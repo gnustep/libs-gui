@@ -148,7 +148,6 @@ Gui_AGSDOC_FILES = ../Documentation/Gui/Gui.gsdoc \
 	../Documentation/Gui/NSBundleAdditions.gsdoc \
 	../Documentation/Gui/NSCoderAdditions.gsdoc \
 	../Documentation/Gui/NSMutableAttributedStringAdditions.gsdoc \
-	../Documentation/Gui/NSMutableParagraphStyle.gsdoc \
 	../Documentation/Gui/NSStringAdditions.gsdoc \
 	$(AUTOGSDOC_HEADERS)
 
