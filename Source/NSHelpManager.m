@@ -34,6 +34,7 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSWorkspace.h>
 #include <AppKit/NSHelpManager.h>
+#include <AppKit/NSGraphics.h>
 
 #include <AppKit/GSHelpManagerPanel.h>
 
