@@ -240,6 +240,8 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
 - (void) setColor: (NSColor *)color
 {
   ASSIGN(_the_color, color);
+  // Notify our target of colour change
+  [self sendAction: _action to: _target];
   [self setNeedsDisplay: YES];
 }
 
@@ -247,8 +249,29 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
 {
   if ([sender respondsToSelector: @selector(color)])
     {
-      ASSIGN(_the_color, [sender color]);
+      [self setColor: [sender color]];
     }
+}
+
+
+- (void) setAction: (SEL)action
+{
+  _action = action;
+}
+
+- (SEL) action
+{
+  return _action;
+}
+
+- (void) setTarget: (id)target
+{
+  _target = target;
+}
+
+- (id) target
+{
+  return _target;
 }
 
 //
@@ -321,6 +344,8 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
   [aCoder encodeObject: _the_color];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_active];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_bordered];
+  [aCoder encodeConditionalObject: _target];
+  [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -329,6 +354,10 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_the_color];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_active];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_bordered];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_target];
+  // Undo RETAIN by decoder
+  TEST_RELEASE(_target);
+  [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
 
   return self;
 }
