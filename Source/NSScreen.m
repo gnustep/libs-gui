@@ -28,7 +28,10 @@
 
 #include <gnustep/gui/config.h>
 #include <Foundation/NSDictionary.h>
+#include <Foundation/NSArray.h>
+#include <AppKit/NSApplication.h>
 #include <AppKit/NSScreen.h>
+#include <AppKit/NSInterfaceStyle.h>
 
 
 
@@ -37,7 +40,7 @@
 //
 // Class variables
 //
-NSScreen *mainScreen = nil;
+static NSScreen *mainScreen = nil;
 
 //
 // Class methods
@@ -66,12 +69,12 @@ NSScreen *mainScreen = nil;
 
 + (NSScreen *)deepestScreen
 {
-	return nil;
+  return [self mainScreen];
 }
 
 + (NSArray *)screens
 {
-	return nil;
+  return [NSArray arrayWithObject: [self mainScreen]];
 }
 
 //
@@ -112,6 +115,33 @@ NSScreen *mainScreen = nil;
 NSDictionary *d = [[NSDictionary alloc] initWithDictionary: device_desc];
 
 	return d;
+}
+
+// Mac OS X methods
+- (const NSWindowDepth*) supportedWindowDepths
+{
+  // Skeletal implementation
+  NSWindowDepth* retval = NSZoneMalloc([self zone], sizeof(NSWindowDepth)*2);
+  retval[1] = depth;
+  retval[2] = 0;
+  return retval;
+}
+
+-(NSRect) visibleFrame
+{
+  NSRect visFrame = frame;
+  switch ([NSApp interfaceStyle])
+    {
+    case NSMacintoshInterfaceStyle:
+      // What is the size of the Mac menubar?
+      visFrame.size.height -= 25;
+      return visFrame;
+    case NSWindows95InterfaceStyle:
+    case NSNextStepInterfaceStyle:
+    case NSNoInterfaceStyle:
+    default:
+      return frame;
+    }
 }
 
 @end

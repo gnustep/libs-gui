@@ -1,3 +1,8 @@
+1999-09-13  Pedro Ivo Andrade Tavares  <ptavares@iname.com>
+
+        * NSScreen.m: added the Mac OS X messages -visibleFrame: and
+        -supportedWindowDepths. The messages are not generalized right now.
+
 1999-09-14  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSCell.m ([NSCell

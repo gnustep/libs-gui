@@ -61,6 +61,11 @@
 - (NSRect)frame;
 - (NSDictionary *)deviceDescription;
 
+#ifndef STRICT_OPENSTEP
+- (const NSWindowDepth*) supportedWindowDepths;
+- (NSRect) visibleFrame;
+#endif
+
 @end
 
 #ifndef NO_GNUSTEP
