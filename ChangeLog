@@ -1,3 +1,11 @@
+Sat Dec  1 09:33:39 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* GNUmakefile.postamble (after-distclean): Remove gui.make as
+	well.  
+	(gui.make): New target.
+	(config.make): New target.
+	(configure): New target.
+	
 Sat Dec  1 09:13:26 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/gnustep/gui/NSButtonCell.h (NSGradientType): Fixed typo
