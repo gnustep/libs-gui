@@ -28,16 +28,22 @@
 #ifndef _GNUstep_H_NSMenu
 #define _GNUstep_H_NSMenu
 
+#include <AppKit/NSView.h>
 #include <AppKit/NSMenuItem.h>
+#include <AppKit/NSButton.h>
+#include <AppKit/NSColor.h>
 #include <AppKit/NSControl.h>
+#include <AppKit/NSImage.h>
+#include <AppKit/NSMenuView.h>
+#include <AppKit/PSOperators.h>
 
 @class NSString;
 @class NSEvent;
 @class NSMatrix;
-
-@class NSMenuView;
-@class NSMenuMatrix;
 @class NSMenuWindow;
+
+@interface      NSMenuWindow : NSWindow
+@end
 
 @interface NSMenu : NSObject <NSCoding, NSCopying>
 {
@@ -54,9 +60,15 @@
 
   // Private.
   BOOL menu_follow_transient;
+  BOOL menu_is_visible;
 
   // Reserved for back-end use
   void *be_menu_reserved;
+
+@private
+  NSMenuWindow *aWindow;
+  NSMenuWindow *bWindow;
+  id titleView;
 }
 
 /* Controlling allocation zones */
@@ -142,11 +154,31 @@
 
 
 @interface NSMenu (PrivateMethods)
+- (BOOL) isFollowTransient;
+- (NSWindow *)window;
+
 /* Shows the menu window on screen */
 - (void)display;
 
 /* Close the associated window menu */
 - (void)close;
+@end
+
+@interface NSMenuWindowTitleView : NSView
+{
+                                        // a menu's title
+        int titleHeight;
+                        // is an instance
+        id  menu;
+                        // of this class
+        NSButton* button;
+        NSButtonCell* buttonCell;
+}
+- (void) _addCloseButton;
+- (void) _releaseCloseButton;
+- (void) windowBecomeTornOff;
+- (void) setMenu: (NSMenu*)menu;
+- (NSMenu*) menu;
 @end
 
 extern NSString* const NSMenuDidSendActionNotification;

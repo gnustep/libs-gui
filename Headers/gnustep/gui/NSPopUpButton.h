@@ -31,6 +31,8 @@
 #ifndef _GNUstep_H_NSPopUpButton
 #define _GNUstep_H_NSPopUpButton
 
+#include <Foundation/Foundation.h>
+
 #include <AppKit/NSButton.h>
 #include <AppKit/NSMenuItem.h>
 #include <AppKit/NSMenu.h>
@@ -38,10 +40,9 @@
 @class NSString;
 @class NSArray;
 @class NSMutableArray;
-
+@class NSMenuView;
 @class NSFont;
 @class NSMatrix;
-@class NSPopUpButton;
 
 @interface NSPopUpButton : NSButton <NSCoding>
 {

@@ -34,13 +34,13 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSNotification.h>
 
-#include <AppKit/NSColor.h>
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSMenuItemCell.h>
 #include <AppKit/NSScreen.h>
 #include <AppKit/NSView.h>
-#include <AppKit/NSPopUpButton.h>
 
+@class NSColor;
+@class NSPopUpButton;
 @class NSFont;
 
 @interface NSMenuView : NSView
@@ -61,7 +61,7 @@
   BOOL menuv_needsSizing;
   NSSize cellSize;
 @private
-  NSPopUpButton *menuv_popb;
+  id menuv_popb;
   id menuv_items_link;
 }
 + (float)menuBarHeight;
