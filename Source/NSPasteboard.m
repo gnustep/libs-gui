@@ -788,8 +788,8 @@ static  NSMapTable              *mimeMap = NULL;
 
 @end
 
-static NSString*	contentsPrefix = @"NSTypedFileContentsPboardType: ";
-static NSString*	namePrefix = @"NSTypedFilenamesPboardType: ";
+static NSString*	contentsPrefix = @"NSTypedFileContentsPboardType:";
+static NSString*	namePrefix = @"NSTypedFilenamesPboardType:";
 
 NSString*
 NSCreateFileContentsPboardType(NSString *fileType)
