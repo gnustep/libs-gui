@@ -69,8 +69,8 @@
 @end
 
 @interface NSObject(NSSplitViewDelegate)
-- (void) splitView: (RBSplitView *)sender resizeSubviewsWithOldSize: (NSSize)oldSize;
-- (void) splitView: (RBSplitView *)sender constrainMinCoordinate: (float *)min maxCoordinate: (float *)max ofSubviewAt: (int)offset;
+- (void) splitView: (NSSplitView *)sender resizeSubviewsWithOldSize: (NSSize)oldSize;
+- (void) splitView: (NSSplitView *)sender constrainMinCoordinate: (float *)min maxCoordinate: (float *)max ofSubviewAt: (int)offset;
 - (void) splitViewWillResizeSubviews: (NSNotification *)notification;
 - (void) splitViewDidResizeSubviews: (NSNotification *)notification;
 @end
