@@ -212,7 +212,7 @@ static NSCharacterSet *invSelectionWordGranularitySet;
   float fmax = NSMaxX(rect);
   float w1, w2;
 
-  if (partialFraction != 0)
+  if (partialFraction != NULL)
     {
       *partialFraction = 0.0;
     }
@@ -257,7 +257,10 @@ static NSCharacterSet *invSelectionWordGranularitySet;
 	}
       if (w1 > x)
 	{
-	  *partialFraction = 1.0 - (w1 - x)/(w1 - w2); 
+	  if (partialFraction != NULL)
+	    {
+	      *partialFraction = 1.0 - (w1 - x)/(w1 - w2); 
+	    }
 	}
       return MAX(0, i-1);
     }
@@ -1121,4 +1124,77 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   return NSMakeRange(aLine, MAX(1, [_lineLayoutInformation count] - aLine));
 }
 
+
+/* Computing where the insertion point should be moved when the user
+ * presses 'Up' or 'Down' is a task for the layout manager.  */
+
+/* Insertion point has y coordinate `position'.  We'd like to put it
+   one line up/down (up if upFlag == YES, down if upFlag == NO),
+   horizontally at `wanted', or the nearest available place.  Return
+   the char index for the new insertion point position.  */
+- (unsigned) _charIndexForInsertionPointMovingFromY: (float)position
+					      bestX: (float)wanted
+						 up: (BOOL)upFlag
+				      textContainer: (NSTextContainer *)tc
+{
+  NSPoint point;
+  unsigned line;
+  _GNULineLayoutInfo *lineInfo;
+  NSRect rect;
+  NSRange range;
+  unsigned glyphIndex;
+  
+  /* Compute the line we were on */
+  point.x = 0;
+  point.y = position;
+  
+  line = [self lineLayoutIndexForPoint: point];
+  
+  if (upFlag == YES  &&  line == 0)
+    {
+      return 0;
+    }
+  else if (upFlag == NO  &&  line == ([_lineLayoutInformation count] - 1))
+    {
+      return [_textStorage length];
+    }
+
+  /* Get line info for previous/following line */
+  if (upFlag)
+    {
+      line -= 1;
+    }
+  else
+    {
+      line += 1;
+    }
+
+  lineInfo = [_lineLayoutInformation objectAtIndex: line];
+  
+  rect  = lineInfo->usedRect;
+  range = lineInfo->glyphRange;
+
+  /* Check if we are outside the rect */
+  if (wanted <= rect.origin.x)
+    {
+      glyphIndex = [self characterIndexForGlyphAtIndex: range.location];
+    }
+  
+  else if (wanted >= NSMaxX (rect))
+    {
+      glyphIndex = [self characterIndexForGlyphAtIndex: 
+			   (NSMaxRange (range) - 1)];
+    }
+  else
+    {
+      /* Else, we can simply move there ! */
+      glyphIndex = [self glyphIndexForPoint: NSMakePoint (wanted, 
+							  NSMidY (rect)) 
+			 inTextContainer: tc
+			 fractionOfDistanceThroughGlyph: NULL];
+    }
+  return [self characterIndexForGlyphAtIndex: glyphIndex];
+}
+
 @end
+
