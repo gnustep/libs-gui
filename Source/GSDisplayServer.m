@@ -241,6 +241,25 @@ GSCurrentServer(void)
 
 - (void) dealloc
 {
+  NSMapEnumerator	enumerator;
+  void			*key;
+  void			*val;
+
+  /*
+   * Remove the display server from the windows map.
+   * This depends on a property of GNUstep map tables, that an
+   * enumerated object can safely be removed from the map.
+   */
+  enumerator = NSEnumerateMapTable(windowmaps);
+  while (NSNextMapEnumeratorPair(&enumerator, &key, &val))
+    {
+      if (val == (void*)self)
+	{
+	  NSMapRemove(windowmaps, key);
+	}
+    }
+  NSEndMapTableEnumeration(&enumerator);
+
   DESTROY(server_info);
   DESTROY(event_queue);
   NSFreeMapTable(drag_types);

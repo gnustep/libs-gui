@@ -1,9 +1,15 @@
+2003-10-29  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSDisplayServer.m: ([-dealloc]) remove deallocated server
+	from windowsmap to avoid segfault on app shuytdown ... fix suggested
+	by benhur@inf.ufsm.br
+
 2003-10-29 02:22  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSServicesManager.m (-updateServicesMenu): Always enable
 	an item with a submenu.
 
-2003-10-27  Richard Frith-Macdonald <rfm@gnu.org>
+2003-10-28  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSSavePanel.m: Change to have entire window accept DnD.
 	* Source/NSWindow.m: Fix to get whole window DnD working, also
@@ -11,7 +17,7 @@
 	first drag-aware view ... Adam reports that this seems to be the
 	behavior on MacOS-X too.
 
-2003-10-27  Richard Frith-Macdonald <rfm@gnu.org>
+2003-10-28  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSOpenPanel.m: Allow users to type in an absolute path name.
 	Support DnD of filename into panel.
