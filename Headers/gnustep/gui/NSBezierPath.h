@@ -66,6 +66,9 @@ typedef enum {
   float _lineWidth;
   float _flatness;
   float _miterLimit;
+  int _dash_count;
+  float _dash_phase;
+  float *_dash_pattern;
   BOOL _shouldRecalculateBounds;
   NSRect _bounds;
   NSRect _controlPointBounds;
