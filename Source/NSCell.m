@@ -181,230 +181,6 @@ static NSColor	*shadowCol;
 }
 
 /*
- * Determining Component Sizes
- */
-- (void) calcDrawInfo: (NSRect)aRect
-{
-}
-
-- (NSSize) cellSize
-{
-  NSSize borderSize, s;
-  
-  // Get border size
-  if (_cell.is_bordered)
-    borderSize = _sizeForBorderType (NSLineBorder);
-  else if (_cell.is_bezeled)
-    borderSize = _sizeForBorderType (NSBezelBorder);
-  else
-    borderSize = NSZeroSize;
-
-  // Add spacing between border and inside 
-  if (_cell.is_bordered || _cell.is_bezeled)
-    {
-      borderSize.height += 1;
-      borderSize.width  += 3;
-    }
-
-  // Get Content Size
-  switch (_cell.type)
-    {
-    case NSTextCellType:
-      s = NSMakeSize([_cell_font widthOfString: _contents], 
-		     [_cell_font boundingRectForFont].size.height);
-      break;
-    case NSImageCellType:
-      if (_cell_image == nil)
-	{
-	  s = NSZeroSize;
-	}
-      else
-	{
-	  s = [_cell_image size];
-	}
-      break;
-    case NSNullCellType:
-      //  macosx instead returns a 'very big size' here; we return NSZeroSize
-      s = NSZeroSize;
-      break;
-    }
-
-  // Add in border size
-  s.width += 2 * borderSize.width;
-  s.height += 2 * borderSize.height;
-  
-  return s;
-}
-
-- (NSSize) cellSizeForBounds: (NSRect)aRect
-{
-  if (_cell.type == NSTextCellType)
-    {
-      // TODO: Resize the text to fit
-    }
-
-  return [self cellSize];
-}
-
-- (NSRect) drawingRectForBounds: (NSRect)theRect
-{
-  NSSize borderSize;
-
-  // Get border size
-  if (_cell.is_bordered)
-    borderSize = _sizeForBorderType (NSLineBorder);
-  else if (_cell.is_bezeled)
-    borderSize = _sizeForBorderType (NSBezelBorder);
-  else
-    borderSize = NSZeroSize;
-
-  return NSInsetRect (theRect, borderSize.width, borderSize.height);
-}
-
-- (NSRect) imageRectForBounds: (NSRect)theRect
-{
-  return [self drawingRectForBounds: theRect];
-}
-
-- (NSRect) titleRectForBounds: (NSRect)theRect
-{
-  if (_cell.type == NSTextCellType)
-    {
-      NSRect frame = [self drawingRectForBounds: theRect];
-      
-      // Add spacing between border and inside 
-      if (_cell.is_bordered || _cell.is_bezeled)
-	{
-	  frame.origin.x += 3;
-	  frame.size.width -= 6;
-	  frame.origin.y += 1;
-	  frame.size.height -= 2;
-	}
-      return frame;
-    }
-  else
-    {
-      return theRect;
-    }
-}
-
-/*
- * Setting the NSCell's Type
- */
-- (void) setType: (NSCellType)aType
-{
-
-  if (_cell.type == aType)
-    return;
-  
-  _cell.type = aType;
-  switch (_cell.type)
-    {
-    case NSTextCellType:
-      ASSIGN(_cell_font, [fontClass userFontOfSize: 0]);
-      ASSIGN(_contents, @"title");
-      break;
-    case NSImageCellType:
-      TEST_RELEASE(_cell_image);
-      _cell_image = nil;
-      break;
-    }
-}
-
-- (NSCellType) type
-{
-  return _cell.type;
-}
-
-/*
- * Setting the NSCell's State
- */
-- (void) setState: (int)value
-{
-  // FIXME
-  _cell.state = value;
-}
-
-- (int) state
-{
-  return _cell.state;
-}
-- (BOOL)allowsMixedState
-{
-  return _cell.allows_mixed_state;
-}
-
-- (void)setAllowsMixedState:(BOOL)flag
-{
-  _cell.allows_mixed_state = flag;
-}
-
-- (int)nextState
-{
-  switch (_cell.state)
-    {
-    case NSOnState:
-      return NSOffState;
-    case NSOffState:
-      if (_cell.allows_mixed_state)
-	{
-	  return NSMixedState;
-	}
-      else
-	{
-	  return NSOnState;
-	}
-    case NSMixedState:
-    default:
-      return NSOnState;
-    }
-}
-
-- (void)setNextState
-{
-  [self setState: [self nextState]];
-}
-
-/*
- * Enabling and Disabling the NSCell
- */
-- (BOOL) isEnabled
-{
-  return !_cell.is_disabled;
-}
-
-- (void) setEnabled: (BOOL)flag
-{
-  _cell.is_disabled = !flag;
-}
-
-/*
- * Setting the Image
- */
-- (NSImage*) image
-{
-  if (_cell.type == NSImageCellType)
-    {
-      return _cell_image;
-    }
-  else
-    return nil;
-}
-
-- (void) setImage: (NSImage*)anImage
-{
-  if (anImage) 
-    {
-      NSAssert ([anImage isKindOfClass: imageClass],
-		NSInvalidArgumentException);
-    }
-  
-  _cell.type = NSImageCellType;    
-  
-  ASSIGN(_cell_image, anImage);
-}
-
-/*
  * Setting the NSCell's Value
  */
 - (id) objectValue
@@ -480,31 +256,138 @@ static NSColor	*shadowCol;
 }
 
 /*
- * Interacting with Other NSCells
+ * Setting Parameters
  */
-- (void) takeObjectValueFrom: (id)sender
+- (int) cellAttribute: (NSCellAttribute)aParameter
 {
-  [self setObjectValue: [sender objectValue]];
+  return 0;
 }
 
-- (void) takeDoubleValueFrom: (id)sender
+- (void) setCellAttribute: (NSCellAttribute)aParameter to: (int)value
 {
-  [self setDoubleValue: [sender doubleValue]];
+  // TOFO
 }
 
-- (void) takeFloatValueFrom: (id)sender
+/*
+ * Setting the NSCell's Type
+ */
+- (void) setType: (NSCellType)aType
 {
-  [self setFloatValue: [sender floatValue]];
+
+  if (_cell.type == aType)
+    return;
+  
+  _cell.type = aType;
+  switch (_cell.type)
+    {
+    case NSTextCellType:
+      ASSIGN(_cell_font, [fontClass userFontOfSize: 0]);
+      ASSIGN(_contents, @"title");
+      break;
+    case NSImageCellType:
+      TEST_RELEASE(_cell_image);
+      _cell_image = nil;
+      break;
+    }
 }
 
-- (void) takeIntValueFrom: (id)sender
+- (NSCellType) type
 {
-  [self setIntValue: [sender intValue]];
+  return _cell.type;
 }
 
-- (void) takeStringValueFrom: (id)sender
+/*
+ * Enabling and Disabling the NSCell
+ */
+- (BOOL) isEnabled
 {
-  [self setStringValue: [sender stringValue]];
+  return !_cell.is_disabled;
+}
+
+- (void) setEnabled: (BOOL)flag
+{
+  _cell.is_disabled = !flag;
+}
+
+/*
+ * Modifying Graphic Attributes
+ */
+- (BOOL) isBezeled
+{
+  return _cell.is_bezeled;
+}
+
+- (BOOL) isBordered
+{
+  return _cell.is_bordered;
+}
+
+- (BOOL) isOpaque
+{
+  return NO;
+}
+
+- (void) setBezeled: (BOOL)flag
+{
+  _cell.is_bezeled = flag;
+  if (_cell.is_bezeled)
+    _cell.is_bordered = NO;
+}
+
+- (void) setBordered: (BOOL)flag
+{
+  _cell.is_bordered = flag;
+  if (_cell.is_bordered)
+    _cell.is_bezeled = NO;
+}
+
+/*
+ * Setting the NSCell's State
+ */
+- (void) setState: (int)value
+{
+  // FIXME
+  _cell.state = value;
+}
+
+- (int) state
+{
+  return _cell.state;
+}
+- (BOOL)allowsMixedState
+{
+  return _cell.allows_mixed_state;
+}
+
+- (void)setAllowsMixedState:(BOOL)flag
+{
+  _cell.allows_mixed_state = flag;
+}
+
+- (int)nextState
+{
+  switch (_cell.state)
+    {
+    case NSOnState:
+      return NSOffState;
+    case NSOffState:
+      if (_cell.allows_mixed_state)
+	{
+	  return NSMixedState;
+	}
+      else
+	{
+	  return NSOnState;
+	}
+    case NSMixedState:
+    default:
+      return NSOnState;
+    }
+}
+
+- (void)setNextState
+{
+  [self setState: [self nextState]];
 }
 
 /*
@@ -620,9 +503,6 @@ static NSColor	*shadowCol;
   return NO;
 }
 
-/*
- * Editing Text
- */
 - (NSText*) setUpFieldEditorAttributes: (NSText*)textObject
 {
   if (_cell.is_disabled)
@@ -637,70 +517,89 @@ static NSColor	*shadowCol;
   return textObject;
 }
 
-- (void) editWithFrame: (NSRect)aRect
-		inView: (NSView *)controlView
-		editor: (NSText *)textObject
-	      delegate: (id)anObject
-		 event: (NSEvent *)theEvent
+/*
+ * Target and Action
+ */
+- (SEL) action
 {
-  if (!controlView || !textObject || !_cell_font ||
-			(_cell.type != NSTextCellType))
-    return;
-
-  [textObject setFrame: [self titleRectForBounds: aRect]];
-  [controlView addSubview: textObject];  
-  [textObject setText: _contents];
-  [textObject setDelegate: anObject];
-  [[controlView window] makeFirstResponder: textObject];
-  [textObject display];
-
-  if ([theEvent type] == NSLeftMouseDown)
-    [textObject mouseDown: theEvent];
+  return NULL;
 }
 
-- (void) endEditing: (NSText*)textObject
+- (void) setAction: (SEL)aSelector
 {
-  [textObject setDelegate: nil];
-  [textObject removeFromSuperview];
+  [NSException raise: NSInternalInconsistencyException
+	      format: @"attempt to set an action in an NSCell"];
 }
 
-- (void) selectWithFrame: (NSRect)aRect
-		  inView: (NSView *)controlView
-		  editor: (NSText *)textObject
-		delegate: (id)anObject
-		   start: (int)selStart
-		  length: (int)selLength
+- (void) setTarget: (id)anObject
 {
-  if (!controlView || !textObject || !_cell_font ||
-			(_cell.type != NSTextCellType))
-    return;
+  [NSException raise: NSInternalInconsistencyException
+	      format: @"attempt to set a target in an NSCell"];
+}
 
-  [textObject setFrame: [self titleRectForBounds: aRect]];
-  [controlView addSubview: textObject];
-  [textObject setText: _contents];
-  [textObject setSelectedRange: NSMakeRange (selStart, selLength)];
-  [textObject setDelegate: anObject];
-  [[controlView window] makeFirstResponder: textObject];
-  [textObject display];
+- (id) target
+{
+  return nil;
+}
+
+- (BOOL) isContinuous
+{
+  return _cell.is_continuous;
+}
+
+- (void) setContinuous: (BOOL)flag
+{
+  _cell.is_continuous = flag;
+  [self sendActionOn: (NSLeftMouseUpMask|NSPeriodicMask)];
+}
+
+- (int) sendActionOn: (int)mask
+{
+  unsigned int previousMask = _action_mask;
+
+  _action_mask = mask;
+
+  return previousMask;
 }
 
 /*
- * Validating Input
+ * Setting the Image
  */
-- (int) entryType
+- (NSImage*) image
 {
-  return _cell.entry_type;
+  if (_cell.type == NSImageCellType)
+    {
+      return _cell_image;
+    }
+  else
+    return nil;
 }
 
-- (BOOL) isEntryAcceptable: (NSString*)aString
+- (void) setImage: (NSImage*)anImage
 {
-  return YES;
+  if (anImage) 
+    {
+      NSAssert ([anImage isKindOfClass: imageClass],
+		NSInvalidArgumentException);
+    }
+  
+  _cell.type = NSImageCellType;    
+  
+  ASSIGN(_cell_image, anImage);
 }
 
-- (void) setEntryType: (int)aType
+/*
+ * Assigning a Tag
+ */
+- (void) setTag: (int)anInt
 {
-  [self setType: NSTextCellType];
-  _cell.entry_type = aType;
+  [NSException raise: NSInternalInconsistencyException
+	      format: @"attempt to set a tag in an NSCell"];
+}
+
+- (int) tag
+{
+  return -1;
 }
 
 /*
@@ -713,6 +612,33 @@ static NSColor	*shadowCol;
   _cell.float_autorange = autoRange;
   _cell_float_left = leftDigits;
   _cell_float_right = rightDigits;
+}
+
+- (void)setFormatter:(NSFormatter *)newFormatter 
+{
+  //TODO
+}
+
+- (id)formatter
+{
+  //TODO
+  return nil;
+}
+
+- (int) entryType
+{
+  return _cell.entry_type;
+}
+
+- (void) setEntryType: (int)aType
+{
+  [self setType: NSTextCellType];
+  _cell.entry_type = aType;
+}
+
+- (BOOL) isEntryAcceptable: (NSString*)aString
+{
+  return YES;
 }
 
 /*
@@ -738,279 +664,69 @@ static NSColor	*shadowCol;
 }
 
 /*
- * Modifying Graphic Attributes
+ * Comparing to Another NSCell
  */
-- (BOOL) isBezeled
+- (NSComparisonResult) compare: (id)otherCell
 {
-  return _cell.is_bezeled;
+  if ([otherCell isKindOfClass: cellClass] == NO)
+    [NSException raise: NSBadComparisonException
+		format: @"NSCell comparison with non-NSCell"];
+  if (_cell.type != NSTextCellType
+    || ((NSCell*)otherCell)->_cell.type != NSTextCellType)
+    [NSException raise: NSBadComparisonException
+		format: @"Comparison between non-text cells"];
+  return [_contents compare: ((NSCell*)otherCell)->_contents];
 }
 
-- (BOOL) isBordered
+/*
+ * respond to keyboard
+ */
+- (BOOL) acceptsFirstResponder
 {
-  return _cell.is_bordered;
+  return !_cell.is_disabled && ([self refusesFirstResponder] == NO);
 }
 
-- (BOOL) isOpaque
+- (void)setShowsFirstResponder:(BOOL)flag 
+{
+}
+
+- (BOOL)showsFirstResponder
 {
   return NO;
 }
 
-- (void) setBezeled: (BOOL)flag
+- (void)setTitleWithMnemonic:(NSString *)aString
 {
-  _cell.is_bezeled = flag;
-  if (_cell.is_bezeled)
-    _cell.is_bordered = NO;
+  // Provided for compatibility only
 }
 
-- (void) setBordered: (BOOL)flag
+- (NSString *)mnemonic
 {
-  _cell.is_bordered = flag;
-  if (_cell.is_bordered)
-    _cell.is_bezeled = NO;
+  // provided for compatibility only
+  return @"";
 }
 
-/*
- * Setting Parameters
- */
-- (int) cellAttribute: (NSCellAttribute)aParameter
+- (void)setMnemonicLocation:(unsigned int)location 
 {
-  return 0;
+  // Provided for compatibility only
 }
 
-- (void) setCellAttribute: (NSCellAttribute)aParameter to: (int)value
+- (unsigned int)mnemonicLocation
 {
+  // Provided for compatibiliy only
+  return NSNotFound;
 }
 
-/*
- * Displaying
- */
-- (NSView*) controlView
+- (BOOL)refusesFirstResponder
 {
-  return nil;
+  // Approximate compatibility behaviour
+  return _cell.is_disabled;
 }
 
-// TODO: Remove this hack without breaking NSTextFieldCell
-- (NSColor*) textColor
+- (void)setRefusesFirstResponder:(BOOL)flag
 {
-  if (_cell.is_disabled)
-    return dtxtCol;
-  else
-    return txtCol;
-}
-
-- (void) _drawText: (NSString *) title inFrame: (NSRect) cellFrame
-{
-  NSColor	*textColor;
-  float		titleWidth;
-  float 	titleHeight;
-  NSDictionary	*dict;
-
-  if (!title)
-    return;
-
-  textColor = [self textColor];
-
-  if (!_cell_font)
-    [NSException raise: NSInvalidArgumentException
-        format: @"Request to draw a text cell but no font specified!"];
-  titleWidth = [_cell_font widthOfString: title];
-  // Important: text should always be vertically centered without
-  // considering descender [as if descender did not exist].
-  // At present (13/1/00) the following code produces the correct output,
-  // even if it seems to be trying to make it wrong.
-  // Please make sure the output remains always correct.
-  titleHeight = [_cell_font pointSize] - [_cell_font descender];
-
-  // Determine the y position of the text
-  cellFrame.origin.y = NSMidY (cellFrame) - titleHeight / 2;
-  cellFrame.size.height = titleHeight;
-
-  // Determine the x position of text
-  switch (_cell.text_align)
-    {
-      // ignore the justified and natural alignments
-      case NSLeftTextAlignment:
-      case NSJustifiedTextAlignment:
-      case NSNaturalTextAlignment:
-	break;
-      case NSRightTextAlignment:
-        if (titleWidth < NSWidth (cellFrame))
-          {
-            float shift = NSWidth (cellFrame) - titleWidth;
-            cellFrame.origin.x += shift;
-            cellFrame.size.width -= shift;
-          }
-	break;
-      case NSCenterTextAlignment:
-        if (titleWidth < NSWidth (cellFrame))
-          {
-            float shift = (NSWidth (cellFrame) - titleWidth) / 2;
-            cellFrame.origin.x += shift;
-            cellFrame.size.width -= shift;
-          }
-    }
-
-  dict = [NSDictionary dictionaryWithObjectsAndKeys:
-		_cell_font, NSFontAttributeName,
-		textColor, NSForegroundColorAttributeName,
-		nil];
-  [title drawInRect: cellFrame withAttributes: dict];
-}
-
-//
-// This drawing is minimal and with no background,
-// to make it easier for subclass to customize drawing. 
-//
-- (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
-{
-  if (![controlView window])
-    return;
-
-  cellFrame = [self drawingRectForBounds: cellFrame];
-
-  //FIXME: Check if this is also neccessary for images,
-  // Add spacing between border and inside 
-  if (_cell.is_bordered || _cell.is_bezeled)
-    {
-      cellFrame.origin.x += 3;
-      cellFrame.size.width -= 6;
-      cellFrame.origin.y += 1;
-      cellFrame.size.height -= 2;
-    }
-
-  [controlView lockFocus];
-
-  switch (_cell.type)
-    {
-      case NSTextCellType:
-	 [self _drawText: _contents inFrame: cellFrame];
-	 break;
-
-      case NSImageCellType:
-	if (_cell_image)
-	  {
-	    NSSize size;
-	    NSPoint position;
-
-	    size = [_cell_image size];
-	    position.x = MAX(NSMidX(cellFrame) - (size.width/2.),0.);
-	    position.y = MAX(NSMidY(cellFrame) - (size.height/2.),0.);
-	    /*
-	     * Images are always drawn with their bottom-left corner
-	     * at the origin so we must adjust the position to take
-	     * account of a flipped view.
-	     */
-	    if ([controlView isFlipped])
-	      position.y += size.height;
-	    [_cell_image compositeToPoint: position operation: NSCompositeCopy];
-	  }
-	 break;
-
-      case NSNullCellType:
-         break;
-    }
-  [controlView unlockFocus];
-}
-
-- (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
-{
-  NSDebugLog (@"NSCell drawWithFrame: inView: ");
-
-  // do nothing if cell's frame rect is zero
-  if (NSIsEmptyRect(cellFrame) || ![controlView window])
-    return;
-
-  [controlView lockFocus];
-
-  // draw the border if needed
-  if (_cell.is_bordered)
-    {
-      [shadowCol set];
-      NSFrameRect(cellFrame);
-    }
-  else if (_cell.is_bezeled)
-    {
-      NSDrawWhiteBezel(cellFrame, NSZeroRect);
-    }
-
-  [controlView unlockFocus];
-  [self drawInteriorWithFrame: cellFrame inView: controlView];
-}
-
-- (BOOL) isHighlighted
-{
-  return _cell.is_highlighted;
-}
-
-- (void) highlight: (BOOL)lit
-	 withFrame: (NSRect)cellFrame
-	    inView: (NSView*)controlView
-{
-  if (_cell.is_highlighted != lit)
-    {
-      _cell.is_highlighted = lit;
-      // NB: This has a visible effect only if subclasses override drawWithFrame:inView: 
-      // to draw something special when the cell is highlighted. 
-      // NSCell simply draws border+text/image and makes no highlighting, 
-      // for easier subclassing.
-      [self drawWithFrame: cellFrame inView: controlView];
-    }
-}
-
-/*
- * Target and Action
- */
-- (SEL) action
-{
-  return NULL;
-}
-
-- (void) setAction: (SEL)aSelector
-{
-  [NSException raise: NSInternalInconsistencyException
-	      format: @"attempt to set an action in an NSCell"];
-}
-
-- (BOOL) isContinuous
-{
-  return _cell.is_continuous;
-}
-
-- (int) sendActionOn: (int)mask
-{
-  unsigned int previousMask = _action_mask;
-
-  _action_mask = mask;
-
-  return previousMask;
-}
-
-- (BOOL)sendsActionOnEndEditing
-{
-  //TODO
-  return NO;
-}
-
-- (void)setSendsActionOnEndEditing:(BOOL)flag
-{
-  //TODO
-}
-
-- (void) setContinuous: (BOOL)flag
-{
-  _cell.is_continuous = flag;
-  [self sendActionOn: (NSLeftMouseUpMask|NSPeriodicMask)];
-}
-
-- (void) setTarget: (id)anObject
-{
-  [NSException raise: NSInternalInconsistencyException
-	      format: @"attempt to set a target in an NSCell"];
-}
-
-- (id) target
-{
-  return nil;
+  // Approximate compatibility behaviour
+  _cell.is_disabled = flag;
 }
 
 - (void) performClick: (id)sender
@@ -1066,87 +782,44 @@ static NSColor	*shadowCol;
 }
 
 /*
- * Assigning a Tag
+ * Deriving values from other objects (not necessarily cells)
  */
-- (void) setTag: (int)anInt
+- (void) takeObjectValueFrom: (id)sender
 {
-  [NSException raise: NSInternalInconsistencyException
-	      format: @"attempt to set a tag in an NSCell"];
+  [self setObjectValue: [sender objectValue]];
 }
 
-- (int) tag
+- (void) takeDoubleValueFrom: (id)sender
 {
-  return -1;
+  [self setDoubleValue: [sender doubleValue]];
 }
 
-- (void)setFormatter:(NSFormatter *)newFormatter 
+- (void) takeFloatValueFrom: (id)sender
 {
-  //TODO
+  [self setFloatValue: [sender floatValue]];
 }
 
-- (id)formatter
+- (void) takeIntValueFrom: (id)sender
 {
-  //TODO
-  return nil;
+  [self setIntValue: [sender intValue]];
+}
+
+- (void) takeStringValueFrom: (id)sender
+{
+  [self setStringValue: [sender stringValue]];
 }
 
 /*
- * Handling Keyboard Alternatives
+ * Using the NSCell to Represent an Object
  */
-- (NSString*) keyEquivalent
+- (id) representedObject
 {
-  return @"";
+  return _represented_object;
 }
 
-/*
- * respond to keyboard
- */
-- (BOOL) acceptsFirstResponder
+- (void) setRepresentedObject: (id)anObject
 {
-  return !_cell.is_disabled && ([self refusesFirstResponder] == NO);
-}
-
-- (void)setShowsFirstResponder:(BOOL)flag 
-{
-}
-
-- (BOOL)showsFirstResponder
-{
-  return NO;
-}
-
-- (void)setTitleWithMnemonic:(NSString *)aString
-{
-  // Provided for compatibility only
-}
-
-- (NSString *)mnemonic
-{
-  // provided for compatibility only
-  return @"";
-}
-
-- (void)setMnemonicLocation:(unsigned int)location 
-{
-  // Provided for compatibility only
-}
-
-- (unsigned int)mnemonicLocation
-{
-  // Provided for compatibiliy only
-  return NSNotFound;
-}
-
-- (BOOL)refusesFirstResponder
-{
-  // Approximate compatibility behaviour
-  return _cell.is_disabled;
-}
-
-- (void)setRefusesFirstResponder:(BOOL)flag
-{
-  // Approximate compatibility behaviour
-  _cell.is_disabled = flag;
+  ASSIGN(_represented_object, anObject);
 }
 
 /*
@@ -1363,33 +1036,361 @@ static NSColor	*shadowCol;
 }
 
 /*
- * Comparing to Another NSCell
+ * Handling Keyboard Alternatives
  */
-- (NSComparisonResult) compare: (id)otherCell
+- (NSString*) keyEquivalent
 {
-  if ([otherCell isKindOfClass: cellClass] == NO)
-    [NSException raise: NSBadComparisonException
-		format: @"NSCell comparison with non-NSCell"];
-  if (_cell.type != NSTextCellType
-    || ((NSCell*)otherCell)->_cell.type != NSTextCellType)
-    [NSException raise: NSBadComparisonException
-		format: @"Comparison between non-text cells"];
-  return [_contents compare: ((NSCell*)otherCell)->_contents];
+  return @"";
 }
 
 /*
- * Using the NSCell to Represent an Object
+ * Determining Component Sizes
  */
-- (id) representedObject
+- (void) calcDrawInfo: (NSRect)aRect
 {
-  return _represented_object;
 }
 
-- (void) setRepresentedObject: (id)anObject
+- (NSSize) cellSize
 {
-  ASSIGN(_represented_object, anObject);
+  NSSize borderSize, s;
+  
+  // Get border size
+  if (_cell.is_bordered)
+    borderSize = _sizeForBorderType (NSLineBorder);
+  else if (_cell.is_bezeled)
+    borderSize = _sizeForBorderType (NSBezelBorder);
+  else
+    borderSize = NSZeroSize;
+
+  // Add spacing between border and inside 
+  if (_cell.is_bordered || _cell.is_bezeled)
+    {
+      borderSize.height += 1;
+      borderSize.width  += 3;
+    }
+
+  // Get Content Size
+  switch (_cell.type)
+    {
+    case NSTextCellType:
+      s = NSMakeSize([_cell_font widthOfString: _contents], 
+		     [_cell_font boundingRectForFont].size.height);
+      break;
+    case NSImageCellType:
+      if (_cell_image == nil)
+	{
+	  s = NSZeroSize;
+	}
+      else
+	{
+	  s = [_cell_image size];
+	}
+      break;
+    case NSNullCellType:
+      //  macosx instead returns a 'very big size' here; we return NSZeroSize
+      s = NSZeroSize;
+      break;
+    }
+
+  // Add in border size
+  s.width += 2 * borderSize.width;
+  s.height += 2 * borderSize.height;
+  
+  return s;
 }
 
+- (NSSize) cellSizeForBounds: (NSRect)aRect
+{
+  if (_cell.type == NSTextCellType)
+    {
+      // TODO: Resize the text to fit
+    }
+
+  return [self cellSize];
+}
+
+- (NSRect) drawingRectForBounds: (NSRect)theRect
+{
+  NSSize borderSize;
+
+  // Get border size
+  if (_cell.is_bordered)
+    borderSize = _sizeForBorderType (NSLineBorder);
+  else if (_cell.is_bezeled)
+    borderSize = _sizeForBorderType (NSBezelBorder);
+  else
+    borderSize = NSZeroSize;
+
+  return NSInsetRect (theRect, borderSize.width, borderSize.height);
+}
+
+- (NSRect) imageRectForBounds: (NSRect)theRect
+{
+  return [self drawingRectForBounds: theRect];
+}
+
+- (NSRect) titleRectForBounds: (NSRect)theRect
+{
+  if (_cell.type == NSTextCellType)
+    {
+      NSRect frame = [self drawingRectForBounds: theRect];
+      
+      // Add spacing between border and inside 
+      if (_cell.is_bordered || _cell.is_bezeled)
+	{
+	  frame.origin.x += 3;
+	  frame.size.width -= 6;
+	  frame.origin.y += 1;
+	  frame.size.height -= 2;
+	}
+      return frame;
+    }
+  else
+    {
+      return theRect;
+    }
+}
+
+/*
+ * Displaying
+ */
+- (NSView*) controlView
+{
+  return nil;
+}
+
+// TODO: Remove this hack without breaking NSTextFieldCell
+- (NSColor*) textColor
+{
+  if (_cell.is_disabled)
+    return dtxtCol;
+  else
+    return txtCol;
+}
+
+- (void) _drawText: (NSString *) title inFrame: (NSRect) cellFrame
+{
+  NSColor	*textColor;
+  float		titleWidth;
+  float 	titleHeight;
+  NSDictionary	*dict;
+
+  if (!title)
+    return;
+
+  textColor = [self textColor];
+
+  if (!_cell_font)
+    [NSException raise: NSInvalidArgumentException
+        format: @"Request to draw a text cell but no font specified!"];
+  titleWidth = [_cell_font widthOfString: title];
+  // Important: text should always be vertically centered without
+  // considering descender [as if descender did not exist].
+  // At present (13/1/00) the following code produces the correct output,
+  // even if it seems to be trying to make it wrong.
+  // Please make sure the output remains always correct.
+  titleHeight = [_cell_font pointSize] - [_cell_font descender];
+
+  // Determine the y position of the text
+  cellFrame.origin.y = NSMidY (cellFrame) - titleHeight / 2;
+  cellFrame.size.height = titleHeight;
+
+  // Determine the x position of text
+  switch (_cell.text_align)
+    {
+      // ignore the justified and natural alignments
+      case NSLeftTextAlignment:
+      case NSJustifiedTextAlignment:
+      case NSNaturalTextAlignment:
+	break;
+      case NSRightTextAlignment:
+        if (titleWidth < NSWidth (cellFrame))
+          {
+            float shift = NSWidth (cellFrame) - titleWidth;
+            cellFrame.origin.x += shift;
+            cellFrame.size.width -= shift;
+          }
+	break;
+      case NSCenterTextAlignment:
+        if (titleWidth < NSWidth (cellFrame))
+          {
+            float shift = (NSWidth (cellFrame) - titleWidth) / 2;
+            cellFrame.origin.x += shift;
+            cellFrame.size.width -= shift;
+          }
+    }
+
+  dict = [NSDictionary dictionaryWithObjectsAndKeys:
+		_cell_font, NSFontAttributeName,
+		textColor, NSForegroundColorAttributeName,
+		nil];
+  [title drawInRect: cellFrame withAttributes: dict];
+}
+
+//
+// This drawing is minimal and with no background,
+// to make it easier for subclass to customize drawing. 
+//
+- (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
+{
+  if (![controlView window])
+    return;
+
+  cellFrame = [self drawingRectForBounds: cellFrame];
+
+  //FIXME: Check if this is also neccessary for images,
+  // Add spacing between border and inside 
+  if (_cell.is_bordered || _cell.is_bezeled)
+    {
+      cellFrame.origin.x += 3;
+      cellFrame.size.width -= 6;
+      cellFrame.origin.y += 1;
+      cellFrame.size.height -= 2;
+    }
+
+  [controlView lockFocus];
+
+  switch (_cell.type)
+    {
+      case NSTextCellType:
+	 [self _drawText: _contents inFrame: cellFrame];
+	 break;
+
+      case NSImageCellType:
+	if (_cell_image)
+	  {
+	    NSSize size;
+	    NSPoint position;
+
+	    size = [_cell_image size];
+	    position.x = MAX(NSMidX(cellFrame) - (size.width/2.),0.);
+	    position.y = MAX(NSMidY(cellFrame) - (size.height/2.),0.);
+	    /*
+	     * Images are always drawn with their bottom-left corner
+	     * at the origin so we must adjust the position to take
+	     * account of a flipped view.
+	     */
+	    if ([controlView isFlipped])
+	      position.y += size.height;
+	    [_cell_image compositeToPoint: position operation: NSCompositeCopy];
+	  }
+	 break;
+
+      case NSNullCellType:
+         break;
+    }
+  [controlView unlockFocus];
+}
+
+- (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
+{
+  NSDebugLog (@"NSCell drawWithFrame: inView: ");
+
+  // do nothing if cell's frame rect is zero
+  if (NSIsEmptyRect(cellFrame) || ![controlView window])
+    return;
+
+  [controlView lockFocus];
+
+  // draw the border if needed
+  if (_cell.is_bordered)
+    {
+      [shadowCol set];
+      NSFrameRect(cellFrame);
+    }
+  else if (_cell.is_bezeled)
+    {
+      NSDrawWhiteBezel(cellFrame, NSZeroRect);
+    }
+
+  [controlView unlockFocus];
+  [self drawInteriorWithFrame: cellFrame inView: controlView];
+}
+
+- (BOOL) isHighlighted
+{
+  return _cell.is_highlighted;
+}
+
+- (void) highlight: (BOOL)lit
+	 withFrame: (NSRect)cellFrame
+	    inView: (NSView*)controlView
+{
+  if (_cell.is_highlighted != lit)
+    {
+      _cell.is_highlighted = lit;
+      // NB: This has a visible effect only if subclasses override drawWithFrame:inView: 
+      // to draw something special when the cell is highlighted. 
+      // NSCell simply draws border+text/image and makes no highlighting, 
+      // for easier subclassing.
+     [self drawWithFrame: cellFrame inView: controlView];
+    }
+}
+
+/*
+ * Editing Text
+ */
+- (void) editWithFrame: (NSRect)aRect
+		inView: (NSView *)controlView
+		editor: (NSText *)textObject
+	      delegate: (id)anObject
+		 event: (NSEvent *)theEvent
+{
+  if (!controlView || !textObject || !_cell_font ||
+			(_cell.type != NSTextCellType))
+    return;
+
+  [textObject setFrame: [self titleRectForBounds: aRect]];
+  [controlView addSubview: textObject];  
+  [textObject setText: _contents];
+  [textObject setDelegate: anObject];
+  [[controlView window] makeFirstResponder: textObject];
+  [textObject display];
+
+  if ([theEvent type] == NSLeftMouseDown)
+    [textObject mouseDown: theEvent];
+}
+
+- (void) endEditing: (NSText*)textObject
+{
+  [textObject setDelegate: nil];
+  [textObject removeFromSuperview];
+}
+
+- (void) selectWithFrame: (NSRect)aRect
+		  inView: (NSView *)controlView
+		  editor: (NSText *)textObject
+		delegate: (id)anObject
+		   start: (int)selStart
+		  length: (int)selLength
+{
+  if (!controlView || !textObject || !_cell_font ||
+			(_cell.type != NSTextCellType))
+    return;
+
+  [textObject setFrame: [self titleRectForBounds: aRect]];
+  [controlView addSubview: textObject];
+  [textObject setText: _contents];
+  [textObject setSelectedRange: NSMakeRange (selStart, selLength)];
+  [textObject setDelegate: anObject];
+  [[controlView window] makeFirstResponder: textObject];
+  [textObject display];
+}
+
+- (BOOL)sendsActionOnEndEditing
+{
+  //TODO
+  return NO;
+}
+
+- (void)setSendsActionOnEndEditing:(BOOL)flag
+{
+  //TODO
+}
+
+/*
+ * Copying
+ */
 - (id) copyWithZone: (NSZone*)zone
 {
   NSCell	*c = [[isa allocWithZone: zone] init];
