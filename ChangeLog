@@ -1,3 +1,28 @@
+2001-09-12  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenu.m
+	Remove function title_height(), replaced calls to it with
+	[NSMenuView menuBarHeight]. [setSubmenu:forItem:] moved code
+	to [NSMenuItem setSubmenu]. [update] use _changedMessagesEnabled
+	to prevent recursion. [sizeToFit] call [setNeedsDisplay:] instead
+	of [display]. [locationForSubmenu:] moved code to [NSMenuView
+	locationForSubmenu:]. 
+	Added [NSMenuWindowTitleView rightMouseDown:], so the main menu
+	is not shown in a menu.
+	* Source/NSMenuItem.m
+	Call [NSMenu itemChange:] in all setXX methods. [setSubmenu:] set
+	the title of the submenu to our title.  
+	* Header/gnustep/gui/NSMenuView.h
+	Removed ivar meunv_menu and reuse _menu from NSResponder.
+	Renamed all the ivars.
+	* Source/NSMenuView.m
+	Adopted to changes in header.
+	[menuBarHeight]	use code from title_height(). Added dummy
+	[initAsTearOff]. Added a lot of code to support horizontal menus,
+	still unfinished. [setHighlightedItemIndex:] don't display items
+	only mark them as needing display. [locationForSubmenu:] moved
+	code from NSMenu to here. [mouseDown:] simplified code.
+		
 2001-09-09  Michael Hanni <mhanni@sprintmail.com>
 
 	* Source/Functions.m (NSDrawButton): rearrange the order of 
