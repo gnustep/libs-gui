@@ -1296,8 +1296,8 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 - (void) setMainMenu: (NSMenu*)aMenu
 {
   unsigned	i, j;
-  NSMenuItem	*mc;
-  NSArray	*mi;
+  NSMenuItem	*anItem;
+  NSArray	*menuItems;
 
   if (main_menu != nil && main_menu != aMenu)
     {
@@ -1311,15 +1311,15 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
   /*
    * Find a menucell with the title Windows this is the default windows menu
    */
-  mi = [main_menu itemArray];
-  j = [mi count];
+  menuItems = [main_menu itemArray];
+  j = [menuItems count];
   windows_menu = nil;
   for (i = 0; i < j; ++i)
     {
-      mc = [mi objectAtIndex: i];
-      if ([[mc stringValue] compare: @"Windows"] == NSOrderedSame)
+      anItem = [menuItems objectAtIndex: i];
+      if ([[anItem title] compare: @"Windows"] == NSOrderedSame)
 	{
-	  windows_menu = mc;
+	  windows_menu = anItem;
 	  break;
 	}
     }
