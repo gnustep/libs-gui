@@ -168,18 +168,24 @@ static Class cellClass;
 
 - (void) setDoubleValue: (double)aDouble
 {
+  [self abortEditing];
+
   [[self selectedCell] setDoubleValue: aDouble];
   [self setNeedsDisplay: YES];
 }
 
 - (void) setFloatValue: (float)aFloat
 {
+  [self abortEditing];
+
   [[self selectedCell] setFloatValue: aFloat];
   [self setNeedsDisplay: YES];
 }
 
 - (void) setIntValue: (int)anInt
 {
+  [self abortEditing];
+
   [[self selectedCell] setIntValue: anInt];
   [self setNeedsDisplay: YES];
 }
