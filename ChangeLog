@@ -1,3 +1,23 @@
+Wed Mar 15 02:41:04 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/GSUtil.m: Removed file; it was duplicating 
+	[NSString -sizeWithAttributes:].
+	* Source/GSUtil.h: Idem.
+	* Source/GNUmakefile: Idem.
+	* Source/NSButtonCell.m ([-drawInteriorWithFrame:inView:]): Invoke
+	[NSString -sizeWithAttributes:] instead of
+	GSUtil_sizeOfMultilineStringWithFont(); ([-cellSize]): Idem.
+	* Source/NSCell.m ([-cellSize]): Idem; updated for the change 
+	so that the @"" string gets simply the height of the font.
+	([-_drawText:title:cellFrame]): Idem, plus rewritten vertical
+	centering of text.
+	* Source/NSFormCell.m ([-cellSize]): Made code slightly smarter;
+	now it detects @"".
+
+	* Source/NSCell.m ([-setObjectValue:]): Temporary implementation 
+	working only with strings, images, and numbers.  This is 
+	needed by the forthcoming NSTableView.
+	
 2000-03-11  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/NSText.h: Add missing methods.
