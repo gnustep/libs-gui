@@ -1,3 +1,14 @@
+2003-03-17  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSControl.m
+	Added method [acceptsFirstResponder], which asks the cell if it
+	accepts first responder. Added [becomeFirstResponder] and
+	[resignFirstResponder] that redraw if the cell may change apprearance.
+	* Source/NSButton.m
+	* Source/NSStepper.m
+	Removed the method [acceptsFirstResponder] as NSControls version
+	is now used.
+	
 2003-03-07  Willem Rein Oudshoorn  <woudshoo@xs4all.nl>
 
 	* Source/NSMenu.m: ([-_updateUserDefaults:]) Do not store location
