@@ -5709,7 +5709,7 @@ inline float computePeriod(NSPoint mouseLocationWin,
     }
 
 
-  return dragOperation;
+  return currentDragOperation;
 }
 
 - (BOOL) performDragOperation: (id<NSDraggingInfo>)sender
