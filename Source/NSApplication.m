@@ -1568,22 +1568,45 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
   DPSPostEvent(GSCurrentServer(), event, flag);
 }
 
-/*
- * Sending action messages
+/**
+ * Sends the aSelector message to the receiver returned by the
+ * -targetForAction:to:from: method (to which the aTarget and sender
+ * arguments are passed).<br />
+ * The method in the receiver must expect a single argument ...
+ * the sender.<br />
+ * Any value returned by the method in the receiver is ignored.<br />
+ * This method returns YES on success, NO on failure (when no receiver
+ * can be found for aSelector).
  */
 - (BOOL) sendAction: (SEL)aSelector to: (id)aTarget from: (id)sender
 {
   id resp = [self targetForAction: aSelector to: aTarget from: sender];
 
-  if (resp)
+  if (resp != nil)
     {
-      [resp performSelector: aSelector withObject: sender];
+      NSInvocation	*inv;
+      NSMethodSignature	*sig;
+
+      sig = [resp methodSignatureForSelector: aSelector];
+      inv = [NSInvocation invocationWithMethodSignature: sig];
+      [inv setSelector: aSelector];
+      if ([sig numberOfArguments] > 2)
+	{
+	  [inv setArgument: &sender atIndex: 2];
+	}
+      [inv invokeWithTarget: resp];
       return YES;
     }
 
   return NO;
 }
 
+/**
+ * If theTarget responds to theAction it is returned, otherwise
+ * the application searches for an object which will handle
+ * theAction and returns the first object found.<br />
+ * Returns nil on failure.
+ */
 - (id) targetForAction: (SEL)theAction to: (id)theTarget from: (id)sender
 {
   /*
@@ -1693,6 +1716,12 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
   return nil;
 }
 
+/**
+ * Attempts to perform aSelector using [NSResponder-tryToPerform:with:]
+ * and if that is not possible, attempts to get the application
+ * delegate to perform the aSelector.<br />
+ * Returns YES if an object was found to perform aSelector, NO otherwise.
+ */
 - (BOOL) tryToPerform: (SEL)aSelector with: (id)anObject
 {
   if ([super tryToPerform: aSelector with: anObject] == YES)
@@ -1701,7 +1730,17 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
     }
   if (_delegate != nil && [_delegate respondsToSelector: aSelector])
     {
-      [_delegate performSelector: aSelector withObject: anObject];
+      NSInvocation	*inv;
+      NSMethodSignature	*sig;
+
+      sig = [_delegate methodSignatureForSelector: aSelector];
+      inv = [NSInvocation invocationWithMethodSignature: sig];
+      [inv setSelector: aSelector];
+      if ([sig numberOfArguments] > 2)
+	{
+	  [inv setArgument: &anObject atIndex: 2];
+	}
+      [inv invokeWithTarget: _delegate];
       return YES;
     }
   return NO;

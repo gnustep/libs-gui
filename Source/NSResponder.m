@@ -28,6 +28,7 @@
 #include "gnustep/gui/config.h"
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSDebug.h>
+#include <Foundation/NSInvocation.h>
 #include "AppKit/NSResponder.h"
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSMenu.h"
@@ -96,12 +97,30 @@
   return NO;
 }
 
+/**
+ * If the receiver responds to anAction, it performs that method with
+ * anObject as its argument, discards any return value, and return YES.<br />
+ * Otherwise, the next responder in the chain is asked to perform
+ * anAction and the result of that is returned.<br />
+ * If no responder in the chain is able to respond to anAction, then
+ * NO is returned.
+ */
 - (BOOL) tryToPerform: (SEL)anAction with: (id)anObject
 {
   /* Can we perform the action -then do it */
   if ([self respondsToSelector: anAction])
     {
-      [self performSelector: anAction withObject: anObject];
+      NSInvocation	*inv;
+      NSMethodSignature	*sig;
+
+      sig = [self methodSignatureForSelector: anAction];
+      inv = [NSInvocation invocationWithMethodSignature: sig];
+      [inv setSelector: anAction];
+      if ([sig numberOfArguments] > 2)
+	{
+	  [inv setArgument: &anObject atIndex: 2];
+	}
+      [inv invokeWithTarget: self];
       return YES;
     }
   else

@@ -1,3 +1,10 @@
+2003-07-26  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSApplication.m: Use NSInvocation to perform actions, so
+	we can handle cases where the action method returns a non-id or
+        misses an argument.
+	* Source/NSResponder.m: ditto
+
 2003-07-26  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSImage.m
