@@ -79,15 +79,41 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
                name: NSText##notif_name##Notification \
              object: _notifObject]
 
-/* MINOR FIXME: The following two should really be kept in the
-   NSLayoutManager object to avoid interferences between different
-   sets of NSTextViews linked to different NSLayoutManagers.  But this
-   bug should show very rarely. */
- 
+/*
+ * Synchronizing flags.  Used to manage synchronizing shared
+ * attributes between textviews coupled with the same layout manager.
+ * These synchronizing flags are only accessed when
+ * _tvf.multiple_textviews == YES and this can only happen if we have
+ * a non-nil NSLayoutManager - so we don't check. */
+
 /* YES when in the process of synchronizing text view attributes.  
-   It is used to avoid recursive synchronizations. */
-static BOOL isSynchronizingFlags = NO;
-static BOOL isSynchronizingDelegate = NO;
+   Used to avoid recursive synchronizations. */
+#define IS_SYNCHRONIZING_FLAGS _layoutManager->_isSynchronizingFlags 
+/* YES when in the process of synchronizing delegates.
+   Used to avoid recursive synchronizations. */ 
+#define IS_SYNCHRONIZING_DELEGATES _layoutManager->_isSynchronizingDelegates
+
+/*
+ * Began editing flag.  There are quite some different ways in which
+ * editing can be started.  Each time editing is started, we need to check 
+ * with the delegate if it is OK to start editing - but we need to check 
+ * only once.  So, we use a flag.  */
+
+static BOOL noLayoutManagerException ()
+{
+  [NSException raise: NSGenericException
+	       format: @"Can't edit a NSTextView without a layout manager!"];
+  return YES;
+}
+
+/* YES when editing has already began.  If NO, then we need to ask to
+   the delegate for permission to begin editing before allowing any
+   change to be made.  We explicitly check for a layout manager, and
+   raise an exception if not found. */
+#define BEGAN_EDITING \
+(_layoutManager ? _layoutManager->_beganEditing : noLayoutManagerException ())
+#define SET_BEGAN_EDITING(X) \
+if (_layoutManager != nil) _layoutManager->_beganEditing = X
 
 /* The shared notification center */
 static NSNotificationCenter *nc;
@@ -1002,6 +1028,16 @@ static NSNotificationCenter *nc;
     {
       [nc removeObserver: _delegate  name: nil  object: oldNotifObject];
 
+      if ([_delegate respondsToSelector: 
+		       @selector(shouldChangeTextInRange:replacementString:)])
+	{
+	  _tvf.delegate_responds_to_should_change = YES;
+	}
+      else
+	{
+	  _tvf.delegate_responds_to_should_change = NO;
+	}
+
       /* SET_DELEGATE_NOTIFICATION defined at the beginning of file */
 
       /* NSText notifications */
@@ -1164,10 +1200,10 @@ static NSNotificationCenter *nc;
 /* 
    _syncTextViewsCalling:withFlag: calls a set method on all text
    views sharing the same layout manager as this one.  It sets the
-   isSynchronizingFlags flag to YES to prevent recursive calls; calls the
-   specified action on all the textviews (this one included) with the
-   specified flag; sets back the isSynchronizingFlags flag to NO; then
-   returns.
+   IS_SYNCHRONIZING_FLAGS flag to YES to prevent recursive calls;
+   calls the specified action on all the textviews (this one included)
+   with the specified flag; sets back the IS_SYNCHRONIZING_FLAGS flag
+   to NO; then returns.
 
    We need to explicitly call the methods - we can't copy the flags
    directly from one textview to another, to allow subclasses to
@@ -1179,7 +1215,7 @@ static NSNotificationCenter *nc;
   int i, count;
   void (*msg)(id, SEL, BOOL);
 
-  if (isSynchronizingFlags == YES)
+  if (IS_SYNCHRONIZING_FLAGS == YES)
     {
       [NSException raise: NSGenericException
 		   format: @"_syncTextViewsCalling:withFlag: "
@@ -1198,7 +1234,7 @@ static NSNotificationCenter *nc;
 		   @"_syncTextViewsCalling:withFlag:"];
     }
 
-  isSynchronizingFlags = YES;
+  IS_SYNCHRONIZING_FLAGS = YES;
 
   for (i = 0; i < count; i++)
     {
@@ -1208,11 +1244,11 @@ static NSNotificationCenter *nc;
       (*msg) (tv, action, flag);
     }
 
-  isSynchronizingFlags = NO;
+  IS_SYNCHRONIZING_FLAGS = NO;
 }
 
 #define NSTEXTVIEW_SYNC(X) \
-  if (_tvf.multiple_textviews && (isSynchronizingFlags == NO)) \
+  if (_tvf.multiple_textviews && (IS_SYNCHRONIZING_FLAGS == NO)) \
     {  [self _syncTextViewsByCalling: @selector(##X##)  withFlag: flag]; \
     return; }
 
@@ -1726,20 +1762,23 @@ replacing the selection.
 - (BOOL) shouldChangeTextInRange: (NSRange)affectedCharRange
 	       replacementString: (NSString*)replacementString
 {
-/*
-This method checks with the delegate as needed using
-textShouldBeginEditing: and
-textView: shouldChangeTextInRange: replacementString: , returning YES to
-allow the change, and NO to prohibit it.
+  if (BEGAN_EDITING == NO)
+    {
+      if (([_delegate respondsToSelector: @selector(textShouldBeginEditing:)])
+	  && ([_delegate textShouldBeginEditing: _notifObject] == NO))
+	return NO;
+      
+      SET_BEGAN_EDITING (YES);
+      
+      [nc postNotificationName: NSTextDidBeginEditingNotification  
+	  object: _notifObject];
+    }
 
-This method must be invoked at the start of any sequence of user-initiated
-editing changes. If your subclass of NSTextView implements new methods
-that modify the text, make sure to invoke this method to determine whether
-the change should be made. If the change is allowed, complete the change
-by invoking the didChangeText method. See Notifying About Changes to the
-Text in the class description for more information. If you can't determine
-the affected range or replacement string before beginning changes, pass
-(NSNotFound, 0) and nil for these values. */
+  if (_tvf.delegate_responds_to_should_change)
+    {
+      return [_delegate shouldChangeTextInRange: affectedCharRange 
+			replacementString: replacementString];
+    }
 
   return YES;
 }
@@ -1822,14 +1861,14 @@ afterString in order over charRange. */
   NSEvent *currentEvent;
   unsigned startIndex;
 
-  // If not selectable than don't recognize the mouse down
-  if (!_tf.is_selectable)
-    return;
+  /* If non selectable then ignore the mouse down. */
+  if (_tf.is_selectable == NO)
+    {
+      return;
+    }
 
-  // Only try to make first responder if editable, otherwise the 
-  // delegate will stop it in becomeFirstResponder.
-  if (_tf.is_editable && ![_window makeFirstResponder: self])
-    return;
+  /* Otherwise, NSWindow has already made us first responder (if
+     possible) */
 
   switch ([theEvent clickCount])
     {
@@ -1890,7 +1929,7 @@ afterString in order over charRange. */
 - (void) keyDown: (NSEvent*)theEvent
 {
   // If not editable, don't recognize the key down
-  if (!_tf.is_editable)
+  if (_tf.is_editable == NO)
     {
       [super keyDown: theEvent];
     }
@@ -2077,35 +2116,53 @@ afterString in order over charRange. */
 - (BOOL) acceptsFirstResponder
 {
   if (_tf.is_selectable)
-    return YES;
+    {
+      return YES;
+    }
   else
-    return NO;
+    {
+      return NO;
+    }
 }
 
 - (BOOL) resignFirstResponder
 {
-  /*
-    if (nextRsponder == NSTextView_in_NSLayoutManager)
-    return YES;
-    else
+  if (_tvf.multiple_textviews == YES)
     {
-    if (![self textShouldEndEditing])
-    return NO;
-    else
-    {
-    [[NSNotificationCenter defaultCenter]
-    postNotificationName: NSTextDidEndEditingNotification object: self];
-    // [self hideSelection];
-    return YES;
+      id futureFirstResponder;
+      NSArray *textContainers;
+      int i, count;
+      
+      futureFirstResponder = [_window _futureFirstResponder];
+      textContainers = [_layoutManager textContainers];
+      count = [textContainers count];
+      for (i = 0; i < count; i++)
+	{
+	  NSTextContainer *container;
+	  NSTextView *view;
+	  
+	  container = (NSTextContainer *)[textContainers objectAtIndex: i];
+	  view = [container textView];
+
+	  if (view == futureFirstResponder)
+	    {
+	      /* NB: We do not reset the BEGAN_EDITING flag so that no
+		 spurious notification is generated. */
+	      return YES;
+	    }
+	}
     }
-    }
-  */
+  
+  /* NB: Possible change: ask always - not only if editable - but we
+     need to change NSTextField etc to allow this. */
   if ((_tf.is_editable)
       && ([_delegate respondsToSelector: @selector(textShouldEndEditing:)])
       && ([_delegate textShouldEndEditing: self] == NO))
-    return NO;
-
-  // Add any clean-up stuff here
+    {
+      return NO;
+    }
+  
+  /* Add any clean-up stuff here */
 
   if ([self shouldDrawInsertionPoint])
     {
@@ -2116,28 +2173,34 @@ afterString in order over charRange. */
       //<!> stop timed entry
     }
 
-  [nc postNotificationName: NSTextDidEndEditingNotification  object: self];
+  SET_BEGAN_EDITING (NO);
+
+  /* NB: According to the doc (and to the tradition), we post this
+     notification even if no real editing was actually done (only
+     selection of text) [Note: in this case, no editing was started,
+     so the notification does not come after a
+     NSTextDidBeginEditingNotification!].  The notification only means
+     that we are resigning first responder status.  This makes sense
+     because many objects inside the gui need this notification anyway
+     - typically, it is needed to remove a field editor (editable or
+     not) when the user presses TAB to move to the next view.  Anyway
+     yes, the notification name is misleading. */
+  [nc postNotificationName: NSTextDidEndEditingNotification  
+      object: _notifObject];
   return YES;
 }
 
 - (BOOL) becomeFirstResponder
 {
   if (_tf.is_selectable == NO)
-    return NO;
+    {
+      return NO;
+    }
 
-    /*
-      if (!nextRsponder == NSTextView_in_NSLayoutManager)
-      {
-      //draw selection
-      //update the insertion point
-      }
-    */
-  
-  if (([_delegate respondsToSelector: @selector(textShouldBeginEditing:)])
-      && ([_delegate textShouldBeginEditing: self] == NO))
-    return NO;
+  /* NB: Notifications (NSTextBeginEditingNotification etc) are managed 
+     on the first time the user tries to edit us. */
 
-  // Add any initialization stuff here.
+  /* Draw selection, update insertion point */
 
   //if ([self shouldDrawInsertionPoint])
   //  {
@@ -2147,7 +2210,7 @@ afterString in order over charRange. */
   //   [self unlockFocus];
   //   //<!> restart timed entry
   //  }
-  [nc postNotificationName: NSTextDidBeginEditingNotification  object: self];
+
   return YES;
 }
 
@@ -2289,14 +2352,14 @@ container, returning the modified location. */
 - (void) setDelegate: (id)anObject
 {
   /* Code to allow sharing the delegate */
-  if (_tvf.multiple_textviews && (isSynchronizingDelegate == NO))
+  if (_tvf.multiple_textviews && (IS_SYNCHRONIZING_DELEGATES == NO))
     {
       /* Invoke setDelegate: on all the textviews which share this
          delegate. */
       NSArray *array;
       int i, count;
 
-      isSynchronizingDelegate = YES;
+      IS_SYNCHRONIZING_DELEGATES = YES;
 
       array = [_layoutManager textContainers];
       count = [array count];
@@ -2309,7 +2372,7 @@ container, returning the modified location. */
 	  [view setDelegate: anObject];
 	}
       
-      isSynchronizingDelegate = NO;
+      IS_SYNCHRONIZING_DELEGATES = NO;
     }
 
   /* Now the real code to set the delegate */
@@ -2320,6 +2383,16 @@ container, returning the modified location. */
     }
 
   [super setDelegate: anObject];
+
+  if ([_delegate respondsToSelector: 
+		   @selector(shouldChangeTextInRange:replacementString:)])
+    {
+      _tvf.delegate_responds_to_should_change = YES;
+    }
+  else
+    {
+      _tvf.delegate_responds_to_should_change = NO;
+    }
 
   /* SET_DELEGATE_NOTIFICATION defined at the beginning of file */
 
