@@ -27,39 +27,22 @@
 #include <Foundation/NSObjCRuntime.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSEnumerator.h>
+#include <Foundation/NSDictionary.h>
 #include <Foundation/NSString.h>
-#include "AppKit/NSEvent.h"
+
+#if !defined USE_INPUT_MANAGER_UTILITIES
+#define USE_INPUT_MANAGER_UTILITIES
+#endif
 #include "NSInputManagerPriv.h"
 
 
-
-@interface NSInputManager (Debug)
-- (NSString *)flagsToString: (unsigned int)flags;
-- (NSString *)nonprintableToPrintable:(NSString *)str;
-@end /* @interface NSInputManager (Debug) */
-
-
-@implementation NSInputManager (Debug)
-
-#define NumberOf(array) (sizeof(array) / sizeof(array[0]))
+#define NumberOf(array) (sizeof(array)/sizeof(array[0]))
 
 
 typedef struct _IMRecord {
     NSString	    *key;
     unsigned int    value;
 } IMRecord;
-
-
-static IMRecord maskTable[] = {
-    { @"AlphaShiftKey",	    NSAlphaShiftKeyMask },
-    { @"ShiftKey",	    NSShiftKeyMask },
-    { @"ControlKey",	    NSControlKeyMask },
-    { @"AlternateKey",	    NSAlternateKeyMask },
-    { @"CommandKey",	    NSCommandKeyMask },
-    { @"NumericPadKey",	    NSNumericPadKeyMask },
-    { @"HelpKey",	    NSHelpKeyMask },
-    { @"FunctionKey",	    NSFunctionKeyMask },
-};
 
 
 static IMRecord functionKeyTable[] = {
@@ -138,7 +121,215 @@ static IMRecord functionKeyTable[] = {
 };
 
 
-- (NSString *)flagsToString: (unsigned int)flags
+static IMRecord maskTable[] = {
+    { @"AlphaShiftKey",	    NSAlphaShiftKeyMask },
+    { @"ShiftKey",	    NSShiftKeyMask },
+    { @"ControlKey",	    NSControlKeyMask },
+    { @"AlternateKey",	    NSAlternateKeyMask },
+    { @"CommandKey",	    NSCommandKeyMask },
+    { @"NumericPadKey",	    NSNumericPadKeyMask },
+    { @"HelpKey",	    NSHelpKeyMask },
+    { @"FunctionKey",	    NSFunctionKeyMask },
+};
+
+
+@interface NSInputManager (Debug)
+- (NSString *)modifierFlagsToString: (unsigned int)flags;
+- (NSString *)nonprintableToPrintable:(NSString *)str;
+@end /* @interface NSInputManager (Debug) */
+
+
+@implementation NSInputManager (KeyEventHandling)
+
+- (void)interpretSingleKeyEvent: (NSEvent *)event
+{
+  NSString	*characters = [event characters];
+  NSString	*noModifiers = [event charactersIgnoringModifiers];
+  unsigned int	modifierFlags = [event modifierFlags];
+
+  /* TODO: Under experiment */
+  if ([self wantsToInterpretAllKeystrokes])
+    {
+      [self insertText: characters];
+    }
+
+  /* For debugging */
+  NSLog(@"%@ -> %@ (%@)",
+	characters,
+	[self nonprintableToPrintable: noModifiers],
+	[self modifierFlagsToString: modifierFlags]);
+
+  if ([[event characters] characterAtIndex: 0] == 010) /* Backspace */
+    {
+      /* Interestingly, Ctrl-h comes here.  Who does this conversion? */
+      [self doCommandBySelector: @selector(deleteBackward:)];
+    }
+  else if ([characters characterAtIndex: 0] == 015) /* CR */
+    {
+      [self doCommandBySelector: @selector(insertNewline:)];
+    }
+  else if ([characters characterAtIndex: 0] == 011) /* TAB */
+    {
+      [self doCommandBySelector: @selector(insertTab:)];
+    }
+  else if (modifierFlags == 0 ||
+	   (modifierFlags & NSShiftKeyMask) == NSShiftKeyMask ||
+	   (modifierFlags & NSAlphaShiftKeyMask) == NSAlphaShiftKeyMask)
+    {
+      [self insertText: [event characters]];
+    }
+}
+
+
+- (void)interpretKeyEvents: (NSArray *)eventArray
+{
+  id		obj;
+  NSEnumerator	*objEnum    = [eventArray objectEnumerator];
+
+  while ((obj = [objEnum nextObject]) != nil)
+    {
+      [self interpretSingleKeyEvent: obj];
+    }
+}
+
+@end /* @implementation NSInputManager (KeyEventHandling) */
+
+
+@implementation IMCharacter
+
+- (id)init
+{
+  return [self initWithCharacter: 0
+		       modifiers: 0];
+}
+
+
+- (id)initWithCharacter: (unichar)c
+	      modifiers: (unsigned int)flags
+{
+  if ((self = [super init]) != nil)
+    {
+      [self setCharacter: c];
+      [self setModifiers: flags];
+    }
+  return self;
+}
+
+
+- (id)characterWithCharacter: (unichar)c
+		   modifiers: (unsigned int)flags
+{
+  return [[[self class] initWithCharacter: c modifiers: flags] autorelease];
+}
+
+
+- (void)setCharacter: (unichar)c
+{
+  character = c;
+}
+
+
+- (unichar)character
+{
+  return character;
+}
+
+
+- (void)setModifiers: (unsigned int)flags
+{
+  modifiers = flags;
+}
+
+
+- (unsigned int)modifiers
+{
+  return modifiers;
+}
+
+
+- (id)copyWithZone: (NSZone *)zone
+{
+  IMCharacter *c = [[[self class] allocWithZone: zone]
+				initWithCharacter: [self character]
+					modifiers: [self modifiers]];
+  return c;
+}
+
+
+- (BOOL)equalTo: (id)anObject
+{
+  if ([anObject isMemberOf: [IMCharacter class]])
+    {
+      return ([anObject character] == [self character]) &&
+	     ([anObject modifiers] == [self modifiers]);
+    }
+  return NO;
+}
+
+
+- (NSComparisonResult)compare: (id)another
+{
+  unsigned long val1 = ([self modifiers] << (sizeof(unichar) * 8))
+			& [self character];
+  unsigned long val2 = ([another modifiers] << (sizeof(unichar) * 8))
+			& [another character];
+  if (val2 > val1)
+    {
+      return NSOrderedDescending;
+    }
+  else if (val2 < val1)
+    {
+      return NSOrderedAscending;
+    }
+  else
+    {
+      return NSOrderedSame;
+    }
+}
+
+
+- (NSString *)description
+{
+  /* TODO: Under construction */
+  return nil;
+}
+
+@end /* @implementation IMCharacter */
+
+
+@implementation IMKeyBindingTable
+
+- (id)initWithKeyBindingDictionary: (NSDictionary *)bindings
+{
+  if ((self = [super init]) != nil)
+    {
+      /* TODO: Under construction */
+    }
+  return nil;
+}
+
+
+- (IMQueryResult)getSelectorForCharacter: (IMCharacter *)c
+				selector: (SEL *)sel
+{
+  /* TODO: Under construction */
+  return IMNotFound;
+}
+
+- (void)dealloc
+{
+  [bindings release];
+  /* Don't release 'branch' because it is a pointer to either 'bindings'
+     or a dictionary inside 'branch'. */
+  [super dealloc];
+}
+
+@end /* @implementation IMKeyBindingTable */
+
+
+@implementation NSInputManager (Debug)
+
+- (NSString *)modifierFlagsToString: (unsigned int)flags
 {
   NSString *str = [NSString stringWithString: @""];
   unsigned i;
@@ -285,9 +476,6 @@ static IMRecord functionKeyTable[] = {
 		case 040:
 		  str = [str stringByAppendingString: @"SPACE"];
 		  break;
-
-		/* Printable Characters */
-
 		case 0177:
 		  str = [str stringByAppendingString: @"DEL"];
 		  break;
@@ -301,56 +489,3 @@ static IMRecord functionKeyTable[] = {
 }
 
 @end /* NSInputManager (Debug) */
-
-
-@implementation NSInputManager (KeyEventHandling)
-
-- (void)interpretSingleKeyEvent: (NSEvent *)event
-{
-  /* TODO: Under experiment */
-  NSString	*chars = [event charactersIgnoringModifiers];
-  unsigned int	flags = [event modifierFlags];
-
-  if ([self wantsToInterpretAllKeystrokes])
-    {
-      [self insertText: [event characters]];
-    }
-
-  /* For debugging */
-  NSLog(@"%@ -> %@ (%@)",
-	[event characters],
-	[self nonprintableToPrintable: [event charactersIgnoringModifiers]],
-	[self flagsToString: [event modifierFlags]]);
-
-  if ([chars characterAtIndex: 0] == 010) /* Backspace */
-    {
-      [self doCommandBySelector: @selector(deleteBackward:)];
-      return;
-    }
-
-  if (flags == 0 ||
-      (flags & NSShiftKeyMask) == NSShiftKeyMask ||
-      (flags & NSAlphaShiftKeyMask) == NSAlphaShiftKeyMask)
-    {
-      [self insertText: [event characters]];
-      return;
-    }
-
-}
-
-
-- (void)interpretKeyEvents: (NSArray *)eventArray
-{
-  id		obj;
-  NSEnumerator	*objEnum    = [eventArray objectEnumerator];
-
-  while ((obj = [objEnum nextObject]) != nil)
-    {
-      if ([obj isKindOf: [NSEvent class]] && [obj type] == NSKeyDown)
-	{
-	  [self interpretSingleKeyEvent: obj];
-	}
-    }
-}
-
-@end /* @implementation NSInputManager (KeyEventHandling) */

@@ -30,12 +30,19 @@
     $	    -- Shift
     #	    -- Numeric Pad
 
-    \010    -- Backspace
-    \033    -- Esc
-    \040    -- Space
-    \177    -- Del
+    \010    -- BS	(Backspace)
+    \011    -- HT	(Tab)
+    \015    -- CR	(Return)
+    \033    -- ESC	(Esc)
+    \040    -- SPACE	
+    \177    -- DEL	(Delete)
  */
 {
+    /* Basic Key-Bindings */
+    "\010"	    = "deleteBackward:";
+    "\011"	    = "insertTab:";
+    "\015"	    = "insertNewline:";
+
     "UpArrow"	    = "moveUp:";
     "DownArrow"	    = "moveDown:";
     "LeftArrow"	    = "moveLeft:";
@@ -67,7 +74,7 @@
     "PageUp"	    = "pageUp:";
     "PageDown"	    = "pageDown:";
 
-    /* Emacs Control Key-Bindings */
+    /* Emacs Key-Bindings */
     "^a"	    = "moveToBeginningOfLine:";
     "^b"	    = "moveLeft:";
     "^d"	    = "deleteForward:";

@@ -54,6 +54,12 @@
 #include "AppKit/NSInputServer.h"
 #include "AppKit/NSInputManager.h"
 
+#if !defined USE_INPUT_MANAGER_UTILITIES
+#define USE_INPUT_MANAGER_UTILITIES
+#endif
+#include "NSInputManagerPriv.h"
+
+
 
 @interface NSInputManager (Private)
 + (void)addToInputServerList: (id)inputServer;
