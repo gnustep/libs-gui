@@ -510,10 +510,10 @@ static NSColor	*shadowCol;
 			(cell_type != NSTextCellType))
     return;
 
-  [textObject setDelegate: anObject];
   [textObject setFrame: [self drawingRectForBounds: aRect]];
-  [textObject setText: [self stringValue]];
   [controlView addSubview: textObject];  
+  [textObject setText: [self stringValue]];
+  [textObject setDelegate: anObject];
   [[controlView window] makeFirstResponder: textObject];
   [textObject display];
 
@@ -539,10 +539,10 @@ static NSColor	*shadowCol;
     return;
 
   [textObject setFrame: [self drawingRectForBounds: aRect]];
+  [controlView addSubview: textObject];
   [textObject setText: [self stringValue]];
   [textObject setSelectedRange: NSMakeRange (selStart, selLength)];
   [textObject setDelegate: anObject];
-  [controlView addSubview: textObject];
   [[controlView window] makeFirstResponder: textObject];
   [textObject display];
 }
