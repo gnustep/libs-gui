@@ -254,7 +254,7 @@ static NSColor	*shadowCol;
     }
   else
     {
-      return [(NSAttributedString *)_contents string];
+      return AUTORELEASE ([[(NSAttributedString *)_contents string] copy]);
     }
 }
 
@@ -1072,7 +1072,7 @@ static NSColor	*shadowCol;
 
   if (_cell.contents_is_attributed_string)
     {
-      c = [(NSAttributedString *)_contents string];
+      c = AUTORELEASE ([[(NSAttributedString *)_contents string] copy]);
     }
   else
     {

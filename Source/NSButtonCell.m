@@ -230,7 +230,11 @@
 - (void)setAttributedAlternateTitle:(NSAttributedString *)aString
 {
   // TODO
-  [self setAlternateTitle: [aString string]];
+  NSString *alternateTitle;
+  
+  alternateTitle = AUTORELEASE ([[aString string] copy]);
+  
+  [self setAlternateTitle: alternateTitle];
 }
 
 - (NSAttributedString *)attributedTitle

@@ -1354,7 +1354,7 @@ byExtendingSelection: (BOOL)flag
       BOOL validatedOK = YES;
 
       formatter = [_editedCell formatter];
-      string = [_textObject text];
+      string = AUTORELEASE ([[_textObject text] copy]);
 
       if (formatter == nil)
 	{

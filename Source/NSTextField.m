@@ -349,7 +349,7 @@ static Class textFieldCellClass;
       NSString *string;
 
       formatter = [_cell formatter];
-      string = [_text_object text];
+      string = AUTORELEASE ([[_text_object text] copy]);
 
       if (formatter == nil)
 	{

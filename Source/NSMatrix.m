@@ -3337,13 +3337,13 @@ static SEL getSel;
 
 - (void) validateEditing
 {
-   if (_textObject)
+  if (_textObject)
     {
       NSFormatter *formatter;
       NSString *string;
 
       formatter = [_selectedCell formatter];
-      string = [_textObject text];
+      string = AUTORELEASE ([[_textObject text] copy]);
 
       if (formatter == nil)
 	{
