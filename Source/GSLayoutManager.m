@@ -569,28 +569,31 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
 {
   glyph_run_t *r;
   int pos, cpos;
-  int i;
+  int lo, hi, mid, i;
 
   r = run_for_character_index(target, glyphs, &pos, &cpos);
   if (!r)
     return NULL;
 
-  i = 0;
-  if (r->glyphs[i].char_offset + cpos > target)
+  target -= cpos;
+
+  lo = 0;
+  hi = r->head.glyph_length - 1;
+  while (lo < hi)
     {
-      GLYPH_SCAN_BACKWARD(r, i, pos, cpos, r->glyphs[i].char_offset + cpos > target)
-    }
-  else
-    {
-      GLYPH_SCAN_FORWARD(r, i, pos, cpos, r->glyphs[i].char_offset + cpos < target)
-      if (i == r->head.glyph_length)
-	GLYPH_STEP_BACKWARD(r, i, pos, cpos)
+      mid = (lo + hi) / 2;
+      if (r->glyphs[mid].char_offset > target)
+	hi = mid - 1;
+      else if (r->glyphs[mid].char_offset < target)
+	lo = mid + 1;
       else
-	GLYPH_SCAN_BACKWARD(r, i, pos, cpos, r->glyphs[i].char_offset + cpos > target)
+	hi = lo;
     }
-  target = r->glyphs[i].char_offset + cpos;
-  GLYPH_SCAN_BACKWARD(r, i, pos, cpos, r->glyphs[i].char_offset + cpos == target)
-  GLYPH_STEP_FORWARD(r, i, pos, cpos)
+  i = lo;
+  while (r->glyphs[i].char_offset > target)
+    i--;
+  while (i > 0 && r->glyphs[i - 1].char_offset == r->glyphs[i].char_offset)
+    i--;
 
   *rindex = i;
   *rpos = pos;
@@ -1842,7 +1845,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
       return;
     }
 
-  for (i = 0, lf = tc->linefrags; i < tc->num_linefrags; i++, lf++)
+  for (i = tc->num_linefrags - 1, lf = tc->linefrags + i; i >= 0; i--, lf--)
     {
       if (lf->pos <= glyphRange.location &&
 	  lf->pos + lf->length >= glyphRange.location + glyphRange.length)
@@ -1882,7 +1885,6 @@ forStartOfGlyphRange: (NSRange)glyphRange
       lf->points = realloc(lf->points, sizeof(linefrag_point_t) * lf->num_points);
       lp = &lf->points[lf->num_points - 1];
     }
-  memset(lp, 0, sizeof(linefrag_point_t));
   lp->pos = glyphRange.location;
   lp->length = glyphRange.length;
   lp->p = location;

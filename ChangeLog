@@ -1,3 +1,12 @@
+2003-02-19 03:09  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSLayoutManager.m (-_glyphForCharacter:index:positions::):
+	Use binary search to find the index of the character in the run.
+
+	(-setLocation:forStartOfGlyphRange:): Start the search for the line
+	frag from the back, as the line frag we're searching will often
+	be the last one (always with GSHorizontalTypesetter).
+
 2003-02-19 00:31  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/GSLayoutManager.h,
