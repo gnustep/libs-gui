@@ -1,3 +1,16 @@
+2002-09-18  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Source/NSSplitView.m ([NSSplitView -initWithCoder:]):
+	set _never_displayed_before to YES.
+	* Source/NSFont.m: rearrange the last change to make
+	it look like other classes' initWithCoder/encodeWithCoder
+	* Source/NSTextView.m: do not call _blink directly
+	(suggested by Nicola Pero).
+	* Source/NSButtonCell.m 
+	([NSButtonCell -drawInteriorWithFrame:inView:]):
+	if the button is NSImageOnly, draw the dotted frame at
+	the right location.
+	
 2002-09-16 19:28  Alexander Malmberg  <alexander@malmberg.org>
 
 	* Source/NSFont (+initialize, -initWithCoder:, -encodeWithCoder:):

@@ -931,7 +931,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
    *
    */
   _dividerWidth = [self dividerThickness];
-
+  _never_displayed_before = YES;
   return self;
 }
 

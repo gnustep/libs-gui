@@ -50,6 +50,8 @@ static BOOL userFixedCacheNeedsRecomputing = NO;
 	     matrix: (const float*)fontMatrix;
 @end
 
+static int currentVersion = 2;
+
 /**
   <unit>
   <heading>NSFont</heading>
@@ -166,7 +168,7 @@ setNSFont(NSString* key, NSFont* font)
 	  defaults = RETAIN([NSUserDefaults standardUserDefaults]);
 	}
 
-      [self setVersion: 2];
+      [self setVersion: currentVersion];
     }
 }
 
@@ -780,25 +782,28 @@ setNSFont(NSString* key, NSFont* font)
 {
   int version = [aDecoder versionForClassName: 
 			    @"NSFont"];
-  id	name;
-  float	fontMatrix[6];
-
-  name = [aDecoder decodeObject];
-  [aDecoder decodeArrayOfObjCType: @encode(float)  count: 6  at: fontMatrix];
-  self = [self initWithName: name  matrix: fontMatrix];
-
-  if (version == 2)
+  if (version == currentVersion)
     {
+      id	name;
+      float	fontMatrix[6];
+      
+      name = [aDecoder decodeObject];
+      [aDecoder decodeArrayOfObjCType: @encode(float)  count: 6  at: fontMatrix];
+      self = [self initWithName: name  matrix: fontMatrix];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &matrixExplicitlySet];
     }
   else
     {
+      id	name;
+      float	fontMatrix[6];
+      
+      name = [aDecoder decodeObject];
+      [aDecoder decodeArrayOfObjCType: @encode(float)  count: 6  at: fontMatrix];
+      self = [self initWithName: name  matrix: fontMatrix];
       if (fontMatrix[0] == fontMatrix[3]
-	  && fontMatrix[1]==0.0
-	  && fontMatrix[2]==0.0)
-	{
-	  matrixExplicitlySet = NO;
-	}
+	  && fontMatrix[1] == 0.0
+	  && fontMatrix[2] == 0.0)
+	matrixExplicitlySet = NO;
     }
   return self;
 }

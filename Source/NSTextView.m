@@ -1770,8 +1770,6 @@ static NSNotificationCenter *nc;
       /* Start blinking timer if not yet started */
       if (_insertionPointTimer == nil  &&  [self shouldDrawInsertionPoint])
 	{
-	  _drawInsertionPointNow = NO;
-	  [self _blink: nil];
 	  _insertionPointTimer = [NSTimer scheduledTimerWithTimeInterval: 0.5
 					  target: self
 					  selector: @selector(_blink:)
@@ -1783,9 +1781,8 @@ static NSNotificationCenter *nc;
 	{
 	  [_insertionPointTimer invalidate];
 	  DESTROY (_insertionPointTimer);
-	  [self setNeedsDisplayInRect: oldInsertionPointRect];
-	  _drawInsertionPointNow = NO;
-	  [self _blink: nil];
+	  [self setNeedsDisplayInRect: oldInsertionPointRect
+		avoidAdditionalLayout: YES];
 	  _insertionPointTimer = [NSTimer scheduledTimerWithTimeInterval: 0.5
 					  target: self
 					  selector: @selector(_blink:)
@@ -1799,12 +1796,15 @@ static NSNotificationCenter *nc;
        * possible.  
        */
       _drawInsertionPointNow = YES;
+      [self setNeedsDisplayInRect: _insertionPointRect
+	    avoidAdditionalLayout: YES];
     }
   else
     {
       if (_insertionPointTimer != nil)
 	{
-	  [self setNeedsDisplayInRect: oldInsertionPointRect];
+	  [self setNeedsDisplayInRect: oldInsertionPointRect
+	    avoidAdditionalLayout: YES];
 	  [_insertionPointTimer invalidate];
 	  DESTROY (_insertionPointTimer);
 

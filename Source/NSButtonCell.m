@@ -856,6 +856,8 @@
     {
       if (_cell.is_bordered || _cell.is_bezeled)
 	NSDottedFrameRect(cellFrame);
+      else if (ipos == NSImageOnly)
+	NSDottedFrameRect(cellFrame);
       else
 	NSDottedFrameRect(titleRect);
     }
