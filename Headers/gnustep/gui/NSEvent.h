@@ -146,10 +146,6 @@ enum {
     } event_data;
 }
 
-/*
- * Creating NSEvent objects
- */
-
 + (NSEvent*) enterExitEventWithType: (NSEventType)type	
 			   location: (NSPoint)location
 		      modifierFlags: (unsigned int)flags
@@ -181,6 +177,7 @@ enum {
 		     clickCount: (int)clickNum	
 		       pressure: (float)pressureValue;
 
+#ifndef	NO_GNUSTEP
 + (NSEvent*) mouseEventWithType: (NSEventType)type	
 		       location: (NSPoint)location
 		  modifierFlags: (unsigned int)flags
@@ -190,6 +187,9 @@ enum {
                          deltaX: (float)deltaX
                          deltaY: (float)deltaY
                          deltaZ: (float)deltaZ;
+#endif
+
++ (NSPoint)mouseLocation;
 
 + (NSEvent*) otherEventWithType: (NSEventType)type	
 		       location: (NSPoint)location
@@ -201,62 +201,39 @@ enum {
 			  data1: (int)data1	
 			  data2: (int)data2;
 
-/*
- * Getting General Event Information
- */
-#ifndef	STRICT_OPENSTEP
-- (int) buttonNumber;
-#endif
-- (NSGraphicsContext*) context;
-- (NSPoint) locationInWindow;
-- (unsigned int) modifierFlags;
-- (NSTimeInterval) timestamp;
-- (NSEventType) type;
-- (NSWindow *) window;
-- (int) windowNumber;
-
-/*
- * Getting Key Event Information
- */
-- (NSString *) characters;
-- (NSString *) charactersIgnoringModifiers;
-- (BOOL) isARepeat;
-- (unsigned short) keyCode;
-
-/*
- * Getting Mouse Event Information
- */
-+ (NSPoint)mouseLocation;
-- (int) clickCount;
-- (int) eventNumber;
-- (float) pressure;
-
-/*
- * Getting Tracking Event Information
- */
-- (int) trackingNumber;
-- (void *) userData;
-
-/*
- * Requesting Periodic Events
- */
 + (void) startPeriodicEventsAfterDelay: (NSTimeInterval)delaySeconds
 			    withPeriod: (NSTimeInterval)periodSeconds;
 + (void) stopPeriodicEvents;
 
-/*
- * Getting Information about Specially Defined Events
- */
+
+#ifndef	STRICT_OPENSTEP
+- (int) buttonNumber;
+#endif
+- (NSString *) characters;
+- (NSString *) charactersIgnoringModifiers;
+- (int) clickCount;
+- (NSGraphicsContext*) context;
 - (int) data1;
 - (int) data2;
-- (short) subtype;
-
-/*
- * Scroll event data
- */
+#ifndef	STRICT_OPENSTEP
 - (float)deltaX;
 - (float)deltaY;
 - (float)deltaZ;
+#endif
+- (int) eventNumber;
+- (BOOL) isARepeat;
+- (unsigned short) keyCode;
+- (NSPoint) locationInWindow;
+- (unsigned int) modifierFlags;
+- (float) pressure;
+- (short) subtype;
+- (NSTimeInterval) timestamp;
+- (int) trackingNumber;
+- (NSEventType) type;
+- (void *) userData;
+- (NSWindow *) window;
+- (int) windowNumber;
+
 
 @end
 
