@@ -116,9 +116,6 @@ static Class cellClass;
     [NSException raise: NSInvalidArgumentException
 		format: @"attempt to set non-cell object for control cell"];
 
-  [cell setControlView: nil];
-  [aCell setControlView: self];
-
   ASSIGN(cell, aCell);
 }
 
