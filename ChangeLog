@@ -1,3 +1,8 @@
+Thu Apr 11 16:20:54 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/NSResponder.h: Include NSObject.h, not NSCoder.h;
+	declare @class NSCoder.
+
 Thu Apr 11 15:37:31 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/GSTextStorage.m ([GSTextStorage -sanity]): Renamed to
