@@ -168,7 +168,7 @@
 
 - (void) drawRect: (NSRect)rect
 {
-  [slideCell drawWithFrame: rect inView: self];
+  [slideCell drawWithFrame: [self frame] inView: self];
 }
 
 @end
