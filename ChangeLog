@@ -1,3 +1,10 @@
+2003-06-22  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWorkspace.m: Implement autolaunch flag and add
+	documentation describing hwo GNUstep and MacOS-X actually
+	handle launching ... hopefully more clearly than the
+	somewhat misleading MacOS-X documentation.
+
 2003-06-22  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSInputManager.h

@@ -1003,7 +1003,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   return NO;
 }
 
-/*
+/**
  * Tracking Changes to the File System
  */
 - (BOOL) fileSystemChanged
@@ -1025,7 +1025,8 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 }
 
 /**
- * Updates Registered Services and File Types
+ * Updates Registered Services, File Types, and other information about any
+ * applications installed in the standard locations.
  */
 - (void) findApplications
 {
@@ -1083,8 +1084,9 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   [_iconMap removeAllObjects];
 }
 
-/*
- * Launching and Manipulating Applications	
+/**
+ * Instructs all the other running applications to hide themselves.
+ * <em>not yet implemented</em>
  */
 - (void) hideOtherApplications
 {
@@ -1103,7 +1105,35 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 }
 
 /**
- * Launches the specified application (unless it is alreeady running)
+ * <p>Launches the specified application (unless it is alreeady running).<br />
+ * If the autolaunch flag is yes, sets the autolaunch user default for the
+ * newly launched application, so that applications which understand the
+ * concept of being autolaunched at system startup time can modify their
+ * behavior appropriately.
+ * </p>
+ * <p>Sends an NSWorkspaceWillLaunchApplicationNotification before it
+ * actually attempts to launch the application (this is not sent if the
+ * application is already running).
+ * </p>
+ * <p>The application sends an NSWorkspaceDidlLaunchApplicationNotification
+ * on completion of launching.  This is not sent if the application is already
+ * running, or if it fails to complete its startup.
+ * </p>
+ * <p>Returns NO if the application cannot be launched (eg. it does not exist
+ * or the binary is not executable).
+ * </p>
+ * <p>Returns YES if the application was already running or of it was launched
+ * (this does not necessarily mean that the application succeeded in starting
+ * up fully).
+ * </p>
+ * <p>Once an application has fully started up, you should be able to connect
+ * to it using [NSConnection+rootProxyForConnectionWithRegisteredName:host:]
+ * passing the application name (normally the filesystem name excluding path
+ * and file extension) and an empty host name.  This will let you communicate
+ * with the the [NSApplication-delagate] of the launched application, and you
+ * can generally use this as a test of whether an application is running
+ * correctly.
+ * </p>
  */
 - (BOOL) launchApplication: (NSString*)appName
 		  showIcon: (BOOL)showIcon
@@ -1114,34 +1144,50 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   app = [self _connectApplication: appName];
   if (app == nil)
     {
-      return [self _launchApplication: appName arguments: nil];
+      NSArray	*args = nil;
+
+      if (autolaunch == YES)
+	{
+	  args = [NSArray arrayWithObjects: @"-autolaunch", "YES", nil];
+	}
+      return [self _launchApplication: appName arguments: args];
     }
 
   return YES;
 }
 
+/**
+ * Returns a description of the currently active application, containing
+ * the name (NSApplicationName), path (NSApplicationPath) and process
+ * identifier (NSApplicationProcessIdentifier).
+ */
 - (NSDictionary*) activeApplication
 {
   NSProcessInfo *processInfo = [NSProcessInfo processInfo];
 
   return [NSDictionary dictionaryWithObjectsAndKeys:
-	[processInfo processName], @"NSApplicationName",
-	[[NSBundle mainBundle] bundlePath], @"NSApplicationPath",
-	[NSNumber numberWithInt: [processInfo processIdentifier]], 
-		       @"NSApplicationProcessIdentifier",
-	nil];
+    [processInfo processName], @"NSApplicationName",
+    [[NSBundle mainBundle] bundlePath], @"NSApplicationPath",
+    [NSNumber numberWithInt: [processInfo processIdentifier]], 
+		   @"NSApplicationProcessIdentifier",
+    nil];
 }
 
+/**
+ * Returns an array listing all the applications know to have been
+ * launched.
+ */
 - (NSArray*) launchedApplications
 {
-  NSDictionary *dict;
-  NSString *app;
-  NSMutableArray *apps = [NSMutableArray array];
-  NSEnumerator *enumerator = [_launched keyEnumerator];
+  NSDictionary		*dict;
+  NSString		*app;
+  NSMutableArray	*apps = [NSMutableArray array];
+  NSEnumerator		*enumerator = [_launched keyEnumerator];
 
   while ((app = [enumerator nextObject]) != nil)
     {
-      dict = [NSDictionary dictionaryWithObject: app forKey: @"NSApplicationName"];
+      dict = [NSDictionary dictionaryWithObject: app
+					 forKey: @"NSApplicationName"];
       [apps addObject: dict];
     }
   
