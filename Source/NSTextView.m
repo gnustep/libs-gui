@@ -2736,6 +2736,43 @@ afterString in order over charRange. */
     }
 }
 
+/* The following method is bound to 'Control-t', and must work like
+ * pressing 'Control-t' inside Emacs.  For example, say that I type
+ * 'Nicoal' in a NSTextView.  Then, I press 'Control-t'.  This should
+ * swap the last two characters which were inserted, thus swapping the
+ * 'a' and the 'l', and changing the text to read 'Nicola'.  */
+- (void) transpose: (id)sender
+{
+  NSRange range;
+  NSString *string;
+  NSString *replacementString;
+  unichar chars[2];
+  unichar tmp;
+
+  /* Do nothing if we are at beginning of text.  */
+  if (_selected_range.location < 2)
+    {
+      return;
+    }
+
+  range = NSMakeRange (_selected_range.location - 2, 2);
+
+  /* Get the two chars.  */
+  string = [_textStorage string];
+  chars[0] = [string characterAtIndex: (_selected_range.location - 2)];
+  chars[1] = [string characterAtIndex: (_selected_range.location - 1)];
+
+  /* Swap them.  */
+  tmp = chars[0];
+  chars[0] = chars[1];
+  chars[1] = tmp;
+  
+  /* Replace the original chars with the swapped ones.  */
+  replacementString = [NSString stringWithCharacters: chars  length: 2];
+  [self replaceCharactersInRange: range  withString: replacementString];
+}
+
+
 - (BOOL) acceptsFirstResponder
 {
   if (_tf.is_selectable)
