@@ -411,7 +411,7 @@
     {
     case NSNoTitle: 
       {
-	NSSize borderSize = [NSCell sizeForBorderType: border_type];
+	NSSize borderSize = _sizeForBorderType (border_type);
 	border_rect = bounds;
 	title_rect = NSZeroRect;
 
@@ -428,7 +428,7 @@
     case NSAboveTop: 
       {
 	NSSize titleSize = [cell cellSize];
-	NSSize borderSize = [NSCell sizeForBorderType: border_type];
+	NSSize borderSize = _sizeForBorderType (border_type);
 	float c;
 
 	// Add spacer around title
@@ -460,7 +460,7 @@
     case NSBelowTop: 
       {
 	NSSize titleSize = [cell cellSize];
-	NSSize borderSize = [NSCell sizeForBorderType: border_type];
+	NSSize borderSize = _sizeForBorderType (border_type);
 	float c;
 
 	// Add spacer around title
@@ -494,7 +494,7 @@
     case NSAtTop: 
       {
 	NSSize titleSize = [cell cellSize];
-	NSSize borderSize = [NSCell sizeForBorderType: border_type];
+	NSSize borderSize = _sizeForBorderType (border_type);
 	float c;
 
 	// Add spacer around title
@@ -530,7 +530,7 @@
     case NSAtBottom: 
       {
 	NSSize titleSize = [cell cellSize];
-	NSSize borderSize = [NSCell sizeForBorderType: border_type];
+	NSSize borderSize = _sizeForBorderType (border_type);
 	float c;
 
 	// Add spacer around title
@@ -567,7 +567,7 @@
     case NSBelowBottom: 
       {
 	NSSize titleSize = [cell cellSize];
-	NSSize borderSize = [NSCell sizeForBorderType: border_type];
+	NSSize borderSize = _sizeForBorderType (border_type);
 	float c;
 
 	// Add spacer around title
@@ -599,7 +599,7 @@
     case NSAboveBottom: 
       {
 	NSSize titleSize = [cell cellSize];
-	NSSize borderSize = [NSCell sizeForBorderType: border_type];
+	NSSize borderSize = _sizeForBorderType (border_type);
 	float c;
 
 	// Add spacer around title
