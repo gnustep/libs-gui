@@ -1017,6 +1017,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 {
   BOOL	flag;
 
+  _reps = [[NSMutableArray alloc] initWithCapacity: 2];
   [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
   if (flag == YES)
     {

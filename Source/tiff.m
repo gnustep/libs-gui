@@ -445,6 +445,7 @@ int
 NSTiffWrite(TIFF* image, NSTiffInfo* info, char* data)
 {
   tdata_t	buf = (tdata_t)data;
+  uint16        sample_info[2];
   int		i;
   int		row;
   int           error = 0;
@@ -459,6 +460,13 @@ NSTiffWrite(TIFF* image, NSTiffInfo* info, char* data)
   TIFFSetField(image, TIFFTAG_SAMPLESPERPIXEL, info->samplesPerPixel);
   TIFFSetField(image, TIFFTAG_PLANARCONFIG, info->planarConfig);
   TIFFSetField(image, TIFFTAG_PHOTOMETRIC, info->photoInterp);
+
+  if (info->assocAlpha)
+    sample_info[0] = EXTRASAMPLE_ASSOCALPHA;
+  else
+    sample_info[0] = EXTRASAMPLE_UNASSALPHA;
+  if (info->extraSamples)
+    TIFFSetField(image, TIFFTAG_EXTRASAMPLES, 1, sample_info);
 
   switch (info->photoInterp) 
     {
