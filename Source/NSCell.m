@@ -1,4 +1,4 @@
-/* 
+/*
    NSCell.m
 
    The abstract cell class
@@ -9,14 +9,14 @@
    Date: 1996
    Author:  Felipe A. Rodriguez <far@ix.netcom.com>
    Date: August 1998
-   
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -26,7 +26,7 @@
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/ 
+*/
 
 #include <gnustep/gui/config.h>
 #include <Foundation/NSString.h>
@@ -82,7 +82,7 @@
 	cell_float_left = 0;
 	cell_float_right = 0;
 	action_mask = NSLeftMouseUpMask;
-	
+
 	return self;
 }
 
@@ -94,51 +94,51 @@
 - (id)initImageCell:(NSImage *)anImage
 {
 	[super init];
-	
+
 	[self _init];
-	
+
 	if (![anImage isKindOfClass:[NSImage class]])			// image must be an
 		return nil;											// NSImage
-	
+
 	cell_type = NSImageCellType;
 	cell_image = [anImage retain];
 	image_position = NSImageOnly;
 	cell_font = [[NSFont userFontOfSize:0] retain];
-	
+
 	return self;
 }
 
 - (id)initTextCell:(NSString *)aString
 {
 	[super init];
-	
+
 	[self _init];
-	
+
 	cell_font = [[NSFont userFontOfSize:0] retain];
 	contents = [aString retain];
 	cell_type = NSTextCellType;
 	text_align = NSCenterTextAlignment;
 	cell_float_autorange = YES;
 	cell_float_right = 6;
-	
+
 	return self;
 }
 
 - (void)dealloc
 {
-	if(contents)
+	if (contents)
 		[contents release];
-	if(cell_image)
+	if (cell_image)
 		[cell_image release];
 	[cell_font release];
-	if(represented_object)
+	if (represented_object)
 		[represented_object release];
-	
+
 	[super dealloc];
 }
 
 //
-// Determining Component Sizes 
+// Determining Component Sizes
 //
 - (void)calcDrawInfo:(NSRect)aRect
 {}
@@ -169,19 +169,19 @@
 }
 
 //
-// Setting the NSCell's Type 
+// Setting the NSCell's Type
 //
 - (void)setType:(NSCellType)aType		{ cell_type = aType; }
 - (NSCellType)type						{ return cell_type; }
 
 //
-// Setting the NSCell's State 
+// Setting the NSCell's State
 //
 - (void)setState:(int)value				{ cell_state = value; }
 - (int)state							{ return cell_state; }
 
 //
-// Enabling and Disabling the NSCell 
+// Enabling and Disabling the NSCell
 //
 - (BOOL)isEnabled						{ return cell_enabled; }
 - (void)setEnabled:(BOOL)flag			{ cell_enabled = flag; }
@@ -189,24 +189,24 @@
 //
 // Determining the first responder
 //
-- (BOOL)acceptsFirstResponder			{ return cell_enabled; }														
+- (BOOL)acceptsFirstResponder			{ return cell_enabled; }
 
 //
-// Setting the Image 
+// Setting the Image
 //
 - (NSImage *)image						{ return cell_image; }
 
 - (void)setImage:(NSImage *)anImage
-{							 
-	if (![anImage isKindOfClass:[NSImage class]])		// set the image only 
-		return;											// if it's an NSImage 
+{
+	if (![anImage isKindOfClass:[NSImage class]])		// set the image only
+		return;											// if it's an NSImage
 
-	ASSIGN(cell_image, anImage);		
+	ASSIGN(cell_image, anImage);
 	[self setType:NSImageCellType];
 }
 
 //
-// Setting the NSCell's Value 
+// Setting the NSCell's Value
 //
 - (double)doubleValue					{ return [contents doubleValue]; }
 - (float)floatValue;					{ return [contents floatValue]; }
@@ -247,7 +247,7 @@ NSString* _string;
 }
 
 //
-// Interacting with Other NSCells 
+// Interacting with Other NSCells
 //
 - (void)takeDoubleValueFrom:(id)sender
 {
@@ -270,7 +270,7 @@ NSString* _string;
 }
 
 //
-// Modifying Text Attributes 
+// Modifying Text Attributes
 //
 - (NSTextAlignment)alignment					{ return text_align; }
 - (NSFont *)font								{ return cell_font; }
@@ -298,9 +298,9 @@ NSString* _string;
 - (void)setSelectable:(BOOL)flag
 {
 	cell_selectable = flag;
-  
-	if (!flag)											// If cell is not 
-		cell_editable = NO;								// selectable then it's 
+
+	if (!flag)											// If cell is not
+		cell_editable = NO;								// selectable then it's
 }														// not editable
 
 - (void)setScrollable:(BOOL)flag			{ cell_scrollable = flag; }
@@ -308,20 +308,20 @@ NSString* _string;
 - (BOOL)wraps								{ return NO; }
 
 //
-// Editing Text 
+// Editing Text
 //
 - (NSText *)setUpFieldEditorAttributes:(NSText *)textObject
 {
 	return nil;
 }
 
-- (void)editWithFrame:(NSRect)aRect 
-			   inView:(NSView *)controlView	
-			   editor:(NSText *)textObject	
-			   delegate:(id)anObject	
+- (void)editWithFrame:(NSRect)aRect
+			   inView:(NSView *)controlView
+			   editor:(NSText *)textObject
+			   delegate:(id)anObject
 			   event:(NSEvent *)theEvent
 {
-	if(cell_type != NSTextCellType)
+	if (cell_type != NSTextCellType)
 		return;
 
 	[[controlView window] makeFirstResponder:textObject];
@@ -338,9 +338,9 @@ NSString* _string;
 
 /*
  * editing is complete, remove the text obj acting as the field
- * editor from window's view heirarchy, set our contents from it 
+ * editor from window's view heirarchy, set our contents from it
  */
-- (void)endEditing:(NSText *)textObject	
+- (void)endEditing:(NSText *)textObject
 {
   [textObject setDelegate:nil];
   [textObject removeFromSuperview];
@@ -348,13 +348,13 @@ NSString* _string;
 }
 
 - (void)selectWithFrame:(NSRect)aRect
-				 inView:(NSView *)controlView	 
-				 editor:(NSText *)textObject	 
-				 delegate:(id)anObject	 
-				 start:(int)selStart	 
+				 inView:(NSView *)controlView
+				 editor:(NSText *)textObject
+				 delegate:(id)anObject
+				 start:(int)selStart
 				 length:(int)selLength
 {														// preliminary FIX ME
-	if(!controlView || !textObject || !cell_font || 
+	if (!controlView || !textObject || !cell_font ||
 			(cell_type != NSTextCellType))
 		return;
 
@@ -369,14 +369,14 @@ NSString* _string;
 }
 
 //
-// Validating Input 
+// Validating Input
 //
 - (int)entryType								{ return entry_type; }
 - (BOOL)isEntryAcceptable:(NSString *)aString 	{ return YES; }
 - (void)setEntryType:(int)aType					{ entry_type = aType; }
 
 //
-// Formatting Data 
+// Formatting Data
 //
 - (void)setFloatingPointFormat:(BOOL)autoRange
 						  left:(unsigned int)leftDigits
@@ -388,7 +388,7 @@ NSString* _string;
 }
 
 //
-// Modifying Graphic Attributes 
+// Modifying Graphic Attributes
 //
 - (BOOL)isBezeled							{ return cell_bezeled; }
 - (BOOL)isBordered							{ return cell_bordered; }
@@ -397,7 +397,7 @@ NSString* _string;
 - (void)setBordered:(BOOL)flag				{ cell_bordered = flag; }
 
 //
-// Setting Parameters 
+// Setting Parameters
 //
 - (int)cellAttribute:(NSCellAttribute)aParameter
 {
@@ -409,47 +409,54 @@ NSString* _string;
 }
 
 //
-// Displaying 
+// Displaying
 //
 - (NSView *)controlView						{ return control_view; }
 - (void)setControlView:(NSView*)view		{ control_view = view; }
 
-- (void)drawInteriorWithFrame:(NSRect)cellFrame inView:(NSView*)controlView
+- (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-	switch ([self type]) 
-		{
-		case NSTextCellType: 
-			{
-			float titleGray = [self isEnabled] ? NSBlack : NSDarkGray;
-
-			[self _displayTitle:[self stringValue]
-						inFrame:cellFrame
-						titleGray:titleGray];
-			break;
-    		}
-		case NSImageCellType:
-			[self _displayImage:cell_image inFrame:cellFrame];
-			break;
-		case NSNullCellType:
-			break;
-  		}
+  switch ([self type])
+    {
+      case NSTextCellType:
+        {
+          NSText *fieldEditor;
+          fieldEditor = [[controlView window] fieldEditor: YES forObject: self];
+          [fieldEditor setString: [self stringValue]];
+          [fieldEditor setAlignment: [self alignment]];
+          [fieldEditor setFont: [self font]];
+          [fieldEditor setDrawsBackground: NO];
+          if ([self isEnabled])
+            [fieldEditor setTextColor: [NSColor blackColor]];
+          else
+            [fieldEditor setTextColor: [NSColor darkGrayColor]];
+          [fieldEditor setFrame: cellFrame];
+          [controlView addSubview: fieldEditor];
+          break;
+        }
+      case NSImageCellType:
+          [self _displayImage:cell_image inFrame:cellFrame];
+          break;
+      case NSNullCellType:
+          break;
+    }
 }
 
 - (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
 {													// implemented in back end
-}											
+}
 
 - (BOOL)isHighlighted					{ return cell_highlighted; }
 
 - (void)highlight:(BOOL)lit withFrame:(NSRect)cellFrame		// Not per OS spec
 							inView:(NSView *)controlView	// FIX ME
-{													
+{
 	cell_highlighted = lit;
 	[self drawWithFrame:cellFrame inView:controlView];			// draw cell
-}											
+}
 
 //
-// Target and Action 
+// Target and Action
 //
 - (SEL)action							{ return NULL; }
 - (void)setAction:(SEL)aSelector		{}
@@ -475,8 +482,8 @@ unsigned int previousMask = action_mask;
 
 - (void) performClick: (id)sender
 {
-  NSView	*cv = [self controlView];  
-  
+  NSView	*cv = [self controlView];
+
   [self highlight: YES withFrame: [cv frame] inView: cv];
   if ([self action] && [self target])
     {
@@ -495,18 +502,18 @@ unsigned int previousMask = action_mask;
 }
 
 //
-// Assigning a Tag 
+// Assigning a Tag
 //
 - (void)setTag:(int)anInt				{}
 - (int)tag								{ return -1; }
 
 //
-// Handling Keyboard Alternatives 
+// Handling Keyboard Alternatives
 //
 - (NSString *)keyEquivalent				{ return nil; }
 
 //
-// Tracking the Mouse 
+// Tracking the Mouse
 //
 - (BOOL)continueTracking:(NSPoint)lastPoint
 					  at:(NSPoint)currentPoint
@@ -527,7 +534,7 @@ unsigned int previousMask = action_mask;
 }
 
 - (BOOL)startTrackingAt:(NSPoint)startPoint inView:(NSView *)controlView
-{												// If the point is in the view 
+{												// If the point is in the view
 												// then yes start tracking
 	if ([controlView mouse: startPoint inRect: [controlView bounds]])
 		return YES;
@@ -549,7 +556,7 @@ unsigned int previousMask = action_mask;
 {
 NSApplication *theApp = [NSApplication sharedApplication];
 unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
-						  NSMouseMovedMask | NSLeftMouseDraggedMask | 
+						  NSMouseMovedMask | NSLeftMouseDraggedMask |
 						  NSRightMouseDraggedMask;
 NSPoint location = [theEvent locationInWindow];
 NSPoint point = [controlView convertPoint: location fromView: nil];
@@ -561,7 +568,7 @@ BOOL done;
 BOOL mouseWentUp;
 
 	NSDebugLog(@"NSCell start tracking\n");
-	NSDebugLog(@"NSCell tracking in rect %f %f %f %f\n", 
+	NSDebugLog(@"NSCell tracking in rect %f %f %f %f\n",
 			cellFrame.origin.x, cellFrame.origin.y,
 			cellFrame.size.width, cellFrame.size.height);
 	NSDebugLog(@"NSCell initial point %f %f\n", point.x, point.y);
@@ -569,14 +576,14 @@ BOOL mouseWentUp;
 	if (![self startTrackingAt: point inView: controlView])
 		return NO;
 
-	if (![controlView mouse: point inRect: cellFrame]) 		 
+	if (![controlView mouse: point inRect: cellFrame])
 		return NO;										// point is not in cell
 
-	if ([theEvent type] == NSLeftMouseDown && 
+	if ([theEvent type] == NSLeftMouseDown &&
 			(action_mask & NSLeftMouseDownMask))
 		[(NSControl*)controlView sendAction:action to:target];
 
-	if (cell_continuous) 
+	if (cell_continuous)
 		{
 		[self getPeriodicDelay:&delay interval:&interval];
 		[NSEvent startPeriodicEventsAfterDelay:delay withPeriod:interval];
@@ -586,19 +593,19 @@ BOOL mouseWentUp;
 	NSDebugLog(@"NSCell get mouse events\n");
 	mouseWentUp = NO;
 	done = NO;
-	while (!done) 										// Get next mouse 
+	while (!done) 										// Get next mouse
 		{												// event until a mouse
 		NSEventType eventType;							// up is obtained
 		BOOL pointIsInCell;
 
 		last_point = point;
-		theEvent = [theApp nextEventMatchingMask:event_mask 
-						   untilDate:nil 
-						   inMode:NSEventTrackingRunLoopMode 
+		theEvent = [theApp nextEventMatchingMask:event_mask
+						   untilDate:nil
+						   inMode:NSEventTrackingRunLoopMode
 						   dequeue:YES];
 		eventType = [theEvent type];
 
-		if (eventType != NSPeriodic) 
+		if (eventType != NSPeriodic)
 			{
 			location = [theEvent locationInWindow];
 			point = [controlView convertPoint: location fromView: nil];
@@ -608,30 +615,30 @@ BOOL mouseWentUp;
 		else
 			NSDebugLog (@"got a periodic event");
 														// Point is not in cell
-		if (![controlView mouse: point inRect: cellFrame]) 
+		if (![controlView mouse: point inRect: cellFrame])
 			{
 			NSDebugLog(@"NSCell point not in cell frame\n");
 
-			pointIsInCell = NO;							// Do we return now or 
+			pointIsInCell = NO;							// Do we return now or
 														// keep tracking?
-			if (![[self class] prefersTrackingUntilMouseUp] && flag) 
+			if (![[self class] prefersTrackingUntilMouseUp] && flag)
 				{
 				NSDebugLog(@"NSCell return immediately\n");
 				done = YES;
 				}
 			}
-		else 
+		else
 			pointIsInCell = YES;							// Point is in cell
 
 		if (!done && ![self continueTracking:last_point 	// should continue
 							at:point 						// tracking?
-							inView:controlView]) 
+							inView:controlView])
 			{
 			NSDebugLog(@"NSCell stop tracking\n");
 			done = YES;
 			}
 														// Did the mouse go up?
-		if (eventType == NSLeftMouseUp) 
+		if (eventType == NSLeftMouseUp)
 			{
 			NSDebugLog(@"NSCell mouse went up\n");
 			mouseWentUp = YES;
@@ -639,7 +646,7 @@ BOOL mouseWentUp;
 			if ((action_mask & NSLeftMouseUpMask))
 				[(NSControl*)controlView sendAction:action to:target];
 			}
-		else 
+		else
 			{
 			if (pointIsInCell && ((eventType == NSLeftMouseDragged
 					&& (action_mask & NSLeftMouseDraggedMask))
@@ -648,17 +655,17 @@ BOOL mouseWentUp;
 				[(NSControl*)controlView sendAction:action to:target];
 			}
 		}
-														// Tell ourselves to 
+														// Tell ourselves to
 	[self stopTracking:last_point 						// stop tracking
 		  at:point
-		  inView:controlView 
+		  inView:controlView
 		  mouseIsUp:mouseWentUp];
 
 	if (cell_continuous)
 		[NSEvent stopPeriodicEvents];
-												// Return YES only if the mouse 
+												// Return YES only if the mouse
 												// went up within the cell
-	if (mouseWentUp && [controlView mouse: point inRect: cellFrame]) 
+	if (mouseWentUp && [controlView mouse: point inRect: cellFrame])
 		{
 		NSDebugLog(@"NSCell mouse went up in cell\n");
 		return YES;
@@ -673,14 +680,14 @@ BOOL mouseWentUp;
 }
 
 //
-// Managing the Cursor 
+// Managing the Cursor
 //
 - (void)resetCursorRect:(NSRect)cellFrame inView:(NSView *)controlView
 {
 }
 
 //
-// Comparing to Another NSCell 
+// Comparing to Another NSCell
 //
 - (NSComparisonResult)compare:(id)otherCell
 {
@@ -723,7 +730,7 @@ NSCell* c = [[isa allocWithZone: zone] init];
 	c->control_view = control_view;
 	c->cell_size = cell_size;
 	[c setRepresentedObject:represented_object];
-	
+
 	return c;
 }
 
@@ -787,7 +794,7 @@ NSCell* c = [[isa allocWithZone: zone] init];
 @implementation NSCell (GNUstepBackend)
 
 + (NSSize)sizeForBorderType:(NSBorderType)aType
-{													// Returns the size of a 
+{													// Returns the size of a
 	return NSZeroSize;								// border
 }
 
