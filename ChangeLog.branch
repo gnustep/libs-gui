@@ -1,0 +1,42 @@
+2004-04-03  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
+
+	* Logging for kazunobu_input_management started.
+
+	* ChangeLog.branch: Created. 
+	* GSKeyBindingAction.m: Deleted
+	* GSKeyBindingTable.m: Deleted
+	* Source/NSResponder.m (-initialize): Instantation of new 
+	  NSInputManager.
+	  (-interpretKeyEvents:): Invocation of new NSInputManager's
+	  interpretKeyEvents:.
+	* Source/DocMakefile: Remove NSInputManager.h from
+	  AUTOGSDOC_HEADERS_GUIADD.
+	* Source/GNUmakefile: Remove GSKeyBindingAction.m and
+	  GSKeyBindingTable.m from libgnustep-gui_OBJC_FILES.
+	  Add NSInputManagerPriv.m to libgnustep-gui_C_FILES.
+	* Source/NSInputManager.m: Rewritten from scratch
+	* Source/NSInputManagerPriv.m: Rewritten from scratch
+	* Source/NSInputManagerPriv.h: Created
+	* Source/NSInputServer.m: Rewritten from scratch
+	* Headers/AppKit/NSInputManager.h: Rewritten from scratch
+	* Headers/AppKit/NSInputServer.h: Rewritten from scratch
+	* InputManagers: Created
+	* InputManagers/GNUmakefile: Created
+	* InputManagers/StandardKeyBinding.dict: Created
+	* InputManagers/PlainInputServer: Created
+	* InputManagers/PlainInputServer/GNUmakefile: Created
+	* InputManagers/PlainInputServer/GNUmakefile.preamble: Created
+	* InputManagers/PlainInputServer/Info: Created
+	* InputManagers/PlainInputServer/PlainInputServer.m: Created
+	* InputManagers/PlainInputServer/PlainInputServer.h: Created
+	* InputManagers/PlainInputServer/ServerController.m: Created
+	* InputManagers/PlainInputServer/ServerController.h: Created
+	* InputManagers/PlainInputServer/main.m: Created
+
+2004-03-24  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
+
+	* Project started
+
+2004-01-13  Adam Fedor <fedor@gnu.org>
+
+	* Branch kazunobu_input_management created
