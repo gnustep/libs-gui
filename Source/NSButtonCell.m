@@ -386,6 +386,10 @@
   // Save last view drawn to
   [self setControlView: controlView];
 
+  // transparent buttons never draw
+  if ([self isTransparent])
+    return;
+
   // do nothing if cell's frame rect is zero
   if (NSIsEmptyRect(cellFrame))
     return;
@@ -414,7 +418,11 @@
   NSString	*titleToDisplay;
   NSSize	imageSize = {0, 0};
   NSRect	rect;
-  NSColor	*backgroundColor = [NSColor controlBackgroundColor];
+  NSColor	*backgroundColor = nil;
+
+  // transparent buttons never draw
+  if ([self isTransparent])
+    return;
 
   cellFrame = NSInsetRect(cellFrame, xDist, yDist);
 
@@ -432,6 +440,9 @@
            & (NSChangeGrayCellMask | NSChangeBackgroundCellMask) )
 	backgroundColor = [NSColor selectedControlColor];
     }
+
+  if (backgroundColor == nil)
+    backgroundColor = [NSColor controlBackgroundColor];
 
   // set cell's background color
   [backgroundColor set];

@@ -1,3 +1,8 @@
+Mon May  3 18:55:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSButtonCell.m: ([-drawWithFrame:inView:]) and
+	([-drawInteriorWithFrame:inView:]) respect ([-isTransparent])
+
 1999-05-01  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/NSGraphicsContext.h
