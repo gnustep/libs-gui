@@ -1,3 +1,16 @@
+2000-07-31  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSDrawer.h
+	New header file for NSDrawer class.
+	* Headers/gnustep/gui/AppKit.h
+	Include NSDrawer.h.
+	* Source/NSDrawer.m
+	Dummy implementation of NSDrawer class.
+	* Source/externs.m
+	Notification strings for NSDrawer.
+	* Source/GNUmake
+	Install NSDrawer.h and compile NSDrawer.m.
+
 2001-07-31  Adam Fedor  <fedor@gnu.org>
 
 	* Convert libgmodel to a bundle to remove the semi-recursive
