@@ -1042,6 +1042,30 @@ TODO: not really clear what these should do
 	changeInLength: lengthChange
 	invalidatedRange: invalidatedRange];
 
+  if ((mask & NSTextStorageEditedCharacters) && lengthChange)
+    {
+      /*
+      Adjust the selected range so it's still valid. We don't try to
+      be smart here (smart adjustments will have to be done by whoever
+      made the change), we just want to keep it in range to avoid crashes.
+
+      TODO: It feels slightly ugly to be doing this here, but there aren't
+      many other places that can do this, and it gives reasonable behavior
+      for select-only text views.
+
+      One option is to only adjust when absolutely necessary to keep the
+      selected range valid.
+      */
+      if (_selected_range.location >= range.location + range.length - lengthChange)
+	{
+	  _selected_range.location += lengthChange;
+	}
+      else if (_selected_range.location + _selected_range.length >= range.location)
+	{
+	  _selected_range.length += lengthChange;
+	}
+    }
+
   /* Invalidate display from the first glyph not laid out (which will
   generally be the first glyph to have been invalidated). */
   g = layout_glyph;

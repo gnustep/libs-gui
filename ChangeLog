@@ -1,3 +1,9 @@
+2003-01-28 22:54  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSLayoutManager.m (-textStorage:edited:range:changeInLength:
+	invalidatedRange:): Add code to adjust the selected range after each
+	change.
+
 2003-01-28 22:20  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSTextView.m (-initWithFrame:textContainer:): Make the
