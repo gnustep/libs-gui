@@ -3068,16 +3068,16 @@ scanRange (NSScanner *scanner, NSCharacterSet* aSet)
                 {
 		  NSLog(@"we are at end before finishing a line: %d.\n",  [lineScanner scanLocation]);
 		NSLog(@"scanLocation = %d, previousParagraphLocation = %d, beginLineIndex = %d",
-[lineScanner scanLocation],
-previousParagraphLocation,
-beginLineIndex);
-		  [lineStarts addObject: [NSNumber
-numberWithInt: beginLineIndex]];
-	          [lineEnds addObject: [NSNumber
-numberWithInt: (int)[lineScanner scanLocation] + previousParagraphLocation - (beginLineIndex)]];
-	          lineWidth = 0.0;
+		      [lineScanner scanLocation],
+		      previousParagraphLocation,
+		      beginLineIndex);
+		[lineStarts addObject: [NSNumber
+					 numberWithInt: beginLineIndex]];
+		[lineEnds addObject: [NSNumber
+				       numberWithInt: (int)[lineScanner scanLocation] + previousParagraphLocation - (beginLineIndex)]];
+		lineWidth = 0.0;
                 }
-
+	      
 	      lineWidth += lSize.width;
 	      //NSLog(@"lineWidth: %f", lineWidth);
 	    }
@@ -3088,22 +3088,22 @@ numberWithInt: (int)[lineScanner scanLocation] + previousParagraphLocation - (be
                    lastLineForContainerReached = YES;
                    break;
                  }
-
+	      
 	      [lineScanner setScanLocation: previousScanLocation];
 	      indexToAdd = previousScanLocation + previousParagraphLocation 
-		  - (beginLineIndex);
-
-		NSLog(@"previousScanLocation = %d, previousParagraphLocation = %d, beginLineIndex = %d indexToAdd = %d",
-previousScanLocation,
-previousParagraphLocation,
-beginLineIndex,
-indexToAdd);
-
+		- (beginLineIndex);
+	      
+	      NSLog(@"previousScanLocation = %d, previousParagraphLocation = %d, beginLineIndex = %d indexToAdd = %d",
+		    previousScanLocation,
+		    previousParagraphLocation,
+		    beginLineIndex,
+		    indexToAdd);
+	      
 	      ourLines += 20.0;  // 14
 	      lineWidth = 0.0;
-
+	      
 	      [lineStarts addObject: [NSNumber
-numberWithInt: beginLineIndex]];
+				       numberWithInt: beginLineIndex]];
 	      [lineEnds addObject: [NSNumber numberWithInt: indexToAdd]];
 	      beginLineIndex = previousScanLocation + previousParagraphLocation;
 	    }
