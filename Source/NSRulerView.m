@@ -23,9 +23,8 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-/* FIXME - HAVE_RINT */
-#include <gnustep/gui/config.h>
 #include <math.h>
+#include <gnustep/gui/config.h>
 
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDebug.h>
@@ -38,6 +37,13 @@
 #include <AppKit/NSRulerView.h>
 #include <AppKit/NSScrollView.h>
 #include <AppKit/PSOperators.h>
+
+#ifndef HAVE_RINT
+static double rint(double a)
+{
+  return (floor(a+0.5));
+}
+#endif
 
 #define MIN_LABEL_DISTANCE 40
 #define MIN_MARK_DISTANCE 5
