@@ -65,6 +65,7 @@
   NSMutableArray *_browserColumns;
   id _titleCell;
   NSSize _columnSize;
+  NSRect _scrollerRect;
   int _lastColumnLoaded;
   int _firstVisibleColumn;
   int _lastVisibleColumn;
