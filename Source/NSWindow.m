@@ -585,10 +585,26 @@ static NSNotificationCenter *nc = nil;
 			     defer: NO];
 }
 
+- (void) _terminateBackendWindow
+{
+  NSGraphicsContext *context = GSCurrentContext();
+
+  /* Check for context also as it might have disappeared before us */
+  if (context && _gstate)
+    {
+      GSUndefineGState(context, _gstate);
+      _gstate = 0;
+    }
+  
+  if (_windowNum)
+    {
+      [GSServerForWindow(self) termwindow: _windowNum];
+      NSMapRemove(windowmaps, (void*)_windowNum);
+    }
+}
+
 - (void) dealloc
 {
-  NSGraphicsContext	*context = GSCurrentContext();
-
   [nc removeObserver: self];
   [[NSRunLoop currentRunLoop]
 	 cancelPerformSelector: @selector(_handleWindowNeedsDisplay:)
@@ -629,6 +645,7 @@ static NSNotificationCenter *nc = nil;
   TEST_RELEASE(_initialFirstResponder);
   TEST_RELEASE(_defaultButtonCell);
   TEST_RELEASE(_cachedImage);
+  TEST_RELEASE(_toolbar);
   RELEASE(_screen);
 
   /*
@@ -637,18 +654,8 @@ static NSNotificationCenter *nc = nil;
    */
   [GSServerForWindow(self) removeDragTypes: nil fromWindow: self];
 
-  /* Check for context also as it might have disappeared before us */
-  if (context && _gstate)
-    {
-      GSUndefineGState(context, _gstate);
-    }
-  
-  if (_windowNum)
-    {
-      [GSServerForWindow(self) termwindow: _windowNum];
-      NSMapRemove(windowmaps, (void*)_windowNum);
-    }
-  
+  [self _terminateBackendWindow];
+
   if (_delegate != nil)
     {
       [nc removeObserver: _delegate  name: nil  object: self];
@@ -682,13 +689,13 @@ static NSNotificationCenter *nc = nil;
   screenNumber = [_screen screenNumber];
   _windowNum = [srv window: frame : _backingType : _styleMask : screenNumber];
   [srv setwindowlevel: [self level] : _windowNum];
+  NSMapInsert (windowmaps, (void*)_windowNum, self);
 
   // Set window in new _gstate
   DPSgsave(context);
   [srv windowdevice: _windowNum];
   _gstate = GSDefineGState(context);
   DPSgrestore(context);
-  NSMapInsert (windowmaps, (void*)_windowNum, self);
 
   frame = [NSWindow contentRectForFrameRect: frame styleMask: _styleMask];
   if (NSIsEmptyRect([_wv frame]))
@@ -974,6 +981,7 @@ static NSNotificationCenter *nc = nil;
 
 - (void) setHasShadow: (BOOL)hasShadow
 {
+  // FIXME: Should be send to backend
   _f.has_shadow = hasShadow;
 }
 
@@ -984,6 +992,7 @@ static NSNotificationCenter *nc = nil;
 
 - (void) setAlphaValue: (float)windowAlpha
 {
+  // FIXME
   _alphaValue = windowAlpha;
 }
 
@@ -994,6 +1003,7 @@ static NSNotificationCenter *nc = nil;
 
 - (void) setOpaque: (BOOL)isOpaque
 {
+  // FIXME
   _f.is_opaque = isOpaque;
 }
 
@@ -1414,6 +1424,10 @@ static NSNotificationCenter *nc = nil;
 	}
       _f.visible = YES;
     }
+  else if ([self isOneShot])
+    {
+      [self _terminateBackendWindow];
+    }
 }
 
 - (void) resignKeyWindow
@@ -1486,8 +1500,12 @@ static NSNotificationCenter *nc = nil;
  */
 - (NSPoint) cascadeTopLeftFromPoint: (NSPoint)topLeftPoint
 {
-  // FIXME: The implementation of this method is missing
-  return NSZeroPoint;
+  // FIXME: As we know nothing about the other window we can only guess
+  topLeftPoint.x += 20;
+  topLeftPoint.y += 20;
+
+  [self setFrameTopLeftPoint: topLeftPoint];
+  return topLeftPoint;
 }
 
 - (BOOL) showsResizeIndicator
@@ -2193,7 +2211,7 @@ resetCursorRectsForView(NSView *theView)
 /**
   Causes the window to deminiaturize. Normally you would not call this
   method directly. A window is automatically deminiaturized by the
-  user via a mouse cloick event.  */
+  user via a mouse click event.  */
 - (void) deminiaturize: sender
 {
   if (_counterpart != 0)
@@ -3590,40 +3608,23 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
   sRect.size.height = value;
 
   /*
-   * FIXME - the screen rectangle should give the area of the screen in which
-   * the window could be placed (ie a rectangle excluding the dock), but
-   * there is no API for that yet - so we just use the screen at present.
+   * The screen rectangle gives the area of the screen in which
+   * the window could be placed (ie a rectangle excluding the dock).
    */
-  nRect = [[self screen] frame];
+  nRect = [[self screen] visibleFrame];
 
   /*
    * FIXME - if the stored screen area is not the same as that currently
    * available, we should probably adjust the window frame (position) in
-   * some way to try to amke layout sensible.
+   * some way to try to make layout sensible.
    */
   if (NSEqualRects(nRect, sRect) == NO)
     {
     }
 
   /*
-   * Check and set frame.
+   * Set frame.
    */
-  if (_maximumSize.width > 0 && fRect.size.width > _maximumSize.width)
-    {
-      fRect.size.width = _maximumSize.width;
-    }
-  if (_maximumSize.height > 0 && fRect.size.height > _maximumSize.height)
-    {
-      fRect.size.height = _maximumSize.height;
-    }
-  if (fRect.size.width < _minimumSize.width)
-    {
-      fRect.size.width = _minimumSize.width;
-    }
-  if (fRect.size.height < _minimumSize.height)
-    {
-      fRect.size.height = _minimumSize.height;
-    }
   [self setFrame: fRect display: (_f.visible) ? YES : NO];
 }
 
@@ -3659,11 +3660,10 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
   fRect = _frame;
 
   /*
-   * FIXME - the screen rectangle should give the area of the screen in which
-   * the window could be placed (ie a rectangle excluding the dock), but
-   * there is no API for that yet - so we just use the screen at present.
+   * The screen rectangle should gives the area of the screen in which
+   * the window could be placed (ie a rectangle excluding the dock).
    */
-  sRect = [[self screen] frame];
+  sRect = [[self screen] visibleFrame];
 
   return [NSString stringWithFormat: @"%d %d %d %d %d %d % d %d ",
     (int)fRect.origin.x, (int)fRect.origin.y,
@@ -3713,9 +3713,54 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
   [self zoom: sender];
 }
 
+#define DIST 3
+
 - (void) zoom: (id)sender
 {
-  NSLog (@"[NSWindow zoom:] not implemented yet");
+  NSRect maxRect = [[self screen] visibleFrame];
+
+  if ([_delegate respondsToSelector: @selector(windowWillUseStandardFrame:defaultFrame:)])
+    {
+      maxRect = [_delegate windowWillUseStandardFrame: self defaultFrame: maxRect];
+    }
+  else if ([self respondsToSelector: @selector(windowWillUseStandardFrame:defaultFrame:)])
+    {
+      maxRect = [self windowWillUseStandardFrame: self defaultFrame: maxRect];
+    }
+
+  maxRect = [self constrainFrameRect: maxRect toScreen: [self screen]];
+
+  // Compare the new frame with the current one
+  if ((abs(NSMaxX(maxRect) - NSMaxX(_frame)) < DIST) &&
+      (abs(NSMaxY(maxRect) - NSMaxY(_frame)) < DIST) &&
+      (abs(NSMinX(maxRect) - NSMinX(_frame)) < DIST) &&
+      (abs(NSMinY(maxRect) - NSMinY(_frame)) < DIST))
+    {
+      // Already in zoomed mode, reset user frame, if stored
+      if (_autosaveName != nil)
+        {
+	  [self setFrameUsingName: _autosaveName];
+	}
+      return;
+    }
+
+  if ([_delegate respondsToSelector: @selector(windowShouldZoom:toFrame:)])
+    {
+      if (![_delegate windowShouldZoom: self toFrame: maxRect])
+	return;
+    }
+  else if ([self respondsToSelector: @selector(windowShouldZoom:toFrame:)])
+    {
+      if (![self windowShouldZoom: self toFrame: maxRect])
+	return;
+    }
+
+  if (_autosaveName != nil)
+    {
+      [self saveFrameUsingName: _autosaveName];
+    }
+  
+  [self setFrame: maxRect display: YES];
 }
 
 
@@ -3925,8 +3970,7 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 - (void) setToolbar: (NSToolbar*)toolbar
 {
   ASSIGN(_toolbar, toolbar);
-  [_wv addSubview: (NSView *)[toolbar _toolbarView]];
-  [self setViewsNeedDisplay: YES];
+  // FIXME The toolbar needs to know about the window!
 }
 
 - (NSToolbar *) toolbar
@@ -3936,16 +3980,12 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 
 - (void) toggleToolbarShown: (id)sender
 {
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"toggleToolbarShown:", "NSWindow");
+  [_toolbar setVisible: [_toolbar isVisible]];
 }
 
 - (void) runToolbarCustomizationPalette: (id)sender
 {
-  // TODO 
-  NSLog(@"Method %s is not implemented for class %s",
-	"runToolbarCustomizationPalette:", "NSWindow");
+  [_toolbar runCustomizationPalette: sender];
 }
 
 - (NSWindow *) initWithWindowRef: (void *)windowRef
@@ -3966,11 +4006,8 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 
 - (void *) windowHandle
 {
-  // FIXME: Should only be defined on MS Windows
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"windowHandle", "NSWindow");
-  return (void *) 0;
+  // Should only be defined on MS Windows
+  return (void *)_windowNum;
 }
 
 @end
@@ -4015,16 +4052,6 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
   [self deminiaturize: sender];
 }
 
-- (void) performHide: sender
-{
-  // FIXME: Implementation is missing
-}
-
-- (void) performUnhide: sender
-{
-  // FIXME: Implementation is missing
-}
-
 /*
  * Allow subclasses to init without the backend
  * class attempting to create an actual window
@@ -4051,7 +4078,7 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 
   _f.is_one_shot = NO;
   _f.is_autodisplay = YES;
-  _f.optimize_drawing = YES;
+  _f.optimize_drawing = NO;
   _f.dynamic_depth_limit = YES;
   _f.cursor_rects_enabled = NO;
   _f.visible = NO;
