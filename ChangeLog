@@ -1,3 +1,18 @@
+2002-05-13  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSColor.m
+	In initSystemColors() and systemColorWithName() replaced
+	implementation of system colours with named colours from a stored
+	colour list. Added conversion cache for named colours. This allows
+	easy configuration of system colours while keeping the same performance.
+	* Source/NSFont.m
+	Moved the caching of fonts from [initWithName:matrix:] to
+	[fontWithName:matrix:] so that unneeded fonts are no longer
+	created. In [labelFontSize], [smallSystemFontSize] and
+	[systemFontSize] get values from defaults if available. In
+	getNSFont() removed hard coded 12, will be relaced by default for
+	NSUserFontSize. 
+	
 Sun May 12 10:08:34 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/gnustep/gui/NSTextView.h: Removed ivar
