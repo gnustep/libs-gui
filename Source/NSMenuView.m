@@ -921,7 +921,6 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 
 - (void) mouseDown: (NSEvent*)theEvent
 {
-  NSMenu	*candidateMenu;
   NSMenu	*masterMenu;
   NSMenuView	*masterMenuView;
   NSPoint	originalLocation;
@@ -929,11 +928,6 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   menuv_keepAttachedMenus = YES;
 
   masterMenu = menuv_menu;
-  while ((candidateMenu = [masterMenu supermenu]) != nil
-    && ([masterMenu isTornOff] == NO || [masterMenu isFollowTransient] == YES))
-    {
-      masterMenu = candidateMenu;
-    }
 
   originalLocation = [[masterMenu window] frame].origin;
 
