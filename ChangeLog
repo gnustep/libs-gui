@@ -1,3 +1,11 @@
+2002-03-31  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/Window.m
+	[setFrame:display:] do nothing if the frame after all the
+	corrections did not change from its current extend.
+	In [makeKeyWindow] and [makeMainWindow] do nothing if the window
+	is already key/main.
+	
 2002-03-31  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSMatrix.m :
