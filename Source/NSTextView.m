@@ -96,10 +96,30 @@ of the text container, when does it actually update its size? Might need
 a new internal method called from NSLayoutManager when text has changed.
 (Currently NSLayoutManager calls -sizeToFit when text has changed.)
 
-
-Selecting with the keyboard behaves weirdly. Need to check if it's correct.
-
 */
+
+
+
+/*
+Interface for a bunch of internal methods that need to be cleaned up.
+*/
+@interface NSTextView (GNUstepPrivate)
+/*
+ * Used to implement the blinking insertion point
+ */
+-(void) _blink: (NSTimer *)t;
+
+/*
+ * these NSLayoutManager- like method is here only informally
+ */
+-(NSRect) rectForCharacterRange: (NSRange)aRange;
+
+//
+// GNU utility methods
+//
+-(void) copySelection;
+-(void) pasteSelection;
+@end
 
 
 
@@ -2238,28 +2258,6 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
     return NSMakeRange(a2, a1 - a2);
 }
 
-
-
-
-
-
-@interface NSTextView (GNUstepPrivate)
-/*
- * Used to implement the blinking insertion point
- */
--(void) _blink: (NSTimer *)t;
-
-/*
- * these NSLayoutManager- like method is here only informally
- */
--(NSRect) rectForCharacterRange: (NSRange)aRange;
-
-//
-// GNU utility methods
-//
--(void) copySelection;
--(void) pasteSelection;
-@end
 
 
 @implementation NSTextView (leftovers)
