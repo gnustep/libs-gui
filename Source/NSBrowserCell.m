@@ -356,41 +356,9 @@ static NSFont *leafFont;
   [controlView unlockFocus];
 }
 
-/*
- * Editing Text
- */
-- (void) editWithFrame: (NSRect)aRect
-		inView: (NSView *)controlView
-		editor: (NSText *)textObject
-	      delegate: (id)anObject
-		 event: (NSEvent *)theEvent
+- (BOOL) isOpaque
 {
-  NSPoint location = [controlView convertPoint: [theEvent locationInWindow]
-				      fromView: nil];
-
-  NSDebugLog(@" NSBrowserCell: editWithFrame --- ");
-
-  [_browserText _setCursorLocation: location];
-  [_browserText _setCursorVisibility: YES];
-
-  if ([[controlView window] makeFirstResponder: controlView])
-    NSDebugLog(@" NSBrowserCell: we are now first responder --- ");
-
-  [self drawInteriorWithFrame: aRect inView: controlView];
-}
-
-- (void) endEditing: (NSText *)textObject
-{
-  [_browserText _setCursorVisibility: NO];
-}
-
-- (void) _handleKeyEvent: (NSEvent*)keyEvent
-{
-  NSDebugLog(@" NSBrowserCell: _handleKeyEvent --- ");
-
-  [_browserText _handleKeyEvent: keyEvent];
-
-//  [self drawInteriorWithFrame: aRect inView: controlView];
+  return YES;
 }
 
 /*
