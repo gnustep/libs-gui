@@ -1,3 +1,12 @@
+Sat July 25 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* NSCell.m removed highlight/unhighlight behaviour from trackMouse method
+		per OS spec.  Behaviour is now as described for this method in 
+		NSControl, NSMatrix and NSCell.
+	* NSMatrix.m: rewrote mouseDown to more closely follow the OS spec.  There
+		are still some very subtle differences.
+	* NSButton.m: now highlights it's cell before invoking Cell's trackMouse.
+
 Mon Jul 20 10:37:22 1998  Adam Fedor  <fedor@ultra.doc.com>
 
 	* config.h: Use NSDebugLog def from Foundation/NSObjCRuntime.h
