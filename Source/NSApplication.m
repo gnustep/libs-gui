@@ -2317,6 +2317,10 @@ image.
   return [_listener servicesMenu];
 }
 
+/**
+ * Returns the services provided previously registered using the
+ * -setServicesProvider: method.
+ */
 - (id) servicesProvider
 {
   return [_listener servicesProvider];
@@ -2327,6 +2331,11 @@ image.
   [_listener setServicesMenu: aMenu];
 }
 
+/**
+ * Sets the object which provides services to other applications.<br />
+ * Passing a nil value for anObject will result in the provision of
+ * services to other applications by this application being disabled.
+ */
 - (void) setServicesProvider: (id)anObject
 {
   [_listener setServicesProvider: anObject];
@@ -2335,10 +2344,11 @@ image.
 - (id) validRequestorForSendType: (NSString *)sendType
 		      returnType: (NSString *)returnType
 {
-  if (_delegate != nil && ![_delegate isKindOfClass: [NSResponder class]] &&
-      [_delegate respondsToSelector: @selector(validRequestorForSendType:returnType:)])
+  if (_delegate != nil && ![_delegate isKindOfClass: [NSResponder class]]
+    && [_delegate respondsToSelector:
+    @selector(validRequestorForSendType:returnType:)])
     return [_delegate validRequestorForSendType: sendType
-		      returnType: returnType];
+				     returnType: returnType];
 
   return nil;
 }

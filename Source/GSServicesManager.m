@@ -88,6 +88,11 @@ static GSListener	*listener = nil;
 static id		servicesProvider = nil;
 static NSString		*providerName = nil;
 
+/**
+ * Unregisters the service provider registered on the named port.<br />
+ * Applications should use [NSApplication-setServicesProvider:] with a nil
+ * argument instead.
+ */
 void
 NSUnregisterServicesProvider(NSString *name)
 {
@@ -108,6 +113,12 @@ NSUnregisterServicesProvider(NSString *name)
   ASSIGN(providerName, nil);
 }
 
+/**
+ * Registers a services providing object using the specified port name.<br />
+ * Applications should not need to use this, as they can use the
+ * [NSApplication-setServicesProvider:] method instead.  The NSApplication
+ * method will use the name of the application rather than an other port name.
+ */
 void
 NSRegisterServicesProvider(id provider, NSString *name)
 {
