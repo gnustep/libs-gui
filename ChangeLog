@@ -1,5 +1,19 @@
 2000-12-24  Fred Kiefer  <FredKiefer@gmx.de>
 
+	* Headers/gnustep/gui/NSButton.h:
+	Added some missing methods.
+	* Headers/gnustep/gui/NSButtonCell.h:
+	Added some missing methods and some ivars.
+	* Source/NSButton.m
+	Delegate all the new methods to the cell. Replaced all calls to
+	[display] with [setNeedsDisplay:] excuding those in [setState:]
+	and [setNextState:]. Removed the initXXX methods, as they were
+	doublicated code from super.
+	* Source/NSButtonCell.m
+	Dummy implementation for new methods.
+	
+2000-12-24  Fred Kiefer  <FredKiefer@gmx.de>
+
 	* Headers/gnustep/gui/NSImageRep.h:
 	* Headers/gnustep/gui/NSBitmapImageRep.h:
 	Added some missing methods.
