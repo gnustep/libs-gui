@@ -66,6 +66,7 @@
       [self _windowDidLoad];
     }
 
+  [self setDocument: nil];
   return self;
 }
 
@@ -97,8 +98,23 @@
 - (void) setDocument: (NSDocument *)document
 {
   // FIXME - this is RETAINed and never RELEASEd ...
-  ASSIGN(_document, document);
+  ASSIGN (_document, document);
   [self _synchronizeWindowTitleWithDocumentName];
+
+  if (_document != nil)
+    {
+      [_window setReleasedWhenClosed: YES];
+    }
+  else
+    {
+      /* If you want the window to be deallocated when closed, you
+	 need to observe the NSWindowWillCloseNotification (or
+	 implement the window's delegate windowWillClose: method) and
+	 autorelease the window controller in that method.  That will
+	 then release the window when the window controller is
+	 released. */
+      [_window setReleasedWhenClosed: NO];
+    }
 }
 
 - (id) document
@@ -151,29 +167,33 @@
 {
   if ([notification object] == _window)
     {
-      if ([_window delegate] == self) 
-	{
-	  [_window setDelegate: nil];
-	}
-      if ([_window windowController] == self) 
-	{
-	  [_window setWindowController: nil];
-	}
-      
-      /*
-       * If the window is set to isReleasedWhenClosed, it will release
-       * itself, so nil out our reference so we don't release it again
-       * We may want to unilaterally turn off the setting in the NSWindow
-       * instance so it doesn't cause problems.
-       * 
-       * Apple's implementation doesn't seem to deal with this case, and
-       * crashes if isReleaseWhenClosed is set.
-       */
+      /* We only need to do something if the window is set to be
+	 released when closed (which should only happen if _document
+	 != nil).  In this case, we release everything; otherwise,
+	 well the window is closed but nothing is released so there's
+	 nothing to do here. */
       if ([_window isReleasedWhenClosed])
 	{
+	  if ([_window delegate] == self) 
+	    {
+	      [_window setDelegate: nil];
+	    }
+	  if ([_window windowController] == self) 
+	    {
+	      [_window setWindowController: nil];
+	    }
+	  
+	  /*
+	   * If the window is set to isReleasedWhenClosed, it will release
+	   * itself, so nil out our reference so we don't release it again
+	   * 
+	   * Apple's implementation doesn't seem to deal with this case, and
+	   * crashes if isReleaseWhenClosed is set.
+	   */
 	  _window = nil;
+
+	  [_document _removeWindowController: self];
 	}
-      [_document _removeWindowController: self];
     }
 }
 
@@ -224,14 +244,14 @@
     }
 }
 
-- (NSString *) windowTitleForDocumentDisplayName:(NSString *)displayName
+- (NSString *) windowTitleForDocumentDisplayName: (NSString *)displayName
 {
   return displayName;
 }
 
 - (void) _synchronizeWindowTitleWithDocumentName
 {
-  if (_document)
+  if (_document != nil)
     {
       NSString *filename = [_document fileName];
       NSString *displayName = [_document displayName];
@@ -332,6 +352,15 @@
 	{
 	  [self setWindow: [_document _transferWindowOwnership]];
 	}
+
+      if (_document != nil)
+	{
+	  [_window setReleasedWhenClosed: YES];
+	}
+      else
+	{
+	  [_window setReleasedWhenClosed: NO];
+	}
     }
   else
     {
@@ -340,10 +369,6 @@
     }
 }
 
-/*
- * There's no way I'll ever get these compatible if Apple's versions
- * actually encode anything, sigh
- */
 - (id) initWithCoder: (NSCoder *)coder
 {
   return [self init];
