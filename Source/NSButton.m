@@ -305,10 +305,6 @@ id _nsbuttonCellClass = nil;
 	  [self performClick: self];
 	  return;
 	}      
-
-      // TODO: Understand better, I don't think this should be here.
-      if ([self performKeyEquivalent: theEvent] == YES)
-	return;
     }
   
   [super keyDown: theEvent];
