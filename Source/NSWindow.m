@@ -312,6 +312,7 @@ static NSRecursiveLock	*windowsLock;
   ASSIGN(content_view, aView);
 
   [content_view setFrame: [wv frame]];		    // Resize to fill window.
+  [content_view setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
   [wv addSubview: content_view];		    // Add to our window view
   NSAssert1 ([[wv subviews] count] == 1, @"window's view has %d	 subviews!",
 		[[wv subviews] count]);
