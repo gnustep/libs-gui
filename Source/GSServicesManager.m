@@ -375,9 +375,9 @@ static NSString         *disabledName = @".GNUstepDisabled";
 
   if (manager != nil)
     {
-      if (manager->application == nil)
+      if (manager->_application == nil)
 	{
-	  manager->application = app;
+	  manager->_application = app;
 	}
       return manager;
     }
@@ -388,19 +388,19 @@ static NSString         *disabledName = @".GNUstepDisabled";
           NSUserDomainMask, YES) objectAtIndex: 0];
   str = [str stringByAppendingPathComponent: @"Services"];
   path = [str stringByAppendingPathComponent: servicesName];
-  manager->servicesPath = [path copy];
+  manager->_servicesPath = [path copy];
   path = [str stringByAppendingPathComponent: disabledName];
-  manager->disabledPath = [path copy];
+  manager->_disabledPath = [path copy];
   /*
    *    Don't retain application object - that would create a cycle.
    */
-  manager->application = app;
-  manager->returnInfo = [[NSMutableSet alloc] initWithCapacity: 16];
-  manager->combinations = [[NSMutableDictionary alloc] initWithCapacity: 16];
+  manager->_application = app;
+  manager->_returnInfo = [[NSMutableSet alloc] initWithCapacity: 16];
+  manager->_combinations = [[NSMutableDictionary alloc] initWithCapacity: 16];
   /*
    *	Check for changes to the services cache every thirty seconds.
    */
-  manager->timer =
+  manager->_timer =
 	[NSTimer scheduledTimerWithTimeInterval: 30.0
 					 target: manager
 				       selector: @selector(loadServices)
@@ -425,33 +425,33 @@ static NSString         *disabledName = @".GNUstepDisabled";
   NSString          *appName;
 
   appName = [[NSProcessInfo processInfo] processName];
-  [timer invalidate];
+  [_timer invalidate];
   NSUnregisterServicesProvider(appName);
-  RELEASE(languages);
-  RELEASE(returnInfo);
-  RELEASE(combinations);
-  RELEASE(title2info);
-  RELEASE(menuTitles);
-  RELEASE(servicesMenu);
-  RELEASE(disabledPath);
-  RELEASE(servicesPath);
-  RELEASE(disabledStamp);
-  RELEASE(servicesStamp);
-  RELEASE(allDisabled);
-  RELEASE(allServices);
+  RELEASE(_languages);
+  RELEASE(_returnInfo);
+  RELEASE(_combinations);
+  RELEASE(_title2info);
+  RELEASE(_menuTitles);
+  RELEASE(_servicesMenu);
+  RELEASE(_disabledPath);
+  RELEASE(_servicesPath);
+  RELEASE(_disabledStamp);
+  RELEASE(_servicesStamp);
+  RELEASE(_allDisabled);
+  RELEASE(_allServices);
   [super dealloc];
 }
 
 - (void) doService: (NSCell*)item
 {
   NSString      *title = [self item2title: item];
-  NSDictionary  *info = [title2info objectForKey: title];
+  NSDictionary  *info = [_title2info objectForKey: title];
   NSArray       *sendTypes = [info objectForKey: @"NSSendTypes"];
   NSArray       *returnTypes = [info objectForKey: @"NSReturnTypes"];
   unsigned      i, j;
   unsigned      es = [sendTypes count];
   unsigned      er = [returnTypes count];
-  NSWindow      *resp = [[application keyWindow] firstResponder];
+  NSWindow      *resp = [[_application keyWindow] firstResponder];
   id            obj = nil;
 
   NSLog(@"doService: called");
@@ -513,7 +513,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
       for (i = 0; i < [returnTypes count]; i++)
         {
           type = [returnTypes objectAtIndex: i];
-          if ([returnInfo member: type] != nil)
+          if ([_returnInfo member: type] != nil)
             {
               return YES;
             }
@@ -524,7 +524,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
       for (i = 0; i < [sendTypes count]; i++)
         {
           type = [sendTypes objectAtIndex: i];
-          if ([combinations objectForKey: type] != nil)
+          if ([_combinations objectForKey: type] != nil)
             {
               return YES;
             }
@@ -537,7 +537,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
           NSSet *rset;
 
           type = [sendTypes objectAtIndex: i];
-          rset = [combinations objectForKey: type];
+          rset = [_combinations objectForKey: type];
           if (rset != nil)
             {
               unsigned  j;
@@ -568,9 +568,9 @@ static NSString         *disabledName = @".GNUstepDisabled";
   if ([item target] != self)
     return nil;
   pos = [item tag];
-  if (pos > [menuTitles count])
+  if (pos > [_menuTitles count])
     return nil;
-  return [menuTitles objectAtIndex: pos];
+  return [_menuTitles objectAtIndex: pos];
 }
 
 - (void) loadServices
@@ -579,20 +579,20 @@ static NSString         *disabledName = @".GNUstepDisabled";
   NSDate		*stamp = [NSDate date];
   BOOL			changed = NO;
 
-  if ([mgr fileExistsAtPath: disabledPath])
+  if ([mgr fileExistsAtPath: _disabledPath])
     {
       NSDictionary	*attr;
       NSDate		*mod;
 
-      attr = [mgr fileAttributesAtPath: disabledPath
+      attr = [mgr fileAttributesAtPath: _disabledPath
 			  traverseLink: YES];
       mod = [attr objectForKey: NSFileModificationDate];
-      if (disabledStamp == nil || [disabledStamp laterDate: mod] == mod)
+      if (_disabledStamp == nil || [_disabledStamp laterDate: mod] == mod)
 	{
 	  NSData	*data;
 	  id		plist = nil;
 
-	  data = [NSData dataWithContentsOfFile: disabledPath];
+	  data = [NSData dataWithContentsOfFile: _disabledPath];
 	  if (data)
 	    {
 	      plist = [NSDeserializer deserializePropertyListFromData: data
@@ -603,29 +603,29 @@ static NSString         *disabledName = @".GNUstepDisabled";
 		  stamp = mod;
 		  changed = YES;
 		  s = (NSMutableSet*)[NSMutableSet setWithArray: plist];
-		  ASSIGN(allDisabled, s);
+		  ASSIGN(_allDisabled, s);
 		}
 	    }
 	}
     }
   /* Track most recent version of file loaded or last time we checked */
-  ASSIGN(disabledStamp, stamp);
+  ASSIGN(_disabledStamp, stamp);
 
   stamp = [NSDate date];
-  if ([mgr fileExistsAtPath: servicesPath])
+  if ([mgr fileExistsAtPath: _servicesPath])
     {
       NSDictionary	*attr;
       NSDate		*mod;
 
-      attr = [mgr fileAttributesAtPath: servicesPath
+      attr = [mgr fileAttributesAtPath: _servicesPath
 			  traverseLink: YES];
       mod = [attr objectForKey: NSFileModificationDate];
-      if (servicesStamp == nil || [servicesStamp laterDate: mod] == mod)
+      if (_servicesStamp == nil || [_servicesStamp laterDate: mod] == mod)
 	{
 	  NSData	*data;
 	  id		plist = nil;
 
-	  data = [NSData dataWithContentsOfFile: servicesPath];
+	  data = [NSData dataWithContentsOfFile: _servicesPath];
 	  if (data)
 	    {
 	      plist = [NSDeserializer deserializePropertyListFromData: data
@@ -633,14 +633,14 @@ static NSString         *disabledName = @".GNUstepDisabled";
 	      if (plist)
 		{
 		  stamp = mod;
-		  ASSIGN(allServices, plist);
+		  ASSIGN(_allServices, plist);
 		  changed = YES;
 		}
 	    }
 	}
     }
   /* Track most recent version of file loaded or last time we checked */
-  ASSIGN(servicesStamp, stamp);
+  ASSIGN(_servicesStamp, stamp);
   if (changed)
     {
       [self rebuildServices];
@@ -649,11 +649,11 @@ static NSString         *disabledName = @".GNUstepDisabled";
 
 - (NSDictionary*) menuServices
 {
-  if (allServices == nil)
+  if (_allServices == nil)
     {
       [self loadServices];
     }
-  return title2info;
+  return _title2info;
 }
 
 - (void) rebuildServices
@@ -664,7 +664,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
   NSMutableDictionary   *newServices;
   unsigned              pos;
 
-  if (allServices == nil)
+  if (_allServices == nil)
     return;
 
   newLang = AUTORELEASE([[NSUserDefaults userLanguages] mutableCopy]);
@@ -676,9 +676,9 @@ static NSString         *disabledName = @".GNUstepDisabled";
     {
       [newLang addObject: @"default"];
     }
-  ASSIGN(languages, newLang);
+  ASSIGN(_languages, newLang);
 
-  services = [allServices objectForKey: @"ByService"];
+  services = [_allServices objectForKey: @"ByService"];
 
   newServices = [NSMutableDictionary dictionaryWithCapacity: 16];
   alreadyFound = [NSMutableSet setWithCapacity: 16];
@@ -690,11 +690,11 @@ static NSString         *disabledName = @".GNUstepDisabled";
    *    3. don't include entries for menu items specifically disabled.
    *    4. don't include entries for which we have no registered types.
    */
-  for (pos = 0; pos < [languages count]; pos++)
+  for (pos = 0; pos < [_languages count]; pos++)
     {
       NSDictionary      *byLanguage;
 
-      byLanguage = [services objectForKey: [languages objectAtIndex: pos]];
+      byLanguage = [services objectForKey: [_languages objectAtIndex: pos]];
       if (byLanguage != nil)
         {
           NSEnumerator  *enumerator = [byLanguage keyEnumerator];
@@ -710,7 +710,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
               [alreadyFound addObject: service];
 
 	      /* See if this service item is disabled. */
-              if ([allDisabled member: menuItem] != nil)
+              if ([_allDisabled member: menuItem] != nil)
                 continue;
 
               if ([self hasRegisteredTypes: service])
@@ -718,21 +718,21 @@ static NSString         *disabledName = @".GNUstepDisabled";
             }
         }
     }
-  if ([newServices isEqual: title2info] == NO)
+  if ([newServices isEqual: _title2info] == NO)
     {
       NSArray   *titles;
 
-      ASSIGN(title2info, newServices);
-      titles = [title2info allKeys];
+      ASSIGN(_title2info, newServices);
+      titles = [_title2info allKeys];
       titles = [titles sortedArrayUsingSelector: @selector(compare:)];
-      ASSIGN(menuTitles, titles);
+      ASSIGN(_menuTitles, titles);
       [self rebuildServicesMenu];
     }
 }
 
 - (void) rebuildServicesMenu
 {
-  if (servicesMenu != nil)
+  if (_servicesMenu != nil)
     {
       NSArray           *itemArray;
       NSMutableSet      *keyEquivalents;
@@ -742,20 +742,20 @@ static NSString         *disabledName = @".GNUstepDisabled";
       SEL               sel = @selector(doService:);
       NSMenu            *submenu = nil;
 
-      itemArray = [[servicesMenu itemArray] copy];
+      itemArray = [[_servicesMenu itemArray] copy];
       pos = [itemArray count];
       while (pos > 0)
         {
-          [servicesMenu removeItem: [itemArray objectAtIndex: --pos]];
+          [_servicesMenu removeItem: [itemArray objectAtIndex: --pos]];
         }
       RELEASE(itemArray);
 
       keyEquivalents = [NSMutableSet setWithCapacity: 4];
-      for (loc0 = pos = 0; pos < [menuTitles count]; pos++)
+      for (loc0 = pos = 0; pos < [_menuTitles count]; pos++)
         {
-          NSString      *title = [menuTitles objectAtIndex: pos];
+          NSString      *title = [_menuTitles objectAtIndex: pos];
           NSString      *equiv = @"";
-          NSDictionary  *info = [title2info objectForKey: title];
+          NSDictionary  *info = [_title2info objectForKey: title];
           NSDictionary  *titles;
           NSDictionary  *equivs;
           NSRange       r;
@@ -768,9 +768,9 @@ static NSString         *disabledName = @".GNUstepDisabled";
            */
           titles = [info objectForKey: @"NSMenuItem"];
           equivs = [info objectForKey: @"NSKeyEquivalent"];
-          for (lang = 0; lang < [languages count]; lang++)
+          for (lang = 0; lang < [_languages count]; lang++)
             {
-              NSString  *language = [languages objectAtIndex: lang];
+              NSString  *language = [_languages objectAtIndex: lang];
               NSString  *t = [titles objectForKey: language];
 
               if ([t isEqual: title])
@@ -806,16 +806,16 @@ static NSString         *disabledName = @".GNUstepDisabled";
               NSString  *parentTitle = [title substringToIndex: r.location];
               NSMenu    *menu;
 
-              item = [servicesMenu itemWithTitle: parentTitle];
+              item = [_servicesMenu itemWithTitle: parentTitle];
               if (item == nil)
                 {
                   loc1 = 0;
-                  item = [servicesMenu insertItemWithTitle: parentTitle
+                  item = [_servicesMenu insertItemWithTitle: parentTitle
                                                     action: 0
                                              keyEquivalent: @""
                                                    atIndex: loc0++];
                   menu = [[NSMenu alloc] initWithTitle: parentTitle];
-                  [servicesMenu setSubmenu: menu
+                  [_servicesMenu setSubmenu: menu
                                    forItem: item];
                   RELEASE(menu);
                 }
@@ -837,7 +837,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
             }
           else
             {
-              item = [servicesMenu insertItemWithTitle: title
+              item = [_servicesMenu insertItemWithTitle: title
                                                 action: sel
                                          keyEquivalent: equiv
                                                atIndex: loc0++];
@@ -847,8 +847,8 @@ static NSString         *disabledName = @".GNUstepDisabled";
         }
       [submenu update];
 //      [submenu sizeToFit];
-//      [servicesMenu sizeToFit];
-      [servicesMenu update];
+//      [_servicesMenu sizeToFit];
+      [_servicesMenu update];
     }
 }
 
@@ -938,12 +938,12 @@ static NSString         *disabledName = @".GNUstepDisabled";
   for (i = 0; i < [sendTypes count]; i++)
     {
       NSString          *sendType = [sendTypes objectAtIndex: i];
-      NSMutableSet      *returnSet = [combinations objectForKey: sendType];
+      NSMutableSet      *returnSet = [_combinations objectForKey: sendType];
 
       if (returnSet == nil)
         {
           returnSet = [NSMutableSet setWithCapacity: [returnTypes count]];
-          [combinations setObject: returnSet forKey: sendType];
+          [_combinations setObject: returnSet forKey: sendType];
           [returnSet addObjectsFromArray: returnTypes];
           didChange = YES;
         }
@@ -959,9 +959,9 @@ static NSString         *disabledName = @".GNUstepDisabled";
         }
     }
 
-  i = [returnInfo count];
-  [returnInfo addObjectsFromArray: returnTypes];
-  if ([returnInfo count] != i)
+  i = [_returnInfo count];
+  [_returnInfo addObjectsFromArray: returnTypes];
+  if ([_returnInfo count] != i)
     {
       didChange = YES;
     }
@@ -974,7 +974,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
 
 - (NSMenu*) servicesMenu
 {
-  return servicesMenu;
+  return _servicesMenu;
 }
 
 - (id) servicesProvider
@@ -984,7 +984,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
 
 - (void) setServicesMenu: (NSMenu*)aMenu
 {
-  ASSIGN(servicesMenu, aMenu);
+  ASSIGN(_servicesMenu, aMenu);
   [self rebuildServicesMenu];
 }
 
@@ -998,14 +998,14 @@ static NSString         *disabledName = @".GNUstepDisabled";
   NSData	*d;
 
   [self loadServices];
-  if (allDisabled == nil)
-    allDisabled = [[NSMutableSet alloc] initWithCapacity: 1];
+  if (_allDisabled == nil)
+    _allDisabled = [[NSMutableSet alloc] initWithCapacity: 1];
   if (enable)
-    [allDisabled removeObject: item];
+    [_allDisabled removeObject: item];
   else
-    [allDisabled addObject: item];
-  d = [NSSerializer serializePropertyList: [allDisabled allObjects]];
-  if ([d writeToFile: disabledPath atomically: YES] == YES)
+    [_allDisabled addObject: item];
+  d = [NSSerializer serializePropertyList: [_allDisabled allObjects]];
+  if ([d writeToFile: _disabledPath atomically: YES] == YES)
     return 0;
   return -1;
 }
@@ -1013,7 +1013,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
 - (BOOL) showsServicesMenuItem: (NSString*)item
 {
   [self loadServices];
-  if ([allDisabled member: item] == nil)
+  if ([_allDisabled member: item] == nil)
     return YES;
   return NO;
 }
@@ -1021,13 +1021,13 @@ static NSString         *disabledName = @".GNUstepDisabled";
 - (BOOL) validateMenuItem: (NSCell*)item
 {
   NSString      *title = [self item2title: item];
-  NSDictionary  *info = [title2info objectForKey: title];
+  NSDictionary  *info = [_title2info objectForKey: title];
   NSArray       *sendTypes = [info objectForKey: @"NSSendTypes"];
   NSArray       *returnTypes = [info objectForKey: @"NSReturnTypes"];
   unsigned      i, j;
   unsigned      es = [sendTypes count];
   unsigned      er = [returnTypes count];
-  NSWindow      *resp = [[application keyWindow] firstResponder];
+  NSWindow      *resp = [[_application keyWindow] firstResponder];
 
   /*
    *    If the menu item is not in our map, it must be the cell containing
@@ -1110,16 +1110,16 @@ static NSString         *disabledName = @".GNUstepDisabled";
 
 - (void) updateServicesMenu
 {
-  if (servicesMenu && [[application mainMenu] autoenablesItems])
+  if (_servicesMenu && [[_application mainMenu] autoenablesItems])
     {
       NSArray   	*a;
       unsigned  	i;
-      NSMenu		*mainMenu = [application mainMenu];
+      NSMenu		*mainMenu = [_application mainMenu];
       BOOL		found = NO;
 
       a = [mainMenu itemArray];
       for (i = 0; i < [a count]; i++)
-	if ([[a objectAtIndex: i] submenu] == servicesMenu)
+	if ([[a objectAtIndex: i] submenu] == _servicesMenu)
 	  found = YES;
       if (found == NO)
 	{
@@ -1127,7 +1127,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
 	  return;
 	}
 
-      a = [servicesMenu itemArray];
+      a = [_servicesMenu itemArray];
 
       for (i = 0; i < [a count]; i++)
         {

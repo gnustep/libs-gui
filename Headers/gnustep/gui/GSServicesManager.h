@@ -40,20 +40,20 @@
 
 @interface      GSServicesManager : NSObject
 {
-  NSApplication         *application;
-  NSMenu                *servicesMenu;
-  NSMutableArray        *languages;
-  NSMutableSet          *returnInfo;
-  NSMutableDictionary   *combinations;
-  NSMutableDictionary   *title2info;
-  NSArray               *menuTitles;
-  NSString		*disabledPath;
-  NSString		*servicesPath;
-  NSDate		*disabledStamp;
-  NSDate		*servicesStamp;
-  NSMutableSet		*allDisabled;
-  NSMutableDictionary	*allServices;
-  NSTimer		*timer;
+  NSApplication         *_application;
+  NSMenu                *_servicesMenu;
+  NSMutableArray        *_languages;
+  NSMutableSet          *_returnInfo;
+  NSMutableDictionary   *_combinations;
+  NSMutableDictionary   *_title2info;
+  NSArray               *_menuTitles;
+  NSString		*_disabledPath;
+  NSString		*_servicesPath;
+  NSDate		*_disabledStamp;
+  NSDate		*_servicesStamp;
+  NSMutableSet		*_allDisabled;
+  NSMutableDictionary	*_allServices;
+  NSTimer		*_timer;
 }
 + (GSServicesManager*) newWithApplication: (NSApplication*)app;
 + (GSServicesManager*) manager;
