@@ -1159,7 +1159,10 @@ void __dummy_GMAppKit_functionForLinking() {}
   self = [super initWithModelUnarchiver:unarchiver];
 
   superview = [unarchiver decodeObjectWithName:@"superview"];
-  [superview addSubview:self];
+  /* If we are the content view of an NSBox, don't add ourselves to it.
+     This is done later in the NSBox unachiver method */
+  if ([superview isKindOfClass: [NSBox class]] == NO)
+    [superview addSubview:self];
 
   subviews = [unarchiver decodeObjectWithName:@"subviews"];
   for (i = 0, count = [subviews count]; i < count; i++)
