@@ -1175,6 +1175,8 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
       if (coordinates_valid == NO)
 	[self _rebuildCoordinates];
+
+      invalidRect = NSIntersectionRect(invalidRect, visibleRect);
       aRect = NSIntersectionRect(aRect, visibleRect);
 
       redrawRect = NSIntersectionRect(aRect, invalidRect);
@@ -1244,17 +1246,20 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 	}
 
       /*
-       * If our invalid rectangle is entirely contained with the area we
-       * have just redisplayed, then we set the invalid rectangle to zero
+       * If the rect we displayed contains the invalidRect for the view
+       * then we can empty invalidRect.  All subviews will have been
+       * fully displayed, so the 'stillNeedsDisplay' flag will be NO.
        */
       redrawRect = NSUnionRect(invalidRect, aRect);
       if (NSEqualRects(aRect, redrawRect) == YES)
 	{
 	  invalidRect = NSZeroRect;
-	  needs_display = stillNeedsDisplay;
 	}
       else
-	needs_display = YES;
+	{
+	  stillNeedsDisplay = YES;
+	}
+      needs_display = stillNeedsDisplay;
 
       [window flushWindow];
     }
@@ -1288,6 +1293,16 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   if (coordinates_valid == NO)
     [self _rebuildCoordinates];
 
+  /*
+   * we limit the invalid rect to the visible area - since we can't
+   * display beyond that anyway.
+   */
+  if (needs_display)
+    invalidRect = NSIntersectionRect(invalidRect, visibleRect);
+
+  /*
+   * Now we draw this view.
+   */
   ctxt = GSCurrentContext();
   [ctxt lockFocusView: self inRect: aRect];
   [self drawRect: aRect];
@@ -1329,8 +1344,9 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
     }
 
   /*
-   *	If the rect we displayed contains the invalidRect
-   *	for the view then we can empty invalidRect.
+   *	If the rect we displayed contains the invalidRect for the view
+   *	then we can empty invalidRect.  All subviews will have been
+   *	fully displayed, so the 'stillNeedsDisplay' flag will be NO.
    */
   rect = NSUnionRect(invalidRect, aRect);
   if (NSEqualRects(rect, aRect) == YES)
@@ -1352,8 +1368,6 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 {
   if (coordinates_valid == NO)
     [self _rebuildCoordinates];
-  if (needs_display)
-    invalidRect = NSIntersectionRect(invalidRect, visibleRect);
   return visibleRect;
 }
 

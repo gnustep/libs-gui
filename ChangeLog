@@ -1,3 +1,8 @@
+Thu Jun 10 19:45:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSView.m: Optimise display routines - avoid unneeded
+	re-displays.
+
 Wed Jun  9  8:35:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Headers/AppKit/DPSOperators.h: Add DPSmouselocation()
