@@ -96,8 +96,6 @@ static Class imageClass;
 
 - (void) dealloc
 {
-  NSDebugLog (@"NSMenuItem '%@' dealloc", _title);
-
   TEST_RELEASE(_title);
   TEST_RELEASE(_keyEquivalent);
   TEST_RELEASE(_image);
@@ -134,6 +132,7 @@ static Class imageClass;
 
 - (void) setMenu: (NSMenu*)menu
 {
+  /* The menu is retaining us.  Do not retain it.  */
   _menu = menu;
   if (_submenu != nil)
     {
