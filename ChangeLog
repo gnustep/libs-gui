@@ -1,3 +1,9 @@
+2003-02-09 14:48  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSHorizontalTypesetter.m: Make the main method reentrant
+	by having it allocate a temporary instance to handle calls when
+	it is already in use.
+
 2003-02-09  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSColorList.m

@@ -62,6 +62,7 @@ cache fairly aggressively without having to worry about memory consumption.
       free(cache);
       cache = NULL;
     }
+  DESTROY(lock);
   [super dealloc];
 }
 
@@ -896,7 +897,23 @@ restart:
   int ret = 0;
   BOOL newParagraph;
 
-  [lock lock];
+  if (![lock tryLock])
+    {
+      /* Since we might be the shared system typesetter, we must be
+      reentrant. Thus, if we are already in use and can't lock our lock,
+      we create a new instance and let it handle the call. */
+      GSHorizontalTypesetter *temp;
+
+      temp = [[isa alloc] init];
+      ret = [temp layoutGlyphsInLayoutManager: layoutManager
+			      inTextContainer: textContainer
+			 startingAtGlyphIndex: glyphIndex
+		     previousLineFragmentRect: previousLineFragRect
+			       nextGlyphIndex: nextGlyphIndex
+			numberOfLineFragments: howMany];
+      DESTROY(temp);
+      return ret;
+    }
 
 NS_DURING
   curLayoutManager = layoutManager;
