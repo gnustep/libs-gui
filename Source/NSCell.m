@@ -1119,6 +1119,7 @@ static NSColor	*shadowCol;
       NSRect   cvBounds = [cv bounds];
       NSWindow *cvWin = [cv window];
       
+      [self setNextState];
       [self highlight: YES withFrame: cvBounds inView: cv];
       [cvWin flushWindow];
       

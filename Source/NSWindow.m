@@ -3239,6 +3239,8 @@ resetCursorRectsForView(NSView *theView)
 {
   ASSIGN(_defaultButtonCell, aButtonCell);
   _f.default_button_cell_key_disabled = NO;
+
+  [aButtonCell setKeyEquivalent: @"\r"];
 }
 
 - (void) disableKeyEquivalentForDefaultButtonCell

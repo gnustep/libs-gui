@@ -2183,7 +2183,6 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   _firstVisibleColumn = 0;
   _lastVisibleColumn = 0;
   [self _createColumn];
-  NSLog(@"init2 %f", _frame.size.width);
 
   return self;
 }
@@ -2436,7 +2435,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 		[_window selectKeyViewFollowingView: self];
 	      }
 	  }
-	  break;
+	  return;
 	}
     }
 

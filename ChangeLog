@@ -1,3 +1,36 @@
+2000-06-16  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSImage.m
+	[compositeToPoint:fromRect:operation:] Move the drawing rectangle
+	to the origin of the image rep before the intersection of the two
+	rects. Now drag&drop in Gorm should display the DragView again.
+
+2001-06-15  Adam Fedor  <fedor@gnu.org>
+
+	* Version: snapshot release 0.6.9
+
+2001-06-14  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
+
+	* Source/NSWindow.m ([NSWindow -setDefaultButtonCell:]): set button
+	key equivalent to '\r'.
+
+	* Source/NSBrowser.m ([NSBrowser -initWithFrame:]): removed debug.
+
+	Patches from Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+	* Source/NSPanel.m ([GSAlertPanel -initWithContentRect:styleMask:
+	backing:defer:screen:]): set key view chain.
+	* Source/NSCell.m ([NSCell -performClick:]): set next cell state.
+	* Source/NSBrowser.m ([NSBrowser -keyDown:]): fixed tab selection.
+
+Wed Jun 13 02:36:44 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSBitmapImageRep.m ([+imageRepsWithData:]): Replaced
+	[self class] with self.  ([+imageUnfilteredFileTypes]): add
+	extensions directly rather than using a temporary array.
+	([+imageRepsWithFile:]): As a temporary bug fix, evaluate
+	extension manually: if it is `tiff' or `tif', use libtiff;
+	otherwise, try backend code.
+	
 2001-06-11  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
 
 	* Source/NSSavePanel.m ([NSSavePanel -_initWithoutGModel]): do not set
