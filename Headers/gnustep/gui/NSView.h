@@ -126,6 +126,9 @@ enum {
 - (NSView*) opaqueAncestor;
 - (void) removeFromSuperviewWithoutNeedingDisplay;
 - (void) removeFromSuperview;
+#ifndef	NO_GNUSTEP
+- (void) removeSubview: (NSView*)aView;
+#endif
 - (void) replaceSubview: (NSView*)oldView
 		   with: (NSView*)newView;
 - (void) sortSubviewsUsingFunction: (int (*)(id ,id ,void*))compare
@@ -384,8 +387,6 @@ enum {
 
 - (NSAffineTransform*) _matrixToWindow;
 - (NSAffineTransform*) _matrixFromWindow;
-
-- (void) _removeSubview: (NSView*)aSubview;
 @end
 #endif
 

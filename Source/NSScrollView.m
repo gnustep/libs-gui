@@ -201,25 +201,29 @@ static Class rulerViewClass = nil;
   if ([aView isKindOfClass: [NSView class]] == NO)
     [NSException raise: NSInvalidArgumentException
 		format: @"Attempt to set non-view object as content view"];
-  ASSIGN((id)_contentView, (id)aView);
-  [self addSubview: _contentView];
+  if (aView != _contentView)
+    {
+      RETAIN(aView);
+      [_contentView removeFromSuperview];
+      _contentView = aView;
+      [self addSubview: _contentView];
+    }
   [_contentView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
   [self tile];
 }
 
-- (void) _removeSubview: (NSView*)aView
+- (void) removeSubview: (NSView*)aView
 {
   if (aView == _contentView)
     {
-      RETAIN(aView);
       _contentView = nil;
-      [super _removeSubview: aView];
+      [super removeSubview: aView];
       RELEASE(aView);
       [self tile];
     }
   else
     {
-      [super _removeSubview: aView];
+      [super removeSubview: aView];
     }
 }
 
