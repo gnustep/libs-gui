@@ -1,3 +1,9 @@
+Wed Apr 24 10:54:47 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Model/GMAppKit.m ([NSMenuItem -initWithModelUnarchiver:]): Do not
+	set submenu if it's nil; decode target in normal place.  (Suggestion
+	by Georg Fleischmann <georg@vhf.de>).
+
 2002-04-23  Adam Fedor  <fedor@gnu.org>
 
 	* Source/GSDisplayServer.m (mouseLocationOnScreen:window:): New
