@@ -1,3 +1,9 @@
+Mon Nov  6 17:02:27 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Documentation/GNUmakefile, Documentation/gsdoc/GNUmakefile:
+	Install the documentation in the appropriate subdirectories of
+	Documentation/Developers/Gui.
+
 2000-11-05  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSScreen.m (+mainScreen): Make the mainScreen a shared
