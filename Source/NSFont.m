@@ -88,11 +88,13 @@ void setNSFont(NSString* key, NSFont* font)
 
 /* Getting the preferred user fonts */
 
+// This is deprecated in MacOSX
 + (NSFont*)boldSystemFontOfSize:(float)fontSize
 {
   return getNSFont (@"NSBoldFont", @"Helvetica-Bold", fontSize);
 }
 
+// This is deprecated in MacOSX
 + (NSFont*)systemFontOfSize:(float)fontSize
 {
   return getNSFont (@"NSFont", @"Helvetica", fontSize);
@@ -119,6 +121,42 @@ void setNSFont(NSString* key, NSFont* font)
 {
   setNSFont (@"NSUserFont", font);
 }
+
+/* Getting various fonts */
+
+#ifndef STRICT_OPENSTEP
++ (NSFont *)controlContentFontOfSize:(float)fontSize
+{
+  return [NSFont fontWithName:@"Helvetica" size:fontSize];
+}
+
++ (NSFont *)menuFontOfSize:(float)fontSize
+{
+  return [NSFont fontWithName:@"Helvetica" size:fontSize];
+}
+
++ (NSFont *)titleBarFontOfSize:(float)fontSize
+{
+  return [self boldSystemFontOfSize:fontSize];
+}
+
++ (NSFont *)messageFontOfSize:(float)fontSize
+{
+  return [self systemFontOfSize:fontSize];
+}
+
++ (NSFont *)paletteFontOfSize:(float)fontSize
+{
+  // Not sure on this one.
+  return [self boldSystemFontOfSize:fontSize];
+}
+
++ (NSFont *)toolTipsFontOfSize:(float)fontSize
+{
+  // Not sure on this one.
+  return [NSFont fontWithName:@"Helvetica" size:fontSize];
+}
+#endif
 
 /* The following method should be rewritten in the backend and it has to be
    called as part of the implementation. */

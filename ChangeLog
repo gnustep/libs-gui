@@ -1,3 +1,15 @@
+1999-04-27  Michael Hanni  <mhanni@sprintmail.com>
+
+	Changes based on report by Tim Bissell <Tim.Bissell@dresdnerkb.com>
+	* Source/NSFont.m: implemented new methods:
+		+ (NSFont *)titleBarFontOfSize:(float)fontSize;
+		+ (NSFont *)menuFontOfSize:(float)fontSize;
+		+ (NSFont *)messageFontOfSize:(float)fontSize;
+		+ (NSFont *)paletteFontOfSize:(float)fontSize;
+		+ (NSFont *)toolTipsFontOfSize:(float)fontSize;
+		+ (NSFont *)controlContentFontOfSize:(float)fontSize;  
+	* Headers/AppKit/NSFont.h: ditto.
+
 Tue Apr 27 15:48:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSApplication.m: Load image specified in Info-gnustep.plist

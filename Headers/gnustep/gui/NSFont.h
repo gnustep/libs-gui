@@ -67,6 +67,13 @@ extern const float *NSFontIdentityMatrix;
 + (NSFont *)userFixedPitchFontOfSize:(float)fontSize;
 + (NSFont *)userFontOfSize:(float)fontSize;
 
++ (NSFont *)titleBarFontOfSize:(float)fontSize;
++ (NSFont *)menuFontOfSize:(float)fontSize;
++ (NSFont *)messageFontOfSize:(float)fontSize;
++ (NSFont *)paletteFontOfSize:(float)fontSize;
++ (NSFont *)toolTipsFontOfSize:(float)fontSize;
++ (NSFont *)controlContentFontOfSize:(float)fontSize;
+
 //
 // Setting the Font
 //
