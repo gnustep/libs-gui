@@ -31,7 +31,7 @@
 #define _GNUstep_H_NSToolbarItem
 
 #include <Foundation/NSObject.h>
-#include <AppKit/NSValidatedUserInterfaceItem.h>
+#include <AppKit/NSUserInterfaceValidation.h>
 #include <AppKit/AppKitDefines.h>
 #include <Foundation/NSGeometry.h>
 
