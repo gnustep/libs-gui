@@ -268,7 +268,8 @@ NSTiffGetInfo(int imageNumber, TIFF* image)
   memset(info, 0, sizeof(NSTiffInfo));
   if (imageNumber >= 0)
     {
-      TIFFSetDirectory(image, imageNumber);
+      if (TIFFSetDirectory(image, imageNumber) == 0)
+	return NULL;
       info->imageNumber = imageNumber;
     }
   
@@ -307,7 +308,7 @@ NSTiffGetInfo(int imageNumber, TIFF* image)
 	default:
 	  TIFFError(TIFFFileName(image),
 		    "Missing needed \"PhotometricInterpretation\" tag");
-	  return (0);
+	  return NULL;
 	}
       TIFFError(TIFFFileName(image),
 		"No \"PhotometricInterpretation\" tag, assuming %s\n",
@@ -320,7 +321,6 @@ NSTiffGetInfo(int imageNumber, TIFF* image)
 #define READ_SCANLINE(sample)				\
   if (TIFFReadScanline(image, buf, row, sample) != 1)	\
     {							\
-      NSLog(@"Tiff bad data read on line %d", row);	\
       error = 1;					\
       break;						\
     }
@@ -425,7 +425,7 @@ NSTiffRead(TIFF* image, NSTiffInfo* info, char* data)
 	}
       break;
     default:
-      NSLog(@"Tiff can't read photometric %d", info->photoInterp);
+      NSLog(@"Tiff: reading photometric %d not supported", info->photoInterp);
       error = 1;
       break;
     }
@@ -436,7 +436,6 @@ NSTiffRead(TIFF* image, NSTiffInfo* info, char* data)
 
 #define WRITE_SCANLINE(sample) \
 	if (TIFFWriteScanline(image, buf, row, sample) != 1) { \
-	    NSLog(@"Tiff bad data write on line %d\n", row); \
 	    error = 1; \
 	    break; \
 	}
@@ -519,13 +518,13 @@ NSTiffWrite(TIFF* image, NSTiffInfo* info, char* data)
 	break;
 
       default:
-	NSLog(@"Tiff can't write photometric %d for image %s", 
+	NSLog(@"Tiff: photometric %d for image %s not supported", 
 	      info->photoInterp, TIFFFileName(image));
 	return -1;
 	break;
     }
     
-  return 0;
+  return error;
 }
 
 /*------------------------------------------------------------------------*/

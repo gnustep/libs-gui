@@ -1043,8 +1043,8 @@ int main(int argc, char** argv, char **env)
 #endif
 
 #ifdef __MINGW__
-	{
-		char **a = malloc((argc+2) * sizeof(char*));
+  {
+    char **a = malloc((argc+2) * sizeof(char*));
 
     memcpy(a, argv, argc * sizeof(char*));
     a[argc] = "--no-fork";

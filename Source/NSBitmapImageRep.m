@@ -40,11 +40,17 @@
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSPasteboard.h"
 #include "AppKit/NSView.h"
+#include "GSGuiPrivate.h"
 
 #include "nsimage-tiff.h"
 
 /* Maximum number of planes */
 #define MAX_PLANES 5
+
+/* FIXME: By default the libtiff library (v3.5.7 and less at least) do
+   not support LZW compression, but it's not possible to find out if it
+   does or not until after we've already written an image :-(.  */
+static BOOL supports_lzw_compression = NO;
 
 /* Backend methods (optional) */
 @interface NSBitmapImageRep (Backend)
@@ -53,10 +59,30 @@
 
 // GNUstep extension
 - _initFromTIFFImage: (TIFF *)image number: (int)imageNumber;
+
+// Internal
+- (int) _localFromCompressionType: (NSTIFFCompression)type;
+- (NSTIFFCompression) _compressionTypeFromLocal: (int)type;
 @end
 
+/**
+  <unit>
+  <heading>Class Description</heading>
+  <p>
+  NSBitmapImageRep is an image representation for handling images composed
+  of pixels. The standard image format for NSBitmapImageRep is the TIFF
+  format. However, through the use of image filters and other methods, many
+  other standard image formats can be handled by NSBitmapImageRep.
+
+  Images are typically handled through the NSImage class and there is often
+  no need to use the NSBitmapImageRep class directly. However there may
+  be cases where you want to manipulate the image bitmap data directly.
+  </p>
+  </unit>
+*/ 
 @implementation NSBitmapImageRep 
 
+/** Returns YES if the image stored in data can be read and decoded */
 + (BOOL) canInitWithData: (NSData *)data
 {
   TIFF	*image = NULL;
@@ -79,6 +105,8 @@
     }
 }
 
+/** Returns a list of image filename extensions that are understood by
+    NSBitmapImageRep.  */
 + (NSArray *) imageUnfilteredFileTypes
 {
   static NSArray *types = nil;
@@ -102,6 +130,8 @@
   return types;
 }
 
+/** Returns a list of image pasteboard types that are understood by
+    NSBitmapImageRep.  */
 + (NSArray *) imageUnfilteredPasteboardTypes
 {
   static NSArray *types = nil;
@@ -114,11 +144,14 @@
   return types;
 }
 
-+ (id) imageRepWithData: (NSData *)tiffData
+/** Returns a newly allocated NSBitmapImageRep object representing the
+    image stored in imageData.  If the image data contains more than one
+    image, the first one is choosen.  */
++ (id) imageRepWithData: (NSData *)imageData
 {
   NSArray* array;
 
-  array = [self imageRepsWithData: tiffData];
+  array = [self imageRepsWithData: imageData];
   if ([array count])
     {
       return [array objectAtIndex: 0];
@@ -126,22 +159,25 @@
   return nil;
 }
 
-+ (NSArray*) imageRepsWithData: (NSData *)tiffData
+/** Returns an array containing newly allocated NSBitmapImageRep
+    objects representing the images stored in imageData.  */
++ (NSArray*) imageRepsWithData: (NSData *)imageData
 {
   int		 i, images;
   TIFF		 *image;
   NSMutableArray *array;
 
-  if (tiffData == nil)
+  if (imageData == nil)
     {
-      return nil;
+      NSLog(@"NSBitmapImageRep: nil image data");
+      return [NSArray array];
     }
 
-  image = NSTiffOpenDataRead((char *)[tiffData bytes], [tiffData length]);
+  image = NSTiffOpenDataRead((char *)[imageData bytes], [imageData length]);
   if (image == NULL)
     {
-      NSLog(@"Tiff unable to open/parse TIFF data");
-      return nil;
+      NSLog(@"NSBitmapImageRep: unable to parse TIFF data");
+      return [NSArray array];
     }
 
   images = NSTiffGetImageCount(image);
@@ -161,19 +197,19 @@
   return array;
 }
 
-/* Loads only the default (first) image from the TIFF image contained in
+/** Loads only the default (first) image from the TIFF image contained in
    data. */
-- (id) initWithData: (NSData *)tiffData
+- (id) initWithData: (NSData *)imageData
 {
   TIFF 	*image;
 
-  if (tiffData == nil)
+  if (imageData == nil)
     {
       RELEASE(self);
       return nil;
     }
 
-  image = NSTiffOpenDataRead((char *)[tiffData bytes], [tiffData length]);
+  image = NSTiffOpenDataRead((char *)[imageData bytes], [imageData length]);
   if (image == NULL)
     {
       RELEASE(self);
@@ -195,9 +231,79 @@
   return nil;
 }
 
-/* This is the designated initializer */
-/* Note: If data is actaully passed to us in planes, we DO NOT own this
-   data and we DO NOT copy it. Just assume that it will always be available.
+/** 
+    <init />
+    <p>
+    Initializes a newly created NSBitmapImageRep object to hold image data
+    specified in the planes buffer and organized according to the
+    additional arguments passed into the method.
+    </p>
+    <p>
+    The planes argument is an array of char pointers where each array
+    holds a single component or plane of data. Note that if data is
+    passed into the method via planes, the data is NOT copied and not
+    freed when the object is deallocated. It is assumed that the data
+    will always be available. If planes is NULL, then a suitable amount
+    of memory will be allocated to store the information needed. One can
+    then obtain a pointer to the planes data using the -bitmapData or
+    -getBitmapDataPlanes: method.
+    </p>
+    <p>
+    Each component of the data is in "standard" order, such as red, green,
+    blue for RGB color images. The transparency component, if these is one, should
+    always be last.
+    </p>
+    <p>
+    The other arguments to the method consist of:
+    </p>
+    <deflist>
+      <term>width and height</term>
+      <desc>The width and height of the image in pixels</desc>
+      <term>bps</term>
+      <desc>
+      The bits per sample or the number of bits used to store a number in
+      one component of one pixel of the image. Typically this is 8 (bits)
+      but can be 2 or 4, although not all values are supported.
+      </desc>
+      <term>spp</term>
+      <desc>
+      Samples per pixel, or the number of components of color in the pixel.
+      For instance this would be 4 for an RGB image with transparency.
+      </desc>
+      <term>alpha</term>
+      <desc>
+      Set to YES if the image has a transparency component.
+      </desc>
+      <term>isPlanar</term>
+      <desc>
+      Set to YES if the data is arranged in planes, i.e. one component
+      per buffer as stored in the planes array. If NO, then the image data
+      is mixed in one buffer. For instance, for RGB data, the first sample
+      would contain red, then next green, then blue, followed by red for the
+      next pixel.
+      </desc>
+      <term>colorSpaceName</term>
+      <desc>
+      This argument specifies how the data values are to be interpreted.
+      Possible values include the typical colorspace names (although
+      not all values are currently supported)
+      </desc>
+      <term>rowBytes</term>
+      <desc>
+      Specifies the number of bytes contained in a single scan line of the
+      data. Normally this can be computed from the width of the image,
+      the samples per pixel and the bits per sample. However, if the data
+      is aligned along word boundaries, this value may differ from this.
+      If rowBytes is 0, the method will calculate the value assuming there
+      are no extra bytes at the end of the scan line.
+      </desc>
+      <term>pixelBits</term>
+      <desc>
+      This is normally bps for planar data and bps times spp for non-planar
+      data, but sometimes images have extra bits. If pixelBits is 0 it
+      will be calculated as described above.
+      </desc>
+      </deflist>
 */
 - (id) initWithBitmapDataPlanes: (unsigned char **)planes
 		pixelsWide: (int)width
@@ -329,31 +435,49 @@
 //
 // Getting Information about the Image 
 //
+/** Returns the number of bits need to contain one pixels worth of data.
+    This is normally the number of samples per pixel times the number of
+    bits in one sample. */
 - (int) bitsPerPixel
 {
   return _bitsPerPixel;
 }
 
+/** Returns the number of samples in a pixel. For instance, a normal RGB
+    image with transparency would have a samplesPerPixel of 4.  */
 - (int) samplesPerPixel
 {
   return _numColors;
 }
 
+/** Returns YES if the image components are stored separately. Returns
+    NO if the components are meshed (i.e. all the samples for one pixel
+    come before the next pixel).  */
 - (BOOL) isPlanar
 {
   return _isPlanar;
 }
 
+/** Returns the number of planes in an image.  Typically this is
+    equal to the number of samples in a planar image or 1 for a non-planar
+    image.  */
 - (int) numberOfPlanes
 {
   return (_isPlanar) ? _numColors : 1;
 }
 
+/** Returns the number of bytes in a plane. This is the number of bytes
+    in a row times tne height of the image.  */
 - (int) bytesPerPlane
 {
   return _bytesPerRow*_pixelsHigh;
 }
 
+/** Returns the number of bytes in a row. This is typically based on the
+    width of the image and the bits per sample and samples per pixel (if
+    in medhed configuration). However it may differ from this if set
+    explicitly in -initWithBitmapDataPlanes:pixelsWide:pixelsHigh:bitsPerSample:samplesPerPixel:hasAlpha:isPlanar:colorSpaceName:bytesPerRow:bitsPerPixel:.
+*/
 - (int) bytesPerRow
 {
   return _bytesPerRow;
@@ -362,6 +486,7 @@
 //
 // Getting Image Data 
 //
+/** Returns the first plane of data representing the image.  */
 - (unsigned char *) bitmapData
 {
   unsigned char *planes[MAX_PLANES];
@@ -369,6 +494,9 @@
   return planes[0];
 }
 
+/** Files the array data with pointers to each of the data planes
+    representing the image. The data array must be allocated to contain
+    at least -samplesPerPixel pointers.  */
 - (void) getBitmapDataPlanes: (unsigned char **)data
 {
   unsigned int i;
@@ -382,6 +510,9 @@
     }
 }
 
+/** Draws the image in the current window according the information
+    from the current gState, including information about the current
+    point, scaling, etc.  */
 - (BOOL) draw
 {
   NSRect irect = NSMakeRect(0, 0, _size.width, _size.height);
@@ -403,6 +534,10 @@
 //
 // Producing a TIFF Representation of the Image 
 //
+/** Produces an NSData object containing a TIFF representation of all
+   the images stored in anArray.  BUGS: Currently this only works if the
+   images are NSBitmapImageRep objects, and it only creates an TIFF from the
+   first image in the array.  */
 + (NSData*) TIFFRepresentationOfImageRepsInArray: (NSArray *)anArray
 {
   //FIXME: This only outputs one of the ImageReps
@@ -420,6 +555,11 @@
   return nil;
 }
 
+/** Produces an NSData object containing a TIFF representation of all
+   the images stored in anArray. The image is compressed according to
+   the compression type and factor. BUGS: Currently this only works if
+   the images are NSBitmapImageRep objects, and it only creates an
+   TIFF from the first image in the array. */
 + (NSData*) TIFFRepresentationOfImageRepsInArray: (NSArray *)anArray
 				usingCompression: (NSTIFFCompression)type
 					  factor: (float)factor
@@ -440,12 +580,21 @@
   return nil;
 }
 
+/** Returns an NSData object containing a TIFF representation of the
+    receiver.  */
 - (NSData*) TIFFRepresentation
 {
-  return [self TIFFRepresentationUsingCompression: _compression
+  if ([self canBeCompressedUsing: _compression] == NO)
+    {
+      [self setCompression: NSTIFFCompressionNone factor: 0];
+    }
+  return [self TIFFRepresentationUsingCompression: _compression 
 	       factor: _comp_factor];
 }
 
+/** Returns an NSData object containing a TIFF representation of the
+    receiver. The TIFF data is compressed using compresssion type
+    and factor.  */
 - (NSData*) TIFFRepresentationUsingCompression: (NSTIFFCompression)type
 					factor: (float)factor
 {
@@ -460,6 +609,12 @@
   info.height = _pixelsHigh;
   info.bitsPerSample = _bitsPerSample;
   info.samplesPerPixel = _numColors;
+
+  if ([self canBeCompressedUsing: type] == NO)
+    {
+      type = NSTIFFCompressionNone;
+      factor = 0;
+    }
 
   if (_isPlanar)
     info.planarConfig = PLANARCONFIG_SEPARATE;
@@ -476,9 +631,11 @@
     info.photoInterp = PHOTOMETRIC_RGB;
 
   info.extraSamples = (_hasAlpha) ? 1 : 0;
-  if (type == 0)
-    type = COMPRESSION_NONE;
-  info.compression = type;
+  info.compression = [self _localFromCompressionType: type];
+  if (factor < 0)
+    factor = 0;
+  if (factor > 255)
+    factor = 255;
   info.quality = (1 - ((float)factor)/255.0) * 100;
   info.numImages = 1;
   info.error = 0;
@@ -486,11 +643,12 @@
   image = NSTiffOpenDataWrite(&bytes, &length);
   if (image == 0)
     {
-      [NSException raise: NSTIFFException format: @"Write TIFF open failed"];
+      [NSException raise: NSTIFFException 
+		   format: @"Opening data stream for writting"];
     }
   if (NSTiffWrite(image, &info, [self bitmapData]) != 0)
     {
-      [NSException raise: NSTIFFException format: @"Write TIFF data failed"];
+      [NSException raise: NSTIFFException format: @"Writing data"];
     }
   NSTiffClose(image);
   return [NSData dataWithBytesNoCopy: bytes length: length];
@@ -523,53 +681,71 @@
     NSTIFFCompressionCCITTFAX4,
     NSTIFFCompressionLZW,
     NSTIFFCompressionJPEG,
-    NSTIFFCompressionPackBits
+    NSTIFFCompressionNEXT,
+    NSTIFFCompressionPackBits,
+    NSTIFFCompressionOldJPEG
   };
 
-  *list = types;
-  *numTypes = sizeof(types)/sizeof(*types);
+  if (list)
+    *list = types;
+  if (numTypes)
+    *numTypes = sizeof(types)/sizeof(*types);
 }
 
 + (NSString*) localizedNameForTIFFCompressionType: (NSTIFFCompression)type
 {
   switch (type)
     {
-      case NSTIFFCompressionNone: return @"NSTIFFCompressionNone";
-      case NSTIFFCompressionCCITTFAX3: return @"NSTIFFCompressionCCITTFAX3";
-      case NSTIFFCompressionCCITTFAX4: return @"NSTIFFCompressionCCITTFAX4";
-      case NSTIFFCompressionLZW: return @"NSTIFFCompressionLZW";
-      case NSTIFFCompressionJPEG: return @"NSTIFFCompressionJPEG";
-      case NSTIFFCompressionNEXT: return @"NSTIFFCompressionNEXT";
-      case NSTIFFCompressionPackBits: return @"NSTIFFCompressionPackBits";
-      case NSTIFFCompressionOldJPEG: return @"NSTIFFCompressionOldJPEG";
+      case NSTIFFCompressionNone: return _(@"No Compression");
+      case NSTIFFCompressionCCITTFAX3: return _(@"CCITTFAX3 Compression");
+      case NSTIFFCompressionCCITTFAX4: return _(@"CCITTFAX4 Compression");
+      case NSTIFFCompressionLZW: return _(@"LZW Compression");
+      case NSTIFFCompressionJPEG: return _(@"JPEG Compression");
+      case NSTIFFCompressionNEXT: return _(@"NEXT Compression");
+      case NSTIFFCompressionPackBits: return _(@"PackBits Compression");
+      case NSTIFFCompressionOldJPEG: return _(@"Old JPEG Compression");
       default: return nil;
     }
 }
 
+/** Returns YES if the receiver can be stored in a representation
+    compressed using the compression type.  */
 - (BOOL) canBeCompressedUsing: (NSTIFFCompression)compression
 {
+  BOOL does;
   switch (compression)
     {
       case NSTIFFCompressionCCITTFAX3:
       case NSTIFFCompressionCCITTFAX4:
 	if (_numColors == 1 && _bitsPerSample == 1)
-	  return YES;
+	  does = YES;
 	else
-	  return NO;
+	  does = NO;
+	break;
 
-      case NSTIFFCompressionNone:
       case NSTIFFCompressionLZW: 
+	does = supports_lzw_compression;
+	break;
+	
+      case NSTIFFCompressionNone:
       case NSTIFFCompressionJPEG:
       case NSTIFFCompressionPackBits:
-	return YES;
+      case NSTIFFCompressionOldJPEG:
+	does = YES;
+	break;
 
       case NSTIFFCompressionNEXT:
-      case NSTIFFCompressionOldJPEG:
       default:
-	return NO;
+	does = NO;
     }
+  return does;
 }
 
+/** Returns the receivers compression and compression factor, which is
+    set either when the image is read in or by -setCompression:factor:.
+    Factor is ignored in many compression schemes. For JPEG compression,
+    factor can be any value from 0 to 255, with 255 being the maximum
+    compression.  */
 - (void) getCompression: (NSTIFFCompression*)compression
 		 factor: (float*)factor
 {
@@ -637,7 +813,7 @@
 //
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  NSData	*data = [self TIFFRepresentation];
+  NSData *data = [self TIFFRepresentation];
 
   [super encodeWithCoder: aCoder];
   [aCoder encodeObject: data];
@@ -655,6 +831,43 @@
 @end
 
 @implementation NSBitmapImageRep (GNUstepExtension)
+
+- (int) _localFromCompressionType: (NSTIFFCompression)type
+{
+  switch (type)
+    {
+    case NSTIFFCompressionNone: return COMPRESSION_NONE;
+    case NSTIFFCompressionCCITTFAX3: return COMPRESSION_CCITTFAX3;
+    case NSTIFFCompressionCCITTFAX4: return COMPRESSION_CCITTFAX4;
+    case NSTIFFCompressionLZW: return COMPRESSION_LZW;
+    case NSTIFFCompressionJPEG: return COMPRESSION_JPEG;
+    case NSTIFFCompressionNEXT: return COMPRESSION_NEXT;
+    case NSTIFFCompressionPackBits: return COMPRESSION_PACKBITS;
+    case NSTIFFCompressionOldJPEG: return COMPRESSION_OJPEG;
+    default:
+      break;
+    }
+  return COMPRESSION_NONE;
+}
+
+- (NSTIFFCompression) _compressionTypeFromLocal: (int)type
+{
+  switch (type)
+    {
+    case COMPRESSION_NONE: return NSTIFFCompressionNone;
+    case COMPRESSION_CCITTFAX3: return NSTIFFCompressionCCITTFAX3;
+    case COMPRESSION_CCITTFAX4: return NSTIFFCompressionCCITTFAX4;
+    case COMPRESSION_LZW: return NSTIFFCompressionLZW;
+    case COMPRESSION_JPEG: return NSTIFFCompressionJPEG;
+    case COMPRESSION_NEXT: return NSTIFFCompressionNEXT;
+    case COMPRESSION_PACKBITS: return NSTIFFCompressionPackBits;
+    case COMPRESSION_OJPEG: return NSTIFFCompressionOldJPEG;
+    default:
+      break;
+   }
+  return NSTIFFCompressionNone;
+}
+
 
 /* A special method used mostly when we have the wraster library in the
    backend, which can read several more image formats. 
@@ -754,7 +967,7 @@
 		colorSpaceName: space
 		bytesPerRow: 0
 		bitsPerPixel: 0];
-  _compression = info->compression;
+  _compression = [self _compressionTypeFromLocal: info->compression];
   _comp_factor = 255 * (1 - ((float)info->quality)/100.0);
 
   if (NSTiffRead(image, info, [self bitmapData]))

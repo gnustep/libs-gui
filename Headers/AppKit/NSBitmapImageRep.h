@@ -39,13 +39,13 @@
 
 typedef enum _NSTIFFCompression {
   NSTIFFCompressionNone  = 1,
-  NSTIFFCompressionCCITTFAX3  = 3,
-  NSTIFFCompressionCCITTFAX4  = 4,
-  NSTIFFCompressionLZW  = 5,
-  NSTIFFCompressionJPEG  = 6,
-  NSTIFFCompressionNEXT  = 32766,
-  NSTIFFCompressionPackBits  = 32773,
-  NSTIFFCompressionOldJPEG  = 32865
+  NSTIFFCompressionCCITTFAX3,
+  NSTIFFCompressionCCITTFAX4,
+  NSTIFFCompressionLZW,
+  NSTIFFCompressionJPEG,
+  NSTIFFCompressionNEXT,
+  NSTIFFCompressionPackBits,
+  NSTIFFCompressionOldJPEG
 } NSTIFFCompression;
 
 #ifndef STRICT_OPENSTEP
@@ -75,9 +75,9 @@ typedef enum _NSBitmapImageFileType {
 //
 // Allocating and Initializing a New NSBitmapImageRep Object 
 //
-+ (id) imageRepWithData: (NSData*)tiffData;
-+ (NSArray*) imageRepsWithData: (NSData*)tiffData;
-- (id) initWithData: (NSData*)tiffData;
++ (id) imageRepWithData: (NSData*)imageData;
++ (NSArray*) imageRepsWithData: (NSData*)imageData;
+- (id) initWithData: (NSData*)imageData;
 - (id) initWithFocusedViewRect: (NSRect)rect;
 - (id) initWithBitmapDataPlanes: (unsigned char**)planes
 		     pixelsWide: (int)width

@@ -1,3 +1,15 @@
+2003-09-07  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSBitmapImageRep.m: Document.
+	(+imageRepWithData:): Return empty array not nil on failure.
+	(-TIFFRepresentation): Check for unsupported compression types.
+	(-TIFFRepresentationUsingCompression:factor:): Idem.
+	* Source/tiff.m (NSTiffGetInfo, NSTiffRead,
+	NSTiffWrite): Better error checking.
+
+	* Source/NSTableView.m (-draggingUpdated:sender): Support
+	NSTableViewDropOn (patch from Björn Giesler <giesler@ira.uka.de>).
+
 2003-09-06  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSPopUpButtonCell.m: -drawInteriorWithFrame:inView:

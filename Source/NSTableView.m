@@ -6436,7 +6436,7 @@ byExtendingSelection: (BOOL)flag
   NSPoint p = [sender draggingLocation];
   NSRect newRect;
   int row;
-  int quarterPosition;
+  int quarterPosition, positionInRow;
   int currentRow;
   unsigned dragOperation;
 
@@ -6460,6 +6460,7 @@ byExtendingSelection: (BOOL)flag
 	[self scrollRowToVisible: currentRow];
     }
 
+  positionInRow = (int)(p.y - _bounds.origin.y) % (int)_rowHeight;
   quarterPosition = (p.y - _bounds.origin.y) / _rowHeight * 4.;
 
   if ((quarterPosition - oldDropRow * 4 <= 2) &&
@@ -6472,8 +6473,17 @@ byExtendingSelection: (BOOL)flag
       row = (quarterPosition + 2) / 4;
     }
 
-  currentDropRow = row;
-  currentDropOperation = NSTableViewDropAbove;
+  // Are we in the two middle quarters of the row? Use TableViewDropOn
+  if(positionInRow > _rowHeight/4 && positionInRow <= (3*_rowHeight)/4)
+    {
+      currentDropRow  = (int)(p.y - _bounds.origin.y) / (int)_rowHeight;
+      currentDropOperation = NSTableViewDropOn;
+    }
+  else // drop above
+    {
+      currentDropRow = row;
+      currentDropOperation = NSTableViewDropAbove;
+    }
 
   dragOperation = [sender draggingSourceOperationMask];
   if ((lastQuarterPosition != quarterPosition)
