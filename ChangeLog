@@ -1,3 +1,11 @@
+Mon Nov 29 17:23:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSMatrix.m: Memory bounds error fixed.
+	* Source/NSOpenPanel.m: use any supplied filetype as denoting a file
+	package for the purposes of differentiating between packages and
+	directories.  Also - better fix for selecting directories when
+	multiple selection is allowed.
+
 Mon Nov 29 11:43:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSBundle.m: rewrite with new nib loading method.
