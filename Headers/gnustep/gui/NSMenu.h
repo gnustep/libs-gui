@@ -109,6 +109,9 @@
 /* Getting the menu cells matrix */
 - (NSMenuMatrix*)menuCells;
 
+// non OS spec methods
+- (void)_rightMouseDisplay;
+
 @end
 
 

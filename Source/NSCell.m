@@ -491,25 +491,20 @@ NSString* _string;
 }
 
 - (void)drawInteriorWithFrame:(NSRect)cellFrame
-		       inView:(NSView *)controlView
-{}
+					   inView:(NSView *)controlView
+{													// implemented in back end
+}											
 
 - (void)drawWithFrame:(NSRect)cellFrame
-	       inView:(NSView *)controlView
-{
-  /* Mark the cell's frame rectangle as needing flush */
-  [[controlView window] _view:controlView needsFlushInRect:cellFrame];
-}
+			   inView:(NSView *)controlView
+{													// implemented in back end
+}											
 
 - (void)highlight:(BOOL)lit
 		withFrame:(NSRect)cellFrame
 	   	inView:(NSView *)controlView
-{
-  cell_highlighted = lit;
-
-  /* Mark the cell's frame rectangle as needing flush */
-  [[controlView window] _view:controlView needsFlushInRect:cellFrame];
-}
+{													// implemented in back end
+}											
 
 - (BOOL)isHighlighted
 {

@@ -285,6 +285,21 @@ NSAutoreleasePool* pool;
 			break;
 			}
 
+		case NSRightMouseDown:								// Right mouse down
+			{
+			static NSMenu *copyOfMainMenu = nil;
+			NSWindow *copyMenuWindow;
+
+			if(!copyOfMainMenu)								// display the menu
+				copyOfMainMenu = [main_menu copy];			// under the mouse
+			copyMenuWindow = [copyOfMainMenu menuWindow];
+			[copyOfMainMenu _rightMouseDisplay];
+			[copyMenuWindow captureMouse:self];
+			[[copyOfMainMenu menuCells] mouseDown:theEvent];
+			[copyMenuWindow releaseMouse:self];
+			}
+			break;
+
 		default:									// pass all other events to 
 			{										// the event's window
 			NSWindow* window = [theEvent window];
@@ -326,28 +341,132 @@ NSAutoreleasePool* pool;
 - (void)discardEventsMatchingMask:(unsigned int)mask
 					  beforeEvent:(NSEvent *)lastEvent
 {
+int i = 0, count;
+NSEvent* event = nil;
+BOOL match = NO;										
+
+	count = [event_queue count];
+	event = [event_queue objectAtIndex:i];
+	while((event != lastEvent) && (i < count))						
+		{
+		if (mask == NSAnyEventMask)						// any event is a match
+			match = YES;									
+		else
+			{
+			if (event == null_event) 
+				match = YES;							// dump all null events 
+			else
+				{											
+				switch([event type])
+					{
+					case NSLeftMouseDown:
+						if (mask & NSLeftMouseDownMask)
+							match = YES;
+						break;
+			
+					case NSLeftMouseUp:
+						if (mask & NSLeftMouseUpMask)
+							match = YES;
+						break;
+			
+					case NSRightMouseDown:
+						if (mask & NSRightMouseDownMask)
+							match = YES;
+						break;
+			
+					case NSRightMouseUp:
+						if (mask & NSRightMouseUpMask)
+							match = YES;
+						break;
+			
+					case NSMouseMoved:
+						if (mask & NSMouseMovedMask)
+							match = YES;
+						break;
+			
+					case NSMouseEntered:
+						if (mask & NSMouseEnteredMask)
+							match = YES;
+						break;
+			
+					case NSMouseExited:
+						if (mask & NSMouseExitedMask)
+							match = YES;
+						break;
+			
+					case NSLeftMouseDragged:
+						if (mask & NSLeftMouseDraggedMask)
+							match = YES;
+						break;
+			
+					case NSRightMouseDragged:
+						if (mask & NSRightMouseDraggedMask)
+							match = YES;
+						break;
+			
+					case NSKeyDown:
+						if (mask & NSKeyDownMask)
+							match = YES;
+						break;
+			
+					case NSKeyUp:
+						if (mask & NSKeyUpMask)
+							match = YES;
+						break;
+			
+					case NSFlagsChanged:
+						if (mask & NSFlagsChangedMask)
+							match = YES;
+						break;
+			
+					case NSPeriodic:
+						if (mask & NSPeriodicMask)
+							match = YES;
+						break;
+			
+					case NSCursorUpdate:
+						if (mask & NSCursorUpdateMask)
+							match = YES;
+						break;
+			
+					default:
+						match = NO;
+						break;
+			}	}	}									// remove event from
+														// the queue if it 
+		if (match) 										// matched the mask
+			[event_queue removeObjectAtIndex:i];		
+		event = [event_queue objectAtIndex:++i];		// get the next event
+    	};												// in the queue
 }
 
-- (NSEvent*)_eventMatchingMask:(unsigned int)mask		// return the next 
-{														// event in the queue
-NSEvent* event;											// which matches mask
-int i, count;
-BOOL match = NO;
+- (NSEvent*)_eventMatchingMask:(unsigned int)mask dequeue:(BOOL)flag		 
+{														
+NSEvent* event;											// return the next
+int i, count;											// event in the queue
+BOOL match = NO;										// which matches mask
 
 	[self _nextEvent];
 
-	if ((count = [event_queue count])) 					// Get an event from
-		{												// the events queue
+	if ((count = [event_queue count])) 					// if queue contains  
+		{												// events check them
 		for (i = 0; i < count; i++) 
-			{
-			event = [event_queue objectAtIndex:i];
+			{											// Get next event from
+			event = [event_queue objectAtIndex:i];		// the events queue
 
-    		if (mask == NSAnyEventMask)					// any event is a match
-				match = YES;									
+    		if (mask == NSAnyEventMask)					// the any event mask
+				match = YES;							// matches all events		
 			else
 				{
-    			if (event == null_event) 				// do nothing if null
-					match = NO;							// event 
+    			if (event == null_event) 				// do not send the null
+					{									// event
+					match = NO;							 
+					if(flag)							// dequeue null event
+						{								// if flag is set
+						[event retain];
+						[event_queue removeObjectAtIndex:i];
+						}								
+					}
 				else
 					{											
 					switch([event type])
@@ -425,30 +544,30 @@ BOOL match = NO;
 						default:
 							match = NO;
 							break;
-						}
-					}
-				}
-
+				}	}	}
+						
 			if (match) 
 				{
-				[event retain];
-				[event_queue removeObjectAtIndex:i];
-				ASSIGN(current_event, event);
-
-				return [event autorelease];				// return an event from
+				if(flag)								// dequeue the event if
+					{									// flag is set
+					[event retain];
+					[event_queue removeObjectAtIndex:i];
+					}									
+				ASSIGN(current_event, event);			 
+		
+				return event;							// return an event from
       			}										// the queue which 
     		}											// matches the mask
   		}
-
-	return nil;											// no event in the 
-}														// queue matches mask
+														// no event in the
+	return nil;											// queue matches mask 
+}														
 
 - (NSEvent *)nextEventMatchingMask:(unsigned int)mask
 			 			untilDate:(NSDate *)expiration
 			    		inMode:(NSString *)mode
 			   			dequeue:(BOOL)flag
 {
-NSEventType type;
 NSEvent *event;
 BOOL done = NO;
 
@@ -457,7 +576,7 @@ BOOL done = NO;
 	else												// of X motion events
 		inTrackingLoop = NO;							// while not in a 
 														// tracking loop
-	if ((event = [self _eventMatchingMask:mask]))
+	if ((event = [self _eventMatchingMask:mask dequeue:flag]))
 		done = YES;
 	else 
 		if (!expiration)
@@ -473,7 +592,7 @@ BOOL done = NO;
 		limitDate = [[currentLoop limitDateForMode:mode] retain];
 		originalLimitDate = limitDate;
 
-		if ((event = [self _eventMatchingMask:mask])) 
+		if ((event = [self _eventMatchingMask:mask dequeue:flag])) 
 			{
       		[limitDate release];
       		break;
@@ -487,15 +606,15 @@ BOOL done = NO;
 		[currentLoop runMode:mode beforeDate:limitDate];
     	[originalLimitDate release];
 
-    	if ((event = [self _eventMatchingMask:mask]))
+    	if ((event = [self _eventMatchingMask:mask dequeue:flag]))
       		break;
-  		}											// no need to unhide cursor
-													// while in a tracking loop
-	if (event != null_event && (!inTrackingLoop))	// or if null event
+  		}											
+													// no need to unhide cursor
+	if (!inTrackingLoop)							// while in a tracking loop
 		{											
 		if ([NSCursor isHiddenUntilMouseMoves])		// do so only if we should
 			{		 								// unhide when mouse moves
-			type = [event type];					// and event is mouse event
+			NSEventType type = [event type];		// and event is mouse event
 			if ((type == NSLeftMouseDown) || (type == NSLeftMouseUp)
 					|| (type == NSRightMouseDown) || (type == NSRightMouseUp)
 					|| (type == NSMouseMoved))
@@ -761,8 +880,8 @@ NSArray *mi;
 // Managing the Windows menu
 //
 - (void)addWindowsItem:aWindow
-				title:(NSString *)aString
-				filename:(BOOL)isFilename
+				 title:(NSString *)aString
+				 filename:(BOOL)isFilename
 {
 int i;
 

@@ -147,6 +147,7 @@ static BOOL GNU_CONTEXT_SYNCHRONIZED = NO;
 
   // Get current context for current thread
 
+//if(current_thread)
   current_context = [[current_thread threadDictionary] objectForKey: GNU_CONTEXT_THREAD_KEY];
 
   // If not in dictionary then create one

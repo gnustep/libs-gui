@@ -34,7 +34,7 @@ include $(GNUSTEP_MAKEFILES)/common.make
 #
 # The list of subproject directories
 #
-SUBPROJECTS = Model Source Images Tools 
+SUBPROJECTS = Source Images Model Tools
 
 -include GNUmakefile.preamble
 

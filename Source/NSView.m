@@ -796,11 +796,6 @@ NSView *current_view = nil;
   return YES;
 }
 
-- (void)_setNeedsFlush
-{
-  [window _setNeedsFlush];
-}
-
 - (void)display
 {
 	if(!window)											// do nothing if not in
@@ -835,14 +830,13 @@ NSView *current_view = nil;
 int i, count;
 
 	if (!boundsMatrix || !frameMatrix)
-		NSLog (@"warning: %@ %p has not have the PS matrices setup!",
+		NSLog (@"warning: %@ %p does not have it's PS matrices configured!",
 	  			NSStringFromClass(isa), self);
 
 	needs_display = NO;
 
 	[self lockFocus];
 	[self drawRect:rect];
-	[window _setNeedsFlush];
 	[self unlockFocus];
   													// Tell subviews to display
 	for (i = 0, count = [sub_views count]; i < count; ++i) 
@@ -955,25 +949,25 @@ NSView* currentView;									// of sibling subviews
 
 - (void)setNeedsDisplay:(BOOL)flag
 {
-  needs_display = flag;
-  if (needs_display) {
+	needs_display = flag;
+	if (needs_display) 
+		{
+		invalidatedRectangle = bounds;
+		[window setViewsNeedDisplay:YES];
 
-    invalidatedRectangle = bounds;
-    [window _setNeedsDisplay];
-
-    if (super_view)
-      [super_view _addSubviewForNeedingDisplay:self];
-  }
+		if (super_view)
+			[super_view _addSubviewForNeedingDisplay:self];
+		}
 }
 
 - (void)setNeedsDisplayInRect:(NSRect)rect
 {
-  needs_display = YES;
-  invalidatedRectangle = NSUnionRect (invalidatedRectangle, rect);
-  [window _setNeedsDisplay];
+	needs_display = YES;
+	invalidatedRectangle = NSUnionRect (invalidatedRectangle, rect);
+	[window setViewsNeedDisplay:YES];
 
-    if (super_view)
-      [super_view _addSubviewForNeedingDisplay:self];
+	if (super_view)
+		[super_view _addSubviewForNeedingDisplay:self];
 }
 
 - (void)_recursivelyResetNeedsDisplayInAllViews

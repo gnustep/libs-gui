@@ -400,15 +400,10 @@ extern NSSize NSTokenSize;
 - (void)encodeWithCoder:aCoder;
 - initWithCoder:aDecoder;
 
-/* Private methods */
-- (void)_view:(NSView*)view needsFlushInRect:(NSRect)rect;
-- (void)_setNeedsDisplay;
-- (void)_setNeedsFlush;
-- (BOOL)_needsFlush;
+//
+// Private methods
+//
 - (void)_collectFlushRectangles;
-+ (BOOL)_flushWindows;
-+ (void)_setNeedsFlushWindows:(BOOL)flag;
-+ (BOOL)_needsFlushWindows;
 
 @end
 

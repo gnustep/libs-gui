@@ -753,14 +753,21 @@ static Class menuCellClass = nil;
 {
 }
 
+// non OS spec methods
+- (void)_rightMouseDisplay
+{
+}
+
 @end /* NSMenu */
 
 
 @implementation NSMenu (PrivateMethods2)
+
 - (void)_menuChanged
 {
   menuHasChanged = YES;
   if (menuChangedMessagesEnabled)
     [self sizeToFit];
 }
+
 @end
