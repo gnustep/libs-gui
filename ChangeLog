@@ -1,3 +1,10 @@
+Thu Jan  3 07:35:42 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSTextView.m ([-mouseDown:]): Implemented activation of
+	links.  (Patch written with Ludovic Marcotte <ludovic@sophos.ca>).
+	* Source/NSTextView.m ([-mouseDown:]): Only use the code for
+	clicks on attachments on the first click.  
+
 Tue Jan  1 21:06:32 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSScrollView.m ([-tile]): Allocate space for the rulers
