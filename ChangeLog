@@ -1,3 +1,20 @@
+2003-04-09  Serg Stoyan <stoyan@hologr.com>
+
+	* Source/NSMenuView.m: return back horizontal menu code.
+	(sizeToFit): ditto.
+	(innerRect): ditto.
+	(rectOfItemAtIndex:): ditto.
+	(locationForSubmenu:): ditto.
+	(setWindowFrameForAttachingToRect:): ditto.
+	(encodeWithCoder:): ditto.
+	(initWithCoder:): ditto.
+	(setHorizontal:): added.
+	(isHorizontal): added.
+
+	* Headers/NSMenuView.h:
+	(setHorizontal:): added.
+	(isHorizontal): added.
+	
 2003-04-09 00:38  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSView.m (-setNeedsDisplay:, -setNeedsDisplayInRect:):

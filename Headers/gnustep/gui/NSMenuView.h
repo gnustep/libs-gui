@@ -56,23 +56,24 @@
 
    <br/><br/>
    <strong>How menus are drawn</strong>
-	 <br/><br/>
+   <br/><br/>
 
    This class implements several menu look and feels at the same time.
    The looks and feels implemented are:
    <list>
    <item>
-	   Ordinary vertically stacked menus with the NeXT submenu positioning 
-		 behavour.
-	 </item>
+   Ordinary vertically stacked menus with the NeXT submenu positioning 
+   behavour.
+   </item>
    <item>
-	   Vertically stacked menus with the WindowMaker submenu placement. This 
-		 behaviour is selected by choosing the <strong>GSWindowMakerInterfaceStyle</strong>. 
-	 </item>
+   Vertically stacked menus with the WindowMaker submenu placement. This
+   behaviour is selected by choosing the 
+   <strong>GSWindowMakerInterfaceStyle</strong>.
+   </item>
    <item>
-	   PopupButtons are actually menus. This class implements also the 
-		 behaviour for the NSPopButtons. See for the the class NSPopButton.
-	 </item>
+   PopupButtons are actually menus. This class implements also the 
+   behaviour for the NSPopButtons. See for the the class NSPopButton.
+   </item>
    </list>
 */
 @interface NSMenuView : NSView <NSCoding, NSMenuView>
@@ -86,13 +87,13 @@
   float          _stateImageWidth;
   float          _imageAndTitleOffset;
   float          _imageAndTitleWidth;
-	float          _keyEqOffset;
-	float          _keyEqWidth;
-	BOOL           _needsSizing;
+  float          _keyEqOffset;
+  float          _keyEqWidth;
+  BOOL           _needsSizing;
   NSSize         _cellSize;
 
 @private
-	id             _items_link;
+  id             _items_link;
   int            _leftBorderOffset;
   id             _titleView;
 }
@@ -126,6 +127,19 @@
    Returns the NSMenu associated with this menu view.
  */
 - (NSMenu *) menu;
+
+/**
+   Sets menu orientation. If YES menu items are displayed from left
+   to right, if NO from top to bottom (vertically). By default, menu 
+   items are displayed vertically.
+ */
+- (void) setHorizontal: (BOOL)flag;
+
+/**
+   Returns YES if menu items are displayed horizontally, NO if 
+   vertically.
+ */
+- (BOOL) isHorizontal;
 
 /**
    Sets the default font to use when drawing the menu text.
@@ -198,29 +212,29 @@
 /**
    Marks menu item cell associated with the menu item and menu view as 
    needing to be resized. This method is invoked when 
-	 NSMenuDidChangeItemNotification received. The notification parameter 
-	 contains index of changed menu item and can be accessed with 
-	 NSMenuItemIndex key.
+   NSMenuDidChangeItemNotification received. The notification parameter 
+   contains index of changed menu item and can be accessed with 
+   NSMenuItemIndex key.
  */
 - (void) itemChanged: (NSNotification *)notification;
 
 /**
    Creates new item cell for the newly created menu item, marks cell and
-	 menu view as needing to be resized. This method is invoked when 
-	 NSMenuDidAddItemNotification received. The notification parameter 
-	 contains index of changed menu item and can be accessed with 
-	 NSMenuItemIndex key.
+   menu view as needing to be resized. This method is invoked when 
+   NSMenuDidAddItemNotification received. The notification parameter 
+   contains index of changed menu item and can be accessed with 
+   NSMenuItemIndex key.
    
  */
 - (void) itemAdded: (NSNotification *)notification;
 
 /**
    Removes cell associated with removed menu item, removes highlighting 
-	 if removed menu item was highlighted, marks cell and menu view as 
-	 needing to be resized. This method is invoked when 
-	 NSMenuDidRemoveItemNotification received. The notification parameter 
-	 contains index of changed menu item and can be accessed with 
-	 NSMenuItemIndex key.
+   if removed menu item was highlighted, marks cell and menu view as 
+   needing to be resized. This method is invoked when 
+   NSMenuDidRemoveItemNotification received. The notification parameter 
+   contains index of changed menu item and can be accessed with 
+   NSMenuItemIndex key.
    
  */
 - (void) itemRemoved: (NSNotification *)notification;
@@ -235,7 +249,7 @@
 
 /**
    Attach submenu if the item at index is a submenu. It will figure out 
-	 if the new submenu should be transient or not.
+   if the new submenu should be transient or not.
 */
 - (void) attachSubmenuForItemAtIndex: (int)index;
 
@@ -245,14 +259,14 @@
 /**
    Adds title view for application menu and submenus, removes title view
    if menu is owned by NSPopUpButton, adds close button to title view for
-	 torn off menus and removes it for other type of menu. 
+   torn off menus and removes it for other type of menu. 
  */
 - (void) update;
 
 /**
    Sets the flag whether layout needs to be resized. Set it to YES if 
-	 menu contents changed and layout needs to be recalculated. This method
-	 is used internally. Yout should not invoke it directly from applications.
+   menu contents changed and layout needs to be recalculated. This method
+   is used internally. Yout should not invoke it directly from applications.
  */
 - (void) setNeedsSizing: (BOOL)flag;
 
@@ -283,37 +297,37 @@
 
 /**
    Returns the width of the image and title section. Tis section contains 
-	 image and text of menu item.
+   image and text of menu item.
  */
 - (float) imageAndTitleWidth;
 
 /**
    Returns the starting position for drawing the key equivalent. Key 
-	 equivalent can be submenu arrow if menu item has submenu.
+   equivalent can be submenu arrow if menu item has submenu.
  */
 - (float) keyEquivalentOffset;
 
 /**
    Returns the width of key equivalent text. Key equivalent can be submenu 
-	 arrow if menu item has submenu
+   arrow if menu item has submenu
  */
 - (float) keyEquivalentWidth;
 
 /**
    Returns bounds rectangle of the menu view. It is smaller by 1 pixel 
-	 in width than menu window (dark gray border at left).
+   in width than menu window (dark gray border at left).
  */
 - (NSRect) innerRect;              
 
 /**
    Returns frame rectangle of menu item cell. It is smaller by 1 pixel 
-	 in width than menu window (dark gray border).
+   in width than menu window (dark gray border).
  */
 - (NSRect) rectOfItemAtIndex: (int)index;
 
 /**
    Returns the index of the item below point. Returns -1 if mouse is 
-	 not above a menu item.
+   not above a menu item.
 */
 - (int) indexOfItemAtPoint: (NSPoint)point;
 
@@ -330,11 +344,11 @@
 
 /**
    Resize menu view frame to be appropriate in size to attach to screenRect 
-	 at preferredEdge. For popup's menu, if selectedItemIndex is other than 
-	 -1, position view so selected item covers the NSPopUpButton.
-
-	 <br/><strong>NOTE: preffered edge positioning doesn't implemented 
-	 yet!</strong>
+   at preferredEdge. For popup's menu, if selectedItemIndex is other than 
+   -1, position view so selected item covers the NSPopUpButton.
+   
+   <br/><strong>NOTE: preffered edge positioning doesn't implemented 
+   yet!</strong>
  */
 - (void) setWindowFrameForAttachingToRect: (NSRect)screenRect
                                  onScreen: (NSScreen *)screen
@@ -363,38 +377,38 @@
 	   attach / detach submenus.
    </item>
    <item> The flag justAttachedNewSubmenu is set to YES when a new 
-	   submenu is attached. The effect is that the 
-		 highlighting / attaching / detaching is supressed
-     for this menu.  This is done so the user is given
-     a change to move the mouse pointer into the newly
-     attached submenu.  Otherwise it would immediately
-     be removed as the mouse pointer move over another
-     item.
+          submenu is attached. The effect is that the 
+          highlighting / attaching / detaching is supressed
+          for this menu.  This is done so the user is given
+          a change to move the mouse pointer into the newly
+          attached submenu.  Otherwise it would immediately
+          be removed as the mouse pointer move over another
+          item.
 
-     The logic for resetting the flag is rather adhoc.
+          The logic for resetting the flag is rather adhoc.
    </item>
 
    <item> the flag subMenusNeedRemoving means that we
-     will remove all the submenus after we are done.
+          will remove all the submenus after we are done.
 
-     This flag is used to clean up the submenus
-     when the user has opened a submenu by clicking
-     and wants to close it again by clicking on the
-     hihglighted item.
+          This flag is used to clean up the submenus
+          when the user has opened a submenu by clicking
+          and wants to close it again by clicking on the
+          hihglighted item.
    </item>  
    <item> When the user released the mouse this method
-     will cleanup all the transient menus.
+          will cleanup all the transient menus.
 
-     Not only its own, but also its attached menu
-     and all its transient super menus.
+          Not only its own, but also its attached menu
+          and all its transient super menus.
    </item>
    <item> The clean up is done BEFORE the action is executed.
-     This is needed otherwise `hiding' the application
-     leaves a dangling menu.   If this is not acceptable,
-     there should be another mechanism of handling
-     the hiding.  BTW besides the `hiding' the application,
-     model panels are also a problem when the menu
-     is not cleared before executing the action.
+          This is needed otherwise `hiding' the application
+          leaves a dangling menu.   If this is not acceptable,
+          there should be another mechanism of handling
+          the hiding.  BTW besides the `hiding' the application,
+          model panels are also a problem when the menu
+          is not cleared before executing the action.
     </item>
     </list>
 */

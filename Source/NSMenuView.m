@@ -216,6 +216,18 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   return _menu;
 }
 
+// FIXME: horizontal orientation related code shoul be removed
+- (void) setHorizontal: (BOOL)flag
+{
+  _horizontal = flag;
+}
+
+// FIXME: horizontal orientation related code shoul be removed
+- (BOOL) isHorizontal
+{
+  return _horizontal;
+}
+
 - (void) setFont: (NSFont*)font
 {
   ASSIGN(_font, font);
@@ -457,7 +469,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
       [self addSubview: _titleView];
       [_titleView release];
     }
-  else if ([_menu _ownedByPopUp] && _titleView) 
+  else if ([_menu _ownedByPopUp] && _titleView)
     {
       // Remove title view if this menu owned by popup
       [_titleView removeFromSuperview];
@@ -494,7 +506,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 {
   unsigned i;
   unsigned howMany = [_itemCells count];
-	unsigned wideTitleView = 1;
+  unsigned wideTitleView = 1;
   float    neededImageAndTitleWidth = 0.0;
   float    neededKeyEquivalentWidth = 0.0;
   float    neededStateImageWidth = 0.0;
@@ -632,12 +644,23 @@ _addLeftBorderOffsetToRect(NSRect aRect)
     {
       _keyEqOffset = _cellSize.width - _keyEqWidth - popupImageWidth;
     }
-  
-  [self setFrameSize: NSMakeSize (_cellSize.width + _leftBorderOffset, 
-                                  (howMany * _cellSize.height)
-                                  + menuBarHeight)];
-  [_titleView setFrame: NSMakeRect (0, howMany * _cellSize.height,
-                                    NSWidth (_bounds), menuBarHeight)];
+
+  // FIXME: horizontal orientation related code shoul be removed
+  if (_horizontal == NO)
+    {
+      [self setFrameSize: NSMakeSize(_cellSize.width + _leftBorderOffset, 
+				     (howMany * _cellSize.height) 
+				     + menuBarHeight)];
+      [_titleView setFrame: NSMakeRect (0, howMany * _cellSize.height,
+					NSWidth (_bounds), menuBarHeight)];
+    }
+  else
+    {
+      [self setFrameSize: NSMakeSize((howMany * _cellSize.width), 
+				     _cellSize.height + _leftBorderOffset)];
+      [_titleView setFrame: NSMakeRect (0, 0,
+					_cellSize.width, _cellSize.height + 1)];
+    }
   
   _needsSizing = NO;
 }
@@ -692,10 +715,21 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
 - (NSRect) innerRect
 {
-  return NSMakeRect(_bounds.origin.x + _leftBorderOffset, 
-                    _bounds.origin.y,
-                    _bounds.size.width - _leftBorderOffset, 
-                    _bounds.size.height);
+  // FIXME: horizontal orientation related code shoul be removed
+  if (_horizontal == NO)
+    {
+      return NSMakeRect (_bounds.origin.x + _leftBorderOffset, 
+			 _bounds.origin.y,
+			 _bounds.size.width - _leftBorderOffset, 
+			 _bounds.size.height);
+    }
+  else
+    {
+      return NSMakeRect (_bounds.origin.x, 
+			 _bounds.origin.y + _leftBorderOffset,
+			 _bounds.size.width, 
+			 _bounds.size.height - _leftBorderOffset);
+    }
 }
 
 - (NSRect) rectOfItemAtIndex: (int)index
@@ -710,8 +744,17 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   /* Fiddle with the origin so that the item rect is shifted 1 pixel over 
 	 * so we do not draw on the heavy line at origin.x = 0.
    */
-  theRect.origin.y = _cellSize.height * ([_itemCells count] - index - 1);
-  theRect.origin.x = _leftBorderOffset;
+  // FIXME: horizontal orientation related code shoul be removed
+  if (_horizontal == NO)
+    {
+      theRect.origin.y = _cellSize.height * ([_itemCells count] - index - 1);
+      theRect.origin.x = _leftBorderOffset;
+    }
+  else
+    {
+      theRect.origin.x = _cellSize.width * index;
+      theRect.origin.y = 0;
+    }
   theRect.size = _cellSize;
 
   /* NOTE: This returns the correct NSRect for drawing cells, but nothing 
@@ -763,22 +806,36 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   else
     submenuFrame = NSZeroRect;
 
-  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil)
-      == GSWindowMakerInterfaceStyle)
+  // FIXME: horizontal orientation related code shoul be removed
+  if (_horizontal == NO)
     {
-      NSRect aRect = [self rectOfItemAtIndex: 
-        [_menu indexOfItemWithSubmenu: aSubmenu]];
-      NSPoint subOrigin = [_window convertBaseToScreen: 
-        NSMakePoint(aRect.origin.x, aRect.origin.y)];
+      if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil)
+	  == GSWindowMakerInterfaceStyle)
+	{
+	  NSRect aRect = [self rectOfItemAtIndex: 
+	    [_menu indexOfItemWithSubmenu: aSubmenu]];
+	  NSPoint subOrigin = [_window convertBaseToScreen: 
+	    NSMakePoint(aRect.origin.x, aRect.origin.y)];
 
-      return NSMakePoint (NSMaxX(frame),
-                          subOrigin.y - NSHeight(submenuFrame) - 3 +
-                          2*[NSMenuView menuBarHeight]);
+	  return NSMakePoint (NSMaxX(frame),
+			      subOrigin.y - NSHeight(submenuFrame) - 3 +
+			      2*[NSMenuView menuBarHeight]);
+	}
+      else
+	{
+	  return NSMakePoint(NSMaxX(frame),
+			     NSMaxY(frame) - NSHeight(submenuFrame));
+	}
     }
   else
     {
-      return NSMakePoint(NSMaxX(frame),
-                         NSMaxY(frame) - NSHeight(submenuFrame));
+      NSRect aRect = [self rectOfItemAtIndex: 
+                       [_menu indexOfItemWithSubmenu: aSubmenu]];
+      NSPoint subOrigin = [_window convertBaseToScreen: 
+	                            NSMakePoint(NSMinX(aRect),
+		                    NSMinY(aRect))];
+
+      return NSMakePoint(subOrigin.x, subOrigin.y - NSHeight(submenuFrame));
     }
 }
 
@@ -817,17 +874,34 @@ _addLeftBorderOffsetToRect(NSRect aRect)
     {
       float f;
 
-      f = screenRect.size.height * (items - 1);
-      screenFrame.size.height += f + _leftBorderOffset;
-      screenFrame.origin.y -= f;
-      screenFrame.size.width += _leftBorderOffset;
-      screenFrame.origin.x -= _leftBorderOffset;
+      // FIXME: horizontal orientation related code shoul be removed
+      if (_horizontal == NO)
+	{
+	  f = screenRect.size.height * (items - 1);
+	  screenFrame.size.height += f + _leftBorderOffset;
+	  screenFrame.origin.y -= f;
+	  screenFrame.size.width += _leftBorderOffset;
+	  screenFrame.origin.x -= _leftBorderOffset;
+	}
+      else
+	{
+ 	  f = screenRect.size.width * (items - 1);
+ 	  screenFrame.size.width += f;
+	}
     }  
   
   // Compute position for popups, if needed
   if (selectedItemIndex != -1) 
     {
-      screenFrame.origin.y += screenRect.size.height * selectedItemIndex;
+      // FIXME: horizontal orientation related code shoul be removed
+      if (_horizontal == NO)
+	{
+	  screenFrame.origin.y += screenRect.size.height * selectedItemIndex;
+	}
+      else
+	{
+	  screenFrame.origin.x -= screenRect.size.width * selectedItemIndex;
+	}
     }
   
   // Get the frameRect
@@ -1276,6 +1350,8 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
   [encoder encodeObject: _itemCells];
   [encoder encodeObject: _font];
+  // FIXME: horizontal orientation related code shoul be removed
+  [encoder encodeValueOfObjCType: @encode(BOOL) at: &_horizontal];
   [encoder encodeValueOfObjCType: @encode(float) at: &_horizontalEdgePad];
   [encoder encodeValueOfObjCType: @encode(NSSize) at: &_cellSize];
 }
@@ -1290,6 +1366,8 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 	      withObject: self];
 
   [decoder decodeValueOfObjCType: @encode(id) at: &_font];
+  // FIXME: horizontal orientation related code shoul be removed
+  [decoder decodeValueOfObjCType: @encode(BOOL) at: &_horizontal];
   [decoder decodeValueOfObjCType: @encode(float) at: &_horizontalEdgePad];
   [decoder decodeValueOfObjCType: @encode(NSSize) at: &_cellSize];
 
