@@ -199,6 +199,9 @@ NSString *NSRTFDPboardType = @"NSRTFDPboardType";
 NSString *NSTIFFPboardType = @"NSTIFFPboardType";
 NSString *NSDataLinkPboardType = @"NSDataLinkPboardType";
 NSString *NSGeneralPboardType = @"NSGeneralPboardType";
+NSString *NSPDFPboardType = @"NSPDFPboardType";
+NSString *NSPICTPboardType = @"NSPICTPboardType";
+NSString *NSURLPboardType = @"NSURLPboardType";
 
 // Pasteboard Name Globals
 NSString *NSDragPboard = @"NSDragPboard";

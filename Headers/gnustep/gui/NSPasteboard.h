@@ -54,6 +54,12 @@ extern NSString *NSTIFFPboardType;
 extern NSString *NSDataLinkPboardType;
 extern NSString *NSGeneralPboardType;
 
+#ifndef STRICT_OPENSTEP
+extern NSString *NSPDFPboardType;
+extern NSString *NSPICTPboardType;
+extern NSString *NSURLPboardType;
+#endif
+
 //
 // Pasteboard Name Globals 
 //
@@ -133,6 +139,9 @@ extern NSString *NSPasteboardCommunicationException;
 - (NSFileWrapper *)readFileWrapper;
 - (NSString *)stringForType:(NSString *)dataType;
 
+@end
+
+@interface NSObject (NSPasteboardOwner)
 //
 // Methods Implemented by the Owner 
 //
