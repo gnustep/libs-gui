@@ -1,3 +1,10 @@
+2004-07-03  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSOutlineView.m: Moved private methods into separate
+	category. Made (-_collectItemsStartingWith:into:) safe against nil
+	parameter and simplified code. (_removeChildren:) new method as a
+	helper in (-reloadItem:reloadChildren:).
+
 2004-07-01  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSOutlineView.m (-reloadItem:reloadChildren:): Convert

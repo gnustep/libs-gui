@@ -79,7 +79,8 @@ static NSImage *unexpandable  = nil;
 - (void) _postSelectionDidChangeNotification;
 - (void) _postColumnDidMoveNotificationWithOldIndex: (int) oldIndex
 					   newIndex: (int) newIndex;
-- (void) _postColumnDidResizeNotification;
+// FIXME: There is a method with a similar name.but this is never called
+//- (void) _postColumnDidResizeNotification;
 - (BOOL) _shouldSelectTableColumn: (NSTableColumn *)tableColumn;
 - (BOOL) _shouldSelectRow: (int)rowIndex;
 - (BOOL) _shouldSelectionChange;
@@ -88,8 +89,11 @@ static NSImage *unexpandable  = nil;
 - (void) _willDisplayCell: (NSCell*)cell
 	   forTableColumn: (NSTableColumn *)tb
 		      row: (int)index;
-- (id)_objectValueForTableColumn: (NSTableColumn *)tb
-			     row: (int)index;
+- (BOOL) _writeRows: (NSArray *) rows
+       toPasteboard: (NSPasteboard *)pboard;
+- (BOOL) _isDraggingSource;
+- (id) _objectValueForTableColumn: (NSTableColumn *)tb
+			      row: (int)index;
 - (void) _setObjectValue: (id)value
 	  forTableColumn: (NSTableColumn *)tb
 		     row: (int) index;
@@ -97,15 +101,15 @@ static NSImage *unexpandable  = nil;
 
 // These methods are private...
 @interface NSOutlineView (TableViewInternalPrivate)
-- (void) _setSelectingColumns: (BOOL)flag;
-- (BOOL) _editNextEditableCellAfterRow: (int)row
-				column: (int)column;
-- (BOOL) _editPreviousEditableCellBeforeRow: (int)row
-				     column: (int)column;
 - (void) _autosaveExpandedItems;
 - (void) _autoloadExpandedItems;
+- (void) _collectItemsStartingWith: (id)startitem
+			      into: (NSMutableArray *)allChildren;
+- (void) _loadDictionaryStartingWith: (id) startitem
+			     atLevel: (int) level;
 - (void) _openItem: (id)item;
 - (void) _closeItem: (id)item;
+- (void) _removeChildren: (id)startitem;
 @end
 
 @implementation NSOutlineView
@@ -193,138 +197,6 @@ static NSImage *unexpandable  = nil;
 - (BOOL)autosaveExpandedItems
 {
   return _autosaveExpandedItems;
-}
-
-// Collect all of the items under a given element.
-- (void)_collectItemsStartingWith: (id)startitem
-			     into: (NSMutableArray *)allChildren
-{
-  int num = 0;
-  int i = 0;
-  id object = nil;
-
-  object = NSMapGet(_itemDict, startitem); 
-  num = [object count];
-  for(i = 0; i < num; i++)
-    {
-      id obj = NSMapGet(_itemDict, startitem);
-      id anitem = [obj objectAtIndex: i];
-
-      // Only collect the children if the item is expanded
-      if([self isItemExpanded: startitem])
-	{
-	  [allChildren addObject: anitem];
-	}
-
-      [self _collectItemsStartingWith: anitem
-	    into: allChildren];
-    }
-}
-
-- (void) _loadDictionaryStartingWith: (id) startitem
-			     atLevel: (int) level
-{
-  int num = [_dataSource outlineView: self
-			 numberOfChildrenOfItem: startitem];
-  int i = 0;
-  id sitem = (startitem == nil)?[NSNull null]:startitem;
-
-  if(num > 0)
-    {
-      NSMapInsert(_itemDict, sitem, [NSMutableArray array]);
-    }
-
-  NSMapInsert(_levelOfItems, sitem, [NSNumber numberWithInt: level]);
-
-  for(i = 0; i < num; i++)
-    {
-      id anitem = [_dataSource outlineView: self
-			       child: i
-			       ofItem: startitem];
-
-      id anarray = NSMapGet(_itemDict, sitem); 
-      
-      [anarray addObject: anitem];
-      [self _loadDictionaryStartingWith: anitem
-	    atLevel: level + 1]; 
-    }
-}
-
-- (void)_closeItem: (id)item
-{
-  int numchildren = 0;
-  int i = 0;
-  NSMutableArray *removeAll = [NSMutableArray array];
-
-  [self _collectItemsStartingWith: item into: removeAll];
-  numchildren = [removeAll count];
-
-  // close the item...
-  if(item != nil)
-    {
-      [_expandedItems removeObject: item];
-    }
-
-  // For the close method it doesn't matter what order they are 
-  // removed in.
-  for(i=0; i < numchildren; i++)
-    {
-      id child = [removeAll objectAtIndex: i];
-      [_items removeObject: child];
-    }
-}
-
-- (void)_openItem: (id)item
-{
-  int numchildren = 0;
-  int i = 0;
-  int insertionPoint = 0;
-  id object = nil;
-  id sitem = (item == nil)?[NSNull null]:item;
-
-  object = NSMapGet(_itemDict, sitem);
-  numchildren = [object count];
-  
-  // open the item...
-  if(item != nil)
-    {
-      [_expandedItems addObject: item];
-    }
-
-  insertionPoint = [_items indexOfObject: item];
-  if(insertionPoint == NSNotFound)
-    {
-      insertionPoint = 0;
-    }
-  else
-    {
-      insertionPoint++;
-    }
-
-  [self setNeedsDisplay: YES];  
-  for(i=numchildren-1; i >= 0; i--)
-    {
-      id obj = NSMapGet(_itemDict, sitem);
-      id child = [obj objectAtIndex: i];
-
-      // Add all of the children...
-      if([self isItemExpanded: child])
-	{
-	  NSMutableArray *insertAll = [NSMutableArray array];
-	  int i = 0, numitems = 0;
-
-	  [self _collectItemsStartingWith: child into: insertAll];
-	  numitems = [insertAll count];
- 	  for(i = numitems-1; i >= 0; i--)
-	    {
-	      [_items insertObject: [insertAll objectAtIndex: i]
-		      atIndex: insertionPoint];
-	    }
-	}
-      
-      // Add the parent
-      [_items insertObject: child atIndex: insertionPoint];
-    }
 }
 
 /**
@@ -592,17 +464,14 @@ static NSImage *unexpandable  = nil;
 - (void)reloadItem: (id)item reloadChildren: (BOOL)reloadChildren
 {
   int index;
-  BOOL hasChildren = NO;
   id parent;
-  id dsobj;
+  BOOL expanded;
+  id dsobj = nil;
   id object = (item == nil)?([NSNull null]):item;
   NSArray *allKeys = NSAllMapTableKeys(_itemDict);
   NSEnumerator *en = [allKeys objectEnumerator];
 
-  if ([allKeys containsObject: object])
-    {
-      hasChildren = YES;
-    }
+  expanded = [self isItemExpanded: item];
 
   // find the parent of the item 
   while ((parent = [en nextObject]))
@@ -616,26 +485,29 @@ static NSImage *unexpandable  = nil;
 			       child: index
 			       ofItem: parent];
 
-	  [childArray removeObject: item];
-	  [childArray insertObject: dsobj atIndex: index];
+	  if (dsobj != item)
+	    {
+	      [childArray replaceObjectAtIndex: index withObject: dsobj];
+	      // FIXME We need to correct _items, _itemDict, _levelOfItems, 
+              // _expandedItems and _selectedItems
+	    }
 	  break;
 	}
     }
   
-  if (reloadChildren && hasChildren) // expand all
+  if (reloadChildren)
     {
-      [self _loadDictionaryStartingWith: object
-	    atLevel: [self levelForItem: object]];
+      [self _removeChildren: dsobj];
+      [self _loadDictionaryStartingWith: dsobj
+	    atLevel: [self levelForItem: dsobj]];
 
-      // release the old array
-      if (_items != nil)
-	{
-	  DESTROY(_items); 
+      if (expanded)
+        {
+	  [self _openItem: dsobj];
+	  [self noteNumberOfRowsChanged];
 	}
-
-      // regenerate the _items array based on the new dictionary
-      [self _openItem: nil];
     }      
+  [self setNeedsDisplay: YES];
 }
 
 /**
@@ -1113,160 +985,6 @@ static NSImage *unexpandable  = nil;
   [super drawRect: aRect];
 }
 
-
-/*
- * (NotificationRequestMethods)
- */
-- (void) _postSelectionIsChangingNotification
-{
-  [nc postNotificationName: 
-	NSOutlineViewSelectionIsChangingNotification
-      object: self];
-}
-- (void) _postSelectionDidChangeNotification
-{
-  [nc postNotificationName: 
-	NSOutlineViewSelectionDidChangeNotification
-      object: self];
-}
-- (void) _postColumnDidMoveNotificationWithOldIndex: (int) oldIndex
-					   newIndex: (int) newIndex
-{
-  [nc postNotificationName: 
-	NSOutlineViewColumnDidMoveNotification
-      object: self
-      userInfo: [NSDictionary 
-		  dictionaryWithObjectsAndKeys:
-		  [NSNumber numberWithInt: newIndex],
-		  @"NSNewColumn",
-		    [NSNumber numberWithInt: oldIndex],
-		  @"NSOldColumn",
-		  nil]];
-}
-
-- (void) _postColumnDidResizeNotificationWithOldWidth: (float) oldWidth
-{
-  [nc postNotificationName: 
-	NSOutlineViewColumnDidResizeNotification
-      object: self
-      userInfo: [NSDictionary 
-		  dictionaryWithObjectsAndKeys:
-		    [NSNumber numberWithFloat: oldWidth],
-		  @"NSOldWidth", 
-		  nil]];
-}
-
-- (BOOL) _shouldSelectTableColumn: (NSTableColumn *)tableColumn
-{
-  if ([_delegate respondsToSelector: 
-		   @selector (outlineView:shouldSelectTableColumn:)] == YES) 
-    {
-      if ([_delegate outlineView: self  shouldSelectTableColumn: tableColumn] == NO)
-	{
-	  return NO;
-	}
-    }
-
-  return YES;
-}
-
-- (BOOL) _shouldSelectRow: (int)rowIndex
-{
-  id item = [self itemAtRow: rowIndex];
-
-  if ([_delegate respondsToSelector: 
-		   @selector (outlineView:shouldSelectItem:)] == YES) 
-    {
-      if ([_delegate outlineView: self  shouldSelectItem: item] == NO)
-	{
-	  return NO;
-	}
-    }
-  
-  return YES;
-}
-
-- (BOOL) _shouldSelectionChange
-{
-  if ([_delegate respondsToSelector: 
-	  @selector (selectionShouldChangeInTableView:)] == YES) 
-    {
-      if ([_delegate selectionShouldChangeInTableView: self] == NO)
-	{
-	  return NO;
-	}
-    }
-  
-  return YES;
-}
-
-- (BOOL) _shouldEditTableColumn: (NSTableColumn *)tableColumn
-			    row: (int) rowIndex
-{
-  if ([_delegate respondsToSelector: 
-			@selector(outlineView:shouldEditTableColumn:item:)])
-    {
-      id item = [self itemAtRow: rowIndex];
-
-      if ([_delegate outlineView: self shouldEditTableColumn: tableColumn
-		     item: item] == NO)
-	{
-	  return NO;
-	}
-    }
-
-  return YES;
-}
-
-- (void) _willDisplayCell: (NSCell*)cell
-	   forTableColumn: (NSTableColumn *)tb
-		      row: (int)index
-{
-  if (_del_responds)
-    {
-      id item = [self itemAtRow: index];
-  
-      [_delegate outlineView: self   
-		 willDisplayCell: cell 
-		 forTableColumn: tb   
-		 item: item];
-    }    
-}
-
-- (id) _objectValueForTableColumn: (NSTableColumn *)tb
-			      row: (int) index
-{
-  id result = nil;
-
-  if([_dataSource respondsToSelector:
-		    @selector(outlineView:objectValueForTableColumn:byItem:)])
-    {
-      id item = [self itemAtRow: index];
-
-      result = [_dataSource outlineView: self
-			    objectValueForTableColumn: tb
-			    byItem: item];
-    }
-
-  return result;
-}
-
-- (void) _setObjectValue: (id)value
-	  forTableColumn: (NSTableColumn *)tb
-		     row: (int) index
-{
-  if([_dataSource respondsToSelector:
-		    @selector(outlineView:setObjectValue:forTableColumn:byItem:)])
-    {
-      id item = [self itemAtRow: index];
-
-      [_dataSource outlineView: self
-		   setObjectValue: value
-		   forTableColumn: tb
-		   byItem: item];
-    }
-}
-
 - (void) setDropItem: (id) item
       dropChildIndex: (int) childIndex
 {
@@ -1291,37 +1009,6 @@ static NSImage *unexpandable  = nil;
       currentDropRow = [_items indexOfObject: itemAfter];
       currentDropLevel = [self levelForItem: itemAfter];
     }
-}
-
-- (BOOL) _isDraggingSource
-{
-  return [_dataSource respondsToSelector:
-			@selector(outlineView:writeItems:toPasteboard:)];
-}
-
-- (BOOL) _writeRows: (NSArray *) rows
-       toPasteboard: (NSPasteboard *)pboard
-{
-  int count = [rows count];
-  int i;
-  NSMutableArray *itemArray = [NSMutableArray
-				arrayWithCapacity: count];
-
-  for ( i = 0; i < count; i++ )
-    {
-      [itemArray addObject: 
-		   [self itemAtRow: 
-			   [[rows objectAtIndex: i] intValue]]];
-    }
-
-  if ([_dataSource respondsToSelector:
-		     @selector(outlineView:writeItems:toPasteboard:)] == YES)
-    {
-      return [_dataSource outlineView: self
-			  writeItems: itemArray
-			  toPasteboard: pboard];
-    }
-  return NO;
 }
 
 /*
@@ -1615,45 +1302,6 @@ static NSImage *unexpandable  = nil;
   [self _autoloadExpandedItems];
 }
 
-- (void) _autosaveExpandedItems
-{
-  if (_autosaveExpandedItems && _autosaveName != nil) 
-    {
-      NSUserDefaults      *defaults;
-      NSString            *tableKey;
-
-      defaults  = [NSUserDefaults standardUserDefaults];
-      tableKey = [NSString stringWithFormat: @"NSOutlineView Expanded Items %@", 
-			   _autosaveName];
-      [defaults setObject: _expandedItems  forKey: tableKey];
-      [defaults synchronize];
-    }
-}
-
-- (void) _autoloadExpandedItems
-{
-  if (_autosaveExpandedItems && _autosaveName != nil) 
-    { 
-      NSUserDefaults     *defaults;
-      id                  config;
-      NSString           *tableKey;
-
-      defaults  = [NSUserDefaults standardUserDefaults];
-      tableKey = [NSString stringWithFormat: @"NSOutlineView Expanded Items %@", 
-			   _autosaveName];
-      config = [defaults objectForKey: tableKey];
-      if (config != nil) 
-	{
-	  NSEnumerator *en = [config objectEnumerator];
-	  id item = nil;
-	  
-	  while ((item = [en nextObject]) != nil) 
-	    {
-	      [self expandItem: item];
-	    }
-	}
-    }
-}
 
 - (void) editColumn: (int) columnIndex 
 		row: (int) rowIndex 
@@ -1816,5 +1464,390 @@ static NSImage *unexpandable  = nil;
   [self unlockFocus];
   return;
 }
+
 @end /* implementation of NSOutlineView */
 
+@implementation NSOutlineView (NotificationRequestMethods)
+/*
+ * (NotificationRequestMethods)
+ */
+- (void) _postSelectionIsChangingNotification
+{
+  [nc postNotificationName: 
+	NSOutlineViewSelectionIsChangingNotification
+      object: self];
+}
+- (void) _postSelectionDidChangeNotification
+{
+  [nc postNotificationName: 
+	NSOutlineViewSelectionDidChangeNotification
+      object: self];
+}
+- (void) _postColumnDidMoveNotificationWithOldIndex: (int) oldIndex
+					   newIndex: (int) newIndex
+{
+  [nc postNotificationName: 
+	NSOutlineViewColumnDidMoveNotification
+      object: self
+      userInfo: [NSDictionary 
+		  dictionaryWithObjectsAndKeys:
+		  [NSNumber numberWithInt: newIndex],
+		  @"NSNewColumn",
+		    [NSNumber numberWithInt: oldIndex],
+		  @"NSOldColumn",
+		  nil]];
+}
+
+- (void) _postColumnDidResizeNotificationWithOldWidth: (float) oldWidth
+{
+  [nc postNotificationName: 
+	NSOutlineViewColumnDidResizeNotification
+      object: self
+      userInfo: [NSDictionary 
+		  dictionaryWithObjectsAndKeys:
+		    [NSNumber numberWithFloat: oldWidth],
+		  @"NSOldWidth", 
+		  nil]];
+}
+
+- (BOOL) _shouldSelectTableColumn: (NSTableColumn *)tableColumn
+{
+  if ([_delegate respondsToSelector: 
+		   @selector (outlineView:shouldSelectTableColumn:)] == YES) 
+    {
+      if ([_delegate outlineView: self  shouldSelectTableColumn: tableColumn] == NO)
+	{
+	  return NO;
+	}
+    }
+
+  return YES;
+}
+
+- (BOOL) _shouldSelectRow: (int)rowIndex
+{
+  id item = [self itemAtRow: rowIndex];
+
+  if ([_delegate respondsToSelector: 
+		   @selector (outlineView:shouldSelectItem:)] == YES) 
+    {
+      if ([_delegate outlineView: self  shouldSelectItem: item] == NO)
+	{
+	  return NO;
+	}
+    }
+  
+  return YES;
+}
+
+- (BOOL) _shouldSelectionChange
+{
+  if ([_delegate respondsToSelector: 
+	  @selector (selectionShouldChangeInTableView:)] == YES) 
+    {
+      if ([_delegate selectionShouldChangeInTableView: self] == NO)
+	{
+	  return NO;
+	}
+    }
+  
+  return YES;
+}
+
+- (BOOL) _shouldEditTableColumn: (NSTableColumn *)tableColumn
+			    row: (int) rowIndex
+{
+  if ([_delegate respondsToSelector: 
+			@selector(outlineView:shouldEditTableColumn:item:)])
+    {
+      id item = [self itemAtRow: rowIndex];
+
+      if ([_delegate outlineView: self shouldEditTableColumn: tableColumn
+		     item: item] == NO)
+	{
+	  return NO;
+	}
+    }
+
+  return YES;
+}
+
+- (void) _willDisplayCell: (NSCell*)cell
+	   forTableColumn: (NSTableColumn *)tb
+		      row: (int)index
+{
+  if (_del_responds)
+    {
+      id item = [self itemAtRow: index];
+  
+      [_delegate outlineView: self   
+		 willDisplayCell: cell 
+		 forTableColumn: tb   
+		 item: item];
+    }    
+}
+
+- (BOOL) _writeRows: (NSArray *) rows
+       toPasteboard: (NSPasteboard *)pboard
+{
+  int count = [rows count];
+  int i;
+  NSMutableArray *itemArray = [NSMutableArray
+				arrayWithCapacity: count];
+
+  for ( i = 0; i < count; i++ )
+    {
+      [itemArray addObject: 
+		   [self itemAtRow: 
+			   [[rows objectAtIndex: i] intValue]]];
+    }
+
+  if ([_dataSource respondsToSelector:
+		     @selector(outlineView:writeItems:toPasteboard:)] == YES)
+    {
+      return [_dataSource outlineView: self
+			  writeItems: itemArray
+			  toPasteboard: pboard];
+    }
+  return NO;
+}
+
+- (BOOL) _isDraggingSource
+{
+  return [_dataSource respondsToSelector:
+			@selector(outlineView:writeItems:toPasteboard:)];
+}
+
+- (id) _objectValueForTableColumn: (NSTableColumn *)tb
+			      row: (int) index
+{
+  id result = nil;
+
+  if([_dataSource respondsToSelector:
+		    @selector(outlineView:objectValueForTableColumn:byItem:)])
+    {
+      id item = [self itemAtRow: index];
+
+      result = [_dataSource outlineView: self
+			    objectValueForTableColumn: tb
+			    byItem: item];
+    }
+
+  return result;
+}
+
+- (void) _setObjectValue: (id)value
+	  forTableColumn: (NSTableColumn *)tb
+		     row: (int) index
+{
+  if([_dataSource respondsToSelector:
+		    @selector(outlineView:setObjectValue:forTableColumn:byItem:)])
+    {
+      id item = [self itemAtRow: index];
+
+      [_dataSource outlineView: self
+		   setObjectValue: value
+		   forTableColumn: tb
+		   byItem: item];
+    }
+}
+
+@end
+
+@implementation NSOutlineView (TableViewInternalPrivate)
+
+- (void) _autosaveExpandedItems
+{
+  if (_autosaveExpandedItems && _autosaveName != nil) 
+    {
+      NSUserDefaults      *defaults;
+      NSString            *tableKey;
+
+      defaults  = [NSUserDefaults standardUserDefaults];
+      tableKey = [NSString stringWithFormat: @"NSOutlineView Expanded Items %@", 
+			   _autosaveName];
+      [defaults setObject: _expandedItems  forKey: tableKey];
+      [defaults synchronize];
+    }
+}
+
+- (void) _autoloadExpandedItems
+{
+  if (_autosaveExpandedItems && _autosaveName != nil) 
+    { 
+      NSUserDefaults     *defaults;
+      id                  config;
+      NSString           *tableKey;
+
+      defaults  = [NSUserDefaults standardUserDefaults];
+      tableKey = [NSString stringWithFormat: @"NSOutlineView Expanded Items %@", 
+			   _autosaveName];
+      config = [defaults objectForKey: tableKey];
+      if (config != nil) 
+	{
+	  NSEnumerator *en = [config objectEnumerator];
+	  id item = nil;
+	  
+	  while ((item = [en nextObject]) != nil) 
+	    {
+	      [self expandItem: item];
+	    }
+	}
+    }
+}
+
+// Collect all of the items under a given element.
+- (void)_collectItemsStartingWith: (id)startitem
+			     into: (NSMutableArray *)allChildren
+{
+  int num;
+  int i;
+  id sitem = (startitem == nil)?[NSNull null]:startitem;
+  NSMutableArray *anarray;
+
+  anarray = NSMapGet(_itemDict, sitem); 
+  num = [anarray count];
+  for (i = 0; i < num; i++)
+    {
+      id anitem = [anarray objectAtIndex: i];
+
+      // Only collect the children if the item is expanded
+      if([self isItemExpanded: startitem])
+	{
+	  [allChildren addObject: anitem];
+	}
+
+      [self _collectItemsStartingWith: anitem
+	    into: allChildren];
+    }
+}
+
+- (void) _loadDictionaryStartingWith: (id) startitem
+			     atLevel: (int) level
+{
+  int num = [_dataSource outlineView: self
+			 numberOfChildrenOfItem: startitem];
+  int i = 0;
+  id sitem = (startitem == nil)?[NSNull null]:startitem;
+  NSMutableArray *anarray = nil;
+
+  if (num > 0)
+    {
+      anarray = [NSMutableArray array];
+      NSMapInsert(_itemDict, sitem, anarray);
+    }
+
+  NSMapInsert(_levelOfItems, sitem, [NSNumber numberWithInt: level]);
+
+  for (i = 0; i < num; i++)
+    {
+      id anitem = [_dataSource outlineView: self
+			       child: i
+			       ofItem: startitem];
+      
+      [anarray addObject: anitem];
+      [self _loadDictionaryStartingWith: anitem
+	    atLevel: level + 1]; 
+    }
+}
+
+- (void)_closeItem: (id)item
+{
+  int numchildren = 0;
+  int i = 0;
+  NSMutableArray *removeAll = [NSMutableArray array];
+
+  [self _collectItemsStartingWith: item into: removeAll];
+  numchildren = [removeAll count];
+
+  // close the item...
+  if(item != nil)
+    {
+      [_expandedItems removeObject: item];
+    }
+
+  // For the close method it doesn't matter what order they are 
+  // removed in.
+  for(i=0; i < numchildren; i++)
+    {
+      id child = [removeAll objectAtIndex: i];
+      [_items removeObject: child];
+    }
+}
+
+- (void)_openItem: (id)item
+{
+  int numchildren = 0;
+  int i = 0;
+  int insertionPoint = 0;
+  id object = nil;
+  id sitem = (item == nil)?[NSNull null]:item;
+
+  object = NSMapGet(_itemDict, sitem);
+  numchildren = [object count];
+  
+  // open the item...
+  if(item != nil)
+    {
+      [_expandedItems addObject: item];
+    }
+
+  insertionPoint = [_items indexOfObject: item];
+  if(insertionPoint == NSNotFound)
+    {
+      insertionPoint = 0;
+    }
+  else
+    {
+      insertionPoint++;
+    }
+
+  [self setNeedsDisplay: YES];  
+  for(i=numchildren-1; i >= 0; i--)
+    {
+      id obj = NSMapGet(_itemDict, sitem);
+      id child = [obj objectAtIndex: i];
+
+      // Add all of the children...
+      if([self isItemExpanded: child])
+	{
+	  NSMutableArray *insertAll = [NSMutableArray array];
+	  int i = 0, numitems = 0;
+
+	  [self _collectItemsStartingWith: child into: insertAll];
+	  numitems = [insertAll count];
+ 	  for(i = numitems-1; i >= 0; i--)
+	    {
+	      [_items insertObject: [insertAll objectAtIndex: i]
+		      atIndex: insertionPoint];
+	    }
+	}
+      
+      // Add the parent
+      [_items insertObject: child atIndex: insertionPoint];
+    }
+}
+
+- (void) _removeChildren: (id)startitem
+{
+  int numchildren = 0;
+  int i = 0;
+  id sitem = (startitem == nil)?[NSNull null]:startitem;
+  NSMutableArray *anarray;
+  
+  anarray = NSMapGet(_itemDict, sitem); 
+  numchildren = [anarray count];
+  for (i = 0; i < numchildren; i++)
+    {
+      id child = [anarray objectAtIndex: i];
+
+      [self _removeChildren: child];
+      NSMapRemove(_itemDict, child); 
+      [_items removeObject: child];
+      [_expandedItems removeObject: child];
+      [_selectedItems removeObject: child];
+    }
+  [anarray removeAllObjects];
+}
+
+@end
