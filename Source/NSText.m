@@ -2813,7 +2813,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   NSString *string = [self string];
   unsigned length = [string length];
 
-  if (proposedCharRange.location > length)
+  if (proposedCharRange.location >= length)
     {
       proposedCharRange.location = length;
       proposedCharRange.length = 0;
