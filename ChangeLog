@@ -1,3 +1,8 @@
+2003-12-02  Adam Fedor  <fedor@gnu.org>
+
+	* Source/GNUmakefile.postamble (libgnustep-gui.def): Generate at   
+	compile time using the proper dependencies.
+
 2003-12-01  Serg Stoyan <stoyan@on.com.ua>
 
 	* Headers/AppKit/NSButton.h: Add setHighlightsBy: and 

@@ -72,7 +72,8 @@ after-uninstall::
 # before-clean::
 
 # Things to do after cleaning
-# after-clean::
+after-clean:
+	rm -f libgnustep-gui.def
 
 # Things to do before distcleaning
 # before-distclean::
@@ -108,16 +109,13 @@ $(GNUSTEP_OBJ_DIR)/*.o \
 	: $(GNUSTEP_TARGET_DIR)/config.h
 
 #
-# Make list of class names for DLL exports. I'm not sure how to make this
-# work with the correct dependencies, so for now it should be regenerated
-# by hand when new classes get added. Then mv libgnustep-gui.def.new to
-# libgnustep-gui.def
+# Make list of class names for DLL exports. Uses the actual classes from
+# the .o files, so it should really have everything needed.
 #
-libgnustep-gui.def.new: $(GNUSTEP_OBJ_DIR)/*o
+libgnustep-gui.def: $(OBJ_FILES_TO_LINK)
 	rm -f $@
 	rm -f _tmp.def
 	cat win32-def.top > $@
 	nm $^ | grep '^........ [T] _' | sed 's/[^_]*_//' > _tmp.def
 	cat _tmp.def | grep "_class_name_" >> $@
 	rm -rf _tmp.def
-
