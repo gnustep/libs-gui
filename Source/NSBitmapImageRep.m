@@ -382,8 +382,18 @@
 //
 + (NSData*) TIFFRepresentationOfImageRepsInArray: (NSArray *)anArray
 {
-  // TODO
-  [self notImplemented: _cmd];
+  //FIXME: This only outputs one of the ImageReps
+  NSEnumerator *enumerator = [anArray objectEnumerator];
+  NSImageRep *rep;
+
+  while ((rep = [enumerator nextObject]) != nil)
+    {
+      if ([rep isKindOfClass: self])
+        {
+	  return [(NSBitmapImageRep*)rep TIFFRepresentation];
+	}
+    }
+
   return nil;
 }
 
@@ -391,8 +401,19 @@
 				usingCompression: (NSTIFFCompression)type
 					  factor: (float)factor
 {
-  // TODO
-  [self notImplemented: _cmd];
+  //FIXME: This only outputs one of the ImageReps
+  NSEnumerator *enumerator = [anArray objectEnumerator];
+  NSImageRep *rep;
+
+  while ((rep = [enumerator nextObject]) != nil)
+    {
+      if ([rep isKindOfClass: self])
+        {
+	  return [(NSBitmapImageRep*)rep TIFFRepresentationUsingCompression: type
+		     factor: factor];
+	}
+    }
+
   return nil;
 }
 
