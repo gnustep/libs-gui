@@ -43,6 +43,7 @@
 @class NSColor;
 @class NSFont;
 @class NSTextStorage;
+@class NSTextContainer;
 
 typedef enum _NSTextAlignment {
   NSLeftTextAlignment = 0,
@@ -296,6 +297,8 @@ typedef enum _NSSelectionAffinity {
 
 @interface NSText(NSTextView)
 // Methods that should be declared on NSTextView, but are usable for NSText
+- (NSTextContainer *)textContainer;
+- (NSPoint)textContainerOrigin;
 - (void) setRulerVisible: (BOOL)flag;
 
 - (NSRange)rangeForUserTextChange;
