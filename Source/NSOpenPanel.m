@@ -205,17 +205,8 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 
 - (void) _setupForDirectory: (NSString *)path file: (NSString *)filename
 {
-  if (path == nil)
-    {
-      if (_directory)
-	path = _directory; 
-      else
-	path = [[NSFileManager defaultManager] currentDirectoryPath];
-    }  
-
-  if (filename == nil)
-    filename = @"";
-  else if ([filename isEqual: @""] == NO)
+  // FIXME: Not sure if this is needed
+  if ((filename == nil) || ([filename isEqual: @""] == NO))
     [_okButton setEnabled: YES];
 
   if (_canChooseDirectories == NO)
@@ -556,9 +547,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 	}
     }
 
-  _OKButtonPressed = YES;
   [NSApp stopModalWithCode: NSOKButton];
-
   [self close];
 }
 

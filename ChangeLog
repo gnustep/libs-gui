@@ -1,3 +1,17 @@
+2005-02-19  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSSavePanel.m (-_setDefaultDirectory): New method to get
+	default directory from user defaults (NSDefaultOpenDirectory).
+	(-_resetDefaults): Use it for setting of default directory.
+	(-_setupForDirectory:file:): Use the new method here as well if no
+	path is provided. Cleaned up this method.
+	(-cancel:) Don't clean up filename and set directory to current.
+	(-ok:) Don't set _OKButtonPressed.
+	* Source/NSOpenPanel.m (-ok:): Don't set _OKButtonPressed.
+	(-_setupForDirectory:file:): Removed code duplicating super class
+	implementation. 
+	This fixes most of bug #7900.
+
 2005-02-14  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPopupButton.m (-mouseDown:): Moved code from here ...

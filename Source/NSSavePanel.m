@@ -79,6 +79,7 @@ static BOOL _gs_display_reading_progress = NO;
 // Methods to manage default settings
 - (id) _initWithoutGModel;
 - (void) _getOriginalSize;
+- (void) _setDefaultDirectory;
 - (void) _resetDefaults;
 // Methods invoked by buttons
 - (void) _setHomeDirectory;
@@ -340,10 +341,30 @@ static BOOL _gs_display_reading_progress = NO;
   _originalSize = [[self contentView] frame].size;
 }
 
+/* Set the current directory to a useful default value */
+- (void) _setDefaultDirectory
+{
+  NSString *path;
+
+  if (_directory == nil)
+    {
+      path = [[NSUserDefaults standardUserDefaults] 
+		 objectForKey: @"NSDefaultOpenDirectory"];
+      if (path == nil)
+        {
+	  // FIXME: Should we use this or the home directory?
+	  ASSIGN(_directory, [_fm currentDirectoryPath]);
+	}
+      else
+        {
+	  ASSIGN(_directory, path);
+	}
+    }
+}
+
 - (void) _resetDefaults
 {
-  if (_directory == nil)
-    ASSIGN (_directory, [_fm currentDirectoryPath]);
+  [self _setDefaultDirectory];
   [self setPrompt: @"Name:"];
   [self setTitle: @"Save"];
   [self setRequiredFileType: @""];
@@ -490,29 +511,21 @@ selectCellWithString: (NSString*)title
 {
   if (path == nil)
     {
-      if (_directory == nil)
-	ASSIGN(_directory, [_fm currentDirectoryPath]);
+      [self _setDefaultDirectory];
     }
   else
     {
-      ASSIGN (_directory, path);
+      ASSIGN(_directory, path);
     }
   if (filename == nil)
     filename = @"";
-  ASSIGN (_fullFileName, [path stringByAppendingPathComponent: filename]);
+  ASSIGN(_fullFileName, [_directory stringByAppendingPathComponent: filename]);
   [_browser setPath: _fullFileName];
 
-  [self _selectCellName:filename];
+  [self _selectCellName: filename];
   [[_form cellAtIndex: 0] setStringValue: filename];
   [_form selectTextAtIndex: 0];
   [_form setNeedsDisplay: YES];
-
-  /*
-   * We need to take care of the possibility of 
-   * the panel being aborted.  We return NSCancelButton 
-   * in that case.
-   */
-  _OKButtonPressed = NO;
 
   [self _browser: _browser
 	selectCellWithString: [[_browser selectedCell] stringValue] 
@@ -1033,8 +1046,7 @@ selectCellWithString: (NSString*)title
 
 - (void) cancel: (id)sender
 {
-  _fullFileName = nil;
-  _directory = nil;
+  ASSIGN(_directory, [_browser pathToColumn:[_browser lastColumn]]);
   [NSApp stopModalWithCode: NSCancelButton];
   [self close];
 }
@@ -1144,7 +1156,6 @@ selectCellWithString: (NSString*)title
     if (![_delegate panel: self isValidFilename: [self filename]])
       return;
 
-  _OKButtonPressed = YES;
   [NSApp stopModalWithCode: NSOKButton];
   [self close];
 }
