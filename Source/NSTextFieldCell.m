@@ -40,6 +40,8 @@ static NSColor	*txtCol;
 
 @interface NSTextFieldCell (PrivateColor)
 + (void) _systemColorsChanged: (NSNotification*)n;
+// Minor optimization -- cache isOpaque.
+- (BOOL) _isOpaque;
 @end
 
 @implementation	NSTextFieldCell (PrivateColor)
@@ -47,6 +49,15 @@ static NSColor	*txtCol;
 {
   ASSIGN(bgCol, [NSColor textBackgroundColor]);
   ASSIGN(txtCol, [NSColor textColor]); 
+}
+- (BOOL) _isOpaque
+{
+  if (_draws_background == NO 
+      || _background_color == nil 
+      || [_background_color alphaComponent] < 1.0)
+    return NO;
+  else
+    return YES;   
 }
 @end
 
@@ -82,6 +93,7 @@ static NSColor	*txtCol;
   ASSIGN(_text_color, txtCol);
   ASSIGN(_background_color, bgCol);
   _draws_background = NO;
+  _isOpaque = NO;
   return self;
 }
 
@@ -108,7 +120,8 @@ static NSColor	*txtCol;
 //
 - (void) setBackgroundColor: (NSColor *)aColor
 {
-  ASSIGN (_background_color, aColor); 
+  ASSIGN (_background_color, aColor);
+  _isOpaque = [self _isOpaque];
 }
 
 - (NSColor *) backgroundColor
@@ -119,6 +132,7 @@ static NSColor	*txtCol;
 - (void) setDrawsBackground: (BOOL)flag
 {
   _draws_background = flag;
+  _isOpaque = [self _isOpaque];
 }
 
 - (BOOL) drawsBackground
@@ -157,6 +171,11 @@ static NSColor	*txtCol;
   [super drawInteriorWithFrame: cellFrame inView: controlView];
 }
 
+- (BOOL) isOpaque
+{
+  return _isOpaque;
+}
+
 //
 // NSCoding protocol
 //
@@ -176,6 +195,7 @@ static NSColor	*txtCol;
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_background_color];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_text_color];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_draws_background];
+  _isOpaque = [self _isOpaque];
 
   return self;
 }
