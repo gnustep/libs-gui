@@ -1,3 +1,8 @@
+2004-06-27 23:10  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSNibTemplates.m: Replace calls to
+	GSGetInstanceMethodNotInherited with calls to GSGetMethod.
+
 2004-06-25  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibCompatibility.m: Print a message when .gorm files are
@@ -71,7 +76,6 @@
 	* Source/GSDragView.m: (-_handleEventDuringDragging:) Get mouse
 	location on periodic event.
 
->>>>>>> 1.2286
 2004-06-19  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/GSDisplayServer.h: Added new method
@@ -83,7 +87,6 @@
 	(-_windowAcceptingDnDunder:windowRef:) with new GSDisplayServer
 	method.	
 	
->>>>>>> 1.2283
 2004-06-17  Fred Kiefer <FredKiefer@gmx.de>
 
        * Source/NSComboBoxCell.m: buttonCellFrameFromRect(),

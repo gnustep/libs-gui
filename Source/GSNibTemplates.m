@@ -606,7 +606,7 @@ static const int currentVersion = 1; // GSNibItem version number...
 
       if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
       {
-	if(GSGetInstanceMethodNotInherited([obj class], @selector(initWithContentRect:styleMask:backing:defer:)) != NULL)
+	if(GSGetMethod([obj class], @selector(initWithContentRect:styleMask:backing:defer:), NO, NO) != NULL)
 	  {
 	    // if we are not in interface builder, call 
 	    // designated initializer per spec...
@@ -648,7 +648,7 @@ static const int currentVersion = 1; // GSNibItem version number...
     {
       if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
       {
-	if(GSGetInstanceMethodNotInherited([obj class],@selector(initWithFrame:)) != NULL)
+	if(GSGetMethod([obj class],@selector(initWithFrame:), NO, NO) != NULL)
 	  {
 	    NSRect theFrame = [obj frame];
 	    obj =  [obj initWithFrame: theFrame];
@@ -677,7 +677,7 @@ static const int currentVersion = 1; // GSNibItem version number...
     {
       if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
       {
-	if(GSGetInstanceMethodNotInherited([obj class],@selector(initWithFrame:)) != NULL)
+	if(GSGetMethod([obj class],@selector(initWithFrame:), NO, NO) != NULL)
 	  {
 	    NSRect theFrame = [obj frame]; 
 	    obj = [obj initWithFrame: theFrame];
@@ -706,7 +706,7 @@ static const int currentVersion = 1; // GSNibItem version number...
     {
       if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
       {
-	if(GSGetInstanceMethodNotInherited([obj class],@selector(initWithFrame:textContainer:)) != NULL)
+	if(GSGetMethod([obj class],@selector(initWithFrame:textContainer:), NO, NO) != NULL)
 	  {
 	    NSRect theFrame = [obj frame];
 	    id textContainer = [obj textContainer];
@@ -737,7 +737,7 @@ static const int currentVersion = 1; // GSNibItem version number...
     {
       if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
       {
-	if(GSGetInstanceMethodNotInherited([obj class],@selector(initWithTitle:)) != NULL)
+	if(GSGetMethod([obj class],@selector(initWithTitle:), NO, NO) != NULL)
 	  {
 	    NSString *theTitle = [obj title]; 
 	    obj = [obj initWithTitle: theTitle];
@@ -768,7 +768,7 @@ static const int currentVersion = 1; // GSNibItem version number...
       /* 
       if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
       {
-	if(GSGetInstanceMethodNotInherited([obj class],@selector(initWithFrame:)) != NULL)
+	if(GSGetMethod([obj class],@selector(initWithFrame:), NO, NO) != NULL)
 	  {
 	    NSRect theFrame = [obj frame]; 
 	    obj = [obj initWithFrame: theFrame];
@@ -797,7 +797,7 @@ static const int currentVersion = 1; // GSNibItem version number...
     {
       if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
       {
-	if(GSGetInstanceMethodNotInherited([obj class],@selector(init)) != NULL)
+	if(GSGetMethod([obj class],@selector(init), NO, NO) != NULL)
 	  {
 	    obj = [self init];
 	  }
