@@ -1092,12 +1092,20 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 
 - (void) setMainMenu: (NSMenu*)aMenu
 {
-  unsigned i, j;
-  NSMenuItem *mc;
-  NSArray *mi;
+  unsigned	i, j;
+  NSMenuItem	*mc;
+  NSArray	*mi;
+
+  if (main_menu != nil && main_menu != aMenu)
+    {
+      [main_menu close];
+    }
 
   ASSIGN(main_menu, aMenu);
 
+  [aMenu setTitle:
+    [[[NSProcessInfo processInfo] processName] lastPathComponent]];
+  [aMenu sizeToFit];
   /*
    * Find a menucell with the title Windows this is the default windows menu
    */
@@ -1112,6 +1120,12 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 	  windows_menu = mc;
 	  break;
 	}
+    }
+
+  if ([self isActive])
+    {
+      [main_menu update];
+      [main_menu display];
     }
 }
 
@@ -1214,12 +1228,12 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 	break;
       i++;
     }
-
   item = [menu insertItemWithTitle: aString
 			    action: @selector(makeKeyAndOrderFront:)
 		     keyEquivalent: @""
 			   atIndex: i];
   [item setTarget: aWindow];
+  [menu sizeToFit];
   [menu update];
 }
 
@@ -1243,6 +1257,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 	  if ([item target] == aWindow)
 	    {
 	      [menu removeItem: item];
+	      [menu sizeToFit];
 	      [menu update];
 	      break;
 	    }
@@ -1299,6 +1314,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 			 filename: [win representedFilename] != nil];
 	  [windows removeLastObject];
 	}
+      [aMenu sizeToFit];
       [aMenu update];
     }
 }
@@ -1360,6 +1376,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 	      if (changed)
 		{
 		  [(id)[item controlView] sizeToFit];
+		  [menu sizeToFit];
 		  [menu update];
 		}
 	      break;
