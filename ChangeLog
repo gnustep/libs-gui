@@ -1,3 +1,12 @@
+Tue Sep  5 00:31:50 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSClipView.m ([-encodeWithCoder:]), ([-initWithCoder:]):
+	Implemented.
+	* Source/NSScroller.m ([-encodeWithCoder:]), ([-initWithCoder:]):
+	Implemented.
+	* Source/NSScrollView.m ([-initWithCoder:]): Fixed typos; 
+	support headerview, cornerview; tile after decoding.
+	
 2000-09-03  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSTypesetter.h: New file.
