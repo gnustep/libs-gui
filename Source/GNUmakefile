@@ -33,7 +33,7 @@ include ../Version
 include ../config.make
 
 # Interface version changes with each minor release
-libgnustep-gui_INTERFACE_VERSION=${MAJOR_VERSION}.${MINOR_VERSION}
+libgnustep-gui_INTERFACE_VERSION=${GNUSTEP_GUI_MAJOR_VERSION}.${GNUSTEP_GUI_MINOR_VERSION}
 
 srcdir = .
 PACKAGE_NAME = gnustep-gui
