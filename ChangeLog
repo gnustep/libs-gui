@@ -1,5 +1,9 @@
 2003-03-24  Adam Fedor  <fedor@gnu.org>
 
+	* Version: 0.8.5
+
+2003-03-24  Adam Fedor  <fedor@gnu.org>
+
 	* Source/NSBox.m (-sizeToFit): Set frame to calculated size when
 	content view has no subviews.
 
