@@ -11,6 +11,10 @@
    Date: December 1999
    First actual coding.
 
+   Author: Nicola Pero <nicola@brainstorm.co.uk>
+   Date: August 2000
+   Selection and Dragging of Columns.
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -35,6 +39,7 @@
 #include <AppKit/NSTableColumn.h>
 #include <AppKit/NSTableView.h>
 #include <AppKit/NSEvent.h>
+#include <AppKit/NSApplication.h>
 
 @implementation NSTableHeaderView
 {
@@ -195,7 +200,150 @@
       return;
     }
 
-  // TODO - simple click events
-  [super mouseDown: event];
+  if (clickCount == 1)
+    {
+      // TODO: Resizing table columns
+      // Start resizing if the mouse is down on the bounds of a column.
+
+      /* Dragging */
+      /* Wait for mouse dragged events. 
+	 If mouse is dragged, move the column.
+	 If mouse is not dragged but released, select/deselect the column. */
+      {
+	BOOL mouseDragged = NO;
+	BOOL startedPeriodicEvents = NO;
+	unsigned int eventMask = (NSLeftMouseUpMask 
+				  | NSLeftMouseDraggedMask 
+				  | NSPeriodicMask);
+	unsigned int modifiers = [event modifierFlags];
+	NSEvent *lastEvent;
+	BOOL done = NO;
+	NSPoint mouseLocationWin;
+	NSDate *distantFuture = [NSDate distantFuture];
+	NSRect visibleRect = [self convertRect: [self visibleRect]
+				   toView: nil];
+	float minXVisible = NSMinX (visibleRect);
+	float maxXVisible = NSMaxX (visibleRect);
+	BOOL mouseLeft = NO;
+	/* We have three zones of speed. 
+	   0   -  50 pixels: period 0.2  <zone 1>
+	   50  - 100 pixels: period 0.1  <zone 2>
+	   100 - 150 pixels: period 0.01 <zone 3> */
+	float oldPeriod = 0;
+	inline float computePeriod ()
+	  {
+	    float distance = 0;
+	    
+	    if (mouseLocationWin.x < minXVisible) 
+	      {
+		distance = minXVisible - mouseLocationWin.x; 
+	      }
+	    else if (mouseLocationWin.x > maxXVisible)
+	      {
+		distance = mouseLocationWin.x - maxXVisible;
+	      }
+	    
+	    if (distance < 50) 
+	      return 0.2;
+	    else if (distance < 100) 
+	      return 0.1;
+	    else   
+	      return 0.01;
+	  }
+
+	while (done != YES)
+	  {
+	    lastEvent = [NSApp nextEventMatchingMask: eventMask 
+			       untilDate: distantFuture
+			       inMode: NSEventTrackingRunLoopMode 
+			       dequeue: YES]; 
+	    
+	    switch ([lastEvent type])
+	      {
+	      case NSLeftMouseUp:
+		done = YES;
+		break;
+	      case NSLeftMouseDragged:
+		if (mouseDragged == NO)
+		  {
+		    // TODO: Deselect the column, prepare for dragging
+		  }
+		mouseDragged = YES;
+		mouseLocationWin = [lastEvent locationInWindow]; 
+		if ((mouseLocationWin.x > minXVisible) 
+		    && (mouseLocationWin.x < maxXVisible))
+		  {
+		    NSPoint mouseLocationView;
+		    
+		    if (startedPeriodicEvents == YES)
+		      {
+			[NSEvent stopPeriodicEvents];
+			startedPeriodicEvents = NO;
+		      }
+		    mouseLocationView = [self convertPoint: 
+						mouseLocationWin 
+					      fromView: nil];
+		    // TODO: drag the column 
+
+		    //[_window flushWindow];
+		    // [nc postNotificationName: 
+		    //                   object: self];
+		      }
+		else /* Mouse dragged out of the table */
+		  {
+		    if (startedPeriodicEvents == YES)
+		      {
+			/* Check - if the mouse did not change zone, 
+			   we do nothing */
+			if (computePeriod () == oldPeriod)
+			  break;
+			
+			[NSEvent stopPeriodicEvents];
+		      }
+		    /* Start periodic events */
+		    oldPeriod = computePeriod ();
+		    
+		    [NSEvent startPeriodicEventsAfterDelay: 0
+			     withPeriod: oldPeriod];
+		    startedPeriodicEvents = YES;
+		    if (mouseLocationWin.x <= minXVisible) 
+		      mouseLeft = YES;
+		    else
+		      mouseLeft = NO;
+		  }
+		break;
+	      case NSPeriodic:
+		if (mouseLeft == YES) // mouse left the table
+		  {
+		    // TODO: Drag the column 
+		  }
+		else /* mouse right the table */
+		  {
+		    // TODO: Drag the column 
+		  }
+		// [nc postNotificationName: 
+		//                   object: self];
+		break;
+	      default:
+		break;
+	      }
+	  }
+	
+	if (mouseDragged == NO)
+	  {
+	    [_tableView _selectColumn: columnIndex
+			modifiers: modifiers];
+	  }
+	else // mouseDragged == YES
+	  {
+	    if (startedPeriodicEvents == YES)
+	      [NSEvent stopPeriodicEvents];
+	    
+	    // TODO: Move the dragged column
+	  }
+	return;
+      }
+    }
 }
 @end
+
