@@ -256,6 +256,13 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 {
   NSMutableArray	*views;
 
+  /*
+   * We MUST make sure that coordinates are invalidated even if we have
+   * no superview - cos they may have been rebuilt since we lost the
+   * superview and the fact that this method has been invoked probably
+   * means we are about to be placed in a new view where the coordinate
+   * system will be different.
+   */
   if (coordinates_valid)
     (*invalidateImp)(self, invalidateSel);
 
@@ -275,6 +282,13 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   NSMutableArray	*views;
   NSWindow		*win;
 
+  /*
+   * We MUST make sure that coordinates are invalidated even if we have
+   * no superview - cos they may have been rebuilt since we lost the
+   * superview and the fact that this method has been invoked probably
+   * means we are about to be placed in a new view where the coordinate
+   * system will be different.
+   */
   if (coordinates_valid)
     (*invalidateImp)(self, invalidateSel);
 
