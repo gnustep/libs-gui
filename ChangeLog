@@ -1,3 +1,20 @@
+2001-09-23  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSSimpleLayoutManager.m
+	[GSSimpleLayoutManager boundingRectForGlyphRange:inTextContainer:]:
+	Use lineFragmentRect instead of usedRect, so that the full line
+	gets cleared. This still is not correct for all cases.
+	* Header/gnustep/gui/NSPageLayout.h
+	Removed ivar _new added ivar _accessoryView. Added sheet method.
+	* Source/NSPageLayout.m
+	Small layout improvements.
+	* Tools/.cvsignore
+	Ignore all services.
+	* Model/.cvsignore
+	Ignore the bundle
+	* TextConverter/RTF/.cvsignore
+	New file to ingore all temporary files.
+	
 2001-09-20  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenu.m
