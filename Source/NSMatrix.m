@@ -2500,7 +2500,7 @@ static SEL getSel = @selector(objectAtIndex:);
 	  selectedCells[i] = NSZoneRealloc(GSAtomicMallocZone(),
 	    selectedCells[i], col * sizeof(BOOL));
 
-	  for (j = oldMaxC - 1; j < col; j++)
+	  for (j = oldMaxC; j < col; j++)
 	    {
 	      cells[i][j] = nil;
 	      selectedCells[i][j] = NO;
