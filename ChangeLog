@@ -1,5 +1,7 @@
-2001-08-13  Pierre-Yves  <pyrivail@spocky.imada.sdu.dk>
+2001-08-13  Pierre-Yves  <pyrivail@ens-lyon.fr>
 
+	* Source/NSPopUpButton.m ([-keyDown:): send selected item related
+	action when using the keyboard.
 	* Source/Functions.m
 	Esthetic corrections to NSDrawGrayBezel and NSDrawWhiteBezel
 
