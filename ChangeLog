@@ -1,6 +1,12 @@
+Thu Jun  6 07:23:59 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSApplication.m ([NSApplication -terminate:]): Send the
+	-applicationShouldTerminate: messages from self, instead of from
+	the sender of -terminate: (Patch by Jeff Teunissen).
+
 2002-06-06  Richard Frith-Macdonald <rfm@gnu.org>
 
-        * Source/NSBundleAdditions.m: patch by Jeff Teunissen to log loading
+	* Source/NSBundleAdditions.m: patch by Jeff Teunissen to log loading
 	only as debug.
 
 WWed Jun  5 14:09:04 2002  Nicola Pero  <n.pero@mi.flashnet.it>
