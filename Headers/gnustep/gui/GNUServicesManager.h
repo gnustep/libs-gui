@@ -72,6 +72,7 @@
 - (void) setServicesMenu: (NSMenu *)anObject;
 - (void) setServicesProvider: (id)anObject;
 - (int) setShowsServicesMenuItem: (NSString*)item to: (BOOL)enable;
+- (BOOL) showsServicesMenuItem: (NSString*)item;
 - (BOOL) validateMenuItem: (NSCell*)item;
 - (void) updateServicesMenu;
 @end
