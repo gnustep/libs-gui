@@ -1,5 +1,10 @@
 2000-03-19  Richard Frith-Macdonald <rfm@gnu.org>
 
+	* Source/GSTextStorage.m: ([setAttributes:range:]) make sure
+	attributes are set when old range starts at start of new range.
+
+2000-03-19  Richard Frith-Macdonald <rfm@gnu.org>
+
 	Fixes fromFred Kiefer -
 	* Headers/gnustep/gui/NSResponder.h: prefix ivars with underscore
 	and add new _menu ivar.
