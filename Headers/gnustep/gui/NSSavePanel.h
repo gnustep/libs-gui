@@ -59,26 +59,26 @@ enum {
 
 @interface NSSavePanel : NSPanel <NSCoding>
 {
-  NSView* _accessoryView;
-  NSView* _bottomView;
-  id _delegate;
-  NSBrowser* _browser;
-  NSForm* _form;
-  NSButton* _okButton;
-  NSTextField* _titleField;
-  NSView* _topView;
+  NSView *_accessoryView;
+  NSView *_bottomView;
+  NSBrowser *_browser;
+  NSForm *_form;
+  NSButton *_okButton;
+  NSTextField *_titleField;
+  NSView *_topView;
 
   NSSize _originalMinSize;
   NSSize _originalSize;
 
   NSString *_requiredFileType;
-  NSString *_lastValidPath;
+  NSString *_directory;
   NSString *_fullFileName;
 
   BOOL _treatsFilePackagesAsDirectories;
   BOOL _delegateHasCompareFilter;
-  BOOL _delegateHasFilenameFilter;
+  BOOL _delegateHasShowFilenameFilter;
   BOOL _delegateHasValidNameFilter;
+  BOOL _selfHasShowExtensionFilter;
 }
 
 /*
