@@ -382,6 +382,9 @@ static NSColor *scrollBarColor = nil;
       _knobProportion = ratio;
     }
 
+  /* Make sure we mark ourselves as needing redisplay.  */
+  _floatValue = -1;
+  
   [self setFloatValue: aFloat];
 }
 
