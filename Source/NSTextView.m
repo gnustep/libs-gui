@@ -90,8 +90,8 @@
 
 - (void)dealloc
 {
-  RELEASE(_selectedTextAttributes);
-  RELEASE(_markedTextAttributes);
+  RELEASE (_selectedTextAttributes);
+  RELEASE (_markedTextAttributes);
 
   [super dealloc];
 }
@@ -111,7 +111,8 @@
 {
   // Notify layoutManager of change?
 
-  ASSIGN(_textContainer, aTextContainer);
+  /* Do not retain: text container is owning us. */
+  _textContainer = aTextContainer;
 }
 
 - (void) setTextContainerInset: (NSSize)inset
