@@ -1,3 +1,30 @@
+Fri Mar 17 23:33:40 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	First alpha implementation of NSTableView.  Mouse interaction 
+	not yet implemented, with the exception of scrolling.
+	* Source/NSScrollView.m: Added NSTableView support.
+	([-_doScroll:]): If we have a header view, scroll the header view
+	too.  ([-tile]): Added code to tile header clip view and corner
+	view if we have them.  ([-drawRect:]): Added code for the case we
+	have a header view and/or a corner view; fixed drawing of border.
+	([-setDocumentView:]): Added code to check if the document view
+	responds to the methods cornerView and headerView, as per macosx
+	NSTableView spec, and to manage the various cases.
+	* Headers/AppKit/NSScrollView.h: New ivars _hasCornerView,
+	_hasHeaderView, _headerClipView.
+	* Source/NSTableColumn.m ([-setWidth:]): Invoke [-tile] in the
+	table view.
+	* Source/NSTableHeaderCell.m ([-initTextCell:]): Set bezeled as
+	yes; set font.  ([-drawWithFrame:inView:]): New method; draw a
+	gray bezel border.
+	* Source/NSTableHeaderView.m ([-columnAtPoint:]): Implemented.
+	([-headerRectOfColumn:]): Rewritten.  ([-drawRect:]): Rewritten.
+	* Source/NSTableView.m: [Re]Written from scratch.
+	* Headers/AppKit/NSTableView.h: Idem.
+	* Source/externs.m: Added NSTableView notifications.
+	* Headers/AppKit/AppKit.h: Added NSTableView.h,
+	NSTableHeaderView.h, NSTableHeaderCell.h.
+
 2000-03-17  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/gnustep/gui/NSGraphics.h: Removed the inclusion of PSOps
