@@ -1,3 +1,10 @@
+2003-02-18 18:03  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/GSLayoutManager_internal.h,
+	Source/GSLayoutManager.m, Source/NSLayoutManager.m: Implement
+	handling of soft-invalidated line frags. Soft-invalidate layout
+	information for glyphs after an edited range in NSLayoutManager.
+
 2003-02-18 01:23  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/GSLayoutManager_internal.h,

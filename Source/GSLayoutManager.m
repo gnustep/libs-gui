@@ -1455,7 +1455,7 @@ places where we switch.
       tc->started = tc->complete = NO;
       if (tc->linefrags)
 	{
-	  for (j = 0, lf = tc->linefrags; j < tc->num_linefrags; j++, lf++)
+	  for (j = 0, lf = tc->linefrags; j < tc->num_linefrags + tc->num_soft; j++, lf++)
 	    {
 	      if (lf->points)
 		free(lf->points);
@@ -1466,7 +1466,7 @@ places where we switch.
 	  free(tc->linefrags);
 	}
       tc->linefrags = NULL;
-      tc->num_linefrags = 0;
+      tc->num_linefrags = tc->num_soft = 0;
       tc->pos = tc->length = 0;
       tc->was_invalidated = YES;
     }
@@ -1524,6 +1524,29 @@ places where we switch.
 	    break;
 	}
       tc->complete = YES;
+      if (tc->num_soft)
+	{
+	  /*
+	  If there is any soft invalidated layout information left, remove
+	  it.
+	  */
+	  int k;
+	  linefrag_t *lf;
+	  for (k = tc->num_linefrags, lf = tc->linefrags + k; k < tc->num_linefrags + tc->num_soft; k++, lf++)
+	    {
+	      if (lf->points)
+		{
+		  free(lf->points);
+		  lf->points = NULL;
+		}
+	      if (lf->attachments)
+		{
+		  free(lf->attachments);
+		  lf->attachments = NULL;
+		}
+	    }
+	  tc->num_soft = 0;
+	}
       if (delegate_responds)
 	{
 	  [_delegate layoutManager: self
@@ -1592,77 +1615,6 @@ by calling this incorrectly.
 		      actualCharacterRange: (NSRange *)actualRange
 {
   [self _invalidateLayoutFromContainer: 0];
-#if 0
-  /* TODO: need to bring this up to date and fix it */
-  unsigned int from_glyph = glyphs->glyph_length;
-  int i, j;
-  textcontainer_t *tc;
-  linefrag_t *lf;
-
-  if (from_glyph)
-    {
-      unsigned int chi = [self characterIndexForGlyphAtIndex: from_glyph - 1];
-      if (chi > aRange.location)
-	{
-	  from_glyph = [self glyphRangeForCharacterRange: NSMakeRange(aRange.location, 1)
-			   actualCharacterRange: actualRange].location;
-	}
-      else
-	{
-	  if (actualRange)
-	    actualRange->location = chi;
-	}
-    }
-  else
-    {
-      if (actualRange)
-	actualRange->location = 0;
-    }
-  if (actualRange)
-    actualRange->length = [_textStorage length] - actualRange->location;
-
-  if (layout_glyph <= from_glyph)
-    return;
-
-  for (i = 0, tc = textcontainers; i < num_textcontainers; i++, tc++)
-    if (tc->pos + tc->length > from_glyph)
-      break;
-  if (i == num_textcontainers)
-    {
-      NSLog(@"%s: can't find text container for glyph (internal error)", __PRETTY_FUNCTION__);
-      return;
-    }
-  j = i;
-
-  for (i = 0, lf = tc->linefrags; i < tc->num_linefrags; i++, lf++)
-    if (lf->pos + lf->length > from_glyph)
-      break;
-  if (i == tc->num_linefrags)
-    {
-      NSLog(@"%s: can't find line frag rect for glyph (internal error)", __PRETTY_FUNCTION__);
-      return;
-    }
-
-  if (i)
-    {
-      int idx = i;
-      for (; i < tc->num_linefrags; i++, lf++)
-	{
-	  if (lf->points)
-	    free(lf->points);
-	  if (lf->attachments)
-	    free(lf->attachments);
-	}
-      tc->num_linefrags = idx;
-      tc->length = tc->linefrags[idx - 1].pos + tc->linefrags[idx - 1].length - tc->pos;
-      tc->complete = NO;
-      [self _invalidateLayoutFromContainer: j + 1];
-    }
-  else
-    {
-      [self _invalidateLayoutFromContainer: j];
-    }
-#endif
 }
 
 
@@ -1780,6 +1732,7 @@ by calling this incorrectly.
       return;
     }
 
+  /* Make sure the given glyph range matches earlier layout. */
   if (!tc->num_linefrags)
     {
       if (glyphRange.location != tc->pos)
@@ -1789,9 +1742,6 @@ by calling this incorrectly.
 			      __PRETTY_FUNCTION__];
 	  return;
 	}
-      tc->linefrags = malloc(sizeof(linefrag_t));
-      tc->num_linefrags = 1;
-      lf = tc->linefrags;
     }
   else
     {
@@ -1803,10 +1753,66 @@ by calling this incorrectly.
 			      __PRETTY_FUNCTION__];
 	  return;
 	}
+    }
+
+  if (!(tc->num_linefrags + tc->num_soft))
+    {
+      tc->linefrags = malloc(sizeof(linefrag_t));
+      tc->num_linefrags = 1;
+      lf = tc->linefrags;
+    }
+  else if (!tc->num_soft)
+    {
       tc->num_linefrags++;
       tc->linefrags = realloc(tc->linefrags, sizeof(linefrag_t) * tc->num_linefrags);
       lf = &tc->linefrags[tc->num_linefrags - 1];
     }
+  else
+    {
+      int i;
+      for (i = tc->num_linefrags, lf = tc->linefrags + i; i < tc->num_linefrags + tc->num_soft; i++, lf++)
+	{
+	  if (lf->pos >= NSMaxRange(glyphRange))
+	    break;
+	  if (lf->points)
+	    {
+	      free(lf->points);
+	      lf->points = NULL;
+	    }
+	  if (lf->attachments)
+	    {
+	      free(lf->attachments);
+	      lf->attachments = NULL;
+	    }
+	}
+
+      if (i == tc->num_linefrags)
+	{
+	  /*
+	  If we should keep all soft frags, we need to enlarge the array
+	  to fit the new line frag.
+	  */
+	  tc->linefrags = realloc(tc->linefrags, sizeof(linefrag_t) * (tc->num_linefrags + tc->num_soft + 1));
+	  memmove(&tc->linefrags[tc->num_linefrags + 1], &tc->linefrags[tc->num_linefrags], tc->num_soft * sizeof(linefrag_t));
+	}
+      else if (i > tc->num_linefrags + 1)
+	{
+	  tc->num_soft -= i - tc->num_linefrags;
+	  memmove(&tc->linefrags[tc->num_linefrags + 1], &tc->linefrags[i], tc->num_soft * sizeof(linefrag_t));
+	}
+      else
+	{
+	  /*
+	  If i == tc->num_linefrags + 1, we're lucky and everything already
+	  lines up, so no moving is necessary.
+	  */
+	  tc->num_soft--;
+	}
+
+      tc->num_linefrags++;
+      lf = &tc->linefrags[tc->num_linefrags - 1];
+    }
+
   memset(lf, 0, sizeof(linefrag_t));
   lf->rect = fragmentRect;
   lf->used_rect = usedRect;

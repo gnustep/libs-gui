@@ -184,8 +184,14 @@ typedef struct GSLayoutManager_textcontainer_s
   */
   BOOL was_invalidated;
 
+  /*
+  The array actually has num_soft+num_linefrags entries. Only the
+  num_linefrags first are significant, the rest hold soft invalidated
+  layout information.
+  */
   linefrag_t *linefrags;
   int num_linefrags;
+  int num_soft;
 } textcontainer_t;
 
 

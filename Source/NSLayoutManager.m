@@ -1732,6 +1732,45 @@ TODO: not really clear what these should do
 }
 
 
+-(void) _dumpLayout
+{
+  int i, j, k;
+  textcontainer_t *tc;
+  linefrag_t *lf;
+  linefrag_point_t *lp;
+  linefrag_attachment_t *la;
+
+  for (i = 0, tc = textcontainers; i < num_textcontainers; i++, tc++)
+    {
+      printf("tc %2i, %5i+%5i\n",i,tc->pos,tc->length);
+      printf("  lfs: (%3i)\n", tc->num_linefrags);
+      for (j = 0, lf = tc->linefrags; j < tc->num_linefrags; j++, lf++)
+	{
+	  printf("   %3i : %5i+%5i  (%g %g)+(%g %g)\n",
+	    j,lf->pos,lf->length,
+	    lf->rect.origin.x,lf->rect.origin.y,
+	    lf->rect.size.width,lf->rect.size.height);
+	  for (k = 0, lp = lf->points; k < lf->num_points; k++, lp++)
+	    printf("               p%3i : %5i+%5i\n",k,lp->pos,lp->length);
+	  for (k = 0, la = lf->attachments; k < lf->num_attachments; k++, la++)
+	    printf("               a%3i : %5i+%5i\n",k,la->pos,la->length);
+	}
+      printf("  softs: (%3i)\n", tc->num_soft);
+      for (; j < tc->num_linefrags + tc->num_soft; j++, lf++)
+	{
+	  printf("   %3i : %5i+%5i  (%g %g)+(%g %g)\n",
+	    j,lf->pos,lf->length,
+	    lf->rect.origin.x,lf->rect.origin.y,
+	    lf->rect.size.width,lf->rect.size.height);
+	  for (k = 0, lp = lf->points; k < lf->num_points; k++, lp++)
+	    printf("               p%3i : %5i+%5i\n",k,lp->pos,lp->length);
+	  for (k = 0, la = lf->attachments; k < lf->num_attachments; k++, la++)
+	    printf("               a%3i : %5i+%5i\n",k,la->pos,la->length);
+	}
+    }
+}
+
+
 /*
 We completely override this method and use the extra information we have
 about layout to do smarter invalidation. The comments at the beginning of
@@ -1744,6 +1783,20 @@ this file describes this.
     invalidatedRange: (NSRange)invalidatedRange
 {
   NSRange r;
+  unsigned int original_last_glyph, new_last_glyph;
+  int glyph_delta;
+
+/*  printf("\n*** invalidating\n");
+  [self _dumpLayout];*/
+
+  /*
+  Using -glyphRangeForChara... here would be safer, but we must make
+  absolutely sure that we don't cause any glyph generation until the
+  invalidation is done.
+
+  TODO: make sure last_glyph is set as expected
+  */
+  original_last_glyph = layout_glyph;
 
   if (!(mask & NSTextStorageEditedCharacters))
     lengthChange = 0;
@@ -1752,12 +1805,29 @@ this file describes this.
 	changeInLength: lengthChange
 	actualCharacterRange: &r];
 
-  if (r.location <= layout_char)
+  if (layout_char > r.location)
     {
-      unsigned int glyph_index;
+      layout_char += lengthChange;
+      if (layout_char < r.location)
+        layout_char = r.location;
+    }
+
+  if (layout_char == [_textStorage length])
+    new_last_glyph = [self numberOfGlyphs];
+  else
+    new_last_glyph = [self glyphRangeForCharacterRange: NSMakeRange(layout_char, 1)
+				  actualCharacterRange: NULL].location;
+
+  glyph_delta = new_last_glyph - original_last_glyph;
+/*  printf("original=%i, new=%i, delta %i\n",
+    original_last_glyph,new_last_glyph,glyph_delta);*/
+
+  if (r.location < layout_char)
+    {
+      unsigned int glyph_index, last_glyph;
       textcontainer_t *tc;
       linefrag_t *lf;
-      int i, j;
+      int i, j, k;
       int new_num;
       NSRange char_range;
 
@@ -1784,75 +1854,212 @@ this file describes this.
 			 actualCharacterRange: &char_range].location;
 	}
 
-	/* glyph_index is the first index we should invalidate for. */
-	for (j = 0, tc = textcontainers; j < num_textcontainers; j++, tc++)
-	  if (tc->pos + tc->length >= glyph_index)
+      /*
+      For soft invalidation, we need to know where to stop hard-invalidating.
+      This will cause immediate glyph generation to fill the gaps the
+      invalidation caused.
+      */
+      if (NSMaxRange(r) == [_textStorage length])
+	{
+	  last_glyph = [self numberOfGlyphs];
+	}
+      else
+	{
+	  last_glyph =
+	    [self glyphRangeForCharacterRange: NSMakeRange(NSMaxRange(r),1)
+			 actualCharacterRange: NULL].location;
+	}
+      last_glyph -= glyph_delta;
+
+      /* glyph_index is the first index we should invalidate for. */
+      for (j = 0, tc = textcontainers; j < num_textcontainers; j++, tc++)
+	if (tc->pos + tc->length >= glyph_index)
+	  break;
+
+      LINEFRAG_FOR_GLYPH(glyph_index);
+
+      /*
+      We invalidate the entire line containing lf, and the entire
+      previous line. Thus, we scan backwards to find the first line frag
+      on the previous line.
+      */
+      while (i > 0 && lf[-1].rect.origin.y == lf->rect.origin.y)
+	lf--, i--;
+      /* Now we have the first line frag on this line. */
+      if (i > 0)
+	{
+	  lf--, i--;
+	}
+      else
+	{
+	  /*
+	  The previous line isn't in this text container, so we move
+	  to the previous text container.
+	  */
+	  if (j > 0)
+	    {
+	      j--;
+	      tc--;
+	      i = tc->num_linefrags - 1;
+	      lf = tc->linefrags + i;
+	    }
+	}
+      /* Last line frag on previous line. */
+      while (i > 0 && lf[-1].rect.origin.y == lf->rect.origin.y)
+	lf--, i--;
+      /* First line frag on previous line. */
+
+      /* Invalidate all line frags that intersect the invalidated range. */
+      new_num = i;
+      while (1)
+	{
+	  for (; i < tc->num_linefrags + tc->num_soft; i++, lf++)
+	    {
+	      /*
+	      Since we must invalidate whole lines, we can only stop if
+	      the line frag is beyond the invalidated range, and the line
+	      frag is the first line frag in a line.
+	      */
+	      if (lf->pos >= last_glyph &&
+		  (!i || lf[-1].rect.origin.y != lf->rect.origin.y))
+		{
+		  break;
+		}
+	      if (lf->points)
+		{
+		  free(lf->points);
+		  lf->points = NULL;
+		}
+	      if (lf->attachments)
+		{
+		  free(lf->attachments);
+		  lf->attachments = NULL;
+		}
+	    }
+	  if (i < tc->num_linefrags + tc->num_soft)
+	    break;
+	  tc->num_linefrags = new_num;
+	  tc->num_soft = 0;
+	  tc->was_invalidated = YES;
+	  tc->complete = NO;
+	  if (new_num)
+	    {
+	      tc->length = tc->linefrags[new_num-1].pos + tc->linefrags[new_num-1].length - tc->pos;
+	    }
+	  else
+	    {
+	      tc->pos = tc->length = 0;
+	      tc->started = NO;
+	    }
+
+	  j++, tc++;
+	  if (j == num_textcontainers)
 	    break;
 
-	LINEFRAG_FOR_GLYPH(glyph_index);
+	  new_num = 0;
+	  i = 0;
+	  lf = tc->linefrags;
+	}
 
-	/*
-	We invalidate the entire line containing lf, and the entire
-	previous line. Thus, we scan backwards to find the first line frag
-	on the previous line.
-	*/
-	while (i > 0 && lf[-1].rect.origin.y == lf->rect.origin.y)
-	  lf--, i--;
-	/* Now we have the first line frag on this line. */
-	if (i > 0)
-	  {
-	    lf--, i--;
-	  }
-	else
-	  {
-	    /*
-	    The previous line isn't in this text container, so we move
-	    to the previous text container.
-	    */
-	    if (j > 0)
-	      {
-		j--;
-		tc--;
-		i = tc->num_linefrags - 1;
-		lf = tc->linefrags + i;
-	      }
-	  }
-	/* Last line frag on previous line. */
-	while (i > 0 && lf[-1].rect.origin.y == lf->rect.origin.y)
-	  lf--, i--;
-	/* First line frag on previous line. */
+      if (j == num_textcontainers)
+	goto no_soft_invalidation;
 
-	new_num = i;
-	for (; i < tc->num_linefrags; i++)
-	  {
-	    if (lf->points)
-	      {
-		free(lf->points);
-		lf->points = NULL;
-	      }
-	    if (lf->attachments)
-	      {
-		free(lf->attachments);
-		lf->attachments = NULL;
-	      }
-	  }
-	tc->num_linefrags = new_num;
-	tc->was_invalidated = YES;
-	tc->complete = NO;
-	if (new_num)
-	  {
-	    tc->length = tc->linefrags[new_num-1].pos + tc->linefrags[new_num-1].length - tc->pos;
-	  }
-	else
-	  {
-	    tc->pos = tc->length = 0;
-	    tc->started = NO;
-	  }
+      if (new_num != i)
+	{
+	  /*
+	  There's a gap between the last valid line frag and the first
+	  soft line frag. Compact the linefrags.
+	  */
+	  memmove(tc->linefrags + new_num, lf, sizeof(linefrag_t) * (tc->num_linefrags + tc->num_soft - i));
+	  tc->num_linefrags -= i - new_num;
+	  i = new_num;
+	  lf = tc->linefrags + i;
+	}
+      tc->num_soft += tc->num_linefrags - new_num;
+      tc->num_linefrags = new_num;
+      tc->was_invalidated = YES;
+      tc->complete = NO;
+      if (new_num)
+	{
+	  tc->length = tc->linefrags[new_num-1].pos + tc->linefrags[new_num-1].length - tc->pos;
+	}
+      else
+	{
+	  tc->pos = tc->length = 0;
+	  tc->started = NO;
+	}
 
-	/* This works even if j+1>=num_textcontainers, and it sets
-	layout_char and layout_glyph for us. */
-	[self _invalidateLayoutFromContainer: j + 1];
+      /*
+      Soft invalidate all remaining layout. Update their glyph positions
+      and set the soft-invalidate markers in the text containers.
+      */
+      while (1)
+	{
+	  for (; i < tc->num_linefrags + tc->num_soft; i++, lf++)
+	    {
+	      lf->pos += glyph_delta;
+	      for (k = 0; k < lf->num_points; k++)
+		lf->points[k].pos += glyph_delta;
+	      for (k = 0; k < lf->num_attachments; k++)
+		lf->attachments[k].pos += glyph_delta;
+	    }
+	
+	  j++, tc++;
+	  if (j == num_textcontainers)
+	    break;
+	  i = 0;
+	  lf = tc->linefrags;
+	}
+
+no_soft_invalidation:
+      /* Set layout_glyph and layout_char. */
+      for (i = num_textcontainers - 1, tc = textcontainers + i; i >= 0; i--, tc--)
+	{
+	  if (tc->started)
+	    {
+	      layout_glyph = tc->pos + tc->length;
+	      if (layout_glyph == glyphs->glyph_length)
+		layout_char = glyphs->char_length;
+	      else
+		layout_char = [self characterIndexForGlyphAtIndex: layout_glyph]; /* TODO? */
+	      break;
+	    }
+        }
+      if (i < 0)
+	layout_glyph = layout_char = 0;
     }
+  else
+    {
+      int i, j;
+      linefrag_t *lf;
+      textcontainer_t *tc;
+      /*
+      TODO: could handle this better, but it should be a rare case,
+      handling it efficiently is tricky.
+
+      For now, we simply clear out all soft invalidation information.
+      */
+      for (i = 0, tc = textcontainers; i < num_textcontainers; i++, tc++)
+	{
+	  for (j = 0, lf = tc->linefrags + j; j < tc->num_soft; j++, lf++)
+	    {
+	      if (lf->points)
+		{
+		  free(lf->points);
+		  lf->points = NULL;
+		}
+	      if (lf->attachments)
+		{
+		  free(lf->attachments);
+		  lf->attachments = NULL;
+		}
+	    }
+	  tc->num_soft = 0;
+	}
+    }
+
+/*  [self _dumpLayout];
+  printf("*** done\n");*/
 
   [self _didInvalidateLayout];
 
