@@ -1,3 +1,15 @@
+2001-12-01  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWorkspace.m
+	Moved all private methods into seperate category. New method
+	[_connectApplication:], use this in [openFile:...] and
+	[launchApplication:...]. Implemented [openTempFile:].
+	New method [_workspaceApplication] used to implement
+	[performFileOperation:...] and [selectFile:inFileViewerRootedAtPath:].
+	* Source/NSApplication.m
+	[finishLaunching] and [terminate:] send workspace notification
+	with the shared workspace as object.
+	
 Sat Dec  1 10:10:58 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* GNUmakefile.postamble (gui.make): Depend on configure.
