@@ -1,3 +1,12 @@
+Fri Dec 17 12:03:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSWindow.m: Remove some inefficient code that was calling
+	([content_view superview]) when we now have the _wv ivar.
+	* Source/NSView.m: Fix another autodisplay problem - when an opaque
+	subview was being set as needing display AND another non-overlapping
+	subview was set for display, the opaque subview didn't get redrawn.
+	* Source/NSPopUpButton.m: removed an NSLog
+
 1999-12-16 Adam Fedor <fedor@gnu.org>
 
 	* New RTF parser from Stefan Bðhringer

@@ -281,8 +281,6 @@ Class _nspopupbuttonCellClass = 0;
 
   [self sizeToFit];
 
-  NSLog(@"synchronizeTitleAndSelectedItem");
-
   [self setNeedsDisplay: YES];
 }
 

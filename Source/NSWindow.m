@@ -1003,7 +1003,7 @@ static NSMapTable* windowmaps = NULL;
   [first_responder becomeFirstResponder];
 
   [self disableFlushWindow];
-  [[content_view superview] display];
+  [_wv display];
   [self enableFlushWindow];
   [self flushWindowIfNeeded];
 }
@@ -1012,7 +1012,7 @@ static NSMapTable* windowmaps = NULL;
 {
   if (_rFlags.needs_display)
     {
-      [[content_view superview] displayIfNeeded];
+      [_wv displayIfNeeded];
       _rFlags.needs_display = NO;
     }
 }
@@ -1243,7 +1243,7 @@ discardCursorRectsForView(NSView *theView)
 
 - (void) discardCursorRects
 {
-  discardCursorRectsForView([content_view superview]);
+  discardCursorRectsForView(_wv);
 }
 
 - (void) enableCursorRects
@@ -1292,7 +1292,7 @@ resetCursorRectsForView(NSView *theView)
 - (void) resetCursorRects
 {
   [self discardCursorRects];
-  resetCursorRectsForView([content_view superview]);
+  resetCursorRectsForView(_wv);
   _f.cursor_rects_valid = YES;
 }
 
@@ -2228,33 +2228,23 @@ resetCursorRectsForView(NSView *theView)
 	    source: (id)sourceObject
 	 slideBack: (BOOL)slideFlag
 {
-  /*
-   * Ensure we have a content view and it's associated window view.
-   */
-  if (content_view == nil)
-    [self setContentView: nil];
-  [[content_view superview] dragImage: anImage
-				   at: baseLocation
-			       offset: initialOffset
-			        event: event
-			   pasteboard: pboard
-			       source: sourceObject
-			    slideBack: slideFlag];
+  [_wv dragImage: anImage
+	      at: baseLocation
+	  offset: initialOffset
+	   event: event
+      pasteboard: pboard
+	  source: sourceObject
+       slideBack: slideFlag];
 }
 
 - (void) registerForDraggedTypes: (NSArray*)newTypes
 {
-  /*
-   * Ensure we have a content view and it's associated window view.
-   */
-  if (content_view == nil)
-    [self setContentView: nil];
-  [[content_view superview] registerForDraggedTypes: newTypes];
+  [_wv registerForDraggedTypes: newTypes];
 }
 
 - (void) unregisterDraggedTypes
 {
-  [[content_view superview] unregisterDraggedTypes];
+  [_wv unregisterDraggedTypes];
 }
 
 /*

@@ -1377,18 +1377,11 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	  if (coordinates_valid == NO)
 	    [self _rebuildCoordinates];
 	  /*
-	   *	If this view is higher in the view hierarchy than one that
-	   *	actually needs display, it's invalidRect will be empty, so
-	   *	we need to set it to the visibleRect.
+	   * If this view is higher in the view hierarchy than ones that
+	   * actually needed display, it's invalidRect may not contain them
+	   * so we need to display the union with the visibleRect.
 	   */
-	  if (NSIsEmptyRect(invalidRect) == YES)
-	    {
-	      rect = visibleRect;
-	    }
-	  else
-	    {
-	      rect = invalidRect;
-	    }
+	  rect = NSUnionRect(invalidRect, visibleRect);
 	  rect = [firstOpaque convertRect: rect fromView: self];
 	  [firstOpaque displayIfNeededInRectIgnoringOpacity: rect];
 	}
@@ -1404,18 +1397,11 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       if (coordinates_valid == NO)
 	[self _rebuildCoordinates];
       /*
-       *	If this view is higher in the view hierarchy than one that
-       *	actually needs display, it's invalidRect will be empty, so
-       *	we need to set it to the visibleRect.
+       * If this view is higher in the view hierarchy than ones that
+       * actually needed display, it's invalidRect may not contain them
+       * so we need to display the union with the visibleRect.
        */
-      if (NSIsEmptyRect(invalidRect) == YES)
-	{
-	  rect = visibleRect;
-	}
-      else
-	{
-	  rect = invalidRect;
-	}
+      rect = NSUnionRect(invalidRect, visibleRect);
       [self displayIfNeededInRectIgnoringOpacity: rect];
     }
 }
