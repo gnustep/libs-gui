@@ -3,7 +3,7 @@
 
    The colorful color class
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1998 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -37,10 +37,11 @@
 @class NSPasteboard;
 
 // What component should we take values from
+// Bitmask - more than one component set may be valid.
 #define GNUSTEP_GUI_RGB_ACTIVE 1
 #define GNUSTEP_GUI_CMYK_ACTIVE 2
-#define GNUSTEP_GUI_HSB_ACTIVE 3
-#define GNUSTEP_GUI_WHITE_ACTIVE 4
+#define GNUSTEP_GUI_HSB_ACTIVE 4
+#define GNUSTEP_GUI_WHITE_ACTIVE 8
 
 enum {
   NSGrayModeColorPanel,
@@ -63,7 +64,7 @@ enum {
   NSColorPanelAllModesMask  
 };
 
-@interface NSColor : NSObject <NSCoding>
+@interface NSColor : NSObject <NSCoding, NSCopying>
 {
   // Attributes
   NSString *colorspace_name;
@@ -101,6 +102,8 @@ enum {
 
   // Reserved for back-end use
   void *be_color_reserved;
+
+  int valid_components;
 }
 
 //
@@ -231,8 +234,48 @@ enum {
 - (void)encodeWithCoder:aCoder;
 - initWithCoder:aDecoder;
 
+#ifndef	STRICT_OPENSTEP
+//
+// Changing the color
+//
+- (NSColor*) blendedColorWithFraction: (float)fraction
+			      ofColor: (NSColor*)aColor;
+- (NSColor*) colorWithAlphaComponent: (float)alpha;
+- (NSColor*) highlightWithLevel: (float)level;
+- (NSColor*) shadowWithLevel: (float)level;
+
+//
+// System colors stuff.
+//
++ (NSColor*) controlBackgroundColor;
++ (NSColor*) controlColor;
++ (NSColor*) controlHighlightColor;
++ (NSColor*) controlLightHighlightColor;
++ (NSColor*) controlShadowColor;
++ (NSColor*) controlDarkShadowColor;
++ (NSColor*) controlTextColor;
++ (NSColor*) disabledControlTextColor;
++ (NSColor*) gridColor;
++ (NSColor*) highlightColor;
++ (NSColor*) knobColor;
++ (NSColor*) scrollBarColor;
++ (NSColor*) selectedControlColor;
++ (NSColor*) selectedControlTextColor;
++ (NSColor*) selectedMenuItemColor;
++ (NSColor*) selectedMenuItemTextColor;
++ (NSColor*) selectedTextBackgroundColor;
++ (NSColor*) selectedTextColor;
++ (NSColor*) selectedKnobColor;
++ (NSColor*) shadowColor;
++ (NSColor*) textBackgroundColor;
++ (NSColor*) textColor;
++ (NSColor*) windowFrameColor;
++ (NSColor*) windowFrameTextColor;
+#endif
+
 @end
 
+#ifndef	STRICT_MACOS_X
 @interface NSCoder (NSCoderAdditions)
 
 //
@@ -241,6 +284,7 @@ enum {
 - (NSColor *)decodeNXColor;
 
 @end
+#endif
 
 #endif // _GNUstep_H_NSColor
 

@@ -33,6 +33,12 @@
 
 @interface NSColor (GNUstepPrivate)
 
++ (NSColor*) colorFromString: (NSString*)string;
++ (void) defaultSystemColors;
++ (void) defaultsDidChange: (NSNotification*)notification;
+
+- (void) supportMaxColorSpaces;
+
 - (void)setColorSpaceName:(NSString *)str;
 - (void)setCatalogName:(NSString *)str;
 - (void)setColorName:(NSString *)str;
@@ -58,6 +64,7 @@
 
 - (void)setAlpha:(float)value;
 - (void)setActiveComponent:(int)value;
+- (void)setValidComponents:(int)value;
 - (void)setClear:(BOOL)flag;
 
 @end
