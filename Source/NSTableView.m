@@ -33,7 +33,7 @@
 #import <AppKit/NSTableColumn.h>
 #import <AppKit/NSTableHeaderView.h>
 #import <AppKit/NSTextFieldCell.h>
-
+#import <AppKit/PSOperators.h>
 
 @interface GSTableCornerView : NSView
 {}
