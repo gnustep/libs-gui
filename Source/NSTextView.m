@@ -2617,6 +2617,49 @@ afterString in order over charRange. */
     }
 }
 
+- (void) pageDown: (id)sender
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"pageDown:", "NSTextView");
+}
+
+- (void) pageUp: (id)sender
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"pageUp:", "NSTextView");
+}
+
+- (void) scrollLineDown: (id)sender
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"scrollLineDown:", "NSTextView");
+}
+
+- (void) scrollLineUp: (id)sender
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"scrollLineUp:", "NSTextView");
+}
+
+- (void) scrollPageDown: (id)sender
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"scrollPageDown:", "NSTextView");
+}
+
+- (void) scrollPageUp: (id)sender
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"scrollPageUp:", "NSTextView");
+}
+
+
 /* -selectAll: inherited from NSText  */
 
 - (void) selectLine: (id)sender
