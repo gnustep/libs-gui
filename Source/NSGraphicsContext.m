@@ -32,6 +32,7 @@
 #include <Foundation/NSException.h>
 #include <Foundation/NSData.h>
 #include <Foundation/NSLock.h>
+#include <Foundation/NSThread.h>
 #include <Foundation/NSZone.h>
 #include "AppKit/NSGraphicsContext.h"
 #include "AppKit/NSAffineTransform.h"
