@@ -517,9 +517,9 @@ static NSImage	*arrowImageH = nil;
 		    inView:(NSView *)controlView
 {
   if ([mcell_item isEnabled])
-    _cell.is_enabled = YES;
+    _cell.is_disabled = NO;
   else
-    _cell.is_enabled = NO;
+    _cell.is_disabled = YES;
 
   [self _drawText: [mcell_item title]
 	  inFrame: [self titleRectForBounds: cellFrame]];

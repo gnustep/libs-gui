@@ -473,7 +473,7 @@
    NSSize	size;
    NSPoint	point,oldPoint;
 
-   if (!_cell.is_enabled)
+   if (_cell.is_disabled)
       return;
 
    if (![self controlView])
