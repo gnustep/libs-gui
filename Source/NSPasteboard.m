@@ -617,11 +617,16 @@ static  NSMapTable              *mimeMap = NULL;
  * </p>
  * Standard pasteboard names are -
  * <list>
- *   <item>NSGeneralPboard</item>
- *   <item>NSFontPboard</item>
- *   <item>NSRulerPboard</item>
- *   <item>NSFindPboard</item>
- *   <item>NSDragPboard</item>
+ *   <item><ref type="variable" id="NSGeneralPboard">
+ *   NSGeneralPboard</ref></item>
+ *   <item><ref type="variable" id="NSFontPboard">
+ *   NSFontPboard</ref></item>
+ *   <item><ref type="variable" id="NSRulerPboard">
+ *   NSRulerPboard</ref></item>
+ *   <item><ref type="variable" id="NSFindPboard">
+ *   NSFindPboard</ref></item>
+ *   <item><ref type="variable" id="NSDragPboard">
+ *   NSDragPboard</ref></item>
  * </list>
  */
 + (NSPasteboard*) pasteboardWithName: (NSString*)aName
@@ -846,7 +851,8 @@ static  NSMapTable              *mimeMap = NULL;
 }
 
 /**
- * Returns the pasteboard name for the receiver.
+ * Returns the pasteboard name (as given to +pasteboardWithName:)
+ * for the receiver.
  */
 - (NSString*) name
 {
@@ -905,6 +911,52 @@ static  NSMapTable              *mimeMap = NULL;
  * is incremented and returned, rather than the last value specified
  * by the -setChangeCount: method.
  * </p>
+ * <p>The types you declare can be arbitrary strings, but as at least two
+ * applications really need to be aware of the same type for it to be
+ * of use, it is much more normal to use a predefined (standard) type
+ * or a type representing the name or content of a particular kind of
+ * file (returned by the NSCreateFilenamePboardType() or
+ * NSCreateFilenamePboardType() function).<br />
+ * The standard type for raw data is
+ * <ref type="variable" id="NSGeneralPboardType">NSGeneralPboardType</ref>
+ * </p>
+ * The predefined pasteboard types are -
+ * <list>
+ *   <item><ref type="variable" id="NSStringPboardType">
+ *   NSStringPboardType</ref></item>
+ *   <item><ref type="variable" id="NSColorPboardType">
+ *   NSColorPboardType</ref></item>
+ *   <item><ref type="variable" id="NSFileContentsPboardType">
+ *   NSFileContentsPboardType</ref></item>
+ *   <item><ref type="variable" id="NSFilenamesPboardType">
+ *   NSFilenamesPboardType</ref></item>
+ *   <item><ref type="variable" id="NSFontPboardType">
+ *   NSFontPboardType</ref></item>
+ *   <item><ref type="variable" id="NSRulerPboardType">
+ *   NSRulerPboardType</ref></item>
+ *   <item><ref type="variable" id="NSPostScriptPboardType">
+ *   NSPostScriptPboardType</ref></item>
+ *   <item><ref type="variable" id="NSTabularTextPboardType">
+ *   NSTabularTextPboardType</ref></item>
+ *   <item><ref type="variable" id="NSRTFPboardType">
+ *   NSRTFPboardType</ref></item>
+ *   <item><ref type="variable" id="NSRTFDPboardType">
+ *   NSRTFDPboardType</ref></item>
+ *   <item><ref type="variable" id="NSTIFFPboardType">
+ *   NSTIFFPboardType</ref></item>
+ *   <item><ref type="variable" id="NSDataLinkPboardType">
+ *   NSDataLinkPboardType</ref></item>
+ *   <item><ref type="variable" id="NSGeneralPboardType">
+ *   NSGeneralPboardType</ref></item>
+ *   <item><ref type="variable" id="NSPDFPboardType">
+ *   NSPDFPboardType</ref></item>
+ *   <item><ref type="variable" id="NSPICTPboardType">
+ *   NSPICTPboardType</ref></item>
+ *   <item><ref type="variable" id="NSURLPboardType">
+ *   NSURLPboardType</ref></item>
+ *   <item><ref type="variable" id="NSHTMLPboardType">
+ *   NSHTMLPboardType</ref></item>
+ * </list>
  */
 - (int) declareTypes: (NSArray*)newTypes
 	       owner: (id)newOwner
@@ -1134,7 +1186,7 @@ static  NSMapTable              *mimeMap = NULL;
 
 /**
  * Returns the first type listed in types which the receiver has been
- * declared to support.
+ * declared (see -declareTypes:owner:) to support.
  */
 - (NSString*) availableTypeFromArray: (NSArray*)types
 {
@@ -1159,7 +1211,8 @@ static  NSMapTable              *mimeMap = NULL;
 }
 
 /**
- * Returns all the types that the receiver has been declared to support.
+ * Returns all the types that the receiver has been declared to support.<br />
+ * See -declareTypes:owner: for details.
  */
 - (NSArray*) types
 {

@@ -146,7 +146,7 @@ APPKIT_EXPORT NSString *NSFindPboard;
 APPKIT_EXPORT NSString *NSFontPboard;
 
 /**
- * The general purpose pasteboard (mostly used for sut and paste)
+ * The general purpose pasteboard (mostly used for cut and paste)
  */
 APPKIT_EXPORT NSString *NSGeneralPboard;
 
