@@ -1,3 +1,8 @@
+2001-02-09  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSApplication.m: NSAppIconView modified to support the
+	opening of any documents dropped on the appicon using DnD.
+
 Fri Feb  9 18:07:13 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSTableView.m ([-noteNumberOfRowsChanged]): Fix for nil

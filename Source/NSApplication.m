@@ -71,12 +71,6 @@
 #include <AppKit/NSDataLinkPanel.h>
 #include <AppKit/NSHelpPanel.h>
 
-/* Prevent recursion handler */
-static void
-_preventRecursion (NSException *exception)
-{
-}
-
 /*
  * Base library exception handler
  */
@@ -141,6 +135,7 @@ struct _NSModalSession {
 
 @interface NSApplication (Private)
 - _appIconInit;
+- (void) _openDocument: (NSString*)name;
 - (void) _windowDidBecomeKey: (NSNotification*) notification;
 - (void) _windowDidBecomeMain: (NSNotification*) notification;
 - (void) _windowDidResignKey: (NSNotification*) notification;
@@ -225,10 +220,36 @@ static NSCell* tileCell = nil;
   return YES;
 }
 
+- (void) concludeDragOperation: (id<NSDraggingInfo>)sender
+{
+}
+
+- (unsigned) draggingEntered: (id<NSDraggingInfo>)sender
+{
+  return NSDragOperationGeneric;
+}
+
+- (void) draggingExited: (id<NSDraggingInfo>)sender
+{
+}
+
+- (unsigned) draggingUpdated: (id<NSDraggingInfo>)sender
+{
+  return NSDragOperationGeneric;
+}
+
 - (void) drawRect: (NSRect)rect
 {                                                
   [tileCell drawWithFrame: NSMakeRect(0,0,64,64) inView: self];
   [dragCell drawWithFrame: NSMakeRect(8,8,48,48) inView: self];
+}
+
+- (id) initWithFrame: (NSRect)frame
+{
+  self = [super initWithFrame: frame];
+  [self registerForDraggedTypes: [NSArray arrayWithObjects:
+    NSFilenamesPboardType, nil]];
+  return self;
 }
 
 - (void) mouseDown: (NSEvent*)theEvent
@@ -283,6 +304,33 @@ static NSCell* tileCell = nil;
       [NSEvent stopPeriodicEvents];
     }
 }                                                        
+
+- (BOOL) prepareForDragOperation: (id<NSDraggingInfo>)sender
+{
+  return YES;
+}
+
+- (BOOL) performDragOperation: (id<NSDraggingInfo>)sender
+{
+  NSArray	*types;
+  NSPasteboard	*dragPb;
+
+  dragPb = [sender draggingPasteboard];
+  types = [dragPb types];
+  if ([types containsObject: NSFilenamesPboardType] == YES)
+    {
+      NSArray	*names = [dragPb propertyListForType: NSFilenamesPboardType];
+      unsigned	index;
+
+      [NSApp activateIgnoringOtherApps: YES];
+      for (index = 0; index < [names count]; index++)
+	{
+	  [NSApp _openDocument: [names objectAtIndex: index]];
+	}
+      return YES;
+    }
+  return NO;
+}
 
 - (void) setImage: (NSImage *)anImage
 {
@@ -520,15 +568,7 @@ static NSCell* tileCell = nil;
   if ((filePath = [defs stringForKey: @"GSFilePath"]) != nil ||
       (filePath = [defs stringForKey: @"NSOpen"]) != nil)
     {
-      if ([_delegate respondsToSelector: @selector(application:openFile:)])
-	{
-	  [_delegate application: self openFile: filePath];
-	}
-      else
-	{
-	  [[NSDocumentController sharedDocumentController]
-	    openDocumentWithContentsOfFile:filePath display:YES];
-	}
+      [self _openDocument: filePath];
     }
   else if ((filePath = [defs stringForKey: @"GSTempPath"]) != nil)
     {
@@ -539,7 +579,7 @@ static NSCell* tileCell = nil;
       else
 	{
 	  [[NSDocumentController sharedDocumentController]
-	    openDocumentWithContentsOfFile:filePath display:YES];
+	    openDocumentWithContentsOfFile: filePath display: YES];
 	}
     }
   // TODO: Should also support printing of a file here.
@@ -2131,6 +2171,19 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
   [_app_icon_window orderFrontRegardless];
   DPSsetinputfocus(GSCurrentContext(), [_app_icon_window windowNumber]);
   return self;
+}
+
+- (void) _openDocument: (NSString*)filePath
+{
+  if ([_delegate respondsToSelector: @selector(application:openFile:)])
+    {
+      [_delegate application: self openFile: filePath];
+    }
+  else
+    {
+      [[NSDocumentController sharedDocumentController]
+	openDocumentWithContentsOfFile: filePath display: YES];
+    }
 }
 
 - (void) _windowDidBecomeKey: (NSNotification*) notification
