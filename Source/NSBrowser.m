@@ -1356,11 +1356,11 @@
         r.origin.x = n * (_columnSize.width + NSBR_COLUMN_SEP);
       else
       	r.origin.x = n * _columnSize.width;
-      r.origin.y = frame.size.height - h;
+      r.origin.y = _frame.size.height - h;
       
       // Calculate size
       if (column == _lastVisibleColumn)
-	r.size.width = frame.size.width - r.origin.x;
+	r.size.width = _frame.size.width - r.origin.x;
       else
       	r.size.width = _columnSize.width;
       r.size.height = h;
@@ -1699,7 +1699,7 @@
 
   // Padding : _columnSize.width is rounded in "tile" method
   if (column == _lastVisibleColumn)
-    r.size.width = frame.size.width - r.origin.x;
+    r.size.width = _frame.size.width - r.origin.x;
 
   if (r.size.width < 0)
     r.size.width = 0;
@@ -1751,13 +1751,13 @@
 //#define NSBTRACE_tile
 #if defined NSBTRACE_tile || defined NSBTRACE_all
   fprintf(stderr, "NSBrowser - (void)tile - num: %d, frame: %s\n",
-          num, [NSStringFromRect(frame) cString]);
+          num, [NSStringFromRect(_frame) cString]);
 #endif
 
   if (num <= 0)
     return;
 
-  _columnSize.height = frame.size.height;
+  _columnSize.height = _frame.size.height;
   
   // Titles (there is no real frames to resize)
   if (_isTitled)
@@ -1768,7 +1768,7 @@
     {
       _scrollerRect.origin.x = bs.width;
       _scrollerRect.origin.y = bs.height;
-      _scrollerRect.size.width = frame.size.width - (2 * bs.width);
+      _scrollerRect.size.width = _frame.size.width - (2 * bs.width);
       _scrollerRect.size.height = [NSScroller scrollerWidth];
 
       _columnSize.height -= [NSScroller scrollerWidth] + (2 * bs.height)
@@ -1781,10 +1781,10 @@
   
   // Columns
   if (_separatesColumns)
-    _columnSize.width = (int)((frame.size.width - ((num - 1) * NSBR_COLUMN_SEP))
+    _columnSize.width = (int)((_frame.size.width - ((num - 1) * NSBR_COLUMN_SEP))
                               / (float)num);
   else
-    _columnSize.width = (int)(frame.size.width / (float)num);
+    _columnSize.width = (int)(_frame.size.width / (float)num);
 
   if (_columnSize.height < 0)
     _columnSize.height = 0;
@@ -2005,7 +2005,9 @@
 	}
       // Multiple selection
       else
-	[self setLastColumn: column];
+	{
+	  [self setLastColumn: column];
+	}
     }
 
   // Send the action to target
@@ -2125,7 +2127,7 @@
   // Horizontal scroller
   _scrollerRect.origin.x = bs.width;
   _scrollerRect.origin.y = bs.height;
-  _scrollerRect.size.width = frame.size.width - (2 * bs.width);
+  _scrollerRect.size.width = _frame.size.width - (2 * bs.width);
   _scrollerRect.size.height = [NSScroller scrollerWidth];
   _horizontalScroller = [[NSScroller alloc] initWithFrame: _scrollerRect];
   [_horizontalScroller setTarget: self];
@@ -2230,7 +2232,7 @@
 #endif
 
   NSRectClip(rect);
-  [[window backgroundColor] set];
+  [[_window backgroundColor] set];
   NSRectFill(rect);
 
   // Load the first column if not already done
@@ -2268,8 +2270,8 @@
       scrollerBorderRect.size.width += 2 * bs.width;
       scrollerBorderRect.size.height += 2 * bs.height;
 
-      if (! NSIsEmptyRect(NSIntersectionRect(scrollerBorderRect, rect)) &&
-          [self window])
+      if (! NSIsEmptyRect(NSIntersectionRect(scrollerBorderRect, rect)) 
+	  && _window)
       	{
 	  [self lockFocus];
       	  NSDrawGrayBezel(scrollerBorderRect, rect);
@@ -2517,7 +2519,7 @@
 
 - (void)_performLoadOfColumn: (int)column
 {
-  id bc, sc, matrix;
+  id bc, sc, matrix = nil;
   NSRect matrixRect = {{0, 0}, {100, 100}};
 
 #if defined NSBTRACE__performLoadOfColumn || defined NSBTRACE_all
@@ -2714,7 +2716,7 @@
   if (_isTitled)
     {
       NSRect r = [self titleFrameOfColumn: _firstVisibleColumn];
-      r.size.width = frame.size.width;
+      r.size.width = _frame.size.width;
       [self setNeedsDisplayInRect: r];
     }
 }
