@@ -1,3 +1,7 @@
+Yue May 25  3:55:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/Model/GMArchiver.m: Fix for save panels by Jonathan Gapen.
+
 1999-05-18  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/DPSOperators: New graphics extensions

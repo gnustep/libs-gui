@@ -30,6 +30,7 @@
 #import <Foundation/NSArray.h>
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSData.h>
+#import <Foundation/NSDebug.h>
 #import <Foundation/NSObjCRuntime.h>
 #import <Foundation/NSEnumerator.h>
 #import <Foundation/NSScanner.h>
@@ -645,6 +646,7 @@ static NSMutableDictionary* classToAliasMappings = nil;
   BOOL objectOnTopLevel = NO;
   id newObject;
   Class class;
+  NSString* decodeAsName;
 
   if (!name)
     return nil;
@@ -715,6 +717,12 @@ static NSMutableDictionary* classToAliasMappings = nil;
 
   /* Create the object */
   className = [representation objectForKey:@"isa"];
+  decodeAsName = [classToAliasMappings objectForKey:className];
+  if( decodeAsName )
+  {
+    NSDebugLLog(@"GMArchiver", @"%@ to be decoded as %@", className, decodeAsName);
+    className = decodeAsName;
+  }
   class = NSClassFromString(className);
   object = [class createObjectForModelUnarchiver:self];
 
