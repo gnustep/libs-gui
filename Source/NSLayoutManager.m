@@ -296,7 +296,7 @@ GSCharIndexForGlyphInChunk(GSGlyphChunk *chunk, unsigned index)
     + (GSIArrayItemAtIndex(&chunk->glyphs, index).ext).offset;
 }
 
-static GSGlyphChunk*
+static unsigned
 GSChunkForCharIndex(GSIArray chunks, unsigned charIndex)
 {
   unsigned	pos;
@@ -314,13 +314,16 @@ GSChunkForCharIndex(GSIArray chunks, unsigned charIndex)
       GSGlyphChunk	*chunk = GSCreateGlyphChunk(0);
 
       GSIArrayInsertItem(chunks, (GSIArrayItem)(void*)chunk, 0);
-      return chunk;
+      return 0;
     }
-  pos--;
-  return (GSGlyphChunk*)(GSIArrayItemAtIndex(chunks, pos).ptr);
+  else
+    {
+      pos--;
+    }
+  return pos;
 }
 
-static GSGlyphChunk*
+static unsigned
 GSChunkForGlyphIndex(GSIArray chunks, unsigned glyphIndex)
 {
   unsigned	pos;
@@ -338,10 +341,12 @@ GSChunkForGlyphIndex(GSIArray chunks, unsigned glyphIndex)
       GSGlyphChunk	*chunk = GSCreateGlyphChunk(0);
 
       GSIArrayInsertItem(chunks, (GSIArrayItem)(void*)chunk, 0);
-      return chunk;
     }
-  pos--;
-  return (GSGlyphChunk*)(GSIArrayItemAtIndex(chunks, pos).ptr);
+  else
+    {
+      pos--;
+    }
+  return pos;
 }
 
 
@@ -1091,8 +1096,10 @@ invalidatedRange.length);
 	    isValidIndex: (BOOL*)flag
 {
   GSGlyphChunk	*chunk;
+  unsigned	pos;
 
-  chunk = GSChunkForGlyphIndex(glyphChunks, index);
+  pos = GSChunkForGlyphIndex(glyphChunks, index);
+  chunk = (GSGlyphChunk*)(GSIArrayItemAtIndex(glyphChunks, pos).ptr);
   while (chunk->glyphIndex + GSIArrayCount(&chunk->glyphs) < index)
     {
       break; // FIXME - should try to extend layout?
@@ -1115,8 +1122,10 @@ invalidatedRange.length);
 {
   GSGlyphChunk	*chunk;
   unsigned	glyphCount;
+  unsigned	pos;
 
-  chunk = GSChunkForGlyphIndex(glyphChunks, index);
+  pos = GSChunkForGlyphIndex(glyphChunks, index);
+  chunk = (GSGlyphChunk*)(GSIArrayItemAtIndex(glyphChunks, pos).ptr);
   glyphCount = GSIArrayCount(&chunk->glyphs);
   if (glyphCount <= index)
     {
@@ -1125,7 +1134,8 @@ invalidatedRange.length);
        * if the glyph index given is too large.
        */
       [self glyphAtIndex: index];
-      chunk = GSChunkForGlyphIndex(glyphChunks, index);
+      pos = GSChunkForGlyphIndex(glyphChunks, index);
+      chunk = (GSGlyphChunk*)(GSIArrayItemAtIndex(glyphChunks, pos).ptr);
       glyphCount = GSIArrayCount(&chunk->glyphs);
     }
   index -= chunk->glyphIndex;
@@ -1151,7 +1161,6 @@ invalidatedRange.length);
   if (toFetch > 0)
     {
       GSGlyphChunk	*chunk;
-      GSGlyphChunk	tmp;
       unsigned		chunkIndex;
       unsigned		pos;
 
@@ -1164,11 +1173,8 @@ invalidatedRange.length);
        * Use binary search to locate the first chunk, and set pos to
        * indicate the first glyph in the chunk that we are interested in.
        */
-      tmp.glyphIndex = glyphRange.location;
-      chunkIndex = GSIArrayInsertionPosition(glyphChunks,
-	(GSIArrayItem)(void*)&tmp, glyphIndexSort); 
-      chunk = (GSGlyphChunk*)(GSIArrayItemAtIndex(glyphChunks,
-	--chunkIndex).ptr);
+      chunkIndex = GSChunkForGlyphIndex(glyphChunks, glyphRange.location);
+      chunk = (GSGlyphChunk*)(GSIArrayItemAtIndex(glyphChunks, chunkIndex).ptr);
       pos = glyphRange.location - chunk->glyphIndex;
 
       /*
