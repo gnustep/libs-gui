@@ -1,3 +1,17 @@
+2003-07-26  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSColorPicker.m
+	Autorelease image returned by [provideNewButtonImage].
+	* Source/NSColorPanel.m
+	* ColorPickers/GSStandardColorPicker.m
+	In [_setupPickers] release cell array.
+	* ColorPickers/GSNamedColorPicker.m
+	Now basically working.
+	* ColorPickers/GSNamedColorPicker.tiff
+	Removed background of image.
+	* ColorPickers/GNUmakefile
+	Activate GSNamedColorPicker.
+	
 2003-07-26  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSApplication.m: Use NSInvocation to perform actions, so
