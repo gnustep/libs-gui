@@ -188,7 +188,7 @@ static Class controlClass;
 /**
  * Set the value of the receiver from anObject.
  */
-- (void) setObjectValue: (NSString*)anObject
+- (void) setObjectValue: (id)anObject
 {
   [super setObjectValue: anObject];
   if (_control_view)

@@ -1,3 +1,8 @@
+2004-01-08 01:24  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSActionCell.m (-setObjectValue:): Change the argument type
+	to id from 'NSString *'.
+
 2004-01-08 00:47  Alexander Malmberg <alexander@malmberg.org>
 
 	* configure.ac: Fail with a verbose error message if libjpeg or
