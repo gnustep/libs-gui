@@ -79,12 +79,37 @@ typedef struct {
   long *outposition;
 } chandle_t;
 
+static int tiff_error_handler_set = 0;
+
+static void
+NSTiffError(const char *func, const char *msg, ...)
+{
+  NSString *format;
+  va_list ap;
+
+  format = [NSString stringWithFormat: @"Tiff Error (%s) %s", func, msg];
+  va_start (ap, msg);
+  NSLogv (format, ap);
+  va_end (ap);
+}
+
+static void 
+NSTiffWarning(const char *func, const char *msg, ...)
+{
+  NSString *format;
+  va_list ap;
+
+  format = [NSString stringWithFormat: @"Tiff Warning (%s) %s", func, msg];
+  va_start (ap, msg);
+  NSLogv (format, ap);
+  va_end (ap);
+}
+
 /* Client functions that provide reading/writing of data for libtiff */
 static tsize_t
 TiffHandleRead(thandle_t handle, tdata_t buf, toff_t count)
 {
   chandle_t* chand = (chandle_t *)handle;
-  NSDebugLLog(@"NSImage", @"TiffHandleRead\n");
   if (chand->position >= chand->size)
     return 0;
   if (chand->position + count > chand->size)
@@ -97,7 +122,6 @@ static tsize_t
 TiffHandleWrite(thandle_t handle, tdata_t buf, toff_t count)
 {
   chandle_t* chand = (chandle_t *)handle;
-  NSDebugLLog(@"NSImage", @"TiffHandleWrite\n");
   if (chand->mode == "r")
     return 0;
   if (chand->position + count > chand->size)
@@ -120,7 +144,6 @@ static toff_t
 TiffHandleSeek(thandle_t handle, toff_t offset, int mode)
 {
   chandle_t* chand = (chandle_t *)handle;
-  NSDebugLLog(@"NSImage", @"TiffHandleSeek\n");
   switch(mode) 
     {
     case SEEK_SET: chand->position = offset; break;
@@ -139,7 +162,6 @@ TiffHandleClose(thandle_t handle)
 {
   chandle_t* chand = (chandle_t *)handle;
 
-  NSDebugLLog(@"NSImage", @"TiffHandleClose\n");
   /* Presumably, we don't need the handle anymore */
   OBJC_FREE(chand);
   return 0;
@@ -149,7 +171,6 @@ static toff_t
 TiffHandleSize(thandle_t handle)
 {
   chandle_t* chand = (chandle_t *)handle;
-  NSDebugLLog(@"NSImage", @"TiffHandleSize\n");
   return chand->size;
 }
 
@@ -158,7 +179,6 @@ TiffHandleMap(thandle_t handle, tdata_t* data, toff_t* size)
 {
   chandle_t* chand = (chandle_t *)handle;
   
-  NSDebugLLog(@"NSImage", @"TiffHandleMap\n");
   *data = chand->data;
   *size = chand->size;
     
@@ -168,7 +188,6 @@ TiffHandleMap(thandle_t handle, tdata_t* data, toff_t* size)
 static void
 TiffHandleUnmap(thandle_t handle, tdata_t data, toff_t size)
 {
-  NSDebugLLog(@"NSImage", @"TiffHandleUnmap\n");
   /* Nothing to unmap. */
 }
 
@@ -177,7 +196,14 @@ TIFF*
 NSTiffOpenDataRead(const char* data, long size)
 {
   chandle_t* handle;
-  NSDebugLLog(@"NSImage", @"NSTiffOpenData\n");
+
+  if (tiff_error_handler_set == 0)
+    {
+      tiff_error_handler_set = 1;
+      TIFFSetErrorHandler(NSTiffError);
+      TIFFSetWarningHandler(NSTiffWarning);
+    }
+
   OBJC_MALLOC(handle, chandle_t, 1);
   handle->data = (char*)data;
   handle->outdata = 0;
@@ -185,7 +211,7 @@ NSTiffOpenDataRead(const char* data, long size)
   handle->outposition = 0;
   handle->size = size;
   handle->mode = "r";
-  return TIFFClientOpen("NSData", "r",
+  return TIFFClientOpen("TiffData", "r",
 			(thandle_t)handle,
 			TiffHandleRead, TiffHandleWrite,
 			TiffHandleSeek, TiffHandleClose,
@@ -197,7 +223,6 @@ TIFF*
 NSTiffOpenDataWrite(char **data, long *size)
 {
   chandle_t* handle;
-  NSDebugLLog(@"NSImage", @"NSTiffOpenData\n");
   OBJC_MALLOC(handle, chandle_t, 1);
   handle->data = *data;
   handle->outdata = data;
@@ -205,7 +230,7 @@ NSTiffOpenDataWrite(char **data, long *size)
   handle->outposition = size;
   handle->size = *size;
   handle->mode = "w";
-  return TIFFClientOpen("NSData", "w",
+  return TIFFClientOpen("TiffData", "w",
 			(thandle_t)handle,
 			TiffHandleRead, TiffHandleWrite,
 			TiffHandleSeek, TiffHandleClose,
@@ -220,6 +245,21 @@ NSTiffClose(TIFF* image)
   return 0;
 }
 
+int   
+NSTiffGetImageCount(TIFF* image)
+{
+  int dircount = 1;
+
+  if (image == NULL)
+    return 0;
+
+  while (TIFFReadDirectory(image))
+    {
+      dircount++;
+    } 
+  return dircount;
+}
+
 /* Read some information about the image. Note that currently we don't
    determine numImages. */
 NSTiffInfo *      
@@ -227,21 +267,23 @@ NSTiffGetInfo(int imageNumber, TIFF* image)
 {
   NSTiffInfo* info;
 
-  if (imageNumber >= 0 && !TIFFSetDirectory(image, imageNumber)) 
-    {
-      return NULL;
-    }
+  if (image == NULL)
+    return NULL;
 
   OBJC_MALLOC(info, NSTiffInfo, 1);
   memset(info, 0, sizeof(NSTiffInfo));
   if (imageNumber >= 0)
-    info->imageNumber = imageNumber;
+    {
+      TIFFSetDirectory(image, imageNumber);
+      info->imageNumber = imageNumber;
+    }
   
   TIFFGetField(image, TIFFTAG_IMAGEWIDTH, &info->width);
   TIFFGetField(image, TIFFTAG_IMAGELENGTH, &info->height);
   TIFFGetField(image, TIFFTAG_COMPRESSION, &info->compression);
   TIFFGetField(image, TIFFTAG_JPEGQUALITY, &info->quality);
   TIFFGetField(image, TIFFTAG_SUBFILETYPE, &info->subfileType);
+  TIFFGetField(image, TIFFTAG_EXTRASAMPLES, &info->extraSamples);
 
   /* If the following tags aren't present then use the TIFF defaults. */
   TIFFGetFieldDefaulted(image, TIFFTAG_BITSPERSAMPLE, &info->bitsPerSample);
@@ -275,13 +317,13 @@ NSTiffGetInfo(int imageNumber, TIFF* image)
   return info;
 }
 
-#define READ_SCANLINE(sample) \
-	if (TIFFReadScanline(image, buf, row, sample) < 0) { \
-	    NSLog(@"tiff: bad data read on line %d\n", row); \
-	    error = 1; \
-	    break; \
-	} \
-	inP = buf;
+#define READ_SCANLINE(sample)				\
+  if (TIFFReadScanline(image, buf, row, sample) != 1)	\
+    {							\
+      NSLog(@"Tiff bad data read on line %d", row);	\
+      error = 1;					\
+      break;						\
+    }
 
 /* Read an image into a data array.  The data array is assumed to have been
    already allocated to the correct size.
@@ -290,84 +332,73 @@ NSTiffGetInfo(int imageNumber, TIFF* image)
    direct color images. Thus the data array should be large 
    enough to hold this information. */
 int
-NSTiffRead(int imageNumber, TIFF* image, NSTiffInfo* info, char* data)
+NSTiffRead(TIFF* image, NSTiffInfo* info, char* data)
 {
   int     i;
   int     row, col;
   int     maxval;
-  int	  size;
-  int	  line;
   int	  error = 0;
-  u_char* inP;
   u_char* outP;
   u_char* buf;
   u_char* raster;
-  NSTiffInfo* newinfo;
   NSTiffColormap* map;
   int scan_line_size;
 
   if (data == NULL)
     return -1;
 	
-  /* Make sure we're at the right image */
-  if ((newinfo = NSTiffGetInfo(imageNumber, image)) == NULL)
-    return -1;
-
-  if (info)
-    memcpy(info, newinfo, sizeof(NSTiffInfo));
-
   map = NULL;
-  if (newinfo->photoInterp == PHOTOMETRIC_PALETTE) 
+  if (info->photoInterp == PHOTOMETRIC_PALETTE) 
     {
       map = NSTiffGetColormap(image);
       if (!map)
 	return -1;
     }
 
-  maxval = (1 << newinfo->bitsPerSample) - 1;
-  line   = ceil((float)newinfo->width * newinfo->bitsPerSample / 8.0);
-  size   = ceil((float)line * newinfo->height * newinfo->samplesPerPixel);
+  maxval = (1 << info->bitsPerSample) - 1;
   scan_line_size = TIFFScanlineSize(image);
-  OBJC_MALLOC(buf, u_char, TIFFScanlineSize(image));
+  buf = _TIFFmalloc(scan_line_size);
   
   raster = (u_char *)data;
   outP = raster;
-  switch (newinfo->photoInterp) 
+  switch (info->photoInterp) 
     {
     case PHOTOMETRIC_MINISBLACK:
     case PHOTOMETRIC_MINISWHITE:
-      if (newinfo->planarConfig == PLANARCONFIG_CONTIG) 
+      if (info->planarConfig == PLANARCONFIG_CONTIG) 
 	{
-	  for (row = 0; row < newinfo->height; ++row) 
+	  for (row = 0; row < info->height; ++row) 
 	    {
-	      READ_SCANLINE(0)
-		for (col = 0; col < line*newinfo->samplesPerPixel; col++) 
-		  *outP++ = *inP++;
+	      READ_SCANLINE(0);
+	      memcpy(outP, buf, scan_line_size);
+	      outP += scan_line_size;
 	    }
 	} 
       else 
 	{
-	  for (i = 0; i < newinfo->samplesPerPixel; i++)
-	    for (row = 0; row < newinfo->height; ++row) 
+	  for (i = 0; i < info->samplesPerPixel; i++)
+	    for (row = 0; row < info->height; ++row) 
 	      {
-		READ_SCANLINE(i)
-		  for (col = 0; col < line; col++) 
-		    *outP++ = *inP++;
+		READ_SCANLINE(i);
+		memcpy(outP, buf, scan_line_size);
+		outP += scan_line_size;
 	      }
 	}
       break;
     case PHOTOMETRIC_PALETTE:
       {
-	for (row = 0; row < newinfo->height; ++row) 
+	for (row = 0; row < info->height; ++row) 
 	  {
-	    READ_SCANLINE(0)
-	      for (col = 0; col < newinfo->width; col++) 
-		{
-		  *outP++ = map->red[*inP] / 256;
-		  *outP++ = map->green[*inP] / 256;
-		  *outP++ = map->blue[*inP] / 256;
-		  inP++;
-		}
+	    u_char *inP;
+	    READ_SCANLINE(0);
+	    inP = buf;
+	    for (col = 0; col < info->width; col++) 
+	      {
+		*outP++ = map->red[*inP] / 256;
+		*outP++ = map->green[*inP] / 256;
+		*outP++ = map->blue[*inP] / 256;
+		inP++;
+	      }
 	  }
 	free(map->red);
 	free(map->green);
@@ -376,46 +407,39 @@ NSTiffRead(int imageNumber, TIFF* image, NSTiffInfo* info, char* data)
       }
       break;
     case PHOTOMETRIC_RGB:
-      if (newinfo->planarConfig == PLANARCONFIG_CONTIG) 
+      if (info->planarConfig == PLANARCONFIG_CONTIG) 
 	{
-	  NSDebugLLog(@"NSImage", @"PHOTOMETRIC_RGB: CONTIG\n");
-	  for (row = 0; row < newinfo->height; ++row) 
+	  for (row = 0; row < info->height; ++row) 
 	    {
-	      READ_SCANLINE(0)
-		for (col = 0; col < newinfo->width; col++) 
-		  for (i = 0; i < newinfo->samplesPerPixel; i++)
-		    {
-		      *outP++ = *inP++;
-		    }
+	      READ_SCANLINE(0);
+	      memcpy(outP, buf, scan_line_size);
+	      outP += scan_line_size;
 	    }
 	} 
       else 
 	{
-	  NSDebugLLog(@"NSImage", @"PHOTOMETRIC_RGB: NOT CONTIG\n");
-	  for (i = 0; i < newinfo->samplesPerPixel; i++)
-	    for (row = 0; row < newinfo->height; ++row) 
+	  for (i = 0; i < info->samplesPerPixel; i++)
+	    for (row = 0; row < info->height; ++row) 
 	      {
-		READ_SCANLINE(i)
-		  for (col = 0; col < newinfo->width; col++) 
-		    {
-		      *outP++ = *inP++;
-		    }
+		READ_SCANLINE(i);
+		memcpy(outP, buf, scan_line_size);
+		outP += scan_line_size;
 	      }
 	}
       break;
     default:
-      TIFFError(TIFFFileName(image),
-		"Can't read photometric %d", newinfo->photoInterp);
+      NSLog(@"Tiff can't read photometric %d", info->photoInterp);
+      error = 1;
       break;
     }
     
-  OBJC_FREE(newinfo);
+  _TIFFfree(buf);
   return error;
 }
 
 #define WRITE_SCANLINE(sample) \
 	if (TIFFWriteScanline(image, buf, row, sample) != 1) { \
-	    NSLog(@"tiff: bad data write on line %d\n", row); \
+	    NSLog(@"Tiff bad data write on line %d\n", row); \
 	    error = 1; \
 	    break; \
 	}
@@ -426,7 +450,7 @@ NSTiffWrite(TIFF* image, NSTiffInfo* info, char* data)
   tdata_t	buf = (tdata_t)data;
   int		i;
   int		row;
-  int		error = 0;
+  int           error = 0;
 
   TIFFSetField(image, TIFFTAG_IMAGEWIDTH, info->width);
   TIFFSetField(image, TIFFTAG_IMAGELENGTH, info->height);
@@ -470,7 +494,6 @@ NSTiffWrite(TIFF* image, NSTiffInfo* info, char* data)
       case PHOTOMETRIC_RGB:
 	if (info->planarConfig == PLANARCONFIG_CONTIG) 
 	  {
-	    NSDebugLLog(@"NSImage", @"PHOTOMETRIC_RGB: CONTIG\n");
 	    for (row = 0; row < info->height; ++row) 
 	      {
 		WRITE_SCANLINE(0)
@@ -479,7 +502,6 @@ NSTiffWrite(TIFF* image, NSTiffInfo* info, char* data)
 	  } 
 	else 
 	  {
-	    NSDebugLLog(@"NSImage", @"PHOTOMETRIC_RGB: NOT CONTIG\n");
 	    for (i = 0; i < info->samplesPerPixel; i++)
 	      {
 		for (row = 0; row < info->height; ++row) 
@@ -492,12 +514,13 @@ NSTiffWrite(TIFF* image, NSTiffInfo* info, char* data)
 	break;
 
       default:
-	TIFFError(TIFFFileName(image),
-		  "Can't write photometric %d", info->photoInterp);
+	NSLog(@"Tiff can't write photometric %d for image %s", 
+	      info->photoInterp, TIFFFileName(image));
+	return -1;
 	break;
     }
     
-  return error;
+  return 0;
 }
 
 /*------------------------------------------------------------------------*/

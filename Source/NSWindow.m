@@ -1263,7 +1263,7 @@ static NSMapTable* windowmaps = NULL;
   NSRect	r = frame;
 
   r.origin = aPoint;
-  [self setFrame: r display: YES];
+  [self setFrame: r display: NO];
 }
 
 - (void) setFrameTopLeftPoint: (NSPoint)aPoint
@@ -1272,7 +1272,7 @@ static NSMapTable* windowmaps = NULL;
 
   r.origin = aPoint;
   r.origin.y -= frame.size.height;
-  [self setFrame: r display: YES];
+  [self setFrame: r display: NO];
 }
 
 - (void) setMinSize: (NSSize)aSize
@@ -3312,6 +3312,8 @@ resetCursorRectsForView(NSView *theView)
   _f.accepts_mouse_moved = NO;
   _f.has_opened = NO;
   _f.has_closed = NO;
+  
+  _rFlags.needs_display = YES;
 }
 
 @end

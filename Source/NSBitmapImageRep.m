@@ -60,10 +60,12 @@
   NSString* space;
   NSTiffInfo* info;
 
+  /* Seek to the correct image and get the dictionary information */
   info = NSTiffGetInfo(imageNumber, image);
   if (!info) 
     {
-      [NSException raise:NSTIFFException format: @"Read invalid TIFF info"];
+      NSLog(@"Tiff read invalid TIFF info in directory %d", imageNumber);
+      return nil;
     }
 
   /* 8-bit RGB will be converted to 24-bit by the tiff routines, so account
@@ -87,7 +89,7 @@
 		pixelsHigh: info->height
 		bitsPerSample: info->bitsPerSample
 		samplesPerPixel: info->samplesPerPixel
-		hasAlpha: (info->samplesPerPixel > 3)
+		hasAlpha: (info->extraSamples > 0)
 		isPlanar: (info->planarConfig == PLANARCONFIG_SEPARATE)
 		colorSpaceName: space
 		bytesPerRow: 0
@@ -95,9 +97,10 @@
   compression = info->compression;
   comp_factor = 255 * (1 - ((float)info->quality)/100.0);
 
-  if (NSTiffRead(imageNumber, image, NULL, [self bitmapData]))
+  if (NSTiffRead(image, info, [self bitmapData]))
     {
-      [NSException raise:NSTIFFException format: @"Read invalid TIFF image"];
+      NSLog(@"Tiff read invalid TIFF image data in directory %d", imageNumber);
+      return nil;
     }
 
   return self;
@@ -115,28 +118,26 @@
 
 + (NSArray*) imageRepsWithData: (NSData *)tiffData
 {
-  int		images;
-  TIFF		*image;
-  NSTiffInfo	*info;
-  NSMutableArray*array;
+  int		 i, images;
+  TIFF		 *image;
+  NSMutableArray *array;
 
   image = NSTiffOpenDataRead((char *)[tiffData bytes], [tiffData length]);
-  if (!image)
+  if (image == NULL)
     {
-      [NSException raise:NSTIFFException format: @"Read invalid TIFF data"];
+      NSLog(@"Tiff unable to open/parse TIFF data");
+      return nil;
     }
 
-  array = [NSMutableArray arrayWithCapacity:1];
-  images = 0;
-  while ((info = NSTiffGetInfo(images, image))) 
+  images = NSTiffGetImageCount(image);
+  NSDebugLLog(@"NSImage", @"Image contains %d directories", images);
+  array = [NSMutableArray arrayWithCapacity: images];
+  for (i = 0; i < images; i++)
     {
       NSBitmapImageRep* imageRep;
-
-      OBJC_FREE(info);
-      imageRep = AUTORELEASE([[[self class] alloc]
-	_initFromImage: image number: images]);
-      [array addObject: imageRep];
-      images++;
+      imageRep = [[[self class] alloc] _initFromImage: image number: i];
+      if (imageRep)
+	[array addObject: AUTORELEASE(imageRep)];
     }
   NSTiffClose(image);
 
@@ -357,6 +358,7 @@
       if (!imagePlanes)
  	OBJC_MALLOC(imagePlanes, unsigned char*, MAX_PLANES);
       bits = [imageData mutableBytes];
+      imagePlanes[0] = bits;
       if (_isPlanar) 
 	{
 	  for (i=1; i < numColors; i++) 
@@ -366,7 +368,6 @@
 	}
       else
 	{
-	  imagePlanes[0] = bits;
 	  for (i= 1; i < MAX_PLANES; i++) 
 	    imagePlanes[i] = NULL;
 	}

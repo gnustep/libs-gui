@@ -1328,6 +1328,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   [ctxt lockFocusView: self inRect: rect];
   wrect = [self convertRect: rect toView: nil];
+  NSDebugLLog(@"NSView", @"Displaying rect \n\t%@\n\t window %p", 
+	      NSStringFromRect(wrect), _window);
   window_t = (struct NSWindow_struct *)_window;
   [window_t->rectsBeingDrawn addObject: [NSValue valueWithRect: wrect]];
 

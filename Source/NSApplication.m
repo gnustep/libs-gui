@@ -215,12 +215,10 @@ static NSCell* tileCell = nil;
 
 - (void) setImage: (NSImage *)anImage
 {
-  [self lockFocus];
   [tileCell drawWithFrame: NSMakeRect(0,0,64,64) inView: self];
   [dragCell setImage: anImage];
   [dragCell drawWithFrame: NSMakeRect(8,8,48,48) inView: self];
   [_window flushWindow];
-  [self unlockFocus];
 }
 
 @end
@@ -688,10 +686,16 @@ static NSCell* tileCell = nil;
 
   userInfo = [NSDictionary dictionaryWithObject:
     [[NSProcessInfo processInfo] processName] forKey: @"NSApplicationName"];
-  [[[NSWorkspace sharedWorkspace] notificationCenter]
-    postNotificationName: NSWorkspaceDidLaunchApplicationNotification
-    object: self
-    userInfo: userInfo];
+  NS_DURING
+    [[[NSWorkspace sharedWorkspace] notificationCenter]
+      postNotificationName: NSWorkspaceDidLaunchApplicationNotification
+      object: self
+      userInfo: userInfo];
+  NS_HANDLER
+    NSLog(@"Problem during launch app notification: %@", 
+	  [localException reason]);
+    [localException raise];
+  NS_ENDHANDLER
 }
 
 - (void) dealloc

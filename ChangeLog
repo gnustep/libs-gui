@@ -1,3 +1,21 @@
+2000-04-13  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSApplication.m ([NSAppIconView -setImage:]): Remove
+	extra lock/unlock focus.
+	([NSApplication -finishLaunching]): More specific error information.
+
+	* Source/NSWindow.m (-setFrameOrigin:): Don't re-display.
+	(-setFrameTopLeftPoint): Likewise.
+	(_initDefaults): Set needs_display flag.
+
+	* Source/NSBitmapImageRep.m (-_initFromImage:number:): Use new
+	Tiff routines, log message and return nil rather than raise exception.
+	* Source/tiff.m (NSTiffGetInfo): Tidy, get alpha info correctly.
+	(NSTiffRead): Bug fixes, particularly reading planar images.
+	(NSTiffError): New function.
+	(NSTiffWarning): Likewise.
+	(NSTiffGetImageCount): Likewise.
+	
 2000-04-13  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSMenu.m: ([-_setOwnedBypopUp:]) set correct window level for
