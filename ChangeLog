@@ -1,3 +1,9 @@
+Thu Jan 30 03:57:42 2003  Serg Stoyan <stoyan@hologr.com>
+	
+	* Source/NSMenuView.m ([-sizeToFit]): Removed the additional 17
+	pixels from menu view title size, they have no reason to be used,
+	and don't look good.
+
 Thu Jan 30 02:55:17 2003  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSScrollView.m ([-scrollPageDown:], [-scrollPageUp:]): Do
