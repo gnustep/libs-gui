@@ -1,3 +1,8 @@
+Thu Nov 23 11:18:27 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Documentation/gsdoc/NSView.gsdoc: Documented drawRect:.
+	* Documentation/gsdoc/NSView.html: Regenerated.
+
 Thu Nov 23 10:50:48 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Documentation/gsdoc/Introduction.gsdoc: Removed email tag which
