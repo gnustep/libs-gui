@@ -102,7 +102,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 + (id)createObjectForModelUnarchiver:(GMUnarchiver*)unarchiver
 {
-  return [self sharedApplication];
+  return [NSApplication sharedApplication];
 }
 
 @end /* NSApplication (GMArchiverMethods) */
@@ -292,7 +292,7 @@ void __dummy_GMAppKit_functionForLinking() {}
     float black = [unarchiver decodeFloatWithName:@"black"];
     float alpha = [unarchiver decodeFloatWithName:@"alpha"];
 
-    return [self colorWithDeviceCyan:cyan
+    return [NSColor colorWithDeviceCyan:cyan
 				magenta:magenta
 				 yellow:yellow
 				  black:black
@@ -302,13 +302,13 @@ void __dummy_GMAppKit_functionForLinking() {}
     float white = [unarchiver decodeFloatWithName:@"white"];
     float alpha = [unarchiver decodeFloatWithName:@"alpha"];
 
-    return [self colorWithDeviceWhite:white alpha:alpha];
+    return [NSColor colorWithDeviceWhite:white alpha:alpha];
   }
   else if ([colorSpaceName isEqual:@"NSCalibratedWhiteColorSpace"]) {
     float white = [unarchiver decodeFloatWithName:@"white"];
     float alpha = [unarchiver decodeFloatWithName:@"alpha"];
 
-    return [self colorWithCalibratedWhite:white alpha:alpha];
+    return [NSColor colorWithCalibratedWhite:white alpha:alpha];
   }
   else if ([colorSpaceName isEqual:@"NSDeviceRGBColorSpace"]) {
     float red = [unarchiver decodeFloatWithName:@"red"];
@@ -412,7 +412,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 + (id)createObjectForModelUnarchiver:(GMUnarchiver*)unarchiver
 {
-  return [self fontWithName:[unarchiver decodeStringWithName:@"name"]
+  return [NSFont fontWithName:[unarchiver decodeStringWithName:@"name"]
 		 size:[unarchiver decodeFloatWithName:@"size"]];
 }
 
@@ -434,10 +434,10 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 + (id)createObjectForModelUnarchiver:(GMUnarchiver*)unarchiver
 {
-  id image = [self imageNamed:[unarchiver decodeStringWithName:@"name"]];
+  id image = [NSImage imageNamed:[unarchiver decodeStringWithName:@"name"]];
 
   if (!image)
-    image = [self imageNamed:@"NSRadioButton"];
+    image = [NSImage imageNamed:@"NSRadioButton"];
   return image;
 }
 
@@ -754,7 +754,7 @@ void __dummy_GMAppKit_functionForLinking() {}
   unsigned backingType = [unarchiver decodeUnsignedIntWithName:@"backingType"];
   unsigned styleMask = [unarchiver decodeUnsignedIntWithName:@"styleMask"];
   NSRect aRect = [unarchiver decodeRectWithName:@"frame"];
-  NSWindow* win = [[[self allocWithZone:[unarchiver objectZone]]
+  NSWindow* win = [[[NSWindow allocWithZone:[unarchiver objectZone]]
 			initWithContentRect:aRect
 			styleMask:styleMask backing:backingType defer:YES]
 			autorelease];
@@ -834,7 +834,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 			   @"backingType"];
     unsigned styleMask = [unarchiver decodeUnsignedIntWithName:@"styleMask"];
     NSRect aRect = [unarchiver decodeRectWithName:@"frame"];
-    NSPanel* panel = [[[self allocWithZone:[unarchiver objectZone]]
+    NSPanel* panel = [[[NSPanel allocWithZone:[unarchiver objectZone]]
 		     initWithContentRect:aRect
 		     styleMask:styleMask backing:backingType defer:YES]
 		    autorelease];
@@ -933,7 +933,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 			   @"backingType"];
     unsigned styleMask = [unarchiver decodeUnsignedIntWithName:@"styleMask"];
     NSRect aRect = [unarchiver decodeRectWithName:@"frame"];
-    NSSavePanel* panel = [[[self allocWithZone:[unarchiver objectZone]]
+    NSSavePanel* panel = [[[NSSavePanel allocWithZone:[unarchiver objectZone]]
 			  initWithContentRect:aRect
 			  styleMask:styleMask backing:backingType defer:YES]
 			 autorelease];
@@ -1039,7 +1039,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 			   @"backingType"];
     unsigned styleMask = [unarchiver decodeUnsignedIntWithName:@"styleMask"];
     NSRect aRect = [unarchiver decodeRectWithName:@"frame"];
-    NSBrowser* browser = [[[self allocWithZone:[unarchiver objectZone]]
+    NSBrowser* browser = [[[NSBrowser allocWithZone:[unarchiver objectZone]]
 			  initWithContentRect:aRect
 			  styleMask:styleMask backing:backingType defer:YES]
 			 autorelease];
