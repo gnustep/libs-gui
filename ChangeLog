@@ -1,3 +1,8 @@
+Thu Jun 15 20:09:55 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSScrollView.m ([-reflectScrolledClipView:]): If needed,
+	scroll the header view too.
+
 Thu Jun 15 15:25:32 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSTableView.m ([-columnAtPoint:]): Fixed fatal typo.
