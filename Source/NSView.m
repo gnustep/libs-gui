@@ -55,6 +55,9 @@
 //  Class variables
 //
 static NSString	*viewThreadKey = @"NSViewThreadKey";
+static void (*concatImp)(PSMatrix*, SEL, PSMatrix*) = 0;
+static SEL	concatSel = @selector(concatenateWith:);
+static PSMatrix	*flip = nil;
 
 //
 // Class methods
@@ -63,6 +66,13 @@ static NSString	*viewThreadKey = @"NSViewThreadKey";
 {
   if (self == [NSView class])
     {
+      Class	matrixClass = [PSMatrix class];
+      float	vals[6] = { 1, 0, 0, -1, 0, 1 };
+
+      concatImp = (void (*)(PSMatrix*, SEL, PSMatrix*))
+		[matrixClass instanceMethodForSelector: concatSel];
+      flip = [[matrixClass matrixFrom: vals] retain];
+
       NSDebugLog(@"Initialize NSView class\n");
       [self setVersion: 1];
     }
@@ -572,32 +582,30 @@ static NSString	*viewThreadKey = @"NSViewThreadKey";
 
 - (PSMatrix*) _concatenateMatricesInReverseOrderFromPath: (NSArray*)viewsPath
 {
-  unsigned	i = [viewsPath count];
   PSMatrix	*matrix = [[PSMatrix new] autorelease];
+  unsigned	i = [viewsPath count];
+  NSView	*matrices[i];
   NSView	*parent;
   BOOL		wasFlipped;
   BOOL		isFlipped;
 
   if (i-- < 2)
     return matrix;
-  parent = [viewsPath objectAtIndex: i];
+  [viewsPath getObjects: matrices];
+  parent = matrices[i];
   wasFlipped = [parent isFlipped];
   while (i-- > 0)
     {
-      NSView	*view = [viewsPath objectAtIndex: i];
+      NSView	*view = matrices[i];
 
-      [matrix concatenateWith: view->frameMatrix];
+      (*concatImp)(matrix, concatSel, view->frameMatrix);
       isFlipped = [view isFlipped];
       if (isFlipped != wasFlipped)
 	{
-	  PSMatrix	*flip = nil;
-	  float		vals[6] = { 1, 0, 0, -1, 0, 1 };
-
-	  vals[5] = view->bounds.size.height;
-	  flip = [PSMatrix matrixFrom: vals];
-	  [matrix concatenateWith: flip];
+	  flip->matrix[5] = view->bounds.size.height;
+	  (*concatImp)(matrix, concatSel, flip);
 	}
-      [matrix concatenateWith: view->boundsMatrix];
+      (*concatImp)(matrix, concatSel, view->boundsMatrix);
       parent = view;
       wasFlipped = isFlipped;
     }

@@ -31,6 +31,7 @@
 
 @interface PSMatrix : NSObject <NSCopying>
 {
+@public
   float matrix[6];
   float rotationAngle;
 }
