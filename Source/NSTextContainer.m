@@ -26,17 +26,22 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#import <AppKit/GSLayoutManager.h>
-#import <AppKit/NSTextContainer.h>
-#import <AppKit/NSTextStorage.h>
-#import <AppKit/NSTextView.h>
-#import <Foundation/NSGeometry.h>
-#import <Foundation/NSNotification.h>
+#include <Foundation/NSGeometry.h>
+#include <Foundation/NSNotification.h>
+#include <Foundation/NSDebug.h>
+#include <AppKit/GSLayoutManager.h>
+#include <AppKit/NSLayoutManager.h>
+#include <AppKit/NSTextContainer.h>
+#include <AppKit/NSTextStorage.h>
+#include <AppKit/NSTextView.h>
 
 @interface NSTextContainer (TextViewObserver)
 - (void) _textViewFrameChanged: (NSNotification*)aNotification;
 @end
 
+
+/* TODO: rethink how this is is triggered.
+use bounds rectangle instead of frame? */
 @implementation NSTextContainer (TextViewObserver)
 
 - (void) _textViewFrameChanged: (NSNotification*)aNotification
@@ -189,7 +194,9 @@
 	}
     }
 
-  [_layoutManager textContainerChangedTextView: self];
+  /* If someone's trying to set a NSTextView for us, the layout manager we
+  have must be capable of handling NSTextView:s. */
+  [(NSLayoutManager *)_layoutManager textContainerChangedTextView: self];
 }
 
 - (NSTextView*) textView

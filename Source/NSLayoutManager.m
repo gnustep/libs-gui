@@ -267,10 +267,10 @@ line frag rect. */
 - (NSRange) glyphRangeForBoundingRect: (NSRect)bounds 
 		      inTextContainer: (NSTextContainer *)container
 {
-  NSLog(@"%@ %s  (%g %g)+(%g %g) in %@\n", self, __PRETTY_FUNCTION__,
+/*  NSLog(@"%@ %s  (%g %g)+(%g %g) in %@\n", self, __PRETTY_FUNCTION__,
 	bounds.origin.x, bounds.origin.y,
 	bounds.size.width, bounds.size.height,
-	container);
+	container);*/
   return NSMakeRange(0, [self numberOfGlyphs]);
 }
 
@@ -676,6 +676,13 @@ for (i = 0; i < gbuf_len; i++) printf("   %3i : %04x\n", i, gbuf[i]); */
 
   for (i = 0; i < num_textcontainers; i++)
     [[textcontainers[i].textContainer textView] _updateMultipleTextViews];
+}
+
+
+-(void) dealloc
+{
+  DESTROY(_typingAttributes);
+  [super dealloc];
 }
 
 @end

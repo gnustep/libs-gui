@@ -4,7 +4,7 @@
    Copyright (C) 2002 Free Software Foundation, Inc.
 
    Author: Alexander Malmberg <alexander@malmberg.org>
-   Date: 2002
+   Date: 2002-11
 
    This file is part of the GNUstep GUI Library.
 
@@ -28,6 +28,9 @@
 #define _GNUstep_H_NSLayoutManager
 
 #include <AppKit/GSLayoutManager.h>
+#include <AppKit/NSTextView.h>
+
+@class NSParagraphStyle;
 
 @interface NSLayoutManager : GSLayoutManager
 {
@@ -38,7 +41,37 @@
   BOOL _isSynchronizingFlags;
   BOOL _isSynchronizingDelegates;
   BOOL _beganEditing;
+
+  /* Selection */
+  NSRange _selected_range;
+  NSRange _original_selected_range;
+  NSSelectionGranularity _selectionGranularity;
+
+  /* Retained by the NSLayoutManager. NSTextView:s that change this value
+  should release the old value and retain the new one. It is nil originally
+  and will be released when the NSLayoutManager is deallocated. */
+  NSMutableDictionary *_typingAttributes;
 }
+
+/* TODO */
+
+- (void) invalidateDisplayForGlyphRange: (NSRange)aRange;
+- (void) invalidateDisplayForCharacterRange: (NSRange)aRange; /* not STRICT_40 ?? */
+
+- (NSTextView *) firstTextView;
+- (NSTextView *) textViewForBeginningOfSelection;
+- (BOOL) layoutManagerOwnsFirstResponderInWindow: (NSWindow *)window;
+
+- (NSArray *) rulerMarkersForTextView: (NSTextView *)textView
+	paragraphStyle: (NSParagraphStyle *)style
+	ruler: (NSRulerView *)ruler;
+- (NSView *) rulerAccessoryViewForTextView: (NSTextView *)textView
+	paragraphStyle: (NSParagraphStyle *)style
+	ruler: (NSRulerView *)ruler
+	enabled: (BOOL)isEnabled;
+
+- (float) hyphenationFactor;
+- (void) setHyphenationFactor: (float)factor;
 
 @end
 
@@ -75,6 +108,7 @@
 	inTextContainer: (NSTextContainer *)container
 	fractionOfDistanceThroughGlyph: (float *)partialFraction;
 
+
 @end
 
 
@@ -86,7 +120,10 @@
 -(void) drawGlyphsForGlyphRange: (NSRange)range
 	atPoint: (NSPoint)containerOrigin;
 
+/* TODO: underline */
+
 @end
+
 
 #endif
 

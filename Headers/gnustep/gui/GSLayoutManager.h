@@ -204,7 +204,7 @@ subclassing). */
 
 
 - (void) setAttachmentSize: (NSSize)attachmentSize 
-	forGlyphRange: (NSRange)glyphRange;
+	forGlyphRange: (NSRange)glyphRange; /* not OPENSTEP */
 
 
 /* Returns the font actually used for a range of glyphs. This isn't
@@ -213,7 +213,7 @@ and the layout manager can substitute a different font (the typesetter might
 eg. substitute a smaller font for sub-/super-scripted text, and the layout
 manager might be substituting screen fonts. */
 - (NSFont *) effectiveFontForGlyphAtIndex: (unsigned int)glyphIndex
-	range: (NSRange *)range;
+	range: (NSRange *)range; /* GNUstep extension */
 
 
 - (void) setDrawsOutsideLineFragment: (BOOL)flag
