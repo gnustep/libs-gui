@@ -2137,12 +2137,12 @@ afterString in order over charRange. */
 
   startPoint = [self convertPoint: [theEvent locationInWindow] fromView: nil];
   startIndex = [self characterIndexForPoint: startPoint];
-
+  
   if ([_textStorage containsAttachments])
     {
       NSTextAttachment *attachment;
       
-      // Check if the click was on an attachment cell
+      /* Check if the click was on an attachment cell.  */
       attachment = [_textStorage attribute: NSAttachmentAttributeName
 				 atIndex: startIndex
 				 effectiveRange: NULL];
@@ -2150,20 +2150,25 @@ afterString in order over charRange. */
       if (attachment != nil)
         { 
 	  id <NSTextAttachmentCell> cell = [attachment attachmentCell];
-	  // FIXME: Where to get the cellFrame?
-	  NSRect cellFrame = NSMakeRect(0, 0, 0, 0);
 	  
-	  if ((cell != nil) &&
-	      ([cell wantsToTrackMouseForEvent: theEvent 
-		     inRect: cellFrame
-		     ofView: self
-		     atCharacterIndex: startIndex] == YES) &&
-	      ([cell trackMouse: theEvent 
-		     inRect: cellFrame 
-		     ofView: self
-		     atCharacterIndex: startIndex
-		     untilMouseUp: NO] == YES))
-	      return;
+	  if (cell != nil)
+	    {
+	      /* FIXME: Where to get the cellFrame? */
+	      NSRect cellFrame = NSMakeRect(0, 0, 0, 0);
+	      
+	      if ([cell wantsToTrackMouseForEvent: theEvent  
+			inRect: cellFrame
+			ofView: self
+			atCharacterIndex: startIndex]
+		  && [cell trackMouse: theEvent  
+			   inRect: cellFrame 
+			   ofView: self
+			   atCharacterIndex: startIndex
+			   untilMouseUp: NO])
+		{
+		  return;
+		}
+	    }
 	}
     }
 
