@@ -24,17 +24,6 @@
     59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-/*
-    FIXME: In the implementation of NSInputManager, some methods use
-           the private method -client.  Currently  there are no error
-	   check against the cases where it returns nil.  If a method
-	   using -client must return some value to the caller, this is
-	   problematic.  But then, should we raise an exception for such
-	   cases (but who handles it?), or should we return an arbitrary
-	   value, expecting the caller recovers something from such
-	   garbage?
- */
-
 #include <Foundation/NSString.h>
 #include <Foundation/NSAttributedString.h>
 #include <Foundation/NSArray.h>
@@ -51,6 +40,7 @@
 #include "AppKit/NSResponder.h"
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSWindow.h"
+#include "AppKit/NSView.h"
 #include "AppKit/NSInputServer.h"
 #include "AppKit/NSInputManager.h"
 
@@ -88,20 +78,35 @@ static NSString *_infoFileName		= @"Info";
 - (BOOL)readInputServerInfo: (NSString *)inputServerName;
 - (BOOL)createKeyBindingTable;
 - (BOOL)establishConnectionToInputServer: (NSString *)host;
-- (void)becomeObserver;
-- (void)resignObserver;
+
 
 - (void)setServerInfo: (id)info;
-- (void)setServerProxy: (id)proxy;
-- (void)setKeyBindingTable: (IMKeyBindingTable *)table;
-
 - (IMInputServerInfo *)serverInfo;
+
+- (void)setServerProxy: (id)proxy;
 - (id)serverProxy;
+
+- (void)setKeyBindingTable: (IMKeyBindingTable *)table;
 - (IMKeyBindingTable *)keyBindingTable;
+
+- (void)setTextView: (id)aTextView;
+- (id)textView;
+
+- (id)lookUpTextInputViewInWindow: (NSWindow *)window;
 
 - (NSString *)standardKeyBindingAbsolutePath;
 - (NSString *)defaultKeyBindingAbsolutePath;
-- (id)client;
+
+/* For communication to other players */
+- (void)becomeObserverOfConnection;
+- (void)becomeObserverOfClient;
+- (void)resignObserverOfConnection;
+- (void)resignObserverOfClient;
+
+- (void)clientBecomeActive: (NSNotification *)aNotification;
+- (void)clientResignActive: (NSNotification *)aNotification;
+- (void)clientPossiblyEnabled: (NSNotification *)aNotification;
+- (void)clientPossiblyDisabled: (NSNotification *)aNotification;
 - (void)lostConnection: (NSNotification *)aNotification;
 @end /* @interface NSInputManager (Private) */
 
@@ -171,8 +176,9 @@ static NSMutableArray *_inputServerList = nil;
   BOOL		consumed;
 
   flags = [theMouseEvent modifierFlags];
-  point = [theMouseEvent locationInWindow];
-  index = [[self client] characterIndexForPoint: point];
+  point = [[self textView] convertPoint: [theMouseEvent locationInWindow]
+			       fromView: nil];
+  index = [[self textView] characterIndexForPoint: [NSEvent mouseLocation]];
 
   switch ([theMouseEvent type])
     {
@@ -180,27 +186,30 @@ static NSMutableArray *_inputServerList = nil;
       consumed = [serverProxy mouseDownOnCharacterIndex: index
 					   atCoordinate: point
 					   withModifier: flags
-						 client: [self client]];
-      return YES;
+						 client: [self textView]];
+      break;
 
     case NSLeftMouseDragged:
       consumed = [serverProxy mouseDraggedOnCharacterIndex: index
 					      atCoordinate: point
 					      withModifier: flags
-						    client: [self client]];
-      return YES;
+						    client: [self textView]];
+      break;
 
     case NSLeftMouseUp:
       [serverProxy mouseUpOnCharacterIndex: index
 			      atCoordinate: point
 			      withModifier: flags
-				    client: [self client]];
-      return YES;
+				    client: [self textView]];
+      consumed = YES;
+      break;
 
     default:
-      return NO;
+      consumed = NO;
+      break;
     }
-  /* Not reached */
+  
+  return consumed;
 }
 
 
@@ -244,6 +253,8 @@ static NSMutableArray *_inputServerList = nil;
 	  return nil;
 	}
     }
+
+  [self becomeObserverOfClient];
   [NSInputManager addToInputServerList: self];
 
   [pool release], pool = nil;
@@ -293,7 +304,7 @@ static NSMutableArray *_inputServerList = nil;
     }
   else
     {
-      return NO;
+      return YES;
     }
 }
 
@@ -326,16 +337,17 @@ static NSMutableArray *_inputServerList = nil;
 
 - (void)dealloc
 {
-  [serverProxy inputClientResignActive: self];
   [serverProxy terminate: self];
 
-  [self resignObserver];
+  [self resignObserverOfClient];
+  [self resignObserverOfConnection];
 
   [NSInputManager removeFromInputServerList: self]; 
 
   [self setKeyBindingTable: nil];
   [self setServerProxy: nil];
   [self setServerInfo: nil];
+
   [super dealloc];
 }
 
@@ -345,93 +357,91 @@ static NSMutableArray *_inputServerList = nil;
  --------------------------------------------------------------------------- */
 - (NSAttributedString *)attributedSubstringFromRange: (NSRange)theRange
 {
-  return [[self client] attributedSubstringFromRange: theRange];
+  return [[self textView] attributedSubstringFromRange: theRange];
 }
 
 
 - (unsigned int)characterIndexForPoint: (NSPoint)thePoint
 {
-  return [[self client] characterIndexForPoint: thePoint];
+  return [[self textView] characterIndexForPoint: thePoint];
 }
 
 
 - (long)conversationIdentifier
 {
-  return [[self client] conversationIdentifier];
+  return [[self textView] conversationIdentifier];
 }
 
 
-/* text view -> input server */
 - (void)doCommandBySelector: (SEL)aSelector
 {
   if (serverProxy)
     {
       [serverProxy doCommandBySelector: aSelector
-				client: [self client]];
+				client: [self textView]];
     }
   else
     {
-      [[self client] doCommandBySelector: aSelector];
+      [[self textView] doCommandBySelector: aSelector];
     }
 }
 
 
 - (NSRect)firstRectForCharacterRange: (NSRange)theRange
 {
-  return [[self client] firstRectForCharacterRange: theRange];
+  return [[self textView] firstRectForCharacterRange: theRange];
 }
 
 
 - (BOOL)hasMarkedText
 {
-  return [[self client] hasMarkedText];
+  return [[self textView] hasMarkedText];
 }
 
 
-/* text view -> input server */
 - (void)insertText: (id)aString
 {
   if (serverProxy)
     {
       [serverProxy insertText: aString
-		       client: [self client]];
+		       client: [self textView]];
     }
   else
     {
-      [[self client] insertText: aString];
+      [[self textView] insertText: aString];
     }
 }
 
 
 - (NSRange)markedRange
 {
-  return [[self client] markedRange];
+  return [[self textView] markedRange];
 }
 
 
 - (NSRange)selectedRange
 {
-  return [[self client] selectedRange];
+  return [[self textView] selectedRange];
 }
 
 
 - (void)setMarkedText: (id)aString
 	selectedRange: (NSRange)selRange
 {
-  return [[self client] setMarkedText: aString
-			selectedRange: selRange];
+  return [[self textView] setMarkedText: aString
+			  selectedRange: selRange];
 }
 
 
 - (void)unmarkText
 {
-  [[self client] unmarkText];
+  [[self textView] unmarkText];
 }
 
 
 - (NSArray *)validAttributesForMarkedText
 {
-  return [[self client] validAttributesForMarkedText];
+  return [[self textView] validAttributesForMarkedText];
 }
 
 @end /* @implementation NSInputManager */
@@ -476,7 +486,8 @@ static NSMutableArray *_inputServerList = nil;
       [self release];
       return NO;
     }
-  [self setServerInfo: [info autorelease]];
+  [self setServerInfo: info];
+  [info release], info = nil;
   return YES;
 }
 
@@ -532,7 +543,8 @@ static NSMutableArray *_inputServerList = nil;
       [src release], src = nil;
       return NO;
     }
-  [self setKeyBindingTable: [table autorelease]];
+  [self setKeyBindingTable: table];
+  [table release], table = nil;
 
   return YES;
 }
@@ -582,31 +594,12 @@ static NSMutableArray *_inputServerList = nil;
 
   [self setServerProxy: proxy];
 
-  [self becomeObserver];
+  [self becomeObserverOfConnection];
   [proxy setProtocolForProxy: @protocol(IMUnifiedProtocolForInputServer)];
   [proxy inputClientBecomeActive: self];
 
 
   return YES;
-}
-
-
-- (void)becomeObserver
-{
-  [[NSNotificationCenter defaultCenter]
-    addObserver: self
-       selector: @selector(lostConnection:)
-	   name: NSConnectionDidDieNotification
-	 object: [serverProxy connectionForProxy]];
-}
-
-
-- (void)resignObserver
-{
-  [[NSNotificationCenter defaultCenter]
-    removeObserver: self
-	      name: NSConnectionDidDieNotification
-	    object: [serverProxy connectionForProxy]];
 }
 
 
@@ -652,6 +645,42 @@ static NSMutableArray *_inputServerList = nil;
 }
 
 
+- (void)setTextView: (id)aTextView
+{
+  /* Don't retain or cache it. */
+  textView = aTextView;
+}
+
+
+- (id)textView
+{
+  return textView;
+}
+
+
+- (id)lookUpTextInputViewInWindow: (NSWindow *)window
+{
+  id obj = [window firstResponder];
+
+  while (obj)
+    {
+      if ([obj conformsToProtocol: @protocol(NSTextInput)])
+	{
+	  return obj;
+	}
+      if ([obj isKindOfClass: [NSResponder class]])
+	{
+	  obj = [obj nextResponder];
+	}
+      else
+	{
+	  obj = nil;
+	}
+    }
+  return nil;
+}
+
+
 /* Return nil if not readable. */
 - (NSString *)standardKeyBindingAbsolutePath
 {
@@ -688,22 +717,105 @@ static NSMutableArray *_inputServerList = nil;
 }
 
 
-- (id)client
+- (void)becomeObserverOfConnection
 {
-  id obj = [[[NSApplication sharedApplication] keyWindow] firstResponder];
+  NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
 
-  while (obj)
+  [center addObserver: self
+	     selector: @selector(lostConnection:)
+		 name: NSConnectionDidDieNotification
+	       object: [serverProxy connectionForProxy]];
+}
+
+
+- (void)becomeObserverOfClient
+{
+  NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+
+  [center addObserver: self
+	     selector: @selector(clientBecomeActive:)
+		 name: NSApplicationDidBecomeActiveNotification
+	       object: nil];
+  [center addObserver: self
+	     selector: @selector(clientResignActive:)
+		 name: NSApplicationWillResignActiveNotification
+	       object: nil];
+  [center addObserver: self
+	     selector: @selector(clientPossiblyEnabled:)
+		 name: NSWindowDidBecomeKeyNotification
+	       object: nil];
+  [center addObserver: self
+	     selector: @selector(clientPossiblyDisabled:)
+		 name: NSWindowDidResignKeyNotification
+	       object: nil];
+}
+
+
+- (void)resignObserverOfConnection
+{
+  NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+
+  [center removeObserver: self
+		    name: NSConnectionDidDieNotification
+		  object: [serverProxy connectionForProxy]];
+}
+
+
+- (void)resignObserverOfClient
+{
+  NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+
+  [center removeObserver: self
+		    name: NSApplicationDidBecomeActiveNotification
+		  object: nil];
+  [center removeObserver: self
+		    name: NSApplicationWillResignActiveNotification
+		  object: nil];
+  [center removeObserver: self
+		    name: NSWindowDidBecomeKeyNotification
+		  object: nil];
+  [center removeObserver: self
+		    name: NSWindowDidResignKeyNotification
+		  object: nil];
+}
+
+
+- (void)clientBecomeActive: (NSNotification *)aNotification
+{
+  [serverProxy inputClientBecomeActive: self];
+}
+
+
+- (void)clientResignActive: (NSNotification *)aNotification
+{
+  [serverProxy inputClientResignActive: self];
+}
+
+
+- (void)clientPossiblyEnabled: (NSNotification *)aNotification
+{
+  id obj = [self lookUpTextInputViewInWindow: [aNotification object]];
+
+  if (obj)
     {
-      if ([obj conformsToProtocol: @protocol(NSTextInput)])
-	{
-	  return obj;
-	}
-      obj = [obj isKindOfClass: [NSResponder class]]
-		? [obj nextResponder]
-		: nil;
+      [self setTextView: obj];
+      [serverProxy inputClientEnabled: obj];
     }
-  NSLog(@"%@: Couldn't specify client", self);
-  return nil;
+}
+
+
+- (void)clientPossiblyDisabled: (NSNotification *)aNotification
+{
+  id obj = [self lookUpTextInputViewInWindow: [aNotification object]];
+
+  if (obj)
+    {
+      [serverProxy inputClientDisabled: obj];
+      if (obj == [self textView])
+	{
+	  [self setTextView: nil];
+	}
+    }
 }
 
 
@@ -716,7 +828,7 @@ static NSMutableArray *_inputServerList = nil;
 
   NSLog(@"%@: Lost connection to input server %@", [serverProxy serverName]);
   /* Release all resources to related to the server */
-  [self resignObserver];
+  [self resignObserverOfConnection];
   [self setKeyBindingTable: nil];
   [self setServerProxy: nil];
   [self setServerInfo: nil];
@@ -736,7 +848,8 @@ static NSMutableArray *_inputServerList = nil;
       [dict release], dict = nil;
     }
   table = [[IMKeyBindingTable alloc] initWithKeyBindingDictionary: src];
-  [self setKeyBindingTable: [table autorelease]];
+  [self setKeyBindingTable: table];
+  [table release], table = nil;
 }
 
 @end /* @implementation NSInputManager (Private) */
@@ -968,5 +1081,3 @@ static NSMutableArray *_inputServerList = nil;
 }
 
 @end /* @implementation	IMInputServerInfo */
-
-

@@ -48,6 +48,7 @@ typedef struct _IMRecord {
 
 static NSString *_plain	  = @"1234567890-=qwertyuiop[]asdfghjkl;'\\zxcvbnm,./";
 static NSString *_shifted = @"!@#$%^&*()_+QWERTYUIOP{}ASDFGHJKL:\"|ZXCVBNM<>?";
+
 static IMRecord _functionKeyTable[] = {
     { @"UpArrow",	    NSUpArrowFunctionKey },
     { @"DownArrow",	    NSDownArrowFunctionKey },
@@ -122,6 +123,7 @@ static IMRecord _functionKeyTable[] = {
     { @"Help",		    NSHelpFunctionKey },
     { @"Mode",		    NSModeSwitchFunctionKey },
 };
+
 static IMRecord _maskTable[] = {
     { @"AlphaShiftKey",	    NSAlphaShiftKeyMask },
     { @"ShiftKey",	    NSShiftKeyMask },
@@ -176,7 +178,6 @@ static IMRecord _maskTable[] = {
       [c setCharacter: [noModChars characterAtIndex: i]];
       [c setModifiers: modifierFlags];
 
-      NSLog(@"<-- %@", c);
       result = [keyBindingTable getSelectorFromCharacter: c
 						selector: &sel];
       switch (result)
@@ -760,21 +761,18 @@ static IMRecord _maskTable[] = {
       *selector = (SEL)0;
       branch = nil;
       result = IMNotFound;
-      NSLog(@"--> NotFound: %@", character);
     }
   else if ([obj isKindOfClass: [NSDictionary class]])
     {
       *selector = (SEL)0;
       branch = obj;
       result = IMPending;
-      NSLog(@"--> Pending: %@", character);
     }
   else if ([obj isKindOfClass: [NSNumber class]])
     {
       *selector = (SEL)[obj unsignedLongValue];
       branch = nil;
       result = IMFound;
-      NSLog(@"--> Found: %@ -> %@", character, NSStringFromSelector(*selector));
     }
 
   return result;

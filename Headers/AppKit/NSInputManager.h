@@ -63,6 +63,7 @@
   IMInputServerInfo	*serverInfo;
   id			serverProxy;
   IMKeyBindingTable	*keyBindingTable;
+  id			textView;   /* active NSTextInput view in the client */
 }
 
 + (NSInputManager *)currentInputManager;
