@@ -1451,8 +1451,12 @@ byExtendingSelection: (BOOL)flag
   if (clickCount == 1)
     {
       SEL selector;
+      unsigned int modifiers;
+      modifiers = [theEvent modifierFlags];
 
-      if ([self isRowSelected: _clickedRow] == YES)
+      /* Unselect a selected row if the shift key is pressed */
+      if ([self isRowSelected: _clickedRow] == YES
+	  && (modifiers & NSShiftKeyMask))
 	{
 	  if (([_selectedRows count] == 1) && (_allowsEmptySelection == NO))
 	    return;
@@ -1477,10 +1481,7 @@ byExtendingSelection: (BOOL)flag
 	}
       else // row is not selected 
 	{
-	  unsigned int modifiers;
 	  BOOL newSelection;
-
-	  modifiers = [theEvent modifierFlags];
 
 	  if ((modifiers & (NSShiftKeyMask | NSAlternateKeyMask)) 
 	      && _allowsMultipleSelection)
@@ -1912,12 +1913,14 @@ byExtendingSelection: (BOOL)flag
 - (int) columnAtPoint: (NSPoint)aPoint
 {
   if ((NSMouseInRect (aPoint, _bounds, YES)) == NO)
-    return -1;
+    {
+      return -1;
+    }
   else
     {
       int i = 0;
       
-      while ((aPoint.x > _columnOrigins[i]) && (i < _numberOfColumns))
+      while ((aPoint.x >= _columnOrigins[i]) && (i < _numberOfColumns))
 	{
 	  i++;
 	}
@@ -1929,7 +1932,9 @@ byExtendingSelection: (BOOL)flag
 {
   /* NB: Y coordinate system is flipped in NSTableView */
   if ((NSMouseInRect (aPoint, _bounds, YES)) == NO)
-    return -1;
+    {
+      return -1;
+    }
   else
     {
       int return_value;
