@@ -1041,6 +1041,8 @@ int
 main(int argc, char** argv, char **env)
 {
   NSAutoreleasePool	*pool;
+  NSString      *hostname;
+
 
 #ifdef GS_PASS_ARGUMENTS
   [NSProcessInfo initializeWithArguments:argv count:argc environment:env];
@@ -1061,18 +1063,59 @@ main(int argc, char** argv, char **env)
   /* Register a connection that provides the server object to the network */
   conn = [NSConnection defaultConnection];
   [conn setRootObject: server];
-  if ([conn registerName: PBSNAME] == NO)
-    {
-      NSLog(@"Unable to register with name server.\n");
-      exit(1);
-    }
-
   [conn setDelegate: server];
   [[NSNotificationCenter defaultCenter]
     addObserver: server
        selector: @selector(connectionBecameInvalid:)
 	   name: NSConnectionDidDieNotification
 	 object: conn];
+
+  hostname = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
+  if ([hostname length] == 0)
+    {
+      if ([conn registerName: PBSNAME] == NO)
+	{
+	  NSLog(@"Unable to register with name server.\n");
+	  exit(1);
+	}
+    }
+  else
+    {
+      NSHost            *host = [NSHost hostWithName: hostname];
+      NSPort            *port = [conn receivePort];
+      NSPortNameServer  *ns = [NSPortNameServer systemDefaultPortNameServer];
+      NSArray           *a;
+      unsigned          c;
+
+      if (host == nil)
+        {
+          NSLog(@"gdnc - unknown NSHost argument  ... %@ - quiting.", hostname);
+          DESTROY(self);
+          return self;
+        }
+      a = [host names];
+      c = [a count];
+      while (c-- > 0)
+        {
+          NSString      *name = [a objectAtIndex: c];
+
+          name = [PBSNAME stringByAppendingFormat: @"-%@", name];
+          if ([ns registerPort: port forName: name] == NO)
+            {
+            }
+        }
+      a = [host addresses];
+      c = [a count];
+      while (c-- > 0)
+        {
+          NSString      *name = [a objectAtIndex: c];
+
+          name = [PBSNAME stringByAppendingFormat: @"-%@", name];
+          if ([ns registerPort: port forName: name] == NO)
+            {
+            }
+        }
+    }
 
   if (verbose)
     {

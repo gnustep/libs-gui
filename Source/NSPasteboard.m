@@ -181,9 +181,15 @@ static  NSMapTable              *mimeMap = NULL;
 	}
       else
 	{
-	  NSLog(@"Unable to contact pasteboard server on %@ - "
-	    @"please ensure that gpbs is running.", host);
-	  return nil;
+	  the_server = (id<GSPasteboardSvr>)[NSConnection
+	    rootProxyForConnectionWithRegisteredName:
+            [PBS_NAME stringByAppendingFormat: @"-%@", host] host: @"*"];
+          if (the_server == nil)
+            {
+	      NSLog(@"Unable to contact pasteboard server for %@ - "
+		  @"please ensure that gpbs is running.", host);
+            }
+          RETAIN(the_server);
 	}
     }
   return the_server;

@@ -1,3 +1,8 @@
+2002-03-09  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSPasteboard.m: Use NSHost to look for alternative servers.
+	* Tools/gpbs.m: Use -NSHost to specify alternative server names.
+
 Sat Mar  9 12:22:05 2002  Adam Fedor  <fedor@yogi.doc.com>
 
 	* Source/GSSimpleLayoutManager.m:
