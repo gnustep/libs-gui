@@ -1,3 +1,12 @@
+2004-09-11 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSCell.m: Reverted previous change. 
+	The change was causing an issue where if the font was 
+	changed on an NSButtonCell which contains both an image and text. 
+	The title was being, incorrectly, reset to "title".  
+	* Source/NSDataLinkPanel.m: Renamed the shared variable to something
+	more standard.
+
 2004-09-09  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSCell.m (-setStringValue:, -setFont:, -setImage:):  Use

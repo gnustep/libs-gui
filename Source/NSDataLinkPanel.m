@@ -28,7 +28,7 @@
 #include "AppKit/NSNibLoading.h"
 #include "GSGuiPrivate.h"
 
-static NSDataLinkPanel *__sharedDataLinkPanel;
+static NSDataLinkPanel *_sharedDataLinkPanel;
 
 @interface GSDataLinkPanelController : NSObject
 {
@@ -43,19 +43,21 @@ static NSDataLinkPanel *__sharedDataLinkPanel;
   NSString *panelPath;
   NSDictionary *table;
 
-  self = [super init];
-  panelPath = [GSGuiBundle() pathForResource: @"GSDataLinkPanel" 
-			  ofType: @"gorm"
-			  inDirectory: nil];
-  NSLog(@"Panel path=%@",panelPath);
-  table = [NSDictionary dictionaryWithObject: self forKey: @"NSOwner"];
-  if ([NSBundle loadNibFile: panelPath 
-	  externalNameTable: table
-		withZone: [self zone]] == NO)
+  if((self = [super init]) != nil)
     {
-      NSRunAlertPanel(@"Error", @"Could not load data link panel resource", 
-		      @"OK", NULL, NULL);
-      return nil;
+      panelPath = [GSGuiBundle() pathForResource: @"GSDataLinkPanel" 
+			      ofType: @"gorm"
+			      inDirectory: nil];
+      NSLog(@"Panel path=%@",panelPath);
+      table = [NSDictionary dictionaryWithObject: self forKey: @"NSOwner"];
+      if ([NSBundle loadNibFile: panelPath 
+		    externalNameTable: table
+		    withZone: [self zone]] == NO)
+	{
+	  NSRunAlertPanel(@"Error", @"Could not load data link panel resource", 
+			  @"OK", NULL, NULL);
+	  return nil;
+	}
     }
 
   return self;
@@ -64,6 +66,12 @@ static NSDataLinkPanel *__sharedDataLinkPanel;
 - (id) panel
 {
   return panel;
+}
+
+- (void) dealloc
+{
+  RELEASE(panel);
+  [super dealloc];
 }
 @end
 
@@ -100,13 +108,13 @@ static NSDataLinkPanel *__sharedDataLinkPanel;
 //
 + (NSDataLinkPanel *)sharedDataLinkPanel
 {
-  if(__sharedDataLinkPanel == nil)
+  if(_sharedDataLinkPanel == nil)
     {
       id controller = [[GSDataLinkPanelController alloc] init];
-      __sharedDataLinkPanel = [controller panel];
+      _sharedDataLinkPanel = [controller panel];
     }
-  NSLog(@"%@",__sharedDataLinkPanel);
-  return __sharedDataLinkPanel;
+  NSLog(@"%@",_sharedDataLinkPanel);
+  return _sharedDataLinkPanel;
 }
 
 //
