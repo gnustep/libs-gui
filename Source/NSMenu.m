@@ -333,7 +333,7 @@ static NSNotificationCenter *nc;
   [_bWindow setLevel: NSPopUpMenuWindowLevel];
 
   // Create a NSMenuView to draw our menu items.
-  _view = [[NSMenuView alloc] initWithFrame: NSMakeRect(0,0,50,50)];
+  _view = [[NSMenuView alloc] initWithFrame: NSZeroRect];
   [_view setMenu: self];
 
   contentView = [_aWindow contentView];
@@ -410,9 +410,6 @@ static NSNotificationCenter *nc;
 
   // Set this after the insert notification has been send.
   [newItem setMenu: self];
-
-  // Update the menu.
-  [self update];
 }
 
 - (id <NSMenuItem>) insertItemWithTitle: (NSString*)aString
@@ -480,9 +477,6 @@ static NSNotificationCenter *nc;
     [nc postNotification: removed];
   else
     [_notifications addObject: removed];
-
-  // Update the menu.
-  [self update];
 }
 
 - (void) itemChanged: (id <NSMenuItem>)anObject
@@ -1005,31 +999,42 @@ static NSNotificationCenter *nc;
   NSRect menuFrame;
   NSSize size;
 
-  [_view sizeToFit];
-
+	[_view update];
+	
   menuFrame = [_view frame];
   size = menuFrame.size;
-
-  newWindowFrame = [NSWindow frameRectForContentRect: menuFrame
-                             styleMask: [_aWindow styleMask]];
+ 
+	// Main
   oldWindowFrame = [_aWindow frame];
-  newWindowFrame.origin = NSMakePoint (oldWindowFrame.origin.x,
-                                       oldWindowFrame.origin.y + oldWindowFrame.size.height
-                                       - newWindowFrame.size.height);
-  [_aWindow setFrame: newWindowFrame display: NO];
+	newWindowFrame = [NSWindow frameRectForContentRect: menuFrame
+                             styleMask: [_aWindow styleMask]];
 
+	if (oldWindowFrame.size.height > 1)
+		{
+			newWindowFrame.origin = NSMakePoint (oldWindowFrame.origin.x,
+						 															 oldWindowFrame.origin.y
+																					 + oldWindowFrame.size.height
+																					 - newWindowFrame.size.height);
+		}
+	[_aWindow setFrame: newWindowFrame display: NO];
+
+	// Transient
+  oldWindowFrame = [_bWindow frame];
   newWindowFrame = [NSWindow frameRectForContentRect: menuFrame
                              styleMask: [_bWindow styleMask]];
-  oldWindowFrame = [_bWindow frame];
-  newWindowFrame.origin = NSMakePoint (oldWindowFrame.origin.x,
-                                       oldWindowFrame.origin.y + oldWindowFrame.size.height
-                                       - newWindowFrame.size.height);
-  [_bWindow setFrame: newWindowFrame display: NO];
+	if (oldWindowFrame.size.height > 1)
+		{
+			newWindowFrame.origin = NSMakePoint (oldWindowFrame.origin.x,
+																					 oldWindowFrame.origin.y
+																					 + oldWindowFrame.size.height
+																					 - newWindowFrame.size.height);
+		}
+	[_bWindow setFrame: newWindowFrame display: NO];
   
   if (_popUpButtonCell == nil)
     {
       [_view setFrameOrigin: NSMakePoint (0, 0)];
-    } 
+    }
 
   [_view setNeedsDisplay: YES];
 
@@ -1220,12 +1225,14 @@ static NSNotificationCenter *nc;
 {
   if (_transient)
     {
-      NSDebugLLog (@"NSMenu", @"trying to display while alreay displayed transient");
+      NSDebugLLog (@"NSMenu", 
+									 @"trying to display while alreay displayed transient");
     }
 
-  [_view update];
   if (_changed)
-    [self sizeToFit];
+		{
+			[self sizeToFit];
+		}
 
   if (_superMenu && ![self isTornOff])
     {                 
@@ -1233,11 +1240,16 @@ static NSNotificationCenter *nc;
       [_aWindow setFrameOrigin: [_superMenu locationForSubmenu: self]];
       _superMenu->_attachedMenu = self;
     }
-  else if ([_aWindow frame].origin.y <= 0)   // get geometry only if not set
+  else if ([_aWindow frame].origin.y <= 0 
+					 && _popUpButtonCell == nil)   // get geometry only if not set
     {
       [self setGeometry];
     }
-  NSDebugLLog (@"NSMenu", @"Display, origin: %@", NSStringFromPoint ([_aWindow frame].origin));
+
+  NSDebugLLog (@"NSMenu", 
+							 @"Display, origin: %@", 
+							 NSStringFromPoint ([_aWindow frame].origin));
+							 
   [_aWindow orderFrontRegardless];
 }
 
@@ -1283,7 +1295,8 @@ static NSNotificationCenter *nc;
 
   contentView = [_bWindow contentView];
   [contentView addSubview: _view];
-  [_view update];
+
+//  [_view update];
   if (_changed)
     {
       [self sizeToFit];
@@ -1291,7 +1304,6 @@ static NSNotificationCenter *nc;
   
   [_bWindow orderFront: self];
 }
-
 
 - (void) setGeometry
 {
@@ -1354,7 +1366,6 @@ static NSNotificationCenter *nc;
       _superMenu->_attachedMenu = nil;
       [[_superMenu menuRepresentation] setHighlightedItemIndex: -1];
     }
-  [_view update];
 }
 
 - (void) closeTransient
@@ -1386,8 +1397,6 @@ static NSNotificationCenter *nc;
   [[self menuRepresentation] setHighlightedItemIndex: _oldHiglightedIndex];
   
   _transient = NO;
-
-  [_view update];
 }
 
 - (NSWindow*) window
