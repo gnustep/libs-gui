@@ -696,7 +696,7 @@ static NSTextFieldCell *titleCell;
 {
   NSBrowserColumn *bc;
   NSScrollView *sc;
-  NSRect rect = {{0, 0}, {100, 100}};
+  NSRect rect = {{-110, -110}, {100, 100}};
 
   bc = [[NSBrowserColumn alloc] init];
 
@@ -1376,35 +1376,24 @@ static NSTextFieldCell *titleCell;
 /** Updates the horizontal scroller to reflect column positions. */
 - (void) updateScroller
 {
-  int num;
+  int   num = [self numberOfVisibleColumns];
+  float prop = (float)num / (float)(_lastColumnLoaded + 1);
+  int   uc = ((_lastColumnLoaded + 1) - num); // Unvisible columns
+  float f_step = 1.0;                         // Knob moving step
+  float fv = 0.0;
 
-  num = [self numberOfVisibleColumns];
-
-  // If there are not enough columns to scroll with
-  // then the column must be visible
-  if ((_firstVisibleColumn == 0) && (_lastColumnLoaded < num))
+  if (uc > 0.0)
     {
-      [_horizontalScroller setEnabled: NO];
+      f_step = 1.0 / (float)uc;
     }
-  else
+  fv = (float)(_firstVisibleColumn * f_step);
+
+  if (_lastVisibleColumn > _lastColumnLoaded)
     {
-      if (!_skipUpdateScroller)
-      	{
-      	  float prop = (float)num / (float)(_lastColumnLoaded + 1);
-      	  float i = _lastColumnLoaded - num + 1;
-      	  float f = 1 + ((_lastVisibleColumn - _lastColumnLoaded) / i);
-
-	  if (_lastVisibleColumn > _lastColumnLoaded)
-	    {
-	      prop = (float)num / (float)(_lastVisibleColumn + 1);
-	    }
-
-          [_horizontalScroller setFloatValue: f knobProportion: prop];
-	}
-      [_horizontalScroller setEnabled: YES];
+      prop = (float)num / (float)(_lastVisibleColumn + 1);
     }
 
-  [_horizontalScroller setNeedsDisplay: YES];
+  [_horizontalScroller setFloatValue: fv knobProportion: prop];
 }
 
 /** Scrolls columns left or right based on an NSScroller. */
@@ -1437,9 +1426,7 @@ static NSTextFieldCell *titleCell;
 	{
 	  float f = [sender floatValue];
 
-	  _skipUpdateScroller = YES;
 	  [self scrollColumnToVisible: rintf(f * _lastColumnLoaded)];
-	  _skipUpdateScroller = NO;
 	}
       	break;
       
