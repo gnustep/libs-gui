@@ -1,3 +1,21 @@
+Thu Dec 16 04:09:20 1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/AppKit/NSControl.h: Prefixed ivars with underscore;
+	added declaration of copyWithZone:.
+	* Source/NSControl.m: Updated for change in ivar names; 
+	([-drawCellInside:]): Fixed bug.
+	* Source/NSButton.m: Updated for change in control ivar names.
+	* Source/NSPopUpButton.m: idem.
+	* Source/NSSecureTextField.m: idem.
+	* Source/NSSlider.m: idem.
+	* Source/NSTextField.m: idem.
+
+	* Source/NSScroller.m ([-drawRect:]): Fill also the space between
+ 	the knobslot and the frame.
+	* Source/NSScrollView.m: Access ivars bounds, borderType directly.
+	* Source/NSView.m ([-removeFromSuperview]): Access ivar frame
+ 	directly.
+	
 Wed Dec 15 17:15:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSCell.m: encode/decode some missing ivars.
