@@ -378,8 +378,6 @@ static NSCell* tileCell = nil;
 
 - (id) init
 {
-  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
-
   if (NSApp != nil && NSApp != self)
     {
       RELEASE(self);
@@ -413,18 +411,6 @@ static NSCell* tileCell = nil;
   /* We are the end of responder chain	*/
   [self setNextResponder: nil];
 
-  /* Register self as observer to window events. */
-  [nc addObserver: self selector: @selector(_windowWillClose:)
-      name: NSWindowWillCloseNotification object: nil];
-  [nc addObserver: self selector: @selector(_windowDidBecomeKey:)
-      name: NSWindowDidBecomeKeyNotification object: nil];
-  [nc addObserver: self selector: @selector(_windowDidBecomeMain:)
-      name: NSWindowDidBecomeMainNotification object: nil];
-  [nc addObserver: self selector: @selector(_windowDidResignKey:)
-      name: NSWindowDidResignKeyNotification object: nil];
-  [nc addObserver: self selector: @selector(_windowDidResignMain:)
-      name: NSWindowDidResignMainNotification object: nil];
-
   return self;
 }
 
@@ -438,6 +424,9 @@ static NSCell* tileCell = nil;
   NSUserDefaults	*defs = [NSUserDefaults standardUserDefaults];
   NSString		*filePath;
   NSDictionary		*userInfo;
+  NSArray		*windows_list;
+  unsigned		count;
+  unsigned		i;
 
   mainModelFile = [infoDict objectForKey: @"NSMainNibFile"];
   if (mainModelFile && ![mainModelFile isEqual: @""])
@@ -465,6 +454,53 @@ static NSCell* tileCell = nil;
   /* Register our listener to incoming services requests etc. */
   [listener registerAsServiceProvider];
 
+  /* Register self as observer to window events. */
+  [nc addObserver: self selector: @selector(_windowWillClose:)
+      name: NSWindowWillCloseNotification object: nil];
+  [nc addObserver: self selector: @selector(_windowDidBecomeKey:)
+      name: NSWindowDidBecomeKeyNotification object: nil];
+  [nc addObserver: self selector: @selector(_windowDidBecomeMain:)
+      name: NSWindowDidBecomeMainNotification object: nil];
+  [nc addObserver: self selector: @selector(_windowDidResignKey:)
+      name: NSWindowDidResignKeyNotification object: nil];
+  [nc addObserver: self selector: @selector(_windowDidResignMain:)
+      name: NSWindowDidResignMainNotification object: nil];
+
+  /*
+   * Establish the current key and main windows.  We need to do this in case
+   * the windows were created and set to be key/main earlier - before the
+   * app was active.
+   */
+  windows_list = [self windows];
+  count = [windows_list count];
+  for (i = 0; i < count; i++)
+    {
+      NSWindow	*win = [windows_list objectAtIndex: i];
+
+      if ([win isKeyWindow] == YES)
+	{
+	  if (_key_window == nil)
+	    {
+	      _key_window = win;
+	    }
+	  else
+	    {
+	      NSLog(@"Duplicate keyWindow ignored");
+	    }
+	}
+      if ([win isMainWindow] == YES)
+	{
+	  if (_main_window == nil)
+	    {
+	      _main_window = win;
+	    }
+	  else
+	    {
+	      NSLog(@"Duplicate mainWindow ignored");
+	    }
+	}
+    }
+
   [self activateIgnoringOtherApps: YES];
 
   /* finish the launching post notification that launching has finished */
@@ -483,7 +519,8 @@ static NSCell* tileCell = nil;
 	}
       else
 	{
-	  [[NSDocumentController sharedDocumentController] openDocumentWithContentsOfFile:filePath display:YES];
+	  [[NSDocumentController sharedDocumentController]
+	    openDocumentWithContentsOfFile:filePath display:YES];
 	}
     }
   else if ((filePath = [defs stringForKey: @"GSTempPath"]) != nil)
@@ -494,7 +531,8 @@ static NSCell* tileCell = nil;
 	}
       else
 	{
-	  [[NSDocumentController sharedDocumentController] openDocumentWithContentsOfFile:filePath display:YES];
+	  [[NSDocumentController sharedDocumentController]
+	    openDocumentWithContentsOfFile:filePath display:YES];
 	}
     }
 
