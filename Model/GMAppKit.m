@@ -66,6 +66,8 @@ void __dummy_GMAppKit_functionForLinking() {}
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
 {
   NSArray* windows;
+  NSEnumerator *enumerator;
+  NSWindow *win;
   NSWindow* keyWindow;
   NSWindow* mainWindow;
   NSMenu* mainMenu;
@@ -78,6 +80,14 @@ void __dummy_GMAppKit_functionForLinking() {}
 #endif
 
   windows = [unarchiver decodeObjectWithName:@"windows"];
+  enumerator = [windows objectEnumerator];
+  while ((win = [enumerator nextObject]) != nil)
+    {
+      /* If we did not retain the windows here, they would all get 
+	 released at the end of the event loop. */
+      RETAIN (win);
+    }
+
   keyWindow = [unarchiver decodeObjectWithName:@"keyWindow"];
   mainWindow = [unarchiver decodeObjectWithName:@"mainWindow"];
 
