@@ -1625,13 +1625,19 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
       /*
        * If the rect we displayed contains the _invalidRect or _visibleRect
-       * then we can empty _invalidRect.	 If all subviews have been
-       * fully displayed, so this view no longer needs to be displayed.
+       * then we can empty _invalidRect.
+       * If all subviews have been fully displayed, we can also turn off the
+       * 'needs_display' flag.
        */
       if (NSEqualRects(aRect, NSUnionRect(neededRect, aRect)) == YES)
 	{
 	  _invalidRect = NSZeroRect;
 	  _rFlags.needs_display = subviewNeedsDisplay;
+	}
+      if (_rFlags.needs_display == YES
+	&& NSEqualRects(aRect, NSUnionRect(_visibleRect, aRect)) == YES)
+	{
+	  _rFlags.needs_display = NO;
 	}
       [_window flushWindow];
     }
@@ -1738,12 +1744,17 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   /*
    * If the rect we displayed contains the _invalidRect or _visibleRect
    * then we can empty _invalidRect.  If all subviews have been
-   * fully displayed, so this view no longer needs to be displayed.
+   * fully displayed, we can also turn off the 'needs_display' flag.
    */
   if (NSEqualRects(aRect, NSUnionRect(neededRect, aRect)) == YES)
     {
       _invalidRect = NSZeroRect;
       _rFlags.needs_display = subviewNeedsDisplay;
+    }
+  if (_rFlags.needs_display == YES
+    && NSEqualRects(aRect, NSUnionRect(_visibleRect, aRect)) == YES)
+    {
+      _rFlags.needs_display = NO;
     }
   [_window flushWindow];
 }
