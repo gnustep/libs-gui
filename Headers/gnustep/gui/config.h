@@ -30,13 +30,7 @@
 #include <Foundation/NSGeometry.h>
 
 /* Define NSDebugLog if not defined */
-#ifndef NSDebugLog
-# ifdef DEBUGLOG
-#  define NSDebugLog(format, args...) NSLog(format, ## args)
-# else
-#  define NSDebugLog(format, args...)
-# endif
-#endif /* !NSDebugLog */
+#include <Foundation/NSObjCRuntime.h>
 
 extern BOOL initialize_gnustep_backend (void);
 

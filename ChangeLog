@@ -1,3 +1,7 @@
+Mon Jul 20 10:37:22 1998  Adam Fedor  <fedor@ultra.doc.com>
+
+	* config.h: Use NSDebugLog def from Foundation/NSObjCRuntime.h
+
 Tues July 18 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* Source/NSBrowser.m fixed bug where column matrix was getting released
