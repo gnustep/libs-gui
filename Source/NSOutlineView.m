@@ -68,61 +68,6 @@ static float widest = 0.0;
 			    row: (int) rowIndex;
 @end
 
-/*
- * The following function can work on columns or rows; 
- * passing the correct select/deselect function switches between one 
- * and the other.  Currently used only for rows, anyway.
- */
-/*
-static void
-_selectionChange (NSOutlineView *ov, id delegate, int numberOfRows, 
-		  int clickedRow, 
-		  int oldSelectedRow, int newSelectedRow, 
-		  void (*deselectFunction)(NSOutlineView *, int, int, int), 
-		  void (*selectFunction)(NSOutlineView *, id, int, int, int))
-{
-  int newDistance;
-  int oldDistance;
-
-  if (oldSelectedRow == newSelectedRow)
-    return;
-
-  // Change coordinates - distance from the center of selection 
-  oldDistance = oldSelectedRow - clickedRow;
-  newDistance = newSelectedRow - clickedRow;
-
-  // If they have different signs, then we decompose it into 
-  //   two problems with the same sign 
-  if ((oldDistance * newDistance) < 0)
-    {
-      _selectionChange (ov, delegate, numberOfRows, clickedRow, 
-			oldSelectedRow, clickedRow, deselectFunction, 
-			selectFunction);
-      _selectionChange (ov, delegate, numberOfRows, clickedRow, clickedRow, 
-			newSelectedRow, deselectFunction, selectFunction);
-      return;
-    }
-
-  // Otherwise, take the modulus of the distances
-  if (oldDistance < 0)
-    oldDistance = -oldDistance;
-
-  if (newDistance < 0)
-    newDistance = -newDistance;
-
-  // If the new selection is more wide, we need to select
-  if (newDistance > oldDistance)
-    {
-      selectFunction (ov, delegate, oldSelectedRow, newSelectedRow, 
-		      clickedRow);
-    }
-  else // Otherwise to deselect
-    {
-      deselectFunction (ov, newSelectedRow, oldSelectedRow, clickedRow);
-    }
-}
-*/
-
 // These methods are defined in NSTableView.
 @interface NSOutlineView (TableViewInternalPrivate)
 - (void) _setSelectingColumns: (BOOL)flag;
@@ -191,7 +136,7 @@ static void _collectItems(NSOutlineView *outline,
 				  numberOfChildrenOfItem: startitem];
   int i = 0;
 
-  for(i = 1; i <= num; i++)
+  for(i = 0; i < num; i++)
     {
       id anitem = [[outline dataSource] outlineView: outline
 					child: i
@@ -213,18 +158,11 @@ static void _collectItems(NSOutlineView *outline,
   int i = 0;
   NSMutableArray *removeAll = [NSMutableArray array];
 
-  //  [_dataSource outlineView: self 
-  //       numberOfChildrenOfItem: item];
-
   _collectItems(self, item, removeAll);
   numchildren = [removeAll count];
 
   // close the item...
-  if(item == nil)
-    {
-      [_expandedItems removeObject: @"root"];
-    }
-  else
+  if(item != nil)
     {
       [_expandedItems removeObject: item];
     }
@@ -247,11 +185,7 @@ static void _collectItems(NSOutlineView *outline,
   int insertionPoint = 0;
 
   // open the item...
-  if(item == nil)
-    {
-      [_expandedItems addObject: @"root"];
-    }
-  else
+  if(item != nil)
     {
       [_expandedItems addObject: item];
     }
@@ -267,7 +201,7 @@ static void _collectItems(NSOutlineView *outline,
     }
 
   [self setNeedsDisplay: YES];  
-  for(i=numchildren; i > 0; i--)
+  for(i=numchildren-1; i >= 0; i--)
     {
       id child = [_dataSource outlineView: self
 			      child: i
@@ -493,7 +427,7 @@ static int _levelForItem(NSOutlineView *outline,
       return level;
     }
 
-  for(i = 1; i <= num; i++)
+  for(i = 0; i < num; i++)
     {
       id anitem = [[outline dataSource] outlineView: outline
 					child: i

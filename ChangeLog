@@ -1,3 +1,9 @@
+2002-03-05  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSOutlineView.m modified to the methods which
+	make calls to the datasource to retrieve children starting
+	from zero instead of one.  
+	
 2002-03-04  Gregory John Casamento <greg_casamento@yahoo.com>
 	  & Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
