@@ -1,3 +1,10 @@
+Wed Mar 08 07:44:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSText.m: Fixes by Fred Kiefer for rich text display.
+	* Source/NSStringDrawing.m: ditto
+	* Headers/AppKit/NSText.h: ditto
+	* Headers/AppKit/NSStringDrawing.h: ditto
+
 Tue Mar 07 11:00:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSWindow.m: Changes throughout to use correct offsets for

@@ -1323,5 +1323,79 @@ setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
   return size;
 }
 
-@end
 
+#if 1
+- (NSSize) sizeRange: (NSRange) lineRange
+{
+  return [[self attributedSubstringFromRange: lineRange] size];
+}
+
+- (void) drawRange: (NSRange) lineRange atPoint: (NSPoint) aPoint
+{
+  [[self attributedSubstringFromRange: lineRange] drawAtPoint: aPoint];
+}
+
+- (void) drawRange: (NSRange) lineRange inRect: (NSRect)aRect
+{
+  [[self attributedSubstringFromRange: lineRange] drawInRect: aRect];
+}
+
+#else
+- (NSSize) sizeRange: (NSRange) lineRange
+{
+  NSRect retRect = NSZeroRect;
+  NSRange currRange = NSMakeRange (lineRange.location, 0);
+  NSPoint currPoint = NSMakePoint (0, 0);
+  NSString *string = [self string];
+  
+
+  for (; NSMaxRange (currRange) < NSMaxRange (lineRange);) // draw all "runs"
+    {
+      NSDictionary *attributes = [self attributesAtIndex: NSMaxRange(currRange) 
+				       longestEffectiveRange: &currRange 
+				       inRange: lineRange];
+      NSString *substring = [string substringWithRange: currRange];
+      NSRect sizeRect = NSMakeRect (currPoint.x, 0, 0, 0);
+      
+      sizeRect.size = [substring sizeWithAttributes: attributes];
+      retRect = NSUnionRect (retRect, sizeRect);
+      currPoint.x += sizeRect.size.width;
+      //<!> size attachments
+    } 
+  return retRect.size;
+}
+
+- (void) drawRange: (NSRange) lineRange atPoint: (NSPoint) aPoint
+{
+  NSRange currRange = NSMakeRange (lineRange.location, 0);
+  NSPoint currPoint;
+  NSString *string = [self string];
+  
+  for (currPoint = aPoint; NSMaxRange (currRange) < NSMaxRange (lineRange);)
+    {
+      // draw all "runs"
+      NSDictionary *attributes = [self attributesAtIndex: NSMaxRange(currRange) 
+				       longestEffectiveRange: &currRange 
+				       inRange: lineRange];
+      NSString *substring = [string substringWithRange: currRange];
+      [substring drawAtPoint: currPoint withAttributes: attributes];
+      currPoint.x += [substring sizeWithAttributes: attributes].width;
+      //<!> draw attachments
+    }
+}
+
+- (void) drawRange: (NSRange)aRange inRect: (NSRect)aRect
+{
+  NSString *substring = [[self string] substringWithRange: aRange];
+  
+  [substring drawInRect: aRect
+	     withAttributes: [NSDictionary dictionaryWithObjectsAndKeys: 
+					     [NSFont systemFontOfSize: 12.0], 
+					     NSFontAttributeName,
+					     [NSColor blueColor], 
+					     NSForegroundColorAttributeName,
+					     nil]];
+}
+#endif
+
+@end
