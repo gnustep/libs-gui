@@ -61,7 +61,8 @@ typedef enum _NSEventType {
   NSSystemDefined,
   NSApplicationDefined,
   NSPeriodic,
-  NSCursorUpdate
+  NSCursorUpdate,
+  NSScrollWheel
 } NSEventType;
 
 enum {
@@ -85,6 +86,7 @@ enum {
   NSApplicationDefinedMask = (1 << NSApplicationDefined),
   NSPeriodicMask = (1 << NSPeriodic),
   NSCursorUpdateMask = (1 << NSCursorUpdate),
+  NSScrollWheelMask = (1 << NSScrollWheel),
   NSAnyEventMask = 0xffffffff
 };
 
@@ -99,7 +101,7 @@ enum {
   NSFunctionKeyMask = 128
 };
 
-@interface NSEvent : NSObject <NSCoding>
+@interface NSEvent : NSObject <NSCoding, NSCopying>
 {
   NSEventType		event_type;
   NSPoint		location_point;
@@ -204,6 +206,7 @@ enum {
 /*
  * Getting Mouse Event Information
  */
++ (NSPoint)mouseLocation;
 - (int) clickCount;
 - (int) eventNumber;
 - (float) pressure;
@@ -229,10 +232,11 @@ enum {
 - (short) subtype;
 
 /*
- * NSCoding protocol
+ * Scroll event data
  */
-- (void) encodeWithCoder: (NSCoder*)aCoder;
-- (id) initWithCoder: (NSCoder*)aDecoder;
+- (float)deltaX;
+- (float)deltaY;
+- (float)deltaZ;
 
 @end
 
