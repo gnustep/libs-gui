@@ -113,11 +113,6 @@ enum {
   NSMixedState			= -1
 };
 
-typedef enum _NSControlSize {
-    NSRegularControlSize,
-    NSSmallControlSize
-} NSControlSize;
-
 @interface NSCell : NSObject <NSCopying, NSCoding>
 {
   // Attributes

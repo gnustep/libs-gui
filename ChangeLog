@@ -1,3 +1,14 @@
+2005-03-07  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Header/AppKit/NSCell.h: Moved NSControlSize definition to ...
+	* Header/AppKit/NSColor.h: ... here and added
+	NSMiniControlSize. For NSControlTint added NSBlueControlTint and
+	NSGraphiteControlTint.
+	* Header/AppKit/NSFont.h (+menuBarFontOfSize:,
+	+systemFontSizeForControlSize:, -numberOfGlyphs,
+	-coveredCharacterSet, -fontDescriptor): New MacOSX 10.3 methods.
+	* Source/NSFont.m: Added dummy implementations for the new methods. 
+
 2005-03-05 Adrian Robert <arobert@cogsci.ucsd.edu>
 
 	* Source/NSApplication.m (-_windowDidResignKey:) Unhide mouse.

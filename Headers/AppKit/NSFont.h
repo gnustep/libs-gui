@@ -34,8 +34,12 @@
 #include <Foundation/NSGeometry.h>
 #include <Foundation/NSString.h>
 #include <AppKit/AppKitDefines.h>
+// For NSControlSize
+#include <AppKit/NSColor.h>
 
 @class NSDictionary;
+@class NSCharacterSet;
+@class NSFontDescriptor;
 
 typedef unsigned int NSGlyph;
 
@@ -98,6 +102,7 @@ APPKIT_EXPORT const float *NSFontIdentityMatrix;
 + (NSFont*) userFixedPitchFontOfSize: (float)fontSize;
 + (NSFont*) userFontOfSize: (float)fontSize;
 
+#ifndef STRICT_OPENSTEP
 + (NSFont*) titleBarFontOfSize: (float)fontSize;
 + (NSFont*) menuFontOfSize: (float)fontSize;
 + (NSFont*) messageFontOfSize: (float)fontSize;
@@ -105,13 +110,18 @@ APPKIT_EXPORT const float *NSFontIdentityMatrix;
 + (NSFont*) toolTipsFontOfSize: (float)fontSize;
 + (NSFont*) controlContentFontOfSize: (float)fontSize;
 + (NSFont*) labelFontOfSize: (float)fontSize;
++ (NSFont*) menuBarFontOfSize: (float)fontSize;
+#endif
 
 //
 // Font Sizes
 //
+#ifndef STRICT_OPENSTEP
 + (float) labelFontSize;
 + (float) smallSystemFontSize;
 + (float) systemFontSize;
++ (float) systemFontSizeForControlSize: (NSControlSize)controlSize;
+#endif
 
 //
 // Preferred Fonts
@@ -154,6 +164,12 @@ APPKIT_EXPORT const float *NSFontIdentityMatrix;
 - (float) xHeight;
 - (float) widthOfString: (NSString*)string;
 - (float) defaultLineHeightForFont;
+
+#ifndef STRICT_OPENSTEP
+- (unsigned) numberOfGlyphs;
+- (NSCharacterSet*) coveredCharacterSet;
+- (NSFontDescriptor*) fontDescriptor;
+#endif
 
 //
 // Manipulating Glyphs

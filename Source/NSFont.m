@@ -148,6 +148,7 @@ keyForFont(NSString *name, const float *matrix, BOOL fix,
     <item>NSFont                    Helvetica (System Font)</item>
     <item>NSLabelFont               System font</item>
     <item>NSMenuFont                System font</item>
+    <item>NSMenuBarFont             System font</item>
     <item>NSMessageFont             System font</item>
     <item>NSPaletteFont             System bold font</item>
     <item>NSTitleBarFont            System bold font</item>
@@ -164,6 +165,7 @@ keyForFont(NSString *name, const float *matrix, BOOL fix,
     <item>NSFontSize                12 (System Font Size)</item>
     <item>NSLabelFontSize           (none)</item>
     <item>NSMenuFontSize            (none)</item>
+    <item>NSMiniFontSize            6</item>
     <item>NSMessageFontSize         (none)</item>
     <item>NSPaletteFontSize         (none)</item>
     <item>NSSmallFontSize           9</item>
@@ -220,6 +222,7 @@ RolePaletteFont,
 RoleToolTipsFont,
 RoleControlContentFont,
 RoleLabelFont,
+RoleMenuBarFont,
 RoleMax
 };
 
@@ -256,7 +259,8 @@ static font_role_info_t font_roles[RoleMax]={
   {@"NSPaletteFont"       , RoleBoldSystemFont, nil, nil},
   {@"NSToolTipsFont"      , RoleSystemFont    , nil, nil},
   {@"NSControlContentFont", RoleSystemFont    , nil, nil},
-  {@"NSLabelFont"         , RoleSystemFont    , nil, nil}
+  {@"NSLabelFont"         , RoleSystemFont    , nil, nil},
+  {@"NSMenuBarFont"       , RoleSystemFont    , nil, nil}
 };
 
 
@@ -533,6 +537,11 @@ static void setNSFont(NSString *key, NSFont *font)
   return getNSFont(fontSize, RoleMenuFont);
 }
 
++ (NSFont*) menuBarFontOfSize: (float)fontSize
+{
+  return getNSFont(fontSize, RoleMenuBarFont);
+}
+
 + (NSFont*) titleBarFontOfSize: (float)fontSize
 {
   return getNSFont(fontSize, RoleTitleBarFont);
@@ -590,6 +599,29 @@ static void setNSFont(NSString *key, NSFont *font)
     }
 
   return fontSize;
+}
+
++ (float) systemFontSizeForControlSize: (NSControlSize)controlSize
+{
+  switch (controlSize)
+    {
+      case NSMiniControlSize:
+        {
+	  float fontSize = [defaults floatForKey: @"NSMiniFontSize"];
+  
+	  if (fontSize == 0)
+	    {
+	      fontSize = 6;
+	    }
+	  
+	  return fontSize;
+	}
+      case NSSmallControlSize:
+	return [self smallSystemFontSize];
+      case NSRegularControlSize:
+      default:
+	return [self systemFontSize];
+    }
 }
 
 /**
@@ -916,6 +948,24 @@ static BOOL flip_hack;
   return [fontInfo widthOfString: string];
 }
 
+- (unsigned) numberOfGlyphs
+{
+  // FIXME
+  return 0;
+}
+
+- (NSCharacterSet*) coveredCharacterSet
+{
+  // FIXME
+  return nil;
+}
+
+- (NSFontDescriptor*) fontDescriptor
+{
+  // FIXME
+  return nil;
+}
+
 /* The following methods have to be implemented by backends */
 
 //
@@ -1181,6 +1231,9 @@ static BOOL flip_hack;
 		break;
 	      case RoleLabelFont:
 		new = [NSFont labelFontOfSize: size];
+		break;
+	      case RoleMenuBarFont:
+		new = [NSFont menuBarFontOfSize: size];
 		break;
 
 	      default:
