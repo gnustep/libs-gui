@@ -70,14 +70,23 @@ static NSString	*nsview_thread_key = @"NSViewThreadKey";
 
       if (stack == nil)
 	{
-	  stack = [[NSMutableDictionary alloc] initWithCapacity: 4];
+	  stack = [[NSMutableArray alloc] initWithCapacity: 4];
 	  [dict setObject: stack forKey: nsview_thread_key];
 	  [stack release];
 	}
       [stack addObject: focusView];
     }
+  else
+    {
+      [NSException raise: NSInternalInconsistencyException
+		  format: @"Attempt to push a 'nil' focus view on to stack."];
+    }
 }
 
+/*
+ *	Remove the top focusView for the current thread from the stack
+ *	and return the new focusView (or nil if the stack is now empty).
+ */
 + (NSView *)popFocusView
 {
   NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
@@ -90,8 +99,11 @@ static NSString	*nsview_thread_key = @"NSViewThreadKey";
 
       if (count > 0)
 	{
+	  [stack removeObjectAtIndex: --count];
+	}
+      if (count > 0)
+	{
 	  v = [stack objectAtIndex: --count];
-	  [stack removeObjectAtIndex: count];
 	}
     }
   return v;
