@@ -1,9 +1,9 @@
 /* NSInputManager                              -*-objc-*-
 
-   Copyright (C) 2001 Free Software Foundation, Inc.
+   Copyright (C) 2001, 2002 Free Software Foundation, Inc.
 
    Author: Nicola Pero <n.pero@mi.flashnet.it>
-   Date: December 2001, January 2002
+   Date: December 2001, January 2002, February 2002
 
    This file is part of the GNUstep GUI Library.
 
