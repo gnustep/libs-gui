@@ -165,10 +165,11 @@ void __dummy_GMAppKit_functionForLinking() {}
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
 {
   float delay, interval;
-  id theCell = [self cell];
+  id theCell;
 
   self = [super initWithModelUnarchiver:unarchiver];
 
+  theCell = [self cell];
   [self setState:[unarchiver decodeIntWithName:@"state"]];
 
   delay = [unarchiver decodeFloatWithName:@"delay"];
@@ -864,10 +865,11 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
 {
-  id theCell = [self cell];
+  id theCell;
 
   self = [super initWithModelUnarchiver:unarchiver];
 
+  theCell = [self cell];
   [self setSelectable:[unarchiver decodeBOOLWithName:@"isSelectable"]];
   [self setErrorAction:[unarchiver decodeSelectorWithName:@"errorAction"]];
   [self setTextColor:[unarchiver decodeObjectWithName:@"textColor"]];

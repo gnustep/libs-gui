@@ -1,3 +1,9 @@
+Wed Apr 14 16:58:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Applied changes by Tim.Bissell@dresdnerkb.com -
+	* Model/GMAppKit.m: Fixed unarchiving of NSButton and NSTextField so
+	they don't refer to [self cell] before initialisation.
+
 Wed Apr 14 15:04:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSPasteboard.m: Remove 'system()' and use NSTask to launch
