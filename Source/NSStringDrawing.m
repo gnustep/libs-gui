@@ -49,6 +49,14 @@ This might be a common case if lots of calls to -size... and -draw...
 are paired.
 */
 
+
+#define LARGE_SIZE 8e6
+/*
+8e6 is not as arbitrary as it seems. 8e6 is chosen because it's close to
+1<<23-1, the largest number that can be stored in a 32-bit float with an
+ulp of 0.5, which means things should round to the correct whole point.
+*/
+
 static NSTextStorage *textStorage;
 static NSLayoutManager *layoutManager;
 static NSTextContainer *textContainer;
@@ -92,7 +100,7 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
   [textStorage replaceCharactersInRange: NSMakeRange(0, [textStorage length])
 			     withString: @""];
 
-  [textContainer setContainerSize: NSMakeSize(1e8, 1e8)];
+  [textContainer setContainerSize: NSMakeSize(LARGE_SIZE, LARGE_SIZE)];
 
   if (ctm->matrix.m11 != 1.0 || ctm->matrix.m12 != 0.0 ||
       ctm->matrix.m21 != 0.0 || fabs(ctm->matrix.m22) != 1.0)
@@ -153,11 +161,11 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
 			     withString: @""];
 
   /*
-  TODO: Use rect.size.heigth instead of 1e8? Should make things faster,
+  TODO: Use rect.size.heigth instead of LARGE_SIZE? Should make things faster,
   since we'll only typeset what fits, but lines that used to fit partially
   won't fit at all.
   */
-  [textContainer setContainerSize: NSMakeSize(rect.size.width, 1e8)];
+  [textContainer setContainerSize: NSMakeSize(rect.size.width, LARGE_SIZE)];
 
   if (ctm->matrix.m11 != 1.0 || ctm->matrix.m12 != 0.0 ||
       ctm->matrix.m21 != 0.0 || fabs(ctm->matrix.m22) != 1.0)
@@ -234,7 +242,7 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
   [textStorage replaceCharactersInRange: NSMakeRange(0, [textStorage length])
 			     withString: @""];
 
-  [textContainer setContainerSize: NSMakeSize(1e8, 1e8)];
+  [textContainer setContainerSize: NSMakeSize(LARGE_SIZE, LARGE_SIZE)];
   [layoutManager setUsesScreenFonts: YES];
 
   [textStorage replaceCharactersInRange: NSMakeRange(0, 0)

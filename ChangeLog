@@ -1,3 +1,8 @@
+2003-07-10 03:37  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSStringDrawing.m, Source/NSTextView.m: Adjust "really large"
+	sizes to ensure accuracy to a whole point.
+
 2003-07-10 Benhur Stein <benhur@inf.ufsm.br>
 
 	* Source/NSSavePanel.m: added new private method

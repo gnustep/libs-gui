@@ -137,7 +137,8 @@ static BOOL noLayoutManagerException(void)
 /* The shared notification center */
 static NSNotificationCenter *notificationCenter;
 
-/* Default max. size. */
+/* Default max. size. Don't change this without understanding and checking
+for roundoff issues. Whole points should be representable. */
 #define HUGE 1e7
 
 
