@@ -363,6 +363,7 @@ id gnustep_gui_nsbutton_class = nil;
 
       [cell drawWithFrame:bounds inView:self];
     }
+  [[self window] flushWindow];
   [self unlockFocus];
 }
 

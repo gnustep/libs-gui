@@ -232,7 +232,6 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
 	  NSImage* image = [[NSImage alloc] initByReferencingFile:path];
 	  if (image)
 	    [image setName:_base_name(path)];
-	  [nameDict setObject: image forKey: [image name]];
 	  return image;
 	}
     }

@@ -163,7 +163,7 @@ NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
   is_flipped = NO;
   is_rotated_from_base = NO;
   is_rotated_or_scaled_from_base = NO;
-  opaque = NO;
+  opaque = YES;
   disable_autodisplay = NO;
   needs_display = YES;
   post_frame_changes = NO;
@@ -756,24 +756,29 @@ NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
 
   [self lockFocus];
   [self drawRect:bounds];
-  [self unlockFocus];
-	
+
   // Tell subviews to display
   j = [sub_views count];
   for (i = 0;i < j; ++i)
     [(NSView *)[sub_views objectAtIndex:i] display];
+  [[self window] flushWindow];
+  [self unlockFocus];
 }
 
 - (void)displayIfNeeded
 {
-  if ((needs_display) && (opaque))
+  if ((needs_display) && (opaque)) {
     [self display];
+    [self setNeedsDisplay:NO];
+  }
 }
 
 - (void)displayIfNeededIgnoringOpacity
 {
-  if (needs_display)
+  if (needs_display) {
     [self display];
+    [self setNeedsDisplay:NO];
+  }
 }
 
 - (void)displayRect:(NSRect)aRect

@@ -98,8 +98,7 @@ id gnustep_gui_nsscroller_class = nil;
   [super initWithFrame:frameRect];
 
   // set our cell
-  [[self cell] release];
-  [self setCell:[[gnustep_gui_nsscroller_class alloc] init]];
+  [self setCell:[[gnustep_gui_nsscroller_class new] autorelease]];
   [self selectCell: cell];
 
   arrows_position = NSScrollerArrowsMaxEnd;

@@ -311,12 +311,14 @@ right:(unsigned)rightDigits
 
 - (void)updateCell:(NSCell *)aCell
 {
-  [self drawCell:aCell];
+  [self setNeedsDisplay:YES];
+//  [self drawCell:aCell];
 }
 
 - (void)updateCellInside:(NSCell *)aCell
 {
-  [self drawCellInside:aCell];
+  [self setNeedsDisplay:YES];
+//  [self drawCellInside:aCell];
 }
 
 //

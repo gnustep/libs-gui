@@ -61,13 +61,13 @@ NSString*NSAFMXHeight = @"XHeight";
    Convention (see the red book). */
 static NSMutableSet* fontsUsed = nil;
 
-static NSFont* getFont(NSString* key, NSString* defaultFont, float fontSize)
+static NSFont* getFont(NSString* key, NSString* defaultFontName, float fontSize)
 {
   NSString* fontName;
-  
+
   fontName = [[NSUserDefaults standardUserDefaults] objectForKey:key];
   if (!fontName)
-     return [NSFont fontWithName: defaultFont size: fontSize];
+    fontName = defaultFontName;
 
   return [NSFont fontWithName:fontName size:fontSize];
 }

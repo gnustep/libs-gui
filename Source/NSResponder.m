@@ -195,7 +195,8 @@
   if (eventSelector != @selector(keyDown:))
     return;
 
-  NSBeep();
+  /* Commented out to be able to create shared libraries on OS 4.1 */
+//  NSBeep();
 }
 
 - (void)rightMouseDown:(NSEvent *)theEvent

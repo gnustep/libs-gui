@@ -28,6 +28,7 @@
 
 #include <Foundation/NSValue.h>
 #include <AppKit/NSApplication.h>
+#include <AppKit/NSWindow.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSFont.h>
 #include <AppKit/NSView.h>
@@ -633,7 +634,10 @@
 
     // If point is in cellFrame then highlight the cell
     if ([controlView mouse: point inRect: cellFrame])
+      {
 	[self highlight:YES withFrame:cellFrame inView:controlView];
+	[[controlView window] flushWindow];
+      }
     else
 	return NO;
 
@@ -646,9 +650,6 @@
 	    last_point = point;
 	    e = [theApp nextEventMatchingMask:event_mask untilDate:nil 
 			inMode:nil dequeue:YES];
-	    // What is going on here? After the following statement location
-	    // should be in the window coordinates, but is in the receiving
-	    // view's coordinate.
 	    location = [e locationInWindow];
 	    point = [controlView convertPoint: location fromView: nil];
 	    NSDebugLog(@"NSCell location %f %f\n", location.x, location.y);
@@ -664,6 +665,7 @@
 			[self highlight: NO withFrame: cellFrame 
 			      inView: controlView];
 			[self drawWithFrame: cellFrame inView: controlView];
+			[[controlView window] flushWindow];
 		      }
 		    
 		    // Do we now return or keep tracking
@@ -684,6 +686,7 @@
 		    [self highlight: YES withFrame: cellFrame 
 			  inView: controlView];
 		    //[self drawWithFrame: cellFrame inView: controlView];
+		    [[controlView window] flushWindow];
 		  }
 	      }
 
