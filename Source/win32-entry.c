@@ -57,13 +57,10 @@ WINBOOL WINAPI DllMain(HANDLE hInst, ULONG ul_reason_for_call,
 	    /* Initialize the GNUstep Base Library runtime structures */
 	    gnustep_base_init_runtime();
 #endif /* __MS_WIN32__ */
-
-	    printf("GNUstep GUI Library: process attach\n");
 	}
 
     if (ul_reason_for_call == DLL_PROCESS_DETACH)
 	{
-	    printf("GNUstep GUI Library: process detach\n");
 	}
 
     if (ul_reason_for_call == DLL_THREAD_ATTACH)
@@ -72,13 +69,10 @@ WINBOOL WINAPI DllMain(HANDLE hInst, ULONG ul_reason_for_call,
 	    /* Initialize C stdio DLL */
 	    _CRT_INIT(hInst, ul_reason_for_call, lpReserved);
 #endif /* __MS_WIN32__ */
-
-	    printf("GNUstep GUI Library: thread attach\n");
 	}
 
     if (ul_reason_for_call == DLL_THREAD_DETACH)
 	{
-	    printf("GNUstep GUI Library: thread detach\n");
 	}
 
     return TRUE;
