@@ -1,3 +1,8 @@
+Thu Jan 17 00:03:46 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSSlider.m ([-mouseDown:]): Do nothing if the slider is
+	disabled.
+
 Wed Jan 16 23:45:32 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSApplication.m (NSAbortModalException): Removed
