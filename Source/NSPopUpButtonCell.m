@@ -496,7 +496,8 @@
   NSImage *aImage;
                                   
   // Save last view drawn to
-  [self setControlView: view];
+  if (_control_view != view)
+    _control_view = view;
 
   [view lockFocus];
 
