@@ -1211,7 +1211,6 @@ static SEL getSel;
 	        startIndex: startPos
 	        endIndex: selStart-1];
         }
-      
     }
   else
     {
@@ -1281,6 +1280,31 @@ static SEL getSel;
 	        endIndex: INDEX_FROM_COORDS(maxx_AS, miny_AE-1)];
         }
     }
+
+  /*
+  Update the _selectedCell and related ivars. This could be optimized a lot
+  in many cases, but the full search cannot be avoided in the general case,
+  and being correct comes first.
+  */
+  {
+    int i, j;
+    for (i = _numRows - 1; i >= 0; i--)
+      {
+	for (j = _numCols - 1; j >= 0; j--)
+	  {
+	    if (_selectedCells[i][j])
+	      {
+		_selectedCell = _cells[i][j];
+		_selectedRow = i;
+		_selectedColumn = j;
+		return;
+	      }
+	  }
+      }
+    _selectedCell = nil;
+    _selectedColumn = -1;
+    _selectedRow = -1;
+  }
 }
 
 - (id) cellAtRow: (int)row
