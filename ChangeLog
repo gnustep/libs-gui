@@ -37,8 +37,7 @@
 	- more than one attention panel can be run simultaneously, without
 	  the later invocation stealing the panel of the former one.
 
-
-	* Source/NSParagraphStyle.m
+	* Source/NSWindow.m
 	
 	Moved  constant   invocation  of  the   method  -[NSParagraphStyle
 	attribute:atIndex:effectiveRange:]  outside of  loops  and removed
