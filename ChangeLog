@@ -1,3 +1,9 @@
+Mon Oct  8 14:50:44 2001  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Tools/wgetopt.h: New file copied from base/Testing/wgetopt.h.
+	* Tools/example.m: Include wgetopt.h.
+	* Tools/gpbs.m: Include wgetopt.h.
+
 Mon Oct  8 15:05:34 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSWindowController.m ([-setDocument:]): Set the window to
@@ -124,7 +130,7 @@ Sat Oct  6 17:23:49 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 	Removed this file.
 	* Tools/GNUmakefile
 	Removed references to Functions.m
-	
+
 Wed Sep 26 23:04:57 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSFileWrapper.m 
