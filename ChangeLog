@@ -1,3 +1,11 @@
+2004-11-08  Quentin Mathe <qmathe@club-internet.fr>
+        
+	* Source/NSButtonCell.m (-setImage:): Added overriden NSCell method in 
+	order to have the cell switched to an image cell (with the NSImageOnly
+	position) when you call -setImage:. With the previous commit, when the
+	cell is a text cell and you call -setImagePosition: after -setImage:,
+	the cell image is released.
+	
 2004-11-07  Quentin Mathe <qmathe@club-internet.fr>
         
 	* Source/NSCell.m (-type): Now returns NSNullCellType when the image

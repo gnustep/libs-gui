@@ -133,13 +133,13 @@
 - (void) setType: (NSCellType)aType
 {
   /* We do nothing here (we match the Mac OS X behavior) because with
-   * NSButtonCell GNUstep implementation the cell type is binded to the image
-   * position. Such behavior has been choosen because it permits to have
+   * NSButtonCell GNUstep implementation the cell type is bound to the image
+   * position. We implemented this behavior because it permits to have
    * -setFont: -setTitle -setImage: methods which are symetrical by not altering
-   * the cell type, morevover a cell type is more characterized by the potential
-   * visibility of the image (which is under the control of the method
-   * -setImagePosition:) than by the value of the image ivar itself (related to
-   * -setImage: method).  
+   * directly the cell type and to validate the fact that the cell type is more
+   * characterized by the potential visibility of the image (which is under the
+   * control of the method -setImagePosition:) than by the value of the image
+   * ivar itself (related to -setImage: method).  
    * On Mac OS X, the NSButtonCell cell type is NSTextCellType by default or
    * NSImageCellType if the initialization has been done with -initImageCell:,
    * it should be noted that the cell type never changes later.
@@ -361,6 +361,22 @@
 - (NSCellImagePosition) imagePosition
 {
   return _cell.image_position;
+}
+
+- (void) setImage: (NSImage *)anImage
+{
+  if (anImage) 
+    {
+      NSAssert ([anImage isKindOfClass: [NSImage class]],
+		NSInvalidArgumentException);
+    }
+  
+  if (_cell.image_position == NSNoImage)
+    {
+      [self setImagePosition: NSImageOnly];
+    }
+  
+  ASSIGN (_cell_image, anImage);
 }
 
 - (void) setAlternateImage: (NSImage*)anImage
