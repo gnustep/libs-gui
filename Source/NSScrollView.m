@@ -930,9 +930,6 @@ static float scrollerWidth;
 
   if (_hasVertScroller)
     {
-      NSLog(@"VertScroller height:%f content height:%f", 
-	    [_vertScroller frame].size.height, [self frame].size.height);
-
       DPSmoveto(ctxt, [_vertScroller frame].origin.x + scrollerWidth, 
 		[_vertScroller frame].origin.y - 1);
       DPSrlineto(ctxt, 0, [_vertScroller frame].size.height+1);
