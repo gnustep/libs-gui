@@ -85,100 +85,100 @@ enum {
 //
 // Create an Attention Panel without Running It Yet
 //
-id NSGetAlertPanel(NSString *title,
-                   NSString *msg,
-                   NSString *defaultButton,
-                   NSString *alternateButton, 
-                   NSString *otherButton, ...);
+APPKIT_DECLARE id NSGetAlertPanel(NSString *title,
+				  NSString *msg,
+				  NSString *defaultButton,
+				  NSString *alternateButton, 
+				  NSString *otherButton, ...);
 
 #ifndef	STRICT_OPENSTEP
-id NSGetCriticalAlertPanel(NSString *title,
-			   NSString *msg,
-			   NSString *defaultButton,
-			   NSString *alternateButton, 
-			   NSString *otherButton, ...);
+APPKIT_DECLARE id NSGetCriticalAlertPanel(NSString *title,
+					  NSString *msg,
+					  NSString *defaultButton,
+					  NSString *alternateButton, 
+					  NSString *otherButton, ...);
 
-id NSGetInformationalAlertPanel(NSString *title,
-				NSString *msg,
-				NSString *defaultButton,
-				NSString *alternateButton, 
-				NSString *otherButton, ...);
+APPKIT_DECLARE id NSGetInformationalAlertPanel(NSString *title,
+					       NSString *msg,
+					       NSString *defaultButton,
+					       NSString *alternateButton, 
+					       NSString *otherButton, ...);
 #endif
 
 //
 // Create and Run an Attention Panel
 //
-int NSRunAlertPanel(NSString *title,
-                    NSString *msg,
-                    NSString *defaultButton,
-                    NSString *alternateButton,
-                    NSString *otherButton, ...);
+APPKIT_DECLARE int NSRunAlertPanel(NSString *title,
+				   NSString *msg,
+				   NSString *defaultButton,
+				   NSString *alternateButton,
+				   NSString *otherButton, ...);
 
 #ifndef	STRICT_OPENSTEP
-int NSRunCriticalAlertPanel(NSString *title,
-			    NSString *msg,
-			    NSString *defaultButton,
-			    NSString *alternateButton, 
-			    NSString *otherButton, ...);
+APPKIT_DECLARE int NSRunCriticalAlertPanel(NSString *title,
+					   NSString *msg,
+					   NSString *defaultButton,
+					   NSString *alternateButton, 
+					   NSString *otherButton, ...);
 
-int NSRunInformationalAlertPanel(NSString *title,
-				 NSString *msg,
-				 NSString *defaultButton,
-				 NSString *alternateButton, 
-				 NSString *otherButton, ...);
+APPKIT_DECLARE int NSRunInformationalAlertPanel(NSString *title,
+						NSString *msg,
+						NSString *defaultButton,
+						NSString *alternateButton, 
+						NSString *otherButton, ...);
 #endif
 
 #ifndef	STRICT_MACOS_X
-int NSRunLocalizedAlertPanel(NSString *table,
-                             NSString *title,
-                             NSString *msg,
-                             NSString *defaultButton, 
-                             NSString *alternateButton, 
-                             NSString *otherButton, ...);
+APPKIT_DECLARE int NSRunLocalizedAlertPanel(NSString *table,
+					    NSString *title,
+					    NSString *msg,
+					    NSString *defaultButton, 
+					    NSString *alternateButton, 
+					    NSString *otherButton, ...);
 #endif
 
 #ifndef	STRICT_OPENSTEP
 //
 // New alert interface of Mac OS X
 //
-void NSBeginAlertSheet(NSString *title, 
-		       NSString *defaultButton, 
-		       NSString *alternateButton, 
-		       NSString *otherButton, 
-		       NSWindow *docWindow, 
-		       id modalDelegate, 
-		       SEL willEndSelector, 
-		       SEL didEndSelector, 
-		       void *contextInfo, 
-		       NSString *msg, ...);
+APPKIT_DECLARE void NSBeginAlertSheet(NSString *title, 
+				      NSString *defaultButton, 
+				      NSString *alternateButton, 
+				      NSString *otherButton, 
+				      NSWindow *docWindow, 
+				      id modalDelegate, 
+				      SEL willEndSelector, 
+				      SEL didEndSelector, 
+				      void *contextInfo, 
+				      NSString *msg, ...);
 
-void NSBeginCriticalAlertSheet(NSString *title, 
-			       NSString *defaultButton, 
-			       NSString *alternateButton, 
-			       NSString *otherButton, 
-			       NSWindow *docWindow, 
-			       id modalDelegate, 
-			       SEL willEndSelector, 
-			       SEL didEndSelector, 
-			       void *contextInfo, 
-			       NSString *msg, ...);
+APPKIT_DECLARE void NSBeginCriticalAlertSheet(NSString *title, 
+					      NSString *defaultButton, 
+					      NSString *alternateButton, 
+					      NSString *otherButton, 
+					      NSWindow *docWindow, 
+					      id modalDelegate, 
+					      SEL willEndSelector, 
+					      SEL didEndSelector, 
+					      void *contextInfo, 
+					      NSString *msg, ...);
 
-void NSBeginInformationalAlertSheet(NSString *title, 
-				    NSString *defaultButton, 
-				    NSString *alternateButton, 
-				    NSString *otherButton,
-				    NSWindow *docWindow, 
-				    id modalDelegate, 
-				    SEL willEndSelector, 
-				    SEL didEndSelector, 
-				    void *contextInfo, 
-				    NSString *msg, ...);
+APPKIT_DECLARE void NSBeginInformationalAlertSheet(NSString *title, 
+						   NSString *defaultButton, 
+						   NSString *alternateButton, 
+						   NSString *otherButton,
+						   NSWindow *docWindow, 
+						   id modalDelegate, 
+						   SEL willEndSelector, 
+						   SEL didEndSelector, 
+						   void *contextInfo, 
+						   NSString *msg, ...);
 
 #endif
 
 //
 // Release an Attention Panel
 //
-void NSReleaseAlertPanel(id panel);
+APPKIT_DECLARE void NSReleaseAlertPanel(id panel);
 
 #endif // _GNUstep_H_NSPanel
