@@ -1,3 +1,16 @@
+2000-05-01  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSFont.h
+	* Source/NSFont.m
+	Added some methods for font size and one function for glyphs from
+	the MacOS X specification.
+	* Headers/gnustep/gui/NSGraphics.h
+	* Source/Functions.m
+	Added missing functions and some dummy implementations.
+	* Headers/gnustep/gui/NSPanel.h
+	* Source/NSPanel.m
+	Added missing functions and some dummy implementations.
+	
 2000-04-30  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSGraphicsContext.m
