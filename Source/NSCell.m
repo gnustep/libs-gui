@@ -526,8 +526,6 @@ static NSColor	*shadowCol;
   [textObject setText: [self stringValue]];
   [controlView addSubview: textObject];  
   [[controlView window] makeFirstResponder: textObject];
-  // Attention: if you see crashes, they are likely to come 
-  // from the following message.  Fix NSText.
   [textObject display];
 
   if ([theEvent type] == NSLeftMouseDown)
@@ -557,8 +555,6 @@ static NSColor	*shadowCol;
   [controlView addSubview: textObject];
   [textObject setSelectedRange: NSMakeRange (selStart, selLength)];
   [[controlView window] makeFirstResponder: textObject];
-  // Attention: if you see crashes, they are likely to come 
-  // from the following message.  Fix NSText.
   [textObject display];
 }
 
