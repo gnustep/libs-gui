@@ -246,6 +246,13 @@ void __dummy_GMAppKit_functionForLinking() {}
   [archiver encodeBOOL:[self isScrollable] withName:@"isScrollable"];
   [archiver encodeBOOL:[self isContinuous] withName:@"isContinuous"];
   [archiver encodeInt:[self sendActionOn: 0] withName:@"sendActionMask"];
+  {
+    /* NB: this is not decoded so maybe we could just do without
+       encoding it. :-) */
+    int actionMask = [self sendActionOn: 0];
+    [archiver encodeInt:actionMask withName:@"sendActionMask"];
+    [self sendActionOn: actionMask];
+  }
 }
 
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
