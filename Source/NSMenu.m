@@ -68,22 +68,6 @@
 
 @end
 
-static inline 
-float title_height()
-{
-  static float height = 0.0;
-
-  if (height == 0.0)
-    {
-      NSFont *font = [NSFont boldSystemFontOfSize: 0.0];
-
-      /* Should make up 23 for the default font */
-      height = ([font boundingRectForFont].size.height) + 8;
-    }
-
-  return height;
-}
-
 static NSZone	*menuZone = NULL;
 static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 static NSNotificationCenter *nc;
@@ -187,8 +171,7 @@ static NSNotificationCenter *nc;
 
 - (id) initWithTitle: (NSString*)aTitle
 {
-  float  height = title_height();
-  NSRect winRect = NSMakeRect(0, 0, 50, height);
+  float  height;
   NSView *contentView;
 
   [super init];
@@ -223,7 +206,8 @@ static NSNotificationCenter *nc;
   [_view setMenu: self];
 
   // Create the title view
-  _titleView = [[NSMenuWindowTitleView alloc] initWithFrame: winRect];
+  height = [[_view class] menuBarHeight];
+  _titleView = [[NSMenuWindowTitleView alloc] initWithFrame: NSMakeRect(0, 0, 50, height)];
   [_titleView setMenu: self];
 
   contentView = [_aWindow contentView];
@@ -531,15 +515,6 @@ static NSNotificationCenter *nc;
 	    forItem: (id <NSMenuItem>)anItem 
 {
   [anItem setSubmenu: aMenu];
-  // FIXME: most of this is already done in setSubmenu:
-  [anItem setTarget: self];
-  [anItem setAction: @selector(submenuAction:)];
-  if (aMenu != nil)
-    {
-      [aMenu setSupermenu: self];
-      [aMenu setTitle: [anItem title]];
-    }
-  [self itemChanged: anItem];
 }
 
 - (void) submenuAction: (id)sender
@@ -568,34 +543,7 @@ static NSNotificationCenter *nc;
 
 - (NSPoint) locationForSubmenu: (NSMenu*)aSubmenu
 {
-  NSWindow *theWindow = _follow_transient ? _bWindow : _aWindow;
-  NSRect frame = [theWindow frame];
-  NSRect submenuFrame;
-
-  if (aSubmenu)
-    submenuFrame = [aSubmenu->_aWindow frame];
-  else
-    submenuFrame = NSZeroRect;
-
-  // FIXME: Fix this to support styles when the menus move.
-  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil)
-      == GSWindowMakerInterfaceStyle)
-    {
-      NSRect aRect = [_view rectOfItemAtIndex: 
-				[self indexOfItemWithTitle: [aSubmenu title]]];
-      NSPoint subOrigin = [theWindow convertBaseToScreen: 
-				      NSMakePoint(aRect.origin.x,
-						  aRect.origin.y)];
-
-      return NSMakePoint (frame.origin.x + frame.size.width,
-			  subOrigin.y - (submenuFrame.size.height - 43));
-    }
-  else
-    {
-      return NSMakePoint (frame.origin.x + frame.size.width,
-                          frame.origin.y + frame.size.height
-                          - submenuFrame.size.height);
-    }
+  return [_view locationForSubmenu: aSubmenu];
 }
 
 - (NSMenu *) supermenu
@@ -623,6 +571,10 @@ static NSNotificationCenter *nc;
 
 - (void) update
 {
+  // We use this as a recursion check.
+  if (!_changedMessagesEnabled)
+    return;
+
   if ([self autoenablesItems])
     {
       unsigned i, count;
@@ -679,7 +631,6 @@ static NSNotificationCenter *nc;
 	  if (shouldBeEnabled != wasEnabled)
 	    {
 	      [item setEnabled: shouldBeEnabled];
-	      [self itemChanged: item];
 	    }
 	}
           
@@ -840,17 +791,17 @@ static NSNotificationCenter *nc;
   NSRect menuFrame;
   NSSize size;
 
-  windowFrame = [_aWindow frame];
-  [_view sizeToFit];
+  //if ([_view needsSizing])
+    [_view sizeToFit];
 
   menuFrame = [_view frame];
+  size = menuFrame.size;
 
-  size.width = menuFrame.size.width;
-  size.height = menuFrame.size.height;
+  windowFrame = [_aWindow frame];
 
   if (!_is_beholdenToPopUpButton)
     {
-      float height = title_height();
+      float height = [[_view class] menuBarHeight];
 
       size.height += height;
       [_aWindow setContentSize: size];
@@ -865,6 +816,7 @@ static NSNotificationCenter *nc;
       [_view setFrameOrigin: NSMakePoint (0, 0)];
       [_titleView setFrame: NSMakeRect (0, size.height - height, 
 				       size.width, height)];
+      [_titleView setNeedsDisplay: YES];
     }
   else
     {
@@ -873,7 +825,7 @@ static NSNotificationCenter *nc;
 	NSMakePoint(NSMinX(windowFrame),NSMaxY(windowFrame))];
     }
 
-  [_aWindow display];
+  [_view setNeedsDisplay: YES];
 
   _changed = NO;
 }
@@ -1494,6 +1446,11 @@ static NSNotificationCenter *nc;
     [self createButton];
   [self addSubview: button];
   [self setNeedsDisplay: YES];
+}
+
+- (void) rightMouseDown: (NSEvent*)theEvent
+{
+  // Dont show our menu
 }
 
 @end /* NSMenuWindowTitleView */
