@@ -5,6 +5,24 @@ Wed Sep 26 23:04:57 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 	part of the path when saving it into the filename (patch by 
 	Ludovic Marcotte <ludovic@Sophos.ca>).
 
+2001-09-25  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSView.m: Add viewIsPrinting "class" variable.
+	(-lockFocusInRect:): Add special code when printing
+	(-unlockFocusNeedsFlush:): Likewise.
+	(-dataWithEPSInsideRect:): Set/reset viewIsPrinting.
+
+2001-09-16  Georg Fleischmann
+
+        * Source/NSPrintOperation.m
+        [NSPrintOperation -destroyContext:]: remove context from the context
+        list. Otherwise we will never get dealloced.
+        [NSPrintOperation -_print:]: use displayRectIgnoringOpacity to avoid
+        drawing of our ancestors.
+        [GSEPSPrintOperation -createContext:]: create a context.
+        [GSEPSPrintOperation -deliverResult:]: add contents of written file
+        to data object.
+
 2001-09-24  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Header/gnustep/gui/NSWindow.h

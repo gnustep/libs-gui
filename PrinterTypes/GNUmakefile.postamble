@@ -53,7 +53,7 @@ after-install::
 	  if [ ! -d $(INSTALL_DIR)/$$dirs ]; then  \
 	    $(MKDIRS) $(INSTALL_DIR)/$$dirs ;     \
 	  fi;                                     \
-	  cp $$dirs/*ppd $(INSTALL_DIR)/$$dirs/ ; \
+	  $(INSTALL_DATA) $$dirs/*ppd $(INSTALL_DIR)/$$dirs/ ; \
 	done;                                     \
 	for file in $(RESOURCE_FILES); do         \
 	  $(INSTALL_DATA) $$file $(INSTALL_DIR) ; \
