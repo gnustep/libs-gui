@@ -196,9 +196,9 @@ static void computeNewSelection
  int *_selectedRow,
  unsigned selectionMode)
 {
-  if (   (selectionMode & ALLOWS_MULTIPLE)
-      && (selectionMode & SHIFT_DOWN)
-      && (selectionMode & ADDING_ROW))
+  if ((selectionMode & ALLOWS_MULTIPLE)
+    && (selectionMode & SHIFT_DOWN)
+    && (selectionMode & ADDING_ROW))
     // we add new row to the current selection
     {
       if (_oldRow == -1)
@@ -4293,8 +4293,7 @@ byExtendingSelection: (BOOL)flag
 	}
 
       // let's sort the _selectedRows
-      _oldSelectedRows = [[NSSet alloc] 
-			   initWithArray: _selectedRows];
+      _oldSelectedRows = [NSSet setWithArray: _selectedRows];
 
       lastEvent = theEvent;
       while (done != YES)

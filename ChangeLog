@@ -3,8 +3,11 @@
 	* Source/NSTextField.m: ([-dealloc]) morph self to be an NSTextView
 	so that when dealloc is re-called, any subclass dealloc methods
 	don't get re-called.
+	* Source/NSTableView.m: Memory leak fix added as suggested by
+	Stefan Urbanek.  NOTE ... selection code looks very inefficient,
+	perhaps we should look into whether it is worth optimising?
 
-2002-10-27  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+2002-10port-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSMenuView.m ([NSMenuView -trackWithEvent:]): 
 	new tracking code. The menu feels snappier now (at least for me).
