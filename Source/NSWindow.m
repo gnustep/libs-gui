@@ -647,7 +647,7 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 															// if app has no
 	if(![[NSApplication sharedApplication] mainMenu])		// menu terminate
 		[[NSApplication sharedApplication] terminate:self];
-	else													// otherwise just 
+	else if (is_released_when_closed)													// otherwise just 
 		[self autorelease];									// release self 
 }
 

@@ -1,3 +1,8 @@
+Wed Nov 18 20:55:53 1998  Adam Fedor  <fedor@ultra.doc.com>
+
+	* Source/NSWindow.m ([-close]): Release only when proper flag is
+	set. 
+
 Wed Nov 18 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSPasteboard.m: make filename and file content pasteboard
