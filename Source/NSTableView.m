@@ -4555,7 +4555,9 @@ byExtendingSelection: (BOOL)flag
 	{
 	  [self _postSelectionDidChangeNotification];
 	}
-      else if (!mouseMoved)
+
+      /* If this was a simple click (ie. no dragging), we send our action. */
+      if (!mouseMoved)
 	{
 	  /*
 	  _clickedRow and _clickedColumn are already set at the start of

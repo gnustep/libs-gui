@@ -1,3 +1,8 @@
+2004-03-14 19:29  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSTableView.m (-mouseDown:): Send the action for simple
+	clicks even if the selection changed.
+
 2004-03-13 03:19  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSLayoutManager.m
