@@ -614,7 +614,6 @@ static NSNotificationCenter *nc = nil;
   TEST_RELEASE(_windowTitle);
   TEST_RELEASE(_rectsBeingDrawn);
   TEST_RELEASE(_initialFirstResponder);
-  TEST_RELEASE(_originalResponder);
   TEST_RELEASE(_defaultButtonCell);
 
   /*
@@ -2646,7 +2645,7 @@ resetCursorRectsForView(NSView *theView)
   type = [theEvent type];
   switch (type)
     {
-      case NSLeftMouseDown:				  // Left mouse down
+      case NSLeftMouseDown:
 	{
 	  BOOL	wasKey = _f.is_key;
 
@@ -2685,40 +2684,42 @@ resetCursorRectsForView(NSView *theView)
 	  break;
 	}
 
-      case NSLeftMouseUp:				  // Left mouse up
-	v = _firstResponder;	/* Send to the view that got the mouse down. */
+      case NSLeftMouseUp:
+	/* Send to the view that got the mouse down.  FIXME - check
+	   that this is actually the correct behaviour.  */
+	v = _firstResponder;
 	[v mouseUp: theEvent];
 	_lastPoint = [theEvent locationInWindow];
 	break;
 
-      case NSMiddleMouseDown:				  // Middle mouse down
+      case NSMiddleMouseDown:
 	v = [_contentView hitTest: [theEvent locationInWindow]];
 	[v middleMouseDown: theEvent];
 	_lastPoint = [theEvent locationInWindow];
 	break;
 
-      case NSMiddleMouseUp:				  // Middle mouse up
+      case NSMiddleMouseUp:
 	v = [_contentView hitTest: [theEvent locationInWindow]];
 	[v middleMouseUp: theEvent];
 	_lastPoint = [theEvent locationInWindow];
 	break;
 
-      case NSRightMouseDown:				  // Right mouse down
+      case NSRightMouseDown:
 	v = [_contentView hitTest: [theEvent locationInWindow]];
 	[v rightMouseDown: theEvent];
 	_lastPoint = [theEvent locationInWindow];
 	break;
 
-      case NSRightMouseUp:				  // Right mouse up
+      case NSRightMouseUp:
 	v = [_contentView hitTest: [theEvent locationInWindow]];
 	[v rightMouseUp: theEvent];
 	_lastPoint = [theEvent locationInWindow];
 	break;
 
-      case NSLeftMouseDragged:				// Left mouse dragged
-      case NSMiddleMouseDragged:			// Middle mouse dragged
-      case NSRightMouseDragged:				// Right mouse dragged
-      case NSMouseMoved:				// Mouse moved
+      case NSLeftMouseDragged:
+      case NSMiddleMouseDragged:
+      case NSRightMouseDragged:
+      case NSMouseMoved:
 	switch (type)
 	  {
 	    case NSLeftMouseDragged:
@@ -2767,32 +2768,22 @@ resetCursorRectsForView(NSView *theView)
 	_lastPoint = [theEvent locationInWindow];
 	break;
 
-      case NSMouseEntered:				  // Mouse entered
-      case NSMouseExited:				  // Mouse exited
+      case NSMouseEntered:
+      case NSMouseExited:
 	break;
 
       case NSKeyDown:
-	/*
-	 * Save the first responder so that the key up goes to it and not a
-	 * possible new first responder.
-	 */
-	ASSIGN(_originalResponder, _firstResponder);
 	[_firstResponder keyDown: theEvent];
 	break;
 
-      case NSKeyUp:					      // Key up
-	  /*
-	   * send message to the object that got the key down
-	   */
-	  if (_originalResponder)
-	    [_originalResponder keyUp: theEvent];
-	  DESTROY(_originalResponder);
-	  break;
+      case NSKeyUp:
+	[_firstResponder keyUp: theEvent];
+	break;
 
-      case NSFlagsChanged:				  // Flags changed
-	  break;
+      case NSFlagsChanged:
+	break;
 
-      case NSCursorUpdate:				  // Cursor update
+      case NSCursorUpdate:
 	{
 	  GSTrackingRect	*r =(GSTrackingRect*)[theEvent userData];
 	  NSCursor		*c = (NSCursor*)[r owner];
@@ -3880,7 +3871,6 @@ resetCursorRectsForView(NSView *theView)
 - (void) _initDefaults
 {
   _firstResponder = self;
-  _originalResponder = nil;
   _initialFirstResponder = nil;
   _selectionDirection = NSDirectSelection;
   _delegate = nil;
