@@ -424,6 +424,9 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
   float		diff;
   NSRect	bRect;
 
+  if ([icoButton superview] == nil)
+    [content addSubview: icoButton];
+
   if (defaultButton != nil)
     {
       [defButton setTitle: defaultButton];

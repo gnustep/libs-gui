@@ -1,4 +1,8 @@
-Tue Dec 22  01:25:00 1999  Enrico Sersale <enrico@imago.ro>
+Wed Dec 22  5:24:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSPanel.m: Fixed image display in alert panel.
+
+Tue Dec 21  01:25:00 1999  Enrico Sersale <enrico@imago.ro>
 
 	* Added Source/NSBezierPath.m and Headers/AppKit/NSBezierPath.h
 
