@@ -43,11 +43,10 @@
 + (void) drawGroove: (NSRect)border : (NSRect)clip;
 + (void) drawFramePhoto: (NSRect)border : (NSRect)clip;
 
-+ (NSRect) drawGradient: (NSGradientType)gradientType 
++ (NSRect) drawGradientBorder: (NSGradientType)gradientType 
            inRect: (NSRect)border 
            withClip: (NSRect)clip;
 
 @end
 
 #endif /* _GNUstep_H_GSDrawFunctions */
-

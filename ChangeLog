@@ -1,5 +1,10 @@
 2004-02-24  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/Additions/GNUstepGUI/GSDrawFunctions.h:
+	Corrected misnaming of method in last change.
+	
+2004-02-24  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Images/nsmapping.strings:
 	Added definition for NSMenuMixedState.
 	* Source/NSButtonCell.m: (-setButtonType:)
