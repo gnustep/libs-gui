@@ -1,3 +1,9 @@
+2002-09-15 13:17  Alexander Malmberg  <alexander@malmberg.org>
+
+	* Source/NSImage.m (compositeToPoint:fromRect:operation:,,
+        dissolveToPoint:fromRect:fraction:): Don't un-flip coordinates
+        when drawing in flipped views.
+
 2002-09-14 13:35  Alexander Malmberg  <alexander@malmberg.org>
 
 	* Source/NSFontPanel.m: Break -browser:selectRow:inColumn: into

@@ -674,10 +674,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 	  NSGraphicsContext *ctxt = GSCurrentContext();	  
 	  float y = aPoint.y;
 
-	  // FIXME: This undos the change done in NSCell, perhaps we can remove both?
-	  if ([[ctxt focusView] isFlipped])
-	    y -= rect.size.height;
-
 	  NSDebugLLog(@"NSImage", @"composite rect %@ in %@", 
 		      NSStringFromRect(rect), NSStringFromRect(aRect));
 	  // Move the drawing rectangle to the origin of the image rep
@@ -758,9 +754,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 	  NSRect rect = [(NSCachedImageRep *)rep rect];
 	  NSGraphicsContext *ctxt = GSCurrentContext();	  
 	  float y = aPoint.y;
-
-	  if ([[ctxt focusView] isFlipped])
-	    y -= rect.size.height;
 
 	  // Move the drawing rectangle to the origin of the image rep
 	  // and intersect the two rects.
