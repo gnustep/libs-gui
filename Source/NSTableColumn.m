@@ -240,6 +240,11 @@
   return _dataCell;
 }
 
+- (NSCell*)dataCellForRow: (int) row
+{
+  [self dataCell];
+}
+
 /*
  * Encoding/Decoding
  */
