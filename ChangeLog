@@ -10,6 +10,7 @@ Tue Sep  8 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 		with menuHasChanged=YES for performance reasons.  
 	* NSMenu.m->NSMenu in removeItem: replaced call to _menuChanged with
 		menuHasChanged=YES for performance reasons.  
+	* NSStringDrawing.h: reformat for clarity
 
 Tue Sep  8 16:30:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 

@@ -70,7 +70,7 @@
 
 //
 // General methods 
-//													// write instace to disk
+//													// write instance to disk
 - (BOOL)writeToFile:(NSString *)path 				// at path. if directory
 		 atomically:(BOOL)atomicFlag 				// type, this method is
 		 updateFilenames:(BOOL)updateFilenamesFlag	// recursive, if flag is
