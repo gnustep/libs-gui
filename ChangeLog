@@ -1,3 +1,8 @@
+Wed Dec  5 11:04:14 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSPrintInfo.m ([+initPrintInfoDefaults]): Commented out
+	debugging log which wouldn't compile.
+
 Wed Dec  5 10:55:13 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSClipView.m ([-setBackgroundColor:]): If the color is
