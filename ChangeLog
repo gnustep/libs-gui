@@ -1,3 +1,12 @@
+2003-01-29 16:01  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSHorizontalTypesetter.m (-layoutLineNewParagraph:): Place
+	baseline higher (in relation to the line height).
+
+	* Source/NSLayoutManager.m (-textStorage:edited:range:changeInLength:
+	invalidatedRange:): Fix selection range adjustment when the entire
+	selection is removed.
+
 2003-01-29 01:40  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/NSTextView.h, Source/NSTextView.m: Implement

@@ -361,7 +361,7 @@ typedef struct
       max_line_height = min;
 
     line_height = [cache->font defaultLineHeightForFont];
-    baseline = line_height + [cache->font descender];
+    baseline = ([cache->font ascender] + [cache->font descender] + line_height) / 2.0;
     if (line_height < min)
       line_height = min;
 
@@ -463,7 +463,7 @@ restart:
 	    if (new_height > line_height)
 	      {
 		line_height = new_height;
-		baseline = line_height + [f descender];
+		baseline = ([cache->font ascender] + [cache->font descender] + line_height) / 2.0;
 		goto restart;
 	      }
 	  }
