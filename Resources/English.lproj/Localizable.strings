@@ -16,7 +16,4 @@
 /* Title of the Info Panel */
 "Info" = "Info"; 
 
-/* Title of Windows menu */
-"Windows" = "Windows";
-
 "reported exception - %@" = "reported exception - %@";
