@@ -187,7 +187,7 @@ Gui_AGSDOC_FLAGS = \
 	-ConstantsTemplate TypesAndConstants \
 	-FunctionsTemplate Functions \
 	-TypedefsTemplate TypesAndConstants \
-	- VariablesTemplate TypesAndConstants \
+	-VariablesTemplate TypesAndConstants \
 	-WordMap '{\
 	APPKIT_EXPORT=extern;APPKIT_DECLARE="";\
 	}' -Up Gui
