@@ -263,7 +263,11 @@ main(int argc, char** argv, char **env_c)
    *	List of directory names to search within each root directory
    *	when looking for applications providing services.
    */
-  locations = [NSArray arrayWithObjects: @"Apps", @"Library/Services", nil];
+  /* FIXME - Shouldn't this be asking to the gnustep-base library for
+   * the list of application directories rather than try build its own
+   * ? */
+  locations = [NSArray arrayWithObjects: @"Applications", 
+		       @"Library/Services", nil];
 
   for (index = 0; index < [roots count]; index++)
     {
