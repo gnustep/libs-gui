@@ -117,7 +117,7 @@ static NSPageLayout *shared_instance;
 		     defer: (BOOL)flag
 		    screen: (NSScreen*)aScreen
 {
-  int i;
+  unsigned int i;
   id control;
   NSForm *sizeForm;
   NSArray *subviews, *list;
@@ -425,7 +425,8 @@ static NSPageLayout *shared_instance;
       list = [printer stringListForKey:@"PageSize" inTable: @"PPD"];
       if ([list count])
 	{
-	  int i;
+	  unsigned int i;
+
 	  for (i = 0; i < [list count]; i++)
 	    {
 	      NSString *key = [list objectAtIndex: i];
@@ -445,8 +446,9 @@ static NSPageLayout *shared_instance;
   control = [[self contentView] viewWithTag: NSPLUnitsButton];
   if ([control numberOfItems] < 2)
     {
-      int i;
+      unsigned int i;
       NSArray *list = [self _units];
+
       [control removeAllItems];
       for (i = 0; i < [list count]; i++)
 	{
