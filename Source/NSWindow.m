@@ -630,24 +630,21 @@ NSView *v;
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
   NSApplication	*theApp = [NSApplication sharedApplication];
 
+  /*
+   * If 'is_released_when_closed' then the window will be removed from the
+   * applications list of windows (causing it to be released) - so we must
+   * bracket any work we do in a retain/release sequence.
+   */
+  if (is_released_when_closed)
+    [self retain];
+
   [nc postNotificationName: NSWindowWillCloseNotification object: self];
   [theApp removeWindowsItem: self];
   [self orderOut: self];
   visible = NO;
 
   if (is_released_when_closed)
-    {
-      [self autorelease];
-
-      /*
-       * Horrible kludge to handle case where an application has no menu - we
-       * assume that this is the only window in the application and terminate.
-       * We only do this for windows that release when closed - any other
-       * window may be intended to re-open.
-       */
-      if ([theApp mainMenu] == nil)
-	[theApp terminate: nil];
-    }
+    [self release];
 }
 
 - (void)deminiaturize:sender

@@ -95,6 +95,10 @@ static id NSApp;
 static NSString *NSAbortModalException = @"NSAbortModalException";
 
 
+@interface NSApplication (Private)
+- (void) _windowWillClose: (NSNotification*)n;
+- (void) _windowWillOpen: (NSWindow*)win;
+@end
 
 @implementation NSApplication
 
@@ -1322,17 +1326,7 @@ NSWindow *w;
    */
   if ([window_list indexOfObjectIdenticalTo: aWindow] == NSNotFound)
     {
-      [window_list addObject: aWindow];
-      [aWindow setWindowNumber: window_count++];
-
-      /*
-       * If this was the first window then make it the main and key window.
-       */
-      if ([window_list count] == 1)
-        {
-          [aWindow becomeMainWindow];
-          [aWindow becomeKeyWindow];
-        }
+      [self _windowWillOpen: aWindow];
     }
 
   /*
@@ -1341,6 +1335,15 @@ NSWindow *w;
    */
   if ([aWindow isKindOfClass: [NSMenu class]])
     return;
+
+  /*
+   * If this was the first window then make it the main and key window.
+   */
+  if ([window_list count] == 1)
+    {
+      [aWindow becomeMainWindow];
+      [aWindow becomeKeyWindow];
+    }
 
   /*
    * Can't permit an untitled window in the window menu.
@@ -1379,7 +1382,6 @@ NSWindow *w;
     {
       menu = [[NSMenu alloc] initWithTitle: [windows_menu title]];
       [self setWindowsMenu: menu];
-      [menu release];
     }
 
   /*
@@ -1729,3 +1731,43 @@ BOOL result = YES;
 
 @end /* NSApplication */
 
+@implementation NSApplication (Private)
+- (void) _windowWillClose: (NSNotification*)n
+{
+  NSWindow	*win = [n object];
+
+  if ([win isReleasedWhenClosed])
+    {
+      NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
+
+      [nc removeObserver: self
+		    name: NSWindowWillCloseNotification
+		  object: win];
+      [window_list removeObjectIdenticalTo: win];
+
+      /*
+       * Horrible kludge to handle case where an application has no menu - we
+       * assume that this is the only window in the application and terminate.
+       * We only do this for windows that release when closed - any other
+       * window may be intended to re-open.
+       */
+      if (main_menu == nil)
+	[self terminate: nil];
+    }
+}
+
+- (void) _windowWillOpen: (NSWindow*)win
+{
+  if ([window_list indexOfObjectIdenticalTo: win] == NSNotFound)
+    {
+      NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
+
+      [window_list addObject: win];
+      [win setWindowNumber: window_count++];
+      [nc addObserver: self
+	     selector: @selector(_windowWillClose:)
+		 name: NSWindowWillCloseNotification
+	       object: win];
+    }
+}
+@end
