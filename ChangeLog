@@ -1,3 +1,8 @@
+1999-03-14  Adam Fedor  <fedor@gnu.org>
+
+	* Model/GNUmakefile: Add ifeq's for OpenStep 4.0 compilation
+	* Model/IMConnectors.m: COmment out extension includes
+
 Sun Mar 14 21:27:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSView.m: ([-resizeWithOldSuperviewSize:]) Added fix for
