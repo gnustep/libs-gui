@@ -126,6 +126,8 @@ static inline MPoint MakePoint (int x, int y)
 				    column: (int)column;
 - (BOOL) _selectPreviousSelectableCellBeforeRow: (int)row
 					 column: (int)column;
+- (void) _drawCellAtRow: (int)row 
+                 column: (int)column;
 @end
 
 enum {
@@ -1807,7 +1809,7 @@ static SEL getSel;
   for (i = row1; i <= row2 && i < _numRows; i++)
     for (j = col1; j <= col2 && j < _numCols; j++)
       {
-	[self drawCellAtRow: i column: j];
+	[self _drawCellAtRow: i column: j];
       }
 }
 
@@ -1834,6 +1836,14 @@ static SEL getSel;
     {
       NSRect cellFrame = [self cellFrameAtRow: row column: column];
 
+      if (!_drawsBackground)
+	{
+          // the matrix is not opaque, we call displayRect: so 
+          // that our opaque ancestor is redrawn
+	  [self displayRect: cellFrame];
+	  return;
+	}
+      
       if (_drawsCellBackground)
 	{
 	  [self lockFocus];
@@ -1841,7 +1851,14 @@ static SEL getSel;
 	  NSRectFill(cellFrame);
 	  [self unlockFocus];
 	}
-
+      else
+	{
+	  [self lockFocus];
+	  [_backgroundColor set];
+	  NSRectFill(cellFrame);
+	  [self unlockFocus];
+	}
+      
       if (_dottedRow == row && _dottedColumn == column
 	  && [aCell acceptsFirstResponder])
 	{
@@ -3673,4 +3690,41 @@ static SEL getSel;
     }
   return NO;
 }
+
+- (void) _drawCellAtRow: (int)row column: (int)column
+{
+  NSCell *aCell = [self cellAtRow: row column: column];
+
+  if (aCell)
+    {
+      NSRect cellFrame = [self cellFrameAtRow: row column: column];
+
+      // we don't need to draw the matrix's background
+      // as it has already been done in drawRect: if needed
+      // (this method is only called by drawRect:)
+      if (_drawsCellBackground)
+	{
+	  [self lockFocus];
+	  [_cellBackgroundColor set];
+	  NSRectFill(cellFrame);
+	  [self unlockFocus];
+	}
+
+      if (_dottedRow == row && _dottedColumn == column
+	  && [aCell acceptsFirstResponder])
+	{
+	  [aCell
+	    setShowsFirstResponder: ([_window isKeyWindow]
+				     && [_window firstResponder] == self)];
+	}
+      else
+        {
+	  [aCell setShowsFirstResponder: NO];
+	}
+      
+      [aCell drawWithFrame: cellFrame inView: self];
+      [aCell setShowsFirstResponder: NO];
+    }
+}
+
 @end

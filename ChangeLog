@@ -1,3 +1,18 @@
+2002-07-11  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Source/NSButtonCell.m ([-isOpaque]): New behaviour
+	that is more consistent with our look and feel
+	* Source/NSMatrix.m ([-drawCellAtRow:column:]):
+	Draws matrix's background if needed and make the opaque ancestor
+	redraw if the matrix is not opaque.
+	([-_drawCellAtRow:column:]): New private method to avoid looping
+	([-drawRect:]): Use _drawCellAtRow:column instead of
+	drawCellAtRow:column.
+	* Source/GSSimpleLayoutManager.m
+	([-rebuildForRange:delta:inTextContainer:]): Empty lines
+	are not fixed height anymore. The height does now depend on the 
+	current font or on the current paragraph's settings.
+
 2002-07-11  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSOutlineView.m: ([-editColumn:row:withEvent:select:])

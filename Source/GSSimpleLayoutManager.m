@@ -1105,15 +1105,20 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	    {
 	      // newline - induced premature lineending: flush
 	      if (eol.length)
-	        {
+		{
 		  // Add information for the line break
 		  scannerPosition += eol.length;
 		  usedLineRect.size.width += 1;
-		  /* FIXME: This should use the real font size!! not
-                     the default one !! */
+		  // FIXME: This should use the real font size!! not
+                  // the default one !!
+		  // This should be fixed (04-07-02)
 		  if (usedLineRect.size.height == 0)
 		    {
-		      usedLineRect.size.height = defaultFontHeight ();
+  		      // usedLineRect.size.height = defaultFontHeight ();
+		      usedLineRect.size.height = 
+			[self _sizeOfRange: NSMakeRange(startingLineCharIndex,
+							eol.length)].height;
+
 		    }
 		}
 	    }

@@ -383,6 +383,14 @@
    * we draw the interior of the cell to fill completely the bounds.  
    * They are likely to draw differently.
    */
+
+  // This seems the best to achieve a correct behaviour
+  // (consistent with Nextstep)
+  if (!(_cell.is_bordered 
+	|| (_highlightsByMask & NSChangeBackgroundCellMask)
+	|| (_highlightsByMask & NSChangeGrayCellMask)))
+    return NO;
+    
   return !_buttoncell_is_transparent;
 }
 
@@ -639,10 +647,17 @@
   if (backgroundColor == nil)
     backgroundColor = [NSColor controlBackgroundColor];
 
-  /* Draw the cell's background color.  We always draw the background,
+  /* Draw the cell's background color.  
+     We draw when there is a border or when highlightsByMask
+     is NSChangeBackgroundCellMask or NSChangeGrayCellMask,
      as required by our nextstep-like look and feel.  */
-  [backgroundColor set];
-  NSRectFill (cellFrame);
+  if (_cell.is_bordered 
+      || (_highlightsByMask & NSChangeBackgroundCellMask)
+      || (_highlightsByMask & NSChangeGrayCellMask))
+    {
+      [backgroundColor set];
+      NSRectFill (cellFrame);
+    }
 
   /*
    * Determine the image and the title that will be
