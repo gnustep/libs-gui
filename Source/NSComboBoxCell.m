@@ -205,7 +205,7 @@ static GSComboWindow *gsWindow = nil;
 
 - (void)dealloc
 {
-  // browser, table view and scroll view were not retained so don't release them
+  // Browser, table view and scroll view were not retained so don't release them
   [super dealloc];
 }
 
@@ -390,14 +390,14 @@ static GSComboWindow *gsWindow = nil;
     name: NSWindowWillMoveNotification object: onWindow];
   [nc addObserver: self selector: @selector(onWindowEdited:) 
     name: NSWindowWillMiniaturizeNotification object: onWindow];
-  /* the notification below doesn't exist currently
+  /* The notification below doesn't exist currently
   [nc addObserver: self selector: @selector(onWindowEdited:) 
     name: NSWindowWillResizeNotification object: onWindow];
   */
   [nc addObserver: self selector: @selector(onWindowEdited:) 
     name: NSWindowWillCloseNotification object: onWindow];
    
-  // ### Hack 
+  // ### HACK: 
   // ### The code below must be removed when the notifications over will work
   [nc addObserver: self selector: @selector(onWindowEdited:) 
     name: NSWindowDidMoveNotification object: onWindow];
@@ -413,8 +413,7 @@ static GSComboWindow *gsWindow = nil;
   
   [nc removeObserver: self];
   [_tableView setDelegate: self];
-  // Hack
-  // Need to reset the delegate to receive the next notifications
+  // HACK: Need to reset the delegate to receive the next notifications
   
   [self close];
 
@@ -504,7 +503,7 @@ static GSComboWindow *gsWindow = nil;
 
 - (void) noteNumberOfItemsChanged
 {
-  // FIXME: Should only load the additional items
+  // FIXME: Probably should only load the additional items
   [self reloadData];
 }
 
@@ -702,6 +701,22 @@ numberOfRowsInColumn: (int)column
 
 // ---
 
+/**
+ <unit>
+ <heading>Class Description</heading> 
+ An NSComboBoxCell is what we can call a completion/choices box cell, derived from
+ NSTextFieldCell, it allows you to enter text like in a text field but also to click
+ in the ellipsis button (indicating the fact other user inputs are possible) on
+ the right of it to obtain a list of choices whose you can use as the text field
+ value by selecting a row in this list. You can also obtain direct completion
+ when it  is enabled via <code>setCompletes:</code> to get a suggested text
+ field value updated as you type. 
+ Like other NSCell classes, NSComboBoxCell has a matching NSControl named NSComboBox
+ which is relying on it to implement the combo box behavior in a standalone
+ control.
+ </unit>
+*/ 
+
 @implementation NSComboBoxCell
 
 //
@@ -746,58 +761,145 @@ numberOfRowsInColumn: (int)column
   [super dealloc];
 }
 
+/**
+ * Returns YES when the combo box cell displays a vertical scroller for its
+ * list, returns NO otherwise. 
+ * Take note that the scroller will be displayed even when the sum of the items
+ * height in the list is inferior to the minimal height of the list displayed
+ * area. 
+ */
 - (BOOL) hasVerticalScroller { return _hasVerticalScroller; }
+
+/**
+ * Sets whether the combo box cell list displays a vertical scroller, by default
+ * it is the case. When <var>flag</var> is NO and the combo cell list has more
+ * items (either in its default list or from its data source) than the number
+ * returned by <code>numberOfVisibleItems</code>, only a subset of them will be
+ * displayed. Uses scroll related methods to position this subset in the combo
+ * box cell list.
+ * Take note that the scroller will be displayed even when the sum of the items
+ * height in the list is inferior to the minimal height of the list displayed
+ * area.
+ */
 - (void) setHasVerticalScroller: (BOOL)flag
 {
   _hasVerticalScroller = flag;
 }
 
+/**
+ * Returns the width and the height (as the values of an NSSize variable)
+ * between each item of the combo box cell list.
+ */
 - (NSSize) intercellSpacing { return _intercellSpacing; }
+
+/**
+ * Sets the width and the height between each item of the combo box cell list to
+ * the values in <var>aSize</var>.
+ */
 - (void) setIntercellSpacing: (NSSize)aSize
 {
   _intercellSpacing = aSize;
 }
 
+/**
+ * Returns the height of the items in the combo box cell list.
+ */
 - (float) itemHeight { return _itemHeight; }
+
+/**
+ * Sets the height of the items in the combo box cell list to
+ * <var>itemHeight</var>.
+ */
 - (void) setItemHeight: (float)itemHeight
 {
   if (itemHeight > 14)
     _itemHeight = itemHeight;
 }
 
+/**
+ * Returns the maximum number of allowed items to be displayed in the combo box
+ * cell list.
+ */
 - (int) numberOfVisibleItems { return _visibleItems; }
+
+/**
+ * Sets the maximum number of allowed items to be displayed in the combo box
+ * cell list.
+ */
 - (void) setNumberOfVisibleItems: (int)visibleItems
 {
   if (visibleItems > 10)
     _visibleItems = visibleItems;
 }
 
+/** 
+ * Marks the combo box cell in order to have its items list reloaded in the
+ * case it uses a data source, and to have it redisplayed.
+ */
 - (void) reloadData
 {
   [_popup reloadData];
 }
 
+/**
+ * Informs the combo box cell that the number of items in its data source has
+ * changed, in order to permit to the scrollers in its displayed list being
+ * updated without needing the reload of the data. 
+ * It is recommended to use this method with a data source that continually
+ * receives data in the background, to keep the the combo box cell responsive to
+ * the user while the data is received.
+ * Take a look at the <code>NSComboBoxDataSource</code> informal protocol
+ * specification to know more on the messages NSComboBox sends to its data
+ * source. 
+ */
 - (void) noteNumberOfItemsChanged
 {
   [_popup noteNumberOfItemsChanged];
 }
 
+/**
+ * Returns YES when the combo box cell uses a data source (which is external) to
+ * populate its items list, otherwise returns NO in the case it uses its default
+ * list.
+ */
 - (BOOL) usesDataSource { return _usesDataSource; }
+
+/**
+ * Sets according to <var>flag</var> whether the combo box cell uses a data
+ * source (which is external) to populate its items list.
+ */
 - (void) setUsesDataSource: (BOOL)flag
 {
   _usesDataSource = flag;
 }
 
+/**
+ * Scrolls the combo box cell list vertically in order to have the item at
+ * <var>index</var> in the closest position relative to the top. There is no
+ * need to have the list displayed when this method is invoked.
+ */
 - (void) scrollItemAtIndexToTop: (int)index
 {
   [_popup scrollItemAtIndexToTop: index];
 }
 
+/**
+ * Scrolls the combo box cell list vertically in order to have the item at
+ * <var>index</var> visible. There is no need to have the list displayed when
+ * this method is invoked. 
+ */
 - (void) scrollItemAtIndexToVisible: (int)index
 {
   [_popup scrollItemAtIndexToVisible: index];
 }
 
+/**
+ * Selects the combo box cell list row at <var>index</var>. 
+ * Take note no changes occurs in the combo box cell list when this method is
+ * called. 
+ * Posts an NSComboBoxSelectionDidChangeNotification to the default notification
+ * center when there is a new selection different from the previous one.
+ */
 - (void) selectItemAtIndex: (int)index
 {
   // Method called by GSComboWindow when a selection is done in the table view or 
@@ -827,6 +929,12 @@ numberOfRowsInColumn: (int)column
     }
 }
 
+/**
+ * Deselects the combo box cell list row at <var>index</var> in the case this
+ * row is selected. 
+ * Posts an NSComboBoxSelectionDidChangeNotification to the default notification
+ * center, when there is a new selection.
+ */
 - (void) deselectItemAtIndex: (int)index
 {
   if (_selectedItem == index)
@@ -841,11 +949,22 @@ numberOfRowsInColumn: (int)column
     }
 }
 
+/**
+ * Returns the index of the selected item in the combo box cell list or -1 when
+ * there is no selection, the selected item can be related to the data source
+ * object in the case <code>usesDataSource</code> returns YES else to the
+ * default items list. 
+ */
 - (int) indexOfSelectedItem
 {
   return _selectedItem;
 }
 
+/**
+ * Returns the number of items in the the combo box cell list, the numbers of
+ * items can be be related to the data source object in the case
+ * <code>usesDataSource</code> returns YES else to the default items list.
+ */
 - (int) numberOfItems
 {
   if (_usesDataSource)
@@ -874,7 +993,24 @@ numberOfRowsInColumn: (int)column
   return 0;
 }
 
+/**
+ * Returns the combo box cell data source object which is reponsible to provide
+ * the data to be displayed. To know how to implement a data source object,
+ * take a  look at the NSComboBoxDataSource informal protocol description. In
+ * the case <code>usesDataSource</code> returns NO, this method logs a warning.
+ */
 - (id) dataSource { return _dataSource; }
+
+/**
+ * Sets the combo box cell data source to <var>aSource</var>. Just calling this
+ * method doesn't set <code>usesDataSource</code> to return YES, you must call
+ * <code>setUsesDataSource:</code> with YES before or a warning will be logged.
+ * To know how to implement a data source objects, take a  look at the
+ * NSComboBoxDataSource informal protocol description. When <var>aSource</var>
+ * doesn't respond to the methods <code>numberOfItemsInComboBox:</code>
+ * <code>comboBox:objectValueForItemAtIndex:</code>, this method
+ * logs a warning.
+ */
 - (void) setDataSource: (id)aSource
 {
   if (!_usesDataSource)
@@ -884,6 +1020,11 @@ numberOfRowsInColumn: (int)column
     _dataSource = aSource;
 }
 
+/**
+ * Adds an item to the combo box cell default items list which is used when
+ * <code>usesDataSource</code> returns NO. In the case
+ * <code>usesDataSource</code> returns YES, this method logs a warning.
+ */
 - (void) addItemWithObjectValue: (id)object
 {
   if (_usesDataSource)
@@ -895,6 +1036,11 @@ numberOfRowsInColumn: (int)column
   [self reloadData];
 }
 
+/**
+ * Adds several items in an array to the combo box cell default items list which
+ * is used when <code>usesDataSource</code> returns NO. In the case
+ * <code>usesDataSource</code> returns YES, this method logs a warning.
+ */
 - (void) addItemsWithObjectValues: (NSArray *)objects
 {
   if (_usesDataSource)
@@ -906,6 +1052,11 @@ numberOfRowsInColumn: (int)column
   [self reloadData];
 }
 
+/**
+ * Inserts an item in the combo box cell default items list which
+ * is used when <code>usesDataSource</code> returns NO. In the case
+ * <code>usesDataSource</code> returns YES, this method logs a warning.
+ */
 - (void) insertItemWithObjectValue: (id)object atIndex: (int)index
 {
   if (_usesDataSource)
@@ -917,6 +1068,11 @@ numberOfRowsInColumn: (int)column
   [self reloadData];
 }
 
+/**
+ * Removes an item in the combo box cell default items list which
+ * is used when <code>usesDataSource</code> returns NO. In the case
+ * <code>usesDataSource</code> returns YES, this method logs a warning.
+ */
 - (void) removeItemWithObjectValue: (id)object
 {
   if (_usesDataSource)
@@ -928,6 +1084,11 @@ numberOfRowsInColumn: (int)column
   [self reloadData];
 }
 
+/**
+ * Removes the item with the specified <var>index</var> in the combo box cell
+ * default items list which is used when <code>usesDataSource</code> returns NO.
+ * In the case <code>usesDataSource</code> returns YES, this method logs a warning.
+ */
 - (void) removeItemAtIndex: (int)index
 {
   if (_usesDataSource)
@@ -939,6 +1100,11 @@ numberOfRowsInColumn: (int)column
   [self reloadData];
 }
 
+/**
+ * Removes all the items in the combo box cell default items list which is used
+ * when <code>usesDataSource</code> returns NO. In the case
+ * <code>usesDataSource</code> returns YES, this method logs a warning.
+ */
 - (void) removeAllItems
 {
   if (_usesDataSource)
@@ -950,6 +1116,15 @@ numberOfRowsInColumn: (int)column
   [self reloadData];
 }
 
+/**
+ * Selects the first item in the default combo box cell list which is equal to
+ * <var>object</var>. In the case <code>usesDataSource</code> returns YES, this
+ * method logs a warning. 
+ * Take note that this method doesn't update the text field part value. 
+ * Posts an NSComboBoxSelectionDidChange notification to the default
+ * notification center when the new selection is different than the previous
+ * one. 
+ */
 - (void) selectItemWithObjectValue: (id)object
 {
  if (_usesDataSource)
@@ -966,6 +1141,12 @@ numberOfRowsInColumn: (int)column
    }
 }
 
+/**
+ * Returns the object value at <var>index</var> within combo box cell default
+ * items list. When the index is beyond the end of the list, an NSRangeException is
+ * raised. In the case <code>usesDataSource</code> returns YES, this method logs
+ * a warning.
+ */
 - (id) itemObjectValueAtIndex: (int)index
 {
   if (_usesDataSource)
@@ -980,6 +1161,11 @@ numberOfRowsInColumn: (int)column
     }
 }
 
+/**
+ * Returns the object value of the selected item in the combo box cell default
+ * items list or nil when there is no selection. In the case
+ * <code>usesDataSource</code> returns YES, this method logs a warning.
+ */
 - (id) objectValueOfSelectedItem
 {
   if (_usesDataSource)
@@ -999,6 +1185,12 @@ numberOfRowsInColumn: (int)column
     }
 }
 
+/**
+ * Returns the lowest index associated with a value in the combo box
+ * cell default items list, which is equal to <var>object</var>, and returns
+ * NSNotFound when there is no such value. In the case
+ * <code>usesDataSource</code> returns YES, this method logs a warning.
+ */
 - (int) indexOfItemWithObjectValue: (id)object
 {
   if (_usesDataSource)
@@ -1011,6 +1203,9 @@ numberOfRowsInColumn: (int)column
   return [_popUpList indexOfObject: object];
 }
 
+/** 
+ * Returns the combo box cell default items list in an array.
+ */
 - (NSArray *)objectValues
 {
   if (_usesDataSource)
@@ -1024,6 +1219,21 @@ numberOfRowsInColumn: (int)column
 }
 
 // Text completion
+/**
+ * Returns a string by looking in the combo box cell list for an item wich
+ * starts with <var>substring</var>, or nil when there is no such string. 
+ * <var>substring</var> is equal to what the user entered in the text field
+ * part.
+ * You rarely needs to call this method explicitly in your code.
+ * By default, the implementation of this method first checks whether the combo
+ * box cell uses a data source and whether the data source responds to 
+ * comboBox:completedString: or comboBoxCell:completedString:. When it is the
+ * case, it uses this method to return <var>str</var>, else this method goes
+ * through the combo box cell items one by one and returns the first item found
+ * starting with <var>substring</var>.
+ * In the case, you want another behavior, you can override this method without
+ * need to call the superclass method.
+ */
 - (NSString *)completedString:(NSString *)substring
 {
   if (_usesDataSource)
@@ -1068,7 +1278,24 @@ numberOfRowsInColumn: (int)column
   return substring;
 }
 
+/** 
+ * Returns YES when the combo box cell automatic completion is active, returns
+ * NO otherwise. 
+ * Take a look at the <code>setCompletes:</code> method documentation to know
+ * how the automatic completion works. 
+ */
 - (BOOL)completes { return _completes; }
+
+/** 
+ * Sets whether the combo box cell automatic completion is active or not.
+ * The automatic completion tries to complete what the user types in the text
+ * field part, it tries to complete only when the the user adds characters at
+ * the end of the string, not when it deletes characters or when the insertion
+ * point precedes the end of the string.
+ * To do the automatic completion, the <code>completedString:</code> method is
+ * called, and when the returned string is longer than the current one in the text
+ * field, the completion occurs and the completed part gets selected.
+ */
 - (void)setCompletes:(BOOL)completes
 {
   _completes = completes;
@@ -1122,7 +1349,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
       [super drawWithFrame: cellFrame inView: controlView];
     }
     
-  _lastValidFrame = cellFrame; // used by GSComboWindow to appear in the right position
+  _lastValidFrame = cellFrame; // Used by GSComboWindow to appear in the right position
 }
 
 - (void) highlight: (BOOL)flag
@@ -1168,7 +1395,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
     {
       if (NSMouseInRect(point, textCellFrameFromRect(cellFrame), isFlipped))
 	{
-	  return YES;// continue
+	  return YES;// Continue
 	}
       else if (NSMouseInRect(point, buttonCellFrameFromRect(cellFrame), isFlipped))
  	{
@@ -1184,7 +1411,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 
           /* We can do the call below but it is already done by the target/action we have set for the button cell
 	  if (clicked)
-	    [self _didClickWithinButton: self]; // not to be used */
+	    [self _didClickWithinButton: self]; // Not to be used */
 	  	       
 	  [controlView lockFocus];
           [_buttonCell highlight: NO withFrame: buttonCellFrameFromRect(cellFrame) inView: controlView];
@@ -1211,6 +1438,10 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 }
 
 // NSCoding
+/**
+ * Encodes the combo box cell using <var>encoder</var>. take note that when it
+ * uses a data source, the data source is conditionally encoded.
+ */
 - (void) encodeWithCoder: (NSCoder *)coder
 {
   [super encodeWithCoder: coder];
@@ -1229,6 +1460,12 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
     [coder encodeConditionalObject: _dataSource];      
 }
 
+/**
+ * Initializes the combo box cell with data linked to <var>decoder</var>. Take
+ * note that when the decoded instance uses a data source,
+ * <code>initWithCoder:<var> decodes the data source. 
+ * Finally, returns thr initialized object.
+ */
 - (id) initWithCoder: (NSCoder *)aDecoder
 {
   self = [super initWithCoder: aDecoder];

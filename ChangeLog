@@ -1,3 +1,7 @@
+2004-06-07  Quentin Mathe <qmathe@club-internet.fr>
+        * Source/NSComboBoxCell.m: Added complete documentation.
+	* Source/NSComboBox.m: Minor documentation corrections.
+
 2004-06-06  Quentin Mathe <qmathe@club-internet.fr>
         * Source/NSComboBox.m: Added complete documentation.
 

@@ -41,12 +41,12 @@ static NSNotificationCenter *nc;
  <heading>Class Description</heading> 
  An NSComboBox is what we can call a completion/choices box, derived from
  NSTextField, it allows you to enter text like in a text field but also to click
- in the ellipsis button (indicating the fact other user inputs is possible) on
- the right of it to obtain a list of choices which you can use as the text field
+ in the ellipsis button (indicating the fact other user inputs are possible) on
+ the right of it to obtain a list of choices whose you can use as the text field
  value by selecting a row in this list. You can also obtain direct completion
  when it  is enabled via <code>setCompletes:</code> to get a suggested text
  field value updated as you type. 
- Like other NSControls, NSComboBox is a wrapper around a core piece which
+ Like other NSControl classes, NSComboBox is a wrapper around a core piece which
  implements the combo box behavior, a cell, which is in this case an
  NSComboBoxCell.
  </unit>
@@ -408,6 +408,17 @@ static NSNotificationCenter *nc;
 }
 
 /** 
+ * Returns YES when the combo box cell automatic completion is active, returns
+ * NO otherwise. 
+ * Take a look at the <code>setCompletes:</code> method documentation to know
+ * how the automatic completion works. 
+ */
+- (BOOL)completes
+{
+  return [_cell completes];
+}
+
+/** 
  * Sets whether the combo box cell automatic completion is active or not.
  * The automatic completion tries to complete what the user types in the text
  * field part, it tries to complete only when the the user adds characters at
@@ -420,17 +431,6 @@ static NSNotificationCenter *nc;
 - (void)setCompletes:(BOOL)completes
 {
   [_cell setCompletes: completes];
-}
-
-/** 
- * Returns YES when the combo box cell automatic completion is active, returns
- * NO otherwise. 
- * Take a look at the <code>setCompletes:</code> method documentation to know
- * how the automatic completion works. 
- */
-- (BOOL)completes
-{
-  return [_cell completes];
 }
 
 - (void) setDelegate: (id)anObject
