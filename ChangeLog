@@ -1,3 +1,14 @@
+2001-08-28  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenu.m
+	[insertItemWithTitle:...atIndex:] autorelease the return value.
+	[mouseDown:] when we create the location directory, autorelease it.
+	In [_locationKey] and [display] remove unneeded checks for popup.
+	In [copyWithZone:] set the autoenable property before adding items.
+	* Source/NSPopUpButtonCell.m
+	In [insertItemWithTitle:atIndex:] use action and target from the
+	cell for menu item. 
+	
 2001-08-27  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSMenuItem.h
