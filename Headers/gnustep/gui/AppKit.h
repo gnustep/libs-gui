@@ -42,37 +42,6 @@
 //
 #include <AppKit/NSGraphics.h>
 
-//
-// Protocols
-//
-
-//
-// Classes
-//
-@class NSWorkspace;
-@class NSResponder, NSApplication, NSScreen;
-@class NSWindow, NSPanel, NSView, NSMenu;
-@class NSSavePanel, NSOpenPanel, NSHelpPanel;
-@class NSClipView, NSScrollView, NSSplitView;
-@class NSText,NSCStringText;
-// Controls
-@class NSControl, NSButton, NSTextField, NSScroller, NSBox, NSForm, NSMatrix;
-@class NSPopUpButton, NSProgressIndicator, NSSlider, NSBrowser, NSForm;
-@class NSComboBox, NSSecureTextField;
-// Cells
-@class NSCell, NSActionCell, NSButtonCell, NSTextFieldCell, NSFormCell;
-@class NSSliderCell, NSMenuCell, NSBrowserCell, NSFormCell;
-@class NSComboBoxCell;
-@class NSEvent, NSCursor;
-@class NSColor, NSColorList, NSColorPanel, NSColorPicker, NSColorWell;
-@class NSImage, NSImageCell, NSImageRep, NSBitmapImageRep, NSCachedImageRep;
-@class NSCustomImageRep, NSEPSImageRep;
-@class NSDataLink, NSDataLinkManager, NSDataLinkPanel;
-@class NSFont, NSFontManager, NSFontPanel;
-@class NSPageLayout, NSPrinter, NSPrintInfo, NSPrintOperation, NSPrintPanel;
-@class NSParagraphStyle, NSMutableParagraphStyle, NSPasteboard, NSSelection;
-@class NSSpellChecker, NSSpellServer, NSTextTab, NSSecureTextFieldCell;
-
 #include <AppKit/NSActionCell.h>
 #include <AppKit/NSAffineTransform.h>
 #include <AppKit/NSApplication.h>
