@@ -388,8 +388,11 @@ static NSNotificationCenter *nc;
     {
       if (_tf.is_rich_text)
 	{
-	  [self setTypingAttributes: [_textStorage attributesAtIndex: range.location
-						   effectiveRange: NULL]];
+	   NSDictionary *dict;
+
+	   dict = [_textStorage attributesAtIndex: range.location
+				effectiveRange: NULL];
+	   [self setTypingAttributes: dict];
 	}
       // <!>enable caret timed entry
     }
@@ -398,28 +401,29 @@ static NSNotificationCenter *nc;
     return;
 
   // Make the selected range visible
-  [self scrollRangeToVisible: _selected_range]; 
+  [self scrollRangeToVisible: range]; 
 
   // Redisplay what has changed
   // This does an unhighlight of the old selected region
-  overlap = NSIntersectionRange(oldRange, _selected_range);
+  overlap = NSIntersectionRange (oldRange, range);
   if (overlap.length)
     {
       // Try to optimize for overlapping ranges
       if (range.location != oldRange.location)
-	  [self setNeedsDisplayInRect: 
-		    [self rectForCharacterRange: 
-			      MakeRangeFromAbs(MIN(range.location,
-						   oldRange.location),
-					       MAX(range.location,
-						   oldRange.location))]];
-      if (NSMaxRange(range) != NSMaxRange(oldRange))
-	  [self setNeedsDisplayInRect: 
-		    [self rectForCharacterRange: 
-			      MakeRangeFromAbs(MIN(NSMaxRange(range),
-						   NSMaxRange(oldRange)),
-					       MAX(NSMaxRange(range),
-						   NSMaxRange (oldRange)))]];
+	{
+	  NSRange r;
+	  r = MakeRangeFromAbs (MIN (range.location, oldRange.location),
+				MAX (range.location, oldRange.location));
+	  [self setNeedsDisplayInRect: [self rectForCharacterRange: r]];
+	}
+      if (NSMaxRange (range) != NSMaxRange (oldRange))
+	{
+	  NSRange r = MakeRangeFromAbs (MIN (NSMaxRange (range), 
+					     NSMaxRange (oldRange)),
+					MAX (NSMaxRange (range),
+					     NSMaxRange (oldRange)));
+	  [self setNeedsDisplayInRect: [self rectForCharacterRange: r]];
+	}
     }
   else
     {
@@ -862,14 +866,15 @@ static NSNotificationCenter *nc;
 - (void) sizeToFit
 {
   // if we are a field editor we don't have to handle the size.
-  if ([self isFieldEditor])
+  if (_tf.is_field_editor)
     return;
   else
     {
       NSSize oldSize = _frame.size;
       float newWidth = oldSize.width;
       float newHeight = oldSize.height;
-      NSRect textRect = [_layoutManager usedRectForTextContainer: [self textContainer]];
+      NSRect textRect = [_layoutManager usedRectForTextContainer: 
+					  _textContainer];
       NSSize newSize;
 
       if (_tf.is_horizontally_resizable)
@@ -899,7 +904,7 @@ static NSNotificationCenter *nc;
 
   NSRange errorRange;
 
-  errorRange = [sp checkSpellingOfString: [self string]
+  errorRange = [sp checkSpellingOfString: [_textStorage string]
 		   startingAt: NSMaxRange (_selected_range)];
   
   if (errorRange.length)
@@ -935,8 +940,7 @@ static NSNotificationCenter *nc;
   // This makes things so much simpler and stabler for now.
   if (_tf.is_field_editor == NO)
     {
-      [self scrollRectToVisible: [self rectForCharacterRange: 
-					   _selected_range]];
+      [self scrollRectToVisible: [self rectForCharacterRange: aRange]];
     }
 }
 
@@ -974,13 +978,6 @@ static NSNotificationCenter *nc;
 
   return [super validRequestorForSendType: sendType  returnType: returnType];
 }
-
-/*
- * Methods which should be moved here from NSText
- * 
- */
-//- (NSRect) rectForCharacterRange: (NSRange)aRange
-//- (void) deleteRange: (NSRange)aRange backspace: (BOOL)flag;
 
 /* 
  *  NSTextView's specific methods 
@@ -1112,7 +1109,7 @@ static NSNotificationCenter *nc;
 
 - (BOOL) shouldDrawInsertionPoint
 {
-  return (_selected_range.length == 0) && [self isEditable];
+  return (_selected_range.length == 0) && _tf.is_editable;
 }
 
 - (void) drawInsertionPointInRect: (NSRect)rect
@@ -1132,7 +1129,7 @@ static NSNotificationCenter *nc;
     }
   else
     {
-      [[self backgroundColor] set];
+      [_background_color set];
       NSRectFill(rect);
       // FIXME: We should redisplay the character the cursor was on.
       //[self setNeedsDisplayInRect: rect];
@@ -1402,8 +1399,7 @@ static NSNotificationCenter *nc;
   if (aRange.location == NSNotFound)
     return;
 
-  if (![self shouldChangeTextInRange: aRange
-	    replacementString: nil])
+  if (![self shouldChangeTextInRange: aRange  replacementString: nil])
     return;
   [_textStorage beginEditing];
   [_textStorage setAlignment: alignment
@@ -1696,14 +1692,15 @@ replacing the selection.
   if (_tf.uses_font_panel)
     {
       NSRange longestRange;
-      NSFont *currentFont = [_textStorage attribute: NSFontAttributeName
+      NSFontManager *fm = [NSFontManager sharedFontManager];
+      NSFont *currentFont;
+
+      currentFont = [_textStorage attribute: NSFontAttributeName
 				  atIndex: _selected_range.location
 				  longestEffectiveRange: &longestRange
 				  inRange: _selected_range];
-
-      [[NSFontManager sharedFontManager] 
-	  setSelectedFont: currentFont
-	  isMultiple: !NSEqualRanges(longestRange, _selected_range)];
+      [fm setSelectedFont: currentFont
+	  isMultiple: !NSEqualRanges (longestRange, _selected_range)];
     }
 }
 
@@ -1938,14 +1935,16 @@ afterString in order over charRange. */
 
 - (void) deleteForward: (id)sender
 {
-  if (_selected_range.location != [self textLength])
+  unsigned location = _selected_range.location;
+
+  if (location != [self textLength])
     {
       /* Not at the end of text -- delete following character */
-      [self deleteRange:
-	      [self selectionRangeForProposedRange:
-		      NSMakeRange (_selected_range.location, 1)
-		    granularity: NSSelectByCharacter]
-	    backspace: NO];
+      NSRange delRange = NSMakeRange (location, 1);
+
+      delRange = [self selectionRangeForProposedRange: delRange
+		       granularity: NSSelectByCharacter];
+      [self deleteRange: delRange  backspace: NO];
     }
   else
     {
@@ -2077,7 +2076,7 @@ afterString in order over charRange. */
 
 - (BOOL) acceptsFirstResponder
 {
-  if ([self isSelectable])
+  if (_tf.is_selectable)
     return YES;
   else
     return NO;
@@ -2101,7 +2100,7 @@ afterString in order over charRange. */
     }
     }
   */
-  if (([self isEditable])
+  if ((_tf.is_editable)
       && ([_delegate respondsToSelector: @selector(textShouldEndEditing:)])
       && ([_delegate textShouldEndEditing: self] == NO))
     return NO;
@@ -2123,7 +2122,7 @@ afterString in order over charRange. */
 
 - (BOOL) becomeFirstResponder
 {
-  if ([self isSelectable] == NO)
+  if (_tf.is_selectable == NO)
     return NO;
 
     /*
@@ -2155,23 +2154,26 @@ afterString in order over charRange. */
 - (void) drawRect: (NSRect)rect
 {
   NSRange drawnRange = [_layoutManager glyphRangeForBoundingRect: rect 
-				       inTextContainer: [self textContainer]];
+				       inTextContainer: _textContainer];
   if (_tf.draws_background)
     {
       [_layoutManager drawBackgroundForGlyphRange: drawnRange 
-		      atPoint: [self textContainerOrigin]];
+		      atPoint: _textContainerOrigin];
     }
 
   [_layoutManager drawGlyphsForGlyphRange: drawnRange 
-		  atPoint: [self textContainerOrigin]];
+		  atPoint: _textContainerOrigin];
 
-  if ([self shouldDrawInsertionPoint] && 
-      (NSLocationInRange(_selected_range.location, drawnRange) ||
-       _selected_range.location == NSMaxRange(drawnRange)))
+  if ([self shouldDrawInsertionPoint])
     {
-      [self drawInsertionPointAtIndex: _selected_range.location
-	    color: _caret_color
-	    turnedOn: YES];
+      unsigned location = _selected_range.location;
+
+      if (NSLocationInRange (location, drawnRange) 
+	  || location == NSMaxRange (drawnRange))
+	{
+	  [self drawInsertionPointAtIndex: location  color: _caret_color
+		turnedOn: YES];
+	}
     }
 }
 
@@ -2433,32 +2435,46 @@ container, returning the modified location. */
 - (NSRange) rangeForUserCharacterAttributeChange
 {
   if (!_tf.is_editable || !_tf.uses_font_panel)
-    return NSMakeRange(NSNotFound, 0);
+    {
+      return NSMakeRange (NSNotFound, 0);
+    }
 
   if (_tf.is_rich_text)
-    // This expects the selection to be already corrected to characters
-    return _selected_range;
+    {
+      // This expects the selection to be already corrected to characters
+      return _selected_range;
+    }
   else
-    return NSMakeRange(0, [_textStorage length]);
+    {
+      return NSMakeRange (0, [_textStorage length]);
+    }
 }
 
 - (NSRange) rangeForUserParagraphAttributeChange
 {
   if (!_tf.is_editable || !_tf.uses_ruler)
-    return NSMakeRange(NSNotFound, 0);
+    {
+      return NSMakeRange (NSNotFound, 0);
+    }
 
   if (_tf.is_rich_text)
-    return [self selectionRangeForProposedRange: _selected_range
-		granularity: NSSelectByParagraph];
+    {
+      return [self selectionRangeForProposedRange: _selected_range
+		   granularity: NSSelectByParagraph];
+    }
   else
-    return NSMakeRange(0, [_textStorage length]);
+    {
+      return NSMakeRange (0, [_textStorage length]);
+    }
 }
 
 - (NSRange) rangeForUserTextChange
 {
   if (!_tf.is_editable)
-    return NSMakeRange(NSNotFound, 0);
-  
+    {
+      return NSMakeRange (NSNotFound, 0);
+    }  
+
   // This expects the selection to be already corrected to characters
   return _selected_range;
 }
@@ -2489,16 +2505,16 @@ container, returning the modified location. */
 - (BOOL) readSelectionFromPasteboard: (NSPasteboard*)pboard
 {
 /*
-Reads the text view's preferred type of data from the pasteboard specified
-by the pboard parameter. This method
-invokes the preferredPasteboardTypeFromArray: restrictedToTypesFromArray: 
-method to determine the text view's
-preferred type of data and then reads the data using the
-readSelectionFromPasteboard: type: method. Returns YES if the
-data was successfully read.
-*/
-  NSString *type = [self preferredPasteboardTypeFromArray: [pboard types]
-			 restrictedToTypesFromArray: [self readablePasteboardTypes]];
+  Reads the text view's preferred type of data from the pasteboard
+  specified by the pboard parameter. This method invokes the
+  preferredPasteboardTypeFromArray: restrictedToTypesFromArray: method
+  to determine the text view's preferred type of data and then reads
+  the data using the readSelectionFromPasteboard: type:
+  method. Returns YES if the data was successfully read.  */
+  NSString *type;
+
+  type = [self preferredPasteboardTypeFromArray: [pboard types]
+	       restrictedToTypesFromArray: [self readablePasteboardTypes]];
   
   if (type == nil)
     return NO;
@@ -2510,14 +2526,13 @@ data was successfully read.
 				type: (NSString*)type 
 {
 /*
-Reads data of the given type from pboard. The new data is placed at the
-current insertion point, replacing the current selection if one exists.
-Returns YES if the data was successfully read.
+  Reads data of the given type from pboard. The new data is placed at
+  the current insertion point, replacing the current selection if one
+  exists.  Returns YES if the data was successfully read.
 
-You should override this method to read pasteboard types other than the
-default types. Use the rangeForUserTextChange method to obtain the range
-of characters (if any) to be replaced by the new data.
-*/
+  You should override this method to read pasteboard types other than
+  the default types. Use the rangeForUserTextChange method to obtain
+  the range of characters (if any) to be replaced by the new data.  */
 
   if ([type isEqualToString: NSStringPboardType])
     {
@@ -2525,7 +2540,7 @@ of characters (if any) to be replaced by the new data.
       return YES;
     } 
 
-  if ([self isRichText])
+  if (_tf.is_rich_text)
     {
       if ([type isEqualToString: NSRTFPboardType])
 	{
@@ -2565,7 +2580,7 @@ of characters (if any) to be replaced by the new data.
       NSRange aRange = [self rangeForUserCharacterAttributeChange];
 
       if (aRange.location != NSNotFound)
-	[self setTextColor: color range: aRange];
+	[self setTextColor: color  range: aRange];
 
       return YES;
     }
@@ -2573,10 +2588,11 @@ of characters (if any) to be replaced by the new data.
   // font pasting
   if ([type isEqualToString: NSFontPboardType])
     {
-      // FIXME - This should use a serializer. To get that working a helper object 
-      // is needed that implements the NSObjCTypeSerializationCallBack protocol.
-      // We should add this later, currently the NSArchiver is used.
-      // Thanks to Richard, for pointing this out.
+      // FIXME - This should use a serializer. To get that working a
+      // helper object is needed that implements the
+      // NSObjCTypeSerializationCallBack protocol.  We should add this
+      // later, currently the NSArchiver is used.  Thanks to Richard,
+      // for pointing this out.
       NSData *data = [pboard dataForType: NSFontPboardType];
       NSDictionary *dict = [NSUnarchiver unarchiveObjectWithData: data];
 
@@ -2703,13 +2719,15 @@ other than copy/paste or dragging. */
 
       if ([type isEqualToString: NSFontPboardType])
         {
-	  NSDictionary *dict = [_textStorage fontAttributesInRange: _selected_range];
+	  NSDictionary *dict;
 
+	  dict = [_textStorage fontAttributesInRange: _selected_range];
 	  if (dict != nil)
 	    {
-	      // FIXME - This should use a serializer. To get that working a helper object 
-	      // is needed that implements the NSObjCTypeSerializationCallBack protocol.
-	      // We should add this later, currently the NSArchiver is used.
+	      // FIXME - This should use a serializer. To get that
+	      // working a helper object is needed that implements the
+	      // NSObjCTypeSerializationCallBack protocol.  We should
+	      // add this later, currently the NSArchiver is used.
 	      // Thanks to Richard, for pointing this out.
 	      [pboard setData: [NSArchiver archivedDataWithRootObject: dict]
 		      forType: NSFontPboardType];
@@ -2719,8 +2737,9 @@ other than copy/paste or dragging. */
 
       if ([type isEqualToString: NSRulerPboardType])
         {
-	  NSDictionary *dict = [_textStorage rulerAttributesInRange: _selected_range];
+	  NSDictionary *dict;
 
+	  dict = [_textStorage rulerAttributesInRange: _selected_range];
 	  if (dict != nil)
 	    {
 	      //FIXME: see NSFontPboardType above
@@ -2793,9 +2812,7 @@ other than copy/paste or dragging. */
   while ((type = [enumerator nextObject]) != nil)
     {
       val = [attributes objectForKey: type];
-      [_textStorage addAttribute: type
-		    value: val
-		    range: aRange];
+      [_textStorage addAttribute: type  value: val  range: aRange];
     }
   [_textStorage endEditing];
   [self didChangeText];
@@ -2811,7 +2828,7 @@ other than copy/paste or dragging. */
   NSNumber *number;
   NSDictionary *uiDictionary;
   
-  if (([self isEditable])
+  if ((_tf.is_editable)
       && ([_delegate respondsToSelector:
 		       @selector(textShouldEndEditing:)])
       && ([_delegate textShouldEndEditing: self] == NO))
@@ -2878,8 +2895,7 @@ other than copy/paste or dragging. */
       deleteRange = NSMakeRange (MAX (0, aRange.location - 1), 1);
     }
 
-  if (![self shouldChangeTextInRange: deleteRange
-	    replacementString: @""])
+  if (![self shouldChangeTextInRange: deleteRange  replacementString: @""])
     return;
   [_textStorage beginEditing];
   [_textStorage deleteCharactersInRange: deleteRange];
@@ -2896,21 +2912,30 @@ other than copy/paste or dragging. */
 
 - (unsigned) characterIndexForPoint: (NSPoint) point
 {
-  unsigned glyphIndex = [_layoutManager glyphIndexForPoint: point 
-					inTextContainer: [self textContainer]];
+  unsigned glyphIndex;
+
+  glyphIndex = [_layoutManager glyphIndexForPoint: point 
+			       inTextContainer: _textContainer];
 
   return [_layoutManager characterIndexForGlyphAtIndex: glyphIndex];
 }
 
-/* TODO: Move to NSTextView */
-- (NSRect) rectForCharacterIndex: (unsigned) index
+- (NSRect) rectForCharacterIndex: (unsigned)index
 {
-  NSRange glyphRange = [_layoutManager glyphRangeForCharacterRange: NSMakeRange(index, 1)
-				       actualCharacterRange: NULL];
-  unsigned glyphIndex = glyphRange.location;
-  NSRect rect = [_layoutManager lineFragmentRectForGlyphAtIndex: glyphIndex 
-				effectiveRange: NULL];
-  NSPoint loc = [_layoutManager locationForGlyphAtIndex: glyphIndex];
+  NSRange charRange;
+  NSRange glyphRange;
+  unsigned glyphIndex;
+  NSRect rect;
+  NSPoint loc;
+
+  charRange = NSMakeRange (index, 1);
+  glyphRange = [_layoutManager glyphRangeForCharacterRange: charRange 
+			       actualCharacterRange: NULL];
+  glyphIndex = glyphRange.location;
+
+  rect = [_layoutManager lineFragmentRectForGlyphAtIndex: glyphIndex 
+			 effectiveRange: NULL];
+  loc = [_layoutManager locationForGlyphAtIndex: glyphIndex];
 
   rect.origin.x += loc.x;
   rect.size.width -= loc.x;
@@ -2918,14 +2943,15 @@ other than copy/paste or dragging. */
   return rect;
 }
 
-/* TODO: Move to NSTextView */
 - (NSRect) rectForCharacterRange: (NSRange) aRange
 {
-  NSRange glyphRange = [_layoutManager glyphRangeForCharacterRange: aRange 
-				       actualCharacterRange: NULL];
+  NSRange glyphRange;
+
+  glyphRange = [_layoutManager glyphRangeForCharacterRange: aRange 
+			       actualCharacterRange: NULL];
 
   return [_layoutManager boundingRectForGlyphRange: glyphRange 
-			 inTextContainer: [self textContainer]];
+			 inTextContainer: _textContainer];
 }
 
 - (void) drawInsertionPointAtIndex: (unsigned) index
@@ -2938,9 +2964,7 @@ other than copy/paste or dragging. */
   if (drawRect.size.height == 0)
     drawRect.size.height = 12;
 
-  [self drawInsertionPointInRect: drawRect
-	color: color
-	turnedOn: flag];
+  [self drawInsertionPointInRect: drawRect  color: color  turnedOn: flag];
 }
 
 @end
@@ -2949,30 +2973,30 @@ other than copy/paste or dragging. */
 // This are all the NSTextInput methods that are not implemented on NSTextView
 // or one of its super classes.
 
-- (void)setMarkedText:(NSString *)aString selectedRange:(NSRange)selRange
+- (void) setMarkedText:(NSString *)aString  selectedRange:(NSRange)selRange
 {
 }
 
-- (BOOL)hasMarkedText
+- (BOOL) hasMarkedText
 {
   return NO;
 }
 
-- (void)unmarkText
+- (void) unmarkText
 {
 }
 
-- (NSArray*)validAttributesForMarkedText
+- (NSArray*) validAttributesForMarkedText
 {
   return nil;
 }
 
-- (long)conversationIdentifier
+- (long) conversationIdentifier
 {
   return 0;
 }
 
-- (NSRect)firstRectForCharacterRange:(NSRange)theRange
+- (NSRect) firstRectForCharacterRange: (NSRange)theRange
 {
   return NSZeroRect;
 }
