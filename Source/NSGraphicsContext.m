@@ -826,6 +826,8 @@ NSGraphicsContext	*GSCurrentContext()
     GET_IMP(@selector(DPSPostEvent:atStart:));
   methodTable.DPSmouselocation__ = 
     GET_IMP(@selector(DPSmouselocation::));
+  methodTable.DPSsetinputstate__ = 
+    GET_IMP(@selector(DPSsetinputstate::));
 
   mptr = NSZoneMalloc(_globalGSZone, sizeof(gsMethodTable));
   memcpy(mptr, &methodTable, sizeof(gsMethodTable));
