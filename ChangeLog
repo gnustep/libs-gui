@@ -1,3 +1,8 @@
+Fri Dec 31 10:49:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSBundleAdditions.m: When decoding nib container, check for a
+	'NSVisible' array, and order the windows it contains to the front.
+
 Wed Dec 29  7:11:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSSliderCell.m: Fix so that setting and taking values from the

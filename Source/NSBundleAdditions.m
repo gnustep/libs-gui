@@ -44,6 +44,7 @@
 #include <AppKit/NSControl.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSView.h>
+#include <AppKit/NSWindow.h>
 #include <AppKit/NSNibConnector.h>
 #include <AppKit/NSNibLoading.h>
 
@@ -219,6 +220,7 @@
 		  NSEnumerator		*enumerator;
 		  NSNibConnector	*connection;
 		  NSString		*key;
+		  NSArray		*visible;
 
 		  /*
 		   *	Go through the table of objects in the nib and
@@ -274,6 +276,21 @@
 			}
 		    }
 		
+		  /*
+		   * See if there are objects that should be made visible.
+		   */
+		  visible = [nameTable objectForKey: @"NSVisible"];
+		  if (visible != nil
+		    && [visible isKindOfClass: [NSArray class]] == YES)
+		    {
+		      unsigned	pos = [visible count];
+
+		      while (pos-- > 0)
+			{
+			  [[visible objectAtIndex: pos] orderFront: self];
+			}
+		    }
+
 		  /*
 		   *	Ok - it's all done now - the nib container will
 		   *	be released when the unarchiver is released, so
