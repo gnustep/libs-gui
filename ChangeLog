@@ -1,3 +1,10 @@
+2003-07-16  Fred Kiefer <FredKiefer@gmx.de>
+
+	* TextConverters/RTF/rtfGrammer.y
+	Free the name for RTFOtherStatement.
+	* TextConverters/RTF/rtfGrammer.tab.c
+	Regenerated.
+
 2003-07-15  Fred Kiefer <FredKiefer@gmx.de>
 
 	* TextConverters/RTF/RTFConsumerFunctions.h
