@@ -1,3 +1,7 @@
+1999-07-05  Adam Fedor  <fedor@gnu.org>
+
+        * Source/GNUmakefile: Install NSPopUpButtonCell.h
+	
 1999-07-03  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSWindow.m: Implement 

@@ -183,6 +183,7 @@ AppKit/NSPanel.h \
 AppKit/NSParagraphStyle.h \
 AppKit/NSPasteboard.h \
 AppKit/NSPopUpButton.h \
+AppKit/NSPopUpButtonCell.h \
 AppKit/NSPrintInfo.h \
 AppKit/NSPrintOperation.h \
 AppKit/NSPrintPanel.h \
