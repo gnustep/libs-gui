@@ -1,3 +1,12 @@
+2004-08-09 21:45  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/Additions/GNUstepGUI/GSLayoutManager_internal.h: Add
+	usedRect and usedRectValid fields to textcontainer_t.
+	* Source/GSLayoutManager.m (-_doLayout): Set usedRectValid to NO
+	when setting complete to YES.
+	(-usedRectForTextContainer:): Optimize the calculation of the used
+	rect. Use usedRect and usedRectValid.
+
 2004-08-09 14:38  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/AppKit/NSWindow.h: _frame is the window frame.

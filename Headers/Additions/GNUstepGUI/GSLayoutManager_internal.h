@@ -193,6 +193,16 @@ typedef struct GSLayoutManager_textcontainer_s
   int num_linefrags;
   int num_soft;
   int size_linefrags;
+
+  /*
+  Keep some per-textcontainer info that's expensive to calculate and often
+  requested here.
+
+  According to profiling (2004-08-09), -usedRectForTextContainer: used to
+  account for ~7% of execution time when editing huge files.
+  */
+  NSRect usedRect;
+  BOOL usedRectValid;
 } textcontainer_t;
 
 

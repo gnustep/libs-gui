@@ -1602,6 +1602,7 @@ places where we switch.
 	    break;
 	}
       tc->complete = YES;
+      tc->usedRectValid = NO;
       if (tc->num_soft)
 	{
 	  /*
@@ -2197,10 +2198,36 @@ forStartOfGlyphRange: (NSRange)glyphRange
 
   [self _doLayoutToContainer: i];
   tc = textcontainers + i;
-  used = NSZeroRect;
-  for (i = 0, lf = tc->linefrags; i < tc->num_linefrags; i++, lf++)
-    used = NSUnionRect(used, lf->used_rect);
 
+  if (tc->usedRectValid)
+    return tc->usedRect;
+
+  if (tc->num_linefrags)
+    {
+      double x0, y0, x1, y1;
+      i = 0;
+      lf = tc->linefrags;
+      x0 = NSMinX(lf->used_rect);
+      y0 = NSMinY(lf->used_rect);
+      x1 = NSMaxX(lf->used_rect);
+      y1 = NSMaxY(lf->used_rect);
+      for (; i < tc->num_linefrags; i++, lf++)
+	{
+	  if (NSMinX(lf->used_rect) < x0)
+	    x0 = NSMinX(lf->used_rect);
+	  if (NSMinY(lf->used_rect) < y0)
+	    y0 = NSMinY(lf->used_rect);
+	  if (NSMaxX(lf->used_rect) > x1)
+	    x1 = NSMinX(lf->used_rect);
+	  if (NSMaxY(lf->used_rect) > y1)
+	    y1 = NSMinY(lf->used_rect);
+	}
+      used = NSMakeRect(x0, y0, x1 - x0, y1 - y0);
+    }
+  else
+    used = NSZeroRect;
+  tc->usedRect = used;
+  tc->usedRectValid = YES;
   return used;
 }
 
