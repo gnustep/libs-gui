@@ -1,3 +1,8 @@
+Fri Dec 18 10:32300 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+        NSApplication.h: New instance variable to give reasonable perfomance
+        with windows menu.  Omitted by error in last update.
+
 Thu Dec 17 22:55:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* NSMenu.m: ([-update]) removed code to search responder chain -
