@@ -1,3 +1,8 @@
+Sat Aug 26 22:55:55 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSText.m: Cache the default notification center for the
+	whole class.
+
 Sat Aug 26 19:25:17 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	Implemented selection of rows and columns in NSTableView:
