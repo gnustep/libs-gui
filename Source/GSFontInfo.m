@@ -188,6 +188,7 @@ static GSFontEnumerator *sharedEnumerator = nil;
 			   [NSNumber numberWithInt: 11], @"heavy",
 			   [NSNumber numberWithInt: 11], @"heavyface",
 			   [NSNumber numberWithInt: 12], @"ultrabold",
+			   [NSNumber numberWithInt: 12], @"black",
 			   [NSNumber numberWithInt: 13], @"ultra",
 			   [NSNumber numberWithInt: 13], @"ultrablack",
 			   [NSNumber numberWithInt: 13], @"fat",
