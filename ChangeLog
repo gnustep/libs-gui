@@ -1,3 +1,8 @@
+2003-01-26 20:24  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/NSMenu.h: Add missing class declaration
+	so the header is self-contained.
+
 2003-01-26 19:17  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/GSFontInfo.h, Headers/gnustep/gui/NSFont.h,
