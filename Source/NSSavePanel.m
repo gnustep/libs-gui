@@ -1053,9 +1053,12 @@ createRowsForColumn: (int)column
 
     /* We need to remove files starting with `.' (dot), but only if
        the user asked for it in the defaults.  Perhaps we could add a
-       button turning on/off display of hidden files ?  */    
+       button turning on/off display of hidden files ?  */
+
+    /* NB: GWorkspace is using this same user default to determine
+       whether to hide or not dot files.  */
     gsSavePanelHideDotFiles = [[NSUserDefaults standardUserDefaults]
-				boolForKey: @"GSSavePanelHideDotFiles"];
+				boolForKey: @"GSFileBrowserHideDotFiles"];
     
     /* Now copy the files array into a mutable array - but only if
        strictly needed.  */
