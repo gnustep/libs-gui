@@ -32,6 +32,7 @@
 
 #include <AppKit/NSBrowserCell.h>
 #include <AppKit/NSTextFieldCell.h>
+#include <AppKit/NSColor.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSEvent.h>
 

@@ -1227,13 +1227,13 @@ typedef enum
 
 	if([self drawsBackground])	// clean up the remaining area under text of us
 	{	float	lowestY=0;
-		NSRect	frame=[self frame];
+		NSRect	f=[self frame];
 
 		if([lineLayoutInformation count]) lowestY=NSMaxY([[lineLayoutInformation lastObject] lineRect]);
 
-		if(![lineLayoutInformation count] || (lowestY < NSMaxY(frame) && frame.size.height<= [self minSize].height))
+		if(![lineLayoutInformation count] || (lowestY < NSMaxY(f) && f.size.height<= [self minSize].height))
 		{	[[self backgroundColor] set];
-			NSRectFill(NSMakeRect(0,lowestY,frame.size.width,NSMaxY(frame)-lowestY));
+			NSRectFill(NSMakeRect(0,lowestY,f.size.width,NSMaxY(f)-lowestY));
 			if(![lineLayoutInformation count] || [[lineLayoutInformation lastObject] type] == LineLayoutInfoType_Paragraph)
 				[self drawSelectionAsRange:[self selectedRange]];
 		}
@@ -1869,7 +1869,13 @@ static unsigned _relocLayoutArray(NSMutableArray *lineLayoutInformation,NSArray 
 
 	if(!lineLayoutInformation) lineLayoutInformation=[[NSMutableArray alloc] init];
 	else
-	{	ghostArray=[lineLayoutInformation subarrayWithRange:NSMakeRange(aLine,[lineLayoutInformation count]-aLine)];	// remember old array for optimization purposes
+	{ 
+	NSLog(@"aLine = %d, count = %d\n", (int)aLine,
+(int)[lineLayoutInformation count]);
+
+ghostArray=[lineLayoutInformation
+subarrayWithRange:NSMakeRange(aLine,[lineLayoutInformation count]-aLine)];
+// remember old array for optimization purposes
 		prevArrayEnum=[ghostArray seekableEnumerator];	// every time an object is added to lineLayoutInformation a nextObject has to be performed on prevArrayEnum!
 	}
 

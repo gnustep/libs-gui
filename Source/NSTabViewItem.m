@@ -1,3 +1,4 @@
+#include <AppKit/NSColor.h>
 #include <AppKit/NSFont.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSTabViewItem.h>

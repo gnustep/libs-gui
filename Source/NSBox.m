@@ -32,6 +32,7 @@
 #include <Foundation/NSString.h>
 
 #include <AppKit/NSBox.h>
+#include <AppKit/NSColor.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSTextFieldCell.h>
 

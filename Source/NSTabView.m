@@ -1,5 +1,7 @@
 
 #include <AppKit/NSColor.h>
+#include <AppKit/NSFont.h>
+#include <AppKit/NSGraphics.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSTabView.h>
 #include <AppKit/NSTabViewItem.h>
