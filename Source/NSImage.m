@@ -5,7 +5,7 @@
 
    Copyright (C) 1996 Free Software Foundation, Inc.
    
-   Written by:  Adam Fedor <fedor@colorado.edu>
+   Author:  Adam Fedor <fedor@colorado.edu>
    Date: Feb 1996
    
    This library is free software; you can redistribute it and/or
@@ -18,12 +18,10 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
    
-   If you are interested in a warranty or support for this source code,
-   contact Scott Christley <scottc@net-community.com> for more information.
-   
    You should have received a copy of the GNU Library General Public
-   License along with this library; if not, write to the Free
-   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+   License along with this library; see the file COPYING.LIB.
+   If not, write to the Free Software Foundation,
+   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
    */ 
 /*
     FIXME:  
@@ -713,9 +711,11 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
 
 - (void) unlockFocus
 {
+#if 0
   if (_lockedView)
     [_lockedView unlockFocus];
   _lockedView = nil;
+#endif
 }
 
 - (NSImageRep *) lastRepresentation
@@ -729,7 +729,7 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
          (NSDictionary *)deviceDescription;
 {
   id o, e;
-  NSImageRep *rep;
+  NSImageRep *rep = nil;
   rep_data_t repd;
 
   // Make sure we have the images loaded in
@@ -745,7 +745,7 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
   while (o)
     {
       [o getValue: &repd];
-      if ([repd.rep class] == [NSBitmapImageRep class])
+      if ([repd.rep isKindOfClass: [NSBitmapImageRep class]])
 	rep = repd.rep;
       o = [e nextObject];
     }

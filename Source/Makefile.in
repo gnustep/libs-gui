@@ -21,8 +21,9 @@
 #  contact Scott Christley at scottc@net-community.com
 #
 #  You should have received a copy of the GNU Library General Public
-#  License along with this library; if not, write to the Free
-#  Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#  License along with this library; see the file COPYING.LIB.
+#  If not, write to the Free Software Foundation,
+#  59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  
 
 SHELL = /bin/sh
@@ -157,6 +158,17 @@ GNUSTEP_DPS_HEADERS = dps/NSDPSContext.h \
 dps/DPSOperators.h \
 dps/TypesandConstants.h
 
+GNUSTEP_RESOURCE = gui/common_ArrowDown.tiff \
+gui/common_ArrowLeft.tiff \
+gui/common_ArrowRight.tiff \
+gui/common_ArrowUp.tiff \
+gui/common_Dimple.tiff \
+gui/common_RadioOff.tiff \
+gui/common_RadioOn.tiff \
+gui/common_SwitchOff.tiff \
+gui/common_SwitchOn.tiff \
+gui/common_ret.tiff
+
 OBJS_WITHOUT_INIT = $(MAIN_FILE)$(oext) \
 NSActionCell$(oext) \
 NSApplication$(oext) \
@@ -266,11 +278,14 @@ $(INIT_FILE_OBJ): $(OBJS_WITHOUT_INIT)
 	$(CC) $(CFLAGS) $(INIT_FILE).c
 	rm tmpinit.c
 
-install: installdirs install-lib install-headers
+install: installdirs install-lib install-headers install-resource
 
 installdirs:
 	$(srcdir)/../mkinstalldirs \
 		$(libdir) \
+		$(libdir)/gnustep \
+		$(libdir)/gnustep/resource \
+		$(libdir)/gnustep/resource/gui \
 		$(includedir)/gnustep \
 		$(includedir)/gnustep/dps \
 		$(includedir)/gnustep/gui
@@ -300,6 +315,12 @@ install-headers:
 		$(INSTALL_DATA) ../Headers/gnustep/$$file \
 			$(includedir)/gnustep/$$file ; \
 	done
+
+install-resource:
+	for file in $(GNUSTEP_RESOURCE); do \
+		$(INSTALL_DATA) ../Headers/gnustep/resource/$$file \
+			$(libdir)/gnustep/resource/$$file ; \
+	done
 # end of install targets
 
 uninstall:
@@ -308,6 +329,7 @@ uninstall:
 	rm -rf $(includedir)/AppKit
 	rm -rf $(includedir)/DPSClient
 	rm -rf $(libdir)/$(MAIN_FILE)$(libext)
+	rm -rf $(libdir)/gnustep/resource/gui
 
 #
 # Cleaning

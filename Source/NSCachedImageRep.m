@@ -5,7 +5,7 @@
 
    Copyright (C) 1996 Free Software Foundation, Inc.
    
-   Written by:  Adam Fedor <fedor@colorado.edu>
+   Author:  Adam Fedor <fedor@colorado.edu>
    Date: Feb 1996
    
    This file is part of the GNUstep GUI Library.
@@ -20,12 +20,10 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
    
-   If you are interested in a warranty or support for this source code,
-   contact Scott Christley <scottc@net-community.com> for more information.
-   
    You should have received a copy of the GNU Library General Public
-   License along with this library; if not, write to the Free
-   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+   License along with this library; see the file COPYING.LIB.
+   If not, write to the Free Software Foundation,
+   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
    */ 
 /*
     Keeps a representation of an image in an off-screen window.  If the

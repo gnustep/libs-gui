@@ -533,8 +533,9 @@ fi
 #   Library General Public License for more details.
 #
 #   You should have received a copy of the GNU Library General Public
-#   License along with this library; if not, write to the Free
-#   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#   License along with this library; see the file COPYING.LIB.
+#   If not, write to the Free Software Foundation,
+#   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 
 #--------------------------------------------------------------------
@@ -626,7 +627,7 @@ else
   yes;
 #endif
 EOF
-if { ac_try='${CC-cc} -E conftest.c'; { (eval echo configure:630: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
+if { ac_try='${CC-cc} -E conftest.c'; { (eval echo configure:631: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
   ac_cv_prog_gcc=yes
 else
   ac_cv_prog_gcc=no
@@ -678,13 +679,13 @@ else
   # On the NeXT, cc -E runs the code through the compiler's parser,
   # not just through cpp.
   cat > conftest.$ac_ext <<EOF
-#line 682 "configure"
+#line 683 "configure"
 #include "confdefs.h"
 #include <assert.h>
 Syntax Error
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:688: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:689: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out`
 if test -z "$ac_err"; then
   :
@@ -693,13 +694,13 @@ else
   rm -rf conftest*
   CPP="${CC-cc} -E -traditional-cpp"
   cat > conftest.$ac_ext <<EOF
-#line 697 "configure"
+#line 698 "configure"
 #include "confdefs.h"
 #include <assert.h>
 Syntax Error
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:703: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:704: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out`
 if test -z "$ac_err"; then
   :
@@ -862,11 +863,11 @@ else
   ac_cv_c_cross=yes
 else
 cat > conftest.$ac_ext <<EOF
-#line 866 "configure"
+#line 867 "configure"
 #include "confdefs.h"
 main(){return(0);}
 EOF
-{ (eval echo configure:870: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }
+{ (eval echo configure:871: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }
 if test -s conftest && (./conftest; exit) 2>/dev/null; then
   ac_cv_c_cross=no
 else
@@ -884,7 +885,7 @@ if eval "test \"`echo '$''{'ac_cv_header_stdc'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 888 "configure"
+#line 889 "configure"
 #include "confdefs.h"
 #include <stdlib.h>
 #include <stdarg.h>
@@ -892,7 +893,7 @@ else
 #include <float.h>
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:896: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:897: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out`
 if test -z "$ac_err"; then
   rm -rf conftest*
@@ -907,7 +908,7 @@ rm -f conftest*
 if test $ac_cv_header_stdc = yes; then
   # SunOS 4.x string.h does not declare mem*, contrary to ANSI.
 cat > conftest.$ac_ext <<EOF
-#line 911 "configure"
+#line 912 "configure"
 #include "confdefs.h"
 #include <string.h>
 EOF
@@ -925,7 +926,7 @@ fi
 if test $ac_cv_header_stdc = yes; then
   # ISC 2.0.2 stdlib.h does not declare free, contrary to ANSI.
 cat > conftest.$ac_ext <<EOF
-#line 929 "configure"
+#line 930 "configure"
 #include "confdefs.h"
 #include <stdlib.h>
 EOF
@@ -946,7 +947,7 @@ if test "$cross_compiling" = yes; then
   :
 else
 cat > conftest.$ac_ext <<EOF
-#line 950 "configure"
+#line 951 "configure"
 #include "confdefs.h"
 #include <ctype.h>
 #define ISLOWER(c) ('a' <= (c) && (c) <= 'z')
@@ -957,7 +958,7 @@ if (XOR (islower (i), ISLOWER (i)) || toupper (i) != TOUPPER (i)) exit(2);
 exit (0); }
 
 EOF
-{ (eval echo configure:961: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }
+{ (eval echo configure:962: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }
 if test -s conftest && (./conftest; exit) 2>/dev/null; then
   :
 else
@@ -988,12 +989,12 @@ if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 992 "configure"
+#line 993 "configure"
 #include "confdefs.h"
 #include <$ac_hdr>
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:997: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:998: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out`
 if test -z "$ac_err"; then
   rm -rf conftest*
@@ -1042,12 +1043,12 @@ if eval "test \"`echo '$''{'ac_cv_header_$ac_safe'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
   cat > conftest.$ac_ext <<EOF
-#line 1046 "configure"
+#line 1047 "configure"
 #include "confdefs.h"
 #include <$ac_hdr>
 EOF
 ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
-{ (eval echo configure:1051: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+{ (eval echo configure:1052: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
 ac_err=`grep -v '^ *+' conftest.out`
 if test -z "$ac_err"; then
   rm -rf conftest*

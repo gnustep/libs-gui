@@ -5,7 +5,7 @@
 
    Copyright (C) 1996 Free Software Foundation, Inc.
    
-   Written by:  Adam Fedor <fedor@colorado.edu>
+   Author:  Adam Fedor <fedor@colorado.edu>
    Date: Feb 1996
    
    This file is part of the GNUstep Application Kit Library.
@@ -20,12 +20,10 @@
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
    
-   If you are interested in a warranty or support for this source code,
-   contact Scott Christley <scottc@net-community.com> for more information.
-   
    You should have received a copy of the GNU Library General Public
-   License along with this library; if not, write to the Free
-   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+   License along with this library; see the file COPYING.LIB.
+   If not, write to the Free Software Foundation,
+   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
 #include <string.h>
@@ -77,8 +75,8 @@ extension(NSString *name)
   if (self == [NSImageRep class])
     {
       imageReps = [[NSMutableArray alloc] initWithCapacity: 2];
-      [imageReps addObject: [NSBitmapImageRep class]];
-      [imageReps addObject: [NSEPSImageRep class]];
+      //      [imageReps addObject: [NSBitmapImageRep class]];
+      //      [imageReps addObject: [NSEPSImageRep class]];
     }
 }
 
@@ -109,7 +107,7 @@ extension(NSString *name)
   for (i = 0; i < count; i++)
     {
       Class rep = [imageReps objectAtIndex: i];
-#if 1
+#if 0
       if ([[rep imageFileTypes] indexOfObject: ext] != NSNotFound)
 #else
 	/* xxxFIXME: not implemented  in gcc-2.7.2 runtime. */
@@ -118,11 +116,11 @@ extension(NSString *name)
 #endif
 	  {
 	    NSData* data = [NSData dataWithContentsOfFile: filename];
-#if 0
+#if 1
 	    if ([rep respondsToSelector: @selector(imageRepsWithData:)])
 #endif
 	      [array addObjectsFromArray: [rep imageRepsWithData: data]];
-#if 0
+#if 1
 	    else if ([rep respondsToSelector: @selector(imageRepWithData:)])
 	      [array addObject: [rep imageRepWithData: data]];
 #endif

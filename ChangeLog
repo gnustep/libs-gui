@@ -1,3 +1,42 @@
+Fri Oct 18 12:56:14 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
+
+	* SUPPORT: New file.
+	* Makefile.in: Corrected FSF address and moved comment about
+	NET-Community support into SUPPORT file.
+	* aclocal.m4: Likewise.
+	* configure.in: Likewise.
+	* config.guess: Likewise.
+	* Headers/gnustep/dps/*.h: Likewise.
+	* Headers/gnustep/gui/*.h: Likewise.
+	* Headers/gnustep/gui/config.h.in: Likewise.
+	* Source/*.m: Likewise.
+	* Source/Makefile.in: Likewise.
+	* Testing/Makefile.in: Likewise.
+	* configure: Regenerate with autoconf for configure.in changes.
+
+	* Testing/nsarchiver.dat: Remove file.
+	* Testing/nsarchiver.m: Remove file.
+
+	* Source/NSImageRep.m: Additional NSImage work.
+	* Source/NSImage.m: Likewise.
+	* Source/tiff.m: Likewise.
+	
+Thu Oct 17 18:11:39 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
+
+	* Headers/gnustep/resource/gui/README: New file.
+	* Headers/gnustep/resource/gui/common_ArrowDown.tiff: New file.
+	* Headers/gnustep/resource/gui/common_ArrowLeft.tiff: New file.
+	* Headers/gnustep/resource/gui/common_ArrowRight.tiff: New file.
+	* Headers/gnustep/resource/gui/common_ArrowUp.tiff: New file.
+	* Headers/gnustep/resource/gui/common_Dimple.tiff: New file.
+	* Headers/gnustep/resource/gui/common_RadioOff.tiff: New file.
+	* Headers/gnustep/resource/gui/common_RadioOn.tiff: New file.
+	* Headers/gnustep/resource/gui/common_SwitchOff.tiff: New file.
+	* Headers/gnustep/resource/gui/common_SwitchOn.tiff: New file.
+	* Headers/gnustep/resource/gui/common_ret.tiff: New file.
+	* Source/Makefile: Add targets for installing and uninstalling
+	resource directory and files.
+
 Mon Oct 07 16:09:57 1996  Scott Christley <scottc@net-community.com>
 
 	* Headers/gnustep/gui/config.sed.nt: Set appropriate definitions.

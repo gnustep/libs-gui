@@ -1,10 +1,14 @@
-/* tiff - Functions for dealing with tiff images
+/* 
+   tiff.m
+
+   Functions for dealing with tiff images.
+
    Copyright (C) 1996 Free Software Foundation, Inc.
    
-   Written by:  Adam Fedor <fedor@colorado.edu>
+   Author:  Adam Fedor <fedor@colorado.edu>
    Date: Feb 1996
    
-   This file is part of the GNUstep Application Kit Library.
+   This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -17,8 +21,9 @@
    Library General Public License for more details.
    
    You should have received a copy of the GNU Library General Public
-   License along with this library; if not, write to the Free
-   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+   License along with this library; see the file COPYING.LIB.
+   If not, write to the Free Software Foundation,
+   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
    */ 
 
 /* Code in NSTiffRead, NSTiffGetInfo, and NSTiffGetColormap 
@@ -66,8 +71,6 @@ typedef struct {
   const char* mode;
   realloc_data_callback* realloc_data;
 } chandle_t;
-
-#ifdef HAVE_TIFF
 
 /* Client functions that provide reading/writing of data for libtiff */
 static tsize_t
@@ -344,22 +347,28 @@ NSTiffRead(int imageNumber, TIFF* image, NSTiffInfo* info, char* data)
     case PHOTOMETRIC_RGB:
       if (newinfo->planarConfig == PLANARCONFIG_CONTIG) 
 	{
+	  NSLog(@"PHOTOMETRIC_RGB: CONTIG\n");
 	  for ( row = 0; row < newinfo->height; ++row ) 
 	    {
 	      READ_SCANLINE(0)
 		for ( col = 0; col < newinfo->width; col++) 
 		  for (i = 0; i < newinfo->samplesPerPixel; i++)
-		    *outP++ = *inP++;
+		    {
+		      *outP++ = *inP++;
+		    }
 	    }
 	} 
       else 
 	{
+	  NSLog(@"PHOTOMETRIC_RGB: NOT CONTIG\n");
 	  for (i = 0; i < newinfo->samplesPerPixel; i++)
 	    for ( row = 0; row < newinfo->height; ++row ) 
 	      {
 		READ_SCANLINE(i)
 		  for ( col = 0; col < newinfo->width; col++) 
-		    *outP++ = *inP++;
+		    {
+		      *outP++ = *inP++;
+		    }
 	      }
 	}
       break;
@@ -434,44 +443,3 @@ NSTiffGetColormap(TIFF* image)
   free(info);
   return map;
 }
-
-#else /* HAVE_TIFF */
-
-TIFF* 
-NSTiffOpenData(char* data, long size, const char* mode,
-			    realloc_data_callback* realloc_data)
-{
-  return NULL;
-}
-
-int  
-NSTiffClose(TIFF* image)
-{
-  return 0;
-}
-
-NSTiffInfo *      
-NSTiffGetInfo(int imageNumber, TIFF* image)
-{
-  return NULL;
-}
-
-int
-NSTiffRead(int imageNumber, TIFF* image, NSTiffInfo* info, char* data)
-{
-  return -1;
-}
-
-int  
-NSTiffWrite(TIFF* image, NSTiffInfo* info, char* data)
-{
-  return -1;
-}
-
-NSTiffColormap *
-NSTiffGetColormap(TIFF* image)
-{
-  return NULL;
-}
-
-#endif /* not HAVE_TIFF */
