@@ -2817,6 +2817,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
     {
       proposedCharRange.location = length;
       proposedCharRange.length = 0;
+      return proposedCharRange;
     }
   if (proposedCharRange.length > length - proposedCharRange.location)
     {
