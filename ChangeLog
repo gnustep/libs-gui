@@ -1,3 +1,8 @@
+2001-03-26  Jonathan Gapen  <jagapen@home.com>
+
+	* Model/IMLoading.m: Find system library path with
+	NSSearchPathForDirectoriesInDomains() instead of env vars.
+
 2001-03-23  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
 
 	* Source/NSCell.m ([NSCell -drawInteriorWithFrame:inView:]): do not

@@ -76,15 +76,21 @@ BOOL _fileOwnerDecoded = NO;
     /* The path is a relative path; search it in the current bundle. */
       NSString *abspath = [resourcePath stringByAppendingPathComponent:path];
       if (![[NSFileManager defaultManager] fileExistsAtPath:abspath]) {
-	  //try in GNUSTEP_ROOT/Library/Model/...
+          NSArray  *paths;
 	  NSString *root;
-	  
-	  root = [NSString stringWithCString:getenv("GNUSTEP_SYSTEM_ROOT")];
-	  root = [root stringByAppendingPathComponent:@"Library"];
-	  root = [root stringByAppendingPathComponent:@"Model"];
-	  abspath = [root stringByAppendingPathComponent:path];
-	  if (![[NSFileManager defaultManager] fileExistsAtPath:abspath])
-	      return NO;
+
+	  paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+                                                      NSSystemDomainMask, YES);
+          if ((paths != nil) && ([paths count] > 0))
+	    {
+              root = [paths objectAtIndex: 0];
+	      root = [root stringByAppendingPathComponent:@"Model"];
+	      abspath = [root stringByAppendingPathComponent:path];
+	      if (![[NSFileManager defaultManager] fileExistsAtPath:abspath])
+	        return NO;
+	    }
+	  else
+	    return NO;
       }
       path = abspath;
   }
