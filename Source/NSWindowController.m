@@ -98,11 +98,11 @@
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver: self];
-  RELEASE(_windowNibName);
-  RELEASE(_windowNibPath);
-  RELEASE(_windowFrameAutosaveName);
-  RELEASE(_topLevelObjects);
-  AUTORELEASE (_window); /* FIXME - should be RELEASE I think */
+  RELEASE (_windowNibName);
+  RELEASE (_windowNibPath);
+  RELEASE (_windowFrameAutosaveName);
+  RELEASE (_topLevelObjects);
+  RELEASE (_window);
   [super dealloc];
 }
 
