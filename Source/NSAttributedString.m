@@ -75,6 +75,15 @@ paraBreakCSet()
   return cset;
 }
 
+@interface NSAttributedString(AttributedStringRTFDAdditions)
+
+- (NSString*) RTFHeaderStringWithContext: (NSMutableDictionary*) contextDict;
+- (NSString*) RTFTrailerStringWithContext: (NSMutableDictionary*) contextDict;
+- (NSString*) RTFBodyStringWithContext: (NSMutableDictionary*) contextDict;
+- (NSString*) RTFDStringFromRange: (NSRange)range
+	       documentAttributes: (NSDictionary*)dict;
+@end
+
 @implementation NSAttributedString (AppKit)
 
 - (BOOL) containsAttachments
@@ -282,7 +291,9 @@ paraBreakCSet()
 - (id) initWithRTFD: (NSData*)data
  documentAttributes: (NSDictionary**)dict
 {
-  return self;
+  // FIXME: We use RTF, as there are currently no additional images
+  return [self initWithRTF: data
+	       documentAttributes: dict];
 }
 
 - (id) initWithPath: (NSString*)path
@@ -319,19 +330,24 @@ documentAttributes: (NSDictionary**)dict
 - (NSData*) RTFFromRange: (NSRange)range
       documentAttributes: (NSDictionary*)dict
 {
-  return (NSData *)self;
+  // FIXME: We use RTFD, as there are currently no additional images
+  return [self RTFDFromRange: range
+	       documentAttributes: dict];
 }
 
 - (NSData*) RTFDFromRange: (NSRange)range
        documentAttributes: (NSDictionary*)dict
 {
-  return (NSData *)self;
+  return [[self RTFDStringFromRange: range documentAttributes: dict]
+    dataUsingEncoding: NSNEXTSTEPStringEncoding];
 }
 
 - (NSFileWrapper*) RTFDFileWrapperFromRange: (NSRange)range
 			 documentAttributes: (NSDictionary*)dict
 {
-  return (NSFileWrapper *)self;
+  return [[NSFileWrapper alloc] initRegularFileWithContents:
+				  [self RTFDFromRange: range
+					documentAttributes: dict]];
 }
 @end
 
@@ -846,12 +862,5 @@ documentAttributes: (NSDictionary**)dict
   [output appendString: bodyString];
   [output appendString: trailerString];
   return (NSString*)output;
-}
-
-- (NSData*) RTFDFromRange: (NSRange)range
-       documentAttributes: (NSDictionary*)dict
-{
-  return [[self RTFDStringFromRange: range documentAttributes: dict]
-    dataUsingEncoding: NSNEXTSTEPStringEncoding];
 }
 @end

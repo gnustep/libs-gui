@@ -1,3 +1,9 @@
+2000-04-01 18:00 Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSText.m: Now really uses a text storage instead of an
+	attributed string (old patch missed this)
+	* Source/NSAttributedString: Use NSFileWrapper to write RTF
+
 2000-03-31  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/NSFont.h: Conform to NSCopying.
