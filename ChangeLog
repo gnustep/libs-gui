@@ -1,3 +1,8 @@
+2001-02-07  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWindow.m: Modified miniwindow view drawing to make titles
+	in miniwindows look like NeXT ones.
+
 2001-02-06  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSMenuView.m: ([-mouseDown:]) modified code for checking

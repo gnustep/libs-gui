@@ -50,6 +50,7 @@
 #include <AppKit/NSImage.h>
 #include <AppKit/NSTextFieldCell.h>
 #include <AppKit/NSTextField.h>
+#include <AppKit/NSFont.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/GSTrackingRect.h>
 #include <AppKit/NSSliderCell.h>
@@ -194,14 +195,14 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 
 @interface NSMiniWindowView : NSView
 {
-  NSCell	*imageCell;
-  NSCell	*titleCell;
+  NSCell		*imageCell;
+  NSTextFieldCell	*titleCell;
 }
 - (void) setImage: (NSImage*)anImage;
 - (void) setTitle: (NSString*)aString;
 @end
 
-static NSCell* tileCell = nil;
+static NSCell	*tileCell = nil;
 
 @implementation NSMiniWindowView
 
@@ -229,7 +230,7 @@ static NSCell* tileCell = nil;
 {                                                
   [tileCell drawWithFrame: NSMakeRect(0,0,64,64) inView: self];
   [imageCell drawWithFrame: NSMakeRect(8,8,48,48) inView: self];
-  [titleCell drawWithFrame: NSMakeRect(0,56,64,8) inView: self];
+  [titleCell drawWithFrame: NSMakeRect(1,52,62,11) inView: self];
 }
 
 - (void) mouseDown: (NSEvent*)theEvent
@@ -310,8 +311,14 @@ static NSCell* tileCell = nil;
 {
   if (titleCell == nil)
     {
-      titleCell = [[NSCell alloc] initTextCell: aString];
+      titleCell = [[NSTextFieldCell alloc] initTextCell: aString];
+      [titleCell setSelectable: NO];
+      [titleCell setEditable: NO];
       [titleCell setBordered: NO];
+      [titleCell setDrawsBackground: YES];
+      [titleCell setBackgroundColor: [NSColor blackColor]];
+      [titleCell setTextColor: [NSColor whiteColor]];
+      [titleCell setFont: [NSFont systemFontOfSize: 8]];
     }
   else
     {
