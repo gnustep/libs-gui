@@ -32,13 +32,15 @@
 
 @interface NSStepperCell : NSActionCell <NSCoding>
 {
+  // Think of the following ones as of two BOOL ivars
+  #define _autorepeat _cell.subclass_bool_one
+  #define _valueWraps _cell.subclass_bool_two
+
   double _maxValue;
   double _minValue;
   double _increment;
   BOOL highlightUp;
   BOOL highlightDown;
-  BOOL _autorepeat;
-  BOOL _valueWraps;
 }
 
 - (double)maxValue;
