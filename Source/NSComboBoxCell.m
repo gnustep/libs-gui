@@ -39,29 +39,33 @@
 - (id)initTextCell:(NSString *)aString
 {
    self = [super initTextCell:aString];
-   _delegate = nil;
-   _dataSource = nil;
-   _buttonCell = nil;
-   _popUpList = [[NSMutableArray array] retain];
-   _usesDataSource = NO;
+
+   // Implicitly set by allocation:
+   //
+   //_delegate = nil;
+   //_dataSource = nil;
+   //_buttonCell = nil;
+   _popUpList = [[NSMutableArray alloc] init];
+   //_usesDataSource = NO;
    _visibleItems = 10;
-   _intercellSpacing = NSMakeSize(0.0,0.0);
+   _intercellSpacing = NSZeroSize;
    _itemHeight = 14;
 
-   _popView = nil;
-   _canPop = NO;
+   //_popView = nil;
+   //_canPop = NO;
    _popRect = NSZeroRect;
-   _mUpEvent = nil;
+   //_mUpEvent = nil;
    [self _createButtonCell];
    return self;
 }
 
 - (void)dealloc
 {
-   [_delegate release];
-   [_dataSource release];
-   [_buttonCell release];
-   [_popUpList release];
+   RELEASE(_delegate);
+   RELEASE(_dataSource);
+   RELEASE(_buttonCell);
+   RELEASE(_popUpList);
+
    [super dealloc];
 }
 

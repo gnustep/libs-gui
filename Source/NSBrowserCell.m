@@ -47,8 +47,6 @@ static NSImage	*_highlight_image;
 
 static Class	_colorClass;
 
-static NSFont *_userDefaultFont;
-
 // GNUstep user default to have NSBrowserCell in bold if non leaf
 static BOOL _gsFontifyCells = NO;
 static NSFont *_nonLeafFont;
@@ -67,7 +65,6 @@ static NSFont *_leafFont;
       ASSIGN(_branch_image, [NSImage imageNamed: @"common_3DArrowRight"]);
       ASSIGN(_highlight_image, [NSImage imageNamed: @"common_3DArrowRightH"]);
 
-      ASSIGN (_userDefaultFont, [NSFont userFontOfSize: 0]);
       /*
        * Cache classes to avoid overheads of poor compiler implementation.
        */
@@ -102,67 +99,26 @@ static NSFont *_leafFont;
  */
 - (id) initTextCell: (NSString *)aString
 {
-  _cell.type = NSTextCellType;
-  _cell_font = RETAIN(_userDefaultFont);
-  _contents = RETAIN(aString);
-  _cell.float_autorange = YES;
-  _cell_float_right = 6;
-  _action_mask = NSLeftMouseUpMask;
-  
-  // Implicitly performed by allocation: 
-  //
-  //_cell_image = nil;
-  //_cell.image_position = NSNoImage;
-  //_cell.state = 0;
-  //_cell.is_disabled = NO;
-  //_cell.is_highlighted = NO;
-  //_cell.is_editable = NO;
-  //_cell.is_bordered = NO;
-  //_cell.is_bezeled = NO;
-  //_cell.is_scrollable = NO;
-  //_cell.is_selectable = NO;
-  //_cell.is_continuous = NO;
-  //_cell_float_left = 0;
-  //_cell.text_align = NSLeftTextAlignment;
+  [super initTextCell: aString];
   //_alternateImage = nil;
   //_browsercell_is_leaf = NO; 
   //_browsercell_is_loaded = NO;
 
   if (_gsFontifyCells)
-    ASSIGN (_cell_font, _nonLeafFont);
+    [self setFont: _nonLeafFont];
 
   return self;
 }
 
 - (id) initImageCell: (NSImage *)anImage
 {
-  _cell.type = NSImageCellType;
-  _cell_image = RETAIN(anImage);
-  _cell.image_position = NSImageOnly;
-  _cell_font = RETAIN(_userDefaultFont);
-  _action_mask = NSLeftMouseUpMask;
-
-  // Implicitly performed by allocation:
-  //
-  //_cell.is_disabled = NO;
-  //_cell.state = 0;
-  //_cell.is_highlighted = NO;
-  //_cell.is_editable = NO;
-  //_cell.is_bordered = NO;
-  //_cell.is_bezeled = NO;
-  //_cell.is_scrollable = NO;
-  //_cell.is_selectable = NO;
-  //_cell.is_continuous = NO;
-  //_cell.float_autorange = NO;
-  //_cell_float_left = 0;
-  //_cell_float_right = 0;
-  //_cell.text_align = NSLeftTextAlignment;
+  [super initImageCell: anImage];
   //_alternateImage = nil;
   //_browsercell_is_leaf = NO; 
   //_browsercell_is_loaded = NO;
 
   if (_gsFontifyCells)
-    ASSIGN (_cell_font, _nonLeafFont);
+    [self setFont: _nonLeafFont];
   
   return self;
 }
@@ -181,8 +137,8 @@ static NSFont *_leafFont;
 
   if (_alternateImage)
     c->_alternateImage = RETAIN(_alternateImage);
-  c->_browsercell_is_leaf = _browsercell_is_leaf;
-  c->_browsercell_is_loaded = _browsercell_is_loaded;
+  //c->_browsercell_is_leaf = _browsercell_is_leaf;
+  //c->_browsercell_is_loaded = _browsercell_is_loaded;
 
   return c;
 }
@@ -219,11 +175,11 @@ static NSFont *_leafFont;
     {
       if (_browsercell_is_leaf)
 	{
-	  ASSIGN (_cell_font, _leafFont);
+	  [self setFont: _leafFont];
 	}
       else 
 	{
-	  ASSIGN (_cell_font, _nonLeafFont);
+	  [self setFont: _nonLeafFont];
 	}
     }
 }

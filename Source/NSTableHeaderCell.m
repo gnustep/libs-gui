@@ -43,7 +43,7 @@ static NSColor *clearCol = nil;
 {
   [super initTextCell: aString];
 
-  _cell.text_align = NSCenterTextAlignment;
+  [self  setAlignment: NSCenterTextAlignment];
   ASSIGN (_text_color, [NSColor windowFrameTextColor]);
   [self setBackgroundColor: [NSColor controlShadowColor]];
   [self setFont: [NSFont titleBarFontOfSize: 0]];

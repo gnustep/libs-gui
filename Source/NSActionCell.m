@@ -42,8 +42,6 @@ static Class controlClass;
 {
   if (self == [NSActionCell class])
     {
-      NSDebugLog(@"Initialize NSActionCell class\n");
-
       controlClass = [NSControl class];
       [self setVersion: 1];
     }
@@ -55,30 +53,39 @@ static Class controlClass;
 - (id) init
 {
   [super init];
-  _target = nil;
-  _action = NULL;
-  _tag = 0;
-  _control_view = nil;
+
+  // Implicitly set by allocation:
+  //
+  //_target = nil;
+  //_action = NULL;
+  //_tag = 0;
+  //_control_view = nil;
   return self;
 }
 
 - (id) initImageCell: (NSImage*)anImage
 {
   [super initImageCell: anImage];
-  _target = nil;
-  _action = NULL;
-  _tag = 0;
-  _control_view = nil;
+
+  // Implicitly set by allocation:
+  //
+  //_target = nil;
+  //_action = NULL;
+  //_tag = 0;
+  //_control_view = nil;
   return self;
 }
 
 - (id) initTextCell: (NSString*)aString
 {
   [super initTextCell: aString];
-  _target = nil;
-  _action = NULL;
-  _tag = 0;
-  _control_view = nil;
+
+  // Implicitly set by allocation:
+  //
+  //_target = nil;
+  //_action = NULL;
+  //_tag = 0;
+  //_control_view = nil;
   return self;
 }
 
@@ -87,7 +94,7 @@ static Class controlClass;
  */
 - (void) setAlignment: (NSTextAlignment)mode
 {
-  _cell.text_align = mode;
+  [super setAlignment: mode];
   if (_control_view)
     if ([_control_view isKindOfClass: controlClass])
       [(NSControl *)_control_view updateCell: self];
@@ -225,10 +232,11 @@ static Class controlClass;
 {
   NSActionCell	*c = [super copyWithZone: zone];
 
-  c->_tag = _tag;
-  c->_target = _target;
-  c->_action = _action;
-  c->_control_view = _control_view;
+  // All done automatically
+  //c->_tag = _tag;
+  //c->_target = _target;
+  //c->_action = _action;
+  //c->_control_view = _control_view;
 
   return c;
 }

@@ -69,7 +69,7 @@
   //_buttoncell_is_transparent = NO;
   //_altContents = nil;
 
-  _cell.text_align = NSCenterTextAlignment;
+  [self setAlignment: NSCenterTextAlignment];
   _cell.is_bordered = YES;
   _showAltStateMask = NSNoCellMask;	// configure as a NSMomentaryPushButton
   _highlightsByMask = NSPushInCellMask | NSChangeGrayCellMask;
@@ -105,10 +105,10 @@
 
 - (void) dealloc
 {
-  [_altContents release];
-  [_altImage release];
-  [_keyEquivalent release];
-  [_keyEquivalentFont release];
+  RELEASE(_altContents);
+  RELEASE(_altImage);
+  RELEASE(_keyEquivalent);
+  RELEASE(_keyEquivalentFont);
 
   [super dealloc];
 }
@@ -116,7 +116,7 @@
 /*
  * Setting the Titles
  */
-- (NSString*) title								
+- (NSString*) title						
 {
   return [self stringValue];
 }
@@ -138,10 +138,8 @@
 
 - (void) setAlternateTitle: (NSString*)aString
 {
-  NSString* string = [aString copy];
+  ASSIGNCOPY(_altContents, aString);
 
-  ASSIGN(_altContents, string);
-  [string release]; 
   if (_control_view)
     if ([_control_view isKindOfClass: [NSControl class]])
       [(NSControl*)_control_view updateCell: self];
@@ -271,7 +269,7 @@
 
 - (void) setButtonType: (NSButtonType)buttonType
 {
-  _cell.type = buttonType;
+  // Don't store the button type anywhere
 
   switch (buttonType)
     {
@@ -491,11 +489,7 @@
 
   if (titleToDisplay && (ipos == NSImageAbove || ipos == NSImageBelow))
     {
-      NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
-					   _cell_font, 
-					 NSFontAttributeName,
-					 nil];
-      titleSize = [titleToDisplay sizeWithAttributes: dict];
+      titleSize = [self _sizeText: titleToDisplay];
     }
 
   if (flippedView == YES)
@@ -697,12 +691,7 @@
   
   if (titleToDisplay != nil)
     {
-      NSDictionary *dict = [NSDictionary dictionaryWithObjectsAndKeys:
-					   _cell_font, 
-					 NSFontAttributeName,
-					 nil];
-      titleSize = [titleToDisplay sizeWithAttributes: dict];
-
+      titleSize = [self _sizeText: titleToDisplay];
     }
   else
     {
@@ -800,14 +789,14 @@
 
   c->_altContents = [_altContents copyWithZone: zone];
   if (_altImage)
-    c->_altImage = [_altImage retain];
+    c->_altImage = RETAIN(_altImage);
   c->_keyEquivalent = [_keyEquivalent copyWithZone: zone];
   if (_keyEquivalentFont)
-    c->_keyEquivalentFont = [_keyEquivalentFont retain];
-  c->_keyEquivalentModifierMask = _keyEquivalentModifierMask;
-  c->_buttoncell_is_transparent = _buttoncell_is_transparent;
-  c->_highlightsByMask = _highlightsByMask;
-  c->_showAltStateMask = _showAltStateMask;
+    c->_keyEquivalentFont = RETAIN(_keyEquivalentFont);
+  //c->_keyEquivalentModifierMask = _keyEquivalentModifierMask;
+  //c->_buttoncell_is_transparent = _buttoncell_is_transparent;
+  //c->_highlightsByMask = _highlightsByMask;
+  //c->_showAltStateMask = _showAltStateMask;
 
   return c;
 }

@@ -104,12 +104,9 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
 - (void) dealloc
 {
-  if (_columnScrollView)
-    [_columnScrollView release];
-  if (_columnMatrix)
-    [_columnMatrix release];
-  if (_columnTitle)
-    [_columnTitle release];
+  TEST_RELEASE(_columnScrollView);
+  TEST_RELEASE(_columnMatrix);
+  TEST_RELEASE(_columnTitle);
   [super dealloc];
 }
 
@@ -158,9 +155,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   if (!aString)
     aString = @"";
 
-  [aString retain];
-  [_columnTitle release];
-  _columnTitle = aString;
+  ASSIGN(_columnTitle, aString);
 }
 
 - (NSString *)columnTitle
@@ -181,9 +176,9 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   [self setTextColor: [NSColor windowFrameTextColor]];
   [self setBackgroundColor: [NSColor controlShadowColor]];
   [self setFont: [NSFont titleBarFontOfSize: 0]];
+  [self setAlignment: NSCenterTextAlignment];
   _cell.is_editable = NO;
   _cell.is_bezeled = YES;
-  _cell.text_align = NSCenterTextAlignment;
   _textfieldcell_draws_background = YES;
 
   return self;
@@ -254,7 +249,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   _browserCellClass = classId;
 
   // set the prototype for the new class
-  [self setCellPrototype: [[[_browserCellClass alloc] init] autorelease]];
+  [self setCellPrototype: AUTORELEASE([[_browserCellClass alloc] init])];
 }
 
 // -------------------
@@ -272,9 +267,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
 - (void)setCellPrototype: (NSCell *)aCell
 {
-  [aCell retain];
-  [_browserCellPrototype release];
-  _browserCellPrototype = aCell;
+  ASSIGN(_browserCellPrototype, aCell);
 }
 
 // -------------------
@@ -689,9 +682,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   fprintf(stderr, "NSBrowser - (void)setPathSeparator\n");
 #endif
 
-  [aString retain];
-  [_pathSeparator release];
-  _pathSeparator = aString;
+  ASSIGN(_pathSeparator, aString);
 }
 
 
@@ -716,19 +707,20 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   fprintf(stderr, "NSBrowser - (void)addColumn\n");
 #endif
 
-  bc = [[[NSBrowserColumn alloc] init] autorelease];
+  bc = [[NSBrowserColumn alloc] init];
 
   // Create a scrollview
-  sc = [[[NSScrollView alloc]
-	 initWithFrame: rect]
-	 autorelease];
+  sc = [[NSScrollView alloc]
+	   initWithFrame: rect];
   [sc setHasHorizontalScroller: NO];
   [sc setHasVerticalScroller: YES];
   [bc setColumnScrollView: sc];
   [self addSubview: sc];
+  RELEASE(sc);
 
   [_browserColumns addObject: bc];
-  
+  RELEASE(bc);
+
   [self tile];
 }
 
@@ -2223,11 +2215,11 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   fprintf(stderr, "NSBrowser - (void)dealloc\n");
 #endif
 
-  [_browserCellPrototype release];
-  [_pathSeparator release];
-  [_horizontalScroller release];
-  [_browserColumns release];
-  [_titleCell release];
+  RELEASE(_browserCellPrototype);
+  RELEASE(_pathSeparator);
+  RELEASE(_horizontalScroller);
+  RELEASE(_browserColumns);
+  RELEASE(_titleCell);
 
   [super dealloc];
 }

@@ -367,10 +367,10 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
 {
   NSImageCell *c = [super copyWithZone: zone];
 
-  c->_imageAlignment = _imageAlignment;
-  c->_frameStyle = _frameStyle;
-  c->_imageScaling = _imageScaling;
-  c->_original_image_size = _original_image_size;
+  //c->_imageAlignment = _imageAlignment;
+  //c->_frameStyle = _frameStyle;
+  //c->_imageScaling = _imageScaling;
+  //c->_original_image_size = _original_image_size;
 
   return c;
 }

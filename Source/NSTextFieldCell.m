@@ -88,7 +88,6 @@ static NSColor	*txtCol;
 - (id) initTextCell: (NSString *)aString
 {
   [super initTextCell: aString];
-  _cell.text_align = NSLeftTextAlignment;
 
   ASSIGN(_text_color, txtCol);
   ASSIGN(_background_color, bgCol);
@@ -99,8 +98,8 @@ static NSColor	*txtCol;
 
 - (void) dealloc
 {
-  [_background_color release];
-  [_text_color release];
+  RELEASE(_background_color);
+  RELEASE(_text_color);
   [super dealloc];
 }
 
@@ -108,9 +107,8 @@ static NSColor	*txtCol;
 {
   NSTextFieldCell *c = [super copyWithZone: zone];
 
-  [c setBackgroundColor: _background_color];
-  [c setTextColor: _text_color];
-  [c setDrawsBackground: _textfieldcell_draws_background];
+  c->_background_color = [_background_color copyWithZone: zone];
+  c->_text_color = [_text_color copyWithZone: zone];
 
   return c;
 }

@@ -70,7 +70,8 @@ static NSImage	*arrowImageH = nil;
   _highlightsByMask = NSChangeBackgroundCellMask;
   _showAltStateMask = NSNoCellMask;
   _cell.image_position = NSNoImage;
-  _cell.text_align = NSLeftTextAlignment;
+  [self setAlignment: NSLeftTextAlignment];
+  [self setFont: [NSFont menuFontOfSize: 0]];
 
   return self;
 }
@@ -169,20 +170,14 @@ static NSImage	*arrowImageH = nil;
     neededMenuItemHeight = componentSize.height;
 
   // Title and Key Equivalent
-  // FIXME: Calculate height (Lazaro).
-  if (_cell_font)
-    {
-      mcell_titleWidth = [_cell_font widthOfString:[mcell_item title]];
-      mcell_keyEquivalentWidth =
-	[_cell_font widthOfString:[mcell_item keyEquivalent]];
-    }
-  else
-    {
-      NSFont *defFont = [NSFont menuFontOfSize: 0];
-      
-      mcell_titleWidth = [defFont widthOfString:[mcell_item title]];
-      mcell_keyEquivalentWidth = [defFont widthOfString:[mcell_item keyEquivalent]];
-    }
+  componentSize = [self _sizeText: [mcell_item title]];
+  mcell_titleWidth = componentSize.width;
+  if (componentSize.height > neededMenuItemHeight)
+    neededMenuItemHeight = componentSize.height;
+  componentSize = [self _sizeText: [mcell_item keyEquivalent]];
+  mcell_keyEquivalentWidth = componentSize.width;
+  if (componentSize.height > neededMenuItemHeight)
+    neededMenuItemHeight = componentSize.height;
 
   // Submenu Arrow
   if ([mcell_item hasSubmenu])
@@ -662,12 +657,12 @@ static NSImage	*arrowImageH = nil;
 {
   NSMenuItemCell *c = [super copyWithZone: zone];
 
-  c->mcell_highlighted = mcell_highlighted;
-  c->mcell_has_submenu = mcell_has_submenu;
+  //c->mcell_highlighted = mcell_highlighted;
+  //c->mcell_has_submenu = mcell_has_submenu;
+  //c->mcell_needs_sizing = mcell_needs_sizing;
   if (mcell_item)
     c->mcell_item = [mcell_item copyWithZone: zone];
-  c->mcell_menuView = mcell_menuView;
-  c->mcell_needs_sizing = mcell_needs_sizing;
+  c->mcell_menuView = RETAIN(mcell_menuView);
 
   return c;
 }

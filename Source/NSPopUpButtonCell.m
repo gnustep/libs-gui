@@ -62,12 +62,6 @@ static NSImage *_pbc_image[2];
     }
 }
 
-- (void) dealloc
-{
-  RELEASE(_menu);
-  [super dealloc];
-}
-
 - (id) initTextCell: (NSString *)stringValue
 {
   return [self initTextCell: stringValue pullsDown: NO];
@@ -575,9 +569,9 @@ static NSImage *_pbc_image[2];
 {
   NSSize s;
   NSSize imageSize;
+  NSSize titleSize;
   int i, count;
   NSString *title;
-  float candidateWidth;
 
   count = [_menu numberOfItems];
 
@@ -585,19 +579,17 @@ static NSImage *_pbc_image[2];
     return NSZeroSize;
   
   imageSize = [_pbc_image[_pbcFlags.pullsDown] size];
-  s = NSZeroSize;
-  
-  s.height = [_cell_font boundingRectForFont].size.height;
-  if (imageSize.height > s.height)
-    s.height = imageSize.height;
+  s = NSMakeSize(0, imageSize.height);
   
   for (i = 0; i < count; i++)
     {
       title = [[_menu itemAtIndex: i] title];
-      candidateWidth = [_cell_font widthOfString: title];
+      titleSize = [self _sizeText: title];
 
-      if (candidateWidth > s.width)
-	s.width = candidateWidth;
+      if (titleSize.width > s.width)
+	s.width = titleSize.width;
+      if (titleSize.height > s.height)
+	s.height = titleSize.height;
     }
 
   s.width += imageSize.width; 
