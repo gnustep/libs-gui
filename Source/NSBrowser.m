@@ -2797,17 +2797,20 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   NSScrollView		*sc;
   id			matrix;
   NSSize		cs, ms;
-  NSRect		mr;
 
   if (column >= (int)[_browserColumns count])
-    return;
+    {
+      return;
+    }
 
 #if defined NSBTRACE__adjustMatrixOfColumn || defined NSBTRACE_all
   fprintf(stderr, "NSBrowser - (void)_adjustMatrixOfColumn: %d\n", column);
 #endif
 
   if (!(bc = [_browserColumns objectAtIndex: column]))
-    return;
+    {
+      return;
+    }
   sc = [bc columnScrollView];
   matrix = [bc columnMatrix];
 
@@ -2818,16 +2821,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
       ms = [matrix cellSize];
       ms.width = cs.width;
       [matrix setCellSize: ms];
-      mr = [matrix frame];
-
-      // this will automatically move the matrix on top if it's not
-      // yet the sc's document view, otherwise it will not move it
       [sc setDocumentView: matrix];
-
-      // the clipview's coordinate system is flipped - we need the
-      // matrix to appear on top - adjust for it
-      mr.origin.y = cs.height;
-      [matrix setFrame: mr];
     }
 }
 
