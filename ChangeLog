@@ -1,4 +1,10 @@
 <<<<<<< ChangeLog
+Weds Aug 12 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* NSCell.m: Modified ([-copyWithZone:]) to use alloc-init to create
+	new cell so that it works properly for subclasses that need to be
+	initialised.
+
 Tues Aug 11 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* externs.m further defined the NSStringAdditions globals. 

@@ -776,7 +776,9 @@
 
 - (id)copyWithZone:(NSZone*)zone
 {
-  NSCell* c = NSAllocateObject (isa, 0, zone);
+  NSCell* c;
+
+  c = [[isa allocWithZone: zone] init];
 
   [c setStringValue:contents];
   [c setImage:cell_image];
