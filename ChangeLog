@@ -1,3 +1,16 @@
+2003-12-30 00:48  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSBundleAdditions.m: Added private class to collect
+	top level items (controllers) which are instantiated in the
+	.gorm file.  This and the change to GSNibContainer provide a
+	much cleaner way of retaining the top level items in the .gorm
+	file without requiring a new special entry in the nameTable.
+	* Source/GSNibContainer.[hm]: Renamed method awakeWithContext:
+	to awakeWithContext:topLevelItems: to allow passing in the
+	items collected.  Also added code to add the GSNibItems which
+	are in the archive to the instance of the private class which
+	is created.
+	
 2003-12-29 20:43  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibTemplates.m: removed extraneous retain in

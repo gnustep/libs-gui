@@ -42,6 +42,7 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSKeyValueCoding.h>
+#include <Foundation/NSNotification.h>
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSSound.h>
@@ -87,7 +88,8 @@ static const int currentVersion = 1; // GSNibItem version number...
     }
 }
 
-- (void) awakeWithContext: (NSDictionary*)context
+- (void) awakeWithContext: (NSDictionary *)context
+	    topLevelItems: (NSArray *)items
 {
   if (_isAwake == NO)
     {
@@ -181,7 +183,6 @@ static const int currentVersion = 1; // GSNibItem version number...
 		}
 	    }
 	}
-
       
       /* 
        * See if the user has passed in the NSTopLevelObjects key.
@@ -201,6 +202,8 @@ static const int currentVersion = 1; // GSNibItem version number...
 
       /*
        * Retain all "top level" items so that, when the container is released, they will remain.
+       * The GSNibItems instantiated in the gorm need to be retained,
+       * since we are deallocating the container.
        */
       enumerator = [nameTable keyEnumerator];
       while ((key = [enumerator nextObject]) != nil)
@@ -218,15 +221,7 @@ static const int currentVersion = 1; // GSNibItem version number...
 	      if (([o isKindOfClass: [NSMenu class]] == YES &&
 		   [key isEqualToString: @"NSMenu"] == YES) || // the main menu...
 		  ([o isKindOfClass: [NSWindow class]] == YES) || // any windows...
-		  ([o isKindOfClass: [NSObject class]] == YES && // any controllers...
-		   [o isKindOfClass: [NSCell class]] == NO && // no cells
-		   [o isKindOfClass: [NSMenu class]] == NO && // no menus, they're handled above
-		   [o isKindOfClass: [NSMenuItem class]] == NO && // no menu items 
-		   [o isKindOfClass: [NSTableColumn class]] == NO && // no table columns
-		   [o isKindOfClass: [NSTabViewItem class]] == NO && // no table columns
-		   [o isKindOfClass: [NSWindow class]] == NO && // no tab view items
-		   [o isKindOfClass: [NSView class]] == NO // no tab view items
-		   )) 
+		  ([items containsObject: o] == YES)) 
 		{
 		  if(topLevelObjects == nil)
 		    {
@@ -351,10 +346,10 @@ static const int currentVersion = 1; // GSNibItem version number...
 {
   int version = [aCoder versionForClassName: 
 			  NSStringFromClass([self class])];
+  id obj = nil;
 
   if (version == 1)
     {
-      id		obj;
       Class		cls;
       unsigned int      mask;
       
@@ -384,13 +379,9 @@ static const int currentVersion = 1; // GSNibItem version number...
 	{
 	  [obj setAutoresizingMask: mask];
 	}
-
-      RELEASE(self);
-      return obj;
     }
   else if (version == 0)
     {
-      id		obj;
       Class		cls;
       
       [aCoder decodeValueOfObjCType: @encode(id) at: &theClass];
@@ -412,16 +403,28 @@ static const int currentVersion = 1; // GSNibItem version number...
 	{
 	  obj = [obj init];
 	}
-
-      RELEASE(self);
-      return obj;
     }
   else
     {
       NSLog(@"no initWithCoder for this version");
-      RELEASE(self);
-      return nil;
     }
+
+  // If this is a nib item and not a custom view, then we need to add it to
+  // the set of things to be retained.
+  if(obj != nil)
+    {
+      if([self isKindOfClass: [GSNibItem class]] == YES &&
+	 [self isKindOfClass: [GSCustomView class]] == NO)
+	{
+	  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+	  [nc postNotificationName: @"__GSInternalNibItemAddedNotification"
+	      object: obj];
+	}
+    }
+
+  // release self and return the object this represents...
+  RELEASE(self);
+  return obj;
 }
 
 @end

@@ -58,7 +58,7 @@
   NSMutableArray	*connections;
   BOOL			_isAwake;
 }
-- (void) awakeWithContext: (NSDictionary*)context;
+- (void) awakeWithContext: (NSDictionary *)context topLevelItems: (NSArray *)items;
 - (NSMutableDictionary*) nameTable;
 - (NSMutableArray*) connections;
 @end
