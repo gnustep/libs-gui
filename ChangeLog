@@ -1,3 +1,13 @@
+2003-10-21  Bjorn Giesler <bjoern@giesler.de>
+
+	* Source/GSServicesManager.m: Fix NSPerformService() to work for
+	any localised service name.
+
+2003-10-21  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSServicesManager.m: Revert last modification in favour
+	of a fix by ... Bjorn.
+
 2003-10-20  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSApplication.m (-changeWindowsItem:title:filename:): Use

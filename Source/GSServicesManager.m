@@ -1376,6 +1376,39 @@ GSContactApplication(NSString *appName, NSString *port, NSDate *expire)
   return app;
 }
 
+NSDictionary *
+_serviceFromAnyLocalizedTitle(NSString *title)
+{
+  NSDictionary *allServices;
+  NSEnumerator *e1;
+  NSDictionary *service;
+
+  allServices = [manager menuServices];
+  if(allServices == nil)
+    return nil;
+
+  if([allServices objectForKey: title] != nil)
+    return [allServices objectForKey: title];
+  
+  e1 = [allServices objectEnumerator];
+  while((service = [e1 nextObject]))
+    {
+      NSDictionary *menuItems;
+      NSString *itemName;
+      NSEnumerator *e2;
+
+      menuItems = [service objectForKey: @"NSMenuItem"];
+      if(menuItems == nil)
+	continue;
+      e2 = [menuItems objectEnumerator];
+      while((itemName = [e2 nextObject]))
+	if([itemName isEqualToString: title])
+	  return service;
+    }
+
+  return nil;
+}
+
 /**
  * <p>Given the name of a serviceItem, and some data in a pasteboard
  * this function sends the data to the service provider (launching
@@ -1399,7 +1432,7 @@ NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
   NSString		*userData;
   NSString		*error = nil;
 
-  service = [[manager menuServices] objectForKey: serviceItem]; 
+  service = _serviceFromAnyLocalizedTitle(serviceItem);
   if (service == nil)
     {
       NSRunAlertPanel(nil,
