@@ -504,12 +504,6 @@ static NSCell* tileCell = nil;
   {
     CREATE_AUTORELEASE_POOL (_app_init_pool);
 
-    /* Initialize the backend here. This is equivalent to connecting to
-       our window server, so if someone wants to query information that might
-       require the backend, they just need to instantiate a sharedApplication
-    */
-    initialize_gnustep_backend();
-
     self = [super init];
     NSApp = self;
     if (NSApp == nil)
@@ -522,7 +516,19 @@ static NSCell* tileCell = nil;
     
     NSDebugLog(@"Begin of NSApplication -init\n");
 
-    _default_context = GSCurrentContext();
+    /* Initialize the backend here. */
+    initialize_gnustep_backend();
+
+    /* Create our context. This is equivalent to connecting to
+       our window server, so if someone wants to query information that might
+       require the backend, they just need to instantiate a sharedApplication
+    */
+    _default_context = [NSGraphicsContext graphicsContextWithAttributes: nil];
+    [NSGraphicsContext setCurrentContext: _default_context];
+
+    /* Initialize font manager */
+    [NSFontManager sharedFontManager];
+
     _hidden = [[NSMutableArray alloc] init];
     _inactive = [[NSMutableArray alloc] init];
     _unhide_on_activation = YES;
