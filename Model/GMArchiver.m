@@ -636,7 +636,7 @@ static NSMutableDictionary* classToAliasMappings = nil;
 
   propertyList = [plist copy];
   currentDecodedObjectRepresentation = propertyList;
-  namesToObjects = [NSMutableDictionary dictionaryWithCapacity: 119];
+  namesToObjects = RETAIN ([NSMutableDictionary dictionaryWithCapacity: 119]);
 
   /* Decode version information */
   versionString = [propertyList objectForKey: @"Version"];
@@ -645,6 +645,13 @@ static NSMutableDictionary* classToAliasMappings = nil;
   objectZone = NSDefaultMallocZone ();
 
   return self;
+}
+
+- (void) dealloc
+{
+  RELEASE (propertyList);
+  RELEASE (namesToObjects);
+  [super dealloc];
 }
 
 - (id) decodeObjectWithName: (NSString*)name
