@@ -4091,19 +4091,29 @@ other than copy/paste or dragging. */
 
   /* Enter modal loop tracking the mouse */
   {
-    unsigned int mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
-    NSEvent *currentEvent, *lastEvent = nil;
+    unsigned int mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask
+			| NSPeriodicMask;
+    NSEvent *currentEvent;
+    NSEvent *lastEvent = nil; /* Last non-periodic event. */
     NSDate *distantPast = [NSDate distantPast];
+    BOOL gettingPeriodic, gotPeriodic;
 
     currentEvent = [_window nextEventMatchingMask: mask
 		     untilDate: nil
 		     inMode: NSEventTrackingRunLoopMode
 		     dequeue: YES];
+    gettingPeriodic = NO;
     do
       {
+	gotPeriodic = NO;
 	while (currentEvent && [currentEvent type] != NSLeftMouseUp)
 	  {
-	    lastEvent = currentEvent;
+	    if ([currentEvent type] == NSPeriodic)
+	    {
+	      gotPeriodic = YES;
+	    }
+	    else
+	      lastEvent = currentEvent;
 	    currentEvent = [_window nextEventMatchingMask: mask
 			     untilDate: distantPast
 			     inMode: NSEventTrackingRunLoopMode
@@ -4112,7 +4122,36 @@ other than copy/paste or dragging. */
 	if (currentEvent && [currentEvent type] == NSLeftMouseUp)
 	  break;
 
-	[self autoscroll: lastEvent];
+	/*
+	Automatic scrolling.
+
+	If we aren't getting periodic events, we check all events. If any of
+	them causes us to scroll, we scroll and start up the periodic events.
+
+	If we are getting periodic events, we only scroll when we receive a
+	periodic event (and we use the last non-periodic event to determine
+	how far). If no scrolling occurred, we stop the periodic events.
+	*/
+	if (!gettingPeriodic)
+	  {
+	    if ([self autoscroll: lastEvent])
+	      {
+		gettingPeriodic = YES;
+		[NSEvent startPeriodicEventsAfterDelay: 0.1
+					    withPeriod: 0.1];
+		
+	      }
+	  }
+	else if (gotPeriodic)
+	  {
+	    if (![self autoscroll: lastEvent])
+	      {
+		gettingPeriodic = NO;
+		[NSEvent stopPeriodicEvents];
+	      }
+	  }
+
+
 	point = [self convertPoint: [lastEvent locationInWindow]
 		  fromView: nil];
 	proposedRange = MakeRangeFromAbs([self characterIndexForPoint: point],
@@ -4127,6 +4166,11 @@ other than copy/paste or dragging. */
 			 inMode: NSEventTrackingRunLoopMode
 			 dequeue: YES];
       } while ([currentEvent type] != NSLeftMouseUp);
+
+    if (gettingPeriodic)
+      {
+	[NSEvent stopPeriodicEvents];
+      }
   }
 
   NSDebugLog(@"chosenRange. location  = %d, length  = %d\n",
