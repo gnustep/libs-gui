@@ -1,3 +1,22 @@
+2002-02-28  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Headers/gnustep/gui/NSEvent.h:
+	new element in event_data union, provides support for deltaX, deltaY
+	and deltaZ.
+	* Source/NSEvent.m 
+	([NSEvent +mouseEventWithType:location:modifierFlags:timestamp:
+	windowNumber:context:deltaX:deltaY:deltaZ:]): 
+	new method : support for creating event with deltaX, deltaY and deltaZ.
+	([NSEvent -delta{X, Y, Z}]): methods implemented. 
+	([NSEvent -description]): 
+	([NSEvent -initWithCoder:]): 
+	([NSEvent -encodeWithCoder:]): 
+	suppor for deltaX, deltaY and deltaZ
+	* Source/NSResponder.m ([NSResponder -scrollWheel:]): 
+	implementation.
+	* Source/NSScrollView.m ([NSScrollView -scrollWheel:]): 
+	implementation, does scroll the document view.
+	
 Thu Feb 28 16:47:58 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Tools/make_services.m: Use 'Applications' not 'Apps'.

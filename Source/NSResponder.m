@@ -289,8 +289,10 @@
 
 - (void) scrollWheel: (NSEvent *)theEvent
 {
-  // FIXME
-  NSLog(@"Sorry, currently no support for scroll wheel.");
+  if (_next_responder)
+    return [_next_responder scrollWheel: theEvent];
+  else
+    return [self noResponderFor: @selector(scrollWheel:)];
 }
 
 /*

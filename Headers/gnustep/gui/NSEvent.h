@@ -113,9 +113,9 @@ enum {
     {
       struct
 	{
-	  int	event_num;
-	  int	click;
-	  float	pressure;
+	  int	        event_num;
+	  int	        click;
+	  float	        pressure;
 	} mouse;
       struct
 	{
@@ -130,6 +130,12 @@ enum {
 	  int		tracking_num;
 	  void		*user_data;
 	} tracking;
+      struct
+        {
+	  float         deltaX;
+	  float         deltaY;
+	  float         deltaZ;
+        } scrollWheel;
       struct
 	{
 	  short		sub_type;
@@ -173,6 +179,16 @@ enum {
 		    eventNumber: (int)eventNum	
 		     clickCount: (int)clickNum	
 		       pressure: (float)pressureValue;
+
++ (NSEvent*) mouseEventWithType: (NSEventType)type	
+		       location: (NSPoint)location
+		  modifierFlags: (unsigned int)flags
+		      timestamp: (NSTimeInterval)time
+		   windowNumber: (int)windowNum	
+			context: (NSGraphicsContext*)context	
+                         deltaX: (float)deltaX
+                         deltaY: (float)deltaY
+                         deltaZ: (float)deltaZ;
 
 + (NSEvent*) otherEventWithType: (NSEventType)type	
 		       location: (NSPoint)location

@@ -292,7 +292,52 @@ static float scrollerWidth;
 
 - (void) scrollWheel: (NSEvent *)theEvent
 {
-  // FIXME
+  NSRect	clipViewBounds = [_contentView bounds];
+  float deltaY = [theEvent deltaY];
+  float amount;
+  NSPoint point = clipViewBounds.origin;
+
+
+  if (([theEvent modifierFlags] & NSAlternateKeyMask) == NSAlternateKeyMask)
+    {
+      amount = - (clipViewBounds.size.height - _vPageScroll) * deltaY;
+    }
+  else
+    {
+      amount = - _vLineScroll * deltaY;
+    }
+
+  if (!_contentView->_rFlags.flipped_view)
+    {
+      /* If view is flipped reverse the scroll direction */
+      amount = -amount;
+    }
+  NSDebugLog (@"increment/decrement: amount = %f, flipped = %d",
+	      amount, _contentView->_rFlags.flipped_view);
+  point.y = clipViewBounds.origin.y + amount;
+  
+  if (_hasHeaderView)
+    {
+      NSPoint scrollTo;
+
+      scrollTo = [_headerClipView bounds].origin;
+      scrollTo.x += point.x - clipViewBounds.origin.x;
+      [_headerClipView scrollToPoint: scrollTo];
+    }
+  [_contentView scrollToPoint: point];
+
+  if (_rulersVisible == YES)
+    {
+      if (_hasHorizRuler)
+	{
+	  [_horizRuler setNeedsDisplay: YES];
+	}
+      if (_hasVertRuler)
+	{
+	  [_vertRuler setNeedsDisplay: YES];
+	}
+    }
+
 }
 
 - (void) _doScroll: (NSScroller*)scroller

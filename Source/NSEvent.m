@@ -188,6 +188,41 @@ static Class eventClass;
   return e;
 }
 
++ (NSEvent*) mouseEventWithType: (NSEventType)type	
+		       location: (NSPoint)location
+		  modifierFlags: (unsigned int)flags
+		      timestamp: (NSTimeInterval)time
+		   windowNumber: (int)windowNum
+			context: (NSGraphicsContext*)context	
+                         deltaX: (float)deltaX
+                         deltaY: (float)deltaY
+                         deltaZ: (float)deltaZ
+{
+  NSEvent	*e;
+
+  if ((type < NSMouseMoved || type > NSRightMouseDragged)
+      && (type != NSScrollWheel))
+    [NSException raise: NSInvalidArgumentException
+		format: @"mouseEvent with wrong type"];
+
+  e = (NSEvent*)NSAllocateObject(self, 0, NSDefaultMallocZone());
+  if (self != eventClass)
+    e = [e init];
+  AUTORELEASE(e);
+
+  e->event_type = type;
+  e->location_point = location;
+  e->modifier_flags = flags;
+  e->event_time = time;
+  e->window_num = windowNum;
+  e->event_context = context;
+  e->event_data.scrollWheel.deltaX = deltaX;
+  e->event_data.scrollWheel.deltaY = deltaY;
+  e->event_data.scrollWheel.deltaZ = deltaZ;
+
+  return e;
+}
+
 + (NSEvent*) otherEventWithType: (NSEventType)type
 		       location: (NSPoint)location
 		  modifierFlags: (unsigned int)flags
@@ -506,31 +541,70 @@ static Class eventClass;
 /*
  * Scroll event data
  */
+/**
+   <p>
+   Returns the movement of the mouse on the X axis.
+   </p>
+   <p>
+   This method is only valid for NSMouseMoved, NS*MouseDragged and 
+   NSScrollWheel events, otherwise it will raise an 
+   NSInvalidArgumentException.
+   </p>
+ */
 - (float)deltaX
 {
-  if (event_type != NSScrollWheel)
+  if (event_type != NSScrollWheel
+      && (event_type < NSMouseMoved
+	  || event_type > NSRightMouseDragged))
     [NSException raise: NSInvalidArgumentException
 		format: @"deltaX requested for invalid event type"];
-  // FIXME
-  return 0.0;
+
+  return event_data.scrollWheel.deltaX;
 }
 
+/**
+   <p>
+   Returns the movement of the mouse on the Y axis.
+   </p>
+   <p>
+   This method is only valid for NSMouseMoved, NS*MouseDragged and 
+   NSScrollWheel events, otherwise it will raise an 
+   NSInvalidArgumentException.
+   </p>
+ */
 - (float)deltaY
 {
-  if (event_type != NSScrollWheel)
+  if (event_type != NSScrollWheel
+      && (event_type < NSMouseMoved
+	  || event_type > NSRightMouseDragged))
     [NSException raise: NSInvalidArgumentException
 		format: @"deltaY requested for invalid event type"];
-  // FIXME
-  return 0.0;
+
+  return event_data.scrollWheel.deltaY;
 }
 
+/**
+   <p>
+   Returns the movement of the mouse on the Z axis.
+   </p>
+   <p>
+   This method is only valid for NSMouseMoved, NS*MouseDragged and 
+   NSScrollWheel events, otherwise it will raise an 
+   NSInvalidArgumentException.
+   </p>
+   <p>
+   The value returned is 0.0 in most cases.
+   </p>
+ */
 - (float)deltaZ
 {
-  if (event_type != NSScrollWheel)
+  if (event_type != NSScrollWheel
+      && (event_type < NSMouseMoved
+	  || event_type > NSRightMouseDragged))
     [NSException raise: NSInvalidArgumentException
 		format: @"deltaZ requested for invalid event type"];
-  // FIXME
-  return 0.0;
+
+  return event_data.scrollWheel.deltaZ;
 }
 
 /*
@@ -552,10 +626,6 @@ static Class eventClass;
       case NSMiddleMouseUp:
       case NSRightMouseDown:
       case NSRightMouseUp:
-      case NSMouseMoved:
-      case NSLeftMouseDragged:
-      case NSMiddleMouseDragged:
-      case NSRightMouseDragged:
 	[aCoder encodeValuesOfObjCTypes: "iif", &event_data.mouse.event_num,
 		&event_data.mouse.click, &event_data.mouse.pressure];
 	break;
@@ -586,7 +656,14 @@ static Class eventClass;
 		&event_data.misc.data1, &event_data.misc.data2];
 	break;
       case NSScrollWheel:
-	// FIXME
+      case NSMouseMoved:
+      case NSLeftMouseDragged:
+      case NSMiddleMouseDragged:
+      case NSRightMouseDragged:
+	[aCoder encodeValuesOfObjCTypes: "fff", 
+		&event_data.scrollWheel.deltaX,
+		&event_data.scrollWheel.deltaY,
+		&event_data.scrollWheel.deltaZ];
 	break;
     }
 }
@@ -608,10 +685,6 @@ static Class eventClass;
       case NSMiddleMouseUp:
       case NSRightMouseDown:
       case NSRightMouseUp:
-      case NSMouseMoved:
-      case NSLeftMouseDragged:
-      case NSMiddleMouseDragged:
-      case NSRightMouseDragged:
 	[aDecoder decodeValuesOfObjCTypes: "iif", &event_data.mouse.event_num,
 	      &event_data.mouse.click, &event_data.mouse.pressure];
 	break;
@@ -643,7 +716,14 @@ static Class eventClass;
 	break;
 
       case NSScrollWheel:
-	// FIXME
+      case NSMouseMoved:
+      case NSLeftMouseDragged:
+      case NSMiddleMouseDragged:
+      case NSRightMouseDragged:
+	[aDecoder decodeValuesOfObjCTypes: "fff", 
+		  &event_data.scrollWheel.deltaX,
+		  &event_data.scrollWheel.deltaY,
+		  &event_data.scrollWheel.deltaZ];
 	break;
     }
 
@@ -691,7 +771,8 @@ static Class eventClass;
     "systemDefined",
     "applicationDefined",
     "periodic",
-    "cursorUpdate"
+    "cursorUpdate",
+    "scrollWheel"
   };
 
   switch (event_type)
@@ -702,10 +783,6 @@ static Class eventClass;
       case NSMiddleMouseUp:
       case NSRightMouseDown:
       case NSRightMouseUp:
-      case NSMouseMoved:
-      case NSLeftMouseDragged:
-      case NSMiddleMouseDragged:
-      case NSRightMouseDragged:
 	return [NSString stringWithFormat:
 	      @"NSEvent: eventType = %s, point = { %f, %f }, modifiers = %u,"
 	      @" time = %f, window = %d, dpsContext = %p,"
@@ -757,8 +834,21 @@ static Class eventClass;
 	      event_data.misc.sub_type, event_data.misc.data1,
 	      event_data.misc.data2];
 	break;
+
       case NSScrollWheel:
-	// FIXME
+      case NSMouseMoved:
+      case NSLeftMouseDragged:
+      case NSMiddleMouseDragged:
+      case NSRightMouseDragged:
+	return [NSString stringWithFormat:
+	      @"NSEvent: eventType = %s, point = { %f, %f }, modifiers = %u,"
+	      @" time = %f, window = %d, dpsContext = %p,"
+	      @" deltaX = %f, deltaY = %f, deltaZ = %f",
+	      eventTypes[event_type], location_point.x, location_point.y,
+	      modifier_flags, event_time, window_num, event_context,
+	      event_data.scrollWheel.deltaX,
+	      event_data.scrollWheel.deltaY,
+	      event_data.scrollWheel.deltaZ];
 	break;
     }
 
