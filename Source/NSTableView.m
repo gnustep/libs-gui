@@ -3910,10 +3910,10 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 
       aPoint.y -= _bounds.origin.y;
       return_value = (int) (aPoint.y / _rowHeight);
-      /* This could happen if point lies on the grid line below the last row */
-      if (return_value == _numberOfRows)
+      /* This could happen if point lies on the grid line or below the last row */
+      if (return_value >= _numberOfRows)
 	{
-	  return_value--;
+	  return_value = _numberOfRows - 1;
 	}
       return return_value;
     }
@@ -4299,7 +4299,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 - (void) noteNumberOfRowsChanged
 {
   _numberOfRows = [_dataSource numberOfRowsInTableView: self];
-  
+ 
   /* If we are selecting rows, we have to check that we have no
      selected rows below the new end of the table */
   if (!_selectingColumns)
@@ -4352,7 +4352,7 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 			      _frame.origin.y,
 			      _frame.size.width, 
 			      (_numberOfRows * _rowHeight) + 1)];
-  
+
   /* If we are shorter in height than the enclosing clipview, we
      should redraw us now. */
   if (_super_view != nil)

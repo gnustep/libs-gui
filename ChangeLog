@@ -1,3 +1,9 @@
+2005-01-20  Fred Kiefer <FredKiefer@gmx.de>
+
+        * Source/NSTableView.m (-rowAtPoint:): If the heigh of the table
+	is incorrect and because of this the row would be greater than the
+	number of rows, return a usable number.
+
 2005-01-18 17:06  Alexander Malmberg  <alexander@malmberg.org>
 
 	* Source/NSWindow.m
