@@ -47,6 +47,12 @@
 - (NSArray*) availableFonts;
 - (NSArray*) availableFontFamilies;
 - (NSArray*) availableMembersOfFontFamily: (NSString*)family;
+
+/* Note that these are only called once. NSFont will remember the returned
+values. Backends may override these. */
+- (NSString *) defaultSystemFontName;
+- (NSString *) defaultBoldSystemFontName;
+- (NSString *) defaultFixedPitchFontName;
 @end
 
 @interface GSFontInfo : NSObject <NSCopying, NSMutableCopying>

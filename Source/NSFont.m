@@ -193,19 +193,38 @@ have a fallback or a defaultFont. There must be a default font for the system
 font. Bad Things will happen if entries are invalid.
 */
 static font_role_info_t font_roles[RoleMax]={
-  {nil                    , 0                 , nil              , nil},
-  {@"NSBoldFont"          , 0                 , @"Helvetica-Bold", nil},
-  {@"NSFont"              , 0                 , @"Helvetica"     , nil},
-  {@"NSUserFixedPitchFont", 0                 , @"Courier"       , nil},
-  {@"NSUserFont"          , RoleSystemFont    , nil              , nil},
-  {@"NSTitleBarFont"      , RoleBoldSystemFont, nil              , nil},
-  {@"NSMenuFont"          , RoleSystemFont    , nil              , nil},
-  {@"NSMessageFont"       , RoleSystemFont    , nil              , nil},
-  {@"NSPaletteFont"       , RoleBoldSystemFont, nil              , nil},
-  {@"NSToolTipsFont"      , RoleSystemFont    , nil              , nil},
-  {@"NSControlContentFont", RoleSystemFont    , nil              , nil},
-  {@"NSLabelFont"         , RoleSystemFont    , nil              , nil}
+  {nil                    , 0                 , nil, nil},
+  {@"NSBoldFont"          , 0                 , nil /* set by init_font_roles */, nil},
+  {@"NSFont"              , 0                 , nil /* set by init_font_roles */, nil},
+  {@"NSUserFixedPitchFont", 0                 , nil /* set by init_font_roles */, nil},
+  {@"NSUserFont"          , RoleSystemFont    , nil, nil},
+  {@"NSTitleBarFont"      , RoleBoldSystemFont, nil, nil},
+  {@"NSMenuFont"          , RoleSystemFont    , nil, nil},
+  {@"NSMessageFont"       , RoleSystemFont    , nil, nil},
+  {@"NSPaletteFont"       , RoleBoldSystemFont, nil, nil},
+  {@"NSToolTipsFont"      , RoleSystemFont    , nil, nil},
+  {@"NSControlContentFont", RoleSystemFont    , nil, nil},
+  {@"NSLabelFont"         , RoleSystemFont    , nil, nil}
 };
+
+
+static BOOL did_init_font_roles;
+
+/*
+Called by getNSFont, since font_roles is only accessed from that function
+(or fontNameForRole, which is only called by getNSFont). This assures that the
+function is called before the table is used, and that it's called _after_ the
+backend has been loaded (or, if it isn't, the _fontWithName:... calls will
+fail anyway).
+*/
+static void init_font_roles(void)
+{
+  GSFontEnumerator *e = [GSFontEnumerator sharedEnumerator];
+
+  font_roles[RoleSystemFont].defaultFont = [e defaultSystemFontName];
+  font_roles[RoleBoldSystemFont].defaultFont = [e defaultBoldSystemFontName];
+  font_roles[RoleUserFixedPitchFont].defaultFont = [e defaultFixedPitchFontName];
+}
 
 
 static NSString *fontNameForRole(int role, int *actual_entry)
@@ -249,6 +268,12 @@ static NSFont *getNSFont(float fontSize, int role)
   int font_role;
 
   NSCAssert(role > RoleExplicit && role < RoleMax, @"Invalid font role.");
+
+  if (!did_init_font_roles)
+    {
+      init_font_roles();
+      did_init_font_roles = YES;
+    }
 
   font_role = role * 2;
 

@@ -90,6 +90,22 @@ static GSFontEnumerator *sharedEnumerator = nil;
   return [allFontFamilies objectForKey: family];
 }
 
+
+- (NSString *) defaultSystemFontName
+{
+  return @"Helvetica";
+}
+
+- (NSString *) defaultBoldSystemFontName
+{
+  return @"Helvetica-Bold";
+}
+
+- (NSString *) defaultFixedPitchFontName
+{
+  return @"Courier";
+}
+
 @end
 
 @interface GSFontInfo (Backend)
