@@ -101,15 +101,15 @@
 
   if ([self readFromURL:url ofType:fileType])
     {
-      //FIXME -- localize.
-      NSRunAlertPanel(@"Load failed",
-		      @"Could not load URL %@.",
-		      nil, nil, nil, [url absoluteString]);
       [self setFileType:fileType];
       [self setFileName:[url path]];
     }
   else
     {
+      //FIXME -- localize.
+      NSRunAlertPanel(@"Load failed",
+		      @"Could not load URL %@.",
+		      nil, nil, nil, [url absoluteString]);
       RELEASE(self);
       return nil;
     }
@@ -166,6 +166,15 @@
     [windowController setDocument:self];
 }
 
+- (void)removeWindowController:(NSWindowController *)windowController
+{
+  if ([_windowControllers containsObject:windowController])
+    {
+	[windowController setDocument:nil];
+	[_windowControllers removeObject:windowController];
+    }
+}
+
 - (NSString *)windowNibName
 {
   return nil;
@@ -179,6 +188,7 @@
   _window = window;
 }
 
+//FIXME: In the later specification this method has a different return type!! 
 - (void)makeWindowControllers
 {
   NSString *name = [self windowNibName];
@@ -259,6 +269,24 @@
     }
 }
 
+- (void)canCloseDocumentWithDelegate:(id)delegate 
+		 shouldCloseSelector:(SEL)shouldCloseSelector 
+			 contextInfo:(void *)contextInfo
+{
+  BOOL result = [self canCloseDocument];
+
+  if (delegate != nil && shouldCloseSelector != NULL)
+    {
+      // FIXME: This is the only way I know to call a callback with 
+      // irregular arguments
+      void (*meth)(id, SEL, id, BOOL, void*);
+      meth = (void (*)(id, SEL, id, BOOL, void*))[delegate methodForSelector: 
+							       shouldCloseSelector];
+      if (meth)
+	meth(delegate, shouldCloseSelector, self, result, contextInfo);
+    }
+}
+
 - (BOOL)shouldCloseWindowController:(NSWindowController *)windowController
 {
   if (![_windowControllers containsObject:windowController]) return YES;
@@ -274,6 +302,25 @@
   return YES;
 }
 
+- (void)shouldCloseWindowController:(NSWindowController *)windowController 
+			   delegate:(id)delegate 
+		shouldCloseSelector:(SEL)callback
+			contextInfo:(void *)contextInfo
+{
+  BOOL result = [self shouldCloseWindowController: windowController];
+
+  if (delegate != nil && callback != NULL)
+    {
+      // FIXME: This is the only way I know to call a callback with 
+      // irregular argumetns
+      void (*meth)(id, SEL, id, BOOL, void*);
+      meth = (void (*)(id, SEL, id, BOOL, void*))[delegate methodForSelector: 
+							       callback];
+      
+      if (meth)
+	meth(delegate, callback, self, result, contextInfo);
+    }
+}
 
 - (NSString *)displayName
 {
@@ -377,7 +424,8 @@
 }
 
 - (IBAction)changeSaveType:(id)sender
-{ //FIXME if we have accessory -- store the desired save type somewhere.
+{ 
+//FIXME if we have accessory -- store the desired save type somewhere.
 }
 
 - (int)runModalSavePanel:(NSSavePanel *)savePanel withAccessoryView:(NSView *)accessoryView
@@ -497,6 +545,14 @@
   return YES;
 }
 
+- (BOOL)validateUserInterfaceItem:(id <NSValidatedUserInterfaceItem>)anItem
+{
+  if ([anItem action] == @selector(revertDocumentToSaved:))
+    return ([self fileName] != nil);
+
+  return YES;
+}
+
 - (NSString *)fileTypeFromLastRunSavePanel
 {
   // FIXME this should return type picked on save accessory
@@ -606,6 +662,35 @@
   [self writeWithBackupToFile: filename 
 	ofType: [self fileTypeFromLastRunSavePanel]
 	saveOperation: NSSaveToOperation];
+}
+
+- (void)saveDocumentWithDelegate:(id)delegate 
+		 didSaveSelector:(SEL)didSaveSelector 
+		     contextInfo:(void *)contextInfo
+{
+  // FIXME
+}
+
+- (void)saveToFile:(NSString *)fileName 
+     saveOperation:(NSSaveOperationType)saveOperation 
+	  delegate:(id)delegate
+   didSaveSelector:(SEL)didSaveSelector 
+       contextInfo:(void *)contextInfo
+{
+  // FIXME
+}
+
+- (BOOL)prepareSavePanel:(NSSavePanel *)savePanel
+{
+  return YES;
+}
+
+- (void)runModalSavePanelForSaveOperation:(NSSaveOperationType)saveOperation 
+				 delegate:(id)delegate
+			  didSaveSelector:(SEL)didSaveSelector 
+			      contextInfo:(void *)contextInfo
+{
+  // FIXME
 }
 
 - (IBAction)revertDocumentToSaved:(id)sender
