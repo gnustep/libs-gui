@@ -1546,8 +1546,7 @@ static NSColor	*shadowCol;
          break;
     }
 
-  if (_cell.shows_first_responder
-      && [[controlView window] firstResponder] == controlView)
+  if (_cell.shows_first_responder)
     NSDottedFrameRect(cellFrame);
 
   // NB: We don't do any highlighting to make it easier for subclasses

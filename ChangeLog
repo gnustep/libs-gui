@@ -1,3 +1,8 @@
+2001-03-23  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
+
+	* Source/NSCell.m ([NSCell -drawInteriorWithFrame:inView:]): do not
+	check if the control that owns the cell is the first responder.
+
 Thu Mar 22 22:13:16 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Tools/Functions.m (NSDottedFrameRect): Added empty 
