@@ -113,6 +113,7 @@ extern NSSize NSTokenSize;
   NSRect        rectNeedingFlush;
   NSMutableArray *rectsBeingDrawn;
   unsigned	disable_flush_window;
+  NSSelectionDirection _selection_direction;
 
   NSWindowDepth depth_limit;
   NSWindowController *_windowController;
