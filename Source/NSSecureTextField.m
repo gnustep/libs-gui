@@ -7,6 +7,9 @@
    Author: Gregory John Casamento <borgheron@yahoo.com>
    Date: 2000
 
+   Author: Nicola Pero <nicola@brainstorm.co.uk>
+   Date: October 2002
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -35,243 +38,157 @@
 #include <AppKit/NSEvent.h>
 #include "GSSimpleLayoutManager.h"
 
-/* Other secure subclasses */
+/* 'Secure' subclasses */
 @interface NSSecureTextView : NSTextView
-{
-}
+{}
 @end
 
 @interface GSSimpleSecureLayoutManager : GSSimpleLayoutManager
-{
-}
+{}
 @end
 
 @implementation NSSecureTextField
 
-/*
-==============
-+initialize
-==============
-*/
 + (void) initialize
 {
-  if (self == [NSSecureTextField class]) {
-	[self setVersion:1];
-  }
+  if (self == [NSSecureTextField class])
+    {
+      [self setVersion:2];
+    }
 }
 
-/*
-============
-+ cellClass
-============
-*/
 + (Class) cellClass
 {
-  // Hard code here to make sure no other class can be used.
+  /* Hard code here to make sure no other class is used.  */
   return [NSSecureTextFieldCell class];
 }
 
-/*
-============
-+ setCellClass
-============
-*/
 + (void) setCellClass: (Class)factoryId
 {
-  // Ward off interlopers with a stern message.
+  /* Ward off interlopers with a stern message.  */
   [NSException raise: NSInvalidArgumentException
-	      format: @"NSSecureTextField can only use NSSecureTextFieldCells in order to ensure security."];
+	       format: @"NSSecureTextField only uses NSSecureTextFieldCells."];
 }
 
-/*
-==============
--initWithFrame:
-==============
-*/
 - (id) initWithFrame:(NSRect)frameRect
 {
-  [super initWithFrame: frameRect];
-  [_cell setEchosBullets: YES];
+  self = [super initWithFrame: frameRect];
+  [self setEchosBullets: YES];
 
   return self;
 }
 
-/*
-==============
--initWithCoder:
-==============
-*/
-- (id) initWithCoder:(NSCoder *)decoder
+- (void) setEchosBullets: (BOOL)flag
 {
-  BOOL echosBullets = YES;
-
-  [super initWithCoder: decoder];
-  [decoder decodeValueOfObjCType: @encode(BOOL) at: &echosBullets];
-  [_cell setEchosBullets: echosBullets];
-
-  return self;
+  [_cell setEchosBullets: flag];
 }
 
-- (void) textDidEndEditing: (NSNotification *)aNotification
+- (BOOL) echosBullets
 {
-  [_text_object setText: [[aNotification object] text]]; 
-  [super textDidEndEditing: aNotification];
+  return [_cell echosBullets];
 }
+
 @end /* NSSecureTextField */
 
 @implementation NSSecureTextFieldCell
-/*
-==============
-+initialize
-==============
-*/
+
 + (void)initialize
 {
   if (self == [NSSecureTextFieldCell class])
-	[self setVersion:1];
-}
-
-/*
-==================================
-+_sharedSecureFieldEditorInstance
-==================================
-*/
-+ (id)_sharedSecureFieldEditorInstance
-{
-  static NSSecureTextView *secureView = nil;
-
-  if( secureView == nil )
     {
-      secureView = [[NSSecureTextView alloc] init];
-      [secureView setFieldEditor: YES];
-      [secureView setText: @""];
+      [self setVersion:2];
     }
-
-  return secureView; 
 }
 
-/*
-===============
--echosBullets
-===============
-*/
-- (BOOL)echosBullets
+- (BOOL) echosBullets
 {
-  return i_echosBullets;
+  return _echosBullets;
 }
 
-/*
-================
-+setEchosBullets:
-================
-*/
-- (void)setEchosBullets:(BOOL)flag
+/* Functionality not implemented.  */
+- (void) setEchosBullets: (BOOL)flag
 {
-  i_echosBullets = flag;
+  _echosBullets = flag;
 }
 
-/*
-===============
--drawInteriorWithFrame:
-===============
-*/
-- (void)drawInteriorWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
+- (void) drawInteriorWithFrame: (NSRect)cellFrame 
+			inView: (NSView *)controlView
 {
-  // do nothing....
+  /* Do nothing.  */
 }
 
-/*
- * Editing Text
- */
-- (void) editWithFrame: (NSRect)aRect
-		inView: (NSView*)controlView
-		editor: (NSText*)textObject 
-	      delegate: (id)anObject
-		 event: (NSEvent*)theEvent
+- (NSText *) setUpFieldEditorAttributes: (NSText *)textObject
 {
-  id l_editor = [NSSecureTextFieldCell _sharedSecureFieldEditorInstance];
+  /* Replace the text object with a secure instance.  It's not shared.  */
+  textObject = [NSSecureTextView new];
+  AUTORELEASE (textObject);
 
-  [l_editor setText: [textObject text]];
-  [super editWithFrame: aRect
-		inView: controlView
-		editor: l_editor
-	      delegate: anObject
-		 event: theEvent];
+  return [super setUpFieldEditorAttributes: textObject];
 }
 
-- (void) selectWithFrame: (NSRect)aRect
-		  inView: (NSView*)controlView
-		  editor: (NSText*)textObject
-		delegate: (id)anObject
-		   start: (int)selStart
-		  length: (int)selLength
+- (id) initWithCoder:(NSCoder *)decoder
 {
-  id l_editor = [NSSecureTextFieldCell _sharedSecureFieldEditorInstance];
+  [super initWithCoder: decoder];
+  [decoder decodeValueOfObjCType: @encode(BOOL) at: &_echosBullets];
 
-  [l_editor setText: [textObject text]];
-  [super selectWithFrame: aRect
-		  inView: controlView
-                  editor: l_editor
-		delegate: anObject
-		   start: selStart
-                  length: selLength];
+  return self;
 }
+
+- (void) encodeWithCoder: (NSCoder *)aCoder
+{
+  [super encodeWithCoder: aCoder];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_echosBullets];
+}
+
 @end
 
 @implementation GSSimpleSecureLayoutManager
 - (void) drawGlyphsForGlyphRange: (NSRange)glyphRange
 			 atPoint: (NSPoint)containerOrigin
 {
-  // do nothing...  
+  /* Do nothing.  */
 }
 @end
 
 @implementation NSSecureTextView
-/* Class methods */
-+ (void) initialize
-{
-  if ([self class] == [NSSecureTextView class])
-    {
-      [self setVersion: 1];
-      [self registerForServices];
-    }
-}
 
 - (id) initWithFrame: (NSRect)frameRect
+       textContainer: (NSTextContainer*)aTextContainer
 {
-  NSTextContainer *aTextContainer = 
-      [[NSTextContainer alloc] initWithContainerSize: frameRect.size];
-  GSSimpleSecureLayoutManager *layoutManager = [[GSSimpleSecureLayoutManager alloc] init];
-  
-  [super initWithFrame: frameRect];
-  [layoutManager addTextContainer: aTextContainer];
-  RELEASE(aTextContainer);
+  GSSimpleSecureLayoutManager *m;
 
-  _textStorage = [[NSTextStorage alloc] init];
-  [_textStorage addLayoutManager: layoutManager];
-  RELEASE(layoutManager);
+  /* Perform the normal init.  */
+  [super initWithFrame: frameRect  textContainer: aTextContainer];
 
-  return [self initWithFrame: frameRect textContainer: aTextContainer];
+  /* Then, replace the layout manager with a
+   * GSSimpleSecureLayoutManager.  */
+  m = [[GSSimpleSecureLayoutManager alloc] init];
+  AUTORELEASE (m);
+  [[self textContainer] replaceLayoutManager: m];
+
+  [self setFieldEditor: YES];
+
+  return self;
 }
 
 - (void) copy: (id)sender
 {
-  // Do nothing since copying from a NSSecureTextView is *not* permitted.
+  /* Do nothing since copying from a NSSecureTextView is not permitted.  */
 }
 
 - (BOOL) writeSelectionToPasteboard: (NSPasteboard*)pboard
 			      types: (NSArray*)types
 {
-  /* Returns NO since the selection should never be 
-     written to the pasteboard */
+  /* Return NO since the selection should never be written to the
+   * pasteboard */
   return NO;
 }
 
 - (id) validRequestorForSendType: (NSString*) sendType
 		      returnType: (NSString*) returnType
 {
-  /* return "nil" to indicate that no type can be sent to the pasteboard for
-     an object of this class */
+  /* Return nil to indicate that no type can be sent to the pasteboard
+   * for an object of this class.  */
   return nil;
 }
 @end
