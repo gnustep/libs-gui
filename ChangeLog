@@ -1,3 +1,12 @@
+Thu Nov 23 10:50:48 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Documentation/gsdoc/Introduction.gsdoc: Removed email tag which
+	was causing gsdoc tool to abort.  
+	* Documentation/gsdoc/NSTableColumn.gsdoc: Added complete
+	documentation about NSTableColumn.
+	* Documentation/gsdoc/Introduction.html: Regenerated.
+	* Documentation/gsdoc/NSTableColumn.html: Idem.
+	
 Thu Nov 23 09:47:21 2000  Georg Fleischmann <georg@vhf.de>
 
 	* Source/NSTabViewItem.m ([NSTabViewItem -setView:]):
