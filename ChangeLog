@@ -1,3 +1,12 @@
+2001-12-18  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Source/NSBrowser.m:
+	NSBrowserColumn: new methods initWithCoder & encodeWithCoder, it now 
+	complies to NSCoding
+	[NSBrowser -initWithCoder:] & [NSBrowser -encodeWithCoder:]: major
+	update to previous implementation. It is now usable with Gorm and 
+	should not generate memory leaks anymore.
+	
 Mon Dec 17 23:54:35 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSInputManager.m: New class which loads key binding files
