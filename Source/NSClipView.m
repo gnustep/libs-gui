@@ -42,7 +42,17 @@
   [self setAutoresizesSubviews: YES];
   [self setBackgroundColor: [NSColor controlColor]];
   _copiesOnScroll = YES;
+  _drawsBackground = YES;
   return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_documentView);
+  RELEASE(_cursor);
+  RELEASE(_backgroundColor);
+
+  [super dealloc];
 }
 
 - (void) setDocumentView: (NSView*)aView
@@ -71,6 +81,8 @@
       [self setBoundsOrigin: df.origin];
       if ([aView respondsToSelector: @selector(backgroundColor)])
 	[self setBackgroundColor: [(id)aView backgroundColor]];
+      if ([aView respondsToSelector: @selector(drawsBackground)])
+	[self setDrawsBackground: [(id)aView drawsBackground]];
 
       /* Register for notifications sent by the document view */
       [_documentView setPostsFrameChangedNotifications: YES];
@@ -88,7 +100,6 @@
 
   _rFlags.flipped_view = [self isFlipped];
 
-  /* TODO: invoke superview's reflectScrolledClipView: ? */
   [_super_view reflectScrolledClipView: self];
 }
 
@@ -201,6 +212,7 @@
       [_documentView setNeedsDisplayInRect: 
 	[self convertRect: newBounds toView: _documentView]];
     }
+
   [_super_view reflectScrolledClipView: self];
 }
 
@@ -218,16 +230,16 @@
   else if (proposedNewOrigin.x <= documentFrame.origin.x)
     new.x = documentFrame.origin.x;
   else if (proposedNewOrigin.x
-	   >= documentFrame.size.width - _bounds.size.width)
-    new.x = documentFrame.size.width - _bounds.size.width;
+	   >= NSMaxX(documentFrame) - _bounds.size.width)
+    new.x = NSMaxX(documentFrame) - _bounds.size.width;
 
   if (documentFrame.size.height <= _bounds.size.height)
     new.y = documentFrame.origin.y;
   else if (proposedNewOrigin.y <= documentFrame.origin.y)
     new.y = documentFrame.origin.y;
   else if (proposedNewOrigin.y
-           >= documentFrame.size.height - _bounds.size.height)
-    new.y = documentFrame.size.height - _bounds.size.height;
+           >= NSMaxY(documentFrame) - _bounds.size.height)
+    new.y = NSMaxY(documentFrame) - _bounds.size.height;
 
   // make it an integer coordinate in device space
   // to avoid some nice effects when scrolling
@@ -275,13 +287,30 @@
 
 - (void) drawRect: (NSRect)rect
 {
-  [_backgroundColor set];
-  NSRectFill(rect);
+  if (_drawsBackground)
+    {
+      [_backgroundColor set];
+      NSRectFill(rect);
+    }
 }
 
 - (BOOL) autoscroll: (NSEvent*)theEvent
 {
-  return 0;
+  NSPoint new;
+
+  if (_documentView == nil)
+    return NO;
+
+  new = [_documentView convertPoint: [theEvent locationInWindow] fromView: nil];
+  new = [self constrainScrollPoint: new];
+
+  if (NSPointInRect(new, [self documentVisibleRect]))
+  {
+    return NO;
+  }
+
+  [self setBoundsOrigin: new];
+  return YES;
 }
 
 - (void) viewBoundsChanged: (NSNotification*)aNotification
@@ -301,8 +330,6 @@
        */
       [self setNeedsDisplay: YES];
     }
-
-  [_super_view reflectScrolledClipView: self];
 }
 
 - (void) scaleUnitSquareToSize: (NSSize)newUnitSize
@@ -341,11 +368,6 @@
   [_super_view reflectScrolledClipView: self];
 }
 
-- (BOOL) isOpaque
-{
-  return YES;
-}
-
 - (id) documentView
 {
   return _documentView;
@@ -376,19 +398,34 @@
   return _backgroundColor;
 }
 
-- (BOOL) isFlipped
-{
-  return (_documentView != nil) ? _documentView->_rFlags.flipped_view : NO;
-}
-
-- (BOOL) acceptsFirstResponder
-{
-  return _documentView != nil;
-}
-
 - (void) setBackgroundColor: (NSColor*)aColor
 {
   ASSIGN(_backgroundColor, aColor);
+}
+
+- (void)setDrawsBackground:(BOOL)flag
+{
+  _drawsBackground = flag; 
+}
+
+- (BOOL)drawsBackground
+{
+  return _drawsBackground;
+}
+
+- (BOOL) isOpaque
+{
+  if (_drawsBackground == NO
+      || _backgroundColor == nil
+      || [_backgroundColor alphaComponent] < 1.0)
+    return NO;
+  else
+    return YES;
+}
+
+- (BOOL) isFlipped
+{
+  return (_documentView != nil) ? _documentView->_rFlags.flipped_view : NO;
 }
 
 /* Disable rotation of clip view */
@@ -405,6 +442,11 @@
 }
 
 /* Managing responder chain */
+- (BOOL) acceptsFirstResponder
+{
+  return _documentView != nil;
+}
+
 - (BOOL) becomeFirstResponder
 {
   return (_documentView != nil) ? [_documentView becomeFirstResponder] : NO;
@@ -419,6 +461,7 @@
 
   [aCoder encodeObject: _backgroundColor];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_copiesOnScroll];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_drawsBackground];
   [aCoder encodeObject: _cursor];
   [aCoder encodeObject: _documentView];
 }
@@ -432,6 +475,7 @@
 
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_backgroundColor];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_copiesOnScroll];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_drawsBackground];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_cursor];
 
   document = [aDecoder decodeObject];
