@@ -840,8 +840,9 @@ NSMutableDictionary	*pasteboards = nil;
 {
   NSMutableArray*   permenant;
 }
-- (NSConnection*) connection: ancestor didConnect: newConn;
-- connectionBecameInvalid: notification;
+- (BOOL) connection: (NSConnection*)ancestor
+  shouldMakeNewConnection: (NSConnection*)newConn;
+- (id) connectionBecameInvalid: (NSNotification*)notification;
 
 - (id<GSPasteboardObj>) pasteboardByFilteringData: (NSData*)data
 					   ofType: (NSString*)type
@@ -854,7 +855,8 @@ NSMutableDictionary	*pasteboards = nil;
 
 @implementation PasteboardServer
 
-- (NSConnection*) connection: ancestor didConnect: newConn
+- (BOOL) connection: (NSConnection*)ancestor
+  shouldMakeNewConnection: (NSConnection*)newConn
 {
   [[NSNotificationCenter defaultCenter]
     addObserver: self
@@ -862,7 +864,7 @@ NSMutableDictionary	*pasteboards = nil;
 	   name: NSConnectionDidDieNotification
 	 object: newConn];
   [newConn setDelegate: self];
-  return newConn;
+  return YES;
 }
 
 - (id) connectionBecameInvalid: (NSNotification*)notification
@@ -1051,16 +1053,15 @@ main(int argc, char** argv, char **env)
     }
 
   /* Register a connection that provides the server object to the network */
-  conn = [NSConnection newRegisteringAtName:PBSNAME
-		 withRootObject:server];
-  
-  if (conn == nil)
+  conn = [NSConnection defaultConnection];
+  [conn setRootobject: server];
+  if ([conn registerName: PBSNAME] == NO)
     {
       NSLog(@"Unable to register with name server.\n");
       exit(1);
     }
 
-  [conn setDelegate:server];
+  [conn setDelegate: server];
   [[NSNotificationCenter defaultCenter]
     addObserver: server
        selector: @selector(connectionBecameInvalid:)
