@@ -37,16 +37,18 @@
 @class NSString;
 @class NSMutableArray;
 @class NSData;
+@class NSURL;
 
 @class NSPasteboard;
 @class NSImageRep;
 @class NSColor;
 @class NSView;
 
-@interface NSImage : NSObject <NSCoding>
+@interface NSImage : NSObject <NSCoding, NSCopying>
 {
   // Attributes
-  NSString	*name;
+  NSString	*_name;
+  NSString	*_fileName;
   NSSize	_size;
   struct __imageFlags {
     unsigned	archiveByName: 1;
@@ -64,7 +66,7 @@
   NSMutableArray	*_reps;
   NSColor		*_color;
   NSView	*_lockedView;
-  id		delegate;
+  id		_delegate;
 }
 
 //
@@ -75,6 +77,12 @@
 - (id) initWithData: (NSData*)data;
 - (id) initWithPasteboard: (NSPasteboard*)pasteboard;
 - (id) initWithSize: (NSSize)aSize;
+
+#ifndef STRICT_OPENSTEP
+- (id)initWithBitmapHandle:(void *)bitmap;
+- (id)initWithContentsOfURL:(NSURL *)anURL;
+- (id)initWithIconHandle:(void *)icon;
+#endif
 
 //
 // Setting the Size of the Image 
@@ -179,18 +187,6 @@
 + (NSArray*) imageFileTypes;
 + (NSArray*) imagePasteboardTypes;
 
-//
-// Methods Implemented by the Delegate 
-//
-- (NSImage*) imageDidNotDraw: (id)sender
-		      inRect: (NSRect)aRect;
-
-//
-// NSCoding protocol
-//
-- (void) encodeWithCoder: (NSCoder*)aCoder;
-- (id) initWithCoder: (NSCoder*)aDecoder;
-
 @end
 
 
@@ -199,5 +195,17 @@
 - (NSString*) pathForImageResource: (NSString*)name;
 
 @end
+
+#ifndef	NO_GNUSTEP
+/*
+ * A formal protocol that duplicates the informal protocol for delegates.
+ */
+@protocol GSImageDelegateProtocol
+
+- (NSImage*) imageDidNotDraw: (id)sender
+		      inRect: (NSRect)aRect;
+
+@end
+#endif
 
 #endif // _GNUstep_H_NSImage
