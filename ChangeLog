@@ -1,3 +1,16 @@
+2001-04-23  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/NSColor.m: 
+	[initialize] call [NSUserDefaults standardUserDefaults] as a
+	workaround for the setlocal() problem. Otherwise colorFromString:
+	will fail later on for the system colours.
+	* Source/NSColorPanel.m: 
+	Added an [init] method, use this in [sharedColorPanel]. Replaced
+	reference to GMModel, with more general call on NSBundle. (This is
+	commented out, but some time in the futur we might use NIB files)
+	* Source/NSFontPanel.m: 
+	Also replaced GMModel with NSBundle in [init].
+	
 2001-04-22  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSColorList.m: ([_loadAvailableColorLists]) Fixed bug causing
