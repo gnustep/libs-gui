@@ -1,3 +1,8 @@
+Sun Oct 24  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSWindow.m ([GSWindowView -setFrame:]): Send to the
+ 	content view a resizeWithOldSuperviewSize: instead of a setFrame:.
+	
 Sat Oct 23  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	Fixed critical bug.  Now setting a flipped view as a window's 
