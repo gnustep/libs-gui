@@ -35,13 +35,14 @@
 
 @interface GSDrawFunctions : NSObject
 
-+ (void) drawButton: (NSRect)border : (NSRect)clip;
-+ (void) drawDarkBezel: (NSRect)border : (NSRect)clip;
-+ (void) drawLightBezel: (NSRect) border : (NSRect)clip;
-+ (void) drawGrayBezel: (NSRect)border : (NSRect)clip;
-+ (void) drawWhiteBezel: (NSRect) border : (NSRect)clip;
-+ (void) drawGroove: (NSRect)border : (NSRect)clip;
-+ (void) drawFramePhoto: (NSRect)border : (NSRect)clip;
++ (NSRect) drawButton: (NSRect)border : (NSRect)clip;
++ (NSRect) drawDarkButton: (NSRect)border : (NSRect)clip;
++ (NSRect) drawDarkBezel: (NSRect)border : (NSRect)clip;
++ (NSRect) drawLightBezel: (NSRect)border : (NSRect)clip;
++ (NSRect) drawGrayBezel: (NSRect)border : (NSRect)clip;
++ (NSRect) drawWhiteBezel: (NSRect)border : (NSRect)clip;
++ (NSRect) drawGroove: (NSRect)border : (NSRect)clip;
++ (NSRect) drawFramePhoto: (NSRect)border : (NSRect)clip;
 
 + (NSRect) drawGradientBorder: (NSGradientType)gradientType 
            inRect: (NSRect)border 

@@ -1,3 +1,19 @@
+2004-05-31  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/Additions/GNUstepGUI/GSDrawFunctions.h:
+	* Source/GSDrawFunctions.m: (-drawDarkButton::) New
+	method. Changed all methods to return the interior rectangle.
+	based on patch by Nicolas Roard <nicolas@roard.com>.
+	* Source/NSComboBoxCell.m: (-_selectCompleted) new method to
+	handle completion of selection in data source case correctly.
+	(-popUpForComboBoxCell:) use this method and also clear
+	selection at the end, so a new popup starts without selection.
+	(-selectItemAtIndex:) simplified and return when invalid
+	index is given. (-_loadButtonCell) always use image name
+	"NSComboArrow" and removed force arrow variable.
+	* Images/nsmapping.strings: mapping "NSComboArrow" to
+	"common_ComboBoxEllipsis". 
+		
 2004-05-29  Quentin Mathe <qmathe@lub-internet.fr>
         
 	* Source/NSComboBoxCell.m: Fixed problems related to decoding an encoded

@@ -51,7 +51,7 @@
 @implementation GSDrawFunctions
 
 /** Draw a button border */
-+ (void) drawButton: (NSRect)border : (NSRect)clip
++ (NSRect) drawButton: (NSRect)border : (NSRect)clip
 {
   NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, 
 			   NSMinXEdge, NSMaxYEdge, 
@@ -68,16 +68,38 @@
 
   if ([[NSView focusView] isFlipped] == YES)
     {
-      NSDrawColorTiledRects(border, clip, dn_sides, colors, 6);
+      return NSDrawColorTiledRects(border, clip, dn_sides, colors, 6);
     }
   else
     {
-      NSDrawColorTiledRects(border, clip, up_sides, colors, 6);
+      return NSDrawColorTiledRects(border, clip, up_sides, colors, 6);
+    }
+}
+
+/** Draw a "dark" button border (used in tableviews) */
++ (NSRect) drawDarkButton: (NSRect)border : (NSRect)clip
+{
+  NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, 
+			   NSMinXEdge, NSMaxYEdge}; 
+  NSRectEdge dn_sides[] = {NSMaxXEdge, NSMaxYEdge, 
+			   NSMinXEdge, NSMinYEdge}; 
+  // These names are role names not the actual colours
+  NSColor *black = [NSColor controlDarkShadowColor];
+  NSColor *white = [NSColor controlHighlightColor];
+  NSColor *colors[] = {black, black, white, white};
+
+  if ([[NSView focusView] isFlipped] == YES)
+    {
+      return NSDrawColorTiledRects(border, clip, dn_sides, colors, 4);
+    }
+  else
+    {
+      return NSDrawColorTiledRects(border, clip, up_sides, colors, 4);
     }
 }
 
 /** Draw a dark bezel border */
-+ (void) drawDarkBezel: (NSRect)border : (NSRect)clip
++ (NSRect) drawDarkBezel: (NSRect)border : (NSRect)clip
 {
   NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, NSMinXEdge, NSMaxYEdge,
 			   NSMinXEdge, NSMaxYEdge, NSMaxXEdge, NSMinYEdge};
@@ -90,10 +112,11 @@
   NSColor *white = [NSColor controlLightHighlightColor];
   NSColor *colors[] = {white, white, dark, dark, 
 		       black, black, light, light};
-  
+  NSRect rect;
+
   if ([[NSView focusView] isFlipped] == YES)
     {
-      NSDrawColorTiledRects(border, clip, dn_sides, colors, 8);
+      rect = NSDrawColorTiledRects(border, clip, dn_sides, colors, 8);
   
       [dark set];
       PSrectfill(NSMinX(border) + 1., NSMinY(border) - 2., 1., 1.);
@@ -101,16 +124,17 @@
     }
   else
     {
-      NSDrawColorTiledRects(border, clip, up_sides, colors, 8);
+      rect = NSDrawColorTiledRects(border, clip, up_sides, colors, 8);
   
       [dark set];
       PSrectfill(NSMinX(border) + 1., NSMinY(border) + 1., 1., 1.);
       PSrectfill(NSMaxX(border) - 2., NSMaxY(border) - 2., 1., 1.);
     }
+  return rect;
 }
 
 /** Draw a light bezel border */
-+ (void) drawLightBezel: (NSRect) border : (NSRect)clip
++ (NSRect) drawLightBezel: (NSRect)border : (NSRect)clip
 {
   NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, NSMinXEdge, NSMaxYEdge, 
   			   NSMaxXEdge, NSMinYEdge, NSMinXEdge, NSMaxYEdge};
@@ -125,16 +149,16 @@
 
   if ([[NSView focusView] isFlipped] == YES)
     {
-      NSDrawColorTiledRects(border, clip, dn_sides, colors, 8);
+      return NSDrawColorTiledRects(border, clip, dn_sides, colors, 8);
     }
   else
     {
-      NSDrawColorTiledRects(border, clip, up_sides, colors, 8);
+      return NSDrawColorTiledRects(border, clip, up_sides, colors, 8);
     }
 }
 
 /** Draw a white bezel border */
-+ (void) drawWhiteBezel: (NSRect) border : (NSRect)clip
++ (NSRect) drawWhiteBezel: (NSRect)border : (NSRect)clip
 {
   NSRectEdge up_sides[] = {NSMaxYEdge, NSMaxXEdge, NSMinYEdge, NSMinXEdge,
   			   NSMaxYEdge, NSMaxXEdge, NSMinYEdge, NSMinXEdge};
@@ -149,16 +173,16 @@
 
   if ([[NSView focusView] isFlipped] == YES)
     {
-      NSDrawColorTiledRects(border, clip, dn_sides, colors, 8);
+      return NSDrawColorTiledRects(border, clip, dn_sides, colors, 8);
     }
   else
     {
-      NSDrawColorTiledRects(border, clip, up_sides, colors, 8);
+      return NSDrawColorTiledRects(border, clip, up_sides, colors, 8);
     }
 }
 
 /** Draw a grey bezel border */
-+ (void) drawGrayBezel: (NSRect) border : (NSRect)clip
++ (NSRect) drawGrayBezel: (NSRect)border : (NSRect)clip
 {
   NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, NSMinXEdge, NSMaxYEdge,
 			   NSMaxXEdge, NSMinYEdge, NSMinXEdge, NSMaxYEdge};
@@ -171,25 +195,27 @@
   NSColor *white = [NSColor controlLightHighlightColor];
   NSColor *colors[] = {white, white, dark, dark,
 		       light, light, black, black};
+  NSRect rect;
 
   if ([[NSView focusView] isFlipped] == YES)
     {
-      NSDrawColorTiledRects(border, clip, dn_sides, colors, 8);
+      rect = NSDrawColorTiledRects(border, clip, dn_sides, colors, 8);
       [dark set];
       PSrectfill(NSMinX(border) + 1., NSMaxY(border) - 2., 1., 1.);
       PSrectfill(NSMaxX(border) - 2., NSMinY(border) + 1., 1., 1.);
     }
   else
     {
-      NSDrawColorTiledRects(border, clip, up_sides, colors, 8);
+      rect = NSDrawColorTiledRects(border, clip, up_sides, colors, 8);
       [dark set];
       PSrectfill(NSMinX(border) + 1., NSMinY(border) + 1., 1., 1.);
       PSrectfill(NSMaxX(border) - 2., NSMaxY(border) - 2., 1., 1.);
     }
+  return rect;
 }
 
 /** Draw a groove border */
-+ (void) drawGroove: (NSRect)border : (NSRect)clip
++ (NSRect) drawGroove: (NSRect)border : (NSRect)clip
 {
   // go clockwise from the top twice -- makes the groove come out right
   NSRectEdge up_sides[] = {NSMaxYEdge, NSMaxXEdge, NSMinYEdge, NSMinXEdge,
@@ -204,16 +230,16 @@
 
   if ([[NSView focusView] isFlipped] == YES)
     {
-      NSDrawColorTiledRects(border, clip, dn_sides, colors, 8);
+      return NSDrawColorTiledRects(border, clip, dn_sides, colors, 8);
     }
   else
     {
-      NSDrawColorTiledRects(border, clip, up_sides, colors, 8);
+      return NSDrawColorTiledRects(border, clip, up_sides, colors, 8);
     }
 }
 
 /** Draw a frame photo border.  Used in NSImageView.   */
-+ (void) drawFramePhoto: (NSRect) border : (NSRect)clip
++ (NSRect) drawFramePhoto: (NSRect)border : (NSRect)clip
 {
   NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, 
 			   NSMinXEdge, NSMaxYEdge, 
@@ -229,11 +255,11 @@
 
   if ([[NSView focusView] isFlipped] == YES)
     {
-      NSDrawColorTiledRects(border, clip, dn_sides, colors, 6);
+      return NSDrawColorTiledRects(border, clip, dn_sides, colors, 6);
     }
   else
     {
-      NSDrawColorTiledRects(border, clip, up_sides, colors, 6);
+      return NSDrawColorTiledRects(border, clip, up_sides, colors, 6);
     }
 }
 

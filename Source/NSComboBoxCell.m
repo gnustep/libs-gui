@@ -52,8 +52,6 @@
 
 static NSNotificationCenter *nc;
 static const BOOL ForceBrowser = NO;
-static const BOOL ForceArrowIcon = NO;
-
 
 @interface GSFirstMouseTableView : NSTableView
 {
@@ -107,6 +105,7 @@ static const BOOL ForceArrowIcon = NO;
 - (NSRect) _textCellFrame;
 - (void) _setSelectedItem: (int)index;
 - (void) _loadButtonCell;
+- (void) _selectCompleted;
 @end
 
 // ---
@@ -369,24 +368,16 @@ static GSComboWindow *gsWindow = nil;
 
 - (void) popUpForComboBoxCell: (NSComboBoxCell *)comboBoxCell
 {
-  NSString *more;
-  unsigned int index = NSNotFound;
-  
-   _cell = comboBoxCell;
+  _cell = comboBoxCell;
    
   [self positionWithComboBoxCell: _cell];
-  more = [_cell completedString: [_cell stringValue]];
-  index = [[_cell objectValues] indexOfObject: more];
-  if (index != NSNotFound)
-    {
-      [_cell _setSelectedItem: index];
-    }
-    
+  [_cell _selectCompleted];
   [self reloadData];
   [self enableKeyEquivalentForDefaultButtonCell];
   [self runModalPopUpWithComboBoxCell: _cell];
 
   _cell = nil;
+  [self deselectItemAtIndex: 0];
 }
 
 - (void) runModalPopUpWithComboBoxCell: (NSComboBoxCell *)comboBoxCell
@@ -811,25 +802,15 @@ numberOfRowsInColumn: (int)column
 {
   // Method called by GSComboWindow when a selection is done in the table view or 
   // the browser
-  
-  NSText *textObject = [[[self controlView] window] fieldEditor: YES 
-                                                      forObject: self];  
-  if ([self usesDataSource])
-    {
-      if ([self numberOfItems] <= index)
-        ; // raise exception
-    }
-  else
-    {
-      if ([_popUpList count] <= index)
-        ; // raise exception
-    }
-  
   if (index < 0)
-    ; // rais exception
+    return; // raise exception?
+  if ([self numberOfItems] <= index)
+    return; // raise exception?
 
   if (_selectedItem != index)
     {
+      NSText *textObject = [[[self controlView] window] fieldEditor: YES 
+							  forObject: self];  
       _selectedItem = index;
       
       [_popup selectItemAtIndex: index]; 
@@ -1504,23 +1485,51 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 
 - (void) _loadButtonCell
 {
-  if (!ForceArrowIcon)
-    {
-      _buttonCell = [[NSButtonCell alloc] initImageCell: 
-        [NSImage imageNamed: @"common_ComboBoxEllipsis"]];
-    }
-  else
-    {
-       _buttonCell = [[NSButtonCell alloc] initImageCell: 
-        [NSImage imageNamed: @"NSComboArrow"]];
-    }
-    
+  _buttonCell = [[NSButtonCell alloc] initImageCell: 
+		    [NSImage imageNamed: @"NSComboArrow"]];
   [_buttonCell setImagePosition: NSImageOnly];
   [_buttonCell setButtonType: NSMomentaryPushButton];
   [_buttonCell setHighlightsBy: NSPushInCellMask];
   [_buttonCell setBordered: YES];
   [_buttonCell setTarget: self];
   [_buttonCell setAction: @selector(_didClickWithinButton:)];
+}
+
+- (void) _selectCompleted
+{
+  NSString *more;
+  unsigned int index = NSNotFound;
+
+  more = [self completedString: [self stringValue]];
+  if (_usesDataSource)
+    {
+      if (!_dataSource)
+        {
+	  NSLog(@"%@: A DataSource should be specified", self);
+	}
+      else
+        {
+	  if ([_dataSource respondsToSelector: 
+			       @selector(comboBoxCell:indexOfItemWithStringValue:)])
+	    {
+	      index = [_dataSource comboBoxCell: self 
+		     indexOfItemWithStringValue: more];
+	    }
+	}
+    }
+  else
+    {
+      index = [[self objectValues] indexOfObject: more];
+    }
+
+  if (index != NSNotFound)
+    {
+      [self _setSelectedItem: index];
+    }
+  else 
+    {
+      [self _setSelectedItem: -1];
+    }
 }
 
 @end
