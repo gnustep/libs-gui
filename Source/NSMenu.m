@@ -1222,15 +1222,18 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
     }
 }
 
+- (void) initDefaults
+{
+  [super initDefaults];
+  window_level = NSSubmenuWindowLevel;
+}
+
 - (id) init
 {
-  [self initWithContentRect: NSZeroRect
-	          styleMask: NSBorderlessWindowMask
-	            backing: NSBackingStoreBuffered
-	              defer: NO];
-
-  window_level = NSSubmenuWindowLevel;
-
+  self = [self initWithContentRect: NSZeroRect
+			 styleMask: NSBorderlessWindowMask
+			   backing: NSBackingStoreBuffered
+			     defer: NO];
   return self;
 }
 
