@@ -1,3 +1,10 @@
+2000-08-31  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/GSFontInfo.h: 
+	* Source/GSFontInfo.m: 
+	Added class methods [weightForString:], [stringForWeight:] and
+	[encodingForRegistry:encoding:] to be used in subclasses.
+	
 Sat Sep  2 01:34:19 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSFont.m ([+boldSystemFontOfSize:]),
