@@ -295,7 +295,9 @@ id gnustep_gui_nsscroller_class = nil;
 	{
 	  pos = (point.x - barRect.origin.x - (knobRect.size.width/2))
 	    / (barRect.size.width - knobRect.size.width);
-	  [self setFloatValue: pos];
+	  if (pos < 0) pos = 0;
+	  if (pos > 1) pos = 1;
+	  [[self cell] setFloatValue: pos];
 	  [self drawBar];
 	  [self drawKnob];
 	  [[self window] flushWindow];
@@ -304,7 +306,9 @@ id gnustep_gui_nsscroller_class = nil;
 	{
 	  pos = (point.y - barRect.origin.y - (knobRect.size.height/2)) 
 	    / (barRect.size.height - knobRect.size.height);
-	  [self setFloatValue: pos];
+	  if (pos < 0) pos = 0;
+	  if (pos > 1) pos = 1;
+	  [[self cell] setFloatValue: pos];
 	  [self drawBar];
 	  [self drawKnob];
 	  [[self window] flushWindow];
