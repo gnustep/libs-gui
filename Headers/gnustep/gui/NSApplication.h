@@ -340,4 +340,9 @@ int NSApplicationMain(int argc, const char **argv);
 
 NSString *NSOpenStepRootDirectory(void);
 
+//
+// The NSApp global variable.
+//
+extern NSApplication *NSApp;
+
 #endif // _GNUstep_H_NSApplication

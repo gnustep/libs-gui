@@ -2,6 +2,10 @@ Tue Feb 16 10:19:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Tools/gpbs.m: Improve handling of loss of connections - don't remove
 	data from a pasteboard unless it was owned by the connection lost.
+	* Source/NSPanel.m: Override NSWindows initDefaults to make sure
+	panels aren't shown in windows menu by default.
+	* Source/NSApplication.m: Make NSApp a global variable.
+	* Headers/AppKit/NSApplication.h: Make NSApp a global variable.
 
 Tue Feb 16  5:30:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 

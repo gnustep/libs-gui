@@ -38,6 +38,7 @@
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSNotification.h>
+#include <Foundation/NSObject.h>
 #include <Foundation/NSRunLoop.h>
 #include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSTimer.h>
@@ -93,9 +94,9 @@ struct _NSModalSession {
 //
 static BOOL gnustep_gui_app_is_in_dealloc;
 static NSEvent *null_event;
-static id NSApp;
 static NSString *NSAbortModalException = @"NSAbortModalException";
 
+NSApplication	*NSApp = nil;
 
 @implementation NSApplication
 

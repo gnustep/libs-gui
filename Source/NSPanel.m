@@ -98,6 +98,12 @@
   return self;
 }
 
+- (void) initDefaults
+{
+  [super initDefaults];
+  menu_exclude = YES;		// Don't show panels in windows menu.
+}
+
 - (BOOL) canBecomeKeyWindow
 {
   return NO;
