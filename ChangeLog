@@ -1,3 +1,12 @@
+2003-03-30 19:14  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSScroller.m (-trackKnob:): Wrap each iteration of the
+	loop in an autorelease pool.
+
+	* Source/NSTextView.m: Correct the name of the delegate method
+	-textView:shouldChangeTextInRange:replacementString: (was missing
+	the textView: part).
+
 2003-03-30  Willem Rein Oudshoorn  <woudshoo@xs4all.nl>
 
 	* Source/NSMenuView.m: Reformatted to comply to coding standards

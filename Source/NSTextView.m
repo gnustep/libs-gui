@@ -209,7 +209,7 @@ some cases, so it needs to be safe wrt. that.
 	object: oldNotifObject];
 
       if ([_delegate respondsToSelector:
-	    @selector(shouldChangeTextInRange:replacementString:)])
+	    @selector(textView:shouldChangeTextInRange:replacementString:)])
 	{
 	  _tf.delegate_responds_to_should_change = YES;
 	}
@@ -292,7 +292,7 @@ decoded.
 {
   SEL selector;
 
-  selector = @selector(shouldChangeTextInRange:replacementString:);
+  selector = @selector(textView:shouldChangeTextInRange:replacementString:);
   if ([_delegate respondsToSelector: selector])
     {
       _tf.delegate_responds_to_should_change = YES;
@@ -2124,8 +2124,9 @@ TextDidEndEditing notification _without_ asking the delegate
 
   if (_tf.delegate_responds_to_should_change)
     {
-      return [_delegate shouldChangeTextInRange: affectedCharRange 
-			      replacementString: replacementString];
+      return [_delegate textView: self
+	 shouldChangeTextInRange: affectedCharRange
+	       replacementString: replacementString];
     }
 
   return YES;
