@@ -1,3 +1,11 @@
+Wed Jun 26 17:50:39 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSTextField.m ([-textDidEndEditing:]): Post the
+	NSControlTextDidEndEditingNotification *after* we end editing, not
+	before!
+	* Source/NSMatrix.m ([-textDidEndEditing:]): Idem.
+	* Source/NSTableView.m ([-textDidEndEditing:]): Idem.
+
 2002-06-24  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: Comitted Jeffs latest attemtpt at handling
