@@ -1699,7 +1699,9 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
   for (i = 0; i < j; ++i)
     {
       anItem = [menuItems objectAtIndex: i];
-      if ([[anItem title] compare: @"Windows"] == NSOrderedSame)
+      /* "Window" is for compatibility with menus ported from apple */
+      if (([[anItem title] compare: @"Windows"] == NSOrderedSame) 
+	  || ([[anItem title] compare: @"Window"] == NSOrderedSame)) 
 	{
 	  windows_menu = anItem;
 	  break;
