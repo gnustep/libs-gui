@@ -136,7 +136,10 @@ GSTextStorage.m \
 GSTrackingRect.m \
 GSServicesManager.m \
 tiff.m \
-externs.m
+externs.m \
+GSTable.m \
+GSHbox.m \
+GSVbox.m
 
 ifneq ($(FOUNDATION_LIB), fd)
 libgnustep-gui_OBJC_FILES += NSPasteboard.m
@@ -258,7 +261,10 @@ AppKit/GSHelpManagerPanel.h \
 AppKit/GSPasteboardServer.h \
 AppKit/GSServicesManager.h \
 AppKit/GSWraps.h \
-AppKit/AppKitExceptions.h
+AppKit/AppKitExceptions.h \
+AppKit/GSTable.h \
+AppKit/GSHbox.h \
+AppKit/GSVbox.h
 
 -include GNUmakefile.preamble
 
