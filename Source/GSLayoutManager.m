@@ -719,6 +719,20 @@ not completely accurate).
   return r->glyphs[glyphIndex].g;
 }
 
+- (BOOL) isValidGlyphIndex: (unsigned int)glyphIndex
+{
+ if (glyphIndex == (unsigned int)-1)
+    return NO;
+
+  if (glyphs->glyph_length <= glyphIndex)
+    {
+      return NO;
+    }
+  else 
+    {
+      return YES;
+    }
+}
 
 - (unsigned int) getGlyphs: (NSGlyph *)glyphArray
 	range: (NSRange)glyphRange

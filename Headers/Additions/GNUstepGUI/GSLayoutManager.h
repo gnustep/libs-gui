@@ -186,6 +186,9 @@ to NO. */
 - (NSGlyph) glyphAtIndex: (unsigned int)glyphIndex
 	isValidIndex: (BOOL *)isValidIndex;
 
+/* Returns if the glyph at glyphIndex is valid or not */
+- (BOOL) isValidGlyphIndex: (unsigned int)glyphIndex;
+
 /* Copies displayed glyphs to glyphArray for glyphRange. Returns the number
 of glyphs actually copied to the array. NSRangeException of the range is
 invalid (extends beyond the end of glyphs). */
