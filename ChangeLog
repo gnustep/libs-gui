@@ -1,3 +1,9 @@
+2001-10-14  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPopUpButtonCell.m
+	Added methods [setAction:] and [setTarget:], which call the super
+	implementation and also update the menu.
+	
 Thu Oct 11 13:53:22 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSMatrix.m ([-setTarget:]): Do not retain the target
