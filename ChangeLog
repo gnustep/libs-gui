@@ -1,3 +1,16 @@
+2003-03-17  Serg Stoyan <stoyan@on.com.ua>
+
+	* Source/NSMenuView.m 
+	(sizeToFit): 15 extra pixels added only for submenus. Extra 
+	_horizontalEdgePad removed. Made cleanup.
+	(GSCloseButton): Added and implemented. Override acceptsFirstResponder
+	method and return NO to avoid drawing dotted rectangle
+	* Images/common_Close.tiff: Changed to work with new GSCloseButton 
+	class.
+	* Images/common_CloseH.tiff: ditto.
+	* Images/common_3DArrowDown.tiff: Corrected position of light and 
+	dark sides of triangle.
+
 2003-03-17  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSControl.m
