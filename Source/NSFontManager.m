@@ -138,7 +138,9 @@ static Class		fontPanelClass = Nil;
       NSString *name = [fontsList objectAtIndex: i];
       
       if ([self _includeFont: name])
-	[fontNames addObject: name];
+	{
+	  [fontNames addObject: name];
+	}
     }
 
   return fontNames;
@@ -159,7 +161,7 @@ static Class		fontPanelClass = Nil;
   for (i = 0; i < [fontFamilies count]; i++)
     {
       NSArray *fontDefs = [self availableMembersOfFontFamily: 
-				  [fontFamilies objectAtIndex: i]];
+				 [fontFamilies objectAtIndex: i]];
       
       for (j = 0; j < [fontDefs count]; j++)
 	{
@@ -193,7 +195,9 @@ static Class		fontPanelClass = Nil;
       NSString *name = [fontDef objectAtIndex: 0];
       
       if ([self _includeFont: name])
-	[fonts addObject: fontDef];
+	{
+	  [fonts addObject: fontDef];
+	}
     }
 
   return fonts;
@@ -220,7 +224,9 @@ static Class		fontPanelClass = Nil;
 	  _multiple = flag;
 	  // The panel should also know if multiple changed
 	  if (fontPanel != nil)
-	    [fontPanel setPanelFont: fontObject isMultiple: flag];
+	    {
+	      [fontPanel setPanelFont: fontObject isMultiple: flag];
+	    }
 	}
       return;
     }
@@ -229,7 +235,9 @@ static Class		fontPanelClass = Nil;
   ASSIGN(_selectedFont, fontObject);
 
   if (fontPanel != nil)
-    [fontPanel setPanelFont: fontObject isMultiple: flag];
+    {
+      [fontPanel setPanelFont: fontObject isMultiple: flag];
+    }
   
   if (_fontMenu != nil)
     {
@@ -495,12 +503,12 @@ static Class		fontPanelClass = Nil;
   else if (trait == NSUnboldFontMask)
     {
       return [self convertFont: fontObject 
-		   toNotHaveTrait: NSBoldFontMask];
+		toNotHaveTrait: NSBoldFontMask];
    }
   else if (trait == NSUnitalicFontMask)
     {
       return [self convertFont: fontObject 
-		   toNotHaveTrait: NSItalicFontMask];
+		toNotHaveTrait: NSItalicFontMask];
    }
   else
     {
@@ -535,10 +543,13 @@ static Class		fontPanelClass = Nil;
 
   // This is a bit strange but is stated in the specification
   if (trait & NSUnboldFontMask)
+    {
       trait = (trait | NSBoldFontMask) & ~NSUnboldFontMask;
+    }
   if (trait & NSUnitalicFontMask)
+    {
       trait = (trait | NSItalicFontMask) & ~NSUnitalicFontMask;
-
+    }
   if (!(t & trait))
     {
       // If already do not have that trait then just return it
@@ -555,8 +566,9 @@ static Class		fontPanelClass = Nil;
 
       // We cannot reuse the weight in an unbold
       if (trait & NSBoldFontMask)
-	weight = 5;
-
+	{
+	  weight = 5;
+	}
       t &= ~trait;
       newFont = [self fontWithFamily: family 
 			      traits: t
@@ -653,8 +665,8 @@ static Class		fontPanelClass = Nil;
 	  NSArray *fontDef = [fontDefs objectAtIndex: i];
 	  int w1 = [[fontDef objectAtIndex: 2] intValue];
 
-	  if (w1 < w && w1 > next_w && 
-	      [[fontDef objectAtIndex: 3] unsignedIntValue] == trait)
+	  if (w1 < w && w1 > next_w
+	    && [[fontDef objectAtIndex: 3] unsignedIntValue] == trait)
 	    {
 	      next_w = w1;
 	      fontName = [fontDef objectAtIndex: 0];
@@ -671,8 +683,8 @@ static Class		fontPanelClass = Nil;
 	      NSArray *fontDef = [fontDefs objectAtIndex: i];
 	      int w1 = [[fontDef objectAtIndex: 2] intValue];
 	      
-	      if (w1 < w && w1 > next_w && 
-		  [[fontDef objectAtIndex: 3] unsignedIntValue] == trait)
+	      if (w1 < w && w1 > next_w
+		&& [[fontDef objectAtIndex: 3] unsignedIntValue] == trait)
 	        {
 		  next_w = w1;
 		  fontName = [fontDef objectAtIndex: 0];
@@ -682,9 +694,10 @@ static Class		fontPanelClass = Nil;
     }
 
   if (fontName != nil)
-    newFont = [NSFont fontWithName: fontName
-		      size: size];
-
+    {
+      newFont = [NSFont fontWithName: fontName
+				size: size];
+    }
   if (newFont == nil)
     return fontObject;
   else 

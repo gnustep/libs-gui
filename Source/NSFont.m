@@ -174,7 +174,11 @@ setNSFont(NSString* key, NSFont* font)
 
 /* Getting the preferred user fonts.  */
 
-// This is deprecated in MacOSX
+/** 
+ * Return the default bold font for use in menus and heading in standard
+ * gui components.<br />
+ * This is deprecated in MacOSX
+ */
 + (NSFont*) boldSystemFontOfSize: (float)fontSize
 {
   static NSFont *font = nil;
@@ -194,7 +198,11 @@ setNSFont(NSString* key, NSFont* font)
     }
 }
 
-// This is deprecated in MacOSX
+/** 
+ * Return the default font for use in menus and heading in standard
+ * gui components.<br />
+ * This is deprecated in MacOSX
+ */
 + (NSFont*) systemFontOfSize: (float)fontSize
 {
   static NSFont *font = nil;
@@ -214,6 +222,10 @@ setNSFont(NSString* key, NSFont* font)
     }
 }
 
+/** 
+ * Return the default fixed pitch font for use in locations other
+ * than standard gui components.
+ */
 + (NSFont*) userFixedPitchFontOfSize: (float)fontSize
 {
   static NSFont *font = nil;
@@ -233,6 +245,10 @@ setNSFont(NSString* key, NSFont* font)
     }
 }
 
+/** 
+ * Return the default font for use in locations other
+ * than standard gui components.
+ */
 + (NSFont*) userFontOfSize: (float)fontSize
 {
   static NSFont *font = nil;
@@ -252,7 +268,10 @@ setNSFont(NSString* key, NSFont* font)
     }
 }
 
-+ (NSArray *)preferredFontNames
+/** 
+ * Return an array of the names of preferred fonts.
+ */
++ (NSArray*) preferredFontNames
 {
   return _preferredFonts;
 }
@@ -269,7 +288,7 @@ setNSFont(NSString* key, NSFont* font)
   setNSFont (@"NSUserFont", aFont);
 }
 
-+ (void)setPreferredFontNames:(NSArray *)fontNames
++ (void) setPreferredFontNames: (NSArray*)fontNames
 {
   ASSIGN(_preferredFonts, fontNames);
 }
@@ -582,7 +601,9 @@ setNSFont(NSString* key, NSFont* font)
 {
   NSFont*new_font;
   if (NSShouldRetainWithZone(self, zone))
-    new_font = RETAIN(self);
+    {
+      new_font = RETAIN(self);
+    }
   else
     {
       new_font = (NSFont*)NSCopyObject(self, 0, zone);
@@ -788,9 +809,12 @@ setNSFont(NSString* key, NSFont* font)
       float	fontMatrix[6];
       
       name = [aDecoder decodeObject];
-      [aDecoder decodeArrayOfObjCType: @encode(float)  count: 6  at: fontMatrix];
+      [aDecoder decodeArrayOfObjCType: @encode(float)
+				count: 6
+				   at: fontMatrix];
       self = [self initWithName: name  matrix: fontMatrix];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &matrixExplicitlySet];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL)
+				   at: &matrixExplicitlySet];
     }
   else
     {
@@ -798,7 +822,9 @@ setNSFont(NSString* key, NSFont* font)
       float	fontMatrix[6];
       
       name = [aDecoder decodeObject];
-      [aDecoder decodeArrayOfObjCType: @encode(float)  count: 6  at: fontMatrix];
+      [aDecoder decodeArrayOfObjCType: @encode(float)
+				count: 6
+				   at: fontMatrix];
       self = [self initWithName: name  matrix: fontMatrix];
       if (fontMatrix[0] == fontMatrix[3]
 	  && fontMatrix[1] == 0.0
