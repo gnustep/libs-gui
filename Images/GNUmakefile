@@ -38,11 +38,7 @@ common_ArrowUp.tiff \
 common_ArrowRight.tiff \
 common_3DArrowRight.tiff \
 common_ArrowLeft.tiff \
-common_ArrowDownH.tiff \
-common_ArrowUpH.tiff \
-common_ArrowRightH.tiff \
 common_3DArrowRightH.tiff \
-common_ArrowLeftH.tiff \
 common_2DCheckMark.tiff \
 common_Close.tiff \
 common_CloseH.tiff \

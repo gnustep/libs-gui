@@ -67,7 +67,10 @@ BUGS_DOC_INSTALL_DIR = Developer/Gui/ReleaseNotes/$(VERSION)
 # file using the make file ../Source/DocMakefile.  If headers are added to the
 # library, you need to modify that file to get the autogsdoc tool to use them.
 #
-REF_DOC_INSTALL_DIR = $(GNUSTEP_DOCUMENTATION)/Developer/Gui/Reference
+DOCUMENT_NAME = Gui GuiAdditions GuiUser
+Gui_DOC_INSTALL_DIR = Developer/Gui/Reference
+GuiAdditions_DOC_INSTALL_DIR = Developer/Gui/Additions
+GuiUser_DOC_INSTALL_DIR = User/Gui
 
 -include GNUmakefile.preamble
 

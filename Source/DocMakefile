@@ -139,15 +139,14 @@ GSTable.h \
 GSHbox.h \
 GSVbox.h \
 
-DOCUMENT_NAME = Gui GuiAdditions
+DOCUMENT_NAME = Gui GuiAdditions GuiUser
 
-Gui_DOC_INSTALL_DIR = Developer
-GuiAdditions_DOC_INSTALL_DIR = Developer
+Gui_DOC_INSTALL_DIR = Developer/Gui/Reference
+GuiAdditions_DOC_INSTALL_DIR = Developer/Gui/Reference
+GuiUser_DOC_INSTALL_DIR = User/Gui
 
 Gui_AGSDOC_FILES = ../Documentation/Gui/Gui.gsdoc \
 	../Documentation/Gui/Introduction.gsdoc \
-	../Documentation/Gui/DefaultsSummary.gsdoc \
-	../Documentation/Gui/LanguageSetup.gsdoc \
 	../Documentation/Gui/NSBundleAdditions.gsdoc \
 	../Documentation/Gui/NSCoderAdditions.gsdoc \
 	../Documentation/Gui/NSMutableAttributedStringAdditions.gsdoc \
@@ -155,6 +154,10 @@ Gui_AGSDOC_FILES = ../Documentation/Gui/Gui.gsdoc \
 	$(AUTOGSDOC_HEADERS_GUI)
 
 GuiAdditions_AGSDOC_FILES = $(AUTOGSDOC_HEADERS_GUIADD)
+
+GuiUser_AGSDOC_FILES =	\
+	../Documentation/Gui/DefaultsSummary.gsdoc \
+	../Documentation/Gui/LanguageSetup.gsdoc
 
 #
 # Hack ... using the -DocumentationDirectory flag overrides the value
@@ -190,6 +193,21 @@ GuiAdditions_AGSDOC_FLAGS = \
 	APPKIT_EXPORT=extern;APPKIT_DECLARE="";\
 	DEFINE_RINT_IF_MISSING=""; \
 	}' -Up Gui
+
+GuiUser_AGSDOC_FLAGS = \
+	-DocumentationDirectory ../Documentation/GuiUser \
+	-HeaderDirectory ../Headers/AppKit \
+	-Declared AppKit \
+	-Standards YES \
+	-ConstantsTemplate TypesAndConstants \
+	-FunctionsTemplate Functions \
+	-MacrosTemplate Functions \
+	-TypedefsTemplate TypesAndConstants \
+	-VariablesTemplate TypesAndConstants \
+	-WordMap '{\
+	APPKIT_EXPORT=extern;APPKIT_DECLARE="";\
+	DEFINE_RINT_IF_MISSING=""; \
+	}' -Up GuiUser
 
 include $(GNUSTEP_MAKEFILES)/documentation.make
 

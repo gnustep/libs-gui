@@ -37,15 +37,21 @@ after-all::
 # Install the library reference documentaion manually
 #
 after-install::
-	rm -rf $(REF_DOC_INSTALL_DIR)
-	$(MKINSTALLDIRS) $(REF_DOC_INSTALL_DIR)
+	rm -rf $(GNUSTEP_DOCUMENTATION)/$(Gui_DOC_INSTALL_DIR)
+	$(MKDIRS) $(GNUSTEP_DOCUMENTATION)/$(Gui_DOC_INSTALL_DIR)
 	(cd Gui; $(TAR) cf - .) | \
-	  (cd $(REF_DOC_INSTALL_DIR); $(TAR) xf -)
-ifneq ($(CHOWN_TO),)
-	$(CHOWN) -R $(CHOWN_TO) \
-	  $(REF_DOC_INSTALL_DIR)
-endif
-
+	  (cd $(GNUSTEP_DOCUMENTATION)/$(Gui_DOC_INSTALL_DIR); $(TAR) xf -)
+	rm -rf $(GNUSTEP_DOCUMENTATION)/$(Gui_DOC_INSTALL_DIR)/CVS
+	rm -rf $(GNUSTEP_DOCUMENTATION)/$(GuiAdditions_DOC_INSTALL_DIR)
+	$(MKDIRS) $(GNUSTEP_DOCUMENTATION)/$(GuiAdditions_DOC_INSTALL_DIR)
+	(cd GuiAdditions; $(TAR) cf - .) | \
+	  (cd $(GNUSTEP_DOCUMENTATION)/$(GuiAdditions_DOC_INSTALL_DIR); $(TAR) xf -)
+	rm -rf $(GNUSTEP_DOCUMENTATION)/$(GuiAdditions_DOC_INSTALL_DIR)/CVS
+	rm -rf $(GNUSTEP_DOCUMENTATION)/$(GuiUser_DOC_INSTALL_DIR)
+	$(MKDIRS) $(GNUSTEP_DOCUMENTATION)/$(GuiUser_DOC_INSTALL_DIR)
+	(cd GuiUser; $(TAR) cf - .) | \
+	  (cd $(GNUSTEP_DOCUMENTATION)/$(GuiUser_DOC_INSTALL_DIR); $(TAR) xf -)
+	rm -rf $(GNUSTEP_DOCUMENTATION)/$(GuiUser_DOC_INSTALL_DIR)/CVS
 
 # Things to do before uninstalling
 # before-uninstall::
