@@ -1,3 +1,11 @@
+Mon Jan 21 11:47:27 2002  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSMenuItem.m ([-setSubmenu:]): When raising an exception
+	that the submenu already has a supermenu, print titles of both
+	submenu and supermenu.  
+	* Source/NSMenuItem.m: For the whole class: access variable
+	_title.
+
 2002-01-20  Richard Frith-Macdonald  <rfm@gnu.org>
 
 	* Source/NSWindow.m: ([-sendEvent:]) check to see that an old drag
