@@ -1,3 +1,22 @@
+Sat Dec 16 22:45:32 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSLayoutManager.m ([GSTextContainerLayoutInfo -dealloc]):
+	Release the text container.  ([NSLayoutManager -setTextStorage:]):
+	Do not retain the text storage.
+	* Source/NSTextContainer.m ([-dealloc]): Implemented.
+	([-setLayoutManager:]): Do not retain the layout manager.
+	* Headers/gnustep/gui/NSText.h: Added flags owns_text_network 
+	and is_in_dealloc.
+	* Source/NSText.m ([NSText -initWithFrame:]): Release self to
+	break the retain cycle.  ([NSText -dealloc]): Manage the very
+	special case in which we own the text network.
+	([-encodeWithCoder:]): Do not encode the other text classes.
+	([-initWithCoder:]): Always build up the text network; added
+	release self as in [-initWithFrame:].  ([-setTextContainer:]): Do
+	not retain the text objects.  ([-buildUpTextNetwork:]): Rewritten.
+	* Source/NSTextView.m ([-replaceTextContainer:]): Do not retain 
+	the text container.
+
 2000-12-16  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSApplication.h:
