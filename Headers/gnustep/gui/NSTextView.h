@@ -41,7 +41,6 @@
 @class NSTextStorage;
 @class NSLayoutManager;
 
-// these definitions should migrate to NSTextView when implemented
 typedef enum _NSSelectionGranularity {	
   NSSelectByCharacter	= 0,
   NSSelectByWord	= 1,
