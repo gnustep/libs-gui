@@ -269,7 +269,7 @@ NSSecureTextField.h \
 NSSelection.h \
 NSSlider.h \
 NSSliderCell.h \
-NSText.h \
+NSSound.h  \
 NSSpellChecker.h \
 NSSpellServer.h \
 NSSplitView.h \
@@ -282,6 +282,7 @@ NSTableColumn.h \
 NSTableHeaderCell.h \
 NSTableHeaderView.h \
 NSTableView.h \
+NSText.h \
 NSTextAttachment.h \
 NSTextContainer.h \
 NSTextField.h \

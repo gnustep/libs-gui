@@ -1,6 +1,7 @@
 2002-07-31  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/AppKit.h: Add NSSound.
+	* Source/GNUmakefile (AUTOGSDOC_HEADERS): Idem.
 	
 	* Tools/gsnd/GNUmakefile (GNUSTEP_INSTALLATION_DIR): Add.
 
