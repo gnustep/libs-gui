@@ -1,3 +1,10 @@
+Sun Jun 10 20:29:08 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSCell.m ([-cellAttribute:]), ([-setCellAttribute:to:]):
+	Readded default label with the action that if debugging is
+	enabled, we print out a message saying the the attribute requested
+	is not supported.
+	
 2000-06-10  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSComboBox.m
