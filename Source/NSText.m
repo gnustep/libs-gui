@@ -118,7 +118,8 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 
       nc = [NSNotificationCenter defaultCenter];
 
-      types  = [NSArray arrayWithObjects: NSStringPboardType, NSRTFPboardType, NSRTFDPboardType, nil];
+      types  = [NSArray arrayWithObjects: NSStringPboardType, 
+			NSRTFPboardType, NSRTFDPboardType, nil];
 
       [[NSApplication sharedApplication] registerServicesMenuSendTypes: types
 					 returnTypes: types];
@@ -139,19 +140,44 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 
 - (id) initWithFrame: (NSRect)frameRect
 {
-  NSTextContainer *aTextContainer = [self buildUpTextNetwork: frameRect.size];
+  NSTextContainer *aTextContainer;
 
-  return [self initWithFrame: frameRect textContainer: aTextContainer];
+  aTextContainer = [self buildUpTextNetwork: frameRect.size];
+
+  self = [self initWithFrame: frameRect  textContainer: aTextContainer];
+
+  /* At this point the situation is as follows: 
+
+     textView (us)  --RETAINs--> textStorage
+     textStorage    --RETAINs--> layoutManager 
+     layoutManager  --RETAINs--> textContainer 
+     textContainter --RETAINs --> textView (us) */
+
+  /* The text system should be destroyed when the textView (us) is
+     released.  To get this result, we send a RELEASE message to us
+     breaking the RETAIN cycle. */
+  RELEASE (self);
+
+  return self;
 }
 
 - (void)dealloc
 {
+  if (_tf.owns_text_network == YES)
+    {
+      /* Prevent recursive dealloc */
+      if (_tf.is_in_dealloc == YES)
+	{
+	  return;
+	}
+      _tf.is_in_dealloc = YES;
+      /* This releases all the text objects (us included) in fall */
+      RELEASE (_textStorage);
+    }
+
   RELEASE(_background_color);
   RELEASE(_caret_color);
   RELEASE(_typingAttributes);
-  RELEASE(_textStorage);
-  RELEASE(_textContainer);
-  RELEASE(_layoutManager);
 
   [super dealloc];
 }
@@ -1395,7 +1421,6 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   [super encodeWithCoder: aCoder];
 
   [aCoder encodeConditionalObject: _delegate];
-  [aCoder encodeObject: _textStorage];
 
   flag = _tf.is_field_editor;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
@@ -1435,10 +1460,11 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 - initWithCoder: aDecoder
 {
   BOOL flag;
+  NSTextContainer *aTextContainer; 
+
   [super initWithCoder: aDecoder];
 
   _delegate  = [aDecoder decodeObject];
-  _textStorage = [aDecoder decodeObject];
 
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
   _tf.is_field_editor = flag;
@@ -1474,11 +1500,12 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &_minSize];
   [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &_maxSize];
 
-  // build up the layout informations that don't get stored
-  {
-      NSTextContainer *aTextContainer = [self buildUpTextNetwork: _frame.size];
-      [aTextContainer setTextView: (NSTextView*)self];
-  }
+  /* build up the rest of the text system, which doesn't get stored 
+     <doesn't even implement the Coding protocol>. */
+  aTextContainer = [self buildUpTextNetwork: _frame.size];
+  [aTextContainer setTextView: (NSTextView*)self];
+  /* See initWithFrame: for comments on this RELEASE */
+  RELEASE (self);
 
   return self;
 }
@@ -1551,7 +1578,7 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   [super initWithFrame: frameRect];
 
   [self setMinSize: frameRect.size];
-  [self setMaxSize: NSMakeSize(HUGE,HUGE)];
+  [self setMaxSize: NSMakeSize (HUGE,HUGE)];
 
   _tf.is_field_editor = NO;
   _tf.is_editable = YES;
@@ -1564,8 +1591,8 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   _tf.uses_font_panel = YES;
   _tf.uses_ruler = YES;
   _tf.is_ruler_visible = NO;
-  ASSIGN(_caret_color, [NSColor blackColor]); 
-  [self setTypingAttributes: [[self class] defaultTypingAttributes]];
+  ASSIGN (_caret_color, [NSColor blackColor]); 
+  [self setTypingAttributes: [isa defaultTypingAttributes]];
 
   [self setBackgroundColor: [NSColor textBackgroundColor]];
 
@@ -1583,9 +1610,9 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 - (void) setTextContainer: (NSTextContainer*)aTextContainer
 {
   // FIXME: This builds up circular references between those objects
-  ASSIGN(_textContainer, aTextContainer);
-  ASSIGN(_layoutManager, [aTextContainer layoutManager]);
-  ASSIGN(_textStorage, [_layoutManager textStorage]);
+  _textContainer = aTextContainer;
+  _layoutManager = [aTextContainer layoutManager];
+  _textStorage = [_layoutManager textStorage];
 
   // Hack to get the layout change
   [_textContainer setContainerSize: _frame.size];
@@ -2323,17 +2350,37 @@ other than copy/paste or dragging. */
 
 - (NSTextContainer*) buildUpTextNetwork: (NSSize)aSize;
 {
-  NSTextContainer *aTextContainer = [[NSTextContainer alloc] initWithContainerSize: aSize];
-  NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
-  NSTextStorage *textStorage = [[NSTextStorage alloc] init];
+  NSTextContainer *textContainer;
+  NSLayoutManager *layoutManager;
+  NSTextStorage *textStorage;
 
-  [layoutManager addTextContainer: aTextContainer];
+  textStorage = [[NSTextStorage alloc] init];
+
+  layoutManager = [[NSLayoutManager alloc] init];
+  /*
+    [textStorage addLayoutManager: layoutManager];
+    RELEASE (layoutManager);
+  */
+
+  textContainer = [[NSTextContainer alloc] initWithContainerSize: aSize];
+  [layoutManager addTextContainer: textContainer];
+  RELEASE (textContainer);
+
+  /* FIXME: The following two lines should go *before* */
   [textStorage addLayoutManager: layoutManager];
-  AUTORELEASE(aTextContainer);
-  AUTORELEASE(layoutManager);
-  AUTORELEASE(textStorage);
+  RELEASE (layoutManager);
 
-  return aTextContainer;
+  /* The situation at this point is as follows: 
+
+     textView (us) --RETAINs--> textStorage 
+     textStorage   --RETAINs--> layoutManager 
+     layoutManager --RETAINs--> textContainer */
+
+  /* We keep a flag to remember that we are directly responsible for 
+     managing the text objects. */
+  _tf.owns_text_network = YES;
+
+  return textContainer;
 }
 
 - (void) drawInsertionPointAtIndex: (unsigned) index
