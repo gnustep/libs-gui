@@ -1,3 +1,8 @@
+2000-07-30 Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSBundleAdditions.m: patch by borgheron@yahoo.com to simplify
+	loading of gmodel files.
+
 2000-07-06 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GNUmakefile: Install GSFontInfo.h
