@@ -420,12 +420,23 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
 	    other: (NSString*)otherButton
 {
   NSView	*content = [self contentView];
+  float		maxX = NSMaxX([content bounds]) - 5;
+  float		diff;
+  NSRect	bRect;
 
-  if (defaultButton)
+  if (defaultButton != nil)
     {
       [defButton setTitle: defaultButton];
+      [defButton sizeToFit];
       if ([defButton superview] == nil)
 	[content addSubview: defButton];
+
+      bRect = [defButton frame];
+      diff = maxX - NSMaxX(bRect);
+      bRect.origin.x += diff;
+      [defButton setFrame: bRect];
+      maxX = NSMinX(bRect) - 10;
+
       [self makeFirstResponder: defButton];
     }
   else
@@ -434,11 +445,18 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
 	[defButton removeFromSuperview];
     }
 
-  if (alternateButton)
+  if (alternateButton != nil)
     {
       [altButton setTitle: alternateButton];
+      [altButton sizeToFit];
       if ([altButton superview] == nil)
 	[content addSubview: altButton];
+
+      bRect = [altButton frame];
+      diff = maxX - NSMaxX(bRect);
+      bRect.origin.x += diff;
+      [altButton setFrame: bRect];
+      maxX = NSMinX(bRect) - 10;
     }
   else
     {
@@ -446,11 +464,18 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
 	[altButton removeFromSuperview];
     }
 
-  if (otherButton)
+  if (otherButton != nil)
     {
       [othButton setTitle: otherButton];
+      [othButton sizeToFit];
       if ([othButton superview] == nil)
 	[content addSubview: othButton];
+
+      bRect = [othButton frame];
+      diff = maxX - NSMaxX(bRect);
+      bRect.origin.x += diff;
+      [othButton setFrame: bRect];
+      maxX = NSMinX(bRect) - 10;
     }
   else
     {
@@ -458,9 +483,10 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
 	[othButton removeFromSuperview];
     }
 
-  if (message)
+  if (message != nil)
     {
       [messageField setStringValue: message];
+      [messageField sizeToFit];
       if ([messageField superview] == nil)
 	[content addSubview: messageField];
     }
@@ -470,9 +496,10 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
 	[messageField removeFromSuperview];
     }
 
-  if (title)
+  if (title != nil)
     {
       [titleField setStringValue: title];
+      [titleField sizeToFit];
       if ([titleField superview] == nil)
 	[content addSubview: titleField];
     }
