@@ -36,7 +36,7 @@
 //
 // class variables
 //
-id _nsbuttonCellClass = nil;
+static id buttonCellClass = nil;
 
 //
 // NSButton implementation
@@ -60,12 +60,12 @@ id _nsbuttonCellClass = nil;
 //
 + (Class) cellClass
 {
-  return _nsbuttonCellClass;
+  return buttonCellClass;
 }
 
 + (void) setCellClass: (Class)classId
 {
-  _nsbuttonCellClass = classId;
+  buttonCellClass = classId;
 }
 
 //
