@@ -55,18 +55,9 @@ TODO: Don't do linear searches through the line frags if avoidable. Some
 cases are considerably more important than others, and should be fixed
 first. Remaining cases, highest priority first:
 
--drawGlyphsForGlyphRange:atPoint:
-	Drawing must be fast.
-
--rectArrayForGlyphRange:withinSelectedGlyphRange:inTextContainer:rectCount:
-	Used when drawing backgrounds and the selection; see above.
-
 -glyphIndexForPoint:inTextContainer:fractionOfDistanceThroughGlyph:
 	Used when selecting with the mouse, and called for every event.
-	(Also slightly incorrect behavior currently.)
 
-
--_insertionPointRectForCharacterIndex:textContainer:
 -characterIndexMoving:fromCharacterIndex:originalCharacterIndex:distance:
 	Keyboard insertion point movement. Performance isn't important.
 
@@ -101,6 +92,27 @@ first. Remaining cases, highest priority first:
 @end
 
 
+/* Helper for searching for the line frag of a glyph. */
+#define LINEFRAG_FOR_GLYPH(glyph) \
+  do { \
+    int lo, hi, mid; \
+\
+    lf = tc->linefrags; \
+    for (lo = 0, hi = tc->num_linefrags - 1; lo < hi; ) \
+      { \
+	mid = (lo + hi) / 2; \
+	if (lf[mid].pos > glyph) \
+	  hi = mid - 1; \
+	else if (lf[mid].pos + lf[mid].length <= glyph) \
+	  lo = mid + 1; \
+	else \
+	  lo = hi = mid; \
+      } \
+    lf = &lf[lo]; \
+    i = lo; \
+  } while (0)
+
+
 @implementation NSLayoutManager (layout)
 
 -(NSPoint) locationForGlyphAtIndex: (unsigned int)glyphIndex
@@ -115,7 +127,7 @@ first. Remaining cases, highest priority first:
   if (r.location == NSNotFound)
     {
       /* The glyph hasn't been typeset yet, probably because there isn't
-      enough space in the text containers to fit them. */
+      enough space in the text containers to fit it. */
       return NSMakePoint(0, 0);
     }
 
@@ -211,14 +223,19 @@ container? necessary? */
 
   num_rects = 0;
 
-  for (lf = tc->linefrags, i = 0; i < tc->num_linefrags; i++, lf++)
-    if (lf->pos + lf->length > glyphRange.location)
-      break;
+  LINEFRAG_FOR_GLYPH(glyphRange.location);
 
+  /* Main loop. Work through all line frag rects and build the array of
+  rects. */
   while (1)
     {
+      /* Determine the starting x-coordinate for this line frag rect. */
       if (lf->pos < glyphRange.location)
 	{
+	  /*
+	  The start index is inside the line frag rect, so we need to
+	  search through it to find the exact starting location.
+	  */
 	  int i, j;
 	  linefrag_point_t *lp;
 	  glyph_run_t *r;
@@ -245,18 +262,31 @@ container? necessary? */
 	    }
 	}
       else
-	x0 = NSMinX(lf->rect);
+	{
+	  /*
+	  The start index was before the this line frag, so the starting
+	  x-coordinate is the left edge of the line frag.
+	  */
+	  x0 = NSMinX(lf->rect);
+	}
 
+      /* Determine the end x-coordinate for this line frag. */
       if (lf->pos + lf->length > last)
 	{
+	  /*
+	  The end index is inside the line frag, so we need to find the
+	  exact end location.
+	  */
 	  int i, j;
 	  linefrag_point_t *lp;
 	  glyph_run_t *r;
 	  unsigned int gpos, cpos;
 
-	  /* At this point there is a glyph in our range that is in this
-	     line frag rect. If we're on the first line frag rect, it's
-	     trivially true. If not, the check before the lf++; ensures it. */
+	  /*
+	  At this point there is a glyph in our range that is in this
+	  line frag rect. If we're on the first line frag rect, it's
+	  trivially true. If not, the check before the lf++; ensures it.
+	  */
 	  for (j = 0, lp = lf->points; j < lf->num_points; j++, lp++)
 	    if (lp->pos + lp->length > last)
 	      break;
@@ -278,9 +308,25 @@ container? necessary? */
 	    }
 	}
       else
-	x1 = NSMaxX(lf->rect);
+	{
+	  /*
+	  The range continues beyond the end of the line frag, so the end
+	  x-coordinate is the right edge of the line frag.
+	  */
+	  x1 = NSMaxX(lf->rect);
+	}
 
+      /*
+      We have the start and end x-coordinates, and use the height of the
+      line frag for the y-coordinates.
+      */
       r = NSMakeRect(x0, lf->rect.origin.y, x1 - x0, lf->rect.size.height);
+
+      /*
+      As an optimization of the rectangle array, we check if the previous
+      rectangle had the same x-coordinates as the new rectangle and touches
+      it vertically. If so, we combine them.
+      */
       if (num_rects &&
 	  r.origin.x == rect_array[num_rects - 1].origin.x &&
 	  r.size.width == rect_array[num_rects - 1].size.width &&
@@ -314,6 +360,8 @@ container? necessary? */
 {
   NSRange r1, r2;
 
+  /* TODO: we can actually do better than this by using the insertion point
+  positioning behavior */
   r1 = [self glyphRangeForCharacterRange: charRange
 	     actualCharacterRange: NULL];
   r2 = [self glyphRangeForCharacterRange: selCharRange
@@ -478,7 +526,14 @@ line frag rect. */
 -(NSRange) glyphRangeForBoundingRectWithoutAdditionalLayout: (NSRect)bounds
 					    inTextContainer: (NSTextContainer *)container
 {
-  /* OPT: handle faster? how? */
+  /* TODO: this should be the same as
+  -glyphRangeForBoundingRect:inTextContainer: but without the _doLayout...
+  call.
+
+  In other words, it returns the range of glyphs in the rect that have
+  already been laid out.
+  */
+
   return [self glyphRangeForBoundingRect: bounds
 	       inTextContainer: container];
 }
@@ -641,10 +696,12 @@ anything visible
 }
 
 
-/*
-Insertion point positioning and movement.
-*/
+/*** Insertion point positioning and movement. ***/
 
+/*
+Determines at which glyph, and how far through it, the insertion point
+should be placed for a certain character index.
+*/
 -(unsigned int) _glyphIndexForCharacterIndex: (unsigned int)cindex
 			     fractionThrough: (float *)fraction
 {
@@ -662,7 +719,21 @@ Insertion point positioning and movement.
       glyphRange = [self glyphRangeForCharacterRange: NSMakeRange(cindex, 1)
 				actualCharacterRange: &charRange];
 
-      /* Deal with composite characters and ligatures. */
+      /*
+      Deal with composite characters and ligatures.
+
+      We determine how far through the character range this character is a
+      part of the character is, and then determine the glyph index and
+      fraction that is the same distance through the glyph range it is
+      mapped to.
+
+      (This gives good behavior when dealing with ligatures, at least.)
+
+      Eg. if the character index is at character 3 in a 5 character range,
+      we are 3/5=0.6 through the entire character range. If this range was
+      mapped to 4 glyphs, we get 0.6*4=2.4, so the glyph index is 2 and
+      the fraction is 0.4.
+      */
       fraction_through = (cindex - charRange.location) / (float)charRange.length;
       fraction_through *= glyphRange.length;
 
@@ -711,7 +782,7 @@ has the same y origin and height as the line frag rect it is in.
       glyph_index = [self numberOfGlyphs] - 1;
       if (glyph_index == (unsigned int)-1)
 	{
-	  /* No information is available. */
+	  /* No information is available. The best we can do is guess. */
 
 	  /* will be -1 if there are no text containers */
 	  *textContainer = num_textcontainers - 1;
@@ -732,9 +803,7 @@ has the same y origin and height as the line frag rect it is in.
 
   *textContainer = i;
 
-  for (lf = tc->linefrags, i = 0; i < tc->num_linefrags; i++, lf++)
-    if (lf->pos + lf->length > glyph_index)
-      break;
+  LINEFRAG_FOR_GLYPH(glyph_index);
 
   {
     int i, j;
@@ -1031,7 +1100,8 @@ will fit in the text container makes sense.
 
 TODO: reconsider silently clamping ranges in these methods; might
 want to make sure we don't do it if part of the range is in a second
-container */
+container
+*/
 
 -(void) drawBackgroundForGlyphRange: (NSRange)range
 			    atPoint: (NSPoint)containerOrigin
@@ -1218,14 +1288,7 @@ container */
   if (range.location + range.length > tc->pos + tc->length)
     range.length = tc->pos + tc->length - range.location;
 
-  for (i = 0, lf = tc->linefrags; i < tc->num_linefrags; i++, lf++)
-    if (lf->pos + lf->length > range.location)
-      break;
-  if (i == tc->num_linefrags)
-    {
-      NSLog(@"%s: can't find line frag rect for glyph (internal error)", __PRETTY_FUNCTION__);
-      return;
-    }
+  LINEFRAG_FOR_GLYPH(range.location);
 
   la = lf->attachments;
   la_i = 0;

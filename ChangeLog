@@ -1,3 +1,13 @@
+2003-02-16 02:08  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSLayoutManager.m (-rectArrayForGlyphRange:
+	withinSelectedGlyphRange:inTextContainer:rectCount:,
+	-_insertionPointRectForCharacterIndex:textContainer:,
+	-drawGlyphsForGlyphRange:atPoint:): Optimize by using a binary
+	instead of linear search for the line frag.
+
+	More cleanups and comments.
+
 2003-02-16 22:37  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSLayoutManager.m: Commenting and cleanups.
