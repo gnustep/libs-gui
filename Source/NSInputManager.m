@@ -46,6 +46,7 @@
 #include "AppKit/NSInputManager.h"
 #include "GSTIMInputServerInfo.h"
 #include "GSTIMKeyBindingTable.h"
+#include "GSTIMInputServerMenu.h"
 #include "NSInputManagerPriv.h"
 
 
@@ -93,6 +94,18 @@
 @implementation NSInputManager
 
 static NSMutableArray *_inputServerList = nil;
+
+
++ (void)initialize
+{
+  static BOOL done = NO;
+
+  if (done == NO)
+    {
+      [GSTIMInputServerMenu sharedInstance];
+      done = YES;
+    }
+}
 
 
 + (NSInputManager *)currentInputManager
@@ -721,7 +734,7 @@ static NSMutableArray *_inputServerList = nil;
 	self, [serverInfo serverName]);
   NSLog(@"%@: Invalidate key-bindings %@",
 	self, [serverInfo defaultKeyBindings]); 
-  /* Release all resources to related to the server */
+  /* Release all resources related to the server */
   [self setServerProxy: nil];
   [self setKeyBindingTable: nil];
   [self setServerInfo: nil];

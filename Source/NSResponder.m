@@ -48,9 +48,8 @@
     {
       [self setVersion: 1];
       
-      /* NSInputManager somehow needs to interact with the NSApplication.
-         Perhap, the right place of the instantiation may be there... */
-      [[NSInputManager alloc] initWithName: @"PlainInputServer" host: nil];
+      [[NSInputManager alloc] initWithName: nil
+				      host: nil];
     }
 }
 
