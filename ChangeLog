@@ -1,3 +1,20 @@
+2000-06-25  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/Parser/attributedStringConsumer.m
+	* Source/Parser/rtfConsumerFunctions.h
+	* Source/Parser/rtfScanner.c
+	* Source/Parser/rtfGrammer.y
+	Added support for RTF special characters and extra paragraph attributes
+	* Source/Parser/RTFProducer.m
+	* Source/Parser/RTFProducer.h
+	New files for RTF output, code comes partly from Source/NSAttributedString
+	* Source/NSAttributedString.m
+	Moved RTF output code to Source/Parser/RTFProducer.m
+	Corrected [fixParagraphStyleAttributeInRange:] and removed all the
+	location < 0 checks as location is unsigned.
+	* Source/NSFontManager.m 
+	Allow for a loosier conversion in [fontWithFamily:traits:weight:size:]
+	
 Wed Jun 21 19:42:12 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* NSCell.m ([-objectValue]): Placeholder implementation returning
