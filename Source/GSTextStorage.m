@@ -101,14 +101,12 @@
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [super encodeWithCoder: aCoder];
   [aCoder encodeValueOfObjCType: @encode(unsigned) at: &loc];
   [aCoder encodeValueOfObjCType: @encode(id) at: &attrs];
 }
 
 - (id) initWithCoder: (NSCoder*)aCoder
 {
-  self = [super initWithCoder: aCoder];
   [aCoder decodeValueOfObjCType: @encode(unsigned) at: &loc];
   [aCoder decodeValueOfObjCType: @encode(id) at: &attrs];
   return self;
@@ -153,7 +151,7 @@ static void _setup()
       infCls = [GSTextInfo class];
       infImp = [infCls methodForSelector: infSel];
 
-      a = [[NSMutableArray allocWithZone: z] initWithCapacity: 1];
+      a = [[NSMutableArray allocWithZone: NSDefaultMallocZone()] initWithCapacity: 1];
       addImp = (void (*)())[a methodForSelector: addSel];
       cntImp = (unsigned (*)())[a methodForSelector: cntSel];
       insImp = (void (*)())[a methodForSelector: insSel];
