@@ -1,3 +1,11 @@
+Tue Jan 19 10:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSScrollView.m: Tidied ([-tile]) and other stuff to do
+	with resizing - removed some redundant code.
+	* Source/NSSplitView.m: ([-adjustSubviews]) complete rewrite in
+	an attempt to get things working as specified in documentation.
+	Subviews are now scaled proportionately.
+
 Mon Jan 18  5:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSColor.m: Fixed error in decoding color from defaults
