@@ -1,7 +1,12 @@
+Mon Jul 12  5:40:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSOpenPanel.m: In ([-runModalForTypes:]) made change
+	suggested by Pascal Bourguignon to pass legal arguments.
+
 Sat Jul 10 14:55:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSapplication.m: In ([-init]) made changes suggested by
-	Pascal Bourguignon to eneable effective sublassing of NSAppklication.
+	Pascal Bourguignon to enable effective sublassing of NSAppklication.
 
 1999-07-9  Michael Hanni  <mhanni@sprintmail.com>
 

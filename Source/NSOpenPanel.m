@@ -181,7 +181,7 @@ static NSOpenPanel *gnustep_gui_open_panel = nil;
 - (int) runModalForTypes: (NSArray *)fileTypes
 {
   return [self runModalForDirectory: [self directory]
-			       file: nil
+			       file: @""
 			      types: fileTypes];
 }
 
