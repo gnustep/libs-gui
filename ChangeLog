@@ -1,3 +1,32 @@
+Sat Aug 26 19:25:17 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	Implemented selection of rows and columns in NSTableView:
+	* Headers/gnustep/gui/NSTableView.h: Added ivars for selection 
+	of rows and columns.
+	* Source/NSTableView.m ([-initWithFrame:]): Initialize the
+	selection ivars.  ([-dealloc]): Release the selected row and
+	column arrays.  ([-setAllowsMultipleSelection:]),
+	([-allowsMultipleSelection]), ([-setAllowsEmptySelection:]),
+	([-allowsEmptySelection]), ([-setAllowsColumnSelection]),
+	([-allowsColumnSelection]), ([-numberOfSelectedColumns]),
+	([-numberOfSelectedRows]), ([-selectedRow]), ([-selectedColumn]),
+	([-isColumnSelected:]), ([-isRowSelected:]),
+	([-selectedColumnEnumerator]), ([-selectedRowEnumerator]):
+	([-selectRow:byExtendingSelection:]),
+	([-selectColumn:byExtendingSelection:]), ([-deselectColumn:]),
+	([-deselectRow:]), ([-deselectAll:sender]), ([-selectAll:]),
+	([-highlightSelectionInClipRect:]): Implemented.  ([-mouseDown:]):
+	Manage selection.  ([-drawRect:]): Draw selection.
+	(_deselectRowsInRange), (_selectionChange), (_selectRowsInRange),
+	(_insertNumberInSelectionArray): New internal functions.
+	([-_selectColumn:modifiers:]): New method;
+	([-_setSelectingColumns:]): New internal method.
+	* Source/NSTableHeaderView.m ([-mouseDown:]): Implemented simple
+	selection of columns; some code for dragging.
+
+	* Source/NSTableView.m: Cache the default notification center for
+	the whole class.  ([-isOpaque]): Added method.
+	
 2000-08-25  Adam Fedor  <fedor@gnu.org>
 
 	* GMAppKit.m ([NSTextView -encodeWithModelArchiver:]): Test if
