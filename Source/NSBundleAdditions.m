@@ -183,7 +183,7 @@ static const int currentVersion = 1;
 	   * FIXME - need some way to do this for libFoundation and
 	   * Foundation based systems.
 	   */
-	  if (GSObjCFindInstanceVariable(_src, nam, &type, &size, &offset))
+	  if (GSObjCFindVariable(_src, nam, &type, &size, &offset))
 	    {
 	      GSObjCSetVariable(_src, offset, size, (void*)&_dst); 
 	    }
