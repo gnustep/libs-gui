@@ -35,7 +35,6 @@
 
 // toDo: - caret blinking
 
-#include <gnustep/gui/config.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSArchiver.h>
@@ -74,7 +73,8 @@ static NSNotificationCenter *nc;
 - (unsigned) characterIndexForPoint: (NSPoint)point;
 - (NSRect) rectForCharacterIndex: (unsigned)index;
 - (NSRect) rectForCharacterRange: (NSRange)aRange;
-- (void) _buildUpLayout;
+
+- (NSTextContainer*) buildUpTextNetwork: (NSSize)aSize;
 
 /*
  * various GNU extensions
@@ -93,16 +93,13 @@ static NSNotificationCenter *nc;
 			  turnedOn: (BOOL)flag;
 @end
 
-static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
+// not the same as NSMakeRange!
+static NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 {
-  if (a1 < 0)
-    a1  = 0;
-  if (a2 < 0)
-    a2  = 0;
   if (a1 < a2)
-    return NSMakeRange (a1, a2 - a1);
+    return NSMakeRange(a1, a2 - a1);
   else
-    return NSMakeRange (a2, a1 - a2);
+    return NSMakeRange(a2, a1 - a2);
 }
 
 @implementation NSText
@@ -141,43 +138,18 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
 
 - (id) initWithFrame: (NSRect)frameRect
 {
-  [super initWithFrame: frameRect];
+  NSTextContainer *aTextContainer = [self buildUpTextNetwork: frameRect.size];
 
-  [self setMinSize: frameRect.size];
-  [self setMaxSize: NSMakeSize(HUGE,HUGE)];
-
-  _tf.is_field_editor = NO;
-  _tf.is_editable = YES;
-  _tf.is_selectable = YES;
-  _tf.is_rich_text = NO;
-  _tf.imports_graphics = NO;
-  _tf.draws_background = YES;
-  _tf.is_horizontally_resizable = NO;
-  _tf.is_vertically_resizable = YES;
-  _tf.uses_font_panel = YES;
-  _tf.uses_ruler = YES;
-  _tf.is_ruler_visible = NO;
-  ASSIGN(_caret_color, [NSColor blackColor]); 
-  [self setTypingAttributes: [[self class] defaultTypingAttributes]];
-
-  [self setBackgroundColor: [NSColor textBackgroundColor]];
-
-  // sets up the contents object
-  _textStorage = [[NSTextStorage alloc]
-		     initWithString: @""
-		     attributes: [self typingAttributes]];
-  [self _buildUpLayout];
-
-  //[self setSelectedRange: NSMakeRange (0, 0)];
-  return self;
+  return [self initWithFrame: frameRect textContainer: aTextContainer];
 }
 
 - (void)dealloc
 {
   RELEASE(_background_color);
   RELEASE(_caret_color);
-  RELEASE(_textStorage);
   RELEASE(_typingAttributes);
+  RELEASE(_textStorage);
+  RELEASE(_textContainer);
   RELEASE(_layoutManager);
 
   [super dealloc];
@@ -228,8 +200,7 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
 
 - (NSString*) string
 {
-  // FIXME: As NSTextStorage returns the real characters we have to copy them.
-  // This should also remove all the attachement characters.
+  // FIXME: This should remove all the attachement characters.
   return [_textStorage string];
 }
 
@@ -396,7 +367,7 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
   NSRange oldRange = _selected_range;
   NSRange overlap;
 
-  // Do nothing to do, if the range is still the same
+  // Nothing to do, if the range is still the same
   if (NSEqualRanges(range, oldRange))
     return;
 
@@ -620,6 +591,7 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
 		    range: aRange];
       [_textStorage endEditing];
       [self didChangeText];
+      [self sizeToFit];
     }
 }
 
@@ -746,6 +718,7 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
       [_textStorage subscriptRange: aRange];
       [_textStorage endEditing];
       [self didChangeText];
+      [self sizeToFit];
     }
 
   // Set the typing attributes
@@ -776,6 +749,7 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
       [_textStorage superscriptRange: aRange];
       [_textStorage endEditing];
       [self didChangeText];
+      [self sizeToFit];
     }
 
   // Set the typing attributes
@@ -803,6 +777,7 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
       [_textStorage unscriptRange: aRange];
       [_textStorage endEditing];
       [self didChangeText];
+      [self sizeToFit];
     }
 
   // Set the typing attributes
@@ -1338,11 +1313,7 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
 {
   NSRange drawnRange = [_layoutManager glyphRangeForBoundingRect: rect 
 				       inTextContainer: [self textContainer]];
-/*
-  NSLog(@"frame: %@", NSStringFromRect([self frame]));
-  NSLog(@"drawRect: %@", NSStringFromRect(rect));
-  NSLog(@"drawRange: %@", NSStringFromRange(drawnRange));
-*/
+
   if (_tf.draws_background)
     {
       [_layoutManager drawBackgroundForGlyphRange: drawnRange 
@@ -1486,8 +1457,12 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
   [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &_minSize];
   [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &_maxSize];
 
-  // build up the layout information that dont get stored
-  [self _buildUpLayout];
+  // build up the layout informations that don't get stored
+  {
+      NSTextContainer *aTextContainer = [self buildUpTextNetwork: _frame.size];
+      [aTextContainer setTextView: (NSTextView*)self];
+  }
+
   return self;
 }
 
@@ -1555,14 +1530,63 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
 
 @implementation NSText(NSTextView)
 
+- (id) initWithFrame: (NSRect)frameRect
+       textContainer: (NSTextContainer*)aTextContainer
+{
+  [super initWithFrame: frameRect];
+
+  [self setMinSize: frameRect.size];
+  [self setMaxSize: NSMakeSize(HUGE,HUGE)];
+
+  _tf.is_field_editor = NO;
+  _tf.is_editable = YES;
+  _tf.is_selectable = YES;
+  _tf.is_rich_text = NO;
+  _tf.imports_graphics = NO;
+  _tf.draws_background = YES;
+  _tf.is_horizontally_resizable = NO;
+  _tf.is_vertically_resizable = YES;
+  _tf.uses_font_panel = YES;
+  _tf.uses_ruler = YES;
+  _tf.is_ruler_visible = NO;
+  ASSIGN(_caret_color, [NSColor blackColor]); 
+  [self setTypingAttributes: [[self class] defaultTypingAttributes]];
+
+  [self setBackgroundColor: [NSColor textBackgroundColor]];
+
+  //[self setSelectedRange: NSMakeRange (0, 0)];
+
+  [aTextContainer setTextView: (NSTextView*)self];
+  [self sizeToFit];
+
+  return self;
+}
+
+/* This should only be called by [NSTextContainer -setTextView:] */
+- (void) setTextContainer: (NSTextContainer*)aTextContainer
+{
+  // FIXME: This builds up circular references between those objects
+  ASSIGN(_textContainer, aTextContainer);
+  ASSIGN(_layoutManager, [aTextContainer layoutManager]);
+  ASSIGN(_textStorage, [_layoutManager textStorage]);
+
+  // Hack to get the layout change
+  [_textContainer setContainerSize: _frame.size];
+}
+
 - (NSTextContainer *)textContainer
 {
-  return nil;
+  return _textContainer;
 }
 
 - (NSPoint)textContainerOrigin
 {
   return NSZeroPoint;
+}
+
+- (NSSize) textContainerInset
+{
+  return NSZeroSize;
 }
 
 - (void) setRulerVisible: (BOOL)flag
@@ -2151,6 +2175,7 @@ other than copy/paste or dragging. */
     }
   [_textStorage endEditing];
   [self didChangeText];
+  [self sizeToFit];
 }
 
 - (void) _illegalMovement: (int) textMovement
@@ -2238,7 +2263,6 @@ other than copy/paste or dragging. */
   [_textStorage deleteCharactersInRange: deleteRange];
   [_textStorage endEditing];
   [self didChangeText];
-
   // ScrollView interaction
   [self sizeToFit];
 
@@ -2282,15 +2306,23 @@ other than copy/paste or dragging. */
 			 inTextContainer: [self textContainer]];
 }
 
-- (void) _buildUpLayout
+- (NSTextContainer*) buildUpTextNetwork: (NSSize)aSize;
 {
-  if (_layoutManager == nil)
-    {
-      _layoutManager = [[GSSimpleLayoutManager alloc] init];
-      [_layoutManager setFirstTextView: (NSTextView*)self];
-    }
-  
-  [_textStorage addLayoutManager: _layoutManager];
+  NSTextContainer *aTextContainer = [[NSTextContainer alloc] initWithContainerSize: aSize];
+  //NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
+  NSLayoutManager *layoutManager = [[GSSimpleLayoutManager alloc] init];
+  NSTextStorage *textStorage = [[NSTextStorage alloc] init];
+
+  [aTextContainer setWidthTracksTextView: YES];
+  [aTextContainer setHeightTracksTextView: YES];
+
+  [layoutManager addTextContainer: aTextContainer];
+  [textStorage addLayoutManager: layoutManager];
+  AUTORELEASE(aTextContainer);
+  AUTORELEASE(layoutManager);
+  AUTORELEASE(textStorage);
+
+  return aTextContainer;
 }
 
 - (void) drawInsertionPointAtIndex: (unsigned) index
