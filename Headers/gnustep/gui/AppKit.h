@@ -142,6 +142,8 @@
 #include <AppKit/NSFileWrapper.h>
 #include <AppKit/NSLayoutManager.h>
 #include <AppKit/NSOutlineView.h>
+#include <AppKit/NSRulerMarker.h>
+#include <AppKit/NSRulerView.h>
 #include <AppKit/NSTextContainer.h>
 #include <AppKit/NSTextStorage.h>
 #include <AppKit/NSUserInterfaceValidation.h>
