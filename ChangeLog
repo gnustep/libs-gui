@@ -1,6 +1,15 @@
+Sat Jun  5 21:50:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Added image updates by jagapen@whitewater.chem.wisc.edu -
+	* Source/NSImageView.m: Implemented
+	* Source/NSImageCell.m: New class
+	* Source/GNUmakefile: Added NSImageCell
+	* Headers/AppKit/NSImageCell.h: New header
+	* Headers/AppKit/AppKit.h: Added NSImageCell
+
 Sat Jun  5  7:05:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
-	* NSCell.m: Some minor drawing optimisations.
+	* Source/NSCell.m: Some minor drawing optimisations.
 
 1999-06-03  Adam Fedor  <fedor@gnu.org>
 
