@@ -163,6 +163,13 @@ APPKIT_EXPORT NSString *NSPrintVerticalPagination;
 APPKIT_EXPORT NSString *NSPrintVerticallyCentered;
 
 //
+// Additional (GNUstep) keys
+//
+/** Set to <code>Rows</code> to print row by row, set to <code>Columns</code>
+    to print column by column */
+APPKIT_EXPORT NSString *NSPrintPageDirection;
+
+//
 // Print Job Disposition Values 
 //
 APPKIT_EXPORT NSString *NSPrintCancelJob;

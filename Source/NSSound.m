@@ -235,7 +235,8 @@ afCloseFile(file); \
 return NO; \
 }
 
-  if ((file = afOpenFile([path cString], "r", NULL)) == AF_NULL_FILEHANDLE) 
+  if ((file = afOpenFile([path fileSystemRepresentation], "r", NULL)) 
+	== AF_NULL_FILEHANDLE) 
     {
       return NO;
     }

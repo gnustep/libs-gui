@@ -1,3 +1,17 @@
+2002-09-06  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/gnustep/gui/NSPrintInfo.h: Add print option.
+	* Source/NSPrintOperation.m ([-_printPaginateWithInfo:knowsRange:): 
+	Use it.
+	(-_rectForPage:info:xpage:ypage:): Correct xpage/ypage calc.
+	(-_adjustPagesFirst:last:info:): Likewise.
+	* Source/NSStringDrawing.m (setupSpecialRun): Set base.
+
+	* Source/NSSound.m (-getDataFromFileAtPath:): Use
+	fileSystemRepresentation.
+	* Source/NSView.m (-beginPage:label:bBox:fonts:): Use
+	lossyCString.
+
 2002-09-06  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSColorPanel.h

@@ -2847,13 +2847,13 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
   if (aString == nil)
     aString = [[NSNumber numberWithInt: ordinalNum] description];
-  DPSPrintf(ctxt, "%%%%Page: %s %d\n", [aString cString], ordinalNum);
+  DPSPrintf(ctxt, "%%%%Page: %s %d\n", [aString lossyCString], ordinalNum);
   if (NSIsEmptyRect(pageRect) == NO)
     DPSPrintf(ctxt, "%%%%PageBoundingBox: %d %d %d %d\n",
 	      (int)NSMinX(pageRect), (int)NSMinY(pageRect), 
 	      (int)NSMaxX(pageRect), (int)NSMaxY(pageRect));
   if (fontNames)
-    DPSPrintf(ctxt, "%%%%PageFonts: %s\n", [fontNames cString]);
+    DPSPrintf(ctxt, "%%%%PageFonts: %s\n", [fontNames lossyCString]);
   DPSPrintf(ctxt, "%%%%BeginPageSetup\n");
 }
 
@@ -2882,13 +2882,13 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     DPSPrintf(ctxt, "%%!PS-Adobe-3.0 EPSF-3.0\n");
   else
     DPSPrintf(ctxt, "%%!PS-Adobe-3.0\n");
-  DPSPrintf(ctxt, "%%%%Title: %s\n", [aTitle cString]);
-  DPSPrintf(ctxt, "%%%%Creator: %s\n", [anApplication cString]);
+  DPSPrintf(ctxt, "%%%%Title: %s\n", [aTitle lossyCString]);
+  DPSPrintf(ctxt, "%%%%Creator: %s\n", [anApplication lossyCString]);
   DPSPrintf(ctxt, "%%%%CreationDate: %s\n", 
-	    [[dateCreated description] cString]);
-  DPSPrintf(ctxt, "%%%%For: %s\n", [user cString]);
+	    [[dateCreated description] lossyCString]);
+  DPSPrintf(ctxt, "%%%%For: %s\n", [user lossyCString]);
   if (fontNames)
-    DPSPrintf(ctxt, "%%%%DocumentFonts: %s\n", [fontNames cString]);
+    DPSPrintf(ctxt, "%%%%DocumentFonts: %s\n", [fontNames lossyCString]);
   else
     DPSPrintf(ctxt, "%%%%DocumentFonts: (atend)\n");
 

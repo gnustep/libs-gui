@@ -68,6 +68,7 @@ typedef struct _page_info_t {
   int    nup;                /* Number up pages to print on a sheet */
   double lastWidth, lastHeight;
   NSPrintingOrientation orient;
+  int    pageDirection;      /* NSPrintPageDirection */
 } page_info_t;
 
 @interface NSPrintOperation (Private)
@@ -771,19 +772,36 @@ scaleRect(NSRect rect, double scale)
     {
       info->nupScale = 2.0 / (float)info->nup;
     }
+
+  if ([[dict objectForKey: NSPrintPageDirection] isEqual: @"Columns"])
+    info->pageDirection = 1;
+  else
+    info->pageDirection = 0;
 }
 
 /* Our personnel method to calculate the print rect for the specified page.
    Note, we assume this function is called in order from our first to last
    page. The returned pageRect is in the view's coordinate system
 */
-- (NSRect) _rectForPage: (int)page info: (page_info_t *)info
+- (NSRect) _rectForPage: (int)page info: (page_info_t *)info 
+		  xpage: (int *)xptr
+		  ypage: (int *)yptr
 {
   int xpage, ypage;
   NSRect pageRect;
 
-  xpage = (page - 1) % info->xpages;
-  ypage = (page - 1) % info->ypages;
+  if (info->pageDirection == 1)
+    {
+      xpage = (page - 1) / info->ypages;
+      ypage = (page - 1) % info->ypages;
+    }
+  else
+    {
+      xpage = (page - 1) % info->xpages;
+      ypage = (page - 1) / info->xpages;
+    }
+  *xptr = xpage;
+  *yptr = ypage;
   if (xpage == 0)
     info->lastWidth = 0;
   if (ypage == 0)
@@ -803,7 +821,7 @@ scaleRect(NSRect rect, double scale)
 			last: (int)last 
 			info: (page_info_t *)info
 {
-  int i;
+  int i, xpage, ypage;
   double hlimit, wlimit;
   NSRect pageRect;
   hlimit = [_view heightAdjustLimit];
@@ -811,7 +829,7 @@ scaleRect(NSRect rect, double scale)
   for (i = first; i <= last; i++)
     {
       float newVal, limitVal;
-      pageRect = [self _rectForPage: i info: info];
+      pageRect = [self _rectForPage: i info: info xpage: &xpage ypage: &ypage];
       limitVal = NSMaxY(pageRect) - hlimit * NSHeight(pageRect);
       [_view adjustPageHeightNew: &newVal
 	                     top: NSMinY(pageRect)
@@ -826,8 +844,10 @@ scaleRect(NSRect rect, double scale)
 	                   limit: limitVal];
       if (newVal < NSMaxX(pageRect))
 	pageRect.size.width = MAX(newVal, limitVal) - NSMinX(pageRect);
-      info->lastWidth = NSMaxX(pageRect)*(info->pageScale*info->printScale);
-      info->lastHeight = NSMaxY(pageRect)*(info->pageScale*info->printScale);
+      if (info->pageDirection == 0 || ypage == info->ypages - 1)
+	info->lastWidth = NSMaxX(pageRect)*(info->pageScale*info->printScale);
+      if (info->pageDirection == 1 || xpage == info->xpages - 1)
+	info->lastHeight = NSMaxY(pageRect)*(info->pageScale*info->printScale);
     }
   return pageRect;
 }

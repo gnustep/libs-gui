@@ -279,6 +279,8 @@ NSString *NSPrintHorizontalPagination = @"PrintHorizontalPagination";
 NSString *NSPrintVerticalPagination = @"PrintVerticalPagination";
 NSString *NSPrintVerticallyCentered = @"PrintVerticallyCentered";
 
+NSString *NSPrintPageDirection = @"NSPrintPageDirection";
+
 // Print Job Disposition Values
 NSString  *NSPrintCancelJob = @"PrintCancelJob";
 NSString  *NSPrintFaxJob = @"PrintFaxJob";
