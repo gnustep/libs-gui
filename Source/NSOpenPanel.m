@@ -371,6 +371,7 @@ selectCellWithString: (NSString *)title
       [self _setDirectory: [sender pathToColumn: [_browser lastColumn]] 
 				   updateBrowser: NO];
       
+      ASSIGN (_fullFileName, [sender path]);
       if (_canChooseDirectories)
 	{
 	  if ([[sender selectedCell] isLeaf])

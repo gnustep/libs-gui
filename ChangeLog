@@ -1,3 +1,9 @@
+Fri Dec  3 14:38:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSOpenPanel.m ([-browser:selectCellWithString:inColumn:])
+	fixed to set the _fullFileName ivar so that the panel can return
+	the selected filename.
+
 Fri Dec  3 11:34:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSApplication.m: ([-updateWindowsItem:]) modified to show
