@@ -314,13 +314,6 @@ GSDestroyGlyphChunk(GSGlyphChunk *chunk)
   NSZoneFree(NSDefaultMallocZone(), chunk);
 }
 
-static inline unsigned
-GSCharIndexForGlyphInChunk(GSGlyphChunk *chunk, unsigned index)
-{
-  return chunk->charIndex
-    + (GSIArrayItemAtIndex(&chunk->glyphs, index).ext).offset;
-}
-
 static unsigned
 GSChunkForCharIndex(GSIArray chunks, unsigned charIndex)
 {
@@ -387,6 +380,10 @@ static void		_SetGlyph(NSLayoutManager *lm, NSGlyph g);
 static BOOL		_Step(NSLayoutManager *lm);
 
 
+/*
+ * Move 'current' glyph index back one place in glyph stream.
+ * return NO on failure (start of stream).
+ */
 static inline BOOL
 _Back(NSLayoutManager *lm)
 {
@@ -410,6 +407,10 @@ _Back(NSLayoutManager *lm)
     }
 }
 
+/*
+ * Move 'current' glyph index forward one place in glyph stream.
+ * return NO on failure (end of stream).
+ */
 static inline BOOL
 _Step(NSLayoutManager *lm)
 {
@@ -590,6 +591,61 @@ _SetGlyph(NSLayoutManager *lm, NSGlyph g)
 {
   GSIArraySetItemAtIndex(&_chunk->glyphs, (GSIArrayItem)g, _offset);
 }
+
+#if	USE_GLYPHS
+static void
+_Sane(NSLayoutManager *lm)
+{
+  unsigned	lastGlyph = 0;
+  unsigned	lastChar = 0;
+  unsigned	pos;
+
+  /*
+   * Check gaps.
+   */
+  for (pos = 0; pos < GSIArrayCount(_gaps); pos++)
+    {
+      unsigned val = GSIArrayItemAtIndex(_gaps, pos).ulng;
+
+      NSCAssert(val > lastGlyph || (val == 0 && pos == 0),
+	NSInternalInconsistencyException);
+      lastGlyph = val;
+    }
+  
+  NSCAssert(GSIArrayCount(_chunks) > 0, NSInternalInconsistencyException);
+  lastGlyph = 0;
+  for (pos = 0; pos < GSIArrayCount(_chunks); pos++)
+    {
+      GSGlyphChunk	*chunk;
+      unsigned		count;
+
+      chunk = (GSGlyphChunk*)GSIArrayItemAtIndex(_chunks, pos).ptr;
+      NSCAssert(chunk->glyphIndex == (pos == 0 ? 0 : lastGlyph+1),
+	NSInternalInconsistencyException);
+      NSCAssert(chunk->charIndex >= lastChar, NSInternalInconsistencyException);
+      count = GSIArrayCount(&chunk->glyphs);
+      if (count > 0)
+	{
+	  GSGlyphAttrs	a;
+	  unsigned	i;
+
+	  for (i = 0; i < count; i++)
+	    {
+	      a = GSIArrayItemAtIndex(&chunk->attrs, i).ext;
+	      NSCAssert(chunk->charIndex + a.offset >= lastChar,
+		NSInternalInconsistencyException);
+	      lastChar = chunk->charIndex + a.offset;
+	    }
+	  lastGlyph = chunk->glyphIndex + count - 1;
+	}
+    }
+}
+#else
+static inline void
+_Sane(NSLayoutManager *lm)
+{
+}
+#endif
 
 
 
@@ -1036,6 +1092,7 @@ _SetGlyph(NSLayoutManager *lm, NSGlyph g)
     }
 
 // FIXME - should invalidate the character range ... but what does that mean?
+_Sane(self);
 }
 
 // This invalidates the layout information (glyph location and
@@ -1473,6 +1530,7 @@ invalidatedRange.length);
 	}
       pos++;
     }
+_Sane(self);
 }
 
 // If there are any holes in the glyph stream this will cause glyph
@@ -1556,6 +1614,7 @@ invalidatedRange.length);
 	    }
 	}
     }
+_Sane(self);
   if (_JumpToGlyph(self, index) == YES)
     {
       *flag = YES;
@@ -1743,6 +1802,7 @@ invalidatedRange.length);
     }
 
   _numberOfGlyphs -= aRange.length;
+_Sane(self);
 }
 
 // If there are any holes in the glyph stream, this will cause all
@@ -1833,6 +1893,7 @@ invalidatedRange.length);
       attrs.offset += diff;
       _SetAttrs(self, attrs);
     }
+_Sane(self);
 }
 
 // If there are any holes in the glyph stream this will cause glyph
