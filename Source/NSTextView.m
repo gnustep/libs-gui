@@ -125,6 +125,7 @@ static NSNotificationCenter *nc;
 - (unsigned) characterIndexForPoint: (NSPoint)point;
 - (NSRect) rectForCharacterIndex: (unsigned)index;
 - (NSRect) rectForCharacterRange: (NSRange)aRange;
+- (NSRect) rectForInsertionPointAtIndex: (unsigned)index;
 
 /*
  * various GNU extensions
@@ -137,10 +138,6 @@ static NSNotificationCenter *nc;
 - (void) setAttributes: (NSDictionary *) attributes  range: (NSRange) aRange;
 - (void) _illegalMovement: (int) notNumber;
 - (void) deleteRange: (NSRange)aRange  backspace: (BOOL)flag;
-
-- (void) drawInsertionPointAtIndex: (unsigned)index
-			     color: (NSColor *)color
-			  turnedOn: (BOOL)flag;
 @end
 
 @implementation NSTextView
@@ -330,7 +327,7 @@ static NSNotificationCenter *nc;
  * on the internals of the NSTextView
  */
 - (void) replaceCharactersInRange: (NSRange)aRange
-		       withString: (NSString*)aString
+		       withString: (NSString *)aString
 {
   if (aRange.location == NSNotFound)
     return;
@@ -1132,7 +1129,8 @@ static NSNotificationCenter *nc;
 - (void) setNeedsDisplayInRect: (NSRect)aRect
 	 avoidAdditionalLayout: (BOOL)flag
 {
-  // FIXME: This is here until the layout manager is working
+  /* FIXME: This is here until the layout manager is working */
+  /* This is very important */
   [super setNeedsDisplayInRect: aRect];
 }
 
@@ -1148,12 +1146,24 @@ static NSNotificationCenter *nc;
   return (_selected_range.length == 0) && _tf.is_editable;
 }
 
+/*
+ * It only makes real sense to call this method with `flag == YES'.
+ * If you want to delete the insertion point, what you want is rather
+ * to redraw what was under the insertion point - which can't be done
+ * here - you need to set the rect as needing redisplay (without
+ * additional layout) instead.  NB: You need to flush the window after
+ * calling this method if you want the insertion point to appear on
+ * the screen immediately.  This could only be needed to implement
+ * blinking insertion point - but even there, it could probably be
+ * done without. */
 - (void) drawInsertionPointInRect: (NSRect)rect
 			    color: (NSColor*)color
 			 turnedOn: (BOOL)flag
 {
-  if (!_window)
-    return;
+  if (_window == nil)
+    {
+      return;
+    }
 
   if (flag)
     {
@@ -1161,17 +1171,13 @@ static NSNotificationCenter *nc;
 	color = _caret_color;
 
       [color set];
-      NSRectFill(rect);
+      NSRectFill (rect);
     }
   else
     {
       [_background_color set];
-      NSRectFill(rect);
-      // FIXME: We should redisplay the character the cursor was on.
-      //[self setNeedsDisplayInRect: rect];
+      NSRectFill (rect);
     }
-
-  [_window flushWindow];
 }
 
 - (void) setConstrainedFrameSize: (NSSize)desiredSize
@@ -1350,9 +1356,11 @@ static NSNotificationCenter *nc;
       [self setSelectedRange: charRange];
 }
 
+/* Override in subclasses to change the default selection affinity */
 - (NSSelectionAffinity) selectionAffinity
 {
-  return _selectionAffinity;
+  /* FIXME: which one should be the default ? */
+  return NSSelectionAffinityDownstream;
 }
 
 - (void) setSelectionGranularity: (NSSelectionGranularity)granularity
@@ -1382,12 +1390,12 @@ static NSNotificationCenter *nc;
   // restart blinking timer.
 }
 
-- (void) setSelectedTextAttributes: (NSDictionary*)attributes
+- (void) setSelectedTextAttributes: (NSDictionary *)attributes
 {
-  ASSIGN(_selectedTextAttributes, attributes);
+  ASSIGN (_selectedTextAttributes, attributes);
 }
 
-- (NSDictionary*) selectedTextAttributes
+- (NSDictionary *) selectedTextAttributes
 {
   return _selectedTextAttributes;
 }
@@ -2166,10 +2174,10 @@ afterString in order over charRange. */
 
   if ([self shouldDrawInsertionPoint])
     {
-      [self lockFocus];
-      [self drawInsertionPointAtIndex: _selected_range.location
-	    color: nil turnedOn: NO];
-      [self unlockFocus];
+      NSRect rect;
+      
+      rect = [self rectForInsertionPointAtIndex: _selected_range.location];
+      [self setNeedsDisplayInRect: rect  avoidAdditionalLayout: YES];
       //<!> stop timed entry
     }
 
@@ -2216,6 +2224,7 @@ afterString in order over charRange. */
 
 - (void) drawRect: (NSRect)rect
 {
+  /* TODO: Only do relayout if needed */
   NSRange drawnRange = [_layoutManager glyphRangeForBoundingRect: rect 
 				       inTextContainer: _textContainer];
   if (_tf.draws_background)
@@ -2234,7 +2243,10 @@ afterString in order over charRange. */
       if (NSLocationInRange (location, drawnRange) 
 	  || location == NSMaxRange (drawnRange))
 	{
-	  [self drawInsertionPointAtIndex: location  color: _caret_color
+	  NSRect rect;
+	  
+	  rect = [self rectForInsertionPointAtIndex: location];
+	  [self drawInsertionPointInRect: rect  color: _caret_color  
 		turnedOn: YES];
 	}
     }
@@ -3027,17 +3039,15 @@ other than copy/paste or dragging. */
 			 inTextContainer: _textContainer];
 }
 
-- (void) drawInsertionPointAtIndex: (unsigned) index
-			     color: (NSColor*) color
-			  turnedOn: (BOOL) flag
+- (NSRect) rectForInsertionPointAtIndex: (unsigned)index
 {
-  NSRect drawRect  = [self rectForCharacterIndex: index];
-
-  drawRect.size.width = 1;
-  if (drawRect.size.height == 0)
-    drawRect.size.height = 12;
-
-  [self drawInsertionPointInRect: drawRect  color: color  turnedOn: flag];
+  NSRect rect  = [self rectForCharacterIndex: index];
+  rect.size.width = 1;
+  
+  if (rect.size.height == 0)
+    rect.size.height = 12;
+  
+  return rect;
 }
 
 @end
