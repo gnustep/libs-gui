@@ -1,3 +1,18 @@
+2001-06-02  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
+
+	* Source/NSMatrix.m ([NSMatrix -mouseDown:]): set highlight in list
+	mode matrix. Use _selectCell: to select the cell.
+	([NSMatrix -_setState:highlight:startIndex:endIndex:]): fixed cell
+	selection/display. Check for selectionByRect.
+	([NSMatrix -setSelectionFrom:to:anchor:highlight:]): removed code for
+	selectionByRect. Set dotted outline and last selected cell.
+	([NSMatrix -_shiftModifier:]): implement shift selection.
+	([NSMatrix -_altModifier:]): implement alt selection.
+	([NSMatrix -keyDown:]): use _shiftSelection: and _altSelection to
+	implement full keyboard selection.
+	([NSMatrix -_selectCell:atRow:column:]): redisplay previous dotted
+	cell. Set cell highlight in list mode matrix.
+
 2001-05-25  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSApplication.m (initialize_gnustep_backend): Use runtime

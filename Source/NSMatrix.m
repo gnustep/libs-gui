@@ -971,11 +971,23 @@ static SEL getSel;
 
       if ([_cells[row][column] acceptsFirstResponder])
 	{
+	  int lastRow, lastColumn;
+
+	  lastRow = _dottedRow;
+	  lastColumn = _dottedColumn;
+
 	  _dottedRow = row;
 	  _dottedColumn = column;
+
+	  if (lastRow != -1 && lastColumn != -1
+	      && (lastRow != row || lastColumn != column))
+	    [self drawCellAtRow: lastRow column: lastColumn];
 	}
 
       [_selectedCell setState: NSOnState];
+
+      if (_mode == NSListModeMatrix)
+	[aCell setCellAttribute: NSCellHighlighted to: 1];
 
       // Note: we select the cell iff it is 'selectable', not 'editable' 
       // as macosx says.  This looks definitely more appropriate. 
@@ -1063,160 +1075,101 @@ static SEL getSel;
 		   anchor: (int)anchorPos
 	        highlight: (BOOL)flag
 {
-  if (_selectionByRect)
+  BOOL	 doSelect = NO;
+  BOOL	 doUnselect = NO;
+  BOOL   drawLast = NO;
+  int	 selectx = 0;
+  int	 selecty = 0;
+  int	 unselectx = 0;
+  int	 unselecty = 0;
+  int	 dca = endPos - anchorPos;
+  int	 dla = startPos - anchorPos;
+  int	 dca_dla = SIGN(dca) / (SIGN(dla) ? SIGN(dla) : 1);
+  int    lastDottedRow, lastDottedColumn;
+  MPoint end = POINT_FROM_INDEX(endPos);
+
+  if (dca_dla >= 0)
     {
-      MPoint anchor = POINT_FROM_INDEX(anchorPos);
-      MPoint last = POINT_FROM_INDEX(startPos);
-      MPoint current = POINT_FROM_INDEX(endPos);
-      unsigned	omaxc = MAX(anchor.x, last.x);
-      unsigned	ominc = MIN(anchor.x, last.x);
-      unsigned	omaxr = MAX(anchor.y, last.y);
-      unsigned	ominr = MIN(anchor.y, last.y);
-      unsigned	nmaxc = MAX(anchor.x, current.x);
-      unsigned	nminc = MIN(anchor.x, current.x);
-      unsigned	nmaxr = MAX(anchor.y, current.y);
-      unsigned	nminr = MIN(anchor.y, current.y);
-      unsigned	maxr = MAX(omaxr, nmaxr);
-      unsigned	minr = MIN(ominr, nminr);
-      unsigned	maxc = MAX(omaxc, nmaxc);
-      unsigned	minc = MIN(ominc, nminc);
-      unsigned	r;
-
-      for (r = minr; r <= maxr; r++)
+      if (ABS(dca) >= ABS(dla))
 	{
-	  if (r >= ominr && r <= omaxr)
-	    {
-	      if (r >= nminr && r <= nmaxr)
-		{
-		  /*
-		   * In old rectangle, and in new.
-		   */
-		  if (ominc != nminc)
-		    {
-		      MPoint	sp = { minc, r};
-		      MPoint	ep = { MAX(ominc, nminc)-1, r};
-		      int	state = (ominc < nminc) ? 0 : 1;
-
-		      [self _setState: state
-			    highlight: flag ? (BOOL)state : NO
-			   startIndex: INDEX_FROM_POINT(sp)
-			     endIndex: INDEX_FROM_POINT(ep)];
-		    }
-
-		  if (omaxc != nmaxc)
-		    {
-		      MPoint	sp = { MIN(omaxc, nmaxc)+1, r};
-		      MPoint	ep = { maxc, r};
-		      int	state = (nmaxc < omaxc) ? 0 : 1;
-
-		      [self _setState: state
-			    highlight: flag ? (BOOL)state : NO
-			   startIndex: INDEX_FROM_POINT(sp)
-			     endIndex: INDEX_FROM_POINT(ep)];
-		    }
-		}
-	      else
-		{
-		  MPoint	sp = { ominc, r};
-		  MPoint	ep = { omaxc, r};
-
-		  /*
-		   * In old rectangle, but not new - clear row.
-		   */
-		  [self _setState: NSOffState
-			highlight: NO
-		       startIndex: INDEX_FROM_POINT(sp)
-			 endIndex: INDEX_FROM_POINT(ep)];
-		}
-	    }
-	  else if (r >= nminr && r <= nmaxr)
-	    {
-	      MPoint	sp = { nminc, r};
-	      MPoint	ep = { nmaxc, r};
-
-	      /*
-	       * In new rectangle, but not old - select row.
-	       */
-	      [self _setState: NSOnState
-		    highlight: flag ? YES : NO
-		   startIndex: INDEX_FROM_POINT(sp)
-		     endIndex: INDEX_FROM_POINT(ep)];
-	    }
-	}
-    }
-  else
-    {
-      BOOL	doSelect = NO;
-      BOOL	doUnselect = NO;
-      int	selectx = 0;
-      int	selecty = 0;
-      int	unselectx = 0;
-      int	unselecty = 0;
-      int	dca = endPos - anchorPos;
-      int	dla = startPos - anchorPos;
-      int	dca_dla = SIGN(dca) / (SIGN(dla) ? SIGN(dla) : 1);
-
-      if (dca_dla >= 0)
-	{
-	  if (ABS(dca) >= ABS(dla))
-	    {
-	      doSelect = YES;
-	      selectx = MIN(startPos, endPos);
-	      selecty = MAX(startPos, endPos);
-	    }
-	  else
-	    {
-	      doUnselect = YES;
-	      if (endPos < startPos)
-		{
-		  unselectx = endPos + 1;
-		  unselecty = startPos;
-		}
-	      else
-		{
-		  unselectx = startPos;
-		  unselecty = endPos - 1;
-		}
-	    }
+	  doSelect = YES;
+	  selectx = MIN(startPos, endPos);
+	  selecty = MAX(startPos, endPos);
 	}
       else
 	{
-	  doSelect = YES;
-	  if (anchorPos < endPos)
-	    {
-	      selectx = anchorPos;
-	      selecty = endPos;
-	    }
-	  else
-	    {
-	      selectx = endPos;
-	      selecty = anchorPos;
-	    }
-
 	  doUnselect = YES;
-	  if (anchorPos < startPos)
+	  drawLast = YES;
+	  if (endPos < startPos)
 	    {
-	      unselectx = anchorPos;
+	      unselectx = endPos + 1;
 	      unselecty = startPos;
 	    }
 	  else
 	    {
 	      unselectx = startPos;
-	      unselecty = anchorPos;
+	      unselecty = endPos - 1;
 	    }
 	}
-
-      if (doUnselect)
-	[self _setState: NSOffState
-	      highlight: NO
-	     startIndex: unselectx
-	       endIndex: unselecty];
-      if (doSelect)
-	[self _setState: NSOnState
-	      highlight: flag ? YES : NO
-	     startIndex: selectx
-	       endIndex: selecty];
     }
+  else
+    {
+      doSelect = YES;
+      if (anchorPos < endPos)
+	{
+	  selectx = anchorPos;
+	  selecty = endPos;
+	}
+      else
+	{
+	  selectx = endPos;
+	  selecty = anchorPos;
+	}
+
+      doUnselect = YES;
+      if (anchorPos < startPos)
+	{
+	  unselectx = anchorPos;
+	  unselecty = startPos - 1;
+	}
+      else
+	{
+	  unselectx = startPos;
+	  unselecty = anchorPos - 1;
+	}
+    }
+
+  if (_dottedRow != -1 && _dottedColumn != -1
+      && (_dottedRow != end.y || _dottedColumn != end.x))
+    {
+      lastDottedRow = _dottedRow;
+      lastDottedColumn = _dottedColumn;
+
+      [self drawCellAtRow: lastDottedRow column: lastDottedColumn];
+    }
+
+  _selectedRow = _dottedRow = end.y;
+  _selectedColumn = _dottedColumn = end.x;
+  _selectedCells[_selectedRow][_selectedColumn] = YES;
+  _selectedCell = _cells[_selectedRow][_selectedColumn];
+
+  if (doUnselect)
+    {
+      [self _setState: flag ? NSOffState : NSOnState
+	    highlight: flag ? NO : YES
+	    startIndex: unselectx
+	    endIndex: unselecty];
+    }
+  if (doSelect)
+    {
+      [self _setState: flag ? NSOnState : NSOffState
+	    highlight: flag ? YES : NO
+	    startIndex: selectx
+	    endIndex: selecty];
+    }
+
+  if (drawLast)
+    [self drawCellAtRow: _dottedRow column: _dottedColumn];
 }
 
 - (id) cellAtRow: (int)row
@@ -2119,7 +2072,7 @@ static SEL getSel;
   NSEvent* lastEvent = nil;
   BOOL done = NO;
   NSRect rect;
-  id aCell, previousCell = nil, previousDottedCell = nil;
+  id aCell, previousCell = nil;
   NSRect previousRect;
   NSApplication *app = [NSApplication sharedApplication];
   static MPoint anchor = {0, 0};
@@ -2253,23 +2206,6 @@ static SEL getSel;
 	      // we clear the existing selection
 	      // unless the Alternate or Shift keys have been pressed.
 
-	      if ([aCell acceptsFirstResponder])
-		{
-		  int lastRow, lastColumn;
-
-		  lastRow = _dottedRow;
-		  lastColumn = _dottedColumn;
-
-		  _dottedRow = row;
-		  _dottedColumn = column;
-
-		  if (lastRow != -1
-		      && (!previousDottedCell || previousDottedCell != aCell))
-		    [self drawCellAtRow: lastRow column: lastColumn];
-
-		  previousDottedCell = aCell;
-		}
-
 	      if (!previousCell)
 		{
 		  if (!(modifiers & NSShiftKeyMask)
@@ -2283,11 +2219,7 @@ static SEL getSel;
 		  // anchor from which to extend the
 		  // selection to the current cell
 		  if (!(modifiers & NSAlternateKeyMask))
-		    {
-		      [aCell setState: NSOnState];
-		      [self drawCell: aCell];
-		      [_window flushWindow];
-		    }
+		    [self _selectCell: aCell atRow: row column: column];
 		}
 	      else
 		{
@@ -2296,14 +2228,9 @@ static SEL getSel;
 			to: INDEX_FROM_COORDS(column, row)
 			anchor: INDEX_FROM_POINT(anchor)
 			highlight: YES];
-
-		  [_window flushWindow];
 		}
 
-	      _selectedCell = aCell;
-	      _selectedRow = row;
-	      _selectedColumn = column;
-	      _selectedCells[row][column] = YES;
+	      [_window flushWindow];
 
 	      previousCell = aCell;
 	      previousRect = rect;
@@ -3063,11 +2990,126 @@ static SEL getSel;
   [self _move: NSRightArrowFunctionKey];
 }
 
+- (void) _shiftModifier:(unichar)character
+{
+  int i, lastDottedRow, lastDottedColumn;
+
+  lastDottedRow = _dottedRow;
+  lastDottedColumn = _dottedColumn;
+
+  if (character == NSUpArrowFunctionKey)
+    {
+      if (_dottedRow <= 0)
+	return;
+
+      for (i = _dottedRow-1; i >= 0; i--)
+	{
+	  if ([_cells[i][_dottedColumn] acceptsFirstResponder])
+	    {
+	      _dottedRow = i;
+	      break;
+	    }
+	}
+
+      if (_dottedRow != i)
+	return;
+    }
+  else if (character == NSDownArrowFunctionKey)
+    {
+      if (_dottedRow < 0 || _dottedRow >= _numRows-1)
+	return;
+
+      for (i = _dottedRow+1; i < _numRows; i++)
+	{
+	  if ([_cells[i][_dottedColumn] acceptsFirstResponder])
+	    {
+	      _dottedRow = i;
+	      break;
+	    }
+	}
+    }
+  else if (character == NSLeftArrowFunctionKey)
+    {
+      if (_dottedColumn <= 0)
+	return;
+
+      for (i = _dottedColumn-1; i >= 0; i--)
+	{
+	  if ([_cells[_dottedRow][i] acceptsFirstResponder])
+	    {
+	      _dottedColumn = i;
+	      break;
+	    }
+	}
+    }
+  else
+    {
+      if (_dottedColumn < 0 || _dottedColumn >= _numCols-1)
+	return;
+
+      for (i = _dottedColumn+1; i < _numCols; i++)
+	{
+	  if ([_cells[_dottedRow][i] acceptsFirstResponder])
+	    {
+	      _dottedColumn = i;
+	      break;
+	    }
+	}
+    }
+
+  [self drawCell: _cells[lastDottedRow][_dottedColumn]];
+  [self drawCell: _cells[_dottedRow][_dottedColumn]];
+  [_window flushWindow];
+
+  [self performClick: self];
+}
+
+- (void) _altModifier:(unichar)character
+{
+  switch (character)
+    {
+    case NSUpArrowFunctionKey:
+      if (_dottedRow <= 0)
+	return;
+
+      _dottedRow--;
+      break;
+
+    case NSDownArrowFunctionKey:
+      if (_dottedRow < 0 || _dottedRow >= _numRows-1)
+	return;
+
+      _dottedRow++;
+      break;
+
+    case NSLeftArrowFunctionKey:
+      if (_dottedColumn <= 0)
+	return;
+
+      _dottedColumn--;
+      break;
+
+    case NSRightArrowFunctionKey:
+      if (_dottedColumn < 0 || _dottedColumn >= _numCols-1)
+	return;
+
+      _dottedColumn++;
+      break;
+    }
+
+  [self setSelectionFrom:
+	  INDEX_FROM_COORDS(_selectedRow, _selectedColumn)
+	to: INDEX_FROM_COORDS(_dottedRow, _dottedColumn)
+	anchor: INDEX_FROM_COORDS(_selectedRow, _selectedColumn)
+	highlight: YES];
+
+  [self performClick: self];
+}
+
 - (void) keyDown: (NSEvent *)theEvent
 {
   NSString *characters = [theEvent characters];
   unsigned modifiers = [theEvent modifierFlags];
-  int      i, lastDottedRow, lastDottedColumn;
   unichar  character = 0;
 
   if ([characters length] > 0)
@@ -3086,98 +3128,60 @@ static SEL getSel;
     case ' ':
       if (_dottedRow != -1 && _dottedColumn != -1)
 	{
-	  NSCell *cell;
-
-	  switch (_mode)
+	  if (modifiers & NSAlternateKeyMask)
+	    [self _altModifier: character];
+	  else
 	    {
-	    case NSTrackModeMatrix:
-	    case NSHighlightModeMatrix:
-	      cell = _cells[_dottedRow][_dottedColumn];
+	      NSCell *cell;
 
-	      [cell setNextState];
-	      [self drawCell: cell];
-	      break;
+	      switch (_mode)
+		{
+		case NSTrackModeMatrix:
+		case NSHighlightModeMatrix:
+		  cell = _cells[_dottedRow][_dottedColumn];
 
-	    case NSListModeMatrix:
-	      if (!(modifiers & NSShiftKeyMask))
-		[self deselectAllCells];
+		  [cell setNextState];
+		  [self drawCell: cell];
+		  break;
 
-	    case NSRadioModeMatrix:
-	      [self selectCellAtRow: _dottedRow column: _dottedColumn];
-	      break;
+		case NSListModeMatrix:
+		  if (!(modifiers & NSShiftKeyMask))
+		    [self deselectAllCells];
+
+		case NSRadioModeMatrix:
+		  [self selectCellAtRow: _dottedRow column: _dottedColumn];
+		  break;
+		}
+
+	      [_window flushWindow];
+	      [self performClick: self];
 	    }
-
-	  [_window flushWindow];
-	  [self performClick: self];
 	  return;
 	}
       break;
 
+    case NSLeftArrowFunctionKey:
+    case NSRightArrowFunctionKey:
+      if (_numCols <= 1)
+	break;
+
     case NSUpArrowFunctionKey:
-      if (modifiers & NSShiftKeyMask)
-	{
-	  if (_dottedRow > 0)
-	    {
-	      lastDottedRow = _dottedRow;
-
-	      for (i = _dottedRow-1; i >= 0; i--)
-		{
-		  if ([_cells[i][_dottedColumn] acceptsFirstResponder])
-		    {
-		      _dottedRow = i;
-		      break;
-		    }
-		}
-
-	      if (_dottedRow != i)
-		return;
-
-	      [self drawCell: _cells[lastDottedRow][_dottedColumn]];
-	      [self drawCell: _cells[_dottedRow][_dottedColumn]];
-	      [_window flushWindow];
-	    }
-	}
-      else if (modifiers & NSAlternateKeyMask)
-	{
-	  if (_dottedRow > 0)
-	    {
-	      // TODO
-	    }
-	}
-      else
-	[self moveUp: self];
-      return;
-
     case NSDownArrowFunctionKey:
       if (modifiers & NSShiftKeyMask)
-	{
-	  if (_dottedRow > -1 && _dottedRow < _numRows-1)
-	    {
-	      lastDottedRow = _dottedRow;
-
-	      for (i = _dottedRow+1; i < _numRows; i++)
-		{
-		  if ([_cells[i][_dottedColumn] acceptsFirstResponder])
-		    {
-		      _dottedRow = i;
-		      break;
-		    }
-		}
-
-	      if (_dottedRow != i)
-		return;
-
-	      [self drawCell: _cells[lastDottedRow][_dottedColumn]];
-	      [self drawCell: _cells[_dottedRow][_dottedColumn]];
-	      [_window flushWindow];
-	    }
-	}
+	[self _shiftModifier: character];
       else if (modifiers & NSAlternateKeyMask)
-	{
-	  // TODO
-	}
+	[self _altModifier: character];
       else
-	[self moveDown: self];
+	{
+	  if (character == NSUpArrowFunctionKey)
+	    [self moveUp: self];
+	  else if (character == NSDownArrowFunctionKey)
+	    [self moveDown: self];
+	  else if (character == NSLeftArrowFunctionKey)
+	    [self moveLeft: self];
+	  else
+	    [self moveRight: self];
+	}
       return;
 
     case NSTabCharacter:
@@ -3195,80 +3199,6 @@ static SEL getSel;
 		       column: _selectedColumn])
 		return;
 	    }
-	}
-      break;
-
-    case NSLeftArrowFunctionKey:
-      if (_numCols > 1)
-	{
-	  if (modifiers & NSShiftKeyMask)
-	    {
-	      if (_dottedColumn > 0)
-		{
-		  lastDottedColumn = _dottedColumn;
-
-		  for (i = _dottedColumn-1; i >= 0; i--)
-		    {
-		      if ([_cells[_dottedRow][i] acceptsFirstResponder])
-			{
-			  _dottedColumn = i;
-			  break;
-			}
-		    }
-
-		  if (_dottedColumn != i)
-		    return;
-
-		  [self drawCell: _cells[_dottedRow][lastDottedColumn]];
-		  [self drawCell: _cells[_dottedRow][_dottedColumn]];
-		  [_window flushWindow];
-		}
-	    }
-	  else if (modifiers & NSAlternateKeyMask)
-	    {
-	      // TODO
-	    }
-	  else
-	    [self moveLeft: self];
-
-	  return;
-	}
-      break;
-
-    case NSRightArrowFunctionKey:
-      if (_numCols > 1)
-	{
-	  if (modifiers & NSShiftKeyMask)
-	    {
-	      if (_dottedColumn > -1 && _dottedColumn < _numCols-1)
-		{
-		  lastDottedColumn = _dottedColumn;
-
-		  for (i = _dottedColumn+1; i < _numCols; i++)
-		    {
-		      if ([_cells[_dottedRow][i] acceptsFirstResponder])
-			{
-			  _dottedColumn = i;
-			  break;
-			}
-		    }
-
-		  if (_dottedColumn != i)
-		    return;
-
-		  [self drawCell: _cells[_dottedRow][lastDottedColumn]];
-		  [self drawCell: _cells[_dottedRow][_dottedColumn]];
-		  [_window flushWindow];
-		}
-	    }
-	  else if (modifiers & NSAlternateKeyMask)
-	    {
-	      // TODO
-	    }
-	  else
-	    [self moveRight: self];
-
-	  return;
 	}
       break;
 
@@ -3541,7 +3471,7 @@ static SEL getSel;
 	  j = 0;
 	}
 
-      if (i == endPoint.y)
+      if (_selectionByRect || i == endPoint.y)
 	colLimit = endPoint.x;
       else
 	colLimit = _numCols - 1;
@@ -3557,9 +3487,12 @@ static SEL getSel;
 	  else
 	    _selectedCells[i][j] = YES;
 
-	  [self highlightCell: highlight atRow: i column: i];
+	  [aCell setCellAttribute: NSCellHighlighted to: highlight];
+	  [self drawCell: aCell];
 	}
     }
+
+  [_window flushWindow];
 }
 
 // Return YES on success; NO if no selectable cell found.
