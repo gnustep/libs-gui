@@ -1363,23 +1363,16 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
   
 - (void) drawRect: (NSRect)rect
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
-  NSRect             workRect = [self bounds];
+  NSRect workRect = [self bounds];
+  NSRectEdge sides[] = {NSMinXEdge, NSMaxYEdge};
+  float grays[] = {NSDarkGray, NSDarkGray};
+  NSDictionary *attr;
 
   // Draw the dark gray upper left lines.
-  DPSgsave(ctxt);
-  DPSsetlinewidth(ctxt, 1);
-  DPSsetgray(ctxt, 0.333);
-  DPSmoveto(ctxt, workRect.origin.x, workRect.origin.y);
-  DPSrlineto(ctxt, 0, workRect.size.height);
-  DPSrlineto(ctxt, workRect.size.width, 0);
-  DPSstroke(ctxt);
-  DPSgrestore(ctxt);
+  workRect = NSDrawTiledRects(workRect, workRect,
+			      sides, grays, 2);
 
   // Draw the title box's button.
-  workRect.size.width  -= 1;
-  workRect.size.height -= 1;
-  workRect.origin.x += 1;
   NSDrawButton(workRect, workRect);
 
   // Paint it Black!
@@ -1391,12 +1384,17 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
   NSRectFill(workRect);
 
   // Draw the title.
-  [[NSColor windowFrameTextColor] set];
-  [[NSFont boldSystemFontOfSize: 0] set];
-  
-  workRect = _bounds;
-  PSmoveto(workRect.origin.x + 7, workRect.origin.y + 7);
-  PSshow([[menu title] cString]);
+  attr = [[NSDictionary alloc] initWithObjectsAndKeys: 
+			       [NSFont boldSystemFontOfSize: 0], NSFontAttributeName,
+			       [NSColor windowFrameTextColor], NSForegroundColorAttributeName,
+			       nil];
+
+  // This gives the correct position, but I don't quite understand it.
+  workRect.origin.x += 5;
+  workRect.size.width -= 5;
+  workRect.size.height -= 2;
+  [[menu title] drawInRect: workRect withAttributes: attr];
+  RELEASE(attr);
 }
 
 - (void) mouseDown: (NSEvent*)theEvent
