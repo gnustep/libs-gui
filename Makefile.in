@@ -59,14 +59,15 @@ config.status: configure
 
 mostlyclean-top:
 	rm -f *~
-clean-top:
-maintainer-clean-top:
+clean-top: mostlyclean-top
+maintainer-clean-top: clean-top
 
 mostlyclean: mostlyclean-top mostlyclean-subdirs
 clean: mostlyclean-top clean-subdirs
 distclean: clean-top distclean-subdirs
 	rm -f Makefile config.status config.log config.cache TAGS
-	cd Headers ; cd gnustep ; cd gui ; rm -f config.h
+	cd Headers ; cd gnustep ; cd gui ; rm -f *~ config.h
+	cd Headers ; cd gnustep ; cd dps ; rm -f *~
 	cd Headers ; rm -f AppKit ; rm -f DPSClient
 maintainer-clean: maintainer-clean-subdirs
 

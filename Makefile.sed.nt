@@ -20,8 +20,9 @@ s/@lib@/lib/
 s/@libout@/-out:/
 s/@ranlib@/touch/
 s/@rc@/rc \/l 0x409 \/i $(MB_INCLUDE)/
-s/cd Headers ; cd AppKit ; rm -f *~/cd Headers \& cd AppKit \& rm -f *~/
-s/cd Headers ; cd AppKit ; rm -f config.h/cd Headers \& cd AppKit \& rm -f config.h/
+s/cd Headers ; cd gnustep ; cd gui ; rm -f \*~ config.h/cd Headers \& cd gnustep \& cd gui \& rm -f *~ config.h/
+s/cd Headers ; cd gnustep ; cd dps ; rm -f \*~/cd Headers \& cd gnustep \& cd dps \& rm -f *~/
+s/cd Headers ; rm -f AppKit ; rm -f DPSClient/cd Headers \& rm -rf AppKit \& rm -rf DPSClient/
 s/cd $@; $(MAKE) $(MAKEDEFINES)/cd $@ \& $(MAKE) $(MAKEDEFINES)/
 /%-subdirs:/,/done/c\
 %-subdirs: \

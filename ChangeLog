@@ -1,3 +1,13 @@
+Mon Jun  3 10:54:28 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
+
+	* Makefile.in (clean-top, distclean): Correct targets and clean
+	all header subdirectories.
+	* Makefile.sed.nt: Modify for Makefile.in changes.
+	* Source/Makefile.in (clean): Remove additional temporary files.
+	* Source/NSDPSContext.m: Add some log messages.
+	* Source/NSView.m (+pushFocusView, +popFocusView): New methods.
+	* Source/NSView.m: Initial implementation of view focusing.
+
 Thu May 30 18:37:51 1996  Scott Christley <scottc@net-community.com>
 
 	* configure.bat: Modifications for new directory structure.
