@@ -1,7 +1,20 @@
 NEWS
 ****
 
-The currently released version of the library is `0.7.5'.
+The currently released version of the library is `0.7.6'.
+
+Noteworthy changes in version `0.7.6'
+=====================================
+
+   * NSOutlineView implemented.
+
+   * Improvements to NSTableView, NSPopUpButton, NSTextView, NSFontPanel
+
+   * Scroll wheel support.
+
+   * Fully-functional keybindings, including multi-stroke keybindings.
+
+   * Memory panel available from Info Panel.
 
 Noteworthy changes in version `0.7.5'
 =====================================

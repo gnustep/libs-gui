@@ -1,7 +1,7 @@
 ANNOUNCE
 ********
 
-This is version 0.7.5 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.7.6 of the GNUstep GUI library (`gnustep-gui').
 
 What is the GNUstep GUI Library?
 ================================
@@ -26,55 +26,26 @@ systems.
 
    The GNUstep GUI Library requires the GNU Objective-C compiler, the
 GNUstep Base Library, the TIFF Graphics library, and a back-end
-component like the GNUstep X/DPS GUI Backend.
+component like the GNUstep X/GPS GUI Backend.
 
-Noteworthy changes in version `0.7.5'
+Noteworthy changes in version `0.7.6'
 =====================================
 
-   * Drag and drop and image sliding much improved.
+   * NSOutlineView implemented.
 
-   * Better handling of remote startup/display.
+   * Improvements to NSTableView, NSPopUpButton, NSTextView, NSFontPanel
 
-   * Some localization.
+   * Scroll wheel support.
 
-   * Keybinding support.
+   * Fully-functional keybindings, including multi-stroke keybindings.
 
-   * Text handling improvements.
-
-   * New gopen command (like MacOSX open command).
-
-   * Implemented simple pagination and printing of views.
-
-   * Support for rulers.
-
-   * Spell checking support.
-
-   * Blinking insertion point.
-
-   * New NSStepper class.
-
-   * Implemented NSOutlineView, NSSelection, NSInputManager.
-
-   * Near rewrite of Menu handling code.
-
-   * Gmodel code compiled as a separate bundle.
-
-How can I get support for this software?
-========================================
-
-   We currently do not have a mailing list setup explicitly for the
-GNUstep GUI Library; however, you may wish to use the GNUstep
-discussion mailing list for general questions and discussion.  Look at
-the GNUstep Web Pages for more information regarding GNUstep resources
-<http://www.gnustep.org/>
+   * Memory panel available from Info Panel.
 
 Where can you get it?  How can you compile it?
 ==============================================
 
-   The gstep-gui-0.7.5.tar.gz distribution file has been placed on
+   The gstep-gui-0.7.6.tar.gz distribution file has been placed on
 `ftp.gnustep.org' in `pub/gnustep/core'.
-
-   The program requires gcc 2.8.0 or higher.
 
    the TIFF Graphics library version 3.4 is required.
 
