@@ -45,7 +45,7 @@
 //
 // The global application instance
 extern id NSApp;
-NSEvent *NullEvent = NULL;
+NSEvent *gnustep_gui_null_event = nil;
 static BOOL gnustep_gui_app_is_in_dealloc;
 
 // Global strings
@@ -165,7 +165,7 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
   // No current event
   current_event = nil;
   // The NULL event
-  NullEvent = [[NSEvent alloc] init];
+  gnustep_gui_null_event = [[NSEvent alloc] init];
 
   //
   // We are the end of the responder chain
@@ -269,7 +269,7 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
     {
       e = [self nextEventMatchingMask:NSAnyEventMask untilDate:nil 
 		inMode:nil dequeue:YES];
-      if (e)
+      if (e != gnustep_gui_null_event)
 	[self sendEvent: e];
       else
 	{
@@ -296,7 +296,7 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 - (void)sendEvent:(NSEvent *)theEvent
 {
   // Don't send the null event
-  if (theEvent == NullEvent)
+  if (theEvent == gnustep_gui_null_event)
     {
       NSDebugLog(@"Not sending the Null Event\n");
       return;
@@ -368,7 +368,7 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
     if (!theEvent) return NO;
 
     // Don't check the null event
-    if (theEvent == NullEvent) return NO;
+    if (theEvent == gnustep_gui_null_event) return NO;
 
     t = [theEvent type];
 
@@ -477,20 +477,22 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
     }
 
   // Unhide the cursor if necessary
-  {
-    NSEventType type;
+  // but only if its not a null event
+  if (e != gnustep_gui_null_event)
+    {
+      NSEventType type;
 
-    // Only if we should unhide when mouse moves
-    if ([NSCursor isHiddenUntilMouseMoves])
-      {
-	// Make sure the event is a mouse event before unhiding
-	type = [e type];
-	if ((type == NSLeftMouseDown) || (type == NSLeftMouseUp)
-	    || (type == NSRightMouseDown) || (type == NSRightMouseUp)
-	    || (type == NSMouseMoved))
-	  [NSCursor unhide];
-      }
-  }
+      // Only if we should unhide when mouse moves
+      if ([NSCursor isHiddenUntilMouseMoves])
+	{
+	  // Make sure the event is a mouse event before unhiding
+	  type = [e type];
+	  if ((type == NSLeftMouseDown) || (type == NSLeftMouseUp)
+	      || (type == NSRightMouseDown) || (type == NSRightMouseUp)
+	      || (type == NSMouseMoved))
+	    [NSCursor unhide];
+	}
+    }
 
   [self setCurrentEvent: e];
   return e;
@@ -502,7 +504,6 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 			   dequeue:(BOOL)flag
 {
   NSEvent *e;
-  BOOL done;
   int i, j;
 
   // If the queue isn't empty then check those messages
@@ -536,20 +537,21 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
     return nil;
 
   // Unhide the cursor if necessary
-  {
-    NSEventType type;
+  if (e != gnustep_gui_null_event)
+    {
+      NSEventType type;
 
-    // Only if we should unhide when mouse moves
-    if ([NSCursor isHiddenUntilMouseMoves])
-      {
-	// Make sure the event is a mouse event before unhiding
-	type = [e type];
-	if ((type == NSLeftMouseDown) || (type == NSLeftMouseUp)
-	    || (type == NSRightMouseDown) || (type == NSRightMouseUp)
-	    || (type == NSMouseMoved))
-	  [NSCursor unhide];
-      }
-  }
+      // Only if we should unhide when mouse moves
+      if ([NSCursor isHiddenUntilMouseMoves])
+	{
+	  // Make sure the event is a mouse event before unhiding
+	  type = [e type];
+	  if ((type == NSLeftMouseDown) || (type == NSLeftMouseUp)
+	      || (type == NSRightMouseDown) || (type == NSRightMouseUp)
+	      || (type == NSMouseMoved))
+	    [NSCursor unhide];
+	}
+    }
 
   [self setCurrentEvent: e];
   return e;
@@ -1114,13 +1116,13 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 // Get next event
 - (NSEvent *)getNextEvent
 {
-  [event_queue addObject: NullEvent];
-  return NullEvent;
+  [event_queue addObject: gnustep_gui_null_event];
+  return gnustep_gui_null_event;
 }
 
 - (NSEvent *)peekNextEvent
 {
-  return NullEvent;
+  return gnustep_gui_null_event;
 }
 
 // handle a non-translated event
