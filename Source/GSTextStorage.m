@@ -73,7 +73,7 @@
   GSTextInfo	*info = (GSTextInfo*)NSAllocateObject(self, 0, z);
 
   info->loc = l;
-  info->attrs = [a copy];
+  info->attrs = [a copyWithZone: z];
   return info;
 }
 
@@ -370,13 +370,14 @@ _attributesAtIndexEffectiveRange(
 
 - (NSString*) string
 {
-  return textChars;
+  return AUTORELEASE([textChars copyWithZone: NSDefaultMallocZone()]);
 }
 
 - (NSDictionary*) attributesAtIndex: (unsigned)index
 		     effectiveRange: (NSRange*)aRange
 {
   unsigned	dummy;
+
   return _attributesAtIndexEffectiveRange(
     index, aRange, [textChars length], infoArray, &dummy);
 }
