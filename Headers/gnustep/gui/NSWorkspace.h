@@ -3,7 +3,7 @@
 
    Interface for workspace.
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996-2002 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -43,127 +43,127 @@
 
 @interface NSWorkspace : NSObject
 {
-  // Attributes
-  NSMutableDictionary *_iconMap;
-  NSNotificationCenter *_workspaceCenter;
-  BOOL _fileSystemChanged;
-  BOOL _userDefaultsChanged;
+  NSMutableDictionary	*_iconMap;
+  NSMutableDictionary	*_launched;
+  NSNotificationCenter	*_workspaceCenter;
+  BOOL			_fileSystemChanged;
+  BOOL			_userDefaultsChanged;
 }
 
 //
 // Creating a Workspace
 //
-+ (NSWorkspace *)sharedWorkspace;
++ (NSWorkspace*) sharedWorkspace;
 
 //
 // Opening Files
 //
-- (BOOL)openFile: (NSString *)fullPath;
-- (BOOL)openFile: (NSString *)fullPath
-       fromImage: (NSImage *)anImage
-	      at: (NSPoint)point
-	  inView: (NSView *)aView;
-- (BOOL)openFile: (NSString *)fullPath
-  withApplication: (NSString *)appName;
-- (BOOL)openFile: (NSString *)fullPath
-  withApplication: (NSString *)appName
-  andDeactivate: (BOOL)flag;
-- (BOOL)openTempFile: (NSString *)fullPath;
+- (BOOL) openFile: (NSString*)fullPath;
+- (BOOL) openFile: (NSString*)fullPath
+	fromImage: (NSImage*)anImage
+	       at: (NSPoint)point
+	   inView: (NSView*)aView;
+- (BOOL) openFile: (NSString*)fullPath
+  withApplication: (NSString*)appName;
+- (BOOL) openFile: (NSString*)fullPath
+  withApplication: (NSString*)appName
+    andDeactivate: (BOOL)flag;
+- (BOOL) openTempFile: (NSString*)fullPath;
 #ifndef STRICT_OPENSTEP
-- (BOOL)openURL:(NSURL *)url;
+- (BOOL) openURL: (NSURL*)url;
 #endif
 
 //
 // Manipulating Files	
 //
-- (BOOL)performFileOperation: (NSString *)operation
-		      source: (NSString *)source
-		 destination: (NSString *)destination
-		       files: (NSArray *)files
-			 tag: (int *)tag;
-- (BOOL)selectFile: (NSString *)fullPath
-  inFileViewerRootedAtPath: (NSString *)rootFullpath;
+- (BOOL) performFileOperation: (NSString*)operation
+		       source: (NSString*)source
+		  destination: (NSString*)destination
+			files: (NSArray*)files
+			  tag: (int*)tag;
+- (BOOL) selectFile: (NSString*)fullPath
+  inFileViewerRootedAtPath: (NSString*)rootFullpath;
 
 //
 // Requesting Information about Files
 //
-- (NSString *)fullPathForApplication: (NSString *)appName;
-- (BOOL)getFileSystemInfoForPath: (NSString *)fullPath
-		     isRemovable: (BOOL *)removableFlag
-		      isWritable: (BOOL *)writableFlag
-		    isUnmountable: (BOOL *)unmountableFlag
-		      description: (NSString **)description
-			     type: (NSString **)fileSystemType;
-- (BOOL)getInfoForFile: (NSString *)fullPath
-	   application: (NSString **)appName
-		  type: (NSString **)type;
-- (NSImage *)iconForFile: (NSString *)fullPath;
-- (NSImage *)iconForFiles: (NSArray *)pathArray;
-- (NSImage *)iconForFileType: (NSString *)fileType;
+- (NSString*) fullPathForApplication: (NSString*)appName;
+- (BOOL) getFileSystemInfoForPath: (NSString*)fullPath
+		      isRemovable: (BOOL*)removableFlag
+		       isWritable: (BOOL*)writableFlag
+		    isUnmountable: (BOOL*)unmountableFlag
+		      description: (NSString**)description
+			     type: (NSString**)fileSystemType;
+- (BOOL) getInfoForFile: (NSString*)fullPath
+	    application: (NSString**)appName
+		   type: (NSString**)type;
+- (NSImage*) iconForFile: (NSString*)fullPath;
+- (NSImage*) iconForFiles: (NSArray*)pathArray;
+- (NSImage*) iconForFileType: (NSString*)fileType;
 #ifndef STRICT_OPENSTEP
-- (BOOL)isFilePackageAtPath:(NSString *)fullPath;
+- (BOOL) isFilePackageAtPath: (NSString*)fullPath;
 #endif
 
 //
 // Tracking Changes to the File System
 //
-- (BOOL)fileSystemChanged;
-- (void)noteFileSystemChanged;
+- (BOOL) fileSystemChanged;
+- (void) noteFileSystemChanged;
 #ifndef STRICT_OPENSTEP
-- (void)noteFileSystemChanged:(NSString *)path;
+- (void) noteFileSystemChanged: (NSString*)path;
 #endif
 
 //
 // Updating Registered Services and File Types
 //
-- (void)findApplications;
+- (void) findApplications;
 
 //
 // Launching and Manipulating Applications	
 //
-- (void)hideOtherApplications;
-- (BOOL)launchApplication: (NSString *)appName;
-- (BOOL)launchApplication: (NSString *)appName
-		 showIcon: (BOOL)showIcon
-	       autolaunch: (BOOL)autolaunch;
+- (void) hideOtherApplications;
+- (BOOL) launchApplication: (NSString*)appName;
+- (BOOL) launchApplication: (NSString*)appName
+		  showIcon: (BOOL)showIcon
+		autolaunch: (BOOL)autolaunch;
 
 //
 // Unmounting a Device	
 //
-- (BOOL)unmountAndEjectDeviceAtPath: (NSString *)path;
+- (BOOL) unmountAndEjectDeviceAtPath: (NSString*)path;
 
 //
 // Tracking Status Changes for Devices
 //
-- (void)checkForRemovableMedia;
-- (NSArray *)mountNewRemovableMedia;
-- (NSArray *)mountedRemovableMedia;
+- (void) checkForRemovableMedia;
+- (NSArray*) mountNewRemovableMedia;
+- (NSArray*) mountedRemovableMedia;
 #ifndef STRICT_OPENSTEP
-- (NSArray *)mountedLocalVolumePaths;
+- (NSArray*) mountedLocalVolumePaths;
 #endif
 
 //
 // Notification Center
 //
-- (NSNotificationCenter *)notificationCenter;
+- (NSNotificationCenter*) notificationCenter;
 
 //
 // Tracking Changes to the User Defaults Database
 //
-- (void)noteUserDefaultsChanged;
-- (BOOL)userDefaultsChanged;
+- (void) noteUserDefaultsChanged;
+- (BOOL) userDefaultsChanged;
 
 //
 // Animating an Image	
 //
-- (void)slideImage: (NSImage *)image
-	      from: (NSPoint)fromPoint
-		to: (NSPoint)toPoint;
+- (void) slideImage: (NSImage*)image
+	       from: (NSPoint)fromPoint
+		 to: (NSPoint)toPoint;
 
 //
 // Requesting Additional Time before Power Off or Logout
 //
-- (int)extendPowerOffBy: (int)requested;
+- (int) extendPowerOffBy: (int)requested;
 
 @end
 
@@ -176,8 +176,8 @@
 		  forExtension: (NSString*)ext;
 - (NSString*) getBestIconForExtension: (NSString*)ext;
 - (NSDictionary*) infoForExtension: (NSString*)ext;
-- (NSBundle *) bundleForApp:(NSString *)appName;
-- (NSImage *) appIconForApp:(NSString *)appName;
+- (NSBundle*) bundleForApp:(NSString*)appName;
+- (NSImage*) appIconForApp:(NSString*)appName;
 - (NSString*) locateApplicationBinary: (NSString*)appName;
 - (void) setBestApp: (NSString*)appName
 	     inRole: (NSString*)role

@@ -1,11 +1,14 @@
 2002-01-22  Richard Frith-Macdonald  <rfm@gnu.org>
 
+	* Source/NSWorkspace.h: new ivar
 	* Source/NSWorkspace.m: Many tidyups and little fixes, major change
 	to -getBestApp... so that it picks the best available app rather
 	than just the one specifed by the user as 'best'.  This means you can
 	always use it to get an app even if the user has set no preference.
 	Fixed uninitialised variable in first version of this mod and made
 	user preferences override declared types opened by apps.
+	Keep track of launched applications so we can tell whether we need
+	to launch a new one or just talk to an existing one.
 
 2002-01-21  Adam Fedor  <fedor@gnu.org>
 
