@@ -121,6 +121,7 @@ enum {
 - (NSView *)ancestorSharedWithView:(NSView *)aView;
 - (BOOL)isDescendantOf:(NSView *)aView;
 - (NSView *)opaqueAncestor;
+- (void)removeFromSuperviewWithoutNeedingDisplay;
 - (void)removeFromSuperview;
 - (void)replaceSubview:(NSView *)oldView
 		  with:(NSView *)newView;
