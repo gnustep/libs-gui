@@ -222,6 +222,7 @@ AppKit/NSMenu.h \
 AppKit/NSMenuItem.h \
 AppKit/NSMenuItemCell.h \
 AppKit/NSMenuView.h \
+AppKit/NSNibConnector.h \
 AppKit/NSNibDeclarations.h \
 AppKit/NSNibLoading.h \
 AppKit/NSOpenPanel.h \

@@ -38,14 +38,122 @@
 #include <Foundation/NSEnumerator.h>
 #include <Foundation/NSInvocation.h>
 #include <Foundation/NSObjCRuntime.h>
+#include <Foundation/NSFileManager.h>
 #include <Foundation/NSString.h>
+#include <Foundation/NSUserDefaults.h>
+#include <AppKit/NSControl.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSView.h>
+#include <AppKit/NSNibConnector.h>
 #include <AppKit/NSNibLoading.h>
+
+
+@implementation	NSNibConnector
+
+- (void) dealloc
+{
+  RELEASE(_src);
+  RELEASE(_dst);
+  RELEASE(_tag);
+  [super dealloc];
+}
+
+- (id) destination
+{
+  return _dst;
+}
+
+- (void) encodeWithCoder: (NSCoder*)aCoder
+{
+  [aCoder encodeObject: _src];
+  [aCoder encodeObject: _dst];
+  [aCoder encodeObject: _tag];
+}
+
+- (void) establishConnection
+{
+}
+
+- (id) initWithCoder: (NSCoder*)aCoder
+{
+  [aCoder decodeValueOfObjCType: @encode(id) at: &_src];
+  [aCoder decodeValueOfObjCType: @encode(id) at: &_dst];
+  [aCoder decodeValueOfObjCType: @encode(id) at: &_tag];
+  return self;
+}
+
+- (NSString*) label
+{
+  return _tag;
+}
+
+- (void) replaceObject: (id)anObject withObject: (id)anotherObject
+{
+}
+
+- (id) source
+{
+  return _src;
+}
+
+- (void) setDestination: (id)anObject
+{
+  ASSIGN(_dst, anObject);
+}
+
+- (void) setLabel: (NSString*)label
+{
+  ASSIGN(_tag, label);
+}
+
+- (void) setSource: (id)anObject
+{
+  ASSIGN(_src, anObject);
+}
+
+@end
+
+@implementation	NSNibControlConnector
+- (void) establishConnection
+{
+  SEL		sel = NSSelectorFromString(_tag);
+	      
+  [_src setTarget: _dst];
+  [_src setAction: sel];
+}
+@end
+
+@implementation	NSNibOutletConnector
+- (void) establishConnection
+{
+  NSString	*selName;
+  SEL		sel;
+
+  selName = [NSString stringWithFormat: @"set%@:", [_tag capitalizedString]];
+  sel = NSSelectorFromString(selName);
+	      
+  if ([_src respondsToSelector: sel])
+    {
+      [_src performSelector: sel withObject: _dst];
+    }
+  else
+    {
+      /*
+       * Use the GNUstep additional function to set the instance variable
+       * directly.
+       * FIXME - need some way to do this for libFoundation and Foundation
+       * based systems.
+       */
+      GSSetInstanceVariable(_src, _tag, (void*)&_dst); 
+    }
+}
+@end
+
+
 
 @implementation NSBundle (NSBundleAdditions)
 
-- (NSString *)pathForImageResource:(NSString *)name
+- (NSString*) pathForImageResource: (NSString*)name
 {
   NSString	*ext = [name pathExtension];
   NSString	*path = nil;
@@ -78,52 +186,68 @@
   BOOL		loaded = NO;
 
   data = [NSData dataWithContentsOfFile: fileName];
-  if (data)
+  if (data != nil)
     {
       NSUnarchiver	*unarchiver;
 
       unarchiver = [[NSUnarchiver alloc] initForReadingWithData: data];
-      if (unarchiver)
+      if (unarchiver != nil)
 	{
 	  id	obj;
 
 	  [unarchiver setObjectZone: zone];
 	  obj = [unarchiver decodeObject];
-	  if (obj)
+	  if (obj != nil)
 	    {
 	      if ([obj isKindOfClass: [GSNibContainer class]])
 		{
 		  GSNibContainer	*container = obj;
-		  NSMutableDictionary	*nameTable;
+		  NSMutableDictionary	*nameTable = [container nameTable];
+		  NSMutableArray	*connections = [container connections];
 		  NSEnumerator		*enumerator;
+		  NSNibConnector	*connection;
 		  NSString		*key;
-
-		  nameTable = [container nameTable];
 
 		  /*
 		   *	Go through the table of objects in the nib and
 		   *	retain each one (except ones that are overridden
 		   *	by values from the 'context table' and retain them
 		   *	so they will persist after the container is gone.
+		   *	Add local entries into name table.
 		   */
 		  enumerator = [nameTable keyEnumerator];
 		  while ((key = [enumerator nextObject]) != nil)
 		    {
 		      if ([context objectForKey: key] == nil)
 			{
-			  [[nameTable objectForKey: key] retain];
+			  RETAIN([nameTable objectForKey: key]);
 			}
+		    }
+		  [nameTable addEntriesFromDictionary: context];
+
+		  /*
+		   *	Now establish all connections by taking the names
+		   *	stored in the connection objects, and replaciong them
+		   *	with the corresponding values from the name table
+		   *	before telling the connections to establish themselves.
+		   */
+		  enumerator = [connections objectEnumerator];
+		  while ((connection = [enumerator nextObject]) != nil)
+		    {
+		      id	val;
+
+		      val = [nameTable objectForKey: [connection source]];
+		      [connection setSource: val];
+		      val = [nameTable objectForKey: [connection destination]];
+		      [connection setDestination: val];
+		      [connection establishConnection];
+		      [connection establishConnection];
 		    }
 
 		  /*
-		   *	Now add local context to the name table, replacing
-		   *	objects in the nib where the local version have the
-		   *	same names.  Get the container to set up the
-		   *	outlets from all the objects.  Finally tell the
-		   *	unarchived objects to wake up.
+		   * Now tell all the objects that they have been loaded from
+		   * a nib.
 		   */
-		  [nameTable addEntriesFromDictionary: context];
-		  [container setAllOutlets];
 		  enumerator = [nameTable keyEnumerator];
 		  while ((key = [enumerator nextObject]) != nil)
 		    {
@@ -151,9 +275,9 @@
 		  NSLog(@"Nib '%@' without container object!", fileName);
 		}
 	    }
-	  [unarchiver release];
+	  RELEASE(unarchiver);
 	}
-      [data release];
+      RELEASE(data);
     }
   return loaded;
 }
@@ -164,29 +288,91 @@
   NSDictionary	*table;
   NSBundle	*bundle;
   NSString	*file;
-  NSString	*ext;
-  NSString	*path;
 
   if (owner == nil || aNibName == nil)
     return NO;
 
   table = [NSDictionary dictionaryWithObject: owner forKey: @"NSOwner"];
   file = [aNibName stringByDeletingPathExtension];
-  ext = [aNibName pathExtension];
-  if ([ext isEqualToString: @""])
-    {
-      ext = @".nib";
-    }
   bundle = [self bundleForClass: [owner class]];
-  path = [bundle pathForResource: file ofType: ext];
-  if (path == nil)
-    return NO;
-  
-  return [self loadNibFile: aNibName
-	 externalNameTable: table
-		  withZone: [owner zone]];
+  if (bundle == nil)
+    {
+      bundle = [self mainBundle];
+    }
+  return [bundle loadNibFile: aNibName
+	   externalNameTable: table
+		    withZone: [owner zone]];
 }
 
+- (BOOL) loadNibFile: (NSString*)fileName
+   externalNameTable: (NSDictionary*)context
+	    withZone: (NSZone*)zone
+{
+  NSFileManager		*mgr = [NSFileManager defaultManager];
+  NSMutableArray	*array = [NSMutableArray arrayWithCapacity: 8];
+  NSArray		*languages = [NSUserDefaults userLanguages];
+  NSString		*rootPath = [self bundlePath];
+  NSString		*primary;
+  NSString		*language;
+  NSEnumerator		*enumerator;
+  NSString		*ext;
+
+  ext = [fileName pathExtension];
+  fileName = [fileName stringByDeletingPathExtension];
+
+  /*
+   * Build an array of resource paths that differs from the normal order -
+   * we want a localized file in preference to a generic one.
+   */
+  primary = [rootPath stringByAppendingPathComponent: @"Resources"];
+  enumerator = [languages objectEnumerator];
+  while ((language = [enumerator nextObject]))
+    {
+      NSString	*langDir;
+
+      langDir = [NSString stringWithFormat: @"%@.lproj", language];
+      [array addObject: [primary stringByAppendingPathComponent: langDir]];
+    }
+  [array addObject: primary];
+  primary = rootPath;
+  enumerator = [languages objectEnumerator];
+  while ((language = [enumerator nextObject]))
+    {
+      NSString	*langDir;
+
+      langDir = [NSString stringWithFormat: @"%@.lproj", language];
+      [array addObject: [primary stringByAppendingPathComponent: langDir]];
+    }
+  [array addObject: primary];
+
+  enumerator = [array objectEnumerator];
+  while ((rootPath = [enumerator nextObject]) != nil)
+    {
+      NSString	*path;
+
+      rootPath = [rootPath stringByAppendingPathComponent: fileName]; 
+      if ([ext isEqualToString: @""] == NO)
+	{
+	  path = [rootPath stringByAppendingPathExtension: ext];
+	  if ([mgr isReadableFileAtPath: path] == NO)
+	    {
+	      path = [rootPath stringByAppendingPathExtension: @".gorm"];
+	      if ([mgr isReadableFileAtPath: path] == NO)
+		{
+		  path = [rootPath stringByAppendingPathExtension: @".nib"];
+		  if ([mgr isReadableFileAtPath: path] == NO)
+		    {
+		      continue;
+		    }
+		}
+	    }
+	  return [NSBundle loadNibFile: path
+		     externalNameTable: context
+			      withZone: (NSZone*)zone];
+	}
+    }
+  return NO;
+}
 @end
 
 
@@ -195,10 +381,16 @@
  *	The GSNibContainer class manages the internals os a nib file.
  */
 @implementation GSNibContainer
+
+- (NSMutableArray*) connections
+{
+  return connections;
+}
+
 - (void) dealloc
 {
-  [nameTable release];
-  [outletMap release];
+  RELEASE(nameTable);
+  RELEASE(connections);
   [super dealloc];
 }
 
@@ -206,7 +398,7 @@
 {
   [super encodeWithCoder: aCoder];
   [aCoder encodeObject: nameTable];
-  [aCoder encodeObject: outletMap];
+  [aCoder encodeObject: connections];
 }
 
 - (id) init
@@ -214,7 +406,7 @@
   if ((self = [super init]) != nil)
     {
       nameTable = [[NSMutableDictionary alloc] initWithCapacity: 8];
-      outletMap = [[NSMutableDictionary alloc] initWithCapacity: 8];
+      connections = [[NSMutableArray alloc] initWithCapacity: 8];
     }
   return self;
 }
@@ -223,7 +415,7 @@
 {
   self = [super initWithCoder: aCoder];
   [aCoder decodeValueOfObjCType: @encode(id) at: &nameTable];
-  [aCoder decodeValueOfObjCType: @encode(id) at: &outletMap];
+  [aCoder decodeValueOfObjCType: @encode(id) at: &connections];
   return self;
 }
 
@@ -232,139 +424,45 @@
   return nameTable;
 }
 
-- (NSMutableDictionary*) outletsFrom: (NSString*)instanceName
-{
-  return [outletMap objectForKey: instanceName];
-}
-
-- (void) setAllOutlets
-{
-  NSString	*instanceName;
-  NSEnumerator	*instanceEnumerator;
-
-  instanceEnumerator = [outletMap keyEnumerator];
-  while ((instanceName = [instanceEnumerator nextObject]) != nil)
-    {
-      NSDictionary	*outletMappings;
-      NSEnumerator	*outletEnumerator;
-      NSString		*outletName;
-      id		source;
-
-      source = [nameTable objectForKey: instanceName];
-      outletMappings = [outletMap objectForKey: instanceName];
-      outletEnumerator = [outletMappings keyEnumerator];
-      while ((outletName = [outletEnumerator nextObject]) != nil)
-	{
-	  id	target;
-
-	  target = [outletMappings objectForKey: outletName];
-	  [self setOutlet: outletName from: source to: target];
-	}
-    }
-}
-
-- (BOOL) setOutlet: (NSString*)outletName from: (id)source to: (id)target
-{
-  NSString	*selName;
-  SEL		sel;
-
-  selName = [NSString stringWithFormat: @"set%@:",
-		[outletName capitalizedString]];
-  sel = NSSelectorFromString(selName);
-	      
-  if ([source respondsToSelector: sel])
-    {
-      [source performSelector: sel withObject: target];
-      return YES;
-    }
-  else
-    {
-      /*
-       * Use the GNUstep additional function to set the instance variable
-       * directly.
-       * FIXME - need some way to do this for libFoundation and Foundation
-       * based systems.
-       */
-      GSSetInstanceVariable(source, outletName, (void*)&target); 
-      NSLog(@"Direct setting of ivar failed");
-    }
-  return NO;
-}
-
-- (BOOL) setOutlet: (NSString*)outletName
-	  fromName: (NSString*)sourceName
-	    toName: (NSString*)targetName
-{
-  NSMutableDictionary	*outletMappings;
-  id	source;
-  id	target;
-
-  /*
-   *	Get the mappings for the source object (create mappings if needed)
-   *	and set the mapping for the outlet (replaces any old mapping).
-   */
-  outletMappings = [outletMap objectForKey: sourceName];
-  if (outletMappings == nil)
-    {
-      outletMappings = [NSMutableDictionary dictionaryWithCapacity: 1];
-      [outletMap setObject: outletMappings forKey: sourceName];
-    }
-  [outletMappings setObject: targetName forKey: outletName];
-
-  /*
-   *	Now make the connection in the objects themselves.
-   */
-  source = [nameTable objectForKey: sourceName];
-  target = [nameTable objectForKey: targetName];
-  return [self setOutlet: outletName from: source to: target];
-}
 @end
 
 @implementation	GSNibItem
+
 - (void) dealloc
 {
-  [theClass release];
-  [settings release];
-  [self dealloc];
+  RELEASE(theClass);
+  [super dealloc];
 }
 
-- (id) init
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  self = [super init];
-  if (self)
-    {
-      settings = [[NSMutableArray alloc] initWithCapacity: 0];
-    }
-  return self;
+  [super encodeWithCoder: aCoder];
+  [aCoder encodeObject: theClass];
+  [aCoder encodeRect: theFrame];
 }
 
 - (id) initWithCoder: (NSCoder*)aCoder
 {
   id		obj;
   Class		cls;
-  unsigned	i;
 
-  self = [super initWithCoder: aCoder];
-  [aCoder decodeValueOfObjCType: @encode(BOOL) at: &hasFrame];
-  frame = [aCoder decodeRect];
   [aCoder decodeValueOfObjCType: @encode(id) at: &theClass];
-  [aCoder decodeValueOfObjCType: @encode(id) at: &settings];
+  theFrame = [aCoder decodeRect];
 
   cls = NSClassFromString(theClass);
+  if (cls == nil)
+    {
+      [NSException raise: NSInternalInconsistencyException
+		  format: @"Unable to find class '%@'", theClass];
+    }
+
   obj = [cls allocWithZone: [self zone]];
-  if (hasFrame)
-    obj = [obj initWithFrame: frame];
+  if (theFrame.size.height > 0 && theFrame.size.width > 0)
+    obj = [obj initWithFrame: theFrame];
   else
     obj = [obj init];
 
-  for (i = 0; i < [settings count]; i++)
-    {
-      NSInvocation	*inv = [settings objectAtIndex: i];
-
-      [inv setTarget: obj];
-      [inv invoke];
-    }
-  [self release];
+  RELEASE(self);
   return obj;
 }
 

@@ -1,8 +1,6 @@
 /* 
    NSNibLoading.h
 
-   Something to do with loading Nibs?
-
    Copyright (C) 1997, 1999 Free Software Foundation, Inc.
 
    Author:  Simon Frankau <sgf@frankau.demon.co.uk>
@@ -39,9 +37,9 @@
 
 @interface NSObject (NSNibAwaking)
 
-//
-// Notification of Loading
-//
+/*
+ * Notification of Loading
+ */
 - (void) awakeFromNib;
 
 @end
@@ -56,38 +54,34 @@
 + (BOOL) loadNibNamed: (NSString *)aNibName
 	        owner: (id)owner;
 
+- (BOOL) loadNibFile: (NSString *)fileName
+   externalNameTable: (NSDictionary *)context
+	    withZone: (NSZone *)zone;
+
 @end
 
 #ifndef	NO_GNUSTEP
 
 /*
- *	This is the class that manages objects within a nib - when a nib is
- *	loaded, the [-setAllOutlets] method is used to set up the objects
- *	and the GSNibContainer object is released.
+ * This is the class that holds objects within a nib.
  */
-@interface GSNibContainer : NSObject
+@interface GSNibContainer : NSObject <NSCoding>
 {
   NSMutableDictionary	*nameTable;
-  NSMutableDictionary	*outletMap;
+  NSMutableArray	*connections;
 }
 - (NSMutableDictionary*) nameTable;
-- (NSMutableDictionary*) outletsFrom: (NSString*)instanceName;
-- (void) setAllOutlets;
-- (BOOL) setOutlet: (NSString*)outletName from: (id)source to: (id)target;
-- (BOOL) setOutlet: (NSString*)outletName
-	  fromName: (NSString*)sourceName
-	    toName: (NSString*)targetName;
+- (NSMutableArray*) connections;
 @end
 
-@interface GSNibItem : NSObject
+@interface GSNibItem : NSObject <NSCoding>
 {
   NSString		*theClass;
-  NSRect		frame;
-  BOOL			hasFrame;
-  NSMutableArray	*settings;
+  NSRect		theFrame;
 }
 @end
 
 #endif	/* NO_GNUSTEP */
 
-#endif // _GNUstep_H_NSNibLoading
+#endif /* _GNUstep_H_NSNibLoading */
+

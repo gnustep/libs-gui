@@ -1,3 +1,10 @@
+Mon Nov 29 11:43:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSBundle.m: rewrite with new nib loading method.
+	* Source/GNUmakefile: Added NSNibConnector.h
+	* Headers/AppKit/NSNibConnector.h: new file
+	* Headers/AppKit/NSNibLoading.h: Update
+
 Mon Nov 29  6:05:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSApplication.m: ([-iconWindow]) new (non-standard) method.
