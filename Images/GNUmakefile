@@ -111,7 +111,9 @@ common_ToolbarClippedItemsMark.tiff \
 common_ToolbarSeparatorItem.tiff \
 common_ToolbarShowColorsItem.tiff \
 common_ToolbarShowFontsItem.tiff \
-common_ToolbarSpaceItem.tiff
+common_ToolbarSpaceItem.tiff \
+page_landscape.tiff \
+page_portrait.tiff
 
 -include GNUmakefile.preamble
 

@@ -1,3 +1,11 @@
+2004-02-29  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/AppKit/NSPageLayout.h: Update tags.
+	* Images/GNUmakefile: Add page_landscape.tiff, page_portrait.tiff.
+	* Panels/English.lproj/GSPageLayout.gorm: Update.
+	* Source/NSPageLayout.m: Internationalize gui text. Update for
+	gorm changes. (Patches from Fabien Vallon).
+
 2004-02-28  Adam Fedor  <fedor@gnu.org>
 
 	* Version 0.9.2

@@ -39,11 +39,13 @@ enum {
   NSPLTitleField,
   NSPLPaperNameButton,
   NSPLUnitsButton,
-  NSPLWidthForm,
-  NSPLHeightForm,
+  NSPLWidthField,
+  NSPLHeightField,
   NSPLOrientationMatrix,
   NSPLCancelButton,
-  NSPLOKButton 
+  NSPLOKButton,
+  NSPLPageLayout,
+  NSPLScaleField
 };
 
 @interface NSApplication (NSPageLayout)

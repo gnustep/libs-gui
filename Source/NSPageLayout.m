@@ -98,8 +98,15 @@ static NSPageLayout *shared_instance;
 //
 - (NSArray*) _units
 {
-  return [NSArray arrayWithObjects: @"pts", @"mm", @"cm", @"in", nil]; 
+  return [NSArray arrayWithObjects: _(@"Points"), _(@"Minimeters"), _(@"Centimeters"), _(@"Inches"), nil]; 
 }
+
+
+- (NSArray*) _pageLayout
+{
+  return [NSArray arrayWithObjects: _(@"1 per page"), _(@"2 per page"), _(@"4 per page"), _(@"8 per page"),_(@"16 per page"),nil]; 
+}
+
 
 - (id) init
 {
@@ -119,10 +126,10 @@ static NSPageLayout *shared_instance;
 {
   unsigned int i;
   id control;
-  NSForm *sizeForm;
   NSArray *subviews, *list;
   NSString *panel;
   NSDictionary *table;
+  id image;
 
   self = [super initWithContentRect: contentRect
 		 styleMask: aStyle
@@ -158,24 +165,49 @@ static NSPageLayout *shared_instance;
       [_contentView addSubview: [subviews objectAtIndex: i]];
     }
   DESTROY(_panel);
-  /* FIXME: Can't do this in Gorm yet: */
-  sizeForm = CONTROL(self, NSPLWidthForm);
-  [[sizeForm cellAtIndex: 0] setEditable: NO];
-  [[sizeForm cellAtIndex: 1] setEditable: NO];
-  [[sizeForm cellAtIndex: 0] setSelectable: NO];
-  [[sizeForm cellAtIndex: 1] setSelectable: NO];
-  control = CONTROL(self, NSPLOKButton);
-  [self setDefaultButtonCell: [control cell]];
 
-  /* Set up units popup */
-  control =  CONTROL(self, NSPLUnitsButton);
+  //Image 
+  control =  CONTROL(self,NSPLImageButton);
+  image = [[NSApplication sharedApplication] applicationIconImage];
+  [control setImage:image];
+
+  //Units PopUpButton tag = 3
+  control = CONTROL(self,NSPLUnitsButton);
   list = [self _units];
   [control removeAllItems];
   for (i = 0; i < [list count]; i++)
     {
       [control addItemWithTitle: [list objectAtIndex: i]];
+      [[control itemAtIndex:i] setEnabled:YES];
     }
+  [control setAutoenablesItems:YES];
+  //Action ?
+  [control setTarget: self];
+  //TODO check local and select the good Unit
   [control selectItemAtIndex: 0];
+
+  //Orientation matix (Portrait/Landscape) tag = 6 
+  control = CONTROL(self,NSPLOrientationMatrix);
+  [[control cellAtRow:0 column:0] setImage:[NSImage imageNamed:@"page_landscape.tiff"]];
+  [[control cellAtRow:0 column:1] setImage:[NSImage imageNamed:@"page_portrait.tiff"]];
+
+  //pageLayout 
+  control = CONTROL(self,NSPLPageLayout);
+  list = [self _pageLayout];
+  [control removeAllItems];
+  for (i = 0; i < [list count]; i++)
+    {
+      [control addItemWithTitle: [list objectAtIndex: i]];
+      [[control itemAtIndex:i] setEnabled:YES];
+    }
+  [control setAutoenablesItems:YES];
+  //Action ?
+  [control setTarget: self];
+  [control selectItemAtIndex: 0];  
+
+  //Protrait YES  ?
+  //  _portrait = YES;
+
   return self;
 }
 
@@ -289,6 +321,7 @@ static NSPageLayout *shared_instance;
 - (void) _pickedButton: (id)sender
 {
   int tag = [sender tag];
+
   if (tag == NSPLOKButton)
     {
       _picked = NSOKButton;
@@ -309,26 +342,26 @@ static NSPageLayout *shared_instance;
 
 - (void) _setNewPageSize
 {
-  NSForm *sizeForm = [[self contentView] viewWithTag: NSPLWidthForm];
+  NSTextField *sizeField = [[self contentView] viewWithTag: NSPLWidthField];
+  NSTextField *heightField = [[self contentView] viewWithTag: NSPLHeightField];
   id control = [[self contentView] viewWithTag: NSPLUnitsButton];
   double factor = [self factorForIndex: [control indexOfSelectedItem]];
-  [[sizeForm cellAtIndex: 0] setDoubleValue: _size.width * factor];
-  [[sizeForm cellAtIndex: 1] setDoubleValue: _size.height * factor];
+  [sizeField setDoubleValue: _size.width * factor];
+  [heightField setDoubleValue: _size.height * factor];
 }
 
 - (void) _pickedPaper: (id)sender
 {
-  NSPrinter *printer;
+  NSPrinter *printer = [_printInfo printer];
   int tag = [sender tag];
 
-  printer = [_printInfo printer];
-
+  //tag == 2
   if (tag == NSPLPaperNameButton)
     {
-      id ocontrol;
+      id control;
       _size = [printer pageSizeForPaper: [sender titleOfSelectedItem]];
-      ocontrol = [[self contentView] viewWithTag: NSPLOrientationMatrix];
-      if ([ocontrol selectedColumn] > 0)
+      control = [[self contentView] viewWithTag: NSPLOrientationMatrix];
+      if ([control selectedColumn] > 0)
 	{
 	  double temp = _size.width;
 	  _size.width = _size.height;
@@ -336,10 +369,12 @@ static NSPageLayout *shared_instance;
 	}
       [self _setNewPageSize];
     }
+  //tag == 3
   else if (tag == NSPLUnitsButton)
     {
       [self _setNewPageSize];
     }
+  //tag == 6
   else if (tag == NSPLOrientationMatrix)
     {
       if ([sender selectedColumn] > 0)
@@ -471,9 +506,10 @@ static NSPageLayout *shared_instance;
      
   /* Set up size form */
   _size = [_printInfo paperSize];
-  control = [[self contentView] viewWithTag: NSPLWidthForm];
-  [[control cellAtIndex: 0] setDoubleValue: _size.width];
-  [[control cellAtIndex: 1] setDoubleValue: _size.height];
+  control = [[self contentView] viewWithTag: NSPLWidthField];
+  [control setDoubleValue: _size.width];
+  control = [[self contentView] viewWithTag: NSPLHeightField];
+  [control setDoubleValue: _size.height];
   
   /* Set up the orientation */
   {
@@ -481,6 +517,20 @@ static NSPageLayout *shared_instance;
     control = [[self contentView] viewWithTag: NSPLOrientationMatrix];
     [control selectCellAtRow: 0 column: (orient - NSPortraitOrientation)];
   }
+
+  //TODO Scaling 
+  {
+    control = [[self contentView] viewWithTag: NSPLScaleField];
+    float scale = 100;
+    NSNumber *scaleNumber; 
+    if ( (scaleNumber = [dict objectForKey:NSPrintScalingFactor]  ) ) 
+      {
+	scale = [scaleNumber floatValue];
+      }
+
+    [control setFloatValue: scale];
+  }
+
 }
 
 /** Writes any layout information set by the user to the receiver's
@@ -491,9 +541,10 @@ static NSPageLayout *shared_instance;
   id control;
   NSString *str;
   NSPrinter *printer;
+  float scale; 
+  NSMutableDictionary *dict = [_printInfo dictionary];
 
   printer = [_printInfo printer];
-
   /* Write Paper Name */
   control = [[self contentView] viewWithTag: NSPLPaperNameButton];
   str = [control titleOfSelectedItem];
@@ -503,6 +554,12 @@ static NSPageLayout *shared_instance;
   control = [[self contentView] viewWithTag: NSPLOrientationMatrix];
   [_printInfo setOrientation: [control selectedColumn]+NSPortraitOrientation];
 
+
+  control = [[self contentView] viewWithTag: NSPLScaleField]; 
+  scale = [control floatValue];
+  [dict setObject: [NSNumber numberWithFloat:scale] forKey:NSPrintScalingFactor];
+  
+  
   /* Write Size */
   /* FIXME: Currently don't allow writing custom size. */
 
