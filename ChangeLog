@@ -1,3 +1,16 @@
+Fri Dec 22 21:40:58 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/NSTextView.h: Added ivar to store the
+	original selected range.
+	* Source/NSTextView.m ([-initWithFrame:textContainer:]): Init
+	original selected range.
+	([-setSelectedRange:affinity:stillSelecting:]): Rewritten,
+	implemented delegate notifications etc.  ([-mouseDown:]): Use
+	setSelectedRange:affinity:stillSelecting: rather than
+	setSelectedRange:, to produce delegate notifications etc.
+	([-setDelegate:]): Check if delegate reponds to
+	textView:willChangeSelectionFromCharacterRange:toCharacterRange:.
+
 Fri Dec 22 20:05:13 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSTextView.m ([-setSelectedRange:]): Simply wrap
