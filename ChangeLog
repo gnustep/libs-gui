@@ -1,3 +1,7 @@
+2002-11-23 22:55  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSSecureTextField: Update to work with new text system.
+
 2002-11-23 22:30  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/NSTextContainer.h,
