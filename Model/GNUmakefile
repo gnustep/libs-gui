@@ -41,7 +41,8 @@ libgmodel_OBJC_FILES = IMCustomObject.m IMConnectors.m IMLoading.m GMAppKit.m \
 	GMArchiver.m
 libgmodel_HEADER_FILES_DIR = ../Headers/AppKit
 libgmodel_HEADER_FILES_INSTALL_DIR = /gnustep/gui/AppKit
-libgmodel_HEADER_FILES = IMConnectors.h IMCustomObject.h IMLoading.h GMAppKit.h
+libgmodel_HEADER_FILES = IMConnectors.h IMCustomObject.h IMLoading.h \
+	GMAppKit.h GMArchiver.h
 
 test_OBJC_FILES = test.m Controller.m
 test_MAIN_MODEL_FILE = test.gmodel

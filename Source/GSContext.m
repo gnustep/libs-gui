@@ -147,4 +147,8 @@ int top;											// deallocated with the
 	[super dealloc];
 }
 
+- (void) wait
+{
+}
+
 @end

@@ -19,7 +19,7 @@ id pool = [NSAutoreleasePool new];
 NSArray* arguments;
 NSProcessInfo* processInfo;
 
-#if LIB_FOUNDATION_LIBRARY
+#ifdef LIB_FOUNDATION_LIBRARY
   [NSProcessInfo initializeWithArguments:argv count:argc environment:env];
 #endif
 #ifndef NX_CURRENT_COMPILER_RELEASE

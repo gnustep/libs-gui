@@ -120,6 +120,8 @@ typedef enum _NSWindowOrderingMode {
 + (void) _destroyContext:(GSContext *) context;				// private use only		
 - (void) destroy;
 
+- (void) wait;
+
 @end
 
 #endif /* _GSContext_h_INCLUDE */
