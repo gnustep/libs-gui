@@ -503,6 +503,10 @@
 
   [super drawWithFrame: cellFrame inView: view];
 
+  // Skip 5 points from left side
+  cellFrame.origin.x += 5;
+  cellFrame.size.width -= 5;
+
   [self _drawText: [self titleOfSelectedItem] inFrame: cellFrame];
 
   if (_pbcFlags.pullsDown)
