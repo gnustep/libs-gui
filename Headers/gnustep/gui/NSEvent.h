@@ -29,6 +29,7 @@
 #ifndef _GNUstep_H_NSEvent
 #define _GNUstep_H_NSEvent
 
+#include <gnustep/gui/config.h>
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSGeometry.h>
 #include <Foundation/NSDate.h>

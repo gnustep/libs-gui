@@ -29,6 +29,7 @@
 #ifndef _GNUstep_H_NSSelection
 #define _GNUstep_H_NSSelection
 
+#include <gnustep/gui/config.h>
 #include <Foundation/NSCoder.h>
 
 @class NSData;

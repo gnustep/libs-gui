@@ -29,6 +29,7 @@
 #ifndef _GNUstep_H_NSPrinter
 #define _GNUstep_H_NSPrinter
 
+#include <gnustep/gui/config.h>
 #include <Foundation/NSCoder.h>
 
 @class NSString;

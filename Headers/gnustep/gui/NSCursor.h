@@ -29,6 +29,7 @@
 #ifndef _GNUstep_H_NSCursor
 #define _GNUstep_H_NSCursor
 
+#include <gnustep/gui/config.h>
 #include <Foundation/NSCoder.h>
 
 @class NSImage;

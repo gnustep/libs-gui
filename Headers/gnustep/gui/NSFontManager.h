@@ -29,6 +29,7 @@
 #ifndef _GNUstep_H_NSFontManager
 #define _GNUstep_H_NSFontManager
 
+#include <gnustep/gui/config.h>
 #include <Foundation/NSObject.h>
 
 @class NSString;

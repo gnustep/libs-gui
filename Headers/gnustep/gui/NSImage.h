@@ -29,6 +29,7 @@
 #ifndef _GNUstep_H_NSImage
 #define _GNUstep_H_NSImage
 
+#include <gnustep/gui/config.h>
 #include <DPSClient/TypesandConstants.h>
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSCoder.h>

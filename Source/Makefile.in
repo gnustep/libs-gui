@@ -157,9 +157,7 @@ gui/NSView.h \
 gui/NSWindow.h \
 gui/NSWorkspace.h \
 gui/TrackingRectangle.h \
-gui/TypesandConstants.h \
 gui/config.h \
-gui/stdappkit.h \
 gui/nsimage-tiff.h
 
 GNUSTEP_DPS_HEADERS = dps/NSDPSContext.h \

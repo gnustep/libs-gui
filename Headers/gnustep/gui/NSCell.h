@@ -29,6 +29,7 @@
 #ifndef _GNUstep_H_NSCell
 #define _GNUstep_H_NSCell
 
+#include <gnustep/gui/config.h>
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSGeometry.h>
 

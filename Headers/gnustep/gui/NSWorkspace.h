@@ -29,6 +29,7 @@
 #ifndef _GNUstep_H_NSWorkspace
 #define _GNUstep_H_NSWorkspace
 
+#include <gnustep/gui/config.h>
 #include <Foundation/NSObject.h>
 #include <Foundation/NSGeometry.h>
 

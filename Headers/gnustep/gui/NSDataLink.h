@@ -29,6 +29,7 @@
 #ifndef _GNUstep_H_NSDataLink
 #define _GNUstep_H_NSDataLink
 
+#include <gnustep/gui/config.h>
 #include <Foundation/NSCoder.h>
 
 @class NSString;

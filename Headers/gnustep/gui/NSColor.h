@@ -29,6 +29,7 @@
 #ifndef _GNUstep_H_NSColor
 #define _GNUstep_H_NSColor
 
+#include <gnustep/gui/config.h>
 #include <Foundation/NSCoder.h>
 
 @class NSString;

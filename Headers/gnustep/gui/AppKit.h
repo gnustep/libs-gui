@@ -30,12 +30,6 @@
 #define _GNUstep_H_AppKit
 
 //
-// System dependent information
-//
-float MB_SCREEN_MAXWIDTH();
-float MB_SCREEN_MAXHEIGHT();
-
-//
 // Display Postscript System
 //
 #include <DPSClient/DPSOperators.h>

@@ -30,7 +30,6 @@
 #include <Foundation/NSLock.h>
 #include <Foundation/NSData.h>
 #include <Foundation/NSDictionary.h>
-#include <gnustep/gui/config.h>
 #include <gnustep/dps/NSDPSContext.h>
 
 //

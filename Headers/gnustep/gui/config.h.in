@@ -39,5 +39,14 @@
 /* Do we have the DPS Client library? */
 #undef HAVE_DPS_DPSCLIENT_H
 
+/* Define NSDebugLog if not defined */
+#ifndef NSDebugLog
+# ifdef DEBUGLOG
+#  define NSDebugLog(format, args...) NSLog(format, ## args)
+# else
+#  define NSDebugLog(format, args...)
+# endif
+#endif /* !NSDebugLog */
+
 #endif /* _GNUstep_H_AppKitConfig */
 

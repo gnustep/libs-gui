@@ -29,6 +29,7 @@
 #ifndef _GNUstep_H_NSPasteboard
 #define _GNUstep_H_NSPasteboard
 
+#include <gnustep/gui/config.h>
 #include <Foundation/NSObject.h>
 #include <Foundation/NSString.h>
 

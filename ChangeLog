@@ -11,6 +11,38 @@ Tue Mar  4 18:05:24 1997  Ovidiu Predescu <ovidiu@bx.logicnet.ro>
 	* Source/NSTextFieldCell.m: -drawWithFrame:inView: : Call super's
 	implementation.
 
+Tue Mar  4 17:28:58 1997  GNUstep Development  <gnustep@net-community.com>
+
+	* Make sure gnustep-gui config.h file is included.
+	* Headers/gnustep/gui/AppKit.h: Likewise.
+	* Headers/gnustep/gui/NSCell.h: Likewise.
+	* Headers/gnustep/gui/NSColor.h: Likewise.
+	* Headers/gnustep/gui/NSColorList.h: Likewise.
+	* Headers/gnustep/gui/NSColorPicker.h: Likewise.
+	* Headers/gnustep/gui/NSCursor.h: Likewise.
+	* Headers/gnustep/gui/NSDataLink.h: Likewise.
+	* Headers/gnustep/gui/NSDataLinkManager.h: Likewise.
+	* Headers/gnustep/gui/NSEvent.h: Likewise.
+	* Headers/gnustep/gui/NSFont.h: Likewise.
+	* Headers/gnustep/gui/NSFontManager.h: Likewise.
+	* Headers/gnustep/gui/NSImage.h: Likewise.
+	* Headers/gnustep/gui/NSImageRep.h: Likewise.
+	* Headers/gnustep/gui/NSPasteboard.h: Likewise.
+	* Headers/gnustep/gui/NSPrintInfo.h: Likewise.
+	* Headers/gnustep/gui/NSPrintOperation.h: Likewise.
+	* Headers/gnustep/gui/NSPrinter.h: Likewise.
+	* Headers/gnustep/gui/NSResponder.h: Likewise.
+	* Headers/gnustep/gui/NSScreen.h: Likewise.
+	* Headers/gnustep/gui/NSSelection.h: Likewise.
+	* Headers/gnustep/gui/NSSpellChecker.h: Likewise.
+	* Headers/gnustep/gui/NSSpellServer.h: Likewise.
+	* Headers/gnustep/gui/NSWorkspace.h: Likewise.
+	* Source/Makefile.in: Remove non-existent header files.
+	* Source/tiff.m: Remove unneeded header file.
+	* Source/NSDPSContext.m: Remove unneeded header file.
+
+	* Headers/gnustep/gui/config.h.in: Define NSDebugLog if not defined.
+
 Tue Mar  4 17:04:16 1997  GNUstep Development  <gnustep@net-community.com>
 
 	* Reinstate NSCursor and NSColorWell changes that got lost.
