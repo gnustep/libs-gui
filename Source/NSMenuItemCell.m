@@ -64,7 +64,6 @@ static NSImage	*arrowImageH = nil;
 
 - (id) init
 {
-  mcell_has_submenu = NO;
   [super init];
   _target = nil;
   _highlightsByMask = NSChangeBackgroundCellMask;
@@ -78,51 +77,33 @@ static NSImage	*arrowImageH = nil;
 
 - (void) setHighlighted:(BOOL)flag
 {
-  mcell_highlighted = flag;
+  _cell.is_highlighted = flag;
 }
 
 - (BOOL) isHighlighted
 {
-  return mcell_highlighted;
-}
-
-- (void) highlight: (BOOL)flag
-	 withFrame: (NSRect)cellFrame
-	    inView: (NSView*)controlView
-{
-  if (mcell_highlighted != flag)
-    {
-      // Save last view drawn to
-      if (_control_view != controlView)
-	_control_view = controlView;
-
-      [controlView lockFocus];
-
-      mcell_highlighted = flag;
-      [self drawInteriorWithFrame: cellFrame  inView: controlView];
-
-      [controlView unlockFocus];
-    }
+  // Same as in super class
+  return _cell.is_highlighted;
 }
 
 - (void) setMenuItem:(NSMenuItem *)item
 {
-  ASSIGN(mcell_item, item);
+  ASSIGN(_menuItem, item);
 }
 
 - (NSMenuItem *) menuItem
 {
-  return mcell_item;
+  return _menuItem;
 }
 
 - (void) setMenuView:(NSMenuView *)menuView
 {
-  ASSIGN(mcell_menuView, menuView);
+  ASSIGN(_menuView, menuView);
 }
 
 - (NSMenuView *) menuView
 {
-  return mcell_menuView;
+  return _menuView;
 }
 
 - (void) calcSize
@@ -132,109 +113,114 @@ static NSImage	*arrowImageH = nil;
   float    neededMenuItemHeight = 20;
 
   // State Image
-  if ([mcell_item changesState])
+  if ([_menuItem changesState])
     {
       // NSOnState
-      componentSize = [[mcell_item onStateImage] size];
-      mcell_stateImageWidth = componentSize.width;
+      componentSize = [[_menuItem onStateImage] size];
+      _stateImageWidth = componentSize.width;
       if (componentSize.height > neededMenuItemHeight)
 	neededMenuItemHeight = componentSize.height;
 
       // NSOffState
-      componentSize = [[mcell_item offStateImage] size];
-      if (componentSize.width > mcell_stateImageWidth)
-	mcell_stateImageWidth = componentSize.width;
+      componentSize = [[_menuItem offStateImage] size];
+      if (componentSize.width > _stateImageWidth)
+	_stateImageWidth = componentSize.width;
       if (componentSize.height > neededMenuItemHeight)
 	neededMenuItemHeight = componentSize.height;
 
       // NSMixedState
-      componentSize = [[mcell_item mixedStateImage] size];
-      if (componentSize.width > mcell_stateImageWidth)
-	mcell_stateImageWidth = componentSize.width;
+      componentSize = [[_menuItem mixedStateImage] size];
+      if (componentSize.width > _stateImageWidth)
+	_stateImageWidth = componentSize.width;
       if (componentSize.height > neededMenuItemHeight)
 	neededMenuItemHeight = componentSize.height;
     }
   else
     {
-      mcell_stateImageWidth = 0.0;
+      _stateImageWidth = 0.0;
     }
 
   // Image
-  if ((anImage = [mcell_item image]) && _cell.image_position == NSNoImage)
+  if ((anImage = [_menuItem image]) && _cell.image_position == NSNoImage)
     [self setImagePosition: NSImageLeft];
-  componentSize = NSMakeSize(0,0);
   if (anImage)
-    componentSize = [anImage size];
-  mcell_imageWidth = componentSize.width;
-  if (componentSize.height > neededMenuItemHeight)
-    neededMenuItemHeight = componentSize.height;
+    {
+      componentSize = [anImage size];
+      _imageWidth = componentSize.width;
+      if (componentSize.height > neededMenuItemHeight)
+	neededMenuItemHeight = componentSize.height;
+    }
+  else
+    {
+      _imageWidth = 0.0;
+    }
 
   // Title and Key Equivalent
-  componentSize = [self _sizeText: [mcell_item title]];
-  mcell_titleWidth = componentSize.width;
+  componentSize = [self _sizeText: [_menuItem title]];
+  _titleWidth = componentSize.width;
   if (componentSize.height > neededMenuItemHeight)
     neededMenuItemHeight = componentSize.height;
-  componentSize = [self _sizeText: [mcell_item keyEquivalent]];
-  mcell_keyEquivalentWidth = componentSize.width;
+  componentSize = [self _sizeText: [_menuItem keyEquivalent]];
+  _keyEquivalentWidth = componentSize.width;
   if (componentSize.height > neededMenuItemHeight)
     neededMenuItemHeight = componentSize.height;
 
   // Submenu Arrow
-  if ([mcell_item hasSubmenu])
+  if ([_menuItem hasSubmenu])
     {
-      componentSize = [[NSImage imageNamed:@"common_3DArrowRight"] size];
-      mcell_keyEquivalentWidth = componentSize.width;
+      componentSize = [arrowImage size];
+      _keyEquivalentWidth = componentSize.width;
       if (componentSize.height > neededMenuItemHeight)
 	neededMenuItemHeight = componentSize.height;
     }
 
   // Cache definitive height
-  mcell_menuItemHeight = neededMenuItemHeight;
+  _menuItemHeight = neededMenuItemHeight;
 
   // At the end we set sizing to NO.
-  mcell_needs_sizing = NO;
+  _needs_sizing = NO;
 }
 
 - (void) setNeedsSizing:(BOOL)flag
 {
-  mcell_needs_sizing = flag;
+  _needs_sizing = flag;
 }
 
 - (BOOL) needsSizing
 {
-  return mcell_needs_sizing;
+  return _needs_sizing;
 }
 
 - (float) imageWidth
 {
-  if (mcell_needs_sizing)
+  if (_needs_sizing)
     [self calcSize];
 
-  return mcell_imageWidth;
+  return _imageWidth;
 }
 
 - (float) titleWidth
 {
-  if (mcell_needs_sizing)
+  if (_needs_sizing)
     [self calcSize];
 
-  return mcell_titleWidth;
+  return _titleWidth;
 }
 
 - (float) keyEquivalentWidth
 {
-  if (mcell_needs_sizing)
+  if (_needs_sizing)
     [self calcSize];
 
-  return mcell_keyEquivalentWidth;
+  return _keyEquivalentWidth;
 }
 
 - (float) stateImageWidth
 {
-  if (mcell_needs_sizing)
+  if (_needs_sizing)
     [self calcSize];
 
-  return mcell_stateImageWidth;
+  return _stateImageWidth;
 }
 
 //
@@ -245,16 +231,17 @@ static NSImage	*arrowImageH = nil;
   if (_mcell_belongs_to_popupbutton && _cell.image_position)
     {
       /* Special case: draw image on the extreme right [FIXME check the distance]*/
-      cellFrame.origin.x  += cellFrame.size.width - mcell_imageWidth - 4;
-      cellFrame.size.width = mcell_imageWidth;
+      cellFrame.origin.x  += cellFrame.size.width - _imageWidth - 4;
+      cellFrame.size.width = _imageWidth;
       return cellFrame;
     }
+
   // Calculate the image part of cell frame from NSMenuView
-  cellFrame.origin.x  += [mcell_menuView imageAndTitleOffset];
-  cellFrame.size.width = [mcell_menuView imageAndTitleWidth];
-  if ([mcell_item changesState])
-    cellFrame.origin.x += [mcell_menuView stateImageWidth]
-                       + 2 * [mcell_menuView horizontalEdgePadding];
+  cellFrame.origin.x  += [_menuView imageAndTitleOffset];
+  cellFrame.size.width = [_menuView imageAndTitleWidth];
+  if ([_menuItem changesState])
+    cellFrame.origin.x += [_menuView stateImageWidth]
+                       + 2 * [_menuView horizontalEdgePadding];
 
   switch (_cell.image_position)
     {
@@ -267,12 +254,12 @@ static NSImage	*arrowImageH = nil;
 	break;
 
       case NSImageLeft:
-	cellFrame.size.width = mcell_imageWidth;
+	cellFrame.size.width = _imageWidth;
 	break;
 
       case NSImageRight:
-	cellFrame.origin.x  += mcell_titleWidth + xDist;
-	cellFrame.size.width = mcell_imageWidth;
+	cellFrame.origin.x  += _titleWidth + xDist;
+	cellFrame.size.width = _imageWidth;
 	break;
 
       case NSImageBelow: 
@@ -291,8 +278,8 @@ static NSImage	*arrowImageH = nil;
 - (NSRect) keyEquivalentRectForBounds:(NSRect)cellFrame
 {
   // Calculate the image part of cell frame from NSMenuView
-  cellFrame.origin.x  += [mcell_menuView keyEquivalentOffset];
-  cellFrame.size.width = [mcell_menuView keyEquivalentWidth];
+  cellFrame.origin.x  += [_menuView keyEquivalentOffset];
+  cellFrame.size.width = [_menuView keyEquivalentWidth];
 
   return cellFrame;
 }
@@ -300,8 +287,8 @@ static NSImage	*arrowImageH = nil;
 - (NSRect) stateImageRectForBounds:(NSRect)cellFrame
 {
   // Calculate the image part of cell frame from NSMenuView
-  cellFrame.origin.x  += [mcell_menuView stateImageOffset];
-  cellFrame.size.width = [mcell_menuView stateImageWidth];
+  cellFrame.origin.x  += [_menuView stateImageOffset];
+  cellFrame.size.width = [_menuView stateImageWidth];
 
   return cellFrame;
 }
@@ -309,11 +296,11 @@ static NSImage	*arrowImageH = nil;
 - (NSRect) titleRectForBounds:(NSRect)cellFrame
 {
   // Calculate the image part of cell frame from NSMenuView
-  cellFrame.origin.x  += [mcell_menuView imageAndTitleOffset];
-  cellFrame.size.width = [mcell_menuView imageAndTitleWidth];
-  if ([mcell_item changesState])
-    cellFrame.origin.x += [mcell_menuView stateImageWidth]
-                        + 2 * [mcell_menuView horizontalEdgePadding];
+  cellFrame.origin.x  += [_menuView imageAndTitleOffset];
+  cellFrame.size.width = [_menuView imageAndTitleWidth];
+  if ([_menuItem changesState])
+    cellFrame.origin.x += [_menuView stateImageWidth]
+                        + 2 * [_menuView horizontalEdgePadding];
 
   switch (_cell.image_position)
     {
@@ -326,12 +313,12 @@ static NSImage	*arrowImageH = nil;
 	break;
 
       case NSImageLeft:
-	cellFrame.origin.x  += mcell_imageWidth + xDist;
-	cellFrame.size.width = mcell_titleWidth;
+	cellFrame.origin.x  += _imageWidth + xDist;
+	cellFrame.size.width = _titleWidth;
 	break;
 
       case NSImageRight: 
-	cellFrame.size.width = mcell_titleWidth;
+	cellFrame.size.width = _titleWidth;
 	break;
 
       case NSImageBelow:
@@ -350,32 +337,29 @@ static NSImage	*arrowImageH = nil;
 //
 // Drawing.
 //
-- (void) drawBorderAndBackgroundWithFrame:(NSRect)cellFrame
-				  inView:(NSView *)controlView
+- (void) drawBorderAndBackgroundWithFrame: (NSRect)cellFrame
+				  inView: (NSView *)controlView
 {
+  if (!_cell.is_bordered)
+    return;
+
+  [controlView lockFocus];
+
   if (_mcell_belongs_to_popupbutton)
     {
       cellFrame.origin.x--;
-      if (_cell.is_highlighted && (_highlightsByMask & NSPushInCellMask))
-	{
-	  NSDrawGrayBezel(cellFrame, NSZeroRect);
-	}
-      else
-	{
-	  NSDrawButton(cellFrame, NSZeroRect);
-	}
+    }
+
+  if (_cell.is_highlighted && (_highlightsByMask & NSPushInCellMask))
+    {
+      NSDrawGrayBezel(cellFrame, NSZeroRect);
     }
   else
     {
-      if (_cell.is_highlighted && (_highlightsByMask & NSPushInCellMask))
-        {
-          NSDrawGrayBezel(cellFrame, NSZeroRect);
-        }
-      else
-        {
-          NSDrawButton(cellFrame, NSZeroRect);
-        }
+      NSDrawButton(cellFrame, NSZeroRect);
     }
+
+  [controlView unlockFocus];
 }
 
 - (void) drawImageWithFrame: (NSRect)cellFrame
@@ -383,10 +367,9 @@ static NSImage	*arrowImageH = nil;
 {
   NSSize	size;
   NSPoint	position;
-  NSColor	*backgroundColor = _backgroundColor;
 
   cellFrame = [self imageRectForBounds: cellFrame];
-  size = [mcell_imageToDisplay size];
+  size = [_imageToDisplay size];
   position.x = MAX(NSMidX(cellFrame) - (size.width/2.), 0.);
   position.y = MAX(NSMidY(cellFrame) - (size.height/2.), 0.);
   /*
@@ -396,26 +379,9 @@ static NSImage	*arrowImageH = nil;
   if ([controlView isFlipped])
     position.y += size.height;
 
-  if (backgroundColor == nil)
-    {
-      if (_cell.state)
-	{
-	  if (_showAltStateMask
-	    & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
-	    backgroundColor = [colorClass selectedMenuItemColor];
-	}
-      if (mcell_highlighted)
-	{
-	  if (_highlightsByMask
-	    & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
-	    backgroundColor = [colorClass selectedMenuItemColor];
-	}
-      if (backgroundColor == nil)
-	backgroundColor = [colorClass controlBackgroundColor];
-    }
-
-  [mcell_imageToDisplay setBackgroundColor: backgroundColor];
-  [mcell_imageToDisplay compositeToPoint: position operation: NSCompositeCopy];
+  if (nil != _backgroundColor)
+    [_imageToDisplay setBackgroundColor: _backgroundColor];
+  [_imageToDisplay compositeToPoint: position operation: NSCompositeSourceOver];
 }
 
 - (void) drawKeyEquivalentWithFrame:(NSRect)cellFrame
@@ -423,14 +389,13 @@ static NSImage	*arrowImageH = nil;
 {
   cellFrame = [self keyEquivalentRectForBounds: cellFrame];
 
-  if ([mcell_item hasSubmenu])
+  if ([_menuItem hasSubmenu])
     {
       NSSize	size;
       NSPoint	position;
-      NSColor	*backgroundColor = _backgroundColor;
       NSImage	*imageToDraw;
 
-      if (mcell_highlighted)
+      if (_cell.is_highlighted)
 	imageToDraw = arrowImageH;
       else
 	imageToDraw = arrowImage;
@@ -444,28 +409,12 @@ static NSImage	*arrowImageH = nil;
       if ([controlView isFlipped])
 	position.y += size.height;
 
-      if (backgroundColor == nil)
-	{
-	  if (_cell.state)
-	    {
-	      if (_showAltStateMask
-		& (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
-		backgroundColor = [colorClass selectedMenuItemColor];
-	    }
-	  if (mcell_highlighted)
-	    {
-	      if (_highlightsByMask
-		& (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
-		backgroundColor = [colorClass selectedMenuItemColor];
-	    }
-	  if (backgroundColor == nil)
-	    backgroundColor = [colorClass controlBackgroundColor];
-	}
-      [imageToDraw setBackgroundColor: backgroundColor];
-      [imageToDraw compositeToPoint: position operation: NSCompositeCopy];
+      if (nil != _backgroundColor)
+	[imageToDraw setBackgroundColor: _backgroundColor];
+      [imageToDraw compositeToPoint: position operation: NSCompositeSourceOver];
     }
   else
-    [self _drawText: [mcell_item keyEquivalent] inFrame: cellFrame];
+    [self _drawText: [_menuItem keyEquivalent] inFrame: cellFrame];
 }
 
 - (void) drawSeparatorItemWithFrame:(NSRect)cellFrame
@@ -481,23 +430,22 @@ static NSImage	*arrowImageH = nil;
   NSSize	size;
   NSPoint	position;
   NSImage	*imageToDisplay;
-  NSColor	*backgroundColor = _backgroundColor;
 
   cellFrame = [self stateImageRectForBounds: cellFrame];
 
-  switch ([mcell_item state])
+  switch ([_menuItem state])
     {
       case NSOnState:
-	imageToDisplay = [mcell_item onStateImage];
+	imageToDisplay = [_menuItem onStateImage];
 	break;
 
       case NSMixedState:
-	imageToDisplay = [mcell_item mixedStateImage];
+	imageToDisplay = [_menuItem mixedStateImage];
 	break;
 
       case NSOffState:
       default:
-	imageToDisplay = [mcell_item offStateImage];
+	imageToDisplay = [_menuItem offStateImage];
 	break;
     }
 
@@ -511,36 +459,20 @@ static NSImage	*arrowImageH = nil;
   if ([controlView isFlipped])
     position.y += size.height;
 
-  if (backgroundColor == nil)
-    {
-      if (_cell.state)
-	{
-	  if (_showAltStateMask
-	    & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
-	    backgroundColor = [colorClass selectedMenuItemColor];
-	}
-      if (mcell_highlighted)
-	{
-	  if (_highlightsByMask
-	    & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
-	    backgroundColor = [colorClass selectedMenuItemColor];
-	}
-      if (backgroundColor == nil)
-	backgroundColor = [colorClass controlBackgroundColor];
-    }
-  [imageToDisplay setBackgroundColor: _backgroundColor];
-  [imageToDisplay compositeToPoint: position operation: NSCompositeCopy];
+  if (nil != _backgroundColor)
+    [imageToDisplay setBackgroundColor: _backgroundColor];
+  [imageToDisplay compositeToPoint: position operation: NSCompositeSourceOver];
 }
 
 - (void) drawTitleWithFrame:(NSRect)cellFrame
 		    inView:(NSView *)controlView
 {
-  if ([mcell_item isEnabled])
+  if ([_menuItem isEnabled])
     _cell.is_disabled = NO;
   else
     _cell.is_disabled = YES;
 
-  [self _drawText: [mcell_item title]
+  [self _drawText: [_menuItem title]
 	  inFrame: [self titleRectForBounds: cellFrame]];
 }
 
@@ -562,59 +494,49 @@ static NSImage	*arrowImageH = nil;
   if ([[controlView window] gState] == 0)
     return;
 
-  [controlView lockFocus];
-
   // Draw the border if needed
-  if (_cell.is_bordered)
-    [self drawBorderAndBackgroundWithFrame: cellFrame inView: controlView];
+  [self drawBorderAndBackgroundWithFrame: cellFrame inView: controlView];
 
   [self drawInteriorWithFrame: cellFrame inView: controlView];
-
-  [controlView unlockFocus];
 }
 
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  BOOL	    showAlternate = NO;
   unsigned  mask;
 
   // Transparent buttons never draw
   if (_buttoncell_is_transparent)
     return;
 
-  // Do nothing if the cell frame is empty
-  if (NSIsEmptyRect(cellFrame))
-    return;
-  
-  // Do nothing if the window is deferred
-  if ([[controlView window] gState] == 0)
-    return;
-
   cellFrame = [self drawingRectForBounds: cellFrame];
+  [controlView lockFocus];
 
-  // Pushed in buttons contents are displaced to the bottom right 1px
-  if (_cell.is_bordered && mcell_highlighted
-      && (_highlightsByMask & NSPushInCellMask))
-    PStranslate(1., [controlView isFlipped] ? 1. : -1.);
+  if (_cell.is_highlighted)
+    {
+      mask = _highlightsByMask;
+
+      if (_cell.state)
+	mask &= ~_showAltStateMask;
+    }
+  else if (_cell.state)
+    mask = _showAltStateMask;
+  else
+    mask = NSNoCellMask;
+
+  // pushed in buttons contents are displaced to the bottom right 1px
+  if (_cell.is_bordered && (mask & NSPushInCellMask))
+    {
+      cellFrame = NSOffsetRect(cellFrame, 1., [controlView isFlipped] ? 1. : -1.);
+    }
 
   /*
    * Determine the background color and cache it in an ivar so that the
    * low-level drawing methods don't need to do it again.
    */
-  if (_cell.state)
+  if (mask & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
     {
-      if (_showAltStateMask
-	  & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
-	_backgroundColor = [colorClass selectedMenuItemColor];
+      _backgroundColor = [colorClass selectedMenuItemColor];
     }
-
-  if (mcell_highlighted)
-    {
-      if (_highlightsByMask
-	  & (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
-	_backgroundColor = [colorClass selectedMenuItemColor];
-    }
-
   if (_backgroundColor == nil)
     _backgroundColor = [colorClass controlBackgroundColor];
 
@@ -640,49 +562,43 @@ static NSImage	*arrowImageH = nil;
    * The results are saved in two ivars for use in other
    * drawing methods.
    */
-  if (mcell_highlighted)
-    mask = _highlightsByMask;
-  else
-    mask = _showAltStateMask;
   if (mask & NSContentsCellMask)
-    showAlternate = _cell.state;
-
-  if (mcell_highlighted || showAlternate)
     {
-      mcell_imageToDisplay = _altImage;
-      if (!mcell_imageToDisplay)
-	mcell_imageToDisplay = [mcell_item image];
-      mcell_titleToDisplay = _altContents;
-      if (mcell_titleToDisplay == nil || [mcell_titleToDisplay isEqual: @""])
-        mcell_titleToDisplay = [mcell_item title];
+      _imageToDisplay = _altImage;
+      if (!_imageToDisplay)
+	_imageToDisplay = [_menuItem image];
+      _titleToDisplay = _altContents;
+      if (_titleToDisplay == nil || [_titleToDisplay isEqual: @""])
+        _titleToDisplay = [_menuItem title];
     }
   else
     {
-      mcell_imageToDisplay = [mcell_item image];
-      mcell_titleToDisplay = [mcell_item title];
+      _imageToDisplay = [_menuItem image];
+      _titleToDisplay = [_menuItem title];
     }
 
-  if (mcell_imageToDisplay)
+  if (_imageToDisplay)
     {
-      mcell_imageWidth = [mcell_imageToDisplay size].width;
+      _imageWidth = [_imageToDisplay size].width;
     }
 
   // Draw the state image
-  if (mcell_stateImageWidth > 0)
+  if (_stateImageWidth > 0)
     [self drawStateImageWithFrame: cellFrame inView: controlView];
 
   // Draw the image
-  if (mcell_imageWidth > 0)
+  if (_imageWidth > 0)
     [self drawImageWithFrame: cellFrame inView: controlView];
 
   // Draw the title
-  if (mcell_titleWidth > 0)
+  if (_titleWidth > 0)
     [self drawTitleWithFrame: cellFrame inView: controlView];
 
   // Draw the key equivalent
-  if (mcell_keyEquivalentWidth > 0)
+  if (_keyEquivalentWidth > 0)
     [self drawKeyEquivalentWithFrame: cellFrame inView: controlView];
 
+  [controlView unlockFocus];
   _backgroundColor = nil;
 }
 
@@ -693,12 +609,9 @@ static NSImage	*arrowImageH = nil;
 {
   NSMenuItemCell *c = [super copyWithZone: zone];
 
-  //c->mcell_highlighted = mcell_highlighted;
-  //c->mcell_has_submenu = mcell_has_submenu;
-  //c->mcell_needs_sizing = mcell_needs_sizing;
-  if (mcell_item)
-    c->mcell_item = [mcell_item copyWithZone: zone];
-  c->mcell_menuView = RETAIN(mcell_menuView);
+  if (_menuItem)
+    c->_menuItem = [_menuItem copyWithZone: zone];
+  c->_menuView = RETAIN(_menuView);
 
   return c;
 }
@@ -710,22 +623,18 @@ static NSImage	*arrowImageH = nil;
 {
   [super encodeWithCoder: aCoder];
 
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &mcell_highlighted];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &mcell_has_submenu];
-  [aCoder encodeConditionalObject: mcell_item];
-  [aCoder encodeConditionalObject: mcell_menuView];
+  [aCoder encodeConditionalObject: _menuItem];
+  [aCoder encodeConditionalObject: _menuView];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   [super initWithCoder: aDecoder];
 
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &mcell_highlighted];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &mcell_has_submenu];
-  mcell_item     = [aDecoder decodeObject];
-  mcell_menuView = [aDecoder decodeObject];
+  _menuItem = [aDecoder decodeObject];
+  _menuView = [aDecoder decodeObject];
 
-  mcell_needs_sizing = YES;
+  _needs_sizing = YES;
 
   return self;
 }
