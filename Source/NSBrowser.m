@@ -749,6 +749,11 @@
     return NSNotFound;
 }
 
+- (int) selectedRowInColumn: (int)column
+{
+  return [[self matrixInColumn: column] selectedRow];
+}
+
 - (void)setLastColumn:(int)column
 {
   _lastColumnLoaded = column;

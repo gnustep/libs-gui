@@ -151,6 +151,7 @@
 - (void)reloadColumn:(int)column;
 - (void)selectAll:(id)sender;
 - (int)selectedColumn;
+- (int) selectedRowInColumn: (int)column;
 - (void)setLastColumn:(int)column;
 - (void)validateVisibleColumns;
 

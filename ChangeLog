@@ -5,6 +5,9 @@ Tue Jan 19 10:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 	* Source/NSSplitView.m: ([-adjustSubviews]) complete rewrite in
 	an attempt to get things working as specified in documentation.
 	Subviews are now scaled proportionately.
+	* Source/NSBrowser.m: ([-selectedRowInColumn:]) implemented as
+	suggested by Dirk Olmes.
+	* Headers/AppKit/NSBrowser.h: ditto
 
 Mon Jan 18  5:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
