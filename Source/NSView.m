@@ -943,10 +943,24 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 	    bounds.size.height += changePerOption;
 	  changedSize = YES;
 	}
-      if (autoresizingMask & NSViewMinYMargin)
+      if (autoresizingMask & (NSViewMaxYMargin | NSViewMinYMargin))
 	{
-	  frame.origin.y += changePerOption;
-	  changedOrigin = YES;
+	  if ([self isFlipped] == YES)
+	    {
+	      if (autoresizingMask & NSViewMaxYMargin)
+		{
+		  frame.origin.y += changePerOption;
+		  changedOrigin = YES;
+		}
+	    }
+	  else
+	    {
+	      if (autoresizingMask & NSViewMinYMargin)
+		{
+		  frame.origin.y += changePerOption;
+		  changedOrigin = YES;
+		}
+	    }
 	}
     }
 

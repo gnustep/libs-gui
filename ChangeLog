@@ -1,3 +1,10 @@
+Sun Mar 14 21:27:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSView.m: ([-resizeWithOldSuperviewSize:]) Added fix for
+	autoresizing in flipped views.
+	* Source/NSScrollView.m: ([-_doScroll:]) update window after each
+	call so that click-and-hold on scroller button is displayed properly.
+
 Sun Mar 14 10:20:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSScroller.m: Rewrite and tidy various stuff to bring into
