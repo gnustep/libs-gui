@@ -45,6 +45,9 @@
    Convention (see the red book).*/
 static NSMutableSet* fontsUsed = nil;
 
+/* Fonts that are preferred by the application */
+NSArray *_preferredFonts;
+
 NSFont*
 getNSFont(NSString* key, NSString* defaultFontName, float fontSize)
 {
@@ -114,6 +117,11 @@ setNSFont(NSString* key, NSFont* font)
   return getNSFont (@"NSUserFont", @"Helvetica", fontSize);
 }
 
++ (NSArray *)preferredFontNames
+{
+  return _preferredFonts;
+}
+
 /* Setting the preferred user fonts*/
 
 + (void) setUserFixedPitchFont: (NSFont*)font
@@ -124,6 +132,11 @@ setNSFont(NSString* key, NSFont* font)
 + (void) setUserFont: (NSFont*)font
 {
   setNSFont (@"NSUserFont", font);
+}
+
++ (void)setPreferredFontNames:(NSArray *)fontNames
+{
+  ASSIGN(_preferredFonts, fontNames);
 }
 
 /* Getting various fonts*/
@@ -291,6 +304,7 @@ setNSFont(NSString* key, NSFont* font)
 - (float) underlinePosition	{ return [fontInfo underlinePosition]; }
 - (float) underlineThickness	{ return [fontInfo underlineThickness]; }
 - (float) xHeight		{ return [fontInfo xHeight]; }
+- (float) defaultLineHeightForFont { return [fontInfo defaultLineHeightForFont]; }
 
 /* Computing font metrics attributes*/
 - (float) widthOfString: (NSString*)string
@@ -323,6 +337,11 @@ setNSFont(NSString* key, NSFont* font)
   return [fontInfo glyphIsEncoded: aGlyph ];
 }
 
+- (NSMultibyteGlyphPacking)glyphPacking
+{
+  return [fontInfo glyphPacking];
+}
+
 - (NSGlyph) glyphWithName: (NSString*)glyphName
 {
   return [fontInfo glyphWithName: glyphName ];
@@ -334,6 +353,75 @@ setNSFont(NSString* key, NSFont* font)
 {
   return [fontInfo positionOfGlyph: curGlyph precededByGlyph: prevGlyph
                          isNominal: nominal];
+}
+
+- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
+              forCharacter:(unichar)aChar 
+            struckOverRect:(NSRect)aRect
+{
+  return [fontInfo positionOfGlyph: aGlyph 
+		   forCharacter: aChar 
+		   struckOverRect: aRect];
+}
+
+- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
+           struckOverGlyph:(NSGlyph)baseGlyph 
+              metricsExist:(BOOL *)flag
+{
+  return [fontInfo positionOfGlyph: aGlyph 
+		   struckOverGlyph: baseGlyph 
+		   metricsExist: flag];
+}
+
+- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
+            struckOverRect:(NSRect)aRect 
+              metricsExist:(BOOL *)flag
+{
+  return [fontInfo positionOfGlyph: aGlyph 
+		   struckOverRect: aRect 
+		   metricsExist: flag];
+}
+
+- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
+              withRelation:(NSGlyphRelation)relation 
+               toBaseGlyph:(NSGlyph)baseGlyph
+          totalAdvancement:(NSSize *)offset 
+              metricsExist:(BOOL *)flag
+{
+  return [fontInfo positionOfGlyph: aGlyph 
+              withRelation: relation 
+               toBaseGlyph: baseGlyph
+          totalAdvancement: offset 
+              metricsExist: flag];
+}
+
+- (int)positionsForCompositeSequence:(NSGlyph *)glyphs 
+                      numberOfGlyphs:(int)numGlyphs 
+                          pointArray:(NSPoint *)points
+{
+  int i;
+  NSGlyph base = glyphs[0];
+
+  points[0] = NSZeroPoint;
+
+  for (i = 1; i < numGlyphs; i++)
+    {
+      BOOL flag;
+      // This only places the glyphs relative to the base glyph 
+      // not to each other
+      points[i] = [self positionOfGlyph: glyphs[i] 
+			struckOverGlyph: base 
+			metricsExist: &flag];
+      if (!flag)
+	return i - 1;
+    }
+
+  return i;
+}
+
+- (NSStringEncoding)mostCompatibleStringEncoding
+{
+  return [fontInfo mostCompatibleStringEncoding];
 }
 
 //
