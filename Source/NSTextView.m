@@ -101,7 +101,7 @@
 {
   ASSIGN(_textContainer, aTextContainer);
   // FIXME: Could also get a reference to the layout manager
-  ASSIGN(_textStorage, [[aTextContainer layoutManager] textStorage]);
+  //ASSIGN(_textStorage, [[aTextContainer layoutManager] textStorage]);
 }
 
 - (NSTextContainer*) textContainer
@@ -190,6 +190,8 @@
 - (void) setNeedsDisplayInRect: (NSRect)aRect
 	 avoidAdditionalLayout: (BOOL)flag
 {
+  // FIXME: This is here until the layout manager is working
+  [super setNeedsDisplayInRect: aRect];
 }
 
 /* We override NSView's setNeedsDisplayInRect: */
@@ -324,13 +326,14 @@
 
 - (void) setSelectedRange: (NSRange)charRange
 {
-  NSLog(@"setSelectedRange (%d, %d)", charRange.location, charRange.length);
 /*
+  NSLog(@"setSelectedRange (%d, %d)", charRange.location, charRange.length);
   [[NSNotificationCenter defaultCenter]
     postNotificationName: NSTextViewDidChangeSelectionNotification
     object: self];
-*/
   _selected_range = charRange;
+*/
+  [super setSelectedRange: charRange];
   [self setSelectionGranularity: NSSelectByCharacter];
 
   // Also removes the marking from
@@ -929,7 +932,7 @@ afterString in order over charRange. */
 	}
     }
 */
-  return YES;
+  return [super resignFirstResponder];
 }
 
 - (BOOL) becomeFirstResponder
@@ -941,7 +944,7 @@ afterString in order over charRange. */
       //update the insertion point
     }
 */
-  return YES;
+  return [super becomeFirstResponder];
 }
 
 - (void) rulerView: (NSRulerView*)aRulerView
