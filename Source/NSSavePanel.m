@@ -107,9 +107,9 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 	isDir = NO;
 
       if (exists == YES && isDir == NO)
-	[cell setLeaf: NO];
-      else
 	[cell setLeaf: YES];
+      else
+	[cell setLeaf: NO];
     }
 }
 
