@@ -787,6 +787,8 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   // Perform actions as needed.
   if (index != -1 && !alreadyAttachedMenu)
     {
+      // Stop the periodic events before performing the action
+      [NSEvent stopPeriodicEvents];
       [menuv_menu performActionForItemAtIndex: index];
 
       if (![menuv_menu isFollowTransient])
