@@ -1,3 +1,8 @@
+Thu Aug 30 10:30:22 2001  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSTableColumn.m ([-dataCellForRow:]): Return
+	[self dataCell], rather than nothing.
+
 2001-08-28  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenu.m
