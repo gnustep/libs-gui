@@ -132,76 +132,119 @@ typedef enum _NSSelectionAffinity {
 	float currentCursorY; // column-stable cursor up/down
 }
 
-
-// GNU utility methods
-// return value is guaranteed to be a NSAttributedString, 
-// even if data contains only NSString
-+(NSAttributedString*) attributedStringForData:(NSData*) aData;
-+(NSData*) dataForAttributedString:(NSAttributedString*) aString;
-
-// GNU extension (override it if you want other characters treated 
-// as newline characters)
-+(NSString*) newlineString;	
-
-
 //
 // Getting and Setting Contents (low level: no selection handling, 
 // relayout or display)
 //
--(void) replaceRange:(NSRange)range 
-withAttributedString:(NSAttributedString*)attrString;	// GNU extension
+- (void)replaceCharactersInRange:(NSRange)aRange withRTF:(NSData *)rtfData;
+- (void)replaceCharactersInRange:(NSRange)aRange withRTFD:(NSData *)rtfdData;
+- (void)replaceCharactersInRange:(NSRange)aRange withString:(NSString *)aString;
+-(void) setString:(NSString *)string;
+-(NSString*) string;
+
+// old fashioned
 -(void) replaceRange:(NSRange)range withString:(NSString*) aString;
 -(void) replaceRange:(NSRange)range withRTF:(NSData *)rtfData;
 -(void) replaceRange:(NSRange)range withRTFD:(NSData *)rtfdData;
--(NSData*) RTFDFromRange:(NSRange)range;
--(NSData*) RTFFromRange:(NSRange)range;
--(void) setString:(NSString *)string;
--(void) setText:(NSString *)string;	// old fashioned
+-(void) setText:(NSString *)string;
 -(void) setText:(NSString*) aString 
-          range:(NSRange) aRange;		// old fashioned
--(NSString*) string;
--(NSString*) text;				// old fashioned
+          range:(NSRange) aRange;
+-(NSString*) text;
 
--(unsigned) textLength;			// GNU extension
+//
+// Graphic attributes
+//
+- (NSColor *) backgroundColor;
+- (BOOL) drawsBackground;
+- (void) setBackgroundColor:(NSColor *)color;
+- (void) setDrawsBackground:(BOOL)flag;
 
 
 //
 // Managing Global Characteristics
 //
-- (NSTextAlignment)alignment;
-- (BOOL)drawsBackground;
 - (BOOL)importsGraphics;
 - (BOOL)isEditable;
+- (BOOL)isFieldEditor;
 - (BOOL)isRichText;
 - (BOOL)isSelectable;
-- (void)setAlignment:(NSTextAlignment)mode;
-- (void)setDrawsBackground:(BOOL)flag;
 - (void)setEditable:(BOOL)flag;
+- (void)setFieldEditor:(BOOL)flag;
 - (void)setImportsGraphics:(BOOL)flag;
 - (void)setRichText:(BOOL)flag;
 - (void)setSelectable:(BOOL)flag;
 
 //
-// Managing Font and Color
+// Using the font panel
+// 
+- (void) setUsesFontPanel: (BOOL) flag;
+- (BOOL) usesFontPanel;
+
 //
-- (NSColor *)backgroundColor;
-- (void)changeFont:(id)sender;
-- (NSFont *)font;
-- (void)setBackgroundColor:(NSColor *)color;
--(void) setTextColor:(NSColor *)color range:(NSRange)range;
-- (void)setColor:(NSColor *)color ofRange:(NSRange)range;
-- (void)setFont:(NSFont *)obj;
-- (void)setFont:(NSFont *)font ofRange:(NSRange)range;
-- (void)setTextColor:(NSColor *)color;
-- (void)setUsesFontPanel:(BOOL)flag;
-- (NSColor *)textColor;
-- (BOOL)usesFontPanel;
+// Managing the Ruler
+//
+- (BOOL)isRulerVisible;
+- (void)toggleRuler:(id)sender;
 
 //
 // Managing the Selection
 //
 - (NSRange)selectedRange;
 - (void)setSelectedRange:(NSRange)range;
+
+//
+// Responding to Editing Commands
+//
+- (void)copy:(id)sender;
+- (void)copyFont:(id)sender;
+- (void)copyRuler:(id)sender;
+- (void)cut:(id)sender;
+- (void)delete:(id)sender;
+- (void)paste:(id)sender;
+- (void)pasteFont:(id)sender;
+- (void)pasteRuler:(id)sender;
+- (void)selectAll:(id)sender;
+
+//
+// Managing Font
+//
+- (void)changeFont:(id)sender;
+- (NSFont *)font;
+- (void)setFont:(NSFont *)obj;
+- (void)setFont:(NSFont *)font ofRange:(NSRange)range;
+
+//
+// Managing Alingment
+//
+- (NSTextAlignment) alignment;
+- (void) setAlignment: (NSTextAlignment) mode;
+- (void)alignCenter:(id)sender;
+- (void)alignLeft:(id)sender;
+- (void)alignRight:(id)sender;
+
+//
+// Text colour
+//
+- (void) setTextColor:(NSColor *)color range:(NSRange)range;
+- (void) setColor:(NSColor *)color ofRange:(NSRange)range;
+- (void) setTextColor:(NSColor *)color;
+- (NSColor *)textColor;
+
+//
+// Text attributes
+//
+- (void)subscript:(id)sender;
+- (void)superscript:(id)sender;
+- (void)underline:(id)sender;
+- (void)unscript:(id)sender;
+
+//
+// Reading and Writing RTFD Files
+//
+-(BOOL) readRTFDFromFile:(NSString *)path;
+-(BOOL) writeRTFDToFile:(NSString *)path atomically:(BOOL)flag;
+-(NSData*) RTFDFromRange:(NSRange)range;
+-(NSData*) RTFFromRange:(NSRange)range;
 
 //
 // Sizing the Frame Rectangle
@@ -217,32 +260,6 @@ withAttributedString:(NSAttributedString*)attrString;	// GNU extension
 - (void)sizeToFit;
 
 //
-// Responding to Editing Commands
-//
-- (void)alignCenter:(id)sender;
-- (void)alignLeft:(id)sender;
-- (void)alignRight:(id)sender;
-- (void)copy:(id)sender;
-- (void)copyFont:(id)sender;
-- (void)copyRuler:(id)sender;
-- (void)cut:(id)sender;
-- (void)delete:(id)sender;
-- (void)paste:(id)sender;
-- (void)pasteFont:(id)sender;
-- (void)pasteRuler:(id)sender;
-- (void)selectAll:(id)sender;
-- (void)subscript:(id)sender;
-- (void)superscript:(id)sender;
-- (void)underline:(id)sender;
-- (void)unscript:(id)sender;
-
-//
-// Managing the Ruler
-//
-- (BOOL)isRulerVisible;
-- (void)toggleRuler:(id)sender;
-
-//
 // Spelling
 //
 -(void) checkSpelling:(id)sender;
@@ -252,18 +269,6 @@ withAttributedString:(NSAttributedString*)attrString;	// GNU extension
 // Scrolling
 //
 - (void)scrollRangeToVisible:(NSRange)range;
-
-//
-// Reading and Writing RTFD Files
-//
--(BOOL) readRTFDFromFile:(NSString *)path;
--(BOOL) writeRTFDToFile:(NSString *)path atomically:(BOOL)flag;
-
-//
-// Managing the Field Editor
-//
-- (BOOL)isFieldEditor;
-- (void)setFieldEditor:(BOOL)flag;
 
 //
 // Managing the Delegate
@@ -287,6 +292,18 @@ withAttributedString:(NSAttributedString*)attrString;	// GNU extension
 // NSIgnoreMisspelledWords protocol
 //
 - (void)ignoreSpelling:(id)sender;
+@end
+
+
+@interface NSText(GNUstepExtension)
+// GNU extension (override it if you want other characters treated 
+// as newline characters)
++(NSString*) newlineString;	
+
+// GNU extension
+-(void) replaceRange:(NSRange)range 
+withAttributedString:(NSAttributedString*)attrString;
+-(unsigned) textLength;
 
 //
 // these NSTextView methods are here only informally (GNU extensions)
@@ -297,50 +314,13 @@ withAttributedString:(NSAttributedString*)attrString;	// GNU extension
 -(NSMutableDictionary*) typingAttributes;
 -(void) setTypingAttributes:(NSDictionary *)attrs;
 
-
 -(BOOL) shouldDrawInsertionPoint;
 -(void) drawInsertionPointInRect:(NSRect)rect color:(NSColor *)color turnedOn:(BOOL)flag;
 
--(NSArray*) acceptableDragTypes;
--(void) updateDragTypeRegistration;
-
 -(NSRange) selectionRangeForProposedRange:(NSRange)proposedCharRange granularity:(NSSelectionGranularity)granularity; // override if you want special cursor behaviour
 
-//
-// these NSLayoutManager- like methods are here only informally (GNU extensions)
-//
-
--(unsigned) characterIndexForPoint:(NSPoint)point;
--(NSRect) rectForCharacterIndex:(unsigned) index;
--(NSRect) boundingRectForLineRange:(NSRange)lineRange;
--(NSRange) characterRangeForBoundingRect:(NSRect)bounds;
--(NSRange) lineRangeForRect:(NSRect) aRect;
-
-//
-// these are implementation specific (GNU extensions)
-//
--(int) rebuildLineLayoutInformationStartingAtLine:(int) aLine;	// returns count of lines actually updated (e.g. drawing optimization)
--(int) rebuildLineLayoutInformationStartingAtLine:(int) aLine delta:(int) insertionDelta actualLine:(int) insertionLine;	// override for special layout of text
-
--(int) lineLayoutIndexForCharacterIndex:(unsigned) anIndex;		// return value is identical to the real line number (plus counted newline characters)
--(void) redisplayForLineRange:(NSRange) redrawLineRange;
--(void) drawRichLinesInLineRange:(NSRange) aRange;	// low level, override but never invoke (use redisplayForLineRange:)
--(void) drawPlainLinesInLineRange:(NSRange) aRange;	// low level, override but never invoke (use redisplayForLineRange:)
-
-//
-// various GNU extensions
-//
--(void) rebuildFromCharacterIndex:(int) anIndex;
-
--(void) setSelectionWordGranularitySet:(NSCharacterSet*) aSet;
--(void) setSelectionParagraphGranularitySet:(NSCharacterSet*) aSet;
-
-//
-// private (never invoke, never subclass)
-//
-
--(void) drawRectNoSelection:(NSRect)rect;
-
+-(NSArray*) acceptableDragTypes;
+-(void) updateDragTypeRegistration;
 @end
 
 /* Notifications */

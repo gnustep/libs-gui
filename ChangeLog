@@ -5,6 +5,8 @@ Mon Mar 06 10:36:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 	of more efficient function based lookup.
 	* Source/NSApplication.m: ditto
 	* Source/NSMenu.m: ditto
+	* Source/NSText.m: Tidyups by Fred.
+	* Headers/AppKit/NSText.h: ditto.
 	* Headers/AppKit/NSWindow.h tidyup.
 	* Headers/AppKit/NSGraphics.h new functions.
 
