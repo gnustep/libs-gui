@@ -444,13 +444,16 @@
     {
       NSImage *closeImage = [NSImage imageNamed: @"common_Close"];
       NSImage *closeHImage = [NSImage imageNamed: @"common_CloseH"];
+
+      NSSize viewSize;
+      NSSize buttonSize;
       
       closeButton = [self _createButtonWithImage: closeImage 
                                   highlightImage: closeHImage
                                           action: closeAction];
 
-      NSSize viewSize = [self frame].size;
-      NSSize buttonSize = [closeButton frame].size;
+      viewSize = [self frame].size;
+      buttonSize = [closeButton frame].size;
 
       // Update location
       [closeButton setFrameOrigin:
@@ -488,12 +491,16 @@
     {
       NSImage *miniImage = [NSImage imageNamed: @"common_Miniaturize"];
       NSImage *miniHImage = [NSImage imageNamed: @"common_MiniaturizeH"];
+
+      NSSize viewSize;
+      NSSize buttonSize;
       
       miniaturizeButton = [self _createButtonWithImage: miniImage
                                         highlightImage: miniHImage
                                                 action: miniaturizeAction];
-      NSSize viewSize = [self frame].size;
-      NSSize buttonSize = [miniaturizeButton frame].size;
+
+      viewSize = [self frame].size;
+      buttonSize = [miniaturizeButton frame].size;
 
       // Update location
       [miniaturizeButton setFrameOrigin:

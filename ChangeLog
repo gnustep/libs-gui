@@ -1,3 +1,7 @@
+2004-02-05 21:04  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSTitleView.m: Fix declarations after statements.
+
 2004-02-05  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenu.m
