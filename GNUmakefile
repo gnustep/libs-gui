@@ -25,11 +25,18 @@
 #  If not, write to the Free Software Foundation,
 #  59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
+# Install into the system root by default
 GNUSTEP_INSTALLATION_DIR = $(GNUSTEP_SYSTEM_ROOT)
+
+RPM_DISABLE_RELOCATABLE=YES
+PACKAGE_NEEDS_CONFIGURE = YES
 
 GNUSTEP_MAKEFILES = $(GNUSTEP_SYSTEM_ROOT)/Makefiles
 
 include $(GNUSTEP_MAKEFILES)/common.make
+
+PACKAGE_NAME = gnustep-gui
+VERSION = 0.6.7
 
 #
 # The list of subproject directories
