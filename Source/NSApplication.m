@@ -5,11 +5,11 @@
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
+   Author: Scott Christley <scottc@net-community.com>
    Date: 1996
-   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Author: Felipe A. Rodriguez <far@ix.netcom.com>
    Date: August 1998
-   Author:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+   Author: Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: December 1998
 
    This file is part of the GNUstep GUI Library.
@@ -103,7 +103,7 @@ NSApplication	*NSApp = nil;
 //
 // Class methods
 //
-+ (void)initialize
++ (void) initialize
 {
   if (self == [NSApplication class])
     {
@@ -126,7 +126,7 @@ NSApplication	*NSApp = nil;
     }
 }
 
-+ (NSApplication *)sharedApplication
++ (NSApplication *) sharedApplication
 {					// If the global application does
   if (!NSApp)				// not yet exist then create it
     {
@@ -140,7 +140,7 @@ NSApplication	*NSApp = nil;
 //
 // Instance methods
 //
-- init
+- (id) init
 {
   if (NSApp != self)
     {
@@ -157,78 +157,71 @@ NSApplication	*NSApp = nil;
   main_menu = nil;
   windows_need_update = YES;
 
-  event_queue = [NSMutableArray new];                 // allocate event queue
-  current_event = [NSEvent new];                      // no current event
-  null_event = [NSEvent new];                         // create dummy event
+  event_queue = [NSMutableArray new];			// allocate event queue
+  current_event = [NSEvent new];			// no current event
+  null_event = [NSEvent new];				// create dummy event
 
-  [self setNextResponder:NULL];                       // We are the end of
+  [self setNextResponder: nil];                       // We are the end of
 						      // the responder chain
 
-						      // Set up the run loop
-						      // object for the
-						      // current thread
-  [self setupRunLoopInputSourcesForMode:NSDefaultRunLoopMode];
-  [self setupRunLoopInputSourcesForMode:NSConnectionReplyMode];
-  [self setupRunLoopInputSourcesForMode:NSModalPanelRunLoopMode];
-  [self setupRunLoopInputSourcesForMode:NSEventTrackingRunLoopMode];
+  // Set up the run loop object for the current thread
+  [self setupRunLoopInputSourcesForMode: NSDefaultRunLoopMode];
+  [self setupRunLoopInputSourcesForMode: NSConnectionReplyMode];
+  [self setupRunLoopInputSourcesForMode: NSModalPanelRunLoopMode];
+  [self setupRunLoopInputSourcesForMode: NSEventTrackingRunLoopMode];
 
   return self;
 }
 
-- (void)finishLaunching
+- (void) finishLaunching
 {
-NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-NSBundle* mainBundle = [NSBundle mainBundle];
-NSString* resourcePath = [mainBundle resourcePath];
-NSString* infoFilePath = [resourcePath
-                        stringByAppendingPathComponent:@"Info-gnustep.plist"];
-NSDictionary* infoDict;
-NSString* mainModelFile;
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+  NSBundle		*mainBundle = [NSBundle mainBundle];
+  NSDictionary		*infoDict = [mainBundle infoDictionary];
+  NSString		*mainModelFile;
 
-    infoDict = [[NSString stringWithContentsOfFile:infoFilePath] propertyList];
-    mainModelFile = [infoDict objectForKey:@"NSMainNibFile"];
+  mainModelFile = [infoDict objectForKey: @"NSMainNibFile"];
 
-    if (mainModelFile && ![mainModelFile isEqual:@""])
-        {
-        if (![GMModel loadIMFile:mainModelFile
-                      owner:[NSApplication sharedApplication]])
-            NSLog (@"Cannot load the main model file '%@", mainModelFile);
-        }
-                                                    // post notification that
-                                                    // launch will finish
-    [nc postNotificationName: NSApplicationWillFinishLaunchingNotification
-        object: self];
-                                                    // Register our listener to
-                                                    // handle incoming services
-                                                    // requests etc.
-    [listener registerAsServiceProvider];
+  if (mainModelFile && ![mainModelFile isEqual: @""])
+    {
+      if (![GMModel loadIMFile: mainModelFile
+			 owner: [NSApplication sharedApplication]])
+	NSLog (@"Cannot load the main model file '%@", mainModelFile);
+    }
 
-                                                    // finish the launching
-                                                    // post notification that
-                                                    // launching has finished
-    [nc postNotificationName: NSApplicationDidFinishLaunchingNotification
-        object: self];
+  /* post notification that launch will finish */
+  [nc postNotificationName: NSApplicationWillFinishLaunchingNotification
+      object: self];
+
+  /* Register our listener to incoming services requests etc. */
+  [listener registerAsServiceProvider];
+
+  /* finish the launching post notification that launching has finished */
+  [nc postNotificationName: NSApplicationDidFinishLaunchingNotification
+		    object: self];
 }
 
 - (void) dealloc
 {
-    NSDebugLog(@"Freeing NSApplication\n");
-                                                    // Let ourselves know we
-    gnustep_gui_app_is_in_dealloc = YES;            // are within dealloc
+  NSDebugLog(@"Freeing NSApplication\n");
 
-    [listener release];
-    [event_queue release];
-    [current_event release];
+  /* Let ourselves know we are within dealloc */
+  gnustep_gui_app_is_in_dealloc = YES;
 
-    while (session != 0)                            // We may need to tidy up
-        {                                           // nested modal session
-        NSModalSession tmp = session;               // structures.
+  [listener release];
+  [event_queue release];
+  [current_event release];
 
-        session = tmp->previous;
-        NSZoneFree(NSDefaultMallocZone(), tmp);
-        }
+  /* We may need to tidy up nested modal session structures. */
+  while (session != 0)
+    {
+      NSModalSession tmp = session;
 
-    [super dealloc];
+      session = tmp->previous;
+      NSZoneFree(NSDefaultMallocZone(), tmp);
+    }
+
+  [super dealloc];
 }
 
 //
@@ -310,10 +303,10 @@ NSString* mainModelFile;
     {
       pool = [arpClass new];
 
-      e = [self nextEventMatchingMask:NSAnyEventMask
-                  untilDate:[NSDate distantFuture]
-                  inMode:NSDefaultRunLoopMode
-                  dequeue:YES];
+      e = [self nextEventMatchingMask: NSAnyEventMask
+                  untilDate: [NSDate distantFuture]
+                  inMode: NSDefaultRunLoopMode
+                  dequeue: YES];
       if (e)
 	[self sendEvent: e];
 
@@ -368,7 +361,7 @@ NSString* mainModelFile;
 
   if (theSession == 0)
     [NSException raise: NSInvalidArgumentException
-                format: @"null pointer passed to endModalSession:"];
+                format: @"null pointer passed to endModalSession: "];
 
                                                 // Remove this session from
                                                 // linked list of sessions.
@@ -377,7 +370,7 @@ NSString* mainModelFile;
 
   if (tmp == 0)
     [NSException raise: NSInvalidArgumentException
-                format: @"unknown session passed to endModalSession:"];
+                format: @"unknown session passed to endModalSession: "];
 
   while (session != theSession)
     {
@@ -400,7 +393,7 @@ NSString* mainModelFile;
 
   NS_DURING
     {
-      theSession = [self beginModalSessionForWindow:theWindow];
+      theSession = [self beginModalSessionForWindow: theWindow];
       while (code == NSRunContinuesResponse)
         {
           code = [self runModalSession: theSession];
@@ -536,7 +529,7 @@ NSString* mainModelFile;
 {
   if (session == 0)
     [NSException raise: NSInvalidArgumentException
-                format:@"stopModalWithCode: when not in a modal session"];
+                format: @"stopModalWithCode: when not in a modal session"];
   else
     if (returnCode == NSRunContinuesResponse)
       [NSException raise: NSInvalidArgumentException
@@ -548,7 +541,7 @@ NSString* mainModelFile;
 //
 // Getting, removing, and posting events
 //
-- (void)sendEvent:(NSEvent *)theEvent
+- (void) sendEvent: (NSEvent *)theEvent
 {
     if (theEvent == null_event)                     // Don't send null event
         {
@@ -558,24 +551,24 @@ NSString* mainModelFile;
 
     switch ([theEvent type])                        // determine the event type
         {
-        case NSPeriodic:                            // NSApplication traps the
+        case NSPeriodic:                           // NSApplication traps the
             break;                                  // periodic events
 
         case NSKeyDown:
             {
             NSDebugLog(@"send key down event\n");
-            [[theEvent window] sendEvent:theEvent];
+            [[theEvent window] sendEvent: theEvent];
             break;
             }
 
         case NSKeyUp:
             {
             NSDebugLog(@"send key up event\n");
-            [[theEvent window] sendEvent:theEvent];
+            [[theEvent window] sendEvent: theEvent];
             break;
             }
 
-        case NSRightMouseDown:                              // Right mouse down
+        case NSRightMouseDown:                             // Right mouse down
             if (main_menu)
                 {
                 static NSMenu *copyOfMainMenu = nil;
@@ -585,13 +578,13 @@ NSString* mainModelFile;
                     copyOfMainMenu = [main_menu copy];      // under the mouse
                 copyMenuWindow = [copyOfMainMenu menuWindow];
                 [copyOfMainMenu _rightMouseDisplay];
-                [copyMenuWindow _captureMouse:self];
-                [[copyOfMainMenu menuCells] mouseDown:theEvent];
-                [copyMenuWindow _releaseMouse:self];
+                [copyMenuWindow _captureMouse: self];
+                [[copyOfMainMenu menuCells] mouseDown: theEvent];
+                [copyMenuWindow _releaseMouse: self];
                 }
             break;
 
-        default:                                    // pass all other events to
+        default:                                   // pass all other events to
             {                                       // the event's window
             NSWindow* window = [theEvent window];
 
@@ -602,7 +595,7 @@ NSString* mainModelFile;
             NSDebugLog([window description]);
             if (!window)
                 NSDebugLog(@"no window");
-            [window sendEvent:theEvent];
+            [window sendEvent: theEvent];
             }
         }
 }
@@ -612,296 +605,296 @@ NSString* mainModelFile;
   return current_event;
 }
 
-- (void) discardEventsMatchingMask:(unsigned int)mask
-                       beforeEvent:(NSEvent *)lastEvent
+- (void) discardEventsMatchingMask: (unsigned int)mask
+                       beforeEvent: (NSEvent *)lastEvent
 {
-int i = 0, count, loop;
-NSEvent* event = nil;
-BOOL match;
-                                                        // if queue contains
-    if ((count = [event_queue count]))                  // events check them
-        {
-        for (loop = 0; ((event != lastEvent) && (loop < count)); loop++)
-            {
-            event = [event_queue objectAtIndex:i];      // Get next event from
-            match = NO;                                 // the events queue
+  unsigned	i = 0, count, loop;
+  NSEvent	*event = nil;
+  BOOL match;
+						      // if queue contains
+  if ((count = [event_queue count]))                  // events check them
+      {
+      for (loop = 0; ((event != lastEvent) && (loop < count)); loop++)
+	  {
+	  event = [event_queue objectAtIndex: i];      // Get next event from
+	  match = NO;                                 // the events queue
 
-            if (mask == NSAnyEventMask)                 // the any event mask
-                match = YES;                            // matches all events
-            else
-                {
-                switch([event type])
-                    {
-                    case NSLeftMouseDown:
-                        if (mask & NSLeftMouseDownMask)
-                            match = YES;
-                        break;
+	  if (mask == NSAnyEventMask)                 // the any event mask
+	      match = YES;                            // matches all events
+	  else
+	      {
+	      switch([event type])
+		  {
+		  case NSLeftMouseDown:
+		      if (mask & NSLeftMouseDownMask)
+			  match = YES;
+		      break;
 
-                    case NSLeftMouseUp:
-                        if (mask & NSLeftMouseUpMask)
-                            match = YES;
-                        break;
+		  case NSLeftMouseUp:
+		      if (mask & NSLeftMouseUpMask)
+			  match = YES;
+		      break;
 
-                    case NSRightMouseDown:
-                        if (mask & NSRightMouseDownMask)
-                            match = YES;
-                        break;
+		  case NSRightMouseDown:
+		      if (mask & NSRightMouseDownMask)
+			  match = YES;
+		      break;
 
-                    case NSRightMouseUp:
-                        if (mask & NSRightMouseUpMask)
-                            match = YES;
-                        break;
+		  case NSRightMouseUp:
+		      if (mask & NSRightMouseUpMask)
+			  match = YES;
+		      break;
 
-                    case NSMouseMoved:
-                        if (mask & NSMouseMovedMask)
-                            match = YES;
-                        break;
+		  case NSMouseMoved:
+		      if (mask & NSMouseMovedMask)
+			  match = YES;
+		      break;
 
-                    case NSMouseEntered:
-                        if (mask & NSMouseEnteredMask)
-                            match = YES;
-                        break;
+		  case NSMouseEntered:
+		      if (mask & NSMouseEnteredMask)
+			  match = YES;
+		      break;
 
-                    case NSMouseExited:
-                        if (mask & NSMouseExitedMask)
-                            match = YES;
-                        break;
+		  case NSMouseExited:
+		      if (mask & NSMouseExitedMask)
+			  match = YES;
+		      break;
 
-                    case NSLeftMouseDragged:
-                        if (mask & NSLeftMouseDraggedMask)
-                            match = YES;
-                        break;
+		  case NSLeftMouseDragged:
+		      if (mask & NSLeftMouseDraggedMask)
+			  match = YES;
+		      break;
 
-                    case NSRightMouseDragged:
-                        if (mask & NSRightMouseDraggedMask)
-                            match = YES;
-                        break;
+		  case NSRightMouseDragged:
+		      if (mask & NSRightMouseDraggedMask)
+			  match = YES;
+		      break;
 
-                    case NSKeyDown:
-                        if (mask & NSKeyDownMask)
-                            match = YES;
-                        break;
+		  case NSKeyDown:
+		      if (mask & NSKeyDownMask)
+			  match = YES;
+		      break;
 
-                    case NSKeyUp:
-                        if (mask & NSKeyUpMask)
-                            match = YES;
-                        break;
+		  case NSKeyUp:
+		      if (mask & NSKeyUpMask)
+			  match = YES;
+		      break;
 
-                    case NSFlagsChanged:
-                        if (mask & NSFlagsChangedMask)
-                            match = YES;
-                        break;
+		  case NSFlagsChanged:
+		      if (mask & NSFlagsChangedMask)
+			  match = YES;
+		      break;
 
-                    case NSPeriodic:
-                        if (mask & NSPeriodicMask)
-                            match = YES;
-                        break;
+		  case NSPeriodic:
+		      if (mask & NSPeriodicMask)
+			  match = YES;
+		      break;
 
-                    case NSCursorUpdate:
-                        if (mask & NSCursorUpdateMask)
-                            match = YES;
-                        break;
+		  case NSCursorUpdate:
+		      if (mask & NSCursorUpdateMask)
+			  match = YES;
+		      break;
 
-                    default:
-                        break;
-                }   }                                   // remove event from
-                                                        // the queue if it
-            if (match)                                  // matched the mask
-                [event_queue removeObjectAtIndex:i];
-            else                                        // inc queue cntr only
-                i++;                                    // if not a match else
-            }                                           // we will run off the
-        }                                               // end of the queue
+		  default:
+		      break;
+	      }   }                                   // remove event from
+						      // the queue if it
+	  if (match)                                  // matched the mask
+	      [event_queue removeObjectAtIndex: i];
+	  else                                        // inc queue cntr only
+	      i++;                                    // if not a match else
+	  }                                           // we will run off the
+      }                                               // end of the queue
 }
 
-- (NSEvent*)_eventMatchingMask:(unsigned int)mask dequeue:(BOOL)flag
+- (NSEvent*) _eventMatchingMask: (unsigned int)mask dequeue: (BOOL)flag
 {
-NSEvent* event;                                         // return the next
-int i, count;                                           // event in the queue
-BOOL match = NO;                                        // which matches mask
+  NSEvent	*event;                                   // return the next
+  unsigned	i, count;                                 // event in the queue
+  BOOL match = NO;                                        // which matches mask
 
-    [self _nextEvent];
+  [self _nextEvent];
 
-    if ((count = [event_queue count]))                  // if queue contains
-        {                                               // events check them
-        for (i = 0; i < count; i++)
-            {                                           // Get next event from
-            event = [event_queue objectAtIndex:i];      // the events queue
+  if ((count = [event_queue count]))                  // if queue contains
+      {                                               // events check them
+      for (i = 0; i < count; i++)
+	  {                                           // Get next event from
+	  event = [event_queue objectAtIndex: i];      // the events queue
 
-            if (mask == NSAnyEventMask)                 // the any event mask
-                match = YES;                            // matches all events
-            else
-                {
-                if (event == null_event)                // do not send the null
-                    {                                   // event
-                    match = NO;
-                    if (flag)                           // dequeue null event
-                        {                               // if flag is set
-                        [event retain];
-                        [event_queue removeObjectAtIndex:i];
-                        }
-                    }
-                else
-                    {
-                    switch([event type])
-                        {
-                        case NSLeftMouseDown:
-                            if (mask & NSLeftMouseDownMask)
-                                match = YES;
-                            break;
+	  if (mask == NSAnyEventMask)                 // the any event mask
+	      match = YES;                            // matches all events
+	  else
+	      {
+	      if (event == null_event)                // do not send the null
+		  {                                   // event
+		  match = NO;
+		  if (flag)                           // dequeue null event
+		      {                               // if flag is set
+		      [event retain];
+		      [event_queue removeObjectAtIndex: i];
+		      }
+		  }
+	      else
+		  {
+		  switch([event type])
+		      {
+		      case NSLeftMouseDown:
+			  if (mask & NSLeftMouseDownMask)
+			      match = YES;
+			  break;
 
-                        case NSLeftMouseUp:
-                            if (mask & NSLeftMouseUpMask)
-                                match = YES;
-                            break;
+		      case NSLeftMouseUp:
+			  if (mask & NSLeftMouseUpMask)
+			      match = YES;
+			  break;
 
-                        case NSRightMouseDown:
-                            if (mask & NSRightMouseDownMask)
-                                match = YES;
-                            break;
+		      case NSRightMouseDown:
+			  if (mask & NSRightMouseDownMask)
+			      match = YES;
+			  break;
 
-                        case NSRightMouseUp:
-                            if (mask & NSRightMouseUpMask)
-                                match = YES;
-                            break;
+		      case NSRightMouseUp:
+			  if (mask & NSRightMouseUpMask)
+			      match = YES;
+			  break;
 
-                        case NSMouseMoved:
-                            if (mask & NSMouseMovedMask)
-                                match = YES;
-                            break;
+		      case NSMouseMoved:
+			  if (mask & NSMouseMovedMask)
+			      match = YES;
+			  break;
 
-                        case NSMouseEntered:
-                            if (mask & NSMouseEnteredMask)
-                                match = YES;
-                            break;
+		      case NSMouseEntered:
+			  if (mask & NSMouseEnteredMask)
+			      match = YES;
+			  break;
 
-                        case NSMouseExited:
-                            if (mask & NSMouseExitedMask)
-                                match = YES;
-                            break;
+		      case NSMouseExited:
+			  if (mask & NSMouseExitedMask)
+			      match = YES;
+			  break;
 
-                        case NSLeftMouseDragged:
-                            if (mask & NSLeftMouseDraggedMask)
-                                match = YES;
-                            break;
+		      case NSLeftMouseDragged:
+			  if (mask & NSLeftMouseDraggedMask)
+			      match = YES;
+			  break;
 
-                        case NSRightMouseDragged:
-                            if (mask & NSRightMouseDraggedMask)
-                                match = YES;
-                            break;
+		      case NSRightMouseDragged:
+			  if (mask & NSRightMouseDraggedMask)
+			      match = YES;
+			  break;
 
-                        case NSKeyDown:
-                            if (mask & NSKeyDownMask)
-                                match = YES;
-                            break;
+		      case NSKeyDown:
+			  if (mask & NSKeyDownMask)
+			      match = YES;
+			  break;
 
-                        case NSKeyUp:
-                            if (mask & NSKeyUpMask)
-                                match = YES;
-                            break;
+		      case NSKeyUp:
+			  if (mask & NSKeyUpMask)
+			      match = YES;
+			  break;
 
-                        case NSFlagsChanged:
-                            if (mask & NSFlagsChangedMask)
-                                match = YES;
-                            break;
+		      case NSFlagsChanged:
+			  if (mask & NSFlagsChangedMask)
+			      match = YES;
+			  break;
 
-                        case NSPeriodic:
-                            if (mask & NSPeriodicMask)
-                                match = YES;
-                            break;
+		      case NSPeriodic:
+			  if (mask & NSPeriodicMask)
+			      match = YES;
+			  break;
 
-                        case NSCursorUpdate:
-                            if (mask & NSCursorUpdateMask)
-                                match = YES;
-                            break;
+		      case NSCursorUpdate:
+			  if (mask & NSCursorUpdateMask)
+			      match = YES;
+			  break;
 
-                        default:
-                            match = NO;
-                            break;
-                }   }   }
+		      default:
+			  match = NO;
+			  break;
+	      }   }   }
 
-            if (match)
-                {
-                if (flag)                               // dequeue the event if
-                    {                                   // flag is set
-                    [event retain];
-                    [event_queue removeObjectAtIndex:i];
-                    }
-                ASSIGN(current_event, event);
+	  if (match)
+	      {
+	      if (flag)                               // dequeue the event if
+		  {                                   // flag is set
+		  [event retain];
+		  [event_queue removeObjectAtIndex: i];
+		  }
+	      ASSIGN(current_event, event);
 
-                return event;                           // return an event from
-                }                                       // the queue which
-            }                                           // matches the mask
-        }
-                                                        // no event in the
-    return nil;                                         // queue matches mask
+	      return event;                           // return an event from
+	      }                                       // the queue which
+	  }                                           // matches the mask
+      }
+						      // no event in the
+  return nil;                                         // queue matches mask
 }
 
-- (NSEvent*) nextEventMatchingMask:(unsigned int)mask
-                         untilDate:(NSDate *)expiration
-                         inMode:(NSString *)mode
-                         dequeue:(BOOL)flag
+- (NSEvent*) nextEventMatchingMask: (unsigned int)mask
+                         untilDate: (NSDate *)expiration
+                         inMode: (NSString *)mode
+                         dequeue: (BOOL)flag
 {
-NSEvent *event;
-BOOL done = NO;
+  NSEvent *event;
+  BOOL done = NO;
 
-    if (mode == NSEventTrackingRunLoopMode)             // temporary hack to
-        inTrackingLoop = YES;                           // regulate translation
-    else                                                // of X motion events
-        inTrackingLoop = NO;                            // while not in a
-                                                        // tracking loop
-    if ((event = [self _eventMatchingMask:mask dequeue:flag]))
-        done = YES;
-    else
-        if (!expiration)
-            expiration = [NSDate distantFuture];
+  if (mode == NSEventTrackingRunLoopMode)             // temporary hack to
+      inTrackingLoop = YES;                           // regulate translation
+  else                                                // of X motion events
+      inTrackingLoop = NO;                            // while not in a
+						      // tracking loop
+  if ((event = [self _eventMatchingMask: mask dequeue: flag]))
+      done = YES;
+  else
+      if (!expiration)
+	  expiration = [NSDate distantFuture];
 
-    while (!done)                                       // Not in queue so wait
-        {                                               // for next event
-        NSDate *limitDate, *originalLimitDate;
-        NSRunLoop* currentLoop = [NSRunLoop currentRunLoop];
-                        // Retain the limitDate so that it doesn't get released
-                        // accidentally by runMode:beforeDate: if a timer which
-                        // has this date as fire date gets released.
-        limitDate = [[currentLoop limitDateForMode:mode] retain];
-        originalLimitDate = limitDate;
+  while (!done)                                       // Not in queue so wait
+      {                                               // for next event
+      NSDate *limitDate, *originalLimitDate;
+      NSRunLoop* currentLoop = [NSRunLoop currentRunLoop];
+		      // Retain the limitDate so that it doesn't get released
+		      // accidentally by runMode: beforeDate: if a timer which
+		      // has this date as fire date gets released.
+      limitDate = [[currentLoop limitDateForMode: mode] retain];
+      originalLimitDate = limitDate;
 
-        if ((event = [self _eventMatchingMask:mask dequeue:flag]))
-            {
-            [limitDate release];
-            break;
-            }
+      if ((event = [self _eventMatchingMask: mask dequeue: flag]))
+	  {
+	  [limitDate release];
+	  break;
+	  }
 
-        if (limitDate)
-            limitDate = [expiration earlierDate:limitDate];
-        else
-            limitDate = expiration;
+      if (limitDate)
+	  limitDate = [expiration earlierDate: limitDate];
+      else
+	  limitDate = expiration;
 
-        [currentLoop runMode:mode beforeDate:limitDate];
-        [originalLimitDate release];
+      [currentLoop runMode: mode beforeDate: limitDate];
+      [originalLimitDate release];
 
-        if ((event = [self _eventMatchingMask:mask dequeue:flag]))
-            break;
-        }
-                                                    // no need to unhide cursor
-    if (!inTrackingLoop)                            // while in a tracking loop
-        {
-        if ([NSCursor isHiddenUntilMouseMoves])     // do so only if we should
-            {                                       // unhide when mouse moves
-            NSEventType type = [event type];        // and event is mouse event
-            if ((type == NSLeftMouseDown) || (type == NSLeftMouseUp)
-                    || (type == NSRightMouseDown) || (type == NSRightMouseUp)
-                    || (type == NSMouseMoved))
-                {
-                [NSCursor unhide];
-                }
-            }
-        }
+      if ((event = [self _eventMatchingMask: mask dequeue: flag]))
+	  break;
+      }
+						  // no need to unhide cursor
+  if (!inTrackingLoop)                            // while in a tracking loop
+      {
+      if ([NSCursor isHiddenUntilMouseMoves])     // do so only if we should
+	  {                                       // unhide when mouse moves
+	  NSEventType type = [event type];        // and event is mouse event
+	  if ((type == NSLeftMouseDown) || (type == NSLeftMouseUp)
+		  || (type == NSRightMouseDown) || (type == NSRightMouseUp)
+		  || (type == NSMouseMoved))
+	      {
+	      [NSCursor unhide];
+	      }
+	  }
+      }
 
-    return event;
+  return event;
 }
 
-- (void)postEvent:(NSEvent *)event atStart:(BOOL)flag
+- (void) postEvent: (NSEvent *)event atStart: (BOOL)flag
 {
   if (!flag)
     [event_queue addObject: event];
@@ -1184,7 +1177,7 @@ BOOL done = NO;
   j = [window_list count];
   for (i = 0; i < j; ++i)
     {
-      w = [window_list objectAtIndex:i];
+      w = [window_list objectAtIndex: i];
       if ([w isMainWindow])
         return w;
     }
@@ -1227,13 +1220,13 @@ BOOL done = NO;
   return nil;
 }
 
-- (void)miniaturizeAll:sender
+- (void) miniaturizeAll: sender
 {
   NSArray *window_list = [self windows];
   unsigned i, count;
 
   for (i = 0, count = [window_list count]; i < count; i++)
-    [[window_list objectAtIndex:i] miniaturize:sender];
+    [[window_list objectAtIndex: i] miniaturize: sender];
 }
 
 - (void) preventWindowOrdering
@@ -1254,7 +1247,7 @@ BOOL done = NO;
   windows_need_update = NO;
                                                     // notify that an update is
                                                     // imminent
-  [nc postNotificationName:NSApplicationWillUpdateNotification object: self];
+  [nc postNotificationName: NSApplicationWillUpdateNotification object: self];
 
   for (i = 0, count = [window_list count]; i < count; i++)
     {
@@ -1263,7 +1256,7 @@ BOOL done = NO;
 	[win update];                           // window is visible
     }
 						  // notify update did occur
-  [nc postNotificationName:NSApplicationDidUpdateNotification object:self];
+  [nc postNotificationName: NSApplicationDidUpdateNotification object: self];
 }
 
 - (NSArray*) windows
@@ -1272,7 +1265,7 @@ BOOL done = NO;
   return nil;
 }
 
-- (NSWindow *)windowWithWindowNumber:(int)windowNum
+- (NSWindow *) windowWithWindowNumber: (int)windowNum
 {
   NSArray *window_list = [self windows];
   unsigned i, j;
@@ -1292,19 +1285,19 @@ BOOL done = NO;
 //
 // Showing Standard Panels
 //
-- (void)orderFrontColorPanel:sender
+- (void) orderFrontColorPanel: sender
 {
 }
 
-- (void)orderFrontDataLinkPanel:sender
+- (void) orderFrontDataLinkPanel: sender
 {
 }
 
-- (void)orderFrontHelpPanel:sender
+- (void) orderFrontHelpPanel: sender
 {
 }
 
-- (void)runPageLayout:sender
+- (void) runPageLayout: sender
 {
 }
 
@@ -1332,7 +1325,7 @@ BOOL done = NO;
   windows_menu = nil;                                   // this is the default
   for (i = 0; i < j; ++i)                               // windows menu
     {
-      mc = [mi objectAtIndex:i];
+      mc = [mi objectAtIndex: i];
       if ([[mc stringValue] compare: @"Windows"] == NSOrderedSame)
         {
           windows_menu = mc;                            // Found it!
@@ -1400,7 +1393,7 @@ BOOL done = NO;
 
           if ([item target] == aWindow)
             {
-              [menu removeItem: item]; 
+              [menu removeItem: item];
               break;
             }
         }
@@ -1413,8 +1406,8 @@ BOOL done = NO;
 
   /*
    * Now we insert a menu item for the window in the correct order.
-   * Make special allowance for menu entries to 'arrangeInFront:'
-   * 'performMiniaturize:' and 'preformClose:'.  If these exist the
+   * Make special allowance for menu entries to 'arrangeInFront: '
+   * 'performMiniaturize: ' and 'preformClose: '.  If these exist the
    * window entries should stay after the first one and before the
    * other two.
    */
@@ -1468,7 +1461,7 @@ BOOL done = NO;
 
           if ([item target] == aWindow)
             {
-              [menu removeItem: item]; 
+              [menu removeItem: item];
               [menu sizeToFit];
               [menu update];
               break;
@@ -1510,13 +1503,13 @@ BOOL done = NO;
 	      if ([win isKindOfClass: [NSWindow class]])
 		{
 		  [windows addObject: win];
-		  [menu removeItem: item]; 
+		  [menu removeItem: item];
 		}
 	    }
 	}
 
       /*
-       * Now use [-changeWindowsItem:title:filename:] to build the new menu.
+       * Now use [-changeWindowsItem: title: filename: ] to build the new menu.
        */
       [main_menu setSubmenu: aMenu forItem: (id<NSMenuItem>)windows_menu];
       while ((win = [windows lastObject]) != nil)
@@ -1641,7 +1634,7 @@ BOOL done = NO;
   return nil;
 }
 
-- (NSGraphicsContext *)context                      // return the current draw
+- (NSGraphicsContext *) context                      // return the current draw
 {                                                   // context (drawing dest)
   return [NSGraphicsContext currentContext];
 }
@@ -1678,10 +1671,10 @@ BOOL done = NO;
   delegate = anObject;
 
 #define SET_DELEGATE_NOTIFICATION(notif_name) \
-  if ([delegate respondsToSelector:@selector(application##notif_name:)]) \
-    [nc addObserver:delegate \
-      selector:@selector(application##notif_name:) \
-      name:NSApplication##notif_name##Notification object:self]
+  if ([delegate respondsToSelector: @selector(application##notif_name:)]) \
+    [nc addObserver: delegate \
+      selector: @selector(application##notif_name:) \
+      name: NSApplication##notif_name##Notification object: self]
 
   SET_DELEGATE_NOTIFICATION(DidBecomeActive);
   SET_DELEGATE_NOTIFICATION(DidFinishLaunching);
@@ -1700,126 +1693,126 @@ BOOL done = NO;
 //
 // Implemented by the delegate
 //
-- (BOOL)application:sender openFileWithoutUI:(NSString *)filename
+- (BOOL) application: sender openFileWithoutUI: (NSString *)filename
 {
-BOOL result = NO;
+  BOOL result = NO;
 
-  if ([delegate respondsToSelector:@selector(application:openFileWithoutUI:)])
-    result = [delegate application:sender openFileWithoutUI:filename];
+  if ([delegate respondsToSelector: @selector(application:openFileWithoutUI:)])
+    result = [delegate application: sender openFileWithoutUI: filename];
 
   return result;
 }
 
-- (BOOL)application:(NSApplication *)app openFile:(NSString *)filename
+- (BOOL) application: (NSApplication *)app openFile: (NSString *)filename
 {
-BOOL result = NO;
+  BOOL result = NO;
 
-  if ([delegate respondsToSelector:@selector(application:openFile:)])
-    result = [delegate application:app openFile:filename];
+  if ([delegate respondsToSelector: @selector(application:openFile:)])
+    result = [delegate application: app openFile: filename];
 
   return result;
 }
 
-- (BOOL)application:(NSApplication *)app openTempFile:(NSString *)filename
+- (BOOL) application: (NSApplication *)app openTempFile: (NSString *)filename
 {
-BOOL result = NO;
+  BOOL result = NO;
 
-  if ([delegate respondsToSelector:@selector(application:openTempFile:)])
-    result = [delegate application:app openTempFile:filename];
+  if ([delegate respondsToSelector: @selector(application:openTempFile:)])
+    result = [delegate application: app openTempFile: filename];
 
   return result;
 }
 
-- (void)applicationDidBecomeActive:(NSNotification *)aNotification
+- (void) applicationDidBecomeActive: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(applicationDidBecomeActive:)])
-    [delegate applicationDidBecomeActive:aNotification];
+  if ([delegate respondsToSelector: @selector(applicationDidBecomeActive:)])
+    [delegate applicationDidBecomeActive: aNotification];
 }
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+- (void) applicationDidFinishLaunching: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(applicationDidFinishLaunching:)])
-    [delegate applicationDidFinishLaunching:aNotification];
+  if ([delegate respondsToSelector: @selector(applicationDidFinishLaunching:)])
+    [delegate applicationDidFinishLaunching: aNotification];
 }
 
-- (void)applicationDidHide:(NSNotification *)aNotification
+- (void) applicationDidHide: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(applicationDidHide:)])
-    [delegate applicationDidHide:aNotification];
+  if ([delegate respondsToSelector: @selector(applicationDidHide:)])
+    [delegate applicationDidHide: aNotification];
 }
 
-- (void)applicationDidResignActive:(NSNotification *)aNotification
+- (void) applicationDidResignActive: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(applicationDidResignActive:)])
-    [delegate applicationDidResignActive:aNotification];
+  if ([delegate respondsToSelector: @selector(applicationDidResignActive:)])
+    [delegate applicationDidResignActive: aNotification];
 }
 
-- (void)applicationDidUnhide:(NSNotification *)aNotification
+- (void) applicationDidUnhide: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(applicationDidUnhide:)])
-    [delegate applicationDidUnhide:aNotification];
+  if ([delegate respondsToSelector: @selector(applicationDidUnhide:)])
+    [delegate applicationDidUnhide: aNotification];
 }
 
-- (void)applicationDidUpdate:(NSNotification *)aNotification
+- (void) applicationDidUpdate: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(applicationDidUpdate:)])
-    [delegate applicationDidUpdate:aNotification];
+  if ([delegate respondsToSelector: @selector(applicationDidUpdate:)])
+    [delegate applicationDidUpdate: aNotification];
 }
 
-- (BOOL)applicationOpenUntitledFile:(NSApplication *)app
+- (BOOL) applicationOpenUntitledFile: (NSApplication *)app
 {
-BOOL result = NO;
+  BOOL result = NO;
 
-  if ([delegate respondsToSelector:@selector(applicationOpenUntitledFile:)])
-    result = [delegate applicationOpenUntitledFile:app];
+  if ([delegate respondsToSelector: @selector(applicationOpenUntitledFile:)])
+    result = [delegate applicationOpenUntitledFile: app];
 
   return result;
 }
 
-- (BOOL)applicationShouldTerminate:sender
+- (BOOL) applicationShouldTerminate: sender
 {
-BOOL result = YES;
+  BOOL result = YES;
 
-  if ([delegate respondsToSelector:@selector(applicationShouldTerminate:)])
-    result = [delegate applicationShouldTerminate:sender];
+  if ([delegate respondsToSelector: @selector(applicationShouldTerminate:)])
+    result = [delegate applicationShouldTerminate: sender];
 
   return result;
 }
 
-- (void)applicationWillBecomeActive:(NSNotification *)aNotification
+- (void) applicationWillBecomeActive: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(applicationWillBecomeActive:)])
-    [delegate applicationWillBecomeActive:aNotification];
+  if ([delegate respondsToSelector: @selector(applicationWillBecomeActive:)])
+    [delegate applicationWillBecomeActive: aNotification];
 }
 
-- (void)applicationWillFinishLaunching:(NSNotification *)aNotification
+- (void) applicationWillFinishLaunching: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(applicationWillFinishLaunching:)])
-    [delegate applicationWillFinishLaunching:aNotification];
+  if ([delegate respondsToSelector: @selector(applicationWillFinishLaunching:)])
+    [delegate applicationWillFinishLaunching: aNotification];
 }
 
-- (void)applicationWillHide:(NSNotification *)aNotification
+- (void) applicationWillHide: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(applicationWillHide:)])
-    [delegate applicationWillHide:aNotification];
+  if ([delegate respondsToSelector: @selector(applicationWillHide:)])
+    [delegate applicationWillHide: aNotification];
 }
 
-- (void)applicationWillResignActive:(NSNotification *)aNotification
+- (void) applicationWillResignActive: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(applicationWillResignActive:)])
-    [delegate applicationWillResignActive:aNotification];
+  if ([delegate respondsToSelector: @selector(applicationWillResignActive:)])
+    [delegate applicationWillResignActive: aNotification];
 }
 
-- (void)applicationWillUnhide:(NSNotification *)aNotification
+- (void) applicationWillUnhide: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(applicationWillUnhide:)])
-    [delegate applicationWillUnhide:aNotification];
+  if ([delegate respondsToSelector: @selector(applicationWillUnhide:)])
+    [delegate applicationWillUnhide: aNotification];
 }
 
-- (void)applicationWillUpdate:(NSNotification *)aNotification
+- (void) applicationWillUpdate: (NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(applicationWillUpdate:)])
-    [delegate applicationWillUpdate:aNotification];
+  if ([delegate respondsToSelector: @selector(applicationWillUpdate:)])
+    [delegate applicationWillUpdate: aNotification];
 }
 
 //
@@ -1849,21 +1842,21 @@ BOOL result = YES;
   return self;
 }
 
-+ (void)setNullEvent:(NSEvent *)e
++ (void) setNullEvent: (NSEvent *)e
 {
   ASSIGN(null_event, e);
 }
 
-+ (NSEvent *)getNullEvent;
++ (NSEvent *) getNullEvent;
 {                                                           // return the class
     return null_event;                                      // dummy event
 }
 
-- (void)_nextEvent                                          // get next event
+- (void) _nextEvent                                          // get next event
 {                                                           // implemented in
 }                                                           // backend
 
-- (void)setupRunLoopInputSourcesForMode:(NSString*)mode
+- (void) setupRunLoopInputSourcesForMode: (NSString*)mode
 {                                                           // implemented in
 }                                                           // backend
 
