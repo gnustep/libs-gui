@@ -2,7 +2,8 @@
 
 	* Source/NSWindow.m: ([-sendEvent:]) use ASSIGN() and DESTROY() to
 	update _lastDragView so we don't run into problems if something
-	deallocates it.
+	deallocates it.  Added some debug logging.  Fixed bug in logic of
+	drag entry/update.  Restructured a little to improve readability.
 
 Thu Jan 17 18:16:08 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
