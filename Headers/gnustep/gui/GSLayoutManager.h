@@ -317,6 +317,19 @@ just the union of all the line frag rects?) */
 - (void) getFirstUnlaidCharacterIndex: (unsigned int *)charIndex
 	glyphIndex: (unsigned int *)glyphIndex;
 
+
+/*
+Basic (and experimental) methods that let the typesetter use soft-invalidated
+layout information.
+*/
+-(void) _softInvalidateUseLineFrags: (int)num
+			  withShift: (NSSize)shift
+		    inTextContainer: (NSTextContainer *)textContainer;
+-(NSRect) _softInvalidateLineFragRect: (int)index
+			    nextGlyph: (unsigned int *)next_glyph
+		      inTextContainer: (NSTextContainer *)textContainer;
+-(unsigned int) _softInvalidateFirstGlyphInTextContainer: (NSTextContainer *)textContainer;
+
 @end
 
 #endif

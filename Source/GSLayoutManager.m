@@ -2267,6 +2267,87 @@ forStartOfGlyphRange: (NSRange)glyphRange
 }
 
 
+-(void) _softInvalidateUseLineFrags: (int)num
+			  withShift: (NSSize)shift
+		    inTextContainer: (NSTextContainer *)textContainer
+{
+  int i;
+  textcontainer_t *tc;
+  linefrag_t *lf;
+  for (i = 0, tc = textcontainers; i < num_textcontainers; i++, tc++)
+    if (tc->textContainer == textContainer)
+      break;
+  if (i == num_textcontainers)
+    {
+      NSLog(@"(%s): does not own text container", __PRETTY_FUNCTION__);
+      return;
+    }
+
+  for (i = 0, lf = &tc->linefrags[tc->num_linefrags]; i < num; i++, lf++)
+    {
+      lf->rect.origin.x += shift.width;
+      lf->rect.origin.y += shift.height;
+      lf->used_rect.origin.x += shift.width;
+      lf->used_rect.origin.y += shift.height;
+      tc->length += lf->length;
+    }
+  tc->num_soft -= num;
+  tc->num_linefrags += num;
+
+  layout_glyph = tc->pos + tc->length;
+  /*
+  We must have layouts beyond all the soft-invalidated line frags,
+  so comparing with glyphs->glyph_length is ok.
+  */
+  if (layout_glyph == glyphs->glyph_length)
+    layout_char = glyphs->char_length;
+  else
+    layout_char = [self characterIndexForGlyphAtIndex: layout_glyph]; /* TODO? */
+}
+
+-(NSRect) _softInvalidateLineFragRect: (int)index
+			    nextGlyph: (unsigned int *)next_glyph
+		      inTextContainer: (NSTextContainer *)textContainer
+{
+  int i;
+  textcontainer_t *tc;
+  linefrag_t *lf;
+  for (i = 0, tc = textcontainers; i < num_textcontainers; i++, tc++)
+    if (tc->textContainer == textContainer)
+      break;
+  if (i == num_textcontainers)
+    {
+      NSLog(@"(%s): does not own text container", __PRETTY_FUNCTION__);
+      return NSZeroRect;
+    }
+
+  if (index >= tc->num_soft)
+    return NSZeroRect;
+
+  lf = &tc->linefrags[tc->num_linefrags + index];
+  *next_glyph = lf->pos + lf->length;
+  return lf->rect;
+}
+
+-(unsigned int) _softInvalidateFirstGlyphInTextContainer: (NSTextContainer *)textContainer
+{
+  int i;
+  textcontainer_t *tc;
+  for (i = 0, tc = textcontainers; i < num_textcontainers; i++, tc++)
+    if (tc->textContainer == textContainer)
+      break;
+  if (i == num_textcontainers)
+    {
+      NSLog(@"(%s): does not own text container", __PRETTY_FUNCTION__);
+      return (unsigned int)-1;
+    }
+  if (tc->num_soft)
+    return tc->linefrags[tc->num_linefrags].pos;
+  else
+    return (unsigned int)-1;
+}
+
+
 @end
 
 

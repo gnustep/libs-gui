@@ -2,7 +2,7 @@
 
 	* Headers/gnustep/gui/GSLayoutManager.h, Source/GSLayoutManager.m:
 	Add basic interface that lets the typesetter access soft-invalidated
-	glyph information.
+	layout information.
 
 	* Source/GSHorizontalTypesetter.m (-layoutLineNewParagraph:): Use
 	the soft-invalidated information to avoid rebuilding the layout
