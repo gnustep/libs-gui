@@ -1130,7 +1130,8 @@ main(int argc, char** argv, char **env)
 	 object: (id)conn];
 
   hostname = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
-  if ([hostname length] == 0)
+  if ([hostname length] == 0
+    ||  [[NSHost hostWithName: hostname] isEqual: [NSHost currentHost]] == YES)
     {
       if ([conn registerName: PBSNAME] == NO)
         {
