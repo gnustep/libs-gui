@@ -522,7 +522,7 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
   if (![_menu _ownedByPopUp] && _titleView)
     {
       menuBarHeight = [[self class] menuBarHeight];
-      neededStateImageWidth = [_titleView titleSize].width;
+      neededImageAndTitleWidth = [_titleView titleSize].width;
     }
   else
     {
