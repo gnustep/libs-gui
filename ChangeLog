@@ -1,3 +1,27 @@
+1999-08-19  Michael Hanni  <mhanni@sprintmail.com>
+
+	* Headers/NSAttributedString.h
+		  NSLayoutManager.h
+		  NSTableView.h: modifications, mostly added ivars.
+	* Source/NSLayoutManager.m: implemented much code for layout and
+	display.
+	* Source/NSMenu.m: fixed some nagging problems. tearoffs should
+	work almost universally. Positions are saved and restored. If you
+	previous position exists for the main menu it goes to the upper
+	left corner.
+	* Source/NSMenuView.m: a few attempts to fix the "move to submenu"
+	bugs.
+	* Source/NSPopUpButton.m: many bug fixes and new implementations.
+	Too many to list here.
+	* Source/NSTableView.m: more code implemented, though I wouldn't
+	recommend trying to use this class. :-)
+	* Source/NSText.m: debugging code to help pinpoint which methods
+	can be used in NSTextView and which have to be overridden.
+	* Source/NSTextStorage.m: properly assigns itself to its
+	layoutManager.
+	* Source/NSTextView.m: more code additions to coincide with the
+	new NSLayoutManager.
+
 1999-08-03  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Source/NSMenu.m: commented out code which did multiple menu

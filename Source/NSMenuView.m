@@ -595,10 +595,18 @@ static float GSMenuBarHeight = 25.0; // a guess.
 		  }
 		else
 		  {
-		    [self setHighlightedItemIndex: -1];
-		    lastIndex = index;
-		    weWereOut = YES;
-		    [window flushWindow];
+		    if (![[menuv_items_link objectAtIndex: lastIndex] hasSubmenu])
+		      {
+		        [self setHighlightedItemIndex: -1];
+		        lastIndex = index;
+		        weWereOut = YES;
+		        [window flushWindow];
+		      }
+		    else
+		      {
+		        weLeftMenu = YES;
+		        done = YES;
+		      }
 		  }
 	      }
 

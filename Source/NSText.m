@@ -252,12 +252,14 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 
 // end: _GNUTextScanner implementation--------------------------------------
 
-
+/*
 @interface NSAttributedString(DrawingAddition)
 -(NSSize) sizeRange:(NSRange) aRange;
 -(void) drawRange:(NSRange) aRange atPoint:(NSPoint) aPoint;
+-(void) drawRange:(NSRange) aRange inRect:(NSRect) aRect;
 -(BOOL) areMultipleFontsInRange:(NSRange) aRange;
 @end
+*/
 
 @implementation NSAttributedString(DrawingAddition)
 -(NSSize) sizeRange:(NSRange) lineRange
@@ -289,6 +291,16 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 		currPoint.x+=[substring sizeWithAttributes:attributes].width;
 		//<!> draw attachments
 	}
+}
+
+-(void) drawRange:(NSRange) aRange inRect:(NSRect) aRect;
+{
+  NSString *substring=[[self string] substringWithRange:aRange];
+
+  [substring drawInRect:aRect withAttributes:[NSDictionary dictionaryWithObjectsAndKeys:
+[NSFont systemFontOfSize:12.0],NSFontAttributeName,
+[NSColor blueColor],NSForegroundColorAttributeName,
+nil]];
 }
 
 -(BOOL) areMultipleFontsInRange:(NSRange) aRange
@@ -431,10 +443,15 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 	[self setSelectedRange:NSMakeRange(0,0)];
 	return self;
 }
+
 -(NSDictionary*) defaultTypingAttributes
-{	return [NSDictionary dictionaryWithObjectsAndKeys:	default_font,NSFontAttributeName,
-														text_color,NSForegroundColorAttributeName,
-														nil];
+{	
+
+return [NSDictionary dictionaryWithObjectsAndKeys:
+default_font,NSFontAttributeName,
+text_color,NSForegroundColorAttributeName,
+nil];
+
 }
 
 /*

@@ -56,6 +56,13 @@ enum
   NSSingleUnderlineStyle = 1
 };
 
+@interface NSAttributedString(DrawingAddition)
+-(NSSize) sizeRange:(NSRange) aRange;
+-(void) drawRange:(NSRange) aRange atPoint:(NSPoint) aPoint;
+-(void) drawRange:(NSRange) aRange inRect:(NSRect) aRect;
+-(BOOL) areMultipleFontsInRange:(NSRange) aRange;
+@end
+
 @interface NSAttributedString (AppKit)
 - (BOOL) containsAttachments;
 - (NSDictionary*) fontAttributesInRange: (NSRange)range;

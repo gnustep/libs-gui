@@ -6,6 +6,14 @@
 #include <AppKit/NSText.h>
 
 @implementation NSTableView
++ (void) initialize
+{
+  if (self == [NSTableView class])
+    {
+      [self setVersion: 1];
+    }
+}
+
 - (id)initWithFrame:(NSRect)frameRect
 {
   self = [super initWithFrame:frameRect];

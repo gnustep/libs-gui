@@ -97,7 +97,10 @@ changeInLength: [attributedString length] - aRange.length];
 - (void) addLayoutManager: (NSLayoutManager*)obj
 {
   if ([layoutManagers indexOfObjectIdenticalTo: obj] == NSNotFound)
-    [layoutManagers addObject: obj];
+    {
+      [layoutManagers addObject: obj];
+      [obj setTextStorage:self];
+    }
 }
 
 - (void) removeLayoutManager: (NSLayoutManager*)obj

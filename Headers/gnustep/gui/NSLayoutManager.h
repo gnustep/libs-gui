@@ -58,8 +58,8 @@
 @class NSView;
 @class NSEvent;
 
-
-
+// Michael's botch list. :-)
+@class GSRunStorage;
 
 // These glyph attributes are used only inside the glyph generation machinery, but must be shared between componenets.
 enum _NSGlyphAttribute {
@@ -87,6 +87,12 @@ typedef enum {
     NSStorage			*_containerUsedRects;
 
     NSStorage			*_glyphs;
+
+    // GS data storage.
+    GSRunStorage *containerRuns;
+    GSRunStorage *fragmentRuns;
+    GSRunStorage *locationRuns;
+
     NSRunStorage		*_containerRuns;
     NSRunStorage		*_fragmentRuns;
     NSRunStorage		*_glyphLocations;
@@ -149,6 +155,7 @@ typedef enum {
     BOOL			_showsControlChars;
     float			_hyphenationFactor;
     BOOL			_usesScreenFonts;
+  BOOL finished;
 }
 
 /**************************** Initialization ****************************/

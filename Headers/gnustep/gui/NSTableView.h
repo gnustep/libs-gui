@@ -4,7 +4,6 @@
 #include <Foundation/Foundation.h>
 #include <AppKit/NSControl.h>
 
-@class NSColor;
 @class NSTableColumn;
 @class NSTableHeaderView;
 @class NSView;

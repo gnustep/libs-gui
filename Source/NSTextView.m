@@ -58,6 +58,7 @@
   textStorage = [[NSTextStorage alloc] init];
 
   layoutManager = [[NSLayoutManager alloc] init];
+
   [textStorage addLayoutManager:layoutManager];
   [layoutManager release];
 
@@ -141,7 +142,15 @@
 - (void)setNeedsDisplayInRect:(NSRect)aRect
         avoidAdditionalLayout:(BOOL)flag
 {
-  // FIXME.
+/*
+  NSRange glyphsToDraw = [layoutManager
+glyphRangeForTextContainer:textContainer];
+
+  [self lockFocus];
+  [layoutManager drawGlyphsForGlyphRange:glyphsToDraw
+                        atPoint:[self frame].origin];
+  [self unlockFocus];
+*/
 }
 
 /* We override NSView's setNeedsDisplayInRect: */
@@ -284,7 +293,7 @@ aRect.size.height);
 
 - (void)setSelectedRange:(NSRange)charRange
 {
-  NSLog(@"setSelectedRange");
+  NSLog(@"setSelectedRange (%d, %d)", charRange.location, charRange.length);
 /*
   [[NSNotificationCenter defaultCenter]
     postNotificationName:NSTextViewDidChangeSelectionNotification
@@ -906,7 +915,15 @@ container, returning the modified location. */
 		initWithString: string
                 attributes: [self typingAttributes]] autorelease];
 
-  [textStorage insertAttributedString:aString atIndex:0];
+//  [textStorage replaceRange:NSMakeRange(0, [string length])
+//	withString:aString];
+
+  [textStorage setAttributedString: aString];
+
+//replaceCharactersInRange:NSMakeRange(0, [string length])
+//                   withAttributedString: aString];
+
+//  [textStorage insertAttributedString:aString atIndex:0];
 }
 
 -(void) setText:(NSString *)string {[self setString:string];}
@@ -916,8 +933,8 @@ container, returning the modified location. */
   NSLog(@"%@", aString);
 
   if (![aString isKindOfClass:[NSAttributedString class]])
-    aString = [[[NSAttributedString alloc] initWithString:aString
-		attributes:[self typingAttributes]] autorelease];
+    aString = [[NSAttributedString alloc] initWithString:aString
+		attributes:[self typingAttributes]];
 
   [textStorage replaceCharactersInRange:[self selectedRange]
        withAttributedString:(NSAttributedString *)aString];
@@ -930,7 +947,14 @@ container, returning the modified location. */
 
 - (void)drawRect:(NSRect)aRect
 {
-  [textStorage drawRange:[self selectedRange] atPoint:aRect.origin.x];
+  if(tv_backGroundColor)
+    {
+      [tv_backGroundColor set];
+      NSRectFill (aRect);
+    }
+
+  [layoutManager drawGlyphsForGlyphRange:[layoutManager glyphRangeForTextContainer: textContainer]
+	atPoint: [self frame].origin];
 }
 
 /*
