@@ -1628,7 +1628,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 - (void) orderFrontHelpPanel: sender
 {
   NSRunAlertPanel (NULL, @"Help Panel not implemented yet",
-		   @"OK", NULL, NULL)
+		   @"OK", NULL, NULL);
 }
 
 - (void) runPageLayout: sender
