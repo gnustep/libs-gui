@@ -59,10 +59,10 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 }
 
 #define SET_DELEGATE_NOTIFICATION(notif_name) \
-  if ([_delegate respondsToSelector: @selector(textView##notif_name: )]) \
+  if ([_delegate respondsToSelector: @selector(text##notif_name: )]) \
     [nc addObserver: _delegate \
-           selector: @selector(textView##notif_name: ) \
-               name: NSTextView##notif_name##Notification \
+           selector: @selector(text##notif_name: ) \
+               name: NSText##notif_name##Notification \
              object: _notifObject]
 
 /* MINOR FIXME: The following two should really be kept in the
@@ -407,8 +407,16 @@ static NSNotificationCenter *nc;
   if ((_delegate != nil) && (oldNotifObject != _notifObject))
     {
       [nc removeObserver: _delegate  name: nil  object: oldNotifObject];
-      SET_DELEGATE_NOTIFICATION (DidChangeSelection);
-      SET_DELEGATE_NOTIFICATION (WillChangeNotifyingTextView);
+
+      /* SET_DELEGATE_NOTIFICATION defined at the beginning of file */
+
+      /* NSText notifications */
+      SET_DELEGATE_NOTIFICATION (DidBeginEditing);
+      SET_DELEGATE_NOTIFICATION (DidChange);
+      SET_DELEGATE_NOTIFICATION (DidEndEditing);
+      /* NSTextView notifications */
+      SET_DELEGATE_NOTIFICATION (ViewDidChangeSelection);
+      SET_DELEGATE_NOTIFICATION (ViewWillChangeNotifyingTextView);
     }
 }
 
@@ -1383,6 +1391,7 @@ container, returning the modified location. */
 
 - (void) setDelegate: (id)anObject
 {
+  /* Code to allow sharing the delegate */
   if (_tvf.multiple_textviews && (isSynchronizingDelegate == NO))
     {
       /* Invoke setDelegate: on all the textviews which share this
@@ -1407,11 +1416,24 @@ container, returning the modified location. */
     }
 
   /* Now the real code to set the delegate */
+
+  if (_delegate != nil)
+    {
+      [nc removeObserver: _delegate  name: nil  object: _notifObject];
+    }
+
   [super setDelegate: anObject];
 
   /* SET_DELEGATE_NOTIFICATION defined at the beginning of file */
-  SET_DELEGATE_NOTIFICATION (DidChangeSelection);
-  SET_DELEGATE_NOTIFICATION (WillChangeNotifyingTextView);
+
+  /* NSText notifications */
+  SET_DELEGATE_NOTIFICATION (DidBeginEditing);
+  SET_DELEGATE_NOTIFICATION (DidChange);
+  SET_DELEGATE_NOTIFICATION (DidEndEditing);
+
+  /* NSTextView notifications */
+  SET_DELEGATE_NOTIFICATION (ViewDidChangeSelection);
+  SET_DELEGATE_NOTIFICATION (ViewWillChangeNotifyingTextView);
 }
 
 @end
