@@ -125,7 +125,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 - (BOOL) _loadFromFile: (NSString *)fileName;
 - (NSImageRep*) _cacheForRep: (NSImageRep*)rep;
 - (NSImageRep*) _doImageCache;
-- (void) _loadImageFilenames;
 @end
 
 @implementation NSImage
@@ -330,20 +329,45 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (id)initWithBitmapHandle:(void *)bitmap
 {
-  // Only needed on MS Windows
-  return nil;
+  NSImageRep *rep = [[NSBitmapImageRep alloc] initWithBitmapHandle: bitmap];
+  
+  if (rep == nil)
+    {
+      RELEASE(self);
+      return nil;
+    }
+  self = [self init];
+  [self addRepresentation: rep];
+  return self;
 }
 
 - (id)initWithIconHandle:(void *)icon
 {
   // Only needed on MS Windows
-  return nil;
+  NSImageRep *rep = [[NSBitmapImageRep alloc] initWithIconHandle: icon];
+  
+  if (rep == nil)
+    {
+      RELEASE(self);
+      return nil;
+    }
+  self = [self init];
+  [self addRepresentation: rep];
+  return self;
 }
 
 - (id)initWithContentsOfURL:(NSURL *)anURL
 {
-  // TODO
-  return nil;
+  NSArray *array = [NSImageRep imageRepsWithContentsOfURL: anURL];
+
+  if (!array)
+    {
+      RELEASE(self);
+      return nil;
+    }
+  self = [self init];
+  [self addRepresentations: array];
+  return self;
 }
 
 - (id) initWithPasteboard: (NSPasteboard *)pasteboard
@@ -402,6 +426,9 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 - (id) copyWithZone: (NSZone *)zone
 {
   NSImage	*copy;
+  NSArray *reps = [self representations];
+  NSEnumerator *enumerator = [reps objectEnumerator];
+  NSImageRep *rep;
 
   // FIXME: maybe we should retain if _flags.dataRetained = NO
   copy = (NSImage*)NSCopyObject (self, 0, zone);
@@ -410,9 +437,16 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   RETAIN(_fileName);
   RETAIN(_color);
   copy->_lockedView = nil;
-  copy->_reps = [NSMutableArray new];
-  // FIXME: We should not copy cached reps.
-  [copy addRepresentations: [self representations]];
+  copy->_reps = [[NSMutableArray alloc] initWithCapacity: [_reps count]];
+
+  //  Only copy non-cached reps.
+  while ((rep = [enumerator nextObject]) != nil)
+    {
+      if (![rep isKindOfClass: cachedClass])
+        {
+	  [copy addRepresentation: rep];
+	}
+    }
   
   return copy;
 }
@@ -756,41 +790,25 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (NSImageRep*) bestRepresentationForDevice: (NSDictionary*)deviceDescription
 {
-  NSImageRep	*rep = nil;
-  unsigned	count;
+  NSArray *reps = [self representations];
+  NSEnumerator *enumerator = [reps objectEnumerator];
+  NSImageRep *rep = nil;  
+  NSImageRep *best = nil;
 
-  /* Make sure we have the images loaded in. */
-  if (_flags.syncLoad)
-    [self _loadImageFilenames];
-
-  count = [_reps count];
-
-  if (count > 0)
+  while ((rep = [enumerator nextObject]) != nil)
     {
-      GSRepData		*reps[count];
-      unsigned		i;
-
       /*
-       *	What's the best representation? FIXME
-       *	At the moment we take the last bitmap we find.
-       *	If we can't find a bitmap, we take whatever we can!
+       * What's the best representation? 
+       * FIXME: At the moment we take the last bitmap we find.
+       * If we can't find a bitmap, we take whatever we can.
+       * Do no change this without changing the Backend stuff on image dragging!
        */
-      [_reps getObjects: reps];
-      for (i = 0; i < count; i++)
-	{
-	  GSRepData	*repd = reps[i];
-    
-	  if ([repd->rep isKindOfClass: bitmapClass])
-	    {
-	      rep = repd->rep;
-	    }
-	  else if (rep == nil)
-	    {
-	      rep = repd->rep;
-	    }
-	}
+      if ([rep isKindOfClass: bitmapClass])
+	best = rep;
+      else if (best == nil)
+	best = rep;
     }
-  return rep;
+  return best;
 }
 
 - (NSArray *) representations
@@ -799,8 +817,12 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
   if (_flags.syncLoad)
     {
-      [self _loadImageFilenames];
+      /* Make sure any images that were added with _useFromFile: are loaded
+	 in and added to the representation list. */
+      [self _loadFromFile: _fileName];
+      _flags.syncLoad = NO;
     }
+
   count = [_reps count];
   if (count == 0)
     {
@@ -1065,14 +1087,6 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 }
 
 @implementation NSImage (Private)
-
-/* Make sure any images that were added with _useFromFile: are loaded
-   in and added to the representation list. */
-- (void) _loadImageFilenames
-{
-  [self _loadFromFile: _fileName];
-  _flags.syncLoad = NO;
-}
     
 - (BOOL)_loadFromData: (NSData *)data
 {
