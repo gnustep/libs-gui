@@ -134,6 +134,11 @@ typedef enum _NSWritingDirection {
 - (NSLineBreakMode) lineBreakMode;
 
 #ifndef	STRICT_OPENSTEP
+/*
+ *      Returns the writing direction of "language", which is an ISO 639
+ *      two- or three letter code, e.g. "en", or an ISO language-region
+ *      format, e.g. "en_GB"
+ */
 + (NSWritingDirection) defaultWritingDirectionForLanguage: (NSString*) language;
 - (NSWritingDirection) baseWritingDirection;
 #endif

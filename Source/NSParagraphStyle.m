@@ -139,8 +139,35 @@ static NSParagraphStyle	*defaultStyle = nil;
 
 + (NSWritingDirection) defaultWritingDirectionForLanguage: (NSString*) language
 {
-  // FIXME
-  return NSWritingDirectionNaturalDirection;
+  static NSArray *rightToLeft;
+  NSWritingDirection writingDirection;
+  NSString *langCode = nil;
+
+  /* If language is 5/6 characters long with underscore in the middle,
+     treat it as ISO language-region format. */
+  if ([language length] == 5 && [language characterAtIndex: 2] == '_')
+      langCode = [language substringToIndex: 2];
+  else if ([language length] == 6 && [language characterAtIndex: 3] == '_')
+      langCode = [language substringToIndex: 3];
+  /* Else if it's just two or three chars long, treat as ISO 639 code. */
+  else if ([language length] == 2 || [language length] == 3)
+    langCode = language;
+  
+  if (!rightToLeft)
+    // Holds languages whose current scripts are written right to left.
+    rightToLeft = [[NSArray alloc] initWithObjects: @"ar", @"ara", @"arc",
+				   @"chi", @"fa", @"fas", @"he", @"heb", @"iw",
+				   @"ji", @"kas", @"ks", @"ku", @"kur", @"pa",
+				   @"pan", @"per" @"ps", @"pus", @"sd", @"snd",
+				   @"syr", @"tk", @"tmh", @"tuk", @"ug",
+				   @"uig", @"ur," @"urd", @"yi", @"yid", @"zh",
+				   @"zho", nil];
+  if ([rightToLeft containsObject: langCode] == YES)
+    writingDirection = NSWritingDirectionRightToLeft;
+  else // If it's not RTL, assume LTR.
+    writingDirection = NSWritingDirectionLeftToRight;
+  
+  return writingDirection;  
 }
 
 - (void) dealloc
