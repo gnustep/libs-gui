@@ -1,3 +1,30 @@
+2001-11-26  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSWindow.h
+	Added some new MacOSX methods and ivars to support them.
+	Changed order of methods.
+	* Source/NSWindow.m
+	Implemented new methods.
+	* Headers/gnustep/gui/NSWindowController.h
+	Added some new MacOSX methods.
+	* Headers/gnustep/gui/NSDocumentFrameworkPrivate.h
+	Removed methods now public.
+	* Source/NSWindowController.m
+	Implemented new methods and renamed some old which are now public.
+	* Source/NSDocument.m
+	Adopted to name changes of NSWindowController methods.
+	* Headers/gnustep/gui/NSNibLoading.h
+	New extension method [pathForNibResource:].
+	* Source/NSBundleAdditions.m
+	Extracted new method [pathForNibResource:] for NSWindowController.
+	* Headers/gnustep/gui/NSWorkspace.h
+	Added some new MacOSX methods. Changed order of methods. Made
+	ivars out of some class variables.
+	* Source/NSWorkspace.m
+	A lot of cleanup. Implemented the new methods. [openFile:XXX] no
+	longer show alert panels, as this should be done by the caller.
+	[launchApplication:XXX] now checks if the application is already running.
+	
 2001-11-25  Gregory John Casamento <greg_casamento@yahoo.com>
 	* Tools/gopen.m made some enhancements to make the gopen tool
 	behave more like the "open" tool under OPENSTEP/MOSX.
