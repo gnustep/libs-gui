@@ -1,3 +1,16 @@
+2004-04-29  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
+
+	Preliminary work for a client/conversation management mechanism.
+
+	* InputManagers/PlainInputServer/GNUmakefile: Added ClientManager.m,
+	  ConversationManager.m, and Context.m to PlainInputServer_OBJC_FILES.
+	* InputManagers/PlainInputServer/ClientManager.h: Created.
+	* InputManagers/PlainInputServer/ClientManager.m: Created.
+	* InputManagers/PlainInputServer/Context.h: Created.
+	* InputManagers/PlainInputServer/Context.m: Created.
+	* InputManagers/PlainInputServer/ConversationManager.h: Created.
+	* InputManagers/PlainInputServer/ConversationManager.m: Created.
+
 2004-04-18  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
 
 	Corrected the handling of pending characters.
