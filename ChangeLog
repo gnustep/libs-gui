@@ -1,3 +1,9 @@
+Fri Aug  9 12:12:18 2002  Georg Fleischmann <georg@vhf.de>
+
+	* Source/NSWindow.m ([-setFrameFromString:]),
+	([-stringWithSavedFrame]): Don't flip coordinates to make it
+	compatible with OpenStep.
+
 2002-08-05  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSSplitView.m 
