@@ -420,6 +420,7 @@ NSApplication	*NSApp = nil;
 
 - (int) runModalSession: (NSModalSession)theSession
 {
+  NSAutoreleasePool	*pool;
   NSGraphicsContext	*ctxt;
   BOOL		found = NO;
   NSEvent	*event;
@@ -429,8 +430,7 @@ NSApplication	*NSApp = nil;
     [NSException raise: NSInvalidArgumentException
                 format: @"runModalSession: with wrong session"];
 
-  theSession->runState = NSRunContinuesResponse;
-  [theSession->window display];
+  pool = [NSAutoreleasePool new];
   [theSession->window makeKeyAndOrderFront: self];
 
   ctxt = GSCurrentContext();
@@ -453,12 +453,13 @@ NSApplication	*NSApp = nil;
     }
   while (found == NO && theSession->runState == NSRunContinuesResponse);
 
+  RELEASE(pool);
   /*
    *    Deal with the events in the queue.
    */
   while (found == YES && theSession->runState == NSRunContinuesResponse)
     {
-      NSAutoreleasePool *pool = [NSAutoreleasePool new];
+      pool = [NSAutoreleasePool new];
 
       event = DPSGetEvent(ctxt, NSAnyEventMask, nil, NSDefaultRunLoopMode);
       if (event != nil && [event window] == theSession->window)
@@ -766,8 +767,8 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 // Set the app's icon
 - (void) setApplicationIconImage: (NSImage*)anImage
 {
-  [app_icon setName:nil];
-  [anImage setName:@"NSApplicationIcon"];
+  [app_icon setName: nil];
+  [anImage setName: @"NSApplicationIcon"];
   ASSIGN(app_icon, anImage);
 }
 
@@ -998,24 +999,22 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
   windows_need_update = flag;
 }
 
-- (void) updateWindows                               // send an update message
-{                                                   // to all visible windows
-  int i, count;
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-  NSArray *window_list = [self windows];
+- (void) updateWindows
+{
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+  NSArray		*window_list = [self windows];
+  unsigned		count = [window_list count];
+  unsigned		i;
 
   windows_need_update = NO;
-                                                    // notify that an update is
-                                                    // imminent
   [nc postNotificationName: NSApplicationWillUpdateNotification object: self];
 
-  for (i = 0, count = [window_list count]; i < count; i++)
+  for (i = 0; i < count; i++)
     {
       NSWindow *win = [window_list objectAtIndex: i];
-      if ([win isVisible])                        // send update only if the
-	[win update];                           // window is visible
+      if ([win isVisible])
+	[win update];
     }
-						  // notify update did occur
   [nc postNotificationName: NSApplicationDidUpdateNotification object: self];
 }
 

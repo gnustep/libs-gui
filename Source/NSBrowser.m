@@ -219,7 +219,7 @@
   scroller_rect.size.height = [NSScroller scrollerWidth];
   _horizontalScroller = [[NSScroller alloc] initWithFrame: scroller_rect];
   [_horizontalScroller setTarget: self];
-  [_horizontalScroller setAction: @selector(scrollViaScroller:)];
+  [_horizontalScroller setAction: @selector(scrollViaScroller: )];
   [self addSubview: _horizontalScroller];
   _acceptsArrowKeys = YES;
   _sendsActionOnArrowKeys = YES;
@@ -294,21 +294,21 @@
   BOOL flag = NO;
   BOOL both = NO;
 
-  if (![anObject respondsToSelector:
-		  @selector(browser: willDisplayCell: atRow: column:)])
+  if (![anObject respondsToSelector: 
+		  @selector(browser: willDisplayCell: atRow: column: )])
     [NSException raise: NSBrowserIllegalDelegateException
 		 format: @"Delegate does not respond to %s\n",
 		 "browser: willDisplayCell: atRow: column: "];
 
-  if ([anObject respondsToSelector:
-		  @selector(browser: numberOfRowsInColumn:)])
+  if ([anObject respondsToSelector: 
+		  @selector(browser: numberOfRowsInColumn: )])
     {
       _passiveDelegate = YES;
       flag = YES;
     }
 
-  if ([anObject respondsToSelector:
-		  @selector(browser:createRowsForColumn:inMatrix:)])
+  if ([anObject respondsToSelector: 
+		  @selector(browser: createRowsForColumn: inMatrix: )])
     {
       _passiveDelegate = NO;
 
@@ -610,8 +610,8 @@
   bc = [_browserColumns objectAtIndex: column];
 
   // Ask the delegate for the column title
-  if ([_browserDelegate respondsToSelector:
-			  @selector(browser:titleOfColumn:)])
+  if ([_browserDelegate respondsToSelector: 
+			  @selector(browser: titleOfColumn: )])
     [self setTitle: [_browserDelegate browser: self
 				      titleOfColumn: column]
 	  ofColumn: column];
@@ -785,8 +785,8 @@
   int i;
 
   // xxx Should we trigger an exception?
-  if (![_browserDelegate respondsToSelector:
-			   @selector(browser:isColumnValid:)])
+  if (![_browserDelegate respondsToSelector: 
+			   @selector(browser: isColumnValid: )])
     return;
 
   // Loop through the visible columns
@@ -893,7 +893,7 @@
     return;
 
   // Notify the delegate
-  if ([_browserDelegate respondsToSelector: @selector(browserWillScroll:)])
+  if ([_browserDelegate respondsToSelector: @selector(browserWillScroll: )])
     [_browserDelegate browserWillScroll: self];
 
   // Shift
@@ -907,7 +907,7 @@
   [self updateScroller];
 
   // Notify the delegate
-  if ([_browserDelegate respondsToSelector: @selector(browserDidScroll:)])
+  if ([_browserDelegate respondsToSelector: @selector(browserDidScroll: )])
     [_browserDelegate browserDidScroll: self];
 }
 
@@ -922,7 +922,7 @@
     return;
 
   // Notify the delegate
-  if ([_browserDelegate respondsToSelector: @selector(browserWillScroll:)])
+  if ([_browserDelegate respondsToSelector: @selector(browserWillScroll: )])
     [_browserDelegate browserWillScroll: self];
 
   // Shift
@@ -936,7 +936,7 @@
   [self updateScroller];
 
   // Notify the delegate
-  if ([_browserDelegate respondsToSelector: @selector(browserDidScroll:)])
+  if ([_browserDelegate respondsToSelector: @selector(browserDidScroll: )])
     [_browserDelegate browserDidScroll: self];
 }
 
@@ -1038,8 +1038,8 @@
     return;
 
   // Ask delegate if selection is ok
-  if ([_browserDelegate respondsToSelector:
-				@selector(browser:selectRow:inColumn:)])
+  if ([_browserDelegate respondsToSelector: 
+				@selector(browser: selectRow: inColumn: )])
     {
       int row = [sender selectedRow];
       shouldSelect = [_browserDelegate browser: self selectRow: row
@@ -1048,12 +1048,12 @@
   else
     {
       // Try the other method
-      if ([_browserDelegate respondsToSelector:
-			    @selector(browser:selectCellWithString:inColumn:)])
+      if ([_browserDelegate respondsToSelector: 
+			    @selector(browser: selectCellWithString: inColumn: )])
 	{
 	  id c = [sender selectedCell];
 	  shouldSelect = [_browserDelegate browser: self
-					   selectCellWithString:
+					   selectCellWithString: 
 					     [c stringValue]
 					   inColumn: column];
 	}
@@ -1246,38 +1246,47 @@
 
 - (NSString *)pathToColumn: (int)column
 {
-  int i;
-  NSMutableString *s = [NSMutableString stringWithCString: ""];
+  NSMutableString	*s = [_pathSeparator mutableCopy];
+  unsigned		i;
 
-  // Cannot go past the number of loaded columns
+  /*
+   * Cannot go past the number of loaded columns
+   */
   if (column > _lastColumnLoaded)
     column = _lastColumnLoaded + 1;
 
-  [s appendString: _pathSeparator];
   for (i = 0;i < column; ++i)
     {
-      id c = [self selectedCellInColumn: i];
+      id	c = [self selectedCellInColumn: i];
+
       if (i != 0)
 	[s appendString: _pathSeparator];
       [s appendString: [c stringValue]];
     }
-
-  return [[[NSString alloc] initWithString: s] autorelease];
+  /*
+   * We actually return a mutable string, but that's ok since a mutable
+   * string is a string and the documentation specifically says that
+   * people should not depend on methods that return strings to return
+   * immutable strings.
+   */
+  return s;
 }
 
-- (BOOL)setPath: (NSString *)path
+- (BOOL) setPath: (NSString *)path
 {
-  NSArray	*subStrings = [path componentsSeparatedByString:_pathSeparator];
-  unsigned	numberOfSubStrings, i;
+  NSArray	*subStrings;
   NSString	*aStr;
+  unsigned	numberOfSubStrings;
+  unsigned	i;
 
+  subStrings = [path componentsSeparatedByString: _pathSeparator];
   [self setLastColumn: 0];
   numberOfSubStrings = [subStrings count];
 
-  if (numberOfSubStrings <= 2)
+  if (numberOfSubStrings == 2)
     {
-      // select root path
-      if ([[subStrings objectAtIndex:1] length] == 0)
+      /* select root path *.
+      if ([[subStrings objectAtIndex: 1] length] == 0)
 	{
 	  [self scrollColumnsLeftBy: [_browserColumns count]];
 	  return YES;
@@ -1305,17 +1314,17 @@
 	    {
 	      NSString	*cellString;
 
-	      selectedCell = [cellRow objectAtIndex:k];
+	      selectedCell = [cellRow objectAtIndex: k];
 	      cellString = [selectedCell stringValue];
 
-	      if ([cellString isEqualToString:aStr])
+	      if ([cellString isEqualToString: aStr])
 		{
 		  int r, c;
 
 		  k = numOfCols;
 		  j = numOfRows;
-		  if ([matrix getRow:&r column:&c ofCell:selectedCell])
-		    [matrix selectCellAtRow:r column:c];
+		  if ([matrix getRow: &r column: &c ofCell: selectedCell])
+		    [matrix selectCellAtRow: r column: c];
 		  else
 		    selectedCell = nil;
 		}
@@ -1539,18 +1548,17 @@
 	}
       else
 	{
-	  // If it is not visible
-	  NSBrowserColumn *bc = [_browserColumns objectAtIndex: i];
-	  id sc = [bc columnScrollView];
+	  NSBrowserColumn	*bc = [_browserColumns objectAtIndex: i];
+	  id			sc = [bc columnScrollView];
 
 	  // Remove it from its superview if it has one
 	  if (sc)
-	    if ([sc superview])
-	      {
-		NSLog(@"before: %d\n", [sc retainCount]);
-		[sc removeFromSuperview];
-		NSLog(@"after: %d\n", [sc retainCount]);
-	      }
+	    {
+	      if ([sc superview])
+		{
+		  [sc removeFromSuperview];
+		}
+	    }
 	}
     }
 }
@@ -1587,8 +1595,8 @@
 	  if (!_allowsMultipleSelection)
 	    [matrix setMode: NSRadioModeMatrix];
 	  [matrix setTarget: self];
-	  [matrix setAction: @selector(doClick:)];
-	  [matrix setDoubleAction: @selector(doDoubleClick:)];
+	  [matrix setAction: @selector(doClick: )];
+	  [matrix setDoubleAction: @selector(doDoubleClick: )];
 
 	  // set new col matrix and release old
 	  [bc setColumnMatrix: matrix];
@@ -1622,8 +1630,8 @@
 	  if (!_allowsMultipleSelection)
 	    [matrix setMode: NSRadioModeMatrix];
 	  [matrix setTarget: self];
-	  [matrix setAction: @selector(doClick:)];
-	  [matrix setDoubleAction: @selector(doDoubleClick:)];
+	  [matrix setAction: @selector(doClick: )];
+	  [matrix setDoubleAction: @selector(doDoubleClick: )];
 
 	  // set new col matrix and release old
 	  [bc setColumnMatrix: matrix];
