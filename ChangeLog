@@ -1,4 +1,14 @@
-2000-09-13  Fred Kiefer  <FredKiefer@gmx.de>
+2000-10-02  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/NSWindow.m: 
+	[_initBackendWindow] always redisplay _wv
+	[setFrame:display:] set the frame of _wv directly if deferred.
+	This changes make the save panel usable again.
+	* Source/NSStringDrawing.m: 
+	Convert glyphs to font encoding in drawRun().
+	Removed unused code. 
+	
+2000-10-01  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Header/gnustep/gui/NSText.h:
 	Moved ivar _textContainer from NSTextView to here.
