@@ -153,8 +153,10 @@ static inline float defaultFontHeight ()
 		  delta: (int)insertionDelta
 	    inTextContainer:(NSTextContainer *)aTextContainer;
 // low level, override but never invoke (use setNeedsDisplayForLineRange:)
-- (void) drawLinesInLineRange: (NSRange)aRange;
-- (void) drawSelectionAsRangeNoCaret: (NSRange)aRange;
+- (void) drawLinesInLineRange: (NSRange)aRange
+		      atPoint: (NSPoint)containerOrigin;
+- (void) drawSelectionAsRangeNoCaret: (NSRange)aRange
+			     atPoint: (NSPoint)containerOrigin;
 @end
 
 @implementation GSSimpleLayoutManager
