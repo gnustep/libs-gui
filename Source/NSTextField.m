@@ -65,7 +65,7 @@
   [_cell setSelectable: YES];
   [_cell setEnabled: YES];
   [_cell setEditable: YES];
-  [self setDrawsBackground: YES];
+  [_cell setDrawsBackground: YES];
   _text_object = nil;
 
   return self;
@@ -444,8 +444,9 @@
 {
   [super initWithCoder: aDecoder];
 
-  _delegate = [aDecoder decodeObject];
+  [self setDelegate: [aDecoder decodeObject]];
   [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_error_action];
+  _text_object = nil;
 
   return self;
 }
