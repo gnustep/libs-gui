@@ -1,3 +1,30 @@
+2000-09-13  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Header/gnustep/gui/NSText.h:
+	Moved ivar _textContainer from NSTextView to here.
+	* Header/gnustep/gui/NSTextView.h:
+	Removed ivar _textContainer. Added some delegate messages.
+	Two new NSTextView like methods for text container handling.	
+	* Source/NSText.m: 
+	Moved the text container handling from NSTextView to here and
+	corrected it.
+	* Source/NSTextView.m: 
+	Use text container implementation from super class.
+	* Source/NSLayoutManager.m:
+	Implemented [firstTextView].
+	* Source/GSSimpleLayoutManager.h: 
+	Removed additional method [setFirstTextView]
+	* Source/GSSimpleLayoutManager.m: 
+	Switched to use the text container for size information.
+	Implemented [textContainerChangedGeometry].
+	* Source/NSTextContainer.m: 
+	In [setTextView] let the text view send frame changed notifications.
+	Check text view in [_textViewFrameChanged:].
+	Don't add observer if text view is nil in
+	[setHeightTracksTextView:] and [setWidthTracksTextView:]
+	* Source/NSView.m: 
+	In [display] check if the _visibleRect is still valid.
+	
 2000-09-28  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSGraphicsContext.m (-_addDragTypes:toWindow:): Change to
