@@ -1565,6 +1565,8 @@ This method is for user changes; see NSTextView_actions.m.
       return;
     }
 
+/*printf("-insertText: range %i+%i  |%@|\n",insertRange.location,insertRange.length,insertString);
+printf("   text storage length %i\n",[self textLength]);*/
   isAttributed = [insertString isKindOfClass: [NSAttributedString class]];
 
   if (isAttributed)
@@ -1610,6 +1612,7 @@ This method is for user changes; see NSTextView_actions.m.
   [self didChangeText];
 
   /* TODO? move cursor <!> [self selectionRangeForProposedRange: ] */
+//printf("   text storage length now %i\n",[self textLength]);
   [self setSelectedRange:
 	  NSMakeRange(insertRange.location + [insertString length], 0)];
 }
@@ -1989,14 +1992,20 @@ called anyway.
 
 To be safe, changes are currently always disallowed if the text view
 isn't the first responder.
+
+(2003-02-01): GNUMail does it by having an "attach" button when editing
+mails. It adds an attachment to the text using -insertText:, and it is
+a fairly reasonable thing to do.
+
+Thus, if we aren't the first responder, we still proceed as normal here.
+In -didChangeText, if we still aren't the first responder, we send the
+TextDidEndEditing notification _without_ asking the delegate
+(-; since we can't handle a NO return).
 */
 -(BOOL) shouldChangeTextInRange: (NSRange)affectedCharRange
 	      replacementString: (NSString *)replacementString
 {
   if (_tf.is_editable == NO)
-    return NO;
-
-  if ([_window firstResponder] != self)
     return NO;
 
 
@@ -2033,6 +2042,22 @@ After each user-induced change, this method should be called.
 {
   [notificationCenter postNotificationName: NSTextDidChangeNotification
     object: _notifObject];
+
+  if ([_window firstResponder] != self)
+    { /* Copied from -resignFirstResponder . See comment above. */
+      if ([self shouldDrawInsertionPoint])
+	{
+	  [self updateInsertionPointStateAndRestartTimer: NO];
+	}
+
+      if (_layoutManager != nil)
+	{
+	  _layoutManager->_beganEditing = NO;
+	}
+
+      [notificationCenter postNotificationName: NSTextDidEndEditingNotification
+	object: _notifObject];
+    }
 }
 
 /*
@@ -2447,6 +2472,7 @@ afterString in order over charRange.
 
 - (void) setSelectedRange: (NSRange)charRange
 {
+//  printf("-setSelectedRange: %i+%i\n",charRange.location,charRange.length);
   [self setSelectedRange: charRange  affinity: [self selectionAffinity]
 	stillSelecting: NO];
 }

@@ -1,3 +1,11 @@
+2003-02-01 15:09  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSTextView.m (-shouldChangeTextInRange:replacementString:):
+	Allow changes even if we're not the first responder.
+
+	(-didChangeText): If we're not the first responder, end the editing
+	session.
+
 2003-02-01 13:52  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSHorizontalTypesetter.m (-layoutLineNewParagraph:): Fix
