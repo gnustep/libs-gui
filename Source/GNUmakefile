@@ -40,7 +40,6 @@ libgnustep-gui_OBJC_FILES = libgnustep-gui.m \
 GSContext.m \
 NSActionCell.m \
 NSApplication.m \
-NSAttributedString.m \
 NSBitmapImageRep.m \
 NSBox.m \
 NSBrowser.m \
@@ -123,7 +122,6 @@ AppKit/AppKit.h \
 AppKit/GSContext.h \
 AppKit/NSActionCell.h \
 AppKit/NSApplication.h \
-AppKit/NSAttributedString.h \
 AppKit/NSBitmapImageRep.h \
 AppKit/NSBox.h \
 AppKit/NSBrowser.h \

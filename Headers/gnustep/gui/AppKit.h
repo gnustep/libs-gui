@@ -71,7 +71,6 @@
 
 #include <AppKit/NSActionCell.h>
 #include <AppKit/NSApplication.h>
-#include <AppKit/NSAttributedString.h>
 #include <AppKit/NSBitmapImageRep.h>
 #include <AppKit/NSBox.h>
 #include <AppKit/NSBrowser.h>

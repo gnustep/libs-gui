@@ -41,7 +41,7 @@
 */
 
 #import <Foundation/Foundation.h>
-#import <AppKit/NSAttributedString.h>
+#import <AppKit/NSStringDrawing.h>
 
 @class NSLayoutManager;
 

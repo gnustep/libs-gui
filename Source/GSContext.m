@@ -86,17 +86,17 @@ GSContext *context;
 	return context;
 }
 
-+ (GSContext *) currentContext			{ return nil;}
++ (GSContext *) currentContext			{ return nil;}				// backend 
 
 + (void) setCurrentContext: (GSContext *)context
 {
-	[self subclassResponsibility:_cmd];
+	[self subclassResponsibility:_cmd];								// backend
 }
 
 + (void) destroyContext:(GSContext *) context		
 {													// if concrete class is not 
 	if(_concreteClass != [GSContext class])			// a GSContext invoke it's 
-		[_concreteClass destroyContext: context];	// equivalent method first
+		[_concreteClass destroyContext: context];	// version of method first
 	else
 		[self _destroyContext: context];			
 }													
@@ -114,9 +114,9 @@ int top;											// deallocated with the
 //
 // Instance methods
 //
-- init
-{
-	return [self initWithContextInfo: nil];
+- init							
+{ 
+	return [self initWithContextInfo: nil]; 
 }
 
 - initWithContextInfo: (NSDictionary *)info
@@ -132,15 +132,8 @@ int top;											// deallocated with the
 	return self;
 }
 
-- (BOOL)isDrawingToScreen
-{
-	return NO;
-}
-
-- (NSMutableData *)mutableData
-{
-	return context_data;
-}
+- (BOOL)isDrawingToScreen				{ return NO; }
+- (NSMutableData *)mutableData			{ return context_data; }
 
 - (void) destroy									// remove self from context
 {													// list so that self gets  

@@ -93,6 +93,7 @@ extern NSSize NSTokenSize;
   unsigned int style_mask;
   int window_level;
   NSMutableArray* _flushRectangles;
+  NSRect rectNeedingFlush;
 
   BOOL is_one_shot;
   BOOL needs_display;

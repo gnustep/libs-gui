@@ -1,7 +1,8 @@
 /* 
    NSStringDrawing.m
 
-   Category which adds measure capabilities to NSString.
+   Categories which add measure capabilities to NSAttributedString 
+   and NSString.
 
    Copyright (C) 1997 Free Software Foundation, Inc.
 
@@ -28,37 +29,72 @@
 
 #include <AppKit/NSStringDrawing.h>
 #include <AppKit/AppKit.h>
+										// by default tabs are measured as one
+#define TABWIDTH 3						// char so this value is set to one 
+										// minus the default tab width of 4
 
-
-@implementation NSString(NSStringDrawing)
+@implementation NSString (NSStringDrawing)
 
 - (NSSize)sizeWithAttributes:(NSDictionary *)attrs
 {
 NSFont *font;
 const char *str = [self cString];
-int i = 0, j = 4;
-float tabSize;
+int i = 0, j = TABWIDTH;
+static float tabSize;
+static float pointSize;
+static NSFont *lastFont = nil;
 
-	while(*str++ != '\0')									// count the tabs
-		{
-		if(*str == '\t')
-			{
-			i += j;
-			j = 4;
-			}
-		else
-			j = j == 0 ? 4 : j--;
-		};
+	while(*str != '\0')								// calc the additional size 
+		{											// to be added for tabs.  
+		if(*str++ == '\t')			
+			{										// j is initialized to the 
+			i += j;									// max number of spaces					  
+			j = TABWIDTH;							// needed per tab.  it then 
+			}										// varies in order to align 
+		else										// tabs to even multiples   
+			j = j-- > 0 ? j : TABWIDTH;				// of TABWIDTH + 1.
+		};							
 															// if font is not
 	if(!(font = [attrs objectForKey:NSFontAttributeName]))	// specified, use
 		font = [NSFont userFontOfSize:12];					// the default
 
-fprintf(stderr,"string %s  width: %f\n", [self cString], [font widthOfString:self]);	
-
-//	tabSize = 4 * i * [font widthOfString:@" "];
-	tabSize = (float)i * [font widthOfString:@" "];
+	if(font != lastFont)									// update font info 
+		{													// if font changes 
+		tabSize = (float)i * [font widthOfString:@"\t"];
+		lastFont = font;
+		pointSize = [font pointSize];
+		}
 	
-	return NSMakeSize(([font widthOfString:self] + tabSize), [font pointSize]);
+	return NSMakeSize(([font widthOfString:self] + tabSize), pointSize);
+}
+
+@end
+
+@implementation NSAttributedString (NSStringDrawing)
+
+- (NSSize)size												// this method is 
+{															// untested FIX ME	
+NSFont *font;
+unsigned int length;
+NSRange effectiveRange;
+NSString *subString;
+float pointSize;
+float sumOfCharacterRange = 0;
+
+	length = [self length];
+	effectiveRange = NSMakeRange(0, 0);
+
+	while (NSMaxRange(effectiveRange) < length) 
+		{
+		font = (NSFont*)[self attribute:NSFontAttributeName
+        			 		  atIndex:NSMaxRange(effectiveRange) 
+					 		  effectiveRange:&effectiveRange];
+		subString = [self substringFromRange:effectiveRange];
+		sumOfCharacterRange += [font widthOfString:subString];
+		pointSize = MAX([font pointSize], pointSize);
+		}
+	
+	return NSMakeSize(sumOfCharacterRange, pointSize);
 }
 
 @end

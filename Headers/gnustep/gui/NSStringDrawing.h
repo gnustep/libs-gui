@@ -1,7 +1,8 @@
 /* 
    NSStringDrawing.h
 
-   Category which adds measure capabilities to NSString.
+   Categories which add measure capabilities to NSAttributedString 
+   and NSString.
 
    Copyright (C) 1997 Free Software Foundation, Inc.
 
@@ -30,7 +31,7 @@
 #define _GNUstep_H_NSStringDrawing
 
 #include <Foundation/NSString.h>
-#include <AppKit/NSAttributedString.h>
+#include <Foundation/NSAttributedString.h>
 #include <Foundation/NSGeometry.h>
 #include <gnustep/base/preface.h>
 
@@ -63,13 +64,14 @@ enum
     NSSingleUnderlineStyle = 1				// NSUnderlineStyleAttributeName
 };
 
-@interface NSString(NSStringDrawing)
+
+@interface NSString (NSStringDrawing)
 
 - (NSSize)sizeWithAttributes:(NSDictionary *)attrs;
 
 @end
 
-@interface NSAttributedString(NSStringDrawing)
+@interface NSAttributedString (NSStringDrawing)
 
 - (NSSize)size;
 

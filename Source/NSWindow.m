@@ -722,10 +722,8 @@ NSApplication *theApp = [NSApplication sharedApplication];
 
 	if (![aResponder acceptsFirstResponder])		// does not accept status
 		return NO;									// of first responder ret N
-									// Notify current first responder that it 
-									// should resign.  If it says NO then no 
-									// change.  But make sure that there even 
-									// is a first responder
+									// If there is a first responder tell it to  
+									// resign. Make change only if it replies Y  
 	if ((first_responder) && (![first_responder resignFirstResponder]))
 		return NO;
   													// Make responder the first
@@ -736,10 +734,10 @@ NSApplication *theApp = [NSApplication sharedApplication];
 	return YES;										// responder
 }
 
-- (NSPoint)mouseLocationOutsideOfEventStream
-{
-	return NSZeroPoint;
-}
+- (NSPoint)mouseLocationOutsideOfEventStream		// Return mouse location
+{													// in reciever's base coord  
+	return NSZeroPoint;								// system, ignores event
+}													// loop status (backend)
 
 - (NSEvent *)nextEventMatchingMask:(unsigned int)mask
 {
