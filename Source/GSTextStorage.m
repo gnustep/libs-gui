@@ -648,7 +648,6 @@ changeInLength: 0];
   NSDictionary	*attrs;
   GSTextInfo	*info;
   int		moveLocations;
-  NSZone	*z = [self zone];
   unsigned	start;
 
 SANITY();
