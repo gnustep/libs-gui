@@ -11,6 +11,20 @@
 	* Source/GNUmakefile: Add GSTIMKeyStroke.m to
 	  libgnustep-gui_OBJC_FILES.
 
+	Abandon IMKeyBindingTable and move its functionality to the new
+	GSTIMKeyBindingTable.
+
+	* Source/GSTIMKeyBindingTable.h: Created.
+	* Source/GSTIMKeyBindingTable.m: Created.
+	* Source/NSInputManagerPriv.m: Replace IMKeyBindingTable with
+	  GSTIMKeyBindingTable.
+	* Source/NSInputManagerPriv.h: Delete the IMKeyBindingTable's interface.
+	* Source/NSInputManger.m: Include GSTIMKeyBindingTable.h
+	* Headers/AppKit/NSInputManager.h: Replace IMKeyBindingTable with
+	  GSTIMKeyBindingTable.
+	* Source/GNUmakefile: Add GSTIMKeyBindingTable.m to
+	  libgnustep-gui_OBJC_FILES.
+
 2004-04-03  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
 
 	Replace the prefix IM with GSTIM (GNUstep Text Input Management)
