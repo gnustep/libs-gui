@@ -47,10 +47,17 @@
 
 - (void) setDocumentView: (NSView*)aView
 {
+  NSNotificationCenter	*nc;
+
   if (_documentView == aView)
     return;
+
+  nc = [NSNotificationCenter defaultCenter];
   if (_documentView)
-    [_documentView removeFromSuperview];
+    {
+      [nc removeObserver: self name: nil object: _documentView];
+      [_documentView removeFromSuperview];
+    }
 
   ASSIGN(_documentView, aView);
 
@@ -69,12 +76,14 @@
       [_documentView setPostsFrameChangedNotifications: YES];
       [_documentView setPostsBoundsChangedNotifications: YES];
 
-      [[NSNotificationCenter defaultCenter] addObserver: self
-	selector: @selector(viewFrameChanged:)
-	name: NSViewFrameDidChangeNotification object: _documentView];
-      [[NSNotificationCenter defaultCenter] addObserver: self
-	selector: @selector(viewBoundsChanged:)
-	name: NSViewBoundsDidChangeNotification object: _documentView];
+      [nc addObserver: self
+	     selector: @selector(viewFrameChanged:)
+		 name: NSViewFrameDidChangeNotification
+	       object: _documentView];
+      [nc addObserver: self
+	     selector: @selector(viewBoundsChanged:)
+		 name: NSViewBoundsDidChangeNotification
+	       object: _documentView];
     }
 
   /* TODO: invoke superview's reflectScrolledClipView: ? */
@@ -197,7 +206,7 @@
   NSPoint	new = proposedNewOrigin;
 
   if (_documentView == nil)
-    return NSZeroPoint;
+    return bounds.origin;
 
   documentFrame = [_documentView frame];
   if (documentFrame.size.width <= bounds.size.width)
@@ -233,7 +242,7 @@
   NSRect rect;
 
   if (_documentView == nil)
-    return NSZeroRect;
+    return bounds;
 
   documentFrame = [_documentView frame];
   clipViewBounds = bounds;
@@ -254,11 +263,8 @@
     return NSZeroRect;
 
   documentBounds = [_documentView bounds];
-  clipViewBounds = bounds;
-  rect.origin = clipViewBounds.origin;
-  rect.size.width = MIN(documentBounds.size.width, clipViewBounds.size.width);
-  rect.size.height = MIN(documentBounds.size.height,
-			 clipViewBounds.size.height);
+  clipViewBounds = [self convertRect: bounds toView: _documentView];
+  rect = NSIntersectionRect(documentBounds, clipViewBounds);
 
   return rect;
 }
@@ -373,13 +379,16 @@
 
 /* Disable rotation of clip view */
 - (void) rotateByAngle: (float)angle
-{}
+{
+}
 
 - (void) setBoundsRotation: (float)angle
-{}
+{
+}
 
 - (void) setFrameRotation: (float)angle
-{}
+{
+}
 
 /* Managing responder chain */
 - (BOOL) becomeFirstResponder

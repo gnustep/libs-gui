@@ -1,3 +1,10 @@
+Mon Mar  8  8:55:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSClipView.m: Tidied a little, including minor fixes for
+	cases where the doucment view is nil.
+	* Source/NSScrollView.m: Tidied and fixed bugs in scrolling for
+	document views whose origins are not 0,0.
+
 Sun Mar  7  6:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSView.m: ([-removeFromSuperview]) Fixed error invalidating
