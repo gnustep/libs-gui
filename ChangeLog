@@ -1,5 +1,10 @@
 Tue Nov  2  1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
+	* Source/NSMatrix.m: Complete rewrite of code for handling cells
+	within a matrix - use plain C arrays for holding the objects and
+	cache method implementations for creating new cells.  Also make GC
+	aware for some future date when we can use GC.
+	* Headers/AppKit/NSMatrix.h: ivar changes for rewrite.
 	* Source/NSCell.m: Updated to notice changes in system colors,
 	also optimised a little by caching some classes.
 

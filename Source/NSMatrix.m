@@ -3,14 +3,16 @@
 
    Matrix class for grouping controls
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1997, 1999 Free Software Foundation, Inc.
 
    Author:  Ovidiu Predescu <ovidiu@net-community.com>
    Date: March 1997
    A completely rewritten version of the original source by Pascal Forget and
    Scott Christley.
-   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Modified:  Felipe A. Rodriguez <far@ix.netcom.com>
    Date: August 1998
+   Cell handling rewritten: <richard@brainstorm.co.uk>
+   Date: November 1999
 
    This file is part of the GNUstep GUI Library.
 
@@ -37,6 +39,7 @@
 #include <Foundation/NSArray.h>
 #include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSString.h>
+#include <Foundation/NSZone.h>
 
 #include <AppKit/NSColor.h>
 #include <AppKit/NSCursor.h>
@@ -46,6 +49,7 @@
 #include <AppKit/NSMatrix.h>
 
 
+#define	LAX	0
 
 #ifdef MIN
 # undef MIN
@@ -71,8 +75,6 @@
     ({typeof(x) _SIGN_x = (x); \
       _SIGN_x > 0 ? 1 : (_SIGN_x == 0 ? 0 : -1); })
 
-#define FREE(p) do { if (p) free (p); } while (0)
-
 #define POINT_FROM_INDEX(index) \
     ({MPoint point = { index % numCols, index / numCols }; point; })
 
@@ -81,162 +83,6 @@
 #define INDEX_FROM_POINT(point) \
     (point.y * numCols + point.x)
 
-
-typedef struct _tMatrix {
-  int numRows, numCols;
-  int allocatedRows, allocatedCols;
-  BOOL** matrix;
-} *tMatrix;
-
-static tMatrix newMatrix (int numRows, int numCols)
-{
-  int rows = (numRows ? numRows : 1);
-  int cols = (numCols ? numCols : 1);
-  tMatrix m = malloc (sizeof(struct _tMatrix));
-  int i;
-
-  m->matrix = malloc (rows * sizeof(BOOL*));
-  for (i = 0; i < rows; i++)
-    m->matrix[i] = calloc (cols, sizeof(BOOL));
-
-  m->allocatedRows = rows;
-  m->allocatedCols = cols;
-  m->numRows = numRows;
-  m->numCols = numCols;
-
-  return m;
-}
-
-static void freeMatrix (tMatrix m)
-{
-  int i;
-
-  for (i = 0; i < m->allocatedRows; i++)
-    FREE (m->matrix[i]);
-  FREE (m->matrix);
-  FREE (m);
-}
-
-/* Grow the matrix to some arbitrary dimensions */
-static void growMatrix (tMatrix m, int numRows, int numCols)
-{
-  int i, j;
-
-  if (numCols > m->allocatedCols) {
-    /* Grow the existing rows to numCols */
-    for (i = 0; i < m->allocatedRows; i++) {
-      m->matrix[i] = realloc (m->matrix[i], numCols * sizeof(BOOL));
-      for (j = m->allocatedCols - 1; j < numCols; j++)
-	m->matrix[i][j] = NO;
-    }
-    m->allocatedCols = numCols;
-  }
-
-  if (numRows > m->allocatedRows) {
-    /* Grow the vector that keeps the rows */
-    m->matrix = realloc (m->matrix, numRows * sizeof(BOOL*));
-
-    /* Allocate the rows up to allocatedRows that are NULL */
-    for (i = 0; i < m->allocatedRows; i++)
-      if (!m->matrix[i])
-	m->matrix[i] = calloc (m->allocatedCols, sizeof(BOOL));
-
-    /* Add the necessary rows */
-    for (i = m->allocatedRows; i < numRows; i++)
-      m->matrix[i] = calloc (m->allocatedCols, sizeof(BOOL));
-    m->allocatedRows = numRows;
-  }
-
-  m->numRows = numRows;
-  m->numCols = numCols;
-}
-
-static void insertRow (tMatrix m, int rowPosition)
-{
-  int rows = m->numRows + 1;
-  int i;
-
-  /* Create space for the new rows if necessary */
-  if (rows > m->allocatedRows)
-    {
-      m->matrix = realloc (m->matrix, rows * sizeof(BOOL*));
-      m->allocatedRows = rows;
-    }
-
-  /* Make room for the new row */
-  for (i = m->numRows - 1; i > rowPosition; i--)
-    m->matrix[i] = m->matrix[i - 1];
-
-  /* Allocate any NULL row that exists up to rowPosition */
-  for (i = 0; i < rowPosition; i++)
-    if (!m->matrix[i])
-      m->matrix[i] = calloc (m->allocatedCols, sizeof(BOOL));
-
-  /* Create the required row */
-  m->matrix[rowPosition] = calloc (m->allocatedCols, sizeof(BOOL));
-
-  m->numRows++;
-}
-
-static void insertColumn (tMatrix m, int colPosition)
-{
-  int cols = m->numCols + 1;
-  int i, j;
-
-  /* First grow the rows to hold `cols' elements */
-  if (cols > m->allocatedCols)
-    {
-      for (i = 0; i < m->numRows; i++)
-	m->matrix[i] = realloc (m->matrix[i], cols * sizeof(BOOL));
-      m->allocatedCols = cols;
-    }
-
-  /* Now insert a new column between the rows, in the required position.
-    If it happens that a row is NULL create a new row with the maximum
-    number of columns for it. */
-  for (i = 0; i < m->numRows; i++)
-    {
-      BOOL* row = m->matrix[i];
-
-      if (!row)
-	m->matrix[i] = calloc (m->allocatedCols, sizeof(BOOL));
-      else
-	{
-	  for (j = m->numCols - 1; j > colPosition; j--)
-	    row[j] = row[j - 1];
-	  row[colPosition] = NO;
-	}
-    }
-  m->numCols++;
-}
-
-static void removeRow (tMatrix m, int row)
-{
-  int i;
-
-  /* Free the row and shrink the matrix by removing the row from it */
-  FREE (m->matrix[row]);
-  m->matrix[row] = NULL;
-  for (i = row; i < m->numRows - 1; i++)
-    m->matrix[i] = m->matrix[i + 1];
-  m->numRows--;
-  m->matrix[m->numRows] = NULL;
-}
-
-static void removeColumn (tMatrix m, int column)
-{
-  int i, j;
-
-  for (i = 0; i < m->numRows; i++)
-    {
-      BOOL* row = m->matrix[i];
-
-      for (j = column; j < m->numCols - 1; j++)
-	row[j] = row[j + 1];
-      row[m->numCols] = NO;
-    }
-  m->numCols--;
-}
 
 /* Some stuff needed to compute the selection in the list mode. */
 typedef struct {
@@ -274,6 +120,9 @@ enum {
 /* Class variables */
 static Class defaultCellClass = nil;
 static int mouseDownFlags = 0;
+static SEL copySel = @selector(copyWithZone:);
+static SEL initSel = @selector(init);
+static SEL allocSel = @selector(allocWithZone:);
 
 + (void) initialize
 {
@@ -282,8 +131,10 @@ static int mouseDownFlags = 0;
       /* Set the initial version */
       [self setVersion: 1];
 
-      /* Set the default cell class */
-      defaultCellClass = [NSCell class];
+      /*
+       * MacOS-X docs say default cell class is NSActionCell
+       */
+      defaultCellClass = [NSActionCell class];
     }
 }
 
@@ -295,24 +146,26 @@ static int mouseDownFlags = 0;
 + (void) setCellClass: (Class)classId
 {
   defaultCellClass = classId;
+  if (defaultCellClass == nil)
+    defaultCellClass = [NSActionCell class];
 }
 
-- init
+- (id) init
 {
   return [self initWithFrame: NSZeroRect
-	       mode: NSRadioModeMatrix
-	       prototype: [[[isa cellClass] new] autorelease]
-	       numberOfRows: 0
-	       numberOfColumns: 1];
+		        mode: NSRadioModeMatrix
+		   cellClass: [isa cellClass]
+		numberOfRows: 0
+	     numberOfColumns: 0];
 }
 
 - (id) initWithFrame: (NSRect)frameRect
 {
   return [self initWithFrame: frameRect
-	       mode: NSRadioModeMatrix
-	       cellClass: [isa cellClass]
-	       numberOfRows: 0
-	       numberOfColumns: 0];
+		        mode: NSRadioModeMatrix
+		   cellClass: [isa cellClass]
+		numberOfRows: 0
+	     numberOfColumns: 0];
 }
 
 - (id) initWithFrame: (NSRect)frameRect
@@ -321,11 +174,13 @@ static int mouseDownFlags = 0;
         numberOfRows: (int)rowsHigh
      numberOfColumns: (int)colsWide
 {
-  return [self initWithFrame: frameRect
-	       mode: aMode
-	       prototype: [[class new] autorelease]
-	       numberOfRows: rowsHigh
-	       numberOfColumns: colsWide];
+  self = [self initWithFrame: frameRect
+		        mode: aMode
+		   prototype: nil
+		numberOfRows: rowsHigh
+	     numberOfColumns: colsWide];
+  [self setCellClass: class];
+  return self;
 }
 
 - (id) initWithFrame: (NSRect)frameRect
@@ -334,27 +189,11 @@ static int mouseDownFlags = 0;
         numberOfRows: (int)rows
      numberOfColumns: (int)cols
 {
-  int i, j;
-
   [super initWithFrame: frameRect];
 
-  ASSIGN(cellPrototype, prototype);
-
-  cells = [[NSMutableArray alloc] initWithCapacity: rows];
-  selectedCells = newMatrix (rows, cols);
-  for (i = 0; i < rows; i++)
-    {
-      NSMutableArray* row = [NSMutableArray arrayWithCapacity: cols];
-
-      [cells addObject: row];
-      for (j = 0; j < cols; j++)
-	{
-	  [row addObject: [[cellPrototype copy] autorelease]];
-	}
-    }
-
-  numRows = rows;
-  numCols = cols;
+  myZone = [self zone];
+  [self setPrototype: prototype];
+  [self renewRows: rows columns: cols];
   mode = aMode;
   [self setFrame: frameRect];
 
@@ -375,18 +214,34 @@ static int mouseDownFlags = 0;
       [self selectCellAtRow: 0 column: 0];
     }
   else
-    selectedRow = selectedColumn = 0;
+    {
+      selectedRow = selectedColumn = 0;
+    }
 
   return self;
 }
 
 - (void) dealloc
 {
-  [cells release];
+  int		i;
+
+  for (i = 0; i < maxRows; i++)
+    {
+      int	j;
+
+      for (j = 0; j < maxCols; j++)
+	{
+	  [cells[i][j] release];
+	}
+      NSZoneFree(myZone, cells[i]);
+      NSZoneFree(GSAtomicMallocZone(), selectedCells[i]);
+    }
+  NSZoneFree(myZone, cells);
+  NSZoneFree(myZone, selectedCells);
+
   [cellPrototype release];
   [backgroundColor release];
   [cellBackgroundColor release];
-  freeMatrix (selectedCells);
   [super dealloc];
 }
 
@@ -412,103 +267,174 @@ static int mouseDownFlags = 0;
 
 - (void) insertColumn: (int)column
 {
-  int i;
+  int i = numCols + 1;
 
-  /* Grow the matrix if necessary */
-  if (column >= numCols)
-    [self renewRows: (numRows == 0 ? 1 : numRows) columns: column];
-  if (numRows == 0)
+  if (column < 0)
     {
-      numRows = 1;
-      [cells addObject: [NSMutableArray array]];
+      column = 0;
+#if	LAX
+      NSLog(@"insert negative column (%d) in matrix", column);
+#else
+      [NSException raise: NSRangeException
+		  format: @"insert negative column (%d) in matrix", column];
+#endif
     }
 
-  numCols++;
-  for (i = 0; i < numRows; i++)
-    [self makeCellAtRow: i column: column];
-  insertColumn (selectedCells, column);
+  if (column >= i)
+    {
+      i = column + 1;
+    }
 
-  if (mode == NSRadioModeMatrix && !allowsEmptySelection && !selectedCell)
+  /* Grow the matrix as necessary */
+  [self renewRows: numRows ? numRows : 1 columns: i];
+
+  /*
+   * Rotate the new column to the insertion point if necessary.
+   */
+  if (numCols > 1)
+    {
+      for (i = 0; i < numRows; i++)
+	{
+	  int	j = numCols;
+	  id	old = cells[i][j-1];
+
+	  while (--j > column)
+	    {
+	      cells[i][j] = cells[i][j-1];
+	      selectedCells[i][j] = selectedCells[i][j-1];
+	    }
+	  cells[i][column] = old;
+	  selectedCells[i][column] = NO;
+	}
+    }
+
+  if (mode == NSRadioModeMatrix && !allowsEmptySelection && selectedCell == nil)
     [self selectCellAtRow: 0 column: 0];
 }
 
 - (void) insertColumn: (int)column withCells: (NSArray*)cellArray
 {
-  int i;
+  int	count = [cellArray count];
+  int	i;
 
-  /* Grow the matrix if necessary */
-  if (column >= numCols)
-    [self renewRows: (numRows == 0 ? 1 : numRows) columns: column];
-  if (numRows == 0)
+  if (count > 0 && (numRows == 0 || numCols == 0))
     {
-      numRows = 1;
-      [cells addObject: [NSMutableArray array]];
+      /*
+       * MacOS-X docs say that if the matrix is empty, we make it have one
+       * column and enough rows for all the elements.
+       */
+      [self renewRows: count columns: 1];
+    }
+  else
+    {
+      [self insertColumn: column];
     }
 
-  numCols++;
-  for (i = 0; i < numRows; i++)
-    [[cells objectAtIndex: i]
-	replaceObjectAtIndex: column withObject: [cellArray objectAtIndex: i]];
-  insertColumn (selectedCells, column);
+  for (i = 0; i < numRows && i < count; i++)
+    {
+      ASSIGN(cells[i][column], [cellArray objectAtIndex: i]);
+    }
 
-  if (mode == NSRadioModeMatrix && !allowsEmptySelection && !selectedCell)
+  if (mode == NSRadioModeMatrix && !allowsEmptySelection && selectedCell == nil)
     [self selectCellAtRow: 0 column: 0];
 }
 
 - (void) insertRow: (int)row
 {
-  int i;
+  int	i = numRows + 1;
 
-  /* Grow the matrix if necessary */
-  if (row >= numRows)
-    [self renewRows: row columns: (numCols == 0 ? 1 : numCols)];
-  if (numCols == 0)
-    numCols = 1;
+  if (row < 0)
+    {
+      row = 0;
+#if	LAX
+      NSLog(@"insert negative row (%d) in matrix", row);
+#else
+      [NSException raise: NSRangeException
+		  format: @"insert negative row (%d) in matrix", row];
+#endif
+    }
 
-  [cells insertObject: [NSMutableArray arrayWithCapacity: numCols] atIndex: row];
+  if (row >= i)
+    {
+      i = row + 1;
+    }
 
-  numRows++;
-  for (i = 0; i < numCols; i++)
-    [self makeCellAtRow: row column: i];
+  /*
+   * Grow the matrix to have the new row.
+   */
+  [self renewRows: i columns: numCols ? numCols : 1];
 
-  insertRow (selectedCells, row);
+  /*
+   * Rotate the newly created row to the insertion point if necessary.
+   */
+  if (numRows > 1)
+    {
+      id	*oldr = cells[numRows - 1];
+      BOOL	*olds = selectedCells[numRows - 1];
 
-  if (mode == NSRadioModeMatrix && !allowsEmptySelection && !selectedCell)
+      for (i = numRows - 1; i > row; i--)
+	{
+	  cells[i] = cells[i-1];
+	  selectedCells[i] = selectedCells[i-1];
+	}
+      cells[row] = oldr;
+      selectedCells[row] = olds;
+    }
+
+  if (mode == NSRadioModeMatrix && !allowsEmptySelection && selectedCell == nil)
     [self selectCellAtRow: 0 column: 0];
 }
 
 - (void) insertRow: (int)row withCells: (NSArray*)cellArray
 {
-  /* Grow the matrix if necessary */
-  if (row >= numRows)
-    [self renewRows: row columns: (numCols == 0 ? 1 : numCols)];
-  if (numCols == 0)
-    numCols = 1;
+  int	count = [cellArray count];
+  int	i;
 
-  [cells insertObject: [cellArray subarrayWithRange: NSMakeRange(0, numCols)]
-	      atIndex: row];
+  if (count > 0 && (numRows == 0 || numCols == 0))
+    {
+      /*
+       * MacOS-X docs say that if the matrix is empty, we make it have one
+       * column and enough rows for all the elements.
+       */
+      [self renewRows: 1 columns: count];
+    }
+  else
+    {
+      [self insertRow: row];
+    }
 
-  insertRow (selectedCells, row);
+  for (i = 0; i < numCols && i < count; i++)
+    {
+      ASSIGN(cells[row][i], [cellArray objectAtIndex: i]);
+    }
 
-  numRows++;
-
-  if (mode == NSRadioModeMatrix && !allowsEmptySelection && !selectedCell)
+  if (mode == NSRadioModeMatrix && !allowsEmptySelection && selectedCell == nil)
     [self selectCellAtRow: 0 column: 0];
 }
 
 - (NSCell*) makeCellAtRow: (int)row
 		   column: (int)column
 {
-  NSCell* aCell;
+  NSCell	*aCell;
 
-  if (cellPrototype)
-    aCell = [[cellPrototype copy] autorelease];
-  else if (cellClass)
-    aCell = [[cellClass new] autorelease];
+  /*
+   * This is only ever called when we are creating a new cell - so we know
+   * we can simply assign a value into the matrix without releasing an old
+   * value.
+   */
+  if (cellPrototype != nil)
+    {
+      aCell = (*cellNew)(cellPrototype, copySel, myZone);
+    }
   else
-    aCell = [[NSActionCell new] autorelease];
-
-  [[cells objectAtIndex: row] insertObject: aCell atIndex: column];
+    {
+      aCell = (*cellNew)(cellClass, allocSel, myZone);
+      if (aCell != nil)
+	{
+	  aCell = (*cellInit)(aCell, initSel);
+	}
+    }
+  cells[row][column] = aCell;
   return aCell;
 }
 
@@ -529,89 +455,169 @@ static int mouseDownFlags = 0;
 - (void) getNumberOfRows: (int*)rowCount
 		 columns: (int*)columnCount
 {
-    *rowCount = numRows;
-    *columnCount = numCols;
+  *rowCount = numRows;
+  *columnCount = numCols;
 }
 
 - (void) putCell: (NSCell*)newCell
 	   atRow: (int)row
 	  column: (int)column
 {
-  [[cells objectAtIndex: row] replaceObjectAtIndex: column withObject: newCell];
+  if (row < 0 || row >= numRows || column < 0 || column >= numCols)
+    {
+      [NSException raise: NSRangeException
+		  format: @"attempt to put cell outside matrix bounds"];
+    }
+  ASSIGN(cells[row][column], newCell);
   [self setNeedsDisplayInRect: [self cellFrameAtRow: row column: column]];
 }
 
-- (void) removeColumn: (int)column
+- (void) removeColumn: (int)col
 {
-  int i;
-
-  if (column >= numCols)
-    return;
-
-  for (i = 0; i < numRows; i++)
-    [[cells objectAtIndex: i] removeObjectAtIndex: column];
-
-  removeColumn (selectedCells, column);
-  numCols--;
-
-  if (column == selectedColumn)
+  if (col >= 0 && col < numCols)
     {
-      selectedCell = nil;
-      [self selectCellAtRow: 0 column: 0];
+      int i;
+
+      for (i = 0; i < maxRows; i++)
+	{
+	  int	j;
+
+	  AUTORELEASE(cells[i][col]);
+	  for (j = col + 1; j < maxCols; j++)
+	    {
+	      cells[i][j-1] = cells[i][j];
+	      selectedCells[i][j-1] = selectedCells[i][j];
+	    }
+	}
+      numCols--;
+      maxCols--;
+
+      if (col == selectedColumn)
+	{
+	  selectedCell = nil;
+	  [self selectCellAtRow: 0 column: 0];
+	}
+    }
+  else
+    {
+#if	LAX
+      NSLog(@"remove non-existent column (%d) from matrix", col);
+#else
+      [NSException raise: NSRangeException
+		  format: @"remove non-existent column (%d) from matrix", col];
+#endif
     }
 }
 
 - (void) removeRow: (int)row
 {
-  if (row >= numRows)
-    return;
-
-  [cells removeObjectAtIndex: row];
-  removeRow (selectedCells, row);
-  numRows--;
-
-  if (row == selectedRow)
+  if (row >= 0 && row < numRows)
     {
-      selectedCell = nil;
-      [self selectCellAtRow: 0 column: 0];
+      int	i;
+
+#if	GS_WITH_GC == 0
+      for (i = 0; i < maxCols; i++)
+	{
+	  [cells[row][i] autorelease];
+	}
+#endif
+      NSZoneFree(myZone, cells[row]);
+      NSZoneFree(GSAtomicMallocZone(), selectedCells[row]);
+      for (i = row + 1; i < maxRows; i++)
+	{
+	  cells[i-1] = cells[i];
+	  selectedCells[i-1] = selectedCells[i];
+	}
+      maxRows--;
+      numRows--;
+
+      if (row == selectedRow)
+	{
+	  selectedCell = nil;
+	  [self selectCellAtRow: 0 column: 0];
+	}
+    }
+  else
+    {
+#if	LAX
+      NSLog(@"remove non-existent row (%d) from matrix", row);
+#else
+      [NSException raise: NSRangeException
+		  format: @"remove non-existent row (%d) from matrix", row];
+#endif
     }
 }
 
-- (void) renewRows: (int)newRows
-	   columns: (int)newColumns
+- (void) renewRows: (int)r
+	   columns: (int)c
 {
-  int i, j;
+  int		i, j;
+  SEL		mkSel = @selector(makeCellAtRow:column:);
+  IMP		mkImp = [self methodForSelector: mkSel];
 
-  if (newColumns > numCols)
+  if (r < 0)
     {
-      /* First check to see if the rows really have fewer cells than
-       newColumns. This may happen because the row arrays are not shrink
-       when a lower number of cells is given. */
-      if (numRows && newColumns > [[cells objectAtIndex: 0] count])
+#if	LAX
+      NSLog(@"renew negative row (%d) in matrix", r);
+#else
+      [NSException raise: NSRangeException
+		  format: @"renew negative row (%d) in matrix", r];
+#endif
+      r = 0;
+    }
+  if (c < 0)
+    {
+#if	LAX
+      NSLog(@"renew negative column (%d) in matrix", c);
+#else
+      [NSException raise: NSRangeException
+		  format: @"renew negative column (%d) in matrix", c];
+#endif
+      c = 0;
+    }
+
+  if (c > maxCols)
+    {
+      for (i = 0; i < maxRows; i++)
 	{
-	  /* Add columns to the existing rows. Call makeCellAtRow: column: 
-	   to be consistent. */
-	  for (i = 0; i < numRows; i++)
+	  cells[i] = NSZoneRealloc(myZone, cells[i], c * sizeof(id));
+	  selectedCells[i] = NSZoneRealloc(GSAtomicMallocZone(),
+	    selectedCells[i], c * sizeof(BOOL));
+
+	  for (j = maxCols - 1; j < c; j++)
 	    {
-	      for (j = numCols; j < newColumns; j++)
-		[self makeCellAtRow: i column: j];
+	      cells[i][j] = nil;
+	      selectedCells[i][j] = NO;
+	      (*mkImp)(self, mkSel, i, j);
 	    }
 	}
+      maxCols = c;
     }
-  numCols = newColumns;
 
-  if (newRows > numRows)
+  if (r > maxRows)
     {
-      for (i = numRows; i < newRows; i++)
-	{
-	  [cells addObject: [NSMutableArray arrayWithCapacity: numCols]];
-	  for (j = 0; j < numCols; j++)
-	    [self makeCellAtRow: i column: j];
-	}
-    }
-  numRows = newRows;
+      cells = NSZoneRealloc(myZone, cells, r * sizeof(id*));
+      selectedCells = NSZoneRealloc(myZone, selectedCells, r * sizeof(BOOL*));
 
-  growMatrix (selectedCells, newRows, newColumns);
+      /* Allocate the new rows and fill them */
+      for (i = maxRows; i < r; i++)
+	{
+	  cells[i] = NSZoneMalloc(myZone, c * sizeof(id));
+	  selectedCells[i] = NSZoneMalloc(GSAtomicMallocZone(),
+	    c * sizeof(BOOL));
+
+	  for (j = 0; j < c; j++)
+	    {
+	      cells[i][j] = nil;
+	      selectedCells[i][j] = NO;
+	      (*mkImp)(self, mkSel, i, j);
+	    }
+	}
+      maxRows = r;
+    }
+  numRows = maxRows;
+  numCols = maxCols;
+  [self deselectAllCells];
 }
 
 - (void) setCellSize: (NSSize)size
@@ -630,48 +636,60 @@ static int mouseDownFlags = 0;
 				   void *userData))comparator
 		   context: (void*)context
 {
-  NSMutableArray* sorted = [NSMutableArray arrayWithCapacity: numRows*numCols];
-  NSMutableArray* row;
-  int i, j, index = 0;
+  NSMutableArray	*sorted;
+  IMP			add;
+  IMP			get;
+  int			i, j, index = 0;
+
+  sorted = [NSMutableArray arrayWithCapacity: numRows * numCols];
+  add = [sorted methodForSelector: @selector(addObject:)];
+  get = [sorted methodForSelector: @selector(objectAtIndex:)];
 
   for (i = 0; i < numRows; i++)
-    [sorted addObjectsFromArray: [[cells objectAtIndex: i]
-				  subarrayWithRange: NSMakeRange(0, numCols)]];
+    {
+      for (j = 0; j < numCols; j++)
+	{
+	  (*add)(sorted, @selector(addObject:), cells[i][j]);
+	}
+    }
 
   [sorted sortUsingFunction: comparator context: context];
 
   for (i = 0; i < numRows; i++)
     {
-      row = [cells objectAtIndex: i];
       for (j = 0; j < numCols; j++)
 	{
-	  [row replaceObjectAtIndex: j
-			 withObject: [sorted objectAtIndex: index]];
-	  index++;
+	  cells[i][j] = (*get)(sorted, @selector(objectAtIndex:), index++);
 	}
     }
 }
 
 - (void) sortUsingSelector: (SEL)comparator
 {
-  NSMutableArray* sorted = [NSMutableArray arrayWithCapacity: numRows*numCols];
-  NSMutableArray* row;
-  int i, j, index = 0;
+  NSMutableArray	*sorted;
+  IMP			add;
+  IMP			get;
+  int			i, j, index = 0;
+
+  sorted = [NSMutableArray arrayWithCapacity: numRows * numCols];
+  add = [sorted methodForSelector: @selector(addObject:)];
+  get = [sorted methodForSelector: @selector(objectAtIndex:)];
 
   for (i = 0; i < numRows; i++)
-    [sorted addObjectsFromArray: [[cells objectAtIndex: i]
-				  subarrayWithRange: NSMakeRange(0, numCols)]];
+    {
+      for (j = 0; j < numCols; j++)
+	{
+	  (*add)(sorted, @selector(addObject:), cells[i][j]);
+	}
+    }
 
   [sorted sortUsingSelector: comparator];
 
   for (i = 0; i < numRows; i++)
     {
-      row = [cells objectAtIndex: i];
       for (j = 0; j < numCols; j++)
 	{
-	  [row replaceObjectAtIndex: j
-			 withObject: [sorted objectAtIndex: index]];
-	  index++;
+	  cells[i][j] = (*get)(sorted, @selector(objectAtIndex:), index++);
 	}
     }
 }
@@ -734,21 +752,22 @@ static int mouseDownFlags = 0;
 	 column: (int*)column
 	 ofCell: (NSCell*)aCell
 {
-  int i, j;
+  int	i;
 
   for (i = 0; i < numRows; i++)
     {
-      NSMutableArray* rowArray = [cells objectAtIndex: i];
+      int	j;
 
       for (j = 0; j < numCols; j++)
-	if ([rowArray objectAtIndex: j] == aCell)
-	  {
-	    *row = i;
-	    *column = j;
-	    return YES;
-	  }
+	{
+	  if (cells[i][j] == aCell)
+	    {
+	      *row = i;
+	      *column = j;
+	      return YES;
+	    }
+	}
     }
-
   return NO;
 }
 
@@ -756,7 +775,7 @@ static int mouseDownFlags = 0;
 	    atRow: (int)row
 	   column: (int)column
 {
-  NSCell* aCell = [self cellAtRow: row column: column];
+  NSCell	*aCell = [self cellAtRow: row column: column];
 
   if (!aCell)
     return;
@@ -769,42 +788,42 @@ static int mouseDownFlags = 0;
 	  selectedRow = row;
 	  selectedColumn = column;
 	  [selectedCell setState: 1];
-	  ((tMatrix)selectedCells)->matrix[row][column] = YES;
+	  selectedCells[row][column] = YES;
 	}
       else if (allowsEmptySelection)
-	[self deselectSelectedCell];
+	{
+	  [self deselectSelectedCell];
+	}
     }
   else
-    [aCell setState: value];
-
+    {
+      [aCell setState: value];
+    }
   [self setNeedsDisplayInRect: [self cellFrameAtRow: row column: column]];
 }
 
 - (void) deselectAllCells
 {
-  unsigned	i, j;
-  NSArray	*row;
-  NSCell	*aCell;
+  int		i;
 
   if (!allowsEmptySelection && mode == NSRadioModeMatrix)
     return;
 
   for (i = 0; i < numRows; i++)
     {
-      row = nil;
+      int	j;
+
       for (j = 0; j < numCols; j++)
 	{
-	  if (((tMatrix)selectedCells)->matrix[i][j])
+	  if (selectedCells[i][j])
 	    {
-	      NSRect theFrame = [self cellFrameAtRow: i column: j];
+	      NSRect	theFrame = [self cellFrameAtRow: i column: j];
+	      NSCell	*aCell = cells[i][j];
 
-	      if (!row)
-		row = [cells objectAtIndex: i];
-	      aCell = [row objectAtIndex: j];
 	      [aCell setState: 0];
 	      [aCell highlight: NO withFrame: theFrame inView: self];
 	      [self setNeedsDisplayInRect: theFrame];
-	      ((tMatrix)selectedCells)->matrix[i][j] = NO;
+	      selectedCells[i][j] = NO;
 	    }
 	}
     }
@@ -815,7 +834,7 @@ static int mouseDownFlags = 0;
   if (!selectedCell || (!allowsEmptySelection && (mode == NSRadioModeMatrix)))
     return;
   
-  ((tMatrix)selectedCells)->matrix[selectedRow][selectedColumn] = NO;
+  selectedCells[selectedRow][selectedColumn] = NO;
   [selectedCell setState: 0];
   selectedCell = nil;
   selectedRow = 0;
@@ -825,21 +844,20 @@ static int mouseDownFlags = 0;
 - (void) selectAll: (id)sender
 {
   unsigned	i, j;
-  NSArray	*row;
 
-  /* Make the selected cell the cell at (0, 0) */
-  selectedCell = [self cellAtRow: 0 column: 0];		// select current cell
+  /*
+   * Make the selected cell the cell at (0, 0)
+   */
+  selectedCell = [self cellAtRow: 0 column: 0];
   selectedRow = 0;
   selectedColumn = 0;
 
   for (i = 0; i < numRows; i++)
     {
-      row = [cells objectAtIndex: i];
-
       for (j = 0; j < numCols; j++)
 	{
-	  [[row objectAtIndex: j] setState: 1];
-	  ((tMatrix)selectedCells)->matrix[i][j] = YES;
+	  [cells[i][j] setState: 1];
+	  selectedCells[i][j] = YES;
 	}
     }
 
@@ -848,26 +866,26 @@ static int mouseDownFlags = 0;
 
 - (void) selectCellAtRow: (int)row column: (int)column
 {
-  NSCell* aCell = [self cellAtRow: row column: column];
+  NSCell	*aCell = [self cellAtRow: row column: column];
 
-  if (!aCell)
-    return;
-
-  if (selectedCell && selectedCell != aCell)
+  /*
+   * We always deselect the current selection unless the new selection
+   * is the same.
+   */
+  if (selectedCell != nil && selectedCell != aCell)
     {
-      ((tMatrix)selectedCells)->matrix[selectedRow][selectedColumn] = NO;
+      selectedCells[selectedRow][selectedColumn] = NO;
       [selectedCell setState: 0];
-      
       [self setNeedsDisplayInRect: [self cellFrameAtRow: selectedRow 
 					 column: selectedColumn]];
     }
 
-  if ((row >= 0) && (column >= 0))
+  if (aCell != nil)
     {
       selectedCell = aCell;
       selectedRow = row;
       selectedColumn = column;
-      ((tMatrix)selectedCells)->matrix[row][column] = YES;
+      selectedCells[row][column] = YES;
       [selectedCell setState: 1];
       
       [self setNeedsDisplayInRect: [self cellFrameAtRow: row column: column]];
@@ -876,16 +894,16 @@ static int mouseDownFlags = 0;
 
 - (BOOL) selectCellWithTag: (int)anInt
 {
-  NSMutableArray* row;
-  id aCell;
-  int i, j;
+  id	aCell;
+  int	i = numRows;
 
-  for (i = numRows - 1; i >= 0; i--)
+  while (i-- > 0)
     {
-      row = [cells objectAtIndex: i];
-      for (j = numCols - 1; j >= 0; j --)
+      int	j = numCols;
+
+      while (j-- > 0)
 	{
-	  aCell = [row objectAtIndex: j];
+	  aCell = cells[i][j];
 	  if ([aCell tag] == anInt)
 	    {
 	      [self selectCellAtRow: i column: j];
@@ -893,24 +911,26 @@ static int mouseDownFlags = 0;
 	    }
 	}
     }
-
   return NO;
 }
 
 - (NSArray*) selectedCells
 {
-  NSMutableArray* array = [NSMutableArray array];
-  int i, j;
+  NSMutableArray	*array = [NSMutableArray array];
+  int	i;
 
   for (i = 0; i < numRows; i++)
     {
-      NSArray* row = [cells objectAtIndex: i];
+      int	j;
 
       for (j = 0; j < numCols; j++)
-	if (((tMatrix)selectedCells)->matrix[i][j])
-	  [array addObject: [row objectAtIndex: j]];
+	{
+	  if (selectedCells[i][j] == YES)
+	    {
+	      [array addObject: cells[i][j]];
+	    }
+	}
     }
-
   return array;
 }
 
@@ -1082,33 +1102,48 @@ static int mouseDownFlags = 0;
 {
   if (row < 0 || row >= numRows || column < 0 || column >= numCols)
     return nil;
-
-  return [[cells objectAtIndex: row] objectAtIndex: column];
+  return cells[row][column];
 }
 
 - (id) cellWithTag: (int)anInt
 {
-  NSMutableArray* row;
-  id aCell;
-  int i, j;
+  int	i = numRows;
 
-  for (i = numRows - 1; i >= 0; i--)
+  while (i-- > 0)
     {
-      row = [cells objectAtIndex: i];
-      for (j = numCols - 1; j >= 0; j --)
+      int	j = numCols;
+
+      while (j-- > 0)
 	{
-	  aCell = [row objectAtIndex: j];
+	  id	aCell = cells[i][j];
+
 	  if ([aCell tag] == anInt)
-	    return aCell;
+	    {
+	      return aCell;
+	    }
 	}
     }
-
   return nil;
 }
 
 - (NSArray*) cells
 {
-  return cells;
+  NSMutableArray	*c;
+  IMP			add;
+  int			i;
+
+  c = [NSMutableArray arrayWithCapacity: numRows * numCols];
+  add = [c methodForSelector: @selector(addObject:)];
+  for (i = 0; i < numRows; i++)
+    {
+      int	j;
+
+      for (j = 0; j < numCols; j++)
+	{
+	  (*add)(c, @selector(addObject:), cells[i][j]);
+	}
+    }
+  return c;
 }
 
 - (void) selectText: (id)sender
@@ -1125,6 +1160,12 @@ fprintf(stderr, " NSMatrix: selectText --- ");
 fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 
 
+  return nil;
+}
+
+- (id) keyCell
+{
+// TODO
   return nil;
 }
 
@@ -1196,15 +1237,13 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 {
   NSSize newSize = NSZeroSize;
   NSSize tmpSize;
-  NSMutableArray *row;
-  int i,j;
+  int i, j;
 
   for (i = 0; i < numRows; i++)
     {
-      row = [cells objectAtIndex: i];
       for (j = 0; j < numCols; j++)
 	{
-	  tmpSize = [[row objectAtIndex: j] cellSize];	  
+	  tmpSize = [cells[i][j] cellSize];	  
 	  if (tmpSize.width > newSize.width)
 	    newSize.width = tmpSize.width;
 	  if (tmpSize.height > newSize.height)
@@ -1227,14 +1266,16 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 
 - (void) setScrollable: (BOOL)flag
 {
-  int i, j;
+  int	i;
 
   for (i = 0; i < numRows; i++)
     {
-      NSArray* row = [cells objectAtIndex: i];
+      int	j;
 
       for (j = 0; j < numCols; j++)
-	[[row objectAtIndex: j] setScrollable: flag];
+	{
+	  [cells[i][j] setScrollable: flag];
+	}
     }
   [cellPrototype setScrollable: flag];
 }
@@ -1247,7 +1288,6 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 
   if (drawsBackground)
     {
-      // draw the background
       [backgroundColor set];
       NSRectFill(rect);
     }
@@ -1288,7 +1328,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 
 - (void) highlightCell: (BOOL)flag atRow: (int)row column: (int)column
 {
-  NSCell *aCell = [self cellAtRow: row column: column];
+  NSCell	*aCell = [self cellAtRow: row column: column];
 
   if (aCell)
     {
@@ -1314,20 +1354,27 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
   if (theAction)
     {
       if (theTarget)
-	return [super sendAction: theAction to: theTarget];
+	{
+	  return [super sendAction: theAction to: theTarget];
+	}
       else
-	return [super sendAction: theAction to: [self target]];
+	{
+	  return [super sendAction: theAction to: [self target]];
+	}
     }
   else
-    return [super sendAction: [self action] to: [self target]];
+    {
+      return [super sendAction: [self action] to: [self target]];
+    }
 }
 
 
 - (BOOL) sendAction
 {
   if (![selectedCell isEnabled])
-    return NO;
-
+    {
+      return NO;
+    }
   return [self sendAction: [selectedCell action] to: [selectedCell target]];
 }
 
@@ -1335,32 +1382,41 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 		 to: (id)anObject
         forAllCells: (BOOL)flag
 {
-  int i, j;
+  int	i;
 
   if (flag)
     {
       for (i = 0; i < numRows; i++)
 	{
-	  NSMutableArray* row = [cells objectAtIndex: i];
+	  int	j;
 
 	  for (j = 0; j < numCols; j++)
-	    if (![anObject performSelector: aSelector
-			   withObject: [row objectAtIndex: j]])
-	      return;
+	    {
+	      if (![anObject performSelector: aSelector
+				  withObject: cells[i][j]])
+		{
+		  return;
+		}
+	    }
 	}
     }
   else
     {
       for (i = 0; i < numRows; i++)
 	{
-	  BOOL* row = ((tMatrix)selectedCell)->matrix[i];
-	  NSMutableArray* cellRow = [cells objectAtIndex: i];
+	  int	j;
 
 	  for (j = 0; j < numCols; j++)
-	    if (row[i])
-	      if (![anObject performSelector: aSelector
-				  withObject: [cellRow objectAtIndex: j]])
-		return;
+	    {
+	      if (selectedCells[i][j])
+		{
+		  if (![anObject performSelector: aSelector
+				      withObject: cells[i][j]])
+		    {
+		      return;
+		    }
+		}
+	    }
 	}
     }
 }
@@ -1368,12 +1424,17 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 - (void) sendDoubleAction
 {
   if (![selectedCell isEnabled])
-    return;
-
-  if (doubleAction)
-    [target performSelector: doubleAction withObject: self];
+    {
+      return;
+    }
+  if (doubleAction != 0)
+    {
+      [target performSelector: doubleAction withObject: self];
+    }
   else
-    [self sendAction];
+    {
+      [self sendAction];
+    }
 }
 
 - (BOOL) acceptsFirstMouse: (NSEvent*)theEvent
@@ -1395,12 +1456,12 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
   unsigned eventMask = NSLeftMouseUpMask | NSLeftMouseDownMask
                      | NSMouseMovedMask  | NSLeftMouseDraggedMask;
 
-  if ((mode == NSRadioModeMatrix) && selectedCell)
+  if ((mode == NSRadioModeMatrix) && selectedCell != nil)
     {
       [selectedCell setState: NSOffState];
       [self drawCellAtRow: selectedRow column: selectedColumn];
       [window flushWindow];
-      ((tMatrix)selectedCells)->matrix[selectedRow][selectedColumn] = NO;
+      selectedCells[selectedRow][selectedColumn] = NO;
       selectedCell = nil;
       selectedRow = selectedColumn = -1;
     }
@@ -1420,7 +1481,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
           selectedCell = mouseCell;
           selectedRow = mouseRow;
           selectedColumn = mouseColumn;
-          ((tMatrix)selectedCells)->matrix[selectedRow][selectedColumn] = YES;
+          selectedCells[selectedRow][selectedColumn] = YES;
 
           if (((mode == NSRadioModeMatrix) || (mode == NSHighlightModeMatrix))
               && (highlightedCell != mouseCell))
@@ -1488,10 +1549,9 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
           }
         else
           {
-            if (selectedCell)
+            if (selectedCell != nil)
               {
-                ((tMatrix)selectedCells)->matrix[selectedRow][selectedColumn]
-		  = NO;
+                selectedCells[selectedRow][selectedColumn] = NO;
                 selectedCell = nil;
                 selectedRow = selectedColumn = -1;
               }
@@ -1597,7 +1657,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 		      break;
 
 		    // deselect previously selected cell
-		    if (selectedCell)
+		    if (selectedCell != nil)
 		      {
 			[selectedCell setState: 0];
 			if (!previousCell)
@@ -1606,7 +1666,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 			[selectedCell highlight: NO
 				      withFrame: previousCellRect
 					 inView: self];
-			((tMatrix)selectedCells)->matrix[selectedRow][selectedColumn] = NO;
+			selectedCells[selectedRow][selectedColumn] = NO;
 		      }
 		    // select current cell
 		    selectedCell = aCell;
@@ -1614,7 +1674,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 		    selectedColumn = column;
 		    [aCell setState: 1];
 		    [aCell highlight: YES withFrame: rect inView: self];
-		    ((tMatrix)selectedCells)->matrix[row][column] = YES;
+		    selectedCells[row][column] = YES;
 		    [window flushWindow];
 		    break;
 
@@ -1649,7 +1709,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 			      [selectedCell highlight: YES
 					    withFrame: rect
 					       inView: self];
-			      ((tMatrix)selectedCells)->matrix[row][column]=YES;
+			      selectedCells[row][column]=YES;
 			      [window flushWindow];
 			      break;
 			    }
@@ -1713,7 +1773,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
   switch (mode)
     {
       case NSRadioModeMatrix: 
-	if (selectedCell)
+	if (selectedCell != nil)
 	  [selectedCell highlight: NO withFrame: rect inView: self];
       case NSListModeMatrix: 
 	[self setNeedsDisplayInRect: rect];
@@ -1723,7 +1783,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 	break;
     }
 
-  if (selectedCell)
+  if (selectedCell != nil)
     {
       // send single click action
       if (!(selectedCellTarget = [selectedCell target]))
@@ -1750,7 +1810,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
   if ((mode != NSTrackModeMatrix) && (mode != NSHighlightModeMatrix))
     [NSEvent stopPeriodicEvents];
 
-  [lastEvent release];
+  RELEASE(lastEvent);
 }
 
 - (void) updateCell: (NSCell*)aCell
@@ -1767,21 +1827,21 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 
 - (BOOL) performKeyEquivalent: (NSEvent*)theEvent
 {
-  int i, j;
-  NSMutableArray* row;
-  NSString* key = [theEvent charactersIgnoringModifiers];
+  NSString	*key = [theEvent charactersIgnoringModifiers];
+  int		i;
 
   for (i = 0; i < numRows; i++)
     {
-      row = [cells objectAtIndex: i];
+      int	j;
+
       for (j = 0; j < numCols; j++)
 	{
-	  NSCell* aCell = [row objectAtIndex: j];
+	  NSCell	*aCell = cells[i][j];;
 
 	  if ([aCell isEnabled]
 	    && [[aCell keyEquivalent] isEqualToString: key])
 	    {
-	      NSCell* oldSelectedCell = selectedCell;
+	      NSCell	*oldSelectedCell = selectedCell;
 
 	      selectedCell = aCell;
 	      [self highlightCell: YES atRow: i column: j];
@@ -1800,15 +1860,16 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 
 - (void) resetCursorRects
 {
-  int i, j;
+  int	i;
 
   for (i = 0; i < numRows; i++)
     {
-      NSArray* row = [cells objectAtIndex: i];
+      int	j;
 
       for (j = 0; j < numCols; j++)
 	{
-	  NSCell* aCell = [row objectAtIndex: j];
+	  NSCell	*aCell = cells[i][j];
+
 	  [aCell resetCursorRect: [self cellFrameAtRow: i column: j]
 			  inView: self];
 	}
@@ -1840,6 +1901,13 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 - (void) setCellClass: (Class)class
 {
   cellClass = class;
+  if (cellClass == nil)
+    {
+      cellClass = defaultCellClass; 
+    }
+  cellNew = [cellClass methodForSelector: allocSel];
+  cellInit = [cellClass methodForSelector: initSel];
+  DESTROY(cellPrototype);
 }
 
 - (Class) cellClass
@@ -1850,6 +1918,16 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 - (void) setPrototype: (NSCell*)aCell
 {
   ASSIGN(cellPrototype, aCell);
+  if (cellPrototype == nil)
+    {
+      [self setCellClass: defaultCellClass];
+    }
+  else
+    {
+      cellNew = [cellPrototype methodForSelector: copySel];
+      cellInit = 0;
+      cellClass = [aCell class];
+    }
 }
 
 - (id) prototype
@@ -2107,10 +2185,6 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
   [self setNeedsDisplay: YES];
 }
 
-//
-//	Methods that may not be needed FIX ME
-//
-
 /*
  * Get characters until you encounter
  * a carriage return, return number of characters.
@@ -2177,13 +2251,13 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 	startIndex: (int)start
 	  endIndex: (int)end
 {
-  int		i, j;
+  int		i;
   MPoint	startPoint = POINT_FROM_INDEX(start);
   MPoint	endPoint = POINT_FROM_INDEX(end);
 
   for (i = startPoint.y; i <= endPoint.y; i++)
     {
-      NSArray	*row = [cells objectAtIndex: i];
+      int	j;
       int	colLimit;
 
       if (i == startPoint.y)
@@ -2203,15 +2277,15 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
       for (; j <= colLimit; j++)
 	{
 	  NSRect	rect = [self cellFrameAtRow: i column: j];
-	  NSCell	*aCell = [row objectAtIndex: j];
+	  NSCell	*aCell = cells[i][j];
 
 	  [aCell setState: state];
 	  [aCell highlight: highlight withFrame: rect inView: self];
 	  [self setNeedsDisplayInRect: rect];
 	  if (state == 0)
-	    ((tMatrix)selectedCells)->matrix[i][j] = NO;
+	    selectedCells[i][j] = NO;
 	  else
-	    ((tMatrix)selectedCells)->matrix[i][j] = YES;
+	    selectedCells[i][j] = YES;
 	}
     }
 }
