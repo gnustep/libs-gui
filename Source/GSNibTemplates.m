@@ -259,9 +259,17 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 		    }
 
 		  /*
-		   * Retain all "top level" items so that, when the container is released, they will remain.
-		   * The GSNibItems instantiated in the gorm need to be retained,
-		   * since we are deallocating the container.  We don't want to retain the owner.
+		   * Retain all "top level" items so that, when the container 
+		   * is released, they will remain. The GSNibItems instantiated in the gorm need 
+		   * to be retained, since we are deallocating the container.  
+		   * We don't want to retain the owner.
+		   *
+		   * Please note: It is encumbent upon the developer of an application to 
+		   * release these objects.   Instantiating a window manually or loading in a .gorm 
+		   * file are equivalent processes.  These objects need to be released in their 
+		   * respective controllers.  If the developer has used the "NSTopLevelObjects" feature, 
+		   * then he will get the objects back in an array which he mearly must release in
+		   * order to release the objects held within.  GJC
 		   */
 		  if([key isEqualToString: @"NSOwner"] == NO)
 		    {
