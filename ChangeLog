@@ -1,3 +1,8 @@
+Sun Nov  7  1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSView.m: Change debug logging for negative width and
+	height values to use NSWarn... macros instead.
+
 Fri Nov  5  1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSApplication.m: ([-hide:]) and ([-unhideWithoutActivation])

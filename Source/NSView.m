@@ -195,12 +195,12 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   if (frameRect.size.width < 0)
     {
-      NSDebugMLLog(@"NSView", @"given negative width", 0);
+      NSWarnMLog(@"given negative width", 0);
       frameRect.size.width = 0;
     }
   if (frameRect.size.height < 0)
     {
-      NSDebugMLLog(@"NSView", @"given negative height", 0);
+      NSWarnMLog(@"given negative height", 0);
       frameRect.size.height = 0;
     }
   frame = frameRect;			// Set frame rectangle
@@ -556,12 +556,12 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   if (frameRect.size.width < 0)
     {
-      NSDebugMLLog(@"NSView", @"given negative width", 0);
+      NSWarnMLog(@"given negative width", 0);
       frameRect.size.width = 0;
     }
   if (frameRect.size.height < 0)
     {
-      NSDebugMLLog(@"NSView", @"given negative height", 0);
+      NSWarnMLog(@"given negative height", 0);
       frameRect.size.height = 0;
     }
   if (coordinates_valid)
@@ -596,12 +596,12 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   if (newSize.width < 0)
     {
-      NSDebugMLLog(@"NSView", @"given negative width", 0);
+      NSWarnMLog(@"given negative width", 0);
       newSize.width = 0;
     }
   if (newSize.height < 0)
     {
-      NSDebugMLLog(@"NSView", @"given negative height", 0);
+      NSWarnMLog(@"given negative height", 0);
       newSize.height = 0; 
     }
   if (coordinates_valid)
@@ -655,12 +655,12 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   if (newSize.width < 0)
     {
-      NSDebugMLLog(@"NSView", @"given negative width", 0);
+      NSWarnMLog(@"given negative width", 0);
       newSize.width = 0;
     }
   if (newSize.height < 0)
     {
-      NSDebugMLLog(@"NSView", @"given negative height", 0);
+      NSWarnMLog(@"given negative height", 0);
       newSize.height = 0;
     }
   if (coordinates_valid)
@@ -709,12 +709,12 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   if (aRect.size.width < 0)
     {
-      NSDebugMLLog(@"NSView", @"given negative width", 0);
+      NSWarnMLog(@"given negative width", 0);
       aRect.size.width = 0;
     }
   if (aRect.size.height < 0)
     {
-      NSDebugMLLog(@"NSView", @"given negative height", 0);
+      NSWarnMLog(@"given negative height", 0);
       aRect.size.height = 0;
     }
   if (coordinates_valid)
@@ -778,12 +778,12 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   if (newSize.width < 0)
     {
-      NSDebugMLLog(@"NSView", @"given negative width", 0);
+      NSWarnMLog(@"given negative width", 0);
       newSize.width = 0;
     }
   if (newSize.height < 0)
     {
-      NSDebugMLLog(@"NSView", @"given negative height", 0);
+      NSWarnMLog(@"given negative height", 0);
       newSize.height = 0;
     }
   if (coordinates_valid)
