@@ -776,6 +776,10 @@ static NSString         *disabledName = @".GNUstepDisabled";
               if ([t isEqual: title])
                 {
                   equiv = [equivs objectForKey: language]; 
+		  if (equiv == nil)
+		    {
+		      equiv = [equivs objectForKey: @"default"];
+		    }		  
                 }
             }
 
