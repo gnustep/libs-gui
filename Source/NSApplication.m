@@ -619,7 +619,7 @@ NSApplication	*NSApp = nil;
       case NSKeyDown:
 	{
 	  NSDebugLog(@"send key down event\n");
-	  if ([theEvent modifierFlags] & NSControlKeyMask)
+	  if ([theEvent modifierFlags] & NSCommandKeyMask)
 	    {
 	      NSArray	*window_list = [self windows];
 	      unsigned	i;
