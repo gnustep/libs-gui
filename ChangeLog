@@ -1,3 +1,8 @@
+2002-02-17  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Source/NSApplication.m ([NSApplication -terminate:]): send a
+	close message to all the windows.
+
 Thu Feb 14 10:45:48 2002  Nicola Pero  <n.pero@mi.flashnet.it>
                           Michael Hanni <mhanni@yahoo.com>
 
