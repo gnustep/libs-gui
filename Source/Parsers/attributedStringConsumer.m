@@ -38,7 +38,7 @@ typedef struct {
 } StringContext;
 
 static void	
-initStringContext(StringContext *ctxt, NSString *string)
+initStringContext (StringContext *ctxt, NSString *string)
 {
   ctxt->string = string;
   ctxt->position = 0;
@@ -46,7 +46,7 @@ initStringContext(StringContext *ctxt, NSString *string)
 }
 
 static int	
-readNSString(StringContext *ctxt)
+readNSString (StringContext *ctxt)
 {
   return (ctxt->position < ctxt->length )
     ? [ctxt->string characterAtIndex:ctxt->position++]: EOF;
@@ -74,7 +74,7 @@ readNSString(StringContext *ctxt)
 - (NSNumber*) underline;
 - (void) resetParagraphStyle;
 - (void) resetFont;
-- (void) addTab: (float) location type: (NSTextTabType) type;
+- (void) addTab: (float)location  type: (NSTextTabType)type;
 
 @end
 
@@ -188,7 +188,7 @@ readNSString(StringContext *ctxt)
   changed = YES;
 }
 
-- (void) addTab: (float) location type: (NSTextTabType) type
+- (void) addTab: (float) location  type: (NSTextTabType) type
 {
   NSTextTab *tab = [[NSTextTab alloc] initWithType: NSLeftTabStopType 
 				      location: location];
@@ -200,7 +200,9 @@ readNSString(StringContext *ctxt)
     tabChanged = YES;
   }
   else
-    [paragraph addTabStop: tab];
+    {
+      [paragraph addTabStop: tab];
+    }
 
   changed = YES;
   RELEASE(tab);
@@ -224,14 +226,16 @@ readNSString(StringContext *ctxt)
 @implementation RTFConsumer
 
 + (NSAttributedString*) parseRTFD: (NSFileWrapper *)wrapper
-	   documentAttributes: (NSDictionary **)dict
+	       documentAttributes: (NSDictionary **)dict
 {
   RTFConsumer *consumer = [RTFConsumer new];
   NSAttributedString *text = nil;
 
   if ([wrapper isRegularFile])
-    text = [consumer parseRTF: [wrapper regularFileContents]
-		     documentAttributes: dict];
+    {
+      text = [consumer parseRTF: [wrapper regularFileContents]
+		       documentAttributes: dict];
+    }
   else if ([wrapper isDirectory])
     {
       NSDictionary *files = [wrapper fileWrappers];
@@ -240,8 +244,10 @@ readNSString(StringContext *ctxt)
       //FIXME: We should store the files in the consumer
       // We try to read the main file in the directory
       if ((contents = [files objectForKey: @"TXT.rtf"]) != nil)
-	text = [consumer parseRTF: [contents regularFileContents]
-			 documentAttributes: dict];
+	{
+	  text = [consumer parseRTF: [contents regularFileContents]
+			   documentAttributes: dict];
+	}
     }
 
   RELEASE(consumer);
@@ -250,7 +256,7 @@ readNSString(StringContext *ctxt)
 }
 
 + (NSAttributedString*) parseRTF: (NSData *)rtfData 
-	       documentAttributes: (NSDictionary **)dict
+	      documentAttributes: (NSDictionary **)dict
 {
   RTFConsumer *consumer = [RTFConsumer new];
   NSAttributedString *text;
@@ -274,7 +280,7 @@ readNSString(StringContext *ctxt)
   return self;
 }
 
-- (void)dealloc
+- (void) dealloc
 {
   RELEASE(fonts);
   RELEASE(attrs);
@@ -340,10 +346,11 @@ readNSString(StringContext *ctxt)
   CREATE_AUTORELEASE_POOL(pool);
   RTFscannerCtxt scanner;
   StringContext stringCtxt;
-  // We should read in the first few characters to find out which encoding we have
+  // We should read in the first few characters to find out which
+  // encoding we have
   NSString *rtfString = [[NSString alloc] 
-			    initWithData: rtfData
-			    encoding: NSASCIIStringEncoding];
+			  initWithData: rtfData
+			  encoding: NSASCIIStringEncoding];
 
   // Reset this RFTConsumer, as it might already have been used!
   [self reset];
@@ -362,7 +369,9 @@ readNSString(StringContext *ctxt)
   RELEASE(pool);
   // document attributes
   if (dict)
-    *dict = [self documentAttributes];
+    {
+      *dict = [self documentAttributes];
+    }
 
   return [self result];
 }
@@ -399,13 +408,13 @@ readNSString(StringContext *ctxt)
 */
 
 /* handle errors (this is the yacc error mech)	*/
-void GSRTFerror(const char *msg)
+void GSRTFerror (const char *msg)
 {
   [NSException raise:NSInvalidArgumentException 
 	       format:@"Syntax error in RTF: %s", msg];
 }
 
-void GSRTFgenericRTFcommand(void *ctxt, RTFcmd cmd)
+void GSRTFgenericRTFcommand (void *ctxt, RTFcmd cmd)
 {
   NSDebugLLog(@"RTFParser", @"encountered rtf cmd:%s", cmd.name);
   if (!cmd.isEmpty) 
@@ -413,40 +422,46 @@ void GSRTFgenericRTFcommand(void *ctxt, RTFcmd cmd)
 }
 
 //Start: we're doing some initialization
-void GSRTFstart(void *ctxt)
+void GSRTFstart (void *ctxt)
 {
   NSDebugLLog(@"RTFParser", @"Start RTF parsing");
   [RESULT beginEditing];
 }
 
 // Finished to parse one piece of RTF.
-void GSRTFstop(void *ctxt)
+void GSRTFstop (void *ctxt)
 {
   //<!> close all open bolds et al.
   [RESULT endEditing];
   NSDebugLLog(@"RTFParser", @"End RTF parsing");
 }
 
-void GSRTFopenBlock(void *ctxt, BOOL ignore)
+void GSRTFopenBlock (void *ctxt, BOOL ignore)
 {
   if (!IGNORE)
-    [(RTFConsumer *)ctxt push];
+    {
+      [(RTFConsumer *)ctxt push];
+    }
   // Switch off any output for ignored block statements
   if (ignore)
-    IGNORE++;
+    {
+      IGNORE++;
+    }
 }
 
-void GSRTFcloseBlock(void *ctxt, BOOL ignore)
+void GSRTFcloseBlock (void *ctxt, BOOL ignore)
 {
   if (ignore)
-    IGNORE--;
+    {
+      IGNORE--;
+    }
   if (!IGNORE)
     {
       [(RTFConsumer *)ctxt pop];
     }
 }
 
-void GSRTFmangleText(void *ctxt, const char *text)
+void GSRTFmangleText (void *ctxt, const char *text)
 {
   int  oldPosition = TEXTPOSITION;
   int  textlen = strlen(text); 
@@ -460,32 +475,41 @@ void GSRTFmangleText(void *ctxt, const char *text)
 
       if (CHANGED)
         {
-	  attributes = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-						[CTXT currentFont], NSFontAttributeName,
-					    PARAGRAPH, NSParagraphStyleAttributeName,
-					    nil];
+	  attributes = [NSMutableDictionary 
+			 dictionaryWithObjectsAndKeys:
+			   [CTXT currentFont], NSFontAttributeName,
+			   PARAGRAPH, NSParagraphStyleAttributeName,
+			   nil];
 	  if (UNDERLINE)
-	    [attributes setObject: [CTXT underline]
-			forKey: NSUnderlineStyleAttributeName];
+	    {
+	      [attributes setObject: [CTXT underline]
+			  forKey: NSUnderlineStyleAttributeName];
+	    }
 	  if (SCRIPT)
-	    [attributes setObject: [CTXT script]
-			forKey: NSSuperscriptAttributeName];
+	    {
+	      [attributes setObject: [CTXT script]
+			  forKey: NSSuperscriptAttributeName];
+	    }
 	  if (FGCOLOUR != nil)
-	    [attributes setObject: FGCOLOUR 
-			forKey: NSForegroundColorAttributeName];
+	    {
+	      [attributes setObject: FGCOLOUR 
+			  forKey: NSForegroundColorAttributeName];
+	    }
 	  if (BGCOLOUR != nil)
-	    [attributes setObject: BGCOLOUR 
-			forKey: NSBackgroundColorAttributeName];
+	    {
+	      [attributes setObject: BGCOLOUR 
+			  forKey: NSBackgroundColorAttributeName];
+	    }
 
-	  [RESULT setAttributes: attributes range: 
-		      NSMakeRange(oldPosition, textlen)];
+	  [RESULT setAttributes: attributes 
+		  range: NSMakeRange(oldPosition, textlen)];
 	  CHANGED = NO;
 	}
     }
 }
 
-void GSRTFregisterFont(void *ctxt, const char *fontName, 
-		       RTFfontFamily family, int fontNumber)
+void GSRTFregisterFont (void *ctxt, const char *fontName, 
+			RTFfontFamily family, int fontNumber)
 {
   NSString		*fontNameString;
   NSNumber		*fontId = [NSNumber numberWithInt: fontNumber];
@@ -502,7 +526,7 @@ void GSRTFregisterFont(void *ctxt, const char *fontName,
   [FONTS setObject: fontNameString forKey: fontId];
 }
 
-void GSRTFfontNumber(void *ctxt, int fontNumber)
+void GSRTFfontNumber (void *ctxt, int fontNumber)
 {
   NSNumber *fontId = [NSNumber numberWithInt: fontNumber];
   NSString *fontName = [FONTS objectForKey: fontId];
@@ -526,7 +550,7 @@ void GSRTFfontNumber(void *ctxt, int fontNumber)
 }
 
 //	<N> fontSize is in halfpoints according to spec
-void GSRTFfontSize(void *ctxt, int fontSize)
+void GSRTFfontSize (void *ctxt, int fontSize)
 {
   float size = halfpoints2points(fontSize);
   
@@ -537,7 +561,7 @@ void GSRTFfontSize(void *ctxt, int fontSize)
     }
 }
 
-void GSRTFpaperWidth(void *ctxt, int width)
+void GSRTFpaperWidth (void *ctxt, int width)
 {
   float fwidth = twips2points(width);
   NSMutableDictionary *dict = DOCUMENTATTRIBUTES;
@@ -545,16 +569,18 @@ void GSRTFpaperWidth(void *ctxt, int width)
   NSSize size;
 
   if (val == nil)
-    size = NSMakeSize(fwidth, 792);
+    {
+      size = NSMakeSize(fwidth, 792);
+    }
   else
     {
       size = [val sizeValue];
       size.width = fwidth;
     }
-  [dict setObject: [NSValue valueWithSize: size] forKey: PAPERSIZE];
+  [dict setObject: [NSValue valueWithSize: size]  forKey: PAPERSIZE];
 }
 
-void GSRTFpaperHeight(void *ctxt, int height)
+void GSRTFpaperHeight (void *ctxt, int height)
 {
   float fheight = twips2points(height);
   NSMutableDictionary *dict = DOCUMENTATTRIBUTES;
@@ -562,48 +588,50 @@ void GSRTFpaperHeight(void *ctxt, int height)
   NSSize size;
 
   if (val == nil)
-    size = NSMakeSize(612, fheight);
+    {
+      size = NSMakeSize(612, fheight);
+    }
   else
     {
       size = [val sizeValue];
       size.height = fheight;
     }
-  [dict setObject: [NSValue valueWithSize: size] forKey: PAPERSIZE];
+  [dict setObject: [NSValue valueWithSize: size]  forKey: PAPERSIZE];
 }
 
-void GSRTFmarginLeft(void *ctxt, int margin)
+void GSRTFmarginLeft (void *ctxt, int margin)
 {
   float fmargin = twips2points(margin);
   NSMutableDictionary *dict = DOCUMENTATTRIBUTES;
 
-  [dict setObject: [NSNumber numberWithFloat: fmargin] forKey: LEFTMARGIN];
+  [dict setObject: [NSNumber numberWithFloat: fmargin]  forKey: LEFTMARGIN];
 }
 
-void GSRTFmarginRight(void *ctxt, int margin)
+void GSRTFmarginRight (void *ctxt, int margin)
 {
   float fmargin = twips2points(margin);
   NSMutableDictionary *dict = DOCUMENTATTRIBUTES;
 
-  [dict setObject: [NSNumber numberWithFloat: fmargin] forKey: RIGHTMARGIN];
+  [dict setObject: [NSNumber numberWithFloat: fmargin]  forKey: RIGHTMARGIN];
 }
 
-void GSRTFmarginTop(void *ctxt, int margin)
+void GSRTFmarginTop (void *ctxt, int margin)
 {
   float fmargin = twips2points(margin);
   NSMutableDictionary *dict = DOCUMENTATTRIBUTES;
 
-  [dict setObject: [NSNumber numberWithFloat: fmargin] forKey: TOPMARGIN];
+  [dict setObject: [NSNumber numberWithFloat: fmargin]  forKey: TOPMARGIN];
 }
 
-void GSRTFmarginButtom(void *ctxt, int margin)
+void GSRTFmarginButtom (void *ctxt, int margin)
 {
   float fmargin = twips2points(margin);
   NSMutableDictionary *dict = DOCUMENTATTRIBUTES;
 
-  [dict setObject: [NSNumber numberWithFloat: fmargin] forKey: BUTTOMMARGIN];
+  [dict setObject: [NSNumber numberWithFloat: fmargin]  forKey: BUTTOMMARGIN];
 }
 
-void GSRTFfirstLineIndent(void *ctxt, int indent)
+void GSRTFfirstLineIndent (void *ctxt, int indent)
 {
   NSMutableParagraphStyle *para = PARAGRAPH;
   float findent = twips2points(indent);
@@ -617,7 +645,7 @@ void GSRTFfirstLineIndent(void *ctxt, int indent)
     }
 }
 
-void GSRTFleftIndent(void *ctxt, int indent)
+void GSRTFleftIndent (void *ctxt, int indent)
 {
   NSMutableParagraphStyle *para = PARAGRAPH;
   float findent = twips2points(indent);
@@ -630,7 +658,7 @@ void GSRTFleftIndent(void *ctxt, int indent)
     }
 }
 
-void GSRTFrightIndent(void *ctxt, int indent)
+void GSRTFrightIndent (void *ctxt, int indent)
 {
   NSMutableParagraphStyle *para = PARAGRAPH;
   float findent = twips2points(indent);
@@ -643,7 +671,7 @@ void GSRTFrightIndent(void *ctxt, int indent)
     }
 }
 
-void GSRTFtabstop(void *ctxt, int location)
+void GSRTFtabstop (void *ctxt, int location)
 {
   float flocation = twips2points(location);
 
@@ -653,7 +681,7 @@ void GSRTFtabstop(void *ctxt, int location)
     }
 }
 
-void GSRTFalignCenter(void *ctxt)
+void GSRTFalignCenter (void *ctxt)
 {
   NSMutableParagraphStyle *para = PARAGRAPH;
 
@@ -664,7 +692,7 @@ void GSRTFalignCenter(void *ctxt)
     }
 }
 
-void GSRTFalignJustified(void *ctxt)
+void GSRTFalignJustified (void *ctxt)
 {
   NSMutableParagraphStyle *para = PARAGRAPH;
 
@@ -675,7 +703,7 @@ void GSRTFalignJustified(void *ctxt)
     }
 }
 
-void GSRTFalignLeft(void *ctxt)
+void GSRTFalignLeft (void *ctxt)
 {
   NSMutableParagraphStyle *para = PARAGRAPH;
 
@@ -686,7 +714,7 @@ void GSRTFalignLeft(void *ctxt)
     }
 }
 
-void GSRTFalignRight(void *ctxt)
+void GSRTFalignRight (void *ctxt)
 {
   NSMutableParagraphStyle *para = PARAGRAPH;
 
@@ -697,7 +725,7 @@ void GSRTFalignRight(void *ctxt)
     }
 }
 
-void GSRTFspaceAbove(void *ctxt, int space)
+void GSRTFspaceAbove (void *ctxt, int space)
 {
   NSMutableParagraphStyle *para = PARAGRAPH;
   float fspace = twips2points(space);
@@ -708,7 +736,7 @@ void GSRTFspaceAbove(void *ctxt, int space)
     }
 }
 
-void GSRTFlineSpace(void *ctxt, int space)
+void GSRTFlineSpace (void *ctxt, int space)
 {
   NSMutableParagraphStyle *para = PARAGRAPH;
   float fspace = twips2points(space);
@@ -728,21 +756,21 @@ void GSRTFlineSpace(void *ctxt, int space)
     }
 }
 
-void GSRTFdefaultParagraph(void *ctxt)
+void GSRTFdefaultParagraph (void *ctxt)
 {
   [CTXT resetParagraphStyle];
 }
 
-void GSRTFstyle(void *ctxt, int style)
+void GSRTFstyle (void *ctxt, int style)
 {
 }
 
-void GSRTFdefaultCharacterStyle(void *ctxt)
+void GSRTFdefaultCharacterStyle (void *ctxt)
 {
   [CTXT resetFont];
 }
 
-void GSRTFaddColor(void *ctxt, int red, int green, int blue)
+void GSRTFaddColor (void *ctxt, int red, int green, int blue)
 {
   NSColor *colour = [NSColor colorWithCalibratedRed: red/255.0 
 			     green: green/255.0 
@@ -752,22 +780,22 @@ void GSRTFaddColor(void *ctxt, int red, int green, int blue)
   [COLOURS addObject: colour];
 }
 
-void GSRTFaddDefaultColor(void *ctxt)
+void GSRTFaddDefaultColor (void *ctxt)
 {
   [COLOURS addObject: [NSColor textColor]];
 }
 
-void GSRTFcolorbg(void *ctxt, int color)
+void GSRTFcolorbg (void *ctxt, int color)
 {
   ASSIGN(BGCOLOUR, [COLOURS objectAtIndex: color]);
 }
 
-void GSRTFcolorfg(void *ctxt, int color)
+void GSRTFcolorfg (void *ctxt, int color)
 {
   ASSIGN(FGCOLOUR, [COLOURS objectAtIndex: color]);
 }
 
-void GSRTFsubscript(void *ctxt, int script)
+void GSRTFsubscript (void *ctxt, int script)
 {
   script = (int) (-halfpoints2points(script) / 3.0);
 
@@ -778,7 +806,7 @@ void GSRTFsubscript(void *ctxt, int script)
     }    
 }
 
-void GSRTFsuperscript(void *ctxt, int script)
+void GSRTFsuperscript (void *ctxt, int script)
 {
   script = (int) (halfpoints2points(script) / 3.0);
 
@@ -789,7 +817,7 @@ void GSRTFsuperscript(void *ctxt, int script)
     }    
 }
 
-void GSRTFitalic(void *ctxt, BOOL state)
+void GSRTFitalic (void *ctxt, BOOL state)
 {
   if (state != ITALIC)
     {
@@ -798,7 +826,7 @@ void GSRTFitalic(void *ctxt, BOOL state)
     }
 }
 
-void GSRTFbold(void *ctxt, BOOL state)
+void GSRTFbold (void *ctxt, BOOL state)
 {
   if (state != BOLD)
     {
@@ -807,7 +835,7 @@ void GSRTFbold(void *ctxt, BOOL state)
     }
 }
 
-void GSRTFunderline(void *ctxt, BOOL state)
+void GSRTFunderline (void *ctxt, BOOL state)
 {
   if (state != UNDERLINE)
     {
@@ -816,7 +844,7 @@ void GSRTFunderline(void *ctxt, BOOL state)
     }
 }
 
-void GSRTFparagraph(void *ctxt)
+void GSRTFparagraph (void *ctxt)
 {
   GSRTFmangleText(ctxt, "\n");
   CTXT->tabChanged = NO;
