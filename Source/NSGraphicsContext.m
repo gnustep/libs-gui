@@ -2278,4 +2278,9 @@ NSGraphicsContext	*GSCurrentContext()
 {
   [self subclassResponsibility: _cmd];
 }
+
+- (void) DPSsetinputstate: (int)win : (int)st 
+{
+  [self subclassResponsibility: _cmd];
+}
 @end
