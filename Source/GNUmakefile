@@ -178,8 +178,9 @@ libgnustep-gui_HEADER_FILES_INSTALL_DIR = /AppKit
 
 DOCUMENT_NAME = Gui
 
-Gui_AGSDOC_FILES = Gui.gsdoc $(AUTOGSDOC_HEADERS)
+Gui_AGSDOC_FILES = ../Documentation/Gui.gsdoc $(AUTOGSDOC_HEADERS)
 Gui_AGSDOC_FLAGS = \
+	-DocumentationDirectory ../Documentation/Gui \
 	-HeaderDirectory ../Headers/AppKit \
 	-Declared AppKit \
 	-Standards YES \
@@ -187,6 +188,7 @@ Gui_AGSDOC_FLAGS = \
 	APPKIT_EXPORT=extern;APPKIT_DECLARE="";\
 	}' -Up Gui
 
+# These are gui headers that are also classes documented with autogsdoc
 AUTOGSDOC_HEADERS = \
 GSDisplayServer.h \
 GSTable.h \

@@ -2747,6 +2747,8 @@ resetCursorRectsForView(NSView *theView)
 		{
 		  [self makeFirstResponder: v];
 		}
+	      if (_lastDragView)
+		DESTROY(_lastDragView);
 	      if (wasKey == YES || [v acceptsFirstMouse: theEvent] == YES)
 		{
 		  if ([NSHelpManager isContextHelpModeActive])
@@ -2755,6 +2757,10 @@ resetCursorRectsForView(NSView *theView)
 		    }
 		  else
 		    {
+		      /* Technically this should be just _lastView,
+			 but I don't think it's a problem reusing this
+			 ivar */
+		      ASSIGN(_lastDragView, v);
 		      [v mouseDown: theEvent];
 		    }
 		}
@@ -2768,9 +2774,10 @@ resetCursorRectsForView(NSView *theView)
 	}
 
       case NSLeftMouseUp:
-	/* Send to the view that got the mouse down.  FIXME - check
-	   that this is actually the correct behaviour.  */
-	v = _firstResponder;
+	v = _lastDragView;
+	DESTROY(_lastDragView);
+	if (v == nil)
+	  break;
 	[v mouseUp: theEvent];
 	_lastPoint = [theEvent locationInWindow];
 	break;

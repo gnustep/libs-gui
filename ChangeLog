@@ -1,3 +1,17 @@
+2002-08-24  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSGraphicsContext.m: More documentation.
+	* Source/NSWindow.m (-sendEvent:): Remember mouseDown view
+	and send mouseUp to this view (not firstResponder).
+
+	* Model/test.m: Fix so it reads in gmodel from command line.
+
+	* Source/GNUmakefile: Correct docs so they are built in
+	Documentation/Gui directory
+	* Source/GNUmakefile.postamble: Extra rules for building docs.
+	* Documentation/Gui: New directory for docs.
+	* Documentation/gsdoc: Remove.
+
 2002-08-23 02:39  Alexander Malmberg  <alexander@malmberg.org>
 
         * Source/NSImage.m (-lockFocusOnRepresentation:): Use a

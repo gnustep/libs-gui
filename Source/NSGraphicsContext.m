@@ -694,13 +694,13 @@ NSGraphicsContext	*GSCurrentContext()
 /* ----------------------------------------------------------------------- */
 /* Color operations */
 /* ----------------------------------------------------------------------- */
-/** Returns the current alpha component */
+/** Returns the current alpha component (DPS). */
 - (void) DPScurrentalpha: (float *)a
 {
   [self subclassResponsibility: _cmd];
 }
 
-/** Returns the current color according to the CMYK color model */
+/** Returns the current color according to the CMYK color model (DPS). */
 - (void) DPScurrentcmykcolor: (float*)c : (float*)m : (float*)y : (float*)k 
 {
   [self subclassResponsibility: _cmd];
@@ -708,19 +708,19 @@ NSGraphicsContext	*GSCurrentContext()
 
 /** Returns the gray-level equivalent in the current color space. The
     value may depend on the current color space and may be 0 if the
-    current color space has no notion of a gray value */
+    current color space has no notion of a gray value (DPS) */
 - (void) DPScurrentgray: (float*)gray 
 {
   [self subclassResponsibility: _cmd];
 }
 
-/** Returns the current color according to the HSB color model. */
+/** Returns the current color according to the HSB color model (DPS). */
 - (void) DPScurrenthsbcolor: (float*)h : (float*)s : (float*)b 
 {
   [self subclassResponsibility: _cmd];
 }
 
-/** Returns the current color according to the RGB color model */
+/** Returns the current color according to the RGB color model (DPS). */
 - (void) DPScurrentrgbcolor: (float*)r : (float*)g : (float*)b 
 {
   [self subclassResponsibility: _cmd];
@@ -728,7 +728,7 @@ NSGraphicsContext	*GSCurrentContext()
 
 /** Sets the alpha drawing component. For this and other color setting
     commands that have no differentiation between fill and stroke colors,
-    both the fill and stroke alpha are set. */
+    both the fill and stroke alpha are set (DPS). */
 - (void) DPSsetalpha: (float)a
 {
   [self subclassResponsibility: _cmd];
@@ -737,27 +737,28 @@ NSGraphicsContext	*GSCurrentContext()
 /** Sets the current colorspace to Device CMYK and the current color
     based on the indicated values. For this and other color setting
     commands that have no differentiation between fill and stroke colors,
-    both the fill and stroke colors are set. */
+    both the fill and stroke colors are set (DPS). */
 - (void) DPSsetcmykcolor: (float)c : (float)m : (float)y : (float)k 
 {
   [self subclassResponsibility: _cmd];
 }
 
-/** Sets the current colorspace to Device Gray and the current gray value */
+/** Sets the current colorspace to Device Gray and the current gray value 
+    (DPS). */
 - (void) DPSsetgray: (float)gray 
 {
   [self subclassResponsibility: _cmd];
 }
 
 /** Sets the current colorspace to Device RGB and the current color based on 
-   the indicated values */
+   the indicated values (DPS). */
 - (void) DPSsethsbcolor: (float)h : (float)s : (float)b 
 {
   [self subclassResponsibility: _cmd];
 }
 
 /** Sets the current colorspace to Device RGB and the current color based on 
-   the indicated values */
+   the indicated values (DPS). */
 - (void) DPSsetrgbcolor: (float)r : (float)g : (float)b 
 {
   [self subclassResponsibility: _cmd];
@@ -769,7 +770,7 @@ NSGraphicsContext	*GSCurrentContext()
    <p>For device colorspaces (GSDeviceGray, GSDeviceRGB,
    GSDeviceCMYK), only the name of the colorspace needs to be set
    using the GSColorSpaceName key.</p>
-   <p>Other colorspaces will be documented later</p>
+   <p>Other colorspaces will be documented later (Quartz). </p>
 */
 - (void) GSSetFillColorspace: (NSDictionary *)dict
 {
@@ -778,7 +779,7 @@ NSGraphicsContext	*GSCurrentContext()
 
 /** Sets the colorspace for stroke operations based on the values in
     the supplied dictionary. See -GSSetFillColorspace: for a
-    description of the values that need to be supplied */
+    description of the values that need to be supplied (Quartz). */
 - (void) GSSetStrokeColorspace: (NSDictionary *)dict
 {
   [self subclassResponsibility: _cmd];
@@ -787,7 +788,7 @@ NSGraphicsContext	*GSCurrentContext()
 /** Sets the current color for fill operations. The values array
     should have n components, where n corresponds to the number of
     color components required to specify the color in the current
-    colorspace. */
+    colorspace (Quartz). */
 - (void) GSSetFillColor: (float *)values
 {
   [self subclassResponsibility: _cmd];
@@ -796,7 +797,7 @@ NSGraphicsContext	*GSCurrentContext()
 /** Sets the current color for stroke operations. The values array
     should have n components, where n corresponds to the number of
     color components required to specify the color in the current
-    colorspace. */
+    colorspace (Quartz). */
 - (void) GSSetStrokeColor: (float *)values
 {
   [self subclassResponsibility: _cmd];
@@ -825,12 +826,13 @@ NSGraphicsContext	*GSCurrentContext()
 
 /** Appends to the current path a path that is equivalent to the
     outlines of the glyphs in the string. This results in a path
-    that can be used for stroking, filling or clipping */
+    that can be used for stroking, filling or clipping (DPS). */
 - (void) DPScharpath: (const char *)s : (int)b 
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Display the string s using the current font (DPS). */
 - (void) DPSshow: (const char *)s 
 {
   [self subclassResponsibility: _cmd];
@@ -872,53 +874,92 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
+/** Use this method to set the additional spacing between characters
+    (glyphs). This spacing is added to the normal spacing for each
+    character. Units are in text-space coordinate system. (Quartz).
+*/
 - (void) GSSetCharacterSpacing: (float)extra
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Set the current NSFont object for drawing glyphs. (DPS, Quartz). */
 - (void) GSSetFont: (NSFont*)font
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Set the font size of the current NSFont used for drawing glyphs.
+    (DPS, Quartz). */
 - (void) GSSetFontSize: (float)size
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** 
+   <p> Returns the transfer function for transforming text from text space
+   to user space. See -GSSetTextCTM: for additiona information. (Quartz).
+   </p>
+*/
 - (NSAffineTransform *) GSGetTextCTM
 {
   [self subclassResponsibility: _cmd];
   return nil;
 }
 
+/** Returns the location at which text will be drawn. In text-space
+   coordinates. (Quartz).
+*/
 - (NSPoint) GSGetTextPosition
 {
   [self subclassResponsibility: _cmd];
   return NSMakePoint(0,0);
 }
 
+/** 
+   <p> Set the transfer function for transforming text from text space
+   to user space. This transform is only applied to text objects and
+   is in addition to the normal coordinate transform matrix. When
+   drawing text, this transform is applied before the normal CTM.
+   </p>
+
+   <p> The text matrix can be changed by either modifying it directly,
+   or just by drawing text, in which case the tx and ty offset
+   veriables are modified to point to the location of the next
+   character that could be rendered (Quartz). </p>
+*/
 - (void) GSSetTextCTM: (NSAffineTransform *)ctm
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Set the current text drawing mode. The mode can be one of several
+    values that fill/stroke the text or add it to the current clipping
+    path. (Quartz).
+*/
 - (void) GSSetTextDrawingMode: (GSTextDrawingMode)mode
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Set the location at which text will be drawn, in text-space
+    coordinates.  This routine updates the current text coordinate
+    matrix. (Quartz).
+*/
 - (void) GSSetTextPosition: (NSPoint)loc
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Paints text represented by the characters in string in the current
+   font. (Quartz).
+*/
 - (void) GSShowText: (const char *)string : (size_t) length
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Paints the glyphs using the current font. (Quartz). */
 - (void) GSShowGlyphs: (const NSGlyph *)glyphs : (size_t) length
 {
   [self subclassResponsibility: _cmd];
@@ -930,7 +971,7 @@ NSGraphicsContext	*GSCurrentContext()
 
 /** Pops a previously saved gstate from the gstate stack and makes it
     current. Drawing information in the previously saved gstate
-    becomes the current information */
+    becomes the current information. (DPS, Quartz). */
 - (void) DPSgrestore
 {
   [self subclassResponsibility: _cmd];
@@ -938,7 +979,7 @@ NSGraphicsContext	*GSCurrentContext()
 
 /** Saves (pushes) a copy of the current gstate information onto the
     gstate stack. This saves drawing information contained in the
-    gstate, such as the current path, ctm and colors. */
+    gstate, such as the current path, ctm and colors. (DPS, Quartz). */
 - (void) DPSgsave
 {
   [self subclassResponsibility: _cmd];
@@ -951,7 +992,7 @@ NSGraphicsContext	*GSCurrentContext()
 
 /** Makes the gstate indicated by the tag gst the current gstate. Note
     that the gstate is copied, so that changes to either gstate do not
-    affect the other. */
+    affect the other. (DPS, Quartz). */
 - (void) DPSsetgstate: (int)gst
 {
   [self subclassResponsibility: _cmd];
@@ -959,7 +1000,7 @@ NSGraphicsContext	*GSCurrentContext()
 
 /** Creates a copy of the current gstate and associates it with a tag,
     which is given in the return value. This tag can later be used in
-    -DPSsetgstate: to set the gstate as being current again. */
+    -DPSsetgstate: to set the gstate as being current again. (DPS, Quartz). */
 - (int)  GSDefineGState
 {
   [self subclassResponsibility: _cmd];
@@ -968,14 +1009,14 @@ NSGraphicsContext	*GSCurrentContext()
 
 /** Disassociates the tag gst with it's gstate and destroys the gstate
     object. The tag will no longer be valid and should not be used to
-    refer to the gstate again. */
+    refer to the gstate again. (DPS, Quartz). */
 - (void) GSUndefineGState: (int)gst
 {
   [self subclassResponsibility: _cmd];
 }
 
 /** Replaces the gstate refered to by the tag gst with the current
-    gstate. The former gstate is destroyed. */
+    gstate. The former gstate is destroyed. (DPS, Quartz). */
 - (void) GSReplaceGState: (int)gst
 {
   [self subclassResponsibility: _cmd];
@@ -984,46 +1025,58 @@ NSGraphicsContext	*GSCurrentContext()
 /* ----------------------------------------------------------------------- */
 /* Gstate operations */
 /* ----------------------------------------------------------------------- */
+/** Returns the current flattness parameter, which controls how curved
+    lines are drawn. (DPS, Quartz). */
 - (void) DPScurrentflat: (float*)flatness
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Returns the current linecap value. (DPS, Quartz). */
 - (void) DPScurrentlinecap: (int*)linecap
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Returns the current linejoin value. (DPS, Quartz). */
 - (void) DPScurrentlinejoin: (int*)linejoin
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Returns the current line width. (DPS, Quartz). */
 - (void) DPScurrentlinewidth: (float*)width
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Returns the current linecap value. (DPS, Quartz). */
 - (void) DPScurrentmiterlimit: (float*)limit
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Returns the current point. (DPS, Quartz). */
 - (void) DPScurrentpoint: (float*)x : (float*)y
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Returns the strokeadjust value. (DPS). */
 - (void) DPScurrentstrokeadjust: (int*)b
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Set the pattern for line dashes like the Postscript setdash operator.
+    (DPS, Quartz). */
 - (void) DPSsetdash: (const float*)pat : (int)size : (float)offset
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Sets the current flattness parameter, which controls how curved
+    lines are drawn. (DPS, Quartz). */
 - (void) DPSsetflat: (float)flatness
 {
   [self subclassResponsibility: _cmd];
@@ -1034,21 +1087,25 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
+/** Set the current linecap value. (DPS, Quartz). */
 - (void) DPSsetlinecap: (int)linecap
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Set the current linejoin value. (DPS, Quartz). */
 - (void) DPSsetlinejoin: (int)linejoin
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Set the current line width. (DPS, Quartz). */
 - (void) DPSsetlinewidth: (float)width
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Set the current meter limit value. (DPS, Quartz). */
 - (void) DPSsetmiterlimit: (float)limit
 {
   [self subclassResponsibility: _cmd];
@@ -1062,42 +1119,55 @@ NSGraphicsContext	*GSCurrentContext()
 /* ----------------------------------------------------------------------- */
 /* Matrix operations */
 /* ----------------------------------------------------------------------- */
+/** Concatenates the coordinate transform represented by the matrix m
+    with the current coordinate transform. (DPS). */
 - (void) DPSconcat: (const float*)m
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Sets the coordinate transform matrix to the initial values for
+    the particular context */
 - (void) DPSinitmatrix
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Rotate the coordinate system. (DPS). */
 - (void) DPSrotate: (float)angle
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Scale the coordinate system. (DPS). */
 - (void) DPSscale: (float)x : (float)y
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Translate the coordinate system. (DPS). */
 - (void) DPStranslate: (float)x : (float)y
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Returns the current coordinate transform matrix. (Quartz). */
 - (NSAffineTransform *) GSCurrentCTM
 {
   [self subclassResponsibility: _cmd];
   return nil;
 }
 
+/** Sets the coordinate transform matrix which describes how graphics
+   will be transformed into device coordinates. (Quartz). */
 - (void) GSSetCTM: (NSAffineTransform *)ctm
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Concatenates the matrix ctm onto the current coordinate transform
+    matrix. (Quartz).
+*/
 - (void) GSConcatCTM: (NSAffineTransform *)ctm
 {
   [self subclassResponsibility: _cmd];
@@ -1123,6 +1193,7 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
+/** Clip to the current path. (DPS, Quartz). */
 - (void) DPSclip
 {
   [self subclassResponsibility: _cmd];
@@ -1149,6 +1220,7 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
+/** Fill the current path. (DPS, Quartz). */
 - (void) DPSfill
 {
   [self subclassResponsibility: _cmd];
@@ -1225,16 +1297,19 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
+/** Append the bezier path to the current path */
 - (void) GSSendBezierPath: (NSBezierPath *)path
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Append the array of rects to the current clip path (DPS, Quartz). */
 - (void) GSRectClipList: (const NSRect *)rects : (int) count
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Draw and fill the array of rects. (DPS, Quartz) */
 - (void) GSRectFillList: (const NSRect *)rects : (int) count
 {
   [self subclassResponsibility: _cmd];
@@ -1339,7 +1414,7 @@ NSGraphicsContext	*GSCurrentContext()
 
 /** Generic method to render bitmap images. This method shouldn't be used
     anywhere except in the AppKit itself. It will be replaced by the more
-    flexible GSDrawImage method sometime in the future.
+    flexible GSDrawImage method sometime in the future. (Quartz).
  */
 - (void) NSDrawBitmap: (NSRect) rect : (int) pixelsWide : (int) pixelsHigh
 		     : (int) bitsPerSample : (int) samplesPerPixel 

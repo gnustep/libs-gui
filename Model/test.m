@@ -12,24 +12,33 @@ int main (int argc, char** argv, char** env)
   [NSProcessInfo initializeWithArguments:argv count:argc environment:env];
 #endif
 
-#if 1
   processInfo = [NSProcessInfo processInfo];
   arguments = [processInfo arguments];
+  [NSApplication sharedApplication];
   if ([arguments count] < 2)
-    model = @"test.gmodel";
+    {
+      model = @"test.gmodel";
+      if (![NSBundle loadNibNamed: model owner: NSApp]) 
+	{
+	  printf ("Cannot load Interface Modeller file!\n");
+	  exit (1);
+	}
+    }
   else
-    model = [arguments objectAtIndex: 1];
-#endif
+    {
+      NSDictionary *table;
+      table = [NSDictionary dictionaryWithObject: NSApp forKey: @"NSOwner"];
+      model = [arguments objectAtIndex: 1];
+      if (![NSBundle loadNibFile: model
+	       externalNameTable: table
+		        withZone: [NSApp zone]])
+	{
+	  printf ("Cannot load Interface Modeller file!\n");
+	  exit (1);
+	}
 
-#if 1
-  if (![NSBundle loadNibNamed: model
-		 owner:[NSApplication sharedApplication]]) {
-    printf ("Cannot load Interface Modeller file!\n");
-    exit (1);
-  }
-#endif
+    }
 
-  [[NSGraphicsContext currentContext] wait];
   [[NSApplication sharedApplication] run];
   printf ("exiting...\n");
 

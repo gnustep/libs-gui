@@ -36,10 +36,15 @@
 #
 
 # Things to do before compiling
-# before-all:: 
+ifeq ($(doc),yes)
+before-all:: 
+	cp ../Documentation/Gui/Gui.gsdoc .
 
 # Things to do after compiling
-# after-all::
+after-all::
+	$(RM) Gui.gsdoc
+	if test -d Gui; then rmdir Gui; fi;
+endif
 
 # Things to do before installing
 # before-install::
