@@ -94,10 +94,16 @@ void GSRTFrightIndent(void *ctxt, int indent);
 void GSRTFtabstop(void *ctxt, int location);
 /* set center alignment */
 void GSRTFalignCenter(void *ctxt);
+/* set justified alignment */
+void GSRTFalignJustified(void *ctxt);
 /* set left alignment */
 void GSRTFalignLeft(void *ctxt);
 /* set right alignment */
 void GSRTFalignRight(void *ctxt);
+/* set space above */
+void GSRTFspaceAbove(void *ctxt, int location);
+/* set line space */
+void GSRTFlineSpace(void *ctxt, int location);
 /* set default paragraph style */
 void GSRTFdefaultParagraph(void *ctxt);
 /* set paragraph style */
@@ -110,6 +116,8 @@ void GSRTFaddDefaultColor(void *ctxt);
 void GSRTFcolorbg(void *ctxt, int color);
 /* set foreground colour */
 void GSRTFcolorfg(void *ctxt, int color);
+/* set default character style */
+void GSRTFdefaultCharacterStyle(void *ctxt);
 /* set subscript in half points */
 void GSRTFsubscript(void *ctxt, int script);
 /* set superscript in half points */
@@ -120,6 +128,8 @@ void GSRTFbold(void *ctxt, BOOL on);
 void GSRTFitalic(void *ctxt, BOOL on);
 /* Switch underline mode on or off */
 void GSRTFunderline(void *ctxt, BOOL on);
+/* new paragraph */
+void GSRTFparagraph(void *ctxt);
 
 #endif
 

@@ -57,7 +57,8 @@ readNSString(StringContext *ctxt)
 {
 @public
   BOOL changed;
-  NSParagraphStyle *paragraph;
+  BOOL tabChanged;
+  NSMutableParagraphStyle *paragraph;
   NSColor *fgColour;
   NSColor *bgColour;
   NSString *fontName;
@@ -73,6 +74,7 @@ readNSString(StringContext *ctxt)
 - (NSNumber*) underline;
 - (void) resetParagraphStyle;
 - (void) resetFont;
+- (void) addTab: (float) location type: (NSTextTabType) type;
 
 @end
 
@@ -97,16 +99,10 @@ readNSString(StringContext *ctxt)
 
 - (id) copyWithZone: (NSZone*)zone
 {
-  RTFAttribute *new = [isa allocWithZone: zone];
+  RTFAttribute *new =  (RTFAttribute *)NSCopyObject (self, 0, zone);
 
   new->paragraph = [paragraph copyWithZone: zone];
   new->fontName = [fontName copyWithZone: zone];
-  new->fontSize = fontSize;
-  new->italic = italic;
-  new->bold = bold;
-  new->underline = underline;
-  new->script = script;
-  new->changed = NO;
 
   return new;
 }
@@ -124,7 +120,7 @@ readNSString(StringContext *ctxt)
     }
   else
     {
-      weight = 6;
+      weight = 5;
       traits |= NSUnboldFontMask;
     }
 
@@ -169,6 +165,7 @@ readNSString(StringContext *ctxt)
 {
   ASSIGN(paragraph, [NSMutableParagraphStyle defaultParagraphStyle]);
 
+  tabChanged = NO;
   changed = YES;
 }
 
@@ -187,6 +184,24 @@ readNSString(StringContext *ctxt)
   DESTROY(bgColour);
 
   changed = YES;
+}
+
+- (void) addTab: (float) location type: (NSTextTabType) type
+{
+  NSTextTab *tab = [[NSTextTab alloc] initWithType: NSLeftTabStopType 
+				      location: location];
+
+  if (!tabChanged)
+  {
+    // remove all tab stops
+    [paragraph setTabStops: [NSArray arrayWithObject: tab]];
+    tabChanged = YES;
+  }
+  else
+    [paragraph addTabStop: tab];
+
+  changed = YES;
+  RELEASE(tab);
 }
  
 @end
@@ -268,6 +283,7 @@ readNSString(StringContext *ctxt)
 - (void) pop
 {
   [attrs removeLastObject];
+  ((RTFAttribute*)[attrs lastObject])->changed = YES;
 }
 
 - (NSAttributedString*) result
@@ -284,7 +300,7 @@ readNSString(StringContext *ctxt)
   StringContext stringCtxt;
   NSString *rtfString = [[NSString alloc] 
 			    initWithData: rtfData
-			    encoding: NSASCIIStringEncoding];
+			    encoding: NSISOLatin1StringEncoding];
 
   // Reset this RFTConsumer, as it might already have been used!
   [self reset];
@@ -355,6 +371,7 @@ void GSRTFgenericRTFcommand(void *ctxt, RTFcmd cmd)
 //Start: we're doing some initialization
 void GSRTFstart(void *ctxt)
 {
+  NSDebugLLog(@"RTFParser", @"Start RTF parsing");
   [RESULT beginEditing];
 }
 
@@ -363,6 +380,7 @@ void GSRTFstop(void *ctxt)
 {
   //<!> close all open bolds et al.
   [RESULT endEditing];
+  NSDebugLLog(@"RTFParser", @"End RTF parsing");
 }
 
 void GSRTFopenBlock(void *ctxt, BOOL ignore)
@@ -379,7 +397,9 @@ void GSRTFcloseBlock(void *ctxt, BOOL ignore)
   if (ignore)
     IGNORE--;
   if (!IGNORE)
-    [(RTFConsumer *)ctxt pop];
+    {
+      [(RTFConsumer *)ctxt pop];
+    }
 }
 
 void GSRTFmangleText(void *ctxt, const char *text)
@@ -544,6 +564,7 @@ void GSRTFfirstLineIndent(void *ctxt, int indent)
   NSMutableParagraphStyle *para = PARAGRAPH;
   float findent = twips2points(indent);
 
+  // FIXME: This should changed the left indent of the paragraph, if < 0
   // for attributed strings only positiv indent is allowed
   if ((findent >= 0.0) && ([para firstLineHeadIndent] != findent))
     {
@@ -580,16 +601,12 @@ void GSRTFrightIndent(void *ctxt, int indent)
 
 void GSRTFtabstop(void *ctxt, int location)
 {
-/*
-  NSMutableParagraphStyle *para = PARAGRAPH;
   float flocation = twips2points(location);
 
-  if (flocation >= 0.0))
+  if (flocation >= 0.0)
     {
-      //[para addTab: flocation];
-      CHANGED = YES;
+      [CTXT addTab: flocation type: NSLeftTabStopType];
     }
-*/
 }
 
 void GSRTFalignCenter(void *ctxt)
@@ -599,6 +616,17 @@ void GSRTFalignCenter(void *ctxt)
   if ([para alignment] != NSCenterTextAlignment)
     {
       [para setAlignment: NSCenterTextAlignment];
+      CHANGED = YES;
+    }
+}
+
+void GSRTFalignJustified(void *ctxt)
+{
+  NSMutableParagraphStyle *para = PARAGRAPH;
+
+  if ([para alignment] != NSJustifiedTextAlignment)
+    {
+      [para setAlignment: NSJustifiedTextAlignment];
       CHANGED = YES;
     }
 }
@@ -625,14 +653,49 @@ void GSRTFalignRight(void *ctxt)
     }
 }
 
+void GSRTFspaceAbove(void *ctxt, int space)
+{
+  NSMutableParagraphStyle *para = PARAGRAPH;
+  float fspace = twips2points(space);
+
+  if (fspace >= 0.0)
+    {
+      [para setParagraphSpacing: fspace];
+    }
+}
+
+void GSRTFlineSpace(void *ctxt, int space)
+{
+  NSMutableParagraphStyle *para = PARAGRAPH;
+  float fspace = twips2points(space);
+
+  if (space == 1000)
+    {
+      [para setMinimumLineHeight: 0.0];
+      [para setMaximumLineHeight: 0.0];
+    }
+  else if (fspace < 0.0)
+    {
+      [para setMaximumLineHeight: -fspace];
+    }
+  else
+    {
+      [para setMinimumLineHeight: fspace];
+    }
+}
+
 void GSRTFdefaultParagraph(void *ctxt)
 {
-  GSRTFmangleText(ctxt, "\n");
   [CTXT resetParagraphStyle];
 }
 
 void GSRTFstyle(void *ctxt, int style)
 {
+}
+
+void GSRTFdefaultCharacterStyle(void *ctxt)
+{
+  [CTXT resetFont];
 }
 
 void GSRTFaddColor(void *ctxt, int red, int green, int blue)
@@ -709,7 +772,11 @@ void GSRTFunderline(void *ctxt, BOOL state)
     }
 }
 
-
+void GSRTFparagraph(void *ctxt)
+{
+  GSRTFmangleText(ctxt, "\n");
+  CTXT->tabChanged = NO;
+}
 
 NSAttributedString *parseRTFintoAttributedString(NSData *rtfData, 
 						 NSDictionary **dict)

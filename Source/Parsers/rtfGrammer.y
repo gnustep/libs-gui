@@ -68,7 +68,7 @@ typedef void	* GSRTFctxt;
 %}
 
 %union {
-	int			number;
+	int		number;
 	const char	*text;
 	RTFcmd		cmd;
 }
@@ -87,6 +87,21 @@ typedef void	* GSRTFctxt;
 %token RTFheader
 %token RTFfooter
 %token RTFpict
+%token RTFplain
+%token RTFparagraph
+%token RTFdefaultParagraph
+%token RTFrow
+%token RTFcell
+%token RTFtabulator
+%token RTFemdash
+%token RTFendash
+%token RTFemspace
+%token RTFenspace
+%token RTFbullet
+%token RTFlquote
+%token RTFrquote
+%token RTFldblquote
+%token RTFrdblquote
 %token <cmd> RTFred
 %token <cmd> RTFgreen
 %token <cmd> RTFblue
@@ -105,8 +120,11 @@ typedef void	* GSRTFctxt;
 %token <cmd> RTFleftIndent
 %token <cmd> RTFrightIndent
 %token <cmd> RTFalignCenter
+%token <cmd> RTFalignJustified
 %token <cmd> RTFalignLeft
 %token <cmd> RTFalignRight
+%token <cmd> RTFlineSpace
+%token <cmd> RTFspaceAbove
 %token <cmd> RTFstyle
 %token <cmd> RTFbold
 %token <cmd> RTFitalic
@@ -114,10 +132,7 @@ typedef void	* GSRTFctxt;
 %token <cmd> RTFunderlineStop
 %token <cmd> RTFsubscript
 %token <cmd> RTFsuperscript
-%token <cmd> RTFtabulator
 %token <cmd> RTFtabstop
-%token <cmd> RTFparagraph
-%token <cmd> RTFdefaultParagraph
 %token <cmd> RTFfcharset
 %token <cmd> RTFfprq
 %token <cmd> RTFcpg
@@ -259,8 +274,17 @@ rtfStatement: RTFfont				{ int font;
 						      location = $1.parameter;
 						  GSRTFtabstop(ctxt, location);}
 		|	RTFalignCenter		{ GSRTFalignCenter(ctxt); }
+		|	RTFalignJustified	{ GSRTFalignJustified(ctxt); }
 		|	RTFalignLeft		{ GSRTFalignLeft(ctxt); }
 		|	RTFalignRight		{ GSRTFalignRight(ctxt); }
+		|	RTFspaceAbove		{ int space; 
+		
+		                                  if ($1.isEmpty)
+						      space = 0;
+						  else
+						      space = $1.parameter;
+						  GSRTFspaceAbove(ctxt, space); }
+		|	RTFlineSpace		{ GSRTFlineSpace(ctxt, $1.parameter); }
 		|	RTFdefaultParagraph	{ GSRTFdefaultParagraph(ctxt); }
 		|	RTFstyle		{ GSRTFstyle(ctxt, $1.parameter); }
 		|	RTFcolorbg		{ int color; 
@@ -313,6 +337,9 @@ rtfStatement: RTFfont				{ int font;
 						      on = NO;
 						  GSRTFunderline(ctxt, on); }
 		|	RTFunderlineStop	{ GSRTFunderline(ctxt, NO); }
+                |	RTFplain	        { GSRTFdefaultCharacterStyle(ctxt); }
+                |	RTFparagraph	        { GSRTFparagraph(ctxt); }
+                |	RTFrow   	        { GSRTFparagraph(ctxt); }
 		|	RTFOtherStatement	{ GSRTFgenericRTFcommand(ctxt, $1); }
 		;
 
@@ -355,7 +382,7 @@ rtfFontFamily:
 
 
 /*
-	Font description end
+	Colour definition
 */
 
 rtfColorDef: '{' RTFcolortable rtfColors '}'
