@@ -12,6 +12,8 @@ Tue Jan 19 10:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 	bounds size (reported by Benhur-de-Oliveira.Stein@imag.fr)
 	* Source/NSControl.m: Corrected ([-sendActionon:]) as
 	suggested by Benhur-de-Oliveira.Stein@imag.fr
+	* Source/NSClipView.m: General tidying and fix code to constrain
+	the scroll point.  Get everything to work correctly.
 
 Mon Jan 18  5:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
