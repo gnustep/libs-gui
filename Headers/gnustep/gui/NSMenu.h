@@ -44,6 +44,7 @@
 @class NSMatrix;
 @class NSMenuView;
 @class NSPopUpButton;
+@class NSPopUpButtonCell;
 
 @interface NSMenu : NSObject <NSCoding, NSCopying>
 {
@@ -59,7 +60,7 @@
   BOOL _is_tornoff;
 
   // GNUstepExtra category
-  BOOL _is_beholdenToPopUpButton;
+  NSPopUpButtonCell *_popUpButtonCell;
   BOOL _follow_transient;
   BOOL _isPartlyOffScreen;
 
@@ -180,7 +181,7 @@
 
 /* Popup behaviour */
 - (BOOL)_ownedByPopUp;
-- (void)_setOwnedByPopUp: (BOOL)flag;
+- (void)_setOwnedByPopUp: (NSPopUpButtonCell*)popUp;
 
 /* Show menu on right mouse down */
 - (void) _rightMouseDisplay: (NSEvent*)theEvent;
