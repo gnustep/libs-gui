@@ -1,3 +1,24 @@
+Tue Oct 19  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Changing suggested by Richard: 
+	* Source/NSApplication.m Removed ([-isRunningModalForWindow:]) in
+ 	favour of ([-modalWindow]).  This method returns the window
+ 	currently running a modal loop, if any; otherwise, nil.
+	* Source/NSWindow.m ([-keyDown:]): changed accordingly.
+	* Headers/AppKit/NSApplication.h: changed accordingly.
+
+	Minor changings/fixes:
+	* Source/NSCell.m ([-performClick:]): Rewritten the case when the
+ 	cell has no control view.  Also, made click faster. 
+	* Source/NSControl.m ([-performClick:]): Added missing method.
+	* Headers/AppKit/NSControl.h: Added corresponding declaration.
+	* Source/NSMatrix.m ([-initWithFrame:mode:prototype:numberOfRows:
+ 	numberOfColumns:]): if numberOfRows or numberOfColumns is zero, 
+	use default size for cells.
+	* Source/NSMenuView.m ([-performKeyEquivalent:]): implemented method. 
+	* Source/NSSavePanel.m ([-_initWithoutGModel]): Make the panel non
+ 	resizable.
+
 1999-10-18  Lyndon Tremblay  <humasect@coolmail.com>
 
 	* Headers/gnustep/gui/NSSecureTextField.h: Added.
