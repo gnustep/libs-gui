@@ -55,6 +55,14 @@
 	  Default is <code>Control-g</code>.
 	  </p>
 	  </desc>
+	  <term>GSAppKitUserBundles</term>
+	  <desc>
+          <p>
+	  An array listing the names of bundles that will be automatically
+	  loaded into every application at startup. Typically these will
+	  be 'theme' bundles that control the look of the application.
+	  </p>
+	  </desc>
 	  <term>GSQuoteKey</term>
 	  <desc>
           <p>

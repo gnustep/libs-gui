@@ -221,6 +221,7 @@ initialize_gnustep_backend(void)
 	  _(@"Backend at path %@ doesn't contain the GSBackend class"), path);
 	[backend initializeBackend];
       }
+
 #else
       /* GSBackend will be in a separate library, so use the runtime
 	 to find the class and avoid an unresolved reference problem */
@@ -230,6 +231,29 @@ initialize_gnustep_backend(void)
 #endif
     }
   return YES;
+}
+
+void
+gsapp_user_bundles()
+{
+  NSUserDefaults *defs=[NSUserDefaults standardUserDefaults];
+  NSArray *a=[defs arrayForKey: @"GSAppKitUserBundles"];
+  int i, c;
+  c = [a count];
+  if (a == nil || c == 0)
+    return;
+  NSLog(@"Loading %d user defined AppKit bundles", c);
+  for (i = 0; i < c; i++)
+    {
+      NSBundle *b = [NSBundle bundleWithPath: [a objectAtIndex: i]];
+      if (!b)
+	{
+	  NSLog(@"* Unable to load '%@'", [a objectAtIndex: i]);
+	  continue;
+	}
+      NSLog(@"Loaded '%@'\n", [a objectAtIndex: i]);
+      [[[b principalClass] alloc] init];
+    }
 }
 
 /*
@@ -588,6 +612,9 @@ static NSCell* tileCell = nil;
   
   /* Initialize the backend here.  */
   initialize_gnustep_backend();
+
+  /* Load user-defined bundles */
+  gsapp_user_bundles();
   
   /* Connect to our window server.  */
   srv = [GSDisplayServer serverWithAttributes: nil];

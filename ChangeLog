@@ -1,3 +1,9 @@
+2003-05-26  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSApplication.m (gsapp_user_bundles): New function
+	(-_init): Use it.
+	* Documentation/Gui/DefaultsSummary.gsdoc: Update.
+
 2003-05-25  Adam Fedor  <fedor@gnu.org>
 
 	* Version 0.8.6
