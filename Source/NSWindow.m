@@ -2800,13 +2800,6 @@ resetCursorRectsForView(NSView *theView)
 
   flag = _f.menu_exclude;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _f.visible;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _f.is_key;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _f.is_main;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-
   flag = _f.is_one_shot;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _f.is_autodisplay;
@@ -2884,17 +2877,6 @@ resetCursorRectsForView(NSView *theView)
 
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       [self setExcludedFromWindowsMenu: flag];
-
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-      if (flag)
-        [self orderFrontRegardless];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-      if (flag)
-        [self makeKeyWindow];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-      if (flag)
-        [self makeMainWindow];
-  
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       [self setOneShot: flag];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
