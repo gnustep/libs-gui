@@ -1,3 +1,12 @@
+Fri May  7 12:16:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/AppKit/GSTrackingRect.h: Add a couple of ivars and make
+	them public.
+	* Source/GSTrackingRect.m: Set ivars to say what methods the owner
+	responds to.
+	* Source/NSWindow.m: Rewrite of ([-_checkTrackingRectangles:forEvent])
+	and ([-_checkCursorRectangles:forEvent:])
+
 1999-05-05  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/NSGraphicsContext.h: New lock focus methods

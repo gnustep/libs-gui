@@ -58,7 +58,13 @@
   tag = aTag;
   owner = anObject;
   if (owner)
-    [owner retain];
+    {
+      [owner retain];
+      if ([owner respondsToSelector: @selector(mouseEntered:)])
+	ownerRespondsToMouseEntered = YES;
+      if ([owner respondsToSelector: @selector(mouseExited:)])
+	ownerRespondsToMouseExited = YES;
+    }
   user_data = theData;
   inside = flag;
   isValid = YES;
@@ -111,6 +117,8 @@
 	{
 	  [owner release];
 	  owner = nil;
+	  ownerRespondsToMouseEntered = NO;
+	  ownerRespondsToMouseExited = NO;
 	}
     }
 }
