@@ -33,8 +33,6 @@
 #include <AppKit/NSColor.h>
 #include <AppKit/NSGraphics.h>
 
-#define XRBW 1.0								// half the width of the bevel
-#define XRHW 5.0								// width of border/handle
 
 @implementation NSColorWell
 
@@ -70,24 +68,47 @@
 //
 // Drawing
 //
-- (void)drawRect:(NSRect)rect
+- (void) drawRect: (NSRect)rect
 {
-NSRect inside = rect;
+  NSRect aRect = bounds;
   
-	if (is_bordered)										// if well has a 
-		[self drawBorderRect: rect];						// border draw it
+  if (NSIntersectsRect(aRect, rect) == NO)
+    return;
 
-	inside.origin.x += XRBW + XRHW + XRBW + XRBW;			// calc interior
-	inside.origin.y += XRBW + XRHW + XRBW;					// rect
-	inside.size.width -= (4*XRBW + XRHW + XRHW) + XRBW;
-	inside.size.height -= (4*XRBW + XRHW + XRHW) + XRBW;
-	[self drawWellInside: inside];							// draw interior
+  if (is_bordered)
+    {
+      /*
+       * Draw outer frame.
+       */
+      NSDrawButton(aRect, rect);
+
+      /*
+       * Fill in grey.
+       */
+      aRect = NSInsetRect(aRect, 2.0, 2.0);
+      [[NSColor lightGrayColor] set];
+      NSRectFill(NSIntersectionRect(aRect, rect));
+
+      /*
+       * Draw inner frame.
+       */
+      aRect = NSInsetRect(aRect, 5.0, 5.0);
+      NSDrawGrayBezel(aRect, rect);
+      
+      aRect = NSInsetRect(aRect, 2.0, 2.0);
+    }
+  else
+    aRect = NSInsetRect(aRect, 9.0, 9.0);
+
+  [self drawWellInside: NSIntersectionRect(aRect, rect)];
 }
 
-- (void)drawWellInside:(NSRect)insideRect
+- (void) drawWellInside: (NSRect)insideRect
 {
-	[the_color set];
-	NSRectFill(insideRect);									// fill interior	
+  if (NSIsEmptyRect(insideRect))
+    return;
+  [the_color set];
+  NSRectFill(insideRect);
 }
 
 //
@@ -169,21 +190,7 @@ NSRect inside = rect;
 //
 @implementation NSColorWell (GNUstepBackend)
 
-- (void)drawBorderRect:(NSRect)aRect
+- (void) drawBorderRect:(NSRect)aRect
 {
-NSRect inside;
-
-	[[NSColor lightGrayColor] set];
-	NSRectFill(bounds);									// fill the area with
-														// gray first
-	NSDrawButton(aRect, aRect);							// draw outer border
-
-	inside = aRect;										// calc inner border
-	inside.origin.x += XRBW + XRHW;						// rect
-	inside.origin.y += XRBW + XRHW;
-	inside.size.width -= (XRBW + XRBW + XRHW + XRHW);
-	inside.size.height -= (XRBW + XRBW + XRHW + XRHW);
-	NSDrawGrayBezel(inside, inside);					// draw inner border
 }
-
 @end
