@@ -50,6 +50,13 @@
 
 #include <signal.h>
 
+BOOL
+initialize_gnustep_backend(void)
+{
+  /* Dummy replacement for the xdps function */
+  return YES;
+}
+
 @class PasteboardServer;
 
 int	debug = 0;

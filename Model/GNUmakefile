@@ -24,7 +24,9 @@
 
 GNUSTEP_INSTALLATION_DIR = $(GNUSTEP_SYSTEM_ROOT)
 
-include $(GNUSTEP_SYSTEM_ROOT)/Makefiles/common.make
+GNUSTEP_MAKEFILE_DIR = $(GNUSTEP_SYSTEM_ROOT)/Makefiles
+
+include $(GNUSTEP_MAKEFILE_DIR)/common.make
 
 LIBRARY_NAME = libgmodel
 
@@ -32,7 +34,7 @@ ifeq ($(GUI_LIB), nx)
 TOOL_NAME = nib2gmodel
 endif
 
-APP_NAME = test
+# APP_NAME = test
 
 libgmodel_OBJC_FILES = IMCustomObject.m IMConnectors.m IMLoading.m GMAppKit.m
 libgmodel_HEADER_FILES_DIR = .
@@ -59,6 +61,9 @@ ADDITIONAL_LIB_DIRS += -L$(GNUSTEP_OBJ_DIR)
 ADDITIONAL_TOOL_LIBS += -lgmodel -lFoundationExt
 ADDITIONAL_OBJC_FLAGS += $(BACKEND_DEFINE)
 
+# Additional include directories the compiler should search
+ADDITIONAL_INCLUDE_DIRS = -I../Headers -I../Headers/gnustep
+
 # What are the libraries this library depends upon. This is needed for some
 # systems where building a shared library requires to pass to the linker
 # all the libraries the target library depends upon.
@@ -68,8 +73,8 @@ LIBRARIES_DEPEND_UPON = -lFoundationExt $(FND_LIBS) $(GUI_LIBS) \
 
 -include GNUmakefile.local
 
-include $(GNUSTEP_SYSTEM_ROOT)/Makefiles/library.make
-include $(GNUSTEP_SYSTEM_ROOT)/Makefiles/tool.make
-include $(GNUSTEP_SYSTEM_ROOT)/Makefiles/application.make
+include $(GNUSTEP_MAKEFILE_DIR)/library.make
+include $(GNUSTEP_MAKEFILE_DIR)/tool.make
+include $(GNUSTEP_MAKEFILE_DIR)/application.make
 
 -include GNUmakefile.postamble

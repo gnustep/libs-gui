@@ -27,7 +27,9 @@
 
 GNUSTEP_INSTALLATION_DIR = $(GNUSTEP_SYSTEM_ROOT)
 
-include $(GNUSTEP_SYSTEM_ROOT)/Makefiles/common.make
+GNUSTEP_MAKEFILE_DIR = $(GNUSTEP_SYSTEM_ROOT)/Makefiles
+
+include $(GNUSTEP_MAKEFILE_DIR)/common.make
 
 # The application to be compiled
 TOOL_NAME = gpbs
@@ -37,6 +39,6 @@ gpbs_OBJC_FILES = gpbs.m
 
 -include GNUmakefile.preamble
 
-include $(GNUSTEP_SYSTEM_ROOT)/Makefiles/tool.make
+include $(GNUSTEP_MAKEFILE_DIR)/tool.make
 
 -include GNUmakefile.postamble

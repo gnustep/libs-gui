@@ -29,8 +29,8 @@
 #import <Foundation/NSPathUtilities.h>
 
 #include <extensions/GMArchiver.h>
-#include "IMLoading.h"
-#include "IMCustomObject.h"
+#include "AppKit/IMLoading.h"
+#include "AppKit/IMCustomObject.h"
 
 void __dummy_IMLoading_functionForLinking()
 {

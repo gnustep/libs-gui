@@ -26,7 +26,9 @@
 
 GNUSTEP_INSTALLATION_DIR = $(GNUSTEP_SYSTEM_ROOT)
 
-include $(GNUSTEP_SYSTEM_ROOT)/Makefiles/common.make
+GNUSTEP_MAKEFILE_DIR = $(GNUSTEP_SYSTEM_ROOT)/Makefiles
+
+include $(GNUSTEP_MAKEFILE_DIR)/common.make
 
 include ../Version
 
@@ -194,6 +196,6 @@ AppKit/DPSOperators.h
 
 -include GNUmakefile.preamble
 
-include $(GNUSTEP_SYSTEM_ROOT)/Makefiles/library.make
+include $(GNUSTEP_MAKEFILE_DIR)/library.make
 
 -include GNUmakefile.postamble

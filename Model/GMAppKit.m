@@ -25,7 +25,7 @@
 
 #import <Foundation/NSArray.h>
 #import <Foundation/NSException.h>
-#include "GMAppKit.h"
+#include "AppKit/GMAppKit.h"
 
 void __dummy_GMAppKit_functionForLinking() {}
 

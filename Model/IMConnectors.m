@@ -28,7 +28,7 @@
 #import <AppKit/NSActionCell.h>
 #include <extensions/GMArchiver.h>
 #include <extensions/objc-runtime.h>
-#include "IMCustomObject.h"
+#include "AppKit/IMCustomObject.h"
 #include "IMConnectors.h"
 
 static void

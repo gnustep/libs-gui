@@ -36,7 +36,7 @@
 #
 
 # Things to do before compiling
-before-all:: header-links
+# before-all::
 
 # Things to do after compiling
 # after-all::
@@ -74,6 +74,3 @@ before-all:: header-links
 #
 # GNUstep GUI Library specific targets
 #
-header-links:
-	-rm -rf ../Headers/AppKit
-	$(LN_S) ../Headers/gnustep/gui ../Headers/AppKit

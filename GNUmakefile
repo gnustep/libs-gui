@@ -27,15 +27,17 @@
 
 GNUSTEP_INSTALLATION_DIR = $(GNUSTEP_SYSTEM_ROOT)
 
-include $(GNUSTEP_SYSTEM_ROOT)/Makefiles/common.make
+GNUSTEP_MAKEFILE_DIR = $(GNUSTEP_SYSTEM_ROOT)/Makefiles
+
+include $(GNUSTEP_MAKEFILE_DIR)/common.make
 
 #
 # The list of subproject directories
 #
-SUBPROJECTS = Model Source Images Tools Testing
+SUBPROJECTS = Model Source Images Tools 
 
 -include GNUmakefile.preamble
 
-include $(GNUSTEP_SYSTEM_ROOT)/Makefiles/aggregate.make
+include $(GNUSTEP_MAKEFILE_DIR)/aggregate.make
 
 -include GNUmakefile.postamble

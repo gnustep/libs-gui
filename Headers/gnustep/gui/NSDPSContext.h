@@ -31,6 +31,7 @@
 
 #include <Foundation/NSObject.h>
 #include <AppKit/DPSOperators.h>
+#include <stdarg.h>
 
 @class NSData;
 @class NSMutableData;

@@ -1,3 +1,35 @@
+Wed Feb  4 09:11:49 1998  Adam Fedor  <fedor@ultra.doc.com>
+
+	* Changes to allow library to be compiled in a GNUstep package
+	without having previous libraries installed.
+	* GNUmakefile (GNUSTEP_MAKEFILE_DIR): New variable. Use it to
+	include makefiles.
+	(SUBPROJECTS): Remove Testing.
+	* GNUmakefile.postamble (before-all): Add header-links depend.
+	(header-links): New target to link in various header dirs.
+	* Documentation/GNUmakefile (GNUSTEP_MAKEFILE_DIR): New
+	variable. Use it to include makefiles.
+	* Images/GNUmakefile: Likewise.
+	* Model/GNUmakefile: Likewise.
+	* Testing/GNUmakefile: Likewise.
+	* Source/GNUmakefile: Likewise.
+	* Tools/GNUmakefile: Likewise.
+	* Source/GNUmakefile.postamble (header-links): Removed.
+	* Model/GNUmakefile (APP_NAME): Comment out.
+	(ADDITIONAL_INCLUDE_DIRS): New variable.
+	* Tools/GNUmakefile.preamble (ADDITIONAL_LIB_DIRS): Include Model
+	lib dir. 
+	(ADDITIONAL_TOOL_LIBS): Include lgmodel, FoundationExt.
+
+	* Tools/gpbs.m (initialize_gnustep_backend): New function.
+	
+	* Headers/gnustep/gui/IMCustomObject.h: Add Appkit/NSView.h.
+	* Headers/gnuste/NSDPSContext.h: Add stdarg.h
+	* Model/GMAppKit.m: Update includes.
+	* Model/IMConnectors.m: Likewise.
+	* Model/IMCustomObject.m: Likewise.
+	* Model/IMLoading.m: Likewise.
+
 Thu Jan 29 12:02:08  Ovidiu Predescu  <ovidiu@net-community.com>
 
 	* Model/IBClasses.h: New class NSCustomView.
