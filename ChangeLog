@@ -1,3 +1,11 @@
+2000-10-0(  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/GSTextStorage.m: 
+	_setup() corrected a problem from the last change
+	Removed obsolete super calls in GSTextInfo coding methods.
+	* Source/NSAttributedString.m: 
+	Small correction in [fixParagraphStyleAttributeInRange]
+	
 2000-10-08 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSTextStorage.m: Removed some depen dencies on private
