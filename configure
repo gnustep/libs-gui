@@ -945,6 +945,20 @@ fi
 CPPFLAGS="$save_cpp"
 LDFLAGS="$save_ldf"
 
+#--------------------------------------------------------------------
+# Record the version
+#--------------------------------------------------------------------
+echo $ac_n "checking for version of gnustep-gui we are compiling""... $ac_c" 1>&6
+echo "configure:953: checking for version of gnustep-gui we are compiling" >&5
+if test -f "Version"; then
+  . ./Version
+fi
+echo "$ac_t""$GNUSTEP_GUI_VERSION" 1>&6
+
+
+
+
+
 
 
 
@@ -1048,7 +1062,7 @@ done
 
 ac_given_srcdir=$srcdir
 
-trap 'rm -fr `echo "config.make Headers/gnustep/gui/config.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
+trap 'rm -fr `echo "config.make gui.make Headers/gnustep/gui/config.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
 
@@ -1096,6 +1110,10 @@ s%@build_cpu@%$build_cpu%g
 s%@build_vendor@%$build_vendor%g
 s%@build_os@%$build_os%g
 s%@CPP@%$CPP%g
+s%@GNUSTEP_GUI_VERSION@%$GNUSTEP_GUI_VERSION%g
+s%@GNUSTEP_GUI_MAJOR_VERSION@%$GNUSTEP_GUI_MAJOR_VERSION%g
+s%@GNUSTEP_GUI_MINOR_VERSION@%$GNUSTEP_GUI_MINOR_VERSION%g
+s%@GNUSTEP_GUI_SUBMINOR_VERSION@%$GNUSTEP_GUI_SUBMINOR_VERSION%g
 s%@ADDITIONAL_LIB_DIRS@%$ADDITIONAL_LIB_DIRS%g
 s%@ADDITIONAL_INCLUDE_DIRS@%$ADDITIONAL_INCLUDE_DIRS%g
 
@@ -1139,7 +1157,7 @@ EOF
 
 cat >> $CONFIG_STATUS <<EOF
 
-CONFIG_FILES=\${CONFIG_FILES-"config.make"}
+CONFIG_FILES=\${CONFIG_FILES-"config.make gui.make"}
 EOF
 cat >> $CONFIG_STATUS <<\EOF
 for ac_file in .. $CONFIG_FILES; do if test "x$ac_file" != x..; then
