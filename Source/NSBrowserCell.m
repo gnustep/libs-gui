@@ -7,6 +7,9 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
+   
+   Author: Nicola Pero <n.pero@mi.flashnet.it>
+   Date: December 1999
 
    This file is part of the GNUstep GUI Library.
 
@@ -40,48 +43,19 @@
 /*
  * Class variables
  */
-static NSImage	*branch_image;
-static NSImage	*highlight_image;
+static NSImage	*_branch_image;
+static NSImage	*_highlight_image;
 
-static Class	cellClass;
-static Class	colorClass;
+static Class	_cellClass;
+static Class	_colorClass;
 
 // Color is not used now, but the code is here
 // in case in the future we want to use it again
-static BOOL gsFontifyCells = NO;
-//static NSColor *nonLeafColor;
-static NSFont *nonLeafFont;
-//static NSColor *leafColor;
-static NSFont *leafFont;
-
-/*
- * Private methods
- */
-@interface NSBrowserCell (Private)
-- (void) setBranchImageCell: aCell;
-- (void) setHighlightBranchImageCell: aCell;
-- (void) setTextFieldCell: aCell;
-@end
-
-@implementation NSBrowserCell (Private)
-
-- (void) setTextFieldCell: aCell
-{
-  ASSIGN(_browserText, aCell);
-}
-
-- (void) setBranchImageCell: aCell
-{
-  ASSIGN(_branchImage, aCell);
-}
-
-- (void) setHighlightBranchImageCell: aCell
-{
-  ASSIGN(_highlightBranchImage, aCell);
-}
-
-@end
-
+static BOOL _gsFontifyCells = NO;
+//static NSColor *_nonLeafColor;
+static NSFont *_nonLeafFont;
+//static NSColor *_leafColor;
+static NSFont *_leafFont;
 
 /*****************************************************************************
  *
@@ -99,25 +73,25 @@ static NSFont *leafFont;
   if (self == [NSBrowserCell class])
     {
       [self setVersion: 1];
-      ASSIGN(branch_image, [NSImage imageNamed: @"common_3DArrowRight"]);
-      ASSIGN(highlight_image, [NSImage imageNamed: @"common_3DArrowRightH"]);
+      ASSIGN(_branch_image, [NSImage imageNamed: @"common_3DArrowRight"]);
+      ASSIGN(_highlight_image, [NSImage imageNamed: @"common_3DArrowRightH"]);
       /*
        * Cache classes to avoid overheads of poor compiler implementation.
        */
-      cellClass = [NSCell class];
-      colorClass = [NSColor class];
+      _cellClass = [NSCell class];
+      _colorClass = [NSColor class];
 
       // A GNUstep experimental feature
       if ([[NSUserDefaults standardUserDefaults] 
 	    boolForKey: @"GSBrowserCellFontify"])
 	{
-	  gsFontifyCells = YES;
-	  cellClass = [NSTextFieldCell class];
-	  //nonLeafColor = RETAIN ([colorClass colorWithCalibratedWhite: 0.222
+	  _gsFontifyCells = YES;
+	  _cellClass = [NSTextFieldCell class];
+	  //_nonLeafColor = RETAIN ([_colorClass colorWithCalibratedWhite: 0.222
 	  //				  alpha: 1.0]);
-	  nonLeafFont = RETAIN ([NSFont boldSystemFontOfSize: 0]);
-	  //leafColor = RETAIN ([colorClass blackColor]);
-	  leafFont = RETAIN ([NSFont systemFontOfSize: 0]);
+	  _nonLeafFont = RETAIN ([NSFont boldSystemFontOfSize: 0]);
+	  //_leafColor = RETAIN ([_colorClass blackColor]);
+	  _leafFont = RETAIN ([NSFont systemFontOfSize: 0]);
 	}
     }
 }
@@ -127,12 +101,12 @@ static NSFont *leafFont;
  */
 + (NSImage*) branchImage
 {
-  return branch_image;
+  return _branch_image;
 }
 
 + (NSImage*) highlightedBranchImage
 {
-  return highlight_image;
+  return _highlight_image;
 }
 
 /*
@@ -146,22 +120,23 @@ static NSFont *leafFont;
 - (id) initTextCell: (NSString *)aString
 {
   [super initTextCell: aString];
-  // create image cells
   _branchImage = RETAIN([isa branchImage]);
   _highlightBranchImage = RETAIN([isa highlightedBranchImage]);
-  // create the text cell
-  _browserText = [[cellClass alloc] initTextCell: aString];
-  [_browserText setEditable: NO];
-  [_browserText setBordered: NO];
-  [_browserText setAlignment: NSLeftTextAlignment];
-
+  _cell.is_editable = NO;
+  _cell.is_bordered = NO;
+  _text_align = NSLeftTextAlignment;
   _alternateImage = nil;
-  // To make the [self setLeaf: NO] effective
-  _isLeaf = YES; 
-  [self setLeaf: NO];
+  if (_gsFontifyCells)
+    {
+      // To make the [self setLeaf: NO] effective
+      _isLeaf = YES; 
+      [self setLeaf: NO];
+    }
+  else
+    {
+      _isLeaf = NO; 
+    }
   _isLoaded = NO;
-
-  [self setEditable: NO];
 
   return self;
 }
@@ -171,7 +146,6 @@ static NSFont *leafFont;
   RELEASE(_branchImage);
   RELEASE(_highlightBranchImage);
   TEST_RELEASE(_alternateImage);
-  RELEASE(_browserText);
 
   [super dealloc];
 }
@@ -184,7 +158,6 @@ static NSFont *leafFont;
   if (_alternateImage)
     c->_alternateImage = RETAIN(_alternateImage);
   c->_highlightBranchImage = RETAIN(_highlightBranchImage);
-  c->_browserText = [_browserText copyWithZone: zone];	// Copy the text cell
   c->_isLeaf = _isLeaf;
   c->_isLoaded = _isLoaded;
 
@@ -219,17 +192,15 @@ static NSFont *leafFont;
 
   _isLeaf = flag;
   
-  if (gsFontifyCells)
+  if (_gsFontifyCells)
     {
       if (_isLeaf)
 	{
-	  [(NSTextFieldCell *)_browserText setFont: leafFont];
-	  //[(NSTextFieldCell *)_browserText setTextColor: leafColor];
+	  ASSIGN (_cell_font, _leafFont);
 	}
       else 
 	{
-	  [(NSTextFieldCell *)_browserText setFont: nonLeafFont];
-	  //[(NSTextFieldCell *)_browserText setTextColor: nonLeafColor]; 
+	  ASSIGN (_cell_font, _nonLeafFont);
 	}
     }
 }
@@ -252,57 +223,14 @@ static NSFont *leafFont;
  */
 - (void) reset
 {
-  cell_highlighted = NO;
-  cell_state = NO;
+  _cell.is_highlighted = NO;
+  _cell_state = NO;
 }
 
 - (void) set
 {
-  cell_highlighted = YES;
-  cell_state = YES;
-}
-
-/*
- * Setting and accessing the NSCell's Value
- */
-- (double) doubleValue
-{
-  return [_browserText doubleValue];
-}
-
-- (float) floatValue
-{
-  return [_browserText floatValue];
-}
-
-- (int) intValue
-{
-  return [_browserText intValue];
-}
-
-- (NSString*) stringValue
-{
-  return [_browserText stringValue];
-}
-
-- (void) setIntValue: (int)anInt
-{
-  [_browserText setIntValue: anInt];
-}
-
-- (void) setDoubleValue: (double)aDouble
-{
-  [_browserText setDoubleValue: aDouble];
-}
-
-- (void) setFloatValue: (float)aFloat
-{
-  [_browserText setFloatValue: aFloat];
-}
-
-- (void) setStringValue: (NSString*)aString
-{
-  [_browserText setStringValue: aString];
+  _cell.is_highlighted = YES;
+  _cell_state = YES;
 }
 
 /*
@@ -313,25 +241,28 @@ static NSFont *leafFont;
   NSRect	title_rect = cellFrame;
   NSImage	*image = nil;
   NSColor	*backColor;
+  NSWindow      *cvWin = [controlView window];
 
-  control_view = controlView;  // remember last view cell was drawn in
-  if (![controlView window])
+  if (!cvWin)
     return;
+
   [controlView lockFocus];
-  if (cell_highlighted || cell_state)
+
+  if (_cell.is_highlighted || _cell_state)
     {
-      backColor = [colorClass selectedControlColor];
+      backColor = [_colorClass selectedControlColor];
       [backColor set];
       if (!_isLeaf)
 	image = _highlightBranchImage;
     }
   else
     {
-      backColor = [[controlView window] backgroundColor];
+      backColor = [cvWin backgroundColor];
       [backColor set];
       if (!_isLeaf)
 	image = _branchImage;
     }
+  
   NSRectFill(cellFrame);	// Clear the background
 
   if (image)
@@ -348,13 +279,13 @@ static NSFont *leafFont;
        * Images are always drawn with their bottom-left corner at the origin
        * so we must adjust the position to take account of a flipped view.
        */
-      if ([control_view isFlipped])
+      if ([controlView isFlipped])
 	image_rect.origin.y += image_rect.size.height;
       [image compositeToPoint: image_rect.origin operation: NSCompositeCopy];
 
       title_rect.size.width -= image_rect.size.width + 8;	
     }
-  [_browserText drawWithFrame: title_rect inView: controlView];
+  [super drawInteriorWithFrame: title_rect inView: controlView];
   [controlView unlockFocus];
 }
 
@@ -370,9 +301,6 @@ static NSFont *leafFont;
 {
   [super encodeWithCoder: aCoder];
 
-  [aCoder encodeObject: _browserText];
-  [aCoder encodeObject: _branchImage];
-  [aCoder encodeObject: _highlightBranchImage];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isLeaf];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isLoaded];
 }
@@ -381,11 +309,10 @@ static NSFont *leafFont;
 {
   [super initWithCoder: aDecoder];
 
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_browserText];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_branchImage];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_highlightBranchImage];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isLeaf];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isLoaded];
+  _branchImage = RETAIN([isa branchImage]);
+  _highlightBranchImage = RETAIN([isa highlightedBranchImage]);
 
   return self;
 }
