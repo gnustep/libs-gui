@@ -6,7 +6,8 @@
    Copyright (C) 1996 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+	    Ovidiu Predescu <ovidiu@net-community.com>
+   Date: 1996, 1997
    
    This file is part of the GNUstep GUI Library.
 
@@ -68,7 +69,8 @@ enum {
   // Attributes
   NSRect frame;
   NSRect bounds;
-  float frame_rotation;
+  id frameMatrix;
+  id boundsMatrix;
 
   id super_view;
   NSMutableArray *sub_views;

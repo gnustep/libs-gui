@@ -349,7 +349,7 @@ static int mouseDownFlags = 0;
 {
   int i, j;
 
-  [super initWithFrame: frameRect];
+  [super initWithFrame:frameRect];
 
   ASSIGN(cellPrototype, prototype);
 

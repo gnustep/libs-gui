@@ -1,3 +1,43 @@
+Mon Aug 18 09:38:27 1997  Ovidiu Predescu <ovidiu@net-community.com>
+
+	Start porting to NeXT PDO under Solaris.
+	* Headers/gnustep/gui/NSCStringText.h: Include Foundation/NSString.h.
+	* Headers/gnustep/gui/NSScreen.h: Declare NSArray.
+	* Headers/gnustep/gui/NSText.h: Include Foundation/NSRange.h.
+	* Source/NSBox.m: Include Foundation/NSString.h.
+	* Source/NSButtonCell.m: Likewise.
+	* Source/NSCachedImageRep.m: Likewise.
+	* Source/NSCell.m: Likewise.
+	* Source/NSColor.m: Likewise.
+	* Source/NSFont.m: Likewise.
+	* Source/NSImage.m: Likewise.
+	* Source/NSMenuItem.m: Likewise.
+	* Source/NSOpenPanel.m: Likewise.
+	* Source/NSSavePanel.m: Likewise.
+	* Source/NSSliderCell.m: Likewise.
+	* Source/NSText.m: Likewise.
+	* Source/NSTextField.m: Likewise.
+	* Source/libgnustep-gui.m: Likewise.
+	* Source/NSDPSContext.m: Likewise. Also declare -copyWithZone: for
+	NSThread to make possible adding it to Foundation containers.
+
+	Add scaling and rotation support.
+	* Headers/gnustep/gui/NSView.h: Remove frame_rotation. Add frameMatrix
+	and boundsMatrix instance variables.
+	* Source/PSMatrix.m: New file.
+	* Headers/gnustep/gui/PSMatrix.h: New file.
+	* Source/Makefile.in: Added PSMatrix.m.
+	* Source/NSView.m: Use two PSMatrix to do all the scaling and rotation
+	stuff instead of dealing with angles and scale factors. Change the
+	implementation of methods that convert points and sizes to use these
+	matrices.
+	* Source/NSWindow.m (-checkCursorRectangles:forEvent:): Changed to work
+	with scaled and rotated views.
+
+	* Headers/gnustep/gui/config.h.in: Declare initialize_gnustep_backend.
+	* Source/NSMenu.m (-copyWithZone:): Create a proper copy of
+	NSMenuMatrix.
+
 Sat Aug 16 16:28:31 1997  Scott Christley  <scottc@net-community.com>
 
 	* Headers/gnustep/gui/NSApplication.h (+setNullEvent:): New method.

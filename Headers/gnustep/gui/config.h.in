@@ -48,5 +48,7 @@
 # endif
 #endif /* !NSDebugLog */
 
+extern BOOL initialize_gnustep_backend (void);
+
 #endif /* _GNUstep_H_AppKitConfig */
 

@@ -27,6 +27,8 @@
 */ 
 
 #include <Foundation/NSArray.h>
+#include <Foundation/NSString.h>
+
 #include <AppKit/NSBox.h>
 #include <AppKit/NSTextFieldCell.h>
 

@@ -26,6 +26,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
+#include <Foundation/NSString.h>
 #include <AppKit/NSText.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSWindow.h>

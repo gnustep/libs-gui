@@ -496,6 +496,9 @@ static NSButtonCell* knobCell = nil;
 
 - (void)drawRect:(NSRect)rect
 {
+  NSLog (@"NSScroller drawRect: ((%f, %f), (%f, %f))",
+	rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
+
   /* Draw the scroller buttons */
   [self drawArrow:NSScrollerDecrementArrow highlight:NO];
   [self drawArrow:NSScrollerIncrementArrow highlight:NO];

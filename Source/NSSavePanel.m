@@ -28,6 +28,7 @@
 
 #include <string.h>
 
+#include <Foundation/NSString.h>
 #include <Foundation/NSCoder.h>
 #include <AppKit/NSSavePanel.h>
 

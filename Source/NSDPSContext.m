@@ -26,6 +26,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
+#include <Foundation/NSString.h>
 #include <Foundation/NSThread.h>
 #include <Foundation/NSLock.h>
 #include <Foundation/NSData.h>
@@ -57,6 +58,15 @@ static NSMutableDictionary *GNU_CONTEXT_THREAD_DICT = nil;
 static NSRecursiveLock *GNU_CONTEXT_LOCK = nil;
 static BOOL GNU_CONTEXT_TRACED = NO;
 static BOOL GNU_CONTEXT_SYNCHRONIZED = NO;
+
+#if defined(NeXT_PDO)
+@implementation NSThread (Containers)
+- copyWithZone:(NSZone*)zone
+{
+  return [self retain];
+}
+@end
+#endif
 
 @implementation NSDPSContext
 

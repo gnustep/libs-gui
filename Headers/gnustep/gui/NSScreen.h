@@ -33,6 +33,7 @@
 #include <Foundation/NSObject.h>
 #include <AppKit/NSGraphics.h>
 
+@class NSArray;
 @class NSDictionary;
 @class NSMutableDictionary;
 

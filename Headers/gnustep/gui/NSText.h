@@ -31,6 +31,7 @@
 
 #include <AppKit/NSView.h>
 #include <AppKit/NSSpellProtocol.h>
+#include <Foundation/NSRange.h>
 
 @class NSString;
 @class NSData;

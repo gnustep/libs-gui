@@ -28,6 +28,7 @@
 #ifndef _GNUstep_H_NSCStringText
 #define _GNUstep_H_NSCStringText
 
+#include <Foundation/NSString.h>
 #include <AppKit/NSText.h>
 #include <AppKit/NSFontManager.h>
 

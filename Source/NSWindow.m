@@ -27,6 +27,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
+#include <Foundation/NSString.h>
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSNotification.h>
@@ -1012,8 +1013,10 @@
   int i, j;
   BOOL last, now;
   NSEvent *e;
-  NSRect convRect;
   NSPoint loc = [theEvent locationInWindow];
+  NSPoint lastPointConverted;
+  NSPoint locationConverted;
+  NSRect rect;
 
   // Loop through cursor rectangles
   j = [tr count];
@@ -1021,12 +1024,14 @@
     {
       // Convert cursor rectangle to window coordinates
       r = (TrackingRectangle *)[tr objectAtIndex:i];
-      convRect = [r rectangle];
-      convRect = [theView convertRect: convRect toView: nil];
+
+      lastPointConverted = [theView convertPoint:last_point fromView:nil];
+      locationConverted = [theView convertPoint:loc fromView:nil];
+
       // Check mouse at last point
-      last = [theView mouse:last_point inRect: convRect];
-      // Check mouse at current point
-      now = [theView mouse: loc inRect: convRect];
+      rect = [r rectangle];
+      last = [theView mouse:lastPointConverted inRect:rect];
+      now = [theView mouse:locationConverted inRect:rect];
 
       // Mouse entered
       if ((!last) && (now))

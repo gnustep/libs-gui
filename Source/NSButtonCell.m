@@ -28,6 +28,8 @@
 
 #include <Foundation/NSLock.h>
 #include <Foundation/NSArray.h>
+#include <Foundation/NSString.h>
+
 #include <AppKit/NSButtonCell.h>
 #include <AppKit/NSButton.h>
 #include <AppKit/NSWindow.h>

@@ -84,11 +84,10 @@ static NSFont* menuFont = nil;
 
 - (id)copyWithZone:(NSZone*)zone
 {
-  NSMenuMatrix* copy = NSAllocateObject (isa, 0, zone);
+  NSMenuMatrix* copy = [[isa alloc] initWithFrame:[self frame]];
   int i, count;
 
   NSDebugLog (@"copy menu matrix of menu with title '%@'", [menu title]);
-  copy->cells = [[NSMutableArray alloc] initWithCapacity:[cells count]];
   for (i = 0, count = [cells count]; i < count; i++) {
     id aCell = [cells objectAtIndex:i];
     id cellCopy = [[aCell copyWithZone:zone] autorelease];

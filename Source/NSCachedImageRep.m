@@ -30,7 +30,10 @@
     message initFromWindow:rect: is sent with a nil window, one is created
     using the rect information.
 */
+
+#include <Foundation/NSString.h>
 #include <Foundation/NSException.h>
+
 #include <AppKit/NSCachedImageRep.h>
 #include <AppKit/NSWindow.h>
 

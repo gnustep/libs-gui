@@ -230,6 +230,7 @@ NSView$(oext) \
 NSWindow$(oext) \
 NSWorkspace$(oext) \
 TrackingRectangle$(oext) \
+PSMatrix$(oext) \
 tiff$(oext) \
 externs$(oext)
 

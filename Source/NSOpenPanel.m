@@ -27,6 +27,7 @@
 */ 
 
 #include <string.h>
+#include <Foundation/NSString.h>
 #include <Foundation/NSArray.h>
 #include <AppKit/NSOpenPanel.h>
 

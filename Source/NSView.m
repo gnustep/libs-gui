@@ -6,7 +6,8 @@
    Copyright (C) 1996 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+	    Ovidiu Predescu <ovidiu@net-community.com>
+   Date: 1996, 1997
    
    This file is part of the GNUstep GUI Library.
 
@@ -26,6 +27,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
+#include <Foundation/NSString.h>
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSThread.h>
@@ -35,7 +37,8 @@
 
 #include <AppKit/NSView.h>
 #include <AppKit/NSWindow.h>
-#include <gnustep/gui/TrackingRectangle.h>
+#include <AppKit/TrackingRectangle.h>
+#include <AppKit/PSMatrix.h>
 
 //
 // Class variables
@@ -150,6 +153,10 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
   bounds.origin = NSZeroPoint;
   bounds.size = frame.size;
 
+  frameMatrix = [PSMatrix new];
+  boundsMatrix = [PSMatrix new];
+  [frameMatrix setFrameOrigin:frame.origin];
+
 	// Initialize subview list
   sub_views = [NSMutableArray new];
 
@@ -186,21 +193,11 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 //
 - (void)addSubview:(NSView *)aView
 {
-  // Not a NSView --then forget it
-  // xxx but NSView will really be the backend class
-  // so how do we check that its really a subclass of NSView
-  // and not of the backend class?
-#if 0
-  if (![aView isKindOfClass:[NSView class]])
+  // make sure we aren't making ourself a subview of ourself or we're not
+  // creating a cycle in the views hierarchy
+  if ([self isDescendantOf:aView])
     {
-      return;
-    }
-#endif
-
-  // make sure we aren't making ourself a subview of ourself
-  if (self == aView)
-    {
-      NSLog(@"Attempt to make view a subview of itself\n");
+      NSLog(@"Operation addSubview: will create a cycle in the views tree!\n");
       return;
     }
 
@@ -215,13 +212,14 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 	positioned:(NSWindowOrderingMode)place
 	relativeTo:(NSView *)otherView
 {
-  // Not a NSView --then forget it
-  // xxx but NSView will really be the backend class
-  // so how do we check that its really a subclass of NSView
-  // and not of the backend class?
-#if 0
-  if (![aView isKindOfClass:[NSView class]]) return;
-#endif
+  // make sure we aren't making ourself a subview of ourself or we're not
+  // creating a cycle in the views hierarchy
+  if ([self isDescendantOf:aView])
+    {
+      NSLog(@"Operation addSubview:positioned:relativeTo: will create a cycle "
+	    @"in the views tree!\n");
+      return;
+    }
 
   // Add to our subview list
   [sub_views addObject:(id)aView];
@@ -262,14 +260,6 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
 - (BOOL)isDescendantOf:(NSView *)aView
 {
-  // Not a NSView --then forget it
-  // xxx but NSView will really be the backend class
-  // so how do we check that its really a subclass of NSView
-  // and not of the backend class?
-#if o
-  if (![aView isKindOfClass:[NSView class]]) return NO;
-#endif
-
   // Quick check
   if (aView == self) return YES;
 
@@ -350,9 +340,10 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 //
 // Modifying the Frame Rectangle 
 //
+
 - (float)frameRotation
 {
-  return frame_rotation;
+  return [frameMatrix rotationAngle];
 }
 
 - (NSRect)frame
@@ -362,6 +353,8 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
 - (void)rotateByAngle:(float)angle
 {
+  [boundsMatrix rotateByAngle:angle];
+
   if (post_bounds_changes)
     [[NSNotificationCenter defaultCenter]
       postNotificationName:NSViewBoundsDidChangeNotification object:self];
@@ -373,6 +366,7 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
   frame = frameRect;
   bounds.size = frame.size;
+  [frameMatrix setFrameOrigin:frame.origin];
 
   // Resize subviews
   [self resizeSubviewsWithOldSize: old_size];
@@ -384,28 +378,31 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 - (void)setFrameOrigin:(NSPoint)newOrigin
 {
   frame.origin = newOrigin;
+  [frameMatrix setFrameOrigin:frame.origin];
+
   if (post_frame_changes)
     [[NSNotificationCenter defaultCenter]
       postNotificationName:NSViewFrameDidChangeNotification object:self];
 
-}
-
-- (void)setFrameRotation:(float)angle
-{
-  if (post_frame_changes)
-    [[NSNotificationCenter defaultCenter]
-      postNotificationName:NSViewFrameDidChangeNotification object:self];
 }
 
 - (void)setFrameSize:(NSSize)newSize
 {
   NSSize old_size = bounds.size;
 
-  frame.size = newSize;
-  bounds.size = newSize;
+  frame.size = bounds.size = newSize;
 
   // Resize subviews
   [self resizeSubviewsWithOldSize: old_size];
+  if (post_frame_changes)
+    [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSViewFrameDidChangeNotification object:self];
+}
+
+- (void)setFrameRotation:(float)angle
+{
+  [frameMatrix setFrameRotation:angle];
+
   if (post_frame_changes)
     [[NSNotificationCenter defaultCenter]
       postNotificationName:NSViewFrameDidChangeNotification object:self];
@@ -417,7 +414,7 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
 - (float)boundsRotation
 {
-  return 0;
+  return [boundsMatrix rotationAngle];
 }
 
 - (NSRect)bounds
@@ -432,16 +429,29 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
 - (BOOL)isRotatedFromBase
 {
+  // TODO
   return is_rotated_from_base;
 }
 
 - (BOOL)isRotatedOrScaledFromBase
 {
+  // TODO
   return is_rotated_or_scaled_from_base;
 }
 
 - (void)scaleUnitSquareToSize:(NSSize)newSize
 {
+  if (!newSize.width)
+    newSize.width = 1;
+  if (!newSize.height)
+    newSize.height = 1;
+
+  bounds.size.width = frame.size.width / newSize.width;
+  bounds.size.height = frame.size.height / newSize.height;
+
+  [boundsMatrix scaleBy:frame.size.width / bounds.size.width
+		       :frame.size.height / bounds.size.height];
+
   if (post_bounds_changes)
     [[NSNotificationCenter defaultCenter]
       postNotificationName:NSViewBoundsDidChangeNotification object:self];
@@ -450,6 +460,10 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 - (void)setBounds:(NSRect)aRect
 {
   bounds = aRect;
+  [boundsMatrix setFrameOrigin:bounds.origin];
+  [boundsMatrix scaleBy:frame.size.width / bounds.size.width
+		       :frame.size.height / bounds.size.height];
+
   if (post_bounds_changes)
     [[NSNotificationCenter defaultCenter]
       postNotificationName:NSViewBoundsDidChangeNotification object:self];
@@ -458,13 +472,8 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 - (void)setBoundsOrigin:(NSPoint)newOrigin
 {
   bounds.origin = newOrigin;
-  if (post_bounds_changes)
-    [[NSNotificationCenter defaultCenter]
-      postNotificationName:NSViewBoundsDidChangeNotification object:self];
-}
+  [boundsMatrix setFrameOrigin:newOrigin];
 
-- (void)setBoundsRotation:(float)angle
-{
   if (post_bounds_changes)
     [[NSNotificationCenter defaultCenter]
       postNotificationName:NSViewBoundsDidChangeNotification object:self];
@@ -473,6 +482,18 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 - (void)setBoundsSize:(NSSize)newSize
 {
   bounds.size = newSize;
+  [boundsMatrix scaleBy:frame.size.width / bounds.size.width
+		       :frame.size.height / bounds.size.height];
+
+  if (post_bounds_changes)
+    [[NSNotificationCenter defaultCenter]
+      postNotificationName:NSViewBoundsDidChangeNotification object:self];
+}
+
+- (void)setBoundsRotation:(float)angle
+{
+  [boundsMatrix setFrameRotation:angle];
+
   if (post_bounds_changes)
     [[NSNotificationCenter defaultCenter]
       postNotificationName:NSViewBoundsDidChangeNotification object:self];
@@ -480,6 +501,8 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
 - (void)translateOriginToPoint:(NSPoint)point
 {
+  [boundsMatrix translateToPoint:point];
+
   if (post_bounds_changes)
     [[NSNotificationCenter defaultCenter]
       postNotificationName:NSViewBoundsDidChangeNotification object:self];
@@ -488,107 +511,79 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 //
 // Converting Coordinates 
 //
-- (NSPoint)convertPointToWindow:(NSPoint)p
-{
-  NSRect f, t;
-  NSPoint a;
-  id s;
-
-  a = p;
-  f = [self frame];
-  if ([self isFlipped])
-    a.y = f.size.height - p.y;
-
-  s = [self superview];
-  // climb up the superview chain
-  while (s)
-    {
-      t = [s frame];
-      // translate frame
-      f.origin.x += t.origin.x;
-      if ([s isFlipped])
-	f.origin.y += t.size.height + t.origin.y;
-      else
-	f.origin.y += t.origin.y;
-      s = [s superview];
-    }
-  a.x += f.origin.x;
-  a.y += f.origin.y;
-
-  return a;
-}
-
-- (NSRect)convertRectToWindow:(NSRect)r
-{
-  NSRect a;
-
-  a.origin = [self convertPointToWindow:r.origin];
-  a.size = r.size;
-
-  return a;
-}
-
 - (NSRect)centerScanRect:(NSRect)aRect
 {
   return NSZeroRect;
 }
 
-- (NSPoint)convertPoint:(NSPoint)aPoint
-	       fromView:(NSView *)aView
+- (PSMatrix*)_concatenateMatricesInReverseOrderFromPath:(NSArray*)viewsPath
 {
-  NSPoint p, q;
+  int i, count = [viewsPath count];
+  PSMatrix* matrix = [[PSMatrix new] autorelease];
 
-  // Must belong to the same window
-  if (([self window] != [aView window]) && (aView))
-    return NSZeroPoint;
+  for (i = count - 1; i >= 0; i--) {
+    NSView* view = [viewsPath objectAtIndex:i];
 
-  // if aView is nil
-  // then converting from window
-  // so convert from the content from the content view of the window
-  if (aView == nil)
-    return [self convertPoint: aPoint fromView:[[self window] contentView]];
+    [matrix concatenateWith:view->frameMatrix];
+    [matrix concatenateWith:view->boundsMatrix];
+  }
 
-  // Convert the point to window coordinates
-  p = [aView convertPointToWindow: aPoint];
+  return matrix;
+}
 
-  // Convert out origin to window coordinates
-  q = [self convertPointToWindow: bounds.origin];
+- (NSArray*)_pathBetweenSubview:(NSView*)subview
+  toSuperview:(NSView*)_superview
+{
+  NSMutableArray* array = [NSMutableArray array];
+  NSView* view = subview;
 
-  NSDebugLog(@"point convert: %f %f %f %f\n", p.x, p.y, q.x, q.y);
+  while (view != _superview) {
+    [array addObject:view];
+    view = view->super_view;
+  }
 
-  // now translate
-  p.x -= q.x;
-  p.y -= q.y;
+  return array;
+}
 
-  return p;
+- (NSPoint)convertPoint:(NSPoint)aPoint
+	       fromView:(NSView*)aView
+{
+  NSPoint new;
+  PSMatrix* matrix;
+
+  if (!aView)
+    aView = [[self window] contentView];
+
+  if ([self isDescendantOf:aView]) {
+    NSArray* path = [self _pathBetweenSubview:self toSuperview:aView];
+
+    matrix = [self _concatenateMatricesInReverseOrderFromPath:path];
+    [matrix inverse];
+    new = [matrix pointInMatrixSpace:aPoint];
+  }
+  else if ([aView isDescendantOf:self]) {
+    NSArray* path = [self _pathBetweenSubview:aView toSuperview:self];
+
+    matrix = [self _concatenateMatricesInReverseOrderFromPath:path];
+    new = [matrix pointInMatrixSpace:aPoint];
+  }
+  else {
+    /* The views are not on the same hierarchy of views. Convert the point to
+       window from the other's view coordinates and then to our view
+       coordinates. */
+    new = [aView convertPoint:aPoint toView:nil];
+    new = [self convertPoint:new fromView:nil];
+  }
+  return new;
 }
 
 - (NSPoint)convertPoint:(NSPoint)aPoint
 		 toView:(NSView *)aView
 {
-  NSPoint p, q;
-  NSRect r;
+  if (!aView)
+    aView = [[self window] contentView];
 
-  // Must belong to the same window
-  if (([self window] != [aView window]) && (aView))
-    return NSZeroPoint;
-
-  // if aView is nil
-  // then converting to window
-  if (aView == nil)
-    return [self convertPointToWindow: aPoint];
-
-  // convert everything to window coordinates
-  p = [self convertPointToWindow: aPoint];
-  r = [aView bounds];
-  q = [aView convertPointToWindow: r.origin];
-  NSDebugLog(@"point convert: %f %f %f %f\n", p.x, p.y, q.x, q.y);
-
-  // now translate
-  p.x -= q.x;
-  p.y -= q.y;
-
-  return p;
+  return [aView convertPoint:aPoint fromView:self];
 }
 
 - (NSRect)convertRect:(NSRect)aRect
@@ -597,7 +592,7 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
   NSRect r;
 
   // Must belong to the same window
-  if (([self window] != [aView window]) && (aView))
+  if (aView && [self window] != [aView window])
     return NSZeroRect;
 
   r = aRect;
@@ -612,7 +607,7 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
   NSRect r;
 
   // Must belong to the same window
-  if (([self window] != [aView window]) && (aView))
+  if (aView && [self window] != [aView window])
     return NSZeroRect;
 
   r = aRect;
@@ -621,18 +616,59 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
   return r;
 }
 
+- (PSMatrix*)_concatenateBoundsMatricesInReverseOrderFromPath:(NSArray*)viewsPath
+{
+  int i, count = [viewsPath count];
+  PSMatrix* matrix = [[PSMatrix new] autorelease];
+
+  for (i = count - 1; i >= 0; i--) {
+    NSView* view = [viewsPath objectAtIndex:i];
+
+    [matrix concatenateWith:view->boundsMatrix];
+  }
+
+  return matrix;
+}
+
 - (NSSize)convertSize:(NSSize)aSize
 	     fromView:(NSView *)aView
 {
-  // Size would only change under scaling
-  return aSize;
+  NSSize new;
+  PSMatrix* matrix;
+
+  if (!aView)
+    aView = [[self window] contentView];
+
+  if ([self isDescendantOf:aView]) {
+    NSArray* path = [self _pathBetweenSubview:self toSuperview:aView];
+
+    matrix = [self _concatenateBoundsMatricesInReverseOrderFromPath:path];
+    [matrix inverse];
+    new = [matrix sizeInMatrixSpace:aSize];
+  }
+  else if ([aView isDescendantOf:self]) {
+    NSArray* path = [self _pathBetweenSubview:aView toSuperview:self];
+
+    matrix = [self _concatenateBoundsMatricesInReverseOrderFromPath:path];
+    new = [matrix sizeInMatrixSpace:aSize];
+  }
+  else {
+    /* The views are not on the same hierarchy of views. Convert the point to
+       window from the other's view coordinates and then to our view
+       coordinates. */
+    new = [aView convertSize:aSize toView:nil];
+    new = [self convertSize:new fromView:nil];
+  }
+  return new;
 }
 
 - (NSSize)convertSize:(NSSize)aSize
 	       toView:(NSView *)aView
 {
-  // Size would only change under scaling
-  return aSize;
+  if (!aView)
+    aView = [[self window] contentView];
+
+  return [aView convertSize:aSize fromView:self];
 }
 
 //
@@ -764,6 +800,10 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 {
   int i, j;
 
+  if (!boundsMatrix || !frameMatrix)
+    NSLog (@"warning: %@ %p has not setup the PS matrices",
+	  NSStringFromClass(isa), self);
+
   [self lockFocus];
   [self drawRect:bounds];
   [self unlockFocus];
@@ -798,8 +838,7 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 {}
 
 - (void)drawRect:(NSRect)rect
-{
-}
+{}
 
 - (NSRect)visibleRect
 {
@@ -949,18 +988,18 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 - (NSView *)hitTest:(NSPoint)aPoint
 {
   NSPoint p;
-  int i, j;
+  int i, count;
   NSView *v = nil, *w;
 
   // If not within our bounds then immediately return
-  if (![self mouse:aPoint inRect:bounds]) return nil;
+  p = [self convertPoint:aPoint fromView:super_view];
+  if (![self mouse:p inRect:bounds]) return nil;
 
   // Check our sub_views
-  j = [sub_views count];
-  for (i = 0;i < j; ++i)
+  count = [sub_views count];
+  for (i = 0; i < count; ++i)
     {
       w = [sub_views objectAtIndex:i];
-      p = [self convertPoint:aPoint toView:w];
       v = [w hitTest:p];
       if (v) break;
     }
