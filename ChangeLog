@@ -1,3 +1,16 @@
+Thu Jan 30 16:31:16 2003  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/GNUmakefile (NSMenuItem.m_FILE_FLAGS): Use -Wno-protocol
+	when compiling NSMenuItem.m
+
+Thu Jan 30 16:19:56 2003  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* TextConverters/RTF/RTFConsumer.m
+	([RTFConsumer +parseData:documentAttributes:]): Method removed.
+	([RTFConsumer +parseFile:documentAttributes:]): Method removed.
+	([RTFDConsumer +parseData:documentAttributes:class:]): New method,
+	replacing +parseData:documentAttribute:.
+
 Thu Jan 30 05:12:21 2003  Serg Stoyan <stoyan@hologr.com>
 
 	* Headers/gnustep/gui/NSMenuItem.h: NSMenuItem protocol conforms
