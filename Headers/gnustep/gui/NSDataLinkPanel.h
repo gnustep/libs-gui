@@ -29,11 +29,16 @@
 #ifndef _GNUstep_H_NSDataLinkPanel
 #define _GNUstep_H_NSDataLinkPanel
 
+#include <AppKit/NSApplication.h>
 #include <AppKit/NSPanel.h>
 
 @class NSDataLink;
 @class NSDataLinkManager;
 @class NSView;
+
+@interface NSApplication (NSDataLinkPanel)
+- (void) orderFrontDataLinkPanel: (id)sender;
+@end
 
 @interface NSDataLinkPanel : NSPanel <NSCoding>
 {

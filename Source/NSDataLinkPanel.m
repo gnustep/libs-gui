@@ -26,6 +26,21 @@
 #include <gnustep/gui/config.h>
 #include <AppKit/NSDataLinkPanel.h>
 
+
+@implementation NSApplication (NSDataLinkPanel)
+
+- (void) orderFrontDataLinkPanel: sender
+{
+  NSDataLinkPanel *dataLinkPanel = [NSDataLinkPanel sharedDataLinkPanel];
+
+  if (dataLinkPanel)
+    [dataLinkPanel orderFront: nil];
+  else
+    NSBeep();
+}
+
+@end
+
 @implementation NSDataLinkPanel
 
 //
