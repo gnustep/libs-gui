@@ -60,7 +60,7 @@ static NSString			*appListName = @"Services/.GNUstepAppList";
 static NSString			*appListPath = nil;
 static NSDictionary		*applications = nil;
 
-static NSString			*extPrefName = @".GNUstepExtPrefs";
+static NSString			*extPrefName = @"Services/.GNUstepExtPrefs";
 static NSString			*extPrefPath = nil;
 static NSDictionary		*extPreferences = nil;
 
@@ -74,6 +74,7 @@ static NSString			*_rootPath = @"/";
   if (self == [NSWorkspace class])
     {
       static BOOL	beenHere;
+      NSFileManager	*mgr = [NSFileManager defaultManager];
       NSDictionary	*env;
       NSString		*home;
       NSData		*data;
@@ -110,12 +111,15 @@ static NSString			*_rootPath = @"/";
        */
       extPrefPath = [home stringByAppendingPathComponent: extPrefName];
       [extPrefPath retain];
-      data = [NSData dataWithContentsOfFile: extPrefPath];
-      if (data)
+      if ([mgr isReadableFileAtPath: extPrefPath] == YES)
 	{
-	  dict = [NSDeserializer deserializePropertyListFromData: data
-					       mutableContainers: NO];
-	  extPreferences = [dict retain];
+	  data = [NSData dataWithContentsOfFile: extPrefPath];
+	  if (data)
+	    {
+	      dict = [NSDeserializer deserializePropertyListFromData: data
+						   mutableContainers: NO];
+	      extPreferences = [dict retain];
+	    }
 	}
 
       /*
@@ -123,14 +127,16 @@ static NSString			*_rootPath = @"/";
        */
       appListPath = [home stringByAppendingPathComponent: appListName];
       [appListPath retain];
-      data = [NSData dataWithContentsOfFile: appListPath];
-      if (data)
+      if ([mgr isReadableFileAtPath: appListPath] == YES)
 	{
-	  dict = [NSDeserializer deserializePropertyListFromData: data
-					       mutableContainers: NO];
-	  applications = [dict retain];
+	  data = [NSData dataWithContentsOfFile: appListPath];
+	  if (data)
+	    {
+	      dict = [NSDeserializer deserializePropertyListFromData: data
+						   mutableContainers: NO];
+	      applications = [dict retain];
+	    }
 	}
-
       [gnustep_global_lock unlock];
     }
 }
@@ -729,6 +735,7 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 - (void) findApplications
 {
   static NSString	*path = nil;
+  NSFileManager		*mgr = [NSFileManager defaultManager];
   NSData		*data;
   NSDictionary		*dict;
   NSTask		*task;
@@ -744,20 +751,26 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   if (task != nil)
     [task waitUntilExit];
 
-  data = [NSData dataWithContentsOfFile: extPrefPath];
-  if (data)
+  if ([mgr isReadableFileAtPath: extPrefPath] == YES)
     {
-      dict = [NSDeserializer deserializePropertyListFromData: data
-					   mutableContainers: NO];
-      ASSIGN(extPreferences, dict);
+      data = [NSData dataWithContentsOfFile: extPrefPath];
+      if (data)
+	{
+	  dict = [NSDeserializer deserializePropertyListFromData: data
+					       mutableContainers: NO];
+	  ASSIGN(extPreferences, dict);
+	}
     }
 
-  data = [NSData dataWithContentsOfFile: appListPath];
-  if (data)
+  if ([mgr isReadableFileAtPath: appListPath] == YES)
     {
-      dict = [NSDeserializer deserializePropertyListFromData: data
-					   mutableContainers: NO];
-      ASSIGN(applications, dict);
+      data = [NSData dataWithContentsOfFile: appListPath];
+      if (data)
+	{
+	  dict = [NSDeserializer deserializePropertyListFromData: data
+					       mutableContainers: NO];
+	  ASSIGN(applications, dict);
+	}
     }
   /*
    *	Invalidate the cache of icons for file extensions.
