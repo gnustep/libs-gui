@@ -442,13 +442,17 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   if ((cell = [matrix cellAtRow: row column: column]))
     {
       if (column < _lastColumnLoaded)
-	[self setLastColumn: column];
+	{
+	  [self setLastColumn: column];
+	}
 
       [matrix deselectAllCells];
       [matrix selectCellAtRow: row column: 0];
 
       if (![cell isLeaf])
-	[self addColumn];
+	{
+	  [self addColumn];
+	}
     }
 }
 
@@ -588,7 +592,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
   // Column Zero is always present. 
   [self loadColumnZero];
-
+  
   // If that's all, return.
   if (path == nil || [path isEqualToString: _pathSeparator])
     {
@@ -614,7 +618,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   // cycle thru str's array created from path
   for (i = 1; i < numberOfSubStrings; i++)
     {
-      NSBrowserColumn	*bc = [_browserColumns objectAtIndex: i-1];
+      NSBrowserColumn	*bc = [_browserColumns objectAtIndex: i - 1];
       NSMatrix		*matrix = [bc columnMatrix];
       NSArray		*cells = [matrix cells];
       unsigned		numOfRows = [cells count];
@@ -624,7 +628,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
       aStr = [subStrings objectAtIndex: i];
       if (aStr)
 	{
-	  // find the cell in the browser matrix with the equal to aStr
+	  // find the cell in the browser matrix which is equal to aStr
 	  for (j = 0; j < numOfRows; j++)
 	    {
 	      NSString	*cellString;
@@ -646,16 +650,17 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 		     aStr, i - 1);
 	      break;
 	    }
-	  // if the cell is not a leaf add a column to the browser for it
+	  // if the cell is a leaf, we are finished setting the path
 	  if ([selectedCell isLeaf])
 	    break;
-
+	  
+	  // else, it is not a leaf: add a column to the browser for it
 	  [self addColumn];
 	}
     }
-  
-  [self setNeedsDisplay: YES];
 
+  [self setNeedsDisplay: YES];
+  
   return found;
 }
 
@@ -782,13 +787,19 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   fprintf(stderr, "NSBrowser - (void)addColumn\n");
 #endif
 
-  if (_lastColumnLoaded >= (int)[_browserColumns count]-1)
-    i = [_browserColumns indexOfObject:  [self _createColumn]];
+  if (_lastColumnLoaded + 1 >= [_browserColumns count])
+    {
+      i = [_browserColumns indexOfObject: [self _createColumn]];
+    }
   else
-    i = _lastColumnLoaded + 1;
+    {
+      i = _lastColumnLoaded + 1;
+    }
 
   if (i < 0)
-    i = 0;
+    {
+      i = 0;
+    }
 
   [self _performLoadOfColumn: i];
   [self setLastColumn: i];
@@ -798,8 +809,10 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
   [self tile];
 
-  if (i > 0 && i-1 == _lastVisibleColumn)
-    [self scrollColumnsRightBy: 1];
+  if (i > 0  &&  i - 1 == _lastVisibleColumn)
+    {
+      [self scrollColumnsRightBy: 1];
+    }
 }
 
 - (BOOL) acceptsFirstResponder
@@ -952,7 +965,9 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 #endif
 
   if (column < -1)
-    column = -1;
+    {
+      column = -1;
+    }
 
   _lastColumnLoaded = column;
   [self _unloadFromColumn: column + 1];
@@ -2482,13 +2497,14 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   if (_isTitled)
     {
       int i;
-      NSString *title;
 
       for (i = _firstVisibleColumn; i <= _lastVisibleColumn; ++i)
 	{
 	  NSRect titleRect = [self titleFrameOfColumn: i];
 	  if (NSIntersectsRect (titleRect, rect) == YES)
 	    {
+	      NSString *title;
+	      
 	      title = [self _getTitleOfColumn: i];
 	      [self setTitle: title ofColumn: i];
 	      [self drawTitle: title  inRect: titleRect  ofColumn: i];
@@ -2640,9 +2656,13 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 	case NSTabCharacter:
 	  {
 	    if ([theEvent modifierFlags] & NSShiftKeyMask)
-	      [_window selectKeyViewPrecedingView: self];
+	      {
+		[_window selectKeyViewPrecedingView: self];
+	      }
 	    else
-	      [_window selectKeyViewFollowingView: self];
+	      {
+		[_window selectKeyViewFollowingView: self];
+	      }
 	  }
 	  break;
 	}
@@ -2817,6 +2837,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 #if defined NSBTRACE__remapColumnSubviews || defined NSBTRACE_all
   fprintf(stderr, "NSBrowser - (void)_remapColumnSubviews: %d\n", fromFirst);
 #endif
+
   // Removes all column subviews.
   count = [_browserColumns count];
   for (i = 0; i < count; i++)
@@ -2825,16 +2846,21 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
       sc = [bc columnScrollView];
 
       if (!firstResponder && [bc columnMatrix] == [_window firstResponder])
-	firstResponder = [bc columnMatrix];
+	{
+	  firstResponder = [bc columnMatrix];
+	}
       if (sc)
-	[sc removeFromSuperviewWithoutNeedingDisplay];
+	{
+	  [sc removeFromSuperviewWithoutNeedingDisplay];
+	}
     }
 
   if (_firstVisibleColumn > _lastVisibleColumn)
     return;
 
   // Sets columns subviews order according to fromFirst (display order...).
-  // All added subviews are automaticaly marked as needing display (-> NSView).
+  // All added subviews are automaticaly marked as needing display (->
+  // NSView).
   if (fromFirst)
     {
       for (i = _firstVisibleColumn; i <= _lastVisibleColumn; i++)
@@ -2851,9 +2877,11 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 	}
 
       if (firstResponder && setFirstResponder == NO)
-	[_window makeFirstResponder:
-		   [[_browserColumns objectAtIndex: _firstVisibleColumn]
-		     columnMatrix]];
+	{
+	  [_window makeFirstResponder:
+		     [[_browserColumns objectAtIndex: _firstVisibleColumn]
+		       columnMatrix]];
+	}
     }
   else
     {
@@ -2871,9 +2899,11 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 	}
 
       if (firstResponder && setFirstResponder == NO)
-	[_window makeFirstResponder:
-		   [[_browserColumns objectAtIndex: _lastVisibleColumn]
-		     columnMatrix]];
+	{
+	  [_window makeFirstResponder:
+		     [[_browserColumns objectAtIndex: _lastVisibleColumn]
+		       columnMatrix]];
+	}
     }
 }
 
@@ -3028,7 +3058,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
       if (!_reusesColumns && i >= _maxVisibleColumns)
 	{
-	  [_browserColumns removeObject:bc];
+	  [_browserColumns removeObject: bc];
 	  count--;
 	  i--;
 	}
