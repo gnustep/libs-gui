@@ -421,13 +421,16 @@ static NSColor *scrollBarColor = nil;
 
   [super setFrame: frameRect];
 
-  if (_isHorizontal)
+  if (_arrowsPosition != NSScrollerArrowsNone)
     {
-      _arrowsPosition = NSScrollerArrowsMinEnd;
-    }
-  else
-    {
-      _arrowsPosition = NSScrollerArrowsMaxEnd;
+      if (_isHorizontal)
+	{
+	  _arrowsPosition = NSScrollerArrowsMinEnd;
+	}
+      else
+	{
+	  _arrowsPosition = NSScrollerArrowsMaxEnd;
+	}
     }
 
   _hitPart = NSScrollerNoPart;
