@@ -47,7 +47,7 @@ strings_OBJC_FILES = \
 # The list of HEADER_FILES containing localizable strings
 strings_HEADER_FILES = 
 
-strings:
+after-strings::
 	make_strings -L "$(gui-resources_LANGUAGES)" \
 	  $(addprefix ../Source/,$(strings_OBJC_FILES)) \
 	  $(addprefix ../Headers/gnustep/gui/,$(strings_HEADER_FILES))
