@@ -12,6 +12,7 @@
 	yet.
 	* Source/NSTabViewItem.m: drawing. still need to move the drawing
 	of the top line out of this and move it into NSTabView's drawRect.
+	* Source/NSPopUpButtonCell.m: moved all backend code to frontend.
 
 1999-06-20  Michael Hanni  <mhanni@sprintmail.com>
 
