@@ -578,7 +578,7 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
   return NO;
 }
 
-/** Returns the document whose window is the keyWindow */
+/** Returns the document whose window is the main window */
 - (id) currentDocument
 {
   return [self documentForWindow: 

@@ -949,11 +949,10 @@ selectCellWithString: (NSString*)title
     {
       int result;
 
-      //FIXME -- localize
-      result = NSRunAlertPanel(@"Save",
-			       @"The file '%@' in '%@' exists. Replace it?",
-			       @"Replace", @"Cancel", nil,
-			       [[_form cellAtIndex: 0] stringValue],
+      result = NSRunAlertPanel(_(@"Save"),
+			       _(@"The file '%@' in '%@' exists. Replace it?"),
+			       _(@"Replace"), _(@"Cancel"), nil,
+			       [[self filename] lastPathComponent],
 			       _directory);
 
       if (result != NSAlertDefaultReturn)

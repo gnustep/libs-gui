@@ -1,3 +1,10 @@
+2002-11-12  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/gnustep/gui/AppKit.h: Add NSDocumentController.
+
+	* Source/NSSavePanel.m ([NSSavePanel -ok:]): Display filename
+	(with extension) if replacing.
+
 2002-11-12 20:40  Alexander Malmberg  <alexander@malmberg.org>
 
 	* Source/NSTableView (-setDataSource:): Allow nil data source.

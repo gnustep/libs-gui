@@ -777,7 +777,7 @@ static NSColor *scrollBarColor = nil;
 		? NSScrollerIncrementLine : NSScrollerDecrementLine)];
   id theCell = nil;
 
-  NSDebugLog (@"position of %s cell is (%f, %f)",
+  NSDebugLLog (@"NSScroller", @"position of %s cell is (%f, %f)",
 	(whichButton == NSScrollerIncrementArrow ? "increment" : "decrement"),
 	rect.origin.x, rect.origin.y);
 
