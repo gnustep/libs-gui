@@ -1,3 +1,8 @@
+2000-08-26 Georg Fleischmann
+
+	* gui/Source/NSApplication.m [NSApplication run]: Don't update
+	menu for NSPeriodic and NSMouseMoved events.
+
 2000-08-27  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Source/NSFontPanel.m:

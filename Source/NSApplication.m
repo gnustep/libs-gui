@@ -883,11 +883,17 @@ static NSCell* tileCell = nil;
 			       inMode: NSDefaultRunLoopMode
 			      dequeue: YES];
       if (e)
-	[self sendEvent: e];
+      {  NSEventType	type = [e type];
 
-      // update (en/disable) the services menu's items
-      [listener updateServicesMenu];
-      [main_menu update];
+        [self sendEvent: e];
+
+        // update (en/disable) the services menu's items
+        if (type != NSPeriodic && type != NSMouseMoved)
+        {
+          [listener updateServicesMenu];
+          [main_menu update];
+        }
+      }
 
       // send an update message to all visible windows
       if (windows_need_update)
