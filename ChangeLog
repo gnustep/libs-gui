@@ -1,3 +1,15 @@
+1999-07-24  Michael Hanni  <mhanni@sprintmail.com>
+
+	* Headers/NSTextView.h: redid ivars.
+	* Source/NSTextView.m: complete rewrite. more methods written.
+	* Source/GSServicesManager.m: minor temp debug NSlog.
+	* Source/NSMenuView.m: debug logs.
+	* Source/NSText.m: debug logs.
+
+	Look at core/Testing/gstextnetwork.app. That is the text
+	application for NSTextView/TextNetwork. Edit.app has been
+	modified to use NSText directly and not NSTextView.
+
 1999-07-23  Adam Fedor  <fedor@gnu.org>
 
 	* Model/GMAppKit.m: Added ifndef's to comment out areas of code

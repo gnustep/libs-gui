@@ -403,6 +403,8 @@ static NSString         *disabledName = @".GNUstepDisabled";
   NSWindow      *resp = [[application keyWindow] firstResponder];
   id            obj = nil;
 
+  NSLog(@"doService: called");
+
   for (i = 0; i <= es; i++)
     {
       NSString  *sendType;

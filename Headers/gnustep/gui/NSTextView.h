@@ -2,7 +2,8 @@
  *	GNUTextView.h
  */
 
-// GNUTextView is a NSText subclass that displays the glyphs laid out in one NSTextContainer.
+#ifndef _GNUstep_H_NSTextView
+#define _GNUstep_H_NSTextView
 
 #import <AppKit/NSText.h>
 #import <AppKit/NSTextAttachment.h>
@@ -18,15 +19,32 @@
 
 @interface NSTextView : NSText
 {
-        NSTextContainer                 *textContainer;
-        NSColor                                 *insertionPointColor;
-        BOOL                                    smartInsertDeleteEnabled;
-        NSSelectionAffinity     selectionAffinity;
-        NSSelectionGranularity  selectionGranularity;
-        NSSize                                  textContainerInset;
-        NSPoint                                 textContainerOrigin;
-        NSLayoutManager                 *layoutManager;
-        NSTextStorage                   *textStorage;
+  NSTextContainer *textContainer;
+  NSLayoutManager *layoutManager;
+  NSTextStorage  *textStorage;
+  NSSize textContainerInset;
+  NSPoint textContainerOrigin;
+  BOOL tv_resetTextContainerOrigin;
+  NSColor *tv_backGroundColor;
+  BOOL tv_drawsBackground;
+  BOOL tv_shouldDrawInsertionPoint;
+  BOOL tv_selectable;
+  BOOL tv_editable;
+  BOOL tv_fieldEditor;
+  BOOL tv_acceptDraggedFiles;
+  BOOL tv_richText;
+  BOOL tv_usesFontPanel;
+  BOOL tv_usesRuler;
+  BOOL tv_rulerVisible;
+  BOOL tv_smartInsertDelete;
+  NSRange tv_selectedRange;
+  NSColor *tv_caretColor;
+  NSDictionary *tv_selectedTextAttributes;
+  NSDictionary *tv_markedTextAttributes;
+  NSDictionary *tv_typingAttributes;
+  int tv_spellTag;
+  NSSelectionAffinity tv_selectionAffinity;
+  NSSelectionGranularity tv_selectionGranularity;
 }
 
 /**************************** Initializing ****************************/
@@ -201,8 +219,10 @@
 - (BOOL)smartInsertDeleteEnabled;
 - (void)setSmartInsertDeleteEnabled:(BOOL)flag;
 - (NSRange)smartDeleteRangeForProposedRange:(NSRange)proposedCharRange;
-- (void)smartInsertForString:(NSString *)pasteString replacingRange:(NSRange)charRangeToReplace beforeString:(NSString **)beforeString afterString:(NSString **)afterString;
-
+- (void)smartInsertForString:(NSString *)aString
+              replacingRange:(NSRange)charRange
+                beforeString:(NSString *)beforeString
+                 afterString:(NSString *)afterString;
 @end
 
 // Note that all delegation messages come from the first textView
@@ -235,3 +255,4 @@ extern NSString *NSTextViewWillChangeNotifyingTextViewNotification;
 extern NSString *NSTextViewDidChangeSelectionNotification;
     // NSOldSelectedCharacterRange -> NSValue with old range.
 
+#endif

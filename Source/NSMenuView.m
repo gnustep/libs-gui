@@ -663,14 +663,12 @@ cell do the following */
 
 	  [self setHighlightedItemIndex: -1];
 
-//	  if ([selectedCell action] && ![selectedCell target])
 	  if (menuv_menu)
 	    [menuv_menu performActionForItem: 
 	      [menuv_items_link objectAtIndex: lastIndex]];
 
 	  if (menuv_popb)
 	    [menuv_popb performSelector:[selectedCell action] withObject:selectedCell];
-//	  else if ([selectedCell action] && [selectedCell target])
 
 	  /* If we are a menu */
 

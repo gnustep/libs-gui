@@ -1190,12 +1190,15 @@ currentCursorY=[self rectForCharacterIndex:NSMaxRange([self selectedRange])].ori
 // Handling Events 
 //
 -(void) mouseDown:(NSEvent *)theEvent
-{	NSSelectionGranularity granularity= NSSelectByCharacter;
+{
+	NSSelectionGranularity granularity= NSSelectByCharacter;
 	NSRange					chosenRange,prevChosenRange,proposedRange;
 	NSPoint					point,startPoint;
 	NSEvent				   *currentEvent;
 	unsigned				startIndex;
 	BOOL					didDragging=NO;
+
+  NSLog(@"mouseDown:");
 
 	if (!is_selectable) return;						// If not selectable then don't recognize the mouse down
 
@@ -2057,6 +2060,8 @@ NSLog(@"opti hook 2");
 	}
 
 	redrawLineRange=[self lineRangeForRect:rect];
+
+  NSLog(@"should be drawing text here. No big deal.\n");
 
 	if([self drawsBackground])	// clear area under text
 	{	[[self backgroundColor] set]; NSRectFill(rect);
