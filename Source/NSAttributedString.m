@@ -1091,7 +1091,7 @@ documentAttributes: (NSDictionary**)dict
 	      else if (svalue < 0)
 		{
 		  [headerString appendString: [NSString stringWithFormat:
-							  @"\\dn%d", svalue]];
+							  @"\\dn%d", -svalue]];
 		  [trailerString appendString: @"\\dn0"];
 		}
 	    }
