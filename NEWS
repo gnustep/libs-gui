@@ -1,7 +1,24 @@
 NEWS
 ****
 
-The currently released version of the library is `0.8.1'.
+The currently released version of the library is `0.8.2'.
+
+Noteworthy changes in version `0.8.2'
+=====================================
+
+   * Handle fonts that aren't found better.
+
+   * Implement pageUp/Down.
+
+   * Some window focusing problems fixed.
+
+   * Quartz-like interface partially implemented.
+
+   * NSSecureTextField partially rewritten. More secure.
+
+   * NSBrowser: implement non-separate columns
+
+   * Fix firstResponder status in text fields.
 
 Noteworthy changes in version `0.8.1'
 =====================================

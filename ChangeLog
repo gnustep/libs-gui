@@ -1,3 +1,8 @@
+2002-10-14  Adam Fedor  <fedor@gnu.org>
+
+	* Version: 0.8.2
+	* Documentation/news.texi: Update.
+
 Mon Oct 14 02:24:45 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSSavePanel.m (browser:createRowsForColumn:inMatrix:):

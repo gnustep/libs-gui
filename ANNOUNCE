@@ -1,7 +1,7 @@
 ANNOUNCE
 ********
 
-This is version 0.8.1 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.8.2 of the GNUstep GUI library (`gnustep-gui').
 
 What is the GNUstep GUI Library?
 ================================
@@ -28,23 +28,27 @@ systems.
 GNUstep Base Library, the TIFF Graphics library, and a back-end
 component like the GNUstep 'Back' Backend.
 
-Noteworthy changes in version `0.8.1'
+Noteworthy changes in version `0.8.2'
 =====================================
 
-   * Handle scaled curves correctly.
+   * Handle fonts that aren't found better.
 
-   * Handle alpha channel with images correctly
+   * Implement pageUp/Down.
 
-   * NSWindow frame string save without flipping coordinates.
+   * Some window focusing problems fixed.
 
-   * NSSound implemented. gssnd sound server.
+   * Quartz-like interface partially implemented.
 
-   * Spell checker starts correctly now.
+   * NSSecureTextField partially rewritten. More secure.
+
+   * NSBrowser: implement non-separate columns
+
+   * Fix firstResponder status in text fields.
 
 Where can you get it?  How can you compile it?
 ==============================================
 
-   The gstep-gui-0.8.1.tar.gz distribution file has been placed on
+   The gstep-gui-0.8.2.tar.gz distribution file has been placed on
 `ftp.gnustep.org' in `pub/gnustep/core'.
 
    the TIFF Graphics library version 3.4 is required.
