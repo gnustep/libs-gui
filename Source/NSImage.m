@@ -238,6 +238,7 @@ static NSDictionary* nsmapping = nil;
 	{
 	  NSImage* image = [[[NSImage alloc] initByReferencingFile:path]
 				autorelease];
+
 	  if (image)
 	    [image setName: [[path lastPathComponent] 
 				stringByDeletingPathExtension]];

@@ -611,12 +611,12 @@ PSMatrix* matrix;
 	post_bounds_changes = flag;
 }
 
-- (void)resizeSubviewsWithOldSize:(NSSize)oldSize
-{
-id e, o;
-  
-	if (![self autoresizesSubviews])					// Are we suppose to 
-		return;											// resize our subviews?
+- (void)resizeSubviewsWithOldSize:(NSSize)oldSize		// resize subviews only
+{														// if we are supposed 
+id e, o;												// to and we have never 
+  														// been rotated
+	if (![self autoresizesSubviews] && !is_rotated_from_base)					 
+		return;											
 
 	e = [sub_views objectEnumerator];
 	o = [e nextObject];
@@ -719,13 +719,13 @@ id e, o;
 }				
 
 - (void)displayIfNeededInRectIgnoringOpacity:(NSRect)aRect
-{														// of our sub views if
-int i = 0, count;										// any part of self has
-														// been marked to be in
-	for (count = [sub_views count]; i < count; ++i) 	// need of display with
-		{												// setNeedsDisplay or
-    	NSView* subview = [sub_views objectAtIndex:i];	// stNeedsDisplayInRect
-
+{														// display self and all
+int i = 0, count;										// of our sub views if
+														// any part of self has
+	for (count = [sub_views count]; i < count; ++i) 	// been marked to be in
+		{												// need of display with
+    	NSView* subview = [sub_views objectAtIndex:i];	// setNeedsDisplay or
+														// stNeedsDisplayInRect
 		if(subview->needs_display)						
 			{											
     		NSRect rect = subview->invalidatedRectangle;
@@ -1097,7 +1097,7 @@ TrackingRectangle *m;
 }
 
 - (void)dragImage:(NSImage *)anImage					// initiate a dragging
-			   at:(NSPoint)viewLocation					// session
+			   at:(NSPoint)viewLocation					// session (backend)
 			   offset:(NSSize)initialOffset
 			   event:(NSEvent *)event
 			   pasteboard:(NSPasteboard *)pboard

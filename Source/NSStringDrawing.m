@@ -41,6 +41,7 @@ NSFont *font;
 const char *str = [self cString];
 int i = 0, j = TABWIDTH;
 static float tabSize;
+float tabSumSize;
 static float pointSize;
 static NSFont *lastFont = nil;
 
@@ -60,12 +61,14 @@ static NSFont *lastFont = nil;
 
 	if(font != lastFont)									// update font info 
 		{													// if font changes 
-		tabSize = (float)i * [font widthOfString:@"\t"];
+		tabSize = [font widthOfString:@"\t"];
 		lastFont = font;
 		pointSize = [font pointSize];
 		}
+
+	tabSumSize = (float)i * tabSize;
 	
-	return NSMakeSize(([font widthOfString:self] + tabSize), pointSize);
+	return NSMakeSize(([font widthOfString:self] + tabSumSize), pointSize);
 }
 
 @end

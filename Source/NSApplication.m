@@ -871,7 +871,8 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
 													// Tell the windows to hide
 	for (i = 0, count = [window_list count]; i < count; i++)
-		[[window_list objectAtIndex:i] performHide:sender];
+//		[[window_list objectAtIndex:i] performHide:sender];
+		[[window_list objectAtIndex:i] orderOut:sender];
 
 	app_is_hidden = YES;
 													// notify that we did hide
@@ -889,7 +890,8 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 int i, count;
 													// Tell windows to unhide
 	for (i = 0, count = [window_list count]; i < count; i++)
-		[[window_list objectAtIndex:i] performUnhide:sender];
+//		[[window_list objectAtIndex:i] performUnhide:sender];
+		[[window_list objectAtIndex:i] orderFront:sender];
 
 													// TODO: unhide the menu
 

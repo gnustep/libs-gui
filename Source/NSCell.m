@@ -463,7 +463,7 @@ NSString* _string;
 			break;
     		}
 		case NSImageCellType:
-			[self _displayImage:[self image] inFrame:cellFrame];
+			[self _displayImage:cell_image inFrame:cellFrame];
 			break;
 		case NSNullCellType:
 			break;

@@ -1,3 +1,11 @@
+Thu Dec 3 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* NSView.m resizeSubviewsWithOldSize: check whether view has ever been 
+	rotated (per 4.2 docs).
+	* NSStringDrawing.m sizeWithAttributes: fix minor bug introduced while
+	optimizing tab calc.
+	* NSCell.m: drawInteriorWithFrame: minor optimization
+
 Tue Dec  3  7:00:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* NSApplication.m: Fixed include for GNUServicesManager.h
