@@ -1,3 +1,7 @@
+2001-12-20  Adam Fedor  <fedor@gnu.org>
+
+	* Images/common_noCursor.tiff: New image from deek@d2dc.net.
+
 2001-12-21  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSView.m
