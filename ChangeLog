@@ -1,3 +1,16 @@
+2000-06-29  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSText.m (-setFont:): Return if font==nil.
+	* Source/NSTextView.m (setAllowsUndo:, allowsUndo): Stub 
+	implementation.
+
+	* Source/Functions.m (NSApplicationMain): Call NSProcessInfo
+	initialization if GS_PASS_ARGUMENTS.
+	* Tools/example.m: Likewise.
+	* Tools/gpbs.m: Likewise.
+	* Tools/make_services.m: Likewise.
+	* Tools/set_show_services.m: Likewise.
+
 Tue Jun 27 19:35:54 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSButton.m ([-allowsMixedState]): Implemented.

@@ -28,6 +28,7 @@
 
 #include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSBundle.h>
+#include <Foundation/NSProcessInfo.h>
 
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSEvent.h>
@@ -46,7 +47,7 @@ NSApplicationMain(int argc, const char **argv)
   NSString		*className;
   Class			appClass;
   CREATE_AUTORELEASE_POOL(pool);
-#if LIB_FOUNDATION_LIBRARY
+#if defined(LIB_FOUNDATION_LIBRARY) || defined(GS_PASS_ARGUMENTS)
   extern char		**environ;
 
   [NSProcessInfo initializeWithArguments: (char**)argv

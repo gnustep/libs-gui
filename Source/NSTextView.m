@@ -167,6 +167,15 @@
   return _background_color;
 }
 
+- (void) setAllowsUndo: (BOOL)flag
+{
+}
+
+- (BOOL) allowsUndo
+{
+  return NO;
+}
+
 - (void) setDrawsBackground: (BOOL)flag
 {
   _tf.draws_background = flag;

@@ -55,7 +55,7 @@ static Class dClass;
 static Class sClass;
 
 int
-main(int argc, char** argv)
+main(int argc, char** argv, char **env_c)
 {
   NSAutoreleasePool	*pool;
   NSData		*data;
@@ -74,6 +74,9 @@ main(int argc, char** argv)
   NSMutableDictionary	*fullMap;
   NSDictionary		*oldMap;
 
+#ifdef GS_PASS_ARGUMENTS
+  [NSProcessInfo initializeWithArguments:argv count:argc environment:env_c];
+#endif
   pool = [NSAutoreleasePool new];
 
   aClass = [NSArray class];

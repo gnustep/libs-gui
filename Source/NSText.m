@@ -1747,6 +1747,9 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 {
   NSRange fullRange = NSMakeRange(0, [_textStorage length]);
 
+  if (font == nil)
+    return;
+
   [self setFont: font ofRange: fullRange];
   [_typingAttributes setObject: font forKey: NSFontAttributeName];
 }
