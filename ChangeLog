@@ -1,3 +1,12 @@
+Fri Feb 22 22:55:51 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Patches by Alexander Malmberg <alexander@malmber.org>:
+	* Source/NSApplication.m ([-dealloc]): Set the main menu and the
+	window menu to nil, so that we don't try updating them later on in
+	the shutdown process.
+	* Source/NSWindow.m ([-dealloc]): Fixed so that it doesn't discard
+	the autosaved frame.
+	
 Fri Feb 22 21:03:19 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/gnustep/gui/NSApplication.h (_runLoopPool): Store the main run loop
