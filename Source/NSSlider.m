@@ -116,14 +116,10 @@ static Class cellClass;
 
 - (id) initWithFrame: (NSRect)frameRect
 {
-  NSSliderCell	*theCell = AUTORELEASE([[isa cellClass] new]);
-
   [super initWithFrame: frameRect];
 
-  // set our cell
-  [self setCell: theCell];
-  [theCell setState: 1];
-  [theCell setContinuous: YES];
+  [_cell setState: 1];
+  [_cell setContinuous: YES];
   return self;
 }
 
