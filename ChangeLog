@@ -1,3 +1,24 @@
+2002-09-07  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSApplication.m
+	Release the invocation in [detachDrawingThread:toTarget:withObject:] 
+	not in the helper method. (Patch by David Ayers <d.ayers@inode.at>).
+	* Headers/gnustep/gui/NSPasteboard.h
+	* Source/externs.m
+	Define NSHTMLPboardType.
+	* Headers/gnustep/gui/GSTextConverter.h
+	Define protocol for method [classForFormat:producer:].
+	* Headers/gnustep/gui/NSTextAttachment.h
+	Moved NSAttributedString text attachment method declarations to here.
+	* Headers/gnustep/gui/NSAttributedString.h
+	Define new MacOSX methods.
+	* Source/NSAttributedString.m
+	Implemented [textFileTypes], [textPasteboardTypes],
+	[textUnfilteredFileTypes], [textUnfilteredPasteboardTypes].
+	* Source/NSMenu.m
+	* Source/NSTextView.m
+	Corrected includes.
+	
 2002-09-06  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/NSPrintInfo.h: Add print option.
