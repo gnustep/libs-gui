@@ -1,3 +1,16 @@
+Thu Feb  7 02:46:15 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSTextView.m ([-moveWordBackward:]): Simplified.
+	([-moveWordForward:]): Simplified.
+	([-moveWordForwardAndModifySelection:]): New method, implemented.
+	([-moveWordBackwardAndModifySelection:]): New method, implemented.
+	* Source/NSAttributedString.m ([-nextWordFromIndex:forward:]):
+	Rewritten, fixing crashes.
+	* KeyBindings/DefaultKeyBindings.dict: Uncommented
+	Alternate-Shift-LeftArrow and Alternate-Shift-RightArrow, and
+	bound to moveWordBackwardAndModifySelection: and
+	moveWordForwardAndModifySelection:.
+
 Wed Feb  6 17:12:35 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/GSSimpleLayoutManager.m
