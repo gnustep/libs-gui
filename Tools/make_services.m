@@ -39,7 +39,12 @@ static NSMutableDictionary *validateService(NSDictionary *service, NSString* pat
 
 static NSString		*appsName = @".GNUstepAppList";
 static NSString		*cacheName = @".GNUstepServices";
-static NSString		*infoLoc = @"Resources/Info-gnustep.plist";
+/*
+ *	First try to scan GNUstep specific file - if that fails, try the
+ *	standard OpenStep file name - We may have an OPENSTEP/MacOS-X app
+ */
+static NSString		*infoLoc0 = @"Resources/Info-gnustep.plist";
+static NSString		*infoLoc1 = @"Resources/Info.plist";
 
 static	BOOL verbose = NO;
 static	NSMutableDictionary	*serviceMap;
@@ -433,7 +438,11 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
                   continue;
                 }
 
-	      infPath = [newPath stringByAppendingPathComponent: infoLoc];
+	      infPath = [newPath stringByAppendingPathComponent: infoLoc0];
+	      if ([mgr fileExistsAtPath: infPath isDirectory: &isDir] == NO)
+		infPath = [newPath stringByAppendingPathComponent: infoLoc1];
+	      else if (isDir == YES)
+		NSLog(@"Info (%@) is a directory!\n", infPath);
 	      if ([mgr fileExistsAtPath: infPath isDirectory: &isDir] && !isDir)
 		{
 		  NSDictionary	*info;
@@ -478,7 +487,11 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
 	    {
 	      NSString	*infPath;
 
-	      infPath = [newPath stringByAppendingPathComponent: infoLoc];
+	      infPath = [newPath stringByAppendingPathComponent: infoLoc0];
+	      if ([mgr fileExistsAtPath: infPath isDirectory: &isDir] == NO)
+		infPath = [newPath stringByAppendingPathComponent: infoLoc1];
+	      else if (isDir == YES)
+		NSLog(@"Info (%@) is a directory!\n", infPath);
 	      if ([mgr fileExistsAtPath: infPath isDirectory: &isDir] && !isDir)
 		{
 		  NSDictionary	*info;
