@@ -1,3 +1,11 @@
+2004-05-14  Serg Stoyan <stoyan@on.com.ua>
+
+	* Source/NSBrowser.m ([drawRect:]): use _bounds instead of rect
+	for NSDrawGrayBezel().
+
+	* Source/NSSplitView.m ([adjustSubviews]): call setNeedsDisplay:
+	after resizing subviews.
+
 2004-05-04  Enrico Sersale  <enrico@imago.ro>
 
 	* Source/NSWorkspace.m ([NSWorkspace -mountedRemovableMedia]): 
