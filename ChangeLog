@@ -1,3 +1,9 @@
+Mon Dec 13 20:00:29 1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/AppKit/NSBrowserCell.h: Removed two ivars.  
+	* Source/NSBrowserCell.m: Made allocation/deallocation faster; 
+	added untested alternateImage support.
+
 Mon Dec 13 16:06:36 1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/AppKit/NSActionCell.h: Added ivar _control_view.
