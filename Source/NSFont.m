@@ -998,7 +998,7 @@ static BOOL flip_hack;
 
       self = [NSFont userFontOfSize: fontMatrix[0]];
       NSAssert(self != nil, @"Couldn't find a valid font when decoding.");
-      return self;
+      return RETAIN(self);
     }
   else
     {
@@ -1057,13 +1057,13 @@ static BOOL flip_hack;
 	    break;
 	}
 
-      [self release];
+      RELEASE(self);
       if (new)
-	return new;
+	return RETAIN(new);
 
       new = [NSFont userFontOfSize: size];
       NSAssert(new != nil, @"Couldn't find a valid font when decoding.");
-      return new;
+      return RETAIN(new);
     }
 }
 

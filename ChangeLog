@@ -1,3 +1,8 @@
+2003-07-05 16:07  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSFont.m (-initWithCoder:): Make sure that the returned
+	font has a correct retain count on all paths.
+
 2003-07-04  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSPasteboard.m: Add code to set protocols for proxy objects.
