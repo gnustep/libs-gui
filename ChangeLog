@@ -1,3 +1,14 @@
+Tue Oct 14  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Sorry for having messed things up using the wrong modifier 
+	for key equivalents.  Thanks to Richard for pointing this out.
+	* Source/NSApplication.m ([-sendEvent:]): Changed modifier 
+	back to NSCommandKeyMask.
+	* Source/NSButtonCell.m ([-_init]): Changed back to use 
+ 	NSCommandKeyMask.
+	* Source/NSWindow.m ([-keyDown:]): Use NSCommandKeyMask for key
+ 	equivalents.
+	
 Wed Oct 13  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	You should now be able to use key equivalents for buttons.  
