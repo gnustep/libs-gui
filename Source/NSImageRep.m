@@ -30,6 +30,8 @@
 #include <string.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSData.h>
+#include <Foundation/NSValue.h>
+#include <Foundation/NSURL.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSUserDefaults.h>
@@ -39,6 +41,7 @@
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSView.h>
+#include <AppKit/NSColor.h>
 #include <AppKit/DPSOperators.h>
 
 static NSMutableArray*	imageReps = NULL;
@@ -93,18 +96,23 @@ static NSMutableArray*	imageReps = NULL;
       Class rep = [imageReps objectAtIndex: i];
       if ([[rep imageFileTypes] indexOfObject: ext] != NSNotFound)
 	{
-	  NSData* data;
-
 	  // This is some GNUstep extension for special file types
 	  if ([rep respondsToSelector: @selector(imageRepsWithFile:)])
 	    [array addObjectsFromArray: [rep imageRepsWithFile: filename]];
-	    
-	  data = [NSData dataWithContentsOfFile: filename];
-	  if ([rep respondsToSelector: @selector(imageRepsWithData:)])
-	    [array addObjectsFromArray: [rep imageRepsWithData: data]];
-	  else if ([rep respondsToSelector: @selector(imageRepWithData:)])
-	    {
-	      [array addObject: [rep imageRepWithData: data]];
+	  else
+	    {  
+	      NSData* data;
+
+	      data = [NSData dataWithContentsOfFile: filename];
+	      if ([rep respondsToSelector: @selector(imageRepsWithData:)])
+		  [array addObjectsFromArray: [rep imageRepsWithData: data]];
+	      else if ([rep respondsToSelector: @selector(imageRepWithData:)])
+	        {
+		    NSImageRep *imageRep = [rep imageRepWithData: data];
+
+		    if (rep != nil)
+		      [array addObject: imageRep];
+		}
 	    }
 	}
     }
@@ -142,7 +150,12 @@ static NSMutableArray*	imageReps = NULL;
 	  if ([rep respondsToSelector: @selector(imageRepsWithData:)])
 	    [array addObjectsFromArray: [rep imageRepsWithData: data]];
 	  else if ([rep respondsToSelector: @selector(imageRepWithData:)])
-	    [array addObject: [rep imageRepWithData: data]];
+	    {
+	      NSImageRep *imageRep = [rep imageRepWithData: data];
+
+	      if (rep != nil)
+		[array addObject: imageRep];
+	    }
 	}
     }
   return (NSArray *)array;
@@ -150,14 +163,50 @@ static NSMutableArray*	imageReps = NULL;
 
 + (id)imageRepWithContentsOfURL:(NSURL *)anURL
 {
-  // TODO
+  NSArray* array;
+
+  array = [self imageRepsWithContentsOfURL: anURL];
+  if ([array count])
+    return [array objectAtIndex: 0];
   return nil;
 }
 
 + (NSArray *)imageRepsWithContentsOfURL:(NSURL *)anURL
 {
-  // TODO
-  return nil;
+  int i, count;
+  NSString *ext;
+  NSMutableArray *array;
+
+  ext = [[anURL path] pathExtension];
+  // FIXME: Should this be an exception? Should we even check this?
+  if (!ext)
+    {
+      NSLog(@"Extension missing from URL - '%@'", [anURL path]);
+      return nil;
+    }
+
+  array = [NSMutableArray arrayWithCapacity: 1];
+  count = [imageReps count];
+  for (i = 0; i < count; i++)
+    {
+      Class rep = [imageReps objectAtIndex: i];
+      if ([[rep imageFileTypes] indexOfObject: ext] != NSNotFound)
+	{
+	  NSData* data;
+
+	  data = [anURL resourceDataUsingCache: YES];
+	  if ([rep respondsToSelector: @selector(imageRepsWithData:)])
+	    [array addObjectsFromArray: [rep imageRepsWithData: data]];
+	  else if ([rep respondsToSelector: @selector(imageRepWithData:)])
+	    {
+	      NSImageRep *imageRep = [rep imageRepWithData: data];
+	      
+	      if (rep != nil)
+		  [array addObject: imageRep];
+	    }
+	}
+    }
+  return (NSArray *)array;
 }
 
 - (id) copyWithZone: (NSZone *)zone
