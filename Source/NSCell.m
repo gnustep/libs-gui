@@ -1042,8 +1042,6 @@ static Class	cellClass;
       return YES;
     }
 
-  [controlView setNeedsDisplayInRect: cellFrame];
-
   NSDebugLog(@"NSCell mouse did not go up in cell\n");
   return NO;				// Otherwise return NO
 }

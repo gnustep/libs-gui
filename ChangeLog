@@ -1,4 +1,18 @@
-1999-09-14  David Lazaro Saz  <khelekir@encomix.es>
+1999-09-14  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSCell.m ([NSCell
+	-trackMouse:inRect:ofView:untilMouseUp:]): Remove setNeedsDisplay
+	(bug reintroduced again inadvertantly).
+
+1999-09-08  Adam Fedor  <fedor@gnu.org>
+
+	* Model/GMAppKit.m: Undef implementation of NSPopUpButton.
+	* Model/IBClasses.h: Interface for NSMenuTemplate.
+	* Model/IBClasses.m: Add code to retain NSMenuTemplate if it's
+	associated with a NSPopUpButton (This seems like a hack - nib2gmodel
+	may not be correctly connecting NSPopUpButton with its NSMenu).
+
+Mon Sep 13  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSScrollView.m ([NSScrollView -drawRect:]): Corrected problem
 	with the vertical black line of a scrollview being displaced 1 pixel
