@@ -296,11 +296,16 @@ static Class	cellClass;
 
 - (void) setImage: (NSImage*)anImage
 {
-  NSAssert(anImage == nil || [anImage isKindOfClass: imageClass],
-	NSInvalidArgumentException);
-
+  if (anImage) 
+    {
+      NSAssert ([anImage isKindOfClass: imageClass],
+		NSInvalidArgumentException);
+    }
+  
+  if (cell_type != NSImageCellType)
+    [self setType: NSImageCellType];    
+  
   ASSIGN(cell_image, anImage);
-  [self setType: NSImageCellType];
 }
 
 /*
@@ -350,6 +355,9 @@ static Class	cellClass;
 - (void) setStringValue: (NSString *)aString
 {
   NSString* _string;
+
+  if (cell_type != NSTextCellType)
+    [self setType: NSTextCellType];
 
   if (!aString)
     _string = @"";
