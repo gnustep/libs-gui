@@ -206,9 +206,9 @@ int	ret;
 	if([self class] == [NSSavePanel class] && 
 			[[browser selectedCell] isLeaf] && ret == NSOKButton)
 		{	
-		if(NSRunAlertPanel(@"Save",@"The file %@ in %@ exists. Replace it?", 
-							@"Replace",@"Cancel",nil,[form stringValue], 
-							[self directory]) == NSAlertAlternateReturn)
+//		if(NSRunAlertPanel(@"Save",@"The file %@ in %@ exists. Replace it?", 
+//							@"Replace",@"Cancel",nil,[form stringValue], 
+//							[self directory]) == NSAlertAlternateReturn)
 			return NSCancelButton;
 		}
 

@@ -9,7 +9,9 @@
    Date: 1996
    Author:  Felipe A. Rodriguez <far@ix.netcom.com>
    Date: July 1998
-   
+   Author:  Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
+   Date: August 1998
+  
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -30,16 +32,23 @@
 
 #include <gnustep/gui/config.h>
 #include <Foundation/NSString.h>
+
 #include <AppKit/NSText.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSFontPanel.h>
 #include <AppKit/NSFont.h>
 #include <AppKit/NSColor.h>
+#include <AppKit/NSSpellChecker.h>
+#include <AppKit/NSPasteboard.h>
+#include <AppKit/NSControl.h>
+
+#include <Foundation/NSScanner.h>
 
 #define ASSIGN(variable, value) [value retain]; \
 								[variable release]; \
 								variable = value;
+
 
 //
 // NSText implementation
@@ -85,8 +94,10 @@
 }
 
 - (void)dealloc 
-{
-    [background_color release];
+{	
+	[background_color release];
+	[plainContent release];
+	[rtfContent release];
 
     [super dealloc];
 }
@@ -94,30 +105,55 @@
 //
 // Getting and Setting Contents 
 //
+- (void)replaceCharactersInRange:(NSRange)range withString:(NSString *)aString
+{	
+}
+
+- (void)replaceCharactersInRange:(NSRange)range withRTF:(NSData *)rtfData
+{	
+}
+
+- (void)replaceCharactersInRange:(NSRange)range withRTFD:(NSData *)rtfdData
+{	
+}
+
 - (void)replaceRange:(NSRange)range withRTF:(NSData *)rtfData
-{}
+{	
+	[self replaceRange:range withRTFD:rtfData];
+}
 
 - (void)replaceRange:(NSRange)range withRTFD:(NSData *)rtfdData
-{}
+{	
+}
 
 - (NSData *)RTFDFromRange:(NSRange)range
-{
+{	
 	return nil;
 }
 
 - (NSData *)RTFFromRange:(NSRange)range
-{
-	return nil;
+{	
+	return [self RTFDFromRange:range];
 }
 
-- (void)setText:(NSString *)string
-{
+- (void)setString:(NSString *)string
+{	
 	ASSIGN(text_contents, string);
 }
 
-- (void)setText:(NSString *)string range:(NSRange)range
-{
-	[self setSelectedRange:range];
+- (NSString*)string
+{	
+	if([self isRichText])	
+		return [rtfContent string];
+	else					
+		return text_contents;
+}
+
+- (void)setText:(NSString *)string	{ [self setString:string]; }
+
+- (void)setText:(NSString *)aString range:(NSRange)range
+{	
+	[self replaceCharactersInRange:(NSRange)range withString:aString];
 }
 
 - (NSString *)text					{ return text_contents; }
@@ -175,7 +211,7 @@
 - (BOOL)usesFontPanel				{ return uses_font_panel; }
 
 - (void)changeFont:(id)sender
-{
+{	
 }
 
 - (void)setBackgroundColor:(NSColor *)color
@@ -183,8 +219,22 @@
 	ASSIGN(background_color, color);
 }
 
+- (void)setTextColor:(NSColor *)color ofRange:(NSRange)range
+{	
+	if([self isRichText])
+		{	
+		if(color) 
+			[rtfContent addAttribute:NSForegroundColorAttributeName 
+						value:color 
+						range:range];
+		else 
+			{}
+		}
+}
+
 - (void)setColor:(NSColor *)color ofRange:(NSRange)range
-{
+{	
+	[self setColor:color ofRange:range];
 }
 
 - (void)setFont:(NSFont *)obj
@@ -193,7 +243,16 @@
 }
 
 - (void)setFont:(NSFont *)font ofRange:(NSRange)range
-{
+{	
+	if([self isRichText])
+		{	
+		if(font) 
+			[rtfContent addAttribute:NSFontAttributeName 
+						value:font 
+						range:range];
+		else 
+			{}
+		}
 }
 
 - (void)setTextColor:(NSColor *)color
@@ -212,7 +271,7 @@
 - (NSRange)selectedRange			{ return selected_range; }
 
 - (void)setSelectedRange:(NSRange)range
-{
+{	
 	selected_range = range;
 }
 
@@ -248,7 +307,7 @@
 }
 
 - (void)sizeToFit
-{
+{	
 }
 
 //
@@ -267,7 +326,23 @@
 }
 
 - (void)copy:(id)sender
-{
+{	
+NSMutableArray *types = [NSMutableArray arrayWithObjects:NSStringPboardType, 
+													   NSColorPboardType, nil];
+NSPasteboard *pboard = [NSPasteboard generalPasteboard];
+
+	if([self isRichText])			
+		[types addObject:NSRTFPboardType];
+	if([self importsGraphics])		
+		[types addObject:NSRTFDPboardType];
+	[pboard declareTypes:types owner:self];
+	[pboard setString:[self string] forType:NSStringPboardType];
+//	if([self isRichText]) 
+//		[pboard setData:[[self class] dataForAttributedString:rtfContent] 
+//									  forType:NSRTFPboardType];
+//	if([self importsGraphics]) 
+//		[pboard setData:[[self class] dataForAttributedString:rtfContent] 
+//									  forType:NSRTFDPboardType];
 }
 
 - (void)copyFont:(id)sender
@@ -278,16 +353,30 @@
 {
 }
 
-- (void)cut:(id)sender
-{
+- (void)delete:(id)sender
+{	
+NSRange selRange = [self selectedRange];
+	
+	if(selRange.length) 
+		[self replaceCharactersInRange:selRange withString:@""];
+															// move the cursor
+	[self setSelectedRange:NSMakeRange([self selectedRange].location,0)];	
 }
 
-- (void)delete:(id)sender
-{
+- (void)cut:(id)sender
+{	
+	if([self selectedRange].length)
+		{	
+		[self delete:self];
+		[self copy:self];
+		}
 }
 
 - (void)paste:(id)sender
-{
+{	
+// NSPasteboard *pboard = [NSPasteboard generalPasteboard];
+
+	//-(void) insertText:(NSString *)insertString
 }
 
 - (void)pasteFont:(id)sender
@@ -324,33 +413,38 @@
 - (BOOL)isRulerVisible				{ return NO; }
 
 - (void)toggleRuler:(id)sender
-{}
+{
+}
 
 //
 // Spelling
 //
 - (void)checkSpelling:(id)sender
-{}
+{
+}
 
 - (void)showGuessPanel:(id)sender
-{}
+{	
+	[[NSSpellChecker sharedSpellChecker] orderFront:self];
+}
 
 //
 // Scrolling
 //
 - (void)scrollRangeToVisible:(NSRange)range
-{}
+{	
+}
 
 //
 // Reading and Writing RTFD Files
 //
 - (BOOL)readRTFDFromFile:(NSString *)path
-{
+{	
 	return NO;
 }
 
 - (BOOL)writeRTFDToFile:(NSString *)path atomically:(BOOL)flag
-{
+{	
 	return NO;
 }
 
@@ -368,7 +462,7 @@
 // Handling Events 
 //
 - (void)mouseDown:(NSEvent *)theEvent
-{
+{	
 	if (!is_selectable) 						// If not selectable then don't
 		return;									// recognize the mouse down
 	[[self window] makeFirstResponder:self];
@@ -435,8 +529,8 @@
 
 - (void)textDidChange:(NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(textDidChange:)])
-    [delegate textDidChange:nil];
+	if ([delegate respondsToSelector:@selector(textDidChange:)])
+		[delegate textDidChange:nil];
 }
 
 - (void)textDidEndEditing:(NSNotification *)aNotification
@@ -465,7 +559,7 @@
 // Displaying
 //
 - (void)drawRect:(NSRect)rect
-{
+{	
 }
 
 //
@@ -475,13 +569,11 @@
 {
 	[super encodeWithCoder:aCoder];
 
-#if 0
-	[aCoder encodeObjectReference: delegate withName: @"Delegate"];
-#else
 	[aCoder encodeConditionalObject:delegate];
-#endif
 
-	[aCoder encodeObject: text_contents];
+	[aCoder encodeObject: plainContent];
+	[aCoder encodeObject: rtfContent];
+
 	[aCoder encodeValueOfObjCType: "I" at: &alignment];
 	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_editable];
 	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_rich_text];
@@ -502,13 +594,11 @@
 {
 	[super initWithCoder:aDecoder];
 
-#if 0
-	[aDecoder decodeObjectAt: &delegate withName: NULL];
-#else
 	delegate = [aDecoder decodeObject];
-#endif
 
-	text_contents = [aDecoder decodeObject];
+	plainContent= [aDecoder decodeObject];
+	rtfContent= [aDecoder decodeObject];
+
 	[aDecoder decodeValueOfObjCType: "I" at: &alignment];
 	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_editable];
 	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_rich_text];
@@ -532,12 +622,16 @@
 // NSChangeSpelling protocol
 //
 - (void) changeSpelling:(id)sender
-{}
+{	
+	[self replaceCharactersInRange:[self selectedRange] 
+		  withString:[[sender selectedCell] stringValue]];
+}
 
 //
 // NSIgnoreMisspelledWords protocol
 //
 - (void)ignoreSpelling:(id)sender
-{}
+{	
+}
 
 @end

@@ -100,48 +100,29 @@ typedef enum _NSSelectionAffinity
 	
 	void *be_text_reserved;						// Reserved for back-end use
 
-	NSSize	minSize, maxSize;
-
-	NSDictionary *typingAttributes;
-
+	NSSize	minSize, maxSize;					// added for Daniel Bðhringer
 	// content
 	NSMutableString *plainContent;
 	NSMutableAttributedString *rtfContent;
-
-	// internal stuff
-								// contains private _GNULineLayoutInfo objects
-	NSMutableArray *lineLayoutInformation;
-	int spellCheckerDocumentTag;
-	NSCharacterSet *selectionWordGranularitySet; 
+	NSCharacterSet *selectionWordGranularitySet; 	
 	NSCharacterSet *selectionParagraphGranularitySet;
-	NSCharacterSet *inWordSet, *outsideWordSet;		// linewrapping by word
 }
-
-//
-// GNU utility methods
-//
-						// return value is guaranteed to be a 
-						// NSAttributedString even if data is only NSString
-+ (NSAttributedString*) attributedStringForData:(NSString*) aData;
-+ (NSData*) dataForAttributedString:(NSAttributedString*) aString;
 
 //
 // Getting and Setting Contents 
 //
-- (void)replaceRange:(NSRange)range
-	     withRTF:(NSData *)rtfData;
-- (void)replaceRange:(NSRange)range
-	    withRTFD:(NSData *)rtfdData;
+- (void)replaceCharactersInRange:(NSRange)range withString:(NSString *)aString;
+- (void)replaceCharactersInRange:(NSRange)range withRTF:(NSData *)rtfData;
+- (void)replaceCharactersInRange:(NSRange)range withRTFD:(NSData *)rtfdData;
+- (void)replaceRange:(NSRange)range withRTF:(NSData *)rtfData;
+- (void)replaceRange:(NSRange)range withRTFD:(NSData *)rtfdData;
 - (NSData *)RTFDFromRange:(NSRange)range;
 - (NSData *)RTFFromRange:(NSRange)range;
 - (void)setText:(NSString *)string;
-- (void)setText:(NSString *)string
-	  range:(NSRange)range;
+- (void)setText:(NSString *)string range:(NSRange)range;
 - (NSString *)text;
 - (NSString *)string;
 - (void)setString:(NSString *)string;					// old fashioned
-
-- (unsigned) textLength;								// GNU extension
 
 //
 // Managing Global Characteristics

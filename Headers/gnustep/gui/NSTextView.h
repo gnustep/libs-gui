@@ -5,7 +5,7 @@
 
    Author:  Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
    Date: August 1998
-   Source by Daniel Bðhringer integrated into GNUstep
+   Source by Daniel Bðhringer integrated into GNUstep gui
    by Felipe A. Rodriguez <far@ix.netcom.com> 
    
    This file is part of the GNUstep GUI Library.
@@ -32,15 +32,32 @@
 
 @interface NSTextView : NSText
 {
+	NSDictionary *typingAttributes;
+	int spellCheckerDocumentTag;
 }
 
 - (void)insertText:(NSString *)insertString;
+
+- (NSDictionary*)typingAttributes;
+- (void)setTypingAttributes:(NSDictionary *)attrs;
 
 - (NSArray *)acceptableDragTypes;
 - (void)updateDragTypeRegistration;
 
 - (NSRange) selectionRangeForProposedRange:(NSRange)proposedCharRange 
 			granularity:(NSSelectionGranularity)granularity;
+
+- (int)spellCheckerDocumentTag;
+
+//
+// Managing the Selection   NSText method
+//
+- (void)setSelectedRange:(NSRange)range;
+
+//
+// NSIgnoreMisspelledWords protocol
+//
+- (void)ignoreSpelling:(id)sender;
 
 @end
 

@@ -1,4 +1,11 @@
 <<<<<<< ChangeLog
+Thurs Aug 20 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* NSSplitView.m in drawRect moved NSRectFill() to backend
+	* NSSavePanel.m commented out call to NSRunAlertPanel
+	* NSText.h and NSText.m integrated source from Daniel Bðhringer. 
+	* NSTextView.h and NSTextView.m integrated source from Daniel Bðhringer. 
+
 Weds Aug 19 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* NSView.h added specific values and comments to resize constants enum. 

@@ -423,8 +423,7 @@ NSPoint centerRectInRect(NSRect innerRect, NSRect outerRect)
   if([self isOpaque])
     {
       [[self backgroundColor] set];
-	  NSRectFill(r);
-//      [self _fillRect: [self bounds]];
+      [self _fillRect: [self bounds]];
     }
 
   /* draw the dimples */
