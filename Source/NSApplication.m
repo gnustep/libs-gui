@@ -21,7 +21,7 @@
 
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
    Library General Public License for more details.
 
    You should have received a copy of the GNU Library General Public
@@ -64,18 +64,18 @@
 #include <AppKit/IMLoading.h>
 #include <AppKit/DPSOperators.h>
 
-//
-// Types
-//
+/*
+ * Types
+ */
 struct _NSModalSession {
-  int       runState;
+  int	    runState;
   NSWindow  *window;
   NSModalSession    previous;
 };
 
-//
-// Class variables
-//
+/*
+ * Class variables
+ */
 static BOOL gnustep_gui_app_is_in_dealloc;
 static NSEvent *null_event;
 static NSString *NSAbortModalException = @"NSAbortModalException";
@@ -84,9 +84,9 @@ NSApplication	*NSApp = nil;
 
 @implementation NSApplication
 
-//
-// Class methods
-//
+/*
+ * Class methods
+ */
 + (void) initialize
 {
   if (self == [NSApplication class])
@@ -111,19 +111,24 @@ NSApplication	*NSApp = nil;
 }
 
 + (NSApplication *) sharedApplication
-{					// If the global application does
-  if (!NSApp)				// not yet exist then create it
+{
+  /* If the global application does not yet exist then create it */
+  if (!NSApp)
     {
-      NSApp = [self alloc];		// Don't combine the following two
-      [NSApp init];			// statements into one to avoid
-    }					// problems with some classes'
-					// initialization code that tries
-  return NSApp;				// to get the shared application.
+      /*
+       * Don't combine the following two statements into one to avoid
+       * problems with some classes' initialization code that tries
+       * to get the shared application.
+       */
+      NSApp = [self alloc];
+      [NSApp init];
+    }
+  return NSApp;
 }
 
-//
-// Instance methods
-//
+/*
+ * Instance methods
+ */
 - (id) init
 {
   if (NSApp != self)
@@ -226,9 +231,9 @@ NSApplication	*NSApp = nil;
   [super dealloc];
 }
 
-//
-// Changing the active application
-//
+/*
+ * Changing the active application
+ */
 - (void) activateIgnoringOtherApps: (BOOL)flag
 {
   if (app_is_active == NO)
@@ -240,7 +245,7 @@ NSApplication	*NSApp = nil;
        * visible when the application is active.
        */
       [nc postNotificationName: NSApplicationWillBecomeActiveNotification
-                        object: self];
+			object: self];
 
       app_is_active = YES;
 
@@ -248,7 +253,7 @@ NSApplication	*NSApp = nil;
 	[self unhide: nil];
 
       [nc postNotificationName: NSApplicationDidBecomeActiveNotification
-                        object: self];
+			object: self];
     }
 }
 
@@ -263,13 +268,13 @@ NSApplication	*NSApp = nil;
        * invisible when the application is not active.
        */
       [nc postNotificationName: NSApplicationWillResignActiveNotification
-                        object: self];
+			object: self];
 
       unhide_on_activation = NO;
       app_is_active = NO;
 
       [nc postNotificationName: NSApplicationDidResignActiveNotification
-                        object: self];
+			object: self];
     }
 }
 
@@ -278,13 +283,13 @@ NSApplication	*NSApp = nil;
   return app_is_active;
 }
 
-//
-// Running the main event loop
-//
+/*
+ * Running the main event loop
+ */
 - (void) run
 {
   NSEvent *e;
-  Class	arpClass = [NSAutoreleasePool class];	 /* Cache the class */
+  Class arpClass = [NSAutoreleasePool class];	 /* Cache the class */
   NSAutoreleasePool* pool;
 
   NSDebugLog(@"NSApplication -run\n");
@@ -331,14 +336,14 @@ NSApplication	*NSApp = nil;
   return app_is_running;
 }
 
-//
-// Running modal event loops
-//
+/*
+ * Running modal event loops
+ */
 - (void) abortModal
 {
   if (session == 0)
     [NSException raise: NSAbortModalException
-                format: @"abortModal called while not in a modal session"];
+		format: @"abortModal called while not in a modal session"];
 
   [NSException raise: NSAbortModalException format: @"abortModal"];
 }
@@ -348,7 +353,7 @@ NSApplication	*NSApp = nil;
   NSModalSession theSession;
 
   theSession = (NSModalSession)NSZoneMalloc(NSDefaultMallocZone(),
-                    sizeof(struct _NSModalSession));
+		    sizeof(struct _NSModalSession));
   theSession->runState = NSRunContinuesResponse;
   theSession->window = theWindow;
   theSession->previous = session;
@@ -363,16 +368,15 @@ NSApplication	*NSApp = nil;
 
   if (theSession == 0)
     [NSException raise: NSInvalidArgumentException
-                format: @"null pointer passed to endModalSession: "];
+		format: @"null pointer passed to endModalSession: "];
 
-                                                // Remove this session from
-                                                // linked list of sessions.
+  /* Remove this session from linked list of sessions. */
   while (tmp && tmp != theSession)
     tmp = tmp->previous;
 
   if (tmp == 0)
     [NSException raise: NSInvalidArgumentException
-                format: @"unknown session passed to endModalSession: "];
+		format: @"unknown session passed to endModalSession: "];
 
   while (session != theSession)
     {
@@ -397,20 +401,20 @@ NSApplication	*NSApp = nil;
     {
       theSession = [self beginModalSessionForWindow: theWindow];
       while (code == NSRunContinuesResponse)
-        {
-          code = [self runModalSession: theSession];
-        }
+	{
+	  code = [self runModalSession: theSession];
+	}
 
       [self endModalSession: theSession];
     }
   NS_HANDLER
     {
       if (theSession)
-        {
-          [self endModalSession: theSession];
-        }
+	{
+	  [self endModalSession: theSession];
+	}
       if ([[localException name] isEqual: NSAbortModalException] == NO)
-        [localException raise];
+	[localException raise];
       code = NSRunAbortedResponse;
     }
     NS_ENDHANDLER
@@ -428,7 +432,7 @@ NSApplication	*NSApp = nil;
 
   if (theSession != session)
     [NSException raise: NSInvalidArgumentException
-                format: @"runModalSession: with wrong session"];
+		format: @"runModalSession: with wrong session"];
 
   pool = [NSAutoreleasePool new];
   [theSession->window makeKeyAndOrderFront: self];
@@ -454,7 +458,7 @@ NSApplication	*NSApp = nil;
 
   RELEASE(pool);
   /*
-   *    Deal with the events in the queue.
+   *	Deal with the events in the queue.
    */
   while (found == YES && theSession->runState == NSRunContinuesResponse)
     {
@@ -465,30 +469,30 @@ NSApplication	*NSApp = nil;
 	{
 	  ASSIGN(current_event, event);
 	  found = YES;
-        }
+	}
       else
 	{
 	  found = NO;
 	}
 
       if (found == YES)
-        {
-          [self sendEvent: current_event];
+	{
+	  [self sendEvent: current_event];
 
-          /*
-           *    Check to see if the window has gone away - if so, end session.
-           */
+	  /*
+	   *	Check to see if the window has gone away - if so, end session.
+	   */
 #if 0
-          if ([[self windows] indexOfObjectIdenticalTo: session->window] ==
-            NSNotFound || [session->window isVisible] == NO)
+	  if ([[self windows] indexOfObjectIdenticalTo: session->window] ==
+	    NSNotFound || [session->window isVisible] == NO)
 #else
-          if ([[self windows] indexOfObjectIdenticalTo: session->window] ==
-            NSNotFound)
+	  if ([[self windows] indexOfObjectIdenticalTo: session->window] ==
+	    NSNotFound)
 #endif
-            [self stopModal];
-          if (windows_need_update)
-            [self updateWindows];
-        }
+	    [self stopModal];
+	  if (windows_need_update)
+	    [self updateWindows];
+	}
 
       RELEASE(pool);
     }
@@ -515,18 +519,18 @@ NSApplication	*NSApp = nil;
 {
   if (session == 0)
     [NSException raise: NSInvalidArgumentException
-                format: @"stopModalWithCode: when not in a modal session"];
+		format: @"stopModalWithCode: when not in a modal session"];
   else
     if (returnCode == NSRunContinuesResponse)
       [NSException raise: NSInvalidArgumentException
-                  format: @"stopModalWithCode: with NSRunContinuesResponse"];
+		  format: @"stopModalWithCode: with NSRunContinuesResponse"];
 
   session->runState = returnCode;
 }
 
-//
-// Getting, removing, and posting events
-//
+/*
+ * Getting, removing, and posting events
+ */
 - (void) sendEvent: (NSEvent *)theEvent
 {
   if (theEvent == null_event)
@@ -575,8 +579,8 @@ NSApplication	*NSApp = nil;
 	    static NSMenu	*copyOfMainMenu = nil;
 	    NSWindow		*copyMenuWindow;
 
-	    if (!copyOfMainMenu)                        // display the menu
-	      copyOfMainMenu = [main_menu copy];      // under the mouse
+	    if (!copyOfMainMenu)	/* display the menu under the mouse */
+	      copyOfMainMenu = [main_menu copy];
 	    copyMenuWindow = [copyOfMainMenu menuWindow];
 	    [copyOfMainMenu _rightMouseDisplay];
 	    [copyMenuWindow _captureMouse: self];
@@ -607,13 +611,13 @@ NSApplication	*NSApp = nil;
 }
 
 - (void) discardEventsMatchingMask: (unsigned int)mask
-                       beforeEvent: (NSEvent *)lastEvent
+		       beforeEvent: (NSEvent *)lastEvent
 {
   DPSDiscardEvents(GSCurrentContext(), mask, lastEvent);
 }
 
 - (NSEvent*) nextEventMatchingMask: (unsigned int)mask
-                         untilDate: (NSDate*)expiration
+			 untilDate: (NSDate*)expiration
 			    inMode: (NSString*)mode
 			   dequeue: (BOOL)flag
 {
@@ -659,9 +663,9 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
   DPSPostEvent(GSCurrentContext(), event, flag);
 }
 
-//
-// Sending action messages
-//
+/*
+ * Sending action messages
+ */
 - (BOOL) sendAction: (SEL)aSelector to: aTarget from: sender
 {
   /*
@@ -674,44 +678,44 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
     }
   else
     {
-      id        resp = [self targetForAction: aSelector];
+      id	resp = [self targetForAction: aSelector];
 
       if (resp)
-        {
-          [resp performSelector: aSelector withObject: sender];
-          return YES;
-        }
+	{
+	  [resp performSelector: aSelector withObject: sender];
+	  return YES;
+	}
     }
   return NO;
 }
 
 - (id) targetForAction: (SEL)aSelector
 {
-  NSWindow      *keyWindow;
-  NSWindow      *mainWindow;
-  id    resp;
+  NSWindow	*keyWindow;
+  NSWindow	*mainWindow;
+  id	resp;
 
   keyWindow = [self keyWindow];
   if (keyWindow != nil)
     {
       resp = [keyWindow firstResponder];
       while (resp != nil)
-        {
-          if ([resp respondsToSelector: aSelector])
-            {
-              return resp;
-            }
-          resp = [resp nextResponder];
-        }
+	{
+	  if ([resp respondsToSelector: aSelector])
+	    {
+	      return resp;
+	    }
+	  resp = [resp nextResponder];
+	}
       if ([keyWindow respondsToSelector: aSelector])
-        {
-          return keyWindow;
-        }
+	{
+	  return keyWindow;
+	}
       resp = [keyWindow delegate];
       if (resp != nil && [resp respondsToSelector: aSelector])
-        {
-          return resp;
-        }
+	{
+	  return resp;
+	}
     }
 
   mainWindow = [self mainWindow];
@@ -719,22 +723,22 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
     {
       resp = [mainWindow firstResponder];
       while (resp != nil)
-        {
-          if ([resp respondsToSelector: aSelector])
-            {
-              return resp;
-            }
-          resp = [resp nextResponder];
-        }
+	{
+	  if ([resp respondsToSelector: aSelector])
+	    {
+	      return resp;
+	    }
+	  resp = [resp nextResponder];
+	}
       if ([mainWindow respondsToSelector: aSelector])
-        {
-          return mainWindow;
-        }
+	{
+	  return mainWindow;
+	}
       resp = [mainWindow delegate];
       if (resp != nil && [resp respondsToSelector: aSelector])
-        {
-          return resp;
-        }
+	{
+	  return resp;
+	}
     }
 
   if ([self respondsToSelector: aSelector])
@@ -775,9 +779,9 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
   return app_icon;
 }
 
-//
-// Hiding and arranging windows
-//
+/*
+ * Hiding and arranging windows
+ */
 - (void) hide: (id)sender
 {
   if (app_is_hidden == NO)
@@ -786,27 +790,27 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
       NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
       [nc postNotificationName: NSApplicationWillHideNotification
-                        object: self];
+			object: self];
 
       menu = [self windowsMenu];
       if (menu)
-        {
-          NSArray   *itemArray;
-          unsigned  count;
-          unsigned  i;
+	{
+	  NSArray   *itemArray;
+	  unsigned  count;
+	  unsigned  i;
 
-          itemArray = [menu itemArray];
-          count = [itemArray count];
-          for (i = 0; i < count; i++)
-            {
-              id    win = [[itemArray objectAtIndex: i] target];
+	  itemArray = [menu itemArray];
+	  count = [itemArray count];
+	  for (i = 0; i < count; i++)
+	    {
+	      id    win = [[itemArray objectAtIndex: i] target];
 
-              if ([win isKindOfClass: [NSWindow class]])
-                {
-                  [win orderOut: self];
-                }
-            }
-        }
+	      if ([win isKindOfClass: [NSWindow class]])
+		{
+		  [win orderOut: self];
+		}
+	    }
+	}
       app_is_hidden = YES;
       /*
        * On hiding we also deactivate the application which will make the menus
@@ -817,7 +821,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 
 
       [nc postNotificationName: NSApplicationDidHideNotification
-                        object: self];
+			object: self];
     }
 }
 
@@ -832,12 +836,12 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
     {
       [self unhideWithoutActivation];
       if (app_is_active == NO)
-        {
-          /*
-           * Activation should make the applications menus visible.
-           */
-          [self activateIgnoringOtherApps: YES];
-        }
+	{
+	  /*
+	   * Activation should make the applications menus visible.
+	   */
+	  [self activateIgnoringOtherApps: YES];
+	}
     }
 }
 
@@ -845,36 +849,36 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 {
   if (app_is_hidden == YES)
     {
-      NSWindow  *key = [self keyWindow];
-      NSMenu    *menu;
+      NSWindow	*key = [self keyWindow];
+      NSMenu	*menu;
       NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
       [nc postNotificationName: NSApplicationWillUnhideNotification
-                        object: self];
+			object: self];
 
       menu = [self windowsMenu];
       if (menu)
-        {
-          NSArray   *itemArray;
-          unsigned  count;
-          unsigned  i;
+	{
+	  NSArray   *itemArray;
+	  unsigned  count;
+	  unsigned  i;
 
-          itemArray = [menu itemArray];
-          count = [itemArray count];
-          for (i = 0; i < count; i++)
-            {
-              id    win = [[itemArray objectAtIndex: i] target];
+	  itemArray = [menu itemArray];
+	  count = [itemArray count];
+	  for (i = 0; i < count; i++)
+	    {
+	      id    win = [[itemArray objectAtIndex: i] target];
 
-              if (win != key && [win isKindOfClass: [NSWindow class]])
-                {
-                  [win orderFront: self];
-                }
-            }
-        }
+	      if (win != key && [win isKindOfClass: [NSWindow class]])
+		{
+		  [win orderFront: self];
+		}
+	    }
+	}
       app_is_hidden = NO;
 
       [nc postNotificationName: NSApplicationDidUnhideNotification
-                        object: self];
+			object: self];
 
       if ([self keyWindow] != key)
 	[key orderFront: self];
@@ -882,34 +886,34 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
     }
 }
 
-- (void) arrangeInFront: (id)sender                 // preliminary FIX ME
+- (void) arrangeInFront: (id)sender
 {
-  NSMenu        *menu;
+  NSMenu	*menu;
 
   menu = [self windowsMenu];
   if (menu)
     {
-      NSArray   *itemArray;
-      unsigned  count;
-      unsigned  i;
+      NSArray	*itemArray;
+      unsigned	count;
+      unsigned	i;
 
       itemArray = [menu itemArray];
       count = [itemArray count];
       for (i = 0; i < count; i++)
-        {
-          id    win = [[itemArray objectAtIndex: i] target];
+	{
+	  id	win = [[itemArray objectAtIndex: i] target];
 
-          if ([win isKindOfClass: [NSWindow class]])
-            {
-              [win orderFront: sender];
-            }
-        }
+	  if ([win isKindOfClass: [NSWindow class]])
+	    {
+	      [win orderFront: sender];
+	    }
+	}
     }
 }
 
-//
-// Managing windows
-//
+/*
+ * Managing windows
+ */
 - (NSWindow*) keyWindow
 {
   NSArray *window_list = [self windows];
@@ -921,7 +925,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
     {
       w = [window_list objectAtIndex: i];
       if ([w isKeyWindow])
-        return w;
+	return w;
     }
 
   return nil;
@@ -938,7 +942,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
     {
       w = [window_list objectAtIndex: i];
       if ([w isMainWindow])
-        return w;
+	return w;
     }
 
   return nil;
@@ -946,35 +950,35 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 
 - (NSWindow*) makeWindowsPerform: (SEL)aSelector inOrder: (BOOL)flag
 {
-  NSArray       *window_list = [self windows];
-  unsigned      i;
+  NSArray	*window_list = [self windows];
+  unsigned	i;
 
   if (flag)
     {
-      unsigned  count = [window_list count];
+      unsigned	count = [window_list count];
 
       for (i = 0; i < count; i++)
-        {
-          NSWindow *window = [window_list objectAtIndex: i];
+	{
+	  NSWindow *window = [window_list objectAtIndex: i];
 
-          if ([window performSelector: aSelector] != nil)
-            {
-              return window;
-            }
-        }
+	  if ([window performSelector: aSelector] != nil)
+	    {
+	      return window;
+	    }
+	}
     }
   else
     {
       i = [window_list count];
       while (i-- > 0)
-        {
-          NSWindow *window = [window_list objectAtIndex: i];
+	{
+	  NSWindow *window = [window_list objectAtIndex: i];
 
-          if ([window performSelector: aSelector] != nil)
-            {
-              return window;
-            }
-        }
+	  if ([window performSelector: aSelector] != nil)
+	    {
+	      return window;
+	    }
+	}
     }
   return nil;
 }
@@ -1033,15 +1037,15 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
     {
       w = [window_list objectAtIndex: i];
       if ([w windowNumber] == windowNum)
-        return w;
+	return w;
     }
 
   return nil;
 }
 
-//
-// Showing Standard Panels
-//
+/*
+ * Showing Standard Panels
+ */
 - (void) orderFrontColorPanel: sender
 {
 }
@@ -1058,9 +1062,9 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 {
 }
 
-//
-// Getting the main menu
-//
+/*
+ * Getting the main menu
+ */
 - (NSMenu*) mainMenu
 {
   return main_menu;
@@ -1084,40 +1088,40 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
     {
       mc = [mi objectAtIndex: i];
       if ([[mc stringValue] compare: @"Windows"] == NSOrderedSame)
-        {
-          windows_menu = mc;                            // Found it!
-          break;
-        }
+	{
+	  windows_menu = mc;
+	  break;
+	}
     }
 }
 
-//
-// Managing the Windows menu
-//
+/*
+ * Managing the Windows menu
+ */
 - (void) addWindowsItem: (NSWindow*)aWindow
-                  title: (NSString*)aString
-               filename: (BOOL)isFilename
+		  title: (NSString*)aString
+	       filename: (BOOL)isFilename
 {
   [self changeWindowsItem: aWindow title: aString filename: isFilename];
 }
 
 - (void) changeWindowsItem: (NSWindow*)aWindow
-                     title: (NSString*)aString
-                  filename: (BOOL)isFilename
+		     title: (NSString*)aString
+		  filename: (BOOL)isFilename
 {
-  NSMenu        *menu;
-  NSArray       *itemArray;
-  unsigned      count;
-  unsigned      i;
-  id            item;
+  NSMenu	*menu;
+  NSArray	*itemArray;
+  unsigned	count;
+  unsigned	i;
+  id		item;
 
   if (![aWindow isKindOfClass: [NSWindow class]])
     [NSException raise: NSInvalidArgumentException
-                format: @"Object of bad type passed as window"];
+		format: @"Object of bad type passed as window"];
 
   /*
-   *    If Menus are implemented as a subclass of window we must make sure
-   *    to exclude them from the windows menu.
+   *	If Menus are implemented as a subclass of window we must make sure
+   *	to exclude them from the windows menu.
    */
   if ([aWindow isKindOfClass: [NSMenu class]])
     return;
@@ -1145,15 +1149,15 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
       itemArray = [menu itemArray];
       count = [itemArray count];
       for (i = 0; i < count; i++)
-        {
-          id    item = [itemArray objectAtIndex: i];
+	{
+	  id	item = [itemArray objectAtIndex: i];
 
-          if ([item target] == aWindow)
-            {
-              [menu removeItem: item];
-              break;
-            }
-        }
+	  if ([item target] == aWindow)
+	    {
+	      [menu removeItem: item];
+	      break;
+	    }
+	}
     }
   else
     {
@@ -1173,13 +1177,13 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 
   i = 0;
   if (count > 0 && sel_eq([[itemArray objectAtIndex: 0] action],
-                @selector(arrangeInFront:)))
+		@selector(arrangeInFront:)))
     i++;
   if (count > i && sel_eq([[itemArray objectAtIndex: count-1] action],
-                @selector(performClose:)))
+		@selector(performClose:)))
     count--;
   if (count > i && sel_eq([[itemArray objectAtIndex: count-1] action],
-                @selector(performMiniaturize:)))
+		@selector(performMiniaturize:)))
     count--;
 
   while (i < count)
@@ -1187,13 +1191,13 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
       item = [itemArray objectAtIndex: i];
 
       if ([[item title] compare: aString] == NSOrderedDescending)
-        break;
+	break;
       i++;
     }
   item = [menu insertItemWithTitle: aString
-                            action: @selector(makeKeyAndOrderFront:)
-                     keyEquivalent: @""
-                           atIndex: i];
+			    action: @selector(makeKeyAndOrderFront:)
+		     keyEquivalent: @""
+			   atIndex: i];
   [item setTarget: aWindow];
   [menu sizeToFit];
   [menu update];
@@ -1201,29 +1205,29 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 
 - (void) removeWindowsItem: (NSWindow*)aWindow
 {
-  NSMenu        *menu;
+  NSMenu	*menu;
 
   menu = [self windowsMenu];
   if (menu)
     {
-      NSArray   *itemArray;
-      unsigned  count;
-      unsigned  i;
+      NSArray	*itemArray;
+      unsigned	count;
+      unsigned	i;
 
       itemArray = [menu itemArray];
       count = [itemArray count];
       for (i = 0; i < count; i++)
-        {
-          id    item = [itemArray objectAtIndex: i];
+	{
+	  id	item = [itemArray objectAtIndex: i];
 
-          if ([item target] == aWindow)
-            {
-              [menu removeItem: item];
-              [menu sizeToFit];
-              [menu update];
-              break;
-            }
-        }
+	  if ([item target] == aWindow)
+	    {
+	      [menu removeItem: item];
+	      [menu sizeToFit];
+	      [menu update];
+	      break;
+	    }
+	}
     }
 }
 
@@ -1232,7 +1236,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
   if (windows_menu)
     {
       NSMutableArray	*windows;
-      NSMenu	        *menu;
+      NSMenu		*menu;
       id		win;
 
       menu = [self windowsMenu];
@@ -1283,23 +1287,23 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 
 - (void) updateWindowsItem: aWindow
 {
-  NSMenu        *menu;
+  NSMenu	*menu;
 
   menu = [self windowsMenu];
   if (menu)
     {
-      NSArray   *itemArray;
-      unsigned  count;
-      unsigned  i;
+      NSArray	*itemArray;
+      unsigned	count;
+      unsigned	i;
 
       itemArray = [menu itemArray];
       count = [itemArray count];
       for (i = 0; i < count; i++)
-        {
-          id    item = [itemArray objectAtIndex: i];
+	{
+	  id	item = [itemArray objectAtIndex: i];
 
-          if ([item target] == aWindow)
-            {
+	  if ([item target] == aWindow)
+	    {
 	      NSCellImagePosition	oldPos = [item imagePosition];
 	      NSImage			*oldImage = [item image];
 	      BOOL			changed = NO;
@@ -1341,9 +1345,9 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 		  [menu sizeToFit];
 		  [menu update];
 		}
-              break;
-            }
-        }
+	      break;
+	    }
+	}
     }
 }
 
@@ -1355,14 +1359,14 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
     return nil;
 }
 
-//
-// Managing the Service menu
-//
+/*
+ * Managing the Service menu
+ */
 - (void) registerServicesMenuSendTypes: (NSArray *)sendTypes
-                           returnTypes: (NSArray *)returnTypes
+			   returnTypes: (NSArray *)returnTypes
 {
   [listener registerSendTypes: sendTypes
-                  returnTypes: returnTypes];
+		  returnTypes: returnTypes];
 }
 
 - (NSMenu *) servicesMenu
@@ -1386,7 +1390,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 }
 
 - (id) validRequestorForSendType: (NSString *)sendType
-                      returnType: (NSString *)returnType
+		      returnType: (NSString *)returnType
 {
   return nil;
 }
@@ -1397,14 +1401,14 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 }
 
 - (void) reportException: (NSException *)anException
-{                                                   // Reporting an exception
+{
   if (anException)
     NSLog(@"reported exception - %@", anException);
 }
 
-//
-// Terminating the application
-//
+/*
+ * Terminating the application
+ */
 - (void) terminate: (id)sender
 {
   if ([self applicationShouldTerminate: self])
@@ -1418,7 +1422,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
     }
 }
 
-- (id) delegate                                     // Assigning a delegate
+- (id) delegate
 {
   return delegate;
 }
@@ -1451,9 +1455,9 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
   SET_DELEGATE_NOTIFICATION(WillUpdate);
 }
 
-//
-// Implemented by the delegate
-//
+/*
+ * Implemented by the delegate
+ */
 - (BOOL) application: sender openFileWithoutUI: (NSString *)filename
 {
   BOOL result = NO;
@@ -1576,9 +1580,9 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
     [delegate applicationWillUpdate: aNotification];
 }
 
-//
-// NSCoding protocol
-//
+/*
+ * NSCoding protocol
+ */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
