@@ -289,15 +289,13 @@ Class _nspopupbuttonCellClass = 0;
 - (void) synchronizeTitleAndSelectedItem
 {
   [_cell synchronizeTitleAndSelectedItem];
-
-  [self sizeToFit];
-
   [self setNeedsDisplay: YES];
 }
 
 - (void) sizeToFit
 {
   [[popb_menu menuRepresentation] sizeToFit];
+  [super sizeToFit];
 } 
 
 - (void) mouseDown: (NSEvent*)theEvent
