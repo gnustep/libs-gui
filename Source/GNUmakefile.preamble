@@ -60,23 +60,23 @@ BISON = BISON_SIMPLE=Parsers/bison.simple bison
 ADDITIONAL_OBJCFLAGS = -Wall
 
 # Additional flags to pass to the C compiler
-ADDITIONAL_CFLAGS =
+# ADDITIONAL_CFLAGS =
 
 # Additional include directories the compiler should search
 ADDITIONAL_INCLUDE_DIRS = -I../Headers
 
 # Additional LDFLAGS to pass to the linker
-ADDITIONAL_LDFLAGS = 
+# ADDITIONAL_LDFLAGS = 
 
 # Additional library directories the linker should search
-ADDITIONAL_LIB_DIRS = 
+# ADDITIONAL_LIB_DIRS = 
 
 #
 # Flags dealing with installing and uninstalling
 #
 
 # Additional directories to be created during installation
-ADDITIONAL_INSTALL_DIRS = 
+# ADDITIONAL_INSTALL_DIRS = 
 
 # What are the libraries this library depends upon. This is needed for some
 # systems where building a shared library requires to pass to the linker
