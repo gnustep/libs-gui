@@ -1,3 +1,9 @@
+2001-12-09  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSApplication.m
+	[NSIconWindow _initDefaults] set the title of the icon window, so
+	the window manager can display it.
+	
 2001-12-07  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWorkspace.m
