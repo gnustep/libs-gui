@@ -1,3 +1,9 @@
+Tue Jan 16 11:47:58 2001  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSMenu.m ([NSMenuWindowTitleView -drawRect:]): Fixed bug
+	- exposed rect being confused with bounds (patch by Malmberg
+	<malmberg@malmberg.org>).
+
 2001-01-15  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/gnustep/gui/NSLayoutManager.h: New _endCharIndex ivar
