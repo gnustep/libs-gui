@@ -28,6 +28,8 @@
 #ifndef _GNUstep_H_NSSpellProtocol
 #define _GNUstep_H_NSSpellProtocol
 
+#include <objc/objc.h>
+
 @protocol NSChangeSpelling
 
 - (void) changeSpelling:(id)sender;

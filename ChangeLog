@@ -1,3 +1,14 @@
+2004-02-11 17:27  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/Additions/GNUstepGUI/GSServicesManager.h,
+	Headers/Additions/GNUstepGUI/GSTitleView.h,
+	Headers/AppKit/NSDrawer.h, Headers/AppKit/NSHelpManager.h,
+	Headers/AppKit/NSMenuItem.h, Headers/AppKit/NSPrintOperation.h,
+	Headers/AppKit/NSSpellProtocol.h, Headers/AppKit/NSTableColumn.h,
+	Headers/AppKit/NSToolbar.h,
+	Headers/AppKit/NSUserInterfaceValidation.h: Add missing forward
+	declarations and includes to make all headers self-contained.
+
 2004-02-11  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenuItemCell.m: (-drawBorderAndBackgroundWithFrame:inView:)

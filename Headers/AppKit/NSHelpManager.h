@@ -30,6 +30,7 @@
 #define __GNUstep_H_NSHelpManager
 
 #include <Foundation/NSBundle.h>
+#include <Foundation/NSGeometry.h>
 #include <Foundation/NSMapTable.h>
 #include <AppKit/NSApplication.h>
 

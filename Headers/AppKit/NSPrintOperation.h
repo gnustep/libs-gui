@@ -41,6 +41,7 @@
 @class NSMutableData;
 
 @class NSView;
+@class NSWindow;
 @class NSPrintInfo;
 @class NSPrintPanel;
 @class NSGraphicsContext;

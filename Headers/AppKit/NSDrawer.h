@@ -34,6 +34,7 @@
 
 @class NSWindow;
 @class NSView;
+@class NSNotification;
 
 enum {
   NSDrawerClosedState,

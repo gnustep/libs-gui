@@ -27,6 +27,8 @@
 #ifndef _GNUstep_H_GSServicesManager
 #define _GNUstep_H_GSServicesManager
 
+#include <Foundation/NSObject.h>
+
 @class	NSApplication;
 @class	NSArray;
 @class	NSDate;

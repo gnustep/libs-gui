@@ -26,7 +26,9 @@
 #ifndef _GNUstep_H_GSTitleView
 #define _GNUstep_H_GSTitleView
 
-@class NSDictionary;
+#include <AppKit/NSView.h>
+
+@class NSMutableDictionary;
 @class NSButton;
 @class NSImage;
 

@@ -30,6 +30,7 @@
 #ifndef _GNUstep_H_NSTableColumn
 #define _GNUstep_H_NSTableColumn
 
+#include <Foundation/NSObject.h>
 #include <AppKit/AppKitDefines.h>
 
 @class NSCell;
