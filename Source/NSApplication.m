@@ -1022,29 +1022,26 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 {
   if (app_is_hidden == NO)
     {
-      NSMenu *menu;
-      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+      NSNotificationCenter	*nc;
+      NSArray			*windowArray;
+      unsigned			count;
+      unsigned			i;
 
+      nc = [NSNotificationCenter defaultCenter];
       [nc postNotificationName: NSApplicationWillHideNotification
 			object: self];
 
-      menu = [self windowsMenu];
-      if (menu)
+      windowArray = [self windows];
+      count = [windowArray count];
+      for (i = 0; i < count; i++)
 	{
-	  NSArray   *itemArray;
-	  unsigned  count;
-	  unsigned  i;
+	  id    win = [windowArray objectAtIndex: i];
 
-	  itemArray = [menu itemArray];
-	  count = [itemArray count];
-	  for (i = 0; i < count; i++)
+	  if ([win isKindOfClass: [NSWindow class]]
+	    && ![win isKindOfClass: [NSMenuWindow class]]
+	    && ![win isKindOfClass: [NSIconWindow class]])
 	    {
-	      id    win = [[itemArray objectAtIndex: i] target];
-
-	      if ([win isKindOfClass: [NSWindow class]])
-		{
-		  [win orderOut: self];
-		}
+	      [win orderOut: self];
 	    }
 	}
       app_is_hidden = YES;
@@ -1086,26 +1083,27 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 {
   if (app_is_hidden == YES)
     {
-      NSWindow	*key = [self keyWindow];
-      NSMenu	*menu;
-      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+      NSNotificationCenter	*nc;
+      NSWindow			*key;
+      NSArray			*windowArray;
+      unsigned			count;
+      unsigned			i;
 
+      nc = [NSNotificationCenter defaultCenter];
       [nc postNotificationName: NSApplicationWillUnhideNotification
 			object: self];
 
-      menu = [self windowsMenu];
-      if (menu)
+      key = [self keyWindow];
+      windowArray = [self windows];
+      count = [windowArray count];
+      for (i = 0; i < count; i++)
 	{
-	  NSArray   *itemArray;
-	  unsigned  count;
-	  unsigned  i;
+	  id    win = [windowArray objectAtIndex: i];
 
-	  itemArray = [menu itemArray];
-	  count = [itemArray count];
-	  for (i = 0; i < count; i++)
+	  if (win != key && [win isKindOfClass: [NSWindow class]]
+	    && ![win isKindOfClass: [NSMenuWindow class]]
+	    && ![win isKindOfClass: [NSIconWindow class]])
 	    {
-	      id    win = [[itemArray objectAtIndex: i] target];
-
 	      if (win != key && [win isKindOfClass: [NSWindow class]])
 		{
 		  [win orderFrontRegardless];

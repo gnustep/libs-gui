@@ -1,3 +1,10 @@
+Fri Nov  5  1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSApplication.m: ([-hide:]) and ([-unhideWithoutActivation])
+	Changed to hide/unhide all windows (excluding a couple of special
+	cases - menu windown and app icon windows) as per the spec, not just
+	menus that appear in the windows menu.
+
 Thu Nov  4  1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSApplication.m: ([-runModalforWindow:]) make the window key
