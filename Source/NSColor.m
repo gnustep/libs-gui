@@ -36,6 +36,7 @@
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSDebug.h>
+#include <Foundation/NSScanner.h>
 
 #include "AppKit/NSColor.h"
 #include "AppKit/NSColorList.h"
@@ -162,7 +163,7 @@ static NSMutableDictionary	*colorStrings = nil;
 static NSMutableDictionary	*systemDict = nil;
 
 static
-void initSystemColors()
+void initSystemColors(void)
 {
   NSString *white;
   NSString *lightGray;
@@ -220,24 +221,38 @@ void initSystemColors()
   systemColors = [NSColorList colorListNamed: @"System"];
   if (systemColors == nil)
     {
+      systemColors = [[NSColorList alloc] initWithName: @"System"];
+    }
+
+    {
       NSEnumerator *e;
       NSString *r;
+      BOOL changed = NO;
 
       // Set up default system colors
-      systemColors = [[NSColorList alloc] initWithName: @"System"];
 
       e = [colorStrings keyEnumerator];
   
       while ((r = (NSString *)[e nextObject])) 
 	{
-	  NSString *cs = [colorStrings objectForKey: r];
-	  NSColor *c = [NSColorClass colorFromString: cs];
+	  NSString *cs;
+	  NSColor *c;
 
-	  if (c != nil)
-	    [systemColors setColor: c forKey: r];
+	  if ([systemColors colorWithKey: r])
+	    continue;
+
+	  cs = [colorStrings objectForKey: r];
+	  c = [NSColorClass colorFromString: cs];
+
+	  NSCAssert1(c, @"couldn't get default system color %@", r);
+
+	  [systemColors setColor: c forKey: r];
+
+	  changed = YES;
 	}
-      
-      [systemColors writeToFile: nil];
+
+      if (changed)
+	[systemColors writeToFile: nil];
     }
 
   systemDict = [NSMutableDictionary new];
@@ -1245,16 +1260,21 @@ systemColorWithName(NSString *name)
     }
   else if (str != nil)
     {
-      const char	*ptr = [str cString];
       float		r, g, b;
+      NSScanner *scanner = [[NSScanner alloc] initWithString: str];
 
-      if (sscanf(ptr, "%f %f %f", &r, &g, &b) == 3)
+      if ([scanner scanFloat: &r] &&
+	  [scanner scanFloat: &g] &&
+	  [scanner scanFloat: &b] &&
+	  [scanner isAtEnd])
 	{
 	  return [self colorWithCalibratedRed: r
 					green: g
 					 blue: b
 					alpha: 1.0];
 	}
+
+      DESTROY(scanner);
     }
 
   return nil;
