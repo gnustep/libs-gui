@@ -58,27 +58,29 @@
 @end
 
 @interface GSDragView (Private)
-- (void) _setupWindowAt: (NSPoint) dragStart image: (NSImage*)anImage;
+- (void) _setupWindowFor: (NSImage*)anImage
+	   mousePosition: (NSPoint)mPoint
+	   imagePosition: (NSPoint)iPoint;
 - (void) _clearupWindow;
 - (BOOL) _updateOperationMask: (NSEvent*) theEvent;
 - (void) _setCursor;
 - (void) _sendLocalEvent: (GSAppKitSubtype)subtype
-		  action: (NSDragOperation)action
-	        position: (NSPoint)eventLocation
-	       timestamp: (NSTimeInterval)time
-	        toWindow: (NSWindow*)dWindow;
+	  action: (NSDragOperation)action
+	position: (NSPoint)eventLocation
+       timestamp: (NSTimeInterval)time
+	toWindow: (NSWindow*)dWindow;
 - (void) _sendExternalEvent: (GSAppKitSubtype)subtype
-		     action: (NSDragOperation)action
-		   position: (NSPoint)eventLocation
-		  timestamp: (NSTimeInterval)time
-		   toWindow: (int)dWindowNumber;
+	     action: (NSDragOperation)action
+	   position: (NSPoint)eventLocation
+	  timestamp: (NSTimeInterval)time
+	   toWindow: (int)dWindowNumber;
 - (void) _handleDrag: (NSEvent*)theEvent;
 - (void) _handleEventDuringDragging: (NSEvent *)theEvent;
 - (void) _updateAndMoveImageToCorrectPosition;
 - (void) _moveDraggedImageToNewPosition;
 - (void) _slideDraggedImageTo: (NSPoint)screenPoint
-                numberOfSteps: (int) steps
-			delay: (float) delay
+	numberOfSteps: (int) steps
+		delay: (float) delay
                waitAfterSlide: (BOOL) waitFlag;
 - (NSWindow*) _windowAcceptingDnDunder: (NSPoint) mouseLocation
 			     windowRef: (int*)mouseWindowRef;
@@ -201,15 +203,12 @@ static	GSDragView *sharedDragView = nil;
 
 - (NSPoint) draggedImageLocation
 {
-  NSPoint loc;
+  NSPoint loc = dragPoint;
 
   if (dragSource)
     {
-      loc = NSMakePoint(dragPoint.x - offset.x, dragPoint.y - offset.y);
-    }
-  else
-    {
-      loc = dragPoint;
+      loc.x -= offset.width;
+      loc.y -= offset.height;
     }
 
   return loc;
@@ -226,10 +225,6 @@ static	GSDragView *sharedDragView = nil;
   [dragCell drawWithFrame: [self frame] inView: self];
 }
 
-/*
- * TODO:
- *  - use initialOffset
- */
 - (void) dragImage: (NSImage*)anImage
 		at: (NSPoint)screenLocation
 	    offset: (NSSize)initialOffset
@@ -238,6 +233,7 @@ static	GSDragView *sharedDragView = nil;
 	    source: (id)sourceObject
 	 slideBack: (BOOL)slideFlag
 {
+  NSPoint	eventPoint;
   ASSIGN(dragPasteboard, pboard);
   ASSIGN(dragSource, sourceObject);
   dragSequence = [event timestamp];
@@ -249,7 +245,22 @@ static	GSDragView *sharedDragView = nil;
   destExternal = NO;
 
   NSDebugLLog(@"NSDragging", @"Start drag with %@", [pboard types]);
-  [self _setupWindowAt: screenLocation image: anImage];
+
+  /*
+   * The position of the mouse is the event location  plus any offset
+   * provided.  We convert this from window coordinates to screen
+   * coordinates, then determine the screen offset between the mouse
+   * pointer and the dragged image.
+   */
+  eventPoint = [event locationInWindow];
+  eventPoint.x += initialOffset.width;
+  eventPoint.y += initialOffset.height;
+  eventPoint = [[event window] convertBaseToScreen: eventPoint];
+
+  [self _setupWindowFor: anImage
+	  mousePosition: eventPoint
+	  imagePosition: screenLocation];
+
   isDragging = YES;
   [self _handleDrag: event];
   isDragging = NO;
@@ -257,8 +268,14 @@ static	GSDragView *sharedDragView = nil;
   DESTROY(dragPasteboard);
 }
 
-- (void) slideDraggedImageTo:  (NSPoint) point
+- (void) slideDraggedImageTo:  (NSPoint)point
 {
+  /*
+   * Convert point from coordinates of image to coordinates of mouse
+   * cursor for internal use.
+   */
+  point.y += offset.height;
+  point.y += offset.height;
   [self _slideDraggedImageTo: point 
 	       numberOfSteps: SLIDE_NR_OF_STEPS 
 	               delay: SLIDE_TIME_STEP
@@ -305,27 +322,28 @@ static	GSDragView *sharedDragView = nil;
   - dragCell is initialized with the image to drag.
   - all instance variables pertaining to moving the window are initialized
  */
-- (void) _setupWindowAt: (NSPoint) dragStart image: (NSImage*)anImage
+- (void) _setupWindowFor: (NSImage*)anImage
+	   mousePosition: (NSPoint)mPoint
+	   imagePosition: (NSPoint)iPoint
 {
-  NSSize imageSize;
+  NSSize	imageSize;
 
   if (anImage == nil)
     {
       anImage = [NSImage imageNamed: @"common_Close"];
     }
-
-  [dragCell setImage: anImage];
   imageSize = [anImage size];
-  offset = NSMakePoint (imageSize.width / 2.0, imageSize.height / 2.0);
+  [dragCell setImage: anImage];
   
-  [_window setFrame: NSMakeRect (dragStart.x - offset.x, 
-                                 dragStart.y - offset.y,
-                                 imageSize.width, imageSize.height)
-           display: NO];
-
   /* setup the coordinates, used for moving the view around */
-  dragPosition = dragStart;
-  newPosition = dragStart;
+  dragPosition = mPoint;
+  newPosition = mPoint;
+  offset.width = mPoint.x - iPoint.x;
+  offset.height = mPoint.y - iPoint.y;
+
+  [_window setFrame:
+    NSMakeRect (iPoint.x, iPoint.y, imageSize.width, imageSize.height)
+            display: NO];
 
   // Only display the image
   [GSServerForWindow(_window) restrictWindow: [_window windowNumber]
@@ -558,6 +576,8 @@ static	GSDragView *sharedDragView = nil;
   BOOL deposited;
 
   startPoint = [eWindow convertBaseToScreen: [theEvent locationInWindow]];
+  startPoint.x -= offset.width;
+  startPoint.y -= offset.height;
   NSDebugLLog(@"NSDragging", @"Drag window origin %d %d\n", startPoint.x, startPoint.y);
 
   // Notify the source that dragging has started
@@ -565,7 +585,7 @@ static	GSDragView *sharedDragView = nil;
       @selector(draggedImage:beganAt:)])
     {
       [dragSource draggedImage: [self draggedImage]
-		  beganAt: startPoint];
+		       beganAt: startPoint];
     }
 
   // --- Setup up the masks for the drag operation ---------------------
@@ -608,19 +628,20 @@ static	GSDragView *sharedDragView = nil;
   if ((targetWindowRef != 0)
     && ((targetMask & dragMask & operationMask) != NSDragOperationNone))
     {
-      // FIXME:
-      // We remove the dragged image from the screen before 
-      // sending the dnd drop event to the destination.
-      // This code should actually be rewritten, because
-      // the depositing of the drop consist of three steps
-      //  - prepareForDragOperation
-      //  - performDragOperation
-      //  - concludeDragOperation.
-      // The dragged image should be removed from the screen
-      // between the prepare and the perform operation.
-      // The three steps are now executed in the NSWindow class
-      // and the NSWindow class does not have access to
-      // the image.
+      /* FIXME:
+       * We remove the dragged image from the screen before 
+       * sending the dnd drop event to the destination.
+       * This code should actually be rewritten, because
+       * the depositing of the drop consist of three steps
+       *  - prepareForDragOperation
+       *  - performDragOperation
+       *  - concludeDragOperation.
+       * The dragged image should be removed from the screen
+       * between the prepare and the perform operation.
+       * The three steps are now executed in the NSWindow class
+       * and the NSWindow class does not have access to
+       * the image.
+       */
       [self _clearupWindow];
       [cursorBeforeDrag set];
       NSDebugLLog(@"NSDragging", @"sending dnd drop\n");
@@ -659,6 +680,9 @@ static	GSDragView *sharedDragView = nil;
       NSPoint point;
           
       point = [theEvent locationInWindow];
+      // Convert from mouse cursor coordinate to image coordinate
+      point.x -= offset.width;
+      point.y -= offset.height;
       point = [[theEvent window] convertBaseToScreen: point];
       [dragSource draggedImage: [self draggedImage]
 		       endedAt: point
@@ -680,6 +704,7 @@ static	GSDragView *sharedDragView = nil;
         switch (sub)
         {
         case GSAppKitWindowMoved:
+        case GSAppKitWindowResized:
           /*
            * Keep window up-to-date with its current position.
            */
@@ -733,7 +758,7 @@ static	GSDragView *sharedDragView = nil;
             {
               [self _sendLocalEvent: GSAppKitDraggingUpdate
 		    action: dragMask & operationMask
-		    position: NSMakePoint(newPosition.x + offset.x, newPosition.y + offset.y)
+		    position: newPosition
 		    timestamp: [theEvent timestamp]
 		    toWindow: destWindow];
 	    }
@@ -741,7 +766,7 @@ static	GSDragView *sharedDragView = nil;
 	    {
               [self _sendExternalEvent: GSAppKitDraggingUpdate
 		    action: dragMask & operationMask
-		    position: NSMakePoint(newPosition.x + offset.x, newPosition.y + offset.y)
+		    position: newPosition
 		    timestamp: [theEvent timestamp]
 		    toWindow: targetWindowRef];
 	    }
@@ -770,14 +795,13 @@ static	GSDragView *sharedDragView = nil;
   BOOL oldDestExternal = destExternal;
   int mouseWindowRef; 
   BOOL changeCursor = NO;
-  NSPoint mouseLocation = NSMakePoint(dragPosition.x + offset.x, dragPosition.y + offset.y);
  
   //--- Move drag image to the new position -----------------------------------
   [self _moveDraggedImageToNewPosition];
   
   //--- Determine target window ---------------------------------------------
- destWindow = [self _windowAcceptingDnDunder: mouseLocation
-                                   windowRef: &mouseWindowRef];
+  destWindow = [self _windowAcceptingDnDunder: dragPosition
+                                    windowRef: &mouseWindowRef];
 
   // If we have are not hovering above a window that we own
   // we are dragging to an external application.
@@ -788,7 +812,8 @@ static	GSDragView *sharedDragView = nil;
       dragPoint = [destWindow convertScreenToBase: dragPosition];
     }
             
-  NSDebugLLog(@"NSDragging", @"mouse window %d\n", mouseWindowRef);
+  NSDebugLLog(@"NSDragging", @"mouse window %d (%x) at %@\n",
+    mouseWindowRef, destWindow, NSStringFromPoint(dragPosition));
             
   //--- send exit message if necessary -------------------------------------
   if ((mouseWindowRef != targetWindowRef) && targetWindowRef)
@@ -837,7 +862,7 @@ static	GSDragView *sharedDragView = nil;
         {
           [self _sendLocalEvent: GSAppKitDraggingUpdate
 			 action: dragMask & operationMask
-		       position: mouseLocation
+		       position: dragPosition
 		      timestamp: dragSequence
 		       toWindow: destWindow];
         }
@@ -845,7 +870,7 @@ static	GSDragView *sharedDragView = nil;
         {
 	  [self _sendExternalEvent: GSAppKitDraggingUpdate 
 		            action: dragMask & operationMask
-		          position: mouseLocation
+		          position: dragPosition
 		         timestamp: dragSequence
 		          toWindow: targetWindowRef];
         }
@@ -859,16 +884,16 @@ static	GSDragView *sharedDragView = nil;
       if (destWindow != nil)
         {
           [self _sendLocalEvent: GSAppKitDraggingEnter
-                action: dragMask
-                position: mouseLocation
-                timestamp: dragSequence
-                toWindow: destWindow];
+			 action: dragMask
+		       position: dragPosition
+		      timestamp: dragSequence
+		       toWindow: destWindow];
         }
       else
         {
           [self _sendExternalEvent: GSAppKitDraggingEnter
                             action: dragMask
-                          position: mouseLocation
+                          position: dragPosition
                          timestamp: dragSequence
                           toWindow: mouseWindowRef];
         }
@@ -895,19 +920,23 @@ static	GSDragView *sharedDragView = nil;
 - (void) _moveDraggedImageToNewPosition
 {
   dragPosition = newPosition;
-  [GSServerForWindow(_window) movewindow: NSMakePoint(newPosition.x - offset.x, 
-						      newPosition.y - offset.y) 
-		                        : [_window windowNumber]];
+  [GSServerForWindow(_window) movewindow:
+    NSMakePoint(newPosition.x - offset.width, newPosition.y - offset.height) 
+    : [_window windowNumber]];
 }
 
 
+/*
+ * NB. screenPoint here is the position of the mouse cursor.
+ */
 - (void) _slideDraggedImageTo: (NSPoint)screenPoint
-                numberOfSteps: (int) steps
-			delay: (float) delay
-               waitAfterSlide: (BOOL) waitFlag
+                numberOfSteps: (int)steps
+			delay: (float)delay
+               waitAfterSlide: (BOOL)waitFlag
 {
-  // --- If we do not need multiple redrawing, just move the image immediately
-  //     to its desired spot.
+  /* If we do not need multiple redrawing, just move the image immediately
+   * to its desired spot.
+   */
   if (steps < 2)
     {
       newPosition = screenPoint;
@@ -963,8 +992,8 @@ static	GSDragView *sharedDragView = nil;
 
   *mouseWindowRef = 0;
   win = [GSServerForWindow(_window) findWindowAt: mouseLocation
-			  windowRef: mouseWindowRef
-			  excluding: [_window windowNumber]];
+				       windowRef: mouseWindowRef
+				       excluding: [_window windowNumber]];
 
   return GSWindowWithNumber(win);
 }

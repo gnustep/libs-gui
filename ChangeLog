@@ -1,3 +1,11 @@
+2005-03-28  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSDragView.m: Fix a few bugs exposed by windows port and
+	tidy/add comments to clarify operation.  When initiating DnD session,
+	take offset argument into account rather than ignoring it.
+	* Headers/Additions/GNUstepGUI/GSDrafView.h: Improve comments and
+	change offset to be NSSize rather thgan NSPoint.
+
 2005-03-21  Adam Fedor  <fedor@gnu.org>
 
 	* Tools/gsnd/portaudio/pa_unix_oss/pa_unix_oss.c: Fix for FreeBSD

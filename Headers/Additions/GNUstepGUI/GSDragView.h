@@ -37,41 +37,71 @@
 @class NSMutableDictionary;
 
 /*
-  used in the operation mask to indicate that the
-  user can not change the drag action by
-  pressing modifiers.
-*/
+ * used in the operation mask to indicate that the
+ * user can not change the drag action by
+ * pressing modifiers.
+ */
 
 #define NSDragOperationIgnoresModifiers  0xffff
 
 @interface GSDragView : NSView <NSDraggingInfo>
 {
-    NSCell          *dragCell;          // the graphics that is dragged
-    NSPasteboard    *dragPasteboard;    // the pasteboard with the dragged data
-    id              destWindow;         // NSWindow in this application that is the current target
-    NSPoint         dragPoint;          // in base coordinates, only valid when destWindow != nil
-    int             dragSequence;
-    id              dragSource;         // the NSObject source of the dragging
-    unsigned int    dragMask;           // Operations supported by the source
-    unsigned int    operationMask;      // user specified operation mask (key modifiers).
-                                        // this is either a mask of type _NSDragOperation,
-                                        // or NSDragOperationIgnoresModifiers, which
-                                        // is defined as 0xffff
-    BOOL            slideBack;          // slide the image back when drag fails?
+  // the graphics that is dragged
+  NSCell	*dragCell;
 
-    /* information used in the drag and drop event loop */
-    NSPoint         offset;             // offset of image w.r.t. cursor
-    NSPoint         dragPosition;       // current drag position in screen coordinates
-    NSPoint         newPosition;        // drag position, not yet processed
+  // the pasteboard with the dragged data
+  NSPasteboard	*dragPasteboard;
 
-    int             targetWindowRef;    // OS specific current window target of the drag operation
-    unsigned int    targetMask;         // Operations supported by the target, only valid if
-                                        // targetWindowRef isn't 0
+  // NSWindow in this application that is the current target
+  NSWindow	*destWindow;
 
-    BOOL            destExternal;       // YES if target and source are in a different application
-    BOOL            isDragging;         // YES if we are currently dragging
+  // Screen coordinates of mouse pointer, only valid when destWindow != nil
+  NSPoint	dragPoint;
 
-    NSMutableDictionary *cursors;       // Cache for cursors
+  int		dragSequence;
+
+  // the source of the dragging operation
+  id		dragSource;
+
+  // Operations supported by the source
+  unsigned int	dragMask;
+
+  /* User specified operation mask (key modifiers).
+   * This is either a mask of type _NSDragOperation,
+   * or NSDragOperationIgnoresModifiers, which
+   * is defined as 0xffff
+   */
+  unsigned int	operationMask;
+
+  // slide the image back when drag fails?
+  BOOL		slideBack;
+
+  /* The following information used in the drag and drop event loop
+   */
+
+  // offset of image w.r.t. cursor
+  NSSize	offset;
+
+  // current drag (mouse cursor) position in screen coordinates
+  NSPoint	dragPosition;
+
+  // drag (mouse cursor) position, not yet processed
+  NSPoint	newPosition;
+
+  // OS specific current window target of the drag operation
+  int		targetWindowRef;
+
+  // Operations supported by the target, only valid if targetWindowRef isn't 0
+  unsigned int	targetMask;
+
+  // YES if target and source are in a different application
+  BOOL		destExternal;
+
+  // YES if we are currently dragging
+  BOOL		isDragging;
+
+  // Cache for cursors
+  NSMutableDictionary	*cursors;
 }
 
 + (GSDragView*) sharedDragView;
