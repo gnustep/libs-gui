@@ -735,6 +735,14 @@ static NSNotificationCenter *nc;
   [nc postNotificationName: NSMenuWillSendActionNotification
                     object: self
                   userInfo: d];
+
+
+  if (_popUpButtonCell != nil)
+    {
+      // Tell the popup button, which item was selected
+      [_popUpButtonCell selectItemAtIndex: index];
+    }
+
   if ((action = [item action]) != NULL)
     {
       [NSApp sendAction: action
@@ -743,9 +751,7 @@ static NSNotificationCenter *nc;
     }
   else if (_popUpButtonCell != nil)
     {
-      // Tell the popup button, which item was selected
-      [_popUpButtonCell selectItemAtIndex: index];
-      if (NULL != (action = [_popUpButtonCell action]))
+      if ((action = [_popUpButtonCell action]) != NULL)
 	[NSApp sendAction: action
 	       to: [_popUpButtonCell target]
 	       from: [_popUpButtonCell controlView]];
