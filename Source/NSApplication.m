@@ -742,8 +742,11 @@ static NSCell* tileCell = nil;
    * The NSWindow documentation says runModalForWindow centers panels.
    */
   if ([theWindow isKindOfClass: [NSPanel class]])
-    [theWindow center];
+    {
+      [theWindow center];
+    }
 
+  [theWindow orderFrontRegardless];
   if ([self isActive] == YES)
     {
       if ([theWindow canBecomeKeyWindow] == YES)
@@ -755,7 +758,6 @@ static NSCell* tileCell = nil;
 	  [theWindow makeMainWindow];
 	}
     }
-  [theWindow orderFrontRegardless];
 
   theSession = NULL;
   code = NSRunContinuesResponse;
@@ -802,6 +804,8 @@ static NSCell* tileCell = nil;
 		format: @"runModalSession: with wrong session"];
 
   pool = [NSAutoreleasePool new];
+
+  [theSession->window orderFrontRegardless];
   if ([theSession->window canBecomeKeyWindow] == YES)
     {
       [theSession->window makeKeyWindow];
