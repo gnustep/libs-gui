@@ -42,34 +42,34 @@ static Class imageClass;
 
 @implementation NSMenuItem
 
-+ (void)initialize
++ (void) initialize
 {
   if (self == [NSMenuItem class])
     {
-      // Initial version
-      [self setVersion:2];
+      [self setVersion: 1];
       imageClass = [NSImage class];
     }
 }
 
-+ (void)setUsesUserKeyEquivalents:(BOOL)flag
++ (void) setUsesUserKeyEquivalents: (BOOL)flag
 {
   usesUserKeyEquivalents = flag;
 }
 
-+ (BOOL)usesUserKeyEquivalents
++ (BOOL) usesUserKeyEquivalents
 {
   return usesUserKeyEquivalents;
 }
 
-+ (id <NSMenuItem>)separatorItem
++ (id <NSMenuItem>) separatorItem
 {
   // FIXME: implementation needed (Lazaro).
   return nil;
 }
 
-- init
+- (id) init
 {
+  self = [super init];
   mi_hasSubmenu = NO;
   mi_target = nil;
   mi_menu = nil;
@@ -81,7 +81,6 @@ static Class imageClass;
   mi_enabled = YES;
   mi_state = NSOffState;
   mi_changesState = NO;
-  [super init];
   return self;
 }
 
@@ -95,59 +94,54 @@ static Class imageClass;
   TEST_RELEASE(mi_onStateImage);
   TEST_RELEASE(mi_offStateImage);
   TEST_RELEASE(mi_mixedStateImage);
+  TEST_RELEASE(mi_submenu);
   TEST_RELEASE(mi_representedObject);
-  if (mi_hasSubmenu)
-    [mi_submenu release];
   [super dealloc];
 }
 
-- (id)initWithTitle:(NSString *)aString
-	     action:(SEL)aSelector
-      keyEquivalent:(NSString *)charCode
+- (id) initWithTitle: (NSString*)aString
+	      action: (SEL)aSelector
+       keyEquivalent: (NSString*)charCode
 {
-  [self init];
+  self = [self init];
   [self setTitle: aString];
   mi_action = aSelector;
   [self setKeyEquivalent: charCode];
   // Set the images according to the spec. On: check mark; off: dash.
-  [self setOnStateImage: [NSImage imageNamed:@"common_2DCheckMark"]];
-  [self setMixedStateImage: [NSImage imageNamed:@"common_2DDash"]];
+  [self setOnStateImage: [imageClass imageNamed: @"common_2DCheckMark"]];
+  [self setMixedStateImage: [imageClass imageNamed: @"common_2DDash"]];
   return self;
 }
 
-- (void)setMenu:(NSMenu *)menu
+- (void) setMenu: (NSMenu*)menu
 {
   mi_menu = menu;
 }
 
-- (NSMenu *)menu
+- (NSMenu*) menu
 {
   return mi_menu;
 }
 
-- (BOOL)hasSubmenu
+- (BOOL) hasSubmenu
 {
-  return mi_hasSubmenu;
+  return (mi_submenu == nil) ? NO : YES;
 }
 
-- (void)setSubmenu:(NSMenu *)submenu
+- (void) setSubmenu: (NSMenu*)submenu
 {
   if ([submenu supermenu] != nil)
     [NSException raise: NSInvalidArgumentException
 		format: @"submenu already has supermenu: "];
-  mi_submenu = submenu;
-  if (mi_submenu == nil)
-    mi_hasSubmenu = NO;
-  else
-    mi_hasSubmenu = YES;
+  ASSIGN(mi_submenu, submenu);
 }
 
-- (NSMenu *)submenu
+- (NSMenu*) submenu
 {
   return mi_submenu;
 }
 
-- (void)setTitle:(NSString*)aString
+- (void) setTitle: (NSString*)aString
 {
   NSString *_string;
 
@@ -156,24 +150,23 @@ static Class imageClass;
   else
     _string = [aString copy];
 
-  if (mi_title)
-    RELEASE(mi_title);
+  TEST_RELEASE(mi_title);
   mi_title = _string;
 }
 
-- (NSString*)title
+- (NSString*) title
 {
   return mi_title;
 }
 
-- (BOOL)isSeparatorItem
+- (BOOL) isSeparatorItem
 {
   // FIXME: This stuff only makes sense in MacOS or Windows alike
   // interface styles. Maybe someone wants to implement this (Lazaro).
   return NO;
 }
 
-- (void)setKeyEquivalent:(NSString *)aKeyEquivalent
+- (void) setKeyEquivalent: (NSString*)aKeyEquivalent
 {
   NSString *_string;
 
@@ -182,12 +175,11 @@ static Class imageClass;
   else
     _string = [aKeyEquivalent copy];
 
-  if (mi_keyEquivalent)
-    RELEASE(mi_keyEquivalent);
+  TEST_RELEASE(mi_keyEquivalent);
   mi_keyEquivalent = _string;
 }
 
-- (NSString*)keyEquivalent
+- (NSString*) keyEquivalent
 {
   if (usesUserKeyEquivalents)
     return [self userKeyEquivalent];
@@ -195,19 +187,19 @@ static Class imageClass;
     return mi_keyEquivalent;
 }
 
-- (void)setKeyEquivalentModifierMask:(unsigned int)mask
+- (void) setKeyEquivalentModifierMask: (unsigned int)mask
 {
   mi_keyEquivalentModifierMask = mask;
 }
 
-- (unsigned int)keyEquivalentModifierMask
+- (unsigned int) keyEquivalentModifierMask
 {
   return mi_keyEquivalentModifierMask;
 }
 
-- (NSString*)userKeyEquivalent
+- (NSString*) userKeyEquivalent
 {
-  NSString* userKeyEquivalent = [[[[NSUserDefaults standardUserDefaults]
+  NSString	*userKeyEquivalent = [[[[NSUserDefaults standardUserDefaults]
       persistentDomainForName:NSGlobalDomain]
       objectForKey:@"NSCommandKeys"]
       objectForKey:mi_title];
@@ -218,12 +210,12 @@ static Class imageClass;
   return userKeyEquivalent;
 }
 
-- (void)setMnemonicLocation:(unsigned)location
+- (void) setMnemonicLocation: (unsigned)location
 {
   mi_mnemonicLocation = location;
 }
 
-- (unsigned)mnemonicLocation
+- (unsigned) mnemonicLocation
 {
   if (mi_mnemonicLocation != 255)
     return mi_mnemonicLocation;
@@ -231,7 +223,7 @@ static Class imageClass;
     return NSNotFound;
 }
 
-- (NSString *)mnemonic
+- (NSString*) mnemonic
 {
   if (mi_mnemonicLocation != 255)
     return [[mi_title substringFromIndex: mi_mnemonicLocation]
@@ -240,7 +232,7 @@ static Class imageClass;
     return @"";
 }
 
-- (void)setTitleWithMnemonic:(NSString *)stringWithAmpersand
+- (void) setTitleWithMnemonic: (NSString*)stringWithAmpersand
 {
   // FIXME: Do something more than copy the string.  Anyway this will only
   // sense in Windows, so... (Lazaro).
@@ -251,127 +243,126 @@ static Class imageClass;
   else
     _string = [stringWithAmpersand copy];
 
-  if (mi_title)
-    RELEASE(mi_title);
+  TEST_RELEASE(mi_title);
   mi_title = _string;
 }
 
-- (void)setImage:(NSImage *)image
+- (void) setImage: (NSImage *)image
 {
   NSAssert(image == nil || [image isKindOfClass: imageClass],
-	NSInvalidArgumentException);
+    NSInvalidArgumentException);
 
   ASSIGN(mi_image, image);
 }
 
-- (NSImage *)image
+- (NSImage*) image
 {
   return mi_image;
 }
 
-- (void)setState:(int)state
+- (void) setState: (int)state
 {
   mi_state = state;
   mi_changesState = YES;
 }
 
-- (int)state
+- (int) state
 {
   return mi_state;
 }
 
-- (void)setOnStateImage:(NSImage *)image
+- (void) setOnStateImage: (NSImage*)image
 {
   NSAssert(image == nil || [image isKindOfClass: imageClass],
-	NSInvalidArgumentException);
+    NSInvalidArgumentException);
 
   ASSIGN(mi_onStateImage, image);
 }
 
-- (NSImage *)onStateImage
+- (NSImage*) onStateImage
 {
   return mi_onStateImage;
 }
 
-- (void)setOffStateImage:(NSImage *)image
+- (void) setOffStateImage: (NSImage*)image
 {
   NSAssert(image == nil || [image isKindOfClass: imageClass],
-	NSInvalidArgumentException);
+    NSInvalidArgumentException);
 
   ASSIGN(mi_offStateImage, image);
 }
 
-- (NSImage *)offStateImage
+- (NSImage*) offStateImage
 {
   return mi_offStateImage;
 }
 
-- (void)setMixedStateImage:(NSImage *)image
+- (void) setMixedStateImage: (NSImage*)image
 {
   NSAssert(image == nil || [image isKindOfClass: imageClass],
-	NSInvalidArgumentException);
+    NSInvalidArgumentException);
 
   ASSIGN(mi_mixedStateImage, image);
 }
 
-- (NSImage *)mixedStateImage
+- (NSImage*) mixedStateImage
 {
   return mi_mixedStateImage;
 }
 
-- (void)setEnabled:(BOOL)flag
+- (void) setEnabled: (BOOL)flag
 {
   mi_enabled = flag;
 }
 
-- (BOOL)isEnabled
+- (BOOL) isEnabled
 {
   return mi_enabled;
 }
 
-- (void)setTarget:(id)anObject
+- (void) setTarget: (id)anObject
 {
   mi_target = anObject;
 }
 
-- (id)target
+- (id) target
 {
   return mi_target;
 }
 
-- (void)setAction:(SEL)aSelector
+- (void) setAction: (SEL)aSelector
 {
   mi_action = aSelector;
 }
 
-- (SEL)action
+- (SEL) action
 {
   return mi_action;
 }
 
-- (void)setTag:(int)anInt
+- (void) setTag: (int)anInt
 {
   mi_tag = anInt;
 }
 
-- (int)tag
+- (int) tag
 {
   return mi_tag;
 }
 
-- (void)setRepresentedObject:(id)anObject
+- (void) setRepresentedObject: (id)anObject
 {
   ASSIGN(mi_representedObject, anObject);
 }
 
-- (id)representedObject
+- (id) representedObject
 {
   return mi_representedObject;
 }
 
-//
-// NSCopying protocol
-//
+/*
+ * NSCopying protocol
+ */
 - (id) copyWithZone: (NSZone*)zone
 {
   NSMenuItem *copy = [[isa allocWithZone: zone] init];
@@ -392,18 +383,18 @@ static Class imageClass;
   copy->mi_target = mi_target;
   copy->mi_action = mi_action;
   copy->mi_tag = mi_tag;
-  copy->mi_representedObject = [mi_representedObject retain];
-  copy->mi_hasSubmenu = mi_hasSubmenu;
-  copy->mi_submenu = mi_submenu;
+  copy->mi_representedObject = RETAIN(mi_representedObject);
+  copy->mi_submenu = [mi_submenu copy];
 
   return copy;
 }
 
-//
-// NSCoding protocol
-//
+/*
+ * NSCoding protocol
+ */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
+  [super encodeWithCoder: aCoder];
   [aCoder encodeConditionalObject: mi_menu];
   [aCoder encodeObject: mi_title];
   [aCoder encodeObject: mi_keyEquivalent];
@@ -411,21 +402,21 @@ static Class imageClass;
   [aCoder encodeValueOfObjCType: "I" at: &mi_mnemonicLocation];
   [aCoder encodeValueOfObjCType: "i" at: &mi_state];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &mi_enabled];
-  [aCoder encodeConditionalObject: mi_image];
-  [aCoder encodeConditionalObject: mi_onStateImage];
-  [aCoder encodeConditionalObject: mi_offStateImage];
-  [aCoder encodeConditionalObject: mi_mixedStateImage];
+  [aCoder encodeObject: mi_image];
+  [aCoder encodeObject: mi_onStateImage];
+  [aCoder encodeObject: mi_offStateImage];
+  [aCoder encodeObject: mi_mixedStateImage];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &mi_changesState];
   [aCoder encodeConditionalObject: mi_target];
   [aCoder encodeValueOfObjCType: @encode(SEL) at: &mi_action];
   [aCoder encodeValueOfObjCType: "i" at: &mi_tag];
   [aCoder encodeConditionalObject: mi_representedObject];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &mi_hasSubmenu];
-  [aCoder encodeConditionalObject: mi_submenu];
+  [aCoder encodeObject: mi_submenu];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
+  self = [super initWithCoder: aDecoder];
   mi_menu = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &mi_title];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &mi_keyEquivalent];
@@ -433,17 +424,16 @@ static Class imageClass;
   [aDecoder decodeValueOfObjCType: "I" at: &mi_mnemonicLocation];
   [aDecoder decodeValueOfObjCType: "i" at: &mi_state];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &mi_enabled];
-  mi_image = [aDecoder decodeObject];
-  mi_onStateImage = [aDecoder decodeObject];
-  mi_offStateImage = [aDecoder decodeObject];
-  mi_mixedStateImage = [aDecoder decodeObject];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &mi_image];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &mi_onStateImage];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &mi_offStateImage];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &mi_mixedStateImage];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &mi_changesState];
   mi_target = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: @encode(SEL) at: &mi_action];
   [aDecoder decodeValueOfObjCType: "i" at: &mi_tag];
-  mi_representedObject = [aDecoder decodeObject];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &mi_hasSubmenu];
-  mi_submenu = [aDecoder decodeObject];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &mi_representedObject];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &mi_submenu];
 
   return self;
 }
@@ -452,10 +442,11 @@ static Class imageClass;
 
 @implementation NSMenuItem (GNUstepExtra)
 
-// This methods support the special arranging in columns of menu
-// items in GNUstep.  There's no need to use them outside but if
-// they are used the display is more pleasant.
-
+/*
+ * These methods support the special arranging in columns of menu
+ * items in GNUstep.  There's no need to use them outside but if
+ * they are used the display is more pleasant.
+ */
 - (void) setChangesState: (BOOL)flag
 {
   mi_changesState = flag;
