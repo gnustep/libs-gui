@@ -1,3 +1,7 @@
+2000-06-16  Adam Fedor  <fedor@gnu.org>
+
+	* Source/GSFontInfo.m (-mutableCopyWithZone:): New method.
+
 2000-06-19  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/GMAppKit.h
