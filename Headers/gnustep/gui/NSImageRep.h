@@ -61,8 +61,10 @@ enum {
 + (NSArray *)imageRepsWithContentsOfFile:(NSString *)filename;
 + (id)imageRepWithPasteboard:(NSPasteboard *)pasteboard;
 + (NSArray *)imageRepsWithPasteboard:(NSPasteboard *)pasteboard;
+#ifndef STRICT_OPENSTEP
 + (id)imageRepWithContentsOfURL:(NSURL *)anURL;
 + (NSArray *)imageRepsWithContentsOfURL:(NSURL *)anURL;
+#endif
 
 //
 // Checking Data Types 

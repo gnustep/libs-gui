@@ -70,6 +70,9 @@ typedef enum _NSTitlePosition {
 - (NSFont *)titleFont;
 - (NSTitlePosition)titlePosition;
 - (NSRect)titleRect;
+#ifndef STRICT_OPENSTEP
+- (void)setTitleWithMnemonic:(NSString *)aString;
+#endif
 
 //
 // Setting and Placing the Content View 
@@ -84,12 +87,6 @@ typedef enum _NSTitlePosition {
 //
 - (void)setFrameFromContentFrame:(NSRect)contentFrame;
 - (void)sizeToFit;
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
 
 @end
 

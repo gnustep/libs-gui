@@ -35,6 +35,7 @@
 @class NSString;
 @class NSData;
 @class NSMutableData;
+@class NSColor;
 
 typedef enum _NSTIFFCompression {
   NSTIFFCompressionNone  = 1,
@@ -46,6 +47,17 @@ typedef enum _NSTIFFCompression {
   NSTIFFCompressionPackBits  = 32773,
   NSTIFFCompressionOldJPEG  = 32865
 } NSTIFFCompression;
+
+#ifndef STRICT_OPENSTEP
+// FIXME: This is probably wrong
+typedef enum _NSBitmapImageFileType {
+    NSTIFFFileType = 0,
+    NSBMPFileType = 1,
+    NSGIFFileType = 2,
+    NSJPEGFileType = 3,
+    NSPNGFileType = 4
+} NSBitmapImageFileType;
+#endif
 
 @interface NSBitmapImageRep : NSImageRep
 {
@@ -83,6 +95,15 @@ typedef enum _NSTIFFCompression {
 		    bytesPerRow: (int)rowBytes
 		   bitsPerPixel: (int)pixelBits;
 
+#ifndef STRICT_OPENSTEP
+- (void)colorizeByMappingGray:(float)midPoint 
+		      toColor:(NSColor *)midPointColor 
+		 blackMapping:(NSColor *)shadowColor
+		 whiteMapping:(NSColor *)lightColor;
+- (id)initWithBitmapHandle:(void *)bitmap;
+- (id)initWithIconHandle:(void *)icon;
+#endif
+
 //
 // Getting Information about the Image 
 //
@@ -110,6 +131,14 @@ typedef enum _NSTIFFCompression {
 - (NSData*) TIFFRepresentationUsingCompression: (NSTIFFCompression)type
 					factor: (float)factor;
 
+#ifndef STRICT_OPENSTEP
++ (NSData *)representationOfImageRepsInArray:(NSArray *)imageReps 
+				   usingType:(NSBitmapImageFileType)storageType
+				  properties:(NSDictionary *)properties;
+- (NSData *)representationUsingType:(NSBitmapImageFileType)storageType 
+			 properties:(NSDictionary *)properties;
+#endif
+
 //
 // Setting and Checking Compression Types 
 //
@@ -122,7 +151,15 @@ typedef enum _NSTIFFCompression {
 - (void) setCompression: (NSTIFFCompression)compression
 		 factor: (float)factor;
 
+#ifndef STRICT_OPENSTEP
+- (void)setProperty:(NSString *)property withValue:(id)value;
+- (id)valueForProperty:(NSString *)property;
+#endif
+
+@end
+
+@interface NSBitmapImageRep (GNUstepExtension)
++ (NSArray*) imageRepsWithFile: (NSString *)filename;
 @end
 
 #endif // _GNUstep_H_NSBitmapImageRep
-

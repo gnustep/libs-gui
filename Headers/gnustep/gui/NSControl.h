@@ -38,7 +38,7 @@
 @class NSFont;
 @class NSEvent;
 
-@interface NSControl : NSView <NSCoding>
+@interface NSControl : NSView
 {
   // Attributes
   int _tag;
@@ -50,11 +50,6 @@
 // Initializing an NSControl Object
 //
 - (id)initWithFrame:(NSRect)frameRect;
-
-//
-// Creating copies
-//
-- (id) copyWithZone: (NSZone*)zone;
 
 //
 // Setting the Control's Cell 
@@ -137,7 +132,6 @@
 - (void)selectCell:(NSCell *)aCell;
 - (void)updateCell:(NSCell *)aCell;
 - (void)updateCellInside:(NSCell *)aCell;
-- (void)performClick:(id)sender;
 
 //
 // Target and Action 
@@ -159,24 +153,26 @@
 - (int)tag;
 
 //
+// Activation
+//
+- (void)performClick:(id)sender;
+#ifndef STRICT_OPENSTEP
+- (BOOL)refusesFirstResponder;
+- (void)setRefusesFirstResponder:(BOOL)flag;
+#endif
+
+//
 // Tracking the Mouse 
 //
 - (void)mouseDown:(NSEvent *)theEvent;
 - (BOOL)ignoresMultiClick;
 - (void)setIgnoresMultiClick:(BOOL)flag;
 
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
-
 @end
 
 extern NSString *NSControlTextDidBeginEditingNotification;
 extern NSString *NSControlTextDidEndEditingNotification;
 extern NSString *NSControlTextDidChangeNotification;
-
 
 //
 // Methods Implemented by the Delegate
