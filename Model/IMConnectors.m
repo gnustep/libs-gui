@@ -26,7 +26,7 @@
 #include <string.h>
 
 #include <Foundation/NSObjCRuntime.h>
-#import <AppKit/NSActionCell.h>
+#include <AppKit/NSActionCell.h>
 #include <AppKit/GMArchiver.h>
 #include "AppKit/IMCustomObject.h"
 #include "IMConnectors.h"
@@ -79,7 +79,6 @@ GSSetInstanceVariable(id obj, NSString *iVarName, const void *data)
     }
   else
     {
-      [_destination retain];
       GSSetInstanceVariable (_source, @"target", &_destination);
     }
 
@@ -90,7 +89,9 @@ GSSetInstanceVariable(id obj, NSString *iVarName, const void *data)
       [_source setAction:action];
     }
   else
-    GSSetInstanceVariable (_source, @"action", &action);
+    {
+      GSSetInstanceVariable (_source, @"action", &action);
+    }
 }
 
 @end /* IMControlConnector:IMConnector */
@@ -126,10 +127,11 @@ GSSetInstanceVariable(id obj, NSString *iVarName, const void *data)
   // NSLog (@"Method Name: %@", setMethodName);
 
   if (setSelector && [_source respondsToSelector:setSelector])
-    [_source performSelector:setSelector withObject:_destination];
+    {
+      [_source performSelector:setSelector withObject:_destination];
+    }
   else
     {
-      [_destination retain];
       GSSetInstanceVariable(_source, label, &_destination);
     }
 }
