@@ -33,11 +33,11 @@
 
 #include <Foundation/NSObject.h>
 #include <Foundation/NSGeometry.h>
+#include <AppKit/NSView.h>
 
 @class NSMutableArray;
 @class GSToolbar;
 @class NSToolbarItem;
-@class NSView;
 @class NSClipView;
 @class GSToolbarClippedItemsButton;
 

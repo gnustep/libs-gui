@@ -33,6 +33,7 @@
 
 #include <Foundation/NSObject.h>
 #include <Foundation/NSArray.h>
+#include <AppKit/AppKitDefines.h>
 
 @class NSString;
 @class NSMutableArray;
