@@ -268,7 +268,7 @@
 - (id) initWithItemIdentifier: (NSString *)itemIdentifier
 {
   NSImage *image = [NSImage imageNamed: @"GSToolbarSeperatorItem"];
-  NSButton *button = [NSButton initWithFrame: NSMakeRect(0,0,48,48)];
+  NSButton *button = [[NSButton alloc] initWithFrame: NSMakeRect(0,0,48,48)];
   [super initWithItemIdentifier: itemIdentifier];
   [self setView: button];
   [self setImage: image];
@@ -286,7 +286,7 @@
 - (id) initWithItemIdentifier: (NSString *)itemIdentifier
 {
   NSImage *image = [NSImage imageNamed: @"GSToolbarSpaceItem"];
-  NSButton *button = [NSButton initWithFrame: NSMakeRect(0,0,48,48)];
+  NSButton *button = [[NSButton alloc] initWithFrame: NSMakeRect(0,0,48,48)];
   [super initWithItemIdentifier: itemIdentifier];
   [self setView: button];
   [self setImage: image];
@@ -304,7 +304,7 @@
 - (id) initWithItemIdentifier: (NSString *)itemIdentifier
 {
   NSImage *image = [NSImage imageNamed: @"GSToolbarFlexibleSpaceItem"];
-  NSButton *button = [NSButton initWithFrame: NSMakeRect(0,0,48,48)];
+  NSButton *button = [[NSButton alloc] initWithFrame: NSMakeRect(0,0,48,48)];
   [super initWithItemIdentifier: itemIdentifier];
   [self setView: button];
   [self setImage: image];
@@ -322,7 +322,7 @@
 - (id) initWithItemIdentifier: (NSString *)itemIdentifier
 {
   NSImage *image = [NSImage imageNamed: @"GSToolbarShowColorsItem"];
-  NSButton *button = [NSButton initWithFrame: NSMakeRect(0,0,48,48)];
+  NSButton *button = [[NSButton alloc] initWithFrame: NSMakeRect(0,0,48,48)];
   [super initWithItemIdentifier: itemIdentifier];
   [self setView: button];
   [self setImage: image];
@@ -340,7 +340,7 @@
 - (id) initWithItemIdentifier: (NSString *)itemIdentifier
 {
   NSImage *image = [NSImage imageNamed: @"GSToolbarShowFontsItem"];
-  NSButton *button = [NSButton initWithFrame: NSMakeRect(0,0,48,48)];
+  NSButton *button = [[NSButton alloc] initWithFrame: NSMakeRect(0,0,48,48)];
   [super initWithItemIdentifier: itemIdentifier];
   [self setView: button];
   [self setImage: image];
@@ -358,7 +358,7 @@
 - (id) initWithItemIdentifier: (NSString *)itemIdentifier
 {
   NSImage *image = [NSImage imageNamed: @"GSToolbarCustomizeToolbarItem"];
-  NSButton *button = [NSButton initWithFrame: NSMakeRect(0,0,48,48)];
+  NSButton *button = [[NSButton alloc] initWithFrame: NSMakeRect(0,0,48,48)];
   [super initWithItemIdentifier: itemIdentifier];
   [self setView: button];
   [self setImage: image];
@@ -376,7 +376,9 @@
 - (id) initWithItemIdentifier: (NSString *)itemIdentifier
 {
   NSImage *image = [NSImage imageNamed: @"GSToolbarPrintItem"];
+  NSButton *button = [[NSButton alloc] initWithFrame: NSMakeRect(0,0,48,48)];
   [super initWithItemIdentifier: itemIdentifier];
+  [self setView: button];
   [self setImage: image];
   return self;
 }

@@ -1,6 +1,11 @@
+2003-08-31  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSToolbarItem.m: Corrected code to instantiate
+	button for toolbar items.
+
 2003-08-30  Gregory John Casamento <greg_casamento@yahoo.com>
 
-	* GSNibTemplates.m: [GSNibContainer awakeWithContext:]
+	* Source/GSNibTemplates.m: [GSNibContainer awakeWithContext:]
 	was not releasing the connections in the array after calling
 	establishConnection.   Once this is done, the connections
 	are no longer needed.
@@ -16,7 +21,7 @@
 	
 2003-08-30  Gregory John Casamento <greg_casamento@yahoo.com>
 
-	* GSNibTemplates.m: Added code to templates to conditionally
+	* Source/GSNibTemplates.m: Added code to templates to conditionally
 	call the designated initializer if and only if it is defined
 	on the class which is being unarchived, not the parent classes.
 	This is consistent with behaviour under OpenStep.
@@ -39,7 +44,7 @@
 	
 2003-08-28  Gregory John Casamento <greg_casamento@yahoo.com>
 
-	* GSNibTemplates.m: Removed an extra release which was causing
+	* Source/GSNibTemplates.m: Removed an extra release which was causing
 	a segfault.  Added code to prevent calling the designated initializer
 	when isInterfaceBuilder is defined.
 
