@@ -1,3 +1,12 @@
+2001-11-27  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSClipView.m: Treat _documentView as a convienience
+	ivar. Don't release/retain or encode it.
+	(-initWithCoder:): Get _documentView from subview array.
+	* Source/NSTabView.m (-encodeWithCoder:): Conditionally encode
+	delegate.
+	(-initWithCoder:): Don't retain delegate.
+
 2001-11-26  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSWindow.h

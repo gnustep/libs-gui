@@ -77,7 +77,11 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 }
 
 
-
+/* Note that the ivar _documentView is really just a convienience
+   variable. The actual document view is stored in NSClipView's
+   subview array. Deallocation, coding, etc of the view is then
+   handled by NSView
+*/
 @implementation NSClipView
 
 - (id) init
@@ -102,7 +106,7 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 	  [nc removeObserver: _documentView name:nil object:self];
 	}
 
-      RELEASE(_documentView);
+      /* Don't RELEASE(_documentView), since it's already in our subviews. */
     }
   RELEASE(_cursor);
   RELEASE(_backgroundColor);
@@ -133,7 +137,8 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
       [_documentView removeFromSuperview];
     }
 
-  ASSIGN (_documentView, aView);
+  /* Don't retain this since it's stored in our subviews. */
+  _documentView = aView;
 
   /* Call this before doing anything else ! */
   _rFlags.flipped_view = [self isFlipped];
@@ -656,7 +661,6 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_copiesOnScroll];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_drawsBackground];
   [aCoder encodeObject: _cursor];
-  [aCoder encodeObject: _documentView];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -671,8 +675,12 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_drawsBackground];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_cursor];
 
-  document = [aDecoder decodeObject];
-  [self setDocumentView: document];
+  if ([[self subviews] count] > 0)
+    {
+      document = AUTORELEASE(RETAIN([[self subviews] objectAtIndex: 0]));
+      [self removeSubview: document];
+      [self setDocumentView: document];
+    }
 
   return self;
 }

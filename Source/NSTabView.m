@@ -703,7 +703,7 @@
   [aCoder encodeValueOfObjCType: @encode(NSTabViewType) at: &_type];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_draws_background];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_truncated_label];
-  [aCoder encodeObject: _delegate];
+  [aCoder encodeConditionalObject: _delegate];
   [aCoder encodeValueOfObjCType: "i" at: &_selected_item];
 }
 
@@ -716,7 +716,7 @@
   [aDecoder decodeValueOfObjCType: @encode(NSTabViewType) at: &_type];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_draws_background];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_truncated_label];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_delegate];
+  _delegate = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: "i" at: &_selected_item];
 
   return self;
