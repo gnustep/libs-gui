@@ -89,7 +89,8 @@ common_Root_Sparc2.tiff \
 common_Root_Apple.tiff \
 GNUstep.tiff \
 nsmapping.strings \
-NSComboArrow.tiff
+NSComboArrow.tiff \
+common_Diamond.tiff
 
 -include GNUmakefile.preamble
 

@@ -106,6 +106,7 @@ NSSavePanel.m \
 NSScreen.m \
 NSScroller.m \
 NSScrollView.m \
+NSSecureTextField.m \
 NSSelection.m \
 NSSlider.m \
 NSSliderCell.m \
@@ -222,6 +223,7 @@ AppKit/NSSavePanel.h \
 AppKit/NSScreen.h \
 AppKit/NSScrollView.h \
 AppKit/NSScroller.h \
+AppKit/NSSecureTextField.h \
 AppKit/NSSelection.h \
 AppKit/NSSlider.h \
 AppKit/NSSliderCell.h \
