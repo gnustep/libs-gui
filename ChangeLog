@@ -1,3 +1,15 @@
+2001-08-15  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSImageRep.m
+	[initialize] removed obsolete check for default setting of
+	ImageComposition. In [copyWithZone:] copy the colour space, it
+	might be mutable.
+	* Source/Functions.m
+	NSEventMaskFromType() added case of  NSScrollWheel.
+	Impelemented missing NSShowSystemInfoPanel().
+	* Source/GSServicesManager.m
+	Implemented missing NSUpdateDynamicServices().
+	
 2001-08-13  Pierre-Yves  <pyrivail@ens-lyon.fr>
 
 	* Source/NSTableView.m
