@@ -811,9 +811,9 @@ static NSRecursiveLock	*windowsLock;
 - (void) display
 {
   needs_display = NO;
- if (!first_responder)
-   if (_initial_first_responder)
-     [self makeFirstResponder: _initial_first_responder];
+  if ((!first_responder) || (first_responder == self))
+    if (_initial_first_responder)
+      [self makeFirstResponder: _initial_first_responder];
   /*
    * inform first responder of it's status so it can set the focus to itself
    */
@@ -1245,14 +1245,6 @@ static NSRecursiveLock	*windowsLock;
 { 
   unsigned int key_code = [theEvent keyCode];
 
-  // TODO:  
-  // "A mnemonic matching the character(s) typed, 
-  // not requiring the Alternate key to be pressed"
-
-  // TODO:
-  // "A key equivalent, not requiring the Command (or Control) key 
-  // to be pressed"
-
   // If this is a TAB or TAB+SHIFT event, move to the next key view
   if (key_code == 0x09) 
     {
@@ -1274,6 +1266,26 @@ static NSRecursiveLock	*windowsLock;
 	}
       return;
     }
+
+  // Try to process the event as a key equivalent 
+  // without Control having being pressed
+  {
+    NSEvent *new_event 
+      =  [NSEvent keyEventWithType: [theEvent type] 
+		  location: NSZeroPoint 
+		  modifierFlags: ([theEvent modifierFlags] | NSControlKeyMask)
+		  timestamp: [theEvent timestamp] 
+		  windowNumber: [theEvent windowNumber]
+		  context: [theEvent context] 
+		  characters: [theEvent characters]
+		  charactersIgnoringModifiers: [theEvent 
+						 charactersIgnoringModifiers]
+		  isARepeat: [theEvent isARepeat]
+		  keyCode: key_code];
+    if ([self performKeyEquivalent: new_event])
+      return;
+  }
+  
   // Otherwise, pass the event up
   [super keyDown: theEvent];
 }
@@ -2321,7 +2333,7 @@ static NSRecursiveLock	*windowsLock;
  */
 - (void) initDefaults
 {
-  first_responder = nil;
+  first_responder = self;
   original_responder = nil;
   _initial_first_responder = nil;
   delegate = nil;
