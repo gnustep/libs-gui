@@ -3,7 +3,7 @@
 
    Holds an image to use as a cursor
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996,1999 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -39,10 +39,10 @@ static BOOL gnustep_gui_hidden_until_move;
 
 @implementation NSCursor
 
-//
-// Class methods
-//
-+ (void)initialize
+/*
+ * Class methods
+ */
++ (void) initialize
 {
   if (self == [NSCursor class])
     {
@@ -52,11 +52,11 @@ static BOOL gnustep_gui_hidden_until_move;
       // Initialize class variables
       gnustep_gui_cursor_stack = [[NSMutableArray alloc] initWithCapacity: 2];
       gnustep_gui_hidden_until_move = YES;
-      gnustep_gui_current_cursor = [[NSCursor arrowCursor] retain];
+      [[self arrowCursor] push];
     }
 }
 
-- (void *)_cid
+- (void *) _cid
 {
   return cid;
 }
@@ -66,181 +66,207 @@ static BOOL gnustep_gui_hidden_until_move;
   cid = id;
 }
 
-//
-// Setting the Cursor
-//
-+ (void)hide
+/*
+ * Setting the Cursor
+ */
++ (void) hide
 {
   DPShidecursor(GSCurrentContext());
 }
 
-+ (void)pop
++ (void) pop
 {
-  // The object we pop is the current cursor
-  if ([gnustep_gui_cursor_stack count]) {
-    gnustep_gui_current_cursor = [gnustep_gui_cursor_stack lastObject];
-    [gnustep_gui_cursor_stack removeLastObject];
-  }
+  /*
+   * The object we pop is the current cursor
+   */
+  if ([gnustep_gui_cursor_stack count] > 1)
+    {
+      [gnustep_gui_cursor_stack removeLastObject];
+      gnustep_gui_current_cursor = [gnustep_gui_cursor_stack lastObject];
 
-  // If the stack isn't empty then get the new current cursor
-  // Otherwise the cursor will stay the same
-  if ([gnustep_gui_cursor_stack count])
-    gnustep_gui_current_cursor = [gnustep_gui_cursor_stack lastObject];
-
-  if ([gnustep_gui_current_cursor _cid])
-    DPSsetcursorcolor(GSCurrentContext(), 0, 0, 0, 1, 1, 1, 
-		      [gnustep_gui_current_cursor _cid]);
+      if ([gnustep_gui_current_cursor _cid])
+	{
+	  DPSsetcursorcolor(GSCurrentContext(), 0, 0, 0, 1, 1, 1, 
+	    [gnustep_gui_current_cursor _cid]);
+	}
+    }
 }
 
-+ (void)setHiddenUntilMouseMoves:(BOOL)flag
++ (void) setHiddenUntilMouseMoves: (BOOL)flag
 {
   gnustep_gui_hidden_until_move = flag;
 }
 
-+ (BOOL)isHiddenUntilMouseMoves
++ (BOOL) isHiddenUntilMouseMoves
 {
   return gnustep_gui_hidden_until_move;
 }
 
-+ (void)unhide
++ (void) unhide
 {
   DPSshowcursor(GSCurrentContext());  
 }
 
-//
-// Getting the Cursor
-//
-+ (NSCursor *)arrowCursor
+/*
+ * Getting the Cursor
+ */
++ (NSCursor*) arrowCursor
 {
-  void *c;
-  NSCursor *cur = AUTORELEASE([[NSCursor alloc] initWithImage: nil]);
+  void		*c;
+  NSCursor	*cur = AUTORELEASE([[NSCursor alloc] initWithImage: nil]);
+
   DPSstandardcursor(GSCurrentContext(), GSArrowCursor, &c);
   [cur _setCid: c];
   return cur;
 }
 
-+ (NSCursor *)currentCursor
++ (NSCursor*) currentCursor
 {
   return gnustep_gui_current_cursor;
 }
 
-+ (NSCursor *)IBeamCursor
++ (NSCursor*) IBeamCursor
 {
-  void *c;
-  NSCursor *cur = AUTORELEASE([[NSCursor alloc] initWithImage: nil]);
+  void		*c;
+  NSCursor	*cur = AUTORELEASE([[NSCursor alloc] initWithImage: nil]);
+
   DPSstandardcursor(GSCurrentContext(), GSIBeamCursor, &c);
   [cur _setCid: c];
   return cur;
 }
 
-//
-// Instance methods
-//
-
-//
-// Initializing a New NSCursor Object
-//
-- init
+/*
+ * Initializing a New NSCursor Object
+ */
+- (id) init
 {
-  return [self initWithImage: nil];
+  return [self initWithImage: nil hotSpot: NSMakePoint(0,15)];
 }
 
-- (id)initWithImage:(NSImage *)newImage
+- (id) initWithImage: (NSImage *)newImage
 {
-  [super init];
+  return [self initWithImage: newImage
+		     hotSpot: NSMakePoint(0,15)];
+}
 
-  cursor_image = newImage;
-  is_set_on_mouse_entered = NO;
-  is_set_on_mouse_exited = NO;
-
+- (id) initWithImage: (NSImage *)newImage hotSpot: (NSPoint)spot
+{
+  self = [super init];
+  if (self != nil)
+    {
+      cursor_image = newImage;
+      hot_spot = spot;
+      is_set_on_mouse_entered = NO;
+      is_set_on_mouse_exited = NO;
+    }
   return self;
 }
 
-//
-// Defining the Cursor
-//
-- (NSPoint)hotSpot
+/*
+ * Defining the Cursor
+ */
+- (NSPoint) hotSpot
 {
   return hot_spot;
 }
 
-- (NSImage *)image
+- (NSImage*) image
 {
   return cursor_image;
 }
 
-- (void)setHotSpot:(NSPoint)spot
+- (void) setHotSpot: (NSPoint)spot
 {
   hot_spot = spot;
 }
 
-- (void)setImage:(NSImage *)newImage
+- (void) setImage: (NSImage *)newImage
 {
   cursor_image = newImage;
 }
 
-//
-// Setting the Cursor
-//
-- (BOOL)isSetOnMouseEntered
+/*
+ * Setting the Cursor
+ */
+- (BOOL) isSetOnMouseEntered
 {
   return is_set_on_mouse_entered;
 }
 
-- (BOOL)isSetOnMouseExited
+- (BOOL) isSetOnMouseExited
 {
   return is_set_on_mouse_exited;
 }
 
-// Hmm, how is this mouse entered/exited suppose to work?
-// Is it simply what the doc says?
-// If the cursor is set when the mouse enters
-// then how does it get unset when the mouse exits?
-- (void)mouseEntered:(NSEvent *)theEvent
+- (void) mouseEntered: (NSEvent*)theEvent
 {
-  if (is_set_on_mouse_entered)
-    [self set];
+  if (is_set_on_mouse_entered == YES)
+    {
+      [self set];
+    }
+  else if (is_set_on_mouse_exited == NO)
+    {
+      /*
+       * Undocumented behavior - if a cursor is not set on exit or entry,
+       * we assume a push-pop situation instead.
+       */
+      [self push];
+    }
 }
 
-- (void)mouseExited:(NSEvent *)theEvent
+- (void) mouseExited: (NSEvent*)theEvent
 {
-  if (is_set_on_mouse_exited)
-    [self set];
+  if (is_set_on_mouse_exited == YES)
+    {
+      [self set];
+    }
+  else if (is_set_on_mouse_entered == NO)
+    {
+      /*
+       * Undocumented behavior - if a cursor is not set on exit or entry,
+       * we assume a push-pop situation instead.
+       */
+      [self pop];
+    }
 }
 
-- (void)pop
+- (void) pop
 {
   [NSCursor pop];
 }
 
-- (void)push
+- (void) push
 {
   [gnustep_gui_cursor_stack addObject: self];
   gnustep_gui_current_cursor = self;
   if (cid)
-    DPSsetcursorcolor(GSCurrentContext(), 0, 0, 0, 1, 1, 1, cid);
+    {
+      DPSsetcursorcolor(GSCurrentContext(), 0, 0, 0, 1, 1, 1, cid);
+    }
 }
 
-- (void)set
+- (void) set
 {
   gnustep_gui_current_cursor = self;
   if (cid)
-    DPSsetcursorcolor(GSCurrentContext(), 0, 0, 0, 1, 1, 1, cid);
+    {
+      DPSsetcursorcolor(GSCurrentContext(), 0, 0, 0, 1, 1, 1, cid);
+    }
 }
 
-- (void)setOnMouseEntered:(BOOL)flag
+- (void) setOnMouseEntered: (BOOL)flag
 {
   is_set_on_mouse_entered = flag;
 }
 
-- (void)setOnMouseExited:(BOOL)flag
+- (void) setOnMouseExited: (BOOL)flag
 {
   is_set_on_mouse_exited = flag;
 }
 
-//
-// NSCoding protocol
-//
+/*
+ * NSCoding protocol
+ */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
 }

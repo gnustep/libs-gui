@@ -3,7 +3,7 @@
 
    Tracking rectangle class
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996,1999 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -38,18 +38,20 @@
   NSTrackingRectTag	tag;
   id			owner;
   void			*user_data;
-  BOOL			inside;
-  BOOL			isValid;
-  BOOL			ownerRespondsToMouseEntered;
-  BOOL			ownerRespondsToMouseExited;
+  struct TrackFlagsType {
+    unsigned	inside:1;
+    unsigned	isValid:1;
+    unsigned	checked:1;
+    unsigned	ownerRespondsToMouseEntered:1;
+    unsigned	ownerRespondsToMouseExited:1;
+  } flags;
 }
 
-// Instance methods
-- initWithRect: (NSRect)aRect
-	   tag: (NSTrackingRectTag)aTag
-	 owner: anObject
-      userData: (void *)theData
-	inside: (BOOL)flag;
+- (id) initWithRect: (NSRect)aRect
+		tag: (NSTrackingRectTag)aTag
+	      owner: (id)anObject
+	   userData: (void *)theData
+	     inside: (BOOL)flag;
 
 - (NSRect) rectangle;
 - (NSTrackingRectTag) tag;
@@ -60,12 +62,13 @@
 - (BOOL) isValid;
 - (void) invalidate;
 
-//
-// NSCoding protocol
-//
+/*
+ * NSCoding protocol
+ */
 - (void) encodeWithCoder: (NSCoder*)aCoder;
 - (id) initWithCoder: (NSCoder*)aDecoder;
 
 @end
 
-#endif // _GNUstep_H_GSTrackingRect
+#endif /* _GNUstep_H_GSTrackingRect */
+

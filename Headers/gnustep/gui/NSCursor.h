@@ -3,7 +3,7 @@
 
    Holds an image to use as a cursor
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996,1999 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -36,58 +36,58 @@
 
 @interface NSCursor : NSObject <NSCoding>
 {
-  // Attributes
-  NSImage *cursor_image;
-  NSPoint hot_spot;
-  BOOL is_set_on_mouse_entered;
-  BOOL is_set_on_mouse_exited;
-
-  void *cid;
+  NSImage	*cursor_image;
+  NSPoint	hot_spot;
+  BOOL		is_set_on_mouse_entered;
+  BOOL		is_set_on_mouse_exited;
+  void		*cid;
 }
 
-//
-// Initializing a New NSCursor Object
-//
-- (id)initWithImage:(NSImage *)newImage;
+/*
+ * Initializing a New NSCursor Object
+ */
+- (id) initWithImage: (NSImage *)newImage;
+- (id) initWithImage: (NSImage *)newImage
+	     hotSpot: (NSPoint)hotSpot;
 
-//
-// Defining the Cursor
-//
-- (NSPoint)hotSpot;
-- (NSImage *)image;
-- (void)setHotSpot:(NSPoint)spot;
-- (void)setImage:(NSImage *)newImage;
+/*
+ * Defining the Cursor
+ */
+- (NSPoint) hotSpot;
+- (NSImage*) image;
+- (void) setHotSpot: (NSPoint)spot;
+- (void) setImage: (NSImage *)newImage;
 
-//
-// Setting the Cursor
-//
-+ (void)hide;
-+ (void)pop;
-+ (void)setHiddenUntilMouseMoves:(BOOL)flag;
-+ (BOOL)isHiddenUntilMouseMoves;
-+ (void)unhide;
-- (BOOL)isSetOnMouseEntered;
-- (BOOL)isSetOnMouseExited;
-- (void)mouseEntered:(NSEvent *)theEvent;
-- (void)mouseExited:(NSEvent *)theEvent;
-- (void)pop;
-- (void)push;
-- (void)set;
-- (void)setOnMouseEntered:(BOOL)flag;
-- (void)setOnMouseExited:(BOOL)flag;
+/*
+ * Setting the Cursor
+ */
++ (void) hide;
++ (void) pop;
++ (void) setHiddenUntilMouseMoves: (BOOL)flag;
++ (BOOL) isHiddenUntilMouseMoves;
++ (void) unhide;
+- (BOOL) isSetOnMouseEntered;
+- (BOOL) isSetOnMouseExited;
+- (void) mouseEntered: (NSEvent*)theEvent;
+- (void) mouseExited: (NSEvent*)theEvent;
+- (void) pop;
+- (void) push;
+- (void) set;
+- (void) setOnMouseEntered: (BOOL)flag;
+- (void) setOnMouseExited: (BOOL)flag;
+ 
+/*
+ * Getting the Cursor
+ */
++ (NSCursor*) arrowCursor;
++ (NSCursor*) currentCursor;
++ (NSCursor*) IBeamCursor;
 
-//
-// Getting the Cursor
-//
-+ (NSCursor *)arrowCursor;
-+ (NSCursor *)currentCursor;
-+ (NSCursor *)IBeamCursor;
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
+/*
+ * NSCoding protocol
+ */
+- (void) encodeWithCoder: (NSCoder*)aCoder;
+- (id) initWithCoder: (NSCoder*)aDecoder;
 
 @end
 
@@ -97,4 +97,4 @@ typedef enum {
   GSIBeamCursor
 } GSCursorTypes;
 
-#endif // _GNUstep_H_NSCursor
+#endif /* _GNUstep_H_NSCursor */

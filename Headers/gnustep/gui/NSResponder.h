@@ -58,6 +58,7 @@
     unsigned	has_trkrects:1;		/* This view has tracking rects	*/
     unsigned	has_draginfo:1;		/* View/window has drag types	*/
     unsigned	opaque_view:1;
+    unsigned	valid_rects:1;		/* Some cursor rects are valid	*/
   } _rFlags;
 }
 

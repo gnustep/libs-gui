@@ -480,6 +480,11 @@ static Class cellClass;
     [self sendAction: [self action] to: [self target]];
 }
 
+- (void) resetCursorRects
+{
+  [cell resetCursorRect: bounds inView: self];
+}
+
 - (BOOL) ignoresMultiClick
 {
   return NO;

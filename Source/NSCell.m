@@ -44,6 +44,7 @@
 #include <AppKit/NSView.h>
 #include <AppKit/NSControl.h>
 #include <AppKit/NSCell.h>
+#include <AppKit/NSCursor.h>
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSColor.h>
@@ -112,7 +113,7 @@ static NSColor	*shadowCol;
 /*
  * Instance methods
  */
-- _init
+- (id) _init
 {
   cell_type = NSNullCellType;
   cell_image = nil;
@@ -1113,6 +1114,26 @@ static NSColor	*shadowCol;
  */
 - (void) resetCursorRect: (NSRect)cellFrame inView: (NSView *)controlView
 {
+  if (cell_type == NSTextCellType && cell_enabled == YES
+    && (cell_selectable == YES || cell_editable == YES))
+    {
+      static NSCursor	*c = nil;
+      NSRect	r;
+
+      if (c == nil)
+	{
+	  c = RETAIN([NSCursor IBeamCursor]);
+	}
+      r = NSIntersectionRect(cellFrame, [controlView visibleRect]);
+      /*
+       * Here we depend on an undocumented feature of NSCursor which may or
+       * may not exist in OPENSTEP or MacOS-X ...
+       * If we add a cursor rect to a view and don't set it to be set on
+       * either entry to or exit from the view, we push it on entry and
+       * pop it from the cursor stack on exit.
+       */
+      [controlView addCursorRect: r cursor: c];
+    }
 }
 
 /*

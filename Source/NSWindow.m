@@ -1077,31 +1077,39 @@ static NSMapTable* windowmaps = NULL;
   cursor_rects_enabled = NO;
 }
 
-- (void) discardCursorRectsForView: (NSView *)theView
+static void
+discardCursorRectsForView(NSView *theView)
 {
-  if (((NSViewPtr)theView)->_rFlags.has_currects)
-    [theView discardCursorRects];
-
-  if (((NSViewPtr)theView)->_rFlags.has_subviews)
+  if (theView != nil)
     {
-      NSArray	*s = ((NSViewPtr)theView)->sub_views;
-      unsigned	count = [s count];
-
-      if (count)
+      if (((NSViewPtr)theView)->_rFlags.has_currects)
 	{
-	  NSView	*subs[count];
-	  unsigned	i;
+	  [theView discardCursorRects];
+	}
 
-	  [s getObjects: subs];
-	  for (i = 0; i < count; i++)
-	    [self discardCursorRectsForView: subs[i]];
+      if (((NSViewPtr)theView)->_rFlags.has_subviews)
+	{
+	  NSArray	*s = ((NSViewPtr)theView)->sub_views;
+	  unsigned	count = [s count];
+
+	  if (count)
+	    {
+	      NSView	*subs[count];
+	      unsigned	i;
+
+	      [s getObjects: subs];
+	      for (i = 0; i < count; i++)
+		{
+		  discardCursorRectsForView(subs[i]);
+		}
+	    }
 	}
     }
 }
 
 - (void) discardCursorRects
 {
-  [self discardCursorRectsForView: [content_view superview]];
+  discardCursorRectsForView([content_view superview]);
 }
 
 - (void) enableCursorRects
@@ -1111,34 +1119,46 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) invalidateCursorRectsForView: (NSView *)aView
 {
-  cursor_rects_valid = NO;
+  if (((NSViewPtr)aView)->_rFlags.valid_rects)
+    {
+      [((NSViewPtr)aView)->cursor_rects
+	makeObjectsPerformSelector: @selector(invalidate)];
+      ((NSViewPtr)aView)->_rFlags.valid_rects = 0;
+      cursor_rects_valid = NO;
+    }
 }
 
-- (void) resetCursorRectsForView: (NSView *)theView
+static void
+resetCursorRectsForView(NSView *theView)
 {
-  if (((NSViewPtr)theView)->_rFlags.has_currects)
-    [theView resetCursorRects];
-
-  if (((NSViewPtr)theView)->_rFlags.has_subviews)
+  if (theView != nil)
     {
-      NSArray	*s = ((NSViewPtr)theView)->sub_views;
-      unsigned	count = [s count];
+      [theView resetCursorRects];
 
-      if (count)
+      if (((NSViewPtr)theView)->_rFlags.has_subviews)
 	{
-	  NSView	*subs[count];
-	  unsigned	i;
+	  NSArray	*s = ((NSViewPtr)theView)->sub_views;
+	  unsigned	count = [s count];
 
-	  [s getObjects: subs];
-	  for (i = 0; i < count; i++)
-	    [self resetCursorRectsForView: subs[i]];
+	  if (count)
+	    {
+	      NSView	*subs[count];
+	      unsigned	i;
+
+	      [s getObjects: subs];
+	      for (i = 0; i < count; i++)
+		{
+		  resetCursorRectsForView(subs[i]);
+		}
+	    }
 	}
     }
 }
 
 - (void) resetCursorRects
 {
-  [self resetCursorRectsForView: [content_view superview]];
+  [self discardCursorRects];
+  resetCursorRectsForView([content_view superview]);
   cursor_rects_valid = YES;
 }
 
@@ -1463,7 +1483,17 @@ static NSMapTable* windowmaps = NULL;
 
 	      if ((!last) && (now))		// Mouse entered event
 		{
-		  if (r->ownerRespondsToMouseEntered)
+		  if (r->flags.checked == NO)
+		    {
+		      if ([r->owner respondsToSelector:
+			@selector(mouseEntered:)])
+			r->flags.ownerRespondsToMouseEntered = YES;
+		      if ([r->owner respondsToSelector:
+			@selector(mouseExited:)])
+			r->flags.ownerRespondsToMouseExited = YES;
+		      r->flags.checked = YES;
+		    }
+		  if (r->flags.ownerRespondsToMouseEntered)
 		    {
 		      NSEvent	*e;
 
@@ -1482,7 +1512,17 @@ static NSMapTable* windowmaps = NULL;
 
 	      if ((last) && (!now))		// Mouse exited event
 		{
-		  if (r->ownerRespondsToMouseExited)
+		  if (r->flags.checked == NO)
+		    {
+		      if ([r->owner respondsToSelector:
+			@selector(mouseEntered:)])
+			r->flags.ownerRespondsToMouseEntered = YES;
+		      if ([r->owner respondsToSelector:
+			@selector(mouseExited:)])
+			r->flags.ownerRespondsToMouseExited = YES;
+		      r->flags.checked = YES;
+		    }
+		  if (r->flags.ownerRespondsToMouseExited)
 		    {
 		      NSEvent	*e;
 
@@ -1524,7 +1564,7 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) _checkCursorRectangles: (NSView *)theView forEvent: (NSEvent *)theEvent
 {
-  if (((NSViewPtr)theView)->_rFlags.has_currects)
+  if (((NSViewPtr)theView)->_rFlags.valid_rects)
     {
       NSArray	*tr = ((NSViewPtr)theView)->cursor_rects;
       unsigned	count = [tr count];
@@ -1534,8 +1574,6 @@ static NSMapTable* windowmaps = NULL;
 	{
 	  GSTrackingRect	*rects[count];
 	  NSPoint		loc = [theEvent locationInWindow];
-	  NSPoint		lastConv;
-	  NSPoint		locConv;
 	  unsigned		i;
 
 	  [tr getObjects: rects];
@@ -1552,8 +1590,8 @@ static NSMapTable* windowmaps = NULL;
 	      /*
 	       * Check for presence of point in rectangle.
 	       */
-	      last = NSMouseInRect(lastConv, r->rectangle, NO);
-	      now = NSMouseInRect(locConv, r->rectangle, NO);
+	      last = NSMouseInRect(last_point, r->rectangle, NO);
+	      now = NSMouseInRect(loc, r->rectangle, NO);
 
 	      // Mouse entered
 	      if ((!last) && (now))
@@ -1635,7 +1673,6 @@ static NSMapTable* windowmaps = NULL;
 
   if (!cursor_rects_valid)
     {
-      [self discardCursorRects];
       [self resetCursorRects];
     }
 
@@ -1763,19 +1800,16 @@ static NSMapTable* windowmaps = NULL;
 
       case NSCursorUpdate:				  // Cursor update
 	{
-	  GSTrackingRect *r =(GSTrackingRect *)[theEvent userData];
-	  NSCursor *c = (NSCursor *)[r owner];
+	  GSTrackingRect	*r =(GSTrackingRect *)[theEvent userData];
+	  NSCursor		*c = (NSCursor *)[r owner];
 
-	  c = (NSCursor *)[r owner];
 	  if ([theEvent trackingNumber])	  // It's a mouse entered
 	    {
-	      if (c && [c isSetOnMouseEntered])
-		[c set];
+	      [c mouseEntered: theEvent];
 	    }
 	  else					  // it is a mouse exited
 	    {
-	      if (c && [c isSetOnMouseExited])
-		[c set];
+	      [c mouseExited: theEvent];
 	    }
 	}
 	break;

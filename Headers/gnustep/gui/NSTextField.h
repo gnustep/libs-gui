@@ -41,7 +41,6 @@
   // Attributes
   id _delegate;
   SEL _error_action;
-  NSCursor *_text_cursor;
   NSText *_text_object;
 }
 

@@ -66,32 +66,19 @@
   [cell setEnabled: YES];
   [cell setEditable: YES];
   [self setDrawsBackground: YES];
-  _text_cursor = [[NSCursor IBeamCursor] retain];
   _text_object = nil;
 
   return self;
 }
 
-- (void) dealloc
-{
-  [_text_cursor release];
-  [super dealloc];
-}
-
 //
 // Creating copies
 //
-- (void) setTextCursor: (NSCursor *)aCursor
-{
-  ASSIGN(_text_cursor, aCursor);
-}
-
 - (id) copyWithZone: (NSZone*)zone
 {
-  id c;
+  NSTextField	*c;
 
-  c = [(id)super copyWithZone: zone];
-  [c setTextCursor: [NSCursor IBeamCursor]];
+  c = [super copyWithZone: zone];
 
   return c;
 }
@@ -440,13 +427,6 @@
 
   // In all other cases
   return YES;
-}
-//
-// Manage the cursor
-//
-- (void) resetCursorRects
-{
-  [self addCursorRect: bounds cursor: _text_cursor];
 }
 
 //

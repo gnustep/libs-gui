@@ -3,7 +3,7 @@
 
    Tracking rectangle class
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996,1999 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -31,9 +31,9 @@
 
 @implementation GSTrackingRect
 
-//
-// Class methods
-//
+/*
+ * Class methods
+ */
 + (void) initialize
 {
   if (self == [GSTrackingRect class])
@@ -42,39 +42,28 @@
     }
 }
 
-//
-// Instance methods
-//
-//
-// Initialization
-//
-- initWithRect: (NSRect)aRect
-	   tag: (NSTrackingRectTag)aTag
-	 owner: anObject
-      userData: (void *)theData
-        inside: (BOOL)flag
+- (id) initWithRect: (NSRect)aRect
+		tag: (NSTrackingRectTag)aTag
+	      owner: (id)anObject
+	   userData: (void *)theData
+	     inside: (BOOL)flag
 {
   rectangle = aRect;
   tag = aTag;
   owner = anObject;
-  if (owner)
+  if (owner != nil)
     {
-      [owner retain];
-      if ([owner respondsToSelector: @selector(mouseEntered:)])
-	ownerRespondsToMouseEntered = YES;
-      if ([owner respondsToSelector: @selector(mouseExited:)])
-	ownerRespondsToMouseExited = YES;
+      RETAIN(owner);
     }
   user_data = theData;
-  inside = flag;
-  isValid = YES;
+  flags.inside = flag;
+  flags.isValid = YES;
   return self;
 }
 
 - (void) dealloc
 {
-  if (owner)
-    [owner release];
+  TEST_RELEASE(owner);
   [super dealloc];
 }
 
@@ -88,7 +77,7 @@
   return tag;
 }
 
-- owner
+- (id) owner
 {
   return owner;
 }
@@ -100,34 +89,34 @@
 
 - (BOOL) inside
 {
-  return inside;
+  return flags.inside;
 }
 
 - (BOOL) isValid
 {
-  return isValid;
+  return flags.isValid;
 }
 
 - (void) invalidate
 {
-  if (isValid)
+  if (flags.isValid)
     {
-      isValid = NO;
-      if (owner)
+      flags.isValid = NO;
+      flags.checked = NO;
+      if (owner != nil)
 	{
-	  [owner release];
-	  owner = nil;
-	  ownerRespondsToMouseEntered = NO;
-	  ownerRespondsToMouseExited = NO;
+	  DESTROY(owner);
 	}
     }
 }
 
-//
-// NSCoding protocol
-//
+/*
+ * NSCoding protocol
+ */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
+  BOOL	inside = flags.inside;
+
   [aCoder encodeRect: rectangle];
   [aCoder encodeValueOfObjCType: @encode(NSTrackingRectTag) at: &tag];
   [aCoder encodeObject: owner];
@@ -136,10 +125,13 @@
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
+  BOOL	inside;
+
   rectangle = [aDecoder decodeRect];
   [aDecoder decodeValueOfObjCType: @encode(NSTrackingRectTag) at: &tag];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &owner];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &inside];
+  flags.inside = inside;
   return self;
 }
 

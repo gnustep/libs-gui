@@ -1792,26 +1792,36 @@ GSSetDragTypes(NSView* obj, NSArray *types)
  */
 - (void) addCursorRect: (NSRect)aRect cursor: (NSCursor*)anObject
 {
-  GSTrackingRect	*m;
+  if (window != nil)
+    {
+      GSTrackingRect	*m;
 
-  if (window)
-  aRect = [self convertRect: aRect toView: nil];
-  m = [rectClass allocWithZone: NSDefaultMallocZone()];
-  m = [m initWithRect: aRect
-		  tag: 0
-		owner: anObject
-	     userData: NULL
-	       inside: YES];
-  [cursor_rects addObject: m];
-  RELEASE(m);
-  _rFlags.has_currects = 1;
+      aRect = [self convertRect: aRect toView: nil];
+      m = [rectClass allocWithZone: NSDefaultMallocZone()];
+      m = [m initWithRect: aRect
+		      tag: 0
+		    owner: anObject
+		 userData: NULL
+		   inside: YES];
+      [cursor_rects addObject: m];
+      RELEASE(m);
+      _rFlags.has_currects = 1;
+      _rFlags.valid_rects = 1;
+    }
 }
 
 - (void) discardCursorRects
 {
-  [cursor_rects makeObjectsPerformSelector: @selector(invalidate)];
-  [cursor_rects removeAllObjects];
-  _rFlags.has_currects = 0;
+  if (_rFlags.has_currects != 0)
+    {
+      if (_rFlags.valid_rects != 0)
+	{
+	  [cursor_rects makeObjectsPerformSelector: @selector(invalidate)];
+	  _rFlags.valid_rects = 0;
+	}
+      [cursor_rects removeAllObjects];
+      _rFlags.has_currects = 0;
+    }
 }
 
 - (void) removeCursorRect: (NSRect)aRect cursor: (NSCursor*)anObject
@@ -1830,16 +1840,22 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	  [o invalidate];
 	  [cursor_rects removeObject: o];
 	  if ([cursor_rects count] == 0)
-	    _rFlags.has_currects = 0;
+	    {
+	      _rFlags.has_currects = 0;
+	      _rFlags.valid_rects = 0;
+	    }
 	  break;
 	}
       else
-	o = [e nextObject];
+	{
+	  o = [e nextObject];
+	}
     }
 }
 
 - (void) resetCursorRects
-{}
+{
+}
 
 static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 {
@@ -2530,6 +2546,10 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       unsigned	count;
 
       coordinates_valid = NO;
+      if (_rFlags.valid_rects != 0)
+	{
+	  [window invalidateCursorRectsForView: self];
+	}
       if (_rFlags.has_subviews)
 	{
 	  count = [sub_views count];
