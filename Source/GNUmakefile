@@ -40,6 +40,7 @@ libgnustep-gui_OBJC_FILES = Functions.m \
 NSActionCell.m \
 NSAffineTransform.m \
 NSApplication.m \
+NSAttributedString.m \
 NSBitmapImageRep.m \
 NSBox.m \
 NSBrowser.m \

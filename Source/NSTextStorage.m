@@ -197,8 +197,7 @@ changeInLength: [attributedString length] - aRange.length];
 
   r = editedRange;
   r.length += editedDelta;
-// FIXME, Michael: yeah, this is needed.
-//  [self fixAttributesInRange: r];
+  [self fixAttributesInRange: r];
 
   [nc postNotificationName: NSTextStorageDidProcessEditingNotification
                     object: self];

@@ -4,6 +4,8 @@
 	edited:range:changeInLength. Also changed on line 191 from > to
 	>=. Not sure the complete implications, but alas it now works
 	correctly.
+	* Source/NSAttributedString.m: new file with implementation of
+	some needed additions to NSMutableAttributedString.
 
 	Try gstextnetwork.app, you'll see a lot of debug information.
 	After that has cleared click twice in the textView and press a
