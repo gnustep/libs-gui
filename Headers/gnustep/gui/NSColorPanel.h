@@ -29,6 +29,7 @@
 #ifndef _GNUstep_H_NSColorPanel
 #define _GNUstep_H_NSColorPanel
 
+#include <AppKit/NSApplication.h>
 #include <AppKit/NSBox.h>
 #include <AppKit/NSButton.h>
 #include <AppKit/NSColorPicking.h>
@@ -63,6 +64,10 @@ enum {
   NSColorPanelWheelModeMask = 64,
   NSColorPanelAllModesMask = 127 
 };
+
+@interface NSApplication (NSColorPanel)
+- (void) orderFrontColorPanel: (id)sender;
+@end
 
 @interface NSColorPanel : NSPanel
 {

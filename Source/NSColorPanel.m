@@ -41,7 +41,6 @@
 #include <AppKit/NSImage.h>
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSWindow.h>
-#include <AppKit/NSApplication.h>
 #include <AppKit/IMLoading.h>
 
 #define MAX_ALPHA_VALUE 100.0
@@ -50,6 +49,21 @@ static NSColorPanel *_gs_gui_color_panel = nil;
 static int _gs_gui_color_picker_mask = NSColorPanelAllModesMask;
 // FIXME: This should be NSWheelModeColorPanel 
 static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
+
+
+@implementation NSApplication (NSColorPanel)
+
+- (void) orderFrontColorPanel: sender
+{ 
+  NSColorPanel *colorPanel = [NSColorPanel sharedColorPanel];
+
+  if (colorPanel)
+    [colorPanel orderFront: nil];
+  else
+    NSBeep();
+}
+
+@end
 
 @interface NSColorPanel (PrivateMethods)
 - (void) _loadPickers;
