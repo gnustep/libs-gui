@@ -1,3 +1,9 @@
+Fri Apr  6 23:39:52 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSSavePanel.m (createRowsForColumn:): Use the public
+	NSFileManager API to enumerate the contents of a directory, rather
+	than using private internals methods of the GNUstep base library.
+
 2001-03-26  Jonathan Gapen  <jagapen@home.com>
 
 	* Model/IMLoading.m: Find system library path with
