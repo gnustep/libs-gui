@@ -5,10 +5,12 @@
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
+   Author: Scott Christley <scottc@net-community.com>
    Date: 1996
-   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Author: Felipe A. Rodriguez <far@ix.netcom.com>
    Date: August 1998
+   Author: Nicola Pero <n.pero@mi.flashnet.it>
+   Date: November 1999
 
    This file is part of the GNUstep GUI Library.
 
@@ -30,22 +32,16 @@
 
 #include <gnustep/gui/config.h>
 
+#include <Foundation/NSNotification.h>
 #include <Foundation/NSString.h>
 
-#include <AppKit/NSTextField.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSTextFieldCell.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSCursor.h>
+#include <AppKit/NSTextField.h>
+#include <AppKit/NSTextFieldCell.h>
+#include <AppKit/NSWindow.h>
 
 @implementation NSTextField
-
-//
-// class variables
-//
-id _nsTextfieldCellClass = nil;
-
-
 //
 // Class methods
 //
@@ -59,58 +55,26 @@ id _nsTextfieldCellClass = nil;
 }
 
 //
-// Initializing the NSTextField Factory
-//
-+ (Class) cellClass
-{
-  return _nsTextfieldCellClass;
-}
-
-+ (void) setCellClass: (Class)classId
-{
-  _nsTextfieldCellClass = classId;
-}
-
-//
 // Instance methods
 //
-- (id) init
-{
-  return [self initWithFrame: NSZeroRect];
-}
-
 - (id) initWithFrame: (NSRect)frameRect
 {
-  return [self _initFieldWithFrame:frameRect cellClass:_nsTextfieldCellClass];
-}
-
-/*
-===============
--_initFieldWithFrame:cellClass:
-===============
-*/
-- (id)_initFieldWithFrame:(NSRect)frameRect cellClass:(Class)cellClass
-{
-  id c;
-
   [super initWithFrame: frameRect];
-  c = [cellClass new];
-  [self setCell: c];
-  [c release];
   [cell setState: 1];
   [cell setBezeled: YES];
   [cell setSelectable: YES];
   [cell setEnabled: YES];
   [cell setEditable: YES];
   [self setDrawsBackground: YES];
-  text_cursor = [[NSCursor IBeamCursor] retain];
+  _text_cursor = [[NSCursor IBeamCursor] retain];
+  _text_object = nil;
 
   return self;
 }
 
 - (void) dealloc
 {
-  [text_cursor release];
+  [_text_cursor release];
   [super dealloc];
 }
 
@@ -119,9 +83,7 @@ id _nsTextfieldCellClass = nil;
 //
 - (void) setTextCursor: (NSCursor *)aCursor
 {
-  [aCursor retain];
-  [text_cursor release];
-  text_cursor = aCursor;
+  ASSIGN(_text_cursor, aCursor);
 }
 
 - (id) copyWithZone: (NSZone*)zone
@@ -150,11 +112,15 @@ id _nsTextfieldCellClass = nil;
 - (void) setEditable: (BOOL)flag
 {
   [cell setEditable: flag];
+  if (_text_object)
+    [_text_object setEditable: flag];
 }
 
 - (void) setSelectable: (BOOL)flag
 {
   [cell setSelectable: flag];
+  if (_text_object)
+    [_text_object setSelectable: flag];
 }
 
 //
@@ -162,15 +128,29 @@ id _nsTextfieldCellClass = nil;
 //
 - (void) selectText: (id)sender
 {
-  // TODO
-  /*
-  if (window)
+  if ([self isSelectable] && (super_view != nil))
     {
-      if ([window makeFirstResponder: self])
-	[cell selectText: sender];
-      [self setNeedsDisplay: YES];
+      if (_text_object)
+	[_text_object selectAll: self];
+      else
+	{
+	  NSText *t = [window fieldEditor: YES 
+			      forObject: self];
+
+	  if ([t superview] != nil)
+	    if ([t resignFirstResponder] == NO)
+	      return;
+	  
+	  //  [NSCursor hide];
+	  _text_object = [cell setUpFieldEditorAttributes: t];
+	  [cell selectWithFrame: bounds
+		inView: self
+		editor: _text_object
+		delegate: self
+		start: 0
+		length: [[self stringValue] length]];
+	}
     }
-  */
 }
 
 //
@@ -201,12 +181,26 @@ id _nsTextfieldCellClass = nil;
 //
 - (void) setDelegate: (id)anObject
 {
-  text_delegate = anObject;
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+
+  if (_delegate)
+    [nc removeObserver: _delegate name: nil object: self];
+  _delegate = anObject;
+
+#define SET_DELEGATE_NOTIFICATION(notif_name) \
+  if ([_delegate respondsToSelector: @selector(controlText##notif_name:)]) \
+    [nc addObserver: _delegate \
+      selector: @selector(controlText##notif_name:) \
+      name: NSControlText##notif_name##Notification object: self]
+
+  SET_DELEGATE_NOTIFICATION(DidBeginEditing);
+  SET_DELEGATE_NOTIFICATION(DidEndEditing);
+  SET_DELEGATE_NOTIFICATION(DidChange);
 }
 
 - (id) delegate
 {
-  return text_delegate;
+  return _delegate;
 }
 
 //
@@ -267,232 +261,218 @@ id _nsTextfieldCellClass = nil;
 //
 - (SEL) errorAction
 {
-  return error_action;
+  return _error_action;
 }
 
 - (void) setErrorAction: (SEL)aSelector
 {
-  error_action = aSelector;
+  _error_action = aSelector;
 }
 
 //
 // Handling Events
 //
+
+// TODO: Understand if, on mouse down, we should: 
+// (1) Select the whole text (as it is now). 
+//     In this case, remove the commented code in the following mouseDown:; 
+//     remove acceptsFirstMouse below.
+// (2) Start editing, and pass the mouseDown: to the field editor, 
+//     so that the cursor is displayed where the mouse was pressed.
+//     In that case, uncomment code in mouseDown:, remove selectText:
+//     from becomeFirstResponder: (but this will not highlight text 
+//     when browsing textfields with the keyboard), and uncomment 
+//     acceptsFirstMouse below.
+// (3) Something more complicated -- figure out how to do it.
 - (void) mouseDown: (NSEvent*)theEvent
 {
-  NSRect cellFrame = bounds;
+  return;
+/*
+  NSText *t;
 
-  if (![self isSelectable])
+  if ([self isSelectable] == NO)
     return;
 
-fprintf(stderr, " TextField mouseDown --- ");
-
-//	location = [self convertPoint: [theEvent locationInWindow] fromView: nil];
-//	[self lockFocus];
-//	cellFrame = [self convertRect: frame toView: nil];
-//	cellFrame.origin = [super_view convertPoint: frame.origin
-//					 toView: [window contentView]];
-
-  if ([cell isBordered])
-    {
-      cellFrame.origin.x += 1;
-      cellFrame.origin.y += 1;
-      cellFrame.size.width -= 2;
-      cellFrame.size.height -= 2;
-    }
-  else if ([cell isBezeled])
-    {
-      cellFrame.origin.x += 4;
-      cellFrame.origin.y += 2;
-      cellFrame.size.width -= 6;
-      cellFrame.size.height -= 4;
-    }
-
-  fprintf (stderr,
-	"XRTextField 0: rect origin (%1.2f, %1.2f), size (%1.2f, %1.2f)\n",
-				frame.origin.x, frame.origin.y,
-				frame.size.width, frame.size.height);
-  fprintf (stderr,
-	"XRTextField 1: rect origin (%1.2f, %1.2f), size (%1.2f, %1.2f)\n",
-				cellFrame.origin.x, cellFrame.origin.y,
-				cellFrame.size.width, cellFrame.size.height);
-
-  [cell editWithFrame: cellFrame
-	       inView: self
-	       editor: [window fieldEditor: YES forObject: cell]
-	     delegate: self
-		event: theEvent];
-
-//	[[self cell] _setCursorLocation: location];
-//	[[self cell] _setCursorVisibility: YES];
-//	[cell drawWithFrame: bounds inView: self];
-//	[window flushWindow];
-//	[self unlockFocus];
-//	if ([[self window] makeFirstResponder: self])
-//		[self setNeedsDisplay: YES];
-}
-
-- (void) mouseUp: (NSEvent *)theEvent
-{
-  if (![self isSelectable])
+  // This could happen if someone pressed the mouse 
+  // on the borders
+  if (_text_object)
     return;
-}
 
-- (void) mouseMoved: (NSEvent *)theEvent
+  [self selectText: self];
+  t = [window fieldEditor: YES forObject: self];
+
+  if ([t superview] != nil)
+    {
+      if ([t resignFirstResponder] == NO)
+	{
+	  if ([window makeFirstResponder: window] == NO)
+	    return;
+	}
+    }
+  
+
+  //  [NSCursor hide];
+  
+  _text_object = [cell setUpFieldEditorAttributes: t];
+  [cell editWithFrame: bounds
+	inView: self
+	editor: _text_object
+	delegate: self
+	event: theEvent];
+*/
+}
+/* TODO: Needed or not? (See above, depends on how we are supposed 
+   to answer to mouse down events)
+- (BOOL) acceptsFirstMouse: (NSEvent *)aEvent
 {
-  if (![self isSelectable])
-    return;
+  return YES;
 }
-
-// This is called if a key is pressed when an editing session
-// is not yet started.  (If needed, we start it from here).
-- (void) keyDown: (NSEvent *)theEvent
-{
-  unsigned int key_code = [theEvent keyCode];
-  
-  NSDebugLLog(@"NSText", @"NSTextField: -keyDown %s\n", 
-	      [[theEvent characters] cString]);
-  
-  // If not editable then we ignore the key down, pass it on
-  if (![self isEditable]) 
-    {
-      [super keyDown: theEvent];
-      return;
-    }
-  
-  // If the key is TAB (with or without SHIFT) or ESC, pass it on
-  if ((key_code == 0x09) || (key_code == 0x1b))
-    {
-      [super keyDown: theEvent];
-      return;
-    }
-  
-  // We handle ENTER here, to avoid setting up an editing session 
-  // only for it.
-  if (key_code == 0x0d)
-    {
-      [self sendAction: [cell action] to: [cell target]];
-      [window selectKeyViewFollowingView: self];
-      return;
-    }
-  
-  // Otherwise, start an editing session (FIXME the following)
-#if 1
-{
-  NSRect cellFrame = bounds;
-
-  if ([cell isBordered])
-    {
-      cellFrame.origin.x += 1;
-      cellFrame.origin.y += 1;
-      cellFrame.size.width -= 2;
-      cellFrame.size.height -= 2;
-    }
-  else if ([cell isBezeled])
-    {
-      cellFrame.origin.x += 4;
-      cellFrame.origin.y += 2;
-      cellFrame.size.width -= 6;
-      cellFrame.size.height -= 4;
-    }
-
-  [cell editWithFrame: cellFrame
-	       inView: self
-	       editor: [window fieldEditor: YES forObject: cell]
-	     delegate: self
-		event: theEvent];
-}
-#else
-  // Hide the cursor during typing
-  [NSCursor hide];
-
-  [self lockFocus];
-  [[self cell] _handleKeyEvent: theEvent];
-  [cell drawWithFrame: bounds inView: self];
-  [window flushWindow];
-  [self unlockFocus];
-//  [self setNeedsDisplay: YES];
-#endif
-}
-
+*/
 - (BOOL) acceptsFirstResponder
 {
-  if ([self isSelectable] || [self isEditable])
-    return YES;
-  else
-    return NO;
+  return [self isSelectable];
 }
 
 - (BOOL) becomeFirstResponder
 {
-  if ([self isSelectable] || [self isEditable])
+  if ([self isSelectable])
     {
+      // TODO: The following will select the whole text 
+      // for any kind of events.  Is this correct?
       [self selectText: self];
       return YES;
     }
-  else
+  else 
+    return NO;
+}
+
+- (BOOL) abortEditing
+{
+  if (_text_object)
     {
-      return NO;
+      [_text_object setString: @""];
+      [cell endEditing: _text_object];
+      _text_object = nil;
+      return YES;
     }
+  else 
+    return NO;
+}
+
+- (NSText *) currentEditor
+{
+  if (_text_object && ([window firstResponder] == _text_object))
+    return _text_object;
+  else
+    return nil;
+}
+
+- (void) validateEditing 
+{
+  if (_text_object)
+    [cell setStringValue: [_text_object text]];
 }
 
 - (void) textDidBeginEditing: (NSNotification *)aNotification
 {
-  if ([text_delegate respondsToSelector: @selector(textDidBeginEditing: )])
-    return [text_delegate textDidBeginEditing: aNotification];
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+  NSDictionary *d;
+  
+  d = [NSDictionary dictionaryWithObject:[aNotification object] 
+		    forKey: @"NSFieldEditor"];
+  [nc postNotificationName: NSControlTextDidBeginEditingNotification
+      object: self
+      userInfo: d];
 }
 
 - (void) textDidChange: (NSNotification *)aNotification
 {
-  if ([text_delegate respondsToSelector: @selector(textDidChange: )])
-    return [text_delegate textDidChange: aNotification];
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+  NSDictionary *d;
+  
+  d = [NSDictionary dictionaryWithObject: [aNotification object] 
+		    forKey: @"NSFieldEditor"];
+  [nc postNotificationName: NSControlTextDidChangeNotification
+      object: self
+      userInfo: d];
 }
 
 - (void) textDidEndEditing: (NSNotification *)aNotification
 {
-  if ([text_delegate respondsToSelector: @selector(textDidEndEditing: )])
-    return [text_delegate textDidEndEditing: aNotification];
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+  NSDictionary *d;
+  id textMovement;
+
+  [self validateEditing];
+
+  d = [NSDictionary dictionaryWithObject: [aNotification object] 
+		    forKey: @"NSFieldEditor"];
+  [nc postNotificationName: NSControlTextDidEndEditingNotification
+      object: self
+      userInfo: d];
+
+  [cell endEditing: [aNotification object]];
+
+  textMovement = [[aNotification userInfo] objectForKey: @"NSTextMovement"];
+  if (textMovement)
+    {
+      switch ([(NSNumber *)textMovement intValue])
+	{
+	case NSReturnTextMovement:
+	  [self sendAction: [self action] to: [self target]];
+	  break;
+	case NSTabTextMovement:
+	  [window selectKeyViewFollowingView: self];
+	  break;
+	case NSBacktabTextMovement:
+	  [window selectKeyViewPrecedingView: self];
+	  break;
+	}
+    }
+  _text_object = nil;
 }
 
 - (BOOL) textShouldBeginEditing: (NSText *)textObject
 {
-  return YES;
+  if ([self isEditable] == NO)
+    return NO;
+  
+  if (_delegate && [_delegate respondsToSelector: 
+				@selector(control:textShouldBeginEditing:)])
+    return [_delegate control: self 
+		      textShouldBeginEditing: textObject];
+  else 
+    return YES;
 }
 
 - (BOOL) textShouldEndEditing: (NSText *)aTextObject
 {
-  if ([cell isEntryAcceptable: [aTextObject text]])
+  if ([cell isEntryAcceptable: [aTextObject text]] == NO)
     {
-//		if ([delegate respondsTo: control: textShouldEndEditing: ])		// FIX ME
-//			{
-//			if (![delegate control: textShouldEndEditing: ])
-//				{
-//				NSBeep();
-//				return NO;
-//				}
-//			else
-//				return YES;
-//			}
-      [cell endEditing: aTextObject];
-    }
-  else
-    {		// entry is not valid
-      NSBeep();
+      [self sendAction: _error_action to: [self target]];
       return NO;
     }
+  
+  if ([_delegate respondsToSelector: 
+		   @selector(control:textShouldEndEditing:)])
+    {
+      if ([_delegate control: self 
+		     textShouldEndEditing: aTextObject] == NO)
+	{
+	  NSBeep ();
+	  return NO;
+	}
+    }
 
-//  [self display];
-//  [window flushWindow];
-
+  // In all other cases
   return YES;
 }
-
 //
 // Manage the cursor
 //
 - (void) resetCursorRects
 {
-  [self addCursorRect: bounds cursor: text_cursor];
+  [self addCursorRect: bounds cursor: _text_cursor];
 }
 
 //
@@ -502,16 +482,16 @@ fprintf(stderr, " TextField mouseDown --- ");
 {
   [super encodeWithCoder: aCoder];
 
-  [aCoder encodeConditionalObject: text_delegate];
-  [aCoder encodeValueOfObjCType: @encode(SEL) at: &error_action];
+  [aCoder encodeConditionalObject: _delegate];
+  [aCoder encodeValueOfObjCType: @encode(SEL) at: &_error_action];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   [super initWithCoder: aDecoder];
 
-  text_delegate = [aDecoder decodeObject];
-  [aDecoder decodeValueOfObjCType: @encode(SEL) at: &error_action];
+  _delegate = [aDecoder decodeObject];
+  [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_error_action];
 
   return self;
 }
