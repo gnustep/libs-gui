@@ -1,3 +1,8 @@
+2002-11-23 21:40  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSParagraphStyle ([NSMutableParagraphStyle -copyWithZone:]):
+	Implement.
+
 2002-11-23 21:31  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/GSHorizontalTypesetter.h,
