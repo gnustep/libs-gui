@@ -961,7 +961,7 @@ NSArray* array;
 - (void)setMenu: (NSMenu*)aMenu          { menu = aMenu; }
 - (NSMenu*)menu                         { return menu; }
   
-- (void)drawRect: (NSRect)rect
+- (void) drawRect: (NSRect)rect
 {
   NSRect floodRect = rect;
                             
@@ -971,10 +971,10 @@ NSArray* array;
   floodRect.origin.y += 2;
   floodRect.size.height -= 3;
   floodRect.size.width -= 3;
-  [[NSColor blackColor] set];
+  [[NSColor windowFrameColor] set];
   NSRectFill(floodRect);
       
-  [[NSColor whiteColor] set];
+  [[NSColor windowFrameTextColor] set];
   [[NSFont boldSystemFontOfSize:12] set];
   PSmoveto(rect.origin.x + 5, rect.origin.y + 6);
   PSshow([[menu title] cString]);

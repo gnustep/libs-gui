@@ -48,7 +48,7 @@
 //
 // Instance methods
 //
-- initWithFrame: (NSRect)frameRect
+- (id) initWithFrame: (NSRect)frameRect
 {
   [super initWithFrame: frameRect];
 
@@ -65,9 +65,9 @@
   [super dealloc];
 }
 
-//
-// Drawing
-//
+/*
+ * Drawing
+ */
 - (void) drawRect: (NSRect)rect
 {
   NSRect aRect = bounds;
@@ -83,10 +83,10 @@
       NSDrawButton(aRect, rect);
 
       /*
-       * Fill in grey.
+       * Fill in control color.
        */
       aRect = NSInsetRect(aRect, 2.0, 2.0);
-      [[NSColor lightGrayColor] set];
+      [[NSColor controlColor] set];
       NSRectFill(NSIntersectionRect(aRect, rect));
 
       /*

@@ -56,8 +56,8 @@
   return contents;
 }
 
-- (void)drawWithFrame:(NSRect)cellFrame
-               inView:(NSView*)view  
+- (void) drawWithFrame: (NSRect)cellFrame
+                inView: (NSView*)view  
 {
   NSGraphicsContext     *ctxt = GSCurrentContext();
   NSRect rect = cellFrame;
@@ -71,13 +71,15 @@
   arect.origin.x += 1;
   arect.origin.y += 2;
  
-  if (cell_highlighted) {
-    [[NSColor whiteColor] set];
-    NSRectFill(arect);
-  } else {
-    [[NSColor lightGrayColor] set];  
-    NSRectFill(arect);
-  }
+  if (cell_highlighted)
+    {
+      [[NSColor selectedMenuItemColor] set];
+    }
+  else
+    {
+      [[NSColor controlColor] set];  
+    }
+  NSRectFill(arect);
 
   if (cell_image)
     {
@@ -96,7 +98,14 @@
       point.x = rect.origin.x + xDist;
       rect.origin = point;  
 
-      [[NSColor blackColor] set];
+      if (cell_highlighted)
+	{
+	  [[NSColor selectedMenuItemTextColor] set];
+	}
+      else
+	{
+	  [[NSColor controlTextColor] set];
+	}
   
       // Draw the title.
 

@@ -36,11 +36,11 @@
 
 @implementation NSClipView
 
-- init
+- (id) init
 {
   [super init];
   [self setAutoresizesSubviews: YES];
-  [self setBackgroundColor: [NSColor lightGrayColor]];
+  [self setBackgroundColor: [NSColor controlColor]];
   _copiesOnScroll = YES;
   return self;
 }

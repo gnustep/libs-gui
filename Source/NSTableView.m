@@ -21,7 +21,7 @@
   tbv_interCellSpacing = NSMakeSize (3,2);
   tbv_rowHeight = 16.0;
   tbv_columns = [NSMutableArray new];
-  tbv_gridColor = [NSColor grayColor];
+  tbv_gridColor = [NSColor gridColor];
 
   tbv_headerView = nil;
 }
