@@ -194,8 +194,6 @@ static GSMemoryPanel *sharedGSMemoryPanel = nil;
   [button setAction: @selector(update:)];
   [button setAutoresizingMask: NSViewMinXMargin];
   [button sizeToFit];
-  [button setFrameSize: NSMakeSize ([button frame].size.width + 6,
-				    [button frame].size.height + 4)];
 
   hbox = [GSHbox new];
   [hbox setDefaultMinXMargin: 5];
