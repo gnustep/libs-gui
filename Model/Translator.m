@@ -30,12 +30,11 @@
    Imran Qureshi.
  */
 
-#import <Foundation/NSNotification.h>
-#import <AppKit/AppKit.h>
-#import "gnustep/gui/GMArchiver.h"
-#import "gnustep/gui/IMLoading.h"
-#import "IBClasses.h"
-#import "Translator.h"
+#include <AppKit/AppKit.h>
+#include "gnustep/gui/GMArchiver.h"
+#include "gnustep/gui/IMLoading.h"
+#include "IBClasses.h"
+#include "Translator.h"
 
 NSMutableArray* objects;
 NSMutableArray* connections;

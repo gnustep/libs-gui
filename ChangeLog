@@ -1,3 +1,14 @@
+2003-03-04  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/gnustep/gui/GMAppKit.h, GMArchiver.h, IMConnectors.h,
+	IMCustomObject.h, IMLoading.h, NSNibConnector.h: Change #import to
+	#include
+	* Model/Controller.[h,m], GMAppKit.m, GMArchiveObjects.m,
+	GMArchiver.m, IBClasses.[hm], IMConnectors.h, IMLoading.m,
+	Translator.[hm], nib2gmodel.m, test.m: Idem.
+
+	* Tools/gsnd/portaudio/pa_unix_oss/pa_unix_oss.c: Fixes for FreeBSD.
+
 2003-02-24  Adam Fedor  <fedor@gnu.org>
 
 	* Version: 0.8.4

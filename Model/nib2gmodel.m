@@ -25,11 +25,8 @@
 
 #include <stdio.h>
 
-#import <Foundation/NSAutoreleasePool.h>
-#import <Foundation/NSProcessInfo.h>
-#import <Foundation/NSArray.h>
-#import <Foundation/NSString.h>
-#import "Translator.h"
+#include <Foundation/Foundation.h>
+#include "Translator.h"
 
 int main ()
 {

@@ -26,7 +26,11 @@
 #ifndef _GNUstep_H_IMLoading
 #define _GNUstep_H_IMLoading
 
-#import <Foundation/NSBundle.h>
+#ifndef GNUSTEP
+#include <Foundation/Foundation.h>
+#else
+#include <Foundation/NSBundle.h>
+#endif
 
 @interface NSObject (NibAwaking)
 - (void)awakeFromModel;
