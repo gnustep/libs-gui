@@ -2,7 +2,7 @@
 
 	* Headers/AppKit/NSEvent.h: Rename 'middle' mouse to 'other' as
 	MacOS-X has caught up with the functionality but not adopted our
-	names.
+	names.  Add -buttonNumber
 	* Headers/AppKit/NSResponder.h: ditto
 	* Source/Functions.m: ditto
 	* Source/GSComboSupport.m: ditto

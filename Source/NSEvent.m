@@ -444,7 +444,7 @@ static Class eventClass;
 /*
  * Getting Mouse Event Information
  */
-+ (NSPoint)mouseLocation
++ (NSPoint) mouseLocation
 {
   float x, y;
 
@@ -454,8 +454,10 @@ static Class eventClass;
 
 - (int) buttonNumber
 {
-  /* FIXME */
-  return 0;
+  if (event_type < NSLeftMouseDown || event_type > NSMouseExited)
+    [NSException raise: NSInvalidArgumentException
+		format: @"buttonNumber requested for non-mouse event"];
+  return event_data.mouse.button;
 }
 
 - (int) clickCount

@@ -114,7 +114,8 @@ enum {
       struct
 	{
 	  int	        event_num;
-	  int	        click;
+	  short	        click;
+	  short	        button;
 	  float	        pressure;
 	} mouse;
       struct
