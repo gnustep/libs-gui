@@ -1,3 +1,14 @@
+2002-11-21  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSGraphicsContext.m
+	Rewrote [GSSendBezierPath:] to send the full path to the
+	backend. Code comes from [NSBezierPath _doPath].
+	* Source/NSBezierPath.m
+	Replaces [_doPath] with calls to [NSGraphicsContext
+	GSSendBezierPath:]. 
+	Added optimisation methods [appendBezierPath:] and
+	[transformUsingAffineTransform:] on GSBezierPath.
+	
 2002-11-18  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSBundleAdditions.m: Added some logic in the initWithCoder
