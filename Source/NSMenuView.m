@@ -88,6 +88,7 @@ static float GSMenuBarHeight = 25.0; // a guess.
 {
   NSArray *menu_items = [menuv_menu itemArray];
   id anItem;
+  BOOL _closeASubmenu = NO;
 
   [self lockFocus];
 
@@ -115,22 +116,26 @@ static float GSMenuBarHeight = 25.0; // a guess.
       [anItem setState:0];
     }
 
-    anItem = [menu_items objectAtIndex:index];
+    if (menuv_highlightedItemIndex != index) {
+      anItem = [menu_items objectAtIndex:index];
 
-    [anItem highlight:YES
-	    withFrame:[self rectOfItemAtIndex:index]
-	       inView:self];
+      [anItem highlight:YES
+  	      withFrame:[self rectOfItemAtIndex:index]
+	         inView:self];
 
-    [anItem setState:1];
+      [anItem setState:1];
 
-    if ([anItem hasSubmenu])
-      [[anItem target] display];
+      if ([anItem hasSubmenu])
+        [[anItem target] display];
 
-    // set view needs to be redrawn
-    [window flushWindow];
+      // set view needs to be redrawn
+      [window flushWindow];
 
-    // set ivar to new index
-    menuv_highlightedItemIndex = index;
+      // set ivar to new index
+      menuv_highlightedItemIndex = index;
+    } else {
+      menuv_highlightedItemIndex = -1;
+    }
   }
   [self unlockFocus];
   [window flushWindow];
@@ -484,15 +489,24 @@ frame].origin.x, [[self window] frame].size.width);
 	      aRect.origin.y + aRect.size.height && [[[menuv_menu itemArray] objectAtIndex:lastIndex] hasSubmenu]) {
 	    weLeftMenu = YES;
             done = YES;
-	  }
+	  } else {
+            [self setHighlightedItemIndex:-1];
+            lastIndex = index;
+	    weWereOut = YES;
+            [window flushWindow];
+          }
         } else if (lastLocation.x < 0) {
           if ([menuv_menu supermenu]) {
 	    weRightMenu = YES;
             done = YES;
+	  } else {
+            [self setHighlightedItemIndex:-1];
+            lastIndex = index;
+	    weWereOut = YES;
+            [window flushWindow];
           }
         } else {
 // FIXME, Michael. This might be needed... or not?
-/*
 NSLog(@"This is the final else... its evil\n");
           if (lastIndex >= 0 && lastIndex < theCount) {
             [self setHighlightedItemIndex:-1];
@@ -500,7 +514,6 @@ NSLog(@"This is the final else... its evil\n");
 	    weWereOut = YES;
             [window flushWindow];
           }
-*/
         }
         [window flushWindow];
       default:
@@ -508,7 +521,7 @@ NSLog(@"This is the final else... its evil\n");
     }
   }
 
-  if (!weLeftMenu && !weRightMenu) {
+  if (!weLeftMenu && !weRightMenu && !weWereOut && menuv_highlightedItemIndex != -1) {
     if (![[[menuv_menu itemArray] objectAtIndex:menuv_highlightedItemIndex] hasSubmenu]) {
       BOOL finished = NO;
       NSMenu *aMenu = menuv_menu;
@@ -517,10 +530,20 @@ NSLog(@"This is the final else... its evil\n");
       [self setHighlightedItemIndex:-1];
 
       if ([selectedCell action])
-        [menuv_menu performActionForItem:[[menuv_menu itemArray] objectAtIndex:index]];
+        [menuv_menu performActionForItem:[[menuv_menu itemArray] objectAtIndex:lastIndex]];
 
       if ([selectedCell hasSubmenu])
         [[selectedCell target] close];
+
+      while (!finished) { // "forward"cursive menu find.
+        if ([aMenu attachedMenu]) {
+          aMenu = [aMenu attachedMenu];
+        }
+        else
+          finished = YES;
+      }
+
+      finished = NO;
 
       while (!finished) { // Recursive menu close & deselect.
         if ([aMenu supermenu] && ![aMenu isTornOff]) {
@@ -562,7 +585,7 @@ NSLog(@"This is the final else... its evil\n");
                 clickCount:[event clickCount]
                 pressure:[event pressure]]];
     }
-  } else /* The weLeftMenu case */ {
+  } else if (weLeftMenu) { /* The weLeftMenu case */
     NSPoint cP = [[self window] convertBaseToScreen:lastLocation];
 
     NSLog(@"Urph.\n");

@@ -1,3 +1,14 @@
+1999-06-30  Michael Hanni  <mhanni@sprintmail.com>
+
+	* Source/NSMenuView.m: fixes:
+
+2. Clicking on the menu item that opened a sub-menu should close the
+sub-menu again - it doesn't. [FIXED]
+5. Menus are not always closed properly at the end of a click and drag -
+I'm not sure if you already know about this one. [FIXED]
+6. If I drag off the bottom of a menu (or submenu) then release the mouse
+button, the app crashes. [FIXED]
+
 1999-06-29  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Source/NSMenu.m: complete rewrite. Some work still required to
