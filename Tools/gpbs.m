@@ -49,13 +49,18 @@
 #include "PasteboardServer.h"
 
 #include <signal.h>
-
-BOOL
-initialize_gnustep_backend(void)
+										// dummy definitions provided here to
+BOOL									// avoid errors when not linking with
+initialize_gnustep_backend(void)		// a back end
 {
-  /* Dummy replacement for the xdps function */
-  return YES;
+  return YES;													// dummy define
 }
+void NSHighlightRect(NSRect aRect)       						// dummy define
+{}
+void NSRectFill(NSRect aRect)       							// dummy define
+{}
+void NSBeep(void)												// dummy define
+{}
 
 @interface	GMModel: NSObject
 {

@@ -65,6 +65,7 @@ NSDataLinkPanel.m \
 NSDPSContext.m \
 NSEPSImageRep.m \
 NSEvent.m \
+NSFileWrapper.m \
 NSFont.m \
 NSFontManager.m \
 NSFontPanel.m \
@@ -148,6 +149,7 @@ AppKit/NSDataLinkPanel.h \
 AppKit/NSDragging.h \
 AppKit/NSEPSImageRep.h \
 AppKit/NSEvent.h \
+AppKit/NSFileWrapper.h \
 AppKit/NSFont.h \
 AppKit/NSFontManager.h \
 AppKit/NSFontPanel.h \

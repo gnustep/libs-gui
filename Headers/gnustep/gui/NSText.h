@@ -80,7 +80,6 @@ typedef enum _NSSelectionAffinity
 @interface NSText : NSView <NSChangeSpelling,NSIgnoreMisspelledWords,NSCoding>
 {											
 	id delegate;
-	NSString *text_contents;
 	unsigned int alignment;
 	BOOL is_editable;
 	BOOL is_rich_text;
@@ -105,6 +104,12 @@ typedef enum _NSSelectionAffinity
 	NSMutableAttributedString *rtfContent;
 	NSCharacterSet *selectionWordGranularitySet; 	
 	NSCharacterSet *selectionParagraphGranularitySet;
+
+	id lineLayoutInformation;
+	NSMutableDictionary *typingAttributes; 
+	float currentCursorX;
+	BOOL displayDisabled;
+	int spellCheckerDocumentTag;
 }
 
 

@@ -59,11 +59,14 @@
 
 // container may be nil
 - initWithFrame:(NSRect)frameRect textContainer:(NSTextContainer *)container
-{	if(container) [self setTextContainer: container];
+{	
+//	self=[super initWithFrame:frameRect];
+	[super initWithFrame:frameRect];
+
+if(container) [self setTextContainer: container];
 	else	// set up a new container
 	{
 	}
-	self=[super initWithFrame:frameRect];
 	return self;
 }
 
