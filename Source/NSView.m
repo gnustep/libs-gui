@@ -595,7 +595,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	  [newView viewWillMoveToWindow: _window];
 	  [newView viewWillMoveToSuperview: self];
 	  [newView setNextResponder: self];
-	  [_sub_views addObject: newView];
+  	  [_sub_views insertObject: newView
+  		      atIndex: index];
 	  _rFlags.has_subviews = 1;
 	  [newView resetCursorRects];
 	  [newView setNeedsDisplay: YES];
