@@ -34,7 +34,7 @@ include $(GNUSTEP_MAKEFILES)/common.make
 include ../Version
 # The applications to be compiled
 TOOL_NAME = gpbs make_services set_show_service
-#SERVICE_NAME = example
+SERVICE_NAME = example
 
 # The source files to be compiled
 gpbs_OBJC_FILES = gpbs.m Functions.m
