@@ -33,6 +33,7 @@
 #include <AppKit/NSActionCell.h>
 
 @class NSFont;
+@class NSSound;
 
 typedef enum _NSButtonType {
   NSMomentaryPushButton,
@@ -45,20 +46,42 @@ typedef enum _NSButtonType {
   NSMomentaryLight
 } NSButtonType;
 
-@interface NSButtonCell : NSActionCell <NSCopying, NSCoding>
+typedef enum _NSBezelStyle {
+    NSRoundedBezelStyle,
+    NSRegularSquareBezelStyle,
+    NSThickSquareBezelStyle,
+    NSThickerSquareBezelStyle
+} NSBezelStyle;
+
+typedef enum _NSGradientType {
+    NSGradientNone,
+    NSGradientConcanveWeak,
+    NSGradientConcaveStrong,
+    NSGradientConvexWeak,
+    NSGradientConvexStrong
+} NSGradientType;
+
+
+@interface NSButtonCell : NSActionCell
 {
   // Attributes
   NSString *_altContents;
   NSImage *_altImage;
-  NSString* _keyEquivalent;
-  NSFont* _keyEquivalentFont;
+  NSString *_keyEquivalent;
+  NSFont *_keyEquivalentFont;
+  NSSound *_sound;
   unsigned int _keyEquivalentModifierMask;
   unsigned int _highlightsByMask;
   unsigned int _showAltStateMask;
   float _delayInterval;
   float _repeatInterval;
+  NSBezelStyle _bezel_style;
+  NSGradientType _gradient_type;
+  BOOL _shows_border_only_while_mouse_inside;
+  BOOL _mouse_inside;
   // Think of the following as a BOOL ivar
 #define _buttoncell_is_transparent _cell.subclass_bool_one
+#define _image_dims_when_disabled _cell.subclass_bool_two
 }
 
 //
@@ -69,6 +92,17 @@ typedef enum _NSButtonType {
 - (void)setFont:(NSFont *)fontObject;
 - (void)setTitle:(NSString *)aString;
 - (NSString *)title;
+#ifndef STRICT_OPENSTEP
+- (NSAttributedString *)attributedAlternateTitle;
+- (NSAttributedString *)attributedTitle;
+- (void)setAttributedAlternateTitle:(NSAttributedString *)aString;
+- (void)setAttributedTitle:(NSAttributedString *)aString;
+- (void)setTitleWithMnemonic:(NSString *)aString;
+- (NSString *)alternateMnemonic;
+- (unsigned)alternateMnemonicLocation;
+- (void)setAlternateMnemonicLocation:(unsigned)location;
+- (void)setAlternateTitleWithMnemonic:(NSString *)aString;
+#endif
 
 //
 // Setting the Images 
@@ -103,6 +137,16 @@ typedef enum _NSButtonType {
 //
 - (BOOL)isTransparent;
 - (void)setTransparent:(BOOL)flag;
+#ifndef STRICT_OPENSTEP
+- (NSBezelStyle)bezelStyle;
+- (void)setBezelStyle:(NSBezelStyle)bezelStyle;
+- (BOOL)showsBorderOnlyWhileMouseInside;
+- (void)setShowsBorderOnlyWhileMouseInside:(BOOL)show;
+- (NSGradientType)gradientType;
+- (void)setGradientType:(NSGradientType)gradientType;
+- (BOOL)imageDimsWhenDisabled;
+- (void)setImageDimsWhenDisabled:(BOOL)flag;
+#endif
 
 //
 // Modifying Graphic Attributes 
@@ -114,10 +158,21 @@ typedef enum _NSButtonType {
 - (int)showsStateBy;
 
 //
-// NSCoding protocol
+// Sound
 //
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
+#ifndef STRICT_OPENSTEP
+- (void)setSound:(NSSound *)aSound;
+- (NSSound *)sound;
+#endif
+
+//
+// Mouse
+//
+#ifndef STRICT_OPENSTEP
+- (void)mouseEntered:(NSEvent *)event;
+- (void)mouseExited:(NSEvent *)event;
+- (void)performClick:(id)sender;
+#endif
 
 @end
 
