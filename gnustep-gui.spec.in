@@ -3,6 +3,7 @@ Release: 1
 Copyright: LGPL
 Group: Development/Libraries
 Source: http://www.gnustep.org/FIXME/%{gs_name}-%{gs_version}.tar.gz
+Requires: gnustep-base
 
 %description 
 The GNUstep gui Library is a powerful library of graphical user interface
