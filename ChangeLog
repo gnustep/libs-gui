@@ -1,3 +1,18 @@
+Sun May 26 13:46:58 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSMatrix.m
+	([-_privateFrame:mode:numberOfRows:numberOfColumns:]): Do not make
+	the cell size integers.  Any approximation is a loss of
+	information, and by approximating without reason at this stage we
+	are downgrading the information we pass to the backend -
+	information which the backend can use to render better.  A longer
+	explanation of why this change is appropriate in the source code.
+	([-_rebuildLayoutAfterResizing]): New method with code taken from
+	-resizeWithOldSuperviewSize:; rewritten not to compute changes
+	incrementally, and not to round up sizes without reason.
+	([-setFrame:], [-setFrameSize:]): New methods.
+	([-resizeWithOldSuperviewSize:]): Removed.
+
 2002-05-17  Georg Fleischmann <georg@vhf.de>
 
 	* gui/Source/GSSimpleLayoutManager.m
