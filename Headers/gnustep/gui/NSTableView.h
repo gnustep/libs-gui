@@ -88,9 +88,9 @@ typedef enum _NSTableViewDropOperation {
   /* YES if _delegate responds to
      tableView:willDisplayCell:forTableColumn:row: */
   BOOL   _del_responds;
-  /* YES if _delegate responds to
+  /* YES if _dataSource responds to
      tableView:setObjectValue:forTableColumn:row: */
-  BOOL   _del_editable;
+  BOOL   _dataSource_editable;
 
   /*
    * We cache column origins (precisely, the x coordinate of the left
