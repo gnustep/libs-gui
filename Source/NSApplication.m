@@ -365,9 +365,6 @@ static NSCell* tileCell = nil;
       /* Save the base library exception handler */
       defaultUncaughtExceptionHandler = NSGetUncaughtExceptionHandler ();
       
-      /* Set a new exception handler for the gui library */
-      NSSetUncaughtExceptionHandler (_NSAppKitUncaughtExceptionHandler);
-      
       /* Cache the NSAutoreleasePool class */
       arpClass = [NSAutoreleasePool class];
       nc = [NSNotificationCenter defaultCenter];
@@ -437,6 +434,9 @@ static NSCell* tileCell = nil;
     //_main_menu = nil;
     _windows_need_update = YES;
 
+    /* Set a new exception handler for the gui library */
+    NSSetUncaughtExceptionHandler (_NSAppKitUncaughtExceptionHandler);
+      
     _listener = [GSServicesManager newWithApplication: self];
     
     /* NSEvent doesn't use -init so we use +alloc instead of +new */

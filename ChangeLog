@@ -1,3 +1,9 @@
+2001-02-11  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSApplication.m ([NSApplication -init]): Don't set our
+	uncaught exception handler until after the back-end is initialized
+	(at least).
+
 2001-02-09  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSApplication.m: NSAppIconView modified to support the
