@@ -149,12 +149,6 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   return [self initWithFrame: NSMakeRect (0, 0, 100, 100)];
 }
 
-- (id) initWithFrame: (NSRect)frameRect
-{
-  [self subclassResponsibility: _cmd];
-  return nil;
-}
-
 - (void)dealloc
 {
   RELEASE(_background_color);
@@ -252,10 +246,10 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 
 - (void) setBackgroundColor: (NSColor*)color
 {
-  ASSIGN(_background_color, color);
+  ASSIGN (_background_color, color);
 }
 
-- (void)setDrawsBackground: (BOOL)flag
+- (void) setDrawsBackground: (BOOL)flag
 {
   _tf.draws_background = flag;
 }
@@ -288,14 +282,13 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   return _tf.is_selectable;
 }
 
-- (void)setEditable: (BOOL)flag
+- (void) setEditable: (BOOL)flag
 {
   _tf.is_editable = flag;
-  // If we are editable then we are selectable
+
   if (flag)
     {
       _tf.is_selectable = YES;
-      // FIXME: We should show the insertion point
     }
 }
 
@@ -304,30 +297,34 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   _tf.is_field_editor = flag;
 }
 
-- (void)setImportsGraphics: (BOOL)flag
+- (void) setImportsGraphics: (BOOL)flag
 {
-  if (flag)
-    _tf.is_rich_text = flag;
-  // FIXME: When switched off remove attachments
   _tf.imports_graphics = flag;
+
+  if (flag == YES)
+    {
+      _tf.is_rich_text = YES;
+    }
 }
 
 - (void) setRichText: (BOOL)flag
 {
   _tf.is_rich_text  = flag;
-  if (!flag)
+
+  if (flag == NO)
     {
-      _tf.imports_graphics = flag;
-      [self setString: [self string]];
+      _tf.imports_graphics = NO;
     }
 }
 
 - (void)setSelectable: (BOOL)flag
 {
   _tf.is_selectable = flag;
-  // If we are not selectable then we must not be editable
-  if (!flag)
-    _tf.is_editable = NO;
+
+  if (flag == NO)
+    {
+      _tf.is_editable = NO;
+    }
 }
 
 //
@@ -338,7 +335,7 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   return _tf.uses_font_panel;
 }
 
-- (void)setUsesFontPanel: (BOOL)flag
+- (void) setUsesFontPanel: (BOOL)flag
 {
   _tf.uses_font_panel = flag;
 }
@@ -359,7 +356,7 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 //
 // Managing the Selection
 //
-- (NSRange)selectedRange
+- (NSRange) selectedRange
 {
   return _selected_range;
 }
@@ -1420,10 +1417,6 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _tf.is_ruler_visible;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.smart_insert_delete;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.allows_undo;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
 
   [aCoder encodeObject: _typingAttributes];
   [aCoder encodeObject: _background_color];
@@ -1463,10 +1456,6 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   _tf.uses_ruler = flag;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
   _tf.is_ruler_visible = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _tf.smart_insert_delete = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _tf.allows_undo = flag;
 
   _typingAttributes  = [aDecoder decodeObject];
   _background_color  = [aDecoder decodeObject];
@@ -1492,9 +1481,10 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 //
 - (void) ignoreSpelling: (id)sender
 {
-  [[NSSpellChecker sharedSpellChecker]
-    ignoreWord: [[(NSControl*)sender selectedCell] stringValue]
-    inSpellDocumentWithTag: [self spellCheckerDocumentTag]];
+  NSSpellChecker *sp = [NSSpellChecker sharedSpellChecker];
+
+  [sp ignoreWord: [[(NSControl*)sender selectedCell] stringValue]
+      inSpellDocumentWithTag: [self spellCheckerDocumentTag]];
 }
 @end
 
@@ -1539,67 +1529,6 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 @end
 
 @implementation NSText(NSTextView)
-
-- (id) initWithFrame: (NSRect)frameRect
-       textContainer: (NSTextContainer*)aTextContainer
-{
-  [super initWithFrame: frameRect];
-
-  [self setMinSize: frameRect.size];
-  [self setMaxSize: NSMakeSize (HUGE,HUGE)];
-
-  _tf.is_field_editor = NO;
-  _tf.is_editable = YES;
-  _tf.is_selectable = YES;
-  _tf.is_rich_text = NO;
-  _tf.imports_graphics = NO;
-  _tf.draws_background = YES;
-  _tf.is_horizontally_resizable = NO;
-  _tf.is_vertically_resizable = NO;
-  _tf.uses_font_panel = YES;
-  _tf.uses_ruler = YES;
-  _tf.is_ruler_visible = NO;
-  ASSIGN (_caret_color, [NSColor blackColor]); 
-  [self setTypingAttributes: [isa defaultTypingAttributes]];
-
-  [self setBackgroundColor: [NSColor textBackgroundColor]];
-
-  //[self setSelectedRange: NSMakeRange (0, 0)];
-
-  [aTextContainer setTextView: (NSTextView*)self];
-  [aTextContainer setWidthTracksTextView: YES];
-  [aTextContainer setHeightTracksTextView: YES];
-  [self sizeToFit];
-
-  return self;
-}
-
-/* This should only be called by [NSTextContainer -setTextView:] */
-- (void) setTextContainer: (NSTextContainer*)aTextContainer
-{
-  // FIXME: This builds up circular references between those objects
-  _textContainer = aTextContainer;
-  _layoutManager = [aTextContainer layoutManager];
-  _textStorage = [_layoutManager textStorage];
-
-  // Hack to get the layout change
-  [_textContainer setContainerSize: _frame.size];
-}
-
-- (NSTextContainer *)textContainer
-{
-  return _textContainer;
-}
-
-- (NSPoint)textContainerOrigin
-{
-  return NSZeroPoint;
-}
-
-- (NSSize) textContainerInset
-{
-  return NSZeroSize;
-}
 
 - (void) setRulerVisible: (BOOL)flag
 {
@@ -1662,7 +1591,7 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 - (void) setTypingAttributes: (NSDictionary*) dict
 {
   if (dict == nil)
-    dict = [[self class] defaultTypingAttributes];
+    dict = [isa defaultTypingAttributes];
 
   if (![dict isKindOfClass: [NSMutableDictionary class]])
     {
