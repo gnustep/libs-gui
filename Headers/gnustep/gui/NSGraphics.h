@@ -298,6 +298,13 @@ GSAvailableDepthsForScreen(NSGraphicsContext *ctxt, int screen_num)
     (ctxt, @selector(GSAvailableDepthsForScreen:), screen_num);
 }
 
+static inline NSSize
+GSResolutionForScreen(NSGraphicsContext *ctxt, int screen_num)
+{
+  return (ctxt->methods->GSResolutionForScreen_)
+    (ctxt, @selector(GSResolutionForScreen:), screen_num);
+}
+
 #ifndef	NO_GNUSTEP
 @class	NSArray;
 @class	NSWindow;
