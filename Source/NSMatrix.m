@@ -1181,13 +1181,14 @@ static MPoint anchor = {0, 0};
 					selectedColumn = column;				// until the cursor
 															// either leaves
 					if([aCell trackMouse:lastEvent			// the cellframe or
-							  inRect:rect					// mouse goes up
+							  inRect:rect					// NSLeftMouseUp
 							  ofView:self				
 							  untilMouseUp:YES])			// YES if mouse 
 						done = YES;							// went up in cell
 					break;									
 
 				case NSHighlightModeMatrix:					
+					[aCell setState:1];					
 					[aCell highlight: YES withFrame: rect inView: self];
 					[self setNeedsDisplayInRect:rect];		// Highlight mode
 					ASSIGN(selectedCell, aCell);			// is like Track
@@ -1199,6 +1200,7 @@ static MPoint anchor = {0, 0};
 							  ofView:self				
 							  untilMouseUp:YES])			// YES if mouse 
 						done = YES;							// went up in cell
+					[aCell setState:0];					
 					[aCell highlight: NO withFrame: rect inView: self];
 					[self setNeedsDisplayInRect:rect];
 					break;									
@@ -1226,9 +1228,9 @@ static MPoint anchor = {0, 0};
 	  				((tMatrix)selectedCells)->matrix[row][column] = YES;				
 	  				[self setNeedsDisplayInRect:rect];					
 	  				break;
-
-				case NSListModeMatrix: 					// List mode allows 
-					{									// multiple selection
+														// List mode allows
+				case NSListModeMatrix: 			 		// multiple cells to be
+					{									// selected
 	  				unsigned modifiers = [lastEvent modifierFlags];
 
 	  				if (previousCell == aCell)
@@ -1329,9 +1331,9 @@ static MPoint anchor = {0, 0};
 			anchor = MakePoint (column, row);		// mouse up as new anchor
 			break;									// point in List mode
   		}
-								// in Track or Highlight modes the single click
-								// action has already been sent by the cell to 
-								// it's target (if it has one)
+								// in Track and Highlight modes the single
+								// click action has already been sent by the  
+								// cell to it's target (if it has one)
 	if ((mode != NSTrackModeMatrix) && (mode != NSHighlightModeMatrix) && 
 			(selectedCellTarget = [selectedCell target]))
 		[selectedCellTarget performSelector:[selectedCell action] 

@@ -141,8 +141,7 @@
 
   rect.origin = documentFrame.origin;
   rect.size.width = MAX(documentFrame.size.width, clipViewBounds.size.width);
-  rect.size.height = MAX(documentFrame.size.height,
-			 clipViewBounds.size.height);
+  rect.size.height = MAX(documentFrame.size.height,clipViewBounds.size.height);
 
   return rect;
 }

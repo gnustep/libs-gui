@@ -1,3 +1,8 @@
+Tues July 28 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* NSScroller.m in trackScrollButtons method added code to highlight cell 
+		prior to calling trackMouse.  In keeping with new behaviour of NSCell.
+
 Sat July 25 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* NSCell.m removed highlight/unhighlight behaviour from trackMouse method

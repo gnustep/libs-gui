@@ -463,6 +463,8 @@ static NSButtonCell* knobCell = nil;
     }
 
     if (theCell) {
+	  [theCell highlight:YES withFrame:rect inView:self];	// highlight cell
+	  [self setNeedsDisplayInRect:rect];		
       NSDebugLog (@"tracking cell %x", theCell);
       /* Track the mouse until mouse goes up */
       shouldReturn = [theCell trackMouse:theEvent
