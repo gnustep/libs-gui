@@ -1,3 +1,10 @@
+2000-12-17 Georg Fleischmann
+
+	* gui/Source/NSView.m ([NSView -setFrameSize:]):
+	scale bounds, if necessary
+	* gui/Source/NSView.m ([NSView -scaleUnitSquareSize:]):
+	scale from bounds instead of frame (like OpenStep)
+
 Sun Dec 17 14:32:11 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSCell.m ([-_nonAutoreleasedTypingAttributes]): New

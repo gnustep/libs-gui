@@ -699,7 +699,18 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       (*invalidateImp)(self, invalidateSel);
     }
-  _frame.size = _bounds.size = newSize;
+
+  if (_is_rotated_or_scaled_from_base)
+    {
+      float sx = _bounds.size.width  / _frame.size.width;
+      float sy = _bounds.size.height / _frame.size.height;
+
+      _frame.size = newSize;
+      _bounds.size.width  = _frame.size.width  * sx;
+      _bounds.size.height = _frame.size.height * sy;
+    }
+  else
+    _frame.size = _bounds.size = newSize;
 
   [self resizeSubviewsWithOldSize: old_size];
   if (_post_frame_changes)
@@ -761,8 +772,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       (*invalidateImp)(self, invalidateSel);
     }
-  _bounds.size.width = _frame.size.width / newSize.width;
-  _bounds.size.height = _frame.size.height / newSize.height;
+  _bounds.size.width  = _bounds.size.width  / newSize.width;
+  _bounds.size.height = _bounds.size.height / newSize.height;
 
   _is_rotated_or_scaled_from_base = YES;
   
