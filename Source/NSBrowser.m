@@ -222,7 +222,6 @@
 - (id) initWithFrame: (NSRect)rect
 {
   NSSize bs;
-  NSRect scroller_rect;
 
   [super initWithFrame: rect];
 
@@ -242,10 +241,10 @@
   _takesTitleFromPreviousColumn = YES;
   _isTitled = YES;
   _hasHorizontalScroller = YES;
-  scroller_rect.origin = NSZeroPoint;
-  scroller_rect.size.width = frame.size.width;
-  scroller_rect.size.height = [NSScroller scrollerWidth];
-  _horizontalScroller = [[NSScroller alloc] initWithFrame: scroller_rect];
+  _scrollerRect.origin = NSZeroPoint;
+  _scrollerRect.size.width = frame.size.width;
+  _scrollerRect.size.height = [NSScroller scrollerWidth];
+  _horizontalScroller = [[NSScroller alloc] initWithFrame: _scrollerRect];
   [_horizontalScroller setTarget: self];
   [_horizontalScroller setAction: @selector(scrollViaScroller:)];
   [self addSubview: _horizontalScroller];
@@ -1399,7 +1398,6 @@
 //
 - (void)tile
 {
-  NSRect scroller_rect;
   int num;
 
   // It is assumed the frame/bounds are set appropriately
@@ -1417,13 +1415,13 @@
   // Horizontal scroller
   if (_hasHorizontalScroller)
     {
-      scroller_rect.origin = frame.origin;
-      scroller_rect.size.width = frame.size.width;
-      scroller_rect.size.height = [NSScroller scrollerWidth] + 4;
-      _columnSize.height -= scroller_rect.size.height;
+      _scrollerRect.origin = NSZeroPoint;
+      _scrollerRect.size.width = frame.size.width;
+      _scrollerRect.size.height = [NSScroller scrollerWidth] + 4;
+      _columnSize.height -= _scrollerRect.size.height;
     }
   else
-    scroller_rect = NSZeroRect;
+    _scrollerRect = NSZeroRect;
 
   // Title
   if (_isTitled)
@@ -1708,6 +1706,7 @@
   [super resizeSubviewsWithOldSize: oldSize];
   [self tile];
   [self _adjustScrollerFrames: YES];
+  [_horizontalScroller setFrame: _scrollerRect];
 }
 
 @end
