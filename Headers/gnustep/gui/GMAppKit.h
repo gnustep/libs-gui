@@ -86,4 +86,7 @@
 @interface NSSavePanel (GMArchiverMethods) <ModelCoding>
 @end
 
+@interface NSBrowser (GMArchiverMethods) <ModelCoding>
+@end
+
 #endif /* _GNUstep_H_GMAppKit */
