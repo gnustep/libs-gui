@@ -3,7 +3,7 @@
    Copyright (C) 2003 Free Software Foundation, Inc.
 
    Author: Serg Stoyan <stoyan@on.com.ua>
-   Date: Mar 2003
+   Date:   Mar 2003
    
    This file is part of the GNUstep GUI Library.
 
@@ -23,6 +23,9 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+#ifndef _GNUstep_H_GSTitleView
+#define _GNUstep_H_GSTitleView
+
 @class NSDictionary;
 @class NSButton;
 @class NSImage;
@@ -35,25 +38,36 @@
   NSColor             *titleColor;
 
   @private
-    id         _owner;
-    unsigned   _ownedByMenu;
-    unsigned   _hasCloseButton;
-    unsigned   _hasMiniaturizeButton;
+    id       _owner;
+    unsigned _ownedByMenu;
+    unsigned _hasCloseButton;
+    unsigned _hasMiniaturizeButton;
+    unsigned _isKeyWindow;
+    unsigned _isMainWindow;
+    unsigned _isActiveApplication;
 }
+
+// ============================================================================
+// ==== Initialization & deallocation
+// ============================================================================
+
 + (float) height;
+- (void) setOwner: (id)owner;
+- (id) initWithOwner: (id)owner;
+- (id) owner;
 - (NSSize) titleSize;
 
-// Buttons
-- (NSButton *) _createButtonWithImage: (NSImage *)image
-                       highlightImage: (NSImage *)imageH
-                               action: (SEL)action;
+// ============================================================================
+// ==== Buttons
+// ============================================================================
+
 - (void) addCloseButtonWithAction: (SEL)closeAction;
+- (NSButton *) closeButton;
 - (void) removeCloseButton;
 - (void) addMiniaturizeButtonWithAction: (SEL)miniaturizeAction;
+- (NSButton *)miniaturizeButton;
 - (void) removeMiniaturizeButton;
-
-- (void) setOwner: (id)owner;
-- (id) owner;
 
 @end
 
+#endif
