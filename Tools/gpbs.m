@@ -52,10 +52,10 @@ int verbose = 0;
 
 #define MAXHIST 100
 
-PasteboardServer    *server = nil;
-NSConnection	    *conn = nil;
-NSLock		*dictionary_lock = nil;
-NSMutableDictionary*	pasteboards = nil;
+PasteboardServer	*server = nil;
+NSConnection		*conn = nil;
+NSLock			*dictionary_lock = nil;
+NSMutableDictionary	*pasteboards = nil;
 
 @interface PasteboardData: NSObject
 {
@@ -73,7 +73,7 @@ NSMutableDictionary*	pasteboards = nil;
 	      wantsChangedOwner: (BOOL)wants
 	      hasStdDataForType: (BOOL)StdData
 	      hasGNUDataForType: (BOOL)GNUData;
-- (void) checkConnection: (NSConnection*)c;
+- (BOOL) checkConnection: (NSConnection*)c;
 - (NSData*) data;
 - (NSData*) newDataWithVersion: (int)version;
 - (id) owner;
@@ -106,9 +106,10 @@ NSMutableDictionary*	pasteboards = nil;
   return d;
 }
 
-- (void) checkConnection: (NSConnection*)c
+- (BOOL) checkConnection: (NSConnection*)c
 {
-  id o;
+  BOOL	ourConnection = NO;
+  id	o;
 
   if (owner && [owner isProxy] && [owner connectionForProxy] == c)
     {
@@ -118,6 +119,7 @@ NSMutableDictionary*	pasteboards = nil;
       o = pboard;
       pboard = nil;
       [o release];
+      ourConnection = YES;
     }
   if (pboard && [pboard isProxy] && [pboard connectionForProxy] == c)
     {
@@ -127,7 +129,9 @@ NSMutableDictionary*	pasteboards = nil;
       o = pboard;
       pboard = nil;
       [o release];
+      ourConnection = YES;
     }
+  return ourConnection;
 }
 
 - (void) dealloc
@@ -139,11 +143,16 @@ NSMutableDictionary*	pasteboards = nil;
   [super dealloc];
 }
 
+- (NSString*) description
+{
+  return [NSString stringWithFormat: @"PasteboardData for type '%@'", type];
+}
+
 - (NSData*) data
 {
   if (verbose)
     {
-      printf("get data for %x\n", (unsigned)self);
+      NSLog(@"get data for %x\n", (unsigned)self);
     }
   return data;
 }
@@ -181,7 +190,7 @@ NSMutableDictionary*	pasteboards = nil;
 {
   if (verbose)
     {
-      printf("set data for %x\n", (unsigned)self);
+      NSLog(@"set data for %x\n", (unsigned)self);
     }
   [d retain];
   [data release];
@@ -218,7 +227,7 @@ NSMutableDictionary*	pasteboards = nil;
 			   pboard: (id)aPboard
 			      ref: (int)count;
 - (void) addTypes: (NSArray*)types owner: (id)owner pasteboard: (id)pb;
-- (void) checkConnection: (NSConnection*)c;
+- (BOOL) checkConnection: (NSConnection*)c;
 - (BOOL) hasBeenFiltered;
 - (PasteboardData*) itemForType: (NSString*)type;
 - (void) lostOwnership;
@@ -258,11 +267,11 @@ NSMutableDictionary*	pasteboards = nil;
 	  e->hasGNUDataForType = YES;
 	}
 
-      e->items = [[NSMutableArray alloc] initWithCapacity:[someTypes count]];
+      e->items = [[NSMutableArray alloc] initWithCapacity: [someTypes count]];
       for (i = 0; i < [someTypes count]; i++)
 	{
-	  NSString*	type = [someTypes objectAtIndex:i];
-	  PasteboardData*   d;
+	  NSString		*type = [someTypes objectAtIndex: i];
+	  PasteboardData	*d;
 
 	  d = [PasteboardData newWithType: type
 				    owner: anOwner
@@ -270,10 +279,14 @@ NSMutableDictionary*	pasteboards = nil;
 			wantsChangedOwner: e->wantsChangedOwner
 			hasStdDataForType: e->hasStdDataForType
 			hasGNUDataForType: e->hasGNUDataForType];
-	  [e->items addObject:d];
+	  [e->items addObject: d];
 	  [d release];
 	}
       e->refNum = count;
+      if (verbose > 1)
+	{
+	  NSLog(@"New PasteboardEntry %d with items - %@", count, e->items);
+	}
     }
   return e;
 }
@@ -303,9 +316,9 @@ NSMutableDictionary*	pasteboards = nil;
 
   for (i = 0; i < [newTypes count]; i++)
     {
-      NSString*	  type = (NSString*)[newTypes objectAtIndex:i];
+      NSString	*type = (NSString*)[newTypes objectAtIndex: i];
 
-      if ([self itemForType:type] == nil)
+      if ([self itemForType: type] == nil)
 	{
 	  PasteboardData*   d;
 
@@ -315,16 +328,21 @@ NSMutableDictionary*	pasteboards = nil;
 			wantsChangedOwner: wants
 			hasStdDataForType: StdData
 			hasGNUDataForType: GNUData];
-	  [items addObject:d];
+	  [items addObject: d];
 	  [d release];
 	}
     }
+  if (verbose > 1)
+    {
+      NSLog(@"Modified PasteboardEntry %d with items - %@", refNum, items);
+    }
 }
 
-- (void) checkConnection: (NSConnection*)c
+- (BOOL) checkConnection: (NSConnection*)c
 {
-  unsigned int i;
-  id o;
+  BOOL		ourConnection = NO;
+  unsigned	i;
+  id		o;
 
   if (owner && [owner isProxy] && [owner connectionForProxy] == c)
     {
@@ -334,7 +352,9 @@ NSMutableDictionary*	pasteboards = nil;
       o = pboard;
       pboard = nil;
       [o release];
+      ourConnection = YES;
     }
+
   if (pboard && [pboard isProxy] && [pboard connectionForProxy] == c)
     {
       o = owner;
@@ -343,18 +363,23 @@ NSMutableDictionary*	pasteboards = nil;
       o = pboard;
       pboard = nil;
       [o release];
+      ourConnection = YES;
     }
 
   for (i = [items count]; i > 0; i--)
     {
-      PasteboardData* d = [items objectAtIndex: i-1];
+      PasteboardData	*d = [items objectAtIndex: i-1];
 
-      [d checkConnection: c];
-      if ([d data] == nil && [d owner] == nil)
+      if ([d checkConnection: c] == YES && [d data] == nil && [d owner] == nil)
 	{
-	  [items removeObjectAtIndex:i-1];
+	  if (verbose > 1)
+	    {
+	      NSLog(@"Removing item from PasteboardEntry %d\n", refNum);
+	    }
+	  [items removeObjectAtIndex: i-1];
 	}
     }
+  return ourConnection;
 }
 
 - (void) dealloc
@@ -372,11 +397,12 @@ NSMutableDictionary*	pasteboards = nil;
 
 - (PasteboardData*) itemForType: (NSString*)type
 {
-  unsigned i;
+  unsigned i, count;
 
-  for (i = 0; i < [items count]; i++)
+  count = [items count];
+  for (i = 0; i < count; i++)
     {
-      PasteboardData* d = [items objectAtIndex:i];
+      PasteboardData	*d = [items objectAtIndex: i];
 
       if ([[d type] isEqual: type])
 	{
@@ -474,13 +500,13 @@ NSMutableDictionary*	pasteboards = nil;
 - (NSString*) availableTypeFromArray: (NSArray*)types
 	     changeCount: (int*)count;
 - (int) changeCount;
-- (void) checkConnection: (NSConnection*)c;
+- (BOOL) checkConnection: (NSConnection*)c;
 - (NSData*) dataForType: (NSString*)type
 	   oldCount: (int)count
       mustBeCurrent: (BOOL)flag;
 - (int) declareTypes: (NSArray*)types
 	       owner: (id)owner
-      pasteboard: (id)pboard;
+	  pasteboard: (id)pboard;
 - (PasteboardEntry*) entryByCount: (int)count;
 - (NSString*) name;
 - (void) releaseGlobally;
@@ -591,14 +617,19 @@ NSMutableDictionary*	pasteboards = nil;
   return 0;
 }
 
-- (void) checkConnection: (NSConnection*)c
+- (BOOL) checkConnection: (NSConnection*)c
 {
-  unsigned int i;
+  unsigned	i;
+  BOOL		found = NO;
 
   for (i = 0; i < [history count]; i++)
     {
-      [[history objectAtIndex: i] checkConnection: c];
+      if ([[history objectAtIndex: i] checkConnection: c] == YES)
+	{
+	  found = YES;
+	}
     }
+  return found;
 }
 
 - (NSData*) dataForType: (NSString*)type
@@ -617,12 +648,11 @@ NSMutableDictionary*	pasteboards = nil;
     }
   if (verbose)
     {
-      printf("get data for type '%s' version %d\n",
-	[type cString], e ? [e refNum] : -1);
+      NSLog(@"get data for type '%@' version %d\n", type, e ? [e refNum] : -1);
     }
   if (e)
     {
-      PasteboardData* d = [e itemForType: type];
+      PasteboardData	*d = [e itemForType: type];
 
       if (d)
 	{
@@ -643,17 +673,17 @@ NSMutableDictionary*	pasteboards = nil;
 	       owner: (id)owner
 	  pasteboard: (NSPasteboard*)pb
 {
-  PasteboardEntry*  old = [current retain];
+  PasteboardEntry	*old = [current retain];
 
-  current = [PasteboardEntry newWithTypes:types
-				    owner:owner
-				   pboard:pb
-				      ref:nextCount++];
-  [history addObject:current];
+  current = [PasteboardEntry newWithTypes: types
+				    owner: owner
+				   pboard: pb
+				      ref: nextCount++];
+  [history addObject: current];
   [current release];
   if ([history count] > histLength)
     {
-      [history removeObjectAtIndex:0];
+      [history removeObjectAtIndex: 0];
     }
   [old lostOwnership];
   [old release];
@@ -705,17 +735,16 @@ NSMutableDictionary*	pasteboards = nil;
 	  isFile: (BOOL)flag
 	oldCount: (int)count
 {
-  PasteboardEntry*  e;
+  PasteboardEntry	*e;
 
   if (verbose)
     {
-      printf("set data for type '%s' version %d\n",
-	[type cString], count);
+      NSLog(@"set data for type '%@' version %d\n", type, count);
     }
   e = [self entryByCount: count];
   if (e)
     {
-      PasteboardData* d;
+      PasteboardData	*d;
 
       if (flag)
 	{
@@ -835,7 +864,7 @@ NSMutableDictionary*	pasteboards = nil;
   return newConn;
 }
 
-- connectionBecameInvalid: notification
+- (id) connectionBecameInvalid: (NSNotification*)notification
 {
   id connection = [notification object];
 
@@ -857,13 +886,13 @@ NSMutableDictionary*	pasteboards = nil;
   return self;
 }
 
-- (void)dealloc
+- (void) dealloc
 {
   [permenant release];
   [super dealloc];
 }
 
-- init
+- (id) init
 {
   self = [super init];
   if (self)
