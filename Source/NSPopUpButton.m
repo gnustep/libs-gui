@@ -338,6 +338,12 @@ this to return nil to indicate that we have no context menu.
   if ([self isEnabled] == NO)
     return;
 
+  if ([[_cell menu] numberOfItems] == 0)
+    {
+      NSBeep ();
+      return;
+    }
+
   // Attach the popUp
   [_cell attachPopUpWithFrame: _bounds
 	               inView: self];
@@ -421,6 +427,13 @@ this to return nil to indicate that we have no context menu.
 	    int selectedIndex;
 	    NSMenuView *menuView;
 	    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+
+	    // Beep, as on OS, and then return.
+	    if ([[_cell menu] numberOfItems] == 0)
+	      {
+		NSBeep();
+		return;
+	      }
 
 	    menuView = [[_cell menu] menuRepresentation];
 	    if ([[menuView window] isVisible] == NO)
