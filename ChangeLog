@@ -1,3 +1,14 @@
+2000-06-17  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/Parser/attributedStringConsumer.m
+	* Source/Parser/rtfConsumer.h
+	* Source/Parser/rtfConsumerFunctions.h
+	* Source/Parser/rtfScanner.h
+	* Source/Parser/rtfScanner.y
+	* Source/Parser/rtfGrammer.y
+	Extended support for RTF. Added underline, script, colour and
+	tailindent. 
+
 Fri Jun 16 21:05:49 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSText.m ([NSText -scrollRangeToVisible:aRange]): Don't
