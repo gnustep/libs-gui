@@ -1,3 +1,26 @@
+Wed Nov 10  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Debugged/rewritten handling of special key events, such as Return
+ 	or TAB, of text field editors:
+	* Source/NSText.m ([-keyDown:]): Debugged, rewritten.
+	* Source/NSText.m ([-acceptsFirstResponder]),
+ 	([-resignFirstResponder]), ([-becomeFirstResponder]): Rewritten to
+ 	deal correctly with delegate.
+	* Headers/AppKit/NSText.h: Added enumeration of important unicodes.
+
+	Improved interaction of cells with text field editors, better
+ 	support for fonts, colors when editing:
+	* Source/NSCell.m
+ 	([-editWithFrame:inView:editor:delegate:event:]): Fixes (eg
+ 	vertical position of rect used for drawing, display text editor, 
+	call setUpFieldEditorAttributes:).
+	([-selectWithFrame:inView:editor: delegate:start:length:]): Fixes
+ 	(eg don't make the text object first responder before having put
+ 	it in the view tree; added selection of the range) [untested].
+	* NSCell.m ([-setUpFieldEditorAttributes:]): First implementation.
+	* Source/NSTextFieldCell.m ([-setUpFieldEditorAttributes:]):
+ 	First implementation.
+
 Tue Nov  9  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSBrowser.m ([NSBrowser -setPath:]): Tidied, and fixed
