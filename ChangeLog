@@ -1,3 +1,8 @@
+Fri Dec 31 17:28:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSSlider.m: ([drawRect:]) minor drawing fix to ensure that
+	the slider knob is drawn in the correct place.
+
 Fri Dec 31 10:49:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSBundleAdditions.m: When decoding nib container, check for a

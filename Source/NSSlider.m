@@ -163,7 +163,12 @@ static Class cellClass;
 
 - (void) drawRect: (NSRect)rect
 {
-  [_cell drawWithFrame: rect inView: self];
+  /*
+   * Give the cell our bounds to draw in, not the rect - if we give it a rect
+   * that represents an exposed part of this view, it will try to draw the
+   * slider knob positioned in that rectangle ... which is wrong.
+   */
+  [_cell drawWithFrame: bounds inView: self];
 }
 
 - (float)_floatValueForMousePoint: (NSPoint)point knobRect: (NSRect)knobRect
