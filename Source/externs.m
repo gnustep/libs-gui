@@ -105,6 +105,7 @@ NSString *NSDeviceBlackColorSpace = @"NSDeviceBlackColorSpace";
 NSString *NSDeviceRGBColorSpace = @"NSDeviceRGBColorSpace";
 NSString *NSDeviceCMYKColorSpace = @"NSDeviceCMYKColorSpace";
 NSString *NSNamedColorSpace = @"NSNamedColorSpace";
+NSString *NSPatternColorSpace = @"NSPatternColorSpace";
 NSString *NSCustomColorSpace = @"NSCustomColorSpace";
 
 // NSColor Global gray values

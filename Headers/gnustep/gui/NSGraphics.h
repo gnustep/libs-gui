@@ -46,6 +46,9 @@ APPKIT_EXPORT NSString *NSDeviceBlackColorSpace;
 APPKIT_EXPORT NSString *NSDeviceRGBColorSpace;
 APPKIT_EXPORT NSString *NSDeviceCMYKColorSpace;
 APPKIT_EXPORT NSString *NSNamedColorSpace;
+#ifndef	STRICT_OPENSTEP
+APPKIT_EXPORT NSString *NSPatternColorSpace;
+#endif
 APPKIT_EXPORT NSString *NSCustomColorSpace;
 
 
