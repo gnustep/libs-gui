@@ -1321,7 +1321,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   NSAssert(_window != nil, NSInternalInconsistencyException);
   /* Check for deferred window */
   if ((window_gstate = [_window gState]) == 0)
-    return;
+    {
+      return;
+    }
 
   [ctxt lockFocusView: self inRect: rect];
   wrect = [self convertRect: rect toView: nil];
@@ -1335,7 +1337,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       DPSsetgstate(ctxt, _gstate);
       if (_renew_gstate)
-	[self setUpGState];
+	{
+	  [self setUpGState];
+	}
       _renew_gstate = 0;
       DPSgsave(ctxt);
     }
@@ -1355,7 +1359,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
        * Set the standard clippath to an empty path.
        */
       if ([matrix isRotated])
-	[matrix boundingRectFor: rect result: &rect];
+	{
+	  [matrix boundingRectFor: rect result: &rect];
+	}
 
       x = NSMinX(rect);
       y = NSMinY(rect);
@@ -1421,10 +1427,14 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (BOOL) canDraw
 {			// not implemented per OS spec FIX ME
-  if (_window)
-    return YES;
+  if (_window != nil)
+    {
+      return YES;
+    }
   else
-    return NO;
+    {
+      return NO;
+    }
 }
 
 - (void) display
@@ -1457,7 +1467,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	      [self _rebuildCoordinates];
 	    }
 	  rect = NSIntersectionRect(_invalidRect, _visibleRect);
-	  rect = [firstOpaque convertRect: rect fromView: self];
+	  rect = [firstOpaque convertRect: rect  fromView: self];
 	  if (NSIsEmptyRect(rect) == NO)
 	    {
 	      [firstOpaque displayIfNeededInRectIgnoringOpacity: rect];
