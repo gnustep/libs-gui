@@ -38,8 +38,6 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSCursor.h>
 
-
-
 @implementation NSTextField
 
 //
@@ -164,9 +162,15 @@ id _nsTextfieldCellClass = nil;
 //
 - (void) selectText: (id)sender
 {
-  if ([[self window] makeFirstResponder: self])
-    [cell selectText: sender];
-  [self setNeedsDisplay: YES];
+  // TODO
+  /*
+  if (window)
+    {
+      if ([window makeFirstResponder: self])
+	[cell selectText: sender];
+      [self setNeedsDisplay: YES];
+    }
+  */
 }
 
 //
@@ -367,8 +371,8 @@ fprintf(stderr, " TextField mouseDown --- ");
   // only for it.
   if (key_code == 0x0d)
     {
-      [window selectKeyViewFollowingView: self];
       [self sendAction: [cell action] to: [cell target]];
+      [window selectKeyViewFollowingView: self];
       return;
     }
   
@@ -423,7 +427,7 @@ fprintf(stderr, " TextField mouseDown --- ");
 {
   if ([self isSelectable] || [self isEditable])
     {
-      [cell selectText: self];
+      [self selectText: self];
       return YES;
     }
   else
