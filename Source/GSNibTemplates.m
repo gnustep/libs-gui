@@ -382,7 +382,7 @@ static const int currentVersion = 1; // GSNibItem version number...
     {
       NSDebugLog(@"Created template %@ -> %@",NSStringFromClass([self class]), className);
       ASSIGN(_object, object);
-      ASSIGN(_className, className);
+      ASSIGN(_className, [className copy]);
       NSAssert(![className isEqualToString: superClassName], NSInvalidArgumentException);
       _superClass = NSClassFromString(superClassName);
       if(_superClass == nil)
@@ -407,7 +407,7 @@ static const int currentVersion = 1; // GSNibItem version number...
 
 - (void) setClassName: (NSString *)name
 {
-  ASSIGN(_className, name);
+  ASSIGN(_className, [name copy]);
 }
 
 - (NSString *)className
@@ -507,16 +507,20 @@ static const int currentVersion = 1; // GSNibItem version number...
       // decode the defer flag...
       [coder decodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];      
 
-      // call designated initializer per spec...
-      contentView = [obj contentView];
-      obj = [obj initWithContentRect: [obj frame]
-		 styleMask: [obj styleMask]
-		 backing: [obj backingType]
-		 defer: _deferFlag];
-
-      // set the content view back
-      [obj setContentView: contentView];
-      RELEASE(self);
+      if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
+      {
+	// if we are not in interface builder, call 
+	// designated initializer per spec...
+	contentView = [obj contentView];
+	obj = [obj initWithContentRect: [obj frame]
+		   styleMask: [obj styleMask]
+		   backing: [obj backingType]
+		   defer: _deferFlag];
+	
+	// set the content view back
+	[obj setContentView: contentView];
+	// RELEASE(self);
+      }
     }
   return obj;
 }
@@ -639,7 +643,7 @@ static const int currentVersion = 1; // GSNibItem version number...
     {
       // NSRect theFrame = [obj frame]; 
       // obj = [obj initWithFrame: theFrame];
-      // RELEASE(self);
+      RELEASE(self);
     }
   return obj;
 }

@@ -1,5 +1,9 @@
 2003-08-23  Gregory John Casamento <greg_casamento@yahoo.com>
 
+	* GSNibTemplates.m: Minor corrections and bugfixes.
+
+2003-08-23  Gregory John Casamento <greg_casamento@yahoo.com>
+
 	* Source/GNUmakefile: Added new header to the list.
 	* Source/GSNibTemplates.m: Added assertion to GSClassSwapper to 
 	prevent it from being initialized with superClassName and className
