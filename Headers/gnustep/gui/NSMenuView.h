@@ -99,8 +99,8 @@
 - (id)initAsTearOff;
 - (void)setMenu:(NSMenu *)menu;
 - (NSMenu *)menu;
-- (void)setHorizontal:(BOOL)flag;
-- (BOOL)isHorizontal;
+/*- (void)setHorizontal:(BOOL)flag;
+- (BOOL)isHorizontal;*/
 - (void)setFont:(NSFont *)font;
 - (NSFont *)font;
 - (void)setHighlightedItemIndex:(int)index;
