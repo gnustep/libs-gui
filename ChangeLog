@@ -1,6 +1,11 @@
 2001-08-13  Pierre-Yves  <pyrivail@ens-lyon.fr>
 
-	* Source/NSPopUpButton.m ([-keyDown:): send selected item related
+	* Source/NSSavePanel.m ([-runModalForDirectory:file:])
+	* Source/NSOpenPanel.m ([-runModalForDirectory:file:types:])
+	Moved functionality from NSOpenPanel to NSSavePanel: the "ok" 
+	button is shown as enabled or not at the beginning depending 
+	on whether the given file is valid.
+	* Source/NSPopUpButton.m ([-keyDown:]): send selected item related
 	action when using the keyboard.
 	* Source/Functions.m
 	Esthetic corrections to NSDrawGrayBezel and NSDrawWhiteBezel
