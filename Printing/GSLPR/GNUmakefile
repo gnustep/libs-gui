@@ -30,6 +30,7 @@ include $(GNUSTEP_MAKEFILES)/common.make
 include ../../config.make
 include ../../Version
 
+GNUSTEP_INSTALLATION_DIR=$(GNUSTEP_SYSTEM_ROOT)
 
 
 

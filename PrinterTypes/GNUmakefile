@@ -29,6 +29,9 @@ include $(GNUSTEP_MAKEFILES)/common.make
 include ../Version
 
 RES_INSTALL_DIR = $(GNUSTEP_LIBRARY)/PostScript
+PPD_INSTALL_DIR = $(GNUSTEP_LIBRARY)/PostScript/PPD
+ 
+RESOURCE_DIRS = English.lproj
 
 RESOURCE_FILES = GSProlog.ps
 

@@ -2,7 +2,7 @@
 ADDITIONAL_CPPFLAGS += 
 
 # Additional flags to pass to the Objective-C compiler
-ADDITIONAL_OBJCFLAGS +=
+ADDITIONAL_OBJCFLAGS += -Wall
 
 # Additional flags to pass to the C compiler
 ADDITIONAL_CFLAGS +=
@@ -32,11 +32,6 @@ ADDITIONAL_OBJC_LIBS +=
 ADDITIONAL_TOOL_LIBS +=
 # WebObjects
 ADDITIONAL_WO_LIBS +=
-
-#
-# Flags dealing with installing and uninstalling
-#
-#GNUSTEP_INSTALLATION_DIR=$(GNUSTEP_SYSTEM_ROOT)
 
 # Additional directories to be created during installation
 #ADDITIONAL_INSTALL_DIRS +=

@@ -1,3 +1,18 @@
+2004-09-04 01:34  Alexander Malmberg <alexander@malmberg.org>
+
+	* PrinterTypes/GNUmakefile, PrinterTypes/GNUmakefile.postamble:
+	Revert removal of rules to install .ppd:s.
+	* PrinterTypes/English.lproj/Generic-PostScript_Printer-Postscript.ppd:
+	New file.
+	* Printing/GSLPR/GNUmakefile: Set GNUSTEP_INSTALLATION_DIR.
+	* Printing/GSLPR/GNUmakefile.preamble: Compile with -Wall.
+	* Printing/GSLPR/GSLPRPrinter.m (+printerWithName:): Remove
+	ppdContents variable.
+	(+printersDictionary): Only warn once if a printer hasn't been set
+	in the defaults. Change the type of the fallback printer to
+	Generic-PostScript_Printer-Postscript. Check that the ppd for this
+	printer is found.
+
 2004-09-04 01:06  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSToolbarView.m (-_insertionIndexAtPoint:): Remove spurious

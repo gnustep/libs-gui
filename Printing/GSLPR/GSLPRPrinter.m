@@ -104,7 +104,6 @@
 {
   NSDictionary* printersDict;
   NSDictionary* printerEntry;
-  NSString* ppdContents;
   NSPrinter* printer;
 
   printersDict = [self printersDictionary];
@@ -117,9 +116,6 @@
                   format: @"(GSLPR) Could not find printer named %@", name];
       return nil;
     }
-
-  ppdContents = [NSString stringWithContentsOfFile: 
-                 [printerEntry objectForKey: @"PPDPath"]];
 
   NSDebugMLLog(@"GSPrinting", @"Creating NSPrinter with Printer Entry: %@", 
                [printerEntry description]);
@@ -331,6 +327,7 @@
 //
 + (NSDictionary*) printersDictionary
 {
+  static BOOL didWarn;
   NSUserDefaults* defaults;
   NSDictionary *printers;
   
@@ -338,7 +335,7 @@
 
   printers = [defaults objectForKey: @"GSLPRPrinters"];
 
-  if( !printers ) //Not set, make a default printer because we are nice.
+  if (!printers) //Not set, make a default printer because we are nice.
     {
       NSString *ppdPath;
       NSMutableDictionary *printerEntry;
@@ -346,12 +343,15 @@
       printers = [NSMutableDictionary dictionary];
       printerEntry = [NSMutableDictionary dictionary];
 
-      ppdPath = [NSBundle pathForLibraryResource: @"Apple_LaserWriter_II_NTX"
-                                          ofType: @"ppd"
-                                     inDirectory: @"PostScript/PPD"];
+      ppdPath = [NSBundle
+	pathForLibraryResource: @"Generic-PostScript_Printer-Postscript"
+			ofType: @"ppd"
+		   inDirectory: @"PostScript/PPD"];
+      NSAssert(ppdPath,
+	       @"Couldn't find the PPD file for the fallback printer.");
 
       [printerEntry setObject: ppdPath
-                       forKey: @"PPDPath"];
+		       forKey: @"PPDPath"];
 
       [printerEntry setObject: @"localhost"
                        forKey: @"Host"];
@@ -365,10 +365,13 @@
       [(NSMutableDictionary*)printers setObject: printerEntry
                                          forKey: @"Unnamed"];
 
-      NSLog(@"Creating a default printer since one is not \
-in the User Defaults (GSLPRPrinters). Description: %@",
-             [printerEntry description]);
-  }
+      if (!didWarn)
+	{
+	  NSLog(@"Creating a default printer since no printer has been set "
+ 		@"in the user defaults (under the GSLPRPrinters key).");
+	  didWarn = YES;
+	}
+    }
 
   return printers;
 }
