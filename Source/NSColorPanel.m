@@ -232,7 +232,8 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
   _colorWell = [[NSColorWell alloc] initWithFrame: wellRect];
   [_colorWell setAutoresizingMask: (NSViewWidthSizable | NSViewMinYMargin)];
   [_colorWell setBordered: NO];
-  // FIXME: How can we monitor colours that get dropped here?
+  [_colorWell setTarget: self];
+  [_colorWell setAction: @selector(_updatePicker:)];
   [_topView addSubview: _colorWell];
 
   // Prototype cell for the matrix
@@ -341,6 +342,11 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 - (void) _maginify: (id) sender
 {
   NSLog(@"Magnification is not implemented");
+}
+
+- (void) _updatePicker: (id) sender
+{
+  [_currentPicker setColor: [_colorWell color]];
 }
 
 @end
