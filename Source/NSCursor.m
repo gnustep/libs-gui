@@ -170,8 +170,8 @@ static NSMutableDictionary *cursorDict = nil;
 /*
  * Getting the Cursor
  */
-inline
-NSCursor* _getStandardCursor(NSString *name, int style)
+static
+NSCursor *getStandardCursor(NSString *name, int style)
 {
   NSCursor *cursor = [cursorDict objectForKey: name];
 
@@ -190,67 +190,67 @@ NSCursor* _getStandardCursor(NSString *name, int style)
 
 + (NSCursor*) arrowCursor
 {
-  return _getStandardCursor(@"GSArrowCursor", GSArrowCursor);
+  return getStandardCursor(@"GSArrowCursor", GSArrowCursor);
 }
 
 + (NSCursor*) IBeamCursor
 {
-  return _getStandardCursor(@"GSIBeamCursor", GSIBeamCursor);
+  return getStandardCursor(@"GSIBeamCursor", GSIBeamCursor);
 }
 
 + (NSCursor*) closedHandCursor
 {
-  return _getStandardCursor(@"GSClosedHandCursor", GSClosedHandCursor);
+  return getStandardCursor(@"GSClosedHandCursor", GSClosedHandCursor);
 }
 
 + (NSCursor*) crosshairCursor
 {
-  return _getStandardCursor(@"GSCrosshairCursor", GSCrosshairCursor);
+  return getStandardCursor(@"GSCrosshairCursor", GSCrosshairCursor);
 }
 
 + (NSCursor*) disappearingItemCursor
 {
-  return _getStandardCursor(@"GSDisappearingItemCursor", GSDisappearingItemCursor);
+  return getStandardCursor(@"GSDisappearingItemCursor", GSDisappearingItemCursor);
 }
 
 + (NSCursor*) openHandCursor
 {
-  return _getStandardCursor(@"GSOpenHandCursor", GSOpenHandCursor);
+  return getStandardCursor(@"GSOpenHandCursor", GSOpenHandCursor);
 }
 
 + (NSCursor*) pointingHandCursor
 {
-  return _getStandardCursor(@"GSPointingHandCursor", GSPointingHandCursor);
+  return getStandardCursor(@"GSPointingHandCursor", GSPointingHandCursor);
 }
 
 + (NSCursor*) resizeDownCursor
 {
-  return _getStandardCursor(@"GSResizeDownCursor", GSResizeDownCursor);
+  return getStandardCursor(@"GSResizeDownCursor", GSResizeDownCursor);
 }
 
 + (NSCursor*) resizeLeftCursor
 {
-  return _getStandardCursor(@"GSResizeLeftCursor", GSResizeLeftCursor);
+  return getStandardCursor(@"GSResizeLeftCursor", GSResizeLeftCursor);
 }
 
 + (NSCursor*) resizeLeftRightCursor
 {
-  return _getStandardCursor(@"GSResizeLeftRightCursor", GSResizeLeftRightCursor);
+  return getStandardCursor(@"GSResizeLeftRightCursor", GSResizeLeftRightCursor);
 }
 
 + (NSCursor*) resizeRightCursor
 {
-  return _getStandardCursor(@"GSResizeRightCursor", GSResizeRightCursor);
+  return getStandardCursor(@"GSResizeRightCursor", GSResizeRightCursor);
 }
 
 + (NSCursor*) resizeUpCursor
 {
-  return _getStandardCursor(@"GSResizeUpCursor", GSResizeUpCursor);
+  return getStandardCursor(@"GSResizeUpCursor", GSResizeUpCursor);
 }
 
 + (NSCursor*) resizeUpDownCursor
 {
-  return _getStandardCursor(@"GSResizeUpDownCursor", GSResizeUpDownCursor);
+  return getStandardCursor(@"GSResizeUpDownCursor", GSResizeUpDownCursor);
 }
 
 + (NSCursor*) currentCursor

@@ -3303,7 +3303,7 @@ byExtendingSelection: (BOOL)flag
 }
 
 
-inline float computePeriod(NSPoint mouseLocationWin, 
+static inline float computePeriod(NSPoint mouseLocationWin,
 			   float minYVisible, 
 			   float maxYVisible)
 {

@@ -1,3 +1,9 @@
+2004-09-21 23:57  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSCursor.m (_getStandardCursor): Rename to
+	getStandardCursor and make static and non-inlined. Update callers.
+	* Source/NSTableView.m (computePeriod): Make static.
+
 2004-09-21 18:53  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSFontInfo.m (-defaultLineHeightForFont): Adjust line
