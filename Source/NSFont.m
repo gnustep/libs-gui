@@ -489,16 +489,16 @@ setNSFont(NSString* key, NSFont* font)
     fontMatrix[3], fontMatrix[4], fontMatrix[5]];
 
   /* Check whether the font is cached */
-  font = (id)NSMapGet(globalFontMap, (void*)nameWithMatrix);
+  font = RETAIN((id)NSMapGet(globalFontMap, (void*)nameWithMatrix));
   if (font == nil)
     {
-      font = AUTORELEASE([[NSFontClass alloc] initWithName: aFontName
-						    matrix: fontMatrix]);
+      font = [[NSFontClass alloc] initWithName: aFontName
+					matrix: fontMatrix];
       /* Cache the font for later use */
       NSMapInsert(globalFontMap, (void*)nameWithMatrix, (void*)font);
     }
 
-  return font;
+  return AUTORELEASE(font);
 }
 
 /** Creates a new font with name aFontName and size fontSize. Fonts created
