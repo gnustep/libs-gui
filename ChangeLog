@@ -1,3 +1,9 @@
+2004-01-22 12:16  Alexander Malmberg <alexander@malmberg.org>
+
+	* Model/GMAppKit.m ([NSFont +createObjectForModelUnarchiver:]):
+	If there's no font of the decoded name, fall back to the system
+	font of the decoded size.
+
 2004-01-19  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
 
 	* GNUmakefile.postamble (after-distclean): Fix deletion of config.make.

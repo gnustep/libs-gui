@@ -739,8 +739,11 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 + (id)createObjectForModelUnarchiver:(GMUnarchiver*)unarchiver
 {
-  return [NSFont fontWithName:[unarchiver decodeStringWithName:@"name"]
+  NSFont *f = [NSFont fontWithName:[unarchiver decodeStringWithName:@"name"]
 		 size:[unarchiver decodeFloatWithName:@"size"]];
+  if (!f)
+    f = [NSFont systemFontOfSize: [unarchiver decodeFloatWithName:@"size"]];
+  return f;
 }
 
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
