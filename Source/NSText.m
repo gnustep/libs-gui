@@ -42,6 +42,7 @@
 #endif         // the definition in gstep-base produces warnings FIX ME FAR
 
 #include <gnustep/gui/config.h>
+#include <Foundation/NSNotification.h>
 #include <Foundation/NSString.h>
 
 #include <AppKit/NSFileWrapper.h>
@@ -2024,7 +2025,9 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 						 [self visibleRect]]);
   [self redisplayForLineRange: redrawLineRange];
   // broadcast notification
-  [self textDidChange: nil];
+  [[NSNotificationCenter defaultCenter] 
+    postNotificationName: NSTextDidChangeNotification 
+    object: self];
 }
 
 // central text deletion/backspace method 
@@ -2111,7 +2114,9 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
   [self redisplayForLineRange: redrawLineRange];
   
   // broadcast notification
-  [self textDidChange: nil];	
+  [[NSNotificationCenter defaultCenter] 
+    postNotificationName: NSTextDidChangeNotification 
+    object: self];
 }
 
 
@@ -2159,21 +2164,29 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 	}
       if (notNumber != NSIllegalTextMovement)
 	{
-	  if ([self resignFirstResponder])
-	    {
-	      NSNumber *number;
-	      NSDictionary *uiDictionary;
-	      NSNotification *notification;
-	      
-	      number = [NSNumber numberWithInt: notNumber];
-	      uiDictionary = [NSDictionary dictionaryWithObjectsAndKeys: number,
-					   @"NSTextMovement", NULL];
-	      notification = [NSNotification notificationWithName: 
-					       NSTextDidEndEditingNotification 
-					     object: self
-					     userInfo: uiDictionary]; 
-	      [self textDidEndEditing: notification];
-	    }
+	  // This is similar to [self resignFirstResponder],
+	  // with the difference that in the notification we need
+	  // to put the NSTextMovement, which resignFirstResponder
+	  // does not.  Also, if we are ending editing, we are going 
+	  // to be removed, so it's useless to update any drawing.
+	  NSNumber *number;
+	  NSDictionary *uiDictionary;
+	  
+	  if (([self isEditable]) 
+	      && ([delegate respondsToSelector: 
+			      @selector(textShouldEndEditing:)])
+	      && ([delegate textShouldEndEditing: self] == NO))
+	    return;
+	  
+	  // Add any clean-up stuff here
+	  
+	  number = [NSNumber numberWithInt: notNumber];
+	  uiDictionary = [NSDictionary dictionaryWithObject: number
+				       forKey: @"NSTextMovement"];
+	  [[NSNotificationCenter defaultCenter] 
+	    postNotificationName: NSTextDidEndEditingNotification 
+	    object: self
+	    userInfo: uiDictionary]; 
 	  return;
 	}
     }
@@ -2230,10 +2243,11 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 
 - (BOOL) resignFirstResponder
 {	
-  if ([self isEditable]) 
-    if ([self textShouldEndEditing: self] == NO)
-      return NO;
-
+  if (([self isEditable]) 
+      && ([delegate respondsToSelector: @selector(textShouldEndEditing:)])
+      && ([delegate textShouldEndEditing: self] == NO))
+    return NO;
+  
   // Add any clean-up stuff here
 
   if ([self shouldDrawInsertionPoint])
@@ -2244,30 +2258,35 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
       //<!> stop timed entry
     }
 
-  [self textDidEndEditing: nil];
+  [[NSNotificationCenter defaultCenter] 
+    postNotificationName: NSTextDidEndEditingNotification 
+    object: self];
   return YES;
 }
 
 - (BOOL) becomeFirstResponder
 {
-  if ([self isSelectable]) 
-    if ([self textShouldBeginEditing: self])
-      {
-	// Add any initialization stuff here.
-
-	//if ([self shouldDrawInsertionPoint])
-	//  {
-	//   [self lockFocus];
-	//   [self drawInsertionPointAtIndex: [self selectedRange].location 
-	//      color: [NSColor blackColor] turnedOn: YES];
-	//   [self unlockFocus];
-	//   //<!> restart timed entry
-	//  }
-	[self textDidBeginEditing: nil];
-	return YES;
-      }
-
-  return NO;
+  if ([self isSelectable] == NO) 
+    return NO;
+  
+  if (([delegate respondsToSelector: @selector(textShouldBeginEditing:)])
+      && ([delegate textShouldBeginEditing: self] == NO))
+    return NO;
+  
+  // Add any initialization stuff here.
+  
+  //if ([self shouldDrawInsertionPoint])
+  //  {
+  //   [self lockFocus];
+  //   [self drawInsertionPointAtIndex: [self selectedRange].location 
+  //      color: [NSColor blackColor] turnedOn: YES];
+  //   [self unlockFocus];
+  //   //<!> restart timed entry
+  //  }
+  [[NSNotificationCenter defaultCenter] 
+    postNotificationName: NSTextDidBeginEditingNotification 
+    object: self];
+  return YES;
 }
 
 /*
@@ -2296,75 +2315,6 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
   SET_DELEGATE_NOTIFICATION(DidBeginEditing);
   SET_DELEGATE_NOTIFICATION(DidChange);
   SET_DELEGATE_NOTIFICATION(DidEndEditing);
-}
-
-/*
- * Implemented by the Delegate
- */
-
-- (void) textDidBeginEditing: (NSNotification *)aNotification
-{	
-  if ([delegate respondsToSelector: @selector(textDidBeginEditing: )])
-    {
-      if (!aNotification)
-	aNotification = [NSNotification notificationWithName: 
-					  NSTextDidBeginEditingNotification 
-					object: self];
-      [delegate textDidBeginEditing: aNotification];
-    }
-
-  [[NSNotificationCenter defaultCenter] 
-    postNotificationName: NSTextDidBeginEditingNotification 
-    object: (id)self];
-}
-
-- (void)textDidChange: (NSNotification *)aNotification
-{	
-  if ([delegate respondsToSelector: @selector(textDidChange: )])
-    {
-      if (!aNotification)
-	aNotification = [NSNotification notificationWithName: 
-					  NSTextDidChangeNotification 
-					object: (id)self];
-
-      [delegate textDidChange: aNotification];
-    }
-
- [[NSNotificationCenter defaultCenter] 
-   postNotificationName: NSTextDidChangeNotification 
-   object: (id)self];
-}
-
-- (void)textDidEndEditing: (NSNotification *)aNotification
-{	
-  if ([delegate respondsToSelector: @selector(textDidEndEditing: )])
-    {
-      if (!aNotification)
-	aNotification = [NSNotification notificationWithName: 
-					  NSTextDidEndEditingNotification 
-					object: (id)self];
-      [delegate textDidEndEditing: aNotification];      
-    }
-  
-  [[NSNotificationCenter defaultCenter] 
-    postNotificationName: NSTextDidEndEditingNotification 
-    object: (id)self];
-}
-
-- (BOOL) textShouldBeginEditing: (NSText *)textObject
-{	
-  if ([delegate respondsToSelector: @selector(textShouldBeginEditing: )])
-    return [delegate textShouldBeginEditing: self];
-  else 
-    return YES;
-}
-
-- (BOOL) textShouldEndEditing: (NSText *)textObject
-{	
-  if ([delegate respondsToSelector: @selector(textShouldEndEditing: )])
-    return [delegate textShouldEndEditing: self];
-  else 
-    return YES;
 }
 
 - (NSRange) characterRangeForBoundingRect: (NSRect)boundsRect
