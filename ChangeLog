@@ -1,3 +1,12 @@
+Sat Dec  4 19:41:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Additional DPS operator in preparation for fixing window code to
+	handle window-manager decoration of windows correctly.
+	* Source/NSGraphicsContext.m: Added method for getting style info.
+	* Headers/AppKit/NSGraphicsContext.h: ditto
+	* Headers/AppKit/DPSOperators.h: ditto
+	* Headers/AppKit/GSMethodTable.h: ditto
+
 Fri Dec  3 14:53:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSPopUpButtonCell.m: arbitrary hacks to get window positioning

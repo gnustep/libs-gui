@@ -1952,6 +1952,11 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
+- (void) DPSstyleoffsets: (float *) r : (float *) l : (float *) t : (float *) b : (int) style ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
 /* ----------------------------------------------------------------------- */
 /* GNUstep Event and other I/O extensions */
 /* ----------------------------------------------------------------------- */

@@ -495,6 +495,8 @@ typedef struct {
         (NSGraphicsContext*, SEL, float, float, float, float, int, const char *, void **);
   void (*DPSsetcursorcolor_______)
         (NSGraphicsContext*, SEL, float, float, float, float, float, float, void *);
+  void (*DPSstyleoffsets_____)
+        (NSGraphicsContext*, SEL, float*, float*, float*, float*, int);
 /* ----------------------------------------------------------------------- */
 /* GNUstep Event and other I/O extensions */
 /* ----------------------------------------------------------------------- */

@@ -406,6 +406,7 @@ NSGraphicsContext	*GSCurrentContext();
 - (void) DPSstandardcursor: (int) style : (void **) cid ;
 - (void) DPSimagecursor: (float) hotx : (float) hoty : (float) w : (float) h : (int) colors : (const char *) image : (void **) cid ;
 - (void) DPSsetcursorcolor: (float) fr : (float) fg : (float) fb : (float) br : (float) bg : (float) bb : (void *) cid ;
+- (void) DPSstyleoffsets: (float*) l : (float*) r : (float*) t : (float*) b : (int) style ;
 
 /* ----------------------------------------------------------------------- */
 /* GNUstep Event and other I/O extensions */

@@ -912,6 +912,10 @@ static inline void
 DPSsetcursorcolor(GSCTXT *ctxt, float fr, float fg, float fb, float br, float bg, float bb, void * cid)
 __attribute__((unused));
 
+static inline void
+DPSstyleoffsets(GSCTXT *ctxt, float *l, float *r, float *t, float *b, int style)
+__attribute__((unused));
+
 /* ----------------------------------------------------------------------- */
 /* Color operations */
 /* ----------------------------------------------------------------------- */
@@ -2430,6 +2434,13 @@ DPSsetcursorcolor(GSCTXT *ctxt, float fr, float fg, float fb, float br, float bg
 {
   (ctxt->methods->DPSsetcursorcolor_______)
     (ctxt, @selector(DPSsetcursorcolor:::::::), fr, fg, fb, br, bg, bb, cid);
+}
+
+static inline void
+DPSstyleoffsets(GSCTXT *ctxt, float *l, float *r, float *t, float *b, int style)
+{
+  (ctxt->methods->DPSstyleoffsets_____)
+    (ctxt, @selector(DPSstyleoffsets:::::), l, r, t, b, style);
 }
 
 /* ----------------------------------------------------------------------- */
