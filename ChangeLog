@@ -1,3 +1,12 @@
+Mon Apr 26  7:05:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	
+        Changes based on report by Marc.Champesme@lipn.univ-paris13.fr
+        * Headers/AppKit/NSHelpPanel.h: place in #ifndef STRICT_MACOS_X
+        * Headers/AppKit/NSGraphicsContext.h: place in #ifndef STRICT_OPENSTEP
+        * Headers/AppKit/NSInterfaceStyle.h: new file.
+        * Headers/AppKit/NSResponder.h: new interface_style ivar.
+
 Fri Apr 23 16:30:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	Changes based on report by Marc.Champesme@lipn.univ-paris13.fr
