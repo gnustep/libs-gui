@@ -36,12 +36,12 @@
 @class NSImage;
 
 typedef enum _NSDragOperation {
-  NSDragOperationNone,
-  NSDragOperationCopy,
-  NSDragOperationLink,
-  NSDragOperationGeneric,
-  NSDragOperationPrivate,
-  NSDragOperationAll   
+  NSDragOperationNone = 0,
+  NSDragOperationCopy = 1,
+  NSDragOperationLink = 2,
+  NSDragOperationGeneric = 4,
+  NSDragOperationPrivate = 8,
+  NSDragOperationAll = 15  
 } NSDragOperation;
 
 @protocol NSDraggingInfo
@@ -54,7 +54,7 @@ typedef enum _NSDragOperation {
 - (NSPasteboard *)draggingPasteboard;
 - (int)draggingSequenceNumber;
 - (id)draggingSource;
-- (NSDragOperation)draggingSourceOperationMask;
+- (unsigned int)draggingSourceOperationMask;
 
 //
 // Image Information
@@ -74,8 +74,8 @@ typedef enum _NSDragOperation {
 //
 // Before the Image is Released
 //
-- (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender;
-- (NSDragOperation)draggingUpdated:(id <NSDraggingInfo>)sender;
+- (unsigned int)draggingEntered:(id <NSDraggingInfo>)sender;
+- (unsigned int)draggingUpdated:(id <NSDraggingInfo>)sender;
 - (void)draggingExited:(id <NSDraggingInfo>)sender;
 
 //
@@ -92,7 +92,7 @@ typedef enum _NSDragOperation {
 //
 // Querying the Source
 //
-- (NSDragOperation)draggingSourceOperationMaskForLocal:(BOOL)isLocal;
+- (unsigned int)draggingSourceOperationMaskForLocal:(BOOL)isLocal;
 - (BOOL)ignoreModifierKeysWhileDragging;
 
 //
