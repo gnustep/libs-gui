@@ -1,3 +1,8 @@
+Thu Sep 14 14:01:10 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSMatrix.m ([-textDidBeginEditing:]),
+	([-textDidChange:]), ([-textDidEndEditing:]): : Fixed memory leak.
+
 2000-09-13  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
 
 	* Source/NSBrowser.m ([NSBrowser -_performLoadOfColumn:]): fixed
