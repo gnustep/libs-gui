@@ -1,3 +1,32 @@
+2003-03-22  Willem Rein Oudshoorn  <woudshoo@xs4all.nl>
+
+	* Source/NSMenu.m ([NSMenu -display]): Added optimization of Michael Hanni
+	to only resize menu view when actually displayed.
+	([NSMenu -setTitle:]): Idem
+	([NSMenu -sizeToFit:]): Fixed problem with jumping menus when items
+	are added.
+	([NSMenu -display:]): added optimization of Michael Hanni to resize 
+	only once.  Also fixed race condition bug in getting menu location.
+	([NSMenu -displayTransient]): Added optimization of M. Hanni, removed
+	resetting position to (0, 0).
+
+	* Source/NSMenuView.m (-initWithFrame:): Removed creation of titleView
+	([NSMenuView -setMenu:]): call update to handle new situation
+	([NSMenuView -update]): Removed call to _menu update, handle the
+	adding/removing of the title view.  
+	([NSMenuView -sizeToFit]): reformatted to conform to coding standard,
+	handle missing titleView.
+	([NSMenuView -setWindowFrameForAttachingToRect:onScreen:preferredEdge:popUpSelectedItem:]): 
+	Reformatted to conform to coding standard.  Removed the code that removed the titleView.
+	That is handled by update.
+	([NSMenuView -drawRect:]): Reformatted to conform to coding standards.
+	([NSMenuWindowTitleView -init]): Reformatted to conform to coding standards.
+	([NSMenuWindowTitleView -dealloc]): new method to prevent leaking the close button.
+	([NSMenuWindowTitleView -titleSize]): Reformatted to conform to coding standard
+	([NSMenuWindowTitleView -drawRect:]): idem
+	([NSMenuWindowTitleView -mouseDown:]): idem
+	([NSMenuWindowTitleView -createButton]): idem
+
 2003-03-20  David Ayers  <d.ayers@inode.at>
 
 	* Source/NSCell.m ([NSCell encodeWithCoder:]): Reinsert encoding
