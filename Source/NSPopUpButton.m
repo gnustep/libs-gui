@@ -91,6 +91,18 @@ Class _nspopupbuttonCellClass = 0;
   return self;
 }
 
+
+/*
+In NSView, -menuForEvent: returns [self menu] as the context menu of the
+view. Since our -menu returns the menu for our pop-up, we need to override
+this to return nil to indicate that we have no context menu.
+*/
+- (NSMenu *)menuForEvent:(NSEvent *)theEvent
+{
+  return nil;
+}
+
+
 - (void) setMenu: (NSMenu*)menu
 {
   [_cell setMenu: menu];
