@@ -1,3 +1,18 @@
+2002-09-15  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSStringDrawing.m 
+	drawRun() now correctly flags that it wants some temporary memory
+	allocated. The old behaviour resulted in a memory leak.
+	* Headers/gnustep/gui/NSBrowser.h
+	Declare new MacOSX method [drawTitleOfColumn:inRect:]. Removed
+	unused ivar _browserCellClass. Replaced ivar _titleCell with a
+	static variable used for all browsers.
+	* Source/NSBrowser.m
+	Use _lastColumnLoaded instead of _lastVisibleColumn  in
+	[selectAll:]. Implemented MacOSX [drawTitleOfColumn:inRect:]. 
+	Optimized [matrixInColumn:] and use it where suitable.
+	Moved calls to [_adjustMatrixOfColumn:] inside of [_performLoadOfColumn:]
+	
 2002-09-15  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSMenuView.m:
