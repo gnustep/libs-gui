@@ -1,3 +1,35 @@
+2000-12-24  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSImageRep.h:
+	* Headers/gnustep/gui/NSBitmapImageRep.h:
+	Added some missing methods.
+	* Source/NSImage.m
+	Implemented [initWithBitmapHandle:], [initWithIconHandle:]  and
+	[initWithContentsOfURL:]. [copyWithZone:] dont copy cached image reps.
+	Allways use [self representations], so that the representation is
+	loaded if needed.
+	* Source/NSImageRep.m
+	Implemented [imageRepWithContentsOfURL:] and [imageRepsWithContentsOfURL:].
+	In [imageRepsWithContentsOfFile:] get all possible reps.
+	* Source/NSBitmapImageRep.m
+	Dummy implementation for new methods.
+	* Headers/gnustep/gui/NSControl.h:
+	Added some missing methods.
+	* Source/NSControl.m
+	Implemented [refusesFirstResponder] and [setRefusesFirstResponder:].
+	Changed [setEnabled:], [setAlignment:], [setFont:] and all
+	[setXXValue:] methods to conform to the spec. Removed the
+	[copyWithZone:] method.
+	* Headers/gnustep/gui/NSBox.h:
+	Added some missing methods.
+	* Source/NSBox.m
+	Implemented [setTitleWithMnemonic:].
+	* Headers/gnustep/gui/NSApplication.h:
+	Added ivar _default_context to store the graphic context used for
+	events, which is not switched while printing.
+	* Source/NSApplication.m 
+	Use the _default_context for all events and in dealloc.
+	
 2000-12-23  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSImage.h:
