@@ -2,7 +2,7 @@ Summary: The GNUstep gui library - debugging version
 Release: 1
 Copyright: LGPL
 Group: Development/Libraries
-Source: http://www.gnustep.org/%{gs_name}-%{gs_version}.tar.gz
+Source: ftp://ftp.gnustep.org/pub/gnustep/core/%{gs_name}-%{gs_version}.tar.gz
 
 %description 
 This package contains the debuggable version of the GNUstep gui library. 

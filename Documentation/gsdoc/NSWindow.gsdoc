@@ -215,6 +215,9 @@
           <sel>deminiaturize:</sel>
           <arg type="id">sender</arg>
           <desc>
+	  Causes the window to deminiaturize. Normally you would not call 
+	  this method directly. A window is automatically deminiaturized
+	  by the user via a mouse cloick event.
           </desc>
         </method>
         <method type="NSWindowDepth">
@@ -466,6 +469,7 @@
         <method type="BOOL">
           <sel>isMiniaturized</sel>
           <desc>
+	  Returns <code>YES</code> if the window has been miniaturized.
           </desc>
         </method>
         <method type="BOOL">
@@ -535,6 +539,8 @@
           <sel>miniaturize:</sel>
           <arg type="id">sender</arg>
           <desc>
+	  Causes the window to miniaturize, that is the window is removed
+	  from the screen and it's counterpart (mini)window is displayed.
           </desc>
         </method>
         <method type="NSImage*">

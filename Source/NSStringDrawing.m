@@ -226,7 +226,7 @@ drawRun(GSTextRun *run, NSPoint origin, GSDrawInfo *draw)
 	}
     }
 
-#ifdef XDPS_BACKEND_LIBRARY
+#if 0
   /* FIXME: Hack to force DGS to flush the text */
   DPSrectfill(draw->ctxt, 0, 0, 0.5, 0.5);
 #endif
