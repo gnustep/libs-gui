@@ -79,11 +79,10 @@ ADDITIONAL_INCLUDE_DIRS = -I../Headers -I../Headers/gnustep
 # all the libraries the target library depends upon.
 ifneq ($(GUI_LIB), nx)
 libgmodel_LIBRARIES_DEPEND_UPON = -lgnustep-gui $(FND_LIBS)
-libgmodel_BUNDLE_LIBS += $(libgmodel_LIBRARIES_DEPEND_UPON)
 else
 libgmodel_LIBRARIES_DEPEND_UPON = $(FND_LIBS)
-libgmodel_BUNDLE_LIBS += $(libgmodel_LIBRARIES_DEPEND_UPON)
 endif
+libgmodel_BUNDLE_LIBS += $(libgmodel_LIBRARIES_DEPEND_UPON)
 nib2gmodel_LIBRARIES_DEPEND_UPON = $(BACKEND_LIBS) $(GUI_LIBS) \
 	$(FND_LIBS) $(SYSTEM_LIBS)
 
