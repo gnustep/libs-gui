@@ -7,6 +7,8 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
+   Author: Nicola Pero <n.pero@mi.flashnet.it>
+   Date: 2000
    
    This file is part of the GNUstep GUI Library.
 
@@ -42,12 +44,18 @@
 @interface NSColorList : NSObject <NSCoding>
 
 {
-  // Attributes
-  NSString *list_name;
-  NSString *file_name;
-  NSMutableDictionary *color_list;
-  NSMutableArray *color_list_keys;
-  BOOL is_editable;
+  NSString* _name;
+  NSString* _fullFileName;
+  BOOL _is_editable;
+
+  // Color Lists are required to be a sort of ordered dictionary
+  // For now it is implemented as follows (Scott Christley, 1996):
+
+  // This object contains couples (keys (=color names), values (=colors))
+  NSMutableDictionary* _colorDictionary;
+
+  // This object contains the keys (=color names) in order
+  NSMutableArray* _orderedColorKeys;
 }
 
 //
