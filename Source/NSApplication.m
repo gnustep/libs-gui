@@ -657,7 +657,7 @@ static NSCell* tileCell = nil;
   if (_key_window == nil && _main_window == nil)
     {
       _key_window = [[self mainMenu] window];
-      [_key_window makeKeyWindow];
+      [_key_window becomeKeyWindow];
     }
 
   /*
