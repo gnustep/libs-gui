@@ -4245,13 +4245,14 @@ byExtendingSelection: (BOOL)flag
 				 toView: nil];
       float minYVisible = NSMinY (visibleRect);
       float maxYVisible = NSMaxY (visibleRect);
+      BOOL mouseMoved = NO;
 
       /* We have three zones of speed. 
 	 0   -  50 pixels: period 0.2  <zone 1>
 	 50  - 100 pixels: period 0.1  <zone 2>
 	 100 - 150 pixels: period 0.01 <zone 3> */
       float oldPeriod = 0;
-      inline float computePeriod ()
+      inline float computePeriod(void)
 	{
 	  float distance = 0;
 	  
@@ -4373,9 +4374,17 @@ byExtendingSelection: (BOOL)flag
 		}
 	      done = YES;
 	      break;
+
 	    case NSLeftMouseDown:
 	    case NSLeftMouseDragged:
-	      mouseLocationWin = [lastEvent locationInWindow]; 
+	      mouseLocationWin = [lastEvent locationInWindow];
+
+	      if (fabs(mouseLocationWin.x - initialLocation.x) > 1
+	          || fabs(mouseLocationWin.y - initialLocation.y) > 1)
+		{
+		  mouseMoved = YES;
+		}
+
 	      if (draggingPossible == YES)
 		{
 		  if (mouseLocationWin.y - initialLocation.y > 2
@@ -4545,7 +4554,18 @@ byExtendingSelection: (BOOL)flag
 		sortedArrayUsingSelector: @selector(compare:)]] == NO)
 	{
 	  [self _postSelectionDidChangeNotification];
-	}	    
+	}
+      else if (!mouseMoved)
+	{
+	  /*
+	  _clickedRow and _clickedColumn are already set at the start of
+	  this function.
+
+	  TODO: should we ask the data source/column for the cell for this
+	  row/column and check whether it has its own action/target?
+	  */
+	  [self sendAction: _action  to: _target];
+	}
       return;
     }
 

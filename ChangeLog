@@ -1,3 +1,8 @@
+2004-03-12 15:30  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSTableView.m (-mouseDown:): Send our action if we get
+	a single, simple (no drag) click.
+
 2004-03-08 19:19  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSPageLayout.m (-readPrintInfo): Move declarations before
