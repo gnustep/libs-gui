@@ -48,9 +48,9 @@ GNUstepMain(int argc, char **argv)
 	// Set the application default fonts
 	fm = [NSFontManager sharedFontManager];
 	[NSFont setUserFixedPitchFont: [fm fontWithFamily:@"Arial"
-		traits:0 weight:0 size:10]];
+		traits:0 weight:0 size:16]];
 	[NSFont setUserFont: [fm fontWithFamily:@"Times New Roman"
-		traits:0 weight:0 size:12]];
+		traits:0 weight:0 size:16]];
 
 	// Call the user's main
 	//user_main(0, NULL);

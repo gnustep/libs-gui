@@ -97,7 +97,7 @@
   cell_type = NSImageCellType;
   cell_image = [anImage retain];
   image_position = NSImageOnly;
-  cell_font = [[NSFont userFontOfSize:12] retain];
+  cell_font = [[NSFont userFontOfSize:16] retain];
   cell_state = NO;
   cell_highlighted = NO;
   cell_enabled = YES;
@@ -121,7 +121,7 @@
   //if (![aString isKindOfClass:[NSString class]])
   //	return nil;
 
-  cell_font = [[NSFont userFontOfSize:12] retain];
+  cell_font = [[NSFont userFontOfSize:16] retain];
   contents = [aString retain];
   cell_type = NSTextCellType;
   text_align = NSCenterTextAlignment;

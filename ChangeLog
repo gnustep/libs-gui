@@ -1,5 +1,10 @@
 Thu Mar 27 09:43:02 1997  GNUstep Development  <gnustep@net-community.com>
 
+	* Source/NSTextFieldCell.m: Change default point size to 16.
+	* Source/NSCell.m: Likewise.
+	* Source/libgnustep-gui.m: Likewise.
+	* Source/NSText.m: Likewise.
+
 	* Headers/gnustep/gui/NSApplication.h (-peekNextEvent): New method.
 	(-peekEventMatchingMask:untilDate:inMode:dequeue:): New method.
 	* Source/NSApplication.m (-peekNextEvent): New method.

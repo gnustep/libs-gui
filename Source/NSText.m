@@ -78,7 +78,7 @@ NSString *NSTextDidChangeNotification = @"NSTextDidChangeNotification";
   is_field_editor = NO;
   background_color = [NSColor whiteColor];
   text_color = [NSColor blackColor];
-  default_font = [NSFont userFontOfSize:12];
+  default_font = [NSFont userFontOfSize:16];
   return self;
 }
 //
