@@ -426,7 +426,6 @@ this to return nil to indicate that we have no context menu.
 	  {
 	    int selectedIndex;
 	    NSMenuView *menuView;
-	    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
 	    // Beep, as on OS, and then return.
 	    if ([[_cell menu] numberOfItems] == 0)
@@ -447,22 +446,9 @@ this to return nil to indicate that we have no context menu.
 		selectedIndex = [self indexOfSelectedItem];
 		if (selectedIndex > -1)
 		  [menuView setHighlightedItemIndex: selectedIndex];
-
-		/* This covers an obscure case where the user subsequently
-		   uses the mouse to select an item. We'll never know
-		   this was done (and thus cannot dismiss the popUp) without
-		   getting this notification */
-		[nc addObserver: self
-		       selector: @selector(_handleNotification:)
-		           name: NSMenuDidSendActionNotification
-		         object: [_cell menu]];
-
 	      }
 	    else
 	      {
-		[nc removeObserver: self
-		              name: NSMenuDidSendActionNotification
-		            object: [_cell menu]];
 		selectedIndex = [menuView highlightedItemIndex];
 		[[_cell menu] performActionForItemAtIndex: selectedIndex];
 
@@ -518,19 +504,6 @@ this to return nil to indicate that we have no context menu.
     }
   
   [super keyDown: theEvent];
-}
-
-/*
- * NSCoding protocol
- */
-- (void) encodeWithCoder: (NSCoder*)aCoder
-{
-  [super encodeWithCoder: aCoder];
-}
-
-- (id) initWithCoder: (NSCoder*)aDecoder
-{
-  return [super initWithCoder: aDecoder];
 }
 
 @end
