@@ -1,3 +1,16 @@
+2003-09-13  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenu.m
+	In [update] use [NSApplication targetForAction:to:from:] to be
+	consistent with the [performActionForItemAtIndex:] implementation.
+	* Source/NSPopUpButtonCell.m
+	Undid last change. Rewrote [setMenu:] to make the popup button
+	cell listen to change notifications of the menu. New method
+	[itemChanged:] gets called when a menu item changes. Added hack to
+	[initWithCoder:] to set menu correctly and read old menu items correctly.
+	Check in [itemAtIndex:] that the index is vaild and return nil
+	otherwise.
+	
 2003-09-07  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSBitmapImageRep.m: Document.
