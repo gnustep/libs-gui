@@ -1,5 +1,8 @@
-1999-05-12  Adam Fedor  <fedor@gnu.org>
+Mon May 14 19:50:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
+	* Tools/make_services.m: Fix to get correct type info cached.
+
+1999-05-12  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSButtonCell.m (-drawWithFrame:inView:): Don't set a clip
 	rect (not needed since we know what we're drawing).
