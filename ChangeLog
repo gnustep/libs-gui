@@ -1,3 +1,13 @@
+2003-12-01  Serg Stoyan <stoyan@on.com.ua>
+
+	* Source/NSPanel.m:
+	Removed TODO about message font size.
+	(-sendEvent:): Cast self when compared with iconWindow to omit
+	compiler warning.
+	(-_initWithoutGModel): Center title vertically relatively to image.
+	Some comments added.
+	(-sizePanelToFit): Center message text horizontally.
+
 2003-11-29  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWindow.m (+initialize) cache runloop modes. 

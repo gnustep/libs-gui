@@ -218,7 +218,8 @@ Code shared with [NSWindow -sendEvent:], remember to update both places.
 		}
 	      /* Activate the app *after* making the receiver key, as app
 		 activation tries to make the previous key window key. */
-	      if ([NSApp isActive] == NO && self != [NSApp iconWindow])
+	      if ([NSApp isActive] == NO 
+		  && (NSWindow*)self != [NSApp iconWindow])
 		{
 		  [NSApp activateIgnoringOtherApps: YES];
 		}
@@ -418,7 +419,6 @@ static const float ButtonMinHeight = 24.0;
 static const float ButtonMinWidth = 72.0;
 
 #define MessageFont [NSFont messageFontOfSize: 14]
-// TODO: Check on NeXTSTEP, I think that the message font size is only 12.0.
 
 + (void) initialize
 {
@@ -522,11 +522,14 @@ setControl(NSView* content, id control, NSString *title)
 
 - (id) _initWithoutGModel
 {
-  NSRect rect;
+  NSRect  rect;
   NSImage *image;
-  NSBox	*box;
-  NSView *content;
-  NSRect r = NSMakeRect(0.0, 0.0, WinMinWidth, WinMinHeight);
+  NSBox	  *box;
+  NSView  *content;
+  NSRect  r = NSMakeRect(0.0, 0.0, WinMinWidth, WinMinHeight);
+  NSFont  *titleFont = [NSFont systemFontOfSize: 18.0];
+  float   titleHeight = [titleFont boundingRectForFont].size.height;
+
 
   self = [self initWithContentRect: r
 	       styleMask: NSTitledWindowMask
@@ -557,10 +560,12 @@ setControl(NSView* content, id control, NSString *title)
   image = [[NSApplication sharedApplication] applicationIconImage];
   [icoButton setImage: image];
   [content addSubview: icoButton];
-  
-  rect.size.height = 20.0; // will be sized to fit anyway.
-  rect.size.width = 80.0;  // will be sized to fit anyway.
-  rect.origin.y = r.origin.y + r.size.height + IconBottom;
+
+  // Title
+  rect.size.height = 0.0; // will be sized to fit anyway.
+  rect.size.width = 0.0;  // will be sized to fit anyway.
+  rect.origin.y = r.origin.y + r.size.height 
+                  + IconBottom + (IconSide - titleHeight)/2;;
   rect.origin.x = TitleLeft;
   titleField = [[NSTextField alloc] initWithFrame: rect];
   [titleField setAutoresizingMask: NSViewMinYMargin];
@@ -569,8 +574,9 @@ setControl(NSView* content, id control, NSString *title)
   [titleField setBezeled: NO];
   [titleField setDrawsBackground: NO];
   [titleField setStringValue: @""];
-  [titleField setFont: [NSFont systemFontOfSize: 18.0]];
-  
+  [titleField setFont: titleFont];
+
+  // Horizontal line
   rect.size.height = LineHeight;
   rect.size.width = r.size.width;
   rect.origin.y = r.origin.y + r.size.height + LineBottom;
@@ -583,8 +589,8 @@ setControl(NSView* content, id control, NSString *title)
   RELEASE(box);
   
   // Then, make the subviews that'll be sized by sizePanelToFit;
-  rect.size.height = 20.0;
-  rect.size.width = 80.0;
+  rect.size.height = 0.0;
+  rect.size.width = 0.0;
   rect.origin.y = 0.0;
   rect.origin.x = 0.0;
   
@@ -836,7 +842,7 @@ setControl(NSView* content, id control, NSString *title)
 	   * the window has a minimum size, thus may be greated
 	   * than expected.
 	   */
-	  mrect.origin.x = bounds.origin.x + MessageHorzMargin;
+	  mrect.origin.x = (wsize.width - mrect.size.width)/2;
 	  vmargin = bounds.size.height + LineBottom-mrect.size.height;
 	  if (numberOfButtons > 0)
 	    {
