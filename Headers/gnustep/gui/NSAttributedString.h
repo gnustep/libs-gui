@@ -29,16 +29,17 @@
 #define _GNUstep_H_NSAttributedString
 
 #include <Foundation/NSAttributedString.h>
-#include <Foundation/NSGeometry.h>
-#include <AppKit/NSFileWrapper.h>
+#include <Foundation/NSRange.h>
 #include <AppKit/NSFontManager.h>
 #include <AppKit/NSText.h>
 #include <AppKit/AppKitDefines.h>
 
 @class NSTextAttachment;
+@class NSFileWrapper;
 @class NSString;
 @class NSDictionary;
 @class NSData;
+@class NSArray;
 @class NSURL;
 
 /* Global NSString attribute names used in accessing the respective
@@ -64,10 +65,6 @@ enum
 };
 
 @interface NSAttributedString (AppKit)
-+ (NSAttributedString*) attributedStringWithAttachment: 
-                 (NSTextAttachment*)attachment;
-
-- (BOOL) containsAttachments;
 - (NSDictionary*) fontAttributesInRange: (NSRange)range;
 - (NSDictionary*) rulerAttributesInRange: (NSRange)range;
 - (unsigned) lineBreakBeforeIndex: (unsigned)location
@@ -91,6 +88,13 @@ enum
   documentAttributes: (NSDictionary*)dict;
 - (NSFileWrapper*) RTFDFileWrapperFromRange: (NSRange)range
   documentAttributes: (NSDictionary*)dict;
+
+#ifndef STRICT_OPENSTEP
++ (NSArray *) textFileTypes;
++ (NSArray *) textPasteboardTypes;
++ (NSArray *) textUnfilteredFileTypes;
++ (NSArray *) textUnfilteredPasteboardTypes;
+#endif
 @end
 
 @interface NSMutableAttributedString (AppKit)
@@ -99,7 +103,6 @@ enum
 - (void) unscriptRange: (NSRange)range;
 - (void) applyFontTraits: (NSFontTraitMask)traitMask range: (NSRange)range;
 - (void) setAlignment: (NSTextAlignment)alignment range: (NSRange)range;
-- (void) updateAttachmentsFromPath:(NSString *)path;
 
 - (void) fixAttributesInRange: (NSRange)range;
 - (void) fixFontAttributeInRange: (NSRange)range;
