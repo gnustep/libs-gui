@@ -9,6 +9,10 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.8.5}
+
+Bug fixes. NSStringDrawing now uses text system implementation.
+
 @section Noteworthy changes in version @samp{0.8.4}
 
 This release features a brand new text and layout system thanks

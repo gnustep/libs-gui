@@ -29,10 +29,14 @@
 #ifndef __GMArchiver_h__
 #define __GMArchiver_h__
 
-#import <Foundation/NSCoder.h>
-#import <Foundation/NSHashTable.h>
-#import <Foundation/NSMapTable.h>
-#import <Foundation/NSGeometry.h>
+#ifndef GNUSTEP
+#include <Foundation/Foundation.h>
+#else
+#include <Foundation/NSCoder.h>
+#include <Foundation/NSHashTable.h>
+#include <Foundation/NSMapTable.h>
+#include <Foundation/NSGeometry.h>
+#endif
 
 @class NSString;
 @class NSData;

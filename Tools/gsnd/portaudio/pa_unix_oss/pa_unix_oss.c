@@ -95,7 +95,9 @@ PaDriverInfo;
 
 #include <stdio.h>
 #include <stdlib.h>
+#ifndef __FreeBSD__
 #include <malloc.h>
+#endif
 #include <memory.h>
 #include <math.h>
 #include <sys/ioctl.h>
@@ -110,7 +112,11 @@ PaDriverInfo;
 #ifdef __linux__
 #include <linux/soundcard.h>
 #else
+#ifdef __FreeBSD__
+#include <sys/soundcard.h>
+#else
 #include <machine/soundcard.h> /* JH20010905 */
+#endif
 #endif
 
 #include "portaudio.h"

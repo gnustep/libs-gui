@@ -1,3 +1,7 @@
+2003-03-24  Adam Fedor  <fedor@gnu.org>
+
+	* Merge from 0.8.5 branch
+
 2003-03-23 Serg Stoyan <stoyan@on.com.ua>
 	* Source/NSMenuView.m: Removed horizontal menu related code.
 	(setHorizontal:): Removed.
@@ -274,6 +278,37 @@
 	* Source/NSLayoutManager.m
 	(-textStorage:edited:range:changeInLength:invalidatedRange:): Fix
 	handling of trailing text containers when soft-invalidating.
+
+2003-03-24  Adam Fedor  <fedor@gnu.org>
+
+	* Version: 0.8.5
+
+2003-03-24  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSBox.m (-sizeToFit): Set frame to calculated size when
+	content view has no subviews.
+
+2003-03-18 17:54  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSFont.m, Source/NSStringDrawing.m,
+	Headers/gnustep/gui/NSStringDrawing.h: Change to an implementation
+	that uses the text system.
+
+2003-03-07  Richard Frith-Macdonald <rfm@gnu.org>
+
+        * Source/NSWindow: ([-miniaturise:]) order the counterpart window
+        in so that it gets drawn properly.
+
+2003-03-04  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/gnustep/gui/GMAppKit.h, GMArchiver.h, IMConnectors.h,
+	IMCustomObject.h, IMLoading.h, NSNibConnector.h: Change #import to
+	#include
+	* Model/Controller.[h,m], GMAppKit.m, GMArchiveObjects.m,
+	GMArchiver.m, IBClasses.[hm], IMConnectors.h, IMLoading.m,
+	Translator.[hm], nib2gmodel.m, test.m: Idem.
+
+	* Tools/gsnd/portaudio/pa_unix_oss/pa_unix_oss.c: Fixes for FreeBSD.
 
 2003-02-24  Adam Fedor  <fedor@gnu.org>
 

@@ -30,7 +30,11 @@
 #ifndef _GNUstep_H_IMConnectors
 #define _GNUstep_H_IMConnectors
 
-#import <Foundation/NSObject.h>
+#ifndef GNUSTEP
+#include <Foundation/Foundation.h>
+#else
+#include <Foundation/NSObject.h>
+#endif
 
 @interface IMConnector : NSObject
 {

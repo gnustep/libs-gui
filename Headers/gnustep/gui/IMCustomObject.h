@@ -30,8 +30,12 @@
 #ifndef _GNUstep_H_IMCustomObject
 #define _GNUstep_H_IMCustomObject
 
-#import <Foundation/NSObject.h>
-#import <AppKit/NSView.h>
+#ifndef GNUSTEP
+#include <AppKit/AppKit.h>
+#else
+#include <Foundation/NSObject.h>
+#include <AppKit/NSView.h>
+#endif
 
 /* Add an archiving category to object so every object can respond to
    -nibInstantiate

@@ -26,7 +26,11 @@
 #ifndef _GNUstep_H_NSNibConnector
 #define _GNUstep_H_NSNibConnector
 
-#import <Foundation/NSObject.h>
+#ifndef GNUSTEP
+#include <Foundation/Foundation.h>
+#else
+#include <Foundation/NSObject.h>
+#endif
 
 @interface NSNibConnector : NSObject <NSCoding>
 {

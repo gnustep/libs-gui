@@ -1,7 +1,7 @@
 ANNOUNCE
 ********
 
-This is version 0.8.4 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.8.5 of the GNUstep GUI library (`gnustep-gui').
 
 What is the GNUstep GUI Library?
 ================================
@@ -28,6 +28,11 @@ systems.
 GNUstep Base Library, the TIFF Graphics library, and a back-end
 component like the GNUstep 'Back' Backend.
 
+Noteworthy changes in version `0.8.5'
+=====================================
+
+   Bug fixes. NSStringDrawing now uses text system implementation.
+
 Noteworthy changes in version `0.8.4'
 =====================================
 
@@ -45,7 +50,7 @@ Alexander Malmberg. Other improvements include:
 Where can you get it?  How can you compile it?
 ==============================================
 
-   The gstep-gui-0.8.4.tar.gz distribution file has been placed on
+   The gstep-gui-0.8.5.tar.gz distribution file has been placed on
 `ftp.gnustep.org' in `pub/gnustep/core'.
 
    the TIFF Graphics library version 3.4 is required.

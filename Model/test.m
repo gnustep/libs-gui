@@ -1,5 +1,5 @@
-#import <Foundation/Foundation.h>
-#import <AppKit/AppKit.h>
+#include <Foundation/Foundation.h>
+#include <AppKit/AppKit.h>
 
 int main (int argc, char** argv, char** env)
 {
