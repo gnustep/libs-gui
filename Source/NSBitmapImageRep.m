@@ -108,11 +108,6 @@
   return self;
 }
 
-- _initFromWrasterFile: (NSString *)filename number: (int)imageNumber
-{
-  return nil;
-}
-
 + (id) imageRepWithData: (NSData *)tiffData
 {
   NSArray* array;
@@ -151,43 +146,6 @@
   return array;
 }
 
-/* A special method used mostly when we have the wraster library in the
-   backend, which can read several more image formats */
-+ (NSArray*) imageRepsWithFile: (NSString *)filename
-{
-  NSString *ext;
-  int	   images;
-  NSMutableArray *array;
-  NSBitmapImageRep* imageRep;
-
-  /* Don't use this for TIFF images, use the regular ...Data methods */
-  ext = [filename pathExtension];
-  if (!ext)
-    {
-      NSLog(@"Extension missing from filename - '%@'", filename);
-      return nil;
-    }
-  if ([[self imageUnfilteredFileTypes] indexOfObject: ext] != NSNotFound)
-    {
-      NSData* data = [NSData dataWithContentsOfFile: filename];
-      return [self imageRepsWithData: data];
-    }
-
-  array = [NSMutableArray arrayWithCapacity: 2];
-  images = 0;
-  do
-    {
-      imageRep = [[[self class] alloc] _initFromWrasterFile: filename 
-				                     number: images];
-      if (imageRep)
-	[array addObject: AUTORELEASE(imageRep)];
-      images++;
-    }
-  while (imageRep);
-
-  return array;
-}
-
 /* Loads only the default (first) image from the TIFF image contained in
    data. */
 - (id) initWithData: (NSData *)tiffData
@@ -209,6 +167,7 @@
 
 - (id) initWithFocusedViewRect: (NSRect)rect
 {
+  // TODO
   return [self notImplemented: _cmd];
 }
 
@@ -287,6 +246,28 @@
   return self;
 }
 
+- (void)colorizeByMappingGray:(float)midPoint 
+		      toColor:(NSColor *)midPointColor 
+		 blackMapping:(NSColor *)shadowColor
+		 whiteMapping:(NSColor *)lightColor
+{
+  // TODO
+}
+
+- (id)initWithBitmapHandle:(void *)bitmap
+{
+  // TODO Only needed on MS Windows
+  RELEASE(self);
+  return nil;
+}
+
+- (id)initWithIconHandle:(void *)icon
+{
+  // TODO Only needed on MS Windows
+  RELEASE(self);
+  return nil;
+}
+
 - (void) dealloc
 {
   OBJC_FREE(_imagePlanes);
@@ -301,7 +282,7 @@
   copy = (NSBitmapImageRep*)[super copyWithZone: zone];
 
   copy->_imagePlanes = 0;
-  copy->_imageData = [_imageData copy];
+  copy->_imageData = [_imageData copyWithZone: zone];
 
   return copy;
 }
@@ -318,11 +299,6 @@
 + (BOOL) canInitWithPasteboard: (NSPasteboard *)pasteboard
 {
   return [[pasteboard types] containsObject: NSTIFFPboardType]; 
-}
-
-+ (NSArray *) _wrasterFileTypes
-{
-  return nil;
 }
 
 + (NSArray *) imageFileTypes
@@ -455,6 +431,7 @@
 //
 + (NSData*) TIFFRepresentationOfImageRepsInArray: (NSArray *)anArray
 {
+  // TODO
   [self notImplemented: _cmd];
   return nil;
 }
@@ -463,6 +440,7 @@
 				usingCompression: (NSTIFFCompression)type
 					  factor: (float)factor
 {
+  // TODO
   [self notImplemented: _cmd];
   return nil;
 }
@@ -518,6 +496,21 @@
     }
   NSTiffClose(image);
   return [NSData dataWithBytesNoCopy: bytes length: length];
+}
+
++ (NSData *)representationOfImageRepsInArray:(NSArray *)imageReps 
+				   usingType:(NSBitmapImageFileType)storageType
+				  properties:(NSDictionary *)properties
+{
+  // TODO
+  return nil;
+}
+
+- (NSData *)representationUsingType:(NSBitmapImageFileType)storageType 
+			 properties:(NSDictionary *)properties
+{
+  // TODO
+  return nil;
 }
 
 //
@@ -593,6 +586,17 @@
   _comp_factor = factor;
 }
 
+- (void)setProperty:(NSString *)property withValue:(id)value
+{
+  // TODO
+}
+
+- (id)valueForProperty:(NSString *)property
+{
+  // TODO
+  return nil;
+}
+
 //
 // NSCoding protocol
 //
@@ -611,6 +615,58 @@
   self = [super initWithCoder: aDecoder];
   data = [aDecoder decodeObject];
   return [self initWithData: data];
+}
+
+@end
+
+@implementation NSBitmapImageRep (GNUstepExtension)
+
+/* A special method used mostly when we have the wraster library in the
+   backend, which can read several more image formats */
++ (NSArray*) imageRepsWithFile: (NSString *)filename
+{
+  NSString *ext;
+  int	   images;
+  NSMutableArray *array;
+  NSBitmapImageRep* imageRep;
+
+  /* Don't use this for TIFF images, use the regular ...Data methods */
+  ext = [filename pathExtension];
+  if (!ext)
+    {
+      NSLog(@"Extension missing from filename - '%@'", filename);
+      return nil;
+    }
+  if ([[self imageUnfilteredFileTypes] indexOfObject: ext] != NSNotFound)
+    {
+      NSData* data = [NSData dataWithContentsOfFile: filename];
+      return [self imageRepsWithData: data];
+    }
+
+  array = [NSMutableArray arrayWithCapacity: 2];
+  images = 0;
+  do
+    {
+      imageRep = [[[self class] alloc] _initFromWrasterFile: filename 
+				                     number: images];
+      if (imageRep)
+	[array addObject: AUTORELEASE(imageRep)];
+      images++;
+    }
+  while (imageRep);
+
+  return array;
+}
+
+// This are just placeholders for the implementation in the backend
+- _initFromWrasterFile: (NSString *)filename number: (int)imageNumber
+{
+  return nil;
+}
+
++ (NSArray *) _wrasterFileTypes
+{
+  return nil;
 }
 
 @end
