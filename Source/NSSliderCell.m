@@ -143,7 +143,7 @@
   _trackRect = cellFrame;
 
   [self drawBarInside: cellFrame flipped: [controlView isFlipped]];
-  if (_titleCell == YES)
+  if (_titleCell != nil)
     {
       [_titleCell drawInteriorWithFrame: cellFrame inView: controlView];
     }
