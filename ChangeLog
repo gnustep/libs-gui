@@ -1,3 +1,9 @@
+2003-08-19  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSImageRep.m ([NSImageRep +imageRepsWithContentsOfFile:]): 
+	Make sure extension is lowercase.
+	Fixes #4750.
+
 2003-08-18  Adam Fedor  <fedor@gnu.org>
 
 	* Model/GNUmakefile (ADDITIONAL_INCLUDE_DIRS): Don't include

@@ -169,6 +169,7 @@ static Class NSImageRep_class = NULL;
       NSLog(@"Extension missing from image filename - '%@'", filename);
       return nil;
     }
+  ext = [ext lowercaseString];
 
   if (self == NSImageRep_class)
     {
