@@ -438,6 +438,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   familyBrowser = [[NSBrowser alloc] initWithFrame: familyBrowserRect];
   [familyBrowser setDelegate: self];
   [familyBrowser setMaxVisibleColumns: 1];
+  [familyBrowser setMinColumnWidth: 0];
   [familyBrowser setAllowsMultipleSelection: NO];
   [familyBrowser setAllowsEmptySelection: YES];
   [familyBrowser setHasHorizontalScroller: NO];
@@ -457,6 +458,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   faceBrowser = [[NSBrowser alloc] initWithFrame: typefaceBrowserRect];
   [faceBrowser setDelegate: self];
   [faceBrowser setMaxVisibleColumns: 1];
+  [faceBrowser setMinColumnWidth: 0];
   [faceBrowser setAllowsMultipleSelection: NO];
   [faceBrowser setAllowsEmptySelection: YES];
   [faceBrowser setHasHorizontalScroller: NO];
