@@ -48,6 +48,16 @@
 
 #define HUGE 1e7
 
+// not the same as NSMakeRange!
+static inline
+NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
+{
+  if (a1 < a2)
+    return NSMakeRange(a1, a2 - a1);
+  else
+    return NSMakeRange(a2, a1 - a2);
+}
+
 #define SET_DELEGATE_NOTIFICATION(notif_name) \
   if ([_delegate respondsToSelector: @selector(textView##notif_name: )]) \
     [nc addObserver: _delegate \
@@ -68,8 +78,9 @@ static BOOL isSynchronizingDelegate = NO;
 /* The shared notification center */
 static NSNotificationCenter *nc;
 
-@interface NSText(GNUstepPrivate)
+@interface NSText (GNUstepPrivate)
 + (NSDictionary*) defaultTypingAttributes;
+- (NSRect) rectForCharacterRange: (NSRange)aRange;
 @end
 
 @interface NSTextView (GNUstepPrivate)
@@ -280,6 +291,99 @@ static NSNotificationCenter *nc;
 {
   return [_textStorage string];
 }
+
+- (NSRange) selectedRange
+{
+  return _selected_range;
+}
+
+- (void) setSelectedRange: (NSRange)range
+{
+/*
+  NSLog(@"setSelectedRange (%d, %d)", charRange.location, charRange.length);
+  [[NSNotificationCenter defaultCenter]
+    postNotificationName: NSTextViewDidChangeSelectionNotification
+    object: self];
+  _selected_range = charRange;
+*/
+  NSRange oldRange = _selected_range;
+  NSRange overlap;
+
+  // Nothing to do, if the range is still the same
+  if (NSEqualRanges(range, oldRange))
+    return;
+
+  //<!> ask delegate for selection validation
+
+  _selected_range  = range;
+  [self updateFontPanel];
+
+#if 0
+  [nc postNotificationName: NSTextViewDidChangeSelectionNotification
+      object: self
+      userInfo: [NSDictionary dictionaryWithObjectsAndKeys:
+				NSStringFromRange (_selected_range),
+			      NSOldSelectedCharacterRange, nil]];
+#endif
+
+  // display
+  if (range.length)
+    {
+      // <!>disable caret timed entry
+    }
+  else	// no selection
+    {
+      if (_tf.is_rich_text)
+	{
+	  [self setTypingAttributes: [_textStorage attributesAtIndex: range.location
+						   effectiveRange: NULL]];
+	}
+      // <!>enable caret timed entry
+    }
+
+  if (!_window)
+    return;
+
+  // Make the selected range visible
+  [self scrollRangeToVisible: _selected_range]; 
+
+  // Redisplay what has changed
+  // This does an unhighlight of the old selected region
+  overlap = NSIntersectionRange(oldRange, _selected_range);
+  if (overlap.length)
+    {
+      // Try to optimize for overlapping ranges
+      if (range.location != oldRange.location)
+	  [self setNeedsDisplayInRect: 
+		    [self rectForCharacterRange: 
+			      MakeRangeFromAbs(MIN(range.location,
+						   oldRange.location),
+					       MAX(range.location,
+						   oldRange.location))]];
+      if (NSMaxRange(range) != NSMaxRange(oldRange))
+	  [self setNeedsDisplayInRect: 
+		    [self rectForCharacterRange: 
+			      MakeRangeFromAbs(MIN(NSMaxRange(range),
+						   NSMaxRange(oldRange)),
+					       MAX(NSMaxRange(range),
+						   NSMaxRange (oldRange)))]];
+    }
+  else
+    {
+      [self setNeedsDisplayInRect: [self rectForCharacterRange: range]];
+      [self setNeedsDisplayInRect: [self rectForCharacterRange: oldRange]];
+    }
+
+  [self setSelectionGranularity: NSSelectByCharacter];
+  // Also removes the marking from
+  // marked text if the new selection is greater than the marked region.
+}
+
+/*
+ * Methods which should be moved here from NSText
+ * 
+ */
+//- (NSRect) rectForCharacterRange: (NSRange)aRange
 
 /* 
  *  NSTextView's specific methods 
@@ -567,27 +671,6 @@ static NSNotificationCenter *nc;
 }
 
 #undef NSTEXTVIEW_SYNC
-
-- (void) setSelectedRange: (NSRange)charRange
-{
-/*
-  NSLog(@"setSelectedRange (%d, %d)", charRange.location, charRange.length);
-  [[NSNotificationCenter defaultCenter]
-    postNotificationName: NSTextViewDidChangeSelectionNotification
-    object: self];
-  _selected_range = charRange;
-*/
-  [super setSelectedRange: charRange];
-  [self setSelectionGranularity: NSSelectByCharacter];
-
-  // Also removes the marking from
-  // marked text if the new selection is greater than the marked region.
-}
-
-- (NSRange) selectedRange
-{
-  return _selected_range;
-}
 
 - (void) setSelectedRange: (NSRange)charRange
 		 affinity: (NSSelectionAffinity)affinity
@@ -1298,7 +1381,7 @@ container, returning the modified location. */
   return 0.0;
 }
 
-- (void) setDelegate: (id) anObject
+- (void) setDelegate: (id)anObject
 {
   if (_tvf.multiple_textviews && (isSynchronizingDelegate == NO))
     {
