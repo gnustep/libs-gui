@@ -1,3 +1,12 @@
+Sat Nov 27 04:30:15 1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSSavePanel.m ([-directory]): Maintenance, clean up.
+	* Source/NSSavePanel.m: Moved code between
+ 	([-_setDirectory:updateBrowser:]) and ([-setDirectory:]) so that
+ 	we check existence of directories etc only if strictly needed.
+	* Source/NSSavePanel.m ([-browser:createRowsForColumn:inMatrix:]): 
+	Maintenance, clean up.
+	
 Thu Nov 26 20:16:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSAttributedString.m: Added and rewrote RTFD additions
