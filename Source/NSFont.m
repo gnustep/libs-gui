@@ -237,6 +237,25 @@ setNSFont(NSString* key, NSFont* font)
     }
 }
 
++ (NSFont*) labelFontOfSize: (float)fontSize
+{
+  static NSFont *font = nil;
+
+  if (fontSize != 0)
+    {
+      return getNSFont (@"NSLabelFont", @"Helvetica", fontSize);
+    }
+  else
+    {
+      if ((font == nil) || (userCacheNeedsRecomputing == YES))
+	{
+	  ASSIGN (font, getNSFont (@"NSLabelFont", @"Helvetica", 0));
+	  userCacheNeedsRecomputing = NO;
+	}
+      return font;
+    }
+}
+
 + (NSFont*) menuFontOfSize: (float)fontSize
 {
   static NSFont *font = nil;
@@ -332,6 +351,24 @@ setNSFont(NSString* key, NSFont* font)
 	}
       return font;
     }
+}
+
+//
+// Font Sizes
+//
++ (float) labelFontSize
+{
+  return 12.0;
+}
+
++ (float) smallSystemFontSize
+{
+  return 9.0;
+}
+
++ (float) systemFontSize
+{
+  return 12.0;
 }
 
 - (id) initWithName: (NSString*)name matrix: (const float*)fontMatrix
@@ -613,3 +650,12 @@ setNSFont(NSString* key, NSFont* font)
 }
 
 @end /* NSFont */
+
+int NSConvertGlyphsToPackedGlyphs(NSGlyph *glBuf, 
+				  int count, 
+				  NSMultibyteGlyphPacking packing, 
+				  char *packedGlyphs)
+{
+// TODO
+  return 0;
+}

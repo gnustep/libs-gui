@@ -86,6 +86,14 @@ extern const float *NSFontIdentityMatrix;
 + (NSFont *)paletteFontOfSize:(float)fontSize;
 + (NSFont *)toolTipsFontOfSize:(float)fontSize;
 + (NSFont *)controlContentFontOfSize:(float)fontSize;
++ (NSFont *)labelFontOfSize:(float)fontSize;
+
+//
+// Font Sizes
+//
++ (float) labelFontSize;
++ (float) smallSystemFontSize;
++ (float) systemFontSize;
 
 //
 // Preferred Fonts
@@ -160,13 +168,14 @@ extern const float *NSFontIdentityMatrix;
 
 - (NSStringEncoding)mostCompatibleStringEncoding;
 
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
-
 @end
+
+#ifndef	STRICT_OPENSTEP
+int NSConvertGlyphsToPackedGlyphs(NSGlyph *glBuf, 
+				  int count, 
+				  NSMultibyteGlyphPacking packing, 
+				  char *packedGlyphs);
+#endif
 
 extern NSString *NSAFMAscender;
 extern NSString *NSAFMCapHeight;
