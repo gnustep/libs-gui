@@ -11,6 +11,8 @@
    Date: August 1998
    Rewrite:  Multiple authors
    Date: 1999
+   Editing, formatters: Nicola Pero <nicola@brainstorm.co.uk>
+   Date: 2000
 
    This file is part of the GNUstep GUI Library.
 
@@ -58,7 +60,6 @@ static Class	imageClass;
 static NSColor	*txtCol;
 static NSColor	*dtxtCol;
 static NSColor	*shadowCol;
-
 
 @interface	NSCell (PrivateColor)
 + (void) _systemColorsChanged: (NSNotification*)n;
@@ -175,10 +176,12 @@ static NSColor	*shadowCol;
 
 - (void) dealloc
 {
-  TEST_RELEASE(_contents);
-  TEST_RELEASE(_cell_image);
-  TEST_RELEASE(_cell_font);
-  TEST_RELEASE(_represented_object);
+  TEST_RELEASE (_contents);
+  TEST_RELEASE (_cell_image);
+  TEST_RELEASE (_cell_font);
+  TEST_RELEASE (_represented_object);
+  TEST_RELEASE (_objectValue);
+  TEST_RELEASE (_formatter);
 
   [super dealloc];
 }
@@ -188,14 +191,19 @@ static NSColor	*shadowCol;
  */
 - (id) objectValue
 {
-  // TODO
-  return [self stringValue];
+  if (_cell.has_valid_object_value)
+    {
+      return _objectValue;
+    }
+  else
+    {
+      return nil;
+    }
 }
 
 - (BOOL) hasValidObjectValue
 {
-  // TODO
-  return NO;
+  return _cell.has_valid_object_value;
 }
 
 - (double) doubleValue
@@ -218,60 +226,98 @@ static NSColor	*shadowCol;
   return _contents;
 }
 
-/* The following method is important for NSTableView */
 - (void) setObjectValue: (id)object 
 {
-  /* Temporary solution to make basics of NSTableView work */
-  if ([object isKindOfClass: [NSString class]])
-    [self setStringValue: object];
-  else if ([object isKindOfClass: [NSImage class]])
-    [self setImage: object];
-  else if ([object isKindOfClass: [NSNumber class]])
-    [self setStringValue: [object stringValue]];
-  else if (object == nil)
+  id newContents;
+  
+  ASSIGN (_objectValue, object);
+  
+  newContents = [_formatter stringForObjectValue: _objectValue];
+  if (newContents != nil)
     {
-      [self setStringValue: nil];
-      [self setImage: nil];
+      _cell.has_valid_object_value = YES;
     }
-  else 
-    NSLog (@"NSFormatter/NSObjectValue not yet implemented in NSCell");
+  else
+    {
+      if ((_formatter == nil) 
+	  && ([object isKindOfClass: [NSString class]] == YES))
+	{
+	  newContents = _objectValue;
+	  _cell.has_valid_object_value = YES;
+	}
+      else
+	{
+	  newContents = [_objectValue description];
+	  _cell.has_valid_object_value = NO;
+	}
+    }
+  
+  ASSIGN (_contents, newContents);
 }
 
 - (void) setDoubleValue: (double)aDouble
 {
-  NSString* number_string = [[NSNumber numberWithDouble: aDouble] stringValue];
+  NSNumber *number;
 
-  ASSIGN(_contents, number_string);
+  // NB: GNUstep can set a double value for an image cell
+
+  number = [NSNumber numberWithDouble: aDouble];
+  [self setObjectValue: number];
 }
 
 - (void) setFloatValue: (float)aFloat
 {
-  NSString* number_string = [[NSNumber numberWithFloat: aFloat] stringValue];
+  NSNumber *number;
 
-  ASSIGN(_contents, number_string);
+  // NB: GNUstep can set a float value for an image cell. 
+  // NSSliderCell is an example of it! 
+
+  number = [NSNumber numberWithFloat: aFloat];
+  [self setObjectValue: number];
 }
 
 - (void) setIntValue: (int)anInt
 {
-  NSString* number_string = [[NSNumber numberWithInt: anInt] stringValue];
+  NSNumber *number;
 
-  ASSIGN(_contents, number_string);
+  // NB: GNUstep can set an int value for an image cell. 
+
+  number = [NSNumber numberWithInt: anInt];
+  [self setObjectValue: number];
 }
 
 - (void) setStringValue: (NSString*)aString
 {
-  NSString	*string;
+  NSString *string = aString;
 
   _cell.type = NSTextCellType;
 
-  if (!aString)
-    string = @"";
-  else
-    string = [aString copy];
+  if (string == nil)
+    {
+      string = @"";
+    }
 
-  if (_contents)
-    RELEASE(_contents);
-  _contents = string;
+  if (_formatter == nil)
+    {
+      ASSIGN (_contents, string);
+      _cell.has_valid_object_value = NO;
+    }
+  else
+    {
+      id newObjectValue;
+      
+      if ([_formatter getObjectValue: &newObjectValue 
+		      forString: string 
+		      errorDescription: NULL] == YES)
+	{
+	  [self setObjectValue: newObjectValue];
+	}
+      else
+	{
+	  _cell.has_valid_object_value = NO;
+	  ASSIGN (_contents, string);
+	}
+    }
 }
 
 /*
@@ -300,11 +346,11 @@ static NSColor	*shadowCol;
   switch (_cell.type)
     {
       case NSTextCellType:
-	ASSIGN(_cell_font, [fontClass userFontOfSize: 0]);
-	ASSIGN(_contents, @"title");
+	ASSIGN (_cell_font, [fontClass userFontOfSize: 0]);
+	ASSIGN (_contents, @"title");
 	break;
       case NSImageCellType:
-	TEST_RELEASE(_cell_image);
+	TEST_RELEASE (_cell_image);
 	_cell_image = nil;
 	break;
     }
@@ -646,13 +692,12 @@ static NSColor	*shadowCol;
 
 - (void) setFormatter: (NSFormatter*)newFormatter 
 {
-  //TODO
+  ASSIGN (_formatter, newFormatter);
 }
 
 - (id) formatter
 {
-  //TODO
-  return nil;
+  return _formatter;
 }
 
 - (int) entryType
@@ -668,6 +713,7 @@ static NSColor	*shadowCol;
 
 - (BOOL) isEntryAcceptable: (NSString*)aString
 {
+  // TODO
   return YES;
 }
 
@@ -699,12 +745,16 @@ static NSColor	*shadowCol;
 - (NSComparisonResult) compare: (id)otherCell
 {
   if ([otherCell isKindOfClass: cellClass] == NO)
-    [NSException raise: NSBadComparisonException
-		format: @"NSCell comparison with non-NSCell"];
+    {
+      [NSException raise: NSBadComparisonException
+		   format: @"NSCell comparison with non-NSCell"];
+    }
   if (_cell.type != NSTextCellType
-    || ((NSCell*)otherCell)->_cell.type != NSTextCellType)
-    [NSException raise: NSBadComparisonException
-		format: @"Comparison between non-text cells"];
+      || ((NSCell*)otherCell)->_cell.type != NSTextCellType)
+    {
+      [NSException raise: NSBadComparisonException
+		   format: @"Comparison between non-text cells"];
+    }
   return [_contents compare: ((NSCell*)otherCell)->_contents];
 }
 
@@ -849,7 +899,7 @@ static NSColor	*shadowCol;
 
 - (void) setRepresentedObject: (id)anObject
 {
-  ASSIGN(_represented_object, anObject);
+  ASSIGN (_represented_object, anObject);
 }
 
 /*
@@ -921,8 +971,8 @@ static NSColor	*shadowCol;
   if (![controlView mouse: point inRect: cellFrame])
     return NO;	// point is not in cell
 
-  if ((_action_mask & NSLeftMouseDownMask)
-    && [theEvent type] == NSLeftMouseDown)
+  if ((_action_mask & NSLeftMouseDownMask) 
+      && [theEvent type] == NSLeftMouseDown)
     [(NSControl*)controlView sendAction: action to: target];
 
   if (_cell.is_continuous)
@@ -1394,13 +1444,31 @@ static NSColor	*shadowCol;
 
   [textObject setFrame: [self titleRectForBounds: aRect]];
   [controlView addSubview: textObject];  
-  [textObject setText: _contents];
+
+  if (_formatter != nil)
+    {
+      NSString *contents; 
+
+      contents = [_formatter editingStringForObjectValue: _objectValue];
+      if (contents == nil)
+	{
+	  contents = _contents;
+	}
+      [textObject setText: contents];
+    }
+  else
+    {
+      [textObject setText: _contents];
+    }
+  
   [textObject setDelegate: anObject];
   [[controlView window] makeFirstResponder: textObject];
   [textObject display];
 
   if ([theEvent type] == NSLeftMouseDown)
-    [textObject mouseDown: theEvent];
+    {
+      [textObject mouseDown: theEvent];
+    }
 }
 
 - (void) endEditing: (NSText*)textObject
@@ -1448,14 +1516,20 @@ static NSColor	*shadowCol;
   NSCell	*c = [[isa allocWithZone: zone] init];
 
   c->_contents = [_contents copyWithZone: zone];
-  ASSIGN(c->_cell_image, _cell_image);
-  ASSIGN(c->_cell_font, _cell_font);
+  ASSIGN (c->_cell_image, _cell_image);
+  ASSIGN (c->_cell_font, _cell_font);
+  ASSIGN (c->_objectValue, _objectValue); 
   c->_cell = _cell;   // This copies all the flags at once.
   c->_cell_float_left = _cell_float_left;
   c->_cell_float_right = _cell_float_right;
-  c->_represented_object = _represented_object;
   c->_action_mask = _action_mask;
-  
+  /* Attention! This is not retained */
+  c->_represented_object = _represented_object;
+
+  /* Attention! The formatter is retained, *not* copied, 
+     as per NSFormatter spec */
+  c->_formatter = RETAIN (_formatter);
+
   return c;
 }
 
@@ -1470,6 +1544,7 @@ static NSColor	*shadowCol;
   [aCoder encodeObject: _contents];
   [aCoder encodeObject: _cell_image];
   [aCoder encodeObject: _cell_font];
+  [aCoder encodeObject: _objectValue];
   tmp_int = _cell.state;
   [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
   flag = _cell.is_highlighted;
@@ -1505,6 +1580,7 @@ static NSColor	*shadowCol;
   tmp_int = _cell.entry_type;
   [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
   [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_action_mask];
+  [aCoder encodeValueOfObjCType: @encode(id) at: &_formatter];
   [aCoder encodeValueOfObjCType: @encode(id) at: &_represented_object];
 }
 
@@ -1515,6 +1591,7 @@ static NSColor	*shadowCol;
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_contents];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_cell_image];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_cell_font];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_objectValue];
   [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
   _cell.state = tmp_int;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
@@ -1552,7 +1629,21 @@ static NSColor	*shadowCol;
   [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
   _cell.entry_type = tmp_int;
   [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &_action_mask];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_formatter];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_represented_object];
+
+  if (_formatter != nil)
+    {
+      NSString *contents;
+
+      contents = [_formatter stringForObjectValue: _objectValue];
+      if (contents != nil)
+	{
+	  _cell.has_valid_object_value = YES;
+	  ASSIGN (_contents, contents);
+	}
+    }
+  
   return self;
 }
 
