@@ -1,3 +1,8 @@
+2004-02-07 03:53  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSTableView.m (-initWithCoder:): Remove an erroneous 'else'
+	from the previous change.
+
 2004-02-06  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenu.m (-dealloc) Clean up pointer from items to menu.

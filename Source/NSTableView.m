@@ -6026,7 +6026,7 @@ byExtendingSelection: (BOOL)flag
         {
 	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnReordering];
 	}
-      else if (version >= 2)
+      if (version >= 2)
         {
 	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_autoresizesAllColumnsToFit];
 	} 
