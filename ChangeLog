@@ -1,3 +1,16 @@
+2004-01-11 Serg Stoyan <stoyan@on.com.ua>
+
+	* Headers/Additions/GNUstepGUI/GSTitleView.h: new file.
+	* Source/GSTitleView.m: ditto.
+	
+	* Images/common_Close.tiff: updated for GSTitleView.
+	* Images/common_CloseH.tiff: ditto.
+	* Images/common_Miniaturize.tiff: new file.
+	* Images/common_MiniaturizeH.tiff: ditto.
+	
+	* Source/NSMenuView.m: modified to use GSTitleView for menu title.
+	NSMenuWindowTitleView class removed.
+
 2004-01-10 18:53 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibTemplates.m: The unarchiver was failing when 
