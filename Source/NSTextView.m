@@ -330,7 +330,24 @@ static NSNotificationCenter *nc;
     return; 
  
   [_textStorage beginEditing];
-  [_textStorage replaceCharactersInRange: aRange  withString: aString];
+
+  if (_tf.is_rich_text  &&  [_textStorage length] == 0)
+    {
+      /* In this case, there is nothing in the _textStorage ... so the
+	 _textStorage can't choose appropriate formatting attributes
+	 for the string ... we want the typingAttributes to be used in
+	 this case.  So we set the attributes manually. */
+      NSAttributedString *as;
+      
+      as = AUTORELEASE ([[NSAttributedString alloc]
+			  initWithString: aString
+			  attributes: _typingAttributes]);  
+      [self replaceRange: aRange  withAttributedString: as];
+    }
+  else
+    {
+      [_textStorage replaceCharactersInRange: aRange  withString: aString];
+    }
   [_textStorage endEditing];
   [self didChangeText];
 }
@@ -604,9 +621,10 @@ static NSNotificationCenter *nc;
   if (aRange.location == NSNotFound)
     return;
 
-  if (![self shouldChangeTextInRange: aRange
-	    replacementString: nil])
-    return;
+  if (![self shouldChangeTextInRange: aRange  replacementString: nil])
+    {
+      return;
+    }
   [_textStorage beginEditing];
   if (color != nil)
     {
@@ -1343,7 +1361,7 @@ static NSNotificationCenter *nc;
 	  if (_tf.is_rich_text)
 	    {
 	      NSDictionary *dict;
-	      
+	    
 	      if (range.location > 0)
 		{
 		  /* If the insertion point is after a bold word, for
