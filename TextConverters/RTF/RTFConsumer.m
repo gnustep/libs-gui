@@ -211,12 +211,27 @@ readNSString (StringContext *ctxt)
 
 @end
 
+static BOOL classInheritsFromNSMutableAttributedString (Class c)
+{
+  Class mutable = [NSMutableAttributedString class];
+  
+  while (c != Nil)
+    {
+      if (c == mutable)
+	{
+	  return YES;
+	}
+      c = [c superclass];
+    }
+  return NO;
+}
+
 @interface RTFConsumer (Private)
 
 - (NSAttributedString*) parseRTF: (NSData *)rtfData 
-	      documentAttributes: (NSDictionary **)dict;
+	      documentAttributes: (NSDictionary **)dict
+			   class: (Class)class;
 - (NSDictionary*) documentAttributes;
-- (NSAttributedString*) result;
 
 - (RTFAttribute*) attr;
 - (void) push;
@@ -258,6 +273,7 @@ readNSString (StringContext *ctxt)
 
 + (NSAttributedString*) parseFile: (NSFileWrapper *)wrapper
 	       documentAttributes: (NSDictionary **)dict
+			    class: (Class)class
 {
   RTFConsumer *consumer = [RTFConsumer new];
   NSAttributedString *text = nil;
@@ -265,7 +281,8 @@ readNSString (StringContext *ctxt)
   if ([wrapper isRegularFile])
     {
       text = [consumer parseRTF: [wrapper regularFileContents]
-		       documentAttributes: dict];
+		       documentAttributes: dict
+		       class: class];
     }
   else if ([wrapper isDirectory])
     {
@@ -277,7 +294,8 @@ readNSString (StringContext *ctxt)
       if ((contents = [files objectForKey: @"TXT.rtf"]) != nil)
 	{
 	  text = [consumer parseRTF: [contents regularFileContents]
-			   documentAttributes: dict];
+			   documentAttributes: dict
+			   class: class];
 	}
     }
   
@@ -286,17 +304,35 @@ readNSString (StringContext *ctxt)
   return text;
 }
 
++ (NSAttributedString*) parseFile: (NSFileWrapper *)wrapper
+	       documentAttributes: (NSDictionary **)dict
+{
+  return [self parseFile: wrapper 
+	       documentAttributes: dict 
+	       class: [NSMutableAttributedString class]];
+}
+
 + (NSAttributedString*) parseData: (NSData *)rtfData 
 	       documentAttributes: (NSDictionary **)dict
+			    class: (Class)class
 {
   RTFConsumer *consumer = [RTFConsumer new];
   NSAttributedString *text;
 
   text = [consumer parseRTF: rtfData
-		   documentAttributes: dict];
+		   documentAttributes: dict
+		   class: class];
   RELEASE(consumer);
 
   return text;
+}
+
++ (NSAttributedString*) parseData: (NSData *)rtfData
+	       documentAttributes: (NSDictionary **)dict
+{
+  return [self parseData: rtfData
+	       documentAttributes: dict 
+	       class: [NSMutableAttributedString class]];
 }
 
 - (id) init
@@ -307,6 +343,7 @@ readNSString (StringContext *ctxt)
   fonts = nil;
   attrs = nil;
   colours = nil;
+  _class = Nil;
 
   return self;
 }
@@ -324,13 +361,6 @@ readNSString (StringContext *ctxt)
 @end
 
 @implementation RTFDConsumer
-
-+ (NSAttributedString*) parseFile: (NSFileWrapper *)wrapper
-	       documentAttributes: (NSDictionary **)dict
-{
-  return [super parseFile: wrapper
-		documentAttributes: dict];
-}
 
 + (NSAttributedString*) parseData: (NSData *)rtfData 
 	       documentAttributes: (NSDictionary **)dict
@@ -361,7 +391,15 @@ readNSString (StringContext *ctxt)
 
   ignore = 0;  
   DESTROY(result);
-  result = [[NSMutableAttributedString alloc] init];
+  
+  if (classInheritsFromNSMutableAttributedString (_class))
+    {
+      result = [[_class alloc] init];
+    }
+  else
+    {
+      result = [[NSMutableAttributedString alloc] init];
+    }
   ASSIGN(documentAttributes, [NSMutableDictionary dictionary]);
   ASSIGN(fonts, [NSMutableDictionary dictionary]);
   ASSIGN(attrs, [NSMutableArray array]);
@@ -389,14 +427,9 @@ readNSString (StringContext *ctxt)
   ((RTFAttribute*)[attrs lastObject])->changed = YES;
 }
 
-- (NSAttributedString*) result
-{
-  RETAIN(result);
-  return AUTORELEASE(result);
-}
-
 - (NSAttributedString*) parseRTF: (NSData *)rtfData 
 	      documentAttributes: (NSDictionary **)dict
+			   class: (Class)class
 {
   CREATE_AUTORELEASE_POOL(pool);
   RTFscannerCtxt scanner;
@@ -408,6 +441,7 @@ readNSString (StringContext *ctxt)
 			  encoding: NSASCIIStringEncoding];
 
   // Reset this RFTConsumer, as it might already have been used!
+  _class = class;
   [self reset];
 
   initStringContext(&stringCtxt, rtfString);
@@ -428,7 +462,16 @@ readNSString (StringContext *ctxt)
       *dict = [self documentAttributes];
     }
 
-  return [self result];
+  if (classInheritsFromNSMutableAttributedString (_class))
+    {
+      RETAIN (result);
+      AUTORELEASE (result);
+      return result;
+    }
+  else
+    {
+      return AUTORELEASE ([[_class alloc] initWithAttributedString: result]);
+    }
 }
 
 @end

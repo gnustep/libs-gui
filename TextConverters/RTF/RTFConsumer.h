@@ -40,6 +40,7 @@
   NSMutableArray *colours;
   NSMutableArray *attrs;
   NSMutableAttributedString *result;
+  Class _class;
   int ignore;
 }
 
