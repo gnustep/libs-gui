@@ -1,9 +1,3 @@
-2000-08-29 Georg Fleischmann
-
-        * gui/Model/GMAppKit.m
-        [NSForm (GMArchiverMethods) initWithModelUnarchiver:]:
-        new method, allows auto alignment of form titles
-
 Thu Aug 31 00:30:15 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSSavePanel.m ([-_initWithoutGModel]): Fixed setting of
