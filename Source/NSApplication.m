@@ -71,6 +71,12 @@
 #include <AppKit/NSDataLinkPanel.h>
 #include <AppKit/NSHelpPanel.h>
 
+/* Prevent recursion handler */
+static void
+_preventRecursion (NSException *exception)
+{
+}
+
 /*
  * Base library exception handler
  */
@@ -95,12 +101,16 @@ _NSAppKitUncaughtExceptionHandler (NSException *exception)
   NSSetUncaughtExceptionHandler (defaultUncaughtExceptionHandler);  
 
   /*
-   * If there is no graphics context to run the alert panel in,
-   * use the default exception handler.
-   */
+   * If there is no graphics context to run the alert panel in, just
+   * quit.  */
   if (GSCurrentContext() == nil)
     {
-      defaultUncaughtExceptionHandler (exception);
+      _NSUncaughtExceptionHandler = _preventRecursion;
+      fprintf (stderr, 
+	       "Uncaught exception %s, reason: %s\n",
+	       [[exception name] lossyCString], 
+	       [[exception reason] lossyCString]);
+      abort();
     }
 
   retVal = NSRunCriticalAlertPanel 
