@@ -1,8 +1,8 @@
-2000-04-23  FredKiefer  <FredKiefer@Hugo>
+2000-04-23  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* GSTextStorage.m: Corrections in replaceCharactersInRange:withString:
 
-2000-04-20  fedor  <fedor@Hugo>
+2000-04-20  fedor  <fedor@gnu.org>
 
 	* NSBrowser.m, NSFont.m, NSFontManager.m, NSGraphicsContext.m:
 	New backend access methods
