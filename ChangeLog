@@ -1,3 +1,15 @@
+Sun Feb 10 23:53:51 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/GSSimpleLayoutManager.m
+	([-textContainerForGlyphAtIndex:effectiveRange:]): Return nil
+	if no text container was set.
+	* Source/NSLayoutManager.m ([-firstTextView]): Always return
+	_firstTextView.  ([-removeTextContainerAtIndex:]): Set
+	_firstTextView to nil if we removed the last text container.
+	* Source/NSTextView.m ([-buildUpTextNetwork:]): Updated setup
+	sequence for the fixes in the layout manager - bound the layout
+	manager and the text storage before creating the text container.
+	
 2002-02-09  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/GSFontInfo.m: ([GSFontInfo -defaultLineHeightForFont]): 
