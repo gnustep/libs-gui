@@ -63,9 +63,9 @@ static BOOL gnustep_gui_hidden_until_move;
   return cid;
 }
 
-- (void) _setCid: (void *)id
+- (void) _setCid: (void *)val
 {
-  cid = id;
+  cid = val;
 }
 
 /*
