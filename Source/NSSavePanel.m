@@ -9,7 +9,7 @@
    Date: 1999
 
    Author:  Nicola Pero <n.pero@mi.flashnet.it>
-   Date: October 1999
+   Date: 1999
 
    This file is part of the GNUstep GUI Library.
 
@@ -41,7 +41,6 @@
 #include <AppKit/NSImageView.h>
 #include <AppKit/NSMatrix.h>
 #include <AppKit/NSSavePanel.h>
-#include <AppKit/NSScreen.h>
 #include <AppKit/NSTextField.h>
 #include <AppKit/NSWorkspace.h>
 #include <Foundation/NSException.h>
@@ -52,62 +51,35 @@
 #define _SAVE_PANEL_Y_PAD	4
 
 static NSSavePanel *_gs_gui_save_panel = nil;
+static NSFileManager *_fm = nil;
 
-//
-// NSFileManager extensions
-//
-@interface NSFileManager (SavePanelExtensions)
+static BOOL _gs_display_reading_progress = NO;
 
-- (NSArray *) directoryContentsAtPath: (NSString *)path showHidden: (BOOL)flag;
-- (NSArray *) hiddenFilesAtPath: (NSString *)path;
-
+// Pacify the compiler
+// Subclasses (read NSOpenPanel) may implement this 
+// to filter some extensions out of displayed files.
+@interface NSObject (_SavePanelPrivate)
+-(BOOL) _shouldShowExtension: (NSString *)extension;
 @end
-
-@implementation NSFileManager (SavePanelExtensions)
-
-- (NSArray *) directoryContentsAtPath: (NSString *)path showHidden: (BOOL)flag
-{
-  NSArray *rawFiles = [self directoryContentsAtPath: path];
-  NSArray *hiddenFiles = [self hiddenFilesAtPath: path];
-  NSMutableArray *files = [NSMutableArray new];
-  NSEnumerator *enumerator = [rawFiles objectEnumerator];
-  NSString *filename;
-
-  if (flag || !hiddenFiles)
-    return rawFiles;
-
-  while ((filename = (NSString *)[enumerator nextObject]))
-    {
-      if ([hiddenFiles indexOfObject: filename] == NSNotFound)
-	[files addObject: filename];
-    }
-  return files;
-}
-
-- (NSArray *) hiddenFilesAtPath: (NSString *)path
-{
-  NSString *hiddenList = [path stringByAppendingPathComponent: @".hidden"];
-  NSString *hiddenFilesString = [NSString stringWithContentsOfFile: hiddenList];
-  return [hiddenFilesString componentsSeparatedByString: @"\n"];
-}
-
-@end /* NSFileManager (SavePanelExtensions) */
+//
 
 //
 // NSSavePanel private methods
 //
-@interface NSSavePanel (PrivateMethods)
+@interface NSSavePanel (_PrivateMethods)
 
+// Methods to manage default settings
 - (id) _initWithoutGModel;
 - (void) _getOriginalSize;
-- (void) _setDirectory: (NSString *)path updateBrowser: (BOOL)flag;
+- (void) _resetDefaults;
+// Methods invoked by buttons
 - (void) _setHomeDirectory;
 - (void) _mountMedia;
 - (void) _unmountMedia;
 
 @end /* NSSavePanel (PrivateMethods) */
 
-@implementation NSSavePanel (PrivateMethods)
+@implementation NSSavePanel (_PrivateMethods)
 -(id) _initWithoutGModel
 {
   //
@@ -256,8 +228,8 @@ static NSSavePanel *_gs_gui_save_panel = nil;
     [_topView addSubview: bar];
     [bar release];
   }
-  [self setMinSize: NSMakeSize (308, 317)];
   [self setContentSize: NSMakeSize (384, 426)];
+  [super setTitle: @""];
   return self;
 }
 
@@ -267,15 +239,20 @@ static NSSavePanel *_gs_gui_save_panel = nil;
   _originalSize = [self frame].size;
 }
 
-- (void) _setDirectory: (NSString *)path updateBrowser: (BOOL)flag
+- (void) _resetDefaults
 {
-  if (path)
-    ASSIGN (_lastValidPath, path);
-  
-  if (flag && _lastValidPath)
-    [_browser setPath: _lastValidPath];
+  ASSIGN (_directory, [_fm currentDirectoryPath]);
+  [self setPrompt: @"Name:"];
+  [self setTitle: @"Save"];
+  [self setRequiredFileType: @""];
+  [self setTreatsFilePackagesAsDirectories: NO];
+  [self setDelegate: nil];
+  [self setAccessoryView: nil];
 }
 
+//
+// Methods invoked by button press
+//
 - (void) _setHomeDirectory
 {
   [self setDirectory: NSHomeDirectory()];
@@ -298,23 +275,41 @@ static NSSavePanel *_gs_gui_save_panel = nil;
 //
 @implementation NSSavePanel
 
++ (void) initialize
+{
+  if (self == [NSSavePanel class])
+    {
+      [self setVersion: 1];
+      ASSIGN (_fm, [NSFileManager defaultManager]);
+
+      // A GNUstep feature
+      if ([[NSUserDefaults standardUserDefaults] 
+	    boolForKey: @"GSSavePanelShowProgress"])
+	{
+	  _gs_display_reading_progress = YES;
+	}
+    }
+}
+
 + (id) savePanel
 {
   if (!_gs_gui_save_panel)
     _gs_gui_save_panel = [[NSSavePanel alloc] init];
 
-  [_gs_gui_save_panel setDirectory: [[NSFileManager defaultManager] 
-				      currentDirectoryPath]];
-  [_gs_gui_save_panel setPrompt: @"Name:"];
-  [_gs_gui_save_panel setTitle: @"Save"];
-  [_gs_gui_save_panel setRequiredFileType: @""];
-  [_gs_gui_save_panel setTreatsFilePackagesAsDirectories: NO];
-  [_gs_gui_save_panel setDelegate: nil];
-  [_gs_gui_save_panel setAccessoryView: nil];
+  [_gs_gui_save_panel _resetDefaults];
 
   return _gs_gui_save_panel;
 }
 //
+
+-(void) dealloc
+{
+  TEST_RELEASE (_fullFileName);
+  TEST_RELEASE (_directory);  
+  TEST_RELEASE (_requiredFileType);
+
+  [super dealloc];
+}
 
 // If you do a simple -init, we initialize the panel with
 // the system size/mask/appearance/subviews/etc.  If you do more
@@ -324,23 +319,28 @@ static NSSavePanel *_gs_gui_save_panel = nil;
   //  if (![GMModel loadIMFile: @"SavePanel" owner: self]);
   [self _initWithoutGModel];
   
+  _directory = nil;
+  _fullFileName = nil;
   _requiredFileType = nil;
-  _lastValidPath = nil;
   _delegate = nil;
   
   _treatsFilePackagesAsDirectories = NO;
   _delegateHasCompareFilter = NO;
-  _delegateHasFilenameFilter = NO;
+  _delegateHasShowFilenameFilter = NO;
   _delegateHasValidNameFilter = NO;
 
-  _fullFileName = nil;
+  if ([self respondsToSelector: @selector(_shouldShowExtension:)])
+    _selfHasShowExtensionFilter = YES;
+  else 
+    _selfHasShowExtensionFilter = NO;
+  
   [self _getOriginalSize];
   return self;
 }
 
 - (void) setAccessoryView: (NSView *)aView
 {
-  NSView *contentView = [self contentView];
+  NSView *contentView;
   NSRect addedFrame, bottomFrame, topFrame;
   NSSize contentSize, contentMinSize;
   NSSize accessoryViewSize;
@@ -348,12 +348,14 @@ static NSSavePanel *_gs_gui_save_panel = nil;
   if (aView == _accessoryView)
     return;
   
+  contentView = [self contentView];
+
   // Remove accessory view
   if (_accessoryView)
     {
       accessoryViewSize = [_accessoryView frame].size;
       [_accessoryView removeFromSuperview];
-      contentSize = [[self contentView] frame].size;
+      contentSize = [contentView frame].size;
       contentSize.height -= (accessoryViewSize.height 
 			     + (_SAVE_PANEL_Y_PAD * 2));
       [self setMinSize: _originalMinSize];
@@ -375,7 +377,7 @@ static NSSavePanel *_gs_gui_save_panel = nil;
   if (_accessoryView)
     {
       // The new accessory view must not play tricks in the vertical direction
-      [_accessoryView setAutoresizingMask: ([aView autoresizingMask] 
+      [_accessoryView setAutoresizingMask: ([_accessoryView autoresizingMask] 
 					    & !NSViewHeightSizable 
 					    & !NSViewMaxYMargin
 					    & !NSViewMinYMargin)];  
@@ -431,9 +433,10 @@ static NSSavePanel *_gs_gui_save_panel = nil;
 
 - (void) setTitle: (NSString *)title
 {
-  [super setTitle:@""];
   [_titleField setStringValue: title];
-  // TODO: Improve on the following.
+
+  // TODO: Improve the following by managing 
+  // vertical alignment better.
   [_titleField sizeToFit];
 }
 
@@ -460,16 +463,16 @@ static NSSavePanel *_gs_gui_save_panel = nil;
 
 - (void) setDirectory: (NSString *)path
 {
-  NSString*      standardizedPath = [path stringByStandardizingPath];
-  NSFileManager* fm = [NSFileManager defaultManager];
-  BOOL		 isDir;
+  NSString *standardizedPath = [path stringByStandardizingPath];
+  BOOL	   isDir;
   
-  if (standardizedPath && [fm fileExistsAtPath: standardizedPath 
-			      isDirectory: &isDir] 
+  if (standardizedPath 
+      && [_fm fileExistsAtPath: standardizedPath 
+	      isDirectory: &isDir] 
       && isDir)
     {
-      [self _setDirectory: standardizedPath 
-	    updateBrowser: YES];
+      ASSIGN (_directory, standardizedPath);
+      [_browser setPath: _directory];
     }
 }
 
@@ -500,7 +503,12 @@ static NSSavePanel *_gs_gui_save_panel = nil;
 
 - (int) runModal
 {
-  return [self runModalForDirectory: @"" file: @""];
+  if (_directory)
+    return [self runModalForDirectory: _directory 
+		 file: @""];
+  else
+    return [self runModalForDirectory: [_fm currentDirectoryPath] 
+		 file: @""];
 }
 
 - (int) runModalForDirectory:(NSString *) path file:(NSString *) filename
@@ -510,8 +518,9 @@ static NSSavePanel *_gs_gui_save_panel = nil;
 		format: @"NSSavePanel runModalForDirectory:file: "
 		 @"does not accept nil arguments."];
 
-  [self setDirectory: path];
-  // TODO: Should set it in the browser, if it's there! 
+  ASSIGN (_directory, path);
+  ASSIGN (_fullFileName, [path stringByAppendingPathComponent: filename]);
+  [_browser setPath: _fullFileName];
   [[_form cellAtIndex: 0] setStringValue: filename];
   [_form setNeedsDisplay: YES];
 
@@ -520,7 +529,10 @@ static NSSavePanel *_gs_gui_save_panel = nil;
 
 - (NSString *) directory
 {
-  return [_browser pathToColumn: [_browser lastColumn]];
+  if (_directory)
+    return _directory;
+  else 
+    return @"";
 }
 
 - (NSString *) filename
@@ -544,8 +556,9 @@ static NSSavePanel *_gs_gui_save_panel = nil;
 - (void) cancel: (id)sender
 {
   _fullFileName = nil;
+  _directory = nil;
   [NSApp stopModalWithCode: NSCancelButton];
-  [self orderOut: self];
+  [self close];
 }
 
 - (void) ok: (id)sender
@@ -555,35 +568,32 @@ static NSSavePanel *_gs_gui_save_panel = nil;
       return;
 
   [NSApp stopModalWithCode: NSOKButton];
-  [self orderOut: self];
+  [self close];
 }
 
 - (void) selectText: (id)sender
 {
+  // TODO
 }
 
 - (void) setDelegate: (id)aDelegate
 {
-  if (aDelegate == nil)
-    {
-      _delegate = nil;
-      _delegateHasCompareFilter = NO;
-      _delegateHasFilenameFilter = NO;
-      _delegateHasValidNameFilter = NO;
-      return;
-    }
-
-  _delegateHasCompareFilter
-    = [aDelegate respondsToSelector:
-      @selector(panel:compareFilename:with:caseSensitive:)] ? YES : NO;
-  _delegateHasFilenameFilter
-    = [aDelegate respondsToSelector:
-      @selector(panel:shouldShowFilename:)] ? YES : NO;
-  _delegateHasValidNameFilter
-    = [aDelegate respondsToSelector:
-      @selector(panel:isValidFilename:)] ? YES : NO;
-
-  _delegate = aDelegate;
+  if ([aDelegate respondsToSelector:
+		   @selector(panel:compareFilename:with:caseSensitive:)])
+    _delegateHasCompareFilter = YES;
+  else 
+    _delegateHasCompareFilter = NO;
+  
+  if ([aDelegate respondsToSelector: @selector(panel:shouldShowFilename:)])
+    _delegateHasShowFilenameFilter = YES;      
+  else
+    _delegateHasShowFilenameFilter = NO;      
+  
+  if ([aDelegate respondsToSelector: @selector(panel:isValidFilename:)])
+    _delegateHasValidNameFilter = YES;
+  else
+    _delegateHasValidNameFilter = NO;
+  
   [super setDelegate: aDelegate];
 }
 
@@ -606,7 +616,7 @@ static NSSavePanel *_gs_gui_save_panel = nil;
 //
 // NSSavePanel browser delegate methods
 //
-@interface NSSavePanel (BrowserDelegate)
+@interface NSSavePanel (_BrowserDelegate)
 - (void) browser: (id)sender
 createRowsForColumn: (int)column
         inMatrix: (NSMatrix *)matrix;
@@ -624,31 +634,53 @@ selectCellWithString: (NSString *)title
           column:(int)column;
 @end 
 
-@implementation NSSavePanel (BrowserDelegate)
-//
-// TODO: Add support for delegate's shouldShowFile: 
-// Is it certainly possible to simplify things so that NSOpenPanel 
-// does not have to rewrite all the following code, but some 
-// inheritance is possible.
-//
+@implementation NSSavePanel (_BrowserDelegate)
 - (void) browser: (id)sender
-    createRowsForColumn: (int)column
+createRowsForColumn: (int)column
 	inMatrix: (NSMatrix *)matrix
 {
-  NSFileManager *fm = [NSFileManager defaultManager];
-  NSString	*path = [sender pathToColumn: column], *file;
-  NSArray	*files = [fm directoryContentsAtPath: path showHidden: NO];
-  unsigned	i, count;
+  NSString      *path, *file, *pathAndFile, *extension, *h; 
+  NSArray       *files, *hiddenFiles;
+  unsigned	i, count, addedRows; 
   BOOL		exists, isDir;
   NSBrowserCell *cell;
-  NSString      *theFile;
-  NSString      *filePath;
+  // _gs_display_reading_progress variables
+  unsigned      reached_frac = 0;
+  unsigned      base_frac = 1;
+  BOOL          display_progress = NO;
+  NSString*     progressString = nil;
   
+  path = [_browser pathToColumn: column];
+  files = [_fm directoryContentsAtPath: path];
+    
+  // Remove hidden files
+  h = [path stringByAppendingPathComponent: @".hidden"];
+  h = [NSString stringWithContentsOfFile: h];
+  hiddenFiles = [h componentsSeparatedByString: @"\n"];
+  if (hiddenFiles)
+    {
+      files = [NSMutableArray arrayWithArray: files];
+      [(NSMutableArray*)files removeObjectsInArray: hiddenFiles];
+    }
+  
+  count = [files count];
+
   // if array is empty, just return (nothing to display)
-  if ([files lastObject] == nil)
+  if (count == 0)
     return;
 
-  // sort list of files to display
+  // Prepare Messages on title bar if directory is big and user wants them
+  if (_gs_display_reading_progress && (count > 100))
+    {
+      display_progress = YES;
+      base_frac = count / 4;
+      progressString = [@"Reading Directory " stringByAppendingString: path];
+      [super setTitle: progressString];
+      // Is the following really safe? 
+      [GSCurrentContext() flush];
+    }
+
+  // Sort list of files to display
   if (_delegateHasCompareFilter == YES)
     {
       int compare(id elem1, id elem2, void *context)
@@ -658,38 +690,80 @@ selectCellWithString: (NSString *)title
 				with: elem2
 		       caseSensitive: YES];
       }
-      files = [files sortedArrayUsingFunction: compare context: nil];
+      files = [files sortedArrayUsingFunction: compare 
+		     context: nil];
     }
   else
     files = [files sortedArrayUsingSelector: @selector(compare:)];
 
-  count = [files count];
-  [matrix renewRows: count columns: 1];
+  // Create the column.
+  [matrix addColumn];
+  addedRows = 0;
   for (i = 0; i < count; i++)
     {
-      theFile = [files objectAtIndex: i];
-      
-      cell = [matrix cellAtRow: i column: 0];
-      [cell setStringValue: theFile];
-      
-      file = [path stringByAppendingPathComponent: theFile];
-      exists = [fm fileExistsAtPath: file
-		   isDirectory: &isDir];
-      
-      if (_treatsFilePackagesAsDirectories == NO && isDir == YES)
+      // Update displayed message if needed
+      if (display_progress && (i > (base_frac * (reached_frac + 1))))
 	{
-	  filePath = [theFile pathExtension];
-	  if ([filePath isEqualToString: @"app"] 
-	      || [filePath isEqualToString: @"bundle"] 
-	      || [filePath isEqualToString: @"debug"] 
-	      || [filePath isEqualToString: @"profile"])
+	  reached_frac++;
+	  progressString = [progressString stringByAppendingString: @"."];
+	  [super setTitle: progressString];
+	  [GSCurrentContext() flush];
+	}
+      // Now the real code
+      file = [files objectAtIndex: i];
+      extension = [file pathExtension];
+      
+      pathAndFile = [path stringByAppendingPathComponent: file];
+      exists = [_fm fileExistsAtPath: pathAndFile 
+		    isDirectory: &isDir];
+      
+      if (_delegateHasShowFilenameFilter)
+	{
+	  exists = [_delegate panel: self
+			      shouldShowFilename: pathAndFile];
+	}
+
+      if (_treatsFilePackagesAsDirectories == NO && isDir == YES && exists)
+	{
+	  // Ones with more chance first
+	  if ([extension isEqualToString: @"app"] 
+	      || [extension isEqualToString: @"bundle"] 
+	      || [extension isEqualToString: @"palette"]
+	      || [extension isEqualToString: @"debug"] 
+	      || [extension isEqualToString: @"profile"])
 	    isDir = NO;
 	}
+
+      if (_selfHasShowExtensionFilter && exists && (isDir == NO))
+	{
+	  exists = [self _shouldShowExtension: extension];
+	}
       
-      if (isDir == NO)
-	[cell setLeaf: YES];
-      else
-	[cell setLeaf: NO];
+      if (exists)
+	{
+	  if (addedRows >0)
+	    [matrix addRow];
+
+	  cell = [matrix cellAtRow: addedRows 
+			 column: 0];
+	  [cell setStringValue: file];
+	  
+	  if (isDir)
+	    [cell setLeaf: NO];
+	  else
+	    [cell setLeaf: YES];
+
+	  addedRows++;
+	}
+    }
+
+  if (addedRows == 0)
+    [matrix removeColumn: 0];
+
+  if (display_progress)
+    {
+      [super setTitle: @""];
+      [GSCurrentContext() flush];
     }
 }
 
@@ -701,10 +775,11 @@ selectCellWithString: (NSString *)title
   
   // iterate through the cells asking the delegate if each filename is valid
   // if it says no for any filename, the column is not valid
-  if (_delegateHasFilenameFilter == YES)
+  if (_delegateHasShowFilenameFilter == YES)
     for (i = 0; i < count; i++)
       {
-	if (![_delegate panel: self shouldShowFilename:
+	if (![_delegate panel: self 
+			shouldShowFilename:
 			  [[cells objectAtIndex: i] stringValue]])
 	  return NO;
       }
@@ -716,16 +791,31 @@ selectCellWithString: (NSString *)title
 selectCellWithString: (NSString *)title
 	inColumn: (int)column
 {
-  [self _setDirectory: [sender pathToColumn: [_browser lastColumn]] 
-	updateBrowser: NO];
-  
-  if ([[sender selectedCell] isLeaf])
+  NSMatrix *m;
+  BOOL isLeaf;
+  NSString *path;
+
+  m = [sender matrixInColumn: column];
+  isLeaf = [[m selectedCell] isLeaf];
+  path = [sender pathToColumn: column];
+
+  if (isLeaf)
     {
-      ASSIGN (_fullFileName, [sender path]);
+      ASSIGN (_directory, path);
+      ASSIGN (_fullFileName, [path stringByAppendingPathComponent: title]);
       [[_form cellAtIndex: 0] setStringValue: title];
       // [_form setNeedsDisplay: YES];
       [_form display];
     }
+  else
+    {
+      ASSIGN (_directory, [path stringByAppendingPathComponent: title]);
+      ASSIGN (_fullFileName, nil);
+      [[_form cellAtIndex: 0] setStringValue: @""];
+      // [_form setNeedsDisplay: YES];
+      [_form display];
+    }
+
   return YES;
 }
 
@@ -750,7 +840,15 @@ selectCellWithString: (NSString *)title
 
   s = [self directory];
   s = [s stringByAppendingPathComponent: [[_form cellAtIndex: 0] stringValue]];
-  ASSIGN (_fullFileName, s);
+  if (1) // TODO: condition when the filename is acceptable
+    {
+      ASSIGN (_fullFileName, s);
+      [_browser setPath: s];
+    }
+  else   // typed filename is not acceptable
+    {
+      // TODO
+    }
 }
 @end /* NSSavePanel */
 
