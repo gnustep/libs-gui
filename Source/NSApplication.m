@@ -71,13 +71,13 @@
 #include <AppKit/NSDataLinkPanel.h>
 #include <AppKit/NSHelpPanel.h>
 
-static void
-_preventRecursion (NSException *exception)
-{
-}
+/*
+ * Base library exception handler
+ */
+static NSUncaughtExceptionHandler *defaultUncaughtExceptionHandler;
 
 /*
- * AppKit exception handler (overrides Foundation)
+ * Gui library user friendly exception handler 
  */
 static void
 _NSAppKitUncaughtExceptionHandler (NSException *exception)
@@ -90,26 +90,33 @@ _NSAppKitUncaughtExceptionHandler (NSException *exception)
 #define DEBUG_BUTTON nil
 #endif
 
+  /* Reset the exception handler to the Base library's one, to prevent
+     recursive calls to the gui one. */
+  NSSetUncaughtExceptionHandler (defaultUncaughtExceptionHandler);  
+
   /*
    * If there is no graphics context to run the alert panel in,
    * use the default exception handler.
    */
   if (GSCurrentContext() == nil)
     {
-      _NSUncaughtExceptionHandler = _preventRecursion;
-      fprintf(stderr, "Uncaught exception %s, reason: %s\n",
-	[[exception name] lossyCString], [[exception reason] lossyCString]);
-      exit(1);
+      defaultUncaughtExceptionHandler (exception);
     }
 
-  retVal = NSRunCriticalAlertPanel([[NSProcessInfo processInfo] processName],
-								   @"%@: %@",
-								   @"Abort", @"Ignore", DEBUG_BUTTON,
-								   [exception name], [exception reason]);
+  retVal = NSRunCriticalAlertPanel ([[NSProcessInfo processInfo] processName],
+				    @"%@: %@",
+				    @"Abort", @"Ignore", DEBUG_BUTTON,
+				    [exception name], [exception reason]);
+
+  /* The user wants to abort */
   if (retVal == NSAlertDefault)
     {
-      abort();
+      defaultUncaughtExceptionHandler (exception);
     }
+
+  /* The user said to go on - more fun I guess - turn the AppKit
+     exception handler on again */
+  NSSetUncaughtExceptionHandler (_NSAppKitUncaughtExceptionHandler);
 }
 
 /*
@@ -297,8 +304,12 @@ static NSCell* tileCell = nil;
       NSDebugLog(@"Initialize NSApplication class\n");
       [self setVersion: 1];
 
-      // Set the AppKit exception handler.
-      _NSUncaughtExceptionHandler = _NSAppKitUncaughtExceptionHandler;
+      /* Save the base library exception handler */
+      defaultUncaughtExceptionHandler = NSGetUncaughtExceptionHandler ();
+      
+      /* Set a new exception handler for the gui library */
+      NSSetUncaughtExceptionHandler (_NSAppKitUncaughtExceptionHandler);
+      
       /* Cache the NSAutoreleasePool class */
       arpClass = [NSAutoreleasePool class];
       nc = [NSNotificationCenter defaultCenter];
