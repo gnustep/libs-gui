@@ -38,7 +38,6 @@
   id	   _delegate;
   float    _dividerWidth;
   float    _draggedBarWidth;
-  id       _splitCursor;
   BOOL     _isVertical;
   NSImage *_dimpleImage;
   NSColor *_backgroundColor; 
@@ -50,12 +49,23 @@
 - (id) delegate;
 - (void) adjustSubviews;
 - (void) drawDividerInRect: (NSRect)aRect;
+- (float) dividerThickness;
 
-- (void) setVertical: (BOOL)flag;	/* Vertical splitview has a vertical split bar */ 
+/* Vertical splitview has a vertical split bar */ 
+- (void) setVertical: (BOOL)flag;
 - (BOOL) isVertical;
 
+#ifndef STRICT_OPENSTEP
+- (BOOL) isSubviewCollapsed: (NSView *)subview;
+- (BOOL) isPaneSplitter;
+- (void) setIsPaneSplitter: (BOOL)flag;
+#endif
+
+@end
+
+#ifndef	NO_GNUSTEP
+@interface NSSplitView (GNUstepExtra)
 /* extra methods to make it more usable */
-- (float) dividerThickness;  //defaults to 8
 - (float) draggedBarWidth;
 - (void) setDraggedBarWidth: (float)newWidth;
 /* if flag is yes, dividerThickness is reset to the height/width of the dimple
@@ -69,6 +79,7 @@
 - (void) setDividerColor: (NSColor *)aColor;
 
 @end
+#endif 
 
 @interface NSObject (NSSplitViewDelegate)
 - (void) splitView: (NSSplitView *)sender 
@@ -85,6 +96,20 @@ constrainSplitPosition: (float)proposedPosition
 
 - (void) splitViewWillResizeSubviews: (NSNotification *)notification;
 - (void) splitViewDidResizeSubviews: (NSNotification *)notification;
+
+#ifndef STRICT_OPENSTEP
+- (BOOL) splitView: (NSSplitView *)sender
+canCollapseSubview: (NSView *)subview;
+
+- (float) splitView: (NSSplitView *)sender
+constrainMaxCoordinate: (float)proposedMax
+	ofSubviewAt: (int)offset;
+
+- (float) splitView: (NSSplitView *)sender
+constrainMinCoordinate: (float)proposedMin
+	ofSubviewAt: (int)offset;
+#endif
+
 @end
 
 /* Notifications */
