@@ -4,6 +4,8 @@
 	* Headers/gnustep/gui/PSOperators.h:
 	Add const qualifier to PSPrintf and PSWriteData argument types to
 	match all other declatrations.
+	* Headers/gnustep/gui/NSMenu.h: Add and document validation protocol.
+	* Headers/gnustep/gui/NSMenuItem.h: Add some documentation and tidy.
 
 2002-10-28  Adam Fedor  <fedor@gnu.org>
 

@@ -37,66 +37,58 @@
 @class NSMenu;
 @class NSImage;
 
+/**
+ * Specifies the methods that an object must implement if it is to be
+ * placed in a menu as a menu item.  The [NSMenuItem] class provides
+ * a reference implementation suitable for most uses.
+ */
 @protocol NSMenuItem <NSCopying, NSCoding>
 
-+ (void)setUsesUserKeyEquivalents:(BOOL)flag;
-+ (BOOL)usesUserKeyEquivalents;
++ (id<NSMenuItem>) separatorItem;
++ (void) setUsesUserKeyEquivalents: (BOOL)flag;
++ (BOOL) usesUserKeyEquivalents;
 
-+ (id <NSMenuItem>)separatorItem;
-
-- (id)initWithTitle:(NSString *)aString
-	     action:(SEL)aSelector
-      keyEquivalent:(NSString *)charCode;
-
-- (void)setMenu:(NSMenu *)menu;
-- (NSMenu *)menu;
-
-- (BOOL)hasSubmenu;
-- (void)setSubmenu:(NSMenu *)submenu;
-- (NSMenu *)submenu;
-
-- (void)setTitle:(NSString*)aString;
-- (NSString*)title;
-- (BOOL)isSeparatorItem;
-
-- (void)setKeyEquivalent:(NSString*)aKeyEquivalent;
-- (NSString*)keyEquivalent;
-- (void)setKeyEquivalentModifierMask:(unsigned int)mask;
-- (unsigned int)keyEquivalentModifierMask;
-
-- (NSString*)userKeyEquivalent;
-- (unsigned int)userKeyEquivalentModifierMask;
-
-- (void)setMnemonicLocation:(unsigned) location;
-- (unsigned)mnemonicLocation;
-- (NSString *)mnemonic;
-- (void)setTitleWithMnemonic:(NSString *)stringWithAmpersand;
-
-- (void)setImage:(NSImage *)menuImage;
-- (NSImage *)image;
-
-- (void)setState:(int)state;
-- (int)state;
-- (void)setOnStateImage:(NSImage *)image;
-- (NSImage *)onStateImage;
-- (void)setOffStateImage:(NSImage *)image;
-- (NSImage *)offStateImage;
-- (void)setMixedStateImage:(NSImage *)image;
-- (NSImage *)mixedStateImage;
-
-- (void)setEnabled:(BOOL)flag;
-- (BOOL)isEnabled;
-
-- (void)setTarget:(id)anObject;
-- (id)target;
-- (void)setAction:(SEL)aSelector;
-- (SEL)action;
-
-- (void)setTag:(int)anInt;
-- (int)tag;
-
-- (void)setRepresentedObject:(id)anObject;
-- (id)representedObject;
+- (SEL) action;
+- (BOOL) hasSubmenu;
+- (NSImage*) image;
+- (id) initWithTitle: (NSString*)aString
+	      action: (SEL)aSelector
+       keyEquivalent: (NSString*)charCode;
+- (BOOL) isEnabled;
+- (BOOL) isSeparatorItem;
+- (NSString*) keyEquivalent;
+- (unsigned int) keyEquivalentModifierMask;
+- (NSMenu*) menu;
+- (NSImage*) mixedStateImage;
+- (NSString*) mnemonic;
+- (unsigned) mnemonicLocation;
+- (NSImage*) offStateImage;
+- (NSImage*) onStateImage;
+- (id) representedObject;
+- (void) setAction: (SEL)aSelector;
+- (void) setEnabled: (BOOL)flag;
+- (void) setImage: (NSImage*)menuImage;
+- (void) setKeyEquivalent: (NSString*)aKeyEquivalent;
+- (void) setKeyEquivalentModifierMask: (unsigned int)mask;
+- (void) setMenu: (NSMenu*)menu;
+- (void) setMixedStateImage: (NSImage*)image;
+- (void) setMnemonicLocation: (unsigned) location;
+- (void) setOffStateImage: (NSImage*)image;
+- (void) setOnStateImage: (NSImage*)image;
+- (void) setRepresentedObject: (id)anObject;
+- (void) setState: (int)state;
+- (void) setSubmenu: (NSMenu*)submenu;
+- (void) setTag: (int)anInt;
+- (void) setTarget: (id)anObject;
+- (void) setTitle: (NSString*)aString;
+- (void) setTitleWithMnemonic: (NSString*)stringWithAmpersand;
+- (int) state;
+- (NSMenu*) submenu;
+- (int) tag;
+- (id) target;
+- (NSString*) title;
+- (unsigned int) userKeyEquivalentModifierMask;
+- (NSString*) userKeyEquivalent;
 
 @end
 
@@ -123,12 +115,12 @@
 
 @end
 
+#ifndef	NO_GNUSTEP
 @interface NSMenuItem (GNUstepExtra)
-
-- (void)setChangesState:(BOOL)flag;
-- (BOOL)changesState;
-
+- (void) setChangesState: (BOOL)flag;
+- (BOOL) changesState;
 @end
+#endif
 
 #endif // _GNUstep_H_NSMenuItem
 

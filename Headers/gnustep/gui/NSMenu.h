@@ -149,36 +149,54 @@
 @end
 
 
-@interface NSObject (NSMenuActionResponder)
+/**
+ * Specifies the protocol to which an object must confirm if it is to be
+ * used to validate menu items (in order to implement automatic enabling
+ * and disabling of menu items).
+ */
 
-- (BOOL)validateMenuItem:(NSMenuItem*)aMenuItem;
-
+@protocol	NSMenuValidation
+/**
+ * <p>The receiver should return YES if the menuItem is valid ... and should
+ * be enabled in the menu, NO if it is invalid and the user should not be
+ * able to select it.
+ * </p>
+ * <p>This method is invoked automatically to determine whether menu items
+ * should be enabled or disabled automatically whenever [NSMenu-update] is
+ * invoked (usually by the applications event loop).
+ * </p>
+ */
+- (BOOL) validateMenuItem: (id<NSMenuItem>)menuItem;
 @end
 
 #ifndef	NO_GNUSTEP
+@interface NSObject (NSMenuActionResponder)
+- (BOOL) validateMenuItem: (NSMenuItem*)aMenuItem;
+@end
+
 @interface NSMenu (GNUstepExtra)
-- (BOOL)isFollowTransient;
-- (NSWindow *)window;
+- (BOOL) isFollowTransient;
+- (NSWindow*) window;
 
 /* Shows the menu window on screen */
-- (void)display;
-- (void)displayTransient;
+- (void) display;
+- (void) displayTransient;
 
 /* Close the associated window menu */
-- (void)close;
-- (void)closeTransient;
+- (void) close;
+- (void) closeTransient;
 
 /* Moving menus */
-- (void)nestedSetFrameOrigin:(NSPoint)aPoint;
+- (void) nestedSetFrameOrigin: (NSPoint)aPoint;
 
 /* Shift partly off-screen menus */
-- (BOOL)isPartlyOffScreen;
-- (void)nestedCheckOffScreen;
-- (void)shiftOnScreen;
+- (BOOL) isPartlyOffScreen;
+- (void) nestedCheckOffScreen;
+- (void) shiftOnScreen;
 
 /* Popup behaviour */
-- (BOOL)_ownedByPopUp;
-- (void)_setOwnedByPopUp: (NSPopUpButtonCell*)popUp;
+- (BOOL) _ownedByPopUp;
+- (void) _setOwnedByPopUp: (NSPopUpButtonCell*)popUp;
 
 /* Show menu on right mouse down */
 - (void) _rightMouseDisplay: (NSEvent*)theEvent;
