@@ -1,7 +1,17 @@
 NEWS
 ****
 
-The currently released version of the library is `0.8.8'.
+The currently released version of the library is `0.8.9'.
+
+Noteworthy changes in version `0.8.9'
+=====================================
+
+   Note that many headers have moved to new locations (both in the
+package and when installed), so it is possible, although not likely
+that some applications may not compile because they cannot find the
+right header.
+
+   * New Language Setup documentation.
 
 Noteworthy changes in version `0.8.8'
 =====================================

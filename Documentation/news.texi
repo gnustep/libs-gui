@@ -9,14 +9,24 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.8.9}
+
+Note that many headers have moved to new locations (both in the package and
+when installed), so it is possible, although not likely that some 
+applications may not compile because they cannot find the right header.
+
+@itemize @bullet
+@item New Language Setup documentation.
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.8.8}
 
 @itemize @bullet
 @item Updated LanguageSetup documentation
 @item Improved RTF reader (unicode support, etc).
 @end itemize
-
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.8.7}
 
