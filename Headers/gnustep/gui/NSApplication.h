@@ -190,8 +190,6 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 - (void) orderFrontColorPanel: (id)sender;
 - (void) orderFrontDataLinkPanel: (id)sender;
 - (void) orderFrontHelpPanel: (id)sender;
-- (void)showHelp:(id)sender;
-- (void)activateContextHelpMode:(id)sender;
 - (void) runPageLayout: (id)sender;
 /* GNUstep extensions displaying an infoPanel, title is 'Info' */
 /* For a list of the useful values in the dictionary, see GSInfoPanel.h. 
