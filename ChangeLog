@@ -1,3 +1,9 @@
+1999-07-31  Michael Hanni  <mhanni@sprintmail.com>
+
+	* Source/NSApplication.m: added patch by Pedro Ivo Andrade Tavares
+	<ptavares@iname.com> to handle last window/application exit. This
+	implementation mimics OpenStep 4.1.
+
 1999-07-30  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Source/NSMenu.m: rewrote sections to handle new popupbutton

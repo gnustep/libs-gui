@@ -197,6 +197,12 @@ NSApplication	*NSApp = nil;
   /* Register our listener to incoming services requests etc. */
   [listener registerAsServiceProvider];
 
+#ifndef STRICT_OPENSTEP
+  /* Register self as observer to every window closing. */
+  [nc addObserver: self selector: @selector(_windowWillClose:)
+      name: NSWindowWillCloseNotification object: nil];
+#endif
+
   /* finish the launching post notification that launching has finished */
   [nc postNotificationName: NSApplicationDidFinishLaunchingNotification
 		    object: self];
@@ -1499,6 +1505,37 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
   [self setWindowsMenu: obj];
   return self;
 }
+
+#ifndef STRICT_OPENSTEP
+- (void) _windowWillClose: (NSNotification*) notification
+{
+  int count, wincount, realcount;
+  id win =  [self windows];
+  wincount = [win count];
+  realcount = 0;
+  for(count = 0; count < wincount; count++)
+    {
+      if([[win objectAtIndex: count] canBecomeMainWindow])
+	{
+	  realcount ++;
+	}
+    }
+  
+  /* If there's only one window left, and that's the one being closed, 
+     then we ask the delegate if the app is to be terminated. */
+  if (realcount <= 1)
+    {
+      NSLog(@"asking delegate whether to terminate app...");
+      if ([delegate respondsToSelector: @selector(applicationShouldTerminateAfterLastWindowClosed:)])
+	{
+	  if([delegate applicationShouldTerminateAfterLastWindowClosed: self])
+	    {
+	      [self terminate: self];
+	    }
+	}
+    }
+}
+#endif
 
 @end /* NSApplication */
 
