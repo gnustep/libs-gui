@@ -1,3 +1,8 @@
+2003-01-26 20:35  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSTextView.m: Make sure the typing attributes are always
+	a mutable dictionary we can modify.
+
 2003-01-26 20:30  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSCell.m: Add missing includes.

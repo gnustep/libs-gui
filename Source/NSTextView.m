@@ -707,7 +707,9 @@ to this method from the text container or layout manager.
       /* There is no text network, and the layout manager's attributes
       might not be set up. We reset them to standard values. */
 
-      ASSIGN(_layoutManager->_typingAttributes, [isa defaultTypingAttributes]);
+      DESTROY(_layoutManager->typingAttributes);
+
+      _layoutManager->_typingAttributes = [[isa defaultTypingAttributes] mutableCopy];
       _layoutManager->_original_selected_range.location = NSNotFound;
       _layoutManager->_selected_range = NSMakeRange(0,0);
     }
@@ -2302,16 +2304,10 @@ ugly_hack_done:
       attrs = [isa defaultTypingAttributes];
     }
 
-  if ([attrs isKindOfClass: [NSMutableDictionary class]] == NO)
-    {
-      RELEASE(_layoutManager->_typingAttributes);
-      _layoutManager->_typingAttributes = [[NSMutableDictionary alloc] 
+  DESTROY(_layoutManager->_typingAttributes);
+  _layoutManager->_typingAttributes = [[NSMutableDictionary alloc]
 			    initWithDictionary: attrs];
-    }
-  else
-    {
-      ASSIGN(_layoutManager->_typingAttributes, (NSMutableDictionary *)attrs);
-    }
+
   [self updateFontPanel];
   [self updateRuler];
 }
