@@ -2883,7 +2883,8 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 - (void) setAlignment: (NSTextAlignment)alignment
 		range: (NSRange)aRange
 { 
-  NSMutableParagraphStyle *style;
+  NSParagraphStyle *style;
+  NSMutableParagraphStyle *mstyle;
   
   if (aRange.location == NSNotFound)
     return;
@@ -2898,11 +2899,15 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   [self didChangeText];
 
   // Set the typing attributes
-  style = [[_typingAttributes objectForKey: NSParagraphStyleAttributeName]
-	      mutableCopy];
-  [style setAlignment: alignment];
+  style = [_typingAttributes objectForKey: NSParagraphStyleAttributeName];
+  if (style == nil)
+    style = [NSParagraphStyle defaultParagraphStyle];
+
+  mstyle = [style mutableCopy];
+
+  [mstyle setAlignment: alignment];
   // FIXME: Should use setTypingAttributes
-  [_typingAttributes setObject: style forKey: NSParagraphStyleAttributeName];
+  [_typingAttributes setObject: mstyle forKey: NSParagraphStyleAttributeName];
 }
 
 - (NSString*) preferredPasteboardTypeFromArray: (NSArray*)availableTypes
