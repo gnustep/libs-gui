@@ -131,6 +131,7 @@ static IMP	ccImp;
 static IMP	ctImp;
 static Class	responderClass;
 static Class	viewClass;
+static Class	textFieldClass;
 static NSMutableSet	*autosaveNames;
 static NSRecursiveLock	*windowsLock;
 static NSMapTable* windowmaps = NULL;
@@ -148,6 +149,7 @@ static NSMapTable* windowmaps = NULL;
       ctImp = [self instanceMethodForSelector: ctSel];
       responderClass = [NSResponder class];
       viewClass = [NSView class];
+      textFieldClass = [NSTextField class];
       autosaveNames = [NSMutableSet new];
       windowsLock = [NSRecursiveLock new];
     }
@@ -1946,7 +1948,11 @@ static NSMapTable* windowmaps = NULL;
   if ([aView isKindOfClass: viewClass])
     theView = [aView nextValidKeyView];
   if (theView)
-    [self makeFirstResponder: theView];
+    {
+      [self makeFirstResponder: theView];
+      if ([theView isKindOfClass: textFieldClass])
+	[(NSTextField *)theView selectText: self];
+    }
 }
 
 - (void) selectKeyViewPrecedingView: (NSView *)aView
@@ -1956,7 +1962,11 @@ static NSMapTable* windowmaps = NULL;
   if ([aView isKindOfClass: viewClass])
     theView = [aView previousValidKeyView];
   if (theView)
-    [self makeFirstResponder: theView];
+    {
+      [self makeFirstResponder: theView];
+      if ([theView isKindOfClass: textFieldClass])
+	[(NSTextField *)theView selectText: self];
+    }
 }
 
 - (void) selectNextKeyView: (id)sender
@@ -1975,7 +1985,11 @@ static NSMapTable* windowmaps = NULL;
     }
 
   if (theView)
-    [self makeFirstResponder: theView];
+    {
+      [self makeFirstResponder: theView];
+      if ([theView isKindOfClass: textFieldClass])
+	[(NSTextField *)theView selectText: self];
+    }
 }
 
 - (void) selectPreviousKeyView: (id)sender
@@ -1994,7 +2008,11 @@ static NSMapTable* windowmaps = NULL;
     }
 
   if (theView)
-    [self makeFirstResponder: theView];
+    {
+      [self makeFirstResponder: theView];
+      if ([theView isKindOfClass: textFieldClass])
+	[(NSTextField *)theView selectText: self];
+    }
 }
 
 /*
