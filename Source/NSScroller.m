@@ -648,6 +648,9 @@ static const float buttonsWidth = 16;
   NSDebugLog (@"NSScroller drawRect: ((%f, %f), (%f, %f))",
 	    rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
 
+  [[window backgroundColor] set];
+  NSRectFill (frame);
+
   [self drawKnobSlot];
   [self drawKnob];
 
