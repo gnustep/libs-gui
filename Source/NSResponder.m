@@ -3,7 +3,7 @@
 
    Abstract class which is basis of command and event processing
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996,1999 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -34,210 +34,209 @@
 
 @implementation NSResponder
 
-//
-// Class methods
-//
-+ (void)initialize
+/*
+ * Class methods
+ */
++ (void) initialize
 {
   if (self == [NSResponder class])
     {
       NSDebugLog(@"Initialize NSResponder class\n");
 
-      // Initial version
-      [self setVersion:1];
+      [self setVersion: 1];
     }
 }
 
-//
-// Instance methods
-//
-//
-// Managing the next responder
-//
-- nextResponder
+/*
+ * Instance methods
+ */
+/*
+ * Managing the next responder
+ */
+- (id) nextResponder
 {
   return next_responder;
 }
 
-- (void)setNextResponder:aResponder
+- (void) setNextResponder: (NSResponder*)aResponder
 {
   next_responder = aResponder;
 }
 
-//
-// Determining the first responder
-//
-- (BOOL)acceptsFirstResponder
+/*
+ * Determining the first responder
+ */
+- (BOOL) acceptsFirstResponder
 {
   return NO;
 }
 
-- (BOOL)becomeFirstResponder
+- (BOOL) becomeFirstResponder
 {
   return YES;
 }
 
-- (BOOL)resignFirstResponder
+- (BOOL) resignFirstResponder
 {
   return YES;
 }
 
-//
-// Aid event processing
-//
-- (BOOL)performKeyEquivalent:(NSEvent *)theEvent
+/*
+ * Aid event processing
+ */
+- (BOOL) performKeyEquivalent: (NSEvent *)theEvent
 {
   return NO;
 }
 
-- (BOOL)tryToPerform:(SEL)anAction with:anObject
+- (BOOL) tryToPerform: (SEL)anAction with: (id)anObject
 {
-  // Can we perform the action -then do it
-  if ([self respondsToSelector:anAction])
+  /* Can we perform the action -then do it */
+  if ([self respondsToSelector: anAction])
     {
-      [self performSelector:anAction withObject:anObject];
+      [self performSelector: anAction withObject: anObject];
       return YES;
     }
   else
     {
-      // If we cannot perform then try the next responder
+      /* If we cannot perform then try the next responder */
       if (!next_responder)
 	return NO;
       else
-	return [next_responder tryToPerform:anAction with:anObject];
+	return [next_responder tryToPerform: anAction with: anObject];
     }
 }
 
-//
-// Forwarding event messages
-//
-- (void)flagsChanged:(NSEvent *)theEvent
+/*
+ * Forwarding event messages
+ */
+- (void) flagsChanged: (NSEvent *)theEvent
 {
   if (next_responder)
-    return [next_responder flagsChanged:theEvent];
+    return [next_responder flagsChanged: theEvent];
   else
-    return [self noResponderFor:@selector(flagsChanged:)];
+    return [self noResponderFor: @selector(flagsChanged: )];
 }
 
-- (void)helpRequested:(NSEvent *)theEvent
+- (void) helpRequested: (NSEvent *)theEvent
 {
   if (next_responder)
-    return [next_responder helpRequested:theEvent];
+    return [next_responder helpRequested: theEvent];
   else
-    return [self noResponderFor:@selector(helpRequested:)];
+    return [self noResponderFor: @selector(helpRequested: )];
 }
 
-- (void)keyDown:(NSEvent *)theEvent
+- (void) keyDown: (NSEvent *)theEvent
 {
   if (next_responder)
-    return [next_responder keyDown:theEvent];
+    return [next_responder keyDown: theEvent];
   else
-    return [self noResponderFor:@selector(keyDown:)];
+    return [self noResponderFor: @selector(keyDown: )];
 }
 
-- (void)keyUp:(NSEvent *)theEvent
+- (void) keyUp: (NSEvent *)theEvent
 {
   if (next_responder)
-    return [next_responder keyUp:theEvent];
+    return [next_responder keyUp: theEvent];
   else
-    return [self noResponderFor:@selector(keyUp:)];
+    return [self noResponderFor: @selector(keyUp: )];
 }
 
-- (void)mouseDown:(NSEvent *)theEvent
+- (void) mouseDown: (NSEvent *)theEvent
 {
   if (next_responder)
-    return [next_responder mouseDown:theEvent];
+    return [next_responder mouseDown: theEvent];
   else
-    return [self noResponderFor:@selector(mouseDown:)];
+    return [self noResponderFor: @selector(mouseDown: )];
 }
 
-- (void)mouseDragged:(NSEvent *)theEvent
+- (void) mouseDragged: (NSEvent *)theEvent
 {
   if (next_responder)
-    return [next_responder mouseDragged:theEvent];
+    return [next_responder mouseDragged: theEvent];
   else
-    return [self noResponderFor:@selector(mouseDragged:)];
+    return [self noResponderFor: @selector(mouseDragged: )];
 }
 
-- (void)mouseEntered:(NSEvent *)theEvent
+- (void) mouseEntered: (NSEvent *)theEvent
 {
   if (next_responder)
-    return [next_responder mouseEntered:theEvent];
+    return [next_responder mouseEntered: theEvent];
   else
-    return [self noResponderFor:@selector(mouseEntered:)];
+    return [self noResponderFor: @selector(mouseEntered: )];
 }
 
-- (void)mouseExited:(NSEvent *)theEvent
+- (void) mouseExited: (NSEvent *)theEvent
 {
   if (next_responder)
-    return [next_responder mouseExited:theEvent];
+    return [next_responder mouseExited: theEvent];
   else
-    return [self noResponderFor:@selector(mouseExited:)];
+    return [self noResponderFor: @selector(mouseExited: )];
 }
 
-- (void)mouseMoved:(NSEvent *)theEvent
+- (void) mouseMoved: (NSEvent *)theEvent
 {
   if (next_responder)
-    return [next_responder mouseMoved:theEvent];
+    return [next_responder mouseMoved: theEvent];
   else
-    return [self noResponderFor:@selector(mouseMoved:)];
+    return [self noResponderFor: @selector(mouseMoved: )];
 }
 
-- (void)mouseUp:(NSEvent *)theEvent
+- (void) mouseUp: (NSEvent *)theEvent
 {
   if (next_responder)
-    return [next_responder mouseUp:theEvent];
+    return [next_responder mouseUp: theEvent];
   else
-    return [self noResponderFor:@selector(mouseUp:)];
+    return [self noResponderFor: @selector(mouseUp: )];
 }
 
-- (void)noResponderFor:(SEL)eventSelector
+- (void) noResponderFor: (SEL)eventSelector
 {
-  // Only beep for key down events
-  if (sel_eq(eventSelector, @selector(keyDown:)))
+  /* Only beep for key down events */
+  if (sel_eq(eventSelector, @selector(keyDown: )))
     NSBeep();
 }
 
-- (void)rightMouseDown:(NSEvent *)theEvent
+- (void) rightMouseDown: (NSEvent *)theEvent
 {
   if (next_responder)
-    return [next_responder rightMouseDown:theEvent];
+    return [next_responder rightMouseDown: theEvent];
   else
-    return [self noResponderFor:@selector(rightMouseDown:)];
+    return [self noResponderFor: @selector(rightMouseDown: )];
 }
 
-- (void)rightMouseDragged:(NSEvent *)theEvent
+- (void) rightMouseDragged: (NSEvent *)theEvent
 {
   if (next_responder)
-    return [next_responder rightMouseDragged:theEvent];
+    return [next_responder rightMouseDragged: theEvent];
   else
-    return [self noResponderFor:@selector(rightMouseDragged:)];
+    return [self noResponderFor: @selector(rightMouseDragged: )];
 }
 
-- (void)rightMouseUp:(NSEvent *)theEvent
+- (void) rightMouseUp: (NSEvent *)theEvent
 {
   if (next_responder)
-    return [next_responder rightMouseUp:theEvent];
+    return [next_responder rightMouseUp: theEvent];
   else
-    return [self noResponderFor:@selector(rightMouseUp:)];
+    return [self noResponderFor: @selector(rightMouseUp: )];
 }
 
-//
-// Services menu support
-//
-- validRequestorForSendType:(NSString *)typeSent
-		 returnType:(NSString *)typeReturned
+/*
+ * Services menu support
+ */
+- (id) validRequestorForSendType: (NSString *)typeSent
+		      returnType: (NSString *)typeReturned
 {
   if (next_responder)
-    return [next_responder validRequestorForSendType:typeSent
-			   returnType:typeReturned];
+    return [next_responder validRequestorForSendType: typeSent
+					  returnType: typeReturned];
   else
     return nil;
 }
 
-//
-// NSCoding protocol
-//
+/*
+ * NSCoding protocol
+ */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [aCoder encodeConditionalObject: next_responder];
@@ -246,8 +245,17 @@
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   next_responder = [aDecoder decodeObject];
-
   return self;
+}
+
+- (NSInterfaceStyle) interfaceStyle
+{
+  return interface_style;
+}
+
+- (void) setInterfaceStyle: (NSInterfaceStyle)aStyle
+{
+  interface_style = aStyle;
 }
 
 @end

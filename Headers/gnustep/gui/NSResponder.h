@@ -3,7 +3,7 @@
 
    Abstract class which is basis of command and event processing
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996,1999 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -30,70 +30,74 @@
 #define _GNUstep_H_NSResponder
 
 #include <Foundation/NSCoder.h>
+#include <AppKit/NSInterfaceStyle.h>
 
 @class NSString;
 @class NSEvent;
 
 @interface NSResponder : NSObject <NSCoding>
 {
-  // Attributes
-  int interface_style;
-  id next_responder;
+  NSInterfaceStyle	interface_style;
+  NSResponder		*next_responder;
 }
 
-//
-// Instance methods
-//
+/*
+ * Instance methods
+ */
 
-//
-// Managing the next responder
-//
-- nextResponder;
-- (void)setNextResponder:aResponder;
+/*
+ * Managing the next responder
+ */
+- (NSResponder*) nextResponder;
+- (void) setNextResponder: (NSResponder*)aResponder;
 
-//
-// Determining the first responder
-//
-- (BOOL)acceptsFirstResponder;
-- (BOOL)becomeFirstResponder;
-- (BOOL)resignFirstResponder;
+/*
+ * Determining the first responder
+ */
+- (BOOL) acceptsFirstResponder;
+- (BOOL) becomeFirstResponder;
+- (BOOL) resignFirstResponder;
 
-//
-// Aid event processing
-//
-- (BOOL)performKeyEquivalent:(NSEvent *)theEvent;
-- (BOOL)tryToPerform:(SEL)anAction with:anObject;
+/*
+ * Aid event processing
+ */
+- (BOOL) performKeyEquivalent: (NSEvent *)theEvent;
+- (BOOL) tryToPerform: (SEL)anAction with: (id)anObject;
 
-//
-// Forwarding event messages
-//
-- (void)flagsChanged:(NSEvent *)theEvent;
-- (void)helpRequested:(NSEvent *)theEvent;
-- (void)keyDown:(NSEvent *)theEvent;
-- (void)keyUp:(NSEvent *)theEvent;
-- (void)mouseDown:(NSEvent *)theEvent;
-- (void)mouseDragged:(NSEvent *)theEvent;
-- (void)mouseEntered:(NSEvent *)theEvent;
-- (void)mouseExited:(NSEvent *)theEvent;
-- (void)mouseMoved:(NSEvent *)theEvent;
-- (void)mouseUp:(NSEvent *)theEvent;
-- (void)noResponderFor:(SEL)eventSelector;
-- (void)rightMouseDown:(NSEvent *)theEvent;
-- (void)rightMouseDragged:(NSEvent *)theEvent;
-- (void)rightMouseUp:(NSEvent *)theEvent;
+/*
+ * Forwarding event messages
+ */
+- (void) flagsChanged: (NSEvent *)theEvent;
+- (void) helpRequested: (NSEvent *)theEvent;
+- (void) keyDown: (NSEvent *)theEvent;
+- (void) keyUp: (NSEvent *)theEvent;
+- (void) mouseDown: (NSEvent *)theEvent;
+- (void) mouseDragged: (NSEvent *)theEvent;
+- (void) mouseEntered: (NSEvent *)theEvent;
+- (void) mouseExited: (NSEvent *)theEvent;
+- (void) mouseMoved: (NSEvent *)theEvent;
+- (void) mouseUp: (NSEvent *)theEvent;
+- (void) noResponderFor: (SEL)eventSelector;
+- (void) rightMouseDown: (NSEvent *)theEvent;
+- (void) rightMouseDragged: (NSEvent *)theEvent;
+- (void) rightMouseUp: (NSEvent *)theEvent;
 
-//
-// Services menu support
-//
-- validRequestorForSendType:(NSString *)typeSent
-		 returnType:(NSString *)typeReturned;
+/*
+ * Services menu support
+ */
+- (id) validRequestorForSendType: (NSString *)typeSent
+		      returnType: (NSString *)typeReturned;
 
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
+/*
+ * NSCoding protocol
+ */
+- (void) encodeWithCoder: (NSCoder*)aCoder;
+- (id) initWithCoder: (NSCoder*)aDecoder;
 
+#ifndef	STRICT_OPENSTEP
+- (NSInterfaceStyle) interfaceStyle;
+- (void) setInterfaceStyle: (NSInterfaceStyle)aStyle;
+#endif
 @end
 
-#endif // _GNUstep_H_NSResponder
+#endif /* _GNUstep_H_NSResponder */

@@ -1,3 +1,15 @@
+Tue May  4 14:40:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Updates from information supplied by Marc Champesme to make NSWindow
+	header have all the MacOS-X stuff in it.
+	* Headers/AppKit/NSResponder.h: include NSInterfaceStyle and fix a
+	few method prototypes;
+	* Headers/AppKit/NSWindow.h: Added a whole load of MacOS-X methods.
+	* Source/NSResponder.m: Fixed a few method prototypes and added
+	interface style stuff.
+	* Source/NSWindow.m: Fixed a few method prototypes and added
+	interface style stuff and gState implementation.
+
 Mon May  3 18:55:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSButtonCell.m: ([-drawWithFrame:inView:]) and

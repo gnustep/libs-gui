@@ -110,13 +110,13 @@
 }
 
 + (NSRect) frameRectForContentRect: (NSRect)aRect
-                        styleMask: (unsigned int)aStyle
+                         styleMask: (unsigned int)aStyle
 {
   return aRect;
 }
 
 + (NSRect) minFrameWidthWithTitle: (NSString *)aTitle
-                       styleMask: (unsigned int)aStyle
+                        styleMask: (unsigned int)aStyle
 {
   return NSZeroRect;
 }
@@ -226,7 +226,10 @@
 //
 // Accessing the content view
 //
-- contentView                               { return content_view; }
+- (id) contentView
+{
+  return content_view;
+}
 
 - (void) setContentView: (NSView *)aView
 {
@@ -328,7 +331,7 @@
 
 - (int) gState
 {
-  return 0;
+  return gstate;
 }
 
 - (BOOL) isOneShot
@@ -349,11 +352,6 @@
 - (int) windowNumber
 {
   return window_num;
-}
-
-- (void) setWindowNumber: (int)windowNum
-{
-  window_num = windowNum;
 }
 
 //
@@ -618,6 +616,11 @@
   maximum_size = aSize;
 }
 
+- (NSSize) resizeIncrements
+{
+  return increments;
+}
+
 - (void) setResizeIncrements: (NSSize)aSize
 {
   increments = aSize;
@@ -879,8 +882,15 @@
   [nc postNotificationName: NSWindowDidDeminiaturizeNotification object: self];
 }
 
-- (BOOL) isDocumentEdited                    { return is_edited; }
-- (BOOL) isReleasedWhenClosed                { return is_released_when_closed; }
+- (BOOL) isDocumentEdited
+{
+  return is_edited;
+}
+
+- (BOOL) isReleasedWhenClosed
+{
+  return is_released_when_closed;
+}
 
 - (void) miniaturize: sender
 {
@@ -894,33 +904,42 @@
 
 - (void) performClose: sender
 {
+  /* self must have a close button in order to be closed */
   if (!([self styleMask] & NSClosableWindowMask))
-    {                                           // self must have a close
-      NSBeep();                                   // button in order to be
-      return;                                     // closed
+    {
+      NSBeep();
+      return;
     }
 
   if ([delegate respondsToSelector: @selector(windowShouldClose:)])
-    {                                           // if delegate responds to
-      if (![delegate windowShouldClose: self])     // windowShouldClose query
-	{                                       // it to see if it's ok to
-	  NSBeep();                               // close the window
+    {
+      /*
+       *	if delegate responds to windowShouldClose query it to see if
+       *	it's ok to close the window
+       */
+      if (![delegate windowShouldClose: self])
+	{
+	  NSBeep();
 	  return;
 	}
     }
   else
     {
+      /*
+       *	else if self responds to windowShouldClose query
+       *	self to see if it's ok to close self
+       */
       if ([self respondsToSelector: @selector(windowShouldClose:)])
-	{                                       // else if self responds to
-	  if (![self windowShouldClose: self])     // windowShouldClose query
-	    {                                   // self to see if it's ok
-	      NSBeep();                           // to close self
+	{
+	  if (![self windowShouldClose: self])
+	    {
+	      NSBeep();
 	      return;
 	    }
 	}
     }
 
-  [self close];                                   // it's ok to close self
+  [self close];
 }
 
 - (void) performMiniaturize: (id)sender
@@ -1635,6 +1654,16 @@
   return self;
 }
 
+- (NSInterfaceStyle) interfaceStyle
+{
+  return interface_style;
+}
+
+- (void) setInterfaceStyle: (NSInterfaceStyle)aStyle
+{
+  interface_style = aStyle;
+}
+
 @end
 
 //
@@ -1647,6 +1676,11 @@
   return nil;
 }
 
+- (void) setWindowNumber: (int)windowNum
+{
+  window_num = windowNum;
+}
+
 //
 // Mouse capture/release
 //
@@ -1657,38 +1691,42 @@
 - (void) performHide: sender              {}
 - (void) performUnhide: sender            {}
 
-- (void) initDefaults                                // Allow subclasses to init
-{                                                   // without the backend
-    first_responder = nil;                          // class attempting to
-    original_responder = nil;                       // create an actual window
-    delegate = nil;
-    window_num = 0;
-    background_color = [[NSColor lightGrayColor] retain];
-    represented_filename = @"Window";
-    miniaturized_title = @"Window";
-    miniaturized_image = nil;
-    window_title = @"Window";
-    last_point = NSZeroPoint;
-    window_level = NSNormalWindowLevel;
+/*
+ * Allow subclasses to init without the backend
+ * class attempting to create an actual window
+ */
+- (void) initDefaults
+{
+  first_responder = nil;
+  original_responder = nil;
+  delegate = nil;
+  window_num = 0;
+  background_color = [[NSColor controlColor] retain];
+  represented_filename = @"Window";
+  miniaturized_title = @"Window";
+  miniaturized_image = nil;
+  window_title = @"Window";
+  last_point = NSZeroPoint;
+  window_level = NSNormalWindowLevel;
 
-    is_one_shot = NO;
-    needs_display = NO;
-    is_autodisplay = YES;
-    optimize_drawing = YES;
-    views_need_display = NO;
-    depth_limit = 8;
-    dynamic_depth_limit = YES;
-    cursor_rects_enabled = NO;
-    visible = NO;
-    is_key = NO;
-    is_main = NO;
-    is_edited = NO;
-    is_released_when_closed = YES;
-    is_miniaturized = NO;
-    disable_flush_window = NO;
-    menu_exclude = NO;
-    hides_on_deactivate = NO;
-    accepts_mouse_moved = NO;
+  is_one_shot = NO;
+  needs_display = NO;
+  is_autodisplay = YES;
+  optimize_drawing = YES;
+  views_need_display = NO;
+  depth_limit = 8;
+  dynamic_depth_limit = YES;
+  cursor_rects_enabled = NO;
+  visible = NO;
+  is_key = NO;
+  is_main = NO;
+  is_edited = NO;
+  is_released_when_closed = YES;
+  is_miniaturized = NO;
+  disable_flush_window = NO;
+  menu_exclude = NO;
+  hides_on_deactivate = NO;
+  accepts_mouse_moved = NO;
 }
 
 - (id) cleanInit
