@@ -1,3 +1,10 @@
+Tue Oct  5  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Model/IMConnectors.m ([IMOutletConnector -establishConnection]):
+ 	Fixed bug which would get some method names wrong, as for example
+ 	@"setInspectorview:" instead of @"setInspectorView:", due to an
+ 	error in calling NSString's -capitalizedString.
+
 Mon Oct  4  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
         Implementation of 'initial first responder' stuff for NSWindow:

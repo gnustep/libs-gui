@@ -102,13 +102,28 @@ GSSetInstanceVariable(id obj, NSString *iVarName, const void *data)
 {
   id _source = [source nibInstantiate];
   id _destination = [destination nibInstantiate];
-  NSString* setMethodName = [[@"set" stringByAppendingString:
-				    [label capitalizedString]]
-				    stringByAppendingString:@":"];
-  SEL setSelector = NSSelectorFromString (setMethodName);
+  NSString* setMethodName; 
+  SEL setSelector;
 
-//  NSLog (@"establish connection: source %@, destination %@, label %@",
-//	  _source, _destination, label);
+  if ([label length] > 1)
+    {
+      setMethodName = [[[label substringToIndex: 1] capitalizedString]
+			stringByAppendingString: 
+			  [label substringFromIndex: 1]];
+      
+      setMethodName = [[@"set" stringByAppendingString: setMethodName]
+			stringByAppendingString:@":"];
+    }
+  else 
+    setMethodName = [[@"set" stringByAppendingString:
+			 [label capitalizedString]]
+		      stringByAppendingString:@":"];
+  
+  setSelector = NSSelectorFromString (setMethodName);
+
+  // NSLog (@"establish connection: source %@, destination %@, label %@",
+  //	 _source, _destination, label);
+  // NSLog (@"Method Name: %@", setMethodName);
 
   if (setSelector && [_source respondsToSelector:setSelector])
     [_source performSelector:setSelector withObject:_destination];
