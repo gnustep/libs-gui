@@ -9,6 +9,13 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.9.0}
+
+Improvements in various classes, include NSPopUpButton, NSBitmapImageRep,
+NSMenu, NSToolbar. Added support for thumbnail images in NSWorkspace.
+
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.8.9}
 
 Note that many headers have moved to new locations (both in the package and
@@ -18,8 +25,6 @@ applications may not compile because they cannot find the right header.
 @itemize @bullet
 @item New Language Setup documentation.
 @end itemize
-
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.8.8}
 

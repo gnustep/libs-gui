@@ -1,7 +1,14 @@
 NEWS
 ****
 
-The currently released version of the library is `0.8.9'.
+The currently released version of the library is `0.9.0'.
+
+Noteworthy changes in version `0.9.0'
+=====================================
+
+   Improvements in various classes, include NSPopUpButton,
+NSBitmapImageRep, NSMenu, NSToolbar. Added support for thumbnail images
+in NSWorkspace.
 
 Noteworthy changes in version `0.8.9'
 =====================================
