@@ -1,3 +1,9 @@
+Mon Feb 22  8:30:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* NSView.m: Tidied coordinate conversion code to use new system with
+	a cached conversion matrix to convert to/from window coordinates.
+	* NSView.h: Cache conversion matrices.
+
 Mon Feb 22  6:06:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* NSView.m: Tidied coordinate conversion code to use new system with
