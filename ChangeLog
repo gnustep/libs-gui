@@ -1,3 +1,19 @@
+2003-09-01  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBitmapImageRep.m
+	[canInitWithData:], [imageRepsWithData:] and [initWithData:]
+	protect against data being nil. [imageRepsWithFile:] check if the
+	file exists and only return an array when it contains objects.
+	* Source/NSWorkspace.m
+	New method [_saveImageFor:] used in all places in this file where
+	an icon is created from a file name. New method
+	[thumbnailForFile:] calculated the name of the corresponding
+	FreeDeskTop.org thumbnail file for a given file name. This does
+	not chack if this file exists!. In [iconForFile:] use this
+	thumbnails if the user default GSUseFreedesktopThumbnails is YES.
+	* Documentation/GuiUser/DefaultsSummary.gsdoc
+	Documented the new user default value GSUseFreedesktopThumbnails.
+	
 2003-09-01  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibTemplates.m: [GSNibContainer awakeWithContext:]
