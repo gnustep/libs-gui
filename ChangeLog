@@ -1,3 +1,11 @@
+2002-11-18  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSBundleAdditions.m: Added some logic in the initWithCoder
+	method to handle different gorm file versions.  Even though there
+	is only one version currently, we need this in place.
+	* Headers/gnustep/gui/GSNibTemplates.h: Added #define for 
+	GNUSTEP_NIB_VERSION.
+	
 2002-11-17  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSCell.m
@@ -11,6 +19,7 @@
 	Rewrote [drawHashMarksAndLabelsInRect:] to use string drawing and
 	bezier path code instead of direct PS operations.
 
+>>>>>>> 1.1674
 2002-11-15  Adam Fedor  <fedor@gnu.org>
 
 	* Model/GMAppKit.m ([NSColor -encodeWithModelArchiver:]): Encode

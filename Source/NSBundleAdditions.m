@@ -467,6 +467,14 @@ Class gmodel_class(void)
  */
 @implementation GSNibContainer
 
++ (void) initialize
+{
+  if (self == [GSNibContainer class])
+    {
+      [self setVersion: GNUSTEP_NIB_VERSION];
+    }
+}
+
 - (void) awakeWithContext: (NSDictionary*)context
 {
   if (_isAwake == NO)
@@ -592,8 +600,14 @@ Class gmodel_class(void)
 
 - (id) initWithCoder: (NSCoder*)aCoder
 {
-  [aCoder decodeValueOfObjCType: @encode(id) at: &nameTable];
-  [aCoder decodeValueOfObjCType: @encode(id) at: &connections];
+  int version = [aCoder versionForClassName: @"GSNibContainer"]; 
+
+  if(version == GNUSTEP_NIB_VERSION)
+    {
+      [aCoder decodeValueOfObjCType: @encode(id) at: &nameTable];
+      [aCoder decodeValueOfObjCType: @encode(id) at: &connections];
+    }
+
   return self;
 }
 
@@ -816,6 +830,7 @@ Class gmodel_class(void)
 - (void) setClassName: (NSString *)name
 {
   ASSIGN(_className, name);
+  RETAIN(_className);
 }
 
 - (NSString *)className
@@ -918,6 +933,7 @@ Class gmodel_class(void)
 - (void) setClassName: (NSString *)name
 {
   ASSIGN(_className, name);
+  RETAIN(_className);
 }
 
 - (NSString *)className
@@ -1018,6 +1034,7 @@ Class gmodel_class(void)
 - (void) setClassName: (NSString *)name
 {
   ASSIGN(_className, name);
+  RETAIN(_className);
 }
 
 - (NSString *)className
@@ -1122,6 +1139,7 @@ Class gmodel_class(void)
 - (void) setClassName: (NSString *)name
 {
   ASSIGN(_className, name);
+  RETAIN(_className);
 }
 
 - (NSString *)className
@@ -1201,6 +1219,8 @@ Class gmodel_class(void)
 - (void) setClassName: (NSString *)name
 {
   ASSIGN(_className, name);
+  RETAIN(_className);
+
 }
 
 - (NSString *)className
@@ -1324,6 +1344,7 @@ Class gmodel_class(void)
 - (void) setClassName: (NSString *)name
 {
   ASSIGN(_className, name);
+  RETAIN(_className);
 }
 
 - (NSString *)className
@@ -1444,6 +1465,7 @@ Class gmodel_class(void)
 - (void) setClassName: (NSString *)name
 {
   ASSIGN(_className, name);
+  RETAIN(_className);
 }
 
 - (NSString *)className
@@ -1499,6 +1521,7 @@ Class gmodel_class(void)
 - (void) setClassName: (NSString *)name
 {
   ASSIGN(_className, name);
+  RETAIN(_className);
 }
 
 - (id) template

@@ -35,6 +35,8 @@
 #include <AppKit/NSControl.h>
 #include <AppKit/NSButton.h>
 
+#define GNUSTEP_NIB_VERSION 0
+
 @class	NSString;
 @class	NSDictionary;
 @class	NSMutableDictionary;
