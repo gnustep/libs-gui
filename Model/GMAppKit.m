@@ -1557,3 +1557,91 @@ void __dummy_GMAppKit_functionForLinking() {}
 }
 
 @end /* NSFormCell (GMArchiverMethods) */
+
+@implementation NSText (GMArchiverMethods)
+
+- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+{
+  [super encodeWithModelArchiver:archiver];
+
+  [archiver encodeString: [self string] withName: @"string"];
+  [archiver encodeConditionalObject: [self backgroundColor] 
+	    withName: @"backgroundColor"];
+  [archiver encodeBOOL:[self drawsBackground] withName:@"drawsBackground"];
+  [archiver encodeObject:[self textColor] withName:@"textColor"];
+  [archiver encodeBOOL:[self isEditable] withName:@"isEditable"];
+  [archiver encodeBOOL:[self isSelectable] withName:@"isSelectable"];
+  [archiver encodeBOOL:[self isFieldEditor] withName:@"isFieldEditor"];
+  [archiver encodeBOOL:[self isRichText] withName:@"isRichText"];
+  [archiver encodeBOOL:[self importsGraphics] withName:@"importsGraphics"];
+  [archiver encodeBOOL:[self usesFontPanel] withName:@"usesFontPanel"];
+  [archiver encodeObject:[self font] withName:@"font"];
+  [archiver encodeInt:[self alignment] withName:@"alignment"];
+  [archiver encodeSize:[self maxSize] withName:@"maxSize"];
+  [archiver encodeSize:[self minSize] withName:@"minSize"];
+  [archiver encodeBOOL:[self isVerticallyResizable] withName:@"isVerticallyResizable"];
+  [archiver encodeBOOL:[self isHorizontallyResizable] withName:@"isHorizontallyResizable"];
+  [archiver encodeConditionalObject: [self delegate] withName: @"delegate"];
+}
+
+- (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
+{
+  self = [super initWithModelUnarchiver: unarchiver];
+
+  [self setString: [unarchiver decodeStringWithName: @"string"]];
+  [self setBackgroundColor:
+	     [unarchiver decodeObjectWithName:@"backgroundColor"]];
+  [self setDrawsBackground:
+	     [unarchiver decodeBOOLWithName:@"drawsBackground"]];
+  [self setTextColor:[unarchiver decodeObjectWithName:@"textColor"]];
+  [self setEditable:[unarchiver decodeBOOLWithName:@"isEditable"]];
+  [self setSelectable:[unarchiver decodeBOOLWithName:@"isSelectable"]];
+  [self setFieldEditor:[unarchiver decodeBOOLWithName:@"isFieldEditor"]];
+  [self setRichText:[unarchiver decodeBOOLWithName:@"isRichText"]];
+  [self setImportsGraphics:[unarchiver decodeBOOLWithName:@"importsGraphics"]];
+  [self setUsesFontPanel:[unarchiver decodeBOOLWithName:@"usesFontPanel"]];
+  [self setFont:[unarchiver decodeObjectWithName:@"font"]];
+  [self setAlignment:[unarchiver decodeIntWithName:@"alignment"]];
+  [self setMaxSize:[unarchiver decodeSizeWithName:@"maxSize"]];
+  [self setMinSize:[unarchiver decodeSizeWithName:@"minSize"]];
+  [self setVerticallyResizable:
+	    [unarchiver decodeBOOLWithName:@"isVerticallyResizable"]];
+  [self setHorizontallyResizable:
+	    [unarchiver decodeBOOLWithName:@"isHorizontallyResizable"]];
+  [self setDelegate: [unarchiver decodeObjectWithName: @"delegate"]];
+
+  return self;
+}
+
+@end /* NSText (GMArchiverMethods) */
+
+@implementation NSTextView (GMArchiverMethods)
+
+- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+{
+  [super encodeWithModelArchiver:archiver];
+
+  // Currently the text container is not encoded
+  [archiver encodeSize:[self textContainerInset] withName:@"textContainerInset"];
+  [archiver encodeBOOL:[self allowsUndo] withName:@"allowsUndo"];
+  [archiver encodeBOOL:[self usesRuler] withName:@"usesRuler"];
+  [archiver encodeBOOL:[self isRulerVisible] withName:@"isRulerVisible"];
+  [archiver encodeObject:[self insertionPointColor] withName:@"insertionPointColor"];
+}
+
+- (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
+{
+  self = [super initWithModelUnarchiver: unarchiver];
+
+  // Currently the text container is not encoded
+  [self setTextContainerInset:[unarchiver decodeSizeWithName:@"textContainerInset"]];
+  [self setAllowsUndo:[unarchiver decodeBOOLWithName:@"allowsUndo"]];
+  [self setUsesRuler:[unarchiver decodeBOOLWithName:@"usesRuler"]];
+  [self setRulerVisible:[unarchiver decodeBOOLWithName:@"isRulerVisible"]];
+  [self setInsertionPointColor:
+	    [unarchiver decodeObjectWithName:@"insertionPointColor"]];
+
+  return self;
+}
+
+@end /* NSTextView (GMArchiverMethods) */

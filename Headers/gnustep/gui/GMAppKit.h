@@ -91,4 +91,10 @@
 @interface NSBrowser (GMArchiverMethods) <ModelCoding>
 @end
 
+@interface NSText (GMArchiverMethods) <ModelCoding>
+@end
+
+@interface NSTextView (GMArchiverMethods) <ModelCoding>
+@end
+
 #endif /* _GNUstep_H_GMAppKit */
