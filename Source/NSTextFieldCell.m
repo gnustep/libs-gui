@@ -52,7 +52,7 @@ static NSColor	*txtCol;
 }
 - (BOOL) _isOpaque
 {
-  if (_draws_background == NO 
+  if (_textfieldcell_draws_background == NO 
       || _background_color == nil 
       || [_background_color alphaComponent] < 1.0)
     return NO;
@@ -88,12 +88,12 @@ static NSColor	*txtCol;
 - (id) initTextCell: (NSString *)aString
 {
   [super initTextCell: aString];
-  _text_align = NSLeftTextAlignment;
+  _cell.text_align = NSLeftTextAlignment;
 
   ASSIGN(_text_color, txtCol);
   ASSIGN(_background_color, bgCol);
-  _draws_background = NO;
-  _isOpaque = NO;
+  _textfieldcell_draws_background = NO;
+  _textfieldcell_is_opaque = NO;
   return self;
 }
 
@@ -110,7 +110,7 @@ static NSColor	*txtCol;
 
   [c setBackgroundColor: _background_color];
   [c setTextColor: _text_color];
-  [c setDrawsBackground: _draws_background];
+  [c setDrawsBackground: _textfieldcell_draws_background];
 
   return c;
 }
@@ -121,7 +121,7 @@ static NSColor	*txtCol;
 - (void) setBackgroundColor: (NSColor *)aColor
 {
   ASSIGN (_background_color, aColor);
-  _isOpaque = [self _isOpaque];
+  _textfieldcell_is_opaque = [self _isOpaque];
 }
 
 - (NSColor *) backgroundColor
@@ -131,13 +131,13 @@ static NSColor	*txtCol;
 
 - (void) setDrawsBackground: (BOOL)flag
 {
-  _draws_background = flag;
-  _isOpaque = [self _isOpaque];
+  _textfieldcell_draws_background = flag;
+  _textfieldcell_is_opaque = [self _isOpaque];
 }
 
 - (BOOL) drawsBackground
 {
-  return _draws_background;
+  return _textfieldcell_draws_background;
 }
 
 - (void) setTextColor: (NSColor *)aColor
@@ -153,7 +153,7 @@ static NSColor	*txtCol;
 - (NSText *) setUpFieldEditorAttributes: (NSText *)textObject
 {
   textObject = [super setUpFieldEditorAttributes: textObject];
-  [textObject setDrawsBackground: _draws_background];
+  [textObject setDrawsBackground: _textfieldcell_draws_background];
   [textObject setBackgroundColor: _background_color];
   [textObject setTextColor: _text_color];
   return textObject;
@@ -161,7 +161,7 @@ static NSColor	*txtCol;
 
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  if (_draws_background)
+  if (_textfieldcell_draws_background)
     {
       [controlView lockFocus];
       [_background_color set];
@@ -173,7 +173,7 @@ static NSColor	*txtCol;
 
 - (BOOL) isOpaque
 {
-  return _isOpaque;
+  return _textfieldcell_is_opaque;
 }
 
 //
@@ -181,21 +181,25 @@ static NSColor	*txtCol;
 //
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
+  BOOL tmp;
   [super encodeWithCoder: aCoder];
 
   [aCoder encodeValueOfObjCType: @encode(id) at: &_background_color];
   [aCoder encodeValueOfObjCType: @encode(id) at: &_text_color];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_draws_background];
+  tmp = _textfieldcell_draws_background;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &tmp];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
+  BOOL tmp;
   [super initWithCoder: aDecoder];
 
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_background_color];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_text_color];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_draws_background];
-  _isOpaque = [self _isOpaque];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
+  _textfieldcell_draws_background = tmp;
+  _textfieldcell_is_opaque = [self _isOpaque];
 
   return self;
 }

@@ -42,12 +42,12 @@ static NSColor *clearCol = nil;
 {
   [super initTextCell: aString];
 
-  _text_align = NSCenterTextAlignment;
+  _cell.text_align = NSCenterTextAlignment;
   ASSIGN (_text_color, [NSColor windowFrameTextColor]);
   [self setBackgroundColor: [NSColor controlShadowColor]];
   _cell.is_bordered = NO;
   _cell.is_bezeled = NO;
-  _draws_background = YES;
+  _textfieldcell_draws_background = YES;
 
   return self;
 }
@@ -56,7 +56,7 @@ static NSColor *clearCol = nil;
 - (void) drawInteriorWithFrame: (NSRect)cellFrame 
 			inView: (NSView*)controlView
 {
-  switch (_cell_type)
+  switch (_cell.type)
     {
     case NSTextCellType:
       [super drawInteriorWithFrame: cellFrame inView: controlView];

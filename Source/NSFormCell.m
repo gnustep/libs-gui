@@ -74,13 +74,13 @@ static NSColor	*shadowCol;
   self = [super initTextCell: @""];
   _cell.is_bezeled = YES;
   _cell.is_bordered = NO;
-  _text_align = NSLeftTextAlignment;
+  _cell.text_align = NSLeftTextAlignment;
   _cell.is_editable = YES;
   _titleCell = [[NSCell alloc] initTextCell: aString];
   [_titleCell setBordered: NO];
   [_titleCell setBezeled: NO];
   [_titleCell setAlignment: NSRightTextAlignment];
-  _autoTitleWidth = YES;
+  _formcell_auto_title_width = YES;
   _titleWidth = [[self titleFont] widthOfString: aString];
   return self;
 }
@@ -99,7 +99,7 @@ static NSColor	*shadowCol;
 - (void)setTitle: (NSString*)aString
 {
   [_titleCell setStringValue: aString];
-  if (_autoTitleWidth)
+  if (_formcell_auto_title_width)
     _titleWidth = [[_titleCell font] widthOfString: aString];
 }
 
@@ -117,12 +117,12 @@ static NSColor	*shadowCol;
 {
   if (_titleWidth >= 0)
     {
-      _autoTitleWidth = NO;
+      _formcell_auto_title_width = NO;
       _titleWidth = width;
     }
   else 
     {
-      _autoTitleWidth = YES;
+      _formcell_auto_title_width = YES;
       _titleWidth = [[_titleCell font] widthOfString: [_titleCell stringValue]];
     }
 }
@@ -186,7 +186,8 @@ static NSColor	*shadowCol;
   NSRect borderedFrame = cellFrame;
 
   // Save last view drawn to
-  [self setControlView: controlView];
+  if (_control_view != controlView)
+    _control_view = controlView;
   
   // do nothing if cell's frame rect is zero
   if (NSIsEmptyRect(cellFrame))
