@@ -142,11 +142,27 @@
 	value = 1;
       break;
     case NSChangeGrayCell:
+      if (_showAltStateMask & NSChangeGrayCellMask)
+	value = 1;
+      break;
+    case NSCellLightsByGray:
       if (_highlightsByMask & NSChangeGrayCellMask)
 	value = 1;
       break;
     case NSChangeBackgroundCell:
+      if (_showAltStateMask & NSChangeBackgroundCellMask)
+	value = 1;
+      break;
+    case NSCellLightsByBackground:
       if (_highlightsByMask & NSChangeBackgroundCellMask)
+	value = 1;
+      break;
+    case NSCellChangesContents:
+      if (_showAltStateMask & NSContentsCellMask)
+	value = 1;
+      break;
+    case NSCellLightsByContents:
+      if (_highlightsByMask & NSContentsCellMask)
 	value = 1;
       break;
     default:
@@ -169,24 +185,22 @@
       break;
     case NSChangeGrayCell:
       if (value)
-	_highlightsByMask |= NSChangeGrayCellMask;
+	_showAltStateMask |= NSChangeGrayCellMask;
       else
-	_highlightsByMask &= ~NSChangeGrayCellMask;
+	_showAltStateMask &= ~NSChangeGrayCellMask;
       break;
     case NSChangeBackgroundCell:
       if (value)
-	_highlightsByMask |= NSChangeBackgroundCellMask;
+	_showAltStateMask |= NSChangeBackgroundCellMask;
       else
-	_highlightsByMask &= ~NSChangeBackgroundCellMask;
-      break;
-      /*
-    case NSCellLightsByContents: 
-      _cell. = value;
+	_showAltStateMask &= ~NSChangeBackgroundCellMask;
       break;
     case NSCellChangesContents:
-      _cell. = value;
+      if (value)
+	_showAltStateMask |= NSContentsCellMask;
+      else
+	_showAltStateMask &= ~NSContentsCellMask;
       break;
-      */
     case NSCellLightsByGray:
       if (value)
 	_highlightsByMask |= NSChangeGrayCellMask;
@@ -199,6 +213,12 @@
       else
 	_highlightsByMask &= ~NSChangeBackgroundCellMask;
       break;
+    case NSCellLightsByContents:
+      if (value)
+	_highlightsByMask |= NSContentsCellMask;
+      else
+	_highlightsByMask &= ~NSContentsCellMask;
+      break;
     default:
       [super setCellAttribute: aParameter to: value];
     }
@@ -206,8 +226,15 @@
 
 - (void) setFont: (NSFont*)fontObject		
 {
-  // TODO Should change the size of the key equivalent font
+  int size;
+
   [super setFont: fontObject];
+  if ((_keyEquivalentFont != nil) && (fontObject != nil) && 
+      ((size = [fontObject pointSize]) != [_keyEquivalentFont pointSize]))
+    {
+      [self setKeyEquivalentFont: [_keyEquivalentFont fontName] 
+	    size: size];       
+    }
 }
 
 - (void) setTitle: (NSString*)aString
@@ -407,7 +434,7 @@
 
 - (BOOL)showsBorderOnlyWhileMouseInside
 {
-    return _shows_border_only_while_mouse_inside;
+  return _shows_border_only_while_mouse_inside;
 }
 
 - (void)setShowsBorderOnlyWhileMouseInside:(BOOL)show
@@ -460,7 +487,7 @@
 
   switch (buttonType)
     {
-      case NSMomentaryLight: 
+      case NSMomentaryLightButton: 
 	[self setHighlightsBy: NSChangeBackgroundCellMask];
 	[self setShowsStateBy: NSNoCellMask];
 	[self setImageDimsWhenDisabled: YES];
@@ -1017,29 +1044,32 @@
     }
 }
 
-- (void)setSound: (NSSound *)aSound
+- (void) setSound: (NSSound *)aSound
 {
   ASSIGN(_sound, aSound);
 }
 
-- (NSSound *)sound
+- (NSSound *) sound
 {
   return _sound;
 }
 
-- (void)mouseEntered:(NSEvent *)event
+- (void) mouseEntered: (NSEvent *)event
 {
   _mouse_inside = YES;
 }
 
-- (void)mouseExited:(NSEvent *)event
+- (void) mouseExited: (NSEvent *)event
 {
   _mouse_inside = NO;
 }
 
-- (void)performClick:(id)sender
+- (void) performClick: (id)sender
 {
-  // TODO Like super plus playing the sound
+  if (_sound != nil)
+    {
+      [_sound play];
+    }
   [super performClick: sender];
 }
 
