@@ -1,3 +1,15 @@
+1999-06-18  Michael Hanni  <mhanni@sprintmail.com>
+
+	* Images/common_Nibble.tiff: new image for NSPopUpButton.
+	* Source/NSPopUpButton.m: more changes. still using a subclass of
+	NSMenuMatrix but had to hack new methods in to make selected_item 
+	working in the Matrix.
+	- drawRect: draws the correct item.
+	- synchronizeTitleAndSelectedItem: now informs our
+	NSPopUpButtonMatrix which one of its cells is "selected", i.e. on top.
+	* Source/NSPopUpButtonCell.m: added new file. empty class, used in
+	the backend currently.
+
 1999-06-17  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Source/NSPopUpButton.m: half way implemented. Most still in

@@ -58,6 +58,7 @@ common_SwitchOff.tiff \
 common_SliderHoriz.tiff \
 common_SliderVert.tiff \
 common_Tile.tiff \
+common_Nibble.tiff \
 common_Dimple.tiff \
 common_ret.tiff \
 common_WMClose.tiff \

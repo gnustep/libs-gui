@@ -31,6 +31,7 @@
 #include <gnustep/gui/config.h>
 #include <Foundation/NSArray.h>
 #include <AppKit/NSPopUpButton.h>
+#include <AppKit/NSPopUpButtonCell.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSMenu.h>
 
@@ -38,6 +39,8 @@
 - (id) initWithFrame: (NSRect)rect
 {
   [super initWithFrame: rect];
+
+  selected_cell = 0;
  
   cellSize = NSMakeSize (rect.size.width, rect.size.height);
   return self;
@@ -47,26 +50,34 @@
 {
 }
 
-/* This is here so we can overide the use of NSMenuItem with
-NSPopUpButtonCell once that cellClass is finished.
-
 - (id <NSMenuItem>)insertItemWithTitle: (NSString*)aString
                                 action: (SEL)aSelector
                          keyEquivalent: (NSString*)charCode
                                atIndex: (unsigned int)index
 { 
-  id menuCell = [[[NSPopUpButton cellClass] new] autorelease];
+  id menuCell = [[NSPopUpButtonCell new] autorelease];
+
+  NSLog(@"insertItem.\n");
  
-  [menuCell setFont: menuFont];
+  [menuCell setFont:[NSFont systemFontOfSize:12]];
   [menuCell setTitle: aString];
-  [menuCell setAction: aSelector];
-  [menuCell setKeyEquivalent: charCode];
+//  [menuCell setAction: aSelector];
+//  [menuCell setKeyEquivalent: charCode];
       
   [cells insertObject: menuCell atIndex: index];
  
   return menuCell;
 }
-*/
+
+- (void) setIndexOfSelectedItem:(int)itemNum
+{
+  selected_cell = itemNum;
+}
+
+- (NSString *)titleOfSelectedItem
+{
+  return [[cells objectAtIndex:selected_cell] title];
+}
 @end
 
 //
@@ -107,7 +118,7 @@ NSPopUpButtonCell once that cellClass is finished.
   list_items = [[NSPopUpButtonMatrix alloc] initWithFrame:frameRect];
   is_up = NO;
   pulls_down = flag;
-  selected_item = 0;
+  selected_item = 2;
 
   return self;
 }
@@ -317,6 +328,10 @@ NSPopUpButtonCell once that cellClass is finished.
 
 - (void)synchronizeTitleAndSelectedItem
 {
+  if (!pulls_down)
+    [list_items setIndexOfSelectedItem:selected_item];
+  else
+    [list_items setIndexOfSelectedItem:0];
 }
 
 //
@@ -363,19 +378,14 @@ NSPopUpButtonCell once that cellClass is finished.
 //
 - (void)drawRect:(NSRect)rect
 {
-   id aCell;
+  id aCell;
 
-   aCell  = [[list_items itemArray] objectAtIndex:selected_item]; 
+  if (!pulls_down)
+    aCell  = [[list_items itemArray] objectAtIndex:selected_item]; 
+  else
+    aCell  = [[list_items itemArray] objectAtIndex:0]; 
 
-   [aCell drawWithFrame:rect inView: self]; 
-
-   rect.origin.x = rect.size.width - 14;
-   rect.origin.y = rect.size.height/2 - 3;
-
-   if (pulls_down == NO)
-     NSDrawPopupNibble(NSMakePoint(rect.origin.x, rect.origin.y));
-   else
-     NSDrawDownArrow(NSMakePoint(rect.origin.x, rect.origin.y));
+  [aCell drawWithFrame:rect inView:self]; 
 }
 
 //

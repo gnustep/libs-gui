@@ -89,6 +89,7 @@ NSPrintInfo.m \
 NSPrintOperation.m \
 NSPrintPanel.m \
 NSPopUpButton.m \
+NSPopUpButtonCell.m \
 NSResponder.m \
 NSSavePanel.m \
 NSScreen.m \

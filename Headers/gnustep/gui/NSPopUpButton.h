@@ -42,8 +42,10 @@
 
 @interface NSPopUpButtonMatrix : NSMenuMatrix
 {
+  int selected_cell;
 }
 - (id) initWithFrame: (NSRect)rect;
+- (void) setIndexOfSelectedItem:(int)itemNum;
 @end
 
 @interface NSPopUpButton : NSButton <NSCoding>
