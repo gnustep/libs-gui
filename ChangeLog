@@ -1,3 +1,8 @@
+1999-12-24  David Lazaro  <khelekir@encomix.es>
+
+	* Source/NSMenuView.m ([NSMenuView -trackWithEvent:]): Added hysteresis
+	to the item selection code.
+
 Wed Dec 22 12:04:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSImage.m: When creating an off-screen cache, fill with
