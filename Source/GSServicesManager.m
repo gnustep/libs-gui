@@ -49,6 +49,7 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSMenu.h>
+#include <AppKit/NSPanel.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSCell.h>
 #include <AppKit/NSWorkspace.h>
@@ -348,19 +349,22 @@ static NSString         *disabledName = @".GNUstepDisabled";
               NSPasteboard      *pb;
 
               pb = [NSPasteboard pasteboardWithUniqueName];
-              if ([obj writeSelectionToPasteboard: pb
-                                            types: sendTypes] == NO)
-                {
-                  NSLog(@"object failed to write to pasteboard\n");
-                }
-              else if (NSPerformService(title, pb) == NO)
-                {
-                  NSLog(@"Failed to perform %@\n", title);
-                }
-              else if ([obj readSelectionFromPasteboard: pb] == NO)
-                {
-                  NSLog(@"object failed to read from pasteboard\n");
-                }
+	      if ([obj writeSelectionToPasteboard: pb
+					    types: sendTypes] == NO)
+		{
+		  NSRunAlertPanel(nil,
+			@"object failed to write to pasteboard",
+			@"Continue", nil, nil);
+		}
+	      else if (NSPerformService(title, pb) == YES)
+		{
+		  if ([obj readSelectionFromPasteboard: pb] == NO)
+		    {
+		      NSRunAlertPanel(nil,
+			    @"object failed to read from pasteboard",
+			    @"Continue", nil, nil);
+		    }
+		}
               return;
             }
         }
@@ -683,7 +687,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
                                              keyEquivalent: @""
                                                    atIndex: loc0++];
                   menu = [[NSMenu alloc] initWithTitle: parentTitle];
-                  [servicesMenu setSubmenu: submenu
+                  [servicesMenu setSubmenu: menu
                                    forItem: item];
                 }
               else
@@ -948,7 +952,44 @@ static NSString         *disabledName = @".GNUstepDisabled";
         {
           NSCell        *cell = [a objectAtIndex: i];
 	  BOOL		wasEnabled = [cell isEnabled];
-	  BOOL		shouldBeEnabled = [self validateMenuItem: cell];
+	  BOOL		shouldBeEnabled;
+	  NSString      *title = [self item2title: cell];
+
+	  /*
+	   *	If there is no title mapping, this cell must be a
+	   *	submenu - so we chaeck the submenu cells.
+	   */
+	  if (title == nil && [[cell target] isKindOfClass: [NSMenu class]])
+	    {
+	      NSMenuMatrix	*subMenuCells = [[cell target] menuCells];
+	      NSArray		*sub = [subMenuCells itemArray];
+	      int		j;
+
+	      shouldBeEnabled = NO;
+	      for (j = 0; j < [sub count]; j++)
+		{
+		  NSCell	*subCell = [sub objectAtIndex: j];
+		  BOOL		subWasEnabled = [subCell isEnabled];
+		  BOOL		subShouldBeEnabled = NO;
+
+		  if ([self validateMenuItem: subCell] == YES)
+		    {
+		      shouldBeEnabled = YES;	/* Enabled menu */
+		      subShouldBeEnabled = YES;
+		    }
+		  if (subWasEnabled != subShouldBeEnabled)
+		    {
+		      [subCell setEnabled: subShouldBeEnabled];
+		      [subMenuCells setNeedsDisplayInRect:
+				[subMenuCells cellFrameAtRow: j]];
+		    }
+		}
+	      /* FIXME - only doing this here 'cos auto-display doesn't work */
+	      if ([subMenuCells needsDisplay])
+		[subMenuCells display];
+	    }
+	  else
+	    shouldBeEnabled = [self validateMenuItem: cell];
 
           if (wasEnabled != shouldBeEnabled)
             {
@@ -985,7 +1026,12 @@ NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
 
   service = [[manager menuServices] objectForKey: serviceItem]; 
   if (service == nil)
-    return NO;			/* No matching service.	*/
+    {
+      NSRunAlertPanel(nil,
+	[NSString stringWithFormat: @"No service matching '%@'", serviceItem],
+	@"Continue", nil, nil);
+      return NO;			/* No matching service.	*/
+    }
 
   port = [service objectForKey: @"NSPortName"];
   timeout = [service objectForKey: @"NSTimeout"];
@@ -1020,37 +1066,72 @@ NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
       msgSel = sel_register_typed_name(name, type);
     }
 
-  provider = [NSConnection rootProxyForConnectionWithRegisteredName: port  
-							       host: @""];
+  NS_DURING
+    {
+      provider = [NSConnection rootProxyForConnectionWithRegisteredName: port  
+								   host: @""];
+    }
+  NS_HANDLER
+    {
+      NSRunAlertPanel(nil,
+	[NSString stringWithFormat:
+	    @"Failed to contact service provider for '%@'", serviceItem],
+	@"Continue", nil, nil);
+      return NO;
+    }
+  NS_ENDHANDLER
+
   if (provider == nil)
     {
       if ([[NSWorkspace sharedWorkspace] launchApplication: appPath] == NO)
 	{
+	  NSRunAlertPanel(nil,
+	    [NSString stringWithFormat:
+		@"Failed to launch service provider for '%@'", serviceItem],
+	    @"Continue", nil, nil);
 	  return NO;		/* Unable to launch.	*/
 	}
 
-      provider = [NSConnection rootProxyForConnectionWithRegisteredName: port  
-								   host: @""];
-      while (provider == nil && [finishBy timeIntervalSinceNow] > 1.0)
+      NS_DURING
 	{
-	  NSRunLoop	*loop = [NSRunLoop currentRunLoop];
-	  NSDate	*next;
-
-	  [NSTimer scheduledTimerWithTimeInterval: 1.0
-				       invocation: nil
-					  repeats: NO];
-	  next = [NSDate dateWithTimeIntervalSinceNow: 5.0];
-	  [loop runUntilDate: next];
 	  provider = [NSConnection
 			rootProxyForConnectionWithRegisteredName: port  
 							    host: @""];
+	  while (provider == nil && [finishBy timeIntervalSinceNow] > 1.0)
+	    {
+	      NSRunLoop	*loop = [NSRunLoop currentRunLoop];
+	      NSDate	*next;
+
+	      [NSTimer scheduledTimerWithTimeInterval: 1.0
+					   invocation: nil
+					      repeats: NO];
+	      next = [NSDate dateWithTimeIntervalSinceNow: 5.0];
+	      [loop runUntilDate: next];
+	      provider = [NSConnection
+			    rootProxyForConnectionWithRegisteredName: port  
+								host: @""];
+	    }
 	}
+      NS_HANDLER
+	{
+	  NSRunAlertPanel(nil,
+	    [NSString stringWithFormat:
+		@"Failed to contact service provider for '%@'", serviceItem],
+	    @"Continue", nil, nil);
+	  return NO;
+	}
+      NS_ENDHANDLER
     }
 
   if (provider == nil)
     {
+      NSRunAlertPanel(nil,
+	[NSString stringWithFormat:
+	    @"Failed to contact service provider for '%@'", serviceItem],
+	    @"Continue", nil, nil);
       return NO;		/* Unable to contact.	*/
     }
+
   connection = [(NSDistantObject*)provider connectionForProxy];
   seconds = [finishBy timeIntervalSinceNow];
   [connection setRequestTimeout: seconds];
@@ -1063,14 +1144,16 @@ NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
     }
   NS_HANDLER
     {
-      [NSException raise: NSPasteboardCommunicationException
-		  format: @"%s", [[localException reason] cString]];
+      error = [NSString stringWithFormat: @"%@", [localException reason]];
     }
   NS_ENDHANDLER
 
   if (error != nil)
     {
-      NSLog(error);
+      NSRunAlertPanel(nil,
+	[NSString stringWithFormat:
+	    @"Failed to contact service provider for '%@'", serviceItem],
+	    @"Continue", nil, nil);
       return NO;
     }
 
