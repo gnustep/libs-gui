@@ -1,3 +1,10 @@
+2000-08-15 Georg Fleischmann
+
+	* gui/Source/NSText.m ([NSText sizeToFit:]): 'else' removed to
+	allow resize of height and width
+	scanRange(): line 1032: +1 to avoid infinite
+	loop for single character line 1011, 1047: '>' instead of '>='
+
 Thu Aug 17 08:51:45 2000  Adam Fedor  <fedor@ultra.doc.com>
 
 	* Headers/gnustep/gui/NSLayoutManager.h: Add hyphenation 

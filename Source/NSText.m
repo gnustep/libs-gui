@@ -1008,7 +1008,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	      // handle case where single word is broader than width
 	      // (buckle word) <!> unfinished and untested
 	      // for richText (absolute position see above)
-	      if (advanceSize.width >= width)
+	      if (advanceSize.width > width)
 		{
 		  if (isBuckled)
 		    {
@@ -1029,7 +1029,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 		      inBuckling = YES;
 		      scannerPosition
 			= localLineStartIndex
-			+ (lastVisibleCharIndex - startingLineCharIndex);
+			+ (lastVisibleCharIndex - startingLineCharIndex)+1;
 		      currentLineRect.size.width = advanceSize.width = width;
 		    }
 		  else
@@ -2145,7 +2145,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	{
 	  newWidth = textRect.size.width;
 	}
-      else if (_tf.is_vertically_resizable)
+      if (_tf.is_vertically_resizable)
 	{
 	  newHeight = textRect.size.height;
 	}
