@@ -1000,6 +1000,8 @@ NSGraphicsContext	*GSCurrentContext()
     GET_IMP(@selector(GSWindowDepthForScreen:));
   methodTable.GSAvailableDepthsForScreen_ = 
     GET_IMP(@selector(GSAvailableDepthsForScreen:));
+  methodTable.GSResolutionForScreen_ = 
+    GET_IMP(@selector(GSResolutionForScreen:));
 
   mptr = NSZoneMalloc(_globalGSZone, sizeof(gsMethodTable));
   memcpy(mptr, &methodTable, sizeof(gsMethodTable));
@@ -2725,6 +2727,13 @@ NSGraphicsContext	*GSCurrentContext()
 {
   [self subclassResponsibility: _cmd];
   return NULL;
+}
+
+- (NSSize) GSResolutionForScreen: (int) screen
+{
+  // This is a fixed value for screens.
+  // All screens I checked under OS4.2 report 72.
+  return NSMakeSize(72, 72);
 }
 
 @end
