@@ -1,3 +1,9 @@
+Fri Mar  3 02:25:24 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSWindow.m ([-performZoom:]), ([-zoom:]): Added methods
+	with trivial implementation - so that code ported from macosx does
+	not crash.
+
 Thu Mar  2 03:16:18 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	Added basic support to create and run gmodels from macosx nibs:
