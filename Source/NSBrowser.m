@@ -2253,14 +2253,12 @@
 
       for (i = _firstVisibleColumn; i <= _lastVisibleColumn; ++i)
 	{
-	  NSRect r = NSIntersectionRect([self titleFrameOfColumn: i], rect);
-	  if (! NSIsEmptyRect(r))
+	  NSRect titleRect = [self titleFrameOfColumn: i];
+	  if (NSIntersectsRect (titleRect, rect) == YES)
 	    {
 	      title = [self _getTitleOfColumn: i];
 	      [self setTitle: title ofColumn: i];
-	      [self drawTitle: title
-		    inRect: [self titleFrameOfColumn: i]
-		    ofColumn: i];
+	      [self drawTitle: title  inRect: titleRect  ofColumn: i];
 	    }
 	}
     }
@@ -2276,12 +2274,9 @@
       scrollerBorderRect.size.width += 2 * bs.width;
       scrollerBorderRect.size.height += 2 * bs.height;
 
-      if (! NSIsEmptyRect(NSIntersectionRect(scrollerBorderRect, rect)) 
-	  && _window)
+      if ((NSIntersectsRect (scrollerBorderRect, rect) == YES) && _window)
       	{
-	  [self lockFocus];
-      	  NSDrawGrayBezel(scrollerBorderRect, rect);
-	  [self unlockFocus];
+      	  NSDrawGrayBezel (scrollerBorderRect, rect);
 	}
     }
 }
@@ -2558,7 +2553,6 @@
 			   prototype: _browserCellPrototype
 			   numberOfRows: n
 			   numberOfColumns: 1];
-	  AUTORELEASE (matrix);
 	  [matrix setAllowsEmptySelection: _allowsEmptySelection];
 	  if (!_allowsMultipleSelection)
 	    [matrix setMode: NSRadioModeMatrix];
@@ -2568,6 +2562,7 @@
 
 	  // set new col matrix and release old
 	  [bc setColumnMatrix: matrix];
+	  RELEASE (matrix);
 	  [sc setDocumentView: matrix];
 
 	  // Now loop through the cells and load each one
@@ -2589,7 +2584,6 @@
 		  prototype: _browserCellPrototype
 		  numberOfRows: 0
 		  numberOfColumns: 0];
-	  AUTORELEASE (matrix);
 	  [matrix setAllowsEmptySelection: _allowsEmptySelection];
 	  if (_allowsMultipleSelection)
 	    [matrix setMode: NSListModeMatrix];
@@ -2599,6 +2593,7 @@
 
 	  // set new col matrix and release old
 	  [bc setColumnMatrix: matrix];
+	  RELEASE (matrix);
 	  [sc setDocumentView: matrix];
 
 	  // Tell the delegate to create the rows
