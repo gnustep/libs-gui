@@ -12,13 +12,13 @@
 #
 
 # Additional flags to pass to the preprocessor
-ADDITIONAL_CPPFLAGS += 
+# ADDITIONAL_CPPFLAGS += 
 
 # Additional flags to pass to the Objective-C compiler
-ADDITIONAL_OBJCFLAGS += 
+# ADDITIONAL_OBJCFLAGS += 
 
 # Additional flags to pass to the C compiler
-ADDITIONAL_CFLAGS += 
+# ADDITIONAL_CFLAGS += 
 
 # Additional include directories the compiler should search
 ADDITIONAL_INCLUDE_DIRS += -I../Headers -I$(GNUSTEP_SYSTEM_ROOT)/Headers
@@ -34,11 +34,11 @@ gpbs_TOOL_LIBS += -lgnustep-gui $(SYSTEM_LIBS)
 set_show_service_TOOL_LIBS += -lgnustep-gui $(SYSTEM_LIBS)
 
 # Additional libraries when linking applications
-#ADDITIONAL_GUI_LIBS +=
+# ADDITIONAL_GUI_LIBS +=
 
 #
 # Flags dealing with installing and uninstalling
 #
 
 # Additional directories to be created during installation
-ADDITIONAL_INSTALL_DIRS +=
+# ADDITIONAL_INSTALL_DIRS +=
