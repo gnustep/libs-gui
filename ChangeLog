@@ -1,3 +1,10 @@
+Thu Oct 11 13:53:22 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSMatrix.m ([-setTarget:]): Do not retain the target
+	(patch by Ludovic Marcotte <ludovic@Sophos.ca>)
+	* Source/NSMatrix.m ([-textShouldEndEditing:]): Access _target
+	ivar directly.
+
 2001-10-08  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSPrintOperation (_runOperation): New internal method.
