@@ -1,3 +1,9 @@
+2004-08-02  Adrian Robert <arobert@cogsci.ucsd.edu>
+
+	* Documentation/Gui/Gui.gsdoc: Update to reflect slight rearrangement
+	of material to initiate a GUI programming manual.  This partially
+	reverts a change that was accidentally undone earlier.
+
 2004-09-13 Matt Rice <ratmice@yahoo.com>
 	* NSScrollView.h: Declare new ivar _cornerView and private method
 	-_synchronizeCornerAndHeaderView
