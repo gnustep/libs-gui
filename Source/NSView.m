@@ -1542,24 +1542,28 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 - (void) lockFocusInRect: (NSRect)rect
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
-  struct NSWindow_struct *window_t;
   NSRect wrect;
   int window_gstate;
 
-  NSAssert(_window != nil, NSInternalInconsistencyException);
-  /* Check for deferred window */
-  if ((window_gstate = [_window gState]) == 0)
+  if (viewIsPrinting == nil)
     {
-      return;
+      NSAssert(_window != nil, NSInternalInconsistencyException);
+      /* Check for deferred window */
+      if ((window_gstate = [_window gState]) == 0)
+	{
+	  return;
+	}
     }
 
   [ctxt lockFocusView: self inRect: rect];
   wrect = [self convertRect: rect toView: nil];
   NSDebugLLog(@"NSView", @"Displaying rect \n\t%@\n\t window %p, flip %d", 
 	      NSStringFromRect(wrect), _window, _rFlags.flipped_view);
-  window_t = (struct NSWindow_struct *)_window;
   if (viewIsPrinting == nil)
-    [window_t->_rectsBeingDrawn addObject: [NSValue valueWithRect: wrect]];
+    {
+      struct NSWindow_struct *window_t = (struct NSWindow_struct *)_window;
+      [window_t->_rectsBeingDrawn addObject: [NSValue valueWithRect: wrect]];
+    }
 
   /* Make sure we don't modify superview's gstate */
   DPSgsave(ctxt);
@@ -1632,16 +1636,17 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
 
-  NSAssert(_window != nil, NSInternalInconsistencyException);
-  /* Check for deferred window */
-  if ([_window gState] == 0)
-    return;
-
   if (viewIsPrinting == nil)
     {
+      NSAssert(_window != nil, NSInternalInconsistencyException);
+      /* Check for deferred window */
+      if ([_window gState] == 0)
+	return;
+
       /* Restore our original gstate */
       DPSgrestore(ctxt);
     }
+
   /* Restore state of nesting lockFocus */
   DPSgrestore(ctxt);
   if (!_allocate_gstate)
@@ -1813,7 +1818,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) displayIfNeededInRectIgnoringOpacity: (NSRect)aRect
 {
-  if (_window == nil)
+  if (viewIsPrinting == nil && _window == nil)
     {
       return;
     }
@@ -1943,7 +1948,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   BOOL		subviewNeedsDisplay = NO;
   NSRect	neededRect;
 
-  if (_window == nil)
+  if (viewIsPrinting == nil && _window == nil)
     {
       return;
     }

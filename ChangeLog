@@ -1,3 +1,11 @@
+2002-12-10  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSView.m ([NSView -lockFocusInRect:]): Check for window iff
+	not printing.
+	([NSView -unlockFocusNeedsFlush:]): Idem.
+	([NSView -displayIfNeededInRectIgnoringOpacity:]): Idem.
+	([NSView -displayRectIgnoringOpacity:]): Idem.
+
 2002-12-10  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSImageView.m
