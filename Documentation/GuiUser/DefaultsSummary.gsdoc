@@ -43,8 +43,10 @@
       <section>
         <heading>GUI Library Defaults</heading>
       <p>
-      Below is a list of <code>NSGlobalDomain</code> defaults used to
-      control the gnustep-gui library.
+        Below is a list of defaults used to control the gnustep-gui library.
+        You can set them either in <code>NSGlobalDomain</code>, to be used
+        everywhere, or in individual application domains, to be used for those
+        apps only.
       </p>
       <deflist>
 	  <term>GSBackend</term>
@@ -248,9 +250,10 @@
 	  <term>NSShowNonLocalizedStrings</term>
 	  <desc>
           <p>
-          Default is "NO".  If "YES", the application will display localization
-          keys instead of strings in its UI.  This can be useful during
-          development to see where a given string in the UI is "coming from".
+          This is mainly a developer option.  If "YES", the application will
+          display localization keys instead of strings in its UI.  This can be
+          useful during development to see where a given string in the UI is
+          "coming from".  Default is "NO".
           </p>
 	  </desc>
 	  <term><em>System Colors</em></term>
