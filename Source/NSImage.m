@@ -51,8 +51,8 @@
 #include <AppKit/NSScreen.h>
 #include <AppKit/NSColor.h>
 
-BOOL	NSImageDoesCaching = YES;	/* enable caching	*/
-BOOL	NSImageForceCaching = YES;	/* use on missmatch	*/
+BOOL	NSImageDoesCaching = NO;	/* enable caching	*/
+BOOL	NSImageForceCaching = NO;	/* use on missmatch	*/
 
 // Resource directories
 static NSString* gnustep_libdir = @GNUSTEP_INSTALL_LIBDIR;
