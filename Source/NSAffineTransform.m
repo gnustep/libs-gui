@@ -436,11 +436,14 @@ static NSAffineTransformStruct identityTransform = {
 
 - (BOOL) isRotated
 {
-  if (rotationAngle == 0)
-    return NO;
-  if (rotationAngle < 0 && [self rotationAngle] == 0)
-    return NO;
-  return YES;
+  if (B == 0  &&  D == 0)
+    {
+      return NO;
+    }
+  else
+    {
+      return YES;
+    }
 }
 
 - (void) boundingRectFor: (NSRect)rect result: (NSRect*)new
