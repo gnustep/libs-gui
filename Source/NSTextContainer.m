@@ -118,11 +118,16 @@ use bounds rectangle instead of frame? */
   [super dealloc];
 }
 
+/*
+See [NSTextView -setTextContainer:] for more information about these calls.
+*/
 - (void) setLayoutManager: (GSLayoutManager*)aLayoutManager
 {
   /* The layout manager owns us - so he retains us and we don't retain 
      him. */
   _layoutManager = aLayoutManager;
+  /* Tell our text view about the change. */
+  [_textView setTextContainer: self];
 }
 
 - (GSLayoutManager*) layoutManager

@@ -1,3 +1,14 @@
+2003-01-29 21:14  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSLayoutManager.m (-setTextStorage:): Tell our text
+	containers about the change.
+
+	* Source/NSTextContainer.m (-setLayoutManager:): Tell our text view
+	about the change.
+
+	* Source/NSTextView.m: Guard in a few places where _layoutManager
+	might be nil.
+
 2003-01-29 16:01  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSHorizontalTypesetter.m (-layoutLineNewParagraph:): Place

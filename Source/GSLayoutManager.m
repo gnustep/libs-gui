@@ -1991,8 +1991,14 @@ forStartOfGlyphRange: (NSRange)glyphRange
  * more for internal use by the text system.
  * Invalidates the entire layout (should it??)
  */
+/*
+See [NSTextView -setTextContainer:] for more information about these calls.
+*/
 - (void) setTextStorage: (NSTextStorage *)aTextStorage
 {
+  int i;
+  textcontainer_t *tc;
+
   [self _invalidateEverything];
 
   /*
@@ -2001,7 +2007,14 @@ forStartOfGlyphRange: (NSRange)glyphRange
    */
   _textStorage = aTextStorage;
 
-  /* TODO: tell all the text containers about that change! */
+  /*
+  We send this message to all text containers so they can respond to the
+  change (most importantly to let them tell their text views).
+  */
+  for (i = 0, tc = textcontainers; i < num_textcontainers; i++, tc++)
+    {
+      [tc->textContainer setLayoutManager: self];
+    }
 }
 
 /**
