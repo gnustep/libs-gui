@@ -9,45 +9,12 @@
 @section Bugs in the GUI library
 @end ifclear
 
-@subsection Windows
-
-@itemize @bullet
-@item Getting and releasing keyboard focus is still buggy. This is mostly
-annoying for users trying to type in a GNUstep or non-GNUstep window.
-
-@end itemize
-
-@subsection Texts
-
 @itemize @bullet
 
 @item There have been a lot of improvements in the NSText code, but is 
 particularly complex. It is 
 somewhat usable though.  We hope to keep improving it.
 
-@end itemize
-
-@subsection Matrices
-
-@itemize @bullet
-@item Encoding/Decoding of matrices is unimplemented.  There are some minor 
-known bugs with handling of mouse down in matrices.
-@end itemize
-
-@subsection Cells
-
-@itemize @bullet
-@item Since NSText does only left alignment, when you select or edit text 
-in a cell it becomes automatically left aligned regardless of the original 
-alignment.
-
-@item Multi line texts are unsupported; isScrollable, wordWraps etc do nothing.
-This restriction will hopefully be removed in next releases.
-@end itemize
-
-@subsection Images anf Graphics
-
-@itemize @bullet
 @item There are problems with alpha composing.  To avoid these problems, 
 you may set manually the background color of your image when displaying it.
 
@@ -56,24 +23,13 @@ degree.
 
 @end itemize
 
-@subsection Alert, Info Panels
-
-@itemize @bullet
-@item Multi line messages are generally unsupported due to the similar 
-restriction in the cells code.
-@end itemize
-
-@subsection Unimplemented Classes
-
 The following classes are currently unimplemented or unfinished
 to such a degree to be unusable.
 
 @itemize @bullet
 @item NSDataLink
 @item NSHelpPanel
-@item NSLayoutManager
 @item NSPageLayout
 @item NSPrintPanel
-@item NSSecureTextField
 @item NSSpellChecker
 @end itemize

@@ -9,6 +9,27 @@
 
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 
+@section Noteworthy changes in version @samp{0.6.7}
+
+@itemize @bullet
+@item App Icons can support documents dropped using DnD.
+@item Added color conversions, working color picker and panel.
+@item Almost complete rewrite of NSBezierPath
+@item Loads of improvements to Text classes.
+@item NSImage, NSButton, NSCell, etc, implemented many missing methods.
+@item ...and even more changes to the Text classes.
+@item Starting implementation of printing.
+@item Scrollview fixes.
+@item Implemented deferred windows.
+@item NSTableView implemented.
+@item Implemented object value and formatter support in NSCell
+@item Support middle mouse button.
+@end itemize
+
+@c ====================================================================
+@c Keep the next line just below the list of changes in most recent version.
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.6.6}
 
 @itemize @bullet
@@ -34,10 +55,6 @@ speed improvements by at least a factor of 4. Note however, that the xdps
 backend is still considered experimental and you may have to deal with
 many problems in order to get it working. We recommend sticking with the
 xgps backend (the default) for now.
-
-@c ====================================================================
-@c Keep the next line just below the list of changes in most recent version.
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.6.5}
 

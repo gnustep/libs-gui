@@ -1,3 +1,9 @@
+2001-02-22  Adam Fedor  <fedor@gnu.org>
+
+	* Documentation/news.texi: Update
+	* Documentation/install.texi: Likewise.
+	* INSTALL, NEWS, etc, regenerate.
+
 Wed Feb 21 11:30:48 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Headers/gnustep/gui/AppKit.h: Commented out extra token after

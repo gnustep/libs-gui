@@ -1,7 +1,7 @@
 ANNOUNCE
 ********
 
-This is version 0.6.6 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.6.7 of the GNUstep GUI library (`gnustep-gui').
 
 What is the GNUstep GUI Library?
 ================================
@@ -31,44 +31,34 @@ component like the GNUstep X/DPS GUI Backend.
 What's new in this release?
 ===========================
 
-   The currently released version of the library is `0.6.6'.
+   The currently released version of the library is `0.6.7'.
 
-Noteworthy changes in version `0.6.6'
+Noteworthy changes in version `0.6.7'
 =====================================
 
-   * Window hints for motif and generic window managers.
+   * App Icons can support documents dropped using DnD.
 
-   * Major improvements to the text handling classes (NSText,
-     NSTextView, etc)
+   * Added color conversions, working color picker and panel.
 
-   * Pasting of fonts and rulers.
+   * Almost complete rewrite of NSBezierPath
 
-   * Much better RTF handling
+   * Loads of improvements to Text classes.
 
-   * DnD for NSColorWell
+   * NSImage, NSButton, NSCell, etc, implemented many missing methods.
 
-   * Much improved NSSplitView
+   * ...and even more changes to the Text classes.
 
-   * New classes - NSColorPanel, NSTableView
+   * Starting implementation of printing.
 
-   * NSScreen rewritten with full support for all methods and functions.
+   * Scrollview fixes.
 
-   * Can use image reading routines from WindowMaker if available to
-     read a variety of image formats besides TIFF.
+   * Implemented deferred windows.
 
-   * Many fixes to get the AppKit to work better with WindowMaker.
+   * NSTableView implemented.
 
-   * Much better gmodel support (particularly with nibs translated from
-     NeXT or OPENSTEP 4.2).
+   * Implemented object value and formatter support in NSCell
 
-   * Muh improved font classes and font support.
-
-   In addition both the xgps and xdps backends have seen some large
-efficiency improvements. Much better font support. The xdps backend
-itself has seen speed improvements by at least a factor of 4. Note
-however, that the xdps backend is still considered experimental and you
-may have to deal with many problems in order to get it working. We
-recommend sticking with the xgps backend (the default) for now.
+   * Support middle mouse button.
 
 How can I get support for this software?
 ========================================
@@ -82,7 +72,7 @@ the GNUstep Web Pages for more information regarding GNUstep resources
 Where can you get it?  How can you compile it?
 ==============================================
 
-   The gstep-gui-0.6.6.tar.gz distribution file has been placed on
+   The gstep-gui-0.6.7.tar.gz distribution file has been placed on
 `ftp.gnustep.org' in `pub/gnustep/core'.
 
    The program requires gcc 2.8.0 or higher.

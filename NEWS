@@ -1,7 +1,34 @@
 NEWS
 ****
 
-The currently released version of the library is `0.6.6'.
+The currently released version of the library is `0.6.7'.
+
+Noteworthy changes in version `0.6.7'
+=====================================
+
+   * App Icons can support documents dropped using DnD.
+
+   * Added color conversions, working color picker and panel.
+
+   * Almost complete rewrite of NSBezierPath
+
+   * Loads of improvements to Text classes.
+
+   * NSImage, NSButton, NSCell, etc, implemented many missing methods.
+
+   * ...and even more changes to the Text classes.
+
+   * Starting implementation of printing.
+
+   * Scrollview fixes.
+
+   * Implemented deferred windows.
+
+   * NSTableView implemented.
+
+   * Implemented object value and formatter support in NSCell
+
+   * Support middle mouse button.
 
 Noteworthy changes in version `0.6.6'
 =====================================
