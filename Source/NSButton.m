@@ -289,6 +289,7 @@ id gnustep_gui_nsbutton_class = nil;
   NSEvent *e;
   unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
     NSMouseMovedMask | NSLeftMouseDraggedMask | NSRightMouseDraggedMask;
+//  int oldActionMask = [cell sendActionOn:0];
 
   NSDebugLog(@"NSButton mouseDown\n");
 
@@ -335,9 +336,12 @@ id gnustep_gui_nsbutton_class = nil;
     }
   [self unlockFocus];
 
+  /* Restore the old action mask */
+//  [cell sendActionOn:oldActionMask];
+
   // Have the target perform the action
-  if (mouseUp)
-    [self sendAction:[self action] to:[self target]];
+//  if (mouseUp)
+//    [self sendAction:[self action] to:[self target]];
 }
 
 - (void)performClick:(id)sender

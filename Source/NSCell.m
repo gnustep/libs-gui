@@ -591,7 +591,7 @@
 - (void)getPeriodicDelay:(float *)delay
 		interval:(float *)interval
 {
-  *delay = 0.0;
+  *delay = 0.05;
   *interval = 0.05;
 }
 
@@ -719,7 +719,7 @@
 
     // Did the mouse go up?
     if (eventType == NSLeftMouseUp) {
-      NSLog(@"NSCell mouse went up\n");
+      NSDebugLog(@"NSCell mouse went up\n");
       mouseWentUp = YES;
       done = YES;
       if ((action_mask & NSLeftMouseUpMask))

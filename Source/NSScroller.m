@@ -114,6 +114,7 @@ static NSButtonCell* knobCell = nil;
   [upCell setAlternateImage:[NSImage imageNamed:@"common_ArrowUpH"]];
   [upCell setImagePosition:NSImageOnly];
   [upCell setContinuous:YES];
+  [upCell setPeriodicDelay:0.05 interval:0.05];
 
   downCell = [NSButtonCell new];
   [downCell setHighlightsBy:NSChangeBackgroundCellMask|NSContentsCellMask];
@@ -121,6 +122,7 @@ static NSButtonCell* knobCell = nil;
   [downCell setAlternateImage:[NSImage imageNamed:@"common_ArrowDownH"]];
   [downCell setImagePosition:NSImageOnly];
   [downCell setContinuous:YES];
+  [downCell setPeriodicDelay:0.05 interval:0.05];
 
   leftCell = [NSButtonCell new];
   [leftCell setHighlightsBy:NSChangeBackgroundCellMask|NSContentsCellMask];
@@ -128,6 +130,7 @@ static NSButtonCell* knobCell = nil;
   [leftCell setAlternateImage:[NSImage imageNamed:@"common_ArrowLeftH"]];
   [leftCell setImagePosition:NSImageOnly];
   [leftCell setContinuous:YES];
+  [leftCell setPeriodicDelay:0.05 interval:0.05];
 
   rightCell = [NSButtonCell new];
   [rightCell setHighlightsBy:NSChangeBackgroundCellMask|NSContentsCellMask];
@@ -135,6 +138,7 @@ static NSButtonCell* knobCell = nil;
   [rightCell setAlternateImage:[NSImage imageNamed:@"common_ArrowRightH"]];
   [rightCell setImagePosition:NSImageOnly];
   [rightCell setContinuous:YES];
+  [rightCell setPeriodicDelay:0.05 interval:0.05];
 
   knobCell = [NSButtonCell new];
   [knobCell setButtonType:NSMomentaryChangeButton];
@@ -399,8 +403,7 @@ static NSButtonCell* knobCell = nil;
 
     if (eventType != NSPeriodic)
       point = [self convertPoint:[theEvent locationInWindow] fromView:nil];
-    else if (point.x != knobRect.origin.x
-	     || point.y != knobRect.origin.y) {
+    else if (point.x != knobRect.origin.x || point.y != knobRect.origin.y) {
       float floatValue = [self _floatValueForMousePoint:point];
 
       if (floatValue != oldFloatValue) {

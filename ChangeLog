@@ -1,3 +1,19 @@
+Wed Aug  6 13:27:53 1997  Ovidiu Predescu <ovidiu@net-community.com>
+
+	* Source/NSApplication (-nextEventMatchingMask:untilDate:inMode:
+	dequeue:): Restored the old behavior of getting time events from the
+	queue because otherwise the scroll view class works slowly; I have to
+	find some other way to put such events on the events queue.
+	* Source/NSButton.m (mouseDown:): Don't send the action to the target
+	since it is already done in trackMouse:inRect:ofView:untilMouseUp:.
+	* Source/NSCell.m (getPeriodicDelay:interval:): Set the delay to 0.05.
+	* Source/NSDPSContext.m (+initialize): Create a retained dictionary
+	for GNU_CONTEXT_THREAD_DICT instead of an autoreleased one.
+	* Source/NSClipView.m: Turned NSLog into NSDebugLog.
+	* Source/NSScrollView.m: Likewise.
+	* Source/NSScroller.m (drawParts): Set the scroller buttons delay and
+	repeat interval.
+
 Tue Aug  5 14:39:29 1997  Ovidiu Predescu <ovidiu@net-community.com>
 
 	* Images/common_ArrowLeftH.tiff: New file.

@@ -94,7 +94,7 @@
 {
   NSPoint currentPoint = [self bounds].origin;
 
-  NSLog (@"scrollToPoint: current point (%f, %f), point (%f, %f)",
+  NSDebugLog (@"scrollToPoint: current point (%f, %f), point (%f, %f)",
 	currentPoint.x, currentPoint.y,
 	point.x, point.y);
 

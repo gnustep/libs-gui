@@ -413,6 +413,9 @@ static BOOL gnustep_gui_app_is_in_dealloc;
   NSEvent *event;
   BOOL done = NO;
 
+  if (!expiration)
+    expiration = [NSDate distantFuture];
+
   event = [self _eventMatchingMask:mask];
   if (event)
     done = YES;
@@ -421,8 +424,9 @@ static BOOL gnustep_gui_app_is_in_dealloc;
   while (!done) {
     NSDate* limitDate = [currentLoop limitDateForMode:mode];
 
-    if (!expiration)
-      expiration = [NSDate distantFuture];
+    event = [self _eventMatchingMask:mask];
+    if (event)
+      break;
 
     if (limitDate)
       limitDate = [expiration earlierDate:limitDate];
@@ -433,7 +437,7 @@ static BOOL gnustep_gui_app_is_in_dealloc;
 
     event = [self _eventMatchingMask:mask];
     if (event)
-      done = YES;
+      break;
   }
 
   type = [event type];

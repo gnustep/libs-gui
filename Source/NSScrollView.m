@@ -197,7 +197,7 @@ static Class rulerViewClass = nil;
   NSPoint point;
   BOOL wasAScrollerButton = YES;
 
-  NSLog (@"_doScroll: float value = %f", floatValue);
+  NSDebugLog (@"_doScroll: float value = %f", floatValue);
 
   if (hitPart == NSScrollerIncrementLine)
     amount = _lineScroll;
@@ -225,7 +225,7 @@ static Class rulerViewClass = nil;
       if (![_contentView isFlipped])
 	amount = -amount;
 
-      NSLog (@"increment/decrement: amount = %f, flipped = %d",
+      NSDebugLog (@"increment/decrement: amount = %f, flipped = %d",
 	      amount, [_contentView isFlipped]);
       point.y = clipViewBounds.origin.y + amount;
     }
@@ -266,7 +266,7 @@ static Class rulerViewClass = nil;
 		   / (documentRect.size.width - newClipViewBounds.size.width);
       [_horizScroller setFloatValue:floatValue];
       [_horizScroller display];
-      NSLog (@"new horiz float value %f", floatValue);
+      NSDebugLog (@"new horiz float value %f", floatValue);
     }
 
     if (newClipViewBounds.origin.x != clipViewBounds.origin.y) {
@@ -279,7 +279,7 @@ static Class rulerViewClass = nil;
 	floatValue = 1 - floatValue;
       [_vertScroller setFloatValue:floatValue];
       [_vertScroller display];
-      NSLog (@"new vert float value %f", floatValue);
+      NSDebugLog (@"new vert float value %f", floatValue);
     }
   }
 }
@@ -291,7 +291,7 @@ static Class rulerViewClass = nil;
   float floatValue;
   float knobProportion;
 
-  NSLog (@"reflectScrolledClipView:");
+  NSDebugLog (@"reflectScrolledClipView:");
 
   if (_hasVertScroller) {
     if (documentRect.size.height < clipViewBounds.size.height)

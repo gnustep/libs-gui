@@ -69,7 +69,7 @@ static BOOL GNU_CONTEXT_SYNCHRONIZED = NO;
 
       // Allocate dictionary for maintaining
       // mapping of threads to contexts
-     GNU_CONTEXT_THREAD_DICT = [NSMutableDictionary dictionary];
+     GNU_CONTEXT_THREAD_DICT = [NSMutableDictionary new];
      // Create lock for serializing access to dictionary
      GNU_CONTEXT_LOCK = [[NSRecursiveLock alloc] init];
 
