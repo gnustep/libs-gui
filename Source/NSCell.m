@@ -48,6 +48,12 @@
 #include <AppKit/PSOperators.h>
 
 
+static	NSColor	*bgCol;
+static	NSColor	*hbgCol;
+static	NSColor	*txtCol;
+static	NSColor	*dtxtCol;
+static	NSColor	*clearCol = nil;
+
 
 @implementation NSCell
 
@@ -93,6 +99,15 @@ static Class	imageClass;
   cell_float_right = 0;
   action_mask = NSLeftMouseUpMask;
 
+  if (clearCol == nil)
+    {
+      bgCol = RETAIN([NSColor controlBackgroundColor]);
+      hbgCol = RETAIN([NSColor selectedControlColor]);
+      txtCol = RETAIN([NSColor controlTextColor]);
+      dtxtCol = RETAIN([NSColor disabledControlTextColor]);
+      clearCol = RETAIN([NSColor clearColor]);
+    }
+
   return self;
 }
 
@@ -111,9 +126,9 @@ static Class	imageClass;
 	NSInvalidArgumentException);
 
   cell_type = NSImageCellType;
-  cell_image = [anImage retain];
+  cell_image = RETAIN(anImage);
   image_position = NSImageOnly;
-  cell_font = [[NSFont userFontOfSize: 0] retain];
+  cell_font = RETAIN([NSFont userFontOfSize: 0]);
 
   return self;
 }
@@ -124,8 +139,8 @@ static Class	imageClass;
 
   [self _init];
 
-  cell_font = [[NSFont userFontOfSize: 0] retain];
-  contents = [aString retain];
+  cell_font = RETAIN([NSFont userFontOfSize: 0]);
+  contents = RETAIN(aString);
   cell_type = NSTextCellType;
   text_align = NSCenterTextAlignment;
   cell_float_autorange = YES;
@@ -136,13 +151,10 @@ static Class	imageClass;
 
 - (void) dealloc
 {
-  if (contents)
-    [contents release];
-  if (cell_image)
-    [cell_image release];
-  [cell_font release];
-  if (represented_object)
-    [represented_object release];
+  TEST_RELEASE(contents);
+  TEST_RELEASE(cell_image);
+  TEST_RELEASE(cell_font);
+  TEST_RELEASE(represented_object);
 
   [super dealloc];
 }
@@ -555,9 +567,9 @@ static Class	imageClass;
 - (NSColor*) textColor
 {
   if ([self isEnabled])
-    return [NSColor controlTextColor];
+    return txtCol;
   else
-    return [NSColor disabledControlTextColor];
+    return dtxtCol;
 }
 
 - (void) _drawText: (NSString *) title inFrame: (NSRect) cellFrame
@@ -654,15 +666,15 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
       NSColor	*bg;
 
       if (cell_highlighted)
-	bg = [NSColor selectedControlColor];
+	bg = hbgCol;
       else
-	bg = [NSColor controlBackgroundColor];
+	bg = bgCol;
       [bg set];
-      [[self image] setBackgroundColor: bg];
+      [cell_image setBackgroundColor: bg];
       NSRectFill(cellFrame);
     }
   else
-    [[self image] setBackgroundColor: [NSColor clearColor]];
+    [cell_image setBackgroundColor: clearCol];
 
   switch ([self type])
     {
@@ -670,7 +682,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
            [self _drawText: [self stringValue] inFrame: cellFrame];
            break;
       case NSImageCellType:
-           [self _drawImage: [self image] inFrame: cellFrame];
+           [self _drawImage: cell_image inFrame: cellFrame];
            break;
       case NSNullCellType:
           break;
