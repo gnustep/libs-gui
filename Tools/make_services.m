@@ -408,54 +408,49 @@ static void addExtensionsForApplication(NSDictionary *info, NSString *app)
                   d = [NSMutableDictionary dictionaryWithCapacity: 1];
                   [extensionsMap setObject: d forKey: e];
                 }
-              if ([d objectForKey: app] == NO)
+              if ([d objectForKey: app] == nil)
                 {
                   [d setObject: t forKey: app];
-                } 
+                }
             }
         }
     }
   else
     {
-      /*
-       *    If we have an old format list of extensions
-       *    handled by this application - ensure that
-       *    the name of the application is listed in
-       *    the dictionary of applications handling each of
-       *    the extensions.
-       */
+      NSDictionary	*extensions;
+
       o0 = [info objectForKey: @"NSExtensions"];
       if (o0 == nil)
         {
           return;
         }
-      if ([o0 isKindOfClass: aClass] == NO)
+      if ([o0 isKindOfClass: dClass] == NO)
         {
-          NSLog(@"bad app NSExtensions (not an array) - %@\n", app);
+          NSLog(@"bad app NSExtensions (not a dictionary) - %@\n", app);
           return;
         }
-      a0 = (NSArray*)o0;
+      extensions = (NSDictionary *) o0;
+      a0 = [extensions allKeys];
       i = [a0 count];
       while (i-- > 0)
         {
-          NSString		*e;
-          NSMutableDictionary	*d;
+          id	tmp = [extensions objectForKey: [a0 objectAtIndex: i]];
+          id	name;
+          id	dict;
 
-          e = [[a0 objectAtIndex: i] lowercaseString];
-          d = [extensionsMap objectForKey: e];
-          if (d == nil)
-            {
-	      d = [NSMutableDictionary dictionaryWithCapacity: 1];
-	      [extensionsMap setObject: d forKey: e];
-            }
-          if ([d objectForKey: app] == nil)
-            {
-	      NSDictionary	*info;
-
-	      info = [NSDictionary dictionaryWithObjectsAndKeys:
-			nil];
-              [d setObject: info forKey: app];
-            } 
+          if ([tmp isKindOfClass: dClass] == NO)
+	    {
+	      NSLog(@"bad app NSExtensions (value isn't a dictionary) - %@\n", app);
+              continue;
+	    }
+          name = [[a0 objectAtIndex: i] lowercaseString];
+          dict = [extensionsMap objectForKey: name];
+          if (dict == nil)
+	    {
+              dict = [NSMutableDictionary dictionaryWithCapacity: 1];
+	    }
+          [dict setObject: tmp forKey: app];
+          [extensionsMap setObject: dict forKey: name];
         }
     }
 }
