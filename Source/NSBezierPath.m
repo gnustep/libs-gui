@@ -27,8 +27,10 @@
    59 Temple Place - Suite 330, Boston, MA 02111 - 1307, USA.
 */
 
-#include <gnustep/gui/config.h>
-#include <AppKit/AppKit.h>
+#include <AppKit/NSAffineTransform.h>
+#include <AppKit/NSBezierPath.h>
+#include <AppKit/NSImage.h>
+#include <AppKit/PSOperators.h>
 #include <math.h>
 
 #ifndef PI

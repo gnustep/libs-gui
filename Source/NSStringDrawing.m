@@ -29,7 +29,11 @@
 #include <Foundation/Foundation.h>
 #include <AppKit/NSStringDrawing.h>
 #include <AppKit/NSTextAttachment.h>
-#include <AppKit/AppKit.h>
+#include <AppKit/NSColor.h>
+#include <AppKit/NSFont.h>
+#include <AppKit/NSGraphics.h>
+#include <AppKit/NSParagraphStyle.h>
+#include <AppKit/DPSOperators.h>
 #include "GSTextStorage.h"
 
 // For the encoding functions
