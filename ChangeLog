@@ -1,3 +1,10 @@
+2002-10-31  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSBundleAdditions.m: 
+	+[loadNibFile:externalNameTable:withZone:]: Added logic
+	to load .gorm directories and also maintained backwards compatibility
+	with .gorm files.
+	
 2002-10-29  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSSplitView.m ([NSSplitView -resizeSubviewsWithOldSize:]):

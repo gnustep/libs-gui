@@ -259,38 +259,57 @@ Class gmodel_class(void)
   NSDebugLog(@"Loading Nib `%@'...\n", fileName);
   NS_DURING
     {
-      NSData	*data = [NSData dataWithContentsOfFile: fileName];
-      NSDebugLog(@"Loaded data...");
-      if (data != nil)
-	{
-	  unarchiver = [[NSUnarchiver alloc] initForReadingWithData: data];
-	  if (unarchiver != nil)
-	    {
-	      id	obj;
+      NSFileManager	*mgr = [NSFileManager defaultManager];
+      BOOL              isDir = NO;
 
-	      NSDebugLog(@"Invoking unarchiver");
-	      [unarchiver setObjectZone: zone];
-	      obj = [unarchiver decodeObject];
-	      if (obj != nil)
+      if([mgr fileExistsAtPath: fileName isDirectory: &isDir])
+	{
+	  NSData	*data = nil;
+	  
+	  // if the data is in a directory, then load from objects.gorm in the directory
+	  if(isDir == NO)
+	    {
+	      data = [NSData dataWithContentsOfFile: fileName];
+	      NSDebugLog(@"Loaded data from file...");
+	    }
+	  else
+	    {
+	      NSString *newFileName = [fileName stringByAppendingPathComponent: @"objects.gorm"];
+	      data = [NSData dataWithContentsOfFile: newFileName];
+	      NSDebugLog(@"Loaded data from %@...",newFileName);
+	    }
+
+	  if (data != nil)
+	    {
+	      unarchiver = [[NSUnarchiver alloc] initForReadingWithData: data];
+	      if (unarchiver != nil)
 		{
-		  if ([obj isKindOfClass: [GSNibContainer class]])
+		  id	obj;
+		  
+		  NSDebugLog(@"Invoking unarchiver");
+		  [unarchiver setObjectZone: zone];
+		  obj = [unarchiver decodeObject];
+		  if (obj != nil)
 		    {
-		      NSDebugLog(@"Calling awakeWithContext");
-		      [obj awakeWithContext: context];
-		      /*
-		       *Ok - it's all done now - just retain the nib container
-		       *so that it will not be released when the unarchiver
-		       *is released, and the nib contents will persist.
-		       */
-		      RETAIN(obj);
-		      loaded = YES;
+		      if ([obj isKindOfClass: [GSNibContainer class]])
+			{
+			  NSDebugLog(@"Calling awakeWithContext");
+			  [obj awakeWithContext: context];
+			  /*
+			   *Ok - it's all done now - just retain the nib container
+			   *so that it will not be released when the unarchiver
+			   *is released, and the nib contents will persist.
+			   */
+			  RETAIN(obj);
+			  loaded = YES;
+			}
+		      else
+			{
+			  NSLog(@"Nib '%@' without container object!", fileName);
+			}
 		    }
-		  else
-		    {
-		      NSLog(@"Nib '%@' without container object!", fileName);
-		    }
+		  RELEASE(unarchiver);
 		}
-	      RELEASE(unarchiver);
 	    }
 	}
     }
