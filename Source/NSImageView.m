@@ -29,12 +29,40 @@
 #include <AppKit/NSImageCell.h>
 #include <AppKit/NSImageView.h>
 
+/*
+ * Class variables
+ */
+static Class usedCellClass;
+static Class imageCellClass;
+
 @implementation NSImageView
 
+//
+// Class methods
+//
++ (void) initialize
+{
+  if (self == [NSImageView class])
+    {
+      [self setVersion: 1];
+      imageCellClass = [NSImageCell class];
+      usedCellClass = imageCellClass;
+    }
+}
+
+/*
+ * Setting the Cell class
+ */
 + (Class) cellClass
 {
-  return [NSImageCell class];
+  return usedCellClass;
 }
+
++ (void) setCellClass: (Class)factoryId
+{
+  usedCellClass = factoryId ? factoryId : imageCellClass;
+}
+
 
 - (id) init
 {
@@ -44,9 +72,6 @@
 - (id) initWithFrame: (NSRect)aFrame
 {
   [super initWithFrame: aFrame];
-
-  // allocate the image cell
-  [self setCell: [[NSImageCell alloc] init]];
 
   // set the default values
   [self setImageAlignment: NSImageAlignCenter];

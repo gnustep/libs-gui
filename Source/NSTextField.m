@@ -44,6 +44,12 @@
 
 static NSNotificationCenter *nc;
 
+/*
+ * Class variables
+ */
+static Class usedCellClass;
+static Class textFieldCellClass;
+
 @implementation NSTextField
 //
 // Class methods
@@ -53,9 +59,23 @@ static NSNotificationCenter *nc;
   if (self == [NSTextField class])
     {
       [self setVersion: 1];
-      [self setCellClass: [NSTextFieldCell class]];
+      textFieldCellClass = [NSTextFieldCell class];
+      usedCellClass = textFieldCellClass;
       nc = [NSNotificationCenter defaultCenter];
     }
+}
+
+/*
+ * Setting the Cell class
+ */
++ (Class) cellClass
+{
+  return usedCellClass;
+}
+
++ (void) setCellClass: (Class)factoryId
+{
+  usedCellClass = factoryId ? factoryId : textFieldCellClass;
 }
 
 //
@@ -75,17 +95,6 @@ static NSNotificationCenter *nc;
   return self;
 }
 
-//
-// Creating copies
-//
-- (id) copyWithZone: (NSZone*)zone
-{
-  NSTextField	*c;
-
-  c = [super copyWithZone: zone];
-
-  return c;
-}
 
 //
 // Setting User Access to Text
