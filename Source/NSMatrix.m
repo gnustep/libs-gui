@@ -79,12 +79,12 @@ static NSNotificationCenter *nc;
       _SIGN_x > 0 ? 1 : (_SIGN_x == 0 ? 0 : -1); })
 
 #define POINT_FROM_INDEX(index) \
-    ({MPoint point = { index % numCols, index / numCols }; point; })
+    ({MPoint point = { index % _numCols, index / _numCols }; point; })
 
 #define INDEX_FROM_COORDS(x,y) \
-    (y * numCols + x)
+    (y * _numCols + x)
 #define INDEX_FROM_POINT(point) \
-    (point.y * numCols + point.x)
+    (point.y * _numCols + point.x)
 
 
 /* Some stuff needed to compute the selection in the list mode. */
@@ -187,25 +187,25 @@ static SEL getSel = @selector(objectAtIndex:);
         numberOfRows: (int)rows
      numberOfColumns: (int)cols
 {
-  myZone = [self zone];
+  _myZone = [self zone];
   [self _renewRows: rows columns: cols rowSpace: 0 colSpace: 0];
-  mode = aMode;
+  _mode = aMode;
   [self setFrame: frameRect];
 
-  if ((numCols > 0) && (numRows > 0))
-    cellSize = NSMakeSize (frameRect.size.width/numCols,
-			   frameRect.size.height/numRows);
+  if ((_numCols > 0) && (_numRows > 0))
+    _cellSize = NSMakeSize (frameRect.size.width/_numCols,
+			    frameRect.size.height/_numRows);
   else
-    cellSize = NSMakeSize (DEFAULT_CELL_WIDTH, DEFAULT_CELL_HEIGHT);
+    _cellSize = NSMakeSize (DEFAULT_CELL_WIDTH, DEFAULT_CELL_HEIGHT);
 
-  intercell = NSMakeSize(1, 1);
+  _intercell = NSMakeSize(1, 1);
   _tabKeyTraversesCells = YES;
   [self setBackgroundColor: [NSColor controlBackgroundColor]];
   [self setDrawsBackground: YES];
   [self setCellBackgroundColor: [NSColor controlBackgroundColor]];
   [self setSelectionByRect: YES];
   [self setAutosizesCells: YES];
-  if (mode == NSRadioModeMatrix && numRows && numCols)
+  if (_mode == NSRadioModeMatrix && _numRows > 0 && _numCols > 0)
     {
       [self selectCellAtRow: 0 column: 0];
     }
@@ -250,44 +250,44 @@ static SEL getSel = @selector(objectAtIndex:);
 {
   int		i;
 
-  for (i = 0; i < maxRows; i++)
+  for (i = 0; i < _maxRows; i++)
     {
       int	j;
 
-      for (j = 0; j < maxCols; j++)
+      for (j = 0; j < _maxCols; j++)
 	{
-	  [cells[i][j] release];
+	  [_cells[i][j] release];
 	}
-      NSZoneFree(myZone, cells[i]);
-      NSZoneFree(GSAtomicMallocZone(), selectedCells[i]);
+      NSZoneFree(_myZone, _cells[i]);
+      NSZoneFree(GSAtomicMallocZone(), _selectedCells[i]);
     }
-  NSZoneFree(myZone, cells);
-  NSZoneFree(myZone, selectedCells);
+  NSZoneFree(_myZone, _cells);
+  NSZoneFree(_myZone, _selectedCells);
 
-  [cellPrototype release];
-  [backgroundColor release];
-  [cellBackgroundColor release];
+  [_cellPrototype release];
+  [_backgroundColor release];
+  [_cellBackgroundColor release];
   [super dealloc];
 }
 
 - (void) addColumn
 {
-  [self insertColumn: numCols withCells: nil];
+  [self insertColumn: _numCols withCells: nil];
 }
 
 - (void) addColumnWithCells: (NSArray*)cellArray
 {
-  [self insertColumn: numCols withCells: cellArray];
+  [self insertColumn: _numCols withCells: cellArray];
 }
 
 - (void) addRow
 {
-  [self insertRow: numRows withCells: nil];
+  [self insertRow: _numRows withCells: nil];
 }
 
 - (void) addRowWithCells: (NSArray*)cellArray
 {
-  [self insertRow: numRows withCells: cellArray];
+  [self insertRow: _numRows withCells: cellArray];
 }
 
 - (void) insertColumn: (int)column
@@ -298,7 +298,7 @@ static SEL getSel = @selector(objectAtIndex:);
 - (void) insertColumn: (int)column withCells: (NSArray*)cellArray
 {
   int	count = [cellArray count];
-  int	i = numCols + 1;
+  int	i = _numCols + 1;
 
   if (column < 0)
     {
@@ -321,13 +321,13 @@ static SEL getSel = @selector(objectAtIndex:);
    * MacOS-X docs say that if the matrix is empty, we make it have one column
    * and enough rows for all the elements.
    */
-  if (count > 0 && (numRows == 0 || numCols == 0))
+  if (count > 0 && (_numRows == 0 || _numCols == 0))
     {
       [self _renewRows: count columns: 1 rowSpace: 0 colSpace: count];
     }
   else
     {
-      [self _renewRows: numRows ? numRows : 1
+      [self _renewRows: _numRows ? _numRows : 1
 	       columns: i
 	      rowSpace: 0
 	      colSpace: count];
@@ -336,20 +336,20 @@ static SEL getSel = @selector(objectAtIndex:);
   /*
    * Rotate the new column to the insertion point if necessary.
    */
-  if (numCols != column)
+  if (_numCols != column)
     {
-      for (i = 0; i < numRows; i++)
+      for (i = 0; i < _numRows; i++)
 	{
-	  int	j = numCols;
-	  id	old = cells[i][j-1];
+	  int	j = _numCols;
+	  id	old = _cells[i][j-1];
 
 	  while (--j > column)
 	    {
-	      cells[i][j] = cells[i][j-1];
-	      selectedCells[i][j] = selectedCells[i][j-1];
+	      _cells[i][j] = _cells[i][j-1];
+	      _selectedCells[i][j] = _selectedCells[i][j-1];
 	    }
-	  cells[i][column] = old;
-	  selectedCells[i][column] = NO;
+	  _cells[i][column] = old;
+	  _selectedCells[i][column] = NO;
 	}
 	if (_selectedCell && (_selectedColumn >= column))
 	_selectedColumn++;
@@ -362,13 +362,13 @@ static SEL getSel = @selector(objectAtIndex:);
     {
       IMP	getImp = [cellArray methodForSelector: getSel];
 
-      for (i = 0; i < numRows && i < count; i++)
+      for (i = 0; i < _numRows && i < count; i++)
 	{
-	  ASSIGN(cells[i][column], (*getImp)(cellArray, getSel, i));
+	  ASSIGN(_cells[i][column], (*getImp)(cellArray, getSel, i));
 	}
     }
 
-  if (mode == NSRadioModeMatrix && !allowsEmptySelection && _selectedCell == nil)
+  if (_mode == NSRadioModeMatrix && !_allowsEmptySelection && _selectedCell == nil)
     [self selectCellAtRow: 0 column: 0];
 }
 
@@ -380,7 +380,7 @@ static SEL getSel = @selector(objectAtIndex:);
 - (void) insertRow: (int)row withCells: (NSArray*)cellArray
 {
   int	count = [cellArray count];
-  int	i = numRows + 1;
+  int	i = _numRows + 1;
 
   if (row < 0)
     {
@@ -403,14 +403,14 @@ static SEL getSel = @selector(objectAtIndex:);
    * MacOS-X docs say that if the matrix is empty, we make it have one
    * row and enough columns for all the elements.
    */
-  if (count > 0 && (numRows == 0 || numCols == 0))
+  if (count > 0 && (_numRows == 0 || _numCols == 0))
     {
       [self _renewRows: 1 columns: count rowSpace: count colSpace: 0];
     }
   else
     {
       [self _renewRows: i
-	       columns: numCols ? numCols : 1
+	       columns: _numCols ? _numCols : 1
 	      rowSpace: count
 	      colSpace: 0];
     }
@@ -418,18 +418,18 @@ static SEL getSel = @selector(objectAtIndex:);
   /*
    * Rotate the newly created row to the insertion point if necessary.
    */
-  if (numRows != row)
+  if (_numRows != row)
     {
-      id	*oldr = cells[numRows - 1];
-      BOOL	*olds = selectedCells[numRows - 1];
+      id	*oldr = _cells[_numRows - 1];
+      BOOL	*olds = _selectedCells[_numRows - 1];
 
-      for (i = numRows - 1; i > row; i--)
+      for (i = _numRows - 1; i > row; i--)
 	{
-	  cells[i] = cells[i-1];
-	  selectedCells[i] = selectedCells[i-1];
+	  _cells[i] = _cells[i-1];
+	  _selectedCells[i] = _selectedCells[i-1];
 	}
-      cells[row] = oldr;
-      selectedCells[row] = olds;
+      _cells[row] = oldr;
+      _selectedCells[row] = olds;
       if (_selectedCell && (_selectedRow >= row))
 	_selectedRow++;
     }
@@ -441,13 +441,13 @@ static SEL getSel = @selector(objectAtIndex:);
     {
       IMP	getImp = [cellArray methodForSelector: getSel];
 
-      for (i = 0; i < numCols && i < count; i++)
+      for (i = 0; i < _numCols && i < count; i++)
 	{
-	  ASSIGN(cells[row][i], (*getImp)(cellArray, getSel, i));
+	  ASSIGN(_cells[row][i], (*getImp)(cellArray, getSel, i));
 	}
     }
 
-  if (mode == NSRadioModeMatrix && !allowsEmptySelection && _selectedCell == nil)
+  if (_mode == NSRadioModeMatrix && !_allowsEmptySelection && _selectedCell == nil)
     [self selectCellAtRow: 0 column: 0];
 }
 
@@ -456,16 +456,16 @@ static SEL getSel = @selector(objectAtIndex:);
 {
   NSCell	*aCell;
 
-  if (cellPrototype != nil)
+  if (_cellPrototype != nil)
     {
-      aCell = (*cellNew)(cellPrototype, copySel, myZone);
+      aCell = (*_cellNew)(_cellPrototype, copySel, _myZone);
     }
   else
     {
-      aCell = (*cellNew)(cellClass, allocSel, myZone);
+      aCell = (*_cellNew)(_cellClass, allocSel, _myZone);
       if (aCell != nil)
 	{
-	  aCell = (*cellInit)(aCell, initSel);
+	  aCell = (*_cellInit)(aCell, initSel);
 	}
     }
   /*
@@ -474,7 +474,7 @@ static SEL getSel = @selector(objectAtIndex:);
    * value.  If someone uses this method directly (which the documentation
    * specifically says they shouldn't) they may produce a memory leak.
    */
-  cells[row][column] = aCell;
+  _cells[row][column] = aCell;
   return aCell;
 }
 
@@ -483,27 +483,27 @@ static SEL getSel = @selector(objectAtIndex:);
 {
   NSRect rect;
 
-  rect.origin.x = column * (cellSize.width + intercell.width);
+  rect.origin.x = column * (_cellSize.width + _intercell.width);
   if (_rFlags.flipped_view)
-    rect.origin.y = row * (cellSize.height + intercell.height);
+    rect.origin.y = row * (_cellSize.height + _intercell.height);
   else
-    rect.origin.y = (numRows - row - 1) * (cellSize.height + intercell.height);
-  rect.size = cellSize;
+    rect.origin.y = (_numRows - row - 1) * (_cellSize.height + _intercell.height);
+  rect.size = _cellSize;
   return rect;
 }
 
 - (void) getNumberOfRows: (int*)rowCount
 		 columns: (int*)columnCount
 {
-  *rowCount = numRows;
-  *columnCount = numCols;
+  *rowCount = _numRows;
+  *columnCount = _numCols;
 }
 
 - (void) putCell: (NSCell*)newCell
 	   atRow: (int)row
 	  column: (int)column
 {
-  if (row < 0 || row >= numRows || column < 0 || column >= numCols)
+  if (row < 0 || row >= _numRows || column < 0 || column >= _numCols)
     {
       [NSException raise: NSRangeException
 		  format: @"attempt to put cell outside matrix bounds"];
@@ -513,30 +513,30 @@ static SEL getSel = @selector(objectAtIndex:);
       && (_selectedCell != nil))
     _selectedCell = newCell;
   
-  ASSIGN(cells[row][column], newCell);
+  ASSIGN(_cells[row][column], newCell);
 
   [self setNeedsDisplayInRect: [self cellFrameAtRow: row column: column]];
 }
 
 - (void) removeColumn: (int)col
 {
-  if (col >= 0 && col < numCols)
+  if (col >= 0 && col < _numCols)
     {
       int i;
 
-      for (i = 0; i < maxRows; i++)
+      for (i = 0; i < _maxRows; i++)
 	{
 	  int	j;
 
-	  AUTORELEASE(cells[i][col]);
-	  for (j = col + 1; j < maxCols; j++)
+	  AUTORELEASE(_cells[i][col]);
+	  for (j = col + 1; j < _maxCols; j++)
 	    {
-	      cells[i][j-1] = cells[i][j];
-	      selectedCells[i][j-1] = selectedCells[i][j];
+	      _cells[i][j-1] = _cells[i][j];
+	      _selectedCells[i][j-1] = _selectedCells[i][j];
 	    }
 	}
-      numCols--;
-      maxCols--;
+      _numCols--;
+      _maxCols--;
 
       if (col == _selectedColumn)
 	{
@@ -557,25 +557,25 @@ static SEL getSel = @selector(objectAtIndex:);
 
 - (void) removeRow: (int)row
 {
-  if (row >= 0 && row < numRows)
+  if (row >= 0 && row < _numRows)
     {
       int	i;
 
 #if	GS_WITH_GC == 0
-      for (i = 0; i < maxCols; i++)
+      for (i = 0; i < _maxCols; i++)
 	{
-	  [cells[row][i] autorelease];
+	  [_cells[row][i] autorelease];
 	}
 #endif
-      NSZoneFree(myZone, cells[row]);
-      NSZoneFree(GSAtomicMallocZone(), selectedCells[row]);
-      for (i = row + 1; i < maxRows; i++)
+      NSZoneFree(_myZone, _cells[row]);
+      NSZoneFree(GSAtomicMallocZone(), _selectedCells[row]);
+      for (i = row + 1; i < _maxRows; i++)
 	{
-	  cells[i-1] = cells[i];
-	  selectedCells[i-1] = selectedCells[i];
+	  _cells[i-1] = _cells[i];
+	  _selectedCells[i-1] = _selectedCells[i];
 	}
-      maxRows--;
-      numRows--;
+      _maxRows--;
+      _numRows--;
 
       if (row == _selectedRow)
 	{
@@ -602,13 +602,13 @@ static SEL getSel = @selector(objectAtIndex:);
 
 - (void) setCellSize: (NSSize)size
 {
-  cellSize = size;
+  _cellSize = size;
   [self sizeToCells];
 }
 
 - (void) setIntercellSpacing: (NSSize)size
 {
-  intercell = size;
+  _intercell = size;
   [self sizeToCells];
 }
 
@@ -621,25 +621,25 @@ static SEL getSel = @selector(objectAtIndex:);
   IMP			get;
   int			i, j, index = 0;
 
-  sorted = [NSMutableArray arrayWithCapacity: numRows * numCols];
+  sorted = [NSMutableArray arrayWithCapacity: _numRows * _numCols];
   add = [sorted methodForSelector: @selector(addObject:)];
   get = [sorted methodForSelector: @selector(objectAtIndex:)];
 
-  for (i = 0; i < numRows; i++)
+  for (i = 0; i < _numRows; i++)
     {
-      for (j = 0; j < numCols; j++)
+      for (j = 0; j < _numCols; j++)
 	{
-	  (*add)(sorted, @selector(addObject:), cells[i][j]);
+	  (*add)(sorted, @selector(addObject:), _cells[i][j]);
 	}
     }
 
   [sorted sortUsingFunction: comparator context: context];
 
-  for (i = 0; i < numRows; i++)
+  for (i = 0; i < _numRows; i++)
     {
-      for (j = 0; j < numCols; j++)
+      for (j = 0; j < _numCols; j++)
 	{
-	  cells[i][j] = (*get)(sorted, @selector(objectAtIndex:), index++);
+	  _cells[i][j] = (*get)(sorted, @selector(objectAtIndex:), index++);
 	}
     }
 }
@@ -651,25 +651,25 @@ static SEL getSel = @selector(objectAtIndex:);
   IMP			get;
   int			i, j, index = 0;
 
-  sorted = [NSMutableArray arrayWithCapacity: numRows * numCols];
+  sorted = [NSMutableArray arrayWithCapacity: _numRows * _numCols];
   add = [sorted methodForSelector: @selector(addObject:)];
   get = [sorted methodForSelector: @selector(objectAtIndex:)];
 
-  for (i = 0; i < numRows; i++)
+  for (i = 0; i < _numRows; i++)
     {
-      for (j = 0; j < numCols; j++)
+      for (j = 0; j < _numCols; j++)
 	{
-	  (*add)(sorted, @selector(addObject:), cells[i][j]);
+	  (*add)(sorted, @selector(addObject:), _cells[i][j]);
 	}
     }
 
   [sorted sortUsingSelector: comparator];
 
-  for (i = 0; i < numRows; i++)
+  for (i = 0; i < _numRows; i++)
     {
-      for (j = 0; j < numCols; j++)
+      for (j = 0; j < _numCols; j++)
 	{
-	  cells[i][j] = (*get)(sorted, @selector(objectAtIndex:), index++);
+	  _cells[i][j] = (*get)(sorted, @selector(objectAtIndex:), index++);
 	}
     }
 }
@@ -683,10 +683,10 @@ static SEL getSel = @selector(objectAtIndex:);
   BOOL	beyondRows;
   BOOL	beyondCols;
   BOOL nullMatrix = NO;
-  int	approxRow = point.y / (cellSize.height + intercell.height);
-  float	approxRowsHeight = approxRow * (cellSize.height + intercell.height);
-  int	approxCol = point.x / (cellSize.width + intercell.width);
-  float	approxColsWidth = approxCol * (cellSize.width + intercell.width);
+  int	approxRow = point.y / (_cellSize.height + _intercell.height);
+  float	approxRowsHeight = approxRow * (_cellSize.height + _intercell.height);
+  int	approxCol = point.x / (_cellSize.width + _intercell.width);
+  float	approxColsWidth = approxCol * (_cellSize.width + _intercell.width);
 
   /* First check the limit cases */
   beyondCols = (point.x > _bounds.size.width || point.x < 0);
@@ -694,20 +694,20 @@ static SEL getSel = @selector(objectAtIndex:);
 
   /* Determine if the point is inside the cell */
   betweenRows = !(point.y > approxRowsHeight
-		&& point.y <= approxRowsHeight + cellSize.height);
+		&& point.y <= approxRowsHeight + _cellSize.height);
   betweenCols = !(point.x > approxColsWidth
-		  && point.x <= approxColsWidth + cellSize.width);
+		  && point.x <= approxColsWidth + _cellSize.width);
 
   if (row)
     {
       if (_rFlags.flipped_view == NO)
-	approxRow = numRows - approxRow - 1;
+	approxRow = _numRows - approxRow - 1;
 
       if (approxRow < 0)
 	approxRow = 0;
-      else if (approxRow >= numRows)
-	approxRow = numRows - 1;
-      if (numRows == 0)
+      else if (approxRow >= _numRows)
+	approxRow = _numRows - 1;
+      if (_numRows == 0)
 	{
 	  nullMatrix = YES;
 	  approxRow = 0;
@@ -719,9 +719,9 @@ static SEL getSel = @selector(objectAtIndex:);
     {
       if (approxCol < 0)
 	approxCol = 0;
-      else if (approxCol >= numCols)
-	approxCol = numCols - 1;
-      if (numCols == 0)
+      else if (approxCol >= _numCols)
+	approxCol = _numCols - 1;
+      if (_numCols == 0)
 	{
 	  nullMatrix = YES;
 	  approxCol = 0;
@@ -745,13 +745,13 @@ static SEL getSel = @selector(objectAtIndex:);
 {
   int	i;
 
-  for (i = 0; i < numRows; i++)
+  for (i = 0; i < _numRows; i++)
     {
       int	j;
 
-      for (j = 0; j < numCols; j++)
+      for (j = 0; j < _numCols; j++)
 	{
-	  if (cells[i][j] == aCell)
+	  if (_cells[i][j] == aCell)
 	    {
 	      *row = i;
 	      *column = j;
@@ -771,7 +771,7 @@ static SEL getSel = @selector(objectAtIndex:);
   if (!aCell)
     return;
 
-  if (mode == NSRadioModeMatrix)
+  if (_mode == NSRadioModeMatrix)
     {
       if (value)
 	{
@@ -779,9 +779,9 @@ static SEL getSel = @selector(objectAtIndex:);
 	  _selectedRow = row;
 	  _selectedColumn = column;
 	  [_selectedCell setState: 1];
-	  selectedCells[row][column] = YES;
+	  _selectedCells[row][column] = YES;
 	}
-      else if (allowsEmptySelection)
+      else if (_allowsEmptySelection)
 	{
 	  [self deselectSelectedCell];
 	}
@@ -797,24 +797,24 @@ static SEL getSel = @selector(objectAtIndex:);
 {
   int		i;
 
-  if (!allowsEmptySelection && mode == NSRadioModeMatrix)
+  if (!_allowsEmptySelection && _mode == NSRadioModeMatrix)
     return;
 
-  for (i = 0; i < numRows; i++)
+  for (i = 0; i < _numRows; i++)
     {
       int	j;
 
-      for (j = 0; j < numCols; j++)
+      for (j = 0; j < _numCols; j++)
 	{
-	  if (selectedCells[i][j])
+	  if (_selectedCells[i][j])
 	    {
 	      NSRect	theFrame = [self cellFrameAtRow: i column: j];
-	      NSCell	*aCell = cells[i][j];
+	      NSCell	*aCell = _cells[i][j];
 
 	      [aCell setState: 0];
 	      [aCell highlight: NO withFrame: theFrame inView: self];
 	      [self setNeedsDisplayInRect: theFrame];
-	      selectedCells[i][j] = NO;
+	      _selectedCells[i][j] = NO;
 	    }
 	}
     }
@@ -827,20 +827,20 @@ static SEL getSel = @selector(objectAtIndex:);
 {
   int i,j;
 
-  if (!_selectedCell || (!allowsEmptySelection && (mode == NSRadioModeMatrix)))
+  if (!_selectedCell || (!_allowsEmptySelection && (_mode == NSRadioModeMatrix)))
     return;
 
   /*
    * For safety (as in macosx)
    */
-  for (i = 0; i < numRows; i++)
+  for (i = 0; i < _numRows; i++)
     {
-      for (j = 0; j < numCols; j++)
+      for (j = 0; j < _numCols; j++)
 	{
-	  if (selectedCells[i][j])
+	  if (_selectedCells[i][j])
 	    {
-	      [cells[i][j] setState: NSOffState];
-	      selectedCells[i][j] = NO;
+	      [_cells[i][j] setState: NSOffState];
+	      _selectedCells[i][j] = NO;
 	    }
 	}
     }
@@ -854,23 +854,23 @@ static SEL getSel = @selector(objectAtIndex:);
 {
   unsigned	i, j;
 
-  for (i = 0; i < numRows; i++)
+  for (i = 0; i < _numRows; i++)
     {
-      for (j = 0; j < numCols; j++)
+      for (j = 0; j < _numCols; j++)
 	{
-	  [cells[i][j] setState: 1];
-	  selectedCells[i][j] = YES;
+	  [_cells[i][j] setState: 1];
+	  _selectedCells[i][j] = YES;
 	}
     }
 
   /*
    * Make the selected cell the last cell
    */
-  if ((numRows >0) && (numCols > 0))
+  if ((_numRows >0) && (_numCols > 0))
     {
-      _selectedCell = [self cellAtRow: numRows - 1  column: numCols - 1];
-      _selectedRow = numRows - 1;
-      _selectedColumn = numCols - 1;
+      _selectedCell = [self cellAtRow: _numRows - 1  column: _numCols - 1];
+      _selectedRow = _numRows - 1;
+      _selectedColumn = _numCols - 1;
     }
   else
     {
@@ -900,7 +900,7 @@ static SEL getSel = @selector(objectAtIndex:);
    */
   if (_selectedCell != nil && _selectedCell != aCell)
     {
-      selectedCells[_selectedRow][_selectedColumn] = NO;
+      _selectedCells[_selectedRow][_selectedColumn] = NO;
       [_selectedCell setState: 0];
       [self setNeedsDisplayInRect: [self cellFrameAtRow: _selectedRow
 					 column: _selectedColumn]];
@@ -911,7 +911,7 @@ static SEL getSel = @selector(objectAtIndex:);
       _selectedCell = aCell;
       _selectedRow = row;
       _selectedColumn = column;
-      selectedCells[row][column] = YES;
+      _selectedCells[row][column] = YES;
       [_selectedCell setState: 1];
 
       // Note: we select the cell iff it is 'selectable', not 'editable' 
@@ -927,15 +927,15 @@ static SEL getSel = @selector(objectAtIndex:);
 - (BOOL) selectCellWithTag: (int)anInt
 {
   id	aCell;
-  int	i = numRows;
+  int	i = _numRows;
 
   while (i-- > 0)
     {
-      int	j = numCols;
+      int	j = _numCols;
 
       while (j-- > 0)
 	{
-	  aCell = cells[i][j];
+	  aCell = _cells[i][j];
 	  if ([aCell tag] == anInt)
 	    {
 	      [self selectCellAtRow: i column: j];
@@ -951,15 +951,15 @@ static SEL getSel = @selector(objectAtIndex:);
   NSMutableArray	*array = [NSMutableArray array];
   int	i;
 
-  for (i = 0; i < numRows; i++)
+  for (i = 0; i < _numRows; i++)
     {
       int	j;
 
-      for (j = 0; j < numCols; j++)
+      for (j = 0; j < _numCols; j++)
 	{
-	  if (selectedCells[i][j] == YES)
+	  if (_selectedCells[i][j] == YES)
 	    {
-	      [array addObject: cells[i][j]];
+	      [array addObject: _cells[i][j]];
 	    }
 	}
     }
@@ -971,7 +971,7 @@ static SEL getSel = @selector(objectAtIndex:);
 		   anchor: (int)anchorPos
 	        highlight: (BOOL)flag
 {
-  if (selectionByRect)
+  if (_selectionByRect)
     {
       MPoint anchor = POINT_FROM_INDEX(anchorPos);
       MPoint last = POINT_FROM_INDEX(startPos);
@@ -1130,22 +1130,22 @@ static SEL getSel = @selector(objectAtIndex:);
 - (id) cellAtRow: (int)row
 	  column: (int)column
 {
-  if (row < 0 || row >= numRows || column < 0 || column >= numCols)
+  if (row < 0 || row >= _numRows || column < 0 || column >= _numCols)
     return nil;
-  return cells[row][column];
+  return _cells[row][column];
 }
 
 - (id) cellWithTag: (int)anInt
 {
-  int	i = numRows;
+  int	i = _numRows;
 
   while (i-- > 0)
     {
-      int	j = numCols;
+      int	j = _numCols;
 
       while (j-- > 0)
 	{
-	  id	aCell = cells[i][j];
+	  id	aCell = _cells[i][j];
 
 	  if ([aCell tag] == anInt)
 	    {
@@ -1162,15 +1162,15 @@ static SEL getSel = @selector(objectAtIndex:);
   IMP			add;
   int			i;
 
-  c = [NSMutableArray arrayWithCapacity: numRows * numCols];
+  c = [NSMutableArray arrayWithCapacity: _numRows * _numCols];
   add = [c methodForSelector: @selector(addObject:)];
-  for (i = 0; i < numRows; i++)
+  for (i = 0; i < _numRows; i++)
     {
       int	j;
 
-      for (j = 0; j < numCols; j++)
+      for (j = 0; j < _numCols; j++)
 	{
-	  (*add)(c, @selector(addObject:), cells[i][j]);
+	  (*add)(c, @selector(addObject:), _cells[i][j]);
 	}
     }
   return c;
@@ -1190,8 +1190,8 @@ static SEL getSel = @selector(objectAtIndex:);
     {
       // _window selecting backwards
     case NSSelectingPrevious:
-      [self _selectPreviousSelectableCellBeforeRow: numRows
-	    column: numCols];
+      [self _selectPreviousSelectableCellBeforeRow: _numRows
+	    column: _numCols];
       break;
       // _Window selecting forward
     case NSSelectingNext:
@@ -1226,19 +1226,19 @@ static SEL getSel = @selector(objectAtIndex:);
 
 - (id) selectTextAtRow: (int)row column: (int)column
 {
-  if (row < 0 || row >= numRows || column < 0 || column >= numCols)
+  if (row < 0 || row >= _numRows || column < 0 || column >= _numCols)
     return self;
 
   // macosx doesn't select the cell if it isn't 'editable'; instead,
   // we select the cell if and only if it is 'selectable', which looks
   // more appropriate.  This is going to start editing if and only if
   // the cell is also 'editable'.
-  if ([cells[row][column] isSelectable] == NO)
+  if ([_cells[row][column] isSelectable] == NO)
     return nil;
 
   if (_textObject)
     {
-      if (_selectedCell == cells[row][column])
+      if (_selectedCell == _cells[row][column])
 	{
 	  [_textObject selectAll: self];
 	  return _selectedCell;
@@ -1259,7 +1259,7 @@ static SEL getSel = @selector(objectAtIndex:);
       if ([t resignFirstResponder] == NO)
 	return nil;
 
-    _selectedCell = cells[row][column];
+    _selectedCell = _cells[row][column];
     _selectedRow = row;
     _selectedColumn = column;
     _textObject = [_selectedCell setUpFieldEditorAttributes: t];
@@ -1500,15 +1500,15 @@ static SEL getSel = @selector(objectAtIndex:);
 - (void) sizeToCells
 {
   NSSize newSize;
-  int nc = numCols;
-  int nr = numRows;
+  int nc = _numCols;
+  int nr = _numRows;
 
   if (!nc)
     nc = 1;
   if (!nr)
     nr = 1;
-  newSize.width = nc * (cellSize.width + intercell.width) - intercell.width;
-  newSize.height = nr * (cellSize.height + intercell.height) - intercell.height;
+  newSize.width = nc * (_cellSize.width + _intercell.width) - _intercell.width;
+  newSize.height = nr * (_cellSize.height + _intercell.height) - _intercell.height;
   [self setFrameSize: newSize];
 }
 
@@ -1518,11 +1518,11 @@ static SEL getSel = @selector(objectAtIndex:);
   NSSize tmpSize;
   int i, j;
 
-  for (i = 0; i < numRows; i++)
+  for (i = 0; i < _numRows; i++)
     {
-      for (j = 0; j < numCols; j++)
+      for (j = 0; j < _numCols; j++)
 	{
-	  tmpSize = [cells[i][j] cellSize];
+	  tmpSize = [_cells[i][j] cellSize];
 	  if (tmpSize.width > newSize.width)
 	    newSize.width = tmpSize.width;
 	  if (tmpSize.height > newSize.height)
@@ -1540,23 +1540,23 @@ static SEL getSel = @selector(objectAtIndex:);
 
 - (void) setAutoscroll: (BOOL)flag
 {
-  autoscroll = flag;
+  _autoscroll = flag;
 }
 
 - (void) setScrollable: (BOOL)flag
 {
   int	i;
 
-  for (i = 0; i < numRows; i++)
+  for (i = 0; i < _numRows; i++)
     {
       int	j;
 
-      for (j = 0; j < numCols; j++)
+      for (j = 0; j < _numCols; j++)
 	{
-	  [cells[i][j] setScrollable: flag];
+	  [_cells[i][j] setScrollable: flag];
 	}
     }
-  [cellPrototype setScrollable: flag];
+  [_cellPrototype setScrollable: flag];
 }
 
 - (void) drawRect: (NSRect)rect
@@ -1565,9 +1565,9 @@ static SEL getSel = @selector(objectAtIndex:);
   int row1, col1;	// The cell at the upper left corner
   int row2, col2;	// The cell at the lower right corner
 
-  if (drawsBackground)
+  if (_drawsBackground)
     {
-      [backgroundColor set];
+      [_backgroundColor set];
       NSRectFill(rect);
     }
 
@@ -1581,14 +1581,14 @@ static SEL getSel = @selector(objectAtIndex:);
     col1 = 0;
 
   /* Draw the cells within the drawing rectangle. */
-  for (i = row1; i <= row2 && i < numRows; i++)
-    for (j = col1; j <= col2 && j < numCols; j++)
+  for (i = row1; i <= row2 && i < _numRows; i++)
+    for (j = col1; j <= col2 && j < _numCols; j++)
       [self drawCellAtRow: i column: j];
 }
 
 - (BOOL) isOpaque
 {
-  return drawsBackground;
+  return _drawsBackground;
 }
 
 - (void) drawCell: (NSCell *)aCell
@@ -1609,10 +1609,10 @@ static SEL getSel = @selector(objectAtIndex:);
     {
       NSRect cellFrame = [self cellFrameAtRow: row column: column];
 
-      if (drawsCellBackground)
+      if (_drawsCellBackground)
 	{
 	  [self lockFocus];
-	  [cellBackgroundColor set];
+	  [_cellBackgroundColor set];
 	  NSRectFill(cellFrame);
 	  [self unlockFocus];
 	}
@@ -1628,10 +1628,10 @@ static SEL getSel = @selector(objectAtIndex:);
     {
       NSRect cellFrame = [self cellFrameAtRow: row column: column];
 
-      if (drawsCellBackground)
+      if (_drawsCellBackground)
 	{
 	  [self lockFocus];
-	  [cellBackgroundColor set];
+	  [_cellBackgroundColor set];
 	  NSRectFill(cellFrame);
 	  [self unlockFocus];
 	}
@@ -1684,14 +1684,14 @@ static SEL getSel = @selector(objectAtIndex:);
 
   if (flag)
     {
-      for (i = 0; i < numRows; i++)
+      for (i = 0; i < _numRows; i++)
 	{
 	  int	j;
 
-	  for (j = 0; j < numCols; j++)
+	  for (j = 0; j < _numCols; j++)
 	    {
 	      if (![anObject performSelector: aSelector
-				  withObject: cells[i][j]])
+				  withObject: _cells[i][j]])
 		{
 		  return;
 		}
@@ -1700,16 +1700,16 @@ static SEL getSel = @selector(objectAtIndex:);
     }
   else
     {
-      for (i = 0; i < numRows; i++)
+      for (i = 0; i < _numRows; i++)
 	{
 	  int	j;
 
-	  for (j = 0; j < numCols; j++)
+	  for (j = 0; j < _numCols; j++)
 	    {
-	      if (selectedCells[i][j])
+	      if (_selectedCells[i][j])
 		{
 		  if (![anObject performSelector: aSelector
-				      withObject: cells[i][j]])
+				      withObject: _cells[i][j]])
 		    {
 		      return;
 		    }
@@ -1732,7 +1732,7 @@ static SEL getSel = @selector(objectAtIndex:);
 
 - (BOOL) acceptsFirstMouse: (NSEvent*)theEvent
 {
-  if (mode == NSListModeMatrix)
+  if (_mode == NSListModeMatrix)
     return NO;
   else
     return YES;
@@ -1753,12 +1753,12 @@ static SEL getSel = @selector(objectAtIndex:);
   unsigned eventMask = NSLeftMouseUpMask | NSLeftMouseDownMask
                      | NSMouseMovedMask  | NSLeftMouseDraggedMask;
 
-  if ((mode == NSRadioModeMatrix) && _selectedCell != nil)
+  if ((_mode == NSRadioModeMatrix) && _selectedCell != nil)
     {
       [_selectedCell setState: NSOffState];
       [self drawCellAtRow: _selectedRow column: _selectedColumn];
       [_window flushWindow];
-      selectedCells[_selectedRow][_selectedColumn] = NO;
+      _selectedCells[_selectedRow][_selectedColumn] = NO;
       _selectedCell = nil;
       _selectedRow = _selectedColumn = -1;
     }
@@ -1770,7 +1770,7 @@ static SEL getSel = @selector(objectAtIndex:);
       [self getRow: &mouseRow column: &mouseColumn forPoint: mouseLocation];
       mouseCellFrame = [self cellFrameAtRow: mouseRow column: mouseColumn];
 
-      if (((mode == NSRadioModeMatrix) && !allowsEmptySelection)
+      if (((_mode == NSRadioModeMatrix) && !_allowsEmptySelection)
 	|| [self mouse: mouseLocation inRect: mouseCellFrame])
         {
           mouseCell = [self cellAtRow: mouseRow column: mouseColumn];
@@ -1778,9 +1778,9 @@ static SEL getSel = @selector(objectAtIndex:);
           _selectedCell = mouseCell;
           _selectedRow = mouseRow;
           _selectedColumn = mouseColumn;
-          selectedCells[_selectedRow][_selectedColumn] = YES;
+          _selectedCells[_selectedRow][_selectedColumn] = YES;
 
-          if (((mode == NSRadioModeMatrix) || (mode == NSHighlightModeMatrix))
+          if (((_mode == NSRadioModeMatrix) || (_mode == NSHighlightModeMatrix))
               && (highlightedCell != mouseCell))
             {
               if (highlightedCell)
@@ -1802,7 +1802,7 @@ static SEL getSel = @selector(objectAtIndex:);
                                          ofView: self
                                    untilMouseUp: NO];
 
-          if (mode == NSHighlightModeMatrix)
+          if (_mode == NSHighlightModeMatrix)
             {
               [self highlightCell: NO
                             atRow: highlightedRow
@@ -1839,7 +1839,7 @@ static SEL getSel = @selector(objectAtIndex:);
   // anyway, the action has to be sent
   if (!mouseUpInCell)
     {
-      if ((mode == NSRadioModeMatrix) && !allowsEmptySelection)
+      if ((_mode == NSRadioModeMatrix) && !_allowsEmptySelection)
 	{
 	  [_selectedCell setState: NSOnState];
 	  [_window flushWindow];
@@ -1848,7 +1848,7 @@ static SEL getSel = @selector(objectAtIndex:);
 	{
 	  if (_selectedCell != nil)
 	    {
-	      selectedCells[_selectedRow][_selectedColumn] = NO;
+	      _selectedCells[_selectedRow][_selectedColumn] = NO;
 	      _selectedCell = nil;
 	      _selectedRow = _selectedColumn = -1;
 	    }
@@ -1886,7 +1886,7 @@ static SEL getSel = @selector(objectAtIndex:);
   /*
    * Pathological case -- ignore mouse down
    */
-  if ((numRows == 0) || (numCols == 0))
+  if ((_numRows == 0) || (_numCols == 0))
     {
       [super mouseDown: theEvent];
       return; 
@@ -1914,7 +1914,7 @@ static SEL getSel = @selector(objectAtIndex:);
 	   column: &column
 	   forPoint: lastLocation])
     {
-      if ([cells[row][column] isSelectable])
+      if ([_cells[row][column] isSelectable])
 	{
 	  NSText* t = [_window fieldEditor: YES forObject: self];
 
@@ -1927,7 +1927,7 @@ static SEL getSel = @selector(objectAtIndex:);
 		}
 	    }
 	  // During editing, the selected cell is the cell being edited
-	  _selectedCell = cells[row][column];
+	  _selectedCell = _cells[row][column];
 	  _selectedRow = row;
 	  _selectedColumn = column;
 	  _textObject = [_selectedCell setUpFieldEditorAttributes: t];
@@ -1955,13 +1955,13 @@ static SEL getSel = @selector(objectAtIndex:);
 
   // TODO: clean this up -- remove code in excess! 
   // While doing that, FIXME! because all this code has bugs!
-  if (mode != NSListModeMatrix)
+  if (_mode != NSListModeMatrix)
     {
       [self _mouseDownNonListMode: theEvent];
       return;
     }
 
-  if ((mode != NSTrackModeMatrix) && (mode != NSHighlightModeMatrix)) 
+  if ((_mode != NSTrackModeMatrix) && (_mode != NSHighlightModeMatrix)) 
     [NSEvent startPeriodicEventsAfterDelay: 0.05
 	     withPeriod: 0.05];
   ASSIGN(lastEvent, theEvent);
@@ -1983,7 +1983,7 @@ static SEL getSel = @selector(objectAtIndex:);
 	  rect = [self cellFrameAtRow: row column: column];
 	  if (aCell != previousCell)
 	    {
-	      switch (mode)
+	      switch (_mode)
 		{
 		  case NSTrackModeMatrix:
 		    // in Track mode the cell should track the mouse
@@ -2036,7 +2036,7 @@ static SEL getSel = @selector(objectAtIndex:);
 			[_selectedCell highlight: NO
 				      withFrame: previousCellRect
 					 inView: self];
-			selectedCells[_selectedRow][_selectedColumn] = NO;
+			_selectedCells[_selectedRow][_selectedColumn] = NO;
 		      }
 		    // select current cell
 		    _selectedCell = aCell;
@@ -2044,7 +2044,7 @@ static SEL getSel = @selector(objectAtIndex:);
 		    _selectedColumn = column;
 		    [aCell setState: 1];
 		    [aCell highlight: YES withFrame: rect inView: self];
-		    selectedCells[row][column] = YES;
+		    _selectedCells[row][column] = YES;
 		    [_window flushWindow];
 		    break;
 
@@ -2079,7 +2079,7 @@ static SEL getSel = @selector(objectAtIndex:);
 			      [_selectedCell highlight: YES
 					    withFrame: rect
 					       inView: self];
-			      selectedCells[row][column]=YES;
+			      _selectedCells[row][column]=YES;
 			      [_window flushWindow];
 			      break;
 			    }
@@ -2127,8 +2127,8 @@ static SEL getSel = @selector(objectAtIndex:);
 		done = YES;
 	      case NSLeftMouseDown:
 	      default:
-		if ((mode == NSTrackModeMatrix)
-		  || (mode == NSHighlightModeMatrix))
+		if ((_mode == NSTrackModeMatrix)
+		  || (_mode == NSHighlightModeMatrix))
 		  shouldProceedEvent = YES;
 		NSDebugLog(@"NSMatrix: got event of type: %d\n",
 					      [theEvent type]);
@@ -2140,7 +2140,7 @@ static SEL getSel = @selector(objectAtIndex:);
       lastLocation = [self convertPoint: lastLocation fromView: nil];
     }
 
-  switch (mode)
+  switch (_mode)
     {
       case NSRadioModeMatrix:
 	if (_selectedCell != nil)
@@ -2154,7 +2154,7 @@ static SEL getSel = @selector(objectAtIndex:);
     }
   // in Track and Highlight modes the single click action has already
   // been sent by the cell to it's target (if it has one)
-  if ((mode != NSTrackModeMatrix) && (mode != NSHighlightModeMatrix))
+  if ((_mode != NSTrackModeMatrix) && (_mode != NSHighlightModeMatrix))
     [self sendAction];
   else if (_selectedCell != nil && ([_selectedCell target] == nil))
     {
@@ -2164,7 +2164,7 @@ static SEL getSel = @selector(objectAtIndex:);
 	[_target performSelector: _action withObject: self];
     }
   
-  if ((mode != NSTrackModeMatrix) && (mode != NSHighlightModeMatrix))
+  if ((_mode != NSTrackModeMatrix) && (_mode != NSHighlightModeMatrix))
     [NSEvent stopPeriodicEvents];
 
   RELEASE(lastEvent);
@@ -2187,13 +2187,13 @@ static SEL getSel = @selector(objectAtIndex:);
   NSString	*key = [theEvent charactersIgnoringModifiers];
   int		i;
 
-  for (i = 0; i < numRows; i++)
+  for (i = 0; i < _numRows; i++)
     {
       int	j;
 
-      for (j = 0; j < numCols; j++)
+      for (j = 0; j < _numCols; j++)
 	{
-	  NSCell	*aCell = cells[i][j];;
+	  NSCell	*aCell = _cells[i][j];;
 
 	  if ([aCell isEnabled]
 	    && [[aCell keyEquivalent] isEqualToString: key])
@@ -2219,13 +2219,13 @@ static SEL getSel = @selector(objectAtIndex:);
 {
   int	i;
 
-  for (i = 0; i < numRows; i++)
+  for (i = 0; i < _numRows; i++)
     {
       int	j;
 
-      for (j = 0; j < numCols; j++)
+      for (j = 0; j < _numCols; j++)
 	{
-	  NSCell	*aCell = cells[i][j];
+	  NSCell	*aCell = _cells[i][j];
 
 	  [aCell resetCursorRect: [self cellFrameAtRow: i column: j]
 		 inView: self];
@@ -2249,79 +2249,79 @@ static SEL getSel = @selector(objectAtIndex:);
 
 - (void) setMode: (NSMatrixMode)aMode
 {
-  mode = aMode;
+  _mode = aMode;
 }
 
 - (NSMatrixMode) mode
 {
-  return mode;
+  return _mode;
 }
 
 - (void) setCellClass: (Class)class
 {
-  cellClass = class;
-  if (cellClass == nil)
+  _cellClass = class;
+  if (_cellClass == nil)
     {
-      cellClass = defaultCellClass;
+      _cellClass = defaultCellClass;
     }
-  cellNew = [cellClass methodForSelector: allocSel];
-  cellInit = [cellClass instanceMethodForSelector: initSel];
-  DESTROY(cellPrototype);
+  _cellNew = [_cellClass methodForSelector: allocSel];
+  _cellInit = [_cellClass instanceMethodForSelector: initSel];
+  DESTROY(_cellPrototype);
 }
 
 - (Class) cellClass
 {
-  return cellClass;
+  return _cellClass;
 }
 
 - (void) setPrototype: (NSCell*)aCell
 {
-  ASSIGN(cellPrototype, aCell);
-  if (cellPrototype == nil)
+  ASSIGN(_cellPrototype, aCell);
+  if (_cellPrototype == nil)
     {
       [self setCellClass: defaultCellClass];
     }
   else
     {
-      cellNew = [cellPrototype methodForSelector: copySel];
-      cellInit = 0;
-      cellClass = [aCell class];
+      _cellNew = [_cellPrototype methodForSelector: copySel];
+      _cellInit = 0;
+      _cellClass = [aCell class];
     }
 }
 
 - (id) prototype
 {
-  return cellPrototype;
+  return _cellPrototype;
 }
 
 - (NSSize) cellSize
 {
-  return cellSize;
+  return _cellSize;
 }
 
 - (NSSize) intercellSpacing
 {
-  return intercell;
+  return _intercell;
 }
 
 - (void) setBackgroundColor: (NSColor*)c
 {
-  ASSIGN(backgroundColor, c);
+  ASSIGN(_backgroundColor, c);
 }
 
 - (NSColor*) backgroundColor
 {
-  return backgroundColor;
+  return _backgroundColor;
 }
 
 - (void) setCellBackgroundColor: (NSColor*)c
 {
-  ASSIGN(cellBackgroundColor, c);
+  ASSIGN(_cellBackgroundColor, c);
 }
 
 - (NSColor*) cellBackgroundColor
 {
-  return cellBackgroundColor;
+  return _cellBackgroundColor;
 }
 
 - (void) setDelegate: (id)object
@@ -2394,67 +2394,67 @@ static SEL getSel = @selector(objectAtIndex:);
 
 - (void) setAllowsEmptySelection: (BOOL)f
 {
-  allowsEmptySelection = f;
+  _allowsEmptySelection = f;
 }
 
 - (BOOL) allowsEmptySelection
 {
-  return allowsEmptySelection;
+  return _allowsEmptySelection;
 }
 
 - (void) setSelectionByRect: (BOOL)flag
 {
-  selectionByRect = flag;
+  _selectionByRect = flag;
 }
 
 - (BOOL) isSelectionByRect
 {
-  return selectionByRect;
+  return _selectionByRect;
 }
 
 - (void) setDrawsBackground: (BOOL)flag
 {
-  drawsBackground = flag;
+  _drawsBackground = flag;
 }
 
 - (BOOL) drawsBackground
 {
-  return drawsBackground;
+  return _drawsBackground;
 }
 
 - (void) setDrawsCellBackground: (BOOL)f
 {
-  drawsCellBackground = f;
+  _drawsCellBackground = f;
 }
 
 - (BOOL) drawsCellBackground
 {
-  return drawsCellBackground;
+  return _drawsCellBackground;
 }
 
 - (void) setAutosizesCells: (BOOL)flag
 {
-  autosizesCells = flag;
+  _autosizesCells = flag;
 }
 
 - (BOOL) autosizesCells
 {
-  return autosizesCells;
+  return _autosizesCells;
 }
 
 - (BOOL) isAutoscroll
 {
-  return autoscroll;
+  return _autoscroll;
 }
 
 - (int) numberOfRows
 {
-  return numRows;
+  return _numRows;
 }
 
 - (int) numberOfColumns
 {
-  return numCols;
+  return _numCols;
 }
 
 - (id) selectedCell
@@ -2487,8 +2487,8 @@ static SEL getSel = @selector(objectAtIndex:);
   NSSize oldBoundsSize = _bounds.size;
   NSSize newBoundsSize;
   NSSize change;
-  int nc = numCols;
-  int nr = numRows;
+  int nc = _numCols;
+  int nr = _numRows;
 
   [super resizeWithOldSuperviewSize: oldSize];
 
@@ -2497,35 +2497,35 @@ static SEL getSel = @selector(objectAtIndex:);
   change.height = newBoundsSize.height - oldBoundsSize.height;
   change.width = newBoundsSize.width - oldBoundsSize.width;
 
-  if (autosizesCells)
+  if (_autosizesCells)
     {
       if (change.height != 0)
 	{
 	  if (nr <= 0) nr = 1;
-	  if (cellSize.height == 0)
+	  if (_cellSize.height == 0)
 	    {
-	      cellSize.height = oldBoundsSize.height
-		- ((nr - 1) * intercell.height);
-	      cellSize.height = cellSize.height / nr;
+	      _cellSize.height = oldBoundsSize.height
+		- ((nr - 1) * _intercell.height);
+	      _cellSize.height = _cellSize.height / nr;
 	    }
 	  change.height = change.height / nr;
-	  cellSize.height += change.height;
-	  if (cellSize.height < 0)
-	    cellSize.height = 0;
+	  _cellSize.height += change.height;
+	  if (_cellSize.height < 0)
+	    _cellSize.height = 0;
 	}
       if (change.width != 0)
 	{
 	  if (nc <= 0) nc = 1;
-	  if (cellSize.width == 0)
+	  if (_cellSize.width == 0)
 	    {
-	      cellSize.width = oldBoundsSize.width
-		- ((nc - 1) * intercell.width);
-	      cellSize.width = cellSize.width / nc;
+	      _cellSize.width = oldBoundsSize.width
+		- ((nc - 1) * _intercell.width);
+	      _cellSize.width = _cellSize.width / nc;
 	    }
 	  change.width = change.width / nc;
-	  cellSize.width += change.width;
-	  if (cellSize.width < 0)
-	    cellSize.width = 0;
+	  _cellSize.width += change.width;
+	  if (_cellSize.width < 0)
+	    _cellSize.width = 0;
 	}
     }
   else // !autosizesCells
@@ -2534,30 +2534,30 @@ static SEL getSel = @selector(objectAtIndex:);
 	{
 	  if (nr > 1)
 	    {
-	      if (intercell.height == 0)
+	      if (_intercell.height == 0)
 		{
-		  intercell.height = oldBoundsSize.height - (nr * cellSize.height);
-		  intercell.height = intercell.height / (nr - 1);
+		  _intercell.height = oldBoundsSize.height - (nr * _cellSize.height);
+		  _intercell.height = _intercell.height / (nr - 1);
 		}
 	      change.height = change.height / (nr - 1);
-	      intercell.height += change.height;
-	      if (intercell.height < 0)
-		intercell.height = 0;
+	      _intercell.height += change.height;
+	      if (_intercell.height < 0)
+		_intercell.height = 0;
 	    }
 	}
       if (change.width != 0)
 	{
 	  if (nc > 1)
 	    {
-	      if (intercell.width == 0)
+	      if (_intercell.width == 0)
 		{
-		  intercell.width = oldBoundsSize.width - (nc * cellSize.width);
-		  intercell.width = intercell.width / (nc - 1);
+		  _intercell.width = oldBoundsSize.width - (nc * _cellSize.width);
+		  _intercell.width = _intercell.width / (nc - 1);
 		}
 	      change.width = change.width / (nc - 1);
-	      intercell.width += change.width;
-	      if (intercell.width < 0)
-		intercell.width = 0;
+	      _intercell.width += change.width;
+	      if (_intercell.width < 0)
+		_intercell.width = 0;
 	    }
 	}
     }
@@ -2683,7 +2683,7 @@ static SEL getSel = @selector(objectAtIndex:);
   SEL		mkSel = @selector(makeCellAtRow:column:);
   IMP		mkImp = [self methodForSelector: mkSel];
 
-//NSLog(@"%x - mr: %d mc:%d nr:%d nc:%d r:%d c:%d", (unsigned)self, maxRows, maxCols, numRows, numCols, row, col);
+//NSLog(@"%x - mr: %d mc:%d nr:%d nc:%d r:%d c:%d", (unsigned)self, _maxRows, _maxCols, _numRows, _numCols, row, col);
   if (row < 0)
     {
 #if	STRICT == 0
@@ -2712,14 +2712,14 @@ static SEL getSel = @selector(objectAtIndex:);
    * Our implementation doesn't care, but a subclass might use
    * putCell:atRow:column: to implement it, and that checks bounds.
    */
-  oldMaxC = maxCols;
-  numCols = col;
-  if (col > maxCols)
-    maxCols = col;
-  oldMaxR = maxRows;
-  numRows = row;
-  if (row > maxRows)
-    maxRows = row;
+  oldMaxC = _maxCols;
+  _numCols = col;
+  if (col > _maxCols)
+    _maxCols = col;
+  oldMaxR = _maxRows;
+  _numRows = row;
+  if (row > _maxRows)
+    _maxRows = row;
 
   if (col > oldMaxC)
     {
@@ -2727,14 +2727,14 @@ static SEL getSel = @selector(objectAtIndex:);
 
       for (i = 0; i < oldMaxR; i++)
 	{
-	  cells[i] = NSZoneRealloc(myZone, cells[i], col * sizeof(id));
-	  selectedCells[i] = NSZoneRealloc(GSAtomicMallocZone(),
-	    selectedCells[i], col * sizeof(BOOL));
+	  _cells[i] = NSZoneRealloc(_myZone, _cells[i], col * sizeof(id));
+	  _selectedCells[i] = NSZoneRealloc(GSAtomicMallocZone(),
+	    _selectedCells[i], col * sizeof(BOOL));
 
 	  for (j = oldMaxC; j < col; j++)
 	    {
-	      cells[i][j] = nil;
-	      selectedCells[i][j] = NO;
+	      _cells[i][j] = nil;
+	      _selectedCells[i][j] = NO;
 	      if (j == end && colSpace > 0)
 		{
 		  colSpace--;
@@ -2751,22 +2751,22 @@ static SEL getSel = @selector(objectAtIndex:);
     {
       int	end = row - 1;
 
-      cells = NSZoneRealloc(myZone, cells, row * sizeof(id*));
-      selectedCells = NSZoneRealloc(myZone, selectedCells, row * sizeof(BOOL*));
+      _cells = NSZoneRealloc(_myZone, _cells, row * sizeof(id*));
+      _selectedCells = NSZoneRealloc(_myZone, _selectedCells, row * sizeof(BOOL*));
 
       /* Allocate the new rows and fill them */
       for (i = oldMaxR; i < row; i++)
 	{
-	  cells[i] = NSZoneMalloc(myZone, col * sizeof(id));
-	  selectedCells[i] = NSZoneMalloc(GSAtomicMallocZone(),
+	  _cells[i] = NSZoneMalloc(_myZone, col * sizeof(id));
+	  _selectedCells[i] = NSZoneMalloc(GSAtomicMallocZone(),
 	    col * sizeof(BOOL));
 
 	  if (i == end)
 	    {
 	      for (j = 0; j < col; j++)
 		{
-		  cells[i][j] = nil;
-		  selectedCells[i][j] = NO;
+		  _cells[i][j] = nil;
+		  _selectedCells[i][j] = NO;
 		  if (rowSpace > 0)
 		    {
 		      rowSpace--;
@@ -2781,8 +2781,8 @@ static SEL getSel = @selector(objectAtIndex:);
 	    {
 	      for (j = 0; j < col; j++)
 		{
-		  cells[i][j] = nil;
-		  selectedCells[i][j] = NO;
+		  _cells[i][j] = nil;
+		  _selectedCells[i][j] = NO;
 		  (*mkImp)(self, mkSel, i, j);
 		}
 	    }
@@ -2790,7 +2790,7 @@ static SEL getSel = @selector(objectAtIndex:);
     }
 
   [self deselectAllCells];
-//NSLog(@"%x - end mr: %d mc:%d nr:%d nc:%d r:%d c:%d", (unsigned)self, maxRows, maxCols, numRows, numCols, row, col);
+//NSLog(@"%x - end mr: %d mc:%d nr:%d nc:%d r:%d c:%d", (unsigned)self, _maxRows, _maxCols, _numRows, _numCols, row, col);
 }
 
 - (void) _setState: (int)state
@@ -2819,20 +2819,20 @@ static SEL getSel = @selector(objectAtIndex:);
       if (i == endPoint.y)
 	colLimit = endPoint.x;
       else
-	colLimit = numCols - 1;
+	colLimit = _numCols - 1;
 
       for (; j <= colLimit; j++)
 	{
 	  NSRect	rect = [self cellFrameAtRow: i column: j];
-	  NSCell	*aCell = cells[i][j];
+	  NSCell	*aCell = _cells[i][j];
 
 	  [aCell setState: state];
 	  [aCell highlight: highlight withFrame: rect inView: self];
 	  [self setNeedsDisplayInRect: rect];
 	  if (state == 0)
-	    selectedCells[i][j] = NO;
+	    _selectedCells[i][j] = NO;
 	  else
-	    selectedCells[i][j] = YES;
+	    _selectedCells[i][j] = YES;
 	}
     }
 }
@@ -2845,9 +2845,9 @@ static SEL getSel = @selector(objectAtIndex:);
   if (row > -1)
     {
       // First look for cells in the same row
-      for (j = column + 1; j < numCols; j++)
+      for (j = column + 1; j < _numCols; j++)
 	{
-	  if ([cells[row][j] isSelectable])
+	  if ([_cells[row][j] isSelectable])
 	    {
 	      _selectedCell = [self selectTextAtRow: row
 				    column: j];
@@ -2858,11 +2858,11 @@ static SEL getSel = @selector(objectAtIndex:);
 	}
     }
   // Otherwise, make the big cycle.
-  for (i = row + 1; i < numRows; i++)
+  for (i = row + 1; i < _numRows; i++)
     {
-      for (j = 0; j < numCols; j++)
+      for (j = 0; j < _numCols; j++)
 	{
-	  if ([cells[i][j] isSelectable])
+	  if ([_cells[i][j] isSelectable])
 	    {
 	      _selectedCell = [self selectTextAtRow: i
 				    column: j];
@@ -2878,12 +2878,12 @@ static SEL getSel = @selector(objectAtIndex:);
 					column: (int)column
 {
   int i,j;
-  if (row < numCols)
+  if (row < _numCols)
     {
       // First look for cells in the same row
       for (j = column - 1; j > -1; j--)
 	{
-	  if ([cells[row][j] isSelectable])
+	  if ([_cells[row][j] isSelectable])
 	    {
 	      _selectedCell = [self selectTextAtRow: row
 				    column: j];
@@ -2896,9 +2896,9 @@ static SEL getSel = @selector(objectAtIndex:);
   // Otherwise, make the big cycle.
   for (i = row - 1; i > -1; i--)
     {
-      for (j = numCols - 1; j > -1; j--)
+      for (j = _numCols - 1; j > -1; j--)
 	{
-	  if ([cells[i][j] isSelectable])
+	  if ([_cells[i][j] isSelectable])
 	    {
 	      _selectedCell = [self selectTextAtRow: i
 				    column: j];

@@ -49,22 +49,22 @@ typedef enum _NSMatrixMode {
 
 @interface NSMatrix : NSControl <NSCoding>
 {
-  id		**cells;
-  BOOL		**selectedCells;
-  int		maxRows;
-  int		maxCols;
-  int		numRows;
-  int		numCols;
-  NSZone	*myZone;
-  Class		cellClass;
-  id		cellPrototype;
-  IMP		cellNew;
-  IMP		cellInit;
-  NSMatrixMode	mode;
-  NSSize	cellSize;
-  NSSize	intercell;
-  NSColor	*backgroundColor;
-  NSColor	*cellBackgroundColor;
+  id		**_cells;
+  BOOL		**_selectedCells;
+  int		_maxRows;
+  int		_maxCols;
+  int		_numRows;
+  int		_numCols;
+  NSZone	*_myZone;
+  Class		_cellClass;
+  id		_cellPrototype;
+  IMP		_cellNew;
+  IMP		_cellInit;
+  NSMatrixMode	_mode;
+  NSSize	_cellSize;
+  NSSize	_intercell;
+  NSColor	*_backgroundColor;
+  NSColor	*_cellBackgroundColor;
   id		_delegate;
   NSText*       _textObject;        
   BOOL          _tabKeyTraversesCells;
@@ -75,12 +75,12 @@ typedef enum _NSMatrixMode {
   id		_selectedCell;
   int		_selectedRow;
   int		_selectedColumn;
-  BOOL		allowsEmptySelection;
-  BOOL		selectionByRect;
-  BOOL		drawsBackground;
-  BOOL		drawsCellBackground;
-  BOOL		autosizesCells;
-  BOOL		autoscroll;
+  BOOL		_allowsEmptySelection;
+  BOOL		_selectionByRect;
+  BOOL		_drawsBackground;
+  BOOL		_drawsCellBackground;
+  BOOL		_autosizesCells;
+  BOOL		_autoscroll;
   id            _keyCell;
 }
 
