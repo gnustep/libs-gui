@@ -280,8 +280,6 @@ static NSFont *getNSFont(float fontSize, int role)
   defaultSize = (fontSize == 0.0);
   if (defaultSize)
     {
-      font_role |= 1;
-
       if (font_roles[role].cachedFont)
 	return AUTORELEASE(RETAIN(font_roles[role].cachedFont));
 
@@ -290,6 +288,10 @@ static NSFont *getNSFont(float fontSize, int role)
 
       if (!fontSize)
 	fontSize = [NSFont systemFontSize];
+    }
+  else
+    {
+      font_role |= 1;
     }
 
   fontName = fontNameForRole(role, &i);
