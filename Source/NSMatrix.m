@@ -52,6 +52,26 @@
   [a release]; \
   a = b;
 
+#ifdef MIN
+# undef MIN
+#endif
+#define MIN(A,B)  ({ typeof(A) __a = (A); \
+					typeof(B) __b = (B); \
+					__a < __b ? __a : __b; })
+
+#ifdef MAX
+# undef MAX
+#endif
+#define MAX(A,B)  ({ typeof(A) __a = (A); \
+					typeof(B) __b = (B); \
+					__a < __b ? __b : __a; })
+
+#ifdef ABS
+# undef ABS
+#endif
+#define ABS(A)	({ typeof(A) __a = (A); __a < 0 ? -__a : __a; })
+
+
 #define SIGN(x) \
     ({typeof(x) _SIGN_x = (x); \
       _SIGN_x > 0 ? 1 : (_SIGN_x == 0 ? 0 : -1); })

@@ -57,7 +57,7 @@
   if (_documentView) {
     [self addSubview:_documentView];
 
-    /* Register to notifications sent by the document view */
+    /* Register for notifications sent by the document view */
     [_documentView setPostsFrameChangedNotifications:YES];
     [_documentView setPostsBoundsChangedNotifications:YES];
 
@@ -120,7 +120,7 @@
 - (NSRect)documentRect
 {
   NSRect documentFrame = [_documentView frame];
-  NSRect clipViewBounds = [self bounds];
+  NSRect clipViewBounds = bounds;
   NSRect rect;
 
   rect.origin = documentFrame.origin;
@@ -133,7 +133,7 @@
 - (NSRect)documentVisibleRect
 {
   NSRect documentBounds = [_documentView bounds];
-  NSRect clipViewBounds = [self bounds];
+  NSRect clipViewBounds = bounds;
   NSRect rect;
 
   rect.origin = clipViewBounds.origin;
@@ -202,14 +202,14 @@
   [super_view reflectScrolledClipView:self];
 }
 
-- (id)documentView				{ return _documentView; }
-- (void)setCopiesOnScroll:(BOOL)flag		{ _copiesOnScroll = flag; }
-- (BOOL)copiesOnScroll				{ return _copiesOnScroll; }
+- (id)documentView								{ return _documentView; }
+- (void)setCopiesOnScroll:(BOOL)flag			{ _copiesOnScroll = flag; }
+- (BOOL)copiesOnScroll							{ return _copiesOnScroll; }
 - (void)setDocumentCursor:(NSCursor*)aCursor	{ ASSIGN(_cursor, aCursor); }
-- (NSCursor*)documentCursor			{ return _cursor; }
-- (NSColor*)backgroundColor			{ return _backgroundColor; }
-- (BOOL)isFlipped			{ return [_documentView isFlipped]; }
-- (BOOL)acceptsFirstResponder		{ return _documentView != nil; }
+- (NSCursor*)documentCursor						{ return _cursor; }
+- (NSColor*)backgroundColor						{ return _backgroundColor; }
+- (BOOL)isFlipped						{ return [_documentView isFlipped]; }
+- (BOOL)acceptsFirstResponder			{ return _documentView != nil; }
 
 - (void)setBackgroundColor:(NSColor*)aColor
 {

@@ -1,3 +1,19 @@
+Thu Oct 15 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* NSApplication.m minor optimiztions. 
+	* NSAttributedString.m sizeWithAttributes: implement tab support. 
+	* NSStringDrawing.m sizeWithAttributes: implement tab support. 
+	* NSScroller.m trackScrollButtons: add temporary hack in support of XRAW's
+		heavily optimized scrolling machinery. 
+	* NSScroller.m remove sendAction:to: 
+	* NSScrolView.m _doScroll: implement scroller update when scrolling via
+		buttons
+	* NSScrolView.m reflectScrolledClipView comment out setNeedsDisplay as it
+		causes display flicker.
+	* NSText.m add changes from Daniel Bðhringer, set initFrame to default 
+		values to prevent infinite loop in rebuildLineLayout, minor tweaks 
+	* NSView.m minor optimiztions.
+
 Fri Sep 18 10:21:38 1998  Adam Fedor  <fedor@ultra.doc.com>
 
 	* Source/NSClipView.m (MIN, MAX): Remove.

@@ -116,9 +116,13 @@ if(container) [self setTextContainer: container];
 /************************* Key binding entry-point *************************/
 
 // This method is the funnel point for text insertion after keys pass through the key binder.
+
+#ifdef DEBUGG
 -(void) insertText:(NSString*) insertString
 {
+[super insertText: insertString];
 }
+#endif /* DEBUGG */
 
 /*************************** Sizing methods ***************************/
 
@@ -204,12 +208,14 @@ if(container) [self setTextContainer: container];
 {
 }
 
+#ifdef DEBUGG
 -(BOOL)shouldDrawInsertionPoint
 {
 }
 -(void) drawInsertionPointInRect:(NSRect)rect color:(NSColor *)color turnedOn:(BOOL)flag
 {
 }
+#endif /* DEBUGG */
 
 /*************************** Especially for subclassers ***************************/
 
@@ -228,12 +234,15 @@ if(container) [self setTextContainer: container];
 	return ret;
 }
 
+#ifdef DEBUGG
 - (void)updateDragTypeRegistration
 {
 }
 
 - (NSRange)selectionRangeForProposedRange:(NSRange)proposedCharRange granularity:(NSSelectionGranularity)granularity
-{}
+{
+}
+#endif /* DEBUGG */
 
 @end
 
@@ -327,12 +336,14 @@ if(container) [self setTextContainer: container];
 
 /*************************** NSResponder methods ***************************/
 
+#ifdef DEBUGG
 -(BOOL) resignFirstResponder
 {	return YES;
 }
 -(BOOL) becomeFirstResponder
 {	return YES;
 }
+#endif /* DEBUGG */
 
 /*************************** Smart copy/paste/delete support ***************************/
 

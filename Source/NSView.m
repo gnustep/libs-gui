@@ -549,7 +549,7 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
   PSMatrix* matrix;
 
   if (!aView)
-    aView = [[self window] contentView];
+    aView = [window contentView];
 
   if ([self isDescendantOf:aView]) {
     NSArray* path = [self _pathBetweenSubview:self toSuperview:aView];
@@ -578,7 +578,7 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 		 toView:(NSView *)aView
 {
   if (!aView)
-    aView = [[self window] contentView];
+    aView = [window contentView];
 
   return [aView convertPoint:aPoint fromView:self];
 }
@@ -731,10 +731,20 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
   		frame.size.height = [super_view frame].size.height;
 		}
 	else									// height is not resizable so check 
-		{									// if right margin can be stretched
+		{									// if bottom margin can be stretchd
 		if(autoresizingMask & NSViewMinYMargin)
-  			frame.origin.y += [super_view frame].size.height - oldSize.height;
+	  		frame.origin.y += [super_view frame].size.height - oldSize.height;
+// 		if(autoresizingMask & NSViewMaxYMargin)
+// 			frame.origin.y = [super_view frame].origin.y;
 		}
+
+	fprintf (stderr, "NSView resizeWithOldSuperviewSize: \n");
+	fprintf (stderr,
+		"NSView: frame origin (%1.2f, %1.2f), size (%1.2f, %1.2f)\n",
+			frame.origin.x, frame.origin.y, 
+			frame.size.width, frame.size.height);
+	fprintf (stderr, "NSView: old size (%1.2f, %1.2f)\n",
+			oldSize.width, oldSize.height);
 }
 
 - (void)allocateGState
@@ -791,8 +801,11 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
 - (void)display
 {
-  invalidatedRectangle = NSZeroRect;
-  [self displayRect:bounds];
+	if(!window)											// do nothing if not in
+		return;											// a window
+														
+	invalidatedRectangle = NSZeroRect;					// Reset invalid rect
+	[self displayRect:[self visibleRect]];				// display visible rect
 }
 
 - (void)displayIfNeeded
@@ -828,7 +841,6 @@ int i, count;
 	[self lockFocus];
 	[self drawRect:rect];
 	[window _setNeedsFlush];
-//  [window _view:self needsFlushInRect:rect];
 	[self unlockFocus];
   													// Tell subviews to display
 	for (i = 0, count = [sub_views count]; i < count; ++i) 
@@ -864,25 +876,28 @@ int i, count;
 {}
 
 - (NSRect)visibleRect
-{
-  if (!super_view)
-    return bounds;
-  else {
-    NSRect superviewsVisibleRect
-	= [self convertRect:[super_view visibleRect] fromView:super_view];
+{														// if no super view 
+	if (!super_view)									// bounds is visible
+		return bounds;
+	else 												// return intersection
+		{												// between bounds and
+		NSRect superviewsVisibleRect;					// super view's visible
+														// rect
+		superviewsVisibleRect = [self convertRect:[super_view visibleRect] 
+				  				  	  fromView:super_view];
 
-    return NSIntersectionRect (superviewsVisibleRect, bounds);
-  }
+    	return NSIntersectionRect(superviewsVisibleRect, bounds);
+		}
 }
 
 - (void)_addSubviewForNeedingDisplay:(NSView*)view
-{													// Add view to the list of
-NSView* currentView;								// sibling subviews that 
-													// need display.
+{														// Add view to the list
+NSView* currentView;									// of sibling subviews 
+														// that need display.
 	currentView = _subviewsThatNeedDisplay;		
-	while (currentView) 							// do nothing if the view 
-		{											// is already in self's
-		if (currentView == view)					// list.
+	while (currentView) 								// do nothing if the 
+		{												// view is already in
+		if (currentView == view)						// self's list.
 			return;
 		currentView = currentView->_nextSiblingSubviewThatNeedsDisplay;
 		}

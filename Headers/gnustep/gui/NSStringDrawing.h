@@ -55,7 +55,7 @@ extern NSString *NSKernAttributeName;				// NSNumber float, 0
 //											defaultParagraphStyle
 //
 //		NSKernAttributeName					NSNumber float, offset from 
-//		 									baseline, amount tomodify default 
+//		 									baseline, amount to modify default 
 //											kerning, if 0 kerning is off		 	 
 
 enum 									

@@ -5,6 +5,8 @@
 
    Author: Ovidiu Predescu <ovidiu@net-community.com>
    Date: July 1997
+   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: October 1998
    
    This file is part of the GNUstep GUI Library.
 
@@ -95,6 +97,7 @@ static Class rulerViewClass = nil;
   _pageScroll = 10;
   _borderType = NSBezelBorder;
   _scrollsDynamically = YES;
+  autoresizingMask = NSViewMaxYMargin;
   [self tile];
 
   return self;
@@ -193,119 +196,153 @@ static Class rulerViewClass = nil;
 
 - (void)_doScroll:(NSScroller*)scroller
 {
-  float floatValue = [scroller floatValue];
-  NSRect clipViewBounds = [_contentView bounds];
-  NSScrollerPart hitPart = [scroller hitPart];
-  NSRect documentRect = [_contentView documentRect];
-  float amount = 0;
-  NSPoint point;
+float floatValue = [scroller floatValue];
+NSRect clipViewBounds = [_contentView bounds];
+NSScrollerPart hitPart = [scroller hitPart];
+NSRect documentRect = [_contentView documentRect];
+float amount = 0;
+NSPoint point;
 
-  NSDebugLog (@"_doScroll: float value = %f", floatValue);
+	NSDebugLog (@"_doScroll: float value = %f", floatValue);
 
-  _knobMoved = NO;
-  if (hitPart == NSScrollerIncrementLine)
-    amount = _lineScroll;
-  else if (hitPart == NSScrollerIncrementPage)
-    amount = _pageScroll;
-  else if (hitPart == NSScrollerDecrementLine)
-    amount = -_lineScroll;
-  else if (hitPart == NSScrollerDecrementPage)
-    amount = -_pageScroll;
-  else
-    _knobMoved = YES;
+	_knobMoved = NO;
 
-  if (!_knobMoved) {
-    if (scroller == _horizScroller) {
-      point.x = clipViewBounds.origin.x + amount;
-      point.y = clipViewBounds.origin.y;
-    }
-    else if (scroller == _vertScroller) {
-      point.x = clipViewBounds.origin.x;
-      /* For the vertical scroller the amount should actually be reversed */
-//      amount = -amount;
+	if(hitPart == NSScrollerKnob)
+		_knobMoved = YES;
+	else
+		{
+		if (hitPart == NSScrollerIncrementLine)
+			amount = _lineScroll;
+		else if (hitPart == NSScrollerIncrementPage)
+				amount = _pageScroll;
+		else if (hitPart == NSScrollerDecrementLine)
+					amount = -_lineScroll;
+		else if (hitPart == NSScrollerDecrementPage)
+						amount = -_pageScroll;
+		else
+			_knobMoved = YES;
+		}
 
-      /* If the view is flipped we also have to reverse the meanings of
-         increasing or decreasing of the y coordinate */
-//      if (![_contentView isFlipped])
-//	amount = -amount;
 
-      NSDebugLog (@"increment/decrement: amount = %f, flipped = %d",
-	      amount, [_contentView isFlipped]);
-      point.y = clipViewBounds.origin.y + amount;
-    }
-    else {
-      /* do nothing */
-      return;
-    }
-  }
-  else {
-    if (scroller == _horizScroller) {
-      point.x = floatValue * (documentRect.size.width
-			      - clipViewBounds.size.width);
-      point.y = clipViewBounds.origin.y;
-    }
-    else if (scroller == _vertScroller) {
-      point.x = clipViewBounds.origin.x;
-      if (![_contentView isFlipped])
-	floatValue = 1 - floatValue;
-      point.y = floatValue * (documentRect.size.height
-			      - clipViewBounds.size.height);
-    }
-    else {
-      /* do nothing */
-      return;
-    }
-  }
+	if (!_knobMoved) 										// button scrolling
+		{
+		if (scroller == _horizScroller) 
+			{
+			point.x = clipViewBounds.origin.x + amount;
+			point.y = clipViewBounds.origin.y;
+    		}
+    	else 
+			{
+			if (scroller == _vertScroller) 				// For the vertical
+				{										// scroller the amount
+     			point.x = clipViewBounds.origin.x;		// should be reversed
+     			amount = -amount;
 
-  [_contentView scrollToPoint:point];
-  _knobMoved = NO;
+									// If the view is flipped we also have to 
+									// reverse the meanings of increasing or 
+									// decreasing of the y coordinate 
+//    			if (![_contentView isFlipped])
+//					amount = -amount;
+
+      			NSDebugLog (@"increment/decrement: amount = %f, flipped = %d",
+	     					 amount, [_contentView isFlipped]);
+      			point.y = clipViewBounds.origin.y + amount;
+      			point.y = point.y < 0 ? 0 : point.y;		// FIX ME s/b in
+	   			}											// clipview
+    		else 
+     			return;										// do nothing
+			}
+  		}
+  	else 												
+		{													// knob scolling
+    	if (scroller == _horizScroller) 
+			{
+     		point.x = floatValue * (documentRect.size.width
+			      		- clipViewBounds.size.width);
+      		point.y = clipViewBounds.origin.y;
+    		}
+    	else
+			{ 
+			if (scroller == _vertScroller) 
+				{
+      			point.x = clipViewBounds.origin.x;
+      			if (![_contentView isFlipped])
+					floatValue = 1 - floatValue;
+      			point.y = floatValue * (documentRect.size.height
+			      			- clipViewBounds.size.height);
+    			}
+    		else 
+     			return;										// do nothing
+			}
+  		}
+
+	[_contentView scrollToPoint:point];						// scroll clipview
+	if (!_knobMoved)										
+		{													// if scrolling via 
+		[self reflectScrolledClipView:_contentView];		// buttons update
+		if (scroller == _vertScroller) 						// scroller pos to
+			[_vertScroller displayIfNeeded];				// reflect clipview
+		else
+			[_horizScroller displayIfNeeded];
+		[window flushWindow];
+		}
 }
 
 - (void)reflectScrolledClipView:(NSClipView*)aClipView
 {
-  NSRect documentFrame = NSZeroRect;
-  NSRect clipViewBounds = NSZeroRect;
-  float floatValue;
-  float knobProportion;
-  id documentView;
+NSRect documentFrame = NSZeroRect;
+NSRect clipViewBounds = NSZeroRect;
+float floatValue;
+float knobProportion;
+id documentView;
+															// do nothing if 
+	if(aClipView != _contentView)							// aClipView is not 
+		return;												// our content view
 
-  if (_knobMoved)
-    return;
+	if (_knobMoved)									// is this really needed? 
+		return;										// FAR FIX ME ?
 
-  NSDebugLog (@"reflectScrolledClipView:");
+	NSDebugLog (@"reflectScrolledClipView:");
 
-  if (_contentView) {
-    clipViewBounds = [_contentView bounds];
-    if ((documentView = [_contentView documentView]))
-      documentFrame = [documentView frame];
-  }
+	clipViewBounds = [_contentView bounds];
+	if ((documentView = [_contentView documentView]))
+		documentFrame = [documentView frame];
 
-  if (_hasVertScroller) {
-    if (documentFrame.size.height <= clipViewBounds.size.height)
-      [_vertScroller setEnabled:NO];
-    else {
-      [_vertScroller setEnabled:YES];
-      knobProportion = clipViewBounds.size.height / documentFrame.size.height;
-      floatValue = clipViewBounds.origin.y
-		  / (documentFrame.size.height - clipViewBounds.size.height);
-      if (![_contentView isFlipped])
-	floatValue = 1 - floatValue;
-      [_vertScroller setFloatValue:floatValue knobProportion:knobProportion];
-    }
-  }
+	if (_hasVertScroller) 
+		{
+		if (documentFrame.size.height <= clipViewBounds.size.height)
+			[_vertScroller setEnabled:NO];
+		else 
+			{
+			[_vertScroller setEnabled:YES];
+			knobProportion = clipViewBounds.size.height / 
+								documentFrame.size.height;
+			floatValue = clipViewBounds.origin.y / (documentFrame.size.height - 
+							clipViewBounds.size.height);
+			if (![_contentView isFlipped])
+				floatValue = 1 - floatValue;
+			[_vertScroller setFloatValue:floatValue 
+						   knobProportion:knobProportion];
+			}
+		}
 
-  if (_hasHorizScroller) {
-    if (documentFrame.size.width <= clipViewBounds.size.width)
-      [_horizScroller setEnabled:NO];
-    else {
-      [_horizScroller setEnabled:YES];
-      knobProportion = clipViewBounds.size.width / documentFrame.size.width;
-      floatValue = clipViewBounds.origin.x
-		   / (documentFrame.size.width - clipViewBounds.size.width);
-      [_horizScroller setFloatValue:floatValue knobProportion:knobProportion];
-    }
-  }
-  [self setNeedsDisplay:YES];
+	if (_hasHorizScroller) 
+		{
+		if (documentFrame.size.width <= clipViewBounds.size.width)
+			[_horizScroller setEnabled:NO];
+		else 
+			{
+			[_horizScroller setEnabled:YES];
+      		knobProportion = clipViewBounds.size.width / 
+								documentFrame.size.width;
+      		floatValue = clipViewBounds.origin.x / (documentFrame.size.width - 
+							clipViewBounds.size.width);
+      		[_horizScroller setFloatValue:floatValue 
+							knobProportion:knobProportion];
+    		}
+  		}
+
+//  [self setNeedsDisplay:YES];			// not needed by XRAW causes flicker
 }
 
 - (void)setHorizontalRulerView:(NSRulerView*)aRulerView

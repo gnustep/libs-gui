@@ -63,10 +63,9 @@ static BOOL gnustep_gui_app_is_in_dealloc;
 static NSEvent *gnustep_gui_null_event;
 static id NSApp;
 
-#define ASSIGN(a, b) \
-  [b retain]; \
-  [a release]; \
-  a = b;
+#define ASSIGN(a, b)	[b retain]; \
+						[a release]; \
+						a = b;
 
 @implementation NSApplication
 
@@ -336,75 +335,98 @@ NSAutoreleasePool* pool;
 // Getting, removing, and posting events
 //
 - (BOOL)event:(NSEvent *)theEvent matchMask:(unsigned int)mask
-{
-    NSEventType t;
+{													 
+    if (mask == NSAnyEventMask)						// If mask is for any event
+        return YES;									// then return success
 
-    // If mask is for any event then return success
-    if (mask == NSAnyEventMask)
-        return YES;
+    if (!theEvent) 
+		return NO;
+													
+    if (theEvent == gnustep_gui_null_event) 		// Don't check a null event
+		return NO;
 
-    if (!theEvent) return NO;
+	switch([theEvent type])
+		{
+		case NSLeftMouseDown:
+    		if (mask & NSLeftMouseDownMask)
+        		return YES;
+			break;
 
-    // Don't check the null event
-    if (theEvent == gnustep_gui_null_event) return NO;
+ 		case NSLeftMouseUp:
+    		if (mask & NSLeftMouseUpMask)
+        		return YES;
+			break;
 
-    t = [theEvent type];
+  		case NSRightMouseDown:
+    		if (mask & NSRightMouseDownMask)
+        		return YES;
+			break;
 
-    if ((t == NSLeftMouseDown) && (mask & NSLeftMouseDownMask))
-        return YES;
+  		case NSRightMouseUp:
+    		if (mask & NSRightMouseUpMask)
+        		return YES;
+			break;
 
-    if ((t == NSLeftMouseUp) && (mask & NSLeftMouseUpMask))
-        return YES;
+  		case NSMouseMoved:
+    		if (mask & NSMouseMovedMask)
+        		return YES;
+			break;
 
-    if ((t == NSRightMouseDown) && (mask & NSRightMouseDownMask))
-        return YES;
+  		case NSMouseEntered:
+    		if (mask & NSMouseEnteredMask)
+        		return YES;
+			break;
 
-    if ((t == NSRightMouseUp) && (mask & NSRightMouseUpMask))
-        return YES;
+  		case NSMouseExited:
+    		if (mask & NSMouseExitedMask)
+        		return YES;
+			break;
 
-    if ((t == NSMouseMoved) && (mask & NSMouseMovedMask))
-        return YES;
+  		case NSLeftMouseDragged:
+    		if (mask & NSLeftMouseDraggedMask)
+        		return YES;
+			break;
 
-    if ((t == NSMouseEntered) && (mask & NSMouseEnteredMask))
-        return YES;
+  		case NSRightMouseDragged:
+    		if (mask & NSRightMouseDraggedMask)
+        		return YES;
+			break;
 
-    if ((t == NSMouseExited) && (mask & NSMouseExitedMask))
-        return YES;
+  		case NSKeyDown:
+    		if (mask & NSKeyDownMask)
+        		return YES;
+			break;
 
-    if ((t == NSLeftMouseDragged) && (mask & NSLeftMouseDraggedMask))
-        return YES;
+  		case NSKeyUp:
+    		if (mask & NSKeyUpMask)
+        		return YES;
+			break;
 
-    if ((t == NSRightMouseDragged) && (mask & NSRightMouseDraggedMask))
-        return YES;
+  		case NSFlagsChanged:
+    		if (mask & NSFlagsChangedMask)
+        		return YES;
+			break;
 
-    if ((t == NSKeyDown) && (mask & NSKeyDownMask))
-        return YES;
+  		case NSPeriodic:
+    		if (mask & NSPeriodicMask)
+        		return YES;
+			break;
 
-    if ((t == NSKeyUp) && (mask & NSKeyUpMask))
-        return YES;
+  		case NSCursorUpdate:
+    		if (mask & NSCursorUpdateMask)
+        		return YES;
+			break;
 
-    if ((t == NSFlagsChanged) && (mask & NSFlagsChangedMask))
-        return YES;
-
-    if ((t == NSPeriodic) && (mask & NSPeriodicMask))
-        return YES;
-
-    if ((t == NSCursorUpdate) && (mask & NSCursorUpdateMask))
-        return YES;
+		default:
+			break;
+		}
 
     return NO;
 }
 
-- (void)setCurrentEvent:(NSEvent *)theEvent
-{
-    [theEvent retain];
-    [current_event release];
-    current_event = theEvent;
-}
-
 - (NSEvent *)currentEvent;
 {
-  return current_event;
+	return current_event;
 }
 
 - (void)discardEventsMatchingMask:(unsigned int)mask
@@ -415,12 +437,13 @@ NSAutoreleasePool* pool;
 - (NSEvent*)_eventMatchingMask:(unsigned int)mask
 {
 NSEvent* event;
-int i, count = [event_queue count];
+int i, count;
 
 	[self getNextEvent];
 
 	if ((count = [event_queue count])) 					// Get an event from
 		{												// the events queue
+//fprintf(stderr,"NSAppliation  _eventMatchingMask:  count %d\n", count);
 		for (i = 0; i < count; i++) 
 			{
 			event = [event_queue objectAtIndex:i];
@@ -428,7 +451,7 @@ int i, count = [event_queue count];
 				{
 				[event retain];
 				[event_queue removeObjectAtIndex:i];
-				[self setCurrentEvent:event];
+				ASSIGN(current_event, event);
 
 				return [event autorelease];
       			}
@@ -458,7 +481,7 @@ BOOL done = NO;
 		{												// for next event
 		NSDate *limitDate, *originalLimitDate;
 								// Retain the limitDate so it doesn't get 
-								// release accidentally by runMode:beforeDate: 
+								// released accidentally by runMode:beforeDate: 
 								// if a timer which has this date as fire date 
 								// gets released.
 		limitDate = [[currentLoop limitDateForMode:mode] retain];
@@ -483,13 +506,12 @@ BOOL done = NO;
     	if (event)
       		break;
   		}
-
-	type = [event type];
 											// Unhide the cursor if necessary
 	if (event != gnustep_gui_null_event)	// and event is not a null event
-		{											// do so only if we should
-		if ([NSCursor isHiddenUntilMouseMoves])		// unhide when mouse moves 
-			{		 								// and event is mouse event
+		{											
+		if ([NSCursor isHiddenUntilMouseMoves])		// do so only if we should
+			{		 								// unhide when mouse moves
+			type = [event type];					// and event is mouse event
 			if ((type == NSLeftMouseDown) || (type == NSLeftMouseUp)
 					|| (type == NSRightMouseDown) || (type == NSRightMouseUp)
 					|| (type == NSMouseMoved))

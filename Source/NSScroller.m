@@ -31,6 +31,7 @@
 #include <Foundation/NSRunLoop.h>
 
 #include <AppKit/NSScroller.h>
+#include <AppKit/NSScrollView.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSButtonCell.h>
 #include <AppKit/NSApplication.h>
@@ -61,16 +62,16 @@ static NSButtonCell* knobCell = nil;
   }
 }
 
-+ (float)scrollerWidth				{ return 18; }
++ (float)scrollerWidth						{ return 18; }
 - (NSScrollArrowPosition)arrowsPosition		{ return _arrowsPosition; }
 - (NSUsableScrollerParts)usableParts		{ return _usableParts; }
-- (float)knobProportion				{ return _knobProportion; }
-- (NSScrollerPart)hitPart			{ return _hitPart; }
-- (float)floatValue				{ return _floatValue; }
-- (void)setAction:(SEL)action			{ _action = action; }
-- (SEL)action					{ return _action; }
-- (void)setTarget:(id)target			{ ASSIGN(_target, target); }
-- (id)target					{ return _target; }
+- (float)knobProportion						{ return _knobProportion; }
+- (NSScrollerPart)hitPart					{ return _hitPart; }
+- (float)floatValue							{ return _floatValue; }
+- (void)setAction:(SEL)action				{ _action = action; }
+- (SEL)action								{ return _action; }
+- (void)setTarget:(id)target				{ ASSIGN(_target, target); }
+- (id)target								{ return _target; }
 
 - initWithFrame:(NSRect)frameRect
 {
@@ -477,17 +478,22 @@ static NSButtonCell* knobCell = nil;
 
     if (theCell) {
       [theCell highlight:YES withFrame:rect inView:self];	
-      [self setNeedsDisplayInRect:rect];		// not needed by XRAW
+//      [self setNeedsDisplayInRect:rect];		// not needed by XRAW
       [window flushWindow];
-      NSDebugLog (@"tracking cell %x", theCell);
+      NSLog (@"tracking cell %x", theCell);
       // Track the mouse until mouse goes up 
       shouldReturn = [theCell trackMouse:theEvent
 				  inRect:rect
 				  ofView:self
 			    untilMouseUp:YES];
 
+	if([_target isKindOf:[NSScrollView class]])			// a hack for XRAW
+		{												// FIX ME
+		if([[_target contentView] respondsTo:@selector(_freeMatrix)])
+			[[_target contentView] _freeMatrix];
+		}
       [theCell highlight:NO withFrame:rect inView:self];
-      [self setNeedsDisplayInRect:rect];		// not needed by XRAW
+//      [self setNeedsDisplayInRect:rect];		// not needed by XRAW
       [window flushWindow];
     }
 
@@ -502,19 +508,6 @@ static NSButtonCell* knobCell = nil;
 
   NSDebugLog (@"return from trackScrollButtons");
 }
-
-- (BOOL)sendAction:(SEL)theAction to:(id)theTarget
-{
-  BOOL ret;
-
-  // send action to the target on behalf of cell
-  ret = [super sendAction:theAction to:theTarget];
-  [self drawKnobSlot];		// lockFocus set in mouseDown method is 
-  [self drawKnob];		// active so we simply redraw the knob and 
-  [window flushWindow];		// slot to reflect the hit scroll button	
-
-  return ret;
-}															
 
 - (void)encodeWithCoder:aCoder
 {

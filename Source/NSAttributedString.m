@@ -28,18 +28,44 @@
 
 #include <AppKit/NSAttributedString.h>
 #include <AppKit/AppKit.h>
-
+										// by default tabs are measured as one
+#define TABWIDTH 3						// char so this value is set to one 
+										// minus the default tab width of 4
 
 @implementation NSString(NSAttributedString)
 
 - (NSSize)sizeWithAttributes:(NSDictionary *)attrs
 {
 NSFont *font;
+const char *str = [self cString];
+int i = 0, j = TABWIDTH;
+float tabSize;
+
+	while(*str != '\0')								// calc the additional size 
+		{											// to be added for tabs.  
+		if(*str++ == '\t')			
+			{						
+			i += j;					// j is the max number of spaces needed per					  
+			j = TABWIDTH;			// tab.  the number of spaces needed per 
+			}						// tab varies in order to align each tab at
+		else						// even multiples of TABWIDTH+1.  
+			j = j-- > 0 ? j : TABWIDTH;	
+		};							
+
+//	fprintf(stderr,"NSAttributedString sizeWithAttributes tabs: %d\n", i);
+	
 															// if font is not
 	if(!(font = [attrs objectForKey:NSFontAttributeName]))	// specified, use
 		font = [NSFont userFontOfSize:12];					// the default
 
-	return NSMakeSize([font widthOfString:self], [font pointSize]);
+#ifdef FAR_DEBUG
+fprintf(stderr,"NSAttributedString sizeWithAttributes \"%s\"  width: %f\n", [self cString], [font widthOfString:self]);	
+fprintf(stderr,"NSAttributedString sizeWithAttributes width: %f\n", [font widthOfString:self]);	
+#endif																		
+
+	tabSize = (float)i * [font widthOfString:@" "];
+	
+	return NSMakeSize(([font widthOfString:self] + tabSize), [font pointSize]);
 }
 
 @end

@@ -107,21 +107,21 @@ typedef enum _NSSelectionAffinity
 
 	id lineLayoutInformation;
 	NSMutableDictionary *typingAttributes; 
-	float currentCursorX;
+	float currentCursorX;	// column-stable cursor up/down
 	BOOL displayDisabled;
 	int spellCheckerDocumentTag;
 }
 
 
 // GNU utility methods
-// return value is guaranteed to be a NSAttributedString even if data is only NSString
+// return value is guaranteed to be a NSAttributedString even if data contains only NSString
 +(NSAttributedString*) attributedStringForData:(NSData*) aData;
 +(NSData*) dataForAttributedString:(NSAttributedString*) aString;
 
 +(NSString*) newlineString;	// GNU extension (override it if you want other characters treated as newline characters)
 
 //
-// Getting and Setting Contents 
+// Getting and Setting Contents (low level: no selection handling, relayout or display)
 //
 -(void) replaceRange:(NSRange)range withAttributedString:(NSAttributedString*)attrString;	// GNU extension
 -(void) replaceRange:(NSRange)range withString:(NSString*) aString;
@@ -241,8 +241,8 @@ typedef enum _NSSelectionAffinity
 //
 // Managing the Delegate
 //
-- (id)delegate;
-- (void)setDelegate:(id)anObject;
+- delegate;
+-(void) setDelegate:anObject;
 
 
 //
@@ -262,13 +262,13 @@ typedef enum _NSSelectionAffinity
 - (void)ignoreSpelling:(id)sender;
 
 //
-// these NSTextView methods are here only informally
+// these NSTextView methods are here only informally (GNU extensions)
 //
 -(int) spellCheckerDocumentTag;
 
--(void) insertText:(NSString *)insertString;
+-(void) insertText:insertString;	// argument may be of class NSString or NSAttributedString (if isRichText)
 -(NSMutableDictionary*) typingAttributes;
--(void) setTypingAttributes:(NSDictionary *)dict;
+-(void) setTypingAttributes:(NSDictionary *)attrs;
 
 
 -(BOOL) shouldDrawInsertionPoint;
@@ -277,26 +277,29 @@ typedef enum _NSSelectionAffinity
 -(NSArray*) acceptableDragTypes;
 -(void) updateDragTypeRegistration;
 
--(NSRange) selectionRangeForProposedRange:(NSRange)proposedCharRange granularity:(NSSelectionGranularity)granularity;
+-(NSRange) selectionRangeForProposedRange:(NSRange)proposedCharRange granularity:(NSSelectionGranularity)granularity; // override if you want special cursor behaviour
 
 //
-// these NSLayoutManager- like methods are here only informally
+// these NSLayoutManager- like methods are here only informally (GNU extensions)
 //
 
 -(unsigned) characterIndexForPoint:(NSPoint)point;
 -(NSRect) rectForCharacterIndex:(unsigned) index;
 -(NSRect) boundingRectForLineRange:(NSRange)lineRange;
 -(NSRange) characterRangeForBoundingRect:(NSRect)bounds;
+-(NSRange) lineRangeForRect:(NSRect) aRect;
 
 //
-// these are implementation specific
+// these are implementation specific (GNU extensions)
 //
--(int) rebuildPlainLineLayoutInformationStartingAtLine:(int) aLine;	// returns count of lines actually updated (e.g. drawing optimization)
--(int) rebuildRichLineLayoutInformationStartingAtLine:(int) aLine;
--(int) lineLayoutIndexForCharacterIndex:(unsigned) anIndex;					// is identical to the real line number (not just counted return characters)
+-(int) rebuildLineLayoutInformationStartingAtLine:(int) aLine;	// returns count of lines actually updated (e.g. drawing optimization)
+-(int) rebuildPlainLineLayoutInformationStartingAtLine:(int) aLine delta:(int) insertionDelta actualLine:(int) insertionLine;	// override for special layout of plain text
+-(int) rebuildRichLineLayoutInformationStartingAtLine:(int) aLine delta:(int) insertionDelta actualLine:(int) insertionLine;	// ditto for rich text
+
+-(int) lineLayoutIndexForCharacterIndex:(unsigned) anIndex;		// return value is identical to the real line number (plus counted newline characters)
 -(void) redisplayForLineRange:(NSRange) redrawLineRange;
--(void) drawRichLinesInLineRange:(NSRange) aRange;	// private (use redisplayForLineRange:)
--(void) drawPlainLinesInLineRange:(NSRange) aRange;	// private (use redisplayForLineRange:)
+-(void) drawRichLinesInLineRange:(NSRange) aRange;	// low level, override but never invoke (use redisplayForLineRange:)
+-(void) drawPlainLinesInLineRange:(NSRange) aRange;	// low level, override but never invoke (use redisplayForLineRange:)
 
 //
 // various GNU extensions
@@ -304,6 +307,14 @@ typedef enum _NSSelectionAffinity
 
 -(void) setSelectionWordGranularitySet:(NSCharacterSet*) aSet;
 -(void) setSelectionParagraphGranularitySet:(NSCharacterSet*) aSet;
+
+//
+// private (never invoke, never subclass)
+//
+
+-(void) drawRectNoSelection:(NSRect)rect;
+-(int) rebuildPlainLineLayoutInformationStartingAtLine:(int) aLine;	// low level never invoke (use rebuildLineLayoutInformationStartingAtLine:)
+-(int) rebuildRichLineLayoutInformationStartingAtLine:(int) aLine;	//  ditto
 
 @end
 
@@ -321,16 +332,3 @@ extern NSString *NSTextDidChangeNotification;
 @end
 
 #endif // _GNUstep_H_NSText
-
-#if 0
-NSFontAttributeName; /* NSFont, default Helvetica 12 */
-->  NSParagraphStyleAttributeName; /* NSParagraphStyle, default defaultParagraphStyle */
-NSForegroundColorAttributeName; /* NSColor, default blackColor */
-NSUnderlineStyleAttributeName; /* int, default 0: no underline */
-NSSuperscriptAttributeName; /* int, default 0 */
-NSBackgroundColorAttributeName; /* NSColor, default nil: no background */
-->  NSAttachmentAttributeName; /* NSTextAttachment, default nil */
-NSLigatureAttributeName; /* int, default 1: default ligatures, 0: no ligatures, 2: all ligatures */
-NSBaselineOffsetAttributeName; /* float, in points; offset from baseline, default 0 */
-NSKernAttributeName; /* float, amount to modify default kerning, if 0, kerning off */
-#endif

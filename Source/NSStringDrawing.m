@@ -35,11 +35,30 @@
 - (NSSize)sizeWithAttributes:(NSDictionary *)attrs
 {
 NSFont *font;
+const char *str = [self cString];
+int i = 0, j = 4;
+float tabSize;
+
+	while(*str++ != '\0')									// count the tabs
+		{
+		if(*str == '\t')
+			{
+			i += j;
+			j = 4;
+			}
+		else
+			j = j == 0 ? 4 : j--;
+		};
 															// if font is not
 	if(!(font = [attrs objectForKey:NSFontAttributeName]))	// specified, use
 		font = [NSFont userFontOfSize:12];					// the default
 
-	return NSMakeSize([font widthOfString:self], [font pointSize]);
+fprintf(stderr,"string %s  width: %f\n", [self cString], [font widthOfString:self]);	
+
+//	tabSize = 4 * i * [font widthOfString:@" "];
+	tabSize = (float)i * [font widthOfString:@" "];
+	
+	return NSMakeSize(([font widthOfString:self] + tabSize), [font pointSize]);
 }
 
 @end
