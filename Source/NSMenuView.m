@@ -109,7 +109,6 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
     {
       // Remove this menu view from the old menu list of observers.
       [theCenter removeObserver: self name: nil object: menuv_menu];
-      [menuv_menu release];
     }
 
   ASSIGN(menuv_menu, menu);
@@ -972,8 +971,6 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 
   [encoder encodeObject: menuv_itemCells];
   [encoder encodeObject: menuv_font];
-  [encoder encodeConditionalObject: menuv_menu];
-  [encoder encodeConditionalObject: menuv_items_link];
   [encoder encodeValueOfObjCType: @encode(BOOL) at: &menuv_horizontal];
   [encoder encodeValueOfObjCType: @encode(float) at: &menuv_horizontalEdgePad];
   [encoder encodeValueOfObjCType: @encode(NSSize) at: &cellSize];
@@ -985,8 +982,6 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 
   [decoder decodeValueOfObjCType: @encode(id) at: &menuv_itemCells];
   [decoder decodeValueOfObjCType: @encode(id) at: &menuv_font];
-  menuv_menu       = [decoder decodeObject];
-  menuv_items_link = [decoder decodeObject];
   [decoder decodeValueOfObjCType: @encode(BOOL) at: &menuv_horizontal];
   [decoder decodeValueOfObjCType: @encode(float) at: &menuv_horizontalEdgePad];
   [decoder decodeValueOfObjCType: @encode(NSSize) at: &cellSize];

@@ -870,9 +870,10 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
   NSNotificationCenter *theCenter = [NSNotificationCenter defaultCenter];
   NSRect                winRect   = {{0,0},{20,23}};
 
-  menu_title = [[decoder decodeObject] retain];
-  menu_items = [[decoder decodeObject] retain];
-  menu_view  = [[decoder decodeObject] retain];
+  [decoder decodeValueOfObjCType: @encode(id) at: &menu_title];
+  [decoder decodeValueOfObjCType: @encode(id) at: &menu_items];
+  [decoder decodeValueOfObjCType: @encode(id) at: &menu_view];
+  [menu_view setMenu: self];	// Sets notifications up
   menu_supermenu = [decoder decodeObject];
   menu_popb      = [decoder decodeObject];
   [decoder decodeValueOfObjCType: @encode(BOOL) at: &menu_autoenable];
@@ -1490,7 +1491,7 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
             
 - (void) _releaseCloseButton
 {
-  [button retain];
+  RETAIN(button);
   [button removeFromSuperview];
 }
   
