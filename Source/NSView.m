@@ -643,12 +643,12 @@ PSMatrix* matrix;
   changey = [super_view bounds].size.height - oldSize.height;
 
                                                     // adjust the X axis
-  fprintf (stderr, "NSView resizeWithOldSuperviewSize: \n");
-  fprintf (stderr, "Change x,y (%1.2f, %1.2f)\n", changex, changey);
-  fprintf (stderr,
-            "NSView: old origin (%1.2f, %1.2f), size (%1.2f, %1.2f)\n",
-            frame.origin.x, frame.origin.y,
-            frame.size.width, frame.size.height);
+//  fprintf (stderr, "NSView resizeWithOldSuperviewSize: \n");
+//  fprintf (stderr, "Change x,y (%1.2f, %1.2f)\n", changex, changey);
+//  fprintf (stderr,
+//            "NSView: old origin (%1.2f, %1.2f), size (%1.2f, %1.2f)\n",
+//            frame.origin.x, frame.origin.y,
+//            frame.size.width, frame.size.height);
 
   if (changex)
     {
@@ -742,10 +742,10 @@ PSMatrix* matrix;
         }
     }
 
-  fprintf (stderr,
-            "NSView: new origin (%1.2f, %1.2f), size (%1.2f, %1.2f)\n",
-            frame.origin.x, frame.origin.y,
-            frame.size.width, frame.size.height);
+//  fprintf (stderr,
+//            "NSView: new origin (%1.2f, %1.2f), size (%1.2f, %1.2f)\n",
+//            frame.origin.x, frame.origin.y,
+//            frame.size.width, frame.size.height);
 
 /* FIXME
  * The lines containing 'floor()' ensure that the frame sizes are an integer

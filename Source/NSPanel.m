@@ -1,14 +1,14 @@
-/* 
+/*
    NSPanel.m
 
    Panel window class and related functions
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   NSPanel implementation 
+   NSPanel implementation
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
-   
+
    GSAlertPanel and alert panel functions implementation
    Author:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: 1998
@@ -19,7 +19,7 @@
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -29,7 +29,7 @@
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/ 
+*/
 
 #include <gnustep/gui/config.h>
 
@@ -50,7 +50,7 @@
 
 //*****************************************************************************
 //
-// 		NSPanel 
+// 		NSPanel
 //
 //*****************************************************************************
 
@@ -61,8 +61,10 @@
 //
 + (void)initialize
 {
-	if (self == [NSPanel class])
-		[self setVersion:1];
+  if (self == [NSPanel class])
+    {
+      [self setVersion:1];
+    }
 }
 
 //
@@ -70,16 +72,16 @@
 //
 - init
 {
-int style = NSTitledWindowMask | NSClosableWindowMask;
+  int style = NSTitledWindowMask | NSClosableWindowMask;
 
-	return [self initWithContentRect:NSZeroRect 
-				 styleMask:style
-				 backing:NSBackingStoreBuffered 
-				 defer:NO];
+  return [self initWithContentRect: NSZeroRect
+			 styleMask: style
+			   backing: NSBackingStoreBuffered
+			     defer: NO];
 }
 
 //
-// Determining the Panel's Behavior 
+// Determining the Panel's Behavior
 //
 - (BOOL)isFloatingPanel					{ return _isFloatingPanel; }
 - (void)setFloatingPanel:(BOOL)flag		{ _isFloatingPanel = flag; }
@@ -89,7 +91,7 @@ int style = NSTitledWindowMask | NSClosableWindowMask;
 
 - (void)setBecomesKeyOnlyIfNeeded:(BOOL)flag
 {
-	_becomesKeyOnlyIfNeeded = flag;
+  _becomesKeyOnlyIfNeeded = flag;
 }
 
 //
@@ -111,12 +113,12 @@ int style = NSTitledWindowMask | NSClosableWindowMask;
 
 //*****************************************************************************
 //
-// 		GSAlertPanel 
+// 		GSAlertPanel
 //
 //*****************************************************************************
 
 #define	PANX	362.0
-#define	PANY	191.0
+#define	PANY	161.0
 
 @class	GSAlertPanel;
 
@@ -151,8 +153,10 @@ static GSAlertPanel	*reusableAlertPanel = nil;
 //
 + (void)initialize
 {
-	if (self == [GSAlertPanel class])
-		[self setVersion:1];							
+  if (self == [GSAlertPanel class])
+    {
+      [self setVersion:1];
+    }
 }
 
 - (void) buttonAction: (id)sender
@@ -215,6 +219,7 @@ static GSAlertPanel	*reusableAlertPanel = nil;
   if (self)
     {
       NSView	*content;
+      NSImage	*image;
       unsigned	bs = 10.0;		/* Inter-button space	*/
       unsigned	bh = 24.0;		/* Button height.	*/
       unsigned	bw = 72.0;		/* Button width.	*/
@@ -225,7 +230,7 @@ static GSAlertPanel	*reusableAlertPanel = nil;
       [self setMinSize: r.size];
       [self setTitle: @" "];
 
-      content = [self contentView]; 
+      content = [self contentView];
 
       rect.size.height = 2.0;
       rect.size.width = 362.0;
@@ -280,8 +285,8 @@ static GSAlertPanel	*reusableAlertPanel = nil;
       [icoButton setBordered: NO];
       [icoButton setEnabled: NO];
       [icoButton setImagePosition: NSImageOnly];
-      [icoButton setImage:
-      [[NSApplication sharedApplication] applicationIconImage]];
+      image = [[NSApplication sharedApplication] applicationIconImage];
+      [icoButton setImage: image];
 
       rect.size.height = 36.0;
       rect.size.width = 344.0;
@@ -294,6 +299,7 @@ static GSAlertPanel	*reusableAlertPanel = nil;
       [messageField setSelectable: NO];
       [messageField setBordered: NO];
       [messageField setDrawsBackground: NO];
+      [messageField setAlignment: NSCenterTextAlignment];
       [messageField setStringValue: @""];
       [messageField setFont: [NSFont systemFontOfSize: 14.0]];
 
@@ -413,7 +419,7 @@ static GSAlertPanel	*reusableAlertPanel = nil;
 
 //*****************************************************************************
 //
-// 		Alert panel functions 
+// 		Alert panel functions
 //
 //*****************************************************************************
 
