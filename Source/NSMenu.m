@@ -1376,7 +1376,8 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
   [[NSColor windowFrameTextColor] set];
   [[NSFont boldSystemFontOfSize: 0] set];
   
-  PSmoveto(rect.origin.x + 7, rect.origin.y + 7);
+  workRect = _bounds;
+  PSmoveto(workRect.origin.x + 7, workRect.origin.y + 7);
   PSshow([[menu title] cString]);
 }
 
