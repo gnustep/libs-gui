@@ -242,8 +242,12 @@ NSString *NSTextDidEndEditingNotification = @"NSTextDidEndEditingNotification";
 NSString *NSTextDidChangeNotification = @"NSTextDidChangeNotification";
 
 // NSView notifications
-NSString *NSViewFrameChangedNotification = @"NSViewFrameChangedNotification";
-NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
+NSString *NSViewFocusDidChangeNotification
+    = @"NSViewFocusDidChangeNotification";
+NSString *NSViewFrameDidChangeNotification
+    = @"NSViewFrameDidChangeNotification";
+NSString *NSViewBoundsDidChangeNotification
+    = @"NSViewBoundsDidChangeNotification";
 
 // NSWindow notifications
 NSString *NSWindowDidBecomeKeyNotification = @"WindowDidBecomeKey";

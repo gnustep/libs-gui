@@ -20,6 +20,8 @@ Tue Aug  5 14:39:29 1997  Ovidiu Predescu <ovidiu@net-community.com>
 
 	* Source/NSView.m: Post notifications if needed when a frame or bound
 	change.
+	* Source/externs.m: Changed the name of NSView notification to conform
+	to the new ones in OS 4.x.
 
 Mon Aug 04 13:16:54 1997  Scott Christley  <scottc@ruth.net-community.com>
 
