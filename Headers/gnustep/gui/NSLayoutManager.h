@@ -50,9 +50,6 @@
 
 // These are unclear:
 @class NSGlyphGenerator;
-@class NSStorage;
-// Michael's botch list. :-)
-@class GSRunStorage;
 
 /*
   These glyph attributes are used only inside the glyph generation machinery, 
@@ -117,13 +114,6 @@ typedef enum {
   unsigned		_numberOfGlyphs;	// After last generated glyph.
   
   NSGlyphGenerator		*_glyphGenerator;
-  NSStorage			*_containerUsedRects;
-  
-  
-  // GS data storage.
-  GSRunStorage *_containerRuns;
-  GSRunStorage *_fragmentRuns;
-  GSRunStorage *_locationRuns;
   
   NSRect 			 _extraLineFragmentRect;
   NSRect 			 _extraLineFragmentUsedRect;
