@@ -47,7 +47,6 @@
 #include <Foundation/NSMethodSignature.h>
 #include <Foundation/NSRunLoop.h>
 #include <Foundation/NSTimer.h>
-#include <Foundation/fast.x>
 
 #define stringify_it(X) #X
 #define	prog_path(X,Y) \
