@@ -59,7 +59,7 @@ static BOOL _gs_display_reading_progress = NO;
 // Subclasses (read NSOpenPanel) may implement this 
 // to filter some extensions out of displayed files.
 @interface NSObject (_SavePanelPrivate)
--(BOOL) _shouldShowExtension: (NSString *)extension;
+-(BOOL) _shouldShowExtension: (NSString*)extension;
 @end
 //
 
@@ -353,7 +353,7 @@ static BOOL _gs_display_reading_progress = NO;
   return self;
 }
 
-- (void) setAccessoryView: (NSView *)aView
+- (void) setAccessoryView: (NSView*)aView
 {
   NSView *contentView;
   NSRect addedFrame, bottomFrame, topFrame;
@@ -446,7 +446,7 @@ static BOOL _gs_display_reading_progress = NO;
     }
 }
 
-- (void) setTitle: (NSString *)title
+- (void) setTitle: (NSString*)title
 {
   [_titleField setStringValue: title];
 
@@ -455,28 +455,28 @@ static BOOL _gs_display_reading_progress = NO;
   [_titleField sizeToFit];
 }
 
-- (NSString *) title
+- (NSString*) title
 {
   return [_titleField stringValue];
 }
 
-- (void) setPrompt: (NSString *)prompt
+- (void) setPrompt: (NSString*)prompt
 {
   [[_form cellAtIndex: 0] setTitle: prompt];
   [_form setNeedsDisplay: YES];
 }
 
-- (NSString *) prompt
+- (NSString*) prompt
 {
   return [[_form cellAtIndex: 0] title];
 }
 
-- (NSView *) accessoryView
+- (NSView*) accessoryView
 {
   return _accessoryView;
 }
 
-- (void) setDirectory: (NSString *)path
+- (void) setDirectory: (NSString*)path
 {
   NSString *standardizedPath = [path stringByStandardizingPath];
   BOOL	   isDir;
@@ -491,12 +491,12 @@ static BOOL _gs_display_reading_progress = NO;
     }
 }
 
-- (void) setRequiredFileType: (NSString *)fileType
+- (void) setRequiredFileType: (NSString*)fileType
 {
   ASSIGN(_requiredFileType, fileType);
 }
 
-- (NSString *) requiredFileType
+- (NSString*) requiredFileType
 {
   return _requiredFileType;
 }
@@ -506,7 +506,7 @@ static BOOL _gs_display_reading_progress = NO;
   return _treatsFilePackagesAsDirectories;
 }
 
-- (void) setTreatsFilePackagesAsDirectories:(BOOL) flag
+- (void) setTreatsFilePackagesAsDirectories: (BOOL)flag
 {
   _treatsFilePackagesAsDirectories = flag;
 }
@@ -520,13 +520,13 @@ static BOOL _gs_display_reading_progress = NO;
 {
   if (_directory)
     return [self runModalForDirectory: _directory 
-		 file: @""];
+				 file: @""];
   else
     return [self runModalForDirectory: [_fm currentDirectoryPath] 
-		 file: @""];
+				 file: @""];
 }
 
-- (int) runModalForDirectory:(NSString *) path file:(NSString *) filename
+- (int) runModalForDirectory: (NSString*)path file: (NSString*)filename
 {
   if (path == nil || filename == nil)
     [NSException raise: NSInvalidArgumentException
@@ -539,9 +539,11 @@ static BOOL _gs_display_reading_progress = NO;
   [[_form cellAtIndex: 0] setStringValue: filename];
   [_form setNeedsDisplay: YES];
 
-  // We need to take care of the possibility of 
-  // the panel being aborted.  We return NSCancelButton 
-  // in that case.
+  /*
+   * We need to take care of the possibility of 
+   * the panel being aborted.  We return NSCancelButton 
+   * in that case.
+   */
   _OKButtonPressed = NO;
 
   [NSApp runModalForWindow: self];
@@ -552,7 +554,7 @@ static BOOL _gs_display_reading_progress = NO;
     return NSCancelButton;
 }
 
-- (NSString *) directory
+- (NSString*) directory
 {
   if (_directory)
     return _directory;
@@ -560,7 +562,7 @@ static BOOL _gs_display_reading_progress = NO;
     return @"";
 }
 
-- (NSString *) filename
+- (NSString*) filename
 {
   if (_fullFileName == nil)
    return @"";
@@ -626,14 +628,14 @@ static BOOL _gs_display_reading_progress = NO;
 //
 // NSCoding protocol
 //
-- (id) initWithCoder: (NSCoder *)aCoder
+- (id) initWithCoder: (NSCoder*)aCoder
 {
   // TODO
 
   return nil;
 }
 
-- (void) encodeWithCoder: (NSCoder *)aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
   // TODO
 }
@@ -645,25 +647,25 @@ static BOOL _gs_display_reading_progress = NO;
 @interface NSSavePanel (_BrowserDelegate)
 - (void) browser: (id)sender
 createRowsForColumn: (int)column
-        inMatrix: (NSMatrix *)matrix;
+        inMatrix: (NSMatrix*)matrix;
 
-- (BOOL) browser: (NSBrowser *)sender
+- (BOOL) browser: (NSBrowser*)sender
    isColumnValid: (int)column;
 
-- (BOOL) browser: (NSBrowser *)sender
-selectCellWithString: (NSString *)title
+- (BOOL) browser: (NSBrowser*)sender
+selectCellWithString: (NSString*)title
 	inColumn: (int)column;
 
-- (void) browser:(NSBrowser *)sender
- willDisplayCell:(id)cell
-           atRow:(int)row
-          column:(int)column;
+- (void) browser: (NSBrowser*)sender
+ willDisplayCell: (id)cell
+           atRow: (int)row
+          column: (int)column;
 @end 
 
 @implementation NSSavePanel (_BrowserDelegate)
 - (void) browser: (id)sender
 createRowsForColumn: (int)column
-	inMatrix: (NSMatrix *)matrix
+	inMatrix: (NSMatrix*)matrix
 {
   NSString      *path, *file, *pathAndFile, *extension, *h; 
   NSArray       *files, *hiddenFiles;
@@ -794,7 +796,7 @@ createRowsForColumn: (int)column
     }
 }
 
-- (BOOL) browser: (NSBrowser *)sender
+- (BOOL) browser: (NSBrowser*)sender
    isColumnValid: (int)column
 {
   NSArray	*cells = [[sender matrixInColumn: column] cells];
@@ -814,8 +816,8 @@ createRowsForColumn: (int)column
   return YES;
 }
 
-- (BOOL) browser: (NSBrowser *)sender
-selectCellWithString: (NSString *)title
+- (BOOL) browser: (NSBrowser*)sender
+selectCellWithString: (NSString*)title
 	inColumn: (int)column
 {
   NSMatrix *m;
@@ -844,10 +846,10 @@ selectCellWithString: (NSString *)title
   return YES;
 }
 
-- (void)browser:(NSBrowser *)sender
-  willDisplayCell:(id)cell
-  atRow:(int)row
-  column:(int)column
+- (void) browser: (NSBrowser*)sender
+ willDisplayCell: (id)cell
+	   atRow: (int)row
+	  column: (int)column
 {
 }
 @end
@@ -856,10 +858,10 @@ selectCellWithString: (NSString *)title
 // NSForm delegate methods
 //
 @interface NSSavePanel (FormDelegate)
-- (void) controlTextDidEndEditing: (NSNotification *)aNotification;
+- (void) controlTextDidEndEditing: (NSNotification*)aNotification;
 @end
 @implementation NSSavePanel (FormDelegate)
-- (void) controlTextDidEndEditing: (NSNotification *)aNotification
+- (void) controlTextDidEndEditing: (NSNotification*)aNotification
 {
   NSString *s;
 

@@ -72,12 +72,95 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
  */
 @interface	NSWindow (GNUstepPrivate)
 - (void) _handleWindowNeedsDisplay: (id)bogus;
+- (void) _lossOfKeyOrMainWindow;
 @end
 
 @implementation	NSWindow (GNUstepPrivate)
 - (void) _handleWindowNeedsDisplay: (id)bogus
 {
   [self displayIfNeeded];
+}
+- (void) _lossOfKeyOrMainWindow
+{
+  NSArray	*windowList = GSAllWindows();
+  unsigned	pos = [windowList indexOfObjectIdenticalTo: self];
+  unsigned	c = [windowList count];
+  unsigned	i;
+  NSWindow	*w;
+
+  if ([self isKeyWindow])
+    {
+      [self resignKeyWindow];
+      i = pos + 1;
+      if (i == c)
+	{
+	  i = 0;
+	}
+      while (i != pos)
+	{
+	  w = [windowList objectAtIndex: i];
+	  if ([w isVisible] && [w canBecomeKeyWindow])
+	    {
+	      [w makeKeyWindow];
+	      break;
+	    }
+
+	  i++;
+	  if (i == c)
+	    {
+	      i = 0;
+	    }
+	}
+      /*
+       * if we didn't find a possible key window - use the app icon or,
+       * failing that, use the menu window.
+       */
+      if (i == pos)
+	{
+	  w = [NSApp iconWindow];
+	  if (w == nil || [w isVisible] == NO)
+	    {
+	      w = [[NSApp mainMenu] window];
+	    }
+	  if (w != nil && [w isVisible] == YES)
+	    {
+	      [GSCurrentContext() DPSsetinputfocus: [w windowNumber]];
+	    }
+	}
+    }
+  if ([self isMainWindow])
+    {
+      NSWindow	*w = [NSApp keyWindow];
+
+      [self resignMainWindow];
+      if (w != nil && [w canBecomeMainWindow])
+	{
+	  [w makeMainWindow];
+	}
+      else
+	{
+	  i = pos + 1;
+	  if (i == c)
+	    {
+	      i = 0;
+	    }
+	  while (i != pos)
+	    {
+	      w = [windowList objectAtIndex: i];
+	      if ([w isVisible] && [w canBecomeMainWindow])
+		{
+		  [w makeMainWindow];
+		  break;
+		}
+	    
+	      i++;
+	      if (i == c)
+		{
+		  i = 0;
+		}		  
+	    }
+	}
+    }
 }
 @end
 
@@ -821,8 +904,8 @@ static NSMapTable* windowmaps = NULL;
       NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
       [first_responder becomeFirstResponder];
-      if ((first_responder != self) && 
-	  [first_responder respondsToSelector: @selector(becomeKeyWindow)])
+      if ((first_responder != self)
+	&& [first_responder respondsToSelector: @selector(becomeKeyWindow)])
 	[first_responder becomeKeyWindow];
 
       _f.is_key = YES;
@@ -850,6 +933,10 @@ static NSMapTable* windowmaps = NULL;
 
 - (BOOL) canBecomeKeyWindow
 {
+  if (!_f.visible)
+    return NO;
+  if (_f.is_miniaturized)
+    return NO;
   if ((NSResizableWindowMask | NSTitledWindowMask) & style_mask)
     return YES;
   else
@@ -860,7 +947,8 @@ static NSMapTable* windowmaps = NULL;
 {
   if (!_f.visible)
     return NO;
-
+  if (_f.is_miniaturized)
+    return NO;
   if ((NSResizableWindowMask | NSTitledWindowMask) & style_mask)
     return YES;
   else
@@ -952,12 +1040,6 @@ static NSMapTable* windowmaps = NULL;
 {
   if (place == NSWindowOut)
     {
-      NSArray	*windowList = GSAllWindows();
-      unsigned	pos = [windowList indexOfObjectIdenticalTo: self];
-      unsigned	c = [windowList count];
-      unsigned	i;
-      NSWindow	*w;
-
       _f.visible = NO;
       if (_rFlags.needs_display == YES)
 	{
@@ -969,79 +1051,7 @@ static NSMapTable* windowmaps = NULL;
                             target: self
                           argument: nil];
 	}
-      if ([self isKeyWindow])
-	{
-	  [self resignKeyWindow];
-	  i = pos + 1;
-	  if (i == c)
-	    {
-	      i = 0;
-	    }
-	  while (i != pos)
-	    {
-	      w = [windowList objectAtIndex: i];
-	      if ([w isVisible] && [w canBecomeKeyWindow])
-		{
-		  [w makeKeyWindow];
-		  break;
-		}
-
-	      i++;
-	      if (i == c)
-		{
-		  i = 0;
-		}
-	    }
-	  /*
-	   * if we didn't find a possible key window - use the app icon or,
-	   * failing that, use the menu window.
-	   */
-	  if (i == pos)
-	    {
-	      w = [NSApp iconWindow];
-	      if (w == nil || [w isVisible] == NO)
-		{
-		  w = [[NSApp mainMenu] window];
-		}
-	      if (w != nil && [w isVisible] == YES)
-		{
-		  [GSCurrentContext() DPSsetinputfocus: [w windowNumber]];
-		}
-	    }
-	}
-      if ([self isMainWindow])
-	{
-	  NSWindow	*w = [NSApp keyWindow];
-
-	  [self resignMainWindow];
-	  if (w != nil && [w canBecomeMainWindow])
-	    {
-	      [w makeMainWindow];
-	    }
-	  else
-	    {
-	      i = pos + 1;
-	      if (i == c)
-		{
-		  i = 0;
-		}
-	      while (i != pos)
-		{
-		  w = [windowList objectAtIndex: i];
-		  if ([w isVisible] && [w canBecomeMainWindow])
-		    {
-		      [w makeMainWindow];
-		      break;
-		    }
-		
-		  i++;
-		  if (i == c)
-		    {
-		      i = 0;
-		    }		  
-		}
-	    }
-	}
+      [self _lossOfKeyOrMainWindow];
     }
   DPSorderwindow(GSCurrentContext(), place, otherWin, window_num);
   if (place != NSWindowOut)
@@ -1094,9 +1104,9 @@ static NSMapTable* windowmaps = NULL;
     {
       NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
-      // FIXME: This is in the documentation, but does not work
-      //if ((first_responder != nil) && (first_responder != self))
-      //[first_responder resignKeyWindow];
+      if ((first_responder != self)
+	&& [first_responder respondsToSelector: @selector(resignKeyWindow)])
+	[first_responder resignKeyWindow];
 
       _f.is_key = NO;
 
@@ -1143,11 +1153,13 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) setLevel: (int)newLevel
 {
-  NSGraphicsContext	*context = GSCurrentContext();
+  if (window_level != newLevel)
+    {
+      NSGraphicsContext	*context = GSCurrentContext();
 
-  window_level = newLevel;
-  DPSsetwindowlevel(context, window_level, window_num);
-  [self orderFront: self];
+      window_level = newLevel;
+      DPSsetwindowlevel(context, window_level, window_num);
+    }
 }
 
 /*
@@ -1703,8 +1715,14 @@ resetCursorRectsForView(NSView *theView)
 {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
+  if (_counterpart != 0)
+    {
+      NSWindow		*mini = GSWindowWithNumber(_counterpart);
+
+      [mini orderOut: self];
+    }
   _f.is_miniaturized = NO;
-  // FIXME: Here seems to be something missing
+  [self makeKeyAndOrderFront: self];
 
   [nc postNotificationName: NSWindowDidDeminiaturizeNotification object: self];
 }
@@ -1719,13 +1737,14 @@ resetCursorRectsForView(NSView *theView)
   return _f.is_released_when_closed;
 }
 
-- (void) miniaturize: sender
+- (void) miniaturize: (id)sender
 {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
   
   [nc postNotificationName: NSWindowWillMiniaturizeNotification
-      object: self];
+		    object: self];
   
+  _f.is_miniaturized = YES;
   /*
    * Ensure that we have a miniwindow counterpart.
    */
@@ -1734,11 +1753,10 @@ resetCursorRectsForView(NSView *theView)
       NSWindow		*mini;
       NSMiniWindowView	*v;
       
-      mini = [[NSMiniWindow alloc]
-	       initWithContentRect: NSMakeRect(0,0,64,64)
-	       styleMask: NSMiniWindowMask
-	       backing: NSBackingStoreBuffered
-	       defer: NO];
+      mini = [[NSMiniWindow alloc] initWithContentRect: NSMakeRect(0,0,64,64)
+					     styleMask: NSMiniWindowMask
+					       backing: NSBackingStoreBuffered
+						 defer: NO];
       mini->_counterpart = [self windowNumber];
       _counterpart = [mini windowNumber];
       v = [[NSMiniWindowView alloc] initWithFrame: NSMakeRect(0,0,64,64)];
@@ -1747,14 +1765,14 @@ resetCursorRectsForView(NSView *theView)
       [mini setContentView: v];
       RELEASE(v);
     }
+  [self _lossOfKeyOrMainWindow];
   DPSminiwindow(GSCurrentContext(), window_num);
-  _f.is_miniaturized = YES;
   
   [nc postNotificationName: NSWindowDidMiniaturizeNotification
-      object: self];
+		    object: self];
 }
 
-- (void) performClose: sender
+- (void) performClose: (id)sender
 {
   /* self must have a close button in order to be closed */
   if (!(style_mask & NSClosableWindowMask))
@@ -3139,13 +3157,9 @@ resetCursorRectsForView(NSView *theView)
       aSize = [aDecoder decodeSize];
       [self setMaxSize: aSize];
 
-      /*
-       * Set window to the correct level without displaying it.
-       */
       [aDecoder decodeValueOfObjCType: @encode(int)
 				   at: &anInt];
-      window_level = anInt;
-      DPSsetwindowlevel(GSCurrentContext(), window_level, window_num);
+      [self setLevel: anInt];
 
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       [self setExcludedFromWindowsMenu: flag];
