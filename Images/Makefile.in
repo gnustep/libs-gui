@@ -46,7 +46,7 @@ include $(srcdir)/../Version
 all: 
 
 IMAGE_FILES = \
-README \
+GNUstep_Images_Copyright \
 common_ArrowDown.tiff \
 common_ArrowUp.tiff \
 common_ArrowRight.tiff \

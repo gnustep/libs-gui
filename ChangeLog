@@ -3,7 +3,7 @@ Fri Jan 31 05:30:40 1997  Scott Christley <scottc@net-community.com>
 	* Move and install resources to a more appropriate place.
 	* gnustep/gui/resource: Remove directory and files.
 	* Images: New directory.
-	* Images/README: New file.
+	* Images/GNUstep_Images_Copyright: New file.
 	* Images/Makefile.in: New file.
 	
 	* Makefile.in: Clean up code.
