@@ -47,8 +47,8 @@ static NSNotificationCenter *nc = nil;
 static const int current_version = 1;
 
 // Cache the arrow images...
-static NSImage *rightArrow = nil;
-static NSImage *downArrow = nil;
+static NSImage *collapsed = nil;
+static NSImage *expanded  = nil;
 
 // Some necessary things which should not become ivars....
 static float widest = 0.0;
@@ -221,9 +221,9 @@ _selectionChange (NSOutlineView *ov, id delegate, int numberOfRows,
     {
       [self setVersion: current_version];
       nc = [NSNotificationCenter defaultCenter];
-      rightArrow = [NSImage imageNamed: @"common_ArrowRight.tiff"];
-      downArrow = [NSImage imageNamed: @"common_ArrowDown.tiff"];
-      NSLog(@"%@ %@",rightArrow, downArrow);
+      collapsed = [NSImage imageNamed: @"common_outlineCollapsed.tiff"];
+      expanded  = [NSImage imageNamed: @"common_outlineExpanded.tiff"];
+      //      NSLog(@"%@ %@",rightArrow, downArrow);
     }
 }
 
@@ -1742,7 +1742,7 @@ byExtendingSelection: (BOOL)flag
 
 	  if(tb == _outlineTableColumn)
 	    {
-	      NSImage *arrow = nil;
+	      NSImage *image = nil;
 	      int level = 0;
 	      float indentationFactor = 0.0;
 	      float originalWidth = drawingRect.size.width;
@@ -1750,17 +1750,17 @@ byExtendingSelection: (BOOL)flag
 	      // display the correct arrow...
 	      if([self isItemExpanded: item])
 		{
-		  arrow = downArrow;
+		  image = expanded;
 		}
 	      else
 		{
-		  arrow = rightArrow;
+		  image = collapsed;
 		}
 
 	      level = [self levelForItem: item];
 	      //	      NSLog(@"outlineColumn: %@ level = %d", item, level);
 	      indentationFactor = _indentationPerLevel * level;
-	      imageCell = [[NSCell alloc] initImageCell: arrow];
+	      imageCell = [[NSCell alloc] initImageCell: image];
 
 	      if(_indentationMarkerFollowsCell)
 		{
@@ -1773,8 +1773,8 @@ byExtendingSelection: (BOOL)flag
 		  imageRect.origin.y = drawingRect.origin.y;
 		}
 
-	      imageRect.size.width = [arrow size].width;
-	      imageRect.size.height = [arrow size].height;
+	      imageRect.size.width = [image size].width;
+	      imageRect.size.height = [image size].height;
 
 	      // Draw the arrow if the item is expandable..
 	      if([self isExpandable: item])
@@ -1782,8 +1782,8 @@ byExtendingSelection: (BOOL)flag
 		  [imageCell drawWithFrame: imageRect inView: self];
 		}
 
-	      drawingRect.origin.x += indentationFactor + [arrow size].width + 1;
-	      drawingRect.size.width -= indentationFactor + [arrow size].width + 1;
+	      drawingRect.origin.x += indentationFactor + [image size].width + 1;
+	      drawingRect.size.width -= indentationFactor + [image size].width + 1;
 	      
 	      if (widest < (drawingRect.origin.x + originalWidth))
 		{

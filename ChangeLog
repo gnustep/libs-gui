@@ -1,3 +1,10 @@
+2002-03-02  Gregory Casamento <greg_casamento@yahoo.com>
+	
+	* Images/common_outlineExpanded.tiff added.
+	* Images/common_outlineCollapsed.tiff added.
+	* Images/GNUmakefile modified to install images
+	* Source/NSOutlineView.m modified to use new images
+
 2002-03-01  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/AppKit/NSEvent.h: Rename 'middle' mouse to 'other' as
