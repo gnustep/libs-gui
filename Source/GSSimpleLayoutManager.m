@@ -706,7 +706,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
 
   for (i = 0; i < count; i++)
     {
-	NSHighlightRect (rects[i]);
+      NSHighlightRect (rects[i]);
     }
 }
 
