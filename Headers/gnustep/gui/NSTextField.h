@@ -107,6 +107,11 @@
 - (void)encodeWithCoder:aCoder;
 - initWithCoder:aDecoder;
 
+//
+// Compatability with NSSecureTextField
+//
+- (id)_initFieldWithFrame:(NSRect)frameRect cellClass:(Class)cellClass;
+
 @end
 
 #endif // _GNUstep_H_NSTextField
