@@ -63,6 +63,7 @@
 #include <AppKit/NSCursor.h>
 #include <AppKit/NSWorkspace.h>
 #include <AppKit/GSServicesManager.h>
+#include <AppKit/NSNibLoading.h>
 #include <AppKit/IMLoading.h>
 #include <AppKit/DPSOperators.h>
 
@@ -557,11 +558,14 @@ static NSCell* tileCell = nil;
   BOOL			hadDuplicates = NO;
 
   mainModelFile = [infoDict objectForKey: @"NSMainNibFile"];
-  if (mainModelFile && ![mainModelFile isEqual: @""])
+  if (mainModelFile != nil && [mainModelFile isEqual: @""] == NO)
     {
-      if (![GMModel loadIMFile: mainModelFile
-			 owner: [NSApplication sharedApplication]])
-	NSLog (@"Cannot load the main model file '%@", mainModelFile);
+      if ([NSBundle loadNibNamed: mainModelFile owner: self] == NO)
+	{
+	  if (![GMModel loadIMFile: mainModelFile
+			     owner: [NSApplication sharedApplication]])
+	    NSLog (@"Cannot load the main model file '%@", mainModelFile);
+	}
     }
 
   appIconFile = [infoDict objectForKey: @"NSIcon"];
