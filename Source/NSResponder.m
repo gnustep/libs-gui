@@ -362,7 +362,7 @@
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  id obj;
+  id obj = nil;
 
   if([aDecoder allowsKeyedCoding])
     {

@@ -1300,7 +1300,14 @@
 	}
       if ([aDecoder containsValueForKey: @"NSAlternateImage"])
         {
-	  [self setAlternateImage: [aDecoder decodeObjectForKey: @"NSAlternateImage"]];
+	  id image;
+	  
+	  image = [aDecoder decodeObjectForKey: @"NSAlternateImage"];
+	  // This test works around an Apple bug, where a font gets encoded here. 
+	  if ([image isKindOfClass: [NSImage class]])
+	    {
+	      [self setAlternateImage: image];
+	    }
 	}
       if ([aDecoder containsValueForKey: @"NSAlternateContents"])
         {
@@ -1308,8 +1315,37 @@
 	}
       if ([aDecoder containsValueForKey: @"NSButtonFlags"])
         {
+	  int highlights = 0;  
+	  int show_state = NSNoCellMask;  
+
 	  bFlags = [aDecoder decodeIntForKey: @"NSButtonFlags"];
 	  // FIXME
+	  if ((bFlags & 0x800000) == 0x800000)
+	    {
+		[self setBezelStyle: NSRegularSquareBezelStyle];
+	    }
+	  if ((bFlags & 0x6000000) == 0x6000000)
+	    {
+	      highlights |= NSChangeBackgroundCellMask;
+	    }
+	  if ((bFlags & 0x8000000) == 0x8000000)
+	    {
+	      highlights |= NSContentsCellMask;
+	    }
+	  if ((bFlags & 0x30000000) == 0x30000000)
+	    {
+	      show_state |= NSChangeBackgroundCellMask;
+	    }
+	  if ((bFlags & 0x40000000) == 0x40000000)
+	    {
+	      show_state |= NSContentsCellMask;
+	    }
+	  if ((bFlags & 0x80000000) == 0x80000000)
+	    {
+	      highlights |= NSPushInCellMask;
+	    }
+	  [self setHighlightsBy: highlights];
+	  [self setShowsStateBy: show_state];
 	  [self setImagePosition: NSImageLeft];
 	}
       if ([aDecoder containsValueForKey: @"NSButtonFlags2"])

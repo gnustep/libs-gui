@@ -1,3 +1,10 @@
+2004-10-21  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSResponder.m (-initWithCoder:): Set missing default
+	value for menu to nil.
+	* Source/NSButtonCell.m (-initWithCoder:): Hack around Apple NIB
+	bug and decode some of the flags.
+
 2004-10-17 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSCell.m: Added code to [NSCell initWithCoder:] which 
