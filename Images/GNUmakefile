@@ -108,7 +108,7 @@ common_DecimalTabStop.tiff \
 common_Diamond.tiff \
 common_Printer.tiff \
 common_ToolbarClippedItemsMark.tiff \
-common_ToolbarSeperatorItem.tiff \
+common_ToolbarSeparatorItem.tiff \
 common_ToolbarShowColorsItem.tiff \
 common_ToolbarShowFontsItem.tiff \
 common_ToolbarSpaceItem.tiff

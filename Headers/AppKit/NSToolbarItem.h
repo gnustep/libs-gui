@@ -47,7 +47,7 @@
 /*
  * Constants
  */
-APPKIT_EXPORT NSString *NSToolbarSeperatorItemIdentifier;
+APPKIT_EXPORT NSString *NSToolbarSeparatorItemIdentifier;
 APPKIT_EXPORT NSString *NSToolbarSpaceItemIdentifier;
 APPKIT_EXPORT NSString *NSToolbarFlexibleSpaceItemIdentifier;
 APPKIT_EXPORT NSString *NSToolbarShowColorsItemIdentifier;

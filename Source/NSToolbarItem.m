@@ -244,7 +244,7 @@
 @implementation GSToolbarSeparatorItem
 - (id) initWithItemIdentifier: (NSString *)itemIdentifier
 {
-  NSImage *image = [NSImage imageNamed: @"common_ToolbarSeperatorItem"];
+  NSImage *image = [NSImage imageNamed: @"common_ToolbarSeparatorItem"];
 
   self = [super initWithItemIdentifier: itemIdentifier];
   [(NSButton *)[self _backView] setImagePosition: NSImageOnly];

@@ -1,3 +1,10 @@
+2004-02-28  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSToolbarItem.m: Corrected misspelling of Separator.
+	* Images/common_ToolbarSeparatorItem.tiff: added, misspelled 
+	image file deleted
+	* Images/GNUmakefile: Corrected.
+	
 2004-02-29  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Header/AppKit/NSApplication.h:

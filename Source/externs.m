@@ -432,7 +432,7 @@ NSString *NSToolbarDidRemoveItemNotification = @"NSToolbarDidRemoveItemNotificat
 NSString *NSToolbarWillAddItemNotification = @"NSToolbarWillAddItemNotification";
 
 // NSToolbarItem constants
-NSString *NSToolbarSeperatorItemIdentifier = @"NSToolbarSeperatorItemIdentifier";
+NSString *NSToolbarSeparatorItemIdentifier = @"NSToolbarSeparatorItemIdentifier";
 NSString *NSToolbarSpaceItemIdentifier = @"NSToolbarSpaceItemIdentifier";
 NSString *NSToolbarFlexibleSpaceItemIdentifier = @"NSToolbarFlexibleSpaceItemIdentifier";
 NSString *NSToolbarShowColorsItemIdentifier = @"NSToolbarShowColorsItemIdentifier";
