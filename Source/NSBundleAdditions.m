@@ -45,8 +45,10 @@
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSKeyValueCoding.h>
 #include <Foundation/NSNotification.h>
+#include <Foundation/NSURL.h>
 #include "AppKit/NSNibConnector.h"
 #include "AppKit/NSNibLoading.h"
+#include "AppKit/NSNib.h"
 #include "GNUstepGUI/GSNibTemplates.h"
 #include "GNUstepGUI/IMLoading.h"
 
@@ -176,65 +178,10 @@
 }
 @end
 
-/*
- * This private class is used to collect the nib items while the 
- * .gorm file is being unarchived.  This is done to allow only
- * the top level items to be retained in a clean way.  The reason it's
- * being done this way is because old .gorm files don't have any
- * array within the nameTable which indicates the objects which are
- * considered top level, so there is no clean and generic way to determine
- * this.   Basically the top level items are any instances of or instances
- * of subclasses of NSMenu, NSWindow, or any controller class.
- * It's the last one that's hairy.  Controller classes are
- * represented in .gorm files by the GSNibItem class, but once they transform
- * into the actual class instance it's not easy to tell if it should be 
- * retained or not since there are a lot of other things stored in the nameTable
- * as well.  GJC
- */
-@interface _GSNibItemCollector : NSObject
-{
-  NSMutableArray *items;
-}
-- (void) handleNotification: (NSNotification *)notification;
-- (NSMutableArray *)items;
+// declare this here to avoid a compiler warning...
+@interface NSNib (GNUstepPrivate)
++ (NSString *) _nibFilename: (NSString *)fileName;
 @end
-
-@implementation _GSNibItemCollector
-- (void) handleNotification: (NSNotification *)notification;
-{
-  id obj = [notification object];
-  [items addObject: obj];
-}
-
-- init
-{
-  if((self = [super init]) != nil)
-    {
-      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-
-      // add myself as an observer and initialize the items array.
-      [nc addObserver: self
-	  selector: @selector(handleNotification:)
-	  name: @"__GSInternalNibItemAddedNotification"
-	  object: nil];
-      items = [[NSMutableArray alloc] init];
-    }
-  return self;
-}
-
-- (void) dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver: self];
-  RELEASE(items);
-  [super dealloc];
-}
-
-- (NSMutableArray *)items
-{
-  return items;
-}
-@end
-
 
 @implementation NSBundle (NSBundleAdditions)
 
@@ -274,11 +221,15 @@ Class gmodel_class(void)
    externalNameTable: (NSDictionary*)context
 	    withZone: (NSZone*)zone
 {
-  BOOL		loaded = NO;
-  NSUnarchiver	*unarchiver = nil;
-  NSString      *ext = [fileName pathExtension];
-  id             nibitems = nil;
+  NSString            *ext    = [fileName pathExtension];
+  NSNib               *nib    = nil;
+  BOOL                 result = NO;
+  NSMutableDictionary *ctx    = nil;
 
+  /* 
+   * Determine if we're loading a .gorm or a .gmodel
+   * if the extension is .nib.
+   */
   if ([ext isEqual: @"nib"])
     {
       NSFileManager	*mgr = [NSFileManager defaultManager];
@@ -304,78 +255,42 @@ Class gmodel_class(void)
   if ([ext isEqualToString: @"gmodel"])
     {
       return [gmodel_class() loadIMFile: fileName
-		      owner: [context objectForKey: @"NSOwner"]];
+			  owner: [context objectForKey: @"NSOwner"]];
     } 
-
-  NSDebugLog(@"Loading Nib `%@'...\n", fileName);
-  NS_DURING
+  
+  // Create a temporary context dictionary, containing all of the entries of the
+  // one passed in, but replacing the NSOwner and NSTopLevelObjects entries with
+  // the ones used by the NSNib class.   We want *all* nib handling to happen in
+  // one unified place within NSNib.  GJC
+  if(context != nil)
     {
-      NSFileManager	*mgr = [NSFileManager defaultManager];
-      BOOL              isDir = NO;
+      id obj = nil;
 
-      if([mgr fileExistsAtPath: fileName isDirectory: &isDir])
+      ctx = [NSMutableDictionary dictionaryWithDictionary: context];
+
+      // remove and set the owner...
+      obj = [ctx objectForKey: @"NSOwner"];
+      if(obj != nil)
 	{
-	  NSData	*data = nil;
-	  
-	  // if the data is in a directory, then load from objects.gorm in the directory
-	  if(isDir == NO)
-	    {
-	      data = [NSData dataWithContentsOfFile: fileName];
-	      NSDebugLog(@"Loaded data from file...");
-	    }
-	  else
-	    {
-	      NSString *newFileName = [fileName stringByAppendingPathComponent: @"objects.gorm"];
-	      data = [NSData dataWithContentsOfFile: newFileName];
-	      NSDebugLog(@"Loaded data from %@...",newFileName);
-	    }
+	  [ctx removeObjectForKey: @"NSOwner"];
+	  [ctx setObject: obj forKey: @"NSNibOwner"];
+	}
 
-	  if (data != nil)
-	    {
-	      unarchiver = [[NSUnarchiver alloc] initForReadingWithData: data];
-	      if (unarchiver != nil)
-		{
-		  id obj;
-		  
-		  nibitems = [[_GSNibItemCollector alloc] init];
-		  NSDebugLog(@"Invoking unarchiver");
-		  [unarchiver setObjectZone: zone];
-		  obj = [unarchiver decodeObject];
-		  if (obj != nil)
-		    {
-		      NSArray *items = [nibitems items];
-		      if ([obj isKindOfClass: [GSNibContainer class]])
-			{
-			  NSDebugLog(@"Calling awakeWithContext");
-			    
-			  [obj awakeWithContext: context
-			       topLevelItems: items];
-			  loaded = YES;
-			}
-		      else
-			{
-			  NSLog(@"Nib '%@' without container object!", fileName);
-			}
-		    }
-		  RELEASE(nibitems);
-		  RELEASE(unarchiver);
-		}
-	    }
+      // Remove and set the top level objects...
+      obj = [ctx objectForKey: @"NSTopLevelObjects"];
+      if(obj != nil)
+	{
+	  [ctx removeObjectForKey: @"NSTopLevelObjects"];
+	  [ctx setObject: obj forKey: @"NSNibTopLevelObjects"];
 	}
     }
-  NS_HANDLER
-    {
-      NSLog(@"Exception occured while loading model: %@",[localException reason]);
-      TEST_RELEASE(nibitems);
-      TEST_RELEASE(unarchiver);
-    }
-  NS_ENDHANDLER
 
-  if (loaded == NO)
-    {
-      NSLog(@"Failed to load Nib\n");
-    }
-  return loaded;
+  // Load and instantiate the nib...  release the NSNib object.
+  nib = [[NSNib alloc] initWithContentsOfURL: [NSURL fileURLWithPath: [NSNib _nibFilename: fileName]]];
+  result = [nib instantiateNibWithExternalNameTable: ctx withZone: zone];
+  RELEASE(nib);
+
+  return result;
 }
 
 + (BOOL) loadNibNamed: (NSString *)aNibName
@@ -481,17 +396,13 @@ Class gmodel_class(void)
 	    withZone: (NSZone*)zone
 {
   NSString *path = [self pathForNibResource: fileName];
-
-  if (path != nil)
+  if (fileName != nil)
     {
       return [NSBundle loadNibFile: path
 		 externalNameTable: context
 			  withZone: (NSZone*)zone];
     }
-  else 
-    {
-      return NO;
-    }
+  return NO;
 }
 @end
 // end of NSBundleAdditions

@@ -1,3 +1,14 @@
+2004-02-08 01:36  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSNib.m: Added implmentation for this class.
+	* Headers/AppKit/NSNib.h: Added header for this class.
+	* Source/GSNibTemplates.m: Modified awakeWithContext:topLevelItems:
+	to use the NSNibOwner/NSNibTopLevelObjects entries.
+	* Source/NSBundleAdditions.m: Added code to use NSNib to load
+	and instantiate the .gorm file.   NSNib now contains all of the
+	.gorm loading code.   NSNib currently does not support .gmodel
+	loading.
+	
 2004-02-07 03:53  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSTableView.m (-initWithCoder:): Remove an erroneous 'else'

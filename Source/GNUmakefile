@@ -103,6 +103,7 @@ NSMenu.m \
 NSMenuView.m \
 NSMenuItem.m \
 NSMenuItemCell.m \
+NSNib.m \
 NSOpenGLContext.m \
 NSOpenGLPixelFormat.m \
 NSOpenGLView.m \
@@ -252,6 +253,7 @@ NSMenu.h \
 NSMenuItem.h \
 NSMenuItemCell.h \
 NSMenuView.h \
+NSNib.h \
 NSOpenPanel.h \
 NSOpenGL.h \
 NSOpenGLView.h \
