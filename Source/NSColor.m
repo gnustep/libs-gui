@@ -1078,6 +1078,7 @@ static NSMutableDictionary	*colorStrings = nil;
       NSDebugLLog(@"NSColor", @"Gray %f\n", white_component);
       PSsetgray(white_component);
     }
+  PSsetalpha(alpha_component);
 }
 
 //

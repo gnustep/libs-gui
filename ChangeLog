@@ -1,3 +1,13 @@
+1999-12-07  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSColorWell.m: Added ([+cellClass]) to set cell class to
+	NSActionCell so that setTarget: and setAction: methods at least
+	don't raise an exception.  Modified ([-drawRect:]) to conform to
+	OpenStep 4.2 behavior. (Patch from Jonathan Gapen
+	<jagapen@offroad.chem.wisc.edu>).
+
+	* Source/NSColor.m (-set): Set the alpha coverage.
+	
 Tue Dec  7 10:50:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSButtonCell.m: ([-drawInteriorWithFrame:inView:]) fix code

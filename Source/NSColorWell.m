@@ -29,6 +29,7 @@
 */ 
 
 #include <gnustep/gui/config.h>
+#include <AppKit/NSActionCell.h>
 #include <AppKit/NSColorWell.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/NSGraphics.h>
@@ -43,6 +44,15 @@
 {
   if (self == [NSColorWell class])
     [self setVersion: 1];
+}
+
+// FIXME: This is a hack.  An NSColorWell shouldn't need an associated
+// cell, but without one the setTarget: and setAction: methods get passed
+// to an NSCell object by the superclass (NSControl).  NSCell raises an
+// exception on these methods, but NSActionCell actually implements them.
++ (Class)cellClass
+{
+  return [NSActionCell class];
 }
 
 //
@@ -89,13 +99,20 @@
       [[NSColor controlColor] set];
       NSRectFill(NSIntersectionRect(aRect, rect));
 
-      /*
-       * Draw inner frame.
-       */
       aRect = NSInsetRect(aRect, 5.0, 5.0);
-      NSDrawGrayBezel(aRect, rect);
-      
-      aRect = NSInsetRect(aRect, 2.0, 2.0);
+
+      /*
+       * OpenStep 4.2 behavior is to omit the inner border for
+       * non-enabled NSColorWell objects.
+       */
+      if ([self isEnabled])
+        {
+          /*
+           * Draw inner frame.
+           */
+          NSDrawGrayBezel(aRect, rect);
+          aRect = NSInsetRect(aRect, 2.0, 2.0);
+        }
     }
   else
     aRect = NSInsetRect(aRect, 9.0, 9.0);
@@ -145,6 +162,7 @@
 - (void)setColor: (NSColor *)color
 {
   ASSIGN(the_color, color);
+  [self display];
 }
 
 - (void)takeColorFrom: (id)sender
