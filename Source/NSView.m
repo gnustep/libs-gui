@@ -632,6 +632,9 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
   if (!aView)
     aView = [window contentView];
+  if (aView == self)
+    return aPoint;
+  NSAssert(window == [aView window], NSInvalidArgumentException);
 
 #if 1
   /*
@@ -677,40 +680,83 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 - (NSPoint) convertPoint: (NSPoint)aPoint toView: (NSView*)aView
 {
+  NSPoint	new;
+  PSMatrix	*matrix;
+
   if (!aView)
     aView = [window contentView];
+  if (aView == self)
+    return aPoint;
+  NSAssert(window == [aView window], NSInvalidArgumentException);
 
+#if 1
+  matrix = [self _windowMatrix];
+  new = [matrix pointInMatrixSpace: aPoint];
+  matrix = [[aView _windowMatrix] copy];
+  [matrix inverse];
+  new = [matrix pointInMatrixSpace: new];
+  [matrix release];
+  return new;
+#else  
   return [aView convertPoint: aPoint fromView: self];
+#endif
 }
 
 - (NSRect) convertRect: (NSRect)aRect fromView: (NSView*)aView
 {
-  NSRect r;
+  PSMatrix	*matrix;
+  NSRect	r;
 
-  /* Must belong to the same window	*/
-  if (aView && window != [aView window])
-    return NSZeroRect;
+  if (!aView)
+    aView = [window contentView];
+  if (aView == self)
+    return aRect;
+  NSAssert(window == [aView window], NSInvalidArgumentException);
 
+#if 1
+  matrix = [aView _windowMatrix];
+  r.origin = [matrix pointInMatrixSpace: aRect.origin];
+  r.size = [matrix sizeInMatrixSpace: aRect.size];
+  matrix = [[self _windowMatrix] copy];
+  [matrix inverse];
+  r.origin = [matrix pointInMatrixSpace: r.origin];
+  r.size = [matrix sizeInMatrixSpace: r.size];
+  [matrix release];
+#else  
   r = aRect;
   r.origin = [self convertPoint: r.origin fromView: aView];
   r.size = [self convertSize: r.size fromView: aView];
+#endif
   if ([aView isFlipped] != [self isFlipped])
     r.origin.y -= r.size.height;
-
   return r;
 }
 
 - (NSRect) convertRect: (NSRect)aRect toView: (NSView*)aView
 {
-  NSRect r;
+  PSMatrix	*matrix;
+  NSRect	r;
 
-  /* Must belong to the same window	*/
-  if (aView && window != [aView window])
-    return NSZeroRect;
+  if (!aView)
+    aView = [window contentView];
+  if (aView == self)
+    return aRect;
+  NSAssert(window == [aView window], NSInvalidArgumentException);
 
+#if 1
+  matrix = [self _windowMatrix];
+  r.origin = [matrix pointInMatrixSpace: aRect.origin];
+  r.size = [matrix sizeInMatrixSpace: aRect.size];
+  matrix = [[aView _windowMatrix] copy];
+  [matrix inverse];
+  r.origin = [matrix pointInMatrixSpace: r.origin];
+  r.size = [matrix sizeInMatrixSpace: r.size];
+  [matrix release];
+#else  
   r = aRect;
   r.origin = [self convertPoint: r.origin toView: aView];
   r.size = [self convertSize: r.size toView: aView];
+#endif
   if ([aView isFlipped] != [self isFlipped])
     r.origin.y -= r.size.height;
 
@@ -719,11 +765,14 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 - (NSSize) convertSize: (NSSize)aSize fromView: (NSView*)aView
 {
-  NSSize new;
-  PSMatrix* matrix;
+  NSSize	new;
+  PSMatrix	*matrix;
 
   if (!aView)
     aView = [window contentView];
+  if (aView == self)
+    return aSize;
+  NSAssert(window == [aView window], NSInvalidArgumentException);
 
 #if 1
   /*
@@ -765,10 +814,26 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 - (NSSize) convertSize: (NSSize)aSize toView: (NSView*)aView
 {
+  NSSize	new;
+  PSMatrix	*matrix;
+
   if (!aView)
     aView = [window contentView];
+  if (aView == self)
+    return aSize;
+  NSAssert(window == [aView window], NSInvalidArgumentException);
 
+#if 1
+  matrix = [self _windowMatrix];
+  new = [matrix sizeInMatrixSpace: aSize];
+  matrix = [[aView _windowMatrix] copy];
+  [matrix inverse];
+  new = [matrix sizeInMatrixSpace: new];
+  [matrix release];
+  return new;
+#else
   return [aView convertSize: aSize fromView: self];
+#endif
 }
 
 - (void) setPostsFrameChangedNotifications: (BOOL)flag
