@@ -613,13 +613,17 @@ _isCellEditable (id delegate, NSArray *tableColumns,
   SEL selector;
 
   if (_allowsColumnSelection == NO)
-    return;
+    {
+      return;
+    }
 
   if ([self isColumnSelected: columnIndex] == YES)
     {
       if (([_selectedColumns count] == 1) && (_allowsEmptySelection == NO))
-	return;
-      
+	{
+	  return;
+	}
+	  
       selector = @selector (selectionShouldChangeInTableView:);
       if ([_delegate respondsToSelector: selector] == YES) 
 	{
@@ -644,10 +648,14 @@ _isCellEditable (id delegate, NSArray *tableColumns,
       
       if ((modifiers & (NSShiftKeyMask | NSAlternateKeyMask)) 
 	  && _allowsMultipleSelection)
-	newSelection = NO;
+	{
+	  newSelection = NO;
+	}
       else
-	newSelection = YES;
-      
+	{
+	  newSelection = YES;
+	}
+
       if (([_selectedColumns count] > 0) && (_allowsMultipleSelection == NO)
 	  && (newSelection == NO))
 	{
@@ -2377,8 +2385,10 @@ byExtendingSelection: (BOOL)flag
   NSRectFill (aRect);
 
   if ((_numberOfRows == 0) || (_numberOfColumns == 0))
-    return;
-  
+    {
+      return;
+    }
+
   /* Draw selection */
   [self highlightSelectionInClipRect: aRect];
 
