@@ -292,7 +292,16 @@ Class _nspopupbuttonCellClass = 0;
   NSMenu *m = [self menu];
 
   if (m != nil)
-    return [m performKeyEquivalent: theEvent];
+    {
+      if ([m performKeyEquivalent: theEvent])
+	{
+	  /* If the key equivalent was performed, redisplay ourselves
+	   * to account for potential changes in the selected item.
+	   */
+	  [self setNeedsDisplay: YES];
+	  return YES;
+	}
+    }
   return NO;
 }
 
@@ -302,6 +311,8 @@ Class _nspopupbuttonCellClass = 0;
   NSWindow   *menuWindow = [mr window];
   NSEvent    *e;
   NSPoint    p;
+  int        lastSelectedItem = [mr highlightedItemIndex];
+  int        highlightedItemIndex;
 
   if ([self isEnabled] == NO)
     return;
@@ -325,6 +336,16 @@ Class _nspopupbuttonCellClass = 0;
 	       clickCount: [theEvent clickCount] 
 	       pressure: [theEvent pressure]];
   [menuWindow sendEvent: e];
+
+  // Selection remains unchanged if selected item is disabled
+  highlightedItemIndex = [mr highlightedItemIndex];
+  if (highlightedItemIndex >= 0)
+    {
+      if ([[self itemAtIndex: highlightedItemIndex] isEnabled] == NO)
+        {
+          [mr setHighlightedItemIndex: lastSelectedItem];
+        }
+    }
 
   // Dismiss the popUp
   [_cell dismissPopUp];
