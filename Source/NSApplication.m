@@ -218,8 +218,7 @@ initialize_gnustep_backend(void)
 	 * from the bundle.  */
 	backend = NSClassFromString (@"GSBackend");
 	NSCAssert1 (backend != Nil, 
-		    _(@"Backend at path %@ doesn't contain the GSBackend class"),
-		   path);
+	  _(@"Backend at path %@ doesn't contain the GSBackend class"), path);
 	[backend initializeBackend];
       }
 #else
@@ -802,35 +801,24 @@ static NSCell* tileCell = nil;
    *	Now check to see if we were launched with arguments asking to
    *	open a file.  We permit some variations on the default name.
    */
-  if ((filePath = [defs stringForKey: @"GSFilePath"]) != nil ||
-      (filePath = [defs stringForKey: @"NSOpen"]) != nil)
+  if ((filePath = [defs stringForKey: @"GSFilePath"]) != nil
+    || (filePath = [defs stringForKey: @"NSOpen"]) != nil)
     {
-      [self _openDocument: filePath];
+      [_listener application: self openFile: filePath];
     }
   else if ((filePath = [defs stringForKey: @"GSTempPath"]) != nil)
     {
-      if ([_delegate respondsToSelector: @selector(application:openTempFile:)])
-	{
-	  [_delegate application: self openTempFile: filePath];
-	}
-      else
-	{
-	  // FIXME: Should remember that this is a temp file
-	  [[NSDocumentController sharedDocumentController]
-	    openDocumentWithContentsOfFile: filePath display: YES];
-	}
+      [_listener application: self openTempFile: filePath];
     }
   else if ((filePath = [defs stringForKey: @"NSPrint"]) != nil)
     {
-      if ([_delegate respondsToSelector: @selector(application:printFile:)])
-	{
-	  [_delegate application: self printFile: filePath];
-	}
+      [_listener application: self printFile: filePath];
       [self terminate: self];
     }
-  else if ([_delegate respondsToSelector: @selector(applicationShouldOpenUntitledFile:)] &&
-	   ([_delegate applicationShouldOpenUntitledFile: self] == YES) &&
-	   [_delegate respondsToSelector: @selector(applicationOpenUntitledFile:)])
+  else if ([_delegate respondsToSelector:
+    @selector(applicationShouldOpenUntitledFile:)]
+    && ([_delegate applicationShouldOpenUntitledFile: self] == YES)
+    && [_delegate respondsToSelector: @selector(applicationOpenUntitledFile:)])
     {
       [_delegate applicationOpenUntitledFile: self];
     }
@@ -1660,7 +1648,7 @@ delegate.
       return _delegate;
     }
   if ([NSDocumentController isDocumentBasedApplication]
-      && [[NSDocumentController sharedDocumentController]
+    && [[NSDocumentController sharedDocumentController]
 	   respondsToSelector: aSelector])
      {
       return [NSDocumentController sharedDocumentController];
@@ -2535,15 +2523,7 @@ image.
 
 - (void) _openDocument: (NSString*)filePath
 {
-  if ([_delegate respondsToSelector: @selector(application:openFile:)])
-    {
-      [_delegate application: self openFile: filePath];
-    }
-  else
-    {
-      [[NSDocumentController sharedDocumentController]
-	openDocumentWithContentsOfFile: filePath display: YES];
-    }
+  [_listener application: self openFile: filePath];
 }
 
 - (void) _windowDidBecomeKey: (NSNotification*) notification

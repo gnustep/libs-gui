@@ -1,3 +1,12 @@
+2003-04-09  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Headers/gnustep/gui/GSServicesManager.h: Expost file open methods.
+	* Source/GSServicesManager.m: Tidy file opening methods.
+	* Source/NSApplication.m: Use methods from GSServicesManager
+	Activate NSApp when opening a file.  Use NSDocumentController if the
+	app delegate won't open a file.  Remove temporary files once they
+	are opened.
+
 2003-04-09  Serg Stoyan <stoyan@hologr.com>
 
 	* Source/NSMenuView.m: return back horizontal menu code.

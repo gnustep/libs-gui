@@ -54,8 +54,13 @@
 #include <AppKit/NSPanel.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSWorkspace.h>
+#include <AppKit/NSDocumentController.h>
 
 #include <AppKit/GSServicesManager.h>
+
+@interface NSDocumentController (ApplicationPrivate)
++ (BOOL) isDocumentBasedApplication;
+@end
 
 /*
  *	The GSListener class is for talking to other applications.
@@ -74,14 +79,6 @@
 - (void) release;
 - (id) retain;
 - (id) self;
-- (BOOL) application: (NSApplication*)theApp
-	    openFile: (NSString*)file;
-- (BOOL) application: (NSApplication*)theApp
-   openFileWithoutUI: (NSString*)file;
-- (BOOL) application: (NSApplication*)theApp
-	openTempFile: (NSString*)file;
-- (BOOL) application: (NSApplication*)theApp
-	   printFile: (NSString*)file;
 - (void) performService: (NSString*)name
 	 withPasteboard: (NSPasteboard*)pb
 	       userData: (NSString*)ud
@@ -224,7 +221,7 @@ NSRegisterServicesProvider(id provider, NSString *name)
     return [servicesProvider performv: aSel :frame];
 
   /*
-   *    If tha applications delegate can handle the message - forward to it.
+   * If the applications delegate can handle the message - forward to it.
    */
   delegate = [[NSApplication sharedApplication] delegate];
   if ([delegate respondsToSelector: aSel] == YES)
@@ -252,7 +249,7 @@ NSRegisterServicesProvider(id provider, NSString *name)
     }
 
   /*
-   *    If tha applications delegate can handle the message - forward to it.
+   * If the applications delegate can handle the message - forward to it.
    */
   delegate = [[NSApplication sharedApplication] delegate];
   if ([delegate respondsToSelector: aSel] == YES)
@@ -263,47 +260,6 @@ NSRegisterServicesProvider(id provider, NSString *name)
 
   [NSException raise: NSGenericException
 	      format: @"method %@ not implemented", selName];
-}
-
-
-- (BOOL) application: (NSApplication*)theApp
-	    openFile: (NSString*)file
-{
-  id	del = [NSApp delegate];
-
-  if ([del respondsToSelector: _cmd])
-    return [del application: theApp openFile: file];
-  return NO;
-}
-
-- (BOOL) application: (NSApplication*)theApp
-   openFileWithoutUI: (NSString*)file
-{
-  id	del = [NSApp delegate];
-
-  if ([del respondsToSelector: _cmd])
-    return [del application: theApp openFileWithoutUI: file];
-  return NO;
-}
-
-- (BOOL) application: (NSApplication*)theApp
-	openTempFile: (NSString*)file
-{
-  id	del = [NSApp delegate];
-
-  if ([del respondsToSelector: _cmd])
-    return [del application: theApp openTempFile: file];
-  return NO;
-}
-
-- (BOOL) application: (NSApplication*)theApp
-	   printFile: (NSString*)file
-{
-  id	del = [NSApp delegate];
-
-  if ([del respondsToSelector: _cmd])
-    return [del application: theApp openFile: file];
-  return NO;
 }
 
 - (void) performService: (NSString*)name
@@ -426,6 +382,70 @@ static NSString         *disabledName = @".GNUstepDisabled";
       [self newWithApplication: nil];
     }
   return manager;
+}
+
+- (BOOL) application: (NSApplication*)theApp
+	    openFile: (NSString*)file
+{
+  id	del = [NSApp delegate];
+  BOOL	result = NO;
+
+  if ([del respondsToSelector: _cmd])
+    {
+      [NSApp activateIgnoringOtherApps: YES];
+      result = [del application: theApp openFile: file];
+    }
+  else if ([NSDocumentController isDocumentBasedApplication] == YES)
+    {
+      [NSApp activateIgnoringOtherApps: YES];
+      if ([[NSDocumentController sharedDocumentController]
+        openDocumentWithContentsOfFile: file display: YES] != nil)
+	{
+	  result = YES;
+	}
+    }
+  return result;
+}
+
+- (BOOL) application: (NSApplication*)theApp
+   openFileWithoutUI: (NSString*)file
+{
+  id	del = [NSApp delegate];
+  BOOL	result = NO;
+
+  if ([del respondsToSelector: _cmd])
+    {
+      result = [del application: theApp openFileWithoutUI: file];
+    }
+  else if ([NSDocumentController isDocumentBasedApplication] == YES)
+    {
+      if ([[NSDocumentController sharedDocumentController]
+        openDocumentWithContentsOfFile: file display: NO] != nil)
+	{
+	  result = YES;
+	}
+    }
+  return result;
+}
+
+- (BOOL) application: (NSApplication*)theApp
+	openTempFile: (NSString*)file
+{
+  BOOL	result = [self application: theApp openFile: file];
+
+  [[NSFileManager defaultManager] removeFileAtPath: file handler: nil];
+
+  return result;
+}
+
+- (BOOL) application: (NSApplication*)theApp
+	   printFile: (NSString*)file
+{
+  id	del = [NSApp delegate];
+
+  if ([del respondsToSelector: _cmd])
+    return [del application: theApp printFile: file];
+  return NO;
 }
 
 - (void) dealloc
@@ -1151,7 +1171,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
 	  if (title == nil && [[item submenu] isKindOfClass: [NSMenu class]])
 	    {
 	      NSArray		*sub = [[item submenu] itemArray];
-	      int		j;
+	      unsigned		j;
 
 	      shouldBeEnabled = NO;
 	      for (j = 0; j < [sub count]; j++)

@@ -57,6 +57,14 @@
 }
 + (GSServicesManager*) newWithApplication: (NSApplication*)app;
 + (GSServicesManager*) manager;
+- (BOOL) application: (NSApplication*)theApp
+	    openFile: (NSString*)file;
+- (BOOL) application: (NSApplication*)theApp
+   openFileWithoutUI: (NSString*)file;
+- (BOOL) application: (NSApplication*)theApp
+	openTempFile: (NSString*)file;
+- (BOOL) application: (NSApplication*)theApp
+	   printFile: (NSString*)file;
 - (void) doService: (NSMenuItem*)item;
 - (BOOL) hasRegisteredTypes: (NSDictionary*)service;
 - (NSString*) item2title: (NSMenuItem*)item;
