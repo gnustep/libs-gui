@@ -36,6 +36,14 @@
 #include <AppKit/NSFontManager.h>
 #include <AppKit/GSFontInfo.h>
 
+/* We cache all the 4 default fonts after we first get them.
+   But when a default font is changed, the variable is set to YES 
+   so all default fonts are forced to be recomputed. */
+static BOOL systemCacheNeedsRecomputing = NO;
+static BOOL boldSystemCacheNeedsRecomputing = NO;
+static BOOL userCacheNeedsRecomputing = NO;
+static BOOL userFixedCacheNeedsRecomputing = NO;
+
 @implementation NSFont
 
 /* Class variables*/
@@ -75,6 +83,11 @@ setNSFont(NSString* key, NSFont* font)
 
   [standardDefaults setObject: [font fontName] forKey: key];
 
+  systemCacheNeedsRecomputing = YES;
+  boldSystemCacheNeedsRecomputing = YES;
+  userCacheNeedsRecomputing = YES;
+  userFixedCacheNeedsRecomputing = YES;
+
   /* Don't care about errors*/
   [standardDefaults synchronize];
 }
@@ -93,28 +106,87 @@ setNSFont(NSString* key, NSFont* font)
     }
 }
 
-/* Getting the preferred user fonts*/
+/* Getting the preferred user fonts.  
+
+   Important: caching (this also implies sharing) the default fonts of
+   cells and views has a considerable impact on performance.  */
 
 // This is deprecated in MacOSX
 + (NSFont*) boldSystemFontOfSize: (float)fontSize
 {
-  return getNSFont (@"NSBoldFont", @"Helvetica-Bold", fontSize);
+  static NSFont *font = nil;
+
+  if (fontSize != 0)
+    {
+      return getNSFont (@"NSBoldFont", @"Helvetica-Bold", fontSize);
+    }
+  else
+    {
+      if ((font == nil) || (boldSystemCacheNeedsRecomputing == YES))
+	{
+	  ASSIGN (font, getNSFont (@"NSBoldFont", @"Helvetica-Bold", 0));
+	  boldSystemCacheNeedsRecomputing = NO;
+	}
+      return font;
+    }
 }
 
 // This is deprecated in MacOSX
 + (NSFont*) systemFontOfSize: (float)fontSize
 {
-  return getNSFont (@"NSFont", @"Helvetica", fontSize);
+  static NSFont *font = nil;
+
+  if (fontSize != 0)
+    {
+      return getNSFont (@"NSFont", @"Helvetica", fontSize);
+    }
+  else
+    {
+      if ((font == nil) || (systemCacheNeedsRecomputing == YES))
+	{
+	  ASSIGN (font, getNSFont (@"NSFont", @"Helvetica", 0));
+	  systemCacheNeedsRecomputing = NO;
+	}
+      return font;
+    }
 }
 
 + (NSFont*) userFixedPitchFontOfSize: (float)fontSize
 {
-  return getNSFont (@"NSUserFixedPitchFont", @"Courier", fontSize);
+  static NSFont *font = nil;
+
+  if (fontSize != 0)
+    {
+      return getNSFont (@"NSUserFixedPitchFont", @"Courier", fontSize);
+    }
+  else
+    {
+      if ((font == nil) || (userFixedCacheNeedsRecomputing == YES))
+	{
+	  ASSIGN (font, getNSFont (@"NSUserFixedPitchFont", @"Courier", 0));
+	  userFixedCacheNeedsRecomputing = NO;
+	}
+      return font;
+    }
 }
 
 + (NSFont*) userFontOfSize: (float)fontSize
 {
-  return getNSFont (@"NSUserFont", @"Helvetica", fontSize);
+  static NSFont *font = nil;
+
+  if (fontSize != 0)
+    {
+      return getNSFont (@"NSUserFont", @"Helvetica", fontSize);
+    }
+  else
+    {
+      if ((font == nil) || (userCacheNeedsRecomputing == YES))
+	{
+	  ASSIGN (font, getNSFont (@"NSUserFont", @"Helvetica", 0));
+	  userCacheNeedsRecomputing = NO;
+	}
+      return font;
+    }
 }
 
 + (NSArray *)preferredFontNames
