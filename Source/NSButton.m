@@ -307,11 +307,19 @@ id _nsbuttonCellClass = nil;
 {
   if ([self isEnabled])
     {
-      NSString *keyDescription = [theEvent charactersIgnoringModifiers];
-      
+      NSString *characters = [theEvent characters];
+      unichar character = 0;
+
+      if ([characters length] > 0)
+	{
+	  character = [characters characterAtIndex: 0];
+	}
+
       // Handle SPACE or RETURN to perform a click
-      if (([keyDescription compare: @" "] == NSOrderedSame)
-	  || ([theEvent keyCode] == 0x0d))
+      if ((character ==  NSNewlineCharacter)
+	  || (character == NSEnterCharacter) 
+	  || (character == NSCarriageReturnCharacter)
+	  || ([characters isEqualToString: @" "]))
 	{
 	  [self performClick: self];
 	  return;

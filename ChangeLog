@@ -1,9 +1,16 @@
+Mon Sep  4 03:53:06 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSButton.m ([-keyDown:]): Updated for fix in generation
+	of key events in the backend.
+	* Source/NSMatrix.m ([-keyDown:]): Idem.
+	* Source/NSResponder.m ([-interpretKeyEvents:]): Idem. 
+	* Source/NSWindow.m ([-keyDown:]): Idem.
+
 2000-09-03  Fred Kiefer  <FredKiefer@gmx.de>
 
-	* Source/GSFontInfo.m: 
-	[weightForString:] added "black"
-	* Source/NSAttributesString.m
-	Corrected bug in [nextWordFromIndex:forward:] 
+	* Source/GSFontInfo.m: [weightForString:] added "black"
+	* Source/NSAttributesString.m: Corrected bug in
+	[nextWordFromIndex:forward:]
 	
 Sun Sep  3 21:20:25 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
