@@ -2262,6 +2262,17 @@ resetCursorRectsForView(NSView *theView)
   [srv miniwindow: _windowNum];
   _f.visible = NO;
   
+  /*
+   * We must order the miniwindow in so that we will start sending
+   * it -_handleWindowNeedsDisplay: messages to tell it to display
+   * itsself when neccessary.
+   */
+  if (_counterpart != 0)
+    {
+      NSWindow	*mini = GSWindowWithNumber(_counterpart);
+
+      [mini orderFront: self];
+    }
   [nc postNotificationName: NSWindowDidMiniaturizeNotification
 		    object: self];
 }

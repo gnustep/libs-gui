@@ -1,3 +1,8 @@
+2003-03-07  Richard Frith-Macdonald <rfm@gnu.org>
+
+        * Source/NSWindow: ([-miniaturise:]) order the counterpart window
+        in so that it gets drawn properly.
+
 2003-03-04  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/GMAppKit.h, GMArchiver.h, IMConnectors.h,
