@@ -360,6 +360,7 @@ setNSFont(NSString* key, NSFont* font)
 //
 + (float) labelFontSize
 {
+  /* FIXME - if the user has set a default, shouldn't this return that ? */ 
   return 12.0;
 }
 
@@ -384,7 +385,18 @@ setNSFont(NSString* key, NSFont* font)
 		    size: (float)fontSize
 {
   NSFont*font;
-  float fontMatrix[6] = { fontSize, 0, 0, fontSize, 0, 0 };
+  float fontMatrix[6] = { 0, 0, 0, 0, 0, 0 };
+
+  if (fontSize == 0)
+    {
+      fontSize = [defaults floatForKey: @"NSUserFontSize"];
+      if (fontSize == 0)
+	{
+	  fontSize = 12;
+	}
+    }
+  fontMatrix[0] = fontSize;
+  fontMatrix[3] = fontSize;
 
   font = [self fontWithName: name matrix: fontMatrix];
   font->matrixExplicitlySet = NO;
