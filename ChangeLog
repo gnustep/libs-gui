@@ -1,3 +1,9 @@
+2003-09-27 19:29 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibContainer.m: [GSNibContainer awakeWithContext:]
+	Added code to set the services and windows menus as designated in
+	Gorm.  Addresses Report #5205
+	
 2003-09-27  David Ayers  <d.ayers@inode.at>
 
 	* Source/NSCell.m (-compare:):  Compare the stringValue of

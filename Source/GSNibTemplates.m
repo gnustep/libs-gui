@@ -137,6 +137,26 @@ static const int currentVersion = 1; // GSNibItem version number...
 	}
 
       /*
+       * Set the Services menu.
+       * Report #5205, Services/Window menu does not behave correctly.
+       */
+      menu = [nameTable objectForKey: @"NSServicesMenu"];
+      if (menu != nil && [menu isKindOfClass: [NSMenu class]] == YES)
+	{
+	  [NSApp setServicesMenu: menu];
+	}
+
+      /*
+       * Set the Services menu.
+       * Report #5205, Services/Window menu does not behave correctly.
+       */
+      menu = [nameTable objectForKey: @"NSWindowsMenu"];
+      if (menu != nil && [menu isKindOfClass: [NSMenu class]] == YES)
+	{
+	  [NSApp setWindowsMenu: menu];
+	}
+
+      /*
        * Now tell all the objects that they have been loaded from
        * a nib.
        */
