@@ -1200,6 +1200,8 @@ static NSColor	*shadowCol;
   [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
   tmp_int = _cell.entry_type;
   [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
+  [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_action_mask];
+  [aCoder encodeValueOfObjCType: @encode(id) at: &_represented_object];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -1240,6 +1242,8 @@ static NSColor	*shadowCol;
   _cell.text_align = tmp_int;
   [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
   _cell.entry_type = tmp_int;
+  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &_action_mask];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_represented_object];
   return self;
 }
 

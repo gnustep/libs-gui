@@ -1,3 +1,8 @@
+Wed Dec 15 17:15:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSCell.m: encode/decode some missing ivars.
+	* Source/NSButtonCell.m: encode/decode some missing ivars.
+
 Wed Dec 15 15:25:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSWindow.m: ([-setFrameAutosaveName:]) bugfix for setting a
