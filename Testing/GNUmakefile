@@ -25,46 +25,15 @@
 #  If not, write to the Free Software Foundation,
 #  59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-ifeq ($(GNUSTEP_SYSTEM_ROOT),)
-  GNUSTEP_SYSTEM_ROOT = $(TOPLEV)
-endif
-
-GNUSTEP_INSTALLATION_DIR = $(GNUSTEP_SYSTEM_ROOT)
-
-GNUSTEP_MAKEFILES = $(GNUSTEP_SYSTEM_ROOT)/Makefiles
-
 GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../gui.make
+
 include $(GNUSTEP_MAKEFILES)/common.make
 
-include ../Version
-# The application to be compiled
 TEST_TOOL_NAME = testpb
-
-TEST_APP_NAME = buttons matrix menu nsbox nsbrowser nsbrowsercell \
-		nscursor nsimage nsscroller scrollview scrollview2 \
-		slider windows
-
-# The source files to be compiled
 testpb_OBJC_FILES = testpb.m Functions.m
-buttons_OBJC_FILES = buttons.m
-matrix_OBJC_FILES = matrix.m
-menu_OBJC_FILES = menu.m
-nsbox_OBJC_FILES = nsbox.m
-nsbrowser_OBJC_FILES = nsbrowser.m
-nsbrowsercell_OBJC_FILES = nsbrowsercell.m
-nscursor_OBJC_FILES = nscursor.m ColorView.m
-nsimage_OBJC_FILES = nsimage.m ImageView.m
-nsscroller_OBJC_FILES = nsscroller.m
-scrollview_OBJC_FILES = scrollview.m TestView.m
-scrollview2_OBJC_FILES = scrollview2.m
-slider_OBJC_FILES = slider.m
 
-
--include GNUmakefile.preamble
--include GNUmakefile.local
+include GNUmakefile.preamble
 
 include $(GNUSTEP_MAKEFILES)/test-tool.make
-include $(GNUSTEP_MAKEFILES)/test-application.make
-include $(GNUSTEP_MAKEFILES)/aggregate.make
 
--include GNUmakefile.postamble
+include GNUmakefile.postamble
