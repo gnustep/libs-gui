@@ -1,3 +1,11 @@
+2005-04-03  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Headers/AppKit/NSTextView.h: Keep track of whether we are acting
+	as a target for a DnD operation, and what the selected range was
+	before the operation began.
+	* Source/NSTextView.m: Display insertion point during DnD operation
+	Fixes bug #9788
+
 2005-04-02  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSTableView.m: ([-mouseDown:]) tweak vertical image

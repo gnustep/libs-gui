@@ -123,6 +123,8 @@ therefore be stored in the NSLayoutManager to avoid problems.
     /* YES if delegate responds to
        `textView:willChangeSelectionFromCharacterRange:toCharacterRange:' */
     unsigned delegate_responds_to_will_change_sel:1;
+    /* YES if a DnD operation is in progress with this as the target view */
+    unsigned isDragTarget:1;
   } _tf;
 
 
@@ -201,6 +203,10 @@ therefore be stored in the NSLayoutManager to avoid problems.
   */
   int _currentInsertionPointMovementDirection;
 
+  /* Ivar to store the original range so it can be restored after a DnD
+   * operation is cancelled (the mouse moves back out of the view).
+   */
+  NSRange _dragTargetSelectionRange;
   /*
   TODO:
   Still need to figure out what "proper behavior" is when moving between two

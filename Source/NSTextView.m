@@ -3050,8 +3050,15 @@ Figure out how the additional layout stuff is supposed to work.
 {
   if (!_layoutManager)
     return NO;
-  return (_layoutManager->_selected_range.length == 0) && _tf.is_editable
-    && [_window isKeyWindow] && ([_window firstResponder] == self);
+  if (_layoutManager->_selected_range.length != 0)
+    return NO;
+  if (_tf.is_editable == NO)
+    return NO;
+  if (_tf.isDragTarget == YES)
+    return YES;
+  if ([_window isKeyWindow] == YES && [_window firstResponder] == self)
+    return YES;
+  return NO;
 }
 
 /*
@@ -3889,7 +3896,7 @@ right.)
 {
   // get default types, what are they?
   NSMutableArray *ret = [NSMutableArray arrayWithObjects: NSRulerPboardType,
-					NSColorPboardType, NSFontPboardType, nil];
+    NSColorPboardType, NSFontPboardType, nil];
 
   if (_tf.imports_graphics)
     {
@@ -3898,8 +3905,9 @@ right.)
       [ret addObject: NSFileContentsPboardType];
     }
   if (_tf.is_rich_text)
-    [ret addObject: NSRTFPboardType];
-
+    {
+      [ret addObject: NSRTFPboardType];
+    }
   [ret addObject: NSStringPboardType];
 
   return ret;
@@ -4044,26 +4052,80 @@ other than copy/paste or dragging. */
 // dragging of text, colors and files
 - (unsigned int) draggingEntered: (id <NSDraggingInfo>)sender
 {
-  NSPasteboard *pboard = [sender draggingPasteboard];
-  NSString *type = [self preferredPasteboardTypeFromArray: [pboard types]
-			 restrictedToTypesFromArray: [self readablePasteboardTypes]];
+  NSPasteboard	*pboard = [sender draggingPasteboard];
+  NSArray	*types = [self readablePasteboardTypes];
+  NSString	*type = [self preferredPasteboardTypeFromArray: [pboard types]
+				    restrictedToTypesFromArray: types];
+  unsigned int	flags = [self dragOperationForDraggingInfo: sender type: type];
 
-  return [self dragOperationForDraggingInfo: sender
-	       type: type];
+  if (flags != NSDragOperationNone)
+    {
+      NSPoint	dragPoint;
+      unsigned	dragIndex;
+      NSRange	dragRange;
+      NSRange	range;
+
+      if (_tf.isDragTarget == NO)
+	{
+	  _tf.isDragTarget = YES;
+	  _dragTargetSelectionRange = [self selectedRange];
+	}
+
+      dragPoint = [sender draggingLocation];
+      dragPoint = [self convertPoint: dragPoint fromView: nil];
+      dragIndex = [self characterIndexForPoint: dragPoint];
+      dragRange = NSMakeRange (dragIndex, 0);
+
+      range = [self selectionRangeForProposedRange: dragRange
+				       granularity: NSSelectByCharacter];
+      [self setSelectedRange: range];
+      [self displayIfNeeded];
+    }
+  return flags;
 }
 
 - (unsigned int) draggingUpdated: (id <NSDraggingInfo>)sender
 {
-  NSPasteboard *pboard = [sender draggingPasteboard];
-  NSString *type = [self preferredPasteboardTypeFromArray: [pboard types]
-			 restrictedToTypesFromArray: [self readablePasteboardTypes]];
+  NSPasteboard	*pboard = [sender draggingPasteboard];
+  NSArray	*types = [self readablePasteboardTypes];
+  NSString	*type = [self preferredPasteboardTypeFromArray: [pboard types]
+				    restrictedToTypesFromArray: types];
+  unsigned int	flags = [self dragOperationForDraggingInfo: sender type: type];
 
-  return [self dragOperationForDraggingInfo: sender
-	       type: type];
+  if (flags != NSDragOperationNone)
+    {
+      NSPoint	dragPoint;
+      unsigned	dragIndex;
+      NSRange	dragRange;
+      NSRange	range;
+
+      if (_tf.isDragTarget == NO)
+	{
+	  _tf.isDragTarget = YES;
+	  _dragTargetSelectionRange = [self selectedRange];
+	}
+
+      dragPoint = [sender draggingLocation];
+      dragPoint = [self convertPoint: dragPoint fromView: nil];
+      dragIndex = [self characterIndexForPoint: dragPoint];
+      dragRange = NSMakeRange (dragIndex, 0);
+
+      range = [self selectionRangeForProposedRange: dragRange
+				       granularity: NSSelectByCharacter];
+      [self setSelectedRange: range];
+      [self displayIfNeeded];
+    }
+  return flags;
 }
 
 - (void) draggingExited: (id <NSDraggingInfo>)sender
 {
+  if (_tf.isDragTarget == YES)
+    {
+      _tf.isDragTarget = NO;
+      [self setSelectedRange: _dragTargetSelectionRange];
+      [self displayIfNeeded];
+    }
 }
 
 - (BOOL) prepareForDragOperation: (id <NSDraggingInfo>)sender
@@ -4073,11 +4135,13 @@ other than copy/paste or dragging. */
 
 - (BOOL) performDragOperation: (id <NSDraggingInfo>)sender
 {
+  _tf.isDragTarget = NO;
   return [self readSelectionFromPasteboard: [sender draggingPasteboard]];
 }
 
 - (void) concludeDragOperation: (id <NSDraggingInfo>)sender
 {
+  _tf.isDragTarget = NO;
 }
 
 - (void) cleanUpAfterDragOperation
@@ -4166,11 +4230,13 @@ other than copy/paste or dragging. */
       granularity = _layoutManager->_selectionGranularity;
       /* Compute the new selection */
       proposedRange = NSMakeRange (startIndex, 0);
-      proposedRange = NSUnionRange (_layoutManager->_selected_range, proposedRange);
+      proposedRange = NSUnionRange (_layoutManager->_selected_range,
+	proposedRange);
       proposedRange = [self selectionRangeForProposedRange: proposedRange
-			    granularity: granularity];
+	granularity: granularity];
       /* Merge it with the old one */
-      proposedRange = NSUnionRange (_layoutManager->_selected_range, proposedRange);
+      proposedRange = NSUnionRange (_layoutManager->_selected_range,
+	proposedRange);
       /* Now decide what happens if the user shift-drags.  The range 
 	 will be based in startIndex, so we need to adjust it. */
       if (startIndex <= _layoutManager->_selected_range.location) 
@@ -4309,9 +4375,9 @@ other than copy/paste or dragging. */
 	while (currentEvent && [currentEvent type] != NSLeftMouseUp)
 	  {
 	    if ([currentEvent type] == NSPeriodic)
-	    {
-	      gotPeriodic = YES;
-	    }
+	      {
+		gotPeriodic = YES;
+	      }
 	    else
 	      lastEvent = currentEvent;
 	    currentEvent = [_window nextEventMatchingMask: mask
