@@ -48,6 +48,7 @@ common_2DCheckMark.tiff \
 common_Close.tiff \
 common_CloseH.tiff \
 common_CloseBroken.tiff \
+common_ColorSwatch.tiff \
 common_2DDash.tiff \
 common_Home.tiff \
 common_Mount.tiff \
