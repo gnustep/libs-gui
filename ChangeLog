@@ -1,3 +1,23 @@
+Fri Jan 26 22:36:21 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSBrowser.m (NSBR_VOFFSET): Changed from 3 to 2.
+	([-titleHeight]): Return 21.
+	* Source/NSFontPanel.m (_setFloatValue): New function to avoid
+	displaying .00000 for floats.  ([-browser:selectRow:inColumn:]),
+	([-setPanelFont:isMultiple:]): Use it.  ([-_initWithoutGModel]):
+	Completely rewritten sizes; fixed autoresizing masks; use a
+	GSBrowserTitleCell to draw the size column title; added trick to
+	make splitview sizes right; set min size.
+	([-browser:titleOfColumn:]), ([-browser:numberOfRowsInColumn:]),
+	([-browser:selectRow:inColumn:]): Tiny speed up.
+	([splitView:constrainMinCoordinate:maxCoordinate:ofSubviewAt:]):
+	New method.
+	* Source/NSSplitView.m ([-initWithFrame:]): Set
+	_autoresizes_subviews to NO.  ([-isFlipped]): Return YES as per
+	spec.  ([-adjustSubviews]), ([-drawRect:]), ([-mouseDown:]):
+	Updated for flipped coordinates.  ([-drawDividerInRect:]): Fixed
+	bug in drawing dimple with flipped coordinates.
+	
 2001-01-26  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSLayoutManager.m: when doing conversions between glyph
