@@ -33,10 +33,10 @@
 @class NSString;
 
 typedef	enum {
-  NSNextStepInterfaceStyle = 0,
-  NSMacintoshInterfaceStyle = 1,
-  NSWindows95InterfaceStyle = 2,
-  NSNoInterfaceStyle = -1
+  NSNoInterfaceStyle = 0,
+  NSNextStepInterfaceStyle = 1,
+  NSMacintoshInterfaceStyle = 2,
+  NSWindows95InterfaceStyle = 3
 } NSInterfaceStyle;
 
 extern	NSString	*NSInterfaceStyleDefault;

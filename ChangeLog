@@ -6,6 +6,9 @@ Mon Apr 26  7:05:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
         * Headers/AppKit/NSGraphicsContext.h: place in #ifndef STRICT_OPENSTEP
         * Headers/AppKit/NSInterfaceStyle.h: new file.
         * Headers/AppKit/NSResponder.h: new interface_style ivar.
+        * Headers/AppKit/AppKit.h: Added NSInterfaceStyle.
+        * Source/NSInterfaceStyle.m: new file - implemented class.
+        * Source/GNUmakefile: Added NSInterfaceStyle stuff.
 
 Fri Apr 23 16:30:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 

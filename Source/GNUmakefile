@@ -75,6 +75,7 @@ NSHelpPanel.m \
 NSImage.m \
 NSImageRep.m \
 NSImageView.m \
+NSInterfaceStyle.m \
 NSMatrix.m \
 NSMenu.m \
 NSMenuItem.m \
@@ -160,6 +161,7 @@ AppKit/NSHelpPanel.h \
 AppKit/NSImage.h \
 AppKit/NSImageRep.h \
 AppKit/NSImageView.h \
+AppKit/NSInterfaceStyle.h \
 AppKit/NSLayoutManager.h \
 AppKit/NSMatrix.h \
 AppKit/NSMenu.h \
