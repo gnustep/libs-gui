@@ -502,7 +502,6 @@ numberOfRowsInColumn: (int)column
 
 - (void) dealloc
 {
-  TEST_RELEASE(_dataSource);
   RELEASE(_buttonCell);
   RELEASE(_popUpList);
   
@@ -629,7 +628,7 @@ numberOfRowsInColumn: (int)column
   if (!_usesDataSource)
     NSLog(@"Method Invalid: ComboBox does not use dataSource");
   else
-    ASSIGN(_dataSource, aSource);
+    _dataSource = aSource;
 }
 
 - (void) addItemWithObjectValue: (id)object
