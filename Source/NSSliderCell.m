@@ -216,16 +216,20 @@
 - (id) initWithCoder: (NSCoder*)decoder
 {
   self = [super initWithCoder: decoder];
-  [decoder decodeValuesOfObjCTypes: "ffff",
-	      &_minValue, &_maxValue, &_floatValue, &_altIncrementValue];
+  [decoder decodeValuesOfObjCTypes: "ffffi",
+    &_minValue, &_maxValue, &_floatValue, &_altIncrementValue, &_isVertical];
+  [decoder decodeValueOfObjCType: @encode(id) at: &_titleCell];
+
+  _knobCell = [NSCell new];
   return self;
 }
 
 - (void) encodeWithCoder: (NSCoder*)coder
 {
   [super encodeWithCoder: coder];
-  [coder encodeValuesOfObjCTypes: "ffff",
-	      &_minValue, &_maxValue, &_floatValue, &_altIncrementValue];
+  [coder encodeValuesOfObjCTypes: "ffffi",
+    &_minValue, &_maxValue, &_floatValue, &_altIncrementValue, &_isVertical];
+  [coder encodeValueOfObjCType: @encode(id) at: &_titleCell];
 }
 
 @end

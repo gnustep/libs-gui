@@ -61,7 +61,7 @@ static Class cellClass;
 
 - (id) initWithFrame: (NSRect)frameRect
 {
-  NSSliderCell* theCell = [[[isa cellClass] new] autorelease];
+  NSSliderCell	*theCell = AUTORELEASE([[isa cellClass] new]);
 
   [super initWithFrame: frameRect];
 
@@ -297,7 +297,6 @@ static Class cellClass;
     }
 
   [self trackKnob: theEvent knobRect: rect];
-
 }
 
 @end
