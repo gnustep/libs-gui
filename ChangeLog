@@ -1,3 +1,6 @@
+2004-06-06  Quentin Mathe <qmathe@club-internet.fr>
+        * Source/NSComboBox.m: Added complete documentation.
+
 2004-06-04  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/GSDragView.h:
