@@ -1,3 +1,15 @@
+Sat Oct 23  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Fixed critical bug.  Now setting a flipped view as a window's 
+	contentView should work.
+	* Source/NSView.m ([-convertPoint:fromView:]): Use window's
+ 	contentView's superview and not contentView when argument is nil.
+	* Source/NSView.m ([-convertPoint:toView:]): idem.
+	* Source/NSView.m ([-convertRect:toView:]): idem.
+	* Source/NSView.m ([-convertRect:fromView:]): idem.
+	* Source/NSView.m ([-convertSize:fromView:]): idem.
+	* Source/NSView.m ([-convertSize:toView:]): idem.
+	
 1999-10-22  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSWindow.m (-initWithContentRect:...): Remove window
