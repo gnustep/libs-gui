@@ -310,6 +310,10 @@ static NSFont *_leafFont;
 
       title_rect.size.width -= image_rect.size.width + 8;	
     }
+
+  // Skip 2 points from the left border
+  title_rect.origin.x += 2;
+  title_rect.size.width -= 2;
   
   // Draw the body of the cell
   if ((_cell.type == NSImageCellType) 
