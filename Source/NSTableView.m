@@ -335,6 +335,7 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 - (void) removeTableColumn: (NSTableColumn *)aColumn
 {
   int columnIndex = [self columnWithIdentifier: [aColumn identifier]];
+  int column, i, count;
 
   if (columnIndex == -1)
     {
@@ -342,8 +343,32 @@ _isCellEditable (id delegate, NSArray *tableColumns,
       return;
     }
 
-  [_tableColumns removeObject: aColumn];
+  /* Remove selection on this column */
+  [self deselectColumn: columnIndex];
+  /* Shift column indexes on the right by one */
+  if (_selectedColumn > columnIndex)
+    {
+      _selectedColumn--;
+    }
+
+  count = [_selectedColumns count];
+  for (i = 0; i < count; i++)
+    {
+      column = [[_selectedColumns objectAtIndex: i] intValue];
+      if (column > columnIndex)
+	{
+	  column--;
+	  [_selectedColumns replaceObjectAtIndex: i 
+			    withObject: [NSNumber numberWithInt: column]];
+	}
+    }
+
+  /* Now really remove the column */
+
+  /* NB: Set table view to nil before removing the column from the
+     array, because removing it from the array could deallocate it !  */
   [aColumn setTableView: nil];
+  [_tableColumns removeObject: aColumn];
   _numberOfColumns--;
   if (_numberOfColumns > 0)
     {
@@ -354,15 +379,106 @@ _isCellEditable (id delegate, NSArray *tableColumns,
     {
       NSZoneFree (NSDefaultMallocZone (), _columnOrigins);
     }      
-  /* TODO: Rearrange selection */
   [self tile];
 }
 
 - (void) moveColumn: (int)columnIndex toColumn: (int)newIndex
 {
-  // TODO
-  /* TODO: Rearrange selection */
-  return;
+  /* The range of columns which need to be shifted, 
+     extremes included */
+  int minRange, maxRange;
+  /* Amount of shift for these columns */
+  int shift;
+  /* Dummy variables for the loop */
+  int i, count, column;
+  NSDictionary *dict;
+
+  if ((columnIndex < 0) || (columnIndex > (_numberOfColumns - 1)))
+    {
+      NSLog (@"Attempt to move column outside table");
+      return;
+    }
+  if ((newIndex < 0) || (newIndex > (_numberOfColumns - 1)))
+    {
+      NSLog (@"Attempt to move column to outside table");
+      return;
+    }
+
+  if (columnIndex == newIndex)
+    return;
+
+  if (columnIndex > newIndex)
+    {
+      minRange = newIndex;
+      maxRange = columnIndex - 1;
+      shift = +1;
+    }
+  else // columnIndex < newIndex
+    {
+      minRange = columnIndex + 1;
+      maxRange = newIndex;
+      shift = -1;
+    }
+
+  /* Rearrange selection */
+  if (_selectedColumn == columnIndex)
+    {
+      _selectedColumn = newIndex;
+    }
+  else if ((_selectedColumn >= minRange) && (_selectedColumn <= maxRange)) 
+    {
+      _selectedColumn += shift;
+    }
+
+  count = [_selectedColumns count];
+  for (i = 0; i < count; i++)
+    {
+      column = [[_selectedColumns objectAtIndex: i] intValue];
+
+      if (column == columnIndex)
+	{
+	  [_selectedColumns replaceObjectAtIndex: i 
+			    withObject: [NSNumber numberWithInt: newIndex]];
+	  continue;
+	}
+
+      if ((column >= minRange) && (column <= maxRange))
+	{
+	  column += shift;
+	  [_selectedColumns replaceObjectAtIndex: i 
+			    withObject: [NSNumber numberWithInt: column]];
+	  continue;
+	}
+
+      if ((column > columnIndex) && (column > newIndex))
+	{
+	  break;
+	}
+    }
+  /* Now really move the column */
+  if (columnIndex < newIndex)
+    {
+      [_tableColumns insertObject: [_tableColumns objectAtIndex: columnIndex]
+		     atIndex: newIndex + 1];
+      [_tableColumns removeObjectAtIndex: columnIndex];
+    }
+  else
+    {
+      [_tableColumns insertObject: [_tableColumns objectAtIndex: columnIndex]
+		     atIndex: newIndex];
+      [_tableColumns removeObjectAtIndex: columnIndex + 1];
+    }
+  /* Tile */
+  [self tile];
+
+  /* Post notification */
+  dict =[NSDictionary dictionaryWithObjectsAndKeys: 
+			[NSNumber numberWithInt: columnIndex], @"NSOldColumn", 
+		      [NSNumber numberWithInt: newIndex], @"NSNewColumn", nil];
+  [(NSNotificationCenter *)[NSNotificationCenter defaultCenter]
+    postNotificationName: NSTableViewColumnDidMoveNotification
+    object: self
+    userInfo: dict];
 }
 
 - (NSArray *) tableColumns
@@ -526,7 +642,8 @@ _isCellEditable (id delegate, NSArray *tableColumns,
     {
       BOOL newSelection;
       
-      if (modifiers & (NSShiftKeyMask | NSAlternateKeyMask))
+      if ((modifiers & (NSShiftKeyMask | NSAlternateKeyMask)) 
+	  && _allowsMultipleSelection)
 	newSelection = NO;
       else
 	newSelection = YES;
@@ -1364,16 +1481,11 @@ byExtendingSelection: (BOOL)flag
 
 	  modifiers = [theEvent modifierFlags];
 
-	  if (modifiers & (NSShiftKeyMask | NSAlternateKeyMask))
+	  if ((modifiers & (NSShiftKeyMask | NSAlternateKeyMask)) 
+	      && _allowsMultipleSelection)
 	    newSelection = NO;
 	  else
 	    newSelection = YES;
-
-	  if (([_selectedRows count] > 0) && (_allowsMultipleSelection == NO)
-	      && (newSelection == NO))
-	    {
-	      return;
-	    }
 
 	  selector = @selector (selectionShouldChangeInTableView:);
 	  if ([_delegate respondsToSelector: selector] == YES) 
@@ -1650,7 +1762,6 @@ byExtendingSelection: (BOOL)flag
 
   // Double-click events
 
-  // FIXME: Start editing only if row is selected
   if ([self isRowSelected: _clickedRow] == NO)
     return;
 
@@ -1668,10 +1779,8 @@ byExtendingSelection: (BOOL)flag
     }
 
   // Delegate said its OK to edit column.  Go on, do it.
-  [self editColumn: _clickedColumn
-	row: _clickedRow
-	withEvent: theEvent 
-	select: NO];
+  [self editColumn: _clickedColumn  row: _clickedRow
+	withEvent: theEvent  select: NO];
 }
 
 /* 
@@ -1860,12 +1969,11 @@ byExtendingSelection: (BOOL)flag
 - (void) setAutoresizesAllColumnsToFit: (BOOL)flag
 {
   // TODO
-  return;
 }
 
 - (BOOL) autoresizesAllColumnsToFit
 {
-  // TODO
+  //TODO
   return NO;
 }
 
@@ -1880,8 +1988,6 @@ byExtendingSelection: (BOOL)flag
       excess_width = NSMaxX ([self convertRect: [_super_view bounds] 
 				      fromView: _super_view]);
       excess_width -= NSMaxX (_bounds);
-      if (excess_width <= 0)
-	return;
       lastColumn = [_tableColumns objectAtIndex: (_numberOfColumns - 1)];
       last_column_width = [lastColumn width];
       last_column_width += excess_width;
@@ -1948,6 +2054,8 @@ byExtendingSelection: (BOOL)flag
       excess_width = NSMaxX ([self convertRect: [_super_view bounds] 
 				      fromView: _super_view]);
       excess_width -= table_width;
+      /* Since we resized each column at its minimum width, 
+	 it's useless to try shrinking more: we can't */
       if (excess_width <= 0)
 	{
 	  _tilingDisabled = NO;
