@@ -1,3 +1,9 @@
+Sat Nov 28  8:00:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* NSColoer.m: Mod for system colors to work nicely with backend
+	* NSColor.h: ditto
+	* NSColorPrivate.h: ditto
+
 Fri Nov 27 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* GSContext.m/.h second rewrite and polish of API.   
