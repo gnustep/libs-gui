@@ -1,3 +1,17 @@
+1998-11-19 16:40  Lyndon Tremblay <tremblay2@home.com>
+
+	* Model/IMLoading.m: -loadIMFile automatically searches in 
+	          GNUSTEP_SYSTEM_ROOT/Library/Model/ for gmodels
+
+1998-11-19 14:13  Lyndon Tremblay  <tremblay2@home.com>
+
+	* Headers/GMAppKit.h: Added NSPanel and NSSavePanel.
+	* Headers/NSSavePanel.h: Cleaned up instance variables.
+	* Model/GMAppKit.m: Implemented NSPanel and NSSavePanel.
+	* Model/GNUmakefile: Disabled test.app, missing NSDPSContext
+	* Source/NSSavePanel.m: Added controller class for loading of gmodels,
+	                loads gmodels.
+
 Wed Nov 18 20:55:53 1998  Adam Fedor  <fedor@ultra.doc.com>
 
 	* Source/NSWindow.m ([-close]): Release only when proper flag is
