@@ -1,3 +1,15 @@
+2000-07-23  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSCursor.h
+	Prefixed ivars with underscore. Added missing method
+	[initWithImage:foregroundColorHint:backgroundColorHint:hotSpot].
+	* Source/NSCursor.m
+	Adopted to changes in header.
+	Extracted new method [_computeCid] from [setImage].
+	Use [set] in [pop] and [push].
+	Implemented coding protocol.
+	Cache the class and use it for standard cursor and in [pop].
+	
 2001-07-23  Pierre-Yves  <pyrivail@ens-lyon.fr>
 
 	* Source/NSPopUpItemCell.m (-drawInteriorWithFrame:inView:): updates to
