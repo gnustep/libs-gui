@@ -894,7 +894,8 @@ restart: ;
 
 	    r = [cell cellFrameForTextContainer: curTextContainer
 		  proposedLineFragment: lf->rect
-		  glyphPosition: p
+		  glyphPosition: NSMakePoint(p.x,
+					     lf->rect.size.height - baseline)
 		  characterIndex: g->char_index];
 
 /*	    printf("cell at %i, (%g %g) in (%g %g)+(%g %g), got rect (%g %g)+(%g %g)\n",

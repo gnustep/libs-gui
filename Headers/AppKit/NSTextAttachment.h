@@ -90,13 +90,12 @@ up. (TODO) */
 /** The new way of placing the cell. **/
 
 /* Returns the rectangle in which the cell should be drawn. The rectangle
-is relative to the current point when typesetting. Positive y is probably
-up. (TODO)
+is relative to the current point when typesetting. Positive y is up.
 
 lineFrag is the line frag rect that this cell might be placed in, and
 position is the current position in that line frag rect (positive y is
-probably down (TODO)). Note that the line frag rect and glyph position
-may not be where the cell is actually placed.
+up). Note that the line frag rect and glyph position may not be where
+the cell is actually placed.
 
 Note that this might be called many times for the same attachment. Eg. if
 you return a rectangle that won't fit in the proposed line frag rect, the

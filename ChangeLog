@@ -1,3 +1,9 @@
+2004-09-04 23:32  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSHorizontalTypesetter.m (-layoutLineNewParagraph:):
+	Pass the right glyph position to cells.
+	* Headers/AppKit/NSTextAttachment.h: Clarify documentation.
+
 2004-09-04 01:34  Alexander Malmberg <alexander@malmberg.org>
 
 	* PrinterTypes/GNUmakefile, PrinterTypes/GNUmakefile.postamble:
