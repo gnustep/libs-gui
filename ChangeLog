@@ -1,3 +1,11 @@
+Wed Mar  7 16:11:19 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSBezierPath.m ([-appendBezierPathWithArcWithCenter:
+	radius:startAngle:endAngle:clockwise:]): Rewritten and fixed the
+	way angles are managed - should be consistent with postscript now
+	(patch by Georg Fleischmann <georg@vhf.de> with little change of
+	mine).
+
 2001-03-05  Adam Fedor  <fedor@gnu.org>
 
 	* Source/tiff.m (NSTiffError): Fix declaration.
