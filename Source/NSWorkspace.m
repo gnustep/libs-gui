@@ -642,12 +642,15 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 - (NSImage *) iconForFile: (NSString *)aPath
 {
   NSImage	*image = nil;
-  BOOL		isDir = NO;
   NSString	*iconPath = nil;
   NSString	*pathExtension = [[aPath pathExtension] lowercaseString];
   NSFileManager	*mgr = [NSFileManager defaultManager];
+  NSDictionary	*attributes;
+  NSString	*fileType;
 
-  if ([mgr fileExistsAtPath: aPath isDirectory: &isDir] && isDir)
+  attributes = [mgr fileAttributesAtPath: aPath traverseLink: YES];
+  fileType = [attributes objectForKey: NSFileType];
+  if ([fileType isEqual: NSFileTypeDirectory] == YES)
     {
       if ([pathExtension isEqualToString: @"app"]
 	|| [pathExtension isEqualToString: @"debug"]
@@ -663,8 +666,7 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 	    }
 	  /*
 	   *	If there is no icon specified in the Info.plist for app
-	   *	try 'wrapper/app.tiff' and 'wrapper/.dir.tiff' as
-	   *	possible locations for the application icon.
+	   *	try 'wrapper/app.tiff'
 	   */
 	  if (iconPath == nil)
 	    {
@@ -675,39 +677,48 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 	      iconPath = [iconPath stringByAppendingPathExtension: @"tiff"];
 	      if ([mgr isReadableFileAtPath: iconPath] == NO)
 		{
-		  str = @".dir.tiff";
-		  iconPath = [aPath stringByAppendingPathComponent: str];
-		  if ([mgr isReadableFileAtPath: iconPath] == NO)
-		    iconPath = nil;
+		  iconPath = nil;
 		}
 	    }
+	}
 
-	  if (iconPath)
+      /*
+       *	If we have no iconPath, try 'dir/.dir.tiff' as a
+       *	possible locations for the directory icon.
+       */
+      if (iconPath == nil)
+	{
+	  iconPath = [aPath stringByAppendingPathComponent: @".dir.tiff"];
+	  if ([mgr isReadableFileAtPath: iconPath] == NO)
 	    {
-	      NS_DURING
-		{
-		  image = [[NSImage alloc] initWithContentsOfFile: iconPath];
-		  AUTORELEASE(image);
-		}
-	      NS_HANDLER
-		{
-		  NSLog(@"BAD TIFF FILE '%@'", iconPath);
-		}
-	      NS_ENDHANDLER
+	      iconPath = nil;
 	    }
+	}
+
+      if (iconPath != nil)
+	{
+	  NS_DURING
+	    {
+	      image = [[NSImage alloc] initWithContentsOfFile: iconPath];
+	      AUTORELEASE(image);
+	    }
+	  NS_HANDLER
+	    {
+	      NSLog(@"BAD TIFF FILE '%@'", iconPath);
+	    }
+	  NS_ENDHANDLER
 	}
 
       if (image == nil)
 	{
 	  image = [self _iconForExtension: pathExtension];
-	}
-
-      if (image == nil)
-	{
-	  if ([aPath isEqual: _rootPath])
-	    image = [self rootImage];
-	  else
-	    image= [self folderImage];
+	  if (image == nil || image == [self unknownFiletypeImage])
+	    {
+	      if ([aPath isEqual: _rootPath])
+		image = [self rootImage];
+	      else
+		image = [self folderImage];
+	    }
 	}
     }
   else

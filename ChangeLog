@@ -1,6 +1,8 @@
-Wed Sep  1 12:35:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+Thu Sep  2  9:50:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* NSWorkspace.m: Attempted fix for locateApplicationBinary and tidied.
+	Modified fix for getting file icons of directories where the extension
+	is meaningless.  Look for .dir.tiff as well.
 
 Wed Sep  1  9:55:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
