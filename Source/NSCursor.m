@@ -29,6 +29,8 @@
 #include <gnustep/gui/config.h>
 #include <Foundation/NSArray.h>
 #include <AppKit/NSCursor.h>
+#include <AppKit/NSImage.h>
+#include <AppKit/NSBitmapImageRep.h>
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/DPSOperators.h>
 
@@ -86,7 +88,7 @@ static BOOL gnustep_gui_hidden_until_move;
 
       if ([gnustep_gui_current_cursor _cid])
 	{
-	  DPSsetcursorcolor(GSCurrentContext(), 0, 0, 0, 1, 1, 1, 
+	  DPSsetcursorcolor(GSCurrentContext(), -1, 0, 0, 1, 1, 1, 
 	    [gnustep_gui_current_cursor _cid]);
 	}
     }
@@ -151,14 +153,11 @@ static BOOL gnustep_gui_hidden_until_move;
 
 - (id) initWithImage: (NSImage *)newImage hotSpot: (NSPoint)spot
 {
-  self = [super init];
-  if (self != nil)
-    {
-      cursor_image = newImage;
-      hot_spot = spot;
-      is_set_on_mouse_entered = NO;
-      is_set_on_mouse_exited = NO;
-    }
+  hot_spot = spot;
+  is_set_on_mouse_entered = NO;
+  is_set_on_mouse_exited = NO;
+  if (newImage)
+    [self setImage: newImage];
   return self;
 }
 
@@ -182,7 +181,27 @@ static BOOL gnustep_gui_hidden_until_move;
 
 - (void) setImage: (NSImage *)newImage
 {
-  cursor_image = newImage;
+  void *c;
+  NSBitmapImageRep *rep;
+  
+  ASSIGN(cursor_image, newImage);
+
+  rep = [newImage bestRepresentationForDevice: nil];
+  /* FIXME: Handle cached image reps also */
+  if (!rep || ![rep respondsToSelector: @selector(samplesPerPixel)])
+    {
+      NSLog(@"NSCursor can only handle NSBitmapImageReps for now");
+      return;
+    }
+  if (hot_spot.x >= [rep pixelsWide])
+    hot_spot.x = [rep pixelsWide]-1;
+  
+  if (hot_spot.y >= [rep pixelsHigh])
+    hot_spot.y = [rep pixelsHigh]-1;
+  DPSimagecursor(GSCurrentContext(), hot_spot.x, hot_spot.y, 
+		 [rep pixelsWide], [rep pixelsHigh],
+		 [rep samplesPerPixel], [rep bitmapData], &c);
+  [self _setCid: c];
 }
 
 /*
@@ -241,7 +260,7 @@ static BOOL gnustep_gui_hidden_until_move;
   gnustep_gui_current_cursor = self;
   if (cid)
     {
-      DPSsetcursorcolor(GSCurrentContext(), 0, 0, 0, 1, 1, 1, cid);
+      DPSsetcursorcolor(GSCurrentContext(), -1, 0, 0, 1, 1, 1, cid);
     }
 }
 
@@ -250,7 +269,7 @@ static BOOL gnustep_gui_hidden_until_move;
   gnustep_gui_current_cursor = self;
   if (cid)
     {
-      DPSsetcursorcolor(GSCurrentContext(), 0, 0, 0, 1, 1, 1, cid);
+      DPSsetcursorcolor(GSCurrentContext(), -1, 0, 0, 1, 1, 1, cid);
     }
 }
 

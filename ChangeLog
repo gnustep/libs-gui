@@ -1,3 +1,7 @@
+2000-02-25  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSCursor.m ([NSCursor -setImage:]): Implement.
+
 Fri Feb 25 07:07:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSWorkspace.m: Removed a little unused code and fixed a
