@@ -119,6 +119,7 @@
 - (void) setTextContainerInset: (NSSize)inset
 {
   _textContainerInset = inset;
+  [self invalidateTextContainerOrigin];
 }
 
 - (NSSize) textContainerInset
@@ -135,7 +136,15 @@
 {
   // recompute the textContainerOrigin
   // use bounds, inset, and used rect.
-    //NSRect bRect = [self bounds];
+  /*
+  NSRect bRect = [self bounds];
+  NSRect uRect = [[self layoutManager] usedRectForTextContainer: _textContainer];
+
+  if ([self isFlipped])
+    _textContainerOrigin = ;
+  else
+    _textContainerOrigin = ;
+  */
 }
 
 - (NSLayoutManager*) layoutManager
@@ -203,6 +212,13 @@
 - (void) cleanUpAfterDragOperation
 {
   // release drag information
+}
+
+- (unsigned int) dragOperationForDraggingInfo: (id <NSDraggingInfo>)dragInfo 
+					 type: (NSString *)type
+{
+  //FIXME
+  return NSDragOperationNone;
 }
 
 - (void) setEditable: (BOOL)flag
@@ -699,11 +715,10 @@ other than copy/paste or dragging. */
 
 /* Notifies the delegate that the user clicked in a link at the specified
 charIndex. The delegate may take any appropriate actions to handle the
-click in its textView: clickedOnLink: atIndex: method.Notifies the delegate
-that the user clicked in a link at the specified charIndex. The delegate
-may take any appropriate actions to handle the click in its
-textView: clickedOnLink: atIndex: method. */
- 
+click in its textView: clickedOnLink: atIndex: method. */
+  if (_delegate != nil && 
+      [_delegate respondsToSelector: @selector(textView:clickedOnLink:atIndex:)])
+      [_delegate textView: self clickedOnLink: link atIndex: charIndex];
 }
 
 /*
@@ -746,7 +761,6 @@ replacing the selection.
   else
     [self unregisterDraggedTypes];
 }
-
 
 - (NSRange) selectionRangeForProposedRange: (NSRange)proposedSelRange
 			       granularity: (NSSelectionGranularity)granularity

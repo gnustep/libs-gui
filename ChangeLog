@@ -1,3 +1,23 @@
+2000-06-16  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/Parser/attributedStringConsumer.m
+	* Source/Parser/rtfConsumer.h
+	* Source/Parser/rtfConsumerFunctions.h
+	* Source/Parser/rtfScanner.h
+	* Source/Parser/rtfScanner.y
+	* Source/Parser/rtfGrammer.y
+	Extended support for RTF. It is possible to read in the OpenStep
+	specification now!
+	* Source/NSAttributedString.m
+	Use new RTF interface in initWithRTF:documentAttributes: 
+	(Will change once more if we use a separat bundle)
+	Implemented attributedStringWithAttachment:
+	* Source/NSTextStorage.m
+	Corrected problem in processEditing. The change range got to big
+	after repeated adding at the end.
+	* Source/NSText.m
+	Made setAlignment:range: save against missing paragraph style
+
 Fri Jun 16 18:59:44 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSTableView.m ([NSTableView -scrollRowToVisible:]): Don't
