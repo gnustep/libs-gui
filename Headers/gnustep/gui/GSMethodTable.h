@@ -272,9 +272,9 @@ typedef struct {
 /* Postscript Client functions */
 /* ----------------------------------------------------------------------- */
   void (*DPSPrintf__)
-        (NSGraphicsContext*, SEL, char *, va_list);
+        (NSGraphicsContext*, SEL, const char *, va_list);
   void (*DPSWriteData__)
-        (NSGraphicsContext*, SEL, char *, unsigned int);
+        (NSGraphicsContext*, SEL, const char *, unsigned int);
 
 /* ----------------------------------------------------------------------- */
 /* NSGraphics Ops */	

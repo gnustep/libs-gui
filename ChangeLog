@@ -1,3 +1,10 @@
+2002-10-29  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Headers/gnustep/gui/GSMethodTable.h:
+	* Headers/gnustep/gui/PSOperators.h:
+	Add const qualifier to PSPrintf and PSWriteData argument types to
+	match all other declatrations.
+
 2002-10-28  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSTextView.m (-drawRect:): Don't draw insertion point

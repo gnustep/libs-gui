@@ -342,11 +342,11 @@ __attribute__((unused));
 /* Postscript Client functions */
 /* ----------------------------------------------------------------------- */
 static inline void
-PSPrintf(char * fmt, va_list args)
+PSPrintf(const char * fmt, va_list args)
 __attribute__((unused));
 
 static inline void
-PSWriteData(char * buf, unsigned int count)
+PSWriteData(const char * buf, unsigned int count)
 __attribute__((unused));
 
 
@@ -796,13 +796,13 @@ PSdissolve(float x, float y, float w, float h, int gstateNum, float dx, float dy
 /* Postscript Client functions */
 /* ----------------------------------------------------------------------- */
 static inline void
-PSPrintf(char * fmt, va_list args)
+PSPrintf(const char * fmt, va_list args)
 {
   DPSPrintf(DEFCTXT, fmt, args);
 }
 
 static inline void
-PSWriteData(char * buf, unsigned int count)
+PSWriteData(const char * buf, unsigned int count)
 {
   DPSWriteData(DEFCTXT, buf, count);
 }
