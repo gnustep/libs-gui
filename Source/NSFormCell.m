@@ -94,9 +94,37 @@ static NSColor	*shadowCol;
   return [_titleCell isOpaque] && [super isOpaque];
 }
 
+- (void)setAttributedTitle:(NSAttributedString *)anAttributedString
+{
+  [_titleCell setAttributedStringValue: anAttributedString];
+  if (_formcell_auto_title_width)
+    {
+      // Invalidates title width 
+      _displayedTitleWidth = -1;
+      // Update the control(s)
+      [[NSNotificationCenter defaultCenter] 
+	postNotificationName: _NSFormCellDidChangeTitleWidthNotification
+	object: self];
+    }
+}
+
 - (void)setTitle: (NSString*)aString
 {
   [_titleCell setStringValue: aString];
+  if (_formcell_auto_title_width)
+    {
+      // Invalidates title width 
+      _displayedTitleWidth = -1;
+      // Update the control(s)
+      [[NSNotificationCenter defaultCenter] 
+	postNotificationName: _NSFormCellDidChangeTitleWidthNotification
+	object: self];
+    }
+}
+
+- (void)setTitleWithMnemonic:(NSString *)titleWithAmpersand
+{
+  [_titleCell setTitleWithMnemonic: titleWithAmpersand];
   if (_formcell_auto_title_width)
     {
       // Invalidates title width 
@@ -147,6 +175,11 @@ static NSColor	*shadowCol;
     object: self];
 }
 
+- (NSAttributedString *)attributedTitle
+{
+  return [_titleCell attributedStringValue];
+}
+
 - (NSString*)title
 {
   return [_titleCell stringValue];
@@ -176,13 +209,25 @@ static NSColor	*shadowCol;
   if (_formcell_auto_title_width == NO)
     return _displayedTitleWidth;
   else
-    return [[_titleCell font] widthOfString: [_titleCell stringValue]];
+    {
+      NSSize titleSize = [_titleCell cellSize];
+      return titleSize.width;
+    }
 }
 
 - (float)titleWidth: (NSSize)size
 {
-  // Minor TODO -- what is this supposed to do?
-  return 0;
+  if (_formcell_auto_title_width == NO)
+    return _displayedTitleWidth;
+  else
+    {
+      NSSize titleSize = [_titleCell cellSize];
+
+      if (size.width > titleSize.width)
+	return titleSize.width;
+      else
+	return size.width;
+    }
 }
 
 // Updates the title width.  The width of aRect is the new title width
@@ -210,8 +255,7 @@ static NSColor	*shadowCol;
       ASSIGN (_contents, @"Minimum");
       _cell.contents_is_attributed_string = NO;
       textSize = [super cellSize];
-      RELEASE (_contents);
-      _contents = nil;
+      DESTROY (_contents);
     }
 
   returnedSize.width = titleSize.width + 3 + textSize.width;
@@ -272,17 +316,19 @@ static NSColor	*shadowCol;
   if (NSIsEmptyRect(borderedFrame))
     return;
   
-  [controlView lockFocus];
   if (_cell.is_bordered)
     {
+      [controlView lockFocus];
       [shadowCol set];
       NSFrameRect(borderedFrame);
+      [controlView unlockFocus];
     }
   else if (_cell.is_bezeled)
     {
+      [controlView lockFocus];
       NSDrawWhiteBezel(borderedFrame, NSZeroRect);
+      [controlView unlockFocus];
     }
-  [controlView unlockFocus];
 
   //
   // Draw interior
