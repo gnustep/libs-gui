@@ -1,3 +1,10 @@
+2003-02-16 22:37  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSLayoutManager.m: Commenting and cleanups.
+	(-glyphIndexForPoint:inTextContainer:fractionOfDistanceThroughGlyph:):
+	Handle the case where the point is on a line, but not inside a line
+	frag rect, better.
+
 2003-02-16 17:48  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/GSHorizontalTypesetter.h,

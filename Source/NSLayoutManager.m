@@ -49,6 +49,27 @@ http://wiki.gnustep.org/index.php/NominallySpacedGlyphs
 TODO: We often need to deal with the case where a glyph can't be typeset
 (because there's nowhere to typeset it, eg. all text containers are full).
 Need to figure out how to handle it.
+
+
+TODO: Don't do linear searches through the line frags if avoidable. Some
+cases are considerably more important than others, and should be fixed
+first. Remaining cases, highest priority first:
+
+-drawGlyphsForGlyphRange:atPoint:
+	Drawing must be fast.
+
+-rectArrayForGlyphRange:withinSelectedGlyphRange:inTextContainer:rectCount:
+	Used when drawing backgrounds and the selection; see above.
+
+-glyphIndexForPoint:inTextContainer:fractionOfDistanceThroughGlyph:
+	Used when selecting with the mouse, and called for every event.
+	(Also slightly incorrect behavior currently.)
+
+
+-_insertionPointRectForCharacterIndex:textContainer:
+-characterIndexMoving:fromCharacterIndex:originalCharacterIndex:distance:
+	Keyboard insertion point movement. Performance isn't important.
+
 */
 
 #include <math.h>
@@ -82,7 +103,7 @@ Need to figure out how to handle it.
 
 @implementation NSLayoutManager (layout)
 
-- (NSPoint) locationForGlyphAtIndex: (unsigned int)glyphIndex
+-(NSPoint) locationForGlyphAtIndex: (unsigned int)glyphIndex
 {
   NSRange r;
   NSPoint p;
@@ -95,7 +116,7 @@ Need to figure out how to handle it.
     {
       /* The glyph hasn't been typeset yet, probably because there isn't
       enough space in the text containers to fit them. */
-      return NSMakePoint(0,0);
+      return NSMakePoint(0, 0);
     }
 
   i = r.location;
@@ -116,7 +137,7 @@ Need to figure out how to handle it.
 }
 
 
-- (void) textContainerChangedTextView: (NSTextContainer *)aContainer
+-(void) textContainerChangedTextView: (NSTextContainer *)aContainer
 {
 /* TODO: what do we do here? invalidate the displayed range for that
 container? necessary? */
@@ -135,10 +156,10 @@ container? necessary? */
 }
 
 
-- (NSRect *) rectArrayForGlyphRange: (NSRange)glyphRange
-	   withinSelectedGlyphRange: (NSRange)selGlyphRange
-		    inTextContainer: (NSTextContainer *)container
-			  rectCount: (unsigned int *)rectCount
+-(NSRect *) rectArrayForGlyphRange: (NSRange)glyphRange
+	  withinSelectedGlyphRange: (NSRange)selGlyphRange
+		   inTextContainer: (NSTextContainer *)container
+			 rectCount: (unsigned int *)rectCount
 {
   unsigned int last;
   int i;
@@ -286,10 +307,10 @@ container? necessary? */
   return rect_array;
 }
 
-- (NSRect *) rectArrayForCharacterRange: (NSRange)charRange
-	   withinSelectedCharacterRange: (NSRange)selCharRange
-			inTextContainer: (NSTextContainer *)container
-			      rectCount: (unsigned int *)rectCount
+-(NSRect *) rectArrayForCharacterRange: (NSRange)charRange
+	  withinSelectedCharacterRange: (NSRange)selCharRange
+		       inTextContainer: (NSTextContainer *)container
+			     rectCount: (unsigned int *)rectCount
 {
   NSRange r1, r2;
 
@@ -304,8 +325,8 @@ container? necessary? */
 	       rectCount: rectCount];
 }
 
-- (NSRect) boundingRectForGlyphRange: (NSRange)glyphRange 
-		     inTextContainer: (NSTextContainer *)aTextContainer
+-(NSRect) boundingRectForGlyphRange: (NSRange)glyphRange
+		    inTextContainer: (NSTextContainer *)aTextContainer
 {
   NSRect *r;
   NSRect result;
@@ -355,7 +376,7 @@ line frag rect. */
     }
 
   [self _doLayoutToContainer: i
-    point: NSMakePoint(NSMaxX(bounds),NSMaxY(bounds))];
+    point: NSMakePoint(NSMaxX(bounds), NSMaxY(bounds))];
 
   tc = textcontainers + i;
 
@@ -454,8 +475,8 @@ line frag rect. */
   return range;
 }
 
-- (NSRange) glyphRangeForBoundingRectWithoutAdditionalLayout: (NSRect)bounds
-					     inTextContainer: (NSTextContainer *)container
+-(NSRange) glyphRangeForBoundingRectWithoutAdditionalLayout: (NSRect)bounds
+					    inTextContainer: (NSTextContainer *)container
 {
   /* OPT: handle faster? how? */
   return [self glyphRangeForBoundingRect: bounds
@@ -463,8 +484,8 @@ line frag rect. */
 }
 
 
-- (unsigned int) glyphIndexForPoint: (NSPoint)aPoint
-		    inTextContainer: (NSTextContainer *)aTextContainer
+-(unsigned int) glyphIndexForPoint: (NSPoint)aPoint
+		   inTextContainer: (NSTextContainer *)aTextContainer
 {
   return [self glyphIndexForPoint: aPoint
 	       inTextContainer: aTextContainer
@@ -475,9 +496,9 @@ line frag rect. */
 TODO: decide on behavior wrt. invisible glyphs and pointer far away from
 anything visible
 */
-- (unsigned int) glyphIndexForPoint: (NSPoint)point
-		    inTextContainer: (NSTextContainer *)container
-     fractionOfDistanceThroughGlyph: (float *)partialFraction
+-(unsigned int) glyphIndexForPoint: (NSPoint)point
+		   inTextContainer: (NSTextContainer *)container
+    fractionOfDistanceThroughGlyph: (float *)partialFraction
 {
   int i;
   textcontainer_t *tc;
@@ -501,15 +522,24 @@ anything visible
 
   tc = textcontainers + i;
 
+  /* Find the line frag rect that contains the point, and handle the case
+  where the point isn't inside a line frag rect. */
   for (i = 0, lf = tc->linefrags; i < tc->num_linefrags; i++, lf++)
     {
+      /* The point is inside a rect; we're done. */
       if (NSPointInRect(point, lf->rect))
 	break;
 
-      /* Point is between two lines. */
+      /* If the current line frag rect is below the point, the point must
+      be between the line with the current line frag rect and the line
+      with the previous line frag rect. */
       if (NSMinY(lf->rect) > point.y)
 	{
-	  if (lf->pos > 0)
+	  /* If this is not the first line frag rect in the text container,
+	  we consider the point to be after the last glyph on the previous
+	  line. Otherwise, we consider it to be before the first glyph on
+	  the current line. */
+	  if (i > 0)
 	    {
 	      *partialFraction = 1.0;
 	      return lf->pos - 1;
@@ -520,9 +550,27 @@ anything visible
 	      return lf->pos;
 	    }
 	}
+      /* We know that NSMinY(lf->rect) <= point.y. If the point is on the
+      current line and to the left of the current line frag rect, we
+      consider the point to be before the first glyph in the current line
+      frag rect.
+
+      (This will happen if the point is between two line frag rects, or
+      before the first line frag rect. If the point is to the right of the
+      current line frag rect, it will be inside a subsequent line frag rect
+      on this line, or to the left of one, which will be handled by the here
+      or by the first check in the loop, or it will be after all line frag
+      rects on the line, which will be detected and handled as a 'between
+      two lines' case, or by the 'after all line frags' code below.)
+      */
+      if (NSMaxY(lf->rect) >= point.y && NSMinX(lf->rect) > point.x)
+	{
+	  *partialFraction = 0.0;
+	  return lf->pos;
+	}
     }
 
-  /* Point is below all line frags. */
+  /* Point is after all line frags. */
   if (i == tc->num_linefrags)
     {
       *partialFraction = 1.0;
@@ -537,15 +585,17 @@ anything visible
     if (lp->p.x > point.x)
       break;
 
-  /* Before the first glyph on the line. */
   if (!i)
     {
+      /* Before the first glyph on the line. */
       /* TODO: what if it isn't shown? */
       *partialFraction = 0;
       return lp->pos;
     }
   else
     {
+      /* There are points in this line frag before the point we're looking
+      for. */
       float cur, prev, next;
       glyph_run_t *r;
       unsigned int glyph_pos, char_pos, last_visible;
@@ -555,7 +605,7 @@ anything visible
       else
 	next = NSMinX(lf->rect);
 
-      lp--;
+      lp--; /* Valid since we checked for !i above. */
       r = run_for_glyph_index(lp->pos, glyphs, &glyph_pos, &char_pos);
 
       prev = lp->p.x;
@@ -584,7 +634,7 @@ anything visible
 	    }
 	  prev = cur;
 	  GLYPH_STEP_FORWARD(r, i, glyph_pos, char_pos)
-	    }
+	}
       *partialFraction = 1;
       return last_visible;
     }
@@ -745,7 +795,7 @@ has the same y origin and height as the line frag rect it is in.
 -(unsigned int) characterIndexMoving: (GSInsertionPointMovementDirection)direction
 		  fromCharacterIndex: (unsigned int)from
 	      originalCharacterIndex: (unsigned int)original
-			    distance: (float)distance
+			    distance: (float)distance;
 {
   NSRect from_rect, new_rect;
   int from_tc, new_tc;
@@ -789,7 +839,7 @@ has the same y origin and height as the line frag rect it is in.
 
       /*
       This is probably very inefficient, but it shouldn't be a bottleneck,
-      and it guarantees that cursor movement matches insertion point
+      and it guarantees that insertion point movement matches insertion point
       positioning. It also lets us do this by character instead of by glyph.
       */
       new = from;
@@ -1275,7 +1325,7 @@ container */
 	      if (g >= range.location && la)
 		{
 		  unsigned int char_index =
-		    [self characterRangeForGlyphRange: NSMakeRange(g,1)
+		    [self characterRangeForGlyphRange: NSMakeRange(g, 1)
 				     actualGlyphRange: NULL].location;
 		  NSObject<NSTextAttachmentCell> *cell = [[_textStorage attribute: NSAttachmentAttributeName
 			atIndex: char_index
@@ -1362,8 +1412,8 @@ for (i = 0; i < gbuf_len; i++) printf("   %3i : %04x\n", i, gbuf[i]); */
 
 @implementation NSLayoutManager
 
-- (void) insertTextContainer: (NSTextContainer *)aTextContainer
-		     atIndex: (unsigned int)index
+-(void) insertTextContainer: (NSTextContainer *)aTextContainer
+		    atIndex: (unsigned int)index
 {
   int i;
 
@@ -1374,7 +1424,7 @@ for (i = 0; i < gbuf_len; i++) printf("   %3i : %04x\n", i, gbuf[i]); */
     [[textcontainers[i].textContainer textView] _updateMultipleTextViews];
 }
 
-- (void) removeTextContainerAtIndex: (unsigned int)index
+-(void) removeTextContainerAtIndex: (unsigned int)index
 {
   int i;
   NSTextView *tv = [textcontainers[index].textContainer textView];
@@ -1398,7 +1448,11 @@ for (i = 0; i < gbuf_len; i++) printf("   %3i : %04x\n", i, gbuf[i]); */
 }
 
 
-/* TODO */
+/*
+TODO: Add a general typesetterAttributes dictionary. Implement the
+hyphenation factor methods by setting/getting an attribute in this
+dictionary.
+*/
 -(float) hyphenationFactor
 {
   return 0.0;
@@ -1406,7 +1460,7 @@ for (i = 0; i < gbuf_len; i++) printf("   %3i : %04x\n", i, gbuf[i]); */
 
 -(void) setHyphenationFactor: (float)factor
 {
-  NSLog(@"Warning: (NSLayoutManager) %s not implemented",__PRETTY_FUNCTION__);
+  NSLog(@"Warning: (NSLayoutManager) %s not implemented", __PRETTY_FUNCTION__);
 }
 
 
