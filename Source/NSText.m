@@ -1215,8 +1215,6 @@ currentCursorY=[self rectForCharacterIndex:NSMaxRange([self selectedRange])].ori
 	unsigned				startIndex;
 	BOOL					didDragging=NO;
 
-  NSLog(@"mouseDown:");
-
 	if (!is_selectable) return;						// If not selectable then don't recognize the mouse down
 
 	[[self window] makeFirstResponder:self];
@@ -2056,13 +2054,13 @@ NSLog(@"opti hook 2");
 //FIXME 	return MakeRangeFromAbs(startLine,endLine+1);
 	if ([plainContent length] != 0) {
 	  myTest = MakeRangeFromAbs(startLine,endLine+1);
-	  NSLog(@"myTest: length = %d, location = %d\n",
+	  NSDebugLog(@"myTest: length = %d, location = %d\n",
 (int)myTest.length,
 (int)myTest.location);
 	  return myTest;
 	} else {
 	  myTest = MakeRangeFromAbs(startLine,endLine);
-	  NSLog(@"myTest: length = %d, location = %d\n",
+	  NSDebugLog(@"myTest: length = %d, location = %d\n",
 (int)myTest.length,
 (int)myTest.location);
 	  return myTest;
@@ -2077,8 +2075,6 @@ NSLog(@"opti hook 2");
 	}
 
 	redrawLineRange=[self lineRangeForRect:rect];
-
-  NSLog(@"should be drawing text here. No big deal.\n");
 
 	if([self drawsBackground])	// clear area under text
 	{	[[self backgroundColor] set]; NSRectFill(rect);

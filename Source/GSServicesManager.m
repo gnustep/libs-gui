@@ -792,8 +792,9 @@ static NSString         *disabledName = @".GNUstepDisabled";
               [item setTag: pos];
             }
         }
-      [submenu sizeToFit];
-      [servicesMenu sizeToFit];
+      [submenu update];
+//      [submenu sizeToFit];
+//      [servicesMenu sizeToFit];
       [servicesMenu update];
     }
 }

@@ -537,7 +537,7 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   id		cells;
   unsigned	i, count;
   id		theApp = [NSApplication sharedApplication];
-  
+
   if (menu_changed)
     [self sizeToFit];
 
@@ -599,7 +599,7 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
       if (shouldBeEnabled != wasEnabled)
         {
           [cell setEnabled: shouldBeEnabled];
-	  [[self window] flushWindow];
+	  [[self window] display];
 //          [menu_view setNeedsDisplay:YES];
 //	  [menu_view setNeedsDisplayInRect:[menu_view rectOfItemAtIndex:i]];
 // FIXME
@@ -607,9 +607,6 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
         }
     }
           
-  if (menu_changed)
-    [self sizeToFit];
-         
   /* Reenable displaying of menus */
   [self setMenuChangedMessagesEnabled: YES];
 }
@@ -716,41 +713,11 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 
   if (!menu_is_beholdenToPopUpButton)
     {
-      [titleView setFrameOrigin: NSMakePoint(0, mFrame.size.height)];
-      [titleView setFrameSize: NSMakeSize (mFrame.size.width,21)];
-      size.height = mFrame.size.height+21;
+      size.height += 21;
       [aWindow setContentSize: size];
       [bWindow setContentSize: size];
-
-/*
-      if (menu_supermenu)
-        {
-        frame.origin = [supermenu locationForSubmenu: self];
-        }
-  else
-    {
-      NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-      NSDictionary* menuLocations = [defaults
-                                        objectForKey: NSMenuLocationsKey];
-      NSString* key;
-      NSArray* array;
-                        
-      if ([[NSApplication sharedApplication] mainMenu] == self)
-        key = @"Main menu";
-      else
-        key = [self title];
-  
-      if (key)
-        {
-          array = [menuLocations objectForKey: key];
-          if (array && [array isKindOfClass: [NSArray class]])
-            {
-              frame.origin.x = [[array objectAtIndex: 0] floatValue];
-              frame.origin.y = [[array objectAtIndex: 1] floatValue];
-            }
-        }
-    }
-*/
+      [menu_view setFrameOrigin: NSMakePoint(0, 0)];
+      [titleView setFrame: NSMakeRect(0,size.height-21,size.width,21)];
     }
   else
     {
@@ -758,8 +725,10 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
     }
 
 // FIXME, popup sets itself up.
-  
-  [menu_view setNeedsDisplay:YES];
+// [menu_view setNeedsDisplay:YES];
+
+  [aWindow display];
+
   menu_changed = NO;
 }
 

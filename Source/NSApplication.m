@@ -1214,13 +1214,18 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 	break;
       i++;
     }
+
+  NSLog(@"aString = %@", aString);
+
   item = [menu insertItemWithTitle: aString
 			    action: @selector(makeKeyAndOrderFront:)
 		     keyEquivalent: @""
 			   atIndex: i];
   [item setTarget: aWindow];
-  [menu sizeToFit];
+//  [menu sizeToFit];
+NSLog(@"sizeToFit the windowsMenu.");
   [menu update];
+NSLog(@"update the windowsMenu.");
 }
 
 - (void) removeWindowsItem: (NSWindow*)aWindow
@@ -1243,7 +1248,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 	  if ([item target] == aWindow)
 	    {
 	      [menu removeItem: item];
-	      [menu sizeToFit];
+//	      [menu sizeToFit];
 	      [menu update];
 	      break;
 	    }
@@ -1300,7 +1305,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 			 filename: [win representedFilename] != nil];
 	  [windows removeLastObject];
 	}
-      [aMenu sizeToFit];
+//      [aMenu sizeToFit];
       [aMenu update];
     }
 }
@@ -1362,7 +1367,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 	      if (changed)
 		{
 		  [(id)[item controlView] sizeToFit];
-		  [menu sizeToFit];
+//		  [menu sizeToFit];
 		  [menu update];
 		}
 	      break;
