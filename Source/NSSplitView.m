@@ -116,10 +116,9 @@ static NSNotificationCenter *nc = nil;
   unsigned	int eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask;
   /* YES if delegate implements splitView:constrainSplitPosition:ofSubviewAt:*/
   BOOL          delegateConstrains = NO;
-  SEL           constrainSel = 
-    @selector(splitView:constrainSplitPosition:ofSubviewAt:);
-  IMP           constrainImp = 0;
-    
+  SEL constrainSel = @selector(splitView:constrainSplitPosition:ofSubviewAt:);
+  typedef float (*floatIMP)(id, SEL, id, float, int);
+  floatIMP constrainImp = NULL;
 
   /*  if there are less the two subviews, there is nothing to do */
   if (count < 2)
@@ -289,7 +288,7 @@ static NSNotificationCenter *nc = nil;
 
   if (delegateConstrains)
     {
-      constrainImp = [_delegate methodForSelector: constrainSel];
+      constrainImp = (floatIMP)[_delegate methodForSelector: constrainSel];
     }
 
   // user is moving the knob loop until left mouse up
@@ -300,21 +299,13 @@ static NSNotificationCenter *nc = nil;
 	{
 	  if (_isVertical)
 	    {
-	      /*
-	      p.x = [_delegate splitView: self  constrainSplitPosition: p.x
-			       ofSubviewAt: offset];
-	      */
-	      (*constrainImp)(_delegate, constrainSel, self,
-			      p.x, offset);
+	      p.x = (*constrainImp)(_delegate, constrainSel, self,
+				    p.x, offset);
 	    }
 	  else
 	    {
-	      /*
-	      p.y = [_delegate splitView: self  constrainSplitPosition: p.y
-			       ofSubviewAt: offset];
-	      */
-	      (*constrainImp)(_delegate, constrainSel, self,
-			      p.y, offset);
+	      p.y = (*constrainImp)(_delegate, constrainSel, self,
+				    p.y, offset);
 	    }
 	}
       
