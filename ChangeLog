@@ -10,6 +10,7 @@ Thu Nov 12 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 	* NSWindow.m move various non OS XDPS specific methods to XDPS, move 
 		various front end methods out of XRWindow and into NSWindow, fix 
 		center method.
+	* NSApplication.m sendEvent: add test for menu to right mouse display of.
 
 Mon Nov 9 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 

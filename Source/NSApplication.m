@@ -286,18 +286,19 @@ NSAutoreleasePool* pool;
 			}
 
 		case NSRightMouseDown:								// Right mouse down
-			{
-			static NSMenu *copyOfMainMenu = nil;
-			NSWindow *copyMenuWindow;
-
-			if(!copyOfMainMenu)								// display the menu
-				copyOfMainMenu = [main_menu copy];			// under the mouse
-			copyMenuWindow = [copyOfMainMenu menuWindow];
-			[copyOfMainMenu _rightMouseDisplay];
-			[copyMenuWindow captureMouse:self];
-			[[copyOfMainMenu menuCells] mouseDown:theEvent];
-			[copyMenuWindow releaseMouse:self];
-			}
+			if(main_menu)
+				{
+				static NSMenu *copyOfMainMenu = nil;
+				NSWindow *copyMenuWindow;
+																	
+				if(!copyOfMainMenu)							// display the menu
+					copyOfMainMenu = [main_menu copy];		// under the mouse
+				copyMenuWindow = [copyOfMainMenu menuWindow];
+				[copyOfMainMenu _rightMouseDisplay];
+				[copyMenuWindow captureMouse:self];
+				[[copyOfMainMenu menuCells] mouseDown:theEvent];
+				[copyMenuWindow releaseMouse:self];
+				}
 			break;
 
 		default:									// pass all other events to 
