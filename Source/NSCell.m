@@ -1112,13 +1112,16 @@ static NSColor	*shadowCol;
   NSView *cv = [self controlView];
 
   if(_cell.is_disabled == YES)
-    return;
+    {
+      return;
+    }
 
-  if (cv)
+  if (cv != nil)
     {  
       NSRect   cvBounds = [cv bounds];
       NSWindow *cvWin = [cv window];
       
+      [self setNextState];
       [self highlight: YES withFrame: cvBounds inView: cv];
       [cvWin flushWindow];
       
@@ -1146,6 +1149,8 @@ static NSColor	*shadowCol;
     {
       if (action)
 	{
+	  [self setNextState];
+
 	  NS_DURING
 	    {
 	      [[NSApplication sharedApplication] sendAction: action
