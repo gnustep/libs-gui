@@ -36,6 +36,8 @@ Since temporary attributes are set for _character_ ranges and not _glyph_
 ranges, a bunch of things could be simplified here (in particular, a
 character can't be in several runs anymore, so there's no need to worry
 about that or search over run boundaries).
+
+(2002-11-27): All comments should be clarified now.
 */
 
 
@@ -52,7 +54,8 @@ typedef struct GSLayoutManager_glyph_run_head_s
   struct GSLayoutManager_glyph_run_head_s *next;
 
   /* char_length must always be accurate. glyph_length is the number of
-  valid glyphs counting from the start. */
+  valid glyphs counting from the start. For a level 0 head, it's the number
+  of glyphs in that run. */
   int glyph_length,char_length;
 
   /* Glyph generation is complete for all created runs. */
@@ -90,15 +93,17 @@ typedef struct GSLayoutManager_glyph_run_s
   glyph_run_head_t head;
   glyph_run_head_t *prev;
 
-  /* zero-based, so it's really the number of heads in addition to the
-  one in glyph_run_t */
+  /* Zero-based, so it's really the number of heads in addition to the
+  one included in glyph_run_t. */
   int level;
 
-  /* All glyph-generation-affecting attributes are same as last run;
-  glyph/character mappings may run across such borders. Continued runs
-  for a run must exist if the run exist; ie. the last created run can't
-  have as-yet uncreated continued runs. (This probably only matters when
-  removing trailing invalidated runs.) */
+  /* All glyph-generation-affecting attributes are same as last run. This
+  doesn't have to be set if a run is continued, but if it is set, it must
+  be correct (it is (will, someday) be used to merge small runs created
+  by repeated inserts in a small range; not merging when we can merge
+  doesn't cost much, but merging when we shouldn't would mess up attributes
+  for those runs).
+  */
   unsigned int continued:1;
 
   /* Bidirectional-level, as per the unicode bidirectional algorithm
@@ -110,9 +115,11 @@ typedef struct GSLayoutManager_glyph_run_s
 
   /* Font for this run. */
   NSFont *font;
-  int superscript;
   int ligature;
-  BOOL explicit_kern; /* YES if there's an explicit kern attribute */
+
+  /* YES if there's an explicit kern attribute. Currently, ligatures aren't
+  used when explicit kerning is available (TODO). */
+  BOOL explicit_kern;
 
   glyph_t *glyphs;
 } glyph_run_t;
@@ -187,6 +194,11 @@ typedef struct GSLayoutManager_textcontainer_s
 
 /* Some helper macros */
 
+/* r is a run, pos and cpos are the glyph and character positions of the
+run, i is the glyph index in the run. */
+
+/* Steps forward to the next glyph. If there is no next glyph, r will be
+the last run and i==r->head.glyph_length. */
 #define GLYPH_STEP_FORWARD(r,i,pos,cpos) \
   { \
     i++; \
@@ -205,6 +217,8 @@ typedef struct GSLayoutManager_textcontainer_s
       } \
   }
 
+/* Steps backward to the previous glyph. If there is no previous glyph, r
+will be the first glyph and i==-1. */
 #define GLYPH_STEP_BACKWARD(r,i,pos,cpos) \
   { \
     i--; \

@@ -54,12 +54,6 @@ static int random_level(void)
 
   r->explicit_kern = !![attributes objectForKey: NSKernAttributeName];
 
-  n = [attributes objectForKey: NSSuperscriptAttributeName];
-  if (n)
-    r->superscript = [n intValue];
-  else
-    r->superscript = 0;
-
   n = [attributes objectForKey: NSLigatureAttributeName];
   if (n)
     r->ligature = [n intValue];
@@ -71,7 +65,8 @@ static int random_level(void)
   Returning a nil font from -fontForCharactersWithAttributes: causes those
   characters to not be displayed (ie. no glyphs are generated).
 
-  How would glyph<->char mapping be handled?
+  How would glyph<->char mapping be handled? Map the entire run to one
+  NSNullGlyph?
   */
   if (!r->font)
     r->font = [NSFont userFontOfSize: 0];
@@ -87,7 +82,6 @@ static int random_level(void)
 -(void) _run_copy_attributes: (glyph_run_t *)dst : (const glyph_run_t *)src
 {
   dst->font = [src->font retain];
-  dst->superscript = src->superscript;
   dst->ligature = src->ligature;
   dst->explicit_kern = src->explicit_kern;
 }
@@ -270,6 +264,8 @@ static glyph_run_t *run_for_character_index(unsigned int charIndex,
 }
 
 
+/* Recalculates char_length, glyph_length, and complete for a
+glyph_run_head_t. All "children" of this head must have valid values. */
 static void run_fix_head(glyph_run_head_t *h)
 {
   glyph_run_head_t *h2, *next;

@@ -1,3 +1,9 @@
+2002-12-01 13:27  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/GSLayoutManager_internal.h,
+	Source/GSLayoutManager.m: Clean ups. Remove some old stuff. Add
+	some more comments.
+
 2002-11-26 16:37  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/GSTypesetter.h, Source/GSTypesetter.m,
