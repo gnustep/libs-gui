@@ -24,6 +24,7 @@
 #include	<Foundation/NSArray.h>
 #include	<Foundation/NSBundle.h>
 #include	<Foundation/NSDictionary.h>
+#include	<Foundation/NSSet.h>
 #include	<Foundation/NSFileManager.h>
 #include	<Foundation/NSString.h>
 #include	<Foundation/NSProcessInfo.h>
@@ -44,7 +45,8 @@ static NSString		*cacheName = @".GNUstepServices";
 
 static	BOOL verbose = NO;
 static	NSMutableDictionary	*serviceMap;
-static	NSMutableDictionary	*filterMap;
+static	NSMutableArray		*filterList;
+static	NSMutableSet		*filterSet;
 static	NSMutableDictionary	*printMap;
 static	NSMutableDictionary	*spellMap;
 static	NSMutableDictionary	*applicationMap;
@@ -94,7 +96,8 @@ main(int argc, char** argv, char **env_c)
   [NSSerializer shouldBeCompact: YES];
 
   serviceMap = [NSMutableDictionary dictionaryWithCapacity: 64];
-  filterMap = [NSMutableDictionary dictionaryWithCapacity: 66];
+  filterList = [NSMutableArray arrayWithCapacity: 16];
+  filterSet = [NSMutableSet setWithCapacity: 64];
   printMap = [NSMutableDictionary dictionaryWithCapacity: 8];
   spellMap = [NSMutableDictionary dictionaryWithCapacity: 8];
   applicationMap = [NSMutableDictionary dictionaryWithCapacity: 64];
@@ -286,7 +289,7 @@ main(int argc, char** argv, char **env_c)
   fullMap = [NSMutableDictionary dictionaryWithCapacity: 5];
   [fullMap setObject: services forKey: @"ByPath"];
   [fullMap setObject: serviceMap forKey: @"ByService"];
-  [fullMap setObject: filterMap forKey: @"ByFilter"];
+  [fullMap setObject: filterList forKey: @"ByFilter"];
   [fullMap setObject: printMap forKey: @"ByPrint"];
   [fullMap setObject: spellMap forKey: @"BySpell"];
 
@@ -815,13 +818,13 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
    */
   if ((obj = [result objectForKey: @"NSFilter"]) != nil)
     {
-      NSDictionary	*inf;
       NSString		*str;
       NSArray		*snd;
       NSArray		*ret;
+      BOOL		notPresent = NO;
 
       str = [result objectForKey: @"NSInputMechanism"];
-      if (str)
+      if (str != nil)
 	{
 	  if ([str isEqualToString: @"NSUnixStdio"] == NO
 	    && [str isEqualToString: @"NSMapFile"] == NO
@@ -831,25 +834,45 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
 	    return nil;
 	  }
 	}
-      else
+      else if ([result objectForKey: @"NSPortName"] == nil)
 	{
-	  if ([result objectForKey: @"NSPortName"] == nil)
-	    {
-	      NSLog(@"NSServices entry %u NSPortName missing - %@", pos, path);
-	      return nil;
-	    }
+	  NSLog(@"NSServices entry %u NSPortName missing - %@", pos, path);
+	  return nil;
 	}
 
       snd = [result objectForKey: @"NSSendTypes"];
       ret = [result objectForKey: @"NSReturnTypes"];
-      if (snd == nil || ret == nil)
+      if ([snd count] == 0 || [ret count] == 0)
 	{
-	  NSLog(@"NSServices entry %u types missing - %@", pos, path);
+	  NSLog(@"NSServices entry %u types empty or missing - %@", pos, path);
 	  return nil;
 	}
+      else
+	{
+	  unsigned	i = [snd count];
 
-      inf = [filterMap objectForKey: obj];
-      if (inf != nil)
+	  /*
+	   * See if this filter handles any send/return combination
+	   * which is not alreadly present.
+	   */
+	  while (notPresent == NO && i-- > 0)
+	    {
+	      unsigned	j = [ret count];
+
+	      while (notPresent == NO && j-- > 0)
+		{
+		  str = [NSString stringWithFormat: @"%@==>%@",
+		    [snd objectAtIndex: i], [ret objectAtIndex: j]];
+		  if ([filterSet member: str] == nil)
+		    {
+		      notPresent = YES;
+		      [filterSet addObject: str];
+		      [filterList addObject: result];
+		    }
+		}
+	    }
+	}
+      if (notPresent == NO)
 	{
 	  if (verbose)
 	    {
@@ -857,7 +880,6 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
 	    }
 	  return nil;
 	}
-      [filterMap setObject: result forKey: obj];
     }
   else if ((obj = [result objectForKey: @"NSMessage"]) != nil)
     {
@@ -871,8 +893,8 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
 	  NSLog(@"NSServices entry %u NSPortName missing - %@", pos, path);
 	  return nil;
 	}
-      if ([result objectForKey: @"NSSendTypes"] == nil &&
-	  [result objectForKey: @"NSReturnTypes"] == nil)
+      if ([result objectForKey: @"NSSendTypes"] == nil
+	&& [result objectForKey: @"NSReturnTypes"] == nil)
 	{
 	  NSLog(@"NSServices entry %u types missing - %@", pos, path);
 	  return nil;

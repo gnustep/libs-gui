@@ -548,7 +548,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
 /**
  * Return a dictionary of information about registered filter services.
  */
-- (NSDictionary*) filters
+- (NSArray*) filters
 {
   return [_allServices objectForKey: @"ByFilter"];
 }
@@ -1312,8 +1312,16 @@ GSContactApplication(NSString *appName, NSString *port, NSDate *expire)
   return app;
 }
 
+/**
+ * <p>Given the name of a serviceItem, and some data in a pasteboard
+ * this function sends the data to the service provider (launching
+ * another application if necessary) and retrieves the result of
+ * the service in the pastebaord.
+ * </p>
+ * Returns YES on success, NO otherwise.
+ */
 BOOL
-GSPerformService(NSString *serviceItem, NSPasteboard *pboard, BOOL isFilter)
+NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
 {
   NSDictionary		*service;
   NSString		*port;
@@ -1327,26 +1335,14 @@ GSPerformService(NSString *serviceItem, NSPasteboard *pboard, BOOL isFilter)
   NSString		*userData;
   NSString		*error = nil;
 
-  if (isFilter == YES)
+  service = [[manager menuServices] objectForKey: serviceItem]; 
+  if (service == nil)
     {
-      service = [[manager filters] objectForKey: serviceItem]; 
-      if (service == nil)
-	{
-	  NSLog(@"No service matching '%@'", serviceItem);
-	  return NO;			/* No matching service.	*/
-	}
-    }
-  else
-    {
-      service = [[manager menuServices] objectForKey: serviceItem]; 
-      if (service == nil)
-	{
-	  NSRunAlertPanel(nil,
-	    @"No service matching '%@'",
-	    @"Continue", nil, nil,
-	    serviceItem);
-	  return NO;			/* No matching service.	*/
-	}
+      NSRunAlertPanel(nil,
+	@"No service matching '%@'",
+	@"Continue", nil, nil,
+	serviceItem);
+      return NO;			/* No matching service.	*/
     }
 
   port = [service objectForKey: @"NSPortName"];
@@ -1362,14 +1358,7 @@ GSPerformService(NSString *serviceItem, NSPasteboard *pboard, BOOL isFilter)
   finishBy = [NSDate dateWithTimeIntervalSinceNow: seconds];
   appPath = [service objectForKey: @"ServicePath"];
   userData = [service objectForKey: @"NSUserData"];
-  if (isFilter == YES)
-    {
-      message = [service objectForKey: @"NSFilter"];
-    }
-  else
-    {
-      message = [service objectForKey: @"NSMessage"];
-    }
+  message = [service objectForKey: @"NSMessage"];
   selName = [message stringByAppendingString: @":userData:error:"];
 
   /*
@@ -1379,17 +1368,10 @@ GSPerformService(NSString *serviceItem, NSPasteboard *pboard, BOOL isFilter)
   provider = GSContactApplication(appPath, port, finishBy);
   if (provider == nil)
     {
-      if (isFilter == YES)
-	{
-	  NSLog(@"Failed to contact service provider for '%@'", serviceItem);
-	}
-      else
-	{
-	  NSRunAlertPanel(nil,
-	    @"Failed to contact service provider for '%@'",
-	    @"Continue", nil, nil,
-	    serviceItem);
-	}
+      NSRunAlertPanel(nil,
+	@"Failed to contact service provider for '%@'",
+	@"Continue", nil, nil,
+	serviceItem);
       return NO;
     }
 
@@ -1425,36 +1407,14 @@ GSPerformService(NSString *serviceItem, NSPasteboard *pboard, BOOL isFilter)
 
   if (error != nil)
     {
-      if (isFilter == YES)
-	{
-	  NSLog(@"Failed to contact service provider for '%@': %@",
-	    serviceItem, error);
-	}
-      else
-	{
-	  NSRunAlertPanel(nil,
-	    @"Failed to contact service provider for '%@': %@",
-	    @"Continue", nil, nil,
-	    serviceItem, error);
-	}
+      NSRunAlertPanel(nil,
+	@"Failed to contact service provider for '%@': %@",
+	@"Continue", nil, nil,
+	serviceItem, error);
       return NO;
     }
 
   return YES;
-}
-
-/**
- * <p>Given the name of a serviceItem, and some data in a pasteboard
- * this function sends the data to the service provider (launching
- * another application if necessary) and retrieves the result of
- * the service in the pastebaord.
- * </p>
- * Returns YES on success, NO otherwise.
- */
-BOOL
-NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
-{
-  return GSPerformService(serviceItem, pboard, NO);
 }
 
 /**

@@ -352,6 +352,55 @@
       data of a particular type, but the pasteboard only contains data of
       some other type.
     </p>
+    <p>
+      A filter service definition in the Info.plist file differs from that
+      of a standard service in that the <em>NSMessage</em> entry is replaced
+      by an <em>NSFilter</em> entry, the <em>NSMenuItem</em> and
+      <em>NSKeyEquivalent</em> entries are omitted, and a few other entries
+      may be added -
+    </p>
+    <deflist>
+      <term>NSFilter</term>
+      <desc>
+	This is the first part of the message name for the method
+	which actually implements the filter service ... just like
+	the NSMessage entry in a normal service.
+      </desc>
+      <term>NSInputMechanism</term>
+      <desc>
+	This (optional) entry is a string value specifying an alternative
+	mechanism for performing the filer service (instead of sending a
+	message to an application to ask it to do it).<be />
+	Possible values are -
+	<deflist>
+	  <term>NSIdentity</term>
+	  <desc>
+	    The data to be filtered is simply placed upon the pasteboard
+	    without any transformation.
+	  </desc>
+	  <term>NSMapFile</term>
+	  <desc>
+	    The data to be filtered is the name of a file, which is
+	    loaded into memory and placed on the pasteboard without
+	    any transformation.<br />
+	    If the data to be filtered contains multiple file names,
+	    only the first is used.
+	  </desc>
+	  <term>NSUnixStdio</term>
+	  <desc>
+	    The data to be filtered is the name of a file, which is
+	    passed as the argument to a unix command-line program,
+	    and the standard output of that program is captured and
+	    placed on the pasteboard.  The program is run each time
+	    data is requested, so this is inefficient in comparison
+	    to a filter implemented using the standard method (of
+	    sending a message to a running application).<br />
+	    If the data to be filtered contains multiple file names,
+	    only the first is used.
+	  </desc>
+	</deflist>
+      </desc>
+    </deflist>
   </section>
 </chapter>
 */ 
@@ -402,36 +451,6 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
 @end
 
 @implementation	FilteredPasteboard
-/**
- * Find a filter specification to use.
- */
-+ (NSString*) _filterForType: (NSString*)type fromTypes: (NSArray*)types
-{
-  NSDictionary	*filters = [[GSServicesManager manager] filters];
-  NSEnumerator	*enumerator = [filters keyEnumerator];
-  NSString	*key;
-
-  while ((key = [enumerator nextObject]) != nil)
-    {
-      NSDictionary	*info = [filters objectForKey: key];
-      NSArray		*returnTypes = [info objectForKey: @"NSReturnTypes"];
-
-      if ([returnTypes containsObject: type] == YES)
-	{
-	  NSArray	*sendTypes = [info objectForKey: @"NSSendTypes"];
-	  unsigned 	i;
-
-	  for (i = 0; i < [types count]; i++)
-	    {
-	      if ([sendTypes containsObject: [types objectAtIndex: i]] == YES)
-		{
-		  return key;
-		}
-	    }
-	}
-    }
-  return nil;
-}
 
 /**
  * Given an array of types, produce an array of all the types we can
@@ -440,18 +459,20 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
 + (NSArray*) _typesFilterableFrom: (NSArray*)from
 {
   NSMutableSet	*types = [NSMutableSet setWithCapacity: 8];
-  NSDictionary	*info = [[GSServicesManager manager] filters];
+  NSArray	*filters = [[GSServicesManager manager] filters];
+  unsigned	c = [filters count];
   unsigned 	i;
 
   for (i = 0; i < [from count]; i++)
     {
-      NSString		*type = [from objectAtIndex: i];
-      NSEnumerator	*enumerator = [info objectEnumerator];
+      NSString	*type = [from objectAtIndex: i];
+      unsigned 	j;
 
       [types addObject: type];	// Always include original type
 
-      while ((info = [enumerator nextObject]) != nil)
+      for (j = 0; j < c; j++)
 	{
+	  NSDictionary	*info = [filters objectAtIndex: j];
 	  NSArray	*sendTypes = [info objectForKey: @"NSSendTypes"];
 
 	  if ([sendTypes containsObject: type] == YES)
@@ -480,7 +501,6 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
  provideDataForType: (NSString*)type
 {
   NSDictionary	*info;
-  NSString	*filterName = nil;
   NSString	*fromType = nil;
   NSString	*mechanism;
 
@@ -495,24 +515,24 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
       info = [NSDictionary dictionaryWithObjectsAndKeys:
 	@"NSIdentity", @"NSInputMechanism",
         nil];
-      filterName = nil;
     }
   else
     {
-      NSDictionary	*filters;
-      NSEnumerator	*enumerator;
+      NSArray	*filters;
+      unsigned	count;
+      unsigned	filterNumber = 0;
 
       /*
        * Locate the filter information needed, including the type we are
        * converting from and the name of the filter to use.
        */
       filters = [[GSServicesManager manager] filters];
-      enumerator = [filters keyEnumerator];
-      while (fromType == nil && (filterName = [enumerator nextObject]) != nil)
+      count = [filters count];
+      while (fromType == nil && filterNumber < count)
 	{
 	  NSArray	*returnTypes;
 
-	  info = [filters objectForKey: filterName];
+	  info = [filters objectAtIndex: filterNumber++];
 	  returnTypes = [info objectForKey: @"NSReturnTypes"];
 
 	  if ([returnTypes containsObject: type] == YES)
@@ -548,7 +568,8 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
       /*
        * The data for an NSUnixStdio filter must be one or more filenames
        */
-      if ([fromType isEqualToString: NSFilenamesPboardType] == NO
+      if ([fromType isEqualToString: NSStringPboardType] == NO
+	&& [fromType isEqualToString: NSFilenamesPboardType] == NO
 	&& [fromType hasPrefix: namePrefix] == NO)
 	{
 	  [sender setData: [NSData data] forType: type];
@@ -616,8 +637,43 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
        */
       [sender setData: m forType: type];
     }
-  else if ([mechanism isEqualToString: @"NSIdentity"] == YES
-    || [mechanism isEqualToString: @"NSMapFile"] == YES)
+  else if ([mechanism isEqualToString: @"NSMapFile"] == YES)
+    {
+      NSString	*filename;
+      NSData	*d;
+      id	o;
+
+      if ([fromType isEqualToString: NSStringPboardType] == NO
+	&& [fromType isEqualToString: NSFilenamesPboardType] == NO
+	&& [fromType hasPrefix: namePrefix] == NO)
+	{
+	  [sender setData: [NSData data] forType: type];
+	  return;	// Not the name of a file to filter.
+	}
+
+      o = [NSDeserializer deserializePropertyListFromData: d
+					mutableContainers: NO];
+      if ([o isKindOfClass: [NSString class]] == YES)
+	{
+	  filename = o;
+	}
+      else if ([o isKindOfClass: [NSArray class]] == YES
+	&& [o count] > 0
+	&& [[o objectAtIndex: 0] isKindOfClass: [NSString class]] == YES)
+	{
+	  filename = [o objectAtIndex: 0];
+	}
+      else
+	{
+	  [sender setData: [NSData data] forType: type];
+	  return;	// Not the name of a file to filter.
+	}
+
+      d = [NSData dataWithContentsOfFile: filename];
+
+      [sender setData: d forType: type];
+    }
+  else if ([mechanism isEqualToString: @"NSIdentity"] == YES)
     {
       /*
        * An 'identity' filter simply places the required data on the
@@ -640,8 +696,17 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
     }
   else
     {
-      extern BOOL 	GSPerformService(NSString*, NSPasteboard*, BOOL);
       NSPasteboard	*tmp;
+      NSString		*port;
+      NSString		*timeout;
+      double		seconds;
+      NSDate		*finishBy;
+      NSString		*appPath;
+      id		provider;
+      NSString		*message;
+      NSString		*selName;
+      NSString		*userData;
+      NSString		*error = nil;
 
       /*
        * Put data onto a pasteboard that can be used by the service provider.
@@ -663,10 +728,86 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
 	  tmp = pboard;		// Already in a pasteboard.
 	}
 
+      port = [info objectForKey: @"NSPortName"];
+      timeout = [info objectForKey: @"NSTimeout"];
+      if (timeout && [timeout floatValue] > 100)
+	{
+	  seconds = [timeout floatValue] / 1000.0;
+	}
+      else
+	{
+	  seconds = 30.0;
+	}
+      finishBy = [NSDate dateWithTimeIntervalSinceNow: seconds];
+      appPath = [info objectForKey: @"NSExecutable"];
+      if ([appPath length] > 0)
+	{
+	  /*
+	   * A relative path for NSExecutable is relative to the bundle.
+	   */
+	  if ([appPath isAbsolutePath] == NO)
+	    {
+	      NSString	*bundlePath = [info objectForKey: @"ServicePath"];
+
+	      appPath = [bundlePath stringByAppendingPathComponent: appPath];
+	    }
+	}
+      else
+	{
+	  appPath = [info objectForKey: @"ServicePath"];
+	}
+      userData = [info objectForKey: @"NSUserData"];
+      message = [info objectForKey: @"NSFilter"];
+      selName = [message stringByAppendingString: @":userData:error:"];
+
       /*
-       * Now get the service provider to do the job.
+       * Locate the service provider ... this will be a proxy to the remote
+       * object, or a local object (if we provide the service ourself)
        */
-      GSPerformService(filterName, tmp, YES);
+      provider = GSContactApplication(appPath, port, finishBy);
+      if (provider == nil)
+	{
+	  NSLog(@"Failed to contact service provider at '%@' '%@'",
+	    appPath, port);
+	  return;
+	}
+
+      /*
+       * If the service provider is a remote object, we can set timeouts on
+       * the NSConnection so we don't hang waiting for it to reply.
+       */
+      if ([provider isProxy] == YES)
+	{
+	  NSConnection	*connection;
+
+	  connection = [(NSDistantObject*)provider connectionForProxy];
+	  seconds = [finishBy timeIntervalSinceNow];
+	  [connection setRequestTimeout: seconds];
+	  [connection setReplyTimeout: seconds];
+	}
+
+      /*
+       * At last, we ask for the service to be performed.
+       */
+      NS_DURING
+	{
+	  [provider performService: selName
+		    withPasteboard: tmp
+			  userData: userData
+			     error: &error];
+	}
+      NS_HANDLER
+	{
+	  error = [NSString stringWithFormat: @"%@", [localException reason]];
+	}
+      NS_ENDHANDLER
+
+      if (error != nil)
+	{
+	  NSLog(@"Failed to contact service provider for '%@': %@",
+	    appPath, error);
+	  return;
+	}
 
       /*
        * Finally, make it available.
@@ -1117,8 +1258,9 @@ static  NSMapTable              *mimeMap = NULL;
 + (NSArray*) typesFilterableTo: (NSString*)type
 {
   NSMutableSet	*types = [NSMutableSet setWithCapacity: 8];
-  NSDictionary	*info = [[GSServicesManager manager] filters];
-  NSEnumerator	*enumerator = [info objectEnumerator];
+  NSArray	*filters = [[GSServicesManager manager] filters];
+  NSEnumerator	*enumerator = [filters objectEnumerator];
+  NSDictionary	*info;
 
   [types addObject: type];	// Always include original type
 
