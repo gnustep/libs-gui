@@ -1,4 +1,4 @@
-/* 
+/*
    NSView.h
 
    The wonderful view class; it encapsulates all drawing functionality
@@ -11,14 +11,14 @@
    Date: 1997
    Author:  Felipe A. Rodriguez <far@ix.netcom.com>
    Date: August 1998
-   
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -28,7 +28,7 @@
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/ 
+*/
 
 #ifndef _GNUstep_H_NSView
 #define _GNUstep_H_NSView
@@ -50,22 +50,23 @@
 
 typedef int NSTrackingRectTag;
 
-typedef enum _NSBorderType {					// constants representing the
-	NSNoBorder,									// four types of borders that
-	NSLineBorder,								// can appear around an NSView
-	NSBezelBorder,
-	NSGrooveBorder 
+typedef enum _NSBorderType {			// constants representing the
+  NSNoBorder,					// four types of borders that
+  NSLineBorder,					// can appear around an NSView
+  NSBezelBorder,
+  NSGrooveBorder
 } NSBorderType;
-								// autoresize constants which NSView uses in
-								// determining the parts of a view which are
-enum {							// resized when the view's superview is resized
-	NSViewNotSizable		= 0,	// view does not resize with its superview 
-	NSViewMinXMargin		= 1,	// left margin between views can stretch
-	NSViewWidthSizable		= 2,	// view's width can stretch
-	NSViewMaxXMargin		= 4,	// right margin between views can stretch
-	NSViewMinYMargin		= 8,	// top margin between views can stretch
-	NSViewHeightSizable		= 16,	// view's height can stretch
-	NSViewMaxYMargin		= 32 	// bottom margin between views can stretch
+			// autoresize constants which NSView uses in
+			// determining the parts of a view which are
+			// resized when the view's superview is resized
+enum {
+  NSViewNotSizable	= 0,	// view does not resize with its superview
+  NSViewMinXMargin	= 1,	// left margin between views can stretch
+  NSViewWidthSizable	= 2,	// view's width can stretch
+  NSViewMaxXMargin	= 4,	// right margin between views can stretch
+  NSViewMinYMargin	= 8,	// top margin between views can stretch
+  NSViewHeightSizable	= 16,	// view's height can stretch
+  NSViewMaxYMargin	= 32 	// bottom margin between views can stretch
 };
 
 @interface NSView : NSResponder <NSCoding>
@@ -82,6 +83,7 @@ enum {							// resized when the view's superview is resized
   NSMutableArray *tracking_rects;
   NSMutableArray *cursor_rects;
   NSRect invalidRect;
+  NSRect visibleRect;
   unsigned int autoresizingMask;
 
   BOOL is_rotated_from_base;
@@ -91,22 +93,19 @@ enum {							// resized when the view's superview is resized
   BOOL post_frame_changes;
   BOOL post_bounds_changes;
   BOOL autoresize_subviews;
-
-  NSView* _nextSiblingSubviewThatNeedsDisplay;
-	/* NULL if no sibling view needs display */
-  NSView* _subviewsThatNeedDisplay;
+  BOOL coordinates_valid;
 
   // Reserved for back-end use
   void *be_view_reserved;
 }
 
 //
-//Initializing NSView Objects 
+//Initializing NSView Objects
 //
 - (id)initWithFrame:(NSRect)frameRect;
 
 //
-// Managing the NSView Hierarchy 
+// Managing the NSView Hierarchy
 //
 - (void)addSubview:(NSView *)aView;
 - (void)addSubview:(NSView *)aView
@@ -118,7 +117,7 @@ enum {							// resized when the view's superview is resized
 - (void)removeFromSuperview;
 - (void)replaceSubview:(NSView *)oldView
 		  with:(NSView *)newView;
-- (void)sortSubviewsUsingFunction:(int (*)(id ,id ,void *))compare 
+- (void)sortSubviewsUsingFunction:(int (*)(id ,id ,void *))compare
 			  context:(void *)context;
 - (NSMutableArray *)subviews;
 - (NSView *)superview;
@@ -127,7 +126,7 @@ enum {							// resized when the view's superview is resized
 - (void)viewWillMoveToWindow:(NSWindow *)newWindow;
 
 //
-// Modifying the Frame Rectangle 
+// Modifying the Frame Rectangle
 //
 - (float)frameRotation;
 - (NSRect)frame;
@@ -138,7 +137,7 @@ enum {							// resized when the view's superview is resized
 - (void)setFrameSize:(NSSize)newSize;
 
 //
-// Modifying the Coordinate System 
+// Modifying the Coordinate System
 //
 
 - (float)boundsRotation;
@@ -154,7 +153,7 @@ enum {							// resized when the view's superview is resized
 - (void)translateOriginToPoint:(NSPoint)point;
 
 //
-// Converting Coordinates 
+// Converting Coordinates
 //
 - (NSRect)centerScanRect:(NSRect)aRect;
 - (NSPoint)convertPoint:(NSPoint)aPoint
@@ -171,7 +170,7 @@ enum {							// resized when the view's superview is resized
 	       toView:(NSView *)aView;
 
 //
-// Notifying Ancestor Views 
+// Notifying Ancestor Views
 //
 - (void)setPostsFrameChangedNotifications:(BOOL)flag;
 - (BOOL)postsFrameChangedNotifications;
@@ -179,7 +178,7 @@ enum {							// resized when the view's superview is resized
 - (BOOL)postsBoundsChangedNotifications;
 
 //
-// Resizing Subviews 
+// Resizing Subviews
 //
 - (void)resizeSubviewsWithOldSize:(NSSize)oldSize;
 - (void)setAutoresizesSubviews:(BOOL)flag;
@@ -189,7 +188,7 @@ enum {							// resized when the view's superview is resized
 - (void)resizeWithOldSuperviewSize:(NSSize)oldSize;
 
 //
-// Graphics State Objects 
+// Graphics State Objects
 //
 - (void)allocateGState;
 - (void)releaseGState;
@@ -198,14 +197,14 @@ enum {							// resized when the view's superview is resized
 - (void)setUpGState;
 
 //
-// Focusing 
+// Focusing
 //
 + (NSView *)focusView;
 - (void)lockFocus;
 - (void)unlockFocus;
 
 //
-// Displaying 
+// Displaying
 //
 - (BOOL) canDraw;
 - (void) display;
@@ -224,7 +223,7 @@ enum {							// resized when the view's superview is resized
 - (BOOL) shouldDrawColor;
 
 //
-// Scrolling 
+// Scrolling
 //
 - (NSRect)adjustScroll:(NSRect)newVisible;
 - (BOOL)autoscroll:(NSEvent *)theEvent;
@@ -237,7 +236,7 @@ enum {							// resized when the view's superview is resized
 - (BOOL)scrollRectToVisible:(NSRect)aRect;
 
 //
-// Managing the Cursor 
+// Managing the Cursor
 //
 - (void)addCursorRect:(NSRect)aRect
 	       cursor:(NSCursor *)anObject;
@@ -248,13 +247,13 @@ enum {							// resized when the view's superview is resized
 - (NSArray *)cursorRectangles;
 
 //
-// Assigning a Tag 
+// Assigning a Tag
 //
 - (int)tag;
 - (id)viewWithTag:(int)aTag;
 
 //
-// Aiding Event Handling 
+// Aiding Event Handling
 //
 - (BOOL)acceptsFirstMouse:(NSEvent *)theEvent;
 - (NSView *)hitTest:(NSPoint)aPoint;
@@ -270,7 +269,7 @@ enum {							// resized when the view's superview is resized
 - (NSArray *)trackingRectangles;
 
 //
-// Dragging 
+// Dragging
 //
 - (BOOL)dragFile:(NSString *)filename
 	fromRect:(NSRect)rect
@@ -296,7 +295,7 @@ enum {							// resized when the view's superview is resized
 	      toPasteboard:(NSPasteboard *)pasteboard;
 
 //
-// Pagination 
+// Pagination
 //
 - (void)adjustPageHeightNew:(float *)newBottom
 			top:(float)oldTop
@@ -304,7 +303,7 @@ enum {							// resized when the view's superview is resized
 		      limit:(float)bottomLimit;
 - (void)adjustPageWidthNew:(float *)newRight
 		      left:(float)oldLeft
-		     right:(float)oldRight	 
+		     right:(float)oldRight
 		     limit:(float)rightLimit;
 - (float)heightAdjustLimit;
 - (BOOL)knowsPagesFirst:(int *)firstPageNum
@@ -314,7 +313,7 @@ enum {							// resized when the view's superview is resized
 - (float)widthAdjustLimit;
 
 //
-// Writing Conforming PostScript 
+// Writing Conforming PostScript
 //
 - (void)addToPageSetup;
 - (void)beginPage:(int)ordinalNum
@@ -354,15 +353,34 @@ enum {							// resized when the view's superview is resized
 
 //
 // GNUstep extensions
-//											 
+// Methods whose names begin with an underscore must NOT be overridden.
+//
+#ifndef	NO_GNUSTEP
 @interface NSView (PrivateMethods)
-											// If the view is rotated returns
-- (NSRect)_boundingRectFor:(NSRect)rect;	// the bounding box of the rect in 
-											// the "normal" coordinates
+
+/*
+ * If the view is rotated, [-_boundingRectFor:] returns the bounding box
+ * of the rect in the "normal" coordinates
+ */
+- (NSRect) _boundingRectFor: (NSRect)rect;
+
+/*
+ * The [-_invalidateCoordinates] method marks the cached visible rectangles
+ * of the view and it's subview as being invalid.  NSViews methods call this
+ * whenever the coordinate system of the view is changed in any way - thus
+ * forcing recalculation of cached values next time they are needed.
+ */
+- (void) _invalidateCoordinates;
+
+
 - (PSMatrix*)_frameMatrix;
 - (PSMatrix*)_boundsMatrix;
-
+- (PSMatrix*) _concatenateBoundsMatricesInReverseOrderFromPath: (NSArray*)p;
+- (PSMatrix*) _concatenateMatricesInReverseOrderFromPath: (NSArray*)p;
+- (NSMutableArray*) _pathBetweenSubview: (NSView*)subview
+			    toSuperview: (NSView*)superview;
 @end
+#endif
 
 
 /* Notifications */

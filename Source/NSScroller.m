@@ -526,6 +526,7 @@ static BOOL preCalcValues = NO;
 
   [self _preCalcParts];			// pre calc scroller parts
   preCalcValues = YES;
+
   knobRect = [self rectForPart: NSScrollerKnob];
 
   if (_hitPart == NSScrollerKnob)
@@ -581,7 +582,11 @@ static BOOL preCalcValues = NO;
 		  [self setFloatValue: floatValue];
 		  [self sendAction: _action to: _target];
 
-		  oldFloatValue = floatValue;
+		  /*
+		   * Get current float value - which may have been changed
+		   * when we sent the action to the target.
+		   */
+		  oldFloatValue = _floatValue;
 		  [window update];
 		}
 	      knobRect.origin = point;

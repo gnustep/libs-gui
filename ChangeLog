@@ -1,3 +1,22 @@
+Thu Feb 18 13:12:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/AppKit/NSView.h: Listed all private methods allong with
+	a warning that they shouldn't be overridden.  Removed a couple of
+	unused ivars.  Added two new ivars - a cache for the visible rectangle
+	and a flag to say whether it (and when we add it, a matrix to map
+	to and from window coordinates) is currently valid.
+	Added ([-_invalidateCoordinates]) method declaration.
+	* Source/NSView.m: Much tidying up. Added ([-__invalidateCoordinates]).
+	Modified ([-visibleRect]) to cache the visible rect and to clip the
+	invalid rect.  Speeded up iterations over all subviews etc.
+	Fix error in redisplay causing occasional excess redisplay.
+	* Source/NSSplitView.m: Corrected orientation of dividers.
+	* Source/NSBrowser.m: Tidied  - use setNeedsDisplay.
+	* Source/NSBrowserCell.m: Tidied and fixed bugs in decoding.
+	* Source/NSCell.m: Tidied and fixed bugs in decoding and setting
+	editable/selectable status.
+	* Source/NSScroller.m: Tidy a little.
+
 Thu Feb 18 1999  Felipe A. Rodriguez  <farz@mindspring.com>
 
 	* NSView.m display: fix for display bug in buttons example 

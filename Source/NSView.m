@@ -11,6 +11,8 @@
    Date: 1997
    Author:  Felipe A. Rodriguez <far@ix.netcom.com>
    Date: August 1998
+   Author:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+   Date: January 1999
 
    This file is part of the GNUstep GUI Library.
 
@@ -48,16 +50,19 @@
 #include <AppKit/PSMatrix.h>
 
 
-
 @implementation NSView
 
 //
 //  Class variables
 //
 static NSString	*viewThreadKey = @"NSViewThreadKey";
-static void (*concatImp)(PSMatrix*, SEL, PSMatrix*) = 0;
-static SEL	concatSel = @selector(concatenateWith:);
 static PSMatrix	*flip = nil;
+
+static void	(*concatImp)(PSMatrix*, SEL, PSMatrix*) = 0;
+static SEL	concatSel = @selector(concatenateWith:);
+
+static void	(*invalidateImp)(NSView*, SEL) = 0;
+static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 //
 // Class methods
@@ -71,6 +76,10 @@ static PSMatrix	*flip = nil;
 
       concatImp = (void (*)(PSMatrix*, SEL, PSMatrix*))
 		[matrixClass instanceMethodForSelector: concatSel];
+
+      invalidateImp = (void (*)(NSView*, SEL))
+		[self instanceMethodForSelector: invalidateSel];
+
       flip = [[matrixClass matrixFrom: vals] retain];
 
       NSDebugLog(@"Initialize NSView class\n");
@@ -79,9 +88,9 @@ static PSMatrix	*flip = nil;
 }
 
 /*
-* return the view at the top of thread's focus stack
-* or nil if none is focused
-*/
+ * return the view at the top of thread's focus stack
+ * or nil if none is focused
+ */
 + (NSView*) focusView
 {
   NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
@@ -124,9 +133,9 @@ static PSMatrix	*flip = nil;
 
 
 /*
-*	Remove the top focusView for the current thread from the stack
-*	and return the new focusView (or nil if the stack is now empty).
-*/
+ *	Remove the top focusView for the current thread from the stack
+ *	and return the new focusView (or nil if the stack is now empty).
+ */
 + (NSView*) popFocusView
 {
   NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
@@ -307,6 +316,8 @@ static PSMatrix	*flip = nil;
   if (!super_view)      // if no superview then just return
     return;
 
+  if (coordinates_valid)
+    (*invalidateImp)(self, invalidateSel);
   if ([window firstResponder] == self)
     [window makeFirstResponder: window];
   views = [super_view subviews];
@@ -323,6 +334,8 @@ static PSMatrix	*flip = nil;
   if (!super_view)	// if no superview then just return
     return;
 
+  if (coordinates_valid)
+    (*invalidateImp)(self, invalidateSel);
   if ([window firstResponder] == self)
     [window makeFirstResponder: window];
   views = [super_view subviews];
@@ -340,10 +353,10 @@ static PSMatrix	*flip = nil;
     return;
 
   /*
-  * NB. we implement the replacement in full rather than calling addSubview:
-  * since classes like NSBox override these methods but expect to be able to
-  * call [super replaceSubview: with: ] safely.
-  */
+   * NB. we implement the replacement in full rather than calling addSubview:
+   * since classes like NSBox override these methods but expect to be able to
+   * call [super replaceSubview: with: ] safely.
+   */
   if (!oldView)
     {
       [newView retain];
@@ -388,17 +401,26 @@ static PSMatrix	*flip = nil;
 
 - (void) viewWillMoveToWindow: (NSWindow*)newWindow
 {
-  unsigned i, count;
+  unsigned	count;
 
   window = newWindow;
 
   count = [sub_views count];
-  for (i = 0; i < count; ++i)
-    [[sub_views objectAtIndex: i] viewWillMoveToWindow: newWindow];
+  if (count > 0)
+    {
+      unsigned	i;
+      NSView*	array[count];
+
+      [sub_views getObjects: array];
+      for (i = 0; i < count; ++i)
+	[array[i] viewWillMoveToWindow: newWindow];
+    }
 }
 
 - (void) rotateByAngle: (float)angle
 {
+  if (coordinates_valid)
+    (*invalidateImp)(self, invalidateSel);
   [boundsMatrix rotateByAngle: angle];
   is_rotated_from_base = is_rotated_or_scaled_from_base = YES;
 
@@ -412,6 +434,8 @@ static PSMatrix	*flip = nil;
 {
   NSSize old_size = frame.size;
 
+  if (coordinates_valid)
+    (*invalidateImp)(self, invalidateSel);
   frame = frameRect;
   bounds.size = frame.size;
   [frameMatrix setFrameOrigin: frame.origin];
@@ -425,6 +449,8 @@ static PSMatrix	*flip = nil;
 
 - (void) setFrameOrigin: (NSPoint)newOrigin
 {
+  if (coordinates_valid)
+    (*invalidateImp)(self, invalidateSel);
   frame.origin = newOrigin;
   [frameMatrix setFrameOrigin: frame.origin];
 
@@ -438,6 +464,8 @@ static PSMatrix	*flip = nil;
 {
   NSSize old_size = frame.size;
 
+  if (coordinates_valid)
+    (*invalidateImp)(self, invalidateSel);
   frame.size = bounds.size = newSize;
 
   [self resizeSubviewsWithOldSize: old_size];		// Resize the subviews
@@ -449,6 +477,8 @@ static PSMatrix	*flip = nil;
 
 - (void) setFrameRotation: (float)angle
 {
+  if (coordinates_valid)
+    (*invalidateImp)(self, invalidateSel);
   [frameMatrix setFrameRotation: angle];
   is_rotated_from_base = is_rotated_or_scaled_from_base = YES;
 
@@ -480,6 +510,8 @@ static PSMatrix	*flip = nil;
 
 - (void) scaleUnitSquareToSize: (NSSize)newSize
 {
+  if (coordinates_valid)
+    (*invalidateImp)(self, invalidateSel);
   if (!newSize.width)
     newSize.width = 1;
   if (!newSize.height)
@@ -503,6 +535,8 @@ static PSMatrix	*flip = nil;
 {
   float sx, sy;
 
+  if (coordinates_valid)
+    (*invalidateImp)(self, invalidateSel);
   if (aRect.size.width <= 0 || aRect.size.height <= 0)
     [NSException raise: NSInvalidArgumentException
 		format: @"illegal bounds size supplied"];
@@ -525,6 +559,8 @@ static PSMatrix	*flip = nil;
 {
   bounds.origin = newOrigin;
 
+  if (coordinates_valid)
+    (*invalidateImp)(self, invalidateSel);
   [boundsMatrix setFrameOrigin: NSMakePoint(-newOrigin.x, -newOrigin.y)];
 
   if (post_bounds_changes)
@@ -537,6 +573,8 @@ static PSMatrix	*flip = nil;
 {
   float sx, sy;
 
+  if (coordinates_valid)
+    (*invalidateImp)(self, invalidateSel);
   if (newSize.width <= 0 || newSize.height <= 0)
     [NSException raise: NSInvalidArgumentException
 		format: @"illegal bounds size supplied"];
@@ -556,6 +594,8 @@ static PSMatrix	*flip = nil;
 
 - (void) setBoundsRotation: (float)angle
 {
+  if (coordinates_valid)
+    (*invalidateImp)(self, invalidateSel);
   [boundsMatrix setFrameRotation: angle];
   is_rotated_from_base = is_rotated_or_scaled_from_base = YES;
 
@@ -567,6 +607,8 @@ static PSMatrix	*flip = nil;
 
 - (void) translateOriginToPoint: (NSPoint)point
 {
+  if (coordinates_valid)
+    (*invalidateImp)(self, invalidateSel);
   [boundsMatrix translateToPoint: point];
 
   if (post_bounds_changes)
@@ -578,54 +620,6 @@ static PSMatrix	*flip = nil;
 - (NSRect) centerScanRect: (NSRect)aRect
 {
   return NSZeroRect;
-}
-
-- (PSMatrix*) _concatenateMatricesInReverseOrderFromPath: (NSArray*)viewsPath
-{
-  PSMatrix	*matrix = [[PSMatrix new] autorelease];
-  unsigned	i = [viewsPath count];
-  NSView	*matrices[i];
-  NSView	*parent;
-  BOOL		wasFlipped;
-  BOOL		isFlipped;
-
-  if (i-- < 2)
-    return matrix;
-  [viewsPath getObjects: matrices];
-  parent = matrices[i];
-  wasFlipped = [parent isFlipped];
-  while (i-- > 0)
-    {
-      NSView	*view = matrices[i];
-
-      (*concatImp)(matrix, concatSel, view->frameMatrix);
-      isFlipped = [view isFlipped];
-      if (isFlipped != wasFlipped)
-	{
-	  flip->matrix[5] = view->bounds.size.height;
-	  (*concatImp)(matrix, concatSel, flip);
-	}
-      (*concatImp)(matrix, concatSel, view->boundsMatrix);
-      parent = view;
-      wasFlipped = isFlipped;
-    }
-
-  return matrix;
-}
-
-- (NSMutableArray*) _pathBetweenSubview: (NSView*)subview
-			    toSuperview: (NSView*)_superview
-{
-  NSMutableArray	*array = [NSMutableArray array];
-  NSView		*view = subview;
-
-  while (view && view != _superview)
-    {
-      [array addObject: view];
-      view = view->super_view;
-    }
-
-  return array;
 }
 
 - (NSPoint) convertPoint: (NSPoint)aPoint fromView: (NSView*)aView
@@ -704,21 +698,6 @@ static PSMatrix	*flip = nil;
     r.origin.y -= r.size.height;
 
   return r;
-}
-
-- (PSMatrix*) _concatenateBoundsMatricesInReverseOrderFromPath: (NSArray*)viewsPath
-{
-  unsigned count = [viewsPath count];
-  PSMatrix* matrix = [[PSMatrix new] autorelease];
-
-  while (count > 0)
-    {
-      NSView* view = [viewsPath objectAtIndex: --count];
-
-      [matrix concatenateWith: view->boundsMatrix];
-    }
-
-  return matrix;
 }
 
 - (NSSize) convertSize: (NSSize)aSize fromView: (NSView*)aView
@@ -884,7 +863,11 @@ static PSMatrix	*flip = nil;
     }
 
   if (changedSize || changedOrigin)
-    [self resizeSubviewsWithOldSize: old_size];
+    {
+      if (coordinates_valid)
+	(*invalidateImp)(self, invalidateSel);
+      [self resizeSubviewsWithOldSize: old_size];
+    }
 }
 
 - (void) allocateGState
@@ -930,20 +913,11 @@ static PSMatrix	*flip = nil;
 
 - (void)display											
 {
-	if(!window)											// do nothing if not in
-		return;											// a window's heirarchy
-														
-	if ([self isOpaque]) 								// if self is opaque	
-		[self displayRect:bounds];						// display visible rect
-	else												// else back up to a
-		{
-		NSView *firstOpaque = [self opaqueAncestor];	// convert rect into
-		NSRect rect = bounds;							// coordinates of the
-														// first opaque view
-      	rect = [firstOpaque convertRect:rect fromView:self];
-		[firstOpaque displayRect:rect];
-		}
-}														
+  if (!window)
+    return;
+
+  [self displayRect: bounds];
+}
 
 - (void) displayIfNeeded
 {
@@ -1002,6 +976,7 @@ static PSMatrix	*flip = nil;
       BOOL	stillNeedsDisplay = NO;
       NSRect	rect;
 
+      count = [sub_views count];
       rect = NSIntersectionRect(aRect, invalidRect);
       if (NSIsEmptyRect(rect) == NO)
 	{
@@ -1009,42 +984,52 @@ static PSMatrix	*flip = nil;
 	  [self drawRect: rect];
 	  [self unlockFocus];
 
-	  for (i = 0, count = [sub_views count]; i < count; i++)
+	  if (count > 0)
 	    {
-	      NSRect intersection;
-	      NSView *subview = [sub_views objectAtIndex: i];
-	      NSRect subviewFrame = subview->frame;
+	      NSView*	array[count];
 
-	      if ([subview->frameMatrix isRotated])
+	      [sub_views getObjects: array];
+	      for (i = 0; i < count; i++)
 		{
-		  [subview->frameMatrix boundingRectFor: subviewFrame
-						 result: &subviewFrame];
-		}
-	      intersection = NSIntersectionRect(rect, subviewFrame);
-	      if (NSIsEmptyRect(intersection) == NO)
-		{
-		  intersection = [subview convertRect: intersection
-					     fromView: self];
-		  [subview displayRectIgnoringOpacity: intersection];
-		}
-	      else
-		{
+		  NSRect isect;
+		  NSView *subview = array[i];
+		  NSRect subviewFrame = subview->frame;
+
+		  if ([subview->frameMatrix isRotated])
+		    {
+		      [subview->frameMatrix boundingRectFor: subviewFrame
+						     result: &subviewFrame];
+		    }
+		  /*
+		   * Having drawn ourself into the rect, we must unconditionally
+		   * draw any subviews that are also in that rectangle.
+		   */
+		  isect = NSIntersectionRect(rect, subviewFrame);
+		  if (NSIsEmptyRect(isect) == NO)
+		    {
+		      isect = [subview convertRect: isect
+					  fromView: self];
+		      [subview displayRectIgnoringOpacity: isect];
+		    }
+		  else
+		    {
+		      if (subview->needs_display)
+			{
+			  [subview displayIfNeededIgnoringOpacity];
+			}
+		    }
 		  if (subview->needs_display)
 		    {
-		      [subview displayIfNeededIgnoringOpacity];
+		      stillNeedsDisplay = YES;
 		    }
-		}
-	      if (subview->needs_display)
-		{
-		  stillNeedsDisplay = YES;
 		}
 	    }
 
 	  /*
-	  *	If the rect we displayed contains the invalidRect
-	  *	for the view then we can clear the invalidRect,
-	  *	otherwise, we still need to be displayed.
-	  */
+	   *	If the rect we displayed contains the invalidRect
+	   *	for the view then we can clear the invalidRect,
+	   *	otherwise, we still need to be displayed.
+	   */
 	  rect = NSUnionRect(invalidRect, aRect);
 	  if (NSEqualRects(rect, aRect) == YES)
 	    {
@@ -1055,32 +1040,35 @@ static PSMatrix	*flip = nil;
 	      stillNeedsDisplay = YES;
 	    }
 	}
-      else
+      else if (count > 0)
 	{
+	  NSView*	array[count];
+
+	  [sub_views getObjects: array];
 	  /*
-	  *	We don't have an invalidRect - so it must be one of our
-	  *	subviews that actually needs the display.
-	  */
-	  for (i = 0, count = [sub_views count]; i < count; i++)
+	   *	We don't have an invalidRect - so it must be one of our
+	   *	subviews that actually needs the display.
+	   */
+	  for (i = 0; i < count; i++)
 	    {
-	      NSView	*subview = [sub_views objectAtIndex: i];
+	      NSView	*subview = array[i];
 
 	      if (subview->needs_display)
 		{
 		  NSRect	subviewFrame = subview->frame;
-		  NSRect	intersection;
+		  NSRect	isect;
 
 		  if ([subview->frameMatrix isRotated])
 		    {
 		      [subview->frameMatrix boundingRectFor: subviewFrame
 						     result: &subviewFrame];
 		    }
-		  intersection = NSIntersectionRect(aRect, subviewFrame);
-		  if (NSIsEmptyRect(intersection) == NO)
+		  isect = NSIntersectionRect(aRect, subviewFrame);
+		  if (NSIsEmptyRect(isect) == NO)
 		    {
-		      intersection = [subview convertRect: intersection
-						 fromView: self];
-		      [subview displayRectIgnoringOpacity: intersection];
+		      isect = [subview convertRect: isect
+					  fromView: self];
+		      [subview displayIfNeededInRectIgnoringOpacity: isect];
 		    }
 		  if (subview->needs_display)
 		    {
@@ -1089,7 +1077,10 @@ static PSMatrix	*flip = nil;
 		}
 	    }
 	}
-      needs_display = stillNeedsDisplay;
+      if (NSIsEmptyRect(invalidRect) == NO)
+	needs_display = YES;
+      else
+	needs_display = stillNeedsDisplay;
       [window flushWindow];
     }
 }
@@ -1126,32 +1117,41 @@ static PSMatrix	*flip = nil;
   [self drawRect: aRect];
   [self unlockFocus];
 
-  for (i = 0, count = [sub_views count]; i < count; ++i)
+  count = [sub_views count];
+
+  if (count > 0)
     {
-      NSView	*subview = [sub_views objectAtIndex: i];
-      NSRect	subviewFrame = subview->frame;
-      NSRect	intersection;
+      NSView*	array[count];
 
-      if ([subview->frameMatrix isRotated])
-	[subview->frameMatrix boundingRectFor: subviewFrame
-				       result: &subviewFrame];
+      [sub_views getObjects: array];
 
-      intersection = NSIntersectionRect(aRect, subviewFrame);
-      if (NSIsEmptyRect(intersection) == NO)
+      for (i = 0; i < count; ++i)
 	{
-	  intersection = [subview convertRect: intersection fromView: self];
-	  [subview displayRectIgnoringOpacity: intersection];
-	}
-      if (subview->needs_display)
-	{
-	  stillNeedsDisplay = YES;
+	  NSView	*subview = array[i];
+	  NSRect	subviewFrame = subview->frame;
+	  NSRect	intersection;
+
+	  if ([subview->frameMatrix isRotated])
+	    [subview->frameMatrix boundingRectFor: subviewFrame
+					   result: &subviewFrame];
+
+	  intersection = NSIntersectionRect(aRect, subviewFrame);
+	  if (NSIsEmptyRect(intersection) == NO)
+	    {
+	      intersection = [subview convertRect: intersection fromView: self];
+	      [subview displayRectIgnoringOpacity: intersection];
+	    }
+	  if (subview->needs_display)
+	    {
+	      stillNeedsDisplay = YES;
+	    }
 	}
     }
 
   /*
-  *	If the rect we displayed contains the invalidRect
-  *	for the view then we can empty invalidRect.
-  */
+   *	If the rect we displayed contains the invalidRect
+   *	for the view then we can empty invalidRect.
+   */
   rect = NSUnionRect(invalidRect, aRect);
   if (NSEqualRects(rect, aRect) == YES)
     {
@@ -1170,19 +1170,25 @@ static PSMatrix	*flip = nil;
 
 - (NSRect) visibleRect
 {
+  if (coordinates_valid)
+    return visibleRect;
   if (!window)
-    return NSZeroRect;
-  if (!super_view)
-    return bounds;
+    visibleRect = NSZeroRect;
+  else if (!super_view)
+    visibleRect = bounds;
   else
     {
-      NSRect superviewsVisibleRect;
+      NSRect	superviewsVisibleRect;
 
       superviewsVisibleRect = [self convertRect: [super_view visibleRect]
 				       fromView: super_view];
 
-      return NSIntersectionRect(superviewsVisibleRect, bounds);
+      visibleRect = NSIntersectionRect(superviewsVisibleRect, bounds);
+      if (needs_display)
+	invalidRect = NSIntersectionRect(invalidRect, visibleRect);
     }
+  coordinates_valid = YES;
+  return visibleRect;
 }
 
 - (void) setNeedsDisplay: (BOOL)flag
@@ -1201,10 +1207,10 @@ static PSMatrix	*flip = nil;
 - (void) setNeedsDisplayInRect: (NSRect)rect
 {
   /*
-  *	Limit to bounds, combine with old invalidRect, and then check to see
-  *	if the result is the same as the old invalidRect - if it isn't then
-  *	set the new invalidRect.
-  */
+   *	Limit to bounds, combine with old invalidRect, and then check to see
+   *	if the result is the same as the old invalidRect - if it isn't then
+   *	set the new invalidRect.
+   */
   rect = NSIntersectionRect(rect, bounds);
   rect = NSUnionRect(invalidRect, rect);
   if (NSEqualRects(rect, invalidRect) == NO)
@@ -1232,29 +1238,20 @@ static PSMatrix	*flip = nil;
     }
 }
 
-- (NSRect) _boundingRectFor: (NSRect)rect
-{
-  NSRect new;
-
-  [frameMatrix boundingRectFor: rect result: &new];
-
-  return new;
-}
-
 //
 // Scrolling
 //
 - (NSRect)adjustScroll: (NSRect)newVisible
 {
-	return NSZeroRect;
+  return NSZeroRect;
 }
 
 - (BOOL)autoscroll: (NSEvent*)theEvent
 {
-	if (super_view)
-		return [super_view autoscroll: theEvent];
+  if (super_view)
+    return [super_view autoscroll: theEvent];
 
-	return NO;
+  return NO;
 }
 
 - (void) reflectScrolledClipView: (NSClipView*)aClipView
@@ -1325,12 +1322,19 @@ static PSMatrix	*flip = nil;
   unsigned i, count;
 
   count = [sub_views count];
-  for (i = 0; i < count; ++i)
+  if (count > 0)
     {
-      id view = [sub_views objectAtIndex: i];
+      NSView*	array[count];
 
-      if ([view tag] == aTag)
-	return view;
+      [sub_views getObjects: array];
+
+      for (i = 0; i < count; ++i)
+	{
+	  NSView *view = array[i];
+
+	  if ([view tag] == aTag)
+	    return view;
+	}
     }
 
   return nil;
@@ -1357,14 +1361,20 @@ static PSMatrix	*flip = nil;
   p = [self convertPoint: aPoint fromView: super_view];
 
   count = [sub_views count];			// Check our sub_views
-  while (count > 0)
+  if (count > 0)
     {
-      w = [sub_views objectAtIndex: --count];
-      v = [w hitTest: p];
-      if (v)
-	break;
-    }
+      NSView*	array[count];
 
+      [sub_views getObjects: array];
+
+      while (count > 0)
+	{
+	  w = array[--count];
+	  v = [w hitTest: p];
+	  if (v)
+	    break;
+	}
+    }
   if (v)		// mouse is either in the subview or within self
     return v;
   else
@@ -1636,9 +1646,9 @@ static PSMatrix	*flip = nil;
   frame = [aDecoder decodeRect];
   bounds = [aDecoder decodeRect];
   super_view = [aDecoder decodeObject];
-  sub_views = [aDecoder decodeObject];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &sub_views];
   window = [aDecoder decodeObject];
-  tracking_rects = [aDecoder decodeObject];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &tracking_rects];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_rotated_from_base];
   [aDecoder decodeValueOfObjCType: @encode(BOOL)
 	  at: &is_rotated_or_scaled_from_base];
@@ -1739,16 +1749,6 @@ static PSMatrix	*flip = nil;
   return [frameMatrix rotationAngle];
 }
 
-- (PSMatrix*) _boundsMatrix
-{
-  return boundsMatrix;
-}
-
-- (PSMatrix*) _frameMatrix
-{
-  return frameMatrix;
-}
-
 - (BOOL) postsFrameChangedNotifications
 {
   return post_frame_changes;
@@ -1759,4 +1759,117 @@ static PSMatrix	*flip = nil;
   return post_bounds_changes;
 }
 
+
+/*
+ *	Private methods.
+ */
+
+- (NSRect) _boundingRectFor: (NSRect)rect
+{
+  NSRect new;
+
+  [frameMatrix boundingRectFor: rect result: &new];
+
+  return new;
+}
+
+- (PSMatrix*) _boundsMatrix
+{
+  return boundsMatrix;
+}
+
+- (PSMatrix*) _concatenateBoundsMatricesInReverseOrderFromPath: (NSArray*)viewsPath
+{
+  unsigned count = [viewsPath count];
+  PSMatrix* matrix = [[PSMatrix new] autorelease];
+
+  while (count > 0)
+    {
+      NSView* view = [viewsPath objectAtIndex: --count];
+
+      [matrix concatenateWith: view->boundsMatrix];
+    }
+
+  return matrix;
+}
+
+- (PSMatrix*) _concatenateMatricesInReverseOrderFromPath: (NSArray*)viewsPath
+{
+  PSMatrix	*matrix = [[PSMatrix new] autorelease];
+  unsigned	i = [viewsPath count];
+  NSView	*matrices[i];
+  NSView	*parent;
+  BOOL		wasFlipped;
+  BOOL		isFlipped;
+
+  if (i-- < 2)
+    return matrix;
+  [viewsPath getObjects: matrices];
+  parent = matrices[i];
+  wasFlipped = [parent isFlipped];
+  while (i-- > 0)
+    {
+      NSView	*view = matrices[i];
+
+      (*concatImp)(matrix, concatSel, view->frameMatrix);
+      isFlipped = [view isFlipped];
+      if (isFlipped != wasFlipped)
+	{
+	  flip->matrix[5] = view->bounds.size.height;
+	  (*concatImp)(matrix, concatSel, flip);
+	}
+      (*concatImp)(matrix, concatSel, view->boundsMatrix);
+      parent = view;
+      wasFlipped = isFlipped;
+    }
+
+  return matrix;
+}
+
+- (void) _invalidateCoordinates
+{
+  if (coordinates_valid == YES)
+    {
+      unsigned	count;
+
+      coordinates_valid = NO;
+      count = [sub_views count];
+      if (count > 0)
+	{
+	  NSView*	array[count];
+	  unsigned	i;
+
+	  [sub_views getObjects: array];
+	  for (i = 0; i < count; i++)
+	    {
+	      NSView	*sub = array[i];
+
+	      if (sub->coordinates_valid == YES)
+		(*invalidateImp)(sub, invalidateSel);
+	    }
+	}
+    }
+}
+
+- (PSMatrix*) _frameMatrix
+{
+  return frameMatrix;
+}
+
+- (NSMutableArray*) _pathBetweenSubview: (NSView*)subview
+			    toSuperview: (NSView*)_superview
+{
+  NSMutableArray	*array = [NSMutableArray array];
+  NSView		*view = subview;
+
+  while (view && view != _superview)
+    {
+      [array addObject: view];
+      view = view->super_view;
+    }
+
+  return array;
+}
+
 @end
+
