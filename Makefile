@@ -30,7 +30,7 @@ include $(GNUSTEP_SYSTEM_ROOT)/Makefiles/common.make
 #
 # The list of subproject directories
 #
-SUBPROJECTS = Source Images
+SUBPROJECTS = Source Images Tools
 
 -include Makefile.preamble
 
