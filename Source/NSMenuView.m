@@ -56,7 +56,7 @@
 {
   NSMenu       *menu;
   NSButton     *button;
-	NSSize       imageSize;
+  NSSize       imageSize;
   NSDictionary *attr;
 }
 
