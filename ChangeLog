@@ -1,3 +1,21 @@
+2002-11-06  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSTableView.m ([NSTableView -drawRow:clipRect:]):Swapped
+	sides of while statement && operator to check for _numberOfColumns
+	first.
+	([NSTableView -drawGridInClipRect:]): Idem.
+	Also remove some unused variables.
+
+2002-11-02  Lyndon Tremblay  <humasect@shaw.ca>
+
+	* NSTableView.m ([NSTableView -columnAtPoint:]): Swapped sides of
+	while statement && operator to check for _numberOfColumns first.
+
+2002-11-01   Lyndon Tremblay <humasect@shaw.ca>
+
+	* Source/NSBitmapImageRep.m ([NSBitmapImageRep -draw]): Cast
+	argument 11 for NSDrawBitmap() to remove warning.
+
 2002-11-04  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSWorkspace.m ([NSWorkspace -_workspaceApplication]): 

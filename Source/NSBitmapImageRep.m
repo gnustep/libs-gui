@@ -379,7 +379,7 @@
 	       _isPlanar,
 	       _hasAlpha,
 	       _colorSpace,
-	       _imagePlanes);
+	       (const unsigned char **)_imagePlanes);
   return YES;
 }
 

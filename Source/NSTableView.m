@@ -3195,8 +3195,6 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 - (void) _selectColumn: (int)columnIndex
 	     modifiers: (unsigned int)modifiers
 {
-  SEL selector;
-
   if (_allowsColumnSelection == NO)
     {
       return;
@@ -3755,8 +3753,6 @@ byExtendingSelection: (BOOL)flag
 
 - (void) selectAll: (id) sender
 {
-  SEL selector; 
-
   if (_allowsMultipleSelection == NO)
     return;
 
@@ -3838,8 +3834,6 @@ byExtendingSelection: (BOOL)flag
 
 - (void) deselectAll: (id) sender
 {
-  SEL selector; 
-
   if (_allowsEmptySelection == NO)
     return;
 
@@ -4177,7 +4171,6 @@ byExtendingSelection: (BOOL)flag
   // Selection
   if (clickCount == 1)
     {
-      SEL selector;
       unsigned int modifiers = [theEvent modifierFlags];
       BOOL startedPeriodicEvents = NO;
       unsigned int eventMask = (NSLeftMouseUpMask 
@@ -5066,7 +5059,7 @@ byExtendingSelection: (BOOL)flag
     {
       int i = 0;
       
-      while ((aPoint.x >= _columnOrigins[i]) && (i < _numberOfColumns))
+      while ((i < _numberOfColumns) && (aPoint.x >= _columnOrigins[i]))
 	{
 	  i++;
 	}
@@ -5627,7 +5620,7 @@ byExtendingSelection: (BOOL)flag
   /* Determine starting column as fast as possible */
   x_pos = NSMinX (clipRect);
   i = 0;
-  while ((x_pos > _columnOrigins[i]) && (i < _numberOfColumns))
+  while ((i < _numberOfColumns) && (x_pos > _columnOrigins[i]))
     {
       i++;
     }
@@ -5639,7 +5632,7 @@ byExtendingSelection: (BOOL)flag
   /* Determine ending column as fast as possible */
   x_pos = NSMaxX (clipRect);
   // Nota Bene: we do *not* reset i
-  while ((x_pos > _columnOrigins[i]) && (i < _numberOfColumns))
+  while ((i < _numberOfColumns) && (x_pos > _columnOrigins[i]))
     {
       i++;
     }
@@ -5695,7 +5688,7 @@ byExtendingSelection: (BOOL)flag
      per drawn rect */
   x_pos = minX;
   i = 0;
-  while ((x_pos > _columnOrigins[i]) && (i < _numberOfColumns))
+  while ((i < _numberOfColumns) && (x_pos > _columnOrigins[i]))
     {
       i++;
     }
@@ -5703,7 +5696,7 @@ byExtendingSelection: (BOOL)flag
 
   x_pos = maxX;
   // Nota Bene: we do *not* reset i
-  while ((x_pos > _columnOrigins[i]) && (i < _numberOfColumns))
+  while ((i < _numberOfColumns) && (x_pos > _columnOrigins[i]))
     {
       i++;
     }
@@ -6844,7 +6837,6 @@ byExtendingSelection: (BOOL)flag
 {
   NSPoint p = [sender draggingLocation];
   NSRect newRect;
-  NSTableViewDropOperation operation = NSTableViewDropAbove;
   int row;
   int quarterPosition;
   unsigned dragOperation;
