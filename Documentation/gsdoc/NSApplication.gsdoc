@@ -18,7 +18,7 @@
         <conform>NSCoding</conform>
         <desc>
         </desc>
-        <method type="void" factory="yes"><sel>setApplicationHandle:</sel><arg type="void*">hInstance</arg><sel>previousHandle:</sel><arg type="void*">prevInstance</arg><sel>commandLine:(NSString *)cmdLine  show:</sel><arg type="int">cmdShow</arg>
+        <method type="void" factory="yes"><sel>setApplicationHandle:</sel><arg type="void*">hInstance</arg><sel>previousHandle:</sel><arg type="void*">prevInstance</arg><sel>commandLine:</sel><arg type="NSString*">cmdLine</arg><sel>show:</sel><arg type="int">cmdShow</arg>
         <desc>
         </desc>
         </method>
@@ -38,7 +38,7 @@
         <desc>
         </desc>
         </method>
-        <method type="void"><sel>addWindowsItem:</sel><arg type="NSWindow*">aWindow</arg><sel>title:(NSString *)  filename:</sel><arg type="BOOL">isFilename</arg>
+        <method type="void"><sel>addWindowsItem:</sel><arg type="NSWindow*">aWindow</arg><sel>title:</sel><arg type="NSString*">title</arg><sel>filename:</sel><arg type="BOOL">isFilename</arg>
         <desc>
         </desc>
         </method>
@@ -58,7 +58,7 @@
         <desc>
         </desc>
         </method>
-        <method type="void"><sel>changeWindowsItem:</sel><arg type="NSWindow*">aWindow</arg><sel>title:(NSString *)aString filename:</sel><arg type="BOOL">isFilename</arg>
+        <method type="void"><sel>changeWindowsItem:</sel><arg type="NSWindow*">aWindow</arg><sel>title:</sel><arg type="NSString*">aString</arg><sel>filename:</sel><arg type="BOOL">isFilename</arg>
         <desc>
         </desc>
         </method>
@@ -126,7 +126,7 @@
         <desc>
         </desc>
         </method>
-        <method type="NSEvent*"><sel>nextEventMatchingMask:</sel><arg type="unsigned int">mask</arg><sel>untilDate:</sel><arg type="NSDate*">expiration</arg><sel>inMode:(NSString *)mode  dequeue:</sel><arg type="BOOL">flag</arg>
+        <method type="NSEvent*"><sel>nextEventMatchingMask:</sel><arg type="unsigned int">mask</arg><sel>untilDate:</sel><arg type="NSDate*">expiration</arg><sel>inMode:</sel><arg type="NSString*">mode</arg><sel>dequeue:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
         </method>
@@ -178,7 +178,7 @@
         <desc>
         </desc>
         </method>
-        <method type="BOOL"><sel>sendAction:</sel><arg type="SEL">anAction</arg><sel>to:(id)aTarget from:</sel><arg type="id">sender</arg>
+        <method type="BOOL"><sel>sendAction:</sel><arg type="SEL">anAction</arg><sel>to:</sel><arg type="id">aTarget</arg><sel>from:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
         </method>
