@@ -41,22 +41,22 @@
 # Things to do after compiling
 # after-all::
 
-$(INSTALL_DIR):
-	$(MKDIRS) $(INSTALL_DIR)
+$(PPD_INSTALL_DIR):
+	$(MKDIRS) $(PPD_INSTALL_DIR)
 
 # Things to do before installing
-before-install:: $(INSTALL_DIR)
+before-install:: $(PPD_INSTALL_DIR)
 
 # Things to do after installing
 after-install::
 	for dirs in $(RESOURCE_DIRS); do          \
-	  if [ ! -d $(INSTALL_DIR)/$$dirs ]; then  \
-	    $(MKDIRS) $(INSTALL_DIR)/$$dirs ;     \
+	  if [ ! -d $(PPD_INSTALL_DIR)/$$dirs ]; then  \
+	    $(MKDIRS) $(PPD_INSTALL_DIR)/$$dirs ;     \
 	  fi;                                     \
-	  $(INSTALL_DATA) $$dirs/*ppd $(INSTALL_DIR)/$$dirs/ ; \
+	  $(INSTALL_DATA) $$dirs/*ppd $(PPD_INSTALL_DIR)/$$dirs/ ; \
 	done;                                     \
 	for file in $(RESOURCE_FILES); do         \
-	  $(INSTALL_DATA) $$file $(INSTALL_DIR) ; \
+	  $(INSTALL_DATA) $$file $(RES_INSTALL_DIR) ; \
 	done
 
 # Things to do before uninstalling
@@ -65,9 +65,11 @@ after-install::
 # Things to do after uninstalling
 after-uninstall::
 	for file in $(RESOURCE_DIRS); do \
-	  rm -rf $(INSTALL_DIR)/$$file ; \
+	  rm -rf $(PPD_INSTALL_DIR)/$$file ; \
 	done
-	rm -rf $(INSTALL_DIR)
+	for file in $(RESOURCE_FILES); do         \
+	  rm $(RES_INSTALL_DIR)/$$file ; \
+	done
 
 # Things to do before cleaning
 # before-clean::

@@ -23,30 +23,17 @@
 #  If not, write to the Free Software Foundation,
 #  59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-$(GNUSTEP_INSTALLATION_DIR)/Library/Model:
-	$(MKDIRS) $(GNUSTEP_INSTALLATION_DIR)/Library/Model
-
-before-install:: $(GNUSTEP_INSTALLATION_DIR)/Library/Model
-	for f in $(PANELS); do \
-	  $(INSTALL_DATA) $$f $(GNUSTEP_INSTALLATION_DIR)/Library/Model/; \
-	done
-
-before-uninstall::
-	for f in $(PANELS); do \
-		rm -f $(GNUSTEP_INSTALLATION_DIR)/Library/Model/$$f; \
-	done
-
 # Things to do after installing
 after-install::
 ifneq ($(strip $(LOCALIZED_RESOURCE_FILES)),)
 	@(echo "Copying localized resources into system..."; \
 	for l in $(LANGUAGES); do \
 	  if [ ! -f $$l.lproj ]; then \
-	    $(MKDIRS) $(GNUSTEP_RESOURCES)/$$l.lproj; \
+	    $(MKDIRS) $(GNUSTEP_RESOURCES)/gnustep-gui/$$l.lproj; \
 	  fi; \
 	  for f in $(LOCALIZED_RESOURCE_FILES); do \
 	    if [ -f $$l.lproj/$$f ]; then \
-	      cp -r $$l.lproj/$$f $(GNUSTEP_RESOURCES)/$$l.lproj; \
+	      cp -r $$l.lproj/$$f $(GNUSTEP_RESOURCES)/gnustep-gui/$$l.lproj; \
 	    fi; \
 	  done; \
 	done;)
@@ -57,7 +44,7 @@ after-uninstall::
 ifneq ($(strip $(LOCALIZED_RESOURCE_FILES)),)
 	@(for l in $(LANGUAGES); do \
 	  if [ ! -f $$l.lproj ]; then \
-	    rm -rf $(GNUSTEP_RESOURCES)/$$l.lproj; \
+	    rm -rf $(GNUSTEP_RESOURCES)/gnustep-gui/$$l.lproj; \
 	  fi; \
 	done;)
 endif

@@ -1,3 +1,32 @@
+2003-04-27  Adam Fedor  <fedor@gnu.org>
+
+	* Updates for filesystem change.
+	* GNUmakefile (GNUSTEP_MAKEFILES): Remove
+	* ColorPickers/GNUmakefile, Documentation/GNUmakefile,
+	Images/GNUmakefile, KeyBindings/GNUmakefile, Model/GNUmakefile,
+	Panels/GNUmakefile, Panels/GNUmakefile.postamble, 
+	PrinterTypes/GNUmakefile, PrinterTypes/GNUmakefile.postamble,
+	Source/GNUmakefile, TextConverters/GNUmakefile, Tools/GNUmakefile: 
+	Idem and update install locations.
+	* Resources/GNUmakefile: Update for change in resource-set.make
+	* configure.ac: Replace $GNUSTEP_SYSTEM_ROOT/Makefiles with
+	$GNUSTEP_MAKEFILES.  Replace Libraries with Library/Libraries.
+	Replace Headers with Library/Headers.
+
+	* Source/NSImage.m (+initialize, +imageNamed:): Use
+	+pathForLibraryResource:ofType:inDirectory.
+	* Source/NSPrintInfo (+initPrintInfoDefaults): Idem.
+	* Source/NSPrinter.m (getFile): Idem.
+	* Source/NSSound.m (+initialize, +soundNamed:): Idem.
+	* Source/NSView.m (-_loadPrinterProlog): Idem.
+
+	* Source/NSPageLayout.m
+	(-initWithContentRect:styleMask:backing:defer:screen:): Use
+	GSGuiBundle to get resources.
+	* Source/NSPrintPanel.m
+	( -initWithContentRect:styleMask:backing:defer:screen:): Idem.
+	* Source/NSSpellChecker.m ([NSSpellChecker -init]): Idem.
+
 2003-03-27  Michael Hanni  <michael@deviant-behavior.com>
 
 	* Source/NSPopUpButtonCell.m (drawWithFrame:inView:): added a call 

@@ -56,7 +56,6 @@
 
 #include <AppKit/NSPrinter.h>
 
-
 // Define size used for the name and type maps - just use a small table
 #define NAMEMAPSIZE 0
 #define TYPEMAPSIZE 0
@@ -69,7 +68,7 @@
 			  [NSCharacterSet whitespaceAndNewlineCharacterSet]\
 			intoString:NULL]
 
-static NSString *NSPrinter_PATH = @"PrinterTypes";
+static NSString *NSPrinter_PATH = @"PostScript/PPD";
 static NSString *NSPrinter_INDEXFILE = @"Printers";
 
 //
@@ -212,9 +211,9 @@ static NSString *interpretQuotedValue(NSString *qString)
 
 static NSString *getFile(NSString *name, NSString *type)
 {
-  return [NSBundle pathForGNUstepResource: name
-		                   ofType: type
-		              inDirectory: NSPrinter_PATH];
+  return [NSBundle pathForLibraryResource: name
+				   ofType: type
+			      inDirectory: NSPrinter_PATH];
 }
 
 
@@ -882,17 +881,21 @@ andOptionTranslation:(NSString *)optionTranslation
 			     NAMEMAPSIZE);
 
   // Load the index file
-  path = getFile(NSPrinter_INDEXFILE, nil);
+  path = [NSBundle pathForLibraryResource: NSPrinter_INDEXFILE
+				   ofType: nil
+			      inDirectory: @"PostScript"];
   // If not found
   if (path == nil || [path length] == 0)
     {
-      [NSException raise:NSGenericException
-		   format:@"Could not find index of printers, file %@",
-		   NSPrinter_INDEXFILE];
-      // NOT REACHED
+      NSLog(@"Could not find index of printers, file %@", NSPrinter_INDEXFILE);
+      nameDict = [NSDictionary dictionaryWithObject:
+		    [NSArray arrayWithObjects: @"Apple_LaserWriter_II_NTX",
+					        @"localhost", @"A Note", nil]
+			                     forKey: @"Unknown"];
     }
-  // And create the name dictionary, loading it
-  nameDict = RETAIN([NSDictionary dictionaryWithContentsOfFile:path]);
+  else
+    nameDict = [NSDictionary dictionaryWithContentsOfFile:path];
+  RETAIN(nameDict);
   return self;
 }
 

@@ -3360,6 +3360,10 @@ shouldRemoveMarker: (NSRulerMarker *)marker
   NSRange errorRange;
   int count = 0;
 
+  if (sp == nil)
+    {
+      return;
+    }
   errorRange = [sp checkSpellingOfString: [self string]
 		              startingAt: NSMaxRange (_layoutManager->_selected_range)
 		                language: [sp language]

@@ -24,12 +24,12 @@ include $(GNUSTEP_MAKEFILES)/common.make
 
 include $(GNUSTEP_MAKEFILES)/rules.make
 
-$(GNUSTEP_RESOURCES)/KeyBindings:
+$(GNUSTEP_LIBRARY)/KeyBindings:
 	$(MKINSTALLDIRS) $@
 
-after-install:: $(GNUSTEP_RESOURCES)/KeyBindings
+after-install:: $(GNUSTEP_LIBRARY)/KeyBindings
 	$(INSTALL_DATA) DefaultKeyBindings.dict \
-	                $(GNUSTEP_RESOURCES)/KeyBindings/
+	                $(GNUSTEP_LIBRARY)/KeyBindings/
 
 after-uninstall::
-	rm -f $(GNUSTEP_RESOURCES)/KeyBindings/DefaultKeyBindings.dict
+	rm -f $(GNUSTEP_LIBRARY)/KeyBindings/DefaultKeyBindings.dict

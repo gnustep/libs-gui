@@ -29,8 +29,6 @@
 
 GNUSTEP_INSTALLATION_DIR = $(GNUSTEP_SYSTEM_ROOT)
 
-GNUSTEP_MAKEFILES = $(GNUSTEP_SYSTEM_ROOT)/Makefiles
-
 GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES = ../gui.make
 include $(GNUSTEP_MAKEFILES)/common.make
 
@@ -38,7 +36,7 @@ include $(GNUSTEP_MAKEFILES)/common.make
 #BUNDLE_NAME = StandardPicker NamedPicker WheelPicker
 BUNDLE_NAME = StandardPicker WheelPicker
 
-BUNDLE_INSTALL_DIR = $(GNUSTEP_INSTALLATION_DIR)/Library/ColorPickers
+BUNDLE_INSTALL_DIR = $(GNUSTEP_LIBRARY)/ColorPickers
 
 ADDITIONAL_INCLUDE_DIRS += -I../Headers -I../Headers/gnustep
 

@@ -32,7 +32,7 @@ fi
 #--------------------------------------------------------------------
 # Use config.guess, config.sub and install-sh provided by gnustep-make
 #--------------------------------------------------------------------
-AC_CONFIG_AUX_DIR($GNUSTEP_SYSTEM_ROOT/Makefiles)
+AC_CONFIG_AUX_DIR($GNUSTEP_MAKEFILES)
 
 AC_CONFIG_HEADER(Headers/gnustep/gui/config.h)
 
@@ -46,14 +46,14 @@ AC_CANONICAL_TARGET([])
 # in the GNUstep root are used before the standard ones
 #--------------------------------------------------------------------
 # Set location of GNUstep dirs for later use
-GNUSTEP_HDIR=$GNUSTEP_SYSTEM_ROOT/Headers
+GNUSTEP_HDIR=$GNUSTEP_SYSTEM_ROOT/Library/Headers
 if test "$GNUSTEP_FLATTENED" = yes; then
-  GNUSTEP_LDIR=$GNUSTEP_SYSTEM_ROOT/Libraries
+  GNUSTEP_LDIR=$GNUSTEP_SYSTEM_ROOT/Library/Libraries
 else
-  clean_target_os=`$GNUSTEP_SYSTEM_ROOT/Makefiles/clean_os.sh $target_os`
-  clean_target_cpu=`$GNUSTEP_SYSTEM_ROOT/Makefiles/clean_cpu.sh $target_cpu`
+  clean_target_os=`$GNUSTEP_MAKEFILES/clean_os.sh $target_os`
+  clean_target_cpu=`$GNUSTEP_MAKEFILES/clean_cpu.sh $target_cpu`
   obj_dir=$clean_target_cpu/$clean_target_os
-  GNUSTEP_LDIR=$GNUSTEP_SYSTEM_ROOT/Libraries/$obj_dir
+  GNUSTEP_LDIR=$GNUSTEP_SYSTEM_ROOT/Library/Libraries/$obj_dir
 fi
 CPPFLAGS="$CPPFLAGS -I$GNUSTEP_HDIR"
 LDFLAGS="$LDFLAGS -L$GNUSTEP_LDIR/$LIBRARY_COMBO -L$GNUSTEP_LDIR"

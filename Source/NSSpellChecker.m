@@ -51,6 +51,7 @@
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSPanel.h>
+#include <AppKit/GSGuiPrivate.h>
 
 // prototype for function to create name for server
 NSString *GSSpellServerName(NSString *checkerDictionary, NSString *language);
@@ -267,7 +268,7 @@ static int __documentTag = 0;
   _ignoredWords = [NSMutableDictionary new];
 
   // Load the gmodel file
-  if(![NSBundle loadNibFile: @"SpellPanel.gmodel"
+  if(![GSGuiBundle() loadNibFile: @"SpellPanel.gmodel"
 	  externalNameTable: [NSDictionary dictionaryWithObject: self forKey: @"NSOwner"]
 	           withZone: [self zone]])
     {

@@ -23,14 +23,12 @@
 
 GNUSTEP_INSTALLATION_DIR = $(GNUSTEP_SYSTEM_ROOT)
 
-GNUSTEP_MAKEFILES = $(GNUSTEP_SYSTEM_ROOT)/Makefiles
-
 GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../gui.make
 include $(GNUSTEP_MAKEFILES)/common.make
 
 include ../Version
 
-imagedir = $(GNUSTEP_RESOURCES)/Images
+imagedir = $(GNUSTEP_LIBRARY)/Images
 
 IMAGE_FILES = \
 GNUstep_Images_Copyright \

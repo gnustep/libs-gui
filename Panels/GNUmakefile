@@ -28,8 +28,6 @@
 
 GNUSTEP_INSTALLATION_DIR = $(GNUSTEP_SYSTEM_ROOT)
 
-GNUSTEP_MAKEFILES = $(GNUSTEP_SYSTEM_ROOT)/Makefiles
-
 GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../gui.make
 include $(GNUSTEP_MAKEFILES)/common.make
 
@@ -37,9 +35,8 @@ include ../Version
 
 LANGUAGES = English
 
-LOCALIZED_RESOURCE_FILES = GSPrintPanel.gorm GSPageLayout.gorm
-
-PANELS = ColorPanel.gmodel SavePanel.gmodel SpellPanel.gmodel
+LOCALIZED_RESOURCE_FILES = GSPrintPanel.gorm GSPageLayout.gorm \
+	SpellPanel.gmodel
 
 -include GNUmakefile.preamble
 -include GNUmakefile.local

@@ -351,17 +351,9 @@ return NO; \
 {
   if (self == [NSSound class]) 
     {
-#ifdef GNUSTEP_BASE_LIBRARY
-      NSString *path = [NSBundle pathForGNUstepResource: @"nsmapping"
-				 ofType: @"strings"
-				 inDirectory: @"Sounds"];
-#else
-      NSBundle *system = [NSBundle bundleWithPath: @GNUSTEP_INSTALL_LIBDIR];
-      NSString *path = [system pathForResource: @"nsmapping"
-			       ofType: @"strings"
-			       inDirectory: @"Sounds"];
-#endif
-
+      NSString *path = [NSBundle pathForLibraryResource: @"nsmapping"
+				                 ofType: @"strings"
+				             inDirectory: @"Sounds"];
       [self setVersion: 1];
 
       nameDict = [[NSMutableDictionary alloc] initWithCapacity: 10];
@@ -591,49 +583,24 @@ return NO; \
 	{
 	  if (extension) 
 	    {
-#ifdef GNUSTEP_BASE_LIBRARY
-	      path = [NSBundle pathForGNUstepResource: the_name
-			       ofType: extension
-			       inDirectory: @"Sounds"];
-#else
-	      NSBundle *system = [NSBundle bundleWithPath: @GNUSTEP_INSTALL_LIBDIR];
-	  
-	      path = [system pathForResource: the_name
-			     ofType: extension
-			     inDirectory: @"Sounds"];
-#endif 
+	      path = [NSBundle pathForLibraryResource: the_name
+				               ofType: extension
+				          inDirectory: @"Sounds"];
 	    } 
 	  else 
 	    {
-#ifdef GNUSTEP_BASE_LIBRARY
 	      id o, e;
 
 	      e = [array objectEnumerator];
 	      while ((o = [e nextObject])) {
-		path = [NSBundle pathForGNUstepResource: the_name
-				 ofType: o
-				 inDirectory: @"Sounds"];
+	      path = [NSBundle pathForLibraryResource: the_name
+				               ofType: o
+				          inDirectory: @"Sounds"];
 		if (path != nil && [path length] != 0) 
 		  {
 		    break;
 		  }
 	      }
-#else
-	      NSBundle *system = [NSBundle bundleWithPath: @GNUSTEP_INSTALL_LIBDIR];
-	      id o, e;
-
-	      e = [array objectEnumerator];
-	      while ((o = [e nextObject])) 
-		{
-		  path = [system pathForResource: the_name
-				 ofType: o
-				 inDirectory: @"Sounds"];
-		  if (path != nil && [path length] != 0) 
-		    {
-		      break;
-		    }
-		}
-#endif
 	    }
 	}
 

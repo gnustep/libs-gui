@@ -115,8 +115,8 @@ static NSPrintPanel *shared_instance;
   if (self == nil)
     return nil;
 
-  panel = [NSBundle pathForGNUstepResource: GSPANELNAME ofType: @"gorm"
-		    inDirectory: nil];
+  panel = [GSGuiBundle() pathForResource: GSPANELNAME ofType: @"gorm"
+		             inDirectory: nil];
   if (panel == nil)
     {
       NSRunAlertPanel(@"Error", @"Could not find print panel resource", 

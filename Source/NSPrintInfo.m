@@ -32,6 +32,7 @@
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSEnumerator.h>
+#include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSValue.h>
 #include <AppKit/NSPrinter.h>
 
@@ -373,33 +374,19 @@ NSDictionary *paperSizes = nil;
 //
 + initPrintInfoDefaults
 {
+  NSUserDefaults *def;
   NSString *defPrinter, *str;
-  NSString *path;
   NSPrinter *printer;
 
-#ifdef GNUSTEP_BASE_LIBRARY
-  path = [NSBundle pathForGNUstepResource: @"PrintDefaults"
-				  ofType: nil
-				  inDirectory: @"PrinterAdmin"];
-#else
-  NSBundle *adminBundle;
-
-  adminBundle = [NSBundle bundleWithPath: @GNUSTEP_INSTALL_LIBDIR];
-  path = [adminBundle pathForResource: @"PrintDefaults" 
-		      ofType: nil
-		      inDirectory: @"PrinterAdmin"];
-#endif
-
-  defPrinter = nil;
-  if (path != nil && [path length] != 0)
-    {
-      printInfoDefaults = [NSMutableDictionary dictionaryWithContentsOfFile:path];
-      RETAIN(printInfoDefaults);
-      defPrinter = [printInfoDefaults objectForKey:NSPrintPrinter];
-      printer = [NSPrinter printerWithName: defPrinter];
-      if (printer == nil)
-	defPrinter = nil;
-    }
+  def = [NSUserDefaults standardUserDefaults];
+  printInfoDefaults = [def objectForKey: @"DefaultPrinter"];
+  if (printInfoDefaults)
+    printInfoDefaults = [printInfoDefaults mutableCopy];
+  defPrinter = [printInfoDefaults objectForKey:NSPrintPrinter];
+  if (defPrinter)
+    printer = [NSPrinter printerWithName: defPrinter];
+  if (printer == nil)
+    defPrinter = nil;
   if (printInfoDefaults == nil)
     {
       NSDebugLog(@"NSPrinter", @"Could not find printing defaults table");

@@ -3396,9 +3396,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 - (void) _loadPrinterProlog: (NSGraphicsContext *)ctxt
 {
   NSString *prolog;
-  prolog = [NSBundle pathForGNUstepResource: @"GSProlog"
-                                     ofType: @"ps"
-                                inDirectory: @"PrinterTypes"];
+  prolog = [NSBundle pathForLibraryResource: @"GSProlog"
+				   ofType: @"ps"
+			      inDirectory: @"PostScript"];
   if (prolog == nil)
     {
       NSLog(@"Cannot find printer prolog file");

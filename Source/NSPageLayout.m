@@ -42,6 +42,7 @@
 #include <AppKit/NSPrintInfo.h>
 #include <AppKit/NSPageLayout.h>
 #include <AppKit/NSPrinter.h>
+#include <AppKit/GSGuiPrivate.h>
 
 static NSPageLayout *shared_instance;
 
@@ -131,8 +132,8 @@ static NSPageLayout *shared_instance;
   if (self == nil)
     return nil;
 
-  panel = [NSBundle pathForGNUstepResource: GSPANELNAME ofType: @"gorm"
-		    inDirectory: nil];
+  panel = [GSGuiBundle() pathForResource: GSPANELNAME ofType: @"gorm"
+		             inDirectory: nil];
   if (panel == nil)
     {
       NSRunAlertPanel(@"Error", @"Could not find page layout resource", 

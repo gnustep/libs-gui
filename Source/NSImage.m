@@ -152,16 +152,9 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 {
   if (self == [NSImage class])
     {
-#ifdef GNUSTEP_BASE_LIBRARY
-      NSString	*path = [NSBundle pathForGNUstepResource: @"nsmapping"
-				  ofType: @"strings"
-				  inDirectory: @"Images"];
-#else
-      NSBundle	*system = [NSBundle bundleWithPath: @GNUSTEP_INSTALL_LIBDIR];
-      NSString	*path = [system pathForResource: @"nsmapping"
-					 ofType: @"strings"
-				    inDirectory: @"Images"];
-#endif
+      NSString *path = [NSBundle pathForLibraryResource: @"nsmapping"
+				                 ofType: @"strings"
+				             inDirectory: @"Images"];
 
       // Initial version
       [self setVersion: 1];
@@ -243,46 +236,23 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 	{
 	  if (ext)
 	    {
-#ifdef GNUSTEP_BASE_LIBRARY
-	      path = [NSBundle pathForGNUstepResource: the_name
-			       ofType: ext
-			       inDirectory: @"Images"];
-#else
-	      NSBundle *system = [NSBundle bundleWithPath: @GNUSTEP_INSTALL_LIBDIR];
-	  
-	      path = [system pathForResource: the_name
-			     ofType: ext
-			     inDirectory: @"Images"];
-#endif 
+	      path = [NSBundle pathForLibraryResource: the_name
+				               ofType: ext
+				          inDirectory: @"Images"];
 	    }
 	  else 
 	    {
-#ifdef GNUSTEP_BASE_LIBRARY
 	      id o, e;
 
 	      e = [array objectEnumerator];
 	      while ((o = [e nextObject]))
 		{
-		  path = [NSBundle pathForGNUstepResource: the_name
-			       ofType: o
-			       inDirectory: @"Images"];
+		  path = [NSBundle pathForLibraryResource: the_name
+			       	                   ofType: o
+				              inDirectory: @"Images"];
 		  if (path != nil && [path length] != 0)
 		    break;
 		}
-#else
-	      NSBundle *system = [NSBundle bundleWithPath: @GNUSTEP_INSTALL_LIBDIR];
-	      id o, e;
-
-	      e = [array objectEnumerator];
-	      while ((o = [e nextObject]))
-		{
-		  path = [system pathForResource: the_name
-					  ofType: o
-				     inDirectory: @"Images"];
-		  if (path != nil && [path length] != 0)
-		    break;
-		}
-#endif
 	    }
 	}
 
