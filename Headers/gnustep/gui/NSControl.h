@@ -41,14 +41,19 @@
 @interface NSControl : NSView <NSCoding>
 {
   // Attributes
-  int tag;
-  id cell;
+  int _tag;
+  id _cell; // id so compiler wont complain too much for subclasses
 }
 
 //
 // Initializing an NSControl Object
 //
 - (id)initWithFrame:(NSRect)frameRect;
+
+//
+// Creating copies
+//
+- (id) copyWithZone: (NSZone*)zone;
 
 //
 // Setting the Control's Cell 
