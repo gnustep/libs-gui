@@ -1,3 +1,10 @@
+2004-05-29  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Images/page_landscape.tiff: Removed the tags in the image
+	which were causing warnings on load.
+	* Images/page_portrait.tiff: same.
+	* Images/common_ToolbarClippedItemsMark.tiff
+
 2004-05-29  Quentin Mathe <qmathe@lub-internet.fr>
         
 	* Source/NSComboBox.m:
@@ -7,10 +14,9 @@
 	* Images/GNUmakefile:
 	* Images/common_ComboBoxEllipsis.tiff:
 	New rewritten combo box implementation (which can be called completion
-	box now).
-	Everything should work except the completion possibility which needs some
-	layout manager and text view changes (patches to be commited by Alexander 
-	Malmberg).
+	box now).  Everything should work except the completion possibility 
+	which needs some layout manager and text view changes (patches to be 
+	commited by Alexander Malmberg).
 
 2004-05-29  Quentin Mathe <qmathe@lub-internet.fr>
 
@@ -18,8 +24,8 @@
 	the 2004/05/23 changes changed the way an event can be caught by one
 	responder definitively through the responder chain.
 	* Source/GSToolbar.m: New way to catch mouse events with the validation
-	system (Uses NSWindowDidUpdateNotification instead of events interception
-	at the view level) and other minor changes.
+	system (Uses NSWindowDidUpdateNotification instead of events 
+	interception at the view level) and other minor changes.
 
 2004-05-27 01:39  Alexander Malmberg <alexander@malmberg.org>
 
@@ -32,12 +38,12 @@
 	
 2004-05-23  Quentin Mathe <qmathe@lub-internet.fr>
 
-        * Source/NSWindow.m: Added a method -_windowView which returns the root 
-	view (variable _wv) and replaced _contentView by _wv in the tracking
-	implementation.
+        * Source/NSWindow.m: Added a method -_windowView which returns the 
+	root view (variable _wv) and replaced _contentView by _wv in the 
+	tracking implementation.
 	* Source/NSControl.m: Modified to call the associated superclass method
-	each time -mouseDown: is called to have the possibility to add behaviors
-	to the related NSView method.
+	each time -mouseDown: is called to have the possibility to add 
+	behaviors to the related NSView method.
 	Modifications needed to fully support toolbar validation mechanism.
 
 2004-05-23  Quentin Mathe <qmathe@lub-internet.fr>
