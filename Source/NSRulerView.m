@@ -244,7 +244,7 @@ static NSMutableDictionary *units = nil;
 				unitToPointsConversionFactor: conversionFactor
 				stepUpCycle: stepUpCycle
 				stepDownCycle: stepDownCycle];
-  [units setObject: u  forKey: uName];
+  [units setObject: u forKey: uName];
 }
 
 - (void) setMeasurementUnits: (NSString *)uName
@@ -268,11 +268,14 @@ static NSMutableDictionary *units = nil;
 
 - (void) setClientView: (NSView *)aView
 {
+  if (_clientView == aView)
+    return;
+
   if (_clientView != nil  
       && [_clientView respondsToSelector: 
 			@selector(rulerView:willSetClientView:)]) 
     {
-      [_clientView rulerView: self  willSetClientView: aView];
+      [_clientView rulerView: self willSetClientView: aView];
     }
   /* NB: We should not RETAIN the clientView.  */
   _clientView = aView;
@@ -373,6 +376,16 @@ static NSMutableDictionary *units = nil;
 {
   /* FIXME/TODO: not implemented */
   return NO;
+}
+
+- (void) mouseDown: (NSEvent*)theEvent
+{
+  if (_clientView != nil  
+      && [_clientView respondsToSelector: 
+			@selector(rulerView:handleMouseDown:)]) 
+    {
+      [_clientView rulerView: self handleMouseDown: theEvent];
+    }
 }
 
 - (void) moveRulerlineFromLocation: (float)oldLoc 
@@ -515,8 +528,7 @@ static NSMutableDictionary *units = nil;
 
   [self _verifyCachedValues];
 
-  /* TODO: should be a user default */
-  font = [NSFont systemFontOfSize: 8];
+  font = [NSFont systemFontOfSize: [NSFont smallSystemFontSize]];
   [font set];
   [[NSColor blackColor] set];
 
