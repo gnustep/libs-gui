@@ -629,7 +629,7 @@ byExtendingSelection: (BOOL) flag
     {
       int i = 0;
       
-      while ((aPoint.x < _columnOrigins[i]) && (i < _numberOfColumns))
+      while ((aPoint.x > _columnOrigins[i]) && (i < _numberOfColumns))
 	{
 	  i++;
 	}
