@@ -1,3 +1,9 @@
+Tue Dec 12 21:07:56 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSMenuItemCell.m ([-drawInteriorWithFrame:inView:]),
+	([-drawWithFrame:inView:]): Bug fix: do nothing in deferred
+	windows.
+
 Tue Dec 12 19:18:08 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSButtonCell.m ([-copyWithZone:]): Do not deep-copy ivars, 
