@@ -1,3 +1,10 @@
+Tue Dec  8 20:50:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/gnustep/gui/NSWindow.h: fixed designated initialiser to
+	use NSScreen type.
+	* Source/NSApplication.m: bugfix for modal sessioin - now works
+	* Source/GNUAlertPanel.m: hard-coded initialiser - seems to work ok.
+
 Mon Dec  7 15:55:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Model/GMAppKit.m: Fix errors in creating new objects - was messing
