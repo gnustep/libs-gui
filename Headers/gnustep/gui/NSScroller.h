@@ -105,6 +105,10 @@ typedef enum _NSScrollerArrow {
 // Handling Events 
 //
 - (NSScrollerPart)hitPart;
+
+/* Return the part of the scroller which contains thePoint.  thePoint
+ * is in the window's coordinate system.
+ */
 - (NSScrollerPart)testPart:(NSPoint)thePoint;
 - (void)trackKnob:(NSEvent *)theEvent;
 - (void)trackScrollButtons:(NSEvent *)theEvent;
