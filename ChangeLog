@@ -1,3 +1,9 @@
+2003-02-19 00:10  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSLayoutManager.m (-invalidateGlyphsForCharacterRange:
+	changeInLength:actualCharacterRange:): Correct the condition for
+	splitting the initial run.
+
 2003-02-18 21:24  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/GSLayoutManager.h, Source/GSLayoutManager.m:

@@ -1043,15 +1043,10 @@ places where we switch.
 //  printf("split if %i+%i > %i+%i\n", cpos, r->head.char_length, ch, range.length);
   /*
   If 'r' extends beyond the invalidated range, split off the trailing, valid
-  part to a new run.
-
-  (It seems unnecessary to do this here, since in most cases, the splitting
-  in the deletion loop will cover it. It seems to me (now) that this only
-  needs to be done if ch > cpos, since otherwise we can't split off the
-  valid front part of the run. Need to figure out exactly what's going
-  on.)
+  part to a new run. The reason we need to do this is that we must have runs
+  for the first glyph not invalidated or the deletion loop below will fail.
   */
-  if (cpos + r->head.char_length > ch + range.length && range.length)
+  if (cpos + r->head.char_length > ch + range.length && ch != cpos)
     {
       glyph_run_t *new;
       glyph_run_head_t *hn;
@@ -1145,6 +1140,9 @@ places where we switch.
 	if (!next)
 	  break;
 
+	NSAssert(max >= cpos,
+		 @"no run for first glyph beyond invalidated range");
+
 	/* Clean cut, just stop. */
 	if (max == cpos)
 	  break;
@@ -1166,7 +1164,9 @@ places where we switch.
 		next->glyphs = NULL;
 	      }
 	    /* TODO: this creates really large runs at times */
+	    printf("at %i, length is %i, max is %i\n",cpos,next->head.char_length,max);
 	    next->head.char_length -= max - cpos;
+	    printf("extend?? to %i\n",next->head.char_length);
 
 	    hn = &next->head;
 	    hn--;
@@ -1213,7 +1213,7 @@ places where we switch.
   adjust their heads with updated information. When we're done, we update
   all the remaining heads.
   */
-//  printf("create runs for %i+%i\n", range.location, range.length);
+  printf("create runs for %i+%i\n", range.location, range.length);
   { /* OPT: this is creating more runs than it needs to */
     NSDictionary *attributes;
     glyph_run_t *new;
