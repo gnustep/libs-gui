@@ -1856,7 +1856,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
       cellClass = defaultCellClass; 
     }
   cellNew = [cellClass methodForSelector: allocSel];
-  cellInit = [cellClass methodForSelector: initSel];
+  cellInit = [cellClass instanceMethodForSelector: initSel];
   DESTROY(cellPrototype);
 }
 

@@ -1,3 +1,8 @@
+Fri Nov 12 12:02:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSMatrix.m: ([-setCellClass:]) was calling methodForSelector
+	when it should have been instanceMethodForSelector.
+
 Fri Nov 12 11:53:52 1999  Lyndon Tremblay  <ltremblay@mezzanine.xnot.com>
 
 	* NSBrowser.m: Removed access to unused variable `draw_background',
