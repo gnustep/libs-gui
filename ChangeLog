@@ -3,6 +3,7 @@ Weds Sept 2 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 	* NSFileWrapper.m and NSFileWrapper.h added preliminary implementations
 		in support of Daniel Bðhringer's work on the text classes
 	* NSText.m added changes by Daniel Bðhringer
+	* NSText.h removed text_contents ivar
 	* Tools/gpbs.m added dummy defines of some backend functions
 
 Tues Sept 1 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
