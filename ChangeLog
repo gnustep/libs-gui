@@ -1,3 +1,8 @@
+2003-04-28 18:35  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/NSTextContainer.h: Documented.
+	* Source/NSTextContainer.m: Cleanups.
+
 Mon Apr 28 13:14:15 2003  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSApplication.m ([NSApplication -targetForAction:]): If this

@@ -56,7 +56,7 @@ use bounds rectangle instead of frame? */
       textView = [aNotification object];
       if (textView != _textView)
         {
-	    NSDebugLog (@"NSTextContainer got notification for wrong View %@",
+	    NSDebugLog(@"NSTextContainer got notification for wrong View %@",
 			textView);
 	    return;
 	}
@@ -66,12 +66,12 @@ use bounds rectangle instead of frame? */
 
       if (_widthTracksTextView)
 	{
-	  size.width = MAX (newTextViewSize.width - (inset.width * 2.0), 0.0);
+	  size.width = MAX(newTextViewSize.width - (inset.width * 2.0), 0.0);
 	}
       if (_heightTracksTextView)
 	{
-	  size.height = MAX (newTextViewSize.height - (inset.height * 2.0), 
-			     0.0);
+	  size.height = MAX(newTextViewSize.height - (inset.height * 2.0),
+			    0.0);
 	}
 
       [self setContainerSize: size];
@@ -92,7 +92,7 @@ use bounds rectangle instead of frame? */
 
 - (id) initWithContainerSize: (NSSize)aSize
 {
-  NSDebugLLog (@"NSText", @"NSTextContainer initWithContainerSize");
+  NSDebugLLog(@"NSText", @"NSTextContainer initWithContainerSize");
   _layoutManager = nil;
   _textView = nil;
   _containerRect.size = aSize;
@@ -113,7 +113,7 @@ use bounds rectangle instead of frame? */
 	  name: NSViewFrameDidChangeNotification
 	  object: _textView];
       
-      RELEASE (_textView);
+      RELEASE(_textView);
     }
   [super dealloc];
 }
@@ -135,10 +135,10 @@ See [NSTextView -setTextContainer:] for more information about these calls.
   return _layoutManager;
 }
 
-/**
- * Replaces the layout manager while maintaining the text object
- * framework intact.
- */
+/*
+Replaces the layout manager while maintaining the text object
+framework intact.
+*/
 - (void) replaceLayoutManager: (GSLayoutManager*)aLayoutManager
 {
   if (aLayoutManager != _layoutManager)
@@ -189,7 +189,7 @@ See [NSTextView -setTextContainer:] for more information about these calls.
 	 the frame change notifications. */
     }
 
-  ASSIGN (_textView, aTextView);
+  ASSIGN(_textView, aTextView);
 
   if (aTextView != nil)
     {
@@ -216,12 +216,12 @@ See [NSTextView -setTextContainer:] for more information about these calls.
 
 - (void) setContainerSize: (NSSize)aSize
 {
-  if (NSEqualSizes (_containerRect.size, aSize))
+  if (NSEqualSizes(_containerRect.size, aSize))
     {
       return;
     }
 
-  _containerRect = NSMakeRect (0, 0, aSize.width, aSize.height);
+  _containerRect = NSMakeRect(0, 0, aSize.width, aSize.height);
 
   if (_layoutManager)
     {
@@ -426,7 +426,7 @@ See [NSTextView -setTextContainer:] for more information about these calls.
 
 - (BOOL) containsPoint: (NSPoint)aPoint
 {
-  return NSPointInRect (aPoint, _containerRect);
+  return NSPointInRect(aPoint, _containerRect);
 }
 
 @end /* NSTextContainer */
