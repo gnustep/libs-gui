@@ -1,3 +1,15 @@
+2003-02-18 21:24  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/GSLayoutManager.h, Source/GSLayoutManager.m:
+	Add basic interface that lets the typesetter access soft-invalidated
+	glyph information.
+
+	* Source/GSHorizontalTypesetter.m (-layoutLineNewParagraph:): Use
+	the soft-invalidated information to avoid rebuilding the layout
+	(when possible).
+
+	* Source/NSLayoutManager.m: Fix edge case in soft invalidation.
+
 2003-02-18  Fred Kiefer <FredKiefer@gmx.de>
 
 	* TextConverters/RTF/RTFProducer.m

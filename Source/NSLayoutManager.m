@@ -1822,7 +1822,7 @@ this file describes this.
 /*  printf("original=%i, new=%i, delta %i\n",
     original_last_glyph,new_last_glyph,glyph_delta);*/
 
-  if (r.location < layout_char)
+  if (r.location <= layout_char)
     {
       unsigned int glyph_index, last_glyph;
       textcontainer_t *tc;
@@ -1831,6 +1831,10 @@ this file describes this.
       int new_num;
       NSRange char_range;
 
+      /*
+      Note that r.location might equal layout_char, in which case
+      r.location won't actually have any text container or line frag.
+      */
       if (r.location == [_textStorage length])
 	{
 	  /*
