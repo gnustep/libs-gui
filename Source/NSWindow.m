@@ -2791,6 +2791,7 @@ resetCursorRectsForView(NSView *theView)
 	break;
 
       case NSFlagsChanged:
+	[_firstResponder flagsChanged: theEvent];
 	break;
 
       case NSCursorUpdate:
