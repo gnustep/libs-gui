@@ -1,3 +1,8 @@
+Fri Aug 31 12:06:24 2001  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/GSSimpleLayoutManager.m ([_GNULineLayoutInfo
+	-description]): Print the usedRect.
+
 2001-08-30  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSImage.m (-initWithCoder:): Fix encode typo.
