@@ -440,6 +440,7 @@ static NSCell* tileCell = nil;
 {
   if (self == [NSApplication class])
     {
+      CREATE_AUTORELEASE_POOL(pool);
       /*
        * Dummy functions to fool linker into linking files that contain
        * only catagories - static libraries seem to have problems here.
@@ -453,13 +454,15 @@ static NSCell* tileCell = nil;
       
       /* Create the gui bundle we use to localize messages.  */
       guiBundle = [NSBundle bundleForLibrary: @"gnustep-gui"];
-      
+      RETAIN(guiBundle);
+
       /* Save the base library exception handler */
       defaultUncaughtExceptionHandler = NSGetUncaughtExceptionHandler ();
       
       /* Cache the NSAutoreleasePool class */
       arpClass = [NSAutoreleasePool class];
       nc = [NSNotificationCenter defaultCenter];
+      RELEASE(pool);
     }
 }
 
