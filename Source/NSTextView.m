@@ -1580,13 +1580,7 @@ static NSNotificationCenter *nc;
 
   rect.size.width = 1;
   
-  if (rect.size.height == 0)
-    {
-      rect.size.height = 12;
-    }  
-
   _insertionPointRect = rect;
-
   
   /* Remember horizontal position of insertion point */
   _originalInsertPoint = _insertionPointRect.origin.x;
