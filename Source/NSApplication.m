@@ -1219,6 +1219,11 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   [NSException raise: NSAbortModalException format: @"abortModal"];
 }
 
+/**
+ * Set up modal session for theWindow, and, if it is not visible already,
+ * puts it up on screen, centering it if it is an NSPanel.  It is then
+ * ordered front and made key or main window.
+ */
 - (NSModalSession) beginModalSessionForWindow: (NSWindow*)theWindow
 {
   NSModalSession theSession;
@@ -1232,12 +1237,13 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   _session = theSession;
 
   /*
-   * The NSWindow documentation says runModalForWindow centers panels.
-   * Here would seem the best place to do it.
+   * Displaying / raising window but centering panel only if not up
+   * seems to match the behavior on OS X (Panther).
    */
   if ([theWindow isKindOfClass: [NSPanel class]])
     {
-      [theWindow center];
+      if ([theWindow isVisible] == NO)
+          [theWindow center];
       [theWindow setLevel: NSModalPanelWindowLevel];
     }
   [theWindow orderFrontRegardless];
@@ -1294,6 +1300,12 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
   NSZoneFree(NSDefaultMallocZone(), theSession);
 }
 
+/**
+ * Starts modal event loop for given window, after calling
+ * -beginModalSessionForWindow:.  Loop is broken only by stopModal: ,
+ * -stopModalWithCode: , or -abortModal: , at which time -endModalSession:
+ * is called.
+ */
 - (int) runModalForWindow: (NSWindow*)theWindow
 {
   NSModalSession theSession = 0;
@@ -1348,13 +1360,17 @@ static NSSize scaledIconSizeForSize(NSSize imageSize)
 /** 
 <p>
 Processes any events for a modal session described by the theSession
-variable. Before processing the events, it makes the session window key
-and orders the window front, so there is no need to do this
-separately. When finished, it returns the state of the session (i.e.
+variable. When finished, it returns the state of the session (i.e.
 whether it is still running or has been stopped, etc) 
 </p>
 <p>If there are no pending events for the session, this method returns
 immediately.
+</p>
+<p>
+ Although Apple's docs state that, before processing the events, it makes the
+ session window key and orders the window front, this method does not attempt
+ to do this (due to excessive overhead).  Therefore you should do it yourself
+ beforehand, if needed.
 </p>
 <p>
 See Also: -runModalForWindow:

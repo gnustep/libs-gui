@@ -1,3 +1,10 @@
+2005-01-26 Adrian Robert <arobert@cogsci.ucsd.edu>
+
+	* Source/NSApplication.m (-beginModalSessionforWindow:): Center
+	panels only if they are not already up, matching OS X Panther;
+	document.
+	(-runModalForWindow:, -runModalSession:): Clarify documentation.
+
 2005-01-25 01:05  Alexander Malmberg  <alexander@malmberg.org>
 
 	* Source/NSImageCell.m (-drawInteriorWithFrame:inView:): Use
