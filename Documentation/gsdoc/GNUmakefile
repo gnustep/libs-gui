@@ -134,12 +134,27 @@ Gui_GSDOC_FILES = Gui.gsdoc \
 	NSWindowController.gsdoc \
 	NSWorkspace.gsdoc
 
+# These gsdoc files are automatically generated from class source/headers
+Gui_AUTOGSDOC_FILES = \
+NSPageLayout.gsdoc \
+NSPrintInfo.gsdoc \
+NSPrintOperation.gsdoc \
+NSPrintPanel.gsdoc
+
+Gui_AUTOGSDOC_HEADERS = $(addprefix ../../Headers/gnustep/gui/, $(addsuffix .h, $(basename $(Gui_AUTOGSDOC_FILES))))
+
 Gui_DOC_INSTALL_DIR = Developer/Gui/Reference
 
--include Makefile.preamble
+-include GNUmakefile.preamble
 
 -include GNUmakefile.local
 
 include $(GNUSTEP_MAKEFILES)/documentation.make
 
--include Makefile.postamble
+-include GNUmakefile.postamble
+
+autogen : $(Gui_AUTOGSDOC_FILES)
+
+$(Gui_AUTOGSDOC_FILES) : $(Gui_AUTOGSDOC_HEADERS)
+	autogsdoc -DocumentationDirectory . \
+        -SourceDirectory ../../Source $^

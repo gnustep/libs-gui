@@ -158,6 +158,21 @@ NSString *NSDrawerWillOpenNotification =
 NSString *_NSFormCellDidChangeTitleWidthNotification 
 = @"_NSFormCellDidChangeTitleWidthNotification";
 
+// NSGraphicContext constants
+NSString *NSGraphicsContextDestinationAttributeName = 
+@"NSGraphicsContextDestinationAttributeName";
+NSString *NSGraphicsContextPDFFormat = 
+@"NSGraphicsContextPDFFormat";
+NSString *NSGraphicsContextPSFormat = 
+@"NSGraphicsContextPSFormat";
+NSString *NSGraphicsContextRepresentationFormatAttributeName = 
+@"NSGraphicsContextRepresentationFormatAttributeName";
+
+NSString *NSImageInterpolationDefault = @"NSImageInterpolationDefault";
+NSString *NSImageInterpolationNone = @"NSImageInterpolationNone";
+NSString *NSImageInterpolationLow = @"NSImageInterpolationLow";
+NSString *NSImageInterpolationHigh = @"NSImageInterpolationHigh";
+
 // NSHelpManager notifications;
 NSString *NSContextHelpModeDidActivateNotification =
 @"NSContextHelpModeDidActivateNotification";

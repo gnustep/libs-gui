@@ -133,6 +133,7 @@
         <method type="void">
           <sel>allocateGState</sel>
           <desc>
+          <p>
 	  Tell the view to maintain a private gstate object which 
 	  encapsulates all the information about drawing, such as coordinate
 	  transforms, line widths, etc. If you do not invoke this method,
@@ -140,9 +141,11 @@
 	  Allocating a private gstate may improve the performance of views
 	  that are focused a lot and have a lot of customized drawing
 	  parameters.
+          </p>
 	  <p>
 	  View subclasses should override the setUpGstate method to set these
 	  custom parameters.
+          </p>
           </desc>
         </method>
         <method type="NSView*">

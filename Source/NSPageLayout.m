@@ -194,7 +194,6 @@ static NSPageLayout *shared_instance;
 
   result = [NSApp runModalForWindow: self];
   [self orderOut: self];
-  NSLog(@"Model Page Layout ended with code %d", result);
   return result;
 }
 
@@ -486,8 +485,7 @@ static NSPageLayout *shared_instance;
   [_printInfo setOrientation: [control selectedColumn]+NSPortraitOrientation];
 
   /* Write Size */
-  /* FIXME: Currently don't allow writing size. What does that mean
-     anyway? Shouldn't we set margins instead? */
+  /* FIXME: Currently don't allow writing custom size. */
 
 }
 

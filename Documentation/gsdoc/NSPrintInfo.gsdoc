@@ -1,23 +1,33 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSPrintInfo" prev="NSPopUpButtonCell.html" next="NSPrintOperation.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.6//EN" "http://www.gnustep.org/gsdoc-0_6_6.xml">
+<gsdoc base="NSPrintInfo" next="NSPrintOperation" prev="NSPageLayout" up="NSPageLayout">
   <head>
     <title>NSPrintInfo</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Simon Frankau">
+      <email>sgf@frankau.demon.co.uk</email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Adam Fedor">
+      <email>fedor@gnu.org</email>
+    </author>
+    <abstract>
+      Stores information used in printing.
+    </abstract>
+    <copy>(C) 1996,1997 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSPrintInfo</heading>
+      <heading>Class Description</heading>
+      <p>
+        NSPrintInfo is a storage object that stores
+        information that describes how a view is to printed
+        and the destination information for printing.
+      </p>
       <class name="NSPrintInfo" super="NSObject">
-        <declared>Gui/NSPrintInfo.h</declared>
+        <declared>../../Headers/gnustep/gui/NSPrintInfo.h</declared>
         <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <conform>NSCopying</conform>
+        <desc>
+        </desc>
         <method type="NSPrinter*" factory="yes">
           <sel>defaultPrinter</sel>
           <desc>
@@ -25,7 +35,7 @@
         </method>
         <method type="void" factory="yes">
           <sel>setDefaultPrinter:</sel>
-          <arg type="NSPrinter*">aPrinter</arg>
+          <arg type="NSPrinter*">printer</arg>
           <desc>
           </desc>
         </method>
@@ -63,7 +73,7 @@
         </method>
         <method type="id">
           <sel>initWithDictionary:</sel>
-          <arg type="NSDictionary*">aDictionary</arg>
+          <arg type="NSDictionary*">aDict</arg>
           <desc>
           </desc>
         </method>
@@ -114,7 +124,7 @@
         </method>
         <method type="void">
           <sel>setBottomMargin:</sel>
-          <arg type="float">margin</arg>
+          <arg type="float">value</arg>
           <desc>
           </desc>
         </method>
@@ -138,13 +148,13 @@
         </method>
         <method type="void">
           <sel>setLeftMargin:</sel>
-          <arg type="float">margin</arg>
+          <arg type="float">value</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setOrientation:</sel>
-          <arg type="NSPrintingOrientation">orientation</arg>
+          <arg type="NSPrintingOrientation">mode</arg>
           <desc>
           </desc>
         </method>
@@ -156,7 +166,7 @@
         </method>
         <method type="void">
           <sel>setPaperSize:</sel>
-          <arg type="NSSize">aSize</arg>
+          <arg type="NSSize">size</arg>
           <desc>
           </desc>
         </method>
@@ -168,13 +178,13 @@
         </method>
         <method type="void">
           <sel>setRightMargin:</sel>
-          <arg type="float">margin</arg>
+          <arg type="float">value</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setTopMargin:</sel>
-          <arg type="float">margin</arg>
+          <arg type="float">value</arg>
           <desc>
           </desc>
         </method>

@@ -45,6 +45,9 @@ static BOOL boldSystemCacheNeedsRecomputing = NO;
 static BOOL userCacheNeedsRecomputing = NO;
 static BOOL userFixedCacheNeedsRecomputing = NO;
 
+/* Set used to keep track of fonts we are using */
+static NSMutableSet *usedFonts = nil;
+
 @interface NSFont (Private)
 - (id) initWithName: (NSString*)name 
 	     matrix: (const float*)fontMatrix;
@@ -394,9 +397,21 @@ setNSFont(NSString* key, NSFont* font)
 
 + (void) useFont: (NSString*)name
 {
-  NSGraphicsContext *ctxt = GSCurrentContext();
+  if (usedFonts == nil)
+    usedFonts = RETAIN([NSMutableSet setWithCapacity: 2]);
 
-  [ctxt useFont: name];
+  [usedFonts addObject: name];
+}
+
++ (void) resetUsedFonts
+{
+  if (usedFonts)
+    [usedFonts removeAllObjects];
+}
+
++ (NSSet *) usedFonts
+{
+  return usedFonts;
 }
 
 //
@@ -497,7 +512,7 @@ setNSFont(NSString* key, NSFont* font)
   NSGraphicsContext *ctxt = GSCurrentContext();
 
   [ctxt setFont: self];
-  [ctxt useFont: fontName];
+  [NSFont useFont: fontName];
 }
 
 //

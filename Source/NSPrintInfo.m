@@ -26,7 +26,9 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
+#include <Foundation/NSArray.h>
 #include <Foundation/NSBundle.h>
+#include <Foundation/NSDebug.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSEnumerator.h>
@@ -47,6 +49,10 @@
 #define NSPrintInfo_DEFAULTSTABLE @"PrintDefaults"
 #endif
 
+#define NSNUMBER(val) [NSNumber numberWithInt: val]
+#define DICTSET(dict, obj, key) \
+   [dict setObject: obj forKey: key]
+
 // FIXME: retain/release of dictionary with retain/release of printInfo?
 
 // Class variables:
@@ -57,6 +63,16 @@ NSDictionary *paperSizes = nil;
 @interface NSPrintInfo (private)
 + initPrintInfoDefaults;
 @end
+
+/**
+  <unit>
+  <heading>Class Description</heading>
+  <p>
+  NSPrintInfo is a storage object that stores information that describes
+  how a view is to printed and the destination information for printing.
+  </p>
+  </unit>
+*/
 
 @implementation NSPrintInfo
 
@@ -98,28 +114,6 @@ NSDictionary *paperSizes = nil;
 + (NSSize)sizeForPaperName:(NSString *)name
 {
   return [[self defaultPrinter] pageSizeForPaper:name];
-  // Alternatively:
-//   NSBundle *adminBundle;
-//   NSString *path;
-//   NSValue *size;
-//   if (!paperSizes)
-//     {
-//       adminBundle = [NSBundle bundleWithPath:NSPrinterAdmin_PATH];
-//       path = [adminBundle pathForResource:NSPrintInfo_PAPERFILE ofType:nil];
-//       // If not found
-//       if (path == nil || [path length] == 0)
-// 	{
-// 	  [NSException raise:NSGenericException
-// 		       format:@"Could not find paper size index, file %s",
-// 		       [NSPrintInfo_PAPERFILE cString]];
-// 	  // NOT REACHED
-// 	}
-//       paperSizes = RETAIN([NSDictionary dictionaryWithContentsOfFile:path]);
-//     }
-//   size = [paperSizes objectForKey:name];
-//   if (!size)
-//     return NSZeroSize;
-//  return [size sizeValue];
 }
 
 //
@@ -214,19 +208,41 @@ NSDictionary *paperSizes = nil;
 
 - (void)setOrientation:(NSPrintingOrientation)mode
 {
+  NSSize size;
   [_info setObject:[NSNumber numberWithInt:mode]
 	forKey:NSPrintOrientation];
+  /* Set the paper size accordingly */
+  size = [self paperSize];
+  if ((mode == NSPortraitOrientation && size.width > size.height)
+      || (mode == NSLandscapeOrientation && size.width < size.height))
+    {
+      float tmp = size.width;
+      size.width = size.height;
+      size.height = tmp;
+      [_info setObject: [NSValue valueWithSize: size] 
+	        forKey: NSPrintPaperSize];
+    }
 }
 
 - (void)setPaperName:(NSString *)name
 {
-  [_info setObject:name forKey:NSPrintPaperName];
+  DICTSET(_info, name, NSPrintPaperName);
+  DICTSET(_info, 
+	  [NSValue valueWithSize: [NSPrintInfo sizeForPaperName: name]],
+	  NSPrintPaperSize);
 }
 
 - (void)setPaperSize:(NSSize)size
 {
+  NSPrintingOrientation orient;
   [_info setObject:[NSValue valueWithSize:size]
 	forKey:NSPrintPaperSize];
+  /* Set orientation accordingly */
+  if (size.width <= size.height)
+    orient = NSPortraitOrientation;
+  else
+    orient = NSLandscapeOrientation;
+  DICTSET(_info, NSNUMBER(orient), NSPrintOrientation);
 }
 
 - (void)setRightMargin:(float)value
@@ -369,38 +385,62 @@ NSDictionary *paperSizes = nil;
 //
 + initPrintInfoDefaults
 {
+  NSString *defPrinter, *str;
   NSBundle *adminBundle;
   NSString *path;
+  NSPrinter *printer;
   adminBundle = [NSBundle bundleWithPath:NSPrinterAdmin_PATH];
   path = [adminBundle pathForResource:NSPrintInfo_DEFAULTSTABLE ofType:nil];
-  // If not found
+  defPrinter = nil;
   if (path != nil && [path length] != 0)
     {
-      printInfoDefaults = RETAIN([NSMutableDictionary dictionaryWithContentsOfFile:path]);
-      // NOT REACHED
+      printInfoDefaults = [NSMutableDictionary dictionaryWithContentsOfFile:path];
+      RETAIN(printInfoDefaults);
+      defPrinter = [printInfoDefaults objectForKey:NSPrintPrinter];
+      printer = [NSPrinter printerWithName: defPrinter];
+      if (printer == nil)
+	defPrinter = nil;
     }
   if (printInfoDefaults == nil)
     {
-      NSLog(@"Could not find printing defaults table, file %s",
-	    [NSPrintInfo_DEFAULTSTABLE cString]);
-      // FIXME: As a replacement we add a very simple definition
-      printInfoDefaults = RETAIN(([NSMutableDictionary dictionaryWithObjectsAndKeys: 
-							  @"Unknown", NSPrintPrinter,
-							  @"A4", NSPrintPaperName,
-						       NULL]));
+      NSDebugLog(@"NSPrinter", @"Could not find printing defaults table, file %@",
+		 NSPrintInfo_DEFAULTSTABLE);
+      printInfoDefaults = RETAIN([NSMutableDictionary dictionary]);
+    }
+  if (defPrinter == nil)
+    {
+      defPrinter = [[NSPrinter printerNames] objectAtIndex: 0];
+      DICTSET(printInfoDefaults, defPrinter, NSPrintPrinter);
     }
 
-  // The loaded dictionary contains the name of the printer for NSPrintPrinter
-  // Load the real NSPrinter object...
-  [printInfoDefaults 
-    setObject:[NSPrinter printerWithName:[printInfoDefaults 
-  					   objectForKey:NSPrintPrinter]]
-    forKey:NSPrintPrinter];
-  [printInfoDefaults 
-    setObject:[NSValue valueWithSize:
-			[NSPrintInfo sizeForPaperName:
-			    [printInfoDefaults objectForKey:NSPrintPaperName]]]
-    forKey:NSPrintPaperSize];
+  /* Replace the printer name with a real NSPrinter object */
+  printer = [NSPrinter printerWithName: defPrinter];
+  DICTSET(printInfoDefaults, [NSPrinter printerWithName: defPrinter], NSPrintPrinter);
+
+  /* Set up other defaults from the printer object */
+  str = [printer stringForKey:@"DefaultPageSize" inTable: @"PPD"];
+  /* FIXME: Need to check for AutoSelect and probably a million other things... */
+  if (str == nil)
+    str = @"A4";
+  DICTSET(printInfoDefaults, str, NSPrintPaperName);
+  DICTSET(printInfoDefaults, 
+	  [NSValue valueWithSize: [NSPrintInfo sizeForPaperName: str]],
+	  NSPrintPaperSize);
+
+  /* Set default margins. FIXME: Probably should check ImageableArea */
+  DICTSET(printInfoDefaults, NSNUMBER(36), NSPrintRightMargin);
+  DICTSET(printInfoDefaults, NSNUMBER(36), NSPrintLeftMargin);
+  DICTSET(printInfoDefaults, NSNUMBER(72), NSPrintTopMargin);
+  DICTSET(printInfoDefaults, NSNUMBER(72), NSPrintBottomMargin);
+  DICTSET(printInfoDefaults, NSNUMBER(NSPortraitOrientation), 
+	  NSPrintOrientation);
+  //DICTSET(printInfoDefaults, NSNUMBER(NSClipPagination), 
+  //	  NSPrintHorizontalPagination);
+  DICTSET(printInfoDefaults, NSNUMBER(NSAutoPagination), 
+	  NSPrintVerticalPagination);
+  DICTSET(printInfoDefaults, NSNUMBER(1), NSPrintHorizontallyCentered);
+  DICTSET(printInfoDefaults, NSNUMBER(1), NSPrintVerticallyCentered);
+
   return self;
 }
 

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.6//EN" "http://www.gnustep.org/gsdoc-0_6_6.xml">
-<gsdoc>
+<gsdoc base="NSPageLayout" next="NSPrintInfo">
   <head>
     <title>NSPageLayout</title>
     <author name="Adam Fedor">
@@ -13,21 +13,37 @@
   </head>
   <body>
     <chapter>
-      <heading>
-        Software documentation for the NSPageLayout class
-      </heading>
+      <heading>NSPageLayout</heading>
+      <p>
+        NSPageLayout provides a panel that allows the user
+        to specify certain information about the printer and how
+        data is formatted for printing. This includes information
+        about the paper size and orientation. Typically you would
+        create a page layout panel with the
+        <ref id="pageLayout">pageLayout</ref>
+        class method. However, the best way to use the panel is
+        to have the application call the runPageLayout: method in
+        the NSApplication object which would both create a standard
+        NSPageLayout panel and display it in a modal loop.
+        This method would be sent up the responder chain if the
+        user clicked on a Page Layout menu item.
+      </p>
       <class name="NSPageLayout" super="NSPanel">
-        <declared>NSPageLayout.h</declared>
+        <declared>../../Headers/gnustep/gui/NSPageLayout.h</declared>
         <desc>
         </desc>
         <method type="NSPageLayout*" factory="yes">
           <sel>pageLayout</sel>
           <desc>
+            Creates and returns a shared instance of the
+            NSPageLayout panel.
           </desc>
         </method>
         <method type="NSView*">
           <sel>accessoryView</sel>
           <desc>
+            Returns the accessory view for the page layout
+            panel
           </desc>
         </method>
         <method type="void">
@@ -50,62 +66,91 @@
           <sel>newFactor:</sel>
           <arg type="float*">new</arg>
           <desc>
+            Convert the <var>old</var> value to a
+            <var>new</var> one based on the current units. This
+            method has been depreciated. It doesn't do anything
+            useful
           </desc>
         </method>
         <method type="void">
           <sel>pickedButton:</sel>
           <arg type="id">sender</arg>
           <desc>
+            This method has been depreciated. It doesn't do
+            anything useful.
           </desc>
         </method>
         <method type="void">
           <sel>pickedOrientation:</sel>
           <arg type="id">sender</arg>
           <desc>
+            This method has been depreciated. It doesn't do
+            anything useful.
           </desc>
         </method>
         <method type="void">
           <sel>pickedPaperSize:</sel>
           <arg type="id">sender</arg>
           <desc>
+            This method has been depreciated. It doesn't do
+            anything useful.
           </desc>
         </method>
         <method type="void">
           <sel>pickedUnits:</sel>
           <arg type="id">sender</arg>
           <desc>
+            This method has been depreciated. It doesn't do
+            anything useful.
           </desc>
         </method>
         <method type="NSPrintInfo*">
           <sel>printInfo</sel>
           <desc>
+            Return the NSPrintInfo object that the receiver
+            stores layout information into.
           </desc>
         </method>
         <method type="void">
           <sel>readPrintInfo</sel>
           <desc>
+            Updates the receiver panel with information from
+            its NSPrintInfo object
           </desc>
         </method>
         <method type="int">
           <sel>runModal</sel>
           <desc>
+            Display the Page Layout panel in a modal loop.
+            Saves any aquired information in the shared
+            NSPrintInfo object. Returns NSCancelButton if
+            the user clicks the Cancel button or NSOKButton
+            otherwise.
           </desc>
         </method>
         <method type="int">
           <sel>runModalWithPrintInfo:</sel>
           <arg type="NSPrintInfo*">pInfo</arg>
           <desc>
+            Display the Page Layout panel in a modal loop.
+            Saves any aquired information in the indicated
+            NSPrintInfo object. Returns NSCancelButton if
+            the user clicks the Cancel button or NSOKButton
+            otherwise.
           </desc>
         </method>
         <method type="void">
           <sel>setAccessoryView:</sel>
           <arg type="NSView*">aView</arg>
           <desc>
+            Set the accessory view for the page layout panel
           </desc>
         </method>
         <method type="void">
           <sel>writePrintInfo</sel>
           <desc>
+            Writes any layout information set by the user to the
+            receiver's NSPrintInfo object
           </desc>
         </method>
       </class>

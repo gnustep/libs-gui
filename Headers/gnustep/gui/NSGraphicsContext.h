@@ -1,8 +1,10 @@
-/* NSGraphicsContext - Generic drawing DrawContext class.
+/** <title>NSGraphicsContext</title>
 
-   Copyright (C) 1998,1999 Free Software Foundation, Inc.
+   <abstract>Abstract drawing context class.</abstract>
 
-   Author:      Richard Frith-Macdonald <richard@brainstorm.co.uk>
+   Copyright <copy>(C) 1998,1999 Free Software Foundation, Inc.</copy>
+
+   Author: <author name="Richard Frith-Macdonald"><email>richard@brainstorm.co.uk</email></author>
    Date: Feb 1999
    Based on code by:  Adam Fedor <fedor@gnu.org>
    Date: Nov 1998
@@ -226,7 +228,6 @@ APPKIT_DECLARE NSGraphicsContext	*GSCurrentContext();
 - (void) DPSsetfont: (int)f ;
 - (void) DPSundefinefont: (const char*)name ;
 - (void) setFont: (NSFont*) font;
-- (void) useFont: (NSString*) name;
 /* ----------------------------------------------------------------------- */
 /* Gstate operations */
 /* ----------------------------------------------------------------------- */
@@ -537,6 +538,18 @@ APPKIT_DECLARE NSGraphicsContext	*GSCurrentContext();
 - (const NSWindowDepth *) GSAvailableDepthsForScreen: (int) screen;
 
 @end
+
+/* NSGraphicContext constants */
+APPKIT_EXPORT NSString *NSGraphicsContextDestinationAttributeName;
+APPKIT_EXPORT NSString *NSGraphicsContextPDFFormat;
+APPKIT_EXPORT NSString *NSGraphicsContextPSFormat;
+APPKIT_EXPORT NSString *NSGraphicsContextRepresentationFormatAttributeName;
+
+APPKIT_EXPORT NSString *NSImageInterpolationDefault;
+APPKIT_EXPORT NSString *NSImageInterpolationNone;
+APPKIT_EXPORT NSString *NSImageInterpolationLow;
+APPKIT_EXPORT NSString *NSImageInterpolationHigh;
+
 
 #endif /* _NSGraphicsContext_h_INCLUDE */
 

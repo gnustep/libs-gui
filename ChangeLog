@@ -1,10 +1,42 @@
+2001-11-08  Adam Fedor  <fedor@gnu.org>
+
+	* Simple printing/pagination implementation
+	* Headers/gnustep/gui/NSGraphicsContext.h: Add some constants
+	* Source/NSFont.m (+useFont:): Same font name in static NSSet
+	(+resetUsedFonts): Implement
+	(+usedFonts): Likewise.
+	* Source/NSGraphicsContext.m (+defaultContextWithInfo:) Depreciated,
+	calls +graphicsContextWithAttributes:.
+	(+graphicsContextWithAttributes:): Creates default context class.
+	(+useFont:): Removed.
+	* Source/NSPrintInfo.m (-setOrienatation:) Set paper size accordingly.
+	(-setPaperName:): Likewise.
+	(-setPaperSize:): Set orientation.
+	(+initPrintInfoDefaults): Rewrite.
+	* Source/NSPrintOperation.m (-_setupPrintInfo): New private.
+	(-_printPaginateWithInfo:knowsRange:): Likewise.
+	(-_rectForPage:info:): Likewise.
+	(-_adjustPagesFirst:last:info:): Likewise.
+	(-_print): Rewrite for pagination, printing.
+	([NSView -_displayPageInRect:atPlacement:withInfo:]): New private.
+	([NSView -_endSheet): Likewise.
+	* Source/NSPrintPanel.m: Fix layout settings.
+	* Source/NSView.m (-printJobTitle): Implement.
+	(-locationOfPrintRect:, beginPage:label:bBox:fonts:,
+	 beginPageSetupRect:placement:, beginPrologueBBox:..., beginSetup,
+	beginTrailer, endHeaderComments, endPrologue, endSetup, endPage, 
+	endTrailer, beginDocument, beginPageInRect:atPlacement:, endDocument):
+	Likewise.
+
 2001-11-08  Laurent Julliard <laurent@julliard-online.org>
+
 	* Headers/gnustep/gui/NSGraphics.h
 	* Source/Functions.m
 	* Source/NSImageCell.m:
 	NSDrawFramePhoto added. Needed by the ImageView inspector in Gorm
 
 2001-11-06  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
 	* Source/NSTableView.m [- sizeToFit]: replaced floorf with floor
 	suggestion from Stephen Brandon <stephen@brandonitconsulting.co.uk>
 

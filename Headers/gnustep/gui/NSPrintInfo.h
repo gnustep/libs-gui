@@ -1,12 +1,13 @@
-/* 
-   NSPrintInfo.h
+/** <title>NSPrintInfo</title>
 
-   Stores information used in printing
+   <abstract>Stores information used in printing.</abstract>
 
-   Copyright (C) 1996,1997 Free Software Foundation, Inc.
+   Copyright <copy>(C) 1996,1997 Free Software Foundation, Inc.</copy>
 
-   Author:  Simon Frankau <sgf@frankau.demon.co.uk>
+   Author: <author name="Simon Frankau"><email>sgf@frankau.demon.co.uk</email></author>
    Date: July 1997
+   Author: <author name="Adam Fedor"><email>fedor@gnu.org</email></author>
+   Date: Oct 2001
    
    This file is part of the GNUstep GUI Library.
 
@@ -120,12 +121,6 @@ typedef enum _NSPrintingPaginationMode {
 // Accessing the NSPrintInfo Object's Dictionary 
 //
 - (NSMutableDictionary *)dictionary;
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
 
 @end
 

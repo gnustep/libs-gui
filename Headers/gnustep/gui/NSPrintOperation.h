@@ -1,15 +1,16 @@
-/* 
-   NSPrintOperation.h
+/** <title>NSPrintOperation</title>
 
-   Controls operations generating EPS, PDF or PS print jobs.
+   <abstract>Controls generation of EPS, PDF or PS print jobs.</abstract>
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright <copy>(C) 1996 Free Software Foundation, Inc.</copy>
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
-   Author: Fred Kiefer <FredKiefer@gmx.de>
+   Author: <author name="Fred Kiefer"><email>FredKiefer@gmx.de</email></author>
    Date: November 2000
    Updated to new specification
+   Author: <author name="Adam Fedor"><email>fedor@gnu.org</email></author>
+   Date: Oct 2001
 
    This file is part of the GNUstep GUI Library.
 

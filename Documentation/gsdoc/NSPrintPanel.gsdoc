@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.6//EN" "http://www.gnustep.org/gsdoc-0_6_6.xml">
-<gsdoc>
+<gsdoc base="NSPrintPanel" prev="NSPrintOperation" up="NSPageLayout">
   <head>
     <title>NSPrintPanel</title>
     <author name="Adam Fedor">
@@ -29,7 +29,7 @@
         with a <code>NO</code> argument.
       </p>
       <class name="NSPrintPanel" super="NSPanel">
-        <declared>NSPrintPanel.h</declared>
+        <declared>../../Headers/gnustep/gui/NSPrintPanel.h</declared>
         <desc>
         </desc>
         <method type="NSPrintPanel*" factory="yes">

@@ -111,18 +111,6 @@ NSGraphicsContext	*GSCurrentContext()
   defaultNSGraphicsContextClass = defaultContextClass;
 }
 
-+ defaultContextWithInfo: (NSDictionary *)info;
-{
-  NSGraphicsContext *ctxt;
-
-  NSAssert(defaultNSGraphicsContextClass, 
-	   @"Internal Error: No default NSGraphicsContext set\n");
-  ctxt = [[defaultNSGraphicsContextClass allocWithZone: _globalGSZone]
-	   initWithContextInfo: info];
-  AUTORELEASE(ctxt);
-  return ctxt;
-}
-
 + (void) setCurrentContext: (NSGraphicsContext *)context
 {
 #ifdef GNUSTEP_BASE_LIBRARY
@@ -149,10 +137,25 @@ NSGraphicsContext	*GSCurrentContext()
   return [GSCurrentContext() isDrawingToScreen];
 }
 
-+ (NSGraphicsContext *) graphicsContextWithAttributes: (NSDictionary *)attributes
++ defaultContextWithInfo: (NSDictionary *)info;
 {
-  // FIXME: The attributes should determine the concrete class
-  return [self defaultContextWithInfo: attributes];
+  return [self graphicsContextWithAttributes: info];
+}
+
++ (NSGraphicsContext *) graphicsContextWithAttributes: (NSDictionary *)info
+{
+  NSGraphicsContext *ctxt;
+  if (self == [NSGraphicsContext class])
+    {
+      NSAssert(defaultNSGraphicsContextClass, 
+	       @"Internal Error: No default NSGraphicsContext set\n");
+      ctxt = [[defaultNSGraphicsContextClass allocWithZone: _globalGSZone]
+	       initWithContextInfo: info];
+      AUTORELEASE(ctxt);
+    }
+  else
+    ctxt = [[self allocWithZone: _globalGSZone] initWithContextInfo: info];
+  return ctxt;
 }
 
 + (NSGraphicsContext *) graphicsContextWithWindow: (NSWindow *)aWindow
@@ -1168,16 +1171,6 @@ NSGraphicsContext	*GSCurrentContext()
 - (void) setFont: (NSFont*) font
 {
   [self subclassResponsibility: _cmd];
-}
-
-- (void) useFont: (NSString*) name
-{
-  /* 
-   * Do nothing here, printing subclasses will have to register all 
-   * the fonts used by the current print operation to be able to
-   * dump the %%DocumentFonts comment required by the Adobe Document 
-   * Structuring Convention (see the red book).
-   */
 }
 
 /* ----------------------------------------------------------------------- */

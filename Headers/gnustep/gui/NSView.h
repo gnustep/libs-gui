@@ -1,9 +1,8 @@
-/*
-   NSView.h
+/** <title>NSView</title>
 
-   The wonderful view class; it encapsulates all drawing functionality
+   <abstract>Encapsulates all drawing functionality</abstract>
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright <copy>(C) 1996 Free Software Foundation, Inc.</copy>
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -11,6 +10,8 @@
    Date: 1997
    Author:  Felipe A. Rodriguez <far@ix.netcom.com>
    Date: August 1998
+   Author: <author name="Various People"></author>
+   Date: Oct 2001
 
    This file is part of the GNUstep GUI Library.
 

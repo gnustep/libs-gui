@@ -2,9 +2,9 @@
  <title>NSView</title>
 </head>
 <body>
-<a href ="NSTextView.html">[Previous]</a>
-<a href ="Gui.html">[Up]</a>
-<a href ="NSWindow.html">[Next]</a>
+<a href ="NSTextView.html">[Previous] </a>
+<a href ="Gui.html">[Up] </a>
+<a href ="NSWindow.html">[Next] </a>
 <h1>NSView</h1>
 <h3>Authors </h3>
  <dl>
@@ -25,21 +25,27 @@
 </p>
 <hr>
 
-          <p>
-NSView is an abstract class which provides facilities for drawing in a window and
-          receiving events.  It is the superclass of many of the visual elements of the GUI.</p>
-
 
           <p>
-In order to display itself, a view must be placed in a window (represented by an 
-          NSWindow object).  Within the window is a hierarchy of NSViews, headed by the window's 
-          content view.  Every other view in a window is a descendant of this view.</p>
+NSView is an abstract class which provides facilities for
+          drawing in a window and receiving events.  It is the
+          superclass of many of the visual elements of the GUI.</p>
 
 
           <p>
-Subclasses can override <code>drawRect:</code> in order to implement their 
-          appearance.  Other methods of NSView and NSResponder can also be overridden to handle
-          user generated events.</p>
+In order to display itself, a view must be placed in a
+          window (represented by an NSWindow object).  Within the
+          window is a hierarchy of NSViews, headed by the window's
+          content view.  Every other view in a window is a descendant
+          of this view.</p>
+
+
+          <p>
+Subclasses can override <code>drawRect:</code> in order
+          to implement their appearance.  Other methods of NSView and
+          NSResponder can also be overridden to handle user generated
+          events.</p>
+
 
           
 <h2>Instance Variables </h2>
@@ -47,144 +53,144 @@ Subclasses can override <code>drawRect:</code> in order to implement their
 </ul>
 <h2>Methods </h2>
 <ul>
-<li><a href ="NSView.html#method-0">+defaultMenu</a>
-<li><a href ="NSView.html#method-1">+focusView</a>
-<li><a href ="NSView.html#method-2">-acceptsFirstMouse:</a>
-<li><a href ="NSView.html#method-3">-addCursorRect:cursor:</a>
-<li><a href ="NSView.html#method-4">-addSubview:</a>
-<li><a href ="NSView.html#method-5">-addSubview:positioned:relativeTo:</a>
-<li><a href ="NSView.html#method-6">-addToPageSetup</a>
-<li><a href ="NSView.html#method-7">-addTrackingRect:owner:userData:assumeInside:</a>
-<li><a href ="NSView.html#method-8">-adjustPageHeightNew:top:bottom:</a>
-<li><a href ="NSView.html#method-9">-adjustPageWidthNew:left:right:</a>
-<li><a href ="NSView.html#method-10">-adjustScroll:</a>
-<li><a href ="NSView.html#method-11">-allocateGState</a>
-<li><a href ="NSView.html#method-12">-ancestorSharedWithView:</a>
-<li><a href ="NSView.html#method-13">-autoresizesSubviews</a>
-<li><a href ="NSView.html#method-14">-autoresizingMask</a>
-<li><a href ="NSView.html#method-15">-autoscroll:</a>
-<li><a href ="NSView.html#method-16">-beginPage:label:bBox:</a>
-<li><a href ="NSView.html#method-17">-beginPageSetupRect:placement:</a>
-<li><a href ="NSView.html#method-18">-beginPrologueBBox:creationDate:createdBy:fonts:forWhom:pages:</a>
-<li><a href ="NSView.html#method-19">-beginSetup</a>
-<li><a href ="NSView.html#method-20">-beginTrailer</a>
-<li><a href ="NSView.html#method-21">-bounds</a>
-<li><a href ="NSView.html#method-22">-boundsRotation</a>
-<li><a href ="NSView.html#method-23">-canDraw</a>
-<li><a href ="NSView.html#method-24">-centerScanRect:</a>
-<li><a href ="NSView.html#method-26">-convertPoint:</a>
-<li><a href ="NSView.html#method-25">-convertPoint:fromView:</a>
-<li><a href ="NSView.html#method-27">-convertRect:fromView:</a>
-<li><a href ="NSView.html#method-28">-convertRect:toView:</a>
-<li><a href ="NSView.html#method-29">-convertSize:fromView:</a>
-<li><a href ="NSView.html#method-30">-convertSize:toView:</a>
-<li><a href ="NSView.html#method-31">-dataWithEPSInsideRect:</a>
-<li><a href ="NSView.html#method-32">-discardCursorRects</a>
-<li><a href ="NSView.html#method-33">-display</a>
-<li><a href ="NSView.html#method-34">-displayIfNeeded</a>
-<li><a href ="NSView.html#method-35">-displayIfNeededIgnoringOpacity</a>
-<li><a href ="NSView.html#method-36">-displayIfNeededInRect:</a>
-<li><a href ="NSView.html#method-37">-displayIfNeededInRectIgnoringOpacity:</a>
-<li><a href ="NSView.html#method-38">-displayRect:</a>
-<li><a href ="NSView.html#method-39">-displayRectIgnoringOpacity:</a>
-<li><a href ="NSView.html#method-40">-dragFile:fromRect:slideBack:</a>
-<li><a href ="NSView.html#method-41">-dragImage:at:offset:event:pasteboard:source:slideBack:</a>
-<li><a href ="NSView.html#method-42">-drawPageBorderWithSize:</a>
-<li><a href ="NSView.html#method-43">-drawRect:</a>
-<li><a href ="NSView.html#method-44">-drawSheetBorderWithSize:</a>
-<li><a href ="NSView.html#method-45">-enclosingScrollView</a>
-<li><a href ="NSView.html#method-46">-endHeaderComments</a>
-<li><a href ="NSView.html#method-47">-endPage</a>
-<li><a href ="NSView.html#method-48">-endPageSetup</a>
-<li><a href ="NSView.html#method-49">-endPrologue</a>
-<li><a href ="NSView.html#method-50">-endSetup</a>
-<li><a href ="NSView.html#method-51">-endTrailer</a>
-<li><a href ="NSView.html#method-52">-fax:</a>
-<li><a href ="NSView.html#method-53">-frame</a>
-<li><a href ="NSView.html#method-54">-frameRotation</a>
-<li><a href ="NSView.html#method-55">-gState</a>
-<li><a href ="NSView.html#method-56">-heightAdjustLimit</a>
-<li><a href ="NSView.html#method-57">-hitTest:</a>
-<li><a href ="NSView.html#method-58">-initWithFrame:</a>
-<li><a href ="NSView.html#method-59">-interfaceStyle</a>
-<li><a href ="NSView.html#method-60">-isDescendantOf:</a>
-<li><a href ="NSView.html#method-61">-isFlipped</a>
-<li><a href ="NSView.html#method-62">-isOpaque</a>
-<li><a href ="NSView.html#method-63">-isRotatedFromBase</a>
-<li><a href ="NSView.html#method-64">-isRotatedOrScaledFromBase</a>
-<li><a href ="NSView.html#method-65">-knowsPageRange:</a>
-<li><a href ="NSView.html#method-66">-knowsPagesFirst:</a>
-<li><a href ="NSView.html#method-67">-locationOfPrintRect:</a>
-<li><a href ="NSView.html#method-68">-lockFocus</a>
-<li><a href ="NSView.html#method-69">-menuForEvent:</a>
-<li><a href ="NSView.html#method-70">-mouse:inRect:</a>
-<li><a href ="NSView.html#method-71">-needsDisplay</a>
-<li><a href ="NSView.html#method-72">-needsPanelToBecomeKey</a>
-<li><a href ="NSView.html#method-73">-nextKeyView</a>
-<li><a href ="NSView.html#method-74">-nextValidKeyView</a>
-<li><a href ="NSView.html#method-75">-opaqueAncestor</a>
-<li><a href ="NSView.html#method-76">-performKeyEquivalent:</a>
-<li><a href ="NSView.html#method-77">-performMnemonic:</a>
-<li><a href ="NSView.html#method-78">-postsBoundsChangedNotifications</a>
-<li><a href ="NSView.html#method-79">-postsFrameChangedNotifications</a>
-<li><a href ="NSView.html#method-80">-previousKeyView</a>
-<li><a href ="NSView.html#method-81">-previousValidKeyView</a>
-<li><a href ="NSView.html#method-82">-print:</a>
-<li><a href ="NSView.html#method-83">-rectForPage:</a>
-<li><a href ="NSView.html#method-84">-reflectScrolledClipView:</a>
-<li><a href ="NSView.html#method-85">-registerForDraggedTypes:</a>
-<li><a href ="NSView.html#method-86">-releaseGState</a>
-<li><a href ="NSView.html#method-87">-removeCursorRect:cursor:</a>
-<li><a href ="NSView.html#method-88">-removeFromSuperview</a>
-<li><a href ="NSView.html#method-89">-removeFromSuperviewWithoutNeedingDisplay</a>
-<li><a href ="NSView.html#method-90">-removeSubview:</a>
-<li><a href ="NSView.html#method-91">-removeTrackingRect:</a>
-<li><a href ="NSView.html#method-92">-renewGState</a>
-<li><a href ="NSView.html#method-93">-replaceSubview:with:</a>
-<li><a href ="NSView.html#method-94">-resetCursorRects</a>
-<li><a href ="NSView.html#method-95">-resizeSubviewsWithOldSize:</a>
-<li><a href ="NSView.html#method-96">-resizeWithOldSuperviewSize:</a>
-<li><a href ="NSView.html#method-97">-rotateByAngle:</a>
-<li><a href ="NSView.html#method-98">-scaleUnitSquareToSize:</a>
-<li><a href ="NSView.html#method-99">-scrollClipView:</a>
-<li><a href ="NSView.html#method-100">-scrollPoint:</a>
-<li><a href ="NSView.html#method-101">-scrollRect:</a>
-<li><a href ="NSView.html#method-102">-scrollRectToVisible:</a>
-<li><a href ="NSView.html#method-103">-setAutoresizesSubviews:</a>
-<li><a href ="NSView.html#method-104">-setAutoresizingMask:</a>
-<li><a href ="NSView.html#method-105">-setBounds:</a>
-<li><a href ="NSView.html#method-106">-setBoundsOrigin:</a>
-<li><a href ="NSView.html#method-107">-setBoundsRotation:</a>
-<li><a href ="NSView.html#method-108">-setBoundsSize:</a>
-<li><a href ="NSView.html#method-109">-setFrame:</a>
-<li><a href ="NSView.html#method-110">-setFrameOrigin:</a>
-<li><a href ="NSView.html#method-111">-setFrameRotation:</a>
-<li><a href ="NSView.html#method-112">-setFrameSize:</a>
-<li><a href ="NSView.html#method-113">-setInterfaceStyle:</a>
-<li><a href ="NSView.html#method-114">-setNeedsDisplay:</a>
-<li><a href ="NSView.html#method-115">-setNeedsDisplayInRect:</a>
-<li><a href ="NSView.html#method-116">-setNextKeyView:</a>
-<li><a href ="NSView.html#method-117">-setPostsBoundsChangedNotifications:</a>
-<li><a href ="NSView.html#method-118">-setPostsFrameChangedNotifications:</a>
-<li><a href ="NSView.html#method-119">-setToolTip:</a>
-<li><a href ="NSView.html#method-120">-setUpGState</a>
-<li><a href ="NSView.html#method-121">-shouldDelayWindowOrderingForEvent:</a>
-<li><a href ="NSView.html#method-122">-shouldDrawColor</a>
-<li><a href ="NSView.html#method-123">-sortSubviewsUsingFunction:context:</a>
-<li><a href ="NSView.html#method-124">-subviews</a>
-<li><a href ="NSView.html#method-125">-superview</a>
-<li><a href ="NSView.html#method-126">-tag</a>
-<li><a href ="NSView.html#method-127">-toolTip</a>
-<li><a href ="NSView.html#method-128">-translateOriginToPoint:</a>
-<li><a href ="NSView.html#method-129">-unlockFocus</a>
-<li><a href ="NSView.html#method-130">-unregisterDraggedTypes</a>
-<li><a href ="NSView.html#method-131">-viewWillMoveToSuperview:</a>
-<li><a href ="NSView.html#method-132">-viewWillMoveToWindow:</a>
-<li><a href ="NSView.html#method-133">-viewWithTag:</a>
-<li><a href ="NSView.html#method-134">-visibleRect</a>
-<li><a href ="NSView.html#method-135">-widthAdjustLimit</a>
-<li><a href ="NSView.html#method-136">-window</a>
-<li><a href ="NSView.html#method-137">-writeEPSInsideRect:toPasteboard:</a>
+<li ><a href ="NSView.html#method-0">+defaultMenu</a>
+<li ><a href ="NSView.html#method-1">+focusView</a>
+<li ><a href ="NSView.html#method-2">-acceptsFirstMouse:</a>
+<li ><a href ="NSView.html#method-3">-addCursorRect:cursor:</a>
+<li ><a href ="NSView.html#method-4">-addSubview:</a>
+<li ><a href ="NSView.html#method-5">-addSubview:positioned:relativeTo:</a>
+<li ><a href ="NSView.html#method-6">-addToPageSetup</a>
+<li ><a href ="NSView.html#method-7">-addTrackingRect:owner:userData:assumeInside:</a>
+<li ><a href ="NSView.html#method-8">-adjustPageHeightNew:top:bottom:</a>
+<li ><a href ="NSView.html#method-9">-adjustPageWidthNew:left:right:</a>
+<li ><a href ="NSView.html#method-10">-adjustScroll:</a>
+<li ><a href ="NSView.html#method-11">-allocateGState</a>
+<li ><a href ="NSView.html#method-12">-ancestorSharedWithView:</a>
+<li ><a href ="NSView.html#method-13">-autoresizesSubviews</a>
+<li ><a href ="NSView.html#method-14">-autoresizingMask</a>
+<li ><a href ="NSView.html#method-15">-autoscroll:</a>
+<li ><a href ="NSView.html#method-16">-beginPage:label:bBox:</a>
+<li ><a href ="NSView.html#method-17">-beginPageSetupRect:placement:</a>
+<li ><a href ="NSView.html#method-18">-beginPrologueBBox:creationDate:createdBy:fonts:forWhom:pages:</a>
+<li ><a href ="NSView.html#method-19">-beginSetup</a>
+<li ><a href ="NSView.html#method-20">-beginTrailer</a>
+<li ><a href ="NSView.html#method-21">-bounds</a>
+<li ><a href ="NSView.html#method-22">-boundsRotation</a>
+<li ><a href ="NSView.html#method-23">-canDraw</a>
+<li ><a href ="NSView.html#method-24">-centerScanRect:</a>
+<li ><a href ="NSView.html#method-26">-convertPoint:</a>
+<li ><a href ="NSView.html#method-25">-convertPoint:fromView:</a>
+<li ><a href ="NSView.html#method-27">-convertRect:fromView:</a>
+<li ><a href ="NSView.html#method-28">-convertRect:toView:</a>
+<li ><a href ="NSView.html#method-29">-convertSize:fromView:</a>
+<li ><a href ="NSView.html#method-30">-convertSize:toView:</a>
+<li ><a href ="NSView.html#method-31">-dataWithEPSInsideRect:</a>
+<li ><a href ="NSView.html#method-32">-discardCursorRects</a>
+<li ><a href ="NSView.html#method-33">-display</a>
+<li ><a href ="NSView.html#method-34">-displayIfNeeded</a>
+<li ><a href ="NSView.html#method-35">-displayIfNeededIgnoringOpacity</a>
+<li ><a href ="NSView.html#method-36">-displayIfNeededInRect:</a>
+<li ><a href ="NSView.html#method-37">-displayIfNeededInRectIgnoringOpacity:</a>
+<li ><a href ="NSView.html#method-38">-displayRect:</a>
+<li ><a href ="NSView.html#method-39">-displayRectIgnoringOpacity:</a>
+<li ><a href ="NSView.html#method-40">-dragFile:fromRect:slideBack:</a>
+<li ><a href ="NSView.html#method-41">-dragImage:at:offset:event:pasteboard:source:slideBack:</a>
+<li ><a href ="NSView.html#method-42">-drawPageBorderWithSize:</a>
+<li ><a href ="NSView.html#method-43">-drawRect:</a>
+<li ><a href ="NSView.html#method-44">-drawSheetBorderWithSize:</a>
+<li ><a href ="NSView.html#method-45">-enclosingScrollView</a>
+<li ><a href ="NSView.html#method-46">-endHeaderComments</a>
+<li ><a href ="NSView.html#method-47">-endPage</a>
+<li ><a href ="NSView.html#method-48">-endPageSetup</a>
+<li ><a href ="NSView.html#method-49">-endPrologue</a>
+<li ><a href ="NSView.html#method-50">-endSetup</a>
+<li ><a href ="NSView.html#method-51">-endTrailer</a>
+<li ><a href ="NSView.html#method-52">-fax:</a>
+<li ><a href ="NSView.html#method-53">-frame</a>
+<li ><a href ="NSView.html#method-54">-frameRotation</a>
+<li ><a href ="NSView.html#method-55">-gState</a>
+<li ><a href ="NSView.html#method-56">-heightAdjustLimit</a>
+<li ><a href ="NSView.html#method-57">-hitTest:</a>
+<li ><a href ="NSView.html#method-58">-initWithFrame:</a>
+<li ><a href ="NSView.html#method-59">-interfaceStyle</a>
+<li ><a href ="NSView.html#method-60">-isDescendantOf:</a>
+<li ><a href ="NSView.html#method-61">-isFlipped</a>
+<li ><a href ="NSView.html#method-62">-isOpaque</a>
+<li ><a href ="NSView.html#method-63">-isRotatedFromBase</a>
+<li ><a href ="NSView.html#method-64">-isRotatedOrScaledFromBase</a>
+<li ><a href ="NSView.html#method-65">-knowsPageRange:</a>
+<li ><a href ="NSView.html#method-66">-knowsPagesFirst:</a>
+<li ><a href ="NSView.html#method-67">-locationOfPrintRect:</a>
+<li ><a href ="NSView.html#method-68">-lockFocus</a>
+<li ><a href ="NSView.html#method-69">-menuForEvent:</a>
+<li ><a href ="NSView.html#method-70">-mouse:inRect:</a>
+<li ><a href ="NSView.html#method-71">-needsDisplay</a>
+<li ><a href ="NSView.html#method-72">-needsPanelToBecomeKey</a>
+<li ><a href ="NSView.html#method-73">-nextKeyView</a>
+<li ><a href ="NSView.html#method-74">-nextValidKeyView</a>
+<li ><a href ="NSView.html#method-75">-opaqueAncestor</a>
+<li ><a href ="NSView.html#method-76">-performKeyEquivalent:</a>
+<li ><a href ="NSView.html#method-77">-performMnemonic:</a>
+<li ><a href ="NSView.html#method-78">-postsBoundsChangedNotifications</a>
+<li ><a href ="NSView.html#method-79">-postsFrameChangedNotifications</a>
+<li ><a href ="NSView.html#method-80">-previousKeyView</a>
+<li ><a href ="NSView.html#method-81">-previousValidKeyView</a>
+<li ><a href ="NSView.html#method-82">-print:</a>
+<li ><a href ="NSView.html#method-83">-rectForPage:</a>
+<li ><a href ="NSView.html#method-84">-reflectScrolledClipView:</a>
+<li ><a href ="NSView.html#method-85">-registerForDraggedTypes:</a>
+<li ><a href ="NSView.html#method-86">-releaseGState</a>
+<li ><a href ="NSView.html#method-87">-removeCursorRect:cursor:</a>
+<li ><a href ="NSView.html#method-88">-removeFromSuperview</a>
+<li ><a href ="NSView.html#method-89">-removeFromSuperviewWithoutNeedingDisplay</a>
+<li ><a href ="NSView.html#method-90">-removeSubview:</a>
+<li ><a href ="NSView.html#method-91">-removeTrackingRect:</a>
+<li ><a href ="NSView.html#method-92">-renewGState</a>
+<li ><a href ="NSView.html#method-93">-replaceSubview:with:</a>
+<li ><a href ="NSView.html#method-94">-resetCursorRects</a>
+<li ><a href ="NSView.html#method-95">-resizeSubviewsWithOldSize:</a>
+<li ><a href ="NSView.html#method-96">-resizeWithOldSuperviewSize:</a>
+<li ><a href ="NSView.html#method-97">-rotateByAngle:</a>
+<li ><a href ="NSView.html#method-98">-scaleUnitSquareToSize:</a>
+<li ><a href ="NSView.html#method-99">-scrollClipView:</a>
+<li ><a href ="NSView.html#method-100">-scrollPoint:</a>
+<li ><a href ="NSView.html#method-101">-scrollRect:</a>
+<li ><a href ="NSView.html#method-102">-scrollRectToVisible:</a>
+<li ><a href ="NSView.html#method-103">-setAutoresizesSubviews:</a>
+<li ><a href ="NSView.html#method-104">-setAutoresizingMask:</a>
+<li ><a href ="NSView.html#method-105">-setBounds:</a>
+<li ><a href ="NSView.html#method-106">-setBoundsOrigin:</a>
+<li ><a href ="NSView.html#method-107">-setBoundsRotation:</a>
+<li ><a href ="NSView.html#method-108">-setBoundsSize:</a>
+<li ><a href ="NSView.html#method-109">-setFrame:</a>
+<li ><a href ="NSView.html#method-110">-setFrameOrigin:</a>
+<li ><a href ="NSView.html#method-111">-setFrameRotation:</a>
+<li ><a href ="NSView.html#method-112">-setFrameSize:</a>
+<li ><a href ="NSView.html#method-113">-setInterfaceStyle:</a>
+<li ><a href ="NSView.html#method-114">-setNeedsDisplay:</a>
+<li ><a href ="NSView.html#method-115">-setNeedsDisplayInRect:</a>
+<li ><a href ="NSView.html#method-116">-setNextKeyView:</a>
+<li ><a href ="NSView.html#method-117">-setPostsBoundsChangedNotifications:</a>
+<li ><a href ="NSView.html#method-118">-setPostsFrameChangedNotifications:</a>
+<li ><a href ="NSView.html#method-119">-setToolTip:</a>
+<li ><a href ="NSView.html#method-120">-setUpGState</a>
+<li ><a href ="NSView.html#method-121">-shouldDelayWindowOrderingForEvent:</a>
+<li ><a href ="NSView.html#method-122">-shouldDrawColor</a>
+<li ><a href ="NSView.html#method-123">-sortSubviewsUsingFunction:context:</a>
+<li ><a href ="NSView.html#method-124">-subviews</a>
+<li ><a href ="NSView.html#method-125">-superview</a>
+<li ><a href ="NSView.html#method-126">-tag</a>
+<li ><a href ="NSView.html#method-127">-toolTip</a>
+<li ><a href ="NSView.html#method-128">-translateOriginToPoint:</a>
+<li ><a href ="NSView.html#method-129">-unlockFocus</a>
+<li ><a href ="NSView.html#method-130">-unregisterDraggedTypes</a>
+<li ><a href ="NSView.html#method-131">-viewWillMoveToSuperview:</a>
+<li ><a href ="NSView.html#method-132">-viewWillMoveToWindow:</a>
+<li ><a href ="NSView.html#method-133">-viewWithTag:</a>
+<li ><a href ="NSView.html#method-134">-visibleRect</a>
+<li ><a href ="NSView.html#method-135">-widthAdjustLimit</a>
+<li ><a href ="NSView.html#method-136">-window</a>
+<li ><a href ="NSView.html#method-137">-writeEPSInsideRect:toPasteboard:</a>
 </ul>
 <hr><h2>Class Methods </h2>
 <h3><a name ="method-0">defaultMenu</a></h3>
@@ -260,6 +266,23 @@ Returns <code>YES</code> if the view object will accept the first click
  <hr>
 <h3><a name ="method-11">allocateGState</a></h3>
 - (void) <b>allocateGState</b>;<br>
+
+          <p>
+
+	  Tell the view to maintain a private gstate object which 
+	  encapsulates all the information about drawing, such as coordinate
+	  transforms, line widths, etc. If you do not invoke this method,
+	  a gstate object is constructed each time the view is lockFocused.
+	  Allocating a private gstate may improve the performance of views
+	  that are focused a lot and have a lot of customized drawing
+	  parameters.
+          </p>
+
+	  <p>
+
+	  View subclasses should override the setUpGstate method to set these
+	  custom parameters.
+          </p>
 
           
  <hr>
@@ -507,6 +530,12 @@ Returns <code>YES</code> if the view object will accept the first click
 <h3><a name ="method-55">gState</a></h3>
 - (int) <b>gState</b>;<br>
 
+	  Returns an identifier that represents the view's gstate object,
+	  which is used to encapsulate drawing information about the view.
+	  Most of the time a gstate object is created from scratch when
+	  the view is focused, so if the view is not currently focused or
+	  allocateGState has not been called, then this method will
+	  return 0.
           
  <hr>
 <h3><a name ="method-56">heightAdjustLimit</a></h3>
@@ -677,6 +706,8 @@ Returns whether or not <var>aPoint</var> lies within <var>aRect</var>.</p>
 <h3><a name ="method-86">releaseGState</a></h3>
 - (void) <b>releaseGState</b>;<br>
 
+	  Frees the gstate object, if there is one. Note that the next time
+	  the view is lockFocused, the gstate will be allocated again.
           
  <hr>
 <h3><a name ="method-87">removeCursorRect:cursor:</a></h3>
@@ -741,6 +772,8 @@ Standards:  NotMacOS-X NotOpenStep<br>
 <h3><a name ="method-92">renewGState</a></h3>
 - (void) <b>renewGState</b>;<br>
 
+	  Invalidates the view's gstate object so it will be set up
+	  again using setUpGState the next time the view is focused.
           
  <hr>
 <h3><a name ="method-93">replaceSubview:with:</a></h3>

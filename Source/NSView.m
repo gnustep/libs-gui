@@ -37,6 +37,7 @@
 #include <float.h>
 
 #include <Foundation/NSString.h>
+#include <Foundation/NSCalendarDate.h>
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSThread.h>
@@ -46,18 +47,24 @@
 #include <Foundation/NSValue.h>
 #include <Foundation/NSData.h>
 #include <Foundation/NSDebug.h>
+#include <Foundation/NSPathUtilities.h>
+#include <Foundation/NSSet.h>
 
-#include <AppKit/NSView.h>
-#include <AppKit/NSWindow.h>
 #include <AppKit/GSTrackingRect.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/PSOperators.h>
+#include <AppKit/GSVersion.h>
 #include <AppKit/NSAffineTransform.h>
-#include <AppKit/NSScrollView.h>
+#include <AppKit/NSDocumentController.h>
+#include <AppKit/NSDocument.h>
 #include <AppKit/NSClipView.h>
+#include <AppKit/NSFont.h>
+#include <AppKit/NSGraphics.h>
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSPrintInfo.h>
 #include <AppKit/NSPrintOperation.h>
+#include <AppKit/NSScrollView.h>
+#include <AppKit/NSView.h>
+#include <AppKit/NSWindow.h>
+#include <AppKit/PSOperators.h>
 
 /* Variable tells this view and subviews that we're printing. Not really
    a class variable because we want it visible to subviews also
@@ -68,6 +75,11 @@ struct NSWindow_struct
 {
   @defs(NSWindow)
 };
+
+@interface NSFont (NSViewFonts)
++ (void) resetUsedFonts;
++ (NSSet *) usedFonts;
+@end
 
 @implementation NSView
 
@@ -1352,7 +1364,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	     a superview so we get printed correctly */
 	  [self _matrixToWindow];
 	  [_matrixToWindow makeIdentityMatrix];
-	  _visibleRect = _bounds;
 	}
       else
 	{
@@ -1418,11 +1429,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   if ([_window gState] == 0)
     return;
 
-  if (viewIsPrinting != nil)
-    {
-      _coordinates_valid = NO;
-    }
-  else
+  if (viewIsPrinting == nil)
     {
       /* Restore our original gstate */
       DPSgrestore(ctxt);
@@ -2450,16 +2457,10 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 {
   NSMutableData *data = [NSMutableData data];
 
-  /* Inform ourselves and subviews that we're printing so we adjust
-     the PostScript accordingly. Perhaps this could be in the thread
-     dictionary, but that's probably overkill and slow */
-  viewIsPrinting = self;
-
   [[NSPrintOperation EPSOperationWithView: self
 		     insideRect: aRect
 		     toData: data] runOperation];
 
-  viewIsPrinting = nil;
   return data;
 }
 
@@ -2495,7 +2496,15 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (NSString *)printJobTitle
 {
-  return nil;
+  id doc;
+  NSString *title;
+  doc = [[NSDocumentController sharedDocumentController] documentForWindow:
+							   [self window]];
+  if (doc)
+    title = [doc displayName];
+  else
+    title = [[self window] title];
+  return title;
 }
 
 /*
@@ -2624,8 +2633,31 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (NSPoint) locationOfPrintRect: (NSRect)aRect
 {
-// FIXME: Should depend on the print info
-  return NSZeroPoint;
+  int pages;
+  NSPoint location;
+  NSRect bounds;
+  NSMutableDictionary *dict;
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSPrintInfo *printInfo = [printOp printInfo];
+  dict = [printInfo dictionary];
+
+  pages = [[dict objectForKey: @"NSPrintTotalPages"] intValue];
+  if ([dict objectForKey: @"NSPrintPaperBounds"])
+    bounds = [[dict objectForKey: @"NSPrintPaperBounds"] rectValue];
+  else
+    bounds = aRect;
+  location = NSMakePoint(0, NSHeight(bounds)-NSHeight(aRect));
+  /* FIXME:  I can't figure out how the location for a multi-page document
+     is computed. Just ignore centering? */
+  if (pages == 1)
+    {
+      if ([printInfo isHorizontallyCentered])
+	location.x = (NSWidth(bounds) - NSWidth(aRect))/2;
+      if ([printInfo isVerticallyCentered])
+	location.y = (NSHeight(bounds) - NSHeight(aRect))/2;
+    }
+
+  return location;
 }
 
 - (NSRect) rectForPage: (int)page
@@ -2646,13 +2678,26 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	      bBox: (NSRect)pageRect
 	     fonts: (NSString*)fontNames
 {
+  NSGraphicsContext *ctxt = GSCurrentContext();
+
+  if (aString == nil)
+    aString = [[NSNumber numberWithInt: ordinalNum] description];
+  DPSPrintf(ctxt, "%%%%Page: %s %d\n", [aString cString], ordinalNum);
+  if (NSIsEmptyRect(pageRect) == NO)
+    DPSPrintf(ctxt, "%%%%PageBoundingBox: %d %d %d %d\n",
+	      (int)NSMinX(pageRect), (int)NSMinY(pageRect), 
+	      (int)NSMaxX(pageRect), (int)NSMaxY(pageRect));
+  if (fontNames)
+    DPSPrintf(ctxt, "%%%%PageFonts: %s\n", [fontNames cString]);
+  DPSPrintf(ctxt, "%%%%BeginPageSetup\n");
 }
 
 - (void) beginPageSetupRect: (NSRect)aRect placement: (NSPoint)location
 {
+  [self beginPageInRect: aRect atPlacement: location];
 }
 
-- (void) beginPrologueBBox: (NSRect)boundingBox
+- (void) beginPrologueBBox: (NSRect)bBox
 	      creationDate: (NSString*)dateCreated
 		 createdBy: (NSString*)anApplication
 		     fonts: (NSString*)fontNames
@@ -2660,6 +2705,57 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 		     pages: (int)numPages
 		     title: (NSString*)aTitle
 {
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSPrintingOrientation orient;
+  BOOL epsOp;
+
+  epsOp = [printOp isEPSOperation];
+  orient = [[printOp printInfo] orientation];
+
+  if (epsOp)
+    DPSPrintf(ctxt, "%%!PS-Adobe-3.0 EPSF-3.0\n");
+  else
+    DPSPrintf(ctxt, "%%!PS-Adobe-3.0\n");
+  DPSPrintf(ctxt, "%%%%Title: %s\n", [aTitle cString]);
+  DPSPrintf(ctxt, "%%%%Creator: %s\n", [anApplication cString]);
+  DPSPrintf(ctxt, "%%%%CreationDate: %s\n", 
+	    [[dateCreated description] cString]);
+  DPSPrintf(ctxt, "%%%%For: %s\n", [user cString]);
+  if (fontNames)
+    DPSPrintf(ctxt, "%%%%DocumentFonts: %s\n", [fontNames cString]);
+  else
+    DPSPrintf(ctxt, "%%%%DocumentFonts: (atend)\n");
+
+  if (NSIsEmptyRect(bBox) == NO)
+    DPSPrintf(ctxt, "%%%%BoundingBox: %d %d %d %d\n", 
+    	      (int)NSMinX(bBox), (int)NSMinY(bBox), 
+	      (int)NSMaxX(bBox), (int)NSMaxY(bBox));
+  else
+    DPSPrintf(ctxt, "%%%%BoundingBox: (atend)\n");
+
+  if (epsOp == NO)
+    {
+      if (numPages)
+	DPSPrintf(ctxt, "%%%%Pages: %d\n", numPages);
+      else
+	DPSPrintf(ctxt, "%%%%Pages: (atend)\n");
+      if ([printOp pageOrder] == NSDescendingPageOrder)
+	DPSPrintf(ctxt, "%%%%PageOrder: Descend\n");
+      else if ([printOp pageOrder] == NSAscendingPageOrder)
+	DPSPrintf(ctxt, "%%%%PageOrder: Ascend\n");
+      else if ([printOp pageOrder] == NSSpecialPageOrder)
+	DPSPrintf(ctxt, "%%%%PageOrder: Special\n");
+
+      if (orient == NSPortraitOrientation)
+	DPSPrintf(ctxt, "%%%%Orientation: Portrait\n");
+      else
+	DPSPrintf(ctxt, "%%%%Orientation: Landscape\n");
+    }
+
+  DPSPrintf(ctxt, "%%%%GNUstepVersion: %d.%d.%d\n", 
+	    GNUSTEP_GUI_MAJOR_VERSION, GNUSTEP_GUI_MINOR_VERSION,
+	    GNUSTEP_GUI_SUBMINOR_VERSION);
 }
 
 - (void) addToPageSetup
@@ -2668,10 +2764,14 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (void) beginSetup
 {
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  DPSPrintf(ctxt, "%%%%BeginSetup\n");
 }
 
 - (void) beginTrailer
 {
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  DPSPrintf(ctxt, "%%%%Trailer\n");
 }
 
 - (void) drawPageBorderWithSize: (NSSize)borderSize
@@ -2684,39 +2784,203 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (void) endHeaderComments
 {
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  DPSPrintf(ctxt, "%%%%EndComments\n\n");
 }
 
 - (void) endPrologue
 {
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  DPSPrintf(ctxt, "%%%%EndProlog\n\n");
 }
 
 - (void) endSetup
 {
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  DPSPrintf(ctxt, "%%%%EndSetup\n\n");
 }
 
 - (void) endPageSetup
 {
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  DPSPrintf(ctxt, "%%%%EndPageSetup\n");
 }
 
 - (void) endPage
 {
+  int nup;
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSDictionary *dict = [[printOp printInfo] dictionary];
+
+  nup = [[dict objectForKey: NSPrintPagesPerSheet] intValue];
+  if (nup > 1)
+    {
+      DPSPrintf(ctxt, "__GSpagesaveobject restore\n\n");
+    }
 }
 
 - (void) endTrailer
 {
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  DPSPrintf(ctxt, "%%%%EOF\n");
 }
 
+/** 
+    Writes header and job information for the PostScript document. This
+    includes at a minimum, PostScript header information. It may also 
+    include job setup information if the output is intended for a printer
+    (i.e. not an EPS file). Most of the information for writing the
+    header comes from the NSPrintOperation and NSPrintInfo objects 
+    associated with the current print operation.
+
+    There isn't normally anything that the program needs to override
+    at the beginning of a document, although if there is additional
+    setup that needs to be done, you can override the NSView's methods
+    endHeaderComments, endPrologue, beginSetup, and/or endSetup.
+
+    This method calls the above methods in the listed order before
+    or after writing the required information. For an EPS operation, the
+    beginSetup and endSetup methods aren't used.  */
 - (void)beginDocument
 {
+  int first, last, pages, nup;
+  NSRect bbox;
+  NSDictionary *dict;
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  dict = [[printOp printInfo] dictionary];
+  if (printOp == nil)
+    {
+      NSLog(@"[NSView -beginDocument] called without a current print op");
+      return;
+    }
+  /* Inform ourselves and subviews that we're printing so we adjust
+     the PostScript accordingly. Perhaps this could be in the thread
+     dictionary, but that's probably overkill and slow */
+  viewIsPrinting = self;
+
+  /* Get pagination information */
+  nup = [[dict objectForKey: NSPrintPagesPerSheet] intValue];
+  bbox = NSZeroRect;
+  if ([dict objectForKey: @"NSPrintSheetBounds"])
+    bbox = [[dict objectForKey: @"NSPrintSheetBounds"] rectValue];
+  first = [[dict objectForKey: NSPrintFirstPage] intValue];
+  last  = [[dict objectForKey: NSPrintLastPage] intValue];
+  pages = last - first + 1;
+  if (nup > 1)
+    pages = ceil((float)pages / nup);
+
+  /* Begin document structure */
+  [self beginPrologueBBox: bbox
+	     creationDate: [[NSCalendarDate calendarDate] description]
+	        createdBy: [[NSProcessInfo processInfo] processName]
+		    fonts: nil
+	          forWhom: NSUserName()
+		    pages: pages
+	            title: [self printJobTitle]];
+  [self endHeaderComments];
+
+  DPSPrintf(ctxt, "%%%%BeginProlog\n");
+  // Prolog goes here !
+  [self endPrologue];
+  if ([printOp isEPSOperation] == NO)
+    {
+      [self beginSetup];
+      // Setup goes here !
+      [self endSetup];
+    }
+
+  [NSFont resetUsedFonts];
+  /* Make sure we set the visible rect so everything is printed. */
+  [self _rebuildCoordinates];
+  _visibleRect = _bounds;
 }
 
 - (void)beginPageInRect:(NSRect)aRect 
 	    atPlacement:(NSPoint)location
 {
+  int nup;
+  float scale;
+  NSRect bounds;
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSDictionary *dict = [[printOp printInfo] dictionary];
+
+  if ([dict objectForKey: @"NSPrintPaperBounds"])
+    bounds = [[dict objectForKey: @"NSPrintPaperBounds"] rectValue];
+  else
+    bounds = aRect;
+      
+  nup = [[dict objectForKey: NSPrintPagesPerSheet] intValue];
+  if (nup > 1)
+    {
+      int page;
+      float xoff, yoff;
+      DPSPrintf(ctxt, "/__GSpagesaveobject save def\n");
+      page = [printOp currentPage] 
+	- [[dict objectForKey: NSPrintFirstPage] intValue];
+      page = page % nup;
+      scale = [[dict objectForKey: @"NSNupScale"] floatValue];
+      if (nup == 2)
+	xoff = page;
+      else
+	xoff = (page % (nup/2));
+      xoff *= NSWidth(bounds) * scale;
+      if (nup == 2)
+	yoff = 0;
+      else
+	yoff = (int)((nup-page-1) / (nup/2));
+      yoff *= NSHeight(bounds) * scale;
+      DPStranslate(ctxt, xoff, yoff);
+      DPSgsave(ctxt);
+      DPSscale(ctxt, scale, scale);
+    }
+  else
+    DPSgsave(ctxt);
+
+  /* Translate to placement */
+  if (location.x != 0 || location.y != 0)
+    DPStranslate(ctxt, location.x, location.y);
 }
 
 - (void)endDocument
 {
+  int first, last, current, pages;
+  NSSet *fontNames;
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSPrintOperation *printOp = [NSPrintOperation currentOperation];
+  NSDictionary *dict = [[printOp printInfo] dictionary];
+
+  first = [[dict objectForKey: NSPrintFirstPage] intValue];
+  last  = [[dict objectForKey: NSPrintLastPage] intValue];
+  pages = last - first + 1;
+  [self beginTrailer];
+
+  if (pages == 0)
+    {
+      int nup = [[dict objectForKey: NSPrintPagesPerSheet] intValue];
+      current = [printOp currentPage];
+      pages = current - first; // Current is 1 more than the last page
+      if (nup > 1)
+	pages = ceil((float)pages / nup);
+      DPSPrintf(ctxt, "%%%%Pages: %d\n", pages);
+    }
+  fontNames = [NSFont usedFonts];
+  if (fontNames && [fontNames count])
+    {
+      NSString *name;
+      NSEnumerator *e = [fontNames objectEnumerator];
+      DPSPrintf(ctxt, "%%%%DocumentFonts: %@\n", [e nextObject]);
+      while ((name = [e nextObject]))
+	{
+	  DPSPrintf(ctxt, "%%%%+ %@\n", name);
+	}
+    }
+
+  [self endTrailer];
+  [self _invalidateCoordinates];
+  viewIsPrinting = nil;
 }
 
 /*

@@ -144,7 +144,8 @@ static NSPrintPanel *shared_instance;
 
   /* Setup the layout popup */
   control = CONTROL(self, NSPPLayoutButton);
-  list = [NSArray arrayWithObjects: @"1up", @"2up", @"3up", @"4up", nil];
+  list = [NSArray arrayWithObjects: @"1 up", @"2 up", @"4 up", @"6 up", 
+		  @"8 up", nil];
   [control removeAllItems];
   for (i = 0; i < [list count]; i++)
     {
@@ -239,11 +240,15 @@ static NSPrintPanel *shared_instance;
   else if (tag == NSPPPreviewButton)
     {
       _picked = NSPPPreviewButton;
+      NSRunAlertPanel(@"Sorry", @"Previewing of print file not implemented", 
+		      @"OK", NULL, NULL);
+      /* Don't stop the modal session */
+      return;
     }
   else if (tag ==NSFaxButton )
     {
       _picked = NSFaxButton;
-      NSRunAlertPanel(@"Warning", @"Fax of print file not implemented", 
+      NSRunAlertPanel(@"Sorry", @"Faxing of print file not implemented", 
 		      @"OK", NULL, NULL);
       /* Don't stop the modal session */
       return;
@@ -293,7 +298,7 @@ static NSPrintPanel *shared_instance;
       NSString *str;
       str = [NSString stringWithFormat: @"%d", _pages.location];
       [[fromRangeForm cellAtIndex: 0] setStringValue: str];
-      str = [NSString stringWithFormat: @"%d", NSMaxRange(_pages)];
+      str = [NSString stringWithFormat: @"%d", NSMaxRange(_pages)-1];
       [[toRangeForm cellAtIndex: 0] setStringValue: str];
     }
 }
@@ -361,7 +366,7 @@ static NSPrintPanel *shared_instance;
 
 
   dict = [info dictionary];
-  NSDebugLLog(@"NSPrintPanel", 
+  NSDebugLLog(@"NSPrinting", 
 	      @"Update PrintInfo dictionary\n %@ \n --------------", dict);
   _pages = NSMakeRange([[dict objectForKey: NSPrintFirstPage] intValue],
 		       [[dict objectForKey: NSPrintLastPage] intValue]);
@@ -375,7 +380,7 @@ static NSPrintPanel *shared_instance;
   if (layout > 4)
     layout = 4;
   control = CONTROL(self, NSPPLayoutButton);
-  [control selectItemAtIndex: layout-1];
+  [control selectItemAtIndex: (int)(layout/2)];
 
   /* Setup the resolution popup */
   control = CONTROL(_optionPanel, NSPPResolutionButton);
@@ -508,7 +513,7 @@ static NSPrintPanel *shared_instance;
 
   /* Scale */
   control = CONTROL(self, NSPPScaleField);
-  scale = [control intValue]/100;
+  scale = [control doubleValue]/100.0;
   if (scale <= 0)
     scale = .1;
   if (scale >= 10)
@@ -518,7 +523,9 @@ static NSPrintPanel *shared_instance;
 	   forKey: NSPrintScalingFactor];
 
   /* Layout */
-  layout = [CONTROL(self, NSPPLayoutButton) indexOfSelectedItem] + 1;
+  layout = [CONTROL(self, NSPPLayoutButton) indexOfSelectedItem] * 2;
+  if (layout == 0)
+    layout = 1;
   [dict setObject: NSNUMBER(layout) forKey: NSPrintPagesPerSheet];
 
   /* Resolution */
@@ -611,7 +618,7 @@ static NSPrintPanel *shared_instance;
     }
   [info setJobDisposition: sel];
 
-  NSDebugLLog(@"NSPrintPanel", 
+  NSDebugLLog(@"NSPrinting", 
 	      @"Final info dictionary ----\n %@ \n --------------", dict);
 
 }
