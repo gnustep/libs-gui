@@ -657,8 +657,8 @@ provideDataForType:(NSString *)type
 }
 @end
 
-static NSString*	contentsPrefix = @"NSPBFileCont";
-static NSString*	namePrefix = @"NSPBFileName";
+static NSString*	contentsPrefix = @"NSTypedFileContentsPboardType:";
+static NSString*	namePrefix = @"NSTypedFilenamesPboardType:";
 
 NSString *NSCreateFileContentsPboardType(NSString *fileType)
 {
