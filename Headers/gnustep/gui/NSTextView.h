@@ -14,37 +14,15 @@
 @class NSTextStorage;
 @class NSLayoutManager;
 
-//@interface NSTextView : NSText <NSTextInput>
-
-
-@interface NSTextView : NSText
+@interface NSTextView : NSText //<NSTextInput>
 {
-  NSTextContainer *textContainer;
-  NSLayoutManager *layoutManager;
-  NSTextStorage  *textStorage;
-  NSSize textContainerInset;
-  NSPoint textContainerOrigin;
-  BOOL tv_resetTextContainerOrigin;
-  NSColor *tv_backGroundColor;
-  BOOL tv_drawsBackground;
-  BOOL tv_shouldDrawInsertionPoint;
-  BOOL tv_selectable;
-  BOOL tv_editable;
-  BOOL tv_fieldEditor;
-  BOOL tv_acceptDraggedFiles;
-  BOOL tv_richText;
-  BOOL tv_usesFontPanel;
-  BOOL tv_usesRuler;
-  BOOL tv_rulerVisible;
-  BOOL tv_smartInsertDelete;
-  NSRange tv_selectedRange;
-  NSColor *tv_caretColor;
-  NSDictionary *tv_selectedTextAttributes;
-  NSDictionary *tv_markedTextAttributes;
-  NSDictionary *tv_typingAttributes;
-  int tv_spellTag;
-  NSSelectionAffinity tv_selectionAffinity;
-  NSSelectionGranularity tv_selectionGranularity;
+  NSTextContainer *_textContainer;
+  NSSize _textContainerInset;
+  NSPoint _textContainerOrigin;
+  NSDictionary *_selectedTextAttributes;
+  NSDictionary *_markedTextAttributes;
+  NSSelectionAffinity _selectionAffinity;
+  NSSelectionGranularity _selectionGranularity;
 }
 
 /**************************** Initializing ****************************/
@@ -91,6 +69,10 @@
 
 /***************** New miscellaneous API above and beyond NSText *****************/
 
+- (void)changeColor:(id)sender;
+    // Called from NSColorPanel to set the text colour of the selection
+
+- (void)alignJustified:(id)sender;
 - (void)setAlignment:(NSTextAlignment)alignment range:(NSRange)range;
     // These complete the set of range: type set methods. to be equivalent to the set of non-range taking varieties.
 
@@ -128,6 +110,17 @@
 
 - (BOOL)shouldDrawInsertionPoint;
 - (void)drawInsertionPointInRect:(NSRect)rect color:(NSColor *)color turnedOn:(BOOL)flag;
+- (void)cleanUpAfterDragOperation;
+
+/*************************** Pasteboard management ***************************/
+- (NSString *)preferredPasteboardTypeFromArray:(NSArray *)availableTypes 
+                    restrictedToTypesFromArray:(NSArray *)allowedTypes;
+- (BOOL)readSelectionFromPasteboard:(NSPasteboard *)pboard;
+- (BOOL)readSelectionFromPasteboard:(NSPasteboard *)pboard type:(NSString *)type;
+- (NSArray *)readablePasteboardTypes;
+- (NSArray *)writablePasteboardTypes;
+- (BOOL)writeSelectionToPasteboard:(NSPasteboard *)pboard type:(NSString *)type;
+- (BOOL)writeSelectionToPasteboard:(NSPasteboard *)pboard types:(NSArray *)types;
 
 /*************************** Especially for subclassers ***************************/
 
@@ -184,6 +177,9 @@
 - (NSRange)rangeForUserCharacterAttributeChange;
 - (NSRange)rangeForUserParagraphAttributeChange;
 
+- (BOOL)allowsUndo;
+- (void)setAllowsUndo:(BOOL)flag;
+
 /*************************** NSText methods ***************************/
 
 - (BOOL)isSelectable;
@@ -206,13 +202,15 @@
 - (void)setDrawsBackground:(BOOL)flag;
 - (BOOL)drawsBackground;
 
-- (NSRange)selectedRange;
+//- (NSRange)selectedRange;
 - (void)setSelectedRange:(NSRange)charRange;
 
 /*************************** NSResponder methods ***************************/
 
 - (BOOL)resignFirstResponder;
 - (BOOL)becomeFirstResponder;
+- (id)validRequestorForSendType:(NSString *)sendType 
+                     returnType:(NSString *)returnType;
 
 /*************************** Smart copy/paste/delete support ***************************/
 
