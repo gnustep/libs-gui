@@ -7,6 +7,8 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
+   Implementation: Richard Frith-Macdonald <richard@brainstorm.co.uk>
+   Date: 1998
    
    This file is part of the GNUstep GUI Library.
 
@@ -28,8 +30,74 @@
 
 #include <gnustep/gui/config.h>
 #include <AppKit/NSWorkspace.h>
+#include <Foundation/NSDictionary.h>
+#include <Foundation/NSLock.h>
+#include <Foundation/NSUserDefaults.h>
+#include <Foundation/NSTask.h>
+#include <Foundation/NSException.h>
 
-@implementation NSWorkspace
+#define stringify_it(X) #X
+#define prog_path(X,Y) \
+  stringify_it(X) "/Tools/" GNUSTEP_TARGET_DIR "/" LIBRARY_COMBO Y
+
+static NSDictionary	*allServices = nil;
+static NSDictionary	*applications = nil;
+
+NSDictionary*
+GSAllServicesDictionary()
+{
+  if (allServices == nil)
+    [[NSWorkspace sharedWorkspace] findApplications];
+  return allServices;
+}
+
+NSDictionary*
+GSApplicationsDictionary()
+{
+  if (applications == nil)
+    [[NSWorkspace sharedWorkspace] findApplications];
+  return applications;
+}
+
+void
+NSUpdateDynamicServices()
+{
+  [[NSWorkspace sharedWorkspace] findApplications];
+}
+
+@implementation	NSWorkspace
+
+static NSWorkspace	*sharedWorkspace = nil;
+static NSNotificationCenter	*workspaceCenter = nil;
+static BOOL userDefaultsChanged = NO;
+
+static NSString		*cacheName = @".GNUstepServices";
+static NSString		*servicesPath = nil;
+
+static NSString* gnustep_target_dir = 
+#ifdef GNUSTEP_TARGET_DIR
+  @GNUSTEP_TARGET_DIR;
+#else
+  nil;
+#endif
+static NSString* gnustep_target_cpu = 
+#ifdef GNUSTEP_TARGET_CPU
+  @GNUSTEP_TARGET_CPU;
+#else
+  nil;
+#endif
+static NSString* gnustep_target_os = 
+#ifdef GNUSTEP_TARGET_OS
+  @GNUSTEP_TARGET_OS;
+#else
+  nil;
+#endif
+static NSString* library_combo = 
+#ifdef LIBRARY_COMBO
+  @LIBRARY_COMBO;
+#else
+  nil;
+#endif
 
 //
 // Class methods
@@ -38,9 +106,61 @@
 {
   if (self == [NSWorkspace class])
     {
+      static BOOL	beenHere;
+      NSDictionary	*env;
+
       // Initial version
       [self setVersion:1];
+
+      [gnustep_global_lock lock];
+      if (beenHere == YES)
+	{
+	  [gnustep_global_lock unlock];
+	  return;
+	}
+
+      beenHere = YES;
+
+      workspaceCenter = [NSNotificationCenter new];
+      env = [[NSProcessInfo processInfo] environment];
+      if (env)
+	{
+	  NSString	*str;
+
+	  str = [env objectForKey: @"GNUSTEP_USER_ROOT"];
+	  if (str == nil)
+	    str = [NSString stringWithFormat: @"%@/GNUstep", NSHomeDirectory()];
+	  str = [str stringByAppendingPathComponent: cacheName];
+	  servicesPath = [str retain];
+
+	  if ((str = [env objectForKey: @"GNUSTEP_TARGET_DIR"]) != nil)
+	    gnustep_target_dir = [str retain];
+	  else if ((str = [env objectForKey: @"GNUSTEP_HOST_DIR"]) != nil)
+	    gnustep_target_dir = [str retain];
+	
+	  if ((str = [env objectForKey: @"GNUSTEP_TARGET_CPU"]) != nil)
+	    gnustep_target_cpu = [str retain];
+	  else if ((str = [env objectForKey: @"GNUSTEP_HOST_CPU"]) != nil)
+	    gnustep_target_cpu = [str retain];
+	
+	  if ((str = [env objectForKey: @"GNUSTEP_TARGET_OS"]) != nil)
+	    gnustep_target_os = [str retain];
+	  else if ((str = [env objectForKey: @"GNUSTEP_HOST_OS"]) != nil)
+	    gnustep_target_os = [str retain];
+	
+	  if ((str = [env objectForKey: @"LIBRARY_COMBO"]) != nil)
+	    library_combo = [str retain];
+
+	  [gnustep_global_lock unlock];
+	}
     }
+}
+
++ (id) allocWithZone: (NSZone*)zone
+{
+  [NSException raise: NSInvalidArgumentException
+	      format: @"You may not allocate a workspace directly"];
+  return nil;
 }
 
 //
@@ -48,12 +168,34 @@
 //
 + (NSWorkspace *)sharedWorkspace
 {
-  return nil;
+  if (sharedWorkspace == nil)
+    {
+      [gnustep_global_lock lock];
+      if (sharedWorkspace == nil)
+	{
+	  sharedWorkspace =
+		(NSWorkspace*)NSAllocateObject(self, 0, NSDefaultMallocZone());
+	}
+      [gnustep_global_lock unlock];
+    }
+  return sharedWorkspace;
 }
 
 //
 // Instance methods
 //
+- (void) dealloc
+{
+  [NSException raise: NSInvalidArgumentException
+	      format: @"Attempt to call dealloc for shared worksapace"];
+}
+
+- (id) init
+{
+  [NSException raise: NSInvalidArgumentException
+	      format: @"Attempt to call init for shared worksapace"];
+  return nil;
+}
 
 //
 // Opening Files
@@ -65,8 +207,8 @@
 
 - (BOOL)openFile:(NSString *)fullPath
        fromImage:(NSImage *)anImage
-at:(NSPoint)point
-       inView:(NSView *)aView
+	      at:(NSPoint)point
+	  inView:(NSView *)aView
 {
   return NO;
 }
@@ -79,7 +221,7 @@ at:(NSPoint)point
 
 - (BOOL)openFile:(NSString *)fullPath
  withApplication:(NSString *)appName
-andDeactivate:(BOOL)flag
+   andDeactivate:(BOOL)flag
 {
   return NO;
 }
@@ -94,9 +236,9 @@ andDeactivate:(BOOL)flag
 //
 - (BOOL)performFileOperation:(NSString *)operation
 		      source:(NSString *)source
-destination:(NSString *)destination
-		      files:(NSArray *)files
-tag:(int *)tag
+		 destination:(NSString *)destination
+		       files:(NSArray *)files
+			 tag:(int *)tag
 {
   return NO;
 }
@@ -112,22 +254,37 @@ inFileViewerRootedAtPath:(NSString *)rootFullpath
 //
 - (NSString *)fullPathForApplication:(NSString *)appName
 {
+  NSString      *last = [appName lastPathComponent];
+
+  if (applications == nil)
+    NSUpdateDynamicServices();
+
+  if ([appName isEqual: last])
+    {
+      NSString  *ext = [appName pathExtension];
+
+      if (ext == nil)
+        {
+          appName = [appName stringByAppendingPathExtension: @"app"];
+        }
+      return [applications objectForKey: appName];
+    }
   return nil;
 }
 
 - (BOOL)getFileSystemInfoForPath:(NSString *)fullPath
 		     isRemovable:(BOOL *)removableFlag
-isWritable:(BOOL *)writableFlag
-		     isUnmountable:(BOOL *)unmountableFlag
-description:(NSString **)description
-		     type:(NSString **)fileSystemType
+		      isWritable:(BOOL *)writableFlag
+		   isUnmountable:(BOOL *)unmountableFlag
+		     description:(NSString **)description
+			    type:(NSString **)fileSystemType
 {
   return NO;
 }
 
 - (BOOL)getInfoForFile:(NSString *)fullPath
 	   application:(NSString **)appName
-type:(NSString **)type
+		  type:(NSString **)type
 {
   return NO;
 }
@@ -162,7 +319,20 @@ type:(NSString **)type
 // Updating Registered Services and File Types
 //
 - (void)findApplications
-{}
+{
+  NSData	*data;
+  NSDictionary	*newServices;
+  NSDictionary	*dict;
+
+  system(prog_path(GNUSTEP_INSTALL_PREFIX, "/make_services"));
+
+  data = [NSData dataWithContentsOfFile: servicesPath];
+  newServices = [NSDeserializer deserializePropertyListFromData: data
+					      mutableContainers: NO];
+  ASSIGN(allServices, newServices);
+  dict = [newServices objectForKey: @"Applications"];
+  ASSIGN(applications, dict);
+}
 
 //
 // Launching and Manipulating Applications	
@@ -172,14 +342,59 @@ type:(NSString **)type
 
 - (BOOL)launchApplication:(NSString *)appName
 {
-  return NO;
+  return [self launchApplication: appName
+			showIcon: YES
+		      autolaunch: NO];
 }
 
 - (BOOL)launchApplication:(NSString *)appName
 		 showIcon:(BOOL)showIcon
-autolaunch:(BOOL)autolaunch
+	       autolaunch:(BOOL)autolaunch
 {
-  return NO;
+  NSArray	*args;
+  NSTask	*task;
+  NSString	*path;
+  NSString	*file;
+  NSDictionary	*info;
+
+  if (appName == nil)
+    return NO;
+
+  path = appName;
+  appName = [path lastPathComponent];
+  if ([appName isEqual: path])
+    {
+      path = [self fullPathForApplication: appName];
+      appName = [[path lastPathComponent] stringByDeletingPathExtension];
+    }
+  else if ([appName pathExtension] == nil)
+    {
+      path = [path stringByAppendingPathExtension: @"app"];
+    }
+  else
+    {
+      appName = [[path lastPathComponent] stringByDeletingPathExtension];
+    }
+
+  if (path == nil)
+    return NO;
+
+  file = [path stringByAppendingPathComponent: @"Resources/Info-gnustep.plist"];
+  info = [NSDictionary dictionaryWithContentsOfFile: file];
+  file = [info objectForKey: @"NSExecutable"];
+  if (file == nil)
+    {
+      file = appName;
+    }
+  path = [path stringByAppendingPathComponent: gnustep_target_dir]; 
+  path = [path stringByAppendingPathComponent: library_combo]; 
+  path = [path stringByAppendingPathComponent: appName]; 
+
+  args = [NSArray arrayWithObjects: nil];
+  task = [NSTask launchedTaskWithLaunchPath: path
+				  arguments: args];
+
+  return YES;
 }
 
 //
@@ -211,18 +426,22 @@ autolaunch:(BOOL)autolaunch
 //
 - (NSNotificationCenter *)notificationCenter
 {
-  return nil;
+  return workspaceCenter;
 }
 
 //
 // Tracking Changes to the User Defaults Database
 //
 - (void)noteUserDefaultsChanged
-{}
+{
+  userDefaultsChanged = YES;
+}
 
 - (BOOL)userDefaultsChanged
 {
-  return NO;
+  BOOL	hasChanged = userDefaultsChanged;
+  userDefaultsChanged = NO;
+  return hasChanged;
 }
 
 //
@@ -230,7 +449,7 @@ autolaunch:(BOOL)autolaunch
 //
 - (void)slideImage:(NSImage *)image
 	      from:(NSPoint)fromPoint
-to:(NSPoint)toPoint
+		to:(NSPoint)toPoint
 {}
 
 //
