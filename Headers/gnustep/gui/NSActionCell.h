@@ -37,6 +37,7 @@
   int _tag;
   id _target;
   SEL _action;
+  NSView *_control_view; 
 }
 
 //
