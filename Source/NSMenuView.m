@@ -801,16 +801,21 @@ _addLeftBorderOffsetToRect(NSRect aRect)
     {
       [_titleView removeFromSuperview];
       _titleView = nil;
+			_needsSizing = YES;
     }
 
-  _cellSize = cellFrame.size;
-  [self sizeToFit];
+	// Only call sizeToFit if needed.
+	if ((NSEqualSizes(_cellSize, cellFrame.size) == NO) || _needsSizing)
+		{
+			_cellSize = cellFrame.size;
+			[self sizeToFit];
+		}
   
   /*
    * Compute the frame
    */
   screenFrame = screenRect;
-  if (items > 1)
+  if (items > 0)
     {
       float f;
 

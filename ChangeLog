@@ -1,3 +1,10 @@
+2003-03-25 Serg Stoyan <stoyan@on.com.ua>
+
+	* Source/NSMenuView.m (setWindowFrameForAttachingToRect:): call sizeToFit
+	only if cell's frame changed (patch by Michael Hanni). Compute frame if number
+	of items > 0 instead of > 1 (fixes size problem when there is 1 item in
+	popup button's menu).
+	
 2003-03-24  Adam Fedor  <fedor@gnu.org>
 
 	* Merge from 0.8.5 branch
