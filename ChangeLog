@@ -1,3 +1,9 @@
+Thu Apr 11 15:37:31 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/GSTextStorage.m ([GSTextStorage -sanity]): Renamed to
+	-_sanity, and changed so that we always compile this in so that
+	regression testcases can use it.
+
 Thu Apr 11 08:54:16 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/GSTable.m ([+new]): New method working around a bug in
