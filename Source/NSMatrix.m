@@ -1130,15 +1130,13 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 }
 
 - (id) nextText
-{
-// TODO
-  return nil;
+{  
+  return _nextKeyView;
 }
 
 - (id) previousText
 {
-// TODO
-  return nil;
+  return _previousKeyView;
 }
 
 - (void) textDidBeginEditing: (NSNotification*)notification
@@ -1165,12 +1163,12 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 
 - (void) setNextText: (id)anObject
 {
-// TODO
+  [self setNextKeyView: anObject];
 }
 
 - (void) setPreviousText: (id)anObject
 {
-// TODO
+  [self setPreviousKeyView: anObject];
 }
 
 - (void) setValidateSize: (BOOL)flag
@@ -1265,6 +1263,11 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
   for (i = row1; i <= row2 && i < numRows; i++)
     for (j = col1; j <= col2 && j < numCols; j++)
       [self drawCellAtRow: i column: j];
+}
+
+- (BOOL) isOpaque
+{
+  return drawsBackground;
 }
 
 - (void) drawCellAtRow: (int)row column: (int)column
@@ -2145,14 +2148,6 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
   [self setNeedsDisplay: YES];
 }
 
-/*
- * Get characters until you encounter
- * a carriage return, return number of characters.
- * Deal with backspaces, etc.  Deal with Expose events
- * on all windows associated with this application.
- * Deal with keyboard remapping.
- */
-
 - (void) keyDown: (NSEvent *)theEvent;
 {
   unsigned int flags = [theEvent modifierFlags];
@@ -2174,7 +2169,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
     }
 
   // Hide the cursor during typing
-  [NSCursor hide];
+  // [NSCursor hide];
 
   [selectedCell _handleKeyEvent: theEvent];
   [selectedCell drawInteriorWithFrame: rect inView: self];
