@@ -1,3 +1,41 @@
+Tue Apr  2 10:28:46 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSButtonCell.m ([-setSound:]): Retain the sound.
+	([-dealloc]): Release it.
+	* Source/NSTableView.m ([-dealloc]): Abort editing.
+
+Tue Apr  2 09:40:48 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/NSApplication.h: Tidied up some #include and
+	@class machinery for efficiency.
+	* Headers/gnustep/gui/NSDocument.h: Idem.
+	* Headers/gnustep/gui/NSDragging.h: Idem.
+	* Headers/gnustep/gui/NSImage.h: Idem.
+	* Headers/gnustep/gui/NSImageRep.h: Idem.
+	* Headers/gnustep/gui/NSMenu.h: Idem.
+	* Headers/gnustep/gui/NSMenuItem.h: Idem.
+	* Headers/gnustep/gui/NSWindowController.h: Idem.
+	* Headers/gnustep/gui/NSWorkspace.h: Idem.
+	* Source/NSApplication.m: Added missing #includes.
+	* Source/NSComboBox.m: Idem.
+	* Source/NSCustomImageRep.m: Idem.
+	* Source/NSEPSImageRep.m: Idem.
+	* Source/NSFontManager.m: Idem.
+	* Source/Functions.m: Idem.
+	* Source/NSHelpManager.m: Idem.
+	* Source/NSMenu.m: Idem.
+	* Source/NSMenuItem.m: Idem.
+	* Source/NSMenuItemCell.m: Idem.
+	* Source/NSPopUpButtonCell.m: Idem.
+	* Source/NSResponder.m: Idem.
+	* Source/NSSpellChecker.m: Idem.
+	* Source/NSSplitView.m: Idem.
+	* Source/NSTableHeaderView.m: Idem.
+	* Source/NSText.m: Idem.
+	* Source/NSWindow.m: Idem, plus removed unused one.
+	* Source/NSInputManager.m: Include AppKit/NSGraphics.h, not
+	AppKit/NSApplication.h, for NSBeep ().
+	
 2002-04-01  Gregory Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSOutlineView.m
