@@ -1,3 +1,11 @@
+2003-02-22 12:29  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSApplication.m (-sendEvent:):	Only bring up the main
+	menu if the there is no window for the event.
+
+	* Source/NSPopUpButton.m: Implement -menuForEvent: to always
+	return nil to indicate that we don't have a context menu.
+
 2003-02-22 02:34  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/GSLayoutManager.h: Declare

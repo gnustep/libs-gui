@@ -1448,10 +1448,10 @@ See -runModalForWindow:
 	    NSDebugLLog(@"NSEvent", @"Send NSEvent type: %d to window %@", 
 			type, ((window != nil) ? [window description] 
 			       : @"No window"));
-	  if (type == NSRightMouseDown)
-	    [self rightMouseDown: theEvent];
-	  else if (window)
+	  if (window)
 	    [window sendEvent: theEvent];
+	  else if (type == NSRightMouseDown)
+	    [self rightMouseDown: theEvent];
 	}
     }
 }
