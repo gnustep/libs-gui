@@ -1053,7 +1053,6 @@ static NSString         *disabledName = @".GNUstepDisabled";
 {
   if (servicesMenu && [[application mainMenu] autoenablesItems])
     {
-      NSMenuMatrix	*menuCells;
       NSArray   	*a;
       unsigned  	i;
       NSMenu		*mainMenu = [application mainMenu];
@@ -1069,8 +1068,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
 	  return;
 	}
 
-      menuCells = [servicesMenu menuCells];
-      a = [menuCells itemArray];
+      a = [servicesMenu itemArray];
 
       for (i = 0; i < [a count]; i++)
         {
@@ -1085,8 +1083,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
 	   */
 	  if (title == nil && [[cell target] isKindOfClass: [NSMenu class]])
 	    {
-	      NSMenuMatrix	*subMenuCells = [[cell target] menuCells];
-	      NSArray		*sub = [subMenuCells itemArray];
+	      NSArray		*sub = [[cell target] itemArray];
 	      int		j;
 
 	      shouldBeEnabled = NO;
@@ -1104,8 +1101,8 @@ static NSString         *disabledName = @".GNUstepDisabled";
 		  if (subWasEnabled != subShouldBeEnabled)
 		    {
 		      [subCell setEnabled: subShouldBeEnabled];
-		      [subMenuCells setNeedsDisplayInRect:
-				[subMenuCells cellFrameAtRow: j]];
+//		      [subMenuCells setNeedsDisplayInRect:
+//				[subMenuCells cellFrameAtRow: j]];
 		    }
 		}
 	    }
@@ -1115,7 +1112,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
           if (wasEnabled != shouldBeEnabled)
             {
               [cell setEnabled: shouldBeEnabled];
-	      [menuCells setNeedsDisplayInRect: [menuCells cellFrameAtRow: i]];
+//	      [menuCells setNeedsDisplayInRect: [menuCells cellFrameAtRow: i]];
             }
         }
     }
