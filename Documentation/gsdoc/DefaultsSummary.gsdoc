@@ -67,6 +67,15 @@
           the problem without raising an exception.
           </p>
 	  </desc>
+	  <term>GSWorkspaceApplication</term>
+	  <desc>
+          <p>
+          A string value that defaults to <code>"GSWorkspace"</code>.
+          This defines the application NSWorkspace will try to
+          conntect to process some operations that require an external
+          application. This is a new feature and has not been tested. 
+          </p>
+	  </desc>
 	  <term>NSInterfaceStyleDefault</term>
 	  <desc>
           <p>
@@ -179,6 +188,17 @@
           <code>YES</code> and the X-Windows system has the XFT
           extension, then the application will use anti-aliased fonts
           as provided by the X-Windows system.
+          </p>
+	  </desc>
+	  <term>GSFontMask</term>
+	  <desc>
+          <p>
+          A string value which defaults to <code>"*"</code>. It defines
+          the pattern used to get the installed fonts from the
+          X-Server. A value of <code>"*-iso8859-1"</code> would only
+          include fonts available with ISO Western encoding. This
+          feature might be helpfull if the font_cacher program is having
+          problem with the X-Server.
           </p>
 	  </desc>
 	  <term>GraphicCompositing</term>
