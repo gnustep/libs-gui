@@ -69,13 +69,13 @@
 -(void) addView: (NSView *)aView;
 
 -(void) addView: (NSView *)aView
-enablingYResizing: (BOOL)flag;
+enablingYResizing: (BOOL)aFlag;
 
 -(void) addView: (NSView *)aView
  withMinYMargin: (float)aMargin;
 
 -(void) addView: (NSView *)aView
-enablingYResizing: (BOOL)flag
+enablingYResizing: (BOOL)aFlag
  withMinYMargin: (float)aMargin;
 
 //

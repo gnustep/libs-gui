@@ -526,9 +526,9 @@
     }
 }
 
-- (BOOL) canBeCompressedUsing: (NSTIFFCompression)type
+- (BOOL) canBeCompressedUsing: (NSTIFFCompression)compression
 {
-  switch (type)
+  switch (compression)
     {
       case NSTIFFCompressionCCITTFAX3:
       case NSTIFFCompressionCCITTFAX4:
@@ -550,17 +550,17 @@
     }
 }
 
-- (void) getCompression: (NSTIFFCompression*)type
+- (void) getCompression: (NSTIFFCompression*)compression
 		 factor: (float*)factor
 {
-  *type = _compression;
+  *compression = _compression;
   *factor = _comp_factor;
 }
 
-- (void) setCompression: (NSTIFFCompression)type
+- (void) setCompression: (NSTIFFCompression)compression
 		 factor: (float)factor
 {
-  _compression = type;
+  _compression = compression;
   _comp_factor = factor;
 }
 

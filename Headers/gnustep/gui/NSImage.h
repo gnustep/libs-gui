@@ -72,8 +72,8 @@
 //
 // Initializing a New NSImage Instance 
 //
-- (id) initByReferencingFile: (NSString*)filename;
-- (id) initWithContentsOfFile: (NSString*)filename;
+- (id) initByReferencingFile: (NSString*)fileName;
+- (id) initWithContentsOfFile: (NSString*)fileName;
 - (id) initWithData: (NSData*)data;
 - (id) initWithPasteboard: (NSPasteboard*)pasteboard;
 - (id) initWithSize: (NSSize)aSize;
@@ -93,8 +93,8 @@
 //
 // Referring to Images by Name 
 //
-+ (id) imageNamed: (NSString*)name;
-- (BOOL) setName: (NSString*)name;
++ (id) imageNamed: (NSString*)aName;
+- (BOOL) setName: (NSString*)aName;
 - (NSString*) name;
 
 //

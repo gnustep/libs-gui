@@ -91,9 +91,9 @@ typedef enum {
  
 - (int) indexOfItem: (id <NSMenuItem>)item;
 - (int) indexOfItemWithTitle: (NSString*)title;
-- (int) indexOfItemWithTag: (int)tag;
+- (int) indexOfItemWithTag: (int)aTag;
 - (int) indexOfItemWithRepresentedObject: (id)obj;
-- (int) indexOfItemWithTarget: (id)target andAction: (SEL)actionSelector;
+- (int) indexOfItemWithTarget: (id)aTarget andAction: (SEL)actionSelector;
 
 - (id <NSMenuItem>) itemAtIndex: (int)index;
 - (id <NSMenuItem>) itemWithTitle: (NSString*)title;

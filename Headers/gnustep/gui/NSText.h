@@ -130,16 +130,16 @@ enum {
 			 withRTFD: (NSData*)rtfdData;
 - (void) replaceCharactersInRange: (NSRange)aRange  
 		       withString: (NSString*)aString;
-- (void) setString: (NSString*)string;
+- (void) setString: (NSString*)aString;
 - (NSString*) string;
 
 /*
  * Old fashioned OpenStep methods (wrappers for the previous ones)
  */
- - (void) replaceRange: (NSRange)range  withString: (NSString*)aString;
-- (void) replaceRange: (NSRange)range  withRTF: (NSData*)rtfData;
-- (void) replaceRange: (NSRange)range  withRTFD: (NSData*)rtfdData;
-- (void) setText: (NSString*)string;
+- (void) replaceRange: (NSRange)aRange  withString: (NSString*)aString;
+- (void) replaceRange: (NSRange)aRange  withRTF: (NSData*)rtfData;
+- (void) replaceRange: (NSRange)aRange  withRTFD: (NSData*)rtfdData;
+- (void) setText: (NSString*)aString;
 - (void) setText: (NSString*)aString  range: (NSRange)aRange;
 - (NSString*) text;
 
@@ -201,8 +201,8 @@ enum {
  */
 - (void) changeFont: (id)sender;
 - (NSFont*) font;
-- (void) setFont: (NSFont*)obj;
-- (void) setFont: (NSFont*)font ofRange: (NSRange)range;
+- (void) setFont: (NSFont*)font;
+- (void) setFont: (NSFont*)font ofRange: (NSRange)aRange;
 
 /*
  * Managing Alignment
@@ -216,8 +216,8 @@ enum {
 /*
  * Text colour
  */
-- (void) setTextColor: (NSColor*)color range: (NSRange)range;
-- (void) setColor: (NSColor*)color ofRange: (NSRange)range;
+- (void) setTextColor: (NSColor*)color range: (NSRange)aRange;
+- (void) setColor: (NSColor*)color ofRange: (NSRange)aRange;
 - (void) setTextColor: (NSColor*)color;
 - (NSColor*) textColor;
 
@@ -234,8 +234,8 @@ enum {
  */
 -(BOOL) readRTFDFromFile: (NSString*)path;
 -(BOOL) writeRTFDToFile: (NSString*)path atomically: (BOOL)flag;
--(NSData*) RTFDFromRange: (NSRange)range;
--(NSData*) RTFFromRange: (NSRange)range;
+-(NSData*) RTFDFromRange: (NSRange)aRange;
+-(NSData*) RTFFromRange: (NSRange)aRange;
 
 /*
  * Sizing the Frame Rectangle
@@ -259,7 +259,7 @@ enum {
 /*
  * Scrolling
  */
-- (void) scrollRangeToVisible: (NSRange)range;
+- (void) scrollRangeToVisible: (NSRange)aRange;
 
 /*
  * Managing the Delegate
@@ -286,7 +286,7 @@ enum {
 
 @interface NSText (GNUstepExtensions)
 
-- (void) replaceRange: (NSRange)range 
+- (void) replaceRange: (NSRange)aRange 
  withAttributedString: (NSAttributedString*)attrString;
 
 - (unsigned) textLength;

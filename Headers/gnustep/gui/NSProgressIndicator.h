@@ -69,7 +69,7 @@
 //
 - (void)incrementBy:(double)delta;
 - (double)doubleValue;
-- (void)setDoubleValue:(double)doubleValue;
+- (void)setDoubleValue:(double)aValue;
 - (double)minValue;
 - (void)setMinValue:(double)newMinimum;
 - (double)maxValue;

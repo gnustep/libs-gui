@@ -176,7 +176,7 @@ enum {
 
 #ifndef	STRICT_OPENSTEP
 - (int) runModalForDirectory: (NSString *)path
-			file: (NSString *)name
+			file: (NSString *)filename
 	    relativeToWindow: (NSWindow*)window;
 - (void) beginSheetForDirectory: (NSString *)path
 			   file: (NSString *)name

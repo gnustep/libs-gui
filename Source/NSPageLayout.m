@@ -58,7 +58,7 @@ static NSPageLayout *shared_instance;
   This includes information about the paper size and orientation.
 
   Typically you would create a page layout panel with the 
-  <ref id="pageLayout">pageLayout</ref> class method. However, the best
+  +pageLayout class method. However, the best
   way to use the panel is to have the application
   call the runPageLayout: method in the NSApplication object
   which would both create a standard NSPageLayout panel and display it

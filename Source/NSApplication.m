@@ -1820,9 +1820,9 @@ delegate.
   [self orderFrontStandardInfoPanel: sender];
 }
 
-- (void) orderFrontStandardAboutPanelWithOptions: (NSDictionary *)options
+- (void) orderFrontStandardAboutPanelWithOptions: (NSDictionary *)dictionary
 {
-  [self orderFrontStandardInfoPanelWithOptions: options];
+  [self orderFrontStandardInfoPanelWithOptions: dictionary];
 }
 
 /* infoPanel, GNUstep API */
@@ -1831,10 +1831,10 @@ delegate.
   [self orderFrontStandardInfoPanelWithOptions: nil];
 }
 
-- (void) orderFrontStandardInfoPanelWithOptions: (NSDictionary *)options
+- (void) orderFrontStandardInfoPanelWithOptions: (NSDictionary *)dictionary
 {
   if (_infoPanel == nil)
-    _infoPanel = [[GSInfoPanel alloc] initWithDictionary: options];
+    _infoPanel = [[GSInfoPanel alloc] initWithDictionary: dictionary];
   
   [_infoPanel setTitle: GSGuiLocalizedString (@"Info", 
 					      @"Title of the Info Panel")];

@@ -89,7 +89,7 @@ APPKIT_EXPORT NSString *NSPasteboardCommunicationException;
 // Creating and Releasing an NSPasteboard Object
 //
 + (NSPasteboard *)generalPasteboard;
-+ (NSPasteboard *)pasteboardWithName:(NSString *)name;
++ (NSPasteboard *)pasteboardWithName:(NSString *)aName;
 + (NSPasteboard *)pasteboardWithUniqueName;
 - (void)releaseGlobally;
 
@@ -159,7 +159,7 @@ provideDataForType:(NSString *)type
 + (NSString *) mimeTypeForPasteboardType: (NSString *)type;
 + (NSString *) pasteboardTypeForMimeType: (NSString *)mimeType;
 
-- (void)setChangeCount: (int)changeCount;
+- (void)setChangeCount: (int)count;
 @end
 
 #ifndef STRICT_OPENSTEP

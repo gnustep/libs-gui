@@ -85,7 +85,7 @@ typedef enum _NSBitmapImageFileType {
 		  bitsPerSample: (int)bps
 		samplesPerPixel: (int)spp
 		       hasAlpha: (BOOL)alpha
-		       isPlanar: (BOOL)config
+		       isPlanar: (BOOL)isPlanar
 		 colorSpaceName: (NSString*)colorSpaceName
 		    bytesPerRow: (int)rowBytes
 		   bitsPerPixel: (int)pixelBits;

@@ -34,6 +34,10 @@ include $(GNUSTEP_MAKEFILES)/common.make
 include ../Version
 include ../config.make
 
+srcdir = .
+PACKAGE_NAME = gnustep-gui
+LIBRARY_VAR = GNUSTEP_GUI
+
 # The library to be compiled
 LIBRARY_NAME = libgnustep-gui
 
@@ -166,32 +170,22 @@ endif
 libgnustep-gui_HEADER_FILES_DIR = ../Headers/AppKit
 libgnustep-gui_HEADER_FILES_INSTALL_DIR = /AppKit
 
-libgnustep-gui_HEADER_FILES = \
-AppKit.h \
-GSVersion.h \
-AppKitDefines.h \
-AppKitExceptions.h \
-DPSOperators.h \
-GMAppKit.h \
-GMArchiver.h \
-GSFontInfo.h \
-GSInfoPanel.h \
-GSMethodTable.h \
-GSPasteboardServer.h \
-GSServicesManager.h \
-GSTextConverter.h \
-GSTrackingRect.h \
-GSHelpManagerPanel.h \
+DOCUMENT_NAME = Gui
+
+Gui_AGSDOC_FILES = Gui.gsdoc $(AUTOGSDOC_HEADERS)
+Gui_AGSDOC_FLAGS = \
+	-HeaderDirectory ../Headers/AppKit \
+	-Declared AppKit \
+	-Standards YES \
+	-Up Gui
+
+AUTOGSDOC_HEADERS = \
 GSTable.h \
 GSHbox.h \
 GSVbox.h \
-IMConnectors.h \
-IMCustomObject.h \
-IMLoading.h \
 NSActionCell.h \
 NSAffineTransform.h \
 NSApplication.h \
-NSAttributedString.h \
 NSBezierPath.h \
 NSBox.h \
 NSBitmapImageRep.h \
@@ -199,7 +193,6 @@ NSBrowser.h \
 NSBrowserCell.h \
 NSButton.h \
 NSButtonCell.h \
-NSCStringText.h \
 NSCachedImageRep.h \
 NSCell.h \
 NSClipView.h \
@@ -207,7 +200,6 @@ NSColor.h \
 NSColorList.h \
 NSColorPanel.h \
 NSColorPicker.h \
-NSColorPicking.h \
 NSColorWell.h \
 NSComboBox.h \
 NSComboBoxCell.h \
@@ -219,8 +211,6 @@ NSDataLinkManager.h \
 NSDataLinkPanel.h \
 NSDocument.h \
 NSDocumentController.h \
-NSDocumentFrameworkPrivate.h \
-NSDragging.h \
 NSDrawer.h \
 NSEPSImageRep.h \
 NSEvent.h \
@@ -230,7 +220,6 @@ NSFontManager.h \
 NSFontPanel.h \
 NSForm.h \
 NSFormCell.h \
-NSGraphics.h \
 NSGraphicsContext.h \
 NSHelpPanel.h \
 NSHelpManager.h \
@@ -247,9 +236,6 @@ NSMenu.h \
 NSMenuItem.h \
 NSMenuItemCell.h \
 NSMenuView.h \
-NSNibConnector.h \
-NSNibDeclarations.h \
-NSNibLoading.h \
 NSOpenPanel.h \
 NSOutlineView.h \
 NSPageLayout.h \
@@ -276,7 +262,6 @@ NSSlider.h \
 NSSliderCell.h \
 NSText.h \
 NSSpellChecker.h \
-NSSpellProtocol.h \
 NSSpellServer.h \
 NSSplitView.h \
 NSStepper.h \
@@ -294,11 +279,42 @@ NSTextField.h \
 NSTextFieldCell.h \
 NSTextStorage.h \
 NSTextView.h \
-NSUserInterfaceValidation.h \
 NSView.h \
 NSWindow.h \
 NSWindowController.h \
-NSWorkspace.h \
+NSWorkspace.h
+
+libgnustep-gui_HEADER_FILES = \
+AppKit.h \
+GSVersion.h \
+AppKitDefines.h \
+AppKitExceptions.h \
+DPSOperators.h \
+GMAppKit.h \
+GMArchiver.h \
+GSFontInfo.h \
+GSInfoPanel.h \
+GSMethodTable.h \
+GSPasteboardServer.h \
+GSServicesManager.h \
+GSTextConverter.h \
+GSTrackingRect.h \
+GSHelpManagerPanel.h \
+$(AUTOGSDOC_HEADERS) \
+IMConnectors.h \
+IMCustomObject.h \
+IMLoading.h \
+NSAttributedString.h \
+NSColorPicking.h \
+NSCStringText.h \
+NSDocumentFrameworkPrivate.h \
+NSDragging.h \
+NSGraphics.h \
+NSNibConnector.h \
+NSNibDeclarations.h \
+NSNibLoading.h \
+NSSpellProtocol.h \
+NSUserInterfaceValidation.h \
 PSOperators.h \
 nsimage-tiff.h
 
@@ -310,5 +326,10 @@ include GNUmakefile.preamble
 -include GNUmakefile.local
 
 include $(GNUSTEP_MAKEFILES)/library.make
+
+# Only build the doc if doc=yes was passed on the command line
+ifeq ($(doc),yes)
+include $(GNUSTEP_MAKEFILES)/documentation.make
+endif
 
 include GNUmakefile.postamble

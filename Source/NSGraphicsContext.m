@@ -144,7 +144,7 @@ NSGraphicsContext	*GSCurrentContext()
   return [self graphicsContextWithAttributes: info];
 }
 
-+ (NSGraphicsContext *) graphicsContextWithAttributes: (NSDictionary *)info
++ (NSGraphicsContext *) graphicsContextWithAttributes: (NSDictionary *)attributes
 {
   NSGraphicsContext *ctxt;
   if (self == [NSGraphicsContext class])
@@ -152,11 +152,11 @@ NSGraphicsContext	*GSCurrentContext()
       NSAssert(defaultNSGraphicsContextClass, 
 	       @"Internal Error: No default NSGraphicsContext set\n");
       ctxt = [[defaultNSGraphicsContextClass allocWithZone: _globalGSZone]
-	       initWithContextInfo: info];
+	       initWithContextInfo: attributes];
       AUTORELEASE(ctxt);
     }
   else
-    ctxt = [[self allocWithZone: _globalGSZone] initWithContextInfo: info];
+    ctxt = [[self allocWithZone: _globalGSZone] initWithContextInfo: attributes];
   return ctxt;
 }
 
@@ -1655,7 +1655,7 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSueofill: (const char *)nums : (int)n : (const char *)op : (int)l 
+- (void) DPSueofill: (const char *)nums : (int)n : (const char *)ops : (int)l 
 {
   [self subclassResponsibility: _cmd];
 }
@@ -1938,7 +1938,7 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPScurrentalpha: (float *)alpha
+- (void) DPScurrentalpha: (float *)a
 {
   [self subclassResponsibility: _cmd];
 }
@@ -2021,7 +2021,7 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSsetexposurecolor;
+- (void) DPSsetexposurecolor
 {
   [self subclassResponsibility: _cmd];
 }
@@ -2136,7 +2136,7 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSreleasemouse;
+- (void) DPSreleasemouse
 {
   [self subclassResponsibility: _cmd];
 }
@@ -2146,12 +2146,12 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPShidecursor;
+- (void) DPShidecursor
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSshowcursor;
+- (void) DPSshowcursor
 {
   [self subclassResponsibility: _cmd];
 }
@@ -2171,7 +2171,7 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSstyleoffsets: (float *) r : (float *) l : (float *) t : (float *) b : (int) style
+- (void) DPSstyleoffsets: (float *) l : (float *) r : (float *) t : (float *) b : (int) style
 {
   [self subclassResponsibility: _cmd];
 }
@@ -2508,7 +2508,7 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSsetinputstate: (int)win : (int)st 
+- (void) DPSsetinputstate: (int)window : (int)state
 {
   [self subclassResponsibility: _cmd];
 }
@@ -2621,7 +2621,7 @@ NSGraphicsContext	*GSCurrentContext()
     }
 }
 
-- (void) NSRectFillUsingOperation: (NSRect) aRect : (NSCompositingOperation) op;
+- (void) NSRectFillUsingOperation: (NSRect)aRect : (NSCompositingOperation)op
 {
   // FIXME: 
   NSRectFill(aRect);

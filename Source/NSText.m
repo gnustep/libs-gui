@@ -8,7 +8,7 @@
    Date: 1996
    Author: Felipe A. Rodriguez <far@ix.netcom.com>
    Date: July 1998
-   Author:  Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de></email></author>
+   Author:  Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
    Date: August 1998
    Author: Fred Kiefer <FredKiefer@gmx.de>
    Date: March 2000

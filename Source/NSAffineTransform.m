@@ -80,24 +80,24 @@ static NSAffineTransformStruct identityTransform = {
   return t;
 }
 
-- (void) appendTransform: (NSAffineTransform*)other
+- (void) appendTransform: (NSAffineTransform*)aTransform
 {
   float newA, newB, newC, newD, newTX, newTY;
 
-  newA = other->A * A + other->B * C;
-  newB = other->A * B + other->B * D;
-  newC = other->C * A + other->D * C;
-  newD = other->C * B + other->D * D;
-  newTX = other->TX * A + other->TY * C + TX;
-  newTY = other->TX * B + other->TY * D + TY;
+  newA = aTransform->A * A + aTransform->B * C;
+  newB = aTransform->A * B + aTransform->B * D;
+  newC = aTransform->C * A + aTransform->D * C;
+  newD = aTransform->C * B + aTransform->D * D;
+  newTX = aTransform->TX * A + aTransform->TY * C + TX;
+  newTY = aTransform->TX * B + aTransform->TY * D + TY;
 
   A = newA; B = newB;
   C = newC; D = newD;
   TX = newTX; TY = newTY;
 
-  if (rotationAngle >= 0 && other->rotationAngle >= 0)
+  if (rotationAngle >= 0 && aTransform->rotationAngle >= 0)
     {
-      rotationAngle += other->rotationAngle;
+      rotationAngle += aTransform->rotationAngle;
       if (rotationAngle < 0)
 	rotationAngle -= ((int)(rotationAngle/360)-1)*360;
       else if (rotationAngle >= 360)
@@ -163,24 +163,24 @@ static NSAffineTransformStruct identityTransform = {
   TX = newTX; TY = newTY;
 }
 
-- (void) prependTransform: (NSAffineTransform*)other
+- (void) prependTransform: (NSAffineTransform*)aTransform
 {
   float newA, newB, newC, newD, newTX, newTY;
 
-  newA = A * other->A + B * other->C;
-  newB = A * other->B + B * other->D;
-  newC = C * other->A + D * other->C;
-  newD = C * other->B + D * other->D;
-  newTX = TX * other->A + TY * other->C + other->TX;
-  newTY = TX * other->B + TY * other->D + other->TY;
+  newA = A * aTransform->A + B * aTransform->C;
+  newB = A * aTransform->B + B * aTransform->D;
+  newC = C * aTransform->A + D * aTransform->C;
+  newD = C * aTransform->B + D * aTransform->D;
+  newTX = TX * aTransform->A + TY * aTransform->C + aTransform->TX;
+  newTY = TX * aTransform->B + TY * aTransform->D + aTransform->TY;
 
   A = newA; B = newB;
   C = newC; D = newD;
   TX = newTX; TY = newTY;
 
-  if (rotationAngle >= 0 && other->rotationAngle >= 0)
+  if (rotationAngle >= 0 && aTransform->rotationAngle >= 0)
     {
-      rotationAngle += other->rotationAngle;
+      rotationAngle += aTransform->rotationAngle;
       if (rotationAngle < 0)
 	rotationAngle -= ((int)(rotationAngle/360)-1)*360;
       else if (rotationAngle >= 360)
@@ -278,24 +278,24 @@ static NSAffineTransformStruct identityTransform = {
   return AUTORELEASE(path);
 }
 
-- (NSPoint) transformPoint: (NSPoint)point
+- (NSPoint) transformPoint: (NSPoint)aPoint
 {
   NSPoint new;
 
-  new.x = A * point.x + C * point.y + TX;
-  new.y = B * point.x + D * point.y + TY;
+  new.x = A * aPoint.x + C * aPoint.y + TX;
+  new.y = B * aPoint.x + D * aPoint.y + TY;
 
   return new;
 }
 
-- (NSSize) transformSize: (NSSize)size
+- (NSSize) transformSize: (NSSize)aSize
 {
   NSSize new;
 
-  new.width = A * size.width + C * size.height;
+  new.width = A * aSize.width + C * aSize.height;
   if (new.width < 0)
     new.width = - new.width;
-  new.height = B * size.width + D * size.height;
+  new.height = B * aSize.width + D * aSize.height;
   if (new.height < 0)
     new.height = - new.height;
 
@@ -433,21 +433,21 @@ static NSAffineTransformStruct identityTransform = {
   return rotationAngle;
 }
 
-- (void) concatenateWith: (NSAffineTransform*)other
+- (void) concatenateWith: (NSAffineTransform*)anotherMatrix
 {
-  [self appendTransform: other];
+  [self appendTransform: anotherMatrix];
 }
 
-- (void) concatenateWithMatrix: (const float[6])concat
+- (void) concatenateWithMatrix: (const float[6])anotherMatrix
 {
   float newA, newB, newC, newD, newTX, newTY;
 
-  newA = concat[0] * A + concat[1] * C;
-  newB = concat[0] * B + concat[1] * D;
-  newC = concat[2] * A + concat[3] * C;
-  newD = concat[2] * B + concat[3] * D;
-  newTX = concat[4] * A + concat[5] * C + TX;
-  newTY = concat[4] * B + concat[5] * D + TY;
+  newA = anotherMatrix[0] * A + anotherMatrix[1] * C;
+  newB = anotherMatrix[0] * B + anotherMatrix[1] * D;
+  newC = anotherMatrix[2] * A + anotherMatrix[3] * C;
+  newD = anotherMatrix[2] * B + anotherMatrix[3] * D;
+  newTX = anotherMatrix[4] * A + anotherMatrix[5] * C + TX;
+  newTY = anotherMatrix[4] * B + anotherMatrix[5] * D + TY;
 
   A = newA; B = newB;
   C = newC; D = newD;
@@ -607,14 +607,14 @@ static NSAffineTransformStruct identityTransform = {
   replace[5] = matrix.ty;
 }
 
-- (void) takeMatrixFromTransform: (NSAffineTransform *)other
+- (void) takeMatrixFromTransform: (NSAffineTransform *)aTransform
 {
-  matrix.m11 = other->matrix.m11;
-  matrix.m12 = other->matrix.m12;
-  matrix.m21 = other->matrix.m21;
-  matrix.m22 = other->matrix.m22;
-  matrix.tx = other->matrix.tx;
-  matrix.ty = other->matrix.ty;
+  matrix.m11 = aTransform->matrix.m11;
+  matrix.m12 = aTransform->matrix.m12;
+  matrix.m21 = aTransform->matrix.m21;
+  matrix.m22 = aTransform->matrix.m22;
+  matrix.tx = aTransform->matrix.tx;
+  matrix.ty = aTransform->matrix.ty;
 }
 
 

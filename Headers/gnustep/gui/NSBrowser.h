@@ -164,7 +164,7 @@
 - (int) numberOfVisibleColumns;
 - (void) reloadColumn: (int)column;
 - (void) selectAll: (id)sender;
-- (void) selectRow: (int)row inColumn: (int)col;
+- (void) selectRow: (int)row inColumn: (int)column;
 - (int) selectedColumn;
 - (int) selectedRowInColumn: (int)column;
 - (void) setLastColumn: (int)column;
@@ -232,8 +232,8 @@
 //
 // NSCoding protocol
 //
-- (void) encodeWithCoder: aCoder;
-- (id) initWithCoder: aDecoder;
+- (void) encodeWithCoder: (NSCoder *)aCoder;
+- (id) initWithCoder: (NSCoder *)aDecoder;
 
 @end
 

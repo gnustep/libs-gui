@@ -407,13 +407,15 @@ static NSCell	*tileCell = nil;
   associated NSViews, and events generate by the user.  An NSWindow's
   size is defined by its frame rectangle, which encompasses its entire
   structure, and its content rectangle, which includes only the
-  content.  </p>
+  content.  
+  </p>
 
   <p> Every NSWindow has a content view, the NSView which forms the
   root of the window's view hierarchy.  This view can be set using the
   <code>setContentView:</code> method, and accessed through the
   <code>contentView</code> method.  <code>setContentView:</code>
-  replaces the default content view created by NSWindow.  </p>
+  replaces the default content view created by NSWindow.  
+  </p>
 
   <p> Other views may be added to the window by using the content
   view's <code>addSubview:</code> method.  These subviews can also
@@ -421,7 +423,8 @@ static NSCell	*tileCell = nil;
   When an NSWindow must display itself, it causes this hierarchy to
   draw itself.  Leaf nodes in the view hierarchy are drawn last,
   causing them to potentially obscure views further up in the
-  hierarchy.  </p>
+  hierarchy.  
+  </p>
 
   <p> A delegate can be specified for an NSWindow, which will receive
   notifications of events pertaining to the window.  The delegate is
@@ -429,7 +432,8 @@ static NSCell	*tileCell = nil;
   <code>delegate</code>.  The delegate can restrain resizing by
   implementing the <code>windowWillResize: toSize:</code> method, or
   control the closing of the window by implementing
-  <code>windowShouldClose:</code>.  </p> 
+  <code>windowShouldClose:</code>.  
+  </p> 
 
   </unit>
 */
@@ -698,18 +702,22 @@ static NSNotificationCenter *nc = nil;
 /**
   <p> Initializes the receiver with a content rect of
   <var>contentRect</var>, a style mask of <var>styleMask</var>, and a
-  backing store type of <var>backingType</var>.  </p>
+  backing store type of <var>backingType</var>.  
+  </p>
 
   <p> The style mask values are <code>NSTitledWindowMask</code>, for a
   window with a title, <code>NSClosableWindowMask</code>, for a window
   with a close widget, <code>NSMiniaturizableWindowMask</code>, for a
   window with a miniaturize widget, and
   <code>NSResizableWindowMask</code>, for a window with a resizing
-  widget.  These mask values can be OR'd in any combination.  </p>
+  widget.  These mask values can be OR'd in any combination.  
+  </p>
  
   <p> Backing store values are <code>NSBackingStoreBuffered</code>,
   <code>NSBackingStoreRetained</code> and
-  <code>NSBackingStoreNonretained</code>.  </p> */
+  <code>NSBackingStoreNonretained</code>.  
+  </p> 
+*/
 - (id) initWithContentRect: (NSRect)contentRect
 		 styleMask: (unsigned int)aStyle
 		   backing: (NSBackingStoreType)bufferingType
@@ -730,18 +738,22 @@ static NSNotificationCenter *nc = nil;
   backing store type of <var>backingType</var> and a boolean
   <var>flag</var>.  <var>flag</var> specifies whether the window
   should be created now (<code>NO</code>), or when it is displayed
-  (<code>YES</code>).  </p>
+  (<code>YES</code>).  
+  </p>
 
   <p> The style mask values are <code>NSTitledWindowMask</code>, for a
   window with a title, <code>NSClosableWindowMask</code>, for a window
   with a close widget, <code>NSMiniaturizableWindowMask</code>, for a
   window with a miniaturize widget, and
   <code>NSResizableWindowMask</code>, for a window with a resizing
-  widget.  These mask values can be OR'd in any combination.  </p>
+  widget.  These mask values can be OR'd in any combination.  
+  </p>
 
   <p> Backing store values are <code>NSBackingStoreBuffered</code>,
   <code>NSBackingStoreRetained</code> and
-  <code>NSBackingStoreNonretained</code>.  </p> */
+  <code>NSBackingStoreNonretained</code>.  
+  </p> 
+*/
 - (id) initWithContentRect: (NSRect)contentRect
 		 styleMask: (unsigned int)aStyle
 		   backing: (NSBackingStoreType)bufferingType
@@ -2854,6 +2866,30 @@ resetCursorRectsForView(NSView *theView)
 	      break;
 
 	    case GSAppKitWindowFocusOut:
+	      break;
+
+	    case GSAppKitWindowLeave:
+	      /*
+	       * We need to go through all of the views, and if there
+	       * is any with a tracking rectangle then we need to
+	       * determine if we should send a NSMouseExited event.  */
+	      (*ctImp)(self, ctSel, _contentView, theEvent);
+
+	      if (_f.is_key)
+		{
+		  /*
+		   * We need to go through all of the views, and if
+		   * there is any with a cursor rectangle then we need
+		   * to determine if we should send a cursor update
+		   * event.  */
+		  if (_f.cursor_rects_enabled)
+		    (*ccImp)(self, ccSel, _contentView, theEvent);
+		}
+	      
+	      _lastPoint = NSMakePoint(-1, -1);
+	      break;
+
+	    case GSAppKitWindowEnter:
 	      break;
 
 

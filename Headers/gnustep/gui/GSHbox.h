@@ -88,7 +88,7 @@
 -(void) addView: (NSView *)aView;
 
 -(void) addView: (NSView *)aView
-enablingXResizing: (BOOL)flag;
+enablingXResizing: (BOOL)aFlag;
 
 -(void) addView: (NSView *)aView
  withMinXMargin: (float)aMargin;
@@ -97,7 +97,7 @@ enablingXResizing: (BOOL)flag;
   // enablingXResizing is YES if the {view and its margins} should be
   // resized when the GSHbox is resized in the horizontal direction.
   // FALSE does not resize it.  Default is YES.
-enablingXResizing: (BOOL)flag
+enablingXResizing: (BOOL)aFlag
   // With a GSHbox, only one margin is set when you add views to the GSHbox: 
   // the margin between each view and the preceding one. 
   // Exception: the first view is special, and has no margin set (it has no 

@@ -45,8 +45,7 @@
 @end
 
 @implementation NSTableHeaderView
-{
-}
+
 /*
  *
  * Class methods

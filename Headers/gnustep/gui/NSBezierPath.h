@@ -86,11 +86,11 @@ typedef enum {
 //
 // Immediate mode drawing of common paths
 //
-+ (void)fillRect:(NSRect)rect;
-+ (void)strokeRect:(NSRect)rect;
-+ (void)clipRect:(NSRect)rect;
++ (void)fillRect:(NSRect)aRect;
++ (void)strokeRect:(NSRect)aRect;
++ (void)clipRect:(NSRect)aRect;
 + (void)strokeLineFromPoint:(NSPoint)point1 toPoint:(NSPoint)point2;
-+ (void)drawPackedGlyphs:(const char *)packedGlyphs atPoint:(NSPoint)point;
++ (void)drawPackedGlyphs: (const char *)packedGlyphs atPoint: (NSPoint)aPoint;
 
 //
 // Default path rendering parameters
@@ -185,7 +185,7 @@ typedef enum {
 //
 // Appending common paths
 //
-- (void)appendBezierPath:(NSBezierPath *)path;
+- (void)appendBezierPath:(NSBezierPath *)aPath;
 - (void)appendBezierPathWithRect:(NSRect)rect;
 - (void)appendBezierPathWithPoints:(NSPoint *)points count:(int)count;
 - (void)appendBezierPathWithOvalInRect:(NSRect)aRect;

@@ -168,12 +168,12 @@ typedef enum {
 /*************************** Helper objects ***************************/
 
 - (NSTextStorage *) textStorage;
-- (void) setTextStorage: (NSTextStorage *)textStorage;
+- (void) setTextStorage: (NSTextStorage *)aTextStorage;
 
 - (void) replaceTextStorage: (NSTextStorage *)newTextStorage;
 
 - (id) delegate;
-- (void) setDelegate: (id)delegate;
+- (void) setDelegate: (id)aDelegate;
 
 /**************************** Containers ****************************/
 
@@ -184,21 +184,21 @@ typedef enum {
 		     atIndex: (unsigned)index;
 - (void) removeTextContainerAtIndex: (unsigned)index;
 
-- (void) textContainerChangedGeometry: (NSTextContainer *)container;
-- (void) textContainerChangedTextView: (NSTextContainer *)container;
+- (void) textContainerChangedGeometry: (NSTextContainer *)aContainer;
+- (void) textContainerChangedTextView: (NSTextContainer *)aContainer;
 
 /************************** Invalidation primitives **************************/
 
-- (void) invalidateGlyphsForCharacterRange: (NSRange)charRange 
-			    changeInLength: (int)delta 
-		      actualCharacterRange: (NSRange *)actualCharRange;
-- (void) invalidateLayoutForCharacterRange: (NSRange)charRange 
+- (void) invalidateGlyphsForCharacterRange: (NSRange)aRange 
+			    changeInLength: (int)lengthChange 
+		      actualCharacterRange: (NSRange *)actualRange;
+- (void) invalidateLayoutForCharacterRange: (NSRange)aRange 
 				    isSoft: (BOOL)flag 
-		      actualCharacterRange: (NSRange *)actualCharRange;
+		      actualCharacterRange: (NSRange *)actualRange;
 
-- (void) invalidateDisplayForGlyphRange: (NSRange)glyphRange;
+- (void) invalidateDisplayForGlyphRange: (NSRange)aRange;
 #ifndef STRICT_40
-- (void) invalidateDisplayForCharacterRange: (NSRange)charRange;
+- (void) invalidateDisplayForCharacterRange: (NSRange)aRange;
 #endif
 
 /******************* Invalidation sent by NSTextStorage *******************/
@@ -223,13 +223,13 @@ typedef enum {
 
 /************************ Adding and removing glyphs ************************/
 
-- (void) insertGlyph: (NSGlyph)glyph   atGlyphIndex: (unsigned)glyphIndex 
+- (void) insertGlyph: (NSGlyph)aGlyph   atGlyphIndex: (unsigned)glyphIndex 
       characterIndex: (unsigned)charIndex;
 
 - (void) replaceGlyphAtIndex: (unsigned)glyphIndex 
 		   withGlyph: (NSGlyph)newGlyph;
 
-- (void) deleteGlyphsInRange: (NSRange)glyphRange;
+- (void) deleteGlyphsInRange: (NSRange)aRange;
 
 - (void) setCharacterIndex: (unsigned)charIndex 
 	   forGlyphAtIndex: (unsigned)glyphIndex;
@@ -250,7 +250,7 @@ typedef enum {
 /************************ Set/Get glyph attributes ************************/
 
 - (void) setIntAttribute: (int)attributeTag 
-		   value: (int)val 
+		   value: (int)anInt
 	 forGlyphAtIndex: (unsigned)glyphIndex;
 
 - (int) intAttribute: (int)attributeTag  
@@ -261,7 +261,7 @@ typedef enum {
 
 /************************ Set/Get layout attributes ************************/
 
-- (void) setTextContainer: (NSTextContainer *)container 
+- (void) setTextContainer: (NSTextContainer *)aTextContainer 
 	    forGlyphRange: (NSRange)glyphRange;
 
 - (void) setLineFragmentRect: (NSRect)fragmentRect 
@@ -282,7 +282,7 @@ forStartOfGlyphRange: (NSRange)glyphRange;
 	      forGlyphAtIndex: (unsigned)glyphIndex;
 
 - (NSTextContainer *) textContainerForGlyphAtIndex: (unsigned)glyphIndex 
-				    effectiveRange: (NSRange *)effectiveGlyphRange;
+				    effectiveRange: (NSRange *)effectiveRange;
 
 - (NSRect) usedRectForTextContainer: (NSTextContainer *)container;
 
@@ -327,7 +327,7 @@ forStartOfGlyphRange: (NSRange)glyphRange;
 			  rectCount: (unsigned *)rectCount;
 
 - (NSRect) boundingRectForGlyphRange: (NSRange)glyphRange 
-		     inTextContainer: (NSTextContainer *)container;
+		     inTextContainer: (NSTextContainer *)aTextContainer;
 
 - (NSRange) glyphRangeForBoundingRect: (NSRect)bounds 
 		      inTextContainer: (NSTextContainer *)container;

@@ -79,8 +79,8 @@
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
+- (void)encodeWithCoder: (NSCoder *)aCoder;
+- initWithCoder: (NSCoder *)aDecoder;
 
 @end
 

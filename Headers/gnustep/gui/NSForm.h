@@ -58,9 +58,9 @@
 //
 - (void)setBezeled:(BOOL)flag;
 - (void)setBordered:(BOOL)flag;
-- (void)setTextAlignment:(int)mode;
+- (void)setTextAlignment:(int)aMode;
 - (void)setTextFont:(NSFont*)fontObject;
-- (void)setTitleAlignment:(NSTextAlignment)mode;
+- (void)setTitleAlignment:(NSTextAlignment)aMode;
 - (void)setTitleFont:(NSFont*)fontObject;
 
 //

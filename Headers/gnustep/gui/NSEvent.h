@@ -328,6 +328,8 @@ typedef enum {
   GSAppKitWindowMiniaturize,
   GSAppKitWindowFocusIn,
   GSAppKitWindowFocusOut,
+  GSAppKitWindowLeave,
+  GSAppKitWindowEnter,
   GSAppKitDraggingEnter,
   GSAppKitDraggingUpdate,
   GSAppKitDraggingStatus,

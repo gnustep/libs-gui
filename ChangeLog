@@ -1,3 +1,25 @@
+2002-01-25  Adam Fedor  <fedor@gnu.org>
+
+
+	* Documentation/gsdoc/GNUmakefile: Remove autogsdoc processing
+	* Source/GNUmakefile: Moved to here.
+
+	* Headers/gnustep/gui/GSHbox.h, GSVbox.h, NSAffineTransform.h,
+	NSApplication.h, NSBezierPath.h, NSBitmapImageRep.h, 
+	NSBrowser.h, NSBrowserCell.h, NSCell.h, NSColorWell.h, NSDataLink.h,
+	NSDataLinkManager.h, NSDataLinkPanel.h, NSForm.h, NSHelpPanel.h, 
+	NSImage.h, NSLayoutManager.h, NSMatrix.h, NSParagraphStyle.h, 
+	NSPasteboard.h, NSPopUpButtonCell.h, NSProgressIndicator.h, 
+	NSSavePanel.h, NSSelection.h, NSStepperCell.h, NSText.h, 
+	NSTextFieldCell.h: Sync interface/impl declarations for autogsdoc.
+	* Source/GSTable.m, NSAffineTransform.m, NSApplication.m,
+	NSBitmapImageRep.m, NSGraphicsContext.m, NSSlider.m, 
+	NSTableHeaderView.m, NSText.m, 
+
+	* Headers/gnustep/gui/NSEvent.h: Two new AppKit events.
+	* Source/NSWindow.m ([NSWindow -sendEvent:]): Implement response
+	for GSAppKitWindowLeave event.
+
 2002-01-24  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSBundleAdditions.m ([NSBundle

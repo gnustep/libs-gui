@@ -150,9 +150,9 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
  * Getting, removing, and posting events
  */
 - (NSEvent*) currentEvent;
-- (void) discardEventsMatchingMask: (unsigned)mask
+- (void) discardEventsMatchingMask: (unsigned int)mask
 		       beforeEvent: (NSEvent*)lastEvent;
-- (NSEvent*) nextEventMatchingMask: (unsigned)mask
+- (NSEvent*) nextEventMatchingMask: (unsigned int)mask
 			 untilDate: (NSDate*)expiration
 			    inMode: (NSString*)mode
 			   dequeue: (BOOL)flag;

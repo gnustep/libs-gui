@@ -311,7 +311,7 @@ static Class cellClass;
   return [_cell indexOfTickMarkAtPoint: point];
 }
 
-- (int) numberOfTickMarks;
+- (int) numberOfTickMarks
 {
   return [_cell numberOfTickMarks];
 }

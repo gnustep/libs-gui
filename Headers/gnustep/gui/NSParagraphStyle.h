@@ -136,7 +136,7 @@ typedef enum _NSLineBreakMode {		/* What to do with long lines */
 
 - (void) setLineSpacing: (float)aFloat;
 - (void) setParagraphSpacing: (float)aFloat;
-- (void) setAlignment: (NSTextAlignment)alignment;
+- (void) setAlignment: (NSTextAlignment)newAlignment;
 - (void) setFirstLineHeadIndent: (float)aFloat;
 - (void) setHeadIndent: (float)aFloat;
 - (void) setTailIndent: (float)aFloat;

@@ -49,8 +49,6 @@
 @end
 
 @implementation GSTable: NSView
-{
-}
 //
 // Class Methods
 //
@@ -311,7 +309,7 @@
  withMinXMargin: (float)minXMargin
      maxXMargin: (float)maxXMargin
      minYMargin: (float)minYMargin
-     maxYMargin: (float)maxYMargin;
+     maxYMargin: (float)maxYMargin
 {
   int jailNumber;
   NSRect oldFrame;
@@ -715,80 +713,80 @@
 // Setting Row and Column Expand Flag
 // 
 -(void) setXResizingEnabled: (BOOL)aFlag
-		  forColumn: (int)column
+		  forColumn: (int)aColumn
 {
-   if (column > (_numberOfColumns - 1)) 
+   if (aColumn > (_numberOfColumns - 1)) 
     {
       NSLog (@"Warning: argument column is > (numberOfColumns - 1)\n");
       return;
     }
-  if (column < 0)
+  if (aColumn < 0)
     {
       NSLog (@"Warning: argument column is < 0\n");
       return;
     }
-  if ((_expandColumn[column] == YES) && (aFlag == NO))
+  if ((_expandColumn[aColumn] == YES) && (aFlag == NO))
     {    
       _expandingColumnNumber--;
-      _expandColumn[column] = aFlag;
+      _expandColumn[aColumn] = aFlag;
     }
-  else if ((_expandColumn[column] == NO) && (aFlag == YES))
+  else if ((_expandColumn[aColumn] == NO) && (aFlag == YES))
     {
       _expandingColumnNumber++;
-      _expandColumn[column] = aFlag;
+      _expandColumn[aColumn] = aFlag;
     }
 }
--(BOOL) isXResizingEnabledForColumn: (int)column
+-(BOOL) isXResizingEnabledForColumn: (int)aColumn
 {
-  if (column > (_numberOfColumns - 1)) 
+  if (aColumn > (_numberOfColumns - 1)) 
     {
       NSLog (@"Warning: argument column is > (numberOfColumns - 1)\n");
       return NO;
     }  
-  if (column < 0)
+  if (aColumn < 0)
     {
       NSLog (@"Warning: argument column is < 0\n");
       return NO;
     }
-  return _expandColumn[column];
+  return _expandColumn[aColumn];
 }
 -(void) setYResizingEnabled: (BOOL)aFlag
-		     forRow: (int)row
+		     forRow: (int)aRow
 {
-  if (row > (_numberOfRows - 1)) 
+  if (aRow > (_numberOfRows - 1)) 
     {
       NSLog (@"Warning: argument row is > (numberOfRows - 1)\n");
       return;
     }
-  if (row < 0)
+  if (aRow < 0)
     {
       NSLog (@"Warning: argument row is < 0\n");
       return;
     }
-  if ((_expandRow[row] == YES) && (aFlag == NO))
+  if ((_expandRow[aRow] == YES) && (aFlag == NO))
     {
       _expandingRowNumber--;
-      _expandRow[row] = aFlag;
+      _expandRow[aRow] = aFlag;
     }
-  else if ((_expandRow[row] == NO) && (aFlag == YES))
+  else if ((_expandRow[aRow] == NO) && (aFlag == YES))
     {
       _expandingRowNumber++;
-      _expandRow[row] = aFlag;
+      _expandRow[aRow] = aFlag;
     }
 }
--(BOOL) isYResizingEnabledForRow: (int)row
+-(BOOL) isYResizingEnabledForRow: (int)aRow
 {
-  if (row > (_numberOfRows - 1)) 
+  if (aRow > (_numberOfRows - 1)) 
     {
       NSLog (@"Warning: argument row is > (numberOfRows - 1)\n");
       return NO;
     }
-  if (row < 0)
+  if (aRow < 0)
     {
       NSLog (@"Warning: argument row is < 0\n");
       return NO;
     }
-  return _expandRow[row];
+  return _expandRow[aRow];
 }
 //
 // Getting Row and Column Number

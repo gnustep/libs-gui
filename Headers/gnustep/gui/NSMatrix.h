@@ -224,11 +224,11 @@ typedef enum _NSMatrixMode {
 - (void) selectText: (id)sender;
 - (id) selectTextAtRow: (int)row
 		column: (int)column;
-- (void) textDidBeginEditing: (NSNotification *)notification;
-- (void) textDidChange: (NSNotification *)notification;
-- (void) textDidEndEditing: (NSNotification *)notification;
-- (BOOL) textShouldBeginEditing: (NSText *)textObject;
-- (BOOL) textShouldEndEditing: (NSText *)textObject;
+- (void) textDidBeginEditing: (NSNotification *)aNotification;
+- (void) textDidChange: (NSNotification *)aNotification;
+- (void) textDidEndEditing: (NSNotification *)aNotification;
+- (BOOL) textShouldBeginEditing: (NSText *)aTextObject;
+- (BOOL) textShouldEndEditing: (NSText *)aTextObject;
 
 /*
  * Setting Tab Key Behavior 
