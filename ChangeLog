@@ -1,3 +1,15 @@
+2003-02-02  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView.m
+	Rewrote all the toolbar methods. Implemented [zoom:]. Extracted
+	new method [_terminateBackendWindow] from [dealloc] and use it to
+	implement one shot windows in the orderOut case of
+	[orderWindow:relativeTo:]. Removed frame restriction from
+	[setFrameFromString:]  as this gets done in
+	[setFrame:display:]. Use [NSScreen visibleFrame] here and in
+	[stringWithSavedFrame]. Implemented [cascadeTopLeftFromPoint:].
+	Removed unused and empty methods [performHide:] and [performUnhide:].
+	
 2003-02-01 15:09  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSTextView.m (-shouldChangeTextInRange:replacementString:):
