@@ -373,6 +373,7 @@
 	  column = [columns objectAtIndex: _resizedColumn];
 	  if ([column isResizable] == NO)
 	    {
+	      _resizedColumn = -1;
 	      return;
 	    }
 	  /* We use p as a temporary variable for a while */
@@ -741,10 +742,7 @@
 	      [_tableView _didClickTableColumn:
 			   currentColumn];
 
-	      [self lockFocus];
-	      [self drawRect: [self headerRectOfColumn: columnIndex]];
-	      [self unlockFocus];
-	      [_window flushWindow];
+	      [self setNeedsDisplay: YES];;
 	    }
 	  else // mouseDragged == YES
 	    {
@@ -827,10 +825,7 @@
 	      [_tableView _didClickTableColumn:
 			   currentColumn];
 
-	      [self lockFocus];
-	      [self drawRect: [self headerRectOfColumn: columnIndex]];
-	      [self unlockFocus];
-	      [_window flushWindow];
+	      [self setNeedsDisplay: YES];
 	      /*	      
 	      if ([_tableView highlightedTableColumn] != currentColumn)
 		{

@@ -5,6 +5,8 @@
 	rowIndex == _numberOfRows was not catched as invalid.
 	* Source/NSTableView.m ([NSTableView -draggingUpdated:sender]): 
 	Less NSLog.
+	* Source/NSTableHeaderView.m ([NSTableHeaderView -mouseDown:]):
+	fixed drawing issue.
 	
 2002-03-21  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
