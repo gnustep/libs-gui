@@ -1,3 +1,36 @@
+2001-09-15  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Header/gnustep/gui/NSApplication.h
+	Added some new MacOSX methods.
+	* Source/NSApplication.m
+	Dummy implementation for [hideOtherApplications:] and
+	[unhideAllApplications:]. Simple implementation for
+	[runModalForWindow:relativeToWindow:], [endSheet:] and [beginSheet:...].
+	Removed various uneeded [update] and [sizeToFit] calls for menu operations.
+	* Header/gnustep/gui/NSSavePanel.h
+	Added some new MacOSX methods. Removed ivar _selfHasShowExtensionFilter.
+	* Source/NSSavePanel.m
+	Implemented [URL]. New methods [_setupForDirectory:file:] and
+	[_shouldShowExtension:isDir:]. Removed check for extension filter
+	in [init]. Simplified [runModalForDirectory:file:]. Implemented
+	[runModalForDirectory:...relativeToWindow:] and
+	[beginSheetForDirectory:...]. In [browser:createRowsForColumn:inMatrix:]
+	allways call [_shouldShowExtension:isDir:].
+	* Header/gnustep/gui/NSOpenPanel.h
+	Added some new MacOSX methods.
+	* Source/NSOpenPanel.m
+	Implemented [URLs]. New method [_setupForDirectory:file:]. Simplified 
+	[runModalForDirectory:file:types:]. Implemented
+	[runModalForDirectory:...relativeToWindow:] and [beginSheetForDirectory:...].
+	Declare all needed private methods from NSSavePanel.
+	* Header/gnustep/gui/NSAttributedString.h
+	Added method [NSMutableAttributedString
+	readFromURL:options:documentAttributes:]. 
+	* Source/NSAttributedString.m
+	Implemented [readFromURL:options:documentAttributes:]. In
+	[applyFontTraits:range:] use [NSFontManager
+	convertFont:toHaveTrait:] instead of explicit font creation.
+	
 2001-09-16  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSImage.m (-initByReferencingFile:): set archiveByName.
