@@ -1,3 +1,8 @@
+2002-11-24 00:56  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSFontInfo.m (-defaultLineHeightForFont): Round the linegap
+	to whole points.
+
 2002-11-23 22:55  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSSecureTextField: Update to work with new text system.

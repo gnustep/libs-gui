@@ -25,6 +25,8 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
+#include <math.h>
+
 #include <AppKit/GSFontInfo.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSString.h>
@@ -337,7 +339,7 @@ static GSFontEnumerator *sharedEnumerator = nil;
 - (float) defaultLineHeightForFont
 {
   // ascent plus descent plus some suitable linegap
-  return [self ascender] - [self descender] + [self pointSize]/ 11.0;
+  return [self ascender] - [self descender] + ceil([self pointSize]/ 11.0);
 }
 
 - (NSSize) advancementForGlyph: (NSGlyph)aGlyph
