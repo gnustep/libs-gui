@@ -1,6 +1,10 @@
+Thu Sep 16  8:38:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSBrowserCell.m: Fix for positioning of leaf images.
+
 Thu Sep 16  7:11:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
-	* NSBrowser.m: ([-setPath:]) ensure column zero is loaded - patch
+	* Source/NSBrowser.m: ([-setPath:]) ensure column zero is loaded - patch
 	from Tim Bissell.
 
 1999-09-13  Pedro Ivo Andrade Tavares  <ptavares@iname.com>

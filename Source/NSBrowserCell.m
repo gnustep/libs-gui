@@ -285,7 +285,9 @@ static Class	colorClass;
 	  image_rect.size.height = cellFrame.size.height;
 	  image_rect.size.width = image_rect.size.height;
 													  // Right justify
-	  image_rect.origin.x += cellFrame.size.width- image_rect.size.width;
+	  image_rect.origin.x += cellFrame.size.width - image_rect.size.width;
+	  image_rect.origin.y
+	    = MAX(NSMidY(image_rect) - ([image size].height/2.),0.);
 	}
       else
 	image_rect = NSZeroRect;
@@ -300,7 +302,9 @@ static Class	colorClass;
 	  image_rect.size.height = cellFrame.size.height;
 	  image_rect.size.width = image_rect.size.height;
 	  // Right justify
-	  image_rect.origin.x += cellFrame.size.width- image_rect.size.width;
+	  image_rect.origin.x += cellFrame.size.width - image_rect.size.width;
+	  image_rect.origin.y
+	    = MAX(NSMidY(image_rect) - ([image size].height/2.),0.);
 	}
       else
 	image_rect = NSZeroRect;
@@ -312,19 +316,15 @@ static Class	colorClass;
 
   if (image)
     {
-      NSSize size;
-      NSPoint position;
+      NSPoint position = image_rect.origin;
 
       [image setBackgroundColor: backColor];
-      size = [image size];
-      position.x = MAX(NSMidX(cellFrame) - (size.width/2.),0.);
-      position.y = MAX(NSMidY(cellFrame) - (size.height/2.),0.);
       /*
        * Images are always drawn with their bottom-left corner at the origin
        * so we must adjust the position to take account of a flipped view.
        */
       if ([control_view isFlipped])
-	position.y += size.height;
+	position.y += [image size].height;
       [image compositeToPoint: position operation: NSCompositeCopy];
     }
 }
