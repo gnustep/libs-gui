@@ -51,6 +51,8 @@
 #include <AppKit/GSWraps.h>
 #include <AppKit/PSOperators.h>
 #include <AppKit/NSAffineTransform.h>
+#include <AppKit/NSScrollView.h>
+#include <AppKit/NSClipView.h>
 
 struct NSWindow_struct 
 {
@@ -1656,13 +1658,90 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 {}
 
 - (void) scrollPoint: (NSPoint)aPoint
-{}
+{
+  NSClipView	*s = (NSClipView*)super_view;
+
+  while (s != nil && [s isKindOfClass: [NSClipView class]] == NO)
+    {
+      s = (NSClipView*)[s superview];
+    }
+
+  aPoint = [self convertPoint: aPoint toView: s];
+  if (NSEqualPoints(aPoint, [s bounds].origin) == NO)
+    {
+      id	cSuper = [s superview];
+
+      aPoint = [s constrainScrollPoint: aPoint];
+      [s scrollToPoint: aPoint];
+
+      if ([cSuper respondsToSelector:@selector(reflectScrolledClipView:)])
+	[(NSScrollView *)cSuper reflectScrolledClipView: s];
+    }
+}
 
 - (void) scrollRect: (NSRect)aRect by: (NSSize)delta
 {}
 
 - (BOOL) scrollRectToVisible: (NSRect)aRect
 {
+  NSClipView	*s = (NSClipView*)super_view;
+
+  while (s != nil && [s isKindOfClass: [NSClipView class]] == NO)
+    {
+      s = (NSClipView*)[s superview];
+    }
+  if (s != nil)
+    {
+      NSRect	vRect = [self visibleRect];
+      NSPoint	aPoint = vRect.origin;
+      BOOL	shouldScroll = NO;
+
+      if (vRect.size.width == 0 && vRect.size.height == 0)			
+	return NO;
+      
+      if (!(NSMinX(vRect) <= NSMinX(aRect) 		
+	&& (NSMaxX(vRect) >= NSMaxX(aRect))))		
+	{
+	  shouldScroll = YES;
+	  if (aRect.origin.x < vRect.origin.x)
+	    aPoint.x = aRect.origin.x;
+	  else
+	    {
+	      float	visibleRange = vRect.origin.x + vRect.size.width;
+	      float	aRectRange = aRect.origin.x + aRect.size.width;
+
+	      aPoint.x = vRect.origin.x + (aRectRange - visibleRange);
+	    }
+	}
+
+      if (!(NSMinY(vRect) <= NSMinY(aRect) 
+	&& (NSMaxY(vRect) >= NSMaxY(aRect))))		
+	{
+	  shouldScroll = YES;
+	  if (aRect.origin.y < vRect.origin.y)
+	    aPoint.y = aRect.origin.y;
+	  else
+	    {
+	      float	visibleRange = vRect.origin.y + vRect.size.height;
+	      float	aRectRange = aRect.origin.y + aRect.size.height;
+
+	      aPoint.y = vRect.origin.y + (aRectRange - visibleRange);
+	    }
+	}
+
+      if (shouldScroll)
+	{
+	  id		cSuper = [s superview];
+
+	  aPoint = [self convertPoint: aPoint toView: s];
+	  aPoint = [s constrainScrollPoint: aPoint];
+	  [s scrollToPoint: aPoint];
+	  if ([cSuper respondsToSelector:@selector(reflectScrolledClipView:)])
+	    [(NSScrollView *)cSuper reflectScrolledClipView: s];
+
+	  return YES;
+	}
+    }
   return NO;
 }
 

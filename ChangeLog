@@ -1,7 +1,11 @@
-Wed Jul 14 15:35:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+Wed Jul 14 16:20:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSMatrix.m: Modifications to get rid of most internal
 	methods and get the list-mode selection by rectangle working.
+	* Source/NSView.m: Implemented ([scrollPoint:]) and
+	([scrollrectToVisible:]) (based on mGSTEP).  Code probably buggy
+	and untested.
+	* Source/NSActionCell.m: Minor optimisations.
 
 Tue Jul 13  6:44:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
