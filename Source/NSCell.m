@@ -500,7 +500,7 @@
 
 - (BOOL) isOpaque
 {
-  return cell_bezeled;
+  return NO;
 }
 
 - (void) setBezeled: (BOOL)flag
@@ -617,13 +617,6 @@
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
   cellFrame = NSInsetRect(cellFrame, xDist, yDist);
-
-  // Clear the cell frame
-  if ([self isOpaque])
-    {
-      [[NSColor lightGrayColor] set];
-      NSRectFill(cellFrame);
-    }
 
   switch ([self type])
     {

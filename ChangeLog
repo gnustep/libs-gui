@@ -1,3 +1,12 @@
+Wed Mar  3 08:53:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSCell.m: ([-drawInteriorWithFrame:inView:]) don't draw
+	background - NSCell shouldn't draw backgrounds even if opaque -
+	it's the responsibility of the subclass.
+	([-isOpaque]) Fixed to return NO as it should.
+	* Source/NSTextFieldCell.m: ([-drawInteriorWithFrame:inView:])
+	handle drawing background if necessary before calling method in super.
+
 Tue Mar  2 13:27:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSView.m: Bugfix in redisplay - avoid views being redrawn

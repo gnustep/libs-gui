@@ -229,6 +229,18 @@
   [super setStringValue:aString];
 }
 
+- (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
+{
+  if (draw_background)
+    {
+      NSRect	backgroundRect = NSInsetRect(cellFrame, xDist, yDist);
+
+      [background_color set];
+      NSRectFill(backgroundRect);
+    }
+  [super drawInteriorWithFrame: cellFrame inView: controlView];
+}
+
 //
 // NSCoding protocol
 //
