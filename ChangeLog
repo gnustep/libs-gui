@@ -1,3 +1,14 @@
+2002-10-07  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSBrowser.m (-frameOfColumn:, -tile): Change distance
+	between columns from 1 to 2. (Patch from Serg Stoyan
+	<stoyan@hologr.com>)
+
+	* Source/NSGraphicsContext.m (-GSSetFillColorspace:):Take
+	void * argument 
+	(-GSSetStrokeColorspace:): Idem.
+	(-GSSetFont:): Idem.
+
 2002-10-06  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSBundleAdditions.m: Implemented the following classes:

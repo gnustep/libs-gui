@@ -227,8 +227,8 @@ APPKIT_EXPORT NSGraphicsContext	*GSCurrentContext();
 - (void) DPSsethsbcolor: (float)h : (float)s : (float)b;
 - (void) DPSsetrgbcolor: (float)r : (float)g : (float)b;
 
-- (void) GSSetFillColorspace: (NSDictionary *)dict;
-- (void) GSSetStrokeColorspace: (NSDictionary *)dict;
+- (void) GSSetFillColorspace: (void *)spaceref;
+- (void) GSSetStrokeColorspace: (void *)spaceref;
 - (void) GSSetFillColor: (float *)values;
 - (void) GSSetStrokeColor: (float *)values;
 
@@ -246,7 +246,7 @@ APPKIT_EXPORT NSGraphicsContext	*GSCurrentContext();
 - (void) DPSyshow: (const char*)s : (const float*)numarray : (int)size;
 
 - (void) GSSetCharacterSpacing: (float)extra;
-- (void) GSSetFont: (NSFont*)font;
+- (void) GSSetFont: (void *)fontref;
 - (void) GSSetFontSize: (float)size;
 - (NSAffineTransform *) GSGetTextCTM;
 - (NSPoint) GSGetTextPosition;

@@ -772,7 +772,7 @@ NSGraphicsContext	*GSCurrentContext()
    using the GSColorSpaceName key.</p>
    <p>Other colorspaces will be documented later (Quartz). </p>
 */
-- (void) GSSetFillColorspace: (NSDictionary *)dict
+- (void) GSSetFillColorspace: (void *)spaceref
 {
   [self subclassResponsibility: _cmd];
 }
@@ -780,7 +780,7 @@ NSGraphicsContext	*GSCurrentContext()
 /** Sets the colorspace for stroke operations based on the values in
     the supplied dictionary. See -GSSetFillColorspace: for a
     description of the values that need to be supplied (Quartz). */
-- (void) GSSetStrokeColorspace: (NSDictionary *)dict
+- (void) GSSetStrokeColorspace: (void *)spaceref
 {
   [self subclassResponsibility: _cmd];
 }
@@ -883,8 +883,8 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-/** Set the current NSFont object for drawing glyphs. (DPS, Quartz). */
-- (void) GSSetFont: (NSFont*)font
+/** Set the current font for drawing glyphs. (DPS, Quartz). */
+- (void) GSSetFont: (void *)fontref
 {
   [self subclassResponsibility: _cmd];
 }

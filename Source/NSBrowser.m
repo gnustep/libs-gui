@@ -1509,9 +1509,9 @@ static NSTextFieldCell *titleCell;
   if (_hasHorizontalScroller)
     {
       if (_separatesColumns)
-	r.origin.y = (scrollerWidth - 2) + (2 * bs.height) + NSBR_VOFFSET;
+ 	r.origin.y = (scrollerWidth - 1) + (2 * bs.height) + NSBR_VOFFSET;
       else
-	r.origin.y = scrollerWidth + 2;
+	r.origin.y = scrollerWidth + bs.width;
     }
 
   // Padding : _columnSize.width is rounded in "tile" method
@@ -1571,17 +1571,13 @@ static NSTextFieldCell *titleCell;
   if (_hasHorizontalScroller)
     {
       _scrollerRect.origin.x = bs.width;
-      
-      // 	  if (_separatesColumns)
-      //       _scrollerRect.origin.y = bs.height;
-      // 	  else
       _scrollerRect.origin.y = bs.height - 1;
-      
       _scrollerRect.size.width = (_frame.size.width - (2 * bs.width)) + 1;
       _scrollerRect.size.height = scrollerWidth;
       
       if (_separatesColumns)
-	_columnSize.height -= (scrollerWidth - 2) + (2 * bs.height) + NSBR_VOFFSET;
+	_columnSize.height -= (scrollerWidth - 1) + (2 * bs.height) 
+	  + NSBR_VOFFSET;
       else
 	_columnSize.height -= scrollerWidth + (2 * bs.height);
       
