@@ -461,6 +461,23 @@ static Class rulerViewClass = nil;
 			 knobProportion: knobProportion];
 	}
     }
+
+  if (_hasHeaderView)
+    {
+      NSPoint headerClipViewOrigin;
+      
+      headerClipViewOrigin = [_headerClipView bounds].origin;
+
+      // If needed, scroll the headerview too
+      if (headerClipViewOrigin.x != clipViewBounds.origin.x)
+	{
+	  headerClipViewOrigin.x = clipViewBounds.origin.x;
+	  headerClipViewOrigin = [_headerClipView constrainScrollPoint: 
+						    headerClipViewOrigin];
+	  [_headerClipView scrollToPoint: headerClipViewOrigin];
+	}
+    }
+  
 }
 
 - (void) setHorizontalRulerView: (NSRulerView*)aRulerView	// FIX ME
