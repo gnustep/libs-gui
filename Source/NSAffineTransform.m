@@ -1,5 +1,9 @@
 /** <title>NSAffineTransform.m</title>
 
+   <abstract>
+   This class provides a way to perform affine transforms.  It provides 
+   a matrix for transforming from one coordinate system to another.
+   </abstract>
    Copyright (C) 1996,1999 Free Software Foundation, Inc.
 
    Author: Ovidiu Predescu <ovidiu@net-community.com>
@@ -59,6 +63,9 @@ static NSAffineTransformStruct identityTransform = {
    1.0, 0.0, 0.0, 1.0, 0.0, 0.0
 };
 
+/**
+ * Return an autoreleased instance of this class.
+ */
 + (NSAffineTransform*) transform
 {
   NSAffineTransform	*t;
@@ -68,6 +75,9 @@ static NSAffineTransformStruct identityTransform = {
   return AUTORELEASE(t);
 }
 
+/**
+ * Return an autoreleased instance of this class.
+ */
 + (id) new
 {
   NSAffineTransform	*t;
@@ -77,6 +87,11 @@ static NSAffineTransformStruct identityTransform = {
   return t;
 }
 
+/**
+ * Appends one transform matrix to another.  It does this by performing a
+ * matrix multiplication of the receiver with aTransform.   The resulting
+ * matrix then replaces the receiver.
+ */
 - (void) appendTransform: (NSAffineTransform*)aTransform
 {
   float newA, newB, newC, newD, newTX, newTY;
@@ -93,6 +108,10 @@ static NSAffineTransformStruct identityTransform = {
   TX = newTX; TY = newTY;
 }
 
+/**
+ * Concatenates the receiver's matrix with the one in the current graphics 
+ * context.
+ */
 - (void) concat
 {
   float m[6];
@@ -105,18 +124,27 @@ static NSAffineTransformStruct identityTransform = {
   PSconcat(m);
 }
 
+/**
+ * Initialize the transformation matrix.
+ */ 
 - (id) init
 {
   matrix = identityTransform;
   return self;
 }
 
+/**
+ * Initialize the receiever's instance with the instance represented by aTransform. 
+ */
 - (id) initWithTransform: (NSAffineTransform*)aTransform
 {
   matrix = aTransform->matrix;
   return self;
 }
 
+/**
+ * Calculates the inverse of the receiver's matrix and replaces the receiever's matrix with it.
+ */
 - (void) invert
 {
   float newA, newB, newC, newD, newTX, newTY;
@@ -163,6 +191,10 @@ static NSAffineTransformStruct identityTransform = {
   TX = newTX; TY = newTY;
 }
 
+/**
+ * Rotates the transformation matrix of the receiver counter-clockwise 
+ * by the number of degrees specified by angle.
+ */
 - (void) rotateByDegrees: (float)angle
 {
   float newA, newB, newC, newD;
@@ -177,6 +209,10 @@ static NSAffineTransformStruct identityTransform = {
   C = newC; D = newD;
 }
 
+/**
+ * Rotates the transformation matrix of the receiver counter-clockwise 
+ * by the number of radians specified by angle.
+ */
 - (void) rotateByRadians: (float)angleRad
 {
   float newA, newB, newC, newD;
@@ -190,12 +226,20 @@ static NSAffineTransformStruct identityTransform = {
   C = newC; D = newD;
 }
 
+/**
+ * Scales the transformation matrix of the reciever by the factor specified
+ * by scale.  
+ */
 - (void) scaleBy: (float)scale
 {
   A *= scale; B *= scale;
   C *= scale; D *= scale;
 }
 
+/**
+ * Scales the X axis of the receiver's transformation matrix by scaleX and
+ * the Y axis of the transformation matrix by scaleY.
+ */
 - (void) scaleXBy: (float)scaleX yBy: (float)scaleY
 {
   A *= scaleX; B *= scaleX;
@@ -207,6 +251,12 @@ static NSAffineTransformStruct identityTransform = {
   GSSetCTM(GSCurrentContext(), self);
 }
 
+/**
+ * <p>
+ * Sets the structure which represents the matrix of the reciever. 
+ * The struct is of the form:</p>
+ * <p>{m11, m12, m21, m22, tX, tY}</p>
+ */
 - (void) setTransformStruct: (NSAffineTransformStruct)val
 {
   matrix = val;
@@ -220,6 +270,10 @@ static NSAffineTransformStruct identityTransform = {
   return AUTORELEASE(path);
 }
 
+/**
+ * Transforms a single point based on the transformation matrix.
+ * Returns the resulting point.
+ */
 - (NSPoint) transformPoint: (NSPoint)aPoint
 {
   NSPoint new;
@@ -230,6 +284,10 @@ static NSAffineTransformStruct identityTransform = {
   return new;
 }
 
+/**
+ * Transforms the NSSize represented by aSize using the reciever's 
+ * transformation matrix.  Returns the resulting NSSize.
+ */
 - (NSSize) transformSize: (NSSize)aSize
 {
   NSSize new;
@@ -244,11 +302,20 @@ static NSAffineTransformStruct identityTransform = {
   return new;
 }
 
+/**
+ * <p>
+ * Returns the structure which represents the matrix of the reciever. 
+ * The struct is of the form:</p>
+ * <p>{m11, m12, m21, m22, tX, tY}</p>
+ */
 - (NSAffineTransformStruct) transformStruct
 {
   return matrix;
 }
 
+/**
+ * Scales the receiver's matrix based on the factors tranX and tranY.
+ */
 - (void) translateXBy: (float)tranX  yBy: (float)tranY
 {
   TX += tranX;
@@ -327,6 +394,7 @@ static NSAffineTransformStruct identityTransform = {
   TX = newTX;
   TY = newTY;
 }
+
 
 - (void) makeIdentityMatrix
 {

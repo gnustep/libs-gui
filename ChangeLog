@@ -1,3 +1,8 @@
+2004-01-04 02:32  Gregory John Casamento  <greg_casamento@yahoo.com>
+
+	* Source/NSApplication.m: Documentation.
+	* Source/NSAffineTransform.m: Documentation.
+	
 2004-01-03 23:36  Gregory John Casamento  <greg_casamento@yahoo.com>
 
 	* Source/GSNibTemplates.m: Removed some uneeded includes.
