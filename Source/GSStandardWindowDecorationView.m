@@ -247,7 +247,7 @@ static const NSRectEdge edges[4] = {NSMinXEdge, NSMaxYEdge,
   
       titleSize = [title sizeWithAttributes: titleTextAttributes[inputState]];
       if (titleSize.width <= workRect.size.width)
-	workRect.origin.x += NSMidX(workRect) - titleSize.width / 2;
+	workRect.origin.x = NSMidX(workRect) - titleSize.width / 2;
       workRect.origin.y = NSMidY(workRect) - titleSize.height / 2;
       workRect.size.height = titleSize.height;
       [title drawInRect: workRect

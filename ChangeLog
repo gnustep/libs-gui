@@ -1,4 +1,9 @@
-2004-08-31 14:28  Alexander Malmberg <alexander@malmberg.org>
+2004-08-01 14:55  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSStandardWindowDecorationView.m (-drawTitleBar): Fix
+	the centering of the title.
+
+2004-08-01 14:28  Alexander Malmberg <alexander@malmberg.org>
 
 	* TextConverters/RTF/RTFProducer.m (-_addAttributesString:): Only add
 	attachmentFileWrapper to the attachments array if it isn't nil.
