@@ -619,10 +619,12 @@ typedef enum
 }
 
 -(void) replaceRange:(NSRange)range withString:(NSString*) aString
-{	if([self isRichText])
-	{	return [rtfContent replaceCharactersInRange:range withString:aString];
-	} else return [plainContent replaceCharactersInRange:range withString:aString];
-}
+{
+	if([self isRichText])
+	{ return [rtfContent replaceCharactersInRange:range
+withString:aString];
+	} else return [plainContent replaceCharactersInRange:range
+withString:aString]; }
 
 -(void) setText:(NSString*) aString range:(NSRange) aRange
 {	[self replaceRange:(NSRange)aRange withString:aString];
@@ -641,10 +643,13 @@ typedef enum
 -(void) setString:(NSString *)string
 {	[plainContent release];
 	plainContent=[[NSMutableString stringWithString:string] retain];
-	[lineLayoutInformation autorelease]; lineLayoutInformation=nil;	// force complete re-layout
+	[lineLayoutInformation autorelease]; 
+	lineLayoutInformation=nil;
+	// force complete re-layout
+//	[self setSelectedRange:NSMakeRange(0, [default_font widthOfString:string])];
+	NSLog(@"setSelectedRange called in setString\n");
+	[self setSelectedRange:NSMakeRange(0, 0)];
 	[self setRichText:NO];
-
-	//[self setNeedsDisplay: YES];
 }
 -(void) setText:(NSString *)string {[self setString:string];}
 
@@ -687,11 +692,16 @@ typedef enum
 -(void) setRichText:(BOOL)flag
 {	is_rich_text = flag;
 	if(flag)
-	{	if(!rtfContent) rtfContent=[[NSMutableAttributedString alloc] initWithString:plainContent? (NSString*)plainContent:@"" attributes:[self defaultTypingAttributes]];
-		[self rebuildRichLineLayoutInformationStartingAtLine:0];
-	} else
-	{	if(!plainContent) plainContent=[[NSMutableString alloc] initWithString:rtfContent? [rtfContent string]:@""];
-		[self rebuildPlainLineLayoutInformationStartingAtLine:0];
+	{
+	  if(!rtfContent) {
+    	     rtfContent=[[NSMutableAttributedString alloc] initWithString:plainContent? (NSString*)plainContent:@"" attributes:[self defaultTypingAttributes]];
+	  }
+	  [self rebuildRichLineLayoutInformationStartingAtLine:0];
+	} else {
+	  if(!plainContent) {
+	    plainContent=[[NSMutableString alloc] initWithString:rtfContent? [rtfContent string]:@""];
+	  }
+	  [self rebuildPlainLineLayoutInformationStartingAtLine:0];
 	}
 
 	[self updateDragTypeRegistration];
@@ -846,6 +856,12 @@ typedef enum
 -(void) setSelectedRange:(NSRange)range
 {	BOOL	didLock=NO;
 
+  NSLog(@"setSelectedRange:\n\tcurrentrange location = %d, length = %d. wantedrange location = %d, length = %d\n", 
+(int)selected_range.location,
+(int)selected_range.length,
+(int)range.location,
+(int)range.length);
+
 	if(![self window])
 		return;
 
@@ -890,12 +906,10 @@ typedef enum
 	}
 }
 
+
 //
 // Sizing the Frame Rectangle
 //
--(void) setFrame:(NSRect)frameRect
-{	[super setFrame:frameRect];
-}
 
 -(BOOL) isHorizontallyResizable		{ return is_horizontally_resizable; }
 -(BOOL) isVerticallyResizable		{ return is_vertically_resizable; }
@@ -937,8 +951,16 @@ typedef enum
 -(void) disableDisplay {displayDisabled=YES;}
 -(void) reenableDisplay {displayDisabled=NO;}
 
+-(void) setFrame:(NSRect)frameRect
+{
+  [super setFrame:frameRect];
+  [self sizeToFit];
+}
+
 -(void) sizeToFit
-{	NSRect sizeToRect=[self frame];
+{
+/*
+	NSRect sizeToRect=[self frame];
 	if([self isHorizontallyResizable])
 	{	if([lineLayoutInformation count])
 		{	sizeToRect=[self boundingRectForLineRange:NSMakeRange(0,[lineLayoutInformation count])];
@@ -960,6 +982,7 @@ typedef enum
 	if(!NSEqualSizes([self frame].size,sizeToRect.size))
 	{	[self setFrame:sizeToRect];	//[self setFrameSize:sizeToRect.size];
 	}
+*/
 }
 -(void) sizeToFit:sender {[self sizeToFit];}
 
@@ -1181,6 +1204,8 @@ typedef enum
 
 		didDragging=YES;
 	}
+	NSLog(@"chosenRange. location = % d, length = %d\n",
+(int)chosenRange.location, (int)chosenRange.length);
 	[self setSelectedRangeNoDrawing:chosenRange];
 	if(!didDragging) [self drawSelectionAsRange:chosenRange];
 	else if(chosenRange.length== 0) [self drawInsertionPointAtIndex:chosenRange.location color:[NSColor blackColor] turnedOn:YES];
@@ -1850,26 +1875,27 @@ static unsigned _relocLayoutArray(NSMutableArray *lineLayoutInformation,NSArray 
 // <!> detachNewThreadSelector:selector toTarget:target withObject:argument;
 
 -(int) rebuildPlainLineLayoutInformationStartingAtLine:(int) aLine delta:(int) insertionDelta actualLine:(int) insertionLineIndex
-{	NSDictionary	   *attributes=[self defaultTypingAttributes];
-	NSPoint				drawingPoint=NSZeroPoint;
-   _GNUTextScanner	   *parscanner;
-	float				width=[self frame].size.width;
-	unsigned			startingIndex=0,currentLineIndex;
-   _GNULineLayoutInfo  *lastValidLineInfo=nil;
-	NSArray			   *ghostArray=nil;	// for optimization detection
-   _GNUSeekableArrayEnumerator	   *prevArrayEnum=nil;
-	NSCharacterSet	   *invSelectionWordGranularitySet=[selectionWordGranularitySet invertedSet];
-	NSCharacterSet	   *invSelectionParagraphGranularitySet=[selectionParagraphGranularitySet invertedSet];
-	NSString		   *parsedString;
-	BOOL				isHorizontallyResizable=[self isHorizontallyResizable];
-	int					lineDriftOffset=0,rebuildLineDrift=0;
-	BOOL				frameshiftCorrection=NO,nlDidShift=NO,enforceOpti=NO;
-	float				yDisplacement=0;
-	BOOL				isRich=[self isRichText];
+{	NSDictionary	   	*attributes=[self defaultTypingAttributes];
+	NSPoint			drawingPoint=NSZeroPoint;
+   _GNUTextScanner	   	*parscanner;
+	float			width=[self frame].size.width;
+	unsigned		startingIndex=0,currentLineIndex;
+   _GNULineLayoutInfo  		*lastValidLineInfo=nil;
+	NSArray			*ghostArray=nil;	// for optimization detection
+   _GNUSeekableArrayEnumerator	*prevArrayEnum=nil;
+	NSCharacterSet	   	*invSelectionWordGranularitySet=[selectionWordGranularitySet invertedSet];
+	NSCharacterSet	   	*invSelectionParagraphGranularitySet=[selectionParagraphGranularitySet invertedSet];
+	NSString		*parsedString;
+	BOOL			isHorizontallyResizable=[self isHorizontallyResizable];
+	int			lineDriftOffset=0,rebuildLineDrift=0;
+	BOOL			frameshiftCorrection=NO,nlDidShift=NO,enforceOpti=NO;
+	float			yDisplacement=0;
+	BOOL			isRich=[self isRichText];
 
-	if(!lineLayoutInformation) lineLayoutInformation=[[NSMutableArray alloc] init];
-	else
-	{ 
+	if(!lineLayoutInformation) {
+	  NSLog(@"lineLayoutInformation was just created.\n");
+	  lineLayoutInformation=[[NSMutableArray alloc] init];
+	} else { 
 	NSLog(@"aLine = %d, count = %d\n", (int)aLine,
 (int)[lineLayoutInformation count]);
 
@@ -2110,7 +2136,10 @@ NSLog(@"opti hook 2");
 {	if([self isRichText])
 	{	return [self rebuildRichLineLayoutInformationStartingAtLine:0 delta:0 actualLine:0];
 	} else
-	{	return [self rebuildPlainLineLayoutInformationStartingAtLine:0 delta:0 actualLine:0];
+	{
+	  NSLog(@"- rebuildLineLayout atLine = %d\n", aLine);
+	  return [self rebuildPlainLineLayoutInformationStartingAtLine:0
+		delta:0 actualLine:0];
 	}
 }
 
@@ -2176,6 +2205,12 @@ NSLog(@"opti hook 2");
 
 -(void) drawRect:(NSRect)rect
 {	if(displayDisabled) return;
+
+	NSLog(@"- drawRect: in NSText. x = %d, y = %d, width = %d, height = %d\n",
+(int)rect.origin.x,
+(int)rect.origin.y,
+(int)rect.size.width,
+(int)rect.size.height);
 
 	[self drawRectNoSelection:rect];
 	[self drawSelectionAsRange:[self selectedRange]];

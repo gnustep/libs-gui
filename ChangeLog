@@ -1,3 +1,13 @@
+1999-06-21  Michael Hanni  <mhanni@sprintmail.com>
+
+	* Source/NSText.m: a bunch of little tweaks. Will document today.
+	However as a consequence hitting return in Edit.app properly
+	moves lines down whereas before it lost lines.
+	* Source/NSCell.m: - editWithFrame:inView:editor:delegate:event: 
+	Now puts fieldEditor in windows contentView rather than in the
+	cell. Debugging messages and red cell splash kept in for the
+	moment as debugging of NSTextField* continues.
+
 1999-06-20  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Images/common_TabSelectedLeft.tiff

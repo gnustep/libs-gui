@@ -305,8 +305,8 @@ fprintf(stderr, " TextField mouseDown --- ");
 //	location = [self convertPoint: [theEvent locationInWindow] fromView: nil];
 //	[self lockFocus];
 //	cellFrame = [self convertRect: frame toView: nil];
-//		    cellFrame.origin = [super_view convertPoint: frame.origin
-//								 toView: [window contentView]];
+//	cellFrame.origin = [super_view convertPoint: frame.origin
+//					 toView: [window contentView]];
 
   if ([cell isBordered])
     {

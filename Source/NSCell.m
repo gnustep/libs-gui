@@ -427,17 +427,40 @@ static Class	imageClass;
 	      delegate: (id)anObject
 		 event: (NSEvent *)theEvent
 {
+  NSRect bRect;
+
   if (cell_type != NSTextCellType)
     return;
 
   [controlView lockFocus];
   [[controlView window] makeFirstResponder: textObject];
 
-  [textObject setText: [self stringValue]];
+  bRect = [controlView convertRect:aRect toView:[[controlView window] contentView]];
+//  cellFrame.origin = [super_view convertPoint: frame.origin
+//                                       toView: [window contentView]];
+
+  NSLog(@"editWithFrame: aRect. x = %d, y = %d, width = %d, height = %d\n", 
+(int)aRect.origin.x,
+(int)aRect.origin.y,
+(int)aRect.size.width,
+(int)aRect.size.height);
+
+  NSLog(@"editWithFrame: bRect. x = %d, y = %d, width = %d, height = %d\n", 
+(int)bRect.origin.x,
+(int)bRect.origin.y,
+(int)bRect.size.width,
+(int)bRect.size.height);
+
   [textObject setDelegate: anObject];
-  [controlView addSubview: textObject];
-  [textObject setFrame: aRect];
-  NSEraseRect(aRect);
+
+  [textObject setFrame: bRect];
+  [[NSColor redColor] set];
+  NSRectFill(aRect);
+//  NSEraseRect(aRect);
+
+  [textObject setText: [self stringValue]];
+  
+  [[[controlView window] contentView] addSubview: textObject];
   [textObject display];
   [controlView unlockFocus];
 }
@@ -451,6 +474,7 @@ static Class	imageClass;
   [textObject setDelegate: nil];
   [textObject removeFromSuperview];
   [self setStringValue: [textObject text]];
+  [textObject setString:@""];
 }
 
 - (void) selectWithFrame: (NSRect)aRect
