@@ -1,3 +1,20 @@
+Mon Nov 15 21:29:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/gnustep/gui/NSMenu.h: Make menu window inherit from NSPanel
+	* Headers/gnustep/gui/NSResponder.h: New flag for window and view.
+	* Headers/gnustep/gui/NSWindow.h: Condense flags into a bitfield.
+	* Source/GSHelpManagerPanel.m: Tidy and fix error in ([-release]).
+	* Source/NSApplication.m: Fixup references into NSWindow ivars.
+	* Source/NSCachedImageRep.m: ditto.
+	* Source/NSMenu.m: Fixup references into NSWindow ivars, and remove
+	unnecessary code for hide/unhide on app deactivation/activation.
+	* Source/NSPanel.m: Fixup references to NSWindow ivars and make
+	panels hide on app deactivation by default.
+	* Source/NSView.m: Fixup references to NSWindow ivars and move one
+	ivar into flags field defined in NSResponder.h
+	* Source/NSWindow.m: Change flags to be in bitfield and implement
+	code to handle hide/unhide on app deactivation/reactivation.
+
 Mon Nov 15 16:57:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSFontPanel.m: Removed a couple of bogus methods that were
