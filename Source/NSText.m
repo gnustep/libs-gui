@@ -59,7 +59,7 @@
 #include <AppKit/NSLayoutManager.h>
 
 
-#define HUGE 1e99
+#define HUGE 1e7
 
 
 static NSNotificationCenter *nc;
@@ -884,7 +884,14 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 
 - (void)setHorizontallyResizable: (BOOL)flag
 {
+  [_textContainer setWidthTracksTextView: !flag];
   _tf.is_horizontally_resizable = flag;
+}
+
+- (void) setVerticallyResizable: (BOOL)flag
+{
+  [_textContainer setHeightTracksTextView: !flag];
+  _tf.is_vertically_resizable = flag;
 }
 
 - (void)setMaxSize: (NSSize)newMaxSize
@@ -895,11 +902,6 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 - (void)setMinSize: (NSSize)newMinSize
 {
   _minSize = newMinSize;
-}
-
-- (void) setVerticallyResizable: (BOOL)flag
-{
-  _tf.is_vertically_resizable = flag;
 }
 
 - (void) sizeToFit
@@ -1314,7 +1316,6 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 {
   NSRange drawnRange = [_layoutManager glyphRangeForBoundingRect: rect 
 				       inTextContainer: [self textContainer]];
-
   if (_tf.draws_background)
     {
       [_layoutManager drawBackgroundForGlyphRange: drawnRange 
@@ -1558,6 +1559,8 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   //[self setSelectedRange: NSMakeRange (0, 0)];
 
   [aTextContainer setTextView: (NSTextView*)self];
+  [aTextContainer setWidthTracksTextView: YES];
+  [aTextContainer setHeightTracksTextView: YES];
   [self sizeToFit];
 
   return self;
