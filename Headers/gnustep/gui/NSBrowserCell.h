@@ -32,14 +32,11 @@
 #include <AppKit/NSCell.h>
 
 @class NSImage;
-@class NSTextFieldCell;
 
 @interface NSBrowserCell : NSCell <NSCoding>
 {
   // Attributes
   NSImage *_alternateImage;
-  NSImage *_branchImage;
-  NSImage *_highlightBranchImage;
   // Think of the following ones as of two BOOL ivars
 #define _browsercell_is_leaf    _cell.subclass_bool_one
 #define _browsercell_is_loaded  _cell.subclass_bool_two
