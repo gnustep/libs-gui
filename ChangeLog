@@ -9,14 +9,6 @@ Wed Jun  9  8:35:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 	* Source/NSApplication.m: Fix retain/release problems introduced by
 	event system changes.
 
-1999-06-08  Adam Fedor  <fedor@gnu.org>
-
-	* Headers/gnustep/gui/NSGraphicsContext.h (-convertBaseToScreen:):
-	New method. (-convertScreenToBase): Likewise.
-	* Source/NSGraphicsContext.m: Default implementation.
-	* Source/NSWindow.m (-convertBaseToScreen:): Use them.
-	(-convertScreenToBase): Likewise.
-
 Sun Jun  6 20:40:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Headers/AppKit/NSEvent.h: Added new event types and masks and tidied.
