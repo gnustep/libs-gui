@@ -274,8 +274,9 @@ static int __documentTag = 0;
   RETAIN(_ignoredWords);
 
   // Load the gmodel file
-  if(![GMModel loadIMFile: @"SpellPanel"
-	       owner: self])
+  if(![NSBundle loadNibFile: @"SpellPanel.gmodel"
+	  externalNameTable: [NSDictionary dictionaryWithObject: self forKey: @"NSOwner"]
+	           withZone: [self zone]])
     {
       NSLog(@"NIB file load failed for SpellPanel");
       return nil;

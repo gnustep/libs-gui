@@ -1,3 +1,14 @@
+2001-07-31  Adam Fedor  <fedor@gnu.org>
+
+	* Convert libgmodel to a bundle to remove the semi-recursive
+	gui<->gmodel dependancy
+	* gui.make.in (GUI_LIBS): Remove -lgmodel
+	* Model/GNUmakefile: Compile libgmodel as a bundle.
+	* Source/NSBundleAdditions.m (gmodel_class): New function.
+	([NSBundle +loadNibFile:externalNameTable:withZone:]): Use it.
+	* Source/NSSpellChecker.m (-init): Use NSBundle method to find
+	model file.
+
 2001-07-30  Adam Fedor  <fedor@gnu.org>
 
 	* Fixes to compile shared (DLL) on Windows.

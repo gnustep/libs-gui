@@ -31,7 +31,7 @@ ifeq ($(GUI_LIB),gnu)
   GNUSTEP_GUI_SUBMINOR_VERSION = @GNUSTEP_GUI_SUBMINOR_VERSION@
 
   GUI_LDFLAGS =
-  GUI_LIBS = -lgnustep-gui -lgmodel -lgnustep-gui
+  GUI_LIBS = -lgnustep-gui
   GUI_DEFINE = -DGNU_GUI_LIBRARY=1
   GNUSTEP_DEFINE = -DGNUSTEP
 

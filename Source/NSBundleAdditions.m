@@ -197,6 +197,38 @@
   return path;
 }
 
+static 
+Class gmodel_class(void)
+{
+  static Class gmclass = Nil;
+
+  if (gmclass == Nil)
+    {
+	NSBundle *theBundle;
+	NSEnumerator *benum;
+	NSString *path;
+
+	/* Find the bundle */
+	benum = [NSStandardLibraryPaths() objectEnumerator];
+	while ((path = [benum nextObject]))
+	  {
+	    path = [path stringByAppendingPathComponent: @"Bundles"];
+	    path = [path stringByAppendingPathComponent: @"libgmodel.bundle"];
+	    if ([[NSFileManager defaultManager] fileExistsAtPath: path])
+	      break;
+	    path = nil;
+	  }
+	NSCAssert(path != nil, @"Unable to load gmodel bundle");
+	NSDebugLog(@"Loading gmodel from %@", path);
+
+	theBundle = [NSBundle bundleWithPath: path];
+	NSCAssert(theBundle != nil, @"Can't init gmodel bundle");
+	gmclass = [theBundle classNamed: @"GMModel"];
+	NSCAssert(gmclass, @"Can't load gmodel bundle");
+    }
+  return gmclass;
+}
+
 + (BOOL) loadNibFile: (NSString *)fileName
    externalNameTable: (NSDictionary *)context
 	    withZone: (NSZone *)zone
@@ -210,7 +242,7 @@
   // read it in and skip the dearchiving below.
   if([ext isEqualToString: @"gmodel"])
     {
-      return [GMModel loadIMFile: fileName
+      return [gmodel_class() loadIMFile: fileName
 		      owner: [context objectForKey: @"NSOwner"]];
     } 
 

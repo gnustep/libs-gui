@@ -448,7 +448,6 @@ static BOOL _gs_display_reading_progress = NO;
 // complicated initializations, you get a simple panel from super.
 -(id) init
 {
-  //  if (![GMModel loadIMFile: @"SavePanel" owner: self]);
   [self _initWithoutGModel];
   
   _directory = nil;

@@ -30,7 +30,11 @@ GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../gui.make
 include $(GNUSTEP_MAKEFILES)/common.make
 
 include ../Version
+ifeq ($(FOUNDATION_LIB), nx)
 LIBRARY_NAME = libgmodel
+else
+BUNDLE_NAME = libgmodel
+endif
 
 ifeq ($(BUILD_NIB2GMODEL), yes)
 TOOL_NAME = nib2gmodel
@@ -46,7 +50,7 @@ libgmodel_HEADER_FILES = IMConnectors.h IMCustomObject.h IMLoading.h \
 	GMAppKit.h GMArchiver.h
 
 test_OBJC_FILES = test.m Controller.m
-test_MAIN_MODEL_FILE = test.gmodel
+#test_MAIN_MODEL_FILE = test.gmodel
 test_RESOURCE_FILES = test.gmodel
 
 nib2gmodel_OBJC_FILES = IBClasses.m Translator.m nib2gmodel.m
@@ -65,7 +69,6 @@ ifneq ($(GUI_LIB), nx)
 ADDITIONAL_LIB_DIRS += -L../Source/$(GNUSTEP_OBJ_DIR)
 endif
 
-ADDITIONAL_TOOL_LIBS += -lgmodel
 ADDITIONAL_OBJC_FLAGS += $(BACKEND_DEFINE)
 
 # Additional include directories the compiler should search
@@ -87,6 +90,7 @@ nib2gmodel_LIBRARIES_DEPEND_UPON = $(BACKEND_LIBS) $(GUI_LIBS) \
 
 -include GNUmakefile.local
 
+include $(GNUSTEP_MAKEFILES)/bundle.make
 include $(GNUSTEP_MAKEFILES)/library.make
 include $(GNUSTEP_MAKEFILES)/tool.make
 include $(GNUSTEP_MAKEFILES)/application.make
