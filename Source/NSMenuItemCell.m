@@ -62,8 +62,8 @@
   _target = nil;
   _highlightsByMask = NSChangeBackgroundCellMask;
   _showAltStateMask = NSNoCellMask;
-  _image_position = NSNoImage;
-  _text_align = NSLeftTextAlignment;
+  _cell.image_position = NSNoImage;
+  _cell.text_align = NSLeftTextAlignment;
 
   _drawMethods[0] = (DrawingIMP)
     [self methodForSelector:@selector(drawStateImageWithFrame:inView:)];
@@ -94,7 +94,8 @@
   if (mcell_highlighted != flag)
     {
       // Save last view drawn to
-      [self setControlView: controlView];
+      if (_control_view != controlView)
+	_control_view = controlView;
 
       [controlView lockFocus];
 
@@ -253,7 +254,7 @@
     cellFrame.origin.x += [mcell_menuView stateImageWidth]
                        + 2 * [mcell_menuView horizontalEdgePadding];
 
-  switch (_image_position)
+  switch (_cell.image_position)
     {
       case NSNoImage: 
 	cellFrame = NSZeroRect;
@@ -312,7 +313,7 @@
     cellFrame.origin.x += [mcell_menuView stateImageWidth]
                         + 2 * [mcell_menuView horizontalEdgePadding];
 
-  switch (_image_position)
+  switch (_cell.image_position)
     {
       case NSNoImage:
       case NSImageOverlaps:
@@ -464,10 +465,11 @@
 - (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
   // Save last view drawn to
-  [self setControlView: controlView];
+  if (_control_view != controlView)
+    _control_view = controlView;
 
   // Transparent buttons never draw
-  if (_is_transparent)
+  if (_buttoncell_is_transparent)
     return;
 
   // Do nothing if cell's frame rect is zero
@@ -492,7 +494,7 @@
   NSColor  *backgroundColor = nil;
 
   // Transparent buttons never draw
-  if (_is_transparent)
+  if (_buttoncell_is_transparent)
     return;
 
   cellFrame = [self drawingRectForBounds: cellFrame];
@@ -503,7 +505,7 @@
     PStranslate(1., [controlView isFlipped] ? 1. : -1.);
 
   // Determine the background color
-  if (_cell_state)
+  if (_cell.state)
     {
       if (_showAltStateMask
 	  & (NSChangeGrayCellMask | NSChangeBackgroundCellMask) )
@@ -538,7 +540,7 @@
   else
     mask = _showAltStateMask;
   if (mask & NSContentsCellMask)
-    showAlternate = _cell_state;
+    showAlternate = _cell.state;
 
   if (mcell_highlighted || showAlternate)
     {
