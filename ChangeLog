@@ -1,4 +1,9 @@
-Yue May 25  3:55:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+Tue May 25  8:06:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/Model/IMConnectors.m: Use 'standard' function to set ivars
+	the local version was buggy.
+
+Tue May 25  3:55:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/Model/GMArchiver.m: Fix for save panels by Jonathan Gapen.
 
