@@ -509,6 +509,17 @@ static NSButtonCell* knobCell = nil;
   NSDebugLog (@"return from trackScrollButtons");
 }
 
+- (BOOL)sendActionO:(SEL)theAction to:(id)theTarget
+{															// send action to
+BOOL ret = [super sendAction:theAction to:theTarget];		// the target on 
+															// behalf of cell
+	[self drawKnobSlot];			// lockFocus set in mouseDown method is 
+	[self drawKnob];				// active so we simply redraw the knob and 
+  	[window flushWindow];			// slot to reflect the hit scroll button	
+
+	return ret;
+}												
+
 - (void)encodeWithCoder:aCoder
 {
 }

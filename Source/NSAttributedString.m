@@ -32,6 +32,7 @@
 #define TABWIDTH 3						// char so this value is set to one 
 										// minus the default tab width of 4
 
+
 @implementation NSString(NSAttributedString)
 
 - (NSSize)sizeWithAttributes:(NSDictionary *)attrs
@@ -45,25 +46,17 @@ float tabSize;
 		{											// to be added for tabs.  
 		if(*str++ == '\t')			
 			{						
-			i += j;					// j is the max number of spaces needed per					  
-			j = TABWIDTH;			// tab.  the number of spaces needed per 
-			}						// tab varies in order to align each tab at
-		else						// even multiples of TABWIDTH+1.  
+			i += j;							// j is the max number of spaces					  
+			j = TABWIDTH;					// needed per tab.  this number
+			}								// varies in order to align tabs 
+		else								// at even multiples of TABWIDTH+1.  
 			j = j-- > 0 ? j : TABWIDTH;	
 		};							
-
-//	fprintf(stderr,"NSAttributedString sizeWithAttributes tabs: %d\n", i);
-	
 															// if font is not
 	if(!(font = [attrs objectForKey:NSFontAttributeName]))	// specified, use
 		font = [NSFont userFontOfSize:12];					// the default
 
-#ifdef FAR_DEBUG
-fprintf(stderr,"NSAttributedString sizeWithAttributes \"%s\"  width: %f\n", [self cString], [font widthOfString:self]);	
-fprintf(stderr,"NSAttributedString sizeWithAttributes width: %f\n", [font widthOfString:self]);	
-#endif																		
-
-	tabSize = (float)i * [font widthOfString:@" "];
+	tabSize = (float)i * [font widthOfString:@"\t"];
 	
 	return NSMakeSize(([font widthOfString:self] + tabSize), [font pointSize]);
 }
