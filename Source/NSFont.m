@@ -606,7 +606,10 @@ setNSFont(NSString* key, NSFont* font)
     }
   else
     {
-      RELEASE(self);
+      if (self != placeHolder)
+	{
+	  RELEASE(self);
+	}
       self = RETAIN(font);
     }
   RELEASE(nameWithMatrix);
