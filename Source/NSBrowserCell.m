@@ -3,12 +3,10 @@
 
    Cell class for the NSBrowser
 
-   Copyright (C) 1996, 1997 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1997, 1999 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
-   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
-   Date: October 1998
 
    This file is part of the GNUstep GUI Library.
 
@@ -38,15 +36,18 @@
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSWindow.h>
 
-//
-// Class variables
-//
-static NSImage *branch_image;
-static NSImage *highlight_image;
+/*
+ * Class variables
+ */
+static NSImage	*branch_image;
+static NSImage	*highlight_image;
 
-//
-// Private methods
-//
+static Class	cellClass;
+static Class	colorClass;
+
+/*
+ * Private methods
+ */
 @interface NSBrowserCell (Private)
 - (void) setBranchImageCell: aCell;
 - (void) setHighlightBranchImageCell: aCell;
@@ -73,17 +74,17 @@ static NSImage *highlight_image;
 @end
 
 
-//*****************************************************************************
-//
-// 		NSBrowserCell
-//
-//*****************************************************************************
+/*****************************************************************************
+ *
+ * 		NSBrowserCell
+ *
+ *****************************************************************************/
 
 @implementation NSBrowserCell
 
-//
-// Class methods
-//
+/*
+ * Class methods
+ */
 + (void) initialize
 {
   if (self == [NSBrowserCell class])
@@ -91,12 +92,17 @@ static NSImage *highlight_image;
       [self setVersion: 1];
       ASSIGN(branch_image, [NSImage imageNamed: @"common_3DArrowRight"]);
       ASSIGN(highlight_image, [NSImage imageNamed: @"common_3DArrowRightH"]);
+      /*
+       * Cache classes to avoid overheads of poor compiler implementation.
+       */
+      cellClass = [NSCell class];
+      colorClass = [NSColor class];
     }
 }
 
-//
-// Accessing Graphic Attributes
-//
+/*
+ * Accessing Graphic Attributes
+ */
 + (NSImage*) branchImage
 {
   return branch_image;
@@ -107,9 +113,9 @@ static NSImage *highlight_image;
   return highlight_image;
 }
 
-//
-// Instance methods
-//
+/*
+ * Instance methods
+ */
 - (id) init
 {
   return [self initTextCell: @"aTitle"];
@@ -119,10 +125,10 @@ static NSImage *highlight_image;
 {
   [super initTextCell: aString];
   // create image cells
-  _branchImage = [[NSBrowserCell branchImage] retain];
-  _highlightBranchImage = [[NSBrowserCell highlightedBranchImage] retain];
+  _branchImage = RETAIN([isa branchImage]);
+  _highlightBranchImage = RETAIN([isa highlightedBranchImage]);
   // create the text cell
-  _browserText = [[[NSCell alloc] initTextCell: aString] retain];
+  _browserText = [[cellClass alloc] initTextCell: aString];
   [_browserText setEditable: NO];
   [_browserText setBordered: NO];
   [_browserText setAlignment: NSLeftTextAlignment];
@@ -131,18 +137,17 @@ static NSImage *highlight_image;
   _isLeaf = NO;
   _isLoaded = NO;
 
-  [self setEditable:NO];
+  [self setEditable: NO];
 
   return self;
 }
 
 - (void) dealloc
 {
-  [_branchImage release];
-  [_highlightBranchImage release];
-  if (_alternateImage)
-    [_alternateImage release];
-  [_browserText release];
+  RELEASE(_branchImage);
+  RELEASE(_highlightBranchImage);
+  TEST_RELEASE(_alternateImage);
+  RELEASE(_browserText);
 
   [super dealloc];
 }
@@ -151,10 +156,10 @@ static NSImage *highlight_image;
 {
   NSBrowserCell	*c = [super copyWithZone: zone];
 
-  c->_branchImage = [_branchImage retain];
+  c->_branchImage = RETAIN(_branchImage);
   if (_alternateImage)
-      c->_alternateImage = [_alternateImage retain];
-  c->_highlightBranchImage = [_highlightBranchImage retain];
+    c->_alternateImage = RETAIN(_alternateImage);
+  c->_highlightBranchImage = RETAIN(_highlightBranchImage);
   c->_browserText = [_browserText copyWithZone: zone];	// Copy the text cell
   c->_isLeaf = _isLeaf;
   c->_isLoaded = _isLoaded;
@@ -162,9 +167,9 @@ static NSImage *highlight_image;
   return c;
 }
 
-//
-// Accessing Graphic Attributes
-//
+/*
+ * Accessing Graphic Attributes
+ */
 - (NSImage*) alternateImage
 {
   return _alternateImage;
@@ -175,9 +180,9 @@ static NSImage *highlight_image;
   ASSIGN(_alternateImage, anImage);
 }
 
-//
-// Placing in the Browser Hierarchy
-//
+/*
+ * Placing in the Browser Hierarchy
+ */
 - (BOOL) isLeaf
 {
   return _isLeaf;
@@ -188,9 +193,9 @@ static NSImage *highlight_image;
   _isLeaf = flag;
 }
 
-//
-// Determining Loaded Status
-//
+/*
+ * Determining Loaded Status
+ */
 - (BOOL) isLoaded
 {
   return _isLoaded;
@@ -201,9 +206,9 @@ static NSImage *highlight_image;
   _isLoaded = flag;
 }
 
-//
-// Setting State
-//
+/*
+ * Setting State
+ */
 - (void) reset
 {
   cell_highlighted = NO;
@@ -216,9 +221,9 @@ static NSImage *highlight_image;
   cell_state = YES;
 }
 
-//
-// Setting and accessing the NSCell's Value
-//
+/*
+ * Setting and accessing the NSCell's Value
+ */
 - (double) doubleValue
 {
   return [_browserText doubleValue];
@@ -259,9 +264,9 @@ static NSImage *highlight_image;
   [_browserText setStringValue: aString];
 }
 
-//
-// Displaying
-//
+/*
+ * Displaying
+ */
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
 {
   NSRect	title_rect = cellFrame;
@@ -272,7 +277,7 @@ static NSImage *highlight_image;
   control_view = controlView;		// remember last view cell was drawn in
   if (cell_highlighted || cell_state)		// temporary hack FAR FIX ME?
     {
-      backColor = [NSColor selectedControlColor];
+      backColor = [colorClass selectedControlColor];
       [backColor set];
       if (!_isLeaf)
 	{
@@ -312,9 +317,9 @@ static NSImage *highlight_image;
     }
 }
 
-//
-// Editing Text
-//
+/*
+ * Editing Text
+ */
 - (void) editWithFrame: (NSRect)aRect
 		inView: (NSView *)controlView
 		editor: (NSText *)textObject
@@ -349,9 +354,9 @@ fprintf(stderr, " NSBrowserCell: editWithFrame --- ");
 //  [self drawInteriorWithFrame: aRect inView: controlView];
 }
 
-//
-// NSCoding protocol
-//
+/*
+ * NSCoding protocol
+ */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
