@@ -821,15 +821,13 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 
   if (flag == NO)
     {
-      if (_numberOfColumns == 1)
+      /* If _numberOfColumns == 1, we can skip trying to deselect the
+	 only column - because we have been called to select it. */
+      if (_numberOfColumns > 1)
 	{
-	  /* Extreme case - we are asked to deselect then select the
-             same column. */
-	  return;
+	  [_selectedColumns removeAllObjects];
+	  _selectedColumn = -1;
 	}
-
-      [_selectedColumns removeAllObjects];
-      _selectedColumn = -1;
     }
   else // flag == YES
     {
@@ -2404,9 +2402,13 @@ byExtendingSelection: (BOOL)flag
   endingRow   = [self rowAtPoint: NSMakePoint (0, NSMaxY (aRect))];
 
   if (startingRow == -1)
-    startingRow = 0;
+    {
+      startingRow = 0;
+    }
   if (endingRow == -1)
-    endingRow = _numberOfRows - 1;
+    {
+      endingRow = _numberOfRows - 1;
+    }
 
   for (i = startingRow; i <= endingRow; i++)
     {
