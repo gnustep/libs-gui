@@ -1,3 +1,8 @@
+Mon Jan 17  21:15:00 2000  Enrico Sersale <enrico@imago.ro>
+
+	* Source/NSBezierPath.m (-elementTypeAtIndex:associatedPoints:]):
+	Changed to set the associatedPoints correctly.
+
 Mon Jan 17  6:32:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSBundleAdditions.m: Catch exceptions when loading nib so

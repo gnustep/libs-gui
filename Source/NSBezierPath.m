@@ -777,8 +777,22 @@ NSPoint rotatePoint(NSPoint p, NSPoint centre, float angle);
 									  associatedPoints:(NSPoint *)points
 {
 	PathElement *elm = [pathElements objectAtIndex: index];
-	points = [elm points];
-	return [elm type];
+	NSBezierPathElementType type = [elm type];
+	NSPoint *p = [elm points];
+	
+	if(type == NSBezierPathElementMoveTo || type == NSBezierPathElementLineTo) {
+		points[0].x = p[0].x;
+		points[0].y = p[0].y;
+	} else if(type == NSBezierPathElementCurveTo) {
+		points[0].x = p[0].x;
+		points[0].y = p[0].y;
+		points[1].x = p[1].x;
+		points[1].y = p[1].y;
+		points[2].x = p[2].x;
+		points[2].y = p[2].y;
+	}
+	
+	return type;
 }
 
 - (void)removeLastElement
