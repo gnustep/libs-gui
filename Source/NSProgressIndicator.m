@@ -40,7 +40,7 @@ NSImage *images[maxCount];
     {
       [self setVersion: 1];
       // FIXME: Should come from defaults and should be reset when defaults change
-      fillColour = [NSColor blueColor];
+      fillColour = RETAIN([NSColor blueColor]);
       // FIXME: Load the images and set maxCount
     }
 }
