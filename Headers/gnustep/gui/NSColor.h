@@ -271,6 +271,8 @@ enum {
 + (NSColor*) textColor;
 + (NSColor*) windowFrameColor;
 + (NSColor*) windowFrameTextColor;
+
+extern NSString	*NSSystemColorsDidChangeNotification;
 #endif
 
 @end

@@ -34,7 +34,7 @@
 @interface NSColor (GNUstepPrivate)
 
 + (NSColor*) colorFromString: (NSString*)string;
-+ (void) defaultSystemColors;
++ (NSColor*) systemColorWithName: (NSString*)name;
 + (void) defaultsDidChange: (NSNotification*)notification;
 
 - (void) supportMaxColorSpaces;

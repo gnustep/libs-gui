@@ -41,11 +41,15 @@
 #include <AppKit/NSView.h>
 #include <AppKit/NSGraphics.h>
 
+NSString	*NSSystemColorsDidChangeNotification =
+			@"NSSystemColorsDidChangeNotification";
+
 @implementation NSColor
 
 // Class variables
 static BOOL gnustep_gui_ignores_alpha = YES;
 static NSColorList	*systemColors = nil;
+static NSMutableDictionary	*colorStrings = nil;
 
 //
 // Class methods
@@ -54,23 +58,69 @@ static NSColorList	*systemColors = nil;
 {
   if (self == [NSColor class])
     {
+      NSString	*white;
+      NSString	*lightGray;
+      NSString	*gray;
+      NSString	*darkGray;
+      NSString	*black;
+
       // Set the version number
       [self setVersion:2];
 
       // ignore alpha by default
       gnustep_gui_ignores_alpha = YES;
 
+      // Set up a dictionary containing the names of all the system colors
+      // as keys and with colors in string format as values.
+      white = [NSString stringWithFormat: @"%f %f %f",
+		NSWhite, NSWhite, NSWhite];
+      lightGray = [NSString stringWithFormat: @"%f %f %f",
+		NSLightGray, NSLightGray, NSLightGray];
+      gray = [NSString stringWithFormat: @"%f %f %f",
+		NSGray, NSGray, NSGray];
+      darkGray = [NSString stringWithFormat: @"%f %f %f",
+		NSDarkGray, NSDarkGray, NSDarkGray];
+      black = [NSString stringWithFormat: @"%f %f %f",
+		NSBlack, NSBlack, NSBlack];
+
+      colorStrings = (NSMutableDictionary*)[[NSMutableDictionary
+		dictionaryWithObjectsAndKeys:
+	lightGray, @"controlBackgroundColor", 
+	lightGray, @"controlColor",
+	lightGray, @"controlHighlightColor",
+	white, @"controlLightHighlightColor",
+	darkGray, @"controlShadowColor",
+	black, @"controlDarkShadowColor",
+	black, @"controlTextColor",
+	darkGray, @"disabledControlTextColor",
+	gray, @"gridColor",
+	white, @"highlightColor",
+	lightGray, @"knobColor",
+	lightGray, @"scrollBarColor",
+	white, @"selectedControlColor",
+	black, @"selectedControlTextColor",
+	white, @"selectedMenuItemColor",
+	black, @"selectedMenuItemTextColor",
+	lightGray, @"selectedTextBackgroundColor",
+	black, @"selectedTextColor",
+	lightGray, @"selectedKnobColor",
+	black, @"shadowColor",
+	white, @"textBackgroundColor",
+	black, @"textColor",
+	black, @"windowFrameColor",
+	white, @"windowFrameTextColor",
+	nil] retain];
+
       // Set up default system colors
       systemColors = [[NSColorList alloc] initWithName: @"System"];
-      [self defaultSystemColors];
 
       // ensure user defaults are loaded, then use them and watch for changes.
       [NSUserDefaults standardUserDefaults];
       [self defaultsDidChange: nil];
-//     [NSNotificationCenter addObserver: self
-//			       selector: @selector(defaultsDidChange:)
-//				   name: NSUserDefaultsDidChangeNotification
-//				 object: nil];
+      [NSNotificationCenter addObserver: self
+			       selector: @selector(defaultsDidChange:)
+				   name: NSUserDefaultsDidChangeNotification
+				 object: nil];
     }
 }
 
@@ -351,123 +401,219 @@ static NSColorList	*systemColors = nil;
 //
 + (NSColor*) controlBackgroundColor
 {
-  return [systemColors colorWithKey: @"controlBackgroundColor"];
+  NSColor *color = [systemColors colorWithKey: @"controlBackgroundColor"];
+
+  if (color == nil)
+    color = [NSColor systemColorWithName: @"controlBackgroundColor"];
+  return color;
 }
 
 + (NSColor*) controlColor
 {
-  return [systemColors colorWithKey: @"controlColor"];
+  NSColor *color = [systemColors colorWithKey: @"controlColor"];
+
+  if (color == nil)
+    color = [NSColor systemColorWithName: @"controlColor"];
+  return color;
 }
 
 + (NSColor*) controlHighlightColor
 {
-  return [systemColors colorWithKey: @"controlHighlightColor"];
+  NSColor *color = [systemColors colorWithKey: @"controlHighlightColor"];
+
+  if (color == nil)
+    color = [NSColor systemColorWithName: @"controlHighlightColor"];
+  return color;
 }
 
 + (NSColor*) controlLightHighlightColor
 {
-  return [systemColors colorWithKey: @"controlLightHighlightColor"];
+  NSColor *color = [systemColors colorWithKey: @"controlLightHighlightColor"];
+
+  if (color == nil)
+    color = [NSColor systemColorWithName: @"controlLightHighlightColor"];
+  return color;
 }
 
 + (NSColor*) controlShadowColor
 {
-  return [systemColors colorWithKey: @"controlShadowColor"];
+  NSColor *color = [systemColors colorWithKey: @"controlShadowColor"];
+
+  if (color == nil)
+    color = [NSColor systemColorWithName: @"controlShadowColor"];
+  return color;
 }
 
 + (NSColor*) controlDarkShadowColor
 {
-  return [systemColors colorWithKey: @"controlDarkShadowColor"];
+  NSColor *color = [systemColors colorWithKey: @"controlDarkShadowColor"];
+
+  if (color == nil)
+    color = [NSColor systemColorWithName: @"controlDarkShadowColor"];
+  return color;
 }
 
 + (NSColor*) controlTextColor
 {
-  return [systemColors colorWithKey: @"controlTextColor"];
+  NSColor *color = [systemColors colorWithKey: @"controlTextColor"];
+
+  if (color == nil)
+    color = [NSColor systemColorWithName: @"controlTextColor"];
+  return color;
 }
 
 + (NSColor*) disabledControlTextColor
 {
-  return [systemColors colorWithKey: @"disabledControlTextColor"];
+  NSColor *color = [systemColors colorWithKey: @"disabledControlTextColor"];
+
+  if (color == nil)
+    color = [NSColor systemColorWithName: @"disabledControlTextColor"];
+  return color;
 }
 
 + (NSColor*) gridColor
 {
-  return [systemColors colorWithKey: @"gridColor"];
+  NSColor *color = [systemColors colorWithKey: @"gridColor"];
+
+  if (color == nil)
+    color = [NSColor systemColorWithName: @"gridColor"];
+  return color;
 }
 
 + (NSColor*) highlightColor
 {
-  return [systemColors colorWithKey: @"highlightColor"];
+  NSColor *color = [systemColors colorWithKey: @"highlightColor"];
+
+  if (color == nil)
+    color = [NSColor systemColorWithName: @"highlightColor"];
+  return color;
 }
 
 + (NSColor*) knobColor
 {
-  return [systemColors colorWithKey: @"knobColor"];
+  NSColor *color = [systemColors colorWithKey: @"knobColor"];
+
+  if (color == nil)
+    color = [NSColor systemColorWithName: @"knobColor"];
+  return color;
 }
 
 + (NSColor*) scrollBarColor
 {
-  return [systemColors colorWithKey: @"scrollBarColor"];
+  NSColor *color = [systemColors colorWithKey: @"scrollBarColor"];
+
+  if (color == nil)
+    color = [NSColor systemColorWithName: @"scrollBarColor"];
+  return color;
 }
 
 + (NSColor*) selectedControlColor
 {
-  return [systemColors colorWithKey: @"selectedControlColor"];
+  NSColor *color = [systemColors colorWithKey: @"selectedControlColor"];
+
+  if (color == nil)
+    color = [NSColor systemColorWithName: @"selectedControlColor"];
+  return color;
 }
 
 + (NSColor*) selectedControlTextColor
 {
-  return [systemColors colorWithKey: @"selectedControlTextColor"];
+  NSColor *color = [systemColors colorWithKey: @"selectedControlTextColor"];
+
+  if (color == nil)
+    color = [NSColor systemColorWithName: @"selectedControlTextColor"];
+  return color;
 }
 
 + (NSColor*) selectedMenuItemColor
 {
-  return [systemColors colorWithKey: @"selectedMenuItemColor"];
+  NSColor *color = [systemColors colorWithKey: @"selectedMenuItemColor"];
+
+  if (color == nil)
+    color = [NSColor systemColorWithName: @"selectedMenuItemColor"];
+  return color;
 }
 
 + (NSColor*) selectedMenuItemTextColor
 {
-  return [systemColors colorWithKey: @"selectedMenuItemTextColor"];
+  NSColor *color = [systemColors colorWithKey: @"selectedMenuItemTextColor"];
+
+  if (color == nil)
+    color = [NSColor systemColorWithName: @"selectedMenuItemTextColor"];
+  return color;
 }
 
 + (NSColor*) selectedTextBackgroundColor
 {
-  return [systemColors colorWithKey: @"selectedTextBackgroundColor"];
+  NSColor *color = [systemColors colorWithKey: @"selectedTextBackgroundColor"];
+
+  if (color == nil)
+    color = [NSColor systemColorWithName: @"selectedTextBackgroundColor"];
+  return color;
 }
 
 + (NSColor*) selectedTextColor
 {
-//  return [systemColors colorWithKey: @"selectedTextColor"];		// FIX ME
-	return [self colorWithCalibratedRed:.12 green:.12 blue:0 alpha:1.0];
+  NSColor *color = [systemColors colorWithKey: @"selectedTextColor"];
+
+  //[self colorWithCalibratedRed:.12 green:.12 blue:0 alpha:1.0];
+  if (color == nil)
+    color = [NSColor systemColorWithName: @"selectedTextColor"];
+  return color;
 }
 
 + (NSColor*) selectedKnobColor
 {
-  return [systemColors colorWithKey: @"selectedKnobColor"];
+  NSColor *color = [systemColors colorWithKey: @"selectedKnobColor"];
+
+  if (color == nil)
+    color = [NSColor systemColorWithName: @"selectedKnobColor"];
+  return color;
 }
 
 + (NSColor*) shadowColor
 {
-  return [systemColors colorWithKey: @"shadowColor"];
+  NSColor *color = [systemColors colorWithKey: @"shadowColor"];
+
+  if (color == nil)
+    color = [NSColor systemColorWithName: @"shadowColor"];
+  return color;
 }
 
 + (NSColor*) textBackgroundColor
 {
-  return [systemColors colorWithKey: @"textBackgroundColor"];
+  NSColor *color = [systemColors colorWithKey: @"textBackgroundColor"];
+
+  if (color == nil)
+    color = [NSColor systemColorWithName: @"textBackgroundColor"];
+  return color;
 }
 
 + (NSColor*) textColor
 {
-  return [systemColors colorWithKey: @"textColor"];
+  NSColor *color = [systemColors colorWithKey: @"textColor"];
+
+  if (color == nil)
+    color = [NSColor systemColorWithName: @"textColor"];
+  return color;
 }
 
 + (NSColor*) windowFrameColor
 {
-  return [systemColors colorWithKey: @"windowFrameColor"];
+  NSColor *color = [systemColors colorWithKey: @"windowFrameColor"];
+
+  if (color == nil)
+    color = [NSColor systemColorWithName: @"windowFrameColor"];
+  return color;
 }
 
 + (NSColor*) windowFrameTextColor
 {
-  return [systemColors colorWithKey: @"windowFrameTextColor"];
+  NSColor *color = [systemColors colorWithKey: @"windowFrameTextColor"];
+
+  if (color == nil)
+    color = [NSColor systemColorWithName: @"windowFrameTextColor"];
+  return color;
 }
 
 ////////////////////////////////////////////////////////////
@@ -1077,329 +1223,84 @@ static NSColorList	*systemColors = nil;
   return nil;
 }
 
-+ (void) defaultSystemColors
++ (NSColor*) systemColorWithName: (NSString*)name
 {
-  NSColor	*color;
+  NSColor	*color = [systemColors colorWithKey: name];
 
-  color = [self lightGrayColor];
-  [systemColors setColor: color forKey: @"controlBackgroundColor"];
+  if (color == nil)
+    {
+      NSString	*rep = [colorStrings objectForKey: name];
 
-  color = [self lightGrayColor];
-  [systemColors setColor: color forKey: @"controlColor"];
-
-  color = [self lightGrayColor];
-  [systemColors setColor: color forKey: @"controlHighlightColor"];
-
-  color = [self whiteColor];
-  [systemColors setColor: color forKey: @"controlLightHighlightColor"];
-
-  color = [self darkGrayColor];
-  [systemColors setColor: color forKey: @"controlShadowColor"];
-
-  color = [self blackColor];
-  [systemColors setColor: color forKey: @"controlDarkShadowColor"];
-
-  color = [self blackColor];
-  [systemColors setColor: color forKey: @"controlTextColor"];
-
-  color = [self darkGrayColor];
-  [systemColors setColor: color forKey: @"disabledControlTextColor"];
-
-  color = [self grayColor];
-  [systemColors setColor: color forKey: @"gridColor"];
-
-  color = [self whiteColor];
-  [systemColors setColor: color forKey: @"highlightColor"];
-
-  color = [self lightGrayColor];
-  [systemColors setColor: color forKey: @"knobColor"];
-
-  color = [self lightGrayColor];
-  [systemColors setColor: color forKey: @"scrollBarColor"];
-
-  color = [self whiteColor];
-  [systemColors setColor: color forKey: @"selectedControlColor"];
-
-  color = [self blackColor];
-  [systemColors setColor: color forKey: @"selectedControlTextColor"];
-
-  color = [self whiteColor];
-  [systemColors setColor: color forKey: @"selectedMenuItemColor"];
-
-  color = [self blackColor];
-  [systemColors setColor: color forKey: @"selectedMenuItemTextColor"];
-
-  color = [self lightGrayColor];
-  [systemColors setColor: color forKey: @"selectedTextBackgroundColor"];
-
-  color = [self blackColor];
-  [systemColors setColor: color forKey: @"selectedTextColor"];
-
-  color = [self lightGrayColor];
-  [systemColors setColor: color forKey: @"selectedKnobColor"];
-
-  color = [self blackColor];
-  [systemColors setColor: color forKey: @"shadowColor"];
-
-  color = [self whiteColor];
-  [systemColors setColor: color forKey: @"textBackgroundColor"];
-
-  color = [self blackColor];
-  [systemColors setColor: color forKey: @"textColor"];
-
-  color = [self blackColor];
-  [systemColors setColor: color forKey: @"windowFrameColor"];
-
-  color = [self whiteColor];
-  [systemColors setColor: color forKey: @"windowFrameTextColor"];
+      if (rep == nil)
+	{
+	  NSLog(@"Request for unknown system color - '%@'\n", name);
+	  return nil;
+	}
+      color = [NSColor colorFromString: rep];
+      if (color == nil)
+	{
+	  NSLog(@"System color '%@' has bad string rep - '%@'\n", name, rep);
+	  return nil;
+	}
+      [systemColors setColor: color forKey: name];
+    }
+  return color;
 }
 
+/*
+ *	Go through all the names of ssystem colors - for each color where
+ *	there is a value in the defaults database, see if the current
+ *	istring value of the color differs from the old one.
+ *	Where there is a difference, update the color strings dictionary 
+ *	and, where a color object exists, update the system colors list
+ *	to contain the new color.
+ *	Finally, issue a notification if appropriate.
+ */
 + (void) defaultsDidChange: (NSNotification*)notification
 {
-  static NSString	*controlBackgroundColor = nil;
-  static NSString	*controlColor = nil;
-  static NSString	*controlHighlightColor = nil;
-  static NSString	*controlLightHighlightColor = nil;
-  static NSString	*controlShadowColor = nil;
-  static NSString	*controlDarkShadowColor = nil;
-  static NSString	*controlTextColor = nil;
-  static NSString	*disabledControlTextColor = nil;
-  static NSString	*gridColor = nil;
-  static NSString	*highlightColor = nil;
-  static NSString	*knobColor = nil;
-  static NSString	*scrollBarColor = nil;
-  static NSString	*selectedControlColor = nil;
-  static NSString	*selectedControlTextColor = nil;
-  static NSString	*selectedMenuItemColor = nil;
-  static NSString	*selectedMenuItemTextColor = nil;
-  static NSString	*selectedTextBackgroundColor = nil;
-  static NSString	*selectedTextColor = nil;
-  static NSString	*selectedKnobColor = nil;
-  static NSString	*shadowColor = nil;
-  static NSString	*textBackgroundColor = nil;
-  static NSString	*textColor = nil;
-  static NSString	*windowFrameColor = nil;
-  static NSString	*windowFrameTextColor = nil;
   NSUserDefaults	*defs;
-  NSString		*str;
-  NSColor		*color;
+  NSEnumerator		*enumerator;
+  NSString		*key;
+  BOOL			didChange = NO;
 
   defs = [NSUserDefaults standardUserDefaults];
 
-  str = [defs stringForKey: @"controlBackgroundColor"];
-  if (str != nil && (controlBackgroundColor == nil || [controlBackgroundColor isEqualToString: str] == NO))
+  enumerator = [colorStrings keyEnumerator];
+  while ((key = [enumerator nextObject]) != nil)
     {
-      [controlBackgroundColor release];
-      controlBackgroundColor = [str retain];
-      color = [self colorFromString: controlBackgroundColor];
-      [systemColors setColor: color forKey: @"controlBackgroundColor"];
-    }
+      NSString	*def = [defs stringForKey: key];
 
-  str = [defs stringForKey: @"controlColor"];
-  if (str != nil && (controlColor == nil || [controlColor isEqualToString: str] == NO))
-    {
-      [controlColor release];
-      controlColor = [str retain];
-      color = [self colorFromString: controlColor];
-      [systemColors setColor: color forKey: @"controlColor"];
-    }
+      if (def != nil)
+	{
+	  NSString	*old = [colorStrings objectForKey: key];
 
-  str = [defs stringForKey: @"controlHighlightColor"];
-  if (str != nil && (controlHighlightColor == nil || [controlHighlightColor isEqualToString: str] == NO))
-    {
-      [controlHighlightColor release];
-      controlHighlightColor = [str retain];
-      color = [self colorFromString: controlHighlightColor];
-      [systemColors setColor: color forKey: @"controlHighlightColor"];
-    }
+	  if ([def isEqualToString: old] == NO)
+	    {
+	      NSColor	*color;
 
-  str = [defs stringForKey: @"controlLightHighlightColor"];
-  if (str != nil && (controlLightHighlightColor == nil || [controlLightHighlightColor isEqualToString: str] == NO))
-    {
-      [controlLightHighlightColor release];
-      controlLightHighlightColor = [str retain];
-      color = [self colorFromString: controlLightHighlightColor];
-      [systemColors setColor: color forKey: @"controlLightHighlightColor"];
+	      didChange = YES;
+	      [colorStrings setObject: def forKey: key];
+	      color = [systemColors colorWithKey: key];
+	      if (color != nil)
+		{
+		  color = [NSColor colorFromString: def];
+		  if (color == nil)
+		    {
+		      NSLog(@"System color '%@' has bad string rep - '%@'\n",
+				key, def);
+		    }
+		  else
+		    {
+		      [systemColors setColor: color forKey: key];
+		    }
+		}
+	    }
+	}
     }
-
-  str = [defs stringForKey: @"controlShadowColor"];
-  if (str != nil && (controlShadowColor == nil || [controlShadowColor isEqualToString: str] == NO))
+  if (didChange)
     {
-      [controlShadowColor release];
-      controlShadowColor = [str retain];
-      color = [self colorFromString: controlShadowColor];
-      [systemColors setColor: color forKey: @"controlShadowColor"];
-    }
-
-  str = [defs stringForKey: @"controlDarkShadowColor"];
-  if (str != nil && (controlDarkShadowColor == nil || [controlDarkShadowColor isEqualToString: str] == NO))
-    {
-      [controlDarkShadowColor release];
-      controlDarkShadowColor = [str retain];
-      color = [self colorFromString: controlDarkShadowColor];
-      [systemColors setColor: color forKey: @"controlDarkShadowColor"];
-    }
-
-  str = [defs stringForKey: @"controlTextColor"];
-  if (str != nil && (controlTextColor == nil || [controlTextColor isEqualToString: str] == NO))
-    {
-      [controlTextColor release];
-      controlTextColor = [str retain];
-      color = [self colorFromString: controlTextColor];
-      [systemColors setColor: color forKey: @"controlTextColor"];
-    }
-
-  str = [defs stringForKey: @"disabledControlTextColor"];
-  if (str != nil && (disabledControlTextColor == nil || [disabledControlTextColor isEqualToString: str] == NO))
-    {
-      [disabledControlTextColor release];
-      disabledControlTextColor = [str retain];
-      color = [self colorFromString: disabledControlTextColor];
-      [systemColors setColor: color forKey: @"disabledControlTextColor"];
-    }
-
-  str = [defs stringForKey: @"gridColor"];
-  if (str != nil && (gridColor == nil || [gridColor isEqualToString: str] == NO))
-    {
-      [gridColor release];
-      gridColor = [str retain];
-      color = [self colorFromString: gridColor];
-      [systemColors setColor: color forKey: @"gridColor"];
-    }
-
-  str = [defs stringForKey: @"highlightColor"];
-  if (str != nil && (highlightColor == nil || [highlightColor isEqualToString: str] == NO))
-    {
-      [highlightColor release];
-      highlightColor = [str retain];
-      color = [self colorFromString: highlightColor];
-      [systemColors setColor: color forKey: @"highlightColor"];
-    }
-
-  str = [defs stringForKey: @"knobColor"];
-  if (str != nil && (knobColor == nil || [knobColor isEqualToString: str] == NO))
-    {
-      [knobColor release];
-      knobColor = [str retain];
-      color = [self colorFromString: knobColor];
-      [systemColors setColor: color forKey: @"knobColor"];
-    }
-
-  str = [defs stringForKey: @"scrollBarColor"];
-  if (str != nil && (scrollBarColor == nil || [scrollBarColor isEqualToString: str] == NO))
-    {
-      [scrollBarColor release];
-      scrollBarColor = [str retain];
-      color = [self colorFromString: scrollBarColor];
-      [systemColors setColor: color forKey: @"scrollBarColor"];
-    }
-
-  str = [defs stringForKey: @"selectedControlColor"];
-  if (str != nil && (selectedControlColor == nil || [selectedControlColor isEqualToString: str] == NO))
-    {
-      [selectedControlColor release];
-      selectedControlColor = [str retain];
-      color = [self colorFromString: selectedControlColor];
-      [systemColors setColor: color forKey: @"selectedControlColor"];
-    }
-
-  str = [defs stringForKey: @"selectedControlTextColor"];
-  if (str != nil && (selectedControlTextColor == nil || [selectedControlTextColor isEqualToString: str] == NO))
-    {
-      [selectedControlTextColor release];
-      selectedControlTextColor = [str retain];
-      color = [self colorFromString: selectedControlTextColor];
-      [systemColors setColor: color forKey: @"selectedControlTextColor"];
-    }
-
-  str = [defs stringForKey: @"selectedMenuItemColor"];
-  if (str != nil && (selectedMenuItemColor == nil || [selectedMenuItemColor isEqualToString: str] == NO))
-    {
-      [selectedMenuItemColor release];
-      selectedMenuItemColor = [str retain];
-      color = [self colorFromString: selectedMenuItemColor];
-      [systemColors setColor: color forKey: @"selectedMenuItemColor"];
-    }
-
-  str = [defs stringForKey: @"selectedMenuItemTextColor"];
-  if (str != nil && (selectedMenuItemTextColor == nil || [selectedMenuItemTextColor isEqualToString: str] == NO))
-    {
-      [selectedMenuItemTextColor release];
-      selectedMenuItemTextColor = [str retain];
-      color = [self colorFromString: selectedMenuItemTextColor];
-      [systemColors setColor: color forKey: @"selectedMenuItemTextColor"];
-    }
-
-  str = [defs stringForKey: @"selectedTextBackgroundColor"];
-  if (str != nil && (selectedTextBackgroundColor == nil || [selectedTextBackgroundColor isEqualToString: str] == NO))
-    {
-      [selectedTextBackgroundColor release];
-      selectedTextBackgroundColor = [str retain];
-      color = [self colorFromString: selectedTextBackgroundColor];
-      [systemColors setColor: color forKey: @"selectedTextBackgroundColor"];
-    }
-
-  str = [defs stringForKey: @"selectedTextColor"];
-  if (str != nil && (selectedTextColor == nil || [selectedTextColor isEqualToString: str] == NO))
-    {
-      [selectedTextColor release];
-      selectedTextColor = [str retain];
-      color = [self colorFromString: selectedTextColor];
-      [systemColors setColor: color forKey: @"selectedTextColor"];
-    }
-
-  str = [defs stringForKey: @"selectedKnobColor"];
-  if (str != nil && (selectedKnobColor == nil || [selectedKnobColor isEqualToString: str] == NO))
-    {
-      [selectedKnobColor release];
-      selectedKnobColor = [str retain];
-      color = [self colorFromString: selectedKnobColor];
-      [systemColors setColor: color forKey: @"selectedKnobColor"];
-    }
-
-  str = [defs stringForKey: @"shadowColor"];
-  if (str != nil && (shadowColor == nil || [shadowColor isEqualToString: str] == NO))
-    {
-      [shadowColor release];
-      shadowColor = [str retain];
-      color = [self colorFromString: shadowColor];
-      [systemColors setColor: color forKey: @"shadowColor"];
-    }
-
-  str = [defs stringForKey: @"textBackgroundColor"];
-  if (str != nil && (textBackgroundColor == nil || [textBackgroundColor isEqualToString: str] == NO))
-    {
-      [textBackgroundColor release];
-      textBackgroundColor = [str retain];
-      color = [self colorFromString: textBackgroundColor];
-      [systemColors setColor: color forKey: @"textBackgroundColor"];
-    }
-
-  str = [defs stringForKey: @"textColor"];
-  if (str != nil && (textColor == nil || [textColor isEqualToString: str] == NO))
-    {
-      [textColor release];
-      textColor = [str retain];
-      color = [self colorFromString: textColor];
-      [systemColors setColor: color forKey: @"textColor"];
-    }
-
-  str = [defs stringForKey: @"windowFrameColor"];
-  if (str != nil && (windowFrameColor == nil || [windowFrameColor isEqualToString: str] == NO))
-    {
-      [windowFrameColor release];
-      windowFrameColor = [str retain];
-      color = [self colorFromString: windowFrameColor];
-      [systemColors setColor: color forKey: @"windowFrameColor"];
-    }
-
-  str = [defs stringForKey: @"windowFrameTextColor"];
-  if (str != nil && (windowFrameTextColor == nil || [windowFrameTextColor isEqualToString: str] == NO))
-    {
-      [windowFrameTextColor release];
-      windowFrameTextColor = [str retain];
-      color = [self colorFromString: windowFrameTextColor];
-      [systemColors setColor: color forKey: @"windowFrameTextColor"];
+      [[NSNotificationCenter defaultCenter] 
+	postNotificationName: NSSystemColorsDidChangeNotification object: nil];
     }
 }
 
