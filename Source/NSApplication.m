@@ -1741,6 +1741,15 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
     }
 }
 
+- (void) rightMouseDown: (NSEvent*)theEvent
+{
+  // On right mouse down display the main menu transient
+  if (_main_menu != nil)
+    [_main_menu _rightMouseDisplay: theEvent];
+  else
+    [super rightMouseDown: theEvent];
+}
+
 - (void) setAppleMenu: (NSMenu*)aMenu
 {
     //TODO: Unclear, what this should do.
