@@ -1,3 +1,9 @@
+Sun Feb 16 14:54:50 2003  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSSplitView.m ([-mouseDown:]): Corrected offset used in
+	delegate calls.  For example, in a splitview with a single
+	divider, the offset used was 1, while it should be 0.
+
 2003-02-16  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSMenu.m: Upon creation of bWindow, set its level to
