@@ -48,9 +48,11 @@
 #define _SAVE_PANEL_X_PAD	5
 #define _SAVE_PANEL_Y_PAD	4
 
-#define _SAVE_PANEL_TOP_VIEW_ORIGIN_Y  60
-#define _SAVE_PANEL_SIZE_WIDTH         280
-#define _SAVE_PANEL_SIZE_HEIGHT        350
+// After loading the save panel, we store in these 
+// variables its size (used when restoring the panel
+// after removing an accessory view)
+static NSSize _savePanelSize;
+static float _savePanelTopViewOriginY;
 
 static NSSavePanel *gnustep_gui_save_panel = nil;
 
@@ -223,6 +225,7 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 @interface NSSavePanel (PrivateMethods)
 
 - (id) _initWithoutGModel;
+- (void) _getOriginalSize;
 - (void) _setDefaults;
 - (void) _setDirectory: (NSString *)path updateBrowser: (BOOL)flag;
 
@@ -395,6 +398,11 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
   return self;
 }
 
+- (void) _getOriginalSize
+{
+  _savePanelSize = [self frame].size;
+  _savePanelTopViewOriginY = [_topView frame].origin.y;
+}
 
 - (void) _setDefaults
 {
@@ -475,6 +483,7 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
     {
       // if (![GMModel loadIMFile:@"SavePanel" owner:NSApp])
 	[[NSSavePanel alloc] _initWithoutGModel];
+	[gnustep_gui_save_panel _getOriginalSize];
     }
   if (gnustep_gui_save_panel)
     [gnustep_gui_save_panel _setDefaults];
@@ -497,38 +506,36 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
   NSView *contentView = [self contentView];
   NSRect addedFrame, bottomFrame, topFrame;
   NSSize contentSize;
-  NSSize originalContentSize = NSMakeSize (_SAVE_PANEL_SIZE_WIDTH, 
-					   _SAVE_PANEL_SIZE_HEIGHT);
   NSDebugLLog(@"NSSavePanel", @"NSSavePanel -setAccessoryView");
   
   if (aView == _accessoryView)
     return;
   
   if (_accessoryView)
+    [_accessoryView removeFromSuperview];
+  
+  _accessoryView = aView;
+  
+  if (_accessoryView == nil)
     {
-      [_accessoryView removeFromSuperview];
       // Restore original size
-      [self setMinSize: originalContentSize];
+      [self setMinSize: _savePanelSize];
       [_topView setAutoresizingMask: NSViewWidthSizable];
       [_bottomView setAutoresizingMask: NSViewWidthSizable];
-      [self setContentSize: originalContentSize];
+      [self setContentSize: _savePanelSize];
       [_topView setAutoresizingMask: 18];
       [_bottomView setAutoresizingMask: 2];
       // 
-      [_topView setFrameOrigin: NSMakePoint (0, _SAVE_PANEL_TOP_VIEW_ORIGIN_Y)];
+      [_topView setFrameOrigin: NSMakePoint (0, _savePanelTopViewOriginY)];
       [_topView setNeedsDisplay: YES];
-
     }
-
-  _accessoryView = aView;
-
-  if (_accessoryView)
+  else // we have an _accessoryView
     {
       //
       // Resize ourselves to make room for the accessory view
       //
       addedFrame = [_accessoryView frame];
-      contentSize = originalContentSize;
+      contentSize = _savePanelSize;
       contentSize.height += (addedFrame.size.height + (_SAVE_PANEL_Y_PAD * 2));
       if ((addedFrame.size.width + (_SAVE_PANEL_X_PAD * 2)) > contentSize.width)
 	contentSize.width = (addedFrame.size.width + (_SAVE_PANEL_X_PAD * 2));  
