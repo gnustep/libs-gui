@@ -1,3 +1,23 @@
+Tue Dec 19 21:13:50 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	First implementation of sharing attributes between NSTextViews
+	with the same layout manager.  Non tested yet - and we miss 
+	sharing the selection.
+	* Headers/gnustep/gui/NSTextView.h: Added a flag to keep track of
+	the case multiple text views.  Added an ivar to cache the
+	firstTextView object to use in notifications.
+	* Source/NSTextView.m: ([-_updateMultipleTextViews]),
+	([-_syncTextViewsByCalling:withFlag:]): New methods.
+	([-replaceTextContainer:]), ([-setTextContainer:]): Call
+	_updateMultipleTextViews:.  ([-setEditable:]), ([-setRichText:]),
+	([-setImportsGraphics:]), ([-setSelectable:]),
+	([-setUsesFontPanel:]), ([-setFieldEditor:]), ([-setUsesRuler:]),
+	([-setRulerVisible:]): Rewritten to share attributes - if needed -
+	with the other NSTextViews.  ([-didChangeText]): Post the
+	firstTextView as notif object if needed.  ([-setDelegate:]):
+	Rewritten completely to share the delegate if needed.
+	* Source/NSTextView.m ([-string]): Moved from NSText.m.
+	
 Tue Dec 19 17:53:35 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/gnustep/gui/NSTextView.h: Moved some flags from NSText.h.
@@ -9,12 +29,9 @@ Tue Dec 19 17:53:35 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 	([-initWithFrame:textContainer:]): Code moved to NSTextView.m.
 	* Source/NSTextView.m ([-backgroundColor]),
 	([-setBackgroundColor:]), ([-setDrawsBackground:]),
-	([-drawsBackground]), ([-isEditable]), ([-setSelectable:]),
-	([-isSelectable]), ([-isFieldEditor]), ([-setFieldEditor:]),
-	([-usesFontPanel]), ([-setUsesFontPanel:]), ([-isRichText]),
-	([-importsGraphics]): Removed.
-	([-setEditable:]), ([-setRichText:]), ([-setImportsGraphics:]):
-	Extend super's implementation.
+	([-drawsBackground]), ([-isEditable]), ([-isSelectable]),
+	([-isFieldEditor]), ([-usesFontPanel]), ([-isRichText]),
+	([-importsGraphics]), ([-isRulerVisible]): Removed.
 	
 Tue Dec 19 00:43:17 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
