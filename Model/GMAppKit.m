@@ -425,28 +425,40 @@ void __dummy_GMAppKit_functionForLinking() {}
     return [NSArray array];
 }
 
-- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+- (void) encodeWithModelArchiver: (GMArchiver*)archiver
 {
-    [super encodeWithModelArchiver:archiver];
+  [super encodeWithModelArchiver: archiver];
 
-    [archiver encodeObject:[self backgroundColor] withName:@"backgroundColor"];
-    [archiver encodeInt:[self borderType] withName:@"borderType"];
-    [archiver encodeBOOL:[self hasHorizontalScroller] withName:@"hasHorizontalScroller"];
-    [archiver encodeBOOL:[self hasVerticalScroller] withName:@"hasVerticalScroller"];
-    [archiver encodeObject:[self documentView] withName:@"documentView"];
+  [archiver encodeObject: [self backgroundColor]
+		withName: @"backgroundColor"];
+  [archiver encodeInt: [self borderType]
+	     withName: @"borderType"];
+  [archiver encodeBOOL: [self hasHorizontalScroller]
+	      withName: @"hasHorizontalScroller"];
+  [archiver encodeBOOL: [self hasVerticalScroller]
+	      withName: @"hasVerticalScroller"];
+  [archiver encodeObject: [self documentView]
+		withName: @"documentView"];
 }
 
-- (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
+- (id) initWithModelUnarchiver: (GMUnarchiver*)unarchiver
 {
-    self = [super initWithModelUnarchiver:unarchiver];
+  self = [super initWithModelUnarchiver: unarchiver];
 
-    [self setBackgroundColor:[unarchiver decodeObjectWithName:@"backgroundColor"]];
-    [self setBorderType:[unarchiver decodeIntWithName:@"borderType"]];
-    [self setHasHorizontalScroller:[unarchiver decodeBOOLWithName:@"hasHorizontalScroller"]];
-    [self setHasVerticalScroller:[unarchiver decodeBOOLWithName:@"hasVerticalScroller"]];
-    [self setDocumentView:[unarchiver decodeObjectWithName:@"documentView"]];
+  [self setContentView: AUTORELEASE([NSClipView new])];
 
-    return self;
+  [self setBackgroundColor:
+    [unarchiver decodeObjectWithName: @"backgroundColor"]];
+  [self setBorderType:
+    [unarchiver decodeIntWithName: @"borderType"]];
+  [self setHasHorizontalScroller:
+    [unarchiver decodeBOOLWithName: @"hasHorizontalScroller"]];
+  [self setHasVerticalScroller:
+    [unarchiver decodeBOOLWithName: @"hasVerticalScroller"]];
+  [self setDocumentView:
+    [unarchiver decodeObjectWithName: @"documentView"]];
+
+  return self;
 }
 
 @end /* NSScrollView (GMArchiverMethods) */

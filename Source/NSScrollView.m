@@ -195,6 +195,12 @@ static Class rulerViewClass = nil;
 
 - (void) setContentView: (NSClipView*)aView
 {
+  if (aView == nil)
+    [NSException raise: NSInvalidArgumentException
+		format: @"Attempt to set nil content view"];
+  if ([aView isKindOfClass: [NSView class]] == NO)
+    [NSException raise: NSInvalidArgumentException
+		format: @"Attempt to set non-view object as content view"];
   ASSIGN((id)_contentView, (id)aView);
   [self addSubview: _contentView];
   [_contentView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
@@ -775,6 +781,67 @@ static Class rulerViewClass = nil;
 - (NSScroller*) verticalScroller
 {
   return _vertScroller;
+}
+
+/*
+ * NSCoding protocol
+ */
+- (void) encodeWithCoder: (NSCoder*)aCoder
+{
+  [super encodeWithCoder: aCoder];
+
+  NSDebugLLog(@"NSScrollView", @"NSScrollView: start encoding\n");
+  [aCoder encodeObject: _contentView];
+  [aCoder encodeValueOfObjCType: @encode(NSBorderType) at: &_borderType];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_scrollsDynamically];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_rulersVisible];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &_hLineScroll];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &_hPageScroll];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &_vLineScroll];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &_vPageScroll];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasHorizScroller];
+  if (_hasHorizScroller)
+    [aCoder encodeObject: _horizScroller];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasVertScroller];
+  if (_hasVertScroller)
+    [aCoder encodeObject: _vertScroller];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasHorizRuler];
+  if (_hasHorizRuler)
+    [aCoder encodeObject: _horizRuler];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasVertRuler];
+  if (_hasVertRuler)
+    [aCoder encodeObject: _vertRuler];
+  NSDebugLLog(@"NSScrollView", @"NSScrollView: finish encoding\n");
+}
+
+- (id) initWithCoder: (NSCoder*)aDecoder
+{
+  [super initWithCoder: aDecoder];
+
+  NSDebugLLog(@"NSScrollView", @"NSScrollView: start decoding\n");
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_contentView];
+  [aDecoder decodeValueOfObjCType: @encode(NSBorderType) at: &_borderType];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_scrollsDynamically];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_rulersVisible];
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &_hLineScroll];
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &_hPageScroll];
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &_vLineScroll];
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &_vPageScroll];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_horizScroller];
+  if (_horizScroller)
+    [aDecoder decodeValueOfObjCType: @encode(id) at: &_horizScroller];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_vertScroller];
+  if (_vertScroller)
+    [aDecoder decodeValueOfObjCType: @encode(id) at: &_vertScroller];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_horizRuler];
+  if (_horizRuler)
+    [aDecoder decodeValueOfObjCType: @encode(id) at: &_horizRuler];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_vertRuler];
+  if (_vertRuler)
+    [aDecoder decodeValueOfObjCType: @encode(id) at: &_vertRuler];
+  NSDebugLLog(@"NSScrollView", @"NSScrollView: finish decoding\n");
+
+  return self;
 }
 
 @end

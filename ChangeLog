@@ -1,3 +1,10 @@
+Tue Sep  7  6:50:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSScrollView.m: ([-setContentView:]) prohibit illegal settings.
+	([-encodeWithCoder:]) and ([-initWithCoder:]) implemented.
+	* Model/GMAppKit.m: Fix NSScrollView initialisation to create the
+	content-view (NSClipView) as it should.
+
 1999-09-06  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSMatrix: Added missing method ([-sizeToFit]).
