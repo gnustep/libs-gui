@@ -9,12 +9,20 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.9.1}
+
+@itemize @bullet
+@item NSWindow - DnD works on whole window and events are propogated up to
+first DnD aware view.
+@item Absolute paths and DnD works in OpenPanels.
+@end itemize
+
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.9.0}
 
 Improvements in various classes, include NSPopUpButton, NSBitmapImageRep,
 NSMenu, NSToolbar. Added support for thumbnail images in NSWorkspace.
-
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.8.9}
 

@@ -1,7 +1,15 @@
 NEWS
 ****
 
-The currently released version of the library is `0.9.0'.
+The currently released version of the library is `0.9.1'.
+
+Noteworthy changes in version `0.9.1'
+=====================================
+
+   * NSWindow - DnD works on whole window and events are propogated up
+     to first DnD aware view.
+
+   * Absolute paths and DnD works in OpenPanels.
 
 Noteworthy changes in version `0.9.0'
 =====================================

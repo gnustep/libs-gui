@@ -1,3 +1,7 @@
+2003-11-23  Adam Fedor  <fedor@gnu.org>
+
+	* Version 0.9.1
+
 2003-11-22  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBrowser.m (-tile) corrected computation of columnCount,
