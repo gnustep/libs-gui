@@ -1,6 +1,11 @@
+Sat Nov 28 18:25:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Tools/example.m: Add very crude code to open a URL in netscape.
+	* Tools/exampleInfo.plist: Add opnURL service definition.
+
 Sat Nov 28  8:00:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
-	* NSColoer.m: Mod for system colors to work nicely with backend
+	* NSColor.m: Mod for system colors to work nicely with backend
 	* NSColor.h: ditto
 	* NSColorPrivate.h: ditto
 
