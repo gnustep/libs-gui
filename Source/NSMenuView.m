@@ -130,65 +130,94 @@ static float GSMenuBarHeight = 25.0; // a guess.
 
   [self lockFocus];
 
-  if (index == -1) {
-    if (menuv_highlightedItemIndex != -1) {
-      anItem  = [menuv_items_link objectAtIndex: menuv_highlightedItemIndex];
+  if (index == -1) 
+    {
+      if (menuv_highlightedItemIndex != -1)
+	{
+	  NSRect aRect = [self rectOfItemAtIndex: menuv_highlightedItemIndex];
 
-      [anItem highlight: NO
-	      withFrame: [self rectOfItemAtIndex: menuv_highlightedItemIndex]
-	         inView: self];
+	  anItem  = [menuv_items_link objectAtIndex: menuv_highlightedItemIndex];
+	  
+	  [anItem highlight: NO
+		  withFrame: aRect
+		  inView: self];
 
-      if ([anItem hasSubmenu] && ![[anItem target] isTornOff])
-        [[anItem target] close];
-      else if ([anItem hasSubmenu] && [[anItem target] isTornOff])
-        [[anItem target] closeTransient];
+	  [self setNeedsDisplayInRect: aRect];
 
-      [anItem setState: 0];
-      menuv_highlightedItemIndex = -1;
-    }
-  } else if (index >= 0) {
-    if ( menuv_highlightedItemIndex != -1 ) {
+	  [window flushWindow];
 
-      anItem  = [menuv_items_link objectAtIndex: menuv_highlightedItemIndex];
+	  if ([anItem hasSubmenu] 
+	      && ![[anItem target] isTornOff])
+	    [[anItem target] close];
+	  else if ([anItem hasSubmenu] 
+		   && [[anItem target] isTornOff])
+	    [[anItem target] closeTransient];
 
-      [anItem highlight: NO
-	    withFrame: [self rectOfItemAtIndex: menuv_highlightedItemIndex]
-	       inView: self];
+	  [anItem setState: 0];
+	  menuv_highlightedItemIndex = -1;
+	}
+    } 
+  else if (index >= 0) 
+    {
+      if ( menuv_highlightedItemIndex != -1)
+	{
+	  NSRect aRect = [self rectOfItemAtIndex: menuv_highlightedItemIndex];
 
-      if ([anItem hasSubmenu] && ![[anItem target] isTornOff])
-        [[anItem target] close];
-      else if ([anItem hasSubmenu] && [[anItem target] isTornOff])
-        [[anItem target] closeTransient];
+	  anItem  = [menuv_items_link objectAtIndex: menuv_highlightedItemIndex];
 
-      [anItem setState: 0];
-    }
+	  [anItem highlight: NO
+		  withFrame: aRect
+		  inView: self];
 
-    if (menuv_highlightedItemIndex != index) {
+	  [self setNeedsDisplayInRect: aRect]; 
 
-      anItem = [menuv_items_link objectAtIndex: index];
+	  [window flushWindow];
 
-      if ([anItem isEnabled])
-        {
-          [anItem highlight: YES
-  	          withFrame: [self rectOfItemAtIndex: index]
-	             inView: self];
+	  if ([anItem hasSubmenu] 
+	      && ![[anItem target] isTornOff])
+	    [[anItem target] close];
+	  else if ([anItem hasSubmenu] 
+		   && [[anItem target] isTornOff])
+	    [[anItem target] closeTransient];
 
-          [anItem setState: 1];
-
-          if ([anItem hasSubmenu] && ![[anItem target] isTornOff])
-            [[anItem target] display];
-          else if ([anItem hasSubmenu] && [[anItem target] isTornOff])
-            [[anItem target] displayTransient];
+	  [anItem setState: 0];
 	}
 
-      // set ivar to new index
-      menuv_highlightedItemIndex = index;
-    } else {	      
-      menuv_highlightedItemIndex = -1;
+      if (index != menuv_highlightedItemIndex)
+	{
+	  anItem = [menuv_items_link objectAtIndex: index];
+
+	  if ([anItem isEnabled])
+	    {
+	      NSRect aRect = [self rectOfItemAtIndex: index];
+
+	      [anItem highlight: YES
+		      withFrame: aRect
+		      inView: self];
+	      [self setNeedsDisplayInRect: aRect]; 
+
+	      [window flushWindow];
+
+	      if ([anItem hasSubmenu] 
+		  && ![[anItem target] isTornOff])
+		[[anItem target] display];
+	      else if ([anItem hasSubmenu] 
+		       && [[anItem target] isTornOff])
+		[[anItem target] displayTransient];
+
+	      [anItem setState: 1];
+	    }
+
+	  // set ivar to new index
+	  menuv_highlightedItemIndex = index;
+	} 
+      else if (menuv_highlightedItemIndex == index)
+	{	      
+	  menuv_highlightedItemIndex = -1;
+	}
     }
-  }
+
   [self unlockFocus];
-  [window flushWindow];
 }
 
 - (int)highlightedItemIndex
@@ -522,16 +551,18 @@ static float GSMenuBarHeight = 25.0; // a guess.
 	    { // Recursive menu close & deselect.
 	      if ([aMenu supermenu] && aMenu != menuv_menu)
 		{
-		  [[[aMenu supermenu] menuView] setHighlightedItemIndex: -1];
+		  [[aMenu menuView] setHighlightedItemIndex: -1];
 		  aMenu = [aMenu supermenu];
 		} 
 	      else
 		finished = YES;
 
-	      [window flushWindow];
+	      //	      [window flushWindow];
 	    }
 	}
+
       [self setHighlightedItemIndex: index];
+
       lastIndex = index;
     }
   
@@ -726,8 +757,6 @@ cell do the following */
 		    } 
 	          else
 		    finished = YES;
-
-	          [window flushWindow];
 	        }
 	    }
 	  else
@@ -770,7 +799,7 @@ cell do the following */
 	        { // Recursive menu close & deselect.
 	          if ([aMenu supermenu])
 		    {
-		      [[[aMenu supermenu] menuView] setHighlightedItemIndex: -1];
+		      [[aMenu menuView] setHighlightedItemIndex: -1];
 		      aMenu = [aMenu supermenu];
 		    } 
 	          else

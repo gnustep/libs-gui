@@ -1,4 +1,12 @@
-1999-09-10  Pedro Ivo Andrade Tavares  <ptavares@iname.com>
+1999-09-11  Michael Hanni   <mhanni@sprintmail.com>
+
+	* Source/NSMenu.m: many small fixes and optimizations for quicker
+	display. In addition several small fixes which should improve
+	functionality as well as usablity.
+	* Source/NSMenuView.m: ditto.
+	* Source/NSHelpManager.m: a small bugfix to allow for compilation.
+
+1999-09-11  Pedro Ivo Andrade Tavares  <ptavares@iname.com>
 
         * NSResponder.m ([NSResponder -helpRequested:]): 
         Now the application exits context help mode regardless of whether

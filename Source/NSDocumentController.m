@@ -22,15 +22,16 @@ static NSString *NSDocumentClassKey     = @"NSDocumentClass";
 
 static NSDictionary *TypeInfoForName(NSArray *types, NSString *typeName)
 {
-	int i, count = [types count];
-	for (i=0; i<count;i++)
-	{
-		NSDictionary *dict = [types objectAtIndex:i];
-		if ([[dict objectForKey:NSNameKey] isEqualToString:typeName])
-			return dict;
-	}
-	
-	return nil;
+  int i, count = [types count];
+  for (i=0; i<count;i++)
+    {
+      NSDictionary *dict = [types objectAtIndex:i];
+
+      if ([[dict objectForKey:NSNameKey] isEqualToString:typeName])
+	return dict;
+    }
+  
+  return nil;
 }
 
 @implementation NSDocumentController
@@ -41,281 +42,291 @@ static NSDictionary *TypeInfoForName(NSArray *types, NSString *typeName)
 
 + (id)documentController //private
 {
-	return [self sharedDocumentController];
+  return [self sharedDocumentController];
 }
 
 + (id)allocWithZone:(NSZone *)zone
 {
-    return [self sharedDocumentController];
+  return [self sharedDocumentController];
 }
+
 + (id)sharedDocumentController
 {
-	static id instance = nil;
+  static id instance = nil;
+  
+  if (instance == nil) 
+    instance = [[super allocWithZone:NULL] init];
 
-	if (instance == nil) instance = [[super allocWithZone:NULL] init];
-	return instance;
+  return instance;
 }
 
 - init
 {
-    NSDictionary *customDict = [[NSBundle mainBundle] infoDictionary];
+  NSDictionary *customDict = [[NSBundle mainBundle] infoDictionary];
 	
-	_types = [[customDict objectForKey:NSTypesKey] retain];
-	_documents = [[NSMutableArray alloc] init];
-	[self setShouldCreateUI:YES];
+  _types = [[customDict objectForKey:NSTypesKey] retain];
+  _documents = [[NSMutableArray alloc] init];
+  [self setShouldCreateUI:YES];
 
-	[[[NSWorkspace sharedWorkspace] notificationCenter]
-		addObserver:self
-		selector:@selector(_workspaceWillPowerOff:)
-		name:NSWorkspaceWillPowerOffNotification
-		object:nil];
+  [[[NSWorkspace sharedWorkspace] notificationCenter]
+    addObserver:self
+    selector:@selector(_workspaceWillPowerOff:)
+    name:NSWorkspaceWillPowerOffNotification
+    object:nil];
 
-	return self;
+  return self;
 }
 
 - (void)dealloc
 {
-	[[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
-	[_documents release];
-	[_types release];
-	[super dealloc];
+  [[[NSWorkspace sharedWorkspace] notificationCenter] removeObserver:self];
+  [_documents release];
+  [_types release];
+  [super dealloc];
 }
 
 - (BOOL)shouldCreateUI
 {
-	return _controllerFlags.shouldCreateUI;
+  return _controllerFlags.shouldCreateUI;
 }
 
 - (void)setShouldCreateUI:(BOOL)flag
 {
-	_controllerFlags.shouldCreateUI = flag;
+  _controllerFlags.shouldCreateUI = flag;
 }
 
 - (id)makeUntitledDocumentOfType:(NSString *)type
 {
-	Class documentClass = [self documentClassForType:type];
-	return [[[documentClass alloc] init] autorelease];
+  Class documentClass = [self documentClassForType:type];
+  return [[[documentClass alloc] init] autorelease];
 }
 
 - (id)makeDocumentWithContentsOfFile:(NSString *)fileName ofType:(NSString *)type
 {
-	Class documentClass = [self documentClassForType:type];
-	return [[[documentClass alloc] initWithContentsOfFile:fileName ofType:type] autorelease];
+  Class documentClass = [self documentClassForType:type];
+  return [[[documentClass alloc] initWithContentsOfFile:fileName ofType:type] autorelease];
 }
 
 - (id)makeDocumentWithContentsOfURL:(NSURL *)url ofType:(NSString *)type
 {
-	Class documentClass = [self documentClassForType:type];
-	return [[[documentClass alloc] initWithContentsOfURL:url ofType:type] autorelease];
+  Class documentClass = [self documentClassForType:type];
+  return [[[documentClass alloc] initWithContentsOfURL:url ofType:type] autorelease];
 }
 
 - _defaultType
 {
-    if ([_types count] == 0) return nil; // raise exception?
-	return [[_types objectAtIndex:0] objectForKey:NSNameKey];
+  if ([_types count] == 0) 
+    return nil; // raise exception?
+
+  return [[_types objectAtIndex:0] objectForKey:NSNameKey];
 }
 
 /* These next two should really have been public. */
 - (void)_addDocument:(NSDocument *)document
 {
-	[_documents addObject:document];
+  [_documents addObject:document];
 }
 
 - (void)_removeDocument:(NSDocument *)document
 {
-	[_documents removeObject:document];
+  [_documents removeObject:document];
 }
 
 - (id)openUntitledDocumentOfType:(NSString*)type display:(BOOL)display
 {
-	NSDocument *document = [self makeUntitledDocumentOfType:type];
-	
-	if (document == nil) return nil;
+  NSDocument *document = [self makeUntitledDocumentOfType:type];
+  
+  if (document == nil) 
+    return nil;
 
-    [self _addDocument:document];
-    if ([self shouldCreateUI])
+  [self _addDocument:document];
+  if ([self shouldCreateUI])
     {
-        [document makeWindowControllers];
-        if (display)
-            [document showWindows];
+      [document makeWindowControllers];
+      if (display)
+	[document showWindows];
     }
 
-	return document;
+  return document;
 }
 
 - (id)openDocumentWithContentsOfFile:(NSString *)fileName display:(BOOL)display
 {
-	NSDocument *document = [self documentForFileName:fileName];
-
-	if (document == nil)
+  NSDocument *document = [self documentForFileName:fileName];
+  
+  if (document == nil)
     {
-		NSString *type = [self typeFromFileExtension:[fileName pathExtension]];
+      NSString *type = [self typeFromFileExtension:[fileName pathExtension]];
+      
+      if ((document = [self makeDocumentWithContentsOfFile:fileName ofType:type]))
+	[self _addDocument:document];
 
-		if ((document = [self makeDocumentWithContentsOfFile:fileName ofType:type]))
-			[self _addDocument:document];
-        if ([self shouldCreateUI])
-			[document makeWindowControllers];
+      if ([self shouldCreateUI])
+	[document makeWindowControllers];
     }
-	
-	if (display && [self shouldCreateUI])
+  
+  if (display && [self shouldCreateUI])
     {
-		[document showWindows];
+      [document showWindows];
     }
 
-	return document;
+  return document;
 }
 
 - (id)openDocumentWithContentsOfURL:(NSURL *)url display:(BOOL)display
 {
-    // Should we only do this if [url isFileURL] is YES?
-    NSDocument *document = [self documentForFileName:[url path]];
-
-    if (document == nil)
+  // Should we only do this if [url isFileURL] is YES?
+  NSDocument *document = [self documentForFileName:[url path]];
+  
+  if (document == nil)
     {
-        NSString *type = [self typeFromFileExtension:[[url path] pathExtension]];
-	
-        document = [self makeDocumentWithContentsOfURL:url ofType:type];
-		if (document == nil) return nil;
+      NSString *type = [self typeFromFileExtension:[[url path] pathExtension]];
+      
+      document = [self makeDocumentWithContentsOfURL:url ofType:type];
+  
+      if (document == nil)
+	return nil;
+      
+      [self _addDocument:document];
 
-        [self _addDocument:document];
-        if ([self shouldCreateUI])
+      if ([self shouldCreateUI])
         {
-            [document makeWindowControllers];
+	  [document makeWindowControllers];
         }
     }
-
-    if (display && [self shouldCreateUI])
+  
+  if (display && [self shouldCreateUI])
     {
-        [document showWindows];
+      [document showWindows];
     }
-
-	return document;
+  
+  return document;
 }
 
 - _setupOpenPanel
 {
-	NSOpenPanel *openPanel = [NSOpenPanel openPanel];
-	[openPanel setDirectory:[self currentDirectory]];
-	[openPanel setAllowsMultipleSelection:YES];
-	return openPanel;
+  NSOpenPanel *openPanel = [NSOpenPanel openPanel];
+  [openPanel setDirectory:[self currentDirectory]];
+  [openPanel setAllowsMultipleSelection:YES];
+  return openPanel;
 }
 
 - (int)runModalOpenPanel:(NSOpenPanel *)openPanel forTypes:(NSArray *)openableFileExtensions
 {
-	return [openPanel runModalForTypes:openableFileExtensions];
+  return [openPanel runModalForTypes:openableFileExtensions];
 }
 
 - (NSArray *)_openableFileExtensions
 {
-	int i, count = [_types count];
-	NSMutableArray *array = [NSMutableArray arrayWithCapacity:count];
+  int i, count = [_types count];
+  NSMutableArray *array = [NSMutableArray arrayWithCapacity:count];
 
-	for (i=0; i<count; i++)
-	{
-		NSDictionary *typeInfo = [_types objectAtIndex:i];
-		[array addObjectsFromArray:[typeInfo objectForKey:NSUnixExtensionsKey]];
-		[array addObjectsFromArray:[typeInfo objectForKey:NSDOSExtensionsKey]];
-	}
-	
-	return array;
+  for (i=0; i<count; i++)
+    {
+      NSDictionary *typeInfo = [_types objectAtIndex:i];
+      [array addObjectsFromArray:[typeInfo objectForKey:NSUnixExtensionsKey]];
+      [array addObjectsFromArray:[typeInfo objectForKey:NSDOSExtensionsKey]];
+    }
+  
+  return array;
 }
 
 - (NSArray *)fileNamesFromRunningOpenPanel
 {
-	NSArray *types = [self _openableFileExtensions];
-	NSOpenPanel *openPanel = [self _setupOpenPanel];
+  NSArray *types = [self _openableFileExtensions];
+  NSOpenPanel *openPanel = [self _setupOpenPanel];
 	
-	if ([self runModalOpenPanel:openPanel forTypes:types])
-	{
-		return [openPanel filenames];
-	}
+  if ([self runModalOpenPanel:openPanel forTypes:types])
+    {
+      return [openPanel filenames];
+    }
 	
-	return nil;
+  return nil;
 }
 
 - (NSArray *)URLsFromRunningOpenPanel
 {
-    NSArray *types = [self _openableFileExtensions];
-    NSOpenPanel *openPanel = [self _setupOpenPanel];
-
-    if ([self runModalOpenPanel:openPanel forTypes:types])
+  NSArray *types = [self _openableFileExtensions];
+  NSOpenPanel *openPanel = [self _setupOpenPanel];
+  
+  if ([self runModalOpenPanel:openPanel forTypes:types])
     {
-        return [openPanel URLs];
+      return [openPanel URLs];
     }
-
-    return nil;
+  
+  return nil;
 }
 
 
 - (IBAction)saveAllDocuments:(id)sender
 {
-	NSDocument *document;
-	NSEnumerator *docEnum = [_documents objectEnumerator];
+  NSDocument *document;
+  NSEnumerator *docEnum = [_documents objectEnumerator];
 	
-	while ((document = [docEnum nextObject]))
+  while ((document = [docEnum nextObject]))
+    {
+      if ([document isDocumentEdited])  //maybe we should save regardless...
 	{
-		if ([document isDocumentEdited])  //maybe we should save regardless...
-		{
-			[document saveDocument:sender];
-		}
+	  [document saveDocument:sender];
 	}
+    }
 }
 
 
 - (IBAction)openDocument:(id)sender
 {
-	NSEnumerator *fileEnum = [[self fileNamesFromRunningOpenPanel] objectEnumerator];
-	NSString *filename;
+  NSEnumerator *fileEnum = [[self fileNamesFromRunningOpenPanel] objectEnumerator];
+  NSString *filename;
 	
-	while ((filename = [fileEnum nextObject]))
-	{
-		[self openDocumentWithContentsOfFile:filename display:YES];
-	}
+  while ((filename = [fileEnum nextObject]))
+    {
+      [self openDocumentWithContentsOfFile:filename display:YES];
+    }
 }
 	
 - (IBAction)newDocument:(id)sender
 {
-	[self openUntitledDocumentOfType:[self _defaultType] display:YES];
+  [self openUntitledDocumentOfType:[self _defaultType] display:YES];
 }
 
 
 - (BOOL)closeAllDocuments
 {
-	NSDocument *document;
-	NSEnumerator *docEnum = [_documents objectEnumerator];
-
-	while ((document = [docEnum nextObject]))
-	{
-		if (![document canCloseDocument]) return NO;
-		[document close];
-		[self _removeDocument:document];
-	}
-	
-	return YES;
+  NSDocument *document;
+  NSEnumerator *docEnum = [_documents objectEnumerator];
+  
+  while ((document = [docEnum nextObject]))
+    {
+      if (![document canCloseDocument]) return NO;
+      [document close];
+      [self _removeDocument:document];
+    }
+  
+  return YES;
 }
 
 - (BOOL)reviewUnsavedDocumentsWithAlertTitle:(NSString *)title cancellable:(BOOL)cancellable
 {
-    //FIXME -- localize.
-	NSString *cancelString = (cancellable)? @"Cancel" : nil;
-	int      result;
-
-	if (![self hasEditedDocuments]) return YES;
+  //FIXME -- localize.
+  NSString *cancelString = (cancellable)? @"Cancel" : nil;
+  int      result;
+  
+  if (![self hasEditedDocuments]) return YES;
 	
-	result = NSRunAlertPanel(title, @"You have unsaved documents.",
-				@"Review Unsaved", cancelString, @"Quit Anyways");
+  result = NSRunAlertPanel(title, @"You have unsaved documents.",
+			   @"Review Unsaved", cancelString, @"Quit Anyways");
 
 #define ReviewUnsaved NSAlertDefaultReturn
 #define Cancel        NSAlertAlternateReturn
 #define QuitAnyways   NSAlertOtherReturn
 
-	switch (result)
-	{
-		case ReviewUnsaved:	return [self closeAllDocuments];
-		case QuitAnyways:	return YES;
-		case Cancel:
-		default:			return NO;
-	}
+  switch (result)
+    {
+    case ReviewUnsaved:	return [self closeAllDocuments];
+    case QuitAnyways:	return YES;
+    case Cancel:
+    default:			return NO;
+    }
 }
 
 #ifdef OPENSTEP_ONLY
@@ -326,148 +337,157 @@ static NSDictionary *TypeInfoForName(NSArray *types, NSString *typeName)
  */
 - (BOOL)application:(NSApplication *)sender openFile:(NSString *)filename
 {
-    return [self openDocumentWithContentsOfFile:filename display:YES] ? YES : NO;
+  return [self openDocumentWithContentsOfFile:filename display:YES] ? YES : NO;
 }
 
 - (BOOL)application:(NSApplication *)sender openTempFile:(NSString *)filename;
 {
-    return [self openDocumentWithContentsOfFile:filename display:YES] ? YES : NO;
+  return [self openDocumentWithContentsOfFile:filename display:YES] ? YES : NO;
 }
 
 - (BOOL)applicationOpenUntitledFile:(NSApplication *)sender
 {
-    return [self openUntitledDocumentOfType:[self _defaultType] display:YES] ? YES : NO;
+  return [self openUntitledDocumentOfType:[self _defaultType] display:YES] ? YES : NO;
 }
 
 - (BOOL)application:(id)sender openFileWithoutUI:(NSString *)filename
 {
-    return [self openDocumentWithContentsOfFile:filename display:NO] ? YES : NO;
+  return [self openDocumentWithContentsOfFile:filename display:NO] ? YES : NO;
 }
 
 - (BOOL)applicationShouldTerminate:(NSApplication *)sender
 {
-    return [self reviewUnsavedDocumentsWithAlertTitle:@"Quit" cancellable:YES];
+  return [self reviewUnsavedDocumentsWithAlertTitle:@"Quit" cancellable:YES];
 }
 #endif
 
 - (void)_workspaceWillPowerOff:(NSNotification *)notification
 {
-    // FIXME -- localize.
-    [self reviewUnsavedDocumentsWithAlertTitle:@"Power" cancellable:NO];
+  // FIXME -- localize.
+  [self reviewUnsavedDocumentsWithAlertTitle:@"Power" cancellable:NO];
 }
 
 
 - (NSArray *)documents
 {
-	return _documents;
+  return _documents;
 }
 
 - (BOOL)hasEditedDocuments;
 {
-	int i, count = [_documents count];
+  int i, count = [_documents count];
+  
+  for (i=0; i<count; i++)
+    {
+      if ([[_documents objectAtIndex:i] isDocumentEdited])
+	return YES;
+    }
 	
-	for (i=0; i<count; i++)
-	{
-		if ([[_documents objectAtIndex:i] isDocumentEdited]) return YES;
-	}
-	
-	return NO;
+  return NO;
 }
 
 - (id)currentDocument
 {
-	return [self documentForWindow:[[NSApplication sharedApplication] mainWindow]];
+  return [self documentForWindow:[[NSApplication sharedApplication] mainWindow]];
 }
 
 - (NSString *)currentDirectory
 {
-	NSFileManager *manager = [NSFileManager defaultManager];
-	NSDocument *currentDocument = [self currentDocument];
-	NSString *directory = [[currentDocument fileName] stringByDeletingLastPathComponent];
-	BOOL isDir = NO;
+  NSFileManager *manager = [NSFileManager defaultManager];
+  NSDocument *currentDocument = [self currentDocument];
+  NSString *directory = [[currentDocument fileName] stringByDeletingLastPathComponent];
+  BOOL isDir = NO;
 
-	if (directory &&
-		[manager fileExistsAtPath:directory isDirectory:&isDir] && isDir) return directory;
-	//FIXME -- need to remember last saved directory, and return that here.
-    //Only return NSHomeDirectory if nothing's been saved yet.
-	return NSHomeDirectory();
+  if (directory &&
+      [manager fileExistsAtPath:directory isDirectory:&isDir] && isDir)
+    return directory;
+
+  //FIXME -- need to remember last saved directory, and return that here.
+  //Only return NSHomeDirectory if nothing's been saved yet.
+  return NSHomeDirectory();
 }
 
 - (id)documentForWindow:(NSWindow *)window
 {
-	id document;
+  id document;
 
-	if (window == nil) return nil;
-	if (![[window windowController] isKindOfClass:[NSWindowController class]]) return nil;
+  if (window == nil)
+    return nil;
 	
-    document = [[window windowController] document];
-	if (![document isKindOfClass:[NSDocument class]]) return nil;
-	return document;
+  if (![[window windowController] isKindOfClass:[NSWindowController class]])
+    return nil;
+	
+  document = [[window windowController] document];
+
+  if (![document isKindOfClass:[NSDocument class]])
+    return nil;
+
+  return document;
 }
 
 - (id)documentForFileName:(NSString *)fileName
 {
-	int i, count = [_documents count];
+  int i, count = [_documents count];
 	
-	for (i=0; i<count; i++)
-	{
-		NSDocument *document = [_documents objectAtIndex:i];
-
-		if ([[document fileName] isEqualToString:fileName])
-			return document;
-	}
+  for (i=0; i<count; i++)
+    {
+      NSDocument *document = [_documents objectAtIndex:i];
+      
+      if ([[document fileName] isEqualToString:fileName])
+	return document;
+    }
 	
-	return nil;
+  return nil;
 }
 
 - (BOOL)validateMenuItem:(NSMenuItem *)anItem
 {
-	if ([anItem action] == @selector(saveAllDocuments:))
-		return [self hasEditedDocuments];
-	return YES;
+  if ([anItem action] == @selector(saveAllDocuments:))
+    return [self hasEditedDocuments];
+  return YES;
 }
 
 - (NSString *)displayNameForType:(NSString *)type
 {
-	NSString *name = [TYPE_INFO(type) objectForKey:NSHumanReadableNameKey];
-
-	return name? name : type;
+  NSString *name = [TYPE_INFO(type) objectForKey:NSHumanReadableNameKey];
+  
+  return name? name : type;
 }
 
 - (NSString *)typeFromFileExtension:(NSString *)fileExtension
 {
-	int i, count = [_types count];
+  int i, count = [_types count];
 	
-	for (i=0; i<count;i++)
+  for (i=0; i<count;i++)
+    {
+      NSDictionary *typeInfo = [_types objectAtIndex:i];
+      
+      if ([[typeInfo objectForKey:NSUnixExtensionsKey] containsObject:fileExtension] ||
+	  [[typeInfo objectForKey:NSDOSExtensionsKey]  containsObject:fileExtension])
 	{
-		NSDictionary *typeInfo = [_types objectAtIndex:i];
-		
-		if ([[typeInfo objectForKey:NSUnixExtensionsKey] containsObject:fileExtension] ||
-		    [[typeInfo objectForKey:NSDOSExtensionsKey]  containsObject:fileExtension])
-		{
-			return [typeInfo objectForKey:NSNameKey];
-		}
+	  return [typeInfo objectForKey:NSNameKey];
 	}
+    }
 	
-	return nil;
+  return nil;
 }
 
 - (NSArray *)fileExtensionsFromType:(NSString *)type
 {
-	NSDictionary *typeInfo = TYPE_INFO(type);
-	NSArray *unixExtensions = [typeInfo objectForKey:NSUnixExtensionsKey];
-	NSArray *dosExtensions  = [typeInfo objectForKey:NSDOSExtensionsKey];
-	
-	if (!dosExtensions)  return unixExtensions;
-	if (!unixExtensions) return dosExtensions;
-	return [unixExtensions arrayByAddingObjectsFromArray:dosExtensions];
+  NSDictionary *typeInfo = TYPE_INFO(type);
+  NSArray *unixExtensions = [typeInfo objectForKey:NSUnixExtensionsKey];
+  NSArray *dosExtensions  = [typeInfo objectForKey:NSDOSExtensionsKey];
+  
+  if (!dosExtensions)  return unixExtensions;
+  if (!unixExtensions) return dosExtensions;
+  return [unixExtensions arrayByAddingObjectsFromArray:dosExtensions];
 }
 
 - (Class)documentClassForType:(NSString *)type
 {
-	NSString *className = [TYPE_INFO(type) objectForKey:NSDocumentClassKey];
+  NSString *className = [TYPE_INFO(type) objectForKey:NSDocumentClassKey];
 	
-	return className? NSClassFromString(className) : Nil;
+  return className? NSClassFromString(className) : Nil;
 }
 
 static NSString *NSEditorRole = @"Editor";
@@ -476,52 +496,52 @@ static NSString *NSNoRole     = @"None";
 
 - (NSArray *)_editorAndViewerTypesForClass:(Class)documentClass
 {
-	int i, count = [_types count];
-	NSMutableArray *types = [NSMutableArray arrayWithCapacity:count];
-	NSString *docClassName = NSStringFromClass(documentClass);
+  int i, count = [_types count];
+  NSMutableArray *types = [NSMutableArray arrayWithCapacity:count];
+  NSString *docClassName = NSStringFromClass(documentClass);
 	
-	for (i=0; i<count; i++)
+  for (i=0; i<count; i++)
+    {
+      NSDictionary *typeInfo = [_types objectAtIndex:i];
+      NSString     *className = [typeInfo objectForKey:NSDocumentClassKey];
+      NSString     *role      = [typeInfo objectForKey:NSRoleKey];
+      
+      if ([docClassName isEqualToString:className] &&
+	  (role == nil || [role isEqual:NSEditorRole] || [role isEqual:NSViewerRole]))
 	{
-		NSDictionary *typeInfo = [_types objectAtIndex:i];
-		NSString     *className = [typeInfo objectForKey:NSDocumentClassKey];
-		NSString     *role      = [typeInfo objectForKey:NSRoleKey];
-		
-		if ([docClassName isEqualToString:className] &&
-			(role == nil || [role isEqual:NSEditorRole] || [role isEqual:NSViewerRole]))
-		{
-			[types addObject:[typeInfo objectForKey:NSNameKey]];
-		}
+	  [types addObject:[typeInfo objectForKey:NSNameKey]];
 	}
-	
-	return types;
+    }
+  
+  return types;
 }
 
 - (NSArray *)_editorTypesForClass:(Class)documentClass
 {
-	int i, count = [_types count];
-	NSMutableArray *types = [NSMutableArray arrayWithCapacity:count];
-	NSString *docClassName = NSStringFromClass(documentClass);
-	
-	for (i=0; i<count; i++)
+  int i, count = [_types count];
+  NSMutableArray *types = [NSMutableArray arrayWithCapacity:count];
+  NSString *docClassName = NSStringFromClass(documentClass);
+  
+  for (i=0; i<count; i++)
+    {
+      NSDictionary *typeInfo = [_types objectAtIndex:i];
+      NSString     *className = [typeInfo objectForKey:NSDocumentClassKey];
+      NSString     *role      = [typeInfo objectForKey:NSRoleKey];
+      
+      if ([docClassName isEqualToString:className] &&
+	  (role == nil || [role isEqual:NSEditorRole]))
 	{
-		NSDictionary *typeInfo = [_types objectAtIndex:i];
-		NSString     *className = [typeInfo objectForKey:NSDocumentClassKey];
-		NSString     *role      = [typeInfo objectForKey:NSRoleKey];
-		
-		if ([docClassName isEqualToString:className] &&
-			(role == nil || [role isEqual:NSEditorRole]))
-		{
-			[types addObject:[typeInfo objectForKey:NSNameKey]];
-		}
+	  [types addObject:[typeInfo objectForKey:NSNameKey]];
 	}
-	
-	return types;
+    }
+  
+  return types;
 }
 
 - (NSArray *)_exportableTypesForClass:(Class)documentClass
 {
-	// Dunno what this method is for; maybe looks for filter types
-	return [self _editorTypesForClass:documentClass];
+  // Dunno what this method is for; maybe looks for filter types
+  return [self _editorTypesForClass:documentClass];
 }
 
 @end

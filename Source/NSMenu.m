@@ -105,7 +105,6 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   menu_follow_transient = NO;
   menu_is_beholdenToPopUpButton = YES;
   ASSIGN(menu_popb, popb);
-//  menu_popb = popb;
 
   menu_changed = YES;
   /* According to the spec, menus do autoenable by default */
@@ -171,8 +170,8 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
                                 defer: NO];
   
   titleView = [NSMenuWindowTitleView new];
-  [titleView setFrameOrigin: NSMakePoint(0, winRect.size.height-21)];
-  [titleView setFrameSize: NSMakeSize (winRect.size.width, 21)];
+  [titleView setFrameOrigin: NSMakePoint(0, winRect.size.height-22)];
+  [titleView setFrameSize: NSMakeSize (winRect.size.width, 22)];
   [[aWindow contentView] addSubview:menu_view];
   [[aWindow contentView] addSubview:titleView];
   [titleView setMenu: self];
@@ -515,7 +514,7 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
       NSPoint subOrigin = [win_link convertBaseToScreen: NSMakePoint(aRect.origin.x, aRect.origin.y)];
 
       return NSMakePoint (frame.origin.x + frame.size.width + 1,
-                         subOrigin.y - (submenuFrame.size.height - 41));
+                         subOrigin.y - (submenuFrame.size.height - 42));
     }
   else
     {
@@ -727,19 +726,16 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 
   if (!menu_is_beholdenToPopUpButton)
     {
-      size.height += 21;
+      size.height += 22;
       [aWindow setContentSize: size];
       [bWindow setContentSize: size];
       [menu_view setFrameOrigin: NSMakePoint(0, 0)];
-      [titleView setFrame: NSMakeRect(0,size.height-21,size.width,21)];
+      [titleView setFrame: NSMakeRect(0,size.height-22,size.width,22)];
     }
   else
     {
       [aWindow setContentSize: size];
     }
-
-// FIXME, popup sets itself up.
-// [menu_view setNeedsDisplay:YES];
 
   [aWindow display];
 
@@ -862,11 +858,9 @@ NSArray* array;
     if (menu_changed)
         [self sizeToFit];
 
-    if (menu_supermenu && ![self isTornOff])                           // query super menu for
+    if (menu_supermenu && ![self isTornOff])      // query super menu for
       {                                           // position
-        NSPoint location = [menu_supermenu locationForSubmenu: self];
-  
-        [aWindow setFrameOrigin: location];
+        [aWindow setFrameOrigin:[menu_supermenu locationForSubmenu: self]];
         menu_supermenu->menu_attached_menu = self;
       }
     else

@@ -27,7 +27,6 @@
 #include <AppKit/NSCStringText.h>
 #include <AppKit/NSEvent.h>
 
-
 /*
  * Dummy definitions provided here to avoid errors when not linking with
  * a back end.
@@ -302,4 +301,3 @@ float NSLinkFrameThickness(void)
 {
   return 0;
 }
-
