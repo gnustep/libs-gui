@@ -328,5 +328,15 @@ enum {
 
 @end
 
+//
+// Methods the backend should implement
+//
+@interface NSCell (GNUstepBackend)
+
+// Returns the size of a border
++ (NSSize)sizeForBorderType:(NSBorderType)aType;
+
+@end
+
 #endif // _GNUstep_H_NSCell
 

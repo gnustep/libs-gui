@@ -84,9 +84,15 @@ id gnustep_gui_nstextfield_cell_class = nil;
   // set our cell
   [self setCell:[[gnustep_gui_nstextfield_cell_class new] autorelease]];
   [cell setState:1];
-  text_cursor = [NSCursor IBeamCursor];
+  text_cursor = [[NSCursor IBeamCursor] retain];
 
   return self;
+}
+
+- (void)dealloc
+{
+  [text_cursor release];
+  [super dealloc];
 }
 
 //
@@ -94,6 +100,8 @@ id gnustep_gui_nstextfield_cell_class = nil;
 //
 - (void)setTextCursor:(NSCursor *)aCursor
 {
+  [aCursor retain];
+  [text_cursor release];
   text_cursor = aCursor;
 }
 

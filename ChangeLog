@@ -1,4 +1,19 @@
-Thu Oct 16 12:28:00 1997  Scott Christley  <scottc@stetson.net-community.com>
+Mon Oct 20 14:32:55 1997  Scott Christley  <scottc@net-community.com>
+
+	* Fill out NSBox implementation.
+	* Headers/gnustep/gui/NSCell.h (+sizeForBorderType:): New method.
+	* Source/NSCell.m (+sizeForBorderType:): New method.
+	* Source/NSBox.m: Fill out implementation.
+
+	* Source/NSTextField.m (-initWithFrame:,-setTextCursor:,-dealloc):
+	Correct retain/release behavior of cursor.
+
+	* Source/NSTextFieldCell.m (-cellSize): Implement.
+
+	* Source/NSView.m (-removeTrackingRect:): Comment out release
+	of object as we haven't retained it.
+
+Thu Oct 16 12:28:00 1997  Scott Christley  <scottc@net-community.com>
 
 	* config.mak.in: Delete.
 	* Headers/gnustep/gui/NSScrollView.h: Correct datatype.

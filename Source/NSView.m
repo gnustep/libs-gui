@@ -1125,7 +1125,7 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
       m = (TrackingRectangle *)[tracking_rects objectAtIndex:i];
       if ([m tag] == tag)
 	{
-	  [m release];
+	  //[m release];
 	  [tracking_rects removeObjectAtIndex:i];
 	  return;
 	}

@@ -883,3 +883,16 @@
 }
 
 @end
+
+//
+// Methods the backend should implement
+//
+@implementation NSCell (GNUstepBackend)
+
+// Returns the size of a border
++ (NSSize)sizeForBorderType:(NSBorderType)aType
+{
+  return NSZeroSize;
+}
+
+@end
