@@ -1899,7 +1899,7 @@ static NSNotificationCenter *nc = nil;
   NSView *cacheView;
   NSRect cacheRect;
   
-  aRect = NSIntegralRect (NSIntersectionRect(aRect, [_contentView frame]));
+  aRect = NSIntegralRect (NSIntersectionRect (aRect, [_wv frame]));
   _cachedImageOrigin = aRect.origin;
   DESTROY(_cachedImage);
   
@@ -1929,11 +1929,11 @@ static NSNotificationCenter *nc = nil;
     {
       return;
     }
-  [_contentView lockFocus];
+  [_wv lockFocus];
   NSCopyBits ([[_cachedImage window] gState], 
 	      [_cachedImage rect],
 	      _cachedImageOrigin);
-  [_contentView unlockFocus];
+  [_wv unlockFocus];
 }
 
 - (void) useOptimizedDrawing: (BOOL)flag
