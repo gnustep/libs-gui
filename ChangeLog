@@ -1,3 +1,14 @@
+2000-06-05  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/AppKit/NSTextAttachment.h
+	* Source/NSTextAttachment.m 
+	Added missing methods.
+	* Source/NSStringDrawing.m 
+	Added drawing code for text attachments (Still untested, as there
+	is a problem with unicode characters in NSAttributedString)
+	* Source/NSTextView.m
+	Implemented some basic handling for mouse down on attachment cell.	
+
 2001-06-02  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
 
 	* Source/NSMatrix.m ([NSMatrix -mouseDown:]): set highlight in list
