@@ -169,10 +169,10 @@
     <heading>Services</heading>
     <p>
       The services system provides a standardised mechanism for an application
-      to provide services to other applications.  Likew cut and paste, or
+      to provide services to other applications.  Like cut and paste, or
       drag and drop, the use of an application service is normally initiated
       by the suer selecting some data to work with.  The user then goes to
-      the services menu, and selects a service lsted there.  The selection
+      the services menu, and selects a service listed there.  The selection
       of a menu item causes the data to be placed on a pasteboard and
       transferred to the service providing application, where the action of
       the service is performed on it, and resulting data transferred back
@@ -211,7 +211,7 @@
     <p>
       Your Info.plist should contain an array named <code>NSServices</code>
       listing all the services your application provides.  Each service
-      definition should be a dictionary contaning the following information -
+      definition should be a dictionary containing the following information -
     </p>
     <deflist>
       <term>NSSendTypes</term>
@@ -276,7 +276,7 @@
 	This is a dictionary containing language names and the text to
 	appear in the services menu for each language.  It may contain
 	an entry where the language name is <code>default</code> and
-	this entry will be used where none of the specific laungues
+	this entry will be used where none of the specific languages
 	listed are found in the application user's preferences.<br />
 	These text items may contain a single slash ('/') character,
 	and if this is present, the text after the slash will appear
@@ -300,14 +300,14 @@
       <desc>
 	This is an optional path to the executable binary of the program
 	which performs the service .. it's used to launch the program if
-	it is not already running.  Normaly, for an application, this is
+	it is not already running.  Normally, for an application, this is
 	not necessary, as the system knows how to launch any applications
-	found instaalled in standard locations.
+	found installed in standard locations.
       </desc>
       <term>NSHost</term>
       <desc>
 	Not yet implemented ... this provides for the system to launch the
-	executabel for this service on a different host on the network.
+	executable for this service on a different host on the network.
       </desc>
     </deflist>
     <p>
@@ -348,7 +348,7 @@
       type.  Unlike general services, this is not directly initiated by
       user action clicking on an item in the services menu (indeed, filter
       services do not appear on the services menu), but is instead performed
-      transparently when the application asks the poasteboard system for
+      transparently when the application asks the pasteboard system for
       data of a particular type, but the pasteboard only contains data of
       some other type.
     </p>
@@ -692,10 +692,10 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
  * as the exchange mechanism for <em>services</em> (as listed on the
  * services menu), for communicating with a spelling server in order to
  * perform spell checking, and for <em>filter services</em> which convert
- * data of one typ to another transparently.
+ * data of one type to another transparently.
  * </p>
  * <p>Pasteboards are identified by names, some of which are standard
- * and are intended to exist permenantly and be shared between all
+ * and are intended to exist permanently and be shared between all
  * applications, others are temporary or private and are used to handle
  * specific services.
  * </p>
@@ -713,7 +713,7 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
  * the owner is responsible for producing the data for the pasteboard when
  * it is called for (lazy provision of data).<br />
  * The pasteboard owner needs to implement the methods of the
- * NSPasteboardOwner informal protocl in order to do this.
+ * NSPasteboardOwner informal protocol in order to do this.
  * </p>
  */
 @implementation NSPasteboard
@@ -942,7 +942,7 @@ static  NSMapTable              *mimeMap = NULL;
 }
 
 /**
- * <p>Returns the pasteboard for the specified name.  Creates a new pasreboard
+ * <p>Returns the pasteboard for the specified name.  Creates a new pasteboard
  * if (and only if) one with the given name does not exist.
  * </p>
  * Standard pasteboard names are -
@@ -1380,7 +1380,7 @@ static  NSMapTable              *mimeMap = NULL;
  * <p>Writes  string it to the pasteboard server using the
  * -setPropertyList:forType: method.
  * </p>
- * <p>The data may subsequently be read from the reciver using the
+ * <p>The data may subsequently be read from the receiver using the
  * -stringForType: or -propertyListForType: method.
  * </p>
  * <p>If the data is retrieved using -dataForType: then it needs to be
@@ -1477,7 +1477,7 @@ static  NSMapTable              *mimeMap = NULL;
   if (filename == nil)
     {
       [NSException raise: NSInvalidArgumentException
-		  format: @"Cannot put file on pastboard with "
+		  format: @"Cannot put file on pasteboard with "
 	@"no preferred filename"];
     }
   data = [wrapper serializedRepresentation];
@@ -1708,7 +1708,7 @@ static  NSMapTable              *mimeMap = NULL;
 /**
  * GNUstep specific extensions ...<br />
  * <p>GNUstep adds a mechanism for mapping between OpenStep pasteboard
- * types and MIME types.  This is useful for interopration with other
+ * types and MIME types.  This is useful for inter-operation with other
  * systems, as MIME types have come into common usage (long after the
  * OpenStep specification was created).
  * </p>
@@ -1722,7 +1722,7 @@ static  NSMapTable              *mimeMap = NULL;
 
 /**
  * <p>Once the -setChangeCount: message has been sent to an NSPasteboard
- * the object will gain an extra GNUstep behaviour - when geting data
+ * the object will gain an extra GNUstep behaviour - when getting data
  * from the pasteboard, the data need no longer be from the latest
  * version but may be a version from a previous representation with
  * the specified change count.
@@ -1886,7 +1886,7 @@ NSCreateFileContentsPboardType(NSString *fileType)
  * formed from the supplied file extension.
  * </p>
  * <p>Data written to a pasteboard with a file names type should
- * be a single name writen using [NSPasteboard-setString:forType:] or
+ * be a single name written using [NSPasteboard-setString:forType:] or
  * an array of strings written using
  * [NSPasteboard-setPropertyList:forType:].<br />
  * Similarly, the data should be read using 
