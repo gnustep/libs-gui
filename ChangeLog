@@ -1,3 +1,7 @@
+2001-11-06  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+	* Source/NSTableView.m [- sizeToFit]: replaced floorf with floor
+	suggestion from Stephen Brandon <stephen@brandonitconsulting.co.uk>
+
 2001-11-03  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMenu.m
