@@ -5788,7 +5788,7 @@ byExtendingSelection: (BOOL)flag
 	  
 	  if (rowNumber >= startingRow)
 	    {
-	      //	      NSHighlightRect(NSIntersectionRect([self rectOfRow: rowNumber],
+	      //NSHighlightRect(NSIntersectionRect([self rectOfRow: rowNumber],
 	      //						 clipRect));
 	      [[NSColor whiteColor] set];
 	      NSRectFill(NSIntersectionRect([self rectOfRow: rowNumber], clipRect));
@@ -5827,9 +5827,9 @@ byExtendingSelection: (BOOL)flag
 	  
 	  if (columnNumber >= startingColumn)
 	    {
-	      NSHighlightRect (NSIntersectionRect(
-						  [self rectOfColumn: columnNumber],
-						  clipRect));
+	      NSHighlightRect
+		(NSIntersectionRect([self rectOfColumn: columnNumber],
+				    clipRect));
 	    }
 	}     
     }
