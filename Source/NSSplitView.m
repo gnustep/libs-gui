@@ -83,6 +83,7 @@
   unsigned	int eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask;
   /* YES if delegate implements splitView:constrainSplitPosition:ofSubviewAt:*/
   BOOL          delegateConstrains = NO;
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
   
 
   /*  if there are less the two subviews, there is nothing to do */
@@ -323,6 +324,9 @@
 
   [self unlockFocus];
 
+  [nc postNotificationName: NSSplitViewWillResizeSubviewsNotification
+		    object: self];
+
   /* resize the subviews accordingly */
   r = [prev frame];
   if (_isVertical == NO)
@@ -378,6 +382,9 @@
 	     (int)NSHeight(r1));
 
   [_window invalidateCursorRectsForView: self];
+
+  [nc postNotificationName: NSSplitViewDidResizeSubviewsNotification
+		    object: self];
 
 
   [self setNeedsDisplay: YES];
@@ -650,7 +657,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 
   if (_delegate)
     {
-      [nc removeObserver: _delegate name: nil object: self];
+      [nc removeObserver: _delegate  name: nil  object: self];
     }
   _delegate = anObject;
 
