@@ -99,6 +99,7 @@ enum {
 - (NSArray *)availableFonts;
 - (NSMenu *)fontMenu:(BOOL)create;
 - (NSFontPanel *)fontPanel:(BOOL)create;
+- (void)orderFrontFontPanel:(id)sender;
 - (BOOL)isEnabled;
 - (BOOL)isMultiple;
 - (NSFont *)selectedFont;

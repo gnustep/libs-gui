@@ -273,11 +273,22 @@ static Class fontPanelClass = Nil;
   return font_menu;
 }
 
+// Get the font panel...
+
 - (NSFontPanel *)fontPanel:(BOOL)create
 {
   if ((!fontPanel) && (create))
     fontPanel = [[fontPanelClass alloc] init];
   return fontPanel;
+}
+
+// Bring the font panel to the front... MacOSX only?
+
+- (void)orderFrontFontPanel:(id)sender
+{
+  if (!fontPanel)
+    fontPanel = [[fontPanelClass alloc] init];
+  [fontPanel orderFront:nil];
 }
 
 - (BOOL)isEnabled

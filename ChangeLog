@@ -1,3 +1,11 @@
+Tue Mar 23 1999  Michael Hanni <mhanni@sprintmail.com>
+
+	* Source/NSFontManager.m: implemented orderFrontFontPanel:.
+	* Source/NSFontPanel.m: implemented init:. Will now display the
+	font panel. Not necessarily useful yet though. I need to plugin a
+	few matrixes and bogus arrays with font info to make it look
+	useful. Try fontpanel.app in xraw/Testing.
+
 Mon Mar 22 13:12:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSView.m: implement lockFocus and unlockFocus
