@@ -747,6 +747,13 @@ PSMatrix* matrix;
             frame.origin.x, frame.origin.y,
             frame.size.width, frame.size.height);
 
+/* FIXME
+ * The lines containing 'floor()' ensure that the frame sizes are an integer
+ * number of points.  This is wrong - but makes for more efficient drawing
+ * on systems where 1pixel == 1point and all coordinates are integer point
+ * sizes.  If and when we can draw efficiently without this 'feature' the
+ * lines should be removed.
+ */
   if (changedOrigin)
     {
       frame.origin.x = floor(frame.origin.x);
@@ -760,6 +767,8 @@ PSMatrix* matrix;
 
       frame.size.width = floor(frame.size.width);
       frame.size.height = floor(frame.size.height);
+      bounds.size.width = floor(bounds.size.width);
+      bounds.size.height = floor(bounds.size.height);
       sx = frame.size.width / bounds.size.width;
       sy = frame.size.height / bounds.size.height;
       [boundsMatrix scaleTo: sx : sy];
