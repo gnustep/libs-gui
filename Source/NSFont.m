@@ -42,7 +42,8 @@
    Convention (see the red book). */
 static NSMutableSet* fontsUsed = nil;
 
-static NSFont* getFont(NSString* key, NSString* defaultFontName, float fontSize)
+NSFont* getNSFont(NSString* key, NSString* defaultFontName,
+		  float fontSize)
 {
   NSString* fontName;
 
@@ -60,7 +61,7 @@ static NSFont* getFont(NSString* key, NSString* defaultFontName, float fontSize)
   return [NSFont fontWithName:fontName size:fontSize];
 }
 
-static void setFont(NSString* key, NSFont* font)
+void setNSFont(NSString* key, NSFont* font)
 {
   NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
 
@@ -87,34 +88,34 @@ static void setFont(NSString* key, NSFont* font)
 
 + (NSFont*)boldSystemFontOfSize:(float)fontSize
 {
-  return getFont (@"NSBoldFont", @"Helvetica-Bold", fontSize);
+  return getNSFont (@"NSBoldFont", @"Helvetica-Bold", fontSize);
 }
 
 + (NSFont*)systemFontOfSize:(float)fontSize
 {
-  return getFont (@"NSFont", @"Helvetica", fontSize);
+  return getNSFont (@"NSFont", @"Helvetica", fontSize);
 }
 
 + (NSFont*)userFixedPitchFontOfSize:(float)fontSize
 {
-  return getFont (@"NSUserFixedPitchFont", @"Courier", fontSize);
+  return getNSFont (@"NSUserFixedPitchFont", @"Courier", fontSize);
 }
 
 + (NSFont*)userFontOfSize:(float)fontSize
 {
-  return getFont (@"NSUserFont", @"Helvetica", fontSize);
+  return getNSFont (@"NSUserFont", @"Helvetica", fontSize);
 }
 
 /* Setting the preferred user fonts */
 
 + (void)setUserFixedPitchFont:(NSFont*)font
 {
-  setFont (@"NSUserFixedPitchFont", font);
+  setNSFont (@"NSUserFixedPitchFont", font);
 }
 
 + (void)setUserFont:(NSFont*)font
 {
-  setFont (@"NSUserFont", font);
+  setNSFont (@"NSUserFont", font);
 }
 
 /* The following method should be rewritten in the backend and it has to be

@@ -29,12 +29,6 @@
 #include <Foundation/NSString.h>
 #include <AppKit/NSEvent.h>
 
-/* The global application object */
-/* This should really be accessed through [NSApplication sharedApplication] */
-id NSApp = nil;
-
-NSEvent *gnustep_gui_null_event = nil;
-
 // Global strings
 NSString *NSModalPanelRunLoopMode = @"ModalPanelMode";
 NSString *NSEventTrackingRunLoopMode = @"EventTrackingMode";

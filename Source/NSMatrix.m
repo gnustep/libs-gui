@@ -349,6 +349,8 @@ static int mouseDownFlags = 0;
 {
   int i, j;
 
+  [super initWithFrame: frameRect];
+
   ASSIGN(cellPrototype, prototype);
 
   cells = [[NSMutableArray alloc] initWithCapacity:rows];
@@ -1164,6 +1166,10 @@ static int mouseDownFlags = 0;
   if (mode != NSTrackModeMatrix)
     [NSEvent startPeriodicEventsAfterDelay:0.05 withPeriod:0.05];
   ASSIGN(lastEvent, theEvent);
+
+  // capture mouse
+  [[self window] captureMouse: self];
+
   [self lockFocus];
 
   while (!done) {
@@ -1286,12 +1292,14 @@ static int mouseDownFlags = 0;
 
     /* Get the next event */
     while (!shouldProceedEvent) {
-      theEvent = [NSApp nextEventMatchingMask:eventMask
-				    untilDate:[NSDate distantFuture]
-				       inMode:NSEventTrackingRunLoopMode
-				      dequeue:YES];
+      theEvent = [[NSApplication sharedApplication]
+		   nextEventMatchingMask:eventMask
+		   untilDate:[NSDate distantFuture]
+		   inMode:NSEventTrackingRunLoopMode
+		   dequeue:YES];
       switch ([theEvent type]) {
 	case NSPeriodic:
+	  NSDebugLog(@"NSMatrix: got NSPeriodic event\n");
 	  shouldProceedEvent = YES;
 	  break;
 	case NSLeftMouseUp:
@@ -1300,6 +1308,7 @@ static int mouseDownFlags = 0;
 	  ASSIGN(lastEvent, theEvent);
 	  break;
 	default:
+	  NSDebugLog(@"NSMatrix: got event type: %d\n", [theEvent type]);
 	  ASSIGN(lastEvent, theEvent);
 	  continue;
       }
@@ -1307,6 +1316,9 @@ static int mouseDownFlags = 0;
     lastLocation = [lastEvent locationInWindow];
     lastLocation = [self convertPoint:lastLocation fromView:nil];
   }
+
+  // Release mouse
+  [[self window] releaseMouse: self];
 
   /* Finalize the selection */
   switch (mode) {

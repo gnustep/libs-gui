@@ -346,13 +346,13 @@ static NSRecursiveLock* timersLock = nil;
 	      modifierFlags:0
 	      timestamp:[[NSDate date] timeIntervalSinceReferenceDate]
 	      windowNumber:0
-	      context:[NSApp context]
+	      context:[[NSApplication sharedApplication] context]
 	      subtype:0
 	      data1:0
 	      data2:0];
 
   NSDebugLog (@"_timerFired:");
-  [NSApp postEvent:periodicEvent atStart:NO];
+  [[NSApplication sharedApplication] postEvent:periodicEvent atStart:NO];
 }
 
 + (void)_registerRealTimer:(NSTimer*)timer

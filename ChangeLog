@@ -1,3 +1,47 @@
+Sat Aug 16 16:28:31 1997  Scott Christley  <scottc@net-community.com>
+
+	* Headers/gnustep/gui/NSApplication.h (+setNullEvent:): New method.
+	(+getNullEvent): New method.
+	(NSApp): Eliminate global variable.
+	* Headers/gnustep/gui/NSWindow.h (-performDeminiaturize:): New method.
+	(-performHide:): New method.
+	(-performUnhide:): New method.
+	* Source/Makefile.in: Rename variables.
+	* Source/NSApplication.m (+setNullEvent:): New method.
+	(+getNullEvent): New method.
+	(-peekEventMatchingMask:untilDate:inMode:dequeue:): Modify to be
+	more like the nextEvent.. method.
+	(-hide:): Call performHide: method.
+	(-unhide:): Call performUnhide: method.
+	* Source/NSButton.m (mouseDown:): Add method calls to capture and
+	release the mouse.  Set the action mask.
+	* Source/NSCell.m (-setDoubleValue:): Don't set the cell type.
+	(-setFloatValue:, -setIntValue:, -setStringValue:): Likewise.
+	* Source/NSEvent.m: Don't access application object through
+	the global variable, use method instead.
+	* Source/NSFont.m (getFont, setFont): Rename to getNSFont and
+	setNSFont and make non-static so that they can be called
+	from the backend implementation.
+	* Source/NSMatrix.m (-initWithFrame:mode:prototype:numberOfRows:
+	numberOfColumns:): Call super's initWithFrame:
+	(mouseDown:): Capture and release the mouse when tracking.  Don't
+	access application object through the global variable, use 
+	method instead.
+	* Source/NSMenu.m: Don't access application object through the
+	global variable, use method instead.
+	* Source/NSScroller.m: Likewise.
+	* Source/NSTextFieldCell.m (-dealloc, -copyWithZone:): New method.
+	Fix retain/release on colors.
+	* Source/NSWindow.m (-deminiaturize:): Call performDeminiaturize.
+	(-makeFirstResponder:): Check that first responder exists before
+	telling it to resign.
+	(-performDeminiaturize:): New method.
+	(-performHide:): New method.
+	(-performUnhide:): New method.
+	* Source/externs.m: Add global variables.
+	* Source/libgnustep-gui.def: Add functions.
+	* Source/libgnustep-gui.m: Eliminate unneeded code.
+
 Wed Aug  6 13:27:53 1997  Ovidiu Predescu <ovidiu@net-community.com>
 
 	* Source/NSApplication (-nextEventMatchingMask:untilDate:inMode:

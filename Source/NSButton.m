@@ -289,7 +289,7 @@ id gnustep_gui_nsbutton_class = nil;
   NSEvent *e;
   unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
     NSMouseMovedMask | NSLeftMouseDraggedMask | NSRightMouseDraggedMask;
-//  int oldActionMask = [cell sendActionOn:0];
+  int oldActionMask;
 
   NSDebugLog(@"NSButton mouseDown\n");
 
@@ -297,8 +297,15 @@ id gnustep_gui_nsbutton_class = nil;
   if (![self isEnabled])
     return;
 
+  // Have NSCell send action only if we are continuous
+  if ([cell isContinuous])
+    oldActionMask = [cell sendActionOn:0];
+  else
+    oldActionMask = [cell sendActionOn: NSPeriodicMask];
+
   // capture mouse
-//  [[self window] captureMouse: self];
+  [[self window] captureMouse: self];
+
   [self lockFocus];
 
   done = NO;
@@ -321,7 +328,7 @@ id gnustep_gui_nsbutton_class = nil;
     }
 
   // Release mouse
-//  [[self window] releaseMouse: self];
+  [[self window] releaseMouse: self];
 
   // If the mouse went up in the button
   if (mouseUp)
@@ -337,11 +344,11 @@ id gnustep_gui_nsbutton_class = nil;
   [self unlockFocus];
 
   /* Restore the old action mask */
-//  [cell sendActionOn:oldActionMask];
+  [cell sendActionOn:oldActionMask];
 
   // Have the target perform the action
-//  if (mouseUp)
-//    [self sendAction:[self action] to:[self target]];
+  if (mouseUp)
+    [self sendAction:[self action] to:[self target]];
 }
 
 - (void)performClick:(id)sender

@@ -419,6 +419,10 @@ extern NSSize NSTokenSize;
 - (void)initDefaults;
 - cleanInit;
 
+- (void)performDeminiaturize:sender;
+- (void)performHide:sender;
+- (void)performUnhide:sender;
+
 @end
 
 /* Notifications */

@@ -395,10 +395,11 @@ static NSButtonCell* knobCell = nil;
   [[NSRunLoop currentRunLoop] limitDateForMode:NSEventTrackingRunLoopMode];
 
   while (eventType != NSLeftMouseUp) {
-    theEvent = [NSApp nextEventMatchingMask:eventMask
-		      untilDate:[NSDate distantFuture] 
-		      inMode:NSEventTrackingRunLoopMode
-		      dequeue:YES];
+    theEvent = [[NSApplication sharedApplication]
+		 nextEventMatchingMask:eventMask
+		 untilDate:[NSDate distantFuture] 
+		 inMode:NSEventTrackingRunLoopMode
+		 dequeue:YES];
     eventType = [theEvent type];
 
     if (eventType != NSPeriodic)
@@ -467,10 +468,11 @@ static NSButtonCell* knobCell = nil;
     if (shouldReturn)
       break;
 
-    theEvent = [NSApp nextEventMatchingMask:eventMask
-		      untilDate:[NSDate distantFuture] 
-		      inMode:NSEventTrackingRunLoopMode // NSDefaultRunLoopMode
-		      dequeue:YES];
+    theEvent = [[NSApplication sharedApplication]
+		 nextEventMatchingMask:eventMask
+		 untilDate:[NSDate distantFuture] 
+		 inMode:NSEventTrackingRunLoopMode // NSDefaultRunLoopMode
+		 dequeue:YES];
     eventType = [theEvent type];
     location = [self convertPoint:[theEvent locationInWindow] fromView:nil];
     _hitPart = [self testPart:location];

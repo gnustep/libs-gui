@@ -43,13 +43,13 @@
 #include <AppKit/NSMenuItem.h>
 #include <AppKit/NSCursor.h>
 
-extern id NSApp;
-extern NSEvent *gnustep_gui_null_event;
-
 //
 // Class variables
 //
 static BOOL gnustep_gui_app_is_in_dealloc;
+static NSEvent *gnustep_gui_null_event;
+static id NSApp;
+
 @implementation NSApplication
 
 //
@@ -465,41 +465,21 @@ static BOOL gnustep_gui_app_is_in_dealloc;
 			    inMode:(NSString *)mode
 			   dequeue:(BOOL)flag
 {
-  NSEvent *e;
+  NSEvent *event = nil;
   int i, j;
 
-  // If the queue isn't empty then check those messages
-  if ([event_queue count])
-    {
-      j = [event_queue count];
-      for (i = j-1;i >= 0; --i)
-	{
-	  e = [event_queue objectAtIndex: i];
-	  if ([self event: e matchMask: mask])
-	    {
-	      [event_queue removeObjectAtIndex: i];
-	      [self setCurrentEvent: e];
-	      return e;
-	    }
-	}
-    }
+  event = [self _eventMatchingMask:mask];
 
-  // Not in queue so peek for event
-  e = [self peekNextEvent];
-
-  // Check mask
-  if ([self event: e matchMask: mask])
+  if (!event)
     {
-      if (e)
-	{
-	  [event_queue removeObject: e];
-	}
+      // Not in queue so peek for event
+      event = [self peekNextEvent];
+
+      event = [self _eventMatchingMask:mask];
     }
-  else
-    return nil;
 
   // Unhide the cursor if necessary
-  if (e != gnustep_gui_null_event)
+  if (event && (event != gnustep_gui_null_event))
     {
       NSEventType type;
 
@@ -507,7 +487,7 @@ static BOOL gnustep_gui_app_is_in_dealloc;
       if ([NSCursor isHiddenUntilMouseMoves])
 	{
 	  // Make sure the event is a mouse event before unhiding
-	  type = [e type];
+	  type = [event type];
 	  if ((type == NSLeftMouseDown) || (type == NSLeftMouseUp)
 	      || (type == NSRightMouseDown) || (type == NSRightMouseUp)
 	      || (type == NSMouseMoved))
@@ -515,8 +495,7 @@ static BOOL gnustep_gui_app_is_in_dealloc;
 	}
     }
 
-  [self setCurrentEvent: e];
-  return e;
+  return event;
 }
 
 - (void)postEvent:(NSEvent *)event atStart:(BOOL)flag
@@ -583,15 +562,16 @@ static BOOL gnustep_gui_app_is_in_dealloc;
 //
 - (void)hide:sender
 {
-  int i, j;
+  id e;
   NSWindow *w;
 
-  j = [window_list count];
-  for (i = 0;i < j; ++i)
-    {
-      w = [window_list objectAtIndex:i];
-      // Do something to hide the window
-    }
+  // TODO: hide the menu
+
+  // Tell the windows to hide
+  e = [window_list objectEnumerator];
+  while ((w = [e nextObject]))
+    [w performHide: sender];
+
   app_is_hidden = YES;
 }
 
@@ -602,17 +582,19 @@ static BOOL gnustep_gui_app_is_in_dealloc;
 
 - (void)unhide:sender
 {
-  int i, j;
+  id e;
   NSWindow *w;
 
-  app_is_hidden = NO;
-  j = [window_list count];
-  for (i = 0;i < j; ++i)
-    {
-      w = [window_list objectAtIndex:i];
-      // Do something to unhide the window
-    }
+  // Tell the windows to unhide
+  e = [window_list objectEnumerator];
+  while ((w = [e nextObject]))
+    [w performUnhide: sender];
 
+  // TODO: unhide the menu
+
+  app_is_hidden = NO;
+
+  // Bring the key window to the front
   [[self keyWindow] makeKeyAndOrderFront:self];
 }
 
@@ -1075,6 +1057,16 @@ static BOOL gnustep_gui_app_is_in_dealloc;
 // empty implementations
 //
 @implementation NSApplication (GNUstepBackend)
+
++ (void)setNullEvent:(NSEvent *)e
+{
+  gnustep_gui_null_event = e;
+}
+
++ (NSEvent *)getNullEvent;
+{
+  return gnustep_gui_null_event;
+}
 
 // Get next event
 - (NSEvent *)getNextEvent

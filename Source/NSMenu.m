@@ -428,8 +428,9 @@ static Class menuCellClass = nil;
 
   id cells;
   int i, count;
+  id theApp = [NSApplication sharedApplication];
 
-  if (![[NSApp mainMenu] autoenablesItems])
+  if (![[theApp mainMenu] autoenablesItems])
     return;
 
   cells = [menuCells itemArray];
@@ -471,7 +472,7 @@ static Class menuCellClass = nil;
     }
 
     /* Search the key window's responder chain */
-    keyWindow = [NSApp keyWindow];
+    keyWindow = [theApp keyWindow];
     responder = [keyWindow firstResponder];
     while (responder && !found) {
       if ([responder respondsToSelector:action]) {
@@ -505,7 +506,7 @@ static Class menuCellClass = nil;
       continue;
     }
 
-    mainWindow = [NSApp mainWindow];
+    mainWindow = [theApp mainWindow];
     if (mainWindow != keyWindow) {
       /* Search the main window's responder chain */
       responder = [mainWindow firstResponder];
@@ -544,16 +545,16 @@ static Class menuCellClass = nil;
     }
 
     /* Search the NSApplication object */
-    if ([NSApp respondsToSelector:action]) {
-      if ([NSApp respondsToSelector:@selector(validateMenuItem:)])
-	[cell setEnabled:[NSApp validateMenuItem:cell]];
+    if ([theApp respondsToSelector:action]) {
+      if ([theApp respondsToSelector:@selector(validateMenuItem:)])
+	[cell setEnabled:[theApp validateMenuItem:cell]];
       else
 	[cell setEnabled:YES];
       continue;
     }
 
     /* Search the NSApplication object's delegate */
-    delegate = [NSApp delegate];
+    delegate = [theApp delegate];
     if ([delegate respondsToSelector:action]) {
       if ([delegate respondsToSelector:@selector(validateMenuItem:)])
 	[cell setEnabled:[delegate validateMenuItem:cell]];
@@ -579,6 +580,7 @@ static Class menuCellClass = nil;
   NSWindow* mainWindow;
   id responder;
   id delegate;
+  id theApp = [NSApplication sharedApplication];
 
   if (![cell isEnabled])
     return;
@@ -592,7 +594,7 @@ static Class menuCellClass = nil;
   }
 
   /* Search the key window's responder chain */
-  keyWindow = [NSApp keyWindow];
+  keyWindow = [theApp keyWindow];
   responder = [keyWindow firstResponder];
   while (responder) {
     if ([responder respondsToSelector:action]) {
@@ -615,7 +617,7 @@ static Class menuCellClass = nil;
     return;
   }
 
-  mainWindow = [NSApp mainWindow];
+  mainWindow = [theApp mainWindow];
   if (mainWindow != keyWindow) {
     /* Search the main window's responder chain */
     responder = [mainWindow firstResponder];
@@ -642,13 +644,13 @@ static Class menuCellClass = nil;
   }
 
   /* Search the NSApplication object */
-  if ([NSApp respondsToSelector:action]) {
-    [NSApp perform:action withObject:cell];
+  if ([theApp respondsToSelector:action]) {
+    [theApp perform:action withObject:cell];
     return;
   }
 
   /* Search the NSApplication object's delegate */
-  delegate = [NSApp delegate];
+  delegate = [theApp delegate];
   if ([delegate respondsToSelector:action]) {
     [delegate perform:action withObject:cell];
     return;

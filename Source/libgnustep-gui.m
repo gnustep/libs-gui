@@ -38,23 +38,5 @@ char **NSArgv = NULL;
 int
 GNUstepMain(int argc, char **argv)
 {
-	NSFontManager *fm;
-
-	// Create the global application object
-	NSApp = [[NSApplication alloc] init];
-
-	// Set the application default fonts
-	fm = [NSFontManager sharedFontManager];
-	[NSFont setUserFixedPitchFont: [fm fontWithFamily:@"Arial"
-		traits:0 weight:0 size:16]];
-	[NSFont setUserFont: [fm fontWithFamily:@"Times New Roman"
-		traits:0 weight:0 size:16]];
-
-	// Call the user's main
-	//user_main(0, NULL);
-
-	// Release the application
-	[NSApp release];
-
-	return 0;
+  return 0;
 }

@@ -259,7 +259,6 @@
 
   [contents release];
   contents = [[number stringValue] retain];
-  [self setType:NSTextCellType];
 }
 
 - (void)setFloatValue:(float)aFloat
@@ -268,7 +267,6 @@
 
   [contents release];
   contents = [[number stringValue] retain];
-  [self setType:NSTextCellType];
 }
 
 - (void)setIntValue:(int)anInt
@@ -277,12 +275,10 @@
 
   [contents release];
   contents = [[number stringValue] retain];
-  [self setType:NSTextCellType];
 }
 
 - (void)setStringValue:(NSString *)aString
 {
-  [self setType:NSTextCellType];
   aString = [aString copy];
   [contents release];
   if (!aString)

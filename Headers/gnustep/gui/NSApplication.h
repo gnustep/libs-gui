@@ -46,8 +46,6 @@
 @class NSWindow;
 @class NSDPSContext;
 
-extern id NSApp;
-
 typedef struct _NSModalSession *NSModalSession;
 
 enum {
@@ -269,6 +267,10 @@ extern NSString *NSEventTrackingRunLoopMode;
 // Backend methods
 //
 @interface NSApplication (GNUstepBackend)
+
+// the null event
++ (void)setNullEvent:(NSEvent *)e;
++ (NSEvent *)getNullEvent;
 
 // Get next event
 - (NSEvent *)getNextEvent;

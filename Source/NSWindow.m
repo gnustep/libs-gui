@@ -791,6 +791,8 @@
   is_miniaturized = NO;
   visible = YES;
 
+  [self performDeminiaturize:self];
+
   // Notify our delegate
   [nc postNotificationName: NSWindowDidDeminiaturizeNotification object: self];
 }
@@ -899,7 +901,7 @@
   // Notify current first responder that it should resign
   // If it says NO then no change
   // But make sure that there even is a first responder
-  if ((![first_responder resignFirstResponder]) && first_responder)
+  if ((first_responder) && (![first_responder resignFirstResponder]))
     return NO;
 
   // Make it the first responder
@@ -1624,6 +1626,21 @@
 
   [self initDefaults];
   return self;
+}
+
+- (void)performDeminiaturize:sender
+{
+  // Do nothing, should be overridden by back-end
+}
+
+- (void)performHide:sender
+{
+  // Do nothing, should be overridden by back-end
+}
+
+- (void)performUnhide:sender
+{
+  // Do nothing, should be overridden by back-end
 }
 
 @end

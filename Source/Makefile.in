@@ -68,9 +68,9 @@ LDFLAGS = @LDFLAGS@ -o
 LD = ld
 
 LDOUT =
-LIB = ar
-LIBOUT =
-LIBFLAGS = rc
+AR = ar
+AROUT =
+ARFLAGS = rc
 RANLIB = @RANLIB@
 RC = 
 DLLTOOL = @DLLTOOL@
@@ -264,12 +264,12 @@ src: @STATIC_LIBRARY@ @SHARED_LIBRARY@
 
 # library
 $(MAIN_FILE)$(libext): $(OBJS)
-	$(LIB) $(LIBFLAGS) $(LIBOUT)$(MAIN_FILE)$(libext) $(OBJS)
+	$(AR) $(ARFLAGS) $(AROUT)$(MAIN_FILE)$(libext) $(OBJS)
 	$(RANLIB) $(MAIN_FILE)$(libext)
 
 # static library when building DLL
 $(MAIN_FILE)_s$(libext): $(OBJS)
-	$(LIB) $(LIBFLAGS) $(LIBOUT)$(MAIN_FILE)_s$(libext) $(OBJS)
+	$(AR) $(ARFLAGS) $(AROUT)$(MAIN_FILE)_s$(libext) $(OBJS)
 	$(RANLIB) $(MAIN_FILE)_s$(libext)
 
 $(MAIN_FILE).def: FORCE
@@ -366,7 +366,9 @@ uninstall:
 	rm -rf $(includedir)/gnustep/gui
 	rm -rf $(includedir)/AppKit
 	rm -rf $(includedir)/DPSClient
-	rm -rf $(libdir)/$(MAIN_FILE)$(libext)
+	rm -f $(libdir)/$(MAIN_FILE)$(libext)
+	rm -f $(libdir)/$(MAIN_FILE)_s$(libext)
+	rm -f $(bindir)/$(MAIN_FILE).dll
 
 Makefile: $(srcdir)/Makefile.in ../config.status
 	cd ..; $(SHELL) config.status
@@ -379,6 +381,8 @@ clean:
 	rm -f *~
 	rm -f *$(oext)
 	rm -f $(MAIN_FILE)$(libext)
+	rm -f $(MAIN_FILE)_s$(libext)
+	rm -f $(MAIN_FILE).dll $(MAIN_FILE).exp $(MAIN_FILE).base
 	rm -f $(INIT_FILE).c
 distclean: clean
 	rm -f Makefile

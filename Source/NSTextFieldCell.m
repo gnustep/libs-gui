@@ -76,12 +76,29 @@
   [self setScrollable:YES];
   [self setEditable:YES];
   [self setAlignment:NSLeftTextAlignment];
-	
-  background_color = [NSColor whiteColor];
-  text_color = [NSColor blackColor];
-  cell_font = [NSFont systemFontOfSize:16];
+
+  [self setBackgroundColor: [NSColor whiteColor]];
+  [self setTextColor: [NSColor blackColor]];
+  [self setFont: [NSFont systemFontOfSize: 16]];
   draw_background = YES;
   return self;
+}
+
+- (void)dealloc
+{
+  [background_color release];
+  [text_color release];
+  [super dealloc];
+}
+
+- (id)copyWithZone:(NSZone*)zone
+{
+  NSTextFieldCell* c = [super copyWithZone:zone];
+
+  [c setBackgroundColor: background_color];
+  [c setTextColor: text_color];
+
+  return c;
 }
 
 //
@@ -99,6 +116,8 @@
 
 - (void)setBackgroundColor:(NSColor *)aColor
 {
+  [aColor retain];
+  [background_color release];
   background_color = aColor;
 }
 
@@ -109,6 +128,8 @@
 
 - (void)setTextColor:(NSColor *)aColor
 {
+  [aColor retain];
+  [text_color release];
   text_color = aColor;
 }
 
