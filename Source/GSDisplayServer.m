@@ -30,6 +30,7 @@
 #include <Foundation/NSLock.h>
 #include <Foundation/NSRunLoop.h>
 #include <Foundation/NSThread.h>
+#include <Foundation/NSGeometry.h>
 
 #include "AppKit/NSEvent.h"
 #include "AppKit/NSImage.h"
@@ -414,7 +415,7 @@ GSCurrentServer(void)
 }
 
 /* Screen information */
-/** Retuns the resolution, in points, for the indicated screen of the
+/** Returns the resolution, in points, for the indicated screen of the
     display. */
 - (NSSize) resolutionForScreen: (int)screen
 {
@@ -422,7 +423,7 @@ GSCurrentServer(void)
   return NSMakeSize(72, 72);
 }
 
-/** Retuns the bounds, in pixels, for the indicated screen of the
+/** Returns the bounds, in pixels, for the indicated screen of the
     display. */
 - (NSRect) boundsForScreen: (int)screen
 {
@@ -479,6 +480,22 @@ GSCurrentServer(void)
 - (void) beep
 {
   [self subclassResponsibility: _cmd];
+}
+
+/** 
+   Returns a display dependent NSImage which will be used as the background
+   image for AppIcons and MiniWindows.  Under Windowmaker, for example this 
+   could be a user specified gradient. */
+- (NSImage *) iconTileImage
+{
+  return [NSImage imageNamed: @"common_Tile"];
+}
+
+
+/** Returns the size of icons and miniwindows for screen. */
+- (NSSize) iconSize
+{
+  return NSMakeSize(64.0, 64.0);
 }
 
 @end
@@ -598,7 +615,7 @@ GSCurrentServer(void)
   [self subclassResponsibility: _cmd];
 }
 
-/** Retuns the frame of the window on the screen */
+/** Returns the frame of the window on the screen */
 - (NSRect) windowbounds: (int) win
 {
   [self subclassResponsibility: _cmd];

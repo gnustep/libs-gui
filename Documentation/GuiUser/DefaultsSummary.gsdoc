@@ -165,18 +165,6 @@
 	  specification are used in [NSWorkspace iconForFile:] when available.
           </p>
 	  </desc>
-	  <term>GSUseWindowmakerIconBackground</term>
-	  <desc>
-	  <p>
-	  A boolean value, <code>NO</code> by default. When set to YES,
-	  GNUstep uses the windowmaker icon background
-	  for app icons and mini-windows.
-	  </p>
-	  <p>
-	  Note that this only works when using back-art, and the
-	  XWindowBuffer-shape-hack default must be set to YES.
-	  </p>
-	  </desc>
 	  <term>GSLogWorkspaceTimeout</term>
 	  <desc>
           <p>

@@ -1,3 +1,39 @@
+2004-11-10  Matt Rice <ratmice@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h (-iconSize): New method
+	declaration.
+	(-iconTileImage): Ditto. 
+	* Source/GSDisplayServer.m (-resolutionForScreen:): Fix Typo in Docs.
+	(-boundsForScreen:): Ditto.
+	(-windowBounds:): Ditto.
+	(-iconSize): Implement new method.
+	(-iconTileImage): Ditto.
+	* Source/NSApplication.m (NSAppIconView): Remove 
+	useWindowmakerIconBackground variable.
+	(scaledIconSizeForSize): New function.
+	([NSAppIconView +initialize]): Dont set a default image here. Remove
+	usage of GSUseWindowmakerIconBackground default. Use backend tile and
+	scale it to the backend icon size.
+	([NSAppIconView -drawRect:]): Remove usage of 
+	useWindowmakerIconBackground. Draw cells with the backend icon size.
+	([NSAppIconView -setImage:]): Set the image to a scaled copy. 
+	setNeedsDisplay instead	of drawing directly.
+	([NSApplication -_appIconInit]): Use backend icon size.
+	* Source/NSWindow.m: Remove useWindowmakerIconBackground variable.
+	(scaledIconSizeForSize): New function.
+	([NSMiniWindowView +initialize]): Remove usage of 
+	GSUseWindowmakerIconBackground default.	Use backend tile image and scale
+	it to the backend icon size.
+	([NSMiniWindowView -drawRect:]): Remove usage of 
+	useWindowmakerIconBackground. Draw cells with the backend iconSize.
+	([NSMiniWindowView -setImage:]): Set the image to a scaled copy. 
+	setNeedsDisplay instead	of drawing directly.
+	([NSMiniWindowView -setTitle:]): setNeedsDisplay instead of drawing 
+	directly.
+	([NSWindow -miniaturize:]): Use backend icon size.
+	* Documentation/GuiUser/DefaultsSummary.gsdoc: Remove docs for 
+	GSUseWindowmakerIconBackground.
+
 2004-11-09 Adrian Robert <arobert@cogsci.ucsd.edu>
 
 	* Source/NSTabView.m (-insertTabViewItem:): Update display.

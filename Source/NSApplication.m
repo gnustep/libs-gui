@@ -343,26 +343,33 @@ NSApplication	*NSApp = nil;
 // Class variables
 static NSCell* dragCell = nil;
 static NSCell* tileCell = nil;
-static BOOL useWindowmakerIconBackground = NO;
+
+static NSSize scaledIconSizeForSize(NSSize imageSize)
+{
+  NSSize iconSize, retSize;
+  
+  iconSize = [GSCurrentServer() iconSize];
+  retSize.width = imageSize.width * iconSize.width / 64;
+  retSize.height = imageSize.height * iconSize.height / 64;
+  return retSize;
+}
 
 + (void) initialize
 {
-  NSImage	*defImage = [NSImage imageNamed: @"GNUstep"];
   NSImage	*tileImage;
+  NSSize	iconSize;
 
-  dragCell = [[NSCell alloc] initImageCell: defImage];
+  iconSize = [GSCurrentServer() iconSize];
+  /* _appIconInit will set our image */
+  dragCell = [[NSCell alloc] initImageCell: nil];
   [dragCell setBordered: NO];
-  if ([[NSUserDefaults standardUserDefaults]
-	  boolForKey: @"GSUseWindowmakerIconBackground"])
-    {
-      useWindowmakerIconBackground = YES; 
-    }
-  else
-    {
-      tileImage = [NSImage imageNamed: @"common_Tile"];
-      tileCell = [[NSCell alloc] initImageCell: tileImage];
-      [tileCell setBordered: NO];
-    }
+  
+  tileImage = [[GSCurrentServer() iconTileImage] copy];
+  [tileImage setScalesWhenResized: YES];
+  [tileImage setSize: iconSize];
+  tileCell = [[NSCell alloc] initImageCell: tileImage];
+  RELEASE(tileImage);
+  [tileCell setBordered: NO];
 }
 
 - (BOOL) acceptsFirstMouse: (NSEvent*)theEvent
@@ -390,20 +397,13 @@ static BOOL useWindowmakerIconBackground = NO;
 
 - (void) drawRect: (NSRect)rect
 {
-  if (useWindowmakerIconBackground)
-    {
-      PScompositerect(_bounds.origin.x,
-      		      _bounds.origin.y,
-		      _bounds.size.width,
-		      _bounds.size.height,
-		      NSCompositeClear);
-    }
-  else
-    {
-      [tileCell drawWithFrame: NSMakeRect(0,0,64,64) inView: self];
-    }
+  NSSize iconSize = [GSCurrentServer() iconSize];
   
-  [dragCell drawWithFrame: NSMakeRect(8,8,48,48) inView: self];
+  [tileCell drawWithFrame: NSMakeRect(0, 0, iconSize.width, iconSize.height)
+  		   inView: self];
+  [dragCell drawWithFrame: NSMakeRect(0, 0, iconSize.width, iconSize.height)
+		   inView: self];
+  
   if ([NSApp isHidden])
     {
       NSRectEdge mySides[] = {NSMinXEdge, NSMinYEdge, NSMaxXEdge, NSMaxYEdge};
@@ -560,14 +560,13 @@ static BOOL useWindowmakerIconBackground = NO;
 
 - (void) setImage: (NSImage *)anImage
 {
-  [dragCell setImage: anImage];
-
-  if ([self lockFocusIfCanDraw])
-    {
-      [self drawRect: NSMakeRect(0,0,64,64)];
-      [self unlockFocus];
-      [_window flushWindow];
-    }
+  NSImage *imgCopy = [anImage copy];
+  NSSize imageSize = [imgCopy size]; 
+  [imgCopy setScalesWhenResized: YES];
+  [imgCopy setSize: scaledIconSizeForSize(imageSize)];
+  [dragCell setImage: imgCopy];
+  RELEASE(imgCopy);
+  [self setNeedsDisplay: YES];
 }
 
 @end
@@ -2870,20 +2869,21 @@ image.
 - _appIconInit
 {
   NSAppIconView	*iv;
+  NSSize iconSize = [GSCurrentServer() iconSize];
+  NSRect iconRect = NSMakeRect(0, 0, iconSize.width, iconSize.height);
 
   if (_app_icon == nil)
     {
       [self setApplicationIconImage: [NSImage imageNamed: @"GNUstep"]];
     }
 
-  _app_icon_window = [[NSIconWindow alloc] initWithContentRect: 
-					    NSMakeRect(0,0,64,64)
+  _app_icon_window = [[NSIconWindow alloc] initWithContentRect: iconRect 
 				styleMask: NSIconWindowMask
 				  backing: NSBackingStoreRetained
 				    defer: NO
 				   screen: nil];
 
-  iv = [[NSAppIconView alloc] initWithFrame: NSMakeRect(0,0,64,64)];
+  iv = [[NSAppIconView alloc] initWithFrame: iconRect]; 
   [iv setImage: _app_icon];
   [_app_icon_window setContentView: iv];
   RELEASE(iv);

@@ -342,24 +342,33 @@ has blocked and waited for events.
 @end
 
 static NSCell	*tileCell = nil;
-static BOOL      useWindowmakerIconBackground = NO;
+
+static NSSize scaledIconSizeForSize(NSSize imageSize)
+{
+  NSSize iconSize, retSize;
+
+  iconSize = [GSCurrentServer() iconSize];
+  retSize.width = imageSize.width * iconSize.width / 64;
+  retSize.height = imageSize.height * iconSize.height / 64;
+  return retSize;
+}
 
 @implementation NSMiniWindowView
 
 + (void) initialize
 {
   NSImage *tileImage;
-  if ([[NSUserDefaults standardUserDefaults]
-	  boolForKey: @"GSUseWindowmakerIconBackground"])
-    {
-      useWindowmakerIconBackground = YES;       
-    }
-  else
-    {
-      tileImage = [NSImage imageNamed: @"common_Tile"];
-      tileCell = [[NSCell alloc] initImageCell: tileImage];
-      [tileCell setBordered: NO];
-    }
+  NSSize iconSize;
+  
+  iconSize = [GSCurrentServer() iconSize];
+  
+  tileImage = [[GSCurrentServer() iconTileImage] copy];
+  [tileImage setScalesWhenResized: YES];
+  [tileImage setSize: iconSize];
+  
+  tileCell = [[NSCell alloc] initImageCell: tileImage];
+  RELEASE(tileImage);
+  [tileCell setBordered: NO];
 }
 
 - (BOOL) acceptsFirstMouse: (NSEvent*)theEvent
@@ -376,20 +385,19 @@ static BOOL      useWindowmakerIconBackground = NO;
 
 - (void) drawRect: (NSRect)rect
 {   
-  if (useWindowmakerIconBackground)
-    {
-      PScompositerect(_bounds.origin.x,
-		      _bounds.origin.y,
-		      _bounds.size.width,
-		      _bounds.size.height,
-		      NSCompositeClear);
-    }
-  else
-    {
-      [tileCell drawWithFrame: NSMakeRect(0,0,64,64) inView: self];
-    }
-  [imageCell drawWithFrame: NSMakeRect(8,4,48,48) inView: self];
-  [titleCell drawWithFrame: NSMakeRect(1,52,62,11) inView: self];
+  NSSize iconSize = [GSCurrentServer() iconSize];
+
+  [tileCell drawWithFrame: NSMakeRect(0, 0, iconSize.width, iconSize.height)
+  		   inView: self];
+  [imageCell
+       drawWithFrame: NSMakeRect(iconSize.width / 8,
+                                 (iconSize.height / 16),
+                                 iconSize.width - ((iconSize.width / 8) * 2),
+                                 iconSize.height - ((iconSize.height / 8) * 2))
+	      inView: self];
+  [titleCell drawWithFrame: NSMakeRect(1, iconSize.height - 12,
+				       iconSize.width - 2, 11)
+		    inView: self];
 }
 
 - (void) mouseDown: (NSEvent*)theEvent
@@ -448,21 +456,22 @@ static BOOL      useWindowmakerIconBackground = NO;
 
 - (void) setImage: (NSImage*)anImage
 {
+  NSImage *imgCopy = [anImage copy];
+
+  [imgCopy setScalesWhenResized: YES];
+  [imgCopy setSize: scaledIconSizeForSize([imgCopy size])];
+ 
   if (imageCell == nil)
     {
-      imageCell = [[NSCell alloc] initImageCell: anImage];
+      imageCell = [[NSCell alloc] initImageCell: imgCopy];
       [imageCell setBordered: NO];
     }
   else
     {
-      [imageCell setImage: anImage];
+      [imageCell setImage: imgCopy];
     }
-  if ([self lockFocusIfCanDraw])
-    {
-      [self drawRect: [self bounds]];
-      [self unlockFocus];
-      [_window flushWindow];
-    }
+  RELEASE(imgCopy);
+  [self setNeedsDisplay: YES];  
 }
 
 - (void) setTitle: (NSString*)aString
@@ -483,12 +492,7 @@ static BOOL      useWindowmakerIconBackground = NO;
     {
       [titleCell setStringValue: aString];
     }
-  if ([self lockFocusIfCanDraw])
-    {
-      [self drawRect: [self bounds]];
-      [self unlockFocus];
-      [_window flushWindow];
-    }
+  [self setNeedsDisplay: YES];
 }
 
 @end
@@ -2340,6 +2344,7 @@ resetCursorRectsForView(NSView *theView)
 - (void) miniaturize: (id)sender
 {
   GSDisplayServer *srv = GSServerForWindow(self);
+  NSSize iconSize = [GSCurrentServer() iconSize];
 
   if (_f.is_miniaturized
       || (!(_styleMask & NSMiniaturizableWindowMask))
@@ -2363,14 +2368,15 @@ resetCursorRectsForView(NSView *theView)
     {
       NSWindow		*mini;
       NSMiniWindowView	*v;
+      NSRect            rect = NSMakeRect(0, 0, iconSize.height, iconSize.width); 
       
-      mini = [[NSMiniWindow alloc] initWithContentRect: NSMakeRect(0,0,64,64)
+      mini = [[NSMiniWindow alloc] initWithContentRect: rect
 					     styleMask: NSMiniWindowMask
 					       backing: NSBackingStoreBuffered
 						 defer: NO];
       mini->_counterpart = [self windowNumber];
       _counterpart = [mini windowNumber];
-      v = [[NSMiniWindowView alloc] initWithFrame: NSMakeRect(0,0,64,64)];
+      v = [[NSMiniWindowView alloc] initWithFrame: rect]; 
       [v setImage: [self miniwindowImage]];
       [v setTitle: [self miniwindowTitle]];
       [mini setContentView: v];

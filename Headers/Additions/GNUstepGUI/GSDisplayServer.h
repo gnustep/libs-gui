@@ -100,6 +100,11 @@ APPKIT_EXPORT NSString * GSScreenNumber;
 - (void *) windowDevice: (int)win;
 
 - (void) beep;
+
+/* AppIcon/MiniWindow information */
+- (NSImage *) iconTileImage;
+- (NSSize) iconSize;
+
 @end
 
 /* ----------------------------------------------------------------------- */
