@@ -1,3 +1,13 @@
+2004-01-08  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSActionCell.m (-initWithCoder:) Don't decode the control
+	view, as this may be a Gorm placeholder or otherwise invalid.
+	* Source/GSDisplayServer.m:
+	(-discardEventsMatchingMask:beforeEvent:),
+	(getEventMatchingMask:beforeDate:inMode:dequeue:) Use function
+	NSEventMaskFromType instead of explicit switch statement where a
+	few entries where missing.	
+
 2004-01-08 01:24  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSActionCell.m (-setObjectValue:): Change the argument type
@@ -24,7 +34,7 @@
 	Source/NSBitmapImageRep+PNM.m, Source/NSBitmapImageRep+PNM.h:
 	New files with image loaders for JPEG, PNG, and PNM.
 
-2003-01-07  Fred Kiefer <FredKiefer@gmx.de>
+2004-01-07  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/GSHbox.h:
 	* Headers/Additions/GNUstepGUI/GSVbox.h:
