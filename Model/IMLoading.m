@@ -90,7 +90,7 @@ BOOL _fileOwnerDecoded = NO;
   id previousNibOwner = _nibOwner;
   GMModel* decoded;
 
-  if (![path hasSuffix:@".gmodel"])
+  if (![[path pathExtension] isEqualToString:@"gmodel"])
     path = [path stringByAppendingPathExtension:@"gmodel"];
 
   /* First check to see if path is an absolute path; if so try to load the
