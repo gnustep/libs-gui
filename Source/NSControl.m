@@ -78,14 +78,14 @@ static Class cellClass;
 {
   [super initWithFrame: frameRect];
   [self setCell: AUTORELEASE([[[self class] cellClass] new])];
-  tag = 0;
+  _tag = 0;
 
   return self;
 }
 
 - (void) dealloc
 {
-  RELEASE(cell);
+  RELEASE(_cell);
   [super dealloc];
 }
 
@@ -95,7 +95,7 @@ static Class cellClass;
 - (id) copyWithZone: (NSZone*)zone
 {
   id		c = NSCopyObject(self, 0, zone);
-  NSCell	*o = [cell copy];
+  NSCell	*o = [_cell copy];
 
   [c setCell: o];
   RELEASE(o);
@@ -107,7 +107,7 @@ static Class cellClass;
  */
 - (id) cell
 {
-  return cell;
+  return _cell;
 }
 
 - (void) setCell: (NSCell *)aCell
@@ -116,7 +116,7 @@ static Class cellClass;
     [NSException raise: NSInvalidArgumentException
 		format: @"attempt to set non-cell object for control cell"];
 
-  ASSIGN(cell, aCell);
+  ASSIGN(_cell, aCell);
 }
 
 /*
@@ -137,7 +137,7 @@ static Class cellClass;
  */
 - (id) selectedCell
 {
-  return cell;
+  return _cell;
 }
 
 - (int) selectedTag
@@ -237,33 +237,33 @@ static Class cellClass;
  */
 - (NSTextAlignment) alignment
 {
-  if (cell)
-    return [cell alignment];
+  if (_cell)
+    return [_cell alignment];
   else
     return NSLeftTextAlignment;
 }
 
 - (NSFont *) font
 {
-  if (cell)
-    return [cell font];
+  if (_cell)
+    return [_cell font];
   else
     return nil;
 }
 
 - (void) setAlignment: (NSTextAlignment)mode
 {
-  if (cell)
+  if (_cell)
     {
-      [cell setAlignment: mode];
+      [_cell setAlignment: mode];
       [self setNeedsDisplay: YES];
     }
 }
 
 - (void) setFont: (NSFont *)fontObject
 {
-  if (cell)
-    [cell setFont: fontObject];
+  if (_cell)
+    [_cell setFont: fontObject];
 }
 
 - (void) setFloatingPointFormat: (BOOL)autoRange
@@ -298,7 +298,7 @@ static Class cellClass;
 
 - (void) sizeToFit
 {
-  [self setFrameSize: [cell cellSize]];
+  [self setFrameSize: [_cell cellSize]];
 }
 
 /*
@@ -306,35 +306,35 @@ static Class cellClass;
  */
 - (BOOL) isOpaque
 {
-  return [cell isOpaque];
+  return [_cell isOpaque];
 }
 
 - (void) drawRect: (NSRect)aRect
 {
-  [self drawCell: cell];
+  [self drawCell: _cell];
 }
 
 - (void) drawCell: (NSCell *)aCell
 {
-  if (cell == aCell)
+  if (_cell == aCell)
     {
-      [cell drawWithFrame: bounds inView: self];
+      [_cell drawWithFrame: bounds inView: self];
     }
 }
 
 - (void) drawCellInside: (NSCell *)aCell
 {
-  if (cell == aCell)
+  if (_cell == aCell)
     {
-      [cell drawInteriorWithFrame: [cell drawingRectForBounds: bounds] 
+      [_cell drawInteriorWithFrame: bounds 
 	    inView: self];
     }
 }
 
 - (void) selectCell: (NSCell *)aCell
 {
-  if (cell == aCell)
-    [cell setState: 1];
+  if (_cell == aCell)
+    [_cell setState: 1];
 }
 
 - (void) updateCell: (NSCell *)aCell
@@ -348,7 +348,7 @@ static Class cellClass;
 }
 - (void) performClick: (id)sender
 {
-  [cell performClick: sender];
+  [_cell performClick: sender];
 }
 
 /*
@@ -356,12 +356,12 @@ static Class cellClass;
  */
 - (SEL) action
 {
-  return [cell action];
+  return [_cell action];
 }
 
 - (BOOL) isContinuous
 {
-  return [cell isContinuous];
+  return [_cell isContinuous];
 }
 
 - (BOOL) sendAction: (SEL)theAction to: (id)theTarget
@@ -376,27 +376,27 @@ static Class cellClass;
 
 - (int) sendActionOn: (int)mask
 {
-  return [cell sendActionOn: mask];
+  return [_cell sendActionOn: mask];
 }
 
 - (void) setAction: (SEL)aSelector
 {
-  [cell setAction: aSelector];
+  [_cell setAction: aSelector];
 }
 
 - (void) setContinuous: (BOOL)flag
 {
-  [cell setContinuous: flag];
+  [_cell setContinuous: flag];
 }
 
 - (void) setTarget: (id)anObject
 {
-  [cell setTarget: anObject];
+  [_cell setTarget: anObject];
 }
 
 - (id) target
 {
-  return [cell target];
+  return [_cell target];
 }
 
 /*
@@ -404,12 +404,12 @@ static Class cellClass;
  */
 - (void) setTag: (int)anInt
 {
-  tag = anInt;
+  _tag = anInt;
 }
 
 - (int) tag
 {
-  return tag;
+  return _tag;
 }
 
 /*
@@ -430,10 +430,10 @@ static Class cellClass;
   if (![self isEnabled])
     return;
 
-  if ([cell isContinuous])
-    oldActionMask = [cell sendActionOn: 0];
+  if ([_cell isContinuous])
+    oldActionMask = [_cell sendActionOn: 0];
   else
-    oldActionMask = [cell sendActionOn: NSPeriodicMask];
+    oldActionMask = [_cell sendActionOn: NSPeriodicMask];
 
   [window _captureMouse: self];
 
@@ -447,16 +447,16 @@ static Class cellClass;
       if ((location.x >= 0) && (location.x < bounds.size.width) &&
 		      (location.y >= 0 && location.y < bounds.size.height))
 	{
-	  [cell highlight: YES withFrame: bounds inView: self];
+	  [_cell highlight: YES withFrame: bounds inView: self];
 	  [window flushWindow];
-	  if ([cell trackMouse: e
-			inRect: bounds
-			ofView: self
-		  untilMouseUp: YES])
+	  if ([_cell trackMouse: e
+		     inRect: bounds
+		     ofView: self
+		     untilMouseUp: YES])
 	    done = mouseUp = YES;
 	  else
 	    {
-	      [cell highlight: NO withFrame: bounds inView: self];
+	      [_cell highlight: NO withFrame: bounds inView: self];
 	      [window flushWindow];
 	    }
 	}
@@ -478,11 +478,11 @@ static Class cellClass;
   if (mouseUp)
     {
 //      	[cell setState: ![cell state]];
-      [cell highlight: NO withFrame: bounds inView: self];
+      [_cell highlight: NO withFrame: bounds inView: self];
       [window flushWindow];
     }
 
-  [cell sendActionOn: oldActionMask];
+  [_cell sendActionOn: oldActionMask];
 
   if (mouseUp)
     [self sendAction: [self action] to: [self target]];
@@ -490,7 +490,7 @@ static Class cellClass;
 
 - (void) resetCursorRects
 {
-  [cell resetCursorRect: bounds inView: self];
+  [_cell resetCursorRect: bounds inView: self];
 }
 
 - (BOOL) ignoresMultiClick
@@ -509,16 +509,16 @@ static Class cellClass;
 {
   [super encodeWithCoder: aCoder];
 
-  [aCoder encodeValueOfObjCType: @encode(int) at: &tag];
-  [aCoder encodeObject: cell];
+  [aCoder encodeValueOfObjCType: @encode(int) at: &_tag];
+  [aCoder encodeObject: _cell];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   [super initWithCoder: aDecoder];
 
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &tag];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &cell];
+  [aDecoder decodeValueOfObjCType: @encode(int) at: &_tag];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_cell];
 
   return self;
 }
