@@ -689,9 +689,12 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   [nc postNotificationName: NSMenuWillSendActionNotification
                     object: self
                   userInfo: d];
-  [[NSApplication sharedApplication] sendAction: [item action]
-                                             to: [item target]
-                                           from: item];
+  if ([item action])
+    {
+      [[NSApplication sharedApplication] sendAction: [item action]
+					 to: [item target]
+					 from: item];
+    }
   [nc postNotificationName: NSMenuDidSendActionNotification
                     object: self
                   userInfo: d];
