@@ -7,6 +7,8 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
+   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: June 1998
    
    This file is part of the GNUstep GUI Library.
 
@@ -79,6 +81,7 @@ extern NSSize NSTokenSize;
   id first_responder;
   id original_responder;
   id delegate;
+  id _fieldEditor;
   int window_num;
   NSColor *background_color;
   NSString *represented_filename;
