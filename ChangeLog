@@ -1,3 +1,11 @@
+2003-06-21  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSOutlineView.m ([NSOutlineView -drawRow:clipRect:]): 
+	Add delegate method call. Patch from Yen-Ju Chen
+
+	* Source/NSView.m (-menuForEvent:): Add note about this
+	method being discouraged.
+
 2003-06-20  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSFont.m ([NSFont -initWithCoder:]): Use NSFont not isa

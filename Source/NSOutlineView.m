@@ -995,6 +995,14 @@ static NSImage *unexpandable  = nil;
 
 	      imageRect.size.width = [image size].width;
 	      imageRect.size.height = [image size].height;
+	      
+	      if ([_delegate respondsToSelector: @selector(outlineView:willDisplayOutlineCell:forTableColumn:item:)])
+		{
+		  [_delegate outlineView: self
+			     willDisplayOutlineCell: imageCell
+			     forTableColumn: tb
+			     item: item];
+		}
 
 	      [imageCell drawWithFrame: imageRect inView: self];
 
