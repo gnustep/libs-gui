@@ -26,10 +26,49 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
    */ 
 
+#include <Foundation/NSArray.h>
 #include <Foundation/NSData.h>
+#include <AppKit/NSPasteboard.h>
 #include <AppKit/NSEPSImageRep.h>
 
 @implementation NSEPSImageRep 
+
++ (BOOL) canInitWithData: (NSData *)data
+{
+  char buffer[2];
+
+  [data getBytes: buffer length: 2];
+
+  // Simple check for Postscript
+  if (buffer[0] == '%' && buffer[1] == '!')
+    return YES;
+  else
+    return NO;
+}
+
++ (NSArray *) imageUnfilteredFileTypes
+{
+  static NSArray *types = nil;
+
+  if (types == nil)
+    {
+      types = [[NSArray alloc] initWithObjects: @"eps", nil];
+    }
+
+  return types;
+}
+
++ (NSArray *) imageUnfilteredPasteboardTypes
+{
+  static NSArray *types = nil;
+
+  if (types == nil)
+    {
+      types = [[NSArray alloc] initWithObjects: NSPostScriptPboardType, nil];
+    }
+  
+  return types;
+}
 
 // Initializing a New Instance 
 + (id) imageRepWithData: (NSData *)epsData
