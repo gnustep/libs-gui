@@ -31,6 +31,7 @@
 @class	NSArray;
 @class	NSDate;
 @class	NSMenu;
+@class	NSMenuItem;
 @class	NSMutableArray;
 @class	NSMutableDictionary;
 @class	NSMutableSet;
