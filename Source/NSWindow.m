@@ -1625,10 +1625,14 @@ static NSNotificationCenter *nc = nil;
       if (difference > 0)
 	{
 	  frameRect.size.height -= difference;
+	  frameRect.origin.y += difference;
 	}
-      if (frameRect.size.height < _minimumSize.height)
+      /* Ensure that rewsizing doesn't makewindow smaller than minimum */
+      difference = _minimumSize.height - frameRect.size.height;
+      if (difference > 0)
 	{
-	  frameRect.size.height = _minimumSize.height;
+	  frameRect.size.height += difference;
+	  frameRect.origin.y -= difference;
 	}
     }
 

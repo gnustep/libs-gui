@@ -2,6 +2,8 @@
 
 	* Source/NSWindow.m: ([setFrameFromString:]) try to adjust sensibly
 	for changes to screen size.
+	([constrainFrameRect:toScreen:]) bugfix for positioning when the
+	window origin is negative.
 
 2003-04-26  Fred Kiefer <FredKiefer@gmx.de>
 
