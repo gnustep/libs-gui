@@ -3034,9 +3034,14 @@ other than copy/paste or dragging. */
   NSString *type;
 
   if (types == nil)
-    return NO;
+    {
+      return NO;
+    }
+  
   if (_selected_range.location == NSNotFound)
-    return NO;
+    {
+      return NO;
+    }
 
   [pboard declareTypes: types owner: self];
     

@@ -181,7 +181,8 @@
       drawingRect.origin.x += width;
     }
 }
--(void)mouseDown: (NSEvent*)event
+
+- (void) mouseDown: (NSEvent*)event
 {
   NSPoint location = [event locationInWindow];
   int clickCount;
