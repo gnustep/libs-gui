@@ -83,7 +83,7 @@ enum {
   NSUpTextMovement	= 0x15,
   NSDownTextMovement	= 0x16
 };
-	 	
+
 enum {
   NSParagraphSeparatorCharacter	= 0x2029,
   NSLineSeparatorCharacter	= 0x2028,
@@ -123,6 +123,9 @@ enum {
 /* PRIMITIVE */
 - (void) replaceCharactersInRange: (NSRange)aRange  
 		       withString: (NSString*)aString;
+/* PRIMITIVE */
+-(void) replaceCharactersInRange: (NSRange)aRange /* GNUstep extension */
+	    withAttributedString: (NSAttributedString *)aString;
 /* PRIMITIVE */
 - (void) setString: (NSString*)aString;
 /* PRIMITIVE */
@@ -278,10 +281,6 @@ enum {
 @end
 
 @interface NSText (GNUstepExtensions)
-
-/* PRIMITIVE */
-- (void) replaceRange: (NSRange)aRange 
- withAttributedString: (NSAttributedString*)attrString;
 
 - (unsigned) textLength; /* PRIMITIVE */
 

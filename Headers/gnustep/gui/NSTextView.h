@@ -255,7 +255,51 @@ and replacing it with the new one. */
 -(NSTextStorage *) textStorage;
 
 
+
+/*
+These two methods are for modifying the text programmatically. They
+don't ask the delegate are send any notifications, and they always work
+(ie. even if the text view isn't editable).
+
+(They are really from NSText, but redeclared here so they can be documented
+here.)
+*/
+
+- (void) replaceCharactersInRange: (NSRange)aRange  
+		       withString: (NSString*)aString;
+
+/*
+If the text view isn't rich-text, the attributes of aString will be ignored
+and the typing attributed will be used.
+*/
+-(void) replaceCharactersInRange: (NSRange)aRange /* GNUstep extension. */
+	    withAttributedString: (NSAttributedString *)aString;
+
 @end
+
+
+@interface NSTextView (user_actions)
+
+-(void) alignJustified: (id)sender; /* mosx */
+
+-(void) turnOffKerning: (id)sender;
+-(void) tightenKerning: (id)sender;
+-(void) loosenKerning: (id)sender;
+-(void) useStandardKerning: (id)sender;
+
+-(void) turnOffLigatures: (id)sender;
+-(void) useStandardLigatures: (id)sender;
+-(void) useAllLigatures: (id)sender;
+
+-(void) raiseBaseline: (id)sender;
+-(void) lowerBaseline: (id)sender;
+
+-(void) toggleTraditionalCharacterShape: (id)sender; /* mosx */
+
+-(void) transpose: (id)sender; /* not OPENSTEP */
+
+@end
+
 
 @interface NSTextView (leftovers)
 
@@ -299,22 +343,8 @@ min. and max. size. */
 
 /* These complete the set of range: type set methods. to be equivalent
 to the set of non-range taking varieties. */
--(void) alignJustified: (id)sender; /* mosx */
 -(void) setAlignment: (NSTextAlignment)alignment  range: (NSRange)range;
 
--(void) turnOffKerning: (id)sender;
--(void) tightenKerning: (id)sender;
--(void) loosenKerning: (id)sender;
--(void) useStandardKerning: (id)sender;
-
--(void) turnOffLigatures: (id)sender;
--(void) useStandardLigatures: (id)sender;
--(void) useAllLigatures: (id)sender;
-
--(void) raiseBaseline: (id)sender;
--(void) lowerBaseline: (id)sender;
-
--(void) toggleTraditionalCharacterShape: (id)sender; /* mosx */
 
 
 /*** Ruler support ***/
@@ -459,8 +489,6 @@ already been laid out. */
 
 -(NSArray *) acceptableDragTypes;
 -(void) updateDragTypeRegistration;
-
--(void) transpose: (id)sender; /* not OPENSTEP */
 
 /* These methods are like paste: (from NSResponder) but they restrict
 the acceptable type of the pasted data.  They are suitable as menu

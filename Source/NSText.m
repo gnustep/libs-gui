@@ -83,7 +83,7 @@ static	Class	concrete;
   attr = [[NSAttributedString alloc] initWithRTF: rtfData 
 				     documentAttributes: NULL];
   AUTORELEASE (attr);
-  [self replaceRange: aRange  withAttributedString: attr];
+  [self replaceCharactersInRange: aRange  withAttributedString: attr];
 }
 
 - (void) replaceCharactersInRange: (NSRange)aRange  
@@ -94,7 +94,7 @@ static	Class	concrete;
   attr = [[NSAttributedString alloc] initWithRTFD: rtfdData 
 				     documentAttributes: NULL];
   AUTORELEASE (attr);
-  [self replaceRange: aRange  withAttributedString: attr];
+  [self replaceCharactersInRange: aRange  withAttributedString: attr];
 }
 
 /* PRIMITIVE */
@@ -103,6 +103,14 @@ static	Class	concrete;
 {
   [self subclassResponsibility: _cmd];
 }
+
+/* PRIMITIVE */
+- (void) replaceCharactersInRange: (NSRange)aRange
+             withAttributedString: (NSAttributedString*)attrString
+{
+  [self subclassResponsibility: _cmd];
+}
+
 
 /* PRIMITIVE */
 - (NSData*) RTFDFromRange: (NSRange)aRange
@@ -635,13 +643,6 @@ old text. */
 @end
 
 @implementation NSText (GNUstepExtensions)
-
-/* PRIMITIVE */
-- (void) replaceRange: (NSRange)aRange
- withAttributedString: (NSAttributedString*)attrString
-{
-  [self subclassResponsibility: _cmd];
-}
 
 /* PRIMITIVE */
 - (unsigned) textLength

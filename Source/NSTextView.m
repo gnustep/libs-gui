@@ -534,7 +534,7 @@ is hairy, and this is the only place where it happens.
 TODO: Make sure the assumption holds; might need to add more dummy calls
 to this method from the text container or layout manager.
 */
--(void) setTextContainer: (NSTextContainer*)container
+-(void) setTextContainer: (NSTextContainer *)container
 {
   unsigned int i, c;
   NSArray *tcs;
@@ -586,7 +586,7 @@ to this method from the text container or layout manager.
   [self _updateMultipleTextViews];
 }
 
--(void) replaceTextContainer: (NSTextContainer*)newContainer
+-(void) replaceTextContainer: (NSTextContainer *)newContainer
 {
   NSLog(@"TODO! [NSTextView -replaceTextContainer:] isn't implemented");
 }
@@ -596,12 +596,12 @@ to this method from the text container or layout manager.
   return _textContainer;
 }
 
--(NSLayoutManager*) layoutManager
+-(NSLayoutManager *) layoutManager
 {
   return _layoutManager;
 }
 
--(NSTextStorage*) textStorage
+-(NSTextStorage *) textStorage
 {
   return _textStorage;
 }
@@ -833,7 +833,6 @@ here. */
 
 /* Unlike NSResponder, we should _not_ send the selector down the responder
 chain if we can't handle it. */
-/* TODO: ask delegate */
 -(void) doCommandBySelector: (SEL)aSelector
 {
   if (!_layoutManager)
@@ -842,6 +841,13 @@ chain if we can't handle it. */
       return;
     }
 
+  /* Give the delegate a chance to handle it. */
+  if ([_delegate respondsToSelector: @selector(textView:doCommandBySelector:)]
+      && [_delegate textView: _notifObject
+            doCommandBySelector: aSelector])
+    {
+      return;
+    }
   if ([self respondsToSelector: aSelector])
     {
       [self performSelector: aSelector];
@@ -852,7 +858,9 @@ chain if we can't handle it. */
     }
 }
 
-/* insertString may actually be an NSAttributedString. */
+/* insertString may actually be an NSAttributedString. If it is, and the
+text view isn't rich-text, we ignore the attributes and use the typing
+attributed. */
 -(void) insertText: (NSString *)insertString
 {
   NSRange insertRange = [self rangeForUserTextChange];
@@ -860,7 +868,10 @@ chain if we can't handle it. */
   BOOL isAttributed;
 
   if (insertRange.location == NSNotFound)
-    return;
+    {
+      NSBeep();
+      return;
+    }
 
   isAttributed = [insertString isKindOfClass: [NSAttributedString class]];
 
@@ -906,7 +917,7 @@ chain if we can't handle it. */
 
   [self didChangeText];
 
-  /* TODO: move cursor <!> [self selectionRangeForProposedRange: ] */
+  /* TODO? move cursor <!> [self selectionRangeForProposedRange: ] */
   [self setSelectedRange:
 	  NSMakeRange(insertRange.location + [insertString length], 0)];
 }
@@ -914,7 +925,7 @@ chain if we can't handle it. */
 
 /**** Text modification primitives (programmatic) ****/
 
-/* These are methods for programmatic changes, ie. they should _not_ check
+/* These are methods for programmatic changes, ie. they do _not_ check
 with the delegate, and they work in un-editable text views. */
 
 
@@ -967,33 +978,1196 @@ by checking if the text storage is empty.
     }
   else
     {
-      [_textStorage replaceCharactersInRange: aRange  withString: aString];
+      [_textStorage replaceCharactersInRange: aRange
+        withString: aString];
+    }
+}
+
+/* GNUstep extension. Like the above, but uses the attributes from the
+string if the text view is rich-text, and otherwise the typing
+attributes. */
+-(void) replaceCharactersInRange: (NSRange)aRange
+	    withAttributedString: (NSAttributedString *)aString
+{
+  if (aRange.location == NSNotFound) /* TODO: throw exception instead? */
+    return;
+
+  if (_tf.is_rich_text)
+    {
+      [_textStorage replaceCharactersInRange: aRange
+        withAttributedString: aString];
+    }
+  else
+    {
+      /* Let the other method deal with the empty text storage case. */
+      [self replaceCharactersInRange: aRange
+        withString: [aString string]];
     }
 }
 
 
+
 /**** Text access primitives ****/
 
--(NSData*) RTFDFromRange: (NSRange)aRange
+-(NSData *) RTFDFromRange: (NSRange)aRange
 {
   return [_textStorage RTFDFromRange: aRange  documentAttributes: nil];
 }
 
--(NSData*) RTFFromRange: (NSRange)aRange
+-(NSData *) RTFFromRange: (NSRange)aRange
 {
   return [_textStorage RTFFromRange: aRange  documentAttributes: nil];
 }
 
--(NSString*) string
+-(NSString *) string
 {
   return [_textStorage string];
+}
+
+-(unsigned) textLength
+{
+  return [_textStorage length];
+}
+
+@end
+
+
+/**** TODO: below this line hasn't been done yet ****/
+
+
+/**** User actions ****/
+
+/*
+These methods are for user actions, ie. they are normally called from
+-doCommandBySelector: (which is called by the input manager) in response
+to some key press or other user event.
+
+User actions that modify the text must check that a modification is allowed
+and make sure all necessary notifications are sent. This is done by sending
+-shouldChangeTextInRange:replacementString: before making any changes, and
+(if the change is allowed) -didChangeText after the changes have been made.
+
+All actions from NSResponder that make sense for a text view  should be
+implemented here, but this is _not_ the place to add new actions.
+
+
+Not all user actions are here. Exceptions:
+
+  -toggleRuler:
+
+  -copy:
+  -copyFont:
+  -copyRuler:
+  -paste:
+  -pasteFont:
+  -pasteRuler:
+  -pasteAsPlainText:
+  -pasteAsRichText:
+
+  -checkSpelling:
+  -showGuessPanel:
+
+  -selectAll: (implemented in NSText)
+
+  -toggleContinuousSpellChecking:
+
+
+Not all methods that handle user-induced text modifications are here.
+Exceptions:
+  (TODO)
+
+  -insertText:
+  -changeColor:
+  -changeFont: (action method?)
+  drag&drop handling methods
+  (others?)
+
+All other methods that modify text are for programmatic changes and do not
+send -shouldChangeTextInRange:replacementString: or -didChangeText.
+
+*/
+
+
+@implementation NSTextView (user_actions)
+
+-(void) subscript: (id)sender
+{
+  NSNumber *value = [_layoutManager->_typingAttributes 
+		       objectForKey: NSSuperscriptAttributeName];
+  int sValue;
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+
+  if (aRange.location == NSNotFound)
+    return;
+
+  if (aRange.length)
+    {
+      if (![self shouldChangeTextInRange: aRange
+		 replacementString: nil])
+	return;
+      [_textStorage beginEditing];
+      [_textStorage subscriptRange: aRange];
+      [_textStorage endEditing];
+      [self didChangeText];
+    }
+
+  // Set the typing attributes
+  if (value != nil)
+    sValue = [value intValue] - 1;
+  else
+    sValue = -1;
+  [_layoutManager->_typingAttributes setObject: [NSNumber numberWithInt: sValue]
+		     forKey: NSSuperscriptAttributeName];
+}
+
+-(void) superscript: (id)sender
+{
+  NSNumber *value = [_layoutManager->_typingAttributes 
+		       objectForKey: NSSuperscriptAttributeName];
+  int sValue;
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+
+  if (aRange.location == NSNotFound)
+    return;
+
+  if (aRange.length)
+    {
+      if (![self shouldChangeTextInRange: aRange
+		 replacementString: nil])
+	return;
+      [_textStorage beginEditing];
+      [_textStorage superscriptRange: aRange];
+      [_textStorage endEditing];
+      [self didChangeText];
+    }
+
+  // Set the typing attributes
+  if (value != nil)
+    sValue = [value intValue] + 1;
+  else
+    sValue = 1;
+  [_layoutManager->_typingAttributes setObject: [NSNumber numberWithInt: sValue]
+		     forKey: NSSuperscriptAttributeName];
+}
+
+-(void) unscript: (id)sender
+{
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+
+  if (aRange.location == NSNotFound)
+    return;
+
+  if (aRange.length)
+    {
+      if (![self shouldChangeTextInRange: aRange
+		 replacementString: nil])
+	return;
+      [_textStorage beginEditing];
+      [_textStorage unscriptRange: aRange];
+      [_textStorage endEditing];
+      [self didChangeText];
+    }
+
+  // Set the typing attributes
+  [_layoutManager->_typingAttributes removeObjectForKey: NSSuperscriptAttributeName];
+}
+
+-(void) underline: (id)sender
+{
+  BOOL doUnderline = YES;
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+
+  if (aRange.location == NSNotFound)
+    return;
+
+  if ([[_textStorage attribute: NSUnderlineStyleAttributeName
+		     atIndex: aRange.location
+		     effectiveRange: NULL] intValue])
+    doUnderline = NO;
+
+  if (aRange.length)
+    {
+      if (![self shouldChangeTextInRange: aRange
+		 replacementString: nil])
+	return;
+      [_textStorage beginEditing];
+      [_textStorage addAttribute: NSUnderlineStyleAttributeName
+		    value: [NSNumber numberWithInt: doUnderline]
+		    range: aRange];
+      [_textStorage endEditing];
+      [self didChangeText];
+    }
+
+  [_layoutManager->_typingAttributes
+      setObject: [NSNumber numberWithInt: doUnderline]
+      forKey: NSUnderlineStyleAttributeName];
+}
+
+-(void) useStandardKerning: (id)sender
+{
+  // rekern for selected range if rich text, else rekern entire document.
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+
+  if (aRange.location == NSNotFound)
+    return;
+  
+  if (![self shouldChangeTextInRange: aRange
+	    replacementString: nil])
+    return;
+  [_textStorage beginEditing];
+  [_textStorage removeAttribute: NSKernAttributeName
+		range: aRange];
+  [_textStorage endEditing];
+  [self didChangeText];
+}
+
+-(void) lowerBaseline: (id)sender
+{
+  id value;
+  float sValue;
+  NSRange effRange;
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+
+  if (aRange.location == NSNotFound)
+    return;
+
+  if (![self shouldChangeTextInRange: aRange
+	    replacementString: nil])
+    return;
+  [_textStorage beginEditing];
+  // We take the value form the first character and use it for the whole range
+  value = [_textStorage attribute: NSBaselineOffsetAttributeName
+			atIndex: aRange.location
+			effectiveRange: &effRange];
+
+  if (value != nil)
+    sValue = [value floatValue] + 1.0;
+  else
+    sValue = 1.0;
+
+  [_textStorage addAttribute: NSBaselineOffsetAttributeName
+		value: [NSNumber numberWithFloat: sValue]
+		range: aRange];
+}
+
+-(void) raiseBaseline: (id)sender
+{
+  id value;
+  float sValue;
+  NSRange effRange;
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+
+  if (aRange.location == NSNotFound)
+    return;
+
+  if (![self shouldChangeTextInRange: aRange
+	    replacementString: nil])
+    return;
+  [_textStorage beginEditing];
+  // We take the value form the first character and use it for the whole range
+  value = [_textStorage attribute: NSBaselineOffsetAttributeName
+			atIndex: aRange.location
+			effectiveRange: &effRange];
+
+  if (value != nil)
+    sValue = [value floatValue] - 1.0;
+  else
+    sValue = -1.0;
+
+  [_textStorage addAttribute: NSBaselineOffsetAttributeName
+		value: [NSNumber numberWithFloat: sValue]
+		range: aRange];
+  [_textStorage endEditing];
+  [self didChangeText];
+}
+
+-(void) turnOffKerning: (id)sender
+{
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+
+  if (aRange.location == NSNotFound)
+    return;
+  
+  if (![self shouldChangeTextInRange: aRange
+	    replacementString: nil])
+    return;
+  [_textStorage beginEditing];
+  [_textStorage addAttribute: NSKernAttributeName
+		value: [NSNumber numberWithFloat: 0.0]
+		range: aRange];
+  [_textStorage endEditing];
+  [self didChangeText];
+}
+
+-(void) loosenKerning: (id)sender
+{
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+
+  if (aRange.location == NSNotFound)
+    return;
+
+  if (![self shouldChangeTextInRange: aRange
+	    replacementString: nil])
+    return;
+  [_textStorage beginEditing];
+  // FIXME: Should use the current kerning and work relative to point size
+  [_textStorage addAttribute: NSKernAttributeName
+		value: [NSNumber numberWithFloat: 1.0]
+		range: aRange];
+  [_textStorage endEditing];
+  [self didChangeText];
+}
+
+-(void) tightenKerning: (id)sender
+{
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+
+  if (aRange.location == NSNotFound)
+    return;
+
+  if (![self shouldChangeTextInRange: aRange
+	    replacementString: nil])
+    return;
+  [_textStorage beginEditing];
+  // FIXME: Should use the current kerning and work relative to point size
+  [_textStorage addAttribute: NSKernAttributeName
+		value: [NSNumber numberWithFloat: -1.0]
+		range: aRange];
+  [_textStorage endEditing];
+  [self didChangeText];
+}
+
+-(void) useStandardLigatures: (id)sender
+{
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+
+  if (aRange.location == NSNotFound)
+    return;
+
+  if (![self shouldChangeTextInRange: aRange
+	    replacementString: nil])
+    return;
+  [_textStorage beginEditing];
+  [_textStorage addAttribute: NSLigatureAttributeName
+		value: [NSNumber numberWithInt: 1]
+		range: aRange];
+  [_textStorage endEditing];
+  [self didChangeText];
+}
+
+-(void) turnOffLigatures: (id)sender
+{
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+
+  if (aRange.location == NSNotFound)
+    return;
+
+  if (![self shouldChangeTextInRange: aRange
+	    replacementString: nil])
+    return;
+  [_textStorage beginEditing];
+  [_textStorage addAttribute: NSLigatureAttributeName
+		value: [NSNumber numberWithInt: 0]
+		range: aRange];
+  [_textStorage endEditing];
+  [self didChangeText];
+}
+
+-(void) useAllLigatures: (id)sender
+{
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+
+  if (aRange.location == NSNotFound)
+    return;
+
+  if (![self shouldChangeTextInRange: aRange
+	    replacementString: nil])
+    return;
+  [_textStorage beginEditing];
+  [_textStorage addAttribute: NSLigatureAttributeName
+		value: [NSNumber numberWithInt: 2]
+		range: aRange];
+  [_textStorage endEditing];
+  [self didChangeText];
+}
+
+-(void) toggleTraditionalCharacterShape: (id)sender
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"toggleTraditionalCharacterShape:", "NSTextView");
+}
+
+-(void) insertNewline: (id)sender
+{
+  if (_tf.is_field_editor)
+    {
+      [self _illegalMovement: NSReturnTextMovement];
+      return;
+    }
+
+  [self insertText: @"\n"];
+}
+
+-(void) insertTab: (id)sender
+{
+  if (_tf.is_field_editor)
+    {
+      [self _illegalMovement: NSTabTextMovement];
+      return;
+    }
+
+  [self insertText: @"\t"];
+}
+
+-(void) insertBacktab: (id)sender
+{
+  if (_tf.is_field_editor)
+    {
+      [self _illegalMovement: NSBacktabTextMovement];
+      return;
+    }
+
+  //[self insertText: @"\t"];
+}
+
+-(void) deleteForward: (id)sender
+{
+  NSRange range = [self rangeForUserTextChange];
+  
+  if (range.location == NSNotFound)
+    {
+      return;
+    }
+  
+  /* Manage case of insertion point - implicitly means to delete following 
+     character */
+  if (range.length == 0)
+    {
+      if (range.location != [_textStorage length])
+	{
+	  /* Not at the end of text -- delete following character */
+	  range.length = 1;
+	}
+      else
+	{
+	  /* At the end of text - TODO: Make beeping or not beeping
+	     configurable vie User Defaults */
+	  NSBeep ();
+	  return;
+	}
+    }
+  
+  if (![self shouldChangeTextInRange: range  replacementString: @""])
+    {
+      return;
+    }
+
+  [_textStorage beginEditing];
+  [_textStorage deleteCharactersInRange: range];
+  [_textStorage endEditing];
+  [self didChangeText];
+
+  /* The new selected range is just the insertion point at the beginning 
+     of deleted range */
+  [self setSelectedRange: NSMakeRange (range.location, 0)];
+}
+
+-(void) deleteBackward: (id)sender
+{
+  NSRange range = [self rangeForUserTextChange];
+  
+  if (range.location == NSNotFound)
+    {
+      return;
+    }
+  
+  /* Manage case of insertion point - implicitly means to delete
+     previous character */
+  if (range.length == 0)
+    {
+      if (range.location != 0)
+	{
+	  /* Not at the beginning of text -- delete previous character */
+	  range.location -= 1;
+	  range.length = 1;
+	}
+      else
+	{
+	  /* At the beginning of text - TODO: Make beeping or not
+	     beeping configurable via User Defaults */
+	  NSBeep ();
+	  return;
+	}
+    }
+  
+  if (![self shouldChangeTextInRange: range  replacementString: @""])
+    {
+      return;
+    }
+
+  [_textStorage beginEditing];
+  [_textStorage deleteCharactersInRange: range];
+  [_textStorage endEditing];
+  [self didChangeText];
+
+  /* The new selected range is just the insertion point at the beginning 
+     of deleted range */
+  [self setSelectedRange: NSMakeRange (range.location, 0)];
+}
+
+-(void) moveUp: (id)sender
+{
+/*  float originalInsertionPoint;
+  float savedOriginalInsertionPoint;
+  float startingY;
+  unsigned newLocation;*/
+
+  if (_tf.is_field_editor) /* TODO: why? */
+    return;
+
+  /* Do nothing if we are at beginning of text */
+  if (_layoutManager->_selected_range.location == 0)
+    {
+      return;
+    }
+
+#if 0 /* TODO */
+  /* Read from memory the horizontal position we aim to move the cursor 
+     at on the next line */
+  savedOriginalInsertionPoint = _originalInsertPoint;
+  originalInsertionPoint = _originalInsertPoint;
+
+  /* Ask the layout manager to compute where to go */
+  startingY = NSMidY (_insertionPointRect);
+
+  /* consider textContainerInset */
+  startingY -= _textContainerInset.height;
+  originalInsertionPoint -= _textContainerInset.width;
+
+  newLocation = [_layoutManager 
+		  _charIndexForInsertionPointMovingFromY: startingY
+		  bestX: originalInsertionPoint
+		  up: YES 
+		  textContainer: _textContainer];
+
+  /* Move the insertion point */
+  [self setSelectedRange: NSMakeRange (newLocation, 0)];
+
+  /* Restore the _originalInsertPoint (which was changed
+     by setSelectedRange:) because we don't want it to change between
+     moveUp:/moveDown: operations. */
+  _originalInsertPoint = savedOriginalInsertionPoint;
+#endif
+}
+
+-(void) moveDown: (id)sender
+{
+/*  float originalInsertionPoint;
+  float savedOriginalInsertionPoint;
+  float startingY;
+  unsigned newLocation;*/
+
+  if (_tf.is_field_editor)
+    return;
+
+  /* Do nothing if we are at end of text */
+  if (_layoutManager->_selected_range.location == [_textStorage length])
+    {
+      return;
+    }
+
+#if 0 /* TODO */
+  /* Read from memory the horizontal position we aim to move the cursor 
+     at on the next line */
+  savedOriginalInsertionPoint = _originalInsertPoint;
+  originalInsertionPoint = _originalInsertPoint;
+
+  /* Ask the layout manager to compute where to go */
+  startingY = NSMidY (_insertionPointRect);
+
+  /* consider textContainerInset */
+  startingY -= _textContainerInset.height;
+  originalInsertionPoint -= _textContainerInset.width;
+
+  newLocation = [_layoutManager 
+		  _charIndexForInsertionPointMovingFromY: startingY
+		  bestX: originalInsertionPoint
+		  up: NO
+		  textContainer: _textContainer];
+
+  /* Move the insertion point */
+  [self setSelectedRange: NSMakeRange (newLocation, 0)];
+
+  /* Restore the _originalInsertPoint (which was changed
+     by setSelectedRange:) because we don't want it to change between
+     moveUp:/moveDown: operations. */
+  _originalInsertPoint = savedOriginalInsertionPoint;
+#endif
+}
+
+-(void) moveLeft: (id)sender
+{
+  unsigned newLocation;
+
+  /* Do nothing if we are at beginning of text with no selection */
+  if (_layoutManager->_selected_range.location == 0 && _layoutManager->_selected_range.length == 0)
+    return;
+
+  if (_layoutManager->_selected_range.location == 0)
+    {
+      newLocation = 0;
+    }
+  else
+    {
+      newLocation = _layoutManager->_selected_range.location - 1;
+    }
+
+  [self setSelectedRange: NSMakeRange (newLocation, 0)];
+}
+
+-(void) moveRight: (id)sender
+{
+  unsigned int length = [_textStorage length];
+  unsigned newLocation;
+
+  /* Do nothing if we are at end of text */
+  if (_layoutManager->_selected_range.location == length)
+    return;
+
+  newLocation = MIN (NSMaxRange (_layoutManager->_selected_range) + 1, length);
+
+  [self setSelectedRange: NSMakeRange (newLocation, 0)];
+}
+
+-(void) moveBackwardAndModifySelection: (id)sender
+{
+  NSRange newRange;
+
+  /* Do nothing if we are at beginning of text.  */
+  if (_layoutManager->_selected_range.location == 0)
+    {
+      return;
+    }
+
+  /* Turn to select by character.  */
+  [self setSelectionGranularity: NSSelectByCharacter];
+
+  /* Extend the selection on the left.  */
+  newRange = NSMakeRange (_layoutManager->_selected_range.location - 1, 
+			  _layoutManager->_selected_range.length + 1);
+
+  newRange = [self selectionRangeForProposedRange: newRange
+		   granularity: NSSelectByCharacter];
+
+  [self setSelectedRange: newRange];
+}
+
+-(void) moveForwardAndModifySelection: (id)sender
+{
+  unsigned int length = [_textStorage length];
+  NSRange newRange;
+
+  /* Do nothing if we are at end of text */
+  if (_layoutManager->_selected_range.location == length)
+    return;
+
+  /* Turn to select by character.  */
+  [self setSelectionGranularity: NSSelectByCharacter];
+
+  /* Extend the selection on the right.  */
+  newRange = NSMakeRange (_layoutManager->_selected_range.location, 
+			  _layoutManager->_selected_range.length + 1);
+
+  newRange = [self selectionRangeForProposedRange: newRange
+		   granularity: NSSelectByCharacter];
+
+  [self setSelectedRange: newRange];
+}
+
+-(void) moveWordBackward: (id)sender
+{
+  unsigned newLocation;
+  
+  newLocation = [_textStorage nextWordFromIndex: _layoutManager->_selected_range.location
+			      forward: NO];
+  
+  [self setSelectedRange: NSMakeRange (newLocation, 0)];
+}
+
+-(void) moveWordForward: (id)sender
+{
+  unsigned newLocation;
+  
+  newLocation = [_textStorage nextWordFromIndex: _layoutManager->_selected_range.location
+			      forward: YES];
+  
+  [self setSelectedRange: NSMakeRange (newLocation, 0)];
+}
+
+-(void) moveWordBackwardAndModifySelection: (id)sender
+{
+  unsigned newLocation;
+  NSRange newRange;
+
+  [self setSelectionGranularity: NSSelectByWord];
+  
+  newLocation = [_textStorage nextWordFromIndex: _layoutManager->_selected_range.location
+			      forward: NO];
+  
+  newRange = NSMakeRange (newLocation, 
+			  NSMaxRange (_layoutManager->_selected_range) - newLocation);
+  
+  newRange = [self selectionRangeForProposedRange: newRange
+		   granularity: NSSelectByCharacter];
+  
+  [self setSelectedRange: newRange];
+}
+
+-(void) moveWordForwardAndModifySelection: (id)sender
+{
+  unsigned newMaxRange;
+  NSRange newRange;
+  
+  [self setSelectionGranularity: NSSelectByWord];
+
+  newMaxRange = [_textStorage nextWordFromIndex: NSMaxRange (_layoutManager->_selected_range)
+			      forward: YES];
+  
+  newRange = NSMakeRange (_layoutManager->_selected_range.location, 
+			  newMaxRange - _layoutManager->_selected_range.location);
+  
+  newRange = [self selectionRangeForProposedRange: newRange
+		   granularity: NSSelectByCharacter];
+
+  [self setSelectedRange: newRange];
+}
+
+-(void) moveToBeginningOfDocument: (id)sender
+{
+  [self setSelectedRange: NSMakeRange (0, 0)];
+}
+
+-(void) moveToBeginningOfParagraph: (id)sender
+{
+  NSRange aRange;
+  
+  aRange = [[_textStorage string] lineRangeForRange: _layoutManager->_selected_range];
+  [self setSelectedRange: NSMakeRange (aRange.location, 0)];
+}
+
+-(void) moveToBeginningOfLine: (id)sender
+{
+  NSRange aRange;
+  NSRect ignored;
+  
+  /* We do nothing if we are at the beginning of the text.  */
+  if (_layoutManager->_selected_range.location == 0)
+    {
+      return;
+    }
+  
+  ignored = [_layoutManager lineFragmentRectForGlyphAtIndex: 
+			      _layoutManager->_selected_range.location
+			    effectiveRange: &aRange];
+
+  [self setSelectedRange: NSMakeRange (aRange.location, 0)];
+}
+
+-(void) moveToEndOfDocument: (id)sender
+{
+  unsigned length = [_textStorage length];
+  
+  if (length > 0)
+    {
+      [self setSelectedRange: NSMakeRange (length, 0)];
+    }
+  else
+    {
+      [self setSelectedRange: NSMakeRange (0, 0)];
+    }
+}
+
+-(void) moveToEndOfParagraph: (id)sender
+{
+  NSRange aRange;
+  unsigned newLocation;
+  unsigned maxRange;
+  
+  aRange = [[_textStorage string] lineRangeForRange: _layoutManager->_selected_range];
+  maxRange = NSMaxRange (aRange);
+
+  if (maxRange == 0)
+    {
+      /* Beginning of text is special only for technical reasons -
+	 since maxRange is an unsigned, we can't safely subtract 1
+	 from it if it is 0.  */
+      newLocation = maxRange;
+    }
+  else if (maxRange == [_textStorage length])
+    {
+      /* End of text is special - we want the insertion point to
+	 appear *after* the last character, which means as if before
+	 the next (virtual) character after the end of text ... unless
+	 the last character is a newline, and we are trying to go to
+	 the end of the line which is displayed as the
+	 one-before-the-last.  Please note (maxRange - 1) is a valid
+	 char since the maxRange == 0 case has already been
+	 eliminated.  */
+      unichar u = [[_textStorage string] characterAtIndex: (maxRange - 1)];
+      if (u == '\n'  ||  u == '\r')
+	{
+	  newLocation = maxRange - 1;
+	}
+      else
+	{
+	  newLocation = maxRange;
+	}
+    }
+  else
+    {
+      /* Else, we want the insertion point to appear before the last
+	 character in the paragraph range.  Normally the last
+	 character in the paragraph range is a newline.  */
+      newLocation = maxRange - 1;
+    }
+
+  if (newLocation < aRange.location)
+    {
+      newLocation = aRange.location;
+    }
+
+  [self setSelectedRange: NSMakeRange (newLocation, 0) ];
+}
+
+-(void) moveToEndOfLine: (id)sender
+{
+  NSRect ignored;
+  NSRange line, glyphs;
+  unsigned newLocation;
+  unsigned maxRange;
+  
+  /* We do nothing if we are at the end of the text.  */
+  if (_layoutManager->_selected_range.location == [_textStorage length])
+    {
+      return;
+    }
+
+  ignored = [_layoutManager lineFragmentRectForGlyphAtIndex: 
+			      _layoutManager->_selected_range.location
+			    effectiveRange: &glyphs];
+  
+  line = [_layoutManager characterRangeForGlyphRange: glyphs
+			 actualGlyphRange: NULL];
+  
+  maxRange = NSMaxRange (line);
+
+  if (maxRange == 0)
+    {
+      /* Beginning of text is special only for technical reasons -
+	 since maxRange is an unsigned, we can't safely subtract 1
+	 from it if it is 0.  */
+      newLocation = maxRange;
+    }
+  else if (maxRange == [_textStorage length])
+    {
+      /* End of text is special - we want the insertion point to
+	 appear *after* the last character, which means as if before
+	 the next (virtual) character after the end of text ... unless
+	 the last character is a newline, and we are trying to go to
+	 the end of the line which is displayed as the
+	 one-before-the-last.  (Please note that we do not check for
+	 spaces - spaces are ok, we want to move after the last space)
+	 Please note (maxRange - 1) is a valid char since the maxRange
+	 == 0 case has already been eliminated.  */
+      unichar u = [[_textStorage string] characterAtIndex: (maxRange - 1)];
+      if (u == '\n'  ||  u == '\r')
+	{
+	  newLocation = maxRange - 1;
+	}
+      else
+	{
+	  newLocation = maxRange;
+	}
+    }
+  else
+    {
+      /* Else, we want the insertion point to appear before the last
+	 character in the line range.  Normally the last character in
+	 the line range is a space or a newline.  */
+      newLocation = maxRange - 1;
+    }
+
+  if (newLocation < line.location)
+    {
+      newLocation = line.location;
+    }
+  
+  [self setSelectedRange: NSMakeRange (newLocation, 0) ];
+}
+
+/**
+ * Tries to move the selection/insertion point down one page of the
+ * visible rect in the receiver while trying to maintain the
+ * horizontal position of the last vertical movement.
+ * If the receiver is a field editor, this method returns immediatly. 
+ */
+-(void) pageDown: (id)sender
+{
+#if 0 /* TODO */
+  float    cachedInsertPointX;
+  float    scrollDelta;
+  float    oldOriginY;
+  float    newOriginY;
+  unsigned glyphIDX;
+  unsigned charIDX;
+  NSPoint  iPoint;
+ 
+  if (_tf.is_field_editor)
+    return;
+  
+  /* 
+   * Save the current horizontal position cache as we will implictly
+   * change it later.
+   */
+//  cachedInsertPointX = _originalInsertPoint;
+
+  /*
+   * Scroll; also determine how far to move the insertion point.
+   */
+  oldOriginY = NSMinY([self visibleRect]);
+  [[self enclosingScrollView] pageDown: sender];
+  newOriginY = NSMinY([self visibleRect]);
+  scrollDelta = newOriginY - oldOriginY;
+
+  if (scrollDelta == 0)
+    {
+      /* TODO/FIXME: If no scroll was done, it means we are in the
+       * last page of the document already - should we move the
+       * insertion point to the last line when the user clicks
+       * 'PageDown' in that case ?
+       */
+    }
+
+  /*
+   * Calculate new insertion point.
+   */
+  iPoint.x  = _originalInsertPoint        - _textContainerInset.width;
+  iPoint.y  = NSMidY(_insertionPointRect) - _textContainerInset.height;
+  iPoint.y += scrollDelta;
+
+  /*
+   * Ask the layout manager to compute where to go.
+   */
+  glyphIDX = [_layoutManager glyphIndexForPoint: iPoint
+                            inTextContainer: _textContainer];
+  charIDX  = [_layoutManager characterIndexForGlyphAtIndex: glyphIDX];
+
+  /*
+   * Move the insertion point (implicitly changing
+   * _originalInsertPoint).
+   */
+  [self setSelectedRange: NSMakeRange(charIDX, 0)];
+
+  /*
+   * Restore the _originalInsertPoint because we do not want it to
+   * change between moveUp:/moveDown:/pageUp:/pageDown: operations.  
+   */
+  _originalInsertPoint = cachedInsertPointX;
+#endif
+}
+
+/**
+ * Tries to move the selection/insertion point up one page of the
+ * visible rect in the receiver while trying to maintain the
+ * horizontal position of the last vertical movement.
+ * If the receiver is a field editor, this method returns immediatly. 
+ */
+-(void) pageUp: (id)sender
+{
+#if 0 /* TODO */
+  float    cachedInsertPointX;
+  float    scrollDelta;
+  float    oldOriginY;
+  float    newOriginY;
+  unsigned glyphIDX;
+  unsigned charIDX;
+  NSPoint  iPoint;
+
+  if (_tf.is_field_editor)
+    return;
+
+  /* 
+   * Save the current horizontal position cache as we will implictly
+   * change it later.
+   */
+  cachedInsertPointX = _originalInsertPoint;
+
+  /*
+   * Scroll; also determine how far to move the insertion point.
+   */
+  oldOriginY = NSMinY([self visibleRect]);
+  [[self enclosingScrollView] pageUp: sender];
+  newOriginY = NSMinY([self visibleRect]);
+  scrollDelta = newOriginY - oldOriginY;
+
+  if (scrollDelta == 0)
+    {
+      /* TODO/FIXME: If no scroll was done, it means we are in the
+       * first page of the document already - should we move the
+       * insertion point to the first line when the user clicks
+       * 'PageUp' in that case ?
+       */
+    }
+
+  /*
+   * Calculate new insertion point.
+   */
+  iPoint.x  = _originalInsertPoint        - _textContainerInset.width;
+  iPoint.y  = NSMidY(_insertionPointRect) - _textContainerInset.height;
+  iPoint.y += scrollDelta;
+
+  /*
+   * Ask the layout manager to compute where to go.
+   */
+  glyphIDX = [_layoutManager glyphIndexForPoint: iPoint
+                             inTextContainer: _textContainer];
+  charIDX  = [_layoutManager characterIndexForGlyphAtIndex: glyphIDX];
+
+  /*
+   * Move the insertion point (implicitly changing
+   * _originalInsertPoint). 
+   */
+  [self setSelectedRange: NSMakeRange(charIDX, 0)];
+  
+  /*
+   * Restore the _originalInsertPoint because we do not want it to
+   * change between moveUp:/moveDown:/pageUp:/pageDown: operations.
+   */
+  _originalInsertPoint = cachedInsertPointX;
+#endif
+}
+
+-(void) scrollLineDown: (id)sender
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"scrollLineDown:", "NSTextView");
+}
+
+-(void) scrollLineUp: (id)sender
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"scrollLineUp:", "NSTextView");
+}
+
+-(void) scrollPageDown: (id)sender
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"scrollPageDown:", "NSTextView");
+}
+
+-(void) scrollPageUp: (id)sender
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"scrollPageUp:", "NSTextView");
+}
+
+
+/* -selectAll: inherited from NSText  */
+
+-(void) selectLine: (id)sender
+{
+  if ([_textStorage length] > 0)
+    {
+      NSRange aRange;
+      NSRect ignored;
+      
+      ignored = [_layoutManager lineFragmentRectForGlyphAtIndex: 
+				  _layoutManager->_selected_range.location
+				effectiveRange: &aRange];
+      
+      [self setSelectedRange: aRange];
+    }
+}
+
+/* The following method is bound to 'Control-t', and must work like
+ * pressing 'Control-t' inside Emacs.  For example, say that I type
+ * 'Nicoal' in a NSTextView.  Then, I press 'Control-t'.  This should
+ * swap the last two characters which were inserted, thus swapping the
+ * 'a' and the 'l', and changing the text to read 'Nicola'.  */
+/*
+TODO: description incorrect. should swap characters on either side of the
+insertion point. (see also: miswart)
+*/
+-(void) transpose: (id)sender
+{
+  NSRange range;
+  NSString *string;
+  NSString *replacementString;
+  unichar chars[2];
+  unichar tmp;
+
+  /* Do nothing if we are at beginning of text.  */
+  if (_layoutManager->_selected_range.location < 2)
+    {
+      return;
+    }
+
+  range = NSMakeRange (_layoutManager->_selected_range.location - 2, 2);
+
+  /* Get the two chars.  */
+  string = [_textStorage string];
+  chars[0] = [string characterAtIndex: (_layoutManager->_selected_range.location - 2)];
+  chars[1] = [string characterAtIndex: (_layoutManager->_selected_range.location - 1)];
+
+  /* Swap them.  */
+  tmp = chars[0];
+  chars[0] = chars[1];
+  chars[1] = tmp;
+  
+  /* Replace the original chars with the swapped ones.  */
+  replacementString = [NSString stringWithCharacters: chars  length: 2];
+  /* TODO: wrap with shouldChange.../didChange */
+  [self replaceCharactersInRange: range  withString: replacementString];
+}
+
+-(void) delete: (id)sender
+{
+  [self deleteForward: sender];
+}
+
+-(void) alignCenter: (id)sender
+{
+  [self setAlignment: NSCenterTextAlignment
+	range: [self rangeForUserParagraphAttributeChange]];
+}
+
+-(void) alignLeft: (id)sender
+{
+  [self setAlignment: NSLeftTextAlignment
+	range: [self rangeForUserParagraphAttributeChange]];
+}
+
+-(void) alignRight: (id)sender
+{
+  [self setAlignment: NSRightTextAlignment
+	range: [self rangeForUserParagraphAttributeChange]];
+}
+
+-(void) alignJustified: (id)sender
+{
+  [self setAlignment: NSJustifiedTextAlignment
+	range: [self rangeForUserParagraphAttributeChange]];   
 }
 
 @end
 
 
 
-/*** TODO: below this line hasn't been done yet ***/
 
 
 /* not the same as NSMakeRange! */
@@ -1042,6 +2216,9 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 //
 // GNU utility methods
 //
+/* TODO: This extension is incorrectly named. It doesn't set attributes,
+it adds them. It should probably also be a programmatic change method and
+not a user change method. Should rename (or even remove) and fix. */
 -(void) setAttributes: (NSDictionary *) attributes  range: (NSRange) aRange;
 -(void) _illegalMovement: (int) notNumber;
 -(void) copySelection;
@@ -1115,11 +2292,6 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   [self writeSelectionToPasteboard: pb  type: NSRulerPboardType];
 }
 
-- (void) delete: (id)sender
-{
-  [self deleteForward: sender];
-}
-
 - (void) paste: (id)sender
 {
   [self readSelectionFromPasteboard: [NSPasteboard generalPasteboard]];
@@ -1142,7 +2314,7 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 /*
  * [NSText] Managing Fonts
  */
-- (NSFont*) font
+- (NSFont *) font
 {
   if ([_textStorage length] > 0)
     {
@@ -1200,7 +2372,7 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
     }
 }
 
-- (void) setFont: (NSFont*)font
+- (void) setFont: (NSFont *)font
 {
   if (font == nil)
     {
@@ -1211,7 +2383,7 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   [_layoutManager->_typingAttributes setObject: font  forKey: NSFontAttributeName];
 }
 
-- (void) setFont: (NSFont*)font  ofRange: (NSRange)aRange
+- (void) setFont: (NSFont *)font  ofRange: (NSRange)aRange
 {
   if (font != nil)
     {
@@ -1260,28 +2432,11 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   [self setAlignment: mode  range: NSMakeRange (0, [_textStorage length])];
 }
 
-- (void) alignCenter: (id)sender
-{
-  [self setAlignment: NSCenterTextAlignment
-	range: [self rangeForUserParagraphAttributeChange]];
-}
-
-- (void) alignLeft: (id)sender
-{
-  [self setAlignment: NSLeftTextAlignment
-	range: [self rangeForUserParagraphAttributeChange]];
-}
-
-- (void) alignRight: (id)sender
-{
-  [self setAlignment: NSRightTextAlignment
-	range: [self rangeForUserParagraphAttributeChange]];
-}
 
 /*
  * [NSText] Managing Text Color
  */
-- (NSColor*) textColor
+- (NSColor *) textColor
 {
   if ([_textStorage length] > 0)
     {
@@ -1298,7 +2453,7 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   return [_layoutManager->_typingAttributes objectForKey: NSForegroundColorAttributeName];
 }
 
-- (void) setTextColor: (NSColor*)color
+- (void) setTextColor: (NSColor *)color
 {
   /* FIXME: This should work also for non rich text objects */
   NSRange fullRange = NSMakeRange (0, [_textStorage length]);
@@ -1306,7 +2461,7 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   [self setTextColor: color  range: fullRange];
 }
 
-- (void) setTextColor: (NSColor*)color  range: (NSRange)aRange
+- (void) setTextColor: (NSColor *)color  range: (NSRange)aRange
 {
   /* FIXME: This should only work for rich text object */
   if (aRange.location == NSNotFound)
@@ -1337,123 +2492,11 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 /*
  * [NSText] Text Attributes
  */
-- (void) subscript: (id)sender
-{
-  NSNumber *value = [_layoutManager->_typingAttributes 
-		       objectForKey: NSSuperscriptAttributeName];
-  int sValue;
-  NSRange aRange = [self rangeForUserCharacterAttributeChange];
-
-  if (aRange.location == NSNotFound)
-    return;
-
-  if (aRange.length)
-    {
-      if (![self shouldChangeTextInRange: aRange
-		 replacementString: nil])
-	return;
-      [_textStorage beginEditing];
-      [_textStorage subscriptRange: aRange];
-      [_textStorage endEditing];
-      [self didChangeText];
-    }
-
-  // Set the typing attributes
-  if (value != nil)
-    sValue = [value intValue] - 1;
-  else
-    sValue = -1;
-  [_layoutManager->_typingAttributes setObject: [NSNumber numberWithInt: sValue]
-		     forKey: NSSuperscriptAttributeName];
-}
-
-- (void) superscript: (id)sender
-{
-  NSNumber *value = [_layoutManager->_typingAttributes 
-		       objectForKey: NSSuperscriptAttributeName];
-  int sValue;
-  NSRange aRange = [self rangeForUserCharacterAttributeChange];
-
-  if (aRange.location == NSNotFound)
-    return;
-
-  if (aRange.length)
-    {
-      if (![self shouldChangeTextInRange: aRange
-		 replacementString: nil])
-	return;
-      [_textStorage beginEditing];
-      [_textStorage superscriptRange: aRange];
-      [_textStorage endEditing];
-      [self didChangeText];
-    }
-
-  // Set the typing attributes
-  if (value != nil)
-    sValue = [value intValue] + 1;
-  else
-    sValue = 1;
-  [_layoutManager->_typingAttributes setObject: [NSNumber numberWithInt: sValue]
-		     forKey: NSSuperscriptAttributeName];
-}
-
-- (void) unscript: (id)sender
-{
-  NSRange aRange = [self rangeForUserCharacterAttributeChange];
-
-  if (aRange.location == NSNotFound)
-    return;
-
-  if (aRange.length)
-    {
-      if (![self shouldChangeTextInRange: aRange
-		 replacementString: nil])
-	return;
-      [_textStorage beginEditing];
-      [_textStorage unscriptRange: aRange];
-      [_textStorage endEditing];
-      [self didChangeText];
-    }
-
-  // Set the typing attributes
-  [_layoutManager->_typingAttributes removeObjectForKey: NSSuperscriptAttributeName];
-}
-
-- (void) underline: (id)sender
-{
-  BOOL doUnderline = YES;
-  NSRange aRange = [self rangeForUserCharacterAttributeChange];
-
-  if (aRange.location == NSNotFound)
-    return;
-
-  if ([[_textStorage attribute: NSUnderlineStyleAttributeName
-		     atIndex: aRange.location
-		     effectiveRange: NULL] intValue])
-    doUnderline = NO;
-
-  if (aRange.length)
-    {
-      if (![self shouldChangeTextInRange: aRange
-		 replacementString: nil])
-	return;
-      [_textStorage beginEditing];
-      [_textStorage addAttribute: NSUnderlineStyleAttributeName
-		    value: [NSNumber numberWithInt: doUnderline]
-		    range: aRange];
-      [_textStorage endEditing];
-      [self didChangeText];
-    }
-
-  [_layoutManager->_typingAttributes
-      setObject: [NSNumber numberWithInt: doUnderline]
-      forKey: NSUnderlineStyleAttributeName];
-}
 
 /*
  * [NSText] Reading and Writing RTFD files
  */
-- (BOOL) readRTFDFromFile: (NSString*)path
+- (BOOL) readRTFDFromFile: (NSString *)path
 {
   NSAttributedString *peek;
 
@@ -1465,15 +2508,15 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 	{
 	  [self setRichText: YES];
 	}
-      [self replaceRange: NSMakeRange (0, [_textStorage length])
-	    withAttributedString: peek];
+      [self replaceCharactersInRange: NSMakeRange (0, [_textStorage length])
+		withAttributedString: peek];
       RELEASE(peek);
       return YES;
     }
   return NO;
 }
 
-- (BOOL) writeRTFDToFile: (NSString*)path  atomically: (BOOL)flag
+- (BOOL) writeRTFDToFile: (NSString *)path  atomically: (BOOL)flag
 {
   NSFileWrapper *wrapper;
   NSRange range = NSMakeRange (0, [_textStorage length]);
@@ -1554,14 +2597,14 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 
 - (void) changeSpelling: (id)sender
 {
-  [self insertText: [[(NSControl*)sender selectedCell] stringValue]];
+  [self insertText: [[(NSControl *)sender selectedCell] stringValue]];
 }
 
 - (void) ignoreSpelling: (id)sender
 {
   NSSpellChecker *sp = [NSSpellChecker sharedSpellChecker];
 
-  [sp ignoreWord: [[(NSControl*)sender selectedCell] stringValue]
+  [sp ignoreWord: [[(NSControl *)sender selectedCell] stringValue]
       inSpellDocumentWithTag: [self spellCheckerDocumentTag]];
 }
 
@@ -1617,8 +2660,8 @@ ugly_hack_done:
 /*
  * [NSResponder] Handle enabling/disabling of services menu items.
  */
-- (id) validRequestorForSendType: (NSString*)sendType
-		      returnType: (NSString*)returnType
+- (id) validRequestorForSendType: (NSString *)sendType
+		      returnType: (NSString *)returnType
 {
   BOOL sendOK = NO;
   BOOL returnOK = NO;
@@ -1785,7 +2828,7 @@ ugly_hack_done:
  * blinking insertion point - but even there, it could probably be
  * done without. */
 - (void) drawInsertionPointInRect: (NSRect)rect
-			    color: (NSColor*)color
+			    color: (NSColor *)color
 			 turnedOn: (BOOL)flag
 {
   if (_window == nil)
@@ -2194,12 +3237,12 @@ ugly_hack_done:
   return _layoutManager->_selectionGranularity;
 }
 
-- (void) setInsertionPointColor: (NSColor*)color
+- (void) setInsertionPointColor: (NSColor *)color
 {
   ASSIGN (_insertionPointColor, color);
 }
 
-- (NSColor*) insertionPointColor
+- (NSColor *) insertionPointColor
 {
   return _insertionPointColor;
 }
@@ -2350,25 +3393,19 @@ ugly_hack_done:
   return _selectedTextAttributes;
 }
 
-- (void) setMarkedTextAttributes: (NSDictionary*)attributeDictionary
+- (void) setMarkedTextAttributes: (NSDictionary *)attributeDictionary
 {
   ASSIGN (_markedTextAttributes, attributeDictionary);
 }
 
-- (NSDictionary*) markedTextAttributes
+- (NSDictionary *) markedTextAttributes
 {
   return _markedTextAttributes;
 }
 
-- (void) alignJustified: (id)sender
-{
-  [self setAlignment: NSJustifiedTextAlignment
-	range: [self rangeForUserParagraphAttributeChange]];   
-}
-
 - (void) changeColor: (id)sender
 {
-  NSColor *aColor = (NSColor*)[sender color];
+  NSColor *aColor = (NSColor *)[sender color];
   NSRange aRange = [self rangeForUserCharacterAttributeChange];
 
   if (aRange.location == NSNotFound)
@@ -2406,7 +3443,7 @@ ugly_hack_done:
   RELEASE (mstyle);
 }
 
-- (void) setTypingAttributes: (NSDictionary*)attrs
+- (void) setTypingAttributes: (NSDictionary *)attrs
 {
   if (attrs == nil)
     {
@@ -2421,211 +3458,17 @@ ugly_hack_done:
     }
   else
     {
-      ASSIGN (_layoutManager->_typingAttributes, (NSMutableDictionary*)attrs);
+      ASSIGN (_layoutManager->_typingAttributes, (NSMutableDictionary *)attrs);
     }
   [self updateFontPanel];
   [self updateRuler];
 }
 
-- (NSDictionary*) typingAttributes
+- (NSDictionary *) typingAttributes
 {
   return [NSDictionary dictionaryWithDictionary: _layoutManager->_typingAttributes];
 }
 
-- (void) useStandardKerning: (id)sender
-{
-  // rekern for selected range if rich text, else rekern entire document.
-  NSRange aRange = [self rangeForUserCharacterAttributeChange];
-
-  if (aRange.location == NSNotFound)
-    return;
-  
-  if (![self shouldChangeTextInRange: aRange
-	    replacementString: nil])
-    return;
-  [_textStorage beginEditing];
-  [_textStorage removeAttribute: NSKernAttributeName
-		range: aRange];
-  [_textStorage endEditing];
-  [self didChangeText];
-}
-
-- (void) lowerBaseline: (id)sender
-{
-  id value;
-  float sValue;
-  NSRange effRange;
-  NSRange aRange = [self rangeForUserCharacterAttributeChange];
-
-  if (aRange.location == NSNotFound)
-    return;
-
-  if (![self shouldChangeTextInRange: aRange
-	    replacementString: nil])
-    return;
-  [_textStorage beginEditing];
-  // We take the value form the first character and use it for the whole range
-  value = [_textStorage attribute: NSBaselineOffsetAttributeName
-			atIndex: aRange.location
-			effectiveRange: &effRange];
-
-  if (value != nil)
-    sValue = [value floatValue] + 1.0;
-  else
-    sValue = 1.0;
-
-  [_textStorage addAttribute: NSBaselineOffsetAttributeName
-		value: [NSNumber numberWithFloat: sValue]
-		range: aRange];
-}
-
-- (void) raiseBaseline: (id)sender
-{
-  id value;
-  float sValue;
-  NSRange effRange;
-  NSRange aRange = [self rangeForUserCharacterAttributeChange];
-
-  if (aRange.location == NSNotFound)
-    return;
-
-  if (![self shouldChangeTextInRange: aRange
-	    replacementString: nil])
-    return;
-  [_textStorage beginEditing];
-  // We take the value form the first character and use it for the whole range
-  value = [_textStorage attribute: NSBaselineOffsetAttributeName
-			atIndex: aRange.location
-			effectiveRange: &effRange];
-
-  if (value != nil)
-    sValue = [value floatValue] - 1.0;
-  else
-    sValue = -1.0;
-
-  [_textStorage addAttribute: NSBaselineOffsetAttributeName
-		value: [NSNumber numberWithFloat: sValue]
-		range: aRange];
-  [_textStorage endEditing];
-  [self didChangeText];
-}
-
-- (void) turnOffKerning: (id)sender
-{
-  NSRange aRange = [self rangeForUserCharacterAttributeChange];
-
-  if (aRange.location == NSNotFound)
-    return;
-  
-  if (![self shouldChangeTextInRange: aRange
-	    replacementString: nil])
-    return;
-  [_textStorage beginEditing];
-  [_textStorage addAttribute: NSKernAttributeName
-		value: [NSNumber numberWithFloat: 0.0]
-		range: aRange];
-  [_textStorage endEditing];
-  [self didChangeText];
-}
-
-- (void) loosenKerning: (id)sender
-{
-  NSRange aRange = [self rangeForUserCharacterAttributeChange];
-
-  if (aRange.location == NSNotFound)
-    return;
-
-  if (![self shouldChangeTextInRange: aRange
-	    replacementString: nil])
-    return;
-  [_textStorage beginEditing];
-  // FIXME: Should use the current kerning and work relative to point size
-  [_textStorage addAttribute: NSKernAttributeName
-		value: [NSNumber numberWithFloat: 1.0]
-		range: aRange];
-  [_textStorage endEditing];
-  [self didChangeText];
-}
-
-- (void) tightenKerning: (id)sender
-{
-  NSRange aRange = [self rangeForUserCharacterAttributeChange];
-
-  if (aRange.location == NSNotFound)
-    return;
-
-  if (![self shouldChangeTextInRange: aRange
-	    replacementString: nil])
-    return;
-  [_textStorage beginEditing];
-  // FIXME: Should use the current kerning and work relative to point size
-  [_textStorage addAttribute: NSKernAttributeName
-		value: [NSNumber numberWithFloat: -1.0]
-		range: aRange];
-  [_textStorage endEditing];
-  [self didChangeText];
-}
-
-- (void) useStandardLigatures: (id)sender
-{
-  NSRange aRange = [self rangeForUserCharacterAttributeChange];
-
-  if (aRange.location == NSNotFound)
-    return;
-
-  if (![self shouldChangeTextInRange: aRange
-	    replacementString: nil])
-    return;
-  [_textStorage beginEditing];
-  [_textStorage addAttribute: NSLigatureAttributeName
-		value: [NSNumber numberWithInt: 1]
-		range: aRange];
-  [_textStorage endEditing];
-  [self didChangeText];
-}
-
-- (void) turnOffLigatures: (id)sender
-{
-  NSRange aRange = [self rangeForUserCharacterAttributeChange];
-
-  if (aRange.location == NSNotFound)
-    return;
-
-  if (![self shouldChangeTextInRange: aRange
-	    replacementString: nil])
-    return;
-  [_textStorage beginEditing];
-  [_textStorage addAttribute: NSLigatureAttributeName
-		value: [NSNumber numberWithInt: 0]
-		range: aRange];
-  [_textStorage endEditing];
-  [self didChangeText];
-}
-
-- (void) useAllLigatures: (id)sender
-{
-  NSRange aRange = [self rangeForUserCharacterAttributeChange];
-
-  if (aRange.location == NSNotFound)
-    return;
-
-  if (![self shouldChangeTextInRange: aRange
-	    replacementString: nil])
-    return;
-  [_textStorage beginEditing];
-  [_textStorage addAttribute: NSLigatureAttributeName
-		value: [NSNumber numberWithInt: 2]
-		range: aRange];
-  [_textStorage endEditing];
-  [self didChangeText];
-}
-
-- (void) toggleTraditionalCharacterShape: (id)sender
-{
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"toggleTraditionalCharacterShape:", "NSTextView");
-}
 
 - (void) clickedOnLink: (id)link
 	       atIndex: (unsigned int)charIndex
@@ -2718,7 +3561,7 @@ replacing the selection.
     }
 }
 
-- (NSArray*) acceptableDragTypes
+- (NSArray *) acceptableDragTypes
 {
   return [self readablePasteboardTypes];
 }
@@ -2741,7 +3584,7 @@ replacing the selection.
  * edit the contents.  
  */
 - (BOOL) shouldChangeTextInRange: (NSRange)affectedCharRange
-	       replacementString: (NSString*)replacementString
+	       replacementString: (NSString *)replacementString
 {
   if (_tf.is_editable == NO)
     return NO;
@@ -2819,10 +3662,10 @@ replacing the selection.
   return nil;
 }
 
-- (void) smartInsertForString: (NSString*)aString
+- (void) smartInsertForString: (NSString *)aString
 	       replacingRange: (NSRange)charRange
-		 beforeString: (NSString**)beforeString 
-		  afterString: (NSString**)afterString
+		 beforeString: (NSString **)beforeString
+		  afterString: (NSString **)afterString
 {
 
 /* Determines whether whitespace needs to be added around aString to
@@ -2853,7 +3696,7 @@ afterString in order over charRange. */
 /*
  * Handling Events
  */
-- (void) mouseDown: (NSEvent*)theEvent
+- (void) mouseDown: (NSEvent *)theEvent
 {
   NSSelectionAffinity affinity = [self selectionAffinity];
   NSSelectionGranularity granularity = NSSelectByCharacter;
@@ -2961,7 +3804,7 @@ afterString in order over charRange. */
 	       programmer who is using the NSTextView and who
 	       originally created the link object and saved it under
 	       the NSLinkAttributeName in the text.  Normally, a NSURL
-	       object is used.*/
+	       object is used. */
 	    id link = [_textStorage attribute: NSLinkAttributeName
 				    atIndex: startIndex
 				    effectiveRange: NULL];
@@ -3051,7 +3894,7 @@ afterString in order over charRange. */
   [self setSelectionGranularity: granularity];
 }
 
-- (void) keyDown: (NSEvent*)theEvent
+- (void) keyDown: (NSEvent *)theEvent
 {
   // If not editable, don't recognize the key down
   if (_tf.is_editable == NO)
@@ -3063,744 +3906,6 @@ afterString in order over charRange. */
       [self interpretKeyEvents: [NSArray arrayWithObject: theEvent]];
     }
 }
-
-- (void) insertNewline: (id)sender
-{
-  if (_tf.is_field_editor)
-    {
-      [self _illegalMovement: NSReturnTextMovement];
-      return;
-    }
-
-  [self insertText: @"\n"];
-}
-
-- (void) insertTab: (id)sender
-{
-  if (_tf.is_field_editor)
-    {
-      [self _illegalMovement: NSTabTextMovement];
-      return;
-    }
-
-  [self insertText: @"\t"];
-}
-
-- (void) insertBacktab: (id)sender
-{
-  if (_tf.is_field_editor)
-    {
-      [self _illegalMovement: NSBacktabTextMovement];
-      return;
-    }
-
-  //[self insertText: @"\t"];
-}
-
-- (void) deleteForward: (id)sender
-{
-  NSRange range = [self rangeForUserTextChange];
-  
-  if (range.location == NSNotFound)
-    {
-      return;
-    }
-  
-  /* Manage case of insertion point - implicitly means to delete following 
-     character */
-  if (range.length == 0)
-    {
-      if (range.location != [_textStorage length])
-	{
-	  /* Not at the end of text -- delete following character */
-	  range.length = 1;
-	}
-      else
-	{
-	  /* At the end of text - TODO: Make beeping or not beeping
-	     configurable vie User Defaults */
-	  NSBeep ();
-	  return;
-	}
-    }
-  
-  if (![self shouldChangeTextInRange: range  replacementString: @""])
-    {
-      return;
-    }
-
-  [_textStorage beginEditing];
-  [_textStorage deleteCharactersInRange: range];
-  [_textStorage endEditing];
-  [self didChangeText];
-
-  /* The new selected range is just the insertion point at the beginning 
-     of deleted range */
-  [self setSelectedRange: NSMakeRange (range.location, 0)];
-}
-
-- (void) deleteBackward: (id)sender
-{
-  NSRange range = [self rangeForUserTextChange];
-  
-  if (range.location == NSNotFound)
-    {
-      return;
-    }
-  
-  /* Manage case of insertion point - implicitly means to delete
-     previous character */
-  if (range.length == 0)
-    {
-      if (range.location != 0)
-	{
-	  /* Not at the beginning of text -- delete previous character */
-	  range.location -= 1;
-	  range.length = 1;
-	}
-      else
-	{
-	  /* At the beginning of text - TODO: Make beeping or not
-	     beeping configurable via User Defaults */
-	  NSBeep ();
-	  return;
-	}
-    }
-  
-  if (![self shouldChangeTextInRange: range  replacementString: @""])
-    {
-      return;
-    }
-
-  [_textStorage beginEditing];
-  [_textStorage deleteCharactersInRange: range];
-  [_textStorage endEditing];
-  [self didChangeText];
-
-  /* The new selected range is just the insertion point at the beginning 
-     of deleted range */
-  [self setSelectedRange: NSMakeRange (range.location, 0)];
-}
-
-- (void) moveUp: (id)sender
-{
-/*  float originalInsertionPoint;
-  float savedOriginalInsertionPoint;
-  float startingY;
-  unsigned newLocation;*/
-
-  if (_tf.is_field_editor) /* TODO: why? */
-    return;
-
-  /* Do nothing if we are at beginning of text */
-  if (_layoutManager->_selected_range.location == 0)
-    {
-      return;
-    }
-
-#if 0 /* TODO */
-  /* Read from memory the horizontal position we aim to move the cursor 
-     at on the next line */
-  savedOriginalInsertionPoint = _originalInsertPoint;
-  originalInsertionPoint = _originalInsertPoint;
-
-  /* Ask the layout manager to compute where to go */
-  startingY = NSMidY (_insertionPointRect);
-
-  /* consider textContainerInset */
-  startingY -= _textContainerInset.height;
-  originalInsertionPoint -= _textContainerInset.width;
-
-  newLocation = [_layoutManager 
-		  _charIndexForInsertionPointMovingFromY: startingY
-		  bestX: originalInsertionPoint
-		  up: YES 
-		  textContainer: _textContainer];
-
-  /* Move the insertion point */
-  [self setSelectedRange: NSMakeRange (newLocation, 0)];
-
-  /* Restore the _originalInsertPoint (which was changed
-     by setSelectedRange:) because we don't want it to change between
-     moveUp:/moveDown: operations. */
-  _originalInsertPoint = savedOriginalInsertionPoint;
-#endif
-}
-
-- (void) moveDown: (id)sender
-{
-/*  float originalInsertionPoint;
-  float savedOriginalInsertionPoint;
-  float startingY;
-  unsigned newLocation;*/
-
-  if (_tf.is_field_editor)
-    return;
-
-  /* Do nothing if we are at end of text */
-  if (_layoutManager->_selected_range.location == [_textStorage length])
-    {
-      return;
-    }
-
-#if 0 /* TODO */
-  /* Read from memory the horizontal position we aim to move the cursor 
-     at on the next line */
-  savedOriginalInsertionPoint = _originalInsertPoint;
-  originalInsertionPoint = _originalInsertPoint;
-
-  /* Ask the layout manager to compute where to go */
-  startingY = NSMidY (_insertionPointRect);
-
-  /* consider textContainerInset */
-  startingY -= _textContainerInset.height;
-  originalInsertionPoint -= _textContainerInset.width;
-
-  newLocation = [_layoutManager 
-		  _charIndexForInsertionPointMovingFromY: startingY
-		  bestX: originalInsertionPoint
-		  up: NO
-		  textContainer: _textContainer];
-
-  /* Move the insertion point */
-  [self setSelectedRange: NSMakeRange (newLocation, 0)];
-
-  /* Restore the _originalInsertPoint (which was changed
-     by setSelectedRange:) because we don't want it to change between
-     moveUp:/moveDown: operations. */
-  _originalInsertPoint = savedOriginalInsertionPoint;
-#endif
-}
-
-- (void) moveLeft: (id)sender
-{
-  unsigned newLocation;
-
-  /* Do nothing if we are at beginning of text with no selection */
-  if (_layoutManager->_selected_range.location == 0 && _layoutManager->_selected_range.length == 0)
-    return;
-
-  if (_layoutManager->_selected_range.location == 0)
-    {
-      newLocation = 0;
-    }
-  else
-    {
-      newLocation = _layoutManager->_selected_range.location - 1;
-    }
-
-  [self setSelectedRange: NSMakeRange (newLocation, 0)];
-}
-
-- (void) moveRight: (id)sender
-{
-  unsigned int length = [_textStorage length];
-  unsigned newLocation;
-
-  /* Do nothing if we are at end of text */
-  if (_layoutManager->_selected_range.location == length)
-    return;
-
-  newLocation = MIN (NSMaxRange (_layoutManager->_selected_range) + 1, length);
-
-  [self setSelectedRange: NSMakeRange (newLocation, 0)];
-}
-
-- (void) moveBackwardAndModifySelection: (id)sender
-{
-  NSRange newRange;
-
-  /* Do nothing if we are at beginning of text.  */
-  if (_layoutManager->_selected_range.location == 0)
-    {
-      return;
-    }
-
-  /* Turn to select by character.  */
-  [self setSelectionGranularity: NSSelectByCharacter];
-
-  /* Extend the selection on the left.  */
-  newRange = NSMakeRange (_layoutManager->_selected_range.location - 1, 
-			  _layoutManager->_selected_range.length + 1);
-
-  newRange = [self selectionRangeForProposedRange: newRange
-		   granularity: NSSelectByCharacter];
-
-  [self setSelectedRange: newRange];
-}
-
-- (void) moveForwardAndModifySelection: (id)sender
-{
-  unsigned int length = [_textStorage length];
-  NSRange newRange;
-
-  /* Do nothing if we are at end of text */
-  if (_layoutManager->_selected_range.location == length)
-    return;
-
-  /* Turn to select by character.  */
-  [self setSelectionGranularity: NSSelectByCharacter];
-
-  /* Extend the selection on the right.  */
-  newRange = NSMakeRange (_layoutManager->_selected_range.location, 
-			  _layoutManager->_selected_range.length + 1);
-
-  newRange = [self selectionRangeForProposedRange: newRange
-		   granularity: NSSelectByCharacter];
-
-  [self setSelectedRange: newRange];
-}
-
-- (void) moveWordBackward: (id)sender
-{
-  unsigned newLocation;
-  
-  newLocation = [_textStorage nextWordFromIndex: _layoutManager->_selected_range.location
-			      forward: NO];
-  
-  [self setSelectedRange: NSMakeRange (newLocation, 0)];
-}
-
-- (void) moveWordForward: (id)sender
-{
-  unsigned newLocation;
-  
-  newLocation = [_textStorage nextWordFromIndex: _layoutManager->_selected_range.location
-			      forward: YES];
-  
-  [self setSelectedRange: NSMakeRange (newLocation, 0)];
-}
-
-- (void) moveWordBackwardAndModifySelection: (id)sender
-{
-  unsigned newLocation;
-  NSRange newRange;
-
-  [self setSelectionGranularity: NSSelectByWord];
-  
-  newLocation = [_textStorage nextWordFromIndex: _layoutManager->_selected_range.location
-			      forward: NO];
-  
-  newRange = NSMakeRange (newLocation, 
-			  NSMaxRange (_layoutManager->_selected_range) - newLocation);
-  
-  newRange = [self selectionRangeForProposedRange: newRange
-		   granularity: NSSelectByCharacter];
-  
-  [self setSelectedRange: newRange];
-}
-
-- (void) moveWordForwardAndModifySelection: (id)sender
-{
-  unsigned newMaxRange;
-  NSRange newRange;
-  
-  [self setSelectionGranularity: NSSelectByWord];
-
-  newMaxRange = [_textStorage nextWordFromIndex: NSMaxRange (_layoutManager->_selected_range)
-			      forward: YES];
-  
-  newRange = NSMakeRange (_layoutManager->_selected_range.location, 
-			  newMaxRange - _layoutManager->_selected_range.location);
-  
-  newRange = [self selectionRangeForProposedRange: newRange
-		   granularity: NSSelectByCharacter];
-
-  [self setSelectedRange: newRange];
-}
-
-- (void) moveToBeginningOfDocument: (id)sender
-{
-  [self setSelectedRange: NSMakeRange (0, 0)];
-}
-
-- (void) moveToBeginningOfParagraph: (id)sender
-{
-  NSRange aRange;
-  
-  aRange = [[_textStorage string] lineRangeForRange: _layoutManager->_selected_range];
-  [self setSelectedRange: NSMakeRange (aRange.location, 0)];
-}
-
-- (void) moveToBeginningOfLine: (id)sender
-{
-  NSRange aRange;
-  NSRect ignored;
-  
-  /* We do nothing if we are at the beginning of the text.  */
-  if (_layoutManager->_selected_range.location == 0)
-    {
-      return;
-    }
-  
-  ignored = [_layoutManager lineFragmentRectForGlyphAtIndex: 
-			      _layoutManager->_selected_range.location
-			    effectiveRange: &aRange];
-
-  [self setSelectedRange: NSMakeRange (aRange.location, 0)];
-}
-
-- (void) moveToEndOfDocument: (id)sender
-{
-  unsigned length = [_textStorage length];
-  
-  if (length > 0)
-    {
-      [self setSelectedRange: NSMakeRange (length, 0)];
-    }
-  else
-    {
-      [self setSelectedRange: NSMakeRange (0, 0)];
-    }
-}
-
-- (void) moveToEndOfParagraph: (id)sender
-{
-  NSRange aRange;
-  unsigned newLocation;
-  unsigned maxRange;
-  
-  aRange = [[_textStorage string] lineRangeForRange: _layoutManager->_selected_range];
-  maxRange = NSMaxRange (aRange);
-
-  if (maxRange == 0)
-    {
-      /* Beginning of text is special only for technical reasons -
-	 since maxRange is an unsigned, we can't safely subtract 1
-	 from it if it is 0.  */
-      newLocation = maxRange;
-    }
-  else if (maxRange == [_textStorage length])
-    {
-      /* End of text is special - we want the insertion point to
-	 appear *after* the last character, which means as if before
-	 the next (virtual) character after the end of text ... unless
-	 the last character is a newline, and we are trying to go to
-	 the end of the line which is displayed as the
-	 one-before-the-last.  Please note (maxRange - 1) is a valid
-	 char since the maxRange == 0 case has already been
-	 eliminated.  */
-      unichar u = [[_textStorage string] characterAtIndex: (maxRange - 1)];
-      if (u == '\n'  ||  u == '\r')
-	{
-	  newLocation = maxRange - 1;
-	}
-      else
-	{
-	  newLocation = maxRange;
-	}
-    }
-  else
-    {
-      /* Else, we want the insertion point to appear before the last
-	 character in the paragraph range.  Normally the last
-	 character in the paragraph range is a newline.  */
-      newLocation = maxRange - 1;
-    }
-
-  if (newLocation < aRange.location)
-    {
-      newLocation = aRange.location;
-    }
-
-  [self setSelectedRange: NSMakeRange (newLocation, 0) ];
-}
-
-- (void) moveToEndOfLine: (id)sender
-{
-  NSRect ignored;
-  NSRange line, glyphs;
-  unsigned newLocation;
-  unsigned maxRange;
-  
-  /* We do nothing if we are at the end of the text.  */
-  if (_layoutManager->_selected_range.location == [_textStorage length])
-    {
-      return;
-    }
-
-  ignored = [_layoutManager lineFragmentRectForGlyphAtIndex: 
-			      _layoutManager->_selected_range.location
-			    effectiveRange: &glyphs];
-  
-  line = [_layoutManager characterRangeForGlyphRange: glyphs
-			 actualGlyphRange: NULL];
-  
-  maxRange = NSMaxRange (line);
-
-  if (maxRange == 0)
-    {
-      /* Beginning of text is special only for technical reasons -
-	 since maxRange is an unsigned, we can't safely subtract 1
-	 from it if it is 0.  */
-      newLocation = maxRange;
-    }
-  else if (maxRange == [_textStorage length])
-    {
-      /* End of text is special - we want the insertion point to
-	 appear *after* the last character, which means as if before
-	 the next (virtual) character after the end of text ... unless
-	 the last character is a newline, and we are trying to go to
-	 the end of the line which is displayed as the
-	 one-before-the-last.  (Please note that we do not check for
-	 spaces - spaces are ok, we want to move after the last space)
-	 Please note (maxRange - 1) is a valid char since the maxRange
-	 == 0 case has already been eliminated.  */
-      unichar u = [[_textStorage string] characterAtIndex: (maxRange - 1)];
-      if (u == '\n'  ||  u == '\r')
-	{
-	  newLocation = maxRange - 1;
-	}
-      else
-	{
-	  newLocation = maxRange;
-	}
-    }
-  else
-    {
-      /* Else, we want the insertion point to appear before the last
-	 character in the line range.  Normally the last character in
-	 the line range is a space or a newline.  */
-      newLocation = maxRange - 1;
-    }
-
-  if (newLocation < line.location)
-    {
-      newLocation = line.location;
-    }
-  
-  [self setSelectedRange: NSMakeRange (newLocation, 0) ];
-}
-
-/**
- * Tries to move the selection/insertion point down one page of the
- * visible rect in the receiver while trying to maintain the
- * horizontal position of the last vertical movement.
- * If the receiver is a field editor, this method returns immediatly. 
- */
-- (void) pageDown: (id)sender
-{
-#if 0 /* TODO */
-  float    cachedInsertPointX;
-  float    scrollDelta;
-  float    oldOriginY;
-  float    newOriginY;
-  unsigned glyphIDX;
-  unsigned charIDX;
-  NSPoint  iPoint;
- 
-  if (_tf.is_field_editor)
-    return;
-  
-  /* 
-   * Save the current horizontal position cache as we will implictly
-   * change it later.
-   */
-//  cachedInsertPointX = _originalInsertPoint;
-
-  /*
-   * Scroll; also determine how far to move the insertion point.
-   */
-  oldOriginY = NSMinY([self visibleRect]);
-  [[self enclosingScrollView] pageDown: sender];
-  newOriginY = NSMinY([self visibleRect]);
-  scrollDelta = newOriginY - oldOriginY;
-
-  if (scrollDelta == 0)
-    {
-      /* TODO/FIXME: If no scroll was done, it means we are in the
-       * last page of the document already - should we move the
-       * insertion point to the last line when the user clicks
-       * 'PageDown' in that case ?
-       */
-    }
-
-  /*
-   * Calculate new insertion point.
-   */
-  iPoint.x  = _originalInsertPoint        - _textContainerInset.width;
-  iPoint.y  = NSMidY(_insertionPointRect) - _textContainerInset.height;
-  iPoint.y += scrollDelta;
-
-  /*
-   * Ask the layout manager to compute where to go.
-   */
-  glyphIDX = [_layoutManager glyphIndexForPoint: iPoint
-                            inTextContainer: _textContainer];
-  charIDX  = [_layoutManager characterIndexForGlyphAtIndex: glyphIDX];
-
-  /*
-   * Move the insertion point (implicitly changing
-   * _originalInsertPoint).
-   */
-  [self setSelectedRange: NSMakeRange(charIDX, 0)];
-
-  /*
-   * Restore the _originalInsertPoint because we do not want it to
-   * change between moveUp:/moveDown:/pageUp:/pageDown: operations.  
-   */
-  _originalInsertPoint = cachedInsertPointX;
-#endif
-}
-
-/**
- * Tries to move the selection/insertion point up one page of the
- * visible rect in the receiver while trying to maintain the
- * horizontal position of the last vertical movement.
- * If the receiver is a field editor, this method returns immediatly. 
- */
-- (void) pageUp: (id)sender
-{
-#if 0 /* TODO */
-  float    cachedInsertPointX;
-  float    scrollDelta;
-  float    oldOriginY;
-  float    newOriginY;
-  unsigned glyphIDX;
-  unsigned charIDX;
-  NSPoint  iPoint;
-
-  if (_tf.is_field_editor)
-    return;
-
-  /* 
-   * Save the current horizontal position cache as we will implictly
-   * change it later.
-   */
-  cachedInsertPointX = _originalInsertPoint;
-
-  /*
-   * Scroll; also determine how far to move the insertion point.
-   */
-  oldOriginY = NSMinY([self visibleRect]);
-  [[self enclosingScrollView] pageUp: sender];
-  newOriginY = NSMinY([self visibleRect]);
-  scrollDelta = newOriginY - oldOriginY;
-
-  if (scrollDelta == 0)
-    {
-      /* TODO/FIXME: If no scroll was done, it means we are in the
-       * first page of the document already - should we move the
-       * insertion point to the first line when the user clicks
-       * 'PageUp' in that case ?
-       */
-    }
-
-  /*
-   * Calculate new insertion point.
-   */
-  iPoint.x  = _originalInsertPoint        - _textContainerInset.width;
-  iPoint.y  = NSMidY(_insertionPointRect) - _textContainerInset.height;
-  iPoint.y += scrollDelta;
-
-  /*
-   * Ask the layout manager to compute where to go.
-   */
-  glyphIDX = [_layoutManager glyphIndexForPoint: iPoint
-                             inTextContainer: _textContainer];
-  charIDX  = [_layoutManager characterIndexForGlyphAtIndex: glyphIDX];
-
-  /*
-   * Move the insertion point (implicitly changing
-   * _originalInsertPoint). 
-   */
-  [self setSelectedRange: NSMakeRange(charIDX, 0)];
-  
-  /*
-   * Restore the _originalInsertPoint because we do not want it to
-   * change between moveUp:/moveDown:/pageUp:/pageDown: operations.
-   */
-  _originalInsertPoint = cachedInsertPointX;
-#endif
-}
-
-- (void) scrollLineDown: (id)sender
-{
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"scrollLineDown:", "NSTextView");
-}
-
-- (void) scrollLineUp: (id)sender
-{
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"scrollLineUp:", "NSTextView");
-}
-
-- (void) scrollPageDown: (id)sender
-{
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"scrollPageDown:", "NSTextView");
-}
-
-- (void) scrollPageUp: (id)sender
-{
-  // TODO
-  NSLog(@"Method %s is not implemented for class %s",
-	"scrollPageUp:", "NSTextView");
-}
-
-
-/* -selectAll: inherited from NSText  */
-
-- (void) selectLine: (id)sender
-{
-  if ([_textStorage length] > 0)
-    {
-      NSRange aRange;
-      NSRect ignored;
-      
-      ignored = [_layoutManager lineFragmentRectForGlyphAtIndex: 
-				  _layoutManager->_selected_range.location
-				effectiveRange: &aRange];
-      
-      [self setSelectedRange: aRange];
-    }
-}
-
-/* The following method is bound to 'Control-t', and must work like
- * pressing 'Control-t' inside Emacs.  For example, say that I type
- * 'Nicoal' in a NSTextView.  Then, I press 'Control-t'.  This should
- * swap the last two characters which were inserted, thus swapping the
- * 'a' and the 'l', and changing the text to read 'Nicola'.  */
-/*
-TODO: description incorrect. should swap characters on either side of the
-insertion point. (see also: miswart)
-*/
-- (void) transpose: (id)sender
-{
-  NSRange range;
-  NSString *string;
-  NSString *replacementString;
-  unichar chars[2];
-  unichar tmp;
-
-  /* Do nothing if we are at beginning of text.  */
-  if (_layoutManager->_selected_range.location < 2)
-    {
-      return;
-    }
-
-  range = NSMakeRange (_layoutManager->_selected_range.location - 2, 2);
-
-  /* Get the two chars.  */
-  string = [_textStorage string];
-  chars[0] = [string characterAtIndex: (_layoutManager->_selected_range.location - 2)];
-  chars[1] = [string characterAtIndex: (_layoutManager->_selected_range.location - 1)];
-
-  /* Swap them.  */
-  tmp = chars[0];
-  chars[0] = chars[1];
-  chars[1] = tmp;
-  
-  /* Replace the original chars with the swapped ones.  */
-  replacementString = [NSString stringWithCharacters: chars  length: 2];
-  /* TODO: wrap with shouldChange.../didChange */
-  [self replaceCharactersInRange: range  withString: replacementString];
-}
-
 
 
 - (void) drawRect: (NSRect)rect
@@ -3859,8 +3964,8 @@ insertion point. (see also: miswart)
 /**
  * Mote movement of marker
  */
-- (void) rulerView: (NSRulerView*)ruler
-     didMoveMarker: (NSRulerMarker*)marker
+- (void) rulerView: (NSRulerView *)ruler
+     didMoveMarker: (NSRulerMarker *)marker
 {
   NSTextTab *old_tab = [marker representedObject];
   NSTextTab *new_tab = [[NSTextTab alloc] initWithType: [old_tab tabStopType]
@@ -3928,8 +4033,8 @@ insertion point. (see also: miswart)
 /**
  * Handle removal of marker.
  */
-- (void) rulerView: (NSRulerView*)ruler
-   didRemoveMarker: (NSRulerMarker*)marker
+- (void) rulerView: (NSRulerView *)ruler
+   didRemoveMarker: (NSRulerMarker *)marker
 {
   NSTextTab *tab = [marker representedObject];
   NSRange range = [self rangeForUserParagraphAttributeChange];
@@ -4054,8 +4159,8 @@ insertion point. (see also: miswart)
 /**
  * Set new marker position from mouse down location.
  */
-- (void) rulerView: (NSRulerView*)ruler
-   handleMouseDown: (NSEvent*)event
+- (void) rulerView: (NSRulerView *)ruler
+   handleMouseDown: (NSEvent *)event
 {
   NSPoint point = [ruler convertPoint: [event locationInWindow] 
 			     fromView: nil];
@@ -4077,8 +4182,8 @@ insertion point. (see also: miswart)
 /**
  * Return YES if the marker should be added, NO otherwise.
  */
-- (BOOL) rulerView: (NSRulerView*)ruler
-   shouldAddMarker: (NSRulerMarker*)marker
+- (BOOL) rulerView: (NSRulerView *)ruler
+   shouldAddMarker: (NSRulerMarker *)marker
 {
   return [self shouldChangeTextInRange:
     [self rangeForUserParagraphAttributeChange] replacementString: nil];
@@ -4088,8 +4193,8 @@ insertion point. (see also: miswart)
 /**
  * Return YES if the marker should be moved, NO otherwise.
  */
-- (BOOL) rulerView: (NSRulerView*)ruler
-  shouldMoveMarker: (NSRulerMarker*)marker
+- (BOOL) rulerView: (NSRulerView *)ruler
+  shouldMoveMarker: (NSRulerMarker *)marker
 {
   return [self shouldChangeTextInRange:
     [self rangeForUserParagraphAttributeChange] replacementString: nil];
@@ -4098,8 +4203,8 @@ insertion point. (see also: miswart)
 /**
  * Return YES if the marker should be removed, NO otherwise.
  */
-- (BOOL) rulerView: (NSRulerView*)ruler
-shouldRemoveMarker: (NSRulerMarker*)marker
+- (BOOL) rulerView: (NSRulerView *)ruler
+shouldRemoveMarker: (NSRulerMarker *)marker
 {
   return [(NSObject *)[marker representedObject] isKindOfClass: [NSTextTab class]];
 }
@@ -4107,8 +4212,8 @@ shouldRemoveMarker: (NSRulerMarker*)marker
 /**
  * Return a position for adding by constraining the specified location.
  */
-- (float) rulerView: (NSRulerView*)ruler
-      willAddMarker: (NSRulerMarker*)marker 
+- (float) rulerView: (NSRulerView *)ruler
+      willAddMarker: (NSRulerMarker *)marker
 	 atLocation: (float)location
 {
   NSSize size = [_textContainer containerSize];
@@ -4125,8 +4230,8 @@ shouldRemoveMarker: (NSRulerMarker*)marker
 /**
  * Return a new position by constraining the specified location.
  */
-- (float) rulerView: (NSRulerView*)ruler
-     willMoveMarker: (NSRulerMarker*)marker 
+- (float) rulerView: (NSRulerView *)ruler
+     willMoveMarker: (NSRulerMarker *)marker
 	 toLocation: (float)location
 {
   NSSize size = [_textContainer containerSize];
@@ -4292,8 +4397,8 @@ shouldRemoveMarker: (NSRulerMarker*)marker
   return _layoutManager->_selected_range;
 }
 
-- (NSString*) preferredPasteboardTypeFromArray: (NSArray*)availableTypes
-		    restrictedToTypesFromArray: (NSArray*)allowedTypes
+- (NSString *) preferredPasteboardTypeFromArray: (NSArray *)availableTypes
+		    restrictedToTypesFromArray: (NSArray *)allowedTypes
 {
   NSEnumerator *enumerator;
   NSString *type;
@@ -4315,7 +4420,7 @@ shouldRemoveMarker: (NSRulerMarker*)marker
   return nil;  
 }
 
-- (BOOL) readSelectionFromPasteboard: (NSPasteboard*)pboard
+- (BOOL) readSelectionFromPasteboard: (NSPasteboard *)pboard
 {
 /*
   Reads the text view's preferred type of data from the pasteboard
@@ -4335,8 +4440,8 @@ shouldRemoveMarker: (NSRulerMarker*)marker
   return [self readSelectionFromPasteboard: pboard  type: type];
 }
 
-- (BOOL) readSelectionFromPasteboard: (NSPasteboard*)pboard
-				type: (NSString*)type 
+- (BOOL) readSelectionFromPasteboard: (NSPasteboard *)pboard
+				type: (NSString *)type
 {
 /*
   Reads data of the given type from pboard. The new data is placed at
@@ -4379,8 +4484,8 @@ shouldRemoveMarker: (NSRulerMarker*)marker
 					      initWithFileWrapper: 
 						  [pboard readFileWrapper]];
 
-	  [self replaceRange: [self rangeForUserTextChange]
-		withAttributedString: 
+	  [self replaceCharactersInRange: [self rangeForUserTextChange]
+		    withAttributedString:
 		    [NSAttributedString attributedStringWithAttachment: attachment]];
 	  RELEASE(attachment);
 	  return YES;
@@ -4457,7 +4562,7 @@ shouldRemoveMarker: (NSRulerMarker*)marker
   return NO;
 }
 
-- (NSArray*) readablePasteboardTypes
+- (NSArray *) readablePasteboardTypes
 {
   // get default types, what are they?
   NSMutableArray *ret = [NSMutableArray arrayWithObjects: NSRulerPboardType,
@@ -4477,14 +4582,14 @@ shouldRemoveMarker: (NSRulerMarker*)marker
   return ret;
 }
 
-- (NSArray*) writablePasteboardTypes
+- (NSArray *) writablePasteboardTypes
 {
   // the selected text can be written to the pasteboard with which types.
   return [self readablePasteboardTypes];
 }
 
-- (BOOL) writeSelectionToPasteboard: (NSPasteboard*)pboard
-			       type: (NSString*)type
+- (BOOL) writeSelectionToPasteboard: (NSPasteboard *)pboard
+			       type: (NSString *)type
 {
 /*
 Writes the current selection to pboard using the given type. Returns YES
@@ -4498,8 +4603,8 @@ overridden version does not.
 	       types: [NSArray arrayWithObject: type]];
 }
 
-- (BOOL) writeSelectionToPasteboard: (NSPasteboard*)pboard
-			      types: (NSArray*)types
+- (BOOL) writeSelectionToPasteboard: (NSPasteboard *)pboard
+			      types: (NSArray *)types
 {
 
 /* Writes the current selection to pboard under each type in the types
@@ -4679,42 +4784,6 @@ other than copy/paste or dragging. */
 
 @end
 
-@implementation NSTextView (GNUstepExtensions)
-
-- (void) replaceRange: (NSRange)aRange
- withAttributedString: (NSAttributedString*)attrString
-{
-  if (aRange.location == NSNotFound)
-    return;
-
-  if (![self shouldChangeTextInRange: aRange
-	     replacementString: [attrString string]])
-    return;
-
-  [_textStorage beginEditing];
-
-  if (_tf.is_rich_text)
-    {
-      [_textStorage replaceCharactersInRange: aRange
-		    withAttributedString: attrString];
-    }
-  else
-    {
-      [_textStorage replaceCharactersInRange: aRange
-		    withString: [attrString string]];
-    }
-  
-  [_textStorage endEditing];
-  [self didChangeText];
-}
-
-- (unsigned) textLength
-{
-  return [_textStorage length];
-}
-
-@end
-
 @implementation NSTextView (GNUstepPrivate)
 
 - (void) _blink: (NSTimer *)t
@@ -4738,7 +4807,7 @@ other than copy/paste or dragging. */
 #endif
 }
 
-- (void) setAttributes: (NSDictionary*)attributes  range: (NSRange)aRange
+- (void) setAttributes: (NSDictionary *)attributes  range: (NSRange)aRange
 {
   NSString *type;
   id val;
@@ -4822,15 +4891,15 @@ other than copy/paste or dragging. */
 }
 
 /** Bind other mouse up to pasteSelection. This should be done via configuation! */
-- (void) otherMouseUp: (NSEvent*)theEvent
+- (void) otherMouseUp: (NSEvent *)theEvent
 {
-  // Should we change the insertion point, based on the event position?
+  // TODO: Should we change the insertion point, based on the event position?
   [self pasteSelection];
 }
 
 
 
-- (NSColor*) backgroundColor
+- (NSColor *) backgroundColor
 {
   return _backgroundColor;
 }
@@ -4845,7 +4914,7 @@ supposed to automatically constrain its effective min size to the size
 of any clip view it's inside, so the scroll view's background color is
 never used */
 
-- (void) setBackgroundColor: (NSColor*)color
+- (void) setBackgroundColor: (NSColor *)color
 {
   if (![_backgroundColor isEqual: color])
     {
