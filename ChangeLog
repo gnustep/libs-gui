@@ -1,3 +1,8 @@
+2002-10-21  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSView.m: Key view code ... complete rewrite to match
+	MacOS-X implementation.
+
 Mon Oct 21 01:17:41 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSView.m ([-setNextKeyView:], [-setPreviousKeyView:]):
@@ -9,6 +14,8 @@ Mon Oct 21 01:17:41 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/gnustep/gui/NSComboBox.h: Add APPKIT_EXPORT and make layout
 	a bit more consistent. 
+	* Source/NSTextView.m: ([-dealloc]) remove unneeded RETAIN()
+	Fixes for beugs reported by Caba Conti.
 
 2002-10-18  Adam Fedor  <fedor@gnu.org>
 

@@ -68,6 +68,21 @@
 #include <AppKit/NSWorkspace.h>
 #include <AppKit/PSOperators.h>
 
+/*
+ * We need a fast array that can store objects without retain/release ...
+ */
+#define GSI_ARRAY_TYPES		GSUNION_OBJ
+#define GSI_ARRAY_NO_RELEASE	1
+#define GSI_ARRAY_NO_RETAIN	1
+
+#ifdef GSIArray
+#undef GSIArray
+#endif
+#include <base/GSIArray.h>
+
+#define	nKV(O)	((GSIArray)(O->_nextKeyView))
+#define	pKV(O)	((GSIArray)(O->_previousKeyView))
+
 /* Variable tells this view and subviews that we're printing. Not really
    a class variable because we want it visible to subviews also
 */
@@ -91,7 +106,7 @@ struct NSWindow_struct
   hierarchy of NSViews, headed by the window's content view.  Every
   other view in a window is a descendant of this view.</p>
 
-  <p>Subclasses can override <code>drawRect:</code> in order to
+  <p>Subclasses can override -drawRect: in order to
   implement their appearance.  Other methods of NSView and NSResponder
   can also be overridden to handle user generated events.</p>
 
@@ -280,18 +295,106 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) dealloc
 {
+  NSView	*tmp;
+  unsigned	count;
+
   while ([_sub_views count] > 0)
     {
       [[_sub_views lastObject] removeFromSuperviewWithoutNeedingDisplay];
     }
-  if (_nextKeyView != nil)
+
+  /*
+   * Remove self from view chain.  Try to mimic MacOS-X behavior ...
+   * We send setNextKeyView: messages to all view for which we are the
+   * next key view, setting their next key view to nil.
+   *
+   * First we do the obvious stuff using the standard methods.
+   */
+  [self setNextKeyView: nil];
+  [[self previousKeyView] setNextKeyView: nil];
+
+  /*
+   * Now, we locate any remaining cases where a view has us as its next
+   * view, and ask the view to change that.
+   */
+  if (pKV(self) != 0)
     {
-      [_nextKeyView setPreviousKeyView: nil];
+      count = GSIArrayCount(pKV(self));
+      while (count-- > 0)
+	{
+	  tmp = GSIArrayItemAtIndex(pKV(self), count).obj;
+	  if ([tmp nextKeyView] == self)
+	    {
+	      [tmp setNextKeyView: nil];
+	    }
+	}
     }
-  if (_previousKeyView != nil)
+
+  /*
+   * Now we clean up the previous view array, in case subclasses have
+   * overridden the default -setNextkeyView: method and broken things.
+   * We also relase the memory we used.
+   */
+  if (pKV(self) != 0)
     {
-      [_previousKeyView setNextKeyView: nil];
+      count = GSIArrayCount(pKV(self));
+      while (count-- > 0)
+	{
+	  tmp = GSIArrayItemAtIndex(pKV(self), count).obj;
+	  if (tmp != nil && nKV(tmp) != 0)
+	    {
+	      unsigned	otherCount = GSIArrayCount(nKV(tmp));
+	
+	      while (otherCount-- > 1)
+		{
+		  if (GSIArrayItemAtIndex(nKV(tmp), otherCount).obj == self)
+		    {
+		      GSIArrayRemoveItemAtIndex(nKV(tmp), otherCount);
+		    }
+		}
+	      if (GSIArrayItemAtIndex(nKV(tmp), 0).obj == self)
+		{
+		  GSIArraySetItemAtIndex(nKV(tmp), (GSIArrayItem)nil, 0);
+		}
+	    }
+	}
+      GSIArrayClear(pKV(self));
+      NSZoneFree(NSDefaultMallocZone(), pKV(self));
+      pKV(self) = 0;
     }
+
+  /*
+   * Now we clean up all views which have us as their previous view.
+   * We also relase the memory we used.
+   */
+  if (nKV(self) != 0)
+    {
+      count = GSIArrayCount(nKV(self));
+      while (count-- > 0)
+	{
+	  tmp = GSIArrayItemAtIndex(nKV(self), count).obj;
+	  if (tmp != nil && pKV(tmp) != 0)
+	    {
+	      unsigned	otherCount = GSIArrayCount(pKV(tmp));
+	
+	      while (otherCount-- > 1)
+		{
+		  if (GSIArrayItemAtIndex(pKV(tmp), otherCount).obj == self)
+		    {
+		      GSIArrayRemoveItemAtIndex(pKV(tmp), otherCount);
+		    }
+		}
+	      if (GSIArrayItemAtIndex(pKV(tmp), 0).obj == self)
+		{
+		  GSIArraySetItemAtIndex(pKV(tmp), (GSIArrayItem)nil, 0);
+		}
+	    }
+	}
+      GSIArrayClear(nKV(self));
+      NSZoneFree(NSDefaultMallocZone(), nKV(self));
+      nKV(self) = 0;
+    }
+
   RELEASE(_matrixToWindow);
   RELEASE(_matrixFromWindow);
   RELEASE(_frameMatrix);
@@ -305,7 +408,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   [super dealloc];
 }
 
-/** Adds <var>aView</var> as a subview of the receiver. */
+/**
+ * Adds aView as a subview of the receiver.
+ */
 - (void) addSubview: (NSView*)aView
 {
   if (aView == nil)
@@ -316,7 +421,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   if ([self isDescendantOf: aView])
     {
       [NSException raise: NSInvalidArgumentException
-		format: @"addSubview: creates a loop in the views tree!\n"];
+		format: @"addSubview: creates a loop in the views tree!"];
     }
 
   RETAIN(aView);
@@ -352,7 +457,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   if ([self isDescendantOf: aView])
     {
       [NSException raise: NSInvalidArgumentException
-		  format: @"addSubview: positioned: relativeTo: creates a loop in the views tree!\n"];
+		  format: @"addSubview:positioned:relativeTo: creates a "
+	@"loop in the views tree!"];
     }
 
   if (aView == otherView)
@@ -389,11 +495,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 }
 
 /**
-  Returns <code>self</code> if <var>aView</var> is the receiver or
-  <var>aView</var> is a subview of the receiver, the ancestor view
-  shared by <var>aView</var> and the receiver, if any,
-  <var>aView</var> if it is an ancestor of the receiver, otherwise
-  returns <code>nil</code>.  */
+ * Returns self if aView is the receiver or aView is a subview of the receiver,
+ * the ancestor view shared by aView and the receiver if any, or
+ * aView if it is an ancestor of the receiver, otherwise returns nil.
+ */
 - (NSView*) ancestorSharedWithView: (NSView*)aView
 {
   if (self == aView)
@@ -420,8 +525,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 }
 
 /**
-  Returns <code>YES</code> if <var>aView</var> is an ancestor of the receiver.
-*/
+ * Returns YES if aView is an ancestor of the receiver.
+ */
 - (BOOL) isDescendantOf: (NSView*)aView
 {
   if (aView == self)
@@ -454,8 +559,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 }
 
 /**
-  Removes the receiver from its superviews list of subviews, by
-  invoking the superviews [-removeSubview:] method.  */
+ * Removes the receiver from its superviews list of subviews, by
+ * invoking the superviews [-removeSubview:] method.
+ */
 - (void) removeFromSuperviewWithoutNeedingDisplay
 {
   if (_super_view != nil)
@@ -526,8 +632,8 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 }
 
 /**
-  Removes <var>oldView</var> from the receiver and places
-  <var>newView</var> in its place.  */
+ * Removes oldView from the receiver and places newView in its place.
+ */
 - (void) replaceSubview: (NSView*)oldView with: (NSView*)newView
 {
   if (newView == oldView)
@@ -616,18 +722,18 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 }
 
 /**
-  Notifies the receiver that its superview is being changed to
-  <var>newSuperview</var>.  */
+ * Notifies the receiver that its superview is being changed to newSuper.
+ */
 - (void) viewWillMoveToSuperview: (NSView*)newSuper
 {
   _super_view = newSuper;
 }
 
 /**
-  Notifies the receiver that it will now be a view of <var>newWindow</var>.
-  Note, this method is also used when removing a view from a window
-  (in which case, <var>newWindow</var> is nil) to let all the subviews know
-  that they have also been removed from the window.
+ * Notifies the receiver that it will now be a view of newWindow.
+ * Note, this method is also used when removing a view from a window
+ * (in which case, newWindow is nil ) to let all the subviews know
+ * that they have also been removed from the window.
  */
 - (void) viewWillMoveToWindow: (NSWindow*)newWindow
 {
@@ -2307,18 +2413,21 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 /*
  * Aiding Event Handling
  */
+
 /**
-  Returns <code>YES</code> if the view object will accept the first
-  click received when in an inactive window, and <code>NO</code>
-  otherwise.  */
+ * Returns YES if the view object will accept the first
+ * click received when in an inactive window, and NO
+ * otherwise.
+ */
 - (BOOL) acceptsFirstMouse: (NSEvent*)theEvent
 {
   return NO;
 }
 
 /**
-  Returns the subview, lowest in the receiver's hierarchy, which
-  contains <var>aPoint</var> */
+ * Returns the subview, lowest in the receiver's hierarchy, which
+ * contains aPoint, or nil if there is no such view.
+ */
 - (NSView*) hitTest: (NSPoint)aPoint
 {
   NSPoint p;
@@ -2359,8 +2468,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 }
 
 /**
-  Returns whether or not <var>aPoint</var> lies within <var>aRect</var>
-*/
+ * Returns whether or not aPoint lies within aRect.
+ */
 - (BOOL) mouse: (NSPoint)aPoint  inRect: (NSRect)aRect
 {
   return NSMouseInRect (aPoint, aRect, _rFlags.flipped_view);
@@ -2446,114 +2555,274 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   return NO;
 }
 
-- (void) setNextKeyView: (NSView *)aView
-{
-  /* As an exception, we do not retain aView, to avoid retain loops
-   * (the simplest being a view retaining and being retained by
-   * another view), which prevents objects from being ever
-   * deallocated.  To understand how we manage without retaining
-   * _nextKeyView, see [NSView -dealloc].  */
 
-  /* A safety measure against recursion.  */
-  if (aView == _nextKeyView)
+/**
+ * <p>The effect of the -setNextkeyView: method is to set aView to be the
+ * value returned by subsequent calls to the receivers -nextKeyView method.
+ * This also has the effect of setting the previous key view of aView,
+ * so that subsequent calls to its -previousKeyView method will return
+ * the receiver.
+ * </p>
+ * <p>As a special case, if you pass nil as aView then the -previousKeyView
+ * of the receivers current -nextKeyView is set to nil as well as the
+ * receivers -nextKeyView: being set to nil.<br />
+ * This behavior provides MacOS-X compatibility.
+ * </p>
+ * <p>If you pass a non-view object other than nil, an
+ * NSInternaInconsistencyException is raised.
+ * </p>
+ * <p><strong>NB</strong> This method does <em>NOT</em> cause aView to be
+ * retained, and if aView is deallocated, the [NSView-dealloc] method will
+ * automatically remove it from the key view chain it is in.
+ * </p>
+ * <p>For keyboard navigation, views are linked together in a chain, so that
+ * the current first responder view can be changed by stepping backward
+ * and forward in that chain.  This is the method for building and modifying
+ * that chain.
+ * </p>
+ * <p>The MacOS-X documentation refers to this chain as a <em>loop</em>, but
+ * the actual implementation is not a loop at all (except as a special case
+ * when you make the chain into a loop).  In fact, while each view may have
+ * only zero or one <em>next</em> view, and zero or one <em>previous</em>
+ * view, several views may have their <em>next</em> view set to a single
+ * view and/or their <em>previous</em> views set to a single view.  So the
+ * actual setup is a directed graph rather than a loop.
+ * </p>
+ * <p>While a directed graph is a very powerful and flexible way of managing
+ * the way views get keyboard focus in response to  tabs etc, it can be
+ * confusing if misused.  It is probably best therefore, to set your views
+ * up as a single loop within each window.
+ * </p>
+ * <example>
+ *   [a setNextKeyView: b];
+ *   [b setNextKeyView: c];
+ *   [c setNextKeyView: d];
+ *   [d setNextKeyView: a];
+ * </example>
+ */
+- (voidi) setNextKeyView: (NSView *)aView
+{
+  NSView	*tmp;
+  unsigned	count;
+
+  if (aView != nil && [aView isKindOfClass: viewClass] == NO)
     {
+      [NSException raise: NSInternalInconsistencyException
+	format: @"[NSView -setNextKeyView:] passed non-view object %@", aView];
+    }
+
+  if (aView == nil)
+    {
+      if (nKV(self) != 0)
+	{
+	  tmp = GSIArrayItemAtIndex(nKV(self), 0).obj;
+	  if (tmp != nil)
+	    {
+	      /*
+	       * Remove all reference to self from our next key view.
+	       */
+	      if (pKV(tmp) != 0)
+		{
+		  count = GSIArrayCount(pKV(tmp));
+		  while (count-- > 1)
+		    {
+		      if (GSIArrayItemAtIndex(pKV(tmp), count).obj == self)
+			{
+			  GSIArrayRemoveItemAtIndex(pKV(tmp), count);
+			}
+		    }
+		  if (GSIArrayItemAtIndex(pKV(tmp), 0).obj == self)
+		    {
+		      GSIArraySetItemAtIndex(pKV(tmp), (GSIArrayItem)nil, 0);
+		    }
+		}
+	      /*
+	       * Clear link to the next key view.
+	       */
+	      GSIArraySetItemAtIndex(nKV(self), (GSIArrayItem)nil, 0);
+	    }
+	}
       return;
     }
 
-  if (aView == nil  ||  [aView isKindOfClass: viewClass])
+  if (nKV(self) == 0)
     {
-      if (_nextKeyView != nil)
-	{	
-	  NSView *oldNextKeyView = _nextKeyView;
-  
-	  /* Discard the pointer to us in the old next key view.  To
-	   * prevent [oldNextKeyView setPreviousKeyView: nil] from
-	   * calling us recursively, set _nextKeyView to nil for
-	   * the time of the call.  */
-	  _nextKeyView = nil;
-
-	  if ([oldNextKeyView previousKeyView] != nil)
-	    {
-	      [oldNextKeyView setPreviousKeyView: nil];
-	    }
-	}
-
-      /* Assign the _nextKeyView first to prevent recursion.  */
-      _nextKeyView = aView;
-
-      if (aView != nil)
+      /*
+       * Create array and ensure that it has a nil item at index 0 ...
+       * so we always have room for the pointer to the next view.
+       */
+      nKV(self) = NSZoneMalloc(NSDefaultMallocZone(), sizeof(GSIArray_t));
+      GSIArrayInitWithZoneAndCapacity(nKV(self), NSDefaultMallocZone(), 1);
+      GSIArrayAddItem(nKV(self), (GSIArrayItem)nil);
+    }
+  else
+    {
+      /* A safety measure against recursion.  */
+      tmp = GSIArrayItemAtIndex(nKV(self), 0).obj;
+      if (tmp == aView)
 	{
-	  if ([aView previousKeyView] != self)
-	    {
-	      [aView setPreviousKeyView: self];
-	    }
+	  return;
 	}
     }
+
+  if (pKV(aView) == 0)
+    {
+      /*
+       * Create array and ensure that it has a nil item at index 0 ...
+       * so we always have room for the pointer to the previous view.
+       */
+      pKV(aView) = NSZoneMalloc(NSDefaultMallocZone(), sizeof(GSIArray_t));
+      GSIArrayInitWithZoneAndCapacity(pKV(aView), NSDefaultMallocZone(), 1);
+      GSIArrayAddItem(pKV(aView), (GSIArrayItem)nil);
+    }
+
+  /*
+   * Tell the old previous view of aView that aView no longer points to it.
+   */
+  tmp = GSIArrayItemAtIndex(pKV(aView), 0).obj;
+  if (tmp != nil)
+    {
+      count = GSIArrayCount(nKV(tmp));
+      while (count-- > 1)
+	{
+	  if (GSIArrayItemAtIndex(nKV(tmp), count).obj == aView)
+	    {
+	      GSIArrayRemoveItemAtIndex(nKV(tmp), count);
+	    }
+	}
+      /*
+       * If the view still points to aView, make a note of it in the
+       * 'previous' array of aView while making space for the new link.
+       */
+      if (GSIArrayItemAtIndex(nKV(tmp), 0).obj == aView)
+	{
+	  GSIArrayInsertItem(pKV(aView), (GSIArrayItem)nil, 0);
+	}
+    }
+
+  /*
+   * Set up 'previous' link in aView to point to us.
+   */
+  GSIArraySetItemAtIndex(pKV(aView), (GSIArrayItem)self, 0);
+
+  /*
+   * Tell our current 'next' view that we are no longer pointing to it.
+   */
+  tmp = GSIArrayItemAtIndex(nKV(self), 0).obj;
+  if (tmp != nil)
+    {
+      count = GSIArrayCount(pKV(tmp));
+      while (count-- > 1)
+	{
+	  if (GSIArrayItemAtIndex(pKV(tmp), count).obj == self)
+	    {
+	      GSIArrayRemoveItemAtIndex(pKV(tmp), count);
+	    }
+	}
+      /*
+       * If the view still points to us, make a note of it in the
+       * 'next' array while making space for the new link to aView.
+       */
+      if (GSIArrayItemAtIndex(pKV(tmp), 0).obj == self)
+	{
+	  GSIArrayInsertItem(nKV(self), (GSIArrayItem)nil, 0);
+	}
+    }
+
+  /*
+   * Set up 'next' link to point to aView.
+   */
+  GSIArraySetItemAtIndex(nKV(self), (GSIArrayItem)aView, 0);
 }
+
+/**
+ * Returns the next view after the receiver in the key view chain.<br />
+ * Returns nil if there is no view after the receiver.<br />
+ * The next view is set up using the -setNextKeyView: method.<br />
+ * The key view chain is used to determine the order in which views become
+ * first responder when using keyboard navigation.
+ */
 - (NSView *) nextKeyView
 {
-  return _nextKeyView;
+  if (nKV(self) == 0)
+    {
+      return nil;
+    }
+  return GSIArrayItemAtIndex(nKV(self), 0).obj;
 }
+
+/**
+ * Returns the first available view after the receiver which is
+ * actually able to become first responder. See -nextKeyView and
+ * [NSResponder-acceptsFirstResponder]
+ */
 - (NSView *) nextValidKeyView
 {
   NSView *theView;
 
-  theView = _nextKeyView;
+  theView = [self nextKeyView];
   while (1)
     {
       if ([theView acceptsFirstResponder] || (theView == nil)
-	  || (theView == self))
-	return theView;
-
+	|| (theView == self))
+	{
+	  return theView;
+	}
       theView = [theView nextKeyView];
     }
 }
+
+/**
+ * GNUstep addition ... a conveninece method to insert a view in the
+ * key view chain before the receiver, using the -previousKeyView and
+ * -setNextKeyView: methods.
+ */
 - (void) setPreviousKeyView: (NSView *)aView
 {
-  if (aView == _previousKeyView)
+  NSView	*p = [self previousKeyView];
+
+  if (aView == p || aView == self)
     {
       return;
     }
-
-  if (aView == nil  ||  [aView isKindOfClass: viewClass])
-    {
-      if (_previousKeyView != nil)
-	{	
-	  NSView *oldPreviousKeyView = _previousKeyView;
-
-	  _previousKeyView = nil;
-	  if ([oldPreviousKeyView nextKeyView] != nil)
-	    {
-	      [oldPreviousKeyView setNextKeyView: nil];
-	    }
-	}
-
-      _previousKeyView = aView;
-
-      if (aView != nil)
-	{
-	  if ([aView nextKeyView] != self)
-	    {
-	      [aView setNextKeyView: self];
-	    }
-	}
-    }
+  [p setNextKeyView: aView];
+  [aView setNextKeyView: self];
 }
+
+/**
+ * Returns the view before the receiver in the key view chain.<br />
+ * Returns nil if there is no view before the receiver in the chain.<br />
+ * The previous view of the receiver was set up by passing it as the
+ * argument to a call of -setNextKeyView: on that view.<br />
+ * The key view chain is used to determine the order in which views become
+ * first responder when using keyboard navigation.
+ */
 - (NSView *) previousKeyView
 {
-  return _previousKeyView;
+  if (pKV(self) == 0)
+    {
+      return nil;
+    }
+  return GSIArrayItemAtIndex(pKV(self), 0).obj;
 }
+
+/**
+ * Returns the first available view before the receiver which is
+ * actually able to become first responder. See -nextKeyView and
+ * [NSResponder-acceptsFirstResponder]
+ */
 - (NSView *) previousValidKeyView
 {
   NSView *theView;
 
-  theView = _previousKeyView;
+  theView = [self previousKeyView];
   while (1)
     {
       if ([theView acceptsFirstResponder] || (theView == nil)
-	  || (theView == self))
-	return theView;
-
+	|| (theView == self))
+	{
+	  return theView;
+	}
       theView = [theView previousKeyView];
     }
 }
@@ -3278,7 +3547,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 			       at: &_is_rotated_or_scaled_from_base];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_post_frame_changes];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_autoresizes_subviews];
-  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &_autoresizingMask];
+  [aDecoder decodeValueOfObjCType: @encode(unsigned int)
+			       at: &_autoresizingMask];
   _nextKeyView = [aDecoder decodeObject];
   _previousKeyView = [aDecoder decodeObject];
 

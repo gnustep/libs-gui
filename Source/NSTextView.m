@@ -352,19 +352,15 @@ static NSNotificationCenter *nc;
   return self;
 }
 
-- (void)dealloc
+- (void) dealloc
 {
   if (_tvf.owns_text_network == YES)
     {
       if (_textStorage != nil)
 	{
-	  /* Balance the RELEASE we sent to us to break the retain cycle
-	     in initWithFrame: or initWithCoder: (otherwise releasing the
-	     _textStorage will make our retain count go below zero ;-) */
-	  RETAIN (self);
-	  
-	  /* This releases all the text objects (us included) in
-	   * fall.  */
+	  /* This releases all the text objects (us included) which means
+	   * this method will be called again ... so this time we just return.
+	   */
 	  DESTROY (_textStorage);
 
 	  /* When the rest of the text network is released, we'll be

@@ -106,8 +106,8 @@ enum {
   BOOL _allocate_gstate;
   BOOL _renew_gstate;
 
-  NSView *_nextKeyView;
-  NSView *_previousKeyView;
+  void *_nextKeyView;
+  void *_previousKeyView;
 }
 
 /*

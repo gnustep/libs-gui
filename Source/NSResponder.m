@@ -69,8 +69,9 @@
   _next_responder = aResponder;
 }
 
-/*
- * Determining the first responder
+/**
+ * Returns YES if the receiver is able to become the first responder,
+ * NO otherwise.
  */
 - (BOOL) acceptsFirstResponder
 {
