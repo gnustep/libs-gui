@@ -45,6 +45,7 @@ typedef enum {
   NSColor *item_color;
   NSTabState item_state;
   NSTabView *item_tabview;
+  NSRect item_rect; // cached
 }
 - (id) initWithIdentifier:(id)identifier;
 
@@ -69,6 +70,11 @@ typedef enum {
 
 - (void)drawLabel:(BOOL)shouldTruncateLabel
            inRect:(NSRect)tabRect;
+
+// Non-spec
+- (void)_setTabState:(NSTabState)tabState;
+- (void)_setTabView:(NSTabView *)tabView;
+- (NSRect) _tabRect;
 
 - (void) encodeWithCoder: (NSCoder*)aCoder;
 - (id) initWithCoder: (NSCoder*)aDecoder;

@@ -44,6 +44,7 @@ typedef enum {
   NSMutableArray *tab_items;
   NSFont *tab_font;
   NSTabViewType tab_type;
+  NSTabViewItem *tab_selected;
   BOOL tab_draws_background;
   BOOL tab_truncated_label;
   id tab_delegate;

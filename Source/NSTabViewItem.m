@@ -123,7 +123,9 @@
   NSGraphicsContext     *ctxt = GSCurrentContext();
   NSRect lRect;
   NSRect fRect;
-      
+
+  item_rect = tabRect;
+
   DPSgsave(ctxt);
 
   fRect = tabRect;
@@ -150,6 +152,13 @@
   DPSshow(ctxt, [item_label cString]);
 
   DPSgrestore(ctxt);
+}
+
+// Non spec
+
+- (NSRect) _tabRect
+{
+  return item_rect;
 }
 
 // NSCoding protocol.

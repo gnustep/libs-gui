@@ -152,9 +152,6 @@ static float GSMenuBarHeight = 25.0; // a guess.
       if ([anItem hasSubmenu])
         [[anItem target] display];
 
-      // set view needs to be redrawn
-      [window flushWindow];
-
       // set ivar to new index
       menuv_highlightedItemIndex = index;
     } else {

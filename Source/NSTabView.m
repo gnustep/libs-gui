@@ -16,6 +16,7 @@
 
   tab_items = [NSMutableArray new];
   tab_font = [NSFont systemFontOfSize:12];
+  tab_selected = nil;
 
   return self;
 }
@@ -206,7 +207,7 @@
     NSTabState itemState;
 
     // hack to simulate a selected tab other than tab one.
-    if (i == 1) [anItem _setTabState:NSSelectedTab];
+//    if (i == 0) [anItem _setTabState:NSSelectedTab];
 
     itemState = [anItem tabState];
 
@@ -303,14 +304,37 @@
 
 - (NSTabViewItem *)tabViewItemAtPoint:(NSPoint)point
 {
+  int howMany = [tab_items count];
+  int i;
+
+  for (i=0;i<howMany;i++) {
+    NSTabViewItem *anItem = [tab_items objectAtIndex:i];
+
+    if(NSPointInRect(point,[anItem _tabRect]))
+      return anItem;
+  }
+
   return nil;
 }
 
-/*
 - (NSView*) hitTest: (NSPoint)aPoint
 {
+  NSTabViewItem *anItem = [self tabViewItemAtPoint:aPoint];
+
+  if (anItem) {
+    if (tab_selected)
+      [tab_selected _setTabState:NSBackgroundTab];
+
+    tab_selected = anItem;
+    [anItem _setTabState:NSSelectedTab];
+  }
+
+  [self setNeedsDisplay:YES];
+
+  return [super hitTest:aPoint];
 }
 
+/*
 - (BOOL) mouse: (NSPoint)aPoint inRect: (NSRect)aRect
 {
 }
