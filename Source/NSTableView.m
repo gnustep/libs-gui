@@ -5951,8 +5951,7 @@ byExtendingSelection: (BOOL)flag
   if (_super_view != nil)
     {
       NSRect columnRect = [self rectOfColumn: columnIndex];
-      NSRect visibleRect = [self convertRect: [_super_view bounds]
-				 toView: self];
+      NSRect visibleRect = [self visibleRect];
       float diff;
 
       // If the row is out on the left, or it is partially visible 

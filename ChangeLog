@@ -1,6 +1,7 @@
 2002-04-02  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSTableView.m ([NSTableView -scrollRowToVisible:]): 
+	([NSTableView -scrollColumnToVisible:]): 
 	Bugfix in getting the visibleRect.
 
 Tue Apr  2 10:28:46 2002  Nicola Pero  <n.pero@mi.flashnet.it>
