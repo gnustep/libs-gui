@@ -896,14 +896,9 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
     {
       if (font != nil)
 	{
-	  CREATE_AUTORELEASE_POOL(pool);
-
 	  [rtfContent addAttribute: NSFontAttributeName value: font 
 		      range: range];
-	  RELEASE(pool);
-	  pool = [NSAutoreleasePool new];
 	  [self rebuildForCharacterRange: range];
-	  RELEASE(pool);
 	}
     } 
 }
