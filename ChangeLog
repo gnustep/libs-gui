@@ -1,5 +1,9 @@
 2002-12-04  Adam Fedor  <fedor@gnu.org>
 
+	* Source/NSPrintOperation.m: Update for change in GSSetLocale.
+
+2002-12-04  Adam Fedor  <fedor@gnu.org>
+
 	* Headers/gnustep/gui/DPSOperators.h (DPSPrintf): Remove inline
 	attribute which caused compiler errors on FreeBSD (patch from Pete
 	French <pete@twisted.org.uk>).
