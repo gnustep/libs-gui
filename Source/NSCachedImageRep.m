@@ -63,12 +63,6 @@
 }
 @end
 
-/* Backend protocol - methods that must be implemented by the backend to
-   complete the class */
-@protocol NXCachedImageRepBackend
-- (BOOL) draw;
-@end
-
 @implementation NSCachedImageRep
 
 // Initializing an NSCachedImageRep 
@@ -80,6 +74,7 @@
   NSWindow	*win;
   NSRect	frame;
 
+  // FIXME: Only create new window when separate is YES
   frame.origin = NSMakePoint(0,0);
   frame.size = aSize;
   win = [[GSCacheW alloc] initWithContentRect: frame
@@ -87,7 +82,9 @@
 				      backing: NSBackingStoreRetained
 					defer: NO];
   self = [self initWithWindow: win rect: frame];
-  [win release];
+  RELEASE(win);
+  [self setAlpha: alpha];
+  [self setBitsPerSample: NSBitsPerSampleFromDepth(aDepth)];
   return self;
 }
 
@@ -95,7 +92,7 @@
 {
   [super init];
 
-  _window = [win retain];
+  _window = RETAIN(win);
   _rect   = rect;
 
   /* Either win or rect must be non-NULL. If rect is empty, we get the
@@ -118,7 +115,7 @@
 					    backing: NSBackingStoreRetained
 					      defer: NO];
   [self setSize: _rect.size];
-  [self setAlpha: NO];		/* FIXME - when we have alpha in windows */
+  [self setAlpha: NO];
   [self setOpaque: YES];
   [self setPixelsHigh: _rect.size.height];
   [self setPixelsWide: _rect.size.width];
@@ -127,7 +124,7 @@
 
 - (void) dealloc
 {
-  [_window release];
+  RELEASE(_window);
   [super dealloc];
 }
 
@@ -145,45 +142,7 @@
 - (BOOL)draw
 {
   PScomposite(NSMinX(_rect), NSMinY(_rect), NSWidth(_rect), NSHeight(_rect),
-	      [_window gState], NSMinX(_rect), NSMinY(_rect),
-	      NSCompositeSourceOver);
-  return YES;
-}
-
-- (BOOL) drawAtPoint: (NSPoint)aPoint
-{
-  NSGraphicsContext *ctxt;
-
-  if (size.width == 0 && size.height == 0)
-    return NO;
-
-  NSDebugLLog(@"NSImage", @"Drawing at point %f %f\n", aPoint.x, aPoint.y);
-  ctxt = GSCurrentContext();
-  if (aPoint.x != 0 || aPoint.y != 0)
-    {
-      if ([[ctxt focusView] isFlipped])
-	aPoint.y -= size.height;
-    }
-  PScomposite(NSMinX(_rect), NSMinY(_rect), NSWidth(_rect), NSHeight(_rect),
-	      [_window gState], aPoint.x, aPoint.y,
-	      NSCompositeSourceOver);
-  return NO;
-}
-
-- (BOOL) drawInRect: (NSRect)aRect
-{
-  NSGraphicsContext *ctxt;
-
-  NSDebugLLog(@"NSImage", @"Drawing in rect (%f %f %f %f)\n", 
-	      NSMinX(aRect), NSMinY(aRect), NSWidth(aRect), NSHeight(aRect));
-  if (size.width == 0 && size.height == 0)
-    return NO;
-
-  ctxt = GSCurrentContext();
-  if ([[ctxt focusView] isFlipped])
-    aRect.origin.y -= NSHeight(aRect);
-  PScomposite(NSMinX(_rect), NSMinY(_rect), NSWidth(_rect), NSHeight(_rect),
-	      [_window gState], NSMinX(aRect), NSMinY(aRect),
+	      [_window gState], 0, 0, 
 	      NSCompositeSourceOver);
   return YES;
 }
@@ -191,11 +150,25 @@
 // NSCoding protocol
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
+  [super encodeWithCoder: aCoder];
+  [aCoder encodeObject: _window];
+  [aCoder encodeRect: _rect];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
+  self = [super initWithCoder: aDecoder];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_window];
+  _rect = [aDecoder decodeRect];
+
   return self;
+}
+
+// NSCopying protocol
+- (id) copyWithZone: (NSZone *)zone
+{
+  // Cached images should not be copied
+  return nil;
 }
 
 @end
