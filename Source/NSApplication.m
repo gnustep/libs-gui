@@ -1947,8 +1947,10 @@ delegate.
       
       if ([item target] == aWindow)
 	{
-	  [_windows_menu removeItem: item];
-	  break;
+	  /*
+	   * If our menu item already exists we need not continue.
+	   */
+	  return;
 	}
     }
 
