@@ -1,3 +1,11 @@
+2002-12-02  Adam Fedor  <fedor@gnu.org>
+
+	* Model/GMAppKit.m, Model/GMArchiver.m, Model/IBClasses.m,
+	Model/IMConnectors.m, Model/IMCustomObject.m, Model/IMLoading.m,
+	Model/Translator.m: Include model headers from gnustep/gui
+	not AppKit.
+	* Model/GNUmakefile: Install headers in gnustep/gui
+
 2002-11-29  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Model/IMConnectors.m: Update ivar setting code.
