@@ -300,6 +300,7 @@ static NSNotificationCenter *nc;
   RELEASE(_notifications);
   RELEASE(_title);
   RELEASE(_items);
+  [_view setMenu: nil];
   RELEASE(_view);
   RELEASE(_aWindow);
   RELEASE(_bWindow);
@@ -312,14 +313,14 @@ static NSNotificationCenter *nc;
 */
 - (id) initWithTitle: (NSString*)aTitle
 {
-  NSView *contentView;
+  NSMenuView *menuRep;
 
   [super init];
 
   // Keep the title.
   ASSIGN(_title, aTitle);
 
-  // Create an array to store out menu items.
+  // Create an array to store our menu items.
   _items = [[NSMutableArray alloc] init];
 
   _changedMessagesEnabled = YES;
@@ -340,11 +341,9 @@ static NSNotificationCenter *nc;
   [_bWindow setLevel: NSPopUpMenuWindowLevel];
 
   // Create a NSMenuView to draw our menu items.
-  _view = [[NSMenuView alloc] initWithFrame: NSZeroRect];
-  [_view setMenu: self];
-
-  contentView = [_aWindow contentView];
-  [contentView addSubview: _view];
+  menuRep = [[NSMenuView alloc] initWithFrame: NSZeroRect];
+  [self setMenuRepresentation: menuRep];
+  RELEASE(menuRep);
 
   /* Set up the notification to start the process of redisplaying
      the menus where the user left them the last time.  
@@ -940,9 +939,18 @@ static NSNotificationCenter *nc;
       return;
     }
 
-  // remove the old representation
+  if (_view == menuRep)
+    {
+      return;
+    }
+
   contentView = [_aWindow contentView];
-  [contentView removeSubview: _view];
+  if (_view != nil)
+    {
+      // remove the old representation
+      [contentView removeSubview: _view];
+      [_view setMenu: nil];
+    }
 
   ASSIGN(_view, menuRep);
   [_view setMenu: self];

@@ -185,12 +185,12 @@ _addLeftBorderOffsetToRect(NSRect aRect)
                     selector: @selector(itemRemoved:)
                         name: NSMenuDidRemoveItemNotification
                       object: _attachedMenu];
+
+      // Force menu view's layout to be recalculated.
+      [self setNeedsSizing: YES];
+      
+      [self update];
     }
-
-  // Force menu view's layout to be recalculated.
-  [self setNeedsSizing: YES];
-
-  [self update];
 }
 
 - (NSMenu*) menu

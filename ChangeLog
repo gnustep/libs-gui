@@ -1,3 +1,12 @@
+2004-09-24  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenuView.m (-setMenu:): Only call update when the new
+	menu is not nil.
+	* Source/NSMenu.m (-setMenuRepresentation:): Unset the menu of the
+	old view. 
+	(-dealloc): Unset the menu of the view. 
+	(-initWithTitle:): Use setMenuRepresentation: to set the view.
+	
 2004-09-24  Adam Fedor  <fedor@gnu.org>
 
 	* Version 0.9.4
