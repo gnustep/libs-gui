@@ -163,7 +163,16 @@
 
 - (NSRect)contentRect
 {
-  return NSZeroRect;
+  NSRect cRect = [self frame];
+
+  cRect.origin.x = 2;
+  cRect.origin.y = 2;
+  cRect.size.height -= 4;
+  cRect.size.width -= 4;
+
+  cRect.size.height -= 21;
+
+  return cRect;
 }
 
 // Drawing.
@@ -330,11 +339,17 @@ tRect.origin.x, tRect.origin.y, tRect.size.width, tRect.size.height);
   NSTabViewItem *anItem = [self tabViewItemAtPoint:aPoint];
 
   if (anItem) {
-    if (tab_selected)
+    if (tab_selected) {
       [tab_selected _setTabState:NSBackgroundTab];
+      if ([tab_selected view])
+	[[tab_selected view] removeFromSuperview];
+    }
 
     tab_selected = anItem;
     [anItem _setTabState:NSSelectedTab];
+    if ([anItem view]) {
+      [self addSubview:[anItem view]];
+    }
   }
 
   [self setNeedsDisplay:YES];

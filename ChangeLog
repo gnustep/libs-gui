@@ -4,6 +4,8 @@
 	in the tabs works wonderfully. Now just need to hook up code to
 	draw the selected tabs view in the tabview rect.
 
+	[Check out nstabview.app in Testing/, you won't regret it, hehe.]
+
 1999-07-9  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Headers/AppKit/NSTabViewItem.h: defined some non-spec methods.
