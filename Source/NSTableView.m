@@ -4278,6 +4278,12 @@ byExtendingSelection: (BOOL)flag
       lastEvent = theEvent;
       while (done != YES)
 	{
+	  /*
+	  Wrap each iteration in an autorelease pool. Otherwise, we end
+	  up allocating huge amounts of objects if the button is held
+	  down for a long time.
+	  */
+	  CREATE_AUTORELEASE_POOL(arp);
 	  BOOL shouldComputeNewSelection = NO;
 	  switch ([lastEvent type])
 	    {
@@ -4470,8 +4476,9 @@ byExtendingSelection: (BOOL)flag
 				 inMode: NSEventTrackingRunLoopMode 
 				 dequeue: YES]; 
 	    }
+	  DESTROY(arp);
 	}
-	    
+
       if (startedPeriodicEvents == YES)
 	[NSEvent stopPeriodicEvents];
 

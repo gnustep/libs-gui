@@ -1,3 +1,9 @@
+2003-03-28 21:08  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSTableView.m (mouseDown:): Wrap each iteration of the mouse
+	tracking loop in an autorelease pool to avoid using huge amounts of
+	memory if the button is held down a long time.
+
 2003-03-28  Serg Stoyan  <stoyan@on.com.ua>
 
 	* Source/NSMenuView.m:
