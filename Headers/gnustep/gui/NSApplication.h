@@ -132,6 +132,12 @@ extern NSString *NSEventTrackingRunLoopMode;
 			   dequeue:(BOOL)flag;
 - (void)postEvent:(NSEvent *)event atStart:(BOOL)flag;
 
+// xxx Not part of OpenStep, should be removed someday
+- (NSEvent *)peekEventMatchingMask:(unsigned int)mask
+			 untilDate:(NSDate *)expiration
+			    inMode:(NSString *)mode
+			   dequeue:(BOOL)flag;
+
 //
 // Sending action messages
 //
@@ -266,6 +272,7 @@ extern NSString *NSEventTrackingRunLoopMode;
 
 // Get next event
 - (NSEvent *)getNextEvent;
+- (NSEvent *)peekNextEvent;
 
 // handle a non-translated event
 - (void)handleNullEvent;

@@ -1,3 +1,11 @@
+Thu Mar 27 09:43:02 1997  GNUstep Development  <gnustep@net-community.com>
+
+	* Headers/gnustep/gui/NSApplication.h (-peekNextEvent): New method.
+	(-peekEventMatchingMask:untilDate:inMode:dequeue:): New method.
+	* Source/NSApplication.m (-peekNextEvent): New method.
+	(-peekEventMatchingMask:untilDate:inMode:dequeue:): New method.
+	* Source/NSControl.m (-setAlignment:): Display if needed.
+
 Thu Mar 20 10:40:51 1997  GNUstep Development  <gnustep@net-community.com>
 
 	* Source/NSControl.m: Call displayIfNeeded after setting the

@@ -496,6 +496,65 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
   return e;
 }
 
+- (NSEvent *)peekEventMatchingMask:(unsigned int)mask
+			 untilDate:(NSDate *)expiration
+			    inMode:(NSString *)mode
+			   dequeue:(BOOL)flag
+{
+  NSEvent *e;
+  BOOL done;
+  int i, j;
+
+  // If the queue isn't empty then check those messages
+  if ([event_queue count])
+    {
+      j = [event_queue count];
+      for (i = j-1;i >= 0; --i)
+	{
+	  e = [event_queue objectAtIndex: i];
+	  if ([self event: e matchMask: mask])
+	    {
+	      [event_queue removeObjectAtIndex: i];
+	      [self setCurrentEvent: e];
+	      return e;
+	    }
+	}
+    }
+
+  // Not in queue so peek for event
+  e = [self peekNextEvent];
+
+  // Check mask
+  if ([self event: e matchMask: mask])
+    {
+      if (e)
+	{
+	  [event_queue removeObject: e];
+	}
+    }
+  else
+    return nil;
+
+  // Unhide the cursor if necessary
+  {
+    NSEventType type;
+
+    // Only if we should unhide when mouse moves
+    if ([NSCursor isHiddenUntilMouseMoves])
+      {
+	// Make sure the event is a mouse event before unhiding
+	type = [e type];
+	if ((type == NSLeftMouseDown) || (type == NSLeftMouseUp)
+	    || (type == NSRightMouseDown) || (type == NSRightMouseUp)
+	    || (type == NSMouseMoved))
+	  [NSCursor unhide];
+      }
+  }
+
+  [self setCurrentEvent: e];
+  return e;
+}
+
 - (void)postEvent:(NSEvent *)event atStart:(BOOL)flag
 {
   if (flag)
@@ -1056,6 +1115,11 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 - (NSEvent *)getNextEvent
 {
   [event_queue addObject: NullEvent];
+  return NullEvent;
+}
+
+- (NSEvent *)peekNextEvent
+{
   return NullEvent;
 }
 

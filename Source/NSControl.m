@@ -260,7 +260,11 @@ NSString *NSControlTextDidChangeNotification = @"NSControlTextDidChangeNotificat
 
 - (void)setAlignment:(NSTextAlignment)mode
 {
-  if (cell) [cell setAlignment:mode];
+  if (cell)
+    {
+      [cell setAlignment:mode];
+      [self displayIfNeeded];
+    }
 }
 
 - (void)setFont:(NSFont *)fontObject
