@@ -5914,9 +5914,8 @@ byExtendingSelection: (BOOL)flag
   if (_super_view != nil)
     {
       NSRect rowRect = [self rectOfRow: rowIndex];
-      NSRect visibleRect = [self convertRect: [_super_view bounds]
-				 toView: self];
-
+      NSRect visibleRect = [self visibleRect];
+      
       // If the row is over the top, or it is partially visible 
       // on top,
       if ((rowRect.origin.y < visibleRect.origin.y))	
