@@ -29,6 +29,7 @@
 
 #include <Foundation/Foundation.h>
 #include <AppKit/NSStringDrawing.h>
+#include <AppKit/NSTextAttachment.h>
 #include <AppKit/AppKit.h>
 #include "GSTextStorage.h"
 
@@ -129,6 +130,7 @@ typedef struct GSTextRunStruct {
   float		width;		// Width of entire run.
   float		height;		// Height of entire run.
   float		baseline;	// Where to draw glyphs.
+  // These fields are for normal glyphs
   NSFont	*font;
   NSColor	*bg;
   NSColor	*fg;
@@ -137,9 +139,31 @@ typedef struct GSTextRunStruct {
   float		base;
   float		kern;
   int		ligature;
+  // Fields for special glyphs
+  id <NSTextAttachmentCell> cell;
+  unsigned charIndex;
+
+  // Forward and backward link
   struct GSTextRunStruct *last;
   struct GSTextRunStruct *next;
 } GSTextRun;
+
+static void
+drawSpecialRun(GSTextRun *run, NSPoint origin, GSDrawInfo *draw)
+{
+  // Currently this is only used for attachments
+  id <NSTextAttachmentCell> cell = run->cell;
+  unsigned charIndex = run->charIndex;
+  NSRect cellFrame = NSMakeRect(origin.x, origin.y, 
+				run->glyphs[0].adv.width,
+				run->glyphs[0].adv.height);
+  NSView *controlView = [draw->ctxt focusView];
+
+  [cell drawWithFrame: cellFrame 
+	       inView: controlView 
+       characterIndex: charIndex
+	layoutManager: nil];
+}
 
 static void
 drawRun(GSTextRun *run, NSPoint origin, GSDrawInfo *draw)
@@ -156,6 +180,13 @@ drawRun(GSTextRun *run, NSPoint origin, GSDrawInfo *draw)
     {
       origin.y += run->base;
     }
+
+  if (run->glyphs[0].glyph == NSControlGlyph)
+    {
+      drawSpecialRun(run, origin, draw);
+      return;
+    }
+
   /*
    * Set current font and color if necessary.
    */
@@ -228,16 +259,27 @@ drawRun(GSTextRun *run, NSPoint origin, GSDrawInfo *draw)
 	}
     }
 
-#if 0
-  /* FIXME: Hack to force DGS to flush the text */
-  DPSrectfill(draw->ctxt, 0, 0, 0.5, 0.5);
-#endif
-
   if (run->underline)
     {
       DPSmoveto(draw->ctxt, origin.x, origin.y);
       DPSlineto(draw->ctxt, origin.x + run->width, origin.y);
     }
+}
+
+static void
+setupSpecialRun(GSTextRun *run, unsigned length, unichar *chars, unsigned pos,
+		NSDictionary *attr)
+{
+  NSTextAttachment *attachment = [attr objectForKey: NSAttachmentAttributeName];
+
+  run->cell = [attachment attachmentCell];
+  run->charIndex = pos;
+  run->glyphs[0].glyph = NSControlGlyph;
+  // We should better call the cellFrameForTextContainer:... method here
+  run->glyphs[0].adv = [run->cell cellSize];
+
+  run->baseline = [run->cell cellBaselineOffset].y;
+  run->height = run->glyphs[0].adv.height;
 }
 
 static void
@@ -263,6 +305,12 @@ setupRun(GSTextRun *run, unsigned length, unichar *chars, unsigned pos,
   run->glyphCount = length;
   run->glyphs = &g->glyphs[g->used];
   g->used += run->glyphCount;
+
+  if (chars[0] == NSAttachmentCharacter)
+    {
+      setupSpecialRun(run, length, chars, pos, attr);
+      return;
+    }
 
   // Get font to be used by characters in run.
   run->font = (NSFont*)[attr objectForKey: NSFontAttributeName];
