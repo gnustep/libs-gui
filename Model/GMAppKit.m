@@ -128,6 +128,15 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 @implementation NSBox (GMArchiverMethods)
 
+/* NSBox is very special because it always has a single subview, which
+   is the contentview, and it overrides addSubview: to add subviews to
+   the contentview.  Make sure we can manage this case properly and
+   portably.  */
+- (NSArray *)subviewsForModel
+{
+    return [NSArray array];
+}
+
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
   [super encodeWithModelArchiver:archiver];
