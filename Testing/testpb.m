@@ -55,21 +55,39 @@ void NSBeep(void)												// dummy define
 int
 main(int argc, char** argv)
 {
-    pbOwner		*owner = [pbOwner new];
-    NSPasteboard	*pb;
-    NSArray		*types;
-    NSData		*d;
+  NSAutoreleasePool *pool = [NSAutoreleasePool new];
+  pbOwner	*owner = [pbOwner new];
+  NSPasteboard	*pb;
+  NSArray	*types;
+  NSData	*d;
 
-    [NSObject enableDoubleReleaseCheck: YES];
+  [NSObject enableDoubleReleaseCheck: YES];
 
-    types = [NSArray arrayWithObjects:
+  types = [NSArray arrayWithObjects:
 	NSStringPboardType, NSFileContentsPboardType, nil];
-    pb = [NSPasteboard generalPasteboard];
-    [pb declareTypes: types owner: owner];
-    [pb setString: @"This is a test" forType: NSStringPboardType];
-    d = [pb dataForType: NSFileContentsPboardType];
-    printf("%.*s\n", [d length], [d bytes]);
-    exit(0);
+  pb = [NSPasteboard generalPasteboard];
+  [pb declareTypes: types owner: owner];
+  [pb setString: @"This is a test" forType: NSStringPboardType];
+  d = [pb dataForType: NSFileContentsPboardType];
+  printf("%.*s\n", [d length], [d bytes]);
+
+  pb = [NSPasteboard pasteboardWithUniqueName];
+  types = [NSArray arrayWithObjects:
+	NSStringPboardType, nil];
+  [pb declareTypes: types owner: owner];
+  [pb setString: @"a lowercase test string" forType: NSStringPboardType];
+  if (NSPerformService(@"To upper", pb) == NO)
+    {
+      printf("Failed to perform 'To upper' service\n");
+    }
+  else
+    {
+      NSString	*result = [pb stringForType: NSStringPboardType];
+
+      printf("To upper - result - '%s'\n", [result cString]);
+    }
+  [pool release];
+  exit(0);
 }
 
 
