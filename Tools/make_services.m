@@ -22,6 +22,7 @@
    */
 
 #include	<Foundation/NSArray.h>
+#include	<Foundation/NSBundle.h>
 #include	<Foundation/NSDictionary.h>
 #include	<Foundation/NSFileManager.h>
 #include	<Foundation/NSString.h>
@@ -39,12 +40,6 @@ static NSMutableDictionary *validateService(NSDictionary *service, NSString* pat
 
 static NSString		*appsName = @".GNUstepAppList";
 static NSString		*cacheName = @".GNUstepServices";
-/*
- *	First try to scan GNUstep specific file - if that fails, try the
- *	standard OpenStep file name - We may have an OPENSTEP/MacOS-X app
- */
-static NSString		*infoLoc0 = @"Resources/Info-gnustep.plist";
-static NSString		*infoLoc1 = @"Resources/Info.plist";
 
 static	BOOL verbose = NO;
 static	NSMutableDictionary	*serviceMap;
@@ -418,8 +413,10 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
 	  newPath = [path stringByAppendingPathComponent: name];
 	  if ([mgr fileExistsAtPath: newPath isDirectory: &isDir] && isDir)
 	    {
-	      NSString	                *oldPath;
-	      NSString	                *infPath;
+	      NSString		*oldPath;
+	      NSString		*infPath;
+	      NSBundle		*bundle;
+	      NSDictionary	*info;
 
 	      /*
 	       *	All application paths are noted by name
@@ -441,41 +438,32 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
                   continue;
                 }
 
-	      infPath = [newPath stringByAppendingPathComponent: infoLoc0];
-	      if ([mgr fileExistsAtPath: infPath isDirectory: &isDir] == NO)
-		infPath = [newPath stringByAppendingPathComponent: infoLoc1];
-	      else if (isDir == YES)
-		NSLog(@"Info (%@) is a directory!\n", infPath);
-	      if ([mgr fileExistsAtPath: infPath isDirectory: &isDir] && !isDir)
+	      bundle = [NSBundle bundleWithPath: newPath];
+	      info = [bundle infoDictionary];
+	      if (info)
 		{
-		  NSDictionary	*info;
+		  id	obj;
 
-		  info = [NSDictionary dictionaryWithContentsOfFile: infPath];
-		  if (info)
+		  /*
+		   * Load and validate any services definitions.
+		   */
+		  obj = [info objectForKey: @"NSServices"];
+		  if (obj)
 		    {
-		      id	obj;
+		      NSMutableArray	*entry;
 
-                      /*
-                       * Load and validate any services definitions.
-                       */
-		      obj = [info objectForKey: @"NSServices"];
-		      if (obj)
+		      entry = validateEntry(obj, newPath);
+		      if (entry)
 			{
-			  NSMutableArray	*entry;
-
-			  entry = validateEntry(obj, newPath);
-			  if (entry)
-			    {
-			      [services setObject: entry forKey: newPath];
-			    }
+			  [services setObject: entry forKey: newPath];
 			}
+		    }
 
-                      addExtensionsForApplication(info, name);
-		    }
-		  else
-		    {
-		      NSLog(@"bad app info - %@\n", infPath);
-		    }
+		  addExtensionsForApplication(info, name);
+		}
+	      else
+		{
+		  NSLog(@"bad app info - %@\n", newPath);
 		}
 	    }
 	  else
@@ -488,41 +476,33 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
 	  newPath = [path stringByAppendingPathComponent: name];
 	  if ([mgr fileExistsAtPath: newPath isDirectory: &isDir] && isDir)
 	    {
-	      NSString	*infPath;
+	      NSBundle		*bundle;
+	      NSDictionary	*info;
 
-	      infPath = [newPath stringByAppendingPathComponent: infoLoc0];
-	      if ([mgr fileExistsAtPath: infPath isDirectory: &isDir] == NO)
-		infPath = [newPath stringByAppendingPathComponent: infoLoc1];
-	      else if (isDir == YES)
-		NSLog(@"Info (%@) is a directory!\n", infPath);
-	      if ([mgr fileExistsAtPath: infPath isDirectory: &isDir] && !isDir)
+	      bundle = [NSBundle bundleWithPath: newPath];
+	      info = [bundle infoDictionary];
+	      if (info)
 		{
-		  NSDictionary	*info;
+		  id	svcs = [info objectForKey: @"NSServices"];
 
-		  info = [NSDictionary dictionaryWithContentsOfFile: infPath];
-		  if (info)
+		  if (svcs)
 		    {
-		      id	svcs = [info objectForKey: @"NSServices"];
+		      NSMutableArray	*entry;
 
-		      if (svcs)
+		      entry = validateEntry(svcs, newPath);
+		      if (entry)
 			{
-			  NSMutableArray	*entry;
-
-			  entry = validateEntry(svcs, newPath);
-			  if (entry)
-			    {
-			      [services setObject: entry forKey: newPath];
-			    }
-			}
-		      else
-			{
-			  NSLog(@"missing info - %@\n", infPath);
+			  [services setObject: entry forKey: newPath];
 			}
 		    }
 		  else
 		    {
-		      NSLog(@"bad service info - %@\n", infPath);
+		      NSLog(@"missing info - %@\n", newPath);
 		    }
+		}
+	      else
+		{
+		  NSLog(@"bad service info - %@\n", newPath);
 		}
 	    }
 	  else
