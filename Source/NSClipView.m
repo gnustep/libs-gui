@@ -391,6 +391,8 @@
        */
       [self setNeedsDisplay: YES];
     }
+
+  [_super_view reflectScrolledClipView: self];
 }
 
 - (void) scaleUnitSquareToSize: (NSSize)newUnitSize
