@@ -1,3 +1,9 @@
+2002-10-28  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSTextField.m: ([-dealloc]) morph self to be an NSTextView
+	so that when dealloc is re-called, any subclass dealloc methods
+	don't get re-called.
+
 2002-10-27  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSMenuView.m ([NSMenuView -trackWithEvent:]): 

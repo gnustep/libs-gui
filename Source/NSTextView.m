@@ -358,17 +358,21 @@ static NSNotificationCenter *nc;
     {
       if (_textStorage != nil)
 	{
-	  /* This releases all the text objects (us included) which means
-	   * this method will be called again ... so this time we just return.
+	  /*
+	   * Destroying our _textStorage releases all the text objects
+	   * (us included) which means this method will be called again ...
+	   * so this time round we should just return, and the rest of
+	   * the deallocation can be done on the next call to dealloc.
+	   *
+	   * However, the dealloc methods of any subclasses should
+	   * already have been called before this method is called,
+	   * and those subclasses don't know how to cope with being
+	   * deallocated more than once ... to deal with that we
+	   * set the isa pointer so that the subclass dealloc methods
+	   * won't get called again.
 	   */
+	  isa = [NSTextView class];
 	  DESTROY (_textStorage);
-
-	  /* When the rest of the text network is released, we'll be
-	   * released again and be deallocated for real.  That will
-	   * likely happen during the DESTROY of the _textStorage, or
-	   * later if parts of the text network are maybe retained
-	   * elsewhere (in autorelease pools etc) for slightly longer.
-	   */
 	  return;
 	}
     }
