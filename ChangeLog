@@ -1,3 +1,11 @@
+2000-09-03  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSTypesetter.h: New file.
+	* Source/NSSimpleHorizontalTypesetter.m: As above.
+	Added some basic implementation.
+	* Source/NSTextView.m
+	Use more implementation from super to make this class temporary working
+	
 Mon Sep  4 03:53:06 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSButton.m ([-keyDown:]): Updated for fix in generation
