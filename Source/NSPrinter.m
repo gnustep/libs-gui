@@ -283,7 +283,7 @@ andOptionTranslation:(NSString *)optionTranslation
   if (!printerInfo)
     {
       [NSException raise:NSGenericException
-		   format:@"Could not find printer named %s", [name cString]];
+		   format:@"Could not find printer named %@", name];
       // NOT REACHED
     }
   // Create it
@@ -292,18 +292,18 @@ andOptionTranslation:(NSString *)optionTranslation
   if (path == nil || [path length] == 0)
     {
       [NSException raise:NSGenericException
-		   format:@"Could not find PPD file %s.ppd", 
-		   [[printerInfo objectAtIndex:0] cString]];
+		   format:@"Could not find PPD file %@.ppd",
+		   [printerInfo objectAtIndex:0]];
       // NOT REACHED
     }
-  printer = [[[self alloc]
+  printer = AUTORELEASE([[self alloc]
 	       initWithPPD:[NSString stringWithContentsOfFile:path]
 	       withName:name
 	       withType:[printerInfo objectAtIndex:0]
 	       withHost:[printerInfo objectAtIndex:1]
 	       withNote:[printerInfo objectAtIndex:2]
 	       fromFile:[printerInfo objectAtIndex:0]
-	       isReal:YES] autorelease];
+	       isReal:YES]);
   // Once created, put it in the map table
   NSMapInsert(nameMap, name, printer);
   return printer;
@@ -326,14 +326,13 @@ andOptionTranslation:(NSString *)optionTranslation
   if (path == nil || [path length] == 0)
     {
       [NSException raise:NSGenericException
-		   format:@"Could not find PPD file %s.ppd", 
-		   [type cString]];
+		   format:@"Could not find PPD file %@.ppd", type];
       // NOT REACHED
     }
-  printer = [[[self alloc]
+  printer = AUTORELEASE([[self alloc]
 	       initWithPPD:[NSString stringWithContentsOfFile:path]
 	       withName:type withType:type withHost:@"" withNote:@""
-	       fromFile:path isReal:NO] autorelease];
+	       fromFile:path isReal:NO]);
   // Once created, put it in the hash table
   NSMapInsert(typeMap, type, printer);
   return printer;
@@ -360,7 +359,7 @@ andOptionTranslation:(NSString *)optionTranslation
   if (printerTypesAvailable)
     return printerTypesAvailable;
 
-  printers = [[NSMutableArray array] retain];
+  printers = RETAIN([NSMutableArray array]);
   subpool = [[NSAutoreleasePool alloc] init];
 
   pathEnum = [NSSearchPathForDirectoriesInDomains(GSLibrariesDirectory,
@@ -379,7 +378,7 @@ andOptionTranslation:(NSString *)optionTranslation
           [printers addObject:[path substringToIndex:[path length]-4]];
         }
     }
-  [subpool release];
+  RELEASE(subpool);
 
   printerTypesAvailable = printers;
   return printers;
@@ -394,19 +393,19 @@ andOptionTranslation:(NSString *)optionTranslation
 - (void)dealloc
 {
   // Remove object from the appropriate table
-  if (isRealPrinter)
-    NSMapRemove(nameMap, printerName);
+  if (_isRealPrinter)
+    NSMapRemove(nameMap, _printerName);
   else
-    NSMapRemove(typeMap, printerType);
-  [printerHost release];
-  [printerName release];
-  [printerNote release];
-  [printerType release];
-  [PPD release];
-  [PPDOptionTranslation release];
-  [PPDArgumentTranslation release];
-  [PPDOrderDependency release];
-  [PPDUIConstraints release];
+    NSMapRemove(typeMap, _printerType);
+  RELEASE(_printerHost);
+  RELEASE(_printerName);
+  RELEASE(_printerNote);
+  RELEASE(_printerType);
+  RELEASE(_PPD);
+  RELEASE(_PPDOptionTranslation);
+  RELEASE(_PPDArgumentTranslation);
+  RELEASE(_PPDOrderDependency);
+  RELEASE(_PPDUIConstraints);
   [super dealloc];
 }
 
@@ -415,22 +414,22 @@ andOptionTranslation:(NSString *)optionTranslation
 //
 - (NSString *)host
 {
-  return printerHost;
+  return _printerHost;
 }
 
 - (NSString *)name
 {
-  return printerName;
+  return _printerName;
 }
 
 - (NSString *)note
 {
-  return printerNote;
+  return _printerNote;
 }
 
 - (NSString *)type
 {
-  return printerType;
+  return _printerType;
 }
 
 //
@@ -443,12 +442,12 @@ andOptionTranslation:(NSString *)optionTranslation
   NSScanner *protocols;
   NSCharacterSet *whitespace;
 
-  if (cacheAcceptsBinary != -1)
-    return cacheAcceptsBinary;
+  if (_cacheAcceptsBinary != -1)
+    return _cacheAcceptsBinary;
   result = [self stringForKey:@"Protocols" inTable:@"PPD"];
   if (!result)
     {
-      cacheAcceptsBinary = NO;
+      _cacheAcceptsBinary = NO;
       return NO;
     }
   protocols = [NSScanner scannerWithString:result];
@@ -458,27 +457,25 @@ andOptionTranslation:(NSString *)optionTranslation
       [protocols scanUpToCharactersFromSet:whitespace intoString:&result];
       if ([result isEqual:@"BCP"])
 	{
-	  cacheAcceptsBinary = YES;
+	  _cacheAcceptsBinary = YES;
 	  return YES;
 	}
     }
-  cacheAcceptsBinary = NO;
+  _cacheAcceptsBinary = NO;
   return NO;    
 }
 
 - (NSRect)imageRectForPaper:(NSString *)paperName
 {
   return [self rectForKey:[NSString 
-			    stringWithFormat:@"ImageableArea/%s",
-			    [paperName cString]]
+			    stringWithFormat:@"ImageableArea/%@", paperName]
 	       inTable:@"PPD"];
 }
 
 - (NSSize)pageSizeForPaper:(NSString *)paperName
 {
   return [self sizeForKey:[NSString 
-			    stringWithFormat:@"PaperDimension/%s",
-			    [paperName cString]]
+			    stringWithFormat:@"PaperDimension/%@", paperName]
 	       inTable:@"PPD"];
 }
 
@@ -489,7 +486,7 @@ andOptionTranslation:(NSString *)optionTranslation
 
 - (BOOL)isFontAvailable:(NSString *)fontName
 {
-  return [self isKey:[NSString stringWithFormat:@"Font/%s", [fontName cString]]
+  return [self isKey:[NSString stringWithFormat:@"Font/%@", fontName]
 	       inTable:@"PPD"];
 }
 
@@ -502,20 +499,20 @@ andOptionTranslation:(NSString *)optionTranslation
 {
   // FIXME: Is this what is needed? I'm not sure how this is worked out.
   NSString *result;
-  if (cacheOutputOrder != -1)
-    return cacheOutputOrder;
+  if (_cacheOutputOrder != -1)
+    return _cacheOutputOrder;
   result = [self stringForKey:@"DefaultOutputOrder" inTable:@"PPD"];
   if (!result)
     {
-      cacheOutputOrder = NO;
+      _cacheOutputOrder = NO;
       return NO;
     }
   if ([result isEqual:@"Reverse"])
     {
-      cacheOutputOrder = YES;
+      _cacheOutputOrder = YES;
       return YES;
     }
-  cacheOutputOrder = NO;
+  _cacheOutputOrder = NO;
   return NO;
 }
 
@@ -707,19 +704,19 @@ andOptionTranslation:(NSString *)optionTranslation
 
   // Select correct table
   if ([table isEqual:@"PPD"])
-    checkMe = PPD;
+    checkMe = _PPD;
   else if ([table isEqual:@"PPDOptionTranslation"])
-    checkMe = PPDOptionTranslation;
+    checkMe = _PPDOptionTranslation;
   else if ([table isEqual:@"PPDArgumentTranslation"])
-    checkMe = PPDArgumentTranslation;
+    checkMe = _PPDArgumentTranslation;
   else if ([table isEqual:@"PPDOrderDependency"])
-    checkMe = PPDOrderDependency;
+    checkMe = _PPDOrderDependency;
   else if ([table isEqual:@"PPDUIConstraints"])
-    checkMe = PPDUIConstraints;
+    checkMe = _PPDUIConstraints;
   else
     {
       [NSException raise:NSGenericException
-         format:@"Could not find PPD table %s", [table cString]];
+         format:@"Could not find PPD table %@", table];
       // NOT REACHED
     }
   // And check it
@@ -738,19 +735,19 @@ andOptionTranslation:(NSString *)optionTranslation
 
   // Select correct Table
   if ([table isEqual:@"PPD"])
-    checkMe = PPD;
+    checkMe = _PPD;
   else if ([table isEqual:@"PPDOptionTranslation"])
-    checkMe = PPDOptionTranslation;
+    checkMe = _PPDOptionTranslation;
   else if ([table isEqual:@"PPDArgumentTranslation"])
-    checkMe = PPDArgumentTranslation;
+    checkMe = _PPDArgumentTranslation;
   else if ([table isEqual:@"PPDOrderDependency"])
-    checkMe = PPDOrderDependency;
+    checkMe = _PPDOrderDependency;
   else if ([table isEqual:@"PPDUIConstraints"])
-    checkMe = PPDUIConstraints;
+    checkMe = _PPDUIConstraints;
   else
     {
       [NSException raise:NSGenericException
-         format:@"Could not find PPD table %s", [table cString]];
+         format:@"Could not find PPD table %@", table];
       // NOT REACHED
     }
   // And check it
@@ -773,15 +770,15 @@ andOptionTranslation:(NSString *)optionTranslation
   NSMutableDictionary *checkMe;
   // Select correct table
   if ([table isEqual:@"PPD"])
-    checkMe = PPD;
+    checkMe = _PPD;
   else if ([table isEqual:@"PPDOptionTranslation"])
-    checkMe = PPDOptionTranslation;
+    checkMe = _PPDOptionTranslation;
   else if ([table isEqual:@"PPDArgumentTranslation"])
-    checkMe = PPDArgumentTranslation;
+    checkMe = _PPDArgumentTranslation;
   else if ([table isEqual:@"PPDOrderDependency"])
-    checkMe = PPDOrderDependency;
+    checkMe = _PPDOrderDependency;
   else if ([table isEqual:@"PPDUIConstraints"])
-    checkMe = PPDUIConstraints;
+    checkMe = _PPDUIConstraints;
   else
     return NSPrinterTableNotFound;
   if (checkMe)
@@ -798,19 +795,19 @@ andOptionTranslation:(NSString *)optionTranslation
 
   // Select correct table
   if ([table isEqual:@"PPD"])
-    checkMe = PPD;
+    checkMe = _PPD;
   else if ([table isEqual:@"PPDOptionTranslation"])
-    checkMe = PPDOptionTranslation;
+    checkMe = _PPDOptionTranslation;
   else if ([table isEqual:@"PPDArgumentTranslation"])
-    checkMe = PPDArgumentTranslation;
+    checkMe = _PPDArgumentTranslation;
   else if ([table isEqual:@"PPDOrderDependency"])
-    checkMe = PPDOrderDependency;
+    checkMe = _PPDOrderDependency;
   else if ([table isEqual:@"PPDUIConstraints"])
-    checkMe = PPDUIConstraints;
+    checkMe = _PPDUIConstraints;
   else
     {
       [NSException raise:NSGenericException
-         format:@"Could not find PPD table %s", [table cString]];
+         format:@"Could not find PPD table %@", table];
       // NOT REACHED
     }
   // And check it
@@ -828,40 +825,40 @@ andOptionTranslation:(NSString *)optionTranslation
 {
   //  [super encodeWithCoder:aCoder];
   
-  [aCoder encodeObject: printerHost];
-  [aCoder encodeObject: printerName];
-  [aCoder encodeObject: printerNote];
-  [aCoder encodeObject: printerType];
+  [aCoder encodeObject: _printerHost];
+  [aCoder encodeObject: _printerName];
+  [aCoder encodeObject: _printerNote];
+  [aCoder encodeObject: _printerType];
 
-  [aCoder encodeValueOfObjCType: @encode(int) at: &cacheAcceptsBinary];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &cacheOutputOrder];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &isRealPrinter];
+  [aCoder encodeValueOfObjCType: @encode(int) at: &_cacheAcceptsBinary];
+  [aCoder encodeValueOfObjCType: @encode(int) at: &_cacheOutputOrder];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isRealPrinter];
 
-  [aCoder encodeObject: PPD];
-  [aCoder encodeObject: PPDOptionTranslation];
-  [aCoder encodeObject: PPDArgumentTranslation];
-  [aCoder encodeObject: PPDOrderDependency];
-  [aCoder encodeObject: PPDUIConstraints];
+  [aCoder encodeObject: _PPD];
+  [aCoder encodeObject: _PPDOptionTranslation];
+  [aCoder encodeObject: _PPDArgumentTranslation];
+  [aCoder encodeObject: _PPDOrderDependency];
+  [aCoder encodeObject: _PPDUIConstraints];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   //  self = [super initWithCoder:aDecoder];
     
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &printerHost];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &printerName];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &printerNote];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &printerType];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_printerHost];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_printerName];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_printerNote];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_printerType];
 
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &cacheAcceptsBinary];
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &cacheOutputOrder];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &isRealPrinter];
+  [aDecoder decodeValueOfObjCType: @encode(int) at: &_cacheAcceptsBinary];
+  [aDecoder decodeValueOfObjCType: @encode(int) at: &_cacheOutputOrder];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isRealPrinter];
 
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &PPD];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &PPDOptionTranslation];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &PPDArgumentTranslation];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &PPDOrderDependency];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &PPDUIConstraints];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_PPD];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_PPDOptionTranslation];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_PPDArgumentTranslation];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_PPDOrderDependency];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_PPDUIConstraints];
 
   return self;
 }
@@ -891,12 +888,12 @@ andOptionTranslation:(NSString *)optionTranslation
   if (path == nil || [path length] == 0)
     {
       [NSException raise:NSGenericException
-		   format:@"Could not find index of printers, file %s",
-		   [NSPrinter_INDEXFILE cString]];
+		   format:@"Could not find index of printers, file %@",
+		   NSPrinter_INDEXFILE];
       // NOT REACHED
     }
   // And create the name dictionary, loading it
-  nameDict = [[NSDictionary dictionaryWithContentsOfFile:path] retain];
+  nameDict = RETAIN([NSDictionary dictionaryWithContentsOfFile:path]);
   return self;
 }
 
@@ -917,17 +914,17 @@ andOptionTranslation:(NSString *)optionTranslation
   NSMutableArray *valArray;
 
   // Initialise instance variables
-  printerName = [name retain];
-  printerType = [type retain];
-  printerHost = [host retain];
-  printerNote = [note retain];
-  cacheAcceptsBinary = cacheOutputOrder = -1;
-  isRealPrinter = real;
-  PPD = [[NSMutableDictionary dictionary] retain];
-  PPDOptionTranslation = [[NSMutableDictionary dictionary] retain];
-  PPDArgumentTranslation = [[NSMutableDictionary dictionary] retain];
-  PPDOrderDependency = [[NSMutableDictionary dictionary] retain];
-  PPDUIConstraints = [[NSMutableDictionary dictionary] retain];
+  _printerName = RETAIN(name);
+  _printerType = RETAIN(type);
+  _printerHost = RETAIN(host);
+  _printerNote = RETAIN(note);
+  _cacheAcceptsBinary = _cacheOutputOrder = -1;
+  _isRealPrinter = real;
+  _PPD = RETAIN([NSMutableDictionary dictionary]);
+  _PPDOptionTranslation = RETAIN([NSMutableDictionary dictionary]);
+  _PPDArgumentTranslation = RETAIN([NSMutableDictionary dictionary]);
+  _PPDOrderDependency = RETAIN([NSMutableDictionary dictionary]);
+  _PPDUIConstraints = RETAIN([NSMutableDictionary dictionary]);
   // Create a temporary autorelease pool, as many temporary objects are used
   subpool = [[NSAutoreleasePool alloc] init];
   // Create character sets used during scanning
@@ -963,7 +960,7 @@ andOptionTranslation:(NSString *)optionTranslation
   // And scan the PPD itself
   [self loadPPD:PPDstring inclusionNum:0];
   // Search the PPD dictionary for symbolvalues, and substitute them.
-  objEnum = [PPD objectEnumerator];
+  objEnum = [_PPD objectEnumerator];
   while ((valArray = [objEnum nextObject]))
     {
       NSString *oldValue;
@@ -983,9 +980,8 @@ andOptionTranslation:(NSString *)optionTranslation
 		{
 		  [NSException
 		    raise:NSPPDParseException
-		    format:@"Unknown symbol value, ^%s in PPD file %s.ppd",
-		    [oldValue cString],
-		    [PPDFileName cString]];
+		    format:@"Unknown symbol value, ^%@ in PPD file %@.ppd",
+		    oldValue, PPDFileName];
 		  // NOT REACHED
 		}
 	      [valArray replaceObjectAtIndex:i withObject:newValue];
@@ -1021,16 +1017,15 @@ andOptionTranslation:(NSString *)optionTranslation
 		{
 		  [NSException
 		    raise:NSPPDParseException
-		    format:@"Required keyword *%s not found in PPD file %s.ppd",
-		    [checkVal cString],
-		    [PPDFileName cString]];
+		    format:@"Required keyword *%@ not found in PPD file %@.ppd",
+		    checkVal, PPDFileName];
 		  // NOT REACHED
 		}
     }
 #endif
 
   // Release the local autoreleasePool
-  [subpool release];
+  RELEASE(subpool);
   return self;
 }
 
@@ -1056,8 +1051,8 @@ inclusionNum:(int)includeNum
       if (![PPDdata scanString:@"*" intoString:NULL])
 	{
 	  [NSException raise:NSPPDParseException
-		       format:@"Line not starting * in PPD file %s.ppd",
-		       [PPDFileName cString]];
+		       format:@"Line not starting * in PPD file %@.ppd",
+		       PPDFileName];
 	  // NOT REACHED
 	}
       // Skip lines starting '*%', '*End', '*SymbolLength', or '*SymbolEnd'
@@ -1094,8 +1089,8 @@ inclusionNum:(int)includeNum
 	  if (path == nil || [path length] == 0)
 	    {
 	      [NSException raise:NSPPDIncludeNotFoundException
-			   format:@"Could not find included PPD file %s", 
-			   [fileName cString]];
+			   format:@"Could not find included PPD file %@", 
+			   fileName];
 	      // NOT REACHED
 	    }
 	  includeNum++;
@@ -1116,8 +1111,8 @@ inclusionNum:(int)includeNum
 	    {
 	      [NSException
 		raise:NSPPDParseException
-		format:@"Badly formatted *SymbolValue in PPD file %s.ppd",
-		  [PPDFileName cString]];
+		format:@"Badly formatted *SymbolValue in PPD file %@.ppd",
+		  PPDFileName];
 	      // NOT REACHED
 	    }	    
 	  [PPDdata scanUpToString:@":" intoString:&symbolName];
@@ -1147,8 +1142,8 @@ inclusionNum:(int)includeNum
   if ([PPDdata scanCharactersFromSet:newlineSet intoString:NULL])
     {
       [NSException raise:NSPPDParseException
-        format:@"Keyword has optional keyword but no value in PPD file %s.ppd",
-		   [PPDFileName cString]];
+        format:@"Keyword has optional keyword but no value in PPD file %@.ppd",
+		   PPDFileName];
       // NOT REACHED
     }
   if ([PPDdata scanString:@"/" intoString:NULL])
@@ -1196,8 +1191,8 @@ inclusionNum:(int)includeNum
   if (optionKeyword)
     {
       NSString *mainAndOptionKeyword=[mainKeyword
-				       stringByAppendingFormat:@"/%s",
-				       [optionKeyword cString]];
+				       stringByAppendingFormat:@"/%@",
+				       optionKeyword];
       if ([self isKey:mainAndOptionKeyword inTable:@"PPD"])
 	return self;
       [self addValue:value
@@ -1211,12 +1206,12 @@ inclusionNum:(int)includeNum
       // option keywords.
       // This is done by making the first item in the array an empty
       // string, which will be skipped by stringListForKey:, if necessary
-      if (![PPD objectForKey:mainKeyword])
+      if (![_PPD objectForKey:mainKeyword])
 	{
-	  [self addString:@"" forKey:mainKeyword inTable:PPD];
-	  [self addString:@"" forKey:mainKeyword inTable:PPDOptionTranslation];
+	  [self addString:@"" forKey:mainKeyword inTable:_PPD];
+	  [self addString:@"" forKey:mainKeyword inTable:_PPDOptionTranslation];
 	  [self addString:@"" forKey:mainKeyword 
-		inTable:PPDArgumentTranslation];
+		inTable:_PPDArgumentTranslation];
 	}
       [self addValue:optionKeyword
 	    andValueTranslation:optionKeyword
@@ -1246,8 +1241,8 @@ inclusionNum:(int)includeNum
   if (![constraint scanString:@":" intoString:NULL])
     {
       [NSException raise:NSPPDParseException
-	format:@"UIConstraints has option keyword in PPDFileName %s.ppd",
-		   [PPDFileName cString]];
+	format:@"UIConstraints has option keyword in PPDFileName %@.ppd",
+		   PPDFileName];
       // NOT REACHED
     }
   // Skip the '*'
@@ -1277,13 +1272,13 @@ inclusionNum:(int)includeNum
     }
   // Add to table
   if (optionKey1)
-    mainKey1 = [mainKey1 stringByAppendingFormat:@"/%s",[optionKey1 cString]];
+    mainKey1 = [mainKey1 stringByAppendingFormat:@"/%@", optionKey1];
   [self addString:mainKey2
 	forKey:mainKey1
-	inTable:PPDUIConstraints];
+	inTable:_PPDUIConstraints];
   [self addString:optionKey2
 	forKey:mainKey1
-	inTable:PPDUIConstraints];
+	inTable:_PPDUIConstraints];
   return self;
 }
 
@@ -1297,8 +1292,8 @@ inclusionNum:(int)includeNum
   if (![dependency scanString:@":" intoString:NULL])
     {
       [NSException raise:NSPPDParseException
-	format:@"OrderDependency has option keyword in PPD file %s.ppd",
-		   [PPDFileName cString]];
+	format:@"OrderDependency has option keyword in PPD file %@.ppd",
+		   PPDFileName];
       // NOT REACHED
     }
   [dependency scanUpToCharactersFromSet:[NSCharacterSet whitespaceCharacterSet]
@@ -1320,10 +1315,9 @@ inclusionNum:(int)includeNum
   [dependency scanCharactersFromSet:newlineSet intoString:NULL];
   // Add to table
   if (optionKeyword)
-    keyword = [keyword stringByAppendingFormat:@"/%s",
-		       [optionKeyword cString]];
-  [self addString:realValue forKey:keyword inTable:PPDOrderDependency];
-  [self addString:section forKey:keyword inTable:PPDOrderDependency];
+    keyword = [keyword stringByAppendingFormat:@"/%s", optionKeyword];
+  [self addString:realValue forKey:keyword inTable:_PPDOrderDependency];
+  [self addString:section forKey:keyword inTable:_PPDOrderDependency];
   return self;
 }
 
@@ -1335,13 +1329,13 @@ inclusionNum:(int)includeNum
 andOptionTranslation:(NSString *)optionTranslation
               forKey:(NSString *)key
 {
-  [self addString:value forKey:key inTable:PPD];
+  [self addString:value forKey:key inTable:_PPD];
   if (valueTranslation)
     [self addString:valueTranslation forKey:key
-	  inTable:PPDArgumentTranslation];
+	  inTable:_PPDArgumentTranslation];
   if (optionTranslation)
     [self addString:optionTranslation forKey:key
-	  inTable:PPDOptionTranslation];
+	  inTable:_PPDOptionTranslation];
   return self;
 }
 
