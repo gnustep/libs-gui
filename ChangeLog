@@ -1,3 +1,13 @@
+2004-07-08  Serg Stoyan <stoyan255@ukr.net>
+
+	* Images/common_ArrowDownH.tiff: added.
+	* Images/common_ArrowLeftH.tiff: added.
+	* Images/common_ArrowRightH.tiff: added.
+	* Images/common_ArrowUpH.tiff: added.
+	
+	* Source/NSScroller.m: (drawParts): Use added images.
+	Cells now highlights also by NSContentsCellMask.
+	
 2004-07-07  Quentin Mathe <qmathe@club-internet.fr>
         
 	* Source/GSToolbar.m: Fixed several segmentation faults which could
