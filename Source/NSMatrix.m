@@ -47,9 +47,6 @@
 
 
 
-/* Define the following symbol when NSView will support flipped views */
-#define HAS_FLIPPED_VIEWS 1
-
 #ifdef MIN
 # undef MIN
 #endif
@@ -79,6 +76,8 @@
 #define POINT_FROM_INDEX(index) \
     ({MPoint point = { index % numCols, index / numCols }; point; })
 
+#define INDEX_FROM_COORDS(x,y) \
+    (y * numCols + x)
 #define INDEX_FROM_POINT(point) \
     (point.y * numCols + point.x)
 
@@ -259,25 +258,10 @@ static inline MPoint MakePoint (int x, int y)
 }
 
 @interface NSMatrix (PrivateMethods)
-
-/* Returns by reference the row and column of cell that is above or below or
-   to the left or to the right of point. `point' is in the matrix coordinates.
-   Returns NO if the point is outside the bounds of matrix, YES otherwise.
- */
-- (BOOL) _getRow: (int*)row
- 	  column: (int*)column
-        forPoint: (NSPoint)point
-	   above: (BOOL)aboveRequired
-	   right: (BOOL)rightRequired
-  isBetweenCells: (BOOL*)isBetweenCells;
-- (void) _selectRectUsingAnchor: (MPoint)anchor
-			   last: (MPoint)last
-		        current: (MPoint)current;
-- (void) _setState: (int)state inRect: (MRect)rect;
-- (void) _selectContinuousUsingAnchor: (MPoint)anchor
-			         last: (MPoint)last
-			      current: (MPoint)current;
-- (void) _setState: (int)state startIndex: (int)start endIndex: (int)end;
+- (void) _setState: (int)state
+	 highlight: (BOOL)highlight
+	startIndex: (int)start
+	  endIndex: (int)end;
 @end
 
 enum {
@@ -529,11 +513,10 @@ static int mouseDownFlags = 0;
   NSRect rect;
 
   rect.origin.x = column * (cellSize.width + intercell.width);
-#if HAS_FLIPPED_VIEWS
-  rect.origin.y = row * (cellSize.height + intercell.height);
-#else
-  rect.origin.y = (numRows - row - 1) * (cellSize.height + intercell.height);
-#endif
+  if (_rFlags.flipped_view)
+    rect.origin.y = row * (cellSize.height + intercell.height);
+  else
+    rect.origin.y = (numRows - row - 1) * (cellSize.height + intercell.height);
   rect.size = cellSize;
   return rect;
 }
@@ -601,7 +584,7 @@ static int mouseDownFlags = 0;
        when a lower number of cells is given. */
       if (numRows && newColumns > [[cells objectAtIndex: 0] count])
 	{
-	  /* Add columns to the existing rows. Call makeCellAtRow: column:
+	  /* Add columns to the existing rows. Call makeCellAtRow: column: 
 	   to be consistent. */
 	  for (i = 0; i < numRows; i++)
 	    {
@@ -690,19 +673,57 @@ static int mouseDownFlags = 0;
 
 - (BOOL) getRow: (int*)row
 	 column: (int*)column
-       forPoint: (NSPoint)aPoint
+       forPoint: (NSPoint)point
 {
-  BOOL isBetweenCells, insideBounds;
+  BOOL	betweenRows;
+  BOOL	betweenCols;
+  BOOL	beyondRows;
+  BOOL	beyondCols;
+  int	approxRow = point.y / (cellSize.height + intercell.height);
+  float	approxRowsHeight = approxRow * (cellSize.height + intercell.height);
+  int	approxCol = point.x / (cellSize.width + intercell.width);
+  float	approxColsWidth = approxCol * (cellSize.width + intercell.width);
+  NSRect theBounds = [self bounds];
 
-  insideBounds = [self _getRow: row column: column
-		      forPoint: aPoint
-			 above: NO right: NO
-	        isBetweenCells: &isBetweenCells];
+  /* First check the limit cases */
+  beyondCols = (point.x > theBounds.size.width || point.x < 0);
+  beyondRows = (point.y > theBounds.size.height || point.y < 0);
 
-  if (!insideBounds || isBetweenCells)
-    return NO;
+  /* Determine if the point is inside the cell */
+  betweenRows = !(point.y > approxRowsHeight
+		&& point.y <= approxRowsHeight + cellSize.height);
+  betweenCols = !(point.x > approxColsWidth
+		  && point.x <= approxColsWidth + cellSize.width);
+
+  if (row)
+    {
+      if (_rFlags.flipped_view == NO)
+	approxRow = numRows - approxRow - 1;
+
+      if (approxRow < 0)
+	approxRow = 0;
+      else if (approxRow >= numRows)
+	approxRow = numRows - 1;
+      *row = approxRow;
+    }
+
+  if (column)
+    {
+      if (approxCol < 0)
+	approxCol = 0;
+      else if (approxCol >= numCols)
+	approxCol = numCols - 1;
+      *column = approxCol;
+    }
+
+  if (beyondRows || betweenRows || beyondCols || betweenCols)
+    {
+      return NO;
+    }
   else
-    return YES;
+    {
+      return YES;
+    }
 }
 
 - (BOOL) getRow: (int*)row
@@ -744,6 +765,7 @@ static int mouseDownFlags = 0;
 	  selectedRow = row;
 	  selectedColumn = column;
 	  [selectedCell setState: 1];
+	  ((tMatrix)selectedCells)->matrix[row][column] = YES;
 	}
       else if (allowsEmptySelection)
 	[self deselectSelectedCell];
@@ -762,26 +784,34 @@ static int mouseDownFlags = 0;
 
   for (i = 0; i < numRows; i++)
     {
-      row = [cells objectAtIndex: i];
+      row = nil;
       for (j = 0; j < numCols; j++)
-	if (((tMatrix)selectedCells)->matrix[i][j])
-	  {
-	    NSRect theFrame = [self cellFrameAtRow: i column: j];
+	{
+	  if (((tMatrix)selectedCells)->matrix[i][j])
+	    {
+	      NSRect theFrame = [self cellFrameAtRow: i column: j];
 
-	    aCell = [row objectAtIndex: j];
-	    [aCell setState: 0];
-	    [aCell highlight: NO withFrame: theFrame inView: self];
-	    [self setNeedsDisplayInRect: theFrame];
-	    ((tMatrix)selectedCells)->matrix[i][j] = NO;
-	  }
+	      if (!row)
+		row = [cells objectAtIndex: i];
+	      aCell = [row objectAtIndex: j];
+	      [aCell setState: 0];
+	      [aCell highlight: NO withFrame: theFrame inView: self];
+	      [self setNeedsDisplayInRect: theFrame];
+	      ((tMatrix)selectedCells)->matrix[i][j] = NO;
+	    }
+	}
     }
 
-  if (!allowsEmptySelection)
+  if (!allowsEmptySelection && mode == NSRadioModeMatrix)
     [self selectCellAtRow: 0 column: 0];
 }
 
 - (void) deselectSelectedCell
 {
+  if (!selectedCell || (!allowsEmptySelection && (mode == NSRadioModeMatrix)))
+    return;
+  
+  ((tMatrix)selectedCells)->matrix[selectedRow][selectedColumn] = NO;
   [selectedCell setState: 0];
   selectedCell = nil;
   selectedRow = 0;
@@ -816,21 +846,19 @@ static int mouseDownFlags = 0;
 {
   NSCell* aCell = [self cellAtRow: row column: column];
 
-  if (mode == NSRadioModeMatrix)
-    {
-      /* Don't allow loss of selection if in radio mode and empty selection
-	 is not allowed. Otherwise deselect the selected cell. */
-      if (!aCell && !allowsEmptySelection)
-	return;
-      else if (selectedCell)
-	[selectedCell setState: 0];
-    }
-  else if (!aCell)
+  if (!aCell)
     return;
 
-  selectedCell = aCell;								// select current cell
+  if (selectedCell && selectedCell != aCell)
+    {
+      ((tMatrix)selectedCells)->matrix[selectedRow][selectedColumn] = NO;
+      [selectedCell setState: 0];
+    }
+
+  selectedCell = aCell;
   selectedRow = row;
   selectedColumn = column;
+  ((tMatrix)selectedCells)->matrix[row][column] = YES;
   [selectedCell setState: 1];
 
   [self setNeedsDisplayInRect: [self cellFrameAtRow: row column: column]];
@@ -886,9 +914,156 @@ static int mouseDownFlags = 0;
   MPoint current = POINT_FROM_INDEX(endPos);
 
   if (selectionByRect)
-    [self _selectRectUsingAnchor: anchor last: last current: current];
+    {
+      unsigned	omaxc = MAX(anchor.x, last.x);
+      unsigned	ominc = MIN(anchor.x, last.x);
+      unsigned	omaxr = MAX(anchor.y, last.y);
+      unsigned	ominr = MIN(anchor.y, last.y);
+      unsigned	nmaxc = MAX(anchor.x, current.x);
+      unsigned	nminc = MIN(anchor.x, current.x);
+      unsigned	nmaxr = MAX(anchor.y, current.y);
+      unsigned	nminr = MIN(anchor.y, current.y);
+      unsigned	maxr = MAX(omaxr, nmaxr);
+      unsigned	minr = MIN(ominr, nminr);
+      unsigned	maxc = MAX(omaxc, nmaxc);
+      unsigned	minc = MIN(ominc, nminc);
+      unsigned	r;
+
+      for (r = minr; r <= maxr; r++)
+	{
+	  if (r >= ominr && r <= omaxr)
+	    {
+	      if (r >= nminr && r <= nmaxr)
+		{
+		  /*
+		   * In old rectangle, and in new.
+		   */
+		  if (ominc != nminc)
+		    {
+		      MPoint	sp = { minc, r};
+		      MPoint	ep = { MAX(ominc, nminc)-1, r};
+		      int	state = (ominc < nminc) ? 0 : 1;
+
+		      [self _setState: state
+			    highlight: flag ? (BOOL)state : NO
+			   startIndex: INDEX_FROM_POINT(sp)
+			     endIndex: INDEX_FROM_POINT(ep)];
+		    }
+
+		  if (omaxc != nmaxc)
+		    {
+		      MPoint	sp = { MIN(omaxc, nmaxc)+1, r};
+		      MPoint	ep = { maxc, r};
+		      int	state = (nmaxc < omaxc) ? 0 : 1;
+
+		      [self _setState: state
+			    highlight: flag ? (BOOL)state : NO
+			   startIndex: INDEX_FROM_POINT(sp)
+			     endIndex: INDEX_FROM_POINT(ep)];
+		    }
+		}
+	      else
+		{
+		  MPoint	sp = { ominc, r};
+		  MPoint	ep = { omaxc, r};
+
+		  /*
+		   * In old rectangle, but not new - clear row.
+		   */
+		  [self _setState: 0
+			highlight: NO
+		       startIndex: INDEX_FROM_POINT(sp)
+			 endIndex: INDEX_FROM_POINT(ep)];
+		}
+	    }
+	  else if (r >= nminr && r <= nmaxr)
+	    {
+	      MPoint	sp = { nminc, r};
+	      MPoint	ep = { nmaxc, r};
+
+	      /*
+	       * In new rectangle, but not old - select row.
+	       */
+	      [self _setState: 1
+		    highlight: flag ? YES : NO
+		   startIndex: INDEX_FROM_POINT(sp)
+		     endIndex: INDEX_FROM_POINT(ep)];
+	    }
+	}
+    }
   else
-    [self _selectContinuousUsingAnchor: anchor last: last current: current];
+    {
+      BOOL	doSelect = NO;
+      BOOL	doUnselect = NO;
+      int	selectx;
+      int	selecty;
+      int	unselectx;
+      int	unselecty;
+      int	dca = endPos - anchorPos;
+      int	dla = startPos - anchorPos;
+      int	dca_dla = SIGN(dca) / (SIGN(dla) ? SIGN(dla) : 1);
+
+      if (dca_dla >= 0)
+	{
+	  if (ABS(dca) >= ABS(dla))
+	    {
+	      doSelect = YES;
+	      selectx = MIN(startPos, endPos);
+	      selecty = MAX(startPos, endPos);
+	    }
+	  else
+	    {
+	      doUnselect = YES;
+	      if (endPos < startPos)
+		{
+		  unselectx = endPos + 1;
+		  unselecty = startPos;
+		}
+	      else
+		{
+		  unselectx = startPos;
+		  unselecty = endPos - 1;
+		}
+	    }
+	}
+      else
+	{
+	  doSelect = YES;
+	  if (anchorPos < endPos)
+	    {
+	      selectx = anchorPos;
+	      selecty = endPos;
+	    }
+	  else
+	    {
+	      selectx = endPos;
+	      selecty = anchorPos;
+	    }
+
+	  doUnselect = YES;
+	  if (anchorPos < startPos)
+	    {
+	      unselectx = anchorPos;
+	      unselecty = startPos;
+	    }
+	  else
+	    {
+	      unselectx = startPos;
+	      unselecty = anchorPos;
+	    }
+	}
+
+      if (doUnselect)
+	[self _setState: 0
+	      highlight: NO
+	     startIndex: unselectx
+	       endIndex: unselecty];
+      if (doSelect)
+	[self _setState: 1
+	      highlight: flag ? YES : NO
+	     startIndex: selectx
+	       endIndex: selecty];
+    }
   [self display];
 }
 
@@ -1015,7 +1190,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 
 - (void) setAutoscroll: (BOOL)flag
 {
-    autoscroll = flag;
+  autoscroll = flag;
 }
 
 - (void) setScrollable: (BOOL)flag
@@ -1045,11 +1220,9 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
       NSRectFill(rect);
     }
 
-  [self _getRow: &row1 column: &col1 forPoint: rect.origin
-	  above: NO right: NO isBetweenCells: NULL];
-  [self _getRow: &row2 column: &col2
-       forPoint: NSMakePoint(NSMaxX(rect), NSMaxY(rect))
-	  above: NO right: NO isBetweenCells: NULL];
+  [self getRow: &row1 column: &col1 forPoint: rect.origin];
+  [self getRow: &row2 column: &col2
+    forPoint: NSMakePoint(NSMaxX(rect), NSMaxY(rect))];
 
   if (row1 < 0)
     row1 = 0;
@@ -1206,7 +1379,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
       mouseCellFrame = [self cellFrameAtRow: mouseRow column: mouseColumn];
 
       if (((mode == NSRadioModeMatrix) && ![self allowsEmptySelection])
-          || [self mouse: mouseLocation inRect: mouseCellFrame])
+	|| [self mouse: mouseLocation inRect: mouseCellFrame])
         {
           mouseCell = [self cellAtRow: mouseRow column: mouseColumn];
 
@@ -1306,7 +1479,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 
 - (void) mouseDown: (NSEvent*)theEvent
 {
-  BOOL isBetweenCells, insideBounds;
+  BOOL onCell;
   int row, column;
   unsigned eventMask = NSLeftMouseUpMask | NSLeftMouseDownMask
 			| NSMouseMovedMask | NSLeftMouseDraggedMask
@@ -1328,16 +1501,11 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
       return;
     }
 
-//FIXME list mode is not working well. there is a flipping coordinates bug
-//      when selecting by rect. the code here should be cleaned to eliminate
-//      references to other modes.
-
   lastLocation = [self convertPoint: lastLocation fromView: nil];
   if ((mode != NSTrackModeMatrix) && (mode != NSHighlightModeMatrix))
     [NSEvent startPeriodicEventsAfterDelay: 0.05 withPeriod: 0.05];
   ASSIGN(lastEvent, theEvent);
 
-  [window _captureMouse: self];			// grab the mouse
   [self lockFocus];
   // selection involves two steps, first
   // a loop that continues until the left mouse goes up; then a series of
@@ -1347,136 +1515,131 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
     {
       BOOL shouldProceedEvent = NO;
 
-      insideBounds = [self _getRow: &row
-			    column: &column
-			  forPoint: lastLocation
-			     above: NO right: NO
-		    isBetweenCells: &isBetweenCells];
-      if (insideBounds && !isBetweenCells)
+      onCell = [self getRow: &row column: &column forPoint: lastLocation];
+      if (onCell)
 	{
 	  aCell = [self cellAtRow: row column: column];
 	  rect = [self cellFrameAtRow: row column: column];
-
-	  switch (mode)
+	  if (aCell != previousCell)
 	    {
-	      case NSTrackModeMatrix:
-		// in Track mode the cell should track the mouse
-		// until the cursor either leaves the cellframe or
-		// NSLeftMouseUp occurs
-		selectedCell = aCell;
-		selectedRow = row;
-		selectedColumn = column;
-		if ([aCell trackMouse: lastEvent
-			       inRect: rect
-			       ofView: self
-			 untilMouseUp: YES])
-		  done = YES;
-		break;
-
-	      case NSHighlightModeMatrix:
-		// Highlight mode is like Track mode except that
-		// the cell is lit before begins tracking and
-		// unlit afterwards
-		[aCell setState: 1];
-		selectedCell = aCell;
-		selectedRow = row;
-		selectedColumn = column;
-		[aCell highlight: YES withFrame: rect inView: self];
-		[window flushWindow];
-
-		if ([aCell trackMouse: lastEvent
-				  inRect: rect
-				  ofView: self
-				  untilMouseUp: YES])
-		  done = YES;
-
-		[aCell setState: 0];
-		[aCell highlight: NO withFrame: rect inView: self];
-		[window flushWindow];
-		break;
-
-	      case NSRadioModeMatrix:
-		// Radio mode allows no more than one cell to be selected
-		if (previousCell == aCell)
-		  break;
-
-		// deselect previously selected cell
-		if (selectedCell)
-		  {
-		    [selectedCell setState: 0];
-		    if (!previousCell)
-		      previousCellRect = [self cellFrameAtRow: selectedRow
-						       column: selectedColumn];
-		    [selectedCell highlight: NO
-				  withFrame: previousCellRect
-				     inView: self];
-		    ((tMatrix)selectedCells)->matrix[selectedRow][selectedColumn] = NO;
-		  }
-		// select current cell
-		selectedCell = aCell;
-		selectedRow = row;
-		selectedColumn = column;
-		[aCell setState: 1];
-		[aCell highlight: YES withFrame: rect inView: self];
-		((tMatrix)selectedCells)->matrix[row][column] = YES;
-		[window flushWindow];
-		break;
-
-	      case NSListModeMatrix:
-		// List mode allows multiple cells to be selected
+	      switch (mode)
 		{
-		  unsigned modifiers = [lastEvent modifierFlags];
-
-		  if (previousCell == aCell)
+		  case NSTrackModeMatrix: 
+		    // in Track mode the cell should track the mouse
+		    // until the cursor either leaves the cellframe or
+		    // NSLeftMouseUp occurs
+		    selectedCell = aCell;
+		    selectedRow = row;
+		    selectedColumn = column;
+		    if ([aCell trackMouse: lastEvent
+				   inRect: rect
+				   ofView: self
+			     untilMouseUp: YES])
+		      done = YES;
 		    break;
-		  // When the user first clicks on a cell
-		  // we clear the existing selection
-		  // unless the Alternate or Shift keys have been pressed.
-		  if (!previousCell)
+
+		  case NSHighlightModeMatrix: 
+		    // Highlight mode is like Track mode except that
+		    // the cell is lit before begins tracking and
+		    // unlit afterwards
+		    [aCell setState: 1];
+		    selectedCell = aCell;
+		    selectedRow = row;
+		    selectedColumn = column;
+		    [aCell highlight: YES withFrame: rect inView: self];
+		    [window flushWindow];
+
+		    if ([aCell trackMouse: lastEvent
+				      inRect: rect
+				      ofView: self
+				      untilMouseUp: YES])
+		      done = YES;
+
+		    [aCell setState: 0];
+		    [aCell highlight: NO withFrame: rect inView: self];
+		    [window flushWindow];
+		    break;
+
+		  case NSRadioModeMatrix: 
+		    // Radio mode allows no more than one cell to be selected
+		    if (previousCell == aCell)
+		      break;
+
+		    // deselect previously selected cell
+		    if (selectedCell)
+		      {
+			[selectedCell setState: 0];
+			if (!previousCell)
+			  previousCellRect = [self cellFrameAtRow: selectedRow
+			   column: selectedColumn];
+			[selectedCell highlight: NO
+				      withFrame: previousCellRect
+					 inView: self];
+			((tMatrix)selectedCells)->matrix[selectedRow][selectedColumn] = NO;
+		      }
+		    // select current cell
+		    selectedCell = aCell;
+		    selectedRow = row;
+		    selectedColumn = column;
+		    [aCell setState: 1];
+		    [aCell highlight: YES withFrame: rect inView: self];
+		    ((tMatrix)selectedCells)->matrix[row][column] = YES;
+		    [window flushWindow];
+		    break;
+
+		  case NSListModeMatrix: 
+		    // List mode allows multiple cells to be selected
 		    {
-		      if (!(modifiers & NSShiftKeyMask) &&
-				      !(modifiers & NSAlternateKeyMask))
-			{
-			  [self deselectAllCells];
-			  anchor = MakePoint (column, row);
-			}
-		      // Consider the selected cell as the
-		      // anchor from which to extend the
-		      // selection to the current cell
-		      if (!(modifiers & NSAlternateKeyMask))
-			{
-			  selectedCell = aCell;		// select current cell
-			  selectedRow = row;
-			  selectedColumn = column;
+		      unsigned modifiers = [lastEvent modifierFlags];
 
-			  [selectedCell setState: 1];
-			  [selectedCell highlight: YES
-					withFrame: rect
-					   inView: self];
-			  ((tMatrix)selectedCells)->matrix[row][column] =YES;
-			  [window flushWindow];
-			  break;
+		      if (previousCell == aCell)
+			break;
+		      // When the user first clicks on a cell
+		      // we clear the existing selection
+		      // unless the Alternate or Shift keys have been pressed.
+		      if (!previousCell)
+			{
+			  if (!(modifiers & NSShiftKeyMask)
+			    && !(modifiers & NSAlternateKeyMask))
+			    {
+			      [self deselectAllCells];
+			      anchor = MakePoint (column, row);
+			    }
+			  // Consider the selected cell as the
+			  // anchor from which to extend the
+			  // selection to the current cell
+			  if (!(modifiers & NSAlternateKeyMask))
+			    {
+			      selectedCell = aCell;
+			      selectedRow = row;
+			      selectedColumn = column;
+
+			      [selectedCell setState: 1];
+			      [selectedCell highlight: YES
+					    withFrame: rect
+					       inView: self];
+			      ((tMatrix)selectedCells)->matrix[row][column]=YES;
+			      [window flushWindow];
+			      break;
+			    }
 			}
+		      [self setSelectionFrom:
+			INDEX_FROM_COORDS(selectedColumn, selectedRow)
+			to: INDEX_FROM_COORDS(column, row)
+			anchor: INDEX_FROM_POINT(anchor)
+			highlight: YES];
+
+		      [window flushWindow];
+		      selectedCell = aCell;
+		      selectedRow = row;
+		      selectedColumn = column;
+		      break;
 		    }
-		  if (selectionByRect)
-		    [self _selectRectUsingAnchor: anchor
-				  last: MakePoint (selectedColumn, selectedRow)
-				    current: MakePoint (column, row)];
-		  else
-		    [self _selectContinuousUsingAnchor: anchor
-				  last: MakePoint (selectedColumn, selectedRow)
-				    current: MakePoint (column, row)];
-
-		  [window flushWindow];
-		  selectedCell = aCell;
-		  selectedRow = row;
-		  selectedColumn = column;
-		  break;
 		}
+	      previousCell = aCell;
+	      previousCellRect = rect;
+	      [self scrollRectToVisible: rect];
 	    }
-	  previousCell = aCell;
-	  previousCellRect = rect;
-	  [self scrollRectToVisible: rect];
 	}
 
       // if done break out of selection loop
@@ -1491,7 +1654,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 				        dequeue: YES];
 	  switch ([theEvent type])
 	    {
-	      case NSPeriodic:
+	      case NSPeriodic: 
 		NSDebugLog(@"NSMatrix: got NSPeriodic event\n");
 		shouldProceedEvent = YES;
 		break;
@@ -1499,12 +1662,12 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 	      // Track and Highlight modes do not use
 	      // periodic events so we must break out
 	      // and check if the mouse is in a cell
-	      case NSLeftMouseUp:
+	      case NSLeftMouseUp: 
 		done = YES;
-	      case NSLeftMouseDown:
-	      default:
-		if ((mode == NSTrackModeMatrix) ||
-				      (mode == NSHighlightModeMatrix))
+	      case NSLeftMouseDown: 
+	      default: 
+		if ((mode == NSTrackModeMatrix)
+		  || (mode == NSHighlightModeMatrix))
 		  shouldProceedEvent = YES;
 		NSDebugLog(@"NSMatrix: got event of type: %d\n",
 					      [theEvent type]);
@@ -1516,18 +1679,16 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
       lastLocation = [self convertPoint: lastLocation fromView: nil];
     }
 
-  [window _releaseMouse: self];
-
   switch (mode)
     {
-      case NSRadioModeMatrix:
+      case NSRadioModeMatrix: 
 	if (selectedCell)
 	  [selectedCell highlight: NO withFrame: rect inView: self];
-      case NSListModeMatrix:
+      case NSListModeMatrix: 
 	[self setNeedsDisplayInRect: rect];
 	[window flushWindow];
-      case NSHighlightModeMatrix:
-      case NSTrackModeMatrix:
+      case NSHighlightModeMatrix: 
+      case NSTrackModeMatrix: 
 	break;
     }
 
@@ -1641,166 +1802,201 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 {
   mode = aMode;
 }
+
 - (NSMatrixMode) mode
 {
   return mode;
 }
+
 - (void) setCellClass: (Class)class
 {
   cellClass = class;
 }
+
 - (Class) cellClass
 {
   return cellClass;
 }
+
 - (void) setPrototype: (NSCell*)aCell
 {
   ASSIGN(cellPrototype, aCell);
 }
+
 - (id) prototype
 {
   return cellPrototype;
 }
+
 - (NSSize) cellSize
 {
   return cellSize;
 }
+
 - (NSSize) intercellSpacing
 {
   return intercell;
 }
+
 - (void) setBackgroundColor: (NSColor*)c
 {
   ASSIGN(backgroundColor, c);
 }
+
 - (NSColor*) backgroundColor
 {
   return backgroundColor;
 }
+
 - (void) setCellBackgroundColor: (NSColor*)c
 {
   ASSIGN(cellBackgroundColor, c);
 }
+
 - (NSColor*) cellBackgroundColor
 {
   return cellBackgroundColor;
 }
+
 - (void) setDelegate: (id)object
 {
   ASSIGN(delegate, object);
 }
+
 - (id) delegate
 {
   return delegate;
 }
+
 - (void) setTarget: anObject
 {
   ASSIGN(target, anObject);
 }
+
 - (id) target
 {
   return target;
 }
+
 - (void) setAction: (SEL)sel
 {
   action = sel;
 }
+
 - (SEL) action
 {
   return action;
 }
+
 - (void) setDoubleAction: (SEL)sel
 {
   doubleAction = sel;
 }
+
 - (SEL) doubleAction
 {
   return doubleAction;
 }
+
 - (void) setErrorAction: (SEL)sel
 {
   errorAction = sel;
 }
+
 - (SEL) errorAction
 {
   return errorAction;
 }
+
 - (void) setAllowsEmptySelection: (BOOL)f
 {
   allowsEmptySelection = f;
 }
+
 - (BOOL) allowsEmptySelection
 {
   return allowsEmptySelection;
 }
+
 - (void) setSelectionByRect: (BOOL)flag
 {
   selectionByRect = flag;
 }
+
 - (BOOL) isSelectionByRect
 {
   return selectionByRect;
 }
+
 - (void) setDrawsBackground: (BOOL)flag
 {
   drawsBackground = flag;
 }
+
 - (BOOL) drawsBackground
 {
   return drawsBackground;
 }
+
 - (void) setDrawsCellBackground: (BOOL)f
 {
   drawsCellBackground = f;
 }
+
 - (BOOL) drawsCellBackground
 {
   return drawsCellBackground;
 }
+
 - (void) setAutosizesCells: (BOOL)flag
 {
   autosizesCells = flag;
 }
+
 - (BOOL) autosizesCells
 {
   return autosizesCells;
 }
+
 - (BOOL) isAutoscroll
 {
   return autoscroll;
 }
+
 - (int) numberOfRows
 {
   return numRows;
 }
+
 - (int) numberOfColumns
 {
   return numCols;
 }
+
 - (id) selectedCell
 {
   return selectedCell;
 }
+
 - (int) selectedColumn
 {
   return selectedColumn;
 }
+
 - (int) selectedRow
 {
   return selectedRow;
 }
+
 - (int) mouseDownFlags
 {
   return mouseDownFlags;
 }
 
-#if HAS_FLIPPED_VIEWS
 - (BOOL) isFlipped
 {
   return YES;
 }
-#endif
-
 
 
 //
@@ -1824,11 +2020,12 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
   fprintf(stderr, " NSMatrix: keyDown --- ");
 
   // If not editable then don't recognize the key down
-  if (![selectedCell isEditable]) return;
+  if (![selectedCell isEditable])
+    return;
 
   [self lockFocus];
 
-   // If RETURN key then make the next text the first responder
+  // If RETURN key then make the next text the first responder
   if (key_code == 0x0d)
     {
       [selectedCell endEditing: nil];
@@ -1837,7 +2034,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
       return;
     }
 
- // Hide the cursor during typing
+  // Hide the cursor during typing
   [NSCursor hide];
 
   [selectedCell _handleKeyEvent: theEvent];
@@ -1857,7 +2054,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 {
   if ([selectedCell isSelectable])
     {
- //     [selectedCell selectText: self];
+//      [selectedCell selectText: self];
       return YES;
     }
   else
@@ -1871,638 +2068,48 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 
 @implementation NSMatrix (PrivateMethods)
 
-#define SET_POINTER_VALUE(pointer, value) \
-  do { if (pointer) *pointer = value; } while (0)
-
-/* Returns by reference the row and column of cell that is above or below or
-   to the left or to the right of point. `point' is in the matrix coordinates.
-   Returns NO if the point is outside the bounds of matrix, YES otherwise.
-
-   Note that the cell numbering is flipped relative to the coordinate system.
- */
-- (BOOL) _getRow: (int*)row
-	  column: (int*)column
-	forPoint: (NSPoint)point
-	   above: (BOOL)aboveRequired
-	   right: (BOOL)rightRequired
-  isBetweenCells: (BOOL*)isBetweenCells
+- (void) _setState: (int)state
+	 highlight: (BOOL)highlight
+	startIndex: (int)start
+	  endIndex: (int)end
 {
-  BOOL rowReady = NO, colReady = NO;
-  BOOL betweenRows = NO, betweenCols = NO;
-  NSRect theBounds = [self bounds];
+  int		i, j;
+  MPoint	startPoint = POINT_FROM_INDEX(start);
+  MPoint	endPoint = POINT_FROM_INDEX(end);
 
-  SET_POINTER_VALUE(isBetweenCells, NO);
-
-  /* First check the limit cases */
-  if (point.x > theBounds.size.width)
+  for (i = startPoint.y; i <= endPoint.y; i++)
     {
-      SET_POINTER_VALUE(column, numCols - 1);
-      colReady = YES;
-    }
-  else if (point.x < 0)
-    {
-      SET_POINTER_VALUE(column, 0);
-      colReady = YES;
-    }
+      NSArray	*row = [cells objectAtIndex: i];
+      int	colLimit;
 
-  if (point.y > theBounds.size.height)
-    {
-      SET_POINTER_VALUE(row, numRows - 1);
-      rowReady = YES;
-    }
-  else if (point.y < 0)
-    {
-      SET_POINTER_VALUE(row, 0);
-      rowReady = YES;
-    }
-
-  if (rowReady && colReady)
-    return NO;
-
-  if (!rowReady)
-    {
-      int approxRow = point.y / (cellSize.height + intercell.height);
-      float approxRowsHeight = approxRow * (cellSize.height + intercell.height);
-
-      /* Determine if the point is inside the cell */
-      betweenRows = !(point.y > approxRowsHeight
-		    && point.y <= approxRowsHeight + cellSize.height);
-
-      /* If the point is between cells then adjust the computed row taking into
-	 account the `aboveRequired' flag. */
-      if (aboveRequired && betweenRows)
-	approxRow++;
-
-#if HAS_FLIPPED_VIEWS == 0
-      approxRow = numRows - approxRow - 1;
-#endif
-      if (approxRow < 0)
+      if (i == startPoint.y)
 	{
-	  approxRow = -1;
-	  rowReady = YES;
+	  j = startPoint.x;
 	}
-      else if (approxRow >= numRows)
+      else
 	{
-	  approxRow = numRows - 1;
-	  rowReady = YES;
+	  j = 0;
 	}
-      SET_POINTER_VALUE(row, approxRow);
-    }
 
-  if (!colReady)
-    {
-      int approxCol = point.x / (cellSize.width + intercell.width);
-      float approxColsWidth = approxCol * (cellSize.width + intercell.width);
+      if (i == endPoint.y)
+	colLimit = endPoint.x;
+      else
+	colLimit = numCols - 1;
 
-      /* Determine if the point is inside the cell */
-      betweenCols = !(point.x > approxColsWidth
-		      && point.x <= approxColsWidth + cellSize.width);
-
-      /* If the point is between cells then adjust the computed column taking
-	 into account the `rightRequired' flag. */
-      if (rightRequired && betweenCols)
-	approxCol++;
-
-      if (approxCol < 0)
+      for (; j <= colLimit; j++)
 	{
-	  approxCol = -1;
-	  colReady = YES;
+	  NSRect	rect = [self cellFrameAtRow: i column: j];
+	  NSCell	*aCell = [row objectAtIndex: j];
+
+	  [aCell setState: state];
+	  [aCell highlight: highlight withFrame: rect inView: self];
+	  [self setNeedsDisplayInRect: rect];
+	  if (state == 0)
+	    ((tMatrix)selectedCells)->matrix[i][j] = NO;
+	  else
+	    ((tMatrix)selectedCells)->matrix[i][j] = YES;
 	}
-      else if (approxCol >= numCols)
-	{
-	  approxCol = numCols - 1;
-	  colReady = YES;
-	}
-      SET_POINTER_VALUE(column, approxCol);
     }
-
-  /* If the point is outside the matrix bounds return NO */
-  if (rowReady || colReady)
-    return NO;
-
-  if (betweenRows || betweenCols)
-    SET_POINTER_VALUE(isBetweenCells, YES);
-  return YES;
 }
-
-/* This method is used to select cells in the list mode with selection by rect
-  option enabled. `anchor' is the first point in the selection (the coordinates
-  of the cell first clicked). `last' is the last point up to which the anterior
-  selection has been made. `current' is the point to which we must extend the
-  selection. */
-
-- (void) _selectRectUsingAnchor: (MPoint)anchor
-		      last: (MPoint)last
-		   current: (MPoint)current
-{
-  /* We use an imaginar coordinate system whose center is the `anchor' point.
-    We should determine in which quadrants are located the `last' and the
-    `current' points. Based on this we extend the selection to the rectangle
-    determined by `anchor' and `current' points.
-
-    The algorithm uses two rectangles: one determined by `anchor' and
-    `current' that defines how the final selection rectangle will look, and
-    another one determined by `anchor' and `last' that defines the current
-    visible selection.
-
-    The three points above determine 9 distinct zones depending on the
-    position of `last' and `current' relative to `anchor'. Each of these
-    zones have a different way of extending the selection from `last' to
-    `current'.
-
-    Note the coordinate system is a flipped one not a usual geometric one
-    (the y coordinate increases downward).
-  */
-
-  int dxca = current.x - anchor.x;
-  int dyca = current.y - anchor.y;
-  int dxla = last.x - anchor.x;
-  int dyla = last.y - anchor.y;
-  int dxca_dxla, dyca_dyla;
-  int selectRectsNo = 0;
-  MRect selectRect[2];
-  int unselectRectsNo = 0;
-  MRect unselectRect[2];
-  int tmpx, tmpy;
-  int i;
-
-  dxca_dxla = SIGN(dxca) / (SIGN(dxla) ? SIGN(dxla) : 1);
-  dyca_dyla = SIGN(dyca) / (SIGN(dyla) ? SIGN(dyla) : 1);
-
-  if (dxca_dxla >= 0) {
-    if (dyca_dyla >= 0) {
-      /* `current' is in the lower right quadrant. */
-      if (ABS(dxca) <= ABS(dxla)) {
-	if (ABS(dyca) <= ABS(dyla)) {
-	  /* `current' is in zone I. */
-
-	  NSDebugLog (@"zone I");
-
-	  if (dxca != dxla) {
-	    i = unselectRectsNo++;
-	    tmpx = dxca > 0 ? current.x + 1 : current.x + SIGN(dxla);
-	    unselectRect[i].x = MIN(tmpx, last.x);
-	    unselectRect[i].y = MIN(anchor.y, current.y);
-	    unselectRect[i].width = ABS(last.x - tmpx);
-	    unselectRect[i].height = ABS(current.y - anchor.y);
-	  }
-
-	  if (dyca != dyla) {
-	    i = unselectRectsNo++;
-	    tmpy = dyca > 0 ? current.y + 1 : current.y + SIGN(dyla);
-	    unselectRect[i].x = MIN(anchor.x, last.x);
-	    unselectRect[i].y = MIN(tmpy, last.y);
-	    unselectRect[i].width = ABS(last.x - anchor.x);
-	    unselectRect[i].height = ABS(last.y - tmpy);
-	  }
-	}
-	else {
-	  /* `current' is in zone F. */
-
-	  NSDebugLog (@"zone F");
-
-	  selectRectsNo = 1;
-
-	  tmpy = dyla >= 0 ? last.y + 1 : last.y - 1;
-	  selectRect[0].x = MIN(anchor.x, current.x);
-	  selectRect[0].y = MIN(tmpy, current.y);
-	  selectRect[0].width = ABS(current.x - anchor.x);
-	  selectRect[0].height = ABS(current.y - tmpy);
-
-	  if (dxca != dxla) {
-	    unselectRectsNo = 1;
-	    tmpx = dxca > 0 ? current.x + 1 : current.x + SIGN(dxla);
-	    unselectRect[0].x = MIN(tmpx, last.x);
-	    unselectRect[0].y = MIN(anchor.y, last.y);
-	    unselectRect[0].width = ABS(last.x - tmpx);
-	    unselectRect[0].height = ABS(last.y - anchor.y);
-	  }
-	}
-      }
-      else {
-	if (ABS(dyca) <= ABS(dyla)) {
-	  /* `current' is in zone H. */
-
-	  NSDebugLog (@"zone H");
-	  selectRectsNo = 1;
-
-	  tmpx = dxla >= 0 ? last.x + 1 : last.x - 1;
-	  selectRect[0].x = MIN(tmpx, current.x);
-	  selectRect[0].y = MIN(anchor.y, current.y);
-	  selectRect[0].width = ABS(current.x - tmpx);
-	  selectRect[0].height = ABS(current.y - anchor.y);
-
-	  if (dyca != dyla) {
-	    unselectRectsNo = 1;
-
-	    tmpy = dyca >= 0 ? current.y + 1 : current.y - 1;
-	    unselectRect[0].x = MIN(anchor.x, last.x);
-	    unselectRect[0].y = MIN(tmpy, last.y);
-	    unselectRect[0].width = ABS(last.x - anchor.x);
-	    unselectRect[0].height = ABS(last.y - tmpy);
-	  }
-	}
-	else {
-	  /* `current' is in zone G. */
-
-	  NSDebugLog (@"zone G");
-	  selectRectsNo = 2;
-
-	  tmpx = dxla >= 0 ? last.x + 1 : last.x - 1;
-	  selectRect[0].x = MIN(tmpx, current.x);
-	  selectRect[0].y = MIN(anchor.y, last.y);
-	  selectRect[0].width = ABS(current.x - tmpx);
-	  selectRect[0].height = ABS(last.y - anchor.y);
-
-	  tmpy = dyla >= 0 ? last.y + 1 : last.y - 1;
-	  selectRect[1].x = MIN(anchor.x, current.x);
-	  selectRect[1].y = MIN(tmpy, current.y);
-	  selectRect[1].width = ABS(current.x - anchor.x);
-	  selectRect[1].height = ABS(current.y - tmpy);
-	}
-      }
-    }
-    else {
-      /* `current' is in the upper right quadrant */
-
-      if (ABS(dxca) <= ABS(dxla)) {
-	/* `current' is in zone B. */
-
-	NSDebugLog (@"zone B");
-
-	selectRectsNo = 1;
-	tmpy = dyca > 0 ? anchor.y + 1 : anchor.y - 1;
-	selectRect[0].x = MIN(anchor.x, current.x);
-	selectRect[0].y = MIN(current.y, tmpy);
-	selectRect[0].width = ABS(current.x - anchor.x);
-	selectRect[0].height = ABS(tmpy - current.y);
-
-	if (dyla) {
-	  unselectRectsNo = 1;
-	  tmpy = dyca < 0 ? anchor.y + 1 : anchor.y + SIGN(dyla);
-	  unselectRect[0].x = MIN(anchor.x, current.x);
-	  unselectRect[0].y = MIN(tmpy, last.y);
-	  unselectRect[0].width = ABS(last.x - anchor.x);
-	  unselectRect[0].height = ABS(last.y - tmpy);
-	}
-
-	if (dxla && dxca != dxla) {
-	  i = unselectRectsNo++;
-	  tmpx = dxca > 0 ? current.x + 1 : current.x + SIGN(dxla);
-	  unselectRect[i].x = MIN(tmpx, last.x);
-	  unselectRect[i].y = MIN(anchor.y, last.y);
-	  unselectRect[i].width = ABS(last.x - tmpx);
-	  unselectRect[i].height = ABS(last.y - anchor.y);
-	}
-      }
-      else {
-	/* `current' is in zone A. */
-
-	NSDebugLog (@"zone A");
-
-	if (dyca != dyla) {
-	  i = selectRectsNo++;
-	  tmpy = dyca < 0 ? anchor.y - 1 : anchor.y + 1;
-	  selectRect[i].x = MIN(anchor.x, last.x);
-	  selectRect[i].y = MIN(tmpy, current.y);
-	  selectRect[i].width = ABS(last.x - anchor.x);
-	  selectRect[i].height = ABS(current.y - tmpy);
-	}
-
-	i = selectRectsNo++;
-	tmpx = dxca > 0 ? last.x + 1 : last.x - 1;
-	selectRect[i].x = MIN(tmpx, current.x);
-	selectRect[i].y = MIN(current.y, anchor.y);
-	selectRect[i].width = ABS(current.x - tmpx);
-	selectRect[i].height = ABS(anchor.y - current.y);
-
-	if (dyla) {
-	  unselectRectsNo = 1;
-	  tmpy = dyca < 0 ? anchor.y + 1 : anchor.y - 1;
-	  unselectRect[0].x = MIN(anchor.x, last.x);
-	  unselectRect[0].y = MIN(tmpy, last.y);
-	  unselectRect[0].width = ABS(last.x - anchor.x);
-	  unselectRect[0].height = ABS(last.y - tmpy);
-	}
-      }
-    }
-  }
-  else {
-    if (dyca_dyla > 0) {
-      /* `current' is in the lower left quadrant */
-      if (ABS(dyca) <= ABS(dyla)) {
-	/* `current' is in zone D. */
-
-	NSDebugLog (@"zone D");
-	selectRectsNo = 1;
-
-	tmpx = dxca < 0 ? anchor.x - 1 : anchor.x + 1;
-	selectRect[0].x = MIN(tmpx, current.x);
-	selectRect[0].y = MIN(anchor.y, current.y);
-	selectRect[0].width = ABS(current.x - tmpx);
-	selectRect[0].height = ABS(current.y - anchor.y);
-
-	if (dxla) {
-	  unselectRectsNo = 1;
-	  tmpx = dxca < 0 ? anchor.x + 1 : anchor.x - 1;
-	  unselectRect[0].x = MIN(tmpx, last.x);
-	  unselectRect[0].y = MIN(anchor.y, current.y);
-	  unselectRect[0].width = ABS(last.x - tmpx);
-	  unselectRect[0].height = ABS(current.y - anchor.y);
-	}
-
-	if (dyla && dyca != dyla) {
-	  i = unselectRectsNo++;
-	  tmpy = dyca > 0 ? current.y + 1 : current.y + SIGN(dyla);
-	  unselectRect[i].x = MIN(anchor.x, last.x);
-	  unselectRect[i].y = MIN(tmpy, last.y);
-	  unselectRect[i].width = ABS(last.x - anchor.x);
-	  unselectRect[i].height = ABS(last.y - tmpy);
-	}
-      }
-      else {
-	/* `current' is in zone E. */
-
-	NSDebugLog (@"zone E");
-
-	i = selectRectsNo++;
-	tmpx = dxca > 0 ? anchor.x + 1 : anchor.x - 1;
-	selectRect[i].x = MIN(tmpx, current.x);
-	selectRect[i].y = MIN(anchor.y, last.y);
-	selectRect[i].width = ABS(current.x - tmpx);
-	selectRect[i].height = ABS(last.y - anchor.y);
-
-	i = selectRectsNo++;
-	tmpy = dyca > 0 ? last.y + 1 : last.y - 1;
-	selectRect[i].x = MIN(current.x, anchor.x);
-	selectRect[i].y = MIN(current.y, tmpy);
-	selectRect[i].width = ABS(anchor.x - current.x);
-	selectRect[i].height = ABS(tmpy - current.y);
-
-	if (dxla) {
-	  unselectRectsNo = 1;
-	  tmpx = dxca > 0 ? anchor.x - 1 : anchor.x + 1;
-	  unselectRect[0].x = MIN(tmpx, last.x);
-	  unselectRect[0].y = MIN(anchor.y, last.y);
-	  unselectRect[0].width = ABS(last.x - tmpx);
-	  unselectRect[0].height = ABS(last.y - anchor.y);
-	}
-      }
-    }
-    else {
-      /* `current' is in zone C. */
-
-      NSDebugLog (@"zone C");
-      selectRectsNo = 1;
-
-      selectRect[0].x = MIN(current.x, anchor.x);
-      selectRect[0].y = MIN(current.y, anchor.y);
-      selectRect[0].width = ABS(anchor.x - current.x);
-      selectRect[0].height = ABS(anchor.y - current.y);
-
-      if (dyca != dyla) {
-	unselectRectsNo = 1;
-	unselectRect[0].x = MIN(anchor.x, last.x);
-	unselectRect[0].y = MIN(anchor.y, last.y);
-	unselectRect[0].width = ABS(last.x - anchor.x);
-	unselectRect[0].height = ABS(last.y - anchor.y);
-      }
-    }
-  }
-
-  /* In this point we know what are the rectangles that must be unselected and
-    those that must be selected. Iterate on them and do the work. First unselect
-    and only then do the cells selection. */
-  for (i = 0; i < unselectRectsNo; i++)
-    [self _setState: 0 inRect: unselectRect[i]];
-  for (i = 0; i < selectRectsNo; i++)
-    [self _setState: 1 inRect: selectRect[i]];
-}
-
-- (void) _setState: (int)state inRect: (MRect)matrixRect
-{
-  int i, j, rowNo, colNo;
-  NSArray* row;
-  NSCell* aCell;
-  NSRect rect, upperLeftRect;
-  BOOL highlight = state ? YES : NO;
-  int cellsCount = [cells count];
-  int rowCount;
-
-  rect = upperLeftRect = [self cellFrameAtRow: matrixRect.y column: matrixRect.x];
-
-  for (i = 0, rowNo = matrixRect.y;
-       i <= matrixRect.height && rowNo < cellsCount;
-       i++, rowNo++) {
-    row = [cells objectAtIndex: rowNo];
-    rowCount = [row count];
-    rect.origin.x = upperLeftRect.origin.x;
-
-    for (j = 0, colNo = matrixRect.x;
-	 j <= matrixRect.width && colNo < rowCount;
-	 j++, colNo++) {
-      aCell = [row objectAtIndex: colNo];
-      [aCell setState: state];
-      [aCell highlight: highlight withFrame: rect inView: self];
-      [self setNeedsDisplayInRect: rect];
-      ((tMatrix)selectedCells)->matrix[rowNo][colNo] = YES;
-      rect.origin.x += cellSize.width + intercell.width;
-    }
-    rect.origin.y -= cellSize.height + intercell.height;
-  }
-}
-
-
-/* This method is used to select and unselect the cells in the list mode with
-  selection by rect option disabled. This method has a far lower complexity than
-  the similar method used by list mode with selection by rect option. */
-- (void) _selectContinuousUsingAnchor: (MPoint)anchor
-			       last: (MPoint)last
-			    current: (MPoint)current
-{
-  /* The idea is to compare the points based on their linear index in matrix and
-  do the appropriate action. */
-
-  int anchorIndex = INDEX_FROM_POINT(anchor);
-  int lastIndex = INDEX_FROM_POINT(last);
-  int currentIndex = INDEX_FROM_POINT(current);
-  BOOL doSelect = NO;
-  MPoint selectPoint;
-  BOOL doUnselect = NO;
-  MPoint unselectPoint;
-
-  int dca = currentIndex - anchorIndex;
-  int dla = lastIndex - anchorIndex;
-  int dca_dla = SIGN(dca) / (SIGN(dla) ? SIGN(dla) : 1);
-
-  if (dca_dla >= 0) {
-    if (ABS(dca) >= ABS(dla)) {
-      doSelect = YES;
-      if (currentIndex > lastIndex) {
-	selectPoint.x = lastIndex;
-	selectPoint.y = currentIndex;
-      }
-      else {
-	selectPoint.x = currentIndex;
-	selectPoint.y = lastIndex;
-      }
-    }
-    else {
-      doUnselect = YES;
-      if (currentIndex < lastIndex) {
-	unselectPoint.x = currentIndex + 1;
-	unselectPoint.y = lastIndex;
-      }
-      else {
-	unselectPoint.x = lastIndex;
-	unselectPoint.y = currentIndex - 1;
-      }
-    }
-  }
-  else {
-    doSelect = YES;
-    if (anchorIndex < currentIndex) {
-      selectPoint.x = anchorIndex;
-      selectPoint.y = currentIndex;
-    }
-    else {
-      selectPoint.x = currentIndex;
-      selectPoint.y = anchorIndex;
-    }
-
-    doUnselect = YES;
-    if (anchorIndex < lastIndex) {
-      unselectPoint.x = anchorIndex;
-      unselectPoint.y = lastIndex;
-    }
-    else {
-      unselectPoint.x = lastIndex;
-      unselectPoint.y = anchorIndex;
-    }
-  }
-
-  if (doUnselect)
-    [self _setState: 0 startIndex: unselectPoint.x endIndex: unselectPoint.y];
-  if (doSelect)
-    [self _setState: 1 startIndex: selectPoint.x endIndex: selectPoint.y];
-}
-
-- (void) _setState: (int)state startIndex: (int)start endIndex: (int)end
-{
-  int i, j, colLimit;
-  NSArray* row;
-  NSCell* aCell;
-  NSRect rect, upperLeftRect;
-  BOOL highlight = state ? YES : NO;
-  MPoint startPoint = POINT_FROM_INDEX(start);
-  MPoint endPoint = POINT_FROM_INDEX(end);
-
-  rect = upperLeftRect = [self cellFrameAtRow: startPoint.y column: 0];
-
-  for (i = startPoint.y; i <= endPoint.y; i++) {
-    row = [cells objectAtIndex: i];
-
-    if (i == startPoint.y) {
-      j = startPoint.x;
-      rect.origin.x = upperLeftRect.origin.x
-		      + j * (cellSize.width + intercell.width);
-    }
-    else {
-      j = 0;
-      rect.origin.x = upperLeftRect.origin.x;
-    }
-
-    if (i == endPoint.y)
-      colLimit = endPoint.x;
-    else
-      colLimit = numCols - 1;
-
-    for (; j <= colLimit; j++) {
-      aCell = [row objectAtIndex: j];
-      [aCell setState: state];
-      [aCell highlight: highlight withFrame: rect inView: self];
-      [self setNeedsDisplayInRect: rect];
-      ((tMatrix)selectedCells)->matrix[i][j] = YES;
-      rect.origin.x += cellSize.width + intercell.width;
-    }
-    rect.origin.y -= cellSize.height + intercell.height;
-  }
-}
-
-#ifdef DEBUG
-#include <stdio.h>
-
-/* A test to exhaustively check if the list selection mode works correctly. */
-- (void) _selectRect2UsingAnchor: (MPoint)anchor
-		      last: (MPoint)last
-		   current: (MPoint)current
-{
-  MRect selectRect;
-  MRect unselectRect;
-
-  selectRect.x = MIN(anchor.x, current.x);
-  selectRect.y = MIN(anchor.y, current.y);
-  selectRect.width = ABS(current.x - anchor.x);
-  selectRect.height = ABS(current.y - anchor.y);
-
-  unselectRect.x = MIN(anchor.x, last.x);
-  unselectRect.y = MIN(anchor.y, last.y);
-  unselectRect.width = ABS(current.x - last.x);
-  unselectRect.height = ABS(current.y - last.y);
-
-  [self _setState: 0 inRect: unselectRect];
-  [self _setState: 1 inRect: selectRect];
-}
-
-/* This method assumes the receiver matrix has at least 5 rows and 5 columns.
- */
-- (void) _test
-{
-  NSArray* selectedCellsByMethod1;
-  NSArray* selectedCellsByMethod2;
-  NSAutoreleasePool* pool;
-  MPoint anchor, last, current;
-  int i = 1;
-  int noOfErrors = 0;
-
-  if (numRows < 5 || numCols < 5) {
-    NSLog (@"matrix should have at least 5 rows and 5 columns!");
-    return;
-  }
-
-  for (anchor.x = 0; anchor.x < 5; anchor.x++)
-    for (anchor.y = 0; anchor.y < 5; anchor.y++)
-      for (last.x = 0; last.x < 5; last.x++)
-	for (last.y = 0; last.y < 5; last.y++)
-	  for (current.x = 0; current.x < 5; current.x++)
-	    for (current.y = 0; current.y < 5; current.y++) {
-	      pool = [NSAutoreleasePool new];
-
-	      printf ("%d\r", i++);
-	      fflush (stdout);
-
-	      /* First determine the selected cells using the sure method */
-	      [self _selectRect2UsingAnchor: anchor last: last current: current];
-	      selectedCellsByMethod2 = [self selectedCells];
-
-	      /* Then determine the same using the optimized method */
-	      [self _selectRectUsingAnchor: anchor last: last current: current];
-	      selectedCellsByMethod1 = [self selectedCells];
-
-	      /* Compare the selected cells determined by the two methods */
-	      if (![selectedCellsByMethod1 isEqual: selectedCellsByMethod2]) {
-		NSLog (@"\nSelected cells are different for: \n"
-		    @"anchor = (%d, %d)\nlast = (%d, %d)\ncurrent = (%d, %d)",
-		    anchor.x, anchor.y, last.x, last.y, current.x, current.y);
-		noOfErrors++;
-	      }
-
-	      [pool release];
-	    }
-
-  printf ("\nready!\nnumber of errors = %d\n", noOfErrors);
-  fflush (stdout);
-}
-#endif
 
 @end

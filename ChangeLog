@@ -1,3 +1,8 @@
+Wed Jul 14 15:35:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSMatrix.m: Modifications to get rid of most internal
+	methods and get the list-mode selection by rectangle working.
+
 Tue Jul 13  6:44:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSApplication.m: In ([-runModalSession:]) pay attention to
