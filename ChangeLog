@@ -1,3 +1,36 @@
+Thu Jan 30 05:12:21 2003  Serg Stoyan <stoyan@hologr.com>
+
+	* Headers/gnustep/gui/NSMenuItem.h: NSMenuItem protocol conforms
+	to NSObject protocol.
+	* Source/NSBundleAdditions.m ([-instantiateObject:]): Added
+	missing cast.
+	* Source/NSImage.m ([-dissolveToPoint:fromRect:fraction:]): Added
+	missing variable initializer.
+	([-_bestRep:withBpsMatch:]): The same.
+	* Source/NSImageRep.m ([-drawAtPoint:]): Added missing variable
+	initializer.
+	* Source/NSSplitView.m ([-mouseDown:]): The same.
+	* Source/NSStringDrawing.m (drawRun): Fixed compiler warning.
+	* Source/NSTableHeaderCell.m ([-setHighlighted:flag]): New method.
+	* Source/NSTableHeaderView.m ([-drawRect:]): Removed calls to
+	setBackgroundColor:.
+	([-mouseDown:]): Use setHighlighted:, not setBackgroundColor:, to
+	highlight a header cell.
+	* Source/NSTableView.m ([-mouseDown:]): Added missing variable
+	initializer.
+	* Headers/gnustep/gui/NSView.h: Added declaration of
+	lockFocusInRect:
+	* Source/NSView.m ([-lockFocusInRect:]): Added missing variable
+	initializer.
+	* Source/NSWindow.m: Include NSToolbar.h
+	
+Thu Jan 30 04:55:12 2003  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/NSToolbar.h: Declaration of GNUstepPrivate
+	category moved here from NSToolbar.m.
+	* Source/NSToolbar.m: Removed GNUstepPrivate category @interface.
+	* Source/NSWindow.m ([-setToolbar:]): Added missing cast.
+	
 Thu Jan 30 04:39:47 2003  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSWindowController.m ([-dealloc]): Release the window, do
