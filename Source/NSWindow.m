@@ -626,7 +626,8 @@ static NSNotificationCenter *nc = nil;
    */
   [GSServerForWindow(self) removeDragTypes: nil fromWindow: self];
 
-  if (_gstate)
+  /* Check for context also as it might have disappeared before us */
+  if (context && _gstate)
     {
       GSUndefineGState(context, _gstate);
     }

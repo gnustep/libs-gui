@@ -46,9 +46,6 @@ static Class defaultServerClass = NULL;
 /* Maps windows to a server */
 static NSMapTable *windowmaps = NULL;
 
-/* Current server */
-static GSDisplayServer *currentServer = nil;
-
 /* Lock for use when creating contexts */
 static NSRecursiveLock  *serverLock = nil;
 
@@ -209,7 +206,7 @@ GSCurrentServer(void)
 
 /**
    Causes the server to disconnect from the display. If the receiver
-   is the current server, it removes it self and sets the current 
+   is the current server, it removes itself and sets the current 
    server to nil. Sending any more messages to the receiver after this
    is likely to cause severe problems and probably crash the
    application. 
@@ -222,8 +219,6 @@ GSCurrentServer(void)
 
 - (void) dealloc
 {
-  if (self == GSCurrentServer())
-    currentServer = nil;
   DESTROY(server_info);
   DESTROY(event_queue);
   NSFreeMapTable(drag_types);

@@ -522,10 +522,12 @@ static NSCell* tileCell = nil;
 
     /* Connect to our window server */
     srv = [GSDisplayServer serverWithAttributes: nil];
+    RETAIN(srv);
     [GSDisplayServer setCurrentServer: srv];
 
     /* Create a default context. */
     _default_context = [NSGraphicsContext graphicsContextWithAttributes: nil];
+    RETAIN(_default_context);
     [NSGraphicsContext setCurrentContext: _default_context];
 
     /* Initialize font manager */
@@ -754,11 +756,13 @@ static NSCell* tileCell = nil;
   TEST_RELEASE(_app_icon_window);
   TEST_RELEASE(_infoPanel);
 
-  /* Destroy the default context, this will free it */
-  [_default_context destroyContext];
+  /* Destroy the default context */
+  [NSGraphicsContext setCurrentContext: nil];
+  DESTROY(_default_context);
 
   /* Close the server */
   [srv closeServer];
+  DESTROY(srv);
 
   [super dealloc];
 }

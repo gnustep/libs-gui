@@ -52,9 +52,6 @@ static NSZone *_globalGSZone = NULL;
 /* The current concrete class */
 static Class defaultNSGraphicsContextClass = NULL;
 
-/* List of contexts */
-static NSMutableArray	*contextList;
-
 /* Class variable for holding pointers to method functions */
 static NSMutableDictionary *classMethodTable;
 
@@ -64,6 +61,7 @@ static NSRecursiveLock  *contextLock = nil;
 #ifndef GNUSTEP_BASE_LIBRARY
 static NSString	*NSGraphicsContextThreadKey = @"NSGraphicsContextThreadKey";
 #endif
+static NSString	*NSGraphicsContextStackKey = @"NSGraphicsContextStackKey";
 
 /*
  *	Function for rapid access to current graphics context.
@@ -116,7 +114,6 @@ NSGraphicsContext	*GSCurrentContext()
 	  contextLock = [NSRecursiveLock new];
 	  defaultNSGraphicsContextClass = [NSGraphicsContext class];
 	  _globalGSZone = NSDefaultMallocZone();
-	  contextList = [[NSMutableArray allocWithZone: _globalGSZone] init];
 	  classMethodTable =
 	    [[NSMutableDictionary allocWithZone: _globalGSZone] init];
 	}
@@ -199,17 +196,40 @@ NSGraphicsContext	*GSCurrentContext()
 
 + (void) restoreGraphicsState
 {
-// FIXME
+  NSGraphicsContext *ctxt;
+  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
+  NSMutableArray *stack = [dict objectForKey: NSGraphicsContextStackKey];
+  if (stack == nil || [stack count] == 0)
+    {
+      [NSException raise: NSGenericException
+		   format: @"restoreGraphicsState without previous save"];
+    }
+  ctxt = [stack lastObject];
+  [NSGraphicsContext setCurrentContext: ctxt];
+  [stack removeLastObject];
+  [ctxt restoreGraphicsState];
 }
 
 + (void) saveGraphicsState
 {
-// FIXME
+  NSGraphicsContext *ctxt;
+  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
+  NSMutableArray *stack = [dict objectForKey: NSGraphicsContextStackKey];
+  if (stack == nil)
+    {
+      stack = [[NSMutableArray allocWithZone: _globalGSZone] init];
+      [dict setObject: stack forKey: NSGraphicsContextStackKey];
+    }
+  ctxt = GSCurrentContext();
+  [ctxt saveGraphicsState];
+  [stack addObject: ctxt];
 }
 
 + (void) setGraphicsState: (int)graphicsState
 {
-// FIXME
+  /* FIXME: Need to keep a table of which context goes with a graphicState,
+     or perhaps we could rely on the backend? */
+  [self notImplemented: _cmd];
 }
 
 - (void) dealloc
@@ -218,17 +238,6 @@ NSGraphicsContext	*GSCurrentContext()
   DESTROY(context_data);
   DESTROY(context_info);
   [super dealloc];
-}
-
-/* Just remove ourselves from the context list so we will be dealloced on
-   the next autorelease pool end */
-- (void) destroyContext
-{
-  if (GSCurrentContext() == self)
-    [NSGraphicsContext setCurrentContext: nil];
-  [contextLock lock];
-  [contextList removeObject: self];
-  [contextLock unlock];
 }
 
 - (id) init
@@ -257,7 +266,6 @@ NSGraphicsContext	*GSCurrentContext()
       [classMethodTable setObject: [NSValue valueWithPointer: methods]
 			   forKey: [self class]];
     }
-  [contextList addObject: self];
   [contextLock unlock];
 
   return self;
@@ -270,6 +278,7 @@ NSGraphicsContext	*GSCurrentContext()
 
 - (void)flushGraphics
 {
+  [self subclassResponsibility: _cmd];
 }
 
 - (void *)graphicsPort
@@ -284,10 +293,12 @@ NSGraphicsContext	*GSCurrentContext()
 
 - (void) restoreGraphicsState
 {
+  [self DPSgrestore];
 }
 
 - (void) saveGraphicsState
 {
+  [self DPSgsave];
 }
 
 - (void *) focusStack
@@ -658,71 +669,109 @@ NSGraphicsContext	*GSCurrentContext()
 /* ----------------------------------------------------------------------- */
 /* Color operations */
 /* ----------------------------------------------------------------------- */
+/** Returns the current alpha component */
 - (void) DPScurrentalpha: (float *)a
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Returns the current color according to the CMYK color model */
 - (void) DPScurrentcmykcolor: (float*)c : (float*)m : (float*)y : (float*)k 
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Returns the gray-level equivalent in the current color space. The
+    value may depend on the current color space and may be 0 if the
+    current color space has no notion of a gray value */
 - (void) DPScurrentgray: (float*)gray 
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Returns the current color according to the HSB color model. */
 - (void) DPScurrenthsbcolor: (float*)h : (float*)s : (float*)b 
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Returns the current color according to the RGB color model */
 - (void) DPScurrentrgbcolor: (float*)r : (float*)g : (float*)b 
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Sets the alpha drawing component. For this and other color setting
+    commands that have no differentiation between fill and stroke colors,
+    both the fill and stroke alpha are set. */
 - (void) DPSsetalpha: (float)a
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Sets the current colorspace to Device CMYK and the current color
+    based on the indicated values. For this and other color setting
+    commands that have no differentiation between fill and stroke colors,
+    both the fill and stroke colors are set. */
 - (void) DPSsetcmykcolor: (float)c : (float)m : (float)y : (float)k 
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Sets the current colorspace to Device Gray and the current gray value */
 - (void) DPSsetgray: (float)gray 
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Sets the current colorspace to Device RGB and the current color based on 
+   the indicated values */
 - (void) DPSsethsbcolor: (float)h : (float)s : (float)b 
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Sets the current colorspace to Device RGB and the current color based on 
+   the indicated values */
 - (void) DPSsetrgbcolor: (float)r : (float)g : (float)b 
 {
   [self subclassResponsibility: _cmd];
 }
 
+/**
+   <p>Sets the colorspace for fill operations based on values in the supplied
+   dictionary dict.</p>
+   <p>For device colorspaces (GSDeviceGray, GSDeviceRGB,
+   GSDeviceCMYK), only the name of the colorspace needs to be set
+   using the GSColorSpaceName key.</p>
+   <p>Other colorspaces will be documented later</p>
+*/
 - (void) GSSetFillColorspace: (NSDictionary *)dict
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Sets the colorspace for stroke operations based on the values in
+    the supplied dictionary. See -GSSetFillColorspace: for a
+    description of the values that need to be supplied */
 - (void) GSSetStrokeColorspace: (NSDictionary *)dict
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Sets the current color for fill operations. The values array
+    should have n components, where n corresponds to the number of
+    color components required to specify the color in the current
+    colorspace. */
 - (void) GSSetFillColor: (float *)values
 {
   [self subclassResponsibility: _cmd];
 }
 
+/** Sets the current color for fill operations. The values array
+    should have n components, where n corresponds to the number of
+    color components required to specify the color in the current
+    colorspace. */
 - (void) GSSetStrokeColor: (float *)values
 {
   [self subclassResponsibility: _cmd];

@@ -187,7 +187,6 @@ APPKIT_DECLARE NSGraphicsContext	*GSCurrentContext();
 + (void) setDefaultContextClass: (Class)defaultContextClass;
 
 - (id) initWithContextInfo: (NSDictionary*)info;
-- (void) destroyContext;
 
 /*
  * Focus management methods - lock and unlock should only be used by NSView
@@ -391,6 +390,19 @@ APPKIT_EXPORT NSString *NSGraphicsContextDestinationAttributeName;
 APPKIT_EXPORT NSString *NSGraphicsContextPDFFormat;
 APPKIT_EXPORT NSString *NSGraphicsContextPSFormat;
 APPKIT_EXPORT NSString *NSGraphicsContextRepresentationFormatAttributeName;
+
+/* Colorspace constants */
+APPKIT_DECLARE NSString *GSColorSpaceName;
+APPKIT_DECLARE NSString *GSColorSpaceWhitePoint;
+APPKIT_DECLARE NSString *GSColorSpaceBlackPoint;
+APPKIT_DECLARE NSString *GSColorSpaceGamma;
+APPKIT_DECLARE NSString *GSColorSpaceMatrix;
+APPKIT_DECLARE NSString *GSColorSpaceRange;
+APPKIT_DECLARE NSString *GSColorSpaceComponents;
+APPKIT_DECLARE NSString *GSColorSpaceProfile;
+APPKIT_DECLARE NSString *GSAlternateColorSpace;
+APPKIT_DECLARE NSString *GSBaseColorSpace;
+APPKIT_DECLARE NSString *GSColorSpaceColorTable;
 
 #endif /* _NSGraphicsContext_h_INCLUDE */
 

@@ -1,3 +1,17 @@
+2002-04-01  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSApplication.m (-init): Retain the server
+	and default context.
+	(-dealloc): Release server and context.
+	* Source/NSGraphicsContext.m (+restoreGraphicsState): Implement.
+	(+saveGraphicsState): Likewise.
+	( destroyContext): Remove.
+	(-restoreGraphicsState): Implement.
+	(-saveGraphicsState): Likewise.
+	Add some documentation.
+	* Source/NSWindow.m ([NSWindow -dealloc]): Check for context
+	before undefining gstate.
+
 2002-04-01  Gregory Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSOutlineView.m
