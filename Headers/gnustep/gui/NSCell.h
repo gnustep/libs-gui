@@ -35,6 +35,7 @@
 #include <AppKit/NSText.h>
 
 @class NSString;
+@class NSMutableDictionary;
 @class NSView;
 @class NSFont;
 @class NSText;
@@ -114,24 +115,28 @@ enum {
   // Attributes
   NSString *_contents;
   NSImage *_cell_image;
-  NSFont *_cell_font;
+  NSMutableDictionary *_typingAttributes;
+  id _objectValue;
   struct GSCellFlagsType { 
-    // total 29 bits.  3 bits left.
+    // total 26 bits.  6 bits left.
     unsigned is_highlighted:1;
-    unsigned is_disabled:1;    
-    unsigned is_editable:1;   
+    unsigned is_disabled:1;
+    unsigned is_editable:1;
+    unsigned is_rich_text: 1;
+    unsigned imports_graphics: 1;
+    unsigned shows_first_responder:1; 
+    unsigned refuses_first_responder:1; 
+    unsigned sends_action_on_end_editing:1; 
     unsigned is_bordered:1;   
     unsigned is_bezeled:1;   
     unsigned is_scrollable:1;
     unsigned is_selectable:1;
     unsigned is_continuous:1;
     unsigned float_autorange:1;
-    unsigned wraps:1;
     unsigned allows_mixed_state:1;
     unsigned has_valid_object_value:1;
-    unsigned text_align:3;     // 5 values
+    unsigned type:2;           // 3 values
     unsigned image_position:4; // 7 values
-    unsigned type:4;           // 8 values (see NSButtonCell)
     unsigned entry_type:4;     // 8 values
     // 2 bits reserved for subclass use
     unsigned subclass_bool_one:1;
@@ -140,12 +145,14 @@ enum {
        but who knows in the future */
     int state; // 3 values but one negative
   } _cell;
+  unsigned char _mnemonic_location;
   unsigned int _cell_float_left;
   unsigned int _cell_float_right;
-  id _represented_object; 
+  unsigned int _mouse_down_flags;
   unsigned int _action_mask; 
   NSFormatter *_formatter;
-  id _objectValue;
+  NSMenu *_menu;
+  id _represented_object; 
 }
 
 //
@@ -409,6 +416,8 @@ enum {
 //
 @interface NSCell (PrivateMethods)
 
+- (NSColor*) textColor;
+- (NSSize) _sizeText: (NSString*) title;
 - (void) _drawText: (NSString*)aString inFrame: (NSRect)aRect;
 
 @end
