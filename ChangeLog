@@ -1,9 +1,21 @@
+Sun Feb 24 11:33:21 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+	
+	* Source/NSSaverPanel.m: Do not assume that NSFileManager
+	-directoryContentsAtPath: returns a NSMutableArray.
+
+Sun Feb 24 11:30:33 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSSavePanel.m ([-browser:createRowsForColumn:inMatrix:]): 
+	Do not display files starting with . if the user has set
+	GSSavePanelHideDotFiles to YES (Patch by Martin Brecher
+	<martin@mb-itconsulting.com> with lots of changes by myself).
+	
 2002-02-24  Richard Frith-Macdonald  <rfm@gnu.org>
 
 	* Source/NSLayoutManager.m: More changes to glyph code - store
 	glyphs and their attributes in the same array, store gaps as
-	ranges rather than simple indexs.  Update comments.
-	Still not working and turned off using #if
+	ranges rather than simple indexs.  Update comments.  Still not
+	working and turned off using #if
 
 Sat Feb 23 22:07:09 2002  Gregory Casamento <greg_casamento@yahoo.com>
 
