@@ -407,6 +407,8 @@ static Class	viewClass;
 static NSMutableSet	*autosaveNames;
 static NSRecursiveLock	*windowsLock;
 static NSMapTable* windowmaps = NULL;
+static NSNotificationCenter *nc = nil;
+
 
 /*
  * Class methods
@@ -425,6 +427,7 @@ static NSMapTable* windowmaps = NULL;
       viewClass = [NSView class];
       autosaveNames = [NSMutableSet new];
       windowsLock = [NSRecursiveLock new];
+      nc = [NSNotificationCenter defaultCenter];
     }
 }
 
@@ -530,7 +533,7 @@ static NSMapTable* windowmaps = NULL;
 {
   NSGraphicsContext	*context = GSCurrentContext();
 
-  [[NSNotificationCenter defaultCenter] removeObserver: self];
+  [nc removeObserver: self];
   [[NSRunLoop currentRunLoop]
 	 cancelPerformSelector: @selector(_handleWindowNeedsDisplay:)
 			target: self
@@ -921,9 +924,8 @@ static NSMapTable* windowmaps = NULL;
 
   if (t && (_firstResponder == t))
     {
-      [[NSNotificationCenter defaultCenter]
-	postNotificationName: NSTextDidEndEditingNotification
-	object: t];
+      [nc postNotificationName: NSTextDidEndEditingNotification
+	  object: t];
       [t setText: @""];
       [t setDelegate: nil];
       [t removeFromSuperview];
@@ -984,8 +986,6 @@ static NSMapTable* windowmaps = NULL;
 {
   if (_f.is_key == NO)
     {
-      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-
       [_firstResponder becomeFirstResponder];
       if ((_firstResponder != self)
 	&& [_firstResponder respondsToSelector: @selector(becomeKeyWindow)])
@@ -1003,8 +1003,6 @@ static NSMapTable* windowmaps = NULL;
 {
   if (_f.is_main == NO)
     {
-      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-
       _f.is_main = YES;
       if (_f.is_key == NO)
 	{
@@ -1202,8 +1200,6 @@ static NSMapTable* windowmaps = NULL;
 {
   if (_f.is_key == YES)
     {
-      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-
       if ((_firstResponder != self)
 	&& [_firstResponder respondsToSelector: @selector(resignKeyWindow)])
 	[_firstResponder resignKeyWindow];
@@ -1228,8 +1224,6 @@ static NSMapTable* windowmaps = NULL;
 {
   if (_f.is_main == YES)
     {
-      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-
       _f.is_main = NO;
       if (_f.is_key == YES)
 	{
@@ -1337,8 +1331,6 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) setFrame: (NSRect)frameRect display: (BOOL)flag
 {
-  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
-
   if (_maximumSize.width > 0 && frameRect.size.width > _maximumSize.width)
     {
       frameRect.size.width = _maximumSize.width;
@@ -1528,8 +1520,6 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) update
 {
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-
   /*
    *	if autodisplay is enabled and window display
    */
@@ -1832,7 +1822,6 @@ resetCursorRectsForView(NSView *theView)
  */
 - (void) close
 {
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
   CREATE_AUTORELEASE_POOL(pool);
 
   [nc postNotificationName: NSWindowWillCloseNotification object: self];
@@ -1863,8 +1852,6 @@ resetCursorRectsForView(NSView *theView)
 */
 - (void) _didDeminiaturize: sender
 {
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-
   _f.is_miniaturized = NO;
   [nc postNotificationName: NSWindowDidDeminiaturizeNotification object: self];
 }
@@ -1894,8 +1881,6 @@ resetCursorRectsForView(NSView *theView)
 
 - (void) miniaturize: (id)sender
 {
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-  
   [nc postNotificationName: NSWindowWillMiniaturizeNotification
 		    object: self];
   
@@ -2600,13 +2585,17 @@ resetCursorRectsForView(NSView *theView)
 	}
 	break;
 
+      case NSScrollWheel:
+  	v = [_contentView hitTest: [theEvent locationInWindow]];
+	[v scrollWheel: theEvent];
+	break;
+
       case NSAppKitDefined:
 	{
 	  id                    dragInfo;
 	  int                   action;
 	  NSEvent               *e;
 	  GSAppKitSubtype	sub = [theEvent subtype];
-	  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
 
 	  switch (sub)
 	    {
@@ -3274,8 +3263,6 @@ resetCursorRectsForView(NSView *theView)
 
 - (void) setDelegate: (id)anObject
 {
-  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
-
   if (_delegate)
     {
       [nc removeObserver: _delegate name: nil object: self];
