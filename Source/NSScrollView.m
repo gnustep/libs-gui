@@ -430,39 +430,55 @@ static Class rulerViewClass = nil;
   NSDebugLog (@"reflectScrolledClipView:");
 
   if (_contentView)
-    clipViewBounds = [_contentView bounds];
+    {
+      clipViewBounds = [_contentView bounds];
+    }
   if ((documentView = [_contentView documentView]))
-    documentFrame = [documentView frame];
+    {
+      documentFrame = [documentView frame];
+    }
 
   if (_hasVertScroller)
     {
       if (documentFrame.size.height <= clipViewBounds.size.height)
-	[_vertScroller setEnabled: NO];
+	{
+	  [_vertScroller setEnabled: NO];
+	}
       else
 	{
 	  [_vertScroller setEnabled: YES];
+
 	  knobProportion = clipViewBounds.size.height
 	    / documentFrame.size.height;
+
 	  floatValue = (clipViewBounds.origin.y - documentFrame.origin.y)
 	    / (documentFrame.size.height - clipViewBounds.size.height);
+
 	  if (!_contentView->_rFlags.flipped_view)
-	    floatValue = 1 - floatValue;
-	  [_vertScroller setFloatValue: floatValue
-			knobProportion: knobProportion];
+	    {
+	      floatValue = 1 - floatValue;
+	    }
+	  [_vertScroller setFloatValue: floatValue 
+			 knobProportion: knobProportion];
 	}
     }
 
   if (_hasHorizScroller)
     {
       if (documentFrame.size.width <= clipViewBounds.size.width)
-	[_horizScroller setEnabled: NO];
+	{
+	  [_horizScroller setEnabled: NO];
+	}
       else
 	{
 	  [_horizScroller setEnabled: YES];
+
 	  knobProportion = clipViewBounds.size.width
 	    / documentFrame.size.width;
+
 	  floatValue = (clipViewBounds.origin.x - documentFrame.origin.x)
 	    / (documentFrame.size.width - clipViewBounds.size.width);
+
 	  [_horizScroller setFloatValue: floatValue
 			 knobProportion: knobProportion];
 	}

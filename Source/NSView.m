@@ -618,7 +618,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   
   [_boundsMatrix scaleTo: sx : sy];
   if (sx != 1 || sy != 1)
-    _is_rotated_or_scaled_from_base = YES;
+    {
+      _is_rotated_or_scaled_from_base = YES;
+    }
 }
 
 - (void) setFrame: (NSRect)frameRect
@@ -668,8 +670,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	}
       [self resizeSubviewsWithOldSize: old_size];
       if (_post_frame_changes)
-	[nc postNotificationName: NSViewFrameDidChangeNotification
-	    object: self];
+	{
+	  [nc postNotificationName: NSViewFrameDidChangeNotification
+	      object: self];
+	}
     }
 }
 
@@ -683,8 +687,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   [_frameMatrix setFrameOrigin: _frame.origin];
 
   if (_post_frame_changes)
-    [nc postNotificationName: NSViewFrameDidChangeNotification
-	object: self];
+    {
+      [nc postNotificationName: NSViewFrameDidChangeNotification
+	  object: self];
+    }
 }
 
 - (void) setFrameSize: (NSSize)newSize
@@ -716,8 +722,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       _bounds.size.height = _frame.size.height * sy;
     }
   else
-    _frame.size = _bounds.size = newSize;
-  
+    {
+      _frame.size = _bounds.size = newSize;
+    }
+
   [self resizeSubviewsWithOldSize: old_size];
   if (_post_frame_changes)
     {
@@ -736,28 +744,42 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   _is_rotated_from_base = _is_rotated_or_scaled_from_base = YES;
 
   if (_post_frame_changes)
-    [nc postNotificationName: NSViewFrameDidChangeNotification
-	object: self];
+    {
+      [nc postNotificationName: NSViewFrameDidChangeNotification
+	  object: self];
+    }
 }
 
 - (BOOL) isRotatedFromBase
 {
   if (_is_rotated_from_base)
-    return _is_rotated_from_base;
+    {
+      return YES;
+    }
   else if (_super_view)
-    return [_super_view isRotatedFromBase];
+    {
+      return [_super_view isRotatedFromBase];
+    }
   else
-    return NO;
+    {
+      return NO;
+    }
 }
 
 - (BOOL) isRotatedOrScaledFromBase
 {
   if (_is_rotated_or_scaled_from_base)
-    return _is_rotated_or_scaled_from_base;
+    {
+      return YES;
+    }
   else if (_super_view)
-    return [_super_view isRotatedOrScaledFromBase];
+    {
+      return [_super_view isRotatedOrScaledFromBase];
+    }
   else
-    return NO;
+    {
+      return NO;
+    }
 }
 
 - (void) scaleUnitSquareToSize: (NSSize)newSize
@@ -784,8 +806,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   [self _updateBoundsMatrix];
 
   if (_post_bounds_changes)
-    [nc postNotificationName: NSViewBoundsDidChangeNotification
-	object: self];
+    {
+      [nc postNotificationName: NSViewBoundsDidChangeNotification
+	  object: self];
+    }
 }
 
 - (void) setBounds: (NSRect)aRect
@@ -806,12 +830,14 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     }
   _bounds = aRect;
   [_boundsMatrix
-    setFrameOrigin: NSMakePoint(-_bounds.origin.x,-_bounds.origin.y)];
+    setFrameOrigin: NSMakePoint(-_bounds.origin.x, -_bounds.origin.y)];
   [self _updateBoundsMatrix];
 
   if (_post_bounds_changes)
-    [nc postNotificationName: NSViewBoundsDidChangeNotification
-	object: self];
+    {
+      [nc postNotificationName: NSViewBoundsDidChangeNotification
+	  object: self];
+    }
 }
 
 - (void) setBoundsOrigin: (NSPoint)newOrigin
@@ -852,8 +878,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   [self _updateBoundsMatrix];
 
   if (_post_bounds_changes)
-    [nc postNotificationName: NSViewBoundsDidChangeNotification
-	object: self];
+    {
+      [nc postNotificationName: NSViewBoundsDidChangeNotification
+	  object: self];
+    }
 }
 
 - (void) setBoundsRotation: (float)angle
@@ -881,8 +909,10 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   [_boundsMatrix translateToPoint: point];
 
   if (_post_bounds_changes)
-    [nc postNotificationName: NSViewBoundsDidChangeNotification
-	object: self];
+    {
+      [nc postNotificationName: NSViewBoundsDidChangeNotification
+	  object: self];
+    }
 }
 
 - (NSRect) centerScanRect: (NSRect)aRect

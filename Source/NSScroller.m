@@ -340,11 +340,17 @@ static NSColor *scrollBarColor = nil;
 - (void) setFloatValue: (float)aFloat
 {
   if (aFloat < 0)
-    _floatValue = 0;
+    {
+      _floatValue = 0;
+    }
   else if (aFloat > 1)
-    _floatValue = 1;
+    {
+      _floatValue = 1;
+    }
   else
-    _floatValue = aFloat;
+    {
+      _floatValue = aFloat;
+    }
 
   [self setNeedsDisplayInRect: [self rectForPart: NSScrollerKnobSlot]];
 }
@@ -352,11 +358,17 @@ static NSColor *scrollBarColor = nil;
 - (void) setFloatValue: (float)aFloat knobProportion: (float)ratio
 {
   if (ratio < 0)
-    _knobProportion = 0;
+    {
+      _knobProportion = 0;
+    }
   else if (ratio > 1)
-    _knobProportion = 1;
+    {
+      _knobProportion = 1;
+    }
   else
-    _knobProportion = ratio;
+    {
+      _knobProportion = ratio;
+    }
 
   [self setFloatValue: aFloat];
 }
@@ -794,9 +806,13 @@ static NSColor *scrollBarColor = nil;
    * knob are not displayed at all.
    */
   if (!_isEnabled)
-    usableParts = NSNoScrollerParts;
+    {
+      usableParts = NSNoScrollerParts;
+    }
   else
-    usableParts = _usableParts;
+    {
+      usableParts = _usableParts;
+    }
 
   /*
    * Assign to `width' and `height' values describing

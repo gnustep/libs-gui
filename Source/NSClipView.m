@@ -145,8 +145,8 @@
       // and after scrolling.
       // then tell docview to draw the exposed parts.
       // intersection is the common rectangle
-      intersection = NSIntersectionRect(originalBounds, newBounds);
-      if (NSEqualRects(intersection, NSZeroRect))
+      intersection = NSIntersectionRect (originalBounds, newBounds);
+      if (NSEqualRects (intersection, NSZeroRect))
 	{
 	  // no intersection -- docview should draw everything
 	  [super setBoundsOrigin: newBounds.origin];
@@ -162,7 +162,7 @@
 	  destPoint.x -= dx;
 	  destPoint.y -= dy;
 	  [self lockFocus];
-	  NSCopyBits(0, intersection, destPoint);
+	  NSCopyBits (0, intersection, destPoint);
 	  [self unlockFocus];
 
 	  [super setBoundsOrigin: newBounds.origin];
@@ -237,31 +237,43 @@
   NSPoint	new = proposedNewOrigin;
 
   if (_documentView == nil)
-    return _bounds.origin;
-
+    {
+      return _bounds.origin;
+    }
+  
   documentFrame = [_documentView frame];
   if (documentFrame.size.width <= _bounds.size.width)
-    new.x = documentFrame.origin.x;
+    {
+      new.x = documentFrame.origin.x;
+    }
   else if (proposedNewOrigin.x <= documentFrame.origin.x)
-    new.x = documentFrame.origin.x;
-  else if (proposedNewOrigin.x
-	   >= NSMaxX(documentFrame) - _bounds.size.width)
-    new.x = NSMaxX(documentFrame) - _bounds.size.width;
+    {
+      new.x = documentFrame.origin.x;
+    }
+  else if (proposedNewOrigin.x + _bounds.size.width >= NSMaxX(documentFrame))
+    {
+      new.x = NSMaxX(documentFrame) - _bounds.size.width;
+    }
 
   if (documentFrame.size.height <= _bounds.size.height)
-    new.y = documentFrame.origin.y;
+    {
+      new.y = documentFrame.origin.y;
+    }
   else if (proposedNewOrigin.y <= documentFrame.origin.y)
-    new.y = documentFrame.origin.y;
-  else if (proposedNewOrigin.y
-           >= NSMaxY(documentFrame) - _bounds.size.height)
-    new.y = NSMaxY(documentFrame) - _bounds.size.height;
+    {
+      new.y = documentFrame.origin.y;
+    }
+  else if (proposedNewOrigin.y + _bounds.size.height >= NSMaxY(documentFrame))
+    {
+      new.y = NSMaxY(documentFrame) - _bounds.size.height;
+    }
 
   // make it an integer coordinate in device space
   // to avoid some nice effects when scrolling
-  new = [self convertPoint: new toView: nil];
+  new = [self convertPoint: new  toView: nil];
   new.x = (int)new.x;
   new.y = (int)new.y;
-  new = [self convertPoint: new fromView: nil];
+  new = [self convertPoint: new  fromView: nil];
 
   return new;
 }
