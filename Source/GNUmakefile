@@ -106,6 +106,7 @@ NSView.m \
 NSWindow.m \
 NSWorkspace.m \
 TrackingRectangle.m \
+GNUServicesManager.m \
 PSMatrix.m \
 tiff.m \
 externs.m
@@ -199,6 +200,7 @@ AppKit/NSWindow.h \
 AppKit/NSWorkspace.h \
 AppKit/TrackingRectangle.h \
 AppKit/PSMatrix.h \
+AppKit/GNUServiceManager.h \
 AppKit/nsimage-tiff.h \
 
 -include GNUmakefile.preamble

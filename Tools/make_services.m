@@ -31,13 +31,16 @@
 #include	<Foundation/NSProcessInfo.h>
 #include	<Foundation/NSData.h>
 #include	<Foundation/NSDebug.h>
+#include	<Foundation/NSDistributedLock.h>
 #include	<Foundation/NSAutoreleasePool.h>
 #include	<Foundation/NSSerialization.h>
 
 static void scanDirectory(NSMutableDictionary *services, NSString *path);
+static void scanDynamic(NSMutableDictionary *services, NSString *path);
 static NSMutableArray *validateEntry(id svcs, NSString* path);
 static NSMutableDictionary *validateService(NSDictionary *service, NSString* path, unsigned i);
 
+static NSString		*appsName = @".GNUstepAppList";
 static NSString		*cacheName = @".GNUstepServices";
 static NSString		*infoLoc = @"Resources/Info-gnustep.plist";
 
@@ -65,6 +68,7 @@ main(int argc, char** argv)
   unsigned		index;
   BOOL			isDir;
   NSMutableDictionary	*fullMap;
+  NSDictionary		*oldMap;
 
   pool = [NSAutoreleasePool new];
 
@@ -132,17 +136,42 @@ main(int argc, char** argv)
     }
 
   roots = [NSMutableArray arrayWithCapacity: 3];
+  services = [NSMutableDictionary dictionaryWithCapacity: 200];
 
   /*
    *	Build a list of 'root' directories to search for applications.
    *	Order is important - later duplicates of services are ignored.
+   *
+   *	Make sure that the users 'GNUstep/Services' directory exists.
    */
   str = [env objectForKey: @"GNUSTEP_USER_ROOT"];
   if (str != nil)
     usrRoot = str;
   else
     usrRoot = [NSString stringWithFormat: @"%@/GNUstep", NSHomeDirectory()];
+
+  mgr = [NSFileManager defaultManager];
+  if (([mgr fileExistsAtPath: usrRoot isDirectory: &isDir] && isDir) == 0)
+    {
+      if ([mgr createDirectoryAtPath: usrRoot attributes: nil] == NO)
+	{
+	  NSLog(@"couldn't create %@\n", usrRoot);
+	  [pool release];
+	  exit(1);
+	}
+    }
   [roots addObject: usrRoot];
+
+  usrRoot = [usrRoot stringByAppendingPathComponent: @"Services"];
+  if (([mgr fileExistsAtPath: usrRoot isDirectory: &isDir] && isDir) == 0)
+    {
+      if ([mgr createDirectoryAtPath: usrRoot attributes: nil] == NO)
+	{
+	  NSLog(@"couldn't create %@\n", usrRoot);
+	  [pool release];
+	  exit(1);
+	}
+    }
 
   str = [env objectForKey: @"GNUSTEP_LOCAL_ROOT"];
   if (str != nil)
@@ -157,12 +186,17 @@ main(int argc, char** argv)
     [roots addObject: @"/usr/GNUstep"];
 
   /*
+   *	Before doing the main scan, we examine the 'Services' directory to
+   *	see if any application has registered dynamic services - these take
+   *	precedence over any listed in an applications Info_gnustep.plist.
+   */
+  scanDynamic(services, usrRoot);
+
+  /*
    *	List of directory names to search within each root directory
    *	when looking for applications providing services.
    */
   locations = [NSArray arrayWithObjects: @"Apps", @"Library/Services", nil];
-
-  services = [NSMutableDictionary dictionaryWithCapacity: 200];
 
   for (index = 0; index < [roots count]; index++)
     {
@@ -178,33 +212,57 @@ main(int argc, char** argv)
 	}
     }
 
-  mgr = [NSFileManager defaultManager];
-  if (([mgr fileExistsAtPath: usrRoot isDirectory: &isDir] && isDir) == 0)
-    {
-      if ([mgr createDirectoryAtPath: usrRoot attributes: nil] == NO)
-	{
-	  NSLog(@"couldn't create %@\n", usrRoot);
-	  [pool release];
-	  exit(1);
-	}
-    }
-
   fullMap = [NSMutableDictionary dictionaryWithCapacity: 5];
   [fullMap setObject: services forKey: @"ByPath"];
   [fullMap setObject: serviceMap forKey: @"ByService"];
   [fullMap setObject: filterMap forKey: @"ByFilter"];
   [fullMap setObject: printMap forKey: @"ByPrint"];
   [fullMap setObject: spellMap forKey: @"BySpell"];
-  [fullMap setObject: applicationMap forKey: @"Applications"];
 
   str = [usrRoot stringByAppendingPathComponent: cacheName];
-  data = [NSSerializer serializePropertyList: fullMap];
-  if ([data writeToFile: str atomically: YES] == NO)
+  if ([mgr fileExistsAtPath: str])
     {
-      NSLog(@"couldn't write %@\n", str);
-      [pool release];
-      exit(1);
+      data = [NSData dataWithContentsOfFile: str];
+      oldMap = [NSDeserializer deserializePropertyListFromData: data
+					     mutableContainers: NO];
     }
+  else
+    {
+      oldMap = nil;
+    }
+  if ([fullMap isEqual: oldMap] == NO)
+    {
+      data = [NSSerializer serializePropertyList: fullMap];
+      if ([data writeToFile: str atomically: YES] == NO)
+	{
+	  NSLog(@"couldn't write %@\n", str);
+	  [pool release];
+	  exit(1);
+	}
+    }
+
+  str = [usrRoot stringByAppendingPathComponent: appsName];
+  if ([mgr fileExistsAtPath: str])
+    {
+      data = [NSData dataWithContentsOfFile: str];
+      oldMap = [NSDeserializer deserializePropertyListFromData: data
+					     mutableContainers: NO];
+    }
+  else
+    {
+      oldMap = nil;
+    }
+  if ([applicationMap isEqual: oldMap] == NO)
+    {
+      data = [NSSerializer serializePropertyList: applicationMap];
+      if ([data writeToFile: str atomically: YES] == NO)
+	{
+	  NSLog(@"couldn't write %@\n", str);
+	  [pool release];
+	  exit(1);
+	}
+    }
+
   [pool release];
   exit(0);
 }
@@ -326,6 +384,54 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
 	    {
 	      scanDirectory(services, newPath);
 	    }
+	}
+    }
+  [arp release];
+}
+
+static void
+scanDynamic(NSMutableDictionary *services, NSString *path)
+{
+  NSFileManager		*mgr = [NSFileManager defaultManager];
+  NSAutoreleasePool	*arp = [NSAutoreleasePool new];
+  NSArray		*contents = [mgr directoryContentsAtPath: path];
+  unsigned		index;
+
+  for (index = 0; index < [contents count]; index++)
+    {
+      NSString		*name = [contents objectAtIndex: index];
+      NSString		*infPath;
+      NSDictionary	*info;
+
+      /*
+       *	Ignore anything with a leading dot.
+       */
+      if ([name hasPrefix: @"."])
+	{
+	  continue;
+	}
+
+      infPath = [path stringByAppendingPathComponent: name];
+
+      info = [NSDictionary dictionaryWithContentsOfFile: infPath];
+      if (info)
+	{
+	  id	svcs = [info objectForKey: @"NSServices"];
+
+	  if (svcs)
+	    {
+	      NSMutableArray	*entry;
+
+	      entry = validateEntry(svcs, infPath);
+	      if (entry)
+		{
+		  [services setObject: entry forKey: infPath];
+		}
+	    }
+	}
+      else
+	{
+	  NSLog(@"bad app info - %@\n", infPath);
 	}
     }
   [arp release];

@@ -39,18 +39,10 @@
 
 #define stringify_it(X) #X
 #define prog_path(X,Y) \
-  stringify_it(X) "/Tools/" GNUSTEP_TARGET_DIR "/" LIBRARY_COMBO Y
+  stringify_it(X) "/Tools/" GNUSTEP_TARGET_DIR "/" LIBRARY_COMBO
 
-static NSDictionary	*allServices = nil;
 static NSDictionary	*applications = nil;
 
-NSDictionary*
-GSAllServicesDictionary()
-{
-  if (allServices == nil)
-    [[NSWorkspace sharedWorkspace] findApplications];
-  return allServices;
-}
 
 NSDictionary*
 GSApplicationsDictionary()
@@ -60,20 +52,14 @@ GSApplicationsDictionary()
   return applications;
 }
 
-void
-NSUpdateDynamicServices()
-{
-  [[NSWorkspace sharedWorkspace] findApplications];
-}
-
 @implementation	NSWorkspace
 
 static NSWorkspace	*sharedWorkspace = nil;
 static NSNotificationCenter	*workspaceCenter = nil;
 static BOOL userDefaultsChanged = NO;
 
-static NSString		*cacheName = @".GNUstepServices";
-static NSString		*servicesPath = nil;
+static NSString		*appListName = @".GNUstepAppList";
+static NSString		*appListPath = nil;
 
 static NSString* gnustep_target_dir = 
 #ifdef GNUSTEP_TARGET_DIR
@@ -130,9 +116,10 @@ static NSString* library_combo =
 
 	  str = [env objectForKey: @"GNUSTEP_USER_ROOT"];
 	  if (str == nil)
-	    str = [NSString stringWithFormat: @"%@/GNUstep", NSHomeDirectory()];
-	  str = [str stringByAppendingPathComponent: cacheName];
-	  servicesPath = [str retain];
+	    str = [NSString stringWithFormat: @"%@/GNUstep/Services",
+		NSHomeDirectory()];
+	  str = [str stringByAppendingPathComponent: appListName];
+	  appListPath = [str retain];
 
 	  if ((str = [env objectForKey: @"GNUSTEP_TARGET_DIR"]) != nil)
 	    gnustep_target_dir = [str retain];
@@ -258,7 +245,7 @@ inFileViewerRootedAtPath:(NSString *)rootFullpath
   NSString      *last = [appName lastPathComponent];
 
   if (applications == nil)
-    NSUpdateDynamicServices();
+    [self findApplications];
 
   if ([appName isEqual: last])
     {
@@ -322,21 +309,18 @@ inFileViewerRootedAtPath:(NSString *)rootFullpath
 - (void)findApplications
 {
   NSData	*data;
-  NSDictionary	*newServices;
-  NSDictionary	*dict;
+  NSDictionary	*newApps;
 
   system(prog_path(GNUSTEP_INSTALL_PREFIX, "/make_services"));
 
-  data = [NSData dataWithContentsOfFile: servicesPath];
+  data = [NSData dataWithContentsOfFile: appListPath];
   if (data)
-    newServices = [NSDeserializer deserializePropertyListFromData: data
-					      mutableContainers: NO];
+    newApps = [NSDeserializer deserializePropertyListFromData: data
+					    mutableContainers: NO];
   else
-    newServices = [NSDictionary dictionary];
+    newApps = [NSDictionary dictionary];
 
-  ASSIGN(allServices, newServices);
-  dict = [newServices objectForKey: @"Applications"];
-  ASSIGN(applications, dict);
+  ASSIGN(applications, newApps);
 }
 
 //

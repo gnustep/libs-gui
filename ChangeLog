@@ -1,3 +1,17 @@
+Tue Dec  1 21:00:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* NSApplication.m: Moved services code out to GNUServiceManager.m
+	* NSPasteboard.m: Moved services code out to GNUServiceManager.m
+	* NSWorkspace.m: Moved services code out to GNUServiceManager.m
+	* GNUServicesManager.m: All services stuff in here - now full
+	implementation of services functions.
+	* GNUServicesManager.h: Header for services manager class.
+	* GNUmakefile: Added services manager stuff
+	* Tools/set_show_service.m: New tool to enable/disable services.
+	* Tools/GNUmakefile: Added set_show_service.m
+	* Tools/dummy.m: More dummy backend functions.
+	* Tools/make_services.m: Update for new directory structure.
+
 Tue Dec 1 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* NSWindow.m rename windowWithNumber to _windowWithTag per backend

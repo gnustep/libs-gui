@@ -54,6 +54,22 @@ NSBeep(void)
 {
 }
 
+void GSfill() {}
+void GSsetgray() {}
+void GSnewpath() {}
+void GSgrestore() {}
+void GSrectfill() {}
+void GSsetlinewidth() {}
+void GSclosepath() {}
+void GSshow() {}
+void GStranslate() {}
+void GSmoveto() {}
+void GSgsave() {}
+void GSlineto() {}
+void GSstroke() {}
+void GSrlineto() {}
+void GSrectclip() {}
+
 void NSFrameRect(NSRect aRect)  
 {
 }
@@ -77,5 +93,17 @@ void NSDrawGroove(NSRect aRect, NSRect clipRect)
 @end
 
 @implementation GMUnarchiver
+@end
+
+@interface  NSWindowView : NSObject
+@end
+
+@implementation NSWindowView
+@end
+
+@interface  GPSDrawContext : NSObject
+@end
+
+@implementation GPSDrawContext
 @end
 
