@@ -74,6 +74,7 @@
   // We do not RETAIN aTableView but aTableView is supposed 
   // to RETAIN us.
   _tableView = aTableView;
+
 }
 - (NSTableView*)tableView
 {
@@ -102,33 +103,28 @@
  */
 - (int)columnAtPoint: (NSPoint)aPoint
 {
-  // TODO
-  return -1;
+  if (_tableView == nil)
+    return -1;
+
+  /* Ask to the tableview, which is caching geometry info */
+  aPoint = [self convertPoint: aPoint toView: _tableView];
+  aPoint.y = [_tableView bounds].origin.y;
+  return [_tableView columnAtPoint: aPoint];
 }
+
 - (NSRect)headerRectOfColumn: (int)columnIndex
 {
-  NSArray* columns;
   NSRect rect;
-  int i;
 
   if (_tableView == nil)
     return NSZeroRect;
 
-  columns = [_tableView tableColumns];
-  
-  NSAssert(columnIndex > 0, NSInternalInconsistencyException);
-  NSAssert(columnIndex < [columns count], NSInternalInconsistencyException);
-
-  rect.origin.x = _bounds.origin.x;
+  /* Ask to the tableview, which is caching geometry info */
+  rect = [_tableView rectOfColumn: columnIndex];
+  rect = [self convertRect: rect fromView: _tableView];
   rect.origin.y = _bounds.origin.y;
   rect.size.height = _bounds.size.height;
   
-  for (i = 0; i < columnIndex; i++)
-    {
-      rect.origin.x += [[columns objectAtIndex: i] width];
-    }
-  rect.size.width = [[columns objectAtIndex: columnIndex] width];
-
   return rect;
 }
 
@@ -137,24 +133,39 @@
  */
 - (void)drawRect: (NSRect)aRect
 {
-  NSArray* columns;
-  NSRange columnsToDraw;
+  NSArray *columns;
+  int firstColumnToDraw;
+  int lastColumnToDraw;
+  NSRect drawingRect;
+  NSTableColumn *column;
+  float width;
   int i;
 
   if (_tableView == nil)
     return;
-  
-  columnsToDraw = [_tableView columnsInRect: aRect];
-  if (columnsToDraw.length == 0)
-    return;
 
+  firstColumnToDraw = [self columnAtPoint: NSMakePoint (aRect.origin.x,
+							aRect.origin.y)];
+  if (firstColumnToDraw == -1)
+    firstColumnToDraw = 0;
+
+  lastColumnToDraw = [self columnAtPoint: NSMakePoint (NSMaxX (aRect),
+						       aRect.origin.y)];
+  if (lastColumnToDraw == -1)
+    lastColumnToDraw = [_tableView numberOfColumns] - 1;
+
+  drawingRect = [self headerRectOfColumn: firstColumnToDraw];
+  
   columns = [_tableView tableColumns];
   
-  for (i = columnsToDraw.location; i < columnsToDraw.length + 1; i++)
+  for (i = firstColumnToDraw; i <= lastColumnToDraw; i++)
     {
-      [[[columns objectAtIndex: i] headerCell] 
-	drawWithFrame: [self headerRectOfColumn: i] 
-	inView: self];
+      column = [columns objectAtIndex: i];
+      width = [column width];
+      drawingRect.size.width = width;
+      [[column headerCell] drawWithFrame: drawingRect
+			   inView: self];
+      drawingRect.origin.x += width;
     }
 }
 -(void)mouseDown: (NSEvent*)event
