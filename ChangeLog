@@ -3,6 +3,8 @@ Wed Jun  2 20:55:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 	* Source/NSApplication.m: Send performKeyEquivalent messages.
 	* Source/NSWindow.m: Send performKeyEquivalent messages.
 	* Source/NSView.m: Send performKeyEquivalent messages.
+	* Source/NSMenu.m: Have the menu matrix forward performKeyEquivalent
+	messages to the menu.
 
 Wed Jun  2 19:22:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 

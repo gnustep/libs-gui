@@ -162,6 +162,11 @@ static NSFont* menuFont = nil;
   return menuCell;
 }
 
+- (BOOL) performKeyEquivalent: (NSEvent*)theEvent
+{
+  return [menu performKeyEquivalent: theEvent];
+}
+
 - (void) removeItem: (id <NSMenuItem>)anItem
 {
   int row = [cells indexOfObject: anItem];
@@ -576,7 +581,7 @@ static Class menuCellClass = nil;
   int i, count = [cells count];
   NSEventType type = [theEvent type];
 
-  if (type != NSKeyDown || type != NSKeyUp)
+  if (type != NSKeyDown && type != NSKeyUp)
     return NO;
 
   for (i = 0; i < count; i++) {
