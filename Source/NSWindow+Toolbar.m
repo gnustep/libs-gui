@@ -28,7 +28,7 @@
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
 
-#include "NSWindow+Toolbar.h"
+#include "AppKit/NSWindow+Toolbar.h"
 #include "AppKit/NSView.h"
 #include "AppKit/NSToolbar.h"
 #include "GNUstepGUI/GSToolbarView.h"

@@ -1,3 +1,9 @@
+2004-04-02  Quentin Mathe <qmathe@club-internet.fr>
+
+        * Source/NSWindow+Toolbar.h: Moved into Headers/AppKit
+	* Headers/AppKit/AppKit.h: Include NSWindow+Toolbar.h now
+	* Source/GNUMakefile: Modified to reflect this change
+
 2004-03-29 18:25  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSTextView.m (-setSelectedRange:affinity:stillSelecting:):
@@ -10,7 +16,7 @@
 	Added ivars _selectedColumns and _selectedRows to NSMutableIndexSet.
 	* Source/NSTableView.m: 
 	* Source/NSOutlineView.m: 
-	Chnaged all the uses of these ivars and started to restructure the
+	Changed all the uses of these ivars and started to restructure the
 	row selection code. Also removed some (not all) dead code.
 	
 2004-03-23 23:52  Alexander Malmberg <alexander@malmberg.org>

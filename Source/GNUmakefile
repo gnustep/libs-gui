@@ -307,6 +307,7 @@ NSToolbarItem.h \
 NSView.h \
 NSWindow.h \
 NSWindowController.h \
+NSWindow+Toolbar.h \
 NSWorkspace.h \
 NSAttributedString.h \
 NSColorPicking.h \
