@@ -634,7 +634,6 @@ void __dummy_GMAppKit_functionForLinking() {}
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
 {
   id theCell = [self cell];
-  BOOL flag;
 
   self = [super initWithModelUnarchiver:unarchiver];
 
@@ -645,13 +644,8 @@ void __dummy_GMAppKit_functionForLinking() {}
 	    [unarchiver decodeObjectWithName:@"backgroundColor"]];
   [self setDrawsBackground:[unarchiver decodeBOOLWithName:@"drawsBackground"]];
 
-  flag = [unarchiver decodeBOOLWithName:@"isBordered"];
-  if (flag)
-    [self setBordered:flag];
-
-  flag = [unarchiver decodeBOOLWithName:@"isBezeled"];
-  if (flag)
-    [self setBezeled:flag];
+  [self setBordered:[unarchiver decodeBOOLWithName:@"isBordered"]];
+  [self setBezeled:[unarchiver decodeBOOLWithName:@"isBezeled"]];
 
   [self setNextText:[unarchiver decodeObjectWithName:@"nextText"]];
   [self setPreviousText:[unarchiver decodeObjectWithName:@"previousText"]];
@@ -1001,3 +995,79 @@ void __dummy_GMAppKit_functionForLinking() {}
 }
 
 @end  /* NSSavePanel (GMArchiverMethods) */
+
+
+/*
+@implementation NSTextFieldCell (GMArchiverMethods)
+
+- (void)encodeWithModelArchiver :(GMArchiver*)archiver
+{
+    //NSTextFieldCell
+    [archiver encodeObject:[self textColor] withName:@"textColor"];
+    [archiver encodeObject:[self backgroundColor] withName:@"backgroundColor"];
+    [archiver encodeBOOL:[self drawsBackground] withName:@"drawsBackground"];
+    
+    //NSActionCell
+    [archiver encodeString:[self stringValue] withName:@"stringValue"];
+    [archiver encodeSelector:[self action] withName:@"action"];
+    [archiver encodeObject:[self target] withName:@"target"];
+    [archiver encodeUnsignedInt:[self tag] withName:@"tag"];
+
+    //NSCell
+    [archiver encodeUnsignedInt:[self cellAttribute]withName:@"cellAttribute"];
+    [archiver encodeBOOL:[self isEnabled] withName:@"isEnabled"];
+    [archiver encodeBOOL:[self isBezeled] withName:@"isBezeled"];
+    [archiver encodeBOOL:[self isBordered] withName:@"isBordered"];
+    [archiver encodeUnsignedInt:[self state] withName:@"state"];
+    [archiver encodeBOOL:[self isEditable] withName:@"isEditable"];
+    [archiver encodeBOOL:[self isSelectable] withName:@"isSelectable"];
+    [archiver encodeUnsignedInt:[self alignment] withName:@"alignment"];
+    [archiver encodeObject:[self font] withName:@"font"];
+    [archiver encodeBOOL:[self wraps] withName:@"wraps"];
+    [archiver encodeBOOL:[self allowsEditingTextAttributes]
+             withName:@"allowsEditingTextAttributes"];
+    [archiver encodeBOOL:[self importsGraphics] withName:@"importsGraphics"];
+    [archiver encodeObject:[self image] withName:@"image"];
+
+    //-isOpaque has no -setOpaque.
+
+    //TODO: menus
+}
+
+- (id)initWithModelArchiver :(GMUnarchiver*)unarchiver
+{
+    //NSTextFieldCell
+    [self setTextColor:[unarchiver decodeObjectWithName:@"textColor"]];
+    [self setBackgroundColor:
+          [unarchiver decodeObjectWithName:@"backgroundColor"]];
+    [self setDrawsBackground:[unarchiver
+			     decodeBOOLWithName:@"drawsBackground"]];
+
+    //NSActionCell
+    [self setStringValue:[unarchiver decodeStringWithName:@"stringValue"]];
+    [self setAction:[unarchiver decodeObjectWithName:@"action"]];
+    [self setTarget:[unarchiver decodeObjectWithName:@"target"]];
+    [self setTag:[unarchiver decodeUnsignedIntWithName:@"tag"]];
+    
+    //NSCell
+    [self setCellAttribute:
+             [unarchiver decodeUnsignedIntWithName:@"cellAttribute"]];
+    [self setEnabled:[unarchiver decodeBOOLWithName:@"isEnabled"]];
+    [self setBezeled:[unarchiver decodeBOOLWithName:@"isBezeled"]];
+    [self setBordered:[unarchiver decodeBOOLWithName:@"isBordered"]];
+    [self setState:[unarchiver decodeUnsignedIntWithName:@"state"]];
+    [self setEditable:[unarchiver decodeBOOLWithName:@"isEditable"]];
+    [self setSelectable:[unarchiver decodeBOOLWithName:@"isSelectable"]];
+    [self setAlignment:[unarchiver decodeUnsignedIntWithName:@"alignment"]];
+    [self setFont:[unarchiver decodeObjectWithName:@"font"]];
+    [self setWraps:[unarchiver decodeBOOLWithName:@"wraps"]];
+    [self setAllowsEditingTextAttributes:
+         [unarchiver decodeBOOLWithName:@"allowsEditingTextAttributes"]];
+    [self setImportsGraphics:
+         [unarchiver decodeBOOLWithName:@"importsGraphics"]];
+    [self setImage:[unarchiver decodeObjectWithName:@"image"]];
+}
+
+
+@end
+*/
