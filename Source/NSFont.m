@@ -262,7 +262,7 @@ setNSFont(NSString* key, NSFont* font)
 
   if (fontSize != 0)
     {
-      return getNSFont (@"NSTitelBarFont", @"Helvetica-Bold", fontSize);
+      return getNSFont (@"NSTitleBarFont", @"Helvetica-Bold", fontSize);
     }
   else
     {
