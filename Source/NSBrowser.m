@@ -1551,8 +1551,7 @@ static NSTextFieldCell *titleCell;
       if (_separatesColumns)
 	r.size.width = _frame.size.width - r.origin.x;
       else
-	r.size.width = _frame.size.width 
-	  - (r.origin.x + (2 * bs.width) + ([self numberOfVisibleColumns] - 1));
+	r.size.width = _frame.size.width - (r.origin.x + bs.width);
     }
 
   if (r.size.width < 0)
@@ -2061,14 +2060,14 @@ static NSTextFieldCell *titleCell;
     }
 
   // Draws scroller border
-  if (_hasHorizontalScroller)
+  if (_hasHorizontalScroller && _separatesColumns)
     {
       NSRect scrollerBorderRect = _scrollerRect;
       NSSize bs = _sizeForBorderType (NSBezelBorder);
 
       scrollerBorderRect.origin.x = 0;
       scrollerBorderRect.origin.y = 0;
-      scrollerBorderRect.size.width += 2 * bs.width - 1;
+      scrollerBorderRect.size.width += 2 * bs.width;
       scrollerBorderRect.size.height += (2 * bs.height) - 1;
 
       if ((NSIntersectsRect (scrollerBorderRect, rect) == YES) && _window)

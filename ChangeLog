@@ -1,3 +1,10 @@
+2004-06-23  Serg Stoyan <stoyan255@ukr.net>
+
+	* Source/NSBrowser.m: (frameOfColumn:): Fixed calculating of last
+	visible column width when columns are separated.
+	(drawRect:): Draw horizontal scroller border only when columns are
+	separated. Fixed calculating of horizontal scroller width.
+	
 2004-06-22  Adrian Robert <arobert@cogsci.ucsd.edu>
 
 	* Documentation/manual: Beginnings of programming manual for GUI like
