@@ -1,3 +1,9 @@
+2003-03-30  Willem Rein Oudshoorn  <woudshoo@xs4all.nl>
+
+	* Source/NSMenu.m: Reformatted to comply to
+	coding standards
+
+
 2003-03-28 21:08  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSTableView.m (mouseDown:): Wrap each iteration of the mouse
