@@ -693,7 +693,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       (*invalidateImp)(self, invalidateSel);
     }
-  [_boundsMatrix rotateByAngle: angle];
+  [_boundsMatrix rotateByDegrees: angle];
   _is_rotated_from_base = _is_rotated_or_scaled_from_base = YES;
 
   if (_post_bounds_changes)
