@@ -3,7 +3,7 @@
 
    Manage named lists of NSColors.
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996, 2000 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -35,6 +35,8 @@
 #include <Foundation/NSArchiver.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSFileManager.h>
+#include <Foundation/NSPathUtilities.h>
+#include <Foundation/NSString.h>
 
 #include <AppKit/NSColorList.h>
 #include <AppKit/NSColor.h>
@@ -43,8 +45,8 @@
 // The list of available color lists is created only once -- this has
 // a drawback, that you need to restart your program to get the color
 // lists read again.
-static NSMutableArray *_gnustep_available_color_lists;
-static NSLock *_gnustep_color_list_lock;
+static NSMutableArray *_gnustep_available_color_lists = nil;
+static NSLock *_gnustep_color_list_lock = nil;
 
 @implementation NSColorList
 
@@ -55,18 +57,50 @@ static NSLock *_gnustep_color_list_lock;
 {
   if (self == [NSColorList class])
     {
-      // Initial version
       [self setVersion:2];
-
-      // Initialize the global array of color lists
-      _gnustep_available_color_lists = [[NSMutableArray alloc] init];
-
-      /*** TODO: Load color lists in the array !! [fairly easy]***/
-      // Sorry, I [NP] am asleep now -- going to work on this tomorrow.
-
-      // And its access lock
-      _gnustep_color_list_lock = [[NSLock alloc] init];
     }
+}
+
+//
+// Private Method which loads the color lists. 
+// Invoke if _gnustep_available_color_lists == nil 
+// before any operation with that object or its lock.
+//
+// The aim is to defer reading the available color lists 
+// till we really need to, so that only programs which really use 
+// this feature get the overhead.
++ (void) _loadAvailableColorLists
+{
+  NSString *dir, *file;
+  NSEnumerator *e;
+  NSFileManager *fm = [NSFileManager defaultManager];
+  NSDirectoryEnumerator *de;
+  NSColorList *newList;
+
+  // Create the global array of color lists
+  _gnustep_available_color_lists = [[NSMutableArray alloc] init];
+  
+  // Load color lists found in standard paths into the array
+  // FIXME: Check exactly where in the directory tree we should scan.
+  e = [GSStandardPathPrefixes() objectEnumerator];
+  while ((dir = (NSString *)[e nextObject])) 
+    {
+      dir = [dir stringByAppendingPathComponent: @"Library/Colors"];
+      de = [fm enumeratorAtPath: dir];
+      while ((file = [de nextObject])) 
+	{
+	  if ([[file pathExtension] isEqualToString: @"clr"])
+	    {
+	      file = [file stringByDeletingPathExtension];
+	      newList = AUTORELEASE ([[NSColorList alloc] initWithName: file
+							  fromFile: dir]);
+	      [_gnustep_available_color_lists addObject: newList];
+	    }
+	}
+    }  
+  
+  // And create its access lock
+  _gnustep_color_list_lock = [[NSLock alloc] init];
 }
 
 //
@@ -76,6 +110,9 @@ static NSLock *_gnustep_color_list_lock;
 {
   NSArray *a;
 
+  if (_gnustep_available_color_lists == nil)
+    [NSColorList _loadAvailableColorLists];
+  
   // Serialize access to color list
   [_gnustep_color_list_lock lock];
 
@@ -91,9 +128,12 @@ static NSLock *_gnustep_color_list_lock;
 //
 + (NSColorList *)colorListNamed:(NSString *)name
 {
-  NSColorList*  r;
-  NSEnumerator* e;
-  BOOL          found = NO;
+  NSColorList  *r;
+  NSEnumerator *e;
+  BOOL         found = NO;
+
+  if (_gnustep_available_color_lists == nil)
+    [NSColorList _loadAvailableColorLists];
 
   // Serialize access to color list
   [_gnustep_color_list_lock lock];
@@ -132,8 +172,8 @@ static NSLock *_gnustep_color_list_lock;
 - (id)initWithName:(NSString *)name
 	  fromFile:(NSString *)path
 {
-  NSColorList* cl;
-  BOOL         could_load = NO; 
+  NSColorList *cl;
+  BOOL        could_load = NO; 
 
   ASSIGN (_name, name);
 
@@ -144,8 +184,9 @@ static NSLock *_gnustep_color_list_lock;
   
       // Unarchive the color list
       
-      // TODO: Unarchive from other formats as well?
-      
+      // TODO [Optm]: Rewrite to initialize directly without unarchiving 
+      // in another object
+
       cl = (NSColorList*)[NSUnarchiver unarchiveObjectWithFile: _fullFileName];
       
       if (cl && [cl isKindOfClass: [NSColorList class]])
@@ -155,22 +196,14 @@ static NSLock *_gnustep_color_list_lock;
 	  _is_editable = [[NSFileManager defaultManager] 
 			   isWritableFileAtPath: _fullFileName];
 	  
-	  if (_is_editable)
-	    {
-	      _colorDictionary = [NSMutableDictionary dictionaryWithDictionary: 
-							cl->_colorDictionary];
-	      _orderedColorKeys = [NSMutableArray arrayWithArray: 
-						    cl->_orderedColorKeys];
-	    }
-	  else
-	    {
-	      _colorDictionary = [NSDictionary dictionaryWithDictionary: 
-						 cl->_colorDictionary];
-	      _orderedColorKeys = [NSArray arrayWithArray: 
-					     cl->_orderedColorKeys];
-	    }
-	}	  
-      [cl release];
+	  ASSIGN(_colorDictionary, [NSMutableDictionary 
+				     dictionaryWithDictionary: 
+				       cl->_colorDictionary]);
+
+	  ASSIGN(_orderedColorKeys, [NSMutableArray 
+				      arrayWithArray: 
+					cl->_orderedColorKeys]);
+	}
     }
   
   if (could_load == NO)
@@ -275,14 +308,22 @@ static NSLock *_gnustep_color_list_lock;
 //
 - (BOOL)writeToFile:(NSString *)path
 {
-  NSFileManager* fm = [NSFileManager defaultManager];
-  BOOL           isDir;
-  BOOL           success;
+  NSFileManager *fm = [NSFileManager defaultManager];
+  NSString      *tmpPath;
+  BOOL          isDir;
+  BOOL          success;
+  BOOL          path_is_standard = YES;
+
+  // We need to initialize before saving, to avoid the new file being 
+  // counted as a different list thus making us appear twice
+  if (_gnustep_available_color_lists == nil)
+    [NSColorList _loadAvailableColorLists];
 
   if (path == nil || ([fm fileExistsAtPath: path isDirectory: &isDir] == NO))
     {
-      // FIXME the standard path for saving color lists
-      path = @"~/GNUstep/Library/Colors/"; 
+      // FIXME the standard path for saving color lists?
+      path = [NSHomeDirectory () stringByAppendingPathComponent: 
+				@"GNUstep/Library/Colors"]; 
       isDir = YES;
     }
 
@@ -305,13 +346,46 @@ static NSLock *_gnustep_color_list_lock;
 	}
     }
 
+  // Check if the path is a standard path
+  if ([[path lastPathComponent] isEqualToString: @"Colors"] == NO)
+    path_is_standard = NO;
+  else 
+    {
+      tmpPath = [path stringByDeletingLastPathComponent];
+      if ([[tmpPath lastPathComponent] isEqualToString: @"Library"] == NO)
+	path_is_standard = NO;
+      else 
+	{
+	  tmpPath = [tmpPath stringByDeletingLastPathComponent];
+	  if ([GSStandardPathPrefixes() containsObject: tmpPath] == NO)
+	    path_is_standard = NO;
+	}
+    }
+
+  // If path is standard and it does not exist, try to create it.
+  // System standard paths should always be assumed to exist; 
+  // this will normally then only try to create user paths.
+  if (path_is_standard && ([fm fileExistsAtPath: path] == NO))
+    {
+      if([fm createDirectoryAtPath: path 
+	     attributes: nil])
+	{
+	  NSLog (@"Created standard directory %@", path);
+	}
+      else
+	{
+	  NSLog (@"Failed attemp to create directory %@", path);
+	}
+    }
+
   success = [NSArchiver archiveRootObject: self 
 			toFile: _fullFileName];
 
-  if (success)
+  if (success && path_is_standard)
     {
       [_gnustep_color_list_lock lock];
-      [_gnustep_available_color_lists addObject: self];
+      if ([_gnustep_available_color_lists containsObject: self] == NO)
+	[_gnustep_available_color_lists addObject: self];
       [_gnustep_color_list_lock unlock];      
       return YES;
     }
@@ -328,6 +402,9 @@ static NSLock *_gnustep_color_list_lock;
 				      handler: nil];
       
       // Remove the color list from the global list of colors
+      if (_gnustep_available_color_lists == nil)
+	[NSColorList _loadAvailableColorLists];
+
       [_gnustep_color_list_lock lock];
       [_gnustep_available_color_lists removeObject: self];
       [_gnustep_color_list_lock unlock];
@@ -345,7 +422,6 @@ static NSLock *_gnustep_color_list_lock;
   [aCoder encodeObject: _name];
   [aCoder encodeObject: _colorDictionary];
   [aCoder encodeObject: _orderedColorKeys];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_editable];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -353,7 +429,6 @@ static NSLock *_gnustep_color_list_lock;
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_name];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_colorDictionary];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_orderedColorKeys];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_editable];
 
   return self;
 }
