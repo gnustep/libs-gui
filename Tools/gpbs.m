@@ -414,38 +414,42 @@ NSMutableDictionary	*pasteboards = nil;
 
 - (void) lostOwnership
 {
-  NSMutableArray*   a = [NSMutableArray arrayWithCapacity:4];
-  unsigned i;
+  NSMutableArray	*a = [NSMutableArray arrayWithCapacity: 4];
+  unsigned		i;
 
   NS_DURING
     {
-      if (wantsChangedOwner)
+      if (wantsChangedOwner == YES && owner != nil)
 	{
 	  [a addObject: owner];
 	}
 
       for (i = 0; i < [items count]; i++)
 	{
-	  PasteboardData*   d = [items objectAtIndex:i];
+	  PasteboardData	*d = [items objectAtIndex: i];
 
-	  if ([d wantsChangedOwner] && [a containsObject: [d owner]] == NO)
+	  if ([d wantsChangedOwner] == YES && [d owner] != nil
+	    && [a containsObject: [d owner]] == NO)
 	    {
 	      [a addObject: [d owner]];
 	    }
 	}
 
-      if (wantsChangedOwner)
+      if (wantsChangedOwner == YES)
 	{
-	  [a removeObject: owner];
 	  [owner pasteboardChangedOwner: pboard];
+	  if (owner != nil)
+	    {
+	      [a removeObject: owner];
+	    }
 	}
 
       for (i = 0; i < [items count] && [a count] > 0; i++)
 	{
-	  PasteboardData*   d = [items objectAtIndex:i];
-	  id		o = [d owner];
+	  PasteboardData	*d = [items objectAtIndex:i];
+	  id			o = [d owner];
 
-	  if ([a containsObject: o])
+	  if (o != nil && [a containsObject: o])
 	    {
 	      [o pasteboardChangedOwner: [d pboard]];
 	      [a removeObject: o];
