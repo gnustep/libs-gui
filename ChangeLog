@@ -10,6 +10,17 @@
 	(-setTitle:): Do not draw background; common_MiniWindowTile.tiff now
 	has title background.
 
+	* Source/GSTitleView.[hm]:
+	Added closeButton and miniaturizeButton methods to access title
+	buttons. Added initWithOwner: method. Comments added. Cleanup.
+	(dealloc): Remove observer. Release textAttributes and titleColor.
+	Don't release closeButton and miniaturizeButton.
+	(setOwner:): Observe NSApplication activate/deactivate notifications.
+	Add title buttons according to the window style mask.
+
+	* Source/NSMenuView.m:
+	(update): Use GSTitleView's initWithOwner: method. Cleanup.
+
 2004-01-13 Serg Stoyan <stoyan@on.com.ua>
 
 	* Source/NSMenuView.m (trackWithEvent:): Changed checking for
