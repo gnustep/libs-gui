@@ -59,6 +59,13 @@ common_Dimple.tiff \
 common_ret.tiff \
 common_WMClose.tiff \
 common_WMCloseBroken.tiff \
+common_Unknown.tiff \
+common_Folder.tiff \
+common_Root_PC.tiff \
+common_Root_SGI.tiff \
+common_Root_Sparc.tiff \
+common_Root_Sparc2.tiff \
+common_Root_Apple.tiff \
 GNUstep.tiff \
 nsmapping.strings
 
