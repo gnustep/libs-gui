@@ -534,7 +534,7 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
   NSMutableArray* array = [NSMutableArray array];
   NSView* view = subview;
 
-  while (view != _superview) {
+  while (view && view != _superview) {
     [array addObject:view];
     view = view->super_view;
   }
