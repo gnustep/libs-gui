@@ -57,6 +57,9 @@
 //
 - (void)setState:(int)value;
 - (int)state;
+- (BOOL) allowsMixedState;
+- (void) setAllowsMixedState: (BOOL)flag;
+- (void)setNextState;
 
 //
 // Setting the Repeat Interval 
