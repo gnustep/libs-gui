@@ -312,33 +312,37 @@ static NSButtonCell* knobCell = nil;
   float position;
 
   if (_isHorizontal) {
+    float	halfKnobWidth = knobRect.size.width / 2;
+
     /* Adjust the point to lie inside the knob slot */
-    if (point.x < slotRect.origin.x + knobRect.size.width / 2)
-      position = slotRect.origin.x + knobRect.size.width / 2;
+    if (point.x < slotRect.origin.x + halfKnobWidth)
+      position = slotRect.origin.x + halfKnobWidth;
     else if (point.x > slotRect.origin.x + slotRect.size.width
-			    - knobRect.size.width / 2)
+			    - halfKnobWidth)
       position = slotRect.origin.x + slotRect.size.width
-		    - knobRect.size.width / 2;
+		    - halfKnobWidth;
     else
       position = point.x;
 
     /* Compute the float value considering the knob size */
-    floatValue = (position - (slotRect.origin.x + knobRect.size.width / 2))
+    floatValue = (position - (slotRect.origin.x + halfKnobWidth))
 		  / (slotRect.size.width - knobRect.size.width);
   }
   else {
+    float	halfKnobHeight = knobRect.size.height / 2; 
+
     /* Adjust the point to lie inside the knob slot */
-    if (point.y < slotRect.origin.y + knobRect.size.height / 2)
-      position = slotRect.origin.y + knobRect.size.height / 2;
+    if (point.y < slotRect.origin.y + halfKnobHeight)
+      position = slotRect.origin.y + halfKnobHeight;
     else if (point.y > slotRect.origin.y + slotRect.size.height
-			    - knobRect.size.height / 2)
+			    - halfKnobHeight)
       position = slotRect.origin.y + slotRect.size.height
-			    - knobRect.size.height / 2;
+			    - halfKnobHeight;
     else
       position = point.y;
 
     /* Compute the float value */
-    floatValue = (position - (slotRect.origin.y + knobRect.size.height/2))
+    floatValue = (position - (slotRect.origin.y + halfKnobHeight))
 		  / (slotRect.size.height - knobRect.size.height);
     floatValue = 1 - floatValue;
   }
@@ -398,13 +402,14 @@ static NSButtonCell* knobCell = nil;
   NSRect knobRect = [self rectForPart:NSScrollerKnob];
   NSEventType eventType = [theEvent type];
   float oldFloatValue = _floatValue;
+  NSApplication *theApp = [NSApplication sharedApplication];
 
   _hitPart = NSScrollerKnob;
   [NSEvent startPeriodicEventsAfterDelay:0.05 withPeriod:0.05];
   [[NSRunLoop currentRunLoop] limitDateForMode:NSEventTrackingRunLoopMode];
 
   while (eventType != NSLeftMouseUp) {
-    theEvent = [[NSApplication sharedApplication]
+    theEvent = [theApp
 		 nextEventMatchingMask:eventMask
 		 untilDate:[NSDate distantFuture] 
 		 inMode:NSEventTrackingRunLoopMode
@@ -438,80 +443,82 @@ static NSButtonCell* knobCell = nil;
 
 - (void)trackScrollButtons:(NSEvent*)theEvent
 {
-NSApplication *theApp = [NSApplication sharedApplication];
-unsigned int eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask | 
-							NSLeftMouseDraggedMask | NSMouseMovedMask;
-NSPoint location;
-BOOL shouldReturn = NO;
-id theCell = nil;
-NSRect rect;
+  NSApplication *theApp = [NSApplication sharedApplication];
+  unsigned int eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask | 
+			   NSLeftMouseDraggedMask | NSMouseMovedMask;
+  NSPoint location;
+  BOOL shouldReturn = NO;
+  id theCell = nil;
+  NSRect rect;
 
-  	NSDebugLog (@"trackScrollButtons");
-	do	{
-		location = [self convertPoint:[theEvent locationInWindow]fromView:nil];
-    	_hitPart = [self testPart:location];
-		rect = [self rectForPart:_hitPart];
+  NSDebugLog (@"trackScrollButtons");
+  do {
+    location = [self convertPoint:[theEvent locationInWindow]fromView:nil];
+    _hitPart = [self testPart:location];
+    rect = [self rectForPart:_hitPart];
 
-		switch (_hitPart) 								// determine which cell
-			{											// was hit
-			case NSScrollerIncrementLine:
-			case NSScrollerIncrementPage:
-				theCell = (_isHorizontal ? rightCell : upCell);
-				break;
+    switch (_hitPart) {
+      // determine which cell was hit
 
-			case NSScrollerDecrementLine:
-			case NSScrollerDecrementPage:
-				theCell = (_isHorizontal ? leftCell : downCell);
-				break;
+      case NSScrollerIncrementLine:
+      case NSScrollerIncrementPage:
+	theCell = (_isHorizontal ? rightCell : upCell);
+	break;
 
-      		default:
-				theCell = nil;
-				break;
-    		}
+      case NSScrollerDecrementLine:
+      case NSScrollerDecrementPage:
+	theCell = (_isHorizontal ? leftCell : downCell);
+	break;
 
-		if (theCell) 
-			{											// highlight the cell
-	  		[theCell highlight:YES withFrame:rect inView:self];	
-	  		[self setNeedsDisplayInRect:rect];			// not needed by XRAW
-			[window flushWindow];
-      		NSDebugLog (@"tracking cell %x", theCell);
-										// Track the mouse until mouse goes up 
-      		shouldReturn = [theCell trackMouse:theEvent
-									inRect:rect
-									ofView:self
-									untilMouseUp:YES];
-														// unhighlight the cell 
-			[theCell highlight:NO withFrame:rect inView:self];
-			[self setNeedsDisplayInRect:rect];			// not needed by XRAW
-			[window flushWindow];
-    		}
+      default:
+	theCell = nil;
+	break;
+    }
 
-    	if (shouldReturn)
-      		break;
+    if (theCell) {
+      [theCell highlight:YES withFrame:rect inView:self];	
+      [self setNeedsDisplayInRect:rect];		// not needed by XRAW
+      [window flushWindow];
+      NSDebugLog (@"tracking cell %x", theCell);
+      // Track the mouse until mouse goes up 
+      shouldReturn = [theCell trackMouse:theEvent
+				  inRect:rect
+				  ofView:self
+			    untilMouseUp:YES];
 
-    	theEvent = [theApp nextEventMatchingMask:eventMask
-						   untilDate:[NSDate distantFuture] 
-						   inMode:NSEventTrackingRunLoopMode
-						   dequeue:YES];
-  		} 
-	while ([theEvent type] != NSLeftMouseUp);
+      [theCell highlight:NO withFrame:rect inView:self];
+      [self setNeedsDisplayInRect:rect];		// not needed by XRAW
+      [window flushWindow];
+    }
 
-  	NSDebugLog (@"return from trackScrollButtons");
+    if (shouldReturn)
+      break;
+
+    theEvent = [theApp nextEventMatchingMask:eventMask
+				   untilDate:[NSDate distantFuture] 
+				      inMode:NSEventTrackingRunLoopMode
+				     dequeue:YES];
+  } while ([theEvent type] != NSLeftMouseUp);
+
+  NSDebugLog (@"return from trackScrollButtons");
 }
 
 - (BOOL)sendAction:(SEL)theAction to:(id)theTarget
-{															// send action to
-BOOL ret = [super sendAction:theAction to:theTarget];		// the target on
-															// behalf of cell
-	[self drawKnobSlot];			// lockFocus set in mouseDown method is 
-	[self drawKnob];				// active so we simply redraw the knob and 
-	[window flushWindow];			// slot to reflect the hit scroll button	
+{
+  BOOL ret;
 
-	return ret; 										
+  // send action to the target on behalf of cell
+  ret = [super sendAction:theAction to:theTarget];
+  [self drawKnobSlot];		// lockFocus set in mouseDown method is 
+  [self drawKnob];		// active so we simply redraw the knob and 
+  [window flushWindow];		// slot to reflect the hit scroll button	
+
+  return ret;
 }															
 
 - (void)encodeWithCoder:aCoder
-{}
+{
+}
 
 - initWithCoder:aDecoder
 {
@@ -520,15 +527,14 @@ BOOL ret = [super sendAction:theAction to:theTarget];		// the target on
 
 - (void)drawRect:(NSRect)rect
 {
-	NSDebugLog (@"NSScroller drawRect: ((%f, %f), (%f, %f))",
-			rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
+  NSDebugLog (@"NSScroller drawRect: ((%f, %f), (%f, %f))",
+	      rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
 
-												 // Draw the scroller buttons
-	[self drawArrow:NSScrollerDecrementArrow highlight:NO];	
-	[self drawArrow:NSScrollerIncrementArrow highlight:NO];
+  [self drawArrow:NSScrollerDecrementArrow highlight:NO];	
+  [self drawArrow:NSScrollerIncrementArrow highlight:NO];
 
-	[self drawKnobSlot];									// Draw knob slot
-	[self drawKnob];										// Draw the knob
+  [self drawKnobSlot];
+  [self drawKnob];
 }
 
 - (void)drawArrow:(NSScrollerArrow)whichButton
@@ -557,7 +563,7 @@ BOOL ret = [super sendAction:theAction to:theTarget];		// the target on
 
 - (void)drawKnob
 {
-	[knobCell drawWithFrame:[self rectForPart:NSScrollerKnob] inView:self];
+  [knobCell drawWithFrame:[self rectForPart:NSScrollerKnob] inView:self];
 }
 
 /* The following methods should be implemented in the backend */
@@ -568,6 +574,7 @@ BOOL ret = [super sendAction:theAction to:theTarget];		// the target on
 }
 
 - (void)drawKnobSlot
-{}
+{
+}
 
 @end
