@@ -42,11 +42,11 @@ static NSColor *clearCol = nil;
 {
   [super initTextCell: aString];
 
-  [self setAlignment: NSCenterTextAlignment];
-  [self setTextColor: [NSColor windowFrameTextColor]];
+  _text_align = NSCenterTextAlignment;
+  ASSIGN (_text_color, [NSColor windowFrameTextColor]);
   [self setBackgroundColor: [NSColor controlShadowColor]];
-  [self setBordered: NO];
-  [self setBezeled: NO];
+  _cell.is_bordered = NO;
+  _cell.is_bezeled = NO;
   _draws_background = YES;
 
   return self;
@@ -56,7 +56,7 @@ static NSColor *clearCol = nil;
 - (void) drawInteriorWithFrame: (NSRect)cellFrame 
 			inView: (NSView*)controlView
 {
-  switch ([self type])
+  switch (_cell_type)
     {
     case NSTextCellType:
       [super drawInteriorWithFrame: cellFrame inView: controlView];
@@ -82,32 +82,32 @@ static NSColor *clearCol = nil;
 	{
 	  NSColor *bg;
 	  
-	  if (cell_highlighted)
+	  if (_cell.is_highlighted)
 	    bg = bgCol;
 	  else
 	    bg = hbgCol;
 	  [bg set];
 	  NSRectFill (cellFrame);
-	  if (cell_image)
-	    [cell_image setBackgroundColor: bg];
+	  if (_cell_image)
+	    [_cell_image setBackgroundColor: bg];
 	}
       else
 	{
-	  if (cell_image)
-	    [cell_image setBackgroundColor: clearCol];
+	  if (_cell_image)
+	    [_cell_image setBackgroundColor: clearCol];
 	}
       // Draw the image
-      if (cell_image)
+      if (_cell_image)
 	{
 	  NSSize size;
 	  NSPoint position;
 	  
-	  size = [cell_image size];
+	  size = [_cell_image size];
 	  position.x = MAX (NSMidX (cellFrame) - (size.width/2.), 0.);
 	  position.y = MAX (NSMidY (cellFrame) - (size.height/2.), 0.);
-	  if ([control_view isFlipped])
+	  if ([controlView isFlipped])
 	    position.y += size.height;
-	  [cell_image compositeToPoint: position operation: NSCompositeCopy];
+	  [_cell_image compositeToPoint: position operation: NSCompositeCopy];
 	}
       // End the drawing
       [controlView unlockFocus];
