@@ -49,10 +49,10 @@ enum {
 @interface NSPageLayout : NSPanel <NSCoding>
 {
   // Attributes
-  int _result;
   float _old;
-  float _new;
   NSPrintInfo *_printInfo;
+
+  NSView *_accessoryView;
 }
 
 //
@@ -65,6 +65,13 @@ enum {
 //
 - (int)runModal;
 - (int)runModalWithPrintInfo:(NSPrintInfo *)pInfo;
+#ifndef	STRICT_OPENSTEP
+- (void)beginSheetWithPrintInfo:(NSPrintInfo *)printInfo
+		 modalForWindow:(NSWindow *)docWindow
+		       delegate:(id)delegate
+		 didEndSelector:(SEL)didEndSelector
+		    contextInfo:(void *)contextInfo;
+#endif
 
 //
 // Customizing the Panel 
@@ -88,12 +95,6 @@ enum {
 - (NSPrintInfo *)printInfo;
 - (void)readPrintInfo;
 - (void)writePrintInfo;
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
 
 @end
 
