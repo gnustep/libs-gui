@@ -749,6 +749,12 @@ setNSFont(NSString* key, NSFont* font)
 			screenFont: screenFont]);
 }
 
+static BOOL flip_hack;
++(void) _setFontFlipHack: (BOOL)flip
+{
+  flip_hack = flip;
+}
+
 //
 // Setting the Font
 //
@@ -760,7 +766,7 @@ setNSFont(NSString* key, NSFont* font)
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
 
-  if (matrixExplicitlySet == NO && [[NSView focusView] isFlipped])
+  if (matrixExplicitlySet == NO && ([[NSView focusView] isFlipped] || flip_hack))
     [ctxt GSSetFont: [[self _flippedViewFont] fontRef]];
   else
     [ctxt GSSetFont: [self fontRef]];

@@ -51,10 +51,6 @@
 - (void) drawAtPoint: (NSPoint)point;
 - (void) drawInRect: (NSRect)rect;
 
--(NSSize) sizeRange:(NSRange) aRange;
--(void) drawRange:(NSRange) aRange atPoint:(NSPoint) aPoint;
--(void) drawRange:(NSRange) aRange inRect:(NSRect) aRect;
-
 @end
 
 #endif /* _GNUstep_H_NSStringDrawing */
