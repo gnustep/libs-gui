@@ -1,5 +1,7 @@
 1999-07-15  Michael Hanni  <mhanni@sprintmail.com>
 
+	* Source/NSPopupButton.m: if (count) == 0, return early in drawing
+	code. This fixes crashes created by Popups created in our gmodels.
 	* Source/NSLayoutManager.m: new file from
 	jagapen@whitewater.chem.wisc.edu
 	* Source/NSTextView.m: initWithFrame: now creates a proper NSText
