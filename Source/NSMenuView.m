@@ -42,6 +42,8 @@
 
 #include "AppKit/NSImage.h"
 
+#include "GNUstepGUI/GSTitleView.h"
+
 /*
   NSMenuView contains:
 
@@ -51,23 +53,6 @@
 
 /* A menu's title is an instance of this class */
 @class NSButton;
-
-@interface NSMenuWindowTitleView : NSView
-{
-  NSMenu       *menu;
-  NSButton     *button;
-  NSSize       imageSize;
-  NSDictionary *attr;
-}
-
-- (NSSize) titleSize;
-- (void) addCloseButton;
-- (void) removeCloseButton;
-- (void) createButton;
-- (void) setMenu: (NSMenu*)menu;
-- (NSMenu*) menu;
-
-@end
 
 @implementation NSMenuView
 
@@ -480,7 +465,9 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   if (![_attachedMenu _ownedByPopUp] && !_titleView)
     {
       // Add title view. If this menu not owned by popup
-      _titleView = [[NSMenuWindowTitleView alloc] init];
+//      _titleView = [[NSMenuWindowTitleView alloc] init];
+      _titleView = [[GSTitleView alloc] init];
+      [_titleView setOwner:_attachedMenu];
       [self addSubview: _titleView];
       RELEASE(_titleView);
     }
@@ -505,7 +492,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   
   if ([_attachedMenu isTornOff] && ![_attachedMenu isTransient])
     {
-      [_titleView addCloseButton];
+      [_titleView addCloseButtonWithAction:@selector(_performMenuClose:)];
     }
   else
     {
@@ -1400,203 +1387,4 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 }
 
 @end
-
-@implementation NSMenuWindowTitleView
-
-- (id) init
-{
-  self = [super init];
-  
-  attr = nil;
-  
-  return self;
-}
-
-- (void) dealloc
-{
-  RELEASE (attr);
-  RELEASE (button);
-  [super dealloc];
-}
-
-- (BOOL) acceptsFirstMouse: (NSEvent *)theEvent
-{
-  return YES;
-} 
- 
-- (void) setMenu: (NSMenu*)aMenu
-{
-  menu = aMenu;
-}
-
-- (NSMenu*) menu
-{
-  return menu;
-}
-  
-- (NSSize) titleSize
-{
-  if (attr == nil)
-    {
-      attr = [[NSDictionary alloc] initWithObjectsAndKeys: 
-                                     [NSFont boldSystemFontOfSize: 0], 
-                                     NSFontAttributeName,
-                                     [NSColor windowFrameTextColor], 
-                                     NSForegroundColorAttributeName,
-                                     nil];
-    }
-  
-  return [[menu title] sizeWithAttributes: attr];
-}
-
-- (void) drawRect: (NSRect)rect
-{
-  NSRect     workRect = [self bounds];
-  NSSize     titleSize;
-  NSRectEdge sides[] = {NSMinXEdge, NSMaxYEdge};
-  float      grays[] = {NSDarkGray, NSDarkGray};
-
-  // Draw the dark gray upper left lines.
-  workRect = NSDrawTiledRects(workRect, workRect, sides, grays, 2);
-  
-  // Draw the title box's button.
-  NSDrawButton(workRect, workRect);
-  
-  // Paint it Black!
-  workRect.origin.x += 1;
-  workRect.origin.y += 2;
-  workRect.size.height -= 3;
-  workRect.size.width -= 3;
-  [[NSColor windowFrameColor] set];
-  NSRectFill(workRect);
-  
-  // Draw the title
-  titleSize = [self titleSize];
-  workRect.origin.x += 4;
-  workRect.origin.y = NSMidY (workRect) - titleSize.height / 2;
-  workRect.size.height = titleSize.height;
-  [[menu title] drawInRect: workRect  withAttributes: attr];
-}
-
-- (void) mouseDown: (NSEvent*)theEvent
-{
-  NSPoint  lastLocation;
-  NSPoint  location;
-  NSPoint  oldOrigin;
-  NSPoint  newOrigin;
-  unsigned eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask 
-                       | NSMouseMovedMask;
-
-  NSDebugLLog (@"NSMenu", @"Mouse down in title!");
-
-  lastLocation = [theEvent locationInWindow];
-
-  if (![menu isTornOff] && [menu supermenu])
-    {
-      [menu setTornOff: YES];
-    }
-
-  oldOrigin = [_window frame].origin;
-
-  while ([theEvent type] != NSLeftMouseUp)
-    {
-      /* Inner loop that gets and (quickly) handles all events that have
-       * already arrived.*/
-      while (theEvent && [theEvent type] != NSLeftMouseUp)
-	{
-	  location = [_window convertBaseToScreen:
-	    [theEvent locationInWindow]];
-	  //	  location = [_window convertBaseToScreen: location];
-	  /* Note the event here. Don't do any expensive handling. 
-	   * Only get events that have already a$. */
-	  theEvent = [NSApp nextEventMatchingMask: eventMask
-	                                untilDate: [NSDate distantPast]
-	                                   inMode: NSEventTrackingRunLoopMode
-	                                  dequeue: YES];
-	} 
-
-      if ([theEvent type] == NSLeftMouseUp)
-	break;
-
-      /* Location is position of the cursor in screen coordinate system.
-	 lastLocation is the position of the cursor in the window. Thus, 
-	 we want the origin to satisfy origin+lastLocation=location: */
-      newOrigin.x = location.x - lastLocation.x;
-      newOrigin.y = location.y - lastLocation.y;
-
-      /* No more events right now. Do expensive handling, 
-	 like drawing, here. */
-      if (NSEqualPoints(oldOrigin, newOrigin) == NO)
-	{
-	  oldOrigin = newOrigin;
-	  [menu nestedSetFrameOrigin: newOrigin];
-	}
-
-      /* Get the next event, blocking if necessary.
-       * No limit, block until we get an event. */
-      theEvent = [NSApp nextEventMatchingMask: eventMask
-	                            untilDate: nil
-	                               inMode: NSEventTrackingRunLoopMode
-	                              dequeue: YES];
-    }
-}
-
-- (void) createButton
-{
-  // create the menu's close button
-  NSImage *closeImage = [NSImage imageNamed: @"common_Close"];
-  NSImage *closeHImage = [NSImage imageNamed: @"common_CloseH"];
-  NSRect  rect;
-        
-  imageSize = [closeImage size];
-  rect = NSMakeRect (_frame.size.width - imageSize.width - 4,
-                     (_frame.size.height - imageSize.height) / 2 ,
-                     imageSize.width, imageSize.height );
-  
-  button = [[NSButton alloc] initWithFrame: rect];
-  [button setRefusesFirstResponder: YES];
-  [button setButtonType: NSMomentaryChangeButton];
-  [button setImagePosition: NSImageOnly];
-  [button setBordered: NO];
-  [button setAutoresizingMask: NSViewMinXMargin];
-  [button setImage: closeImage];
-  [button setAlternateImage: closeHImage];
-  [button setTarget: menu];
-  [button setAction: @selector(_performMenuClose:)];
-  
-  [self setAutoresizingMask:
-          NSViewMinXMargin | NSViewMinYMargin | NSViewMaxYMargin];
-}
-            
-- (void) removeCloseButton
-{
-  [button removeFromSuperview];
-}
-  
-- (void) addCloseButton
-{
-  if (button == nil)
-    [self createButton];
-
-  // Update location
-  [button setFrameOrigin: 
-            NSMakePoint (_frame.size.width - imageSize.width - 4,
-                         (_frame.size.height - imageSize.height) / 2)];
-
-  [self addSubview: button];
-  [self setNeedsDisplay: YES];
-}
-
-// We do not need app menu over menu
-- (void) rightMouseDown: (NSEvent*)theEvent
-{
-}
-
-// We do not want to popup menus in this menu.
-- (id) menuForEvent: (NSEvent*) theEvent
-{
-  return nil;
-}
-
-@end /* NSMenuWindowTitleView */
 
