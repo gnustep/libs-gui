@@ -31,43 +31,50 @@
 
 //	<§> scanner types and helpers
 
-#define	CArraySize(a)	(sizeof(a)/sizeof((a)[0])-1)
+#define CArraySize(a) (sizeof(a)/sizeof((a)[0])-1)
 
 typedef struct {
   char	*bf;
   int	length, position, chunkSize;
 } DynamicString;
+
 typedef struct {
   const char	*string;
   int		token;
 } LexKeyword;
 
-GSLexError	initDynamicString(DynamicString *string)
+GSLexError initDynamicString (DynamicString *string)
 {
   string->length = 0, string->position = 0, string->chunkSize = 128;
   string->bf = calloc(1, string->length = string->chunkSize);
   if (!string->bf) 
-    return LEXoutOfMemory;
+    {
+      return LEXoutOfMemory;
+    }
   return NoError;
 }
 
-GSLexError	appendChar(DynamicString *string, int c)
+GSLexError appendChar (DynamicString *string, int c)
 {
   if (string->position == string->length)
     {
       if (!(string->bf = realloc(string->bf, 
 				 string->length += string->chunkSize))) 
-	return LEXoutOfMemory;
+	{
+	  return LEXoutOfMemory;
+	}
       else 
-	string->chunkSize <<= 1;
+	{
+	  string->chunkSize <<= 1;
+	}
     }
   
   string->bf[string->position++] = c;
   return NoError;
 }
 
-void	lexInitContext(RTFscannerCtxt *lctxt, void *customContext, 
-		       int (*getcharFunction)(void *))
+void lexInitContext (RTFscannerCtxt *lctxt, void *customContext, 
+		     int (*getcharFunction)(void *))
 {
   lctxt->streamLineNumber = 1;
   lctxt->streamPosition = lctxt->pushbackCount = 0;
@@ -75,7 +82,7 @@ void	lexInitContext(RTFscannerCtxt *lctxt, void *customContext,
   lctxt->customContext = customContext;
 }
 
-int	lexGetchar(RTFscannerCtxt *lctxt)
+int lexGetchar (RTFscannerCtxt *lctxt)
 {
   int	c;
   if (lctxt->pushbackCount)
@@ -85,175 +92,192 @@ int	lexGetchar(RTFscannerCtxt *lctxt)
     }
   else
     {
-	lctxt->streamPosition++;
-	c = lctxt->lgetchar(lctxt->customContext);
+      lctxt->streamPosition++;
+      c = lctxt->lgetchar(lctxt->customContext);
     }
   if (c == '\n') 
-    lctxt->streamLineNumber++;
+    {
+      lctxt->streamLineNumber++;
+    }
   return c;
 }
 
-void	lexUngetchar(RTFscannerCtxt *lctxt, int c)
+void lexUngetchar (RTFscannerCtxt *lctxt, int c)
 {
   if (c == '\n') 
-    lctxt->streamLineNumber--;
+    {
+      lctxt->streamLineNumber--;
+    }
   lctxt->pushbackBuffer[lctxt->pushbackCount++] = c;	//<!> no checking here
 }
 
-int	lexStreamPosition(RTFscannerCtxt *lctxt)
+int lexStreamPosition (RTFscannerCtxt *lctxt)
 {
   return lctxt->streamPosition - lctxt->pushbackCount;
 }
 
-char	*my_strdup(const char *str)
+char *my_strdup (const char *str)
 {
-  char   *copy = str? malloc(strlen(str) + 1): 0;
+  char *copy = str? malloc (strlen (str) + 1): 0;
   return !copy? 0: strcpy(copy, str);
 }
 
-int	findStringFromKeywordArray(const char *string, const LexKeyword *array,
-				   int arrayCount)
+int findStringFromKeywordArray(const char *string, const LexKeyword *array,
+			       int arrayCount)
 {
   int	min, max, mid, cmp;
   const LexKeyword *currentKeyword;
-
-  for (min=0, max=arrayCount; min<=max; )
+  
+  for (min = 0, max = arrayCount; min <= max; )
     {
-      mid = (min+max)>>1;
+      mid = (min + max)>>1;
       currentKeyword = array + mid;
-      if (!(cmp = strcmp(string, currentKeyword->string)))
+      if (!(cmp = strcmp (string, currentKeyword->string)))
 	{
 	  return currentKeyword->token;
 	} 
-      else if (cmp>0) 
-	min=mid+1;
+      else if (cmp > 0) 
+	{
+	  min = mid + 1;
+	}
       else 
-	max=mid-1;
+	{
+	  max = mid - 1;
+	}
     }
-  return 0;		// couldn't find
+  return 0; // couldn't find
 }
 
 //	end <§> scanner types and helpers
 
 //	<§> core scanner functions
 
-#define	token(a)	(a)
+#define token(a) (a)
 
 //	<!> must be sorted
-LexKeyword	RTFcommands[]={
-	"ansi",		token(RTFansi),
-	"b",		token(RTFbold),
-	"blue",		token(RTFblue),
-	"bullet",	token(RTFbullet),
-	"cb",		token(RTFcolorbg),
-	"cell",		token(RTFcell),
-	"cf",		token(RTFcolorfg),
-	"colortbl",	token(RTFcolortable),
-	"cpg",		token(RTFcpg),
-	"dn",		token(RTFsubscript),
-	"emdash",	token(RTFemdash),
-	"emspace",	token(RTFemspace),
-	"endash",	token(RTFendash),
-	"enspace",	token(RTFenspace),
-	"f", 		token(RTFfont),
-	"fcharset",	token(RTFfcharset),
-	"fdecor",	token(RTFfamilyDecor),
-	"fi", 		token(RTFfirstLineIndent),
-	"fmodern",	token(RTFfamilyModern),
-	"fnil",		token(RTFfamilyNil),
-	"fonttbl",	token(RTFfontListStart),
-	/* All footers are mapped on one entry */
-	"footer",	token(RTFfooter),
-	"footerf",	token(RTFfooter),
-	"footerl",	token(RTFfooter),
-	"footerr",	token(RTFfooter),
-	"footnote",	token(RTFfootnote),
-	"fprq",	        token(RTFfprq),
-	"froman",	token(RTFfamilyRoman),
-	"fs",		token(RTFfontSize),
-	"fscript",	token(RTFfamilyScript),
-	"fswiss",	token(RTFfamilySwiss),
-	"ftech",	token(RTFfamilyTech),
-	"green",	token(RTFgreen),
-	/* All headers are mapped on one entry */
-	"header",	token(RTFheader),
-	"headerf",	token(RTFheader),
-	"headerl",	token(RTFheader),
-	"headerr",	token(RTFheader),
-	"i",		token(RTFitalic),
-	"info",		token(RTFinfo),
-	"ldblquote",	token(RTFldblquote),
-	"li", 		token(RTFleftIndent),
-	"lquote",	token(RTFlquote),
-	"mac",	        token(RTFmac),
-	"margb",	token(RTFmarginButtom),
-	"margl",	token(RTFmarginLeft),
-	"margr",	token(RTFmarginRight),
-	"margt",	token(RTFmarginTop),
-	"paperh",	token(RTFpaperHeight),
-	"paperw",	token(RTFpaperWidth),
-	"par",	        token(RTFparagraph),
-	"pard",	        token(RTFdefaultParagraph),
-	"pc",	        token(RTFpc),
-	"pca",	        token(RTFpca),
-	"pict",	        token(RTFpict),
-	"plain",        token(RTFplain),
-	"qc",	        token(RTFalignCenter),
-	"qj",	        token(RTFalignJustified),
-	"ql",	        token(RTFalignLeft),
-	"qr",	        token(RTFalignRight),
-	"rdblquote",	token(RTFrdblquote),
-	"red",		token(RTFred),
-	"ri",		token(RTFrightIndent),
-	"row",		token(RTFrow),
-	"rquote",	token(RTFrquote),
-	"rtf",		token(RTFstart),
-	"s",	        token(RTFstyle),
-	"sa",	        token(RTFspaceAbove),
-	"sl",	        token(RTFlineSpace),
-	"stylesheet",   token(RTFstylesheet),
-	"tab",	        token(RTFtabulator),
-	"tx",	        token(RTFtabstop),
-	/* All underline are mapped on one entry */
-	"ul",		token(RTFunderline),
-	"uld",		token(RTFunderline),
-	"uldb",		token(RTFunderline),
-	"ulnone",	token(RTFunderlineStop),
-	"ulw",		token(RTFunderline),
-	"up",	        token(RTFsuperscript)
-};
+LexKeyword RTFcommands[] = 
+  {
+    "ansi",      token(RTFansi),
+    "b",         token(RTFbold),
+    "blue",      token(RTFblue),
+    "bullet",    token(RTFbullet),
+    "cb",        token(RTFcolorbg),
+    "cell",      token(RTFcell),
+    "cf",        token(RTFcolorfg),
+    "colortbl",  token(RTFcolortable),
+    "cpg",       token(RTFcpg),
+    "dn",        token(RTFsubscript),
+    "emdash",    token(RTFemdash),
+    "emspace",   token(RTFemspace),
+    "endash",    token(RTFendash),
+    "enspace",   token(RTFenspace),
+    "f",         token(RTFfont),
+    "fcharset",  token(RTFfcharset),
+    "fdecor",    token(RTFfamilyDecor),
+    "fi",        token(RTFfirstLineIndent),
+    "fmodern",   token(RTFfamilyModern),
+    "fnil",      token(RTFfamilyNil),
+    "fonttbl",   token(RTFfontListStart),
+    /* All footers are mapped on one entry */
+    "footer",    token(RTFfooter),
+    "footerf",   token(RTFfooter),
+    "footerl",   token(RTFfooter),
+    "footerr",   token(RTFfooter),
+    "footnote",  token(RTFfootnote),
+    "fprq",      token(RTFfprq),
+    "froman",    token(RTFfamilyRoman),
+    "fs",        token(RTFfontSize),
+    "fscript",   token(RTFfamilyScript),
+    "fswiss",    token(RTFfamilySwiss),
+    "ftech",     token(RTFfamilyTech),
+    "green",     token(RTFgreen),
+    /* All headers are mapped on one entry */
+    "header",    token(RTFheader),
+    "headerf",   token(RTFheader),
+    "headerl",   token(RTFheader),
+    "headerr",   token(RTFheader),
+    "i",         token(RTFitalic),
+    "info",      token(RTFinfo),
+    "ldblquote", token(RTFldblquote),
+    "li",        token(RTFleftIndent),
+    "lquote",    token(RTFlquote),
+    "mac",       token(RTFmac),
+    "margb",     token(RTFmarginButtom),
+    "margl",     token(RTFmarginLeft),
+    "margr",     token(RTFmarginRight),
+    "margt",     token(RTFmarginTop),
+    "paperh",    token(RTFpaperHeight),
+    "paperw",    token(RTFpaperWidth),
+    "par",       token(RTFparagraph),
+    "pard",      token(RTFdefaultParagraph),
+    "pc",        token(RTFpc),
+    "pca",       token(RTFpca),
+    "pict",      token(RTFpict),
+    "plain",     token(RTFplain),
+    "qc",        token(RTFalignCenter),
+    "qj",        token(RTFalignJustified),
+    "ql",        token(RTFalignLeft),
+    "qr",        token(RTFalignRight),
+    "rdblquote", token(RTFrdblquote),
+    "red",       token(RTFred),
+    "ri",        token(RTFrightIndent),
+    "row",       token(RTFrow),
+    "rquote",    token(RTFrquote),
+    "rtf",       token(RTFstart),
+    "s",         token(RTFstyle),
+    "sa",        token(RTFspaceAbove),
+    "sl",        token(RTFlineSpace),
+    "stylesheet",token(RTFstylesheet),
+    "tab",       token(RTFtabulator),
+    "tx",        token(RTFtabstop),
+    /* All underline are mapped on one entry */
+    "ul",        token(RTFunderline),
+    "uld",       token(RTFunderline),
+    "uldb",      token(RTFunderline),
+    "ulnone",    token(RTFunderlineStop),
+    "ulw",       token(RTFunderline),
+    "up",        token(RTFsuperscript)
+  };
 
-BOOL	probeCommand(RTFscannerCtxt *lctxt)
+BOOL probeCommand (RTFscannerCtxt *lctxt)
 {
   int	c = lexGetchar(lctxt);
-  lexUngetchar(lctxt, c);
+  lexUngetchar (lctxt, c);
   if (isalpha(c))
-    return YES;
+    {
+      return YES;
+    }
   return NO;
 }
 
 //	<N> According to spec a cmdLength of 32 is respected
-#define	RTFMaxCmdLength			32
-#define RTFMaxArgumentLength	64
-GSLexError	readCommand(RTFscannerCtxt *lctxt, YYSTYPE *lvalp, int *token)	// the '\\' is already read
+#define RTFMaxCmdLength 32
+#define RTFMaxArgumentLength 64
+GSLexError readCommand (RTFscannerCtxt *lctxt, 
+			YYSTYPE *lvalp, 
+			int *token) // the '\\' is already read
 {
-  char	cmdNameBf[RTFMaxCmdLength+1], *cmdName = cmdNameBf;
-  char	argumentBf[RTFMaxArgumentLength+1], *argument = argumentBf;
-  int	c, foundToken;
+  char cmdNameBf[RTFMaxCmdLength+1], *cmdName = cmdNameBf;
+  char argumentBf[RTFMaxArgumentLength+1], *argument = argumentBf;
+  int  c, foundToken;
 
   lvalp->cmd.name = 0;	// initialize
-  while (isalpha( c = lexGetchar(lctxt) ))
+  while (isalpha (c = lexGetchar(lctxt)))
     {
       *cmdName++ = c;
       if (cmdName >= cmdNameBf + RTFMaxCmdLength) 
-	return LEXsyntaxError;
+	{
+	  return LEXsyntaxError;
+	}
     }
   *cmdName = 0;
   if (!(foundToken = findStringFromKeywordArray(cmdNameBf, RTFcommands, 
 						CArraySize(RTFcommands))))
     {
       if (!(lvalp->cmd.name = my_strdup(cmdNameBf))) 
-	return LEXoutOfMemory;
+	{
+	  return LEXoutOfMemory;
+	}
       *token = RTFOtherStatement;
     } 
   else 
@@ -270,11 +294,15 @@ GSLexError	readCommand(RTFscannerCtxt *lctxt, YYSTYPE *lvalp, int *token)	// the
 	{
 	  *argument++ = c;
 	  if (argument >= argumentBf + RTFMaxArgumentLength) 
-	    return LEXsyntaxError;
+	    {
+	      return LEXsyntaxError;
+	    }
 	} while (isdigit(c = lexGetchar(lctxt)));
       *argument = 0;
       if (c != ' ') 
-	lexUngetchar(lctxt, c); 	// <N> ungetc non-digit
+	{
+	  lexUngetchar(lctxt, c); 	// <N> ungetc non-digit
+	}
       // the consumption of the space seems necessary on NeXT but
       // is not according to spec
       lvalp->cmd.isEmpty = NO;
@@ -288,14 +316,16 @@ GSLexError	readCommand(RTFscannerCtxt *lctxt, YYSTYPE *lvalp, int *token)	// the
   return NoError;
 }
 
-GSLexError	readText(RTFscannerCtxt *lctxt, YYSTYPE *lvalp)
+GSLexError readText (RTFscannerCtxt *lctxt, YYSTYPE *lvalp)
 {
-  int	c;
-  DynamicString	text;
-  GSLexError	error;
+  int c;
+  DynamicString text;
+  GSLexError error;
   
   if ((error = initDynamicString(&text))) 
-    return error;
+    {
+      return error;
+    }
   for (;;)
     {
       c = lexGetchar(lctxt);
@@ -307,63 +337,84 @@ GSLexError	readText(RTFscannerCtxt *lctxt, YYSTYPE *lvalp)
 	}
       else 
 	{
-	  if (c != '\n' && c != '\r')	// <N> newline and cr are ignored if not quoted
-	    appendChar(&text, c);
+	  // <N> newline and cr are ignored if not quoted
+	  if (c != '\n' && c != '\r')
+	    {
+	      appendChar(&text, c);
+	    }
 	}
     }
   appendChar(&text, 0);
-  lvalp->text = text.bf;	// release is up to the consumer
+  lvalp->text = text.bf; // release is up to the consumer
   return NoError;
 }
 
 // read in a character as two hex digit
 static int gethex(RTFscannerCtxt *lctxt)
 {
-    int c = 0;
-    int i;
-
-    for (i = 0; i < 2; i++)
-      {
-	  int c1 = lexGetchar(lctxt);
-
-	  if (!isxdigit(c1))
+  int c = 0;
+  int i;
+  
+  for (i = 0; i < 2; i++)
+    {
+      int c1 = lexGetchar(lctxt);
+      
+      if (!isxdigit(c1))
+	{
+	  lexUngetchar(lctxt, c1);
+	  break;
+	}
+      else 
+	{
+	  c = c * 16;
+	  if (isdigit(c1))
 	    {
-	      lexUngetchar(lctxt, c1);
-	      break;
+	      c += c1 - '0';
 	    }
-	  else 
+	  else if (isupper(c1))
 	    {
-		c = c * 16;
-		if (isdigit(c1))
-		    c += c1 - '0';
-		else if (isupper(c1))
-		    c += c1 - 'A' + 10;
-		else
-		    c += c1 - 'a' + 10;
+	      c += c1 - 'A' + 10;
 	    }
-      }
-
-    return c;
+	  else
+	    {
+	      c += c1 - 'a' + 10;
+	    }
+	}
+    }
+  
+  return c;
 }
 
-int	GSRTFlex(YYSTYPE *lvalp, YYLTYPE *llocp, RTFscannerCtxt *lctxt)	/* provide value and position in the params */ 
+int GSRTFlex (YYSTYPE *lvalp, YYLTYPE *llocp, 
+	      RTFscannerCtxt *lctxt)	/* provide value and position in the params */ 
 {
-  int	c;
-  int	token = 0;
+  int c;
+  int token = 0;
   char *cv;
   
-  do	
-    c = lexGetchar(lctxt);
+  do
+    {
+      c = lexGetchar(lctxt);
+    }
   while ( c == '\n' || c == '\r' );	// <A> the listed characters are to be ignored
   
   switch (c)
     {
-    case EOF:	token = 0;
-      break;
-    case '{':	token = '{';
-      break;
-    case '}':	token = '}';
-      break;
+    case EOF: 
+      {
+	token = 0;
+	break;
+      }
+    case '{':
+      {
+	token = '{';
+	break;
+      }
+    case '}': 
+      {
+	token = '}'; 
+	break;
+      }
     case '\\':
       if (probeCommand(lctxt) == YES)
 	{

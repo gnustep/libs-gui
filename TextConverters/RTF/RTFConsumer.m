@@ -142,12 +142,12 @@ readNSString (StringContext *ctxt)
 					    size: fontSize];
   if (font == nil)
     {
-	NSDebugMLLog(@"RTFParser", 
-		     @"Could not find font %@ size %f traits %d weight %d", 
-		     fontName, fontSize, traits, weight);
-	font = [NSFont userFontOfSize: fontSize];
+      NSDebugMLLog(@"RTFParser", 
+		   @"Could not find font %@ size %f traits %d weight %d", 
+		   fontName, fontSize, traits, weight);
+      font = [NSFont userFontOfSize: fontSize];
     }
-
+  
   return font;
 }
 
@@ -195,11 +195,11 @@ readNSString (StringContext *ctxt)
 				      location: location];
 
   if (!tabChanged)
-  {
-    // remove all tab stops
-    [paragraph setTabStops: [NSArray arrayWithObject: tab]];
-    tabChanged = YES;
-  }
+    {
+      // remove all tab stops
+      [paragraph setTabStops: [NSArray arrayWithObject: tab]];
+      tabChanged = YES;
+    }
   else
     {
       [paragraph addTabStop: tab];
@@ -208,7 +208,7 @@ readNSString (StringContext *ctxt)
   changed = YES;
   RELEASE(tab);
 }
- 
+
 @end
 
 @interface RTFConsumer (Private)
@@ -234,16 +234,24 @@ readNSString (StringContext *ctxt)
   if (flag)
     {
       if ([format isEqual: @"RTFD"])
-	cClass = [RTFDProducer class];
+	{
+	  cClass = [RTFDProducer class];
+	}
       else if ([format isEqual: @"RTF"])
-	cClass = [RTFProducer class];
+	{
+	  cClass = [RTFProducer class];
+	}
     }
   else
     {
       if ([format isEqual: @"RTFD"])
-	cClass = [RTFDConsumer class];
+	{
+	  cClass = [RTFDConsumer class];
+	}
       else if ([format isEqual: @"RTF"])
-	cClass = [RTFConsumer class];
+	{
+	  cClass = [RTFConsumer class];
+	}
     }
   return cClass;
 }
@@ -272,14 +280,14 @@ readNSString (StringContext *ctxt)
 			   documentAttributes: dict];
 	}
     }
-
+  
   RELEASE(consumer);
 
   return text;
 }
 
 + (NSAttributedString*) parseData: (NSData *)rtfData 
-	      documentAttributes: (NSDictionary **)dict
+	       documentAttributes: (NSDictionary **)dict
 {
   RTFConsumer *consumer = [RTFConsumer new];
   NSAttributedString *text;
@@ -329,8 +337,8 @@ readNSString (StringContext *ctxt)
 {
   NSAttributedString *str;
   NSFileWrapper *wrapper = [[NSFileWrapper alloc] 
-			       initWithSerializedRepresentation: rtfData];
-
+			     initWithSerializedRepresentation: rtfData];
+  
   str = [self parseFile: wrapper documentAttributes: dict];
   RELEASE (wrapper);
 
@@ -426,23 +434,23 @@ readNSString (StringContext *ctxt)
 @end
 
 #undef IGNORE
-#define	FONTS	((RTFConsumer *)ctxt)->fonts
-#define	COLOURS	((RTFConsumer *)ctxt)->colours
-#define	RESULT	((RTFConsumer *)ctxt)->result
-#define	IGNORE	((RTFConsumer *)ctxt)->ignore
-#define	TEXTPOSITION [RESULT length]
+#define FONTS	((RTFConsumer *)ctxt)->fonts
+#define COLOURS	((RTFConsumer *)ctxt)->colours
+#define RESULT	((RTFConsumer *)ctxt)->result
+#define IGNORE	((RTFConsumer *)ctxt)->ignore
+#define TEXTPOSITION [RESULT length]
 #define DOCUMENTATTRIBUTES ((RTFConsumer*)ctxt)->documentAttributes
 
-#define	CTXT	[((RTFConsumer *)ctxt) attr]
-#define	CHANGED	CTXT->changed
-#define	PARAGRAPH CTXT->paragraph
-#define	FONTNAME CTXT->fontName
-#define	SCRIPT CTXT->script
-#define	ITALIC CTXT->italic
-#define	BOLD CTXT->bold
-#define	UNDERLINE CTXT->underline
-#define	FGCOLOUR CTXT->fgColour
-#define	BGCOLOUR CTXT->bgColour
+#define CTXT [((RTFConsumer *)ctxt) attr]
+#define CHANGED CTXT->changed
+#define PARAGRAPH CTXT->paragraph
+#define FONTNAME CTXT->fontName
+#define SCRIPT CTXT->script
+#define ITALIC CTXT->italic
+#define BOLD CTXT->bold
+#define UNDERLINE CTXT->underline
+#define FGCOLOUR CTXT->fgColour
+#define BGCOLOUR CTXT->bgColour
 
 #define PAPERSIZE @"PaperSize"
 #define LEFTMARGIN @"LeftMargin"
@@ -526,8 +534,8 @@ void GSRTFmangleText (void *ctxt, const char *text)
 	  attributes = [NSMutableDictionary 
 			 dictionaryWithObjectsAndKeys:
 			   [CTXT currentFont], NSFontAttributeName,
-			   PARAGRAPH, NSParagraphStyleAttributeName,
-			   nil];
+			 PARAGRAPH, NSParagraphStyleAttributeName,
+			 nil];
 	  if (UNDERLINE)
 	    {
 	      [attributes setObject: [CTXT underline]
@@ -548,7 +556,7 @@ void GSRTFmangleText (void *ctxt, const char *text)
 	      [attributes setObject: BGCOLOUR 
 			  forKey: NSBackgroundColorAttributeName];
 	    }
-
+	  
 	  [RESULT setAttributes: attributes 
 		  range: NSMakeRange(oldPosition, textlen)];
 	  CHANGED = NO;
@@ -561,7 +569,7 @@ void GSRTFregisterFont (void *ctxt, const char *fontName,
 {
   NSString		*fontNameString;
   NSNumber		*fontId = [NSNumber numberWithInt: fontNumber];
-
+  
   if (!fontName || !*fontName)
     {	
       [NSException raise: NSInvalidArgumentException 

@@ -31,41 +31,44 @@
 #include	"rtfScanner.h"
 
 /* general statements:
-   measurement is usually in twips: one twentieth of a point (this is about 0.01764 mm)
-   a tabstop of 540 twips (as it occurs on NeXT) is therefore about 0.95 cm
-*/
-#define	halfpoints2points(a)	((a)/2.0)
-#define	twips2points(a)	((a)/20.0)
-#define	twips2mm(a)	((a)*0.01764)
+ * measurement is usually in twips: one twentieth of a point (this is
+ * about 0.01764 mm) a tabstop of 540 twips (as it occurs on NeXT) is
+ * therefore about 0.95 cm
+ */
+#define halfpoints2points(a) ((a)/2.0)
+#define twips2points(a) ((a)/20.0)
+#define twips2mm(a) ((a)*0.01764)
 
-/*	prepare the ctxt, or whatever you want	*/
-void	GSRTFstart(void *ctxt);
+/* prepare the ctxt, or whatever you want */
+void GSRTFstart(void *ctxt);
 
-/*	seal the parsing process, the context or whatever you want	*/
-void	GSRTFstop(void *ctxt);
-
-/*	those pairing functions enclose RTFBlocks. Use it to capture the hierarchical attribute changes of blocks.
-	i.e. attributes of a block are forgotten once a block is closed
-*/
-void	GSRTFopenBlock(void *ctxt, BOOL ignore);
-void	GSRTFcloseBlock(void *ctxt, BOOL ignore);
-
-/*	handle errors	*/
-void	GSRTFerror(const char *msg);
-
-/*	handle rtf commands not expicated in the grammer */
-void	GSRTFgenericRTFcommand(void *ctxt, RTFcmd cmd);
-
-/*	go, handle text	*/
-void	GSRTFmangleText(void *ctxt, const char *text);
+/* seal the parsing process, the context or whatever you want */
+void GSRTFstop(void *ctxt);
 
 /*
-	font functions
-*/
+ * those pairing functions enclose RTFBlocks. Use it to capture the
+ * hierarchical attribute changes of blocks.  i.e. attributes of a
+ * block are forgotten once a block is closed
+ */
+void GSRTFopenBlock(void *ctxt, BOOL ignore);
+void GSRTFcloseBlock(void *ctxt, BOOL ignore);
+
+/* handle errors */
+void GSRTFerror(const char *msg);
+
+/* handle rtf commands not expicated in the grammer */
+void GSRTFgenericRTFcommand(void *ctxt, RTFcmd cmd);
+
+/* go, handle text */
+void GSRTFmangleText(void *ctxt, const char *text);
+
+/*
+ * font functions
+ */
 
 /* get noticed that a particular font is introduced */
-void	GSRTFregisterFont(void *ctxt, const char *fontName, 
-			  RTFfontFamily family, int fontNumber);
+void GSRTFregisterFont(void *ctxt, const char *fontName, 
+		       RTFfontFamily family, int fontNumber);
 
 /* change font number */
 void GSRTFfontNumber(void *ctxt, int fontNumber);
