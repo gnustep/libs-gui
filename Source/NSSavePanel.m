@@ -524,7 +524,8 @@ selectCellWithString: (NSString*)title
 {
   if (*isDir == NO)
     {
-      if ([extension isEqualToString: _requiredFileType] == NO)
+      if (_requiredFileType != nil && [_requiredFileType length] != 0
+          && [extension isEqualToString: _requiredFileType] == NO)
 	return NO;
     }
   else if ([extension length] == 0)
@@ -533,7 +534,8 @@ selectCellWithString: (NSString*)title
     }
   else if (_treatsFilePackagesAsDirectories == NO)
     {
-      if ([extension isEqualToString: _requiredFileType] == YES)
+      if (_requiredFileType == nil || [_requiredFileType length] == 0
+              || [extension isEqualToString: _requiredFileType] == YES)
 	  *isDir = NO;
     }
 
@@ -856,14 +858,20 @@ selectCellWithString: (NSString*)title
  * any selected files that don't already have that extension;
  * The argument type should not include the period that begins 
  * the extension.  Invoke this method each time the Save panel 
- * is used for another file type within the application.
+ * is used for another file type within the application.  If
+ * you do not invoke it, or set it to empty string or nil, no
+ * extension will be appended, indicated by an empty string
+ * returned from -requiredFileType .
  */
 - (void) setRequiredFileType: (NSString*)fileType
 {
   ASSIGN(_requiredFileType, fileType);
 }
 
-/** Returns the required file type. The default is no required file type.  */
+/**
+ * Returns the required file type. The default, indicated by empty string,
+ * is no required file type.
+ */
 - (NSString*) requiredFileType
 {
   return _requiredFileType;
@@ -1008,12 +1016,9 @@ selectCellWithString: (NSString*)title
   if (_fullFileName == nil)
    return @"";
 
-  if (_requiredFileType == nil)
+  if (_requiredFileType == nil || [_requiredFileType isEqual: @""] == YES)
     return _fullFileName;
 
-  if ([_requiredFileType isEqual: @""] == YES)
-    return _fullFileName;
-					    
   // add filetype extension only if the filename does not include it already
   if ([[_fullFileName pathExtension] isEqual: _requiredFileType] == YES)
     return _fullFileName;

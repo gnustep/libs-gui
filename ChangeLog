@@ -1,3 +1,12 @@
+2005-01-24 Adrian Robert <arobert@cogsci.ucsd.edu>
+
+	* Source/NSSavePanel.m (-_shouldShowExtension:isDir:,
+	-setRequiredFileType:, -requiredFileType, -filename): For filename
+	display filtering, handle case where _requiredFileType is unset or
+	set to nil or "" by allowing any extension (including none), as
+	specified in Apple docs, instead of allowing no extensions, as it
+	was.  Document.
+
 2005-01-24 00:48  Alexander Malmberg  <alexander@malmberg.org>
 
 	* Source/NSImageCell.m (-drawInteriorWithFrame:inView:): Draw
@@ -5,6 +14,7 @@
 	bug #11712.
 
 2005-01-22 Adrian Robert <arobert@cogsci.ucsd.edu>
+
 	* Source/NSFontManager.m (-fontWithFamily:traits:weight:size:)
 	Corrected logic in fallback approximate trait search for weight 5 or 6
 	(regular) fonts. Font w/approximate traits but originally-requested
