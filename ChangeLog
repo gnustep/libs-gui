@@ -1,3 +1,7 @@
+2002-06-17  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWorkspace.m: Vague attempt to improve locating of apps
+
 2002-06-15  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSOutlineView.m a number of improvements:

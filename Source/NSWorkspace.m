@@ -506,9 +506,17 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
     {
       NSString  *ext = [appName pathExtension];
 
-      if (ext == nil)
+      if ([ext length] == 0)
         {
-          appName = [appName stringByAppendingPathExtension: @"app"];
+          appName = [last stringByAppendingPathExtension: @"app"];
+	  if ([applications objectForKey: appName] == nil)
+	    {
+	      appName = [last stringByAppendingPathExtension: @"debug"];
+	      if ([applications objectForKey: appName] == nil)
+		{
+		  appName = [last stringByAppendingPathExtension: @"profile"];
+		}
+	    }
         }
       return [applications objectForKey: appName];
     }
@@ -1091,7 +1099,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 {
   NSString	*path;
 
-  if (appName == nil)
+  if ([appName length] == 0)
     {
       return nil;
     }
@@ -1102,13 +1110,9 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
       path = [self fullPathForApplication: appName];
       appName = [[path lastPathComponent] stringByDeletingPathExtension];
     }
-  else if ([appName pathExtension] == nil)
+  else if ([[appName pathExtension] length] == 0)
     {
       path = [path stringByAppendingPathExtension: @"app"];
-    }
-  else
-    {
-      appName = [[path lastPathComponent] stringByDeletingPathExtension];
     }
 
   if (path == nil)
