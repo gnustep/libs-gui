@@ -1450,24 +1450,12 @@ static NSColor	*shadowCol;
   c->_contents = [_contents copyWithZone: zone];
   ASSIGN(c->_cell_image, _cell_image);
   ASSIGN(c->_cell_font, _cell_font);
-  c->_cell.state = _cell.state;
-  c->_cell.is_highlighted = _cell.is_highlighted;
-  c->_cell.is_disabled = _cell.is_disabled;
-  c->_cell.is_editable = _cell.is_editable;
-  c->_cell.is_bordered = _cell.is_bordered;
-  c->_cell.is_bezeled = _cell.is_bezeled;
-  c->_cell.is_scrollable = _cell.is_scrollable;
-  c->_cell.is_selectable = _cell.is_selectable;
-  [c setContinuous: _cell.is_continuous];
-  c->_cell.float_autorange = _cell.float_autorange;
+  c->_cell = _cell;   // This copies all the flags at once.
   c->_cell_float_left = _cell_float_left;
   c->_cell_float_right = _cell_float_right;
-  c->_cell.image_position = _cell.image_position;
-  c->_cell.type = _cell.type;
-  c->_cell.text_align = _cell.text_align;
-  c->_cell.entry_type = _cell.entry_type;
-  [c setRepresentedObject: _represented_object];
-
+  c->_represented_object = _represented_object;
+  c->_action_mask = _action_mask;
+  
   return c;
 }
 
