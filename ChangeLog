@@ -1,3 +1,9 @@
+Sat Jan 27 11:56:33 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSApplication.m (_NSAppKitUncaughtExceptionHandler): 
+	When aborting, simply reraise the exception which gets then managed by
+	the base library exception handler.
+
 Sat Jan 27 11:33:35 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSColorWell.m ([-acceptsFirstMouse:]): Added.
