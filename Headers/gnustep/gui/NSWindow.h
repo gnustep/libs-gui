@@ -114,31 +114,29 @@ extern NSSize NSTokenSize;
   NSMutableArray *rectsBeingDrawn;
   unsigned	disable_flush_window;
 
-  BOOL          accepts_drag;
-  BOOL          is_one_shot;
-  BOOL          needs_display;
-  BOOL          needs_flush;
-  BOOL          is_autodisplay;
-  BOOL          optimize_drawing;
-  BOOL          views_need_display;
   NSWindowDepth depth_limit;
-  BOOL          dynamic_depth_limit;
-
-  BOOL          cursor_rects_enabled;
-  BOOL          cursor_rects_valid;
-
-  BOOL          visible;
-  BOOL          is_key;
-  BOOL          is_main;
-  BOOL          is_edited;
-  BOOL          is_released_when_closed;
-  BOOL          is_miniaturized;
-  BOOL          menu_exclude;
-  BOOL          hides_on_deactivate;
-  BOOL          accepts_mouse_moved;
- 
   NSWindowController *_windowController;
 
+  struct GSWindowFlagsType {
+    unsigned	accepts_drag:1;
+    unsigned	is_one_shot:1;
+    unsigned	needs_flush:1;
+    unsigned	is_autodisplay:1;
+    unsigned	optimize_drawing:1;
+    unsigned	dynamic_depth_limit:1;
+    unsigned	cursor_rects_enabled:1;
+    unsigned	cursor_rects_valid:1;
+    unsigned	visible:1;
+    unsigned	is_key:1;
+    unsigned	is_main:1;
+    unsigned	is_edited:1;
+    unsigned	is_released_when_closed:1;
+    unsigned	is_miniaturized:1;
+    unsigned	menu_exclude:1;
+    unsigned	hides_on_deactivate:1;
+    unsigned	accepts_mouse_moved:1;
+  } _f;
+ 
   /* Reserved for back-end use */
   void *be_wind_reserved;
 }

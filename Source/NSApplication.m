@@ -107,9 +107,9 @@ NSApplication	*NSApp = nil;
 - (void) initDefaults
 {
   [super initDefaults];
-  menu_exclude = YES;           // Don't show in windows menu.
+  [self setExcludedFromWindowsMenu: YES];
+  [self setReleasedWhenClosed: NO];
   window_level = NSDockWindowLevel;
-  is_released_when_closed = NO;
 }
 
 @end

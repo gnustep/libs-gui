@@ -221,7 +221,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   window = nil;
   is_rotated_from_base = NO;
   is_rotated_or_scaled_from_base = NO;
-  needs_display = YES;
+  _rFlags.needs_display = YES;
   post_frame_changes = NO;
   autoresize_subviews = YES;
   autoresizingMask = NSViewNotSizable;
@@ -1312,7 +1312,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       rect = [[window_t->rectsBeingDrawn lastObject] rectValue];
       window_t->rectNeedingFlush = 
 	NSUnionRect(window_t->rectNeedingFlush, rect);
-      window_t->needs_flush = YES;
+      window_t->_f.needs_flush = YES;
     }
   [window_t->rectsBeingDrawn removeLastObject];
   [ctxt unlockFocusView: self needsFlush: YES ];
@@ -1346,7 +1346,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) displayIfNeeded
 {
-  if (needs_display)
+  if (_rFlags.needs_display)
     {
       if (_rFlags.opaque_view)
 	{
@@ -1380,7 +1380,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) displayIfNeededIgnoringOpacity
 {
-  if (needs_display)
+  if (_rFlags.needs_display)
     {
       NSRect	rect;
 
@@ -1405,7 +1405,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) displayIfNeededInRect: (NSRect)aRect
 {
-  if (needs_display)
+  if (_rFlags.needs_display)
     {
       if (_rFlags.opaque_view)
 	{
@@ -1427,7 +1427,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   if (!window)
     return;
 
-  if (needs_display)
+  if (_rFlags.needs_display)
     {
       NSRect	redrawRect;
 
@@ -1481,12 +1481,12 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 		      /*
 		       * hack the ivars of the subview directly for speed.
 		       */
-		      subview->needs_display = YES;
+		      subview->_rFlags.needs_display = YES;
 		      subview->invalidRect = NSUnionRect(subview->invalidRect,
 			    isect);
 		    }
 
-		  if (subview->needs_display)
+		  if (subview->_rFlags.needs_display)
 		    {
 		      if (intersectCalculated == NO
 			|| NSEqualRects(aRect, redrawRect) == NO)
@@ -1510,7 +1510,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	|| NSEqualRects(aRect, NSUnionRect(visibleRect, aRect)) == YES)
 	{
 	  invalidRect = NSZeroRect;
-	  needs_display = NO;
+	  _rFlags.needs_display = NO;
 	}
       [window flushWindow];
     }
@@ -1586,12 +1586,12 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 		  /*
 		   * hack the ivars of the subview directly for speed.
 		   */
-		  subview->needs_display = YES;
+		  subview->_rFlags.needs_display = YES;
 		  subview->invalidRect = NSUnionRect(subview->invalidRect,
 			isect);
 		}
 
-	      if (subview->needs_display)
+	      if (subview->_rFlags.needs_display)
 		{
 		  if (intersectCalculated == NO)
 		    {
@@ -1613,7 +1613,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     || NSEqualRects(aRect, NSUnionRect(visibleRect, aRect)) == YES)
     {
       invalidRect = NSZeroRect;
-      needs_display = NO;
+      _rFlags.needs_display = NO;
     }
   [window flushWindow];
 }
@@ -1636,7 +1636,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     }
   else
     {
-      needs_display = NO;
+      _rFlags.needs_display = NO;
       invalidRect = NSZeroRect;
     }
 }
@@ -1655,7 +1655,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       NSView	*firstOpaque = [self opaqueAncestor];
       NSView	*currentView = super_view;
 
-      needs_display = YES;
+      _rFlags.needs_display = YES;
       invalidRect = rect;
       if (firstOpaque == self)
 	{
@@ -1669,7 +1669,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
       while (currentView)
 	{
-	  currentView->needs_display = YES;
+	  currentView->_rFlags.needs_display = YES;
 	  currentView = currentView->super_view;
 	}
     }
@@ -2366,6 +2366,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
+  BOOL	flag;
+
   [super encodeWithCoder: aCoder];
 
   NSDebugLLog(@"NSView", @"NSView: start encoding\n");
@@ -2378,7 +2380,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_rotated_from_base];
   [aCoder encodeValueOfObjCType: @encode(BOOL)
 	  at: &is_rotated_or_scaled_from_base];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &needs_display];
+  flag = _rFlags.needs_display;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &post_frame_changes];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &autoresize_subviews];
   [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &autoresizingMask];
@@ -2389,6 +2392,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
+  BOOL	flag;
+
   [super initWithCoder: aDecoder];
 
   NSDebugLLog(@"NSView", @"NSView: start decoding\n");
@@ -2401,7 +2406,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_rotated_from_base];
   [aDecoder decodeValueOfObjCType: @encode(BOOL)
 	  at: &is_rotated_or_scaled_from_base];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &needs_display];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _rFlags.needs_display = flag;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &post_frame_changes];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &autoresize_subviews];
   [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &autoresizingMask];
@@ -2482,7 +2488,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (BOOL) needsDisplay
 {
-  return needs_display;
+  return _rFlags.needs_display;
 }
 
 - (int) tag

@@ -46,7 +46,7 @@
 - (void) initDefaults
 {
   [super initDefaults];
-  menu_exclude = YES;           // Don't show in windows menu.
+  [self setExcludedFromWindowsMenu: YES];
 }
 @end
 

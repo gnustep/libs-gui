@@ -83,25 +83,12 @@
 			     defer: NO];
 }
 
-- (id) initWithContentRect: (NSRect)contentRect
-		 styleMask: (unsigned int)aStyle
-		   backing: (NSBackingStoreType)bufferingType
-		     defer: (BOOL)flag
-		    screen: (NSScreen*)aScreen
-{
-  self = [super initWithContentRect: contentRect
-			  styleMask: aStyle
-			    backing: bufferingType
-			      defer: flag
-			     screen: aScreen];
-  [self setReleasedWhenClosed: NO];
-  return self;
-}
-
 - (void) initDefaults
 {
   [super initDefaults];
-  menu_exclude = YES;		// Don't show panels in windows menu.
+  [self setReleasedWhenClosed: NO];
+  [self setHidesOnDeactivate: YES];
+  [self setExcludedFromWindowsMenu: YES];
 }
 
 - (BOOL) canBecomeKeyWindow
@@ -156,7 +143,7 @@
   return _becomesKeyOnlyIfNeeded;
 }
 
-- (void)setBecomesKeyOnlyIfNeeded: (BOOL)flag
+- (void) setBecomesKeyOnlyIfNeeded: (BOOL)flag
 {
   _becomesKeyOnlyIfNeeded = flag;
 }

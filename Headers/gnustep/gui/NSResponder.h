@@ -59,6 +59,7 @@
     unsigned	has_draginfo:1;		/* View/window has drag types	*/
     unsigned	opaque_view:1;
     unsigned	valid_rects:1;		/* Some cursor rects are valid	*/
+    unsigned	needs_display:1;	/* window/view needs display	*/
   } _rFlags;
 }
 

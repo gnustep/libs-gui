@@ -289,8 +289,8 @@ static NSMapTable* windowmaps = NULL;
 
   [self setNextResponder: NSApp];
 
-  cursor_rects_enabled = YES;
-  cursor_rects_valid = NO;
+  _f.cursor_rects_enabled = YES;
+  _f.cursor_rects_valid = NO;
 
   /* Create the content view */
   cframe.origin = NSZeroPoint;
@@ -389,7 +389,7 @@ static NSMapTable* windowmaps = NULL;
   id  old = represented_filename;
 
   ASSIGN(represented_filename, aString);
-  if (menu_exclude == NO
+  if (_f.menu_exclude == NO
     && ((represented_filename != nil && old == nil)
       || (represented_filename == nil && old != nil)))
     {
@@ -440,7 +440,7 @@ static NSMapTable* windowmaps = NULL;
 
 - (BOOL) isOneShot
 {
-  return is_one_shot;
+  return _f.is_one_shot;
 }
 
 - (void) setBackingType: (NSBackingStoreType)type
@@ -450,7 +450,7 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) setOneShot: (BOOL)flag
 {
-  is_one_shot = flag;
+  _f.is_one_shot = flag;
 }
 
 - (int) windowNumber
@@ -481,11 +481,11 @@ static NSMapTable* windowmaps = NULL;
   BOOL isDoc = NO;
 
   ASSIGN(miniaturized_title, title);
-  if (is_miniaturized == NO)
+  if (_f.is_miniaturized == NO)
     title = window_title;
   if ([title isEqual: represented_filename])
     isDoc = YES;
-  if (menu_exclude == NO)
+  if (_f.menu_exclude == NO)
     [NSApp changeWindowsItem: self
 		       title: title
 		    filename: isDoc];
@@ -552,7 +552,7 @@ static NSMapTable* windowmaps = NULL;
 {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
-  is_key = YES;
+  _f.is_key = YES;
   [self resetCursorRects];
   [nc postNotificationName: NSWindowDidBecomeKeyNotification object: self];
 }
@@ -561,7 +561,7 @@ static NSMapTable* windowmaps = NULL;
 {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
-  is_main = YES;
+  _f.is_main = YES;
   [nc postNotificationName: NSWindowDidBecomeMainNotification object: self];
 }
 
@@ -577,27 +577,27 @@ static NSMapTable* windowmaps = NULL;
 
 - (BOOL) hidesOnDeactivate
 {
-  return hides_on_deactivate;
+  return _f.hides_on_deactivate;
 }
 
 - (BOOL) isKeyWindow
 {
-  return is_key;
+  return _f.is_key;
 }
 
 - (BOOL) isMainWindow
 {
-  return is_main;
+  return _f.is_main;
 }
 
 - (BOOL) isMiniaturized
 {
-  return is_miniaturized;
+  return _f.is_miniaturized;
 }
 
 - (BOOL) isVisible
 {
-  return visible;
+  return _f.visible;
 }
 
 - (int) level
@@ -667,7 +667,7 @@ static NSMapTable* windowmaps = NULL;
 {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
-  is_key = NO;
+  _f.is_key = NO;
   [self discardCursorRects];
   [nc postNotificationName: NSWindowDidResignKeyNotification object: self];
 }
@@ -676,13 +676,55 @@ static NSMapTable* windowmaps = NULL;
 {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
-  is_main = NO;
+  _f.is_main = NO;
   [nc postNotificationName: NSWindowDidResignMainNotification object: self];
+}
+
+- (void) _appWillBecomeActive: (NSNotification*)aNotification
+{
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+
+  [nc removeObserver: self
+		name: NSApplicationWillBecomeActiveNotification
+	      object: NSApp];
+  [self orderFrontRegardless];
+}
+
+- (void) _appWillResignActive: (NSNotification*)aNotification
+{
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+
+  if (_f.visible)
+    {
+      [nc addObserver: self
+	     selector: @selector(_appWillBecomeActive:)
+		 name: NSApplicationWillBecomeActiveNotification
+	       object: NSApp];
+      [self orderOut: self];
+    }
 }
 
 - (void) setHidesOnDeactivate: (BOOL)flag
 {
-  hides_on_deactivate = flag;
+  if (flag != _f.hides_on_deactivate)
+    {
+      NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+
+      if (flag == YES)
+	{
+	  [nc addObserver: self
+		 selector: @selector(_appWillResignActive:)
+		     name: NSApplicationWillResignActiveNotification
+		   object: NSApp];
+	}
+      else
+	{
+	  [nc removeObserver: self
+			name: NSApplicationWillResignActiveNotification
+		      object: NSApp];
+	}
+      _f.hides_on_deactivate = flag;
+    }
 }
 
 - (void) setLevel: (int)newLevel
@@ -865,7 +907,7 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) display
 {
-  needs_display = NO;
+  _rFlags.needs_display = NO;
   if ((!first_responder) || (first_responder == self))
     if (_initial_first_responder)
       [self makeFirstResponder: _initial_first_responder];
@@ -882,10 +924,10 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) displayIfNeeded
 {
-  if (needs_display)
+  if (_rFlags.needs_display)
     {
       [[content_view superview] displayIfNeeded];
-      needs_display = NO;
+      _rFlags.needs_display = NO;
     }
 }
 
@@ -896,7 +938,7 @@ static NSMapTable* windowmaps = NULL;
   /*
    *	if autodisplay is enabled and window display
    */
-  if (is_autodisplay && needs_display)
+  if (_f.is_autodisplay && _rFlags.needs_display)
     {
       [self disableFlushWindow];
       [self displayIfNeeded];
@@ -909,9 +951,9 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) flushWindowIfNeeded
 {
-  if (disable_flush_window == 0 && needs_flush == YES)
+  if (disable_flush_window == 0 && _f.needs_flush == YES)
     {
-      needs_flush = NO;
+      _f.needs_flush = NO;
       [self flushWindow];
     }
 }
@@ -930,7 +972,7 @@ static NSMapTable* windowmaps = NULL;
 
   if (disable_flush_window)		// if flushWindow is called
     {					// while flush is disabled
-      needs_flush = YES;		// mark self as needing a
+      _f.needs_flush = YES;		// mark self as needing a
       return;				// flush, then return
     }
 
@@ -940,7 +982,7 @@ static NSMapTable* windowmaps = NULL;
     {
       if ([rectsBeingDrawn count] == 0)
 	{
-	  needs_flush = NO;
+	  _f.needs_flush = NO;
 	  return;
 	}
     }
@@ -959,7 +1001,7 @@ static NSMapTable* windowmaps = NULL;
 		     NSMinX(rectNeedingFlush), NSMinY(rectNeedingFlush),
 		     NSWidth(rectNeedingFlush), NSHeight(rectNeedingFlush),
 		     window_num);
-  needs_flush = NO;
+  _f.needs_flush = NO;
   rectNeedingFlush = NSZeroRect;
 }
 
@@ -973,7 +1015,7 @@ static NSMapTable* windowmaps = NULL;
 
 - (BOOL) isAutodisplay
 {
-  return is_autodisplay;
+  return _f.is_autodisplay;
 }
 
 - (BOOL) isFlushWindowDisabled
@@ -983,7 +1025,7 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) setAutodisplay: (BOOL)flag
 {
-  is_autodisplay = flag;
+  _f.is_autodisplay = flag;
 }
 
 - (void) _handleWindowNeedsDisplay: (id)bogus
@@ -993,7 +1035,7 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) setViewsNeedDisplay: (BOOL)flag
 {
-  needs_display = flag;
+  _rFlags.needs_display = flag;
   if (flag)
     {
       [NSApp setWindowsNeedUpdate: YES];
@@ -1018,12 +1060,12 @@ static NSMapTable* windowmaps = NULL;
 
 - (BOOL) viewsNeedDisplay
 {
-  return needs_display;
+  return _rFlags.needs_display;
 }
 
 - (void) useOptimizedDrawing: (BOOL)flag
 {
-  optimize_drawing = flag;
+  _f.optimize_drawing = flag;
 }
 
 - (BOOL) canStoreColor
@@ -1046,7 +1088,7 @@ static NSMapTable* windowmaps = NULL;
 
 - (BOOL) hasDynamicDepthLimit
 {
-  return dynamic_depth_limit;
+  return _f.dynamic_depth_limit;
 }
 
 - (NSScreen *) screen
@@ -1061,7 +1103,7 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) setDynamicDepthLimit: (BOOL)flag
 {
-  dynamic_depth_limit = flag;
+  _f.dynamic_depth_limit = flag;
 }
 
 /*
@@ -1069,12 +1111,12 @@ static NSMapTable* windowmaps = NULL;
  */
 - (BOOL) areCursorRectsEnabled
 {
-  return cursor_rects_enabled;
+  return _f.cursor_rects_enabled;
 }
 
 - (void) disableCursorRects
 {
-  cursor_rects_enabled = NO;
+  _f.cursor_rects_enabled = NO;
 }
 
 static void
@@ -1114,7 +1156,7 @@ discardCursorRectsForView(NSView *theView)
 
 - (void) enableCursorRects
 {
-  cursor_rects_enabled = YES;
+  _f.cursor_rects_enabled = YES;
 }
 
 - (void) invalidateCursorRectsForView: (NSView *)aView
@@ -1124,7 +1166,7 @@ discardCursorRectsForView(NSView *theView)
       [((NSViewPtr)aView)->cursor_rects
 	makeObjectsPerformSelector: @selector(invalidate)];
       ((NSViewPtr)aView)->_rFlags.valid_rects = 0;
-      cursor_rects_valid = NO;
+      _f.cursor_rects_valid = NO;
     }
 }
 
@@ -1159,7 +1201,7 @@ resetCursorRectsForView(NSView *theView)
 {
   [self discardCursorRects];
   resetCursorRectsForView([content_view superview]);
-  cursor_rects_valid = YES;
+  _f.cursor_rects_valid = YES;
 }
 
 /*
@@ -1170,19 +1212,19 @@ resetCursorRectsForView(NSView *theView)
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
   /*
-   * If 'is_released_when_closed' then the window will be removed from the
+   * If '_f.is_released_when_closed' then the window will be removed from the
    * global list of windows (causing it to be released) - so we must
    * bracket any work we do in a retain/release sequence in case that
    * removal takes place when we post the notification.
    */
-  if (is_released_when_closed)
+  if (_f.is_released_when_closed)
     RETAIN(self);
 
   [nc postNotificationName: NSWindowWillCloseNotification object: self];
   [NSApp removeWindowsItem: self];
   [self orderOut: self];
 
-  if (is_released_when_closed)
+  if (_f.is_released_when_closed)
     RELEASE(self);
 }
 
@@ -1190,7 +1232,7 @@ resetCursorRectsForView(NSView *theView)
 {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
-  is_miniaturized = NO;
+  _f.is_miniaturized = NO;
 
   [self performDeminiaturize: self];
   [nc postNotificationName: NSWindowDidDeminiaturizeNotification object: self];
@@ -1198,12 +1240,12 @@ resetCursorRectsForView(NSView *theView)
 
 - (BOOL) isDocumentEdited
 {
-  return is_edited;
+  return _f.is_edited;
 }
 
 - (BOOL) isReleasedWhenClosed
 {
-  return is_released_when_closed;
+  return _f.is_released_when_closed;
 }
 
 - (void) miniaturize: sender
@@ -1266,7 +1308,7 @@ resetCursorRectsForView(NSView *theView)
 - (void) performMiniaturize: (id)sender
 {
   DPSminiwindow(GSCurrentContext(), window_num);
-  is_miniaturized = YES;
+  _f.is_miniaturized = YES;
 }
 
 - (int) resizeFlags
@@ -1276,10 +1318,10 @@ resetCursorRectsForView(NSView *theView)
 
 - (void) setDocumentEdited: (BOOL)flag
 {
-  if (is_edited != flag)
+  if (_f.is_edited != flag)
     {
-      is_edited = flag;
-      if (menu_exclude == NO)
+      _f.is_edited = flag;
+      if (_f.menu_exclude == NO)
 	{
 	  [NSApp updateWindowsItem: self];
 	}
@@ -1288,7 +1330,7 @@ resetCursorRectsForView(NSView *theView)
 
 - (void) setReleasedWhenClosed: (BOOL)flag
 {
-  is_released_when_closed = flag;
+  _f.is_released_when_closed = flag;
 }
 
 /*
@@ -1296,7 +1338,7 @@ resetCursorRectsForView(NSView *theView)
  */
 - (BOOL) acceptsMouseMovedEvents
 {
-  return accepts_mouse_moved;
+  return _f.accepts_mouse_moved;
 }
 
 - (NSEvent *) currentEvent
@@ -1448,7 +1490,7 @@ resetCursorRectsForView(NSView *theView)
 
 - (void) setAcceptsMouseMovedEvents: (BOOL)flag
 {
-  accepts_mouse_moved = flag;
+  _f.accepts_mouse_moved = flag;
 }
 
 - (void) _checkTrackingRectangles: (NSView *)theView
@@ -1671,7 +1713,7 @@ resetCursorRectsForView(NSView *theView)
   NSView	*v;
   NSEventType	type;
 
-  if (!cursor_rects_valid)
+  if (!_f.cursor_rects_valid)
     {
       [self resetCursorRects];
     }
@@ -1684,7 +1726,7 @@ resetCursorRectsForView(NSView *theView)
 	if (first_responder != v)
 	  {
 	    [self makeFirstResponder: v];
-	    if (is_key || [v acceptsFirstMouse: theEvent] == YES)
+	    if (_f.is_key || [v acceptsFirstMouse: theEvent] == YES)
 	      {
 		if([NSHelpManager isContextHelpModeActive])
 		  {
@@ -1742,7 +1784,7 @@ resetCursorRectsForView(NSView *theView)
 	      [v rightMouseDragged: theEvent];
 	      break;
 	    default:
-	      if (accepts_mouse_moved)
+	      if (_f.accepts_mouse_moved)
 		{
 		  /*
 		   * If the window is set to accept mouse movements, we need to
@@ -1761,7 +1803,7 @@ resetCursorRectsForView(NSView *theView)
 	 */
 	(*ctImp)(self, ctSel, content_view, theEvent);
 
-	if (is_key)
+	if (_f.is_key)
 	  {
 	    /*
 	     * We need to go through all of the views, and if there is any with
@@ -1873,13 +1915,13 @@ resetCursorRectsForView(NSView *theView)
 	      if (!v)
 		v = content_view;
 	      dragInfo = [GSCurrentContext() _dragInfo];
-	      if (_lastDragView && _lastDragView != v && accepts_drag)
+	      if (_lastDragView && _lastDragView != v && _f.accepts_drag)
 		{
 		  GSPerformVoidDragSelector(_lastDragView, 
 				      @selector(draggingExited:), dragInfo);
 		}
-	      accepts_drag = GSViewAcceptsDrag(v, dragInfo);
-	      if (_lastDragView != v && accepts_drag)
+	      _f.accepts_drag = GSViewAcceptsDrag(v, dragInfo);
+	      if (_lastDragView != v && _f.accepts_drag)
 		{
 		  GSPerformDragSelector(v, @selector(draggingEntered:), 
 				      dragInfo, action);
@@ -1908,7 +1950,7 @@ resetCursorRectsForView(NSView *theView)
 
 	    case GSAppKitDraggingExit:
 	      dragInfo = [GSCurrentContext() _dragInfo];
-	      if (_lastDragView && accepts_drag)
+	      if (_lastDragView && _f.accepts_drag)
 		{
 		  GSPerformDragSelector(_lastDragView, 
 				      @selector(draggingExited:), dragInfo,
@@ -1917,7 +1959,7 @@ resetCursorRectsForView(NSView *theView)
 	      break;
 
 	    case GSAppKitDraggingDrop:
-	      if (_lastDragView && accepts_drag)
+	      if (_lastDragView && _f.accepts_drag)
 		{
 	          dragInfo = [GSCurrentContext() _dragInfo];
 		  GSPerformDragSelector(_lastDragView, 
@@ -2094,12 +2136,12 @@ resetCursorRectsForView(NSView *theView)
  */
 - (BOOL) isExcludedFromWindowsMenu
 {
-  return menu_exclude;
+  return _f.menu_exclude;
 }
 
 - (void) setExcludedFromWindowsMenu: (BOOL)flag
 {
-  menu_exclude = flag;
+  _f.menu_exclude = flag;
 }
 
 - (id) validRequestorForSendType: (NSString *)sendType
@@ -2385,6 +2427,8 @@ resetCursorRectsForView(NSView *theView)
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
+  BOOL	flag;
+
   [self setNextResponder: nil];
 
   [super encodeWithCoder: aCoder];
@@ -2398,13 +2442,19 @@ resetCursorRectsForView(NSView *theView)
   [aCoder encodeObject: miniaturized_title];
   [aCoder encodeObject: window_title];
   [aCoder encodePoint: last_point];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &visible];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_key];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_main];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_edited];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_miniaturized];
+  flag = _f.visible;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _f.is_key;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _f.is_main;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _f.is_edited;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _f.is_miniaturized;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   [aCoder encodeValueOfObjCType: @encode(unsigned) at: &style_mask];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &menu_exclude];
+  flag = _f.menu_exclude;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
 
   // Version 2
   [aCoder encodeSize: minimum_size];
@@ -2414,21 +2464,31 @@ resetCursorRectsForView(NSView *theView)
   [aCoder encodeValueOfObjCType: @encode(NSBackingStoreType) at: &backing_type];
   [aCoder encodeValueOfObjCType: @encode(int) at: &window_level];
   [aCoder encodeValueOfObjCType: @encode(unsigned) at: &disable_flush_window];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_one_shot];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_autodisplay];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &optimize_drawing];
+  flag = _f.is_one_shot;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _f.is_autodisplay;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _f.optimize_drawing;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   [aCoder encodeValueOfObjCType: @encode(NSWindowDepth) at: &depth_limit];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &dynamic_depth_limit];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &cursor_rects_enabled];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_released_when_closed];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &hides_on_deactivate];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &accepts_mouse_moved];
+  flag = _f.dynamic_depth_limit;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _f.cursor_rects_enabled;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _f.is_released_when_closed;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _f.hides_on_deactivate;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _f.accepts_mouse_moved;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
 
   NSDebugLog(@"NSWindow: finish encoding\n");
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
+  BOOL	flag;
+
   [super initWithCoder: aDecoder];
 
   NSDebugLog(@"NSWindow: start decoding\n");
@@ -2440,13 +2500,19 @@ resetCursorRectsForView(NSView *theView)
   [aDecoder decodeValueOfObjCType: @encode(id) at: &miniaturized_title];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &window_title];
   last_point = [aDecoder decodePoint];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &visible];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_key];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_main];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_edited];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_miniaturized];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _f.visible = flag;
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _f.is_key = flag;
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _f.is_main = flag;
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _f.is_edited = flag;
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _f.is_miniaturized = flag;
   [aDecoder decodeValueOfObjCType: @encode(unsigned) at: &style_mask];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &menu_exclude];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _f.menu_exclude = flag;
 
   // Version 2
   minimum_size = [aDecoder decodeSize];
@@ -2457,15 +2523,23 @@ resetCursorRectsForView(NSView *theView)
 	at: &backing_type];
   [aDecoder decodeValueOfObjCType: @encode(int) at: &window_level];
   [aDecoder decodeValueOfObjCType: @encode(unsigned) at: &disable_flush_window];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_one_shot];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_autodisplay];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &optimize_drawing];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _f.is_one_shot = flag;
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _f.is_autodisplay = flag;
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _f.optimize_drawing = flag;
   [aDecoder decodeValueOfObjCType: @encode(NSWindowDepth) at: &depth_limit];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &dynamic_depth_limit];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &cursor_rects_enabled];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_released_when_closed];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &hides_on_deactivate];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &accepts_mouse_moved];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _f.dynamic_depth_limit = flag;
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _f.cursor_rects_enabled = flag;
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _f.is_released_when_closed = flag;
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _f.hides_on_deactivate = flag;
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _f.accepts_mouse_moved = flag;
 
   NSDebugLog(@"NSWindow: finish decoding\n");
 
@@ -2524,7 +2598,7 @@ resetCursorRectsForView(NSView *theView)
 
 - (void) _setVisible: (BOOL)flag
 {
-  visible = flag;
+  _f.visible = flag;
 }
 
 - (void) performDeminiaturize: sender	  {}
@@ -2551,24 +2625,23 @@ resetCursorRectsForView(NSView *theView)
   last_point = NSZeroPoint;
   window_level = NSNormalWindowLevel;
 
-  is_one_shot = NO;
-  needs_display = NO;
-  is_autodisplay = YES;
-  optimize_drawing = YES;
-  views_need_display = NO;
   depth_limit = 8;
-  dynamic_depth_limit = YES;
-  cursor_rects_enabled = NO;
-  visible = NO;
-  is_key = NO;
-  is_main = NO;
-  is_edited = NO;
-  is_released_when_closed = YES;
-  is_miniaturized = NO;
   disable_flush_window = 0;
-  menu_exclude = NO;
-  hides_on_deactivate = NO;
-  accepts_mouse_moved = NO;
+
+  _f.is_one_shot = NO;
+  _f.is_autodisplay = YES;
+  _f.optimize_drawing = YES;
+  _f.dynamic_depth_limit = YES;
+  _f.cursor_rects_enabled = NO;
+  _f.visible = NO;
+  _f.is_key = NO;
+  _f.is_main = NO;
+  _f.is_edited = NO;
+  _f.is_released_when_closed = YES;
+  _f.is_miniaturized = NO;
+  _f.menu_exclude = NO;
+  _f.hides_on_deactivate = NO;
+  _f.accepts_mouse_moved = NO;
 }
 
 - (id) cleanInit

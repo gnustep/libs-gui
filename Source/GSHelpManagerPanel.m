@@ -8,7 +8,7 @@
 
 static GSHelpManagerPanel* _GSsharedGSHelpPanel;
 
-+sharedHelpManagerPanel
++ (id) sharedHelpManagerPanel
 {
   if(!_GSsharedGSHelpPanel)
     _GSsharedGSHelpPanel = [[GSHelpManagerPanel alloc] init];
@@ -16,68 +16,67 @@ static GSHelpManagerPanel* _GSsharedGSHelpPanel;
 }
 
 /* This window should not be destroyed... So we don't allow it to! */
--retain
+- (id) retain
 {
   return self;
 }
 
--release
+- (void) release
+{
+}
+
+- (id) autorelease
 {
   return self;
 }
 
--autorelease
+- (id) init
 {
-  return self;
-}
-
--init
-{
-  NSScrollView* scrollView;
-  NSRect scrollViewRect = {{0, 0}, {470, 150}};
-  NSRect winRect = {{100, 100}, {470, 150}};
-  NSColor* backColor;
-  unsigned int style = NSTitledWindowMask | NSClosableWindowMask
+  NSScrollView	*scrollView;
+  NSRect	scrollViewRect = {{0, 0}, {470, 150}};
+  NSRect	winRect = {{100, 100}, {470, 150}};
+  NSColor	*backColor;
+  unsigned int	style = NSTitledWindowMask | NSClosableWindowMask
     | NSMiniaturizableWindowMask | NSResizableWindowMask;
   
-  [self initWithContentRect:winRect
-	styleMask:style
-	backing:NSBackingStoreRetained
-	defer:NO];
+  [self initWithContentRect: winRect
+		  styleMask: style
+		    backing: NSBackingStoreRetained
+		      defer: NO];
   [self setRepresentedFilename: @"Help"];
   [self setDocumentEdited: NO];
   
-  scrollView = [[NSScrollView alloc] initWithFrame:scrollViewRect];
-  [scrollView setHasHorizontalScroller:NO];
-  [scrollView setHasVerticalScroller:YES]; 
+  scrollView = [[NSScrollView alloc] initWithFrame: scrollViewRect];
+  [scrollView setHasHorizontalScroller: NO];
+  [scrollView setHasVerticalScroller: YES]; 
   [scrollView setAutoresizingMask: NSViewHeightSizable];
   
   textView = [NSText new];
   [textView setEditable: NO];
   [textView setRichText: YES];
   [textView setSelectable: YES];
-  [textView setFrame:[[scrollView contentView] frame]];
-  backColor = [NSColor colorWithCalibratedWhite:0.85 alpha:1.0]; // off white
-  [textView setBackgroundColor:backColor];					
-  [scrollView setDocumentView:textView];
+  [textView setFrame: [[scrollView contentView] frame]];
+  backColor = [NSColor colorWithCalibratedWhite: 0.85 alpha: 1.0]; // off white
+  [textView setBackgroundColor: backColor];					
+  [scrollView setDocumentView: textView];
   [[self contentView] addSubview: scrollView];
   
-  [self setTitle:@"Help"];
+  [self setTitle: @"Help"];
   
   return self;
 }
 
--(void)setHelpText: (NSAttributedString*) helpText
+- (void) setHelpText: (NSAttributedString*) helpText
 {
   [textView setText: [helpText string]];
 }
 
--(BOOL) isFloatingPanel
+- (BOOL) isFloatingPanel
 {
   return YES;
 }
 
--(void) close
+- (void) close
 {
   [NSApp stopModal];
   [super close];

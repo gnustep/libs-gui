@@ -182,16 +182,6 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
                     selector: @selector(_showTornOffMenuIfAny:)
                     name: NSApplicationWillFinishLaunchingNotification 
                     object: theApp];
-  [defaultCenter addObserver: self
-                    selector: @selector(_deactivate:)
-                    name: NSApplicationWillResignActiveNotification
-                    object: theApp];
-  [defaultCenter addObserver: self
-                    selector: @selector(_activate:)
-                    name: NSApplicationWillBecomeActiveNotification
-                    object: theApp];
-
-
   return self;
 }
 
@@ -770,17 +760,6 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 @end
 
 @implementation NSMenu (GNUstepPrivate)
-- (void) _activate: (NSNotification*)notification
-{
-  if (menu_is_visible)
-    [aWindow orderFrontRegardless];
-}
-
-- (void) _deactivate: (NSNotification*)notification
-{
-  if (menu_is_visible)
-    [aWindow orderOut:nil];
-}
 
 - (void)_showTornOffMenuIfAny: (NSNotification*)notification
 {
@@ -971,6 +950,14 @@ NSArray* array;
     }
 }
 
+- (id) init
+{
+  return [self initWithContentRect: NSZeroRect
+			 styleMask: NSBorderlessWindowMask
+			   backing: NSBackingStoreBuffered
+			     defer: NO];
+}
+
 - (BOOL) canBecomeMainWindow
 {
   return NO;
@@ -979,14 +966,6 @@ NSArray* array;
 - (BOOL) canBecomeKeyWindow
 {
   return NO;
-}
-
-- (void) initDefaults
-{
-  [super initDefaults];
-  menu_exclude = YES;           // Don't show in windows menu.
-  window_level = NSSubmenuWindowLevel;
-  is_released_when_closed = NO;
 }
 
 - (BOOL) worksWhenModal

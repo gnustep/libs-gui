@@ -37,6 +37,7 @@
 #include <AppKit/NSMenuView.h>
 #include <AppKit/PSOperators.h>
 #include <AppKit/NSWindow.h>
+#include <AppKit/NSPanel.h>
 
 @class NSString;
 @class NSEvent;
@@ -44,7 +45,7 @@
 @class NSMenuView;
 @class NSMenuWindow;
 
-@interface      NSMenuWindow : NSWindow
+@interface      NSMenuWindow : NSPanel
 @end
 
 @interface NSMenu : NSObject <NSCoding, NSCopying>
