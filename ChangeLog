@@ -2,7 +2,7 @@
 
 	* Source/NSPasteboard.m (+_pbs): Give gpbs a --GSStartupNotification
 	argument. Listen for the notification and connect immediately if it
-	arrives. Clarify the user message.
+	arrives. Clarify the user message. Fixes bug #10876.
 
 2004-11-08  Quentin Mathe <qmathe@club-internet.fr>
         
