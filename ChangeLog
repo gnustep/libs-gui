@@ -1,3 +1,11 @@
+2000-03-21 22:00 Fred Kiefer <FredKiefer@gmx.de>
+	* Source/NSText.m: Changed to use a text storage instead of an
+	attributed string.
+	* Source/NSTextStorage.m: Removed unnecessary method, changes
+	of the delegate now don't trigger processEditing
+	* Source/GSTextStorage.m: The two basic operations call
+	([-edited:range:changeInLength:])
+
 2000-03-22  Richard Frith-Macdonald <rfm@gnu.org>
 
 	Patch from jagapen@whitewater.chem.wisc.edu
