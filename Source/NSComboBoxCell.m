@@ -1167,6 +1167,48 @@ numberOfRowsInColumn: (int)column
     }
 }
 
+/* FIXME: Not sure, if this is the best way to implement objectValue,
+ * perhaps it would be better to store the current value with setObjectValue: 
+ * whenever it changes.
+ */
+- (id) objectValue
+{
+  int index = [self indexOfSelectedItem];
+
+  if (index == -1)
+    {
+      return nil;
+    }
+  else
+    {
+      if (_usesDataSource)
+        {
+	  if (!_dataSource)
+	    {
+	      NSLog(@"%@: No data source currently specified", self);
+	      return nil;
+	    }
+	  if ([_dataSource respondsToSelector: 
+			       @selector(comboBox:objectValueForItemAtIndex:)])
+	    {
+	      return [_dataSource comboBox: (NSComboBox *)[self controlView] 
+				  objectValueForItemAtIndex: index];
+	    }
+	  else if ([_dataSource respondsToSelector: 
+				    @selector(comboBoxCell:objectValueForItemAtIndex:)])
+	    {
+	      return [_dataSource comboBoxCell: self
+				  objectValueForItemAtIndex: index];
+	    }
+	}
+      else
+        {
+	  return [self itemObjectValueAtIndex: index];
+	}
+    }
+  return nil;
+}
+
 /**
  * Returns the object value of the selected item in the combo box cell default
  * items list or nil when there is no selection. In the case

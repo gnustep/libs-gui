@@ -1,3 +1,11 @@
+2004-06-20  Fred Kiefer <FredKiefer@gmx.de>
+
+        * Source/NSTableView.m: (-mouseDown:) Set value after cell tracking.
+	(_setObjectValue:forTableColumn:row:) Check for correct method.
+	Patch by Matt Rice <ratmice@yahoo.com>
+       * Source/NSComboBoxCell.m: (-objectValue) Added this method, as
+       the object value never gets set.
+
 2004-06-19  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSDragView.m: (-_handleEventDuringDragging:) Get mouse

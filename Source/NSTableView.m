@@ -3455,31 +3455,40 @@ inline float computePeriod(NSPoint mouseLocationWin,
         {
 	  NSTableColumn *tb;
 	  NSCell *cell;
-	  NSRect rect;
-	  int columnIndex; 
-	  int rowIndex; 
+	  NSRect cellFrame;
 	  
-	  rowIndex  = [self rowAtPoint: mouseLocationView];
-	  columnIndex = [self columnAtPoint: mouseLocationView];
 	  // Prepare the cell
-	  tb = [_tableColumns objectAtIndex: columnIndex];
+	  tb = [_tableColumns objectAtIndex: _clickedColumn];
 	  // NB: need to be released when no longer used
-	  cell = [[tb dataCellForRow: rowIndex] copy];
-	  [cell setEditable: YES];
+	  // Not sure if we really need a copy here.
+	  cell = [[tb dataCellForRow: _clickedRow] copy];
 	  [cell setObjectValue: [self _objectValueForTableColumn: tb
-				      row: rowIndex]];
-	  rect = [self frameOfCellAtColumn: columnIndex 
-		       row: rowIndex];
-	  
+				      row: _clickedRow]];
+	  cellFrame = [self frameOfCellAtColumn: _clickedColumn 
+		       row: _clickedRow];
 	  [cell setHighlighted: YES];
-	  [self setNeedsDisplayInRect: rect];
+	  [self setNeedsDisplayInRect: cellFrame];
+	  /* give delegate a chance to i.e set target */
+	  if (_del_responds)
+	    {
+	      [_delegate tableView: self
+			 willDisplayCell: cell 
+			 forTableColumn: tb
+			 row: _clickedRow];
+	    }
 	  if ([cell trackMouse: lastEvent
-		    inRect: rect
+		    inRect: cellFrame
 		    ofView: self
 		    untilMouseUp: [[cell class] prefersTrackingUntilMouseUp]])
 	    {
+	      if ([tb isEditable])
+	        {
+		  [self _setObjectValue: [cell objectValue]
+			forTableColumn: tb
+			row: _clickedRow];
+		} 
 	      done = YES;
-	      currentRow = rowIndex;
+	      currentRow = _clickedRow;
 	      computeNewSelection(self,
 				  oldSelectedRows, 
 				  _selectedRows,
@@ -3488,13 +3497,10 @@ inline float computePeriod(NSPoint mouseLocationWin,
 				  currentRow,
 				  &_selectedRow,
 				  selectionMode);
-	      [self displayIfNeeded];
 	    }
-	  else
-	    {
-	      [cell setHighlighted: NO];
-	      [self setNeedsDisplayInRect: rect];
-	    }
+	  [cell setHighlighted: NO];
+	  [self setNeedsDisplayInRect: cellFrame];
+	  lastEvent = [NSApp currentEvent];
 
 	  DESTROY(cell);
 	}
@@ -5881,7 +5887,7 @@ inline float computePeriod(NSPoint mouseLocationWin,
 		     row: (int) index
 {
   if([_dataSource respondsToSelector:
-		    @selector(tableView:objectValueForTableColumn:row:)])
+		    @selector(tableView:setObjectValue:forTableColumn:row:)])
     {
       [_dataSource tableView: self
 		   setObjectValue: value
