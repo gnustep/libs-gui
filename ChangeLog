@@ -1,3 +1,21 @@
+Tue Dec 19 17:53:35 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/NSTextView.h: Moved some flags from NSText.h.
+	* Source/NSTextView.m: Updated for the change in flag name.
+	* Source/NSText.m ([-initWithCoder:]), ([-encodeWithCoder:]): Code
+	for the flags moved to NSTextView.m.  ([-initWithFrame:]),
+	([-textContainerInset]), ([-textContainerOrigin]),
+	([-textContainer]), ([-setTextContainer:]): Removed.
+	([-initWithFrame:textContainer:]): Code moved to NSTextView.m.
+	* Source/NSTextView.m ([-backgroundColor]),
+	([-setBackgroundColor:]), ([-setDrawsBackground:]),
+	([-drawsBackground]), ([-isEditable]), ([-setSelectable:]),
+	([-isSelectable]), ([-isFieldEditor]), ([-setFieldEditor:]),
+	([-usesFontPanel]), ([-setUsesFontPanel:]), ([-isRichText]),
+	([-importsGraphics]): Removed.
+	([-setEditable:]), ([-setRichText:]), ([-setImportsGraphics:]):
+	Extend super's implementation.
+	
 Tue Dec 19 00:43:17 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSText.m: Made an abstract class always allocating 
