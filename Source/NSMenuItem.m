@@ -84,10 +84,10 @@ static BOOL usesUserKeyEquivalents = YES;
   NSDebugLog (@"menu item '%@' copy", [self title]);
   copy->representedObject = [representedObject retain];
   copy->hasSubmenu = hasSubmenu;
-  if (hasSubmenu) {
-    id submenu = [[target copyWithZone:zone] autorelease];
-    copy->target = [submenu retain];
- }
+  if (hasSubmenu) {											// recursive call
+      id submenu = [target copyWithZone:zone];				// to create our
+      copy->target = [submenu retain];						// submenus
+  }	
 
   return copy;
 }

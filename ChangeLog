@@ -1,3 +1,8 @@
+Thur Sept 3 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* NSMenuItem.m in copyWithZone: fixed bug which crashed menus two or more 	
+		deep when said menus are opened and detached twice
+
 Mon Aug 31 16:31:12 1998  Adam Fedor  <fedor@ultra.doc.com>
 
 	* Headers/gnustep/gui/DPSOperators.h: Define enough stuff so that
