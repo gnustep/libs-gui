@@ -1,3 +1,11 @@
+Sat Oct  6 17:23:49 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSWindowController.m ([-initWithWindowNibName:owner:]):
+	Raise and exception on nil nib name or on nil owner.
+	([-init]): Call initWithWindow: rather than initWithWindowNibName:
+	because the latter can't accept a nil argument.
+	([-initWithWindow:]): Assign to self the result of [super init].
+
 2001-10-03  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/NSNibLoading.h: New GSCustomView class.
