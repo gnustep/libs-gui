@@ -12,8 +12,8 @@
    First actual coding.
 
    Author: Nicola Pero <nicola@brainstorm.co.uk>
-   Date: August 2000
-   Selection and Dragging of Columns.
+   Date: August 2000, Semptember 2000
+   Selection and resizing of Columns.
 
    This file is part of the GNUstep GUI Library.
 
@@ -40,6 +40,13 @@
 #include <AppKit/NSTableView.h>
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSApplication.h>
+#include <AppKit/NSColor.h>
+
+@interface NSTableView (GNUstepPrivate)
+- (void) _userResizedTableColumn: (int)index
+		       leftWidth: (float)lwidth
+		      rightWidth: (float)rwidth;
+@end
 
 @implementation NSTableHeaderView
 {
@@ -70,6 +77,7 @@
 {
   self = [super initWithFrame: frameRect];
   _tableView = nil;
+  _resizedColumn = -1;
   return self;
 }
 /*
@@ -89,25 +97,24 @@
 /*
  * Checking altered columns 
  */
-- (int)draggedColumn
+- (int) draggedColumn
 {
   // TODO
   return -1;
 }
-- (float)draggedDistance
+- (float) draggedDistance
 {
   // TODO
   return -1;
 }
-- (int)resizedColumn
+- (int) resizedColumn
 {
-  // TODO
-  return -1;
+  return _resizedColumn;
 }
 /*
  * Utility methods 
  */
-- (int)columnAtPoint: (NSPoint)aPoint
+- (int) columnAtPoint: (NSPoint)aPoint
 {
   if (_tableView == nil)
     return -1;
@@ -200,10 +207,148 @@
       return;
     }
 
-  if (clickCount == 1)
+  if (clickCount == 1 && [_tableView allowsColumnResizing])
     {
-      // TODO: Resizing table columns
-      // Start resizing if the mouse is down on the bounds of a column.
+      /* Start resizing if the mouse is down on the bounds of a column. */
+      NSRect rect = [self headerRectOfColumn: columnIndex];
+      
+      /* Safety check */
+      if (_resizedColumn != -1)
+	{
+	  NSLog (@"Bug: starting resizing of column while already resizing!");
+	  _resizedColumn = -1;
+	}
+
+      if (location.x >= NSMaxX (rect) - 1)
+	{
+	  if (columnIndex != ([_tableView numberOfColumns] - 1))
+	    {
+	      _resizedColumn = columnIndex;
+	    }
+	}
+      else if (location.x <= NSMinX (rect) + 2) 
+	{
+	  if (columnIndex > 0)
+	    {
+	      _resizedColumn = columnIndex - 1;
+	    }
+	}
+
+      /* Resizing */
+      if (_resizedColumn != -1)
+	{
+	  /* Width of the highlighted area. */
+	  const float divWidth = 4;
+	  /* Dragging limits */
+	  float minCoord; 
+	  float maxCoord; 
+	  NSArray *columns;
+	  /* Column on the left of resizing bound */
+	  NSTableColumn *columnLow;
+	  NSRect rectLow = [self headerRectOfColumn: _resizedColumn];
+	  /* Column on the right of resizing bound */
+	  NSTableColumn *columnHigh;
+	  NSRect rectHigh = [self headerRectOfColumn: (_resizedColumn + 1)];
+	  /* Old highlighted rect, used to avoid useless redrawing */
+	  NSRect oldRect = NSZeroRect;
+	  /* Current highlighted rect */
+	  NSRect r;
+	  /* Mouse position */
+	  float p;
+	  /* YES if some highlighting was done and needs to be undone */
+	  BOOL lit = NO;
+	  NSEvent *e;
+	  NSDate *farAway = [NSDate distantFuture];
+	  unsigned int eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask;
+
+	  /* Determine dragging limits, constrained to visible rect */
+	  rect = [self visibleRect];
+	  minCoord = MAX (NSMinX (rectLow), NSMinX (rect)) + divWidth;
+	  maxCoord = MIN (NSMaxX (rectHigh), NSMaxX (rect)) - divWidth;
+	  
+	  /* Then constrain to minimum and maximum column width if any */
+	  columns = [_tableView tableColumns];
+	  /* Column at the left */
+	  columnLow = [columns objectAtIndex: _resizedColumn];
+	  /* We use p as a temporary variable for a while */
+	  p = NSMinX (rectLow) + [columnLow minWidth];
+	  minCoord = MAX (p, minCoord);
+	  p = NSMinX (rectLow) + [columnLow maxWidth];
+	  maxCoord = MIN (p, maxCoord);
+
+	  /* Column at the right */
+	  columnHigh = [columns objectAtIndex: _resizedColumn + 1];
+	  
+	  /* This is trickier - think to what happens at the column on
+	     the right when the user released the mouse somewhere */
+	  p = NSMaxX (rectHigh) - [columnHigh minWidth];
+	  maxCoord = MIN (p, maxCoord);
+	  p = NSMaxX (rectHigh) - [columnHigh maxWidth];
+	  minCoord = MAX (p, minCoord);
+
+	  /* Do we need to check that we already fit into this area ? 
+	     We should */
+
+	  [self lockFocus];
+	  
+	  [[NSRunLoop currentRunLoop] limitDateForMode: NSEventTrackingRunLoopMode];
+	  
+	  [[NSColor lightGrayColor] set];
+	  r.size.width = divWidth;
+	  r.size.height = NSHeight (rect);
+	  r.origin.y = NSMinY (rect);
+	      
+	  e = [NSApp nextEventMatchingMask: eventMask
+		     untilDate: farAway
+		     inMode: NSEventTrackingRunLoopMode
+		     dequeue: YES];
+
+	  while ([e type] != NSLeftMouseUp)
+	    {
+	      p = [self convertPoint: [e locationInWindow] fromView: nil].x;
+	      if (p < minCoord)
+		{
+		  p = minCoord;
+		}
+	      if (p > maxCoord)
+		{
+		  p = maxCoord;
+		}
+	      r.origin.x = p - (divWidth / 2.);
+	      
+	      if (NSEqualRects(r, oldRect) == NO)
+		{
+		  if (lit == YES)
+		    {
+		      NSHighlightRect (oldRect);
+		    }
+		  NSHighlightRect (r);
+		  lit = YES;
+		  oldRect = r;
+		}
+	      e = [NSApp nextEventMatchingMask: eventMask
+			 untilDate: farAway
+			 inMode: NSEventTrackingRunLoopMode
+			 dequeue: YES];
+	    }
+	  
+	  if (lit == YES)
+	    {
+	      NSHighlightRect(oldRect);
+	    }
+
+	  [self unlockFocus];
+
+	  /* The following tiles the table.  We use a private method 
+	     which avoids tiling the table twice. */
+	  [_tableView _userResizedTableColumn: _resizedColumn
+		      leftWidth: (p - NSMinX (rectLow))
+		      rightWidth: (NSMaxX (rectHigh) - p)];
+
+	  /* Clean up */
+	  _resizedColumn = -1;
+	  return;
+	}
 
       /* Dragging */
       /* Wait for mouse dragged events. 
