@@ -137,8 +137,7 @@ GSDisplayServer.h \
 GSFusedSilica.h \
 GSTable.h \
 GSHbox.h \
-GSVbox.h \
-GSInputManager.h
+GSVbox.h
 
 DOCUMENT_NAME = Gui GuiAdditions GuiUser
 
