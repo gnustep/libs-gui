@@ -1,3 +1,25 @@
+Tue Oct  8 19:15:24 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSSecureTextField.m: Mostly rewritten.  Main changes -
+	NSCoding protocol methods moved to the cell; implemented encoding;
+	do not share the secure text field globally, just create one each
+	time; create the secure text field in setupFieldEditorAttributes:
+	and removed most other hacks.  Init methods of the secure text
+	view rewritten to be simpler.  Do not register the secure text
+	view for services.  Should no longer crash with the new internals.
+	* Headers/gnustep/gui/NSSecureTextField.h: Prefix ivars with
+	underscore.  Add setEchosBullets: and echosBullets methods to 
+	the textfield as well as the cell.
+	
+Tue Oct  8 18:46:45 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSTextContainer.m ([-replaceLayoutManager:]): Retain the
+	layout manager, then release it at the end; refresh the layout
+	manager cached by the textview; do not set the layout manager's
+	text storage manually.
+	* Source/NSTextStorage.m ([-removeLayoutManager:]): Set the
+	argument's text storage to nil before removing it from the array.
+	
 2002-10-08  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/GSNibTemplates.h: Added new template class.
