@@ -541,6 +541,8 @@ static NSTextFieldCell *titleCell;
             }
           else
             {
+	      // Actually it's always called at 0 column
+	      [[self matrixInColumn: i] deselectAllCells];
               break;
             }
         }
@@ -1836,7 +1838,7 @@ static NSTextFieldCell *titleCell;
   // If the matrix isn't ours then just return
   if (column < 0 || column > _lastColumnLoaded)
     return;
-
+    
   a = [sender selectedCells];
   aCount = [a count];
   if(aCount == 0)
@@ -1858,16 +1860,9 @@ static NSTextFieldCell *titleCell;
 
   selectedCellsCount = [selectedCells count];
 
-  if (selectedCellsCount == 0)
+  // Select cells that should be selected
+  if (selectedCellsCount > 0)
     {
-      // If we should not select the cell then deselect it
-
-      [sender deselectAllCells];
-    }
-  else if (selectedCellsCount < aCount)
-    {
-      [sender deselectSelectedCell];
-
       enumerator = [selectedCells objectEnumerator];
       while ((cell = [enumerator nextObject]))
 	[sender selectCell: cell];
@@ -1888,6 +1883,7 @@ static NSTextFieldCell *titleCell;
       [sender scrollCellToVisibleAtRow: [sender selectedRow] column: 0];
     }
 
+  [self updateScroller];
   // Send the action to target
   [self sendAction];
 
