@@ -664,7 +664,7 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
   if ([anItem action] == @selector(saveAllDocuments:))
     {
       return [self hasEditedDocuments];
-      }
+    }
   return YES;
 }
 
