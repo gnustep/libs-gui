@@ -243,14 +243,12 @@ mostlyclean:
 	rm -f $(TEXI_FILES)
 	rm -f objc-runtime.texi
 
-clean: mostlyclean
+distclean clean: mostlyclean
 	rm -f version.tmpl.texi
 	rm -f $(TEXT_FILES)
 	rm -f *.html
 	rm -f *.info
 	rm -f *.dvi
 	rm -f *.ps
-
-distclean: clean
 
 maintainer-clean: distclean
