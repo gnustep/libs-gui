@@ -1,3 +1,9 @@
+2004-11-06 08:34 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibTemplates.m: Removed nibInstantiate.  This method
+	should only be defined and used inside the GUI builder application
+	according to specs.
+	
 2004-11-04 Adrian Robert <arobert@cogsci.ucsd.edu>
 
 	* Documentation/GuiUser/KeyboardSetup.gsdoc: Describe the new

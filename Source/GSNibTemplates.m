@@ -933,19 +933,8 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 }
 @end
 
-@interface NSObject (NibInstantiation)
-- (id) nibInstantiate;
-@end
-
-@implementation NSObject (NibInstantiation)
-- (id) nibInstantiate
-{
-  // default implementation of nibInstantiate
-  return self;
-}
-@end
-
-// Order in this factory method is very important.  Which template to create must be determined
+// Order in this factory method is very important.  
+// Which template to create must be determined
 // in sequence because of the class hierarchy.
 @implementation GSTemplateFactory
 + (id) templateForObject: (id) object 
