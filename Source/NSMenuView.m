@@ -346,6 +346,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
   // Mark the cell associated with the item as needing resizing.
   [[_itemCells objectAtIndex: index] setNeedsSizing: YES];
+  [self setNeedsDisplayForItemAtIndex: index];
 
   // Mark the menu view as needing to be resized.
   [self setNeedsSizing: YES];
