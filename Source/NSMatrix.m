@@ -124,7 +124,7 @@ static void growMatrix (tMatrix m, int numRows, int numCols)
 
   if (numCols > m->allocatedCols) {
     /* Grow the existing rows to numCols */
-    for (i = 0; i < numRows; i++) {
+    for (i = 0; i < allocatedRows; i++) {
       m->matrix[i] = realloc (m->matrix[i], numCols * sizeof (BOOL));
       for (j = m->allocatedCols - 1; j < numCols; j++)
 	m->matrix[i][j] = NO;

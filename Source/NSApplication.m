@@ -114,6 +114,11 @@ static NSString *NSAbortModalException = @"NSAbortModalException";
         }                                           // can prevent -release
 }                                                   // loops.
 
++ (id) new
+{
+  return [self sharedApplication];
+}
+
 + (NSApplication *)sharedApplication
 {                                           // If the global application does
     if (!NSApp)                             // not yet exist then create it
@@ -130,6 +135,12 @@ static NSString *NSAbortModalException = @"NSAbortModalException";
 //
 - init
 {
+  if (NSApp != self)
+    {
+      [self release];
+      return [NSApplication sharedApplication];
+    }
+
     [super init];
 
     NSDebugLog(@"Begin of NSApplication -init\n");
