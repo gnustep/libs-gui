@@ -39,6 +39,7 @@
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSMenu.h>
+#include <AppKit/NSMenuView.h>
 #include <AppKit/NSMenuItemCell.h>
 
 #include <AppKit/PSOperators.h>
