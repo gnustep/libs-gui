@@ -53,7 +53,8 @@ PrinterTypes \
 TextConverters \
 ColorPickers \
 KeyBindings \
-Resources
+Resources \
+Documentation
 
 -include GNUmakefile.preamble
 

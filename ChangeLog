@@ -1,5 +1,9 @@
 2003-06-17  Adam Fedor  <fedor@gnu.org>
 
+	* GNUmakefile (SUBPROJECTS): Add Documentation
+
+2003-06-17  Adam Fedor  <fedor@gnu.org>
+
 	* Source/NSDocumentController.m: Add GSGuiPrivate header for
 	localization.
 	* Source/NSSavePanel.m: Idem.
