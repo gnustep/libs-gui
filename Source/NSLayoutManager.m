@@ -1302,7 +1302,7 @@ container
  
 #define GBUF_SIZE 16 /* TODO: tweak */
   NSGlyph gbuf[GBUF_SIZE];
-  int gbuf_len;
+  int gbuf_len, gbuf_size;
   NSPoint gbuf_point;
 
   NSView *controlView = nil;
@@ -1310,6 +1310,11 @@ container
   if (!range.length)
     return;
   [self _doLayoutToGlyph: range.location + range.length - 1];
+
+  if ([ctxt isDrawingToScreen])
+    gbuf_size = GBUF_SIZE;
+  else
+    gbuf_size = 16;
 
   for (i = 0, tc = textcontainers; i < num_textcontainers; i++, tc++)
     if (tc->pos + tc->length > range.location)
@@ -1467,10 +1472,10 @@ container
 		}
 	      else
 		{
-		  if (gbuf_len == GBUF_SIZE)
+		  if (gbuf_len == gbuf_size)
 		    {
 		      DPSmoveto(ctxt, gbuf_point.x, gbuf_point.y);
-		      GSShowGlyphs(ctxt, gbuf, GBUF_SIZE);
+		      GSShowGlyphs(ctxt, gbuf, gbuf_size);
 		      DPSnewpath(ctxt);
 		      gbuf_len = 0;
 		      gbuf_point = p;
