@@ -416,7 +416,7 @@ enum {
 //
 @interface NSCell (PrivateMethods)
 
-- (NSMutableDictionary*) _typingAttributes;
+- (NSMutableDictionary*) _nonAutoreleasedTypingAttributes;
 - (NSColor*) textColor;
 - (NSSize) _sizeText: (NSString*) title;
 - (void) _drawText: (NSString*)aString  inFrame: (NSRect)aRect;
