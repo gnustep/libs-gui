@@ -67,9 +67,6 @@ typedef enum _NSSelectionAffinity {
        hand, and the text storage owns everything - thus we need to
        release nothing.  */
     unsigned owns_text_network: 1;
-    /* is_in_dealloc is always NO except when we own text network and
-       are deallocating */
-    unsigned is_in_dealloc: 1;
     unsigned allows_undo: 1;
     unsigned smart_insert_delete: 1;
     /* multiple_textviews is YES if more than one NSTextView are
