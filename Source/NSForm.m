@@ -1,7 +1,7 @@
 /*
    NSForm.m
 
-   Form class, a text field with a label
+   Form class, a matrix of text fields with labels
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
@@ -194,7 +194,9 @@ static Class defaultCellClass = nil;
 }
 
 - (void)selectTextAtIndex:(int)index
-{}
+{
+  [self selectTextAtRow:index column:0];
+}
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
