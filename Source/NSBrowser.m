@@ -3095,7 +3095,16 @@ static double rint(double a)
 	}
       else
 	{ 
-	  return [c stringValue];
+	  NSString *value = [c stringValue];
+
+	  if (value != nil)
+	    {
+	      return value;
+	    }
+	  else
+	    {
+	      return @"";
+	    }
 	}
     }
   return @"";
