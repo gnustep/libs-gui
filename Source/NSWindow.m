@@ -583,19 +583,16 @@ static BOOL _needsFlushWindows = YES;
 {
 }
 
-- (void)setFrame:(NSRect)frameRect
-	 display:(BOOL)flag
+- (void)setFrame:(NSRect)frameRect display:(BOOL)flag
 {
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-
-  frame = frameRect;
-
-  // post notification
+NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+	
+  frame = frameRect;									
+  														// post notification
   [nc postNotificationName: NSWindowDidResizeNotification object: self];
 
-  // display if requested
-  if (!flag) return;
-  [self display];
+  if (flag) 											// display if requested
+  	[self display];									
 }
 
 - (void)setFrameOrigin:(NSPoint)aPoint
@@ -730,9 +727,16 @@ static BOOL _needsFlushWindows = YES;
 
 - (void)update
 {
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
-  [nc postNotificationName: NSWindowDidUpdateNotification object: self];
+	if(is_autodisplay && needs_display)					// if autodisplay is
+		{												// enabled
+		[self _collectFlushRectangles];
+		[self displayIfNeeded];
+		[self flushWindowIfNeeded];
+    	}
+
+	[nc postNotificationName: NSWindowDidUpdateNotification object: self];
 }
 
 - (void)useOptimizedDrawing:(BOOL)flag
@@ -1587,15 +1591,17 @@ static BOOL _needsFlushWindows = YES;
 //  NSLog (@"_flushWindows");
 
   windowList = [[NSApplication sharedApplication] windows];
-
-  for (i = 0, count = [windowList count]; i < count; i++) {
+  
+  for (i = 0, count = [windowList count]; i < count; i++) 
+	{
     NSWindow* window = [windowList objectAtIndex:i];
 
-    if (window->needs_display || window->needs_flush) {
-      [window _collectFlushRectangles];
-      [window displayIfNeeded];
-      [window flushWindowIfNeeded];
-    }
+    if (window->needs_display || window->needs_flush) 
+		{
+		[window _collectFlushRectangles];
+		[window displayIfNeeded];
+		[window flushWindowIfNeeded];
+    	}
   }
 
   _needsFlushWindows = NO;

@@ -60,6 +60,11 @@
 - (void)_resizeMenuForCellSize;
 @end
 
+//*****************************************************************************
+//
+// 		NSMenuMatrix 
+//
+//*****************************************************************************
 
 @implementation NSMenuMatrix
 
@@ -227,14 +232,20 @@ static NSFont* menuFont = nil;
   }
 }
 
-- (NSSize)cellSize			{ return cellSize; }
+- (NSSize)cellSize					{ return cellSize; }
 - (void)setMenu:(NSMenu*)anObject	{ menu = anObject; }
-- (void)setSelectedCell:(id)aCell	{ ASSIGN(selectedCell, aCell); }
-- (id)selectedCell			{ return selectedCell; }
-- (NSRect)selectedCellRect		{ return selectedCellRect; }
+- (void)setSelectedCell:(id)aCell	{ selectedCell = aCell; }
+- (id)selectedCell					{ return selectedCell; }
+- (NSRect)selectedCellRect			{ return selectedCellRect; }
 
 @end /* NSMenuMatrix */
 
+
+//*****************************************************************************
+//
+// 		NSMenu 
+//
+//*****************************************************************************
 
 @implementation NSMenu
 

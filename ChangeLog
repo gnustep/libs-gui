@@ -1,3 +1,70 @@
+Sun Aug 30 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* NSApplication.h added windows_need_update as autodisplay ivar. 
+	* NSApplication.m in init set default for main_menu, windows_need_update. 
+	* NSApplication.m in run added support for OPENSTEP autodisplay mechanism. 
+	* NSApplication.m _eventMatchingMask: reformat. 
+	* NSApplication.m nextEventMatchingMask:untilDate:inMode:dequeue:
+		move calls to _flushWindows to XDPS backend. 
+	* NSApplication.m implemented updateWindows. 
+	* NSApplication.m implemented setWindowsNeedUpdate:. 
+	* NSApplication.m setMainMenu: test for menu prior to release. 
+	* NSActionCell.m removed setState: method. 
+	* NSActionCell.m copyWithZone: optimized ivar copying. 
+	* NSButtonCell.m added _init and moved common defaults to this method. 
+	* NSButtonCell.m initImageCell: and initTextCell: minor optimizations. 
+	* NSButtonCell.m setAlternateTitle: optimize and use ASSIGN macro. 
+	* NSButtonCell.m setKeyEquivalent: remove [copy release]. 
+	* NSButtonCell.m setKeyEquivalentFont:size: optimize. 
+	* NSButtonCell.m copyWithZone: optimized ivar copying where possible. 
+	* NSCell.m _init removed call to [super init]. 
+	* NSCell.m initTextCell: removed duplicate default initializers. 
+	* NSCell.m setImage: rewrote to use ASSIGN macro. 
+	* NSCell.m setDoubleValue: rewrote to use ASSIGN macro. 
+	* NSCell.m setFloatValue: rewrote to use ASSIGN macro. 
+	* NSCell.m setIntValue: rewrote to use ASSIGN macro. 
+	* NSCell.m setStringValue: rewrote to use ASSIGN macro. 
+	* NSCell.m setFont: rewrote to use ASSIGN macro. 
+	* NSCell.m setRepresentedObject: rewrote to use ASSIGN macro. 
+	* NSCell.m copyWithZone: optimized ivar copying where possible. 
+	* NSClipView.m viewBoundsChanged: minor optimization. 
+	* NSClipView.m viewFrameChanged: minor optimization. 
+	* NSClipView.m scaleUnitSquareToSize: minor optimization. 
+	* NSClipView.m setBoundsOrigin: minor optimization. 
+	* NSClipView.m setBoundsSize: minor optimization. 
+	* NSClipView.m setFrameSize: minor optimization. 
+	* NSClipView.m setFrameOrigin: minor optimization. 
+	* NSClipView.m setFrame: minor optimization. 
+	* NSClipView.m translateOriginToPoint: minor optimization. 
+	* NSMatrix.m eliminate retain/release of selected cell via ASSIGN. 
+	* NSMatrix.m initWithFrame: remove duplicate setting of selected row and
+		column. 
+	* NSMatrix.m removeColumn: rewrite so that col is removed before new
+		selection is attempted (needed because selected cell is not retained). 
+	* NSMatrix.m removeRow: rewrite so that row is removed before new
+		selection is attempted (needed because selected cell is not retained). 
+	* NSMatrix.m deselectAllCells per OS spec try to select a cell at end
+		if empty selection is not allowed. 
+	* NSMatrix.m deselectSelectedCell set default selected row/col to 0. 
+	* NSMatrix.m mouseDown: optimize for new drawing behaviour. 
+	* NSMenu.m setSelectedCell: eliminate use of retain/release of selected 
+		cell via ASSIGN. 
+	* NSMenuItem.m copyWithZone: optimized ivar copying where possible. 
+	* NSMenuItem.m dealloc minor optimization. 
+	* NSMenuItem.m setTarget: minor optimization. 
+	* NSScroller.m trackScrollButtons: heavily optimized. 
+	* NSScroller.m sendAction: reimplemented to use sendAction: per spec also
+		optimized. 
+	* NSText.m implemented init method. 
+	* NSText.m initWithFrame: fixed initialization of ivars which are released 
+		to retain. 
+	* NSText.m dealloc add release of retained ivars. 
+	* NSView.m dealloc add release of retained ivars. 
+	* NSView.m displayRect: and _addSubviewForNeedingDisplay reformatted code 
+		and rewrote comments. 
+	* NSWindow.m setFrame:display: rewrote for clarity. 
+	* NSWindow.m implemented update method per OPENSTEP spec. 
+
 Thurs Aug 20 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* NSTextView.m commented out references to defaultTypingAttributes

@@ -167,55 +167,55 @@
 
 - (void)viewBoundsChanged:(NSNotification*)aNotification
 {
-  [[self superview] reflectScrolledClipView:self];
+  [super_view reflectScrolledClipView:self];
 }
 
 - (void)viewFrameChanged:(NSNotification*)aNotification
 {
   [self setBoundsOrigin:[self constrainScrollPoint:bounds.origin]];
-  [[self superview] reflectScrolledClipView:self];
+  [super_view reflectScrolledClipView:self];
 }
 
 - (void)scaleUnitSquareToSize:(NSSize)newUnitSize
 {
   [super scaleUnitSquareToSize:newUnitSize];
-  [[self superview] reflectScrolledClipView:self];
+  [super_view reflectScrolledClipView:self];
 }
 
 - (void)setBoundsOrigin:(NSPoint)aPoint
 {
   [super setBoundsOrigin:aPoint];
-  [[self superview] reflectScrolledClipView:self];
+  [super_view reflectScrolledClipView:self];
 }
 
 - (void)setBoundsSize:(NSSize)aSize
 {
   [super setBoundsSize:aSize];
-  [[self superview] reflectScrolledClipView:self];
+  [super_view reflectScrolledClipView:self];
 }
 
 - (void)setFrameSize:(NSSize)aSize
 {
   [super setFrameSize:aSize];
-  [[self superview] reflectScrolledClipView:self];
+  [super_view reflectScrolledClipView:self];
 }
 
 - (void)setFrameOrigin:(NSPoint)aPoint
 {
   [super setFrameOrigin:aPoint];
-  [[self superview] reflectScrolledClipView:self];
+  [super_view reflectScrolledClipView:self];
 }
 
 - (void)setFrame:(NSRect)rect
 {
   [super setFrame:rect];
-  [[self superview] reflectScrolledClipView:self];
+  [super_view reflectScrolledClipView:self];
 }
 
 - (void)translateOriginToPoint:(NSPoint)aPoint
 {
   [super translateOriginToPoint:aPoint];
-  [[self superview] reflectScrolledClipView:self];
+  [super_view reflectScrolledClipView:self];
 }
 
 - (id)documentView				{ return _documentView; }

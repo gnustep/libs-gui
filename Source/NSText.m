@@ -70,6 +70,11 @@
 //
 // Initialization
 //
+- init
+{
+	return [self initWithFrame:NSZeroRect];
+}
+
 - initWithFrame:(NSRect)frameRect
 {
 	[super initWithFrame:frameRect];
@@ -86,15 +91,17 @@
 	is_ruler_visible = NO;
 	is_field_editor = NO;
 	draws_background = YES;
-	background_color = [NSColor whiteColor];
-	text_color = [NSColor blackColor];
-	default_font = [NSFont userFontOfSize:12];
+	background_color = [[NSColor whiteColor] retain];
+	text_color = [[NSColor blackColor] retain];
+	default_font = [[NSFont userFontOfSize:12] retain];
 
 	return self;
 }
 
 - (void)dealloc 
 {	
+	[default_font release];
+	[text_color release];
 	[background_color release];
 	[plainContent release];
 	[rtfContent release];

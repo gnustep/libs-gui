@@ -75,6 +75,7 @@ extern NSString *NSEventTrackingRunLoopMode;
   BOOL app_should_quit;
   BOOL app_is_active;
   BOOL app_is_hidden;
+  BOOL windows_need_update;
   NSImage *app_icon;
 
   // Reserved for back-end use

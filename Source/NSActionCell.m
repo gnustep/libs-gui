@@ -139,17 +139,6 @@
 }
 
 //
-// Setting the NSCell's State 
-//
-- (void)setState:(int)value
-{
-  [super setState: value];
-  if (control_view)
-    if ([control_view isKindOfClass: [NSControl class]])
-      [(NSControl *)control_view updateCell: self];
-}
-
-//
 // Manipulating NSActionCell Values 
 //
 - (void)setStringValue:(NSString *)aString
@@ -225,9 +214,9 @@
 {
   NSActionCell* c = [super copyWithZone:zone];
 
-  [c setTag:tag];
-  [c setTarget:target];
-  [c setAction:action];
+  c->tag = tag;
+  c->target = target;
+  c->action = action;
 
   return c;
 }

@@ -7,7 +7,9 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
-   
+   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: August 1998
+  
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -116,6 +118,8 @@ static id NSApp;
   window_list = [NSMutableArray new];
   window_count = 1;
 
+  main_menu = nil;
+  windows_need_update = YES;
   //
   // Event handling setup
   //
@@ -222,36 +226,36 @@ static id NSApp;
 
 - (void)run
 {
-  NSEvent *e;
-  NSAutoreleasePool* pool;
+NSEvent *e;
+NSAutoreleasePool* pool;
 
-  NSDebugLog(@"NSApplication -run\n");
+	NSDebugLog(@"NSApplication -run\n");
 
-  [self finishLaunching];
+	[self finishLaunching];
 
-  app_should_quit = NO;
-  app_is_running = YES;
+	app_should_quit = NO;
+	app_is_running = YES;
 
-  do
-    {
-      pool = [NSAutoreleasePool new];
+	do	{
+		pool = [NSAutoreleasePool new];				
 
-      e = [self nextEventMatchingMask:NSAnyEventMask
-		untilDate:[NSDate distantFuture]
-		inMode:NSDefaultRunLoopMode dequeue:YES];
-      if (e)
-	[self sendEvent: e];
-      else
-	{
-	  // Null event
-	  // Call the back-end method to handle it
-	  [self handleNullEvent];
-	}
-      [pool release];
-    } while (!app_should_quit);
-  app_is_running = YES;
+		e = [self nextEventMatchingMask:NSAnyEventMask			
+				  untilDate:[NSDate distantFuture]				
+				  inMode:NSDefaultRunLoopMode 
+				  dequeue:YES];
+		if (e)
+			[self sendEvent: e];
+		else										// if Null event call back
+			[self handleNullEvent];					// end method to handle it
 
-  NSDebugLog(@"NSApplication end of run loop\n");
+		if(windows_need_update)						// send an update message
+			[self updateWindows];					// to all visible windows
+									
+		[pool release];
+		} 
+	while (!app_should_quit);
+
+	NSDebugLog(@"NSApplication end of run loop\n");
 }
 
 - (int)runModalForWindow:(NSWindow *)theWindow
@@ -410,98 +414,90 @@ static id NSApp;
 
 - (NSEvent*)_eventMatchingMask:(unsigned int)mask
 {
-  NSEvent* event;
-  int i, count = [event_queue count];
+NSEvent* event;
+int i, count = [event_queue count];
 
-  [self getNextEvent];
+	[self getNextEvent];
 
-  /* Get an event from the events queue */
-  if ((count = [event_queue count])) {
-    for (i = 0; i < count; i++) {
-      event = [event_queue objectAtIndex:i];
-      if ([self event:event matchMask:mask]) {
-	[event retain];
-	[event_queue removeObjectAtIndex:i];
-	[self setCurrentEvent:event];
-	return [event autorelease];
-      }
-    }
-  }
+	if ((count = [event_queue count])) 					// Get an event from
+		{												// the events queue
+		for (i = 0; i < count; i++) 
+			{
+			event = [event_queue objectAtIndex:i];
+			if ([self event:event matchMask:mask]) 
+				{
+				[event retain];
+				[event_queue removeObjectAtIndex:i];
+				[self setCurrentEvent:event];
 
-  return nil;
+				return [event autorelease];
+      			}
+    		}
+  		}
+
+	return nil;
 }
 
 - (NSEvent *)nextEventMatchingMask:(unsigned int)mask
-			 untilDate:(NSDate *)expiration
-			    inMode:(NSString *)mode
-			   dequeue:(BOOL)flag
+			 			untilDate:(NSDate *)expiration
+			    		inMode:(NSString *)mode
+			   			dequeue:(BOOL)flag
 {
-  NSRunLoop* currentLoop = [NSRunLoop currentRunLoop];
-  NSEventType type;
-  NSEvent *event;
-  BOOL done = NO;
+NSRunLoop* currentLoop = [NSRunLoop currentRunLoop];
+NSEventType type;
+NSEvent *event;
+BOOL done = NO;
 
-  event = [self _eventMatchingMask:mask];
-  if (event)
-    done = YES;
-  else if (!expiration)
-    expiration = [NSDate distantFuture];
+	event = [self _eventMatchingMask:mask];
+	if (event)
+		done = YES;
+	else if (!expiration)
+		expiration = [NSDate distantFuture];
+   
+	while (!done) 										// Not in queue so wait
+		{												// for next event
+		NSDate *limitDate, *originalLimitDate;
+								// Retain the limitDate so it doesn't get 
+								// release accidentally by runMode:beforeDate: 
+								// if a timer which has this date as fire date 
+								// gets released.
+		limitDate = [[currentLoop limitDateForMode:mode] retain];
+		originalLimitDate = limitDate;
 
-  // Not in queue so wait for next event
-  while (!done) {
-    NSDate *limitDate, *originalLimitDate;
+		event = [self _eventMatchingMask:mask];
+		if (event) 
+			{
+      		[limitDate release];
+      		break;
+    		}
 
-    // flush any windows that need it
-    [NSWindow _flushWindows];
-    [self _flushCommunicationChannels];
+    	if (limitDate)
+      		limitDate = [expiration earlierDate:limitDate];
+    	else
+      		limitDate = expiration;
 
-    /* Retain the limitDate so it doesn't get release accidentally by
-       runMode:beforeDate: if a timer which has this date as fire date gets
-       released. */
-    limitDate = [[currentLoop limitDateForMode:mode] retain];
-    originalLimitDate = limitDate;
+    	[currentLoop runMode:mode beforeDate:limitDate];
+    	[originalLimitDate release];
 
-    event = [self _eventMatchingMask:mask];
-    if (event) {
-      [limitDate release];
-      break;
-    }
+    	event = [self _eventMatchingMask:mask];
+    	if (event)
+      		break;
+  		}
 
-    if (limitDate)
-      limitDate = [expiration earlierDate:limitDate];
-    else
-      limitDate = expiration;
+	type = [event type];
+											// Unhide the cursor if necessary
+	if (event != gnustep_gui_null_event)	// and event is not a null event
+		{											// do so only if we should
+		if ([NSCursor isHiddenUntilMouseMoves])		// unhide when mouse moves 
+			{		 								// and event is mouse event
+			if ((type == NSLeftMouseDown) || (type == NSLeftMouseUp)
+					|| (type == NSRightMouseDown) || (type == NSRightMouseUp)
+					|| (type == NSMouseMoved))
+	    		[NSCursor unhide];
+			}
+    	}
 
-    [currentLoop runMode:mode beforeDate:limitDate];
-    [originalLimitDate release];
-
-    event = [self _eventMatchingMask:mask];
-    if (event)
-      break;
-  }
-
-  // flush any windows that need it
-  [NSWindow _flushWindows];
-  [self _flushCommunicationChannels];
-
-  type = [event type];
-
-  // Unhide the cursor if necessary
-  // but only if its not a null event
-  if (event != gnustep_gui_null_event)
-    {
-      // Only if we should unhide when mouse moves
-      if ([NSCursor isHiddenUntilMouseMoves])
-	{
-	  // Make sure the event is a mouse event before unhiding
-	  if ((type == NSLeftMouseDown) || (type == NSLeftMouseUp)
-	      || (type == NSRightMouseDown) || (type == NSRightMouseUp)
-	      || (type == NSMouseMoved))
-	    [NSCursor unhide];
-	}
-    }
-
-  return event;
+	return event;
 }
 
 - (NSEvent *)peekEventMatchingMask:(unsigned int)mask
@@ -712,23 +708,25 @@ static id NSApp;
 
 - (void)setWindowsNeedUpdate:(BOOL)flag
 {
+	windows_need_update = flag;
 }
 
-- (void)updateWindows
-{
-  int i, count;
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+- (void)updateWindows							// send an update message to
+{												// all visible windows
+int i, count;									
+NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
-  // notify that we will update
-  [nc postNotificationName: NSApplicationWillUpdateNotification
-      object: self];
+  												// notify that we will update
+	[nc postNotificationName:NSApplicationWillUpdateNotification object:self];
 
-  for (i = 0, count = [window_list count]; i < count; i++)
-    [[window_list objectAtIndex:i] update];
-
-  // notify that we did update
-  [nc postNotificationName: NSApplicationDidUpdateNotification
-      object: self];
+	for (i = 0, count = [window_list count]; i < count; i++)
+		{
+		NSWindow *win = [window_list objectAtIndex:i];
+		if([win isVisible])								// send update only if
+    		[win update];								// window is visible
+		}
+  												// notify that we did update
+	[nc postNotificationName:NSApplicationDidUpdateNotification object:self];
 }
 
 - (NSArray *)windows
@@ -785,7 +783,8 @@ static id NSApp;
 
   // Release old and retain new
   [aMenu retain];
-  [main_menu release];
+  if(main_menu)
+ 	 [main_menu release];
   main_menu = aMenu;
 
   // Search for a menucell with the name Windows

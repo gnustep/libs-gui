@@ -6,6 +6,8 @@
    Author: Ovidiu Predescu <ovidiu@net-community.com>
    A completely rewritten version of the original source by Scott Christley.
    Date: July 1997
+   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: August 1998
    
    This file is part of the GNUstep GUI Library.
 
@@ -207,14 +209,15 @@ static NSButtonCell* knobCell = nil;
 
 - (void)setFloatValue:(float)aFloat
 {
-  if (aFloat < 0)
-    _floatValue = 0;
-  else if (aFloat > 1)
-    _floatValue = 1;
-  else
-    _floatValue = aFloat;
-
-  [self setNeedsDisplayInRect:[self rectForPart:NSScrollerKnobSlot]];
+	if (aFloat < 0)
+		_floatValue = 0;
+	else 
+		if (aFloat > 1)
+			_floatValue = 1;
+		else
+			_floatValue = aFloat;
+							
+	[self setNeedsDisplayInRect:[self rectForPart:NSScrollerKnobSlot]];
 }
 
 - (void)setFloatValue:(float)aFloat
@@ -435,74 +438,77 @@ static NSButtonCell* knobCell = nil;
 
 - (void)trackScrollButtons:(NSEvent*)theEvent
 {
-  unsigned int eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
-			   | NSLeftMouseDraggedMask | NSMouseMovedMask;
-  NSPoint location;
-  NSEventType eventType;
-  BOOL shouldReturn = NO;
-  id theCell = nil;
+NSApplication *theApp = [NSApplication sharedApplication];
+unsigned int eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask | 
+							NSLeftMouseDraggedMask | NSMouseMovedMask;
+NSPoint location;
+BOOL shouldReturn = NO;
+id theCell = nil;
+NSRect rect;
 
-  NSDebugLog (@"trackScrollButtons");
-  do {
-    NSRect rect = [self rectForPart:_hitPart];
+  	NSDebugLog (@"trackScrollButtons");
+	do	{
+		location = [self convertPoint:[theEvent locationInWindow]fromView:nil];
+    	_hitPart = [self testPart:location];
+		rect = [self rectForPart:_hitPart];
 
-    switch (_hitPart) {
-      case NSScrollerIncrementLine:
-      case NSScrollerIncrementPage:
-	theCell = (_isHorizontal ? rightCell : upCell);
-	break;
+		switch (_hitPart) 								// determine which cell
+			{											// was hit
+			case NSScrollerIncrementLine:
+			case NSScrollerIncrementPage:
+				theCell = (_isHorizontal ? rightCell : upCell);
+				break;
 
-      case NSScrollerDecrementLine:
-      case NSScrollerDecrementPage:
-	theCell = (_isHorizontal ? leftCell : downCell);
-	break;
+			case NSScrollerDecrementLine:
+			case NSScrollerDecrementPage:
+				theCell = (_isHorizontal ? leftCell : downCell);
+				break;
 
-      default:
-	theCell = nil;
-	break;
-    }
+      		default:
+				theCell = nil;
+				break;
+    		}
 
-    if (theCell) {
-	  [theCell highlight:YES withFrame:rect inView:self];	// highlight cell
-	  [self setNeedsDisplayInRect:rect];		
-      NSDebugLog (@"tracking cell %x", theCell);
-      /* Track the mouse until mouse goes up */
-      shouldReturn = [theCell trackMouse:theEvent
-			      inRect:rect
-			      ofView:self
-			      untilMouseUp:NO];
+		if (theCell) 
+			{											// highlight the cell
+	  		[theCell highlight:YES withFrame:rect inView:self];	
+	  		[self setNeedsDisplayInRect:rect];			// not needed by XRAW
+			[window flushWindow];
+      		NSDebugLog (@"tracking cell %x", theCell);
+										// Track the mouse until mouse goes up 
+      		shouldReturn = [theCell trackMouse:theEvent
+									inRect:rect
+									ofView:self
+									untilMouseUp:YES];
+														// unhighlight the cell 
+			[theCell highlight:NO withFrame:rect inView:self];
+			[self setNeedsDisplayInRect:rect];			// not needed by XRAW
+			[window flushWindow];
+    		}
 
-      /* Now unhighlight the cell */
-      [theCell highlight:NO withFrame:rect inView:self];
-#if 1
-      [self setNeedsDisplayInRect:rect];
-#else
-      [theCell drawWithFrame:rect inView:self];
-      [self setNeedsDisplayInRect:rect];
-      [[self window] flushWindow];
-#endif
-    }
+    	if (shouldReturn)
+      		break;
 
-    if (shouldReturn)
-      break;
+    	theEvent = [theApp nextEventMatchingMask:eventMask
+						   untilDate:[NSDate distantFuture] 
+						   inMode:NSEventTrackingRunLoopMode
+						   dequeue:YES];
+  		} 
+	while ([theEvent type] != NSLeftMouseUp);
 
-    theEvent = [[NSApplication sharedApplication]
-		 nextEventMatchingMask:eventMask
-		 untilDate:[NSDate distantFuture] 
-		 inMode:NSEventTrackingRunLoopMode
-		 dequeue:YES];
-    eventType = [theEvent type];
-    location = [self convertPoint:[theEvent locationInWindow] fromView:nil];
-    _hitPart = [self testPart:location];
-  } while (eventType != NSLeftMouseUp);
-  NSDebugLog (@"return from trackScrollButtons");
+  	NSDebugLog (@"return from trackScrollButtons");
 }
 
-- (BOOL)sendAction:(SEL)action to:(id)target
-{
-  [target performSelector:action withObject:self];
-  return YES;
-}
+- (BOOL)sendAction:(SEL)theAction to:(id)theTarget
+{															// send action to
+BOOL ret = [super sendAction:theAction to:theTarget];		// the target on
+															// behalf of cell
+	[self drawKnobSlot];			// lockFocus set in mouseDown method is 
+	[self drawKnob];				// active so we simply redraw the knob and 
+	[window flushWindow];			// slot to reflect the hit scroll button	
+
+	return ret; 										
+}															
 
 - (void)encodeWithCoder:aCoder
 {}
@@ -514,18 +520,15 @@ static NSButtonCell* knobCell = nil;
 
 - (void)drawRect:(NSRect)rect
 {
-  NSDebugLog (@"NSScroller drawRect: ((%f, %f), (%f, %f))",
-	rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
+	NSDebugLog (@"NSScroller drawRect: ((%f, %f), (%f, %f))",
+			rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
 
-  /* Draw the scroller buttons */
-  [self drawArrow:NSScrollerDecrementArrow highlight:NO];
-  [self drawArrow:NSScrollerIncrementArrow highlight:NO];
+												 // Draw the scroller buttons
+	[self drawArrow:NSScrollerDecrementArrow highlight:NO];	
+	[self drawArrow:NSScrollerIncrementArrow highlight:NO];
 
-  /* Draw the knob slot */
-  [self drawKnobSlot];
-
-  /* Draw the knob */
-  [self drawKnob];
+	[self drawKnobSlot];									// Draw knob slot
+	[self drawKnob];										// Draw the knob
 }
 
 - (void)drawArrow:(NSScrollerArrow)whichButton
@@ -554,8 +557,7 @@ static NSButtonCell* knobCell = nil;
 
 - (void)drawKnob
 {
-  NSRect rect = [self rectForPart:NSScrollerKnob];
-  [knobCell drawWithFrame:rect inView:self];
+	[knobCell drawWithFrame:[self rectForPart:NSScrollerKnob] inView:self];
 }
 
 /* The following methods should be implemented in the backend */

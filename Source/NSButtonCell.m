@@ -8,6 +8,8 @@
    Author:  Scott Christley <scottc@net-community.com>
 	    Ovidiu Predescu <ovidiu@net-community.com>
    Date: 1996
+   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: August 1998
    
    This file is part of the GNUstep GUI Library.
 
@@ -40,10 +42,9 @@
 #include <AppKit/NSFont.h>
 #include <AppKit/NSImage.h>
 
-#define ASSIGN(a, b) \
-  [b retain]; \
-  [a release]; \
-  a = b;
+#define ASSIGN(a, b) 	[b retain]; \
+						[a release]; \
+						a = b;
 
 //
 // NSButtonCell implementation
@@ -56,45 +57,47 @@
 + (void)initialize
 {
   if (self == [NSButtonCell class])
-    {
-      // Initial version
-      [self setVersion:1];
-    }
+	[self setVersion:1];								// Initial version
 }
 
 //
 // Instance methods
 //
+- _init
+{
+  cell_enabled = YES;
+  transparent = NO;
+  cell_bordered = YES;
+  showAltStateMask = NSNoCellMask;	// configure as a NSMomentaryPushButton
+  highlightsByMask = NSPushInCellMask | NSChangeGrayCellMask;
+  delayInterval = 0.4;
+  repeatInterval = 0.075;
+  altContents = nil;
+	
+  return self;
+}
+
 - init
 {
   [self initTextCell:@"Button"];
+	
   return self;
 }
 
 - initImageCell:(NSImage *)anImage
 {
   [super initImageCell:anImage];
-  [self setStringValue:@"Button"];
-  [self setButtonType:NSMomentaryPushButton];
-  [self setEnabled:YES];
-  [self setTransparent:NO];
-  [self setBordered:YES];
-  delayInterval = 0.4;
-  repeatInterval = 0.075;
-  return self;
+	
+  contents = nil;
+	
+  return [self _init];
 }
 
 - initTextCell:(NSString *)aString
 {
   [super initTextCell:aString];
-  altContents = nil;
-  [self setButtonType:NSMomentaryPushButton];
-  [self setEnabled:YES];
-  [self setTransparent:NO];
-  [self setBordered:YES];
-  delayInterval = 0.4;
-  repeatInterval = 0.075;
-  return self;
+	
+  return [self _init];
 }
 
 - (void)dealloc
@@ -103,6 +106,7 @@
   [altImage release];
   [keyEquivalent release];
   [keyEquivalentFont release];
+
   [super dealloc];
 }
 
@@ -116,9 +120,10 @@
 
 - (void)setAlternateTitle:(NSString *)aString
 {
-  altContents = [aString copy];
-  // update our state
-  [self setState:[self state]];
+NSString* _string = [aString copy];
+
+  ASSIGN(altContents, _string);
+  [self setState:[self state]];						// update our state
 }
 
 - (void)setFont:(NSFont *)fontObject
@@ -129,8 +134,7 @@
 - (void)setTitle:(NSString *)aString
 {
   [self setStringValue:aString];
-  // update our state
-  [self setState:[self state]];
+  [self setState:[self state]];						// update our state
 }
 
 - (NSString *)title
@@ -165,14 +169,14 @@
 // Setting the Repeat Interval 
 //
 - (void)getPeriodicDelay:(float *)delay
-		interval:(float *)interval
+				interval:(float *)interval
 {
   *delay = delayInterval;
   *interval = repeatInterval;
 }
 
 - (void)setPeriodicDelay:(float)delay
-		interval:(float)interval
+				interval:(float)interval
 {
   delayInterval = delay;
   repeatInterval = interval;
@@ -197,11 +201,11 @@
   return keyEquivalentModifierMask;
 }
 
-- (void)setKeyEquivalent:(NSString *)key
-{
-  id copy = [key copy];
-  ASSIGN(keyEquivalent, copy);
-  [copy release];
+- (void)setKeyEquivalent:(NSString *)key	
+{ 
+NSString* _string = [key copy];
+
+  ASSIGN(keyEquivalent, _string);
 }
 
 - (void)setKeyEquivalentModifierMask:(unsigned int)mask
@@ -215,9 +219,11 @@
 }
 
 - (void)setKeyEquivalentFont:(NSString *)fontName 
-			size:(float)fontSize
+						size:(float)fontSize
 {
-  ASSIGN(keyEquivalentFont, [NSFont fontWithName:fontName size:fontSize]);
+NSFont* font = [NSFont fontWithName:fontName size:fontSize];
+
+  ASSIGN(keyEquivalentFont, font);
 }
 
 //
@@ -327,18 +333,17 @@
   [self setState:(aDouble != 0)];
 }
 
-- (int)intValue			{ return [self state]; }
-- (float)floatValue		{ return [self state]; }
+- (int)intValue				{ return [self state]; }
+- (float)floatValue			{ return [self state]; }
 - (double)doubleValue		{ return [self state]; }
 
 //
 // Displaying
 //
 - (void)drawWithFrame:(NSRect)cellFrame
-	       inView:(NSView *)controlView
+	       	   inView:(NSView *)controlView
 {
-  // Save last view drawn to
-  control_view = controlView;
+  control_view = controlView;				// Save last view cell was drawn to
 }
 
 //
@@ -352,12 +357,12 @@
 {
   NSButtonCell* c = [super copyWithZone:zone];
 
-  [c setAlternateTitle:altContents];
-  [c setAlternateImage:altImage];
-  [c setKeyEquivalent:keyEquivalent];
-  [c setKeyEquivalentFont:keyEquivalentFont];
-  [c setKeyEquivalentModifierMask:keyEquivalentModifierMask];
-  [c setTransparent:transparent];
+  c->altContents = [[altContents copy] retain];
+  ASSIGN(c->altImage, altImage);
+  c->keyEquivalent = [[keyEquivalent copy] retain];
+  ASSIGN(c->keyEquivalentFont, keyEquivalentFont);
+  c->keyEquivalentModifierMask = keyEquivalentModifierMask;
+  c->transparent = transparent;
   c->highlightsByMask = highlightsByMask;
   c->showAltStateMask = showAltStateMask;
 
@@ -387,6 +392,7 @@
   altImage = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &transparent];
   NSDebugLog(@"NSButtonCell: finish decoding\n");
+
   return self;
 }
 

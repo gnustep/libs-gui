@@ -73,7 +73,7 @@ static BOOL usesUserKeyEquivalents = YES;
 
   [representedObject release];
   if (hasSubmenu)
-    [[self target] release];
+    [target release];
   [super dealloc];
 }
 
@@ -86,8 +86,8 @@ static BOOL usesUserKeyEquivalents = YES;
   copy->hasSubmenu = hasSubmenu;
   if (hasSubmenu) {
     id submenu = [[target copyWithZone:zone] autorelease];
-    [copy setTarget:submenu];
-  }
+    copy->target = [submenu retain];
+ }
 
   return copy;
 }
@@ -97,7 +97,7 @@ static BOOL usesUserKeyEquivalents = YES;
   hasSubmenu = anObject && [anObject isKindOfClass:[NSMenu class]];
   if (hasSubmenu) {
     [anObject retain];
-    [[self target] release];
+    [target release];
   }
   [super setTarget:anObject];
 }

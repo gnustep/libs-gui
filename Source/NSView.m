@@ -715,6 +715,7 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 {										// preliminary implementation FIX ME
 	if(autoresizingMask == NSViewNotSizable)		// view is not resizable
 		return;
+
 	if(autoresizingMask & NSViewWidthSizable)		// width resizable?
 		{
   		frame.size.width = [super_view frame].size.width;
@@ -724,6 +725,7 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 		if(autoresizingMask & NSViewMinXMargin)
   			frame.origin.x += [super_view frame].size.width - oldSize.width;
 		}
+
 	if(autoresizingMask & NSViewHeightSizable)		// height resizable?
 		{
   		frame.size.height = [super_view frame].size.height;
@@ -815,41 +817,44 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
 - (void)displayRect:(NSRect)rect
 {
-  int i, count;
+int i, count;
 
-  if (!boundsMatrix || !frameMatrix)
-    NSLog (@"warning: %@ %p has not have the PS matrices setup!",
-	  NSStringFromClass(isa), self);
+	if (!boundsMatrix || !frameMatrix)
+		NSLog (@"warning: %@ %p has not have the PS matrices setup!",
+	  			NSStringFromClass(isa), self);
 
-  needs_display = NO;
+	needs_display = NO;
 
-  [self lockFocus];
-  [self drawRect:rect];
-  [window _setNeedsFlush];
+	[self lockFocus];
+	[self drawRect:rect];
+	[window _setNeedsFlush];
 //  [window _view:self needsFlushInRect:rect];
-  [self unlockFocus];
+	[self unlockFocus];
+  													// Tell subviews to display
+	for (i = 0, count = [sub_views count]; i < count; ++i) 
+		{
+    	NSView* subview = [sub_views objectAtIndex:i];
+    	NSRect subviewFrame = subview->frame;
+    	NSRect intersection;
+									// If the subview is rotated compute its 
+									// bounding rectangle and use this one 
+									// instead of the subview's frame. 
+		if ([subview->frameMatrix isRotated])
+      		[subview->frameMatrix boundingRectFor:subviewFrame 
+								  result:&subviewFrame];
 
-  // Tell subviews to display
-  for (i = 0, count = [sub_views count]; i < count; ++i) {
-    NSView* subview = [sub_views objectAtIndex:i];
-    NSRect subviewFrame = subview->frame;
-    NSRect intersection;
-
-    /* If the subview is rotated compute its bounding rectangle and use this
-       one instead of the subview's frame. */
-    if ([subview->frameMatrix isRotated])
-      [subview->frameMatrix boundingRectFor:subviewFrame result:&subviewFrame];
-
-    /* Determine if the subview's frame intersects "rect"
-       so that we can display the subview. */
-    intersection = NSIntersectionRect (rect, subviewFrame);
-    if (intersection.origin.x || intersection.origin.y
-	|| intersection.size.width || intersection.size.height) {
-      /* Convert the intersection rectangle to the subview's coordinates */
-      intersection = [subview convertRect:intersection fromView:self];
-      [subview displayRect:intersection];
-    }
-  }
+									// Determine if the subview's frame 
+									// intersects "rect" so that we can display 
+									// the subview. 
+    	intersection = NSIntersectionRect (rect, subviewFrame);
+		if (intersection.origin.x || intersection.origin.y || 
+				intersection.size.width || intersection.size.height) 
+			{						// Convert the intersection rectangle to
+									// the subview's coordinates 
+      		intersection = [subview convertRect:intersection fromView:self];
+      		[subview displayRect:intersection];
+    		}
+  		}
 }
 
 - (void)displayRectIgnoringOpacity:(NSRect)aRect
@@ -871,35 +876,35 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 }
 
 - (void)_addSubviewForNeedingDisplay:(NSView*)view
-{
-  NSView* currentView;
+{													// Add view to the list of
+NSView* currentView;								// sibling subviews that 
+													// need display.
+	currentView = _subviewsThatNeedDisplay;		
+	while (currentView) 							// do nothing if the view 
+		{											// is already in self's
+		if (currentView == view)					// list.
+			return;
+		currentView = currentView->_nextSiblingSubviewThatNeedsDisplay;
+		}
+					// view is not in the list of subviews that need display.
+					// Concatenate self's list of subviews that need display to 
+					// the view's list of siblings subviews that need display.
 
-  /* Add view in the list of sibling subviews that need display. First
-     check if view is not already there. */
-  currentView = _subviewsThatNeedDisplay;
-  while (currentView) {
-    if (currentView == view)
-      return;
-    currentView = currentView->_nextSiblingSubviewThatNeedsDisplay;
-  }
+									// find the last element in the view's
+	currentView = view;				// list of siblings that need display
+	while (currentView->_nextSiblingSubviewThatNeedsDisplay)
+		currentView = currentView->_nextSiblingSubviewThatNeedsDisplay;
 
-  /* view is not in the list of subviews that need display; add it.
-     To do this concatenate the "view"'s list of siblings to the list of
-     subviews. Find the last element in the "view"'s list of siblings and
-     assign to its _nextSiblingSubviewThatNeedsDisplay ivar the first element
-     of the subviews that need display list in self.
-   */
-  currentView = view;
-  while (currentView->_nextSiblingSubviewThatNeedsDisplay)
-    currentView = currentView->_nextSiblingSubviewThatNeedsDisplay;
+									// link the lists by assigning to view's  
+									// _nextSiblingSubviewThatNeedsDisplay ivar 
+									// self's _subviewsThatNeedDisplay ivar. 
+	currentView->_nextSiblingSubviewThatNeedsDisplay =_subviewsThatNeedDisplay;
+	_subviewsThatNeedDisplay = view;
 
-  currentView->_nextSiblingSubviewThatNeedsDisplay = _subviewsThatNeedDisplay;
-  _subviewsThatNeedDisplay = view;
-
-  /* Now add recursively do the same algorithm with self. This way we'll create
-     a subtree of views that need display inside the views hierarchy. */
-  if (super_view)
-    [super_view _addSubviewForNeedingDisplay:self];
+							// Add recursively using the same algorithm with 
+	needs_display = YES;	// self. This way we'll create a subtree of views
+	if (super_view)			// that need display inside the views hierarchy.
+		[super_view _addSubviewForNeedingDisplay:self];
 }
 
 - (void)_removeSubviewFromViewsThatNeedDisplay:(NSView*)view
@@ -935,7 +940,7 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 {
   needs_display = flag;
   if (needs_display) {
-//    NSLog (@"NSView setNeedsDisplay:");
+
     invalidatedRectangle = bounds;
     [window _setNeedsDisplay];
 
@@ -946,7 +951,6 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
 - (void)setNeedsDisplayInRect:(NSRect)rect
 {
-//  NSLog (@"NSView setNeedsDisplayInRect:");
   needs_display = YES;
   invalidatedRectangle = NSUnionRect (invalidatedRectangle, rect);
   [window _setNeedsDisplay];

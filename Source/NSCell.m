@@ -7,6 +7,8 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
+   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: August 1998
    
    This file is part of the GNUstep GUI Library.
 
@@ -39,6 +41,10 @@
 #include <AppKit/NSCell.h>
 #include <AppKit/NSEvent.h>
 
+#define ASSIGN(a, b) 	[b retain]; \
+						[a release]; \
+						a = b;
+
 @implementation NSCell
 
 //
@@ -70,7 +76,6 @@
 //
 - _init
 {
-  self = [super init];
   cell_type = NSNullCellType;
   cell_image = nil;
   cell_font = nil;
@@ -88,6 +93,7 @@
   cell_float_left = 0;
   cell_float_right = 0;
   action_mask = NSLeftMouseUpMask;
+
   return self;
 }
 
@@ -110,6 +116,7 @@
   cell_image = [anImage retain];
   image_position = NSImageOnly;
   cell_font = [[NSFont userFontOfSize:0] retain];
+
   return self;
 }
 
@@ -123,11 +130,9 @@
   contents = [aString retain];
   cell_type = NSTextCellType;
   text_align = NSCenterTextAlignment;
-  cell_image = nil;
-  image_position = NSNoImage;
   cell_float_autorange = YES;
-  cell_float_left = 0;
   cell_float_right = 6;
+
   return self;
 }
 
@@ -219,15 +224,11 @@
 }
 
 - (void)setImage:(NSImage *)anImage
-{
-  // Not an image class --then forget it
-  if (![anImage isKindOfClass:[NSImage class]])
-    return;
+{							 
+  if (![anImage isKindOfClass:[NSImage class]])			// set the image only 
+    return;												// if it's an NSImage 
 
-  // Only set the image if we are an image cell
-  [anImage retain];
-  [cell_image release];
-  cell_image = anImage;
+  ASSIGN(cell_image, anImage);		
   [self setType:NSImageCellType];
 }
 
@@ -256,36 +257,35 @@
 
 - (void)setDoubleValue:(double)aDouble
 {
-  NSNumber* number = [NSNumber numberWithDouble:aDouble];
+NSString* number_string = [[NSNumber numberWithDouble:aDouble] stringValue];
 
-  [contents release];
-  contents = [[number stringValue] retain];
+  ASSIGN(contents, number_string);
 }
 
 - (void)setFloatValue:(float)aFloat
 {
-  NSNumber* number = [NSNumber numberWithFloat:aFloat];
+NSString* number_string = [[NSNumber numberWithFloat:aFloat] stringValue];
 
-  [contents release];
-  contents = [[number stringValue] retain];
+  ASSIGN(contents, number_string);
 }
 
 - (void)setIntValue:(int)anInt
 {
-  NSNumber* number = [NSNumber numberWithInt:anInt];
+NSString* number_string = [[NSNumber numberWithInt:anInt] stringValue];
 
-  [contents release];
-  contents = [[number stringValue] retain];
+  ASSIGN(contents, number_string);
 }
 
 - (void)setStringValue:(NSString *)aString
 {
-  aString = [aString copy];
-  [contents release];
-  if (!aString)
-    contents = @"";
-  else
-    contents = aString;
+NSString* _string;
+
+	if (!aString)
+		_string = @"";
+	else
+		_string = [aString copy];
+
+	ASSIGN(contents, _string);
 }
 
 //
@@ -354,13 +354,10 @@
 
 - (void)setFont:(NSFont *)fontObject
 {
-  // Not a font --then forget it
-  if (![fontObject isKindOfClass:[NSFont class]])
-    return;
+  if (![fontObject isKindOfClass:[NSFont class]])		// set the font only
+    return;												// if it's an NSFont
 
-  [fontObject retain];
-  [cell_font release];
-  cell_font = fontObject;
+  ASSIGN(cell_font, fontObject);
 }
 
 - (void)setSelectable:(BOOL)flag
@@ -505,8 +502,8 @@
 }
 
 - (void)highlight:(BOOL)lit
-	withFrame:(NSRect)cellFrame
-	   inView:(NSView *)controlView
+		withFrame:(NSRect)cellFrame
+	   	inView:(NSView *)controlView
 {
   cell_highlighted = lit;
 
@@ -769,36 +766,32 @@
 
 - (void)setRepresentedObject:(id)anObject
 {
-  [anObject retain];
-  [represented_object release];
-  represented_object = anObject;
+  ASSIGN(represented_object, anObject);
 }
 
 - (id)copyWithZone:(NSZone*)zone
 {
-  NSCell* c;
+  NSCell* c = [[isa allocWithZone: zone] init];
 
-  c = [[isa allocWithZone: zone] init];
-
-  [c setStringValue:contents];
-  [c setImage:cell_image];
-  [c setFont:cell_font];
-  [c setState:cell_state];
+  c->contents = [[contents copy] retain];
+  ASSIGN(c->cell_image, cell_image);
+  ASSIGN(c->cell_font, cell_font);
+  c->cell_state = cell_state;
   c->cell_highlighted = cell_highlighted;
-  [c setEnabled:cell_enabled];
-  [c setEditable:cell_editable];
-  [c setBordered:cell_bordered];
-  [c setBezeled:cell_bezeled];
-  [c setScrollable:cell_scrollable];
-  [c setSelectable:cell_selectable];
+  c->cell_enabled = cell_enabled;
+  c->cell_editable = cell_editable;
+  c->cell_bordered = cell_bordered;
+  c->cell_bezeled = cell_bezeled;
+  c->cell_scrollable = cell_scrollable;
+  c->cell_selectable = cell_selectable;
   [c setContinuous:cell_continuous];
-  [c setFloatingPointFormat:cell_float_autorange
-	left:cell_float_left
-	right:cell_float_right];
+  c->cell_float_autorange = cell_float_autorange;
+  c->cell_float_left = cell_float_left;
+  c->cell_float_right = cell_float_right;
   c->image_position = image_position;
-  [c setType:cell_type];
-  [c setAlignment:text_align];
-  [c setEntryType:entry_type];
+  c->cell_type = cell_type;
+  c->text_align = text_align;
+  c->entry_type = entry_type;
   c->control_view = control_view;
   c->cell_size = cell_size;
   [c setRepresentedObject:represented_object];
