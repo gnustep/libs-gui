@@ -1,6 +1,7 @@
 #include <gnustep/gui/config.h>  
 #include <AppKit/NSColor.h>
 #include <AppKit/NSFont.h>
+#include <AppKit/NSGraphics.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSMatrix.h>
 #include <AppKit/NSPopUpButton.h>
@@ -29,9 +30,9 @@
 
   NSDrawButton(cellFrame, cellFrame);
   
-  arect.size.width -= 4;
-  arect.size.height -= 4;
-  arect.origin.x += 2;
+  arect.size.width -= 3;
+  arect.size.height -= 3;
+  arect.origin.x += 1;
   arect.origin.y += 2;
  
   if (cell_highlighted) {

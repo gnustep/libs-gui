@@ -1,3 +1,15 @@
+1999-06-29  Michael Hanni  <mhanni@sprintmail.com>
+
+	* Source/NSMenu.m: complete rewrite. Some work still required to
+	finish implementing obscure MacOSX methods, but otherwise functional.
+	* Source/NSMenuView.m: new file. Implementation of MacOSX menu
+	view class. Most classes implemented to provide basic
+	functionality. Some work required in event code to "forward"curse
+	to close/deselect menus in one case. I'll fix this ASAP.
+	* Source/NSMenuItemCell.m: new file. Implementation complete, plus
+	modifications to allow its use as an <NSMenuItem>.
+	* Source/*.m: compilation fixes.
+
 Sun Jun 27  7:50:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/GNUmakefile: Install GSWraps.h

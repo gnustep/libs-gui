@@ -30,7 +30,7 @@
 #include <AppKit/NSTabView.h>
 
 typedef enum {
-  NSSelectedTab,
+  NSSelectedTab = 0,
   NSBackgroundTab,
   NSPressedTab
 } NSTabState;

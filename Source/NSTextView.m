@@ -43,8 +43,26 @@
 
 // This variant will create the text network (textStorage, layoutManager, and a container).
 - initWithFrame:(NSRect)frameRect
-{	return [self initWithFrame:frameRect textContainer:nil];
+{       return [self initWithFrame:frameRect textContainer:nil];
 }
+
+#ifdef 0
+- initWithFrame:(NSRect)frameRect
+{
+
+  textStorage = [NSTextStorage new];
+//  layoutManager = [NSLayoutManager new];
+//  [textStorage addLayoutManager:layoutManager];
+//  [layoutManager release];
+
+  textContainer = [[NSTextContainer alloc] 
+                      initWithContainerSize:frameRect];
+//  [layoutManager addTextContainer:textContainer];
+  [textContainer release]; 
+
+  return [self initWithFrame:frameRect textContainer:textContainer];
+}
+#endif
 
 /***************** Get/Set the container and other stuff *****************/
 

@@ -35,17 +35,22 @@
 @class NSEvent;
 @class NSMatrix;
 
+@class NSMenuView;
 @class NSMenuMatrix;
+@class NSMenuWindow;
 
 @interface NSMenu : NSObject <NSCoding, NSCopying>
 {
-  NSString* title;
-  NSMenuMatrix* menuCells;
-  NSMenu* supermenu;
-  NSMenu* attachedMenu;
-  BOOL autoenablesItems;
-  BOOL menuChangedMessagesEnabled;
-  BOOL menuHasChanged;
+  NSString *menu_title;
+  NSMutableArray *menu_items;
+  NSMenuView *menu_view;
+  NSMenu *menu_supermenu;
+  NSMenu *menu_attached_menu;
+  id menu_rep;
+  BOOL menu_ChangedMessagesEnabled;
+  BOOL menu_autoenable;
+  BOOL menu_changed;
+  BOOL menu_is_tornoff;
 
   // Reserved for back-end use
   void *be_menu_reserved;
@@ -107,7 +112,7 @@
 - (NSString*)title;
 
 /* Getting the menu cells matrix */
-- (NSMenuMatrix*)menuCells;
+- (NSMenuView *)menuView;
 
 // non OS spec methods
 - (void)_rightMouseDisplay;
@@ -126,35 +131,6 @@
 
 /* Close the associated window menu */
 - (void)close;
-@end
-
-
-/* Private class used to display the menu cells and respond to user actions */
-@interface NSMenuMatrix : NSControl <NSCopying>
-{
-  NSMutableArray* cells;
-  NSSize cellSize;
-  NSMenu* menu;
-  id selectedCell;
-  NSRect selectedCellRect;
-}
-
-- initWithFrame:(NSRect)rect;
-- (id <NSMenuItem>)insertItemWithTitle:(NSString*)aString
-				action:(SEL)aSelector
-			 keyEquivalent:(NSString*)charCode
-			       atIndex:(unsigned int)index;
-- (void)removeItem:(id <NSMenuItem>)anItem;
-- (NSArray*)itemArray;
-- (id <NSMenuItem>)itemWithTitle:(NSString*)aString;
-- (id <NSMenuItem>)itemWithTag:(int)aTag;
-- (NSRect)cellFrameAtRow:(int)index;
-- (NSSize)cellSize;
-- (void)setMenu:(NSMenu*)menu;
-- (void)setSelectedCell:(id)aCell;
-- (id)selectedCell;
-- (NSRect)selectedCellRect;
-
 @end
 
 extern NSString* const NSMenuDidSendActionNotification;

@@ -1474,12 +1474,12 @@ static Class	responderClass;
    */
   if (content_view == nil)
     [self setContentView: nil];
-  [[content_view superView] registerForDraggedTypes: newTypes];
+  [[content_view superview] registerForDraggedTypes: newTypes];
 }
 
 - (void) unregisterDraggedTypes
 {
-  [[content_view superView] unregisterDraggedTypes];
+  [[content_view superview] unregisterDraggedTypes];
 }
 
 /*

@@ -773,7 +773,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 @end /* NSMenu (GMArchiverMethods) */
 
-
+#if 0
 @implementation NSPopUpButton (GMArchiverMethods)
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
@@ -840,7 +840,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 }
 
 @end /* NSPopUpButton (GMArchiverMethods) */
-
+#endif
 
 @implementation NSResponder (GMArchiverMethods)
 

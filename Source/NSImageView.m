@@ -41,9 +41,9 @@
   return [self initWithFrame: NSZeroRect];
 }
 
-- (id) initWithFrame: (NSRect)frame
+- (id) initWithFrame: (NSRect)aFrame
 {
-  [super initWithFrame: frame];
+  [super initWithFrame: aFrame];
 
   // allocate the image cell
   [self setCell: [[NSImageCell alloc] init]];

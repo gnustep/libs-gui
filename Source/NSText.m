@@ -976,7 +976,7 @@ NSLog(@"did set font");
 	_GNULineLayoutInfo	*currentInfo;
 	NSRect			 retRect=NSMakeRect(0,0,0,0);
 
-	for(lineEnum=[linesToDraw objectEnumerator]; currentInfo=[lineEnum nextObject];)
+	for((lineEnum=[linesToDraw objectEnumerator]); (currentInfo=[lineEnum nextObject]);)
 	{	retRect=NSUnionRect(retRect,[currentInfo lineRect]);
 	} return retRect;
 }
@@ -1021,7 +1021,7 @@ NSLog(@"did set font");
 [[lineLayoutInformation lastObject] lineRect].size.height) {
 	newY = currentCursorY - tRect.size.height +
 ([[lineLayoutInformation lastObject] lineRect].size.height * 2);
-	[[self superview] scrollToPoint:NSMakePoint(sizeToRect.origin.x,newY)];
+	[(NSClipView *)[self superview] scrollToPoint:NSMakePoint(sizeToRect.origin.x,newY)];
       }
       else
 	NSLog(@"=========> Oops!\n");
@@ -1150,7 +1150,7 @@ rectForCharacterIndex:[self selectedRange].location],
 	if([lineLayoutInformation count] && anIndex>= NSMaxRange([[lineLayoutInformation lastObject] lineRange]))
 		return [lineLayoutInformation count]-1;
 
-	for(lineEnum=[lineLayoutInformation objectEnumerator]; currentInfo=[lineEnum nextObject];)
+	for((lineEnum=[lineLayoutInformation objectEnumerator]); (currentInfo=[lineEnum nextObject]);)
 	{	NSRange lineRange=[currentInfo lineRange];
 		if(lineRange.location<= anIndex && anIndex<= NSMaxRange(lineRange)-([currentInfo type] == LineLayoutInfoType_Paragraph? 1:0))
 			return [lineLayoutInformation indexOfObject:currentInfo];
@@ -1432,7 +1432,7 @@ NSLog(NSStringFromRange(redrawLineRange));
 {	unsigned short keyCode;
 	if(!is_editable) return; 					// If not editable then don't  recognize the key down
 
-	if(keyCode=[theEvent keyCode]) 
+	if((keyCode=[theEvent keyCode])) 
 	switch(keyCode)
 	{	case 	NSUpArrowFunctionKey:	//NSUpArrowFunctionKey:
 			[self moveCursorUp:self];
@@ -1609,7 +1609,7 @@ NSLog(@"keycode:%x",keyCode);
 
 	point.x=MAX(0,point.x); point.y=MAX(0,point.y);
 
-	for(i=0,lineEnum=[lineLayoutInformation objectEnumerator]; currentInfo=[lineEnum nextObject];i++)
+	for(i=0,(lineEnum=[lineLayoutInformation objectEnumerator]);(currentInfo=[lineEnum nextObject]);i++)
 	{	NSRect rect=[currentInfo lineRect];
 		if(NSMaxY(rect)>=point.y && rect.origin.y<point.y && rect.origin.x< point.x && point.x >= NSMaxX(rect) ) return NSMaxRange([currentInfo lineRange]);
 		if(NSPointInRect(point,rect))	// this loop holds some optimization potential (linear search)
@@ -1648,7 +1648,7 @@ NSLog(@"keycode:%x",keyCode);
 		return NSMakeRect(NSMaxX(rect), rect.origin.y,[self frame].size.width-NSMaxX(rect),rect.size.height);
 	}
 
-	for(i=0,lineEnum=[lineLayoutInformation objectEnumerator]; currentInfo=[lineEnum nextObject];i++)
+	for(i=0,(lineEnum=[lineLayoutInformation objectEnumerator]);(currentInfo=[lineEnum nextObject]);i++)
 	{	NSRange	range=[currentInfo lineRange];
 		if(NSLocationInRange(index,range))
 		{	NSRect rect=[currentInfo lineRect];
@@ -1677,7 +1677,7 @@ NSLog(@"keycode:%x",keyCode);
 
 	point.x=MAX(0,point.x); point.y=MAX(0,point.y);
 
-	for(i=0,lineEnum=[lineLayoutInformation objectEnumerator]; currentInfo=[lineEnum nextObject];i++)
+	for(i=0,(lineEnum=[lineLayoutInformation objectEnumerator]); (currentInfo=[lineEnum nextObject]);i++)
 	{	NSRect rect=[currentInfo lineRect];
 		if(NSMaxY(rect)> point.y && rect.origin.y<= point.y && rect.origin.x< point.x && point.x >= NSMaxX(rect) )
 			return [lineLayoutInformation indexOfObject:currentInfo];
@@ -1743,7 +1743,7 @@ static unsigned _relocLayoutArray(NSMutableArray *lineLayoutInformation,NSArray 
 
 	if(![relocArray count]) return ret;
 
-	for(relocEnum=[relocArray objectEnumerator]; currReloc=[relocEnum nextObject];)
+	for((relocEnum=[relocArray objectEnumerator]); (currReloc=[relocEnum nextObject]);)
 	{	NSRange range=[currReloc lineRange];
 		[currReloc setLineRange:NSMakeRange(range.location+relocOffset,range.length)];
 		if(yReloc)
@@ -2018,7 +2018,7 @@ NSLog(@"opti hook 2");
 		_GNULineLayoutInfo	*currentInfo;
 		NSDictionary		*attributes=[self defaultTypingAttributes];
 
-		for(lineEnum=[linesToDraw objectEnumerator]; currentInfo=[lineEnum nextObject];)
+		for((lineEnum=[linesToDraw objectEnumerator]);(currentInfo=[lineEnum nextObject]);)
 		{	if([currentInfo isDontDisplay] || [currentInfo type]== LineLayoutInfoType_Paragraph) continue;	// e.g. for nl
 			[[plainContent substringWithRange:[currentInfo lineRange]] drawAtPoint:[currentInfo lineRect].origin withAttributes:attributes];
 			// <!> make this use drawInRect:withAttributes: in the future (for proper adoption of layout information [e.g. centering])
@@ -2034,7 +2034,7 @@ NSLog(@"opti hook 2");
 		NSEnumerator		*lineEnum;
 		_GNULineLayoutInfo	*currentInfo;
 
-		for(lineEnum=[linesToDraw objectEnumerator]; currentInfo=[lineEnum nextObject];)
+		for((lineEnum=[linesToDraw objectEnumerator]);(currentInfo=[lineEnum nextObject]);)
 		{	if([currentInfo isDontDisplay] || [currentInfo type] == LineLayoutInfoType_Paragraph) continue;	// e.g. for nl
 			[rtfContent drawRange:[currentInfo lineRange] atPoint:[currentInfo lineRect].origin];
 			// <!> make this use drawRange: inRect: in the future (for proper adoption of layout information [e.g. centering])

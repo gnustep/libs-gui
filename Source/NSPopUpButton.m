@@ -29,7 +29,7 @@
 */ 
 
 #include <gnustep/gui/config.h>
-#include <Foundation/NSArray.h>
+#import <Foundation/Foundation.h>
 #include <AppKit/NSPopUpButton.h>
 #include <AppKit/NSPopUpButtonCell.h>
 #include <AppKit/NSApplication.h>
@@ -37,18 +37,83 @@
 #include <AppKit/NSFont.h>
 
 @implementation NSPopUpButtonMatrix
+
+// Class variables
+static NSFont* menuFont = nil;
+
+- (BOOL) acceptsFirstMouse: (NSEvent *)theEvent
+{
+  return YES;
+}
+
 - (id) initWithFrame: (NSRect)rect
 {
   [super initWithFrame: rect];
+  cells = [NSMutableArray new];
 
   selected_cell = 0;
  
   cellSize = NSMakeSize (rect.size.width, rect.size.height);
+
   return self;
+}
+
+- (void) dealloc
+{
+  NSDebugLog (@"NSMenuMatrix of menu '%@' dealloc", [menu title]);
+
+  [cells release];
+  [super dealloc];
+}
+
+- (id) copyWithZone: (NSZone*)zone
+{
+  NSPopUpButtonMatrix* copy = [[isa allocWithZone: zone] initWithFrame: [self frame]];
+  int i, count;
+
+  NSDebugLog (@"copy menu matrix of menu with title '%@'", [menu title]);
+  for (i = 0, count = [cells count]; i < count; i++)
+    {
+      id aCell = [cells objectAtIndex: i];
+      id cellCopy = [[aCell copyWithZone: zone] autorelease];
+
+      [copy->cells addObject: cellCopy];
+    }
+
+  copy->cellSize = cellSize;
+  copy->menu = menu;
+  if (selectedCell)
+    {
+      int index = [cells indexOfObject: selectedCell];
+
+      copy->selectedCell = [[cells objectAtIndex: index] retain];
+    }
+  copy->selectedCellRect = selectedCellRect;
+
+  return copy;
 }
 
 - (void) _resizeMenuForCellSize
 {
+  int i, count;
+  float titleWidth;
+
+  /* Compute the new width of the menu cells matrix */
+  cellSize.width = 0;
+  count = [cells count];
+  for (i = 0; i < count; i++)
+    {
+      titleWidth = [menuFont widthOfString: 
+				  [[cells objectAtIndex: i] stringValue]];
+      cellSize.width = MAX(titleWidth + ADDITIONAL_WIDTH, cellSize.width);
+    }
+  cellSize.width = MAX([menuFont widthOfString: [menu title]]
+			  + ADDITIONAL_WIDTH,
+			cellSize.width);
+
+  /* Resize the frame to hold all the menu cells */
+  [super setFrameSize: NSMakeSize (cellSize.width,
+      count ? (cellSize.height + INTERCELL_SPACE)*count - INTERCELL_SPACE : 0)];
 }
 
 - (id <NSMenuItem>)insertItemWithTitle: (NSString*)aString
@@ -91,6 +156,115 @@
 - (BOOL)pullsDown
 {
   return pull_down;
+}
+
+- (BOOL) performKeyEquivalent: (NSEvent*)theEvent
+{
+  return [menu performKeyEquivalent: theEvent];
+}
+
+- (void) removeItem: (id <NSMenuItem>)anItem
+{
+  int row = [cells indexOfObject: anItem];
+
+  if (row == -1)
+    return;
+
+  [cells removeObjectAtIndex: row];
+}
+
+- (NSArray*) itemArray
+{
+  return cells;
+}
+
+- (id <NSMenuItem>) itemWithTitle: (NSString*)aString
+{
+  unsigned i, count = [cells count];
+  id menuCell;
+
+  for (i = 0; i < count; i++)
+    {
+      menuCell = [cells objectAtIndex: i];
+      if ([[menuCell title] isEqual: aString])
+	return menuCell;
+    }
+  return nil;
+}
+
+- (id <NSMenuItem>) itemWithTag: (int)aTag
+{
+  unsigned i, count = [cells count];
+  id menuCell;
+
+  for (i = 0; i < count; i++)
+    {
+      menuCell = [cells objectAtIndex: i];
+      if ([menuCell tag] == aTag)
+	return menuCell;
+    }
+  return nil;
+}
+
+- (NSRect) cellFrameAtRow: (int)index
+{
+  unsigned count = [cells count];
+  NSRect rect;
+
+  NSAssert(index >= 0 && index < count+1, @"invalid row coordinate");
+
+  rect.origin.x = 0;
+  rect.origin.y = (count - index - 1)
+		  * (cellSize.height + INTERCELL_SPACE);
+  rect.size = cellSize;
+
+  return rect;
+}
+
+- (void)drawRect: (NSRect)rect
+{
+  unsigned i = 0, count = [cells count];
+  int max, howMany;
+  NSRect aRect = [self frame];
+
+  // If there are no cells then just return
+  if (count == 0) return;
+
+  aRect.origin.y = cellSize.height * (count - 1);
+  aRect.size = cellSize;
+
+  for (i=0;i<count;i++)
+  {
+    id aCell = [cells objectAtIndex:i];
+ 
+    [aCell drawWithFrame:aRect inView:self];
+    aRect.origin.y -= cellSize.height;
+  }
+}
+
+- (NSSize) cellSize
+{
+  return cellSize;
+}
+
+- (void) setMenu: (NSMenu*)anObject
+{
+  menu = anObject;
+}
+
+- (void) setSelectedCell: (id)aCell
+{
+  selectedCell = aCell;
+}
+
+- (id) selectedCell
+{
+  return selectedCell;
+}
+
+- (NSRect) selectedCellRect
+{
+  return selectedCellRect;
 }
 @end
 

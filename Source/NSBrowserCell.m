@@ -34,7 +34,9 @@
 #include <AppKit/NSTextFieldCell.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/NSImage.h>
+#include <AppKit/NSGraphics.h>
 #include <AppKit/NSEvent.h>
+#include <AppKit/NSWindow.h>
 
 //
 // Class variables
