@@ -1,3 +1,15 @@
+2004-01-15 Serg Stoyan <stoyan@on.com.ua>
+
+	* Images/common_MiniWindowTile.m: New file.
+	* Images/common_Tile.m: Updated.
+	* Images/GNUmakefile: Added common_MiniWindowTile.tiff.
+	
+	* Source/NSWindow.m (NSMiniWindowView):
+	(+initialize): Use common_MiniWindowTile.tiff
+	(-drawRect:): Move imageCell down to avoid overlapping with title.
+	(-setTitle:): Do not draw background; common_MiniWindowTile.tiff now
+	has title background.
+
 2004-01-13 Serg Stoyan <stoyan@on.com.ua>
 
 	* Source/NSMenuView.m (trackWithEvent:): Changed checking for
