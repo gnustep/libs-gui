@@ -73,7 +73,7 @@
 {
   self = [super initWithFrame: frameRect];
 
-  [self setTextContainer: aTextContainer];
+  [aTextContainer setTextView: self];
   [self setEditable: YES];
   [self setUsesFontPanel: YES];
   [self setUsesRuler: YES];
@@ -97,6 +97,7 @@
   return [self initWithFrame: frameRect textContainer: aTextContainer];
 }
 
+/* This should only be called by [NSTextContainer -setTextView:] */
 - (void) setTextContainer: (NSTextContainer*)aTextContainer
 {
   ASSIGN(_textContainer, aTextContainer);
