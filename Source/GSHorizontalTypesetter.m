@@ -1035,9 +1035,28 @@ NS_DURING
 
   [self _cacheClear];
 
-  newParagraph = NO;
+  /*
+  -layoutLineNewParagraph: needs to know if the starting glyph is the
+  first glyph of a paragraph so it can apply eg. -firstLineHeadIndent and
+  paragraph spacing properly.
+  */
   if (!curGlyph)
-    newParagraph = YES;
+    {
+      newParagraph = YES;
+    }
+  else
+    {
+      unsigned char chi;
+      unichar ch;
+      chi = [curLayoutManager characterRangeForGlyphRange: NSMakeRange(curGlyph - 1, 1)
+					 actualGlyphRange: NULL].location;
+      ch = [[curTextStorage string] characterAtIndex: chi];
+
+      if (ch == '\n')
+	newParagraph = YES;
+      else
+	newParagraph = NO;
+    }
 
   ret = 0;
   curPoint = NSMakePoint(0,NSMaxY(previousLineFragRect));
