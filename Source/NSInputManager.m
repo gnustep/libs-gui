@@ -4,7 +4,7 @@
     Copyright (C) 2004 Free Software Foundation, Inc.
 
     Author: Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
-    Date:   March, 2004
+    Date:   March 2004
 
     This file is part of the GNUstep GUI Library.
 
@@ -44,32 +44,12 @@
 #include "AppKit/NSText.h"
 #include "AppKit/NSInputServer.h"
 #include "AppKit/NSInputManager.h"
+#include "GSTIMInputServerInfo.h"
 
 #if !defined USE_INPUT_MANAGER_UTILITIES
 #define USE_INPUT_MANAGER_UTILITIES
 #endif
 #include "NSInputManagerPriv.h"
-
-
-/* Possible keys of the file Info */
-static NSString *_executableNameKey	= @"ExecutableName";
-static NSString *_connectionNameKey	= @"ConnectionName";
-static NSString *_displayNameKey	= @"DisplayName";
-static NSString *_defaultKeyBindingsKey	= @"DefaultKeyBindings";
-static NSString *_localizedNamesKey	= @"LocalizedNames";
-static NSString *_languageNameKey	= @"LanguageName";
-
-/*
-    Possible prefixes are 
-	(1) $(GNUSTEP_USER_ROOT)/Library/InputManager and
-	(2) $(GNUSTEP_SYSTEM_ROOT)/Library/InputManager.
-   The file Info is to be searched in that order.
- */
-static NSString *_parentComponent	= @"InputManagers";
-static NSString *_extName		= @"app";
-static NSString *_resourcesComponent	= @"Resources";
-static NSString *_infoFileName		= @"Info";
-
 
 
 @interface NSInputManager (Private)
@@ -82,7 +62,7 @@ static NSString *_infoFileName		= @"Info";
 
 
 - (void)setServerInfo: (id)info;
-- (IMInputServerInfo *)serverInfo;
+- (GSTIMInputServerInfo *)serverInfo;
 
 - (void)setServerProxy: (id)proxy;
 - (id)serverProxy;
@@ -111,36 +91,6 @@ static NSString *_infoFileName		= @"Info";
 @protocol IMUnifiedProtocolForInputServer <NSInputServiceProvider,
                                            NSInputServerMouseTracker>
 @end /* @protocol IMUnifiedProtocolForInputServer */
-
-
-/* Class encapsulating input server's Info file */
-@interface IMInputServerInfo : NSObject
-{
-  NSString	*serverName;
-  NSDictionary	*info;
-}
-
-- (id)initWithName: (NSString *)inputServerName;
-
-- (void)setServerName: (NSString *)inputServerName;
-- (NSString *)serverName;
-
-- (void)setInfo: (NSDictionary *)inputServerInfo;
-- (NSDictionary *)info;
-
-/* Value for each key */
-- (NSString *)executableName;
-- (NSString *)connectionName;
-- (NSString *)displayName;
-- (NSString *)defaultKeyBindings;
-- (NSString *)localizedName;
-- (NSString *)languageName;
-
-- (NSString *)serverHomeDir;
-- (NSString *)infoAbsolutePath;
-- (NSString *)executableAbsolutePath;
-- (NSString *)defaultKeyBindingsAbsolutePath;
-@end /* @interface ServerInfo : NSObject */
 
 
 @implementation NSInputManager
@@ -468,9 +418,10 @@ static NSMutableArray *_inputServerList = nil;
 /* Return YES if succeeded, NO otherwise. */
 - (BOOL)readInputServerInfo: (NSString *)inputServerName
 {
-  IMInputServerInfo *info;
+  GSTIMInputServerInfo *info;
 
-  if ((info = [[IMInputServerInfo alloc] initWithName: inputServerName]) == nil)
+  info = [[GSTIMInputServerInfo alloc] initWithName: inputServerName];
+  if (info == nil)
     {
       NSLog(@"%@: Couldn't read Info for %@", self, inputServerName);
       return NO;
@@ -598,7 +549,7 @@ static NSMutableArray *_inputServerList = nil;
 }
 
 
-- (IMInputServerInfo *)serverInfo
+- (GSTIMInputServerInfo *)serverInfo
 {
   return serverInfo;
 }
@@ -664,7 +615,7 @@ static NSMutableArray *_inputServerList = nil;
 						       NSSystemDomainMask,
 						       YES);
   NSString *path = [array objectAtIndex: 0];
-  path = [path stringByAppendingPathComponent: _parentComponent];
+  path = [path stringByAppendingPathComponent: @"InputManagers"];
   path = [path stringByAppendingPathComponent: @"StandardKeyBinding"];
   path = [path stringByAppendingPathExtension: @"dict"];
   if ([[NSFileManager defaultManager] isReadableFileAtPath: path] == NO)
@@ -807,231 +758,3 @@ static NSMutableArray *_inputServerList = nil;
 }
 
 @end /* @implementation NSInputManager (Private) */
-
-
-@implementation IMInputServerInfo
-
-- (id)initWithName: (NSString *)inputServerName
-{
-  NSString	*path;
-  NSDictionary	*dict;
-
-  if ((self = [super init]) == nil)
-    {
-      NSLog(@"NSInputManager: Initialization for %@ failed",
-	    inputServerName);
-      return nil;
-    }
-
-  if (inputServerName == nil)
-    {
-      NSLog(@"NSInputManager: Input server name wasn't specified");
-      [self release];
-      return nil;
-    }
-  [self setServerName: inputServerName];
-
-  if ((path = [self infoAbsolutePath]) == nil)
-    {
-      NSLog(@"%@: Couldn't find Info for %@", self, inputServerName);
-      [self release];
-      return nil;
-    }
-  if ((dict = [NSDictionary dictionaryWithContentsOfFile: path]) == nil)
-    {
-      NSLog(@"%@: Couldn't read Info for %@", self, inputServerName);
-      [self release];
-      return nil;
-    }
-  [self setInfo: dict];
-
-  return self;
-}
-
-
-- (void)dealloc
-{
-  [self setInfo: nil];
-  [self setServerName: nil];
-  [super dealloc];
-}
-
-
-- (void)setServerName: (NSString *)inputServerName
-{
-  [inputServerName retain];
-  [serverName release];
-  serverName = inputServerName;
-}
-
-
-- (NSString *)serverName
-{
-  return serverName;
-}
-
-
-- (void)setInfo: (NSDictionary *)inputServerInfo
-{
-  [inputServerInfo retain];
-  [info release];
-  info = inputServerInfo;
-}
-
-
-- (NSDictionary *)info
-{
-  return info;
-}
-
-
-- (NSString *)executableName
-{
-  return [info objectForKey: _executableNameKey];
-}
-
-
-- (NSString *)connectionName
-{
-  return [info objectForKey: _connectionNameKey];
-}
-
-
-- (NSString *)displayName
-{
-  return [info objectForKey: _displayNameKey];
-}
-
-
-- (NSString *)defaultKeyBindings
-{
-  return [info objectForKey: _defaultKeyBindingsKey];
-}
-
-
-- (NSString *)localizedName
-{
-  NSString	*lang;
-  NSDictionary	*dict;
-  NSEnumerator	*keyEnum;
-  id		key;
-
-  if ((lang = [[NSUserDefaults standardUserDefaults]
-       stringForKey: NSLanguageName]) == nil)
-    {
-      return [self displayName];
-    }
-
-  if ((dict = [info objectForKey: _localizedNamesKey]) == nil)
-    {
-      return [self displayName];
-    }
-
-  keyEnum = [dict keyEnumerator];
-  while ((key = [keyEnum nextObject]) != nil)
-    {
-      if ([key isKindOfClass: [NSString class]] == NO)
-	{
-	  continue;
-	}
-
-      if ([(NSString *)key isEqualToString: lang])
-	{
-	  return [dict objectForKey: key];
-	}
-    }
-
-  return [self displayName];
-}
-
-
-- (NSString *)languageName
-{
-  return [info objectForKey: _languageNameKey];
-}
-
-
-/* Return nil if the directory is not found. */
-- (NSString *)serverHomeDir
-{
-  NSArray	*prefixes   = nil;
-  NSEnumerator	*objEnum    = nil;
-  id		obj	    = nil;
-  NSString	*path	    = nil;
-  BOOL		isDir;
-
-  prefixes = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
-						 NSUserDomainMask
-						 | NSSystemDomainMask,
-						 YES);
-  objEnum = [prefixes objectEnumerator];
-  /* Assuming the user domain directory comes first, */
-  for (path = nil; (obj = [objEnum nextObject]) != nil; path = nil)
-    {
-      path = [NSString stringWithString: obj];
-      path = [path stringByAppendingPathComponent: _parentComponent];
-      path = [path stringByAppendingPathComponent: serverName];
-      path = [path stringByAppendingPathExtension: _extName];
-
-      if ([[NSFileManager defaultManager] fileExistsAtPath: path
-					       isDirectory: &isDir] && isDir)
-	{
-	  break;
-	}
-    }
-  return path;
-}
-
-
-/* Return nil if the file is not readable. */
-- (NSString *)infoAbsolutePath
-{
-  NSString *absPath = [self serverHomeDir];
-
-  absPath = [absPath stringByAppendingPathComponent: _resourcesComponent];
-  absPath = [absPath stringByAppendingPathComponent: _infoFileName];
-
-  if ([[NSFileManager defaultManager] isReadableFileAtPath: absPath] == NO)
-    {
-      absPath = nil;
-    }
-
-  return absPath;
-}
-
-
-/* Return nil if the file is not executable. */
-- (NSString *)executableAbsolutePath
-{
-  NSString *absPath = [self serverHomeDir];
-  NSString *relPath = [self executableName];
-
-  absPath = [absPath stringByDeletingLastPathComponent];
-  absPath = [absPath stringByAppendingPathComponent: relPath];
-
-  if ([[NSFileManager defaultManager] isExecutableFileAtPath: absPath] == NO)
-    {
-      absPath = nil;
-    }
-
-  return absPath;
-}
-
-
-/* Return nil if the file is not readable. */
-- (NSString *)defaultKeyBindingsAbsolutePath
-{
-  NSString *absPath = [self serverHomeDir];
-  NSString *file = [self defaultKeyBindings];
-
-  absPath = [absPath stringByAppendingPathComponent: _resourcesComponent];
-  absPath = [absPath stringByAppendingPathComponent: file];
-
-  if ([[NSFileManager defaultManager] isReadableFileAtPath: absPath] == NO)
-    {
-      absPath = nil;
-    }
-  return absPath;
-}
-
-@end /* @implementation	IMInputServerInfo */
