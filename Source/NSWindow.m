@@ -4155,16 +4155,6 @@ resetCursorRectsForView(NSView *theView)
   // Should only be defined on MS Windows
   return (void *)_windowNum;
 }
-
-- (void) undo: (id)sender
-{
-  [[[[NSDocumentController sharedDocumentController] currentDocument] undoManager] undo];
-}
-
-- (void) redo: (id)sender
-{
-  [[[[NSDocumentController sharedDocumentController] currentDocument] undoManager] redo];
-}
 @end
 
 /*

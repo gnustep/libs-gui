@@ -1,3 +1,9 @@
+2005-01-15 05:59 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSDocument.m: Added undo:/redo: here.  Smarter use
+	of the responder chain.
+	* Source/NSWindow.m: Removed undo:/redo: here.
+
 2005-01-14 16:11  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/AppKit/NSSavePanel.h (-panel:shouldShowFilename:):

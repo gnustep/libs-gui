@@ -930,4 +930,14 @@
   [self updateChangeCount: NSChangeDone];
 }
 
+- (void) undo: (id)sender
+{
+  [[self undoManager] undo];
+}
+
+- (void) redo: (id)sender
+{
+  [[self undoManager] redo];
+}
+
 @end
