@@ -1,3 +1,15 @@
+2003-05-22  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSFontPanel.m
+	[_familySelectionChanged:] removed unused local variable.
+	* Headers/gnustep/gui/NSWorkspace.h
+	Added new MacOSX methods.
+	* Source/NSWorkspace.m
+	Basic implemention of [activeApplication] and [launchedApplications].
+	* Source/NSApplication.m
+	In [finishLaunching] and [replyToApplicationShouldTerminate:] use
+	[NSWorkspace activeApplication] to get application information.
+
 2003-05-20 22:50  Alexander Malmberg <alexander@malmberg.org>
 
 	* Tools/make_services.m (scanDynamic): Skip anything with a .service
