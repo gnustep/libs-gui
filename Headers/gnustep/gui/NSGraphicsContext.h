@@ -148,9 +148,9 @@ NSGraphicsContext	*GSCurrentContext();
 /*
  *	Drag and drop support
  */
-- (BOOL) _addDragTypes: (NSArray*)types toWindow: (int)winNum;
-- (BOOL) _removeDragTypes: (NSArray*)types fromWindow: (int)winNum;
-- (NSCountedSet*) _dragTypesForWindow: (int)winNum;
+- (BOOL) _addDragTypes: (NSArray*)types toWindow: (NSWindow *)win;
+- (BOOL) _removeDragTypes: (NSArray*)types fromWindow: (NSWindow *)win;
+- (NSCountedSet*) _dragTypesForWindow: (NSWindow *)win;
 - (id <NSDraggingInfo>)_dragInfo;
 - (void) _postExternalEvent: (NSEvent*)event;
 

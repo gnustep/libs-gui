@@ -551,7 +551,7 @@ static NSMapTable* windowmaps = NULL;
    * FIXME This should not be necessary - the views should have removed
    * their drag types, so we should already have been removed.
    */
-  [context _removeDragTypes: nil fromWindow: _windowNum];
+  [context _removeDragTypes: nil fromWindow: self];
 
   if (_gstate)
     DPSundefineuserobject(context, _gstate);
@@ -562,7 +562,17 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) _initBackendWindow: (NSRect)frame
 {
+  id dragTypes;
   NSGraphicsContext	*context = GSCurrentContext();
+
+  /* If we were deferred or one shot, out drag types may not have
+     been registered properly in the backend. Remove them then re-add
+     them when we create the window */
+  dragTypes = [context _dragTypesForWindow: self];
+  if (dragTypes)
+    {
+      [context _removeDragTypes: dragTypes fromWindow: self];
+    }
 
   frame = [NSWindow contentRectForFrameRect: frame styleMask: _styleMask];
   DPSwindow(context, NSMinX(frame), NSMinY(frame),
@@ -585,6 +595,24 @@ static NSMapTable* windowmaps = NULL;
       [_wv setFrame: frame];
       [_wv setNeedsDisplay: YES];
     }
+
+  /* Ok, now add the drag types back */
+  if (dragTypes)
+    {
+      NSDebugLLog(@"NSWindow", @"Resetting drag types for window");
+      [context _addDragTypes: dragTypes toWindow: self];
+    }
+
+  /* Other stuff we need to do for deferred windows */
+  if (_windowTitle != nil)
+    DPStitlewindow(GSCurrentContext(), [_windowTitle cString], _windowNum);
+  if (!NSEqualSizes(_minimumSize, NSZeroSize))
+    [self setMinSize: _minimumSize];
+  if (!NSEqualSizes(_maximumSize, NSZeroSize))
+    [self setMaxSize: _maximumSize];
+  if (!NSEqualSizes(_increments, NSZeroSize))
+    [self setResizeIncrements: _increments];
+
   NSDebugLLog(@"NSWindow", @"Created NSWindow frame %@",
 	      NSStringFromRect(_frame));
 }
@@ -731,7 +759,8 @@ static NSMapTable* windowmaps = NULL;
     {
       ASSIGN(_windowTitle, aString);
       [self setMiniwindowTitle: aString];
-      DPStitlewindow(GSCurrentContext(), [aString cString], _windowNum);
+      if (_windowNum > 0)
+	DPStitlewindow(GSCurrentContext(), [aString cString], _windowNum);
       if (_f.menu_exclude == NO && _f.has_opened == YES)
 	{
 	  [NSApp changeWindowsItem: self
@@ -751,7 +780,8 @@ static NSMapTable* windowmaps = NULL;
     {
       ASSIGN(_windowTitle, aString);
       [self setMiniwindowTitle: aString];
-      DPStitlewindow(GSCurrentContext(), [aString cString], _windowNum);
+      if (_windowNum > 0)
+	DPStitlewindow(GSCurrentContext(), [aString cString], _windowNum);
       if (_f.menu_exclude == NO && _f.has_opened == YES)
 	{
 	  [NSApp changeWindowsItem: self
@@ -786,6 +816,8 @@ static NSMapTable* windowmaps = NULL;
 
 - (int) gState
 {
+  if (_gstate <= 0)
+    NSDebugLLog(@"NSWindow", @"gState called on deferred window");
   return _gstate;
 }
 
@@ -806,6 +838,8 @@ static NSMapTable* windowmaps = NULL;
 
 - (int) windowNumber
 {
+  if (_windowNum <= 0)
+    NSDebugLLog(@"NSWindow", @"windowNumber called on deferred window");
   return _windowNum;
 }
 
@@ -1195,7 +1229,8 @@ static NSMapTable* windowmaps = NULL;
       NSGraphicsContext	*context = GSCurrentContext();
 
       _windowLevel = newLevel;
-      DPSsetwindowlevel(context, _windowLevel, _windowNum);
+      if (_windowNum > 0)
+	DPSsetwindowlevel(context, _windowLevel, _windowNum);
     }
 }
 
@@ -1310,9 +1345,9 @@ static NSMapTable* windowmaps = NULL;
    * Now we can tell the graphics context to do the actual resizing.
    * We will recieve an event to tell us when the resize is done.
    */
-  if(_gstate)
-  DPSplacewindow(GSCurrentContext(), frameRect.origin.x, frameRect.origin.y,
-    frameRect.size.width, frameRect.size.height, _windowNum);
+  if(_windowNum)
+    DPSplacewindow(GSCurrentContext(), frameRect.origin.x, frameRect.origin.y,
+		   frameRect.size.width, frameRect.size.height, _windowNum);
   else
     _frame = frameRect;
 
@@ -1344,7 +1379,8 @@ static NSMapTable* windowmaps = NULL;
   if (aSize.height < 1)
     aSize.height = 1;
   _minimumSize = aSize;
-  DPSsetminsize(GSCurrentContext(), aSize.width, aSize.height, _windowNum);
+  if (_windowNum > 0)
+    DPSsetminsize(GSCurrentContext(), aSize.width, aSize.height, _windowNum);
 }
 
 - (void) setMaxSize: (NSSize)aSize
@@ -1357,7 +1393,8 @@ static NSMapTable* windowmaps = NULL;
   if (aSize.height > 10000)
     aSize.height = 10000;
   _maximumSize = aSize;
-  DPSsetmaxsize(GSCurrentContext(), aSize.width, aSize.height, _windowNum);
+  if (_windowNum > 0)
+    DPSsetmaxsize(GSCurrentContext(), aSize.width, aSize.height, _windowNum);
 }
 
 - (NSSize) resizeIncrements
@@ -1368,8 +1405,9 @@ static NSMapTable* windowmaps = NULL;
 - (void) setResizeIncrements: (NSSize)aSize
 {
   _increments = aSize;
-  DPSsetresizeincrements(GSCurrentContext(), aSize.width, aSize.height,
-			 _windowNum);
+  if (_windowNum > 0)
+    DPSsetresizeincrements(GSCurrentContext(), aSize.width, aSize.height,
+			   _windowNum);
 }
 
 - (NSSize) aspectRatio
@@ -2314,8 +2352,7 @@ resetCursorRectsForView(NSView *theView)
 
 - (void) _processResizeEvent
 {
-
-  if (_gstate)
+  if (_windowNum && _gstate)
     {
       NSGraphicsContext	*context = GSCurrentContext();
       DPSgsave(context);

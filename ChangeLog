@@ -1,3 +1,16 @@
+2000-09-28  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSGraphicsContext.m (-_addDragTypes:toWindow:): Change to
+	take window object, since window number may not exist for deferred win.
+	(-_removeDragTypes:fromWindow:):Likewise.
+	(-_dragTypesForWindow:): Likewise.
+	* Source/NSView.m: Change calling of above methods.
+	* Source/NSWindow.m (-_initBackendWindow:): Reset the drag types
+	if the window was deferred. Also reset title, min/max size, etc.
+	(-setTitle:): Set only if we have a windowNum
+	(-setMinimumSize:): Likewise.
+	(-setMaximumSize:): Likewise.
+
 2000-09-27  Adam Fedor  <fedor@gnu.org>
 
 	* Implementation of deferred windows (with the help of

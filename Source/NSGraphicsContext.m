@@ -254,11 +254,12 @@ NSGraphicsContext	*GSCurrentContext()
  * Subclasses should override this method, call 'super' and take
  * appropriate action if the method returns 'YES'.
  */
-- (BOOL) _addDragTypes: (NSArray*)types toWindow: (int)winNum
+- (BOOL) _addDragTypes: (NSArray*)types toWindow: (NSWindow *)win
 {
-  NSCountedSet	*old = (NSCountedSet*)NSMapGet(drag_types, (void*)winNum);
+  NSCountedSet	*old = (NSCountedSet*)NSMapGet(drag_types, (void*)win);
+  NSEnumerator *drag_enum = [types objectEnumerator];
+  id            type;
   unsigned	originalCount;
-  unsigned	i = [types count];
 
   /*
    * Make sure the set exists.
@@ -266,16 +267,14 @@ NSGraphicsContext	*GSCurrentContext()
   if (old == nil)
     {
       old = [NSCountedSet new];
-      NSMapInsert(drag_types, (void*)winNum, (void*)(gsaddr)old);
+      NSMapInsert(drag_types, (void*)win, (void*)(gsaddr)old);
       RELEASE(old);
     }
   originalCount = [old count];
 
-  while (i-- > 0)
+  while ((type = [drag_enum nextObject]))
     {
-      id	o = [types objectAtIndex: i];
-
-      [old addObject: o];
+      [old addObject: type];
     }
   if ([old count] == originalCount)
     return NO;
@@ -290,15 +289,16 @@ NSGraphicsContext	*GSCurrentContext()
  * Subclasses should override this method, call 'super' and take
  * appropriate action if the method returns 'YES'.
  */
-- (BOOL) _removeDragTypes: (NSArray*)types fromWindow: (int)winNum
+- (BOOL) _removeDragTypes: (NSArray*)types fromWindow: (NSWindow *)win
 {
-  NSCountedSet	*old = (NSCountedSet*)NSMapGet(drag_types, (void*)winNum);
+  NSCountedSet	*old = (NSCountedSet*)NSMapGet(drag_types, (void*)win);
+  NSEnumerator *drag_enum = [types objectEnumerator];
 
   if (types == nil)
     {
       if (old == nil)
 	return NO;
-      NSMapRemove(drag_types, (void*)winNum);
+      NSMapRemove(drag_types, (void*)win);
       return YES;
     }
   else if (old == nil)
@@ -308,12 +308,10 @@ NSGraphicsContext	*GSCurrentContext()
   else
     {
       unsigned	originalCount = [old count];
-      unsigned	i = [types count];
+      id o;
 
-      while (i-- > 0)
+      while ((o = [drag_enum nextObject]))
 	{
-	  id	o = [types objectAtIndex: i];
-
 	  [old removeObject: o];
 	}
       if ([old count] == originalCount)
@@ -322,9 +320,9 @@ NSGraphicsContext	*GSCurrentContext()
     }
 }
 
-- (NSCountedSet*) _dragTypesForWindow: (int)winNum
+- (NSCountedSet*) _dragTypesForWindow: (NSWindow *)win
 {
-  return (NSCountedSet*)NSMapGet(drag_types, (void*)winNum);
+  return (NSCountedSet*)NSMapGet(drag_types, (void *)win);
 }
 
 - (id <NSDraggingInfo>)_dragInfo

@@ -532,11 +532,11 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
       if (_window != nil)
 	{
-	  [ctxt _removeDragTypes: t fromWindow: [_window windowNumber]];
+	  [ctxt _removeDragTypes: t fromWindow: _window];
 	}
       if (newWindow != nil)
 	{
-	  [ctxt _addDragTypes: t toWindow: [newWindow windowNumber]];
+	  [ctxt _addDragTypes: t toWindow: newWindow];
 	}
     }
 
@@ -2307,10 +2307,10 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     {
       NSGraphicsContext	*ctxt = GSCurrentContext();
 
-      [ctxt _addDragTypes: t toWindow: [_window windowNumber]];
+      [ctxt _addDragTypes: t toWindow: _window];
       if (o != nil)
 	{
-	  [ctxt _removeDragTypes: o fromWindow: [_window windowNumber]];
+	  [ctxt _removeDragTypes: o fromWindow: _window];
 	}
     }
   TEST_RELEASE(o);
@@ -2325,7 +2325,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	  NSGraphicsContext	*ctxt = GSCurrentContext();
 	  NSArray		*t = GSGetDragTypes(self);
 
-	  [ctxt _removeDragTypes: t fromWindow: [_window windowNumber]];
+	  [ctxt _removeDragTypes: t fromWindow: _window];
 	}
       GSRemoveDragTypes(self);
       _rFlags.has_draginfo = 0;
