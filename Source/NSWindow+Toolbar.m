@@ -72,7 +72,10 @@
   {
     if (!isVisible) // In the case : not visible when the method has been called
       {
-        [toolbarView setFrameSize: NSMakeSize([self frame].size.width, 100)];
+        [toolbarView setFrameSize:
+	  NSMakeSize([NSWindow
+	    contentRectForFrameRect: [self frame]
+			  styleMask: [self styleMask]].size.width, 100)];
 	// -toogleToolbarViewWithDisplay: will reset the toolbarView frame
 	[toolbarView _reload]; // Will recalculate the layout
       }
@@ -190,7 +193,8 @@
   if (toolbarView == nil)
   {
     toolbarView = [[GSToolbarView alloc] initWithFrame: NSMakeRect(0, 0, 
-      [self frame].size.width, 100)]; 
+      [NSWindow contentRectForFrameRect: [self frame]
+			      styleMask: [self styleMask]].size.width, 100)];
     // _toggleToolbarView:display: method will set the toolbar view to the right
     // frame
     [toolbarView setAutoresizingMask: NSViewWidthSizable | NSViewMinYMargin];
@@ -258,7 +262,9 @@
   NSView *contentViewWithoutToolbar;
   
   // Frame
-  NSRect windowFrame = [self frame];
+  NSRect windowContentFrame
+    = [NSWindow contentRectForFrameRect: [self frame]
+			      styleMask: [self styleMask]];
   
   if ([toolbarView superview] == nil)
     {
@@ -274,16 +280,18 @@
         [[NSView alloc] initWithFrame: [_contentView frame]]];
     
       // Resize the window
-  
-      [self setFrame: NSMakeRect(
-        windowFrame.origin.x, 
-        windowFrame.origin.y - newToolbarViewHeight, 
-	windowFrame.size.width, 
-        windowFrame.size.height + newToolbarViewHeight) display: NO];
+
+      windowContentFrame.origin.y -= newToolbarViewHeight;
+      windowContentFrame.size.height += newToolbarViewHeight;
+
+      [self setFrame: [NSWindow frameRectForContentRect: windowContentFrame
+					      styleMask: [self styleMask]]
+	     display: NO];
   
       // Plug the toolbar view
       
       contentViewWithoutToolbarFrame = [contentViewWithoutToolbar frame];
+
     
       [toolbarView setFrame: NSMakeRect(
         0,
@@ -294,7 +302,13 @@
       [_contentView addSubview: toolbarView];
     
       // Insert the previous content view 
-  
+
+      /* We want contentViewWithoutToolbarFrame at the origin of our new
+      content view. There's no guarantee that the old position was (0,0). */
+      contentViewWithoutToolbarFrame.origin.x = 0;
+      contentViewWithoutToolbarFrame.origin.y = 0;
+      [contentViewWithoutToolbar setFrame: contentViewWithoutToolbarFrame];
+
       [_contentView addSubview: contentViewWithoutToolbar];
       RELEASE(contentViewWithoutToolbar);
     }
@@ -312,11 +326,11 @@
       
       [contentViewWithoutToolbar setAutoresizingMask: NSViewMaxYMargin];
   
-      [self setFrame: NSMakeRect(
-        windowFrame.origin.x, 
-        windowFrame.origin.y + toolbarViewHeight, 
-	windowFrame.size.width, 
-        windowFrame.size.height - toolbarViewHeight) display: NO];
+      windowContentFrame.origin.y += toolbarViewHeight;
+      windowContentFrame.size.height -= toolbarViewHeight;
+      [self setFrame: [NSWindow frameRectForContentRect: windowContentFrame
+					      styleMask: [self styleMask]]
+	     display: NO];
       
       [contentViewWithoutToolbar setAutoresizingMask: NSViewWidthSizable 
         | NSViewHeightSizable];
