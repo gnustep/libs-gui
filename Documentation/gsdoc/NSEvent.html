@@ -1,0 +1,174 @@
+<html><head>
+<title>NSEvent</title>
+</head>
+<body>
+<a href="NSEPSImageRep.html">[Previous]</a>
+<a href="AppKit.html">[Up]</a>
+<a href="NSFileWrapper.html">[Next]</a>
+<h1>NSEvent</h1>
+<h3>Authors</h3>
+<dl>
+<dt><a href="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
+<dd>
+</dl>
+<p>Version: 0.1</p>
+<p>Date: 28 February, 2000</p>
+<h2><a name="cont-0">NSEvent</a></h2>
+<h2><a name="NSEvent">NSEvent</a></h2>
+<p><b>Declared in:</b> AppKit/NSEvent.h</p>
+<p><b>Inherits from:</b> NSObject</p>
+<p><b>Conforms to:</b> NSCoding
+</p>
+<hr>
+
+          
+<ul>
+<li><a href="NSEvent.html#method-0">+enterExitEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:trackingNumber:</a>
+<li><a href="NSEvent.html#method-1">+keyEventWithType:location:modifierFlags:timestamp:windowNumber:context:characters:charactersIgnoringModifiers:isARepeat:keyCode:</a>
+<li><a href="NSEvent.html#method-2">+mouseEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:clickCount:pressure:</a>
+<li><a href="NSEvent.html#method-3">+otherEventWithType:location:modifierFlags:timestamp:windowNumber:context:subtype:data1:data2:</a>
+<li><a href="NSEvent.html#method-4">+stopPeriodicEvents</a>
+<li><a href="NSEvent.html#method-5">-characters</a>
+<li><a href="NSEvent.html#method-6">-charactersIgnoringModifiers</a>
+<li><a href="NSEvent.html#method-7">-clickCount</a>
+<li><a href="NSEvent.html#method-8">-context</a>
+<li><a href="NSEvent.html#method-9">-data1</a>
+<li><a href="NSEvent.html#method-10">-data2</a>
+<li><a href="NSEvent.html#method-11">-eventNumber</a>
+<li><a href="NSEvent.html#method-12">-isARepeat</a>
+<li><a href="NSEvent.html#method-13">-keyCode</a>
+<li><a href="NSEvent.html#method-14">-locationInWindow</a>
+<li><a href="NSEvent.html#method-15">-modifierFlags</a>
+<li><a href="NSEvent.html#method-16">-pressure</a>
+<li><a href="NSEvent.html#method-17">-subtype</a>
+<li><a href="NSEvent.html#method-18">-timestamp</a>
+<li><a href="NSEvent.html#method-19">-trackingNumber</a>
+<li><a href="NSEvent.html#method-20">-type</a>
+<li><a href="NSEvent.html#method-21">-userData</a>
+<li><a href="NSEvent.html#method-22">-window</a>
+<li><a href="NSEvent.html#method-23">-windowNumber</a>
+</ul>
+<hr>
+<h2><a name="method-0">enterExitEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:trackingNumber:</a></h2>
++ (NSEvent*) <b>enterExitEventWithType:</b> (NSEventType)type <b>location:</b> (NSPoint)location <b>modifierFlags:</b> (unsigned int)flags <b>timestamp:</b> (NSTimeInterval)time <b>windowNumber:</b> (int)windowNumber <b>context:</b> (NSDPSContext *)context <b>eventNumber:</b> (int)eventNumber <b>trackingNumber:</b> (int)trackingNumber<br>
+
+          
+<hr>
+<h2><a name="method-1">keyEventWithType:location:modifierFlags:timestamp:windowNumber:context:characters:charactersIgnoringModifiers:isARepeat:keyCode:</a></h2>
++ (NSEvent*) <b>keyEventWithType:</b> (NSEventType)type <b>location:</b> (NSPoint)location <b>modifierFlags:</b> (unsigned int)flags <b>timestamp:</b> (NSTimeInterval)time <b>windowNumber:</b> (int)windowNum <b>context:</b> (NSDPSContext *)context <b>characters:</b> (NSString*)characters <b>charactersIgnoringModifiers:</b> (NSString*)unmodCharacters <b>isARepeat:</b> (BOOL)repeatKey <b>keyCode:</b> (unsigned short int)code<br>
+
+          
+<hr>
+<h2><a name="method-2">mouseEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:clickCount:pressure:</a></h2>
++ (NSEvent*) <b>mouseEventWithType:</b> (NSEventType)type <b>location:</b> (NSPoint)location <b>modifierFlags:</b> (unsigned int)flags <b>timestamp:</b> (NSTimeInterval)time <b>windowNumber:</b> (int)windowNum <b>context:</b> (NSDPSContext *)context <b>eventNumber:</b> (int)eventNumber <b>clickCount:</b> (int)clickNumber <b>pressure:</b> (float)pressure<br>
+
+          
+<hr>
+<h2><a name="method-3">otherEventWithType:location:modifierFlags:timestamp:windowNumber:context:subtype:data1:data2:</a></h2>
++ (NSEvent*) <b>otherEventWithType:</b> (NSEventType)type <b>location:</b> (NSPoint)location <b>modifierFlags:</b> (unsigned int)flags <b>timestamp:</b> (NSTimeInterval)time <b>windowNumber:</b> (int)windowNum <b>context:</b> (NSDPSContext *)context <b>subtype:</b> (shortint)subtype <b>data1:</b> (int)data1 <b>data2:</b> (int)data2<br>
+
+          
+<hr>
+<h2><a name="method-4">stopPeriodicEvents</a></h2>
++ (void) <b>stopPeriodicEvents</b><br>
+
+          
+<hr>
+<h2><a name="method-5">characters</a></h2>
+- (NSString*) <b>characters</b><br>
+
+          
+<hr>
+<h2><a name="method-6">charactersIgnoringModifiers</a></h2>
+- (NSString*) <b>charactersIgnoringModifiers</b><br>
+
+          
+<hr>
+<h2><a name="method-7">clickCount</a></h2>
+- (int) <b>clickCount</b><br>
+
+          
+<hr>
+<h2><a name="method-8">context</a></h2>
+- (NSDPSContext*) <b>context</b><br>
+
+          
+<hr>
+<h2><a name="method-9">data1</a></h2>
+- (int) <b>data1</b><br>
+
+          
+<hr>
+<h2><a name="method-10">data2</a></h2>
+- (int) <b>data2</b><br>
+
+          
+<hr>
+<h2><a name="method-11">eventNumber</a></h2>
+- (int) <b>eventNumber</b><br>
+
+          
+<hr>
+<h2><a name="method-12">isARepeat</a></h2>
+- (BOOL) <b>isARepeat</b><br>
+
+          
+<hr>
+<h2><a name="method-13">keyCode</a></h2>
+- (unsigned short int) <b>keyCode</b><br>
+
+          
+<hr>
+<h2><a name="method-14">locationInWindow</a></h2>
+- (NSPoint) <b>locationInWindow</b><br>
+
+          
+<hr>
+<h2><a name="method-15">modifierFlags</a></h2>
+- (unsigned int) <b>modifierFlags</b><br>
+
+          
+<hr>
+<h2><a name="method-16">pressure</a></h2>
+- (float) <b>pressure</b><br>
+
+          
+<hr>
+<h2><a name="method-17">subtype</a></h2>
+- (shortint) <b>subtype</b><br>
+
+          
+<hr>
+<h2><a name="method-18">timestamp</a></h2>
+- (NSTimeInterval) <b>timestamp</b><br>
+
+          
+<hr>
+<h2><a name="method-19">trackingNumber</a></h2>
+- (int) <b>trackingNumber</b><br>
+
+          
+<hr>
+<h2><a name="method-20">type</a></h2>
+- (NSEventType) <b>type</b><br>
+
+          
+<hr>
+<h2><a name="method-21">userData</a></h2>
+- (void*) <b>userData</b><br>
+
+          
+<hr>
+<h2><a name="method-22">window</a></h2>
+- (NSWindow*) <b>window</b><br>
+
+          
+<hr>
+<h2><a name="method-23">windowNumber</a></h2>
+- (int) <b>windowNumber</b><br>
+
+          
+<hr>
+</body>
+
+</html>

@@ -1,0 +1,165 @@
+<html><head>
+<title>NSSavePanel</title>
+</head>
+<body>
+<a href="NSRulerView.html">[Previous]</a>
+<a href="AppKit.html">[Up]</a>
+<a href="NSScreen.html">[Next]</a>
+<h1>NSSavePanel</h1>
+<h3>Authors</h3>
+<dl>
+<dt><a href="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
+<dd>
+</dl>
+<p>Version: 0.1</p>
+<p>Date: 28 February, 2000</p>
+<h2><a name="cont-0">NSSavePanel</a></h2>
+<h2><a name="NSSavePanel">NSSavePanel</a></h2>
+<p><b>Declared in:</b> AppKit/NSSavePanel.h</p>
+<hr>
+
+          
+<ul>
+<li><a href="NSSavePanel.html#method-0">+savePanel</a>
+<li><a href="NSSavePanel.html#method-1">-cancel:</a>
+<li><a href="NSSavePanel.html#method-2">-directory</a>
+<li><a href="NSSavePanel.html#method-3">-encodeWithCoder:</a>
+<li><a href="NSSavePanel.html#method-4">-initWithCoder:</a>
+<li><a href="NSSavePanel.html#method-5">-ok:</a>
+<li><a href="NSSavePanel.html#method-20">-panel:compareFilename:with:caseSensitive:</a>
+<li><a href="NSSavePanel.html#method-22">-panel:isValidFilename:</a>
+<li><a href="NSSavePanel.html#method-21">-panel:shouldShowFilename:</a>
+<li><a href="NSSavePanel.html#method-6">-prompt</a>
+<li><a href="NSSavePanel.html#method-7">-requiredFileType</a>
+<li><a href="NSSavePanel.html#method-8">-runModalForDirectory:</a>
+<li><a href="NSSavePanel.html#method-9">-selectText:</a>
+<li><a href="NSSavePanel.html#method-10">-setAccessoryView:</a>
+<li><a href="NSSavePanel.html#method-11">-setDelegate:</a>
+<li><a href="NSSavePanel.html#method-12">-setDirectory:</a>
+<li><a href="NSSavePanel.html#method-13">-setPrompt:</a>
+<li><a href="NSSavePanel.html#method-14">-setRequiredFileType:</a>
+<li><a href="NSSavePanel.html#method-16">-setTitle:</a>
+<li><a href="NSSavePanel.html#method-15">-setTreatsFilePackagesAsDirectories:</a>
+<li><a href="NSSavePanel.html#method-17">-title</a>
+<li><a href="NSSavePanel.html#method-18">-treatsFilePackagesAsDirectories</a>
+<li><a href="NSSavePanel.html#method-19">-validateVisibleColumns</a>
+</ul>
+<hr>
+<h2><a name="method-0">savePanel</a></h2>
++ (NSSavePanel*) <b>savePanel</b><br>
+
+          
+<hr>
+<h2><a name="method-1">cancel:</a></h2>
+- (void) <b>cancel:</b> (id)sender<br>
+
+          
+<hr>
+<h2><a name="method-2">directory</a></h2>
+- (NSString*) <b>directory</b><br>
+
+          
+<hr>
+<h2><a name="method-3">encodeWithCoder:</a></h2>
+- (void) <b>encodeWithCoder:</b> (NSCoder*)coder<br>
+
+          
+<hr>
+<h2><a name="method-4">initWithCoder:</a></h2>
+- (id) <b>initWithCoder:</b> (NSCoder*)coder<br>
+
+          
+<hr>
+<h2><a name="method-5">ok:</a></h2>
+- (void) <b>ok:</b> (id)sender<br>
+
+          
+<hr>
+<h2><a name="method-6">prompt</a></h2>
+- (NSString*) <b>prompt</b><br>
+
+          
+<hr>
+<h2><a name="method-7">requiredFileType</a></h2>
+- (NSString*) <b>requiredFileType</b><br>
+
+          
+<hr>
+<h2><a name="method-8">runModalForDirectory:</a></h2>
+- (int) <b>runModalForDirectory:</b> (NSString*)path<br>
+
+          
+<hr>
+<h2><a name="method-9">selectText:</a></h2>
+- (void) <b>selectText:</b> (id)sender<br>
+
+          
+<hr>
+<h2><a name="method-10">setAccessoryView:</a></h2>
+- (void) <b>setAccessoryView:</b> (NSView*)aView<br>
+
+          
+<hr>
+<h2><a name="method-11">setDelegate:</a></h2>
+- (void) <b>setDelegate:</b> (id)anObject<br>
+
+          
+<hr>
+<h2><a name="method-12">setDirectory:</a></h2>
+- (void) <b>setDirectory:</b> (NSString*)path<br>
+
+          
+<hr>
+<h2><a name="method-13">setPrompt:</a></h2>
+- (void) <b>setPrompt:</b> (NSString*)prompt<br>
+
+          
+<hr>
+<h2><a name="method-14">setRequiredFileType:</a></h2>
+- (void) <b>setRequiredFileType:</b> (NSString*)type<br>
+
+          
+<hr>
+<h2><a name="method-15">setTreatsFilePackagesAsDirectories:</a></h2>
+- (void) <b>setTreatsFilePackagesAsDirectories:</b> (BOOL)flag<br>
+
+          
+<hr>
+<h2><a name="method-16">setTitle:</a></h2>
+- (void) <b>setTitle:</b> (NSString*)title<br>
+
+          
+<hr>
+<h2><a name="method-17">title</a></h2>
+- (NSString*) <b>title</b><br>
+
+          
+<hr>
+<h2><a name="method-18">treatsFilePackagesAsDirectories</a></h2>
+- (BOOL) <b>treatsFilePackagesAsDirectories</b><br>
+
+          
+<hr>
+<h2><a name="method-19">validateVisibleColumns</a></h2>
+- (void) <b>validateVisibleColumns</b><br>
+
+          
+<hr>
+<h2><a name="method-20">panel:compareFilename:with:caseSensitive:</a></h2>
+- (NSComparisonResult) <b>panel:</b> (id)sender <b>compareFilename:</b> (NSString*)fileName1 <b>with:</b> (NSString *)fileName2 <b>caseSensitive:</b> (BOOL)flag<br>
+
+          
+<hr>
+<h2><a name="method-21">panel:shouldShowFilename:</a></h2>
+- (BOOL) <b>panel:</b> (id)sender <b>shouldShowFilename:</b> (NSString*)filename<br>
+
+          
+<hr>
+<h2><a name="method-22">panel:isValidFilename:</a></h2>
+- (BOOL) <b>panel:</b> (id)sender <b>isValidFilename:</b> (NSString*)filename<br>
+
+          
+<hr>
+</body>
+
+</html>

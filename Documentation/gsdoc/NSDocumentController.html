@@ -1,0 +1,180 @@
+<html><head>
+<title>NSDocumentController</title>
+</head>
+<body>
+<a href="NSDocument.html">[Previous]</a>
+<a href="AppKit.html">[Up]</a>
+<a href="NSEPSImageRep.html">[Next]</a>
+<h1>NSDocumentController</h1>
+<h3>Authors</h3>
+<dl>
+<dt><a href="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
+<dd>
+</dl>
+<p>Version: 0.1</p>
+<p>Date: 28 February, 2000</p>
+<h2><a name="cont-0">NSDocumentController</a></h2>
+<h2><a name="NSDocumentController">NSDocumentController</a></h2>
+<p><b>Declared in:</b> AppKit/NSDocumentController.h</p>
+<p><b>Inherits from:</b> NSObject</p>
+<p><b>Conforms to:</b> NSObject
+</p>
+<hr>
+
+          
+<ul>
+<li><a href="NSDocumentController.html#method-0">+sharedDocumentController</a>
+<li><a href="NSDocumentController.html#method-1">-closeAllDocuments</a>
+<li><a href="NSDocumentController.html#method-2">-currentDirectory</a>
+<li><a href="NSDocumentController.html#method-3">-currentDocument</a>
+<li><a href="NSDocumentController.html#method-4">-displayNameForType:</a>
+<li><a href="NSDocumentController.html#method-5">-documentClassForType:</a>
+<li><a href="NSDocumentController.html#method-6">-documentForFileName:</a>
+<li><a href="NSDocumentController.html#method-7">-documentForWindow:</a>
+<li><a href="NSDocumentController.html#method-8">-documents</a>
+<li><a href="NSDocumentController.html#method-9">-fileExtensionsFromType:</a>
+<li><a href="NSDocumentController.html#method-10">-fileNamesFromRunningOpenPanel</a>
+<li><a href="NSDocumentController.html#method-11">-hasEditedDocuments</a>
+<li><a href="NSDocumentController.html#method-12">-makeDocumentWithContentsOfFile:</a>
+<li><a href="NSDocumentController.html#method-13">-makeUntitledDocumentOfType:</a>
+<li><a href="NSDocumentController.html#method-14">-newDocument:</a>
+<li><a href="NSDocumentController.html#method-15">-openDocument:</a>
+<li><a href="NSDocumentController.html#method-16">-openDocumentWithContentsOfFile:</a>
+<li><a href="NSDocumentController.html#method-17">-openUntitledDocumentOfType:</a>
+<li><a href="NSDocumentController.html#method-18">-reviewUnsavedDocumentsWithAlertTitle:cancellable:</a>
+<li><a href="NSDocumentController.html#method-19">-runModalOpenPanel:</a>
+<li><a href="NSDocumentController.html#method-20">-saveAllDocuments:</a>
+<li><a href="NSDocumentController.html#method-21">-setShouldCreateUI:</a>
+<li><a href="NSDocumentController.html#method-22">-shouldCreateUI</a>
+<li><a href="NSDocumentController.html#method-23">-typeFromFileExtension:</a>
+<li><a href="NSDocumentController.html#method-24">-validateMenuItem:</a>
+</ul>
+<hr>
+<h2><a name="method-0">sharedDocumentController</a></h2>
++ (id) <b>sharedDocumentController</b><br>
+
+          
+<hr>
+<h2><a name="method-1">closeAllDocuments</a></h2>
+- (BOOL) <b>closeAllDocuments</b><br>
+
+          
+<hr>
+<h2><a name="method-2">currentDirectory</a></h2>
+- (NSString*) <b>currentDirectory</b><br>
+
+          
+<hr>
+<h2><a name="method-3">currentDocument</a></h2>
+- (id) <b>currentDocument</b><br>
+
+          
+<hr>
+<h2><a name="method-4">displayNameForType:</a></h2>
+- (NSString*) <b>displayNameForType:</b> (NSString*)docType<br>
+
+          
+<hr>
+<h2><a name="method-5">documentClassForType:</a></h2>
+- (Class) <b>documentClassForType:</b> (NSString*)docType<br>
+
+          
+<hr>
+<h2><a name="method-6">documentForFileName:</a></h2>
+- (id) <b>documentForFileName:</b> (NSString*)fileName<br>
+
+          
+<hr>
+<h2><a name="method-7">documentForWindow:</a></h2>
+- (id) <b>documentForWindow:</b> (NSWindow*)window<br>
+
+          
+<hr>
+<h2><a name="method-8">documents</a></h2>
+- (NSArray*) <b>documents</b><br>
+
+          
+<hr>
+<h2><a name="method-9">fileExtensionsFromType:</a></h2>
+- (NSArray*) <b>fileExtensionsFromType:</b> (NSString*)docType<br>
+
+          
+<hr>
+<h2><a name="method-10">fileNamesFromRunningOpenPanel</a></h2>
+- (NSArray*) <b>fileNamesFromRunningOpenPanel</b><br>
+
+          
+<hr>
+<h2><a name="method-11">hasEditedDocuments</a></h2>
+- (BOOL) <b>hasEditedDocuments</b><br>
+
+          
+<hr>
+<h2><a name="method-12">makeDocumentWithContentsOfFile:</a></h2>
+- (id) <b>makeDocumentWithContentsOfFile:</b> (NSString*)fileName<br>
+
+          
+<hr>
+<h2><a name="method-13">makeUntitledDocumentOfType:</a></h2>
+- (id) <b>makeUntitledDocumentOfType:</b> (NSString*)type<br>
+
+          
+<hr>
+<h2><a name="method-14">newDocument:</a></h2>
+- (void) <b>newDocument:</b> (id)sender<br>
+
+          
+<hr>
+<h2><a name="method-15">openDocument:</a></h2>
+- (void) <b>openDocument:</b> (id)sender<br>
+
+          
+<hr>
+<h2><a name="method-16">openDocumentWithContentsOfFile:</a></h2>
+- (id) <b>openDocumentWithContentsOfFile:</b> (NSString*)fileName<br>
+
+          
+<hr>
+<h2><a name="method-17">openUntitledDocumentOfType:</a></h2>
+- (id) <b>openUntitledDocumentOfType:</b> (NSString*)docType<br>
+
+          
+<hr>
+<h2><a name="method-18">reviewUnsavedDocumentsWithAlertTitle:cancellable:</a></h2>
+- (BOOL) <b>reviewUnsavedDocumentsWithAlertTitle:</b> (NSString*)title <b>cancellable:</b> (BOOL)flag<br>
+
+          
+<hr>
+<h2><a name="method-19">runModalOpenPanel:</a></h2>
+- (int) <b>runModalOpenPanel:</b> (NSOpenPanel*)openPanel<br>
+
+          
+<hr>
+<h2><a name="method-20">saveAllDocuments:</a></h2>
+- (void) <b>saveAllDocuments:</b> (id)sender<br>
+
+          
+<hr>
+<h2><a name="method-21">setShouldCreateUI:</a></h2>
+- (void) <b>setShouldCreateUI:</b> (BOOL)flag<br>
+
+          
+<hr>
+<h2><a name="method-22">shouldCreateUI</a></h2>
+- (BOOL) <b>shouldCreateUI</b><br>
+
+          
+<hr>
+<h2><a name="method-23">typeFromFileExtension:</a></h2>
+- (NSString*) <b>typeFromFileExtension:</b> (NSString*)fileExtension<br>
+
+          
+<hr>
+<h2><a name="method-24">validateMenuItem:</a></h2>
+- (BOOL) <b>validateMenuItem:</b> (NSMenuItem*)anItem<br>
+
+          
+<hr>
+</body>
+
+</html>

@@ -1,0 +1,174 @@
+<html><head>
+<title>NSBitmapImageRep</title>
+</head>
+<body>
+<a href="NSBezierPath.html">[Previous]</a>
+<a href="AppKit.html">[Up]</a>
+<a href="NSBox.html">[Next]</a>
+<h1>NSBitmapImageRep</h1>
+<h3>Authors</h3>
+<dl>
+<dt><a href="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
+<dd>
+</dl>
+<p>Version: 0.1</p>
+<p>Date: 28 February, 2000</p>
+<h2><a name="cont-0">NSBitmapImageRep</a></h2>
+<h2><a name="NSBitmapImageRep">NSBitmapImageRep</a></h2>
+<p><b>Declared in:</b> AppKit/NSImage.h</p>
+<p><b>Inherits from:</b> NSImageRep</p>
+<p><b>Conforms to:</b> NSCoding
+</p>
+<hr>
+
+          
+<ul>
+<li><a href="NSBitmapImageRep.html#method-4">+TIFFRepresentationOfImageRepsInArray:</a>
+<li><a href="NSBitmapImageRep.html#method-5">+TIFFRepresentationOfImageRepsInArray:usingCompression:</a>
+<li><a href="NSBitmapImageRep.html#method-0">+getTIFFCompressionTypes:count:</a>
+<li><a href="NSBitmapImageRep.html#method-2">+imageRepWithData:</a>
+<li><a href="NSBitmapImageRep.html#method-1">+imageRepsWithData:</a>
+<li><a href="NSBitmapImageRep.html#method-3">+localizedNameForTIFFCompressionType:</a>
+<li><a href="NSBitmapImageRep.html#method-22">-TIFFRepresentation</a>
+<li><a href="NSBitmapImageRep.html#method-23">-TIFFRepresentationUsingCompression:factor:</a>
+<li><a href="NSBitmapImageRep.html#method-6">-bitmapData</a>
+<li><a href="NSBitmapImageRep.html#method-7">-bitsPerPixel</a>
+<li><a href="NSBitmapImageRep.html#method-8">-bytesPerPlane</a>
+<li><a href="NSBitmapImageRep.html#method-9">-bytesPerRow</a>
+<li><a href="NSBitmapImageRep.html#method-10">-canBeCompressedUsing:</a>
+<li><a href="NSBitmapImageRep.html#method-11">-getBitmapDataPlanes:</a>
+<li><a href="NSBitmapImageRep.html#method-12">-getCompression:</a>
+<li><a href="NSBitmapImageRep.html#method-13">-initWithBitmapDataPlanes:pixelsWide:pixelsHigh:bitsPerSample:samplesPerPixel:hasAlpha:isPlanar:colorSpaceName:bytesPerRow:bitsPerPixel:</a>
+<li><a href="NSBitmapImageRep.html#method-14">-initWithBitmapHandle:</a>
+<li><a href="NSBitmapImageRep.html#method-15">-initWithData:</a>
+<li><a href="NSBitmapImageRep.html#method-16">-initWithFocusedViewRect:</a>
+<li><a href="NSBitmapImageRep.html#method-17">-initWithIconHandle:</a>
+<li><a href="NSBitmapImageRep.html#method-18">-isPlanar</a>
+<li><a href="NSBitmapImageRep.html#method-19">-numberOfPlanes</a>
+<li><a href="NSBitmapImageRep.html#method-20">-samplesPerPixel</a>
+<li><a href="NSBitmapImageRep.html#method-21">-setCompression:</a>
+</ul>
+<hr>
+<h2><a name="method-0">getTIFFCompressionTypes:count:</a></h2>
++ (void) <b>getTIFFCompressionTypes:</b> (constNSTIFFCompression**)list <b>count:</b> (int*)numTypes<br>
+
+          
+<hr>
+<h2><a name="method-1">imageRepsWithData:</a></h2>
++ (NSArray*) <b>imageRepsWithData:</b> (NSData*)bitmapData<br>
+
+          
+<hr>
+<h2><a name="method-2">imageRepWithData:</a></h2>
++ (id) <b>imageRepWithData:</b> (NSData*)bitmapData<br>
+
+          
+<hr>
+<h2><a name="method-3">localizedNameForTIFFCompressionType:</a></h2>
++ (NSString*) <b>localizedNameForTIFFCompressionType:</b> (NSTIFFCompression)compression<br>
+
+          
+<hr>
+<h2><a name="method-4">TIFFRepresentationOfImageRepsInArray:</a></h2>
++ (NSData*) <b>TIFFRepresentationOfImageRepsInArray:</b> (NSArray*)array<br>
+
+          
+<hr>
+<h2><a name="method-5">TIFFRepresentationOfImageRepsInArray:usingCompression:</a></h2>
++ (NSData*) <b>TIFFRepresentationOfImageRepsInArray:</b> (NSArray*)array <b>usingCompression:</b> (NSTIFFCompression)compression<br>
+
+          
+<hr>
+<h2><a name="method-6">bitmapData</a></h2>
+- (unsigned char*) <b>bitmapData</b><br>
+
+          
+<hr>
+<h2><a name="method-7">bitsPerPixel</a></h2>
+- (int) <b>bitsPerPixel</b><br>
+
+          
+<hr>
+<h2><a name="method-8">bytesPerPlane</a></h2>
+- (int) <b>bytesPerPlane</b><br>
+
+          
+<hr>
+<h2><a name="method-9">bytesPerRow</a></h2>
+- (int) <b>bytesPerRow</b><br>
+
+          
+<hr>
+<h2><a name="method-10">canBeCompressedUsing:</a></h2>
+- (BOOL) <b>canBeCompressedUsing:</b> (NSTIFFCompression)compression<br>
+
+          
+<hr>
+<h2><a name="method-11">getBitmapDataPlanes:</a></h2>
+- (void) <b>getBitmapDataPlanes:</b> (unsigned char**)data<br>
+
+          
+<hr>
+<h2><a name="method-12">getCompression:</a></h2>
+- (void) <b>getCompression:</b> (NSTIFFCompression*)compression<br>
+
+          
+<hr>
+<h2><a name="method-13">initWithBitmapDataPlanes:pixelsWide:pixelsHigh:bitsPerSample:samplesPerPixel:hasAlpha:isPlanar:colorSpaceName:bytesPerRow:bitsPerPixel:</a></h2>
+- (id) <b>initWithBitmapDataPlanes:</b> (unsigned char**)planes <b>pixelsWide:</b> (int)width <b>pixelsHigh:</b> (int)height <b>bitsPerSample:</b> (int)bps <b>samplesPerPixel:</b> (int)spp <b>hasAlpha:</b> (BOOL)alpha <b>isPlanar:</b> (BOOL)isPlanar <b>colorSpaceName:</b> (NSString*)colorSpaceName <b>bytesPerRow:</b> (int)rowBytes <b>bitsPerPixel:</b> (int)pixelBits<br>
+
+          
+<hr>
+<h2><a name="method-14">initWithBitmapHandle:</a></h2>
+- (id) <b>initWithBitmapHandle:</b> (void*)bitmap<br>
+
+          
+<hr>
+<h2><a name="method-15">initWithData:</a></h2>
+- (id) <b>initWithData:</b> (NSData*)bitmapData<br>
+
+          
+<hr>
+<h2><a name="method-16">initWithFocusedViewRect:</a></h2>
+- (id) <b>initWithFocusedViewRect:</b> (NSRect)rect<br>
+
+          
+<hr>
+<h2><a name="method-17">initWithIconHandle:</a></h2>
+- (id) <b>initWithIconHandle:</b> (void*)icon<br>
+
+          
+<hr>
+<h2><a name="method-18">isPlanar</a></h2>
+- (BOOL) <b>isPlanar</b><br>
+
+          
+<hr>
+<h2><a name="method-19">numberOfPlanes</a></h2>
+- (int) <b>numberOfPlanes</b><br>
+
+          
+<hr>
+<h2><a name="method-20">samplesPerPixel</a></h2>
+- (int) <b>samplesPerPixel</b><br>
+
+          
+<hr>
+<h2><a name="method-21">setCompression:</a></h2>
+- (void) <b>setCompression:</b> (NSTIFFCompression)compression<br>
+
+          
+<hr>
+<h2><a name="method-22">TIFFRepresentation</a></h2>
+- (NSData*) <b>TIFFRepresentation</b><br>
+
+          
+<hr>
+<h2><a name="method-23">TIFFRepresentationUsingCompression:factor:</a></h2>
+- (NSData*) <b>TIFFRepresentationUsingCompression:</b> (NSTIFFCompression)comp <b>factor:</b> (float)factor<br>
+
+          
+<hr>
+</body>
+
+</html>

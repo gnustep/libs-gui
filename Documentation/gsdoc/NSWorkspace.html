@@ -1,0 +1,203 @@
+<html><head>
+<title>NSWorkspace</title>
+</head>
+<body>
+<a href="NSWindowController.html">[Previous]</a>
+<a href="AppKit.html">[Up]</a>
+<h1>NSWorkspace</h1>
+<h3>Authors</h3>
+<dl>
+<dt><a href="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
+<dd>
+</dl>
+<p>Version: 0.1</p>
+<p>Date: 28 February, 2000</p>
+<h2><a name="cont-0">NSWorkspace</a></h2>
+<h2><a name="NSWorkspace">NSWorkspace</a></h2>
+<p><b>Declared in:</b> AppKit/NSWorkspace.h</p>
+<p><b>Inherits from:</b> NSObject</p>
+<p><b>Conforms to:</b> NSObject
+</p>
+<hr>
+
+          
+<ul>
+<li><a href="NSWorkspace.html#method-0">+sharedWorkspace</a>
+<li><a href="NSWorkspace.html#method-1">-checkForRemovableMedia</a>
+<li><a href="NSWorkspace.html#method-2">-extendPowerOffBy:</a>
+<li><a href="NSWorkspace.html#method-3">-fileSystemChanged</a>
+<li><a href="NSWorkspace.html#method-4">-findApplications</a>
+<li><a href="NSWorkspace.html#method-5">-fullPathForApplication:</a>
+<li><a href="NSWorkspace.html#method-6">-getFileSystemInfoForPath:isRemovable:isWritable:isUnmountable:description:type:</a>
+<li><a href="NSWorkspace.html#method-7">-getInfoForFile:application:</a>
+<li><a href="NSWorkspace.html#method-8">-hideOtherApplications</a>
+<li><a href="NSWorkspace.html#method-9">-iconForFile:</a>
+<li><a href="NSWorkspace.html#method-10">-iconForFileType:</a>
+<li><a href="NSWorkspace.html#method-11">-iconForFiles:</a>
+<li><a href="NSWorkspace.html#method-12">-launchApplication:</a>
+<li><a href="NSWorkspace.html#method-13">-launchApplication:showIcon:autolaunch:</a>
+<li><a href="NSWorkspace.html#method-14">-mountNewRemovableMedia</a>
+<li><a href="NSWorkspace.html#method-15">-mountedRemovableMedia</a>
+<li><a href="NSWorkspace.html#method-16">-noteFileSystemChanged</a>
+<li><a href="NSWorkspace.html#method-17">-noteUserDefaultsChanged</a>
+<li><a href="NSWorkspace.html#method-18">-notificationCenter</a>
+<li><a href="NSWorkspace.html#method-19">-openFile:</a>
+<li><a href="NSWorkspace.html#method-20">-openFile:fromImage:at:inView:</a>
+<li><a href="NSWorkspace.html#method-21">-openFile:withApplication:</a>
+<li><a href="NSWorkspace.html#method-22">-openFile:withApplication:andDeactivate:</a>
+<li><a href="NSWorkspace.html#method-23">-openTempFile:</a>
+<li><a href="NSWorkspace.html#method-24">-performFileOperation:source:destination:files:tag:</a>
+<li><a href="NSWorkspace.html#method-25">-selectFile:inFileViewerRootedAtPath:</a>
+<li><a href="NSWorkspace.html#method-26">-slideImage:from:to:</a>
+<li><a href="NSWorkspace.html#method-27">-unmountAndEjectDeviceAtPath:</a>
+<li><a href="NSWorkspace.html#method-28">-userDefaultsChanged</a>
+</ul>
+<hr>
+<h2><a name="method-0">sharedWorkspace</a></h2>
++ (NSWorkspace*) <b>sharedWorkspace</b><br>
+
+          
+<hr>
+<h2><a name="method-1">checkForRemovableMedia</a></h2>
+- (void) <b>checkForRemovableMedia</b><br>
+
+          
+<hr>
+<h2><a name="method-2">extendPowerOffBy:</a></h2>
+- (int) <b>extendPowerOffBy:</b> (int)requested<br>
+
+          
+<hr>
+<h2><a name="method-3">fileSystemChanged</a></h2>
+- (BOOL) <b>fileSystemChanged</b><br>
+
+          
+<hr>
+<h2><a name="method-4">findApplications</a></h2>
+- (void) <b>findApplications</b><br>
+
+          
+<hr>
+<h2><a name="method-5">fullPathForApplication:</a></h2>
+- (NSString*) <b>fullPathForApplication:</b> (NSString*)appName<br>
+
+          
+<hr>
+<h2><a name="method-6">getFileSystemInfoForPath:isRemovable:isWritable:isUnmountable:description:type:</a></h2>
+- (BOOL) <b>getFileSystemInfoForPath:</b> (NSString*)fullPath <b>isRemovable:</b> (BOOL*)removableFlag <b>isWritable:</b> (BOOL *)writableFlag <b>isUnmountable:</b> (BOOL*)unmountableFlag <b>description:</b> (NSString **)description <b>type:</b> (NSString**)fileSystemType<br>
+
+          
+<hr>
+<h2><a name="method-7">getInfoForFile:application:</a></h2>
+- (BOOL) <b>getInfoForFile:</b> (NSString*)fullPath <b>application:</b> (NSString**)appName<br>
+
+          
+<hr>
+<h2><a name="method-8">hideOtherApplications</a></h2>
+- (void) <b>hideOtherApplications</b><br>
+
+          
+<hr>
+<h2><a name="method-9">iconForFile:</a></h2>
+- (NSImage*) <b>iconForFile:</b> (NSString*)fullPath<br>
+
+          
+<hr>
+<h2><a name="method-10">iconForFileType:</a></h2>
+- (NSImage*) <b>iconForFileType:</b> (NSString*)fileType<br>
+
+          
+<hr>
+<h2><a name="method-11">iconForFiles:</a></h2>
+- (NSImage*) <b>iconForFiles:</b> (NSArray*)fullPaths<br>
+
+          
+<hr>
+<h2><a name="method-12">launchApplication:</a></h2>
+- (BOOL) <b>launchApplication:</b> (NSString*)appName<br>
+
+          
+<hr>
+<h2><a name="method-13">launchApplication:showIcon:autolaunch:</a></h2>
+- (BOOL) <b>launchApplication:</b> (NSString*)appName <b>showIcon:</b> (BOOL)showIcon <b>autolaunch:</b> (BOOL)autolaunch<br>
+
+          
+<hr>
+<h2><a name="method-14">mountNewRemovableMedia</a></h2>
+- (NSArray*) <b>mountNewRemovableMedia</b><br>
+
+          
+<hr>
+<h2><a name="method-15">mountedRemovableMedia</a></h2>
+- (NSArray*) <b>mountedRemovableMedia</b><br>
+
+          
+<hr>
+<h2><a name="method-16">noteFileSystemChanged</a></h2>
+- (void) <b>noteFileSystemChanged</b><br>
+
+          
+<hr>
+<h2><a name="method-17">noteUserDefaultsChanged</a></h2>
+- (void) <b>noteUserDefaultsChanged</b><br>
+
+          
+<hr>
+<h2><a name="method-18">notificationCenter</a></h2>
+- (NSNotificationCenter*) <b>notificationCenter</b><br>
+
+          
+<hr>
+<h2><a name="method-19">openFile:</a></h2>
+- (BOOL) <b>openFile:</b> (NSString*)fullPath<br>
+
+          
+<hr>
+<h2><a name="method-20">openFile:fromImage:at:inView:</a></h2>
+- (BOOL) <b>openFile:</b> (NSString*)fullPath <b>fromImage:</b> (NSImage*)anImage <b>at:</b> (NSPoint)point <b>inView:</b> (NSView*)aView<br>
+
+          
+<hr>
+<h2><a name="method-21">openFile:withApplication:</a></h2>
+- (BOOL) <b>openFile:</b> (NSString*)fullPath <b>withApplication:</b> (NSString*)appName<br>
+
+          
+<hr>
+<h2><a name="method-22">openFile:withApplication:andDeactivate:</a></h2>
+- (BOOL) <b>openFile:</b> (NSString*)fullPath <b>withApplication:</b> (NSString*)appName <b>andDeactivate:</b> (BOOL)flag<br>
+
+          
+<hr>
+<h2><a name="method-23">openTempFile:</a></h2>
+- (BOOL) <b>openTempFile:</b> (NSString*)fullPath<br>
+
+          
+<hr>
+<h2><a name="method-24">performFileOperation:source:destination:files:tag:</a></h2>
+- (BOOL) <b>performFileOperation:</b> (NSString*)operation <b>source:</b> (NSString *)source <b>destination:</b> (NSString*)destination <b>files:</b> (NSArray *)files <b>tag:</b> (int*)tag<br>
+
+          
+<hr>
+<h2><a name="method-25">selectFile:inFileViewerRootedAtPath:</a></h2>
+- (BOOL) <b>selectFile:</b> (NSString*)fullPath <b>inFileViewerRootedAtPath:</b> (NSString*)rootFullPath<br>
+
+	    
+<hr>
+<h2><a name="method-26">slideImage:from:to:</a></h2>
+- (void) <b>slideImage:</b> (NSImage*)image <b>from:</b> (NSPoint)fromPoint <b>to:</b> (NSPoint)toPoint<br>
+
+          
+<hr>
+<h2><a name="method-27">unmountAndEjectDeviceAtPath:</a></h2>
+- (BOOL) <b>unmountAndEjectDeviceAtPath:</b> (NSString*)path<br>
+
+          
+<hr>
+<h2><a name="method-28">userDefaultsChanged</a></h2>
+- (BOOL) <b>userDefaultsChanged</b><br>
+
+          
+<hr>
+</body>
+
+</html>

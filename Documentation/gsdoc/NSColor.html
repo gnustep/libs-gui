@@ -1,0 +1,516 @@
+<html><head>
+<title>NSColor</title>
+</head>
+<body>
+<a href="NSCoderAdditions.html">[Previous]</a>
+<a href="AppKit.html">[Up]</a>
+<a href="NSColorList.html">[Next]</a>
+<h1>NSColor</h1>
+<h3>Authors</h3>
+<dl>
+<dt><a href="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
+<dd>
+</dl>
+<p>Version: 0.1</p>
+<p>Date: 28 February, 2000</p>
+<h2><a name="cont-0">NSColor</a></h2>
+<h2><a name="NSColor">NSColor</a></h2>
+<p><b>Declared in:</b> AppKit/NSColor.h</p>
+<p><b>Inherits from:</b> NSResponder</p>
+<p><b>Conforms to:</b> NSCoding
+</p>
+<hr>
+
+          
+<ul>
+<li><a href="NSColor.html#method-0">+blackColor</a>
+<li><a href="NSColor.html#method-1">+blueColor</a>
+<li><a href="NSColor.html#method-2">+brownColor</a>
+<li><a href="NSColor.html#method-3">+clearColor</a>
+<li><a href="NSColor.html#method-4">+colorFromPasteboard:</a>
+<li><a href="NSColor.html#method-5">+colorWithCalibratedHue:saturation:brightness:alpha:</a>
+<li><a href="NSColor.html#method-6">+colorWithCalibratedRed:green:blue:alpha:</a>
+<li><a href="NSColor.html#method-7">+colorWithCalibratedWhite:</a>
+<li><a href="NSColor.html#method-8">+colorWithCatalogName:colorName:</a>
+<li><a href="NSColor.html#method-9">+colorWithDeviceCyan:magenta:yellow:black:</a>
+<li><a href="NSColor.html#method-10">+colorWithDeviceHue:saturation:brightness:alpha:</a>
+<li><a href="NSColor.html#method-11">+colorWithDeviceRed:green:blue:alpha:</a>
+<li><a href="NSColor.html#method-12">+colorWithDeviceWhite:</a>
+<li><a href="NSColor.html#method-13">+controlBackgroundColor</a>
+<li><a href="NSColor.html#method-14">+controlColor</a>
+<li><a href="NSColor.html#method-15">+controlDarkShadowColor</a>
+<li><a href="NSColor.html#method-16">+controlHighlightColor</a>
+<li><a href="NSColor.html#method-17">+controlLightHighlightColor</a>
+<li><a href="NSColor.html#method-18">+controlShadowColor</a>
+<li><a href="NSColor.html#method-19">+controlTextColor</a>
+<li><a href="NSColor.html#method-20">+cyanColor</a>
+<li><a href="NSColor.html#method-21">+darkGrayColor</a>
+<li><a href="NSColor.html#method-22">+disabledControlTextColor</a>
+<li><a href="NSColor.html#method-23">+grayColor</a>
+<li><a href="NSColor.html#method-24">+greenColor</a>
+<li><a href="NSColor.html#method-25">+gridColor</a>
+<li><a href="NSColor.html#method-26">+highlightColor</a>
+<li><a href="NSColor.html#method-27">+ignoresAlpha</a>
+<li><a href="NSColor.html#method-28">+keyboardFocusIndicatorColor</a>
+<li><a href="NSColor.html#method-29">+knobColor</a>
+<li><a href="NSColor.html#method-30">+lightGrayColor</a>
+<li><a href="NSColor.html#method-31">+magentaColor</a>
+<li><a href="NSColor.html#method-32">+orangeColor</a>
+<li><a href="NSColor.html#method-33">+purpleColor</a>
+<li><a href="NSColor.html#method-34">+redColor</a>
+<li><a href="NSColor.html#method-35">+scrollBarColor</a>
+<li><a href="NSColor.html#method-36">+selectedControlColor</a>
+<li><a href="NSColor.html#method-37">+selectedControlTextColor</a>
+<li><a href="NSColor.html#method-38">+selectedKnobColor</a>
+<li><a href="NSColor.html#method-39">+selectedMenuItemColor</a>
+<li><a href="NSColor.html#method-40">+selectedMenuItemTextColor</a>
+<li><a href="NSColor.html#method-41">+selectedTextBackgroundColor</a>
+<li><a href="NSColor.html#method-42">+selectedTextColor</a>
+<li><a href="NSColor.html#method-43">+setIgnoresAlpha:</a>
+<li><a href="NSColor.html#method-44">+shadowColor</a>
+<li><a href="NSColor.html#method-45">+textBackgroundColor</a>
+<li><a href="NSColor.html#method-46">+textColor</a>
+<li><a href="NSColor.html#method-47">+whiteColor</a>
+<li><a href="NSColor.html#method-48">+windowFrameColor</a>
+<li><a href="NSColor.html#method-49">+windowFrameTextColor</a>
+<li><a href="NSColor.html#method-50">+yellowColor</a>
+<li><a href="NSColor.html#method-51">-alphaComponent</a>
+<li><a href="NSColor.html#method-52">-blackComponent</a>
+<li><a href="NSColor.html#method-53">-blendedColorWithFraction:</a>
+<li><a href="NSColor.html#method-54">-blueComponent</a>
+<li><a href="NSColor.html#method-55">-brightnessComponent</a>
+<li><a href="NSColor.html#method-56">-catalogNameComponent</a>
+<li><a href="NSColor.html#method-57">-colorNameComponent</a>
+<li><a href="NSColor.html#method-58">-colorSpaceName</a>
+<li><a href="NSColor.html#method-60">-colorUsingColorSpaceName:</a>
+<li><a href="NSColor.html#method-59">-colorUsingColorSpaceName:</a>
+<li><a href="NSColor.html#method-61">-colorWithAlphaComponent:</a>
+<li><a href="NSColor.html#method-62">-cyanComponent</a>
+<li><a href="NSColor.html#method-63">-drawSwatchInRect:</a>
+<li><a href="NSColor.html#method-64">-getCyan:magenta:yellow:black:</a>
+<li><a href="NSColor.html#method-65">-getHue:saturation:brightness:alpha:</a>
+<li><a href="NSColor.html#method-66">-getRed:green:blue:alpha:</a>
+<li><a href="NSColor.html#method-67">-getWhite:</a>
+<li><a href="NSColor.html#method-68">-greenComponent</a>
+<li><a href="NSColor.html#method-69">-highlightWithLevel:</a>
+<li><a href="NSColor.html#method-70">-hueComponent</a>
+<li><a href="NSColor.html#method-71">-localizedCatalogNameComponent</a>
+<li><a href="NSColor.html#method-72">-localizedColorNameComponent</a>
+<li><a href="NSColor.html#method-73">-magentaComponent</a>
+<li><a href="NSColor.html#method-74">-redComponent</a>
+<li><a href="NSColor.html#method-75">-saturationComponent</a>
+<li><a href="NSColor.html#method-76">-set</a>
+<li><a href="NSColor.html#method-77">-shadowWithLevel:</a>
+<li><a href="NSColor.html#method-78">-whiteComponent</a>
+<li><a href="NSColor.html#method-79">-writeToPasteboard:</a>
+<li><a href="NSColor.html#method-80">-yellowComponent</a>
+</ul>
+<hr>
+<h2><a name="method-0">blackColor</a></h2>
++ (NSColor*) <b>blackColor</b><br>
+
+          
+<hr>
+<h2><a name="method-1">blueColor</a></h2>
++ (NSColor*) <b>blueColor</b><br>
+
+          
+<hr>
+<h2><a name="method-2">brownColor</a></h2>
++ (NSColor*) <b>brownColor</b><br>
+
+          
+<hr>
+<h2><a name="method-3">clearColor</a></h2>
++ (NSColor*) <b>clearColor</b><br>
+
+          
+<hr>
+<h2><a name="method-4">colorFromPasteboard:</a></h2>
++ (NSColor*) <b>colorFromPasteboard:</b> (NSPasteboard*)pasteBoard<br>
+
+          
+<hr>
+<h2><a name="method-5">colorWithCalibratedHue:saturation:brightness:alpha:</a></h2>
++ (NSColor*) <b>colorWithCalibratedHue:</b> (float)hue <b>saturation:</b> (float)saturation <b>brightness:</b> (float)brightness <b>alpha:</b> (float)alpha<br>
+
+          
+<hr>
+<h2><a name="method-6">colorWithCalibratedRed:green:blue:alpha:</a></h2>
++ (NSColor*) <b>colorWithCalibratedRed:</b> (float)red <b>green:</b> (float)green <b>blue:</b> (float)blue <b>alpha:</b> (float)alpha<br>
+
+          
+<hr>
+<h2><a name="method-7">colorWithCalibratedWhite:</a></h2>
++ (NSColor*) <b>colorWithCalibratedWhite:</b> (float)white<br>
+
+          
+<hr>
+<h2><a name="method-8">colorWithCatalogName:colorName:</a></h2>
++ (NSColor*) <b>colorWithCatalogName:</b> (NSString*)listName <b>colorName:</b> (NSString*)colorName<br>
+
+          
+<hr>
+<h2><a name="method-9">colorWithDeviceCyan:magenta:yellow:black:</a></h2>
++ (NSColor*) <b>colorWithDeviceCyan:</b> (float)cyan <b>magenta:</b> (float)magenta <b>yellow:</b> (float)yellow <b>black:</b> (float)black<br>
+
+          
+<hr>
+<h2><a name="method-10">colorWithDeviceHue:saturation:brightness:alpha:</a></h2>
++ (NSColor*) <b>colorWithDeviceHue:</b> (float)hue <b>saturation:</b> (float)saturation <b>brightness:</b> (float)brightness <b>alpha:</b> (float)alpha<br>
+
+          
+<hr>
+<h2><a name="method-11">colorWithDeviceRed:green:blue:alpha:</a></h2>
++ (NSColor*) <b>colorWithDeviceRed:</b> (float)red <b>green:</b> (float)green <b>blue:</b> (float)blue <b>alpha:</b> (float)alpha<br>
+
+          
+<hr>
+<h2><a name="method-12">colorWithDeviceWhite:</a></h2>
++ (NSColor*) <b>colorWithDeviceWhite:</b> (float)white<br>
+
+          
+<hr>
+<h2><a name="method-13">controlBackgroundColor</a></h2>
++ (NSColor*) <b>controlBackgroundColor</b><br>
+
+          
+<hr>
+<h2><a name="method-14">controlColor</a></h2>
++ (NSColor*) <b>controlColor</b><br>
+
+          
+<hr>
+<h2><a name="method-15">controlDarkShadowColor</a></h2>
++ (NSColor*) <b>controlDarkShadowColor</b><br>
+
+          
+<hr>
+<h2><a name="method-16">controlHighlightColor</a></h2>
++ (NSColor*) <b>controlHighlightColor</b><br>
+
+          
+<hr>
+<h2><a name="method-17">controlLightHighlightColor</a></h2>
++ (NSColor*) <b>controlLightHighlightColor</b><br>
+
+          
+<hr>
+<h2><a name="method-18">controlShadowColor</a></h2>
++ (NSColor*) <b>controlShadowColor</b><br>
+
+          
+<hr>
+<h2><a name="method-19">controlTextColor</a></h2>
++ (NSColor*) <b>controlTextColor</b><br>
+
+          
+<hr>
+<h2><a name="method-20">cyanColor</a></h2>
++ (NSColor*) <b>cyanColor</b><br>
+
+          
+<hr>
+<h2><a name="method-21">darkGrayColor</a></h2>
++ (NSColor*) <b>darkGrayColor</b><br>
+
+          
+<hr>
+<h2><a name="method-22">disabledControlTextColor</a></h2>
++ (NSColor*) <b>disabledControlTextColor</b><br>
+
+          
+<hr>
+<h2><a name="method-23">grayColor</a></h2>
++ (NSColor*) <b>grayColor</b><br>
+
+          
+<hr>
+<h2><a name="method-24">greenColor</a></h2>
++ (NSColor*) <b>greenColor</b><br>
+
+          
+<hr>
+<h2><a name="method-25">gridColor</a></h2>
++ (NSColor*) <b>gridColor</b><br>
+
+          
+<hr>
+<h2><a name="method-26">highlightColor</a></h2>
++ (NSColor*) <b>highlightColor</b><br>
+
+          
+<hr>
+<h2><a name="method-27">ignoresAlpha</a></h2>
++ (BOOL) <b>ignoresAlpha</b><br>
+
+          
+<hr>
+<h2><a name="method-28">keyboardFocusIndicatorColor</a></h2>
++ (NSColor*) <b>keyboardFocusIndicatorColor</b><br>
+
+          
+<hr>
+<h2><a name="method-29">knobColor</a></h2>
++ (NSColor*) <b>knobColor</b><br>
+
+          
+<hr>
+<h2><a name="method-30">lightGrayColor</a></h2>
++ (NSColor*) <b>lightGrayColor</b><br>
+
+          
+<hr>
+<h2><a name="method-31">magentaColor</a></h2>
++ (NSColor*) <b>magentaColor</b><br>
+
+          
+<hr>
+<h2><a name="method-32">orangeColor</a></h2>
++ (NSColor*) <b>orangeColor</b><br>
+
+          
+<hr>
+<h2><a name="method-33">purpleColor</a></h2>
++ (NSColor*) <b>purpleColor</b><br>
+
+          
+<hr>
+<h2><a name="method-34">redColor</a></h2>
++ (NSColor*) <b>redColor</b><br>
+
+          
+<hr>
+<h2><a name="method-35">scrollBarColor</a></h2>
++ (NSColor*) <b>scrollBarColor</b><br>
+
+          
+<hr>
+<h2><a name="method-36">selectedControlColor</a></h2>
++ (NSColor*) <b>selectedControlColor</b><br>
+
+          
+<hr>
+<h2><a name="method-37">selectedControlTextColor</a></h2>
++ (NSColor*) <b>selectedControlTextColor</b><br>
+
+          
+<hr>
+<h2><a name="method-38">selectedKnobColor</a></h2>
++ (NSColor*) <b>selectedKnobColor</b><br>
+
+          
+<hr>
+<h2><a name="method-39">selectedMenuItemColor</a></h2>
++ (NSColor*) <b>selectedMenuItemColor</b><br>
+
+          
+<hr>
+<h2><a name="method-40">selectedMenuItemTextColor</a></h2>
++ (NSColor*) <b>selectedMenuItemTextColor</b><br>
+
+          
+<hr>
+<h2><a name="method-41">selectedTextBackgroundColor</a></h2>
++ (NSColor*) <b>selectedTextBackgroundColor</b><br>
+
+          
+<hr>
+<h2><a name="method-42">selectedTextColor</a></h2>
++ (NSColor*) <b>selectedTextColor</b><br>
+
+          
+<hr>
+<h2><a name="method-43">setIgnoresAlpha:</a></h2>
++ (void) <b>setIgnoresAlpha:</b> (BOOL)flag<br>
+
+          
+<hr>
+<h2><a name="method-44">shadowColor</a></h2>
++ (NSColor*) <b>shadowColor</b><br>
+
+          
+<hr>
+<h2><a name="method-45">textBackgroundColor</a></h2>
++ (NSColor*) <b>textBackgroundColor</b><br>
+
+          
+<hr>
+<h2><a name="method-46">textColor</a></h2>
++ (NSColor*) <b>textColor</b><br>
+
+          
+<hr>
+<h2><a name="method-47">whiteColor</a></h2>
++ (NSColor*) <b>whiteColor</b><br>
+
+          
+<hr>
+<h2><a name="method-48">windowFrameColor</a></h2>
++ (NSColor*) <b>windowFrameColor</b><br>
+
+          
+<hr>
+<h2><a name="method-49">windowFrameTextColor</a></h2>
++ (NSColor*) <b>windowFrameTextColor</b><br>
+
+          
+<hr>
+<h2><a name="method-50">yellowColor</a></h2>
++ (NSColor*) <b>yellowColor</b><br>
+
+          
+<hr>
+<h2><a name="method-51">alphaComponent</a></h2>
+- (float) <b>alphaComponent</b><br>
+
+          
+<hr>
+<h2><a name="method-52">blackComponent</a></h2>
+- (float) <b>blackComponent</b><br>
+
+          
+<hr>
+<h2><a name="method-53">blendedColorWithFraction:</a></h2>
+- (NSColor*) <b>blendedColorWithFraction:</b> (float)fractiono<br>
+
+          
+<hr>
+<h2><a name="method-54">blueComponent</a></h2>
+- (float) <b>blueComponent</b><br>
+
+          
+<hr>
+<h2><a name="method-55">brightnessComponent</a></h2>
+- (float) <b>brightnessComponent</b><br>
+
+          
+<hr>
+<h2><a name="method-56">catalogNameComponent</a></h2>
+- (NSString*) <b>catalogNameComponent</b><br>
+
+          
+<hr>
+<h2><a name="method-57">colorNameComponent</a></h2>
+- (NSString*) <b>colorNameComponent</b><br>
+
+          
+<hr>
+<h2><a name="method-58">colorSpaceName</a></h2>
+- (NSString*) <b>colorSpaceName</b><br>
+
+          
+<hr>
+<h2><a name="method-59">colorUsingColorSpaceName:</a></h2>
+- (NSColor*) <b>colorUsingColorSpaceName:</b> (NSString*)colorSpace<br>
+
+          
+<hr>
+<h2><a name="method-60">colorUsingColorSpaceName:</a></h2>
+- (NSColor*) <b>colorUsingColorSpaceName:</b> (NSString*)colorSpace<br>
+
+          
+<hr>
+<h2><a name="method-61">colorWithAlphaComponent:</a></h2>
+- (NSColor*) <b>colorWithAlphaComponent:</b> (float)alpha<br>
+
+          
+<hr>
+<h2><a name="method-62">cyanComponent</a></h2>
+- (float) <b>cyanComponent</b><br>
+
+          
+<hr>
+<h2><a name="method-63">drawSwatchInRect:</a></h2>
+- (void) <b>drawSwatchInRect:</b> (NSRect)rect<br>
+
+          
+<hr>
+<h2><a name="method-64">getCyan:magenta:yellow:black:</a></h2>
+- (void) <b>getCyan:</b> (float*)cyan <b>magenta:</b> (float*)magenta <b>yellow:</b> (float *)yellow <b>black:</b> (float*)black<br>
+
+          
+<hr>
+<h2><a name="method-65">getHue:saturation:brightness:alpha:</a></h2>
+- (void) <b>getHue:</b> (float*)hue <b>saturation:</b> (float*)saturation <b>brightness:</b> (float *)brightness <b>alpha:</b> (float*)alpha<br>
+
+          
+<hr>
+<h2><a name="method-66">getRed:green:blue:alpha:</a></h2>
+- (void) <b>getRed:</b> (float*)red <b>green:</b> (float*)green <b>blue:</b> (float *)blue <b>alpha:</b> (float*)alpha<br>
+
+          
+<hr>
+<h2><a name="method-67">getWhite:</a></h2>
+- (void) <b>getWhite:</b> (float*)white<br>
+
+          
+<hr>
+<h2><a name="method-68">greenComponent</a></h2>
+- (float) <b>greenComponent</b><br>
+
+          
+<hr>
+<h2><a name="method-69">highlightWithLevel:</a></h2>
+- (NSColor*) <b>highlightWithLevel:</b> (float)highlightLevel<br>
+
+          
+<hr>
+<h2><a name="method-70">hueComponent</a></h2>
+- (float) <b>hueComponent</b><br>
+
+          
+<hr>
+<h2><a name="method-71">localizedCatalogNameComponent</a></h2>
+- (NSString*) <b>localizedCatalogNameComponent</b><br>
+
+          
+<hr>
+<h2><a name="method-72">localizedColorNameComponent</a></h2>
+- (NSString*) <b>localizedColorNameComponent</b><br>
+
+          
+<hr>
+<h2><a name="method-73">magentaComponent</a></h2>
+- (float) <b>magentaComponent</b><br>
+
+          
+<hr>
+<h2><a name="method-74">redComponent</a></h2>
+- (float) <b>redComponent</b><br>
+
+          
+<hr>
+<h2><a name="method-75">saturationComponent</a></h2>
+- (float) <b>saturationComponent</b><br>
+
+          
+<hr>
+<h2><a name="method-76">set</a></h2>
+- (void) <b>set</b><br>
+
+          
+<hr>
+<h2><a name="method-77">shadowWithLevel:</a></h2>
+- (NSColor*) <b>shadowWithLevel:</b> (float)shadowLevel<br>
+
+          
+<hr>
+<h2><a name="method-78">whiteComponent</a></h2>
+- (float) <b>whiteComponent</b><br>
+
+          
+<hr>
+<h2><a name="method-79">writeToPasteboard:</a></h2>
+- (void) <b>writeToPasteboard:</b> (NSPasteboard*)pasteBoard<br>
+
+          
+<hr>
+<h2><a name="method-80">yellowComponent</a></h2>
+- (float) <b>yellowComponent</b><br>
+
+          
+<hr>
+</body>
+
+</html>

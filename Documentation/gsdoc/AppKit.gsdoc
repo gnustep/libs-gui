@@ -8,11 +8,21 @@
       <url url="http://www.gnustep.org/developers/whoiswho.html"/>
     </author>
     <version>0.1</version>
-    <date>28 February, 2000</date>
+    <date>5 March, 2000</date>
   </head>
   <body>
     <chapter>
       <heading>AppKit</heading>
+      <p>
+	Nicola Pero has begun work on writing an
+	<uref url="Introduction.html">introduction</uref>
+	to the basic concepts and use of the GNUstep GUI library (AppKit).
+      </p>
+      <p>
+	We also have reference documentation for the classes, though this is
+	currently very sketchy, mostly consisting of listings of class
+	methods and the arguments they take -
+      </p>
       <list>
         <item><uref url="NSActionCell.html">NSActionCell</uref></item>
         <item><uref url="NSAffineTransform.html">NSAffineTransform</uref></item>

@@ -1,0 +1,852 @@
+<html><head>
+<title>NSView</title>
+</head>
+<body>
+<a href="NSTextView.html">[Previous]</a>
+<a href="AppKit.html">[Up]</a>
+<a href="NSWindow.html">[Next]</a>
+<h1>NSView</h1>
+<h3>Authors</h3>
+<dl>
+<dt><a href="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
+<dd>
+</dl>
+<p>Version: 0.1</p>
+<p>Date: 28 February, 2000</p>
+<h2><a name="cont-0">NSView</a></h2>
+<h2><a name="NSView">NSView</a></h2>
+<p><b>Declared in:</b> AppKit/NSView.h</p>
+<p><b>Inherits from:</b> NSResponder</p>
+<p><b>Conforms to:</b> NSCoding
+</p>
+<hr>
+
+          
+<ul>
+<li><a href="NSView.html#method-0">+defaultMenu</a>
+<li><a href="NSView.html#method-1">+focusView</a>
+<li><a href="NSView.html#method-2">-acceptsFirstMouse:</a>
+<li><a href="NSView.html#method-3">-addCursorRect:cursor:</a>
+<li><a href="NSView.html#method-4">-addSubview:</a>
+<li><a href="NSView.html#method-5">-addSubview:positioned:relativeTo:</a>
+<li><a href="NSView.html#method-6">-addToPageSetup</a>
+<li><a href="NSView.html#method-7">-addTrackingRect:owner:userData:assumeInside:</a>
+<li><a href="NSView.html#method-8">-adjustPageHeightNew:top:bottom:</a>
+<li><a href="NSView.html#method-9">-adjustPageWidthNew:left:right:</a>
+<li><a href="NSView.html#method-10">-adjustScroll:</a>
+<li><a href="NSView.html#method-11">-allocateGState</a>
+<li><a href="NSView.html#method-12">-ancestorSharedWithView:</a>
+<li><a href="NSView.html#method-13">-autoresizesSubviews</a>
+<li><a href="NSView.html#method-14">-autoresizingMask</a>
+<li><a href="NSView.html#method-15">-autoscroll:</a>
+<li><a href="NSView.html#method-16">-beginPage:label:bBox:</a>
+<li><a href="NSView.html#method-17">-beginPageSetupRect:placement:</a>
+<li><a href="NSView.html#method-18">-beginPrologueBBox:creationDate:createdBy:fonts:forWhom:pages:</a>
+<li><a href="NSView.html#method-19">-beginSetup</a>
+<li><a href="NSView.html#method-20">-beginTrailer</a>
+<li><a href="NSView.html#method-21">-bounds</a>
+<li><a href="NSView.html#method-22">-boundsRotation</a>
+<li><a href="NSView.html#method-23">-canDraw</a>
+<li><a href="NSView.html#method-24">-centerScanRect:</a>
+<li><a href="NSView.html#method-26">-convertPoint:</a>
+<li><a href="NSView.html#method-25">-convertPoint:fromView:</a>
+<li><a href="NSView.html#method-27">-convertRect:fromView:</a>
+<li><a href="NSView.html#method-28">-convertRect:toView:</a>
+<li><a href="NSView.html#method-29">-convertSize:fromView:</a>
+<li><a href="NSView.html#method-30">-convertSize:toView:</a>
+<li><a href="NSView.html#method-31">-dataWithEPSInsideRect:</a>
+<li><a href="NSView.html#method-32">-discardCursorRects</a>
+<li><a href="NSView.html#method-33">-display</a>
+<li><a href="NSView.html#method-34">-displayIfNeeded</a>
+<li><a href="NSView.html#method-35">-displayIfNeededIgnoringOpacity</a>
+<li><a href="NSView.html#method-36">-displayIfNeededInRect:</a>
+<li><a href="NSView.html#method-37">-displayIfNeededInRectIgnoringOpacity:</a>
+<li><a href="NSView.html#method-38">-displayRect:</a>
+<li><a href="NSView.html#method-39">-displayRectIgnoringOpacity:</a>
+<li><a href="NSView.html#method-40">-dragFile:fromRect:slideBack:</a>
+<li><a href="NSView.html#method-41">-dragImage:at:offset:event:pasteboard:source:slideBack:</a>
+<li><a href="NSView.html#method-42">-drawPageBorderWithSize:</a>
+<li><a href="NSView.html#method-43">-drawRect:</a>
+<li><a href="NSView.html#method-44">-drawSheetBorderWithSize:</a>
+<li><a href="NSView.html#method-45">-enclosingScrollView</a>
+<li><a href="NSView.html#method-46">-endHeaderComments</a>
+<li><a href="NSView.html#method-47">-endPage</a>
+<li><a href="NSView.html#method-48">-endPageSetup</a>
+<li><a href="NSView.html#method-49">-endPrologue</a>
+<li><a href="NSView.html#method-50">-endSetup</a>
+<li><a href="NSView.html#method-51">-endTrailer</a>
+<li><a href="NSView.html#method-52">-fax:</a>
+<li><a href="NSView.html#method-53">-frame</a>
+<li><a href="NSView.html#method-54">-frameRotation</a>
+<li><a href="NSView.html#method-55">-gState</a>
+<li><a href="NSView.html#method-56">-heightAdjustLimit</a>
+<li><a href="NSView.html#method-57">-hitTest:</a>
+<li><a href="NSView.html#method-58">-initWithFrame:</a>
+<li><a href="NSView.html#method-59">-interfaceStyle</a>
+<li><a href="NSView.html#method-60">-isDescendantOf:</a>
+<li><a href="NSView.html#method-61">-isFlipped</a>
+<li><a href="NSView.html#method-62">-isOpaque</a>
+<li><a href="NSView.html#method-63">-isRotatedFromBase</a>
+<li><a href="NSView.html#method-64">-isRotatedOrScaledFromBase</a>
+<li><a href="NSView.html#method-65">-knowsPageRange:</a>
+<li><a href="NSView.html#method-66">-knowsPagesFirst:</a>
+<li><a href="NSView.html#method-67">-locationOfPrintRect:</a>
+<li><a href="NSView.html#method-68">-lockFocus</a>
+<li><a href="NSView.html#method-69">-menuForEvent:</a>
+<li><a href="NSView.html#method-70">-mouse:</a>
+<li><a href="NSView.html#method-71">-needsDisplay</a>
+<li><a href="NSView.html#method-72">-needsPanelToBecomeKey</a>
+<li><a href="NSView.html#method-73">-nextKeyView</a>
+<li><a href="NSView.html#method-74">-nextValidKeyView</a>
+<li><a href="NSView.html#method-75">-opaqueAncestor</a>
+<li><a href="NSView.html#method-76">-performKeyEquivalent:</a>
+<li><a href="NSView.html#method-77">-performMnemonic:</a>
+<li><a href="NSView.html#method-78">-postsBoundsChangedNotifications</a>
+<li><a href="NSView.html#method-79">-postsFrameChangedNotifications</a>
+<li><a href="NSView.html#method-80">-previousKeyView</a>
+<li><a href="NSView.html#method-81">-previousValidKeyView</a>
+<li><a href="NSView.html#method-82">-print:</a>
+<li><a href="NSView.html#method-83">-rectForPage:</a>
+<li><a href="NSView.html#method-84">-reflectScrolledClipView:</a>
+<li><a href="NSView.html#method-85">-registerForDraggedTypes:</a>
+<li><a href="NSView.html#method-86">-releaseGState</a>
+<li><a href="NSView.html#method-87">-removeCursorRect:cursor:</a>
+<li><a href="NSView.html#method-88">-removeFromSuperview</a>
+<li><a href="NSView.html#method-89">-removeFromSuperviewWithoutNeedingDisplay</a>
+<li><a href="NSView.html#method-90">-removeTrackingRect:</a>
+<li><a href="NSView.html#method-91">-renewGState</a>
+<li><a href="NSView.html#method-92">-replaceSubview:</a>
+<li><a href="NSView.html#method-93">-resetCursorRects</a>
+<li><a href="NSView.html#method-94">-resizeSubviewsWithOldSize:</a>
+<li><a href="NSView.html#method-95">-resizeWithOldSuperviewSize:</a>
+<li><a href="NSView.html#method-96">-rotateByAngle:</a>
+<li><a href="NSView.html#method-97">-scaleUnitSquareToSize:</a>
+<li><a href="NSView.html#method-98">-scrollClipView:</a>
+<li><a href="NSView.html#method-99">-scrollPoint:</a>
+<li><a href="NSView.html#method-100">-scrollRect:</a>
+<li><a href="NSView.html#method-101">-scrollRectToVisible:</a>
+<li><a href="NSView.html#method-102">-setAutoresizesSubviews:</a>
+<li><a href="NSView.html#method-103">-setAutoresizingMask:</a>
+<li><a href="NSView.html#method-104">-setBounds:</a>
+<li><a href="NSView.html#method-105">-setBoundsOrigin:</a>
+<li><a href="NSView.html#method-106">-setBoundsRotation:</a>
+<li><a href="NSView.html#method-107">-setBoundsSize:</a>
+<li><a href="NSView.html#method-108">-setFrame:</a>
+<li><a href="NSView.html#method-109">-setFrameOrigin:</a>
+<li><a href="NSView.html#method-110">-setFrameRotation:</a>
+<li><a href="NSView.html#method-111">-setFrameSize:</a>
+<li><a href="NSView.html#method-112">-setInterfaceStyle:</a>
+<li><a href="NSView.html#method-113">-setNeedsDisplay:</a>
+<li><a href="NSView.html#method-114">-setNeedsDisplayInRect:</a>
+<li><a href="NSView.html#method-115">-setNextKeyView:</a>
+<li><a href="NSView.html#method-116">-setPostsBoundsChangedNotifications:</a>
+<li><a href="NSView.html#method-117">-setPostsFrameChangedNotifications:</a>
+<li><a href="NSView.html#method-118">-setToolTip:</a>
+<li><a href="NSView.html#method-119">-setUpGState</a>
+<li><a href="NSView.html#method-120">-shouldDelayWindowOrderingForEvent:</a>
+<li><a href="NSView.html#method-121">-shouldDrawColor</a>
+<li><a href="NSView.html#method-122">-sortSubviewsUsingFunction:context:</a>
+<li><a href="NSView.html#method-123">-subviews</a>
+<li><a href="NSView.html#method-124">-superview</a>
+<li><a href="NSView.html#method-125">-tag</a>
+<li><a href="NSView.html#method-126">-toolTip</a>
+<li><a href="NSView.html#method-127">-translateOriginToPoint:</a>
+<li><a href="NSView.html#method-128">-unlockFocus</a>
+<li><a href="NSView.html#method-129">-unregisterDraggedTypes</a>
+<li><a href="NSView.html#method-130">-viewWillMoveToSuperview:</a>
+<li><a href="NSView.html#method-131">-viewWillMoveToWindow:</a>
+<li><a href="NSView.html#method-132">-viewWithTag:</a>
+<li><a href="NSView.html#method-133">-visibleRect</a>
+<li><a href="NSView.html#method-134">-widthAdjustLimit</a>
+<li><a href="NSView.html#method-135">-window</a>
+<li><a href="NSView.html#method-136">-writeEPSInsideRect:toPasteboard:</a>
+</ul>
+<hr>
+<h2><a name="method-0">defaultMenu</a></h2>
++ (NSMenu*) <b>defaultMenu</b><br>
+
+          
+<hr>
+<h2><a name="method-1">focusView</a></h2>
++ (NSView*) <b>focusView</b><br>
+
+          
+<hr>
+<h2><a name="method-2">acceptsFirstMouse:</a></h2>
+- (BOOL) <b>acceptsFirstMouse:</b> (NSEvent*)theEvent<br>
+
+          
+<hr>
+<h2><a name="method-3">addCursorRect:cursor:</a></h2>
+- (void) <b>addCursorRect:</b> (NSRect)aRect <b>cursor:</b> (NSCursor*)aCursor<br>
+
+          
+<hr>
+<h2><a name="method-4">addSubview:</a></h2>
+- (void) <b>addSubview:</b> (NSView*)aView<br>
+
+          
+<hr>
+<h2><a name="method-5">addSubview:positioned:relativeTo:</a></h2>
+- (void) <b>addSubview:</b> (NSView*)aView <b>positioned:</b> (NSWindowOrderingMode)place <b>relativeTo:</b> (NSView*)otherView<br>
+
+          
+<hr>
+<h2><a name="method-6">addToPageSetup</a></h2>
+- (void) <b>addToPageSetup</b><br>
+
+          
+<hr>
+<h2><a name="method-7">addTrackingRect:owner:userData:assumeInside:</a></h2>
+- (NSTrackingRectTag) <b>addTrackingRect:</b> (NSRect)aRect <b>owner:</b> (id)anObject <b>userData:</b> (void*)userData <b>assumeInside:</b> (BOOL)flag<br>
+
+          
+<hr>
+<h2><a name="method-8">adjustPageHeightNew:top:bottom:</a></h2>
+- (void) <b>adjustPageHeightNew:</b> (float*)newBottom <b>top:</b> (float)top <b>bottom:</b> (float)proposedBottom<br>
+
+          
+<hr>
+<h2><a name="method-9">adjustPageWidthNew:left:right:</a></h2>
+- (void) <b>adjustPageWidthNew:</b> (float*)newRight <b>left:</b> (float)left <b>right:</b> (float)proposedRight<br>
+
+          
+<hr>
+<h2><a name="method-10">adjustScroll:</a></h2>
+- (NSRect) <b>adjustScroll:</b> (NSRect)proposedVisibleRect<br>
+
+          
+<hr>
+<h2><a name="method-11">allocateGState</a></h2>
+- (void) <b>allocateGState</b><br>
+
+          
+<hr>
+<h2><a name="method-12">ancestorSharedWithView:</a></h2>
+- (NSView*) <b>ancestorSharedWithView:</b> (NSView*)aView<br>
+
+          
+<hr>
+<h2><a name="method-13">autoresizesSubviews</a></h2>
+- (BOOL) <b>autoresizesSubviews</b><br>
+
+          
+<hr>
+<h2><a name="method-14">autoresizingMask</a></h2>
+- (unsigned int) <b>autoresizingMask</b><br>
+
+          
+<hr>
+<h2><a name="method-15">autoscroll:</a></h2>
+- (BOOL) <b>autoscroll:</b> (NSEvent*)theEvent<br>
+
+          
+<hr>
+<h2><a name="method-16">beginPage:label:bBox:</a></h2>
+- (void) <b>beginPage:</b> (int)ordinalNum <b>label:</b> (NSString *)aString <b>bBox:</b> (NSRect)pageRect<br>
+
+          
+<hr>
+<h2><a name="method-17">beginPageSetupRect:placement:</a></h2>
+- (void) <b>beginPageSetupRect:</b> (NSRect)aRect <b>placement:</b> (NSPoint)location<br>
+
+          
+<hr>
+<h2><a name="method-18">beginPrologueBBox:creationDate:createdBy:fonts:forWhom:pages:</a></h2>
+- (void) <b>beginPrologueBBox:</b> (NSRect)boundingBox <b>creationDate:</b> (NSString*)dateCreated <b>createdBy:</b> (NSString *)anApplication <b>fonts:</b> (NSString*)fontNames <b>forWhom:</b> (NSString *)user <b>pages:</b> (int)numPages<br>
+
+          
+<hr>
+<h2><a name="method-19">beginSetup</a></h2>
+- (void) <b>beginSetup</b><br>
+
+          
+<hr>
+<h2><a name="method-20">beginTrailer</a></h2>
+- (void) <b>beginTrailer</b><br>
+
+          
+<hr>
+<h2><a name="method-21">bounds</a></h2>
+- (NSRect) <b>bounds</b><br>
+
+          
+<hr>
+<h2><a name="method-22">boundsRotation</a></h2>
+- (float) <b>boundsRotation</b><br>
+
+          
+<hr>
+<h2><a name="method-23">canDraw</a></h2>
+- (BOOL) <b>canDraw</b><br>
+
+          
+<hr>
+<h2><a name="method-24">centerScanRect:</a></h2>
+- (NSRect) <b>centerScanRect:</b> (NSRect)aRect<br>
+
+          
+<hr>
+<h2><a name="method-25">convertPoint:fromView:</a></h2>
+- (NSPoint) <b>convertPoint:</b> (NSPoint)aPoint <b>fromView:</b> (NSView*)aView<br>
+
+          
+<hr>
+<h2><a name="method-26">convertPoint:</a></h2>
+- (NSPoint) <b>convertPoint:</b> (NSPoint)aPoint<br>
+
+          
+<hr>
+<h2><a name="method-27">convertRect:fromView:</a></h2>
+- (NSRect) <b>convertRect:</b> (NSRect)aRect <b>fromView:</b> (NSView*)aView<br>
+
+          
+<hr>
+<h2><a name="method-28">convertRect:toView:</a></h2>
+- (NSRect) <b>convertRect:</b> (NSRect)aRect <b>toView:</b> (NSView*)aView<br>
+
+          
+<hr>
+<h2><a name="method-29">convertSize:fromView:</a></h2>
+- (NSSize) <b>convertSize:</b> (NSSize)aSize <b>fromView:</b> (NSView*)aView<br>
+
+          
+<hr>
+<h2><a name="method-30">convertSize:toView:</a></h2>
+- (NSSize) <b>convertSize:</b> (NSSize)aSize <b>toView:</b> (NSView*)aView<br>
+
+          
+<hr>
+<h2><a name="method-31">dataWithEPSInsideRect:</a></h2>
+- (NSData*) <b>dataWithEPSInsideRect:</b> (NSRect)aRect<br>
+
+          
+<hr>
+<h2><a name="method-32">discardCursorRects</a></h2>
+- (void) <b>discardCursorRects</b><br>
+
+          
+<hr>
+<h2><a name="method-33">display</a></h2>
+- (void) <b>display</b><br>
+
+          
+<hr>
+<h2><a name="method-34">displayIfNeeded</a></h2>
+- (void) <b>displayIfNeeded</b><br>
+
+          
+<hr>
+<h2><a name="method-35">displayIfNeededIgnoringOpacity</a></h2>
+- (void) <b>displayIfNeededIgnoringOpacity</b><br>
+
+          
+<hr>
+<h2><a name="method-36">displayIfNeededInRect:</a></h2>
+- (void) <b>displayIfNeededInRect:</b> (NSRect)aRect<br>
+
+          
+<hr>
+<h2><a name="method-37">displayIfNeededInRectIgnoringOpacity:</a></h2>
+- (void) <b>displayIfNeededInRectIgnoringOpacity:</b> (NSRect)aRect<br>
+
+          
+<hr>
+<h2><a name="method-38">displayRect:</a></h2>
+- (void) <b>displayRect:</b> (NSRect)aRect<br>
+
+          
+<hr>
+<h2><a name="method-39">displayRectIgnoringOpacity:</a></h2>
+- (void) <b>displayRectIgnoringOpacity:</b> (NSRect)aRect<br>
+
+          
+<hr>
+<h2><a name="method-40">dragFile:fromRect:slideBack:</a></h2>
+- (BOOL) <b>dragFile:</b> (NSString*)fullPath <b>fromRect:</b> (NSRect)aRect <b>slideBack:</b> (BOOL)slideBack<br>
+
+          
+<hr>
+<h2><a name="method-41">dragImage:at:offset:event:pasteboard:source:slideBack:</a></h2>
+- (void) <b>dragImage:</b> (NSImage*)anImage <b>at:</b> (NSPoint)imageLoc <b>offset:</b> (NSSize)mouseOffset <b>event:</b> (NSEvent *)theEvent <b>pasteboard:</b> (NSPasteboard*)pboard <b>source:</b> (id)sourceObject <b>slideBack:</b> (BOOL)slideBack<br>
+
+          
+<hr>
+<h2><a name="method-42">drawPageBorderWithSize:</a></h2>
+- (void) <b>drawPageBorderWithSize:</b> (NSSize)borderSize<br>
+
+          
+<hr>
+<h2><a name="method-43">drawRect:</a></h2>
+- (void) <b>drawRect:</b> (NSRect)aRect<br>
+
+          
+<hr>
+<h2><a name="method-44">drawSheetBorderWithSize:</a></h2>
+- (void) <b>drawSheetBorderWithSize:</b> (NSSize)borderSize<br>
+
+          
+<hr>
+<h2><a name="method-45">enclosingScrollView</a></h2>
+- (NSScrollView*) <b>enclosingScrollView</b><br>
+
+          
+<hr>
+<h2><a name="method-46">endHeaderComments</a></h2>
+- (void) <b>endHeaderComments</b><br>
+
+          
+<hr>
+<h2><a name="method-47">endPage</a></h2>
+- (void) <b>endPage</b><br>
+
+          
+<hr>
+<h2><a name="method-48">endPageSetup</a></h2>
+- (void) <b>endPageSetup</b><br>
+
+          
+<hr>
+<h2><a name="method-49">endPrologue</a></h2>
+- (void) <b>endPrologue</b><br>
+
+          
+<hr>
+<h2><a name="method-50">endSetup</a></h2>
+- (void) <b>endSetup</b><br>
+
+          
+<hr>
+<h2><a name="method-51">endTrailer</a></h2>
+- (void) <b>endTrailer</b><br>
+
+          
+<hr>
+<h2><a name="method-52">fax:</a></h2>
+- (void) <b>fax:</b> (id)sender<br>
+
+          
+<hr>
+<h2><a name="method-53">frame</a></h2>
+- (NSRect) <b>frame</b><br>
+
+          
+<hr>
+<h2><a name="method-54">frameRotation</a></h2>
+- (float) <b>frameRotation</b><br>
+
+          
+<hr>
+<h2><a name="method-55">gState</a></h2>
+- (int) <b>gState</b><br>
+
+          
+<hr>
+<h2><a name="method-56">heightAdjustLimit</a></h2>
+- (float) <b>heightAdjustLimit</b><br>
+
+          
+<hr>
+<h2><a name="method-57">hitTest:</a></h2>
+- (NSView*) <b>hitTest:</b> (NSPoint)aPoint<br>
+
+          
+<hr>
+<h2><a name="method-58">initWithFrame:</a></h2>
+- (id) <b>initWithFrame:</b> (NSRect)frameRect<br>
+
+          
+<hr>
+<h2><a name="method-59">interfaceStyle</a></h2>
+- (NSInterfaceStyle) <b>interfaceStyle</b><br>
+
+          
+<hr>
+<h2><a name="method-60">isDescendantOf:</a></h2>
+- (BOOL) <b>isDescendantOf:</b> (NSView*)aView<br>
+
+          
+<hr>
+<h2><a name="method-61">isFlipped</a></h2>
+- (BOOL) <b>isFlipped</b><br>
+
+          
+<hr>
+<h2><a name="method-62">isOpaque</a></h2>
+- (BOOL) <b>isOpaque</b><br>
+
+          
+<hr>
+<h2><a name="method-63">isRotatedFromBase</a></h2>
+- (BOOL) <b>isRotatedFromBase</b><br>
+
+          
+<hr>
+<h2><a name="method-64">isRotatedOrScaledFromBase</a></h2>
+- (BOOL) <b>isRotatedOrScaledFromBase</b><br>
+
+          
+<hr>
+<h2><a name="method-65">knowsPageRange:</a></h2>
+- (BOOL) <b>knowsPageRange:</b> (NSRangePointer)range<br>
+
+          
+<hr>
+<h2><a name="method-66">knowsPagesFirst:</a></h2>
+- (BOOL) <b>knowsPagesFirst:</b> (int*)firstPageNum<br>
+
+          
+<hr>
+<h2><a name="method-67">locationOfPrintRect:</a></h2>
+- (NSPoint) <b>locationOfPrintRect:</b> (NSRect)aRect<br>
+
+          
+<hr>
+<h2><a name="method-68">lockFocus</a></h2>
+- (void) <b>lockFocus</b><br>
+
+          
+<hr>
+<h2><a name="method-69">menuForEvent:</a></h2>
+- (NSMenu*) <b>menuForEvent:</b> (NSEvent*)theEvent<br>
+
+          
+<hr>
+<h2><a name="method-70">mouse:</a></h2>
+- (BOOL) <b>mouse:</b> (NSPoint)aPoint<br>
+
+          
+<hr>
+<h2><a name="method-71">needsDisplay</a></h2>
+- (BOOL) <b>needsDisplay</b><br>
+
+          
+<hr>
+<h2><a name="method-72">needsPanelToBecomeKey</a></h2>
+- (BOOL) <b>needsPanelToBecomeKey</b><br>
+
+          
+<hr>
+<h2><a name="method-73">nextKeyView</a></h2>
+- (NSView*) <b>nextKeyView</b><br>
+
+          
+<hr>
+<h2><a name="method-74">nextValidKeyView</a></h2>
+- (NSView*) <b>nextValidKeyView</b><br>
+
+          
+<hr>
+<h2><a name="method-75">opaqueAncestor</a></h2>
+- (NSView*) <b>opaqueAncestor</b><br>
+
+          
+<hr>
+<h2><a name="method-76">performKeyEquivalent:</a></h2>
+- (BOOL) <b>performKeyEquivalent:</b> (NSEvent*)theEvent<br>
+
+          
+<hr>
+<h2><a name="method-77">performMnemonic:</a></h2>
+- (BOOL) <b>performMnemonic:</b> (NSString*)aString<br>
+
+          
+<hr>
+<h2><a name="method-78">postsBoundsChangedNotifications</a></h2>
+- (BOOL) <b>postsBoundsChangedNotifications</b><br>
+
+          
+<hr>
+<h2><a name="method-79">postsFrameChangedNotifications</a></h2>
+- (BOOL) <b>postsFrameChangedNotifications</b><br>
+
+          
+<hr>
+<h2><a name="method-80">previousKeyView</a></h2>
+- (NSView*) <b>previousKeyView</b><br>
+
+          
+<hr>
+<h2><a name="method-81">previousValidKeyView</a></h2>
+- (NSView*) <b>previousValidKeyView</b><br>
+
+          
+<hr>
+<h2><a name="method-82">print:</a></h2>
+- (void) <b>print:</b> (id)sender<br>
+
+          
+<hr>
+<h2><a name="method-83">rectForPage:</a></h2>
+- (NSRect) <b>rectForPage:</b> (int)pageNumber<br>
+
+          
+<hr>
+<h2><a name="method-84">reflectScrolledClipView:</a></h2>
+- (void) <b>reflectScrolledClipView:</b> (NSClipView*)aClipView<br>
+
+          
+<hr>
+<h2><a name="method-85">registerForDraggedTypes:</a></h2>
+- (void) <b>registerForDraggedTypes:</b> (NSArray*)pboardTypes<br>
+
+          
+<hr>
+<h2><a name="method-86">releaseGState</a></h2>
+- (void) <b>releaseGState</b><br>
+
+          
+<hr>
+<h2><a name="method-87">removeCursorRect:cursor:</a></h2>
+- (void) <b>removeCursorRect:</b> (NSRect)aRect <b>cursor:</b> (NSCursor*)aCursor<br>
+
+          
+<hr>
+<h2><a name="method-88">removeFromSuperview</a></h2>
+- (void) <b>removeFromSuperview</b><br>
+
+          
+<hr>
+<h2><a name="method-89">removeFromSuperviewWithoutNeedingDisplay</a></h2>
+- (void) <b>removeFromSuperviewWithoutNeedingDisplay</b><br>
+
+          
+<hr>
+<h2><a name="method-90">removeTrackingRect:</a></h2>
+- (void) <b>removeTrackingRect:</b> (NSTrackingRectTag)aTag<br>
+
+          
+<hr>
+<h2><a name="method-91">renewGState</a></h2>
+- (void) <b>renewGState</b><br>
+
+          
+<hr>
+<h2><a name="method-92">replaceSubview:</a></h2>
+- (void) <b>replaceSubview:</b> (NSView*)oldView<br>
+
+          
+<hr>
+<h2><a name="method-93">resetCursorRects</a></h2>
+- (void) <b>resetCursorRects</b><br>
+
+          
+<hr>
+<h2><a name="method-94">resizeSubviewsWithOldSize:</a></h2>
+- (void) <b>resizeSubviewsWithOldSize:</b> (NSSize)oldFrameSize<br>
+
+          
+<hr>
+<h2><a name="method-95">resizeWithOldSuperviewSize:</a></h2>
+- (void) <b>resizeWithOldSuperviewSize:</b> (NSSize)oldFrameSize<br>
+
+          
+<hr>
+<h2><a name="method-96">rotateByAngle:</a></h2>
+- (void) <b>rotateByAngle:</b> (float)angle<br>
+
+          
+<hr>
+<h2><a name="method-97">scaleUnitSquareToSize:</a></h2>
+- (void) <b>scaleUnitSquareToSize:</b> (NSSize)newUnitSize<br>
+
+          
+<hr>
+<h2><a name="method-98">scrollClipView:</a></h2>
+- (void) <b>scrollClipView:</b> (NSClipView*)aClipView<br>
+
+          
+<hr>
+<h2><a name="method-99">scrollPoint:</a></h2>
+- (void) <b>scrollPoint:</b> (NSPoint)aPoint<br>
+
+          
+<hr>
+<h2><a name="method-100">scrollRect:</a></h2>
+- (void) <b>scrollRect:</b> (NSRect)aRect<br>
+
+          
+<hr>
+<h2><a name="method-101">scrollRectToVisible:</a></h2>
+- (BOOL) <b>scrollRectToVisible:</b> (NSRect)aRect<br>
+
+          
+<hr>
+<h2><a name="method-102">setAutoresizesSubviews:</a></h2>
+- (void) <b>setAutoresizesSubviews:</b> (BOOL)flag<br>
+
+          
+<hr>
+<h2><a name="method-103">setAutoresizingMask:</a></h2>
+- (void) <b>setAutoresizingMask:</b> (unsigned int)mask<br>
+
+          
+<hr>
+<h2><a name="method-104">setBounds:</a></h2>
+- (void) <b>setBounds:</b> (NSRect)boundsRect<br>
+
+          
+<hr>
+<h2><a name="method-105">setBoundsOrigin:</a></h2>
+- (void) <b>setBoundsOrigin:</b> (NSPoint)newOrigin<br>
+
+          
+<hr>
+<h2><a name="method-106">setBoundsRotation:</a></h2>
+- (void) <b>setBoundsRotation:</b> (float)angle<br>
+
+          
+<hr>
+<h2><a name="method-107">setBoundsSize:</a></h2>
+- (void) <b>setBoundsSize:</b> (NSSize)newSize<br>
+
+          
+<hr>
+<h2><a name="method-108">setFrame:</a></h2>
+- (void) <b>setFrame:</b> (NSRect)frameRect<br>
+
+          
+<hr>
+<h2><a name="method-109">setFrameOrigin:</a></h2>
+- (void) <b>setFrameOrigin:</b> (NSPoint)newOrigin<br>
+
+          
+<hr>
+<h2><a name="method-110">setFrameRotation:</a></h2>
+- (void) <b>setFrameRotation:</b> (float)angle<br>
+
+          
+<hr>
+<h2><a name="method-111">setFrameSize:</a></h2>
+- (void) <b>setFrameSize:</b> (NSSize)newSize<br>
+
+          
+<hr>
+<h2><a name="method-112">setInterfaceStyle:</a></h2>
+- (void) <b>setInterfaceStyle:</b> (NSInterfaceStyle)interfaceStyle<br>
+
+          
+<hr>
+<h2><a name="method-113">setNeedsDisplay:</a></h2>
+- (void) <b>setNeedsDisplay:</b> (BOOL)flag<br>
+
+          
+<hr>
+<h2><a name="method-114">setNeedsDisplayInRect:</a></h2>
+- (void) <b>setNeedsDisplayInRect:</b> (NSRect)invalidRect<br>
+
+          
+<hr>
+<h2><a name="method-115">setNextKeyView:</a></h2>
+- (void) <b>setNextKeyView:</b> (NSView*)aView<br>
+
+          
+<hr>
+<h2><a name="method-116">setPostsBoundsChangedNotifications:</a></h2>
+- (void) <b>setPostsBoundsChangedNotifications:</b> (BOOL)flag<br>
+
+          
+<hr>
+<h2><a name="method-117">setPostsFrameChangedNotifications:</a></h2>
+- (void) <b>setPostsFrameChangedNotifications:</b> (BOOL)flag<br>
+
+          
+<hr>
+<h2><a name="method-118">setToolTip:</a></h2>
+- (void) <b>setToolTip:</b> (NSString*)string<br>
+
+          
+<hr>
+<h2><a name="method-119">setUpGState</a></h2>
+- (void) <b>setUpGState</b><br>
+
+          
+<hr>
+<h2><a name="method-120">shouldDelayWindowOrderingForEvent:</a></h2>
+- (BOOL) <b>shouldDelayWindowOrderingForEvent:</b> (NSEvent*)theEvent<br>
+
+          
+<hr>
+<h2><a name="method-121">shouldDrawColor</a></h2>
+- (BOOL) <b>shouldDrawColor</b><br>
+
+          
+<hr>
+<h2><a name="method-122">sortSubviewsUsingFunction:context:</a></h2>
+- (void) <b>sortSubviewsUsingFunction:</b> (int (*)(id,id,void*))compare <b>context:</b> (void*)context<br>
+
+          
+<hr>
+<h2><a name="method-123">subviews</a></h2>
+- (NSArray*) <b>subviews</b><br>
+
+          
+<hr>
+<h2><a name="method-124">superview</a></h2>
+- (NSView*) <b>superview</b><br>
+
+          
+<hr>
+<h2><a name="method-125">tag</a></h2>
+- (int) <b>tag</b><br>
+
+          
+<hr>
+<h2><a name="method-126">toolTip</a></h2>
+- (NSString*) <b>toolTip</b><br>
+
+          
+<hr>
+<h2><a name="method-127">translateOriginToPoint:</a></h2>
+- (void) <b>translateOriginToPoint:</b> (NSPoint)newOrigin<br>
+
+          
+<hr>
+<h2><a name="method-128">unlockFocus</a></h2>
+- (void) <b>unlockFocus</b><br>
+
+          
+<hr>
+<h2><a name="method-129">unregisterDraggedTypes</a></h2>
+- (void) <b>unregisterDraggedTypes</b><br>
+
+          
+<hr>
+<h2><a name="method-130">viewWillMoveToSuperview:</a></h2>
+- (void) <b>viewWillMoveToSuperview:</b> (NSView*)newSuperview<br>
+
+          
+<hr>
+<h2><a name="method-131">viewWillMoveToWindow:</a></h2>
+- (void) <b>viewWillMoveToWindow:</b> (NSWindow*)newWindow<br>
+
+          
+<hr>
+<h2><a name="method-132">viewWithTag:</a></h2>
+- (id) <b>viewWithTag:</b> (int)aTag<br>
+
+          
+<hr>
+<h2><a name="method-133">visibleRect</a></h2>
+- (NSRect) <b>visibleRect</b><br>
+
+          
+<hr>
+<h2><a name="method-134">widthAdjustLimit</a></h2>
+- (float) <b>widthAdjustLimit</b><br>
+
+          
+<hr>
+<h2><a name="method-135">window</a></h2>
+- (NSWindow*) <b>window</b><br>
+
+          
+<hr>
+<h2><a name="method-136">writeEPSInsideRect:toPasteboard:</a></h2>
+- (void) <b>writeEPSInsideRect:</b> (NSRect)aRect <b>toPasteboard:</b> (NSPasteboard*)pboard<br>
+
+          
+<hr>
+</body>
+
+</html>

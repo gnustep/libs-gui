@@ -1,0 +1,360 @@
+<html><head>
+<title>NSBezierPath</title>
+</head>
+<body>
+<a href="NSAttributedStrngAdds.html">[Previous]</a>
+<a href="AppKit.html">[Up]</a>
+<a href="NSBitmapImageRep.html">[Next]</a>
+<h1>NSBezierPath</h1>
+<h3>Authors</h3>
+<dl>
+<dt><a href="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
+<dd>
+</dl>
+<p>Version: 0.1</p>
+<p>Date: 28 February, 2000</p>
+<h2><a name="cont-0">NSBezierPath</a></h2>
+<h2><a name="NSBezierPath">NSBezierPath</a></h2>
+<p><b>Declared in:</b> AppKit/NSBezierPath.h</p>
+<p><b>Inherits from:</b> NSObject</p>
+<p><b>Conforms to:</b> NSCoding
+</p>
+<hr>
+
+          
+<ul>
+<li><a href="NSBezierPath.html#method-0">+bezierPath</a>
+<li><a href="NSBezierPath.html#method-1">+bezierPathWithRect:</a>
+<li><a href="NSBezierPath.html#method-2">+clipRect:</a>
+<li><a href="NSBezierPath.html#method-3">+drawPackedGlyphs:</a>
+<li><a href="NSBezierPath.html#method-4">+fillRect:</a>
+<li><a href="NSBezierPath.html#method-5">+setFlatness:</a>
+<li><a href="NSBezierPath.html#method-6">+setHalftonePhase:</a>
+<li><a href="NSBezierPath.html#method-7">+setLineCapStyle:</a>
+<li><a href="NSBezierPath.html#method-8">+setLineJoinStyle:</a>
+<li><a href="NSBezierPath.html#method-9">+setLineWidth:</a>
+<li><a href="NSBezierPath.html#method-10">+setMiterLimit:</a>
+<li><a href="NSBezierPath.html#method-11">+strokeLineFromPoint:toPoint:</a>
+<li><a href="NSBezierPath.html#method-12">+strokeRect:</a>
+<li><a href="NSBezierPath.html#method-13">-addClip</a>
+<li><a href="NSBezierPath.html#method-14">-appendBezierPath:</a>
+<li><a href="NSBezierPath.html#method-15">-appendBezierPathWithArcWithCenter:radius:startAngle:</a>
+<li><a href="NSBezierPath.html#method-16">-appendBezierPathWithGlyph:</a>
+<li><a href="NSBezierPath.html#method-17">-appendBezierPathWithGlyphs:count:inFont:</a>
+<li><a href="NSBezierPath.html#method-18">-appendBezierPathWithOvalInRect:</a>
+<li><a href="NSBezierPath.html#method-19">-appendBezierPathWithPackedGlyphs:</a>
+<li><a href="NSBezierPath.html#method-20">-appendBezierPathWithPoints:</a>
+<li><a href="NSBezierPath.html#method-21">-appendBezierPathWithRect:</a>
+<li><a href="NSBezierPath.html#method-22">-bounds</a>
+<li><a href="NSBezierPath.html#method-23">-cachesBezierPath</a>
+<li><a href="NSBezierPath.html#method-24">-closePath</a>
+<li><a href="NSBezierPath.html#method-25">-controlPointBounds</a>
+<li><a href="NSBezierPath.html#method-26">-currentPoint</a>
+<li><a href="NSBezierPath.html#method-27">-curveToPoint:controlPoint1:</a>
+<li><a href="NSBezierPath.html#method-28">-elementCount</a>
+<li><a href="NSBezierPath.html#method-29">-elementTypeAtIndex:</a>
+<li><a href="NSBezierPath.html#method-30">-elementTypeAtIndex:associatedPoints:</a>
+<li><a href="NSBezierPath.html#method-31">-fill</a>
+<li><a href="NSBezierPath.html#method-32">-isHitByPath:</a>
+<li><a href="NSBezierPath.html#method-33">-isHitByPoint:</a>
+<li><a href="NSBezierPath.html#method-34">-isHitByRect:</a>
+<li><a href="NSBezierPath.html#method-35">-isStrokeHitByPath:</a>
+<li><a href="NSBezierPath.html#method-36">-isStrokeHitByPoint:</a>
+<li><a href="NSBezierPath.html#method-37">-isStrokeHitByRect:</a>
+<li><a href="NSBezierPath.html#method-38">-lineToPoint:</a>
+<li><a href="NSBezierPath.html#method-39">-moveToPoint:</a>
+<li><a href="NSBezierPath.html#method-40">-pathElementIndexForPointIndex:</a>
+<li><a href="NSBezierPath.html#method-41">-pointAtIndex:</a>
+<li><a href="NSBezierPath.html#method-42">-pointCount</a>
+<li><a href="NSBezierPath.html#method-43">-pointIndexForPathElementIndex:</a>
+<li><a href="NSBezierPath.html#method-44">-relativeCurveToPoint:controlPoint1:</a>
+<li><a href="NSBezierPath.html#method-45">-relativeLineToPoint:</a>
+<li><a href="NSBezierPath.html#method-46">-relativeMoveToPoint:</a>
+<li><a href="NSBezierPath.html#method-47">-removeLastElement</a>
+<li><a href="NSBezierPath.html#method-48">-reset</a>
+<li><a href="NSBezierPath.html#method-49">-setCachesBezierPath:</a>
+<li><a href="NSBezierPath.html#method-50">-setClip</a>
+<li><a href="NSBezierPath.html#method-51">-setPointAtIndex:toPoint:</a>
+<li><a href="NSBezierPath.html#method-52">-setWindingRule:</a>
+<li><a href="NSBezierPath.html#method-53">-stroke</a>
+<li><a href="NSBezierPath.html#method-54">-windingRule</a>
+</ul>
+<hr>
+<h2><a name="method-0">bezierPath</a></h2>
++ (NSBezierPath*) <b>bezierPath</b><br>
+
+          
+<hr>
+<h2><a name="method-1">bezierPathWithRect:</a></h2>
++ (NSBezierPath*) <b>bezierPathWithRect:</b> (NSRect)aRect<br>
+
+          
+<hr>
+<h2><a name="method-2">clipRect:</a></h2>
++ (void) <b>clipRect:</b> (NSRect)aRect<br>
+
+          
+<hr>
+<h2><a name="method-3">drawPackedGlyphs:</a></h2>
++ (void) <b>drawPackedGlyphs:</b> (constchar*)packedGlyphs<br>
+
+          
+<hr>
+<h2><a name="method-4">fillRect:</a></h2>
++ (void) <b>fillRect:</b> (NSRect)aRect<br>
+
+          
+<hr>
+<h2><a name="method-5">setFlatness:</a></h2>
++ (void) <b>setFlatness:</b> (float)flatness<br>
+
+          
+<hr>
+<h2><a name="method-6">setHalftonePhase:</a></h2>
++ (void) <b>setHalftonePhase:</b> (NSPoint)aPoint<br>
+
+          
+<hr>
+<h2><a name="method-7">setLineCapStyle:</a></h2>
++ (void) <b>setLineCapStyle:</b> (NSLineCapStyle)lineCap<br>
+
+          
+<hr>
+<h2><a name="method-8">setLineJoinStyle:</a></h2>
++ (void) <b>setLineJoinStyle:</b> (NSLineJoinStyle)lineJoinStyle<br>
+
+          
+<hr>
+<h2><a name="method-9">setLineWidth:</a></h2>
++ (void) <b>setLineWidth:</b> (float)width<br>
+
+          
+<hr>
+<h2><a name="method-10">setMiterLimit:</a></h2>
++ (void) <b>setMiterLimit:</b> (float)limit<br>
+
+          
+<hr>
+<h2><a name="method-11">strokeLineFromPoint:toPoint:</a></h2>
++ (void) <b>strokeLineFromPoint:</b> (NSPoint)point1 <b>toPoint:</b> (NSPoint)point2<br>
+
+          
+<hr>
+<h2><a name="method-12">strokeRect:</a></h2>
++ (void) <b>strokeRect:</b> (NSRect)aRect<br>
+
+          
+<hr>
+<h2><a name="method-13">addClip</a></h2>
+- (void) <b>addClip</b><br>
+
+          
+<hr>
+<h2><a name="method-14">appendBezierPath:</a></h2>
+- (void) <b>appendBezierPath:</b> (NSBezierPath*)aPath<br>
+
+          
+<hr>
+<h2><a name="method-15">appendBezierPathWithArcWithCenter:radius:startAngle:</a></h2>
+- (void) <b>appendBezierPathWithArcWithCenter:</b> (NSPoint)center <b>radius:</b> (float)radius <b>startAngle:</b> (float)startAngle<br>
+
+          
+<hr>
+<h2><a name="method-16">appendBezierPathWithGlyph:</a></h2>
+- (void) <b>appendBezierPathWithGlyph:</b> (NSGlyph)aGlyph<br>
+
+          
+<hr>
+<h2><a name="method-17">appendBezierPathWithGlyphs:count:inFont:</a></h2>
+- (void) <b>appendBezierPathWithGlyphs:</b> (NSGlyph*)glyphs <b>count:</b> (int)count <b>inFont:</b> (NSFont*)fontObj<br>
+
+          
+<hr>
+<h2><a name="method-18">appendBezierPathWithOvalInRect:</a></h2>
+- (void) <b>appendBezierPathWithOvalInRect:</b> (NSRect)aRect<br>
+
+          
+<hr>
+<h2><a name="method-19">appendBezierPathWithPackedGlyphs:</a></h2>
+- (void) <b>appendBezierPathWithPackedGlyphs:</b> (constchar*)packedGlyphs<br>
+
+          
+<hr>
+<h2><a name="method-20">appendBezierPathWithPoints:</a></h2>
+- (void) <b>appendBezierPathWithPoints:</b> (NSPoint*)points<br>
+
+          
+<hr>
+<h2><a name="method-21">appendBezierPathWithRect:</a></h2>
+- (void) <b>appendBezierPathWithRect:</b> (NSRect)aRect<br>
+
+          
+<hr>
+<h2><a name="method-22">bounds</a></h2>
+- (NSRect) <b>bounds</b><br>
+
+          
+<hr>
+<h2><a name="method-23">cachesBezierPath</a></h2>
+- (BOOL) <b>cachesBezierPath</b><br>
+
+          
+<hr>
+<h2><a name="method-24">closePath</a></h2>
+- (void) <b>closePath</b><br>
+
+          
+<hr>
+<h2><a name="method-25">controlPointBounds</a></h2>
+- (NSRect) <b>controlPointBounds</b><br>
+
+          
+<hr>
+<h2><a name="method-26">currentPoint</a></h2>
+- (NSPoint) <b>currentPoint</b><br>
+
+          
+<hr>
+<h2><a name="method-27">curveToPoint:controlPoint1:</a></h2>
+- (void) <b>curveToPoint:</b> (NSPoint)aPoint <b>controlPoint1:</b> (NSPoint)controlPoint1<br>
+
+          
+<hr>
+<h2><a name="method-28">elementCount</a></h2>
+- (int) <b>elementCount</b><br>
+
+          
+<hr>
+<h2><a name="method-29">elementTypeAtIndex:</a></h2>
+- (NSBezierPathElementType) <b>elementTypeAtIndex:</b> (int)index<br>
+
+          
+<hr>
+<h2><a name="method-30">elementTypeAtIndex:associatedPoints:</a></h2>
+- (NSBezierPathElementType) <b>elementTypeAtIndex:</b> (int)index <b>associatedPoints:</b> (NSPoint*)points<br>
+
+          
+<hr>
+<h2><a name="method-31">fill</a></h2>
+- (void) <b>fill</b><br>
+
+          
+<hr>
+<h2><a name="method-32">isHitByPath:</a></h2>
+- (BOOL) <b>isHitByPath:</b> (NSBezierPath*)aBezierPath<br>
+
+          
+<hr>
+<h2><a name="method-33">isHitByPoint:</a></h2>
+- (BOOL) <b>isHitByPoint:</b> (NSPoint)aPoint<br>
+
+          
+<hr>
+<h2><a name="method-34">isHitByRect:</a></h2>
+- (BOOL) <b>isHitByRect:</b> (NSRect)aRect<br>
+
+          
+<hr>
+<h2><a name="method-35">isStrokeHitByPath:</a></h2>
+- (BOOL) <b>isStrokeHitByPath:</b> (NSBezierpath*)aBezierPath<br>
+
+          
+<hr>
+<h2><a name="method-36">isStrokeHitByPoint:</a></h2>
+- (BOOL) <b>isStrokeHitByPoint:</b> (NSPoint)aPoint<br>
+
+          
+<hr>
+<h2><a name="method-37">isStrokeHitByRect:</a></h2>
+- (BOOL) <b>isStrokeHitByRect:</b> (NSRect)aRect<br>
+
+          
+<hr>
+<h2><a name="method-38">lineToPoint:</a></h2>
+- (void) <b>lineToPoint:</b> (NSPoint)aPoint<br>
+
+          
+<hr>
+<h2><a name="method-39">moveToPoint:</a></h2>
+- (void) <b>moveToPoint:</b> (NSPoint)aPoint<br>
+
+          
+<hr>
+<h2><a name="method-40">pathElementIndexForPointIndex:</a></h2>
+- (int) <b>pathElementIndexForPointIndex:</b> (int)index<br>
+
+          
+<hr>
+<h2><a name="method-41">pointAtIndex:</a></h2>
+- (NSPoint) <b>pointAtIndex:</b> (int)index<br>
+
+          
+<hr>
+<h2><a name="method-42">pointCount</a></h2>
+- (int) <b>pointCount</b><br>
+
+          
+<hr>
+<h2><a name="method-43">pointIndexForPathElementIndex:</a></h2>
+- (int) <b>pointIndexForPathElementIndex:</b> (int)index<br>
+
+          
+<hr>
+<h2><a name="method-44">relativeCurveToPoint:controlPoint1:</a></h2>
+- (void) <b>relativeCurveToPoint:</b> (NSPoint)aPoint <b>controlPoint1:</b> (NSPoint)controlPoint1<br>
+
+          
+<hr>
+<h2><a name="method-45">relativeLineToPoint:</a></h2>
+- (void) <b>relativeLineToPoint:</b> (NSPoint)aPoint<br>
+
+          
+<hr>
+<h2><a name="method-46">relativeMoveToPoint:</a></h2>
+- (void) <b>relativeMoveToPoint:</b> (NSPoint)aPoint<br>
+
+          
+<hr>
+<h2><a name="method-47">removeLastElement</a></h2>
+- (void) <b>removeLastElement</b><br>
+
+          
+<hr>
+<h2><a name="method-48">reset</a></h2>
+- (void) <b>reset</b><br>
+
+          
+<hr>
+<h2><a name="method-49">setCachesBezierPath:</a></h2>
+- (void) <b>setCachesBezierPath:</b> (BOOL)flag<br>
+
+          
+<hr>
+<h2><a name="method-50">setClip</a></h2>
+- (void) <b>setClip</b><br>
+
+          
+<hr>
+<h2><a name="method-51">setPointAtIndex:toPoint:</a></h2>
+- (void) <b>setPointAtIndex:</b> (int)index <b>toPoint:</b> (NSPoint)aPoint<br>
+
+          
+<hr>
+<h2><a name="method-52">setWindingRule:</a></h2>
+- (void) <b>setWindingRule:</b> (NSWindingRule)aWindingRule<br>
+
+          
+<hr>
+<h2><a name="method-53">stroke</a></h2>
+- (void) <b>stroke</b><br>
+
+          
+<hr>
+<h2><a name="method-54">windingRule</a></h2>
+- (NSWindingRule) <b>windingRule</b><br>
+
+          
+<hr>
+</body>
+
+</html>

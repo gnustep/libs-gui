@@ -1,0 +1,702 @@
+<html><head>
+<title>NSCell</title>
+</head>
+<body>
+<a href="NSCachedImageRep.html">[Previous]</a>
+<a href="AppKit.html">[Up]</a>
+<a href="NSClipView.html">[Next]</a>
+<h1>NSCell</h1>
+<h3>Authors</h3>
+<dl>
+<dt><a href="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
+<dd>
+</dl>
+<p>Version: 0.1</p>
+<p>Date: 28 February, 2000</p>
+<h2><a name="cont-0">NSCell</a></h2>
+<h2><a name="NSCell">NSCell</a></h2>
+<p><b>Declared in:</b> AppKit/NSCell.h</p>
+<p><b>Inherits from:</b> NSObject</p>
+<p><b>Conforms to:</b> NSCoding
+</p>
+<hr>
+
+          
+<ul>
+<li><a href="NSCell.html#method-0">+defaultMenu</a>
+<li><a href="NSCell.html#method-1">+prefersTrackingUntilMouseUp</a>
+<li><a href="NSCell.html#method-2">-acceptsFirstResponder</a>
+<li><a href="NSCell.html#method-3">-action</a>
+<li><a href="NSCell.html#method-4">-alignment</a>
+<li><a href="NSCell.html#method-5">-allowsEditingTextAttributes</a>
+<li><a href="NSCell.html#method-6">-allowsMixedState</a>
+<li><a href="NSCell.html#method-7">-attributedStringValue</a>
+<li><a href="NSCell.html#method-8">-calcDrawInfo:</a>
+<li><a href="NSCell.html#method-9">-cellAttribute:</a>
+<li><a href="NSCell.html#method-10">-cellSize</a>
+<li><a href="NSCell.html#method-11">-cellSizeForBounds:</a>
+<li><a href="NSCell.html#method-12">-compare:</a>
+<li><a href="NSCell.html#method-13">-continueTracking:at:inView:</a>
+<li><a href="NSCell.html#method-14">-controlView</a>
+<li><a href="NSCell.html#method-15">-doubleValue</a>
+<li><a href="NSCell.html#method-16">-drawInteriorWithFrame:</a>
+<li><a href="NSCell.html#method-17">-drawWithFrame:</a>
+<li><a href="NSCell.html#method-18">-drawingRectForBounds:</a>
+<li><a href="NSCell.html#method-19">-editWithFrame:inView:editor:delegate:</a>
+<li><a href="NSCell.html#method-20">-endEditing:</a>
+<li><a href="NSCell.html#method-21">-entryType</a>
+<li><a href="NSCell.html#method-22">-floatValue</a>
+<li><a href="NSCell.html#method-23">-font</a>
+<li><a href="NSCell.html#method-24">-formatter</a>
+<li><a href="NSCell.html#method-25">-getPeriodicDelay:interval:</a>
+<li><a href="NSCell.html#method-26">-hasValidObjectValue</a>
+<li><a href="NSCell.html#method-27">-highlight:withFrame:</a>
+<li><a href="NSCell.html#method-28">-image</a>
+<li><a href="NSCell.html#method-29">-imageRectForBounds:</a>
+<li><a href="NSCell.html#method-30">-importsGraphics</a>
+<li><a href="NSCell.html#method-31">-initImageCell:</a>
+<li><a href="NSCell.html#method-32">-initTextCell:</a>
+<li><a href="NSCell.html#method-33">-intValue</a>
+<li><a href="NSCell.html#method-34">-isBezeled</a>
+<li><a href="NSCell.html#method-35">-isBordered</a>
+<li><a href="NSCell.html#method-36">-isContinuous</a>
+<li><a href="NSCell.html#method-37">-isEditable</a>
+<li><a href="NSCell.html#method-38">-isEnabled</a>
+<li><a href="NSCell.html#method-39">-isEntryAcceptable:</a>
+<li><a href="NSCell.html#method-40">-isHighlighted</a>
+<li><a href="NSCell.html#method-41">-isOpaque</a>
+<li><a href="NSCell.html#method-42">-isScrollable</a>
+<li><a href="NSCell.html#method-43">-isSelectable</a>
+<li><a href="NSCell.html#method-44">-keyEquivalent</a>
+<li><a href="NSCell.html#method-45">-menu</a>
+<li><a href="NSCell.html#method-46">-menuForEvent:inRect:ofView:</a>
+<li><a href="NSCell.html#method-47">-mnemonic</a>
+<li><a href="NSCell.html#method-48">-mnemonicLocation</a>
+<li><a href="NSCell.html#method-49">-mouseDownFlags</a>
+<li><a href="NSCell.html#method-50">-nextState</a>
+<li><a href="NSCell.html#method-51">-objectValue</a>
+<li><a href="NSCell.html#method-52">-performClick:</a>
+<li><a href="NSCell.html#method-53">-refusesFirstResponder</a>
+<li><a href="NSCell.html#method-54">-representedObject</a>
+<li><a href="NSCell.html#method-55">-resetCursorRect:</a>
+<li><a href="NSCell.html#method-56">-sendActionOn:</a>
+<li><a href="NSCell.html#method-57">-sendsActionOnEndEditing</a>
+<li><a href="NSCell.html#method-58">-setAction:</a>
+<li><a href="NSCell.html#method-59">-setAlignment:</a>
+<li><a href="NSCell.html#method-60">-setAllowsEditingTextAttributes:</a>
+<li><a href="NSCell.html#method-61">-setAllowsMixedState:</a>
+<li><a href="NSCell.html#method-62">-setAttributedStringValue:</a>
+<li><a href="NSCell.html#method-63">-setBezeled:</a>
+<li><a href="NSCell.html#method-64">-setBordered:</a>
+<li><a href="NSCell.html#method-65">-setCellAttribute:</a>
+<li><a href="NSCell.html#method-66">-setContinuous:</a>
+<li><a href="NSCell.html#method-67">-setDoubleValue:</a>
+<li><a href="NSCell.html#method-68">-setEditable:</a>
+<li><a href="NSCell.html#method-69">-setEnabled:</a>
+<li><a href="NSCell.html#method-70">-setEntryType:</a>
+<li><a href="NSCell.html#method-72">-setFloatValue:</a>
+<li><a href="NSCell.html#method-71">-setFloatingPointFormat:left:right:</a>
+<li><a href="NSCell.html#method-73">-setFont:</a>
+<li><a href="NSCell.html#method-74">-setFormatter:</a>
+<li><a href="NSCell.html#method-75">-setImage:</a>
+<li><a href="NSCell.html#method-76">-setImportsGraphics:</a>
+<li><a href="NSCell.html#method-77">-setIntValue:</a>
+<li><a href="NSCell.html#method-78">-setMenu:</a>
+<li><a href="NSCell.html#method-79">-setMnemonicLocation:</a>
+<li><a href="NSCell.html#method-80">-setNextState</a>
+<li><a href="NSCell.html#method-81">-setObjectValue:</a>
+<li><a href="NSCell.html#method-82">-setRefusesFirstResponder:</a>
+<li><a href="NSCell.html#method-83">-setRepresentedObject:</a>
+<li><a href="NSCell.html#method-84">-setScrollable:</a>
+<li><a href="NSCell.html#method-85">-setSelectable:</a>
+<li><a href="NSCell.html#method-86">-setSendsActionOnEndEditing:</a>
+<li><a href="NSCell.html#method-87">-setShowsFirstResponder:</a>
+<li><a href="NSCell.html#method-88">-setState:</a>
+<li><a href="NSCell.html#method-89">-setStringValue:</a>
+<li><a href="NSCell.html#method-90">-setTag:</a>
+<li><a href="NSCell.html#method-91">-setTarget:</a>
+<li><a href="NSCell.html#method-92">-setTitleWithMnemonic:</a>
+<li><a href="NSCell.html#method-93">-setType:</a>
+<li><a href="NSCell.html#method-94">-setUpFieldEditorAttributes:</a>
+<li><a href="NSCell.html#method-95">-setWraps:</a>
+<li><a href="NSCell.html#method-96">-showsFirstResponder</a>
+<li><a href="NSCell.html#method-97">-startTrackingAt:</a>
+<li><a href="NSCell.html#method-98">-state</a>
+<li><a href="NSCell.html#method-99">-stopTracking:at:inView:</a>
+<li><a href="NSCell.html#method-100">-stringValue</a>
+<li><a href="NSCell.html#method-101">-tag</a>
+<li><a href="NSCell.html#method-102">-takeDoubleValueFrom:</a>
+<li><a href="NSCell.html#method-103">-takeFloatValueFrom:</a>
+<li><a href="NSCell.html#method-104">-takeIntValueFrom:</a>
+<li><a href="NSCell.html#method-105">-takeObjectValueFrom:</a>
+<li><a href="NSCell.html#method-106">-takeStringValueFrom:</a>
+<li><a href="NSCell.html#method-107">-target</a>
+<li><a href="NSCell.html#method-108">-titleRectForBounds:</a>
+<li><a href="NSCell.html#method-109">-trackMouse:inRect:ofView:untilMouseUp:</a>
+<li><a href="NSCell.html#method-110">-type</a>
+<li><a href="NSCell.html#method-111">-wraps</a>
+</ul>
+<hr>
+<h2><a name="method-0">defaultMenu</a></h2>
++ (NSMenu*) <b>defaultMenu</b><br>
+
+          
+<hr>
+<h2><a name="method-1">prefersTrackingUntilMouseUp</a></h2>
++ (BOOL) <b>prefersTrackingUntilMouseUp</b><br>
+
+          
+<hr>
+<h2><a name="method-2">acceptsFirstResponder</a></h2>
+- (BOOL) <b>acceptsFirstResponder</b><br>
+
+          
+<hr>
+<h2><a name="method-3">action</a></h2>
+- (SEL) <b>action</b><br>
+
+          
+<hr>
+<h2><a name="method-4">alignment</a></h2>
+- (NSTextAlignment) <b>alignment</b><br>
+
+          
+<hr>
+<h2><a name="method-5">allowsEditingTextAttributes</a></h2>
+- (BOOL) <b>allowsEditingTextAttributes</b><br>
+
+          
+<hr>
+<h2><a name="method-6">allowsMixedState</a></h2>
+- (BOOL) <b>allowsMixedState</b><br>
+
+          
+<hr>
+<h2><a name="method-7">attributedStringValue</a></h2>
+- (NSAttributedString*) <b>attributedStringValue</b><br>
+
+          
+<hr>
+<h2><a name="method-8">calcDrawInfo:</a></h2>
+- (void) <b>calcDrawInfo:</b> (NSRect)aRect<br>
+
+          
+<hr>
+<h2><a name="method-9">cellAttribute:</a></h2>
+- (int) <b>cellAttribute:</b> (NSCellAttribute)aParameter<br>
+
+          
+<hr>
+<h2><a name="method-10">cellSize</a></h2>
+- (NSSize) <b>cellSize</b><br>
+
+          
+<hr>
+<h2><a name="method-11">cellSizeForBounds:</a></h2>
+- (NSSize) <b>cellSizeForBounds:</b> (NSRect)aRect<br>
+
+          
+<hr>
+<h2><a name="method-12">compare:</a></h2>
+- (NSComparisonResult) <b>compare:</b> (id)otherCell<br>
+
+          
+<hr>
+<h2><a name="method-13">continueTracking:at:inView:</a></h2>
+- (BOOL) <b>continueTracking:</b> (NSPoint)lastPoint <b>at:</b> (NSPoint)currentPoint <b>inView:</b> (NSView*)controlView<br>
+
+          
+<hr>
+<h2><a name="method-14">controlView</a></h2>
+- (NSView*) <b>controlView</b><br>
+
+          
+<hr>
+<h2><a name="method-15">doubleValue</a></h2>
+- (double) <b>doubleValue</b><br>
+
+          
+<hr>
+<h2><a name="method-16">drawInteriorWithFrame:</a></h2>
+- (void) <b>drawInteriorWithFrame:</b> (NSRect)cellFrame<br>
+
+          
+<hr>
+<h2><a name="method-17">drawWithFrame:</a></h2>
+- (void) <b>drawWithFrame:</b> (NSRect)cellFrame<br>
+
+          
+<hr>
+<h2><a name="method-18">drawingRectForBounds:</a></h2>
+- (NSRect) <b>drawingRectForBounds:</b> (NSRect)theRect<br>
+
+          
+<hr>
+<h2><a name="method-19">editWithFrame:inView:editor:delegate:</a></h2>
+- (void) <b>editWithFrame:</b> (NSRect)aRect <b>inView:</b> (NSView*)controlView <b>editor:</b> (NSText *)textObj <b>delegate:</b> (id)anObject<br>
+
+          
+<hr>
+<h2><a name="method-20">endEditing:</a></h2>
+- (void) <b>endEditing:</b> (NSText*)textObj<br>
+
+          
+<hr>
+<h2><a name="method-21">entryType</a></h2>
+- (int) <b>entryType</b><br>
+
+          
+<hr>
+<h2><a name="method-22">floatValue</a></h2>
+- (float) <b>floatValue</b><br>
+
+          
+<hr>
+<h2><a name="method-23">font</a></h2>
+- (NSFont*) <b>font</b><br>
+
+          
+<hr>
+<h2><a name="method-24">formatter</a></h2>
+- (id) <b>formatter</b><br>
+
+          
+<hr>
+<h2><a name="method-25">getPeriodicDelay:interval:</a></h2>
+- (void) <b>getPeriodicDelay:</b> (float*)delay <b>interval:</b> (float*)interval<br>
+
+          
+<hr>
+<h2><a name="method-26">hasValidObjectValue</a></h2>
+- (BOOL) <b>hasValidObjectValue</b><br>
+
+          
+<hr>
+<h2><a name="method-27">highlight:withFrame:</a></h2>
+- (void) <b>highlight:</b> (BOOL)flag <b>withFrame:</b> (NSRect)cellFrame<br>
+
+          
+<hr>
+<h2><a name="method-28">image</a></h2>
+- (NSImage*) <b>image</b><br>
+
+          
+<hr>
+<h2><a name="method-29">imageRectForBounds:</a></h2>
+- (NSRect) <b>imageRectForBounds:</b> (NSRect)theRect<br>
+
+          
+<hr>
+<h2><a name="method-30">importsGraphics</a></h2>
+- (BOOL) <b>importsGraphics</b><br>
+
+          
+<hr>
+<h2><a name="method-31">initImageCell:</a></h2>
+- (id) <b>initImageCell:</b> (NSImage*)anImage<br>
+
+          
+<hr>
+<h2><a name="method-32">initTextCell:</a></h2>
+- (id) <b>initTextCell:</b> (NSString*)aString<br>
+
+          
+<hr>
+<h2><a name="method-33">intValue</a></h2>
+- (int) <b>intValue</b><br>
+
+          
+<hr>
+<h2><a name="method-34">isBezeled</a></h2>
+- (BOOL) <b>isBezeled</b><br>
+
+          
+<hr>
+<h2><a name="method-35">isBordered</a></h2>
+- (BOOL) <b>isBordered</b><br>
+
+          
+<hr>
+<h2><a name="method-36">isContinuous</a></h2>
+- (BOOL) <b>isContinuous</b><br>
+
+          
+<hr>
+<h2><a name="method-37">isEditable</a></h2>
+- (BOOL) <b>isEditable</b><br>
+
+          
+<hr>
+<h2><a name="method-38">isEnabled</a></h2>
+- (BOOL) <b>isEnabled</b><br>
+
+          
+<hr>
+<h2><a name="method-39">isEntryAcceptable:</a></h2>
+- (BOOL) <b>isEntryAcceptable:</b> (NSString*)aString<br>
+
+          
+<hr>
+<h2><a name="method-40">isHighlighted</a></h2>
+- (BOOL) <b>isHighlighted</b><br>
+
+          
+<hr>
+<h2><a name="method-41">isOpaque</a></h2>
+- (BOOL) <b>isOpaque</b><br>
+
+          
+<hr>
+<h2><a name="method-42">isScrollable</a></h2>
+- (BOOL) <b>isScrollable</b><br>
+
+          
+<hr>
+<h2><a name="method-43">isSelectable</a></h2>
+- (BOOL) <b>isSelectable</b><br>
+
+          
+<hr>
+<h2><a name="method-44">keyEquivalent</a></h2>
+- (NSString*) <b>keyEquivalent</b><br>
+
+          
+<hr>
+<h2><a name="method-45">menu</a></h2>
+- (NSMenu*) <b>menu</b><br>
+
+          
+<hr>
+<h2><a name="method-46">menuForEvent:inRect:ofView:</a></h2>
+- (NSMenu*) <b>menuForEvent:</b> (NSEvent*)anEvent <b>inRect:</b> (NSRect)cellFrame <b>ofView:</b> (NSView*)aView<br>
+
+          
+<hr>
+<h2><a name="method-47">mnemonic</a></h2>
+- (NSString*) <b>mnemonic</b><br>
+
+          
+<hr>
+<h2><a name="method-48">mnemonicLocation</a></h2>
+- (unsigned int) <b>mnemonicLocation</b><br>
+
+          
+<hr>
+<h2><a name="method-49">mouseDownFlags</a></h2>
+- (int) <b>mouseDownFlags</b><br>
+
+          
+<hr>
+<h2><a name="method-50">nextState</a></h2>
+- (int) <b>nextState</b><br>
+
+          
+<hr>
+<h2><a name="method-51">objectValue</a></h2>
+- (id) <b>objectValue</b><br>
+
+          
+<hr>
+<h2><a name="method-52">performClick:</a></h2>
+- (void) <b>performClick:</b> (id)sender<br>
+
+          
+<hr>
+<h2><a name="method-53">refusesFirstResponder</a></h2>
+- (BOOL) <b>refusesFirstResponder</b><br>
+
+          
+<hr>
+<h2><a name="method-54">representedObject</a></h2>
+- (id) <b>representedObject</b><br>
+
+          
+<hr>
+<h2><a name="method-55">resetCursorRect:</a></h2>
+- (void) <b>resetCursorRect:</b> (NSRect)cellFrame<br>
+
+          
+<hr>
+<h2><a name="method-56">sendActionOn:</a></h2>
+- (int) <b>sendActionOn:</b> (int)mask<br>
+
+          
+<hr>
+<h2><a name="method-57">sendsActionOnEndEditing</a></h2>
+- (BOOL) <b>sendsActionOnEndEditing</b><br>
+
+          
+<hr>
+<h2><a name="method-58">setAction:</a></h2>
+- (void) <b>setAction:</b> (SEL)aSelector<br>
+
+          
+<hr>
+<h2><a name="method-59">setAlignment:</a></h2>
+- (void) <b>setAlignment:</b> (NSTextAlignment)mode<br>
+
+          
+<hr>
+<h2><a name="method-60">setAllowsEditingTextAttributes:</a></h2>
+- (void) <b>setAllowsEditingTextAttributes:</b> (BOOL)flag<br>
+
+          
+<hr>
+<h2><a name="method-61">setAllowsMixedState:</a></h2>
+- (void) <b>setAllowsMixedState:</b> (BOOL)flag<br>
+
+          
+<hr>
+<h2><a name="method-62">setAttributedStringValue:</a></h2>
+- (void) <b>setAttributedStringValue:</b> (NSAttributedString*)attribStr<br>
+
+          
+<hr>
+<h2><a name="method-63">setBezeled:</a></h2>
+- (void) <b>setBezeled:</b> (BOOL)flag<br>
+
+          
+<hr>
+<h2><a name="method-64">setBordered:</a></h2>
+- (void) <b>setBordered:</b> (BOOL)flag<br>
+
+          
+<hr>
+<h2><a name="method-65">setCellAttribute:</a></h2>
+- (void) <b>setCellAttribute:</b> (NSCellAttribute)aParameter<br>
+
+          
+<hr>
+<h2><a name="method-66">setContinuous:</a></h2>
+- (void) <b>setContinuous:</b> (BOOL)flag<br>
+
+          
+<hr>
+<h2><a name="method-67">setDoubleValue:</a></h2>
+- (void) <b>setDoubleValue:</b> (double)aDouble<br>
+
+          
+<hr>
+<h2><a name="method-68">setEditable:</a></h2>
+- (void) <b>setEditable:</b> (BOOL)flag<br>
+
+          
+<hr>
+<h2><a name="method-69">setEnabled:</a></h2>
+- (void) <b>setEnabled:</b> (BOOL)flag<br>
+
+          
+<hr>
+<h2><a name="method-70">setEntryType:</a></h2>
+- (void) <b>setEntryType:</b> (int)aType<br>
+
+          
+<hr>
+<h2><a name="method-71">setFloatingPointFormat:left:right:</a></h2>
+- (void) <b>setFloatingPointFormat:</b> (BOOL)autoRange <b>left:</b> (unsigned int)leftDigits <b>right:</b> (unsigned int)rightDigits<br>
+
+          
+<hr>
+<h2><a name="method-72">setFloatValue:</a></h2>
+- (void) <b>setFloatValue:</b> (float)aFloat<br>
+
+          
+<hr>
+<h2><a name="method-73">setFont:</a></h2>
+- (void) <b>setFont:</b> (NSFont*)fontObj<br>
+
+          
+<hr>
+<h2><a name="method-74">setFormatter:</a></h2>
+- (void) <b>setFormatter:</b> (NSFormatter*)newFormatter<br>
+
+          
+<hr>
+<h2><a name="method-75">setImage:</a></h2>
+- (void) <b>setImage:</b> (NSImage*)image<br>
+
+          
+<hr>
+<h2><a name="method-76">setImportsGraphics:</a></h2>
+- (void) <b>setImportsGraphics:</b> (BOOL)flag<br>
+
+          
+<hr>
+<h2><a name="method-77">setIntValue:</a></h2>
+- (void) <b>setIntValue:</b> (int)anInt<br>
+
+          
+<hr>
+<h2><a name="method-78">setMenu:</a></h2>
+- (void) <b>setMenu:</b> (NSMenu*)aMenu<br>
+
+          
+<hr>
+<h2><a name="method-79">setMnemonicLocation:</a></h2>
+- (void) <b>setMnemonicLocation:</b> (unsigned int)location<br>
+
+          
+<hr>
+<h2><a name="method-80">setNextState</a></h2>
+- (void) <b>setNextState</b><br>
+
+          
+<hr>
+<h2><a name="method-81">setObjectValue:</a></h2>
+- (void) <b>setObjectValue:</b> (id)object<br>
+
+          
+<hr>
+<h2><a name="method-82">setRefusesFirstResponder:</a></h2>
+- (void) <b>setRefusesFirstResponder:</b> (BOOL)flag<br>
+
+          
+<hr>
+<h2><a name="method-83">setRepresentedObject:</a></h2>
+- (void) <b>setRepresentedObject:</b> (id)anObject<br>
+
+          
+<hr>
+<h2><a name="method-84">setScrollable:</a></h2>
+- (void) <b>setScrollable:</b> (BOOL)flag<br>
+
+          
+<hr>
+<h2><a name="method-85">setSelectable:</a></h2>
+- (void) <b>setSelectable:</b> (BOOL)flag<br>
+
+          
+<hr>
+<h2><a name="method-86">setSendsActionOnEndEditing:</a></h2>
+- (void) <b>setSendsActionOnEndEditing:</b> (BOOL)flag<br>
+
+          
+<hr>
+<h2><a name="method-87">setShowsFirstResponder:</a></h2>
+- (void) <b>setShowsFirstResponder:</b> (BOOL)flag<br>
+
+          
+<hr>
+<h2><a name="method-88">setState:</a></h2>
+- (void) <b>setState:</b> (int)value<br>
+
+          
+<hr>
+<h2><a name="method-89">setStringValue:</a></h2>
+- (void) <b>setStringValue:</b> (NSString*)aString<br>
+
+          
+<hr>
+<h2><a name="method-90">setTag:</a></h2>
+- (void) <b>setTag:</b> (int)anInt<br>
+
+          
+<hr>
+<h2><a name="method-91">setTarget:</a></h2>
+- (void) <b>setTarget:</b> (id)anObject<br>
+
+          
+<hr>
+<h2><a name="method-92">setTitleWithMnemonic:</a></h2>
+- (void) <b>setTitleWithMnemonic:</b> (NSString*)aString<br>
+
+          
+<hr>
+<h2><a name="method-93">setType:</a></h2>
+- (void) <b>setType:</b> (NSCellType)aType<br>
+
+          
+<hr>
+<h2><a name="method-94">setUpFieldEditorAttributes:</a></h2>
+- (NSText*) <b>setUpFieldEditorAttributes:</b> (NSText*)textObj<br>
+
+          
+<hr>
+<h2><a name="method-95">setWraps:</a></h2>
+- (void) <b>setWraps:</b> (BOOL)flag<br>
+
+          
+<hr>
+<h2><a name="method-96">showsFirstResponder</a></h2>
+- (BOOL) <b>showsFirstResponder</b><br>
+
+          
+<hr>
+<h2><a name="method-97">startTrackingAt:</a></h2>
+- (BOOL) <b>startTrackingAt:</b> (NSPoint)startPoint<br>
+
+          
+<hr>
+<h2><a name="method-98">state</a></h2>
+- (int) <b>state</b><br>
+
+          
+<hr>
+<h2><a name="method-99">stopTracking:at:inView:</a></h2>
+- (void) <b>stopTracking:</b> (NSPoint)lastPoint <b>at:</b> (NSPoint)stopPoint <b>inView:</b> (NSView*)controlView<br>
+
+          
+<hr>
+<h2><a name="method-100">stringValue</a></h2>
+- (NSString*) <b>stringValue</b><br>
+
+          
+<hr>
+<h2><a name="method-101">tag</a></h2>
+- (int) <b>tag</b><br>
+
+          
+<hr>
+<h2><a name="method-102">takeDoubleValueFrom:</a></h2>
+- (void) <b>takeDoubleValueFrom:</b> (id)sender<br>
+
+          
+<hr>
+<h2><a name="method-103">takeFloatValueFrom:</a></h2>
+- (void) <b>takeFloatValueFrom:</b> (id)sender<br>
+
+          
+<hr>
+<h2><a name="method-104">takeIntValueFrom:</a></h2>
+- (void) <b>takeIntValueFrom:</b> (id)sender<br>
+
+          
+<hr>
+<h2><a name="method-105">takeObjectValueFrom:</a></h2>
+- (void) <b>takeObjectValueFrom:</b> (id)sender<br>
+
+          
+<hr>
+<h2><a name="method-106">takeStringValueFrom:</a></h2>
+- (void) <b>takeStringValueFrom:</b> (id)sender<br>
+
+          
+<hr>
+<h2><a name="method-107">target</a></h2>
+- (id) <b>target</b><br>
+
+          
+<hr>
+<h2><a name="method-108">titleRectForBounds:</a></h2>
+- (NSRect) <b>titleRectForBounds:</b> (NSRect)theRect<br>
+
+          
+<hr>
+<h2><a name="method-109">trackMouse:inRect:ofView:untilMouseUp:</a></h2>
+- (BOOL) <b>trackMouse:</b> (NSEvent*)theEvent <b>inRect:</b> (NSRect)cellFrame <b>ofView:</b> (NSView*)controlView <b>untilMouseUp:</b> (BOOL)untilMouseUp<br>
+
+          
+<hr>
+<h2><a name="method-110">type</a></h2>
+- (NSCellType) <b>type</b><br>
+
+          
+<hr>
+<h2><a name="method-111">wraps</a></h2>
+- (BOOL) <b>wraps</b><br>
+
+          
+<hr>
+</body>
+
+</html>
