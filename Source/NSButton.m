@@ -103,6 +103,14 @@ id MB_NSBUTTON_CLASS;
 }
 
 //
+// Identifying the Selected Cell 
+//
+- (id)selectedCell
+{
+  return cell;
+}
+
+//
 // Setting the State 
 //
 - (void)setState:(int)value
@@ -223,6 +231,7 @@ id MB_NSBUTTON_CLASS;
 
 - (void)highlight:(BOOL)flag
 {
+  [cell highlight: flag withFrame: bounds inView: self];
 }
 
 //
@@ -249,73 +258,81 @@ id MB_NSBUTTON_CLASS;
 //
 - (void)mouseDown:(NSEvent *)theEvent
 {
-    NSApplication *theApp = [NSApplication sharedApplication];
-    BOOL mouseUp, done;
-    NSEvent *e;
-    unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask
-        | NSMouseMovedMask;
+  NSApplication *theApp = [NSApplication sharedApplication];
+  BOOL mouseUp, done;
+  NSEvent *e;
+  unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
+    NSMouseMovedMask | NSLeftMouseDraggedMask | NSRightMouseDraggedMask;
 
-    NSDebugLog(@"NSButton mouseDown\n");
+  NSDebugLog(@"NSButton mouseDown\n");
 
-    // capture mouse
-    [[self window] captureMouse: self];
+  // If we are not enabled then ignore the mouse
+  if (![self isEnabled])
+    return;
 
-    done = NO;
-    e = theEvent;
-    while (!done)
-        {
-            mouseUp = [cell trackMouse: e inRect: bounds
-                            ofView:self untilMouseUp:YES];
-            e = [theApp currentEvent];
+  // capture mouse
+  [[self window] captureMouse: self];
 
-            // If mouse went up then we are done
-            if ((mouseUp) || ([e type] == NSLeftMouseUp))
-                done = YES;
-            else
-                {
-                    NSDebugLog(@"NSButton process another event\n");
-                    e = [theApp nextEventMatchingMask:event_mask untilDate:nil
-                                inMode:nil dequeue:YES];
-                }
-        }
+  done = NO;
+  e = theEvent;
+  while (!done)
+    {
+      mouseUp = [cell trackMouse: e inRect: bounds
+		      ofView:self untilMouseUp:YES];
+      e = [theApp currentEvent];
 
-    // Release mouse
-    [[self window] releaseMouse: self];
+      // If mouse went up then we are done
+      if ((mouseUp) || ([e type] == NSLeftMouseUp))
+	done = YES;
+      else
+	{
+	  NSDebugLog(@"NSButton process another event\n");
+	  e = [theApp nextEventMatchingMask:event_mask untilDate:nil
+		      inMode:nil dequeue:YES];
+	}
+    }
 
-    // If the mouse went up in the button
-    if (mouseUp)
-        {
-            // Unhighlight the button
-            [cell highlight: NO withFrame: bounds
-                  inView: self];
+  // Release mouse
+  [[self window] releaseMouse: self];
 
-            //
-            // Perform different state changes based upon our type
-            //
-            switch ([cell type])
-                {
-                case NSMomentaryChangeButton:
-                case NSPushOnPushOffButton:
-                case NSToggleButton:
-                case NSSwitchButton:
-                case NSRadioButton:
-                case NSOnOffButton:
-                    // Toggle our state
-                    if ([self state])
-                        {
-                            [self setState:0];
-                            NSDebugLog(@"toggle state off\n");
-                        }
-                    else
-                        {
-                            [self setState:1];
-                            NSDebugLog(@"toggle state on\n");
-                        }
-                }
+  // If the mouse went up in the button
+  if (mouseUp)
+    { 
+      // Unhighlight the button
+      [cell highlight: NO withFrame: bounds
+	    inView: self];
 
-            // Have the target perform the action
-            [self sendAction:[self action] to:[self target]];
-        }
+      //
+      // Perform different state changes based upon our type
+      //
+      switch ([cell type])
+	{
+	case NSToggleButton:
+	case NSMomentaryChangeButton:
+	case NSMomentaryPushButton:
+	  /* No state changes */
+	  break;
+
+	case NSPushOnPushOffButton:
+	case NSSwitchButton:
+	case NSRadioButton:
+	case NSOnOffButton:
+	  // Toggle our state
+	  if ([self state])
+	    {
+	      [cell setState:0];
+	      NSDebugLog(@"toggle state off\n");
+	    }
+	  else
+	    {
+	      [cell setState:1];
+	      NSDebugLog(@"toggle state on\n");
+	    }
+	}
+
+      // Have the target perform the action
+      [self sendAction:[self action] to:[self target]];
+    }
 }
 
 - (void)performClick:(id)sender

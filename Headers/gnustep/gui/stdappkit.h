@@ -1,7 +1,6 @@
-/* 
-   NSScreen.h
+/* stdappkit.h
 
-   Description...
+   Global includes for the GNUstep GUI Library.
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
@@ -28,37 +27,13 @@
    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */ 
 
-#ifndef _GNUstep_H_NSScreen
-#define _GNUstep_H_NSScreen
+#ifndef _GNUstep_H_AppKitStandard
+#define _GNUstep_H_AppKitStandard
 
-#include <AppKit/stdappkit.h>
+#include <AppKit/config.h>
+
+#include <AppKit/LogFile.h>
 #include <AppKit/TypesandConstants.h>
-#include <Foundation/NSDictionary.h>
+#include <AppKit/Functions.h>
 
-@interface NSScreen : NSObject
-
-{
-  // Attributes
-  NSMutableDictionary *device_desc;
-
-  // Reserved for backend use
-  void *be_screen_reserved;
-}
-
-//
-// Creating NSScreen Instances
-//
-+ (NSScreen *)mainScreen;
-+ (NSScreen *)deepestScreen;
-+ (NSArray *)screens;
-
-//
-// Reading Screen Information
-//
-- (NSWindowDepth)depth;
-- (NSRect)frame;
-- (NSDictionary *)deviceDescription;
-
-@end
-
-#endif // _GNUstep_H_NSScreen
+#endif // _GNUstep_H_AppKitStandard

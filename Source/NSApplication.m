@@ -39,6 +39,7 @@
 // The global application instance
 extern id NSApp;
 NSEvent *NullEvent;
+BOOL gnustep_gui_app_is_in_dealloc;
 
 // Global strings
 NSString *NSModalPanelRunLoopMode = @"ModalPanelMode";
@@ -107,10 +108,14 @@ NSString *NSApplicationWillUpdateNotification;
 {
   if (self == [NSApplication class])
     {
-      NSLog(@"Initialize NSApplication class\n");
+      NSDebugLog(@"Initialize NSApplication class\n");
 
       // Initial version
       [self setVersion:1];
+
+      // So the application knows its within dealloc
+      // and can prevent -release loops.
+      gnustep_gui_app_is_in_dealloc = NO;
     }
 }
 
@@ -133,7 +138,7 @@ NSString *NSApplicationWillUpdateNotification;
 {
   [super init];
 
-  NSLog(@"Begin of NSApplication -init\n");
+  NSDebugLog(@"Begin of NSApplication -init\n");
 
   // allocate the window list
   window_list = [NSMutableArray array];
@@ -154,9 +159,6 @@ NSString *NSApplicationWillUpdateNotification;
   //
   [self setNextResponder:NULL];
 
-  // Finish the Launching
-  [self finishLaunching];
-
   return self;
 }
 
@@ -175,17 +177,20 @@ NSString *NSApplicationWillUpdateNotification;
 {
   int i, j;
 
-  //NSLog(@"Freeing NSApplication\n");
+  NSDebugLog(@"Freeing NSApplication\n");
+
+  // Let ourselves know we are within dealloc
+  gnustep_gui_app_is_in_dealloc = YES;
 
   // Release the window list
   // We retain all of the objects in our list
   //   so we need to release them
 
   //NSArray doesn't know -removeAllObjects yet
-  //[window_list removeAllObjects];
-  j = [window_list count];
-  for (i = 0;i < j; ++i)
-    [[window_list objectAtIndex:i] release];
+  [window_list removeAllObjects];
+  //j = [window_list count];
+  //for (i = 0;i < j; ++i)
+  //  [[window_list objectAtIndex:i] release];
 
   // no need -array is autoreleased
   //[window_list release];
@@ -238,7 +243,7 @@ NSString *NSApplicationWillUpdateNotification;
 {
   NSEvent *e;
 
-  NSLog(@"NSApplication -run\n");
+  NSDebugLog(@"NSApplication -run\n");
 
   [self finishLaunching];
 
@@ -260,7 +265,7 @@ NSString *NSApplicationWillUpdateNotification;
     } while (!app_should_quit);
   app_is_running = YES;
 
-  NSLog(@"NSApplication end of run loop\n");
+  NSDebugLog(@"NSApplication end of run loop\n");
 }
 
 - (int)runModalForWindow:(NSWindow *)theWindow
@@ -278,7 +283,7 @@ NSString *NSApplicationWillUpdateNotification;
   // Don't send the null event
   if (theEvent == NullEvent)
     {
-      NSLog(@"Not sending the Null Event\n");
+      NSDebugLog(@"Not sending the Null Event\n");
       return;
     }
 
@@ -294,7 +299,7 @@ NSString *NSApplicationWillUpdateNotification;
 
     case NSKeyDown:
       {
-	NSLog(@"send key down event\n");
+	NSDebugLog(@"send key down event\n");
 	[[theEvent window] sendEvent:theEvent];
 	break;
       }
@@ -309,13 +314,13 @@ NSString *NSApplicationWillUpdateNotification;
       //
     default:
       {
-	if (!theEvent) NSLog(@"NSEvent is nil!\n");
-	NSLog(@"NSEvent type: %d\n", [theEvent type]);
-	NSLog(@"send event to window\n");
-	NSLog([[theEvent window] description]);
-	NSLog(@"\n");
+	if (!theEvent) NSDebugLog(@"NSEvent is nil!\n");
+	NSDebugLog(@"NSEvent type: %d\n", [theEvent type]);
+	NSDebugLog(@"send event to window\n");
+	NSDebugLog([[theEvent window] description]);
+	NSDebugLog(@"\n");
 	if (![theEvent window])
-	  NSLog(@"no window\n");
+	  NSDebugLog(@"no window\n");
 	[[theEvent window] sendEvent:theEvent];
       }
     }
@@ -713,10 +718,7 @@ NSString *NSApplicationWillUpdateNotification;
   if (![aWindow isKindOfClass:[NSWindow class]])
     return;
 
-  // Retain the window
-  //[aWindow retain];
-
-  // Add to our window list
+  // Add to our window list, the array retains it
   i = [window_list count];
   [window_list addObject:aWindow];
 
@@ -748,26 +750,21 @@ NSString *NSApplicationWillUpdateNotification;
   int i, j;
   id w;
 
-  // This should be different
+  // +++ This should be different
   if (aWindow == key_window)
 	key_window = nil;
   if (aWindow == main_window)
 	main_window = nil;
 
-  // Simple -find it and remove it
-  j = [window_list count];
-  for (i = 0;i < j; ++i)
-    {
-      w = [window_list objectAtIndex:i];
-      if (w == aWindow)
-	{
-	  // Remove from out list
-	  [window_list removeObjectAtIndex:i];
-	  // Release it because we retained it before
-	  //[w release];
-	  return;
-	}
-    }
+  // If we are within our dealloc then don't remove the window
+  // Most likely dealloc is removing windows from our window list
+  // and subsequently NSWindow is caling us to remove itself.
+  if (gnustep_gui_app_is_in_dealloc)
+      return;
+
+  // Remove it from the window list
+  [window_list removeObject: aWindow];
+
   return;
 }
 
@@ -810,7 +807,10 @@ NSString *NSApplicationWillUpdateNotification;
 }
 
 // Getting the display postscript context
-// - (NSDOSContext *)context;
+- (NSDPSContext *)context
+{
+    return [NSDPSContext currentContext];
+}
 
 // Reporting an exception
 //- (void)reportException:(NSException *)anException

@@ -94,7 +94,7 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
 
     for (i = 0;i < num_rows; ++i)
 	{
-	    aRow = [NSMutableArray arrayWithCapacity: j];
+	    aRow = [NSMutableArray arrayWithCapacity: num_cols];
 	    [rows addObject: aRow];
 	    for (j = 0;j < num_cols; ++j)
 		{
@@ -1103,7 +1103,7 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
     newSize.width = 0;
     newSize.height = 0;
 
-    NSLog(@"NSMatrix intercell height: %4.0f\n", inter_cell.height);
+    NSDebugLog(@"NSMatrix intercell height: %4.0f\n", inter_cell.height);
     
     for (row=0; row<num_rows; row++)
     {
@@ -1130,7 +1130,7 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
     }
 
 #if 1    
-    NSLog(@"NSMatrix size: %4.0f %4.0f\n",newSize.width,newSize.height);
+    NSDebugLog(@"NSMatrix size: %4.0f %4.0f\n",newSize.width,newSize.height);
 #endif
     
     [(NSView *)self setFrameSize:newSize];

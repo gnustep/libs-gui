@@ -1,7 +1,7 @@
 /* 
-   NSScreen.h
+   NSText.h
 
-   Description...
+   The text object
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
@@ -28,37 +28,23 @@
    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */ 
 
-#ifndef _GNUstep_H_NSScreen
-#define _GNUstep_H_NSScreen
+#ifndef _GNUstep_H_NSBundleAdditions
+#define _GNUstep_H_NSBundleAdditions
 
-#include <AppKit/stdappkit.h>
-#include <AppKit/TypesandConstants.h>
-#include <Foundation/NSDictionary.h>
+@implementation NSBundle (NSBundleAdditions)
 
-@interface NSScreen : NSObject
+- (NSString *)pathForImageResource:(NSString *)name;
 
-{
-  // Attributes
-  NSMutableDictionary *device_desc;
++ (BOOL)loadNibFile:(NSString *)fileName
+  externalNameTable:(NSDictionary *)context
+withZone:(NSZone *)zone;
 
-  // Reserved for backend use
-  void *be_screen_reserved;
-}
-
-//
-// Creating NSScreen Instances
-//
-+ (NSScreen *)mainScreen;
-+ (NSScreen *)deepestScreen;
-+ (NSArray *)screens;
-
-//
-// Reading Screen Information
-//
-- (NSWindowDepth)depth;
-- (NSRect)frame;
-- (NSDictionary *)deviceDescription;
++ (BOOL)loadNibNamed:(NSString *)aNibName
+	       owner:(id)owner;
 
 @end
 
-#endif // _GNUstep_H_NSScreen
+#endif // _GNUstep_H_NSBundleAdditions
+
+
+

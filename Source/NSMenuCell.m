@@ -1,7 +1,7 @@
 /* 
-   NSFontPanel.m
+   NSMenuCell.m
 
-   System generic panel for selecting and previewing fonts
+   Cell class for menu items
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
@@ -28,89 +28,103 @@
    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */ 
 
-#include <gnustep/gui/NSFontPanel.h>
-#include <gnustep/gui/NSFontManager.h>
-#include <gnustep/gui/NSApplication.h>
+#include <gnustep/gui/NSMenuCell.h>
+#include <gnustep/gui/NSMenu.h>
+#include <gnustep/base/NSCoder.h>
 
-@implementation NSFontPanel
+//
+// Class variables
+//
+BOOL MB_NSMENUCELL_USES_KEY;
+
+@implementation NSMenuCell
 
 //
 // Class methods
 //
 + (void)initialize
 {
-  if (self == [NSFontPanel class])
+  if (self == [NSMenuCell class])
     {
-      NSDebugLog(@"Initialize NSFontPanel class\n");
-
       // Initial version
       [self setVersion:1];
     }
 }
 
 //
-// Creating an NSFontPanel 
+// Managing User Key Equivalents 
 //
-+ (NSFontPanel *)sharedFontPanel
++ (void)setUsesUserKeyEquivalents:(BOOL)flag
 {
-  NSFontManager *fm = [NSFontManager sharedFontManager];
+  MB_NSMENUCELL_USES_KEY = flag;
+}
 
-  return [fm fontPanel:YES];
++ (BOOL)usesUserKeyEquivalents
+{
+  return MB_NSMENUCELL_USES_KEY;
 }
 
 //
 // Instance methods
 //
-//
-// Creating an NSFontPanel 
-//
-- (NSFont *)panelConvertFont:(NSFont *)fontObject
+- (unsigned int)menuIdentifier
 {
-  return panel_font;
+  return menu_identifier;
+}
+
+- (void)setMenuIdentifier:(unsigned int)theID
+{
+  menu_identifier = theID;
 }
 
 //
-// Setting the Font 
+// Initialization
 //
-- (void)setPanelFont:(NSFont *)fontObject
-	  isMultiple:(BOOL)flag
+- init
 {
-  panel_font = fontObject;
+  return [self initTextCell:@"Text"];
+}
+
+- initTextCell:(NSString *)aString
+{
+  [super initTextCell:aString];
+  [self setEnabled:YES];
+  sub_menu = nil;
+  return self;
+}
+
+- (void)dealloc
+{
+  [sub_menu release];
+  [super dealloc];
 }
 
 //
-// Configuring the NSFontPanel 
+// Checking for a Submenu 
 //
-- (NSView *)accessoryView
+- (BOOL)hasSubmenu
 {
-  return nil;
+  if (sub_menu)
+    return YES;
+  else
+    return NO;
 }
 
-- (BOOL)isEnabled
+- (NSMenu *)submenu
 {
-  return NO;
+  return sub_menu;
 }
 
-- (void)setAccessoryView:(NSView *)aView
-{}
-
-- (void)setEnabled:(BOOL)flag
-{}
-
-- (BOOL)worksWhenModal
+- (void)setSubmenu:(NSMenu *)aMenu
 {
-  return NO;
+  [sub_menu release];
+  sub_menu = aMenu;
+  [sub_menu retain];
 }
 
-//
-// Displaying the NSFontPanel 
-//
-- (void)orderWindow:(NSWindowOrderingMode)place	 
-	 relativeTo:(int)otherWindows
-{}
-
-- (void)display
+- (NSString *)userKeyEquivalent
 {
+  return key_equivalent;
 }
 
 //
@@ -120,16 +134,21 @@
 {
   [super encodeWithCoder:aCoder];
 
-  [aCoder encodeObject: panel_font];
+  [aCoder encodeObject: key_equivalent];
+  [aCoder encodeObject: sub_menu];
+  [aCoder encodeValueOfObjCType: "I" at: &menu_identifier];
 }
 
 - initWithCoder:aDecoder
 {
   [super initWithCoder:aDecoder];
 
-  panel_font = [aDecoder decodeObject];
+  key_equivalent = [aDecoder decodeObject];
+  sub_menu = [aDecoder decodeObject];
+  [aDecoder decodeValueOfObjCType: "I" at: &menu_identifier];
 
   return self;
 }
 
 @end
+

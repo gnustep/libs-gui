@@ -405,9 +405,9 @@
 //
 - (void)editWithFrame:(NSRect)aRect
 	       inView:(NSView *)controlView	
-editor:(NSText *)textObject	
-	       delegate:(id)anObject	
-event:(NSEvent *)theEvent
+	       editor:(NSText *)textObject	
+	     delegate:(id)anObject	
+		event:(NSEvent *)theEvent
 {}
 
 - (void)endEditing:(NSText *)textObject
@@ -415,9 +415,9 @@ event:(NSEvent *)theEvent
 
 - (void)selectWithFrame:(NSRect)aRect
 		 inView:(NSView *)controlView	 
-editor:(NSText *)textObject	 
-		 delegate:(id)anObject	 
-start:(int)selStart	 
+		 editor:(NSText *)textObject	 
+	       delegate:(id)anObject	 
+		  start:(int)selStart	 
 		 length:(int)selLength
 {}
 
@@ -615,8 +615,9 @@ start:(int)selStart
 {
     NSApplication *theApp = [NSApplication sharedApplication];
     NSEvent *e;
-    unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask 
-	| NSMouseMovedMask;
+    unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
+      NSMouseMovedMask | NSLeftMouseDraggedMask |
+      NSRightMouseDraggedMask;
     NSPoint location = [theEvent locationInWindow];
     NSPoint point = [controlView convertPoint: location fromView: nil];
     NSPoint last_point;

@@ -31,8 +31,8 @@
 #include <gnustep/gui/NSFont.h>
 #include <gnustep/gui/NSFontManager.h>
 
-NSFont *MB_USER_FIXED_FONT;
-NSFont *MB_USER_FONT;
+NSFont *gnustep_gui_user_fixed_font;
+NSFont *gnustep_gui_user_font;
 
 // Global Strings
 NSString *NSAFMAscender;
@@ -62,7 +62,7 @@ NSString *NSAFMXHeight;
 {
   if (self == [NSFont class])
     {
-      NSLog(@"Initialize NSFont class\n");
+      NSDebugLog(@"Initialize NSFont class\n");
 
       // Initial version
       [self setVersion:1];
@@ -110,13 +110,13 @@ NSString *NSAFMXHeight;
 + (NSFont *)userFixedPitchFontOfSize:(float)fontSize
 {
   NSFontManager *fm = [NSFontManager sharedFontManager];
-  return [fm convertFont:MB_USER_FIXED_FONT toSize:fontSize];
+  return [fm convertFont:gnustep_gui_user_fixed_font toSize:fontSize];
 }
 
 + (NSFont *)userFontOfSize:(float)fontSize
 {
   NSFontManager *fm = [NSFontManager sharedFontManager];
-  return [fm convertFont:MB_USER_FONT toSize:fontSize];
+  return [fm convertFont:gnustep_gui_user_font toSize:fontSize];
 }
 
 //
@@ -124,12 +124,12 @@ NSString *NSAFMXHeight;
 //
 + (void)setUserFixedPitchFont:(NSFont *)aFont
 {
-  MB_USER_FIXED_FONT = aFont;
+  gnustep_gui_user_fixed_font = aFont;
 }
 
 + (void)setUserFont:(NSFont *)aFont
 {
-  MB_USER_FONT = aFont;
+  gnustep_gui_user_font = aFont;
 }
 
 + (void)useFont:(NSString *)fontName

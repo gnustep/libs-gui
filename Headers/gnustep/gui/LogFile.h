@@ -1,14 +1,14 @@
 /* 
-   NSScreen.h
+   LogFile.h
 
-   Description...
+   Logfile for recording trace messages
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
    
-   This file is part of the GNUstep GUI Library.
+   This file is part of the GNUstep Application Library.
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -28,37 +28,48 @@
    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */ 
 
-#ifndef _GNUstep_H_NSScreen
-#define _GNUstep_H_NSScreen
+#ifndef _GNUstep_H_LogFile
+#define _GNUstep_H_LogFile
 
-#include <AppKit/stdappkit.h>
-#include <AppKit/TypesandConstants.h>
-#include <Foundation/NSDictionary.h>
+#include <Foundation/NSObject.h>
+#include <stdio.h>
 
-@interface NSScreen : NSObject
+@interface LogFile : NSObject
 
 {
-  // Attributes
-  NSMutableDictionary *device_desc;
-
-  // Reserved for backend use
-  void *be_screen_reserved;
+	// Attributes
+	struct _MB_lflags
+	{
+	  unsigned int is_locking:1;
+	  unsigned int is_date_logging:1;
+	} l_flags;
+	FILE *the_log;
 }
 
 //
-// Creating NSScreen Instances
+// Call one of these to initialize the log file and open a stream
+//   to the standard output or a file.  
 //
-+ (NSScreen *)mainScreen;
-+ (NSScreen *)deepestScreen;
-+ (NSArray *)screens;
+// -init does not open a file
+- init;
+- initStdout;
+- initStdoutWithLocking;
+- initFile:(const char *)filename;
+- initFileWithLocking:(const char *)filename;
 
-//
-// Reading Screen Information
-//
-- (NSWindowDepth)depth;
-- (NSRect)frame;
-- (NSDictionary *)deviceDescription;
+// Instance methods
+- writeLog:(const char *)logEntry;
+- closeLog;
+- (BOOL)isDateLogging;
+- setDateLogging:(BOOL)flag;
+- (BOOL)isLocking;
 
 @end
 
-#endif // _GNUstep_H_NSScreen
+#ifdef DEBUGLOG
+#define NSDebugLog(format, args...) NSLog(format, ## args)
+#else
+#define NSDebugLog(format, args...)
+#endif
+
+#endif // _GNUstep_H_LogFile

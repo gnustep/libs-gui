@@ -1,0 +1,38 @@
+s/@configure_input@/ Generated from Makefile.in by configure.bat/
+s/@srcdir@/./
+s/@CC@/gcc -fgnu-runtime -O/
+s/@lib_installdir@/\/MB\/Libraries/
+s/@h_installdir@/\/MB\/Headers/
+s/@gcc_lib@/libgcc.lib/
+s/@objc_lib@/libobjc.lib/
+s/@sys_libs@/libc.lib oldnames.lib user32.lib gdi32.lib wsock32.lib/
+s/@add_libs@/libobjects.lib General.lib/
+s/@exeext@/.exe/
+s/@oext@/.obj/
+s/@libext@/.lib/
+s/@resext@/.res/
+s/@rcext@/.rc/
+s/INIT_FILE =/INIT_FILE = init_$(MAIN_FILE)/
+s/@ldflags@/-align:0x1000 -entry:WinMainCRTStartup -stack:1000000,1000000/
+s/@ld@/ld -subsystem:windows/
+s/@ldout@/-out:/
+s/@lib@/lib/
+s/@libout@/-out:/
+s/@ranlib@/touch/
+s/@rc@/rc \/l 0x409 \/i $(MB_INCLUDE)/
+s/cd Headers ; cd gnustep ; cd gui ; rm -f \*~ config.h/cd Headers \& cd gnustep \& cd gui \& rm -f *~ config.h/
+s/cd Headers ; cd gnustep ; cd dps ; rm -f \*~/cd Headers \& cd gnustep \& cd dps \& rm -f *~/
+s/cd Headers ; rm -f AppKit ; rm -f DPSClient/cd Headers \& rm -rf AppKit \& rm -rf DPSClient/
+s/cd $@; $(MAKE) $(MAKEDEFINES)/cd $@ \& $(MAKE) $(MAKEDEFINES)/
+/%-subdirs:/,/done/c\
+%-subdirs: \
+	for %i in ( $(SUBDIRS) ) do \\\
+		( cd %i & \\\
+		$(MAKE) - $(MAKEFLAGS) $(MAKEDEFINES) $* & \\\
+		cd .. )
+/install uninstall TAGS:/,/done/c\
+install uninstall TAGS: Source\
+	for %i in ( $(SUBDIRS) ) do \\\
+		( cd %i & \\\
+		$(MAKE) - $(MAKEFLAGS) $(MAKEDEFINES) $@ & \\\
+		cd .. )

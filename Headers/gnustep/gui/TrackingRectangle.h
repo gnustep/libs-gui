@@ -1,7 +1,7 @@
-/* 
-   NSScreen.h
+/*
+   TrackingRectangle.h
 
-   Description...
+   Tracking rectangle class
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
@@ -28,37 +28,42 @@
    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */ 
 
-#ifndef _GNUstep_H_NSScreen
-#define _GNUstep_H_NSScreen
+#ifndef _GNUstep_H_TrackingRectangle
+#define _GNUstep_H_TrackingRectangle
 
 #include <AppKit/stdappkit.h>
-#include <AppKit/TypesandConstants.h>
-#include <Foundation/NSDictionary.h>
+#include <Foundation/NSCoder.h>
 
-@interface NSScreen : NSObject
+@interface TrackingRectangle : NSObject <NSCoding>
 
 {
-  // Attributes
-  NSMutableDictionary *device_desc;
-
-  // Reserved for backend use
-  void *be_screen_reserved;
+	// Attributes
+	NSRect rectangle;
+	NSTrackingRectTag tag;
+	id owner;
+	void *user_data;
+	BOOL inside;
 }
 
-//
-// Creating NSScreen Instances
-//
-+ (NSScreen *)mainScreen;
-+ (NSScreen *)deepestScreen;
-+ (NSArray *)screens;
+// Instance methods
+- initWithRect:(NSRect)aRect
+ tag:(NSTrackingRectTag)aTag
+ owner:anObject
+ userData:(void *)theData
+ inside:(BOOL)flag;
+
+- (NSRect)rectangle;
+- (NSTrackingRectTag)tag;
+- owner;
+- (void *)userData;
+- (BOOL)inside;
 
 //
-// Reading Screen Information
+// NSCoding protocol
 //
-- (NSWindowDepth)depth;
-- (NSRect)frame;
-- (NSDictionary *)deviceDescription;
+- (void)encodeWithCoder:aCoder;
+- initWithCoder:aDecoder;
 
 @end
 
-#endif // _GNUstep_H_NSScreen
+#endif // _GNUstep_H_TrackingRectangle

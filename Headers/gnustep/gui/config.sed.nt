@@ -1,0 +1,2 @@
+s/@configure_input@/ Generated from config.in by configure.bat/
+s/@config_include@//

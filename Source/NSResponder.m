@@ -40,7 +40,7 @@
 {
   if (self == [NSResponder class])
     {
-      NSLog(@"Initialize NSResponder class\n");
+      NSDebugLog(@"Initialize NSResponder class\n");
 
       // Initial version
       [self setVersion:1];

@@ -50,7 +50,7 @@ NSString *NSControlTextDidChangeNotification;
 {
   if (self == [NSControl class])
     {
-      NSLog(@"Initialize NSControl class\n");
+      NSDebugLog(@"Initialize NSControl class\n");
 
       // Initial version
       [self setVersion:1];
@@ -280,12 +280,12 @@ right:(unsigned)rightDigits
 //
 - (void)drawCell:(NSCell *)aCell
 {
-  if (cell == aCell) [cell drawWithFrame:frame inView:self];
+  if (cell == aCell) [cell drawWithFrame:bounds inView:self];
 }
 
 - (void)drawCellInside:(NSCell *)aCell
 {
-  if (cell == aCell) [cell drawInteriorWithFrame:frame inView:self];
+  if (cell == aCell) [cell drawInteriorWithFrame:bounds inView:self];
 }
 
 - (void)selectCell:(NSCell *)aCell

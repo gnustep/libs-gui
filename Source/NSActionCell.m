@@ -41,7 +41,7 @@
 {
   if (self == [NSActionCell class])
     {
-      NSLog(@"Initialize NSActionCell class\n");
+      NSDebugLog(@"Initialize NSActionCell class\n");
 
       // Initial version
       [self setVersion:1];
@@ -134,6 +134,17 @@
 - (void)setImage:(NSImage *)image
 {
   [super setImage:image];
+  if (control_view)
+    if ([control_view isKindOfClass: [NSControl class]])
+      [(NSControl *)control_view updateCell: self];
+}
+
+//
+// Setting the NSCell's State 
+//
+- (void)setState:(int)value
+{
+  [super setState: value];
   if (control_view)
     if ([control_view isKindOfClass: [NSControl class]])
       [(NSControl *)control_view updateCell: self];

@@ -1,3 +1,87 @@
+Wed Jul 10 17:11:53 1996  Scott Christley <scottc@net-community.com>
+
+	* Source/NSView.m: Use NSDebugLog instead of NSLog.
+	* Source/NSWindow.m: Likewise.
+	* Source/NSResponder.m: Likewise.
+	* Source/NSMatrix.m: Likewise.
+	* Source/NSFontPanel.m: Likewise.
+	* Source/NSFontManager.m: Likewise.
+	* Source/NSFont.m: Likewise.
+	* Source/NSEvent.m: Likewise.
+	* Source/NSControl.m: Likewise.
+	* Source/NSButtonCell.m: Likewise.
+	* Source/NSApplication.m: Likewise.
+	* Source/NSActionCell.m: Likewise.
+	
+	* Source/Makefile.sed.nt: Disable debugging by default.
+
+Wed Jun 26 12:43:17 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
+
+	* Source/NSButton.m (mouseDown:): Correct cell state changes for
+	the different cell types.
+	* Source/NSActionCell.m (setState:): Update the cell.
+	* Source/NSControl.m (drawCell:, drawCellInside:): Pass the
+	control's bounds not its frame.
+	* Source/NSTextFieldCell.m (initTextCell:): Make the default
+	background color be white.
+	* Source/NSWindow.m: Corrections to key and main window
+	notification and first responder handling.
+
+Fri Jun 21 11:09:50 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
+
+	* Headers/gnustep/gui/NSScreen.h: Add instance variables for
+	a screen's device dictionary and for the backend.
+	* Source/NSButton.m (highlight:): Implement method.
+	(mouseDown:): Add mouse dragged events to tracking event mask.
+	* Source/NSCell.m (trackMouse:inRect:ofView:untilMouseUp:): Likewise.
+	* Source/NSMatrix.m (createInitialMatrix): Wrong initial capacity.
+	* Source/NSScreen.m: Initial implementation.
+	* Source/NSView.m (convertRectToWindow:): New method.
+	(convertPointToWindow:): New method.
+	(convertPoint:fromView:, convertPoint:toView:): Implement method.
+
+Wed Jun 19 14:25:46 1996  Scott Christley <scottc@net-community.com>
+
+	* Source/NSView.m (resizeSubviewsWithOldSize:): Implement method.
+	(setFrame:): Notify subviews that size has changed.
+	(initWithFrame:): Automatically resize subviews.
+	* Source/Makefile.sed.nt: Have the library automatically contain
+	COFF debugging information.
+	* Source/NSButton.m (mouseDown:): Ignore the mouse if the button
+	is not enabled.
+	* Source/NSFont.m (MB_USER_FIXED_FONT, MB_USER_FONT): Rename
+	global variables to correspond with coding standards.
+
+Thu Jun  6 09:20:51 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
+
+	* Headers/gnustep/gui/NSApplication.h (-context): New method.
+	* Source/Makefile.sed.nt (install): Delete AppKit and DPSClient
+	headers directories before installing headers.
+	* Source/NSApplication.m (gnustep_gui_app_is_in_dealloc): New
+	global variable to flag when the application is being dealloced
+	so it can prevent -release loops.
+	(+initialize, -dealloc, -removeWindowsItem:): Likewise.
+	(-context): New method.
+	* Source/NSView.m (+pushFocusView, +focusView): Remove
+	debugging information.
+
+Mon Jun  3 10:54:28 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
+
+	* Makefile.in (clean-top, distclean): Correct targets and clean
+	all header subdirectories.
+	* Makefile.sed.nt: Modify for Makefile.in changes.
+	* Source/Makefile.in (clean): Remove additional temporary files.
+	* Source/NSDPSContext.m: Add some log messages.
+	* Source/NSView.m (+pushFocusView, +popFocusView): New methods.
+	* Source/NSView.m: Initial implementation of view focusing.
+
+Thu May 30 18:37:51 1996  Scott Christley <scottc@net-community.com>
+
+	* configure.bat: Modifications for new directory structure.
+	* Source/Makefile.in (uninstall): New target.
+	* Source/Makefile.sed.nt: Modifications for Source/Makefile.in
+	changes and new directory structure.
+
 Tue Feb 13 09:52:02 1996  Scott Christley <scottc@net-community.com>
 
 	* Headers/AppKit/NSText.h: Removed WIN32 instance variables

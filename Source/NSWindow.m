@@ -66,7 +66,7 @@ NSString *NSWindowWillMoveNotification;
 {
   if (self == [NSWindow class])
     {
-      NSLog(@"Initialize NSWindow class\n");
+      NSDebugLog(@"Initialize NSWindow class\n");
 
       // Initial version
       [self setVersion:1];
@@ -113,7 +113,7 @@ NSString *NSWindowWillMoveNotification;
 {
   int style;
 
-  NSLog(@"NSWindow -init\n");
+  NSDebugLog(@"NSWindow -init\n");
   style = NSTitledWindowMask | NSClosableWindowMask
     | NSMiniaturizableWindowMask | NSResizableWindowMask;
   return [self initWithContentRect:NSZeroRect styleMask:style
@@ -144,7 +144,7 @@ NSString *NSWindowWillMoveNotification;
 	      backing:(NSBackingStoreType)bufferingType
 		defer:(BOOL)flag
 {
-  NSLog(@"NSWindow -initWithContentRect:\n");
+  NSDebugLog(@"NSWindow -initWithContentRect:\n");
   return [self initWithContentRect:contentRect styleMask:aStyle
 	       backing:bufferingType defer:flag screen:nil];
 }
@@ -157,13 +157,13 @@ NSString *NSWindowWillMoveNotification;
 {
   NSApplication *theApp = [NSApplication sharedApplication];
 
-  NSLog(@"NSWindow default initializer\n");
+  NSDebugLog(@"NSWindow default initializer\n");
   if (!theApp)
     NSLog(@"No application!\n");
 
   [super init];
 
-  NSLog(@"NSWindow start of init\n");
+  NSDebugLog(@"NSWindow start of init\n");
 
   frame = contentRect;
   style_mask = aStyle;
@@ -174,7 +174,7 @@ NSString *NSWindowWillMoveNotification;
   // Initialize attributes and flags
   frame_view = nil;
   [self setContentView:[[NSView alloc] initWithFrame:frame]];
-  first_responder = self;
+  first_responder = nil;
   delegate = nil;
   window_num = 0;
   background_color = [NSColor grayColor];
@@ -193,7 +193,7 @@ NSString *NSWindowWillMoveNotification;
   // Register ourselves with the Application object
   [theApp addWindowsItem:self title:window_title filename:NO];
 
-  NSLog(@"NSWindow end of init\n");
+  NSDebugLog(@"NSWindow end of init\n");
   return self;
 }
 
@@ -350,21 +350,19 @@ NSString *NSWindowWillMoveNotification;
 //
 - (void)becomeKeyWindow
 {
-  // Can we become the key window
-  if (![self canBecomeKeyWindow]) return;
+  // We are the key window
+  is_key = YES;
 
-	// Yes well then do it
-  [self makeKeyWindow];
+  // Post notification
   [self windowDidBecomeKey:self];
 }
 
 - (void)becomeMainWindow
 {
-  // Can we become the main window
-  if (![self canBecomeMainWindow]) return;
+  // We are the main window
+  is_main = YES;
 
-	// Yes well then do it
-  [self makeMainWindow];
+  // Post notification
   [self windowDidBecomeMain:self];
 }
 
@@ -410,19 +408,8 @@ NSString *NSWindowWillMoveNotification;
 
 - (void)makeKeyAndOrderFront:sender
 {
-  id w;
-  NSApplication *theApp = [NSApplication sharedApplication];
-
-  // Can we become the key window?
-  if ([self canBecomeKeyWindow])
-    {
-      // Tell the current key window to resign
-      w = [theApp keyWindow];
-      [w resignKeyWindow];
-
-      // Now we should become the key window
-      [self becomeKeyWindow];
-    }
+  // Make ourself the key window
+  [self makeKeyWindow];
 
   // Now order to the front
   [self orderFront:sender];
@@ -430,12 +417,30 @@ NSString *NSWindowWillMoveNotification;
 
 - (void)makeKeyWindow
 {
-  is_key = YES;
+  NSApplication *theApp = [NSApplication sharedApplication];
+
+  // Can we become the key window
+  if (![self canBecomeKeyWindow]) return;
+
+  // Make the current key window resign
+  [[theApp keyWindow] resignKeyWindow];
+
+  // Make ourself become the key window
+  [self becomeKeyWindow];
 }
 
 - (void)makeMainWindow
 {
-  is_main = YES;
+  NSApplication *theApp = [NSApplication sharedApplication];
+
+  // Can we become the main window
+  if (![self canBecomeMainWindow]) return;
+
+  // Make the current main window resign
+  [[theApp mainWindow] resignMainWindow];
+
+  // Make ourself become the main window
+  [self becomeMainWindow];
 }
 
 - (void)orderBack:sender
@@ -465,11 +470,17 @@ NSString *NSWindowWillMoveNotification;
 - (void)resignKeyWindow
 {
   is_key = NO;
+
+  // Post notification
+  [self windowDidResignKey: self];
 }
 
 - (void)resignMainWindow
 {
   is_main = NO;
+
+  // Post notification
+  [self windowDidResignMain: self];
 }
 
 - (void)setHidesOnDeactivate:(BOOL)flag
@@ -754,20 +765,21 @@ NSString *NSWindowWillMoveNotification;
   if (first_responder == aResponder)
     return YES;
 
-	// If not a NSResponder then forget it
+  // If not a NSResponder then forget it
   if (![aResponder isKindOfClass:[NSResponder class]])
     return NO;
 
-	// Does it accept the first responder?
+  // Does it accept the first responder?
   if (![aResponder acceptsFirstResponder])
     return NO;
 
-	// Notify current first responder that it should resign
-	// If it says NO then no change
-  if (![first_responder resignFirstResponder])
+  // Notify current first responder that it should resign
+  // If it says NO then no change
+  // But make sure that there even is a first responder
+  if ((![first_responder resignFirstResponder]) && first_responder)
     return NO;
 
-	// Make it the first responder
+  // Make it the first responder
   first_responder = aResponder;
 
   // Notify it that it just became the first responder
@@ -788,7 +800,7 @@ NSString *NSWindowWillMoveNotification;
 
 - (NSEvent *)nextEventMatchingMask:(unsigned int)mask
 			 untilDate:(NSDate *)expiration
-inMode:(NSString *)mode
+			    inMode:(NSString *)mode
 			 dequeue:(BOOL)deqFlag
 {
   return nil;
@@ -872,6 +884,8 @@ inMode:(NSString *)mode
     case NSLeftMouseDown:
       {
 	NSView *v = [content_view hitTest:[theEvent locationInWindow]];
+	NSDebugLog([content_view description]);
+	NSDebugLog(@"\n");
 	[v mouseDown:theEvent];
 	last_point = [theEvent locationInWindow];
 	break;
@@ -1012,11 +1026,11 @@ inMode:(NSString *)mode
 //
 - (void)dragImage:(NSImage *)anImage
 	       at:(NSPoint)baseLocation
-offset:(NSSize)initialOffset
-	       event:(NSEvent *)event
-pasteboard:(NSPasteboard *)pboard
-	       source:sourceObject
-	       slideBack:(BOOL)slideFlag
+	   offset:(NSSize)initialOffset
+	    event:(NSEvent *)event
+       pasteboard:(NSPasteboard *)pboard
+	   source:sourceObject
+	slideBack:(BOOL)slideFlag
 {}
 
 - (void)registerForDraggedTypes:(NSArray *)newTypes
@@ -1221,7 +1235,7 @@ pasteboard:(NSPasteboard *)pboard
 
   [super encodeWithCoder:aCoder];
 
-  NSLog(@"NSWindow: start encoding\n");
+  NSDebugLog(@"NSWindow: start encoding\n");
   [aCoder encodeRect:frame];
   [aCoder encodeObject:content_view];
 //  [aCoder encodeObjectReference: first_responder withName:NULL];
@@ -1240,7 +1254,7 @@ pasteboard:(NSPasteboard *)pboard
   [aCoder encodeValueOfObjCType:@encode(BOOL) at: &is_miniaturized];
   [aCoder encodeValueOfObjCType:"I" at: &style_mask];
   [aCoder encodeValueOfObjCType:@encode(BOOL) at: &menu_exclude];
-  NSLog(@"NSWindow: finish encoding\n");
+  NSDebugLog(@"NSWindow: finish encoding\n");
 }
 
 - initWithCoder:aDecoder
@@ -1249,7 +1263,7 @@ pasteboard:(NSPasteboard *)pboard
 
   [super initWithCoder:aDecoder];
 
-  NSLog(@"NSWindow: start decoding\n");
+  NSDebugLog(@"NSWindow: start decoding\n");
   frame = [aDecoder decodeRect];
   content_view = [aDecoder decodeObject];
 //  [aDecoder decodeObjectAt: &first_responder withName:NULL];
@@ -1270,9 +1284,11 @@ pasteboard:(NSPasteboard *)pboard
   [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &menu_exclude];
 
   // Register ourselves with the Application object
+  // +++ we shouldn't do this because coding may not be done?
+  //     better to do it in the awakeFromCoder method
   theApp = [NSApplication sharedApplication];
   [theApp addWindowsItem:self title:nil filename:NO];
-  NSLog(@"NSWindow: finish decoding\n");
+  NSDebugLog(@"NSWindow: finish decoding\n");
 
   return self;
 }

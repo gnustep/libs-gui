@@ -140,7 +140,7 @@
 {
   if (self == [NSEvent class])
     {
-      NSLog(@"Initialize NSEvent class\n");
+      NSDebugLog(@"Initialize NSEvent class\n");
 
       // Initial version
       [self setVersion:1];
