@@ -846,6 +846,7 @@ static NSNotificationCenter *nc;
 - (void) checkSpelling: (id)sender
 {
   NSSpellChecker *sp = [NSSpellChecker sharedSpellChecker];
+  NSString *misspelledWord = nil;
   NSRange errorRange;
   int count = 0;
 
@@ -859,10 +860,13 @@ static NSNotificationCenter *nc;
   if (errorRange.length)
     {
       [self setSelectedRange: errorRange];
+
+      misspelledWord = [[self string] substringFromRange: errorRange];
+      [sp updateSpellingPanelWithMisspelledWord: misspelledWord];
     }
   else
     {
-      NSBeep();
+      [sp updateSpellingPanelWithMisspelledWord: @""];
     }
 }
 
