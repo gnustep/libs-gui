@@ -172,29 +172,29 @@ id _nsbuttonCellClass = nil;
   return [_cell title];
 }
 
-- (NSAttributedString *)attributedAlternateTitle
+- (NSAttributedString *) attributedAlternateTitle
 {
   return [_cell attributedAlternateTitle];
 }
 
-- (NSAttributedString *)attributedTitle
+- (NSAttributedString *) attributedTitle
 {
   return [_cell attributedTitle];
 }
 
-- (void)setAttributedAlternateTitle:(NSAttributedString *)aString
+- (void) setAttributedAlternateTitle: (NSAttributedString *)aString
 {
   [_cell setAttributedAlternateTitle: aString];
   [self setNeedsDisplay: YES];
 }
 
-- (void)setAttributedTitle:(NSAttributedString *)aString
+- (void) setAttributedTitle: (NSAttributedString *)aString
 {
   [_cell setAttributedTitle: aString];
   [self setNeedsDisplay: YES];
 }
 
-- (void)setTitleWithMnemonic:(NSString *)aString
+- (void) setTitleWithMnemonic: (NSString *)aString
 {
   [_cell setTitleWithMnemonic: aString];
   [self setNeedsDisplay: YES];
@@ -378,12 +378,12 @@ id _nsbuttonCellClass = nil;
   return NO;
 }
 
-- (void)setSound:(NSSound *)aSound
+- (void) setSound: (NSSound *)aSound
 {
   [_cell setSound: aSound];
 }
 
-- (NSSound *)sound
+- (NSSound *) sound
 {
   return [_cell sound];
 }
@@ -391,16 +391,15 @@ id _nsbuttonCellClass = nil;
 //
 // NSCoding protocol
 //
-- (void) encodeWithCoder: (NSCoder*)aCoder
+- (void) encodeWithCoder: (NSCoder *)aCoder
 {
   [super encodeWithCoder: aCoder];
 }
 
-- (id) initWithCoder: (NSCoder*)aDecoder
+- (id) initWithCoder: (NSCoder *)aDecoder
 {
   [super initWithCoder: aDecoder];
 
   return self;
 }
-
 @end

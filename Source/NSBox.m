@@ -242,7 +242,9 @@
   NSRect f;
 
   if ([_content_view respondsToSelector: @selector(sizeToFit)])
-    [_content_view sizeToFit];
+    {
+      [_content_view sizeToFit];
+    }
   else // _content_view !respondsToSelector: sizeToFit
     {   
       NSArray *subviewArray = [_content_view subviews];
@@ -642,9 +644,13 @@
   if (!aFlag)
     {
       if (r.size.width < 0)
-	r.size.width = 0;
+	{
+	  r.size.width = 0;
+	}
       if (r.size.height < 0)
-	r.size.height = 0;
+	{
+	  r.size.height = 0;
+	}
     }
   
   return r;
