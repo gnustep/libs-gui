@@ -1319,7 +1319,7 @@ GSContactApplication(NSString *appName, NSString *port, NSDate *expire)
     }
   if (expire == nil)
     {
-      expire = [NSDate datyeWithTimeIntervalSinceNow: 30.0];
+      expire = [NSDate dateWithTimeIntervalSinceNow: 30.0];
     }
   if (providerName != nil && [port isEqual: providerName] == YES)
     {

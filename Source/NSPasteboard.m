@@ -176,7 +176,7 @@
       The services system provides a standardised mechanism for an application
       to provide services to other applications.  Like cut and paste, or
       drag and drop, the use of an application service is normally initiated
-      by the suer selecting some data to work with.  The user then goes to
+      by the user selecting some data to work with.  The user then goes to
       the services menu, and selects a service listed there.  The selection
       of a menu item causes the data to be placed on a pasteboard and
       transferred to the service providing application, where the action of
@@ -211,7 +211,11 @@
       When your application is installed in one of the standard locations,
       and the <em>make_services</em> tool is run to update the cache of
       services information, your service automatically becomes available
-      on the services menu of every application you run.
+      on the services menu of every application you run.<br />
+      At runtime, you use [NSApplication-setServicesProvider:] to specify
+      the object which implements the method to perform the service,
+      or, if you are providing the service from a process other than a
+      gui application, you use the NSRegisterServicesProvider() function.
     </p>
     <p>
       Your Info.plist should contain an array named <code>NSServices</code>
@@ -228,7 +232,7 @@
 	for these types, so the string "NSStringPboardType" would match
 	the use of the <code>NSStringPboardType</code> in your code.<br />
 	Similarly, the functions NSCreateFileContentsPboardType() and
-	NSCreateFilenamesPboardType() return types whose string values
+	NSCreateFilenamePboardType() return types whose string values
 	are found by appending the filename extension concerned to the
 	strings "NSTypedFileContentsPboardType:" and
 	"NSTypedFilenamesPboardType:" respectively.

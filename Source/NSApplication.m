@@ -1600,14 +1600,14 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 }
 
 /** 
-<p>
-Returns the target object that will respond to aSelector, if any. The
-method first checks if any of the key window's first responders, the
-key window or its delegate responds. Next it checks the main window in
-the same way. Finally it checks the receiver (NSApplication) and it's
-delegate.
-</p>
-*/
+ * <p>
+ *   Returns the target object that will respond to aSelector, if any. The
+ *   method first checks if any of the key window's first responders, the
+ *   key window or its delegate responds. Next it checks the main window in
+ *   the same way. Finally it checks the receiver (NSApplication) and it's
+ *   delegate.
+ * </p>
+ */
 - (id) targetForAction: (SEL)aSelector
 {
   NSWindow	*keyWindow;
@@ -2334,7 +2334,8 @@ image.
 /**
  * Sets the object which provides services to other applications.<br />
  * Passing a nil value for anObject will result in the provision of
- * services to other applications by this application being disabled.
+ * services to other applications by this application being disabled.<br />
+ * See [NSPasteboard] for information about providing services.
  */
 - (void) setServicesProvider: (id)anObject
 {
@@ -2432,11 +2433,62 @@ image.
     }
 }
 
+/**
+ * Returns the applications delegate, as set by the -setDelegate: method.<br />
+ * <p>The application delegate will automatically be sent various
+ * notifications (as long as it implements the appropriate methods)
+ * when application events occur.  The method to handle each of these
+ * notifications has name mirroring the notification name, so for instance
+ * an <em>NSApplicationDidBecomeActiveNotification</em> is handled by an
+ * <code>applicationDidBecomeActive:</code> method.
+ * </p> 
+ * <list>
+ *   <item>NSApplicationDidBecomeActiveNotification</item>
+ *   <item>NSApplicationDidFinishLaunchingNotification</item>
+ *   <item>NSApplicationDidHideNotification</item>
+ *   <item>NSApplicationDidResignActiveNotification</item>
+ *   <item>NSApplicationDidUnhideNotification</item>
+ *   <item>NSApplicationDidUpdateNotification</item>
+ *   <item>NSApplicationWillBecomeActiveNotification</item>
+ *   <item>NSApplicationWillFinishLaunchingNotification</item>
+ *   <item>NSApplicationWillHideNotification</item>
+ *   <item>NSApplicationWillResignActiveNotification</item>
+ *   <item>NSApplicationWillTerminateNotification</item>
+ *   <item>NSApplicationWillUnhideNotification</item>
+ *   <item>NSApplicationWillUpdateNotification</item>
+ * </list>
+ * <p>The delegate is also sent various messages to ask for authorisation
+ * to perform actions, or to ask it to perform actions (again, as long
+ * as it implements the appropriate methods).
+ * </p>
+ * <list>
+ *   <item>applicationShouldTerminateAfterLastWindowClosed:</item>
+ *   <item>applicationShouldOpenUntitledFile:</item>
+ *   <item>applicationOpenUntitledFile:</item>
+ *   <item>applicationShouldTerminate:</item>
+ * </list>
+ * <p>The delegate is also called upon to respond to any actions which
+ *   are not handled by a window, a window delgate, or by the application
+ *   object itsself..  This is controlled by the -targetForAction: method. 
+ * </p>
+ * <p>Finally, the application delegate is responsible for handling
+ *   messages sent to the application from remote processes (see the
+ *   section documenting distributed objects for [NSPasteboard]).
+ * </p>
+ */
 - (id) delegate
 {
   return _delegate;
 }
 
+/**
+ * Sets the delegate of the application to anObject.<br />
+ * <p><em>Beware</em>, this does not retain anObject, so you must be sure
+ * that, in the event of anObject being deallocated, you
+ * stop it being the application delagate by calling this
+ * method again with another object (or nil) as the argument.
+ * </p>
+ */
 - (void) setDelegate: (id)anObject
 {
   if (_delegate)
