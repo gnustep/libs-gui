@@ -30,8 +30,12 @@
 #include <gnustep/gui/config.h>
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSDictionary.h>
+#include <Foundation/NSException.h>
 #include <AppKit/NSMenuItem.h>
 #include <AppKit/NSMenu.h>
+#include <AppKit/NSImage.h>
+#include <AppKit/NSEvent.h>
+#include <AppKit/NSCell.h>
 
 static BOOL usesUserKeyEquivalents = NO;
 static Class imageClass;
