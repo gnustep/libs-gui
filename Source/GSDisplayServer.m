@@ -497,7 +497,7 @@ GSCurrentServer(void)
 
 /** Sets the style of the window. See [NSWindow -styleMask] for a
     description of the available styles */
-- (void) stylewindow: (int) style : (int) win
+- (void) stylewindow: (unsigned int) style : (int) win
 {
   [self subclassResponsibility: _cmd];
 }
@@ -619,7 +619,8 @@ GSCurrentServer(void)
 /** Returns the dimensions of the window that are inside the window
     frame but are controlled by the window manager. For instance, t
     gives the height of the title bar for the window */
-- (void) styleoffsets: (float*) l : (float*) r : (float*) t : (float*) b : (int) style
+- (void) styleoffsets: (float*) l : (float*) r : (float*) t : (float*) b 
+		     : (unsigned int) style
 {
   [self subclassResponsibility: _cmd];
 }
