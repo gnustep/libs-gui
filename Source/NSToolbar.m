@@ -204,8 +204,14 @@ static const int current_version = 1;
 
 
 - (void) insertItemWithItemIdentifier: (NSString *)itemIdentifier
-                             atIndex: (int)index
+			      atIndex: (int)index
 {
+  NSToolbarItem *item = [_delegate toolbar: self 
+				   itemForItemIdentifier: itemIdentifier
+				   willBeInsertedIntoToolbar: YES];
+  [nc postNotificationName: NSToolbarWillAddItemNotification
+      object: self];
+  [_items insertObject: item atIndex: index];
 }
 
 - (BOOL) isVisible
@@ -220,6 +226,12 @@ static const int current_version = 1;
 
 - (void) removeItemAtIndex: (int)index
 {
+  
+  id obj = [_items objectAtIndex: index]; 
+  [_items removeObjectAtIndex: index];
+  [_visibleItems removeObject: obj];
+  [nc postNotificationName: NSToolbarDidRemoveItemNotification
+      object: self];
 }
 
 - (void) runCustomizationPalette: (id)sender
