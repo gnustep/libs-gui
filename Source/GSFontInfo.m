@@ -196,6 +196,20 @@ static GSFontEnumerator *sharedEnumerator = nil;
   return copy;
 }
 
+/* We really want a mutable class for this, but this is quick and easy since
+   it's not really a public class anyway */
+- mutableCopyWithZone: (NSZone *)zone
+{
+  GSFontInfo *copy;
+  copy = (GSFontInfo*) NSCopyObject (self, 0, zone);
+  copy->fontDictionary = [fontDictionary copyWithZone: zone];
+  copy->fontName = [fontName copyWithZone: zone];
+  copy->familyName = [familyName copyWithZone: zone];
+  copy->weight = [weight copyWithZone: zone];
+  copy->encodingScheme = [encodingScheme copyWithZone: zone];
+  return copy;
+}
+
 - (void) set
 {
   [self subclassResponsibility: _cmd];
