@@ -34,8 +34,6 @@
 #include <AppKit/NSWindow.h>
 #include <AppKit/PSOperators.h>
 
-static float GSMenuBarHeight = 25.0; // A wild guess.
-
 // FIXME Check this strange comment: 
 // These private methods are used in NSPopUpButton. For NSPB we need to be
 // able to init with a frame, but have a very custom cell size.
@@ -51,7 +49,10 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
  */
 + (float) menuBarHeight
 {
-  return GSMenuBarHeight;
+  NSFont *font = [NSFont menuFontOfSize: 0.0];
+
+//static float GSMenuBarHeight = 25.0; - A wild guess for default font.
+  return [font boundingRectForFont].size.height + 10;
 }
 
 /*
@@ -72,7 +73,9 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 
 - (id) initWithFrame: (NSRect)aFrame
 {
-  cellSize = NSMakeSize(110,20);
+  NSRect r = [[NSFont menuFontOfSize: 0.0] boundingRectForFont];
+  /* Should make up 110, 20 for default font */
+  cellSize = NSMakeSize (r.size.width * 10., r.size.height + 5.);
 
   menuv_highlightedItemIndex = -1;
   menuv_horizontalEdgePad = 4.;
