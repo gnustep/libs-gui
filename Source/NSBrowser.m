@@ -47,6 +47,9 @@
 #include <AppKit/NSTextFieldCell.h>
 #include <AppKit/PSOperators.h>
 
+/* Cache */
+static float scrollerWidth; // == [NSScroller scrollerWidth]
+
 #ifndef HAVE_RINTF
 #define rintf rint
 #endif
@@ -68,7 +71,6 @@
   BOOL _isLoaded;
   id _columnScrollView;
   id _columnMatrix;
-  id _emptyView;
   int _numberOfRows;
   NSString *_columnTitle;
 }
@@ -83,7 +85,6 @@
 - (int)numberOfRows;
 - (void)setColumnTitle: (NSString *)aString;
 - (NSString *)columnTitle;
-- emptyView;
 
 @end
 
@@ -94,7 +95,6 @@
   [super init];
 
   _isLoaded = NO;
-  _emptyView = [[NSView alloc] init];
 
   return self;
 }
@@ -105,8 +105,6 @@
     [_columnScrollView release];
   if (_columnMatrix)
     [_columnMatrix release];
-  if (_emptyView)
-    [_emptyView release];
   if (_columnTitle)
     [_columnTitle release];
   [super dealloc];
@@ -165,11 +163,6 @@
 - (NSString *)columnTitle
 {
   return _columnTitle;
-}
-
-- emptyView
-{
-  return _emptyView;
 }
 
 @end
@@ -667,7 +660,7 @@
    * immutable strings.
    */
 
-  return s;
+  return AUTORELEASE (s);
 }
 
 // -------------------
@@ -1157,7 +1150,7 @@
   fprintf(stderr, "NSBrowser - (void)setMinColumnWidth: %d\n", columnWidth);
 #endif
 
-  sw = [NSScroller scrollerWidth];
+  sw = scrollerWidth;
   // Take the border into account
   if (_separatesColumns)
     sw += 2 * (_sizeForBorderType (NSBezelBorder)).width;
@@ -1336,7 +1329,7 @@
 #endif
 
   // Same as horizontal scroller with borders
-  return ([NSScroller scrollerWidth] + (2 * bs.height));
+  return (scrollerWidth + (2 * bs.height));
 }
 
 // -------------------
@@ -1703,7 +1696,7 @@
 
   // Adjust for horizontal scroller
   if (_hasHorizontalScroller)
-    r.origin.y = [NSScroller scrollerWidth] + (2 * bs.height) + NSBR_VOFFSET;
+    r.origin.y = scrollerWidth + (2 * bs.height) + NSBR_VOFFSET;
 
   // Padding : _columnSize.width is rounded in "tile" method
   if (column == _lastVisibleColumn)
@@ -1777,10 +1770,9 @@
       _scrollerRect.origin.x = bs.width;
       _scrollerRect.origin.y = bs.height;
       _scrollerRect.size.width = _frame.size.width - (2 * bs.width);
-      _scrollerRect.size.height = [NSScroller scrollerWidth];
+      _scrollerRect.size.height = scrollerWidth;
 
-      _columnSize.height -= [NSScroller scrollerWidth] + (2 * bs.height)
-                            + NSBR_VOFFSET;
+      _columnSize.height -= scrollerWidth + (2 * bs.height) + NSBR_VOFFSET;
     }
   else
     _scrollerRect = NSZeroRect;
@@ -1880,7 +1872,7 @@
 		 "browser: numberOfRowsInColumn: ",
 		 "browser: createRowsForColumn: inMatrix: "];
 
-  ASSIGN(_browserDelegate, anObject);
+  _browserDelegate = anObject;
 }
 
 
@@ -2079,6 +2071,7 @@
     {
       // Initial version
       [self setVersion: 1];
+      scrollerWidth = [NSScroller scrollerWidth];
     }
 }
 
@@ -2128,13 +2121,13 @@
   _passiveDelegate = YES;
   _doubleAction = NULL;  
   bs = _sizeForBorderType (NSBezelBorder);
-  _minColumnWidth = [NSScroller scrollerWidth] + (2 * bs.width);
+  _minColumnWidth = scrollerWidth + (2 * bs.width);
   
   // Horizontal scroller
   _scrollerRect.origin.x = bs.width;
   _scrollerRect.origin.y = bs.height;
   _scrollerRect.size.width = _frame.size.width - (2 * bs.width);
-  _scrollerRect.size.height = [NSScroller scrollerWidth];
+  _scrollerRect.size.height = scrollerWidth;
   _horizontalScroller = [[NSScroller alloc] initWithFrame: _scrollerRect];
   [_horizontalScroller setTarget: self];
   [_horizontalScroller setAction: @selector(scrollViaScroller:)];
@@ -2632,7 +2625,7 @@
 	  if (!(sc = [bc columnScrollView]))
 	    continue;
 	  // Make the column appear empty by removing the matrix
-	  [sc setDocumentView: [bc emptyView]];
+	  [sc setDocumentView: nil];
       	  [sc setNeedsDisplay: YES];
 	  [bc setIsLoaded: NO];
 	}
@@ -2722,3 +2715,5 @@
 }
 
 @end
+
+
