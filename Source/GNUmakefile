@@ -65,6 +65,8 @@ NSCustomImageRep.m \
 NSDataLink.m \
 NSDataLinkManager.m \
 NSDataLinkPanel.m \
+NSDocument.m \
+NSDocumentController.m \
 NSEPSImageRep.m \
 NSEvent.m \
 NSFileWrapper.m \
@@ -125,6 +127,7 @@ NSTextStorage.m \
 NSTextView.m \
 NSView.m \
 NSWindow.m \
+NSWindowController.m \
 NSWorkspace.m \
 GSComboSupport.m \
 GSHelpManagerPanel.m \
@@ -171,6 +174,9 @@ AppKit/NSCustomImageRep.h \
 AppKit/NSDataLink.h \
 AppKit/NSDataLinkManager.h \
 AppKit/NSDataLinkPanel.h \
+AppKit/NSDocument.h \
+AppKit/NSDocumentController.h \
+AppKit/NSDocumentFrameworkPrivate.h \
 AppKit/NSDragging.h \
 AppKit/NSEPSImageRep.h \
 AppKit/NSEvent.h \
@@ -239,12 +245,14 @@ AppKit/NSTextStorage.h \
 AppKit/NSTextView.h \
 AppKit/NSView.h \
 AppKit/NSWindow.h \
+AppKit/NSWindowController.h \
 AppKit/NSWorkspace.h \
 AppKit/GSTrackingRect.h \
 AppKit/nsimage-tiff.h \
 AppKit/GSMethodTable.h \
 AppKit/DPSOperators.h \
 AppKit/PSOperators.h \
+AppKit/GSHelpManagerPanel.h \
 AppKit/GSPasteboardServer.h \
 AppKit/GSServicesManager.h \
 AppKit/GSWraps.h

@@ -56,6 +56,7 @@
 @class NSScreen;
 @class NSText;
 @class NSView;
+@class NSWindowController;
 
 enum {
   NSNormalWindowLevel = 0,
@@ -134,6 +135,8 @@ extern NSSize NSTokenSize;
   BOOL          menu_exclude;
   BOOL          hides_on_deactivate;
   BOOL          accepts_mouse_moved;
+ 
+  NSWindowController *_windowController;
 
   /* Reserved for back-end use */
   void *be_wind_reserved;
@@ -217,6 +220,12 @@ extern NSSize NSTokenSize;
 - (void) endEditingFor: anObject;
 - (NSText *) fieldEditor: (BOOL)createFlag
 	       forObject: anObject;
+
+/*
+ * The window controller
+ */
+- (void)setWindowController:(NSWindowController *)windowController;
+- (id)windowController;
 
 /*
  * Window status and ordering

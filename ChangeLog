@@ -1,4 +1,14 @@
-1999-09-10  Pedro Ivo Andrade Tavares  <ptavares@iname.com>
+1999-09-10  Carl Lindberg	<Carl.Lindberg@hbo.com>
+
+	* Source/NSDocument.m: new file, implementation.
+	* Source/NSDocumentController.m: ditto.
+	* Source/NSWindowController.m: ditto.
+	* Headers/NSDocument.h
+	  Headers/NSDocumentController.h
+	  Headers/NSDocumentFrameworkPrivate.h
+	  Headers/NSWindowController.h: new.
+
+1999-09-10  Pedro Ivo Andrade Tavares  	<ptavares@iname.com>
 
         * Source/NSHelpManager.m: new file. See below for an explanation.
         * Headers/AppKit/NSHelpManager.h: new file.
@@ -25,6 +35,13 @@
 
 1999-09-10  Michael Hanni   <mhanni@sprintmail.com>
 
+	* Source/NSWindow.m: modifications to allow NSWindowController and
+	friends to work happily. Before windowShouldClose completes we
+	confer with NSWindowController if we should REALLY close the
+	window.
+	* Source/NSApplication.m: modifications for NSDocumentController.
+	If the delgate doesn't handle openFile: [NSDocumentController
+	sharedDocumentController] opens the file.
 	* Source/NSTabView.m: fixed a display problem. Tabs on the bottom
 	of the view work, but some display niggles remain. (Note: we beat
 	Apple on this one, heh.)

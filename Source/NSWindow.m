@@ -42,7 +42,9 @@
 #include <Foundation/NSLock.h>
 #include <Foundation/NSUserDefaults.h>
 
+#include <AppKit/NSDocument.h>
 #include <AppKit/NSWindow.h>
+#include <AppKit/NSWindowController.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSTextFieldCell.h>
@@ -474,6 +476,19 @@ static NSRecursiveLock	*windowsLock;
     }
 
   return _fieldEditor;
+}
+
+/*
+ * Window controller
+ */
+- (void)setWindowController:(NSWindowController *)windowController
+{
+  ASSIGN(_windowController, windowController);
+}
+   
+- (id)windowController
+{ 
+  return _windowController;
 }
 
 /*
@@ -1942,7 +1957,18 @@ static NSRecursiveLock	*windowsLock;
 - (BOOL) windowShouldClose: (id)sender
 {
   if ([delegate respondsToSelector: @selector(windowShouldClose:)])
-    return [delegate windowShouldClose: sender];
+    {
+      BOOL ourReturn; 
+
+      ourReturn = [delegate windowShouldClose: sender];
+
+      if (ourReturn)
+	{
+	  ourReturn = [[_windowController document] shouldCloseWindowController: _windowController];
+	}
+
+      return ourReturn;
+    }
   else
     return YES;
 }

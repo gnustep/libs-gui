@@ -52,6 +52,7 @@
 
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSApplication.h>
+#include <AppKit/NSDocumentController.h>
 #include <AppKit/NSPopUpButton.h>
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSPanel.h>
@@ -217,12 +218,20 @@ NSApplication	*NSApp = nil;
 	{
 	  [delegate application: self openFile: filePath];
 	}
+      else
+	{
+	  [[NSDocumentController sharedDocumentController] openDocumentWithContentsOfFile:filePath display:YES];
+	}
     }
   else if ((filePath = [defs stringForKey: @"GSTempPath"]) != nil)
     {
       if ([delegate respondsToSelector: @selector(application:openTempFile:)])
 	{
 	  [delegate application: self openTempFile: filePath];
+	}
+      else
+	{
+	  [[NSDocumentController sharedDocumentController] openDocumentWithContentsOfFile:filePath display:YES];
 	}
     }
 }
@@ -1448,6 +1457,9 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 
   if ([delegate respondsToSelector: @selector(applicationShouldTerminate:)])
     shouldTerminate = [delegate applicationShouldTerminate: sender];
+  else
+    shouldTerminate = [[NSDocumentController sharedDocumentController] reviewUnsavedDocumentsWithAlertTitle:@"Quit" cancellable:YES];
+
   if (shouldTerminate)
     {
       app_should_quit = YES;
