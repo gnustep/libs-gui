@@ -40,8 +40,8 @@ PACKAGE_NAME = gnustep-gui
 
 include ./Version
 
-# Build docs by default
-doc=yes
+# Don't build docs by default
+doc=no
 
 #
 # The list of subproject directories

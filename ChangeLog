@@ -1,3 +1,7 @@
+2003-09-16  Adam Fedor  <fedor@gnu.org>
+
+	* GNUmakefile (SUBPROJECTS): Don't build Documentation by default.
+
 2003-09-14  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPopUpButtonCell.m
