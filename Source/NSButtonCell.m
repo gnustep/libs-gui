@@ -77,6 +77,8 @@
   _delayInterval = 0.4;
   _repeatInterval = 0.075;
   _keyEquivalentModifierMask = NSCommandKeyMask;
+  _keyEquivalent = @"";
+  _altContents = @"";
 
   return self;
 }
