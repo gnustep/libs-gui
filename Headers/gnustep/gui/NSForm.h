@@ -35,7 +35,9 @@
 @class NSFont;
 
 @interface NSForm : NSMatrix <NSCoding>
-
+{
+  BOOL _title_width_needs_update;
+}
 //
 // Laying Out the Form 
 //
@@ -81,6 +83,10 @@
 //
 - (void)setEntryWidth:(float)width;
 
+// Private
+-(void) _setTitleWidthNeedsUpdate: (NSNotification*)notification;
 @end
+
+extern NSString *_NSFormCellDidChangeTitleWidthNotification;
 
 #endif // _GNUstep_H_NSForm
