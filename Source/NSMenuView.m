@@ -633,8 +633,8 @@
     }
   
   // Get the frameRect
-  r = [NSMenuWindow frameRectForContentRect: screenRect
-				  styleMask: [_window styleMask]];
+  r = [NSWindow frameRectForContentRect: screenRect
+		styleMask: [_window styleMask]];
   
   // Update position,if needed, using the preferredEdge;
   // It seems we should be calling [self resizeWindowWithMaxHeight:];
