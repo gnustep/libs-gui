@@ -1,3 +1,8 @@
+2004-11-04 Adrian Robert <arobert@cogsci.ucsd.edu>
+
+	* Documentation/GuiUser/KeyboardSetup.gsdoc: Describe the new
+	"GSModifiersAreKeys" default.
+	
 2004-10-31 12:04 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* GNUmakefile.postamble: Removed the after-clean clean section

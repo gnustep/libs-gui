@@ -202,6 +202,22 @@
 	  move the wm shortcuts that you do not use to keys which do
 	  not conflict (at least not too much) with GNUstep.
 	</p>
+        <p>
+          A final potential worry on X11 has to do with keyboards where hitting
+          'shift' or another key can affect the interpretation of a modifier
+          key.  For example, on some Apple USB keyboards one key to the left
+          of the space bar maps to "Option" without shift pressed, and "Alt"
+          when it IS pressed.  Such keyboard mappings are often useful in
+          non-English contexts to access accents or non-Roman characters.
+          However if such a key is used as a modifier in GNUstep problems can
+          occur when trying to use the modifier in conjunction with a shifted
+          character.  In particular, you will need to hit and release the
+          modifier and the shift key in a particular order, or else things
+          will not work as expected, and the modifier may become "stuck".  If
+          you experience such a problem, set the GNUstep back default
+          <code>GSModifiersAreKeys</code> to <code>YES</code>.
+        <p>
+
 
       </section>
     </chapter>
