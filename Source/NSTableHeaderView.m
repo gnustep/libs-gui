@@ -187,20 +187,11 @@
       if ((column == highlightedTableColumn)
 	  || [_tableView isColumnSelected: i])
 	{
-	  /* FIXME/TODO - cell can be any subclass of NSCell
-	     (specially a custom subclass), which might not implement
-	     setBackgroundColor: (or might not want us to mess up its
-	     custom drawing by hardcoding a background color here) -
-	     so we should not call it.  Instead, NSTableHeaderCell
-	     should override setHighlighted: to change the background
-	     color.  */
 	  [cell setHighlighted: YES];
-	  [cell setBackgroundColor: [NSColor controlColor]];
 	}
       else
 	{
 	  [cell setHighlighted: NO];
-	  [cell setBackgroundColor: [NSColor controlShadowColor]];
 	}
       [cell drawWithFrame: drawingRect
 			   inView: self];
@@ -216,12 +207,10 @@
 	  || [_tableView isColumnSelected: lastColumnToDraw])
 	{
 	  [cell setHighlighted: YES];
-	  [cell setBackgroundColor: [NSColor controlColor]];
 	}
       else
 	{
 	  [cell setHighlighted: NO];
-	  [cell setBackgroundColor: [NSColor controlShadowColor]];
 	}
       [cell drawWithFrame: drawingRect
 			   inView: self];
@@ -237,12 +226,10 @@
 	  || [_tableView isColumnSelected: lastColumnToDraw])
 	{
 	  [cell setHighlighted: YES];
-	  [cell setBackgroundColor: [NSColor controlColor]];
 	}
       else
 	{
 	  [cell setHighlighted: NO];
-	  [cell setBackgroundColor: [NSColor controlShadowColor]];
 	}
       [cell drawWithFrame: drawingRect
 			   inView: self];
@@ -530,8 +517,7 @@
 			objectAtIndex: columnIndex]];
 	rect.origin.y++;
 	rect.size.height--;
-	[[currentColumn headerCell]
-	  setBackgroundColor: [NSColor controlColor]];
+	[[currentColumn headerCell] setHighlighted: YES];
 
 	[[currentColumn headerCell]
 	  highlight: YES
@@ -767,7 +753,7 @@
 		rect.origin.y++;
 		rect.size.height--;
 		[[currentColumn headerCell]
-		  setBackgroundColor: [NSColor controlShadowColor]];
+		  setHighlighted: NO];
 		
 		[[currentColumn headerCell] 
 		  highlight: NO
@@ -822,7 +808,7 @@
 		rect.origin.y++;
 		rect.size.height--;
 		[[currentColumn headerCell]
-		  setBackgroundColor: [NSColor controlShadowColor]];
+		  setHighlighted: NO];
 		
 		[[currentColumn headerCell] 
 		  highlight: NO
@@ -852,8 +838,7 @@
 		  rect.origin.y++;
 		  rect.size.height--;
 		  NSLog(@"highlight");
-		  [[currentColumn headerCell]
-		    setBackgroundColor: [NSColor controlShadowColor]];
+		  [[currentColumn headerCell] setHighlighted: NO];
 		  
 		  [[currentColumn headerCell] 
 		    highlight: NO
