@@ -1,3 +1,10 @@
+Wed Dec 22 10:08:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSWindow.m: ([-sendEvent:]) reset _lastDragView on exit from
+	a view or on completion of dragging operation.  This ensures that if
+	you do two drags into the same view, the view gets two draggingEntered
+	messages (one for each session).
+
 Wed Dec 22  5:24:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSPanel.m: Fixed image display in alert panel.

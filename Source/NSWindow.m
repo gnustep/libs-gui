@@ -2055,6 +2055,7 @@ resetCursorRectsForView(NSView *theView)
 				      @selector(draggingExited:), dragInfo,
 				      action);
 		}
+	      _lastDragView = nil;
 	      break;
 
 	    case GSAppKitDraggingDrop:
@@ -2077,6 +2078,7 @@ resetCursorRectsForView(NSView *theView)
 					  dragInfo);
 		    }
 		}
+	      _lastDragView = nil;
 	      e = [NSEvent otherEventWithType: NSAppKitDefined
 			   location: [theEvent locationInWindow]
 			   modifierFlags: 0
@@ -2090,6 +2092,7 @@ resetCursorRectsForView(NSView *theView)
 	      break;
 
 	    case GSAppKitDraggingFinished:
+	      _lastDragView = nil;
 	      NSLog(@"Internal: dropped GSAppKitDraggingFinished event\n");
 	      break;
 
