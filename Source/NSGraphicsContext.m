@@ -39,6 +39,7 @@
 #include "AppKit/NSAffineTransform.h"
 #include "AppKit/NSWindow.h"
 #include "AppKit/NSView.h"
+#include "AppKit/DPSOperators.h"
 
 /* The memory zone where all global objects are allocated from (Contexts
    are also allocated from this zone) */
@@ -911,8 +912,10 @@ NSGraphicsContext	*GSCurrentContext()
 /* Context helper wraps */
   methodTable.GSWDefineAsUserObj = 
     GET_IMP(@selector(GSWDefineAsUserObj));
-  methodTable.GSWViewIsFlipped_ = 
-    GET_IMP(@selector(GSWViewIsFlipped:));
+  methodTable.GSWViewIsFlipped = 
+    GET_IMP(@selector(GSWViewIsFlipped));
+  methodTable.GSWSetViewIsFlipped_ = 
+    GET_IMP(@selector(GSWSetViewIsFlipped:));
   methodTable.GSWindowDepthForScreen_ = 
     GET_IMP(@selector(GSWindowDepthForScreen:));
   methodTable.GSAvailableDepthsForScreen_ = 
@@ -2413,100 +2416,378 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
+@end
+
+@implementation NSGraphicsContext (NSGraphics)
 /* ----------------------------------------------------------------------- */
 /* NSGraphics Ops */	
 /* ----------------------------------------------------------------------- */
++ (void) initializeBackend
+{
+  [self subclassResponsibility: _cmd];
+}
+
 /*
  * Rectangle Drawing Functions
  */
 - (void) NSEraseRect: (NSRect) aRect
 {
-  [self subclassResponsibility: _cmd];
+  DPSgsave(self);
+  DPSsetgray(self, 1.0);
+  NSRectFill(aRect);
+  DPSgrestore(self);
 }
 
 - (void) NSHighlightRect: (NSRect) aRect
 {
-  [self subclassResponsibility: _cmd];
+  DPScompositerect(self, NSMinX(aRect), NSMinY(aRect), 
+		   NSWidth(aRect), NSHeight(aRect), 
+		   NSCompositeHighlight);
+  [[[self focusView] window] flushWindow];
 }
 
 - (void) NSRectClip: (NSRect) aRect
 {
-  [self subclassResponsibility: _cmd];
+  DPSrectclip(self, NSMinX(aRect), NSMinY(aRect), 
+	      NSWidth(aRect), NSHeight(aRect));
+  DPSnewpath(self);
 }
 
 - (void) NSRectClipList: (const NSRect *)rects : (int) count
 {
-  [self subclassResponsibility: _cmd];
+  int i;
+  NSRect union_rect;
+
+  if (count == 0)
+    return;
+
+  /* 
+     The specification is not clear if the union of the rects 
+     should produce the new clip rect or if the outline of all rects 
+     should be used as clip path.
+  */
+  union_rect = rects[0];
+  for (i = 1; i < count; i++)
+    union_rect = NSUnionRect(union_rect, rects[i]);
+
+  NSRectClip(union_rect);
 }
 
 - (void) NSRectFill: (NSRect) aRect
 {
-  [self subclassResponsibility: _cmd];
+  DPSrectfill(self, NSMinX(aRect), NSMinY(aRect), 
+	      NSWidth(aRect), NSHeight(aRect));
 }
 
 - (void) NSRectFillList: (const NSRect *)rects : (int) count
 {
-  [self subclassResponsibility: _cmd];
+  int i;
+  
+  for (i = 0; i < count; i++)
+    DPSrectfill(self,  NSMinX(rects[i]), NSMinY(rects[i]), 
+		NSWidth(rects[i]), NSHeight(rects[i]));
 }
 
 - (void) NSRectFillListWithGrays: (const NSRect *)rects : (const float *)grays
-				:(int) count
+				: (int) count
 {
-  [self subclassResponsibility: _cmd];
+  int i;
+
+  for (i = 0; i < count; i++)
+    {
+      DPSsetgray(self, grays[i]);
+      DPSrectfill(self,  NSMinX(rects[i]), NSMinY(rects[i]), 
+		  NSWidth(rects[i]), NSHeight(rects[i]));
+    }
 }
 
+//*****************************************************************************
+//
+// 	Draws an unfilled rectangle, clipped by clipRect, whose border
+//	is defined by the parallel arrays sides and grays, both of length
+//	count. Each element of sides specifies an edge of the rectangle,
+//	which is drawn with a width of 1.0 using the corresponding gray level
+//	from grays. If the edges array contains recurrences of the same edge,
+//	each is inset within the previous edge.
+//
+//*****************************************************************************
+- (NSRect) NSDrawTiledRects: (NSRect) aRect : (const NSRect) clipRect  
+			   : (const NSRectEdge *) sides 
+			   : (const float *)grays : (int) count
+{
+  int i;
+  NSRect slice;
+  NSRect remainder = aRect;
+  NSRect rects[count];
+  BOOL hasClip = !NSIsEmptyRect(clipRect);
+
+  if (hasClip && NSIntersectsRect(aRect, clipRect) == NO)
+    return remainder;
+
+  for (i = 0; i < count; i++)
+    {
+      NSDivideRect(remainder, &slice, &remainder, 1.0, sides[i]);
+      if (hasClip)
+	rects[i] = NSIntersectionRect(slice, clipRect);
+      else
+	rects[i] = slice;
+    }
+
+  NSRectFillListWithGrays(rects, grays, count);
+
+  return remainder;
+}
 
 /*
  * Draw a Bordered Rectangle
  */
 - (void) NSDrawButton: (const NSRect) aRect : (const NSRect) clipRect
 {
-  [self subclassResponsibility: _cmd];
+  float x, y, w, h, v;
+
+  if (!NSIsEmptyRect(clipRect) && NSIntersectsRect(aRect, clipRect) == NO)
+    return;
+
+/* The lines drawn should be offset by half a linewidth inwards so
+   that the entire line gets drawn inside the rectangle. */
+  x = NSMinX(aRect);
+  y = NSMinY(aRect);
+  w = NSWidth(aRect) - 1.0;
+  h = NSHeight(aRect) - 1.0;
+  v = 1.0;
+  
+  if (GSWViewIsFlipped(self) == YES)
+    {
+      y += h;
+      h = -h;
+      v = -v;
+    }
+  else
+    y++;
+
+  DPSsetlinewidth(self, 1.0);
+
+  // Fill the inner rectangle in light gray
+  DPSsetgray(self, 0.667);
+  DPSrectfill(self, x, y, w, h);
+
+  // Top and left outer line in white
+  DPSsetgray(self, 1.0);
+  DPSmoveto(self, x, y);
+  DPSrlineto(self, 0, h);
+  DPSrlineto(self, w, 0);
+  DPSstroke(self);
+
+  // Bottom and right inner line in dark grey
+  DPSsetgray(self, 0.333);
+  DPSmoveto(self, x+1, y+v);
+  DPSrlineto(self, w-2, 0);
+  DPSrlineto(self, 0, h-2*v);
+  DPSstroke(self);
+
+  // Bottom and right outer line in black
+  DPSsetgray(self, 0.0);
+  DPSmoveto(self, x, y);
+  DPSrlineto(self, w, 0);
+  DPSrlineto(self, 0, h);
+  DPSstroke(self);
 }
 
 - (void) NSDrawGrayBezel: (const NSRect) aRect : (const NSRect) clipRect
 {
-  [self subclassResponsibility: _cmd];
+  float		x, y, w, h, v;
+
+  if (!NSIsEmptyRect(clipRect) && NSIntersectsRect(aRect, clipRect) == NO)
+    return;
+
+/* The lines drawn should be offset by half a linewidth inwards so
+   that the entire line gets drawn inside the rectangle. */
+  x = NSMinX(aRect);
+  y = NSMinY(aRect);
+  w = NSWidth(aRect) - 1.0;
+  h = NSHeight(aRect) - 1.0;
+  v = 1.0;
+  
+  if (GSWViewIsFlipped(self) == YES)
+    {
+      y += h;
+      h = -h;
+      v = -v;
+    }
+  else
+    y++;
+
+  DPSsetlinewidth(self, 1.0);
+
+  // Fill the inner rectangle in light gray
+  DPSsetgray(self, 0.667);
+  DPSrectfill(self, x, y, w, h);
+
+  // Top and left outer line in dark grey
+  DPSsetgray(self, 0.333);
+  DPSmoveto(self, x, y);
+  DPSrlineto(self, 0, h);
+  DPSrlineto(self, w, 0);
+  DPSstroke(self);
+
+  // Top and left inner line in black
+  DPSsetgray(self, 0.0);
+  DPSmoveto(self, x+1, y+v);
+  DPSrlineto(self, 0, h-2*v);
+  DPSrlineto(self, w-2, 0);
+  DPSstroke(self);
+
+  // Bottom and right outer line in white
+  DPSsetgray(self, 1.0);
+  DPSmoveto(self, x, y);
+  DPSrlineto(self, w, 0);
+  DPSrlineto(self, 0, h-v);
+  DPSstroke(self);
+
+  // Bottom and right inner line in light grey
+  DPSsetgray(self, 0.667);
+  DPSmoveto(self, x+1, y+v);
+  DPSrlineto(self, w-2, 0);
+  DPSrlineto(self, 0, h-2*v);
+  DPSstroke(self);
 }
 
 - (void) NSDrawBezel: (const NSRect) aRect : (const NSRect) clipRect
 {
-  [self subclassResponsibility: _cmd];
+  NSDrawGrayBezel(aRect, clipRect);
 }
 
 - (void) NSDrawGroove: (const NSRect) aRect : (const NSRect) clipRect
 {
-  [self subclassResponsibility: _cmd];
-}
+  float		x, y, w, h, v;
 
-- (NSRect) NSDrawTiledRects: (NSRect) aRect : (const NSRect) clipRect  
-			   : (const NSRectEdge *) sides 
-			   :  (const float *)grays : (int) count
-{
-  [self subclassResponsibility: _cmd];
-  return NSZeroRect;
+  if (!NSIsEmptyRect(clipRect) && NSIntersectsRect(aRect, clipRect) == NO)
+    return;
+
+/* The lines drawn should be offset by half a linewidth inwards so
+   that the entire line gets drawn inside the rectangle. */
+  x = NSMinX(aRect);
+  y = NSMinY(aRect);
+  w = NSWidth(aRect) - 1.0;
+  h = NSHeight(aRect) - 1.0;
+  v = 1.0;
+
+  if (GSWViewIsFlipped(self) == YES)
+    {
+      y += h;
+      h = -h;
+      v = -v;
+    }
+  else
+    y++;
+
+  DPSsetlinewidth(self, 1.0);
+
+  // Fill the inner rectangle in light gray
+  DPSsetgray(self, 0.667);
+  DPSrectfill(self, x, y, w, h);
+
+  // Top and left outer line in dark gray
+  DPSsetgray(self, 0.333);
+  DPSmoveto(self, x, y);
+  DPSrlineto(self, 0, h);
+  DPSrlineto(self, w, 0);
+  DPSstroke(self);
+
+  // Bottom and right inner line in dark gray (too)
+  DPSmoveto(self, x+2, y+v);
+  DPSrlineto(self, w-3, 0);
+  DPSrlineto(self, 0, h-3*v);
+  DPSstroke(self);
+
+  // Draw remaining white lines using a single white rect
+  DPSsetgray(self, 1.0);
+  DPSrectstroke(self, x+1, y-v, w, h);
 }
 
 - (void) NSDrawWhiteBezel: (const NSRect) aRect :  (const NSRect) clipRect
 {
-  [self subclassResponsibility: _cmd];
+  float x, y, w, h, v;
+
+  if (!NSIsEmptyRect(clipRect) && NSIntersectsRect(aRect, clipRect) == NO)
+    return;
+
+/* The lines drawn should be offset by half a linewidth inwards so
+   that the entire line gets drawn inside the rectangle. */
+  x = NSMinX(aRect);
+  y = NSMinY(aRect);
+  w = NSWidth(aRect) - 1.0;
+  h = NSHeight(aRect) - 1.0;
+  v = 1.0;
+  
+  if (GSWViewIsFlipped(self) == YES)
+    {
+      y += h;
+      h = -h;
+      v = -v;
+    }
+  else
+    y++;
+
+  DPSsetlinewidth(self, 1.0);
+
+  // Fill the inner rectangle in white
+  DPSsetgray(self, 1.0);
+  DPSrectfill(self, x, y, w, h);
+
+  // Top and left outer line in dark grey
+  DPSsetgray(self, 0.333);
+  DPSmoveto(self, x, y);
+  DPSrlineto(self, 0, h);
+  DPSrlineto(self, w, 0);
+  DPSstroke(self);
+
+  // Top and left inner line in dark gray (too)
+  DPSmoveto(self, x+1, y+v);
+  DPSrlineto(self, 0, h-2*v);
+  DPSrlineto(self, w-2, 0);
+  DPSstroke(self);
+
+  // Bottom and right outer line in white
+  DPSsetgray(self, 1.0);
+  DPSmoveto(self, x, y);
+  DPSrlineto(self, w, 0);
+  DPSrlineto(self, 0, h-v);
+  DPSstroke(self);
+
+  // Bottom and right inner line in light grey
+  DPSsetgray(self, 0.667);
+  DPSmoveto(self, x+1, y+v);
+  DPSrlineto(self, w-2, 0);
+  DPSrlineto(self, 0, h-3*v);
+  DPSstroke(self);
 }
 
 - (void) NSDottedFrameRect: (const NSRect) aRect
 {
-  [self subclassResponsibility: _cmd];
+  float dot_dash[] = {1.0, 1.0};
+
+  DPSsetgray(self, 0.0);
+  DPSsetlinewidth(self, 1.0);
+  // FIXME
+  DPSsetdash(self, dot_dash, 2, 0.0);
+  DPSrectstroke(self,  NSMinX(aRect), NSMinY(aRect), 
+		NSWidth(aRect), NSHeight(aRect));
 }
 
 - (void) NSFrameRect: (const NSRect) aRect
 {
-  [self subclassResponsibility: _cmd];
+  DPSsetlinewidth(self, 1.0);
+  DPSrectstroke(self,  NSMinX(aRect), NSMinY(aRect), 
+		NSWidth(aRect), NSHeight(aRect));
 }
 
 - (void) NSFrameRectWithWidth: (const NSRect) aRect :  (float) frameWidth
 {
-  [self subclassResponsibility: _cmd];
+  DPSsetlinewidth(self, frameWidth);
+  DPSrectstroke(self,  NSMinX(aRect), NSMinY(aRect), 
+		NSWidth(aRect), NSHeight(aRect));
 }
-
 
 
 /*
@@ -2563,9 +2844,13 @@ NSGraphicsContext	*GSCurrentContext()
   return 0;
 }
 
-- (void) GSWViewIsFlipped: (BOOL) flipped
+- (void) GSWSetViewIsFlipped: (BOOL) flipped
 {
-  [self subclassResponsibility: _cmd];
+}
+
+- (BOOL) GSWViewIsFlipped
+{
+  return [[self focusView] isFlipped];
 }
 
 - (NSWindowDepth) GSWindowDepthForScreen: (int) screen
@@ -2581,8 +2866,4 @@ NSGraphicsContext	*GSCurrentContext()
   return NULL;
 }
 
-+ (void) initializeBackend
-{
-  [self subclassResponsibility: _cmd];
-}
 @end
