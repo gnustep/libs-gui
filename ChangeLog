@@ -1,4 +1,4 @@
-Thu Feb  7 02:46:15 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+Fri Feb  8 02:46:15 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSTextView.m ([-moveWordBackward:]): Simplified.
 	([-moveWordForward:]): Simplified.
