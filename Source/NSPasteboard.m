@@ -55,6 +55,9 @@
 #include "gnustep/gui/GSServicesManager.h"
 #include "gnustep/gui/GSPasteboardServer.h"
 
+static NSString	*contentsPrefix = @"NSTypedFileContentsPboardType:";
+static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
+
 /*
  * A pasteboard class for lazily filtering data
  */
@@ -62,8 +65,8 @@
 {
 @public
   NSArray	*originalTypes;
-  NSData	*data;
   NSString	*file;
+  NSData	*data;
   NSPasteboard	*pboard;
 }
 @end
@@ -136,7 +139,6 @@
 {
   DESTROY(originalTypes);
   DESTROY(data);
-  DESTROY(file);
   DESTROY(pboard);
   [super dealloc];
 }
@@ -205,13 +207,80 @@
 
   if ([mechanism isEqualToString: @"NSUnixStdio"] == YES)
     {
-// FIXME
+      NSMutableData	*m = [NSMutableData dataWithCapacity: 1023];
+      NSString		*filename;
+      NSData		*d;
+      NSPipe		*p;
+      NSTask		*t;
+      id		o;
+
+      /*
+       * The data for an NSUnixStdio filter must be one or more filenames
+       */
+      if ([type isEqualToString: NSFilenamesPboardType] == NO
+	&& [type hasPrefix: namePrefix] == NO)
+	{
+	  [sender setData: [NSData data] forType: type];
+	  return;	// Not the name of a file to filter.
+	}
+      if (data != nil)
+	{
+	  d = data;
+	}
+      else if (file != nil)
+	{
+	  d = [NSData dataWithContentsOfFile: file];
+	}
+      else
+	{
+	  d = [pboard dataForType: fromType];
+	}
+
+      o = [NSDeserializer deserializePropertyListFromData: d
+					mutableContainers: NO];
+      if ([o isKindOfClass: [NSString class]] == YES)
+	{
+	  filename = o;
+	}
+      else if ([o isKindOfClass: [NSArray class]] == YES
+	&& [o count] > 0
+	&& [[o objectAtIndex: 0] isKindOfClass: [NSString class]] == YES)
+	{
+	  filename = [o objectAtIndex: 0];
+	}
+      else
+	{
+	  [sender setData: [NSData data] forType: type];
+	  return;	// Not the name of a file to filter.
+	}
+
+      /*
+       * Set up and launch task to filter the named file.
+       */
+      t = [NSTask new];
+      [t setLaunchPath: [info objectForKey: @"NSPortName"]];
+      [t setArguments: [NSArray arrayWithObject: filename]];
+      p = [NSPipe pipe];
+      [t setStandardOutput: p];
+      [t launch];
+
+      /*
+       * Read all the data that the task writes.
+       */
+      while ((d = [[p fileHandleForReading] availableData]) != nil)
+	{
+	  [m appendData: d];
+	}
+      [t waitUntilExit];
+      RELEASE(t);
+
+      /*
+       * And send it on.
+       */
+      [sender setData: m forType: type];
     }
-  else if ([mechanism isEqualToString: @"NSMapFile"] == YES)
-    {
-// FIXME
-    }
-  else if ([mechanism isEqualToString: @"NSIdentity"] == YES)
+  else if ([mechanism isEqualToString: @"NSIdentity"] == YES
+    || [mechanism isEqualToString: @"NSMapFile"] == YES)
     {
       /*
        * An 'identity' filter simply places the required data on the
@@ -278,6 +347,38 @@
 - (id) _target;
 @end
 
+/**
+ * <p>The pasteboard system is the primary mechanism for data exchange
+ * between OpenStep applications.  It is used for cut and paste of data,
+ * as the exchange mechanism for <em>services</em> (as listed on the
+ * services menu), for communicating with a spelling server in order to
+ * perform spell checking, and for <em>filter services</em> which convert
+ * data of one typ to another transparently.
+ * </p>
+ * <p>Pasteboards are identified by names, some of which are standard
+ * and are intended to exist permenantly and be shared between all
+ * applications, others are temporary or private and are used to handle
+ * specific services.
+ * </p>
+ * <p>All data transferred to/from pasteboards is <em>typed</em>.  Mostly
+ * using one of several standard types for common data or using standardised
+ * names which identify particular kinds of files and their contents
+ * (see the NSCreateFileContentsPboardType() an
+ * NSCreateFilenamePboardType() functions for details).  It is also possible
+ * for cooperating applications to use their own private types ... any string
+ * value will do.
+ * </p>
+ * <p>Each pasteboard has an <em>owner</em> ... an object which declares the
+ * types of data it can provide.  That object is responsible for producing
+ * the data for the pasteboard when it is called for (or it may send all
+ * formats of data it supports to the pastebaord system before any other
+ * application calls for it).<br />
+ * The pasteboard owner needs to implement the 
+ * -pasteboard:provideDataForType: and -pasteboardChangedOwner: methods,
+ * and for extended (GNUstep specific) pastebaord support may implement
+ * -pasteboard:provideDataForType:andVersion: too.
+ * </p>
+ */
 @implementation NSPasteboard
 
 static	NSLock			*dictionary_lock = nil;
@@ -577,12 +678,13 @@ static  NSMapTable              *mimeMap = NULL;
 }
 
 /**
- * <p>Returns a pasteboard from which the data (of the specified type)
- * can be read in all the types to which it can be converted by
- * filter services.
+ * <p>Creates and returns a pasteboard from which the data in the named
+ * file can be read in all the types to which it can be converted by
+ * filter services.<br />
+ * The type of data in the file is inferred from the file extension.
  * </p>
- * <p>Also registers the pasteboard as providing information of the
- * specified type.
+ * <p>No filtering is actually performed until some object asks the
+ * pasteboard for the data, so calling this method is quite inexpensive.
  * </p>
  */
 + (NSPasteboard*) pasteboardByFilteringData: (NSData*)data
@@ -1152,25 +1254,50 @@ static  NSMapTable              *mimeMap = NULL;
   return s;
 }
 
-/*
- * Methods Implemented by the Owner 
+@end
+
+
+
+/**
+ * Methods to be implemented by pastebaord owners.
+ */
+@implementation	NSObject (NSPasteboardOwner)
+/**
+ * This method is called by the pasteboard system when it does not have
+ * the data that has been asked for ... the pasteboard owner should
+ * supply the data to the pasteboard by calling -setData:forType: or one
+ * of the related methods.
  */
 - (void) pasteboard: (NSPasteboard*)sender
  provideDataForType: (NSString*)type
 {
 }
 
+/**
+ * Implemented where GNUstep pasteboard extensions are required.<br />
+ * This method is called by the pasteboard system when it does not have
+ * the data that has been asked for ... the pasteboard owner should
+ * supply the data to the pasteboard by calling -setData:forType: or one
+ * of the related methods.
+ */
 - (void) pasteboard: (NSPasteboard*)sender
  provideDataForType: (NSString*)type
 	 andVersion: (int)version
 {
 }
 
+/**
+ * This method is called by the pasteboard system when another object
+ * takes ownership of the pasteboard ... it lets the previous owner
+ * know that it is no longer required to supply data.
+ */
 - (void) pasteboardChangedOwner: (NSPasteboard*)sender
 {
 }
 
 @end
+
+
 
 @implementation NSPasteboard (GNUstepExtensions)
 
@@ -1292,35 +1419,65 @@ static  NSMapTable              *mimeMap = NULL;
 - (void) writeToPasteboard: (NSPasteboard *)pasteBoard
 {
   [pasteBoard setString: [self absoluteString]
-	      forType: NSURLPboardType];
+		forType: NSURLPboardType];
 }
 
 @end
 
 
-static NSString*	contentsPrefix = @"NSTypedFileContentsPboardType:";
-static NSString*	namePrefix = @"NSTypedFilenamesPboardType:";
-
 /**
- * Returns a standardised pasteboard type for file contents,
+ * <p>Returns a standardised pasteboard type for file contents,
  * formed from the supplied file extension.
+ * </p>
+ * <p>Data written to a pastebaord with a file contents type should
+ * be written using the [NSPasteboard-writeFileContents:] or
+ * [NSPasteboard-writeFileWrapper:] method.  Similarly, the data should
+ * be read using the [NSPasteboard-readFileContentsType:toFile:] or
+ * [NSPasteboard-readFileWrapper] method.
  */
 NSString*
 NSCreateFileContentsPboardType(NSString *fileType)
 {
-  return [NSString stringWithFormat: @"%@%@", contentsPrefix, fileType];
+  NSString	*ext = [fileType pathExtension];
+
+  if ([ext length] == 0)
+    {
+      ext = fileType;
+    }
+  return [NSString stringWithFormat: @"%@%@", contentsPrefix, ext];
 }
 
 /**
- * Returns a standardised pasteboard type for file names,
+ * <p>Returns a standardised pasteboard type for file names,
  * formed from the supplied file extension.
+ * </p>
+ * <p>Data written to a pastebaord with a file names type should
+ * be a single name writen using [NSPasteboard-setString:forType:] or
+ * an array of strings written using
+ * [NSPasteboard-setPropertyList:forType:].<br />
+ * Similarly, the data should be read using 
+ * the [NSPasteboard-stringForType:] or
+ * [NSPasteboard-propertyListForType:] method.
+ * </p>
+ * <p>See also the NSGetFileType() and NSGetFileTypes() functions.
  */
 NSString*
-NSCreateFilenamePboardType(NSString *filename)
+NSCreateFilenamePboardType(NSString *fileType)
 {
-  return [NSString stringWithFormat: @"%@%@", namePrefix, filename];
+  NSString	*ext = [fileType pathExtension];
+
+  if ([ext length] == 0)
+    {
+      ext = fileType;
+    }
+  return [NSString stringWithFormat: @"%@%@", namePrefix, ext];
 }
 
+/**
+ * Returns the file type (fileType extension) corresponding to the
+ * pasteboard type given.<br />
+ * This is a counterpart to the NSCreateFilenamePboardType() function.
+ */
 NSString*
 NSGetFileType(NSString *pboardType)
 {
@@ -1335,6 +1492,10 @@ NSGetFileType(NSString *pboardType)
   return nil;
 }
 
+/**
+ * Returns the file types (filename extensions) corresponding to the
+ * pasteboard types given.
+ */
 NSArray*
 NSGetFileTypes(NSArray *pboardTypes)
 {

@@ -4,7 +4,8 @@
 	writing fiels to pastebaords, implemented ([+typesFilterableTo:])
 	wrote (partial implementation ...) the unimplemented filters stuff.
 	* Source/GSServicesManager.m: helpers for filters.
-	* Headers/AppKit/GSPasteboard.h: Removed unused methods.
+	* Headers/AppKit/GSPasteboard.h: Removed unused methods, added
+	documentation.
 
 2003-06-26  Ludovic Marcotte <ludovic@Sophos.ca>
 
