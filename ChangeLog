@@ -1,3 +1,10 @@
+Thu Nov 26 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* NSApplication.m add updateServicesMenu invocation accidently deleted 
+		during merge.  Move method from _eventMatchingMask to tail of run 
+		method for performance reasons.
+	* Tools/dummy.m add various new dummy functions.
+
 Wed Nov 25 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* move DPSOperators.h to XDPS.

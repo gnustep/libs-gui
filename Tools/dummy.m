@@ -54,6 +54,19 @@ NSBeep(void)
 {
 }
 
+void NSFrameRect(NSRect aRect)  
+{
+}
+void NSDrawButton(NSRect aRect, NSRect clipRect)
+{
+}
+void NSDrawGrayBezel(NSRect aRect, NSRect clipRect)
+{
+}
+void NSDrawGroove(NSRect aRect, NSRect clipRect)
+{
+}
+
 @interface  GMModel : NSObject
 @end
 

@@ -838,6 +838,8 @@ NSAutoreleasePool* pool;
 		if(windows_need_update)						// send an update message
 			[self updateWindows];					// to all visible windows
 									
+		[listener updateServicesMenu]; 				// update (en/disable) the 
+													// services menu's items
 		[pool release];
 		} 
 	while (!app_should_quit);
@@ -1164,10 +1166,10 @@ BOOL match = NO;										// which matches mask
 	return nil;											// queue matches mask 
 }                                                       
 
-- (NSEvent*) nextEventMatchingMask: (unsigned int)mask
-                         untilDate: (NSDate *)expiration
-                            inMode: (NSString *)mode
-                           dequeue: (BOOL)flag
+- (NSEvent*) nextEventMatchingMask:(unsigned int)mask
+						 untilDate:(NSDate *)expiration
+						 inMode:(NSString *)mode
+						 dequeue:(BOOL)flag
 {
 NSEvent *event;
 BOOL done = NO;
