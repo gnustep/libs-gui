@@ -1217,6 +1217,15 @@ static NSString         *disabledName = @".GNUstepDisabled";
 @end /* GSServicesManager */
 
 
+/**
+ * <p>Establishes an NSConnection to the application listening at port
+ * (by convention usually the application name), launching appName 
+ * if necessary.  Returns the proxy to the remote application, or nil
+ * on failure.
+ * </p>
+ * The value of expire provides a timeout in case the application cannot
+ * be contacted promptly.
+ */
 id
 GSContactApplication(NSString *appName, NSString *port, NSDate *expire)
 {
@@ -1276,6 +1285,14 @@ GSContactApplication(NSString *appName, NSString *port, NSDate *expire)
   return app;
 }
 
+/**
+ * <p>Given the name of a serviceItem, and some data in a pasteboard
+ * this function sends the data to the service provider (launching
+ * another application if necessary) and retrieves the result of
+ * the service in the pastebaord.
+ * </p>
+ * Returns YES on success, NO otherwise.
+ */
 BOOL
 NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
 {

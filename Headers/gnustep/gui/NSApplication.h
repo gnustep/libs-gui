@@ -1,4 +1,4 @@
-/* 
+/** 
    NSApplication.h
 
    The one and only application class
@@ -7,6 +7,11 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
+   Author: Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: August 1998
+   Author: Richard Frith-Macdonald <richard@brainstorm.co.uk>
+   Date: December 1998
+
    
    This file is part of the GNUstep GUI Library.
 
@@ -24,6 +29,10 @@
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
+    AutogsdocSource: NSApplication.m
+    AutogsdocSource: GSServicesManager.m
+
 */ 
 
 #ifndef _GNUstep_H_NSApplication
