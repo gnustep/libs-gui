@@ -87,10 +87,15 @@ paraBreakCSet()
 
 @implementation NSAttributedString (AppKit)
 
++ (NSAttributedString *)attributedStringWithAttachment:(NSTextAttachment *)attachment
+{
+  // FIXME: Still missing
+  return nil;
+}
+
 - (BOOL) containsAttachments
 {
-  // Currently there are no attachment in GNUstep.
-  // FIXME.
+  // FIXME: Currently there are no attachment in GNUstep.
   return NO;
 }
 
@@ -183,20 +188,33 @@ paraBreakCSet()
 - (unsigned) lineBreakBeforeIndex: (unsigned)location
                       withinRange: (NSRange)aRange
 {
-  NSScanner *tScanner;
-  unsigned int sL;
+  NSString *str = [self string];
+  unsigned length = [str length];
+  NSRange scanRange;
+  NSRange startRange;
 
-  tScanner = [[NSScanner alloc] initWithString: [[self string]
-	substringWithRange: aRange]];
-  [tScanner scanUpToString: [NSText newlineString] intoString:NULL];
-  sL = [tScanner scanLocation] + 2;
+  if (aRange.location < 0 || NSMaxRange(aRange) > length || 
+      location < 0 || location > length)
+    {
+      [NSException raise: NSRangeException
+		  format: @"RangeError in method -lineBreakBeforeIndex:withinRange:"];
+    }
 
-  [tScanner release];
-
-  if (sL > aRange.length)
+  if (!NSLocationInRange(location, aRange))
     return NSNotFound;
+
+  scanRange = NSMakeRange(aRange.location, location - aRange.location);
+  startRange = [str rangeOfCharacterFromSet: wordBreakCSet()
+				    options: NSBackwardsSearch|NSLiteralSearch
+				      range: scanRange];
+  if (startRange.length == 0)
+    {
+      return NSNotFound;
+    }
   else
-    return sL;
+    {
+      return NSMaxRange(startRange);
+    }
 }
 
 - (NSRange) doubleClickAtIndex: (unsigned)location
@@ -206,6 +224,12 @@ paraBreakCSet()
   NSRange	scanRange;
   NSRange	startRange;
   NSRange	endRange;
+
+  if (location > length)
+    {
+      [NSException raise: NSRangeException
+		  format: @"RangeError in method -doubleClickAtIndex:"];
+    }
 
   scanRange = NSMakeRange(0, location);
   startRange = [str rangeOfCharacterFromSet: wordBreakCSet()
@@ -237,48 +261,47 @@ paraBreakCSet()
 - (unsigned) nextWordFromIndex: (unsigned)location
 		       forward: (BOOL)isForward
 {
+  NSString *str = [self string];
+  unsigned length = [str length];
+  NSRange range;
+
+  if (location < 0 || location > length)
+    {
+      [NSException raise: NSRangeException
+		  format: @"RangeError in method -nextWordFromIndex:forward:"];
+    }
+
   if (isForward)
     {
-      NSString	*str = [self string];
-      unsigned	length = [str length];
-      NSRange	range;
-
       range = NSMakeRange(location, length - location);
       range = [str rangeOfCharacterFromSet: wordBreakCSet()
 				   options: NSLiteralSearch
 				     range: range];
       if (range.length == 0)
-	return NSNotFound;
-      location = range.location;
-      range = NSMakeRange(location, length - location);
+	return location;
+      range = NSMakeRange(range.location, length - range.location);
       range = [str rangeOfCharacterFromSet: wordCSet()
 				   options: NSLiteralSearch
 				     range: range];
       if (range.length == 0)
-	return NSNotFound;
-      return range.location;
-    }
-  else if (location > 0)
-    {
-      NSString	*str = [self string];
-      NSRange	range;
-
-      range = NSMakeRange(0, location);
-      range = [str rangeOfCharacterFromSet: wordBreakCSet()
-				   options: NSBackwardsSearch|NSLiteralSearch
-				     range: range];
-      location = range.location;
-      range = NSMakeRange(0, location);
-      range = [str rangeOfCharacterFromSet: wordCSet()
-				   options: NSLiteralSearch
-				     range: range];
-      if (range.length == 0)
-	return NSNotFound;
+	return location;
       return range.location;
     }
   else
     {
-      return NSNotFound;
+      range = NSMakeRange(0, location);
+      range = [str rangeOfCharacterFromSet: wordBreakCSet()
+				   options: NSBackwardsSearch|NSLiteralSearch
+				     range: range];
+      if (range.length == 0)
+	return location;
+      range = NSMakeRange(0, range.location);
+      range = [str rangeOfCharacterFromSet: wordCSet()
+				   options: NSLiteralSearch
+				     range: range];
+      if (range.length == 0)
+	return location;
+      return range.location;
     }
 }
 
@@ -288,14 +311,6 @@ paraBreakCSet()
  * With love from Michael, hehe.
  */
 
-
-- (id) initWithRTFD: (NSData*)data
- documentAttributes: (NSDictionary**)dict
-{
-  // FIXME: We use RTF, as there are currently no additional images
-  return [self initWithRTF: data
-	       documentAttributes: dict];
-}
 
 - (id) initWithPath: (NSString*)path
  documentAttributes: (NSDictionary**)dict
@@ -324,10 +339,25 @@ documentAttributes: (NSDictionary**)dict
     return [self initWithRTF: [wrapper regularFileContents]
 		 documentAttributes: dict];
   else if ([wrapper isDirectory])
-    // FIXME: We should read the main file in the directory
-    return self;
+    {
+      NSDictionary *files = [wrapper fileWrappers];
+      NSFileWrapper *contents;
 
-  return self;
+      // We try to read the main file in the directory
+      if ((contents = [files objectForKey: @"TXT.rtf"]) != nil)
+	return [self initWithRTF: [contents regularFileContents]
+		     documentAttributes: dict];
+    }
+
+  return nil;
+}
+
+- (id) initWithRTFD: (NSData*)data
+ documentAttributes: (NSDictionary**)dict
+{
+  // FIXME: We use RTF, as there are currently no additional images
+  return [self initWithRTF: data
+	       documentAttributes: dict];
 }
 
 - (id) initWithRTF: (NSData*)data
@@ -711,6 +741,7 @@ documentAttributes: (NSDictionary**)dict
 
 - (void)updateAttachmentsFromPath:(NSString *)path
 {
+    // FIXME: Still missing
 }
 @end
 
