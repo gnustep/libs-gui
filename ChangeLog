@@ -1,3 +1,11 @@
+Wed Dec 25 17:01:51 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/NSText.h ([-setFont:range:]): Declare.
+	* Source/NSTextView.m ([-setFont:ofRange:]): Renamed to
+	setFont:range:.
+	* Source/NSText.m ([-setFont:range:]): New method.
+	([-setFont:ofRange:]): Call the new method.
+
 2002-12-23  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSComboBoxCell.h
