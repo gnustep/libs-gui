@@ -122,8 +122,6 @@ static const int currentVersion = 1; // GSNibItem version number...
 	  val = [nameTable objectForKey: [connection destination]];
 	  [connection setDestination: val];
 	  [connection establishConnection];
-	  // release the connections, now that they have been established.
-	  RELEASE(connection); 
 	}
 
       /*

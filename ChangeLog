@@ -1,3 +1,9 @@
+2003-11-22 15:07  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSNibTemplates.m ([GSNibContainer -awakeWithContext:]):
+	Don't release connections when enumerating them; they're owned
+	by the array. Partial fix for bug #6354.
+
 2003-11-19 21:53  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSTextView.m (-sizeToFit): If we are horizontally resizable
