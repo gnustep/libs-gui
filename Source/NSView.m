@@ -53,6 +53,7 @@
 #include <AppKit/GSTrackingRect.h>
 #include <AppKit/GSVersion.h>
 #include <AppKit/NSAffineTransform.h>
+#include <AppKit/NSApplication.h>
 #include <AppKit/NSDocumentController.h>
 #include <AppKit/NSDocument.h>
 #include <AppKit/NSClipView.h>
@@ -304,6 +305,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   _rFlags.has_subviews = 1;
   [aView resetCursorRects];
   [aView setNeedsDisplay: YES];
+  [aView viewDidMoveToWindow];
+  [aView viewDidMoveToSuperview];
+  [self didAddSubview: aView];
   RELEASE(aView);
 }
 
@@ -351,6 +355,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   _rFlags.has_subviews = 1;
   [aView resetCursorRects];
   [aView setNeedsDisplay: YES];
+  [aView viewDidMoveToWindow];
+  [aView viewDidMoveToSuperview];
+  [self didAddSubview: aView];
   RELEASE(aView);
 }
 
@@ -444,10 +451,15 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	  break;
 	}
     }
+  [self willRemoveSubview: aSubview];
   aSubview->_super_view = nil;
   [aSubview viewWillMoveToWindow: nil];
   [aSubview setNextResponder: nil];
+  RETAIN(aSubview);
   [_sub_views removeObjectIdenticalTo: aSubview];
+  [aSubview viewDidMoveToWindow];
+  [aSubview viewDidMoveToSuperview];
+  RELEASE(aSubview);
   if ([_sub_views count] == 0)
     {
       _rFlags.has_subviews = 0;
@@ -485,6 +497,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       _rFlags.has_subviews = 1;
       [newView resetCursorRects];
       [newView setNeedsDisplay: YES];
+      [newView viewDidMoveToWindow];
+      [newView viewDidMoveToSuperview];
+      [self didAddSubview: newView];
       RELEASE(newView);
     }
   else if ([_sub_views indexOfObjectIdenticalTo: oldView] != NSNotFound)
@@ -523,6 +538,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	  _rFlags.has_subviews = 1;
 	  [newView resetCursorRects];
 	  [newView setNeedsDisplay: YES];
+	  [newView viewDidMoveToWindow];
+	  [newView viewDidMoveToSuperview];
+	  [self didAddSubview: newView];
 	  RELEASE(newView);
 	}
     }
@@ -592,6 +610,18 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	}
     }
 }
+
+- (void) didAddSubview: (NSView *)subview
+{}
+
+- (void) viewDidMoveToSuperview
+{}
+
+- (void) viewDidMoveToWindow
+{}
+
+- (void) willRemoveSubview: (NSView *)subview
+{}
 
 - (void) rotateByAngle: (float)angle
 {
@@ -1470,6 +1500,19 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   [self unlockFocusNeedsFlush: YES ];
 }
 
+- (BOOL) lockFocusIfCanDraw
+{
+  if ([self canDraw])
+    {
+      [self lockFocus];
+      return YES;
+    }
+  else
+    {
+      return NO;
+    }
+}
+
 - (BOOL) canDraw
 {			// not implemented per OS spec FIX ME
   if (_window != nil)
@@ -2220,10 +2263,20 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 - (BOOL) performKeyEquivalent: (NSEvent*)theEvent
 {
-  unsigned	i;
+  unsigned i;
 
   for (i = 0; i < [_sub_views count]; i++)
     if ([[_sub_views objectAtIndex: i] performKeyEquivalent: theEvent] == YES)
+      return YES;
+  return NO;
+}
+
+- (BOOL) performMnemonic: (NSString *)aString
+{
+  unsigned i;
+
+  for (i = 0; i < [_sub_views count]; i++)
+    if ([[_sub_views objectAtIndex: i] performMnemonic: aString] == YES)
       return YES;
   return NO;
 }
@@ -2376,7 +2429,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 {
   NSView *dragView = (NSView*)[GSCurrentContext() _dragInfo];
 
-  
+  [NSApp preventWindowOrdering];
   [dragView dragImage: anImage
 		   at: viewLocation
 	       offset: initialOffset
@@ -3066,6 +3119,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       _rFlags.has_subviews = 1;
       [sub resetCursorRects];
       [sub setNeedsDisplay: YES];
+      [sub viewDidMoveToWindow];
+      [sub viewDidMoveToSuperview];
+      [self didAddSubview: sub];
     }
   RELEASE(subs);
 
