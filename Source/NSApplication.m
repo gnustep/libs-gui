@@ -78,7 +78,7 @@
 struct	_NSModalSession {
   int		runState;
   NSWindow	*window;
-  NSModalSession	parent;
+  NSModalSession	previous;
 };
 
 //
@@ -189,17 +189,28 @@ NSString* mainModelFile;
 		object: self];
 }
 
-- (void)dealloc
+- (void) dealloc
 {
-	NSDebugLog(@"Freeing NSApplication\n");
-													// Let ourselves know we 
-	gnustep_gui_app_is_in_dealloc = YES;			// are within dealloc
+  NSDebugLog(@"Freeing NSApplication\n");
+						// Let ourselves know we 
+						// are within dealloc
+  gnustep_gui_app_is_in_dealloc = YES;
 	
-	[listener release];
-	[window_list release];
-	[event_queue release];
-	[current_event release];
-	[super dealloc];
+  [listener release];
+  [window_list release];
+  [event_queue release];
+  [current_event release];
+  /*
+   *	We may need to tidy up nested modal session structures.
+   */
+  while (session != 0)
+    {
+      NSModalSession	tmp = session;
+
+      session = tmp->previous;
+      NSZoneFree(NSDefaultMallocZone(), tmp);
+    }
+  [super dealloc];
 }
 
 //
@@ -239,31 +250,36 @@ NSString* mainModelFile;
 
   theSession = (NSModalSession)NSZoneMalloc(NSDefaultMallocZone(),
 			sizeof(struct _NSModalSession));
-  theSession->parent = 0;
   theSession->runState = NSRunContinuesResponse;
   theSession->window = theWindow; 
+  theSession->previous = session;
+  session = theSession;
   return theSession;
 }
 
 - (void) endModalSession: (NSModalSession)theSession
 {
+  NSModalSession	tmp = session;
+
   if (theSession == 0)
     [NSException raise: NSInvalidArgumentException
 		format: @"null pointer passed to endModalSession:"];
   /*
    *	Remove this session from the linked list of sessions.
    */
-  if (session == theSession)
-    session = session->parent;
-  else
-    {
-      NSModalSession	tmp = session;
+  while (tmp && tmp != theSession)
+    tmp = tmp->previous;
+  if (tmp == 0)
+    [NSException raise: NSInvalidArgumentException
+		format: @"unknown session passed to endModalSession:"];
 
-      while (tmp != 0 && tmp->parent != theSession)
-	tmp = tmp->parent;
-      if (tmp)
-	tmp->parent = tmp->parent->parent;
+  while (session != theSession)
+    {
+      tmp = session;
+      session = tmp->previous;
+      NSZoneFree(NSDefaultMallocZone(), tmp);
     }
+  session = session->previous;
   NSZoneFree(NSDefaultMallocZone(), session);
 }
 
@@ -324,7 +340,6 @@ NSAutoreleasePool* pool;
     {
       if (theSession)
 	{
-	  theSession->runState = NSRunAbortedResponse;
 	  [self endModalSession: theSession];
 	}
       if ([[localException name] isEqual: NSAbortModalException] == NO)
@@ -342,11 +357,13 @@ NSAutoreleasePool* pool;
   unsigned		count;
   unsigned		i;
 
-  theSession->parent = session;
-  session = theSession;
-  session->runState = NSRunContinuesResponse;
-  [session->window display];
-  [session->window makeKeyAndOrderFront: self];
+  if (theSession != session)
+    [NSException raise: NSInvalidArgumentException
+		format: @"runModalSession: with wrong session"];
+
+  theSession->runState = NSRunContinuesResponse;
+  [theSession->window display];
+  [theSession->window makeKeyAndOrderFront: self];
 
   /*
    *	First we make sure that there is an event.
@@ -357,7 +374,7 @@ NSAutoreleasePool* pool;
       for (i = 0; i < count; i++)
 	{
 	  event = [event_queue objectAtIndex: i];
-	  if ([event window] == session->window)
+	  if ([event window] == theSession->window)
 	    {
 	      found = YES;
 	      break;
@@ -372,12 +389,12 @@ NSAutoreleasePool* pool;
 				   beforeDate: limitDate];
 	}
     }
-  while (found == NO && session->runState == NSRunContinuesResponse);
+  while (found == NO && theSession->runState == NSRunContinuesResponse);
 
   /*
    *	Now we deal with all the events in the queue.
    */
-  while (found == YES && session->runState == NSRunContinuesResponse)
+  while (found == YES && theSession->runState == NSRunContinuesResponse)
     {
       NSAutoreleasePool	*pool = [NSAutoreleasePool new];
 
@@ -385,7 +402,7 @@ NSAutoreleasePool* pool;
       for (i = 0; i < count; i++)
 	{
 	  event = [event_queue objectAtIndex: i];
-	  if ([event window] == session->window)
+	  if ([event window] == theSession->window)
 	    {
 	      ASSIGN(current_event, event);
 	      [event_queue removeObjectAtIndex: i];
@@ -407,8 +424,7 @@ NSAutoreleasePool* pool;
       [pool release];
     }
 
-  NSAssert(session == theSession, @"Session was ended while running");
-  session = session->parent;
+  NSAssert(session == theSession, @"Session was changed while running");
   return theSession->runState;
 }
 
