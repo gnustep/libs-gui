@@ -1,3 +1,14 @@
+2004-12-09  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCursor.m (getStandardCursor()): If not standard cursor
+	is available, try an image cursor with an image of the same name.
+	* Images/common_OpenHandCursor.tiff
+	* Images/common_ClosedHandCursor.tiff: New cursor image files by
+	Fabien Vallon <fabien@sonappart.net>.
+	* Images/GNUmakefile: Install the new files.
+	* Images/nsmapping.strings: Register the new cursor files for the
+	names used in NSCursor.m.
+
 2004-11-11  Adam Fedor  <fedor@gnu.org>
 
 	* Source/GSDragView.m ([GSDragView -_setCursor]): Initialize variable.

@@ -11,3 +11,5 @@ NSMenuCheckmark = common_2DCheckMark;
 NSMenuArrow = common_3DArrowRight;
 NSMenuMixedState = common_2DDash;
 NSComboArrow = common_ComboBoxEllipsis;
+GSClosedHandCursor =  common_ClosedHandCursor;
+GSOpenHandCursor = common_OpenHandCursor;

@@ -117,6 +117,8 @@ common_ToolbarSeparatorItem.tiff \
 common_ToolbarShowColorsItem.tiff \
 common_ToolbarShowFontsItem.tiff \
 common_ToolbarSpaceItem.tiff \
+common_ClosedHandCursor.tiff \
+common_OpenHandCursor.tiff \
 page_landscape.tiff \
 page_portrait.tiff
 

@@ -177,11 +177,22 @@ NSCursor *getStandardCursor(NSString *name, int style)
 
   if (cursor == nil)
     {
-      void *c;
+      void *c = NULL;
     
       cursor = [[NSCursor_class alloc] initWithImage: nil];
       [GSCurrentServer() standardcursor: style : &c];
-      [cursor _setCid: c];
+      if (c == NULL)
+        {
+	  /* 
+	     There is no standard cursor with this name defined in the 
+	     backend, so try an image with this name.
+	  */
+	  [cursor setImage: [NSImage imageNamed: name]];
+	}
+      else
+        {
+	  [cursor _setCid: c];
+	}
       [cursorDict setObject: cursor forKey: name];
       RELEASE(cursor);
     }
