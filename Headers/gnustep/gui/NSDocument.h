@@ -31,6 +31,7 @@
 
 #include <Foundation/Foundation.h>
 #include <AppKit/NSNibDeclarations.h>
+#include <AppKit/NSUserInterfaceValidation.h>
 
 
 @class NSURL, NSUndoManager;
@@ -82,6 +83,8 @@ typedef enum _NSSaveOperationType {
 - (void)addWindowController:(NSWindowController *)windowController;
 - (BOOL)shouldCloseWindowController:(NSWindowController *)windowController;
 - (void)showWindows;
+- (void)removeWindowController:(NSWindowController *)windowController;
+- (void)setWindow:(NSWindow *)aWindow;
 
 /*" Window controller creation "*/
 - (void)makeWindowControllers;  // Manual creation
@@ -135,6 +138,10 @@ typedef enum _NSSaveOperationType {
 - (BOOL)shouldRunSavePanelWithAccessoryView;
 - (NSString *)fileNameFromRunningSavePanelForSaveOperation:(NSSaveOperationType)saveOperation;
 - (int)runModalSavePanel:(NSSavePanel *)savePanel withAccessoryView:(NSView *)accessoryView;
+- (NSString *)fileTypeFromLastRunSavePanel;
+- (BOOL)writeWithBackupToFile:(NSString *)fileName 
+		       ofType:(NSString *)fileType 
+		saveOperation:(NSSaveOperationType)saveOp;
 
 /*" Printing "*/
 - (NSPrintInfo *)printInfo;
@@ -153,12 +160,35 @@ typedef enum _NSSaveOperationType {
 
 /*" Menus "*/
 - (BOOL)validateMenuItem:(NSMenuItem *)anItem;
+- (BOOL)validateUserInterfaceItem:(id <NSValidatedUserInterfaceItem>)anItem;
 
 /*" Undo "*/
 - (NSUndoManager *)undoManager;
 - (void)setUndoManager:(NSUndoManager *)undoManager;
 - (BOOL)hasUndoManager;
 - (void)setHasUndoManager:(BOOL)flag;
+
+/* NEW delegate operations*/
+- (void)shouldCloseWindowController:(NSWindowController *)windowController 
+			   delegate:(id)delegate 
+		shouldCloseSelector:(SEL)callback
+			contextInfo:(void *)contextInfo;
+- (void)canCloseDocumentWithDelegate:(id)delegate 
+		 shouldCloseSelector:(SEL)shouldCloseSelector 
+			 contextInfo:(void *)contextInfo;
+- (void)saveToFile:(NSString *)fileName 
+     saveOperation:(NSSaveOperationType)saveOperation 
+	  delegate:(id)delegate
+   didSaveSelector:(SEL)didSaveSelector 
+       contextInfo:(void *)contextInfo;
+- (BOOL)prepareSavePanel:(NSSavePanel *)savePanel;
+- (void)saveDocumentWithDelegate:(id)delegate 
+		 didSaveSelector:(SEL)didSaveSelector 
+		     contextInfo:(void *)contextInfo;
+- (void)runModalSavePanelForSaveOperation:(NSSaveOperationType)saveOperation 
+				 delegate:(id)delegate
+			  didSaveSelector:(SEL)didSaveSelector 
+			      contextInfo:(void *)contextInfo;
 
 @end
 
