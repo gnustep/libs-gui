@@ -1,3 +1,12 @@
+Tue Jun 15 20:55:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/GSServicesManager.m: Use NSNotificationCenter properly.
+	* Source/NSColor.m: Use NSNotificationCenter properly.
+	* Source/NSInterfaceStyle.m: Use NSNotificationCenter properly.
+	* Source/NSPasteboard.m: Use NSNotificationCenter properly.
+	* Source/NSWorkspace.m: Use NSNotificationCenter properly.
+	* Tools/gpbs.m: Use NSNotificationCenter properly.
+
 Tue Jun 15  9:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSWindow.m: Handle dnd registration for the window by using

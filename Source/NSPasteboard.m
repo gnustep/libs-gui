@@ -94,9 +94,10 @@ static	id<GSPasteboardSvr>	the_server = nil;
   id	obj = the_server;
 
   the_server = nil;
-  [NSNotificationCenter removeObserver: self
-              			  name: NSConnectionDidDieNotification
-              			object: [notification object]];
+  [[NSNotificationCenter defaultCenter]
+    removeObserver: self
+	      name: NSConnectionDidDieNotification
+	    object: [notification object]];
   [obj release];
   return self;
 }
@@ -119,10 +120,11 @@ static	id<GSPasteboardSvr>	the_server = nil;
 	{
 	  NSConnection*	conn = [(id)the_server connectionForProxy];
 
-	  [NSNotificationCenter addObserver: self
-				   selector: @selector(_lostServer:)
-				       name: NSConnectionDidDieNotification
-				     object: conn];
+	  [[NSNotificationCenter defaultCenter]
+	    addObserver: self
+	       selector: @selector(_lostServer:)
+		   name: NSConnectionDidDieNotification
+		 object: conn];
 	}
       else
 	{

@@ -856,10 +856,11 @@ NSMutableDictionary	*pasteboards = nil;
 
 - (NSConnection*) connection: ancestor didConnect: newConn
 {
-  [NotificationDispatcher addObserver: self
-			     selector: @selector(connectionBecameInvalid:)
-				 name: NSConnectionDidDieNotification
-			       object: newConn];
+  [[NSNotificationCenter defaultCenter]
+    addObserver: self
+       selector: @selector(connectionBecameInvalid:)
+	   name: NSConnectionDidDieNotification
+	 object: newConn];
   [newConn setDelegate: self];
   return newConn;
 }
@@ -1055,10 +1056,11 @@ main(int argc, char** argv)
     }
 
   [conn setDelegate:server];
-  [NotificationDispatcher addObserver: server
-		 selector: @selector(connectionBecameInvalid:)
-		 name: NSConnectionDidDieNotification
-		   object: conn];
+  [[NSNotificationCenter defaultCenter]
+    addObserver: server
+       selector: @selector(connectionBecameInvalid:)
+	   name: NSConnectionDidDieNotification
+	 object: conn];
 
   if (verbose)
     {

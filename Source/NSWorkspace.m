@@ -162,10 +162,11 @@ static NSString			*_rootPath = @"/";
 	  sharedWorkspace =
 		(NSWorkspace*)NSAllocateObject(self, 0, NSDefaultMallocZone());
 
-	  [NSNotificationCenter addObserver: sharedWorkspace
-				   selector: @selector(noteUserDefaultsChanged)
-				       name: NSUserDefaultsDidChangeNotification
-				     object: nil];
+	  [[NSNotificationCenter defaultCenter]
+	    addObserver: sharedWorkspace
+	       selector: @selector(noteUserDefaultsChanged)
+		   name: NSUserDefaultsDidChangeNotification
+		 object: nil];
 	}
       [gnustep_global_lock unlock];
     }

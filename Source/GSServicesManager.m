@@ -101,9 +101,10 @@ NSUnregisterServicesProvider(NSString *name)
        *        the given port name.
        */
       [[NSPortNameServer defaultPortNameServer] removePortForName: name];
-      [NSNotificationCenter removeObserver: [GSListener class]
-                                      name: NSConnectionDidDieNotification
-                                    object: listenerConnection];
+      [[NSNotificationCenter defaultCenter]
+	removeObserver: [GSListener class]
+		  name: NSConnectionDidDieNotification
+		object: listenerConnection];
       [listenerConnection release];
       listenerConnection = nil;
     }
@@ -120,9 +121,10 @@ NSRegisterServicesProvider(id provider, NSString *name)
        *	the given port name.
        */
       [[NSPortNameServer defaultPortNameServer] removePortForName: name];
-      [NSNotificationCenter removeObserver: [GSListener class]
-				      name: NSConnectionDidDieNotification
-				    object: listenerConnection];
+      [[NSNotificationCenter defaultCenter]
+	removeObserver: [GSListener class]
+		  name: NSConnectionDidDieNotification
+		object: listenerConnection];
       [listenerConnection release];
       listenerConnection = nil;
     }
@@ -133,7 +135,7 @@ NSRegisterServicesProvider(id provider, NSString *name)
       if (listenerConnection)
 	{
 	  [listenerConnection retain];
-	  [NotificationDispatcher
+	  [[NSNotificationCenter defaultCenter]
                     addObserver: [GSListener class]
 		       selector: @selector(connectionBecameInvalid:)
 			   name: NSConnectionDidDieNotification
@@ -159,9 +161,10 @@ NSRegisterServicesProvider(id provider, NSString *name)
   NSAssert(listenerConnection==[notification object],
 	NSInternalInconsistencyException);
 
-  [NSNotificationCenter removeObserver: self
-				  name: NSConnectionDidDieNotification
-				object: listenerConnection];
+  [[NSNotificationCenter defaultCenter]
+    removeObserver: self
+	      name: NSConnectionDidDieNotification
+	    object: listenerConnection];
   [listenerConnection release];
   listenerConnection = nil;
   return self;

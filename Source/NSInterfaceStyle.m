@@ -137,10 +137,11 @@ NSInterfaceStyleForKey(NSString *key, NSResponder *responder)
 
       [NSUserDefaults standardUserDefaults];
       [self defaultsDidChange: nil];
-      [NSNotificationCenter addObserver: self
-			       selector: @selector(defaultsDidChange:)
-				   name: NSUserDefaultsDidChangeNotification
-				 object: nil];
+      [[NSNotificationCenter defaultCenter]
+	addObserver: self
+	   selector: @selector(defaultsDidChange:)
+	       name: NSUserDefaultsDidChangeNotification
+	     object: nil];
     }
 }
 
