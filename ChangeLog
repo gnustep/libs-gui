@@ -1,3 +1,61 @@
+2000-03-10  Pascal J. Bourguignon  <pjb@imaginet.fr>
+
+	* Source/GSUtil.m 
+
+	A new file where to put utility functions used by the classes. For
+	now,  only   contains  the  GSUtil_sizeOfMultilineStringWithFont()
+	function.
+
+
+	* Source/NSCell.m 
+	* Source/NSButtonCell.m 
+
+	Updated -cellSize  to process multiline string  value. This should
+	improve greately the behaviour  of NSTextField and consequently of
+	the NSPanel building functions.
+
+	Updated    -[NSCell    _drawText:inFrame:]   and    -[NSButtonCell
+	drawInteriorWithFrame:inView:]   to   handle  properly   multiline
+	strings.
+
+
+	* Source/NSPanel.m
+
+	Added the following  features to GSAlertPanel private subclass
+	of NSPanel:
+
+	- fit  the height  of the  panel according  to the  height  of the
+	  message, in addition to the width.
+
+	- when the final  size for the panel is much too big respective to
+	  the screen,  it is reduced, and  the message is put  in a scroll
+	  view.
+
+	- made the  attention panel stay  visible when the  application is
+	  deactivated as manded by the OpenStep specifications.
+
+	- more than one attention panel can be run simultaneously, without
+	  the later invocation stealing the panel of the former one.
+
+
+	* Source/NSParagraphStyle.m
+	
+	Moved  constant   invocation  of  the   method  -[NSParagraphStyle
+	attribute:atIndex:effectiveRange:]  outside of  loops  and removed
+	firstLine variable in -drawAtPoint: and in -size.
+
+	Made  -center take  into  account  the title  bar  height so  that
+	windows as high as the screen  would be centered at y=0 instead of
+	y=title bar height/2.
+
+
+	* Testing/NSPanelTest
+
+	Also, I've  added a NSPanelTest application  in core/Testing, that
+	will show how nice have become the Alert panels...
+
+
+
 Fri Mar 10 12:42:44 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSSplitView.m ([-mouseDown:]): Fixed bug.
@@ -130,11 +188,11 @@ Mon Mar 06 10:36:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 Sun Mar  5 23:39:33 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
-	* Source/NSButtonCell.m ([-setPeriodicDelay:interval:]): Bug fix:
-	do not set the cell as being continuous.  This was also causing
+	* Source/NSButtonCell.m  ([-setPeriodicDelay:interval:]): Bug fix:
+	do not  set the cell as  being continuous.  This  was also causing
 	Model/GMAppKit.m to make all buttoncells continuous upon decoding.
-	* Model/GMAppKit.m ([NSCell -initWithModelUnarchiver:]): Temporary 
-	commented out line setting cell's action mask so things go on 
+	* Model/GMAppKit.m ([NSCell -initWithModelUnarchiver:]): Temporary
+	commented  out line  setting cell's  action mask  so things  go on
 	working.  Better solution coming soon.
 	
 Sun Mar  5 01:51:52 2000  Nicola Pero  <n.pero@mi.flashnet.it>
