@@ -53,6 +53,10 @@ static Class controlClass;
 /*
  * Configuring an NSActionCell 
  */
+
+/**
+ * Sets the alignment of text within the receiver.
+ */
 - (void) setAlignment: (NSTextAlignment)mode
 {
   [super setAlignment: mode];
@@ -61,6 +65,9 @@ static Class controlClass;
       [(NSControl *)_control_view updateCell: self];
 }
 
+/**
+ * If <code>YES</code> then the receiver is drawn with a bezeled border.
+ */
 - (void) setBezeled: (BOOL)flag
 {
   _cell.is_bezeled = flag;
@@ -71,6 +78,9 @@ static Class controlClass;
       [(NSControl *)_control_view updateCell: self];
 }
 
+/**
+ * If <code>YES</code> then receiver is drawn with a border.
+ */
 - (void) setBordered: (BOOL)flag
 {
   _cell.is_bordered = flag;
@@ -81,6 +91,9 @@ static Class controlClass;
       [(NSControl *)_control_view updateCell: self];
 }
 
+/**
+ * If <code>YES</code> then the receiver is capable of accepting input.
+ */
 - (void) setEnabled: (BOOL)flag
 {
   _cell.is_disabled = !flag;
@@ -101,6 +114,9 @@ static Class controlClass;
       [(NSControl *)_control_view updateCell: self];
 }
 
+/**
+ * Sets the font to be used in the receiver.
+ */
 - (void) setFont: (NSFont*)fontObject
 {
   [super setFont: fontObject];
@@ -110,6 +126,9 @@ static Class controlClass;
   // TODO: This should also set the font of the text object, when selected
 }
 
+/**
+ * Sets the image to be displayed in the receiver.
+ */
 - (void) setImage: (NSImage*)image
 {
   [super setImage: image];
@@ -122,6 +141,9 @@ static Class controlClass;
  * Manipulating NSActionCell Values 
  */
 
+/**
+ * Retrieve the value of the receiver as an NSString.
+ */
 - (NSString *)stringValue
 {
   if (_control_view)
@@ -130,6 +152,9 @@ static Class controlClass;
   return [super stringValue];
 }
 
+/**
+ * Retrieve the value of the receiver as a double.
+ */
 - (double)doubleValue
 {
   if (_control_view)
@@ -138,6 +163,9 @@ static Class controlClass;
   return [super doubleValue];
 }
 
+/**
+ * Retrieve the value of the receiver as a float.
+ */
 - (float)floatValue
 {
   if (_control_view)
@@ -146,6 +174,9 @@ static Class controlClass;
   return [super floatValue];
 }
 
+/**
+ * Retrieve the value of the receiver as an int.
+ */
 - (int)intValue
 {
   if (_control_view)
@@ -154,6 +185,9 @@ static Class controlClass;
   return [super intValue];
 }
 
+/**
+ * Set the value of the receiver from anObject.
+ */
 - (void) setObjectValue: (NSString*)anObject
 {
   [super setObjectValue: anObject];
@@ -162,6 +196,9 @@ static Class controlClass;
       [(NSControl *)_control_view updateCell: self];
 }
 
+/**
+ * Set the value of the receiver from aString.
+ */
 - (void) setStringValue: (NSString*)aString
 {
   [super setStringValue: aString];
@@ -170,6 +207,9 @@ static Class controlClass;
       [(NSControl *)_control_view updateCell: self];
 }
 
+/**
+ * Set the value of the receiver from aDouble.
+ */
 - (void) setDoubleValue: (double)aDouble
 {
   [super setDoubleValue: aDouble];
@@ -178,6 +218,9 @@ static Class controlClass;
       [(NSControl *)_control_view updateCell: self];
 }
 
+/**
+ * Set the value of the receiver from aFloat.
+ */
 - (void) setFloatValue: (float)aFloat
 {
   [super setFloatValue: aFloat];
@@ -186,6 +229,9 @@ static Class controlClass;
       [(NSControl *)_control_view updateCell: self];
 }
 
+/**
+ * Set the value of the receiver from anInt.
+ */
 - (void) setIntValue: (int)anInt
 {
   [super setIntValue: anInt];
@@ -197,40 +243,58 @@ static Class controlClass;
 /*
  * Target and Action 
  */
+
+/**
+ * Retrieve the action from the receiver.
+ */
 - (SEL) action
 {
   return _action;
 }
 
+/**
+ * Set the action in the receiver as the selector aSelector.
+ */
 - (void) setAction: (SEL)aSelector
 {
   _action = aSelector;
 }
 
-/* NSActionCell does not retain its target! */
+/**
+ * Set the target in the receiver as anObject.  NSActionCell does not retain its target! 
+ */
 - (void) setTarget: (id)anObject
 {
   _target = anObject;
 }
 
+/**
+ * Return the target of the receiver.
+ */
 - (id) target
 {
   return _target;
 }
 
-/*
- * Assigning a Tag 
+/**
+ * Assigning a Tag. 
  */
 - (void) setTag: (int)anInt
 {
   _tag = anInt;
 }
 
+/**
+ * Return the tag.
+ */
 - (int) tag
 {
   return _tag;
 }
 
+/**
+ * Returns the control view of the receiver.
+ */
 -(NSView *)controlView
 {
   return _control_view;

@@ -286,6 +286,7 @@ Class gmodel_class(void)
   BOOL		loaded = NO;
   NSUnarchiver	*unarchiver = nil;
   NSString      *ext = [fileName pathExtension];
+  id             nibitems = nil;
 
   if ([ext isEqual: @"nib"])
     {
@@ -344,7 +345,8 @@ Class gmodel_class(void)
 	      if (unarchiver != nil)
 		{
 		  id obj;
-		  id nibitems = [[_GSNibItemCollector alloc] init];
+		  
+		  nibitems = [[_GSNibItemCollector alloc] init];
 		  NSDebugLog(@"Invoking unarchiver");
 		  [unarchiver setObjectZone: zone];
 		  obj = [unarchiver decodeObject];
@@ -363,8 +365,8 @@ Class gmodel_class(void)
 			{
 			  NSLog(@"Nib '%@' without container object!", fileName);
 			}
-		      RELEASE(nibitems);
 		    }
+		  RELEASE(nibitems);
 		  RELEASE(unarchiver);
 		}
 	    }
@@ -373,6 +375,7 @@ Class gmodel_class(void)
   NS_HANDLER
     {
       NSLog(@"Exception occured while loading model: %@",[localException reason]);
+      TEST_RELEASE(nibitems);
       TEST_RELEASE(unarchiver);
     }
   NS_ENDHANDLER

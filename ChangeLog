@@ -1,3 +1,11 @@
+2003-01-01 23:22  Gregory John Casamento  <greg_casamento@yahoo.com>
+
+	* Source/NSBundleAdditions.m: Moved the declaration of 
+	nibitems in loadNibFile:externalNameTable:withZone: so
+	that it can be released if there is an exception.
+	* Source/NSActionCell.m: Documentation.
+	* Source/NSScreen.m: Documentation.
+	
 2003-12-31 01:07  Alexander Malmberg <alexander@malmberg.org>
 
 	* KeyBindings/DefaultKeyBindings.dict: Uncomment the
@@ -27,7 +35,6 @@
 	NSDrawLightBezel().
 	* Source/NSTableHeaderView.m (-drawRect:) Use NSDrawTiledRects()
 	instead of DPS operations.
-	
 
 2003-12-30 00:48  Gregory John Casamento <greg_casamento@yahoo.com>
 

@@ -54,11 +54,18 @@
 
 static NSMutableArray *screenArray = nil;
 
+/**
+ * Resets the cached list of screens.
+ */
 + (void) resetScreens
 {
   screenArray = nil;
 }
 
+/**
+ * Returns an NSArray containing NSScreen instances representing all of the
+ * screen devices attached to the computer.
+ */
 + (NSArray*) screens
 {
   int count = 0, index = 0;
@@ -95,11 +102,17 @@ static NSMutableArray *screenArray = nil;
 }
 
 // Creating NSScreen Instances
+/**
+ * Gets information about the main screen.
+ */
 + (NSScreen*) mainScreen
 {
   return [[self screens] objectAtIndex: 0];
 }
 
+/**
+ * Gets information about the screen with the highest depth (i.e. bits per pixel).
+ */
 + (NSScreen*) deepestScreen
 {
   NSArray *screenArray = [self screens];
@@ -131,14 +144,18 @@ static NSMutableArray *screenArray = nil;
  * Instance methods
  */
 
-// NSScreen does not respond to the init method.
+/**
+ * NSScreen does not respond to the init method.
+ */
 - (id) init
 {
   [self doesNotRecognizeSelector: _cmd];
   return nil;
 }
 
-// Get all of the infomation for a given screen.
+/**
+ * Get all of the infomation for a given screen.
+ */
 - (id) _initWithScreenNumber: (int)screen
 {
   GSDisplayServer *srv;
@@ -187,19 +204,30 @@ static NSMutableArray *screenArray = nil;
   return NO;
 }
 
-/*
- * Reading Screen Information
+/**
+ * Returns the depth of the screen in bits.
  */
 - (NSWindowDepth) depth
 {
   return _depth;
 }
 
+/**
+ * The full frame of the screen.
+ */
 - (NSRect) frame
 {
   return _frame;
 }
 
+/**
+ * <p>
+ * This method generates a dictionary containing information
+ * about the screen device.  The resulting dictionary will have the following
+ * entires: NSScreenNumber, NSDeviceSize, NSDeviceResolution, NSDeviceBitsPerSample,
+ * NSDeviceColorSpaceName.
+ * </p>
+ */
 - (NSDictionary*) deviceDescription
 {
   NSMutableDictionary	*devDesc;
@@ -243,6 +271,9 @@ static NSMutableArray *screenArray = nil;
 }
 
 // Mac OS X methods
+/**
+ * Returns the window depths this screen will support.
+ */
 - (const NSWindowDepth*) supportedWindowDepths
 {
   // If the variable isn't initialized, get the info and
@@ -264,6 +295,9 @@ static NSMutableArray *screenArray = nil;
   return _supportedWindowDepths;
 }
 
+/**
+ * Returns the NSRect representing the visible area of the screen.
+ */
 - (NSRect) visibleFrame
 {
   NSRect visFrame = _frame;
