@@ -1,3 +1,16 @@
+2002-09-26  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSBrowserCell.h
+	Removed all references to coding.
+	* Source/NSBundleAdditions.m
+	Moved add on methods.
+	* Source/NSImage.m
+	Moved method [NSBundle pathForImageResource:] to here.
+	* Source/NSSound.m
+	Moved method [NSBundle pathForSoundResource:] to here.
+	* Source/NSButton.m
+	Removed the coder methods as they were just super calls. 
+	
 Wed Sep 25 03:37:27 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/gnustep/gui/NSInterfaceStyle.h: Put include guards in
