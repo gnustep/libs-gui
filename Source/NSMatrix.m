@@ -1598,7 +1598,9 @@ static SEL getSel;
   /* Draw the cells within the drawing rectangle. */
   for (i = row1; i <= row2 && i < _numRows; i++)
     for (j = col1; j <= col2 && j < _numCols; j++)
-      [self drawCellAtRow: i column: j];
+      {
+	[self drawCellAtRow: i column: j];
+      }
 }
 
 - (BOOL) isOpaque

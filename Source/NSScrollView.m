@@ -727,7 +727,9 @@ static Class rulerViewClass = nil;
       horizLineLength -= scrollerWidth + 2 * borderThickness;
       DPSmoveto(ctxt, horizLinePosition, borderThickness);
       if (_rFlags.flipped_view)
-	DPSrmoveto(ctxt, 0, headerViewHeight);
+	{
+	  DPSrmoveto(ctxt, 0, headerViewHeight);
+	}
       DPSrlineto(ctxt, 0, _bounds.size.height - headerViewHeight 
 		 - 2 * borderThickness - 1);
       DPSstroke(ctxt);

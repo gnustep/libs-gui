@@ -922,9 +922,13 @@ static NSColor *scrollBarColor = nil;
     }
 
   if (_isHorizontal)
-    return NSMakeRect (y, x, height, width);
+    {
+      return NSMakeRect (y, x, height, width);
+    }
   else
-    return NSMakeRect (x, y, width, height);
+    {
+      return NSMakeRect (x, y, width, height);
+    }
 }
 
 @end
