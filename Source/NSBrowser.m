@@ -165,7 +165,7 @@
   [self setEditable: NO];
   [self setBezeled: YES];
   [self setAlignment: NSCenterTextAlignment];
-  draw_background = YES;
+  //draw_background = YES;
   return self;
 }
 - (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView

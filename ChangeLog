@@ -1,3 +1,8 @@
+Fri Nov 12 11:53:52 1999  Lyndon Tremblay  <ltremblay@mezzanine.xnot.com>
+
+	* NSBrowser.m: Removed access to unused variable `draw_background',
+	which prevented successful compile.
+	
 Fri Nov 12  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 		
 	NSTextFieldCell made OpenStep compliant; this class is finished.
