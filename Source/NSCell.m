@@ -336,12 +336,16 @@ NSString* _string;
 	[textObject display];
 }
 
-- (void)endEditing:(NSText *)textObject					// editing is complete,
-{														// remove the text obj
-	[textObject removeFromSuperview];					// acting as the field
-	[self setStringValue: [textObject text]];			// editor from window's
-	[textObject setDelegate:nil];						// view heirarchy, set
-}														// our contents from it 
+/*
+ * editing is complete, remove the text obj acting as the field
+ * editor from window's view heirarchy, set our contents from it 
+ */
+- (void)endEditing:(NSText *)textObject	
+{
+  [textObject setDelegate:nil];
+  [textObject removeFromSuperview];
+  [self setStringValue: [textObject text]];
+}
 
 - (void)selectWithFrame:(NSRect)aRect
 				 inView:(NSView *)controlView	 

@@ -1,3 +1,8 @@
+Wed Jan  6 21:45:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+        * Source/NSCell.m: ([-endEditing]) modified as suggested by
+        stark@easynet.fr to prevent recursion - clear delegate at start.
+
 Wed Jan  6 17:35:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
         * Source/NSApplication.m: minor fix for updating windows menu items.
