@@ -29,6 +29,7 @@
 
 #include <gnustep/gui/config.h>
 #include <AppKit/NSPasteboard.h>
+#include <AppKit/NSApplication.h>
 #include "../Tools/PasteboardServer.h"
 #include <Foundation/NSArray.h>
 #include <Foundation/NSData.h>
@@ -38,9 +39,14 @@
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSLock.h>
+#include <Foundation/NSPortNameServer.h>
 #include <Foundation/NSProcessInfo.h>
 #include <Foundation/NSSerialization.h>
 #include <Foundation/NSUserDefaults.h>
+
+#define stringify_it(X) #X
+#define	prog_path(X,Y) \
+  stringify_it(X) "/Tools/" GNUSTEP_TARGET_DIR "/" LIBRARY_COMBO Y
 
 @interface NSPasteboard (Private)
 + (id<PasteboardServer>) _pbs;
@@ -84,30 +90,47 @@ static	id<PasteboardServer>	the_server = nil;
 
 + (id<PasteboardServer>) _pbs
 {
-  if (the_server == nil) {
-    NSString*	host;
+  if (the_server == nil)
+    {
+      NSString*	host;
 
-    host = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
-    if (host == nil) {
-      host = [[NSProcessInfo processInfo] hostName];
-    }
-    the_server = (id<PasteboardServer>)[NSConnection
-	rootProxyForConnectionWithRegisteredName: PBSNAME
-					    host: host];
-    if ([(id)the_server retain]) {
-      NSConnection*	conn = [(id)the_server connectionForProxy];
+      host = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
+      if (host == nil)
+	{
+	  host = [[NSProcessInfo processInfo] hostName];
+	}
+      the_server = (id<PasteboardServer>)[NSConnection
+		rootProxyForConnectionWithRegisteredName: PBSNAME
+						    host: host];
+      if ([(id)the_server retain])
+	{
+	  NSConnection*	conn = [(id)the_server connectionForProxy];
 
-      [NSNotificationCenter
-              addObserver: self
-              selector: @selector(_lostServer:)
-              name: NSConnectionDidDieNotification
-              object: conn];
+	  [NSNotificationCenter addObserver: self
+				   selector: @selector(_lostServer:)
+				       name: NSConnectionDidDieNotification
+				     object: conn];
+	}
+      else
+	{
+	  static BOOL	recursion = NO;
+
+	  if (recursion)
+	    {
+	      NSLog(@"Unable to contact pasteboard server - "
+		    @"please ensure that gpbs is running.\n");
+	      return nil;
+	    }
+	  else
+	    {
+	      system(prog_path(GNUSTEP_INSTALL_PREFIX, "/gpbs &"));
+	      sleep(5);
+	      recursion = YES;
+	      [self _pbs];
+	      recursion = NO;
+	    }
+	}
     }
-    else {
-      NSLog(@"Unable to contact pasteboard server - "
-	@"please ensure that gpbs is running.\n");
-    }
-  }
   return the_server;
 }
 
@@ -132,7 +155,7 @@ static	id<PasteboardServer>	the_server = nil;
      *	If this is the case, our proxy for the object on the server will be
      *	out of date, so we swap it for the newly created one.
      */
-    if (p->target != aTarget) {
+    if (p->target != (id)aTarget) {
       [p->target autorelease];
       p->target = [(id)aTarget retain];
     }
@@ -660,17 +683,20 @@ provideDataForType:(NSString *)type
 static NSString*	contentsPrefix = @"NSTypedFileContentsPboardType:";
 static NSString*	namePrefix = @"NSTypedFilenamesPboardType:";
 
-NSString *NSCreateFileContentsPboardType(NSString *fileType)
+NSString*
+NSCreateFileContentsPboardType(NSString *fileType)
 {
   return [NSString stringWithFormat:@"%@%@", contentsPrefix, fileType];
 }
 
-NSString *NSCreateFilenamePboardType(NSString *filename)
+NSString*
+NSCreateFilenamePboardType(NSString *filename)
 {
   return [NSString stringWithFormat:@"%@%@", namePrefix, filename];
 }
 
-NSString *NSGetFileType(NSString *pboardType)
+NSString*
+NSGetFileType(NSString *pboardType)
 {
   if ([pboardType hasPrefix: contentsPrefix]) {
     return [pboardType substringFromIndex: [contentsPrefix length]];
@@ -681,7 +707,8 @@ NSString *NSGetFileType(NSString *pboardType)
   return nil;
 }
 
-NSArray *NSGetFileTypes(NSArray *pboardTypes)
+NSArray*
+NSGetFileTypes(NSArray *pboardTypes)
 {
   NSMutableArray *a = [NSMutableArray arrayWithCapacity: [pboardTypes count]];
   unsigned int	i;
@@ -699,5 +726,29 @@ NSArray *NSGetFileTypes(NSArray *pboardTypes)
   return nil;
 }
 
+void
+NSUpdateDynamicServices()
+{
+  system(prog_path(GNUSTEP_INSTALL_PREFIX, "/make_services"));
+}
 
+
+static NSConnection	*listener = nil;
+
+void
+NSRegisterServicesProvider(id provider, NSString *name)
+{
+  if (listener)
+    {
+      /*
+       *	Ensure there is no previous listener and nothing else using
+       *	the given port name.
+       */
+      [[NSPortNameServer defaultPortNameServer] removePortForName: name];
+      [listener release];
+    }
+  listener = [NSConnection newRegisteringAtName: name
+				 withRootObject: provider];
+  [listener retain];
+}
 

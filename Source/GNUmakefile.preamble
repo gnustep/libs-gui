@@ -38,10 +38,20 @@
 # Flags dealing with compiling and linking
 #
 
+# GNUSTEP_INSTALL_PREFIX must be defined here and not in config.h because
+# the installing person may set it on the `make' command line.
+GNUSTEP_INSTALL_PREFIX=$(GNUSTEP_SYSTEM_ROOT)
+
 # Additional flags to pass to the preprocessor
 GNUSTEP_INSTALL_LIBDIR=$(GNUSTEP_LIBRARIES_ROOT)
 ADDITIONAL_CPPFLAGS = -DGNUSTEP_INSTALL_LIBDIR=\"$(GNUSTEP_INSTALL_LIBDIR)\" \
-	${DPS_DEFINE}
+	${DPS_DEFINE} \
+	-DGNUSTEP_INSTALL_PREFIX=$(GNUSTEP_INSTALL_PREFIX) \
+	-DGNUSTEP_TARGET_DIR=\"$(GNUSTEP_TARGET_DIR)\" \
+	-DGNUSTEP_TARGET_CPU=\"$(GNUSTEP_TARGET_CPU)\" \
+	-DGNUSTEP_TARGET_OS=\"$(GNUSTEP_TARGET_OS)\" \
+	-DLIBRARY_COMBO=\"$(LIBRARY_COMBO)\"
+
 
 # Additional flags to pass to the Objective-C compiler
 ADDITIONAL_OBJCFLAGS = -g -Wall
