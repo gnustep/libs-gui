@@ -27,29 +27,29 @@
 
 @implementation NSWindowController
 
-- (id)initWithWindowNibName:(NSString *)windowNibName
+- (id) initWithWindowNibName: (NSString *)windowNibName
 {
-  return [self initWithWindowNibName:windowNibName owner:self];
+  return [self initWithWindowNibName: windowNibName  owner: self];
 }
 
-- (id)initWithWindowNibName:(NSString *)windowNibName owner:(id)owner
+- (id) initWithWindowNibName: (NSString *)windowNibName  owner: (id)owner
 {
-  [self initWithWindow:nil];
-  _windowNibName = RETAIN(windowNibName);
+  [self initWithWindow: nil];
+  _windowNibName = RETAIN (windowNibName);
   _owner = owner;
   return self;
 }
 
-- (id)initWithWindow:(NSWindow *)window
+- (id) initWithWindow: (NSWindow *)window
 {
   [super init];
 
-  _window = RETAIN(window);
+  ASSIGN (_window, window);
   _windowFrameAutosaveName = @"";
   _wcFlags.shouldCascade = YES;
   _wcFlags.shouldCloseDocument = NO;
 
-  if (_window)
+  if (_window != nil)
     {
       [self _windowDidLoad];
     }
@@ -57,90 +57,96 @@
   return self;
 }
 
-- (id)init
+- (id) init
 {
-  return [self initWithWindowNibName:nil];
+  return [self initWithWindowNibName: nil];
 }
 
-- (void)dealloc
+- (void) dealloc
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  RELEASE(_windowNibName);
-  RELEASE(_windowFrameAutosaveName);
-  RELEASE(_topLevelObjects);
-  AUTORELEASE(_window);
+  [[NSNotificationCenter defaultCenter] removeObserver: self];
+  RELEASE (_windowNibName);
+  RELEASE (_windowFrameAutosaveName);
+  RELEASE (_topLevelObjects);
+  AUTORELEASE (_window); /* FIXME - should be RELEASE I think */
   [super dealloc];
 }
 
-- (NSString *)windowNibName
+- (NSString *) windowNibName
 {
   return _windowNibName;
 }
 
-- (id)owner
+- (id) owner
 {
   return _owner;
 }
 
-- (void)setDocument:(NSDocument *)document
+- (void) setDocument: (NSDocument *)document
 {
   // FIXME - this is RETAINed and never RELEASEd ...
   ASSIGN(_document, document);
   [self _synchronizeWindowTitleWithDocumentName];
 }
 
-- (id)document
+- (id) document
 {
   return _document;
 }
 
-- (void)setWindowFrameAutosaveName:(NSString *)name
+- (void) setWindowFrameAutosaveName:(NSString *)name
 {
-  ASSIGN(_windowFrameAutosaveName, name);
-	
+  ASSIGN (_windowFrameAutosaveName, name);
+  
   if ([self isWindowLoaded])
     {
       [[self window] setFrameAutosaveName:name? name : @""];
     }
 }
 
-- (NSString *)windowFrameAutosaveName;
+- (NSString *) windowFrameAutosaveName;
 {
   return _windowFrameAutosaveName;
 }
 
-- (void)setShouldCloseDocument:(BOOL)flag
+- (void) setShouldCloseDocument: (BOOL)flag
 {
   _wcFlags.shouldCloseDocument = flag;
 }
 
-- (BOOL)shouldCloseDocument
+- (BOOL) shouldCloseDocument
 {
   return _wcFlags.shouldCloseDocument;
 }
 
-- (void)setShouldCascadeWindows:(BOOL)flag
+- (void) setShouldCascadeWindows: (BOOL)flag
 {
   _wcFlags.shouldCascade = flag;
 }
 
-- (BOOL)shouldCascadeWindows
+- (BOOL) shouldCascadeWindows
 {
   return _wcFlags.shouldCascade;
 }
 
-- (void)close
+- (void) close
 {
   [_window close];
 }
 
 
-- (void)_windowWillClose:(NSNotification *)notification
+- (void) _windowWillClose: (NSNotification *)notification
 {
   if ([notification object] == _window)
     {
-      if ([_window delegate] == self) [_window setDelegate:nil];
-      if ([_window windowController] == self) [_window setWindowController:nil];
+      if ([_window delegate] == self) 
+	{
+	  [_window setDelegate: nil];
+	}
+      if ([_window windowController] == self) 
+	{
+	  [_window setWindowController: nil];
+	}
 
       /*
        * If the window is set to isReleasedWhenClosed, it will release
@@ -155,53 +161,64 @@
         {
           _window = nil;
         }
-
-      [_document _removeWindowController:self];
+      
+      [_document _removeWindowController: self];
     }
 }
 
-- (NSWindow *)window
+- (NSWindow *) window
 {
   if (_window == nil && ![self isWindowLoaded])
     {
       // Do all the notifications.  Yes, the docs say this should
       // be implemented here instead of in -loadWindow itself.
       [self windowWillLoad];
-      if ([_document respondsToSelector:@selector(windowControllerWillLoadNib:)])
-        [_document windowControllerWillLoadNib:self];
+      if ([_document respondsToSelector:
+		       @selector(windowControllerWillLoadNib:)])
+	{
+	  [_document windowControllerWillLoadNib:self];
+	}
 
       [self loadWindow];
 
       [self _windowDidLoad];
-      if ([_document respondsToSelector:@selector(windowControllerDidLoadNib:)])
-        [_document windowControllerDidLoadNib:self];
+      if ([_document respondsToSelector:
+		       @selector(windowControllerDidLoadNib:)])
+	{
+	  [_document windowControllerDidLoadNib:self];
+	}
     }
 
   return _window;
 }
 
 // Private method; the nib loading will call this.
-- (void)setWindow:(NSWindow *)aWindow
+- (void) setWindow: (NSWindow *)aWindow
 {
-  ASSIGN(_window, aWindow);
+  ASSIGN (_window, aWindow);
 }
 
-- (IBAction)showWindow:(id)sender
+- (IBAction) showWindow: (id)sender
 {
   NSWindow *window = [self window];
 
-  if ([window isKindOfClass:[NSPanel class]] && [(NSPanel*)window becomesKeyOnlyIfNeeded])
-    [window orderFront:sender];
+  if ([window isKindOfClass: [NSPanel class]] 
+      && [(NSPanel*)window becomesKeyOnlyIfNeeded])
+    {
+      [window orderFront: sender];
+    }
   else
-    [window makeKeyAndOrderFront:sender];
+    {
+      [window makeKeyAndOrderFront: sender];
+    }
 }
 
-- (NSString *)windowTitleForDocumentDisplayName:(NSString *)displayName
+- (NSString *) windowTitleForDocumentDisplayName:(NSString *)displayName
 {
   return displayName;
 }
 
-- (void)_synchronizeWindowTitleWithDocumentName
+- (void) _synchronizeWindowTitleWithDocumentName
 {
   if (_document)
     {
@@ -239,21 +256,21 @@
 {
   _wcFlags.nibIsLoaded = YES;
 
-  [_window setWindowController:self];
+  [_window setWindowController: self];
 
   [self _synchronizeWindowTitleWithDocumentName];
-
+  
   [[NSNotificationCenter defaultCenter]
-                addObserver:self
-                selector:@selector(_windowWillClose:)
-                name:NSWindowWillCloseNotification
-                object:_window];
+                addObserver: self
+                selector: @selector(_windowWillClose:)
+                name: NSWindowWillCloseNotification
+                object: _window];
 
   /* Make sure window sizes itself right */
   if ([_windowFrameAutosaveName length] > 0)
     {
-      [_window setFrameUsingName:_windowFrameAutosaveName];
-      [_window setFrameAutosaveName:_windowFrameAutosaveName];
+      [_window setFrameUsingName: _windowFrameAutosaveName];
+      [_window setFrameAutosaveName: _windowFrameAutosaveName];
     }
 
   if ([self shouldCascadeWindows])
@@ -266,7 +283,8 @@
           NSRect windowFrame = [_window frame];
 
           /* Start with the frame as set */
-          nextWindowLocation = NSMakePoint(NSMinX(windowFrame), NSMaxY(windowFrame));
+          nextWindowLocation = NSMakePoint (NSMinX (windowFrame), 
+					    NSMaxY (windowFrame));
           firstWindow = NO;
         }
       else
@@ -278,7 +296,8 @@
            * extreme top of the screen, and offset only a small amount
            * from the left.
            */
-           nextWindowLocation = [_window cascadeTopLeftFromPoint:nextWindowLocation];
+           nextWindowLocation = [_window 
+				  cascadeTopLeftFromPoint: nextWindowLocation];
         }
     }
 
@@ -306,12 +325,12 @@
  * There's no way I'll ever get these compatible if Apple's versions
  * actually encode anything, sigh
  */
-- initWithCoder:(NSCoder *)coder
+- (id) initWithCoder: (NSCoder *)coder
 {
   return [self init];
 }
 
-- (void)encodeWithCoder:(NSCoder *)coder
+- (void) encodeWithCoder: (NSCoder *)coder
 {
   // What are we supposed to encode?  Window nib name?  Or should these
   // be empty, just to conform to NSCoding, so we do an -init on
