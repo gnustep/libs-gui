@@ -918,14 +918,21 @@ static NSMapTable* windowmaps = NULL;
 
 - (NSText*) fieldEditor: (BOOL)createFlag forObject: (id)anObject
 {
-  NSText *edit;
   /* ask delegate if it can provide a field editor */
-  if ((_delegate != anObject) && 
-      [_delegate respondsToSelector:
-		   @selector(windowWillReturnFieldEditor:toObject:)] && 
-      (edit = [_delegate windowWillReturnFieldEditor: self toObject: anObject]) != nil)
-    return edit;
-  
+  if ((_delegate != anObject) 
+      && [_delegate respondsToSelector:
+		      @selector(windowWillReturnFieldEditor:toObject:)]) 
+    {
+      NSText *editor;
+      
+      editor = [_delegate windowWillReturnFieldEditor: self   
+			  toObject: anObject];
+      
+      if (editor != nil)
+	{
+	  return editor;
+	}
+    }
   /*
    * Each window has a global text field editor, if it doesn't exist create it
    * if create flag is set
