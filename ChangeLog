@@ -1,3 +1,8 @@
+2000-09-16  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/gnustep/gui/NSWindowController.h: Add copyright notice.
+	Protect with #ifdef's.
+
 2000-09-14  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
 
 	* Source/NSPanel.m ([GSAlertPanel
