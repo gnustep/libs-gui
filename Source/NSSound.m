@@ -46,7 +46,7 @@ static NSDictionary *nsmapping = nil;
 
 @implementation NSBundle (NSSoundAdditions)
 
-- (NSString *)pathForSoundResource:(NSString *)name
+- (NSString *) pathForSoundResource: (NSString *)name
 {
   NSString *ext = [name pathExtension];
   NSString *path = nil;
@@ -75,15 +75,15 @@ static NSDictionary *nsmapping = nil;
 
 @protocol GSSoundSvr
 
-- (BOOL)playSound:(id)aSound;
+- (BOOL) playSound: (id)aSound;
 
-- (BOOL)stopSoundWithIdentifier:(NSString *)identifier;
+- (BOOL) stopSoundWithIdentifier: (NSString *)identifier;
 
-- (BOOL)pauseSoundWithIdentifier:(NSString *)identifier;
+- (BOOL) pauseSoundWithIdentifier: (NSString *)identifier;
 
-- (BOOL)resumeSoundWithIdentifier:(NSString *)identifier;
+- (BOOL) resumeSoundWithIdentifier: (NSString *)identifier;
 
-- (BOOL)isPlayingSoundWithIdentifier:(NSString *)identifier;
+- (BOOL) isPlayingSoundWithIdentifier: (NSString *)identifier;
 
 @end 
 
@@ -91,32 +91,32 @@ static id<GSSoundSvr> the_server = nil;
 
 @interface NSSound (PrivateMethods)
 
-+ (id<GSSoundSvr>)gsnd;
++ (id<GSSoundSvr>) gsnd;
 
-+ (void)localServer:(id<GSSoundSvr>)s;
++ (void) localServer: (id<GSSoundSvr>)s;
 
-+ (id)lostServer:(NSNotification*)notification;
++ (id) lostServer: (NSNotification*)notification;
 
-- (BOOL)getDataFromFileAtPath:(NSString *)path;
+- (BOOL) getDataFromFileAtPath: (NSString *)path;
 
-- (void)setIdentifier:(NSString *)identifier;
+- (void) setIdentifier: (NSString *)identifier;
 
-- (NSString *)identifier;
+- (NSString *) identifier;
 
-- (float)samplingRate;
+- (float) samplingRate;
 
-- (float)frameSize;
+- (float) frameSize;
 
-- (long)frameCount;
+- (long) frameCount;
 
-- (NSData *)data;
+- (NSData *) data;
 
 @end
 
 @implementation NSSound (PrivateMethods)
 
 #ifdef HAVE_AUDIOFILE_H
-+ (id<GSSoundSvr>)gsnd
++ (id<GSSoundSvr>) gsnd
 {
   if (the_server == nil) 
     {
@@ -234,12 +234,12 @@ static id<GSSoundSvr> the_server = nil;
   return the_server;
 }
 
-+ (void)localServer:(id<GSSoundSvr>)s
++ (void) localServer: (id<GSSoundSvr>)s
 {
   the_server = s;
 }
 
-+ (id)lostServer:(NSNotification*)notification
++ (id) lostServer: (NSNotification*)notification
 {
   id obj = the_server;
 
@@ -252,7 +252,7 @@ static id<GSSoundSvr> the_server = nil;
   return self;
 }
 
-- (BOOL)getDataFromFileAtPath:(NSString *)path
+- (BOOL) getDataFromFileAtPath: (NSString *)path
 {
   AFfilehandle file;
   AFframecount framesRead;
@@ -301,53 +301,53 @@ return NO; \
 #else
 /* No sound software */
 
-+ (id<GSSoundSvr>)gsnd
++ (id<GSSoundSvr>) gsnd
 {
   return nil;
 }
 
-+ (void)localServer:(id<GSSoundSvr>)s
++ (void) localServer: (id<GSSoundSvr>)s
 {
 }
 
-+ (id)lostServer:(NSNotification*)notification
++ (id) lostServer: (NSNotification*)notification
 {
   return self;
 }
 
-- (BOOL)getDataFromFileAtPath:(NSString *)path
+- (BOOL) getDataFromFileAtPath: (NSString *)path
 {
   NSLog(@"NSSound: No sound software installed, cannot get sound");
   return NO;
 }
 #endif
 
-- (void)setIdentifier:(NSString *)identifier
+- (void) setIdentifier: (NSString *)identifier
 {
   ASSIGN (uniqueIdentifier, identifier);
 }
 
-- (NSString *)identifier
+- (NSString *) identifier
 {
   return uniqueIdentifier;
 }
 
-- (float)samplingRate
+- (float) samplingRate
 {
   return samplingRate;
 }
 
-- (float)frameSize
+- (float) frameSize
 {
   return frameSize;
 }
 
-- (long)frameCount
+- (long) frameCount
 {
   return frameCount;
 }
 
-- (NSData *)data
+- (NSData *) data
 {
   return data;
 }
@@ -356,7 +356,7 @@ return NO; \
 
 @implementation	NSSound
 
-+ (void)initialize
++ (void) initialize
 {
   if (self == [NSSound class]) 
     {
@@ -383,7 +383,7 @@ return NO; \
     }
 }
 
-- (void)dealloc
+- (void) dealloc
 {
   TEST_RELEASE (data);
   if (name && self == [nameDict objectForKey: name]) 
@@ -398,7 +398,7 @@ return NO; \
 //
 // Creating an NSSound 
 //
-- (id)initWithContentsOfFile:(NSString *)path byReference:(BOOL)byRef
+- (id) initWithContentsOfFile: (NSString *)path byReference:(BOOL)byRef
 {
   self = [super init];
 	
@@ -417,19 +417,19 @@ return NO; \
   return self;
 }
 
-- (id)initWithContentsOfURL:(NSURL *)url byReference:(BOOL)byRef
+- (id) initWithContentsOfURL: (NSURL *)url byReference:(BOOL)byRef
 {
   onlyReference = byRef;	
   return [self initWithData: [NSData dataWithContentsOfURL: url]];
 }
 
-- (id)initWithData:(NSData *)data
+- (id) initWithData: (NSData *)data
 {
   [self notImplemented: _cmd];
   return nil;
 }
 
-- (id)initWithPasteboard:(NSPasteboard *)pasteboard
+- (id) initWithPasteboard: (NSPasteboard *)pasteboard
 {
   if ([NSSound canInitWithPasteboard: pasteboard] == YES) 
     {	
@@ -442,7 +442,7 @@ return NO; \
 //
 // Playing
 //
-- (BOOL)pause 
+- (BOOL) pause 
 {
   if (uniqueIdentifier) 
     {
@@ -451,12 +451,12 @@ return NO; \
   return NO;
 }
 
-- (BOOL)play
+- (BOOL) play
 {
   return [[NSSound gsnd] playSound: self];
 }
 
-- (BOOL)resume
+- (BOOL) resume
 {
   if (uniqueIdentifier) 
     {
@@ -465,7 +465,7 @@ return NO; \
   return NO;
 }
 
-- (BOOL)stop
+- (BOOL) stop
 {
   if (uniqueIdentifier) 
     {
@@ -474,7 +474,7 @@ return NO; \
   return NO;
 }
 
-- (BOOL)isPlaying
+- (BOOL) isPlaying
 {
   if (uniqueIdentifier) 
     {
@@ -486,7 +486,7 @@ return NO; \
 //
 // Working with pasteboards 
 //
-+ (BOOL)canInitWithPasteboard:(NSPasteboard *)pasteboard
++ (BOOL) canInitWithPasteboard: (NSPasteboard *)pasteboard
 {
   NSArray *pbTypes = [pasteboard types];
   NSArray *myTypes = [NSSound soundUnfilteredPasteboardTypes];
@@ -494,12 +494,12 @@ return NO; \
   return ([pbTypes firstObjectCommonWithArray: myTypes] != nil);
 }
 
-+ (NSArray *)soundUnfilteredPasteboardTypes
++ (NSArray *) soundUnfilteredPasteboardTypes
 {
   return [NSArray arrayWithObjects: @"NSGeneralPboardType", nil];
 }
 
-- (void)writeToPasteboard:(NSPasteboard *)pasteboard
+- (void) writeToPasteboard: (NSPasteboard *)pasteboard
 {
   NSData *d = [NSArchiver archivedDataWithRootObject: self];
 
@@ -513,12 +513,12 @@ return NO; \
 //
 // Working with delegates 
 //
-- (id)delegate
+- (id) delegate
 {
   return delegate;
 }
 
-- (void)setDelegate:(id)aDelegate
+- (void) setDelegate: (id)aDelegate
 {
   delegate = aDelegate;
 }
@@ -526,32 +526,32 @@ return NO; \
 //
 // Naming Sounds 
 //
-+ (id)soundNamed:(NSString *)aName
++ (id) soundNamed: (NSString*)name
 {
-  NSString *realName = [nsmapping objectForKey: aName];
+  NSString	*realName = [nsmapping objectForKey: name];
   NSSound	*sound;
 
   if (realName) 
     {
-      aName = realName;
+      name = realName;
     }
 	
-  sound = (NSSound *)[nameDict objectForKey: aName];
+  sound = (NSSound *)[nameDict objectForKey: name];
  
   if (sound == nil) 
     {
-      NSString *extension;
-      NSString *path = nil;
-      NSBundle *main_bundle;
+      NSString	*extension;
+      NSString	*path = nil;
+      NSBundle	*main_bundle;
       NSArray	*array;
-      NSString *the_name = aName;
+      NSString	*the_name = name;
 
       // FIXME: This should use [NSBundle pathForSoundResource], but this will 
       // only allow soundUnfilteredFileTypes.
       /* If there is no sound with that name, search in the main bundle */
 			
       main_bundle = [NSBundle mainBundle];
-      extension = [aName pathExtension];
+      extension = [name pathExtension];
 		
       if (extension != nil && [extension length] == 0) 
 	{
@@ -565,14 +565,14 @@ return NO; \
 	{
 	  /* Extension is one of the sound types
 	     So remove from the name */
-	  the_name = [aName stringByDeletingPathExtension];
+	  the_name = [name stringByDeletingPathExtension];
 
 	} 
       else 
 	{
 	  /* Otherwise extension is not an sound type
 	     So leave it alone */
-	  the_name = aName;
+	  the_name = name;
 	  extension = nil;
 	}
 
@@ -655,7 +655,7 @@ return NO; \
 
 	  if (sound != nil) 
 	    {
-	      [sound setName: aName];
+	      [sound setName: name];
 	      RELEASE(sound);	
 	      sound->onlyReference = YES;
 	    }
@@ -667,17 +667,17 @@ return NO; \
   return sound;
 }
 
-+ (NSArray *)soundUnfilteredFileTypes
++ (NSArray *) soundUnfilteredFileTypes
 {
   return [NSArray arrayWithObjects: @"aiff", @"waw", @"snd", @"au", nil];
 }
 
-- (NSString *)name
+- (NSString *) name
 {
   return name;
 }
 
-- (BOOL)setName:(NSString *)aName
+- (BOOL) setName: (NSString *)aName
 {
   BOOL retained = NO;
   
@@ -709,7 +709,7 @@ return NO; \
 //
 // NSCoding 
 //
-- (void)encodeWithCoder:(NSCoder *)coder
+- (void) encodeWithCoder: (NSCoder *)coder
 {
   [coder encodeValueOfObjCType: @encode(BOOL) at: &onlyReference];
   [coder encodeObject: name];
@@ -736,7 +736,7 @@ return NO; \
   [coder encodeObject: data];
 }
 
-- (id)initWithCoder:(NSCoder*)decoder
+- (id) initWithCoder: (NSCoder*)decoder
 {	
   [decoder decodeValueOfObjCType: @encode(BOOL) at: &onlyReference];
 
@@ -795,7 +795,7 @@ return NO; \
   return self;
 }
 
-- (id)awakeAfterUsingCoder:(NSCoder *)coder
+- (id) awakeAfterUsingCoder: (NSCoder *)coder
 {
   return self;
 }
@@ -803,7 +803,7 @@ return NO; \
 //
 // NSCopying 
 //
-- (id)copyWithZone:(NSZone *)zone
+- (id) copyWithZone: (NSZone *)zone
 {
   NSSound *newSound = (NSSound *)NSCopyObject(self, 0, zone);
 	

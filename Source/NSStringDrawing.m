@@ -1141,42 +1141,41 @@ sizeAttributedString(NSAttributedString *str, NSString *allText, NSRange aRange)
 }
 
 // GNUstep extensions.
-- (NSSize) sizeRange: (NSRange) lineRange
+- (NSSize) sizeRange: (NSRange)aRange
 {
-  return sizeAttributedString(self, [self string], lineRange);
+  return sizeAttributedString(self, [self string], aRange);
 }
 
-- (void) drawRange: (NSRange) lineRange atPoint: (NSPoint) point
+- (void) drawRange: (NSRange)aRange atPoint: (NSPoint)aPoint
 {
   NSGraphicsContext	*ctxt = GSCurrentContext();
 
-  drawAttributedString(self, [self string], lineRange, point, NO_R_MARGIN,
-		       ctxt);
+  drawAttributedString(self, [self string], aRange, aPoint, NO_R_MARGIN, ctxt);
 }
 
-- (void) drawRange: (NSRange) lineRange inRect: (NSRect)rect
+- (void) drawRange: (NSRange)aRange inRect: (NSRect)aRect
 {
   NSPoint	point;
   NSView	*view = [NSView focusView];
 
   /* FIXME: This is an extremely lossy and temporary workaround for
-     the fact that we should draw only inside rect. */
+     the fact that we should draw only inside aRect. */
   NSGraphicsContext *ctxt = GSCurrentContext();
   DPSgsave(ctxt);
-  NSRectClip (rect);
+  NSRectClip (aRect);
 
   /*
    * Since [-drawAtPoint:] positions the top-left corner of the text at
    * the point, we locate the top-left corner of the rectangle to do the
    * drawing.
    */
-  point.x = rect.origin.x;
+  point.x = aRect.origin.x;
   if ([view isFlipped])
-    point.y = rect.origin.y;
+    point.y = aRect.origin.y;
   else
-    point.y = rect.origin.y + rect.size.height;
+    point.y = aRect.origin.y + aRect.size.height;
 
-  drawAttributedString(self, [self string], lineRange, point, rect.size.width,
+  drawAttributedString(self, [self string], aRange, point, aRect.size.width,
 		       ctxt);
   /* Restore matching the DPSgsave used in the temporary workaround */
   DPSgrestore(ctxt);
@@ -1230,7 +1229,7 @@ sizeAttributedString(NSAttributedString *str, NSString *allText, NSRange aRange)
 }
 
 // GNUstep extensions.
-- (NSSize) sizeRange: (NSRange) lineRange
+- (NSSize) sizeRange: (NSRange)lineRange
 {
   return sizeAttributedString(self, _textChars, lineRange);
 }

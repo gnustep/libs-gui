@@ -85,9 +85,9 @@
   return _increment;
 }
 
-- (void) setIncrement: (double)newIncrement
+- (void) setIncrement: (double)increment
 {
-  _increment = newIncrement;
+  _increment = increment;
 }
 
 
