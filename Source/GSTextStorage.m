@@ -44,6 +44,7 @@
 #include <Foundation/NSRange.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSDebug.h>
+#include <Foundation/NSZone.h>
 #include <AppKit/NSTextStorage.h>
 
 #define		SANITY_CHECKS	0
@@ -151,7 +152,8 @@ static void _setup()
       infCls = [GSTextInfo class];
       infImp = [infCls methodForSelector: infSel];
 
-      a = [[NSMutableArray allocWithZone: NSDefaultMallocZone()] initWithCapacity: 1];
+      a = [NSMutableArray allocWithZone: NSDefaultMallocZone()];
+      a = [a initWithCapacity: 1];
       addImp = (void (*)())[a methodForSelector: addSel];
       cntImp = (unsigned (*)())[a methodForSelector: cntSel];
       insImp = (void (*)())[a methodForSelector: insSel];
