@@ -33,6 +33,7 @@
 
 @class NSTableColumn;
 @class NSTableHeaderView;
+@class NSText;
 
 @interface NSTableView : NSControl
 {
@@ -53,14 +54,22 @@
   id                 _target;
   int                _clickedRow;
   int                _clickedColumn;
+  NSText            *_textObject;
+  int                _editedRow;
+  int                _editedColumn;
+  NSCell            *_editedCell;
 
   /*
    * Ivars Acting as Cache 
    */
   int    _numberOfRows;
   int    _numberOfColumns;
-  /* YES if _delegate responds to tableView:willDisplayCell:forTableColumn:row: */ 
+  /* YES if _delegate responds to
+     tableView:willDisplayCell:forTableColumn:row: */
   BOOL   _del_responds;
+  /* YES if _delegate responds to
+     tableView:setObjectValue:forTableColumn:row: */
+  BOOL   _del_editable;
 
   /*
    * We cache column origins (precisely, the x coordinate of the left
