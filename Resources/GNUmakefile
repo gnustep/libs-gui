@@ -36,8 +36,11 @@ include $(GNUSTEP_MAKEFILES)/resource-set.make
 
 # The following code is so that by typing 'make strings', all the
 # Localizable.strings files are updated for the new localizable
-# strings in the source code.  This stuff will definitely be supported
-# directly by gnustep-make itself.
+# strings in the source code.  If we had the localized resources in
+# the Source directory, this would be supported automatically by
+# gnustep-make (but it would parse all files all the times ... which
+# will be reasonable when more than two files actually contain
+# something to translate :-)
 
 # The list of OBJC_FILES containing localizable strings
 strings_OBJC_FILES = \
