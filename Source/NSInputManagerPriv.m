@@ -205,6 +205,10 @@ static IMRecord _maskTable[] = {
 	    {
 	      [self doCommandBySelector: sel];
 	    }
+	  else
+	    {
+	      [self insertText: chars];
+	    }
 	  break;
 
 	case IMPending:
