@@ -1,3 +1,8 @@
+2001-10-17  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSMenuItemCell.m (calcSize): Set size to 0 if image does
+	not exist.
+
 Wed Oct 17 04:30:25 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSTabView.m ([NSTabView -dealloc]): Do not release the
