@@ -102,7 +102,9 @@ readNSString(StringContext *ctxt)
   RTFAttribute *new =  (RTFAttribute *)NSCopyObject (self, 0, zone);
 
   new->paragraph = [paragraph copyWithZone: zone];
-  new->fontName = [fontName copyWithZone: zone];
+  RETAIN(new->fontName);
+  RETAIN(new->fgColour);
+  RETAIN(new->bgColour);
 
   return new;
 }
@@ -304,6 +306,7 @@ readNSString(StringContext *ctxt)
   ASSIGN(attrs, [NSMutableArray array]);
   ASSIGN(colours, [NSMutableArray array]);
   [attrs addObject: attr];
+  RELEASE(attr);
 }
 
 - (RTFAttribute*) attr
@@ -313,7 +316,10 @@ readNSString(StringContext *ctxt)
 
 - (void) push
 {
-  [attrs addObject: [[attrs lastObject] copy]];
+  RTFAttribute *attr = [[attrs lastObject] copy];
+
+  [attrs addObject: attr];
+  RELEASE(attr);
 }
 
 - (void) pop
@@ -351,6 +357,7 @@ readNSString(StringContext *ctxt)
   //[localException raise];
   NS_ENDHANDLER
 
+  RELEASE(rtfString);
   RELEASE(pool);
   // document attributes
   if (dict)
