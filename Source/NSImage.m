@@ -51,7 +51,7 @@
 #include <AppKit/NSScreen.h>
 #include <AppKit/NSColor.h>
 
-BOOL	NSImageDoesCaching = NO;	/* enable caching	*/
+BOOL	NSImageDoesCaching = YES;	/* enable caching	*/
 BOOL	NSImageForceCaching = NO;	/* use on missmatch	*/
 
 // Resource directories
