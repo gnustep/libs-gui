@@ -51,7 +51,7 @@ $(INSTALL_ROOT_DIR)$(GNUSTEP_MAKEFILES)/Additional:
 # Things to do before installing
 before-install:: $(INSTALL_ROOT_DIR)$(GNUSTEP_MAKEFILES)/Additional
 	$(INSTALL_DATA) gui.make \
-	   $(INSTALL_ROOT_DIR)/$(GNUSTEP_MAKEFILES)/Additional/gui.make
+	   $(INSTALL_ROOT_DIR)$(GNUSTEP_MAKEFILES)/Additional/gui.make
 
 # Things to do after installing
 # after-install::

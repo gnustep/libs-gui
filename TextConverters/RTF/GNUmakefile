@@ -33,6 +33,13 @@ RTFConverter_C_FILES =	 		\
 
 RTFConverter_PRINCIPAL_CLASS = RTFConsumer
 
+ifeq ($(GNUSTEP_TARGET_OS),mingw32)
+RTFConverter_BUNDLE_LIBS += -lgnustep-gui $(FND_LIBS) $(OBJC_LIBS)
+endif
+ifeq ($(GNUSTEP_TARGET_OS),cygwin)
+RTFConverter_BUNDLE_LIBS += -lgnustep-gui $(FND_LIBS) $(OBJC_LIBS)
+endif
+
 -include GNUmakefile.preamble
 
 include $(GNUSTEP_MAKEFILES)/bundle.make

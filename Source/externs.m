@@ -421,3 +421,14 @@ const NSWindowDepth NSTwentyFourBitRGBDepth = 520; // 1000001000 RGB  | 8bps
 const NSWindowDepth _GSWindowDepths[7] = { 258, 264, 514, 516, 517, 520, 0 };
 
 /* End of color functions externs */
+
+extern void __objc_gui_force_linking (void);
+
+void
+__objc_gui_force_linking (void)
+{
+  extern void __objc_gui_linking (void);
+  __objc_gui_linking ();
+}
+
+

@@ -1,3 +1,17 @@
+2001-10-16  Adam Fedor  <fedor@gnu.org>
+
+	* GNUmakefile.postamble (before-install): Remove extra /
+	* TextConverters/RTF/GNUmakefile: Add BUNDLE_LIBS on mingw32/cygwin
+	(bug report from stephen@brandonitconsulting.co.uk).
+
+	* Source/NSMenuItemCell.m (calcSize): Check that images exist
+	before asking for their size (assigning structs from nil objects
+	crashes Solaris).
+	
+	* Make sure classes are linked in when shared=no
+	* Source/linking.m: New file.
+	* Source/extern.m (__objc_gui_force_linking): Linking function.
+
 2001-10-16  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSTableView.m ([selectColumn:byExtendingSelection]):

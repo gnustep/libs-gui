@@ -129,20 +129,23 @@ static NSImage	*arrowImageH = nil;
   if ([_menuItem changesState])
     {
       // NSOnState
-      componentSize = [[_menuItem onStateImage] size];
+      if ([_menuItem onStateImage])
+        componentSize = [[_menuItem onStateImage] size];
       _stateImageWidth = componentSize.width;
       if (componentSize.height > neededMenuItemHeight)
 	neededMenuItemHeight = componentSize.height;
 
       // NSOffState
-      componentSize = [[_menuItem offStateImage] size];
+      if ([_menuItem offStateImage])
+        componentSize = [[_menuItem offStateImage] size];
       if (componentSize.width > _stateImageWidth)
 	_stateImageWidth = componentSize.width;
       if (componentSize.height > neededMenuItemHeight)
 	neededMenuItemHeight = componentSize.height;
 
       // NSMixedState
-      componentSize = [[_menuItem mixedStateImage] size];
+      if ([_menuItem mixedStateImage])
+        componentSize = [[_menuItem mixedStateImage] size];
       if (componentSize.width > _stateImageWidth)
 	_stateImageWidth = componentSize.width;
       if (componentSize.height > neededMenuItemHeight)
