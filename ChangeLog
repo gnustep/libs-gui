@@ -1,5 +1,12 @@
 2003-07-26  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/gnustep/gui/NSTableView.h
+	Added new ivar _action.
+	* Source/NSTableView.m
+	Implemented methods [action] and [setAction:].
+	
+2003-07-26  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Tools/gopen.m 
 	The option -a no longer starts the provided applciation
 	directly, but uses this application to open the specified files.
