@@ -72,9 +72,10 @@ static NSColor	*shadowCol;
 - initTextCell: (NSString *)aString
 {
   self = [super initTextCell: @""];
-  [self setBezeled: YES];
-  [self setAlignment: NSLeftTextAlignment];
-  [self setEditable: YES];
+  _cell.is_bezeled = YES;
+  _cell.is_bordered = NO;
+  _text_align = NSLeftTextAlignment;
+  _cell.is_editable = YES;
   _titleCell = [[NSCell alloc] initTextCell: aString];
   [_titleCell setBordered: NO];
   [_titleCell setBezeled: NO];
@@ -92,8 +93,6 @@ static NSColor	*shadowCol;
 
 - (BOOL)isOpaque
 {
-  // [_titleCell isOpaque] always returns NO, so put it first 
-  // to spare the other message.
   return [_titleCell isOpaque] && [super isOpaque];
 }
 
@@ -101,7 +100,7 @@ static NSColor	*shadowCol;
 {
   [_titleCell setStringValue: aString];
   if (_autoTitleWidth)
-    _titleWidth = [[self titleFont] widthOfString: aString];
+    _titleWidth = [[_titleCell font] widthOfString: aString];
 }
 
 - (void)setTitleAlignment:(NSTextAlignment)mode
@@ -124,7 +123,7 @@ static NSColor	*shadowCol;
   else 
     {
       _autoTitleWidth = YES;
-      _titleWidth = [[self titleFont] widthOfString: [self title]];
+      _titleWidth = [[_titleCell font] widthOfString: [_titleCell stringValue]];
     }
 }
 
@@ -160,9 +159,9 @@ static NSColor	*shadowCol;
   NSSize titleSize = [_titleCell cellSize];
   NSSize textSize;
   
-  textSize.width = [cell_font widthOfString: @"minimum"];
-  textSize.height = [cell_font pointSize] + (2 * yDist) 
-    + 2 * ([NSCell sizeForBorderType: NSBezelBorder].height); 
+  textSize.width = [_cell_font widthOfString: @"minimum"];
+  textSize.height = [_cell_font pointSize] + (2 * yDist) 
+    + 2 * ((_sizeForBorderType (NSBezelBorder)).height); 
  
   returnedSize.width = titleSize.width + 4 + textSize.width;
   if (titleSize.height > textSize.height)
@@ -213,12 +212,12 @@ static NSColor	*shadowCol;
     return;
   
   [controlView lockFocus];
-  if ([self isBordered])
+  if (_cell.is_bordered)
     {
       [shadowCol set];
       NSFrameRect(borderedFrame);
     }
-  else if ([self isBezeled])
+  else if (_cell.is_bezeled)
     {
       NSDrawWhiteBezel(borderedFrame, NSZeroRect);
     }
