@@ -25,6 +25,7 @@
 
 #include <AppKit/NSView.h>
 #include <AppKit/NSWindow.h>
+#include <AppKit/NSPanel.h>
 #include <AppKit/NSButton.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSMenu.h>
@@ -363,18 +364,10 @@
 {
   NSNotificationCenter *theCenter = [NSNotificationCenter defaultCenter];
 
-  if ([owner class] == [NSMenu class])
+  if ([owner class] == [NSWindow class] 
+      || [owner class] == [NSPanel class])
     {
-      _owner = owner;
-      _ownedByMenu = YES;
-
-      RELEASE (titleColor);
-      titleColor = RETAIN ([NSColor blackColor]);
-      [textAttributes setObject: [NSColor whiteColor] 
-                         forKey: NSForegroundColorAttributeName];
-    }
-  else if ([owner class] == [NSWindow class])
-    {
+      NSDebugLLog(@"GSTitleView: owner is NSWindow or NSPanel");
       _owner = owner;
       _ownedByMenu = NO;
 
@@ -396,8 +389,21 @@
                         name: NSWindowDidResignKeyNotification
                       object: _owner];
     }
+  else if ([owner respondsToSelector:@selector(menuRepresentation)])
+    {
+      NSDebugLLog(@"GSTitleView: owner is NSMenu");
+      _owner = owner;
+      _ownedByMenu = YES;
+
+      RELEASE (titleColor);
+      titleColor = RETAIN ([NSColor blackColor]);
+      [textAttributes setObject: [NSColor whiteColor] 
+                         forKey: NSForegroundColorAttributeName];
+    }
   else
     {
+      NSDebugLLog(@"GSTitleView: %@ owner is not NSMenu or NSWindow or NSPanel",
+		  [owner className]);
       return;
     }
 }
