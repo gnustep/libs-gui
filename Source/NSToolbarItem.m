@@ -51,17 +51,17 @@
 #include "AppKit/NSToolbarItem.h"
 
 /*
- * Each NSToolbarItem object are coupled with a backView which is their representation 
- * on the screen.
- * backView for the standard toolbar item (without custom view) are NSButton subclass
- * called GSToolbarButton.
+ * Each NSToolbarItem object are coupled with a backView which is their 
+ * representation on the screen.
+ * backView for the standard toolbar item (without custom view) are NSButton 
+ * subclass called GSToolbarButton.
  * backView for the toolbar item with a custom view are NSView subclass called
  * GSToolbarBackView.
- * GSToolbarButton and GSToolbarBackView are adjusted according to their content and
- * their title when the method layout is called.
- * The predefined GNUstep toolbar items are implemented with a class cluster pattern :
- * initWithToolbarItemIdentifier: returns differents concrete subclass in accordance
- * with the item identifier.
+ * GSToolbarButton and GSToolbarBackView are adjusted according to their content
+ * and their title when the method layout is called.
+ * The predefined GNUstep toolbar items are implemented with a class cluster 
+ * pattern: initWithToolbarItemIdentifier: returns differents concrete subclass 
+ * in accordance with the item identifier.
  */
  
 typedef enum {
@@ -202,10 +202,10 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
         layoutedWidth = ItemBackViewSmallWidth;
 	layoutedHeight = ItemBackViewSmallHeight;
 	[[_toolbarItem image] setSize: NSMakeSize(24, 24)];
-	// Not use [self image] here because it can return nil, when image position is
-	// set to NSNoImage. Even if NSToolbarDisplayModeTextOnly is not true anymore
-	// -setImagePosition: is only called below, then [self image] can still returns 
-	// nil.
+	/* Not use [self image] here because it can return nil, when image 
+	   position is set to NSNoImage. Even if NSToolbarDisplayModeTextOnly 
+	   is not true anymore -setImagePosition: is only called below, then 
+	   [self image] can still returns nil. */
 	font = SmallFont;
 	break;
       default:
@@ -270,49 +270,58 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 }
 
 /*
- * The code below should be kept in sync with GSToolbarBackView methods which have identical names
+ * The code below should be kept in sync with GSToolbarBackView methods which
+ * have identical names.
  */
  
 - (void) mouseDown: (NSEvent *)event
 {
-  if ([event modifierFlags] == NSCommandKeyMask)
+  GSToolbar *toolbar = [_toolbarItem toolbar];
+  
+  if ([event modifierFlags] == NSCommandKeyMask 
+    && [toolbar allowsUserCustomization])
     {	  
 	  NSSize viewSize = [self frame].size;
 	  NSImage *image = [[NSImage alloc] initWithSize: viewSize];
 	  NSCell *cell = [self cell];
 	  NSPasteboard *pboard;
-	  GSToolbar *toolbar = [_toolbarItem toolbar];
 	  int index;
 	  
 	  AUTORELEASE(image);
 	    
 	  // Prepare the drag
 	  
-	  RETAIN(self); // We need to keep this view (aka self) to be able to draw the drag image.
+	  RETAIN(self); 
+	  /* We need to keep this view (aka self) to be able to draw the drag
+	     image. */
 	  
 	  // Draw the drag content in an image
 	  
-	  // The code below is only partially supported by GNUstep, then NSImage needs to be improved
+	  /* The code below is only partially supported by GNUstep, then NSImage
+	     needs to be improved. */
 	  [image lockFocus];
-      [cell setShowsFirstResponder: NO]; // To remove the dotted rect
-      [cell drawWithFrame: NSMakeRect(0, 0, viewSize.width, viewSize.height) inView: nil];
-      [cell setShowsFirstResponder: YES];
+          [cell setShowsFirstResponder: NO]; // To remove the dotted rect
+          [cell drawWithFrame: 
+	    NSMakeRect(0, 0, viewSize.width, viewSize.height) inView: nil];
+          [cell setShowsFirstResponder: YES];
 	  [image unlockFocus];
 	  
 	  pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
-	  [pboard declareTypes: [NSArray arrayWithObject: GSMovableToolbarItemPboardType] owner: nil];
+	  [pboard declareTypes: [NSArray arrayWithObject: GSMovableToolbarItemPboardType] 
+	    owner: nil];
 	  index = [toolbar _indexOfItem: _toolbarItem];
-	  [pboard setString: [NSString stringWithFormat:@"%d", index] forType: GSMovableToolbarItemPboardType];
+	  [pboard setString: [NSString stringWithFormat:@"%d", index] 
+	    forType: GSMovableToolbarItemPboardType];
 	  
 	  [self dragImage: image 
 	               at: NSMakePoint(0.0, 0.0)
-		       offset: NSMakeSize(0.0, 0.0)
-		        event: event 
+		   offset: NSMakeSize(0.0, 0.0)
+		    event: event 
 	       pasteboard: pboard 
 	           source: self
-		    slideBack: NO];	  
+		slideBack: NO];	  
     }
-  else
+  else if ([event modifierFlags] != NSCommandKeyMask)
     {
       [super mouseDown: event];
     }
@@ -323,12 +332,15 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
   GSToolbar *toolbar = [_toolbarItem toolbar];
   
   RETAIN(_toolbarItem); 
-  // We retain the toolbar item to be able to have have it reinsered later by the dragging destination.
+  /* We retain the toolbar item to be able to have have it reinsered later by 
+     the dragging destination. */
   
   [toolbar _performRemoveItem: _toolbarItem];
 }
 
-- (void) draggedImage: (NSImage *)dragImage endedAt: (NSPoint)location operation: (NSDragOperation)operation
+- (void) draggedImage: (NSImage *)dragImage 
+              endedAt: (NSPoint)location 
+	    operation: (NSDragOperation)operation
 {
   RELEASE(self); // The view is no more needed : no more drawing to do with it.
 }
@@ -345,11 +357,16 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 - (BOOL) sendAction: (SEL)action to: (id)target
 { 
   if ([_toolbarItem _selectable])
-    [[_toolbarItem toolbar] setSelectedItemIdentifier: [_toolbarItem itemIdentifier]];
+    {
+      [[_toolbarItem toolbar] 
+        setSelectedItemIdentifier: [_toolbarItem itemIdentifier]];
+    }
   
   if (_toolbarItemAction)
     {
-      return [NSApp sendAction: _toolbarItemAction to: target from: _toolbarItem];
+      return [NSApp sendAction: _toolbarItemAction 
+                            to: target 
+			  from: _toolbarItem];
     }
   else
     {
@@ -382,7 +399,8 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
   NSSize titleSize = [[self attributedTitle] size];
   // We ignore alternateAttributedTitle, it is not needed
   
-  // We store the values we need to customize the drawing into titleRect and imageRect
+  /* We store the values we need to customize the drawing into titleRect and 
+     imageRect. */
   
   titleRect.origin.x = cellFrame.origin.x;
   titleRect.origin.y = cellFrame.origin.y + InsetItemTextY;
@@ -408,13 +426,12 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
   if (aString == nil)
     return;
 
-  /** Important: text should always be vertically centered without
-   * considering descender [as if descender did not exist].
-   * This is particularly important for single line texts.
-   * Please make sure the output remains always correct.
-   */
-  // We ignore aRect value
-  [aString drawInRect: titleRect];
+  /* Important: text should always be vertically centered without considering 
+     descender (as if descender did not exist). This is particularly important 
+     for single line texts.Please make sure the output remains always 
+     correct. */
+
+  [aString drawInRect: titleRect]; // We ignore aRect value
 }
 
 // Overriden NSButtonCell method
@@ -429,10 +446,8 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
   position.x = MAX(NSMidX(imageRect) - (size.width / 2.), 0.);
   position.y = MAX(NSMidY(imageRect) - (size.height / 2.), 0.);
   
-  /*
-   * Images are always drawn with their bottom-left corner at the origin
-   * so we must adjust the position to take account of a flipped view.
-   */
+  /* Images are always drawn with their bottom-left corner at the origin so we 
+     must adjust the position to take account of a flipped view. */
   if (flipped)
     {
       position.y += size.height;
@@ -472,8 +487,8 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 - (id)initWithToolbarItem: (NSToolbarItem *)toolbarItem
 {  
-  self = [super initWithFrame: NSMakeRect(ItemBackViewX, ItemBackViewY, ItemBackViewDefaultWidth,
-  ItemBackViewDefaultHeight)];
+  self = [super initWithFrame: NSMakeRect(ItemBackViewX, ItemBackViewY, 
+    ItemBackViewDefaultWidth, ItemBackViewDefaultHeight)];
   // Frame will be reset by the layout method
   
   if (self != nil)
@@ -487,8 +502,8 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 - (void) dealloc
 { 
-  // _font is pointing on a static variable then we do own it and don't need
-  // to release it.
+  /* _font is pointing on a static variable then we do own it and don't need 
+    to release it. */
   
   [super dealloc];
 }
@@ -519,13 +534,10 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
       
       // We draw the label
       attr = [NSDictionary dictionaryWithObjectsAndKeys: _font, 
-					   NSFontAttributeName,
-							 color,
-				NSForegroundColorAttributeName,
-				                        pStyle,
-				 NSParagraphStyleAttributeName,
-						          nil];
-      attrString = [[NSAttributedString alloc] initWithString: [_toolbarItem label] attributes: attr];
+        NSFontAttributeName, color, NSForegroundColorAttributeName, pStyle,
+        NSParagraphStyleAttributeName, nil];
+      attrString = [[NSAttributedString alloc] 
+        initWithString: [_toolbarItem label] attributes: attr];
       
       titleRect.origin.x = viewBounds.origin.x;
       titleRect.origin.y = viewBounds.origin.y + InsetItemTextY;
@@ -576,7 +588,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 	  [view removeFromSuperview];
 	break;
       default:
-	NSLog(@"Invalid NSToolbarSizeMode"); // invalid
+	NSLog(@"Invalid NSToolbarSizeMode"); // Invalid
     } 
     
   // Adjust the layout in accordance with the border
@@ -608,8 +620,8 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
   
   _enabled = YES;
   _showLabel = YES; 
-  // This boolean variable is used to known when it's needed to draw the label in the -drawRect:
-  // method.
+  /* This boolean variable is used to known when it's needed to draw the label
+     in the -drawRect: method. */
    
   switch ([[_toolbarItem toolbar] displayMode])
     {
@@ -631,38 +643,41 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 	; // Invalid
     }
    
-  // If the view is visible... 
-  // Adjust the layout in accordance with the view width in the case it is needed
+  /* If the view is visible... 
+     Adjust the layout in accordance with the view width in the case it is 
+     needed. */
   
   if ([view superview] != nil)
     { 
-    if (layoutedWidth < [view frame].size.width + 2 * InsetItemViewX)
-      layoutedWidth = [view frame].size.width + 2 * InsetItemViewX; 
+      if (layoutedWidth < [view frame].size.width + 2 * InsetItemViewX)
+        layoutedWidth = [view frame].size.width + 2 * InsetItemViewX; 
     }
   
   // Set the frame size to use the new layout
   
   [self setFrameSize: NSMakeSize(layoutedWidth, layoutedHeight)];
   
-  // If the view is visible...
-  // Adjust the view position in accordance with the new layout
+  /* If the view is visible...
+     Adjust the view position in accordance with the new layout. */
   
   if ([view superview] != nil)
     {
       if (_showLabel)
         {
-          insetItemViewY = ([self frame].size.height 
-	    - [view frame].size.height - [attrStr size].height - InsetItemTextX) / 2
+          insetItemViewY = ([self frame].size.height - [view frame].size.height 
+	    - [attrStr size].height - InsetItemTextX) / 2 
 	    + [attrStr size].height + InsetItemTextX;
 	}
       else
         {
-	  insetItemViewY = ([self frame].size.height - [view frame].size.height) / 2;
+	  insetItemViewY = ([self frame].size.height 
+	    - [view frame].size.height) / 2;
 	}
 	
-      [view setFrameOrigin: 
-        NSMakePoint((layoutedWidth - [view frame].size.width) / 2, insetItemViewY)];
+      [view setFrameOrigin: NSMakePoint((layoutedWidth 
+        - [view frame].size.width) / 2, insetItemViewY)];
     }
+    
   DESTROY(attrStr);
 }
 
@@ -683,44 +698,56 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 }
 
 /*
- * The code below should be kept in sync with GSToolbarButton methods which have identical names
+ * The code below should be kept in sync with GSToolbarButton methods which 
+ * have identical names.
  */
+ 
  
 - (void) mouseDown: (NSEvent *)event
 {
-  if ([event modifierFlags] == NSCommandKeyMask)
+  GSToolbar *toolbar = [_toolbarItem toolbar];
+  
+  if ([event modifierFlags] == NSCommandKeyMask 
+    && [toolbar allowsUserCustomization])
     {	  
 	  NSSize viewSize = [self frame].size;
 	  NSImage *image = [[NSImage alloc] initWithSize: viewSize];
 	  NSPasteboard *pboard;
-	  GSToolbar *toolbar = [_toolbarItem toolbar];
 	  int index;
 	  
 	  AUTORELEASE(image);
 	    
 	  // Prepare the drag
 	  
-	  RETAIN(self); // We need to keep this view (aka self) to be able to draw the drag image.
+	  RETAIN(self); 
+	  /* We need to keep this view (aka self) to be able to draw the drag
+	     image. */
 	  
-	  // The code below is only partially supported by GNUstep, then NSImage needs to be improved
+	  // Draw the drag content in an image
+	  
+	  /* The code below is only partially supported by GNUstep, then NSImage
+	     needs to be improved. */
 	  [image lockFocus];
-      [self drawRect: NSMakeRect(0, 0, viewSize.width, viewSize.height)];
+          [self drawRect: 
+	    NSMakeRect(0, 0, viewSize.width, viewSize.height)];
 	  [image unlockFocus];
-	  	  
+	  
 	  pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
-	  [pboard declareTypes: [NSArray arrayWithObject: GSMovableToolbarItemPboardType] owner: nil];
+	  [pboard declareTypes: [NSArray arrayWithObject: GSMovableToolbarItemPboardType] 
+	    owner: nil];
 	  index = [toolbar _indexOfItem: _toolbarItem];
-	  [pboard setString: [NSString stringWithFormat:@"%d", index] forType: GSMovableToolbarItemPboardType];
+	  [pboard setString: [NSString stringWithFormat:@"%d", index] 
+	    forType: GSMovableToolbarItemPboardType];
 	  
 	  [self dragImage: image 
 	               at: NSMakePoint(0.0, 0.0)
-		       offset: NSMakeSize(0.0, 0.0)
-		        event: event 
+		   offset: NSMakeSize(0.0, 0.0)
+		    event: event 
 	       pasteboard: pboard 
 	           source: self
-		    slideBack: NO];	  
+		slideBack: NO];	  
     }
-  else
+  else if ([event modifierFlags] != NSCommandKeyMask)
     {
       [super mouseDown: event];
     }
@@ -731,12 +758,15 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
   GSToolbar *toolbar = [_toolbarItem toolbar];
   
   RETAIN(_toolbarItem); 
-  // We retain the toolbar item to be able to have have it reinsered later by the dragging destination.
+  /* We retain the toolbar item to be able to have have it reinsered later by 
+     the dragging destination. */
   
   [toolbar _performRemoveItem: _toolbarItem];
 }
 
-- (void) draggedImage: (NSImage *)dragImage endedAt: (NSPoint)location operation: (NSDragOperation)operation
+- (void) draggedImage: (NSImage *)dragImage 
+              endedAt: (NSPoint)location 
+	    operation: (NSDragOperation)operation
 {
   RELEASE(self); // The view is no more needed : no more drawing to do with it.
 }
@@ -781,9 +811,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 @end
 
 /*
- *
  * Standard toolbar items.
- *
  */
 
 // ---- NSToolbarSeparatorItemIdentifier
@@ -800,7 +828,8 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
   self = [super initWithItemIdentifier: itemIdentifier];
   [(NSButton *)[self _backView] setImagePosition: NSImageOnly];
   [(NSButton *)[self _backView] setImage: image];
-  // We bypass the toolbar item accessor to set the image in order to have it (48 * 48) not resized
+  /* We bypass the toolbar item accessor to set the image in order to have it
+     (48 * 48) not resized. */
    
   [[self _backView] setFrameSize: NSMakeSize(30, ItemBackViewDefaultHeight)];
   
@@ -990,52 +1019,63 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
       // GNUstep predefined toolbar items
        
       if ([itemIdentifier isEqualToString: @"NSToolbarSeparatorItemIdentifier"] 
-           && ![self isKindOfClass:[GSToolbarSeparatorItem class]])
+        && ![self isKindOfClass:[GSToolbarSeparatorItem class]] == NO)
         {
           [self release];
-          self = [[GSToolbarSeparatorItem alloc] initWithItemIdentifier: itemIdentifier];
+          self = [[GSToolbarSeparatorItem alloc] 
+	    initWithItemIdentifier: itemIdentifier];
         }
     
       else if ([itemIdentifier isEqualToString: @"NSToolbarSpaceItemIdentifier"] 
-                && ![self isKindOfClass:[GSToolbarSpaceItem class]])
+        && [self isKindOfClass:[GSToolbarSpaceItem class]] == NO)
         {
           [self release];
-          self = [[GSToolbarSpaceItem alloc] initWithItemIdentifier: itemIdentifier];
+          self = [[GSToolbarSpaceItem alloc] 
+	    initWithItemIdentifier: itemIdentifier];
         }
     
-      else if ([itemIdentifier isEqualToString: @"NSToolbarFlexibleSpaceItemIdentifier"] 
-                && ![self isKindOfClass:[GSToolbarFlexibleSpaceItem class]])
+      else if ([itemIdentifier 
+	         isEqualToString: @"NSToolbarFlexibleSpaceItemIdentifier"] 
+        && [self isKindOfClass:[GSToolbarFlexibleSpaceItem class]] == NO)
         {
           [self release];
-          self = [[GSToolbarFlexibleSpaceItem alloc] initWithItemIdentifier: itemIdentifier];
+          self = [[GSToolbarFlexibleSpaceItem alloc] 
+	    initWithItemIdentifier: itemIdentifier];
         }
     
-      else if ([itemIdentifier isEqualToString: @"NSToolbarShowColorsItemIdentifier"] 
-                && ![self isKindOfClass:[GSToolbarShowColorsItem class]])
+      else if ([itemIdentifier 
+                 isEqualToString: @"NSToolbarShowColorsItemIdentifier"] 
+        && [self isKindOfClass:[GSToolbarShowColorsItem class]] == NO)
         {
           [self release];
-          self = [[GSToolbarShowColorsItem alloc] initWithItemIdentifier: itemIdentifier];
+          self = [[GSToolbarShowColorsItem alloc] 
+	    initWithItemIdentifier: itemIdentifier];
         }
     
-      else if ([itemIdentifier isEqualToString: @"NSToolbarShowFontsItemIdentifier"] 
-                && ![self isKindOfClass:[GSToolbarShowFontsItem class]])
+      else if ([itemIdentifier 
+                 isEqualToString: @"NSToolbarShowFontsItemIdentifier"] 
+        && [self isKindOfClass:[GSToolbarShowFontsItem class]] == NO)
         {
           [self release];
-          self = [[GSToolbarShowFontsItem alloc] initWithItemIdentifier: itemIdentifier];
+          self = [[GSToolbarShowFontsItem alloc] 
+	    initWithItemIdentifier: itemIdentifier];
         }
     
-      else if ([itemIdentifier isEqualToString: @"NSToolbarCustomizeToolbarItemIdentifier"] 
-                && ![self isKindOfClass:[GSToolbarCustomizeToolbarItem class]])
+      else if ([itemIdentifier 
+                 isEqualToString: @"NSToolbarCustomizeToolbarItemIdentifier"] 
+        && [self isKindOfClass:[GSToolbarCustomizeToolbarItem class]] == NO)
         {
           [self release];
-          self = [[GSToolbarCustomizeToolbarItem alloc] initWithItemIdentifier: itemIdentifier];
+          self = [[GSToolbarCustomizeToolbarItem alloc] 
+	    initWithItemIdentifier: itemIdentifier];
         }
      
       else if ([itemIdentifier isEqualToString: @"NSToolbarPrintItemIdentifier"] 
-                && ![self isKindOfClass:[GSToolbarPrintItem class]])
+        && [self isKindOfClass:[GSToolbarPrintItem class]] == NO)
         {
           [self release];
-          self = [[GSToolbarPrintItem alloc] initWithItemIdentifier: itemIdentifier];
+          self = [[GSToolbarPrintItem alloc] 
+	    initWithItemIdentifier: itemIdentifier];
         }
 	
       // Normal toolbar items
@@ -1051,9 +1091,11 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
           [button setBordered: NO];
           [button setImagePosition: NSImageAbove];
 	  [cell setBezeled: YES];
-          [cell setHighlightsBy: NSChangeGrayCellMask | NSChangeBackgroundCellMask];
+          [cell setHighlightsBy: 
+	    NSChangeGrayCellMask | NSChangeBackgroundCellMask];
           [cell setFont: [NSFont systemFontOfSize: 11]]; 
-	  // [NSFont smallSystemFontSize] or better should be controlContentFontSize
+	  /* [NSFont smallSystemFontSize] or better should be 
+	     controlContentFontSize. */
 
           [_backView release];
           _backView = button;
@@ -1062,14 +1104,18 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
       // gets
       _flags._isEnabled  = [_backView respondsToSelector: @selector(isEnabled)];
       _flags._tag        = YES;
-      _flags._action     = [_backView respondsToSelector: @selector(toolbarItemAction)];	
+      _flags._action     = 
+        [_backView respondsToSelector: @selector(toolbarItemAction)];	
       _flags._target     = [_backView respondsToSelector: @selector(target)];
       _flags._image      = [_backView respondsToSelector: @selector(image)];
       // sets
-      _flags._setEnabled = [_backView respondsToSelector: @selector(setEnabled:)];
+      _flags._setEnabled = 
+        [_backView respondsToSelector: @selector(setEnabled:)];
       _flags._setTag     = YES;
-      _flags._setAction  = [_backView respondsToSelector: @selector(setToolbarItemAction:)];
-      _flags._setTarget  = [_backView respondsToSelector: @selector(setTarget:)];
+      _flags._setAction  = 
+        [_backView respondsToSelector: @selector(setToolbarItemAction:)];
+      _flags._setTarget  = 
+        [_backView respondsToSelector: @selector(setTarget:)];
       _flags._setImage   = [_backView respondsToSelector: @selector(setImage:)];
     
     }
@@ -1111,6 +1157,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
     {
       return _image;
     }
+    
   return nil;
 }
 
@@ -1123,7 +1170,8 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 {
   NSMenuItem *menuItem = [self menuFormRepresentation];
   
-  if ([[self toolbar] displayMode] == NSToolbarDisplayModeLabelOnly && menuItem != nil)
+  if ([[self toolbar] displayMode] == NSToolbarDisplayModeLabelOnly 
+    && menuItem != nil)
     {
       return [menuItem title];
     }
@@ -1159,6 +1207,7 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
     {
       if ([_backView isKindOfClass: [GSToolbarButton class]])
         [(GSToolbarButton *)_backView setToolbarItemAction: action];
+	
 	if (action != NULL)
 	  {
 	    [self setEnabled: YES];
@@ -1250,13 +1299,17 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
     {
       // gets
       _flags._isEnabled  = [_backView respondsToSelector: @selector(isEnabled)];
-      _flags._action     = [_backView respondsToSelector: @selector(toolbarItemAction)];
+      _flags._action     = 
+        [_backView respondsToSelector: @selector(toolbarItemAction)];
       _flags._target     = [_backView respondsToSelector: @selector(target)];
       _flags._image      = [_backView respondsToSelector: @selector(image)];
       // sets
-      _flags._setEnabled = [_backView respondsToSelector: @selector(setEnabled:)];
-      _flags._setAction  = [_backView respondsToSelector: @selector(setToolbarItemAction:)];
-      _flags._setTarget  = [_backView respondsToSelector: @selector(setTarget:)];
+      _flags._setEnabled = 
+        [_backView respondsToSelector: @selector(setEnabled:)];
+      _flags._setAction  = 
+        [_backView respondsToSelector: @selector(setToolbarItemAction:)];
+      _flags._setTarget  = 
+        [_backView respondsToSelector: @selector(setTarget:)];
       _flags._setImage   = [_backView respondsToSelector: @selector(setImage:)];
     }
   else
@@ -1297,12 +1350,13 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 - (void) validate
 {
-  // Validate by default, we know that all of the
-  // "standard" items are correct.
+  /* Validate by default, we know that all of the
+     "standard" items are correct. */
   NSMenuItem *menuItem = [self menuFormRepresentation];
   id target = [self target];
   
-  if ([[self toolbar] displayMode] == NSToolbarDisplayModeLabelOnly && menuItem != nil)
+  if ([[self toolbar] displayMode] == NSToolbarDisplayModeLabelOnly 
+    && menuItem != nil)
     {
       if ([target respondsToSelector: @selector(validateMenuItem:)])
         [self setEnabled: [target validateMenuItem: menuItem]];
@@ -1373,15 +1427,15 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 
 - (void) _setSelected: (BOOL)selected
 {
-  if (_selectable && ![self _selected] && selected)
+  if (_selectable && [self _selected] == NO && selected)
     {
       [(GSToolbarButton *)_backView performClick:self];
     }
-  else if (!selected)
+  else if (selected == NO)
     {
       [(GSToolbarButton *)_backView setState: NO];
     }
-  else if (!_selectable)
+  else if (_selectable == NO)
     {
       NSLog(@"The toolbar item %@ is not selectable", self);
     }
@@ -1431,7 +1485,8 @@ NSString *GSMovableToolbarItemPboardType = @"GSMovableToolbarItemPboardType";
 // NSCopying protocol
 - (id) copyWithZone: (NSZone *)zone 
 {
-  NSToolbarItem *new = [[NSToolbarItem allocWithZone: zone] initWithItemIdentifier: _itemIdentifier];
+  NSToolbarItem *new = [[NSToolbarItem allocWithZone: zone] 
+    initWithItemIdentifier: _itemIdentifier];
 
   // Copy all items individually...
   [new setTarget: [self target]];

@@ -1,29 +1,37 @@
-2004-12-28 12:04 Gregory John Casamento <greg_casamento@yahoo.com>
+2004-12-30  Quentin Mathe <qmathe@club-internet.fr>
 
-	* Source/NSWindow.m: Correction for bug#11409.
+        * Source/GSToolbarView.m: Modified to be more compliant with GNUstep 
+        coding standards.
+        (-draggingEntered:):
+        (-draggingUpdated:): Prevents the user to customize the toolbar when 
+        -allowsUserCustomization returns NO (bug #11393).
+        * Source/NSToolbarItem.m: Modified to be more compliant with GNUstep 
+        coding standards.
+        (-mouseDown:): Prevents the user to customize the toolbar when 
+        -allowsUserCustomization returns NO (bug #11393).
 
 2004-12-23 05:38 Gregory John Casamento <greg_casamento@yahoo.com>
 
-	* Images/MagnifyGlass.tiff: Added.  The NSColorPanel class uses
-	this image.
+        * Images/MagnifyGlass.tiff: Added.  The NSColorPanel class uses 
+        this image.
 	
 2004-12-13  Quentin Mathe <qmathe@club-internet.fr>
 
-       * Source/NSComboBoxCell.m: Modified the code to be clearer
-       Renamed internal class GSFirstMouseTableView to GSComboBoxTableView
-       Removed GSComboWindow _localSelection ivar which is not needed, because 
-       the user selection is now handled in -clickItem and not in 
-       -tableViewSelectionDidChange: which is now reserved to the internal (aka
-       local) selection support.
-       (-[GSComboWindow selectItem:]) Renamed the method name to -clickItem:
-       (-[GSComboWindow clickItem:]): Reworked to the method to be used by the 
-       NSTableView (or NSBrowser) action to track the user clicks.
-       (-[GSComboWindow validateSelection:]): Rewritten the method to handle
-       itself the selection, the method updates now the cell object value and 
-       sends the action bound to the cell.
-       (-selectItemAtIndex:): Updated the method to match the Cocoa 
-       specification which states that this method should adjust the selection 
-       in the combo box list but not simulate a user click.
+        * Source/NSComboBoxCell.m: Modified the code to be clearer
+        Renamed internal class GSFirstMouseTableView to GSComboBoxTableView
+        Removed GSComboWindow _localSelection ivar which is not needed, because 
+        the user selection is now handled in -clickItem and not in 
+        -tableViewSelectionDidChange: which is now reserved to the internal (aka
+        local) selection support.
+        (-[GSComboWindow selectItem:]): Renamed the method name to -clickItem:
+        (-[GSComboWindow clickItem:]): Reworked to the method to be used by the 
+        NSTableView (or NSBrowser) action to track the user clicks.
+        (-[GSComboWindow validateSelection:]): Rewritten the method to handle
+        itself the selection, the method updates now the cell object value and 
+        sends the action bound to the cell.
+        (-selectItemAtIndex:): Updated the method to match the Cocoa 
+        specification which states that this method should adjust the selection 
+        in the combo box list but not simulate a user click.
 
 2004-12-09  Fred Kiefer <FredKiefer@gmx.de>
 
