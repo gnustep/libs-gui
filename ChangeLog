@@ -1,3 +1,18 @@
+2000-05-07  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/NSAttributedString.m:
+	RTFBodyStringWithContext: Corrected output of subscript
+
+	* Source/Parsers/attributedStringConsumer.m:
+	GSRTFsubscript, GSRTFsuperscript: Change interpretation of
+	super/subscript parameter
+
+	* Source/NSStringDrawing.m:
+	Corrected baseline for font with different point size. Added primitiv
+	support for super/subscript as baseline change of 3 points. The
+	baseline correction is only done for the current chunk not for the
+	whole line.
+
 2000-05-06  James Dessart <skwirl@cam.org>
 
 	* Documentation/gsdoc/NSWindow.gsdoc :
