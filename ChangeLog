@@ -1,3 +1,9 @@
+Thu Mar  9 19:42:17 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSSplitView.m ([-adjustSubviews]): Fixed bug in
+	calculation of frames; patch by Björn Giesler
+	<Bjoern.Giesler@stud.uni-karlsruhe.de>.
+
 Wed Mar  8 23:19:08 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSPopUpButton.m ([-sizeToFit]): Invoke super's implementation.
