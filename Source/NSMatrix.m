@@ -2566,16 +2566,23 @@ static SEL getSel = @selector(objectAtIndex:);
 
 - (void) keyDown: (NSEvent *)theEvent;
 {
-  //  unsigned int flags = [theEvent modifierFlags];
-  unsigned int key_code = [theEvent keyCode];
-  
+  NSString *characters = [theEvent characters];
+  unichar character = 0;
+
+  if ([characters length] > 0)
+    {
+      character = [characters characterAtIndex: 0];
+    }
+
   // TODO
   // Selecting (not-editable, not-selectable cells) with the keyboard
   //  NSLog (@"NSMatrix -keyDown:");
 
-  switch (key_code)
+  switch (character)
     {
-    case 0x000d: // Enter
+    case NSCarriageReturnCharacter:
+    case NSNewlineCharacter:
+    case NSEnterCharacter: 
       [self selectText: self];
       break;
     default:

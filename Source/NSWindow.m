@@ -1940,10 +1940,16 @@ resetCursorRectsForView(NSView *theView)
 
 - (void) keyDown: (NSEvent*)theEvent
 {
-  unsigned int key_code = [theEvent keyCode];
+  NSString *characters = [theEvent characters];
+  unichar character = 0;
+
+  if ([characters length] > 0)
+    {
+      character = [characters characterAtIndex: 0];
+    }
 
   // If this is a TAB or TAB+SHIFT event, move to the next key view
-  if (key_code == 0x09)
+  if (character == NSTabCharacter)
     {
       if ([theEvent modifierFlags] & NSShiftKeyMask)
 	[self selectPreviousKeyView: self];
@@ -1953,13 +1959,12 @@ resetCursorRectsForView(NSView *theView)
     }
 
   // If this is an ESC event, abort modal loop
-  if (key_code == 0x1b)
+  if (character == 0x001b)
     {
-      NSApplication *app = [NSApplication sharedApplication];
-      if ([app modalWindow] == self)
+      if ([NSApp modalWindow] == self)
 	{
 	  // NB: The following *never* returns.
-	  [app abortModal];
+	  [NSApp abortModal];
 	}
       return;
     }
@@ -1975,11 +1980,11 @@ resetCursorRectsForView(NSView *theView)
 		  timestamp: [theEvent timestamp]
 		  windowNumber: [theEvent windowNumber]
 		  context: [theEvent context]
-		  characters: [theEvent characters]
+		  characters: characters
 		  charactersIgnoringModifiers: [theEvent
 						 charactersIgnoringModifiers]
 		  isARepeat: [theEvent isARepeat]
-		  keyCode: key_code];
+		  keyCode: [theEvent keyCode]];
     if ([self performKeyEquivalent: new_event])
       return;
   }

@@ -118,15 +118,20 @@
 - (void) interpretKeyEvents:(NSArray*)eventArray
 {
   // FIXME: As NSInputManger is still missing this method is hard coded
-  unsigned short keyCode;
   NSEvent *theEvent;
   NSEnumerator *eventEnum = [eventArray objectEnumerator];
 
   while((theEvent = [eventEnum nextObject]) != nil)
     {
-      keyCode = [theEvent keyCode];
+      NSString *characters = [theEvent characters];
+      unichar character = 0;
+
+      if ([characters length] > 0)
+	{
+	  character = [characters characterAtIndex: 0];
+	}
       
-      switch (keyCode)
+      switch (character)
 	{
 	case NSUpArrowFunctionKey:
 	  [self doCommandBySelector: @selector(moveUp:)];
@@ -158,25 +163,26 @@
 	case NSPageDownFunctionKey:
 	  [self doCommandBySelector: @selector(pageDown:)];
 	  break;
-	case 0x0008:
-	  //BackspaceKey
+	case NSBackspaceCharacter:
 	  [self doCommandBySelector: @selector(deleteBackward:)];
 	  break;
-	case 0x0009:
-	  // TabKey
+	case NSTabCharacter:
 	  if ([theEvent modifierFlags] & NSShiftKeyMask)
 	    [self doCommandBySelector: @selector(insertBacktab:)];
 	  else
 	    [self doCommandBySelector: @selector(insertTab:)];
 	  break;
-	case 0x000a:
-	case 0x000d:
-	  // Enter, Newline
+	case NSEnterCharacter:
+	case NSFormFeedCharacter:
+	case NSCarriageReturnCharacter:
 	  [self doCommandBySelector: @selector(insertNewline:)];
+	  break;
+	case 0:
+	  /* Character to implement ?? */
 	  break;
 	default:
 	  // If the character(s) was not a special one, simply insert it.
-	  [self insertText: [theEvent characters]];
+	  [self insertText: characters];
 	}  
     }
 }
