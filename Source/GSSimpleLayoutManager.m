@@ -251,8 +251,8 @@ typedef enum
 
 - (void) setTextStorage: (NSTextStorage*)aTextStorage
 {
-  RELEASE(lineLayoutInformation);
-  lineLayoutInformation = nil;
+  RELEASE(_lineLayoutInformation);
+  _lineLayoutInformation = nil;
 
   [super setTextStorage: aTextStorage];
 }
@@ -284,13 +284,13 @@ typedef enum
 // Returns the currently used bounds for all the text
 - (NSRect)usedRectForTextContainer:(NSTextContainer *)aTextContainer
 {
-  if ([lineLayoutInformation count])
+  if ([_lineLayoutInformation count])
     {
       NSEnumerator *lineEnum;
       _GNULineLayoutInfo *currentInfo;
       NSRect retRect = NSMakeRect (0, 0, 0, 0);
 
-      for ((lineEnum = [lineLayoutInformation objectEnumerator]);
+      for ((lineEnum = [_lineLayoutInformation objectEnumerator]);
 	   (currentInfo = [lineEnum nextObject]);)
 	{
 	  retRect = NSUnionRect (retRect, currentInfo->lineRect);
@@ -304,7 +304,7 @@ typedef enum
 - (unsigned)glyphIndexForPoint:(NSPoint)point 
 	       inTextContainer:(NSTextContainer *)aTextContainer
 {
-  _GNULineLayoutInfo *currentInfo = [lineLayoutInformation 
+  _GNULineLayoutInfo *currentInfo = [_lineLayoutInformation 
 				      objectAtIndex: 
 					[self lineLayoutIndexForPoint: point]];
   NSRect rect = currentInfo->lineRect;
@@ -365,7 +365,7 @@ typedef enum
       return NSMakeRect(0, 0, 0, 12);
     }
     
-  currentInfo = [lineLayoutInformation 
+  currentInfo = [_lineLayoutInformation 
 		    objectAtIndex: [self lineLayoutIndexForCharacterIndex: 
 					     index]];
 
@@ -386,7 +386,7 @@ typedef enum
       return NSMakePoint(0, 0);
     }
     
-  currentInfo = [lineLayoutInformation 
+  currentInfo = [_lineLayoutInformation 
 		    objectAtIndex: [self lineLayoutIndexForCharacterIndex: 
 					     index]];
   if (index >= NSMaxRange(currentInfo->lineRange))
@@ -415,12 +415,12 @@ typedef enum
   i2 = [self lineLayoutIndexForCharacterIndex: NSMaxRange(aRange)];
 
   // This is not exacty what we need, but should be correct enought
-  currentInfo = [lineLayoutInformation objectAtIndex: i1];
+  currentInfo = [_lineLayoutInformation objectAtIndex: i1];
   rect1 = currentInfo->lineRect;
 
   if (i1 != i2)
     {
-      currentInfo = [lineLayoutInformation objectAtIndex: i2];
+      currentInfo = [_lineLayoutInformation objectAtIndex: i2];
       rect1 = NSUnionRect(rect1, currentInfo->lineRect);
     }
 
@@ -501,8 +501,8 @@ typedef enum
 {
   NSRange lineRange;
 
-  RELEASE(lineLayoutInformation);
-  lineLayoutInformation = nil;
+  RELEASE(_lineLayoutInformation);
+  _lineLayoutInformation = nil;
 
   lineRange = [self rebuildForRange: NSMakeRange(0, [_textStorage length])
 		delta: 0];
@@ -611,10 +611,10 @@ typedef enum
 {
   int i;
   int min = 0;
-  int max = MAX(0, [lineLayoutInformation count] - 1);
+  int max = MAX(0, [_lineLayoutInformation count] - 1);
   float y = point.y;
-  float fmin = NSMinY([[lineLayoutInformation objectAtIndex: 0] lineRect]);
-  float fmax = NSMaxY([[lineLayoutInformation lastObject] lineRect]);
+  float fmin = NSMinY([[_lineLayoutInformation objectAtIndex: 0] lineRect]);
+  float fmax = NSMaxY([[_lineLayoutInformation lastObject] lineRect]);
   NSRect rect;
 
   if (y >= fmax)
@@ -627,7 +627,7 @@ typedef enum
   i = (int)((max - min) * (y - fmin) / (fmax - fmin)) + min;
   while (min < max)
     {
-      _GNULineLayoutInfo *ci = [lineLayoutInformation objectAtIndex: i];
+      _GNULineLayoutInfo *ci = [_lineLayoutInformation objectAtIndex: i];
 
       rect = ci->lineRect;
 
@@ -649,15 +649,15 @@ typedef enum
       if ((NSMinX(rect) > point.x)  && (i > 0) &&
 	  (ci->type == LineLayoutInfoType_Paragraph))
 	{
-	  _GNULineLayoutInfo *bi = [lineLayoutInformation objectAtIndex: i - 1];
+	  _GNULineLayoutInfo *bi = [_lineLayoutInformation objectAtIndex: i - 1];
 	  rect = bi->lineRect;
 	  if (NSPointInRect(point, rect))
 	    return i - 1;
 	}
-      if ((NSMaxX(rect) < point.x) && (i < [lineLayoutInformation count] - 1) &&
+      if ((NSMaxX(rect) < point.x) && (i < [_lineLayoutInformation count] - 1) &&
 	  (ci->type == LineLayoutInfoType_Text))
 	{
-	  _GNULineLayoutInfo *bi = [lineLayoutInformation objectAtIndex: i + 1];
+	  _GNULineLayoutInfo *bi = [_lineLayoutInformation objectAtIndex: i + 1];
 	  rect = bi->lineRect;
 	  if (NSPointInRect(point, rect))
 	    return i + 1;
@@ -672,10 +672,10 @@ typedef enum
 {
   int i;
   int min = 0;
-  int max = MAX(0, [lineLayoutInformation count] - 1);
+  int max = MAX(0, [_lineLayoutInformation count] - 1);
   unsigned y = anIndex;
-  unsigned fmin = [[lineLayoutInformation objectAtIndex: 0] lineRange].location;
-  unsigned fmax = NSMaxRange([[lineLayoutInformation lastObject] lineRange]);
+  unsigned fmin = [[_lineLayoutInformation objectAtIndex: 0] lineRange].location;
+  unsigned fmax = NSMaxRange([[_lineLayoutInformation lastObject] lineRange]);
   NSRange range;
 
   if (y >= fmax)
@@ -688,7 +688,7 @@ typedef enum
   i = (int)((max - min) * (y - fmin) / (fmax - fmin)) + min;
   while (min < max)
     {
-      _GNULineLayoutInfo *ci = [lineLayoutInformation objectAtIndex: i];
+      _GNULineLayoutInfo *ci = [_lineLayoutInformation objectAtIndex: i];
 
       range = ci->lineRange;
 
@@ -718,16 +718,16 @@ typedef enum
   unsigned startIndex;
   unsigned endIndex;
 
-  if (startLine >= [lineLayoutInformation count])
-    currentInfo = [lineLayoutInformation lastObject];
+  if (startLine >= [_lineLayoutInformation count])
+    currentInfo = [_lineLayoutInformation lastObject];
   else
-    currentInfo = [lineLayoutInformation objectAtIndex: startLine];
+    currentInfo = [_lineLayoutInformation objectAtIndex: startLine];
   startIndex = currentInfo->lineRange.location;
 
-  if (endLine >= [lineLayoutInformation count])
-    currentInfo = [lineLayoutInformation lastObject];
+  if (endLine >= [_lineLayoutInformation count])
+    currentInfo = [_lineLayoutInformation lastObject];
   else
-    currentInfo = [lineLayoutInformation objectAtIndex: endLine];
+    currentInfo = [_lineLayoutInformation objectAtIndex: endLine];
   endIndex = NSMaxRange(currentInfo->lineRange);
 
   return NSMakeRange(startIndex, endIndex - startIndex);
@@ -757,7 +757,7 @@ typedef enum
       return NSMakeRect(0, 0, width, 12);
     }
 
-  currentInfo = [lineLayoutInformation lastObject];
+  currentInfo = [_lineLayoutInformation lastObject];
   if (index >= NSMaxRange(currentInfo->lineRange))
     {
       NSRect rect = currentInfo->lineRect;
@@ -772,7 +772,7 @@ typedef enum
     }
 
 
- currentInfo = [lineLayoutInformation 
+ currentInfo = [_lineLayoutInformation 
 		   objectAtIndex: [self lineLayoutIndexForCharacterIndex: 
 					    index]];
  start = currentInfo->lineRange.location;
@@ -816,8 +816,8 @@ typedef enum
 
   startLine = [self lineLayoutIndexForPoint: upperLeftPoint];
   endLine = [self lineLayoutIndexForPoint: lowerRightPoint];
-  if (++endLine > [lineLayoutInformation count])
-    endLine = [lineLayoutInformation count];
+  if (++endLine > [_lineLayoutInformation count])
+    endLine = [_lineLayoutInformation count];
 
   return NSMakeRange(startLine, endLine - startLine);
 }
@@ -825,7 +825,7 @@ typedef enum
 // relies on lineLayoutInformation
 - (void) drawLinesInLineRange: (NSRange)aRange;
 {
-  NSArray *linesToDraw = [lineLayoutInformation subarrayWithRange: aRange];
+  NSArray *linesToDraw = [_lineLayoutInformation subarrayWithRange: aRange];
   NSEnumerator *lineEnum;
   _GNULineLayoutInfo *currentInfo;
 
@@ -846,24 +846,24 @@ typedef enum
 {
   float width = [self width];
 
-  if ([lineLayoutInformation count]
-      && redrawLineRange.location < [lineLayoutInformation count]
+  if ([_lineLayoutInformation count]
+      && redrawLineRange.location < [_lineLayoutInformation count]
       && redrawLineRange.length)
     {
       _GNULineLayoutInfo *firstInfo
-	= [lineLayoutInformation objectAtIndex: redrawLineRange.location];
+	= [_lineLayoutInformation objectAtIndex: redrawLineRange.location];
       NSRect displayRect = firstInfo->lineRect;
 
       if (firstInfo->type  == LineLayoutInfoType_Paragraph
 	  && displayRect.origin.x >0 && redrawLineRange.location)
       {
-	displayRect = [[lineLayoutInformation objectAtIndex: redrawLineRange.location-1] 
+	displayRect = [[_lineLayoutInformation objectAtIndex: redrawLineRange.location-1] 
 			  lineRect];
       }
 
       if (redrawLineRange.length > 1)
 	  displayRect = NSUnionRect(displayRect,
-				    [[lineLayoutInformation
+				    [[_lineLayoutInformation
 					 objectAtIndex: 
 					     (int)NSMaxRange(redrawLineRange) - 1] lineRect]);
 
@@ -877,10 +877,10 @@ typedef enum
       NSRect myFrame = [self frame];
       float lowestY = 0;
 
-      if ([lineLayoutInformation count])
-	lowestY = NSMaxY ([[lineLayoutInformation lastObject] lineRect]);
+      if ([_lineLayoutInformation count])
+	lowestY = NSMaxY ([[_lineLayoutInformation lastObject] lineRect]);
 
-      if (![lineLayoutInformation count]
+      if (![_lineLayoutInformation count]
 	  || (lowestY < NSMaxY(myFrame)))
 	{
 	  [[self firstTextView] setNeedsDisplayInRect: NSMakeRect(0, lowestY,
@@ -944,7 +944,7 @@ verticalDisplacement: (float*)verticalDisplacement
 		    floatTrift: (float) yReloc
 {
   // lines actually updated (optimized drawing)
-  unsigned ret = [lineLayoutInformation count] - aLine;
+  unsigned ret = [_lineLayoutInformation count] - aLine;
   unsigned start = MAX(0, ret + rebuildLineDrift);
   NSArray *relocArray = [ghostArray subarrayWithRange: 
 					NSMakeRange(start, [ghostArray count] - start)];
@@ -969,7 +969,7 @@ verticalDisplacement: (float*)verticalDisplacement
 					      rect.size.height)];
 	}
     }
-  [lineLayoutInformation addObjectsFromArray: relocArray];
+  [_lineLayoutInformation addObjectsFromArray: relocArray];
   return ret;
 }
 
@@ -1022,9 +1022,9 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
       return NSMakeRange(0,0);
     }
 
-  if (lineLayoutInformation == nil)
+  if (_lineLayoutInformation == nil)
     {
-      lineLayoutInformation = [[NSMutableArray alloc] init];
+      _lineLayoutInformation = [[NSMutableArray alloc] init];
       aLine = 0;
       ghostArray = nil;
       prevArrayEnum = nil;
@@ -1035,13 +1035,13 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 				     aRange.location];
       aLine = MAX(0, insertionLineIndex - 1);
 
-      if (NSMaxRange(aRange) < NSMaxRange([[lineLayoutInformation lastObject] lineRange]))
+      if (NSMaxRange(aRange) < NSMaxRange([[_lineLayoutInformation lastObject] lineRange]))
         {
 	  // remember old array for optimization purposes
-	  ghostArray = [lineLayoutInformation
+	  ghostArray = [_lineLayoutInformation
 			   subarrayWithRange:
-			       NSMakeRange (aLine, [lineLayoutInformation count] - aLine)];
-	  // every time an object is added to lineLayoutInformation
+			       NSMakeRange (aLine, [_lineLayoutInformation count] - aLine)];
+	  // every time an object is added to _lineLayoutInformation
 	  // a nextObject has to be performed on prevArrayEnum!
 	  prevArrayEnum = [ghostArray seekableEnumerator];
 	}
@@ -1053,7 +1053,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
       if (aLine)
 	{
-	  _GNULineLayoutInfo *lastValidLineInfo = [lineLayoutInformation 
+	  _GNULineLayoutInfo *lastValidLineInfo = [_lineLayoutInformation 
 						      objectAtIndex: aLine - 1];
 	  NSRect aRect = lastValidLineInfo->lineRect;
 
@@ -1066,10 +1066,10 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	    }
 
 	  // keep paragraph - terminating space on same line as paragraph
-	  if ((((int)[lineLayoutInformation count]) - 1) >= aLine)
+	  if ((((int)[_lineLayoutInformation count]) - 1) >= aLine)
 	    {
 	      _GNULineLayoutInfo *anchorLine
-		= [lineLayoutInformation objectAtIndex: aLine];
+		= [_lineLayoutInformation objectAtIndex: aLine];
 	      NSRect anchorRect = anchorLine->lineRect;
 
 	      if (anchorRect.origin.x > drawingPoint.x
@@ -1080,15 +1080,15 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	    }
 	}
 
-      [lineLayoutInformation
+      [_lineLayoutInformation
 	removeObjectsInRange:
-	  NSMakeRange (aLine, [lineLayoutInformation count] - aLine)];
+	  NSMakeRange (aLine, [_lineLayoutInformation count] - aLine)];
     }
 
   if (![_textStorage length])
     {
 	// If there is no text add one empty box
-	[lineLayoutInformation
+	[_lineLayoutInformation
 	    addObject: [_GNULineLayoutInfo
 			   lineLayoutWithRange: NSMakeRange (0, 0)
 			   rect: NSMakeRect (0, 0, 0, 12)
@@ -1118,7 +1118,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
       if (leadingNlRange.length > 0)
 	{
 	  [self addNewlines: leadingNlRange
-	    intoLayoutArray: lineLayoutInformation
+	    intoLayoutArray: _lineLayoutInformation
 		    atPoint: &drawingPoint
 		      width: width
 	     characterIndex: startingLineCharIndex
@@ -1245,7 +1245,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 		drawingPoint.y += currentLineRect.size.height;
 		drawingPoint.x = 0;
 
-		[lineLayoutInformation
+		[_lineLayoutInformation
 		  addObject: (thisInfo
 			      = [_GNULineLayoutInfo
 				  lineLayoutWithRange:
@@ -1319,7 +1319,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
 			// y displacement: redisplay all remaining lines
 			if (frameshiftCorrection)
-			  erg = [lineLayoutInformation count] - aLine;
+			  erg = [_lineLayoutInformation count] - aLine;
 			else if (currentLineIndex - 1  == insertionLineIndex
 				 && ABS(insertionDelta) == 1)
 			  {
@@ -1342,7 +1342,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 		{
 		  _GNULineLayoutInfo *thisInfo;
 		  scannerPosition = [lScanner scanLocation];
-		  [lineLayoutInformation
+		  [_lineLayoutInformation
 		    addObject: (thisInfo
 				= [_GNULineLayoutInfo
 				    lineLayoutWithRange:
@@ -1412,7 +1412,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
       if (trailingNlRange.length)
 	{
 	  [self addNewlines: trailingNlRange
-		intoLayoutArray: lineLayoutInformation
+		intoLayoutArray: _lineLayoutInformation
 		atPoint: &drawingPoint
 		width: width
 		characterIndex: startingLineCharIndex
@@ -1438,7 +1438,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
     }
 
   // lines actually updated (optimized drawing)
-  return NSMakeRange(aLine, MAX(1, [lineLayoutInformation count] - aLine));
+  return NSMakeRange(aLine, MAX(1, [_lineLayoutInformation count] - aLine));
 }
 // end: central line formatting method------------------------------------
 
