@@ -1814,11 +1814,8 @@ static NSColor	*shadowCol;
 	  [textObject setText: [(NSAttributedString *)_contents string]];
 	}
     }
-  [textObject sizeToFit];
-  
-  [textObject setDelegate: anObject];
-  [[controlView window] makeFirstResponder: textObject];
 
+  [textObject sizeToFit];
   [textObject setSelectedRange: NSMakeRange (selStart, selLength)];
   [textObject setDelegate: anObject];
   [[controlView window] makeFirstResponder: textObject];
