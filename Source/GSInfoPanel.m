@@ -40,8 +40,8 @@ static id
 _value_from_info_plist_for_key (NSString *key)
 {
   static NSDictionary *d = nil;
-  /* We use this additional BOOL so that if loading Info-gnustep.plist fails once, 
-     we do not try again. */
+  /* We use this additional BOOL so that if loading Info-gnustep.plist
+     fails once, we do not try again. */
   static BOOL load_failed = NO;
   
   if ((d == nil) && (load_failed == NO))
@@ -440,9 +440,10 @@ _new_label (NSString *value)
     }
 
   /* height */
-  /* Warning: we implicitly assume icon height is approx of the standard height of 48.
-     The code tries to be nice so that 50 or 47 should more or less work -- but beware 
-     that 200 or 20 will *not* work. */
+  /* Warning: we implicitly assume icon height is approx of the
+     standard height of 48.  The code tries to be nice so that 50 or
+     47 should more or less work -- but beware that 200 or 20 will
+     *not* work. */
   tmp_A = [icon size].height;
 
   if (description)
@@ -502,8 +503,8 @@ _new_label (NSString *value)
 
   f = [nameLabel frame];
   f.origin.x = tmp_a;
-  /* NB: We relay upon the fact that the text in a text field is vertically centered 
-     in its frame */
+  /* NB: We relay upon the fact that the text in a text field is
+     vertically centered in its frame */
   if (description)
     f.origin.y = tmp_b + 10;
   else
