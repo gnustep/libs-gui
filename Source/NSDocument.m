@@ -44,80 +44,93 @@
 + (NSArray *)readableTypes
 {
   return [[NSDocumentController sharedDocumentController]
-	   _editorAndViewerTypesForClass:self];
+	   _editorAndViewerTypesForClass: self];
 }
 
 + (NSArray *)writableTypes
 {
   return [[NSDocumentController sharedDocumentController] 
-	   _editorTypesForClass:self];
+	   _editorTypesForClass: self];
 }
 
-+ (BOOL)isNativeType:(NSString *)type
++ (BOOL)isNativeType: (NSString *)type
 {
-  return ([[self readableTypes] containsObject:type] &&
-	  [[self writableTypes] containsObject:type]);
+  return ([[self readableTypes] containsObject: type] &&
+	  [[self writableTypes] containsObject: type]);
 }
 
 
-- (id)init
+- (id) init
 {
   static int untitledCount = 1;
   
-  [super init];
-  _documentIndex = untitledCount++;
-  _windowControllers = [[NSMutableArray alloc] init];
+  self = [super init];
+  if (self != nil)
+    {
+      _documentIndex = untitledCount++;
+      _windowControllers = [[NSMutableArray alloc] init];
 
-  /* Set our default type */
-  [self setFileType: [[[self class] writableTypes] objectAtIndex: 0]];
+      /* Set our default type */
+      [self setFileType: [[[self class] writableTypes] objectAtIndex: 0]];
+    }
   return self;
 }
 
-- (id)initWithContentsOfFile:(NSString *)fileName ofType:(NSString *)fileType
+/**
+ * Initialises the receiver with the contents of the document at fileName
+ * assuming that the type of data is as specified by fileType.<br />
+ * Destroys the receiver and returns nil on failure.
+ */
+- (id) initWithContentsOfFile: (NSString*)fileName ofType: (NSString*)fileType
 {
-  [self init];
-	
-  if ([self readFromFile:fileName ofType:fileType])
+  self = [self init];
+  if (self != nil)
     {
-      [self setFileType:fileType];
-      [self setFileName:fileName];
+      if ([self readFromFile: fileName ofType: fileType])
+	{
+	  [self setFileType: fileType];
+	  [self setFileName: fileName];
+	}
+      else
+	{
+	  NSRunAlertPanel (_(@"Load failed"),
+			   _(@"Could not load file %@."),
+			   nil, nil, nil, fileName);
+	  DESTROY(self);
+	}
     }
-  else
-    {
-      NSRunAlertPanel (_(@"Load failed"),
-		       _(@"Could not load file %@."),
-		       nil, nil, nil, fileName);
-      RELEASE(self);
-      return nil;
-    }
-	
   return self;
 }
 
-- (id)initWithContentsOfURL:(NSURL *)url ofType:(NSString *)fileType
+/**
+ * Initialises the receiver with the contents of the document at url
+ * assuming that the type of data is as specified by fileType.<br />
+ * Destroys the receiver and returns nil on failure.
+ */
+- (id) initWithContentsOfURL: (NSURL*)url ofType: (NSString*)fileType
 {
-  [super init];
-
-  if ([self readFromURL:url ofType:fileType])
+  self = [self init];
+  if (self != nil)
     {
-      [self setFileType:fileType];
-      [self setFileName:[url path]];
-    }
-  else
-    {
-      NSRunAlertPanel(_(@"Load failed"),
-		      _(@"Could not load URL %@."),
-		      nil, nil, nil, [url absoluteString]);
-      RELEASE(self);
-      return nil;
-    }
-  
+      if ([self readFromURL: url ofType: fileType])
+	{
+	  [self setFileType: fileType];
+	  [self setFileName:[url path]];
+	}
+      else
+	{
+	  NSRunAlertPanel(_(@"Load failed"),
+			  _(@"Could not load URL %@."),
+			  nil, nil, nil, [url absoluteString]);
+	  DESTROY(self);
+	}
+    }  
   return self;
 }
 
-- (void)dealloc
+- (void) dealloc
 {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [[NSNotificationCenter defaultCenter] removeObserver: self];
   RELEASE(_undoManager);
   RELEASE(_fileName);
   RELEASE(_fileType);
@@ -134,7 +147,7 @@
   return _fileName;
 }
 
-- (void)setFileName:(NSString *)fileName
+- (void)setFileName: (NSString *)fileName
 {
   ASSIGN(_fileName, fileName);
 	
@@ -147,7 +160,7 @@
   return _fileType;
 }
 
-- (void)setFileType:(NSString *)type
+- (void)setFileType: (NSString *)type
 {
   ASSIGN(_fileType, type);
 }
@@ -157,19 +170,21 @@
   return _windowControllers;
 }
 
-- (void)addWindowController:(NSWindowController *)windowController
+- (void)addWindowController: (NSWindowController *)windowController
 {
-  [_windowControllers addObject:windowController];
+  [_windowControllers addObject: windowController];
   if ([windowController document] != self)
-    [windowController setDocument:self];
+    {
+      [windowController setDocument: self];
+    }
 }
 
-- (void)removeWindowController:(NSWindowController *)windowController
+- (void)removeWindowController: (NSWindowController *)windowController
 {
-  if ([_windowControllers containsObject:windowController])
+  if ([_windowControllers containsObject: windowController])
     {
-	[windowController setDocument:nil];
-	[_windowControllers removeObject:windowController];
+      [windowController setDocument: nil];
+      [_windowControllers removeObject: windowController];
     }
 }
 
@@ -181,42 +196,50 @@
 // private; called during nib load.  
 // we do not retain the window, since it should
 // already have a retain from the nib.
-- (void)setWindow:(NSWindow *)aWindow
+- (void)setWindow: (NSWindow *)aWindow
 {
   _window = aWindow;
 }
 
 //FIXME: In the later specification this method has a different return type!! 
-- (void)makeWindowControllers
+- (void) makeWindowControllers
 {
   NSString *name = [self windowNibName];
 
   if (name != nil && [name length] > 0)
     {
       NSWindowController *controller;
-      controller = [[NSWindowController alloc] initWithWindowNibName:name owner:self];
-      [self addWindowController:controller];
+
+      controller = [[NSWindowController alloc] initWithWindowNibName: name
+							       owner: self];
+      [self addWindowController: controller];
       RELEASE(controller);
     }
   else
     {
-      [NSException raise:NSInternalInconsistencyException
-		   format:@"%@ must override either -windowNibName or -makeWindowControllers",
-		   NSStringFromClass([self class])];
+      [NSException raise: NSInternalInconsistencyException
+		  format: @"%@ must override either -windowNibName "
+	@"or -makeWindowControllers", NSStringFromClass([self class])];
     }
 }
 
-- (void)showWindows
+/**
+ * Makes all the documents windows visible by ordering them to the
+ * front and making them main or key.<br />
+ * If the document has no windows, this method has no effect.
+ */
+- (void) showWindows
 {
-  [_windowControllers makeObjectsPerformSelector:@selector(showWindow:) withObject:self];
+  [_windowControllers makeObjectsPerformSelector: @selector(showWindow:)
+				      withObject: self];
 }
 
-- (BOOL)isDocumentEdited
+- (BOOL) isDocumentEdited
 {
   return _changeCount != 0;
 }
 
-- (void)updateChangeCount:(NSDocumentChangeType)change
+- (void)updateChangeCount: (NSDocumentChangeType)change
 {
   int i, count = [_windowControllers count];
   BOOL isEdited;
@@ -263,7 +286,7 @@
       // return NO if save failed
     case Save:
       {
-	[self saveDocument:nil]; 
+	[self saveDocument: nil]; 
 	return ![self isDocumentEdited];
       }
     case DontSave:	return YES;
@@ -272,9 +295,9 @@
     }
 }
 
-- (void)canCloseDocumentWithDelegate:(id)delegate 
-		 shouldCloseSelector:(SEL)shouldCloseSelector 
-			 contextInfo:(void *)contextInfo
+- (void)canCloseDocumentWithDelegate: (id)delegate 
+		 shouldCloseSelector: (SEL)shouldCloseSelector 
+			 contextInfo: (void *)contextInfo
 {
   BOOL result = [self canCloseDocument];
 
@@ -290,9 +313,9 @@
     }
 }
 
-- (BOOL)shouldCloseWindowController:(NSWindowController *)windowController
+- (BOOL)shouldCloseWindowController: (NSWindowController *)windowController
 {
-  if (![_windowControllers containsObject:windowController]) return YES;
+  if (![_windowControllers containsObject: windowController]) return YES;
 
   /* If it's the last window controller, pop up a warning */
   /* maybe we should count only loaded window controllers (or visible windows). */
@@ -305,10 +328,10 @@
   return YES;
 }
 
-- (void)shouldCloseWindowController:(NSWindowController *)windowController 
-			   delegate:(id)delegate 
-		shouldCloseSelector:(SEL)callback
-			contextInfo:(void *)contextInfo
+- (void)shouldCloseWindowController: (NSWindowController *)windowController 
+			   delegate: (id)delegate 
+		shouldCloseSelector: (SEL)callback
+			contextInfo: (void *)contextInfo
 {
   BOOL result = [self shouldCloseWindowController: windowController];
 
@@ -342,35 +365,35 @@
   return NO;
 }
 
-- (NSData *)dataRepresentationOfType:(NSString *)type
+- (NSData *)dataRepresentationOfType: (NSString *)type
 {
-  [NSException raise:NSInternalInconsistencyException format:@"%@ must implement %@",
+  [NSException raise: NSInternalInconsistencyException format:@"%@ must implement %@",
 	       NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
   return nil;
 }
 
-- (BOOL)loadDataRepresentation:(NSData *)data ofType:(NSString *)type
+- (BOOL)loadDataRepresentation: (NSData *)data ofType: (NSString *)type
 {
-  [NSException raise:NSInternalInconsistencyException format:@"%@ must implement %@",
+  [NSException raise: NSInternalInconsistencyException format:@"%@ must implement %@",
 	       NSStringFromClass([self class]), NSStringFromSelector(_cmd)];
   return NO;
 }
 
-- (NSFileWrapper *)fileWrapperRepresentationOfType:(NSString *)type
+- (NSFileWrapper *)fileWrapperRepresentationOfType: (NSString *)type
 {
-  NSData *data = [self dataRepresentationOfType:type];
+  NSData *data = [self dataRepresentationOfType: type];
   
   if (data == nil) 
     return nil;
 
-  return AUTORELEASE([[NSFileWrapper alloc] initRegularFileWithContents:data]);
+  return AUTORELEASE([[NSFileWrapper alloc] initRegularFileWithContents: data]);
 }
 
-- (BOOL)loadFileWrapperRepresentation:(NSFileWrapper *)wrapper ofType:(NSString *)type
+- (BOOL)loadFileWrapperRepresentation: (NSFileWrapper *)wrapper ofType: (NSString *)type
 {
   if ([wrapper isRegularFile])
     {
-      return [self loadDataRepresentation:[wrapper regularFileContents] ofType:type];
+      return [self loadDataRepresentation:[wrapper regularFileContents] ofType: type];
     }
   
     /*
@@ -383,26 +406,26 @@
   return NO;
 }
 
-- (BOOL)writeToFile:(NSString *)fileName ofType:(NSString *)type
+- (BOOL)writeToFile: (NSString *)fileName ofType: (NSString *)type
 {
-  return [[self fileWrapperRepresentationOfType:type]
-	   writeToFile:fileName atomically:YES updateFilenames:YES];
+  return [[self fileWrapperRepresentationOfType: type]
+	   writeToFile: fileName atomically: YES updateFilenames: YES];
 }
 
-- (BOOL)readFromFile:(NSString *)fileName ofType:(NSString *)type
+- (BOOL)readFromFile: (NSString *)fileName ofType: (NSString *)type
 {
-  NSFileWrapper *wrapper = AUTORELEASE([[NSFileWrapper alloc] initWithPath:fileName]);
-  return [self loadFileWrapperRepresentation:wrapper ofType:type];
+  NSFileWrapper *wrapper = AUTORELEASE([[NSFileWrapper alloc] initWithPath: fileName]);
+  return [self loadFileWrapperRepresentation: wrapper ofType: type];
 }
 
-- (BOOL)revertToSavedFromFile:(NSString *)fileName ofType:(NSString *)type
+- (BOOL)revertToSavedFromFile: (NSString *)fileName ofType: (NSString *)type
 {
-  return [self readFromFile:fileName ofType:type];
+  return [self readFromFile: fileName ofType: type];
 }
 
-- (BOOL)writeToURL:(NSURL *)url ofType:(NSString *)type
+- (BOOL)writeToURL: (NSURL *)url ofType: (NSString *)type
 {
-  NSData *data = [self dataRepresentationOfType:type];
+  NSData *data = [self dataRepresentationOfType: type];
   
   if (data == nil) 
     return NO;
@@ -410,7 +433,7 @@
   return [url setResourceData: data];
 }
 
-- (BOOL)readFromURL:(NSURL *)url ofType:(NSString *)type
+- (BOOL)readFromURL: (NSURL *)url ofType: (NSString *)type
 {
   NSData *data = [url resourceDataUsingCache: YES];
 
@@ -420,20 +443,20 @@
   return [self loadDataRepresentation: data ofType: type];
 }
 
-- (BOOL)revertToSavedFromURL:(NSURL *)url ofType:(NSString *)type
+- (BOOL)revertToSavedFromURL: (NSURL *)url ofType: (NSString *)type
 {
   return [self readFromURL: url ofType: type];
 }
 
-- (IBAction)changeSaveType:(id)sender
+- (IBAction)changeSaveType: (id)sender
 { 
 //FIXME if we have accessory -- store the desired save type somewhere.
 }
 
-- (int)runModalSavePanel:(NSSavePanel *)savePanel 
-       withAccessoryView:(NSView *)accessoryView
+- (int)runModalSavePanel: (NSSavePanel *)savePanel 
+       withAccessoryView: (NSView *)accessoryView
 {
-  [savePanel setAccessoryView:accessoryView];
+  [savePanel setAccessoryView: accessoryView];
   return [savePanel runModal];
 }
 
@@ -442,16 +465,16 @@
   return YES;
 }
 
-- (void)_loadPanelAccessoryNib
+- (void) _loadPanelAccessoryNib
 {
 // FIXME.  We need to load the pop-up button
 }
-- (void)_addItemsToSpaButtonFromArray:(NSArray *)types
+- (void) _addItemsToSpaButtonFromArray: (NSArray *)types
 {
 // FIXME.  Add types to popup.
 }
 
-- (NSString *)fileNameFromRunningSavePanelForSaveOperation:(NSSaveOperationType)saveOperation
+- (NSString *)fileNameFromRunningSavePanelForSaveOperation: (NSSaveOperationType)saveOperation
 {
   NSView *accessory = nil;
   NSString *title;
@@ -468,7 +491,7 @@
       if (savePanelAccessory == nil)
 	[self _loadPanelAccessoryNib];
       
-      [self _addItemsToSpaButtonFromArray:extensions];
+      [self _addItemsToSpaButtonFromArray: extensions];
       
       accessory = savePanelAccessory;
     }
@@ -486,7 +509,7 @@
       break;
    }
   
-  [savePanel setTitle:title];
+  [savePanel setTitle: title];
 
   
   if ([self fileName])
@@ -495,7 +518,7 @@
     directory = [controller currentDirectory];
   [savePanel setDirectory: directory];
 	
-  if ([self runModalSavePanel:savePanel withAccessoryView:accessory])
+  if ([self runModalSavePanel: savePanel withAccessoryView: accessory])
     {
       return [savePanel filename];
     }
@@ -503,7 +526,7 @@
   return nil;
 }
 
-- (BOOL)shouldChangePrintInfo:(NSPrintInfo *)newPrintInfo
+- (BOOL)shouldChangePrintInfo: (NSPrintInfo *)newPrintInfo
 {
   return YES;
 }
@@ -513,7 +536,7 @@
   return _printInfo? _printInfo : [NSPrintInfo sharedPrintInfo];
 }
 
-- (void)setPrintInfo:(NSPrintInfo *)printInfo
+- (void)setPrintInfo: (NSPrintInfo *)printInfo
 {
   ASSIGN(_printInfo, printInfo);
 }
@@ -521,34 +544,34 @@
 
 // Page layout panel (Page Setup)
 
-- (int)runModalPageLayoutWithPrintInfo:(NSPrintInfo *)printInfo
+- (int)runModalPageLayoutWithPrintInfo: (NSPrintInfo *)printInfo
 {
-  return [[NSPageLayout pageLayout] runModalWithPrintInfo:printInfo];
+  return [[NSPageLayout pageLayout] runModalWithPrintInfo: printInfo];
 }
 
-- (IBAction)runPageLayout:(id)sender
+- (IBAction)runPageLayout: (id)sender
 {
   NSPrintInfo *printInfo = [self printInfo];
   
-  if ([self runModalPageLayoutWithPrintInfo:printInfo]
-      && [self shouldChangePrintInfo:printInfo])
+  if ([self runModalPageLayoutWithPrintInfo: printInfo]
+      && [self shouldChangePrintInfo: printInfo])
     {
-      [self setPrintInfo:printInfo];
-      [self updateChangeCount:NSChangeDone];
+      [self setPrintInfo: printInfo];
+      [self updateChangeCount: NSChangeDone];
     }
 }
 
 /* This is overridden by subclassers; the default implementation does nothing. */
-- (void)printShowingPrintPanel:(BOOL)flag
+- (void)printShowingPrintPanel: (BOOL)flag
 {
 }
 
-- (IBAction)printDocument:(id)sender
+- (IBAction)printDocument: (id)sender
 {
-  [self printShowingPrintPanel:YES];
+  [self printShowingPrintPanel: YES];
 }
 
-- (BOOL)validateMenuItem:(NSMenuItem *)anItem
+- (BOOL)validateMenuItem: (NSMenuItem *)anItem
 {
   if ([anItem action] == @selector(revertDocumentToSaved:))
     return ([self fileName] != nil && [self isDocumentEdited]);
@@ -558,7 +581,7 @@
   return YES;
 }
 
-- (BOOL)validateUserInterfaceItem:(id <NSValidatedUserInterfaceItem>)anItem
+- (BOOL)validateUserInterfaceItem: (id <NSValidatedUserInterfaceItem>)anItem
 {
   if ([anItem action] == @selector(revertDocumentToSaved:))
     return ([self fileName] != nil);
@@ -581,39 +604,39 @@
   return [NSDictionary dictionary];
 }
 
-- (BOOL)writeToFile:(NSString *)fileName 
-	     ofType:(NSString *)type 
-       originalFile:(NSString *)origFileName
-      saveOperation:(NSSaveOperationType)saveOp
+- (BOOL)writeToFile: (NSString *)fileName 
+	     ofType: (NSString *)type 
+       originalFile: (NSString *)origFileName
+      saveOperation: (NSSaveOperationType)saveOp
 {
   return [self writeToFile: fileName ofType: type];
 }
 
-- (BOOL)writeWithBackupToFile:(NSString *)fileName 
-		       ofType:(NSString *)fileType 
-		saveOperation:(NSSaveOperationType)saveOp
+- (BOOL)writeWithBackupToFile: (NSString *)fileName 
+		       ofType: (NSString *)fileType 
+		saveOperation: (NSSaveOperationType)saveOp
 {
   NSFileManager *fileManager = [NSFileManager defaultManager];
   NSString *backupFilename = nil;
 
   if (fileName)
     {
-      if ([fileManager fileExistsAtPath:fileName])
+      if ([fileManager fileExistsAtPath: fileName])
 	{
 	  NSString *extension  = [fileName pathExtension];
 	  
 	  backupFilename = [fileName stringByDeletingPathExtension];
 	  backupFilename = [backupFilename stringByAppendingString:@"~"];
-	  backupFilename = [backupFilename stringByAppendingPathExtension:extension];
+	  backupFilename = [backupFilename stringByAppendingPathExtension: extension];
 
 	  /* Save panel has already asked if the user wants to replace it */
 
 	  /* NSFileManager movePath: will fail if destination exists */
-	  if ([fileManager fileExistsAtPath:backupFilename])
-	    [fileManager removeFileAtPath:backupFilename handler:nil];
+	  if ([fileManager fileExistsAtPath: backupFilename])
+	    [fileManager removeFileAtPath: backupFilename handler: nil];
 
 	  // Move or copy?
-	  if (![fileManager movePath:fileName toPath:backupFilename handler:nil] &&
+	  if (![fileManager movePath: fileName toPath: backupFilename handler: nil] &&
 	      [self keepBackupFile])
             {
 	      int result = NSRunAlertPanel(_(@"File Error"),
@@ -630,14 +653,14 @@
 	{
 	  if (saveOp != NSSaveToOperation)
 	    {
-	      [self setFileName:fileName];
+	      [self setFileName: fileName];
 	      [self setFileType: fileType];
-	      [self updateChangeCount:NSChangeCleared];
+	      [self updateChangeCount: NSChangeCleared];
 	    }
 	  
 	  if (backupFilename && ![self keepBackupFile])
 	    {
-	      [fileManager removeFileAtPath:backupFilename handler:nil];
+	      [fileManager removeFileAtPath: backupFilename handler: nil];
 	    }
 
 	  return YES;
@@ -647,7 +670,7 @@
   return NO;
 }
 
-- (IBAction)saveDocument:(id)sender
+- (IBAction)saveDocument: (id)sender
 {
   NSString *filename = [self fileName];
 
@@ -662,7 +685,7 @@
 	saveOperation: NSSaveOperation];
 }
 
-- (IBAction)saveDocumentAs:(id)sender
+- (IBAction)saveDocumentAs: (id)sender
 {
   NSString *filename = 
       [self fileNameFromRunningSavePanelForSaveOperation: 
@@ -673,7 +696,7 @@
 	saveOperation: NSSaveAsOperation];
 }
 
-- (IBAction)saveDocumentTo:(id)sender
+- (IBAction)saveDocumentTo: (id)sender
 {
   NSString *filename = 
       [self fileNameFromRunningSavePanelForSaveOperation: 
@@ -684,36 +707,36 @@
 	saveOperation: NSSaveToOperation];
 }
 
-- (void)saveDocumentWithDelegate:(id)delegate 
-		 didSaveSelector:(SEL)didSaveSelector 
-		     contextInfo:(void *)contextInfo
+- (void)saveDocumentWithDelegate: (id)delegate 
+		 didSaveSelector: (SEL)didSaveSelector 
+		     contextInfo: (void *)contextInfo
 {
   // FIXME
 }
 
-- (void)saveToFile:(NSString *)fileName 
-     saveOperation:(NSSaveOperationType)saveOperation 
-	  delegate:(id)delegate
-   didSaveSelector:(SEL)didSaveSelector 
-       contextInfo:(void *)contextInfo
+- (void)saveToFile: (NSString *)fileName 
+     saveOperation: (NSSaveOperationType)saveOperation 
+	  delegate: (id)delegate
+   didSaveSelector: (SEL)didSaveSelector 
+       contextInfo: (void *)contextInfo
 {
   // FIXME
 }
 
-- (BOOL)prepareSavePanel:(NSSavePanel *)savePanel
+- (BOOL)prepareSavePanel: (NSSavePanel *)savePanel
 {
   return YES;
 }
 
-- (void)runModalSavePanelForSaveOperation:(NSSaveOperationType)saveOperation 
-				 delegate:(id)delegate
-			  didSaveSelector:(SEL)didSaveSelector 
-			      contextInfo:(void *)contextInfo
+- (void)runModalSavePanelForSaveOperation: (NSSaveOperationType)saveOperation 
+				 delegate: (id)delegate
+			  didSaveSelector: (SEL)didSaveSelector 
+			      contextInfo: (void *)contextInfo
 {
   // FIXME
 }
 
-- (IBAction)revertDocumentToSaved:(id)sender
+- (IBAction)revertDocumentToSaved: (id)sender
 {
   int result;
 
@@ -726,7 +749,7 @@
   if (result == NSAlertDefaultReturn &&
       [self revertToSavedFromFile:[self fileName] ofType:[self fileType]])
     {
-      [self updateChangeCount:NSChangeCleared];
+      [self updateChangeCount: NSChangeCleared];
     }
 }
 
@@ -751,12 +774,12 @@
 	  while (count-- > 0)
 	    [array[count] close];
 	}
-      [[NSDocumentController sharedDocumentController] removeDocument:self];
+      [[NSDocumentController sharedDocumentController] removeDocument: self];
     }
 }
 
-- (void)windowControllerWillLoadNib:(NSWindowController *)windowController {}
-- (void)windowControllerDidLoadNib:(NSWindowController *)windowController  {}
+- (void)windowControllerWillLoadNib: (NSWindowController *)windowController {}
+- (void)windowControllerDidLoadNib: (NSWindowController *)windowController  {}
 
 - (NSUndoManager *)undoManager
 {
@@ -768,7 +791,7 @@
   return _undoManager;
 }
 
-- (void)setUndoManager:(NSUndoManager *)undoManager
+- (void)setUndoManager: (NSUndoManager *)undoManager
 {
   if (undoManager != _undoManager)
     {
@@ -776,14 +799,14 @@
       
       if (_undoManager)
         {
-	  [center removeObserver:self
-		  name:NSUndoManagerWillCloseUndoGroupNotification
+	  [center removeObserver: self
+		  name: NSUndoManagerWillCloseUndoGroupNotification
 		  object:_undoManager];
-	  [center removeObserver:self
-		  name:NSUndoManagerDidUndoChangeNotification
+	  [center removeObserver: self
+		  name: NSUndoManagerDidUndoChangeNotification
 		  object:_undoManager];
-	  [center removeObserver:self
-		  name:NSUndoManagerDidRedoChangeNotification
+	  [center removeObserver: self
+		  name: NSUndoManagerDidRedoChangeNotification
 		  object:_undoManager];
         }
       
@@ -791,22 +814,22 @@
       
       if (_undoManager == nil)
         {
-	  [self setHasUndoManager:NO];
+	  [self setHasUndoManager: NO];
         }
       else
         {
-	  [center addObserver:self
+	  [center addObserver: self
 		  selector:@selector(_changeWasDone:)
-		  name:NSUndoManagerWillCloseUndoGroupNotification
+		  name: NSUndoManagerWillCloseUndoGroupNotification
 		  object:_undoManager];
-	  [center addObserver:self
+	  [center addObserver: self
 		  selector:@selector(_changeWasUndone:)
-		  name:NSUndoManagerDidUndoChangeNotification
+		  name: NSUndoManagerDidUndoChangeNotification
 		  object:_undoManager];
 	  [[NSNotificationCenter defaultCenter]
-	    addObserver:self
+	    addObserver: self
 	    selector:@selector(_changeWasRedone:)
-	    name:NSUndoManagerDidRedoChangeNotification
+	    name: NSUndoManagerDidRedoChangeNotification
 	    object:_undoManager];
         }
     }
@@ -817,10 +840,10 @@
   return _docFlags.hasUndoManager;
 }
 
-- (void)setHasUndoManager:(BOOL)flag
+- (void)setHasUndoManager: (BOOL)flag
 {
   if (_undoManager && !flag)
-    [self setUndoManager:nil];
+    [self setUndoManager: nil];
   
   _docFlags.hasUndoManager = flag;
 }
@@ -834,21 +857,21 @@
  * document is set to the nib owner, and thus owns the window immediately
  * following the loading of the nib.
  */
-- (NSWindow *)_transferWindowOwnership
+- (NSWindow *) _transferWindowOwnership
 {
   NSWindow *window = _window;
   _window = nil;
   return AUTORELEASE(window);
 }
 
-- (void)_removeWindowController:(NSWindowController *)windowController
+- (void) _removeWindowController: (NSWindowController *)windowController
 {
-  if ([_windowControllers containsObject:windowController])
+  if ([_windowControllers containsObject: windowController])
     {
       BOOL autoClose = [windowController shouldCloseDocument];
       
-      [windowController setDocument:nil];
-      [_windowControllers removeObject:windowController];
+      [windowController setDocument: nil];
+      [_windowControllers removeObject: windowController];
       
       if (autoClose || [_windowControllers count] == 0)
         {
@@ -857,19 +880,19 @@
     }
 }
 
-- (void)_changeWasDone:(NSNotification *)notification
+- (void) _changeWasDone: (NSNotification *)notification
 {
-  [self updateChangeCount:NSChangeDone];
+  [self updateChangeCount: NSChangeDone];
 }
 
-- (void)_changeWasUndone:(NSNotification *)notification
+- (void) _changeWasUndone: (NSNotification *)notification
 {
-  [self updateChangeCount:NSChangeUndone];
+  [self updateChangeCount: NSChangeUndone];
 }
 
-- (void)_changeWasRedone:(NSNotification *)notification
+- (void) _changeWasRedone: (NSNotification *)notification
 {
-  [self updateChangeCount:NSChangeDone];
+  [self updateChangeCount: NSChangeDone];
 }
 
 @end

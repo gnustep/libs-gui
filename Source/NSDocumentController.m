@@ -259,7 +259,12 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
   return document;
 }
 
-- (id) openDocumentWithContentsOfFile: (NSString *)fileName 
+/**
+ * Creates an [NSDocument] object from the data at the absolute path
+ * given in fileName.  Causes the document to be displayed if display
+ * is YES, unless the -shouldCreateUI method returns NO.
+ */
+- (id) openDocumentWithContentsOfFile: (NSString*)fileName 
 			      display: (BOOL)display
 {
   NSDocument *document = [self documentForFileName: fileName];
@@ -291,6 +296,11 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
   return document;
 }
 
+/**
+ * Creates an [NSDocument] object from the data at the supplied url.<br />
+ * Causes the document to be displayed if display
+ * is YES, unless the -shouldCreateUI method returns NO.
+ */
 - (id) openDocumentWithContentsOfURL: (NSURL *)url  display: (BOOL)display
 {
   // Should we only do this if [url isFileURL] is YES?

@@ -19,7 +19,8 @@
 	Ruder) and initialisation tidyups.
 	* Source/NSInputManager.m: ditto
 	* Source/NSOpenPanel.m: ditto
-
+	* Source/NSDocument.m: minor tidyup in init and add some documentation
+	* Source/NSDocumentController.m: add some documentation
 
 2003-07-19  Adam Fedor  <fedor@gnu.org>
 
