@@ -144,10 +144,7 @@ static	Class	concrete;
     }
   else
     {
-      if (editedRange.location > old.location)
-	editedRange.location = old.location;
-      if (NSMaxRange(editedRange) < NSMaxRange(old))
-	editedRange.length = NSMaxRange(old) - editedRange.location;
+      editedRange = NSUnionRange(editedRange, old);
     }
 
   /*
@@ -161,6 +158,7 @@ static	Class	concrete;
 	  // FIXME: this was > not >=, is that going to be a problem?
 	  NSAssert(old.length >= -delta, NSInvalidArgumentException);
 	}
+      editedRange.length += delta; 
       editedDelta += delta;
     }
 
@@ -193,7 +191,6 @@ static	Class	concrete;
 		    object: self];
 
   r = editedRange;
-  r.length += editedDelta;
   // Multiple adds at the end might give a too long result
   if (NSMaxRange(r) > [self length])
       r.length = [self length] - r.location;
@@ -208,15 +205,16 @@ static	Class	concrete;
    * Calls textStorage:edited:range:changeInLength:invalidatedRange: for
    * every layoutManager.
    *
-   * FIXME, Michael: are the ranges used correct?
+   * FIXME: The invalidatedRange is not correct, this should include the 
+   *        surrounding paragraphs.
    */
 
   for (i=0;i<[layoutManagers count];i++)
     {
       NSLayoutManager *lManager = [layoutManagers objectAtIndex:i];
 
-      [lManager textStorage:self edited:editedMask range:editedRange
-	changeInLength:editedDelta invalidatedRange:r];
+      [lManager textStorage: self edited: editedMask range: r
+		changeInLength: editedDelta invalidatedRange: r];
     }
 
   /*
