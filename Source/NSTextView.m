@@ -54,6 +54,11 @@
            selector: @selector(textView##notif_name: ) \
                name: NSTextView##notif_name##Notification \
              object: _notifObject]
+
+/* MINOR FIXME: The following two should really be kept in the
+   NSLayoutManager object to avoid interferences between different
+   sets of NSTextViews linked to different NSLayoutManagers.  But this
+   bug should show very rarely. */
  
 /* YES when in the process of synchronizing text view attributes.  
    It is used to avoid recursive synchronizations. */
@@ -324,8 +329,6 @@ static NSNotificationCenter *nc;
   _textContainer = aTextContainer;
 
   [self _updateMultipleTextViews];
-
-  /* Update multiple_textviews flag */
 }
 
 - (NSTextContainer *) textContainer
@@ -395,7 +398,7 @@ static NSNotificationCenter *nc;
 
 - (void) setNeedsDisplayInRect: (NSRect)aRect
 {
-  [self setNeedsDisplayInRect: aRect avoidAdditionalLayout: NO];
+  [self setNeedsDisplayInRect: aRect  avoidAdditionalLayout: NO];
 }
 
 - (BOOL) shouldDrawInsertionPoint
@@ -487,7 +490,22 @@ static NSNotificationCenter *nc;
 
 #define NSTEXTVIEW_SYNC(X) \
   if (_tvf.multiple_textviews && (isSynchronizingFlags == NO)) \
-      [self _syncTextViewsByCalling: @selector(##X##)  withFlag: flag]
+    {  [self _syncTextViewsByCalling: @selector(##X##)  withFlag: flag]; \
+    return; }
+
+/*
+ * NB: You might override these methods in subclasses, as in the 
+ * following example: 
+ * - (void) setEditable: (BOOL)flag
+ * {
+ *   [super setEditable: flag];
+ *   XXX your custom code here XXX
+ * }
+ * 
+ * If you override them in this way, they are automatically
+ * synchronized between multiple textviews - ie, when it is called on
+ * one, it will be automatically called on all related textviews.
+ * */
 
 - (void) setEditable: (BOOL)flag
 {
