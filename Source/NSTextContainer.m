@@ -137,6 +137,8 @@
   if (_textView)
     {
       [_textView setTextContainer: nil];
+      // May we realy switch this off, as somebody else might be listening 
+      // to those notifications?
       [_textView setPostsFrameChangedNotifications: NO];
       [nc removeObserver: self name: NSViewFrameDidChangeNotification 
 	  object: _textView];
@@ -182,15 +184,22 @@
 - (void) setWidthTracksTextView: (BOOL)flag
 {
   NSNotificationCenter *nc;
-  nc = [NSNotificationCenter defaultCenter];
+  BOOL old_observing = _observingFrameChanges;
 
   _widthTracksTextView = flag;
   _observingFrameChanges = _widthTracksTextView | _heightTracksTextView;
+
   if (_textView == nil)
     return;
 
+  if (_observingFrameChanges == old_observing)
+    return;
+
+  nc = [NSNotificationCenter defaultCenter];
+
   if (_observingFrameChanges)
     {      
+      [_textView setPostsFrameChangedNotifications: YES];
       [nc addObserver: self
 	  selector: @selector(_textViewFrameChanged:)
 	  name: NSViewFrameDidChangeNotification
@@ -211,15 +220,21 @@
 - (void) setHeightTracksTextView: (BOOL)flag
 {
   NSNotificationCenter *nc;
-  nc = [NSNotificationCenter defaultCenter];
+  BOOL old_observing = _observingFrameChanges;
 
   _heightTracksTextView = flag;
   _observingFrameChanges = _widthTracksTextView | _heightTracksTextView;
   if (_textView == nil)
     return;
 
+  if (_observingFrameChanges == old_observing)
+    return;
+
+  nc = [NSNotificationCenter defaultCenter];
+
   if (_observingFrameChanges)
     {      
+      [_textView setPostsFrameChangedNotifications: YES];
       [nc addObserver: self
 	  selector: @selector(_textViewFrameChanged:)
 	  name: NSViewFrameDidChangeNotification
