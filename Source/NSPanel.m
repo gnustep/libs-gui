@@ -504,7 +504,7 @@ setControl(NSView* content, id control, NSString *title)
 
       rect.size.height = 20.0; // will be sized to fit anyway.
       rect.size.width = 80.0;  // will be sized to fit anyway.
-      rect.origin.y = r.origin.y + r.size.height;
+      rect.origin.y = r.origin.y + r.size.height + IconBottom;
       rect.origin.x = TitleLeft;
       titleField = [[NSTextField alloc] initWithFrame: rect];
       [titleField setAutoresizingMask: NSViewMinYMargin];
