@@ -1,3 +1,11 @@
+2002-04-08  Ludovic Marcotte <ludovic@Sophos.ca>
+
+	* Source/NSMenuView.m (-dealloc): Modified the dealloc method
+	  so that we remove the menu view from the menu list of observers.
+	  We could otherwise receive notifications on a dealloc'ed object
+	  and segfault.
+
+
 2002-04-06  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSView.m (-_cleanupPrinting): Private method to cleanup
