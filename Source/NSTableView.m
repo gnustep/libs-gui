@@ -516,10 +516,11 @@ byExtendingSelection: (BOOL) flag
 {
   if (_super_view != nil)
     {
-      /* Changing the headerView after the table has been linked to a scrollview 
-	 is not yet supported - the doc is not clear whether it should be supported 
-	 at all.  If it is, perhaps it's going to be done through a private method 
-	 between the tableview and the scrollview. */
+      /* Changing the headerView after the table has been linked to a
+	 scrollview is not yet supported - the doc is not clear
+	 whether it should be supported at all.  If it is, perhaps
+	 it's going to be done through a private method between the
+	 tableview and the scrollview. */
       NSLog (@"setHeaderView: called after NSTableView has been put in the view tree!"); 
     }
   [_headerView setTableView: nil];
