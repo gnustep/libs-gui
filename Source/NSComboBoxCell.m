@@ -55,14 +55,14 @@
 static NSNotificationCenter *nc;
 static const BOOL ForceBrowser = NO;
 
-@interface GSFirstMouseTableView : NSTableView
+@interface GSComboBoxTableView : NSTableView
 {
 
 }
 
 @end
 
-@implementation GSFirstMouseTableView
+@implementation GSComboBoxTableView
 - (BOOL) acceptsFirstMouse: (NSEvent *)event
 {
   return YES;
@@ -72,13 +72,12 @@ static const BOOL ForceBrowser = NO;
 @interface GSComboWindow : NSPanel
 {
    NSBrowser *_browser;
-   GSFirstMouseTableView *_tableView;
+   GSComboBoxTableView *_tableView;
    NSComboBoxCell *_cell;
    BOOL _stopped;
-   BOOL _localSelection;
 }
 
-+ (GSComboWindow *)defaultPopUp;
++ (GSComboWindow *) defaultPopUp;
 
 - (void) layoutWithComboBoxCell:(NSComboBoxCell *)comboBoxCell;
 - (void) positionWithComboBoxCell:(NSComboBoxCell *)comboBoxCell;
@@ -86,6 +85,7 @@ static const BOOL ForceBrowser = NO;
 - (void) runModalPopUpWithComboBoxCell:(NSComboBoxCell *)comboBoxCell;
 - (void) runLoopWithComboBoxCell:(NSComboBoxCell *)comboBoxCell;
 - (void) onWindowEdited: (NSNotification *)notification;
+- (void) clickItem: (id)sender;
 - (void) reloadData;
 - (void) noteNumberOfItemsChanged;
 - (void) scrollItemAtIndexToTop: (int)index;
@@ -118,7 +118,7 @@ static GSComboWindow *gsWindow = nil;
 
 + (GSComboWindow *) defaultPopUp
 {
-  if (!gsWindow)
+  if (gsWindow == nil)
     gsWindow = [[self alloc] initWithContentRect: NSMakeRect(0,0,200,200)
 			               styleMask: NSBorderlessWindowMask
 			                 backing: NSBackingStoreNonretained // NSBackingStoreBuffered
@@ -142,8 +142,6 @@ static GSComboWindow *gsWindow = nil;
   [self setLevel: NSPopUpMenuWindowLevel];
   [self setBecomesKeyOnlyIfNeeded: YES];
   
-  _localSelection = NO;
-  
   box = [[NSBox alloc] initWithFrame: contentRect];
   [box setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
   [box setBorderType: NSLineBorder];
@@ -155,7 +153,8 @@ static GSComboWindow *gsWindow = nil;
   
   if (!ForceBrowser)
     {
-  _tableView = [[GSFirstMouseTableView alloc] initWithFrame: NSMakeRect(0, 0, 100, 100)];
+  _tableView = [[GSComboBoxTableView alloc] 
+    initWithFrame: NSMakeRect(0, 0, 100, 100)];
   [_tableView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
   //[_tableView setBackgroundColor: [NSColor whiteColor]];
   [_tableView setDrawsGrid: NO];
@@ -168,6 +167,8 @@ static GSComboWindow *gsWindow = nil;
   [[_tableView tableColumnWithIdentifier:@"content"]  setDataCell: [[NSCell alloc] initTextCell: @""]];
   [_tableView setDataSource: self];
   [_tableView setDelegate: self];
+  [_tableView setAction: @selector(clickItem:)];
+  [_tableView setTarget: self];
   
   scrollView = [[NSScrollView alloc] initWithFrame: NSMakeRect(borderRect.origin.x, 
                                                                borderRect.origin.y,
@@ -189,7 +190,7 @@ static GSComboWindow *gsWindow = nil;
   [_browser setTitled: NO];
   [_browser setHasHorizontalScroller: NO];
   [_browser setTarget: self];
-  [_browser setAction: @selector(selectItem:)];
+  [_browser setAction: @selector(clickItem:)];
   [_browser setDelegate: self];
   [_browser setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
   [_browser setAllowsEmptySelection: YES];
@@ -203,7 +204,10 @@ static GSComboWindow *gsWindow = nil;
   return self;
 }
 
-- (BOOL) canBecomeKeyWindow { return YES; }
+- (BOOL) canBecomeKeyWindow 
+{ 
+  return YES; 
+}
 
 - (void)dealloc
 {
@@ -250,6 +254,7 @@ static GSComboWindow *gsWindow = nil;
     {
       size.width = textCellWidth - bsize.width;
     }
+    
   if (size.width < 0)
     {
       size.width = 0;
@@ -382,25 +387,25 @@ static GSComboWindow *gsWindow = nil;
   onWindow = [[_cell controlView] window];
 
   [nc addObserver: self selector: @selector(onWindowEdited:) 
+    name: NSWindowWillCloseNotification object: onWindow];
+  [nc addObserver: self selector: @selector(onWindowEdited:) 
     name: NSWindowWillMoveNotification object: onWindow];
   [nc addObserver: self selector: @selector(onWindowEdited:) 
     name: NSWindowWillMiniaturizeNotification object: onWindow];
-  /* The notification below doesn't exist currently
-  [nc addObserver: self selector: @selector(onWindowEdited:) 
-    name: NSWindowWillResizeNotification object: onWindow];
-  */
-  [nc addObserver: self selector: @selector(onWindowEdited:) 
-    name: NSWindowWillCloseNotification object: onWindow];
+    
+  // FIX ME: The notification below doesn't exist currently
+  // [nc addObserver: self selector: @selector(onWindowEdited:) 
+  //   name: NSWindowWillResizeNotification object: onWindow];
    
-  // ### HACK: 
-  // ### The code below must be removed when the notifications over will work
+  
+  // FIXME: The code below must be removed when the notifications over will work
   [nc addObserver: self selector: @selector(onWindowEdited:) 
     name: NSWindowDidMoveNotification object: onWindow];
   [nc addObserver: self selector: @selector(onWindowEdited:) 
     name: NSWindowDidMiniaturizeNotification object: onWindow];
   [nc addObserver: self selector: @selector(onWindowEdited:) 
     name: NSWindowDidResizeNotification object: onWindow];
-  // ###
+  // End of the code to remove
   
   [self orderFront: self];
   [self makeFirstResponder: _tableView];
@@ -429,7 +434,7 @@ static GSComboWindow *gsWindow = nil;
       if ([event type] == NSLeftMouseDown
        || [event type] == NSRightMouseDown)
         {		   
-          if (![comboBoxCell _isWantedEvent: event] && [event window] != self)
+          if ([comboBoxCell _isWantedEvent: event] == NO && [event window] != self)
 	    {
               break;
 	    }
@@ -541,10 +546,8 @@ static GSComboWindow *gsWindow = nil;
     {
   if ([_tableView selectedRow] == index || [_tableView numberOfRows] <= index)
     return;
-   _localSelection  = YES;
-  // Will block the TableDidSelectionChange: action
+  
   [_tableView selectRow: index byExtendingSelection: NO];     
-  _localSelection = NO;
     }
   else
     {
@@ -552,6 +555,7 @@ static GSComboWindow *gsWindow = nil;
   
   if ([matrix selectedRow] == index || [matrix numberOfRows] <= index)
     return;
+    
   [_browser selectRow: index inColumn: 0];
     }   
 }
@@ -560,9 +564,7 @@ static GSComboWindow *gsWindow = nil;
 {
   if (!ForceBrowser)
     {
-  _localSelection = YES;
   [_tableView deselectAll: self];
-  _localSelection = NO;
     }
   else
     {
@@ -572,21 +574,36 @@ static GSComboWindow *gsWindow = nil;
     }
 }
 
-// Target/Action of Browser
-- (void) selectItem: (id)sender
-{
-  if (_cell)
-    {      
-      [_cell selectItemAtIndex: [sender selectedRowInColumn: 0]];
-      _stopped = YES;
+// Target/Action method
+- (void) clickItem: (id)sender
+{  
+  if (_cell == nil)
+    return;
+  
+  if (!ForceBrowser)  
+    {
+      [_cell _setSelectedItem: [sender selectedRow]];
     }
+  else
+    {
+      [_cell _setSelectedItem: [sender selectedRowInColumn: 0]];
+      // NSBrowser has nothing like browserSelectionDidChange: delegate method
+      // which means selection changes not resulting from a click should be 
+      // handled here by calling previously -setSendsActionOnArrowKeys: on the
+      // browser.
+    }
+  
+  [self validateSelection];
+  
+  [nc postNotificationName: NSComboBoxSelectionDidChangeNotification
+	            object: [_cell controlView]
+	          userInfo: nil];
 }
 
 // Browser delegate methods
-- (int) browser: (NSBrowser *)sender 
-numberOfRowsInColumn: (int)column
+- (int) browser: (NSBrowser *)sender numberOfRowsInColumn: (int)column
 {
-  if (!_cell)
+  if (_cell == nil)
     return 0;
 
   return [_cell numberOfItems];
@@ -597,7 +614,7 @@ numberOfRowsInColumn: (int)column
 	   atRow: (int)row 
 	  column: (int)column
 {
-  if (!_cell)
+  if (_cell == nil)
     return;
 
   [aCell setStringValue: [_cell _stringValueAtIndex: row]];
@@ -618,7 +635,11 @@ numberOfRowsInColumn: (int)column
 // Table view delegate methods
 - (void) tableViewSelectionDidChange: (NSNotification *)notification
 {
-  [self validateSelection];
+  [_cell _setSelectedItem: [[notification object] selectedRow]];
+  
+  [nc postNotificationName: NSComboBoxSelectionDidChangeNotification
+	            object: [_cell controlView]
+	          userInfo: nil];
 }
 
 // Key actions methods
@@ -630,10 +651,8 @@ numberOfRowsInColumn: (int)column
 
   if (index > -1 && index < [_tableView numberOfRows])
     {
-      _localSelection = YES;
       [_tableView selectRow: index byExtendingSelection: NO];
       [_tableView scrollRowToVisible: index];
-      _localSelection = NO;
     }
     }
   else
@@ -642,9 +661,7 @@ numberOfRowsInColumn: (int)column
 
   if (index > -1 && index < [[_browser matrixInColumn: 0] numberOfRows])
     {
-      _localSelection = YES;
       [_browser selectRow: index inColumn: 0];
-      _localSelection = NO;
     }
     }
 }
@@ -657,10 +674,8 @@ numberOfRowsInColumn: (int)column
   
   if (index > -1 && index < [_tableView numberOfRows])
     {
-      _localSelection = YES;
       [_tableView selectRow: index byExtendingSelection: NO];
       [_tableView scrollRowToVisible: index];
-      _localSelection = NO;
     }
     }
   else
@@ -669,25 +684,48 @@ numberOfRowsInColumn: (int)column
 
   if (index > -1 && index < [[_browser matrixInColumn: 0] numberOfRows])
     {
-      _localSelection = YES;
       [_browser selectRow: index inColumn: 0];
-      _localSelection = NO;
     }
     }
 }
 
 - (void) validateSelection
 {
-  if (_cell && _localSelection == NO)
+  if (_cell != nil)
     {
-      if (!ForceBrowser)
+      NSText *textObject = nil;
+      NSControl *cv = [_cell controlView];
+      
+      if ([cv isKindOfClass: [NSControl class]])
         {
-      [_cell selectItemAtIndex: [_tableView selectedRow]];
-        }
-      else
-        {
-      [_cell selectItemAtIndex: [_browser selectedRowInColumn: 0]];
+	   textObject = [(NSControl *)cv currentEditor];
 	}
+      
+      [_cell setStringValue: [_cell _stringValueAtIndex: 
+        [_cell indexOfSelectedItem]]]; 
+      // Will update the editor when needed
+      
+      // FIXME: Because NSCell doesn't behave correctly the line just over has 
+      // no effect, to correct this fact, the code below is needed.
+      [textObject setString: [_cell _stringValueAtIndex:
+        [_cell indexOfSelectedItem]]];
+      
+      /* 
+       * Dispatch the text notifications and by side effect update the cell 
+       * object value with the -textDidChange: method of NSTextField which is
+       * the editor delegate
+       */
+      [(NSTextView *)textObject didChangeText];
+      // End of the code to remove 
+      
+      if  (textObject != nil)
+        {
+          [textObject setSelectedRange: 
+	    NSMakeRange(0, [[textObject string] length])];	
+	}	
+      
+      [cv sendAction: [_cell action] to: [_cell target]];
+      
       _stopped = YES;
     }
 }
@@ -713,13 +751,13 @@ numberOfRowsInColumn: (int)column
 */ 
 
 /**
- <p>No special instructions to use NSComboBoxCell or text to detail the implementation.</p>
-*/
+ * <p>No special instructions to use NSComboBoxCell or text to detail the implementation.</p>
+ */
 @implementation NSComboBoxCell
 
-//
-// Class methods
-//
+/*
+ * Class methods
+ */
 + (void) initialize
 {
   if (self == [NSComboBoxCell class])
@@ -777,7 +815,10 @@ numberOfRowsInColumn: (int)column
  * height in the list is inferior to the minimal height of the list displayed
  * area. 
  */
-- (BOOL) hasVerticalScroller { return _hasVerticalScroller; }
+- (BOOL) hasVerticalScroller 
+{ 
+  return _hasVerticalScroller; 
+}
 
 /**
  * Sets whether the combo box cell list displays a vertical scroller, by default
@@ -799,7 +840,10 @@ numberOfRowsInColumn: (int)column
  * Returns the width and the height (as the values of an NSSize variable)
  * between each item of the combo box cell list.
  */
-- (NSSize) intercellSpacing { return _intercellSpacing; }
+- (NSSize) intercellSpacing
+{ 
+  return _intercellSpacing; 
+}
 
 /**
  * Sets the width and the height between each item of the combo box cell list to
@@ -813,7 +857,10 @@ numberOfRowsInColumn: (int)column
 /**
  * Returns the height of the items in the combo box cell list.
  */
-- (float) itemHeight { return _itemHeight; }
+- (float) itemHeight 
+{ 
+  return _itemHeight; 
+}
 
 /**
  * Sets the height of the items in the combo box cell list to
@@ -829,7 +876,10 @@ numberOfRowsInColumn: (int)column
  * Returns the maximum number of allowed items to be displayed in the combo box
  * cell list.
  */
-- (int) numberOfVisibleItems { return _visibleItems; }
+- (int) numberOfVisibleItems 
+{ 
+  return _visibleItems; 
+}
 
 /**
  * Sets the maximum number of allowed items to be displayed in the combo box
@@ -871,7 +921,10 @@ numberOfRowsInColumn: (int)column
  * populate its items list, otherwise returns NO in the case it uses its default
  * list.
  */
-- (BOOL) usesDataSource { return _usesDataSource; }
+- (BOOL) usesDataSource 
+{ 
+  return _usesDataSource; 
+}
 
 /**
  * Sets according to <var>flag</var> whether the combo box cell uses a data
@@ -913,24 +966,18 @@ numberOfRowsInColumn: (int)column
 {
   // Method called by GSComboWindow when a selection is done in the table view or 
   // the browser
-  if (index < 0)
-    return; // raise exception?
-  if ([self numberOfItems] <= index)
-    return; // raise exception?
+  
+  if (index < 0 || [self numberOfItems] <= index)
+    return; // FIXME: Probably we should raise an exception
 
   if (_selectedItem != index)
     {
-      NSText *textObject = [[[self controlView] window] fieldEditor: YES 
-							  forObject: self];  
-      _selectedItem = index;
+      [self _setSelectedItem: index];
       
       [_popup selectItemAtIndex: index]; 
       // This method call will not create a infinite loop when the index has been 
       // already set by a mouse click because the method is not completed when the 
       // current index is not different from the index parameter
-      
-      [textObject setString: [self _stringValueAtIndex: _selectedItem]];
-      [textObject setSelectedRange: NSMakeRange(0, [[textObject string] length])];
 
       [nc postNotificationName: NSComboBoxSelectionDidChangeNotification
 	                object: [self controlView]
@@ -948,7 +995,7 @@ numberOfRowsInColumn: (int)column
 {
   if (_selectedItem == index)
     {
-      _selectedItem = -1;
+      [self _setSelectedItem: -1];
 
       [_popup deselectItemAtIndex: index];
 
@@ -978,27 +1025,27 @@ numberOfRowsInColumn: (int)column
 {
   if (_usesDataSource)
     {
-      if (!_dataSource)
+      if (_dataSource == nil)
         {
-	  NSLog(@"%@: No data source currently specified", self);
-	}
-      else
+          NSLog(@"%@: No data source currently specified", self);
+        }
+      else if ([_dataSource respondsToSelector: 
+                 @selector(numberOfItemsInComboBox:)])
         {
-	  if ([_dataSource respondsToSelector: @selector(numberOfItemsInComboBox:)])
-	    {
-	      return [_dataSource numberOfItemsInComboBox: 
-	        (NSComboBox *)[self controlView]];
-	    }
-	  else
-	    {
-	      if ([_dataSource respondsToSelector: @selector(numberOfItemsInComboBoxCell:)])
-		return [_dataSource numberOfItemsInComboBoxCell: self];
-	    }
-	}
+          return [_dataSource numberOfItemsInComboBox: 
+            (NSComboBox *)[self controlView]];
+        }
+      else if ([_dataSource respondsToSelector: 
+                  @selector(numberOfItemsInComboBoxCell:)])
+        {
+          return [_dataSource numberOfItemsInComboBoxCell: self];
+        }
     }
   else
-    return [_popUpList count];
-	 
+    {
+      return [_popUpList count];
+    }
+     
   return 0;
 }
 
@@ -1008,7 +1055,10 @@ numberOfRowsInColumn: (int)column
  * take a  look at the NSComboBoxDataSource informal protocol description. In
  * the case <code>usesDataSource</code> returns NO, this method logs a warning.
  */
-- (id) dataSource { return _dataSource; }
+- (id) dataSource 
+{ 
+  return _dataSource; 
+}
 
 /**
  * Sets the combo box cell data source to <var>aSource</var>. Just calling this
@@ -1022,11 +1072,15 @@ numberOfRowsInColumn: (int)column
  */
 - (void) setDataSource: (id)aSource
 {
-  if (!_usesDataSource)
-    NSLog(@"%@: This method is invalid, this combo box is not set to use a data source", 
-      self);
+  if (_usesDataSource == NO)
+    {
+      NSLog(@"%@: This method is invalid, this combo box is not set to use a data source", 
+        self);
+    }
   else
-    _dataSource = aSource;
+    {
+      _dataSource = aSource;
+    }
 }
 
 /**
@@ -1037,10 +1091,14 @@ numberOfRowsInColumn: (int)column
 - (void) addItemWithObjectValue: (id)object
 {
   if (_usesDataSource)
-    NSLog(@"%@: This method is invalid, this combo box is set to use a data source", 
-      self);
+    {
+      NSLog(@"%@: This method is invalid, this combo box is set to use a data source", 
+        self);
+    }
   else
-    [_popUpList addObject: object];
+    {
+      [_popUpList addObject: object];
+    }
     
   [self reloadData];
 }
@@ -1053,10 +1111,14 @@ numberOfRowsInColumn: (int)column
 - (void) addItemsWithObjectValues: (NSArray *)objects
 {
   if (_usesDataSource)
-    NSLog(@"%@: This method is invalid, this combo box is set to use a data source", 
-      self);
+    {
+      NSLog(@"%@: This method is invalid, this combo box is set to use a data source", 
+        self);
+    }
   else
-    [_popUpList addObjectsFromArray: objects];
+    {
+      [_popUpList addObjectsFromArray: objects];
+    }
     
   [self reloadData];
 }
@@ -1069,10 +1131,14 @@ numberOfRowsInColumn: (int)column
 - (void) insertItemWithObjectValue: (id)object atIndex: (int)index
 {
   if (_usesDataSource)
-    NSLog(@"%@: This method is invalid, this combo box is set to use a data source", 
-      self);
+    {
+      NSLog(@"%@: This method is invalid, this combo box is set to use a data source", 
+        self);
+    }
   else
-    [_popUpList insertObject: object atIndex: index];
+    {
+      [_popUpList insertObject: object atIndex: index];
+    }
     
   [self reloadData];
 }
@@ -1085,10 +1151,14 @@ numberOfRowsInColumn: (int)column
 - (void) removeItemWithObjectValue: (id)object
 {
   if (_usesDataSource)
-    NSLog(@"%@: This method is invalid, this combo box is set to use a data source", 
-      self);
+    {
+      NSLog(@"%@: This method is invalid, this combo box is set to use a data source", 
+        self);
+    }
   else
-    [_popUpList removeObject: object];
+    {
+      [_popUpList removeObject: object];
+    }
     
   [self reloadData];
 }
@@ -1101,10 +1171,14 @@ numberOfRowsInColumn: (int)column
 - (void) removeItemAtIndex: (int)index
 {
   if (_usesDataSource)
-    NSLog(@"%@: This method is invalid, this combo box is set to use a data source", 
-      self);
+    {
+      NSLog(@"%@: This method is invalid, this combo box is set to use a data source", 
+        self);
+    }
   else
-    [_popUpList removeObjectAtIndex: index];
+    {
+      [_popUpList removeObjectAtIndex: index];
+    }
     
   [self reloadData];
 }
@@ -1117,10 +1191,14 @@ numberOfRowsInColumn: (int)column
 - (void) removeAllItems
 {
   if (_usesDataSource)
-    NSLog(@"%@: This method is invalid, this combo box is set to use a data source", 
-      self);
+    {
+      NSLog(@"%@: This method is invalid, this combo box is set to use a data source", 
+        self);
+    }
   else
-    [_popUpList removeAllObjects];
+    {
+      [_popUpList removeAllObjects];
+    }
     
   [self reloadData];
 }
@@ -1137,8 +1215,10 @@ numberOfRowsInColumn: (int)column
 - (void) selectItemWithObjectValue: (id)object
 {
  if (_usesDataSource)
-    NSLog(@"%@: This method is invalid, this combo box is set to use a data source", 
-      self);
+   {
+     NSLog(@"%@: This method is invalid, this combo box is set to use a data source", 
+       self);
+   }
  else
    {
      int i = [_popUpList indexOfObject: object];
@@ -1186,7 +1266,7 @@ numberOfRowsInColumn: (int)column
     {
       if (_usesDataSource)
         {
-	  if (!_dataSource)
+	  if (_dataSource == nil)
 	    {
 	      NSLog(@"%@: No data source currently specified", self);
 	      return nil;
@@ -1209,6 +1289,7 @@ numberOfRowsInColumn: (int)column
 	  return [self itemObjectValueAtIndex: index];
 	}
     }
+    
   return nil;
 }
 
@@ -1230,9 +1311,13 @@ numberOfRowsInColumn: (int)column
       int index = [self indexOfSelectedItem];
 
       if (index == -1)
-	return nil;
+        {
+          return nil;
+        }
       else
-	return [_popUpList objectAtIndex: index];
+        {
+          return [_popUpList objectAtIndex: index];
+        }
     }
 }
 
@@ -1257,7 +1342,7 @@ numberOfRowsInColumn: (int)column
 /** 
  * Returns the combo box cell default items list in an array.
  */
-- (NSArray *)objectValues
+- (NSArray *) objectValues
 {
   if (_usesDataSource)
     {
@@ -1285,7 +1370,7 @@ numberOfRowsInColumn: (int)column
  * In the case, you want another behavior, you can override this method without
  * need to call the superclass method.
  */
-- (NSString *)completedString:(NSString *)substring
+- (NSString *) completedString: (NSString *)substring
 {
   if (nil == substring)
     {
@@ -1294,7 +1379,7 @@ numberOfRowsInColumn: (int)column
 
   if (_usesDataSource)
     {
-      if (!_dataSource)
+      if (_dataSource == NO)
         {
 	  NSLog(@"%@: No data source currently specified", self);
 	}
@@ -1342,7 +1427,10 @@ numberOfRowsInColumn: (int)column
  * Take a look at the <code>setCompletes:</code> method documentation to know
  * how the automatic completion works. 
  */
-- (BOOL)completes { return _completes; }
+- (BOOL) completes 
+{ 
+  return _completes; 
+}
 
 /** 
  * Sets whether the combo box cell automatic completion is active or not.
@@ -1354,18 +1442,21 @@ numberOfRowsInColumn: (int)column
  * called, and when the returned string is longer than the current one in the text
  * field, the completion occurs and the completed part gets selected.
  */
-- (void)setCompletes:(BOOL)completes
+- (void) setCompletes: (BOOL)completes
 {
   _completes = completes;
 }
 
 #define ComboBoxHeight 21 // FIX ME: All this stuff shouldn't be hardcoded
-// Inlined methods
 #define ButtonWidth 17
 #define ButtonHeight 17
 #define BorderSize 2
-// the inset border for the top and the bottom of the button
+// The inset border for the top and the bottom of the button
 
+/*
+ * Inlined methods
+ */
+ 
 static inline NSRect textCellFrameFromRect(NSRect cellRect) 
 // Not the drawed part, precises just the part which receives events
 {
@@ -1387,6 +1478,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 + (BOOL) prefersTrackingUntilMouseUp
 {
   return YES; 
+  
   /* Needed to have the clickability of the button take in account when the tracking happens.
      This method is call by the NSControl -mouseDown: method with the code :
      [_cell trackMouse: e
@@ -1459,7 +1551,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
   NSRect textRect = textCellFrameFromRect(cellFrame);
   BOOL result = NO;
 
-  // Should this be set by NSActionCell ?
+  // FIXME: May be that should be set by NSActionCell
   if (_control_view != controlView)
     _control_view = controlView;
   
@@ -1480,8 +1572,8 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
        | NSMouseMovedMask | NSLeftMouseDraggedMask | NSOtherMouseDraggedMask
        | NSRightMouseDraggedMask;
       NSPoint location;
-	  
-      while (!isMouseUp) // Loop until mouse goes up
+      
+      while (isMouseUp == NO) // Loop until mouse goes up
         {
           location = [controlView convertPoint: [e locationInWindow] fromView: nil];
              
@@ -1501,7 +1593,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 	      [controlView setNeedsDisplay: YES];
             }
 		
-          if (!isMouseUp)
+          if (isMouseUp == NO)
 	    {
 	      e = [NSApp nextEventMatchingMask: eventMask
 			             untilDate: nil
@@ -1523,7 +1615,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 	}
     }
 
-  return NO; // Pathological case, normally never happen
+  return NO; // Pathological case, normally never happens
 }
 
 - (void) resetCursorRect: (NSRect)cellFrame inView: (NSView *)controlView
@@ -1700,7 +1792,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
         && _prevSelectedRange.location < selectedRange.location)
         {
           more = [self completedString: myString];
-          if (![more isEqualToString: myString])
+          if ([more isEqualToString: myString] == NO)
             {
 	      [textObject setString: more];
 	      location = myStringLength;
@@ -1717,18 +1809,18 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 
 - (NSString *) _stringValueAtIndex: (int)index
 {
-  if (!_usesDataSource)
+  if (_usesDataSource == NO)
     {
       return [[self itemObjectValueAtIndex: index] description];
     }
   else
     {
-      if (!_dataSource)
+      if (_dataSource == nil)
         {
 	  NSLog(@"%@: No data source currently specified", self);
 	  return nil;
 	}
-      if ([_dataSource respondsToSelector: 
+      else if ([_dataSource respondsToSelector: 
 			   @selector(comboBox:objectValueForItemAtIndex:)])
         {
 	  return [[_dataSource comboBox: (NSComboBox *)[self controlView] 
@@ -1842,7 +1934,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
   more = [self completedString: [self stringValue]];
   if (_usesDataSource)
     {
-      if (!_dataSource)
+      if (_dataSource == nil)
         {
 	  NSLog(@"%@: No data source currently specified", self);
 	}
