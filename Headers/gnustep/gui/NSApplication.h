@@ -33,6 +33,7 @@
 #include <AppKit/GSInfoPanel.h>
 
 @class NSArray;
+@class NSAutoreleasePool;
 @class NSMutableArray;
 @class NSString;
 @class NSException;
@@ -82,6 +83,12 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
   NSMutableArray	*_inactive;
   NSWindow		*_hidden_key;
   GSInfoPanel           *_infoPanel;
+
+  /* This autorelease pool should only be created and used by -run, with
+     a single exception (which is why it is stored here as an ivar): the
+     -terminate: method will destroy this autorelease pool before exiting
+     the program.  */
+  NSAutoreleasePool     *_runLoopPool;
 }
 
 /*
