@@ -91,7 +91,9 @@ static NSColor	*shadowCol;
 
 - (BOOL)isOpaque
 {
-  return [super isOpaque] && [_titleCell isOpaque];
+  // [_titleCell isOpaque] always returns NO, so put it first 
+  // to spare the other message.
+  return [_titleCell isOpaque] && [super isOpaque];
 }
 
 - (void)setTitle: (NSString*)aString
