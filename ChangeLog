@@ -1,3 +1,23 @@
+Tue Oct 26  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Fixes for Controls and Cells:
+	* Source/NSButton.m ([-selectedCell]): Removed (duplicate of
+ 	NSControl's method).
+	* Source/NSCell.m ([-setImage:]): Accept nil argument. 
+	* Source/NSCell.m ([-setStringValue:]): Make the cell a text cell.
+	* Source/NSControl.m ([-selectedCell]): Always return the
+ 	control's cell.
+	* Source/NSTextField.m ([-selectedCell]): Removed (duplicate of
+ 	NSControl method).
+
+	Class Rewritten: 
+	* Source/NSTableHeaderCell.m: Rewritten from scratch, tested.   
+	This class is now complete and fully compliant. 
+
+	Headers Fix:
+	* Headers/gnustep/gui/AppKit.h: Include NSTableColumn.h.
+	* Headers/gnustep/gui/NSTableHeaderCell.h: Added copyright notice.
+	
 Mon Oct 25  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	The merit should all go to David Lee Ludwig <davidl@wpi.edu>, for
