@@ -33,6 +33,7 @@ imagedir = $(GNUSTEP_RESOURCES)/Images
 
 IMAGE_FILES = \
 GNUstep_Images_Copyright \
+common_3DArrowDown.tiff \
 common_ArrowDown.tiff \
 common_ArrowUp.tiff \
 common_ArrowRight.tiff \

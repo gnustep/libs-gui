@@ -7,6 +7,7 @@
 	common_TabUnSelectedJunction.tiff
 	common_TabUnSelectedLeft.tiff
 	common_TabUnSelectedRight.tiff: all tiffs needed to draw NSTabs.
+	* Images/common_3DArrowDown.tiff: for NSPopUp in pulldown mode.
 	* Source/NSTabView.m: lots of work on drawing. Should draw correct
 	in almost all cases. However, without event code I can't test it
 	yet.

@@ -62,7 +62,10 @@
   
   if ([(NSPopUpButton *)view titleOfSelectedItem] == contents)
   {
-    [super _drawImage:[NSImage imageNamed:@"common_Nibble"] inFrame:rect];
+    if ([(NSPopUpButton *)view pullsDown] == NO)
+      [super _drawImage:[NSImage imageNamed:@"common_Nibble"] inFrame:rect];
+    else
+      [super _drawImage:[NSImage imageNamed:@"common_3DArrowDown"] inFrame:rect];
   }
 }
 @end

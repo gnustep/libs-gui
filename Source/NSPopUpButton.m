@@ -82,6 +82,16 @@
 {
   ASSIGN(popup_button, popb);
 }
+
+- (void)setPullsDown:(BOOL)pull
+{
+  pull_down = pull;
+}
+
+- (BOOL)pullsDown
+{
+  return pull_down;
+}
 @end
 
 //
@@ -121,6 +131,7 @@
   [super initWithFrame:frameRect];
   list_items = [[NSPopUpButtonMatrix alloc] initWithFrame:frameRect];
   [list_items setPopUpButton:self];
+  [list_items setPullsDown:flag];
   is_up = NO;
   pulls_down = flag;
   selected_item = 0;
@@ -159,7 +170,10 @@
 
 - (void)buttonSelected:(id)sender
 {
-  selected_item = [self indexOfItemWithTitle:[sender title]];
+  if (!pulls_down)
+    selected_item = [self indexOfItemWithTitle:[sender title]];
+  else
+    selected_item = 0;
 
   [self synchronizeTitleAndSelectedItem];
 

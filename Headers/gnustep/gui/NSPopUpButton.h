@@ -43,6 +43,7 @@
 
 @interface NSPopUpButtonMatrix : NSMenuMatrix
 {
+  BOOL pull_down;
   int selected_cell;
   NSPopUpButton *popup_button;
 }
