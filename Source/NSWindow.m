@@ -1139,13 +1139,15 @@ static NSNotificationCenter *nc = nil;
     }
   else
     {
-      _frame = [self constrainFrameRect:_frame toScreen:[self screen]];
+      NSRect nframe = [self constrainFrameRect:_frame toScreen:[self screen]];
       // create deferred window
       if (_windowNum == 0)
 	{
 	  [self _initBackendWindow: _frame];
 	  display = YES;
 	}
+      else if (NSEqualRects(_frame, nframe) == NO)
+	[self setFrame: nframe display: NO];
     }
   DPSorderwindow(context, place, otherWin, _windowNum);
   if (display)

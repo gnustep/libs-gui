@@ -1,3 +1,8 @@
+2001-10-02  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSWindow.m (-orderWindow:relativeTo:): setFrame: to the
+	new constrained rect (if changed).
+
 2001-09-28  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Header/gnustep/gui/NSPopupButton.h
