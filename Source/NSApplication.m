@@ -339,7 +339,8 @@ static NSCell* tileCell = nil;
       }
     
     NSDebugLog(@"Begin of NSApplication -init\n");
-    
+
+    _default_context = GSCurrentContext();
     _hidden = [[NSMutableArray alloc] init];
     _inactive = [[NSMutableArray alloc] init];
     _unhide_on_activation = YES;
@@ -548,7 +549,7 @@ static NSCell* tileCell = nil;
   TEST_RELEASE(_app_icon);
   TEST_RELEASE(_app_icon_window);
   TEST_RELEASE(_infoPanel);
-  [GSCurrentContext() destroyContext];
+  [_default_context destroyContext];
 
   [super dealloc];
 }
@@ -872,7 +873,8 @@ static NSCell* tileCell = nil;
       [theSession->window makeMainWindow];
     }
 
-  ctxt = GSCurrentContext();
+  // Use the default context for all events.
+  ctxt = _default_context;
 
   /*
    * Set a limit date in the distant future so we wait until we get an
@@ -968,7 +970,7 @@ static NSCell* tileCell = nil;
        * add dummy event to queue to assure loop cycles
        * at least one more time
        */
-      DPSPostEvent(GSCurrentContext(), null_event, NO);
+      DPSPostEvent(_default_context, null_event, NO);
     }
 }
 
@@ -1061,7 +1063,7 @@ static NSCell* tileCell = nil;
 - (void) discardEventsMatchingMask: (unsigned int)mask
 		       beforeEvent: (NSEvent *)lastEvent
 {
-  DPSDiscardEvents(GSCurrentContext(), mask, lastEvent);
+  DPSDiscardEvents(_default_context, mask, lastEvent);
 }
 
 - (NSEvent*) nextEventMatchingMask: (unsigned int)mask
@@ -1075,9 +1077,9 @@ static NSCell* tileCell = nil;
     expiration = [NSDate distantFuture];
 
   if (flag)
-    event = DPSGetEvent(GSCurrentContext(), mask, expiration, mode);
+    event = DPSGetEvent(_default_context, mask, expiration, mode);
   else
-    event = DPSPeekEvent(GSCurrentContext(), mask, expiration, mode);
+    event = DPSPeekEvent(_default_context, mask, expiration, mode);
 
   if (event)
     {
@@ -1109,7 +1111,7 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 
 - (void) postEvent: (NSEvent *)event atStart: (BOOL)flag
 {
-  DPSPostEvent(GSCurrentContext(), event, flag);
+  DPSPostEvent(_default_context, event, flag);
 }
 
 /*
@@ -1957,7 +1959,7 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 
 - (NSGraphicsContext *) context
 {
-  return GSCurrentContext();
+  return _default_context;
 }
 
 - (void) reportException: (NSException *)anException
