@@ -1,3 +1,21 @@
+2003-03-19  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBitmapImageRep.m
+	In [imageUnfilteredFileTypes] add the tiff entries always to the
+	front of the list. As the standard GNUstep images are in this
+	format, this will speed up image loading.
+	* Headers/gnustep/gui/NSCell.h
+	Remvoed ivar is_continuous, this is now handled by the action
+	mask. Decreased size of the image_position ivar. Added two more
+	subclass ivar to reuse the freed space. Flagged all methods that
+	are new in MacOSX and added a few more of this.
+	* Source/NSCell.m 
+	Added new MacOSX methods [title], [setTitle:], [controlSize],
+	[setControlSize:], [controlTint], [setControlTint:] and
+	[highlightColorWithFrame:inView:]. Rewrote [isContinuous], 
+	[setContinuous:] and [trackMouse:...untilMouseUp:] to work via the
+	_action_mask. 
+
 2003-03-18  Serg Stoyan <stoyan@on.com.ua>
 
 	* Source/NSMenuView.m 
