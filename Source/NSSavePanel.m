@@ -969,7 +969,7 @@ selectCellWithString: (NSString*)title
 createRowsForColumn: (int)column
 	inMatrix: (NSMatrix*)matrix
 {
-  NSString              *path, *pathTmp, *file, *pathAndFile, *extension, *h; 
+  NSString              *path, *file, *pathAndFile, *extension, *h; 
   NSArray               *files, *hiddenFiles;
   unsigned	         i, count, addedRows; 
   BOOL		         exists, isDir;
@@ -981,25 +981,11 @@ createRowsForColumn: (int)column
   NSString              *progressString = nil;
   /* We create lot of objects in this method, so we use a pool */
   NSAutoreleasePool     *pool;
-  NSDirectoryEnumerator *dirEnum;
-  IMP			 nxtImp;
-  IMP			 addImp;
 
   pool = [NSAutoreleasePool new];
   
   path = [_browser pathToColumn: column];
-  dirEnum = AUTORELEASE([[NSDirectoryEnumerator alloc]
-			  initWithDirectoryPath: path 
-			  recurseIntoSubdirectories: NO
-			  followSymlinks: NO
-			  prefixFiles: NO]);
-  files = [NSMutableArray arrayWithCapacity: 16];
-
-  nxtImp = [dirEnum methodForSelector: @selector(nextObject)];
-  addImp = [files   methodForSelector: @selector(addObject:)];
-
-  while ((pathTmp = (*nxtImp)(dirEnum, @selector(nextObject))) != nil)
-    (*addImp)(files, @selector(addObject:), pathTmp);
+  files = [[NSFileManager defaultManager] directoryContentsAtPath: path];
 
   // Remove hidden files
   h = [path stringByAppendingPathComponent: @".hidden"];
