@@ -344,7 +344,7 @@ RETURN_LABEL:
 	      oldTotal +=  NSHeight(frames[i]);
 	    }
 	  scale = newTotal/oldTotal;
-	  running = newTotal;
+	  running = NSHeight (_bounds);
 	  for (i = 0; i < count; i++)
 	    {
 	      float	newHeight;
