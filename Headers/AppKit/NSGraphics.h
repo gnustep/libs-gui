@@ -1,7 +1,7 @@
 /*
    NSGraphics.h
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996, 2005 Free Software Foundation, Inc.
 
    Author: Ovidiu Predescu <ovidiu@net-community.com>
    Date: February 1997
@@ -117,8 +117,12 @@ APPKIT_EXPORT void NSRectFillList(const NSRect *rects, int count);
 APPKIT_EXPORT void NSRectFillListWithGrays(const NSRect *rects,
 					   const float *grays,int count);
 
-APPKIT_EXPORT NSRect NSDrawTiledRects(NSRect aRect,const NSRect clipRect,  
-			const NSRectEdge * sides, 
+/** Draws a set of edges of aRect.  The sides array should contain
+    count edges, and grays the corresponding color.  Edges are drawn
+    in the order given in the array, and subsequent edges are drawn
+    inside previous edges (thus, they will never overlap).  */
+APPKIT_EXPORT NSRect NSDrawTiledRects(NSRect aRect, const NSRect clipRect,
+			const NSRectEdge *sides,
 			const float *grays, int count);
 
 APPKIT_EXPORT void NSDrawButton(const NSRect aRect, const NSRect clipRect);
@@ -134,7 +138,19 @@ NSDrawBezel(const NSRect aRect, const NSRect clipRect)
   NSDrawGrayBezel(aRect, clipRect);
 }
 
+
+/** Draws a rectangle along the inside of aRect.  The rectangle will be
+    black, dotted (using 1 point dashes), and will have a line width
+    of 1 point.  */
 APPKIT_EXPORT void NSDottedFrameRect(NSRect aRect);
+/** <p>Draws a rectangle using the current color along the inside of aRect.
+    NSFrameRectWithWidth uses the frameWidth as the line width, while
+    NSFrameRect always uses 1 point wide lines.  The functions do not
+    change the line width of the current graphics context.
+    </p><p>
+    'Inside' here means that no part of the stroked rectangle will extend
+    outside the given rectangle.
+    </p>  */
 APPKIT_EXPORT void NSFrameRect(const NSRect aRect); 
 APPKIT_EXPORT void NSFrameRectWithWidth(const NSRect aRect, float frameWidth);
 

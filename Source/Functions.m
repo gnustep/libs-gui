@@ -451,9 +451,9 @@ NSRectFillListWithColorsUsingOperation(const NSRect *rects,
     }
 }
 
-/*
- * Draw a Bordered Rectangle
- */
+
+/* Various functions for drawing bordered rectangles.  */
+
 void NSDottedFrameRect(const NSRect aRect)
 {
   float dot_dash[] = {1.0, 1.0};
@@ -463,8 +463,8 @@ void NSDottedFrameRect(const NSRect aRect)
   DPSsetlinewidth(ctxt, 1.0);
   // FIXME
   DPSsetdash(ctxt, dot_dash, 2, 0.0);
-  DPSrectstroke(ctxt,  NSMinX(aRect), NSMinY(aRect), 
-		NSWidth(aRect), NSHeight(aRect));
+  DPSrectstroke(ctxt,  NSMinX(aRect) + 0.5, NSMinY(aRect) + 0.5,
+		NSWidth(aRect) - 1.0, NSHeight(aRect) - 1.0);
 }
 
 void NSFrameRect(const NSRect aRect)
@@ -478,25 +478,15 @@ void NSFrameRectWithWidth(const NSRect aRect, float frameWidth)
   NSGraphicsContext *ctxt = GSCurrentContext();
   DPScurrentlinewidth(ctxt, &width);
   DPSsetlinewidth(ctxt, frameWidth);
-  DPSrectstroke(ctxt,  NSMinX(aRect), NSMinY(aRect), 
-		NSWidth(aRect), NSHeight(aRect));
+  DPSrectstroke(ctxt,  NSMinX(aRect) + frameWidth / 2.0,
+		NSMinY(aRect) + frameWidth / 2.0,
+		NSWidth(aRect) - frameWidth, NSHeight(aRect) - frameWidth);
   DPSsetlinewidth(ctxt, width);
 }
 
-//*****************************************************************************
-//
-// 	Draws an unfilled rectangle, clipped by clipRect, whose border
-//	is defined by the parallel arrays sides and grays, both of length
-//	count. Each element of sides specifies an edge of the rectangle,
-//	which is drawn with a width of 1.0 using the corresponding gray level
-//	from grays. If the edges array contains recurrences of the same edge,
-//	each is inset within the previous edge.
-//
-//*****************************************************************************
-
 NSRect 
-NSDrawTiledRects(NSRect aRect,const NSRect clipRect,  
-		 const NSRectEdge * sides, 
+NSDrawTiledRects(NSRect aRect, const NSRect clipRect,
+		 const NSRectEdge *sides,
 		 const float *grays, int count)
 {
   int i;

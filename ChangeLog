@@ -1,3 +1,11 @@
+2005-01-18 14:09  Alexander Malmberg  <alexander@malmberg.org>
+
+	* Source/Functions.m (NSDottedFrameRect, NSFrameRectWithWidth): Draw
+	the frame inside the given rectangle.
+	(NSDrawTiledRects): Remove documentation.
+	* Headers/AppKit/NSGraphics.h (NSDottedFrameRect, NSFrameRect)
+	(NSFrameRectWithWidth, NSDrawTiledRects): Add new documentation.
+
 2005-01-17 Adrian Robert <arobert@cogsci.ucsd.edu>
 
 	* Source/NSWindow.m (-sendEvent:becomesKeyOnlyIfNeeded:): Give
