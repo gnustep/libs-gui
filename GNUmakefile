@@ -37,7 +37,8 @@ GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=gui.make
 include $(GNUSTEP_MAKEFILES)/common.make
 
 PACKAGE_NAME = gnustep-gui
-VERSION = 0.6.7
+
+include ./Version
 
 #
 # The list of subproject directories
