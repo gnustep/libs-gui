@@ -124,30 +124,4 @@
 	   withClassName: (NSString *)className
       withSuperClassName: (NSString *)superClassName;
 @end
-
-/*
-  These templates are from the old system, which had some issues.  Currently I believe
-  that NSWindowTemplate was the only one seeing use, so it is the only one included.
-  if any more are needed they will be added back.   
-  
-  As these classes are deprecated, they should disappear from the gnustep distribution
-  in the next major release.
-*/
-
-// DO NOT USE.
-
-@protocol __DeprecatedTemplate__
-- (void) setClassName: (NSString *)className;
-- (NSString *)className;
-- (id) instantiateObject: (NSCoder *)coder;
-@end
-
-@interface NSWindowTemplate : NSWindow <__DeprecatedTemplate__>
-{
-  NSString            *_className;
-  NSString            *_parentClassName;
-  BOOL                 _deferFlag;
-}
-@end
-
 #endif /* _GNUstep_H_GSNibTemplates */

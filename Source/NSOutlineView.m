@@ -873,7 +873,7 @@ static NSImage *unexpandable  = nil;
 }
 
 /**
- * Sets the delegate of the outline view. 
+ * Sets the delegate of the outlineView. 
  */
 - (void) setDelegate: (id)anObject
 {

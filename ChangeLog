@@ -1,3 +1,13 @@
+2003-10-25 16:52  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibTemplates.m: initWithFrame is not supposed to be called
+	on subclasses of NSControl as the designated initializer according to
+	docs.  Removed the call.
+	* Source/GSNibCompatibility.[hm]: Added in the old templates for 
+	compatibility ONLY.  This is so any of the older .gorms which use 
+	these templates can be loaded and used normally.
+	* Source/NSOutlineView.m: Corrected a documentation issue.
+	
 2003-10-25 12:53  Matt Rice <ratmice@yahoo.com>
 
 	* Source/NSWorkspace.m (-_connectApplication:): Ignore the path to

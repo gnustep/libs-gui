@@ -175,6 +175,7 @@ GSLayoutManager.m \
 GSTypesetter.m \
 GSHorizontalTypesetter.m \
 GSNibTemplates.m \
+GSNibCompatibility.m
 
 # Turn off NSMenuItem warning that NSMenuItem conforms to <NSObject>,
 # but does not implement <NSObject>'s methods itself (it inherits
@@ -336,7 +337,8 @@ GSLayoutManager.h \
 GSLayoutManager_internal.h \
 GSTypesetter.h \
 GSHorizontalTypesetter.h \
-GSToolbarView.h
+GSToolbarView.h \
+GSNibCompatibility.h
 
 libgnustep-gui_HEADER_FILES = ${GUI_HEADERS}
 

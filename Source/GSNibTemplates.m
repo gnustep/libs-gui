@@ -683,6 +683,7 @@ static const int currentVersion = 1; // GSNibItem version number...
   id     obj = [super initWithCoder: coder];
   if(obj != nil)
     {
+      /* 
       if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
       {
 	if(GSGetInstanceMethodNotInherited([obj class],@selector(initWithFrame:)) != NULL)
@@ -691,6 +692,7 @@ static const int currentVersion = 1; // GSNibItem version number...
 	    obj = [obj initWithFrame: theFrame];
 	  }
       }
+      */
       RELEASE(self);
     }
   return obj;
@@ -793,131 +795,5 @@ static const int currentVersion = 1; // GSNibItem version number...
 	}
     }
   return template;
-}
-@end
-
-//////////////////////////////////////////////////////////////////////////////////////////
-////////////////// DEPRECATED TEMPLATES ----- THESE SHOULD NOT BE USED  //////////////////
-//////////////////////////////////////////////////////////////////////////////////////////
-
-/*
-  These templates are from the old system, which had some issues.  Currently I believe
-  that NSWindowTemplate was the only one seeing use, so it is the only one included.
-  if any more are needed they will be added back.   
-  
-  As these classes are deprecated, they should disappear from the gnustep distribution
-  in the next major release.
-*/
-
-@implementation NSWindowTemplate
-+ (void) initialize
-{
-  if (self == [NSWindowTemplate class]) 
-    { 
-      [self setVersion: 0];
-    }
-}
-
-- (void) dealloc
-{
-  RELEASE(_parentClassName);
-  RELEASE(_className);
-  [super dealloc];
-}
-
-- init
-{
-  [super init];
-
-  // Start initially with the highest level class...
-  ASSIGN(_className, NSStringFromClass([super class]));
-  ASSIGN(_parentClassName, NSStringFromClass([super class]));
-
-  // defer flag...
-  _deferFlag = NO;
-
-  return self;
-}
-
-- (id) initWithCoder: (NSCoder *)aCoder
-{
-  [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
-  [aCoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];  
-  [aCoder decodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];  
-  return [super initWithCoder: aCoder];
-}
-
-- (void) encodeWithCoder: (NSCoder *)aCoder
-{
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_className];  
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_parentClassName];  
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];  
-  [super encodeWithCoder: aCoder];
-}
-
-- (id) awakeAfterUsingCoder: (NSCoder *)coder
-{
-  if([self respondsToSelector: @selector(isInInterfaceBuilder)])
-    {
-      // if we live in the interface builder, give them an instance of
-      // the parent, not the child..
-      [self setClassName: _parentClassName];
-    }
-  
-  return [self instantiateObject: coder];
-}
-
-- (id) instantiateObject: (NSCoder *)coder
-{
-  id obj = nil;
-  Class aClass = NSClassFromString(_className);      
-  
-  if (aClass == nil)
-    {
-	[NSException raise: NSInternalInconsistencyException
-		     format: @"Unable to find class '%@'", _className];
-    }
-  
-  obj = [[aClass allocWithZone: [self zone]] 
-	    initWithContentRect: [self frame]
-	    styleMask: [self styleMask]
-	    backing: [self backingType]
-	    defer: _deferFlag];
-    
-    // fill in actual object from template...
-  [obj setBackgroundColor: [self backgroundColor]];
-  [(NSWindow*)obj setContentView: [self contentView]];
-  [obj setFrameAutosaveName: [self frameAutosaveName]];
-  [obj setHidesOnDeactivate: [self hidesOnDeactivate]];
-  [obj setInitialFirstResponder: [self initialFirstResponder]];
-  [obj setAutodisplay: [self isAutodisplay]];
-  [obj setReleasedWhenClosed: [self isReleasedWhenClosed]];
-  [obj _setVisible: [self isVisible]];
-  [obj setTitle: [self title]];
-  [obj setFrame: [self frame] display: NO];
-  
-  RELEASE(self);
-  return obj;
-}
-
-// setters and getters...
-- (void) setClassName: (NSString *)name
-{
-  ASSIGN(_className, name);
-}
-
-- (NSString *)className
-{
-  return _className;
-}
-
-- (BOOL)deferFlag
-{
-  return _deferFlag;
-}
-
-- (void)setDeferFlag: (BOOL)flag
-{
-  _deferFlag = flag;
 }
 @end
