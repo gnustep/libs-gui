@@ -1,4 +1,5 @@
 Sat Feb 23 11:28:32 2002  Gregory Casamento <greg_casamento@yahoo.com>
+
 	* Headers/gnustep/gui/AppKit.h: Added NSOutlineView header
 	* Headers/gnustep/gui/NSOutlineView.h: Added additional ivars and
 	corrected methods for delegate and data source.
