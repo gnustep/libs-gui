@@ -41,8 +41,9 @@
 
 @implementation NSSplitView
 
-/* API Methods */
-
+//
+// Instance methods
+//
 - (void)mouseDown:(NSEvent *)theEvent 
 {
   NSApplication *app = [NSApplication sharedApplication];

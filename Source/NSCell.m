@@ -42,6 +42,8 @@
 #include <AppKit/NSCell.h>
 #include <AppKit/NSEvent.h>
 
+
+
 @implementation NSCell
 
 //
@@ -49,101 +51,90 @@
 //
 + (void)initialize
 {
-  if (self == [NSCell class])
-    {
-      // Initial version
+	if (self == [NSCell class])
       [self setVersion:1];
-    }
 }
 
-//
-// Tracking the Mouse 
-//
 + (BOOL)prefersTrackingUntilMouseUp
 {
-  return NO;
+	return NO;
 }
 
 //
 // Instance methods
 //
-
-//
-// Initializing an NSCell 
-//
 - _init
 {
-  cell_type = NSNullCellType;
-  cell_image = nil;
-  cell_font = nil;
-  image_position = NSNoImage;
-  cell_state = NO;
-  cell_highlighted = NO;
-  cell_enabled = YES;
-  cell_editable = NO;
-  cell_bordered = NO;
-  cell_bezeled = NO;
-  cell_scrollable = NO;
-  cell_selectable = NO;
-  cell_continuous = NO;
-  cell_float_autorange = NO;
-  cell_float_left = 0;
-  cell_float_right = 0;
-  action_mask = NSLeftMouseUpMask;
-
-  return self;
+	cell_type = NSNullCellType;
+	cell_image = nil;
+	cell_font = nil;
+	image_position = NSNoImage;
+	cell_state = NO;
+	cell_highlighted = NO;
+	cell_enabled = YES;
+	cell_editable = NO;
+	cell_bordered = NO;
+	cell_bezeled = NO;
+	cell_scrollable = NO;
+	cell_selectable = NO;
+	cell_continuous = NO;
+	cell_float_autorange = NO;
+	cell_float_left = 0;
+	cell_float_right = 0;
+	action_mask = NSLeftMouseUpMask;
+	
+	return self;
 }
 
 - init
 {
-  return [self initTextCell:@""];
+	return [self initTextCell:@""];
 }
 
 - (id)initImageCell:(NSImage *)anImage
 {
-  [super init];
-
-  [self _init];
-
-  // Not an image class --then forget it
-  if (![anImage isKindOfClass:[NSImage class]])
-    return nil;
-
-  cell_type = NSImageCellType;
-  cell_image = [anImage retain];
-  image_position = NSImageOnly;
-  cell_font = [[NSFont userFontOfSize:0] retain];
-
-  return self;
+	[super init];
+	
+	[self _init];
+	
+	if (![anImage isKindOfClass:[NSImage class]])			// image must be an
+		return nil;											// NSImage
+	
+	cell_type = NSImageCellType;
+	cell_image = [anImage retain];
+	image_position = NSImageOnly;
+	cell_font = [[NSFont userFontOfSize:0] retain];
+	
+	return self;
 }
 
 - (id)initTextCell:(NSString *)aString
 {
-  [super init];
-
-  [self _init];
-
-  cell_font = [[NSFont userFontOfSize:0] retain];
-  contents = [aString retain];
-  cell_type = NSTextCellType;
-  text_align = NSCenterTextAlignment;
-  cell_float_autorange = YES;
-  cell_float_right = 6;
-
-  return self;
+	[super init];
+	
+	[self _init];
+	
+	cell_font = [[NSFont userFontOfSize:0] retain];
+	contents = [aString retain];
+	cell_type = NSTextCellType;
+	text_align = NSCenterTextAlignment;
+	cell_float_autorange = YES;
+	cell_float_right = 6;
+	
+	return self;
 }
 
 - (void)dealloc
 {
-  if(contents)
-	[contents release];
-  if(cell_image)
-	[cell_image release];
-  [cell_font release];
-  if(represented_object)
-	[represented_object release];
-
-  [super dealloc];
+	if(contents)
+		[contents release];
+	if(cell_image)
+		[cell_image release];
+	[cell_font release];
+	if(represented_object)
+		[represented_object release];
+	
+	[super dealloc];
 }
 
 //
@@ -154,127 +145,93 @@
 
 - (NSSize)cellSize
 {
-  return NSZeroSize;
+	return NSZeroSize;
 }
 
 - (NSSize)cellSizeForBounds:(NSRect)aRect
 {
-  return NSZeroSize;
+	return NSZeroSize;
 }
 
 - (NSRect)drawingRectForBounds:(NSRect)theRect
 {
-  return NSZeroRect;
+	return NSZeroRect;
 }
 
 - (NSRect)imageRectForBounds:(NSRect)theRect
 {
-  return NSZeroRect;
+	return NSZeroRect;
 }
 
 - (NSRect)titleRectForBounds:(NSRect)theRect
 {
-  return NSZeroRect;
+	return NSZeroRect;
 }
 
 //
 // Setting the NSCell's Type 
 //
-- (void)setType:(NSCellType)aType
-{
-  cell_type = aType;
-}
-
-- (NSCellType)type
-{
-  return cell_type;
-}
+- (void)setType:(NSCellType)aType		{ cell_type = aType; }
+- (NSCellType)type						{ return cell_type; }
 
 //
 // Setting the NSCell's State 
 //
-- (void)setState:(int)value
-{
-  cell_state = value;
-}
-
-- (int)state
-{
-  return cell_state;
-}
+- (void)setState:(int)value				{ cell_state = value; }
+- (int)state							{ return cell_state; }
 
 //
 // Enabling and Disabling the NSCell 
 //
-- (BOOL)isEnabled
-{
-  return cell_enabled;
-}
+- (BOOL)isEnabled						{ return cell_enabled; }
+- (void)setEnabled:(BOOL)flag			{ cell_enabled = flag; }
 
-- (void)setEnabled:(BOOL)flag
-{
-  cell_enabled = flag;
-}
+//
+// Determining the first responder
+//
+- (BOOL)acceptsFirstResponder			{ return cell_enabled; }														
 
 //
 // Setting the Image 
 //
-- (NSImage *)image
-{
-  return cell_image;
-}
+- (NSImage *)image						{ return cell_image; }
 
 - (void)setImage:(NSImage *)anImage
 {							 
-  if (![anImage isKindOfClass:[NSImage class]])			// set the image only 
-    return;												// if it's an NSImage 
+	if (![anImage isKindOfClass:[NSImage class]])		// set the image only 
+		return;											// if it's an NSImage 
 
-  ASSIGN(cell_image, anImage);		
-  [self setType:NSImageCellType];
+	ASSIGN(cell_image, anImage);		
+	[self setType:NSImageCellType];
 }
 
 //
 // Setting the NSCell's Value 
 //
-- (double)doubleValue
-{
-  return [contents doubleValue];
-}
-
-- (float)floatValue;
-{
-  return [contents floatValue];
-}
-
-- (int)intValue
-{
-  return [contents intValue];
-}
-
-- (NSString *)stringValue
-{
-  return contents;
-}
+- (double)doubleValue					{ return [contents doubleValue]; }
+- (float)floatValue;					{ return [contents floatValue]; }
+- (int)intValue							{ return [contents intValue]; }
+- (NSString *)stringValue				{ return contents; }
 
 - (void)setDoubleValue:(double)aDouble
 {
 NSString* number_string = [[NSNumber numberWithDouble:aDouble] stringValue];
 
-  ASSIGN(contents, number_string);
+	ASSIGN(contents, number_string);
 }
 
 - (void)setFloatValue:(float)aFloat
 {
 NSString* number_string = [[NSNumber numberWithFloat:aFloat] stringValue];
 
-  ASSIGN(contents, number_string);
+	ASSIGN(contents, number_string);
 }
 
 - (void)setIntValue:(int)anInt
 {
 NSString* number_string = [[NSNumber numberWithInt:anInt] stringValue];
 
-  ASSIGN(contents, number_string);
+	ASSIGN(contents, number_string);
 }
 
 - (void)setStringValue:(NSString *)aString
@@ -294,108 +251,109 @@ NSString* _string;
 //
 - (void)takeDoubleValueFrom:(id)sender
 {
-  [self setDoubleValue:[sender doubleValue]];
+	[self setDoubleValue:[sender doubleValue]];
 }
 
 - (void)takeFloatValueFrom:(id)sender
 {
-  [self setFloatValue:[sender floatValue]];
+	[self setFloatValue:[sender floatValue]];
 }
 
 - (void)takeIntValueFrom:(id)sender
 {
-  [self setIntValue:[sender intValue]];
+	[self setIntValue:[sender intValue]];
 }
 
 - (void)takeStringValueFrom:(id)sender
 {
-  [self setStringValue:[sender stringValue]];
+	[self setStringValue:[sender stringValue]];
 }
 
 //
 // Modifying Text Attributes 
 //
-- (NSTextAlignment)alignment
-{
-  return text_align;
-}
-
-- (NSFont *)font
-{
-  return cell_font;
-}
-
-- (BOOL)isEditable
-{
-  return cell_editable;
-}
-
-- (BOOL)isSelectable
-{
-  return cell_selectable;
-}
-
-- (BOOL)isScrollable
-{
-  return cell_scrollable;
-}
-
-- (void)setAlignment:(NSTextAlignment)mode
-{
-  text_align = mode;
-}
+- (NSTextAlignment)alignment					{ return text_align; }
+- (NSFont *)font								{ return cell_font; }
+- (BOOL)isEditable								{ return cell_editable; }
+- (BOOL)isSelectable							{ return cell_selectable; }
+- (BOOL)isScrollable							{ return cell_scrollable; }
+- (void)setAlignment:(NSTextAlignment)mode		{ text_align = mode; }
 
 - (void)setEditable:(BOOL)flag
 {
-  cell_editable = flag;
-  // If its editable then its selectable
-  if (flag)
-    cell_selectable = flag;
-}
+	cell_editable = flag;
+
+	if (flag)											// If cell is not
+		cell_selectable = flag;							// selectable then it's
+}														// not editable
 
 - (void)setFont:(NSFont *)fontObject
 {
-  if (![fontObject isKindOfClass:[NSFont class]])		// set the font only
-    return;												// if it's an NSFont
+	if (![fontObject isKindOfClass:[NSFont class]])		// set the font only
+		return;											// if it's an NSFont
 
-  ASSIGN(cell_font, fontObject);
+	ASSIGN(cell_font, fontObject);
 }
 
 - (void)setSelectable:(BOOL)flag
 {
-  cell_selectable = flag;
-  // If its not selectable then its not editable
-  if (!flag)
-    cell_editable = NO;
-}
+	cell_selectable = flag;
+  
+	if (!flag)											// If cell is not 
+		cell_editable = NO;								// selectable then it's 
+}														// not editable
 
-- (void)setScrollable:(BOOL)flag
-{
-  cell_scrollable = flag;
-}
-
-- (NSText *)setUpFieldEditorAttributes:(NSText *)textObject
-{
-  return nil;
-}
-
-- (void)setWraps:(BOOL)flag
-{}
-
-- (BOOL)wraps
-{
-  return NO;
-}
+- (void)setScrollable:(BOOL)flag			{ cell_scrollable = flag; }
+- (void)setWraps:(BOOL)flag					{}
+- (BOOL)wraps								{ return NO; }
 
 //
 // Editing Text 
 //
-- (void)editWithFrame:(NSRect)aRect 
-				inView:(NSView *)controlView	
-				editor:(NSText *)textObject	
-				delegate:(id)anObject	
-				event:(NSEvent *)theEvent
+- (NSText *)setUpFieldEditorAttributes:(NSText *)textObject
 {
+	return nil;
+}
+
+- (void)editWithFrame:(NSRect)aRect 
+			   inView:(NSView *)controlView	
+			   editor:(NSText *)textObject	
+			   delegate:(id)anObject	
+			   event:(NSEvent *)theEvent
+{
+	if(cell_type != NSTextCellType)
+		return;
+
+	[[controlView window] makeFirstResponder:textObject];
+
+	[textObject setFrame:aRect];
+	[textObject setText:[self stringValue]];
+	[textObject setDelegate:anObject];
+	[controlView addSubview:textObject];
+	[controlView lockFocus];
+	NSEraseRect(aRect);
+	[controlView unlockFocus];
+	[textObject display];
+}
+
+- (void)endEditing:(NSText *)textObject					// editing is complete,
+{														// remove the text obj
+	[textObject removeFromSuperview];					// acting as the field
+	[self setStringValue: [textObject text]];			// editor from window's
+	[textObject setDelegate:nil];						// view heirarchy, set
+}														// our contents from it 
+
+- (void)selectWithFrame:(NSRect)aRect
+				 inView:(NSView *)controlView	 
+				 editor:(NSText *)textObject	 
+				 delegate:(id)anObject	 
+				 start:(int)selStart	 
+				 length:(int)selLength
+{														// preliminary FIX ME
+	if(!controlView || !textObject || !cell_font || 
+			(cell_type != NSTextCellType))
+		return;
+
 	[[controlView window] makeFirstResponder:textObject];
 
 	[textObject setFrame:aRect];
@@ -405,21 +363,6 @@ NSString* _string;
 	NSEraseRect(aRect);
 	[textObject display];
 }
-
-- (void)endEditing:(NSText *)textObject
-{
-	[textObject removeFromSuperview];
-	[self setStringValue: [textObject text]];
-	[textObject setDelegate:nil];
-}
-
-- (void)selectWithFrame:(NSRect)aRect
-			inView:(NSView *)controlView	 
-			editor:(NSText *)textObject	 
-			delegate:(id)anObject	 
-			start:(int)selStart	 
-			length:(int)selLength
-{}
 
 //
 // Validating Input 

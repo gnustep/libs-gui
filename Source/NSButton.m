@@ -284,18 +284,22 @@ id gnustep_gui_nsbutton_class = nil;
 }
 
 //
-// Handling Events and Action Messages 
+// Determining the first responder
 //
 - (BOOL)acceptsFirstResponder
-{
-  return [self keyEquivalent] != nil;;
-}
+{														
+	return [cell acceptsFirstResponder] && ([self keyEquivalent] != nil);				
+}														
 
 - (void) keyDown: (NSEvent*)theEvent
 {
   if ([self performKeyEquivalent: theEvent] == NO)
     [super keyDown: theEvent];
 }
+
+//
+// Handling Events and Action Messages 
+//
 
 - (void) performClick: (id)sender
 {

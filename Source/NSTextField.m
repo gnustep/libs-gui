@@ -45,7 +45,7 @@
 //
 // class variables
 //
-id gnustep_gui_nstextfield_cell_class = nil;
+id _nsTextfieldCellClass = nil;
 
 //
 // Class methods
@@ -62,15 +62,8 @@ id gnustep_gui_nstextfield_cell_class = nil;
 //
 // Initializing the NSTextField Factory 
 //
-+ (Class)cellClass
-{
-	return gnustep_gui_nstextfield_cell_class;
-}
-
-+ (void)setCellClass:(Class)classId
-{
-	gnustep_gui_nstextfield_cell_class = classId;
-}
++ (Class)cellClass						{ return _nsTextfieldCellClass; }
++ (void)setCellClass:(Class)classId		{ _nsTextfieldCellClass = classId; }
 
 //
 // Instance methods
@@ -84,7 +77,7 @@ id gnustep_gui_nstextfield_cell_class = nil;
 {
 	[super initWithFrame:frameRect];
 															// set our cell
-	[self setCell:[[gnustep_gui_nstextfield_cell_class new] autorelease]];
+	[self setCell:[[_nsTextfieldCellClass new] autorelease]];
 	[cell setState:1];
 	text_cursor = [[NSCursor IBeamCursor] retain];
 
@@ -120,7 +113,7 @@ id c;
 //
 // Setting User Access to Text 
 //
-- (BOOL)isEditable						{  return [cell isEditable]; }
+- (BOOL)isEditable						{ return [cell isEditable]; }
 - (BOOL)isSelectable					{ return [cell isSelectable]; }
 - (void)setEditable:(BOOL)flag			{ [cell setEditable:flag]; }
 - (void)setSelectable:(BOOL)flag		{ [cell setSelectable:flag]; }
@@ -219,22 +212,60 @@ id t;
 //
 - (void)mouseDown:(NSEvent *)theEvent
 {
-NSPoint location;									
+NSRect cellFrame = bounds;							
 													// If not selectable then 
 	if (![self isSelectable]) 						// don't recognize the 
 		return;										// mouse down
 
 fprintf(stderr, " TextField mouseDown --- ");
 
-	location = [self convertPoint:[theEvent locationInWindow] fromView:nil];
-	[self lockFocus];
-	[[self cell] _setCursorLocation:location];
-	[[self cell] _setCursorVisibility: YES];
-	[cell drawWithFrame:bounds inView:self];
-	[window flushWindow];
-	[self unlockFocus];
-	if ([[self window] makeFirstResponder:self])
-		[self setNeedsDisplay:YES];
+//	location = [self convertPoint:[theEvent locationInWindow] fromView:nil];
+//	[self lockFocus];
+//	cellFrame = [self convertRect:frame toView:nil];
+//		    cellFrame.origin = [super_view convertPoint:frame.origin 
+//								 toView:[window contentView]];
+
+	if ([cell isBordered]) 								// draw the border if 
+		{												// needed.
+		if ([cell isBezeled]) 
+			{
+			cellFrame.origin.x += 4;
+			cellFrame.origin.y += 2;
+			cellFrame.size.width -= 6;
+			cellFrame.size.height -= 4;
+    		}
+		else 
+			{
+			cellFrame.origin.x += 1;
+			cellFrame.origin.y += 1;
+			cellFrame.size.width -= 2;
+			cellFrame.size.height -= 2;
+    		}
+  		}
+													// set field editor to
+	fprintf (stderr,
+	"XRTextField 0: rect origin (%1.2f, %1.2f), size (%1.2f, %1.2f)\n",
+				frame.origin.x, frame.origin.y, 
+				frame.size.width, frame.size.height);
+	fprintf (stderr,
+	"XRTextField 1: rect origin (%1.2f, %1.2f), size (%1.2f, %1.2f)\n",
+				cellFrame.origin.x, cellFrame.origin.y, 
+				cellFrame.size.width, cellFrame.size.height);
+
+	[cell editWithFrame:cellFrame 			
+					inView:self				
+					editor:[window fieldEditor:YES forObject:cell]	
+					delegate:self	
+					event:theEvent];
+
+
+//	[[self cell] _setCursorLocation:location];
+//	[[self cell] _setCursorVisibility: YES];
+//	[cell drawWithFrame:bounds inView:self];
+//	[window flushWindow];
+//	[self unlockFocus];
+//	if ([[self window] makeFirstResponder:self])
+//		[self setNeedsDisplay:YES];
 }
 
 - (void)mouseUp:(NSEvent *)theEvent
@@ -357,9 +388,12 @@ id nextResponder;
   return YES;
 }
 
-- (BOOL)textShouldEndEditing:(NSText *)textObject
-{
-  return YES;
+- (BOOL)textShouldEndEditing:(NSText *)aTextObject		// NSText(field editor) 
+{														// delegate method
+	[cell endEditing:aTextObject];
+fprintf(stderr, " TextField textShouldEndEditing --- ");
+
+	return YES;
 }
 
 //

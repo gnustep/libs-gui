@@ -1,3 +1,12 @@
+Wed Dec 16 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* NSCell.m acceptsFirstResponder implement, editWithFrame: adjust further,
+	selectWithFrame: preliminary implementation.
+	* NSButton.m: acceptsFirstResponder implement.
+	* NSText.m: shouldDrawInsertionPoint test for field editor status.
+	* NSTextField.m: mouseDown: use field editor instead of previous non OS
+	text field cell editor code, textShouldEndEditing: implement.
+
 Tue Dec 15 16:30:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* NSApplication.m: Terminate modal loop if the window goes away.

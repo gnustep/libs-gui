@@ -309,10 +309,10 @@ NSView *wv;
 			@selector(windowWillReturnFieldEditor:toObject:)])
 		return [delegate windowWillReturnFieldEditor:self toObject:anObject];
 
-	if (!_fieldEditor && createFlag)					// each window has a global
-		{											// text field editor
-		_fieldEditor = [[NSText new] retain];
-		[_fieldEditor setFieldEditor:YES];
+	if(!_fieldEditor && createFlag)					// each window has a global
+		{											// text field editor, if it
+		_fieldEditor = [[NSText new] retain];		// doesn't exist create it
+		[_fieldEditor setFieldEditor:YES]; 			// if create flag is set					 
 		}
 
 	return _fieldEditor;

@@ -794,7 +794,7 @@ typedef enum
 
 
 -(BOOL) shouldDrawInsertionPoint
-{	return ([self selectedRange].length==0) && [self isEditable];
+{	return ([self selectedRange].length==0) && [self isEditable] && (![self isFieldEditor]);
 }
 -(void) drawInsertionPointInRect:(NSRect)rect color:(NSColor *)color turnedOn:(BOOL)flag
 {	if(flag)
