@@ -172,7 +172,7 @@ static NSNotificationCenter *nc;
  */
 - (id) init
 {
-  return [self initWithTitle: @"Menu"];
+  return [self initWithTitle: [[NSProcessInfo processInfo] processName]];
 }
 
 - (void) dealloc
@@ -251,6 +251,11 @@ static NSNotificationCenter *nc;
   [nc addObserver: self
       selector: @selector(_showTornOffMenuIfAny:)
       name: NSApplicationDidFinishLaunchingNotification 
+      object: NSApp];
+
+  [nc addObserver: self
+      selector: @selector(_showOnActivateApp:)
+      name: NSApplicationWillBecomeActiveNotification 
       object: NSApp];
 
   return self;
@@ -1053,6 +1058,16 @@ static NSNotificationCenter *nc;
     }
 }
 
+- (void) _showOnActivateApp: (NSNotification*)notification
+{
+  if ([NSApp mainMenu] == self)
+  {
+    [self display];
+    // we must make sure that any attached submenu is visible too.
+    [[self attachedMenu] display];
+  }
+}
+
 - (BOOL) isFollowTransient
 {
   return _follow_transient;
@@ -1110,54 +1125,27 @@ static NSNotificationCenter *nc;
 
 - (void) display
 {
-  NSString *key;
-
   if (_changed)
     [self sizeToFit];
 
-  if (_superMenu && ![self isTornOff])
-    {                 
-      // query super menu for position
-      [_aWindow setFrameOrigin: [_superMenu locationForSubmenu: self]];
-      _superMenu->_attachedMenu = self;
-    }
-  else if (nil != (key = [self _locationKey]))
+  // get geometry only if not set
+  if ([_aWindow frame].origin.y <= 0)
     {
-      NSUserDefaults *defaults;
-      NSDictionary *menuLocations;
-      NSString *location;
-
-      defaults = [NSUserDefaults standardUserDefaults];
-      menuLocations = [defaults objectForKey: NSMenuLocationsKey];
-      location = [menuLocations objectForKey: key];
-      if (location && [location isKindOfClass: [NSString class]])
-        {
-	  [_aWindow setFrameFromString: location];
-	  /*
-	   * May need resize in case saved frame is out of sync
-	   * with number of items in menu.
-	   */
-	  [self sizeToFit];
+      if (_superMenu && ![self isTornOff])
+	{                 
+	  // query super menu for position
+	  [_aWindow setFrameOrigin: [_superMenu locationForSubmenu: self]];
+	  _superMenu->_attachedMenu = self;
 	}
       else
         {
-	  NSPoint aPoint = {0, [[NSScreen mainScreen] frame].size.height
-			    - [_aWindow frame].size.height};
-	  
-	  [_aWindow setFrameOrigin: aPoint];
-	  [_bWindow setFrameOrigin: aPoint];
+	  [self setGeometry];
 	}
     }
 
   [_aWindow orderFrontRegardless];
 
   _isPartlyOffScreen = IS_OFFSCREEN(_aWindow);
-
-  /*
-   * If we have just been made visible, we must make sure that any attached
-   * submenu is visible too.
-   */
-  [[self attachedMenu] display];
 }
 
 - (void) displayTransient
@@ -1206,6 +1194,40 @@ static NSNotificationCenter *nc;
   _isPartlyOffScreen = IS_OFFSCREEN(_bWindow);
 }
 
+- (void) setGeometry
+{
+  NSString       *key;
+  NSUserDefaults *defaults;
+  NSDictionary   *menuLocations;
+  NSString       *location;
+  
+  NSPoint        origin;
+  NSScanner      *scanner;
+  int            value;
+
+  origin = NSMakePoint (0, [[NSScreen mainScreen] frame].size.height 
+      - [_aWindow frame].size.height);
+      
+  if (nil != (key = [self _locationKey]))
+    {
+      defaults = [NSUserDefaults standardUserDefaults];
+      menuLocations = [defaults objectForKey: NSMenuLocationsKey];
+      location = [menuLocations objectForKey: key];
+ 
+      if (location && [location isKindOfClass: [NSString class]])
+        {
+          scanner = [NSScanner scannerWithString: location];
+          [scanner scanInt: &value];
+          origin.x = value;
+          [scanner scanInt: &value];
+          origin.y = value;
+        }
+    }
+  
+  [_aWindow setFrameOrigin: origin];
+  [_bWindow setFrameOrigin: origin];
+}
+
 - (void) close
 {
   NSMenu *sub = [self attachedMenu];
@@ -1221,6 +1243,7 @@ static NSNotificationCenter *nc;
       _attachedMenu = sub;
     }
   [_aWindow orderOut: self];
+  [_aWindow setFrameOrigin: NSMakePoint (0, 0)];
 
   if (_superMenu)
     _superMenu->_attachedMenu = nil;

@@ -335,7 +335,7 @@ Class _nspopupbuttonCellClass = 0;
 	       eventNumber: [theEvent eventNumber]
 	       clickCount: [theEvent clickCount] 
 	       pressure: [theEvent pressure]];
-  [menuWindow sendEvent: e];
+  [NSApp sendEvent: e];
 
   // Selection remains unchanged if selected item is disabled
   highlightedItemIndex = [mr highlightedItemIndex];

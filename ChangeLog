@@ -1,3 +1,17 @@
+2003-02-21 Serg Stoyan <stoyan@hologr.com>
+
+	* Source/NSApplication.m (-activateIgnoringOtherApps:): Remove
+	main menu display.
+	(-sendEvent:): Check first if right button down.
+	(-setMainMenu:): Don't set menu title. Remove menu display.
+	* Source/NSMenu.m (-init): Default title is process name.
+	(-initWithTitle:): Observe NSApplicationWillBecomeActiveNotification.
+	(_showOnActivateApp:): New.
+	(-display): Set geometry only if not set.
+	(-setGeometry): New.
+
+	* Source/NSPopUpButton.m (-mouseDown:): Send event to NSApp.
+
 2003-02-19  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSPrintOperation.m (-_print): Remove locale change (now

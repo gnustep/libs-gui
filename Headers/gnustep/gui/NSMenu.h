@@ -182,6 +182,7 @@
 /* Shows the menu window on screen */
 - (void) display;
 - (void) displayTransient;
+- (void) setGeometry;
 
 /* Close the associated window menu */
 - (void) close;

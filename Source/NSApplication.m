@@ -888,9 +888,6 @@ static NSCell* tileCell = nil;
 	  _hidden_key = nil;
 	}
 
-      [_main_menu update];
-      [_main_menu display];
-
       if (_unhide_on_activation)
 	{
 	  [self unhide: nil];
@@ -1451,10 +1448,10 @@ See -runModalForWindow:
 	    NSDebugLLog(@"NSEvent", @"Send NSEvent type: %d to window %@", 
 			type, ((window != nil) ? [window description] 
 			       : @"No window"));
-	  if (window)
-	    [window sendEvent: theEvent];
-	  else if (type == NSRightMouseDown)
+	  if (type == NSRightMouseDown)
 	    [self rightMouseDown: theEvent];
+	  else if (window)
+	    [window sendEvent: theEvent];
 	}
     }
 }
@@ -1958,18 +1955,11 @@ image.
 
   ASSIGN(_main_menu, aMenu);
 
-  [_main_menu setTitle: [[NSProcessInfo processInfo] processName]];
-  // Set the title of the window also. 
+  // Set the title of the window.
   // This wont be displayed, but the window manager may need it.
   [[_main_menu window] setTitle: [[NSProcessInfo processInfo] processName]];
   [[_main_menu window] setLevel: NSMainMenuWindowLevel];
-  [_main_menu sizeToFit];
-
-  if ([self isActive])
-    {
-      [_main_menu update];
-      [_main_menu display];
-    }
+  [_main_menu setGeometry];
 }
 
 - (void) rightMouseDown: (NSEvent*)theEvent
