@@ -66,7 +66,6 @@ static NSAffineTransformStruct identityTransform = {
 
   t = (NSAffineTransform*)NSAllocateObject(self, 0, NSDefaultMallocZone());
   t->matrix = identityTransform;
-  t->rotationAngle = 0.0;
   return AUTORELEASE(t);
 }
 
@@ -76,7 +75,6 @@ static NSAffineTransformStruct identityTransform = {
 
   t = (NSAffineTransform*)NSAllocateObject(self, 0, NSDefaultMallocZone());
   t->matrix = identityTransform;
-  t->rotationAngle = 0.0;
   return t;
 }
 
@@ -94,17 +92,6 @@ static NSAffineTransformStruct identityTransform = {
   A = newA; B = newB;
   C = newC; D = newD;
   TX = newTX; TY = newTY;
-
-  if (rotationAngle >= 0 && aTransform->rotationAngle >= 0)
-    {
-      rotationAngle += aTransform->rotationAngle;
-      if (rotationAngle < 0)
-	rotationAngle -= ((int)(rotationAngle/360)-1)*360;
-      else if (rotationAngle >= 360)
-	rotationAngle -= ((int)(rotationAngle/360))*360;
-    }
-  else
-    rotationAngle = -1;
 }
 
 - (void) concat
@@ -122,14 +109,12 @@ static NSAffineTransformStruct identityTransform = {
 - (id) init
 {
   matrix = identityTransform;
-  rotationAngle = 0.0;
   return self;
 }
 
 - (id) initWithTransform: (NSAffineTransform*)aTransform
 {
   matrix = aTransform->matrix;
-  rotationAngle = aTransform->rotationAngle;
   return self;
 }
 
@@ -177,17 +162,6 @@ static NSAffineTransformStruct identityTransform = {
   A = newA; B = newB;
   C = newC; D = newD;
   TX = newTX; TY = newTY;
-
-  if (rotationAngle >= 0 && aTransform->rotationAngle >= 0)
-    {
-      rotationAngle += aTransform->rotationAngle;
-      if (rotationAngle < 0)
-	rotationAngle -= ((int)(rotationAngle/360)-1)*360;
-      else if (rotationAngle >= 360)
-	rotationAngle -= ((int)(rotationAngle/360))*360;
-    }
-  else
-    rotationAngle = -1;
 }
 
 - (void) rotateByDegrees: (float)angle
@@ -202,23 +176,11 @@ static NSAffineTransformStruct identityTransform = {
 
   A = newA; B = newB;
   C = newC; D = newD;
-
-  if (rotationAngle >= 0)
-    {
-      rotationAngle += angle;
-      if (rotationAngle < 0)
-	rotationAngle -= ((int)(rotationAngle/360)-1)*360;
-      else if (rotationAngle >= 360)
-	rotationAngle -= ((int)(rotationAngle/360))*360;
-    }
-  else
-    rotationAngle = -1;
 }
 
 - (void) rotateByRadians: (float)angleRad
 {
   float newA, newB, newC, newD;
-  float angle = angleRad * 180 / pi;
   float sine = sin (angleRad);
   float cosine = cos (angleRad);
 
@@ -227,17 +189,6 @@ static NSAffineTransformStruct identityTransform = {
 
   A = newA; B = newB;
   C = newC; D = newD;
-
-  if (rotationAngle >= 0)
-    {
-      rotationAngle += angle;
-      if (rotationAngle < 0)
-	rotationAngle -= ((int)(rotationAngle/360)-1)*360;
-      else if (rotationAngle >= 360)
-	rotationAngle -= ((int)(rotationAngle/360))*360;
-    }
-  else
-    rotationAngle = -1;
 }
 
 - (void) scaleBy: (float)scale
@@ -260,7 +211,6 @@ static NSAffineTransformStruct identityTransform = {
 - (void) setTransformStruct: (NSAffineTransformStruct)val
 {
   matrix = val;
-  rotationAngle = -1;	// Needs recalculating
 }
 
 - (NSBezierPath*) transformBezierPath: (NSBezierPath*)aPath
@@ -352,14 +302,21 @@ static NSAffineTransformStruct identityTransform = {
 
 - (void) scaleTo: (float)sx : (float)sy
 {
-  float angle = rotationAngle < 0 ? [self rotationAngle] : rotationAngle;
-
-  A = sx; B = 0;
-  C = 0; D = sy;
-  if (rotationAngle)
+  /* If it's rotated.  */
+  if (B != 0  ||  C != 0)
     {
+      /* Not sure why this code, it was this way.  */
+      float angle = [self rotationAngle];
+
+      A = sx; B = 0;
+      C = 0; D = sy;
+
       [self rotateByDegrees: angle];
-      rotationAngle = angle;
+    }
+  else
+    {
+      A = sx; B = 0;
+      C = 0; D = sy;
     }
 }
 
@@ -376,7 +333,6 @@ static NSAffineTransformStruct identityTransform = {
 - (void) makeIdentityMatrix
 {
   matrix = identityTransform;
-  rotationAngle = 0;
 }
 
 - (void) setFrameOrigin: (NSPoint)point
@@ -388,21 +344,15 @@ static NSAffineTransformStruct identityTransform = {
 
 - (void) setFrameRotation: (float)angle
 {
-  float newAngle;
-
-  if (rotationAngle < 0)
-    [self rotationAngle];
-  newAngle = angle - rotationAngle;
-  [self rotateByDegrees: newAngle];
+  [self rotateByDegrees: angle - [self rotationAngle]];
 }
 
 - (float) rotationAngle
 {
-  if (rotationAngle < 0)
-    {
-      rotationAngle = atan2(matrix.m21, matrix.m11);
-      rotationAngle *= 180.0 / pi;
-    }
+  /* FIXME - this is not correct in general!  */
+  float rotationAngle = atan2(C, A);
+  rotationAngle *= 180.0 / pi;
+
   return rotationAngle;
 }
 
@@ -425,8 +375,6 @@ static NSAffineTransformStruct identityTransform = {
   A = newA; B = newB;
   C = newC; D = newD;
   TX = newTX; TY = newTY;
-
-  rotationAngle = -1;
 }
 
 - (void)inverse
@@ -436,7 +384,7 @@ static NSAffineTransformStruct identityTransform = {
 
 - (BOOL) isRotated
 {
-  if (B == 0  &&  D == 0)
+  if (B == 0  &&  C == 0)
     {
       return NO;
     }
@@ -448,7 +396,7 @@ static NSAffineTransformStruct identityTransform = {
 
 - (void) boundingRectFor: (NSRect)rect result: (NSRect*)new
 {
-  float angle = (rotationAngle < 0) ? [self rotationAngle] : rotationAngle;
+  float angle = [self rotationAngle];
   float angleRad = pi * angle / 180;
   float angle90Rad = pi * (angle + 90) / 180;
   float cosWidth, cosHeight, sinWidth, sinHeight;
@@ -458,7 +406,7 @@ static NSAffineTransformStruct identityTransform = {
   float width = rect.size.width;
   float height = rect.size.height;
 
-  if (rotationAngle == 0)
+  if (angle == 0)
     {
       *new = rect;
       return;
