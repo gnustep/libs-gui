@@ -1,3 +1,9 @@
+Wed Dec  9  7:00:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* NSView.m: Complete rewrite of auto-resize code - now works!
+	* NSBox.m: Fix to make auto-resize work.
+	* GNUAlertPanel.m: Minor tidying for auto-resize.
+
 Tue Dec 8 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* NSScroller.m move backend code into frontend, polish code, remove ifdefs.

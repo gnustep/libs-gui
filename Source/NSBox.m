@@ -226,6 +226,12 @@
   [self setFrameFromContentFrame: r];
 }
 
+- (void) resizeWithOldSuperviewSize: (NSSize)oldSize
+{
+  [super resizeWithOldSuperviewSize: oldSize];
+  [content_view setFrame: [self calcSizes]];
+}
+
 //
 // Managing the NSView Hierarchy 
 //

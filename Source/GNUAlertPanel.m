@@ -135,6 +135,8 @@ static GNUAlertPanel	*reusableAlertPanel = nil;
       NSRect	rect;
       NSBox	*box;
 
+      [self setMaxSize: r.size];
+      [self setMinSize: r.size];
       [self setTitle: @" "];
 
       content = [self contentView]; 
@@ -201,7 +203,7 @@ static GNUAlertPanel	*reusableAlertPanel = nil;
       rect.origin.x = 8.0;
       messageField = [[NSTextField alloc] initWithFrame: rect];
       [messageField setAutoresizingMask:
-		NSViewWidthSizable | NSViewHeightSizable];
+		NSViewWidthSizable | NSViewHeightSizable | NSViewMaxYMargin];
       [messageField setEditable: NO];
       [messageField setSelectable: NO];
       [messageField setBordered: NO];
