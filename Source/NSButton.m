@@ -308,7 +308,9 @@ id _nsbuttonCellClass = nil;
 
 - (void) performClick: (id)sender
 {
+  [self lockFocus];
   [cell performClick: sender];
+  [self unlockFocus];
 }
 
 - (BOOL) performKeyEquivalent: (NSEvent *)anEvent

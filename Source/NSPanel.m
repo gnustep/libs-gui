@@ -106,6 +106,13 @@
 
 - (BOOL) canBecomeKeyWindow
 {
+  if (_becomesKeyOnlyIfNeeded)
+    return NO;
+  return YES;
+}
+
+- (BOOL) canBecomeMainWindow
+{
   return NO;
 }
 
@@ -685,6 +692,7 @@ NSRunAlertPanel(NSString *title,
     }
 
   [panel center];
+  [panel makeKeyAndOrderFront: panel];
   result = [panel runModal];
   NSReleaseAlertPanel(panel);
   return result;
@@ -707,6 +715,7 @@ NSRunCriticalAlertPanel(NSString *title,
   va_end (ap);
 
   [panel center];
+  [panel makeKeyAndOrderFront: panel];
   result = [panel runModal];
   NSReleaseAlertPanel(panel);
   return result;
@@ -729,6 +738,7 @@ NSRunInformationalAlertPanel(NSString *title,
   va_end (ap);
 
   [panel center];
+  [panel makeKeyAndOrderFront: panel];
   result = [panel runModal];
   NSReleaseAlertPanel(panel);
   return result;
@@ -792,6 +802,7 @@ NSRunLocalizedAlertPanel(NSString *table,
     }
 
   [panel center];
+  [panel makeKeyAndOrderFront: panel];
   result = [panel runModal];
   NSReleaseAlertPanel(panel);
   return result;
