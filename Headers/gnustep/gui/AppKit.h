@@ -134,6 +134,7 @@
 #include <AppKit/NSNibDeclarations.h>
 
 #ifndef STRICT_OPENSTEP
+#include <AppKit/NSDrawer.h>
 #include <AppKit/NSLayoutManager.h>
 #include <AppKit/NSTextContainer.h>
 #include <AppKit/NSTextStorage.h>
