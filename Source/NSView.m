@@ -1294,6 +1294,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   if (_allocate_gstate && _gstate)
     PSundefineuserobject(_gstate);
   _gstate = 0;
+  /* Note that the next time we lock focus, we'll realloc a gstate (if
+     _allocate_gstate). This seems to make sense, and also allows us
+     to call this method each time we invalidate the coordinates */
 }
 
 - (int) gState
