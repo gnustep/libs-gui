@@ -55,6 +55,10 @@
 
 static const int currentVersion = 1; // GSNibItem version number...
 
+@interface NSObject (GSNibPrivateMethods)
+- (BOOL) isInInterfaceBuilder;
+@end
+
 @interface NSApplication (GSNibContainer)
 - (void)_deactivateVisibleWindow: (NSWindow *)win;
 @end
@@ -643,11 +647,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 
 	  // if we are living within the interface builder app, then don't try to 
 	  // morph into the subclass.
-	  if([self respondsToSelector: @selector(isInInterfaceBuilder)])
-	    {
-	      obj = [_superClass alloc];
-	    }
-	  else
+	  if([self shouldSwapClass])
 	    {
 	      Class aClass = NSClassFromString(_className);
 	      if(aClass == 0)
@@ -659,6 +659,10 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
 	      // Initialize the object...  dont call decode, since this wont 
 	      // allow us to instantiate the class we want. 
 	      obj = [aClass alloc];
+	    }
+	  else
+	    {
+	      obj = [_superClass alloc];
 	    }
 
 	  // inform the coder that this object is to replace the template in all cases.
@@ -682,6 +686,16 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
       // it from being saved correctly.  Just call encodeWithCoder directly.
       [_object encodeWithCoder: aCoder]; 
     }
+}
+
+- (BOOL) shouldSwapClass
+{
+  BOOL result = YES;
+  if([self respondsToSelector: @selector(isInInterfaceBuilder)])
+    {
+      result = !([self isInInterfaceBuilder]);
+    }
+  return result;
 }
 @end
 
@@ -715,7 +729,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
       // decode the defer flag...
       [coder decodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];      
 
-      if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
+      if([self shouldSwapClass])
       {
 	if(GSGetMethod([obj class], @selector(initWithContentRect:styleMask:backing:defer:), YES, NO) != NULL)
 	  {
@@ -757,7 +771,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   id obj = [super initWithCoder: coder];
   if(obj != nil)
     {
-      if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
+      if([self shouldSwapClass])
       {
 	if(GSGetMethod([obj class],@selector(initWithFrame:), YES, NO) != NULL)
 	  {
@@ -786,7 +800,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   id     obj = [super initWithCoder: coder];
   if(obj != nil)
     {
-      if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
+      if([self shouldSwapClass])
       {
 	if(GSGetMethod([obj class],@selector(initWithFrame:), YES, NO) != NULL)
 	  {
@@ -815,7 +829,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   id     obj = [super initWithCoder: coder];
   if(obj != nil)
     {
-      if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
+      if([self shouldSwapClass])
       {
 	if(GSGetMethod([obj class],@selector(initWithFrame:textContainer:), YES, NO) != NULL)
 	  {
@@ -846,7 +860,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   id     obj = [super initWithCoder: coder];
   if(obj != nil)
     {
-      if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
+      if([self shouldSwapClass])
       {
 	if(GSGetMethod([obj class],@selector(initWithTitle:), YES, NO) != NULL)
 	  {
@@ -877,7 +891,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   if(obj != nil)
     {
       /* 
-      if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
+      if([self shouldSwapClass])
       {
 	if(GSGetMethod([obj class],@selector(initWithFrame:), YES, NO) != NULL)
 	  {
@@ -906,7 +920,7 @@ static NSString *GSInternalNibItemAddedNotification = @"_GSInternalNibItemAddedN
   id     obj = [super initWithCoder: coder];
   if(obj != nil)
     {
-      if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
+      if([self shouldSwapClass])
       {
 	if(GSGetMethod([obj class],@selector(init), YES, NO) != NULL)
 	  {

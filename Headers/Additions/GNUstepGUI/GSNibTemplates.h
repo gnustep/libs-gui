@@ -81,6 +81,7 @@
   NSString            *_className;
   Class                _superClass;
 }
+- (BOOL) shouldSwapClass;
 @end
 
 @interface GSNibItem : NSObject <NSCoding> 
