@@ -1,3 +1,12 @@
+2003-10-17  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSServicesManager.m: Make mapping of service names to
+	their definitions include all available language variants so
+	that NSPerformService() should work irrespective of the
+	currently selected language preferences.  Tested to ensure it
+	still works for my selected english, but not yet to see if it
+	actually fixes the bug.
+
 2003-10-13  Adam Fedor  <fedor@gnu.org>
 
 	* configure.ac: Simplify graphics libs lookup
