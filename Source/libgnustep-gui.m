@@ -26,11 +26,13 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/AppKit.h>
+#include <AppKit/NSApplication.h>
+#include <AppKit/NSFontManager.h>
+#include <AppKit/NSFont.h>
 
-id NSApp;
+id NSApp = nil;
 
-char **NSArgv;
+char **NSArgv = NULL;
 
 //
 // The main entry point for X Windows
@@ -55,4 +57,6 @@ GNUstepMain(int argc, char **argv)
 
 	// Release the application
 	[NSApp release];
+
+	return 0;
 }

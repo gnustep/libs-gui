@@ -29,12 +29,15 @@
 #ifndef _GNUstep_H_NSColorList
 #define _GNUstep_H_NSColorList
 
-#include <AppKit/stdappkit.h>
-#include <AppKit/NSColor.h>
 #include <Foundation/NSCoder.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSString.h>
+
+@class NSString;
+@class NSArray;
+@class NSMutableArray;
+@class NSDictionary;
+@class NSMutableDictionary;
+
+@class NSColor;
 
 @interface NSColorList : NSObject <NSCoding>
 
@@ -95,5 +98,8 @@
 - initWithCoder:aDecoder;
 
 @end
+
+/* Notifications */
+extern NSString *NSColorListChangedNotification;
 
 #endif // _GNUstep_H_NSColorList

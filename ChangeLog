@@ -1,27 +1,48 @@
-Wed Feb 12 14:14:47 1997  GNUstep Development  <gnustep@net-community.com>
+Mon Feb 17 19:30:50 1997  Ovidiu Predescu <ovidiu@bx.logicnet.ro>
 
-	* Initial implementation of NSCursor.
-	* Headers/gnustep/gui/NSCursor.h: Likewise.
-	* Source/NSCursor.m: Likewise.
-	* Headers/gnustep/gui/NSWindow.h: Implement cursor rectangles.
-	* Source/NSView.m: Likewise.
-	* Source/NSWindow.m: Likewise.
-	* Source/Makefile.in: Clean up variables
-	* Source/NSApplication.m: Fixes to event posting.  Unhide the
-	cursor when a mouse event occurs.
-	* Source/NSEvent.m: NSCursorUpdate events are implemented
-	as enter/exit events instead of other events.
-	* Headers/gnustep/gui/NSTextField.h: Add text field cursor.
-	* Source/NSTextField.m: Likewise.
+	* Source/NSButton.m: New methods -setAlignment: and -alignment,
+	setIntValue:, setFloatValue:, setDoubleValue:, setAlignment:,
+	alignment.
+	* Source/NSButtonCell.m: setType: changed to setButtonType:. Changed
+	the way in which the button types are handled (use highlightsBy and
+	showsStateBy attributes). Fixed some object allocation retain/release
+	problems. setHighlightsBy: and setShowsStateBy: implemented. New
+	methods setIntValue:, setFloatValue:, setDoubleValue:, intValue,
+	floatValue, doubleValue. Fixed coding methods.
+	* Source/NSCell.m: Fixed some object allocation problems. Changed the
+	way in which setIntValue:, setFloatValue: and setDoubleValue: work.
+	Commented out a point conversion that works wrong (why?).
 
-Thu Feb  6 19:31:54 1997  GNUstep Development  <gnustep@net-community.com>
+Sat Feb 15 23:12:35 1997  Ovidiu Predescu <ovidiu@bx.logicnet.ro>
 
-	* Fill out implementation of NSColorWell.
-	* Headers/gnustep/gui/NSColorWell.h: Add backend instance variable
-	and backend method.
-	* Source/NSColorWell.m: Initial implementation.
-	* NSView.m: Don't use -isKindOfClass: because it isn't working
-	as we expect with the backend classes doing a +poseAs:
+	* Major reorganization of header files. Types and constants were moved
+	in the files they belong (too many to enumerate here). Each header
+	file includes only the headers it really needs. Use @class to forward
+	class definitions instead of including the corresponding class file.
+	* Headers/gnustep/gui/Functions.h: Removed.
+	* Headers/gnustep/gui/NSBundle.h: Removed.
+	* Headers/gnustep/gui/NSFontPrivate.h: Removed.
+	* Headers/gnustep/gui/TypesandConstants.h: Removed.
+	* Headers/gnustep/gui/stdappkit.h: Removed.
+	* Headers/gnustep/gui/NSGraphichs.h: New file.
+	* Headers/gnustep/gui/AppKitExceptions.h: New file. A place to put
+	exception strings that don't belong elsewhere.
+	* Headers/gnustep/gui/NSNibLoading.h: Added category to NSBundle that
+	deals with nib loading.
+
+Mon Feb 10 17:23:06 1997  Ovidiu Predescu <ovidiu@bx.logicnet.ro>
+
+	* Source/NSFont.m: Completely reworked. Get the default fonts using
+	the NSUserDefaults class instead of hard-coding them. Almost all the
+	methods have to be overwritten in the true backend class.
+	* Headers/gnustep/gui/NSFont.h: Removed unnecessary instance variables.
+	Define some particular glyph types.
+	* Source/NSFontManager.m: Commented out the methods that converts
+	between different fonts and traits.
+	* Source/Makefile: Define GNUSTEP_INSTALL_LIBDIR directly as string.
+	* Source/NSImage.m: GNUSTEP_INSTALL_LIBDIR is passed as string during
+	compilation so don't use OBJC_STRINGIFY. Use an OpenStep method to
+	search for a resource instead of the particular gnustep-base method.
 
 Fri Jan 31 05:30:40 1997  Scott Christley <scottc@net-community.com>
 
@@ -100,6 +121,15 @@ Thu Jan 23 15:10:13 1997  Scott Christley  <scottc@net-community.com>
 	* Source/NSColorList.m (NSColorListNotEditableException): Already
 	defined in NSApplication.
 	* Source/NSTextFieldCell.m (-initWithFrame:): Bezeled by default.
+
+Tue Jan 14 9:33:04 1997  Ovidiu Predescu <ovidiu@bx.logicnet.ro>
+
+	* Source/Functions.m: Exclude from compiling the NSLog functions when
+	working with libFoundation.
+	* Source/NSBundle.m: Renamed to NSBundleAdditions.m to make possible
+	create a shared library under OS 4.1.
+	* Changed the -encodeWithCoder: and -initWithCoder: methods in all
+	classes to work with the basic NSCoder methods.
 
 Thu Dec  5 06:58:51 1996  GNUstep Development  <gnustep@net-community.com>
 

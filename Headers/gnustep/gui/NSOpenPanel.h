@@ -29,12 +29,13 @@
 #ifndef _GNUstep_H_NSOpenPanel
 #define _GNUstep_H_NSOpenPanel
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSSavePanel.h>
-#include <Foundation/NSCoder.h>
+
+@class NSString;
+@class NSArray;
+@class NSMutableArray;
 
 @interface NSOpenPanel : NSSavePanel <NSCoding>
-
 {
   // Attributes
   NSMutableArray *the_filenames;
@@ -69,7 +70,7 @@
 - (int)runModalForTypes:(NSArray *)fileTypes;
 - (int)runModalForDirectory:(NSString *)path
 		       file:(NSString *)filename
-types:(NSArray *)fileTypes;
+		      types:(NSArray *)fileTypes;
 
 //
 // NSCoding protocol

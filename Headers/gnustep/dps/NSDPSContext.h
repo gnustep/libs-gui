@@ -29,10 +29,12 @@
 #ifndef _GNUstep_H_NSDPSContext
 #define _GNUstep_H_NSDPSContext
 
-#include <AppKit/stdappkit.h>
 #include <DPSClient/TypesandConstants.h>
-#include <Foundation/NSData.h>
 #include <DPSClient/DPSOperators.h>
+#include <Foundation/NSObject.h>
+
+@class NSData;
+@class NSMutableData;
 
 //
 // NSDPSContextNotification

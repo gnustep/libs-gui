@@ -29,13 +29,25 @@
 #ifndef _GNUstep_H_NSBitmapImageRep
 #define _GNUstep_H_NSBitmapImageRep
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSImageRep.h>
-#include <Foundation/NSCoder.h>
-#include <AppKit/nsimage-tiff.h>
+
+@class NSArray;
+@class NSString;
+@class NSData;
+@class NSMutableData;
+
+typedef enum _NSTIFFCompression {
+  NSTIFFCompressionNone  = 1,
+  NSTIFFCompressionCCITTFAX3  = 3,
+  NSTIFFCompressionCCITTFAX4  = 4,
+  NSTIFFCompressionLZW  = 5,
+  NSTIFFCompressionJPEG  = 6,
+  NSTIFFCompressionNEXT  = 32766,
+  NSTIFFCompressionPackBits  = 32773,
+  NSTIFFCompressionOldJPEG  = 32865
+} NSTIFFCompression;
 
 @interface NSBitmapImageRep : NSImageRep <NSCoding>
-
 {
   // Attributes
   unsigned int    bytesPerRow;

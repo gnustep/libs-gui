@@ -29,21 +29,47 @@
 #ifndef _GNUstep_H_NSWindow
 #define _GNUstep_H_NSWindow
 
-#include <AppKit/stdappkit.h>
+#include <DPSClient/TypesandConstants.h>
+#include <AppKit/NSGraphics.h>
 #include <AppKit/NSResponder.h>
-#include <AppKit/NSView.h>
 #include <AppKit/NSEvent.h>
-#include <Foundation/NSDate.h>
-#include <Foundation/NSString.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSText.h>
-#include <Foundation/NSCoder.h>
-#include <AppKit/NSScreen.h>
-#include <Foundation/NSNotification.h>
+#include <AppKit/LogFile.h>
+
+@class NSString;
+@class NSArray;
+@class NSData;
+@class NSDictionary;
+@class NSNotification;
+@class NSDate;
+
+@class NSColor;
+@class NSImage;
+@class NSScreen;
+@class NSEvent;
+@class NSPasteboard;
+@class NSView;
+@class NSText;
+
+enum {
+  NSNormalWindowLevel   = 0,
+  NSFloatingWindowLevel  = 3,
+  NSDockWindowLevel   = 5,
+  NSSubmenuWindowLevel  = 10,
+  NSMainMenuWindowLevel  = 20
+};
+
+enum {
+  NSBorderlessWindowMask = 1,
+  NSTitledWindowMask = 2,
+  NSClosableWindowMask = 4,
+  NSMiniaturizableWindowMask = 8,
+  NSResizableWindowMask = 16 
+};
+
+extern NSSize NSIconSize;
+extern NSSize NSTokenSize;
 
 @interface NSWindow : NSResponder <NSCoding>
-
 {
   // Attributes
   NSRect frame;
@@ -73,7 +99,6 @@
   BOOL dynamic_depth_limit;
 
   BOOL cursor_rects_enabled;
-  BOOL cursor_rects_valid;
 
   BOOL visible;
   BOOL is_key;
@@ -388,5 +413,21 @@
 - cleanInit;
 
 @end
+
+/* Notifications */
+extern NSString *NSWindowDidBecomeKeyNotification;
+extern NSString *NSWindowDidBecomeMainNotification;
+extern NSString *NSWindowDidChangeScreenNotification;
+extern NSString *NSWindowDidDeminiaturizeNotification;
+extern NSString *NSWindowDidExposeNotification;
+extern NSString *NSWindowDidMiniaturizeNotification;
+extern NSString *NSWindowDidMoveNotification;
+extern NSString *NSWindowDidResignKeyNotification;
+extern NSString *NSWindowDidResignMainNotification;
+extern NSString *NSWindowDidResizeNotification;
+extern NSString *NSWindowDidUpdateNotification;
+extern NSString *NSWindowWillCloseNotification;
+extern NSString *NSWindowWillMiniaturizeNotification;
+extern NSString *NSWindowWillMoveNotification;
 
 #endif // _GNUstep_H_NSWindow

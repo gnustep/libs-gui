@@ -26,36 +26,36 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSWorkspace.h>
+#include <AppKit/NSWorkspace.h>
 
 // Workspace File Type Globals 
-NSString *NSPlainFileType;
-NSString *NSDirectoryFileType;
-NSString *NSApplicationFileType;
-NSString *NSFilesystemFileType;
-NSString *NSShellCommandFileType;
+NSString *NSPlainFileType = @"NSPlainFileType";
+NSString *NSDirectoryFileType = @"NSDirectoryFileType";
+NSString *NSApplicationFileType = @"NSApplicationFileType";
+NSString *NSFilesystemFileType = @"NSFilesystemFileType";
+NSString *NSShellCommandFileType = @"NSShellCommandFileType";
 
 // Workspace File Operation Globals 
-NSString *NSWorkspaceCompressOperation;
-NSString *NSWorkspaceCopyOperation;
-NSString *NSWorkspaceDecompressOperation;
-NSString *NSWorkspaceDecryptOperation;
-NSString *NSWorkspaceDestroyOperation;
-NSString *NSWorkspaceDuplicateOperation;
-NSString *NSWorkspaceEncryptOperation;
-NSString *NSWorkspaceLinkOperation;
-NSString *NSWorkspaceMoveOperation;
-NSString *NSWorkspaceRecycleOperation;
+NSString *NSWorkspaceCompressOperation = @"NSWorkspaceCompressOperation";
+NSString *NSWorkspaceCopyOperation = @"NSWorkspaceCopyOperation";
+NSString *NSWorkspaceDecompressOperation = @"NSWorkspaceDecompressOperation";
+NSString *NSWorkspaceDecryptOperation = @"NSWorkspaceDecryptOperation";
+NSString *NSWorkspaceDestroyOperation = @"NSWorkspaceDestroyOperation";
+NSString *NSWorkspaceDuplicateOperation = @"NSWorkspaceDuplicateOperation";
+NSString *NSWorkspaceEncryptOperation = @"NSWorkspaceEncryptOperation";
+NSString *NSWorkspaceLinkOperation = @"NSWorkspaceLinkOperation";
+NSString *NSWorkspaceMoveOperation = @"NSWorkspaceMoveOperation";
+NSString *NSWorkspaceRecycleOperation = @"NSWorkspaceRecycleOperation";
 
 // NSWorkspace notifications
-NSString *NSWorkspaceDidLaunchApplicationNotification;
-NSString *NSWorkspaceDidMountNotification;
-NSString *NSWorkspaceDidPerformFileOperationNotification;
-NSString *NSWorkspaceDidTerminateApplicationNotification;
-NSString *NSWorkspaceDidUnmountNotification;
-NSString *NSWorkspaceWillLaunchApplicationNotification;
-NSString *NSWorkspaceWillPowerOffNotification;
-NSString *NSWorkspaceWillUnmountNotification;
+NSString *NSWorkspaceDidLaunchApplicationNotification = @"NSWorkspaceDidLaunchApplicationNotification";
+NSString *NSWorkspaceDidMountNotification = @"NSWorkspaceDidMountNotification";
+NSString *NSWorkspaceDidPerformFileOperationNotification = @"NSWorkspaceDidPerformFileOperationNotification";
+NSString *NSWorkspaceDidTerminateApplicationNotification = @"NSWorkspaceDidTerminateApplicationNotification";
+NSString *NSWorkspaceDidUnmountNotification = @"NSWorkspaceDidUnmountNotification";
+NSString *NSWorkspaceWillLaunchApplicationNotification = @"NSWorkspaceWillLaunchApplicationNotification";
+NSString *NSWorkspaceWillPowerOffNotification = @"NSWorkspaceWillPowerOffNotification";
+NSString *NSWorkspaceWillUnmountNotification = @"NSWorkspaceWillUnmountNotification";
 
 @implementation NSWorkspace
 

@@ -29,12 +29,9 @@
 #ifndef _GNUstep_H_NSCustomImageRep
 #define _GNUstep_H_NSCustomImageRep
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSImageRep.h>
-#include <Foundation/NSCoder.h>
 
 @interface NSCustomImageRep : NSImageRep <NSCoding>
-
 {
   // Attributes
   id  delegate;

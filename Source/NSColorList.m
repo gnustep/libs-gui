@@ -26,11 +26,13 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSColorList.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSLock.h>
+#include <Foundation/NSDictionary.h>
 #include <Foundation/NSArchiver.h>
 #include <Foundation/NSException.h>
+#include <AppKit/NSColorList.h>
+#include <AppKit/AppKitExceptions.h>
 
 // NSColorList notifications
 NSString *NSColorListChangedNotification = @"NSColorListChange";
@@ -86,7 +88,8 @@ static NSLock *gnustep_color_list_lock;
 //
 + (NSColorList *)colorListNamed:(NSString *)name
 {
-  id o, e;
+  id e;
+  NSColorList* o;
   BOOL found = NO;
 
   // Serialize access to color list
@@ -288,7 +291,6 @@ static NSLock *gnustep_color_list_lock;
 //
 - (void)encodeWithCoder:aCoder
 {
-  [super encodeWithCoder:aCoder];
   [aCoder encodeObject: list_name];
   [aCoder encodeObject: color_list];
   [aCoder encodeObject: color_list_keys];
@@ -297,7 +299,6 @@ static NSLock *gnustep_color_list_lock;
 
 - initWithCoder:aDecoder
 {
-  [super initWithCoder:aDecoder];
   list_name = [aDecoder decodeObject];
   color_list = [aDecoder decodeObject];
   color_list_keys = [aDecoder decodeObject];

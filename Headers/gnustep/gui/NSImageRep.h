@@ -29,12 +29,20 @@
 #ifndef _GNUstep_H_NSImageRep
 #define _GNUstep_H_NSImageRep
 
-#include <AppKit/stdappkit.h>
-#include <AppKit/NSPasteboard.h>
 #include <Foundation/NSCoder.h>
+#include <Foundation/NSGeometry.h>
+
+@class NSString;
+@class NSArray;
+@class NSData;
+
+@class NSPasteboard;
+
+enum {
+  NSImageRepMatchesDevice
+};
 
 @interface NSImageRep : NSObject <NSCoding>
-
 {
   // Attributes
   NSString* _colorSpace;
@@ -110,5 +118,7 @@
 - initWithCoder:aDecoder;
 
 @end
+
+extern NSString *NSImageRepRegistryChangedNotification;
 
 #endif // _GNUstep_H_NSImageRep

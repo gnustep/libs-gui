@@ -29,15 +29,35 @@
 #ifndef _GNUstep_H_NSText
 #define _GNUstep_H_NSText
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSView.h>
-#include <AppKit/NSFont.h>
 #include <AppKit/NSSpellProtocol.h>
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSNotification.h>
+
+@class NSString;
+@class NSData;
+@class NSNotification;
+@class NSColor;
+@class NSFont;
+
+typedef enum _NSTextAlignment {
+  NSLeftTextAlignment,
+  NSRightTextAlignment,
+  NSCenterTextAlignment,
+  NSJustifiedTextAlignment,
+  NSNaturalTextAlignment
+} NSTextAlignment;
+
+enum {
+  NSIllegalTextMovement  = 0,
+  NSReturnTextMovement  = 0x10,
+  NSTabTextMovement   = 0x11,
+  NSBacktabTextMovement  = 0x12,
+  NSLeftTextMovement   = 0x13,
+  NSRightTextMovement   = 0x14,
+  NSUpTextMovement   = 0x15,
+  NSDownTextMovement   = 0x16
+};	 	
 
 @interface NSText : NSView <NSChangeSpelling,NSIgnoreMisspelledWords,NSCoding>
-
 {
   // Attributes
   id delegate;
@@ -208,5 +228,10 @@
 - (void)ignoreSpelling:(id)sender;
 
 @end
+
+/* Notifications */
+extern NSString *NSTextDidBeginEditingNotification;
+extern NSString *NSTextDidEndEditingNotification;
+extern NSString *NSTextDidChangeNotification;
 
 #endif // _GNUstep_H_NSText

@@ -26,15 +26,15 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSTextField.h>
-#include <gnustep/gui/NSWindow.h>
-#include <gnustep/gui/NSTextFieldCell.h>
-#include <gnustep/gui/NSApplication.h>
+#include <AppKit/NSTextField.h>
+#include <AppKit/NSWindow.h>
+#include <AppKit/NSTextFieldCell.h>
+#include <AppKit/NSApplication.h>
 
 //
 // class variables
 //
-id MB_NSTEXTFIELDCELL_CLASS;
+static id MB_NSTEXTFIELDCELL_CLASS = nil;
 
 @implementation NSTextField
 
@@ -82,7 +82,6 @@ id MB_NSTEXTFIELDCELL_CLASS;
   [[self cell] release];
   [self setCell:[[MB_NSTEXTFIELDCELL_CLASS alloc] init]];
   [cell setState:1];
-  text_cursor = [NSCursor IBeamCursor];
 
   return self;
 }
@@ -276,10 +275,8 @@ id MB_NSTEXTFIELDCELL_CLASS;
 
 - (void)keyDown:(NSEvent *)theEvent
 {
-  int result;
   unsigned int flags = [theEvent modifierFlags];
   unsigned int key_code = [theEvent keyCode];
-  char out[80];
 
   // If SHIFT-TAB key then make the previous text the first responder
   if ((key_code == 0x09) && (flags & NSShiftKeyMask))
@@ -370,19 +367,19 @@ id MB_NSTEXTFIELDCELL_CLASS;
 
 - (void)textDidBeginEditing:(NSNotification *)aNotification
 {
-  if ([text_delegate respondsTo:@selector(textDidBeginEditing:)])
+  if ([text_delegate respondsToSelector:@selector(textDidBeginEditing:)])
     return [text_delegate textDidBeginEditing:aNotification];
 }
 
 - (void)textDidChange:(NSNotification *)aNotification
 {
-  if ([text_delegate respondsTo:@selector(textDidChange:)])
+  if ([text_delegate respondsToSelector:@selector(textDidChange:)])
     return [text_delegate textDidChange:aNotification];
 }
 
 - (void)textDidEndEditing:(NSNotification *)aNotification
 {
-  if ([text_delegate respondsTo:@selector(textDidEndEditing:)])
+  if ([text_delegate respondsToSelector:@selector(textDidEndEditing:)])
     return [text_delegate textDidEndEditing:aNotification];
 }
 
@@ -397,23 +394,21 @@ id MB_NSTEXTFIELDCELL_CLASS;
 }
 
 //
-// Manage the cursor
-//
-- (void)resetCursorRects
-{
-  [self addCursorRect: bounds cursor: text_cursor];
-}
-
-//
 // NSCoding protocol
 //
 - (void)encodeWithCoder:aCoder
 {
   [super encodeWithCoder:aCoder];
 
+#if 0
   [aCoder encodeObjectReference: next_text withName: @"Next text"];
   [aCoder encodeObjectReference: previous_text withName: @"Previous text"];
   [aCoder encodeObjectReference: text_delegate withName: @"Text delegate"];
+#else
+  [aCoder encodeConditionalObject:next_text];
+  [aCoder encodeConditionalObject:previous_text];
+  [aCoder encodeConditionalObject:text_delegate];
+#endif
   [aCoder encodeValueOfObjCType: @encode(SEL) at: &error_action];
 }
 
@@ -421,9 +416,15 @@ id MB_NSTEXTFIELDCELL_CLASS;
 {
   [super initWithCoder:aDecoder];
 
+#if 0
   [aDecoder decodeObjectAt: &next_text withName: NULL];
   [aDecoder decodeObjectAt: &previous_text withName: NULL];
   [aDecoder decodeObjectAt: &text_delegate withName: NULL];
+#else
+  next_text = [aDecoder decodeObject];
+  previous_text = [aDecoder decodeObject];
+  text_delegate = [aDecoder decodeObject];
+#endif
   [aDecoder decodeValueOfObjCType: @encode(SEL) at: &error_action];
 
   return self;

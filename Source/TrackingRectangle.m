@@ -99,7 +99,6 @@
 //
 - (void)encodeWithCoder:aCoder
 {
-	[super encodeWithCoder:aCoder];
 	[aCoder encodeRect:rectangle];
 	[aCoder encodeValueOfObjCType:@encode(NSTrackingRectTag) at:&tag];
 	[aCoder encodeObject:owner];
@@ -108,7 +107,6 @@
 
 - initWithCoder:aDecoder
 {
-	[super initWithCoder:aDecoder];
 	rectangle = [aDecoder decodeRect];
 	[aDecoder decodeValueOfObjCType:@encode(NSTrackingRectTag) at:&tag];
 	[aDecoder decodeValueOfObjCType:@encode(BOOL) at:&inside];

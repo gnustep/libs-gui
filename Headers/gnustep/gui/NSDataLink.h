@@ -29,16 +29,34 @@
 #ifndef _GNUstep_H_NSDataLink
 #define _GNUstep_H_NSDataLink
 
-#include <AppKit/stdappkit.h>
-#include <AppKit/NSSelection.h>
-#include <AppKit/NSPasteboard.h>
-#include <Foundation/NSDate.h>
 #include <Foundation/NSCoder.h>
 
+@class NSString;
+@class NSArray;
+@class NSDate;
+
 @class NSDataLinkManager;
+@class NSSelection;
+@class NSPasteboard;
+
+typedef int NSDataLinkNumber;
+
+typedef enum _NSDataLinkDisposition {
+  NSLinkInDestination,
+  NSLinkInSource,
+  NSLinkBroken 
+} NSDataLinkDisposition;
+
+typedef enum _NSDataLinkUpdateMode {
+  NSUpdateContinuously,
+  NSUpdateWhenSourceSaved,
+  NSUpdateManually,
+  NSUpdateNever
+} NSDataLinkUpdateMode;
+
+extern NSString *NSDataLinkFileNameExtension;
 
 @interface NSDataLink : NSObject <NSCoding>
-
 {
   // Attributes
 }
@@ -49,7 +67,7 @@
 - (id)initLinkedToFile:(NSString *)filename;
 - (id)initLinkedToSourceSelection:(NSSelection *)selection
 			managedBy:(NSDataLinkManager *)linkManager
-supportingTypes:(NSArray *)newTypes;
+		  supportingTypes:(NSArray *)newTypes;
 - (id)initWithContentsOfFile:(NSString *)filename;
 - (id)initWithPasteboard:(NSPasteboard *)pasteboard;
 

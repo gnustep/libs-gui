@@ -26,9 +26,10 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSActionCell.h>
-#include <gnustep/base/NSCoder.h>
-#include <gnustep/gui/NSControl.h>
+#include <Foundation/NSCoder.h>
+#include <AppKit/NSActionCell.h>
+#include <AppKit/NSControl.h>
+#include <AppKit/LogFile.h>
 
 @implementation NSActionCell
 
@@ -151,21 +152,6 @@
 //
 // Manipulating NSActionCell Values 
 //
-- (double)doubleValue
-{
-  return [super doubleValue];
-}
-
-- (float)floatValue
-{
-  return [super floatValue];
-}
-
-- (int)intValue
-{
-  return [super intValue];
-}
-
 - (void)setStringValue:(NSString *)aString
 {
   [super setStringValue:aString];
@@ -174,23 +160,28 @@
       [(NSControl *)control_view updateCell: self];
 }
 
-- (NSString *)stringValue
+- (void)setDoubleValue:(double)aDouble
 {
-  return [super stringValue];
+  [super setDoubleValue:aDouble];
+  if (control_view)
+    if ([control_view isKindOfClass: [NSControl class]])
+      [(NSControl *)control_view updateCell: self];
 }
 
-//
-// Displaying 
-//
-- (void)drawWithFrame:(NSRect)cellFrame
-	       inView:(NSView *)controlView
+- (void)setFloatValue:(float)aFloat
 {
-  [super drawWithFrame:cellFrame inView:controlView];
+  [super setFloatValue:aFloat];
+  if (control_view)
+    if ([control_view isKindOfClass: [NSControl class]])
+      [(NSControl *)control_view updateCell: self];
 }
 
-- (NSView *)controlView
+- (void)setIntValue:(int)anInt
 {
-  return [super controlView];
+  [super setIntValue:anInt];
+  if (control_view)
+    if ([control_view isKindOfClass: [NSControl class]])
+      [(NSControl *)control_view updateCell: self];
 }
 
 //
@@ -237,8 +228,13 @@
   [super encodeWithCoder:aCoder];
 
   [aCoder encodeValueOfObjCType: "i" at: &tag];
+#if 0
   [aCoder encodeObjectReference: target withName: @"Target"];
-  [aCoder encodeValueOfObjCType: @encode(SEL) at: &action];
+#else
+  [aCoder encodeConditionalObject:target];
+#endif
+
+  [aCoder encodeValueOfObjCType:@encode(SEL) at: &action];
 }
 
 - initWithCoder:aDecoder
@@ -246,7 +242,11 @@
   [super initWithCoder:aDecoder];
 
   [aDecoder decodeValueOfObjCType: "i" at: &tag];
+#if 0
   [aDecoder decodeObjectAt: &target withName: NULL];
+#else
+  target = [aDecoder decodeObject];
+#endif
   [aDecoder decodeValueOfObjCType: @encode(SEL) at: &action];
 
   return self;

@@ -29,7 +29,7 @@
 #ifndef _GNUstep_H_NSColorPrivate
 #define _GNUstep_H_NSColorPrivate
 
-#include <gnustep/gui/NSColor.h>
+#include <AppKit/NSColor.h>
 
 @interface NSColor (GNUstepPrivate)
 

@@ -28,10 +28,11 @@
 #ifndef _GNUstep_H_NSColorPicking
 #define _GNUstep_H_NSColorPicking
 
-#include <AppKit/NSPasteboard.h>
+#include <objc/Protocol.h>
 
 @class NSColor;
 @class NSColorPanel;
+@class NSView;
 @class NSImage;
 @class NSButtonCell;
 @class NSColorList;

@@ -26,15 +26,17 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSText.h>
-#include <gnustep/gui/NSApplication.h>
-#include <gnustep/gui/NSWindow.h>
-#include <gnustep/gui/NSFontPanel.h>
+#include <AppKit/NSText.h>
+#include <AppKit/NSApplication.h>
+#include <AppKit/NSWindow.h>
+#include <AppKit/NSFontPanel.h>
+#include <AppKit/NSFont.h>
+#include <AppKit/NSColor.h>
 
 // NSText notifications
-NSString *NSTextDidBeginEditingNotification;
-NSString *NSTextDidEndEditingNotification;
-NSString *NSTextDidChangeNotification;
+NSString *NSTextDidBeginEditingNotification = @"NSTextDidBeginEditingNotification";
+NSString *NSTextDidEndEditingNotification = @"NSTextDidEndEditingNotification";
+NSString *NSTextDidChangeNotification = @"NSTextDidChangeNotification";
 
 //
 // NSText implementation
@@ -530,7 +532,11 @@ NSString *NSTextDidChangeNotification;
 {
   [super encodeWithCoder:aCoder];
 
+#if 0
   [aCoder encodeObjectReference: delegate withName: @"Delegate"];
+#else
+  [aCoder encodeConditionalObject:delegate];
+#endif
   [aCoder encodeObject: text_contents];
   [aCoder encodeValueOfObjCType: "I" at: &alignment];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_editable];
@@ -552,7 +558,11 @@ NSString *NSTextDidChangeNotification;
 {
   [super initWithCoder:aDecoder];
 
+#if 0
   [aDecoder decodeObjectAt: &delegate withName: NULL];
+#else
+  delegate = [aDecoder decodeObject];
+#endif
   text_contents = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: "I" at: &alignment];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_editable];

@@ -29,12 +29,33 @@
 #ifndef _GNUstep_H_NSPrintPanel
 #define _GNUstep_H_NSPrintPanel
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSPanel.h>
-#include <Foundation/NSCoder.h>
+
+@class NSView;
+
+enum {
+  NSPPSaveButton,
+  NSPPPreviewButton,
+  NSFaxButton,
+  NSPPTitleField,
+  NSPPImageButton,
+  NSPPNameTitle,
+  NSPPNameField,
+  NSPPNoteTitle,
+  NSPPNoteField,
+  NSPPStatusTitle,
+  NSPPStatusField,
+  NSPPCopiesField,
+  NSPPPageChoiceMatrix,
+  NSPPPageRangeFrom,
+  NSPPPageRangeTo,
+  NSPPScaleField,
+  NSPPOptionsButton,
+  NSPPPaperFeedButton,
+  NSPPLayoutButton
+};
 
 @interface NSPrintPanel : NSPanel <NSCoding>
-
 {
   // Attributes
 }

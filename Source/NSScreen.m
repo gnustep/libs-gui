@@ -26,7 +26,8 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSScreen.h>
+#include <Foundation/NSDictionary.h>
+#include <AppKit/NSScreen.h>
 
 // Global device dictionary key strings
 NSString *NSDeviceResolution = @"Resolution";

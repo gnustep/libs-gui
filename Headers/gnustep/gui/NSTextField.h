@@ -29,22 +29,19 @@
 #ifndef _GNUstep_H_NSTextField
 #define _GNUstep_H_NSTextField
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSControl.h>
-#include <AppKit/NSColor.h>
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSNotification.h>
-#include <AppKit/NSCursor.h>
+
+@class NSNotification;
+@class NSColor;
+@class NSText;
 
 @interface NSTextField : NSControl <NSCoding>
-
 {
   // Attributes
   id next_text;
   id previous_text;
   id text_delegate;
   SEL error_action;
-  NSCursor *text_cursor;
 }
 
 //

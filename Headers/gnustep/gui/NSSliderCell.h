@@ -29,12 +29,13 @@
 #ifndef _GNUstep_H_NSSliderCell
 #define _GNUstep_H_NSSliderCell
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSActionCell.h>
-#include <Foundation/NSCoder.h>
+
+@class NSString;
+@class NSColor;
+@class NSFont;
 
 @interface NSSliderCell : NSActionCell <NSCoding>
-
 {
   // Attributes
   double max_value;

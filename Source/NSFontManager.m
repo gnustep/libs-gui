@@ -26,17 +26,19 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSFontManager.h>
-#include <gnustep/gui/NSApplication.h>
-#include <gnustep/gui/NSFontPrivate.h>
+#include <Foundation/NSArray.h>
+#include <AppKit/NSFontManager.h>
+#include <AppKit/NSApplication.h>
+#include <AppKit/NSFont.h>
+#include <gnustep/gui/LogFile.h>
 
 //
 // Class variables
 //
-NSFontManager *GNUSTEP_GUI_FONT_MANAGER;
-NSFontPanel *GNUSTEP_GUI_FONT_PANEL;
-id GNUSTEP_GUI_FONT_MANAGER_FACTORY;
-id GNUSTEP_GUI_FONT_PANEL_FACTORY;
+static NSFontManager *sharedFontManager = nil;
+static NSFontPanel *fontPanel = nil;
+static Class fontManagerClass = Nil;
+static Class fontPanelClass = Nil;
 
 @implementation NSFontManager
 
@@ -61,24 +63,24 @@ id GNUSTEP_GUI_FONT_PANEL_FACTORY;
 //
 // Managing the FontManager
 //
-+ (void)setFontManagerFactory:(Class)classId
++ (void)setFontManagerFactory:(Class)class
 {
-  GNUSTEP_GUI_FONT_MANAGER_FACTORY = classId;
+  fontManagerClass = class;
 }
 
-+ (void)setFontPanelFactory:(Class)classId
++ (void)setFontPanelFactory:(Class)class
 {
-  GNUSTEP_GUI_FONT_PANEL_FACTORY = classId;
+  fontPanelClass = class;
 }
 
 + (NSFontManager *)sharedFontManager
 {
-  if (!GNUSTEP_GUI_FONT_MANAGER)
+  if (!sharedFontManager)
     {
-      GNUSTEP_GUI_FONT_MANAGER = [[NSFontManager alloc] init];
-      [GNUSTEP_GUI_FONT_MANAGER enumerateFontsAndFamilies];
+      sharedFontManager = [[fontManagerClass alloc] init];
+      [sharedFontManager enumerateFontsAndFamilies];
     }
-  return GNUSTEP_GUI_FONT_MANAGER;
+  return sharedFontManager;
 }
 
 //
@@ -86,17 +88,16 @@ id GNUSTEP_GUI_FONT_PANEL_FACTORY;
 //
 - init
 {
-  [super init];
+  self = [super init];
 
   // Allocate the font list
-  font_list = [NSMutableArray array];
-
-  // Allocate the family list
-  family_list = [NSMutableArray array];
-  family_metrics = [NSMutableArray array];
+  fontsList = [NSMutableArray array];
 
   return self;
 }
+
+#if 0
+/* This code needs to be reworked */
 
 //
 // Converting Fonts
@@ -225,10 +226,10 @@ id GNUSTEP_GUI_FONT_PANEL_FACTORY;
   NSFont *f;
 
   // Make sure it is a legitimate family name
-  j = [family_list count];
+  j = [fontsList count];
   for (i = 0;i < j; ++i)
     {
-      name = [family_list objectAtIndex:i];
+      name = [fontsList objectAtIndex:i];
       if ([family compare:name] == NSOrderedSame)
 	{
 	  found = YES;
@@ -252,6 +253,7 @@ id GNUSTEP_GUI_FONT_PANEL_FACTORY;
       return nil;
     }
 }
+#endif
 
 //
 // Setting and Getting Parameters
@@ -263,12 +265,7 @@ id GNUSTEP_GUI_FONT_PANEL_FACTORY;
 
 - (NSArray *)availableFonts
 {
-  return family_list;
-}
-
-- (NSArray *)familyMetrics;
-{
-  return family_metrics;
+  return fontsList;
 }
 
 - (NSMenu *)fontMenu:(BOOL)create
@@ -278,9 +275,9 @@ id GNUSTEP_GUI_FONT_PANEL_FACTORY;
 
 - (NSFontPanel *)fontPanel:(BOOL)create
 {
-  if ((!GNUSTEP_GUI_FONT_PANEL) && (create))
-    GNUSTEP_GUI_FONT_PANEL = [[NSFontPanel alloc] init];
-  return GNUSTEP_GUI_FONT_PANEL;
+  if ((!fontPanel) && (create))
+    fontPanel = [[fontPanelClass alloc] init];
+  return fontPanel;
 }
 
 - (BOOL)isEnabled
@@ -315,6 +312,7 @@ id GNUSTEP_GUI_FONT_PANEL_FACTORY;
   selected_font = fontObject;
 }
 
+#if 0
 - (NSFontTraitMask)traitsOfFont:(NSFont *)fontObject
 {
   return [fontObject traits];
@@ -324,6 +322,7 @@ id GNUSTEP_GUI_FONT_PANEL_FACTORY;
 {
   return [fontObject weight];
 }
+#endif
 
 //
 // Target and Action Methods

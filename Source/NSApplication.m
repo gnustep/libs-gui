@@ -26,18 +26,27 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSApplication.h>
-#include <gnustep/gui/NSPopUpButton.h>
-#include <gnustep/gui/NSPanel.h>
 #include <stdio.h>
+
+#include <Foundation/NSArray.h>
+#include <Foundation/NSNotification.h>
+#include <DPSClient/NSDPSContext.h>
+#include <AppKit/NSApplication.h>
+#include <AppKit/NSPopUpButton.h>
+#include <AppKit/NSPanel.h>
+#include <AppKit/NSEvent.h>
+#include <AppKit/NSImage.h>
+#include <AppKit/NSMenu.h>
+#include <AppKit/NSMenuCell.h>
+#include <AppKit/LogFile.h>
 
 //
 // Class variables
 //
 // The global application instance
 extern id NSApp;
-NSEvent *NullEvent;
-BOOL gnustep_gui_app_is_in_dealloc;
+NSEvent *NullEvent = NULL;
+static BOOL gnustep_gui_app_is_in_dealloc;
 
 // Global strings
 NSString *NSModalPanelRunLoopMode = @"ModalPanelMode";
@@ -152,7 +161,7 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
   // Event handling setup
   //
   // allocate the event queue
-  event_queue = [[Queue alloc] init];
+  event_queue = [[NSMutableArray alloc] init];
   // No current event
   current_event = nil;
   // The NULL event
@@ -183,8 +192,6 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 
 - (void)dealloc
 {
-  int i, j;
-
   NSDebugLog(@"Freeing NSApplication\n");
 
   // Let ourselves know we are within dealloc
@@ -263,7 +270,7 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
       e = [self nextEventMatchingMask:NSAnyEventMask untilDate:nil 
 		inMode:nil dequeue:YES];
       if (e)
-	[self sendEvent: e];
+	[self postEvent:e atStart:YES];
       else
 	{
 	  // Null event
@@ -437,10 +444,10 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
   int i, j;
 
   // If the queue isn't empty then check those messages
-  if (![event_queue isEmpty])
+  if ([event_queue count])
     {
       j = [event_queue count];
-      for (i = j-1;i >= 0; --i)
+      for (i = j-1;i > 0; --i)
 	{
 	  e = [event_queue objectAtIndex: i];
 	  if ([self event: e matchMask: mask])
@@ -469,32 +476,13 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 	}
     }
 
-  // Unhide the cursor if necessary
-  {
-    NSEventType type;
-
-    // Only if we should unhide when mouse moves
-    if ([NSCursor isHiddenUntilMouseMoves])
-      {
-	// Make sure the event is a mouse event before unhiding
-	type = [e type];
-	if ((type == NSLeftMouseDown) || (type == NSLeftMouseUp)
-	    || (type == NSRightMouseDown) || (type == NSRightMouseUp)
-	    || (type == NSMouseMoved))
-	  [NSCursor unhide];
-      }
-  }
-
   [self setCurrentEvent: e];
   return e;
 }
 
 - (void)postEvent:(NSEvent *)event atStart:(BOOL)flag
 {
-  if (flag)
-    [event_queue appendObject: event];
-  else
-    [event_queue enqueueObject: event];
+  [self sendEvent:event];
 }
 
 //
@@ -713,7 +701,6 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
   int i, j;
   NSMenuCell *mc;
   NSArray *mi;
-  id w;
 
   // Release old and retain new
   [main_menu release];
@@ -779,9 +766,6 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 
 - (void)removeWindowsItem:aWindow
 {
-  int i, j;
-  id w;
-
   // +++ This should be different
   if (aWindow == key_window)
 	key_window = nil;
@@ -875,7 +859,7 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 {
   BOOL result = NO;
 
-  if ([delegate respondsTo:@selector(application:openFileWithoutUI:)])
+  if ([delegate respondsToSelector:@selector(application:openFileWithoutUI:)])
     result = [delegate application:sender openFileWithoutUI:filename];
 
   return result;
@@ -885,7 +869,7 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 {
   BOOL result = NO;
 
-  if ([delegate respondsTo:@selector(application:openFile:)])
+  if ([delegate respondsToSelector:@selector(application:openFile:)])
     result = [delegate application:app openFile:filename];
 
   return result;
@@ -895,7 +879,7 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 {
   BOOL result = NO;
 
-  if ([delegate respondsTo:@selector(application:openTempFile:)])
+  if ([delegate respondsToSelector:@selector(application:openTempFile:)])
     result = [delegate application:app openTempFile:filename];
 
   return result;
@@ -903,37 +887,37 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 
 - (void)applicationDidBecomeActive:(NSNotification *)aNotification
 {
-  if ([delegate respondsTo:@selector(applicationDidBecomeActive:)])
+  if ([delegate respondsToSelector:@selector(applicationDidBecomeActive:)])
     [delegate applicationDidBecomeActive:aNotification];
 }
 	
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-  if ([delegate respondsTo:@selector(applicationDidFinishLaunching:)])
+  if ([delegate respondsToSelector:@selector(applicationDidFinishLaunching:)])
     [delegate applicationDidFinishLaunching:aNotification];
 }
 
 - (void)applicationDidHide:(NSNotification *)aNotification
 {
-  if ([delegate respondsTo:@selector(applicationDidHide:)])
+  if ([delegate respondsToSelector:@selector(applicationDidHide:)])
     [delegate applicationDidHide:aNotification];
 }
 
 - (void)applicationDidResignActive:(NSNotification *)aNotification
 {
-  if ([delegate respondsTo:@selector(applicationDidResignActive:)])
+  if ([delegate respondsToSelector:@selector(applicationDidResignActive:)])
     [delegate applicationDidResignActive:aNotification];
 }
 
 - (void)applicationDidUnhide:(NSNotification *)aNotification
 {
-  if ([delegate respondsTo:@selector(applicationDidUnhide:)])
+  if ([delegate respondsToSelector:@selector(applicationDidUnhide:)])
     [delegate applicationDidUnhide:aNotification];
 }
 
 - (void)applicationDidUpdate:(NSNotification *)aNotification
 {
-  if ([delegate respondsTo:@selector(applicationDidUpdate:)])
+  if ([delegate respondsToSelector:@selector(applicationDidUpdate:)])
     [delegate applicationDidUpdate:aNotification];
 }
 
@@ -941,7 +925,7 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 {
   BOOL result = NO;
 
-  if ([delegate respondsTo:@selector(applicationOpenUntitledFile:)])
+  if ([delegate respondsToSelector:@selector(applicationOpenUntitledFile:)])
     result = [delegate applicationOpenUntitledFile:app];
 
   return result;
@@ -951,7 +935,7 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 {
   BOOL result = YES;
 
-  if ([delegate respondsTo:@selector(applicationShouldTerminate:)])
+  if ([delegate respondsToSelector:@selector(applicationShouldTerminate:)])
     result = [delegate applicationShouldTerminate:sender];
 
   return result;
@@ -959,37 +943,37 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 
 - (void)applicationWillBecomeActive:(NSNotification *)aNotification
 {
-  if ([delegate respondsTo:@selector(applicationWillBecomeActive:)])
+  if ([delegate respondsToSelector:@selector(applicationWillBecomeActive:)])
     [delegate applicationWillBecomeActive:aNotification];
 }
 
 - (void)applicationWillFinishLaunching:(NSNotification *)aNotification
 {
-  if ([delegate respondsTo:@selector(applicationWillFinishLaunching:)])
+  if ([delegate respondsToSelector:@selector(applicationWillFinishLaunching:)])
     [delegate applicationWillFinishLaunching:aNotification];
 }
 
 - (void)applicationWillHide:(NSNotification *)aNotification
 {
-  if ([delegate respondsTo:@selector(applicationWillHide:)])
+  if ([delegate respondsToSelector:@selector(applicationWillHide:)])
     [delegate applicationWillHide:aNotification];
 }
 
 - (void)applicationWillResignActive:(NSNotification *)aNotification
 {
-  if ([delegate respondsTo:@selector(applicationWillResignActive:)])
+  if ([delegate respondsToSelector:@selector(applicationWillResignActive:)])
     [delegate applicationWillResignActive:aNotification];
 }
 
 - (void)applicationWillUnhide:(NSNotification *)aNotification
 {
-  if ([delegate respondsTo:@selector(applicationWillUnhide:)])
+  if ([delegate respondsToSelector:@selector(applicationWillUnhide:)])
     [delegate applicationWillUnhide:aNotification];
 }
 
 - (void)applicationWillUpdate:(NSNotification *)aNotification
 {
-  if ([delegate respondsTo:@selector(applicationWillUpdate:)])
+  if ([delegate respondsToSelector:@selector(applicationWillUpdate:)])
     [delegate applicationWillUpdate:aNotification];
 }
 
@@ -1004,11 +988,19 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
   // We don't want to code the event queue do we?
   //[aCoder encodeObject: event_queue];
   //[aCoder encodeObject: current_event];
+#if 0
   [aCoder encodeObjectReference: key_window withName: @"Key window"];
   [aCoder encodeObjectReference: main_window withName: @"Main window"];
   [aCoder encodeObjectReference: delegate withName: @"Delegate"];
   [aCoder encodeObject: main_menu];
   [aCoder encodeObjectReference: windows_menu withName: @"Windows menu"];
+#else
+  [aCoder encodeConditionalObject:key_window];
+  [aCoder encodeConditionalObject:main_window];
+  [aCoder encodeConditionalObject:delegate];
+  [aCoder encodeObject:main_menu];
+  [aCoder encodeConditionalObject:windows_menu];
+#endif
 }
 
 - initWithCoder:aDecoder
@@ -1016,11 +1008,19 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
   [super initWithCoder:aDecoder];
 
   window_list = [aDecoder decodeObject];
+#if 0
   [aDecoder decodeObjectAt: &key_window withName: NULL];
   [aDecoder decodeObjectAt: &main_window withName: NULL];
   [aDecoder decodeObjectAt: &delegate withName: NULL];
   main_menu = [aDecoder decodeObject];
   [aDecoder decodeObjectAt: &windows_menu withName: NULL];
+#else
+  key_window = [aDecoder decodeObject];
+  main_window = [aDecoder decodeObject];
+  delegate = [aDecoder decodeObject];
+  main_menu = [aDecoder decodeObject];
+  windows_menu = [aDecoder decodeObject];
+#endif
 
   return self;
 }
@@ -1036,7 +1036,7 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 // Get next event
 - (NSEvent *)getNextEvent
 {
-  [event_queue enqueueObject: NullEvent];
+  [event_queue addObject: NullEvent];
   return NullEvent;
 }
 

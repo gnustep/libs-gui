@@ -29,15 +29,15 @@
 #ifndef _GNUstep_H_NSClipView
 #define _GNUstep_H_NSClipView
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSView.h>
-#include <AppKit/NSCursor.h>
-#include <AppKit/NSColor.h>
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSNotification.h>
+
+@class NSNotification;
+
+@class NSCursor;
+@class NSEvent;
+@class NSColor;
 
 @interface NSClipView : NSView <NSCoding>
-
 {
   // Attributes
 }

@@ -29,13 +29,11 @@
 #ifndef _GNUstep_H_NSHelpPanel
 #define _GNUstep_H_NSHelpPanel
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSPanel.h>
-#include <Foundation/NSCoder.h>
-#include <AppKit/NSApplication.h>
+
+@class NSString;
 
 @interface NSHelpPanel : NSPanel <NSCoding>
-
 {
   // Attributes
 }
@@ -60,7 +58,7 @@
 //
 + (void)attachHelpFile:(NSString *)filename
 	    markerName:(NSString *)markerName
-to:(id)anObject;
+		    to:(id)anObject;
 + (void)detachHelpFrom:(id)anObject;
 
 //

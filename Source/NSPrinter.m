@@ -26,50 +26,49 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSPrinter.h>
+#include <AppKit/NSPrinter.h>
 
 // Printing Information Dictionary Keys 
-NSString *NSPrintAllPages;
-NSString *NSPrintBottomMargin;
-NSString *NSPrintCopies;
-NSString *NSPrintFaxCoverSheetName;
-NSString *NSPrintFaxHighResolution;
-NSString *NSPrintFaxModem;
-NSString *NSPrintFaxReceiverNames;
-NSString *NSPrintFaxReceiverNumbers;
-NSString *NSPrintFaxReturnReceipt;
-NSString *NSPrintFaxSendTime;
-NSString *NSPrintFaxTrimPageEnds;
-NSString *NSPrintFaxUseCoverSheet;
-NSString *NSPrintFirstPage;
-NSString *NSPrintHorizonalPagination;
-NSString *NSPrintHorizontallyCentered;
-NSString *NSPrintJobDisposition;
-NSString *NSPrintJobFeatures;
-NSString *NSPrintLastPage;
-NSString *NSPrintLeftMargin;
-NSString *NSPrintManualFeed;
-NSString *NSPrintOrientation;
-NSString *NSPrintPackageException;
-NSString *NSPrintPagesPerSheet;
-NSString *NSPrintPaperFeed;
-NSString *NSPrintPaperName;
-NSString *NSPrintPaperSize;
-NSString *NSPrintPrinter;
-NSString *NSPrintReversePageOrder;
-NSString *NSPrintRightMargin;
-NSString *NSPrintSavePath;
-NSString *NSPrintScalingFactor;
-NSString *NSPrintTopMargin;
-NSString *NSPrintVerticalPagination;
-NSString *NSPrintVerticallyCentered;
+NSString *NSPrintAllPages = @"NSPrintAllPages";
+NSString *NSPrintBottomMargin = @"NSPrintBottomMargin";
+NSString *NSPrintCopies = @"NSPrintCopies";
+NSString *NSPrintFaxCoverSheetName = @"NSPrintFaxCoverSheetName";
+NSString *NSPrintFaxHighResolution = @"NSPrintFaxHighResolution";
+NSString *NSPrintFaxModem = @"NSPrintFaxModem";
+NSString *NSPrintFaxReceiverNames = @"NSPrintFaxReceiverNames";
+NSString *NSPrintFaxReceiverNumbers = @"NSPrintFaxReceiverNumbers";
+NSString *NSPrintFaxReturnReceipt = @"NSPrintFaxReturnReceipt";
+NSString *NSPrintFaxSendTime = @"NSPrintFaxSendTime";
+NSString *NSPrintFaxTrimPageEnds = @"NSPrintFaxTrimPageEnds";
+NSString *NSPrintFaxUseCoverSheet = @"NSPrintFaxUseCoverSheet";
+NSString *NSPrintFirstPage = @"NSPrintFirstPage";
+NSString *NSPrintHorizonalPagination = @"NSPrintHorizonalPagination";
+NSString *NSPrintHorizontallyCentered = @"NSPrintHorizontallyCentered";
+NSString *NSPrintJobDisposition = @"NSPrintJobDisposition";
+NSString *NSPrintJobFeatures = @"NSPrintJobFeatures";
+NSString *NSPrintLastPage = @"NSPrintLastPage";
+NSString *NSPrintLeftMargin = @"NSPrintLeftMargin";
+NSString *NSPrintManualFeed = @"NSPrintManualFeed";
+NSString *NSPrintOrientation = @"NSPrintOrientation";
+NSString *NSPrintPagesPerSheet = @"NSPrintPagesPerSheet";
+NSString *NSPrintPaperFeed = @"NSPrintPaperFeed";
+NSString *NSPrintPaperName = @"NSPrintPaperName";
+NSString *NSPrintPaperSize = @"NSPrintPaperSize";
+NSString *NSPrintPrinter = @"NSPrintPrinter";
+NSString *NSPrintReversePageOrder = @"NSPrintReversePageOrder";
+NSString *NSPrintRightMargin = @"NSPrintRightMargin";
+NSString *NSPrintSavePath = @"NSPrintSavePath";
+NSString *NSPrintScalingFactor = @"NSPrintScalingFactor";
+NSString *NSPrintTopMargin = @"NSPrintTopMargin";
+NSString *NSPrintVerticalPagination = @"NSPrintVerticalPagination";
+NSString *NSPrintVerticallyCentered = @"NSPrintVerticallyCentered";
 
 // Print Job Disposition Values 
-NSString  *NSPrintCancelJob;
-NSString  *NSPrintFaxJob;
-NSString  *NSPrintPreviewJob;
-NSString  *NSPrintSaveJob;
-NSString  *NSPrintSpoolJob;
+NSString  *NSPrintCancelJob = @"NSPrintCancelJob";
+NSString  *NSPrintFaxJob = @"NSPrintFaxJob";
+NSString  *NSPrintPreviewJob = @"NSPrintPreviewJob";
+NSString  *NSPrintSaveJob = @"NSPrintSaveJob";
+NSString  *NSPrintSpoolJob = @"NSPrintSpoolJob";
 
 @implementation NSPrinter
 
@@ -233,13 +232,10 @@ NSString  *NSPrintSpoolJob;
 //
 - (void)encodeWithCoder:aCoder
 {
-  [super encodeWithCoder:aCoder];
 }
 
 - initWithCoder:aDecoder
 {
-  [super initWithCoder:aDecoder];
-
   return self;
 }
 

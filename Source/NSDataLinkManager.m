@@ -26,7 +26,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSDataLinkManager.h>
+#include <AppKit/NSDataLinkManager.h>
 
 @implementation NSDataLinkManager
 
@@ -237,13 +237,10 @@ cheapCopyAllowed:(BOOL)flag
 //
 - (void)encodeWithCoder:aCoder
 {
-  [super encodeWithCoder:aCoder];
 }
 
 - initWithCoder:aDecoder
 {
-  [super initWithCoder:aDecoder];
-
   return self;
 }
 

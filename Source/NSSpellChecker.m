@@ -26,7 +26,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSSpellChecker.h>
+#include <AppKit/NSSpellChecker.h>
 
 @implementation NSSpellChecker
 

@@ -29,13 +29,27 @@
 #ifndef _GNUstep_H_NSPrintInfo
 #define _GNUstep_H_NSPrintInfo
 
-#include <AppKit/stdappkit.h>
-#include <AppKit/NSPrinter.h>
-#include <Foundation/NSDictionary.h>
 #include <Foundation/NSCoder.h>
+#include <Foundation/NSGeometry.h>
+
+@class NSString;
+@class NSDictionary;
+@class NSMutableDictionary;
+
+@class NSPrinter;
+
+typedef enum _NSPrintingOrientation {
+  NSPortraitOrientation,
+  NSLandscapeOrientation
+} NSPrintingOrientation;
+
+typedef enum _NSPrintingPaginationMode {
+  NSAutoPagination,
+  NSFitPagination,
+  NSClipPagination
+} NSPrintingPaginationMode;
 
 @interface NSPrintInfo : NSObject <NSCoding>
-
 {
   // Attributes
 }
@@ -113,5 +127,52 @@
 - initWithCoder:aDecoder;
 
 @end
+
+//
+// Printing Information Dictionary Keys 
+//
+extern NSString *NSPrintAllPages;
+extern NSString *NSPrintBottomMargin;
+extern NSString *NSPrintCopies;
+extern NSString *NSPrintFaxCoverSheetName;
+extern NSString *NSPrintFaxHighResolution;
+extern NSString *NSPrintFaxModem;
+extern NSString *NSPrintFaxReceiverNames;
+extern NSString *NSPrintFaxReceiverNumbers;
+extern NSString *NSPrintFaxReturnReceipt;
+extern NSString *NSPrintFaxSendTime;
+extern NSString *NSPrintFaxTrimPageEnds;
+extern NSString *NSPrintFaxUseCoverSheet;
+extern NSString *NSPrintFirstPage;
+extern NSString *NSPrintHorizonalPagination;
+extern NSString *NSPrintHorizontallyCentered;
+extern NSString *NSPrintJobDisposition;
+extern NSString *NSPrintJobFeatures;
+extern NSString *NSPrintLastPage;
+extern NSString *NSPrintLeftMargin;
+extern NSString *NSPrintManualFeed;
+extern NSString *NSPrintOrientation;
+extern NSString *NSPrintPackageException;
+extern NSString *NSPrintPagesPerSheet;
+extern NSString *NSPrintPaperFeed;
+extern NSString *NSPrintPaperName;
+extern NSString *NSPrintPaperSize;
+extern NSString *NSPrintPrinter;
+extern NSString *NSPrintReversePageOrder;
+extern NSString *NSPrintRightMargin;
+extern NSString *NSPrintSavePath;
+extern NSString *NSPrintScalingFactor;
+extern NSString *NSPrintTopMargin;
+extern NSString *NSPrintVerticalPagination;
+extern NSString *NSPrintVerticallyCentered;
+
+//
+// Print Job Disposition Values 
+//
+extern NSString *NSPrintCancelJob;
+extern NSString *NSPrintFaxJob;
+extern NSString *NSPrintPreviewJob;
+extern NSString *NSPrintSaveJob;
+extern NSString *NSPrintSpoolJob;
 
 #endif // _GNUstep_H_NSPrintInfo

@@ -29,15 +29,17 @@
 #ifndef _GNUstep_H_NSPopUpButton
 #define _GNUstep_H_NSPopUpButton
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSButton.h>
-#include <AppKit/NSMenuCell.h>
-#include <AppKit/NSMatrix.h>
-#include <AppKit/NSFont.h>
-#include <Foundation/NSCoder.h>
+
+@class NSString;
+@class NSArray;
+@class NSMutableArray;
+
+@class NSMenuCell;
+@class NSFont;
+@class NSMatrix;
 
 @interface NSPopUpButton : NSButton <NSCoding>
-
 {
   // Attributes
   NSMutableArray *list_items;

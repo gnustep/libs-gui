@@ -29,11 +29,9 @@
 #ifndef _GNUstep_H_TrackingRectangle
 #define _GNUstep_H_TrackingRectangle
 
-#include <AppKit/stdappkit.h>
-#include <Foundation/NSCoder.h>
+#include <AppKit/NSView.h>
 
 @interface TrackingRectangle : NSObject <NSCoding>
-
 {
 	// Attributes
 	NSRect rectangle;
@@ -45,10 +43,10 @@
 
 // Instance methods
 - initWithRect:(NSRect)aRect
- tag:(NSTrackingRectTag)aTag
- owner:anObject
- userData:(void *)theData
- inside:(BOOL)flag;
+  tag:(NSTrackingRectTag)aTag
+  owner:anObject
+  userData:(void *)theData
+  inside:(BOOL)flag;
 
 - (NSRect)rectangle;
 - (NSTrackingRectTag)tag;

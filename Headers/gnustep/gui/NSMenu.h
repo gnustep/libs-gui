@@ -30,15 +30,17 @@
 #ifndef _GNUstep_H_NSMenu
 #define _GNUstep_H_NSMenu
 
-#include <AppKit/stdappkit.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSMenuCell.h>
-#include <AppKit/NSMatrix.h>
 #include <Foundation/NSCoder.h>
-#include <Foundation/NSZone.h>
+#include <Foundation/NSGeometry.h>
+
+@class NSString;
+@class NSArray;
+@class NSMutableArray;
+
+@class NSMatrix;
+@class NSMenuCell;
 
 @interface NSMenu : NSObject <NSCoding>
-
 {
   // Attributes
   NSString *window_title;

@@ -26,13 +26,15 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSButtonCell.h>
-#include <gnustep/gui/NSButton.h>
-#include <gnustep/gui/NSWindow.h>
 #include <Foundation/NSLock.h>
 #include <Foundation/NSArray.h>
-#include <gnustep/gui/NSEvent.h>
-#include <gnustep/gui/NSApplication.h>
+#include <AppKit/NSButtonCell.h>
+#include <AppKit/NSButton.h>
+#include <AppKit/NSWindow.h>
+#include <AppKit/NSEvent.h>
+#include <AppKit/NSApplication.h>
+#include <AppKit/NSFont.h>
+#include <AppKit/NSImage.h>
 
 //
 // NSButtonCell implementation
@@ -56,17 +58,17 @@
 //
 - init
 {
-  [self initTextCell:[NSString stringWithCString:"Button"]];
+  [self initTextCell:@"Button"];
   return self;
 }
 
 - initImageCell:(NSImage *)anImage
 {
   [super initImageCell:anImage];
-  contents = @"Button";
-  cell_type = NSMomentaryPushButton;
+  [self setStringValue:@"Button"];
+  [self setButtonType:NSMomentaryPushButton];
   [self setEnabled:YES];
-  transparent = NO;
+  [self setTransparent:NO];
   [self setBordered:YES];
   return self;
 }
@@ -74,16 +76,20 @@
 - initTextCell:(NSString *)aString
 {
   [super initTextCell:aString];
-  alt_contents = @"Button";
-  cell_type = NSMomentaryPushButton;
+  altContents = @"Button";
+  [self setButtonType:NSMomentaryPushButton];
   [self setEnabled:YES];
-  transparent = NO;
+  [self setTransparent:NO];
   [self setBordered:YES];
   return self;
 }
 
 - (void)dealloc
 {
+  [altContents release];
+  [altImage release];
+  [keyEquivalent release];
+  [keyEquivalentFont release];
   [super dealloc];
 }
 
@@ -92,12 +98,12 @@
 //
 - (NSString *)alternateTitle
 {
-  return alt_contents;
+  return altContents;
 }
 
 - (void)setAlternateTitle:(NSString *)aString
 {
-  alt_contents = aString;
+  altContents = [aString copy];
   // update our state
   [self setState:[self state]];
 }
@@ -124,7 +130,7 @@
 //
 - (NSImage *)alternateImage
 {
-  return alt_image;
+  return altImage;
 }
 
 - (NSCellImagePosition)imagePosition
@@ -134,7 +140,7 @@
 
 - (void)setAlternateImage:(NSImage *)anImage
 {
-  alt_image = anImage;
+  altImage = [anImage retain];
 }
 
 - (void)setImagePosition:(NSCellImagePosition)aPosition
@@ -158,40 +164,43 @@
 //
 - (NSString *)keyEquivalent
 {
-  return nil;
+  return keyEquivalent;
 }
 
 - (NSFont *)keyEquivalentFont
 {
-  return nil;
+  return keyEquivalentFont;
 }
 
 - (unsigned int)keyEquivalentModifierMask
 {
-  return 0;
+  return keyEquivalentModifierMask;
 }
 
-- (void)setKeyEquivalent:(NSString *)aKeyEquivalent
-{}
+- (void)setKeyEquivalent:(NSString *)key
+{
+  keyEquivalent = [key copy];
+}
 
 - (void)setKeyEquivalentModifierMask:(unsigned int)mask
-{}
+{
+  keyEquivalentModifierMask = mask;
+}
 
 - (void)setKeyEquivalentFont:(NSFont *)fontObj
-{}
+{
+  keyEquivalentFont = [fontObj retain];
+}
 
 - (void)setKeyEquivalentFont:(NSString *)fontName 
 			size:(float)fontSize
-{}
+{
+  keyEquivalentFont = [[NSFont fontWithName:fontName size:fontSize] retain];
+}
 
 //
 // Modifying Graphic Attributes 
 //
-- (BOOL)isOpaque
-{
-  return NO;
-}
-
 - (BOOL)isTransparent
 {
   return transparent;
@@ -202,23 +211,64 @@
   transparent = flag;
 }
 
+- (BOOL)isOpaque
+{
+  return !transparent && [self isBordered];
+}
+
 //
 // Modifying Graphic Attributes 
 //
 - (int)highlightsBy
 {
-  return 0;
+  return highlightsByMask;
 }
 
-- (void)setHighlightsBy:(int)aType
-{}
-
-- (void)setShowsStateBy:(int)aType
-{}
-
-- (void)setType:(NSButtonType)aType
+- (void)setHighlightsBy:(int)mask
 {
-  cell_type = aType;
+  highlightsByMask = mask;
+}
+
+- (void)setShowsStateBy:(int)mask
+{
+  showAltStateMask = mask;
+}
+
+- (void)setButtonType:(NSButtonType)buttonType
+{
+  [super setType:buttonType];
+
+  switch (buttonType) {
+    case NSMomentaryLight:
+      [self setHighlightsBy:NSChangeBackgroundCellMask];
+      [self setShowsStateBy:NSNoCellMask];
+      break;
+    case NSMomentaryPushButton:
+      [self setHighlightsBy:NSPushInCellMask | NSChangeGrayCellMask];
+      [self setShowsStateBy:NSNoCellMask];
+      break;
+    case NSMomentaryChangeButton:
+      [self setHighlightsBy:NSContentsCellMask];
+      [self setShowsStateBy:NSNoCellMask];
+      break;
+    case NSPushOnPushOffButton:
+      [self setHighlightsBy:NSPushInCellMask | NSChangeGrayCellMask];
+      [self setShowsStateBy:NSChangeBackgroundCellMask];
+      break;
+    case NSOnOffButton:
+      [self setHighlightsBy:NSChangeBackgroundCellMask];
+      [self setShowsStateBy:NSChangeBackgroundCellMask];
+      break;
+    case NSToggleButton:
+      [self setHighlightsBy:NSPushInCellMask | NSContentsCellMask];
+      [self setShowsStateBy:NSContentsCellMask];
+      break;
+    case NSSwitchButton:
+    case NSRadioButton:
+      [self setHighlightsBy:NSContentsCellMask];
+      [self setShowsStateBy:NSContentsCellMask];
+      break;
+  }
 
   // update our state
   [self setState:[self state]];
@@ -226,13 +276,27 @@
 
 - (int)showsStateBy
 {
-  return 0;
+  return showAltStateMask;
 }
 
-- (void)setState:(int)value
+- (void)setIntValue:(int)anInt
 {
-  [super setState:value];
+  [self setState:(anInt != 0)];
 }
+
+- (void)setFloatValue:(float)aFloat
+{
+  [self setState:(aFloat != 0)];
+}
+
+- (void)setDoubleValue:(double)aDouble
+{
+  [self setState:(aDouble != 0)];
+}
+
+- (int)intValue			{ return [self state]; }
+- (float)floatValue		{ return [self state]; }
+- (double)doubleValue		{ return [self state]; }
 
 //
 // Displaying
@@ -259,8 +323,8 @@
   [super encodeWithCoder:aCoder];
 
   NSDebugLog(@"NSButtonCell: start encoding\n");
-  [aCoder encodeObject: alt_contents];
-  [aCoder encodeObject: alt_image];
+  [aCoder encodeObject: altContents];
+  [aCoder encodeObject: altImage];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &transparent];
   NSDebugLog(@"NSButtonCell: finish encoding\n");
 }
@@ -270,8 +334,8 @@
   [super initWithCoder:aDecoder];
 
   NSDebugLog(@"NSButtonCell: start decoding\n");
-  alt_contents = [aDecoder decodeObject];
-  alt_image = [aDecoder decodeObject];
+  altContents = [aDecoder decodeObject];
+  altImage = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &transparent];
   NSDebugLog(@"NSButtonCell: finish decoding\n");
   return self;

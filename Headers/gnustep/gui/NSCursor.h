@@ -29,10 +29,10 @@
 #ifndef _GNUstep_H_NSCursor
 #define _GNUstep_H_NSCursor
 
-#include <AppKit/stdappkit.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSEvent.h>
 #include <Foundation/NSCoder.h>
+
+@class NSImage;
+@class NSEvent;
 
 @interface NSCursor : NSObject <NSCoding>
 

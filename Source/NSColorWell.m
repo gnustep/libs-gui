@@ -26,7 +26,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSColorWell.h>
+#include <AppKit/NSColorWell.h>
 
 @implementation NSColorWell
 
@@ -45,30 +45,14 @@
 //
 // Instance methods
 //
-- initWithFrame:(NSRect)frameRect
-{
-  [super initWithFrame: frameRect];
-
-  is_bordered = YES;
-  is_active = NO;
-  the_color = [NSColor blackColor];
-
-  return self;
-}
 
 //
 // Drawing
 //
 - (void)drawRect:(NSRect)rect
 {
-  NSLog(@"NSColorWell drawRect: %f %f %f %f\n", rect.origin.x, rect.origin.y,
-	rect.size.width, rect.size.height);
+  // xxx Draw border
 
-  // Draw border
-  if (is_bordered)
-    [self drawBorderRect: rect];
-
-  // Draw the color inside
   [self drawWellInside: rect];
 }
 
@@ -146,17 +130,6 @@
   [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_bordered];
 
   return self;
-}
-
-@end
-
-//
-// GNUstep backend methods
-//
-@implementation NSColorWell (GNUstepBackend)
-
-- (void)drawBorderRect:(NSRect)aRect
-{
 }
 
 @end

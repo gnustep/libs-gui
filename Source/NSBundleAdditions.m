@@ -26,7 +26,7 @@
 */ 
 
 #include <Foundation/NSBundle.h>
-#include <AppKit/NSBundle.h>
+#include <AppKit/NSNibLoading.h>
 
 @implementation NSBundle (NSBundleAdditions)
 
@@ -37,7 +37,7 @@
 
 + (BOOL)loadNibFile:(NSString *)fileName
   externalNameTable:(NSDictionary *)context
-withZone:(NSZone *)zone
+  withZone:(NSZone *)zone
 {
   return NO;
 }
@@ -49,3 +49,10 @@ withZone:(NSZone *)zone
 }
 
 @end
+
+@interface __dummy_class_in_NSBundle
+@end
+
+@implementation __dummy_class_in_NSBundle
+@end
+

@@ -45,12 +45,10 @@ bindir = @bindir@
 
 MAKEDEFINES =
 
-CC = @CC@
+CC = @CC@ -g
 CPPFLAGS = @CPPFLAGS@
-CFLAGS = -g -O -Wall $(GCCFLAGS)
-ALL_CPPFLAGS = $(CPPFLAGS) -I../Headers
-ALL_CFLAGS = $(ALL_CPPFLAGS) $(CFLAGS)
-DEFS = -DGNUSTEP_INSTALL_LIBDIR=$(gnustep_libdir) @DEFS@
+CFLAGS = -c $(GCCFLAGS) -I../Headers $(CPPFLAGS)
+DEFS = -DGNUSTEP_INSTALL_LIBDIR=\"$(gnustep_libdir)\" @DEFS@
 
 GCC_LIB = 
 OBJC_LIB = -lobjc
@@ -175,7 +173,7 @@ NSBitmapImageRep$(oext) \
 NSBox$(oext) \
 NSBrowser$(oext) \
 NSBrowserCell$(oext) \
-NSBundle$(oext) \
+NSBundleAdditions$(oext) \
 NSButton$(oext) \
 NSButtonCell$(oext) \
 NSCStringText$(oext) \
@@ -242,9 +240,9 @@ OBJS = $(OBJS_WITHOUT_INIT)
 
 .SUFFIXES: .m
 .m$(oext):
-	$(CC) -c $(ALL_CFLAGS) $(DEFS) $<
+	$(CC) $(CFLAGS) $(DEFS) $<
 .c$(oext):
-	$(CC) -c $(ALL_CFLAGS) $(DEFS) $<
+	$(CC) $(CFLAGS) $(DEFS) $<
 
 #
 # libraries
@@ -276,7 +274,7 @@ $(MAIN_FILE)$(libext): $(OBJS)
 $(INIT_FILE_OBJ): $(OBJS_WITHOUT_INIT)
 	nm $(OBJS_WITHOUT_INIT) | grep "  __GLOBAL_" > tmpinit.c
 	collect tmpinit.c $(INIT_FILE)
-	$(CC) $(ALL_CFLAGS) $(INIT_FILE).c
+	$(CC) $(CFLAGS) $(INIT_FILE).c
 	rm tmpinit.c
 
 install: installdirs install-lib install-headers
@@ -320,9 +318,6 @@ uninstall:
 	rm -rf $(includedir)/AppKit
 	rm -rf $(includedir)/DPSClient
 	rm -rf $(libdir)/$(MAIN_FILE)$(libext)
-
-Makefile: $(srcdir)/Makefile.in ../config.status
-	cd ..; $(SHELL) config.status
 
 #
 # Cleaning

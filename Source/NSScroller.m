@@ -26,9 +26,9 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSScroller.h>
-#include <gnustep/gui/NSWindow.h>
-#include <gnustep/base/NSCoder.h>
+#include <Foundation/NSCoder.h>
+#include <AppKit/NSScroller.h>
+#include <AppKit/NSWindow.h>
 
 @implementation NSScroller
 
@@ -155,7 +155,11 @@
 
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_horizontal];
   [aCoder encodeValueOfObjCType: @encode(SEL) at: &action];
+#if 0
   [aCoder encodeObjectReference: target withName: @"Target"];
+#else
+  [aCoder encodeConditionalObject:target];
+#endif
   [aCoder encodeValuesOfObjCTypes: "ff", &percent, &cur_value];
 }
 
@@ -165,7 +169,11 @@
 
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_horizontal];
   [aDecoder decodeValueOfObjCType: @encode(SEL) at: &action];
+#if 0
   [aDecoder decodeObjectAt: &target withName: NULL];
+#else
+  target = [aDecoder decodeObject];
+#endif
   [aDecoder decodeValuesOfObjCTypes: "ff", &percent, &cur_value];
 
   return self;

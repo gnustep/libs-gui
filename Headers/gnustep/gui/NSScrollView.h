@@ -29,13 +29,14 @@
 #ifndef _GNUstep_H_NSScrollView
 #define _GNUstep_H_NSScrollView
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSView.h>
-#include <AppKit/NSScroller.h>
-#include <Foundation/NSCoder.h>
+
+@class NSScroller;
+@class NSClipView;
+@class NSColor;
+@class NSCursor;
 
 @interface NSScrollView : NSView <NSCoding>
-
 {
   // Attributes
 }
@@ -51,11 +52,11 @@
 //
 + (NSSize)contentSizeForFrameSize:(NSSize)size
 	    hasHorizontalScroller:(BOOL)horizFlag
-hasVerticalScroller:(BOOL)vertFlag 
-	    borderType:(NSBorderType)aType;
+	      hasVerticalScroller:(BOOL)vertFlag 
+		       borderType:(NSBorderType)aType;
 + (NSSize)frameSizeForContentSize:(NSSize)size
 	    hasHorizontalScroller:(BOOL)horizFlag
-hasVerticalScroller:(BOOL)vertFlag 
+	      hasVerticalScroller:(BOOL)vertFlag 
 	    borderType:(NSBorderType)aType;
 - (void)setHasHorizontalScroller:(BOOL)flag;
 - (BOOL)hasHorizontalScroller;

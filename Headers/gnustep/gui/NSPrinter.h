@@ -29,11 +29,19 @@
 #ifndef _GNUstep_H_NSPrinter
 #define _GNUstep_H_NSPrinter
 
-#include <AppKit/stdappkit.h>
 #include <Foundation/NSCoder.h>
 
-@interface NSPrinter : NSObject <NSCoding>
+@class NSString;
+@class NSArray;
+@class NSDictionary;
 
+typedef enum _NSPrinterTableStatus {
+  NSPrinterTableOK,
+  NSPrinterTableNotFound,
+  NSPrinterTableError
+} NSPrinterTableStatus;
+
+@interface NSPrinter : NSObject <NSCoding>
 {
   // Attributes
 }

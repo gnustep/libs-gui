@@ -29,12 +29,23 @@
 #ifndef _GNUstep_H_NSPanel
 #define _GNUstep_H_NSPanel
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSWindow.h>
-#include <Foundation/NSCoder.h>
+
+@class NSString;
+
+enum {
+  NSOKButton = 1,
+  NSCancelButton = 0
+};
+
+enum {
+  NSAlertDefaultReturn = 1,
+  NSAlertAlternateReturn = 0,
+  NSAlertOtherReturn = -1,
+  NSAlertErrorReturn  = -2
+};	 
 
 @interface NSPanel : NSWindow <NSCoding>
-
 {
   // Attributes
 }
@@ -56,5 +67,34 @@
 - initWithCoder:aDecoder;
 
 @end
+
+//
+// Create an Attention Panel without Running It Yet
+//
+id NSGetAlertPanel(NSString *title,
+                   NSString *msg,
+                   NSString *defaultButton,
+                   NSString *alternateButton, 
+                   NSString *otherButton, ...);
+
+//
+// Create and Run an Attention Panel
+//
+int NSRunAlertPanel(NSString *title,
+                    NSString *msg,
+                    NSString *defaultButton,
+                    NSString *alternateButton,
+                    NSString *otherButton, ...);
+int NSRunLocalizedAlertPanel(NSString *table,
+                             NSString *title,
+                             NSString *msg,
+                             NSString *defaultButton, 
+                             NSString *alternateButton, 
+                             NSString *otherButton, ...);
+
+//
+// Release an Attention Panel
+//
+void NSReleaseAlertPanel(id panel);
 
 #endif // _GNUstep_H_NSPanel

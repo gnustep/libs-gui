@@ -26,8 +26,9 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSPopUpButton.h>
-#include <gnustep/gui/NSApplication.h>
+#include <Foundation/NSArray.h>
+#include <AppKit/NSPopUpButton.h>
+#include <AppKit/NSApplication.h>
 
 //
 // NSPopUpButton implementation
@@ -110,8 +111,6 @@
 //
 - (void)addItemWithTitle:(NSString *)title
 {
-  char out[80];
-
   [list_items addObject:title];
   [self synchronizeTitleAndSelectedItem];
 }
@@ -214,8 +213,6 @@
 
 - (void)selectItemAtIndex:(int)index
 {
-  char out[80];
-
   if ((index >= 0) && (index <= [list_items count]))
     {
       selected_item = index;
@@ -274,10 +271,6 @@
 
 - (NSView *)hitTest:(NSPoint)aPoint
 {
-  NSPoint p;
-  char out[80];
-  NSRect wr;
-
   // First check ourselves
   if ([self mouse:aPoint inRect:bounds]) return self;
 
@@ -301,7 +294,11 @@
   [aCoder encodeObject: list_items];
   [aCoder encodeRect: list_rect];
   [aCoder encodeValueOfObjCType: "i" at: &selected_item];
+#if 0
   [aCoder encodeObjectReference: pub_target withName: @"Target"];
+#else
+  [aCoder encodeConditionalObject:pub_target];
+#endif
   [aCoder encodeValueOfObjCType: @encode(SEL) at: &pub_action];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_up];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &pulls_down];
@@ -314,7 +311,11 @@
   list_items = [aDecoder decodeObject];
   list_rect = [aDecoder decodeRect];
   [aDecoder decodeValueOfObjCType: "i" at: &selected_item];
+#if 0
   [aDecoder decodeObjectAt: &pub_target withName: NULL];
+#else
+  pub_target = [aDecoder decodeObject];
+#endif
   [aDecoder decodeValueOfObjCType: @encode(SEL) at: &pub_action];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_up];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &pulls_down];

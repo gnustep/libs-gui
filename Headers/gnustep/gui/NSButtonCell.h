@@ -29,20 +29,32 @@
 #ifndef _GNUstep_H_NSButtonCell
 #define _GNUstep_H_NSButtonCell
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSActionCell.h>
-#include <Foundation/NSString.h>
-#include <DPSClient/DPSOperators.h>
-#include <AppKit/NSControl.h>
-#include <Foundation/NSCoder.h>
+
+@class NSFont;
+
+typedef enum _NSButtonType {
+  NSMomentaryPushButton,
+  NSPushOnPushOffButton,
+  NSToggleButton,
+  NSSwitchButton,
+  NSRadioButton,
+  NSMomentaryChangeButton,
+  NSOnOffButton,
+  NSMomentaryLight
+} NSButtonType;
 
 @interface NSButtonCell : NSActionCell <NSCoding>
-
 {
   // Attributes
-  NSString *alt_contents;
-  NSImage *alt_image;
+  NSString *altContents;
+  NSImage *altImage;
+  NSString* keyEquivalent;
+  NSFont* keyEquivalentFont;
+  unsigned int keyEquivalentModifierMask;
   BOOL transparent;
+  unsigned int highlightsByMask;
+  unsigned int showAltStateMask;
 
   // Reserved for back-end use
   void *be_bc_reserved;
@@ -88,7 +100,6 @@
 //
 // Modifying Graphic Attributes 
 //
-- (BOOL)isOpaque;
 - (BOOL)isTransparent;
 - (void)setTransparent:(BOOL)flag;
 
@@ -98,7 +109,7 @@
 - (int)highlightsBy;
 - (void)setHighlightsBy:(int)aType;
 - (void)setShowsStateBy:(int)aType;
-- (void)setType:(NSButtonType)aType;
+- (void)setButtonType:(NSButtonType)aType;
 - (int)showsStateBy;
 
 //

@@ -29,6 +29,8 @@
 #ifndef _GNUstep_H_DPSOperators
 #define _GNUstep_H_DPSOperators
 
+#include <gnustep/gui/config.h>
+
 // Use the DPSclient library if we have it
 #ifdef HAVE_DPSCLIENT
 

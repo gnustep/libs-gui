@@ -26,11 +26,11 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSSliderCell.h>
-#include <gnustep/gui/NSControl.h>
-#include <gnustep/gui/NSApplication.h>
-#include <gnustep/gui/NSEvent.h>
-#include <gnustep/gui/NSWindow.h>
+#include <AppKit/NSSliderCell.h>
+#include <AppKit/NSControl.h>
+#include <AppKit/NSApplication.h>
+#include <AppKit/NSEvent.h>
+#include <AppKit/NSWindow.h>
 
 //
 // NSSliderCell implementation
@@ -135,7 +135,7 @@
 
 - (void)setMaxValue:(double)aDouble
 {
-  double val_range,value;
+  double val_range;
 
   // Swap values if new max is less than min
   if (aDouble < min_value)
@@ -157,7 +157,7 @@
 
 - (void)setMinValue:(double)aDouble
 {
-  double val_range,value;
+  double val_range;
 
   // Swap values if new min is greater than max
   if (aDouble > max_value)

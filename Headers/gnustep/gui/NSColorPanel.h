@@ -29,14 +29,13 @@
 #ifndef _GNUstep_H_NSColorPanel
 #define _GNUstep_H_NSColorPanel
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSPanel.h>
-#include <AppKit/NSColorList.h>
-#include <Foundation/NSCoder.h>
-#include <AppKit/NSApplication.h>
+
+@class NSView;
+@class NSColorList;
+@class NSEvent;
 
 @interface NSColorPanel : NSPanel <NSCoding>
-
 {
   // Attributes
 }
@@ -74,7 +73,7 @@
 //
 + (BOOL)dragColor:(NSColor **)aColor
 	withEvent:(NSEvent *)anEvent
-fromView:(NSView *)sourceView;
+	 fromView:(NSView *)sourceView;
 - (float)alpha;
 - (NSColor *)color;
 - (void)setColor:(NSColor *)aColor;
@@ -86,5 +85,8 @@ fromView:(NSView *)sourceView;
 - initWithCoder:aDecoder;
 
 @end
+
+/* Notifications */
+extern NSString *NSColorPanelColorChangedNotification;
 
 #endif // _GNUstep_H_NSColorPanel

@@ -29,6 +29,10 @@
 #ifndef _GNUstep_H_DPSTypes
 #define _GNUstep_H_DPSTypes
 
+#include <gnustep/gui/config.h>
+
+@class NSString;
+
 // These are already defined in the DPSclient headers
 #ifndef HAVE_DPSCLIENT
 typedef void *DPSProgramEncoding;

@@ -5,8 +5,9 @@
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+   Author: Ovidiu Predescu <ovidiu@bx.logicnet.ro>
+   Date: February 1997
+   A completely rewritten version of the original source by Scott Christley.
    
    This file is part of the GNUstep GUI Library.
 
@@ -26,133 +27,136 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSFont.h>
-#include <gnustep/gui/NSFontManager.h>
-#include <gnustep/gui/NSFontPrivate.h>
+#include <Foundation/NSUserDefaults.h>
+#include <Foundation/NSSet.h>
 
-NSFont *gnustep_gui_user_fixed_font;
-NSFont *gnustep_gui_user_font;
-NSString *gnustep_gui_system_family = @"";
+#include <AppKit/NSFont.h>
+#include <AppKit/NSFontManager.h>
 
 // Global Strings
-NSString *NSAFMAscender = @"AFMAscender";
-NSString *NSAFMCapHeight = @"AFMCapHeight";
-NSString *NSAFMCharacterSet = @"AFMCharacterSet";
-NSString *NSAFMDescender = @"AFMDescender";
-NSString *NSAFMEncodingScheme = @"AFMEncodingScheme";
-NSString *NSAFMFamilyName = @"AFMFamilyName";
-NSString *NSAFMFontName = @"AFMFontName";
-NSString *NSAFMFormatVersion = @"AFMFormatVersion";
-NSString *NSAFMFullName = @"AFMFullName";
-NSString *NSAFMItalicAngle = @"AFMItalicAngle";
-NSString *NSAFMMappingScheme = @"AFMMappingScheme";
-NSString *NSAFMNotice = @"AFMNotice";
-NSString *NSAFMUnderlinePosition = @"AFMUnderlinePosition";
-NSString *NSAFMUnderlineThickness = @"AFMUnderlineThickness";
-NSString *NSAFMVersion = @"AFMVersion";
-NSString *NSAFMWeight = @"AFMWeight";
-NSString *NSAFMXHeight = @"AFMXHeight";
+NSString*NSAFMAscender = @"Ascender";
+NSString*NSAFMCapHeight = @"CapHeight";
+NSString*NSAFMCharacterSet = @"CharacterSet";
+NSString*NSAFMDescender = @"Descender";
+NSString*NSAFMEncodingScheme = @"EncodingScheme";
+NSString*NSAFMFamilyName = @"FamilyName";
+NSString*NSAFMFontName = @"FontName";
+NSString*NSAFMFormatVersion = @"FormatVersion";
+NSString*NSAFMFullName = @"FullName";
+NSString*NSAFMItalicAngle = @"ItalicAngle";
+NSString*NSAFMMappingScheme = @"MappingScheme";
+NSString*NSAFMNotice = @"Notice";
+NSString*NSAFMUnderlinePosition = @"UnderlinePosition";
+NSString*NSAFMUnderlineThickness = @"UnderlineThickness";
+NSString*NSAFMVersion = @"Version";
+NSString*NSAFMWeight = @"Weight";
+NSString*NSAFMXHeight = @"XHeight";
 
 @implementation NSFont
+
+/* Class variables */
+
+/* Register all the fonts used by the current print operation to be able to
+   dump the %%DocumentFonts comment required by the Adobe Document Structuring
+   Convention (see the red book). */
+static NSMutableSet* fontsUsed = nil;
+
+static NSFont* getFont(NSString* key, NSString* defaultFont, float fontSize)
+{
+  NSString* fontName;
+
+  fontName = [[NSUserDefaults standardUserDefaults] objectForKey:key];
+  if (!fontName)
+    fontName = defaultFont;
+
+  return [NSFont fontWithName:fontName size:fontSize];
+}
+
+static void setFont(NSString* key, NSFont* font)
+{
+  NSUserDefaults* standardDefaults = [NSUserDefaults standardUserDefaults];
+
+  [standardDefaults setObject:[font fontName] forKey:key];
+
+  /* Don't care about errors */
+  [standardDefaults synchronize];
+}
 
 //
 // Class methods
 //
 + (void)initialize
 {
-  if (self == [NSFont class])
-    {
-      NSDebugLog(@"Initialize NSFont class\n");
+  static BOOL initialized = NO;
 
-      // Initial version
-      [self setVersion:2];
-    }
+  if (!initialized) {
+    initialized = YES;
+    fontsUsed = [NSMutableSet new];
+  }
 }
 
-//
-// Creating a Font Object
-//
-+ (NSFont *)boldSystemFontOfSize:(float)fontSize
-{
-  NSFontManager *fm = [NSFontManager sharedFontManager];
-  NSFont *f;
+/* Getting the preferred user fonts */
 
-  f = [fm fontWithFamily:gnustep_gui_system_family traits:NSBoldFontMask 
-	  weight:0 size:fontSize];
-  return f;
++ (NSFont*)boldSystemFontOfSize:(float)fontSize
+{
+  return getFont (@"NSBoldFont", @"Helvetica-Bold", fontSize);
 }
 
-+ (NSFont *)fontWithName:(NSString *)fontName 
-		  matrix:(const float *)fontMatrix
++ (NSFont*)systemFontOfSize:(float)fontSize
 {
+  return getFont (@"NSFont", @"Helvetica", fontSize);
+}
+
++ (NSFont*)userFixedPitchFontOfSize:(float)fontSize
+{
+  return getFont (@"NSUserFixedPitchFont", @"Courier", fontSize);
+}
+
++ (NSFont*)userFontOfSize:(float)fontSize
+{
+  return getFont (@"NSUserFont", @"Helvetica", fontSize);
+}
+
+/* Setting the preferred user fonts */
+
++ (void)setUserFixedPitchFont:(NSFont*)font
+{
+  setFont (@"NSUserFixedPitchFont", font);
+}
+
++ (void)setUserFont:(NSFont*)font
+{
+  setFont (@"NSUserFont", font);
+}
+
+/* The following method should be rewritten in the backend and it has to be
+   called as part of the implementation. */
++ (NSFont*)fontWithName:(NSString*)name 
+		 matrix:(const float*)fontMatrix
+{
+  [fontsUsed addObject:name];
   return nil;
 }
 
-+ (NSFont *)fontWithName:(NSString *)fontName
-		    size:(float)fontSize
++ (NSFont*)fontWithName:(NSString*)name
+		   size:(float)fontSize
 {
-  NSFontManager *fm = [NSFontManager sharedFontManager];
-  NSFont *f;
+  float fontMatrix[6] = { fontSize, 0, 0, fontSize, 0, 0 };
 
-  // +++ We need to extract the family name from the font name
-  f = [fm fontWithFamily:fontName traits:0 weight:400 size:fontSize];
-  return f;
+  return [self fontWithName:name matrix:fontMatrix];
 }
 
-+ (NSFont *)systemFontOfSize:(float)fontSize
++ (void)useFont:(NSString*)name
 {
-  NSFontManager *fm = [NSFontManager sharedFontManager];
-  NSFont *f;
-
-  f = [fm fontWithFamily:gnustep_gui_system_family traits:0 
-	  weight:400 size:fontSize];
-  return f;
+  [fontsUsed addObject:name];
 }
-
-+ (NSFont *)userFixedPitchFontOfSize:(float)fontSize
-{
-  NSFontManager *fm = [NSFontManager sharedFontManager];
-  return [fm convertFont:gnustep_gui_user_fixed_font toSize:fontSize];
-}
-
-+ (NSFont *)userFontOfSize:(float)fontSize
-{
-  NSFontManager *fm = [NSFontManager sharedFontManager];
-  return [fm convertFont:gnustep_gui_user_font toSize:fontSize];
-}
-
-//
-// Setting the Font
-//
-+ (void)setUserFixedPitchFont:(NSFont *)aFont
-{
-  gnustep_gui_user_fixed_font = aFont;
-}
-
-+ (void)setUserFont:(NSFont *)aFont
-{
-  gnustep_gui_user_font = aFont;
-}
-
-+ (void)useFont:(NSString *)fontName
-{}
 
 //
 // Instance methods
 //
-- init
-{
-  [super init];
-
-  family_name = @"";
-  font_name = @"";
-  type_face = @"";
-
-  return self;
-}
-
 - (void)dealloc
 {
+  [fontName release];
   [super dealloc];
 }
 
@@ -166,70 +170,47 @@ NSString *NSAFMXHeight = @"AFMXHeight";
 //
 // Querying the Font
 //
-- (NSDictionary *)afmDictionary
-{
-  return nil;
-}
+- (float)pointSize			{ return matrix[3]; }
+- (NSString*)fontName			{ return fontName; }
+- (const float*)matrix			{ return matrix; }
 
-- (NSString *)afmFileContents
-{
-  return nil;
-}
+/* The backends should rewrite the following methods to provide a more
+   appropiate behavior than these. */
 
-- (NSRect)boundingRectForFont
-{
-  return NSZeroRect;
-}
+- (NSString *)encodingScheme		{ return nil; }
+- (NSString*)familyName			{ return nil; }
+- (NSRect)boundingRectForFont		{ return NSZeroRect; }
+- (BOOL)isFixedPitch			{ return NO; }
+- (BOOL)isBaseFont			{ return YES; }
 
-- (NSString *)displayName
-{
-  return nil;
-}
+/* Usually the display name of font is the font name. */
+- (NSString*)displayName		{ return fontName; }
 
-- (NSString *)familyName
-{
-  return family_name;
-}
+- (NSDictionary*)afmDictionary		{ return nil; }
+- (NSString*)afmFileContents		{ return nil; }
+- (NSFont*)printerFont			{ return self; }
+- (NSFont*)screenFont			{ return self; }
+- (float)ascender			{ return 0.0; }
+- (float)descender			{ return 0.0; }
+- (float)capHeight			{ return 0.0; }
+- (float)italicAngle			{ return 0.0; }
+- (NSSize)maximumAdvancement		{ return NSZeroSize; }
+- (float)underlinePosition		{ return 0.0; }
+- (float)underlineThickness		{ return 0.0; }
+- (float)xHeight			{ return 0.0; }
 
-- (NSString *)fontName
-{
-  return font_name;
-}
-
-- (BOOL)isBaseFont
-{
-  return NO;
-}
-
-- (const float *)matrix
-{
-  return NULL;
-}
-
-- (float)pointSize
-{
-  return point_size;
-}
-
-- (NSFont *)printerFont
-{
-  return self;
-}
-
-- (NSFont *)screenFont
-{
-  return self;
-}
-
-- (float)widthOfString:(NSString *)string
+/* Computing font metrics attributes */
+- (float)widthOfString:(NSString*)string
 {
   return 0;
 }
 
-- (float *)widths
+- (float*)widths
 {
   return NULL;
 }
+
+/* The following methods have to implemented by backends */
 
 //
 // Manipulating Glyphs
@@ -249,6 +230,11 @@ NSString *NSAFMXHeight = @"AFMXHeight";
   return NO;
 }
 
+- (NSGlyph)glyphWithName:(NSString*)glyphName
+{
+  return -1;
+}
+
 - (NSPoint)positionOfGlyph:(NSGlyph)curGlyph
 	   precededByGlyph:(NSGlyph)prevGlyph
 		 isNominal:(BOOL *)nominal
@@ -261,129 +247,16 @@ NSString *NSAFMXHeight = @"AFMXHeight";
 //
 - (void)encodeWithCoder:aCoder
 {
-  [super encodeWithCoder:aCoder];
-
-  [aCoder encodeObject: family_name];
-  [aCoder encodeObject: font_name];
-  [aCoder encodeValueOfObjCType: "f" at: &point_size];
-  [aCoder encodeValueOfObjCType: @encode(NSFontTraitMask) at: &font_traits];
-
-  // Version 2
-  //[aCoder encodeObject: type_face];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &font_weight];
+  [aCoder encodeObject:fontName];
+  [aCoder encodeArrayOfObjCType:"f" count:6 at:matrix];
 }
 
 - initWithCoder:aDecoder
 {
-  [super initWithCoder:aDecoder];
-
-  family_name = [aDecoder decodeObject];
-  font_name = [aDecoder decodeObject];
-  [aDecoder decodeValueOfObjCType: "f" at: &point_size];
-  [aDecoder decodeValueOfObjCType: @encode(NSFontTraitMask) at: &font_traits];
-
-  // Version 2
-  //type_face = [aDecoder decodeObject];
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &font_weight];
+  fontName = [aDecoder decodeObject];
+  [aDecoder decodeArrayOfObjCType:"f" count:6 at:matrix];
 
   return self;
 }
 
-@end
-
-@implementation NSFont (GNUstepPrivate)
-
-- (void)setFamilyName:(NSString *)familyName
-{
-  NSMutableString *s = [NSMutableString stringWithCString: ""];
-
-  // New family name so new font name
-  // Format is family name, dash, typeface
-  family_name = familyName;
-  [s appendString: family_name];
-
-  if ([type_face compare: @""] != NSOrderedSame)
-    {
-      [s appendString: @"-"];
-      [s appendString: type_face];
-    }
-  font_name = s;
-}
-
-- (void)setFontName:(NSString *)fontName
-{
-  font_name = fontName;
-}
-
-- (void)setPointSize:(float)value
-{
-  point_size = value;
-}
-
-- (NSFontTraitMask)traits
-{
-  return font_traits;
-}
-
-- (void)setTraits:(NSFontTraitMask)traits
-{
-  // Only if the traits have changed
-  if (font_traits != traits)
-    {
-      // Figure out a new typeface
-      NSMutableString *s = [NSMutableString stringWithCString: ""];
-
-      // Bold
-      if (traits & NSBoldFontMask)
-	[s appendString: @"Bold"];
-
-      // +++ How do we determine whether to use Italic or Oblique?
-      if (traits & NSItalicFontMask)
-	[s appendString: @"Italic"];
-
-      [self setTypeface: s];
-    }
-  font_traits = traits;
-}
-
-- (int)weight
-{
-  return font_weight;
-}
-
-- (void)setWeight:(int)value
-{
-  NSFontTraitMask t = font_traits;
-
-  font_weight = value;
-  // Make the font bold or unbold based upon the weight
-  if (font_weight <= 400)
-    t = t ^ NSUnboldFontMask;
-  else
-    t = t ^ NSBoldFontMask;
-  [self setTraits:t];
-}
-
-- (NSString *)typeface
-{
-  return type_face;
-}
-
-- (void)setTypeface:(NSString *)str
-{
-  NSMutableString *s = [NSMutableString stringWithCString: ""];
-
-  // New typeface so new font name
-  // Format is family name, dash, typeface
-  type_face = str;
-  [s appendString: family_name];
-
-  if ([type_face compare: @""] != NSOrderedSame)
-    {
-      [s appendString: @"-"];
-      [s appendString: type_face];
-    }
-  font_name = s;
-}
-
-@end
+@end /* NSFont */

@@ -29,13 +29,15 @@
 #ifndef _GNUstep_H_NSSpellChecker
 #define _GNUstep_H_NSSpellChecker
 
-#include <AppKit/stdappkit.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSPanel.h>
+#include <Foundation/NSObject.h>
 #include <Foundation/NSRange.h>
 
-@interface NSSpellChecker : NSObject
+@class NSString;
+@class NSArray;
+@class NSView;
+@class NSPanel;
 
+@interface NSSpellChecker : NSObject
 {
   // Attributes
 }
@@ -62,10 +64,10 @@
 		      startingAt:(int)startingOffset;
 - (NSRange)checkSpellingOfString:(NSString *)stringToCheck
 		      startingAt:(int)startingOffset
-language:(NSString *)language
-		      wrap:(BOOL)wrapFlag
-inSpellDocumentWithTag:(int)tag
-		      wordCount:(int *)wordCount;
+			language:(NSString *)language
+			    wrap:(BOOL)wrapFlag
+	  inSpellDocumentWithTag:(int)tag
+		       wordCount:(int *)wordCount;
 
 //
 // Setting the Language 
@@ -79,10 +81,10 @@ inSpellDocumentWithTag:(int)tag
 + (int)uniqueSpellDocumentTag;
 - (void)closeSpellDocumentWithTag:(int)tag;
 - (void)ignoreWord:(NSString *)wordToIgnore
-inSpellDocumentWithTag:(int)tag;
+  inSpellDocumentWithTag:(int)tag;
 - (NSArray *)ignoredWordsInSpellDocumentWithTag:(int)tag;
 - (void)setIgnoredWords:(NSArray *)someWords
- inSpellDocumentWithTag:(int)tag;
+  inSpellDocumentWithTag:(int)tag;
 - (void)setWordFieldStringValue:(NSString *)aString;
 - (void)updateSpellingPanelWithMisspelledWord:(NSString *)word;
 

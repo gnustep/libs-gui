@@ -26,9 +26,9 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSColor.h>
-#include <gnustep/gui/NSColorPrivate.h>
-#include <gnustep/gui/NSView.h>
+#include <AppKit/NSColor.h>
+#include <AppKit/NSColorPrivate.h>
+#include <AppKit/NSView.h>
 
 // Class variables
 static BOOL gnustep_gui_ignores_alpha = YES;
@@ -582,8 +582,6 @@ const float NSWhite = 1;
 //
 - (void)encodeWithCoder:aCoder
 {
-  [super encodeWithCoder:aCoder];
-
   // Version 1
   [aCoder encodeValueOfObjCType: "f" at: &RGB_component.red];
   [aCoder encodeValueOfObjCType: "f" at: &RGB_component.green];
@@ -609,7 +607,6 @@ const float NSWhite = 1;
 - initWithCoder:aDecoder
 {
   NSString *s;
-  [super initWithCoder:aDecoder];
 
   // Version 1
   [aDecoder decodeValueOfObjCType: "f" at: &RGB_component.red];
@@ -619,7 +616,7 @@ const float NSWhite = 1;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_clear];
 
   // Get our class name
-  s = [NSString stringWithCString: object_get_class_name(self)];
+  s = NSStringFromClass(isa);
 
   // Version 2
   // +++ Coding cannot return class version yet

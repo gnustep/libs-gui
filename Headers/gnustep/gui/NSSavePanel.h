@@ -29,16 +29,26 @@
 #ifndef _GNUstep_H_NSSavePanel
 #define _GNUstep_H_NSSavePanel
 
-#include <AppKit/stdappkit.h>
-#include <AppKit/NSPanel.h>
-#include <AppKit/NSView.h>
 #include <Foundation/NSCoder.h>
 
+@class NSString;
+@class NSView;
+
+enum {
+  NSFileHandlingPanelImageButton,
+  NSFileHandlingPanelTitleField,
+  NSFileHandlingPanelBrowser,
+  NSFileHandlingPanelCancelButton,
+  NSFileHandlingPanelOKButton,
+  NSFileHandlingPanelForm, 
+  NSFileHandlingPanelHomeButton, 
+  NSFileHandlingPanelDiskButton, 
+  NSFileHandlingPanelDiskEjectButton 
+};
 
 // Should be subclassed from NSPanel but
 //   we are using the WIN32 common dialog
 @interface NSSavePanel : NSObject <NSCoding>
-
 {
   // Attributes
   NSView *accessory_view;
@@ -113,12 +123,12 @@
 //
 - (NSComparisonResult)panel:(id)sender
 	    compareFilename:(NSString *)filename1
-with:(NSString *)filename2
-	    caseSensitive:(BOOL)caseSensitive;	 
+		       with:(NSString *)filename2
+	      caseSensitive:(BOOL)caseSensitive;	 
 - (BOOL)panel:(id)sender
-shouldShowFilename:(NSString *)filename;
+  shouldShowFilename:(NSString *)filename;
 - (BOOL)panel:(id)sender
-isValidFilename:(NSString*)filename;
+  isValidFilename:(NSString*)filename;
 
 //
 // NSCoding protocol

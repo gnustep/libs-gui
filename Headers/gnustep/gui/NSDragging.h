@@ -28,11 +28,21 @@
 #ifndef _GNUstep_H_NSDragging
 #define _GNUstep_H_NSDragging
 
-#include <AppKit/stdappkit.h>
+#include <objc/Protocol.h>
+#include <Foundation/NSGeometry.h>
 
 @class NSWindow;
-@class NSPasteBoard;
+@class NSPasteboard;
 @class NSImage;
+
+typedef enum _NSDragOperation {
+  NSDragOperationNone,
+  NSDragOperationCopy,
+  NSDragOperationLink,
+  NSDragOperationGeneric,
+  NSDragOperationPrivate,
+  NSDragOperationAll   
+} NSDragOperation;
 
 @protocol NSDraggingInfo
 

@@ -28,13 +28,275 @@
 #ifndef _GNUstep_H_NSCStringText
 #define _GNUstep_H_NSCStringText
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSText.h>
-#include <Foundation/NSCoder.h>
+#include <AppKit/NSFontManager.h>
 
 @class NSCell;
 @class NSPasteBoard;
 
+typedef short NSLineDesc;
+
+typedef struct _NSTextChunk {
+  short   growby;
+  int allocated;
+  int used;
+} NSTextChunk;
+
+typedef struct _NSBreakArray {
+  NSTextChunk chunk;
+  NSLineDesc  breaks[1];
+} NSBreakArray;
+
+typedef struct _NSCharArray {
+  NSTextChunk chunk;
+  unsigned char text[1];
+} NSCharArray;
+
+typedef unsigned short (*NSCharFilterFunc) (unsigned short charCode,
+					    int flags, 
+					    NSStringEncoding theEncoding);
+
+typedef struct _NSFSM {
+  const struct _NSFSM  *next;
+  short   delta;
+  short   token;
+} NSFSM;
+
+typedef struct _NSHeightInfo {
+  float newHeight;
+  float oldHeight;
+  NSLineDesc  lineDesc;
+} NSHeightInfo;
+
+typedef struct _NSHeightChange {
+  NSLineDesc  lineDesc;
+  NSHeightInfo heightInfo;
+} NSHeightChange;
+
+typedef struct {
+  unsigned int underline:1;
+  unsigned int dummy:1;
+  unsigned int subclassWantsRTF:1;
+  unsigned int graphic:1;
+  unsigned int forcedSymbol:1;
+  unsigned int RESERVED:11;
+} NSRunFlags;
+
+typedef struct _NSRun {
+  id  font;
+  int chars;
+  void   *paraStyle;
+  int  textRGBColor;
+  unsigned char   superscript;
+  unsigned char   subscript;
+  id   info;
+  NSRunFlags rFlags;
+} NSRun;
+
+typedef struct {
+  unsigned int mustMove:1;
+  unsigned int isMoveChar:1;
+  unsigned int RESERVED:14;
+} NSLayFlags;
+
+typedef struct _NSLay {
+  float x;
+  float y;
+  short   offset;
+  short   chars;
+  id  font;
+  void   *paraStyle;
+  NSRun *run;
+  NSLayFlags lFlags;
+} NSLay;
+
+typedef struct _NSLayArray {
+  NSTextChunk chunk;
+  NSLay   lays[1];
+} NSLayArray;
+
+typedef struct _NSWidthArray {
+  NSTextChunk chunk;
+  float widths[1];
+} NSWidthArray;
+
+typedef struct _NSTextBlock {
+  struct _NSTextBlock *next;
+  struct _NSTextBlock *prior;
+  struct _tbFlags {
+    unsigned int malloced:1;
+    unsigned int PAD:15;
+  } tbFlags;
+  short   chars;
+  unsigned char *text;
+} NSTextBlock;
+
+typedef struct _NSTextCache {
+  int curPos;
+  NSRun *curRun;
+  int runFirstPos;
+  NSTextBlock *curBlock;
+  int blockFirstPos;
+} NSTextCache;
+
+typedef struct _NSLayInfo {
+  NSRect rect;
+  float descent;
+  float width;
+  float left;
+  float right;
+  float rightIndent;
+  NSLayArray *lays;
+  NSWidthArray *widths;
+  NSCharArray *chars;
+  NSTextCache cache;
+  NSRect *textClipRect;
+  struct _lFlags {
+    unsigned int horizCanGrow:1;
+    unsigned int vertCanGrow:1;
+    unsigned int erase:1;
+    unsigned int ping:1;
+    unsigned int endsParagraph:1;
+    unsigned int resetCache:1;
+    unsigned int RESERVED:10;
+  } lFlags;
+} NSLayInfo;
+
+typedef enum _NSParagraphProperty {
+  NSLeftAlignedParagraph,
+  NSRightAlignedParagraph,
+  NSCenterAlignedParagraph,
+  NSJustificationAlignedParagraph,
+  NSFirstIndentParagraph,
+  NSIndentParagraph,
+  NSAddTabParagraph,
+  NSRemoveTabParagraph,
+  NSLeftMarginParagraph,
+  NSRightMarginParagraph  
+} NSParagraphProperty;
+
+typedef struct _NSRunArray {
+  NSTextChunk chunk;
+  NSRun   runs[1];
+} NSRunArray;
+
+typedef struct _NSSelPt {
+  int cp;
+  int line;
+  float x;
+  float y;
+  int c1st;
+  float ht;
+} NSSelPt;
+
+typedef struct _NSTabStop {
+  short   kind;
+  float x;
+} NSTabStop;
+
+typedef char  *(*NSTextFilterFunc) (id self,
+				    unsigned char * insertText, 
+				    int *insertLength, 
+				    int position);
+
+typedef int (*NSTextFunc) (id self,
+			   NSLayInfo *layInfo);
+
+typedef struct _NSTextStyle {
+  float indent1st;
+  float indent2nd;
+  float lineHt;
+  float descentLine;
+  NSTextAlignment   alignment;
+  short   numTabs;
+  NSTabStop  *tabs;
+} NSTextStyle;
+
+enum {
+  NSLeftTab
+};
+
+enum {
+  NSBackspaceKey   = 8,
+  NSCarriageReturnKey   = 13,
+  NSDeleteKey= 0x7f,
+  NSBacktabKey   = 25
+};
+
+enum {
+  NSTextBlockSize   = 512
+};
+
+//
+// NSCStringText Internal State Structure
+//
+typedef struct _NSCStringTextInternalState  {
+  const NSFSM *breakTable;
+  const NSFSM *clickTable;
+  const unsigned char *preSelSmartTable;
+  const unsigned char *postSelSmartTable;
+  const unsigned char *charCategoryTable;
+  char delegateMethods;
+  NSCharFilterFunc charFilterFunc;
+  NSTextFilterFunc textFilterFunc;
+  NSString *_string;
+  NSTextFunc scanFunc;
+  NSTextFunc drawFunc;
+  id delegate;
+  int tag;
+  void *cursorTE;
+  NSTextBlock *firstTextBlock;
+  NSTextBlock *lastTextBlock;
+  NSRunArray  *theRuns;
+  NSRun  typingRun;
+  NSBreakArray *theBreaks;
+  int growLine;
+  int textLength;
+  float maxY;
+  float maxX;
+  NSRect bodyRect;
+  float borderWidth;
+  char clickCount;
+  NSSelPt sp0;
+  NSSelPt spN;
+  NSSelPt anchorL;
+  NSSelPt anchorR;
+  NSSize maxSize;
+  NSSize minSize;
+  struct _tFlags {
+#ifdef __BIG_ENDIAN__
+    unsigned int _editMode:2;
+    unsigned int _selectMode:2;
+    unsigned int _caretState:2;
+    unsigned int changeState:1;
+    unsigned int charWrap:1;
+    unsigned int haveDown:1;
+    unsigned int anchorIs0:1;
+    unsigned int horizResizable:1;
+    unsigned int vertResizable:1;
+    unsigned int overstrikeDiacriticals:1;
+    unsigned int monoFont:1;
+    unsigned int disableFontPanel:1;
+    unsigned int inClipView:1;
+#else
+    unsigned int inClipView:1;
+    unsigned int disableFontPanel:1;
+    unsigned int monoFont:1;
+    unsigned int overstrikeDiacriticals:1;
+    unsigned int vertResizable:1;
+    unsigned int horizResizable:1;
+    unsigned int anchorIs0:1;
+    unsigned int haveDown:1;
+    unsigned int charWrap:1;
+    unsigned int changeState:1;
+    unsigned int _caretState:2;
+    unsigned int _selectMode:2;
+    unsigned int _editMode:2;
+#endif
+  } tFlags;
+  void *_info;
+  void *_textStr;
+}  NSCStringTextInternalState;
 
 
 @interface NSCStringText : NSText
@@ -293,5 +555,94 @@
 - (void)ignoreSpelling:(id)sender;
 
 @end
+
+//
+// Break Tables 
+//
+extern const NSFSM *NSCBreakTable;
+extern int NSCBreakTableSize;
+extern const NSFSM *NSEnglishBreakTable;
+extern int NSEnglishBreakTableSize;
+extern const NSFSM *NSEnglishNoBreakTable;
+extern int NSEnglishNoBreakTableSize;
+
+//
+// Character Category Tables 
+//
+extern const unsigned char *NSCCharCatTable;
+extern const unsigned char *NSEnglishCharCatTable;
+
+//
+// Click Tables 
+//
+extern const NSFSM *NSCClickTable;
+extern int NSCClickTableSize;
+extern const NSFSM *NSEnglishClickTable;
+extern int NSEnglishClickTableSize;
+
+//
+// Smart Cut and Paste Tables 
+//
+extern const unsigned char *NSCSmartLeftChars;
+extern const unsigned char *NSCSmartRightChars;
+extern const unsigned char *NSEnglishSmartLeftChars;
+extern const unsigned char *NSEnglishSmartRightChars;
+
+//
+// Calculate or Draw a Line of Text (in Text Object)
+//
+int NSDrawALine(id self, NSLayInfo *layInfo);
+int NSScanALine(id self, NSLayInfo *layInfo);
+
+//
+// Calculate Font Ascender, Descender, and Line Height (in Text Object)
+//
+void NSTextFontInfo(id fid, 
+		    float *ascender, float *descender, 
+		    float *lineHeight);
+
+//
+// Access Text Object's Word Tables
+//
+NSData * NSDataWithWordTable(const unsigned char *smartLeft,
+			     const unsigned char *smartRight,
+			     const unsigned char *charClasses,
+			     const NSFSM *wrapBreaks,
+			     int wrapBreaksCount,
+			     const NSFSM *clickBreaks, 
+			     int clickBreaksCount, 
+			     BOOL charWrap);
+void NSReadWordTable(NSZone *zone,
+		     NSData *data,
+		     unsigned char **smartLeft,
+		     unsigned char **smartRight,
+		     unsigned char **charClasses,
+		     NSFSM **wrapBreaks,
+		     int *wrapBreaksCount,
+		     NSFSM **clickBreaks,
+		     int *clickBreaksCount, 
+		     BOOL *charWrap);
+
+//
+// Array Allocation Functions for Use by the NSText Class
+//
+NSTextChunk *NSChunkCopy(NSTextChunk *pc, NSTextChunk *dpc);
+NSTextChunk *NSChunkGrow(NSTextChunk *pc, int newUsed);
+NSTextChunk *NSChunkMalloc(int growBy, int initUsed);
+NSTextChunk *NSChunkRealloc(NSTextChunk *pc);
+NSTextChunk *NSChunkZoneCopy(NSTextChunk *pc, 
+                             NSTextChunk *dpc,
+                             NSZone *zone);
+NSTextChunk *NSChunkZoneGrow(NSTextChunk *pc, int newUsed, NSZone *zone);
+NSTextChunk *NSChunkZoneMalloc(int growBy, int initUsed, NSZone *zone);
+NSTextChunk *NSChunkZoneRealloc(NSTextChunk *pc, NSZone *zone);
+
+//
+// Filter Characters Entered into a Text Object
+//
+unsigned short NSEditorFilter(unsigned short theChar, 
+			      int flags, NSStringEncoding theEncoding);
+unsigned short NSFieldFilter(unsigned short theChar, 
+			     int flags, NSStringEncoding theEncoding);
 
 #endif // _GNUstep_H_NSCStringText

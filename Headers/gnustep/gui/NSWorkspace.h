@@ -29,13 +29,16 @@
 #ifndef _GNUstep_H_NSWorkspace
 #define _GNUstep_H_NSWorkspace
 
-#include <AppKit/stdappkit.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSView.h>
-#include <Foundation/NSNotification.h>
+#include <Foundation/NSObject.h>
+#include <Foundation/NSGeometry.h>
+
+@class NSString;
+@class NSArray;
+@class NSNotificationCenter;
+@class NSImage;
+@class NSView;
 
 @interface NSWorkspace : NSObject
-
 {
   // Attributes
 }
@@ -51,13 +54,13 @@
 - (BOOL)openFile:(NSString *)fullPath;
 - (BOOL)openFile:(NSString *)fullPath
        fromImage:(NSImage *)anImage
-at:(NSPoint)point
-       inView:(NSView *)aView;
+	      at:(NSPoint)point
+	  inView:(NSView *)aView;
 - (BOOL)openFile:(NSString *)fullPath
- withApplication:(NSString *)appName;
+  withApplication:(NSString *)appName;
 - (BOOL)openFile:(NSString *)fullPath
- withApplication:(NSString *)appName
-andDeactivate:(BOOL)flag;
+  withApplication:(NSString *)appName
+  andDeactivate:(BOOL)flag;
 - (BOOL)openTempFile:(NSString *)fullPath;
 
 //
@@ -65,11 +68,11 @@ andDeactivate:(BOOL)flag;
 //
 - (BOOL)performFileOperation:(NSString *)operation
 		      source:(NSString *)source
-destination:(NSString *)destination
-		      files:(NSArray *)files
-tag:(int *)tag;
+		 destination:(NSString *)destination
+		       files:(NSArray *)files
+			 tag:(int *)tag;
 - (BOOL)selectFile:(NSString *)fullPath
-inFileViewerRootedAtPath:(NSString *)rootFullpath;
+  inFileViewerRootedAtPath:(NSString *)rootFullpath;
 
 //
 // Requesting Information about Files
@@ -77,13 +80,13 @@ inFileViewerRootedAtPath:(NSString *)rootFullpath;
 - (NSString *)fullPathForApplication:(NSString *)appName;
 - (BOOL)getFileSystemInfoForPath:(NSString *)fullPath
 		     isRemovable:(BOOL *)removableFlag
-isWritable:(BOOL *)writableFlag
-		     isUnmountable:(BOOL *)unmountableFlag
-description:(NSString **)description
-		     type:(NSString **)fileSystemType;
+		      isWritable:(BOOL *)writableFlag
+		    isUnmountable:(BOOL *)unmountableFlag
+		      description:(NSString **)description
+			     type:(NSString **)fileSystemType;
 - (BOOL)getInfoForFile:(NSString *)fullPath
 	   application:(NSString **)appName
-type:(NSString **)type;
+		  type:(NSString **)type;
 - (NSImage *)iconForFile:(NSString *)fullPath;
 - (NSImage *)iconForFiles:(NSArray *)pathArray;
 - (NSImage *)iconForFileType:(NSString *)fileType;
@@ -106,7 +109,7 @@ type:(NSString **)type;
 - (BOOL)launchApplication:(NSString *)appName;
 - (BOOL)launchApplication:(NSString *)appName
 		 showIcon:(BOOL)showIcon
-autolaunch:(BOOL)autolaunch;
+	       autolaunch:(BOOL)autolaunch;
 
 //
 // Unmounting a Device	
@@ -136,7 +139,7 @@ autolaunch:(BOOL)autolaunch;
 //
 - (void)slideImage:(NSImage *)image
 	      from:(NSPoint)fromPoint
-to:(NSPoint)toPoint;
+		to:(NSPoint)toPoint;
 
 //
 // Requesting Additional Time before Power Off or Logout
@@ -144,5 +147,39 @@ to:(NSPoint)toPoint;
 - (int)extendPowerOffBy:(int)requested;
 
 @end
+
+
+/* Notifications */
+extern NSString *NSWorkspaceDidLaunchApplicationNotification;
+extern NSString *NSWorkspaceDidMountNotification;
+extern NSString *NSWorkspaceDidPerformFileOperationNotification;
+extern NSString *NSWorkspaceDidTerminateApplicationNotification;
+extern NSString *NSWorkspaceDidUnmountNotification;
+extern NSString *NSWorkspaceWillLaunchApplicationNotification;
+extern NSString *NSWorkspaceWillPowerOffNotification;
+extern NSString *NSWorkspaceWillUnmountNotification;
+
+//
+// Workspace File Type Globals 
+//
+extern NSString *NSPlainFileType;
+extern NSString *NSDirectoryFileType;
+extern NSString *NSApplicationFileType;
+extern NSString *NSFilesystemFileType;
+extern NSString *NSShellCommandFileType;
+
+//
+// Workspace File Operation Globals 
+//
+extern NSString *NSWorkspaceCompressOperation;
+extern NSString *NSWorkspaceCopyOperation;
+extern NSString *NSWorkspaceDecompressOperation;
+extern NSString *NSWorkspaceDecryptOperation;
+extern NSString *NSWorkspaceDestroyOperation;
+extern NSString *NSWorkspaceDuplicateOperation;
+extern NSString *NSWorkspaceEncryptOperation;
+extern NSString *NSWorkspaceLinkOperation;
+extern NSString *NSWorkspaceMoveOperation;
+extern NSString *NSWorkspaceRecycleOperation;
 
 #endif // _GNUstep_H_NSWorkspace

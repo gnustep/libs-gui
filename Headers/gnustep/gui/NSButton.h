@@ -29,13 +29,13 @@
 #ifndef _GNUstep_H_NSButton
 #define _GNUstep_H_NSButton
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSControl.h>
-#include <DPSClient/DPSOperators.h>
-#include <Foundation/NSCoder.h>
+#include <AppKit/NSButtonCell.h>
+
+@class NSString;
+@class NSEvent;
 
 @interface NSButton : NSControl <NSCoding>
-
 {
   // Attributes
 }
@@ -49,7 +49,7 @@
 //
 // Setting the Button Type 
 //
-- (void)setType:(NSButtonType)aType;
+- (void)setButtonType:(NSButtonType)aType;
 
 //
 // Setting the State 

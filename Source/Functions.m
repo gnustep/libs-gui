@@ -26,10 +26,15 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/Functions.h>
-#include <gnustep/gui/LogFile.h>
 #include <stdio.h>
 #include <stdarg.h>
+
+#include <AppKit/NSGraphics.h>
+
+#ifndef LIB_FOUNDATION_LIBRARY
+
+#include <Foundation/NSString.h>
+#include <gnustep/gui/LogFile.h>
 
 // Should be in Foundation Kit
 // Does not handle %@
@@ -51,7 +56,18 @@ void NSLog(NSString *format, ...)
 	NSLogV(format, ap);
 	va_end(ap);
 }
+#endif /* LIB_FOUNDATION_LIBRARY */
 
 void NSNullLog(NSString *format, ...)
 {
+}
+
+//
+// Play the System Beep
+//
+void NSBeep(void)
+{
+#ifdef WIN32
+	MessageBeep(MB_OK);
+#endif
 }

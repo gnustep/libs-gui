@@ -29,14 +29,16 @@
 #ifndef _GNUstep_H_NSControl
 #define _GNUstep_H_NSControl
 
-#include <AppKit/stdappkit.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSCell.h>
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSNotification.h>
+#include <AppKit/NSText.h>
+
+@class NSString;
+@class NSNotification;
+
+@class NSCell;
+@class NSFont;
+@class NSEvent;
 
 @interface NSControl : NSView <NSCoding>
-
 {
   // Attributes
   int tag;
@@ -98,7 +100,7 @@
 - (void)setFont:(NSFont *)fontObject;
 - (void)setFloatingPointFormat:(BOOL)autoRange
 			  left:(unsigned)leftDigits
-right:(unsigned)rightDigits;
+			 right:(unsigned)rightDigits;
 
 //
 // Managing the Field Editor 
@@ -152,9 +154,9 @@ right:(unsigned)rightDigits;
 // Methods Implemented by the Delegate
 //
 - (BOOL)control:(NSControl *)control
-textShouldBeginEditing:(NSText *)fieldEditor;
+  textShouldBeginEditing:(NSText *)fieldEditor;
 - (BOOL)control:(NSControl *)control
-textShouldEndEditing:(NSText *)fieldEditor;
+  textShouldEndEditing:(NSText *)fieldEditor;
 - (void)controlTextDidBeginEditing:(NSNotification *)aNotification;
 - (void)controlTextDidEndEditing:(NSNotification *)aNotification;
 - (void)controlTextDidChange:(NSNotification *)aNotification;
@@ -166,5 +168,9 @@ textShouldEndEditing:(NSText *)fieldEditor;
 - initWithCoder:aDecoder;
 
 @end
+
+extern NSString *NSControlTextDidBeginEditingNotification;
+extern NSString *NSControlTextDidEndEditingNotification;
+extern NSString *NSControlTextDidChangeNotification;
 
 #endif // _GNUstep_H_NSControl

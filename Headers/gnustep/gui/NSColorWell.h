@@ -29,10 +29,9 @@
 #ifndef _GNUstep_H_NSColorWell
 #define _GNUstep_H_NSColorWell
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSControl.h>
-#include <Foundation/NSCoder.h>
-#include <AppKit/NSColor.h>
+
+@class NSColor;
 
 @interface NSColorWell : NSControl <NSCoding>
 
@@ -41,9 +40,6 @@
   NSColor *the_color;
   BOOL is_active;
   BOOL is_bordered;
-
-  // Reserved for back-end use
-  void *be_cwell_reserved;
 }
 
 //
@@ -76,15 +72,6 @@
 //
 - (void)encodeWithCoder:aCoder;
 - initWithCoder:aDecoder;
-
-@end
-
-//
-// GNUstep backend methods
-//
-@interface NSColorWell (GNUstepBackend)
-
-- (void)drawBorderRect:(NSRect)aRect;
 
 @end
 

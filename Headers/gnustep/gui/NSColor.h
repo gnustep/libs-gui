@@ -29,8 +29,10 @@
 #ifndef _GNUstep_H_NSColor
 #define _GNUstep_H_NSColor
 
-#include <AppKit/stdappkit.h>
 #include <Foundation/NSCoder.h>
+
+@class NSString;
+@class NSDictionary;
 
 @class NSPasteboard;
 
@@ -40,8 +42,28 @@
 #define GNUSTEP_GUI_HSB_ACTIVE 3
 #define GNUSTEP_GUI_WHITE_ACTIVE 4
 
-@interface NSColor : NSObject <NSCoding>
+enum {
+  NSGrayModeColorPanel,
+  NSRGBModeColorPanel,
+  NSCMYKModeColorPanel,
+  NSHSBModeColorPanel,
+  NSCustomPaletteModeColorPanel,
+  NSColorListModeColorPanel,
+  NSWheelModeColorPanel 
+};
 
+enum {
+  NSColorPanelGrayModeMask,
+  NSColorPanelRGBModeMask,
+  NSColorPanelCMYKModeMask,
+  NSColorPanelHSBModeMask,
+  NSColorPanelCustomPaletteModeMask,
+  NSColorPanelColorListModeMask,
+  NSColorPanelWheelModeMask,
+  NSColorPanelAllModesMask  
+};
+
+@interface NSColor : NSObject <NSCoding>
 {
   // Attributes
   NSString *colorspace_name;

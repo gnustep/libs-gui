@@ -26,9 +26,11 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSOpenPanel.h>
+#include <string.h>
+#include <Foundation/NSArray.h>
+#include <AppKit/NSOpenPanel.h>
 
-NSOpenPanel *MB_THE_OPEN_PANEL;
+static NSOpenPanel *MB_THE_OPEN_PANEL = nil;
 
 @implementation NSOpenPanel
 
@@ -130,6 +132,7 @@ NSOpenPanel *MB_THE_OPEN_PANEL;
 //
 - (int)runModalForTypes:(NSArray *)fileTypes
 {
+  return 0;
 }
 
 - (int)runModalForDirectory:(NSString *)path

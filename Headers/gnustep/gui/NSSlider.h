@@ -29,12 +29,16 @@
 #ifndef _GNUstep_H_NSSlider
 #define _GNUstep_H_NSSlider
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSControl.h>
-#include <Foundation/NSCoder.h>
+
+@class NSString;
+@class NSImage;
+@class NSCell;
+@class NSFont;
+@class NSColor;
+@class NSEvent;
 
 @interface NSSlider : NSControl <NSCoding>
-
 {
   // Attributes
 }

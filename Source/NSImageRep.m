@@ -33,9 +33,10 @@
 #include <AppKit/NSImageRep.h>
 #include <AppKit/NSBitmapImageRep.h>
 #include <AppKit/NSEPSImageRep.h>
+#include <AppKit/NSPasteboard.h>
 
 // NSImageRep notifications
-NSString *NSImageRepRegistryChangedNotification;
+NSString *NSImageRepRegistryChangedNotification = @"NSImageRepRegistryChangedNotification";
 
 /* Backend protocol - methods that must be implemented by the backend to
    complete the class */
@@ -373,8 +374,6 @@ extension(NSString *name)
 // NSCoding protocol
 - (void) encodeWithCoder: aCoder
 {
-  [super encodeWithCoder: aCoder];
-
   [aCoder encodeObject: _colorSpace];
   [aCoder encodeSize: size];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &hasAlpha];
@@ -386,8 +385,6 @@ extension(NSString *name)
 
 - initWithCoder: aDecoder
 {
-  self = [super initWithCoder: aDecoder];
-
   _colorSpace = [[aDecoder decodeObject] retain];
   size = [aDecoder decodeSize];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &hasAlpha];

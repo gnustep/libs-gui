@@ -29,12 +29,13 @@
 #ifndef _GNUstep_H_NSScreen
 #define _GNUstep_H_NSScreen
 
-#include <AppKit/stdappkit.h>
-#include <AppKit/TypesandConstants.h>
-#include <Foundation/NSDictionary.h>
+#include <Foundation/NSObject.h>
+#include <AppKit/NSGraphics.h>
+
+@class NSDictionary;
+@class NSMutableDictionary;
 
 @interface NSScreen : NSObject
-
 {
   // Attributes
   NSMutableDictionary *device_desc;

@@ -26,8 +26,8 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSDataLink.h>
-#include <gnustep/gui/NSDataLinkManager.h>
+#include <AppKit/NSDataLink.h>
+#include <AppKit/NSDataLinkManager.h>
 
 // Global strings
 NSString *NSDataLinkFileNameExtension = @"dlf";
@@ -188,13 +188,10 @@ supportingTypes:(NSArray *)newTypes
 //
 - (void)encodeWithCoder:aCoder
 {
-  [super encodeWithCoder:aCoder];
 }
 
 - initWithCoder:aDecoder
 {
-  [super initWithCoder:aDecoder];
-
   return self;
 }
 

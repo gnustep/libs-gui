@@ -29,13 +29,12 @@
 #ifndef _GNUstep_H_NSCachedImageRep
 #define _GNUstep_H_NSCachedImageRep
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSImageRep.h>
-#include <AppKit/NSWindow.h>
-#include <Foundation/NSCoder.h>
+#include <AppKit/NSGraphics.h>
+
+@class NSWindow;
 
 @interface NSCachedImageRep : NSImageRep <NSCoding>
-
 {
   // Attributes
   NSRect      _rect;

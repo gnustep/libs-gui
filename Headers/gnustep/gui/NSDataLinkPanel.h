@@ -29,15 +29,13 @@
 #ifndef _GNUstep_H_NSDataLinkPanel
 #define _GNUstep_H_NSDataLinkPanel
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSPanel.h>
-#include <AppKit/NSDataLink.h>
-#include <Foundation/NSCoder.h>
-#include <AppKit/NSApplication.h>
 
+@class NSDataLink;
+@class NSDataLinkManager;
+@class NSView;
 
 @interface NSDataLinkPanel : NSPanel <NSCoding>
-
 {
   // Attributes
 }
@@ -52,16 +50,16 @@
 //
 + (void)getLink:(NSDataLink **)link
 	manager:(NSDataLinkManager **)linkManager
-isMultiple:(BOOL *)flag;
+     isMultiple:(BOOL *)flag;
 + (void)setLink:(NSDataLink *)link
 	manager:(NSDataLinkManager *)linkManager
-isMultiple:(BOOL)flag;
+     isMultiple:(BOOL)flag;
 - (void)getLink:(NSDataLink **)link
 	manager:(NSDataLinkManager **)linkManager
-isMultiple:(BOOL *)flag;
+     isMultiple:(BOOL *)flag;
 - (void)setLink:(NSDataLink *)link
 	manager:(NSDataLinkManager *)linkManager
-isMultiple:(BOOL)flag;
+     isMultiple:(BOOL)flag;
 
 //
 // Customizing the Panel

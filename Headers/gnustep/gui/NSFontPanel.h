@@ -29,12 +29,23 @@
 #ifndef _GNUstep_H_NSFontPanel
 #define _GNUstep_H_NSFontPanel
 
-#include <AppKit/stdappkit.h>
+#include <DPSClient/TypesandConstants.h>
 #include <AppKit/NSPanel.h>
-#include <Foundation/NSCoder.h>
+
+@class NSFont;
+@class NSView;
+
+enum {
+  NSFPPreviewButton,
+  NSFPRevertButton,
+  NSFPSetButton,
+  NSFPPreviewField,
+  NSFPSizeField,
+  NSFPSizeTitle,
+  NSFPCurrentField
+};
 
 @interface NSFontPanel : NSPanel <NSCoding>
-
 {
   // Attributes
   NSFont *panel_font;

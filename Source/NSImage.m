@@ -30,22 +30,23 @@
 	(findImageNamed:).
 	[3] bestRepresentation is not complete.
 */
+#include <string.h>
+
+#include <Foundation/NSException.h>
+#include <Foundation/NSArray.h>
+#include <Foundation/NSValue.h>
+#include <Foundation/NSDictionary.h>
+#include <Foundation/NSBundle.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSBitmapImageRep.h>
 #include <AppKit/NSCachedImageRep.h>
 #include <AppKit/NSView.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSScreen.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSValue.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSBundle.h>
-#include <string.h>
+#include <AppKit/NSColor.h>
 
-#ifndef NSImage_PATH
-#define NSImage_PATH OBJC_STRINGIFY(GNUSTEP_INSTALL_LIBDIR) @"/Images"
-#endif
+static NSString* NSImage_PATH
+    = @GNUSTEP_INSTALL_LIBDIR @"/Images";
 
 /* Backend protocol - methods that must be implemented by the backend to
    complete the class */
@@ -187,11 +188,12 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
       /* If not found then search in system */
       if (!path)
 	{
+	  NSArray* dirsArray = [NSArray arrayWithObject:NSImage_PATH];
+
 	  if (ext)
 	    path = [NSBundle pathForResource: aName
 			     ofType: ext
-			     inDirectory: NSImage_PATH
-			     withVersion: 0];
+			     inDirectories:dirsArray];
 	  else 
 	    {
 	      id o, e;
@@ -203,11 +205,10 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
 	      e = [array objectEnumerator];
 	      while ((o = [e nextObject]))
 		{
-		  NSLog(@"extension %s\n", [o cString]);
+		  NSLog(@"extension %s, array = %@\n", [o cString], dirsArray);
 		  path = [NSBundle pathForResource: aName
 				   ofType: o
-				   inDirectory: NSImage_PATH
-				   withVersion: 0];
+				   inDirectories:dirsArray];
 		  if ([path length] != 0)
 		    break;
 		}
@@ -322,7 +323,7 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
   NSImage* copy;
 
   // FIXME: maybe we should retain if _flags.dataRetained = NO
-  copy = [super copyWithZone: zone];
+  copy = (NSImage*)NSAllocateObject (isa, 0, zone);
 
   [name retain];
   [_color retain];
@@ -339,6 +340,11 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
 
   if (!string || [nameDict objectForKey: string])
     return NO;
+
+  [string retain];
+  [name release];
+  name = string;
+
   [nameDict setObject: self forKey: name];
   return YES;
 }
@@ -413,7 +419,7 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
 // Determining How the Image is Drawn 
 - (BOOL) isValid
 {
-  BOOL valid;
+  BOOL valid = NO;
   int i, count;
 
   /* Go through all our representations and determine if at least one
@@ -611,7 +617,7 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
 
   ok = NO;
   rep = [NSImageRep imageRepClassForData: data];
-  if (rep && [rep respondsTo: @selector(imageRepsWithData:)])
+  if (rep && [rep respondsToSelector: @selector(imageRepsWithData:)])
     {
       NSArray* array;
       array = [rep imageRepsWithData: data];
@@ -733,8 +739,11 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
 
 - (void) lockFocusOnRepresentation: (NSImageRep *)imageRep
 {
+#if 0
   NSScreen *cur = [NSScreen mainScreen];
   NSWindow *window;
+#endif
+
   if (!imageRep)
     [NSException raise: NSInvalidArgumentException
       format: @"Cannot lock focus on nil rep"];
@@ -873,12 +882,10 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
 // NSCoding
 - (void)encodeWithCoder:(NSCoder *)coder
 {
-  [super encodeWithCoder:coder];
 }
 
 - (id)initWithCoder:(NSCoder *)coder
 {
-  self = [super initWithCoder:coder];
   return self;
 }
 
@@ -941,7 +948,7 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
 {
   NSImageRep *rep;
   id e;
-  int i, count;
+//  int i, count;
   NSMutableArray* types;
 
   types = [NSMutableArray arrayWithCapacity: 2];

@@ -26,11 +26,11 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSSplitView.h>
+#include <AppKit/NSSplitView.h>
 
 // NSSplitView notifications
-NSString *NSSplitViewDidResizeSubviewsNotification;
-NSString *NSSplitViewWillResizeSubviewsNotification;
+NSString *NSSplitViewDidResizeSubviewsNotification = @"NSSplitViewDidResizeSubviewsNotification";
+NSString *NSSplitViewWillResizeSubviewsNotification = @"NSSplitViewWillResizeSubviewsNotification";
 
 @implementation NSSplitView
 

@@ -26,22 +26,24 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSView.h>
-#include <gnustep/gui/NSWindow.h>
-#include <gnustep/base/NSCoder.h>
-#include <gnustep/base/NSDictionary.h>
-#include <gnustep/base/NSThread.h>
-#include <gnustep/base/NSLock.h>
+#include <Foundation/NSCoder.h>
+#include <Foundation/NSDictionary.h>
+#include <Foundation/NSThread.h>
+#include <Foundation/NSLock.h>
+#include <Foundation/NSArray.h>
+#include <AppKit/NSView.h>
+#include <AppKit/NSWindow.h>
+#include <gnustep/gui/TrackingRectangle.h>
 
 //
 // Class variables
 //
-NSMutableDictionary *gnustep_gui_nsview_thread_dict;
-NSRecursiveLock *gnustep_gui_nsview_lock;
+static NSMutableDictionary *gnustep_gui_nsview_thread_dict = nil;
+static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
 // NSView notifications
-NSString *NSViewFrameChangedNotification;
-NSString *NSViewFocusChangedNotification;
+NSString *NSViewFrameChangedNotification = @"NSViewFrameChangedNotification";
+NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
 
 @implementation NSView
 
@@ -153,9 +155,6 @@ NSString *NSViewFocusChangedNotification;
   // Initialize tracking rectangle list
   tracking_rects = [NSMutableArray array];
 
-  // Initialize cursor rect list
-  cursor_rects = [NSMutableArray array];
-
   super_view = nil;
   window = nil;
   is_flipped = NO;
@@ -188,11 +187,6 @@ NSString *NSViewFocusChangedNotification;
   for (i = 0;i < j; ++i)
     [[tracking_rects objectAtIndex:i] release];
 
-  // Free the cursor rectangles
-  j = [cursor_rects count];
-  for (i = 0;i < j; ++i)
-    [[cursor_rects objectAtIndex:i] release];
-
   [super dealloc];
 }
 
@@ -202,20 +196,8 @@ NSString *NSViewFocusChangedNotification;
 - (void)addSubview:(NSView *)aView
 {
   // Not a NSView --then forget it
-  // xxx but NSView will really be the backend class
-  // so how do we check that its really a subclass of NSView
-  // and not of the backend class?
-#if 0
   if (![aView isKindOfClass:[NSView class]])
     {
-      return;
-    }
-#endif
-
-  // make sure we aren't making ourself a subview of ourself
-  if (self == aView)
-    {
-      NSLog(@"Attempt to make view a subview of itself\n");
       return;
     }
 
@@ -234,14 +216,9 @@ NSString *NSViewFocusChangedNotification;
 	relativeTo:(NSView *)otherView
 {
   // Not a NSView --then forget it
-  // xxx but NSView will really be the backend class
-  // so how do we check that its really a subclass of NSView
-  // and not of the backend class?
-#if 0
   if (![aView isKindOfClass:[NSView class]]) return;
-#endif
 
-  // retain the object
+	// retain the object
   [aView retain];
 
   // Add to our subview list
@@ -258,24 +235,14 @@ NSString *NSViewFocusChangedNotification;
 - (NSView *)ancestorSharedWithView:(NSView *)aView
 {
   NSView *v = nil;
-  BOOL found = NO;
 
   return v;
 }
 
 - (BOOL)isDescendantOf:(NSView *)aView
 {
-  int i, j;
-  NSView *v;
-  BOOL found = NO;
-
   // Not a NSView --then forget it
-  // xxx but NSView will really be the backend class
-  // so how do we check that its really a subclass of NSView
-  // and not of the backend class?
-#if o
   if (![aView isKindOfClass:[NSView class]]) return NO;
-#endif
 
   // Quick check
   if (aView == self) return YES;
@@ -317,12 +284,7 @@ NSString *NSViewFocusChangedNotification;
   NSView *v;
 
   // Not a NSView --then forget it
-  // xxx but NSView will really be the backend class
-  // so how do we check that its really a subclass of NSView
-  // and not of the backend class?
-#if 0
   if (![newView isKindOfClass:[NSView class]]) return;
-#endif
 
   j = [sub_views count];
   for (i = 0;i < j; ++i)
@@ -360,12 +322,7 @@ NSString *NSViewFocusChangedNotification;
 - (void)setSuperview:(NSView *)superview
 {
   // Not a NSView --then forget it
-  // xxx but NSView will really be the backend class
-  // so how do we check that its really a subclass of NSView
-  // and not of the backend class?
-#if 0
   if (![superview isKindOfClass:[NSView class]]) return;
-#endif
 
   super_view = superview;
 }
@@ -553,7 +510,6 @@ NSString *NSViewFocusChangedNotification;
 	       fromView:(NSView *)aView
 {
   NSPoint p, q;
-  NSRect r;
 
   // Must belong to the same window
   if (([self window] != [aView window]) && (aView))
@@ -855,54 +811,19 @@ NSString *NSViewFocusChangedNotification;
 //
 // Managing the Cursor 
 //
-// We utilize the tracking rectangle class
-// to also maintain the cursor rects
-//
 - (void)addCursorRect:(NSRect)aRect
 	       cursor:(NSCursor *)anObject
-{
-  TrackingRectangle *m;
-
-  m = [[TrackingRectangle alloc] initWithRect: aRect tag: 0 owner: anObject
-				 userData: NULL inside: YES];
-  [cursor_rects addObject:m];
-}
+{}
 
 - (void)discardCursorRects
-{
-  [cursor_rects removeAllObjects];
-}
+{}
 
 - (void)removeCursorRect:(NSRect)aRect
 		  cursor:(NSCursor *)anObject
-{
-  id e = [cursor_rects objectEnumerator];
-  TrackingRectangle *o;
-  NSCursor *c;
-  BOOL found = NO;
-
-  // Base remove test upon cursor object
-  o = [e nextObject];
-  while (o && (!found))
-    {
-      c = [o owner];
-      if (c == anObject)
-	found = YES;
-      else
-	o = [e nextObject];
-    }
-
-  if (found)
-    [cursor_rects removeObject: o];
-}
+{}
 
 - (void)resetCursorRects
 {}
-
-- (NSArray *)cursorRectangles
-{
-  return cursor_rects;
-}
 
 //
 // Assigning a Tag 
@@ -1187,9 +1108,19 @@ NSString *NSViewFocusChangedNotification;
   NSDebugLog(@"NSView: start encoding\n");
   [aCoder encodeRect: frame];
   [aCoder encodeRect: bounds];
+#if 0
   [aCoder encodeObjectReference: super_view withName: @"Superview"];
+#else
+  [aCoder encodeConditionalObject:super_view];
+#endif
+
   [aCoder encodeObject: sub_views];
+
+#if 0
   [aCoder encodeObjectReference: window withName: @"Window"];
+#else
+  [aCoder encodeConditionalObject:window];
+#endif
   [aCoder encodeObject: tracking_rects];
   [aCoder encodeValueOfObjCType:@encode(BOOL) at: &is_flipped];
   [aCoder encodeValueOfObjCType:@encode(BOOL) at: &is_rotated_from_base];
@@ -1210,9 +1141,20 @@ NSString *NSViewFocusChangedNotification;
   NSDebugLog(@"NSView: start decoding\n");
   frame = [aDecoder decodeRect];
   bounds = [aDecoder decodeRect];
+#if 0
   [aDecoder decodeObjectAt: &super_view withName: NULL];
+#else
+  super_view = [aDecoder decodeObject];
+#endif
+
   sub_views = [aDecoder decodeObject];
+
+#if 0
   [aDecoder decodeObjectAt: &window withName: NULL];
+#else
+  window = [aDecoder decodeObject];
+#endif
+
   tracking_rects = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_flipped];
   [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_rotated_from_base];

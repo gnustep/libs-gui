@@ -29,8 +29,6 @@
 #ifndef _GNUstep_H_AppKit
 #define _GNUstep_H_AppKit
 
-#include <AppKit/stdappkit.h>
-
 //
 // System dependent information
 //
@@ -43,14 +41,9 @@ float MB_SCREEN_MAXHEIGHT();
 #include <DPSClient/DPSOperators.h>
 
 //
-// Types and Constants for GNUstep GUI Library
-//
-#include <AppKit/TypesandConstants.h>
-
-//
 // GNUstep GUI Library functions
 //
-#include <AppKit/Functions.h>
+#include <AppKit/NSGraphics.h>
 
 //
 // Protocols
@@ -147,8 +140,5 @@ float MB_SCREEN_MAXHEIGHT();
 #include <AppKit/NSView.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSWorkspace.h>
-
-#include <Foundation/NSBundle.h>
-#include <AppKit/NSBundle.h>
 
 #endif _GNUstep_H_AppKit

@@ -29,13 +29,12 @@
 #ifndef _GNUstep_H_NSSplitView
 #define _GNUstep_H_NSSplitView
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSView.h>
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSNotification.h>
+
+@class NSString;
+@class NSNotification;
 
 @interface NSSplitView : NSView <NSCoding>
-
 {
   // Attributes
 }
@@ -57,11 +56,11 @@
 // Implemented by the Delegate 
 //
 - (void)splitView:(NSSplitView *)splitView
-constrainMinCoordinate:(float *)min
-    maxCoordinate:(float *)max
-      ofSubviewAt:(int)offset;
+  constrainMinCoordinate:(float *)min
+  maxCoordinate:(float *)max
+  ofSubviewAt:(int)offset;
 - (void)splitView:(NSSplitView *)sender
-resizeSubviewsWithOldSize:(NSSize)oldSize;
+  resizeSubviewsWithOldSize:(NSSize)oldSize;
 - (void)splitViewDidResizeSubviews:(NSNotification *)notification;
 - (void)splitViewWillResizeSubviews:(NSNotification *)notification;
 
@@ -72,5 +71,8 @@ resizeSubviewsWithOldSize:(NSSize)oldSize;
 - initWithCoder:aDecoder;
 
 @end
+
+extern NSString *NSSplitViewDidResizeSubviewsNotification;
+extern NSString *NSSplitViewWillResizeSubviewsNotification;
 
 #endif // _GNUstep_H_NSSplitView

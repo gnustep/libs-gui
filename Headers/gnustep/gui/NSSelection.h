@@ -29,12 +29,12 @@
 #ifndef _GNUstep_H_NSSelection
 #define _GNUstep_H_NSSelection
 
-#include <AppKit/stdappkit.h>
-#include <AppKit/NSPasteboard.h>
 #include <Foundation/NSCoder.h>
 
-@interface NSSelection : NSObject <NSCoding>
+@class NSData;
+@class NSPasteboard;
 
+@interface NSSelection : NSObject <NSCoding>
 {
   // Attributes
 }

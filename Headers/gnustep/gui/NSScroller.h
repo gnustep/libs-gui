@@ -29,12 +29,40 @@
 #ifndef _GNUstep_H_NSScroller
 #define _GNUstep_H_NSScroller
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSControl.h>
-#include <Foundation/NSCoder.h>
+
+@class NSEvent;
+
+typedef enum _NSScrollArrowPosition {
+  NSScrollerArrowsMaxEnd,
+  NSScrollerArrowsMinEnd,
+  NSScrollerArrowsNone 
+} NSScrollArrowPosition;
+
+typedef enum _NSScrollerPart {
+  NSScrollerNoPart,
+  NSScrollerDecrementPage,
+  NSScrollerKnob,
+  NSScrollerIncrementPage,
+  NSScrollerDecrementLine,
+  NSScrollerIncrementLine,
+  NSScrollerKnobSlot 
+} NSScrollerPart;
+
+typedef enum _NSScrollerUsablePart {
+  NSNoScrollerParts,
+  NSOnlyScrollerArrows,
+  NSAllScrollerParts  
+} NSUsableScrollerParts;
+
+typedef enum _NSScrollerArrow {
+  NSScrollerIncrementArrow,
+  NSScrollerDecrementArrow
+} NSScrollerArrow;
+
+extern const float NSScrollerWidth;
 
 @interface NSScroller : NSControl <NSCoding>
-
 {
   // Attributes
   BOOL is_horizontal;

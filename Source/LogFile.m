@@ -26,7 +26,7 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/LogFile.h>
+#include <AppKit/LogFile.h>
 
 @implementation LogFile
 
@@ -101,6 +101,7 @@
 		fprintf(the_log, "%s", logEntry);
 		fflush(the_log);
 	}
+	return self;
 }
 
 - closeLog
@@ -108,6 +109,7 @@
 	[self writeLog:"Log closed.\n"];
 	if (the_log) fclose(the_log);
 	the_log = NULL;
+	return self;
 }
 
 - (BOOL)isDateLogging
@@ -118,6 +120,7 @@
 - setDateLogging:(BOOL)flag
 {
 	l_flags.is_date_logging = flag;
+	return self;
 }
 
 - (BOOL)isLocking

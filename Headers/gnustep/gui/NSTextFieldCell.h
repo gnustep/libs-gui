@@ -29,14 +29,11 @@
 #ifndef _GNUstep_H_NSTextFieldCell
 #define _GNUstep_H_NSTextFieldCell
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSActionCell.h>
-#include <DPSClient/DPSOperators.h>
-#include <AppKit/NSColor.h>
-#include <Foundation/NSCoder.h>
+
+@class NSColor;
 
 @interface NSTextFieldCell : NSActionCell <NSCoding>
-
 {
   // Attributes
   NSColor *background_color;

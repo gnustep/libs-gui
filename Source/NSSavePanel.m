@@ -26,13 +26,15 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSSavePanel.h>
-#include <gnustep/base/NSCoder.h>
+#include <string.h>
+
+#include <Foundation/NSCoder.h>
+#include <AppKit/NSSavePanel.h>
 
 //
 // Class variables
 //
-NSSavePanel *MB_THE_SAVE_PANEL;
+static NSSavePanel *MB_THE_SAVE_PANEL = nil;
 
 @implementation NSSavePanel
 
@@ -161,6 +163,7 @@ NSSavePanel *MB_THE_SAVE_PANEL;
 
 - (int)runModal
 {
+  return 0;
 }
 
 //
@@ -223,6 +226,7 @@ with:(NSString *)filename2
 		  @selector(panel:compareFilename:with:caseSensitive:)])
     return [delegate panel:sender compareFilename:filename1
 		     with:filename2 caseSensitive:caseSensitive];
+  return NSOrderedSame;
 }
 
 - (BOOL)panel:(id)sender
@@ -230,6 +234,7 @@ shouldShowFilename:(NSString *)filename
 {
   if ([delegate respondsToSelector:@selector(panel:shouldShowFilename:)])
     return [delegate panel:sender shouldShowFilename:filename];
+  return NO;
 }
 
 - (BOOL)panel:(id)sender
@@ -237,6 +242,7 @@ isValidFilename:(NSString*)filename
 {
   if ([delegate respondsToSelector:@selector(panel:isValidFilename:)])
     return [delegate panel:sender isValidFilename:filename];
+  return NO;
 }
 
 //
@@ -244,8 +250,6 @@ isValidFilename:(NSString*)filename
 //
 - (void)encodeWithCoder:aCoder
 {
-  [super encodeWithCoder:aCoder];
-
   [aCoder encodeObject: accessory_view];
   [aCoder encodeObject: panel_title];
   [aCoder encodeObject: panel_prompt];
@@ -253,13 +257,15 @@ isValidFilename:(NSString*)filename
   [aCoder encodeObject: file_name];
   [aCoder encodeObject: required_type];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at:&required_type];
+#if 0
   [aCoder encodeObjectReference: delegate withName: @"Delegate"];
+#else
+  [aCoder encodeConditionalObject:delegate];
+#endif
 }
 
 - initWithCoder:aDecoder
 {
-  [super initWithCoder:aDecoder];
-
   accessory_view = [aDecoder decodeObject];
   panel_title = [aDecoder decodeObject];
   panel_prompt = [aDecoder decodeObject];
@@ -267,7 +273,11 @@ isValidFilename:(NSString*)filename
   file_name = [aDecoder decodeObject];
   required_type = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at:&required_type];
+#if 0
   [aDecoder decodeObjectAt: &delegate withName: NULL];
+#else
+  delegate = [aDecoder decodeObject];
+#endif
 
   return self;
 }

@@ -26,8 +26,10 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSResponder.h>
-#include <gnustep/base/NSCoder.h>
+#include <Foundation/NSCoder.h>
+#include <AppKit/NSResponder.h>
+#include <AppKit/NSGraphics.h>
+#include <gnustep/gui/LogFile.h>
 
 @implementation NSResponder
 
@@ -239,16 +241,20 @@
 //
 - (void)encodeWithCoder:aCoder
 {
-  [super encodeWithCoder:aCoder];
-
+#if 0
   [aCoder encodeObjectReference: next_responder withName: @"Next responder"];
+#else
+  [aCoder encodeConditionalObject:next_responder];
+#endif
 }
 
 - initWithCoder:aDecoder
 {
-  [super initWithCoder:aDecoder];
-
+#if 0
   [aDecoder decodeObjectAt: &next_responder withName: NULL];
+#else
+  next_responder = [aDecoder decodeObject];
+#endif
 
   return self;
 }

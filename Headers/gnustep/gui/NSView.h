@@ -29,19 +29,41 @@
 #ifndef _GNUstep_H_NSView
 #define _GNUstep_H_NSView
 
-#include <AppKit/stdappkit.h>
+#include <DPSClient/TypesandConstants.h>
 #include <AppKit/NSResponder.h>
-#include <AppKit/NSImage.h>
-#include <Foundation/NSArray.h>
-#include <AppKit/TrackingRectangle.h>
-#include <AppKit/NSCursor.h>
-#include <Foundation/NSCoder.h>
+
+@class NSString;
+@class NSArray;
+@class NSMutableArray;
+@class NSData;
 
 @class NSWindow;
+@class NSPasteboard;
+@class NSView;
 @class NSClipView;
+@class NSImage;
+@class NSCursor;
+
+typedef int NSTrackingRectTag;
+
+typedef enum _NSBorderType {
+  NSNoBorder,
+  NSLineBorder,
+  NSBezelBorder,
+  NSGrooveBorder 
+} NSBorderType;
+
+enum {
+  NSViewNotSizable,
+  NSViewMinXMargin,
+  NSViewWidthSizable,
+  NSViewMaxXMargin,
+  NSViewMinYMargin,
+  NSViewHeightSizable,
+  NSViewMaxYMargin 
+};
 
 @interface NSView : NSResponder <NSCoding>
-
 {
   // Attributes
   NSRect frame;
@@ -52,7 +74,6 @@
   NSMutableArray *sub_views;
   id window;
   NSMutableArray *tracking_rects;
-  NSMutableArray *cursor_rects;
 
   BOOL is_flipped;
   BOOL is_rotated_from_base;
@@ -208,7 +229,6 @@
 - (void)removeCursorRect:(NSRect)aRect
 		  cursor:(NSCursor *)anObject;
 - (void)resetCursorRects;
-- (NSArray *)cursorRectangles;
 
 //
 // Assigning a Tag 
@@ -229,7 +249,7 @@
 - (NSTrackingRectTag)addTrackingRect:(NSRect)aRect
 			       owner:(id)anObject
 			    userData:(void *)data
-			assumeInside:(BOOL)flag;
+			       assumeInside:(BOOL)flag;
 - (NSArray *)trackingRectangles;
 
 //
@@ -311,5 +331,9 @@
 - initWithCoder:aDecoder;
 
 @end
+
+/* Notifications */
+extern NSString *NSViewFrameChangedNotification;
+extern NSString *NSViewFocusChangedNotification;
 
 #endif // _GNUstep_H_NSView

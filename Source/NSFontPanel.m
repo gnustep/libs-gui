@@ -26,9 +26,9 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSFontPanel.h>
-#include <gnustep/gui/NSFontManager.h>
-#include <gnustep/gui/NSApplication.h>
+#include <AppKit/NSFontPanel.h>
+#include <AppKit/NSFontManager.h>
+#include <AppKit/NSApplication.h>
 
 @implementation NSFontPanel
 

@@ -26,36 +26,38 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/dps/NSDPSContext.h>
 #include <Foundation/NSThread.h>
 #include <Foundation/NSLock.h>
+#include <Foundation/NSData.h>
 #include <Foundation/NSDictionary.h>
+#include <gnustep/gui/config.h>
+#include <gnustep/dps/NSDPSContext.h>
 
 //
 // DPS exceptions
 //
-NSString *DPSPostscriptErrorException;
-NSString *DPSNameTooLongException;
-NSString *DPSResultTagCheckException;
-NSString *DPSResultTypeCheckException;
-NSString *DPSInvalidContextException;
-NSString *DPSSelectException;
-NSString *DPSConnectionClosedException;
-NSString *DPSReadException;
-NSString *DPSWriteException;
-NSString *DPSInvalidFDException;
-NSString *DPSInvalidTEException;
-NSString *DPSInvalidPortException;
-NSString *DPSOutOfMemoryException;
-NSString *DPSCantConnectException;
+NSString *DPSPostscriptErrorException = @"DPSPostscriptErrorException";
+NSString *DPSNameTooLongException = @"DPSNameTooLongException";
+NSString *DPSResultTagCheckException = @"DPSResultTagCheckException";
+NSString *DPSResultTypeCheckException = @"DPSResultTypeCheckException";
+NSString *DPSInvalidContextException = @"DPSInvalidContextException";
+NSString *DPSSelectException = @"DPSSelectException";
+NSString *DPSConnectionClosedException = @"DPSConnectionClosedException";
+NSString *DPSReadException = @"DPSReadException";
+NSString *DPSWriteException = @"DPSWriteException";
+NSString *DPSInvalidFDException = @"DPSInvalidFDException";
+NSString *DPSInvalidTEException = @"DPSInvalidTEException";
+NSString *DPSInvalidPortException = @"DPSInvalidPortException";
+NSString *DPSOutOfMemoryException = @"DPSOutOfMemoryException";
+NSString *DPSCantConnectException = @"DPSCantConnectException";
 
 //
 // Class variables
 //
-NSMutableDictionary *GNU_CONTEXT_THREAD_DICT;
-NSRecursiveLock *GNU_CONTEXT_LOCK;
-BOOL GNU_CONTEXT_TRACED;
-BOOL GNU_CONTEXT_SYNCHRONIZED;
+static NSMutableDictionary *GNU_CONTEXT_THREAD_DICT = nil;
+static NSRecursiveLock *GNU_CONTEXT_LOCK = nil;
+static BOOL GNU_CONTEXT_TRACED = NO;
+static BOOL GNU_CONTEXT_SYNCHRONIZED = NO;
 
 @implementation NSDPSContext
 
@@ -132,8 +134,10 @@ BOOL GNU_CONTEXT_SYNCHRONIZED;
 //
 + (NSDPSContext *)currentContext
 {
-  NSThread *current_thread = [NSThread currentThread];
+  NSThread *current_thread;
   NSDPSContext *current_context = nil;
+
+  current_thread = [NSThread currentThread];
 
   // Get current context for current thread
   [GNU_CONTEXT_LOCK lock];

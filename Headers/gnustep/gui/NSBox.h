@@ -29,15 +29,23 @@
 #ifndef _GNUstep_H_NSBox
 #define _GNUstep_H_NSBox
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSView.h>
-#include <AppKit/NSFont.h>
-#include <Foundation/NSCoder.h>
+
+@class NSString;
+@class NSFont;
+
+typedef enum _NSTitlePosition {
+  NSNoTitle,
+  NSAboveTop,
+  NSAtTop,
+  NSBelowTop,
+  NSAboveBottom,
+  NSAtBottom,
+  NSBelowBottom
+} NSTitlePosition;
 
 @interface NSBox : NSView <NSCoding>
-
 {
-@protected
   // Attributes
   id cell;
   id content_view;

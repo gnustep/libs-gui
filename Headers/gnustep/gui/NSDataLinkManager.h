@@ -29,14 +29,17 @@
 #ifndef _GNUstep_H_NSDataLinkManager
 #define _GNUstep_H_NSDataLinkManager
 
-#include <AppKit/stdappkit.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSDataLink.h>
-#include <AppKit/NSSelection.h>
 #include <Foundation/NSCoder.h>
 
-@interface NSDataLinkManager : NSObject <NSCoding>
+@class NSString;
+@class NSEnumerator;
 
+@class NSDataLink;
+@class NSSelection;
+@class NSPasteboard;
+@class NSWindow;
+
+@interface NSDataLinkManager : NSObject <NSCoding>
 {
   // Attributes
 }
@@ -57,7 +60,7 @@
 		     at:(NSSelection *)selection;
 - (NSDataLink *)addLinkPreviouslyAt:(NSSelection *)oldSelection
 		     fromPasteboard:(NSPasteboard *)pasteboard
-at:(NSSelection *)selection;
+				 at:(NSSelection *)selection;
 - (void)breakAllLinks;
 - (void)writeLinksToPasteboard:(NSPasteboard *)pasteboard;
 
@@ -96,7 +99,7 @@ at:(NSSelection *)selection;
 //
 - (BOOL)copyToPasteboard:(NSPasteboard *)pasteboard 
 		      at:(NSSelection *)selection
-cheapCopyAllowed:(BOOL)flag;
+	cheapCopyAllowed:(BOOL)flag;
 - (void)dataLinkManager:(NSDataLinkManager *)sender 
 	   didBreakLink:(NSDataLink *)link;
 - (BOOL)dataLinkManager:(NSDataLinkManager *)sender 
@@ -123,5 +126,11 @@ cheapCopyAllowed:(BOOL)flag;
 - initWithCoder:aDecoder;
 
 @end
+
+//
+// Draw a Distinctive Outline around Linked Data
+//
+void NSFrameLinkRect(NSRect aRect, BOOL isDestination);
+float NSLinkFrameThickness(void);
 
 #endif // _GNUstep_H_NSDataLinkManager

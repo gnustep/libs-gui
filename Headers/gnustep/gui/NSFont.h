@@ -6,7 +6,8 @@
    Copyright (C) 1996 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+   Author:  Ovidiu Predescu <ovidiu@bx.logicnet.ro>
+   Date: 1996, 1997
    
    This file is part of the GNUstep GUI Library.
 
@@ -29,19 +30,26 @@
 #ifndef _GNUstep_H_NSFont
 #define _GNUstep_H_NSFont
 
-#include <AppKit/stdappkit.h>
 #include <Foundation/NSCoder.h>
+#include <Foundation/NSGeometry.h>
+
+@class NSString;
+@class NSDictionary;
+
+typedef unsigned int NSGlyph;
+
+enum {
+  NSControlGlyph = 0x00ffffff,
+  NSNullGlyph = 0x0
+};
+
+extern const float *NSFontIdentityMatrix;
 
 @interface NSFont : NSObject <NSCoding>
-
 {
-  // Attributes
-  NSString *family_name;
-  NSString *font_name;
-  NSString *type_face;
-  float point_size;
-  NSFontTraitMask font_traits;
-  int font_weight;
+  // Font attributes
+  NSString *fontName;
+  float matrix[6];
 
   // Reserved for back-end use
   void *be_font_reserved;
@@ -76,11 +84,21 @@
 - (NSString *)displayName;
 - (NSString *)familyName;
 - (NSString *)fontName;
+- (NSString *)encodingScheme;
+- (BOOL)isFixedPitch;
 - (BOOL)isBaseFont;
 - (const float *)matrix;
 - (float)pointSize;
 - (NSFont *)printerFont;
 - (NSFont *)screenFont;
+- (float)ascender;
+- (float)descender;
+- (float)capHeight;
+- (float)italicAngle;
+- (NSSize)maximumAdvancement;
+- (float)underlinePosition;
+- (float)underlineThickness;
+- (float)xHeight;
 - (float)widthOfString:(NSString *)string;
 - (float *)widths;
 
@@ -90,6 +108,7 @@
 - (NSSize)advancementForGlyph:(NSGlyph)aGlyph;
 - (NSRect)boundingRectForGlyph:(NSGlyph)aGlyph;
 - (BOOL)glyphIsEncoded:(NSGlyph)aGlyph;
+- (NSGlyph)glyphWithName:(NSString*)glyphName;
 - (NSPoint)positionOfGlyph:(NSGlyph)curGlyph
 	   precededByGlyph:(NSGlyph)prevGlyph
 		 isNominal:(BOOL *)nominal;
@@ -101,5 +120,23 @@
 - initWithCoder:aDecoder;
 
 @end
+
+extern NSString *NSAFMAscender;
+extern NSString *NSAFMCapHeight;
+extern NSString *NSAFMCharacterSet;
+extern NSString *NSAFMDescender;
+extern NSString *NSAFMEncodingScheme;
+extern NSString *NSAFMFamilyName;
+extern NSString *NSAFMFontName;
+extern NSString *NSAFMFormatVersion;
+extern NSString *NSAFMFullName;
+extern NSString *NSAFMItalicAngle;
+extern NSString *NSAFMMappingScheme;
+extern NSString *NSAFMNotice;
+extern NSString *NSAFMUnderlinePosition;
+extern NSString *NSAFMUnderlineThickness;
+extern NSString *NSAFMVersion;
+extern NSString *NSAFMWeight;
+extern NSString *NSAFMXHeight;
 
 #endif // _GNUstep_H_NSFont

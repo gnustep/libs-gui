@@ -27,19 +27,19 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSMatrix.h>
 #include <Foundation/NSValue.h>
 #include <Foundation/NSArray.h>
-#include <gnustep/gui/NSActionCell.h>
-#include <gnustep/gui/NSWindow.h>
-#include <gnustep/gui/NSApplication.h>
+#include <AppKit/NSMatrix.h>
+#include <AppKit/NSActionCell.h>
+#include <AppKit/NSWindow.h>
+#include <AppKit/NSApplication.h>
 
 #define GNU_DEFAULT_CELL_HEIGHT 20
 
 //
 // Class variables
 //
-Class NSMATRIX_DEFAULT_CELL_CLASS;
+static Class NSMATRIX_DEFAULT_CELL_CLASS = nil;
 
 @implementation NSMatrix
 
@@ -656,8 +656,7 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
 
 - (void)insertRow:(int)row withCells:(NSArray *)cellArray
 {
-  NSCell *newCell;
-  int i, count;
+  int i;
   id e, o;
 
   // No array then forget the insert
@@ -996,7 +995,10 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
 
 - (id)selectedCell
 {
-  return [selected_cells lastObject];
+  if ([selected_cells count])
+    return [selected_cells lastObject];
+
+  return nil;
 }
 
 /*
@@ -1074,7 +1076,6 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
 - (id)cellWithTag:(int)anInt
 {
   id re, ce;
-  int i, j;
   NSMutableArray *aRow;
   NSCell *aCell;
 
@@ -1356,7 +1357,6 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
 {
   NSCell *aCell = [self cellAtRow:row column:column];
   NSRect cellFrame;
-  BOOL did_lock = NO;
 
   if (aCell != nil)
     {

@@ -26,11 +26,14 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSMenu.h>
-#include <gnustep/gui/NSMenuPrivate.h>
 #include <Foundation/NSLock.h>
-#include <gnustep/base/NSCoder.h>
-#include <gnustep/gui/NSApplication.h>
+#include <Foundation/NSCoder.h>
+#include <Foundation/NSArray.h>
+#include <AppKit/NSMenu.h>
+#include <AppKit/NSMenuCell.h>
+#include <AppKit/NSMenuPrivate.h>
+#include <AppKit/NSApplication.h>
+#include <AppKit/NSMatrix.h>
 
 NSZone *gnustep_gui_nsmenu_zone = NULL;
 
@@ -75,7 +78,7 @@ NSZone *gnustep_gui_nsmenu_zone = NULL;
 // Default initializer
 - (id)initWithTitle:(NSString *)aTitle
 {
-  NSApplication *theApp = [NSApplication sharedApplication];
+  // NSApplication *theApp = [NSApplication sharedApplication];
 
   // Init our superclass but skip any of its backend implementation
   [super init];
@@ -106,7 +109,6 @@ NSZone *gnustep_gui_nsmenu_zone = NULL;
 	 keyEquivalent:(NSString *)charCode
 {
   NSMenuCell *m;
-  unsigned int mi;
 
   m = [[NSMenuCell alloc] initTextCell:aString];
   [m setAction:aSelector];
@@ -121,7 +123,6 @@ NSZone *gnustep_gui_nsmenu_zone = NULL;
 		  atIndex:(unsigned int)index
 {
   NSMenuCell *m;
-  unsigned int mi;
 
   m = [[NSMenuCell alloc] initTextCell:aString];
   [m setAction:aSelector];
@@ -247,13 +248,15 @@ NSZone *gnustep_gui_nsmenu_zone = NULL;
 //
 - (void)encodeWithCoder:aCoder
 {
-  [super encodeWithCoder:aCoder];
-
   [aCoder encodeObject: menu_items];
 
   // Version 2
   [aCoder encodeObject: window_title];
+#if 0
   [aCoder encodeObjectReference: super_menu withName: @"SuperMenu"];
+#else
+  [aCoder encodeConditionalObject:super_menu];
+#endif
   [aCoder encodeValueOfObjCType:@encode(BOOL) at: &autoenables_items];
   [aCoder encodeObject: menu_matrix];
   [aCoder encodeValueOfObjCType:@encode(BOOL) at: &is_torn_off];
@@ -261,13 +264,15 @@ NSZone *gnustep_gui_nsmenu_zone = NULL;
 
 - initWithCoder:aDecoder
 {
-  [super initWithCoder:aDecoder];
-
   menu_items = [aDecoder decodeObject];
 
   // Version 2
   window_title = [aDecoder decodeObject];
+#if 0
   [aDecoder decodeObjectAt: &super_menu withName: NULL];
+#else
+  super_menu = [aDecoder decodeObject];
+#endif
   [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &autoenables_items];
   menu_matrix = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_torn_off];

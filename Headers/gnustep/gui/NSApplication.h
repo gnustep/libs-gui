@@ -29,28 +29,41 @@
 #ifndef _GNUstep_H_NSApplication
 #define _GNUstep_H_NSApplication
 
-#include <AppKit/stdappkit.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSException.h>
-#include <AppKit/NSEvent.h>
 #include <AppKit/NSResponder.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSMenu.h>
-#include <AppKit/NSImage.h>
-#include <Foundation/NSDate.h>
-#include <gnustep/base/Queue.h>
-#include <Foundation/NSCoder.h>
-#include <DPSClient/NSDPSContext.h>
-#include <Foundation/NSNotification.h>
 
+@class NSArray;
+@class NSMutableArray;
+@class NSString;
+@class NSException;
+@class NSNotification;
+@class NSDate;
+
+@class NSEvent;
 @class NSPasteboard;
+@class NSMenu;
+@class NSMenuCell;
+@class NSImage;
+@class NSWindow;
+@class NSDPSContext;
+
+extern id NSApp;
+
+typedef struct _NSModalSession *NSModalSession;
+
+enum {
+  NSRunStoppedResponse,
+  NSRunAbortedResponse,
+  NSRunContinuesResponse
+};
+
+extern NSString *NSModalPanelRunLoopMode;
+extern NSString *NSEventTrackingRunLoopMode;
 
 @interface NSApplication : NSResponder <NSCoding>
-
 {
   // Attributes
   NSMutableArray *window_list;
-  Queue *event_queue;
+  NSMutableArray *event_queue;
   NSEvent *current_event;
   id key_window;
   id main_window;
@@ -267,5 +280,37 @@
                              types:(NSArray *)types;
 
 @end
+
+//
+// Notifications
+//
+extern NSString *NSApplicationDidBecomeActiveNotification;
+extern NSString *NSApplicationDidFinishLaunchingNotification;
+extern NSString *NSApplicationDidHideNotification;
+extern NSString *NSApplicationDidResignActiveNotification;
+extern NSString *NSApplicationDidUnhideNotification;
+extern NSString *NSApplicationDidUpdateNotification;
+extern NSString *NSApplicationWillBecomeActiveNotification;
+extern NSString *NSApplicationWillFinishLaunchingNotification;
+extern NSString *NSApplicationWillHideNotification;
+extern NSString *NSApplicationWillResignActiveNotification;
+extern NSString *NSApplicationWillUnhideNotification;
+extern NSString *NSApplicationWillUpdateNotification;
+
+//
+// Determine Whether an Item Is Included in Services Menus
+//
+int NSSetShowsServicesMenuItem(NSString *item, BOOL showService);
+BOOL NSShowsServicesMenuItem(NSString *item);
+
+//
+// Programmatically Invoke a Service
+//
+BOOL NSPerformService(NSString *item, NSPasteboard *pboard);
+
+//
+// Force Services Menu to Update Based on New Services
+//
+void NSUpdateDynamicServices(void);
 
 #endif // _GNUstep_H_NSApplication

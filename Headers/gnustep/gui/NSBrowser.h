@@ -29,14 +29,16 @@
 #ifndef _GNUstep_H_NSBrowser
 #define _GNUstep_H_NSBrowser
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSControl.h>
-#include <AppKit/NSMatrix.h>
-#include <AppKit/NSScroller.h>
-#include <Foundation/NSCoder.h>
+
+@class NSString;
+@class NSArray;
+
+@class NSCell;
+@class NSMatrix;
+@class NSScroller;
 
 @interface NSBrowser : NSControl <NSCoding>
-
 {
   // Attributes
 }
@@ -130,7 +132,7 @@
 //
 - (void)drawTitle:(NSString *)title
 	   inRect:(NSRect)aRect
-ofColumn:(int)column;
+	 ofColumn:(int)column;
 - (BOOL)isTitled;
 - (void)setTitled:(BOOL)flag;
 - (void)setTitle:(NSString *)aString
@@ -185,33 +187,39 @@ ofColumn:(int)column;
 - (void)tile;
 
 //
-// Methods Implemented by the Delegate 
-//
-- (void)browser:(NSBrowser *)sender
-createRowsForColumn:(int)column
-inMatrix:(NSMatrix *)matrix;
-- (BOOL)browser:(NSBrowser *)sender
-  isColumnValid:(int)column;
-- (int)browser:(NSBrowser *)sender
-numberOfRowsInColumn:(int)column;
-- (BOOL)browser:(NSBrowser *)sender
-     selectCell:(NSString *)title
-inColumn:(int)column;
-- (NSString *)browser:(NSBrowser *)sender
-	titleOfColumn:(int)column;
-- (void)browser:(NSBrowser *)sender
-willDisplayCell:(id)cell
-atRow:(int)row
-column:(int)column;
-- (void)browserDidScroll:(NSBrowser *)sender;
-- (void)browserWillScroll:(NSBrowser *)sender;
-
-//
 // NSCoding protocol
 //
 - (void)encodeWithCoder:aCoder;
 - initWithCoder:aDecoder;
 
 @end
+
+
+//
+// Methods Implemented by the Delegate 
+//
+@interface NSObject (NSBrowserDelegate)
+
+- (void)browser:(NSBrowser *)sender
+  createRowsForColumn:(int)column
+  inMatrix:(NSMatrix *)matrix;
+- (BOOL)browser:(NSBrowser *)sender
+  isColumnValid:(int)column;
+- (int)browser:(NSBrowser *)sender
+  numberOfRowsInColumn:(int)column;
+- (BOOL)browser:(NSBrowser *)sender
+     selectCell:(NSString *)title
+       inColumn:(int)column;
+- (NSString *)browser:(NSBrowser *)sender
+	titleOfColumn:(int)column;
+- (void)browser:(NSBrowser *)sender
+  willDisplayCell:(id)cell
+  atRow:(int)row
+  column:(int)column;
+- (void)browserDidScroll:(NSBrowser *)sender;
+- (void)browserWillScroll:(NSBrowser *)sender;
+
+@end
+
 
 #endif // _GNUstep_H_NSBrowser

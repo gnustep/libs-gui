@@ -29,12 +29,9 @@
 #ifndef _GNUstep_H_NSFormCell
 #define _GNUstep_H_NSFormCell
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSActionCell.h>
-#include <Foundation/NSCoder.h>
 
 @interface NSFormCell : NSActionCell <NSCoding>
-
 {
   // Attributes
 }

@@ -29,15 +29,15 @@
 #ifndef _GNUstep_H_NSColorPicker
 #define _GNUstep_H_NSColorPicker
 
-#include <AppKit/stdappkit.h>
-#include <AppKit/NSColorPanel.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSColorList.h>
-#include <AppKit/NSButtonCell.h>
+#include <Foundation/NSObject.h>
 #include <AppKit/NSColorPicking.h>
 
-@interface NSColorPicker : NSObject <NSColorPickingDefault>
+@class NSColorPanel;
+@class NSColorList;
+@class NSImage;
+@class NSButtonCell;
 
+@interface NSColorPicker : NSObject <NSColorPickingDefault>
 {
   // Attributes
 }

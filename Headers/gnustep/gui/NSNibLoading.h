@@ -28,8 +28,7 @@
 #ifndef _GNUstep_H_NSNibLoading
 #define _GNUstep_H_NSNibLoading
 
-#include <AppKit/stdappkit.h>
-#include <AppKit/NSBundle.h>
+#include <Foundation/NSBundle.h>
 
 @interface NSObject (NSNibAwaking)
 
@@ -37,6 +36,18 @@
 // Notification of Loading
 //
 - (void)awakeFromNib;
+
+@end
+
+
+@interface NSBundle (NSNibLoading)
+
++ (BOOL)loadNibFile:(NSString *)fileName
+  externalNameTable:(NSDictionary *)context
+	   withZone:(NSZone *)zone;
+
++ (BOOL)loadNibNamed:(NSString *)aNibName
+	       owner:(id)owner;
 
 @end
 

@@ -27,14 +27,17 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSWindow.h>
-#include <gnustep/gui/NSApplication.h>
-#include <gnustep/gui/NSTextFieldCell.h>
-#include <gnustep/gui/NSTextField.h>
-#include <gnustep/gui/NSColor.h>
-#include <gnustep/gui/TrackingRectangle.h>
-#include <gnustep/gui/NSSliderCell.h>
-#include <gnustep/base/NSCoder.h>
+#include <Foundation/NSCoder.h>
+#include <Foundation/NSArray.h>
+#include <Foundation/NSNotification.h>
+#include <AppKit/NSWindow.h>
+#include <AppKit/NSApplication.h>
+#include <AppKit/NSTextFieldCell.h>
+#include <AppKit/NSTextField.h>
+#include <AppKit/NSColor.h>
+#include <AppKit/TrackingRectangle.h>
+#include <AppKit/NSSliderCell.h>
+#include <AppKit/NSScreen.h>
 
 // NSWindow notifications
 NSString *NSWindowDidBecomeKeyNotification = @"WindowDidBecomeKey";
@@ -176,10 +179,6 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
 
   // Next responder is the application
   [self setNextResponder:theApp];
-
-  // Cursor management
-  cursor_rects_enabled = YES;
-  cursor_rects_valid = NO;
 
   // Create our content view
   [self setContentView:[[NSView alloc] initWithFrame:frame]];
@@ -353,9 +352,6 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
   // We are the key window
   is_key = YES;
 
-  // Reset the cursor rects
-  [self resetCursorRects];
-
   // Post notification
   [nc postNotificationName: NSWindowDidBecomeKeyNotification object: self];
 }
@@ -477,9 +473,6 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
   is_key = NO;
-
-  // Discard the cursor rects
-  [self discardCursorRects];
 
   // Post notification
   [nc postNotificationName: NSWindowDidResignKeyNotification object: self];
@@ -726,26 +719,8 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
   cursor_rects_enabled = NO;
 }
 
-- (void)discardCursorRectsForView:(NSView *)theView
-{
-  NSArray *s;
-  id e;
-  NSView *v;
-
-  // Discard for the view
-  [theView discardCursorRects];
-
-  // Discard for the view's subviews
-  s = [theView subviews];
-  e = [s objectEnumerator];
-  while ((v = [e nextObject]))
-    [self discardCursorRectsForView: v];
-}
-
 - (void)discardCursorRects
-{
-  [self discardCursorRectsForView: content_view];
-}
+{}
 
 - (void)enableCursorRects
 {
@@ -753,34 +728,10 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
 }
 
 - (void)invalidateCursorRectsForView:(NSView *)aView
-{
-  cursor_rects_valid = NO;
-}
-
-- (void)resetCursorRectsForView:(NSView *)theView
-{
-  NSArray *s;
-  id e;
-  NSView *v;
-
-  // Reset the view
-  [theView resetCursorRects];
-
-  // Reset the view's subviews
-  s = [theView subviews];
-  e = [s objectEnumerator];
-  while ((v = [e nextObject]))
-    [self resetCursorRectsForView: v];
-}
+{}
 
 - (void)resetCursorRects
-{
-  // Tell all the views to reset their cursor rects
-  [self resetCursorRectsForView: content_view];
-
-  // Cursor rects are now valid
-  cursor_rects_valid = YES;
-}
+{}
 
 //
 // Handling user actions and events
@@ -980,31 +931,27 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
       // Mouse entered event
       if ((!last) && (now))
 	{
-	  id owner = [r owner];
 	  e = [NSEvent enterExitEventWithType:NSMouseEntered
 		       location:[theEvent locationInWindow] 
 		       modifierFlags:[theEvent modifierFlags]
 		       timestamp:0 windowNumber:[theEvent windowNumber]
 		       context:NULL eventNumber:0 
 		       trackingNumber:[r tag] userData:[r userData]];
-	  // Send the event to the owner
-	  if ([owner respondsToSelector:@selector(mouseEntered:)])
-	    [owner mouseEntered:e];
+	  // Send the event to the view
+	  [theView mouseEntered:e];
 	}
 
       // Mouse exited event
       if ((last) && (!now))
 	{
-	  id owner = [r owner];
 	  e = [NSEvent enterExitEventWithType:NSMouseExited
 		       location:[theEvent locationInWindow] 
 		       modifierFlags:[theEvent modifierFlags]
 		       timestamp:0 windowNumber:[theEvent windowNumber]
 		       context:NULL eventNumber:0 
 		       trackingNumber:[r tag] userData:[r userData]];
-	  // Send the event to the owner
-	  if ([owner respondsToSelector:@selector(mouseExited:)])
-	    [owner mouseExited:e];
+	  // Send the event to the view
+	  [theView mouseExited:e];
 	}
     }
 
@@ -1014,81 +961,12 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
     [self checkTrackingRectangles:[sb objectAtIndex:i] forEvent:theEvent];
 }
 
-- (void)checkCursorRectangles:(NSView *)theView forEvent:(NSEvent *)theEvent
-{
-  NSArray *tr = [theView cursorRectangles];
-  NSArray *sb = [theView subviews];
-  TrackingRectangle *r;
-  int i, j;
-  BOOL last, now;
-  NSEvent *e;
-  NSRect convRect;
-  NSPoint loc = [theEvent locationInWindow];
-
-  // Loop through cursor rectangles
-  j = [tr count];
-  for (i = 0;i < j; ++i)
-    {
-      // Convert cursor rectangle to window coordinates
-      r = (TrackingRectangle *)[tr objectAtIndex:i];
-      convRect = [r rectangle];
-      convRect = [theView convertRect: convRect toView: nil];
-      // Check mouse at last point
-      last = [theView mouse:last_point inRect: convRect];
-      // Check mouse at current point
-      now = [theView mouse: loc inRect: convRect];
-
-      // Mouse entered
-      if ((!last) && (now))
-	{
-	  // Post cursor update event
-	  e = [NSEvent enterExitEventWithType: NSCursorUpdate
-		       location: loc
-		       modifierFlags: [theEvent modifierFlags]
-		       timestamp: 0
-		       windowNumber: [theEvent windowNumber]
-		       context: [theEvent context]
-		       eventNumber: 0
-		       trackingNumber: (int)YES
-		       userData: (void *)r];
-	  [self postEvent: e atStart: YES];
-	}
-
-      // Mouse exited event
-      if ((last) && (!now))
-	{
-	  // Post cursor update event
-	  e = [NSEvent enterExitEventWithType: NSCursorUpdate
-		       location: loc
-		       modifierFlags: [theEvent modifierFlags]
-		       timestamp: 0
-		       windowNumber: [theEvent windowNumber]
-		       context: [theEvent context]
-		       eventNumber: 0
-		       trackingNumber: (int)NO
-		       userData: (void *)r];
-	  [self postEvent: e atStart: YES];
-	}
-    }
-
-  // Check the cursor rectangles for the subviews
-  j = [sb count];
-  for (i = 0;i < j; ++i)
-    [self checkCursorRectangles:[sb objectAtIndex:i] forEvent:theEvent];
-}
-
 - (void)sendEvent:(NSEvent *)theEvent
 {
-  // If the cursor rects are invalid
-  // Then discard and reset
-  if (!cursor_rects_valid)
-    {
-      [self discardCursorRects];
-      [self resetCursorRects];
-    }
 
   switch ([theEvent type])
     {
+
       //
       // Mouse events
       //
@@ -1148,13 +1026,6 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
 	//   a tracking rectangle then we need to determine if we
 	//   should send a NSMouseEntered or NSMouseExited event
 	[self checkTrackingRectangles:content_view forEvent:theEvent];
-
-	// We need to go through all of the views, and any with
-	// a cursor rectangle then we need to determine if we
-	// should send a cursor update event
-	// We only do this if we are the key window
-	if ([self isKeyWindow])
-	  [self checkCursorRectangles: content_view forEvent: theEvent];
 
 	last_point = [theEvent locationInWindow];
 	break;
@@ -1227,21 +1098,11 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
       //
     case NSCursorUpdate:
       {
-	// Is it a mouse entered
-	if ([theEvent trackingNumber])
-	  {
-	    // push the cursor
-	    TrackingRectangle *r = (TrackingRectangle *)[theEvent userData];
-	    NSCursor *c = (NSCursor *)[r owner];
-	    [c push];
-	  }
-	else
-	  {
-	    // it is a mouse exited
-	    // so pop the cursor
-	    [NSCursor pop];
-	  }
 	break;
+      }
+    case NSPeriodic:
+      {
+        break;
       }
     }
 }
@@ -1354,7 +1215,7 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
 //
 - (BOOL)windowShouldClose:sender
 {
-  if ([delegate respondsTo:@selector(windowShouldClose:)])
+  if ([delegate respondsToSelector:@selector(windowShouldClose:)])
     return [delegate windowShouldClose:sender];
   else
     return YES;
@@ -1363,7 +1224,7 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
 - (NSSize)windowWillResize:(NSWindow *)sender
 		    toSize:(NSSize)frameSize
 {
-  if ([delegate respondsTo:@selector(windowWillResize:toSize:)])
+  if ([delegate respondsToSelector:@selector(windowWillResize:toSize:)])
     return [delegate windowWillResize:sender toSize:frameSize];
   else
     return frameSize;
@@ -1377,85 +1238,85 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
 
 - (void)windowDidBecomeKey:(NSNotification *)aNotification
 {
-  if ([delegate respondsTo:@selector(windowDidBecomeKey:)])
+  if ([delegate respondsToSelector:@selector(windowDidBecomeKey:)])
     return [delegate windowDidBecomeKey:aNotification];
 }
 
 - (void)windowDidBecomeMain:(NSNotification *)aNotification
 {
-  if ([delegate respondsTo:@selector(windowDidBecomeMain:)])
+  if ([delegate respondsToSelector:@selector(windowDidBecomeMain:)])
     return [delegate windowDidBecomeMain:aNotification];
 }
 
 - (void)windowDidChangeScreen:(NSNotification *)aNotification
 {
-  if ([delegate respondsTo:@selector(windowDidChangeScreen:)])
+  if ([delegate respondsToSelector:@selector(windowDidChangeScreen:)])
     return [delegate windowDidChangeScreen:aNotification];
 }
 
 - (void)windowDidDeminiaturize:(NSNotification *)aNotification
 {
-  if ([delegate respondsTo:@selector(windowDidDeminiaturize:)])
+  if ([delegate respondsToSelector:@selector(windowDidDeminiaturize:)])
     return [delegate windowDidDeminiaturize:aNotification];
 }
 
 - (void)windowDidExpose:(NSNotification *)aNotification
 {
-  if ([delegate respondsTo:@selector(windowDidExpose:)])
+  if ([delegate respondsToSelector:@selector(windowDidExpose:)])
     return [delegate windowDidExpose:aNotification];
 }
 
 - (void)windowDidMiniaturize:(NSNotification *)aNotification
 {
-  if ([delegate respondsTo:@selector(windowDidMiniaturize:)])
+  if ([delegate respondsToSelector:@selector(windowDidMiniaturize:)])
     return [delegate windowDidMiniaturize:aNotification];
 }
 
 - (void)windowDidMove:(NSNotification *)aNotification
 {
-  if ([delegate respondsTo:@selector(windowDidMove:)])
+  if ([delegate respondsToSelector:@selector(windowDidMove:)])
     return [delegate windowDidMove:aNotification];
 }
 
 - (void)windowDidResignKey:(NSNotification *)aNotification
 {
-  if ([delegate respondsTo:@selector(windowDidResignKey:)])
+  if ([delegate respondsToSelector:@selector(windowDidResignKey:)])
     return [delegate windowDidResignKey:aNotification];
 }
 
 - (void)windowDidResignMain:(NSNotification *)aNotification
 {
-  if ([delegate respondsTo:@selector(windowDidResignMain:)])
+  if ([delegate respondsToSelector:@selector(windowDidResignMain:)])
     return [delegate windowDidResignMain:aNotification];
 }
 
 - (void)windowDidResize:(NSNotification *)aNotification
 {
-  if ([delegate respondsTo:@selector(windowDidResize:)])
+  if ([delegate respondsToSelector:@selector(windowDidResize:)])
     return [delegate windowDidResize:aNotification];
 }
 
 - (void)windowDidUpdate:(NSNotification *)aNotification
 {
-  if ([delegate respondsTo:@selector(windowDidUpdate:)])
+  if ([delegate respondsToSelector:@selector(windowDidUpdate:)])
     return [delegate windowDidUpdate:aNotification];
 }
 
 - (void)windowWillClose:(NSNotification *)aNotification
 {
-  if ([delegate respondsTo:@selector(windowWillClose:)])
+  if ([delegate respondsToSelector:@selector(windowWillClose:)])
     return [delegate windowWillClose:aNotification];
 }
 
 - (void)windowWillMiniaturize:(NSNotification *)aNotification
 {
-  if ([delegate respondsTo:@selector(windowWillMiniaturize:)])
+  if ([delegate respondsToSelector:@selector(windowWillMiniaturize:)])
     return [delegate windowWillMiniaturize:aNotification];
 }
 
 - (void)windowWillMove:(NSNotification *)aNotification
 {
-  if ([delegate respondsTo:@selector(windowWillMove:)])
+  if ([delegate respondsToSelector:@selector(windowWillMove:)])
     return [delegate windowWillMove:aNotification];
 }
 
@@ -1464,8 +1325,6 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
 //
 - (void)encodeWithCoder:aCoder
 {
-  NSApplication *theApp = [NSApplication sharedApplication];
-
   [self setNextResponder: nil];
 
   [super encodeWithCoder:aCoder];

@@ -26,11 +26,13 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSTextFieldCell.h>
-#include <gnustep/gui/NSTextField.h>
-#include <gnustep/gui/NSWindow.h>
 #include <Foundation/NSArray.h>
-#include <gnustep/gui/NSApplication.h>
+#include <AppKit/NSTextFieldCell.h>
+#include <AppKit/NSTextField.h>
+#include <AppKit/NSWindow.h>
+#include <AppKit/NSApplication.h>
+#include <AppKit/NSColor.h>
+#include <AppKit/NSFont.h>
 
 //
 // TextFieldCell implementation
@@ -60,7 +62,7 @@
 //
 - init
 {
-  [self initTextCell:[NSString stringWithCString:"Field"]];
+  [self initTextCell:@""];
   return self;
 }
 

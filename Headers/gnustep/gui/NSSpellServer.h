@@ -29,8 +29,7 @@
 #ifndef _GNUstep_H_NSSpellServer
 #define _GNUstep_H_NSSpellServer
 
-#include <AppKit/stdappkit.h>
-#include <Foundation/NSRange.h>
+#include <Foundation/NSObject.h>
 
 @interface NSSpellServer : NSObject
 

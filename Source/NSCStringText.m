@@ -25,9 +25,9 @@
    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */ 
 
-#include <gnustep/gui/NSCStringText.h>
-#include <gnustep/gui/NSText.h>
 #include <Foundation/NSCoder.h>
+#include <AppKit/NSCStringText.h>
+#include <AppKit/NSText.h>
 
 //
 // NSCStringText implementation

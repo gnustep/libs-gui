@@ -29,12 +29,16 @@
 #ifndef _GNUstep_H_NSImage
 #define _GNUstep_H_NSImage
 
-#include <AppKit/stdappkit.h>
 #include <DPSClient/TypesandConstants.h>
-#include <AppKit/NSBundle.h>
+#include <Foundation/NSBundle.h>
+#include <Foundation/NSCoder.h>
+#include <AppKit/NSBitmapImageRep.h>
+
+@class NSString;
+@class NSMutableArray;
+@class NSData;
 
 @class NSPasteboard;
-@class NSMutableArray;
 @class NSImageRep;
 @class NSColor;
 @class NSView;
@@ -192,6 +196,13 @@
 //
 - (void)encodeWithCoder:aCoder;
 - initWithCoder:aDecoder;
+
+@end
+
+
+@interface NSBundle (NSImageAdditions)
+
+- (NSString *)pathForImageResource:(NSString *)name;
 
 @end
 

@@ -29,12 +29,11 @@
 #ifndef _GNUstep_H_NSBrowserCell
 #define _GNUstep_H_NSBrowserCell
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSCell.h>
-#include <Foundation/NSCoder.h>
+
+@class NSImage;
 
 @interface NSBrowserCell : NSCell <NSCoding>
-
 {
   // Attributes
 }

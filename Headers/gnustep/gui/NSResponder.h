@@ -29,15 +29,12 @@
 #ifndef _GNUstep_H_NSResponder
 #define _GNUstep_H_NSResponder
 
-#include <AppKit/stdappkit.h>
-#include <AppKit/NSEvent.h>
-#include <Foundation/NSObject.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSArray.h>
 #include <Foundation/NSCoder.h>
 
-@interface NSResponder : NSObject <NSCoding>
+@class NSString;
+@class NSEvent;
 
+@interface NSResponder : NSObject <NSCoding>
 {
   // Attributes
   id next_responder;

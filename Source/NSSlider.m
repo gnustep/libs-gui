@@ -26,13 +26,13 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSSlider.h>
-#include <gnustep/gui/NSSliderCell.h>
+#include <AppKit/NSSlider.h>
+#include <AppKit/NSSliderCell.h>
 
 //
 // class variables
 //
-id MB_NSSLIDER_CLASS;
+static id MB_NSSLIDER_CLASS = nil;
 
 //
 // NSSlider implementation

@@ -26,14 +26,14 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSMenuCell.h>
-#include <gnustep/gui/NSMenu.h>
-#include <gnustep/base/NSCoder.h>
+#include <Foundation/NSCoder.h>
+#include <AppKit/NSMenuCell.h>
+#include <AppKit/NSMenu.h>
 
 //
 // Class variables
 //
-BOOL MB_NSMENUCELL_USES_KEY;
+static BOOL MB_NSMENUCELL_USES_KEY = NO;
 
 @implementation NSMenuCell
 

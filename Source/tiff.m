@@ -54,8 +54,11 @@
  * OF THIS SOFTWARE.
  */
 
-#include <gnustep/base/preface.h>
+//#include <gnustep/base/preface.h>
 #include <gnustep/gui/config.h>
+#include <Foundation/NSString.h>
+#include <Foundation/NSUtilities.h>
+
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>

@@ -29,14 +29,26 @@
 #ifndef _GNUstep_H_NSPrintOperation
 #define _GNUstep_H_NSPrintOperation
 
-#include <AppKit/stdappkit.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSPrintInfo.h>
-#include <AppKit/NSPrintPanel.h>
-#include <Foundation/NSData.h>
+#include <Foundation/NSObject.h>
+#include <Foundation/NSGeometry.h>
+
+@class NSString;
+@class NSData;
+@class NSMutableData;
+
+@class NSView;
+@class NSPrintInfo;
+@class NSPrintPanel;
+@class NSDPSContext;
+
+typedef enum _NSPrintingPageOrder {
+  NSDescendingPageOrder,
+  NSSpecialPageOrder,
+  NSAscendingPageOrder,
+  NSUnknownPageOrder
+} NSPrintingPageOrder;
 
 @interface NSPrintOperation : NSObject
-
 {
   // Attributes
 }
@@ -46,21 +58,21 @@
 //
 + (NSPrintOperation *)EPSOperationWithView:(NSView *)aView
 				insideRect:(NSRect)rect
-toData:(NSMutableData *)data;
+				    toData:(NSMutableData *)data;
 + (NSPrintOperation *)EPSOperationWithView:(NSView *)aView	
 				insideRect:(NSRect)rect
-toData:(NSMutableData *)data
-				printInfo:(NSPrintInfo *)aPrintInfo;
+				    toData:(NSMutableData *)data
+				 printInfo:(NSPrintInfo *)aPrintInfo;
 + (NSPrintOperation *)EPSOperationWithView:(NSView *)aView	
 				insideRect:(NSRect)rect
-toPath:(NSString *)path
+				    toPath:(NSString *)path
 				printInfo:(NSPrintInfo *)aPrintInfo;
 + (NSPrintOperation *)printOperationWithView:(NSView *)aView;
 + (NSPrintOperation *)printOperationWithView:(NSView *)aView
 				   printInfo:(NSPrintInfo *)aPrintInfo;
 - (id)initEPSOperationWithView:(NSView *)aView
 		    insideRect:(NSRect)rect
-toData:(NSMutableData *)data
+			toData:(NSMutableData *)data
 		    printInfo:(NSPrintInfo *)aPrintInfo;
 - (id)initWithView:(NSView *)aView
 	 printInfo:(NSPrintInfo *)aPrintInfo;

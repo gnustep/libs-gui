@@ -29,14 +29,12 @@
 #ifndef _GNUstep_H_NSForm
 #define _GNUstep_H_NSForm
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSMatrix.h>
-#include <AppKit/NSFormCell.h>
-#include <AppKit/NSFont.h>
-#include <Foundation/NSCoder.h>
+
+@class NSFormCell;
+@class NSFont;
 
 @interface NSForm : NSMatrix <NSCoding>
-
 {
   // Attributes
 }

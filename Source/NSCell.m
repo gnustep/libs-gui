@@ -26,9 +26,14 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSCell.h>
-#include <gnustep/gui/NSApplication.h>
-#include <gnustep/gui/NSButton.h>
+#include <Foundation/NSValue.h>
+#include <AppKit/NSApplication.h>
+#include <AppKit/NSImage.h>
+#include <AppKit/NSFont.h>
+#include <AppKit/NSView.h>
+#include <AppKit/NSCell.h>
+#include <AppKit/NSEvent.h>
+#include <AppKit/LogFile.h>
 
 @implementation NSCell
 
@@ -92,7 +97,7 @@
   cell_type = NSImageCellType;
   cell_image = anImage;
   image_position = NSImageOnly;
-  cell_font = [NSFont userFontOfSize:12];
+  cell_font = [[NSFont userFontOfSize:12] retain];
   cell_state = NO;
   cell_highlighted = NO;
   cell_enabled = YES;
@@ -116,7 +121,7 @@
   //if (![aString isKindOfClass:[NSString class]])
   //	return nil;
 
-  cell_font = [NSFont userFontOfSize:12];
+  cell_font = [[NSFont userFontOfSize:12] retain];
   contents = aString;
   cell_type = NSTextCellType;
   text_align = NSLeftTextAlignment;
@@ -135,6 +140,14 @@
   cell_float_left = 0;
   cell_float_right = 6;
   return self;
+}
+
+- (void)dealloc
+{
+  [contents release];
+  [cell_image release];
+  [cell_font release];
+  [super dealloc];
 }
 
 //
@@ -222,7 +235,7 @@
     return;
 
   // Only set the image if we are an image cell
-  cell_image = anImage;
+  cell_image = [anImage retain];
 }
 
 //
@@ -245,48 +258,28 @@
 
 - (NSString *)stringValue
 {
-  return [NSString stringWithCString: [contents cString]];
+  return contents;
 }
 
 - (void)setDoubleValue:(double)aDouble
 {
-  char c[256];
-  unsigned int w = cell_float_left + cell_float_right;
+  NSNumber* number = [NSNumber numberWithDouble:aDouble];
 
-  // Default printf formatting
-  if (cell_float_left == 0)
-    sprintf(c, "%f", aDouble);
-  else
-    if (cell_float_autorange)
-      sprintf(c, "%*f", w, aDouble);
-    else
-      sprintf(c, "%*.*f", w, cell_float_right, aDouble);
-
-  contents = [NSString stringWithCString:c];
+  contents = [[number stringValue] retain];
 }
 
 - (void)setFloatValue:(float)aFloat
 {
-  char c[256];
-  unsigned int w = cell_float_left + cell_float_right;
+  NSNumber* number = [NSNumber numberWithFloat:aFloat];
 
-  // Default printf formatting
-  if (cell_float_left == 0)
-    sprintf(c, "%f", aFloat);
-  else
-    if (cell_float_autorange)
-      sprintf(c, "%*f", w, aFloat);
-    else
-      sprintf(c, "%*.*f", w, cell_float_right, aFloat);
-
-  contents = [NSString stringWithCString:c];
+  contents = [[number stringValue] retain];
 }
 
 - (void)setIntValue:(int)anInt
 {
-  char c[256];
-  sprintf(c, "%d", anInt);
-  contents = [NSString stringWithCString:c];
+  NSNumber* number = [NSNumber numberWithInt:anInt];
+
+  contents = [[number stringValue] retain];
 }
 
 - (void)setStringValue:(NSString *)aString
@@ -294,7 +287,7 @@
   if (!aString)
     contents = @"";
   else
-    contents = [NSString stringWithCString: [aString cString]];
+    contents = [aString copy];
 }
 
 //
@@ -367,7 +360,7 @@
   if (![fontObject isKindOfClass:[NSFont class]])
     return;
 
-  cell_font = fontObject;
+  cell_font = [fontObject retain];
 }
 
 - (void)setSelectable:(BOOL)flag
@@ -618,8 +611,7 @@
     NSPoint point = [controlView convertPoint: location fromView: nil];
     NSPoint last_point;
     BOOL done;
-    NSRect r;
-    BOOL untilMU, mouseWentUp;
+    BOOL mouseWentUp;
 
     NSDebugLog(@"NSCell start tracking\n");
     NSDebugLog(@"NSCell tracking in rect %f %f %f %f\n", 
@@ -645,8 +637,11 @@
 	    last_point = point;
 	    e = [theApp nextEventMatchingMask:event_mask untilDate:nil 
 			inMode:nil dequeue:YES];
+	    // What is going on here? After the following statement location
+	    // should be in the window coordinates, but is in the receiving
+	    // view's coordinate.
 	    location = [e locationInWindow];
-	    point = [controlView convertPoint: location fromView: nil];
+	    // point = [controlView convertPoint: location fromView: nil];
 	    NSDebugLog(@"NSCell location %f %f\n", location.x, location.y);
 	    NSDebugLog(@"NSCell point %f %f\n", point.x, point.y);
 
@@ -733,8 +728,6 @@
 //
 - (void)encodeWithCoder:aCoder
 {
-  [super encodeWithCoder:aCoder];
-
   [aCoder encodeObject: contents];
   [aCoder encodeObject: cell_image];
   [aCoder encodeObject: cell_font];
@@ -754,13 +747,15 @@
   [aCoder encodeValueOfObjCType: "i" at: &cell_type];
   [aCoder encodeValueOfObjCType: @encode(NSTextAlignment) at: &text_align];
   [aCoder encodeValueOfObjCType: "i" at: &entry_type];
+#if 0
   [aCoder encodeObjectReference: control_view withName: @"Control view"];
+#else
+  [aCoder encodeConditionalObject:control_view];
+#endif
 }
 
 - initWithCoder:aDecoder
 {
-  [super initWithCoder:aDecoder];
-
   contents = [aDecoder decodeObject];
   cell_image = [aDecoder decodeObject];
   cell_font = [aDecoder decodeObject];
@@ -780,8 +775,11 @@
   [aDecoder decodeValueOfObjCType: "i" at: &cell_type];
   [aDecoder decodeValueOfObjCType: @encode(NSTextAlignment) at: &text_align];
   [aDecoder decodeValueOfObjCType: "i" at: &entry_type];
+#if 0
   [aDecoder decodeObjectAt: &control_view withName: NULL];
-
+#else
+  control_view = [aDecoder decodeObject];
+#endif
   return self;
 }
 

@@ -26,28 +26,28 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSPasteboard.h>
+#include <AppKit/NSPasteboard.h>
 
 // Pasteboard Type Globals 
-NSString *NSStringPboardType;
-NSString *NSColorPboardType;
-NSString *NSFileContentsPboardType;
-NSString *NSFilenamesPboardType;
-NSString *NSFontPboardType;
-NSString *NSRulerPboardType;
-NSString *NSPostScriptPboardType;
-NSString *NSTabularTextPboardType;
-NSString *NSRTFPboardType;
-NSString *NSTIFFPboardType;
-NSString *NSDataLinkPboardType;
-NSString *NSGeneralPboardType;
+NSString *NSStringPboardType = @"NSStringPboardType";
+NSString *NSColorPboardType = @"NSColorPboardType";
+NSString *NSFileContentsPboardType = @"NSFileContentsPboardType";
+NSString *NSFilenamesPboardType = @"NSFilenamesPboardType";
+NSString *NSFontPboardType = @"NSFontPboardType";
+NSString *NSRulerPboardType = @"NSRulerPboardType";
+NSString *NSPostScriptPboardType = @"NSPostScriptPboardType";
+NSString *NSTabularTextPboardType = @"NSTabularTextPboardType";
+NSString *NSRTFPboardType = @"NSRTFPboardType";
+NSString *NSTIFFPboardType = @"NSTIFFPboardType";
+NSString *NSDataLinkPboardType = @"NSDataLinkPboardType";
+NSString *NSGeneralPboardType = @"NSGeneralPboardType";
 
 // Pasteboard Name Globals 
-NSString *NSDragPboard;
-NSString *NSFindPboard;
-NSString *NSFontPboard;
-NSString *NSGeneralPboard;
-NSString *NSRulerPboard;
+NSString *NSDragPboard = @"NSDragPboard";
+NSString *NSFindPboard = @"NSFindPboard";
+NSString *NSFontPboard = @"NSFontPboard";
+NSString *NSGeneralPboard = @"NSGeneralPboard";
+NSString *NSRulerPboard = @"NSRulerPboard";
 
 @implementation NSPasteboard
 

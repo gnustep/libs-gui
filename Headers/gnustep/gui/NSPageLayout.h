@@ -29,14 +29,24 @@
 #ifndef _GNUstep_H_NSPageLayout
 #define _GNUstep_H_NSPageLayout
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSPanel.h>
-#include <AppKit/NSPrintInfo.h>
-#include <Foundation/NSCoder.h>
-#include <AppKit/NSApplication.h>
+
+@class NSPrintInfo;
+@class NSView;
+
+enum {
+  NSPLImageButton,
+  NSPLTitleField,
+  NSPLPaperNameButton,
+  NSPLUnitsButton,
+  NSPLWidthForm,
+  NSPLHeightForm,
+  NSPLOrientationMatrix,
+  NSPLCancelButton,
+  NSPLOKButton 
+};
 
 @interface NSPageLayout : NSPanel <NSCoding>
-
 {
   // Attributes
 }

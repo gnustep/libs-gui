@@ -26,8 +26,9 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSBox.h>
-#include <gnustep/gui/NSTextFieldCell.h>
+#include <Foundation/NSArray.h>
+#include <AppKit/NSBox.h>
+#include <AppKit/NSTextFieldCell.h>
 
 @implementation NSBox
 

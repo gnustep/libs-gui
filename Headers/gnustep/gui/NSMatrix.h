@@ -31,13 +31,25 @@
 #ifndef _GNUstep_H_NSMatrix
 #define _GNUstep_H_NSMatrix
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSControl.h>
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSNotification.h>
+
+@class NSArray;
+@class NSMutableArray;
+@class NSNotification;
+
+@class NSCell;
+@class NSColor;
+@class NSText;
+@class NSEvent;
+
+typedef enum _NSMatrixMode {
+  NSRadioModeMatrix,
+  NSHighlightModeMatrix,
+  NSListModeMatrix,
+  NSTrackModeMatrix 
+} NSMatrixMode;
 
 @interface NSMatrix : NSControl <NSCoding>
-
 {
     // Attributes
     NSMutableArray *rows;
@@ -241,7 +253,7 @@
 	       column:(int)column;
 - (void)highlightCell:(BOOL)flag
 		atRow:(int)row
-column:(int)column;
+	       column:(int)column;
 
 //
 //Target and Action 

@@ -29,12 +29,9 @@
 #ifndef _GNUstep_H_NSActionCell
 #define _GNUstep_H_NSActionCell
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSCell.h>
-#include <Foundation/NSCoder.h>
 
 @interface NSActionCell : NSCell <NSCoding>
-
 {
   // Attributes
   int tag;
@@ -51,25 +48,17 @@
 - (void)setEnabled:(BOOL)flag;
 - (void)setFloatingPointFormat:(BOOL)autoRange
 			  left:(unsigned int)leftDigits
-right:(unsigned int)rightDigits;
+			 right:(unsigned int)rightDigits;
 - (void)setFont:(NSFont *)fontObject;
 - (void)setImage:(NSImage *)image;
 
 //
 // Manipulating NSActionCell Values 
 //
-- (double)doubleValue;
-- (float)floatValue;
-- (int)intValue;
+- (void)setIntValue:(int)anInt;
+- (void)setFloatValue:(float)aFloat;
+- (void)setDoubleValue:(double)aDouble;
 - (void)setStringValue:(NSString *)aString;
-- (NSString *)stringValue;
-
-//
-// Displaying 
-//
-- (void)drawWithFrame:(NSRect)cellFrame
-	       inView:(NSView *)controlView;
-- (NSView *)controlView;
 
 //
 // Target and Action 

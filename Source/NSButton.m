@@ -26,15 +26,16 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSButton.h>
-#include <gnustep/gui/NSWindow.h>
-#include <gnustep/gui/NSButtonCell.h>
-#include <gnustep/gui/NSApplication.h>
+#include <AppKit/NSButton.h>
+#include <AppKit/NSWindow.h>
+#include <AppKit/NSButtonCell.h>
+#include <AppKit/NSApplication.h>
+#include <gnustep/gui/LogFile.h>
 
 //
 // class variables
 //
-id MB_NSBUTTON_CLASS;
+static id MB_NSBUTTON_CLASS = nil;
 
 //
 // NSButton implementation
@@ -94,9 +95,9 @@ id MB_NSBUTTON_CLASS;
 //
 // Setting the Button Type 
 //
-- (void)setType:(NSButtonType)aType
+- (void)setButtonType:(NSButtonType)aType
 {
-  [cell setType:aType];
+  [cell setButtonType:aType];
   [self display];
 }
 
@@ -111,6 +112,21 @@ id MB_NSBUTTON_CLASS;
 //
 // Setting the State 
 //
+- (void)setIntValue:(int)anInt
+{
+  [self setState:(anInt != 0)];
+}
+
+- (void)setFloatValue:(float)aFloat
+{
+  [self setState:(aFloat != 0)];
+}
+
+- (void)setDoubleValue:(double)aDouble
+{
+  [self setState:(aDouble != 0)];
+}
+
 - (void)setState:(int)value
 {
   [cell setState:value];
@@ -194,6 +210,16 @@ id MB_NSBUTTON_CLASS;
   [self display];
 }
 
+- (void)setAlignment:(NSTextAlignment)mode
+{
+  [cell setAlignment:mode];
+}
+
+- (NSTextAlignment)alignment
+{
+  return [cell alignment];
+}
+
 //
 // Modifying Graphic Attributes 
 //
@@ -270,6 +296,7 @@ id MB_NSBUTTON_CLASS;
 
   // capture mouse
   [[self window] captureMouse: self];
+  [self lockFocus];
 
   done = NO;
   e = theEvent;
@@ -300,6 +327,7 @@ id MB_NSBUTTON_CLASS;
       [cell highlight: NO withFrame: bounds
 	    inView: self];
 
+#if 0
       //
       // Perform different state changes based upon our type
       //
@@ -326,11 +354,18 @@ id MB_NSBUTTON_CLASS;
 	      [cell setState:1];
 	      NSDebugLog(@"toggle state on\n");
 	    }
+	default:
+	  break;
 	}
+#endif
+      [cell setState:![self state]];
 
       // Have the target perform the action
       [self sendAction:[self action] to:[self target]];
+
+      [cell drawWithFrame:bounds inView:self];
     }
+  [self unlockFocus];
 }
 
 - (void)performClick:(id)sender

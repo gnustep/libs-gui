@@ -26,18 +26,20 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/NSControl.h>
-#include <gnustep/gui/NSApplication.h>
+#include <AppKit/NSControl.h>
+#include <AppKit/NSApplication.h>
+#include <AppKit/NSCell.h>
+#include <AppKit/LogFile.h>
 
 //
 // Class variables
 //
-id MB_NSCONTROL_CELL_CLASS;
+static id MB_NSCONTROL_CELL_CLASS = nil;
 
 // NSControl notifications
-NSString *NSControlTextDidBeginEditingNotification;
-NSString *NSControlTextDidEndEditingNotification;
-NSString *NSControlTextDidChangeNotification;
+NSString *NSControlTextDidBeginEditingNotification = @"NSControlTextDidBeginEditingNotification";
+NSString *NSControlTextDidEndEditingNotification = @"NSControlTextDidEndEditingNotification";
+NSString *NSControlTextDidChangeNotification = @"NSControlTextDidChangeNotification";
 
 @implementation NSControl
 
@@ -103,7 +105,7 @@ NSString *NSControlTextDidChangeNotification;
 - copyWithZone:(NSZone *)zone
 {
   id c;
-  c = [super copyWithZone: zone];
+  c = NSAllocateObject (isa, 0, zone);
 
   NSLog(@"NSControl: copyWithZone\n");
 

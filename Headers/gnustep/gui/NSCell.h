@@ -29,16 +29,71 @@
 #ifndef _GNUstep_H_NSCell
 #define _GNUstep_H_NSCell
 
-#include <AppKit/stdappkit.h>
-#include <AppKit/NSImage.h>
-#include <Foundation/NSString.h>
-#include <AppKit/NSView.h>
-#include <AppKit/NSFont.h>
-#include <AppKit/NSText.h>
 #include <Foundation/NSCoder.h>
+#include <Foundation/NSGeometry.h>
+
+#include <AppKit/NSText.h>
+
+@class NSString;
+@class NSView;
+@class NSFont;
+@class NSText;
+
+typedef enum _NSCellType {
+  NSNullCellType,
+  NSTextCellType,
+  NSImageCellType
+} NSCellType;
+
+enum {
+  NSAnyType,
+  NSIntType,
+  NSPositiveIntType,   
+  NSFloatType,
+  NSPositiveFloatType,   
+  NSDateType,
+  NSDoubleType,   
+  NSPositiveDoubleType
+};
+
+typedef enum {
+  NSNoImage = 0,
+  NSImageOnly,
+  NSImageLeft,
+  NSImageRight,
+  NSImageBelow,
+  NSImageAbove,
+  NSImageOverlaps
+} NSCellImagePosition;
+
+typedef enum _NSCellAttribute {
+  NSCellDisabled,
+  NSCellState,
+  NSPushInCell,
+  NSCellEditable,
+  NSChangeGrayCell,
+  NSCellHighlighted,   
+  NSCellLightsByContents,  
+  NSCellLightsByGray,   
+  NSChangeBackgroundCell,  
+  NSCellLightsByBackground,  
+  NSCellIsBordered,  
+  NSCellHasOverlappingImage,  
+  NSCellHasImageHorizontal,  
+  NSCellHasImageOnLeftOrBottom, 
+  NSCellChangesContents,  
+  NSCellIsInsetButton
+} NSCellAttribute;
+
+enum {
+  NSNoCellMask			= 0,
+  NSContentsCellMask		= 1,
+  NSPushInCellMask		= 2,
+  NSChangeGrayCellMask		= 4,
+  NSChangeBackgroundCellMask	= 8
+};
 
 @interface NSCell : NSObject <NSCoding>
-
 {
   // Attributes
   NSString *contents;
@@ -56,7 +111,7 @@
   BOOL cell_float_autorange;
   unsigned int cell_float_left;
   unsigned int cell_float_right;
-  unsigned int image_position;
+  NSCellImagePosition image_position;
   int cell_type;
   NSTextAlignment text_align;
   int entry_type;

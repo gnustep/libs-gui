@@ -29,14 +29,12 @@
 #ifndef _GNUstep_H_NSMenuCell
 #define _GNUstep_H_NSMenuCell
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSButtonCell.h>
-#include <Foundation/NSCoder.h>
 
+@class NSString;
 @class NSMenu;
 
 @interface NSMenuCell : NSButtonCell <NSCoding>
-
 {
   // Attributes
   NSString *key_equivalent;

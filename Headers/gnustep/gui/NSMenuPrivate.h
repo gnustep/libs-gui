@@ -29,7 +29,7 @@
 #ifndef _GNUstep_H_NSMenuPrivate
 #define _GNUstep_H_NSMenuPrivate
 
-#include <gnustep/gui/NSMenu.h>
+#include <AppKit/NSMenu.h>
 
 @interface NSMenu (GNUstepPrivate)
 

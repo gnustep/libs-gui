@@ -29,12 +29,11 @@
 #ifndef _GNUstep_H_NSEPSImageRep
 #define _GNUstep_H_NSEPSImageRep
 
-#include <AppKit/stdappkit.h>
 #include <AppKit/NSImageRep.h>
-#include <Foundation/NSCoder.h>
+
+@class NSData;
 
 @interface NSEPSImageRep : NSImageRep <NSCoding>
-
 {
   // Attributes
 }

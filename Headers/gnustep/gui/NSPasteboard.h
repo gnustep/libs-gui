@@ -29,10 +29,38 @@
 #ifndef _GNUstep_H_NSPasteboard
 #define _GNUstep_H_NSPasteboard
 
-#include <AppKit/stdappkit.h>
+#include <Foundation/NSObject.h>
+
+@class NSString;
+@class NSArray;
+@class NSData;
+
+//
+// Pasteboard Type Globals 
+//
+extern NSString *NSStringPboardType;
+extern NSString *NSColorPboardType;
+extern NSString *NSFileContentsPboardType;
+extern NSString *NSFilenamesPboardType;
+extern NSString *NSFontPboardType;
+extern NSString *NSRulerPboardType;
+extern NSString *NSPostScriptPboardType;
+extern NSString *NSTabularTextPboardType;
+extern NSString *NSRTFPboardType;
+extern NSString *NSTIFFPboardType;
+extern NSString *NSDataLinkPboardType;
+extern NSString *NSGeneralPboardType;
+
+//
+// Pasteboard Name Globals 
+//
+extern NSString *NSDragPboard;
+extern NSString *NSFindPboard;
+extern NSString *NSFontPboard;
+extern NSString *NSGeneralPboard;
+extern NSString *NSRulerPboard;
 
 @interface NSPasteboard : NSObject
-
 {
   // Attributes
 }
@@ -94,9 +122,18 @@
 // Methods Implemented by the Owner 
 //
 - (void)pasteboard:(NSPasteboard *)sender
-provideDataForType:(NSString *)type;
+  provideDataForType:(NSString *)type;
 - (void)pasteboardChangedOwner:(NSPasteboard *)sender;
 
 @end
+
+//
+// Return File-related Pasteboard Types
+//
+NSString *NSCreateFileContentsPboardType(NSString *fileType);
+NSString *NSCreateFilenamePboardType(NSString *filename);
+NSString *NSGetFileType(NSString *pboardType);
+NSArray *NSGetFileTypes(NSArray *pboardTypes);
+
 
 #endif // _GNUstep_H_NSPasteboard

@@ -29,21 +29,38 @@
 #ifndef _GNUstep_H_NSFontManager
 #define _GNUstep_H_NSFontManager
 
-#include <AppKit/stdappkit.h>
-#include <AppKit/NSFont.h>
-#include <AppKit/NSFontPanel.h>
-#include <AppKit/NSMenu.h>
+#include <Foundation/NSObject.h>
+
+@class NSString;
+@class NSArray;
+
+@class NSFont;
+@class NSMenu;
+@class NSFontPanel;
+
+typedef unsigned int NSFontTraitMask;
+
+enum {
+  NSItalicFontMask = 1,
+  NSBoldFontMask = 2,
+  NSUnboldFontMask = 4,
+  NSNonStandardCharacterSetFontMask = 8,
+  NSNarrowFontMask = 16,
+  NSExpandedFontMask = 32,
+  NSCondensedFontMask = 64,
+  NSSmallCapsFontMask = 128,
+  NSPosterFontMask = 256,
+  NSCompressedFontMask = 512,
+  NSUnitalicFontMask = 1024
+};
 
 @interface NSFontManager : NSObject
-
 {
   // Attributes
   id delegate;
   SEL action;
-  NSMutableArray *family_list;
-  NSMutableArray *family_metrics;
   NSFont *selected_font;
-  NSMutableArray *font_list;
+  NSArray *fontsList;
   NSMenu *font_menu;
 }
 
@@ -80,7 +97,6 @@
 //
 - (SEL)action;
 - (NSArray *)availableFonts;
-- (NSArray *)familyMetrics;
 - (NSMenu *)fontMenu:(BOOL)create;
 - (NSFontPanel *)fontPanel:(BOOL)create;
 - (BOOL)isEnabled;
