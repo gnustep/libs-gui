@@ -699,6 +699,14 @@ Class gmodel_class(void)
 }
 @end
 
+/*
+ *
+ *  Template Classes:  these are used to 
+ *  persist custom classes (classes implemented by the user and loaded into Gorm
+ *  to .gorm files.
+ *
+ */
+
 // Template for any class which derives from NSWindow.
 @implementation NSWindowTemplate
 + (void) initialize
@@ -733,7 +741,6 @@ Class gmodel_class(void)
 {
   [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
   [aCoder decodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];  
-  //  return [super _initWithCoder: aCoder defer: YES];
   return [super initWithCoder: aCoder];
 }
 
@@ -766,8 +773,7 @@ Class gmodel_class(void)
 	  backing: [self backingType]
 	  defer: _deferFlag];
   
-  // NSLog(@"Instantiated window %@",obj);
-  
+  // fill in actual object from template...
   [obj setBackgroundColor: [self backgroundColor]];
   [obj setContentView: [self contentView]];
   [obj setFrameAutosaveName: [self frameAutosaveName]];
@@ -1208,10 +1214,6 @@ Class gmodel_class(void)
   [aCoder decodeValueOfObjCType: @encode(id) at: &_delegate];  
   [aCoder decodeValueOfObjCType: @encode(id) at: &_dataSource];  
   [aCoder decodeValueOfObjCType: @encode(BOOL) at: &_usesDataSource];  
-  [aCoder decodeValueOfObjCType: @encode(int) at: &_buttonType];  
-  [aCoder decodeValueOfObjCType: @encode(int) at: &_bezelStyle]; 
-  [aCoder decodeValueOfObjCType: @encode(BOOL) at: &_bordered];   
-  [aCoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsMixedState];   
   return [super initWithCoder: aCoder];
 }
 
@@ -1221,10 +1223,6 @@ Class gmodel_class(void)
   [aCoder encodeValueOfObjCType: @encode(id) at: &_delegate];  
   [aCoder encodeValueOfObjCType: @encode(id) at: &_dataSource];  
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_usesDataSource];  
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_buttonType];  
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_bezelStyle]; 
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_bordered];   
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_allowsMixedState];   
   [super encodeWithCoder: aCoder];
 }
 
@@ -1265,30 +1263,129 @@ Class gmodel_class(void)
 
   // since only some controls have delegates, we need to test...
   if([obj respondsToSelector: @selector(setDelegate:)])
-    {
       [obj setDelegate: _delegate];
-    }
 
   // since only some controls have data sources, we need to test...
   if([obj respondsToSelector: @selector(setDataSource:)])
-    {
       [obj setDataSource: _dataSource];
-    }
 
   // since only some controls have data sources, we need to test...
   if([obj respondsToSelector: @selector(setUsesDataSource:)])
-    {
       [obj setUsesDataSource: _usesDataSource];
+
+  RELEASE(self);
+  return obj;
+}
+
+// accessors
+- (void) setClassName: (NSString *)name
+{
+  ASSIGN(_className, name);
+}
+
+- (NSString *)className
+{
+  return _className;
+}
+@end
+
+// Template for any classes which derive from NSButton
+@implementation NSButtonTemplate
++ (void) initialize
+{
+  if (self == [NSButtonTemplate class]) 
+    {
+      [self setVersion: 0];
+    }
+}
+
+- (void) dealloc
+{
+  RELEASE(_className);
+  [super dealloc];
+}
+
+- initWithFrame: (NSRect)frame
+{
+  // Start initially with the highest level class...
+  ASSIGN(_className, NSStringFromClass([super class]));
+  RETAIN(_className);
+  _buttonType = NSMomentaryLightButton;
+  [super initWithFrame: frame];
+  
+  return self;
+}
+
+- init
+{
+  // Start initially with the highest level class...
+  [super init];
+  ASSIGN(_className, NSStringFromClass([super class]));
+  RETAIN(_className);
+  _buttonType = NSMomentaryLightButton;
+  return self;
+}
+
+- (id) initWithCoder: (NSCoder *)aCoder
+{
+  [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
+  [aCoder decodeValueOfObjCType: @encode(int) at: &_buttonType];  
+  return [super initWithCoder: aCoder];
+}
+
+- (void) encodeWithCoder: (NSCoder *)aCoder
+{
+  [aCoder encodeValueOfObjCType: @encode(id) at: &_className];  
+  [aCoder encodeValueOfObjCType: @encode(int) at: &_buttonType];  
+  [super encodeWithCoder: aCoder];
+}
+
+- (id) awakeAfterUsingCoder: (NSCoder *)coder
+{
+  return [self instantiateObject: coder];
+}
+
+- (id) instantiateObject: (NSCoder *)coder
+{
+  Class       aClass = NSClassFromString(_className);
+  NSRect theFrame = [self frame];
+  id obj = nil;
+
+  if (aClass == nil)
+    {
+      [NSException raise: NSInternalInconsistencyException
+		   format: @"Unable to find class '%@'", _className];
     }
 
-  // for buttons...
-  if([obj respondsToSelector: @selector(setButtonType:)] )
-    {
-      [obj setButtonType: _buttonType];
-      [obj setBezelStyle: _bezelStyle];
-      [obj setBordered: _bordered];
-      [obj setAllowsMixedState: _allowsMixedState];
-    }
+  obj =  [[aClass allocWithZone: NSDefaultMallocZone()]
+	   initWithFrame: theFrame];
+
+  // set the attributes for the view
+  [obj setBounds: [self bounds]];
+
+  // set the attributes for the control
+  [obj setDoubleValue: [self doubleValue]];
+  [obj setFloatValue: [self floatValue]];
+  [obj setIntValue: [self intValue]];
+  [obj setObjectValue: [self objectValue]];
+  [obj setStringValue: [self stringValue]];
+  [obj setTag: [self tag]];
+  [obj setFont: [self font]];
+  [obj setAlignment: [self alignment]];
+  [obj setEnabled: [self isEnabled]];
+  [obj setContinuous: [self isContinuous]];
+
+  // button
+  [obj setButtonType: _buttonType];
+  [obj setBezelStyle: [self bezelStyle]];
+  [obj setBordered: [self isBordered]];
+  [obj setAllowsMixedState: [self allowsMixedState]];
+  [obj setTitle: [self title]];
+  [obj setAlternateTitle: [self alternateTitle]];
+  [obj setImage: [self image]];
+  [obj setAlternateImage: [self alternateImage]];
+  [obj setImagePosition: [self imagePosition]];
+  [obj setKeyEquivalent: [self keyEquivalent]];
 
   RELEASE(self);
   return obj;

@@ -114,10 +114,13 @@
   id                   _delegate;
   id                   _dataSource;
   BOOL                 _usesDataSource;
+}
+@end
+
+@interface NSButtonTemplate : NSButton <GSTemplate>
+{
+  NSString            *_className;
   NSButtonType         _buttonType;
-  NSBezelStyle         _bezelStyle;
-  BOOL                 _bordered;
-  BOOL                 _allowsMixedState;
 }
 @end
 

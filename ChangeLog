@@ -1,3 +1,9 @@
+2002-10-08  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/GSNibTemplates.h: Added new template class.
+	* Source/NSBundleAdditions.m: Added implementation for new template
+	class.  Improved some of the existing classes.
+
 2002-10-08  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSButtonCell.h
