@@ -1452,119 +1452,145 @@ int contribution(NSPoint point, float dir, NSPoint start, NSPoint end, BOOL *hit
   DESTROY(_cacheImage);
 }
 
+
+/* Helper for -_recalculateBounds. */
+static NSPoint point_on_curve(double t, NSPoint a, NSPoint b, NSPoint c,
+			      NSPoint d)
+{
+  double ti = 1.0 - t;
+  return NSMakePoint(ti * ti * ti * a.x + 3 * ti * ti * t * b.x
+		       + 3 * ti * t * t * c.x + t * t * t * d.x,
+		     ti * ti * ti * a.y + 3 * ti * ti * t * b.y
+		       + 3 * ti * t * t * c.y + t * t * t * d.y);
+}
+
 - (void)_recalculateBounds
 {
   NSBezierPathElement type;
-  NSPoint p, last_p;
+  NSPoint p; /* Current point. */
+  NSPoint last_move;
   NSPoint pts[3];
-  // This will compute three intermediate points per curve
-  double x, y, t, k = 0.25;
-  float maxx, minx, maxy, miny;
-  float cpmaxx, cpminx, cpmaxy, cpminy;	
-  int i, count;
-  BOOL first = YES;
+
+  NSPoint min, max;   /* Path bounding box. */
+  NSPoint cmin, cmax; /* Control-point bounding box. */
+
+  int i, count, num_curves;
   
   count = [self elementCount];
-  if(!count)
+  if (!count)
     {
       _bounds = NSZeroRect;
       _controlPointBounds = NSZeroRect;
+      _shouldRecalculateBounds = NO;
       return;
     }
 
-  // Some big starting values
-  maxx = maxy = cpmaxx = cpmaxy = -1E9;
-  minx = miny = cpminx = cpminy = 1E9;
+  last_move = p = min = max = cmin = cmax = NSMakePoint(0, 0);
 
-  for(i = 0; i < count; i++) 
+#define CHECK_MAX(max, p) \
+  if (p.x > max.x) max.x = p.x; \
+  if (p.y > max.y) max.y = p.y;
+#define CHECK_MIN(min, p) \
+  if (p.x < min.x) min.x = p.x; \
+  if (p.y < min.y) min.y = p.y;
+
+  num_curves = 0;
+  for (i = 0; i < count; i++)
     {
-      type = [self elementAtIndex: i associatedPoints: pts];
-      switch(type) 
-        {
-	  case NSMoveToBezierPathElement:
-	      last_p = pts[0];
-	      // NO BREAK
-	  case NSLineToBezierPathElement:
-	      if (first)
-	        {
-		  maxx = minx = cpmaxx = cpminx = pts[0].x;
-		  maxy = miny = cpmaxy = cpminy = pts[0].y;
-		  last_p = pts[0];
-		  first = NO;
-		}
-	      else
-	      {
-	        if(pts[0].x > maxx) maxx = pts[0].x;
-		if(pts[0].x < minx) minx = pts[0].x;
-		if(pts[0].y > maxy) maxy = pts[0].y;
-		if(pts[0].y < miny) miny = pts[0].y;
-		
-		if(pts[0].x > cpmaxx) cpmaxx = pts[0].x;
-		if(pts[0].x < cpminx) cpminx = pts[0].x;
-		if(pts[0].y > cpmaxy) cpmaxy = pts[0].y;
-		if(pts[0].y < cpminy) cpminy = pts[0].y;
-	      }
+      type = [self elementAtIndex: i  associatedPoints: pts];
 
-	      p = pts[0];
-	      break;
+      if (!i)
+	{
+	  cmin = cmax = min = max = p = last_move = pts[0];
+	}
+
+      switch (type)
+	{
+          case NSClosePathBezierPathElement:
+	    p = last_move;
+	    continue;
+
+	  case NSMoveToBezierPathElement:
+	    last_move = pts[0];
+	    /* Fall-through. */
+	  case NSLineToBezierPathElement:
+	    CHECK_MAX(max, pts[0])
+	    CHECK_MIN(min, pts[0])
+	    p = pts[0];
+	    break;
 
 	  case NSCurveToBezierPathElement:
-	      if (first)
-	        {
-		  maxx = minx = cpmaxx = cpminx = pts[0].x;
-		  maxy = miny = cpmaxy = cpminy = pts[0].y;
-		  p = last_p = pts[0];
-		  first = NO;
+	    {
+	      double t0, t1, t;
+	      NSPoint q;
+
+	      num_curves++;
+	      CHECK_MAX(cmax, pts[0])
+	      CHECK_MIN(cmin, pts[0])
+	      CHECK_MAX(cmax, pts[1])
+	      CHECK_MIN(cmin, pts[1])
+
+	      CHECK_MAX(max, pts[2])
+	      CHECK_MIN(min, pts[2])
+
+#define CHECK_CURVE_EXTREMES(x) \
+	      t = (p.x * (pts[2].x - pts[1].x) \
+		   + pts[0].x * (-pts[2].x - pts[1].x) \
+		   + pts[1].x * pts[1].x + pts[0].x * pts[0].x); \
+	      if (t >= 0.0) \
+		{ \
+		  t = sqrt(t); \
+		  t0 = (pts[1].x - 2 * pts[0].x + p.x + t) \
+		       / (-pts[2].x + 3 * pts[1].x - 3 * pts[0].x + p.x); \
+		  t1 = (pts[1].x - 2 * pts[0].x + p.x - t) \
+		       / (-pts[2].x + 3 * pts[1].x - 3 * pts[0].x + p.x); \
+\
+		  if (t0 > 0.0 && t0 < 1.0) \
+		    { \
+		      q = point_on_curve(t0, p, pts[0], pts[1], pts[2]); \
+		      CHECK_MAX(max, q) \
+		      CHECK_MIN(min, q) \
+		    } \
+		  if (t1 > 0.0 && t1 < 1.0) \
+		    { \
+		      q = point_on_curve(t1, p, pts[0], pts[1], pts[2]); \
+		      CHECK_MAX(max, q) \
+		      CHECK_MIN(min, q) \
+		    } \
 		}
 
-	      if(pts[2].x > maxx) maxx = pts[2].x;
-	      if(pts[2].x < minx) minx = pts[2].x;
-	      if(pts[2].y > maxy) maxy = pts[2].y;
-	      if(pts[2].y < miny) miny = pts[2].y;
-	      
-	      if(pts[0].x > cpmaxx) cpmaxx = pts[0].x;
-	      if(pts[0].x < cpminx) cpminx = pts[0].x;
-	      if(pts[0].y > cpmaxy) cpmaxy = pts[0].y;
-	      if(pts[0].y < cpminy) cpminy = pts[0].y;
-	      if(pts[1].x > cpmaxx) cpmaxx = pts[1].x;
-	      if(pts[1].x < cpminx) cpminx = pts[1].x;
-	      if(pts[1].y > cpmaxy) cpmaxy = pts[1].y;
-	      if(pts[1].y < cpminy) cpminy = pts[1].y;
-	      if(pts[2].x > cpmaxx) cpmaxx = pts[2].x;
-	      if(pts[2].x < cpminx) cpminx = pts[2].x;
-	      if(pts[2].y > cpmaxy) cpmaxy = pts[2].y;
-	      if(pts[2].y < cpminy) cpminy = pts[2].y;
-	      
-	      for(t = k; t <= 1+k; t += k) 
-	        {
-		  x = (p.x+t*(-p.x*3+t*(3*p.x-p.x*t)))+
-		      t*(3*pts[0].x+t*(-6*pts[0].x+pts[0].x*3*t))+
-		      t*t*(pts[1].x*3-pts[1].x*3*t)+pts[2].x*t*t*t;
-		  y = (p.y+t*(-p.y*3+t*(3*p.y-p.y*t)))+
-		      t*(3*pts[0].y+t*(-6*pts[0].y+pts[0].y*3*t))+
-		      t*t*(pts[1].y*3-pts[1].y*3*t)+pts[2].y*t*t*t;
-		  
-		  if(x > cpmaxx) cpmaxx = x;
-		  if(x < cpminx) cpminx = x;
-		  if(y > cpmaxy) cpmaxy = y;
-		  if(y < cpminy) cpminy = y;
-		}
+	      CHECK_CURVE_EXTREMES(x)
+	      CHECK_CURVE_EXTREMES(y)
+
+#undef CHECK_CURVE_EXTREMES
 
 	      p = pts[2];
 	      break;
-
-	  case NSClosePathBezierPathElement:
-	      // This does not add to the bounds, but changes the current point
-	      p = last_p;
-	      break;
-	  default:
-	      break;
+	    }
 	}
     }
-  
-  _bounds = NSMakeRect(minx, miny, maxx - minx, maxy - miny);
-  _controlPointBounds = NSMakeRect(cpminx, cpminy, cpmaxx - cpminx, cpmaxy - cpminy);
+
+  /* If there were no curve elements, the control-point bounding box is the
+  same as the path bounding box. Otherwise, the control-point bounding box
+  is the union of the path bounding box and the bounding box of the curve
+  control points. */
+  if (num_curves)
+    {
+      CHECK_MAX(cmax, max)
+      CHECK_MIN(cmin, min)
+    }
+  else
+    {
+      cmin = min;
+      cmax = max;
+    }
+
+  _bounds = NSMakeRect(min.x, min.y, max.x - min.x, max.y - min.y);
+  _controlPointBounds = NSMakeRect(cmin.x, cmin.y,
+				   cmax.x - cmin.x, cmax.y - cmin.y);
   _shouldRecalculateBounds = NO;
+#undef CHECK_MAX
+#undef CHECK_MIN
 }
 
 @end

@@ -1,3 +1,8 @@
+2004-07-15 02:28  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSBezierPath.m (point_on_curve): New function.
+	(-_recalculateBounds): Rewrite. Calculate bounds analytically.
+
 2004-07-13 02:54  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSImageRep.m (+_imageRepsWithData:): New method.
