@@ -1,3 +1,13 @@
+Tue Dec 18 22:13:31 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSTextView.m ([-moveToEndOfLine:]): Fixed crashes for
+	empty lines by carefully checking for special cases.
+	* Source/NSLayoutManager.m
+	([-lineFragmentRectForGlyphAtIndex:effectiveRange:]): Fixed setting
+	effective range.
+	([-lineFragmentUsedRectForGlyphAtIndex:effectiveRange:]): Idem.
+	([-textContainerForGlyphAtIndex:effectiveRange:]): Idem.
+	
 2001-12-19  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSApplication.m
