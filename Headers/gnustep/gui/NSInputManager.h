@@ -124,6 +124,12 @@
      reset ourselves immediately into vanilla root input state.  */
   unichar _abortCharacter;
   int _abortFlags;
+
+  /* When it is YES, keystrokes containing the NSControlKeyMask as not
+     inserted into the text.  This is so that if you press Control-x,
+     and that is bound to nothing, it doesn't get inserted as a strange
+     character into your text.  */
+  BOOL _insertControlKeystrokes;
 }
 + (NSInputManager *) currentInputManager;
 
