@@ -56,7 +56,7 @@ static	Class	concrete;
 
 - (void) dealloc
 {
-  RELEASE(layoutManagers);
+  RELEASE (_layoutManagers);
   [super dealloc];
 }
 
@@ -66,7 +66,7 @@ static	Class	concrete;
 - (id) initWithString: (NSString*)aString
            attributes: (NSDictionary*)attributes
 {
-  layoutManagers = [[NSMutableArray alloc] initWithCapacity: 2];
+  _layoutManagers = [[NSMutableArray alloc] initWithCapacity: 2];
   return self;
 }
 
@@ -85,34 +85,36 @@ static	Class	concrete;
  */
 - (void) addLayoutManager: (NSLayoutManager*)obj
 {
-  if ([layoutManagers indexOfObjectIdenticalTo: obj] == NSNotFound)
+  if ([_layoutManagers indexOfObjectIdenticalTo: obj] == NSNotFound)
     {
-      [layoutManagers addObject: obj];
-      [obj setTextStorage:self];
+      [_layoutManagers addObject: obj];
+      [obj setTextStorage: self];
     }
 }
 
 - (void) removeLayoutManager: (NSLayoutManager*)obj
 {
-  [layoutManagers removeObjectIdenticalTo: obj];
+  [_layoutManagers removeObjectIdenticalTo: obj];
 }
 
 - (NSArray*) layoutManagers
 {
-  return layoutManagers;
+  return _layoutManagers;
 }
 
 - (void) beginEditing
 {
-  editCount++;
+  _editCount++;
 }
 
 - (void) endEditing
 {
-  if (editCount == 0)
-    [NSException raise: NSGenericException
-		format: @"endEditing without corresponding beginEditing"];
-  if (--editCount == 0)
+  if (_editCount == 0)
+    {
+      [NSException raise: NSGenericException
+		   format: @"endEditing without corresponding beginEditing"];
+    }
+  if (--_editCount == 0)
     {
       [self processEditing];
     }
@@ -133,18 +135,18 @@ static	Class	concrete;
   /*
    * Add in any new flags for this edit.
    */
-  editedMask |= mask;
+  _editedMask |= mask;
 
   /*
    * Extend edited range to encompass the latest edit.
    */
-  if (editedRange.length == 0)
+  if (_editedRange.length == 0)
     {
-      editedRange = old;		// First edit.
+      _editedRange = old;		// First edit.
     }
   else
     {
-      editedRange = NSUnionRange(editedRange, old);
+      _editedRange = NSUnionRange (_editedRange, old);
     }
 
   /*
@@ -155,14 +157,13 @@ static	Class	concrete;
     {
       if (delta < 0)
 	{
-	  // FIXME: this was > not >=, is that going to be a problem?
-	  NSAssert(old.length >= -delta, NSInvalidArgumentException);
+	  NSAssert (old.length >= -delta, NSInvalidArgumentException);
 	}
-      editedRange.length += delta; 
-      editedDelta += delta;
+      _editedRange.length += delta; 
+      _editedDelta += delta;
     }
 
-  if (editCount == 0)
+  if (_editCount == 0)
     [self processEditing];
 }
 
@@ -177,53 +178,60 @@ static	Class	concrete;
 {
   NSRange	r;
   int i;
+  unsigned length;
 
   NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
 
   NSDebugLLog(@"NSText", @"processEditing called in NSTextStorage.");
 
   /*
-   * The editCount gets decreased later again, so that changes by
-   * the delegate dont trigger a new processEditing
-   */
-  editCount++;
+   * The _editCount gets decreased later again, so that changes by the
+   * delegate or by ourselves when we fix attributes dont trigger a
+   * new processEditing */
+  _editCount++;
   [nc postNotificationName: NSTextStorageWillProcessEditingNotification
 		    object: self];
 
-  r = editedRange;
+  /* Very important: we save the current _editedRange */
+  r = _editedRange;
+  length = [self length];
   // Multiple adds at the end might give a too long result
-  if (NSMaxRange(r) > [self length])
-      r.length = [self length] - r.location;
+  if (NSMaxRange(r) > length)
+      r.length = length - r.location;
 
+  /* The following call will potentially fix attributes.  These changes 
+     are done through NSTextStorage methods, which records the changes 
+     by calling edited:range:changeInLength: - which modifies editedRange.
+     
+     As a consequence, if any attribute has been fixed, r !=
+     editedRange after this call.  This is why we saved r in the first
+     place. */
   [self fixAttributesInRange: r];
 
   [nc postNotificationName: NSTextStorageDidProcessEditingNotification
                     object: self];
-  editCount--;
+  _editCount--;
 
   /*
    * Calls textStorage:edited:range:changeInLength:invalidatedRange: for
    * every layoutManager.
-   *
-   * FIXME: The invalidatedRange is not correct, this should include the 
-   *        surrounding paragraphs.
    */
 
-  for (i=0;i<[layoutManagers count];i++)
+  for (i = 0; i < [_layoutManagers count]; i++)
     {
-      NSLayoutManager *lManager = [layoutManagers objectAtIndex:i];
+      NSLayoutManager *lManager = [_layoutManagers objectAtIndex: i];
 
-      [lManager textStorage: self edited: editedMask range: r
-		changeInLength: editedDelta invalidatedRange: r];
+      [lManager textStorage: self  edited: _editedMask  range: r
+		changeInLength: _editedDelta  invalidatedRange: _editedRange];
     }
 
   /*
    * edited values reset to be used again in the next pass.
    */
 
-  editedRange = NSMakeRange(0, 0);
-  editedDelta = 0;
-  editedMask = 0;
+  _editedRange = NSMakeRange (0, 0);
+  _editedDelta = 0;
+  _editedMask = 0;
 }
 
 /*
@@ -234,17 +242,17 @@ static	Class	concrete;
  */       
 - (unsigned) editedMask
 {
-  return editedMask;
+  return _editedMask;
 }
 
 - (NSRange) editedRange
 {
-  return editedRange;
+  return _editedRange;
 }
 
 - (int) changeInLength
 {
-  return editedDelta;
+  return _editedDelta;
 }
 
 /*
@@ -254,13 +262,13 @@ static	Class	concrete;
 {
   NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
 
-  if (delegate)
-    [nc removeObserver: delegate name: nil object: self];
-  delegate = anObject;
+  if (_delegate)
+    [nc removeObserver: _delegate  name: nil  object: self];
+  _delegate = anObject;
 
 #define SET_DELEGATE_NOTIFICATION(notif_name) \
-  if ([delegate respondsToSelector: @selector(textStorage##notif_name:)]) \
-    [nc addObserver: delegate \
+  if ([_delegate respondsToSelector: @selector(textStorage##notif_name:)]) \
+    [nc addObserver: _delegate \
 	   selector: @selector(textStorage##notif_name:) \
 	       name: NSTextStorage##notif_name##Notification object: self]
 
@@ -270,7 +278,7 @@ static	Class	concrete;
 
 - (id) delegate
 {
-  return delegate;
+  return _delegate;
 }
 
 @end

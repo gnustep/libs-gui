@@ -1,12 +1,13 @@
 /*
    NSTextStorage.h
 
-     NSTextStorage is a semi-abstract subclass of NSMutableAttributedString. It 
-     implements change management (beginEditing/endEditing), verification of 
-     attributes, delegate handling, and layout management notification. The one 
-     aspect it does not implement is the actual attributed string storage --- 
-     this is left up to the subclassers, which need to override the four 
-     NSAttributedString and NSMutableAttributedString primitives:
+     NSTextStorage is a semi-abstract subclass of
+     NSMutableAttributedString. It implements change management
+     (beginEditing/endEditing), verification of attributes, delegate
+     handling, and layout management notification. The one aspect it
+     does not implement is the actual attributed string storage ---
+     this is left up to the subclassers, which need to override the
+     four NSAttributedString and NSMutableAttributedString primitives:
 
 	- (NSString*) string;
 	- (NSDictionary*) attributesAtIndex: (unsigned)index
@@ -42,8 +43,7 @@
 
    You should have received a copy of the GNU Library General Public
    License along with this library; if not, write to the Free
-   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
-*/
+   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.  */
 
 #ifndef _GNUstep_H_NSTextStorage
 #define _GNUstep_H_NSTextStorage
@@ -65,12 +65,12 @@ enum
 
 @interface NSTextStorage : NSMutableAttributedString
 {
-  NSRange		editedRange;
-  int			editedDelta;
-  NSMutableArray	*layoutManagers;
-  id			delegate;
-  unsigned		editedMask;
-  unsigned		editCount;
+  NSRange		_editedRange;
+  int			_editedDelta;
+  NSMutableArray	*_layoutManagers;
+  id			_delegate;
+  unsigned		_editedMask;
+  unsigned		_editCount;
 }
 
 /*
