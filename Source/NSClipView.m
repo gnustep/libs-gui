@@ -118,7 +118,8 @@
 
   if (_copiesOnScroll && _window)
     {
-      // copy the portion of the view that is common before and after scrolling.
+      // copy the portion of the view that is common before 
+      // and after scrolling.
       // then tell docview to draw the exposed parts.
       // intersection is the common rectangle
       intersection = NSIntersectionRect(originalBounds, newBounds);
