@@ -329,67 +329,10 @@ this to return nil to indicate that we have no context menu.
 
 - (void) mouseDown: (NSEvent*)theEvent
 { 
-  NSMenuView *mr = [[_cell menu] menuRepresentation];
-  NSWindow   *menuWindow = [mr window];
-  NSEvent    *e;
-  NSPoint    p;
-  int        lastSelectedItem = [_cell indexOfSelectedItem];
-  int        highlightedItemIndex;
-
-  if ([self isEnabled] == NO)
-    return;
-
-  if ([[_cell menu] numberOfItems] == 0)
-    {
-      NSBeep ();
-      return;
-    }
-
-  // Attach the popUp
-  [_cell attachPopUpWithFrame: _bounds
-	               inView: self];
-  
-  p = [_window convertBaseToScreen: [theEvent locationInWindow]];
-  p = [menuWindow convertScreenToBase: p];
-  
-  // Process events; we start menu events processing by converting 
-  // this event to the menu window, and sending it there. 
-  e = [NSEvent mouseEventWithType: [theEvent type]
-	       location: p
-	       modifierFlags: [theEvent modifierFlags]
-	       timestamp: [theEvent timestamp]
-	       windowNumber: [menuWindow windowNumber]
-	       context: [theEvent context]
-	       eventNumber: [theEvent eventNumber]
-	       clickCount: [theEvent clickCount] 
-	       pressure: [theEvent pressure]];
-  [NSApp sendEvent: e];
-
-  // Get highlighted item index from _cell because NSMenuView:
-  // - tells to NSPopUpButtonCell about current selected item index;
-  // - sets own selected item index to -1;
-  //
-  // So, at this point [mr highlightedItemIndex] always = -1
-  highlightedItemIndex = [_cell indexOfSelectedItem];
-
-  // Selection remains unchanged if selected item is disabled
-  // or mouse left menu (highlightedItemIndex == -1).
-  if ( highlightedItemIndex < 0
-       || highlightedItemIndex == lastSelectedItem
-       || [[self itemAtIndex: highlightedItemIndex] isEnabled] == NO)
-    {
-      [mr setHighlightedItemIndex: lastSelectedItem];
-    }
-  else
-    {
-      [mr setHighlightedItemIndex: highlightedItemIndex];
-    }
-
-  // Dismiss the popUp
-  [_cell dismissPopUp];
-
-  // Update our selected item
-  [self synchronizeTitleAndSelectedItem];  
+  [_cell trackMouse: theEvent 
+	     inRect: [self bounds] 
+	     ofView: self 
+       untilMouseUp: YES];
 }
 
 /* Private method which covers an obscure case where the user uses the

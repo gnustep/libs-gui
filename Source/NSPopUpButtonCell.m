@@ -632,6 +632,68 @@ static NSImage *_pbc_image[2];
 	     ofView: (NSView *)controlView
        untilMouseUp: (BOOL)untilMouseUp
 {
+  NSMenuView *mr = [[self menu] menuRepresentation];
+  NSWindow   *menuWindow = [mr window];
+  NSEvent    *e;
+  NSPoint    p;
+  int        lastSelectedItem = [self indexOfSelectedItem];
+  int        highlightedItemIndex;
+
+  if ([self isEnabled] == NO)
+    return NO;
+
+  if ([[self menu] numberOfItems] == 0)
+    {
+      NSBeep ();
+      return NO;
+    }
+
+  // Attach the popUp
+  [self attachPopUpWithFrame: cellFrame
+	              inView: controlView];
+  
+  p = [[controlView window] convertBaseToScreen: [theEvent locationInWindow]];
+  p = [menuWindow convertScreenToBase: p];
+  
+  // Process events; we start menu events processing by converting 
+  // this event to the menu window, and sending it there. 
+  e = [NSEvent mouseEventWithType: [theEvent type]
+	       location: p
+	       modifierFlags: [theEvent modifierFlags]
+	       timestamp: [theEvent timestamp]
+	       windowNumber: [menuWindow windowNumber]
+	       context: [theEvent context]
+	       eventNumber: [theEvent eventNumber]
+	       clickCount: [theEvent clickCount] 
+	       pressure: [theEvent pressure]];
+  [NSApp sendEvent: e];
+
+  // Get highlighted item index from cell because NSMenuView:
+  // - tells to NSPopUpButtonCell about current selected item index;
+  // - sets own selected item index to -1;
+  //
+  // So, at this point [mr highlightedItemIndex] always = -1
+  highlightedItemIndex = [self indexOfSelectedItem];
+
+  // Selection remains unchanged if selected item is disabled
+  // or mouse left menu (highlightedItemIndex == -1).
+  if ( highlightedItemIndex < 0
+       || highlightedItemIndex == lastSelectedItem
+       || [[self itemAtIndex: highlightedItemIndex] isEnabled] == NO)
+    {
+      [mr setHighlightedItemIndex: lastSelectedItem];
+    }
+  else
+    {
+      [mr setHighlightedItemIndex: highlightedItemIndex];
+    }
+
+  // Dismiss the popUp
+  [self dismissPopUp];
+
+  // Update our selected item
+  [self synchronizeTitleAndSelectedItem];  
+
   return NO;
 }
 

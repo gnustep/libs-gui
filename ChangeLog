@@ -1,3 +1,10 @@
+2005-02-14  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPopupButton.m (-mouseDown:): Moved code from here ...
+	* Source/NSPopupButtonCell.m
+	(-trackMouse:inRect:ofView:untilMouseUp:): ... to here. This fixes
+	bug #9824.
+
 2005-02-14  Richard Frith-Macdoanld <rfm@gnu.org>
 
 	* Source/GSTitleView.m (-mouseDown:): Post an
