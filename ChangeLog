@@ -1,3 +1,18 @@
+2000-09-13  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/GSSimpleLayoutManager.m: 
+	* Source/GSSimpleLayoutManager.h: 
+	New file extracted from NSText.m. This class is now a subclass of
+	NSLayoutManager and uses a similar interface. 
+	* Source/GNUmakefile:
+	Include new file GSSimpleLayoutManager.m
+	* Header/gnustep/gui/NSText.h:
+	Two new NSTextView like methods.
+	* Source/NSText.m: 
+	Removed GSSimpleLayoutManager code and use new interface to it.
+	* Source/NSTextView.m: 
+	[initWithFrame:] switch of the creation of a NSLayoutManager.
+	
 2000-09-16  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/NSWindowController.h: Add copyright notice.
