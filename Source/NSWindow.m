@@ -2887,7 +2887,6 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 
       case NSRightMouseDown:
 	{
-	  NSMenu *m;
 	  v = [_contentView hitTest: [theEvent locationInWindow]];
 	  [v rightMouseDown: theEvent];
 	  _lastPoint = [theEvent locationInWindow];
