@@ -593,6 +593,18 @@ static NSImage *_pbc_image[2];
   return s;
 }
 
+- (void) setAction: (SEL)aSelector
+{
+  [super setAction: aSelector];
+  [_menu update];
+}
+
+- (void) setTarget: (id)anObject
+{
+  [super setTarget: anObject];
+  [_menu update];
+}
+
 //
 // NSCoding protocol
 //
