@@ -31,45 +31,44 @@
 #include <AppKit/NSButtonCell.h>
 #include <AppKit/NSMenuItem.h>
 
-@interface NSMenuItemCell : NSButtonCell <NSMenuItem>
+@class NSMenuView;
+
+typedef void (*DrawingIMP)(id, SEL, NSRect, NSView*);
+
+@interface NSMenuItemCell : NSButtonCell <NSCopying, NSCoding>
 {
-  id representedObject;
   BOOL mcell_highlighted;
   BOOL mcell_has_submenu;
-
-  // Not used is GS.
   NSMenuItem *mcell_item;
+  NSMenuView *mcell_menuView;
 
+  // Cache
   BOOL mcell_needs_sizing;
   float mcell_imageWidth;
   float mcell_titleWidth;
-  float mcell_keyEqWidth;
-  float mcell_stateImgWidth;
+  float mcell_keyEquivalentWidth;
+  float mcell_stateImageWidth;
+  float mcell_menuItemHeight;
+
+  NSImage *mcell_imageToDisplay;
+  NSString *mcell_titleToDisplay;
+  NSSize mcell_imageSize;
+
+@private
+  DrawingIMP _drawMethods[4];
 }
-
-// NSMenuItem Protocol demands these:
-- (void)setTarget:(id)anObject;
-
-- (void)setTitle:(NSString*)aString;
-- (NSString*)title;
-
-- (NSString*)keyEquivalent;
-
-- (NSString*)userKeyEquivalent;
-
-- (void)setRepresentedObject:(id)anObject;
-- (id)representedObject;
-
-// NSMenuItemCell from MacOSX API.
 
 - (void)setHighlighted:(BOOL)flag;
 - (BOOL)isHighlighted;
-
-// These NSMenuItem calls are deprecated in GS. You should not use them
-// under any circumstance (i.e. they don't do anything.)
+- (void)highlight:(BOOL)flag
+	withFrame:(NSRect)cellFrame
+	   inView:(NSView*)controlView;
 
 - (void)setMenuItem:(NSMenuItem *)item;
 - (NSMenuItem *)menuItem;
+
+- (void)setMenuView:(NSMenuView *)menuView;
+- (NSMenuView *)menuView;
 
 - (void)calcSize;
 - (void)setNeedsSizing:(BOOL)flag;

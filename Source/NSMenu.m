@@ -3,16 +3,15 @@
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 
+   Author: David Lazaro Saz <khelekir@encomix.es>
+   Date: Oct 1999
    Author:  Michael Hanni <mhanni@sprintmail.com>
    Date: 1999
-
-   A completely rewritten version of the original source by Scott Christley.
+   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: July 1998
    and: 
    Author: Ovidiu Predescu <ovidiu@net-community.com>
    Date: May 1997
-   and: 
-   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
-   Date: July 1998
    
    This file is part of the GNUstep GUI Library.
 
@@ -46,8 +45,8 @@
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSFont.h>
 #include <AppKit/NSMenu.h>
+#include <AppKit/NSMenuItem.h>
 #include <AppKit/NSMenuView.h>
-#include <AppKit/NSMenuItemCell.h>
 #include <AppKit/NSPopUpButton.h>
 #include <AppKit/NSPopUpButtonCell.h>
 #include <AppKit/NSScreen.h>
@@ -58,7 +57,9 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 
 @implementation NSMenu
 
+//
 // Class Methods
+//
 + (void) initialize
 {
   if (self == [NSMenu class])
@@ -72,12 +73,17 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   menuZone = zone;
 }
 
-// Methods.
++ (NSZone *) menuZone
+{
+  return menuZone;
+}
 
+//
+// Initializing a New NSMenu
+//
 - (id) init
 {
   return [self initWithTitle: @"Menu"];
-  //return self;
 }
 
 - (id) initWithPopUpButton: (NSPopUpButton *)popb
@@ -105,11 +111,14 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   menu_is_visible = NO;
   menu_follow_transient = NO;
   menu_is_beholdenToPopUpButton = YES;
+  menu_changedMessagesEnabled = YES;
   ASSIGN(menu_popb, popb);
-
+  menu_notifications = [NSMutableArray new];
+  menu_is_beholdenToPopUpButton = NO;
   menu_changed = YES;
-  /* According to the spec, menus do autoenable by default */
+  // According to the spec, menus do autoenable by default.
   menu_autoenable = YES;
+
 
   aWindow = [[NSMenuWindow alloc] initWithContentRect:winRect
                                 styleMask: NSBorderlessWindowMask
@@ -132,20 +141,19 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 
 - (id) initWithTitle: (NSString *)aTitle
 {
-  NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
-  NSApplication* theApp = [NSApplication sharedApplication];
-  NSRect winRect = {{0, 0}, {20, 17}};
-  //float titleWidth = 0;
+  NSNotificationCenter *theCenter = [NSNotificationCenter defaultCenter];
+  NSApplication        *theApp    = [NSApplication sharedApplication];
+  NSRect                winRect   = {{0,0},{20,23}};
 
   [super init];
 
   // Keep the title.
   ASSIGN(menu_title, aTitle);
 
-  // Create an array to store out cells.
+  // Create an array to store out menu items.
   menu_items = [NSMutableArray new];
 
-  // Create a NSMenuView to draw our cells.
+  // Create a NSMenuView to draw our menu items.
   menu_view = [[NSMenuView alloc] initWithFrame: NSMakeRect(0,0,50,50)];
 
   // Set ourself as the menu for this view.
@@ -156,74 +164,81 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   menu_is_tornoff = NO;
   menu_is_visible = NO;
   menu_follow_transient = NO;
+  menu_changedMessagesEnabled = YES;
+  menu_notifications = [NSMutableArray new];
   menu_is_beholdenToPopUpButton = NO;
-
   menu_changed = YES;
-  /* According to the spec, menus do autoenable by default */
+  // According to the spec, menus do autoenable by default.
   menu_autoenable = YES;
 
-  aWindow = [[NSMenuWindow alloc] initWithContentRect:winRect
-                                styleMask: NSBorderlessWindowMask
-                                backing: NSBackingStoreRetained
-                                defer: NO];
-  bWindow = [[NSMenuWindow alloc] initWithContentRect:winRect
-                                styleMask: NSBorderlessWindowMask
-                                backing: NSBackingStoreRetained
-                                defer: NO];
+  // Transient windows private stuff.
+  _oldAttachedMenu = nil;
+
+  // Create the windows that will display the menu.
+  aWindow = [[NSMenuWindow alloc] initWithContentRect: winRect
+                                            styleMask: NSBorderlessWindowMask
+                                              backing: NSBackingStoreRetained
+                                                defer: NO];
+  bWindow = [[NSMenuWindow alloc] initWithContentRect: winRect
+                                            styleMask: NSBorderlessWindowMask
+                                              backing: NSBackingStoreRetained
+                                                defer: NO];
   
   titleView = [NSMenuWindowTitleView new];
-  [titleView setFrameOrigin: NSMakePoint(0, winRect.size.height-22)];
-  [titleView setFrameSize: NSMakeSize (winRect.size.width, 22)];
-  [[aWindow contentView] addSubview:menu_view];
-  [[aWindow contentView] addSubview:titleView];
+  [titleView setFrameOrigin: NSMakePoint(0, winRect.size.height - 23)];
+  [titleView setFrameSize: NSMakeSize (winRect.size.width, 23)];
+  [[aWindow contentView] addSubview: menu_view];
+  [[aWindow contentView] addSubview: titleView];
   [titleView setMenu: self];
- 
-  [defaultCenter addObserver: self
-                    selector: @selector(_showTornOffMenuIfAny:)
-                    name: NSApplicationWillFinishLaunchingNotification 
-                    object: theApp];
+
+  // Set up the notification to start the process of redisplaying
+  // the menus where the user left them the last time.
+  [theCenter addObserver: self
+	        selector: @selector(_showTornOffMenuIfAny:)
+	            name: NSApplicationWillFinishLaunchingNotification 
+	          object: theApp];
+
   return self;
 }
 
-/*
- * - (void)insertItem: (id <NSMenuItem>)newItem
- *            atIndex: (int)index
- *
- * This method has been modified to convert anything that conforms to the
- * <NSMenuItem> Protocol into a NSMenuItemCell which will be added to the
- * items array.
- *
- * Blame: Michael
- */
-
+//
+// Setting Up the Menu Commands
+//
 - (void) insertItem: (id <NSMenuItem>)newItem
 	    atIndex: (int)index
 {
-  NSNotificationCenter *nc;
-  NSDictionary *d;
+  NSNotification *inserted;
+  NSDictionary   *d;
 
   if ([(id)newItem conformsToProtocol: @protocol(NSMenuItem)])
     {
-      if ([(id)newItem isKindOfClass: [NSMenuItemCell class]]
-	  || [(id)newItem isKindOfClass: [NSPopUpButtonCell class]])
+      if ([(id)newItem isKindOfClass: [NSMenuItem class]])
         {
-	  nc = [NSNotificationCenter defaultCenter];
-  	  d = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt:index]
-					  forKey: @"NSMenuItemIndex"];
-  	  [nc postNotificationName: NSMenuDidAddItemNotification
-                    	    object: self
-                          userInfo: d];
+	  // If the item is already attached to another menu it
+	  // isn't added.
+	  if ([(NSMenuItem *)newItem menu] != nil)
+	    return;
+
+  	  d = [NSDictionary
+		dictionaryWithObject: [NSNumber numberWithInt:index]
+		              forKey: @"NSMenuItemIndex"];
 
           [menu_items insertObject: newItem atIndex: index];
+	  [(NSMenuItem *)newItem setMenu: self];
+
+	  // Create the notification for the menu representation.
+	  inserted = [NSNotification
+		       notificationWithName: NSMenuDidAddItemNotification
+		                     object: self
+		                   userInfo: d];
+
+	  if (menu_changedMessagesEnabled)
+	    [[NSNotificationCenter defaultCenter] postNotification: inserted];
+	  else
+	    [menu_notifications addObject: inserted];
 	}
       else
         {
-
-	  // The item we received conformed to <NSMenuItem> which is good,
-	  // but it wasn't an NSMenuItemCell which is bad. Therefore, we
-	  // loop through the system and create an NSMenuItemCell for
-	  // this bad boy.
-
           [self insertItemWithTitle: [newItem title]
 			     action: [newItem action]
 		      keyEquivalent: [newItem keyEquivalent]
@@ -249,7 +264,7 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
       [anItem setTarget: menu_popb];
     }
   else
-    anItem = [NSMenuItemCell new];
+    anItem = [NSMenuItem new];
 
   [anItem setTitle: aString];
   [anItem setAction: aSelector];
@@ -286,28 +301,34 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 
 - (void) removeItemAtIndex: (int)index
 {
-  NSNotificationCenter *nc;
-  NSDictionary *d;
-  id anItem = [menu_items objectAtIndex:index];
+  NSNotification *removed;
+  NSDictionary   *d;
+  id              anItem = [menu_items objectAtIndex:index];
 
   if (!anItem)
     return;
 
-  if ([(NSMenuItemCell *)anItem isKindOfClass: [NSMenuItemCell class]]
-	  || [(id)anItem isKindOfClass: [NSPopUpButtonCell class]])
+  if ([anItem isKindOfClass: [NSMenuItem class]])
     {
-      nc = [NSNotificationCenter defaultCenter];
       d = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt:index]
 				      forKey: @"NSMenuItemIndex"];
-      [nc postNotificationName: NSMenuDidRemoveItemNotification
-                        object: self
-                      userInfo: d];
 
+      [anItem setMenu: nil];
       [menu_items removeObjectAtIndex: index];
+
+      removed = [NSNotification
+		  notificationWithName: NSMenuDidRemoveItemNotification
+		                object: self
+		              userInfo: d];
+
+      if (menu_changedMessagesEnabled)
+	[[NSNotificationCenter defaultCenter] postNotification: removed];
+      else
+	[menu_notifications addObject: removed];
     }
   else
     {
-      NSLog(@"You must use an NSMenuItemCell, or a derivative thereof.\n");
+      NSLog(@"You must use an NSMenuItem, or a derivative thereof.\n");
     }
 
   menu_changed = YES;
@@ -315,43 +336,57 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 
 - (void) itemChanged: (id <NSMenuItem>)anObject
 {
-  // another nebulous method in NSMenu. Is this correct?
+  NSNotification *changed;
+  NSDictionary   *d;
 
-  NSNotificationCenter *nc;
-  NSDictionary *d;
+  d = [NSDictionary
+	dictionaryWithObject: [NSNumber
+				numberWithInt:[self indexOfItem: anObject]]
+	              forKey: @"NSMenuItemIndex"];
 
-  nc = [NSNotificationCenter defaultCenter];
-  d = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt:[self indexOfItem: anObject]]
-                                  forKey: @"NSMenuItemIndex"];
-  [nc postNotificationName: NSMenuDidChangeItemNotification
-                    object: self
-                  userInfo: d];  
+  changed = [NSNotification
+	      notificationWithName: NSMenuDidChangeItemNotification
+	                    object: self
+	                  userInfo: d];
+
+  if (menu_changedMessagesEnabled)
+    [[NSNotificationCenter defaultCenter] postNotification: changed];
+  else
+    [menu_notifications addObject: changed];
+
+  // Update the menu.
+  [self update];
 }
 
+//
+// Finding Menu Items
+//
 - (id <NSMenuItem>) itemWithTag: (int)aTag
 {
-  unsigned i, count = [menu_items count];
-  id menuCell;
+  unsigned i;
+  unsigned count = [menu_items count];
 
   for (i = 0; i < count; i++)
     {
-      menuCell = [menu_items objectAtIndex: i];
-      if ([menuCell tag] == aTag)
-        return menuCell;
+      id menuItem = [menu_items objectAtIndex: i];
+
+      if ([menuItem tag] == aTag)
+        return menuItem;
     }
   return nil;
 }
 
 - (id <NSMenuItem>) itemWithTitle: (NSString*)aString
 {
-  unsigned i, count = [menu_items count];
-  id menuCell;
+  unsigned i;
+  unsigned count = [menu_items count];
 
   for (i = 0; i < count; i++)
     {
-      menuCell = [menu_items objectAtIndex: i];
-      if ([[menuCell title] isEqual: aString])
-        return menuCell;
+      id menuItem = [menu_items objectAtIndex: i];
+
+      if ([[menuItem title] isEqual: aString])
+        return menuItem;
     }
   return nil;
 }
@@ -359,8 +394,9 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 - (id <NSMenuItem>) itemAtIndex: (int)index
 {
   if (index >= [menu_items count] || index < 0)
-	[NSException raise:NSRangeException format:@"menu index %i out of range",
-	index];
+    [NSException  raise: NSRangeException
+		 format: @"Range error in method -itemAtIndex:"];
+
   return [menu_items objectAtIndex: index];
 }
 
@@ -374,14 +410,11 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   return (NSArray *)menu_items;
 }
 
+//
+// Finding Indices of Menu Items
+//
 - (int) indexOfItem: (id <NSMenuItem>)anObject
 {
-  if (![(NSMenuItemCell *)anObject isKindOfClass: [NSMenuItemCell class]]
-	  || ![(id)anObject isKindOfClass: [NSPopUpButtonCell class]])
-    {
-      NSLog(@"You must use an NSMenuItemCell, or a derivative thereof.\n");
-      return -1;
-    }
   return [menu_items indexOfObject: anObject];
 }
 
@@ -408,14 +441,26 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 - (int) indexOfItemWithTarget: (id)anObject
 		   andAction: (SEL)actionSelector
 {
+  unsigned i;
+  unsigned count = [menu_items count];
+
+  for (i = 0; i < count; i++)
+    {
+      NSMenuItem *menuItem = [menu_items objectAtIndex: i];
+
+      if ([[menuItem target] isEqual: anObject]
+	  && (!actionSelector || [menuItem action] == actionSelector))
+        return i;
+    }
+
   return -1;
 }
 
 - (int) indexOfItemWithRepresentedObject: (id)anObject
 {
-  int i;
+  int i, count = [menu_items count];
 
-  for (i=0;i<[menu_items count];i++)
+  for (i = 0; i < count; i++)
     {
       if ([[[menu_items objectAtIndex:i] representedObject]
 	isEqual:anObject])
@@ -429,12 +474,12 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 
 - (int) indexOfItemWithSubmenu: (NSMenu *)anObject
 {
-  int i;
+  int i, count = [menu_items count];
 
-  for (i=0;i<[menu_items count];i++)
+  for (i = 0; i < count; i++)
     {
       if ([[[menu_items objectAtIndex:i] title]
-	isEqual:[anObject title]])
+	    isEqual:[anObject title]])
 	{
 	  return i;
 	}
@@ -443,33 +488,39 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   return -1;
 }
 
-// Dealing with submenus.
-
+//
+// Managing Submenus.
+//
 - (void) setSubmenu: (NSMenu *)aMenu
 	    forItem: (id <NSMenuItem>) anItem 
 {
-  [anItem setTarget: aMenu];
+  [(NSMenuItem *)anItem setSubmenu: aMenu];
+  [anItem setTarget: self];
   [anItem setAction: @selector(submenuAction:)];
   if (aMenu)
     aMenu->menu_supermenu = self;
 
   ASSIGN(aMenu->menu_title, [anItem title]);
 
-  // notification that the menu has changed.
+  [self itemChanged: anItem];
 }
 
 - (void) submenuAction: (id)sender
 {
+  [menu_view detachSubmenu];
 }
 
 - (NSMenu *) attachedMenu
 {
-  return menu_attached_menu;
+  if (menu_attachedMenu && menu_follow_transient
+      && !menu_attachedMenu->menu_follow_transient)
+    return nil;
+
+  return menu_attachedMenu;
 }
 
 - (BOOL) isAttached
 {
-  // eh?
   return menu_supermenu && [menu_supermenu attachedMenu] == self;
 }
 
@@ -480,8 +531,8 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 
 - (NSPoint) locationForSubmenu: (NSMenu*)aSubmenu
 {
-  NSRect frame;
-  NSRect submenuFrame;
+  NSRect    frame;
+  NSRect    submenuFrame;
   NSWindow *win_link;
 
   if (![self isFollowTransient])
@@ -502,17 +553,22 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   else
     submenuFrame = NSZeroRect;
 
-  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil) == GSWindowMakerInterfaceStyle)
+  // FIXME: Fix this to support styles when the menus move.
+  if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil)
+      == GSWindowMakerInterfaceStyle)
     {
-      NSRect aRect = [menu_view rectOfItemAtIndex:[self indexOfItemWithTitle:[aSubmenu title]]];
-      NSPoint subOrigin = [win_link convertBaseToScreen: NSMakePoint(aRect.origin.x, aRect.origin.y)];
+      NSRect aRect = [menu_view rectOfItemAtIndex:
+				[self indexOfItemWithTitle:[aSubmenu title]]];
+      NSPoint subOrigin = [win_link convertBaseToScreen:
+				      NSMakePoint(aRect.origin.x,
+						  aRect.origin.y)];
 
-      return NSMakePoint (frame.origin.x + frame.size.width + 1,
-                         subOrigin.y - (submenuFrame.size.height - 42));
+      return NSMakePoint (frame.origin.x + frame.size.width,
+			  subOrigin.y - (submenuFrame.size.height - 43));
     }
   else
     {
-      return NSMakePoint (frame.origin.x + frame.size.width + 1,
+      return NSMakePoint (frame.origin.x + frame.size.width,
                           frame.origin.y + frame.size.height
                           - submenuFrame.size.height);
     }
@@ -528,6 +584,9 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   ASSIGN(menu_supermenu, supermenu);
 }
 
+//
+// Enabling and Disabling Menu Items
+//
 - (void) setAutoenablesItems: (BOOL)flag
 {
   menu_autoenable = flag;
@@ -540,84 +599,80 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 
 - (void) update
 {
-  // FIXME: needs to be checked.
-  id		cells;
-  unsigned	i, count;
-  id		theApp = [NSApplication sharedApplication];
+  if ([self autoenablesItems])
+    {
+      unsigned i, count;
+      id       theApp = [NSApplication sharedApplication];
+
+      count = [menu_items count];  
+      
+      // Temporary disable automatic displaying of menu.
+      [self setMenuChangedMessagesEnabled: NO];
+      
+      for (i = 0; i < count; i++)
+	{
+	  NSMenuItem *item = [menu_items objectAtIndex: i];
+	  SEL	      action = [item action];
+	  id	      target;
+	  id	      validator = nil;
+	  BOOL	      wasEnabled = [item isEnabled];
+	  BOOL	      shouldBeEnabled;
+
+	  // Update the submenu items if any.
+	  if ([item hasSubmenu])
+	    [[item submenu] update];
+
+	  // If there is no action - there can be no validator for the item.
+	  if (action)
+	    {
+	      // If there is a target use that for validation (or nil).
+	      if ((target = [item target]))
+		{
+		  if ([target respondsToSelector: action])
+		    {  
+		      validator = target;
+		    }
+		}
+	      else
+		{
+		  validator = [theApp targetForAction: action];
+		}
+	    }
+      
+	  if (validator == nil)
+	    {
+	      shouldBeEnabled = NO;
+	    }
+	  else if ([validator
+		     respondsToSelector: @selector(validateMenuItem:)])
+	    {
+	      shouldBeEnabled = [validator validateMenuItem: item];
+	    }
+	  else
+	    {
+	      shouldBeEnabled = YES;
+	    }
+
+	  if (shouldBeEnabled != wasEnabled)
+	    {
+	      [item setEnabled: shouldBeEnabled];
+	      [[self window] display];
+	    }
+	}
+          
+      // Reenable displaying of menus
+      [self setMenuChangedMessagesEnabled: YES];
+    }
 
   if (menu_changed)
     [self sizeToFit];
 
-  if (![self autoenablesItems])
-    return;
-      
-  count = [menu_items count];  
-      
-  /* Temporary disable automatic displaying of menu */
-  [self setMenuChangedMessagesEnabled: NO];
-      
-  for (i = 0; i < count; i++)
-    {
-      id<NSMenuItem>	cell = [menu_items objectAtIndex: i];
-      SEL		action = [cell action];
-      id		target;
-      NSWindow		*keyWindow;
-      NSWindow		*mainWindow;
-      id		responder;
-      id		delegate;
-      id		validator = nil;
-      BOOL		 wasEnabled = [cell isEnabled];
-      BOOL		shouldBeEnabled;
-  
-      /* Update the submenu items if any */
-      if ([cell hasSubmenu])
-        [[cell target] update];
-      
-      /* If there is no action - there can be no validator for the cell */
-      if (action)
-        {
-          /* If there is a target use that for validation (or nil). */
-          if ((target = [cell target]))
-            {
-              if ([target respondsToSelector: action])
-                {  
-                  validator = target;
-                }
-            }
-          else
-            {
-              validator = [theApp targetForAction: action];
-            }
-        }
-      
-      if (validator == nil)
-        {
-          shouldBeEnabled = NO;
-        }
-      else if ([validator respondsToSelector: @selector(validateMenuItem:)])
-        {
-          shouldBeEnabled = [validator validateMenuItem: cell];
-        }
-      else
-        {
-          shouldBeEnabled = YES;
-        }
-             
-      if (shouldBeEnabled != wasEnabled)
-        {
-          [cell setEnabled: shouldBeEnabled];
-	  [[self window] display];
-//          [menu_view setNeedsDisplay:YES];
-//	  [menu_view setNeedsDisplayInRect:[menu_view rectOfItemAtIndex:i]];
-// FIXME
-//          [menuCells setNeedsDisplayInRect: [menuCells cellFrameAtRow: i]];
-        }
-    }
-          
-  /* Reenable displaying of menus */
-  [self setMenuChangedMessagesEnabled: YES];
+  return;
 }
 
+//
+// Handling Keyboard Equivalents
+//
 - (BOOL) performKeyEquivalent: (NSEvent*)theEvent
 {
   unsigned      i;
@@ -629,52 +684,59 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
              
   for (i = 0; i < count; i++)
     {
-      id<NSMenuItem> cell = [menu_items objectAtIndex: i];
+      NSMenuItem *item = [menu_items objectAtIndex: i];
                                     
-      if ([cell hasSubmenu])
+      if ([item hasSubmenu])
         {
-          if ([[cell target] performKeyEquivalent: theEvent])
+	  // Recurse through submenus.
+          if ([[item submenu] performKeyEquivalent: theEvent])
             {
-              /* The event has been handled by a cell in submenu */
+              // The event has been handled by an item in the submenu.
               return YES;
             }
         }
       else
         {
-          if ([[cell keyEquivalent] isEqual: 
-            [theEvent charactersIgnoringModifiers]])
-            {
-              [menu_view lockFocus];
-              [(id)cell performClick: self];
-              [menu_view unlockFocus];
-              return YES;           
-            }
-        }
+          if ([[item keyEquivalent] isEqual: 
+				      [theEvent charactersIgnoringModifiers]])
+	    {
+	      [menu_view performActionWithHighlightingForItemAtIndex: i];
+	      return YES;
+	    }
+	}
     }
   return NO; 
 }
 
-- (void)  performActionForItem: (id <NSMenuItem>)cell
+//
+// Simulating Mouse Clicks
+//
+- (void)  performActionForItemAtIndex: (int)index
 {
+  id<NSMenuItem> item = [menu_items objectAtIndex: index];
   NSNotificationCenter *nc;
   NSDictionary *d;
 
-  if (![cell isEnabled])
+  if (![item isEnabled])
     return;
-  
+
+  // Send the actual action and the estipulated notifications.
   nc = [NSNotificationCenter defaultCenter];
-  d = [NSDictionary dictionaryWithObject: cell forKey: @"MenuItem"];
+  d = [NSDictionary dictionaryWithObject: item forKey: @"MenuItem"];
   [nc postNotificationName: NSMenuWillSendActionNotification
                     object: self
                   userInfo: d];
-  [[NSApplication sharedApplication] sendAction: [cell action]
-                                             to: [cell target]
-                                           from: cell];
+  [[NSApplication sharedApplication] sendAction: [item action]
+                                             to: [item target]
+                                           from: item];
   [nc postNotificationName: NSMenuDidSendActionNotification
-                                    object: self
-                                  userInfo: d];
+                    object: self
+                  userInfo: d];
 }
 
+//
+// Setting the Title
+//
 - (void) setTitle: (NSString*)aTitle
 {
   ASSIGN(menu_title, aTitle);
@@ -686,46 +748,73 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   return menu_title;
 }
 
+//
+// Setting the Representing Object
+//
 - (void) setMenuRepresentation: (id)menuRep
 {
-  ASSIGN(menu_rep, menuRep);
+  if ([menuRep isKindOfClass: [NSMenuView class]])
+    ASSIGN(menu_view, menuRep);
+  else
+    NSLog(@"You must use an NSMenuView, or a derivative thereof.\n");
 }
 
 - (id) menuRepresentation
 {
-  return menu_rep;
+  return menu_view;
 }
 
+//
+// Updating the Menu Layout
+//
 - (void) setMenuChangedMessagesEnabled: (BOOL)flag
 { 
-  menu_ChangedMessagesEnabled = flag;
+  if (menu_changedMessagesEnabled != flag)
+    {
+      if (flag)
+	{
+	  if ([menu_notifications count])
+	    {
+	      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+	      NSEnumerator *enumerator = [menu_notifications objectEnumerator];
+	      id            aNotification;
+
+	      while ((aNotification = [enumerator nextObject]))
+		[nc postNotification: aNotification];
+	    }
+
+	  // Clean the notification array.
+	  [menu_notifications removeAllObjects];
+	}
+
+      menu_changedMessagesEnabled = flag;
+    }
 }
  
 - (BOOL) menuChangedMessagesEnabled
 {
-  return menu_ChangedMessagesEnabled;
+  return menu_changedMessagesEnabled;
 }
 
 - (void) sizeToFit
 {
-  NSRect mFrame;
+  NSRect menuFrame;
   NSSize size;
 
+  [menu_view sizeToFit];
 
-  //-setTitleWidth: ends up calling -sizeToFit.
-  [menu_view setTitleWidth:[[NSFont systemFontOfSize:12] widthOfString:menu_title]];
-  mFrame = [menu_view frame];
+  menuFrame = [menu_view frame];
 
-  size.width = mFrame.size.width;
-  size.height = mFrame.size.height;
+  size.width = menuFrame.size.width;
+  size.height = menuFrame.size.height;
 
   if (!menu_is_beholdenToPopUpButton)
     {
-      size.height += 22;
+      size.height += 23;
       [aWindow setContentSize: size];
       [bWindow setContentSize: size];
       [menu_view setFrameOrigin: NSMakePoint(0, 0)];
-      [titleView setFrame: NSMakeRect(0,size.height-22,size.width,22)];
+      [titleView setFrame: NSMakeRect(0,size.height-23,size.width,23)];
     }
   else
     {
@@ -737,52 +826,131 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   menu_changed = NO;
 }
 
+//
+// Displaying Context Sensitive Help
+//
 - (void) helpRequested: (NSEvent *)event
 {
-  // Won't be implemented until we have NSHelp*
+  // TODO: Won't be implemented until we have NSHelp*
 }
 
-// NSCoding
-- (id) initWithCoder: (NSCoder*)aDecoder
+//
+// NSCoding Protocol
+//
+- (void) encodeWithCoder: (NSCoder*)encoder
 {
+  [encoder encodeObject: menu_title];
+  [encoder encodeObject: menu_items];
+  [encoder encodeObject: menu_view];
+  [encoder encodeConditionalObject: menu_supermenu];
+  [encoder encodeConditionalObject: menu_popb];
+  [encoder encodeValueOfObjCType: @encode(BOOL) at: &menu_autoenable];
+  [encoder encodeValueOfObjCType: @encode(BOOL) at: &menu_is_tornoff];
+  [encoder encodeValueOfObjCType: @encode(BOOL)
+	                     at: &menu_is_beholdenToPopUpButton];
+}
+
+- (id) initWithCoder: (NSCoder*)decoder
+{
+  NSNotificationCenter *theCenter = [NSNotificationCenter defaultCenter];
+  NSApplication        *theApp    = [NSApplication sharedApplication];
+  NSRect                winRect   = {{0,0},{20,23}};
+
+  menu_title = [[decoder decodeObject] retain];
+  menu_items = [[decoder decodeObject] retain];
+  menu_view  = [[decoder decodeObject] retain];
+  menu_supermenu = [decoder decodeObject];
+  menu_popb      = [decoder decodeObject];
+  [decoder decodeValueOfObjCType: @encode(BOOL) at: &menu_autoenable];
+  [decoder decodeValueOfObjCType: @encode(BOOL) at: &menu_is_tornoff];
+  [decoder decodeValueOfObjCType: @encode(BOOL)
+	                       at: &menu_is_beholdenToPopUpButton];
+
+  menu_attachedMenu = nil;
+  menu_changedMessagesEnabled = YES;
+  menu_notifications = [NSMutableArray new];
+  menu_follow_transient = NO;
+  menu_is_visible = NO;
+
+  // Mark the menu as changed in order to get it resized.
+  menu_changed = YES;
+
+  // Transient windows private stuff.
+  _oldAttachedMenu = nil;
+
+  // Create the windows that will display the menu.
+  aWindow = [[NSMenuWindow alloc] initWithContentRect: winRect
+                                            styleMask: NSBorderlessWindowMask
+                                              backing: NSBackingStoreRetained
+                                                defer: NO];
+  bWindow = [[NSMenuWindow alloc] initWithContentRect: winRect
+                                            styleMask: NSBorderlessWindowMask
+                                              backing: NSBackingStoreRetained
+                                                defer: NO];
+  
+  titleView = [NSMenuWindowTitleView new];
+  [titleView setFrameOrigin: NSMakePoint(0, winRect.size.height - 23)];
+  [titleView setFrameSize: NSMakeSize (winRect.size.width, 23)];
+  [[aWindow contentView] addSubview: menu_view];
+  [[aWindow contentView] addSubview: titleView];
+  [titleView setMenu: self];
+
+  // Set up the notification to start the process of redisplaying
+  // the menus where the user left them the last time.
+  [theCenter addObserver: self
+	        selector: @selector(_showTornOffMenuIfAny:)
+	            name: NSApplicationWillFinishLaunchingNotification 
+	          object: theApp];
+
   return self;
 }
 
-- (void) encodeWithCoder: (NSCoder*)aCoder
-{
-}
-
-//NSCopying
+//
+// NSCopying Protocol
+//
 - (id) copyWithZone: (NSZone*)zone
 {
   return self;
 }
 @end
 
-@implementation NSMenu (GNUstepPrivate)
+@implementation NSMenu (GNUstepExtra)
+
+#define IS_OFFSCREEN(WINDOW) \
+  !(NSContainsRect([[NSScreen mainScreen] frame], [WINDOW frame]))
+
+- (void) _setTornOff:(BOOL)flag
+{
+  NSMenu *supermenu = [self supermenu];
+
+  menu_is_tornoff = flag;
+
+  [[supermenu menuRepresentation] setHighlightedItemIndex:-1];
+  supermenu->menu_attachedMenu = nil;
+}
 
 - (void)_showTornOffMenuIfAny: (NSNotification*)notification
 {
-NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-NSDictionary* menuLocations = [defaults objectForKey: NSMenuLocationsKey];
-NSString* key;
-NSArray* array;
+  NSUserDefaults *defaults  = [NSUserDefaults standardUserDefaults];
+  NSDictionary   *menuLocations = [defaults objectForKey: NSMenuLocationsKey];
+  NSString       *key;
+  NSArray        *array;
       
-    if ([[NSApplication sharedApplication] mainMenu] == self)
-        key = nil;                                  // Ignore the main menu
-    else
-        key = [self title];
-                                                                 
-    if (key)
-        {
-        array = [menuLocations objectForKey: key];
-        if (array && [array isKindOfClass: [NSArray class]])
-            {
-	    [titleView windowBecomeTornOff];
-            [self _setTornOff:YES];
-            [self display];
-            }
-        }
+  if ([[NSApplication sharedApplication] mainMenu] == self)
+    key = nil; // Ignore the main menu.
+  else
+    key = [self title];
+
+  if (key)
+    {
+      array = [menuLocations objectForKey: key];
+      if (array && [array isKindOfClass: [NSArray class]])
+	{
+	  [titleView windowBecomeTornOff];
+	  [self _setTornOff:YES];
+	  [self display];
+	}
+    }
 }
 
 - (BOOL) isFollowTransient
@@ -790,22 +958,18 @@ NSArray* array;
   return menu_follow_transient;
 } 
 
-- (void) _setTornOff:(BOOL)flag
-{ 
-  menu_is_tornoff = flag;
+- (BOOL) isPartlyOffScreen
+{
+  return menu_isPartlyOffScreen;
+}
 
-  [[[self supermenu] menuView] setHighlightedItemIndex:-1];
+- (void) nestedCheckOffScreen
+{
+  // This method is used when the menu is moved.
+  if (menu_attachedMenu)
+    [menu_attachedMenu nestedCheckOffScreen];
 
-/*
-  if (flag)
-    {
-      if (menu_supermenu)
-        {
-          menu_supermenu->menu_attached_menu = nil;
-          menu_supermenu = nil;
-        }
-    }
-*/
+  menu_isPartlyOffScreen = IS_OFFSCREEN(aWindow);
 }
 
 - (void) _performMenuClose:(id)sender
@@ -813,6 +977,11 @@ NSArray* array;
   NSUserDefaults* defaults;
   NSMutableDictionary* menuLocations;
   NSString* key;
+
+  if (menu_attachedMenu)
+    [menu_view detachSubmenu];
+
+  [menu_view setHighlightedItemIndex: -1];
 
   [self _setTornOff:NO];
   [self close];
@@ -833,86 +1002,96 @@ NSArray* array;
 
 - (void) _rightMouseDisplay
 {
-  // TODO: implement this method 
-  ;
+  // TODO: implement this method.
 }
 
 - (void) display
 {
-    if (menu_changed)
-        [self sizeToFit];
+  if (menu_changed)
+    [self sizeToFit];
 
-    if (menu_supermenu && ![self isTornOff])      // query super menu for
-      {                                           // position
-        [aWindow setFrameOrigin:[menu_supermenu locationForSubmenu: self]];
-        menu_supermenu->menu_attached_menu = self;
-      }
-    else
-      {
-        NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-        NSDictionary* menuLocations = [defaults
-                                        objectForKey: NSMenuLocationsKey];
-        NSString* key;
-        NSArray* array;
-        NSPoint origin; 
+  if (menu_supermenu && ![self isTornOff])      // query super menu for
+    {                                           // position
+      [aWindow setFrameOrigin:[menu_supermenu locationForSubmenu: self]];
+      menu_supermenu->menu_attachedMenu = self;
+    }
+  else
+    {
+      NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
+      NSDictionary* menuLocations = [defaults
+				      objectForKey: NSMenuLocationsKey];
+      NSString* key;
+      NSArray* array;
+      NSPoint origin; 
       
-        if ([[NSApplication sharedApplication] mainMenu] == self)
-            key = @"Main menu";
-        else
-            key = [self title];
-      
-        if (key)
-            {
-            array = [menuLocations objectForKey: key];
-            if (array && [array isKindOfClass: [NSArray class]])
-                {
-                origin.x = [[array objectAtIndex: 0] floatValue];
-                origin.y = [[array objectAtIndex: 1] floatValue];
-                [aWindow setFrameOrigin: origin];
-                }
-            else
-              {
-	        float aPoint = [[NSScreen mainScreen] frame].size.height - [aWindow frame].size.height;
+      if ([[NSApplication sharedApplication] mainMenu] == self)
+	key = @"Main menu";
+      else
+	key = [self title];
 
-                [aWindow setFrameOrigin:NSMakePoint(0,aPoint)];
-                [bWindow setFrameOrigin:NSMakePoint(0,aPoint)];
-              }
-            }
-      }
+      if (key)
+	{
+	  array = [menuLocations objectForKey: key];
+	  if (array && [array isKindOfClass: [NSArray class]])
+	    {
+	      origin.x = [[array objectAtIndex: 0] floatValue];
+	      origin.y = [[array objectAtIndex: 1] floatValue];
+	      [aWindow setFrameOrigin: origin];
+	    }
+	  else
+	    {
+	      float aPoint =   [[NSScreen mainScreen] frame].size.height
+		             - [aWindow frame].size.height;
 
-  [self submenuAction: nil];
-  
+	      [aWindow setFrameOrigin:NSMakePoint(0,aPoint)];
+	      [bWindow setFrameOrigin:NSMakePoint(0,aPoint)];
+	    }
+	}
+    }
+
   menu_is_visible = YES;
+
   [aWindow orderFront:nil];
+
+  menu_isPartlyOffScreen = IS_OFFSCREEN(aWindow);
 }
 
 - (void) displayTransient
 {
+  NSPoint location;
+
   menu_follow_transient = YES;
 
-    if (menu_supermenu)                         // query super menu for our
-    {                                           // position
-        NSPoint location = [menu_supermenu locationForSubmenu: self];
-    
-        [bWindow setFrameOrigin: location];
-        menu_supermenu->menu_attached_menu = self;
-    }
-  
+  // Cache the old submenu if any.
+  _oldAttachedMenu = menu_supermenu->menu_attachedMenu;
+  menu_supermenu->menu_attachedMenu = self;
+
+  // Query the supermenu our position.
+  location = [menu_supermenu locationForSubmenu: self];
+
+  [bWindow setFrameOrigin: location];
+
   [menu_view removeFromSuperviewWithoutNeedingDisplay];
   [titleView removeFromSuperviewWithoutNeedingDisplay];
-  
-  [titleView _releaseCloseButton];
-  
+
+  if (menu_is_tornoff)
+    [titleView _releaseCloseButton];
+
   [[bWindow contentView] addSubview:menu_view];
   [[bWindow contentView] addSubview:titleView];
-  
+
   [bWindow orderFront:self];
+
+  menu_isPartlyOffScreen = IS_OFFSCREEN(bWindow);
 }
 
 - (void) close
 {
   [aWindow orderOut:self];
   menu_is_visible = NO;
+
+  if (menu_supermenu)
+    menu_supermenu->menu_attachedMenu = nil;
 }
 
 - (void) closeTransient
@@ -920,24 +1099,123 @@ NSArray* array;
   [bWindow orderOut:self];
   [menu_view removeFromSuperviewWithoutNeedingDisplay];
   [titleView removeFromSuperviewWithoutNeedingDisplay];
-    
+
   [[aWindow contentView] addSubview:menu_view];
-  [titleView _addCloseButton];
+
+  if (menu_is_tornoff)
+    [titleView _addCloseButton];
+
   [[aWindow contentView] addSubview:titleView];
+
   [[aWindow contentView] setNeedsDisplay:YES];
 
+  // Restore the old submenu.
+  menu_supermenu->menu_attachedMenu = _oldAttachedMenu;
+
   menu_follow_transient = NO;
+
+  menu_isPartlyOffScreen = IS_OFFSCREEN(aWindow);
 }
 
 - (NSWindow *) window
-{ 
-  return (NSWindow *)aWindow;
-}
-            
-- (NSMenuView *) menuView
 {
-  return menu_view;
+  if (menu_follow_transient)
+    return (NSWindow *)bWindow;
+  else
+    return (NSWindow *)aWindow;
 }
+
+- (void) nestedSetFrameOrigin: (NSPoint) aPoint
+{
+  NSRect frame;
+
+  // Move ourself and get our width.
+  if (menu_follow_transient)
+    {
+      [bWindow moveToPoint: aPoint];
+      frame = [bWindow frame];
+    }
+  else
+    {
+      [aWindow moveToPoint: aPoint];
+      frame = [aWindow frame];
+    }
+
+
+  // Do the same for attached menus.
+  if (menu_attachedMenu)
+    {
+      // First locate the origin.
+      aPoint.x += frame.size.width;
+      aPoint.y += frame.size.height
+	- [menu_attachedMenu->aWindow frame].size.height;
+      [menu_attachedMenu nestedSetFrameOrigin: aPoint];
+    }
+}
+
+#define SHIFT_DELTA 15.0
+
+- (void) shiftOnScreen
+{
+  NSWindow *theWindow = menu_follow_transient ? bWindow : aWindow;
+  NSRect    frameRect = [theWindow frame];
+  NSPoint   vector    = {0.0, 0.0};
+  BOOL      moveIt    = YES;
+
+  if (frameRect.origin.y < 0)
+    {
+      if (frameRect.origin.y + SHIFT_DELTA <= 0)
+	vector.y = SHIFT_DELTA;
+      else
+	vector.y = -frameRect.origin.y;
+    }
+  else if (frameRect.origin.x < 0)
+    {
+      if (frameRect.origin.x + SHIFT_DELTA <= 0)
+	vector.x = SHIFT_DELTA;
+      else
+	vector.x = -frameRect.origin.x;
+    }
+  else
+    {
+      vector.x  = frameRect.origin.x + frameRect.size.width;
+      vector.x -= [[NSScreen mainScreen] frame].size.width;
+
+      if (vector.x > 0)
+	{
+	  if (vector.x - SHIFT_DELTA <= 0)
+	    vector.x = -SHIFT_DELTA;
+	  else
+	    vector.x = -vector.x - 2;
+	}
+      else
+	moveIt = NO;
+    }
+
+  if (moveIt)
+    {
+        NSMenu  *candidateMenu;
+	NSMenu  *masterMenu;
+	NSPoint  masterLocation;
+	NSPoint  destinationPoint;
+
+	// Look for the "master" menu, i.e. the one to move from.
+	for (candidateMenu = masterMenu = self;
+	     (candidateMenu = masterMenu->menu_supermenu)
+	       && (!masterMenu->menu_is_tornoff
+		   || masterMenu->menu_follow_transient);
+	     masterMenu = candidateMenu);
+
+	masterLocation = [[masterMenu window] frame].origin;
+	destinationPoint.x = masterLocation.x + vector.x;
+	destinationPoint.y = masterLocation.y + vector.y;
+
+	[masterMenu nestedSetFrameOrigin: destinationPoint];
+    }
+  else
+    menu_isPartlyOffScreen = NO;
+}
+
 @end
 
 @implementation NSMenuWindow
@@ -973,6 +1251,15 @@ NSArray* array;
   return YES;
 }
 
+// This method is a hack to speed-up menu dragging.
+- (void) moveToPoint: (NSPoint)aPoint
+{
+  NSRect frameRect = frame;
+
+  frameRect.origin = aPoint;
+  [GSCurrentContext() _setFrame: frameRect forWindow: [self windowNumber]];
+}
+
 @end
 
 @implementation NSMenuWindowTitleView
@@ -981,56 +1268,78 @@ NSArray* array;
   return YES;
 } 
  
-- (void)setMenu: (NSMenu*)aMenu          { menu = aMenu; }
-- (NSMenu*)menu                         { return menu; }
+- (void)setMenu: (NSMenu*)aMenu
+{
+  menu = aMenu;
+}
+
+- (NSMenu*)menu
+{
+  return menu;
+}
   
 - (void) drawRect: (NSRect)rect
 {
-  NSRect floodRect = rect;
-                            
-  NSDrawButton(rect, rect);
-  
-  floodRect.origin.x += 1;
-  floodRect.origin.y += 2;
-  floodRect.size.height -= 3;
-  floodRect.size.width -= 3;
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSRect             workRect = rect;
+
+
+  // Draw the dark gray upper left lines.
+  DPSgsave(ctxt);
+    DPSsetlinewidth(ctxt, 1);
+    DPSsetgray(ctxt, 0.333);
+    DPSmoveto(ctxt, workRect.origin.x, workRect.origin.y);
+    DPSrlineto(ctxt, 0, workRect.size.height);
+    DPSrlineto(ctxt, workRect.size.width, 0);
+    DPSstroke(ctxt);
+  DPSgrestore(ctxt);
+
+  // Draw the title box's button.
+  workRect.size.width  -= 1;
+  workRect.size.height -= 1;
+  workRect.origin.x += 1;
+  NSDrawButton(workRect, workRect);
+
+  // Paint it Black!
+  workRect.origin.x += 1;
+  workRect.origin.y += 2;
+  workRect.size.height -= 3;
+  workRect.size.width -= 3;
   [[NSColor windowFrameColor] set];
-  NSRectFill(floodRect);
-      
+  NSRectFill(workRect);
+
+  // Draw the title.
   [[NSColor windowFrameTextColor] set];
-  [[NSFont boldSystemFontOfSize:12] set];
-  PSmoveto(rect.origin.x + 5, rect.origin.y + 6);
+  [[NSFont boldSystemFontOfSize: 12] set];
+  PSmoveto(rect.origin.x + 7, rect.origin.y + 7);
   PSshow([[menu title] cString]);
-  
+
 }
 
 - (void) mouseDown: (NSEvent*)theEvent
 {
-  NSUserDefaults *defaults;
+  NSUserDefaults      *defaults;
   NSMutableDictionary *menuLocations;
-  NSMenu 	*appMainMenu;
-  NSPoint origin;
-  NSArray* array;
-  NSString* key;
+  NSMenu 	      *appMainMenu;
+  NSPoint              origin;
+  NSArray*             array;
+  NSString*            key;
 
-  NSPoint       lastLocation;
-  NSPoint       location;
-  unsigned      eventMask = NSLeftMouseUpMask | NSLeftMouseDownMask
-                            | NSPeriodicMask | NSRightMouseUpMask;
-  BOOL          done = NO;
-  NSApplication *theApp = [NSApplication sharedApplication];
-  NSDate        *theDistantFuture = [NSDate distantFuture];
+  NSPoint              lastLocation;
+  NSPoint              location;
+  unsigned             eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask;
+  BOOL                 done = NO;
+  NSApplication       *theApp = [NSApplication sharedApplication];
+  NSDate              *theDistantFuture = [NSDate distantFuture];
 
   lastLocation = [theEvent locationInWindow];
    
-  if ([menu supermenu])
+  if (![menu isTornOff] && [menu supermenu])
     {
       [self windowBecomeTornOff];
       [menu _setTornOff:YES];
     }
  
-  [NSEvent startPeriodicEventsAfterDelay: 0.02 withPeriod: 0.02];
-
   while (!done)
     {
       theEvent = [theApp nextEventMatchingMask: eventMask
@@ -1040,56 +1349,28 @@ NSArray* array;
   
       switch ([theEvent type])
         {
-          case NSRightMouseUp:
-          case NSLeftMouseUp:
-          /* right mouse up or left mouse up means we're done */
-            done = YES; 
-            break;
-          case NSPeriodic:   
-            location = [window mouseLocationOutsideOfEventStream];
-            if (NSEqualPoints(location, lastLocation) == NO)
-              {
-                NSMenu *aMenu = menu;
-                BOOL aDone = NO;
-                NSPoint origin = [window frame].origin;
+	case NSLeftMouseUp:
+	  done = YES; 
+	  break;
+	case NSLeftMouseDragged:   
+	  location = [window mouseLocationOutsideOfEventStream];
+	  if (NSEqualPoints(location, lastLocation) == NO)
+	    {
+	      NSPoint origin = [window frame].origin;
 
-                origin.x += (location.x - lastLocation.x);
-                origin.y += (location.y - lastLocation.y);
-                [window setFrameOrigin: origin];
-  
-/* FIXME: Michael wrote this crappy hack.
-                while (!aDone)
-                  {
-                    if ((aMenu = [aMenu attachedMenu]))
-                      {
-                        NSPoint origin;
-  
-                        if ([aMenu isTornOff])
-                          {
-                            aDone = YES;
-                            return;
-                          }  
-     
-                        origin = [[aMenu window] frame].origin;
-  
-                        origin.x += (location.x - lastLocation.x);
-                        origin.y += (location.y - lastLocation.y);
-                        [[aMenu window] setFrameOrigin: origin];
-                      }
-                    else
-                      aDone = YES;
-                  }
-*/
-              }
-            break;
+	      origin.x += (location.x - lastLocation.x);
+	      origin.y += (location.y - lastLocation.y);
+	      [menu nestedSetFrameOrigin: origin];
+	      [menu nestedCheckOffScreen];
+	    }
+	  break;
          
-          default:
-            break;
+	default:
+	  break;
         }
     }
-  [NSEvent stopPeriodicEvents];
 
-  // save position code goes here. FIXME.
+  // Save position code goes here. FIXME.
   appMainMenu = [NSApp mainMenu];
   defaults = [NSUserDefaults standardUserDefaults];
   menuLocations = [[[defaults objectForKey: NSMenuLocationsKey] mutableCopy] autorelease]; 
@@ -1098,8 +1379,8 @@ NSArray* array;
     menuLocations = [NSMutableDictionary dictionaryWithCapacity: 2];
   origin = [[menu window] frame].origin;
   array = [NSArray arrayWithObjects:
-                        [[NSNumber numberWithInt: origin.x] stringValue],
-                        [[NSNumber numberWithInt: origin.y] stringValue], nil];
+		     [[NSNumber numberWithInt: origin.x] stringValue],
+		     [[NSNumber numberWithInt: origin.y] stringValue], nil];
 
   if (menu == appMainMenu)
     key = @"Main menu";
@@ -1154,4 +1435,3 @@ NSArray* array;
   [self addSubview:button];
 }
 @end /* NSMenuWindowTitleView */
-

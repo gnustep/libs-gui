@@ -3,6 +3,9 @@
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 
+   Author:  David Lazaro Saz <khelekir@encomix.es>
+   Date: Oct 1999
+
    Author:  Michael Hanni <mhanni@sprintmail.com>
    Date: 1999
    
@@ -26,31 +29,38 @@
 
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSEvent.h>
+#include <AppKit/NSFont.h>
 #include <AppKit/NSMenuView.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/PSOperators.h>
 
-static float GSMenuBarHeight = 25.0; // a guess.
+static float GSMenuBarHeight = 25.0; // A wild guess.
 
+// FIXME Check this strange comment:
 // These private methods are used in NSPopUpButton. For NSPB we need to be
 // able to init with a frame, but have a very custom cell size.
 
 @implementation NSMenuView
 
+//
 // Class methods.
-
+//
 + (float)menuBarHeight
 {
   return GSMenuBarHeight;
 }
 
+//
+// NSView overrides
+//
 - (BOOL)acceptsFirstMouse: (NSEvent *)theEvent
 {
   return YES;
 }
 
+//
 // Init methods.
-
+//
 - (id)init
 {
   return [self initWithFrame: NSZeroRect];
@@ -59,8 +69,12 @@ static float GSMenuBarHeight = 25.0; // a guess.
 - (id)initWithFrame: (NSRect)aFrame
 {
   cellSize = NSMakeSize(110,20);
-  i_titleWidth = 110;
+
   menuv_highlightedItemIndex = -1;
+  menuv_horizontalEdgePad = 4.;
+
+  // Create an array to store out menu item cells.
+  menuv_itemCells = [NSMutableArray new];
 
   return [super initWithFrame: aFrame];
 }
@@ -75,12 +89,41 @@ static float GSMenuBarHeight = 25.0; // a guess.
   return self;
 }
 
-// Our menu.
-
+//
+// Getting and Setting Menu View Attributes
+//
 - (void)setMenu: (NSMenu *)menu
 {
+  NSNotificationCenter *theCenter = [NSNotificationCenter defaultCenter];
+
+  if (menuv_menu)
+    {
+      // Remove this menu view from the old menu list of observers.
+      [theCenter removeObserver: self name: nil object: menuv_menu];
+      [menuv_menu release];
+    }
+
   ASSIGN(menuv_menu, menu);
   menuv_items_link = [menuv_menu itemArray];
+
+  // Add this menu view to the menu's list of observers.
+  [theCenter addObserver: self
+                selector: @selector(itemChanged:)
+                    name: NSMenuDidChangeItemNotification
+                  object: menuv_menu];
+
+  [theCenter addObserver: self
+                selector: @selector(itemAdded:)
+                    name: NSMenuDidAddItemNotification
+                  object: menuv_menu];
+
+  [theCenter addObserver: self
+                selector: @selector(itemRemoved:)
+                    name: NSMenuDidRemoveItemNotification
+                  object: menuv_menu];
+
+  // Force menu view's layout to be recalculated.
+  [self setNeedsSizing: YES];
 }
 
 - (NSMenu *)menu
@@ -108,26 +151,9 @@ static float GSMenuBarHeight = 25.0; // a guess.
   return menuv_font;
 }
 
-/* 
- * - (void)setHighlightedItemIndex: (int)index
- *
- * MacOS-X defines this function as the central way of switching to a new
- * highlighted item. The index value is == to the item you want
- * highlighted. When used this method unhighlights the last item (if
- * applicable) and selects the new item. If index == -1 highlighting is
- * turned off.
- *
- * NOTES (Michael Hanni): 
- *
- * I modified this method for GNUstep to take submenus into account. This
- * way we get maximum performance while still using a method outside the
- * loop.
- *
- */
-
 - (void)setHighlightedItemIndex: (int)index
 {
-  id anItem;
+  id   aCell;
 
   [self lockFocus];
 
@@ -137,79 +163,44 @@ static float GSMenuBarHeight = 25.0; // a guess.
 	{
 	  NSRect aRect = [self rectOfItemAtIndex: menuv_highlightedItemIndex];
 
-	  anItem  = [menuv_items_link objectAtIndex: menuv_highlightedItemIndex];
-	  
-	  [anItem highlight: NO
-		  withFrame: aRect
-		  inView: self];
+	  aCell  = [menuv_itemCells objectAtIndex: menuv_highlightedItemIndex];
 
-	  [self setNeedsDisplayInRect: aRect];
+	  [aCell highlight: NO withFrame:aRect inView: self];
 
 	  [window flushWindow];
 
-	  if ([anItem hasSubmenu] 
-	      && ![[anItem target] isTornOff])
-	    [[anItem target] close];
-	  else if ([anItem hasSubmenu] 
-		   && [[anItem target] isTornOff])
-	    [[anItem target] closeTransient];
-
-	  [anItem setState: 0];
 	  menuv_highlightedItemIndex = -1;
 	}
     } 
-  else if (index >= 0) 
+  else if (index >= 0)
     {
       if ( menuv_highlightedItemIndex != -1)
 	{
 	  NSRect aRect = [self rectOfItemAtIndex: menuv_highlightedItemIndex];
 
-	  anItem  = [menuv_items_link objectAtIndex: menuv_highlightedItemIndex];
+	  aCell = [menuv_itemCells objectAtIndex: menuv_highlightedItemIndex];
 
-	  [anItem highlight: NO
-		  withFrame: aRect
-		  inView: self];
-
-	  [self setNeedsDisplayInRect: aRect]; 
+	  [aCell highlight: NO withFrame: aRect inView: self];
 
 	  [window flushWindow];
-
-	  if ([anItem hasSubmenu] 
-	      && ![[anItem target] isTornOff])
-	    [[anItem target] close];
-	  else if ([anItem hasSubmenu] 
-		   && [[anItem target] isTornOff])
-	    [[anItem target] closeTransient];
-
-	  [anItem setState: 0];
 	}
 
       if (index != menuv_highlightedItemIndex)
 	{
-	  anItem = [menuv_items_link objectAtIndex: index];
+	  id anItem = [menuv_items_link objectAtIndex: index];
 
 	  if ([anItem isEnabled])
 	    {
 	      NSRect aRect = [self rectOfItemAtIndex: index];
 
-	      [anItem highlight: YES
-		      withFrame: aRect
-		      inView: self];
-	      [self setNeedsDisplayInRect: aRect]; 
+	      aCell  = [menuv_itemCells objectAtIndex: index];
+
+	      [aCell highlight: YES withFrame: aRect inView: self];
 
 	      [window flushWindow];
-
-	      if ([anItem hasSubmenu] 
-		  && ![[anItem target] isTornOff])
-		[[anItem target] display];
-	      else if ([anItem hasSubmenu] 
-		       && [[anItem target] isTornOff])
-		[[anItem target] displayTransient];
-
-	      [anItem setState: 1];
 	    }
 
-	  // set ivar to new index
+	  // Set ivar to new index.
 	  menuv_highlightedItemIndex = index;
 	} 
       else if (menuv_highlightedItemIndex == index)
@@ -229,23 +220,26 @@ static float GSMenuBarHeight = 25.0; // a guess.
 - (void)setMenuItemCell: (NSMenuItemCell *)cell
 	 forItemAtIndex: (int)index
 {
-//  [menuv_items insertObject: cell atIndex: index];
+  [menuv_itemCells replaceObjectAtIndex: index withObject: cell];
 
-  // resize the cell
+  // Mark the new cell and the menu view as needing resizing.
   [cell setNeedsSizing: YES];
-
-  // resize menuview
   [self setNeedsSizing: YES];
 }
 
 - (NSMenuItemCell *)menuItemCellForItemAtIndex: (int)index
 {
-  return [menuv_items_link objectAtIndex: index];
+  return [menuv_itemCells objectAtIndex: index];
 }
 
 - (NSMenuView *)attachedMenuView
 {
-  return [[menuv_menu attachedMenu] menuView];
+  NSMenu *attachedMenu;
+
+  if ((attachedMenu = [menuv_menu attachedMenu]))
+    return [attachedMenu menuRepresentation];
+  else
+    return nil;
 }
 
 - (NSMenu *)attachedMenu
@@ -265,42 +259,115 @@ static float GSMenuBarHeight = 25.0; // a guess.
 
 - (void)setHorizontalEdgePadding: (float)pad
 {
-  menuv_hEdgePad = pad;
+  menuv_horizontalEdgePad = pad;
 }
 
 - (float)horizontalEdgePadding
 {
-  return menuv_hEdgePad;
+  return menuv_horizontalEdgePad;
 }
 
+//
+// Notification Methods
+//
 - (void)itemChanged: (NSNotification *)notification
 {
+  int index = [[[notification userInfo] objectForKey: @"NSMenuItemIndex"]
+		intValue];
+
+  // Mark the cell associated with the item as needing resizing.
+  [[menuv_itemCells objectAtIndex: index] setNeedsSizing: YES];
+
+  // Mark the menu view as needing to be resized.
+  [self setNeedsSizing: YES];
 }
 
 - (void)itemAdded: (NSNotification *)notification
 {
+  int         index  = [[[notification userInfo]
+			  objectForKey: @"NSMenuItemIndex"] intValue];
+  NSMenuItem *anItem = [menuv_items_link objectAtIndex: index];
+  id          aCell  = [NSMenuItemCell new];
+
+  [aCell setMenuItem: anItem];
+  [aCell setMenuView: self];
+
+  if ([self highlightedItemIndex] == index)
+    [aCell setHighlighted: YES];
+  else
+    [aCell setHighlighted: NO];
+
+  [menuv_itemCells insertObject: aCell atIndex: index];
+
+  [aCell setNeedsSizing: YES];
+
+  // Mark the menu view as needing to be resized.
+  [self setNeedsSizing: YES];
 }
 
 - (void)itemRemoved: (NSNotification *)notification
 {
+  int index = [[[notification userInfo] objectForKey: @"NSMenuItemIndex"]
+		intValue];
+
+  [menuv_itemCells removeObjectAtIndex: index];
+
+  // Mark the menu view as needing to be resized.
+  [self setNeedsSizing: YES];
 }
 
-// Submenus.
-
+//
+// Working with Submenus.
+//
 - (void)detachSubmenu
 {
+  NSMenu     *attachedMenu = [menuv_menu attachedMenu];
+  NSMenuView *attachedMenuView;
+
+  if (!attachedMenu)
+    return;
+
+  attachedMenuView = [attachedMenu menuRepresentation];
+
+  [attachedMenuView detachSubmenu];
+
+  [attachedMenuView setHighlightedItemIndex: -1];
+
+  if ([attachedMenu isFollowTransient])
+    {
+      [attachedMenu closeTransient];
+      [attachedMenuView setHighlightedItemIndex: _oldHighlightedItemIndex];
+    }
+  else
+    [attachedMenu close];
 }
 
 - (void)attachSubmenuForItemAtIndex: (int)index
 {
-  // create rect to display submenu in.
+  // Transient menus are used for torn-off menus, which are already on the
+  // screen and for sons of transient menus.  As transients disappear as
+  // soon as we release the mouse the user will be able to leave submenus
+  // open on the screen and interact with other menus at the same time.
 
-  // order window with submenu in it to front.
+  NSMenu *attachableMenu = [[menuv_items_link objectAtIndex: index] submenu];
+
+  if ([attachableMenu isTornOff] || [menuv_menu isFollowTransient])
+    {
+      _oldHighlightedItemIndex = [[attachableMenu menuRepresentation]
+						  highlightedItemIndex];
+      [attachableMenu displayTransient];
+      [[attachableMenu menuRepresentation] setHighlightedItemIndex: -1];
+    }
+  else
+    [attachableMenu display];
 }
 
+//
+// Calculating Menu Geometry
+//
 - (void)update
 {
-//  [menuv_menu update];
+  [menuv_menu update];
 
   if (menuv_needsSizing)
     [self sizeToFit];
@@ -316,43 +383,92 @@ static float GSMenuBarHeight = 25.0; // a guess.
   return menuv_needsSizing;
 }
 
-/*
-================
--setTitleWidth:
-================
-*/
-- (void)setTitleWidth:(float)titleWidth
-{
-  i_titleWidth = titleWidth;
-  [self sizeToFit];
-}
-
 - (void)sizeToFit
 {
   int i;
-  int howMany = [menuv_items_link count];
-  int howHigh = (howMany * cellSize.height);
-  float neededWidth = i_titleWidth;
+  int howMany = [menuv_itemCells count];
+  float howHigh = (howMany * cellSize.height);
+  float neededImageAndTitleWidth = [[NSFont boldSystemFontOfSize: 12]
+				     widthOfString: [menuv_menu title]] + 17;
+  float neededKeyEquivalentWidth = 0.;
+  float neededStateImageWidth = 0.;
+  float accumulatedOffset = 0.;
 
-  for (i=0;i<howMany;i++)
+  // TODO: Optimize this loop.
+  for (i = 0; i < howMany; i++)
   {
-    float aWidth;
+    float anImageAndTitleWidth;
+    float anImageWidth;
+    float aKeyEquivalentWidth;
+    float aStateImageWidth;
+    float aTitleWidth;
+    NSMenuItemCell *aCell = [menuv_itemCells objectAtIndex: i];
 
-    NSMenuItemCell *anItem = [menuv_items_link objectAtIndex: i];
-    aWidth = [anItem titleWidth];
+    // State image area.
+    aStateImageWidth = [aCell stateImageWidth];
 
-    if (aWidth > neededWidth)
-      neededWidth = aWidth;
+    if (aStateImageWidth > neededStateImageWidth)
+      neededStateImageWidth = aStateImageWidth;
+
+    // Image and title area.
+    aTitleWidth = [aCell titleWidth];
+    anImageWidth = [aCell imageWidth];
+    switch ([aCell imagePosition])
+      {
+      case NSNoImage:
+	anImageAndTitleWidth = aTitleWidth;
+	break;
+
+      case NSImageOnly:
+	anImageAndTitleWidth = anImageWidth;
+	break;
+
+      case NSImageLeft:
+      case NSImageRight:
+	anImageAndTitleWidth = anImageWidth + aTitleWidth + xDist;
+	break;
+
+      case NSImageBelow:
+      case NSImageAbove:
+      case NSImageOverlaps:
+      default:
+	if (aTitleWidth > anImageWidth)
+	  anImageAndTitleWidth = aTitleWidth;
+	else
+	  anImageAndTitleWidth = anImageWidth;
+	break;
+      }
+    anImageAndTitleWidth += aStateImageWidth;
+    if (anImageAndTitleWidth > neededImageAndTitleWidth)
+      neededImageAndTitleWidth = anImageAndTitleWidth;
+
+    // Key equivalent area.
+    aKeyEquivalentWidth = [aCell keyEquivalentWidth];
+
+    if (aKeyEquivalentWidth > neededKeyEquivalentWidth)
+      neededKeyEquivalentWidth = aKeyEquivalentWidth;
   }
 
-  if (![menuv_menu _isBeholdenToPopUpButton])
-    cellSize.width = 7 + neededWidth + 7 + 7 + 5;
+  // Cache the needed widths.
+  menuv_stateImageWidth = neededStateImageWidth;
+  menuv_imageAndTitleWidth = neededImageAndTitleWidth;
+  menuv_keyEqWidth = neededKeyEquivalentWidth;
 
-//  if ([window contentView] == self)
-//    [window setContentSize: NSMakeSize(cellSize.width,howHigh)];
-//  else
-//  [self setFrame: NSMakeRect(0,0,cellSize.width,howHigh)];
-  [self setFrameSize: NSMakeSize(cellSize.width,howHigh)];
+  // Calculate the offsets and cache them.
+  menuv_stateImageOffset = menuv_imageAndTitleOffset = accumulatedOffset =
+    menuv_horizontalEdgePad;
+  accumulatedOffset += 2 * menuv_horizontalEdgePad + neededImageAndTitleWidth;
+
+  menuv_keyEqOffset = accumulatedOffset += menuv_horizontalEdgePad;
+  accumulatedOffset += neededKeyEquivalentWidth + menuv_horizontalEdgePad;
+
+  // Calculate frame size.
+  if (![menuv_menu _isBeholdenToPopUpButton])
+    cellSize.width = accumulatedOffset + 3; // Add the border width
+
+  [self setFrameSize: NSMakeSize(cellSize.width + 1, howHigh)];
+
+  menuv_needsSizing = NO;
 }
 
 - (void)sizeToFitForPopUpButton
@@ -415,11 +531,10 @@ static float GSMenuBarHeight = 25.0; // a guess.
 
 - (NSRect)innerRect
 {
-  return bounds;
+  NSRect aRect = {{bounds.origin.x + 1, bounds.origin.y},
+		  {bounds.size.width - 1, bounds.size.height}};
 
-  // this could change if we drew menuitemcells as
-  // plain rects with no bezel like in macOSX. Talk to Michael Hanni if
-  // you would like to see this configurable.
+  return aRect;
 }
 
 - (NSRect)rectOfItemAtIndex: (int)index
@@ -430,10 +545,10 @@ static float GSMenuBarHeight = 25.0; // a guess.
     [self sizeToFit];
 
   if (index == 0)
-    theRect.origin.y = frame.size.height - cellSize.height;
+    theRect.origin.y = bounds.size.height - cellSize.height;
   else
-    theRect.origin.y = frame.size.height - (cellSize.height * (index + 1));
-  theRect.origin.x = 0;
+    theRect.origin.y = bounds.size.height - (cellSize.height * (index + 1));
+  theRect.origin.x = 1;
   theRect.size = cellSize;
 
   return theRect;
@@ -445,15 +560,18 @@ static float GSMenuBarHeight = 25.0; // a guess.
   // *every* cell to figure this out. Well, instead we will just do some
   // simple math. (NOTE: if we get horizontal methods we will have to do
   // this. Very much like NSTabView.
-  NSRect aRect = [self rectOfItemAtIndex: 0];
 
-  // this will need some finnessing but should be close.
-  return (frame.size.height - point.y) / aRect.size.height;
+  return (   point.x <  frame.origin.x
+	  || point.x >  frame.size.width + frame.origin.x
+	  || point.y <= frame.origin.y
+	  || point.y >  frame.size.height + frame.origin.y) ?
+          -1 :
+          (frame.size.height - point.y) / cellSize.height;
 }
 
 - (void)setNeedsDisplayForItemAtIndex: (int)index
 {
-  [[menuv_items_link objectAtIndex: index] setNeedsDisplay: YES];  
+  [[menuv_itemCells objectAtIndex: index] setNeedsDisplay: YES];  
 }
 
 - (NSPoint)locationForSubmenu: (NSMenu *)aSubmenu
@@ -479,441 +597,259 @@ static float GSMenuBarHeight = 25.0; // a guess.
 			   preferredEdge: (NSRectEdge)edge
 		       popUpSelectedItem: (int)selectedItemIndex
 {
-  // huh.
+  // Huh!?
 }
 
+//
 // Drawing.
- 
+//
 - (void)drawRect: (NSRect)rect
 {
-  int i;
-  NSRect aRect = frame;
-  int howMany = [menuv_items_link count];
+  int    i;
+  NSRect aRect   = [self innerRect];
+  int    howMany = [menuv_itemCells count];
 
-  // This code currently doesn't take intercell spacing into account. I'll
-  // need to fix that.
+  NSGraphicsContext *ctxt = GSCurrentContext();
 
+  // Draw a dark gray line at the left of the menu item cells.
+  DPSgsave(ctxt);
+    DPSsetlinewidth(ctxt, 1);
+    DPSsetgray(ctxt, 0.333);
+    DPSmoveto(ctxt, bounds.origin.x, bounds.origin.y);
+    DPSrlineto(ctxt, 0, bounds.size.height);
+    DPSstroke(ctxt);
+  DPSgrestore(ctxt);
+
+  // Draw the menu cells.
   aRect.origin.y = cellSize.height * (howMany - 1);
   aRect.size = cellSize;
 
-  for (i=0;i<howMany;i++)
+  for (i = 0; i < howMany; i++)
   {
-    id aCell = [menuv_items_link objectAtIndex: i];
+    id aCell;
+
+    aCell = [menuv_itemCells objectAtIndex: i];
 
     [aCell drawWithFrame: aRect inView: self];
     aRect.origin.y -= cellSize.height;
   }
 }
 
-// Event.
-
+//
+// Event Handling
+//
 - (void)performActionWithHighlightingForItemAtIndex: (int)index
 {
-  // for use with key equivalents.
+  NSMenu     *candidateMenu = menuv_menu;
+  NSMenuView *targetMenuView;
+  int         indexToHighlight = index;
+
+  for (;;)
+    {
+      if (![candidateMenu supermenu] ||
+	  [candidateMenu isAttached] ||
+	  [candidateMenu isTornOff])
+	{
+	  targetMenuView = [candidateMenu menuRepresentation];
+
+	  break;
+	}
+      else
+	{
+	  NSMenu *superMenu = [candidateMenu supermenu];
+
+	  indexToHighlight = [superMenu indexOfItemWithSubmenu: candidateMenu];
+	  candidateMenu = superMenu;
+	}
+    }
+
+  if ([targetMenuView attachedMenu])
+    [targetMenuView detachSubmenu];
+
+  [targetMenuView setHighlightedItemIndex: indexToHighlight];
+
+  [menuv_menu performActionForItemAtIndex: index];
+
+  [targetMenuView setHighlightedItemIndex: -1];
 }
 
 - (BOOL)trackWithEvent: (NSEvent *)event
 {
-  NSPoint       lastLocation = [event locationInWindow];
-  float         height = frame.size.height;
-  int index;
-  int lastIndex = 0;
-  unsigned      eventMask =   NSLeftMouseUpMask | NSLeftMouseDownMask
-                            | NSRightMouseUpMask | NSRightMouseDraggedMask
-			    | NSLeftMouseDraggedMask;
-  BOOL          done = NO;
-  NSApplication *theApp = [NSApplication sharedApplication];  
+  NSApplication *theApp           = [NSApplication sharedApplication];  
+  unsigned       eventMask        = NSLeftMouseUpMask 
+			          | NSLeftMouseDraggedMask
+                                  | NSPeriodicMask;
   NSDate        *theDistantFuture = [NSDate distantFuture];
-  int theCount = [menuv_items_link count];
-  id selectedCell;
 
-// These 3 BOOLs are misnomers. I'll rename them later. -Michael. FIXME.
+  NSPoint  location;
+  int      index;
+  NSMenu  *alreadyAttachedMenu = NO;
 
-  BOOL weWereOut = NO;
-  BOOL weLeftMenu = NO;
-  BOOL weRightMenu = NO;
-
-  // Get our mouse location, regardless of where it may be it the event
-  // stream.
-
-  lastLocation = [window mouseLocationOutsideOfEventStream];
-
-  index = (height - lastLocation.y) / cellSize.height;
-                                         
-  if (index >= 0 && index < theCount)
+  do
     {
-      if (menuv_highlightedItemIndex > -1)
-        {
-	  BOOL finished = NO;
-	  NSMenu *aMenu = menuv_menu;
+      location = [window mouseLocationOutsideOfEventStream];
+      index    = [self indexOfItemAtPoint: location];
 
-	  while (!finished)
-	    { // "forward"cursive menu find.
-	      if ([aMenu attachedMenu])
-		{
-		  aMenu = [aMenu attachedMenu];
-		}
-	      else
-		finished = YES;
-	    }
+      if ([event type] == NSPeriodic)
+	if ([menuv_menu isPartlyOffScreen])
+	  {
+	    NSPoint pointerLoc = [window convertBaseToScreen: location];
 
-	  finished = NO;
+	    // TODO: Why 1 in the Y axis?
+	    if (pointerLoc.x == 0 || pointerLoc.y == 1 ||
+		pointerLoc.x == [[window screen] frame].size.width - 1)
+	      [menuv_menu shiftOnScreen];
+	  }
 
-	  while (!finished)
-	    { // Recursive menu close & deselect.
-	      if ([aMenu supermenu] && aMenu != menuv_menu)
-		{
-		  [[aMenu menuView] setHighlightedItemIndex: -1];
-		  aMenu = [aMenu supermenu];
-		} 
-	      else
-		finished = YES;
-
-	      //	      [window flushWindow];
-	    }
-	}
-
-      [self setHighlightedItemIndex: index];
-
-      lastIndex = index;
-    }
-  
-  while (!done)
-    {
-      event = [theApp nextEventMatchingMask: eventMask
-				  untilDate: theDistantFuture
-				     inMode: NSEventTrackingRunLoopMode
-				    dequeue: YES];
-
-      switch ([event type])
+      if (index == -1)
 	{
-	  case NSRightMouseUp: 
-	  case NSLeftMouseUp: 
-//	    [self setHighlightedItemIndex:-1];
-	  /* right mouse up or left mouse up means we're done */
-	    done = YES;
-	    break;
-	  case NSRightMouseDragged: 
-	  case NSLeftMouseDragged: 
-	    lastLocation = [window mouseLocationOutsideOfEventStream];
-	    lastLocation = [self convertPoint: lastLocation fromView: nil];
-
-#if 0
-	    NSLog (@"location = (%f, %f, %f)", lastLocation.x, [window
-	      frame].origin.x, [window frame].size.width);  
-	    NSLog (@"location = %f (%f, %f)", lastLocation.y, [window
-	      frame].origin.y, [window frame].size.height);  
-#endif
-
-	    /* If the location of the mouse is inside the window on the
-	       x-axis. */
-
-	    if (lastLocation.x > 0
-	      && lastLocation.x < [window frame].size.width)
-	      {
-
-		/* Get the index from some simple math. */
-
-		index = (height - lastLocation.y) / cellSize.height;
-#if 0                                         
-		NSLog (@"location = (%f, %f)",
-		  lastLocation.x, lastLocation.y);  
-		NSLog (@"index = %d\n", index);
-#endif
-		/* If the index generated above is valid, use it. */
-
-		if (index >= 0 && index < theCount)
-		  {
-		    if (index != lastIndex)
-		      {
-			[self setHighlightedItemIndex: index];
-			lastIndex = index;
-		      }
-		    else
-		      {
-			if (weWereOut)
-			  {
-			    [self setHighlightedItemIndex: index];
-			    lastIndex = index;
-			    weWereOut = NO;
-			  } 
-		      }
-		  }
-
-		/* If we leave the bottom or top deselect menu items in
-		   the current view. This should check to see if the
-		   current item, if any, has an open submenu. */
-
-	        if (lastLocation.y > [window frame].size.height
-	           || lastLocation.y < 0)
-	          {
-		    weWereOut = YES;
-		    [self setHighlightedItemIndex: -1];
-	          }
-
-	      }
-
-	    /* If the location of the mouse is greater than the width of
-	       the current window we need to see if we should display a
-	       submenu. */
-
-	    else if (lastLocation.x > [window frame].size.width)
-	      {
-		NSRect aRect = [self rectOfItemAtIndex: lastIndex];
-		if (lastLocation.y > aRect.origin.y
-		  && lastLocation.y < aRect.origin.y + aRect.size.height
-		  && [[menuv_items_link objectAtIndex: lastIndex]
-		  hasSubmenu])
-		  {
-		    weLeftMenu = YES;
-		    done = YES;
-		  }
-		else
-		  {
-		    if (![[menuv_items_link objectAtIndex: lastIndex] hasSubmenu])
-		      {
-		        [self setHighlightedItemIndex: -1];
-		        lastIndex = index;
-		        weWereOut = YES;
-		        [window flushWindow];
-		      }
-		    else
-		      {
-		        weLeftMenu = YES;
-		        done = YES;
-		      }
-		  }
-	      }
-
-	    /* If the mouse location is less than 0 we moved to the left,
-	       perhaps into a supermenu? */
-
-	    else if (lastLocation.x < 0)
-	      {
-		if ([menuv_menu supermenu])
-		  {
-		    weRightMenu = YES;
-		    done = YES;
-		  }
-		else
-		  {
-		    [self setHighlightedItemIndex: -1];
-		    lastIndex = index;
-		    weWereOut = YES;
-		    [window flushWindow];
-		  }
-	      }
-	    else
-	      {
-      // FIXME, Michael. This might be needed... or not?
-/* FIXME this code is just plain nasty.
-      NSLog(@"This is the final else... its evil\n");
-		if (lastIndex >= 0 && lastIndex < theCount)
-		  {
-		    [self setHighlightedItemIndex: -1];
-		    lastIndex = index;
-		    weWereOut = YES;
-		    [window flushWindow];
-		  }
-*/
-	      }
-	    [window flushWindow];
-	  default: 
-	    break;
-	}
-    }
-
-  /* If we didn't move out of the window to the left or right, and if we
-didn't move beyond the bounds of the menu (?) and if we have a selected
-cell do the following */
-
-  if (!weLeftMenu && !weRightMenu && !weWereOut
-    && menuv_highlightedItemIndex != -1)
-    {
-      if (![[menuv_items_link objectAtIndex: menuv_highlightedItemIndex]
-	hasSubmenu])
-	{
-	  BOOL finished = NO;
-	  NSMenu *aMenu = menuv_menu;
-
-	  if (index >= 0 && index < theCount)
-	    selectedCell = [menuv_items_link objectAtIndex: index];
-	  else
-	    selectedCell = nil;
-
-	  [self setHighlightedItemIndex: -1];
-
-	  [menuv_menu performActionForItem: 
-	    [menuv_items_link objectAtIndex: lastIndex]];
-
-          if (![menuv_menu _isBeholdenToPopUpButton])
+	  if ([menuv_menu attachedMenu])
 	    {
-	      while (!finished)
-	        { // "forward"cursive menu find.
-	          if ([aMenu attachedMenu])
-		    {
-		      aMenu = [aMenu attachedMenu];
-		    }
-	          else
-		    finished = YES;
-	        }
-
-	      finished = NO;
-
-	      while (!finished)
-	        { // Recursive menu close & deselect.
-	          if ([aMenu supermenu])
-		    {
-		      [[[aMenu supermenu] menuView] setHighlightedItemIndex: -1];
-		      aMenu = [aMenu supermenu];
-		    } 
-	          else
-		    finished = YES;
-	        }
+	      if ([[self attachedMenuView] trackWithEvent: event])
+		return YES;
 	    }
 	  else
 	    {
-	      [menuv_menu close];
+	      if (index != menuv_highlightedItemIndex)
+		[self setHighlightedItemIndex: index];
 	    }
-        }
+
+	  if (([menuv_menu supermenu] && ![menuv_menu isTornOff])
+	      || [menuv_menu isFollowTransient])
+	    return NO;
+	}
       else
 	{
-	  BOOL finished = NO;
-	  NSMenu *aMenu = menuv_menu;
-
-	  if (index >= 0 && index < theCount)
-	    selectedCell = [menuv_items_link objectAtIndex: index];
-	  else
-	    selectedCell = nil;
-
-	  if (![[selectedCell target] isTornOff])
-	    return;
-
-	  [self setHighlightedItemIndex: -1];
-
-	  /* If we are a menu */
-
-          if (![menuv_menu _isBeholdenToPopUpButton])
+	  if (index != menuv_highlightedItemIndex)
 	    {
-	      while (!finished)
-	        { // "forward"cursive menu find.
-	          if ([aMenu attachedMenu])
-		    {
-		      aMenu = [aMenu attachedMenu];
-		    }
-	          else
-		    finished = YES;
-	        }
+	      [self setHighlightedItemIndex: index];
 
-	      finished = NO;
+	      if ([menuv_menu attachedMenu])
+		[self detachSubmenu];
 
-	      while (!finished)
-	        { // Recursive menu close & deselect.
-	          if ([aMenu supermenu])
-		    {
-		      [[aMenu menuView] setHighlightedItemIndex: -1];
-		      aMenu = [aMenu supermenu];
-		    } 
-	          else
-		    finished = YES;
-
-	          [window flushWindow];
-	        }
+	      if ((alreadyAttachedMenu =
+		   [[menuv_items_link objectAtIndex: index] submenu]))
+		[self attachSubmenuForItemAtIndex: index];
 	    }
-	  else
-	    {
-	      [menuv_menu close];
-	    }
-
 	}
+
+      event = [theApp nextEventMatchingMask: eventMask
+		                  untilDate: theDistantFuture
+		                     inMode: NSEventTrackingRunLoopMode
+		                    dequeue: YES];
     }
+  while ([event type] != NSLeftMouseUp);
 
-  /* If the mouse is released and there is no highlighted cell */
-
-  else if (menuv_highlightedItemIndex == -1
-	&& [menuv_menu _isBeholdenToPopUpButton])
+  // Perform actions as needed.
+  if (index != -1 && !alreadyAttachedMenu)
     {
-      [menuv_menu close];
+      [menuv_menu performActionForItemAtIndex: index];
+
+      if (![menuv_menu isFollowTransient])
+	[self setHighlightedItemIndex: -1];
+
+      if (![[menuv_items_link objectAtIndex: index] hasSubmenu])
+	menuv_keepAttachedMenus = NO;
     }
 
-  /* We went to the left of the current NSMenuView. BOOL is a misnomer. */
-
-  else if (weRightMenu)
+  // Close menus if needed.
+  if (!menuv_keepAttachedMenus ||
+      index == -1 ||
+      (alreadyAttachedMenu && [alreadyAttachedMenu isFollowTransient]))
     {
-      NSPoint cP = [window convertBaseToScreen: lastLocation];
+      NSMenu     *parentMenu;
+      NSMenu     *masterMenu;
 
-      [self setHighlightedItemIndex: -1];
+      for (parentMenu = masterMenu = menuv_menu;
+	   (parentMenu = [masterMenu supermenu])
+	    && (![masterMenu isTornOff] || [masterMenu isFollowTransient]);
+	   masterMenu = parentMenu);
 
-      if ([menuv_menu supermenu] && ![menuv_menu isTornOff])
+      if ([masterMenu attachedMenu])
 	{
-	  [self mouseUp: 
-		[NSEvent mouseEventWithType: NSLeftMouseUp
-		    location: cP
-		    modifierFlags: [event modifierFlags]
-		    timestamp: [event timestamp]
-		    windowNumber: [window windowNumber]
-		    context: [event context] 
-		    eventNumber: [event eventNumber]
-		    clickCount: [event clickCount]
-		    pressure: [event pressure]]];
+	  NSMenuView *masterMenuView = [masterMenu menuRepresentation];
 
-	  [[[menuv_menu supermenu] menuView] mouseDown: 
-		[NSEvent mouseEventWithType: NSLeftMouseDragged
-		    location: cP
-		    modifierFlags: [event modifierFlags]
-		    timestamp: [event timestamp]
-		    windowNumber: [[[[menuv_menu supermenu] menuView] window] windowNumber]
-		    context: [event context] 
-		    eventNumber: [event eventNumber]
-		    clickCount: [event clickCount]
-		    pressure: [event pressure]]];
+	  [masterMenuView detachSubmenu];
+	  [masterMenuView setHighlightedItemIndex: -1];
 	}
     }
 
-  /* We went to the right of the current NSMenuView. BOOL is a misnomer. */
-
-  else if (weLeftMenu)
-    { /* The weLeftMenu case */
-      NSPoint cP = [window convertBaseToScreen: lastLocation];
-
-      selectedCell = [menuv_items_link objectAtIndex: lastIndex];
-      if ([selectedCell hasSubmenu])
-	{
-	  [self mouseUp: 
-		[NSEvent mouseEventWithType: NSLeftMouseUp
-		    location: cP
-		    modifierFlags: [event modifierFlags]
-		    timestamp: [event timestamp]
-		    windowNumber: [window windowNumber]
-		    context: [event context] 
-		    eventNumber: [event eventNumber]
-		    clickCount: [event clickCount]
-		    pressure: [event pressure]]];
-
-	  [[[selectedCell target] menuView] mouseDown: 
-		[NSEvent mouseEventWithType: NSLeftMouseDragged
-		    location: cP
-		    modifierFlags: [event modifierFlags]
-		    timestamp: [event timestamp]
-		    windowNumber: [[[[selectedCell target] menuView] window] windowNumber]
-		    context: [event context] 
-		    eventNumber: [event eventNumber]
-		    clickCount: [event clickCount]
-		    pressure: [event pressure]]];
-	}
-    }
-
-  return YES;                
+  return YES;
 }
 
 - (void)mouseDown: (NSEvent *)theEvent
 {
-  [self trackWithEvent: theEvent];
+  NSMenu     *candidateMenu;
+  NSMenu     *masterMenu;
+  NSMenuView *masterMenuView;
+  NSPoint     originalLocation;
+
+  menuv_keepAttachedMenus = YES;
+
+  for (candidateMenu = masterMenu = menuv_menu;
+       (candidateMenu = [masterMenu supermenu])
+	 && (![masterMenu isTornOff] || [masterMenu isFollowTransient]);
+       masterMenu = candidateMenu);
+
+  originalLocation = [[masterMenu window] frame].origin;
+
+  masterMenuView = [masterMenu menuRepresentation];
+
+  masterMenuView->menuv_keepAttachedMenus = YES;
+
+  [NSEvent startPeriodicEventsAfterDelay: 0.2 withPeriod: 0.05];
+
+  [masterMenuView trackWithEvent: theEvent];
+
+  [NSEvent stopPeriodicEvents];
+
+  if (!NSEqualPoints(originalLocation, [[masterMenu window] frame].origin))
+    {
+      [masterMenu nestedSetFrameOrigin: originalLocation];
+      [masterMenu nestedCheckOffScreen];
+    }
+  masterMenuView->menuv_keepAttachedMenus = NO;
+
+  menuv_keepAttachedMenus = NO;
 }
 
--(void) performKeyEquivalent: (NSEvent *)theEvent
+-(BOOL) performKeyEquivalent: (NSEvent *)theEvent
 {
-  [menuv_menu performKeyEquivalent: theEvent];
+  return [menuv_menu performKeyEquivalent: theEvent];
+}
+
+//
+// NSCoding Protocol
+//
+- (void)encodeWithCoder:(NSCoder *)encoder
+{
+  [super encodeWithCoder: encoder];
+
+  [encoder encodeObject: menuv_itemCells];
+  [encoder encodeObject: menuv_font];
+  [encoder encodeConditionalObject: menuv_menu];
+  [encoder encodeConditionalObject: menuv_items_link];
+  [encoder encodeValueOfObjCType: @encode(BOOL) at: &menuv_horizontal];
+  [encoder encodeValueOfObjCType: @encode(float) at: &menuv_horizontalEdgePad];
+  [encoder encodeValueOfObjCType: @encode(NSSize) at: &cellSize];
+}
+
+- (id)initWithCoder:(NSCoder *)decoder
+{
+  self = [super initWithCoder: decoder];
+
+  menuv_itemCells  = [decoder decodeObject];
+  menuv_font       = [decoder decodeObject];
+  menuv_menu       = [decoder decodeObject];
+  menuv_items_link = [decoder decodeObject];
+  [decoder decodeValueOfObjCType: @encode(BOOL) at: &menuv_horizontal];
+  [decoder decodeValueOfObjCType: @encode(float) at: &menuv_horizontalEdgePad];
+  [decoder decodeValueOfObjCType: @encode(NSSize) at: &cellSize];
+
+  menuv_highlightedItemIndex = -1;
+  menuv_needsSizing = YES;
+
+  return self;
 }
 
 @end

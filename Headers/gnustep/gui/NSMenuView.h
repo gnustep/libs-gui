@@ -35,23 +35,24 @@
 #include <Foundation/NSNotification.h>
 
 #include <AppKit/NSMenu.h>
+#include <AppKit/NSMenuItem.h>
 #include <AppKit/NSMenuItemCell.h>
 #include <AppKit/NSScreen.h>
 #include <AppKit/NSView.h>
+#include <AppKit/NSWindow.h>
 
 @class NSColor;
 @class NSPopUpButton;
 @class NSFont;
 
-@interface NSMenuView : NSView
+@interface NSMenuView : NSView <NSCoding>
 {
   NSMenu *menuv_menu;
+  NSMutableArray *menuv_itemCells;
   BOOL menuv_horizontal;
   NSFont *menuv_font;
   int menuv_highlightedItemIndex;
-  BOOL menuv_isAttached;
-  BOOL menuv_isTornOff;
-  float menuv_hEdgePad;
+  float menuv_horizontalEdgePad;
   float menuv_stateImageOffset;
   float menuv_stateImageWidth;
   float menuv_imageAndTitleOffset;
@@ -60,11 +61,12 @@
   float menuv_keyEqWidth;
   BOOL menuv_needsSizing;
   NSSize cellSize;
-  float i_titleWidth;
 @private
-  id menuv_popb;
   id menuv_items_link;
+  BOOL menuv_keepAttachedMenus;
+  int _oldHighlightedItemIndex;
 }
+
 + (float)menuBarHeight;
 
 - (void)setMenu:(NSMenu *)menu;

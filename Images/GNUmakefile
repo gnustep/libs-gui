@@ -44,9 +44,11 @@ common_ArrowUpH.tiff \
 common_ArrowRightH.tiff \
 common_3DArrowRightH.tiff \
 common_ArrowLeftH.tiff \
+common_2DCheckMark.tiff \
 common_Close.tiff \
 common_CloseH.tiff \
 common_CloseBroken.tiff \
+common_2DDash.tiff \
 common_Home.tiff \
 common_Mount.tiff \
 common_Unmount.tiff \
