@@ -277,10 +277,6 @@ systemColorWithName(NSString *name)
       // ignore alpha by default
       gnustep_gui_ignores_alpha = YES;
 
-      // We call this so that the local information is set up before
-      // initSystemColors() converts floats to strings.
-      [NSUserDefaults standardUserDefaults];
-      
       // Load or define the system colour list
       initSystemColors();
 
