@@ -118,8 +118,6 @@ PaDriverInfo;
 #else
 #include <machine/soundcard.h> /* JH20010905 */
 #endif
-#endif
-#endif
 
 #include "portaudio.h"
 #include "pa_host.h"
