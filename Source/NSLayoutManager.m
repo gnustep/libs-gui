@@ -2226,7 +2226,7 @@ _Sane(self);
   NSLog(@"glyphRangeForTextContainer: called. There are %d
 textContainer(s) in containerRuns.", [_containerRuns count]);
 
-  for (i=0;i<[_containerRuns count];i++)
+  for (i = 0; i < [_containerRuns count]; i++)
     {
       GSTextContainerLayoutInfo *aNewLine = [_containerRuns objectAtIndex: i];
 
@@ -2258,11 +2258,17 @@ textContainer(s) in containerRuns.", [_containerRuns count]);
   theLine = [_containerRuns objectContainingLocation: glyphIndex];
   if (theLine)
     {
-      (NSRange*)effectiveRange = &theLine->glyphRange;
+      if (effectiveRange)
+	{
+	  *effectiveRange = theLine->glyphRange;
+	}
       return theLine->textContainer;
     }
-
-  (NSRange*)effectiveRange = NULL;
+  
+  if (effectiveRange)
+    {
+      *effectiveRange = NSMakeRange (NSNotFound, 0);
+    }
   return nil;
 }
 
@@ -2296,11 +2302,17 @@ textContainer(s) in containerRuns.", [_containerRuns count]);
   theLine = [_fragmentRuns objectContainingLocation: glyphIndex];
   if (theLine)
     {
-      (NSRange*)lineFragmentRange = &theLine->glyphRange;
+      if (lineFragmentRange != NULL)
+	{
+	  *lineFragmentRange = theLine->glyphRange;
+	}
       return theLine->lineFragmentRect;
     }
 
-  (NSRange*)lineFragmentRange = NULL;
+  if (lineFragmentRange != NULL)
+    {
+      *lineFragmentRange = NSMakeRange (NSNotFound, 0);
+    }
   return NSZeroRect;
 }
 
@@ -2316,11 +2328,17 @@ textContainer(s) in containerRuns.", [_containerRuns count]);
   theLine = [_fragmentRuns objectContainingLocation: glyphIndex];
   if (theLine)
     {
-      (NSRange*)lineFragmentRange = &theLine->glyphRange;
+      if (lineFragmentRange != NULL)
+	{
+	  *lineFragmentRange = theLine->glyphRange;
+	}
       return theLine->usedRect;
     }
 
-  (NSRange*)lineFragmentRange = NULL;
+  if (lineFragmentRange != NULL)
+    {
+      *lineFragmentRange = NSMakeRange (NSNotFound, 0);
+    }
   return NSZeroRect;
 }
 
