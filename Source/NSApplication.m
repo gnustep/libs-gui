@@ -266,7 +266,7 @@ NSApplication	*NSApp = nil;
 
 - (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (int)otherWin
 {
-  if (place == NSWindowOut)
+  if ((place == NSWindowOut) && [NSApp isRunning])
     {
       NSLog (@"Argh - icon window ordered out");
     }
