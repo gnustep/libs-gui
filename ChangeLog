@@ -1,3 +1,8 @@
+2004-02-28  Adam Fedor  <fedor@gnu.org>
+
+	* configure.ac: Don't add CPPFLAGS to ADDITIONAL_INCLUDES, add
+	ungif and X11 flags to GRAPHIC_... flags.
+
 2004-02-26  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSApplication.m: (-beginSheet:...contextInfo:)

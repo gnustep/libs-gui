@@ -4631,9 +4631,6 @@ echo "$as_me: error: gnustep-gui will not compile without tiff" >&2;}
    { (exit 1); exit 1; }; }
 fi
 
-ADDITIONAL_INCLUDE_DIRS="$ADDITIONAL_INCLUDE_DIRS $GRAPHIC_CFLAGS"
-ADDITIONAL_LIB_DIRS="$ADDITIONAL_LIB_DIRS $GRAPHIC_LFLAGS"
-
 #--------------------------------------------------------------------
 # Find additional image libs
 #--------------------------------------------------------------------
@@ -4914,9 +4911,12 @@ fi
       # ungif.
       { echo "$as_me:$LINENO: -gui will be linked against -lX11 to support ungif images" >&5
 echo "$as_me: -gui will be linked against -lX11 to support ungif images" >&6;}
-      ADDITIONAL_INCLUDE_DIRS="$ADDITIONAL_INCLUDE_DIRS $CPPFLAGS"
-      ADDITIONAL_LIB_DIRS="$ADDITIONAL_LIB_DIRS $LDFLAGS -lX11"
+      GRAPHIC_CFLAGS="-I${ac_x_includes} ${with_ungif_include} $GRAPHIC_CFLAGS"
+      GRAPHIC_LFLAGS="-L${ac_x_libraries} ${with_ungif_library} $GRAPHIC_LFLAGS"
     fi
+  else
+    GRAPHIC_CFLAGS="${with_ungif_include} $GRAPHIC_CFLAGS"
+    GRAPHIC_LFLAGS="${with_ungif_library} $GRAPHIC_LFLAGS"
   fi
 fi
 
@@ -5188,6 +5188,9 @@ echo "${ECHO_T}$GNUSTEP_GUI_VERSION" >&6
 
 
 
+
+ADDITIONAL_INCLUDE_DIRS="$ADDITIONAL_INCLUDE_DIRS $GRAPHIC_CFLAGS"
+ADDITIONAL_LIB_DIRS="$ADDITIONAL_LIB_DIRS $GRAPHIC_LFLAGS"
 
 
 

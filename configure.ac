@@ -172,9 +172,6 @@ if test "$have_tiff" = no; then
   AC_MSG_ERROR(gnustep-gui will not compile without tiff)
 fi
 
-ADDITIONAL_INCLUDE_DIRS="$ADDITIONAL_INCLUDE_DIRS $GRAPHIC_CFLAGS"
-ADDITIONAL_LIB_DIRS="$ADDITIONAL_LIB_DIRS $GRAPHIC_LFLAGS"
-
 #--------------------------------------------------------------------
 # Find additional image libs
 #--------------------------------------------------------------------
@@ -244,9 +241,12 @@ if test "${enable_ungif}" = yes; then
       # the flags so that -gui gets linked against the X11 library to support
       # ungif.
       AC_MSG_NOTICE([-gui will be linked against -lX11 to support ungif images])
-      ADDITIONAL_INCLUDE_DIRS="$ADDITIONAL_INCLUDE_DIRS $CPPFLAGS"
-      ADDITIONAL_LIB_DIRS="$ADDITIONAL_LIB_DIRS $LDFLAGS -lX11"
+      GRAPHIC_CFLAGS="-I${ac_x_includes} ${with_ungif_include} $GRAPHIC_CFLAGS"
+      GRAPHIC_LFLAGS="-L${ac_x_libraries} ${with_ungif_library} $GRAPHIC_LFLAGS"
     fi
+  else
+    GRAPHIC_CFLAGS="${with_ungif_include} $GRAPHIC_CFLAGS"
+    GRAPHIC_LFLAGS="${with_ungif_library} $GRAPHIC_LFLAGS"
   fi
 fi
 
@@ -298,6 +298,9 @@ AC_SUBST(GNUSTEP_GUI_VERSION)
 AC_SUBST(GNUSTEP_GUI_MAJOR_VERSION)
 AC_SUBST(GNUSTEP_GUI_MINOR_VERSION)
 AC_SUBST(GNUSTEP_GUI_SUBMINOR_VERSION)
+
+ADDITIONAL_INCLUDE_DIRS="$ADDITIONAL_INCLUDE_DIRS $GRAPHIC_CFLAGS"
+ADDITIONAL_LIB_DIRS="$ADDITIONAL_LIB_DIRS $GRAPHIC_LFLAGS"
 
 AC_SUBST(ADDITIONAL_LIB_DIRS)
 AC_SUBST(ADDITIONAL_INCLUDE_DIRS)
