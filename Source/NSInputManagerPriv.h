@@ -34,7 +34,6 @@
 @class NSString;
 @class NSDictionary;
 
-
 @interface NSInputManager (KeyEventHandling)
 - (void)interpretKeyEvents: (NSArray *)eventArray;
 @end /* @interface NSInputManager (KeyEventHandling) */
@@ -49,65 +48,7 @@ typedef enum _IMState {
 } IMQueryResult;
 
 
-@interface IMCharacter : NSObject <NSCopying>
-{
-  unichar	character;
-  unsigned int	modifiers;
-}
-
-+ (id)characterWithCharacter: (unichar)c
-		   modifiers: (unsigned int)flags;
-
-- (id)initWithCharacter: (unichar)c
-	      modifiers: (unsigned int)flags;
-
-- (void)setCharacter: (unichar)c;
-- (unichar)character;
-
-- (void)setModifiers: (unsigned int)flags;
-- (unsigned int)modifiers;
-
-- (BOOL)isAlphaShiftKeyOn;
-- (void)setAlphaShiftKeyMask;
-- (void)clearAlphaShiftKeyMask;
-
-- (BOOL)isShiftKeyOn;
-- (void)setShiftKeyMask;
-- (void)clearShiftKeyMask;
-
-- (BOOL)isControlKeyOn;
-- (void)setControlKeyMask;
-- (void)clearControlKeyMask;
-
-- (BOOL)isAlternateKeyOn;
-- (void)setAlternateKeyMask;
-- (void)clearAlternateKeyMask;
-
-- (BOOL)isCommandKeyOn;
-- (void)setCommandKeyMask;
-- (void)clearCommandKeyMask;
-
-- (BOOL)isNumericPadKeyOn;
-- (void)setNumericPadKeyMask;
-- (void)clearNumericPadKeyMask;
-
-- (BOOL)isHelpKeyOn;
-- (void)setHelpKeyMask;
-- (void)clearHelpKeyMask;
-
-- (BOOL)isFunctionKeyOn;
-- (void)setFunctionKeyMask;
-- (void)clearFunctionKeyMask;
-
-- (BOOL)isNotModified;
-- (BOOL)isShiftedOnly;
-
-- (NSString *)convertCharacterToString;	    /* unprintable char -> its name */
-- (NSString *)convertModifiersToString;
-- (NSString *)stringValue;		    /* not necessarily printable */
-
-@end /* @interface IMCharacter : NSObject <NSCopying> */
-
+@class GSTIMKeyStroke;
 
 @interface IMKeyBindingTable : NSObject
 {
@@ -120,11 +61,11 @@ typedef enum _IMState {
 - (void)setBindings: (NSDictionary *)newBindings;
 - (NSDictionary *)bindings;
 
-- (IMCharacter *)compileForKey: (NSString *)key;
+- (GSTIMKeyStroke *)compileForKey: (NSString *)key;
 - (void)compileBindings: (NSMutableDictionary *)draft
 	     withSource: (NSDictionary *)source;
 
-- (IMQueryResult)getSelectorFromCharacter: (IMCharacter *)character
+- (IMQueryResult)getSelectorFromCharacter: (GSTIMKeyStroke *)character
 				 selector: (SEL *)selector;
 @end /* @interface IMKeyBindingTable */
 

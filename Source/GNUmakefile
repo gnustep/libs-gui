@@ -180,7 +180,8 @@ GSHorizontalTypesetter.m \
 GSNibTemplates.m \
 GSNibCompatibility.m \
 GSTitleView.m \
-GSTIMInputServerInfo.m
+GSTIMInputServerInfo.m \
+GSTIMKeyStroke.m
 
 # Turn off NSMenuItem warning that NSMenuItem conforms to <NSObject>,
 # but does not implement <NSObject>'s methods itself (it inherits
