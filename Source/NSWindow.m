@@ -121,13 +121,17 @@ static BOOL _needsFlushWindows = YES;
 //
 - init
 {
-  int style;
+int style;
 
-  NSDebugLog(@"NSWindow -init\n");
-  style = NSTitledWindowMask | NSClosableWindowMask
-    | NSMiniaturizableWindowMask | NSResizableWindowMask;
-  return [self initWithContentRect:NSZeroRect styleMask:style
-	       backing:NSBackingStoreBuffered defer:NO];
+	NSDebugLog(@"NSWindow -init\n");
+
+	style = NSTitledWindowMask | NSClosableWindowMask
+			| NSMiniaturizableWindowMask | NSResizableWindowMask;
+
+	return [self initWithContentRect:NSZeroRect 
+				 styleMask:style
+				 backing:NSBackingStoreBuffered 
+				 defer:NO];
 }
 
 - (void)dealloc
@@ -153,20 +157,24 @@ static BOOL _needsFlushWindows = YES;
 // Initializing and getting a new NSWindow object
 //
 - initWithContentRect:(NSRect)contentRect
-	    styleMask:(unsigned int)aStyle
-	      backing:(NSBackingStoreType)bufferingType
-		defer:(BOOL)flag
+			styleMask:(unsigned int)aStyle
+			backing:(NSBackingStoreType)bufferingType
+			defer:(BOOL)flag
 {
-  NSDebugLog(@"NSWindow -initWithContentRect:\n");
-  return [self initWithContentRect:contentRect styleMask:aStyle
-	       backing:bufferingType defer:flag screen:nil];
+	NSDebugLog(@"NSWindow -initWithContentRect:\n");
+
+	return [self initWithContentRect:contentRect 
+				 styleMask:aStyle
+				 backing:bufferingType 
+				 defer:flag 
+				 screen:nil];
 }
 
 - initWithContentRect:(NSRect)contentRect
-	    styleMask:(unsigned int)aStyle
-	      backing:(NSBackingStoreType)bufferingType
-		defer:(BOOL)flag
-	       screen:aScreen
+			styleMask:(unsigned int)aStyle
+			backing:(NSBackingStoreType)bufferingType
+			defer:(BOOL)flag
+			screen:aScreen
 {
   NSApplication *theApp = [NSApplication sharedApplication];
   NSRect r = [[NSScreen mainScreen] frame];

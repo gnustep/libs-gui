@@ -111,20 +111,19 @@ static NSString	*nsview_thread_key = @"NSViewThreadKey";
 
 + (NSView *)focusView
 {
-  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
-  NSMutableArray *stack = [dict objectForKey: nsview_thread_key];
-  NSView *current_view = nil;
+NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
+NSMutableArray *stack = [dict objectForKey: nsview_thread_key];
+NSView *current_view = nil;
 
-  if (stack)
-    {
-      unsigned count = [stack count];
+	if (stack)
+		{
+		unsigned count = [stack count];
 
-      if (count > 0)
-	{
-	  current_view = [stack objectAtIndex: --count];
-	}
-    }
-  return current_view;
+		if (count > 0)
+			current_view = [stack objectAtIndex: --count];
+		}
+
+	return current_view;
 }
 
 - init
