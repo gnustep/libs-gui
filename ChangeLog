@@ -1,3 +1,8 @@
+2003-01-29 01:40  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/NSTextView.h, Source/NSTextView.m: Implement
+	basic drawing of insertion point.
+
 2003-01-28  Fred Kiefer <FredKiefer@gmx.de>
 
 	* TextConverters/RTF/RTFConsumer.m

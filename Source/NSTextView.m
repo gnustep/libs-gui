@@ -2800,26 +2800,95 @@ Figure out how the additional layout stuff is supposed to work.
 
   if ([self shouldDrawInsertionPoint])
     {
+      if (NSIntersectsRect(rect, _insertionPointRect))
+	{
+	  [self drawInsertionPointInRect: _insertionPointRect
+	    color: _insertionPointColor
+	    turnedOn: YES];
+	}
+#if 0 /* TODO: insertion point */
       unsigned location = _layoutManager->_selected_range.location;
       
       if (NSLocationInRange (location, drawnRange) 
 	  || location == NSMaxRange (drawnRange))
 	{
-#if 0 /* TODO: insertion point */
 	  if (_drawInsertionPointNow && viewIsPrinting != self)
 	    {
 	      [self drawInsertionPointInRect: _insertionPointRect  
 		    color: _insertionPointColor
 		    turnedOn: YES];
 	    }
-#endif
 	}
+#endif
     }
 }
 
 
 - (void) updateInsertionPointStateAndRestartTimer: (BOOL)restartFlag
 {
+  /* TODO: this is a basic stopgap implementation; should work fine, but no
+  blinking. need to do a proper one once I know how */
+
+  unsigned int l;
+  BOOL after;
+  NSRange gr;
+  NSRect new;
+
+  if (_layoutManager->_selected_range.length > 0 ||
+      _layoutManager->_selected_range.location == NSNotFound)
+    {
+      _insertionPointRect = NSZeroRect;
+      return;
+    }
+
+  l = _layoutManager->_selected_range.location;
+  if (l == [self textLength])
+    {
+      if (l == 0)
+	{
+	  /* TODO */
+	  new = NSZeroRect;
+	  new.size.width = 1;
+	  new.size.height = 14;
+	  new.origin.y = 0;
+	  goto adjust;
+	}
+      l--;
+      after = YES;
+    }
+  else
+    after = NO;
+
+  gr = [_layoutManager glyphRangeForCharacterRange: NSMakeRange(l,1)
+	 actualCharacterRange: NULL];
+
+  new = [_layoutManager boundingRectForGlyphRange: gr
+	  inTextContainer: _textContainer];
+
+  if (after)
+    {
+      new.origin.x += new.size.width - 1;
+    }
+  new.size.width = 1;
+
+adjust:
+  new.origin.y++;
+  new.size.height -= 2;
+
+  new.origin.x += _textContainerOrigin.x;
+  new.origin.y += _textContainerOrigin.y;
+
+  printf("at %i (%i) got (%g %g)+(%g %g)\n",l,after,
+    new.origin.x,new.origin.y,new.size.width,new.size.height);
+
+  if (!NSEqualRects(new, _insertionPointRect))
+    {
+      printf("not equal, redisplaying\n");
+      [self setNeedsDisplayInRect: _insertionPointRect];
+      _insertionPointRect = new;
+      [self setNeedsDisplayInRect: _insertionPointRect];
+    }
+
 #if 0 /* TODO */
   /* Update insertion point rect */
   NSRange charRange;

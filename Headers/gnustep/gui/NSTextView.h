@@ -176,6 +176,7 @@ therefore be stored in the NSLayoutManager to avoid problems.
      following little period in which the insertion point should not
      be drawn */
   BOOL _drawInsertionPointNow;
+#endif
 
 
   /* Stores the insertion point rect - updated by
@@ -184,6 +185,7 @@ therefore be stored in the NSLayoutManager to avoid problems.
      need to be recomputed <eg, relayout>. */
   NSRect _insertionPointRect;
 
+#if 0
   /* This is used when you move the insertion point up or down.  The
      system remembers the horizontal position of the insertion point
      at the beginning of the process, and always tries to put the
