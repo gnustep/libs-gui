@@ -1033,6 +1033,7 @@ void __dummy_GMAppKit_functionForLinking() {}
     [archiver encodeSelector:[self doubleAction] withName:@"doubleAction"];
 }
 
+#if 0
 + (id)createObjectForModelUnarchiver:(GMUnarchiver*)unarchiver
 {
     unsigned backingType = [unarchiver decodeUnsignedIntWithName:
@@ -1046,9 +1047,13 @@ void __dummy_GMAppKit_functionForLinking() {}
 
     return browser;
 }
+#endif
 
 - (id)initWithModelUnarchiver :(GMUnarchiver *)unarchiver
 {
+    id delegate;
+
+
     self = [super initWithModelUnarchiver:unarchiver];
     
     [self setPath:[unarchiver decodeStringWithName:@"path"]];
@@ -1078,8 +1083,12 @@ void __dummy_GMAppKit_functionForLinking() {}
     [self setSendsActionOnArrowKeys:[unarchiver
 		       decodeBOOLWithName:@"sendsActionOnArrowKeys"]];
 
-    [self setDelegate:[unarchiver decodeObjectWithName:@"delegate"]];
-    [self setDoubleAction:[unarchiver decodeBOOLWithName:@"doubleAction"]];
+    //avoid an exeption
+    delegate = [unarchiver decodeObjectWithName:@"delegate"];
+    if (delegate)
+	[self setDelegate:delegate];
+
+    [self setDoubleAction:[unarchiver decodeSelectorWithName:@"doubleAction"]];
 }
 
 @end  /* NSBrowser (GMArchiverMethods) */
