@@ -1,3 +1,8 @@
+2004-04-09  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
+
+	* InputManagers/PlainInputServer/PlainInputServer.dict: The key
+	  binding "$\040" commented out.
+
 2004-04-07  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
 
 	* InputManagers/StandardKeyBinding.dict: Add multiple message
