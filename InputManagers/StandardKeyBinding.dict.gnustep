@@ -40,24 +40,31 @@
     "Control-LeftArrow"	    = "moveToBeginningOfLine:";
     "Control-RightArrow"    = "moveToEndOfLine:";
 
-    "Alternate-LeftArrow"    = "moveWordBackward:";
-    "Alternate-RightArrow"   = "moveWordForward:";
+    //"Alternate-UpArrow"	    = ("moveUp:", "moveWordBackward:");
+    //"Alternate-DownArrow"   = ("moveDown:", "moveWordForward:");
+    "Alternate-LeftArrow"   = "moveWordBackward:";
+    "Alternate-RightArrow"  = "moveWordForward:";
 
     "Shift-UpArrow"	= "moveUpAndModifySelection:";
     "Shift-DownArrow"	= "moveDownAndModifySelection:";
     "Shift-LeftArrow"   = "moveBackwardAndModifySelection:";
     "Shift-RightArrow"  = "moveForwardAndModifySelection:";
 
-    "Alternate-Shift-LeftArrow"   = "moveWordBackwardAndModifySelection:";
-    "Alternate-Shift-RightArrow"  = "moveWordForwardAndModifySelection:";
+    //"Alternate-Shift-UpArrow"	    = ("moveUpAndModifySelection:", "moveWordBackwardAndModifySelection:");
+    //"Alternate-Shift-DownArrow"	    = ("moveDownAndModifySelection:", "moveWordForwardAndModifySelection:");
+    "Alternate-Shift-LeftArrow"	    = "moveWordBackwardAndModifySelection:";
+    "Alternate-Shift-RightArrow"    = "moveWordForwardAndModifySelection:";
+
+    //"Control-Alternate-UpArrow" = ("pageUp:", "moveWordBackward:");
+    //"Control-Alternate-DownArrow" = ("pageDown:", "moveWordForward:");
 
     "Delete"		= "deleteForward:";
     "Home"		= "moveToBeginningOfParagraph:";
     "Control-Home"	= "moveToBeginningOfDocument:";
-    /*"Shift-Home"	= "moveToBeginningOfParagraphAndModifySelection:"; */
+    //"Shift-Home"	= "moveToBeginningOfParagraphAndModifySelection:";
     "End"		= "moveToEndOfParagraph:";
     "Control-End"	= "moveToEndOfDocument:";
-    /*"Shift-End"	= "moveToEndOfParagraphAndModifySelection:"; */
+    //"Shift-End"		= "moveToEndOfParagraphAndModifySelection:";
     "PageUp"		= "pageUp:";
     "PageDown"		= "pageDown:";
 
@@ -68,8 +75,8 @@
     "Control-e"	    = "moveToEndOfLine:";
     "Control-f"	    = "moveRight:";
     "Control-h"	    = "deleteBackward:";
-    /*"Control-l"   = "centerSelectionInVisibleArea:"; */
-    /*"Control-k"   = "deleteToEndOfLine:"; */
+    //"Control-l"	    = "centerSelectionInVisibleArea:";
+    //"Control-k"	    = "deleteToEndOfLine:";
     "Control-n"	    = "moveDown:";
     "Control-p"	    = "moveUp:";
     "Control-t"	    = "transpose:";
@@ -79,5 +86,5 @@
 			    ">" = "moveToEndOfDocument:";
 			    "<" = "moveToBeginningOfDocument:";
 			};
-    /*"Control-y"   = "yank:"; */
+    //"Control-y"	    = "yank:";
 }
