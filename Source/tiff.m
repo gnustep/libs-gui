@@ -266,6 +266,7 @@ NSTiffInfo *
 NSTiffGetInfo(int imageNumber, TIFF* image)
 {
   NSTiffInfo* info;
+  u_short *sample_info = NULL;
 
   if (image == NULL)
     return NULL;
@@ -283,7 +284,9 @@ NSTiffGetInfo(int imageNumber, TIFF* image)
   TIFFGetField(image, TIFFTAG_COMPRESSION, &info->compression);
   TIFFGetField(image, TIFFTAG_JPEGQUALITY, &info->quality);
   TIFFGetField(image, TIFFTAG_SUBFILETYPE, &info->subfileType);
-  TIFFGetField(image, TIFFTAG_EXTRASAMPLES, &info->extraSamples);
+  TIFFGetField(image, TIFFTAG_EXTRASAMPLES, &info->extraSamples, &sample_info);
+  if (info->extraSamples == EXTRASAMPLE_ASSOCALPHA && sample_info)
+    info->extraSamples = sample_info[0];
 
   /* If the following tags aren't present then use the TIFF defaults. */
   TIFFGetFieldDefaulted(image, TIFFTAG_BITSPERSAMPLE, &info->bitsPerSample);

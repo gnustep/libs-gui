@@ -1,3 +1,8 @@
+2000-04-16  Adam Fedor  <fedor@gnu.org>
+
+	* Source/tiff.m (NSTiffGetInfo): Getting alpha info requires
+	two parameters!
+
 2000-04-14  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSSliderCell.m: Fix stupid mistake in last mod.
