@@ -3,6 +3,7 @@
 	* Source/NSWorkspace.m: Add support for generic application icon.
 	Reduce private method name pollution a little.
 	* Images/common_UnknownApplication.tiff: copied from WM ...
+	* Images/common_UnknownTool.tiff: similar image for unix cmd-line tools.
 
 2003-05-05  Michael Hanni   <michael@deviant-behavior.com>
 

@@ -86,6 +86,7 @@ common_WMClose.tiff \
 common_WMCloseBroken.tiff \
 common_Unknown.tiff \
 common_UnknownApplication.tiff \
+common_UnknownTool.tiff \
 common_Folder.tiff \
 common_Root_PC.tiff \
 common_Root_SGI.tiff \

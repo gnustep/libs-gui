@@ -60,7 +60,8 @@ static NSImage	*folderImage = nil;
 static NSImage	*homeImage = nil;
 static NSImage	*multipleFiles = nil;
 static NSImage	*rootImage = nil;
-static NSImage	*unknownApp = nil;
+static NSImage	*unknownApplication = nil;
+static NSImage	*unknownTool = nil;
 
 
 static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
@@ -931,6 +932,31 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
       NSDebugLog(@"pathExtension is '%@'", pathExtension);
 
       image = [self _iconForExtension: pathExtension];
+      if (image == nil || image == [self unknownFiletypeImage])
+	{
+	  NSFileManager	*mgr;
+
+	  mgr = [NSFileManager defaultManager];
+	  if ([mgr isExecutableFileAtPath: fullPath] == YES)
+	    {
+	      NSDictionary	*attributes;
+	      NSString		*fileType;
+
+	      attributes = [mgr fileAttributesAtPath: fullPath
+					traverseLink: YES];
+	      fileType = [attributes objectForKey: NSFileType];
+	      if ([fileType isEqual: NSFileTypeRegular] == YES)
+		{
+		  if (unknownTool == nil)
+		    {
+		      unknownTool = RETAIN([self _getImageWithName:
+			@"UnknownTool.tiff" alternate:
+			@"common_UnknownTool.tiff"]);
+		    }
+		  image = unknownTool;
+		}
+	    }
+	}
     }
 
   if (image == nil)
@@ -1656,13 +1682,13 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	    || [ext isEqualToString: @"debug"] == YES
 	    || [ext isEqualToString: @"profile"] == YES)
 	    {
-	      if (unknownApp == nil)
+	      if (unknownApplication == nil)
 		{
-		  unknownApp = RETAIN([self _getImageWithName:
+		  unknownApplication = RETAIN([self _getImageWithName:
 		    @"UnknownApplication.tiff" alternate:
 		    @"common_UnknownApplication.tiff"]);
 		}
-	      icon = unknownApp;
+	      icon = unknownApplication;
 	    }
 	  else
 	    {
