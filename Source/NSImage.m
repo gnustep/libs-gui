@@ -916,12 +916,12 @@ static Class			cacheClass = 0;
 		{
 		  /*
 		   * If the image rep has transparencey and we are drawing
-		   * without a background (background is clear) then the
-		   * cache can't really be valid 'cos we might be drawing
-		   * transparency on top of anything.  So we invalidate
-		   * the cache by removing the background color information.
+		   * without an opaque background then the cache can't
+		   * really be valid 'cos we might be drawing transparency
+		   * on top of anything.  So we invalidate the cache by
+		   * removing the background color information.
 		   */
-		  if ([rep hasAlpha] && [validCache->bg isEqual: clearColor])
+		  if ([rep hasAlpha] && [validCache->bg alphaComponent] != 1.0)
 		    {
 		      DESTROY(validCache->bg);
 		    }

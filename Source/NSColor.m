@@ -49,7 +49,7 @@ NSString	*NSSystemColorsDidChangeNotification =
 
 // Class variables
 static BOOL gnustep_gui_ignores_alpha = YES;
-static NSColorList	*systemColors = nil;
+static NSColorList		*systemColors = nil;
 static NSMutableDictionary	*colorStrings = nil;
 
 //
@@ -659,7 +659,7 @@ static NSMutableDictionary	*colorStrings = nil;
    *	consisting of the three componets values in a quoted string.
    */
   if ([colorspace_name isEqualToString: NSCalibratedRGBColorSpace] &&
-	alpha_component == 0)
+	alpha_component == 1.0)
     return [NSString stringWithFormat: @"\"%f %f %f\"",
 	RGB_component.red, RGB_component.green, RGB_component.blue];
  
@@ -1005,7 +1005,7 @@ static NSMutableDictionary	*colorStrings = nil;
   return [NSColor colorWithCalibratedRed: red
 				   green: green
 				    blue: blue
-				   alpha: 0];
+				   alpha: 1.0];
 }
 
 - (NSColor*) colorWithAlphaComponent: (float)alpha
@@ -1168,6 +1168,7 @@ static NSMutableDictionary	*colorStrings = nil;
     {
       NSDictionary	*dict;
       NSString		*space;
+      NSString		*str;
       float		alpha;
 
       dict = [str propertyList];
@@ -1176,7 +1177,15 @@ static NSMutableDictionary	*colorStrings = nil;
       if ((space = [dict objectForKey: @"ColorSpace"]) == nil)
 	return nil;
 
-      alpha = [[dict objectForKey: @"Alpha"] floatValue];
+      str = [dict objectForKey: @"Alpha"];
+      if (str == nil || [str isEqualToString: @""])
+	{
+	  alpha = 1.0;
+	}
+      else
+	{
+	  alpha = [str floatValue];
+	}
 
       if ([space isEqual: NSCalibratedWhiteColorSpace])
 	{
@@ -1247,7 +1256,7 @@ static NSMutableDictionary	*colorStrings = nil;
       return [self colorWithCalibratedRed: r
 				    green: g
 				     blue: b
-				    alpha: 0];
+				    alpha: 1.0];
     }
   return nil;
 }
@@ -1273,7 +1282,7 @@ static NSMutableDictionary	*colorStrings = nil;
 }
 
 /*
- *	Go through all the names of ssystem colors - for each color where
+ *	Go through all the names of system colors - for each color where
  *	there is a value in the defaults database, see if the current
  *	istring value of the color differs from the old one.
  *	Where there is a difference, update the color strings dictionary 

@@ -1,5 +1,6 @@
 Wed Dec  1 14:55:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
+	* Source/NSColor.m: Fixed a few transparency bugs in system colors.
 	* Source/NSImage.m: Caching rewrite - using NSCachedImageRep - works
 	with xgps, but probably not xdps.  There are two global variables to
 	control this -
