@@ -252,6 +252,5 @@ clean: mostlyclean
 	rm -f *.ps
 
 distclean: clean
-	rm -f Makefile 
 
 maintainer-clean: distclean
