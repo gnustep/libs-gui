@@ -3915,7 +3915,7 @@ resetCursorRectsForView(NSView *theView)
   _backgroundColor = RETAIN([NSColor controlColor]);
   _representedFilename = @"Window";
   _miniaturizedTitle = @"Window";
-  _miniaturizedImage = nil;
+  _miniaturizedImage = RETAIN([NSApp applicationIconImage]);
   _windowTitle = @"Window";
   _lastPoint = NSZeroPoint;
   _windowLevel = NSNormalWindowLevel;

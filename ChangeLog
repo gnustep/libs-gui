@@ -1,5 +1,10 @@
 2002-06-08  Alexander Malmberg  <alexander@malmberg.org>
 
+        * Source/NSWindow (-_initDefaults): Make _miniaturizedImage
+        default to the application icon.
+
+2002-06-08  Alexander Malmberg  <alexander@malmberg.org>
+
 	* Source/GSServicesProvider.m (-doService:): Only try to
         write/read selection if the send/return type isn't nil.
         Fix calls to NSRunAlertPanel() so they don't do printf()
