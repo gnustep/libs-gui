@@ -1,3 +1,18 @@
+2004-01-25 16:16  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSStringDrawing.m: Big redesign.
+
+	(cache_match, cache_lookup_string, cache_lookup_attributed_string,
+	use_screen_fonts): New helper functions for caching layout
+	information.
+
+	(init_string_drawing, [NSAttributedString -drawAtPoint:],
+	[NSAttributedString -drawInRect:], [NSAttributedString -size],
+	[NSString -drawAtPoint:withAttributes:],
+	[NSString -drawInRect:withAttributes:],
+	[NSString -sizeWithAttributes:]): Reimplement using the cache system
+	and the new helper functions.
+
 2004-01-25  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWindow.m (-orderWindow:relativeTo:): In OrderOut case

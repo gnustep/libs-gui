@@ -3,7 +3,7 @@
    <abstract>Categories which add drawing capabilities to NSAttributedString
    and NSString.</abstract>
 
-   Copyright (C) 1999, 2003 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2003, 2004 Free Software Foundation, Inc.
 
    Author: Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: Mar 1999 - rewrite from scratch
@@ -31,6 +31,8 @@
 
 #include <math.h>
 
+#include <Foundation/NSException.h>
+
 #include "AppKit/NSAffineTransform.h"
 #include "AppKit/NSLayoutManager.h"
 #include "AppKit/NSTextContainer.h"
@@ -42,39 +44,327 @@
 TODO:
 
 these methods are _not_ reentrant. should they be?
-
-We could save time by trying to avoid changing the text storage and
-container size if the new rect and text are the same as the previous.
-This might be a common case if lots of calls to -size... and -draw...
-are paired.
 */
 
 
-#define LARGE_SIZE 8e6
+#define LARGE_SIZE 4e6
 /*
-8e6 is not as arbitrary as it seems. 8e6 is chosen because it's close to
-1<<23-1, the largest number that can be stored in a 32-bit float with an
-ulp of 0.5, which means things should round to the correct whole point.
+4e6 is chosen because it's close to (half of, for extra margin) 1<<23-1, the
+largest number that can be stored in a 32-bit float with an ulp of 0.5, which
+means things should round to the correct whole point.
 */
 
-static NSTextStorage *textStorage;
-static NSLayoutManager *layoutManager;
-static NSTextContainer *textContainer;
+
+#define NUM_CACHE_ENTRIES 16
+#define HIT_BOOST         2
+#define MISS_COST         1
+/*
+A size of 16 and these constants give a hit rate of 80%-90% for normal app
+use (based on real world statistics gathered with the help of some users
+from #GNUstep).
+*/
+
+
+typedef struct
+{
+  int used;
+  unsigned int string_hash;
+  int hasSize, useScreenFonts;
+
+  NSTextStorage *textStorage;
+  NSLayoutManager *layoutManager;
+  NSTextContainer *textContainer;
+
+  NSSize givenSize;
+  NSRect usedRect;
+} cache_t;
+
+
+static BOOL did_init;
+static cache_t cache[NUM_CACHE_ENTRIES];
+
+static NSTextStorage *scratchTextStorage;
+static NSLayoutManager *scratchLayoutManager;
+static NSTextContainer *scratchTextContainer;
+
+
+static int total, hits, misses, hash_hits;
+
+/* For collecting statistics. */
+//#define STATS
+
+#ifdef STATS
+static void NSStringDrawing_dump_stats(void)
+{
+#define P(x) printf("%15i %s\n", x, #x);
+  P(total)
+  P(hits)
+  P(misses)
+  P(hash_hits)
+#undef P
+  printf("%15.8f hit ratio\n", hits / (double)total);
+}
+#endif
+
 
 static void init_string_drawing(void)
 {
-  if (textStorage)
-    return;
+  int i;
+  NSTextStorage *textStorage;
+  NSLayoutManager *layoutManager;
+  NSTextContainer *textContainer;
 
-  textStorage = [[NSTextStorage alloc] init];
-  layoutManager = [[NSLayoutManager alloc] init];
-  [textStorage addLayoutManager: layoutManager];
-  [layoutManager release];
-  textContainer = [[NSTextContainer alloc]
-		    initWithContainerSize: NSMakeSize(10,10)];
-  [layoutManager addTextContainer: textContainer];
-  [textContainer release];
+  if (did_init)
+    return;
+  did_init = YES;
+
+#ifdef STATS
+  atexit(NSStringDrawing_dump_stats);
+#endif
+
+  for (i = 0; i < NUM_CACHE_ENTRIES + 1; i++)
+    {
+      textStorage = [[NSTextStorage alloc] init];
+      layoutManager = [[NSLayoutManager alloc] init];
+      [textStorage addLayoutManager: layoutManager];
+      [layoutManager release];
+      textContainer = [[NSTextContainer alloc]
+			initWithContainerSize: NSMakeSize(10, 10)];
+      [layoutManager addTextContainer: textContainer];
+      [textContainer release];
+
+      if (i < NUM_CACHE_ENTRIES)
+	{
+	  cache[i].textStorage = textStorage;
+	  cache[i].layoutManager = layoutManager;
+	  cache[i].textContainer = textContainer;
+	}
+      else
+	{
+	  scratchTextStorage = textStorage;
+	  scratchLayoutManager = layoutManager;
+	  scratchTextContainer = textContainer;
+	}
+    }
 }
+
+
+static int cache_match(int hasSize, NSSize size, int useScreenFonts, int *matched)
+{
+  int i, j;
+  cache_t *c;
+  int least_used;
+  int replace;
+  int orig_used;
+
+  unsigned int string_hash = [[scratchTextStorage string] hash];
+
+  total++;
+
+  *matched = 1;
+  replace = least_used = -1;
+
+  /*
+  A deterministic pattern for replacing cache entries can hit ugly worst
+  cases on certain matching use patterns (where the cache is full of old
+  unused entries, but the new entries keep replacing each other).
+
+  By starting at a random index, we avoid this kind of problem.
+  */
+  j = random() % NUM_CACHE_ENTRIES;
+  for (i = 0; i < NUM_CACHE_ENTRIES; i++, j++)
+    {
+      if (j == NUM_CACHE_ENTRIES)
+	j = 0;
+      c = cache + j;
+      if (least_used == -1 || c->used < least_used)
+	{
+	  least_used = c->used;
+	  replace = j;
+	}
+
+      if (!c->used)
+	continue;
+
+      orig_used = c->used;
+      if (c->used > MISS_COST)
+	c->used -= MISS_COST;
+      else
+	c->used = 1;
+
+      if (c->string_hash != string_hash
+	  || c->useScreenFonts != useScreenFonts)
+	continue;
+
+      hash_hits++;
+
+      if (![scratchTextStorage isEqualToAttributedString: c->textStorage])
+	continue;
+
+      /* String and attributes match. */
+      if (!c->hasSize && !hasSize)
+	{
+	  c->used = orig_used + HIT_BOOST;
+	  hits++;
+	  return j;
+	}
+
+      if (c->hasSize && hasSize && c->givenSize.width == size.width
+	  && c->givenSize.height == size.height)
+	{
+	  c->used = orig_used + HIT_BOOST;
+	  hits++;
+	  return j;
+	}
+
+      if (!c->hasSize && hasSize && size.width >= NSMaxX(c->usedRect)
+	  && size.height >= NSMaxY(c->usedRect))
+	{
+	  c->used = orig_used + HIT_BOOST;
+	  hits++;
+	  return j;
+	}
+    }
+
+  NSCAssert(replace != -1, @"Couldn't find a cache entry to replace.");
+
+  misses++;
+  *matched = 0;
+
+  c = cache + replace;
+  c->used = 1;
+  c->string_hash = string_hash;
+  c->hasSize = hasSize;
+  c->useScreenFonts = useScreenFonts;
+  c->givenSize = size;
+
+  {
+    id temp;
+
+#define SWAP(a, b) temp = a; a = b; b = temp;
+    SWAP(scratchTextStorage, c->textStorage)
+    SWAP(scratchLayoutManager, c->layoutManager)
+    SWAP(scratchTextContainer, c->textContainer)
+#undef SWAP
+  }
+
+  return replace;
+}
+
+
+
+static int cache_lookup_string(NSString *string, NSDictionary *attributes,
+	int hasSize, NSSize size, int useScreenFonts)
+{
+  cache_t *c;
+  int ci, hit;
+  NSTextStorage *textStorage;
+  NSLayoutManager *layoutManager;
+  NSTextContainer *textContainer;
+
+  if (!did_init)
+    init_string_drawing();
+
+
+  /*
+  This is a hack, but it's an efficient way of getting the layout manager
+  to just ditch all old information, and here, we don't want it to try to
+  be clever and cache or soft-invalidate anything since the new string has
+  nothing to do with the old one.
+
+  TODO: the layout manager should realize this by itself
+  */
+  [scratchLayoutManager setTextStorage: scratchTextStorage];
+
+  [scratchTextStorage beginEditing];
+  [scratchTextStorage replaceCharactersInRange: NSMakeRange(0, [scratchTextStorage length])
+			     withString: @""];
+  if ([string length])
+    {
+      [scratchTextStorage replaceCharactersInRange: NSMakeRange(0, 0)
+				 withString: string];
+      [scratchTextStorage setAttributes: attributes
+			   range: NSMakeRange(0, [string length])];
+    }
+  [scratchTextStorage endEditing];
+
+  ci = cache_match(hasSize, size, useScreenFonts, &hit);
+  if (hit)
+    return ci;
+
+  c = &cache[ci];
+
+  textStorage = c->textStorage;
+  layoutManager = c->layoutManager;
+  textContainer = c->textContainer;
+
+  if (hasSize)
+    [textContainer setContainerSize: NSMakeSize(size.width, LARGE_SIZE)];
+  else
+    [textContainer setContainerSize: NSMakeSize(LARGE_SIZE, LARGE_SIZE)];
+  [layoutManager setUsesScreenFonts: useScreenFonts];
+
+  c->usedRect = [layoutManager usedRectForTextContainer: textContainer];
+
+  return ci;
+}
+
+static int cache_lookup_attributed_string(NSAttributedString *string,
+	int hasSize, NSSize size, int useScreenFonts)
+{
+  cache_t *c;
+  int ci, hit;
+  NSTextStorage *textStorage;
+  NSLayoutManager *layoutManager;
+  NSTextContainer *textContainer;
+
+  if (!did_init)
+    init_string_drawing();
+
+  [scratchTextStorage replaceCharactersInRange: NSMakeRange(0, [scratchTextStorage length])
+			     withString: @""];
+  [scratchTextStorage replaceCharactersInRange: NSMakeRange(0, 0)
+		   withAttributedString: string];
+
+  ci = cache_match(hasSize, size, useScreenFonts, &hit);
+  if (hit)
+    return ci;
+
+  c = &cache[ci];
+
+  textStorage = c->textStorage;
+  layoutManager = c->layoutManager;
+  textContainer = c->textContainer;
+
+  if (hasSize)
+    [textContainer setContainerSize: NSMakeSize(size.width, LARGE_SIZE)];
+  else
+    [textContainer setContainerSize: NSMakeSize(LARGE_SIZE, LARGE_SIZE)];
+  [layoutManager setUsesScreenFonts: useScreenFonts];
+
+  c->usedRect = [layoutManager usedRectForTextContainer: textContainer];
+
+  return ci;
+}
+
+
+static int use_screen_fonts(void)
+{
+  NSGraphicsContext *ctxt = GSCurrentContext();
+  NSAffineTransform *ctm = GSCurrentCTM(ctxt);
+
+  if (ctm->matrix.m11 != 1.0 || ctm->matrix.m12 != 0.0 ||
+      ctm->matrix.m21 != 0.0 || fabs(ctm->matrix.m22) != 1.0)
+    {
+      return 0;
+    }
+  else
+    {
+      return 1;
+    }
+}
+
+
 
 /*
 This is an ugly hack to get text to display correctly in non-flipped views.
@@ -87,40 +377,24 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
 +(void) _setFontFlipHack: (BOOL)flip;
 @end
 
+
 @implementation NSAttributedString (NSStringDrawing)
 
 - (void) drawAtPoint: (NSPoint)point
 {
+  int ci;
+  cache_t *c;
+
   NSRange r;
   NSGraphicsContext *ctxt = GSCurrentContext();
-  NSAffineTransform *ctm = GSCurrentCTM(ctxt);
 
-  init_string_drawing();
+  ci = cache_lookup_attributed_string(self, 0, NSZeroSize, use_screen_fonts());
+  c = &cache[ci];
 
-  [textStorage replaceCharactersInRange: NSMakeRange(0, [textStorage length])
-			     withString: @""];
-
-  [textContainer setContainerSize: NSMakeSize(LARGE_SIZE, LARGE_SIZE)];
-
-  if (ctm->matrix.m11 != 1.0 || ctm->matrix.m12 != 0.0 ||
-      ctm->matrix.m21 != 0.0 || fabs(ctm->matrix.m22) != 1.0)
-    {
-      [layoutManager setUsesScreenFonts: NO];
-    }
-  else
-    {
-      [layoutManager setUsesScreenFonts: YES];
-    }
-
-  [textStorage replaceCharactersInRange: NSMakeRange(0, 0)
-		   withAttributedString: self];
-
-  r = NSMakeRange(0, [layoutManager numberOfGlyphs]);
+  r = NSMakeRange(0, [c->layoutManager numberOfGlyphs]);
 
   if (![[NSView focusView] isFlipped])
     {
-      NSRect usedRect;
-
       DPSscale(ctxt, 1, -1);
       point.y = -point.y;
 
@@ -128,17 +402,16 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
       Adjust point.y so the lower left corner of the used rect is at the
       point that was passed to us.
       */
-      usedRect = [layoutManager usedRectForTextContainer: textContainer];
-      point.y -= NSMaxY(usedRect);
+      point.y -= NSMaxY(c->usedRect);
 
       [NSFont _setFontFlipHack: YES];
     }
 
-  [layoutManager drawBackgroundForGlyphRange: r
-				     atPoint: point];
+  [c->layoutManager drawBackgroundForGlyphRange: r
+					atPoint: point];
 
-  [layoutManager drawGlyphsForGlyphRange: r
-				 atPoint: point];
+  [c->layoutManager drawGlyphsForGlyphRange: r
+				    atPoint: point];
 
   if (![[NSView focusView] isFlipped])
     {
@@ -149,38 +422,18 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
 
 - (void) drawInRect: (NSRect)rect
 {
+  int ci;
+  cache_t *c;
+
   NSRange r;
   BOOL need_clip;
-  NSRect used;
   NSGraphicsContext *ctxt = GSCurrentContext();
-  NSAffineTransform *ctm = GSCurrentCTM(ctxt);
 
-  init_string_drawing();
+  if (rect.size.width <= 0 || rect.size.height <= 0)
+    return;
 
-  [textStorage replaceCharactersInRange: NSMakeRange(0, [textStorage length])
-			     withString: @""];
-
-  /*
-  TODO: Use rect.size.heigth instead of LARGE_SIZE? Should make things faster,
-  since we'll only typeset what fits, but lines that used to fit partially
-  won't fit at all.
-  */
-  [textContainer setContainerSize: NSMakeSize(rect.size.width, LARGE_SIZE)];
-
-  if (ctm->matrix.m11 != 1.0 || ctm->matrix.m12 != 0.0 ||
-      ctm->matrix.m21 != 0.0 || fabs(ctm->matrix.m22) != 1.0)
-    {
-      [layoutManager setUsesScreenFonts: NO];
-    }
-  else
-    {
-      [layoutManager setUsesScreenFonts: YES];
-    }
-
-  [textStorage replaceCharactersInRange: NSMakeRange(0, 0)
-		   withAttributedString: self];
-
-  used = [layoutManager usedRectForTextContainer: textContainer];
+  ci = cache_lookup_attributed_string(self, 1, rect.size, use_screen_fonts());
+  c = &cache[ci];
 
   /*
   If the used rect fits completely in the rect we draw in, we save time
@@ -189,8 +442,9 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
   This isn't completely safe; the used rect isn't guaranteed to contain
   all parts of all glyphs.
   */
-  if (used.origin.x >= 0 && used.origin.y <= 0 &&
-      NSMaxX(used) <= rect.size.width && NSMaxY(used) <= rect.size.height)
+  if (c->usedRect.origin.x >= 0 && c->usedRect.origin.y <= 0
+      && NSMaxX(c->usedRect) <= rect.size.width
+      && NSMaxY(c->usedRect) <= rect.size.height)
     {
       need_clip = NO;
     }
@@ -202,9 +456,10 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
 		  rect.size.width, rect.size.height);
     }
 
-  r = [layoutManager
-	glyphRangeForBoundingRect: NSMakeRect(0, 0, rect.size.width, rect.size.height)
-		  inTextContainer: textContainer];
+  r = [c->layoutManager
+	glyphRangeForBoundingRect: NSMakeRect(0, 0, rect.size.width,
+					      rect.size.height)
+		  inTextContainer: c->textContainer];
 
   if (![[NSView focusView] isFlipped])
     {
@@ -213,11 +468,11 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
       [NSFont _setFontFlipHack: YES];
     }
 
-  [layoutManager drawBackgroundForGlyphRange: r
-				     atPoint: rect.origin];
+  [c->layoutManager drawBackgroundForGlyphRange: r
+					atPoint: rect.origin];
 
-  [layoutManager drawGlyphsForGlyphRange: r
-				 atPoint: rect.origin];
+  [c->layoutManager drawGlyphsForGlyphRange: r
+				    atPoint: rect.origin];
 
   [NSFont _setFontFlipHack: NO];
   if (![[NSView focusView] isFlipped])
@@ -234,24 +489,14 @@ glyphs to be drawn upside-down, so we need to tell NSFont to flip the fonts.
 
 - (NSSize) size
 {
-  NSRange r;
-  NSRect rect;
-
-  init_string_drawing();
-
-  [textStorage replaceCharactersInRange: NSMakeRange(0, [textStorage length])
-			     withString: @""];
-
-  [textContainer setContainerSize: NSMakeSize(LARGE_SIZE, LARGE_SIZE)];
-  [layoutManager setUsesScreenFonts: YES];
-
-  [textStorage replaceCharactersInRange: NSMakeRange(0, 0)
-		   withAttributedString: self];
-
-  r = NSMakeRange(0, [layoutManager numberOfGlyphs]);
-
-  rect = [layoutManager usedRectForTextContainer: textContainer];
-  return rect.size;
+  int ci;
+  ci = cache_lookup_attributed_string(self, 0, NSZeroSize, 1);
+  /*
+  An argument could be made for using NSMaxX/NSMaxY here, but that fails
+  horribly on right-aligned strings. For now, we handle that case in a
+  useful way and ignore indents.
+  */
+  return cache[ci].usedRect.size;
 }
 
 @end
@@ -264,37 +509,121 @@ NSAttributedString to do the job.
 
 - (void) drawAtPoint: (NSPoint)point withAttributes: (NSDictionary *)attrs
 {
-  NSAttributedString	*a;
+  int ci;
+  cache_t *c;
 
-  a = [[NSAttributedString allocWithZone: NSDefaultMallocZone()]
-			  initWithString: self
-			      attributes: attrs];
-  [a drawAtPoint: point];
-  RELEASE(a);
+  NSRange r;
+  NSGraphicsContext *ctxt = GSCurrentContext();
+
+  ci = cache_lookup_string(self, attrs, 0, NSZeroSize, use_screen_fonts());
+  c = &cache[ci];
+
+  r = NSMakeRange(0, [c->layoutManager numberOfGlyphs]);
+
+  if (![[NSView focusView] isFlipped])
+    {
+      DPSscale(ctxt, 1, -1);
+      point.y = -point.y;
+
+      /*
+      Adjust point.y so the lower left corner of the used rect is at the
+      point that was passed to us.
+      */
+      point.y -= NSMaxY(c->usedRect);
+
+      [NSFont _setFontFlipHack: YES];
+    }
+
+  [c->layoutManager drawBackgroundForGlyphRange: r
+					atPoint: point];
+
+  [c->layoutManager drawGlyphsForGlyphRange: r
+				    atPoint: point];
+
+  if (![[NSView focusView] isFlipped])
+    {
+      DPSscale(ctxt, 1, -1);
+      [NSFont _setFontFlipHack: NO];
+    }
 }
 
 - (void) drawInRect: (NSRect)rect withAttributes: (NSDictionary *)attrs
 {
-  NSAttributedString	*a;
+  int ci;
+  cache_t *c;
 
-  a = [[NSAttributedString allocWithZone: NSDefaultMallocZone()]
-			  initWithString: self
-			      attributes: attrs];
-  [a drawInRect: rect];
-  RELEASE(a);
+  NSRange r;
+  BOOL need_clip;
+  NSGraphicsContext *ctxt = GSCurrentContext();
+
+  if (rect.size.width <= 0 || rect.size.height <= 0)
+    return;
+
+  ci = cache_lookup_string(self, attrs, 1, rect.size, use_screen_fonts());
+  c = &cache[ci];
+
+  /*
+  If the used rect fits completely in the rect we draw in, we save time
+  by avoiding the DPSrectclip (and the state save and restore).
+
+  This isn't completely safe; the used rect isn't guaranteed to contain
+  all parts of all glyphs.
+  */
+  if (c->usedRect.origin.x >= 0 && c->usedRect.origin.y <= 0
+      && NSMaxX(c->usedRect) <= rect.size.width
+      && NSMaxY(c->usedRect) <= rect.size.height)
+    {
+      need_clip = NO;
+    }
+  else
+    {
+      need_clip = YES;
+      DPSgsave(ctxt);
+      DPSrectclip(ctxt, rect.origin.x, rect.origin.y,
+		  rect.size.width, rect.size.height);
+    }
+
+  r = [c->layoutManager
+	glyphRangeForBoundingRect: NSMakeRect(0, 0, rect.size.width,
+					      rect.size.height)
+		  inTextContainer: c->textContainer];
+
+  if (![[NSView focusView] isFlipped])
+    {
+      DPSscale(ctxt, 1, -1);
+      rect.origin.y = -NSMaxY(rect);
+      [NSFont _setFontFlipHack: YES];
+    }
+
+  [c->layoutManager drawBackgroundForGlyphRange: r
+					atPoint: rect.origin];
+
+  [c->layoutManager drawGlyphsForGlyphRange: r
+				    atPoint: rect.origin];
+
+  [NSFont _setFontFlipHack: NO];
+  if (![[NSView focusView] isFlipped])
+    {
+      DPSscale(ctxt, 1, -1);
+    }
+
+  if (need_clip)
+    {
+      /* Restore the original clipping path. */
+      DPSgrestore(ctxt);
+    }
 }
 
 - (NSSize) sizeWithAttributes: (NSDictionary *)attrs
 {
-  NSAttributedString	*a;
-  NSSize		s;
-
-  a = [[NSAttributedString allocWithZone: NSDefaultMallocZone()]
-			  initWithString: self
-			      attributes: attrs];
-  s = [a size];
-  RELEASE(a);
-  return s;
+  int ci;
+  ci = cache_lookup_string(self, attrs, 0, NSZeroSize, 1);
+  /*
+  An argument could be made for using NSMaxX/NSMaxY here, but that fails
+  horribly on right-aligned strings (which may be the right thing). For now,
+  we handle that case in a useful way and ignore indents.
+  */
+  return cache[ci].usedRect.size;
 }
 
 @end
