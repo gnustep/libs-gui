@@ -219,8 +219,7 @@
   [decoder decodeValuesOfObjCTypes: "ffffi",
     &_minValue, &_maxValue, &_floatValue, &_altIncrementValue, &_isVertical];
   [decoder decodeValueOfObjCType: @encode(id) at: &_titleCell];
-
-  _knobCell = [NSCell new];
+  [decoder decodeValueOfObjCType: @encode(id) at: &_knobCell];
   return self;
 }
 
@@ -230,6 +229,7 @@
   [coder encodeValuesOfObjCTypes: "ffffi",
     &_minValue, &_maxValue, &_floatValue, &_altIncrementValue, &_isVertical];
   [coder encodeValueOfObjCType: @encode(id) at: &_titleCell];
+  [coder encodeValueOfObjCType: @encode(id) at: &_knobCell];
 }
 
 @end
