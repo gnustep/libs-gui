@@ -294,8 +294,24 @@ id _nsbuttonCellClass = nil;
 
 - (void) keyDown: (NSEvent*)theEvent
 {
-  if ([self performKeyEquivalent: theEvent] == NO)
-    [super keyDown: theEvent];
+  if ([self isEnabled])
+    {
+      NSString *keyDescription = [theEvent charactersIgnoringModifiers];
+      
+      // Handle SPACE or RETURN to perform a click
+      if (([keyDescription compare: @" "] == NSOrderedSame)
+	  || ([theEvent keyCode] == 0x0d))
+	{
+	  [self performClick: self];
+	  return;
+	}      
+
+      // TODO: Understand better, I don't think this should be here.
+      if ([self performKeyEquivalent: theEvent] == YES)
+	return;
+    }
+  
+  [super keyDown: theEvent];
 }
 
 //

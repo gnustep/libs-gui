@@ -825,15 +825,26 @@ static Class	cellClass;
 - (void) performClick: (id)sender
 {
   NSView	*cv;
+  NSRect   cvBounds;
+  NSWindow *cvWin;
 
   if (control_view)
     cv = control_view;
   else 
     cv = [NSView focusView];
 
-  NSLog(@"performClick:");
+  cvBounds = [cv bounds];
+  cvWin = [cv window];
+  
+  [self highlight: YES withFrame: cvBounds inView: cv];
+  [cvWin flushWindow];
+  // Wait approx 1/5 seconds
+  [[NSRunLoop currentRunLoop] 
+    runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.2]];
 
-  [self highlight: YES withFrame: [cv frame] inView: cv];
+  [self highlight: NO withFrame: cvBounds inView: cv];
+  [cvWin flushWindow];
+
   if ([self action])
     {
       NS_DURING
@@ -842,14 +853,11 @@ static Class	cellClass;
 	}
       NS_HANDLER
 	{
-	  [self highlight: NO withFrame: [cv frame] inView: cv];
           [localException raise];
 	}
       NS_ENDHANDLER
     }
-  [self highlight: NO withFrame: [cv frame] inView: cv];
 }
-
 /*
  * Assigning a Tag
  */

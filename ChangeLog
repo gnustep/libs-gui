@@ -1,3 +1,11 @@
+Sat Oct  9  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+	
+	* Source/NSButton.m ([-keyDown:]): Perform a click if  
+	the key is SPACE or ENTER. 
+	* Source/NSCell.m ([-performClick:]): Completely rewritten.
+	* Source/NSView.m ([-previousValidKeyView]),
+ 	([-nextValidKeyView]): fix to avoid an infinite loop.
+
 1999-10-09    <fedor@gnu.org>
 
 	* Model/GMAppKit.m ([NSPopUpButton -initWithModelUnarchiver:]): 

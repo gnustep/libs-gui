@@ -2090,7 +2090,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   theView = _nextKeyView;
   while (1)
     {
-      if ([theView acceptsFirstResponder] || (theView == nil))
+      if ([theView acceptsFirstResponder] || (theView == nil) 
+	  || (theView == self))
 	return theView;
       
       theView = [theView nextKeyView];
@@ -2122,7 +2123,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   theView = _previousKeyView;
   while (1)
     {
-      if ([theView acceptsFirstResponder] || (theView == nil))
+      if ([theView acceptsFirstResponder] || (theView == nil) 
+	  || (theView == self))
 	return theView;
       
       theView = [theView previousKeyView];
