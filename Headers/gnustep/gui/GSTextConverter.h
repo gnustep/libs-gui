@@ -34,8 +34,13 @@
 #include <Foundation/NSAttributedString.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSData.h>
+#include <AppKit/NSFileWrapper.h>
 
-@class NSFileWrapper;
+
+@protocol GSTextConverter
++ (Class) classForFormat: (NSString*)format 
+		producer: (BOOL)producer;
+@end
 
 @protocol GSTextProducer
 + (NSData*) produceDataFrom: (NSAttributedString*) aText
