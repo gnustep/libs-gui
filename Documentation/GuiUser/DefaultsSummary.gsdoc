@@ -136,6 +136,14 @@
           is meant to make things friendlier for slow computers.
           </p>
 	  </desc>
+	  <term>GSUseFreedesktopThumbnails</term>
+	  <desc>
+          <p>
+          A boolean value, <code>NO</code> by default.  When the
+          feature is on, thumbnail files according to the Freedesktop
+	  specification are used in [NSWorkspace iconForFile:] when available.
+          </p>
+	  </desc>
 	  <term>GSLogWorkspaceTimeout</term>
 	  <desc>
           <p>
