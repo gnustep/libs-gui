@@ -1,7 +1,8 @@
 2003-06-27  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSPasteboard.m: Documented all methods, fixed minor bugs
-	writign fiels to pastebaords, implemented ([+typesFilterableTo:])
+	writing fiels to pastebaords, implemented ([+typesFilterableTo:])
+	wrote (partial implementation ...) the unimplemented filters stuff.
 
 2003-06-26  Ludovic Marcotte <ludovic@Sophos.ca>
 

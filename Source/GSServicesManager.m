@@ -1312,16 +1312,8 @@ GSContactApplication(NSString *appName, NSString *port, NSDate *expire)
   return app;
 }
 
-/**
- * <p>Given the name of a serviceItem, and some data in a pasteboard
- * this function sends the data to the service provider (launching
- * another application if necessary) and retrieves the result of
- * the service in the pastebaord.
- * </p>
- * Returns YES on success, NO otherwise.
- */
 BOOL
-NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
+GSPerformService(NSString *serviceItem, NSPasteboard *pboard, BOOL isFilter)
 {
   NSDictionary		*service;
   NSString		*port;
@@ -1335,7 +1327,14 @@ NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
   NSString		*userData;
   NSString		*error = nil;
 
-  service = [[manager menuServices] objectForKey: serviceItem]; 
+  if (isFilter == YES)
+    {
+      service = [[manager filters] objectForKey: serviceItem]; 
+    }
+  else
+    {
+      service = [[manager menuServices] objectForKey: serviceItem]; 
+    }
   if (service == nil)
     {
       NSRunAlertPanel(nil,
@@ -1415,6 +1414,20 @@ NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
     }
 
   return YES;
+}
+
+/**
+ * <p>Given the name of a serviceItem, and some data in a pasteboard
+ * this function sends the data to the service provider (launching
+ * another application if necessary) and retrieves the result of
+ * the service in the pastebaord.
+ * </p>
+ * Returns YES on success, NO otherwise.
+ */
+BOOL
+NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
+{
+  return GSPerformService(serviceItem, pboard, NO);
 }
 
 /**

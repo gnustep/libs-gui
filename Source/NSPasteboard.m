@@ -70,6 +70,37 @@
 
 @implementation	FilteredPasteboard
 /**
+ * Find a filter specification to use.
+ */
++ (NSString*) _filterForType: (NSString*)type fromTypes: (NSArray*)types
+{
+  NSDictionary	*filters = [[GSServicesManager manager] filters];
+  NSEnumerator	*enumerator = [filters keyEnumerator];
+  NSString	*key;
+
+  while ((key = [enumerator nextObject]) != nil)
+    {
+      NSDictionary	*info = [filters objectForKey: key];
+      NSArray		*returnTypes = [info objectForKey: @"NSReturnTypes"];
+
+      if ([returnTypes containsObject: type] == YES)
+	{
+	  NSArray	*sendTypes = [info objectForKey: @"NSSendTypes"];
+	  unsigned 	i;
+
+	  for (i = 0; i < [types count]; i++)
+	    {
+	      if ([sendTypes containsObject: [types objectAtIndex: i]] == YES)
+		{
+		  return key;
+		}
+	    }
+	}
+    }
+  return nil;
+}
+
+/**
  * Given an array of types, produce an array of all the types we can
  * make from that using a single filter.
  */
@@ -116,12 +147,76 @@
 - (void) pasteboard: (NSPasteboard*)sender
  provideDataForType: (NSString*)type
 {
+  NSDictionary	*info;
+  NSString	*filterName = nil;
+  NSString	*fromType = nil;
+  NSString	*mechanism;
+
+  NSAssert(sender == self, NSInvalidArgumentException);
+
   /*
    * If the requested type is the same as one of the original types,
    * no filtering is required ... and we can just write what we have.
    */
   if ([originalTypes containsObject: type] == YES)
     {
+      info = [NSDictionary dictionaryWithObjectsAndKeys:
+	@"NSIdentity", @"NSInputMechanism",
+        nil];
+      filterName = nil;
+    }
+  else
+    {
+      NSDictionary	*filters;
+      NSEnumerator	*enumerator;
+
+      /*
+       * Locate the filter information needed, including the type we are
+       * converting from and the name of the filter to use.
+       */
+      filters = [[GSServicesManager manager] filters];
+      enumerator = [filters keyEnumerator];
+      while (fromType == nil && (filterName = [enumerator nextObject]) != nil)
+	{
+	  NSArray	*returnTypes;
+
+	  info = [filters objectForKey: filterName];
+	  returnTypes = [info objectForKey: @"NSReturnTypes"];
+
+	  if ([returnTypes containsObject: type] == YES)
+	    {
+	      NSArray	*sendTypes = [info objectForKey: @"NSSendTypes"];
+	      unsigned 	i;
+
+	      for (i = 0; i < [types count]; i++)
+		{
+		  fromType = [types objectAtIndex: i];
+		  if ([sendTypes containsObject: fromType] == YES)
+		    {
+		      break;
+		    }
+		  fromType = nil;
+		}
+	    }
+	}
+    }
+
+  mechanism = [info objectForKey: @"NSInputMechanism"];
+
+  if ([mechanism isEqualToString: @"NSUnixStdio"] == YES)
+    {
+// FIXME
+    }
+  else if ([mechanism isEqualToString: @"NSMapFile"] == YES)
+    {
+// FIXME
+    }
+  else if ([mechanism isEqualToString: @"NSIdentity"] == YES)
+    {
+      /*
+       * An 'identity' filter simply places the required data on the
+       * pasteboard.
+       */
       if (data != nil)
 	{
 	  [sender setData: data forType: type];
@@ -139,7 +234,36 @@
     }
   else
     {
-// FIXME
+      extern BOOL 	GSPerformService(NSString*, NSPasteboard*, BOOL);
+      NSPasteboard	*tmp;
+
+      /*
+       * Put data onto a pasteboard that can be used by the service provider.
+       */
+      if (data != nil)
+	{
+	  tmp = [NSPasteboard pasteboardWithUniqueName];
+	  [tmp setData: data forType: fromType];
+	}
+      else if (file != nil)
+	{
+	  tmp = [NSPasteboard pasteboardWithUniqueName];
+	  [tmp writeFileContents: file];
+	}
+      else
+	{
+	  tmp = pboard;		// Already in a pasteboard.
+	}
+
+      /*
+       * Now get the service provider to do the job.
+       */
+      GSPerformService(filterName, tmp, YES)
+
+      /*
+       * Finally, make it available.
+       */
+      [sender setData: [tmp dataForType: type] forType: type];
     }
 }
 
