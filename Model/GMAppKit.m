@@ -368,10 +368,6 @@ void __dummy_GMAppKit_functionForLinking() {}
     interval = [unarchiver decodeFloatWithName:@"interval"];
     [self setPeriodicDelay:delay interval:interval];
 
-    obj = [unarchiver decodeStringWithName:@"title"];
-    if (obj) [self setTitle:obj];
-    obj = [unarchiver decodeStringWithName:@"alternateTitle"];
-    if (obj) [self setAlternateTitle:obj];
     obj = [unarchiver decodeObjectWithName:@"alternateImage"];
     [self setAlternateImage:obj];
     [self setImagePosition:[unarchiver decodeIntWithName:@"imagePosition"]];
@@ -381,6 +377,10 @@ void __dummy_GMAppKit_functionForLinking() {}
     [self setKeyEquivalentModifierMask:[unarchiver decodeIntWithName:@"keyEquivalentModifierMask"]];
     [self setHighlightsBy:[unarchiver decodeIntWithName:@"highlightsBy"]];
     [self setShowsStateBy:[unarchiver decodeIntWithName:@"showsStateBy"]];
+    obj = [unarchiver decodeStringWithName:@"title"];
+    if (obj) [self setTitle:obj];
+    obj = [unarchiver decodeStringWithName:@"alternateTitle"];
+    if (obj) [self setAlternateTitle:obj];
     // }
 
     return self;
