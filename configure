@@ -948,8 +948,8 @@ LDFLAGS="$save_ldf"
 #--------------------------------------------------------------------
 # Record the version
 #--------------------------------------------------------------------
-echo $ac_n "checking for version of gnustep-gui we are compiling""... $ac_c" 1>&6
-echo "configure:953: checking for version of gnustep-gui we are compiling" >&5
+echo $ac_n "checking for the version of gnustep-gui we are compiling""... $ac_c" 1>&6
+echo "configure:953: checking for the version of gnustep-gui we are compiling" >&5
 if test -f "Version"; then
   . ./Version
 fi

@@ -80,7 +80,7 @@ LDFLAGS="$save_ldf"
 #--------------------------------------------------------------------
 # Record the version
 #--------------------------------------------------------------------
-AC_MSG_CHECKING(for version of gnustep-gui we are compiling)
+AC_MSG_CHECKING(for the version of gnustep-gui we are compiling)
 if test -f "Version"; then
   . ./Version
 fi
