@@ -72,17 +72,17 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 
 - (void) _loadPickers
 {
-  NSArray *paths;
-  NSString *path;
-  NSEnumerator *pathEnumerator;
-  NSArray *bundles;
-  NSEnumerator *bundleEnumerator;
-  NSString *bundleName;
+  NSArray	*paths;
+  NSString	*path;
+  NSEnumerator	*pathEnumerator;
+  NSArray	*bundles;
+  NSEnumerator	*bundleEnumerator;
+  NSString	*bundleName;
 
   _pickers = [NSMutableArray new];
 
   paths = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
-                                              NSAllDomainsMask, YES);
+    NSAllDomainsMask, YES);
 
   pathEnumerator = [paths objectEnumerator];
   while ((path = [pathEnumerator nextObject]))
@@ -92,8 +92,10 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 
       bundleEnumerator = [bundles objectEnumerator];
       while ((bundleName = [bundleEnumerator nextObject]))
-        [self _loadPickerAtPath:
+	{
+	  [self _loadPickerAtPath:
             [path stringByAppendingPathComponent: bundleName]];
+	}
     }
 
   paths = [[NSBundle mainBundle] pathsForResourcesOfType: @"bundle"
@@ -101,14 +103,16 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 
   pathEnumerator = [paths objectEnumerator];
   while ((path = [pathEnumerator nextObject]))
-    [self _loadPickerAtPath: path];
+    {
+      [self _loadPickerAtPath: path];
+    }
 }
 
 - (void) _loadPickerAtPath: (NSString *)path
 {
-  NSBundle *bundle;
-  Class pickerClass;
-  NSColorPicker *picker;
+  NSBundle	*bundle;
+  Class		pickerClass;
+  NSColorPicker	*picker;
 
   bundle = [NSBundle bundleWithPath: path];
   if (bundle && (pickerClass = [bundle principalClass]))
@@ -121,7 +125,9 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
           [_pickers addObject: picker];
         }
       else
-        NSLog(@"%@ does not contain a valid color picker.", path);
+	{
+	  NSLog(@"%@ does not contain a valid color picker.", path);
+	}
     }
 }
 
@@ -341,22 +347,19 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 
 @implementation NSColorPanel
 
-//
-// Class methods
-//
-+ (void)initialize
+/*
+ * Class methods
+ */
++ (void) initialize
 {
   if (self == [NSColorPanel class])
     {
       // Initial version
-      [self setVersion:1];
+      [self setVersion: 1];
       _gs_gui_color_panel_lock = [NSLock new];
     }
 }
 
-//
-// Creating the NSColorPanel 
-//
 + (NSColorPanel *)sharedColorPanel
 {
   if (_gs_gui_color_panel == nil)
@@ -364,7 +367,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
       [_gs_gui_color_panel_lock lock];
       if (!_gs_gui_color_panel)
         {
-	    _gs_gui_color_panel = [[self alloc] _initWithoutGModel];
+	  _gs_gui_color_panel = [[self alloc] _initWithoutGModel];
 /*
           GSAppKitPanelController *panelCtrl = [GSAppKitPanelController new];
 
@@ -374,9 +377,9 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
               [_gs_gui_color_panel _fixupMatrix];
 */ 
              [_gs_gui_color_panel _loadPickers];
-              [_gs_gui_color_panel _setupPickers];
-	      [_gs_gui_color_panel setMode: _gs_gui_color_picker_mode];
-              [_gs_gui_color_panel setShowsAlpha: ![NSColor ignoresAlpha]];
+             [_gs_gui_color_panel _setupPickers];
+	     [_gs_gui_color_panel setMode: _gs_gui_color_picker_mode];
+             [_gs_gui_color_panel setShowsAlpha: ![NSColor ignoresAlpha]];
 //            }
         }
       [_gs_gui_color_panel_lock unlock];
@@ -385,33 +388,27 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
   return _gs_gui_color_panel;
 }
 
-+ (BOOL)sharedColorPanelExists
++ (BOOL) sharedColorPanelExists
 {
   return (_gs_gui_color_panel == nil) ? NO : YES;
 }
 
-//
-// Setting the NSColorPanel 
-//
-+ (void)setPickerMask:(int)mask
++ (void) setPickerMask: (int)mask
 {
   _gs_gui_color_picker_mask = mask;
 }
 
-+ (void)setPickerMode:(int)mode
++ (void) setPickerMode: (int)mode
 {
   _gs_gui_color_picker_mode = mode;
 }
 
-//
-// Setting Color
-//
-+ (BOOL)dragColor:(NSColor *)aColor
-        withEvent:(NSEvent *)anEvent
-         fromView:(NSView *)sourceView
++ (BOOL) dragColor: (NSColor *)aColor
+	 withEvent: (NSEvent *)anEvent
+	  fromView: (NSView *)sourceView
 {
-  NSPasteboard *pb = [NSPasteboard pasteboardWithName: NSDragPboard];
-  NSImage *image = [NSImage imageNamed: @"common_ColorSwatch"];
+  NSPasteboard	*pb = [NSPasteboard pasteboardWithName: NSDragPboard];
+  NSImage	*image = [NSImage imageNamed: @"common_ColorSwatch"];
 
   [pb declareTypes: [NSArray arrayWithObjects: NSColorPboardType, nil]
              owner: aColor];
@@ -429,9 +426,9 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
   return YES;
 }
 
-//
-// Instance methods
-//
+/*
+ * Instance methods
+ */
 
 - (void) dealloc
 {
@@ -448,20 +445,17 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
   [super dealloc];
 }
 
-//
-// Setting the NSColorPanel 
-//
-- (NSView *)accessoryView
+- (NSView *) accessoryView
 {
   return _accessoryView;
 }
 
-- (BOOL)isContinuous
+- (BOOL) isContinuous
 {
   return _isContinuous;
 }
 
-- (int)mode
+- (int) mode
 {
   if (_currentPicker != nil)
     return [_currentPicker currentMode];
@@ -469,7 +463,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
     return 0;
 }
 
-- (void)setAccessoryView:(NSView *)aView
+- (void) setAccessoryView: (NSView *)aView
 {
   if (_accessoryView == aView)
     return;
@@ -480,17 +474,17 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
   [_splitView addSubview: _accessoryView];
 }
 
-- (void)setAction:(SEL)aSelector
+- (void) setAction: (SEL)aSelector
 {
   _action = aSelector;
 }
 
-- (void)setContinuous:(BOOL)flag
+- (void) setContinuous: (BOOL)flag
 {
   _isContinuous = flag;
 }
 
-- (void)setMode:(int)mode
+- (void) setMode: (int)mode
 {
   int i, count;
 
@@ -510,7 +504,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
     }
 }
 
-- (void)setShowsAlpha:(BOOL)flag
+- (void) setShowsAlpha: (BOOL)flag
 {
   if (flag == _showsAlpha)
     return;
@@ -542,12 +536,12 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
   [_topView setNeedsDisplay: YES];
 }
 
-- (void)setTarget:(id)anObject
+- (void) setTarget: (id)anObject
 {
   _target = anObject;
 }
 
-- (BOOL)showsAlpha
+- (BOOL) showsAlpha
 {
   return _showsAlpha;
 }
@@ -555,13 +549,13 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 //
 // Attaching a Color List
 //
-- (void)attachColorList:(NSColorList *)aColorList
+- (void) attachColorList: (NSColorList *)aColorList
 {
   [_pickers makeObjectsPerformSelector: @selector(attachColorList:)
                             withObject: aColorList];
 }
 
-- (void)detachColorList:(NSColorList *)aColorList
+- (void) detachColorList: (NSColorList *)aColorList
 {
   [_pickers makeObjectsPerformSelector: @selector(detachColorList:)
                             withObject: aColorList];
@@ -570,7 +564,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 //
 // Setting Color
 //
-- (float)alpha
+- (float) alpha
 {
   if ([self showsAlpha])
     return [_alphaSlider floatValue] / MAX_ALPHA_VALUE;
@@ -578,12 +572,12 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
     return 1.0;
 }
 
-- (NSColor *)color
+- (NSColor *) color
 {
   return [_colorWell color];
 }
 
-- (void)setColor:(NSColor *)aColor
+- (void) setColor: (NSColor *)aColor
 {
   [_colorWell setColor: aColor];
   [_currentPicker setColor: aColor];

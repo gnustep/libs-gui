@@ -5,6 +5,9 @@
 	1. colorwell should not deactivate when panel is closed.
 	2. setting color of an active well should set the color of the panel
 	(though it should not raise it).
+	* Source/NSColorPanel.m: Minor tidy.
+	* Images/common_ColorSwatch.tiff: Updated to same size as NeXTstep
+	color swatch.
 
 Sun Feb 18 13:35:55 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
