@@ -300,11 +300,9 @@ shouldRemoveMarker: (NSRulerMarker *)marker;
 - (NSRange) selectionRangeForProposedRange: (NSRange)proposedCharRange 
 			       granularity: (NSSelectionGranularity)gr;
 
-@end
+- (void) transpose: (id)sender;
 
-@interface NSTextView (NSSharing)
-
-// The methods in this category deal with settings that need to be
+// The methods in the following list deal with settings that need to be
 // shared by all the GNUTextViews of a single NSLayoutManager.  Many
 // of these methods are overrides of NSText or NSResponder methods.
 
@@ -359,6 +357,7 @@ shouldRemoveMarker: (NSRulerMarker *)marker;
 
 /*************************** NSText methods ***************************/
 
+/* Declared in the superclass
 - (BOOL) isSelectable;
 - (void) setSelectable:(BOOL)flag;
 - (BOOL) isEditable;
@@ -378,6 +377,7 @@ shouldRemoveMarker: (NSRulerMarker *)marker;
 - (NSColor *) backgroundColor;
 - (void) setDrawsBackground:(BOOL)flag;
 - (BOOL) drawsBackground;
+*/
 
 - (NSRange) selectedRange;
 - (void) setSelectedRange:(NSRange)charRange;
