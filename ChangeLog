@@ -1,3 +1,15 @@
+Wed Jun 26 12:43:17 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
+
+	* Source/NSButton.m (mouseDown:): Correct cell state changes for
+	the different cell types.
+	* Source/NSActionCell.m (setState:): Update the cell.
+	* Source/NSControl.m (drawCell:, drawCellInside:): Pass the
+	control's bounds not its frame.
+	* Source/NSTextFieldCell.m (initTextCell:): Make the default
+	background color be white.
+	* Source/NSWindow.m: Corrections to key and main window
+	notification and first responder handling.
+
 Fri Jun 21 11:09:50 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
 
 	* Headers/gnustep/gui/NSScreen.h: Add instance variables for

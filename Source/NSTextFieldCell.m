@@ -76,7 +76,7 @@
   [self setEditable:YES];
   [self setAlignment:NSLeftTextAlignment];
 	
-  background_color = [NSColor grayColor];
+  background_color = [NSColor whiteColor];
   text_color = [NSColor blackColor];
   return self;
 }

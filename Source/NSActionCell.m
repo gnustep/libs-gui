@@ -140,6 +140,17 @@
 }
 
 //
+// Setting the NSCell's State 
+//
+- (void)setState:(int)value
+{
+  [super setState: value];
+  if (control_view)
+    if ([control_view isKindOfClass: [NSControl class]])
+      [(NSControl *)control_view updateCell: self];
+}
+
+//
 // Manipulating NSActionCell Values 
 //
 - (double)doubleValue

@@ -174,7 +174,7 @@ NSString *NSWindowWillMoveNotification;
   // Initialize attributes and flags
   frame_view = nil;
   [self setContentView:[[NSView alloc] initWithFrame:frame]];
-  first_responder = self;
+  first_responder = nil;
   delegate = nil;
   window_num = 0;
   background_color = [NSColor grayColor];
@@ -350,21 +350,19 @@ NSString *NSWindowWillMoveNotification;
 //
 - (void)becomeKeyWindow
 {
-  // Can we become the key window
-  if (![self canBecomeKeyWindow]) return;
+  // We are the key window
+  is_key = YES;
 
-	// Yes well then do it
-  [self makeKeyWindow];
+  // Post notification
   [self windowDidBecomeKey:self];
 }
 
 - (void)becomeMainWindow
 {
-  // Can we become the main window
-  if (![self canBecomeMainWindow]) return;
+  // We are the main window
+  is_main = YES;
 
-	// Yes well then do it
-  [self makeMainWindow];
+  // Post notification
   [self windowDidBecomeMain:self];
 }
 
@@ -410,19 +408,8 @@ NSString *NSWindowWillMoveNotification;
 
 - (void)makeKeyAndOrderFront:sender
 {
-  id w;
-  NSApplication *theApp = [NSApplication sharedApplication];
-
-  // Can we become the key window?
-  if ([self canBecomeKeyWindow])
-    {
-      // Tell the current key window to resign
-      w = [theApp keyWindow];
-      [w resignKeyWindow];
-
-      // Now we should become the key window
-      [self becomeKeyWindow];
-    }
+  // Make ourself the key window
+  [self makeKeyWindow];
 
   // Now order to the front
   [self orderFront:sender];
@@ -430,12 +417,30 @@ NSString *NSWindowWillMoveNotification;
 
 - (void)makeKeyWindow
 {
-  is_key = YES;
+  NSApplication *theApp = [NSApplication sharedApplication];
+
+  // Can we become the key window
+  if (![self canBecomeKeyWindow]) return;
+
+  // Make the current key window resign
+  [[theApp keyWindow] resignKeyWindow];
+
+  // Make ourself become the key window
+  [self becomeKeyWindow];
 }
 
 - (void)makeMainWindow
 {
-  is_main = YES;
+  NSApplication *theApp = [NSApplication sharedApplication];
+
+  // Can we become the main window
+  if (![self canBecomeMainWindow]) return;
+
+  // Make the current main window resign
+  [[theApp mainWindow] resignMainWindow];
+
+  // Make ourself become the main window
+  [self becomeMainWindow];
 }
 
 - (void)orderBack:sender
@@ -465,11 +470,17 @@ NSString *NSWindowWillMoveNotification;
 - (void)resignKeyWindow
 {
   is_key = NO;
+
+  // Post notification
+  [self windowDidResignKey: self];
 }
 
 - (void)resignMainWindow
 {
   is_main = NO;
+
+  // Post notification
+  [self windowDidResignMain: self];
 }
 
 - (void)setHidesOnDeactivate:(BOOL)flag
@@ -754,20 +765,21 @@ NSString *NSWindowWillMoveNotification;
   if (first_responder == aResponder)
     return YES;
 
-	// If not a NSResponder then forget it
+  // If not a NSResponder then forget it
   if (![aResponder isKindOfClass:[NSResponder class]])
     return NO;
 
-	// Does it accept the first responder?
+  // Does it accept the first responder?
   if (![aResponder acceptsFirstResponder])
     return NO;
 
-	// Notify current first responder that it should resign
-	// If it says NO then no change
-  if (![first_responder resignFirstResponder])
+  // Notify current first responder that it should resign
+  // If it says NO then no change
+  // But make sure that there even is a first responder
+  if ((![first_responder resignFirstResponder]) && first_responder)
     return NO;
 
-	// Make it the first responder
+  // Make it the first responder
   first_responder = aResponder;
 
   // Notify it that it just became the first responder
@@ -788,7 +800,7 @@ NSString *NSWindowWillMoveNotification;
 
 - (NSEvent *)nextEventMatchingMask:(unsigned int)mask
 			 untilDate:(NSDate *)expiration
-inMode:(NSString *)mode
+			    inMode:(NSString *)mode
 			 dequeue:(BOOL)deqFlag
 {
   return nil;
@@ -1014,11 +1026,11 @@ inMode:(NSString *)mode
 //
 - (void)dragImage:(NSImage *)anImage
 	       at:(NSPoint)baseLocation
-offset:(NSSize)initialOffset
-	       event:(NSEvent *)event
-pasteboard:(NSPasteboard *)pboard
-	       source:sourceObject
-	       slideBack:(BOOL)slideFlag
+	   offset:(NSSize)initialOffset
+	    event:(NSEvent *)event
+       pasteboard:(NSPasteboard *)pboard
+	   source:sourceObject
+	slideBack:(BOOL)slideFlag
 {}
 
 - (void)registerForDraggedTypes:(NSArray *)newTypes
