@@ -28,11 +28,17 @@
 
 #include <AppKit/IMLoading.h>
 #include <AppKit/NSApplication.h>
+#include <AppKit/NSBox.h>
 #include <AppKit/NSBrowser.h>
 #include <AppKit/NSBrowserCell.h>
+#include <AppKit/NSButton.h>
+#include <AppKit/NSFont.h>
+#include <AppKit/NSImage.h>
+#include <AppKit/NSImageView.h>
 #include <AppKit/NSMatrix.h>
 #include <AppKit/NSSavePanel.h>
 #include <AppKit/NSScreen.h>
+#include <AppKit/NSTextField.h>
 #include <AppKit/NSWorkspace.h>
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
@@ -63,11 +69,11 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
     @"NSSavePanel -browser: createRowsForColumn: %d inMatrix:", column);
 
   // if array is empty, just return (nothing to display)
-  if ( ![files lastObject] )
+  if ([files lastObject] == nil)
     return;
 
   // sort list of files to display
-  if ( _delegateHasCompareFilter )
+  if (_delegateHasCompareFilter == YES)
     {
       int compare(id elem1, id elem2, void *context)
       {
@@ -82,12 +88,12 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
     files = [files sortedArrayUsingSelector: @selector(compare:)];
 
   count = [files count];
-  for ( i = 0; i < count; i++ )
+  for (i = 0; i < count; i++)
     {
       NSBrowserCell *cell;
 
-      //if ( i != 0 )
-	[matrix insertRow:i];
+      //if (i != 0)
+	[matrix insertRow: i];
 
       cell = [matrix cellAtRow: i column: 0];
       [cell setStringValue: [files objectAtIndex: i]];
@@ -97,10 +103,10 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 			isDirectory: &isDir
 			  isPackage: &isPackage];
 
-      if ( isPackage && !_treatsFilePackagesAsDirectories )
+      if (isPackage == YES && _treatsFilePackagesAsDirectories == NO)
 	isDir = NO;
 
-      if ( exists && isDir )
+      if (exists == YES && isDir == NO)
 	[cell setLeaf: NO];
       else
 	[cell setLeaf: YES];
@@ -117,11 +123,11 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 
   // iterate through the cells asking the delegate if each filename is valid
   // if it says no for any filename, the column is not valid
-  if ( _delegateHasFilenameFilter )
-    for ( i = 0; i < count; i++ )
+  if (_delegateHasFilenameFilter == YES)
+    for (i = 0; i < count; i++)
       {
-	if ( ![_delegate panel: self shouldShowFilename:
-	  [[cells objectAtIndex: i] stringValue]] )
+	if (![_delegate panel: self shouldShowFilename:
+	  [[cells objectAtIndex: i] stringValue]])
 	  return NO;
       }
 
@@ -153,18 +159,161 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 //
 @interface NSSavePanel (PrivateMethods)
 
+- (id) _initWithoutGModel;
 - (void) _setDefaults;
 - (void) _setDirectory: (NSString *)path updateBrowser: (BOOL)flag;
 
 @end /* NSSavePanel (PrivateMethods) */
 
 @implementation NSSavePanel (PrivateMethods)
+-(id) _initWithoutGModel
+{
+  [super initWithContentRect: NSMakeRect (100, 100, 280, 350)
+	 styleMask: 9 backing: 2 defer: YES];
+  [self setMinSize: NSMakeSize (280, 350)];
+  [[self contentView] setBounds: NSMakeRect (0, 0, 280, 350)];
+  
+  _topView = [[NSView alloc] initWithFrame: NSMakeRect (0, 60, 280, 290)];
+  [_topView setBounds:  NSMakeRect (0, 0, 280, 290)];
+  [[self contentView] addSubview: _topView];
+  [_topView release];
+  
+  _bottomView = [[NSView alloc] initWithFrame: NSMakeRect (0, 0, 280, 60)];
+  [_bottomView setBounds:  NSMakeRect (0, 0, 280, 60)];
+  [[self contentView] addSubview: _bottomView];
+  [_bottomView release];
+
+  _browser = [[NSBrowser alloc] initWithFrame: NSMakeRect (10, 10, 260, 196)];
+  [_browser setDelegate: self];
+  [_browser setMaxVisibleColumns: 2]; 
+  [_browser setHasHorizontalScroller: YES];
+  [_browser setAllowsMultipleSelection: NO];
+  [_browser setTarget: self];
+  [_browser setAction: @selector(_processCellSelection)];
+  [_topView addSubview: _browser];
+  [_browser release];
+
+  //  { 
+  //  NSForm *_formControl;
+  //  
+  //  _formControl = [NSForm new];
+  //  [_formControl addEntry: @"Name:"];
+  //  [_formControl setFrame: NSMakeRect (5, 38, 264, 22)];
+  //  [_formControl setEntryWidth: 264];
+  //  [_bottomView addSubview: _formControl];
+  //  _form = [_formControl cellAtIndex: 0];
+  //}
+  _prompt = [[NSTextField alloc] initWithFrame: NSMakeRect (5, 38, 38, 18)];
+  [_prompt setEnabled: NO];
+  [_prompt setBordered: NO];
+  [_prompt setBezeled: NO];
+  [_prompt setDrawsBackground: NO];
+  [_bottomView addSubview: _prompt];
+  [_prompt release];
+
+  // The gmodel says (44, 40, 226, 22), but that makes the upper border 
+  // clipped. 
+  _form = [[NSTextField alloc] initWithFrame: NSMakeRect (44, 38, 226, 22)];
+  [_form setEditable: YES];
+  [_form setBordered: NO];
+  [_form setBezeled: YES];
+  [_form setDrawsBackground: YES];
+  [_form setContinuous: NO];
+  [_bottomView addSubview: _form];
+  [_form release];
+
+  {
+    NSButton *button;
+
+    button = [[NSButton alloc] initWithFrame: NSMakeRect (18, 5, 28, 28)];
+    [button setBordered: YES];
+    [button setButtonType: NSMomentaryPushButton];
+    [button setImage:  [NSImage imageNamed: @"common_Home"]]; 
+    [button setImagePosition: NSImageOnly]; 
+    [button setTarget: self];
+    [button setAction: @selector(_setHomeDirectory)];
+    [_bottomView addSubview: button];
+    [button release];
+
+    button = [[NSButton alloc] initWithFrame: NSMakeRect (52, 5, 28, 28)];
+    [button setBordered: YES];
+    [button setButtonType: NSMomentaryPushButton];
+    [button setImage:  [NSImage imageNamed: @"common_Mount"]]; 
+    [button setImagePosition: NSImageOnly]; 
+    [button setTarget: self];
+    [button setAction: @selector(_mountMedia)];
+    [_bottomView addSubview: button];
+    [button release];
+
+    button = [[NSButton alloc] initWithFrame: NSMakeRect (86, 5, 28, 28)];
+    [button setBordered: YES];
+    [button setButtonType: NSMomentaryPushButton];
+    [button setImage:  [NSImage imageNamed: @"common_Unmount"]]; 
+    [button setImagePosition: NSImageOnly]; 
+    [button setTarget: self];
+    [button setAction: @selector(_unmountMedia)];
+    [_bottomView addSubview: button];
+    [button release];
+
+    button = [[NSButton alloc] initWithFrame: NSMakeRect (122, 5, 70, 28)];
+    [button setBordered: YES];
+    [button setButtonType: NSMomentaryPushButton];
+    [button setTitle:  @"Cancel"];
+    [button setImagePosition: NSNoImage]; 
+    [button setTarget: self];
+    [button setAction: @selector(cancel:)];
+    [_bottomView addSubview: button];
+    [button release];
+
+    button = [[NSButton alloc] initWithFrame: NSMakeRect (200, 5, 70, 28)];
+    [button setBordered: YES];
+    [button setButtonType: NSMomentaryPushButton];
+    [button setTitle:  @"Ok"];
+    [button setImagePosition: NSNoImage]; 
+    [button setTarget: self];
+    [button setAction: @selector(ok:)];
+    [_bottomView addSubview: button];
+    [button release];
+  }
+  {
+    NSImageView *imageView;
+
+    imageView
+      = [[NSImageView alloc] initWithFrame: NSMakeRect (8, 218, 64, 64)];
+    [imageView setImageFrameStyle: NSImageFrameNone];
+    [imageView setImage:
+      [[NSApplication sharedApplication] applicationIconImage]];
+    [_topView addSubview: imageView];
+    [imageView release];
+  }
+  _titleField
+    = [[NSTextField alloc] initWithFrame: NSMakeRect (80, 240, 224, 21)];
+  [_titleField setSelectable: NO];
+  [_titleField setEditable: NO];
+  [_titleField setDrawsBackground: NO];
+  [_titleField setBezeled: NO];
+  [_titleField setBordered: NO];
+  [_titleField setFont: [NSFont messageFontOfSize: 18]];
+  [_topView addSubview: _titleField];
+  [_titleField release];
+  { 
+    NSBox *bar;
+    bar = [[NSBox alloc] initWithFrame: NSMakeRect (0, 210, 310, 2)];
+    [bar setBorderType: NSGrooveBorder];
+    [bar setTitlePosition: NSNoTitle];
+    [_topView addSubview: bar];
+    [bar release];
+  }
+  return self;
+}
+
 
 - (void) _setDefaults
 {
   NSDebugLLog(@"NSSavePanel", @"NSSavePanel -_setDefaults");
   [self setDirectory: [[NSFileManager defaultManager] currentDirectoryPath]];
   [self setPrompt: @"Name:"];
+  [self setTitle: @"Save"];
   [self setRequiredFileType: @""];
   [self setTreatsFilePackagesAsDirectories: NO];
   [self setDelegate: nil];
@@ -180,16 +329,16 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
     @"NSSavePanel -_setDirectory: %@ updateBrowser:", path);
 
   // check that path exists, and if so save it
-  if ( standardizedPath
+  if (standardizedPath
     && [[NSFileManager defaultManager]
-	 fileExistsAtPath: path isDirectory: &isDir] && isDir )
+	 fileExistsAtPath: path isDirectory: &isDir] && isDir)
     {
-      if ( _lastValidPath )
+      if (_lastValidPath)
 	[_lastValidPath autorelease];
       _lastValidPath = [standardizedPath retain];
     }
   // set the path in the browser
-  if ( _browser && flag )
+  if (_browser && flag)
     [_browser setPath: _lastValidPath];
 }
 
@@ -202,7 +351,7 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
   [self _setDirectory:
     [_browser pathToColumn: [_browser lastColumn]] updateBrowser: NO];
 
-  if ( [selectedCell isLeaf] )
+  if ([selectedCell isLeaf])
     [_form setStringValue: [selectedCell stringValue]];
 }
 
@@ -234,18 +383,12 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 + (id) savePanel
 {
   NSDebugLLog(@"NSSavePanel", @"NSSavePanel +savePanel");
-  if ( !gnustep_gui_save_panel )
+  if (!gnustep_gui_save_panel)
     {
-      if ( ![GMModel loadIMFile:@"SavePanel" owner:NSApp] )
-	{
-	  NSRunAlertPanel(@"SavePanel Error",
-			  @"Cannot open the save panel model file",
-			  @"Ok",
-			  nil,
-			  nil);
-	}
+      // if (![GMModel loadIMFile:@"SavePanel" owner:NSApp])
+	[[NSSavePanel alloc] _initWithoutGModel];
     }
-  if ( gnustep_gui_save_panel )
+  if (gnustep_gui_save_panel)
     [gnustep_gui_save_panel _setDefaults];
 
   return gnustep_gui_save_panel;
@@ -255,7 +398,7 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 {
   NSDebugLLog(@"NSSavePanel", @"NSSavePanel +allocWithZone");
 
-  if ( !gnustep_gui_save_panel )
+  if (!gnustep_gui_save_panel)
     gnustep_gui_save_panel = (NSSavePanel *)NSAllocateObject(self, 0, z);
 
   return gnustep_gui_save_panel;
@@ -267,7 +410,10 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
   NSRect addedFrame, contentFrame, bottomFrame, topFrame;
   NSDebugLLog(@"NSSavePanel", @"NSSavePanel -setAccessoryView");
 
-  if ( _accessoryView )
+  if (aView == _accessoryView)
+    return;
+
+  if (_accessoryView != nil)
     {
       [_accessoryView removeFromSuperview];
       [self setContentSize: _oldContentFrame.size];
@@ -277,7 +423,7 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 
   _accessoryView = aView;
 
-  if ( _accessoryView )
+  if (_accessoryView != nil)
     {
       // save old values
       _oldContentFrame = [contentView frame];
@@ -388,9 +534,10 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 {
   NSDebugLLog(@"NSSavePanel", @"NSSavePanel -runModalForDirectory: filename:");
 
-  if ( !path || !filename )
+  if (path == nil || filename == nil)
     [NSException raise: NSInvalidArgumentException
-		 format: @"NSSavePanel runModalForDirectory: file: does not accept nil arguments."];
+		format: @"NSSavePanel runModalForDirectory:file: "
+      @"does not accept nil arguments."];
 
   // must display here so that...
   [self display];
@@ -403,7 +550,7 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 
 - (NSString *) directory
 {
-  if ( _browser )
+  if (_browser != nil)
     return [_browser pathToColumn:[_browser lastColumn]];
   else
     return _lastValidPath;
@@ -413,11 +560,11 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 {
   NSString *filename = [_form stringValue];
 
-  if ( [_requiredFileType isEqual: @""] )
+  if ([_requiredFileType isEqual: @""] == YES)
     return filename;
 
   // add filetype extension only if the filename does not include it already
-  if ( [[filename pathExtension] isEqual: _requiredFileType] )
+  if ([[filename pathExtension] isEqual: _requiredFileType] == YES)
     return filename;
   else
     return [filename stringByAppendingPathExtension:_requiredFileType];
@@ -431,8 +578,8 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 
 - (void) ok: (id)sender
 {
-  if ( _delegateHasValidNameFilter )
-    if ( ![_delegate panel:self isValidFilename: [self filename]] )
+  if (_delegateHasValidNameFilter)
+    if (![_delegate panel:self isValidFilename: [self filename]])
       return;
 
   [NSApp stopModalWithCode: NSOKButton];
@@ -446,7 +593,7 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 - (void) setDelegate: (id)aDelegate
 {
   NSDebugLLog(@"NSSavePanel", @"NSSavePanel -setDelegate");
-  if ( aDelegate == nil )
+  if (aDelegate == nil)
     {
       _delegate = nil;
       _delegateHasCompareFilter = NO;
@@ -455,12 +602,18 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
       return;
     }
 
-  _delegateHasCompareFilter = [aDelegate respondsToSelector: @selector(panel:compareFilename:with:caseSensitive:)] ? YES : NO;
-  _delegateHasFilenameFilter = [aDelegate respondsToSelector: @selector(panel:shouldShowFilename:)] ? YES : NO;
-  _delegateHasValidNameFilter = [aDelegate respondsToSelector: @selector(panel:isValidFilename:)] ? YES : NO;
+  _delegateHasCompareFilter
+    = [aDelegate respondsToSelector:
+      @selector(panel:compareFilename:with:caseSensitive:)] ? YES : NO;
+  _delegateHasFilenameFilter
+    = [aDelegate respondsToSelector:
+      @selector(panel:shouldShowFilename:)] ? YES : NO;
+  _delegateHasValidNameFilter
+    = [aDelegate respondsToSelector:
+      @selector(panel:isValidFilename:)] ? YES : NO;
 
-  if ( !_delegateHasCompareFilter && !_delegateHasFilenameFilter
-    && !_delegateHasValidNameFilter )
+  if (!_delegateHasCompareFilter && !_delegateHasFilenameFilter
+    && !_delegateHasValidNameFilter)
     [NSException raise:NSInvalidArgumentException
 		format: @"Delegate supports no save panel delegete methods."];
 
@@ -494,7 +647,9 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 
 - (NSArray *) directoryContentsAtPath: (NSString *)path showHidden: (BOOL)flag;
 - (NSArray *) hiddenFilesAtPath: (NSString *)path;
-- (BOOL) fileExistsAtPath: (NSString *)path isDirectory: (BOOL *)flag1 isPackage: (BOOL *)flag2;
+- (BOOL) fileExistsAtPath: (NSString *)path
+	      isDirectory: (BOOL *)flag1
+		isPackage: (BOOL *)flag2;
 
 @end
 
@@ -508,12 +663,12 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
   NSEnumerator *enumerator = [rawFiles objectEnumerator];
   NSString *filename;
 
-  if ( flag || !hiddenFiles )
+  if (flag || !hiddenFiles)
     return rawFiles;
 
-  while ( (filename = (NSString *)[enumerator nextObject]) )
+  while ((filename = (NSString *)[enumerator nextObject]))
     {
-      if ( [hiddenFiles indexOfObject: filename] == NSNotFound )
+      if ([hiddenFiles indexOfObject: filename] == NSNotFound)
 	[files addObject: filename];
     }
   return files;
@@ -530,9 +685,12 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 	      isDirectory: (BOOL *)isDir
 		isPackage: (BOOL *)isPackage
 {
-  NSArray *extArray = [NSArray arrayWithObjects: @"app", @"bundle", @"debug", @"profile", nil];
+  NSArray *extArray;
 
-  if ( [extArray indexOfObject: [path pathExtension]] == NSNotFound )
+  extArray = [NSArray arrayWithObjects:
+    @"app", @"bundle", @"debug", @"profile", nil];
+
+  if ([extArray indexOfObject: [path pathExtension]] == NSNotFound)
     *isPackage = NO;
   else
     *isPackage = YES;

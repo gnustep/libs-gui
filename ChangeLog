@@ -1,3 +1,15 @@
+Thu Sep 23  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSBrowserCell.m ([-drawInteriorWithFrame:inView:]): Clean
+ 	up and bug fix for cells without image.  Leaf cells (and branch cells
+	with a nil branchimage) should now draw correctly.
+	* Source/NSSavePanel.m ([-_initWithoutGModel]): new method meant
+ 	to allow the panel run even without a gmodel, or when loading of
+ 	the gmodel fails. ([-_setDefaults]): set the title to "Save".
+	([+savePanel]): Use always the safer _initWithoutGModel for now.
+	RFM - tidied a little, adding releases for subviews etc (even though
+	the save panel may never be destroyed).
+
 Tue Sep 21  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSBrowser.m ([-selectedColumn]): fix: ignore unloaded

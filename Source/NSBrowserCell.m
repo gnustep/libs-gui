@@ -270,59 +270,48 @@ static Class	colorClass;
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
 {
   NSRect	title_rect = cellFrame;
-  NSRect	image_rect = cellFrame;
   NSImage	*image = nil;
   NSColor	*backColor;
 
-  control_view = controlView;		// remember last view cell was drawn in
+  control_view = controlView;  // remember last view cell was drawn in
   [controlView lockFocus];
-  if (cell_highlighted || cell_state)		// temporary hack FAR FIX ME?
+  if (cell_highlighted || cell_state)
     {
       backColor = [colorClass selectedControlColor];
       [backColor set];
       if (!_isLeaf)
-	{
-          image = _highlightBranchImage;
-	}
-      else
-          image_rect = NSZeroRect;
+	image = _highlightBranchImage;
     }
   else
     {
       backColor = [[controlView window] backgroundColor];
       [backColor set];
       if (!_isLeaf)
-	{
-          image = _branchImage;
-	}
-      else
-          image_rect = NSZeroRect;
+	image = _branchImage;
     }
-
-  image_rect.size = [image size];
-													  // Right justify
-  image_rect.origin.x += cellFrame.size.width - image_rect.size.width - 4.0;
-  image_rect.origin.y += (cellFrame.size.height - image_rect.size.height) / 2.0;
-//MAX(NSMidY(image_rect) - ([image size].height/2.),0.);
-
   NSRectFill(cellFrame);	// Clear the background
-
-  title_rect.size.width -= image_rect.size.width + 8;	// draw the title cell
-  [_browserText drawWithFrame: title_rect inView: controlView];
 
   if (image)
     {
-      NSPoint position = image_rect.origin;
+      NSRect image_rect;
 
+      image_rect.origin = cellFrame.origin;
+      image_rect.size = [image size];
+      image_rect.origin.x += cellFrame.size.width - image_rect.size.width - 4.0;
+      image_rect.origin.y
+	+= (cellFrame.size.height - image_rect.size.height) / 2.0;
       [image setBackgroundColor: backColor];
       /*
        * Images are always drawn with their bottom-left corner at the origin
        * so we must adjust the position to take account of a flipped view.
        */
       if ([control_view isFlipped])
-	position.y += [image size].height;
-      [image compositeToPoint: position operation: NSCompositeCopy];
+	image_rect.origin.y += image_rect.size.height;
+      [image compositeToPoint: image_rect.origin operation: NSCompositeCopy];
+
+      title_rect.size.width -= image_rect.size.width + 8;	
     }
+  [_browserText drawWithFrame: title_rect inView: controlView];
   [controlView unlockFocus];
 }
 
