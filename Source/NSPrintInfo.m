@@ -26,7 +26,6 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include "gnustep/gui/config.h"
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSException.h>
@@ -115,7 +114,7 @@ NSDictionary *paperSizes = nil;
 // 		       [NSPrintInfo_PAPERFILE cString]];
 // 	  // NOT REACHED
 // 	}
-//       paperSizes = [[NSDictionary dictionaryWithContentsOfFile:path] retain];
+//       paperSizes = RETAIN([NSDictionary dictionaryWithContentsOfFile:path]);
 //     }
 //   size = [paperSizes objectForKey:name];
 //   if (!size)
@@ -149,8 +148,14 @@ NSDictionary *paperSizes = nil;
 - (id)initWithDictionary:(NSDictionary *)aDict
 {
   [super init];
-  info = [[NSMutableDictionary alloc] initWithDictionary:aDict];
+  _info = [[NSMutableDictionary alloc] initWithDictionary:aDict];
   return self;
+}
+
+- (void) dealloc
+{
+  RELEASE(_info);
+  [super dealloc];
 }
 
 //
@@ -158,78 +163,78 @@ NSDictionary *paperSizes = nil;
 //
 - (float)bottomMargin
 {
-  return [(NSNumber *)[info objectForKey:NSPrintBottomMargin] floatValue];
+  return [(NSNumber *)[_info objectForKey:NSPrintBottomMargin] floatValue];
 }
 
 - (float)leftMargin
 {
-  return [(NSNumber *)[info objectForKey:NSPrintLeftMargin] floatValue];
+  return [(NSNumber *)[_info objectForKey:NSPrintLeftMargin] floatValue];
 }
 
 - (NSPrintingOrientation)orientation
 {
-  return [(NSNumber *)[info objectForKey:NSPrintOrientation] intValue];
+  return [(NSNumber *)[_info objectForKey:NSPrintOrientation] intValue];
 }
 
 - (NSString *)paperName
 {
-  return [info objectForKey:NSPrintPaperName];
+  return [_info objectForKey:NSPrintPaperName];
 }
 
 - (NSSize)paperSize
 {
-  return [(NSValue *)[info objectForKey:NSPrintPaperSize] sizeValue];
+  return [(NSValue *)[_info objectForKey:NSPrintPaperSize] sizeValue];
 }
 
 - (float)rightMargin
 {
-  return [(NSNumber *)[info objectForKey:NSPrintRightMargin] floatValue];
+  return [(NSNumber *)[_info objectForKey:NSPrintRightMargin] floatValue];
 }
 
 - (void)setBottomMargin:(float)value
 {
-  [info setObject:[NSNumber numberWithFloat:value]
+  [_info setObject:[NSNumber numberWithFloat:value]
 	forKey:NSPrintBottomMargin];
 }
 
 - (void)setLeftMargin:(float)value
 {
-  [info setObject:[NSNumber numberWithFloat:value]
+  [_info setObject:[NSNumber numberWithFloat:value]
 	forKey:NSPrintLeftMargin];
 }
 
 - (void)setOrientation:(NSPrintingOrientation)mode
 {
-  [info setObject:[NSNumber numberWithInt:mode]
+  [_info setObject:[NSNumber numberWithInt:mode]
 	forKey:NSPrintOrientation];
 }
 
 - (void)setPaperName:(NSString *)name
 {
-  [info setObject:name forKey:NSPrintPaperName];
+  [_info setObject:name forKey:NSPrintPaperName];
 }
 
 - (void)setPaperSize:(NSSize)size
 {
-  [info setObject:[NSValue valueWithSize:size]
+  [_info setObject:[NSValue valueWithSize:size]
 	forKey:NSPrintPaperSize];
 }
 
 - (void)setRightMargin:(float)value
 {
-  [info setObject:[NSNumber numberWithFloat:value]
+  [_info setObject:[NSNumber numberWithFloat:value]
 	forKey:NSPrintRightMargin];
 }
 
 - (void)setTopMargin:(float)value
 {
-  [info setObject:[NSNumber numberWithFloat:value]
+  [_info setObject:[NSNumber numberWithFloat:value]
 	forKey:NSPrintTopMargin];
 }
 
 - (float)topMargin
 {
-  return [(NSNumber *)[info objectForKey:NSPrintTopMargin] floatValue];
+  return [(NSNumber *)[_info objectForKey:NSPrintTopMargin] floatValue];
 }
 
 //
@@ -237,25 +242,25 @@ NSDictionary *paperSizes = nil;
 //
 - (NSPrintingPaginationMode)horizontalPagination
 {
-  return [(NSNumber *)[info objectForKey:NSPrintHorizontalPagination]
+  return [(NSNumber *)[_info objectForKey:NSPrintHorizontalPagination]
 		      intValue];
 }
 
 - (void)setHorizontalPagination:(NSPrintingPaginationMode)mode
 {
-  [info setObject:[NSNumber numberWithInt:mode]
+  [_info setObject:[NSNumber numberWithInt:mode]
 	forKey:NSPrintHorizontalPagination];
 }
 
 - (void)setVerticalPagination:(NSPrintingPaginationMode)mode
 {
-  [info setObject:[NSNumber numberWithInt:mode]
+  [_info setObject:[NSNumber numberWithInt:mode]
 	forKey:NSPrintVerticalPagination];
 }
 
 - (NSPrintingPaginationMode)verticalPagination
 {
-  return [(NSNumber *)[info objectForKey:NSPrintVerticalPagination] intValue];
+  return [(NSNumber *)[_info objectForKey:NSPrintVerticalPagination] intValue];
 }
 
 //
@@ -263,24 +268,24 @@ NSDictionary *paperSizes = nil;
 //
 - (BOOL)isHorizontallyCentered
 {
-  return [(NSNumber *)[info objectForKey:NSPrintHorizontallyCentered] 
+  return [(NSNumber *)[_info objectForKey:NSPrintHorizontallyCentered] 
 		      boolValue];
 }
 
 - (BOOL)isVerticallyCentered
 {
-  return [(NSNumber *)[info objectForKey:NSPrintVerticallyCentered] boolValue];
+  return [(NSNumber *)[_info objectForKey:NSPrintVerticallyCentered] boolValue];
 }
 
 - (void)setHorizontallyCentered:(BOOL)flag
 {
-  [info setObject:[NSNumber numberWithBool:flag]
+  [_info setObject:[NSNumber numberWithBool:flag]
 	forKey:NSPrintHorizontallyCentered];
 }
 
 - (void)setVerticallyCentered:(BOOL)flag
 {
-  [info setObject:[NSNumber numberWithBool:flag]
+  [_info setObject:[NSNumber numberWithBool:flag]
 	forKey:NSPrintVerticallyCentered];
 }
 
@@ -289,12 +294,12 @@ NSDictionary *paperSizes = nil;
 //
 - (NSPrinter *)printer
 {
-  return [info objectForKey:NSPrintPrinter];
+  return [_info objectForKey:NSPrintPrinter];
 }
 
 - (void)setPrinter:(NSPrinter *)aPrinter
 {
-  [info setObject:aPrinter forKey:NSPrintPrinter];
+  [_info setObject:aPrinter forKey:NSPrintPrinter];
 }
 
 //
@@ -302,12 +307,12 @@ NSDictionary *paperSizes = nil;
 //
 - (NSString *)jobDisposition
 {
-  return [info objectForKey:NSPrintJobDisposition];
+  return [_info objectForKey:NSPrintJobDisposition];
 }
 
 - (void)setJobDisposition:(NSString *)disposition
 {
-  [info setObject:disposition forKey:NSPrintJobDisposition];
+  [_info setObject:disposition forKey:NSPrintJobDisposition];
 }
 
 - (void)setUpPrintOperationDefaultValues
@@ -315,6 +320,7 @@ NSDictionary *paperSizes = nil;
   NSEnumerator *keys, *objects;
   NSString *key;
   id object;
+
   if (!printInfoDefaults)
     [NSPrintInfo initPrintInfoDefaults];
   keys = [printInfoDefaults keyEnumerator];
@@ -322,8 +328,8 @@ NSDictionary *paperSizes = nil;
   while ((key = [keys nextObject]))
     {
       object = [objects nextObject];
-      if (![info objectForKey:key])
-	[info setObject:object forKey:key];
+      if (![_info objectForKey:key])
+	[_info setObject:object forKey:key];
     }
 }
 
@@ -332,7 +338,7 @@ NSDictionary *paperSizes = nil;
 //
 - (NSMutableDictionary *)dictionary
 {
-  return info;
+  return _info;
 }
 
 //
@@ -340,12 +346,12 @@ NSDictionary *paperSizes = nil;
 //
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodePropertyList: info];
+  [aCoder encodePropertyList: _info];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  info = [[aDecoder decodePropertyList] retain];
+  _info = RETAIN([aDecoder decodePropertyList]);
   return self;
 }
 
@@ -359,15 +365,22 @@ NSDictionary *paperSizes = nil;
   adminBundle = [NSBundle bundleWithPath:NSPrinterAdmin_PATH];
   path = [adminBundle pathForResource:NSPrintInfo_DEFAULTSTABLE ofType:nil];
   // If not found
-  if (path == nil || [path length] == 0)
+  if (path != nil && [path length] != 0)
     {
-      [NSException raise:NSGenericException
-		   format:@"Could not find printing defaults table, file %s",
-		   [NSPrintInfo_DEFAULTSTABLE cString]];
+      printInfoDefaults = RETAIN([NSMutableDictionary dictionaryWithContentsOfFile:path]);
       // NOT REACHED
     }
-  printInfoDefaults = [[NSMutableDictionary dictionaryWithContentsOfFile:path]
-			retain];
+  if (printInfoDefaults == nil)
+    {
+      NSLog(@"Could not find printing defaults table, file %s",
+	    [NSPrintInfo_DEFAULTSTABLE cString]);
+      // FIXME: As a replacement we add a very simple definition
+      printInfoDefaults = RETAIN(([NSMutableDictionary dictionaryWithObjectsAndKeys: 
+							  @"Unknown", NSPrintPrinter,
+							  @"A4", NSPrintPaperName,
+						       NULL]));
+    }
+
   // The loaded dictionary contains the name of the printer for NSPrintPrinter
   // Load the real NSPrinter object...
   [printInfoDefaults 
