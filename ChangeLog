@@ -1,3 +1,8 @@
+Sat Jan 27 13:46:44 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSBrowser.m ([-_adjustMatrixOfColumn:]): Fixed position
+	of matrix (from a patch by Wim Oudshoorn <woudshoo@sctcorp.com>).
+
 Sat Jan 27 11:56:33 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSApplication.m (_NSAppKitUncaughtExceptionHandler): 
