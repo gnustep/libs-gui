@@ -105,6 +105,10 @@ how it's supposed to work. It's functional and correct, but it isn't fast. */
 - (void) setDelegate: (id)aDelegate;
 
 
+-(GSTypesetter *) typesetter;
+-(void) setTypesetter: (GSTypesetter *)typesetter;
+
+
 - (void) setBackgroundLayoutEnabled: (BOOL)flag;
 - (BOOL) backgroundLayoutEnabled;
 

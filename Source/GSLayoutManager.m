@@ -2538,6 +2538,16 @@ See [NSTextView -setTextContainer:] for more information about these calls.
 }
 
 
+-(GSTypesetter *) typesetter
+{
+  return typesetter;
+}
+-(void) setTypesetter: (GSTypesetter *)a_typesetter
+{
+  ASSIGN(typesetter, a_typesetter);
+}
+
+
 - (BOOL) usesScreenFonts
 {
   return usesScreenFonts;
