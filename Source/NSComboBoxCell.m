@@ -980,7 +980,7 @@ numberOfRowsInColumn: (int)column
     {
       if (!_dataSource)
         {
-	  NSLog(@"%@: A DataSource should be specified", self);
+	  NSLog(@"%@: No data source currently specified", self);
 	}
       else
         {
@@ -1287,10 +1287,17 @@ numberOfRowsInColumn: (int)column
  */
 - (NSString *)completedString:(NSString *)substring
 {
+  if (nil == substring)
+    {
+      return nil;
+    }
+
   if (_usesDataSource)
     {
       if (!_dataSource)
-	NSLog(@"%@: A data source should be specified", self);
+        {
+	  NSLog(@"%@: No data source currently specified", self);
+	}
       else if ([_dataSource respondsToSelector: @selector(comboBox:completedString:)])
         {
 	  return [_dataSource comboBox: (NSComboBox *)[self controlView] 
@@ -1837,7 +1844,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
     {
       if (!_dataSource)
         {
-	  NSLog(@"%@: A DataSource should be specified", self);
+	  NSLog(@"%@: No data source currently specified", self);
 	}
       else
         {

@@ -1,3 +1,10 @@
+2004-08-21  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSComboBoxCell.m (-completedString:):  Handle a nil
+	substring by returning nil directly without trying to find a
+	match. Patch by Andreas Hoeschler <ahoesch@smartsoft.de>.
+	Changed data source error messages to consistent wording.
+	
 2004-08-13  Quentin Mathe <qmathe@club-internet.fr>
         
 	* Source/NSComboBoxCell.m:
