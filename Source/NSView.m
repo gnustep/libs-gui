@@ -1355,7 +1355,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) display
 {
-  if (window)
+  if (window != nil)
     {
       [self displayRect: visibleRect];
     }
@@ -1363,7 +1363,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) displayIfNeeded
 {
-  if (_rFlags.needs_display)
+  if (_rFlags.needs_display == YES)
     {
       if ([self isOpaque] == YES)
 	{
@@ -1375,40 +1375,76 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	  NSRect	rect;
 
 	  if (coordinates_valid == NO)
-	    [self _rebuildCoordinates];
-	  /*
-	   * If this view is higher in the view hierarchy than ones that
-	   * actually needed display, it's invalidRect may not contain them
-	   * so we need to display the union with the visibleRect.
-	   */
-	  rect = NSUnionRect(invalidRect, visibleRect);
+	    {
+	      [self _rebuildCoordinates];
+	    }
+	  rect = NSIntersectionRect(invalidRect, visibleRect);
 	  rect = [firstOpaque convertRect: rect fromView: self];
-	  [firstOpaque displayIfNeededInRectIgnoringOpacity: rect];
+	  if (NSIsEmptyRect(rect) == NO)
+	    {
+	      [firstOpaque displayIfNeededInRectIgnoringOpacity: rect];
+	    }
+	  /*
+	   * If we still need display after displaying the invalid rectangle,
+	   * display any subviews that need display.
+	   */ 
+	  if (_rFlags.needs_display == YES)
+	    {
+	      NSEnumerator	*enumerator = [sub_views objectEnumerator];
+	      NSView		*sub;
+
+	      while ((sub = [enumerator nextObject]) != nil)
+		{
+		  if (sub->_rFlags.needs_display)
+		    {
+		      [sub displayIfNeededIgnoringOpacity];
+		    }
+		}
+	      _rFlags.needs_display = NO;
+	    }
 	}
     }
 }
 
 - (void) displayIfNeededIgnoringOpacity
 {
-  if (_rFlags.needs_display)
+  if (_rFlags.needs_display == YES)
     {
       NSRect	rect;
 
       if (coordinates_valid == NO)
-	[self _rebuildCoordinates];
+	{
+	  [self _rebuildCoordinates];
+	}
+      rect = NSIntersectionRect(invalidRect, visibleRect);
+      if (NSIsEmptyRect(rect) == NO)
+	{
+	  [self displayIfNeededInRectIgnoringOpacity: rect];
+	}
       /*
-       * If this view is higher in the view hierarchy than ones that
-       * actually needed display, it's invalidRect may not contain them
-       * so we need to display the union with the visibleRect.
-       */
-      rect = NSUnionRect(invalidRect, visibleRect);
-      [self displayIfNeededInRectIgnoringOpacity: rect];
+       * If we still need display after displaying the invalid rectangle,
+       * display any subviews that need display.
+       */ 
+      if (_rFlags.needs_display == YES)
+	{
+	  NSEnumerator	*enumerator = [sub_views objectEnumerator];
+	  NSView	*sub;
+
+	  while ((sub = [enumerator nextObject]) != nil)
+	    {
+	      if (sub->_rFlags.needs_display)
+		{
+		  [sub displayIfNeededIgnoringOpacity];
+		}
+	    }
+	  _rFlags.needs_display = NO;
+	}
     }
 }
 
 - (void) displayIfNeededInRect: (NSRect)aRect
 {
-  if (_rFlags.needs_display)
+  if (_rFlags.needs_display == NO)
     {
       if ([self isOpaque] == YES)
 	{
@@ -1427,18 +1463,20 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) displayIfNeededInRectIgnoringOpacity: (NSRect)aRect
 {
-  if (!window)
-    return;
-
-  if (_rFlags.needs_display)
+  if (window == nil)
+    {
+      return;
+    }
+  if (_rFlags.needs_display == YES)
     {
       BOOL	subviewNeedsDisplay = NO;
       NSRect	neededRect;
       NSRect	redrawRect;
 
       if (coordinates_valid == NO)
-	[self _rebuildCoordinates];
-
+	{
+	  [self _rebuildCoordinates];
+	}
       aRect = NSIntersectionRect(aRect, visibleRect);
       redrawRect = NSIntersectionRect(aRect, invalidRect);
       neededRect = NSIntersectionRect(visibleRect, invalidRect);
@@ -1449,8 +1487,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	  [self drawRect: redrawRect];
 	  [self unlockFocusNeedsFlush: YES];
 	}
-
-      if (_rFlags.has_subviews)
+      if (_rFlags.has_subviews == YES)
 	{
 	  unsigned	count = [sub_views count];
 
@@ -1492,7 +1529,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 			    isect);
 		    }
 
-		  if (subview->_rFlags.needs_display)
+		  if (subview->_rFlags.needs_display == YES)
 		    {
 		      if (intersectCalculated == NO
 			|| NSEqualRects(aRect, redrawRect) == NO)
@@ -1502,7 +1539,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 					      fromView: self];
 			}
 		      [subview displayIfNeededInRectIgnoringOpacity: isect];
-		      if (subview->_rFlags.needs_display)
+		      if (subview->_rFlags.needs_display == YES)
 			{
 			  subviewNeedsDisplay = YES;
 			}
@@ -1545,12 +1582,14 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   BOOL		subviewNeedsDisplay = NO;
   NSRect	neededRect;
 
-  if (!window)
-    return;
-
+  if (window == nil)
+    {
+      return;
+    }
   if (coordinates_valid == NO)
-    [self _rebuildCoordinates];
-
+    {
+      [self _rebuildCoordinates];
+    }
   aRect = NSIntersectionRect(aRect, visibleRect);
   neededRect = NSIntersectionRect(invalidRect, visibleRect);
 
@@ -1564,7 +1603,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       [self unlockFocusNeedsFlush: YES];
     }
 
-  if (_rFlags.has_subviews)
+  if (_rFlags.has_subviews == YES)
     {
       unsigned		count = [sub_views count];
 
@@ -1582,7 +1621,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	      NSRect	isect;
 	      BOOL	intersectCalculated = NO;
 
-	      if ([subview->frameMatrix isRotated])
+	      if ([subview->frameMatrix isRotated] == YES)
 		[subview->frameMatrix boundingRectFor: subviewFrame
 					       result: &subviewFrame];
 
@@ -1604,7 +1643,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 			isect);
 		}
 
-	      if (subview->_rFlags.needs_display)
+	      if (subview->_rFlags.needs_display == YES)
 		{
 		  if (intersectCalculated == NO)
 		    {
@@ -1612,7 +1651,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 					  fromView: self];
 		    }
 		  [subview displayIfNeededInRectIgnoringOpacity: isect];
-		  if (subview->_rFlags.needs_display)
+		  if (subview->_rFlags.needs_display == YES)
 		    {
 		      subviewNeedsDisplay = YES;
 		    }
@@ -1640,7 +1679,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 - (NSRect) visibleRect
 {
   if (coordinates_valid == NO)
-    [self _rebuildCoordinates];
+    {
+      [self _rebuildCoordinates];
+    }
   return visibleRect;
 }
 
