@@ -1,3 +1,10 @@
+Mon Feb 11 14:30:35 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSLayoutManager.m ([-textContainerChangedTextView:]):
+	Update _firstTextView even if there is a single text view.
+	* Source/NSTextContainer.m ([-setTextView:]): Always inform the
+	layout manager that the textview is changed.
+
 2002-02-11  Richard Frith-Macdonald  <rfm@gnu.org>
 
 	* Source/NSBundleAdditions.m:
