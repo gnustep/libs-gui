@@ -2,7 +2,7 @@
 
 	* Headers/gnustep/gui/NSTextView.h, Source/NSTextView.m: Add
 	-_updateInputMethodState and -_updateInputMethodWithInsertionPoint:
-	methods. Minor cleanups in comments.
+	methods. Call them in suitable places. Minor cleanups in comments.
 
 2003-07-12 Gregory John Casamento <greg_casamento@yahoo.com>
 

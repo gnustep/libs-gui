@@ -322,6 +322,7 @@ this happens when layout has been invalidated, and when we are resized.
   [self setNeedsDisplay: YES];
   [self updateInsertionPointStateAndRestartTimer:
     [self shouldDrawInsertionPoint]];
+  [self _updateInputMethodState];
 }
 
 -(void) _layoutManagerDidInvalidateLayout
@@ -3036,6 +3037,8 @@ Figure out how the additional layout stuff is supposed to work.
 	}
     }
 #endif
+
+  [self _updateInputMethodWithInsertionPoint: _insertionPointRect.origin];
 }
 
 
