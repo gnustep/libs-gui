@@ -81,6 +81,7 @@ typedef enum _NSMatrixMode {
   BOOL		drawsCellBackground;
   BOOL		autosizesCells;
   BOOL		autoscroll;
+  id            _keyCell;
 }
 
 /*
@@ -231,6 +232,7 @@ typedef enum _NSMatrixMode {
  * Setting Tab Key Behavior 
  */
 - (id) keyCell;
+- (void) setKeyCell: (NSCell *)aCell;
 - (id) nextText;
 - (id) previousText;
 - (void) setNextText: (id)anObject;
