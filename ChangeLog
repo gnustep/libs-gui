@@ -1,5 +1,9 @@
 2005-03-05 Adrian Robert <arobert@cogsci.ucsd.edu>
 
+	* Source/NSApplication.m (-_windowDidResignKey:) Unhide mouse.
+
+2005-03-05 Adrian Robert <arobert@cogsci.ucsd.edu>
+
 	* Source/NSScroller.m (-checkSpaceForParts, -rectForPart:) Calculate
 	buttonsWidth variable dynamically based on +scrollerWidth (supports
 	width override by subclass).

@@ -2960,6 +2960,7 @@ image.
   if (_key_window == obj)
     {
       _key_window = nil;
+      [NSCursor setHiddenUntilMouseMoves: NO];
     }
   else
     {
