@@ -637,14 +637,30 @@ static float scrollerWidth;
 
 - (void) tile
 {
-  NSSize contentSize;
-  NSRect contentRect;
+  NSRect headerRect, contentRect;
   NSSize border = _sizeForBorderType(_borderType);
-  /* NSTableView related vars */
+  NSRectEdge bottomEdge, topEdge;
   float headerViewHeight = 0;
   NSView *cornerView = nil;
-  NSSize fakeBoundsSize;
 
+  /* Determine edge positions.  */
+  if (_rFlags.flipped_view)
+    {
+      topEdge = NSMinYEdge;
+      bottomEdge = NSMaxYEdge;
+    }
+  else
+    {
+      topEdge = NSMaxYEdge;
+      bottomEdge = NSMinYEdge;
+    }
+
+  /* Prepare the contentRect by the insetting the borders.  */
+  contentRect = NSInsetRect (_bounds, border.width, border.height);
+  
+  /* First, allocate vertical space for the headerView / cornerView
+     (but - NB - the headerView needs to be placed above the clipview
+     later on, we can't place it now).  */
   if (_hasHeaderView == YES)
     {
       headerViewHeight = [[_headerClipView documentView] frame].size.height;
@@ -654,96 +670,66 @@ static float scrollerWidth;
     {
       cornerView = [(NSTableView *)[_contentView documentView] cornerView];
       if (headerViewHeight == 0)
-	headerViewHeight = [cornerView frame].size.height;
-    }
-  fakeBoundsSize = _bounds.size;
-  fakeBoundsSize.height -= headerViewHeight;
-  contentSize = [isa contentSizeForFrameSize: fakeBoundsSize
-		     hasHorizontalScroller: _hasHorizScroller
-		     hasVerticalScroller: _hasVertScroller
-		     borderType: _borderType];
-  contentRect = NSMakeRect (0, 0, contentSize.width, contentSize.height);
-  contentRect.origin.x = border.width;
-  contentRect.origin.y = border.height;
-
-  if (_rFlags.flipped_view)
-    {
-      contentRect.origin.y += headerViewHeight;
+	{
+	  headerViewHeight = [cornerView frame].size.height;
+	}
     }
 
+  /* Remove the vertical slice used by the header/corner view.  Save
+     the height and y position of headerRect for later reuse.  */
+  NSDivideRect (contentRect, &headerRect, &contentRect, headerViewHeight, 
+		topEdge);
+
+  /* Ok - now go on with drawing the actual scrollview in the
+     remaining space.  Just consider contentRect to be the area in
+     which we draw, ignoring header/corner view.  */
+
+  /* Prepare the vertical scroller.  */
   if (_hasVertScroller)
     {
-      NSRect vertScrollerRect = NSZeroRect;
+      NSRect vertScrollerRect;
 
-      vertScrollerRect.origin.x = _bounds.origin.x + border.width;
-      vertScrollerRect.origin.y = _bounds.origin.y + border.height;
-      vertScrollerRect.size.width = scrollerWidth;
-      vertScrollerRect.size.height = fakeBoundsSize.height 
-	- 2 * border.height;
+      NSDivideRect (contentRect, &vertScrollerRect, &contentRect, 
+		    scrollerWidth, NSMinXEdge);
 
-      contentRect.origin.x += scrollerWidth + 1;
-
-      if (_rFlags.flipped_view)
-	{
-	  vertScrollerRect.origin.y += headerViewHeight;
-	}
       [_vertScroller setFrame: vertScrollerRect];
+
+      /* Substract 1 for the line that separates the vertical scroller
+       * from the clip view (and eventually the horizontal scroller).  */
+      NSDivideRect (contentRect, NULL, &contentRect, 1, NSMinXEdge);
     }
 
+  /* Prepare the horizontal scroller.  */
   if (_hasHorizScroller)
     {
-      NSRect horizScrollerRect = NSZeroRect;
+      NSRect horizScrollerRect;
+      
+      NSDivideRect (contentRect, &horizScrollerRect, &contentRect, 
+		    scrollerWidth, bottomEdge);
 
-      horizScrollerRect.origin.x = contentRect.origin.x;
-      horizScrollerRect.origin.y = _bounds.origin.y + border.height;
-      horizScrollerRect.size.width = contentRect.size.width;
-      horizScrollerRect.size.height = scrollerWidth;
-
-      if (_rFlags.flipped_view)
-	{
-	  horizScrollerRect.origin.y += headerViewHeight;
-	  horizScrollerRect.origin.y += contentRect.size.height + 1;
-	}
-      else
-	{
-	  contentRect.origin.y += scrollerWidth + 1;
-	}
       [_horizScroller setFrame: horizScrollerRect];
+
+      /* Substract 1 for the width for the line that separates the
+       * horizontal scroller from the clip view.  */
+      NSDivideRect (contentRect, NULL, &contentRect, 1, bottomEdge);
     }
 
+  /* Now place and size the header view to be exactly above the
+     resulting clipview.  */
   if (_hasHeaderView)
     {
-      NSRect rect;
+      NSRect rect = headerRect;
 
       rect.origin.x = contentRect.origin.x;
-      if (_rFlags.flipped_view)
-	{
-	  rect.origin.y = _bounds.origin.y + border.height;
-	}
-      else
-	{
-	  rect.origin.y = NSMaxY (_bounds);
-	  rect.origin.y -= headerViewHeight + border.height;
-	}
       rect.size.width = contentRect.size.width;
-      rect.size.height = headerViewHeight;
+
       [_headerClipView setFrame: rect];
     }
 
+  /* Now place the corner view.  */
   if (_hasCornerView)
     {
-      NSPoint origin;
-
-      origin.x = _bounds.origin.x + border.width;
-      if (_rFlags.flipped_view)
-	{
-	  origin.y = _bounds.origin.y + border.height;
-	}
-      else
-	{
-	  origin.y = NSMaxY (_bounds) - headerViewHeight - border.height;
-	}
-      [cornerView setFrameOrigin: origin];
+      [cornerView setFrameOrigin: headerRect.origin];
     }
 
   // FIXME: The Rulers should be positioned too
