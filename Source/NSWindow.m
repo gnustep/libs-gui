@@ -205,30 +205,32 @@ NSRect cframe;
 
 - (void)setContentView:(NSView *)aView
 {
-NSView *wv;
+  NSView *wv;
 
-    if (!aView)                                     // contentview can't be nil
-        aView = [[[NSView alloc] initWithFrame: frame] autorelease];
-                                                    // If window view has not
+  if (!aView)                                       // contentview can't be nil
+    aView = [[[NSView alloc] initWithFrame: frame] autorelease];
+						    // If window view has not
                                                     // been created, create it
-    if ((!content_view) || ([content_view superview] == nil))
-        {
-        wv = [NSWindow _windowViewWithFrame: frame];
-        [wv viewWillMoveToWindow: self];
-        }
-    else
-        wv = [content_view superview];
+  if ((!content_view) || ([content_view superview] == nil))
+    {
+      wv = [NSWindow _windowViewWithFrame: frame];
+      [wv viewWillMoveToWindow: self];
+    }
+  else
+    wv = [content_view superview];
 
-    if (content_view)
-        [content_view removeFromSuperview];
+  if (content_view)
+    [content_view removeFromSuperview];
 
-    ASSIGN(content_view, aView);
+  ASSIGN(content_view, aView);
 
-    [wv addSubview: content_view];                  // Add to our window view
-    NSAssert1 ([[wv subviews] count] == 1, @"window's view has %d  subviews!",
+  [content_view setFrame: [wv frame]];		    // Resize to fill window.
+  [wv addSubview: content_view];                    // Add to our window view
+  NSAssert1 ([[wv subviews] count] == 1, @"window's view has %d  subviews!",
                 [[wv subviews] count]);
                                                     // Make self the view's
-    [content_view setNextResponder:self];           // next responder
+  [content_view setNextResponder:self];             // next responder
+  [content_view setNeedsDisplay: YES];		    // Make sure we redraw.
 }
 
 //
