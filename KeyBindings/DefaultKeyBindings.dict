@@ -32,10 +32,10 @@
 /*  "Control-Alternate-DownArrow" = ("pageDown:", "moveWordForward:"); */
 
   "Delete" = "deleteForward:";
-/*  "Home" = "moveToBeginningOfParagraph:"; */
+  "Home" = "moveToBeginningOfParagraph:"; 
   "Control-Home" = "moveToBeginningOfDocument:";
 /*  "Shift-Home" = "moveToBeginningOfParagraphAndModifySelection:"; */
-/*  "End" = "moveToEndOfParagraph:"; */
+  "End" = "moveToEndOfParagraph:"; 
   "Control-End" = "moveToEndOfDocument:";
 /*  "Shift-End" = "moveToEndOfParagraphAndModifySelection:"; */
   "PageUp" = "pageUp:";
