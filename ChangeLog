@@ -1,3 +1,23 @@
+Tue Sep  5 18:52:57 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Headers/gnustep/gui/NSWindow.h, Source/NSWindow.m: Prefixed all
+	ivars with underscores.
+	* Source/NSApplication.m ([NSIconWindow -_initDefaults]): Updated 
+	for change in NSWindow's ivars.
+	* Source/NSMenu.m ([NSMenuWindow -_initDefaults]), ([NSMenuWindow
+	-moveToPoint:]): Idem.
+	* Source/NSView.m ([-lockFocusInRect:]), 
+	([-unlockFocusNeedsFlush:]): Idem.
+	
+Tue Sep  5 17:55:17 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSTextContainer.m ([-setHeightTracksTextView:]),
+	([-setWidthTracksTextView:]): Register for notifications if we
+	need.  ([-setTextView:]): Only remove us from notifications
+	regarding the old text view; register for notifications only if we
+	need.  ([-_textViewFrameChanged:]): Don't track height if we only
+	need to track width and vice versa.
+
 Tue Sep  5 03:04:41 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSApplication.m ([-terminate:]): Post
