@@ -59,20 +59,21 @@
   NSString *familyName;
   float matrix[6];
   float italicAngle;
-  NSString *weight;
   float underlinePosition;
   float underlineThickness;
   float capHeight;
   float xHeight;
   float descender;
   float ascender;
-  float widths[256];
   NSSize maximumAdvancement;
   NSSize minimumAdvancement;
   NSString *encodingScheme;
+  NSStringEncoding mostCompatibleStringEncoding;
   NSRect fontBBox;
   BOOL isFixedPitch;
   BOOL isBaseFont;
+  int weight;
+  NSFontTraitMask traits;
 }
 
 + (void) setDefaultClass: (Class)defaultClass;
@@ -98,7 +99,6 @@
 - (float)underlineThickness;
 - (float)xHeight;
 - (float) widthOfString: (NSString*)string;
-- (float *)widths;
 - (float)defaultLineHeightForFont;
 
 - (NSSize) advancementForGlyph: (NSGlyph)aGlyph;
