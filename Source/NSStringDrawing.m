@@ -484,13 +484,12 @@ drawRun(GSTextRun *run, NSPoint origin, GSDrawInfo *draw)
    */
   if (draw->flip)
     {
-      origin.y += (run->height - run->baseline);
+      origin.y -= run->base;
     }
   else
     {
-      origin.y -= (run->height - run->baseline);
+      origin.y += run->base;
     }
-
   /*
    * Set current font and color if necessary.
    */
@@ -602,14 +601,18 @@ setupRun(GSTextRun *run, unsigned length, unichar *chars, unsigned pos,
   // Get superscript
   num = (NSNumber*)[attr objectForKey: NSSuperscriptAttributeName]; 
   if (num == nil)
-    run->superscript = 0;
+    run->base = 0.0;
+    //run->superscript = 0;
   else
-    run->superscript = [num intValue];
+    // interprete as a baseline change without font change
+    run->base = 3.0 * [num intValue];
+    //run->superscript = [num intValue];
 
   // Get baseline offset
   num = (NSNumber*)[attr objectForKey: NSBaselineOffsetAttributeName]; 
   if (num == nil)
-    run->base = 0.0;
+      ; // Use value from superscript!
+    //run->base = 0.0;
   else
     run->base = [num floatValue];
 
@@ -716,6 +719,14 @@ drawChunk(GSTextChunk *chunk, NSPoint origin, GSDrawInfo *draw)
   GSTextRun	*run = &chunk->run0;
 
   origin.x += chunk->xpos;
+  if (draw->flip)
+    {
+      origin.y += (chunk->height - chunk->baseline);
+    }
+  else
+    {
+      origin.y -= (chunk->height - chunk->baseline);
+    }
   while (run != 0)
     {
       drawRun(run, origin, draw);
