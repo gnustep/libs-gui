@@ -635,7 +635,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
    * so we must adjust the position to take account of a flipped view.
    */
   if ([control_view isFlipped])
-    position.y -= size.height;
+    position.y += size.height;
   [image compositeToPoint: position operation: NSCompositeCopy];
 }
 

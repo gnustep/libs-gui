@@ -1,3 +1,12 @@
+Wed Apr  7 21:35:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSCell.m: Position image correctly in flipped view.
+
+Wed Apr  7 10:10:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Images/GNUmakefile: Install all images
+	* Source/NSControl.m: ([setCell:]) permit nil cell values.
+
 Tue Apr  6 14:50:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	Applied Felipes fixes from mgstep.
