@@ -2079,13 +2079,11 @@ static NSTextFieldCell *titleCell;
   if (!_separatesColumns)
     {
       NSPoint p1,p2;
-      NSRect  browserRect;
       int     i, visibleColumns;
       float   hScrollerWidth = _hasHorizontalScroller ? scrollerWidth : 0;
       
       // Columns borders
-      browserRect = NSMakeRect(0, 0, rect.size.width, rect.size.height);
-      NSDrawGrayBezel (browserRect, rect);
+      NSDrawGrayBezel (_bounds, rect);
       
       [[NSColor blackColor] set];
       visibleColumns = [self numberOfVisibleColumns]; 
