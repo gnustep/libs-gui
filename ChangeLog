@@ -1,3 +1,9 @@
+2001-08-19  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSTextView.m (-setSelectedRange:affinity:stillSelecting:): 
+	Prevent NSTextView from asking a text storage of zero length 
+	for attributes (Patch from georg@vhf.de).
+
 2001-08-20  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSMenu.h

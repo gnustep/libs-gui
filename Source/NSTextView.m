@@ -1358,7 +1358,7 @@ static NSNotificationCenter *nc;
 	}
       else  /* no selection, only insertion point */
 	{
-	  if (_tf.is_rich_text)
+	  if (_tf.is_rich_text && [_textStorage length])
 	    {
 	      NSDictionary *dict;
 	    
