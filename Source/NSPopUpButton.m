@@ -317,6 +317,7 @@ Class _nspopupbuttonCellClass = 0;
   NSEvent    *e;
   NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
   NSPoint    p;
+  NSWindow  *menuWindow = [mr window];
 
   if ([self isEnabled] == NO)
     return;
@@ -326,23 +327,23 @@ Class _nspopupbuttonCellClass = 0;
 
   // Attach the popUp
   [_cell attachPopUpWithFrame: _bounds
-	inView: self];
-
+	 inView: self];
+  
   p = [_window convertBaseToScreen: [theEvent locationInWindow]];
-  p = [[mr window] convertScreenToBase: p];
-
+  p = [menuWindow convertScreenToBase: p];
+  
   // Process events; we start menu events processing by converting 
   // this event to the menu window, and sending it there. 
   e = [NSEvent mouseEventWithType: [theEvent type]
 	       location: p
 	       modifierFlags: [theEvent modifierFlags]
 	       timestamp: [theEvent timestamp]
-	       windowNumber: [[mr window] windowNumber]
+	       windowNumber: [menuWindow windowNumber]
 	       context: nil // TODO ? 
 	       eventNumber: [theEvent eventNumber]
 	       clickCount: [theEvent clickCount] 
 	       pressure: [theEvent pressure]];
-  [[mr window] sendEvent: e];
+  [menuWindow sendEvent: e];
 
   // Update our selected item
   [self synchronizeTitleAndSelectedItem];
