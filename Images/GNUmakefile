@@ -90,6 +90,7 @@ common_Root_Sparc.tiff \
 common_Root_Sparc2.tiff \
 common_Root_Apple.tiff \
 GNUstep.tiff \
+GNUstepMenuImage.tiff \
 nsmapping.strings \
 NSComboArrow.tiff \
 common_Diamond.tiff
