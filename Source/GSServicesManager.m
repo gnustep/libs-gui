@@ -1081,7 +1081,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
 
       a = [mainMenu itemArray];
       for (i = 0; i < [a count]; i++)
-	if ([[a objectAtIndex: i] target] == servicesMenu)
+	if ([[a objectAtIndex: i] submenu] == servicesMenu)
 	  found = YES;
       if (found == NO)
 	{
