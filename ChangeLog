@@ -1,3 +1,14 @@
+2000-07-01  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/NSFileWrapper.m
+	Implemented coding and replaced [initWithSerializedRepresentation:]
+	and [serializedRepresentation] to use it.
+	* Source/NSText.m
+	Changed Font/Ruler pasting to use an Archiver
+	* Source/NSTextView.m 
+	[setAllowsUndo:] and [allowsUndo] now use ivar
+	
+	
 2000-06-29  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSText.m (-setFont:): Return if font==nil.
