@@ -942,12 +942,12 @@
 	 * The drawing code below will then center the image in imageRect.
 	 */
 	titleRect.origin.x = cellFrame.origin.x;
-	titleRect.origin.y = cellFrame.origin.y + GSCellTextImageYDist;
+	titleRect.origin.y = cellFrame.origin.y;
 	titleRect.size.width = cellFrame.size.width;
 	titleRect.size.height = titleSize.height;
 
 	imageRect.origin.x = cellFrame.origin.x;
-	imageRect.origin.y = NSMaxY(titleRect);
+	imageRect.origin.y = NSMaxY(titleRect) + GSCellTextImageYDist;
 	imageRect.size.width = cellFrame.size.width;
 	imageRect.size.height = NSMaxY(cellFrame) - imageRect.origin.y;
 
