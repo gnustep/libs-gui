@@ -1,3 +1,18 @@
+Mon Jan 27 03:16:22 2003  Benhur Stein <benhur@inf.ufsm.br>
+
+	Patch with minor changes by Nicola:
+	* Source/NSScroller.m ([-testPart:]): The point to test is now
+	assumed to be in the window's coordinates.
+	([-mouseDown:], [-trackScrollButtons:]): Updated calls to
+	-testPart:.
+	([-drawArrow:highlight:]): Highlight the cell according to the
+	argument.
+	
+Mon Jan 27 01:21:11 2003  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/GSLayoutManager.m (GET_GLYPH): Removed argument, and
+	updated all callers, to get it to compile.
+
 2003-01-27 00:01  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSLayoutManager.m (-drawBackgroundForGlyphRange:atPoint:):
