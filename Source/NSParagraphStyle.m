@@ -49,6 +49,23 @@
   return self;
 }
 
+- (NSComparisonResult) compare: (id)anObject
+{
+  float	loc;
+
+  if (anObject == self)
+    return NSOrderedSame;
+  if (anObject == nil || ([anObject isKindOfClass: self->isa] == NO))
+    return NSOrderedAscending;
+  loc = ((NSTextTab*)anObject)->location;
+  if (loc < location)
+    return NSOrderedAscending;
+  else if (loc > location)
+    return NSOrderedDescending;
+  else
+    return NSOrderedSame;
+}
+
 - (unsigned) hash
 {
   unsigned val = (unsigned)location;
@@ -138,7 +155,7 @@ static NSParagraphStyle	*defaultStyle = nil;
   minimumLineHeight = 0.0;
   paragraphSpacing = 0.0;
   tailIndent = 0.0;
-  tabStops = [[NSMutableArray alloc] initWithCapacity: 12];
+  tabStops = [[NSMutableArray allocWithZone: [self zone]] initWithCapacity: 12];
   return self;
 }
 
@@ -246,7 +263,7 @@ static NSParagraphStyle	*defaultStyle = nil;
 {
   NSMutableParagraphStyle	*c;
 
-  c = [NSMutableParagraphStyle allocWithZone: aZone];
+  c = [[NSMutableParagraphStyle allocWithZone: aZone] init];
   [c setParagraphStyle: self];
   return c;
 }
@@ -354,11 +371,13 @@ static NSParagraphStyle	*defaultStyle = nil;
 
 - (void) setLineSpacing: (float)aFloat
 {
+  NSAssert(aFloat >= 0.0, NSInvalidArgumentException);
   lineSpacing = aFloat;
 }
 
 - (void) setParagraphSpacing: (float)aFloat
 {
+  NSAssert(aFloat >= 0.0, NSInvalidArgumentException);
   paragraphSpacing = aFloat;
 }
 
@@ -369,11 +388,13 @@ static NSParagraphStyle	*defaultStyle = nil;
 
 - (void) setFirstLineHeadIndent: (float)aFloat
 {
+  NSAssert(aFloat >= 0.0, NSInvalidArgumentException);
   firstLineHeadIndent = aFloat;
 }
 
 - (void) setHeadIndent: (float)aFloat
 {
+  NSAssert(aFloat >= 0.0, NSInvalidArgumentException);
   headIndent = aFloat;
 }
 
@@ -389,22 +410,47 @@ static NSParagraphStyle	*defaultStyle = nil;
 
 - (void) setMinimumLineHeight: (float)aFloat
 {
+  NSAssert(aFloat >= 0.0, NSInvalidArgumentException);
   minimumLineHeight = aFloat;
 }
 
 - (void) setMaximumLineHeight: (float)aFloat
 {
+  NSAssert(aFloat >= 0.0, NSInvalidArgumentException);
   maximumLineHeight = aFloat;
 }
 
-- (void) addTabStop: (NSTextTab *)anObject
+- (void) addTabStop: (NSTextTab*)anObject
 {
-  [tabStops addObject: anObject];
+  unsigned	count = [tabStops count];
+
+  if (count == 0)
+    {
+      [tabStops addObject: anObject];
+    }
+  else
+    {
+      while (count-- > 0)
+	{
+	  NSTextTab	*tab;
+
+	  tab = [tabStops objectAtIndex: count];
+	  if ([tab compare: anObject] != NSOrderedDescending)
+	    {
+	      [tabStops insertObject: anObject atIndex: count+1];
+	      return;
+	    }
+	}
+      [tabStops insertObject: anObject atIndex: 0];
+    }
 }
 
-- (void) removeTabStop: (NSTextTab *)anObject
+- (void) removeTabStop: (NSTextTab*)anObject
 {
-  [tabStops removeObject: anObject];
+  unsigned	i = [tabStops indexOfObject: anObject];
+
+  if (i != NSNotFound)
+    [tabStops removeObjectAtIndex: i];
 }
 
 - (void) setTabStops: (NSArray *)array
@@ -413,6 +459,7 @@ static NSParagraphStyle	*defaultStyle = nil;
     {
       [tabStops removeAllObjects];
       [tabStops addObjectsFromArray: array];
+      [tabStops sortUsingSelector: @selector(compare:)];
     }
 }
 
@@ -420,7 +467,13 @@ static NSParagraphStyle	*defaultStyle = nil;
 {
   NSMutableParagraphStyle	*p = (NSMutableParagraphStyle*)obj;
 
-  [self setTabStops: p->tabStops];
+  if (p == self)
+    return;
+
+  /* Can add tab stops without sorting as we know they are already sorted. */
+  [tabStops removeAllObjects];
+  [tabStops addObjectsFromArray: p->tabStops];
+
   alignment = p->alignment;
   firstLineHeadIndent = p->firstLineHeadIndent;
   headIndent = p->headIndent;

@@ -66,8 +66,8 @@
 @class NSDataLink, NSDataLinkManager, NSDataLinkPanel;
 @class NSFont, NSFontManager, NSFontPanel;
 @class NSPageLayout, NSPrinter, NSPrintInfo, NSPrintOperation, NSPrintPanel;
-@class NSPasteboard, NSSelection;
-@class NSSpellChecker, NSSpellServer;
+@class NSParagraphStyle, NSMutableParagraphStyle, NSPasteboard, NSSelection;
+@class NSSpellChecker, NSSpellServer, NSTextTab;
 
 #include <AppKit/NSActionCell.h>
 #include <AppKit/NSApplication.h>
@@ -113,6 +113,7 @@
 #include <AppKit/NSOpenPanel.h>
 #include <AppKit/NSPageLayout.h>
 #include <AppKit/NSPanel.h>
+#include <AppKit/NSParagraphStyle.h>
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSPopUpButton.h>
 #include <AppKit/NSPrinter.h>
