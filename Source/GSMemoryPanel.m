@@ -354,6 +354,7 @@ static GSMemoryPanel *sharedGSMemoryPanel = nil;
       RELEASE (entry);
       i++;
     }
+  NSZoneFree(NSDefaultMallocZone(), classList);
 
   switch (orderingBy)
     {
