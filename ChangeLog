@@ -1,3 +1,20 @@
+2003-05-02  Fred Kiefer <FredKiefer@gmx.de>
+
+	* TextConverters/RTF/RTFProducer.h
+	* TextConverters/RTF/RTFProducer.m
+	New implemtation by Axel "Mikesch" Katerbau (axel@objectpark.org)
+	with small changes from me. RTF output now support much more
+	attributes and even Unicode characters. 
+	* Source/NSBezierPath.m
+	Moved code from [bezierPathWithOvalInRect:] and
+	[bezierPathWithRect:] to [appendBezierPathWithOvalInRect:] and 
+	[appendBezierPathWithRect:] and implemented the former with a call
+	to the later.
+	Preliminary implemetation for [appendBezierPathWithGlyph:inFont:]
+	and [appendBezierPathWithGlyphs:count:inFont:]. 
+	* Source/NSFont.m:
+	Preliminary implemetation for NSConvertGlyphsToPackedGlyphs().
+	
 2003-05-01 21:48  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSScroller.m (-acceptsFirstResponder): Implement to
@@ -67,14 +84,14 @@ Mon Apr 28 13:14:15 2003  Nicola Pero  <n.pero@mi.flashnet.it>
 	( -initWithContentRect:styleMask:backing:defer:screen:): Idem.
 	* Source/NSSpellChecker.m ([NSSpellChecker -init]): Idem.
 
-2003-03-27  Michael Hanni  <michael@deviant-behavior.com>
+2003-04-27  Michael Hanni  <michael@deviant-behavior.com>
 
 	* Source/NSPopUpButtonCell.m (drawWithFrame:inView:): added a call 
         to the NSMenuItemCell's calcSize method to place the image 
         correctly when we are making a temp item. Fixes regression 
         prompted by changes on 2003-04-17.
 
-2003-03-27  Fred Kiefer <FredKiefer@gmx.de>
+2003-04-27  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/GSFontInfo.m
 	Removed creation of fontDictionary from [init] method. This now
@@ -98,7 +115,7 @@ Mon Apr 28 13:14:15 2003  Nicola Pero  <n.pero@mi.flashnet.it>
 	* Headers/gnustep/gui/NSRulerView.h: Renamed unused ivar
 	_zeroLocation to _UNUSED.
 
-2003-03-26  Fred Kiefer <FredKiefer@gmx.de>
+2003-04-26  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSControl.m
 	Removed [becomeFirstResponder] and [resignFirstResponder] as the
