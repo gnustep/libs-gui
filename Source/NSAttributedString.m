@@ -560,7 +560,13 @@ static Class converter_class(NSString *format, BOOL producer)
 {
   // FIXME: This expects the file to be RTFD
   NSFileWrapper *fw;
-  
+
+  if (path == nil)
+    {
+      RELEASE (self);
+      return nil;
+    }
+
   fw = [[NSFileWrapper alloc] initWithPath: path];
   AUTORELEASE (fw);
   
@@ -572,6 +578,13 @@ documentAttributes: (NSDictionary **)dict
 {
   NSData *data = [url resourceDataUsingCache: YES];
   
+  if (data == nil)
+    {
+      RELEASE (self);
+      return nil;
+    }
+
+
   // FIXME: This expects the URL to point to a HTML page
   return [self initWithHTML: data
 	       baseURL: [url baseURL]
@@ -581,9 +594,17 @@ documentAttributes: (NSDictionary **)dict
 - (id) initWithRTFDFileWrapper: (NSFileWrapper *)wrapper
             documentAttributes: (NSDictionary **)dict
 {
-  NSAttributedString *new = [converter_class(@"RTFD", NO) 
-					    parseFile: wrapper
-					    documentAttributes: dict];
+  NSAttributedString *new;
+
+  if (wrapper == nil)
+    {
+      RELEASE (self);
+      return nil;
+    }
+
+  new = [converter_class(@"RTFD", NO) 
+			parseFile: wrapper
+			documentAttributes: dict];
   // We do not return self but the newly created object
   RELEASE (self);
   return RETAIN (new); 
@@ -592,9 +613,17 @@ documentAttributes: (NSDictionary **)dict
 - (id) initWithRTFD: (NSData*)data
  documentAttributes: (NSDictionary**)dict
 {
-  NSAttributedString *new = [converter_class(@"RTFD", NO)
-					    parseData: data
-					    documentAttributes: dict];
+  NSAttributedString *new;
+
+  if (data == nil)
+    {
+      RELEASE (self);
+      return nil;
+    }
+
+  new = [converter_class(@"RTFD", NO)
+			parseData: data
+			documentAttributes: dict];
   // We do not return self but the newly created object
   RELEASE (self);
   return RETAIN (new); 
@@ -603,9 +632,17 @@ documentAttributes: (NSDictionary **)dict
 - (id) initWithRTF: (NSData *)data
   documentAttributes: (NSDictionary **)dict
 {
-  NSAttributedString *new = [converter_class(@"RTF", NO) 
-					    parseData: data
-					    documentAttributes: dict];
+  NSAttributedString *new;
+
+  if (data == nil)
+    {
+      RELEASE (self);
+      return nil;
+    }
+
+  new = [converter_class(@"RTF", NO) 
+			parseData: data
+			documentAttributes: dict];
   // We do not return self but the newly created object
   RELEASE (self);
   return RETAIN (new); 
@@ -623,6 +660,12 @@ documentAttributes: (NSDictionary **)dict
             baseURL: (NSURL *)base
  documentAttributes: (NSDictionary **)dict
 {
+  if (data == nil)
+    {
+      RELEASE (self);
+      return nil;
+    }
+
   // FIXME: Not implemented
   return self;
 }
