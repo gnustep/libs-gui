@@ -53,7 +53,8 @@ Tools \
 Panels \
 PrinterTypes \
 TextConverters \
-KeyBindings
+KeyBindings \
+Resources
 
 -include GNUmakefile.preamble
 
