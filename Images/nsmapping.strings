@@ -6,3 +6,6 @@ NSSwitch = common_SwitchOff;
 NSHighlightedSwitch = common_SwitchOn;
 NSRadioButton = common_RadioOff;
 NSHighlightedRadioButton = common_RadioOn;
+AppleMenuImage = GNUstepMenuImage;
+NSMenuCheckmark = common_2DCheckMark;
+NSMenuArrow = common_3DArrowRight;
