@@ -558,6 +558,11 @@ setControl(NSView* content, id control, NSString *title)
       altButton = [self _makeButtonWithRect: rect];
       othButton = [self _makeButtonWithRect: rect];
 
+      /* Create the nextKeyView chain */
+      [defButton setNextKeyView: othButton];
+      [othButton setNextKeyView: altButton];
+      [altButton setNextKeyView: defButton];
+
       rect.size.height = 80.0;
       scroll = makeScrollViewWithRect(rect);
 
