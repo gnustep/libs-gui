@@ -1436,6 +1436,8 @@ it should still be safe. might lose opportunities to merge runs, though.
 	{
 	  if (lf->points)
 	    free(lf->points);
+	  if (lf->attachments)
+	    free(lf->attachments);
 	}
       tc->num_linefrags = idx;
       tc->length = tc->linefrags[idx - 1].pos + tc->linefrags[idx - 1].length - tc->pos;
@@ -1887,6 +1889,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
 
 
 
+/* TODO: make more efficient */
 - (NSArray *) textContainers
 {
   NSMutableArray *ma;
@@ -1942,9 +1945,11 @@ forStartOfGlyphRange: (NSRange)glyphRange
     textcontainers = realloc(textcontainers,
 			   sizeof(textcontainer_t) * num_textcontainers);
   else
-    free(textcontainers);
+    {
+      free(textcontainers);
+      textcontainers = NULL;
+    }
 }
-
 
 - (void) textContainerChangedGeometry: (NSTextContainer *)aContainer
 {
@@ -2015,6 +2020,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
       [tc->textContainer release];
     }
   free(textcontainers);
+  textcontainers = NULL;
 
   [self _freeGlyphs];
 

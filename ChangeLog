@@ -1,3 +1,12 @@
+2003-02-01 03:26  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSLayoutManager.m (-removeTextContainerAtIndex:): Set
+	textcontainers to NULL after freeing it. Clean up some other
+	malloc-stuff.
+
+	* Source/NSTextContainer.m (-replaceLayoutManager:): Remove the
+	containers from the correct layout manager.
+
 2003-01-31  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/GSDisplayServer.h
