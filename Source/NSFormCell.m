@@ -29,6 +29,7 @@
 */ 
 
 #include <gnustep/gui/config.h>
+#include <Foundation/NSNotification.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/NSFormCell.h>
 #include <AppKit/NSFont.h>
@@ -73,15 +74,12 @@ static NSColor	*shadowCol;
 {
   self = [super initTextCell: @""];
   _cell.is_bezeled = YES;
-  _cell.is_bordered = NO;
   _cell.text_align = NSLeftTextAlignment;
   _cell.is_editable = YES;
   _titleCell = [[NSCell alloc] initTextCell: aString];
-  [_titleCell setBordered: NO];
-  [_titleCell setBezeled: NO];
   [_titleCell setAlignment: NSRightTextAlignment];
   _formcell_auto_title_width = YES;
-  _titleWidth = [[self titleFont] widthOfString: aString];
+  _displayedTitleWidth = -1;
   return self;
 }
 
@@ -100,7 +98,14 @@ static NSColor	*shadowCol;
 {
   [_titleCell setStringValue: aString];
   if (_formcell_auto_title_width)
-    _titleWidth = [[_titleCell font] widthOfString: aString];
+    {
+      // Invalidates title width 
+      _displayedTitleWidth = -1;
+      // Update the control(s)
+      [[NSNotificationCenter defaultCenter] 
+	postNotificationName: _NSFormCellDidChangeTitleWidthNotification
+	object: self];
+    }
 }
 
 - (void)setTitleAlignment:(NSTextAlignment)mode
@@ -111,20 +116,35 @@ static NSColor	*shadowCol;
 - (void)setTitleFont: (NSFont*)fontObject
 {
   [_titleCell setFont: fontObject];
+  if (_formcell_auto_title_width)
+    {
+      // Invalidates title width 
+      _displayedTitleWidth = -1;
+      // Update the control(s)
+      [[NSNotificationCenter defaultCenter] 
+	postNotificationName: _NSFormCellDidChangeTitleWidthNotification
+	object: self];
+    }
 }
 
 - (void)setTitleWidth: (float)width
 {
-  if (_titleWidth >= 0)
+  if (width >= 0)
     {
       _formcell_auto_title_width = NO;
-      _titleWidth = width;
+      _displayedTitleWidth = width;
     }
   else 
     {
       _formcell_auto_title_width = YES;
-      _titleWidth = [[_titleCell font] widthOfString: [_titleCell stringValue]];
+      _displayedTitleWidth = -1;
     }
+  // TODO: Don't updated the control if nothing changed.
+
+  // Update the control(s)
+  [[NSNotificationCenter defaultCenter] 
+    postNotificationName: _NSFormCellDidChangeTitleWidthNotification
+    object: self];
 }
 
 - (NSString*)title
@@ -142,9 +162,21 @@ static NSColor	*shadowCol;
   return [_titleCell font];
 }
 
+//
+// Warning: this method returns the width of the title; the width the
+// title would have if the cell was the only cell in the form.  This
+// is used by NSForm to align all the cells in its form.  This is to
+// say that this title width is *not* what you are going to see on the
+// screen if more than one cell is present.  Setting a titleWidth
+// manually with setTitleWidth: disables any alignment with other
+// cells.
+//
 - (float)titleWidth
 {
-  return _titleWidth;
+  if (_formcell_auto_title_width == NO)
+    return _displayedTitleWidth;
+  else
+    return [[_titleCell font] widthOfString: [_titleCell stringValue]];
 }
 
 - (float)titleWidth: (NSSize)size
@@ -153,17 +185,36 @@ static NSColor	*shadowCol;
   return 0;
 }
 
+// Updates the title width.  The width of aRect is the new title width
+// to display.  Invoked by NSForm to align the editable parts of the
+// cells.
+- (void) calcDrawInfo: (NSRect)aRect
+{
+  if (_formcell_auto_title_width == NO)
+    return;
+  
+  _displayedTitleWidth = aRect.size.width;
+}
+
+
 - (NSSize)cellSize
 {
   NSSize returnedSize;
   NSSize titleSize = [_titleCell cellSize];
   NSSize textSize;
   
-  textSize.width = [_cell_font widthOfString: @"minimum"];
-  textSize.height = [_cell_font pointSize] + (2 * yDist) 
-    + 2 * ((_sizeForBorderType (NSBezelBorder)).height); 
- 
-  returnedSize.width = titleSize.width + 4 + textSize.width;
+  if (_contents)
+    textSize = [super cellSize];
+  else
+    {
+      ASSIGN (_contents, @"minimum");
+      textSize = [super cellSize];
+      RELEASE (_contents);
+      _contents = nil;
+    }
+
+  returnedSize.width = titleSize.width + 3 + textSize.width;
+
   if (titleSize.height > textSize.height)
     returnedSize.height = titleSize.height;
   else
@@ -174,8 +225,12 @@ static NSColor	*shadowCol;
 
 - (NSRect) drawingRectForBounds: (NSRect)theRect
 {
-  theRect.origin.x   += _titleWidth + 4;
-  theRect.size.width -= _titleWidth + 4;
+  // Safety check
+  if (_displayedTitleWidth == -1)
+    _displayedTitleWidth = [self titleWidth];
+
+  theRect.origin.x   += _displayedTitleWidth + 3;
+  theRect.size.width -= _displayedTitleWidth + 3;
   
   return [super drawingRectForBounds: theRect];
 }
@@ -193,10 +248,14 @@ static NSColor	*shadowCol;
   if (NSIsEmptyRect(cellFrame))
     return;
 
+  // Safety check
+  if (_displayedTitleWidth == -1)
+    _displayedTitleWidth = [self titleWidth];
+
   //
   // Draw title
   //
-  titleFrame.size.width = _titleWidth;
+  titleFrame.size.width = _displayedTitleWidth;
   [_titleCell drawWithFrame: titleFrame inView: controlView];
 
   //
@@ -206,8 +265,8 @@ static NSColor	*shadowCol;
   //
   // Draw border
   //
-  borderedFrame.origin.x   += _titleWidth + 4;
-  borderedFrame.size.width -= _titleWidth + 4;
+  borderedFrame.origin.x   += _displayedTitleWidth + 3;
+  borderedFrame.size.width -= _displayedTitleWidth + 3;
 
   if (NSIsEmptyRect(borderedFrame))
     return;
@@ -232,15 +291,27 @@ static NSColor	*shadowCol;
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  // TODO
+  BOOL tmp;
+
   [super encodeWithCoder: aCoder];
+
+  tmp = _formcell_auto_title_width;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &tmp];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &_displayedTitleWidth];
+  [aCoder encodeObject: _titleCell];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  // TODO
+  BOOL tmp;
+
   [super initWithCoder: aDecoder];
 
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
+  _formcell_auto_title_width = tmp;
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &_displayedTitleWidth];
+  [aDecoder decodeValueOfObjCType: @encode(id)
+	    at: &_titleCell];
   return self;
 }
 
