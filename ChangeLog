@@ -1,3 +1,8 @@
+2004-09-17  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextFieldCell.m (-initWithCoder:): Moved special
+	handling of action mask into non-keyed decoder branch.
+
 2004-09-16  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSCell.m (-setStringValue:, -setFont:, -setImage:):  Use
