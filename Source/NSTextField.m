@@ -272,24 +272,10 @@
 //
 // Handling Events
 //
-
-// TODO: Understand if, on mouse down, we should: 
-// (1) Select the whole text (as it is now). 
-//     In this case, remove the commented code in the following mouseDown:; 
-//     remove acceptsFirstMouse below.
-// (2) Start editing, and pass the mouseDown: to the field editor, 
-//     so that the cursor is displayed where the mouse was pressed.
-//     In that case, uncomment code in mouseDown:, remove selectText:
-//     from becomeFirstResponder: (but this will not highlight text 
-//     when browsing textfields with the keyboard), and uncomment 
-//     acceptsFirstMouse below.
-// (3) Something more complicated -- figure out how to do it.
 - (void) mouseDown: (NSEvent*)theEvent
 {
-  return;
-/*
   NSText *t;
-
+  
   if ([self isSelectable] == NO)
     return;
 
@@ -298,7 +284,6 @@
   if (_text_object)
     return;
 
-  [self selectText: self];
   t = [window fieldEditor: YES forObject: self];
 
   if ([t superview] != nil)
@@ -309,7 +294,7 @@
 	    return;
 	}
     }
-  
+
 
   //  [NSCursor hide];
   
@@ -319,15 +304,12 @@
 	editor: _text_object
 	delegate: self
 	event: theEvent];
-*/
 }
-/* TODO: Needed or not? (See above, depends on how we are supposed 
-   to answer to mouse down events)
 - (BOOL) acceptsFirstMouse: (NSEvent *)aEvent
 {
   return YES;
 }
-*/
+
 - (BOOL) acceptsFirstResponder
 {
   return [self isSelectable];
@@ -335,15 +317,7 @@
 
 - (BOOL) becomeFirstResponder
 {
-  if ([self isSelectable])
-    {
-      // TODO: The following will select the whole text 
-      // for any kind of events.  Is this correct?
-      [self selectText: self];
-      return YES;
-    }
-  else 
-    return NO;
+  return [self isSelectable];
 }
 
 - (BOOL) abortEditing
