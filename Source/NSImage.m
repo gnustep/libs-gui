@@ -970,7 +970,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 // Producing TIFF Data for the Image 
 - (NSData *) TIFFRepresentation
 {
-  return [bitmapClass TIFFRepresentation];
+  return [bitmapClass TIFFRepresentationOfImageRepsInArray: [self representations]];
 }
 
 - (NSData *) TIFFRepresentationUsingCompression: (NSTIFFCompression)comp
