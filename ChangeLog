@@ -1,17 +1,21 @@
-2002-10-25  Adam Fedor  <fedor@gnu.org>
+2002-10-26  Adam Fedor  <fedor@gnu.org>
 
+	* Source/NSOutlineView.m (-drawRow:clipRect:): Release imageCell
+	(patch from Stefan <urbanek@host.sk>).
+
+2002-10-25  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSApplication.m: Remove some NSDebugLogs.
 
 	* Source/NSDocument.m
-	(-fileNameFromRunningSavePanelForSaveOperation:): Set dicectory to
+	(-fileNameFromRunningSavePanelForSaveOperation:): Set directory to
 	the currentDirectory if no fileName is set. Localize.
-	(-fileAttributesToWriteToFile:ofType:saveOperation:): Stib implement.
+	(-fileAttributesToWriteToFile:ofType:saveOperation:): Stub implement.
 	* Source/NSDocumentController.m: Document.
 	(+sharedDocumentController): Proper allocation/init. Set ourselves
 	as the application delegate if there isn't one already.
 	(-init): Retrieve list of recent documents.
-	(-reviewUnsavedDocumentsWithAlertTitle:cancellable:) Save
+	(-reviewUnsavedDocumentsWithAlertTitle:cancellable:): Save
 	current directory. Localize.
 	(-currentDirectory): Rewrite according to docs.
 

@@ -1003,7 +1003,7 @@ static NSImage *unexpandable  = nil;
 
 	      drawingRect.origin.x += indentationFactor + [image size].width + 5;
 	      drawingRect.size.width -= indentationFactor + [image size].width + 5;
-	      
+	      RELEASE(imageCell);
 	    }
 
 	  [cell drawWithFrame: drawingRect inView: self];
