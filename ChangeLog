@@ -1,3 +1,13 @@
+Tue Dec 15 16:30:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* NSApplication.m: Terminate modal loop if the window goes away.
+	* NSButton.m: Handle key equivalents.
+	* NSButtonCell.m: Handle key equivalents.
+	* NSCell.m: implement ([-performClick:]) method.
+	* NSPanel.m: Close closable panels when user hits escape key.
+	handle keyboard shortcut for default option.
+	* NSWindow.m: Fix bug causing app to terminate when it shouldn't.
+
 Mon Dec 14 16:15:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* GSServicesMnager.m: Added alert panels to display error messages

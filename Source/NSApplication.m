@@ -345,80 +345,92 @@ static int code;
 
 - (int) runModalSession: (NSModalSession)theSession
 {
-BOOL found = NO;
-NSEvent *event;
-unsigned count;
-unsigned i;
+  BOOL found = NO;
+  NSEvent *event;
+  unsigned count;
+  unsigned i;
 
-	if (theSession != session)
-		[NSException raise: NSInvalidArgumentException
-					 format: @"runModalSession: with wrong session"];
+  if (theSession != session)
+    [NSException raise: NSInvalidArgumentException
+                format: @"runModalSession: with wrong session"];
 
-	theSession->runState = NSRunContinuesResponse;
-	[theSession->window display];
-	[theSession->window makeKeyAndOrderFront: self];
+  theSession->runState = NSRunContinuesResponse;
+  [theSession->window display];
+  [theSession->window makeKeyAndOrderFront: self];
 
-	do {												// First we make sure 
-		count = [event_queue count];					// that there is an 
-		for (i = 0; i < count; i++)						// event.
-			{
-			event = [event_queue objectAtIndex: 0];
-			if ([event window] == theSession->window)
-				{
-				found = YES;
-				break;
-				}
-			else										// dump events not for 
-				[event_queue removeObjectAtIndex:0];	// the modal window
-			}
+    // First we make sure 
+    // that there is an 
+    // event.
+  do
+    {
+      count = [event_queue count];
+      for (i = 0; i < count; i++)
+        {
+          event = [event_queue objectAtIndex: 0];
+          if ([event window] == theSession->window)
+            {
+              found = YES;
+              break;
+            }
+          else
+            {
+              // dump events not for 
+              // the modal window
+              [event_queue removeObjectAtIndex: 0];
+            }
+        }
 
-		if (found == NO)
-			{
-			NSDate *limitDate = [NSDate distantFuture];
+      if (found == NO)
+        {
+          NSDate *limitDate = [NSDate distantFuture];
 
-			[[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode
-										beforeDate: limitDate];
-			}
-		}
-	while (found == NO && theSession->runState == NSRunContinuesResponse);
+          [[NSRunLoop currentRunLoop] runMode: NSDefaultRunLoopMode
+        			   beforeDate: limitDate];
+        }
+    }
+  while (found == NO && theSession->runState == NSRunContinuesResponse);
 
-														// Deal with the events
-														// in the queue.
-	while (found == YES && theSession->runState == NSRunContinuesResponse)
-		{
-		NSAutoreleasePool *pool = [NSAutoreleasePool new];
+        													// Deal with the events
+        													// in the queue.
+  while (found == YES && theSession->runState == NSRunContinuesResponse)
+    {
+      NSAutoreleasePool *pool = [NSAutoreleasePool new];
 
-		found = NO;
-		count = [event_queue count];
-		for (i = 0; i < count; i++)
-			{
-			event = [event_queue objectAtIndex: i];
-			if ([event window] == theSession->window)
-				{
-				ASSIGN(current_event, event);
-				[event_queue removeObjectAtIndex: i];
-				found = YES;
+      found = NO;
+      count = [event_queue count];
+      for (i = 0; i < count; i++)
+        {
+          event = [event_queue objectAtIndex: i];
+          if ([event window] == theSession->window)
+            {
+              ASSIGN(current_event, event);
+              [event_queue removeObjectAtIndex: i];
+              found = YES;
 
-				break;
-				}
-			}
+              break;
+            }
+        }
 
-		if (found == YES)
-			{
-			[self sendEvent: current_event];
+      if (found == YES)
+        {
+          [self sendEvent: current_event];
 
-			if (windows_need_update)
-				[self updateWindows];
-							/* xxx should we update the services menu? */
-			[listener updateServicesMenu];
-			}
+          /*
+           *	Check to see if the window has gone away - if so, end session.
+           */
+          if ([window_list indexOfObjectIdenticalTo: session->window] ==
+        	NSNotFound || [session->window isVisible] == NO)
+            [self stopModal];
+          if (windows_need_update)
+            [self updateWindows];
+        }
 
-		[pool release];
-		}
+      [pool release];
+    }
 
-	NSAssert(session == theSession, @"Session was changed while running");
+  NSAssert(session == theSession, @"Session was changed while running");
 
-	return theSession->runState;
+  return theSession->runState;
 }
 
 - (void) stop: (id)sender
@@ -1093,22 +1105,22 @@ int i;
 {
 }
 
-- (void)removeWindowsItem:aWindow
+- (void) removeWindowsItem: (NSWindow*)aWindow
 {
-	if (aWindow == key_window)						// This should be different
-		key_window = nil;
-	if (aWindow == main_window)
-		main_window = nil;
+  if (aWindow == key_window)						// This should be different
+	key_window = nil;
+  if (aWindow == main_window)
+	main_window = nil;
 
 				// If we are within our dealloc then don't remove the window
 				// Most likely dealloc is removing windows from our window list
 				// and subsequently NSWindow is caling us to remove itself.
-	if (gnustep_gui_app_is_in_dealloc)
-		return;
-													// Remove window from the 
-	[window_list removeObject: aWindow];			// window list
-
+  if (gnustep_gui_app_is_in_dealloc)
 	return;
+													// Remove window from the 
+  [window_list removeObject: aWindow];			// window list
+
+  return;
 }
 
 - (void)setWindowsMenu:aMenu

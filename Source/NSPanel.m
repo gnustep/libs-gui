@@ -84,6 +84,18 @@
 }
 
 //
+// If we receive an escape, close.
+//
+- (void) keyDown: (NSEvent*)theEvent
+{
+  if ([@"\e" isEqual: [theEvent charactersIgnoringModifiers]] &&
+    ([self styleMask] & NSClosableWindowMask) == NSClosableWindowMask)
+    [self close];
+  else
+    [super keyDown: theEvent];
+}
+
+//
 // Determining the Panel's Behavior
 //
 - (BOOL) isFloatingPanel
@@ -409,60 +421,61 @@ static GSAlertPanel	*gmodelAlertPanel = nil;
     {
       [defButton setTitle: defaultButton];
       if ([defButton superview] == nil)
-	  	[content addSubview: defButton];
+	[content addSubview: defButton];
+      [self makeFirstResponder: defButton];
     }
   else
     {
       if ([defButton superview] != nil)
-	  	[defButton removeFromSuperview];
+	[defButton removeFromSuperview];
     }
 
   if (alternateButton)
     {
       [altButton setTitle: alternateButton];
       if ([altButton superview] == nil)
-	  	[content addSubview: altButton];
+	[content addSubview: altButton];
     }
   else
     {
       if ([altButton superview] != nil)
-		[altButton removeFromSuperview];
+	[altButton removeFromSuperview];
     }
 
   if (otherButton)
     {
       [othButton setTitle: otherButton];
       if ([othButton superview] == nil)
-		[content addSubview: othButton];
+	[content addSubview: othButton];
     }
   else
     {
       if ([othButton superview] != nil)
-		[othButton removeFromSuperview];
+	[othButton removeFromSuperview];
     }
 
   if (message)
     {
       [messageField setStringValue: message];
       if ([messageField superview] == nil)
-	  	[content addSubview: messageField];
+	[content addSubview: messageField];
     }
   else
     {
       if ([messageField superview] != nil)
-	  	[messageField removeFromSuperview];
+	[messageField removeFromSuperview];
     }
 
   if (title)
     {
       [titleField setStringValue: title];
       if ([titleField superview] == nil)
-	  	[content addSubview: titleField];
+	[content addSubview: titleField];
     }
   else
     {
       if ([titleField superview] != nil)
-	  	[titleField removeFromSuperview];
+	[titleField removeFromSuperview];
     }
 
   result = NSAlertErrorReturn;	/* If no button was pressed	*/

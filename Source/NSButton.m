@@ -263,32 +263,62 @@ id gnustep_gui_nsbutton_class = nil;
 //
 // Setting the Key Equivalent 
 //
-- (NSString *)keyEquivalent
+- (NSString*) keyEquivalent
 {
-  return nil;
+  return [cell keyEquivalent];
 }
 
-- (unsigned int)keyEquivalentModifierMask
+- (unsigned int) keyEquivalentModifierMask
 {
-  return 0;
+  return [cell keyEquivalentModifierMask];
 }
 
-- (void)setKeyEquivalent:(NSString *)aKeyEquivalent
-{}
+- (void) setKeyEquivalent: (NSString*)aKeyEquivalent
+{
+  [cell setKeyEquivalent: aKeyEquivalent];
+}
 
-- (void)setKeyEquivalentModifierMask:(unsigned int)mask
-{}
+- (void) setKeyEquivalentModifierMask: (unsigned int)mask
+{
+  [cell setKeyEquivalentModifierMask: mask];
+}
 
 //
 // Handling Events and Action Messages 
 //
-- (void)performClick:(id)sender
+- (BOOL)acceptsFirstResponder
 {
-  [cell performClick:sender];
+  return [self keyEquivalent] != nil;;
 }
 
-- (BOOL)performKeyEquivalent:(NSEvent *)anEvent
+- (void) keyDown: (NSEvent*)theEvent
 {
+  if ([self performKeyEquivalent: theEvent] == NO)
+    [super keyDown: theEvent];
+}
+
+- (void) performClick: (id)sender
+{
+  [cell performClick: sender];
+}
+
+- (BOOL) performKeyEquivalent: (NSEvent *)anEvent
+{
+  if ([self isEnabled])
+    {
+      NSString	*key = [self keyEquivalent];
+
+      if (key != nil && [key isEqual: [anEvent charactersIgnoringModifiers]])
+	{
+	  unsigned int	mask = [self keyEquivalentModifierMask];
+
+	  if (([anEvent modifierFlags] & mask) == mask)
+	    {
+	      [self performClick: self];
+	      return YES;
+	    }
+	}
+    }
   return NO;
 }
 

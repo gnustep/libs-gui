@@ -30,6 +30,7 @@
 
 #include <gnustep/gui/config.h>
 #include <Foundation/NSString.h>
+#include <Foundation/NSException.h>
 #include <Foundation/NSValue.h>
 
 #include <AppKit/NSApplication.h>
@@ -525,8 +526,25 @@ unsigned int previousMask = action_mask;
 - (void)setTarget:(id)anObject			{}
 - (id)target							{ return nil; }
 
-- (void)performClick:(id)sender
+- (void) performClick: (id)sender
 {
+  NSView	*cv = [self controlView];  
+  
+  [self highlight: YES withFrame: [cv frame] inView: cv];
+  if ([self action] && [self target])
+    {
+      NS_DURING
+	{
+	  [(NSControl*)cv sendAction: [self action] to: [self target]];
+	}
+      NS_HANDLER
+	{
+	  [self highlight: NO withFrame: [cv frame] inView: cv];
+          [localException raise];
+	}
+      NS_ENDHANDLER
+    }
+  [self highlight: NO withFrame: [cv frame] inView: cv];
 }
 
 //

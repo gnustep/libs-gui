@@ -33,6 +33,7 @@
 #include <Foundation/NSLock.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSString.h>
+#include <Foundation/NSException.h>
 
 #include <AppKit/NSButtonCell.h>
 #include <AppKit/NSButton.h>
@@ -154,35 +155,67 @@ NSString* _string = [aString copy];
 	[self setContinuous:YES];
 }
 
+- (void) performClick: (id)sender
+{
+  NSView	*cv = [self controlView];  
+  
+  [self highlight: YES withFrame: [cv frame] inView: cv];
+  if (action && target)
+    {
+      NS_DURING
+	{
+	  [(NSControl*)cv sendAction: action to: target];
+	}
+      NS_HANDLER
+	{
+	  [self highlight: NO withFrame: [cv frame] inView: cv];
+          [localException raise];
+	}
+      NS_ENDHANDLER
+    }
+  [self highlight: NO withFrame: [cv frame] inView: cv];
+}
+
 //
 // Setting the Key Equivalent 
 //
-- (NSString *)keyEquivalent				{ return keyEquivalent; }
-- (NSFont *)keyEquivalentFont			{ return keyEquivalentFont; }
+- (NSString*) keyEquivalent
+{
+  return keyEquivalent;
+}
 
-- (unsigned int)keyEquivalentModifierMask 
+- (NSFont*) keyEquivalentFont
+{
+  return keyEquivalentFont;
+}
+
+- (unsigned int) keyEquivalentModifierMask 
 { 
-	return keyEquivalentModifierMask;
+  return keyEquivalentModifierMask;
 }
 
-- (void)setKeyEquivalent:(NSString *)key	
+- (void) setKeyEquivalent: (NSString*)key	
 { 
-	ASSIGN(keyEquivalent, [key copy]);
+  if (keyEquivalent != key)
+    {
+      [keyEquivalent release];
+      keyEquivalent = [key copy];
+    }
 }
 
-- (void)setKeyEquivalentModifierMask:(unsigned int)mask
+- (void) setKeyEquivalentModifierMask: (unsigned int)mask
 {
-	keyEquivalentModifierMask = mask;
+  keyEquivalentModifierMask = mask;
 }
 
-- (void)setKeyEquivalentFont:(NSFont *)fontObj
+- (void) setKeyEquivalentFont: (NSFont*)fontObj
 {
-	ASSIGN(keyEquivalentFont, fontObj);
+  ASSIGN(keyEquivalentFont, fontObj);
 }
 
-- (void)setKeyEquivalentFont:(NSString *)fontName size:(float)fontSize
+- (void) setKeyEquivalentFont: (NSString*)fontName size: (float)fontSize
 {
-	ASSIGN(keyEquivalentFont, [NSFont fontWithName:fontName size:fontSize]);
+  ASSIGN(keyEquivalentFont, [NSFont fontWithName: fontName size: fontSize]);
 }
 
 //
@@ -270,13 +303,6 @@ NSString* _string = [aString copy];
 - (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
 {
 	control_view = controlView;				// Save last view cell was drawn to
-}
-
-//
-// Simulating a Click 
-//
-- (void)performClick:(id)sender
-{
 }
 
 - (id)copyWithZone:(NSZone*)zone

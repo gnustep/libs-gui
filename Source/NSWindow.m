@@ -1,4 +1,4 @@
-/* 
+/*
    NSWindow.m
 
    The window class
@@ -10,14 +10,14 @@
    Date: 1996
    Author:  Felipe A. Rodriguez <far@ix.netcom.com>
    Date: June 1998
-   
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -27,7 +27,7 @@
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/ 
+*/
 
 #include <gnustep/gui/config.h>
 
@@ -54,7 +54,7 @@
 
 //*****************************************************************************
 //
-// 		NSWindow 
+// 		NSWindow
 //
 //*****************************************************************************
 
@@ -68,22 +68,22 @@
 	if (self == [NSWindow class])
 		{
 		NSDebugLog(@"Initialize NSWindow class\n");
-		[self setVersion:2];							
+		[self setVersion:2];
 		}
 }
 
-+ (NSView *)_windowViewWithFrame:(NSRect)frameRect		// create the view at  
-{														// the root of window's 
-	return nil;											// view heirarchy. 
++ (NSView *)_windowViewWithFrame:(NSRect)frameRect		// create the view at
+{														// the root of window's
+	return nil;											// view heirarchy.
 }														// (backend)
 
-+ (void)removeFrameUsingName:(NSString *)name				
-{														// Saving and restoring 
++ (void)removeFrameUsingName:(NSString *)name
+{														// Saving and restoring
 }														// the window's frame
 
 + (NSRect)contentRectForFrameRect:(NSRect)aRect
 						styleMask:(unsigned int)aStyle
-{														// Computing frame and 
+{														// Computing frame and
 	return aRect;										// content rectangles
 }
 
@@ -113,24 +113,24 @@ int style;
 
 	NSDebugLog(@"NSWindow -init\n");
 															// default window
-	style = NSTitledWindowMask | NSClosableWindowMask		// style mask		
+	style = NSTitledWindowMask | NSClosableWindowMask		// style mask
 			| NSMiniaturizableWindowMask | NSResizableWindowMask;
 
-	return [self initWithContentRect:NSZeroRect 
+	return [self initWithContentRect:NSZeroRect
 				 styleMask:style
-				 backing:NSBackingStoreBuffered 
+				 backing:NSBackingStoreBuffered
 				 defer:NO];
 }
 
 - (void)dealloc
 {
-	if (content_view) 								
+	if (content_view)
 		{
     	[[content_view superview] release];			// Release the window view
 		[content_view release];						// Release the content view
 		}
 
-	if(_fieldEditor)
+	if (_fieldEditor)
 		[_fieldEditor release];
 	[background_color release];
 	[represented_filename release];
@@ -138,7 +138,7 @@ int style;
 	[miniaturized_image release];
 	[window_title release];
 	[_flushRectangles release];
-	
+
 	[super dealloc];
 }
 
@@ -152,10 +152,10 @@ int style;
 {
 	NSDebugLog(@"NSWindow -initWithContentRect:\n");
 
-	return [self initWithContentRect:contentRect 
+	return [self initWithContentRect:contentRect
 				 styleMask:aStyle
-				 backing:bufferingType 
-				 defer:flag 
+				 backing:bufferingType
+				 defer:flag
 				 screen:nil];
 }
 
@@ -174,7 +174,7 @@ NSRect cframe;
 		NSLog(@"No application!\n");
 
 	NSDebugLog(@"NSWindow start of init\n");
-													// Initialize attributes 
+													// Initialize attributes
 	[self cleanInit];								// and flags
 
 	backing_type = bufferingType;
@@ -192,7 +192,7 @@ NSRect cframe;
 	cframe.origin = NSZeroPoint;					// Create the content view
 	cframe.size = frame.size;
 	[self setContentView:[[[NSView alloc] initWithFrame:cframe] autorelease]];
-													// Register ourselves with 
+													// Register ourselves with
 													// the Application object
 	[theApp addWindowsItem:self title:window_title filename:NO];
 
@@ -214,9 +214,9 @@ NSView *wv;
 
 	if (!aView)										// contentview can't be nil
 		aView = [[[NSView alloc] initWithFrame: frame] autorelease];
-													// If window view has not 
+													// If window view has not
 													// been created, create it
-	if ((!content_view) || ([content_view superview] == nil)) 
+	if ((!content_view) || ([content_view superview] == nil))
 		{
 		wv = [NSWindow _windowViewWithFrame: frame];
 		[wv viewWillMoveToWindow: self];
@@ -271,9 +271,9 @@ NSView *wv;
 - (int)gState								{ return 0; }
 - (BOOL)isOneShot							{ return is_one_shot; }
 
-- (void)setBackingType:(NSBackingStoreType)type		
-{ 
-	backing_type = type; 
+- (void)setBackingType:(NSBackingStoreType)type
+{
+	backing_type = type;
 }
 
 - (void)setOneShot:(BOOL)flag				{ is_one_shot = flag; }
@@ -309,13 +309,13 @@ NSView *wv;
 			@selector(windowWillReturnFieldEditor:toObject:)])
 		return [delegate windowWillReturnFieldEditor:self toObject:anObject];
 
-	if(!_fieldEditor && createFlag)					// each window has a global
+	if (!_fieldEditor && createFlag)					// each window has a global
 		{											// text field editor
-		_fieldEditor = [[NSText new] retain];		
-		[_fieldEditor setFieldEditor:YES]; 								 
+		_fieldEditor = [[NSText new] retain];
+		[_fieldEditor setFieldEditor:YES];
 		}
 
-	return _fieldEditor;							
+	return _fieldEditor;
 }
 
 //
@@ -326,7 +326,7 @@ NSView *wv;
 NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
 	is_key = YES;									// We are the key window
-													
+
 	[self resetCursorRects];						// Reset the cursor rects
 														// Post notification
 	[nc postNotificationName: NSWindowDidBecomeKeyNotification object: self];
@@ -335,7 +335,7 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 - (void)becomeMainWindow
 {
 NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-													
+
 	is_main = YES;									// We are the main window
 														// Post notification
 	[nc postNotificationName: NSWindowDidBecomeMainNotification object: self];
@@ -351,7 +351,7 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 - (int)level								{ return window_level; }
 
 - (void)makeKeyAndOrderFront:sender
-{			  										
+{
 	[self makeKeyWindow];							// Make self the key window
 	[self orderFront:sender];						// order self to the front
 }
@@ -361,24 +361,24 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 NSApplication *theApp = [NSApplication sharedApplication];
 													// Can we become the key
 	if (![self canBecomeKeyWindow]) 				// window?
-		return;										
-													// ask the current key 
+		return;
+													// ask the current key
 	[[theApp keyWindow] resignKeyWindow];			// window to resign status
- 
+
 	[self becomeKeyWindow];							// become the key window
-}													 
-	
+}
+
 - (void)makeMainWindow
 {
 NSApplication *theApp = [NSApplication sharedApplication];
 													// Can we become the main
 	if (![self canBecomeMainWindow]) 				// window?
 		return;
-													// ask the current main 
+													// ask the current main
 	[[theApp mainWindow] resignMainWindow];			// window to resign status
-  
+
 	[self becomeMainWindow];						// become the main window
-}													
+}
 
 - (void)orderBack:sender					{}		// implemented in back end
 - (void)orderFront:sender					{}
@@ -443,13 +443,13 @@ NSPoint origin = frame.origin;							// center the window
 - (void)setFrame:(NSRect)frameRect display:(BOOL)flag
 {
 NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-	
-	frame = frameRect;									
+
+	frame = frameRect;
   														// post notification
 	[nc postNotificationName: NSWindowDidResizeNotification object: self];
 
 	if (flag) 											// display if requested
-		[self display];									
+		[self display];
 }
 
 - (void)setFrameTopLeftPoint:(NSPoint)aPoint
@@ -491,20 +491,20 @@ NSPoint basePoint;
 - (void)display
 {
 	visible = YES;
-	needs_display = NO;								// inform first responder 
-													// of it's status so it can 
+	needs_display = NO;								// inform first responder
+													// of it's status so it can
 	[first_responder becomeFirstResponder];			// set the focus to itself
 
 	[self disableFlushWindow];						// tmp disable display
 
 	[[content_view superview] display];				// Draw the window view
-													
-	[self enableFlushWindow];						// Reenable displaying and  
+
+	[self enableFlushWindow];						// Reenable displaying and
 }													// flush the window
 
 - (void)displayIfNeeded
 {
-	if (needs_display) 
+	if (needs_display)
 		{
 		[[content_view superview] displayIfNeeded];
 		needs_display = NO;
@@ -515,7 +515,7 @@ NSPoint basePoint;
 {
 NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
-	if(is_autodisplay && needs_display)					// if autodisplay is
+	if (is_autodisplay && needs_display)					// if autodisplay is
 		{												// enabled and window
 		[self displayIfNeeded];							// display
 		[self flushWindowIfNeeded];
@@ -526,14 +526,14 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
 - (void)flushWindowIfNeeded
 {
-	if (!disable_flush_window && needs_flush) 
+	if (!disable_flush_window && needs_flush)
 		{
 		needs_flush = NO;
 		[self flushWindow];
 		}
 }
 
-- (void)flushWindow							{}		// implemented in back end											
+- (void)flushWindow							{}		// implemented in back end
 - (void)enableFlushWindow					{ disable_flush_window = NO; }
 - (BOOL)isAutodisplay						{ return is_autodisplay; }
 - (BOOL)isFlushWindowDisabled				{ return disable_flush_window; }
@@ -544,7 +544,7 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
 - (BOOL)canStoreColor
 {
-	if (depth_limit > 1)							// If the depth is greater 
+	if (depth_limit > 1)							// If the depth is greater
 		return YES;									// than a single bit
 	else
 		return NO;
@@ -571,7 +571,7 @@ NSView *v;
 														// Discard cursor rects
 	[theView discardCursorRects];						// for the view
 
-	s = [theView subviews];								// Discard cursor rects 
+	s = [theView subviews];								// Discard cursor rects
 	e = [s objectEnumerator];							// for view's subviews
 	while ((v = [e nextObject]))
 		[self discardCursorRectsForView: v];
@@ -594,10 +594,10 @@ NSView *v;
 NSArray *s;
 id e;
 NSView *v;
-												
-	[theView resetCursorRects];					// Reset cursor rects for view		  
 
-	s = [theView subviews];						// Reset cursor rects for the 
+	[theView resetCursorRects];					// Reset cursor rects for view
+
+	s = [theView subviews];						// Reset cursor rects for the
 	e = [s objectEnumerator];					// view's subviews
 	while ((v = [e nextObject]))
 		[self resetCursorRectsForView: v];
@@ -612,27 +612,22 @@ NSView *v;
 //
 // Handling user actions and events
 //
-- (void)close
+- (void) close
 {
-NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 															// Notify delegate
-	[nc postNotificationName: NSWindowWillCloseNotification object: self];
-	[self orderOut:self];									
-	visible = NO;
-															// if app has no
-	if(![[NSApplication sharedApplication] mainMenu])		// menu terminate
-		[[NSApplication sharedApplication] terminate:self];
-	else 													
-		{													// else if should
-		if (is_released_when_closed)						// release do so						 
-			[self autorelease];								// default is YES
-		}													// for windows and				 	
-}															// NO for panels
+  [nc postNotificationName: NSWindowWillCloseNotification object: self];
+  [self orderOut: self];
+  visible = NO;
+
+  if (is_released_when_closed)
+    [self autorelease];
+}
 
 - (void)deminiaturize:sender
 {
 NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-													// Set ivar flag to say we 
+													// Set ivar flag to say we
 	is_miniaturized = NO;							// are not miniaturized
 	visible = YES;
 
@@ -655,33 +650,33 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 	[nc postNotificationName: NSWindowDidMiniaturizeNotification object: self];
 }
 
-- (void)performClose:sender									
+- (void)performClose:sender
 {
-	if(!([self styleMask] & NSClosableWindowMask))
+	if (!([self styleMask] & NSClosableWindowMask))
 		{											// self must have a close
 		NSBeep();									// button in order to be
 		return;										// closed
 		}
-															
+
 	if ([delegate respondsToSelector:@selector(windowShouldClose:)])
 		{											// if delegate responds to
-    	if(![delegate windowShouldClose:self])		// windowShouldClose query
+    	if (![delegate windowShouldClose:self])		// windowShouldClose query
 			{										// it to see if it's ok to
 			NSBeep();								// close the window
-			return;									
+			return;
 			}
-		}											
+		}
 	else
 		{
 		if ([self respondsToSelector:@selector(windowShouldClose:)])
 			{										// else if self responds to
-			if(![self windowShouldClose:self])		// windowShouldClose query
+			if (![self windowShouldClose:self])		// windowShouldClose query
 				{									// self to see if it's ok
 				NSBeep();							// to close self
-				return;								
-		}	}	} 
+				return;
+		}	}	}
 
-	[self close];									// it's ok to close self								
+	[self close];									// it's ok to close self
 }
 
 - (void)performMiniaturize:sender			{ is_miniaturized = YES; }													- (int)resizeFlags							{ return 0; }
@@ -708,12 +703,32 @@ NSApplication *theApp = [NSApplication sharedApplication];
 
 - (NSResponder *)firstResponder				{ return first_responder; }
 
-- (void)keyDown:(NSEvent *)theEvent					// save the first responder
-{													// so that the key up goes 
-	original_responder = first_responder;			// to it and not a possible 
-													// new first responder
-	[first_responder keyDown:theEvent];				// Send the first responder
-}													// the key down
+- (void) keyDown: (NSEvent*)theEvent
+{
+  static NSEvent *inProgress = nil;
+
+  if (theEvent == inProgress)
+    {
+      /*
+       * There was a loop in the responser chain - nothin handled the event
+       * so we make a warning beep.
+       */
+      inProgress = nil;
+      NSBeep();
+    }
+  else
+    {
+      /*
+       * Save the first responder so that the key up goes to it and not a
+       * possible new first responder.
+       * Save the event so we can detect a loop in the responder chain.
+       */
+      original_responder = first_responder;
+      inProgress = theEvent;
+      [first_responder keyDown: theEvent];
+      inProgress = nil;
+    }
+}
 
 - (BOOL)makeFirstResponder:(NSResponder *)aResponder
 {
@@ -725,8 +740,8 @@ NSApplication *theApp = [NSApplication sharedApplication];
 
 	if (![aResponder acceptsFirstResponder])		// does not accept status
 		return NO;									// of first responder ret N
-									// If there is a first responder tell it to  
-									// resign. Make change only if it replies Y  
+									// If there is a first responder tell it to
+									// resign. Make change only if it replies Y
 	if ((first_responder) && (![first_responder resignFirstResponder]))
 		return NO;
   													// Make responder the first
@@ -738,15 +753,15 @@ NSApplication *theApp = [NSApplication sharedApplication];
 }
 
 - (NSPoint)mouseLocationOutsideOfEventStream		// Return mouse location
-{													// in reciever's base coord  
+{													// in reciever's base coord
 	return NSZeroPoint;								// system, ignores event
 }													// loop status (backend)
 
 - (NSEvent *)nextEventMatchingMask:(unsigned int)mask
 {
-	return [[NSApplication sharedApplication] nextEventMatchingMask:mask 
+	return [[NSApplication sharedApplication] nextEventMatchingMask:mask
 											  untilDate:nil
-											  inMode:NSEventTrackingRunLoopMode 
+											  inMode:NSEventTrackingRunLoopMode
 											  dequeue:YES];
 }
 
@@ -755,9 +770,9 @@ NSApplication *theApp = [NSApplication sharedApplication];
 						 inMode:(NSString *)mode
 						 dequeue:(BOOL)deqFlag
 {
-	return [[NSApplication sharedApplication] nextEventMatchingMask:mask 
+	return [[NSApplication sharedApplication] nextEventMatchingMask:mask
 											  untilDate:expiration
-											  inMode:mode 
+											  inMode:mode
 											  dequeue:deqFlag];
 }
 
@@ -793,12 +808,12 @@ NSEvent *e;
 			{
 			id owner = [r owner];
 			e = [NSEvent enterExitEventWithType:NSMouseEntered
-						 location:[theEvent locationInWindow] 
+						 location:[theEvent locationInWindow]
 						 modifierFlags:[theEvent modifierFlags]
-						 timestamp:0 
+						 timestamp:0
 						 windowNumber:[theEvent windowNumber]
-						 context:NULL eventNumber:0 
-						 trackingNumber:[r tag] 
+						 context:NULL eventNumber:0
+						 trackingNumber:[r tag]
 						 userData:[r userData]];
 												// Send the event to the owner
 			if ([owner respondsToSelector:@selector(mouseEntered:)])
@@ -809,21 +824,21 @@ NSEvent *e;
 			{
 			id owner = [r owner];
 			e = [NSEvent enterExitEventWithType:NSMouseExited
-						 location:[theEvent locationInWindow] 
+						 location:[theEvent locationInWindow]
 						 modifierFlags:[theEvent modifierFlags]
-						 timestamp:0 
+						 timestamp:0
 						 windowNumber:[theEvent windowNumber]
-						 context:NULL 
-						 eventNumber:0 
-						 trackingNumber:[r tag] 
+						 context:NULL
+						 eventNumber:0
+						 trackingNumber:[r tag]
 						 userData:[r userData]];
 												// Send the event to the owner
 			if ([owner respondsToSelector:@selector(mouseExited:)])
 				[owner mouseExited:e];
 			}
 		}
-  
-	j = [sb count];								// Check tracking rectangles 
+
+	j = [sb count];								// Check tracking rectangles
 	for (i = 0;i < j; ++i)						// for the subviews
 		[self checkTrackingRectangles:[sb objectAtIndex:i] forEvent:theEvent];
 }
@@ -848,12 +863,12 @@ NSRect rect;
 
 		lastPointConverted = [theView convertPoint:last_point fromView:nil];
 		locationConverted = [theView convertPoint:loc fromView:nil];
-													
+
 		rect = [r rectangle];						// Check mouse's last point
 		last = [theView mouse:lastPointConverted inRect:rect];
 		now = [theView mouse:locationConverted inRect:rect];
 															// Mouse entered
-		if ((!last) && (now))								
+		if ((!last) && (now))
 			{										// Post cursor update event
 			e = [NSEvent enterExitEventWithType: NSCursorUpdate
 						 location: loc
@@ -881,7 +896,7 @@ NSRect rect;
 			[self postEvent: e atStart: YES];
 			}
 		}
-													// Check cursor rectangles 
+													// Check cursor rectangles
 	j = [sb count];									// for the subviews
 	for (i = 0;i < j; ++i)
 		[self checkCursorRectangles:[sb objectAtIndex:i] forEvent:theEvent];
@@ -898,12 +913,12 @@ NSView *v;
     	}
 
 	switch ([theEvent type])
-    	{													
+    	{
 		case NSLeftMouseDown:								// Left mouse down
 			v = [content_view hitTest:[theEvent locationInWindow]];
 			NSDebugLog([v description]);
 			NSDebugLog(@"\n");
-			if(first_responder != v)				// if hit view is not first
+			if (first_responder != v)				// if hit view is not first
 				[self makeFirstResponder:v];		// responder ask it to be
 			[v mouseDown:theEvent];
 			last_point = [theEvent locationInWindow];
@@ -955,7 +970,7 @@ NSView *v;
 		case NSMouseEntered:								// Mouse entered
 		case NSMouseExited:									// Mouse exited
 			break;
-												
+
 		case NSKeyDown:											// Key down
 			[self keyDown:theEvent];
 			break;
@@ -1065,14 +1080,14 @@ id result = nil;
 {
 }
 
-- (BOOL)setFrameUsingName:(NSString *)name	
+- (BOOL)setFrameUsingName:(NSString *)name
 {
 	return NO;
 }
 
-- (NSString *)stringWithSavedFrame				
-{ 
-	return nil; 
+- (NSString *)stringWithSavedFrame
+{
+	return nil;
 }
 
 //
@@ -1275,7 +1290,7 @@ id result = nil;
   minimum_size = [aDecoder decodeSize];
   maximum_size = [aDecoder decodeSize];
   miniaturized_image = [aDecoder decodeObject];
-  [aDecoder decodeValueOfObjCType:@encode(NSBackingStoreType) 
+  [aDecoder decodeValueOfObjCType:@encode(NSBackingStoreType)
 	    at: &backing_type];
   [aDecoder decodeValueOfObjCType:@encode(int) at: &window_level];
   [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_one_shot];
@@ -1319,7 +1334,7 @@ id result = nil;
 - (void)performDeminiaturize:sender		{}
 - (void)performHide:sender				{}
 - (void)performUnhide:sender			{}
-													
+
 - (void)initDefaults								// Allow subclasses to init
 {													// without the backend
 	first_responder = nil;							// class attempting to
@@ -1357,7 +1372,7 @@ id result = nil;
 - cleanInit
 {
 	[super init];
-	
+
 	[self initDefaults];
 	return self;
 }
