@@ -54,14 +54,14 @@
 
 /* Helpers.  Would be nicer to use the C99 fmin/fmax functions, but that
    isn't currently possible.  */
-static double min(double x, double y)
+static double gs_min(double x, double y)
 {
   if (x > y)
     return y;
   else
     return x;
 }
-static double max(double x, double y)
+static double gs_max(double x, double y)
 {
   if (x < y)
     return y;
@@ -985,22 +985,22 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     y0 = y1 = p.y;
 
     p = [transform transformPoint: NSMakePoint(s.width, 0)];
-    x0 = min(x0, p.x);
-    y0 = min(y0, p.y);
-    x1 = max(x1, p.x);
-    y1 = max(y1, p.y);
+    x0 = gs_min(x0, p.x);
+    y0 = gs_min(y0, p.y);
+    x1 = gs_max(x1, p.x);
+    y1 = gs_max(y1, p.y);
 
     p = [transform transformPoint: NSMakePoint(s.width, s.height)];
-    x0 = min(x0, p.x);
-    y0 = min(y0, p.y);
-    x1 = max(x1, p.x);
-    y1 = max(y1, p.y);
+    x0 = gs_min(x0, p.x);
+    y0 = gs_min(y0, p.y);
+    x1 = gs_max(x1, p.x);
+    y1 = gs_max(y1, p.y);
 
     p = [transform transformPoint: NSMakePoint(0, 0)];
-    x0 = min(x0, p.x);
-    y0 = min(y0, p.y);
-    x1 = max(x1, p.x);
-    y1 = max(y1, p.y);
+    x0 = gs_min(x0, p.x);
+    y0 = gs_min(y0, p.y);
+    x1 = gs_max(x1, p.x);
+    y1 = gs_max(y1, p.y);
 
     x0 = floor(x0);
     y0 = floor(y0);

@@ -1,3 +1,8 @@
+2005-02-03 10:54  Alexander Malmberg  <alexander@malmberg.org>
+
+	* Source/NSImage.m (min, max): Rename to ...
+	(gs_min, gs_max): ... this. Update callers.
+
 2005-01-28 21:58 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSColorWell.m: [NSColorWell mouseDown:] prevent use
