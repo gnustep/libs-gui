@@ -33,13 +33,6 @@ DOCUMENT_NAME = General
 General_DOC_INSTALL_DIR = Developer/Gui
 
 General_AGSDOC_FILES = \
-OpenStepCompliance.gsdoc \
+OpenStepCompliance.gsdoc
 
 include $(GNUSTEP_MAKEFILES)/documentation.make
-
-#
-# Ensure that our destination subdirectory exists in the Documentation
-# directory, and temporarily copy the base source file here for autogsdoc
-# to use.
-#
-#before-all::

@@ -37,12 +37,4 @@ GuiUser_AGSDOC_FILES = \
 	KeyboardSetup.gsdoc \
 	LanguageSetup.gsdoc
 
-
 include $(GNUSTEP_MAKEFILES)/documentation.make
-
-#
-# Ensure that our destination subdirectory exists in the Documentation
-# directory, and temporarily copy the base source file here for autogsdoc
-# to use.
-#
-#before-all::
