@@ -2,6 +2,8 @@
 
    Copyright (C) 1999 Free Software Foundation, Inc.
    
+   Author: Fred Kiefer <FredKiefer@gmx.de>
+   Date: Jul 2003
    Author:  Michael Hanni <mhanni@sprintmail.com>
    Date: 1999
 
@@ -49,6 +51,11 @@ static NSImage *_pbc_image[2];
     }
 }
 
+- (id) init
+{
+  return [self initTextCell: @"" pullsDown: NO];
+}
+
 - (id) initTextCell: (NSString *)stringValue
 {
   return [self initTextCell: stringValue pullsDown: NO];
@@ -59,17 +66,16 @@ static NSImage *_pbc_image[2];
 {
   [super initTextCell: stringValue];
 
-  _pbcFlags.pullsDown = pullDown;
+  _menu = [[NSMenu alloc] initWithTitle: @""];
+  [_menu _setOwnedByPopUp: self];
+
+  [self setPullsDown: pullDown];
   _pbcFlags.usesItemFromMenu = YES;
-  _pbcFlags.altersStateOfSelectedItem = YES;
 
   if ([stringValue length] > 0)
     {
       [self addItemWithTitle: stringValue]; 
     }
-
-  _menu = [[NSMenu alloc] initWithTitle: @""];
-  [_menu _setOwnedByPopUp: self];
 
   return self;
 }
@@ -86,10 +92,24 @@ static NSImage *_pbc_image[2];
   return _menu;
 }
 
-// Behavior settings
+// Behaviour settings
 - (void) setPullsDown: (BOOL)flag
 {
   _pbcFlags.pullsDown = flag;
+  [self setAltersStateOfSelectedItem: !flag];
+
+  if (!flag)
+    {
+      // pop up
+      [self setArrowPosition: NSPopUpArrowAtCenter];
+      [self setPreferredEdge: NSMinYEdge];
+    }
+  else
+    {
+      // pull down
+      [self setArrowPosition: NSPopUpArrowAtBottom];
+      [self setPreferredEdge: NSMaxYEdge];
+    }
 }
 
 - (BOOL) pullsDown
@@ -110,7 +130,6 @@ static NSImage *_pbc_image[2];
 // The preferred edge is used for pull down menus and for popups under 
 // severe screen position restrictions.  It indicates what edge of the
 // cell the menu should pop out from.
-
 - (void) setPreferredEdge: (NSRectEdge)edge
 {
   _pbcFlags.preferredEdge = edge;
@@ -137,12 +156,21 @@ static NSImage *_pbc_image[2];
   return _pbcFlags.usesItemFromMenu;
 }
 
-// This only has an effect for popups (it is ignored for pulldowns).  
-// If YES (the default) then the selected item gets its state set to
-// NSOnState.  If NO the items in the menu are left alone.
-
+// If YES (the default for popups) then the selected item gets its state
+// set to NSOnState. If NO the items in the menu are left alone.
 - (void) setAltersStateOfSelectedItem: (BOOL)flag
 {
+  id <NSMenuItem> selectedItem = [self selectedItem];
+
+  if (flag)
+    {
+      [selectedItem setState: NSOffState];
+    }
+  else
+    {
+      [selectedItem setState: NSOnState];
+    }
+
   _pbcFlags.altersStateOfSelectedItem = flag;
 }
 
@@ -173,6 +201,12 @@ static NSImage *_pbc_image[2];
 {
   id <NSMenuItem> anItem;
   int count = [_menu numberOfItems];
+  int i = [self indexOfItemWithTitle: title];
+
+  if (-1 != i)
+    {
+      [self removeItemAtIndex: i];
+    }
 
   if (index < 0)
     index = 0;
@@ -188,6 +222,8 @@ static NSImage *_pbc_image[2];
      it to appear on the screen.  */
   [anItem setOnStateImage: nil];
   [anItem setMixedStateImage: nil];
+
+  // FIXME: Set target and action to default
 }
 
 - (void) removeItemWithTitle: (NSString *)title
@@ -263,11 +299,47 @@ static NSImage *_pbc_image[2];
   return [_menu itemAtIndex: end];
 }
 
+- (id <NSCopying>) objectValue
+{
+  return [NSNumber numberWithInt: [self indexOfSelectedItem]];
+}
+
+- (void) setObjectValue: (id)object
+{
+  if ([object respondsTo: @selector(intValue)])
+    {
+      int i = [object intValue];
+	
+      [self selectItemAtIndex: i];
+    }
+}
+
+- (void)setImage:(NSImage *)anImage;
+{
+  // Do nothing as the image is determined by the current item
+}
+
 // Dealing with selection
 - (void) selectItem: (id <NSMenuItem>)item
 {
+  NSImage *image;
+
   if (_selectedItem == item)
     return;
+
+  if (_pbcFlags.arrowPosition == NSPopUpArrowAtBottom)
+    {
+      image = _pbc_image[1];
+    }
+  else if (_pbcFlags.arrowPosition == NSPopUpArrowAtCenter)
+    {
+      image = _pbc_image[0];
+    }
+  else
+    {
+      // No image for NSPopUpNoArrow
+      image = nil;
+    }
 
   if (_selectedItem != nil)
     {
@@ -275,7 +347,7 @@ static NSImage *_pbc_image[2];
 	{
 	  [_selectedItem setState: NSOffState];
 	}
-      if ([_selectedItem image] == _pbc_image[_pbcFlags.pullsDown])
+      if ([_selectedItem image] == image)
   	[_selectedItem setImage: nil];
     }
 
@@ -288,7 +360,7 @@ static NSImage *_pbc_image[2];
 	  [_selectedItem setState: NSOnState];
         }
       if ([_selectedItem image] == nil)
-	[_selectedItem setImage: _pbc_image[_pbcFlags.pullsDown]];
+	[_selectedItem setImage: image];
     }
 
   /* Set the item in the menu */
@@ -373,7 +445,7 @@ static NSImage *_pbc_image[2];
   else
     {
       int index = [[_menu menuRepresentation] highlightedItemIndex];
-      
+
       if (index < 0)
 	index = [self indexOfSelectedItem];
       if (index < 0)
@@ -476,40 +548,18 @@ static NSImage *_pbc_image[2];
   return _pbcFlags.arrowPosition;
 }
 
-/*
- * Does nothing for now.
- */
 - (void) setArrowPosition: (NSPopUpArrowPosition)position
 {
   _pbcFlags.arrowPosition = position;
 }
 
 /*
- * What would be nice and natural is to make this drawing using the same code 
- * that is used to draw cells in the menu.
- * This looks like a mess to do in this framework.
- *
- * Well, here is an attempt to make this work.
+ * This drawing uses the same code that is used to draw cells in the menu.
  */
-- (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
+- (void) drawInteriorWithFrame: (NSRect)cellFrame
+			inView: (NSView*)controlView
 {
-  NSMenuItemCell    *aCell;
-
-  // Save last view drawn to
-  if (_control_view != controlView)
-    _control_view = controlView;
-
-  // Transparent buttons never draw 
-  if (_buttoncell_is_transparent)
-    return;
-
-  // Do nothing if cell's frame rect is zero
-  if (NSIsEmptyRect(cellFrame))
-    return;
-
-  // Do nothing if the window is deferred
-  if ([[controlView window] gState] == 0)
-    return;
+  NSMenuItem *anItem;
 
   /* 
    * Get the NSMenuItemCell of the selected item, or create a temporary 
@@ -517,63 +567,48 @@ static NSImage *_pbc_image[2];
    */
   if ([_menu numberOfItems] > 0)
     {
-      aCell = [[_menu menuRepresentation] 
-	       menuItemCellForItemAtIndex: [self indexOfSelectedItem]];
+      // This conversion is needed as [setMenuView:] expects an NSMenuItem
+      anItem = (NSMenuItem *)[_menu itemAtIndex: [self indexOfSelectedItem]];
     }
   else
     {
-      NSMenuItem *anItem = [NSMenuItem new];
+      anItem = [NSMenuItem new];
 
-      [anItem setImage: _pbc_image[_pbcFlags.pullsDown]];
-      
-      aCell = [NSMenuItemCell new];
-      /* We need this menu item because NSMenuItemCell gets its contents 
-       * from the menuItem not from what is set in the cell
-       */
-      [aCell setMenuItem: anItem];
-      /* We need to set the menu view so we trigger the special case 
-       * popupbutton code in NSMenuItemCell
-       */
-      [aCell setMenuView: [_menu menuRepresentation]];
+      if (_pbcFlags.arrowPosition == NSPopUpArrowAtBottom)
+        {
+	  [anItem setImage: _pbc_image[1]];
+	}
+      else if (_pbcFlags.arrowPosition == NSPopUpArrowAtCenter)
+        {
+	  [anItem setImage: _pbc_image[0]];
+	}
+      else
+        {
+	    // No image for NSPopUpNoArrow
+        }
+    }      
 
-      /* We need to calc our size to get images placed correctly */
-      [aCell calcSize];
+  /* We need this menu item because NSMenuItemCell gets its contents 
+   * from the menuItem not from what is set in the cell */
+  [self setMenuItem: anItem];
+  /* We need to set the menu view so we trigger the special case 
+   * popupbutton code in NSMenuItemCell
+   */
+  [self setMenuView: [_menu menuRepresentation]];
+  
+  /* We need to calc our size to get images placed correctly */
+  [self calcSize];
+  [super drawInteriorWithFrame: cellFrame inView: controlView];
 
+  /* Release the item to restore balance if menu items array is empty*/
+  if ([_menu numberOfItems] == 0)
+    {
       RELEASE(anItem);
     }
 
-  /* Turn off highlighting so the NSPopUpButton looks right */
-  [aCell setHighlighted: NO];
-  
-  [aCell drawWithFrame: cellFrame inView: controlView];
-
-  /* Draw our own interior so we pick up our dotted frame */
-  [self drawInteriorWithFrame: cellFrame inView: controlView];
-
-  /* Rehighlight item for consistency */
-  [aCell setHighlighted: YES];
-
-  /* Release the cell to restore balance if menu items array is empty*/
-  if ([_menu numberOfItems] == 0)
-    {
-      RELEASE (aCell);
-    }
-}
-
-/* FIXME: This needs to be removed in favor of allowing the cell to draw 
- * our NSDottedRect.
- */
-- (void) drawInteriorWithFrame: (NSRect)cellFrame
-			inView: (NSView*)view
-{
-  // Transparent buttons never draw
-  if (_buttoncell_is_transparent)
-    return;
-
   cellFrame = [self drawingRectForBounds: cellFrame];
 
-  if (_cell.shows_first_responder
-      && [[view window] firstResponder] == view)
+  if (_cell.shows_first_responder)
     NSDottedFrameRect(cellFrame);
 }
 
