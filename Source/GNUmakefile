@@ -28,6 +28,7 @@ GNUSTEP_INSTALLATION_DIR = $(GNUSTEP_SYSTEM_ROOT)
 
 GNUSTEP_MAKEFILES = $(GNUSTEP_SYSTEM_ROOT)/Makefiles
 
+GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../gui.make
 include $(GNUSTEP_MAKEFILES)/common.make
 
 include ../Version
@@ -158,7 +159,7 @@ libgnustep-gui_OBJC_FILES += NSPasteboard.m
 endif
 
 libgnustep-gui_HEADER_FILES_DIR = ../Headers
-libgnustep-gui_HEADER_FILES_INSTALL_DIR = /gnustep
+libgnustep-gui_HEADER_FILES_INSTALL_DIR = /
 
 libgnustep-gui_HEADER_FILES = \
 AppKit/AppKit.h \
