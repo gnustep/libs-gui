@@ -1,3 +1,14 @@
+2000-04-27  Jonathan Gapen  <jagapen@whitewater.chem.wisc.edu>
+
+	* Images/common_ColorSwatch.tiff: New file.
+	* Images/GNUmakefile: Update.
+	* Model/IMLoading.m: Bugfix in [+loadGModelNamed:owner:] to invoke
+	[+bundleForClass:] with a class, not an object.
+	* Panels/ColorPanel.gmodel: Add attributes to make a color panel
+	become key only as needed, and make it a floating panel.
+	* Source/NSColorPanel.m: Use above image for color dragging.
+	* Source/NSColorWell.m: Updates for proper (de)activation.
+
 2000-04-25  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSScreen.m (-deviceDescription): Use autoreleased dictionary.
