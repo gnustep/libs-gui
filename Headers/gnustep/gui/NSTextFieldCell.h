@@ -36,30 +36,25 @@
 @interface NSTextFieldCell : NSActionCell <NSCoding>
 {
   // Attributes
-  NSColor *background_color;
-  NSColor *text_color;
-  BOOL draw_background;
-  BOOL pending_select;
-
-  // Reserved for back-end use
-  void *be_tfc_reserved;
+  NSColor *_background_color;
+  NSColor *_text_color;
+  BOOL _draws_background;
 }
 
 //
 // Modifying Graphic Attributes 
 //
-- (NSColor *)backgroundColor;
-- (BOOL)drawsBackground;
-- (void)setBackgroundColor:(NSColor *)aColor;
-- (void)setDrawsBackground:(BOOL)flag;
 - (void)setTextColor:(NSColor *)aColor;
-- (id)setUpFieldEditorAttributes:(id)textObject;
 - (NSColor *)textColor;
 
-//
-// Edit text
-//
-- (void)selectText:(id)sender;
+- (void)setDrawsBackground:(BOOL)flag;
+- (BOOL)drawsBackground;
+
+- (void)setBackgroundColor:(NSColor *)aColor;
+- (NSColor *)backgroundColor;
+
+- (id)setUpFieldEditorAttributes:(id)textObject;
+
 
 //
 // NSCoding protocol
