@@ -89,11 +89,12 @@ static BOOL usesUserKeyEquivalents = YES;
 
 - (void)setTarget:(id)anObject
 {
+  BOOL	hadSubmenu = hasSubmenu;
   hasSubmenu = anObject && [anObject isKindOfClass:[NSMenu class]];
-  if (hasSubmenu) {
+  if (hasSubmenu)
     [anObject retain];
+  if (hadSubmenu)
     [target release];
-  }
   [super setTarget:anObject];
 }
 
@@ -110,14 +111,6 @@ static BOOL usesUserKeyEquivalents = YES;
 - (BOOL)hasSubmenu
 {
   return hasSubmenu;
-}
-
-- (BOOL)isEnabled
-{
-  if (hasSubmenu)
-    return YES;
-  else
-    return [super isEnabled];
 }
 
 - (NSString*)keyEquivalent

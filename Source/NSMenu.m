@@ -454,138 +454,156 @@ static Class menuCellClass = nil;
   /* Temporary disable automatic displaying of menu */
   [self setMenuChangedMessagesEnabled:NO];
 
-  for (i = 0; i < count; i++) {
-    id<NSMenuItem> cell = [cells objectAtIndex:i];
-    SEL action = [cell action];
-    id target;
-    NSWindow* keyWindow;
-    NSWindow* mainWindow;
-    id responder;
-    id delegate;
-    BOOL found = NO;
+  for (i = 0; i < count; i++)
+    {
+      id<NSMenuItem> cell = [cells objectAtIndex: i];
+      SEL action = [cell action];
+      id target;
+      NSWindow* keyWindow;
+      NSWindow* mainWindow;
+      id responder;
+      id delegate;
+      id validator = nil;
+      BOOL wasEnabled = [cell isEnabled];
+      BOOL shouldBeEnabled;
 
-    /* Update the submenu items if any */
-    if ([cell hasSubmenu]) {
-      [[cell target] update];
-      continue;
-    }
+      /* Update the submenu items if any */
+      if ([cell hasSubmenu])
+	[[cell target] update];
 
-    if (!action) {
-      [cell setEnabled:NO];
-      continue;
-    }
-
-    /* Search the target */
-    if ((target = [cell target])) {
-      if ([target respondsToSelector:action]) {
-	if ([target respondsToSelector:@selector(validateMenuItem:)])
-	  [cell setEnabled:[target validateMenuItem:cell]];
-	else
-	  [cell setEnabled:YES];
-	continue;
-      }
-    }
-
-    /* Search the key window's responder chain */
-    keyWindow = [theApp keyWindow];
-    responder = [keyWindow firstResponder];
-    while (responder && !found) {
-      if ([responder respondsToSelector:action]) {
-	if ([responder respondsToSelector:@selector(validateMenuItem:)])
-	  [cell setEnabled:[responder validateMenuItem:cell]];
-	else
-	  [cell setEnabled:YES];
-	found = YES;
-      }
-      responder = [responder nextResponder];
-    }
-    if (found)
-      continue;
-
-    /* Search the key window */
-    if ([keyWindow respondsToSelector:action]) {
-      if ([keyWindow respondsToSelector:@selector(validateMenuItem:)])
-	[cell setEnabled:[keyWindow validateMenuItem:cell]];
-      else
-	[cell setEnabled:YES];
-      continue;
-    }
-
-    /* Search the key window's delegate */
-    delegate = [keyWindow delegate];
-    if ([delegate respondsToSelector:action]) {
-      if ([delegate respondsToSelector:@selector(validateMenuItem:)])
-	[cell setEnabled:[delegate validateMenuItem:cell]];
-      else
-	[cell setEnabled:YES];
-      continue;
-    }
-
-    mainWindow = [theApp mainWindow];
-    if (mainWindow != keyWindow) {
-      /* Search the main window's responder chain */
-      responder = [mainWindow firstResponder];
-      while (responder && !found) {
-	if ([responder respondsToSelector:action]) {
-	  if ([responder respondsToSelector:@selector(validateMenuItem:)])
-	    [cell setEnabled:[responder validateMenuItem:cell]];
+      /* If there is no action - there can be no validator for the cell */
+      if (action)
+	{
+	  /* If there is a target use that for validation (or nil). */
+	  if ((target = [cell target]))
+	    {
+	      if ([target respondsToSelector: action])
+		{
+		  validator = target;
+		}
+	    }
 	  else
-	    [cell setEnabled:YES];
-	  found = YES;
+	    {
+	      /* Search the key window's responder chain */
+	      keyWindow = [theApp keyWindow];
+	      responder = [keyWindow firstResponder];
+	      while (responder)
+		{
+		  if ([responder respondsToSelector: action])
+		    {
+		      validator = responder;
+		      break;
+		    }
+		  responder = [responder nextResponder];
+		}
+	      
+	      if (validator == nil)
+		{
+		  /* Search the key window */
+		  if ([keyWindow respondsToSelector: action])
+		    {
+		      validator = keyWindow;
+		    }
+		}
+
+	      if (validator == nil)
+		{
+		  /* Search the key window's delegate */
+		  delegate = [keyWindow delegate];
+		  if ([delegate respondsToSelector: action])
+		    {
+		      validator = delegate;
+		    }
+		}
+
+	      if (validator == nil)
+		{
+		  mainWindow = [theApp mainWindow];
+		  if (mainWindow != keyWindow)
+		    {
+		      /* Search the main window's responder chain */
+		      responder = [mainWindow firstResponder];
+		      while (responder)
+			{
+			  if ([responder respondsToSelector: action])
+			    {
+			      validator = responder;
+			      break;
+			    }
+			  responder = [responder nextResponder];
+			}
+
+		      if (validator == nil)
+			{
+			  /* Search the main window */
+			  if ([mainWindow respondsToSelector: action])
+			    {
+			      validator = mainWindow;
+			    }
+			}
+
+		      if (validator == nil)
+			{
+			  /* Search the main window's delegate */
+			  delegate = [mainWindow delegate];
+			  if ([delegate respondsToSelector: action])
+			    {
+			      validator = delegate;
+			    }
+			}
+		    }
+		}
+
+	      if (validator == nil)
+		{
+		  /* Search the NSApplication object */
+		  if ([theApp respondsToSelector: action])
+		    {
+		      validator = theApp;
+		    }
+		}
+
+	      if (validator == nil)
+		{
+		  /* Search the NSApplication object's delegate */
+		  delegate = [theApp delegate];
+		  if ([delegate respondsToSelector: action])
+		    {
+		      validator = theApp;
+		    }
+		}
+	    }
 	}
 
-	responder = [responder nextResponder];
-      }
-      if (found)
-	continue;
-
-      /* Search the main window */
-      if ([mainWindow respondsToSelector:action]) {
-	if ([mainWindow respondsToSelector:@selector(validateMenuItem:)])
-	  [cell setEnabled:[mainWindow validateMenuItem:cell]];
-	else
-	  [cell setEnabled:YES];
-	continue;
-      }
-
-      /* Search the main window's delegate */
-      delegate = [mainWindow delegate];
-      if ([delegate respondsToSelector:action]) {
-	if ([delegate respondsToSelector:@selector(validateMenuItem:)])
-	  [cell setEnabled:[delegate validateMenuItem:cell]];
-	else
-	  [cell setEnabled:YES];
-	continue;
-      }
-    }
-
-    /* Search the NSApplication object */
-    if ([theApp respondsToSelector:action]) {
-      if ([theApp respondsToSelector:@selector(validateMenuItem:)])
-	[cell setEnabled:[theApp validateMenuItem:cell]];
+      if (validator == nil)
+	{
+	  shouldBeEnabled = NO;
+	}
+      else if ([validator respondsToSelector: @selector(validateMenuItem:)])
+	{
+	  shouldBeEnabled = [validator validateMenuItem: cell];
+	}
       else
-	[cell setEnabled:YES];
-      continue;
-    }
+	{
+	  shouldBeEnabled = YES;
+	}
 
-    /* Search the NSApplication object's delegate */
-    delegate = [theApp delegate];
-    if ([delegate respondsToSelector:action]) {
-      if ([delegate respondsToSelector:@selector(validateMenuItem:)])
-	[cell setEnabled:[delegate validateMenuItem:cell]];
-      else
-	[cell setEnabled:YES];
-      continue;
+      if (shouldBeEnabled != wasEnabled)
+	{
+	  [cell setEnabled: shouldBeEnabled];
+	  [menuCells setNeedsDisplayInRect: [menuCells cellFrameAtRow: i]];
+	}
     }
-
-    [cell setEnabled:NO];
-  }
 
   /* Reenable displaying of menus */
   [self setMenuChangedMessagesEnabled:YES];
 
-  if(menuHasChanged)										// resize if menu 
-    [self sizeToFit];										// has been changed
+  if (menuHasChanged)
+    [self sizeToFit];
+
+  /* FIXME - only doing this here 'cos auto-display doesn't work */
+  if ([menuCells needsDisplay])
+    [menuCells display];
 }
 
 - (void)performActionForItem:(id <NSMenuItem>)cell

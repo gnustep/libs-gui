@@ -605,44 +605,96 @@ extern NSDictionary *GSAllServicesDictionary();
    *    The cell corresponds to one of our services - so we check to see if
    *    there is anything that can deal with it.
    */
-  for (i = 0; i <= es; i++)
+  if (es == 0)
     {
-      NSString  *sendType;
+      if (er == 0)
+	{
+	  if ([resp validRequestorForSendType: nil
+				   returnType: nil] != nil)
+	    return YES;
+	}
+      else
+	{
+	  for (j = 0; j < er; j++)
+	    {
+	      NSString      *returnType;
 
-      sendType = (i < es) ? [sendTypes objectAtIndex: i] : nil;
+	      returnType = [returnTypes objectAtIndex: j];
+	      if ([resp validRequestorForSendType: nil
+				       returnType: returnType] != nil)
+		return YES;
+	    }
+	}
+    }
+  else
+    {
+      for (i = 0; i < es; i++)
+	{
+	  NSString  *sendType;
 
-      for (j = 0; j <= er; j++)
-        {
-          NSString      *returnType;
+	  sendType = [sendTypes objectAtIndex: i];
 
-          returnType = (j < er) ? [returnTypes objectAtIndex: j] : nil;
+	  if (er == 0)
+	    {
+	      if ([resp validRequestorForSendType: sendType
+				       returnType: nil] != nil)
+		return YES;
+	    }
+	  else
+	    {
+	      for (j = 0; j < er; j++)
+		{
+		  NSString      *returnType;
 
-          if ([resp validRequestorForSendType: sendType
-                                   returnType: returnType] != nil)
-            {
-              return YES;
-            }
-        }
+		  returnType = [returnTypes objectAtIndex: j];
+		  if ([resp validRequestorForSendType: sendType
+					   returnType: returnType] != nil)
+		    return YES;
+		}
+	    }
+	}
     }
   return NO;
 }
 
 - (void) updateServicesMenu
 {
-  if (servicesMenu)
+  if (servicesMenu && [[application mainMenu] autoenablesItems])
     {
-      NSArray   *a = [servicesMenu itemArray];
-      unsigned  i;
+      NSMenuMatrix	*menuCells;
+      NSArray   	*a;
+      unsigned  	i;
+      NSMenu		*mainMenu = [application mainMenu];
+      BOOL		found = NO;
+
+      a = [mainMenu itemArray];
+      for (i = 0; i < [a count]; i++)
+	if ([[a objectAtIndex: i] target] == servicesMenu)
+	  found = YES;
+      if (found == NO)
+	{
+	  NSLog(@"Services menu not in main menu!\n");
+	  return;
+	}
+
+      menuCells = [servicesMenu menuCells];
+      a = [menuCells itemArray];
 
       for (i = 0; i < [a count]; i++)
         {
           NSCell        *cell = [a objectAtIndex: i];
+	  BOOL		wasEnabled = [cell isEnabled];
+	  BOOL		shouldBeEnabled = [self validateMenuItem: cell];
 
-          if ([self validateMenuItem: cell] == YES)
+          if (wasEnabled != shouldBeEnabled)
             {
-              [cell setEnabled: YES];
+              [cell setEnabled: shouldBeEnabled];
+	      [menuCells setNeedsDisplayInRect: [menuCells cellFrameAtRow: i]];
             }
         }
+	/* FIXME - only doing this here 'cos auto-display doesn't work */
+	if ([menuCells needsDisplay])
+	  [menuCells display];
     }
 }
 
