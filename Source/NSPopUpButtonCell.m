@@ -557,7 +557,13 @@ static NSImage *_pbc_image[2];
   //  cellFrame.origin.x += 5;
   //  cellFrame.size.width -= 5;
 
+  cellFrame.origin.x += 2;
+  cellFrame.size.width -= 2;
+
   [self _drawText: [self titleOfSelectedItem] inFrame: cellFrame];
+
+  cellFrame.origin.x -= 4;
+  cellFrame.size.width += 4;
   
   anImage = _pbc_image[_pbcFlags.pullsDown];
 
@@ -565,7 +571,7 @@ static NSImage *_pbc_image[2];
   [anImage setBackgroundColor: [NSColor controlBackgroundColor]];
 
   size = [anImage size];
-  position.x = cellFrame.origin.x + cellFrame.size.width - size.width - 4;
+  position.x = cellFrame.origin.x + cellFrame.size.width - size.width;
   position.y = MAX(NSMidY(cellFrame) - (size.height/2.), 0.);
   /*
    * Images are always drawn with their bottom-left corner at the origin
@@ -581,6 +587,9 @@ static NSImage *_pbc_image[2];
       cellFrame.size.width += 2;
     }
 
+  cellFrame.origin.y -= 1;
+  cellFrame.size.height += 2;
+  cellFrame.size.width += 2;
   if (_cell.shows_first_responder
       && [[view window] firstResponder] == view)
     NSDottedFrameRect(cellFrame);
