@@ -1,7 +1,0 @@
-{ /* A Sample printers file */
-    Unknown = (
-       "Apple_LaserWriter_II_NTX",
-       "localhost",
-       "A Note"
-    );
-}
