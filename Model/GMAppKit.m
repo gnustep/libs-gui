@@ -27,13 +27,19 @@
 #import <Foundation/NSException.h>
 #include "AppKit/GMAppKit.h"
 
+#ifndef AUTORELEASE
+#define AUTORELEASE(object)	[object autorelease]
+#define RELEASE(object)		[object release]
+#define RETAIN(object)		[object retain]
+#endif
+
 void __dummy_GMAppKit_functionForLinking() {}
 
 @implementation NSApplication (GMArchiverMethods)
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
-#if NeXT_GUI_LIBRARY
+#ifndef GNU_GUI_LIBRARY
   NSArray* windows1 = [self windows];
   NSMutableArray* windows2 = [NSMutableArray array];
   int i, count = [windows1 count];
@@ -77,7 +83,7 @@ void __dummy_GMAppKit_functionForLinking() {}
   if (anObject)
     [self setDelegate:anObject];
 
-#if NeXT_GUI_LIBRARY
+#ifndef GNU_GUI_LIBRARY
   mainMenu = [unarchiver decodeObjectWithName:@"mainMenu"];
   if (mainMenu)
     [self setMainMenu:mainMenu];
@@ -999,7 +1005,7 @@ void __dummy_GMAppKit_functionForLinking() {}
   [self setAutoresizingMask:
 	[unarchiver decodeUnsignedIntWithName:@"autoresizingMask"]];
 
-#ifndef NeXT_GUI_LIBRARY
+#ifdef GNU_GUI_LIBRARY
   _rFlags.flipped_view = [self isFlipped];
   _rFlags.opaque_view = [self isOpaque];
   if ([sub_views count])
@@ -1069,7 +1075,7 @@ void __dummy_GMAppKit_functionForLinking() {}
   if (frameAutosaveName)
     [self setFrameAutosaveName:frameAutosaveName];
 
-#ifndef NeXT_GUI_LIBRARY
+#ifdef GNU_GUI_LIBRARY
   window_level = [unarchiver decodeIntWithName:@"level"];
 #endif
 
@@ -1156,7 +1162,7 @@ void __dummy_GMAppKit_functionForLinking() {}
     if (frameAutosaveName)
 	[self setFrameAutosaveName:frameAutosaveName];
     
-#ifndef NeXT_GUI_LIBRARY
+#ifdef GNU_GUI_LIBRARY
     window_level = [unarchiver decodeIntWithName:@"level"];
 #endif
     
@@ -1263,7 +1269,7 @@ void __dummy_GMAppKit_functionForLinking() {}
     if (frameAutosaveName)
 	[self setFrameAutosaveName:frameAutosaveName];
     
-#ifndef NeXT_GUI_LIBRARY
+#ifdef GNU_GUI_LIBRARY
     window_level = [unarchiver decodeIntWithName:@"level"];
 #endif
     
