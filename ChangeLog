@@ -1,3 +1,7 @@
+Sun Apr 21 11:44:01 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/libgnustep-gui.def: Added __objc_class_name_NSOutlineView.
+
 2002-04-19  Richard Frith-Macdonald <rfm@gnu.org>
 
         * Tools/gpbs.m: If given -NSHost specification for the current host,
