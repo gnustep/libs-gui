@@ -1,3 +1,8 @@
+2003-01-31 23:20  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSLayoutManager.m (-_generateGlyphsForRun:at:): Add
+	handling of NSAttachmentCharacter.
+
 2003-01-31 21:59  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/GSLayoutManager.h,

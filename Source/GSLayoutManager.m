@@ -24,15 +24,18 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#include "AppKit/GSLayoutManager_internal.h"
+#include <AppKit/GSLayoutManager_internal.h>
 
 #include <Foundation/NSCharacterSet.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSValue.h>
 
-#include "AppKit/GSTypesetter.h"
-#include "AppKit/NSTextStorage.h"
-#include "AppKit/NSTextContainer.h"
+#include <AppKit/GSTypesetter.h>
+#include <AppKit/NSTextStorage.h>
+#include <AppKit/NSTextContainer.h>
+
+/* just for NSAttachmentCharacter */
+#include <AppKit/NSTextAttachment.h>
 
 
 
@@ -2248,6 +2251,8 @@ for the backends to use it */
       g->char_offset = i;
       if (characterIsMember(cs, @selector(characterIsMember:), ch))
 	g->g = NSControlGlyph;
+      else if (ch == NSAttachmentCharacter)
+	g->g = GSAttachmentGlyph;
       else
 	g->g = ch;
       g++;
