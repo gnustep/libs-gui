@@ -1,5 +1,9 @@
 1999-12-28  Adam Fedor  <fedor@gnu.org>
 
+	* Source/NSBitmapImageRep.m ([NSBitmapImageRep
+	-initWithBitmapDataPlanes:...]): Move check for opaqueness to here
+	from backend.
+
 	* Headers/gnustep/gui/DPSOperators.h: New operators colorimage
 	and alphaimage.
 	* Headers/gnustep/gui/NSGraphicsContext.h: Likewise.

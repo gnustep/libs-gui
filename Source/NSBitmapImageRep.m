@@ -211,6 +211,32 @@
       for (i = 0; i < ((_isPlanar) ? numColors : 1); i++)
  	imagePlanes[i] = planes[i];
     }
+  if (alpha)
+    {
+      unsigned char	*bData = (unsigned char*)[self bitmapData];
+      BOOL		allOpaque = YES;
+      unsigned		offset = numColors - 1;
+      unsigned		limit = size.height * size.width;
+      unsigned		i;
+
+      for (i = 0; i < limit; i++)
+	{
+	  unsigned	a;
+
+	  bData += offset;
+	  a = *bData++;
+	  if (a != 255)
+	    {
+	      allOpaque = NO;
+	      break;
+	    }
+	}
+      [self setOpaque: allOpaque];
+    }
+  else
+    {
+      [self setOpaque: YES];
+    }
   return self;
 }
 
