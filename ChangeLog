@@ -1,4 +1,10 @@
 <<<<<<< ChangeLog
+Sat Aug 1 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* NSText in setText modified to use ASSIGN macro.
+	* NSText added draws_background ivar and implemented it's set method.
+	* NSText reformatted code.
+
 Weds July 29 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* NSMatrix.m in mouseDown adjusted the selection process when in List mode

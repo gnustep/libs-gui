@@ -7,6 +7,8 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
+   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: July 1998
    
    This file is part of the GNUstep GUI Library.
 
@@ -49,11 +51,8 @@
 //
 + (void)initialize
 {
-  if (self == [NSText class])
-    {
-      // Initial version
-      [self setVersion:1];
-    }
+	if (self == [NSText class])
+		[self setVersion:1];						// Initial version
 }
 
 //
@@ -64,23 +63,25 @@
 //
 - initWithFrame:(NSRect)frameRect
 {
-  [super initWithFrame:frameRect];
+	[super initWithFrame:frameRect];
+	
+	text_contents = @"Mary had a little lamb";
+	alignment = NSLeftTextAlignment;
+	is_editable = YES;
+	is_rich_text = NO;
+	is_selectable = YES;
+	imports_graphics = NO;
+	uses_font_panel = YES;
+	is_horizontally_resizable = YES;
+	is_vertically_resizable = YES;
+	is_ruler_visible = NO;
+	is_field_editor = NO;
+	draws_background = YES;
+	background_color = [NSColor whiteColor];
+	text_color = [NSColor blackColor];
+	default_font = [NSFont userFontOfSize:12];
 
-  text_contents = @"Field";
-  alignment = NSLeftTextAlignment;
-  is_editable = YES;
-  is_rich_text = NO;
-  is_selectable = YES;
-  imports_graphics = NO;
-  uses_font_panel = YES;
-  is_horizontally_resizable = YES;
-  is_vertically_resizable = YES;
-  is_ruler_visible = NO;
-  is_field_editor = NO;
-  background_color = [NSColor whiteColor];
-  text_color = [NSColor blackColor];
-  default_font = [NSFont userFontOfSize:12];
-  return self;
+	return self;
 }
 
 - (void)dealloc 
@@ -93,38 +94,35 @@
 //
 // Getting and Setting Contents 
 //
-- (void)replaceRange:(NSRange)range
-	     withRTF:(NSData *)rtfData
+- (void)replaceRange:(NSRange)range withRTF:(NSData *)rtfData
 {}
 
-- (void)replaceRange:(NSRange)range
-	    withRTFD:(NSData *)rtfdData
+- (void)replaceRange:(NSRange)range withRTFD:(NSData *)rtfdData
 {}
 
 - (NSData *)RTFDFromRange:(NSRange)range
 {
-  return nil;
+	return nil;
 }
 
 - (NSData *)RTFFromRange:(NSRange)range
 {
-  return nil;
+	return nil;
 }
 
 - (void)setText:(NSString *)string
 {
-  text_contents = string;
+	ASSIGN(text_contents, string);
 }
 
-- (void)setText:(NSString *)string
-	  range:(NSRange)range
+- (void)setText:(NSString *)string range:(NSRange)range
 {
-  [self setSelectedRange:range];
+	[self setSelectedRange:range];
 }
 
 - (NSString *)text
 {
-  return text_contents;
+	return text_contents;
 }
 
 //
@@ -132,66 +130,66 @@
 //
 - (NSTextAlignment)alignment
 {
-  return alignment;
+	return alignment;
 }
 
 - (BOOL)drawsBackground
 {
-  return YES;
+	return draws_background;
 }
 
 - (BOOL)importsGraphics
 {
-  return imports_graphics;
+	return imports_graphics;
 }
 
 - (BOOL)isEditable
 {
-  return is_editable;
+	return is_editable;
 }
 
 - (BOOL)isRichText
 {
-  return is_rich_text;
+	return is_rich_text;
 }
 
 - (BOOL)isSelectable
 {
-  return is_selectable;
+	return is_selectable;
 }
 
 - (void)setAlignment:(NSTextAlignment)mode
 {
-  alignment = mode;
+	alignment = mode;
 }
 
 - (void)setDrawsBackground:(BOOL)flag
-{}
+{
+	draws_background = flag;
+}
 
 - (void)setEditable:(BOOL)flag
 {
-  is_editable = flag;
-  // If we are editable then we are selectable
-  if (flag)
-    is_selectable = YES;
+	is_editable = flag;
+	if (flag)									// If we are editable then we 
+    	is_selectable = YES;					// are selectable
 }
 
 - (void)setImportsGraphics:(BOOL)flag
 {
-  imports_graphics = flag;
+	imports_graphics = flag;
 }
 
 - (void)setRichText:(BOOL)flag
 {
-  is_rich_text = flag;
+	is_rich_text = flag;
 }
 
 - (void)setSelectable:(BOOL)flag
 {
-  is_selectable = flag;
-  // If we are not selectable then we must not be editable
-  if (!flag)
-    is_editable = NO;
+	is_selectable = flag;
+	if (!flag)									// If we are not selectable
+    	is_editable = NO;						// then we must not be editable
 }
 
 //
@@ -199,7 +197,7 @@
 //
 - (NSColor *)backgroundColor
 {
-  return background_color;
+	return background_color;
 }
 
 - (void)changeFont:(id)sender
@@ -208,7 +206,7 @@
 
 - (NSFont *)font
 {
-  return default_font;
+	return default_font;
 }
 
 - (void)setBackgroundColor:(NSColor *)color
@@ -216,8 +214,7 @@
 	ASSIGN(background_color, color);
 }
 
-- (void)setColor:(NSColor *)color
-	 ofRange:(NSRange)range
+- (void)setColor:(NSColor *)color ofRange:(NSRange)range
 {
 }
 
@@ -225,29 +222,28 @@
 {
 }
 
-- (void)setFont:(NSFont *)font
-	ofRange:(NSRange)range
+- (void)setFont:(NSFont *)font ofRange:(NSRange)range
 {
 }
 
 - (void)setTextColor:(NSColor *)color
 {
-  text_color = color;
+	text_color = color;
 }
 
 - (void)setUsesFontPanel:(BOOL)flag
 {
-  uses_font_panel = YES;
+	uses_font_panel = YES;
 }
 
 - (NSColor *)textColor
 {
-  return text_color;
+	return text_color;
 }
 
 - (BOOL)usesFontPanel
 {
-  return uses_font_panel;
+	return uses_font_panel;
 }
 
 //
@@ -255,12 +251,12 @@
 //
 - (NSRange)selectedRange
 {
-  return selected_range;
+	return selected_range;
 }
 
 - (void)setSelectedRange:(NSRange)range
 {
-  selected_range = range;
+	selected_range = range;
 }
 
 //
@@ -268,43 +264,45 @@
 //
 - (void)setFrame:(NSRect)frameRect
 {
-  [super setFrame:frameRect];
+	[super setFrame:frameRect];
 }
 
 - (BOOL)isHorizontallyResizable
 {
-  return is_horizontally_resizable;
+	return is_horizontally_resizable;
 }
 
 - (BOOL)isVerticallyResizable
 {
-  return is_vertically_resizable;
+	return is_vertically_resizable;
 }
 
 - (NSSize)maxSize
 {
-  return NSZeroSize;
+	return NSZeroSize;
 }
 
 - (NSSize)minSize
 {
-  return NSZeroSize;
+	return NSZeroSize;
 }
 
 - (void)setHorizontallyResizable:(BOOL)flag
 {
-  is_horizontally_resizable = flag;
+	is_horizontally_resizable = flag;
 }
 
 - (void)setMaxSize:(NSSize)newMaxSize
-{}
+{
+}
 
 - (void)setMinSize:(NSSize)newMinSize
-{}
+{
+}
 
 - (void)setVerticallyResizable:(BOOL)flag
 {
-  is_vertically_resizable = flag;
+	is_vertically_resizable = flag;
 }
 
 - (void)sizeToFit
@@ -374,7 +372,7 @@
 //
 - (BOOL)isRulerVisible
 {
-  return NO;
+	return NO;
 }
 
 - (void)toggleRuler:(id)sender
@@ -400,13 +398,13 @@
 //
 - (BOOL)readRTFDFromFile:(NSString *)path
 {
-  return NO;
+	return NO;
 }
 
 - (BOOL)writeRTFDToFile:(NSString *)path
 	     atomically:(BOOL)flag
 {
-  return NO;
+	return NO;
 }
 
 //
@@ -414,12 +412,12 @@
 //
 - (BOOL)isFieldEditor
 {
-  return is_field_editor;
+	return is_field_editor;
 }
 
 - (void)setFieldEditor:(BOOL)flag
 {
-  is_field_editor = flag;
+	is_field_editor = flag;
 }
 
 //
@@ -427,54 +425,49 @@
 //
 - (void)mouseDown:(NSEvent *)theEvent
 {
-  // If not selectable then don't recognize the mouse down
-  if (!is_selectable) return;
-
-  [[self window] makeFirstResponder:self];
+	if (!is_selectable) 						// If not selectable then don't
+		return;									// recognize the mouse down
+	[[self window] makeFirstResponder:self];
 }
 
 - (void)mouseUp:(NSEvent *)theEvent
 {
-  // If not selectable then don't recognize the mouse up
-  if (!is_selectable) return;
+	if (!is_selectable) 						// If not selectable then don't
+		return;									// recognize the mouse up
 }
 
 - (void)mouseMoved:(NSEvent *)theEvent
 {
-  // If not selectable then don't recognize the mouse moved
-  if (!is_selectable) return;
+	if (!is_selectable) 						// If not selectable then don't
+		return;									// recognize the mouse moved
 }
 
 - (void)keyDown:(NSEvent *)theEvent
 {
-  // If not editable then don't recognize the key down
-  if (!is_editable) return;
+	if (!is_editable) 							// If not editable then don't
+		return;									// recognize the key down
 }
 
 - (void)keyUp:(NSEvent *)theEvent
 {
-  // If not editable then don't recognize the key up
-  if (!is_editable) return;
+	if (!is_editable) 							// If not editable then don't
+		return;									// recognize the key up
 }
 
 - (BOOL)acceptsFirstResponder
 {
-  if ([self isSelectable])
-    return YES;
-  else
-    return NO;
+	if ([self isSelectable])
+		return YES;
+	else
+		return NO;
 }
 
 - (BOOL)becomeFirstResponder
 {
-  if ([self isEditable])
-    {
-      return YES;
-    }
-  else
-    {
-      return NO;
-    }
+	if ([self isEditable])
+		return YES;
+	else
+		return NO;
 }
 
 //
@@ -482,12 +475,12 @@
 //
 - (id)delegate
 {
-  return delegate;
+	return delegate;
 }
 
 - (void)setDelegate:(id)anObject
 {
-  delegate = anObject;
+	delegate = anObject;
 }
 
 //
@@ -495,8 +488,8 @@
 //
 - (void)textDidBeginEditing:(NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(textDidBeginEditing:)])
-    [delegate textDidBeginEditing:nil];
+	if ([delegate respondsToSelector:@selector(textDidBeginEditing:)])
+    	[delegate textDidBeginEditing:nil];
 }
 
 - (void)textDidChange:(NSNotification *)aNotification
@@ -507,24 +500,24 @@
 
 - (void)textDidEndEditing:(NSNotification *)aNotification
 {
-  if ([delegate respondsToSelector:@selector(textDidEndEditing:)])
-    [delegate textDidEndEditing:nil];
+	if ([delegate respondsToSelector:@selector(textDidEndEditing:)])
+    	[delegate textDidEndEditing:nil];
 }
 
 - (BOOL)textShouldBeginEditing:(NSText *)textObject
 {
-  if ([delegate respondsToSelector:@selector(textShouldBeginEditing:)])
-    return [delegate textShouldBeginEditing:nil];
-  else
-    return YES;
+	if ([delegate respondsToSelector:@selector(textShouldBeginEditing:)])
+    	return [delegate textShouldBeginEditing:nil];
+	else
+		return YES;
 }
 
 - (BOOL)textShouldEndEditing:(NSText *)textObject
 {
-  if ([delegate respondsToSelector:@selector(textShouldEndEditing:)])
-    return [delegate textShouldEndEditing:nil];
-  else
-    return YES;
+	if ([delegate respondsToSelector:@selector(textShouldEndEditing:)])
+    	return [delegate textShouldEndEditing:nil];
+	else
+		return YES;
 }
 
 //
@@ -539,57 +532,59 @@
 //
 - (void)encodeWithCoder:aCoder
 {
-  [super encodeWithCoder:aCoder];
+	[super encodeWithCoder:aCoder];
 
 #if 0
-  [aCoder encodeObjectReference: delegate withName: @"Delegate"];
+	[aCoder encodeObjectReference: delegate withName: @"Delegate"];
 #else
-  [aCoder encodeConditionalObject:delegate];
+	[aCoder encodeConditionalObject:delegate];
 #endif
-  [aCoder encodeObject: text_contents];
-  [aCoder encodeValueOfObjCType: "I" at: &alignment];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_editable];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_rich_text];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_selectable];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &imports_graphics];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &uses_font_panel];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_horizontally_resizable];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_vertically_resizable];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_ruler_visible];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_field_editor];
-  [aCoder encodeObject: background_color];
-  [aCoder encodeObject: text_color];
-  [aCoder encodeObject: default_font];
-  [aCoder encodeValueOfObjCType: @encode(NSRange) at: &selected_range];
+
+	[aCoder encodeObject: text_contents];
+	[aCoder encodeValueOfObjCType: "I" at: &alignment];
+	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_editable];
+	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_rich_text];
+	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_selectable];
+	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &imports_graphics];
+	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &uses_font_panel];
+	[aCoder encodeValueOfObjCType:@encode(BOOL) at:&is_horizontally_resizable];
+	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_vertically_resizable];
+	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_ruler_visible];
+	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_field_editor];
+	[aCoder encodeObject: background_color];
+	[aCoder encodeObject: text_color];
+	[aCoder encodeObject: default_font];
+	[aCoder encodeValueOfObjCType: @encode(NSRange) at: &selected_range];
 }
 
 - initWithCoder:aDecoder
 {
-  [super initWithCoder:aDecoder];
+	[super initWithCoder:aDecoder];
 
 #if 0
-  [aDecoder decodeObjectAt: &delegate withName: NULL];
+	[aDecoder decodeObjectAt: &delegate withName: NULL];
 #else
-  delegate = [aDecoder decodeObject];
+	delegate = [aDecoder decodeObject];
 #endif
-  text_contents = [aDecoder decodeObject];
-  [aDecoder decodeValueOfObjCType: "I" at: &alignment];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_editable];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_rich_text];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_selectable];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &imports_graphics];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &uses_font_panel];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) 
-	    at: &is_horizontally_resizable];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_vertically_resizable];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_ruler_visible];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_field_editor];
-  background_color = [aDecoder decodeObject];
-  text_color = [aDecoder decodeObject];
-  default_font = [aDecoder decodeObject];
-  [aDecoder decodeValueOfObjCType: @encode(NSRange) at: &selected_range];
 
-  return self;
+	text_contents = [aDecoder decodeObject];
+	[aDecoder decodeValueOfObjCType: "I" at: &alignment];
+	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_editable];
+	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_rich_text];
+	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_selectable];
+	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &imports_graphics];
+	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &uses_font_panel];
+	[aDecoder decodeValueOfObjCType: @encode(BOOL) 
+			  at: &is_horizontally_resizable];
+	[aDecoder decodeValueOfObjCType:@encode(BOOL) at:&is_vertically_resizable];
+	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_ruler_visible];
+	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_field_editor];
+	background_color = [aDecoder decodeObject];
+	text_color = [aDecoder decodeObject];
+	default_font = [aDecoder decodeObject];
+	[aDecoder decodeValueOfObjCType: @encode(NSRange) at: &selected_range];
+
+	return self;
 }
 
 //

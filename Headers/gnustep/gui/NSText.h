@@ -7,7 +7,9 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
-   
+   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: July 1998
+  
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -73,6 +75,7 @@ enum {
   BOOL is_vertically_resizable;
   BOOL is_ruler_visible;
   BOOL is_field_editor;
+  BOOL draws_background;
   NSColor *background_color;
   NSColor *text_color;
   NSFont *default_font;
