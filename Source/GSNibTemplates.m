@@ -56,6 +56,7 @@
 #include <AppKit/NSNibLoading.h>
 #include <AppKit/NSNibConnector.h>
 #include <AppKit/NSApplication.h>
+#include <GNUstepBase/GSObjCRuntime.h>
 #include <GNUstepGUI/GSNibTemplates.h>
 
 static const int currentVersion = 1; // GSNibItem version number...
@@ -415,14 +416,6 @@ static const int currentVersion = 1; // GSNibItem version number...
   return _className;
 }
 
-/*
-- (void) dealloc
-{
-  RELEASE(_className);
-  [super dealloc];
-}
-*/
-
 - (id) initWithCoder: (NSCoder *)coder
 {
   id obj = nil;
@@ -511,16 +504,19 @@ static const int currentVersion = 1; // GSNibItem version number...
 
       if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
       {
-	// if we are not in interface builder, call 
-	// designated initializer per spec...
-	contentView = [obj contentView];
-	obj = [obj initWithContentRect: [obj frame]
-		   styleMask: [obj styleMask]
-		   backing: [obj backingType]
-		   defer: _deferFlag];
-	
-	// set the content view back
-	[obj setContentView: contentView];
+	if(GSGetInstanceMethodNotInherited([obj class], @selector(initWithContentRect:styleMask:backing:defer:)) != NULL)
+	  {
+	    // if we are not in interface builder, call 
+	    // designated initializer per spec...
+	    contentView = [obj contentView];
+	    obj = [obj initWithContentRect: [obj frame]
+		       styleMask: [obj styleMask]
+		       backing: [obj backingType]
+		       defer: _deferFlag];
+	    
+	    // set the content view back
+	    [obj setContentView: contentView];
+	  }
       }
       RELEASE(self);
     }
@@ -550,8 +546,11 @@ static const int currentVersion = 1; // GSNibItem version number...
     {
       if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
       {
-	NSRect theFrame = [obj frame];
-	obj =  [obj initWithFrame: theFrame];
+	if(GSGetInstanceMethodNotInherited([obj class],@selector(initWithFrame:)) != NULL)
+	  {
+	    NSRect theFrame = [obj frame];
+	    obj =  [obj initWithFrame: theFrame];
+	  }
       }
       RELEASE(self);
     }
@@ -576,8 +575,11 @@ static const int currentVersion = 1; // GSNibItem version number...
     {
       if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
       {
-	NSRect theFrame = [obj frame]; 
-	obj = [obj initWithFrame: theFrame];
+	if(GSGetInstanceMethodNotInherited([obj class],@selector(initWithFrame:)) != NULL)
+	  {
+	    NSRect theFrame = [obj frame]; 
+	    obj = [obj initWithFrame: theFrame];
+	  }
       }
       RELEASE(self);
     }
@@ -602,10 +604,13 @@ static const int currentVersion = 1; // GSNibItem version number...
     {
       if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
       {
-	NSRect theFrame = [obj frame];
-	id textContainer = [obj textContainer];
-	obj = [obj initWithFrame: theFrame 
-		   textContainer: textContainer];
+	if(GSGetInstanceMethodNotInherited([obj class],@selector(initWithFrame:textContainer:)) != NULL)
+	  {
+	    NSRect theFrame = [obj frame];
+	    id textContainer = [obj textContainer];
+	    obj = [obj initWithFrame: theFrame 
+		       textContainer: textContainer];
+	  }
       }
       RELEASE(self);
     }
@@ -630,8 +635,11 @@ static const int currentVersion = 1; // GSNibItem version number...
     {
       if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
       {
-	NSString *theTitle = [obj title]; 
-	obj = [obj initWithTitle: theTitle];
+	if(GSGetInstanceMethodNotInherited([obj class],@selector(initWithTitle:)) != NULL)
+	  {
+	    NSString *theTitle = [obj title]; 
+	    obj = [obj initWithTitle: theTitle];
+	  }
       }
       RELEASE(self);
     }
@@ -657,11 +665,11 @@ static const int currentVersion = 1; // GSNibItem version number...
     {
       if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
       {
-	//if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
-	//{
-	//  NSRect theFrame = [obj frame]; 
-	//  obj = [obj initWithFrame: theFrame];
-	//}
+	if(GSGetInstanceMethodNotInherited([obj class],@selector(initWithFrame:)) != NULL)
+	  {
+	    NSRect theFrame = [obj frame]; 
+	    obj = [obj initWithFrame: theFrame];
+	  }
       }
       RELEASE(self);
     }
@@ -683,10 +691,13 @@ static const int currentVersion = 1; // GSNibItem version number...
   id     obj = [super initWithCoder: coder];
   if(obj != nil)
     {
-      //if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
-      //{
-      //  obj = [self init];
-      //}
+      if(![self respondsToSelector: @selector(isInInterfaceBuilder)])
+      {
+	if(GSGetInstanceMethodNotInherited([obj class],@selector(init)) != NULL)
+	  {
+	    obj = [self init];
+	  }
+      }
       RELEASE(self);
     }
   return obj;

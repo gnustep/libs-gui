@@ -1,3 +1,10 @@
+2003-08-30  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* GSNibTemplates.m: Added code to templates to conditionally
+	call the designated initializer if and only if it is defined
+	on the class which is being unarchived, not the parent classes.
+	This is consistent with behaviour under OpenStep.
+
 2003-08-29  Adam Fedor  <fedor@gnu.org>
 
 	* Source/GNUmakefile.preamble (ADDITIONAL_OBJCFLAGS): Include
