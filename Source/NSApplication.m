@@ -827,8 +827,13 @@ static NSCell* tileCell = nil;
   [nc postNotificationName: NSApplicationDidFinishLaunchingNotification
 		    object: self];
 
-  userInfo = [NSDictionary dictionaryWithObject:
-    [[NSProcessInfo processInfo] processName] forKey: @"NSApplicationName"];
+  userInfo = [NSDictionary dictionaryWithObjectsAndKeys:
+    [[NSProcessInfo processInfo] processName], @"NSApplicationName",
+    [[NSBundle mainBundle] bundlePath],        @"NSApplicationPath",
+    [NSNumber numberWithInt: [[NSProcessInfo processInfo] processIdentifier]], 
+                                             @"NSApplicationProcessIdentifier",
+    nil];
+
   NS_DURING
     [[workspace notificationCenter]
       postNotificationName: NSWorkspaceDidLaunchApplicationNotification

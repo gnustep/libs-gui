@@ -4,6 +4,8 @@
 	Reduce private method name pollution a little.
 	* Images/common_UnknownApplication.tiff: copied from WM ...
 	* Images/common_UnknownTool.tiff: similar image for unix cmd-line tools.
+	* Source/NSApplication.m: Add some user info to the launch
+	notification (provided by urbanek@host.sk).
 
 2003-05-05  Michael Hanni   <michael@deviant-behavior.com>
 
