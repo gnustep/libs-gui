@@ -813,7 +813,8 @@ NSString *NSApplicationWillUpdateNotification;
 }
 
 // Reporting an exception
-//- (void)reportException:(NSException *)anException
+- (void)reportException:(NSException *)anException
+{}
 
 //
 // Terminating the application

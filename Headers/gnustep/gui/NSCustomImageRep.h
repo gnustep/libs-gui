@@ -1,12 +1,12 @@
 /* 
    NSCustomImageRep.h
 
-   Description...
+   Custom image representation.
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+   Written by:  Adam Fedor <fedor@colorado.edu>
+   Date: Feb 1996
    
    This file is part of the GNUstep GUI Library.
 
@@ -39,6 +39,8 @@
 
 {
   // Attributes
+  id  delegate;
+  SEL selector;
 }
 
 - (id)initWithDrawSelector:(SEL)aSelector

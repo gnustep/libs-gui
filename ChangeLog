@@ -1,3 +1,33 @@
+Mon Aug 12 14:16:12 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
+
+	* Headers/gnustep/gui/NSBitmapImageRep.h: Initial implementation
+	based upon Adam's Feodor work.
+	* Headers/gnustep/gui/NSCachedImageRep.h: Likewise.
+	* Headers/gnustep/gui/NSCustomImageRep.h: Likewise.
+	* Headers/gnustep/gui/NSEPSImageRep.h: Likewise.
+	* Headers/gnustep/gui/NSImage.h: Likewise.
+	* Headers/gnustep/gui/NSImageRep.h: Likewise.
+	* Source/NSBitmapImageRep.m: Likewise.
+	* Source/NSCachedImageRep.m: Likewise.
+	* Source/NSCustomImageRep.m: Likewise.
+	* Source/NSEPSImageRep.m: Likewise.
+	* Source/NSImage.m: Likewise.
+	* Source/NSImageRep.m: Likewise.
+
+	* Headers/gnustep/gui/NSApplication.h (-reportException:): Uncomment
+	method now that NSExceptions are implemented.
+	* Source/NSApplication.m (-reportException:): Likewise.
+	* Headers/gnustep/gui/NSText.h: Include NSNotification header file
+	now that class is implemented.
+	* Headers/gnustep/gui/config.h.in: Don't define NSNotification and
+	NSNotificationCenter to void as classes are now implemented.
+	* Headers/gnustep/gui/NSWindow.h: Uncomment methods now that NSScreen
+	class has been implemented.
+	* Source/NSWindow.m: Likewise.
+	* Source/Makefile.in: Changes to use TIFF library.
+	* Source/tiff.c: New file.
+	* Headers/gnustep/gui/nsimage-tiff.h: New file.
+
 Wed Jul 10 17:11:53 1996  Scott Christley <scottc@net-community.com>
 
 	* Source/NSView.m: Use NSDebugLog instead of NSLog.

@@ -42,7 +42,7 @@ includedir = $(prefix)/include
 
 MAKEDEFINES =
 
-CC = @CC@ -g
+CC = @CC@ -g -DHAVE_LIBTIFF
 CPPFLAGS = @CPPFLAGS@
 CFLAGS = -c $(GCCFLAGS) -I../Headers $(CPPFLAGS)
 
@@ -150,7 +150,8 @@ gui/NSWorkspace.h \
 gui/TrackingRectangle.h \
 gui/TypesandConstants.h \
 gui/config.h \
-gui/stdappkit.h
+gui/stdappkit.h \
+gui/nsimage-tiff.h
 
 GNUSTEP_DPS_HEADERS = dps/NSDPSContext.h \
 dps/DPSOperators.h \
@@ -221,12 +222,15 @@ NSWindow$(oext) \
 NSWorkspace$(oext) \
 Functions$(oext) \
 TrackingRectangle$(oext) \
-LogFile$(oext)
+LogFile$(oext) \
+tiff$(oext)
 
 OBJS = $(OBJS_WITHOUT_INIT)
 
 .SUFFIXES: .m
 .m$(oext):
+	$(CC) $(CFLAGS) $<
+.c$(oext):
 	$(CC) $(CFLAGS) $<
 
 #

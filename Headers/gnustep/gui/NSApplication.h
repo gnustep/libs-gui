@@ -33,6 +33,7 @@
 
 #include <AppKit/stdappkit.h>
 #include <Foundation/NSArray.h>
+#include <Foundation/NSException.h>
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSResponder.h>
 #include <AppKit/NSWindow.h>
@@ -202,7 +203,7 @@
 //
 // Reporting an exception
 //
-//- (void)reportException:(NSException *)anException
+- (void)reportException:(NSException *)anException;
 
 //
 // Terminating the application

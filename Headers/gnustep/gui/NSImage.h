@@ -1,12 +1,12 @@
 /* 
    NSImage.h
 
-   Description...
+   Load, manipulate and display images
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+   Written by:  Adam Fedor <fedor@colorado.edu>
+   Date: Feb 1996
    
    This file is part of the GNUstep GUI Library.
 
@@ -33,15 +33,43 @@
 
 #include <AppKit/stdappkit.h>
 #include <DPSClient/TypesandConstants.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSImageRep.h>
-#include <Foundation/NSCoder.h>
+
+@class NSPasteboard;
+@class NSMutableArray;
+@class NSImageRep;
+@class NSColor;
+@class NSView;
 
 @interface NSImage : NSObject <NSCoding>
 
 {
   // Attributes
-  NSSize image_size;
+  NSString*	name;
+  NSSize	_size;
+  struct __imageFlags {
+    unsigned int        scalable:1;
+    unsigned int        dataRetained:1;
+    unsigned int        flipDraw:1;
+    unsigned int        uniqueWindow:1;
+    unsigned int        uniqueWasExplicitlySet:1;
+    unsigned int        sizeWasExplicitlySet:1;
+    unsigned int        builtIn:1;
+    unsigned int        needsToExpand:1;
+    unsigned int        useEPSOnResolutionMismatch:1;
+    unsigned int        colorMatchPreferred:1;
+    unsigned int        multipleResolutionMatching:1;
+    unsigned int        subImage:1;
+    unsigned int	    aSynch:1;
+    unsigned int	    archiveByName:1;
+    unsigned int        cacheSeparately:1;
+    unsigned int	    unboundedCacheDepth:1;
+  }                   _flags;
+  NSMutableArray*     _reps;
+  NSMutableArray*	_repList;
+  NSColor*	_color;
+  BOOL	_syncLoad;
+  NSView*	_lockedView;
+  id		delegate;
 }
 
 //
@@ -82,12 +110,12 @@
 	       operation:(NSCompositingOperation)op;
 - (void)compositeToPoint:(NSPoint)aPoint
 		fromRect:(NSRect)aRect
-operation:(NSCompositingOperation)op;
+	       operation:(NSCompositingOperation)op;
 - (void)dissolveToPoint:(NSPoint)aPoint
 	       fraction:(float)aFloat;
 - (void)dissolveToPoint:(NSPoint)aPoint
 	       fromRect:(NSRect)aRect
-fraction:(float)aFloat;
+	       fraction:(float)aFloat;
 
 //
 // Choosing Which Image Representation to Use 

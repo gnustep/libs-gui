@@ -101,7 +101,10 @@ NSString *NSWindowWillMoveNotification;
 }
 
 // Screens and window depths
-//+ (NSWindowDepth)defaultDepthLimit
++ (NSWindowDepth)defaultDepthLimit
+{
+  return 0;
+}
 
 //
 // Instance methods
@@ -630,13 +633,36 @@ NSString *NSWindowWillMoveNotification;
 }
 
 // Screens and window depths
-//- (BOOL)canStoreColor;
-//- (NSScreen *)deepestScreen;
-//- (NSWindowDepth)depthLimit;
-//- (BOOL)hasDynamicDepthLimit;
-//- (NSScreen *)screen;
-//- (void)setDepthLimit:(NSWindowDepth)limit;
-//- (void)setDynamicDepthLimit:(BOOL)flag;
+- (BOOL)canStoreColor
+{
+  return YES;
+}
+
+- (NSScreen *)deepestScreen
+{
+  return [NSScreen deepestScreen];
+}
+
+- (NSWindowDepth)depthLimit
+{
+  return 0;
+}
+
+- (BOOL)hasDynamicDepthLimit
+{
+  return YES;
+}
+
+- (NSScreen *)screen
+{
+  return [NSScreen mainScreen];
+}
+
+- (void)setDepthLimit:(NSWindowDepth)limit
+{}
+
+- (void)setDynamicDepthLimit:(BOOL)flag
+{}
 
 //
 // Cursor management

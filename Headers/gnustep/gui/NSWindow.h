@@ -41,6 +41,7 @@
 #include <AppKit/NSColor.h>
 #include <AppKit/NSText.h>
 #include <Foundation/NSCoder.h>
+#include <AppKit/NSScreen.h>
 
 @interface NSWindow : NSResponder <NSCoding>
 
@@ -223,14 +224,14 @@ screen:aScreen;
 //
 // Screens and window depths
 //
-//+ (NSWindowDepth)defaultDepthLimit
-//- (BOOL)canStoreColor;
-//- (NSScreen *)deepestScreen;
-//- (NSWindowDepth)depthLimit;
-//- (BOOL)hasDynamicDepthLimit;
-//- (NSScreen *)screen;
-//- (void)setDepthLimit:(NSWindowDepth)limit;
-//- (void)setDynamicDepthLimit:(BOOL)flag;
++ (NSWindowDepth)defaultDepthLimit;
+- (BOOL)canStoreColor;
+- (NSScreen *)deepestScreen;
+- (NSWindowDepth)depthLimit;
+- (BOOL)hasDynamicDepthLimit;
+- (NSScreen *)screen;
+- (void)setDepthLimit:(NSWindowDepth)limit;
+- (void)setDynamicDepthLimit:(BOOL)flag;
 
 //
 // Cursor management

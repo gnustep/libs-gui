@@ -5,8 +5,8 @@
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+   Written by:  Adam Fedor <fedor@colorado.edu>
+   Date: Feb 1996
    
    This file is part of the GNUstep GUI Library.
 
@@ -39,6 +39,14 @@
 
 {
   // Attributes
+  unsigned int    bytesPerRow;
+  unsigned int    numColors;
+  unsigned int    bitsPerPixel;   
+  unsigned short  compression;
+  BOOL            isPlanar;
+  BOOL            freePlanes;
+  unsigned char** imagePlanes;
+  NSMutableData*  imageData;
 }
 
 //
@@ -50,14 +58,14 @@
 - (id)initWithFocusedViewRect:(NSRect)rect;
 - (id)initWithBitmapDataPlanes:(unsigned char **)planes
 		    pixelsWide:(int)width
-pixelsHigh:(int)height
-		    bitsPerSample:(int)bps
-samplesPerPixel:(int)spp
-		    hasAlpha:(BOOL)alpha
-isPlanar:(BOOL)config
-		    colorSpaceName:(NSString *)colorSpaceName
-bytesPerRow:(int)rowBytes
-		    bitsPerPixel:(int)pixelBits;
+		    pixelsHigh:(int)height
+		 bitsPerSample:(int)bps
+	       samplesPerPixel:(int)spp
+		      hasAlpha:(BOOL)alpha
+		      isPlanar:(BOOL)config
+		colorSpaceName:(NSString *)colorSpaceName
+		   bytesPerRow:(int)rowBytes
+		  bitsPerPixel:(int)pixelBits;
 
 //
 // Getting Information about the Image 
@@ -81,7 +89,7 @@ bytesPerRow:(int)rowBytes
 + (NSData *)TIFFRepresentationOfImageRepsInArray:(NSArray *)anArray;
 + (NSData *)TIFFRepresentationOfImageRepsInArray:(NSArray *)anArray
 				usingCompression:(NSTIFFCompression)compressionType
-factor:(float)factor;
+					  factor:(float)factor;
 - (NSData *)TIFFRepresentation;
 - (NSData *)TIFFRepresentationUsingCompression:(NSTIFFCompression)compressionType
 					factor:(float)factor;

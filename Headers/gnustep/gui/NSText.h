@@ -35,6 +35,7 @@
 #include <AppKit/NSView.h>
 #include <AppKit/NSFont.h>
 #include <Foundation/NSCoder.h>
+#include <Foundation/NSNotification.h>
 
 @interface NSText : NSView <NSCoding>
 

@@ -1,14 +1,14 @@
 /* 
    NSImageRep.m
 
-   Description...
+   Abstract representation of an image.
 
    Copyright (C) 1996 Free Software Foundation, Inc.
-
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
    
-   This file is part of the GNUstep GUI Library.
+   Written by:  Adam Fedor <fedor@colorado.edu>
+   Date: Feb 1996
+   
+   This file is part of the GNUstep Application Kit Library.
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
@@ -19,7 +19,7 @@
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-
+   
    If you are interested in a warranty or support for this source code,
    contact Scott Christley <scottc@net-community.com> for more information.
    
@@ -28,206 +28,369 @@
    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */ 
 
-#include <gnustep/gui/NSImageRep.h>
+#include <string.h>
+#include <Foundation/NSArray.h>
+#include <Foundation/NSData.h>
+#include <Foundation/NSNotification.h>
+#include <AppKit/NSImageRep.h>
+#include <AppKit/NSBitmapImageRep.h>
+#include <AppKit/NSEPSImageRep.h>
 
 // NSImageRep notifications
 NSString *NSImageRepRegistryChangedNotification;
 
+/* Backend protocol - methods that must be implemented by the backend to
+   complete the class */
+@protocol NXImageRepBackend
+- (BOOL) drawAtPoint: (NSPoint)aPoint;
+- (BOOL) drawInRect: (NSRect)aRect;
+@end
+
+static NSMutableArray*	imageReps = NULL;
+
+/* Get the extension from a name  */
+static NSString *
+extension(NSString *name)
+{
+/* Waiting for NSString to be complete */
+#if 0
+  return [name pathExtension];
+#else
+  char *s;
+    
+  s = strrchr([name cString], '.');
+  if (s > strrchr([name cString], '/'))
+    return [NSString stringWithCString:s+1];
+  else
+    return nil;
+#endif
+} 
+
 @implementation NSImageRep
 
-//
-// Class methods
-//
-+ (void)initialize
++ (void) initialize
 {
-  if (self == [NSImageRep class])
-    {
-      // Initial version
-      [self setVersion:1];
-    }
+  /* While there are four imageRep subclasses, in practice, only two of
+     them can load in data from an external source. */
+  imageReps = [[NSMutableArray alloc] initWithCapacity: 2];
+  [imageReps addObject: [NSBitmapImageRep class]];
+  [imageReps addObject: [NSEPSImageRep class]];
 }
 
-//
 // Creating an NSImageRep
-//
-+ (id)imageRepWithContentsOfFile:(NSString *)filename
++ (id) imageRepWithContentsOfFile: (NSString *)filename
 {
+  NSArray* array;
+
+  array = [self imageRepsWithContentsOfFile: filename];
+  if ([array count])
+    return [array objectAtIndex: 0];
   return nil;
 }
 
-+ (NSArray *)imageRepsWithContentsOfFile:(NSString *)filename
++ (NSArray *) imageRepsWithContentsOfFile: (NSString *)filename
 {
+  int i, count;
+  NSString* ext;
+  NSMutableArray* array;
+
+  ext = extension(filename);
+  // FIXME: Should this be an exception? Should we even check this?
+  if (!ext)
+    return nil;
+  array = [NSMutableArray arrayWithCapacity:1];
+
+  count = [imageReps count];
+  for (i = 0; i < count; i++)
+    {
+      Class rep = [imageReps objectAtIndex: i];
+      if ([[rep imageFileTypes] indexOfObject: ext] != NSNotFound)
+	{
+	  NSData* data = [NSData dataWithContentsOfFile: filename];
+	  if ([rep class] == [NSBitmapImageRep class])
+	    [array addObject: [rep imageRepWithData: data]];
+	}
+#if 0
+      if ([rep respondsToSelector: @selector(imageFileTypes)]
+	  && [[rep imageFileTypes] indexOfObject: ext] != NSNotFound)
+	{
+	  NSData* data = [NSData dataWithContentsOfFile: filename];
+	  if ([rep respondsToSelector: @selector(imageRepsWithData:)])
+	    [array addObjectsFromArray: [rep imageRepsWithData: data]];
+	  else if ([rep respondsToSelector: @selector(imageRepWithData:)])
+	    [array addObject: [rep imageRepWithData: data]];
+	}
+#endif
+    }
+  return (NSArray *)array;
+}
+
++ (id) imageRepWithPasteboard: (NSPasteboard *)pasteboard
+{
+  NSArray* array;
+
+  array = [self imageRepsWithPasteboard: pasteboard];
+  if ([array count])
+    return [array objectAtIndex: 0];
   return nil;
 }
 
-+ (id)imageRepWithPasteboard:(NSPasteboard *)pasteboard
++ (NSArray *) imageRepsWithPasteboard: (NSPasteboard *)pasteboard
 {
-  return nil;
+  int i, count;
+  NSMutableArray* array;
+
+  array = [NSMutableArray arrayWithCapacity:1];
+
+  count = [imageReps count];
+  for (i = 0; i < count; i++)
+    {
+      NSString* ptype;
+      Class rep = [imageReps objectAtIndex: i];
+      if ([rep respondsToSelector: @selector(imagePasteboardTypes)]
+	  && (ptype = 
+	      [pasteboard availableTypeFromArray:[rep imagePasteboardTypes]]))
+	{
+	  NSData* data = [pasteboard dataForType: ptype];
+	  if ([rep respondsToSelector: @selector(imageRepsWithData:)])
+	    [array addObjectsFromArray: [rep imageRepsWithData: data]];
+	  else if ([rep respondsToSelector: @selector(imageRepWithData:)])
+	    [array addObject: [rep imageRepWithData: data]];
+	}
+    }
+  return (NSArray *)array;
 }
 
-+ (NSArray *)imageRepsWithPasteboard:(NSPasteboard *)pasteboard
+- (void) dealloc
 {
-  return nil;
+  [colorSpace release];
+  [super dealloc];
 }
 
-//
 // Checking Data Types 
-//
-+ (BOOL)canInitWithData:(NSData *)data
++ (BOOL) canInitWithData: (NSData *)data
 {
+  /* Subclass responsibility */
   return NO;
 }
 
-+ (BOOL)canInitWithPasteboard:(NSPasteboard *)pasteboard
++ (BOOL) canInitWithPasteboard: (NSPasteboard *)pasteboard
 {
+  /* Subclass responsibility */
   return NO;
 }
 
-+ (NSArray *)imageFileTypes
++ (NSArray *) imageFileTypes
 {
+  /* Subclass responsibility */
   return nil;
 }
 
-+ (NSArray *)imagePasteboardTypes
++ (NSArray *) imagePasteboardTypes
 {
+  /* Subclass responsibility */
   return nil;
 }
 
-+ (NSArray *)imageUnfilteredFileTypes
++ (NSArray *) imageUnfilteredFileTypes
 {
+  /* Subclass responsibility */
   return nil;
 }
 
-+ (NSArray *)imageUnfilteredPasteboardTypes
++ (NSArray *) imageUnfilteredPasteboardTypes
 {
+  /* Subclass responsibility */
   return nil;
 }
 
-//
-// Managing NSImageRep Subclasses 
-//
-+ (Class)imageRepClassForData:(NSData *)data
-{
-  return NULL;
-}
-
-+ (Class)imageRepClassForFileType:(NSString *)type
-{
-  return NULL;
-}
-
-+ (Class)imageRepClassForPasteboardType:(NSString *)type
-{
-  return NULL;
-}
-
-+ (void)registerImageRepClass:(Class)imageRepClass
-{}
-
-+ (NSArray *)registeredImageRepClasses
-{
-  return nil;
-}
-
-+ (void)unregisterImageRepClass:(Class)imageRepClass
-{}
-
-//
-// Instance methods
-//
-//
 // Setting the Size of the Image 
-//
-- (void)setSize:(NSSize)aSize
-{}
-
-- (NSSize)size
+- (void) setSize: (NSSize)aSize
 {
-  return NSZeroSize;
+  size = aSize;
 }
 
-//
+- (NSSize) size
+{
+  return size;
+}
+
 // Specifying Information about the Representation 
-//
-- (int)bitsPerSample
+- (int) bitsPerSample
 {
-  return 0;
+    return bitsPerSample;
 }
 
-- (NSString *)colorSpaceName
+- (NSString *) colorSpaceName
 {
-  return nil;
+  return colorSpace;
 }
 
-- (BOOL)hasAlpha
+- (BOOL) hasAlpha
 {
-  return NO;
+  return hasAlpha;
 }
 
-- (BOOL)isOpaque
+- (BOOL) isOpaque
 {
-  return NO;
+  return isOpaque;
 }
 
-- (int)pixelsHigh
+- (int) pixelsWide
 {
-  return 0;
+  return _pixelsWide;
 }
 
-- (int)pixelsWide
+- (int) pixelsHigh
 {
-  return 0;
+  return _pixelsHigh;
 }
 
-- (void)setAlpha:(BOOL)flag
-{}
+- (void) setAlpha: (BOOL)flag
+{
+  hasAlpha = flag;
+}
 
-- (void)setBitsPerSample:(int)anInt
-{}
+- (void) setBitsPerSample: (int)anInt
+{
+  bitsPerSample = anInt;
+}
 
-- (void)setColorSpaceName:(NSString *)aString
-{}
+- (void) setColorSpaceName: (NSString *)aString
+{
+  [colorSpace autorelease];
+  colorSpace = [aString retain];
+}
 
-- (void)setOpaque:(BOOL)flag
-{}
+- (void) setOpaque: (BOOL)flag
+{
+  isOpaque = flag;
+}
 
-- (void)setPixelsHigh:(int)anInt
-{}
+- (void) setPixelsWide: (int)anInt
+{
+  _pixelsWide = anInt;
+}
 
-- (void)setPixelsWide:(int)anInt
-{}
+- (void) setPixelsHigh: (int)anInt
+{
+  _pixelsHigh = anInt;
+}
 
-//
 // Drawing the Image 
-//
-- (BOOL)draw
+- (BOOL) draw
+{
+  [self subclassResponsibility: _cmd];
+  return NO;
+}
+
+- (BOOL) drawAtPoint: (NSPoint)aPoint
 {
   return NO;
 }
 
-- (BOOL)drawAtPoint:(NSPoint)aPoint
+- (BOOL) drawInRect: (NSRect)aRect
 {
   return NO;
 }
 
-- (BOOL)drawInRect:(NSRect)aRect
+// Managing NSImageRep Subclasses 
++ (Class) imageRepClassForData: (NSData *)data
 {
-  return NO;
+  int i, count;
+
+  count = [imageReps count];
+  for (i = 0; i < count; i++)
+    {
+      Class rep = [imageReps objectAtIndex: i];
+      if ([rep canInitWithData: data])
+	return rep;
+    }
+  return Nil;
 }
 
-//
++ (Class) imageRepClassForFileType: (NSString *)type
+{
+  int i, count;
+
+  count = [imageReps count];
+  for (i = 0; i < count; i++)
+    {
+      Class rep = [imageReps objectAtIndex: i];
+      if ([rep respondsToSelector: @selector(imageFileTypes)]
+	  && [[rep imageFileTypes] indexOfObject: type] != NSNotFound)
+	{
+	  return rep;
+	}
+    }
+  return Nil;
+}
+
++ (Class) imageRepClassForPasteboardType: (NSString *)type
+{
+  int i, count;
+
+  count = [imageReps count];
+  for (i = 0; i < count; i++)
+    {
+      Class rep = [imageReps objectAtIndex: i];
+      if ([rep respondsToSelector: @selector(imagePasteboardTypes)]
+	  && ([[rep imagePasteboardTypes] indexOfObject: type] != NSNotFound))
+	{
+	  return rep;
+	}
+    }
+  return Nil;
+}
+
++ (void) registerImageRepClass: (Class)imageRepClass
+{
+  [imageReps addObject: imageRepClass];
+  [[NSNotificationCenter defaultCenter] 
+    postNotificationName: NSImageRepRegistryChangedNotification
+    object: self];
+} 
+
++ (NSArray *) registeredImageRepClasses
+{
+  return (NSArray *)imageReps;
+}
+
++ (void) unregisterImageRepClass: (Class)imageRepClass
+{
+  [imageReps removeObject: imageRepClass];
+  [[NSNotificationCenter defaultCenter] 
+    postNotificationName: NSImageRepRegistryChangedNotification
+    object: self];
+}
+
 // NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder
+- (void) encodeWithCoder: aCoder
 {
-  [super encodeWithCoder:aCoder];
+  [super encodeWithCoder: aCoder];
+
+  [aCoder encodeObject: colorSpace];
+  [aCoder encodeSize: size];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &hasAlpha];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &isOpaque];
+  [aCoder encodeValueOfObjCType: @encode(int) at: &bitsPerSample];
+  [aCoder encodeValueOfObjCType: @encode(int) at: &_pixelsWide];
+  [aCoder encodeValueOfObjCType: @encode(int) at: &_pixelsHigh];
 }
 
-- initWithCoder:aDecoder
+- initWithCoder: aDecoder
 {
-  [super initWithCoder:aDecoder];
+  self = [super initWithCoder: aDecoder];
 
+  colorSpace = [[aDecoder decodeObject] retain];
+  size = [aDecoder decodeSize];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &hasAlpha];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &isOpaque];
+  [aDecoder decodeValueOfObjCType: @encode(int) at: &bitsPerSample];
+  [aDecoder decodeValueOfObjCType: @encode(int) at: &_pixelsWide];
+  [aDecoder decodeValueOfObjCType: @encode(int) at: &_pixelsHigh];
   return self;
 }
 
 @end
+

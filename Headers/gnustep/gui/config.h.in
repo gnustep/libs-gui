@@ -36,8 +36,8 @@
 #include <Foundation/NSGeometry.h>
 
 // Until they have been added to libobjects
-#define NSNotification void
-#define NSNotificationCenter void
+//#define NSNotification void
+//#define NSNotificationCenter void
 
 @config_include@
 

@@ -1,12 +1,12 @@
-/* 
+/*
    NSCachedImageRep.m
 
-   Description...
+   Cached image representation.
 
    Copyright (C) 1996 Free Software Foundation, Inc.
-
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+   
+   Written by:  Adam Fedor <fedor@colorado.edu>
+   Date: Feb 1996
    
    This file is part of the GNUstep GUI Library.
 
@@ -19,74 +19,101 @@
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
    Library General Public License for more details.
-
+   
    If you are interested in a warranty or support for this source code,
    contact Scott Christley <scottc@net-community.com> for more information.
    
    You should have received a copy of the GNU Library General Public
    License along with this library; if not, write to the Free
    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/ 
+   */ 
+/*
+    Keeps a representation of an image in an off-screen window.  If the
+    message initFromWindow:rect: is sent with a nil window, one is created
+    using the rect information.
+*/
+#include <Foundation/NSException.h>
+#include <AppKit/NSCachedImageRep.h>
+#include <AppKit/NSWindow.h>
 
-#include <gnustep/gui/NSCachedImageRep.h>
+/* Backend protocol - methods that must be implemented by the backend to
+   complete the class */
+@protocol NXCachedImageRepBackend
+- (BOOL) draw;
+@end
 
 @implementation NSCachedImageRep
 
-//
-// Class methods
-//
-+ (void)initialize
-{
-  if (self == [NSCachedImageRep class])
-    {
-      // Initial version
-      [self setVersion:1];
-    }
-}
-
-//
 // Initializing an NSCachedImageRep 
-//
-- (id)initWithSize:(NSSize)aSize
-	     depth:(NSWindowDepth)aDepth
-separate:(BOOL)separate
-	     alpha:(BOOL)alpha
+- (id) initWithSize: (NSSize)aSize
+		depth: (NSWindowDepth)aDepth
+		separate: (BOOL)separate
+		alpha: (BOOL)alpha
 {
   return nil;
 }
 
-- (id)initWithWindow:(NSWindow *)aWindow
-		rect:(NSRect)aRect
+- initWithWindow: (NSWindow *)win rect: (NSRect)rect
 {
-  return nil;
+  int style = NSClosableWindowMask;
+
+  [super init];
+
+  _window = win;
+  _rect   = rect;
+
+  /* Either win or rect must be non-NULL. If rect is empty, we get the
+     frame info from the window. If win is nil we create it from the
+     rect information. */
+  if (NSIsEmptyRect(_rect))
+    {
+      if (!_window) 
+	{
+	  [NSException raise: NSInvalidArgumentException
+	    format: @"Must specify either window or rect when creating NSCachedImageRep"];
+	}
+
+      _rect = [_window frame];
+    }
+  if (!_window)
+    _window = [[NSWindow alloc] initWithContentRect: _rect
+			styleMask: style
+			backing: NSBackingStoreRetained
+			defer: NO];
+  return self;
 }
 
-//
+- (void) dealloc
+{
+  [_window release];
+  [super dealloc];
+}
+
 // Getting the Representation 
-//
-- (NSRect)rect
+- (NSRect) rect
 {
-  return NSZeroRect;
+  return _rect;
 }
 
-- (NSWindow *)window
+- (NSWindow *) window
 {
-  return nil;
+  return _window;
 }
 
-//
+- (BOOL)draw
+{
+  return NO;
+}
+
 // NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder
+- (void) encodeWithCoder: aCoder
 {
-  [super encodeWithCoder:aCoder];
 }
 
-- initWithCoder:aDecoder
+- initWithCoder: aDecoder
 {
-  [super initWithCoder:aDecoder];
-
   return self;
 }
 
 @end
+
