@@ -86,7 +86,5 @@
 - (void) updateServicesMenu;
 @end
 
-id GSContactApplication(NSString *appName, NSString *port, NSDate *expire);
-
 #endif
 

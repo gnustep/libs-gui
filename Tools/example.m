@@ -74,6 +74,7 @@
   NSString	*val;
   NSData	*data;
 
+  *err = nil;
   types = [pb types];
   if (![types containsObject: NSStringPboardType])
     {
@@ -106,6 +107,7 @@
   NSString      *browser;
   NSUserDefaults *defs = [NSUserDefaults standardUserDefaults];
 
+  *err = nil;
   types = [pb types];
   if (![types containsObject: NSStringPboardType])
     {
@@ -143,6 +145,7 @@
   NSString	*out;
   NSArray	*types;
 
+  *err = nil;
   types = [pb types];
   if (![types containsObject: NSStringPboardType])
     {
@@ -171,6 +174,7 @@
   NSString	*out;
   NSArray	*types;
 
+  *err = nil;
   types = [pb types];
   if (![types containsObject: NSStringPboardType])
     {

@@ -67,7 +67,7 @@ static GSServicesManager	*manager = nil;
  *	messing with us.  This is responsible for forwarding service
  *      requests and other communications with the outside world.
  */
-@interface      GSListener : NSObject
+@interface      GSListener : NSProxy
 + (id) connectionBecameInvalid: (NSNotification*)notification;
 + (GSListener*) listener;
 + (id) servicesProvider;
@@ -77,13 +77,10 @@ static GSServicesManager	*manager = nil;
 - (void) release;
 - (id) retain;
 - (id) self;
-- (void) performService: (NSString*)name
-	 withPasteboard: (NSPasteboard*)pb
-	       userData: (NSString*)ud
-		  error: (NSString**)e;
 @end
 
 static NSConnection	*listenerConnection = nil;
+static NSMutableArray	*listeners = nil;
 static GSListener	*listener = nil;
 static id		servicesProvider = nil;
 static NSString		*providerName = nil;
@@ -159,10 +156,10 @@ NSRegisterServicesProvider(id provider, NSString *name)
 }
 
 /*
- *	The GSListener class exists as a proxy to forward messages to
- *	service provider objects.  It implements very few methods and
- *	those that it does implement are generally designed to defeat
- *	any attack by a malicious program.
+ * The GSListener class exists as a proxy to forward messages to
+ * service provider objects.  It implements very few methods and
+ * those that it does implement are generally designed to defeat
+ * any attack by a malicious program.
  */
 @implementation GSListener
 
@@ -179,13 +176,37 @@ NSRegisterServicesProvider(id provider, NSString *name)
   return self;
 }
 
++ (void) initialize
+{
+  static BOOL	beenHere = NO;
+
+  if (beenHere == NO)
+    {
+      beenHere = YES;
+      listeners = [NSMutableArray new];
+    }
+}
+
 + (GSListener*) listener
 {
   if (listener == nil)
     {
       listener = (id)NSAllocateObject(self, 0, NSDefaultMallocZone());
+      [listeners addObject: listener];
     }
   return listener;
+}
+
+/**
+ * Needed to permit use of this class as a notification observer,
+ * since the notification system caches method implementations for speed.
+ */
++ (IMP) methodForSelector: (SEL)aSelector
+{
+  if (aSelector == 0)
+    [NSException raise: NSInvalidArgumentException
+                format: @"%@ null selector given", NSStringFromSelector(_cmd)];
+  return get_imp(GSObjCClass(self), aSelector);
 }
 
 + (id) servicesProvider
@@ -204,6 +225,11 @@ NSRegisterServicesProvider(id provider, NSString *name)
     }
 }
 
+- (id) autorelease
+{
+   return self;
+}
+
 - (Class) class
 {
   return 0;
@@ -213,47 +239,13 @@ NSRegisterServicesProvider(id provider, NSString *name)
 {
 }
 
-/*
- * Obsolete ... prefer forwardInvocation now.
+/**
+ * Selectively forwards those messages which are known to be safe.
  */
-- forward: (SEL)aSel :(arglist_t)frame
-{
-  NSString      *selName = NSStringFromSelector(aSel);
-  id            delegate;
-
-  /*
-   *    If the selector matches the correct form for a services request,
-   *    send the message to the services provider - otherwise raise an
-   *    exception to say the method is not implemented.
-   */
-  if ([selName hasSuffix: @":userData:error:"])
-    return [servicesProvider performv: aSel :frame];
-
-  /*
-   * If the applications delegate can handle the message - forward to it.
-   */
-  delegate = [[NSApplication sharedApplication] delegate];
-  if ([delegate respondsToSelector: aSel] == YES)
-    return [delegate performv: aSel :frame];
-
-  /*
-   *    If the selector matches the correct form for a file operaqtion
-   *    send the message to the manager.
-   */
-  if ([selName hasPrefix: @"application:"] == YES
-    && [manager respondsToSelector: aSel] == YES)
-    return [(id)manager performv: aSel :frame];
-
-  [NSException raise: NSGenericException
-	      format: @"method %@ not implemented", selName];
-  return nil;
-}
-
 - (void) forwardInvocation: (NSInvocation*)anInvocation
 {
   SEL		aSel = [anInvocation selector];
   NSString      *selName = NSStringFromSelector(aSel);
-  id            delegate;
 
   /*
    *    If the selector matches the correct form for a services request,
@@ -261,74 +253,130 @@ NSRegisterServicesProvider(id provider, NSString *name)
    */
   if ([selName hasSuffix: @":userData:error:"])
     {
-      [anInvocation invokeWithTarget: servicesProvider];
-      return;
-    }
+      if ([servicesProvider respondsToSelector: aSel] == YES)
+	{
+	  NSPasteboard	*pb;
 
-  /*
-   * If the applications delegate can handle the message - forward to it.
-   */
-  delegate = [[NSApplication sharedApplication] delegate];
-  if ([delegate respondsToSelector: aSel] == YES)
+	  /*
+	   * Create a local NSPasteboard object for this pasteboard.
+	   * If we try to use the remote NSPasteboard object, we get
+	   * trouble when setting property lists since the remote
+	   * NSPasteboard fails to serialize the local property
+	   * list objects for sending to gpbs.
+	   */
+	  [anInvocation getArgument: (void*)&pb atIndex: 2];
+	  pb = [NSPasteboard pasteboardWithName: [pb name]];
+	  [anInvocation setArgument: (void*)&pb atIndex: 2];
+
+	  [anInvocation invokeWithTarget: servicesProvider];
+	  return;
+	}
+    }
+  else
     {
-      [anInvocation invokeWithTarget: delegate];
-      return;
-    }
+      id	delegate = [[NSApplication sharedApplication] delegate];
 
-  /*
-   *    If the selector matches the correct form for a file operaqtion
-   *    send the message to the manager.
-   */
-  if ([selName hasPrefix: @"application:"] == YES
-    && [manager respondsToSelector: aSel] == YES)
-    {
-      [anInvocation invokeWithTarget: manager];
-      return;
-    }
+      if ([selName hasPrefix: @"application:"] == YES)
+	{
+	  if ([delegate respondsToSelector: aSel] == YES)
+	    {
+	      [anInvocation invokeWithTarget: delegate];
+	      return;
+	    }
+	  else if ([manager respondsToSelector: aSel] == YES)
+	    {
+	      [anInvocation invokeWithTarget: manager];
+	      return;
+	    }
+	}
+      else
+	{
+	  if ([delegate respondsToSelector: aSel] == YES)
+	    {
+	      NSArray	*messages;
 
+	      messages = [[NSUserDefaults standardUserDefaults] arrayForKey:
+		@"GSPermittedMessages"];
+	      if (messages != nil)
+		{
+		  if ([messages containsObject: selName] == YES)
+		    {
+		      [anInvocation invokeWithTarget: delegate];
+		    }
+		}
+	      else
+		{
+		  [anInvocation invokeWithTarget: delegate];
+		}
+	      return;
+	    }
+	}
+    }
   [NSException raise: NSGenericException
 	      format: @"method %@ not implemented", selName];
 }
 
-- (void) performService: (NSString*)name
-	 withPasteboard: (NSPasteboard*)pb
-	       userData: (NSString*)ud
-		  error: (NSString**)e
+/**
+ * Return the appropriate method signature for aSelector, checking
+ * to see if it's a standard service message or standard application
+ * message.<br />
+ * If the message is non-standard, it can be checked against a list
+ * of messages specified by the GSPermittedMessages user default.
+ */
+- (NSMethodSignature*) methodSignatureForSelector: (SEL)aSelector
 {
-  id	obj = servicesProvider;
-  SEL	msgSel = NSSelectorFromString(name);
-  IMP	msgImp;
+  NSMethodSignature	*sig = nil;
+  NSString      	*selName = NSStringFromSelector(aSelector);
 
-  /*
-  Create a local NSPasteboard object for this pasteboard. If we try to
-  use the remote NSPasteboard object, we get trouble when setting property
-  lists since the remote NSPasteboard fails to serialize the local property
-  list objects for sending to gpbs.
-  */
-  pb = [NSPasteboard pasteboardWithName: [pb name]];
-
-  if (obj != nil && [obj respondsToSelector: msgSel])
+  if ([selName hasSuffix: @":userData:error:"])
     {
-      msgImp = [obj methodForSelector: msgSel];
-      if (msgImp != 0)
+      sig = [servicesProvider methodSignatureForSelector: aSelector];
+    }
+  else
+    {
+      id	delegate = [[NSApplication sharedApplication] delegate];
+
+      if ([selName hasPrefix: @"application:"] == YES)
 	{
-	  (*msgImp)(obj, msgSel, pb, ud, e);
-	  return;
+	  if ([delegate respondsToSelector: aSelector] == YES)
+	    {
+	      sig = [delegate methodSignatureForSelector: aSelector];
+	    }
+	  else
+	    {
+	      sig = [manager methodSignatureForSelector: aSelector];
+	    }
+	}
+      else
+	{
+	  NSArray	*messages;
+
+	  messages = [[NSUserDefaults standardUserDefaults] arrayForKey:
+	    @"GSPermittedMessages"];
+
+	  if (messages != nil)
+	    {
+	      if ([messages containsObject: selName] == YES)
+		{
+		  sig = [delegate methodSignatureForSelector: aSelector];
+		}
+	    }
+	  else
+	    {
+	      sig = [delegate methodSignatureForSelector: aSelector];
+	    }
 	}
     }
+  return sig;
+}
 
-  obj = [[NSApplication sharedApplication] delegate];
-  if (obj != nil && [obj respondsToSelector: msgSel])
+- (BOOL) respondsToSelector: (SEL)aSelector
+{
+  if ([self methodSignatureForSelector: aSelector] != nil)
     {
-      msgImp = [obj methodForSelector: msgSel];
-      if (msgImp != 0)
-	{
-	  (*msgImp)(obj, msgSel, pb, ud, e);
-	  return;
-	}
+      return YES;
     }
-
-  *e = @"No object available to provide service"; 
+  return NO;
 }
 
 - (void) release
@@ -1250,14 +1298,29 @@ static NSString         *disabledName = @".GNUstepDisabled";
  * if necessary.  Returns the proxy to the remote application, or nil
  * on failure.
  * </p>
- * The value of expire provides a timeout in case the application cannot
- * be contacted promptly.
+ * <p>The value of port specifies the name of the distributed objects
+ * service to which the connection is to be made.  If this is nil
+ * it will be inferred from appName ... by convention, applications
+ * use their own name (minus any path or extension) for this.
+ * </p>
+ * <p>The value of expire provides a timeout in case the application cannot
+ * be contacted promptly.  If it is omitted, a thirty second timeout is
+ * used.
+ * </p>
  */
 id
 GSContactApplication(NSString *appName, NSString *port, NSDate *expire)
 {
   id	app;
 
+  if (port == nil)
+    {
+      port = [[appName lastPathComponent] stringByDeletingPathExtension];
+    }
+  if (expire == nil)
+    {
+      expire = [NSDate datyeWithTimeIntervalSinceNow: 30.0];
+    }
   if (providerName != nil && [port isEqual: providerName] == YES)
     {
       app = [GSListener listener];	// Contect our own listener.
@@ -1391,13 +1454,31 @@ NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
 
   /*
    * At last, we ask for the service to be performed.
+   * We create an untyped selector matching the message name we have,
+   * Using that, we get a method signature from the provider, and
+   * take the type information from that to make a fully typed
+   * selector, with which we can create and use an invocation.
    */
   NS_DURING
     {
-      [provider performService: selName
-		withPasteboard: pboard
-		      userData: userData
-			 error: &error];
+      const char	*name = [selName UTF8String];
+      SEL		sel = GSSelectorFromNameAndTypes(name, 0); 
+      NSMethodSignature	*sig = [provider methodSignatureForSelector: sel];
+
+      if (sig != nil)
+	{
+	  NSInvocation	*inv;
+	  NSString	**errPtr = &error;
+
+	  sel = GSSelectorFromNameAndTypes(name, [sig methodType]); 
+	  inv = [NSInvocation invocationWithMethodSignature: sig];
+	  [inv setTarget: provider];
+	  [inv setSelector: sel];
+	  [inv setArgument: (void*)&pboard atIndex: 2];
+	  [inv setArgument: (void*)&userData atIndex: 3];
+	  [inv setArgument: (void*)&errPtr atIndex: 4];
+	  [inv invoke];
+	}
     }
   NS_HANDLER
     {

@@ -411,16 +411,21 @@ APPKIT_EXPORT NSString	*NSApplicationWillUpdateNotification;
  * Determine Whether an Item Is Included in Services Menus
  */
 APPKIT_EXPORT int
-NSSetShowsServicesMenuItem(NSString *item, BOOL showService);
+NSSetShowsServicesMenuItem(NSString *name, BOOL enabled);
 
 APPKIT_EXPORT BOOL
-NSShowsServicesMenuItem(NSString *item);
+NSShowsServicesMenuItem(NSString *name);
 
 /*
  * Programmatically Invoke a Service
  */
 APPKIT_EXPORT BOOL
-NSPerformService(NSString *item, NSPasteboard *pboard);
+NSPerformService(NSString *serviceItem, NSPasteboard *pboard);
+
+#ifndef	NO_GNUSTEP
+APPKIT_EXPORT id
+GSContactApplication(NSString *appName, NSString *port, NSDate *expire);
+#endif
 
 /*
  * Force Services Menu to Update Based on New Services

@@ -31,7 +31,12 @@
   <p>
     The pasteboard system is the core of OpenStep inter-application
     communications.  This chapter is concerned with the use of the system,
-    for detailed reference see the [NSPasteboard] class.
+    for detailed reference see the [NSPasteboard] class.<br />
+    For non-standard services provided by applications (ie those which
+    do not fit the general <em>services</em> mechanism described below),
+    you generally use the Distributed Objects system (see [NSConnection])
+    directly, and some hints about that are provided at the end of this
+    chapter.
   </p>
   <section>
     <heading>Cut and Paste</heading>
@@ -401,6 +406,109 @@
 	</deflist>
       </desc>
     </deflist>
+    <p>
+      Filter services are used implicitly whenever you get a pasteboard
+      by using one of the methods +pasteboardByFilteringData:ofType:,
+      +pasteboardByFilteringFile: or +pasteboardByFilteringTypesInPasteboard:
+      as the pasteboard system will automatically invoke any available
+      filter to convert the data in the pastebaord to any required
+      type as long as a conversion can be done using a single filter.
+    </p>
+  </section>
+  <section>
+    <heading>Distributed Objects services</heading>
+    <p>
+      While the general <em>services</em> mechanism described above
+      covers most eventualities, there are some circumstances where
+      you might want your application to offer more complex services
+      which require the client application to have been written to
+      make use of those services and where the interaction between
+      the two is much trickier.
+    </p>
+    <p>
+      In most cases, such situations are handled by server processes
+      rather than gui applications, thus avoiding all the overheads
+      of a gui application ... linking with the gui library and
+      using the windowing system etc.  On occasion you may actually
+      want the services to use facilities from the gui library
+      (such as the [NSPasteboard] or [NSWorkspace] class).
+    </p>
+    <p>
+      Traditionally, NeXTstep and GNUstep applications permit you to
+      connect to an application using the standard [NSConnection]
+      mechanisms, with the name of the port you connect to being
+      (by convention) the name of the application.  The root proxy
+      of the NSConnection obtained this way would be the
+      [NSApplication-delegate] object, and any messages sent to
+      this object would be handled by the application delegate.
+    </p>
+    <p>
+      In the interests of security, GNUstep provides a mechanism to
+      ensure that <em>only</em> those methods you explicitly want to
+      be available to remote processes are actually available.<br />
+      Those methods are assumed to be any of the standard application
+      methods, and any methods implementing the standard <em>services</em>
+      mechanism (ie. methods whose names begin <code>application:</code>
+      or end with <code>:userData:error:</code>), plus any methods
+      listed in the array returned by the
+      <code>GSPermittedMessages</code> user default.<br />
+      If your application wishes to make non-standard methods available,
+      it should use [NSUserDefaults-registerDefaults:] to set a standard
+      value for GSPermittedMessages.  Users of the application can then
+      use the defaults system to override that standard setting for the
+      application in order to reduce or increase the list of messages
+      available to remote processes.
+    </p>
+    <p>
+      To make use of a service, you need to check to ensure that the
+      application providing the service is running, connect to it,
+      and then send messages to it.  You should take care to catch
+      exceptions and deal with a loss of connection to the server
+      application.<br />
+      As an aid to using the services, GNUstep provides a helper function
+      (GSContactApplication()) which encapsulates the process of
+      establishing a connection and
+      launching the server application if necessary.
+    </p>
+<example>
+  id	proxy = GSContactApplication(@"pathToApp", nil, nil);
+  if (proxy != nil)
+    {
+      NS_EXCEPTION
+	{
+	  id result = [proxy performTask: taskName withArgument: anArgument];
+
+	  if (result == nil)
+	    {
+	      // handle error
+	    }
+	  else
+	    {
+	      // Use result
+	    }
+	}
+      NS_HANDLER
+        // Handle exception
+      NS_ENDHANDLER
+    }
+</example>
+    <p>
+      If we want to send repeated messages, we may store the proxy to
+      server application, and might want to keep track of the state of
+      the connection to be sure that the proxy is still valid.
+    </p>
+<example>
+  ASSIGN(remote, proxy);
+  // We want to keep hold of the proxy for use later, so we need to know
+  // if the connection dies ... we ask for a notification to call our
+  // connectionBecameInvalid: method when the connection dies ... in that
+  // method we can release the proxy.
+  [[NSNotificationCenter defaultCenter]
+    addObserver: self
+       selector: @selector(connectionBecameInvalid:)
+	   name: NSConnectionDidDieNotification
+	 object: [remote connectionForProxy]];
+</example>
   </section>
 </chapter>
 */ 
@@ -419,6 +527,7 @@
 #include <Foundation/NSMapTable.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSException.h>
+#include <Foundation/NSInvocation.h>
 #include <Foundation/NSLock.h>
 #include <Foundation/NSPathUtilities.h>
 #include <Foundation/NSPortNameServer.h>
@@ -440,7 +549,7 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
 /*
  * A pasteboard class for lazily filtering data
  */
-@interface FilteredPasteboard : NSPasteboard
+@interface GSFiltered : NSPasteboard
 {
 @public
   NSArray	*originalTypes;
@@ -450,7 +559,7 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
 }
 @end
 
-@implementation	FilteredPasteboard
+@implementation	GSFiltered
 
 /**
  * Given an array of types, produce an array of all the types we can
@@ -489,9 +598,56 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
 - (void) dealloc
 {
   DESTROY(originalTypes);
+  DESTROY(file);
   DESTROY(data);
   DESTROY(pboard);
   [super dealloc];
+}
+
+/**
+ * GSFiltered instances are encoded differently from standard pasteboards,
+ * they have no names and are instead represented by whatever it is they
+ * are filtering.
+ */
+- (void) encodeWithCoder: (NSCoder*)aCoder
+{
+  if (data != nil)
+    {
+      [aCoder encodeObject: data];
+      [aCoder encodeObject: [originalTypes lastObject]];
+    }
+  else if (file != nil)
+    {
+      [aCoder encodeObject: file];
+    }
+  else
+    {
+      [aCoder encodeObject: pboard];
+    }
+}
+
+- (id) initWithCoder: (NSCoder*)aCoder
+{
+  NSPasteboard	*p;
+  id		val = [aCoder decodeObject];
+
+  if ([val isKindOfClass: [NSData class]] == YES)
+    {
+      NSString	*s = [aCoder decodeObject];
+
+      p = [NSPasteboard pasteboardByFilteringData: val ofType: s];
+    }
+  else if ([val isKindOfClass: [NSString class]] == YES)
+    {
+      p = [NSPasteboard pasteboardByFilteringFile: val];
+    }
+  else
+    {
+      p = [NSPasteboard pasteboardByFilteringTypesInPasteboard: val];
+    }
+
+  ASSIGN(self, p);
+  return self;
 }
 
 /**
@@ -791,10 +947,31 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
        */
       NS_DURING
 	{
-	  [provider performService: selName
-		    withPasteboard: tmp
-			  userData: userData
-			     error: &error];
+	  const char		*cName;
+	  SEL			sel;
+	  NSMethodSignature	*sig;
+
+	  cName = [selName UTF8String];
+	  sel = GSSelectorFromNameAndTypes(cName, 0); 
+	  sig = [provider methodSignatureForSelector: sel];
+	  if (sig != nil)
+	    {
+	      NSInvocation	*inv;
+	      NSString		**errPtr = &error;
+
+	      sel = GSSelectorFromNameAndTypes(cName, [sig methodType]); 
+	      inv = [NSInvocation invocationWithMethodSignature: sig];
+	      [inv setTarget: provider];
+	      [inv setSelector: sel];
+	      [inv setArgument: (void*)&tmp atIndex: 2];
+	      [inv setArgument: (void*)&userData atIndex: 3];
+	      [inv setArgument: (void*)&errPtr atIndex: 4];
+	      [inv invoke];
+	    }
+	  else
+	    {
+	      error = @"No remote object to handle filter";
+	    }
 	}
       NS_HANDLER
 	{
@@ -821,6 +998,8 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
 
 
 @interface NSPasteboard (Private)
++ (void) _localServer: (id<GSPasteboardSvr>)s;
++ (id) _lostServer: (NSNotification*)notification;
 + (id<GSPasteboardSvr>) _pbs;
 + (NSPasteboard*) _pasteboardWithTarget: (id<GSPasteboardObj>)aTarget
 				   name: (NSString*)aName;
@@ -864,9 +1043,15 @@ static	NSMutableDictionary	*pasteboards = nil;
 static	id<GSPasteboardSvr>	the_server = nil;
 static  NSMapTable              *mimeMap = NULL;
 
-//
-// Class methods
-//
+/**
+ * Returns the general pasteboard found by calling +pasteboardWithName:
+ * with NSGeneralPboard as the name.
+ */
++ (NSPasteboard*) generalPasteboard
+{
+  return [self pasteboardWithName: NSGeneralPboard];
+}
+
 + (void) initialize
 {
   if (self == [NSPasteboard class])
@@ -878,210 +1063,93 @@ static  NSMapTable              *mimeMap = NULL;
     }
 }
 
-/*
- *	Special method to use a local server rather than connecting over DO
+/**
+ * <p>Creates and returns a pasteboard from which the data in the named
+ * file can be read in all the types to which it can be converted by
+ * filter services.<br />
+ * The type of data in the file is inferred from the file extension.
+ * </p>
+ * <p>No filtering is actually performed until some object asks the
+ * pasteboard for the data, so calling this method is quite inexpensive.
+ * </p>
  */
-+ (void) _localServer: (id<GSPasteboardSvr>)s
++ (NSPasteboard*) pasteboardByFilteringData: (NSData*)data
+				     ofType: (NSString*)type
 {
-  the_server = s;
-}
+  GSFiltered	*p;
+  NSArray	*types;
+  NSArray	*originalTypes;
 
-+ (id) _lostServer: (NSNotification*)notification
-{
-  id	obj = the_server;
-
-  the_server = nil;
-  [[NSNotificationCenter defaultCenter]
-    removeObserver: self
-	      name: NSConnectionDidDieNotification
-	    object: [notification object]];
-  RELEASE(obj);
-  return self;
-}
-
-+ (id<GSPasteboardSvr>) _pbs
-{
-  if (the_server == nil)
-    {
-      NSString	*host;
-      NSString	*description;
-
-      host = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
-      if (host == nil)
-	{
-	  host = @"";
-	}
-      else
-	{
-	  NSHost	*h;
-
-	  /*
-	   * If we have a host specified, but it is the current host,
-	   * we do not need to ask for a host by name (nameserver lookup
-	   * can be faster) and the empty host name can be used to
-	   * indicate that we may start a pasteboard server locally.
-	   */
-	  h = [NSHost hostWithName: host];
-	  if (h == nil)
-	    {
-	      NSLog(@"Unknown NSHost (%@) ignored", host);
-	      host = @"";
-	    }
-	  else if ([h isEqual: [NSHost currentHost]] == YES)
-	    {
-	      host = @"";
-	    }
-	  else
-	    {
-	      host = [h name];
-	    }
-	}
-
-      if ([host length] == 0)
-	{
-	  description = @"local host";
-	}
-      else
-	{
-	  description = host;
-	}
-
-      the_server = (id<GSPasteboardSvr>)[NSConnection
-	rootProxyForConnectionWithRegisteredName: PBSNAME host: host];
-      if (the_server == nil && [host length] > 0)
-	{
-	  NSString	*service;
-
-	  service = [PBSNAME stringByAppendingFormat: @"-%@", host];
-	  the_server = (id<GSPasteboardSvr>)[NSConnection
-	    rootProxyForConnectionWithRegisteredName: service host: @"*"];
-	}
-
-      if (RETAIN((id)the_server) != nil)
-	{
-	  NSConnection	*conn = [(id)the_server connectionForProxy];
-          Protocol      *p = @protocol(GSPasteboardSvr);
-
-          [(id)the_server setProtocolForProxy: p];
-	  [[NSNotificationCenter defaultCenter]
-	    addObserver: self
-	       selector: @selector(_lostServer:)
-		   name: NSConnectionDidDieNotification
-		 object: conn];
-	}
-      else
-	{
-	  static BOOL		recursion = NO;
-	  static NSString	*cmd = nil;
-	  static NSArray	*args = nil;
-
-	  if (cmd == nil && recursion ==NO)
-	    {
-#ifdef GNUSTEP_BASE_LIBRARY
-	      cmd = RETAIN([[NSSearchPathForDirectoriesInDomains(
-		GSToolsDirectory, NSSystemDomainMask, YES) objectAtIndex: 0]
-		stringByAppendingPathComponent: @"gpbs"]);
-#else
-	      cmd = RETAIN([[@GNUSTEP_INSTALL_PREFIX 
-		stringByAppendingPathComponent: @"Tools"] 
-		stringByAppendingPathComponent: @"gpbs"]);
-#endif
-	    }
-	  if (recursion == YES || cmd == nil)
-	    {
-	      NSLog(@"Unable to contact pasteboard server - "
-		@"please ensure that gpbs is running for %@.", description);
-	      return nil;
-	    }
-	  else
-	    {
-	      NSLog(@"\nI couldn't contact the pasteboard server for %@ -\n"
-@"so I'm attempting to to start one - which will take a few seconds.\n"
-@"Trying to launch gpbs from %@ or a machine/operating-system subdirectory.\n"
-@"It is recommended that you start the pasteboard server (gpbs) when\n"
-@"your windowing system is started up.\n", description,
-[cmd stringByDeletingLastPathComponent]);
-	      if ([host length] > 0)
-		{
-		  args = [[NSArray alloc] initWithObjects:
-		    @"-NSHost", host, nil];
-		}
-	      [NSTask launchedTaskWithLaunchPath: cmd arguments: args];
-	      [NSTimer scheduledTimerWithTimeInterval: 5.0
-					   invocation: nil
-					      repeats: NO];
-	      [[NSRunLoop currentRunLoop] runUntilDate: 
-		[NSDate dateWithTimeIntervalSinceNow: 5.0]];
-	      recursion = YES;
-	      [self _pbs];
-	      recursion = NO;
-	    }
-	}
-    }
-  return the_server;
-}
-
-/*
- * Creating and Releasing an NSPasteboard Object
- */
-+ (NSPasteboard*) _pasteboardWithTarget: (id<GSPasteboardObj>)aTarget
-				   name: (NSString*)aName
-{
-  NSPasteboard	*p = nil;
-
-  [dictionary_lock lock];
-  p = [pasteboards objectForKey: aName];
-  if (p != nil)
-    {
-      /*
-       * It is conceivable that the following may have occurred -
-       * 1. The pasteboard was created on the server
-       * 2. We set up an NSPasteboard to point to it
-       * 3. The pasteboard on the server was destroyed by a [-releaseGlobally]
-       * 4. The named pasteboard was asked for again - resulting in a new
-       *	object being created on the server.
-       * If this is the case, our proxy for the object on the server will be
-       *	out of date, so we swap it for the newly created one.
-       */
-      if (p->target != (id)aTarget)
-	{
-	  AUTORELEASE(p->target);
-	  p->target = RETAIN((id)aTarget);
-	}
-    }
-  else
-    {
-      /*
-       * For a newly created NSPasteboard object, we must make an entry
-       * in the dictionary so we can look it up safely.
-       */
-      p = [self alloc];
-      if (p != nil)
-	{
-	  p->target = RETAIN((id)aTarget);
-	  p->name = RETAIN(aName);
-	  [pasteboards setObject: p forKey: aName];
-	  AUTORELEASE(p);
-	}
-      /*
-       * The AUTORELEASE ensures that the NSPasteboard object we are
-       * returning will be released once our caller has finished with it.
-       * This is necessary so that our RELEASE method will be called to
-       * remove the NSPasteboard from the 'pasteboards' array when it is not
-       * needed any more.
-       */
-    }
-  [dictionary_lock unlock];
+  originalTypes = [NSArray arrayWithObject: type];
+  types = [GSFiltered _typesFilterableFrom: originalTypes];
+  p = (GSFiltered*)[GSFiltered pasteboardWithUniqueName];
+  p->originalTypes = [originalTypes copy];
+  p->data = [data copy];
+  [p declareTypes: types owner: p];
   return p;
 }
 
 /**
- * Returns the general pasteboard found by calling +pasteboardWithName:
- * with NSGeneralPboard as the name.
+ * <p>Creates and returns a pasteboard from which the data in the named
+ * file can be read in all the types to which it can be converted by
+ * filter services.<br />
+ * The type of data in the file is inferred from the file extension.
+ * </p>
  */
-+ (NSPasteboard*) generalPasteboard
++ (NSPasteboard*) pasteboardByFilteringFile: (NSString*)filename
 {
-  return [self pasteboardWithName: NSGeneralPboard];
+  GSFiltered	*p;
+  NSString		*ext = [filename pathExtension];
+  NSArray		*types;
+  NSArray		*originalTypes;
+
+  if ([ext length] > 0)
+    {
+      originalTypes = [NSArray arrayWithObjects:
+	NSCreateFileContentsPboardType(ext),
+	NSFileContentsPboardType,
+	nil];
+    }
+  else
+    {
+      originalTypes = [NSArray arrayWithObject: NSFileContentsPboardType];
+    }
+  types = [GSFiltered _typesFilterableFrom: originalTypes];
+  p = (GSFiltered*)[GSFiltered pasteboardWithUniqueName];
+  p->originalTypes = [originalTypes copy];
+  p->file = [filename copy];
+  [p declareTypes: types owner: p];
+  return p;
+}
+
+/**
+ * <p>Creates and returns a pasteboard where the data contained in pboard
+ * is available for reading in as many types as it can be converted to by
+ * available filter services.  This normally expands on the range of types
+ * available in pboard.
+ * </p>
+ * <p>NB. This only permits a single level of filtering ... if pboard was
+ * previously returned by another filtering method, it is returned instead
+ * of a new pasteboard.
+ * </p>
+ */
++ (NSPasteboard*) pasteboardByFilteringTypesInPasteboard: (NSPasteboard*)pboard
+{
+  GSFiltered	*p;
+  NSArray		*types;
+  NSArray		*originalTypes;
+
+  if ([pboard isKindOfClass: [GSFiltered class]] == YES)
+    {
+      return pboard;
+    }
+  originalTypes = [pboard types];
+  types = [GSFiltered _typesFilterableFrom: originalTypes];
+  p = (GSFiltered*)[GSFiltered pasteboardWithUniqueName];
+  p->originalTypes = [originalTypes copy];
+  p->pboard = RETAIN(pboard);
+  [p declareTypes: types owner: p];
+  return p;
 }
 
 /**
@@ -1169,95 +1237,6 @@ static  NSMapTable              *mimeMap = NULL;
 }
 
 /**
- * <p>Creates and returns a pasteboard from which the data in the named
- * file can be read in all the types to which it can be converted by
- * filter services.<br />
- * The type of data in the file is inferred from the file extension.
- * </p>
- * <p>No filtering is actually performed until some object asks the
- * pasteboard for the data, so calling this method is quite inexpensive.
- * </p>
- */
-+ (NSPasteboard*) pasteboardByFilteringData: (NSData*)data
-				     ofType: (NSString*)type
-{
-  FilteredPasteboard	*p;
-  NSArray		*types;
-  NSArray		*originalTypes;
-
-  originalTypes = [NSArray arrayWithObject: type];
-  types = [FilteredPasteboard _typesFilterableFrom: originalTypes];
-  p = (FilteredPasteboard*)[FilteredPasteboard pasteboardWithUniqueName];
-  p->originalTypes = [originalTypes copy];
-  p->data = [data copy];
-  [p declareTypes: types owner: p];
-  return p;
-}
-
-/**
- * <p>Creates and returns a pasteboard from which the data in the named
- * file can be read in all the types to which it can be converted by
- * filter services.<br />
- * The type of data in the file is inferred from the file extension.
- * </p>
- */
-+ (NSPasteboard*) pasteboardByFilteringFile: (NSString*)filename
-{
-  FilteredPasteboard	*p;
-  NSString		*ext = [filename pathExtension];
-  NSArray		*types;
-  NSArray		*originalTypes;
-
-  if ([ext length] > 0)
-    {
-      originalTypes = [NSArray arrayWithObjects:
-	NSCreateFileContentsPboardType(ext),
-	NSFileContentsPboardType,
-	nil];
-    }
-  else
-    {
-      originalTypes = [NSArray arrayWithObject: NSFileContentsPboardType];
-    }
-  types = [FilteredPasteboard _typesFilterableFrom: originalTypes];
-  p = (FilteredPasteboard*)[FilteredPasteboard pasteboardWithUniqueName];
-  p->originalTypes = [originalTypes copy];
-  p->file = [filename copy];
-  [p declareTypes: types owner: p];
-  return p;
-}
-
-/**
- * <p>Creates and returns a pasteboard where the data contained in pboard
- * is available for reading in as many types as it can be converted to by
- * available filter services.  This normally expands on the range of types
- * available in pboard.
- * </p>
- * <p>NB. This only permits a single level of filtering ... if pboard was
- * previously returned by another filtering method, it is returned instead
- * of a new pasteboard.
- * </p>
- */
-+ (NSPasteboard*) pasteboardByFilteringTypesInPasteboard: (NSPasteboard*)pboard
-{
-  FilteredPasteboard	*p;
-  NSArray		*types;
-  NSArray		*originalTypes;
-
-  if ([pboard isKindOfClass: [FilteredPasteboard class]] == YES)
-    {
-      return pboard;
-    }
-  originalTypes = [pboard types];
-  types = [FilteredPasteboard _typesFilterableFrom: originalTypes];
-  p = (FilteredPasteboard*)[FilteredPasteboard pasteboardWithUniqueName];
-  p->originalTypes = [originalTypes copy];
-  p->pboard = RETAIN(pboard);
-  [p declareTypes: types owner: p];
-  return p;
-}
-
-/**
  * Returns an array of the types from which data of the specified type
  * can be produced by registered filter services.<br />
  * The original type is always present in this array.<br />
@@ -1288,55 +1267,6 @@ static  NSMapTable              *mimeMap = NULL;
     }
 
   return [types allObjects];
-}
-
-/*
- * Instance methods
- */
-
-- (id) _target
-{
-  return target;
-}
-
-/*
- * Creating and Releasing an NSPasteboard Object
- */
-
-- (void) dealloc
-{
-  RELEASE(target);
-  RELEASE(name);
-  [super dealloc];
-}
-
-/**
- * Releases the receiver in the pasteboard server so that no other application
- * can use the pasteboard.  This should not be called for any of the standard
- * pasteboards, only for temporary ones.
- */
-- (void) releaseGlobally
-{
-  if ([name isEqualToString: NSGeneralPboard] == YES
-    || [name isEqualToString: NSFontPboard] == YES
-    || [name isEqualToString: NSRulerPboard] == YES
-    || [name isEqualToString: NSFindPboard] == YES
-    || [name isEqualToString: NSDragPboard] == YES)
-    {
-      [NSException raise: NSGenericException
-		  format: @"Illegal attempt to globally release %@", name];
-    }
-  [target releaseGlobally];
-  [pasteboards removeObjectForKey: name];
-}
-
-/**
- * Returns the pasteboard name (as given to +pasteboardWithName:)
- * for the receiver.
- */
-- (NSString*) name
-{
-  return name;
 }
 
 /**
@@ -1454,6 +1384,79 @@ static  NSMapTable              *mimeMap = NULL;
     }
   NS_ENDHANDLER
   return changeCount;
+}
+
+- (void) dealloc
+{
+  RELEASE(target);
+  RELEASE(name);
+  [super dealloc];
+}
+
+/**
+ * Encode for DO by using just our name.
+ */
+- (void) encodeWithCoder: (NSCoder*)aCoder
+{
+  [aCoder encodeObject: name];
+}
+
+/**
+ * Decode from DO by creating a new pasteboard with the decoded name.
+ */
+- (id) initWithCoder: (NSCoder*)aCoder
+{
+  NSString	*n = [aCoder decodeObject];
+  NSPasteboard	*p = [[self class] pasteboardWithName: n];
+
+  ASSIGN(self, p);
+  return self;
+}
+
+/**
+ * Returns the pasteboard name (as given to +pasteboardWithName:)
+ * for the receiver.
+ */
+- (NSString*) name
+{
+  return name;
+}
+
+/**
+ * Releases the receiver in the pasteboard server so that no other application
+ * can use the pasteboard.  This should not be called for any of the standard
+ * pasteboards, only for temporary ones.
+ */
+- (void) releaseGlobally
+{
+  if ([name isEqualToString: NSGeneralPboard] == YES
+    || [name isEqualToString: NSFontPboard] == YES
+    || [name isEqualToString: NSRulerPboard] == YES
+    || [name isEqualToString: NSFindPboard] == YES
+    || [name isEqualToString: NSDragPboard] == YES)
+    {
+      [NSException raise: NSGenericException
+		  format: @"Illegal attempt to globally release %@", name];
+    }
+  [target releaseGlobally];
+  [pasteboards removeObjectForKey: name];
+}
+
+/**
+ * Pasteboards sent over DO should always be copied so that a local
+ * instance is created to communicate with the pastebaord server.
+ */
+- (id) replacementObjectForPortCoder: (NSPortCoder*)aCoder
+{
+  if ([self class] == [NSPasteboard class])
+    {
+      return self;	// Always encode bycopy.
+    }
+  if ([self class] == [GSFiltered class])
+    {
+      return self;	// Always encode bycopy.
+    }
+  return [super replacementObjectForPortCoder: aCoder];
 }
 
 /*
@@ -1849,6 +1852,212 @@ static  NSMapTable              *mimeMap = NULL;
       s = nil;
     }
   return s;
+}
+
+@end
+
+@implementation NSPasteboard (Private)
+
+/*
+ *	Special method to use a local server rather than connecting over DO
+ */
++ (void) _localServer: (id<GSPasteboardSvr>)s
+{
+  the_server = s;
+}
+
++ (id) _lostServer: (NSNotification*)notification
+{
+  id	obj = the_server;
+
+  the_server = nil;
+  [[NSNotificationCenter defaultCenter]
+    removeObserver: self
+	      name: NSConnectionDidDieNotification
+	    object: [notification object]];
+  RELEASE(obj);
+  return self;
+}
+
++ (id<GSPasteboardSvr>) _pbs
+{
+  if (the_server == nil)
+    {
+      NSString	*host;
+      NSString	*description;
+
+      host = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
+      if (host == nil)
+	{
+	  host = @"";
+	}
+      else
+	{
+	  NSHost	*h;
+
+	  /*
+	   * If we have a host specified, but it is the current host,
+	   * we do not need to ask for a host by name (nameserver lookup
+	   * can be faster) and the empty host name can be used to
+	   * indicate that we may start a pasteboard server locally.
+	   */
+	  h = [NSHost hostWithName: host];
+	  if (h == nil)
+	    {
+	      NSLog(@"Unknown NSHost (%@) ignored", host);
+	      host = @"";
+	    }
+	  else if ([h isEqual: [NSHost currentHost]] == YES)
+	    {
+	      host = @"";
+	    }
+	  else
+	    {
+	      host = [h name];
+	    }
+	}
+
+      if ([host length] == 0)
+	{
+	  description = @"local host";
+	}
+      else
+	{
+	  description = host;
+	}
+
+      the_server = (id<GSPasteboardSvr>)[NSConnection
+	rootProxyForConnectionWithRegisteredName: PBSNAME host: host];
+      if (the_server == nil && [host length] > 0)
+	{
+	  NSString	*service;
+
+	  service = [PBSNAME stringByAppendingFormat: @"-%@", host];
+	  the_server = (id<GSPasteboardSvr>)[NSConnection
+	    rootProxyForConnectionWithRegisteredName: service host: @"*"];
+	}
+
+      if (RETAIN((id)the_server) != nil)
+	{
+	  NSConnection	*conn = [(id)the_server connectionForProxy];
+          Protocol      *p = @protocol(GSPasteboardSvr);
+
+          [(id)the_server setProtocolForProxy: p];
+	  [[NSNotificationCenter defaultCenter]
+	    addObserver: self
+	       selector: @selector(_lostServer:)
+		   name: NSConnectionDidDieNotification
+		 object: conn];
+	}
+      else
+	{
+	  static BOOL		recursion = NO;
+	  static NSString	*cmd = nil;
+	  static NSArray	*args = nil;
+
+	  if (cmd == nil && recursion ==NO)
+	    {
+#ifdef GNUSTEP_BASE_LIBRARY
+	      cmd = RETAIN([[NSSearchPathForDirectoriesInDomains(
+		GSToolsDirectory, NSSystemDomainMask, YES) objectAtIndex: 0]
+		stringByAppendingPathComponent: @"gpbs"]);
+#else
+	      cmd = RETAIN([[@GNUSTEP_INSTALL_PREFIX 
+		stringByAppendingPathComponent: @"Tools"] 
+		stringByAppendingPathComponent: @"gpbs"]);
+#endif
+	    }
+	  if (recursion == YES || cmd == nil)
+	    {
+	      NSLog(@"Unable to contact pasteboard server - "
+		@"please ensure that gpbs is running for %@.", description);
+	      return nil;
+	    }
+	  else
+	    {
+	      NSLog(@"\nI couldn't contact the pasteboard server for %@ -\n"
+@"so I'm attempting to to start one - which will take a few seconds.\n"
+@"Trying to launch gpbs from %@ or a machine/operating-system subdirectory.\n"
+@"It is recommended that you start the pasteboard server (gpbs) when\n"
+@"your windowing system is started up.\n", description,
+[cmd stringByDeletingLastPathComponent]);
+	      if ([host length] > 0)
+		{
+		  args = [[NSArray alloc] initWithObjects:
+		    @"-NSHost", host, nil];
+		}
+	      [NSTask launchedTaskWithLaunchPath: cmd arguments: args];
+	      [NSTimer scheduledTimerWithTimeInterval: 5.0
+					   invocation: nil
+					      repeats: NO];
+	      [[NSRunLoop currentRunLoop] runUntilDate: 
+		[NSDate dateWithTimeIntervalSinceNow: 5.0]];
+	      recursion = YES;
+	      [self _pbs];
+	      recursion = NO;
+	    }
+	}
+    }
+  return the_server;
+}
+
+/*
+ * Creating and Releasing an NSPasteboard Object
+ */
++ (NSPasteboard*) _pasteboardWithTarget: (id<GSPasteboardObj>)aTarget
+				   name: (NSString*)aName
+{
+  NSPasteboard	*p = nil;
+
+  [dictionary_lock lock];
+  p = [pasteboards objectForKey: aName];
+  if (p != nil)
+    {
+      /*
+       * It is conceivable that the following may have occurred -
+       * 1. The pasteboard was created on the server
+       * 2. We set up an NSPasteboard to point to it
+       * 3. The pasteboard on the server was destroyed by a [-releaseGlobally]
+       * 4. The named pasteboard was asked for again - resulting in a new
+       *	object being created on the server.
+       * If this is the case, our proxy for the object on the server will be
+       *	out of date, so we swap it for the newly created one.
+       */
+      if (p->target != (id)aTarget)
+	{
+	  AUTORELEASE(p->target);
+	  p->target = RETAIN((id)aTarget);
+	}
+    }
+  else
+    {
+      /*
+       * For a newly created NSPasteboard object, we must make an entry
+       * in the dictionary so we can look it up safely.
+       */
+      p = [self alloc];
+      if (p != nil)
+	{
+	  p->target = RETAIN((id)aTarget);
+	  p->name = RETAIN(aName);
+	  [pasteboards setObject: p forKey: aName];
+	  AUTORELEASE(p);
+	}
+      /*
+       * The AUTORELEASE ensures that the NSPasteboard object we are
+       * returning will be released once our caller has finished with it.
+       * This is necessary so that our RELEASE method will be called to
+       * remove the NSPasteboard from the 'pasteboards' array when it is not
+       * needed any more.
+       */
+    }
+  [dictionary_lock unlock];
+  return p;
+}
+
+- (id) _target
+{
+  return target;
 }
 
 @end

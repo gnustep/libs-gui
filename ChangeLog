@@ -1,3 +1,14 @@
+2003-07-14  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Headers/gnustep/gui/GSServicesManager.h: removed a function
+	* Headers/gnustep/gui/NSApplication.h: and added it here so it's
+	public.  Also fixed some argument name missmatches.
+	* Source/GSServicesManager.m: Some fixes for recent changes to
+	DO in base library ... also make listener even safer.
+	* Source/NSPasteboard.m: Improve documentation and change pasteboards
+	to always be sent over DO bycopy.
+	* Tools/example.m: Set error response to nil when there is no error.
+
 2003-07-12 18:20  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/NSTextView.h, Source/NSTextView.m: Add
