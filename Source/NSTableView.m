@@ -479,10 +479,9 @@ _isCellEditable (id delegate, NSArray *tableColumns,
   dict =[NSDictionary dictionaryWithObjectsAndKeys: 
 			[NSNumber numberWithInt: columnIndex], @"NSOldColumn", 
 		      [NSNumber numberWithInt: newIndex], @"NSNewColumn", nil];
-  [(NSNotificationCenter *)[NSNotificationCenter defaultCenter]
-    postNotificationName: NSTableViewColumnDidMoveNotification
-    object: self
-    userInfo: dict];
+  [nc postNotificationName: NSTableViewColumnDidMoveNotification
+      object: self
+      userInfo: dict];
 }
 
 - (NSArray *) tableColumns
