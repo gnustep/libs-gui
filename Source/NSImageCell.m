@@ -41,7 +41,9 @@
 + (void) initialize
 {
   if (self == [NSImageCell class])
-    [self setVersion: 1];
+    {
+      [self setVersion: 1];
+    }
 }
 
 //
@@ -67,7 +69,7 @@
   [super dealloc];
 }
 
-- (void)setImage:(NSImage *)anImage
+- (void) setImage:(NSImage *)anImage
 {
   [super setImage:anImage];
   _original_image_size = [anImage size];
@@ -76,23 +78,23 @@
 //
 // Aligning and scaling the image
 //
-- (NSImageAlignment)imageAlignment
+- (NSImageAlignment) imageAlignment
 {
   return _imageAlignment;
 }
 
-- (void)setImageAlignment: (NSImageAlignment)anAlignment
+- (void) setImageAlignment: (NSImageAlignment)anAlignment
 {
   NSDebugLLog(@"NSImageCell", @"NSImageCell -setImageAlignment");
   _imageAlignment = anAlignment;
 }
 
-- (NSImageScaling)imageScaling
+- (NSImageScaling) imageScaling
 {
   return _imageScaling;
 }
 
-- (void)setImageScaling: (NSImageScaling)scaling
+- (void) setImageScaling: (NSImageScaling)scaling
 {
   _imageScaling = scaling;
 }
@@ -100,12 +102,12 @@
 //
 // Choosing the frame
 //
-- (NSImageFrameStyle)imageFrameStyle
+- (NSImageFrameStyle) imageFrameStyle
 {
   return _frameStyle;
 }
 
-- (void)setImageFrameStyle: (NSImageFrameStyle)aFrameStyle
+- (void) setImageFrameStyle: (NSImageFrameStyle)aFrameStyle
 {
   _frameStyle = aFrameStyle;
 }
@@ -148,22 +150,26 @@
   [controlView unlockFocus];
 }
 
-static inline float xLeftInRect(NSSize innerSize, NSRect outerRect)
+static inline float
+xLeftInRect(NSSize innerSize, NSRect outerRect)
 {
   return NSMinX(outerRect);
 }
 
-static inline float xCenterInRect(NSSize innerSize, NSRect outerRect)
+static inline float
+xCenterInRect(NSSize innerSize, NSRect outerRect)
 {
   return MAX(NSMidX(outerRect) - (innerSize.width/2.0), 0.0);
 }
 
-static inline float xRightInRect(NSSize innerSize, NSRect outerRect)
+static inline float
+xRightInRect(NSSize innerSize, NSRect outerRect)
 {
   return MAX(NSMaxX(outerRect) - innerSize.width, 0.0);
 }
 
-static inline float yTopInRect(NSSize innerSize, NSRect outerRect, BOOL flipped)
+static inline float
+yTopInRect(NSSize innerSize, NSRect outerRect, BOOL flipped)
 {
   if (flipped)
     return NSMinY(outerRect);
@@ -171,12 +177,14 @@ static inline float yTopInRect(NSSize innerSize, NSRect outerRect, BOOL flipped)
     return MAX(NSMaxY(outerRect) - innerSize.height, 0.0);
 }
 
-static inline float yCenterInRect(NSSize innerSize, NSRect outerRect, BOOL flipped)
+static inline float
+yCenterInRect(NSSize innerSize, NSRect outerRect, BOOL flipped)
 {
   return MAX(NSMidY(outerRect) - innerSize.height/2.0, 0.0);
 }
 
-static inline float yBottomInRect(NSSize innerSize, NSRect outerRect, BOOL flipped)
+rtatic inline float
+yBottomInRect(NSSize innerSize, NSRect outerRect, BOOL flipped)
 {
   if (flipped)
     return MAX(NSMaxY(outerRect) - innerSize.height, 0.0);
@@ -184,13 +192,14 @@ static inline float yBottomInRect(NSSize innerSize, NSRect outerRect, BOOL flipp
     return NSMinY(outerRect);
 }
 
-static inline NSSize scaleProportionally(NSSize imageSize, NSRect canvasRect)
+static inline NSSize
+scaleProportionally(NSSize imageSize, NSRect canvasRect)
 {
   float ratio;
 
   // get the smaller ratio and scale the image size by it
   ratio = MIN(NSWidth(canvasRect) / imageSize.width,
-                NSHeight(canvasRect) / imageSize.height);
+    NSHeight(canvasRect) / imageSize.height);
 
   imageSize.width *= ratio;
   imageSize.height *= ratio;
@@ -200,9 +209,9 @@ static inline NSSize scaleProportionally(NSSize imageSize, NSRect canvasRect)
 
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
 {
-  NSImage *image;
-  NSPoint position;
-  BOOL is_flipped = [controlView isFlipped];
+  NSImage	*image;
+  NSPoint	position;
+  BOOL		is_flipped = [controlView isFlipped];
 
   NSDebugLLog(@"NSImageCell", @"NSImageCell drawInteriorWithFrame called");
 
