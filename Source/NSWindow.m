@@ -63,8 +63,6 @@
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/GSWraps.h>
 
-@class	NSMenuWindow;
-
 BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 
 @interface GSWindowView : NSView
@@ -2311,32 +2309,7 @@ resetCursorRectsForView(NSView *theView)
   [windowsLock lock];
   defs = [NSUserDefaults standardUserDefaults];
   obj = [self stringWithSavedFrame];
-  if ([self isKindOfClass: [NSMenuWindow class]])
-    {
-      id	dict;
-
-      key = @"NSMenuLocations";
-      dict = [defs objectForKey: key];
-      if (dict == nil)
-	{
-	  dict = [NSMutableDictionary dictionaryWithCapacity: 1];
-	}
-      else if ([dict isKindOfClass: [NSDictionary class]] == NO)
-	{
-	  NSLog(@"NSMenuLocations default is not a dictionary - overwriting");
-	  dict = [NSMutableDictionary dictionaryWithCapacity: 1];
-	}
-      else
-	{
-	  dict = AUTORELEASE([dict mutableCopy]);
-	}
-      [dict setObject: obj forKey: name];
-      obj = dict;
-    }
-  else
-    {
-      key = [NSString stringWithFormat: @"NSWindow Frame %@", name];
-    }
+  key = [NSString stringWithFormat: @"NSWindow Frame %@", name];
   [defs setObject: obj forKey: key];
   [windowsLock unlock];
 }
@@ -2381,33 +2354,8 @@ resetCursorRectsForView(NSView *theView)
        * Autosave name cleared - remove from defaults database.
        */
       defs = [NSUserDefaults standardUserDefaults];
-      if ([self isKindOfClass: [NSMenuWindow class]])
-	{
-	  id	dict;
-
-	  key = @"NSMenuLocations";
-	  dict = [defs objectForKey: key];
-	  if (dict == nil)
-	    {
-	      dict = [NSMutableDictionary dictionaryWithCapacity: 1];
-	    }
-	  else if ([dict isKindOfClass: [NSDictionary class]] == NO)
-	    {
-	      NSLog(@"NSMenuLocations is not a dictionary - overwriting");
-	      dict = [NSMutableDictionary dictionaryWithCapacity: 1];
-	    }
-	  else
-	    {
-	      dict = AUTORELEASE([dict mutableCopy]);
-	    }
-	  [dict removeObjectForKey: nameToRemove];
-	  [defs setObject: dict forKey: key];
-	}
-      else
-	{
-	  key = [NSString stringWithFormat: @"NSWindow Frame %@", nameToRemove];
-	  [defs removeObjectForKey: key];
-	}
+      key = [NSString stringWithFormat: @"NSWindow Frame %@", nameToRemove];
+      [defs removeObjectForKey: key];
       RELEASE(nameToRemove);
     }
   [windowsLock unlock];
@@ -2531,32 +2479,12 @@ resetCursorRectsForView(NSView *theView)
 {
   NSUserDefaults	*defs;
   id			obj;
+  NSString		*key;
 
   [windowsLock lock];
   defs = [NSUserDefaults standardUserDefaults];
-  if ([self isKindOfClass: [NSMenuWindow class]] == YES)
-    {
-      obj = [defs objectForKey: @"NSMenuLocations"];
-      if (obj != nil)
-	{
-	  if ([obj isKindOfClass: [NSDictionary class]] == YES)
-	    {
-	      obj = [obj objectForKey: name];
-	    }
-	  else
-	    {
-	      NSLog(@"NSMenuLocations default is not a dictionary");
-	      obj = nil;
-	    }
-	}
-    }
-  else
-    {
-      NSString	*key;
-
-      key = [NSString stringWithFormat: @"NSWindow Frame %@", name];
-      obj = [defs objectForKey: key];
-    }
+  key = [NSString stringWithFormat: @"NSWindow Frame %@", name];
+  obj = [defs objectForKey: key];
   [windowsLock unlock];
   if (obj == nil)
     return NO;
@@ -2564,7 +2492,7 @@ resetCursorRectsForView(NSView *theView)
   return YES;
 }
 
-- (NSString *) stringWithSavedFrame
+- (NSString*) stringWithSavedFrame
 {
   NSRect	fRect;
   NSRect	sRect;

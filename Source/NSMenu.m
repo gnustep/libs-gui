@@ -55,6 +55,42 @@ static NSZone	*menuZone = NULL;
 
 static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 
+@interface	NSMenu (GNUstepPrivate)
+- (NSString*) _locationKey;
+@end
+
+@implementation	NSMenu (GNUstepPrivate)
+- (NSString*) _locationKey
+{
+  if (menu_is_beholdenToPopUpButton == YES)
+    {
+      return nil;		/* Can't save	*/
+    }
+  if (menu_supermenu == nil)
+    {
+      if ([NSApp mainMenu] == self)
+	{
+	  return @"\033";	/* Root menu.	*/
+	}
+      else
+	{
+	  return nil;		/* Unused menu.	*/
+	}
+    }
+  else if (menu_supermenu->menu_supermenu == nil)
+    {
+      return [NSString stringWithFormat: @"\033%@", [self title]];
+    }
+  else
+    {
+      return [[menu_supermenu _locationKey] stringByAppendingFormat: @"\033%@",
+	[self title]];
+    }
+}
+
+@end
+
+
 @implementation NSMenu
 
 /*
@@ -119,7 +155,6 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 - (id) initWithTitle: (NSString*)aTitle
 {
   NSNotificationCenter *theCenter = [NSNotificationCenter defaultCenter];
-  NSApplication        *theApp    = [NSApplication sharedApplication];
   NSRect                winRect   = {{0,0},{20,23}};
 
   [super init];
@@ -167,7 +202,7 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
   [theCenter addObserver: self
 	        selector: @selector(_showTornOffMenuIfAny:)
 	            name: NSApplicationWillFinishLaunchingNotification 
-	          object: theApp];
+	          object: NSApp];
 
   return self;
 }
@@ -571,7 +606,6 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
   if ([self autoenablesItems])
     {
       unsigned i, count;
-      id       theApp = [NSApplication sharedApplication];
 
       count = [menu_items count];  
       
@@ -604,7 +638,7 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 		}
 	      else
 		{
-		  validator = [theApp targetForAction: action];
+		  validator = [NSApp targetForAction: action];
 		}
 	    }
       
@@ -807,17 +841,17 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
   menu_changed = NO;
 }
 
-//
-// Displaying Context Sensitive Help
-//
+/*
+ * Displaying Context Sensitive Help
+ */
 - (void) helpRequested: (NSEvent *)event
 {
   // TODO: Won't be implemented until we have NSHelp*
 }
 
-//
-// NSCoding Protocol
-//
+/*
+ * NSCoding Protocol
+ */
 - (void) encodeWithCoder: (NSCoder*)encoder
 {
   [encoder encodeObject: menu_title];
@@ -834,7 +868,6 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 - (id) initWithCoder: (NSCoder*)decoder
 {
   NSNotificationCenter *theCenter = [NSNotificationCenter defaultCenter];
-  NSApplication        *theApp    = [NSApplication sharedApplication];
   NSRect                winRect   = {{0,0},{20,23}};
 
   menu_title = [[decoder decodeObject] retain];
@@ -881,14 +914,14 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
   [theCenter addObserver: self
 	        selector: @selector(_showTornOffMenuIfAny:)
 	            name: NSApplicationWillFinishLaunchingNotification 
-	          object: theApp];
+	          object: NSApp];
 
   return self;
 }
 
-//
-// NSCopying Protocol
-//
+/*
+ * NSCopying Protocol
+ */
 - (id) copyWithZone: (NSZone*)zone
 {
   return self;
@@ -902,30 +935,33 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 
 - (void) _setTornOff: (BOOL)flag
 {
-  NSMenu *supermenu = [self supermenu];
+  NSMenu	*supermenu;
 
   menu_is_tornoff = flag;
 
-  [[supermenu menuRepresentation] setHighlightedItemIndex: -1];
-  supermenu->menu_attachedMenu = nil;
+  supermenu = [self supermenu];
+  if (supermenu != nil)
+    {
+      [[supermenu menuRepresentation] setHighlightedItemIndex: -1];
+      supermenu->menu_attachedMenu = nil;
+    }
 }
 
-- (void)_showTornOffMenuIfAny: (NSNotification*)notification
+- (void) _showTornOffMenuIfAny: (NSNotification*)notification
 {
-  NSUserDefaults *defaults  = [NSUserDefaults standardUserDefaults];
-  NSDictionary   *menuLocations = [defaults objectForKey: NSMenuLocationsKey];
-  NSString       *key;
-  NSArray        *array;
-      
-  if ([[NSApplication sharedApplication] mainMenu] == self)
-    key = nil; // Ignore the main menu.
-  else
-    key = [self title];
-
-  if (key)
+  if ([NSApp mainMenu] != self)
     {
-      array = [menuLocations objectForKey: key];
-      if (array && [array isKindOfClass: [NSArray class]])
+      NSString		*key;
+      NSString		*location;
+      NSUserDefaults	*defaults;
+      NSDictionary	*menuLocations;
+
+      key = [self _locationKey];
+      defaults  = [NSUserDefaults standardUserDefaults];
+      menuLocations = [defaults objectForKey: NSMenuLocationsKey];
+      
+      location = [menuLocations objectForKey: key];
+      if (location && [location isKindOfClass: [NSString class]])
 	{
 	  [titleView windowBecomeTornOff];
 	  [self _setTornOff: YES];
@@ -955,30 +991,29 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 
 - (void) _performMenuClose: (id)sender
 {
-  NSUserDefaults* defaults;
-  NSMutableDictionary* menuLocations;
-  NSString* key;
+  NSString		*key;
 
   if (menu_attachedMenu)
     [menu_view detachSubmenu];
 
-  [menu_view setHighlightedItemIndex: -1];
+  key = [self _locationKey];
+  if (key != nil)
+    {
+      NSUserDefaults		*defaults;
+      NSMutableDictionary	*menuLocations;
 
+      defaults = [NSUserDefaults standardUserDefaults];
+      menuLocations = [[defaults objectForKey: NSMenuLocationsKey] mutableCopy];
+      [menuLocations removeObjectForKey: key];
+      [defaults setObject: menuLocations forKey: NSMenuLocationsKey];
+      RELEASE(menuLocations);
+      [defaults synchronize];
+    }
+
+  [menu_view setHighlightedItemIndex: -1];
   [self _setTornOff: NO];
   [self close];
   [titleView _releaseCloseButton];
-
-  defaults = [NSUserDefaults standardUserDefaults];
-  menuLocations = [[[defaults objectForKey: NSMenuLocationsKey]
-			mutableCopy] autorelease];
-
-  key = [self title];                             // Remove window's position$
-  if (key)                                        // info from defaults db
-    {
-      [menuLocations removeObjectForKey: key];
-      [defaults setObject: menuLocations forKey: NSMenuLocationsKey];
-      [defaults synchronize];
-    }
 } 
 
 - (void) _rightMouseDisplay
@@ -1005,30 +1040,24 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
     }
   else
     {
-      NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-      NSDictionary* menuLocations = [defaults
-				      objectForKey: NSMenuLocationsKey];
-      NSString* key;
-      NSArray* array;
-      NSPoint origin; 
+      NSString	*key = [self _locationKey];
       
-      if ([[NSApplication sharedApplication] mainMenu] == self)
-	key = @"Main menu";
-      else
-	key = [self title];
-
-      if (key)
+      if (key != nil)
 	{
-	  array = [menuLocations objectForKey: key];
-	  if (array && [array isKindOfClass: [NSArray class]])
+	  NSUserDefaults	*defaults;
+	  NSDictionary		*menuLocations;
+	  NSString		*location;
+
+	  defaults = [NSUserDefaults standardUserDefaults];
+	  menuLocations = [defaults objectForKey: NSMenuLocationsKey];
+	  location = [menuLocations objectForKey: key];
+	  if (location && [location isKindOfClass: [NSString class]])
 	    {
-	      origin.x = [[array objectAtIndex: 0] floatValue];
-	      origin.y = [[array objectAtIndex: 1] floatValue];
-	      [aWindow setFrameOrigin: origin];
+	      [aWindow setFrameFromString: location];
 	    }
 	  else
 	    {
-	      float aPoint =   [[NSScreen mainScreen] frame].size.height
+	      float	aPoint = [[NSScreen mainScreen] frame].size.height
 		             - [aWindow frame].size.height;
 
 	      [aWindow setFrameOrigin: NSMakePoint(0,aPoint)];
@@ -1039,7 +1068,7 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 
   menu_is_visible = YES;
 
-  [aWindow orderFront: nil];
+  [aWindow orderFrontRegardless];
 
   menu_isPartlyOffScreen = IS_OFFSCREEN(aWindow);
 
@@ -1277,17 +1306,18 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 @end
 
 @implementation NSMenuWindowTitleView
+
 - (BOOL) acceptsFirstMouse: (NSEvent *)theEvent
 {
   return YES;
 } 
  
-- (void)setMenu: (NSMenu*)aMenu
+- (void) setMenu: (NSMenu*)aMenu
 {
   menu = aMenu;
 }
 
-- (NSMenu*)menu
+- (NSMenu*) menu
 {
   return menu;
 }
@@ -1332,19 +1362,15 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 
 - (void) mouseDown: (NSEvent*)theEvent
 {
-  NSUserDefaults      *defaults;
-  NSMutableDictionary *menuLocations;
-  NSMenu 	      *appMainMenu;
-  NSPoint              origin;
-  NSArray*             array;
-  NSString*            key;
-
-  NSPoint              lastLocation;
-  NSPoint              location;
-  unsigned             eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask;
-  BOOL                 done = NO;
-  NSApplication       *theApp = [NSApplication sharedApplication];
-  NSDate              *theDistantFuture = [NSDate distantFuture];
+  NSUserDefaults	*defaults;
+  NSMutableDictionary	*menuLocations;
+  NSString		*key;
+  NSString		*locString;
+  NSPoint		lastLocation;
+  NSPoint		location;
+  unsigned		eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask;
+  BOOL			done = NO;
+  NSDate		*theDistantFuture = [NSDate distantFuture];
 
   lastLocation = [theEvent locationInWindow];
    
@@ -1356,7 +1382,7 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
  
   while (!done)
     {
-      theEvent = [theApp nextEventMatchingMask: eventMask
+      theEvent = [NSApp nextEventMatchingMask: eventMask
                                      untilDate: theDistantFuture
                                         inMode: NSEventTrackingRunLoopMode
                                        dequeue: YES];
@@ -1384,25 +1410,18 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
         }
     }
 
-  // Save position code goes here. FIXME.
-  appMainMenu = [NSApp mainMenu];
+  /*
+   * Same current menu frame in defaults database.
+   */
   defaults = [NSUserDefaults standardUserDefaults];
-  menuLocations = [[[defaults objectForKey: NSMenuLocationsKey] mutableCopy] autorelease]; 
-
-  if (!menuLocations)
+  menuLocations = [[defaults objectForKey: NSMenuLocationsKey] mutableCopy];
+  if (menuLocations == nil)
     menuLocations = [NSMutableDictionary dictionaryWithCapacity: 2];
-  origin = [[menu window] frame].origin;
-  array = [NSArray arrayWithObjects: 
-		     [[NSNumber numberWithInt: origin.x] stringValue],
-		     [[NSNumber numberWithInt: origin.y] stringValue], nil];
-
-  if (menu == appMainMenu)
-    key = @"Main menu";
-  else
-    key = [menu title];                             // Save menu window pos
-
-  [menuLocations setObject: array forKey: key];         // in defaults databa
+  locString = [[menu window] stringWithSavedFrame];
+  key = [menu _locationKey];
+  [menuLocations setObject: locString forKey: key];
   [defaults setObject: menuLocations forKey: NSMenuLocationsKey];
+  RELEASE(menuLocations);
   [defaults synchronize];
 }
 

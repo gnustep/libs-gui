@@ -52,24 +52,26 @@ _screen_numbers(void)
 
 @implementation NSScreen
 
-//
-// Class variables
-//
+/*
+ * Class variables
+ */
 static NSScreen *mainScreen = nil;
 
-//
-// Class methods
-//
-+ (void)initialize
+/*
+ * Class methods
+ */
++ (void) initialize
 {
-	if (self == [NSScreen class])
-		[self setVersion:1];
+  if (self == [NSScreen class])
+    {
+      [self setVersion:1];
+    }
 }
 
-//
-// Creating NSScreen Instances
-//
-+ (NSScreen *)mainScreen
+/*
+ * Creating NSScreen Instances
+ */
++ (NSScreen*) mainScreen
 {
   NSMutableDictionary *dict;
   
@@ -82,20 +84,20 @@ static NSScreen *mainScreen = nil;
   return mainScreen;
 }
 
-+ (NSScreen *)deepestScreen
++ (NSScreen*) deepestScreen
 {
   return [self mainScreen];
 }
 
-+ (NSArray *)screens
++ (NSArray*) screens
 {
   return [NSArray arrayWithObject: [self mainScreen]];
 }
 
-//
-// Instance methods
-//
-- initWithDeviceDescription: (NSDictionary *)dict
+/*
+ * Instance methods
+ */
+- (id) initWithDeviceDescription: (NSDictionary*)dict
 {
   int screen;
   float x, y, w, h;
@@ -145,29 +147,29 @@ static NSScreen *mainScreen = nil;
   return self;
 }
 
-- init
+- (id) init
 {
   return [self initWithDeviceDescription: NULL];
 }
 
-//
-// Reading Screen Information
-//
-- (NSWindowDepth)depth
+/*
+ * Reading Screen Information
+ */
+- (NSWindowDepth) depth
 {
-	return depth;
+  return depth;
 }
 
-- (NSRect)frame
+- (NSRect) frame
 {
-	return frame;
+  return frame;
 }
 
-- (NSDictionary *)deviceDescription					// Make a copy of device 
-{													// dictionary and return it
-NSDictionary *d = [[NSDictionary alloc] initWithDictionary: device_desc];
+- (NSDictionary*) deviceDescription
+{
+  NSDictionary *d = [[NSDictionary alloc] initWithDictionary: device_desc];
 
-	return d;
+  return d;
 }
 
 // Mac OS X methods
@@ -180,20 +182,21 @@ NSDictionary *d = [[NSDictionary alloc] initWithDictionary: device_desc];
   return retval;
 }
 
--(NSRect) visibleFrame
+- (NSRect) visibleFrame
 {
   NSRect visFrame = frame;
+
   switch ([NSApp interfaceStyle])
     {
-    case NSMacintoshInterfaceStyle:
-      // What is the size of the Mac menubar?
-      visFrame.size.height -= 25;
-      return visFrame;
-    case NSWindows95InterfaceStyle:
-    case NSNextStepInterfaceStyle:
-    case NSNoInterfaceStyle:
-    default:
-      return frame;
+      case NSMacintoshInterfaceStyle:
+	// What is the size of the Mac menubar?
+	visFrame.size.height -= 25;
+	return visFrame;
+      case NSWindows95InterfaceStyle:
+      case NSNextStepInterfaceStyle:
+      case NSNoInterfaceStyle:
+      default:
+	return frame;
     }
 }
 

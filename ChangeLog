@@ -1,3 +1,10 @@
+Fri Jan  7 16:40:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSWindow.m: Removed spurious code for setting menu window
+	locations.
+	* Source/NSMenu.m: Implemented 'correct' save/restore of menu locations
+	conforming to MacOS-X implementation details.
+
 Fri Jan  7 10:32:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/Functions.m: NSApplicationMain() added suggestions from
