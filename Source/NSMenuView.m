@@ -433,13 +433,12 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 
 - (void) sizeToFit
 {
-  unsigned	i;
-  unsigned	howMany = [_itemCells count];
-  float		neededImageAndTitleWidth = [_font widthOfString: 
-							   [_menu title]] + 17;
-  float		neededKeyEquivalentWidth = 0.0;
-  float		neededStateImageWidth = 0.0;
-  float		accumulatedOffset = 0.0;
+  unsigned i;
+  unsigned howMany = [_itemCells count];
+  float    neededImageAndTitleWidth = [_font widthOfString: [_menu title]];
+  float    neededKeyEquivalentWidth = 0.0;
+  float    neededStateImageWidth = 0.0;
+  float    accumulatedOffset = 0.0;
 
   /* Set the necessary offset for the menuView. That is, how many pixels 
    * do we need for our left side border line. For regular menus this 
