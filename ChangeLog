@@ -1,3 +1,9 @@
+2000-03-31  Jonathan Gapen  <jagapen@whitewater.chem.wisc.edu>
+	* Model/GMAppKit.m: Re-organize NSCell's [-initWithModelUnarchiver:]
+	to unarchive each cell type appropriately.  Changed NSPanel 
+	[+createObjectForModelUnarchiver:] so that it correctly creates
+	an object for NSPanel subclasses.
+
 2000-03-27  Adam Fedor  <fedor@gnu.org>
 
 	* Changes to use "helper" class for getting backend

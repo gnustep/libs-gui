@@ -239,18 +239,38 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
 {
+    int cellType = [unarchiver decodeIntWithName:@"type"];
     NSFont* font = [unarchiver decodeObjectWithName:@"font"];
-    if (!font)
-        font = [NSFont userFontOfSize:0];
 
+    // this is a tricky object to decode, because a number of its methods
+    // have side-effects; [-setEntryType:] converts the cell to a text-type
+    // cell and sets its font to the system font, so it comes first
+    [self setEntryType:[unarchiver decodeIntWithName:@"entryType"]];
+
+    // now set the font
     [self setFont:font];
 
-    // if (model_version >= 2) {
-    [self setStringValue:[unarchiver decodeStringWithName:@"stringValue"]];
-    [self setEntryType:[unarchiver decodeIntWithName:@"entryType"]];
+    // both [-setImage:] and [-setStringValue:] convert the cell to an
+    // image or text cell (respectively), so they must be called in the
+    // correct order for the type of cell desired
+    switch (cellType)
+      {
+        case NSTextCellType:
+          [self setImage:[unarchiver decodeObjectWithName:@"image"]];
+          [self setStringValue:
+              [unarchiver decodeStringWithName:@"stringValue"]];
+          break;
+        case NSImageCellType:
+          [self setStringValue:
+              [unarchiver decodeStringWithName:@"stringValue"]];
+          [self setImage:[unarchiver decodeObjectWithName:@"image"]];
+          break;
+        case NSNullCellType:
+          [self setType: NSNullCellType];
+          break;
+      }
     [self setAlignment:[unarchiver decodeIntWithName:@"alignment"]];
     [self setWraps:[unarchiver decodeBOOLWithName:@"wraps"]];
-    [self setImage:[unarchiver decodeObjectWithName:@"image"]];
     [self setState:[unarchiver decodeIntWithName:@"state"]];
     [self setEnabled:[unarchiver decodeBOOLWithName:@"isEnabled"]];
     [self setBordered:[unarchiver decodeBOOLWithName:@"isBordered"]];
@@ -261,8 +281,6 @@ void __dummy_GMAppKit_functionForLinking() {}
     [self setContinuous:[unarchiver decodeBOOLWithName:@"isContinuous"]];
     /* Temporary commented out so buttons keep on working - new code fixing this under testing */
     //    [self sendActionOn:[unarchiver decodeIntWithName:@"sendActionMask"]];
-    [self setType:[unarchiver decodeIntWithName:@"type"]];
-    // }
 
     return self;
 }
@@ -1222,10 +1240,11 @@ void __dummy_GMAppKit_functionForLinking() {}
 			   @"backingType"];
     unsigned styleMask = [unarchiver decodeUnsignedIntWithName:@"styleMask"];
     NSRect ctRect = [unarchiver decodeRectWithName:@"contentFrame"];
-    NSPanel* panel = [[[NSPanel allocWithZone:[unarchiver objectZone]]
+    NSPanel* panel = [[[[self class] allocWithZone:[unarchiver objectZone]]
 		     initWithContentRect:ctRect
 		     styleMask:styleMask backing:backingType defer:YES]
 		    autorelease];
+    // use [self class] here, so it works for subclasses
 
     return panel;
 }
