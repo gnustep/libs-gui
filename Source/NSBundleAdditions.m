@@ -295,7 +295,9 @@ Class gmodel_class(void)
 		  id	obj;
 		  
 		  // font fallback and automatic translation...
+#if 0
 		  [unarchiver decodeClassName: @"NSFont" asClassName: @"GSFontProxy"];
+#endif
 		  // [unarchiver decodeClassName: @"NSString" asClassName: @"GSStringProxy"];
 
 		  NSDebugLog(@"Invoking unarchiver");
@@ -1486,6 +1488,22 @@ Class gmodel_class(void)
 }
 @end
 
+// this class holds the data from subclasses so that more specific templates
+// need not be made.
+@implementation GSObjectData
+- (void) setValuesFromObject: (id)object
+{
+}
+
+- (void) restoreValuesToObject: (id)object
+{
+}
+
+- (NSMutableDictionary *)dictionary
+{
+  return dictionary;
+}
+@end
 
 // This class uses the templates above to persist the correct type of
 // custom object into the nib file.
@@ -1547,6 +1565,7 @@ Class gmodel_class(void)
 }
 @end
 
+#if 0
 // Font proxy...
 @implementation GSFontProxy
 - (id) initWithCoder: (NSCoder *)aDecoder
@@ -1562,6 +1581,7 @@ Class gmodel_class(void)
   return result;
 }
 @end
+#endif
 
 // String proxy for dynamic translation...
 /*

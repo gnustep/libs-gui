@@ -48,13 +48,31 @@
 //
 - (id)initWithDelegate:(id)anObject
 {
-  return nil;
+  self = [super init];
+
+  ASSIGN(delegate,anObject);
+  filename = nil;
+  delegateVerifiesLinks = NO;
+  interactsWithUser = NO;
+  isEdited = NO;
+  areLinkOutlinesVisible = NO;
+
+  return self;
 }
 
 - (id)initWithDelegate:(id)anObject
 	      fromFile:(NSString *)path
 {
-  return nil;
+  self = [super init];
+
+  ASSIGN(delegate,anObject);
+  ASSIGN(filename,path);
+  delegateVerifiesLinks = NO;
+  interactsWithUser = NO;
+  isEdited = NO;
+  areLinkOutlinesVisible = NO;
+
+  return self;
 }
 
 //
@@ -74,7 +92,7 @@
 
 - (NSDataLink *)addLinkPreviouslyAt:(NSSelection *)oldSelection
 		     fromPasteboard:(NSPasteboard *)pasteboard
-at:(NSSelection *)selection
+                                 at:(NSSelection *)selection
 {
   return nil;
 }
@@ -111,41 +129,45 @@ at:(NSSelection *)selection
 //
 - (id)delegate
 {
-  return nil;
+  return delegate;
 }
 
 - (BOOL)delegateVerifiesLinks
 {
-  return NO;
+  return delegateVerifiesLinks;
 }
 
 - (NSString *)filename
 {
-  return nil;
+  return filename;
 }
 
 - (BOOL)interactsWithUser
 {
-  return NO;
+  return interactsWithUser;
 }
 
 - (BOOL)isEdited
 {
-  return NO;
+  return isEdited;
 }
 
 - (void)setDelegateVerifiesLinks:(BOOL)flag
-{}
+{
+  delegateVerifiesLinks = flag;
+}
 
 - (void)setInteractsWithUser:(BOOL)flag
-{}
+{
+  interactsWithUser = flag;
+}
 
 //
 // Getting and Setting Information about the Manager's Links
 //
 - (BOOL)areLinkOutlinesVisible
 {
-  return NO;
+  return areLinkOutlinesVisible;
 }
 
 - (NSEnumerator *)destinationLinkEnumerator
@@ -159,7 +181,9 @@ at:(NSSelection *)selection
 }
 
 - (void)setLinkOutlinesVisible:(BOOL)flag
-{}
+{
+  areLinkOutlinesVisible = flag;
+}
 
 - (NSEnumerator *)sourceLinkEnumerator
 {

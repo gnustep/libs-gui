@@ -33,7 +33,7 @@
 
 @class NSString;
 @class NSEnumerator;
-
+@class NSMutableDictionary;
 @class NSDataLink;
 @class NSSelection;
 @class NSPasteboard;
@@ -42,6 +42,14 @@
 @interface NSDataLinkManager : NSObject <NSCoding>
 {
   // Attributes
+  id                  delegate;
+  NSString            *filename;
+  BOOL                delegateVerifiesLinks;
+  BOOL                interactsWithUser;
+  BOOL                isEdited;
+  BOOL                areLinkOutlinesVisible;
+  NSMutableDictionary *sourceLinks;
+  NSMutableDictionary *destinationLinks;
 }
 
 //

@@ -133,6 +133,16 @@
 }
 @end
 
+@interface GSObjectData : NSObject
+{
+  NSMutableDictionary *dictionary;
+}
+
+- (void) setValuesFromObject: (id)object;
+- (void) restoreValuesToObject: (id)object;
+- (NSMutableDictionary *)dictionary;
+@end
+
 @interface GSClassSwapper : NSObject 
 {
   NSString            *_className;

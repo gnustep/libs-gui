@@ -59,7 +59,7 @@ typedef enum _NSMultibyteGlyphPacking {
   NSFourByteGlyphPacking
 } NSMultibyteGlyphPacking;
 
-APPKIT_EXPORT const float*NSFontIdentityMatrix;
+APPKIT_EXPORT const float *NSFontIdentityMatrix;
 
 @interface NSFont : NSObject <NSCoding, NSCopying>
 {
@@ -70,6 +70,13 @@ APPKIT_EXPORT const float*NSFontIdentityMatrix;
 
   id fontInfo;
   void *_fontRef;
+
+  /*
+  If this font was created with a specific "role", like user font, or
+  message font, and not a specific postscript name, the role will be
+  stored here.
+  */
+  int role;
 }
 
 //

@@ -47,6 +47,9 @@
 #include <AppKit/NSButton.h>
 #include <AppKit/NSBox.h>
 
+#define _SAVE_PANEL_X_PAD	5
+#define _SAVE_PANEL_Y_PAD	4
+
 static inline void _setFloatValue (NSTextField *field, float size)
 {
   /* If casting size to int and then back to float we get no change, 
@@ -88,6 +91,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 - (void) _doPreview;
 - (void) ok: (id) sender;
 
+- (void) _getOriginalSize;
 - (id)_initWithoutGModel;
 @end
 
@@ -133,6 +137,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   _face = -1;
   _family = -1;
   [self reloadDefaultFontFamilies];
+  [self _getOriginalSize];
 
   return self;
 }
@@ -304,8 +309,10 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   return _accessoryView;
 }
 
+/*
 - (void) setAccessoryView: (NSView*)aView
 {
+
   // FIXME: We have to resize
   // Perhaps we could copy the code from NSSavePanel over to here
   if (_accessoryView != nil)
@@ -315,6 +322,121 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
   ASSIGN(_accessoryView, aView);
   [[self contentView] addSubview: aView];
+}
+*/
+
+- (void) _getOriginalSize
+{
+  /* Used in setMinSize: */
+  _originalMinSize = [self minSize];
+  /* Used in setContentSize: */
+  _originalSize = [[self contentView] frame].size;
+}
+
+- (void) setAccessoryView: (NSView*)aView
+{
+  NSRect accessoryViewFrame, bottomFrame;
+  NSRect tmpRect;
+  NSSize contentSize, contentMinSize;
+  float addedHeight, accessoryWidth;
+
+  if (aView == _accessoryView)
+    return;
+  
+  /* The following code is very tricky.  Please think and test a lot
+     before changing it. */
+
+  /* Remove old accessory view if any */
+  if (_accessoryView != nil)
+    {
+      /* Remove accessory view */
+      accessoryViewFrame = [_accessoryView frame];
+      [_accessoryView removeFromSuperview];
+
+      /* Change the min size before doing the resizing otherwise it
+	 could be a problem. */
+      [self setMinSize: _originalMinSize];
+
+      /* Resize the panel to the height without the accessory view. 
+	 This must be done with the special care of not resizing 
+	 the heights of the other views. */
+      addedHeight = accessoryViewFrame.size.height + (_SAVE_PANEL_Y_PAD * 2);
+      contentSize = [[self contentView] frame].size;
+      contentSize.height -= addedHeight;
+      // Resize without modifying topView and bottomView height.
+      [_topView setAutoresizingMask: NSViewWidthSizable | NSViewMinYMargin];
+      [self setContentSize: contentSize];
+      [_topView setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+    }
+  
+  /* Resize the panel to its original size.  This resizes freely the
+     heights of the views.  NB: minSize *must* come first */
+  [self setMinSize: _originalMinSize];
+  [self setContentSize: _originalSize];
+  
+  /* Set the new accessory view */
+  _accessoryView = aView;
+  
+  /* If there is a new accessory view, plug it in */
+  if (_accessoryView != nil)
+    {
+      /* Make sure the new accessory view behaves  - its height must be fixed
+       * and its position relative to the bottom of the superview must not
+       * change	- so its position rlative to the top must be changable. */
+      [_accessoryView setAutoresizingMask: NSViewMaxYMargin
+	| ([_accessoryView autoresizingMask] 
+	& ~(NSViewHeightSizable | NSViewMinYMargin))];  
+      
+      /* Compute size taken by the new accessory view */
+      accessoryViewFrame = [_accessoryView frame];
+      addedHeight = accessoryViewFrame.size.height + (_SAVE_PANEL_Y_PAD * 2);
+      accessoryWidth = accessoryViewFrame.size.width + (_SAVE_PANEL_X_PAD * 2);
+
+      /* Resize content size accordingly */
+      contentSize = _originalSize;
+      contentSize.height += addedHeight;
+      if (accessoryWidth > contentSize.width)
+	{
+	  contentSize.width = accessoryWidth;
+	}
+      
+      /* Set new content size without resizing heights of topView, bottomView */
+      // Our views should resize horizontally if needed, but not vertically
+      [_topView setAutoresizingMask: NSViewWidthSizable | NSViewMinYMargin];
+      [self setContentSize: contentSize];
+      // Restore the original autoresizing masks
+      [_topView setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+
+      /* Compute new min size */
+      contentMinSize = _originalMinSize;
+      contentMinSize.height += addedHeight;
+      // width is more delicate
+      tmpRect = NSMakeRect (0, 0, contentMinSize.width, contentMinSize.height);
+      tmpRect = [NSWindow contentRectForFrameRect: tmpRect 
+			  styleMask: [self styleMask]];
+      if (accessoryWidth > tmpRect.size.width)
+	{
+	  contentMinSize.width += accessoryWidth - tmpRect.size.width;
+	}
+      // Set new min size
+      [self setMinSize: contentMinSize];
+
+      /*
+       * Pack the Views
+       */
+
+      /* BottomView is ready */
+      bottomFrame = [_bottomView frame];
+
+      /* AccessoryView */
+      accessoryViewFrame.origin.x 
+	= (contentSize.width - accessoryViewFrame.size.width) / 2;
+      accessoryViewFrame.origin.y =  NSMaxY (bottomFrame) + _SAVE_PANEL_Y_PAD;
+      [_accessoryView setFrameOrigin: accessoryViewFrame.origin];
+
+      /* Add the accessory view */
+      [[self contentView] addSubview: _accessoryView];
+    }
 }
 
 /*
@@ -417,6 +539,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   // preview and selection
   topArea = [[NSView alloc] initWithFrame: topAreaRect];
   [topArea setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
+  _topView = topArea;
 
   splitView = [[NSSplitView alloc] initWithFrame: splitViewRect];
   [splitView setVertical: NO]; 
@@ -541,6 +664,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
   // action buttons
   bottomArea = [[NSView alloc] initWithFrame: bottomAreaRect];
+  _bottomView = bottomArea;
 
   slash = [[NSBox alloc] initWithFrame: slashRect];
   [slash setBorderType: NSGrooveBorder];

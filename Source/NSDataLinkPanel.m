@@ -25,7 +25,46 @@
 
 #include <gnustep/gui/config.h>
 #include <AppKit/NSDataLinkPanel.h>
+#include <AppKit/NSNibLoading.h>
 
+static NSDataLinkPanel *__sharedDataLinkPanel;
+
+@interface GSDataLinkPanelController : NSObject
+{
+  id panel;
+}
+- (id) panel;
+@end
+
+@implementation GSDataLinkPanelController
+- (id) init
+{
+  NSString *panelPath;
+  NSDictionary *table;
+
+  self = [super init];
+  panelPath = [NSBundle pathForGNUstepResource: @"GSDataLinkPanel"
+		       ofType: @"gorm"
+		       inDirectory: nil];
+  NSLog(@"Panel path=%@",panelPath);
+  table = [NSDictionary dictionaryWithObject: self forKey: @"NSOwner"];
+  if ([NSBundle loadNibFile: panelPath 
+	  externalNameTable: table
+		withZone: [self zone]] == NO)
+    {
+      NSRunAlertPanel(@"Error", @"Could not load data link panel resource", 
+		      @"OK", NULL, NULL);
+      return nil;
+    }
+
+  return self;
+}
+
+- (id) panel
+{
+  return panel;
+}
+@end
 
 @implementation NSApplication (NSDataLinkPanel)
 
@@ -60,9 +99,13 @@
 //
 + (NSDataLinkPanel *)sharedDataLinkPanel
 {
-  NSRunAlertPanel (NULL, @"Data Link Panel not implemented yet",
-		   @"OK", NULL, NULL);
-  return nil;
+  if(__sharedDataLinkPanel == nil)
+    {
+      id controller = [[GSDataLinkPanelController alloc] init];
+      __sharedDataLinkPanel = [controller panel];
+    }
+  NSLog(@"%@",__sharedDataLinkPanel);
+  return __sharedDataLinkPanel;
 }
 
 //
@@ -110,19 +153,29 @@ isMultiple:(BOOL)flag
 // Responding to User Input
 //
 - (void)pickedBreakAllLinks:(id)sender
-{}
+{
+  NSLog(@"Break all links...");
+}
 
 - (void)pickedBreakLink:(id)sender
-{}
+{
+  NSLog(@"Break link...");
+}
 
 - (void)pickedOpenSource:(id)sender
-{}
+{
+  NSLog(@"Open Source...");
+}
 
 - (void)pickedUpdateDestination:(id)sender
-{}
+{
+  NSLog(@"Update destination...");
+}
 
 - (void)pickedUpdateMode:(id)sender
-{}
+{
+  NSLog(@"Update mode..");
+}
 
 //
 // NSCoding protocol

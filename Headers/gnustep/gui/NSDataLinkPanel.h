@@ -43,6 +43,13 @@
 @interface NSDataLinkPanel : NSPanel <NSCoding>
 {
   // Attributes
+  id _sourceField;
+  id _lastUpdateField;
+  id _openSourceButton;
+  id _updateDestinationButton;
+  id _breakLinkButton;
+  id _breakAllLinksButton;
+  id _updateModeButton;
 }
 
 //

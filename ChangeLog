@@ -1,3 +1,30 @@
+2003-06-09  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/gnustep/gui/NSDataLinkPanel.h: Added ivar declarations
+	for the data link panel.
+	* Source/NSDataLinkPanel.m: Added some implementations for panel methods.
+	* Source/NSDataLinkManager.m: Manages the data links for an application.
+	added implementation for some methods.
+	* Headers/gnustep/gui/NSFontPanel.h: Added topView and bottomView and sizes
+	for use by accessory view code.
+	* Source/NSFontPanel.m: Added implementation for _getOriginalSize and also
+	for sertAccessoryView.  Previously the setAccessoryView method was causing
+	the accessory view to overlay the content view of the window.
+	* Panels/GNUmakefile: added GSDataLinkPanel.gorm in the makefile.
+	* Source/NSBundleAdditions.m: Skeletal implementation of GSObjectData
+	class.
+
+2003-06-09  Alexander Malmberg <alexander@malmberg.org>
+	committed by: Gregory Casamento <greg_casamento@yahoo.com>
+
+	* Headers/gnustep/gui/NSFont.h: Added ivar to hold font role
+	to represent preferred fonts (e.g. system, user, & tooltip fonts)
+	* Source/NSFont.m: Added roles and modified code to properly encode
+	and decode fonts such that an intelligent default is selected if the
+	specified font is unavailable and also unarchives as the correct
+	preferred font if one of the predefined roles is selected.
+	
+
 2003-06-08  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBitmapImageRep.m

@@ -72,6 +72,12 @@ enum {
 
   // field for display
   NSView *_accessoryView;
+  NSView *_topView;
+  NSView *_bottomView;
+
+  // sizes
+  NSSize _originalMinSize;
+  NSSize _originalSize;
 }
 
 //
