@@ -9,6 +9,12 @@
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 @end ifclear
 
+@section Noteworthy changes in version @samp{0.8.0}
+
+@c ====================================================================
+@c Keep the next line just below the list of changes in most recent version.
+@ifclear ANNOUNCE-ONLY
+
 @section Noteworthy changes in version @samp{0.7.9}
 
 @itemize @bullet
@@ -16,10 +22,6 @@ The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSIO
 @item Menus no longer work in modal loop.
 @item Skeleton implementation of NSToolBar
 @end itemize
-
-@c ====================================================================
-@c Keep the next line just below the list of changes in most recent version.
-@ifclear ANNOUNCE-ONLY
 
 @section Noteworthy changes in version @samp{0.7.8}
 

@@ -879,17 +879,28 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   if (NSImageDoesCaching == YES)
     {
       NSWindow	*window;
+      GSRepData *repd;
 
       if (imageRep == nil)
 	imageRep = [self bestRepresentationForDevice: nil];
 
       imageRep = [self _cacheForRep: imageRep];
+      repd = repd_for_rep(_reps, imageRep);
+
       window = [(NSCachedImageRep *)imageRep window];
       _lockedView = [window contentView];
       if (_lockedView == nil)
 	[NSException raise: NSImageCacheException
 		     format: @"Cannot lock focus on nil rep"];
       [_lockedView lockFocus];
+
+      /* Validate cached image */
+      if (repd->bg == nil)
+	{
+	  repd->bg = [_color copy];
+	  [_color set];
+	  NSRectFill(NSMakeRect(0, 0, _size.width, _size.height));
+	}
     }
 }
 

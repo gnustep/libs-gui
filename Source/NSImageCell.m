@@ -58,7 +58,10 @@
 - (void) setImage:(NSImage *)anImage
 {
   [super setImage:anImage];
-  _original_image_size = [anImage size];
+  if (anImage)
+    _original_image_size = [anImage size];
+  else
+    _original_image_size = NSMakeSize(1,1);
 }
 
 //

@@ -1,7 +1,19 @@
 NEWS
 ****
 
-The currently released version of the library is `0.7.8'.
+The currently released version of the library is `0.8.0'.
+
+Noteworthy changes in version `0.8.0'
+=====================================
+
+Noteworthy changes in version `0.7.9'
+=====================================
+
+   * NSTableView, NSOutlineView improvements.
+
+   * Menus no longer work in modal loop.
+
+   * Skeleton implementation of NSToolBar
 
 Noteworthy changes in version `0.7.8'
 =====================================

@@ -286,6 +286,7 @@ setupSpecialRun(GSTextRun *run, unsigned length, unichar *chars, unsigned pos,
 
   run->baseline = [run->cell cellBaselineOffset].y;
   run->height = run->glyphs[0].adv.height;
+  run->width = run->glyphs[0].adv.width;
   // Unset the normale fields
   run->font = nil;
   run->bg = nil;
