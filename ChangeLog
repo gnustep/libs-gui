@@ -1,3 +1,26 @@
+2001-10-15  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/gnustep/gui/DPSOperators.h: New functions DPSPrintf, 
+	DPSWriteData
+	* Headers/gnustep/gui/GSMethodTable.h: Likewise.
+	* Headers/gnustep/gui/NSGraphicsContext.h: Likewise.
+	* Source/NSGraphicsContext.m: Implement.
+
+	* Headers/gnustep/gui/NSPageLayout.h: Change some ivars.
+	* Headers/gnustep/gui/NSPrintOperation.h: Add an ivar.
+	* Headers/gnustep/gui/NSPrintPanel.h: Remove outlets, use tags instead.
+	* Panels/GNUmakefile: Add GSPageLayout gorm files.
+	* Source/NSPageLayout.m: Rewrite (set NSPrintInfo, use gorm files).
+	* Source/NSPrintOperation.m (_print): Start of implementation. Use 
+	NSView to add PS headers, etc.
+	* Source/NSPrintPanel.m: Rewrite using tags not outlets. Document.
+	* Documentation/gsdoc/NSPrintPanel.gsdoc: Regenerate
+	* Documentation/gsdoc/NSPageLayout.gsdoc: Likewise.
+	
+	* Model/GNUmakefile: Add OBJC_LIB to DEPENDS_UPON line.
+
+	* Source/NSFontPanel.m (init): setBecomesKeyOnlyIfNeeded to YES.
+	
 2001-10-14  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPopUpButtonCell.m

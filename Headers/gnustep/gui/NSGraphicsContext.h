@@ -465,6 +465,12 @@ NSGraphicsContext	*GSCurrentContext();
 - (void) DPScurrentserverdevice: (void **)serverptr;
 - (void) DPScurrentwindowdevice: (int)win : (void **)windowptr;
 
+/* ----------------------------------------------------------------------- */
+/* Client functions */
+/* ----------------------------------------------------------------------- */
+- (void) DPSPrintf: (char *)fmt : (va_list)args;
+- (void) DPSWriteData: (char *)buf : (unsigned int)count;
+
 @end
 
 /* Common graphics functions */

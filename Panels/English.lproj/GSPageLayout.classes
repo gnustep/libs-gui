@@ -30,21 +30,18 @@
 	);
 	Super = NSObject;
     };
-    NSPanel = {
-	Outlets = (
-	);
-	Super = NSWindow;
-    };
-    NSPrintPanel = {
+    NSPageLayout = {
 	Actions = (
 	    "_pickedButton:",
-	    "_pickedPage:",
-	    "_pickedPrintOp:"
+	    "_pickedPaper:"
 	);
 	Outlets = (
 	    _panel
 	);
 	Super = NSPanel;
+    };
+    NSPanel = {
+	Super = NSWindow;
     };
     NSResponder = {
 	Super = NSObject;
@@ -62,10 +59,6 @@
 	Super = NSResponder;
     };
     NSWindow = {
-	Actions = (
-	    "orderFront:",
-	    "orderOut:"
-	);
 	Outlets = (
 	    delegate
 	);

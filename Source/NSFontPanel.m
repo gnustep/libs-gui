@@ -598,6 +598,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   [self setMinSize: [self frame].size];
 
   [self setInitialFirstResponder: setButton];
+  [self setBecomesKeyOnlyIfNeeded: YES];
   
   return self;
 }

@@ -78,7 +78,7 @@ ADDITIONAL_INCLUDE_DIRS = -I../Headers -I../Headers/gnustep
 # systems where building a shared library requires to pass to the linker
 # all the libraries the target library depends upon.
 ifneq ($(GUI_LIB), nx)
-libgmodel_LIBRARIES_DEPEND_UPON = -lgnustep-gui $(FND_LIBS)
+libgmodel_LIBRARIES_DEPEND_UPON = -lgnustep-gui $(FND_LIBS) $(OBJC_LIBS)
 else
 libgmodel_LIBRARIES_DEPEND_UPON = $(FND_LIBS)
 endif

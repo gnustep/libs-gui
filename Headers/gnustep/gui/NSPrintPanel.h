@@ -24,6 +24,7 @@
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
 */ 
 
 #ifndef _GNUstep_H_NSPrintPanel
@@ -35,43 +36,31 @@
 @class NSPrintInfo;
 
 enum {
-  NSPPSaveButton = 4,
-  NSPPPreviewButton,
-  NSFaxButton,
-  NSPPTitleField,
-  NSPPImageButton,
-  NSPPNameTitle,
-  NSPPNameField,
-  NSPPNoteTitle,
-  NSPPNoteField,
-  NSPPStatusTitle,
-  NSPPStatusField,
-  NSPPCopiesField,
-  NSPPPageChoiceMatrix,
-  NSPPPageRangeFrom,
-  NSPPPageRangeTo,
-  NSPPScaleField,
-  NSPPOptionsButton,
-  NSPPPaperFeedButton,
-  NSPPLayoutButton
+  NSPPSaveButton 	= 3,
+  NSPPPreviewButton	= 4,
+  NSFaxButton		= 5,
+  NSPPTitleField	= 20,
+  NSPPImageButton	= 21,
+  NSPPNameTitle		= 22,
+  NSPPNameField		= 23,
+  NSPPNoteTitle		= 24,
+  NSPPNoteField		= 25,
+  NSPPStatusTitle	= 26,
+  NSPPStatusField	= 27,
+  NSPPCopiesField	= 28,
+  NSPPPageChoiceMatrix	= 29,
+  NSPPPageRangeFrom	= 30,
+  NSPPPageRangeTo	= 31,
+  NSPPScaleField	= 32,
+  NSPPOptionsButton	= 33,
+  NSPPPaperFeedButton	= 34,
+  NSPPLayoutButton	= 35,
+  NSPPResolutionButton	= 36
 };
 
 @interface NSPrintPanel : NSPanel
 {
-  id _cancelButton;
-  id _copiesField;
-  id _faxButton;
-  id _fromRangeForm;
-  id _pageMatrix;
-  id _paperButton;
-  id _previewButton;
-  id _printButton;
-  id _printForm;
-  id _resButton;
-  id _saveButton;
-  id _toRangeForm;
-  id _panelWindow;
-
+  id _panel;
   id _accessoryView;
   id _savePath;
   int _picked;

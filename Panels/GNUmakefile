@@ -37,7 +37,7 @@ include ../Version
 
 LANGUAGES = English
 
-LOCALIZED_RESOURCE_FILES = GSPrintPanel.gorm
+LOCALIZED_RESOURCE_FILES = GSPrintPanel.gorm GSPageLayout.gorm
 
 PANELS = ColorPanel.gmodel SavePanel.gmodel SpellPanel.gmodel
 

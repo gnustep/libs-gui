@@ -1,12 +1,11 @@
-/* 
-   NSPageLayout.h
+/** <title>NSPageLayout</title>
 
-   Standard panel for querying user about page layout info
+   <abstract>Standard panel for querying user about page layout.</abstract>
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright <copy>(C) 2001 Free Software Foundation, Inc.</copy>
 
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+   Written By: <author name="Adam Fedor"><email>fedor@gnu.org</email></author>
+   Date: Oct 2001
    
    This file is part of the GNUstep GUI Library.
 
@@ -46,13 +45,13 @@ enum {
   NSPLOKButton 
 };
 
-@interface NSPageLayout : NSPanel <NSCoding>
+@interface NSPageLayout : NSPanel
 {
-  // Attributes
-  float _old;
+  NSSize _size;
   NSPrintInfo *_printInfo;
-
   NSView *_accessoryView;
+  id _panel;
+  int _picked;
 }
 
 //

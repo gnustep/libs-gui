@@ -1849,6 +1849,7 @@ resetCursorRectsForView(NSView *theView)
     {
       NSWarnMLog(@"closing window (%@) that's already closed.", self);
     }
+
 }
 
 /* Private Method. Many X Window managers will just deminiaturize us without

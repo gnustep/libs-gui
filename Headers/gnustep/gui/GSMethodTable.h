@@ -532,6 +532,17 @@ typedef struct {
   void (*DPScurrentwindowdevice__)
 	(NSGraphicsContext*, SEL, int, void **);
 
+
+/* ----------------------------------------------------------------------- */
+/* Client functions */
+/* ----------------------------------------------------------------------- */
+  void (*DPSPrintf__)
+        (NSGraphicsContext*, SEL, char *, va_list);
+
+  void (*DPSWriteData__)
+        (NSGraphicsContext*, SEL, char *, unsigned int);
+
+
 /*
  * Rectangle Drawing Functions
  */

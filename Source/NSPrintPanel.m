@@ -1,12 +1,11 @@
-/* 
-   NSPrintPanel.m
+/** <title>NSPrintPanel</title>
 
-   Creates a Print panel for the user to select various print options.
+   <abstract>Standard panel for querying user about printing.</abstract>
 
-   Copyright (C) 2001 Free Software Foundation, Inc.
+   Copyright <copy>(C) 2001 Free Software Foundation, Inc.</copy>
 
-   Author: Adam Fedor <fedor@gnu.org>
-   Date: 2001
+   Written By: <author name="Adam Fedor"><email>fedor@gnu.org</email></author>
+   Date: Oct 2001
    
    This file is part of the GNUstep GUI Library.
 
@@ -24,7 +23,8 @@
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/ 
+
+*/
 
 #include <gnustep/gui/config.h>
 #include <Foundation/NSArray.h>
@@ -42,41 +42,58 @@
 #include <AppKit/NSSavePanel.h>
 #include <AppKit/NSView.h>
 
+NSPrintPanel *shared_instance;
+
 #define GSPANELNAME @"GSPrintPanel"
 
+#define CONTROL(panel, name) [[panel contentView] viewWithTag: name]
+
+/**
+  <unit>
+  <heading>Class Description</heading>
+  <p>
+  NSPrintPanel provides a standard print panel allowing the user to 
+  specify information about how a document is to be printed, including
+  the page range, number of copies and scale of the document. It also
+  allows the user to save the document to a file or preview it.
+
+  When a print: message is sent to an NSView or NSWindow, an
+  NSPrintOpertation is created which manages printing of a view. The
+  NSPrintOperation object would by default show a print panel in a modal
+  loop for the user. You can avoid showing the print panel by sending
+  the setShowsPanels: message in the print operation with a NO argument.
+  </p>
+  </unit>
+*/ 
 @implementation NSPrintPanel
 
 //
-// Class methods
+// Class Methods
 //
-+ (void)initialize
-{
-  if (self == [NSPrintPanel class])
-    {
-      // Initial version
-      [self setVersion:1];
-    }
-}
-
-//
-// Creating an NSPrintPanel 
-//
-/* It seems like this should be a singleton, but the docs say this
-   returns a newly created panel object
-*/
+/** Creates and returns a shared instance of the NSPrintPanel panel.
+ */
 + (NSPrintPanel *)printPanel
 {
-  int style =  NSTitledWindowMask | NSClosableWindowMask;
-  NSRect frame = NSMakeRect(300, 300, 420, 350);
-  return [[NSPrintPanel alloc] initWithContentRect: frame
-			 styleMask: style
-			   backing: NSBackingStoreBuffered
-			     defer: YES];
+  if (shared_instance == nil)
+    {
+      shared_instance = [[NSPrintPanel alloc] init];
+    }
+  return shared_instance;
 }
 
 //
 // Instance methods
 //
+- (id) init
+{
+  int style =  NSTitledWindowMask;
+  NSRect frame = NSMakeRect(300, 300, 420, 350);
+  return [self initWithContentRect: frame
+			 styleMask: style
+			   backing: NSBackingStoreBuffered
+			     defer: YES];
+}
+
 /* Designated initializer */
 - (id) initWithContentRect: (NSRect)contentRect
 		 styleMask: (unsigned int)aStyle
@@ -117,32 +134,29 @@
 
   /* Transfer the objects to us. FIXME: There must be a way to 
      instantiate the panel directly */
-  subviews = [[_panelWindow contentView] subviews];
+  subviews = [[_panel contentView] subviews];
   for (i = 0; i < [subviews count]; i++)
     {
       [_contentView addSubview: [subviews objectAtIndex: i]];
     }
-  DESTROY(_panelWindow);
-  /* FIXME: Can't do this in Gorm yet: */
-  [_printForm setBezeled: NO];
-  [_printForm setBordered: NO];
-  [[_printForm cellAtIndex: 0] setEditable: NO];
-  [[_printForm cellAtIndex: 1] setEditable: NO];
-  [[_printForm cellAtIndex: 2] setEditable: NO];
-  [[_printForm cellAtIndex: 0] setSelectable: NO];
-  [[_printForm cellAtIndex: 1] setSelectable: NO];
-  [[_printForm cellAtIndex: 2] setSelectable: NO];
+  DESTROY(_panel);
+  /* Now set _panel to point to our options panel */
+  _panel = RETAIN([CONTROL(self, NSPPOptionsButton) target]);
   return self;
 }
 
 //
 // Customizing the Panel 
 //
+/** Set the accessory view for the print panel 
+ */
 - (void)setAccessoryView:(NSView *)aView
 {
   ASSIGN(_accessoryView, aView);
 }
 
+/** Returns the accessory view for the print panel 
+ */
 - (NSView *)accessoryView
 {
   return _accessoryView;
@@ -151,10 +165,16 @@
 //
 // Running the Panel 
 //
+/** Display the Print panel in a modal loop. Saves any aquired 
+   information in the NSPrintInfo object for the current NSPrintOperation. 
+   Returns NSCancelButton if the user clicks the Cancel button or 
+   NSOKButton otherwise.
+*/
 - (int)runModal
 {
-  _picked = NSCancelButton;
+  _picked = NSOKButton;
   [NSApp runModalForWindow: self];
+  [_panel orderOut: self];
   [self orderOut: self];
   return (_picked == NSCancelButton) ? NSCancelButton :  NSOKButton;
 }
@@ -165,13 +185,13 @@
 		  didEndSelector: (SEL)didEndSelector 
 		     contextInfo: (void *)contextInfo
 {
-  _picked = NSCancelButton;
-  // FIXME: We should probably arrange to call endSheet instead of stopModal
+  _picked = NSOKButton;
   [NSApp beginSheet: self
          modalForWindow: docWindow
          modalDelegate: delegate
          didEndSelector: didEndSelector
          contextInfo: contextInfo];
+  [_panel orderOut: self];
   [self orderOut: self];
 }
 
@@ -206,7 +226,9 @@
 /* Private communication with our panel objects */
 - (void) _pickedButton: (id)sender
 {
-  if (sender == _saveButton)
+  int tag = [sender tag];
+
+  if (tag == NSPPSaveButton)
     {
       _picked = NSPPSaveButton;
       if ([self _getSavePath] == NO)
@@ -216,11 +238,11 @@
 	  return;
 	}
     }
-  else if (sender == _previewButton)
+  else if (tag == NSPPPreviewButton)
     {
       _picked = NSPPPreviewButton;
     }
-  else if (sender == _faxButton)
+  else if (tag ==NSFaxButton )
     {
       _picked = NSFaxButton;
       NSRunAlertPanel(@"Warning", @"Fax of print file not implemented", 
@@ -228,11 +250,11 @@
       /* Don't stop the modal session */
       return;
     }
-  else if (sender == _cancelButton)
+  else if (tag == NSCancelButton)
     {
       _picked = NSCancelButton;
     }
-  else if (sender == _printButton)
+  else if (tag == NSOKButton)
     {
       _picked = NSOKButton;
     }
@@ -246,39 +268,44 @@
 
 - (void) _pickedPage: (id)sender
 {
-  if ([_pageMatrix selectedColumn] == 0)
+  id pageMatrix = CONTROL(self, NSPPPageChoiceMatrix);
+  id fromRangeForm = CONTROL(self, NSPPPageRangeFrom);
+  id toRangeForm = CONTROL(self, NSPPPageRangeTo);
+
+  if ([pageMatrix selectedColumn] == 0)
     {
-      [[_fromRangeForm cellAtIndex: 0] setStringValue: @"" ];
-      [[_toRangeForm cellAtIndex: 0] setStringValue: @"" ];
+      [[fromRangeForm cellAtIndex: 0] setStringValue: @"" ];
+      [[toRangeForm cellAtIndex: 0] setStringValue: @"" ];
     }
   else
     {
       NSString *str;
       str = [NSString stringWithFormat: @"%d", _pages.location];
-      [[_fromRangeForm cellAtIndex: 0] setStringValue: str];
+      [[fromRangeForm cellAtIndex: 0] setStringValue: str];
       str = [NSString stringWithFormat: @"%d", NSMaxRange(_pages)];
-      [[_toRangeForm cellAtIndex: 0] setStringValue: str];
+      [[toRangeForm cellAtIndex: 0] setStringValue: str];
     }
 }
 
-- (void) _pickedPrintOp: (id)sender
-{
-  NSLog(@"pick print op from sender %@, title %@", sender, [sender title]);
-}
-
 /* Depreciated communication methods */
+/** This method has been depreciated. It doesn't do anything useful.
+*/
 - (void)pickedButton:(id)sender
 {
   NSLog(@"[NSPrintPanel -pickedButton:] method depreciated");
   [self pickedButton: sender];
 }
 
+/** This method has been depreciated. It doesn't do anything useful.
+*/
 - (void)pickedAllPages:(id)sender
 {
   NSLog(@"[NSPrintPanel -pickedAllPages:] method depreciated");
   [self _pickedPage: sender];
 }
 
+/** This method has been depreciated. It doesn't do anything useful.
+*/
 - (void)pickedLayoutList:(id)sender
 {
   NSLog(@"[NSPrintPanel -pickedLayoutList:] method depreciated");
@@ -287,22 +314,35 @@
 //
 // Communicating with the NSPrintInfo Object 
 //
+/** Setup the display in the receiver's panel based on the values stored
+   in the NSPrintInfo object from the current NSPrintOperation.
+*/
 - (void)updateFromPrintInfo
 {
+  id control;
+  int layout;
+  double scale;
   NSString *str;
   NSPrinter *printer;
   NSDictionary *dict;
   NSPrintInfo* info = [[NSPrintOperation currentOperation] printInfo];
 
   printer = [info printer];
-  [[_printForm cellAtIndex: 0] setStringValue: [printer name] ];
-  [[_printForm cellAtIndex: 1] setStringValue: [printer note] ];
-  [[_printForm cellAtIndex: 2] setStringValue: @"" ];
+  /* Setup printer information */
+  [CONTROL(self, NSPPNameField) setStringValue: [printer name] ];
+  [CONTROL(self, NSPPNoteField) setStringValue: [printer note] ];
+  [CONTROL(self, NSPPStatusField) setStringValue: @"Idle" ];
 
-  [_copiesField setIntValue: 1];
-  [[_fromRangeForm cellAtIndex: 0] setStringValue: @"" ];
-  [[_toRangeForm cellAtIndex: 0] setStringValue: @"" ];
-  [_pageMatrix selectCellAtRow: 0 column: 0];
+  /* Setup copies, page range, scale */
+  [CONTROL(self, NSPPCopiesField)  setIntValue: 1];
+  [[CONTROL(self, NSPPPageRangeFrom) cellAtIndex: 0] setStringValue: @"" ];
+  [[CONTROL(self, NSPPPageRangeTo) cellAtIndex: 0] setStringValue: @"" ];
+  [CONTROL(self, NSPPPageChoiceMatrix) selectCellAtRow: 0 column: 0];
+  scale = [[dict objectForKey: NSPrintScalingFactor] doubleValue];
+  if (scale == 0)
+    scale = 1;
+  [CONTROL(self, NSPPScaleField) setIntValue: (int)(scale*100)];
+
 
   dict = [info dictionary];
   NSDebugLLog(@"NSPrintPanel", 
@@ -312,93 +352,127 @@
   if (NSMaxRange(_pages) == 0)
     _pages = NSMakeRange(1, 0);
 
+  /* Setup the layout popup */
+  layout = [[dict objectForKey: NSPrintPagesPerSheet] intValue];
+  if (layout == 0)
+    layout = 1;
+  if (layout > 4)
+    layout = 4;
+  control = CONTROL(self, NSPPLayoutButton);
+  if ([control numberOfItems] < 2)
+    {
+      int i;
+      NSArray *list = [NSArray arrayWithObjects: @"1up", @"2up", @"3up",
+			       @"4up", nil];
+      [control removeAllItems];
+      for (i = 0; i < [list count]; i++)
+	{
+	  [control addItemWithTitle: [list objectAtIndex: i]];
+	}
+      [control selectItemAtIndex: layout-1];
+    }
+  else
+    {
+      /* We've already been setup */
+      [control selectItemAtIndex: layout-1];
+    }
+
   /* Setup the resolution popup */
-  [_resButton removeAllItems];
+  control = CONTROL(_panel, NSPPResolutionButton);
+  [control removeAllItems];
+  /* FIXME: Get default from printInfo? */
   str = [printer stringForKey:@"DefaultResolution" inTable: @"PPD"];
   if (str)
     {
-      NSArray *resList;
-      resList = [printer stringListForKey:@"Resolution" inTable: @"PPD"];
-      if ([resList count])
+      NSArray *list;
+      list = [printer stringListForKey:@"Resolution" inTable: @"PPD"];
+      if ([list count])
 	{
 	  int i;
-	  NSString *displayRes, *listRes;
-	  for (i = 0; i < [resList count]; i++)
+	  NSString *display, *option;
+	  for (i = 0; i < [list count]; i++)
 	    {
-	      NSString *res = [resList objectAtIndex: i];
-	      listRes = [@"Resolution/" stringByAppendingString: res];
-	      displayRes = [printer stringForKey: listRes
+	      NSString *key = [list objectAtIndex: i];
+	      option = [@"Resolution/" stringByAppendingString: key];
+	      display = [printer stringForKey: option
 				        inTable: @"PPDOptionTranslation"];
 
-	      if (displayRes == nil)
-		displayRes = res;
-	      [_resButton addItemWithTitle: displayRes];
+	      if (display == nil)
+		display = key;
+	      [control addItemWithTitle: display];
 	    }
-	  listRes = [@"Resolution/" stringByAppendingString: str];
-	  displayRes = [printer stringForKey: listRes
+	  option = [@"Resolution/" stringByAppendingString: str];
+	  display = [printer stringForKey: option
 				inTable: @"PPDOptionTranslation"];
 	  
-	  if (displayRes == nil)
-	    displayRes = str;
-	  [_resButton selectItemWithTitle: displayRes];
+	  if (display == nil)
+	    display = str;
+	  [control selectItemWithTitle: display];
 	}
       else
 	{
-	  [_resButton addItemWithTitle: str];
+	  [control addItemWithTitle: str];
 	}
     }
   else
-    [_resButton addItemWithTitle: @"Unknown"];
+    [control addItemWithTitle: @"Unknown"];
 
   /* Setup the paper feed popup */
-  [_paperButton removeAllItems];
+  control = CONTROL(_panel, NSPPPaperFeedButton);
+  [control removeAllItems];
   str = [printer stringForKey:@"DefaultInputSlot" inTable: @"PPD"];
   if (str)
     {
       NSString *manual;
-      NSArray *inputList;
+      NSArray *list;
       manual = [printer stringForKey:@"DefaultManualFeed" inTable: @"PPD"];
       if (manual)
-	[_paperButton addItemWithTitle: @"Manual"];
-      inputList = [printer stringListForKey:@"InputSlot" inTable: @"PPD"];
-      if ([inputList count])
+	[control addItemWithTitle: @"Manual"];
+      list = [printer stringListForKey:@"InputSlot" inTable: @"PPD"];
+      if ([list count])
 	{
 	  int i;
-	  NSString *displayPaper, *listPaper;
-	  for (i = 0; i < [inputList count]; i++)
+	  NSString *display, *option;
+	  for (i = 0; i < [list count]; i++)
 	    {
-	      NSString *paper = [inputList objectAtIndex: i];
-	      listPaper = [@"InputSlot/" stringByAppendingString: paper];
-	      displayPaper = [printer stringForKey: listPaper
+	      NSString *paper = [list objectAtIndex: i];
+	      option = [@"InputSlot/" stringByAppendingString: paper];
+	      display = [printer stringForKey: option
 				        inTable: @"PPDOptionTranslation"];
 
-	      if (displayPaper == nil)
-		displayPaper = paper;
-	      [_paperButton addItemWithTitle: displayPaper];
+	      if (display == nil)
+		display = paper;
+	      [control addItemWithTitle: display];
 	    }
 	  /* FIXME: What if manual is default ? */
-	  listPaper = [@"InputSlot/" stringByAppendingString: str];
-	  displayPaper = [printer stringForKey: listPaper
+	  option = [@"InputSlot/" stringByAppendingString: str];
+	  display = [printer stringForKey: option
 				  inTable: @"PPDOptionTranslation"];
 	  
-	  if (displayPaper == nil)
-	    displayPaper = str;
-	  [_paperButton selectItemWithTitle: displayPaper];
+	  if (display == nil)
+	    display = str;
+	  [control selectItemWithTitle: display];
 	}
       else
 	{
-	  [_paperButton addItemWithTitle: str];
+	  [control addItemWithTitle: str];
 	}
     }
   else
-    [_paperButton addItemWithTitle: @"Unknown"];
+    [control addItemWithTitle: @"Unknown"];
 
 }
 
 #define NSNUMBER(a) [NSNumber numberWithInt: (a)]
 
+/** Saves information set by the user in the receiver's panel 
+   in the NSPrintInfo object from the current NSPrintOperation.
+*/
 - (void)finalWritePrintInfo
 {
+  id control;
+  double scale;
+  int layout;
   NSString *sel;
   NSArray  *list;
   NSPrinter *printer;
@@ -410,35 +484,56 @@
   features = [dict objectForKey: NSPrintJobFeatures];
 
   /* Copies */
-  if ([_copiesField intValue] > 1)
+  control = CONTROL(self, NSPPCopiesField);
+  if ([control intValue] > 1)
     {
-      [dict setObject: NSNUMBER([_copiesField intValue]) 
+      [dict setObject: NSNUMBER([control intValue]) 
 	       forKey: NSPrintCopies];
     }
 
   /* Pages */
-  if ([_pageMatrix selectedColumn] != 0)
+  control = CONTROL(self, NSPPPageChoiceMatrix);
+  if ([control selectedColumn] != 0)
     {
-      [dict setObject: NSNUMBER([[_fromRangeForm cellAtIndex: 0] intValue])
+      id fromRangeForm = CONTROL(self, NSPPPageRangeFrom);
+      id toRangeForm = CONTROL(self, NSPPPageRangeTo);
+      [dict setObject: NSNUMBER([[fromRangeForm cellAtIndex: 0] intValue])
 	    forKey: NSPrintFirstPage];
-      [dict setObject: NSNUMBER([[_toRangeForm cellAtIndex: 0] intValue])
+      [dict setObject: NSNUMBER([[toRangeForm cellAtIndex: 0] intValue])
 	    forKey: NSPrintLastPage];
       [dict setObject: NSNUMBER(NO) forKey: NSPrintAllPages];
     }
   else
       [dict setObject: NSNUMBER(YES) forKey: NSPrintAllPages];
 
+  /* Scale */
+  control = CONTROL(self, NSPPScaleField);
+  scale = [control intValue]/100;
+  if (scale <= 0)
+    scale = .1;
+  if (scale >= 10)
+    scale = 10;
+  [control setIntValue: (int)(scale*100)];
+  [dict setObject: [NSNumber numberWithDouble: scale]
+	   forKey: NSPrintScalingFactor];
+
+  /* Layout */
+  layout = [CONTROL(self, NSPPLayoutButton) indexOfSelectedItem] + 1;
+  [dict setObject: NSNUMBER(layout) forKey: NSPrintPagesPerSheet];
+
   /* Resolution */
   /* Here we take advantage of the fact the names in the popup list
      are in the same order as the PPD file, so we don't actually compare
      the values */
+  control = CONTROL(_panel, NSPPResolutionButton);
   list = [printer stringListForKey: @"Resolution" inTable: @"PPD"];
   if (list)
     {
       NSString *def;
-      sel = [list objectAtIndex: [_resButton indexOfSelectedItem]];
+      sel = [list objectAtIndex: [control indexOfSelectedItem]];
       def = [printer stringForKey:@"DefaultResolution" inTable: @"PPD"];
-      if ([sel isEqual: def] == NO)
+      if ([sel isEqual: def] == NO
+	  || [features objectForKey: @"Resolution"])
 	{
 	  if (features == nil)
 	    {
@@ -451,13 +546,14 @@
     }
   
   /* Input Slot */
+  control = CONTROL(_panel, NSPPPaperFeedButton);
   list = [printer stringListForKey:@"InputSlot" inTable: @"PPD"];
   if (list)
     {
       int selected;
       NSString *def, *manual;
       sel = nil;
-      selected = [_paperButton indexOfSelectedItem];
+      selected = [control indexOfSelectedItem];
       manual = [printer stringForKey:@"DefaultManualFeed" inTable: @"PPD"];
       
       if (manual)
@@ -479,7 +575,8 @@
 	  [dict setObject: @"ManualFeed/True" forKey: NSPrintManualFeed];
 	  [features setObject: @"ManualFeed/True" forKey: NSPrintPaperFeed];
 	}
-      else if ([sel isEqual: def] == NO)
+      else if ([sel isEqual: def] == NO
+	       || [dict objectForKey: NSPrintPaperFeed])
 	{
 	  if (features == nil)
 	    {

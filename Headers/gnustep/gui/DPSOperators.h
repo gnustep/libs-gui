@@ -975,6 +975,21 @@ DPScurrentwindowdevice(GSCTXT *ctxt, int win, void **windowptr)
 __attribute__((unused));
 
 /* ----------------------------------------------------------------------- */
+/* Client functions */
+/* ----------------------------------------------------------------------- */
+static inline void
+DPSPrintf(GSCTXT *ctxt, char *fmt, ...)
+__attribute__((unused));
+
+static inline void
+DPSWriteData(GSCTXT *ctxt,  char *buf, unsigned int count)
+__attribute__((unused));
+
+/***************************************************************************/
+/* Definitions */
+/***************************************************************************/
+
+/* ----------------------------------------------------------------------- */
 /* Color operations */
 /* ----------------------------------------------------------------------- */
 static inline void
@@ -2598,6 +2613,28 @@ DPScurrentwindowdevice(GSCTXT *ctxt, int win, void **windowptr)
 {
   (ctxt->methods->DPScurrentwindowdevice__)
     (ctxt, @selector(DPScurrentwindowdevice::), win, windowptr);
+}
+
+/* ----------------------------------------------------------------------- */
+/* Client functions */
+/* ----------------------------------------------------------------------- */
+static inline void
+DPSPrintf(GSCTXT *ctxt, char *fmt, ...)
+{
+  va_list ap;
+
+  va_start(ap, fmt);
+  if (fmt != NULL)
+    (ctxt->methods->DPSPrintf__)
+      (ctxt, @selector(DPSPrintf::), fmt, ap);
+  va_end(ap);
+}
+
+static inline void
+DPSWriteData(GSCTXT *ctxt,  char *buf, unsigned int count)
+{
+  (ctxt->methods->DPSWriteData__)
+    (ctxt, @selector(DPSWriteData::), buf, count);
 }
 
 #endif	

@@ -1,14 +1,11 @@
-/* 
-   NSPageLayout.m
+/** <title>NSPageLayout</title>
 
-   Page setup panel
+   <abstract>Standard panel for querying user about page layout.</abstract>
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright <copy>(C) 2001 Free Software Foundation, Inc.</copy>
 
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
-   Author:  Fred Kiefer <fredkiefer@gmx.de>
-   Date: November 2000
+   Written By: <author name="Adam Fedor"><email>fedor@gnu.org</email></author>
+   Date: Oct 2001
    
    This file is part of the GNUstep GUI Library.
 
@@ -26,6 +23,7 @@
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+
 */ 
 
 #include <AppKit/NSApplication.h>
@@ -38,47 +36,47 @@
 #include <AppKit/NSComboBox.h>
 #include <AppKit/NSPopUpButton.h>
 #include <AppKit/NSMatrix.h>
+#include <AppKit/NSNibLoading.h>
 #include <AppKit/NSForm.h>
 #include <AppKit/NSFormCell.h>
 #include <AppKit/NSPrintInfo.h>
 #include <AppKit/NSPageLayout.h>
+#include <AppKit/NSPrinter.h>
 
 NSPageLayout *shared_instance;
 
-@interface NSPageLayout (Private)
-- (id) _initWithoutGModel;
-- (NSArray*) _units;
-- (float) factorForIndex: (int)sel;
-- (NSArray*) _paperSizes;
-- (NSArray*) _layouts;
-@end
+#define GSPANELNAME @"GSPageLayout"
 
+#define CONTROL(panel, name) [[panel contentView] viewWithTag: name]
+
+<unit>
+  <heading>NSPageLayout</heading>
+  <p>
+  NSPageLayout provides a panel that allows the user to specify certain
+  information about the printer and how data is formatted for printing.
+  This includes information about the paper size and orientation.
+
+  Typically you would create a page layout panel with the 
+  <ref id="pageLayout">pageLayout</ref> class method. However, the best
+  way to use the panel is to have the application
+  call the runPageLayout: method in the NSApplication object
+  which would both create a standard NSPageLayout panel and display it
+  in a modal loop. This method would be sent up the responder chain if
+  the user clicked on a Page Layout menu item.
+  </p>
+</unit>
 @implementation NSPageLayout
 
 //
 // Class methods
 //
-+ (void)initialize
-{
-  if (self == [NSPageLayout class])
-    {
-      // Initial version
-      [self setVersion:1];
-    }
-}
-
-//
-// Creating an NSPageLayout Instance 
-//
+/** Creates and returns a shared instance of the NSPageLayout panel.
+ */
 + (NSPageLayout *)pageLayout
 {
   if (shared_instance == nil)
     {
       shared_instance = [[NSPageLayout alloc] init];
-    }
-  else
-    {
-      [shared_instance _initDefaults];
     }
   return shared_instance;
 }
@@ -86,42 +84,115 @@ NSPageLayout *shared_instance;
 //
 // Instance methods
 //
-- (id) init
+- (NSArray*) _units
 {
-  self = [self _initWithoutGModel];
-  [self _initDefaults];
-  
-  return self;
+  return [NSArray arrayWithObjects: @"pts", @"mm", @"cm", @"in", nil]; 
 }
 
-- (void) _initDefaults
+- (id) init
 {
-  // use points as the default
-  _old = 1.0;
-  [super _initDefaults];
+  int style =  NSTitledWindowMask;
+  NSRect frame = NSMakeRect(300, 300, 350, 320);
+  return [self initWithContentRect: frame
+			 styleMask: style
+			   backing: NSBackingStoreBuffered
+			     defer: YES];
+}
+
+- (id) initWithContentRect: (NSRect)contentRect
+		 styleMask: (unsigned int)aStyle
+		   backing: (NSBackingStoreType)bufferingType
+		     defer: (BOOL)flag
+		    screen: (NSScreen*)aScreen
+{
+  int i;
+  id control;
+  NSForm *sizeForm;
+  NSArray *subviews, *list;
+  NSString *panel;
+  NSDictionary *table;
+
+  self = [super initWithContentRect: contentRect
+		 styleMask: aStyle
+		   backing: bufferingType
+		     defer: flag
+		    screen: aScreen];
+  if (self == nil)
+    return nil;
+
+  panel = [NSBundle pathForGNUstepResource: GSPANELNAME ofType: @"gorm"
+		    inDirectory: nil];
+  if (panel == nil)
+    {
+      NSRunAlertPanel(@"Error", @"Could not find page layout resource", 
+		      @"OK", NULL, NULL);
+      return nil;
+    }
+  table = [NSDictionary dictionaryWithObject: self forKey: @"NSOwner"];
+  if ([NSBundle loadNibFile: panel 
+	  externalNameTable: table
+		withZone: [self zone]] == NO)
+    {
+      NSRunAlertPanel(@"Error", @"Could not load page layout resource", 
+		      @"OK", NULL, NULL);
+      return nil;
+    }
+
+  /* Transfer the objects to us. FIXME: There must be a way to 
+     instantiate the panel directly */
+  subviews = [[_panel contentView] subviews];
+  for (i = 0; i < [subviews count]; i++)
+    {
+      [_contentView addSubview: [subviews objectAtIndex: i]];
+    }
+  DESTROY(_panel);
+  /* FIXME: Can't do this in Gorm yet: */
+  sizeForm = CONTROL(self, NSPLWidthForm);
+  [[sizeForm cellAtIndex: 0] setEditable: NO];
+  [[sizeForm cellAtIndex: 1] setEditable: NO];
+  [[sizeForm cellAtIndex: 0] setSelectable: NO];
+  [[sizeForm cellAtIndex: 1] setSelectable: NO];
+  control = CONTROL(self, NSPLOKButton);
+  [self setDefaultButtonCell: [control cell]];
+
+  /* Set up units popup */
+  control =  CONTROL(self, NSPLUnitsButton);
+  list = [self _units];
+  [control removeAllItems];
+  for (i = 0; i < [list count]; i++)
+    {
+      [control addItemWithTitle: [list objectAtIndex: i]];
+    }
+  [control selectItemAtIndex: 0];
+  return self;
 }
 
 //
 // Running the Panel 
 //
+/** Display the Page Layout panel in a modal loop. Saves any aquired 
+   information in the shared NSPrintInfo object. Returns NSCancelButton 
+   if the user clicks the Cancel button or NSOKButton otherwise.
+*/
 - (int)runModal
 {
   return [self runModalWithPrintInfo: [NSPrintInfo sharedPrintInfo]];
 }
 
+/** Display the Page Layout panel in a modal loop. Saves any aquired 
+   information in the indicated NSPrintInfo object. Returns NSCancelButton 
+   if the user clicks the Cancel button or NSOKButton otherwise.
+*/
 - (int)runModalWithPrintInfo:(NSPrintInfo *)pInfo
 {
   int result;
   
-  // store the print Info
   _printInfo = pInfo;
-
-  // read the values of the print info
   [self readPrintInfo];
 
   result = [NSApp runModalForWindow: self];
   [self orderOut: self];
-
+  NSLog(@"Model Page Layout ended with code %d", result);
   return result;
 }
 
@@ -131,10 +202,8 @@ NSPageLayout *shared_instance;
 		 didEndSelector:(SEL)didEndSelector
 		    contextInfo:(void *)contextInfo
 {
-  // store the print Info
+  _picked = NSOKButton;
   _printInfo = printInfo;
-
-  // read the values of the print info
   [self readPrintInfo];
 
   [NSApp beginSheet: self
@@ -149,412 +218,23 @@ NSPageLayout *shared_instance;
 //
 // Customizing the Panel 
 //
+/** Returns the accessory view for the page layout panel 
+ */
 - (NSView *)accessoryView
 {
-  return nil;
+  return _accessoryView;
 }
 
+/** Set the accessory view for the page layout panel 
+ */
 - (void)setAccessoryView:(NSView *)aView
 {
+  ASSIGN(_accessoryView, aView);
 }
 
 //
 // Updating the Panel's Display 
 //
-- (void)convertOldFactor:(float *)old
-	       newFactor:(float *)new
-{
-  NSPopUpButton *pop;
-  int sel;
-
-  if (old)
-    *old = _old;
-
-  pop = [[self contentView] viewWithTag: NSPLUnitsButton];
-  if (pop != nil)
-    {
-      sel = [pop indexOfSelectedItem];
-      
-      if (new)
-	*new = [self factorForIndex: sel];
-    }
-  else if (new)
-    *new = _old;
-}
-
-- (void)pickedButton:(id)sender
-{
-  if ([sender tag] == NSPLOKButton)
-    {
-      // check the items if the values are positive,
-      // if not select that item and keep on running.
-      NSTextField *field;
-
-      field = [[self contentView] viewWithTag: NSPLWidthForm];
-      if ((field != nil) && ([field floatValue] <= 0.0))
-        {
-	  [field selectText: sender];  
-	  return;
-	}
-      field = [[self contentView] viewWithTag: NSPLHeightForm];
-      if ((field != nil) && ([field floatValue] <= 0.0))
-        {
-	  [field selectText: sender];  
-	  return;
-	}
-
-      // store the values in the print info
-      [self writePrintInfo];
-
-      [NSApp stopModalWithCode: NSOKButton];
-    }
-  if ([sender tag] == NSPLCancelButton)
-    {
-      [NSApp stopModalWithCode: NSCancelButton];
-    }
-}
-
-- (void)pickedOrientation:(id)sender
-{
-  NSLog(@"pickedOrientation %@", sender);
-}
-
-- (void)pickedPaperSize:(id)sender
-{
-  NSLog(@"pickedPaperSize %@", sender);
-}
-
-- (void)pickedLayout:(id)sender
-{
-  NSLog(@"pickedLayout %@", sender);
-}
-
-- (void)pickedUnits:(id)sender
-{
-  NSTextField *field;
-  float new, old;
-  
-  // At this point the units have been selected but not set.
-  [self convertOldFactor: &old newFactor: &new];
-
-  field = [[self contentView] viewWithTag: NSPLWidthForm];
-  if (field != nil)
-    {
-      // Update field based on the conversion factors.
-      [field setFloatValue:([field floatValue]*new/old)];
-    }
-
-  field = [[self contentView] viewWithTag: NSPLHeightForm];
-  if (field != nil)
-    {
-      // Update field based on the conversion factors.
-      [field setFloatValue:([field floatValue]*new/old)];
-    }
-
-  // Set the selected units.
-  _old = new;
-}
-
-//
-// Communicating with the NSPrintInfo Object 
-//
-- (NSPrintInfo *)printInfo
-{
-  return _printInfo;
-}
-
-- (void)readPrintInfo
-{
-  NSTextField *field;
-  NSSize size = [_printInfo paperSize];
-  float new, old;
-  
-  // Both values should be the same
-  [self convertOldFactor: &old newFactor: &new];
-
-  field = [[self contentView] viewWithTag: NSPLWidthForm];
-  if (field != nil)
-    {
-      // Update field based on the conversion factors.
-      [field setFloatValue:(size.width/old)];
-    }
-
-  field = [[self contentView] viewWithTag: NSPLHeightForm];
-  if (field != nil)
-    {
-      // Update field based on the conversion factors.
-      [field setFloatValue:(size.height/old)];
-    }
-
-  //[_printInfo paperName];
-  //[_printInfo orientation];  
-}
-
-- (void)writePrintInfo
-{
-}
-
-//
-// NSCoding protocol
-//
-- (void) encodeWithCoder: (NSCoder*)aCoder
-{
-  [super encodeWithCoder: aCoder];
-}
-
-- (id) initWithCoder: (NSCoder*)aDecoder
-{
-  [super initWithCoder: aDecoder];
-
-  return self;
-}
-
-@end
-
-@implementation NSPageLayout (Private)
-
-- (id) _initWithoutGModel
-{
-  NSRect rect = {{100,100}, {300,300}};    
-  unsigned int style = NSTitledWindowMask | NSClosableWindowMask;
-
-  self = [super initWithContentRect: rect
-			  styleMask: style
-			    backing: NSBackingStoreRetained
-			      defer: NO
-			     screen: nil];
-  if (self != nil)
-    {
-      NSImageView *imageView;
-      NSImage *paper;
-      NSBox *box;
-      NSForm *f;
-      NSFormCell *fc;
-      NSMatrix *o;
-      NSButtonCell *oc;
-      NSButton *okButton;
-      NSButton *cancelButton;
-      NSRect uv = {{0,50}, {300,250}};
-      NSRect lv = {{0,0}, {300,50}};  
-      NSRect ulv = {{0,0}, {190,250}};
-      NSRect urv = {{190,0}, {110,250}};
-      NSRect pi = {{60,120}, {100,100}};
-      NSRect wf = {{5,70}, {75,30}};
-      NSRect hf = {{90,70}, {75,30}};
-      NSRect pb = {{0,190}, {95,30}};
-      NSRect pc = {{5,5}, {85,20}};
-      NSRect lb = {{0,130}, {95,30}};
-      NSRect lc = {{5,5}, {85,20}};
-      NSRect ub = {{0,70}, {95,30}};
-      NSRect uc = {{5,5}, {85,20}};
-      NSRect sb = {{0,10}, {95,35}};
-      NSRect tf = {{5,5}, {75,20}};
-      NSRect mo = {{60,10}, {90,40}};
-      NSRect rb = {{126,8}, {72,24}};
-      NSRect db = {{217,8}, {72,24}};
-      NSView *content;
-      NSView *upper;
-      NSView *lower;
-      NSView *left;
-      NSView *right;
-      NSPopUpButton *pop;
-      NSTextField *text;
-
-      [self setTitle: @"Page Layout"];
-
-      content = [self contentView];
-      // Spilt up in upper and lower
-      upper = [[NSView alloc] initWithFrame: uv];
-      [content addSubview: upper];
-      RELEASE(upper);
-      lower = [[NSView alloc] initWithFrame: lv];
-      [content addSubview: lower];
-      RELEASE(lower);
-      // Solit upper in left and right
-      left = [[NSView alloc] initWithFrame: ulv];
-      [upper addSubview: left];
-      RELEASE(left);
-      right = [[NSView alloc] initWithFrame: urv];
-      [upper addSubview: right];
-      RELEASE(right);
-
-      // FIXME: image of the paper size
-      paper = nil;
-      imageView = [[NSImageView alloc] initWithFrame: pi]; 
-      [imageView setImage: paper];
-      [imageView setImageScaling: NSScaleNone];
-      [imageView setEditable: NO];
-      [imageView setTag: NSPLImageButton];
-      [left addSubview: imageView];
-      RELEASE(imageView);
-
-      // Width
-      f = [[NSForm alloc] initWithFrame: wf];
-      fc = [f addEntry: @"Width:"];
-      [fc setEditable: YES];
-      [fc setSelectable: YES];
-      [f setBordered: NO];
-      [f setBezeled: YES];
-      [f setTitleAlignment: NSRightTextAlignment];
-      [f setTextAlignment: NSLeftTextAlignment];
-      [f setAutosizesCells: YES];
-      [f sizeToFit];
-      [f setEntryWidth: 80.0];
-      [f setTag: NSPLWidthForm];
-      [left addSubview: f];
-      RELEASE(f);
-
-      // Height
-      f = [[NSForm alloc] initWithFrame: hf];
-      fc = [f addEntry: @"Height:"];
-      [fc setEditable: YES];
-      [fc setSelectable: YES];
-      [f setBordered: NO];
-      [f setBezeled: YES];
-      [f setTitleAlignment: NSRightTextAlignment];
-      [f setTextAlignment: NSLeftTextAlignment];
-      [f setAutosizesCells: YES];
-      [f sizeToFit];
-      [f setEntryWidth: 80.0];
-      [f setTag: NSPLHeightForm];
-      [left addSubview: f];
-      RELEASE(f);
-
-      // Paper Size
-      box = [[NSBox alloc] initWithFrame: pb];
-      [box setTitle: @"Paper Size"];
-      [box setTitlePosition: NSAtTop];
-      [box setBorderType: NSGrooveBorder];
-      [box setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
-
-      pop = [[NSPopUpButton alloc] initWithFrame: pc pullsDown: NO];
-      [pop setAction: @selector(pickedPaperSize:)];
-      [pop setTarget: self];
-      [pop addItemsWithTitles: [self _paperSizes]];
-      [pop selectItemAtIndex: 0];
-      [pop setTag: NSPLPaperNameButton];
-      [box addSubview: pop];
-      RELEASE(pop);
-      [box sizeToFit];
-
-      [right addSubview: box];
-      RELEASE(box);
-
-      // Layout
-      box = [[NSBox alloc] initWithFrame: lb];
-      [box setTitle: @"Layout"];
-      [box setTitlePosition: NSAtTop];
-      [box setBorderType: NSGrooveBorder];
-      [box setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
-
-      pop = [[NSPopUpButton alloc] initWithFrame: lc pullsDown: NO];
-      [pop setAction: @selector(pickedLayout:)];
-      [pop setTarget: self];
-      [pop addItemsWithTitles: [self _layouts]];
-      [pop selectItemAtIndex: 0];
-      //[pop setTag: NSPLPaperNameButton];
-      [box addSubview: pop];
-      RELEASE(pop);
-      [box sizeToFit];
-
-      [right addSubview: box];
-      RELEASE(box);
-
-      // Units
-      box = [[NSBox alloc] initWithFrame: ub];
-      [box setTitle: @"Units"];
-      [box setTitlePosition: NSAtTop];
-      [box setBorderType: NSGrooveBorder];
-      [box setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
-
-      pop = [[NSPopUpButton alloc] initWithFrame: uc pullsDown: NO];
-      [pop setAction: @selector(pickedUnits:)];
-      [pop setTarget: self];
-      [pop addItemsWithTitles: [self _units]];
-      [pop selectItemAtIndex: 0];
-      [pop setTag: NSPLUnitsButton];
-      [box addSubview: pop];
-      RELEASE(pop);
-
-      [box sizeToFit];
-
-      [right addSubview: box];
-      RELEASE(box);
-
-      // Scale
-      box = [[NSBox alloc] initWithFrame: sb];
-      [box setTitle: @"Scale"];
-      [box setTitlePosition: NSAtTop];
-      [box setBorderType: NSGrooveBorder];
-      [box setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
-
-      text = [[NSTextField alloc] initWithFrame: tf];
-      [box addSubview: text];
-      RELEASE(text);
-
-      [box sizeToFit];
-
-      [right addSubview: box];
-      RELEASE(box);
-
-      // orientation
-      o = [[NSMatrix alloc] initWithFrame: mo 
-			    mode: NSRadioModeMatrix 
-			    cellClass: [NSButtonCell class]
-			    numberOfRows: 1
-			    numberOfColumns: 2];
-      [o setCellSize: NSMakeSize(60, 50)];
-      [o setIntercellSpacing: NSMakeSize(5, 5)];
-      oc = (NSButtonCell*)[o cellAtRow: 0 column: 0];
-      [oc setFont: [NSFont systemFontOfSize: 10]];
-      [oc setButtonType: NSOnOffButton];
-      [oc setBordered: YES];
-      [oc setTitle: @"Portrait"];
-      [oc setImagePosition: NSImageAbove];
-      oc = (NSButtonCell*)[o cellAtRow: 0 column: 1];
-      [oc setFont: [NSFont systemFontOfSize: 10]];
-      [oc setButtonType: NSOnOffButton];
-      [oc setBordered: YES];
-      [oc setTitle: @"Landscape"];
-      [oc setImagePosition: NSImageAbove];
-      [o selectCellAtRow: 0 column: 0];
-      [o setAllowsEmptySelection: NO];
-      [o setTag: NSPLOrientationMatrix];
-      [o setAction: @selector(pickedOrientation:)];
-      [o setTarget: self];
-      [left addSubview: o];
-      RELEASE(o);
-
-      // cancle button
-      cancelButton = [[NSButton alloc] initWithFrame: rb];
-      [cancelButton setStringValue: @"Cancel"];
-      [cancelButton setAction: @selector(pickedButton:)];
-      [cancelButton setTarget: self];
-      [cancelButton setTag: NSPLCancelButton];
-      [lower addSubview: cancelButton];
-      RELEASE(cancelButton);
-
-      // OK button
-      okButton = [[NSButton alloc] initWithFrame: db];
-      [okButton setStringValue: @"OK"];
-      [okButton setAction: @selector(pickedButton:)];
-      [okButton setTarget: self];
-      [okButton setTag: NSPLOKButton];
-      [lower addSubview: okButton];
-      // make it the default button
-      [self setDefaultButtonCell: [okButton cell]];
-      RELEASE(okButton);
-    }
-
-  return self;
-}
-
-- (NSArray*) _units
-{
-  return [NSArray arrayWithObjects: @"Points", @"Millimeter", 
-		  @"Centimeter", @"Inches", nil]; 
-}
-
 - (float) factorForIndex: (int)sel
 {
   switch (sel)
@@ -567,15 +247,246 @@ NSPageLayout *shared_instance;
     }    
 }
 
-- (NSArray*) _paperSizes
+/** Convert the old value to a new one based on the current units. This
+    method has been depreciated. It doesn't do anything useful
+*/
+- (void)convertOldFactor:(float *)old
+	       newFactor:(float *)new
 {
-  return [NSArray arrayWithObjects: @"A2", @"A3", @"A4", 
-		  @"A5", @"A6", nil]; 
+  NSPopUpButton *pop;
+  int sel;
+
+  if (old == NULL)
+    return;
+  pop = [[self contentView] viewWithTag: NSPLUnitsButton];
+  if (pop == nil)
+    return;
+
+  sel = [pop indexOfSelectedItem];
+  if (new)
+    *new = [self factorForIndex: sel];
 }
 
-- (NSArray*) _layouts
+/* Private communication with our panel objects */
+- (void) _pickedButton: (id)sender
 {
-  return [NSArray arrayWithObjects: @"1 Up", nil]; 
+  int tag = [sender tag];
+  if (tag == NSPLOKButton)
+    {
+      _picked = NSOKButton;
+      [self writePrintInfo];
+    }
+  else if (tag == NSPLCancelButton)
+    {
+      _picked = NSCancelButton;
+    }
+  else
+    {
+      NSLog(@"NSPageLayout button press from unknown sender %@ tag %d", 
+	    sender, tag);
+      _picked = NSOKButton;
+    }
+  [NSApp stopModalWithCode: _picked];
+}
+
+- (void) _setNewPageSize
+{
+  NSForm *sizeForm = [[self contentView] viewWithTag: NSPLWidthForm];
+  id control = [[self contentView] viewWithTag: NSPLUnitsButton];
+  double factor = [self factorForIndex: [control indexOfSelectedItem]];
+  [[sizeForm cellAtIndex: 0] setDoubleValue: _size.width * factor];
+  [[sizeForm cellAtIndex: 1] setDoubleValue: _size.height * factor];
+}
+
+- (void) _pickedPaper: (id)sender
+{
+  NSPrinter *printer;
+  int tag = [sender tag];
+
+  printer = [_printInfo printer];
+
+  if (tag == NSPLPaperNameButton)
+    {
+      id ocontrol;
+      _size = [printer pageSizeForPaper: [sender titleOfSelectedItem]];
+      ocontrol = [[self contentView] viewWithTag: NSPLOrientationMatrix];
+      if ([ocontrol selectedColumn] > 0)
+	{
+	  double temp = _size.width;
+	  _size.width = _size.height;
+	  _size.height = temp;
+	}
+      [self _setNewPageSize];
+    }
+  else if (tag == NSPLUnitsButton)
+    {
+      [self _setNewPageSize];
+    }
+  else if (tag == NSPLOrientationMatrix)
+    {
+      if ([sender selectedColumn] > 0)
+	{
+	  double temp = MIN(_size.width, _size.height);
+	  _size.width = MAX(_size.width, _size.height);
+	  _size.height = temp;
+	}
+      else
+	{
+	  double temp = MAX(_size.width, _size.height);
+	  _size.width = MIN(_size.width, _size.height);
+	  _size.height = temp;
+	}
+      [self _setNewPageSize];
+    }
+  else 
+    {
+      NSLog(@"NSPageLayout action from unknown sender %@ tag %d", 
+	    sender, tag);
+    }
+}
+
+/** This method has been depreciated. It doesn't do anything useful.
+*/
+- (void)pickedButton:(id)sender
+{
+  NSLog(@"[NSPageLayout -pickedButton:] method depreciated");
+  [self pickedButton: sender];
+}
+
+/** This method has been depreciated. It doesn't do anything useful.
+*/
+- (void)pickedOrientation:(id)sender
+{
+  NSLog(@"[NSPageLayout -pickedOrientation:] method depreciated");
+}
+
+/** This method has been depreciated. It doesn't do anything useful.
+*/
+- (void)pickedPaperSize:(id)sender
+{
+  NSLog(@"[NSPageLayout -pickedPaperSize:] method depreciated");
+}
+
+/** This method has been depreciated. It doesn't do anything useful.
+*/
+- (void)pickedLayout:(id)sender
+{
+  NSLog(@"[NSPageLayout -pickedLayout:] method depreciated");
+}
+
+/** This method has been depreciated. It doesn't do anything useful.
+*/
+- (void)pickedUnits:(id)sender
+{
+  NSLog(@"[NSPageLayout -pickedUnits:] method depreciated");
+}
+
+//
+// Communicating with the NSPrintInfo Object 
+//
+/** Return the NSPrintInfo object that the receiver stores layout information
+    into.
+*/
+- (NSPrintInfo *)printInfo
+{
+  return _printInfo;
+}
+
+/** Updates the receiver panel with information from its NSPrintInfo object
+ */
+- (void)readPrintInfo
+{
+  id control;
+  NSString *str;
+  NSPrinter *printer;
+  NSDictionary *dict;
+
+  printer = [_printInfo printer];
+  dict = [_printInfo dictionary];
+
+  /* Setup the paper name popup */
+  control = [[self contentView] viewWithTag: NSPLPaperNameButton];
+  [control removeAllItems];
+  str = [_printInfo paperName];
+  if (str)
+    {
+      NSArray *list;
+      list = [printer stringListForKey:@"PageSize" inTable: @"PPD"];
+      if ([list count])
+	{
+	  int i;
+	  for (i = 0; i < [list count]; i++)
+	    {
+	      NSString *key = [list objectAtIndex: i];
+	      [control addItemWithTitle: key];
+	    }
+	  [control selectItemWithTitle: str];
+	}
+      else
+	{
+	  [control addItemWithTitle: str];
+	}
+    }
+  else
+    [control addItemWithTitle: @"Unknown"];
+
+  /* Set up units */
+  control = [[self contentView] viewWithTag: NSPLUnitsButton];
+  if ([control numberOfItems] < 2)
+    {
+      int i;
+      NSArray *list = [self _units];
+      [control removeAllItems];
+      for (i = 0; i < [list count]; i++)
+	{
+	  [control addItemWithTitle: [list objectAtIndex: i]];
+	}
+      [control selectItemAtIndex: 0];
+    }
+  else
+    {
+      /* We've already been setup */
+      [control selectItemAtIndex: 0];
+    }
+     
+  /* Set up size form */
+  _size = [_printInfo paperSize];
+  control = [[self contentView] viewWithTag: NSPLWidthForm];
+  [[control cellAtIndex: 0] setDoubleValue: _size.width];
+  [[control cellAtIndex: 1] setDoubleValue: _size.height];
+  
+  /* Set up the orientation */
+  {
+    NSPrintingOrientation orient = [_printInfo orientation];
+    control = [[self contentView] viewWithTag: NSPLOrientationMatrix];
+    [control selectCellAtRow: 0 column: (orient - NSPortraitOrientation)];
+  }
+}
+
+/** Writes any layout information set by the user to the receiver's
+    NSPrintInfo object
+*/
+- (void)writePrintInfo
+{
+  id control;
+  NSString *str;
+  NSPrinter *printer;
+
+  printer = [_printInfo printer];
+
+  /* Write Paper Name */
+  control = [[self contentView] viewWithTag: NSPLPaperNameButton];
+  str = [control titleOfSelectedItem];
+  [_printInfo setPaperName: str];
+
+  /* Write Orientation */
+  control = [[self contentView] viewWithTag: NSPLOrientationMatrix];
+  [_printInfo setOrientation: [control selectedColumn]+NSPortraitOrientation];
+
+  /* Write Size */
+  /* FIXME: Currently don't allow writing size. What does that mean
+     anyway? Shouldn't we set margins instead? */
+
 }
 
 @end

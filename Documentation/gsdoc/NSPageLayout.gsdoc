@@ -1,23 +1,25 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSPageLayout" prev="NSPICTImageRep.html" next="NSPanel.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.6//EN" "http://www.gnustep.org/gsdoc-0_6_6.xml">
+<gsdoc>
   <head>
     <title>NSPageLayout</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Adam Fedor">
+      <email>fedor@gnu.org</email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>
+      Standard panel for querying user about page layout.
+    </abstract>
+    <copy>(C) 2001 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSPageLayout</heading>
-      <class name="NSPageLayout" super="NSObject">
-        <declared>Gui/NSPageLayout.h</declared>
-        <conform>NSObject</conform>
-          <desc>
-          </desc>
+      <heading>
+        Software documentation for the NSPageLayout class
+      </heading>
+      <class name="NSPageLayout" super="NSPanel">
+        <declared>NSPageLayout.h</declared>
+        <desc>
+        </desc>
         <method type="NSPageLayout*" factory="yes">
           <sel>pageLayout</sel>
           <desc>
@@ -25,6 +27,20 @@
         </method>
         <method type="NSView*">
           <sel>accessoryView</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>beginSheetWithPrintInfo:</sel>
+          <arg type="NSPrintInfo*">printInfo</arg>
+          <sel>modalForWindow:</sel>
+          <arg type="NSWindow*">docWindow</arg>
+          <sel>delegate:</sel>
+          <arg type="id">delegate</arg>
+          <sel>didEndSelector:</sel>
+          <arg type="SEL">didEndSelector</arg>
+          <sel>contextInfo:</sel>
+          <arg type="void*">contextInfo</arg>
           <desc>
           </desc>
         </method>
@@ -77,7 +93,7 @@
         </method>
         <method type="int">
           <sel>runModalWithPrintInfo:</sel>
-          <arg type="NSPrintInfo*">printInfo</arg>
+          <arg type="NSPrintInfo*">pInfo</arg>
           <desc>
           </desc>
         </method>

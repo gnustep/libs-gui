@@ -2,44 +2,44 @@
  <title>NSPageLayout</title>
 </head>
 <body>
-<a href ="NSPICTImageRep.html">[Previous]</a>
-<a href ="Gui.html">[Up]</a>
-<a href ="NSPanel.html">[Next]</a>
 <h1>NSPageLayout</h1>
 <h3>Authors </h3>
  <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
+<dt>Adam Fedor
 <dd>
 </dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSPageLayout</a></h2>
+<blockquote>
+      Standard panel for querying user about page layout.
+    </blockquote>
+<p>Copyright: (C) 2001 Free Software Foundation, Inc.</p>
+<h2><a name ="cont-0">
+        Software documentation for the NSPageLayout class
+      </a></h2>
 <h2><a name ="NSPageLayout">NSPageLayout</a></h2>
-<p><b>Declared in: </b> Gui/NSPageLayout.h</p>
-<p><b>Inherits from: </b> NSObject</p>
-<p><b>Conforms to: </b> NSObject
-</p>
+<p><b>Declared in: </b> NSPageLayout.h</p>
+<p><b>Inherits from: </b> NSPanel</p>
 <hr>
 
-          
+        
 <h2>Instance Variables </h2>
 <ul>
 </ul>
 <h2>Methods </h2>
 <ul>
-<li><a href ="NSPageLayout.html#method-0">+pageLayout</a>
-<li><a href ="NSPageLayout.html#method-1">-accessoryView</a>
-<li><a href ="NSPageLayout.html#method-2">-convertOldFactor:newFactor:</a>
-<li><a href ="NSPageLayout.html#method-3">-pickedButton:</a>
-<li><a href ="NSPageLayout.html#method-4">-pickedOrientation:</a>
-<li><a href ="NSPageLayout.html#method-5">-pickedPaperSize:</a>
-<li><a href ="NSPageLayout.html#method-6">-pickedUnits:</a>
-<li><a href ="NSPageLayout.html#method-7">-printInfo</a>
-<li><a href ="NSPageLayout.html#method-8">-readPrintInfo</a>
-<li><a href ="NSPageLayout.html#method-9">-runModal</a>
-<li><a href ="NSPageLayout.html#method-10">-runModalWithPrintInfo:</a>
-<li><a href ="NSPageLayout.html#method-11">-setAccessoryView:</a>
-<li><a href ="NSPageLayout.html#method-12">-writePrintInfo</a>
+<li ><a href ="NSPageLayout.html#method-0">+pageLayout</a>
+<li ><a href ="NSPageLayout.html#method-1">-accessoryView</a>
+<li ><a href ="NSPageLayout.html#method-2">-beginSheetWithPrintInfo:modalForWindow:delegate:didEndSelector:contextInfo:</a>
+<li ><a href ="NSPageLayout.html#method-3">-convertOldFactor:newFactor:</a>
+<li ><a href ="NSPageLayout.html#method-4">-pickedButton:</a>
+<li ><a href ="NSPageLayout.html#method-5">-pickedOrientation:</a>
+<li ><a href ="NSPageLayout.html#method-6">-pickedPaperSize:</a>
+<li ><a href ="NSPageLayout.html#method-7">-pickedUnits:</a>
+<li ><a href ="NSPageLayout.html#method-8">-printInfo</a>
+<li ><a href ="NSPageLayout.html#method-9">-readPrintInfo</a>
+<li ><a href ="NSPageLayout.html#method-10">-runModal</a>
+<li ><a href ="NSPageLayout.html#method-11">-runModalWithPrintInfo:</a>
+<li ><a href ="NSPageLayout.html#method-12">-setAccessoryView:</a>
+<li ><a href ="NSPageLayout.html#method-13">-writePrintInfo</a>
 </ul>
 <hr><h2>Class Methods </h2>
 <h3><a name ="method-0">pageLayout</a></h3>
@@ -53,57 +53,62 @@
 
           
  <hr>
-<h3><a name ="method-2">convertOldFactor:newFactor:</a></h3>
+<h3><a name ="method-2">beginSheetWithPrintInfo:modalForWindow:delegate:didEndSelector:contextInfo:</a></h3>
+- (void) <b>beginSheetWithPrintInfo:</b> (NSPrintInfo*)printInfo <b>modalForWindow:</b> (NSWindow*)docWindow <b>delegate:</b> (id)delegate <b>didEndSelector:</b> (SEL)didEndSelector <b>contextInfo:</b> (void*)contextInfo;<br>
+
+          
+ <hr>
+<h3><a name ="method-3">convertOldFactor:newFactor:</a></h3>
 - (void) <b>convertOldFactor:</b> (float*)old <b>newFactor:</b> (float*)new;<br>
 
           
  <hr>
-<h3><a name ="method-3">pickedButton:</a></h3>
+<h3><a name ="method-4">pickedButton:</a></h3>
 - (void) <b>pickedButton:</b> (id)sender;<br>
 
           
  <hr>
-<h3><a name ="method-4">pickedOrientation:</a></h3>
+<h3><a name ="method-5">pickedOrientation:</a></h3>
 - (void) <b>pickedOrientation:</b> (id)sender;<br>
 
           
  <hr>
-<h3><a name ="method-5">pickedPaperSize:</a></h3>
+<h3><a name ="method-6">pickedPaperSize:</a></h3>
 - (void) <b>pickedPaperSize:</b> (id)sender;<br>
 
           
  <hr>
-<h3><a name ="method-6">pickedUnits:</a></h3>
+<h3><a name ="method-7">pickedUnits:</a></h3>
 - (void) <b>pickedUnits:</b> (id)sender;<br>
 
           
  <hr>
-<h3><a name ="method-7">printInfo</a></h3>
+<h3><a name ="method-8">printInfo</a></h3>
 - (NSPrintInfo*) <b>printInfo</b>;<br>
 
           
  <hr>
-<h3><a name ="method-8">readPrintInfo</a></h3>
+<h3><a name ="method-9">readPrintInfo</a></h3>
 - (void) <b>readPrintInfo</b>;<br>
 
           
  <hr>
-<h3><a name ="method-9">runModal</a></h3>
+<h3><a name ="method-10">runModal</a></h3>
 - (int) <b>runModal</b>;<br>
 
           
  <hr>
-<h3><a name ="method-10">runModalWithPrintInfo:</a></h3>
-- (int) <b>runModalWithPrintInfo:</b> (NSPrintInfo*)printInfo;<br>
+<h3><a name ="method-11">runModalWithPrintInfo:</a></h3>
+- (int) <b>runModalWithPrintInfo:</b> (NSPrintInfo*)pInfo;<br>
 
           
  <hr>
-<h3><a name ="method-11">setAccessoryView:</a></h3>
+<h3><a name ="method-12">setAccessoryView:</a></h3>
 - (void) <b>setAccessoryView:</b> (NSView*)aView;<br>
 
           
  <hr>
-<h3><a name ="method-12">writePrintInfo</a></h3>
+<h3><a name ="method-13">writePrintInfo</a></h3>
 - (void) <b>writePrintInfo</b>;<br>
 
           

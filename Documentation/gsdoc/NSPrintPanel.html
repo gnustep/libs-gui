@@ -2,86 +2,125 @@
  <title>NSPrintPanel</title>
 </head>
 <body>
-<a href ="NSPrintOperation.html">[Previous]</a>
-<a href ="Gui.html">[Up]</a>
-<a href ="NSPrinter.html">[Next]</a>
 <h1>NSPrintPanel</h1>
 <h3>Authors </h3>
  <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
+<dt>Adam Fedor
 <dd>
 </dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSPrintPanel</a></h2>
+<blockquote>
+      Standard panel for querying user about printing.
+    </blockquote>
+<p>Copyright: (C) 2001 Free Software Foundation, Inc.</p>
+<h2><a name ="cont-0">Class Description</a></h2>
+<p>
+
+        NSPrintPanel provides a standard print panel
+        allowing the user to specify information about how a
+        document is to be printed, including the page range,
+        number of copies and scale of the document. It also
+        allows the user to save the document to a file or
+        preview it. When a print: message is sent to an NSView
+        or NSWindow, an NSPrintOpertation is created which manages
+        printing of a view. The NSPrintOperation object would
+        by default show a print panel in a modal loop for the user.
+        You can avoid showing the print panel by sending the
+        setShowsPanels: message in the print operation
+        with a <code>NO</code> argument.
+      </p>
 <h2><a name ="NSPrintPanel">NSPrintPanel</a></h2>
-<p><b>Declared in: </b> Gui/NSPrintPanel.h</p>
+<p><b>Declared in: </b> NSPrintPanel.h</p>
 <p><b>Inherits from: </b> NSPanel</p>
-<p><b>Conforms to: </b> NSObject
-</p>
 <hr>
 
-          
+        
 <h2>Instance Variables </h2>
 <ul>
 </ul>
 <h2>Methods </h2>
 <ul>
-<li><a href ="NSPrintPanel.html#method-0">+printPanel</a>
-<li><a href ="NSPrintPanel.html#method-1">-accessoryView</a>
-<li><a href ="NSPrintPanel.html#method-2">-finalWritePrintInfo</a>
-<li><a href ="NSPrintPanel.html#method-3">-pickedAllPages:</a>
-<li><a href ="NSPrintPanel.html#method-4">-pickedButton:</a>
-<li><a href ="NSPrintPanel.html#method-5">-pickedLayoutList:</a>
-<li><a href ="NSPrintPanel.html#method-6">-runModal</a>
-<li><a href ="NSPrintPanel.html#method-7">-setAccessoryView:</a>
-<li><a href ="NSPrintPanel.html#method-8">-updateFromPrintInfo</a>
+<li ><a href ="NSPrintPanel.html#method-0">+printPanel</a>
+<li ><a href ="NSPrintPanel.html#method-1">-accessoryView</a>
+<li ><a href ="NSPrintPanel.html#method-2">-beginSheetWithPrintInfo:modalForWindow:delegate:didEndSelector:contextInfo:</a>
+<li ><a href ="NSPrintPanel.html#method-3">-finalWritePrintInfo</a>
+<li ><a href ="NSPrintPanel.html#method-4">-pickedAllPages:</a>
+<li ><a href ="NSPrintPanel.html#method-5">-pickedButton:</a>
+<li ><a href ="NSPrintPanel.html#method-6">-pickedLayoutList:</a>
+<li ><a href ="NSPrintPanel.html#method-7">-runModal</a>
+<li ><a href ="NSPrintPanel.html#method-8">-setAccessoryView:</a>
+<li ><a href ="NSPrintPanel.html#method-9">-updateFromPrintInfo</a>
 </ul>
 <hr><h2>Class Methods </h2>
 <h3><a name ="method-0">printPanel</a></h3>
 + (NSPrintPanel*) <b>printPanel</b>;<br>
 
+            Creates and returns a shared instance of the
+            NSPrintPanel panel.
           
  <hr>
 <hr><h2>Instances Methods </h2>
 <h3><a name ="method-1">accessoryView</a></h3>
 - (NSView*) <b>accessoryView</b>;<br>
 
+            Returns the accessory view for the print panel
           
  <hr>
-<h3><a name ="method-2">finalWritePrintInfo</a></h3>
+<h3><a name ="method-2">beginSheetWithPrintInfo:modalForWindow:delegate:didEndSelector:contextInfo:</a></h3>
+- (void) <b>beginSheetWithPrintInfo:</b> (NSPrintInfo*)printInfo <b>modalForWindow:</b> (NSWindow*)docWindow <b>delegate:</b> (id)delegate <b>didEndSelector:</b> (SEL)didEndSelector <b>contextInfo:</b> (void*)contextInfo;<br>
+
+          
+ <hr>
+<h3><a name ="method-3">finalWritePrintInfo</a></h3>
 - (void) <b>finalWritePrintInfo</b>;<br>
 
+            Saves information set by the user in the receiver's
+            panel in the NSPrintInfo object from the current
+            NSPrintOperation.
           
  <hr>
-<h3><a name ="method-3">pickedAllPages:</a></h3>
+<h3><a name ="method-4">pickedAllPages:</a></h3>
 - (void) <b>pickedAllPages:</b> (id)sender;<br>
 
+            This method has been depreciated. It doesn't do
+            anything useful.
           
  <hr>
-<h3><a name ="method-4">pickedButton:</a></h3>
+<h3><a name ="method-5">pickedButton:</a></h3>
 - (void) <b>pickedButton:</b> (id)sender;<br>
 
+            This method has been depreciated. It doesn't do
+            anything useful.
           
  <hr>
-<h3><a name ="method-5">pickedLayoutList:</a></h3>
+<h3><a name ="method-6">pickedLayoutList:</a></h3>
 - (void) <b>pickedLayoutList:</b> (id)sender;<br>
 
+            This method has been depreciated. It doesn't do
+            anything useful.
           
  <hr>
-<h3><a name ="method-6">runModal</a></h3>
+<h3><a name ="method-7">runModal</a></h3>
 - (int) <b>runModal</b>;<br>
 
+            Display the Print panel in a modal loop. Saves any
+            aquired information in the NSPrintInfo object for
+            the current NSPrintOperation. Returns NSCancelButton if
+            the user clicks the Cancel button or NSOKButton
+            otherwise.
           
  <hr>
-<h3><a name ="method-7">setAccessoryView:</a></h3>
+<h3><a name ="method-8">setAccessoryView:</a></h3>
 - (void) <b>setAccessoryView:</b> (NSView*)aView;<br>
 
+            Set the accessory view for the print panel
           
  <hr>
-<h3><a name ="method-8">updateFromPrintInfo</a></h3>
+<h3><a name ="method-9">updateFromPrintInfo</a></h3>
 - (void) <b>updateFromPrintInfo</b>;<br>
 
+            Setup the display in the receiver's panel based on
+            the values stored in the NSPrintInfo object from the
+            current NSPrintOperation.
           
  <hr>
 </body>

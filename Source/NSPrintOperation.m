@@ -250,6 +250,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
   TEST_RELEASE(_context);
   TEST_RELEASE(_printPanel);  
   TEST_RELEASE(_accessoryView);  
+  TEST_RELEASE(_path);  
 
   [super dealloc];
 }
@@ -328,8 +329,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 //
 - (int)currentPage
 {
-  // FIXME
-  return 0;
+  return _currentPage;
 }
 
 - (NSPrintingPageOrder)pageOrder
@@ -347,6 +347,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 //
 - (void)cleanUpOperation
 {
+  _currentPage = 0;
   [NSPrintOperation setCurrentOperation: nil];
 }
 
@@ -513,6 +514,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 
   ASSIGN(_path, @"/tmp/NSTempPrintFile");
   _pathSet = NO;
+  _currentPage = 0;
 
   [NSPrintOperation setCurrentOperation: self];
   return self;
@@ -520,6 +522,8 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 
 - (void) _print
 {
+  BOOL knowsPageRange;
+  NSRange viewPageRange;
   NSString *clocale;
   /* Reset the current locale to a generic C locale so numbers
      get printed correctly for PostScript (maybe we should only
@@ -527,7 +531,15 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
   clocale = GSSetLocale(nil);
   GSSetLocale(@"C");
 
+  /* Print the header information */
+  [_view beginDocument];
+
+  /* Setup pagination */
+  knowsPageRange = [_view knowsPageRange: &viewPageRange]; 
+
+  [_view beginPageInRect: _rect atPlacement: NSMakePoint(0,0)];
   [_view displayRectIgnoringOpacity: _rect];
+  [_view endDocument];
 
   GSSetLocale(clocale);
 }
@@ -590,13 +602,6 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 
 @implementation GSEPSPrintOperation
 
--(void) dealloc
-{
-  TEST_RELEASE(_path);  
-
-  [super dealloc];
-}
-
 - (id)initEPSOperationWithView:(NSView *)aView
 		    insideRect:(NSRect)rect
 			toData:(NSMutableData *)data
@@ -606,7 +611,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 	       insideRect: rect
 	       toData: data
 	       printInfo: aPrintInfo];
-
+  _pathSet = YES; /* Use the default temp path */
   return self;
 }
 
@@ -628,15 +633,21 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
   return self;
 }
 
-- (NSGraphicsContext*)createContext
+- (void) _print
 {
-  NSMutableDictionary *info = [_printInfo dictionary];
-  NSGraphicsContext *psContext;
+  NSString *clocale;
+  /* Reset the current locale to a generic C locale so numbers
+     get printed correctly for PostScript (maybe we should only
+     set the numeric locale?). Save the current locale for later. */
+  clocale = GSSetLocale(nil);
+  GSSetLocale(@"C");
+  
+  [_view beginDocument];
+  [_view beginPageInRect: _rect atPlacement: NSMakePoint(0,0)];
+  [_view displayRectIgnoringOpacity: _rect];
+  [_view endDocument];
 
-  [info setObject: _path forKey: @"NSOutputFile"];
-  psContext = [NSGraphicsContext postscriptContextWithInfo: info];
-
-  return psContext;
+  GSSetLocale(clocale);
 }
 
 - (BOOL)deliverResult
@@ -656,13 +667,6 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 
 @implementation GSPDFPrintOperation
 
--(void) dealloc
-{
-  TEST_RELEASE(_path);  
-
-  [super dealloc];
-}
-
 - (id) initPDFOperationWithView:(NSView *)aView 
 		     insideRect:(NSRect)rect 
 			 toData:(NSMutableData *)data 
@@ -672,7 +676,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 	       insideRect: rect
 	       toData: data
 	       printInfo: aPrintInfo];
-
+  _pathSet = YES; /* Use the default temp path */
   return self;
 }
 
@@ -698,6 +702,20 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 {
   // FIXME
   return nil;
+}
+
+- (void) _print
+{
+  NSString *clocale;
+  /* Reset the current locale to a generic C locale so numbers
+     get printed correctly for PostScript (maybe we should only
+     set the numeric locale?). Save the current locale for later. */
+  clocale = GSSetLocale(nil);
+  GSSetLocale(@"C");
+
+  [_view displayRectIgnoringOpacity: _rect];
+
+  GSSetLocale(clocale);
 }
 
 - (BOOL)deliverResult

@@ -891,6 +891,14 @@ NSGraphicsContext	*GSCurrentContext()
   methodTable.DPScurrentwindowdevice__ = 
     GET_IMP(@selector(DPScurrentwindowdevice::));
 
+/* ----------------------------------------------------------------------- */
+/* Client functions */
+/* ----------------------------------------------------------------------- */
+  methodTable.DPSPrintf__ = 
+    GET_IMP(@selector(DPSPrintf::));
+  methodTable.DPSWriteData__ = 
+    GET_IMP(@selector(DPSWriteData::));
+
 /*
  * Rectangle Drawing Functions
  */
@@ -2485,6 +2493,19 @@ NSGraphicsContext	*GSCurrentContext()
 }
 
 - (void) DPScurrentwindowdevice: (int)win : (void **)windowptr
+{
+  [self subclassResponsibility: _cmd];
+}
+
+/* ----------------------------------------------------------------------- */
+/* Client functions */
+/* ----------------------------------------------------------------------- */
+- (void) DPSPrintf: (char *)fmt : (va_list)args
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSWriteData: (char *)buf : (unsigned int)count
 {
   [self subclassResponsibility: _cmd];
 }
