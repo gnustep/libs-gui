@@ -37,7 +37,7 @@ endif
 # APP_NAME = test
 
 libgmodel_OBJC_FILES = IMCustomObject.m IMConnectors.m IMLoading.m GMAppKit.m
-libgmodel_HEADER_FILES_DIR = .
+libgmodel_HEADER_FILES_DIR = ../Headers/AppKit
 libgmodel_HEADER_FILES_INSTALL_DIR = /gnustep/gui/AppKit
 libgmodel_HEADER_FILES = IMConnectors.h IMCustomObject.h IMLoading.h GMAppKit.h
 

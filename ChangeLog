@@ -1,3 +1,7 @@
+Sat Feb 14 16:34:22 1998  Scott Christley  <scottc@net-community.com>
+
+	* Model/GNUmakefile (HEADER_FILES_DIR): Correct definition.
+
 Thu Feb  5 09:44:38 1998  Adam Fedor  <fedor@ultra.doc.com>
 
 	* GNUmakefile.postamble (header-links): Remove non-package
