@@ -32,7 +32,7 @@
 //
 // class variables
 //
-static id MB_NSSLIDER_CLASS = nil;
+id gnustep_gui_nsslider_cell_class = nil;
 
 //
 // NSSlider implementation
@@ -59,12 +59,12 @@ static id MB_NSSLIDER_CLASS = nil;
 //
 + (Class)cellClass
 {
-  return MB_NSSLIDER_CLASS;
+  return gnustep_gui_nsslider_cell_class;
 }
 
 + (void)setCellClass:(Class)classId
 {
-  MB_NSSLIDER_CLASS = classId;
+  gnustep_gui_nsslider_cell_class = classId;
 }
 
 //
@@ -79,7 +79,7 @@ static id MB_NSSLIDER_CLASS = nil;
   [super initWithFrame:frameRect];
 
   // set our cell
-  [self setCell:[[MB_NSSLIDER_CLASS new] autorelease]];
+  [self setCell:[[gnustep_gui_nsslider_cell_class new] autorelease]];
   if (frame.size.width > frame.size.height)
     [cell setVertical:NO];
   else

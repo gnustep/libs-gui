@@ -1,3 +1,9 @@
+Fri Apr 04 14:03:40 1997  Scott Christley  <scottc@net-community.com>
+
+	* Source/NSSlider.m (MB_NSSLIDER_CLASS): Rename to follow GNU
+	coding standards.
+	* Source/NSTextField.m (MB_NSTEXTFIELDCELL_CLASS): Likewise.
+
 Sat Mar 29 11:58:31 1997  GNUstep Development  <gnustep@net-community.com>
 
 	* Source/NSApplication.m (NullEvent): Rename global variable to

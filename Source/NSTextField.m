@@ -35,7 +35,7 @@
 //
 // class variables
 //
-static id MB_NSTEXTFIELDCELL_CLASS = nil;
+id gnustep_gui_nstextfield_cell_class = nil;
 
 @implementation NSTextField
 
@@ -59,12 +59,12 @@ static id MB_NSTEXTFIELDCELL_CLASS = nil;
 //
 + (Class)cellClass
 {
-  return MB_NSTEXTFIELDCELL_CLASS;
+  return gnustep_gui_nstextfield_cell_class;
 }
 
 + (void)setCellClass:(Class)classId
 {
-  MB_NSTEXTFIELDCELL_CLASS = classId;
+  gnustep_gui_nstextfield_cell_class = classId;
 }
 
 //
@@ -80,7 +80,7 @@ static id MB_NSTEXTFIELDCELL_CLASS = nil;
   [super initWithFrame:frameRect];
 
   // set our cell
-  [self setCell:[[MB_NSTEXTFIELDCELL_CLASS new] autorelease]];
+  [self setCell:[[gnustep_gui_nstextfield_cell_class new] autorelease]];
   [cell setState:1];
   text_cursor = [NSCursor IBeamCursor];
 
