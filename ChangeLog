@@ -1,3 +1,9 @@
+Thu Jun  6 08:29:42 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSScroller.m ([NSScroller -setFrame:]): Do not add
+	scroller arrows if they aren't already there (Patch by Jeff
+	Teunissen).
+
 Thu Jun  6 07:23:59 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSApplication.m ([NSApplication -terminate:]): Send the
