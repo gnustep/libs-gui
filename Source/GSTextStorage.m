@@ -548,6 +548,7 @@ _attributesAtIndexEffectiveRange(
 {
   unsigned	tmpLength, arrayIndex, arraySize;
   NSRange	effectiveRange;
+  NSRange	originalRange = range;
   unsigned	afterRangeLoc, beginRangeLoc;
   NSDictionary	*attrs;
   NSZone	*z = [self zone];
@@ -667,7 +668,7 @@ SANITY();
   
 SANITY();
   [self edited: NSTextStorageEditedAttributes
-	 range: range
+	 range: originalRange
 changeInLength: 0];
 }
 
