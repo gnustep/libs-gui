@@ -450,7 +450,19 @@ static float default_miter_limit = 10.0;
 {
   NSZone *myZone = [self zone];
   
-  if ( _dash_pattern == NULL)
+  if ((pattern == NULL) || (count == 0))
+    {
+      if (_dash_pattern != NULL)
+        {
+	  NSZoneFree(myZone, _dash_pattern);
+	  _dash_pattern = NULL;
+	}
+      _dash_count = 0;
+      _dash_phase = 0.0;
+      return;
+    }
+
+  if (_dash_pattern == NULL)
     _dash_pattern = NSZoneMalloc(myZone, count * sizeof(float));
   else
     NSZoneRealloc(myZone, _dash_pattern, count * sizeof(float));
@@ -1399,8 +1411,8 @@ static float default_miter_limit = 10.0;
   DPSsetflat(ctxt, [self flatness]);
 
   [self getLineDash: pattern count: &count phase: &phase];
-  if (count != 0 && count < 10)
-    DPSsetdash(ctxt, pattern, count, phase);
+  // Always sent the dash pattern. When NULL this will reset to a solid line.
+  DPSsetdash(ctxt, pattern, count, phase);
 
   count = [self elementCount];
   for(i = 0; i < count; i++) 
