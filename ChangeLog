@@ -1,3 +1,13 @@
+Sat Feb 23 01:28:15 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSTableView.m ([-editColumn:row:withEvent:select:]):
+	Call stringValue on the _editedCell before setting up _textObject,
+	not after, to prevent a spurious validation from messing up the
+	text to edit.  This fixes the bug when moving with TAB between
+	different edited cells.
+	* Source/NSTableView.m ([-textDidEndEditing:]): Release the
+	_editedCell *before* setting it to nil :-).
+	
 Fri Feb 22 22:55:51 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	Patches by Alexander Malmberg <alexander@malmber.org>:
