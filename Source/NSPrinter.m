@@ -872,44 +872,44 @@ andOptionTranslation:(NSString *)optionTranslation
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
   //  [super encodeWithCoder:aCoder];
   
-  [aCoder encodeObject:printerHost];
-  [aCoder encodeObject:printerName];
-  [aCoder encodeObject:printerNote];
-  [aCoder encodeObject:printerType];
+  [aCoder encodeObject: printerHost];
+  [aCoder encodeObject: printerName];
+  [aCoder encodeObject: printerNote];
+  [aCoder encodeObject: printerType];
 
-  [aCoder encodeValueOfObjCType:"i" at:&cacheAcceptsBinary];
-  [aCoder encodeValueOfObjCType:"i" at:&cacheOutputOrder];
-  [aCoder encodeValueOfObjCType:@encode(BOOL) at:&isRealPrinter];
+  [aCoder encodeValueOfObjCType: @encode(int) at: &cacheAcceptsBinary];
+  [aCoder encodeValueOfObjCType: @encode(int) at: &cacheOutputOrder];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &isRealPrinter];
 
-  [aCoder encodeObject:PPD];
-  [aCoder encodeObject:PPDOptionTranslation];
-  [aCoder encodeObject:PPDArgumentTranslation];
-  [aCoder encodeObject:PPDOrderDependency];
-  [aCoder encodeObject:PPDUIConstraints];
+  [aCoder encodeObject: PPD];
+  [aCoder encodeObject: PPDOptionTranslation];
+  [aCoder encodeObject: PPDArgumentTranslation];
+  [aCoder encodeObject: PPDOrderDependency];
+  [aCoder encodeObject: PPDUIConstraints];
 }
 
-- initWithCoder:aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
   //  self = [super initWithCoder:aDecoder];
     
-  printerHost = [aDecoder decodeObject];
-  printerName = [aDecoder decodeObject];
-  printerNote = [aDecoder decodeObject];
-  printerType = [aDecoder decodeObject];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &printerHost];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &printerName];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &printerNote];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &printerType];
 
-  [aDecoder decodeValueOfObjCType:"i" at:&cacheAcceptsBinary];
-  [aDecoder decodeValueOfObjCType:"i" at:&cacheOutputOrder];
-  [aDecoder decodeValueOfObjCType:@encode(BOOL) at:&isRealPrinter];
+  [aDecoder decodeValueOfObjCType: @encode(int) at: &cacheAcceptsBinary];
+  [aDecoder decodeValueOfObjCType: @encode(int) at: &cacheOutputOrder];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &isRealPrinter];
 
-  PPD = [aDecoder decodeObject];
-  PPDOptionTranslation = [aDecoder decodeObject];
-  PPDArgumentTranslation = [aDecoder decodeObject];
-  PPDOrderDependency = [aDecoder decodeObject];
-  PPDUIConstraints = [aDecoder decodeObject];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &PPD];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &PPDOptionTranslation];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &PPDArgumentTranslation];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &PPDOrderDependency];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &PPDUIConstraints];
 
   return self;
 }

@@ -42,10 +42,6 @@ discussion mailing list for general questions and discussion.  Look at
 the GNUstep Web Pages for more information regarding GNUstep resources
 @url{http://www.gnustep.org/}
 
-There are also companies which provide commercial support for the
-GNUstep GUI Library, see the file @file{SUPPORT} for more
-information.
-
 @section Where can you get it?  How can you compile it?
 
 @ifset GNUSTEP-GUI-FTP-MACHINE
@@ -60,14 +56,14 @@ file has not been made available by anonymous ftp.
 
 The program requires gcc @value{GNUSTEP-GUI-GCC} or higher.
 
-It requires the Display Ghostscript System version
+The Display Ghostscript System version
 @value{GNUSTEP-GUI-DGS} and the TIFF Graphics library version
-@value{GNUSTEP-GUI-LIBTIFF}.
+@value{GNUSTEP-GUI-LIBTIFF} may be required depending on the backend
+you choose.
 
 It also requires a FoundationKit library as specified by the OpenStep
 specification.  The FoundationKit libraries known to work are the GNUstep
-Base Library version @samp{@value{GNUSTEP-GUI-BASE}} and libFoundation
-version @samp{@value{LIB-FOUNDATION}}.
+Base Library version @samp{@value{GNUSTEP-GUI-BASE}}.
 
 The @samp{.tar} file is compressed with GNU gzip.  Gzip can be obtained by
 anonymous ftp at any of the GNU archive sites.
@@ -83,8 +79,7 @@ be placed in
 @section Where do I send bug reports?
 
 Bug reports can be sent to the GNUstep discussion list
-@email{discussion@@gnustep.org} or to NET-Community Technical
-Support @email{support@@net-community.com}.
+@email{discuss-gnustep@@gnu.org}.
 
 @noindent
 Creators rejoice!@*

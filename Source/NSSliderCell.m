@@ -5,14 +5,14 @@
 
    Author: Ovidiu Predescu <ovidiu@net-community.com>
    Date: September 1997
-   
+  
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+  
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -75,36 +75,34 @@
 	if ([self image])
 		return;
 
-	[[NSColor darkGrayColor] set];						
+	[[NSColor darkGrayColor] set];					
 	NSRectFill(rect);									// draw the bar
 }
 
 - (NSRect)knobRectFlipped:(BOOL)flipped
 {
-NSImage* image = [_knobCell image];
-NSSize size;
-NSPoint origin;
-float floatValue;
+  NSImage* image = [_knobCell image];
+  NSSize size;
+  NSPoint origin;
+  float floatValue;
 
-	if (_isVertical && flipped)
-		_floatValue = _maxValue + _minValue - _floatValue;
-	
-	floatValue = (_floatValue - _minValue) / (_maxValue - _minValue);
-	
-	size = [image size];
-	
-	if (_isVertical) 
-		{
-		origin.x = 2;
-		origin.y = ((_trackRect.size.height - size.height) * floatValue) + 2;
-		}
-	else 
-		{
-		origin.x = ((_trackRect.size.width - size.width) * floatValue) + 2;
-		origin.y = 2;
-		}
-	
-	return NSMakeRect (origin.x, origin.y, size.width, size.height);  
+  if (_isVertical && flipped)
+    _floatValue = _maxValue + _minValue - _floatValue;
+
+  floatValue = (_floatValue - _minValue) / (_maxValue - _minValue);
+
+  size = [image size];
+
+  if (_isVertical) {
+    origin.x = 0;
+    origin.y = (_trackRect.size.height - size.height) * floatValue;
+  }
+  else {
+    origin.x = (_trackRect.size.width - size.width) * floatValue;
+    origin.y = 0;
+  }
+
+  return NSMakeRect (origin.x, origin.y, size.width, size.height); 
 }
 
 - (void)drawKnob
@@ -204,18 +202,19 @@ float floatValue;
 - (double)maxValue			{ return _maxValue; }
 - (float)floatValue			{ return _floatValue; }
 
-- (id)initWithCoder:(NSCoder*)decoder
+- (id) initWithCoder: (NSCoder*)decoder
 {
-  self = [super initWithCoder:decoder];
+  self = [super initWithCoder: decoder];
   [decoder decodeValuesOfObjCTypes:"ffff",
 	      &_minValue, &_maxValue, &_floatValue, &_altIncrementValue];
   return self;
 }
 
-- (void)encodeWithCoder:(NSCoder*)coder
+- (void) encodeWithCoder: (NSCoder*)coder
 {
+  [super encodeWithCoder: coder];
   [coder encodeValuesOfObjCTypes:"ffff",
-	      _minValue, _maxValue, _floatValue, _altIncrementValue];
+	      &_minValue, &_maxValue, &_floatValue, &_altIncrementValue];
 }
 
 @end

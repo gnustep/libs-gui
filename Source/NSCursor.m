@@ -215,11 +215,11 @@ static BOOL gnustep_gui_hidden_until_move;
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
 }
 
-- initWithCoder:aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
   return self;
 }

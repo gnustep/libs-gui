@@ -906,11 +906,11 @@ static NSDictionary* nsmapping = nil;
 }
 
 // NSCoding
-- (void)encodeWithCoder:(NSCoder *)coder
+- (void) encodeWithCoder: (NSCoder*)coder
 {
 }
 
-- (id)initWithCoder:(NSCoder *)coder
+- (id) initWithCoder: (NSCoder*)coder
 {
   return self;
 }

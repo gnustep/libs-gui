@@ -7,6 +7,8 @@
    Date: July 1997
    Author:  Felipe A. Rodriguez <far@ix.netcom.com>
    Date: October 1998
+   Author:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+   Date: February 1999
 
    This file is part of the GNUstep GUI Library.
 
@@ -44,9 +46,6 @@ extern void PSrlineto(float x, float y);
 extern void PSstroke(void);
 extern void PSgrestore(void);
 extern void PSgsave(void);
-
-
-
 
 @implementation NSScrollView
 
@@ -194,7 +193,7 @@ static Class rulerViewClass = nil;
 
 - (void) setContentView: (NSView*)aView
 {
-  ASSIGN(_contentView, aView);
+  ASSIGN((id)_contentView, (id)aView);
   [self addSubview: _contentView];
   [_contentView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
   [self tile];
@@ -332,6 +331,7 @@ static Class rulerViewClass = nil;
 	{
 	  point.x = floatValue * (documentRect.size.width
 			      		- clipViewBounds.size.width);
+	  point.x += documentRect.origin.x;
 	}
       else
 	{
@@ -339,6 +339,7 @@ static Class rulerViewClass = nil;
 	    floatValue = 1 - floatValue;
 	  point.y = floatValue * (documentRect.size.height
 		     			- clipViewBounds.size.height);
+	  point.y += documentRect.origin.y;
 	}
     }
 
@@ -369,10 +370,10 @@ static Class rulerViewClass = nil;
       else
 	{
 	  [_vertScroller setEnabled: YES];
-	  knobProportion = clipViewBounds.size.height /
-						documentFrame.size.height;
-	  floatValue = clipViewBounds.origin.y / (documentFrame.size.height
-					- clipViewBounds.size.height);
+	  knobProportion = clipViewBounds.size.height
+	    / documentFrame.size.height;
+	  floatValue = (clipViewBounds.origin.y - documentFrame.origin.y)
+	    / (documentFrame.size.height - clipViewBounds.size.height);
 	  if (![_contentView isFlipped])
 	    floatValue = 1 - floatValue;
 	  [_vertScroller setFloatValue: floatValue
@@ -387,10 +388,10 @@ static Class rulerViewClass = nil;
       else
 	{
 	  [_horizScroller setEnabled: YES];
-	  knobProportion = clipViewBounds.size.width /
-						documentFrame.size.width;
-	  floatValue = clipViewBounds.origin.x / (documentFrame.size.width -
-					clipViewBounds.size.width);
+	  knobProportion = clipViewBounds.size.width
+	    / documentFrame.size.width;
+	  floatValue = (clipViewBounds.origin.x - documentFrame.origin.x)
+	    / (documentFrame.size.width - clipViewBounds.size.width);
 	  [_horizScroller setFloatValue: floatValue
 			 knobProportion: knobProportion];
 	}
@@ -615,14 +616,24 @@ static Class rulerViewClass = nil;
   return _borderType;
 }
 
-- (BOOL) hasVerticalScroller
-{
-  return _hasVertScroller;
-}
-
 - (BOOL) hasHorizontalRuler
 {
   return _hasHorizRuler;
+}
+
+- (BOOL) hasHorizontalScroller
+{
+  return _hasHorizScroller;
+}
+
+- (BOOL) hasVerticalRuler
+{
+  return _hasVertRuler;
+}
+
+- (BOOL) hasVerticalScroller
+{
+  return _hasVertScroller;
 }
 
 - (NSSize) contentSize
@@ -638,11 +649,6 @@ static Class rulerViewClass = nil;
 - (NSRulerView*) horizontalRulerView
 {
   return _horizRuler;
-}
-
-- (BOOL) hasVerticalRuler
-{
-  return _hasVertRuler;
 }
 
 - (NSRulerView*) verticalRulerView
@@ -690,9 +696,9 @@ static Class rulerViewClass = nil;
   return _horizScroller;
 }
 
-- (BOOL) hasHorizontalScroller
+- (NSScroller*) verticalScroller
 {
-  return _hasHorizScroller;
+  return _vertScroller;
 }
 
 @end

@@ -144,20 +144,20 @@ NSRect inside = rect;
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [super encodeWithCoder:aCoder];
+  [super encodeWithCoder: aCoder];
   [aCoder encodeObject: the_color];
-  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &is_active];
-  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &is_bordered];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_active];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_bordered];
 }
 
-- initWithCoder:aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder:aDecoder];
-  the_color = [aDecoder decodeObject];
-  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_active];
-  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_bordered];
+  [super initWithCoder: aDecoder];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &the_color];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_active];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_bordered];
 
   return self;
 }

@@ -71,12 +71,12 @@
 }
 
 // NSCoding protocol
-- (void) encodeWithCoder: aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [self notImplemented: _cmd];
 }
 
-- initWithCoder: aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
   [self notImplemented: _cmd];
   return self;

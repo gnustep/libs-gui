@@ -1328,93 +1328,87 @@ id result = nil;
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [self setNextResponder: nil];
 
-  [super encodeWithCoder:aCoder];
+  [super encodeWithCoder: aCoder];
 
   NSDebugLog(@"NSWindow: start encoding\n");
-  [aCoder encodeRect:frame];
-  [aCoder encodeObject:content_view];
-//  [aCoder encodeObjectReference: first_responder withName:NULL];
-//  [aCoder encodeObjectReference: original_responder withName:NULL];
-//  [aCoder encodeObjectReference: delegate withName:NULL];
-  [aCoder encodeValueOfObjCType:"i" at:&window_num];
-  [aCoder encodeObject:background_color];
-  [aCoder encodeObject:represented_filename];
-  [aCoder encodeObject:miniaturized_title];
-  [aCoder encodeObject:window_title];
-  [aCoder encodePoint:last_point];
-  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &visible];
-  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &is_key];
-  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &is_main];
-  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &is_edited];
-  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &is_miniaturized];
-  [aCoder encodeValueOfObjCType:"I" at: &style_mask];
-  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &menu_exclude];
+  [aCoder encodeRect: frame];
+  [aCoder encodeObject: content_view];
+  [aCoder encodeValueOfObjCType: @encode(int) at: &window_num];
+  [aCoder encodeObject: background_color];
+  [aCoder encodeObject: represented_filename];
+  [aCoder encodeObject: miniaturized_title];
+  [aCoder encodeObject: window_title];
+  [aCoder encodePoint: last_point];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &visible];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_key];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_main];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_edited];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_miniaturized];
+  [aCoder encodeValueOfObjCType: @encode(unsigned) at: &style_mask];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &menu_exclude];
 
   // Version 2
-  [aCoder encodeSize:minimum_size];
-  [aCoder encodeSize:maximum_size];
-  [aCoder encodeObject:miniaturized_image];
-  [aCoder encodeValueOfObjCType:@encode(NSBackingStoreType) at: &backing_type];
-  [aCoder encodeValueOfObjCType:@encode(int) at: &window_level];
-  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &is_one_shot];
-  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &is_autodisplay];
-  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &optimize_drawing];
-  [aCoder encodeValueOfObjCType:@encode(NSWindowDepth) at: &depth_limit];
-  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &dynamic_depth_limit];
-  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &cursor_rects_enabled];
-  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &is_released_when_closed];
-  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &disable_flush_window];
-  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &hides_on_deactivate];
-  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &accepts_mouse_moved];
+  [aCoder encodeSize: minimum_size];
+  [aCoder encodeSize: maximum_size];
+  [aCoder encodeObject: miniaturized_image];
+  [aCoder encodeValueOfObjCType: @encode(NSBackingStoreType) at: &backing_type];
+  [aCoder encodeValueOfObjCType: @encode(int) at: &window_level];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_one_shot];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_autodisplay];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &optimize_drawing];
+  [aCoder encodeValueOfObjCType: @encode(NSWindowDepth) at: &depth_limit];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &dynamic_depth_limit];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &cursor_rects_enabled];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_released_when_closed];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &disable_flush_window];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &hides_on_deactivate];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &accepts_mouse_moved];
 
   NSDebugLog(@"NSWindow: finish encoding\n");
 }
 
-- initWithCoder:aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder:aDecoder];
+  [super initWithCoder: aDecoder];
 
   NSDebugLog(@"NSWindow: start decoding\n");
   frame = [aDecoder decodeRect];
   content_view = [aDecoder decodeObject];
-//  [aDecoder decodeObjectAt: &first_responder withName:NULL];
-//  [aDecoder decodeObjectAt: &original_responder withName:NULL];
-//  [aDecoder decodeObjectAt: &delegate withName:NULL];
-  [aDecoder decodeValueOfObjCType:"i" at:&window_num];
-  background_color = [aDecoder decodeObject];
-  represented_filename = [aDecoder decodeObject];
-  miniaturized_title = [aDecoder decodeObject];
-  window_title = [aDecoder decodeObject];
+  [aDecoder decodeValueOfObjCType: @encode(int) at: &window_num];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &background_color];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &represented_filename];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &miniaturized_title];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &window_title];
   last_point = [aDecoder decodePoint];
-  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &visible];
-  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_key];
-  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_main];
-  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_edited];
-  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_miniaturized];
-  [aDecoder decodeValueOfObjCType:"I" at: &style_mask];
-  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &menu_exclude];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &visible];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_key];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_main];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_edited];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_miniaturized];
+  [aDecoder decodeValueOfObjCType: @encode(unsigned) at: &style_mask];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &menu_exclude];
 
   // Version 2
   minimum_size = [aDecoder decodeSize];
   maximum_size = [aDecoder decodeSize];
-  miniaturized_image = [aDecoder decodeObject];
-  [aDecoder decodeValueOfObjCType:@encode(NSBackingStoreType)
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &miniaturized_image];
+  [aDecoder decodeValueOfObjCType: @encode(NSBackingStoreType)
         at: &backing_type];
-  [aDecoder decodeValueOfObjCType:@encode(int) at: &window_level];
-  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_one_shot];
-  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_autodisplay];
-  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &optimize_drawing];
-  [aDecoder decodeValueOfObjCType:@encode(NSWindowDepth) at: &depth_limit];
-  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &dynamic_depth_limit];
-  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &cursor_rects_enabled];
-  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_released_when_closed];
-  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &disable_flush_window];
-  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &hides_on_deactivate];
-  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &accepts_mouse_moved];
+  [aDecoder decodeValueOfObjCType: @encode(int) at: &window_level];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_one_shot];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_autodisplay];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &optimize_drawing];
+  [aDecoder decodeValueOfObjCType: @encode(NSWindowDepth) at: &depth_limit];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &dynamic_depth_limit];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &cursor_rects_enabled];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_released_when_closed];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &disable_flush_window];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &hides_on_deactivate];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &accepts_mouse_moved];
 
   NSDebugLog(@"NSWindow: finish decoding\n");
 

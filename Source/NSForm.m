@@ -196,14 +196,14 @@ static Class defaultCellClass = nil;
 - (void)selectTextAtIndex:(int)index
 {}
 
-- (void)encodeWithCoder:aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [super encodeWithCoder:aCoder];
+  [super encodeWithCoder: aCoder];
 }
 
-- initWithCoder:aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder:aDecoder];
+  [super initWithCoder: aDecoder];
 
   return self;
 }

@@ -105,25 +105,25 @@ NSApplication	*NSApp = nil;
 //
 + (void)initialize
 {
-    if (self == [NSApplication class])
-        {
-        NSDebugLog(@"Initialize NSApplication class\n");
+  if (self == [NSApplication class])
+    {
+      NSDebugLog(@"Initialize NSApplication class\n");
                                                     // Initial version
-        [self setVersion:1];
+      [self setVersion:1];
                                                     // So the application knows
-        gnustep_gui_app_is_in_dealloc = NO;         // it's within dealloc and
-        }                                           // can prevent -release
+      gnustep_gui_app_is_in_dealloc = NO;         // it's within dealloc and
+    }                                           // can prevent -release
 }                                                   // loops.
 
 + (NSApplication *)sharedApplication
-{                                           // If the global application does
-    if (!NSApp)                             // not yet exist then create it
-        {
-        NSApp = [self alloc];               // Don't combine the following two
-        [NSApp init];                       // statements into one to avoid
-        }                                   // problems with some classes'
-                                            // initialization code that tries
-    return NSApp;                           // to get the shared application.
+{					// If the global application does
+  if (!NSApp)				// not yet exist then create it
+    {
+      NSApp = [self alloc];		// Don't combine the following two
+      [NSApp init];			// statements into one to avoid
+    }					// problems with some classes'
+					// initialization code that tries
+  return NSApp;				// to get the shared application.
 }
 
 //
@@ -137,31 +137,31 @@ NSApplication	*NSApp = nil;
       return [NSApplication sharedApplication];
     }
 
-    [super init];
+  [super init];
 
-    NSDebugLog(@"Begin of NSApplication -init\n");
+  NSDebugLog(@"Begin of NSApplication -init\n");
 
-    listener = [GSServicesManager newWithApplication: self];
+  listener = [GSServicesManager newWithApplication: self];
 
-    main_menu = nil;
-    windows_need_update = YES;
+  main_menu = nil;
+  windows_need_update = YES;
 
-    event_queue = [NSMutableArray new];                 // allocate event queue
-    current_event = [NSEvent new];                      // no current event
-    null_event = [NSEvent new];                         // create dummy event
+  event_queue = [NSMutableArray new];                 // allocate event queue
+  current_event = [NSEvent new];                      // no current event
+  null_event = [NSEvent new];                         // create dummy event
 
-    [self setNextResponder:NULL];                       // We are the end of
-                                                        // the responder chain
+  [self setNextResponder:NULL];                       // We are the end of
+						      // the responder chain
 
-                                                        // Set up the run loop
-                                                        // object for the
-                                                        // current thread
-    [self setupRunLoopInputSourcesForMode:NSDefaultRunLoopMode];
-    [self setupRunLoopInputSourcesForMode:NSConnectionReplyMode];
-    [self setupRunLoopInputSourcesForMode:NSModalPanelRunLoopMode];
-    [self setupRunLoopInputSourcesForMode:NSEventTrackingRunLoopMode];
+						      // Set up the run loop
+						      // object for the
+						      // current thread
+  [self setupRunLoopInputSourcesForMode:NSDefaultRunLoopMode];
+  [self setupRunLoopInputSourcesForMode:NSConnectionReplyMode];
+  [self setupRunLoopInputSourcesForMode:NSModalPanelRunLoopMode];
+  [self setupRunLoopInputSourcesForMode:NSEventTrackingRunLoopMode];
 
-    return self;
+  return self;
 }
 
 - (void)finishLaunching
@@ -1801,26 +1801,27 @@ BOOL result = YES;
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [super encodeWithCoder:aCoder];
+  [super encodeWithCoder: aCoder];
 
-  [aCoder encodeConditionalObject:key_window];
-  [aCoder encodeConditionalObject:main_window];
-  [aCoder encodeConditionalObject:delegate];
-  [aCoder encodeObject:main_menu];
-  [aCoder encodeConditionalObject:windows_menu];
+  [aCoder encodeConditionalObject: delegate];
+  [aCoder encodeObject: main_menu];
+  [aCoder encodeConditionalObject: windows_menu];
 }
 
-- initWithCoder:aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder:aDecoder];
+  id	obj;
 
-  key_window = [aDecoder decodeObject];
-  main_window = [aDecoder decodeObject];
-  delegate = [aDecoder decodeObject];
-  main_menu = [aDecoder decodeObject];
-  windows_menu = [aDecoder decodeObject];
+  [super initWithCoder: aDecoder];
+
+  obj = [aDecoder decodeObject];
+  [self setDelegate: obj];
+  obj = [aDecoder decodeObject];
+  [self setMainMenu: obj];
+  obj = [aDecoder decodeObject];
+  [self setWindowsMenu: obj];
   return self;
 }
 

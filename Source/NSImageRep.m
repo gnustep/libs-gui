@@ -370,7 +370,7 @@ extension(NSString *name)
 }
 
 // NSCoding protocol
-- (void) encodeWithCoder: aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [aCoder encodeObject: _colorSpace];
   [aCoder encodeSize: size];
@@ -381,9 +381,9 @@ extension(NSString *name)
   [aCoder encodeValueOfObjCType: @encode(int) at: &_pixelsHigh];
 }
 
-- initWithCoder: aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
-  _colorSpace = [[aDecoder decodeObject] retain];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_colorSpace];
   size = [aDecoder decodeSize];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &hasAlpha];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &isOpaque];

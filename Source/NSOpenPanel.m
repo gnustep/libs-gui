@@ -199,9 +199,9 @@ static NSOpenPanel *gnustep_gui_open_panel = nil;
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [super encodeWithCoder:aCoder];
+  [super encodeWithCoder: aCoder];
 
   [aCoder encodeObject: the_filenames];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &multiple_select];
@@ -209,11 +209,11 @@ static NSOpenPanel *gnustep_gui_open_panel = nil;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &choose_file];
 }
 
-- initWithCoder:aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder:aDecoder];
+  [super initWithCoder: aDecoder];
 
-  the_filenames = [aDecoder decodeObject];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &the_filenames];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &multiple_select];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &choose_dir];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &choose_file];

@@ -2231,54 +2231,56 @@ NSLog(@"opti hook 2");
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:aCoder
-{	[super encodeWithCoder:aCoder];
+- (void) encodeWithCoder: (NSCoder*)aCoder
+{
+  [super encodeWithCoder: aCoder];
 
-	[aCoder encodeConditionalObject:delegate];
+  [aCoder encodeConditionalObject:delegate];
 
-	[aCoder encodeObject: plainContent];
-	[aCoder encodeObject: rtfContent];
+  [aCoder encodeObject: plainContent];
+  [aCoder encodeObject: rtfContent];
 
-	[aCoder encodeValueOfObjCType: "I" at: &alignment];
-	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_editable];
-	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_rich_text];
-	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_selectable];
-	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &imports_graphics];
-	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &uses_font_panel];
-	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_horizontally_resizable];
-	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_vertically_resizable];
-	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_ruler_visible];
-	[aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_field_editor];
-	[aCoder encodeObject: background_color];
-	[aCoder encodeObject: text_color];
-	[aCoder encodeObject: default_font];
-	[aCoder encodeValueOfObjCType: @encode(NSRange) at: &selected_range];
+  [aCoder encodeValueOfObjCType: @encode(unsigned) at: &alignment];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_editable];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_rich_text];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_selectable];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &imports_graphics];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &uses_font_panel];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_horizontally_resizable];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_vertically_resizable];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_ruler_visible];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_field_editor];
+  [aCoder encodeObject: background_color];
+  [aCoder encodeObject: text_color];
+  [aCoder encodeObject: default_font];
+  [aCoder encodeValueOfObjCType: @encode(NSRange) at: &selected_range];
 }
 
-- initWithCoder:aDecoder
-{	[super initWithCoder:aDecoder];
+- (id) initWithCoder: (NSCoder*)aDecoder
+{
+  [super initWithCoder: aDecoder];
 
-	delegate = [aDecoder decodeObject];
+  delegate = [aDecoder decodeObject];
 
-	plainContent= [aDecoder decodeObject];
-	rtfContent= [aDecoder decodeObject];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &plainContent];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &rtfContent];
 
-	[aDecoder decodeValueOfObjCType: "I" at: &alignment];
-	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_editable];
-	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_rich_text];
-	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_selectable];
-	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &imports_graphics];
-	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &uses_font_panel];
-	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_horizontally_resizable];
-	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_vertically_resizable];
-	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_ruler_visible];
-	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_field_editor];
-	background_color = [aDecoder decodeObject];
-	text_color = [aDecoder decodeObject];
-	default_font = [aDecoder decodeObject];
-	[aDecoder decodeValueOfObjCType: @encode(NSRange) at: &selected_range];
+  [aDecoder decodeValueOfObjCType: @encode(unsigned) at: &alignment];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_editable];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_rich_text];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_selectable];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &imports_graphics];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &uses_font_panel];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_horizontally_resizable];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_vertically_resizable];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_ruler_visible];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_field_editor];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &background_color];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &text_color];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &default_font];
+  [aDecoder decodeValueOfObjCType: @encode(NSRange) at: &selected_range];
 
-	return self;
+  return self;
 }
 
 //

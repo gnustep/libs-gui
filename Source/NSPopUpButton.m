@@ -75,7 +75,7 @@
   return self;
 }
 
-- (void)dealloc
+- (void) dealloc
 {
   [list_items release];
   [super dealloc];
@@ -326,26 +326,26 @@
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [super encodeWithCoder:aCoder];
+  [super encodeWithCoder: aCoder];
 
   [aCoder encodeObject: list_items];
   [aCoder encodeRect: list_rect];
-  [aCoder encodeValueOfObjCType: "i" at: &selected_item];
-  [aCoder encodeConditionalObject:pub_target];
+  [aCoder encodeValueOfObjCType: @encode(int) at: &selected_item];
+  [aCoder encodeConditionalObject: pub_target];
   [aCoder encodeValueOfObjCType: @encode(SEL) at: &pub_action];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_up];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &pulls_down];
 }
 
-- initWithCoder:aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder:aDecoder];
+  [super initWithCoder: aDecoder];
 
-  list_items = [aDecoder decodeObject];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &list_items];
   list_rect = [aDecoder decodeRect];
-  [aDecoder decodeValueOfObjCType: "i" at: &selected_item];
+  [aDecoder decodeValueOfObjCType: @encode(int) at: &selected_item];
   pub_target = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: @encode(SEL) at: &pub_action];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_up];

@@ -30,10 +30,10 @@ ADDITIONAL_INCLUDE_DIRS += -I../Headers -I$(GNUSTEP_SYSTEM_ROOT)/Headers
 ADDITIONAL_LIB_DIRS += -L../Source/$(GNUSTEP_OBJ_DIR) -L/usr/local/lib -L../Model/$(GNUSTEP_OBJ_DIR)
 
 # Additional libraries when linking tools
-ADDITIONAL_TOOL_LIBS += -lgnustep-gui -ltiff -ljpeg
+ADDITIONAL_TOOL_LIBS += -lgnustep-gui $(SYSTEM_LIBS)
 
 # Additional libraries when linking applications
-ADDITIONAL_GUI_LIBS += -lgnustep-gui -ltiff -ljpeg
+#ADDITIONAL_GUI_LIBS +=
 
 #
 # Flags dealing with installing and uninstalling

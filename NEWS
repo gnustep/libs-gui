@@ -1,10 +1,24 @@
 NEWS
 ****
 
-The currently released version of the library is `0.4.0'.
+The currently released version of the library is `0.5.5'.
 
-Noteworthy changes in version `0.4.0'
+Noteworthy changes in version `0.5.5'
 =====================================
+
+   Probably to extensive to list.
+
+   * A lot of rewritting has been done to the classes, with general
+     cleanup of coordinate conversion code, etc.
+
+Noteworthy changes in version `0.5.0'
+=====================================
+
+   * NSBrowser and NSBrowserCell have been implemented.  There is one
+     odd display artifact; lists which are smaller than the browser
+     column area have the list justified to the bottom of the column
+     versus the top of the column.  This is actually an issue with
+     NSMatrix and will be remedied when flip views are implemented.
 
    * Two important optimizations that speed up the displaying of views
      and flushing of windows have been implemented. Only the views that

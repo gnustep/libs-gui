@@ -146,13 +146,13 @@ static NSImage *highlight_image;
 
 - (id) copyWithZone: (NSZone*)zone
 {
-  NSBrowserCell* c = [super copyWithZone: zone];
-  // Copy the image cells
+  NSBrowserCell	*c = [super copyWithZone: zone];
+
   c->_branchImage = [_branchImage retain];
   if (_alternateImage)
       c->_alternateImage = [_alternateImage retain];
   c->_highlightBranchImage = [_highlightBranchImage retain];
-  c->_browserText = [[_browserText copy] retain];	// Copy the text cell
+  c->_browserText = [_browserText copyWithZone: zone];	// Copy the text cell
   c->_isLeaf = _isLeaf;
   c->_isLoaded = _isLoaded;
 
@@ -307,11 +307,6 @@ static NSImage *highlight_image;
 
   if (image)
     [self _drawImage: image inFrame: image_rect];
-}
-
-- (void) drawWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
-{
-  [self drawInteriorWithFrame: cellFrame inView: controlView];
 }
 
 //

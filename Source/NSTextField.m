@@ -100,14 +100,14 @@ id _nsTextfieldCellClass = nil;
 	text_cursor = aCursor;
 }
 
-- copyWithZone:(NSZone *)zone
+- (id) copyWithZone: (NSZone*)zone
 {
-id c;
+  id c;
 
-	c = [super copyWithZone: zone];
-	[c setTextCursor: [NSCursor IBeamCursor]];
+  c = [super copyWithZone: zone];
+  [c setTextCursor: [NSCursor IBeamCursor]];
 
-	return c;
+  return c;
 }
 
 //
@@ -420,35 +420,23 @@ id nextResponder;
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [super encodeWithCoder:aCoder];
+  [super encodeWithCoder: aCoder];
 
-#if 0
-  [aCoder encodeObjectReference: next_text withName: @"Next text"];
-  [aCoder encodeObjectReference: previous_text withName: @"Previous text"];
-  [aCoder encodeObjectReference: text_delegate withName: @"Text delegate"];
-#else
-  [aCoder encodeConditionalObject:next_text];
-  [aCoder encodeConditionalObject:previous_text];
-  [aCoder encodeConditionalObject:text_delegate];
-#endif
+  [aCoder encodeConditionalObject: next_text];
+  [aCoder encodeConditionalObject: previous_text];
+  [aCoder encodeConditionalObject: text_delegate];
   [aCoder encodeValueOfObjCType: @encode(SEL) at: &error_action];
 }
 
-- initWithCoder:aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder:aDecoder];
+  [super initWithCoder: aDecoder];
 
-#if 0
-  [aDecoder decodeObjectAt: &next_text withName: NULL];
-  [aDecoder decodeObjectAt: &previous_text withName: NULL];
-  [aDecoder decodeObjectAt: &text_delegate withName: NULL];
-#else
   next_text = [aDecoder decodeObject];
   previous_text = [aDecoder decodeObject];
   text_delegate = [aDecoder decodeObject];
-#endif
   [aDecoder decodeValueOfObjCType: @encode(SEL) at: &error_action];
 
   return self;

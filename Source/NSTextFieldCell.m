@@ -79,8 +79,8 @@
   [self setEditable:YES];
   [self setAlignment:NSLeftTextAlignment];
 
-  [self setBackgroundColor: [NSColor whiteColor]];
-  [self setTextColor: [NSColor blackColor]];
+  [self setBackgroundColor: [NSColor textBackgroundColor]];
+  [self setTextColor: [NSColor textColor]];
   [self setFont: [NSFont systemFontOfSize:0]];
   draw_background = YES;
   return self;
@@ -93,9 +93,9 @@
   [super dealloc];
 }
 
-- (id)copyWithZone:(NSZone*)zone
+- (id) copyWithZone: (NSZone*)zone
 {
-  NSTextFieldCell* c = [super copyWithZone:zone];
+  NSTextFieldCell	*c = [super copyWithZone: zone];
 
   [c setBackgroundColor: background_color];
   [c setTextColor: text_color];
@@ -230,34 +230,49 @@
 }
 
 //
-// Displaying
+// Drawing
 //
-- (void)drawWithFrame:(NSRect)cellFrame
-	       inView:(NSView *)controlView
+- (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  // Save last view drawn to
-  control_view = controlView;
-  [super drawWithFrame:cellFrame inView:controlView];
+  cellFrame = NSInsetRect(cellFrame, xDist, yDist);
+
+  if ([self drawsBackground])
+    {
+      [background_color set];
+      NSRectFill(cellFrame);
+    }
+
+  switch ([self type])
+    {
+      case NSTextCellType:
+           [self _drawText: [self stringValue] inFrame: cellFrame];
+           break;
+      case NSImageCellType:
+           [self _drawImage: [self image] inFrame: cellFrame];
+           break;
+      case NSNullCellType:
+          break;
+    }
 }
 
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [super encodeWithCoder:aCoder];
+  [super encodeWithCoder: aCoder];
 
-  [aCoder encodeObject: background_color];
-  [aCoder encodeObject: text_color];
+  [aCoder encodeValueOfObjCType: @encode(id) at: &background_color];
+  [aCoder encodeValueOfObjCType: @encode(id) at: &text_color];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &draw_background];
 }
 
-- initWithCoder:aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder:aDecoder];
+  [super initWithCoder: aDecoder];
 
-  background_color = [aDecoder decodeObject];
-  text_color = [aDecoder decodeObject];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &background_color];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &text_color];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &draw_background];
 
   return self;

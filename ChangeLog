@@ -1,30 +1,64 @@
-Wed Feb 24  Felipe A. Rodriguez  <farz@mindspring.com>
+1999-03-08  Adam Fedor  <fedor@gnu.org>
 
-	* NSSliderCell.m: knobRectFlipped: fix draw bugs in slider.app example.
+	* Version 0.5.5 Released.
 
-Mon Feb 22  8:30:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+Sun Mar  7  5:58:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
-	* NSView.m: Tidied coordinate conversion code to use new system with
-	a cached conversion matrix to convert to/from window coordinates.
-	* NSView.h: Cache conversion matrices.
+	* Source/NSView.m: Fixed error invalidating coordinates of a view.
 
-Mon Feb 22  6:06:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+1999-03-04  Adam Fedor  <fedor@gnu.org>
 
-	* NSView.m: Tidied coordinate conversion code to use new system with
-	a cached conversion matrix to convert to/from window coordinates.
+	* Testing/GNUmakefile.preamble: Remove tiff and jpeg libs.
+	* Tools/GNUmakefile.preamble: Likewise (already in make package).
 
-1999-02-21 Michael Hanni <mhanni@sprintmail.com>
+1999-03-01  Adam Fedor  <fedor@gnu.org>
 
-	* Headers/gnustep/gui/NSRulerView.h: added (note: not implemented)
-	* Headers/gnustep/gui/NSRulerMarker.h: added (note: not
-	implemented)
+	* Update documentation.
 
-Sun Feb 21 20:36:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+Wed Feb 24  8:56:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
-	* Headers/gnustep/gui/NSCell.h: tidyup
-	* Headers/gnustep/gui/NSView.h: Added matrix for coordinate conversion
-	* Source/NSView.m: Bugfix in update, plus partial code for improved
-	coordinate handling.
+	Benhur reported oddity in cell drawing code - cells were drawing their
+	backgrounds in the method to draw the frame.  Fixed this by moving
+	background drawing code to the drawInterior methods - also removed
+	a lot of redundant code to workaround bugs in clipping that are now
+	fixed.
+	* Source/NSBrowserCell.m: update drawing code.
+	* Source/NSButtonCell.m: ditto.
+	* Source/NSCell.m: ditto.
+	* Source/NSFormCell.m: ditto.
+	* Source/NSSliderCell.m: ditto.
+	* Source/NSTextFieldCell.m: ditto.
+
+Tue Feb 23 19:30:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Practically every file - I went through all the classes that conform
+	to the NSCoding protocol and checked and tidied their initWithCoder
+	and encodeWithCoder methods.  In some cases they simply needed the
+	method prototypes fixing, but in most the initWithCoder method
+	needed modifying to retain decoded ivar objects correctly!
+	No guarantees that coding/decoding is correct now - but it's
+	certainly a lot better.
+
+Tue Feb 23 15:18:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Various files - fixed all the copyWithZone: methods where objects are
+	both copied AND retained.
+
+1999-02-22  Adam Fedor  <fedor@gnu.org>
+
+	* Version: update version.
+
+Mon Feb 22  5:52:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSView.m: ([-displayIfNeededInRectIgnoringOpacity:]) a two
+	character change to fix a redisplay problem - already in the main
+	cvs branch.
+	Also merged in changes to coordinate conversion code.
+
+Sun Feb 21 14:43:57 1999  Masatake Yamato  <masata-y@is.aist-nara.ac.jp>
+
+	* Panels/GNUmakefile (before-uninstall): Use -d instead of -e.
+        test command in sh of solaris2.6 doesn't support -e option.
 
 Fri Feb 19 20:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 

@@ -237,16 +237,16 @@ void setNSFont(NSString* key, NSFont* font)
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeObject:fontName];
-  [aCoder encodeArrayOfObjCType:"f" count:6 at:matrix];
+  [aCoder encodeObject: fontName];
+  [aCoder encodeArrayOfObjCType: @encode(float) count: 6 at: matrix];
 }
 
-- initWithCoder:aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
-  fontName = [aDecoder decodeObject];
-  [aDecoder decodeArrayOfObjCType:"f" count:6 at:matrix];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &fontName];
+  [aDecoder decodeArrayOfObjCType: @encode(float) count: 6 at: matrix];
 
   return self;
 }

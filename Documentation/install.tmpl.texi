@@ -22,7 +22,8 @@ make
 make install
 @end example
 
-Here are more detailed instructions.
+Here are more detailed instructions. Also read the @file{GNUstep-HOWTO}
+for instructions on how to install the entire GNUstep system.
 
 @enumerate
 @item

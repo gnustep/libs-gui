@@ -1,7 +1,7 @@
 README
 ******
 
-This is version 0.5.0 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.5.5 of the GNUstep GUI library (`gnustep-gui').
 
    Here is some introductory info to get you started:
 
@@ -18,12 +18,8 @@ Initial reading
 How can you help?
 =================
 
-   * Read the projects and questions in the `TODO' file.  If you can
-     volunteer for any of the projects, or if you have any useful
-     comments send me email!  <scottc@net-community.com>
-
-   * Give me feedback!  Tell me what you like; tell me what you think
-     could be better.  Send me bug reports.
+   * Give us feedback!  Tell us what you like; tell us what you think
+     could be better.  Send bug reports to <bug-gnustep@gnu.org>.
 
 Creators rejoice!
 Scott Christley

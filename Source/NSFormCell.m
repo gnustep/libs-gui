@@ -114,8 +114,7 @@
   return 0;
 }
 
-- (void)drawWithFrame:(NSRect)cellFrame
-  inView:(NSView*)controlView
+- (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
   NSRect titleFrame;
   NSRect textFrame;
@@ -123,18 +122,18 @@
   NSDivideRect(cellFrame, &titleFrame, &textFrame,
                [self titleWidth] + 4, NSMinXEdge);
 
-  [titleCell drawWithFrame:titleFrame inView:controlView];
-  [super drawWithFrame:textFrame inView:controlView];
+  [titleCell drawWithFrame: titleFrame inView: controlView];
+  [super drawWithFrame: textFrame inView: controlView];
 }
 
-- (void)encodeWithCoder:aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [super encodeWithCoder:aCoder];
+  [super encodeWithCoder: aCoder];
 }
 
-- initWithCoder:aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder:aDecoder];
+  [super initWithCoder: aDecoder];
 
   return self;
 }

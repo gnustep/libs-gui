@@ -14,7 +14,7 @@ help is greatly appreciated.  Send email to @email{scottc@@net-community.com}.
 
 @itemize @bullet
 
-@item Consolodate examples & tests [3, OpenStep] (980913).
+@item Consolodate examples and tests [3, OpenStep] (980913).
 Also fix or document whatever bugs are there.
 
 @item Need an rtf parser [6 - Objective-C, RTF] (980820).

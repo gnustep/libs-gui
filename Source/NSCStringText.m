@@ -551,10 +551,11 @@ return NSZeroSize;
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:aCoder
-{}
+- (void) encodeWithCoder: (NSCoder*)aCoder
+{
+}
 
-- initWithCoder:aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
   return nil;
 }
