@@ -8,7 +8,7 @@
         scottc@net-community.com
       </email>
     </author>
-    <author name="Daniel Bðhringer">
+    <author name="Daniel BÃ°hringer">
       <email address="boehring@biomed.ruhr-uni-bochum.de">
         boehring@biomed.ruhr-uni-bochum.de
       </email>
@@ -48,7 +48,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSArray*">
@@ -57,7 +57,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -66,7 +66,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -88,7 +88,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -97,7 +97,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -106,7 +106,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSArray*">
@@ -115,7 +115,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="int">
@@ -129,7 +129,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="int">
@@ -145,7 +145,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="int">
@@ -155,7 +155,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -165,7 +165,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -175,7 +175,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -185,11 +185,11 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <standards>
-          <GNUstep /> <MacOS-X /> <OpenStep />
+          <MacOS-X /> <OpenStep /> <GNUstep />
         </standards>
       </class>
     </chapter>

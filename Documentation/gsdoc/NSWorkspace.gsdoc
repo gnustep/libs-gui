@@ -38,7 +38,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -47,7 +47,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="int">
@@ -57,7 +57,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -66,7 +66,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -75,17 +75,29 @@
             Updates Registered Services and File Types
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSString*">
           <sel>fullPathForApplication:</sel>
           <arg type="NSString*">appName</arg>
           <desc>
-            <em>Description forthcoming.</em>
+            Given an application name, return the full path for
+            that application. <br /> This method looks for the
+            application in standard locations, and if not
+            found there, according to MacOS-X documentation,
+            returns <code>nil</code>. <br /> If the supplied
+            application name is an absolute path, returns
+            that path irrespective of whether such an application
+            exists or not. This is <em>not</em> the docmented
+            debavior in the MacOS-X documentation, but is the
+            MacOS-X implemented behavior. <br /> If the
+            <var>appName</var> has an extension, it is used,
+            otherwise in GNUstep the standard app, debug, and
+            profile extensions * are tried. <br />
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -105,7 +117,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -119,7 +131,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -128,7 +140,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSImage*">
@@ -138,7 +150,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSImage*">
@@ -148,7 +160,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSImage*">
@@ -158,7 +170,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -168,7 +180,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -179,7 +191,7 @@
             <ref type="method" id="-launchApplication:showIcon:autolaunch:">-launchApplication:showIcon:autolaunch:</ref> with arguments set to show the icon but not set it up as an autolaunch.
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -194,7 +206,7 @@
             alreeady running)
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSArray*">
@@ -203,7 +215,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSArray*">
@@ -212,7 +224,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSArray*">
@@ -221,7 +233,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -230,7 +242,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -240,7 +252,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -250,7 +262,7 @@
             has changed.
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSNotificationCenter*">
@@ -259,7 +271,7 @@
             Returns the workspace notification center
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -269,7 +281,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -285,7 +297,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -297,7 +309,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -311,7 +323,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -321,7 +333,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -331,7 +343,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -349,7 +361,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -361,7 +373,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -376,7 +388,7 @@
             the screen to another.
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -386,7 +398,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -396,11 +408,11 @@
             changed since the last time this method was called.
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <standards>
-          <GNUstep /> <MacOS-X /> <OpenStep />
+          <MacOS-X /> <OpenStep /> <GNUstep />
         </standards>
       </class>
     </chapter>
@@ -431,7 +443,11 @@
           <arg type="NSString*">appName</arg>
           <desc>
             Returns the application bundle for the named
-            application.
+            application. Accepts either a full path to an
+            app or just the name. The extension (.app,.debug,
+            .profile) is optional, but if provided it will be
+            used. <br /> Returns <code>nil</code> if the
+            specified app does not exist as requested.
           </desc>
           <standards>
             <NotOpenStep /> <NotMacOS-X /> <GNUstep />

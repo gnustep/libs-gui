@@ -38,7 +38,7 @@
         <li>
           <a href="#002000000000">Software documentation for the
         NSObject(NSServicesRequests)
-        category</a>
+        informal protocol</a>
         </li>
         <li>
           <a href="#003000000000">Software documentation for the GSAppDelegateProtocol
@@ -60,15 +60,15 @@
     <blockquote>
       <dl>
         <dt><b>Conforms to:</b></dt>
-        <dd><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#protocol$(NSCoding)">NSCoding</a></dd>
+        <dd>NSCoding</dd>
       </dl>
     </blockquote>
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -81,6 +81,7 @@
       <li><a rel="gsdoc" href="NSApplication.html#method$NSApplication+detachDrawingThread:toTarget:withObject:">+detachDrawingThread:toTarget:withObject:</a></li>
       <li><a rel="gsdoc" href="NSApplication.html#method$NSApplication+sharedApplication">+sharedApplication</a></li>
       <li><a rel="gsdoc" href="NSApplication.html#method$NSApplication-abortModal">-abortModal</a></li>
+      <li><a rel="gsdoc" href="NSHelpManager.html#method$NSApplication-activateContextHelpMode:">-activateContextHelpMode:</a></li>
       <li><a rel="gsdoc" href="NSApplication.html#method$NSApplication-activateIgnoringOtherApps:">-activateIgnoringOtherApps:</a></li>
       <li><a rel="gsdoc" href="NSApplication.html#method$NSApplication-addWindowsItem:title:filename:">-addWindowsItem:title:filename:</a></li>
       <li><a rel="gsdoc" href="NSApplication.html#method$NSApplication-applicationIconImage">-applicationIconImage</a></li>
@@ -140,6 +141,7 @@
       <li><a rel="gsdoc" href="NSApplication.html#method$NSApplication-setServicesProvider:">-setServicesProvider:</a></li>
       <li><a rel="gsdoc" href="NSApplication.html#method$NSApplication-setWindowsMenu:">-setWindowsMenu:</a></li>
       <li><a rel="gsdoc" href="NSApplication.html#method$NSApplication-setWindowsNeedUpdate:">-setWindowsNeedUpdate:</a></li>
+      <li><a rel="gsdoc" href="NSHelpManager.html#method$NSApplication-showHelp:">-showHelp:</a></li>
       <li><a rel="gsdoc" href="NSApplication.html#method$NSApplication-stop:">-stop:</a></li>
       <li><a rel="gsdoc" href="NSApplication.html#method$NSApplication-stopModal">-stopModal</a></li>
       <li><a rel="gsdoc" href="NSApplication.html#method$NSApplication-stopModalWithCode:">-stopModalWithCode:</a></li>
@@ -157,10 +159,9 @@
       <li><a rel="gsdoc" href="NSApplication.html#method$NSApplication-windows">-windows</a></li>
       <li><a rel="gsdoc" href="NSApplication.html#method$NSApplication-windowsMenu">-windowsMenu</a></li>
     </ul>
-<hr width="50%" align="left" />
+    <hr width="50%" align="left" />
     <h3><a name="method$NSApplication+detachDrawingThread:toTarget:withObject:">detachDrawingThread:toTarget:withObject:</a></h3>
     + (void) <b>detachDrawingThread:</b> (SEL)selector<b> toTarget:</b> (id)target<b> withObject:</b> (id)argument;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -169,7 +170,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication+sharedApplication">sharedApplication</a></h3>
     + (<a rel="gsdoc" href="#class$NSApplication">NSApplication</a>*) <b>sharedApplication</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -178,7 +178,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-abortModal">abortModal</a></h3>
     - (void) <b>abortModal</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -187,7 +186,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-activateIgnoringOtherApps:">activateIgnoringOtherApps:</a></h3>
     - (void) <b>activateIgnoringOtherApps:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -195,8 +193,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-addWindowsItem:title:filename:">addWindowsItem:title:filename:</a></h3>
-    - (void) <b>addWindowsItem:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)aWindow<b> title:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString<b> filename:</b> (BOOL)isFilename;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>addWindowsItem:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)aWindow<b> title:</b> (NSString*)aString<b> filename:</b> (BOOL)isFilename;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -205,7 +202,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-applicationIconImage">applicationIconImage</a></h3>
     - (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*) <b>applicationIconImage</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -214,7 +210,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-arrangeInFront:">arrangeInFront:</a></h3>
     - (void) <b>arrangeInFront:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -222,8 +217,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-beginModalSessionForWindow:">beginModalSessionForWindow:</a></h3>
-    - (NSModalSession) <b>beginModalSessionForWindow:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)theWindow;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (<a rel="gsdoc" href="TypesAndConstants.html#type$NSModalSession">NSModalSession</a>) <b>beginModalSessionForWindow:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)theWindow;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -232,7 +226,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-beginSheet:modalForWindow:modalDelegate:didEndSelector:contextInfo:">beginSheet:modalForWindow:modalDelegate:didEndSelector:contextInfo:</a></h3>
     - (void) <b>beginSheet:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)sheet<b> modalForWindow:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)docWindow<b> modalDelegate:</b> (id)modalDelegate<b> didEndSelector:</b> (SEL)didEndSelector<b> contextInfo:</b> (void*)contextInfo;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -240,8 +233,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-changeWindowsItem:title:filename:">changeWindowsItem:title:filename:</a></h3>
-    - (void) <b>changeWindowsItem:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)aWindow<b> title:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString<b> filename:</b> (BOOL)isFilename;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>changeWindowsItem:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)aWindow<b> title:</b> (NSString*)aString<b> filename:</b> (BOOL)isFilename;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -250,7 +242,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-context">context</a></h3>
     - (<a rel="gsdoc" href="NSGraphicsContext.html#class$NSGraphicsContext">NSGraphicsContext</a>*) <b>context</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -259,7 +250,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-currentEvent">currentEvent</a></h3>
     - (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*) <b>currentEvent</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -268,7 +258,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-deactivate">deactivate</a></h3>
     - (void) <b>deactivate</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -277,7 +266,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-delegate">delegate</a></h3>
     - (id) <b>delegate</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -286,7 +274,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-discardEventsMatchingMask:beforeEvent:">discardEventsMatchingMask:beforeEvent:</a></h3>
     - (void) <b>discardEventsMatchingMask:</b> (unsigned int)mask<b> beforeEvent:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)lastEvent;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -294,8 +281,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-encodeWithCoder:">encodeWithCoder:</a></h3>
-    - (void) <b>encodeWithCoder:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSCoder.html#class$NSCoder">NSCoder</a>*)aCoder;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>encodeWithCoder:</b> (NSCoder*)aCoder;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -303,8 +289,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-endModalSession:">endModalSession:</a></h3>
-    - (void) <b>endModalSession:</b> (NSModalSession)theSession;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>endModalSession:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSModalSession">NSModalSession</a>)theSession;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -313,7 +298,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-endSheet:">endSheet:</a></h3>
     - (void) <b>endSheet:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)sheet;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -322,7 +306,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-endSheet:returnCode:">endSheet:returnCode:</a></h3>
     - (void) <b>endSheet:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)sheet<b> returnCode:</b> (int)returnCode;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -331,7 +314,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-finishLaunching">finishLaunching</a></h3>
     - (void) <b>finishLaunching</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -340,7 +322,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-hide:">hide:</a></h3>
     - (void) <b>hide:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -349,7 +330,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-hideOtherApplications:">hideOtherApplications:</a></h3>
     - (void) <b>hideOtherApplications:</b> (id)sender;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -357,8 +337,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-initWithCoder:">initWithCoder:</a></h3>
-    - (id) <b>initWithCoder:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSCoder.html#class$NSCoder">NSCoder</a>*)aDecoder;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (id) <b>initWithCoder:</b> (NSCoder*)aDecoder;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -367,7 +346,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-isActive">isActive</a></h3>
     - (BOOL) <b>isActive</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -376,7 +354,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-isHidden">isHidden</a></h3>
     - (BOOL) <b>isHidden</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -385,7 +362,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-isRunning">isRunning</a></h3>
     - (BOOL) <b>isRunning</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -394,7 +370,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-keyWindow">keyWindow</a></h3>
     - (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*) <b>keyWindow</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -403,7 +378,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-mainMenu">mainMenu</a></h3>
     - (<a rel="gsdoc" href="NSMenu.html#class$NSMenu">NSMenu</a>*) <b>mainMenu</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -412,7 +386,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-mainWindow">mainWindow</a></h3>
     - (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*) <b>mainWindow</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -421,7 +394,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-makeWindowsPerform:inOrder:">makeWindowsPerform:inOrder:</a></h3>
     - (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*) <b>makeWindowsPerform:</b> (SEL)aSelector<b> inOrder:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -430,7 +402,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-miniaturizeAll:">miniaturizeAll:</a></h3>
     - (void) <b>miniaturizeAll:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -439,7 +410,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-modalWindow">modalWindow</a></h3>
     - (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*) <b>modalWindow</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             
@@ -449,13 +419,10 @@
               Returns the window that is part of the current
               modal session, if any.     </p>
     <p>
-      
-          
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-nextEventMatchingMask:untilDate:inMode:dequeue:">nextEventMatchingMask:untilDate:inMode:dequeue:</a></h3>
-    - (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*) <b>nextEventMatchingMask:</b> (unsigned int)mask<b> untilDate:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDate.html#class$NSDate">NSDate</a>*)expiration<b> inMode:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)mode<b> dequeue:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*) <b>nextEventMatchingMask:</b> (unsigned int)mask<b> untilDate:</b> (NSDate*)expiration<b> inMode:</b> (NSString*)mode<b> dequeue:</b> (BOOL)flag;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -464,7 +431,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-orderFrontColorPanel:">orderFrontColorPanel:</a></h3>
     - (void) <b>orderFrontColorPanel:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -473,7 +439,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-orderFrontDataLinkPanel:">orderFrontDataLinkPanel:</a></h3>
     - (void) <b>orderFrontDataLinkPanel:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -482,7 +447,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-orderFrontHelpPanel:">orderFrontHelpPanel:</a></h3>
     - (void) <b>orderFrontHelpPanel:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -491,7 +455,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-orderFrontStandardAboutPanel:">orderFrontStandardAboutPanel:</a></h3>
     - (void) <b>orderFrontStandardAboutPanel:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -499,8 +462,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-orderFrontStandardAboutPanelWithOptions:">orderFrontStandardAboutPanelWithOptions:</a></h3>
-    - (void) <b>orderFrontStandardAboutPanelWithOptions:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*)dictionary;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>orderFrontStandardAboutPanelWithOptions:</b> (NSDictionary*)dictionary;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -509,7 +471,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-orderFrontStandardInfoPanel:">orderFrontStandardInfoPanel:</a></h3>
     - (void) <b>orderFrontStandardInfoPanel:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -517,8 +478,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-orderFrontStandardInfoPanelWithOptions:">orderFrontStandardInfoPanelWithOptions:</a></h3>
-    - (void) <b>orderFrontStandardInfoPanelWithOptions:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*)dictionary;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>orderFrontStandardInfoPanelWithOptions:</b> (NSDictionary*)dictionary;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -527,7 +487,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-postEvent:atStart:">postEvent:atStart:</a></h3>
     - (void) <b>postEvent:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)event<b> atStart:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -536,7 +495,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-preventWindowOrdering">preventWindowOrdering</a></h3>
     - (void) <b>preventWindowOrdering</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -544,8 +502,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-registerServicesMenuSendTypes:returnTypes:">registerServicesMenuSendTypes:returnTypes:</a></h3>
-    - (void) <b>registerServicesMenuSendTypes:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)sendTypes<b> returnTypes:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)returnTypes;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>registerServicesMenuSendTypes:</b> (NSArray*)sendTypes<b> returnTypes:</b> (NSArray*)returnTypes;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -554,7 +511,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-removeWindowsItem:">removeWindowsItem:</a></h3>
     - (void) <b>removeWindowsItem:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)aWindow;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -562,8 +518,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-reportException:">reportException:</a></h3>
-    - (void) <b>reportException:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSException.html#class$NSException">NSException</a>*)anException;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>reportException:</b> (NSException*)anException;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -572,7 +527,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-run">run</a></h3>
     - (void) <b>run</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -581,7 +535,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-runModalForWindow:">runModalForWindow:</a></h3>
     - (int) <b>runModalForWindow:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)theWindow;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -590,7 +543,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-runModalForWindow:relativeToWindow:">runModalForWindow:relativeToWindow:</a></h3>
     - (int) <b>runModalForWindow:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)theWindow<b> relativeToWindow:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)docWindow;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -598,8 +550,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-runModalSession:">runModalSession:</a></h3>
-    - (int) <b>runModalSession:</b> (NSModalSession)theSession;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (int) <b>runModalSession:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSModalSession">NSModalSession</a>)theSession;<br />
     <p>
       
             
@@ -615,13 +566,10 @@
               (i.e. whether it is still running or has been
               stopped, etc)     </p>
     <p>
-      
-          
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-runPageLayout:">runPageLayout:</a></h3>
     - (void) <b>runPageLayout:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -630,7 +578,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-sendAction:to:from:">sendAction:to:from:</a></h3>
     - (BOOL) <b>sendAction:</b> (SEL)aSelector<b> to:</b> (id)aTarget<b> from:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -639,7 +586,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-sendEvent:">sendEvent:</a></h3>
     - (void) <b>sendEvent:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -648,7 +594,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-servicesMenu">servicesMenu</a></h3>
     - (<a rel="gsdoc" href="NSMenu.html#class$NSMenu">NSMenu</a>*) <b>servicesMenu</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -657,7 +602,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-servicesProvider">servicesProvider</a></h3>
     - (id) <b>servicesProvider</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -666,7 +610,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-setAppleMenu:">setAppleMenu:</a></h3>
     - (void) <b>setAppleMenu:</b> (<a rel="gsdoc" href="NSMenu.html#class$NSMenu">NSMenu</a>*)aMenu;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -675,7 +618,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-setApplicationIconImage:">setApplicationIconImage:</a></h3>
     - (void) <b>setApplicationIconImage:</b> (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*)anImage;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -684,7 +626,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-setDelegate:">setDelegate:</a></h3>
     - (void) <b>setDelegate:</b> (id)anObject;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -693,7 +634,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-setMainMenu:">setMainMenu:</a></h3>
     - (void) <b>setMainMenu:</b> (<a rel="gsdoc" href="NSMenu.html#class$NSMenu">NSMenu</a>*)aMenu;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -702,7 +642,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-setServicesMenu:">setServicesMenu:</a></h3>
     - (void) <b>setServicesMenu:</b> (<a rel="gsdoc" href="NSMenu.html#class$NSMenu">NSMenu</a>*)aMenu;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -711,7 +650,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-setServicesProvider:">setServicesProvider:</a></h3>
     - (void) <b>setServicesProvider:</b> (id)anObject;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -720,7 +658,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-setWindowsMenu:">setWindowsMenu:</a></h3>
     - (void) <b>setWindowsMenu:</b> (<a rel="gsdoc" href="NSMenu.html#class$NSMenu">NSMenu</a>*)aMenu;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -729,7 +666,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-setWindowsNeedUpdate:">setWindowsNeedUpdate:</a></h3>
     - (void) <b>setWindowsNeedUpdate:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -738,7 +674,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-stop:">stop:</a></h3>
     - (void) <b>stop:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -747,7 +682,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-stopModal">stopModal</a></h3>
     - (void) <b>stopModal</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -756,7 +690,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-stopModalWithCode:">stopModalWithCode:</a></h3>
     - (void) <b>stopModalWithCode:</b> (int)returnCode;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -765,7 +698,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-targetForAction:">targetForAction:</a></h3>
     - (id) <b>targetForAction:</b> (SEL)aSelector;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             
@@ -781,13 +713,10 @@
               (NSApplication) and it's delegate.
                 </p>
     <p>
-      
-          
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-targetForAction:to:from:">targetForAction:to:from:</a></h3>
     - (id) <b>targetForAction:</b> (SEL)theAction<b> to:</b> (id)theTarget<b> from:</b> (id)sender;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -796,7 +725,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-terminate:">terminate:</a></h3>
     - (void) <b>terminate:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -805,7 +733,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-tryToPerform:with:">tryToPerform:with:</a></h3>
     - (BOOL) <b>tryToPerform:</b> (SEL)aSelector<b> with:</b> (id)anObject;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -814,7 +741,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-unhide:">unhide:</a></h3>
     - (void) <b>unhide:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -823,7 +749,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-unhideAllApplications:">unhideAllApplications:</a></h3>
     - (void) <b>unhideAllApplications:</b> (id)sender;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -832,7 +757,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-unhideWithoutActivation">unhideWithoutActivation</a></h3>
     - (void) <b>unhideWithoutActivation</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -841,7 +765,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-updateWindows">updateWindows</a></h3>
     - (void) <b>updateWindows</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -850,7 +773,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-updateWindowsItem:">updateWindowsItem:</a></h3>
     - (void) <b>updateWindowsItem:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)aWindow;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -858,8 +780,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-validRequestorForSendType:returnType:">validRequestorForSendType:returnType:</a></h3>
-    - (id) <b>validRequestorForSendType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)sendType<b> returnType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)returnType;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (id) <b>validRequestorForSendType:</b> (NSString*)sendType<b> returnType:</b> (NSString*)returnType;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -868,7 +789,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-windowWithWindowNumber:">windowWithWindowNumber:</a></h3>
     - (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*) <b>windowWithWindowNumber:</b> (int)windowNum;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -876,8 +796,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-windows">windows</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>windows</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSArray*) <b>windows</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -886,7 +805,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSApplication-windowsMenu">windowsMenu</a></h3>
     - (<a rel="gsdoc" href="NSMenu.html#class$NSMenu">NSMenu</a>*) <b>windowsMenu</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -896,9 +814,9 @@
     <h1><a name="002000000000">
         Software documentation for the
         NSObject(NSServicesRequests)
-        category
+        informal protocol
       </a></h1>
-    <h2><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a>(<a name="category$NSObject(NSServicesRequests)">NSServicesRequests</a>)</h2>
+    <h2>NSObject(<a name="category$NSObject(NSServicesRequests)">NSServicesRequests</a>)</h2>
     <blockquote>
       <dl>
         <dt><b>Declared in:</b></dt>
@@ -908,9 +826,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -920,32 +838,29 @@
     </p>
     <b>Method summary</b>
     <ul>
-      <li><a rel="gsdoc" href="NSApplication.html#method$NSObject(NSServicesRequests)-iconWindow">-iconWindow</a></li>
-      <li><a rel="gsdoc" href="NSApplication.html#method$NSObject(NSServicesRequests)-readSelectionFromPasteboard:">-readSelectionFromPasteboard:</a></li>
-      <li><a rel="gsdoc" href="NSApplication.html#method$NSObject(NSServicesRequests)-writeSelectionToPasteboard:types:">-writeSelectionToPasteboard:types:</a></li>
+      <li><a rel="gsdoc" href="NSApplication.html#method$NSObject-iconWindow">-iconWindow</a></li>
+      <li><a rel="gsdoc" href="NSApplication.html#method$NSObject-readSelectionFromPasteboard:">-readSelectionFromPasteboard:</a></li>
+      <li><a rel="gsdoc" href="NSApplication.html#method$NSObject-writeSelectionToPasteboard:types:">-writeSelectionToPasteboard:types:</a></li>
     </ul>
-<hr width="50%" align="left" />
-    <h3><a name="method$NSObject(NSServicesRequests)-iconWindow">iconWindow</a></h3>
+    <hr width="50%" align="left" />
+    <h3><a name="method$NSObject-iconWindow">iconWindow</a></h3>
     - (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*) <b>iconWindow</b>;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSServicesRequests)-readSelectionFromPasteboard:">readSelectionFromPasteboard:</a></h3>
+    <h3><a name="method$NSObject-readSelectionFromPasteboard:">readSelectionFromPasteboard:</a></h3>
     - (BOOL) <b>readSelectionFromPasteboard:</b> (<a rel="gsdoc" href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pboard;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSServicesRequests)-writeSelectionToPasteboard:types:">writeSelectionToPasteboard:types:</a></h3>
-    - (BOOL) <b>writeSelectionToPasteboard:</b> (<a rel="gsdoc" href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pboard<b> types:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)types;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <h3><a name="method$NSObject-writeSelectionToPasteboard:types:">writeSelectionToPasteboard:types:</a></h3>
+    - (BOOL) <b>writeSelectionToPasteboard:</b> (<a rel="gsdoc" href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pboard<b> types:</b> (NSArray*)types;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1000,10 +915,9 @@
       <li><a rel="gsdoc" href="NSApplication.html#method$(GSAppDelegateProtocol)-applicationWillUnhide:">-applicationWillUnhide:</a></li>
       <li><a rel="gsdoc" href="NSApplication.html#method$(GSAppDelegateProtocol)-applicationWillUpdate:">-applicationWillUpdate:</a></li>
     </ul>
-<hr width="50%" align="left" />
+    <hr width="50%" align="left" />
     <h3><a name="method$(GSAppDelegateProtocol)-application:openFile:">application:openFile:</a></h3>
-    - (BOOL) <b>application:</b> (<a rel="gsdoc" href="#class$NSApplication">NSApplication</a>*)app<b> openFile:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)filename;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
+    - (BOOL) <b>application:</b> (<a rel="gsdoc" href="#class$NSApplication">NSApplication</a>*)app<b> openFile:</b> (NSString*)filename;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1011,8 +925,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$(GSAppDelegateProtocol)-application:openFileWithoutUI:">application:openFileWithoutUI:</a></h3>
-    - (BOOL) <b>application:</b> (<a rel="gsdoc" href="#class$NSApplication">NSApplication</a>*)app<b> openFileWithoutUI:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)filename;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
+    - (BOOL) <b>application:</b> (<a rel="gsdoc" href="#class$NSApplication">NSApplication</a>*)app<b> openFileWithoutUI:</b> (NSString*)filename;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1020,8 +933,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$(GSAppDelegateProtocol)-application:openTempFile:">application:openTempFile:</a></h3>
-    - (BOOL) <b>application:</b> (<a rel="gsdoc" href="#class$NSApplication">NSApplication</a>*)app<b> openTempFile:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)filename;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
+    - (BOOL) <b>application:</b> (<a rel="gsdoc" href="#class$NSApplication">NSApplication</a>*)app<b> openTempFile:</b> (NSString*)filename;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1029,8 +941,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$(GSAppDelegateProtocol)-application:printFile:">application:printFile:</a></h3>
-    - (BOOL) <b>application:</b> (<a rel="gsdoc" href="#class$NSApplication">NSApplication</a>*)theApplication<b> printFile:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)filename;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
+    - (BOOL) <b>application:</b> (<a rel="gsdoc" href="#class$NSApplication">NSApplication</a>*)theApplication<b> printFile:</b> (NSString*)filename;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1038,8 +949,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$(GSAppDelegateProtocol)-applicationDidBecomeActive:">applicationDidBecomeActive:</a></h3>
-    - (void) <b>applicationDidBecomeActive:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
+    - (void) <b>applicationDidBecomeActive:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1047,8 +957,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$(GSAppDelegateProtocol)-applicationDidFinishLaunching:">applicationDidFinishLaunching:</a></h3>
-    - (void) <b>applicationDidFinishLaunching:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
+    - (void) <b>applicationDidFinishLaunching:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1056,8 +965,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$(GSAppDelegateProtocol)-applicationDidHide:">applicationDidHide:</a></h3>
-    - (void) <b>applicationDidHide:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
+    - (void) <b>applicationDidHide:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1065,8 +973,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$(GSAppDelegateProtocol)-applicationDidResignActive:">applicationDidResignActive:</a></h3>
-    - (void) <b>applicationDidResignActive:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
+    - (void) <b>applicationDidResignActive:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1074,8 +981,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$(GSAppDelegateProtocol)-applicationDidUnhide:">applicationDidUnhide:</a></h3>
-    - (void) <b>applicationDidUnhide:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
+    - (void) <b>applicationDidUnhide:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1083,8 +989,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$(GSAppDelegateProtocol)-applicationDidUpdate:">applicationDidUpdate:</a></h3>
-    - (void) <b>applicationDidUpdate:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
+    - (void) <b>applicationDidUpdate:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1093,7 +998,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$(GSAppDelegateProtocol)-applicationOpenUntitledFile:">applicationOpenUntitledFile:</a></h3>
     - (BOOL) <b>applicationOpenUntitledFile:</b> (<a rel="gsdoc" href="#class$NSApplication">NSApplication</a>*)app;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1102,7 +1006,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$(GSAppDelegateProtocol)-applicationShouldOpenUntitledFile:">applicationShouldOpenUntitledFile:</a></h3>
     - (BOOL) <b>applicationShouldOpenUntitledFile:</b> (<a rel="gsdoc" href="#class$NSApplication">NSApplication</a>*)sender;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1111,7 +1014,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$(GSAppDelegateProtocol)-applicationShouldTerminate:">applicationShouldTerminate:</a></h3>
     - (BOOL) <b>applicationShouldTerminate:</b> (id)sender;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1120,7 +1022,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$(GSAppDelegateProtocol)-applicationShouldTerminateAfterLastWindowClosed:">applicationShouldTerminateAfterLastWindowClosed:</a></h3>
     - (BOOL) <b>applicationShouldTerminateAfterLastWindowClosed:</b> (id)sender;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1128,8 +1029,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$(GSAppDelegateProtocol)-applicationWillBecomeActive:">applicationWillBecomeActive:</a></h3>
-    - (void) <b>applicationWillBecomeActive:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
+    - (void) <b>applicationWillBecomeActive:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1137,8 +1037,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$(GSAppDelegateProtocol)-applicationWillFinishLaunching:">applicationWillFinishLaunching:</a></h3>
-    - (void) <b>applicationWillFinishLaunching:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
+    - (void) <b>applicationWillFinishLaunching:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1146,8 +1045,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$(GSAppDelegateProtocol)-applicationWillHide:">applicationWillHide:</a></h3>
-    - (void) <b>applicationWillHide:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
+    - (void) <b>applicationWillHide:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1155,8 +1053,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$(GSAppDelegateProtocol)-applicationWillResignActive:">applicationWillResignActive:</a></h3>
-    - (void) <b>applicationWillResignActive:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
+    - (void) <b>applicationWillResignActive:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1164,8 +1061,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$(GSAppDelegateProtocol)-applicationWillTerminate:">applicationWillTerminate:</a></h3>
-    - (void) <b>applicationWillTerminate:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
+    - (void) <b>applicationWillTerminate:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1173,8 +1069,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$(GSAppDelegateProtocol)-applicationWillUnhide:">applicationWillUnhide:</a></h3>
-    - (void) <b>applicationWillUnhide:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
+    - (void) <b>applicationWillUnhide:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1182,8 +1077,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$(GSAppDelegateProtocol)-applicationWillUpdate:">applicationWillUpdate:</a></h3>
-    - (void) <b>applicationWillUpdate:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
+    - (void) <b>applicationWillUpdate:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>

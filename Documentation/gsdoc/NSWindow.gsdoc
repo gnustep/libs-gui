@@ -75,7 +75,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSWindowDepth" factory="yes">
@@ -84,7 +84,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSRect" factory="yes">
@@ -96,7 +96,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void" factory="yes">
@@ -106,7 +106,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSRect" factory="yes">
@@ -118,7 +118,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void" factory="yes">
@@ -128,7 +128,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -137,7 +137,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="float">
@@ -146,7 +146,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSTimeInterval">
@@ -156,7 +156,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -165,7 +165,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSSize">
@@ -174,7 +174,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSColor*">
@@ -183,7 +183,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSBackingStoreType">
@@ -192,7 +192,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -201,7 +201,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -210,7 +210,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -220,25 +220,36 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
           <sel>canBecomeKeyWindow</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Returns <code>YES</code> if the receiver can be
+            made key. If this method returns <code>NO</code>, the
+            window will not be made key. This implementation
+            returns <code>YES</code> if the window is resizable
+            or has a title bar. You can override this method to
+            change it's behavior
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
           <sel>canBecomeMainWindow</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Returns <code>YES</code> if the receiver can be the
+            main window. If this method returns <code>NO</code>,
+            the window will not become the main window. This
+            implementation returns <code>YES</code> if
+            the window is resizable or has a title bar and is
+            visible and is not an NSPanel. You can override
+            this method to change it's behavior
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -247,7 +258,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -256,7 +267,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSPoint">
@@ -266,7 +277,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -275,7 +286,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -284,7 +295,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSRect">
@@ -296,7 +307,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="id">
@@ -305,7 +316,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSPoint">
@@ -315,7 +326,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSPoint">
@@ -325,7 +336,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSWindow*">
@@ -343,7 +354,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSData*">
@@ -353,7 +364,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSData*">
@@ -363,16 +374,18 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSScreen*">
           <sel>deepestScreen</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Returns the screen the window is on. Unlike
+            (apparently) OpenStep and MacOSX, GNUstep does
+            not support windows being split across multiple screens
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSButtonCell*">
@@ -381,7 +394,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="id">
@@ -390,7 +403,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -403,7 +416,7 @@
             a mouse cloick event.
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSWindowDepth">
@@ -412,7 +425,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSDictionary*">
@@ -421,7 +434,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -430,7 +443,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -439,7 +452,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -448,7 +461,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -457,7 +470,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -466,7 +479,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -478,7 +491,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -487,7 +500,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -496,7 +509,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -518,7 +531,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSArray*">
@@ -527,7 +540,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -536,7 +549,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -545,7 +558,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -554,7 +567,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -564,7 +577,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -574,7 +587,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSText*">
@@ -586,7 +599,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSResponder*">
@@ -595,16 +608,18 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
           <sel>flushWindow</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Flush all drawing in the windows buffer to the screen
+            unless the window is not buffered or flushing is not
+            enabled.
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -613,7 +628,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSRect">
@@ -622,7 +637,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSString*">
@@ -631,7 +646,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="int">
@@ -640,7 +655,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -649,7 +664,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -658,7 +673,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -667,7 +682,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="id">
@@ -705,7 +720,7 @@
             </p>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="id">
@@ -748,7 +763,7 @@
             </p>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSWindow*">
@@ -758,7 +773,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSView*">
@@ -767,7 +782,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -777,7 +792,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -786,7 +801,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -795,7 +810,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -804,7 +819,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -813,7 +828,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -822,7 +837,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -831,7 +846,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -840,7 +855,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -849,7 +864,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -858,7 +873,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -867,7 +882,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -876,7 +891,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -886,7 +901,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSSelectionDirection">
@@ -895,7 +910,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="int">
@@ -904,7 +919,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -914,7 +929,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -924,7 +939,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -933,7 +948,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -942,7 +957,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSSize">
@@ -951,7 +966,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSSize">
@@ -960,7 +975,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -972,7 +987,7 @@
             (mini)window is displayed.
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSImage*">
@@ -981,7 +996,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSString*">
@@ -990,7 +1005,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSPoint">
@@ -999,7 +1014,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSEvent*">
@@ -1009,7 +1024,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSEvent*">
@@ -1025,7 +1040,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1035,7 +1050,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1045,7 +1060,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1054,7 +1069,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1064,7 +1079,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1076,7 +1091,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1086,17 +1101,28 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
           <sel>performMiniaturize:</sel>
           <arg type="id">sender</arg>
           <desc>
-            <em>Description forthcoming.</em>
+            Miniaturize the receiver... as long as its
+            style mask includes NSMiniaturizableWindowMask (and
+            as long as the receiver is not an icon or mini window
+            itsself). Calls
+            <ref type="method" id="-miniaturize">
+              -miniaturize
+            </ref>
+            to do this. <br /> Beeps if the window can't be
+            miniaturised. <br /> Should ideally provide
+            visual feedback (highlighting the miniaturize button
+            as if it had been clicked) first... but that's not yet
+            implemented.
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1106,7 +1132,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1118,7 +1144,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1128,7 +1154,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1138,7 +1164,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSString*">
@@ -1147,7 +1173,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1156,7 +1182,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1165,7 +1191,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1174,7 +1200,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="int">
@@ -1183,7 +1209,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSSize">
@@ -1192,7 +1218,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1201,7 +1227,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1211,7 +1237,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1221,16 +1247,16 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSScreen*">
           <sel>screen</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Returns the screen the window is on.
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1240,7 +1266,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1250,7 +1276,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1260,7 +1286,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1270,17 +1296,18 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
           <sel>sendEvent:</sel>
           <arg type="NSEvent*">theEvent</arg>
           <desc>
-            <em>Description forthcoming.</em>
+            Handles mouse and other events sent to the received
+            by NSApplication. Do not invoke this method directly.
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1290,7 +1317,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1300,7 +1327,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1310,7 +1337,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1320,7 +1347,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1330,7 +1357,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1340,7 +1367,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1350,7 +1377,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1360,7 +1387,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1371,7 +1398,7 @@
             replacing any previous content view.
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1381,7 +1408,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1391,7 +1418,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1401,7 +1428,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1411,7 +1438,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1421,7 +1448,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1431,7 +1458,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1443,7 +1470,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1457,7 +1484,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -1467,7 +1494,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1477,7 +1504,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1487,7 +1514,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1497,7 +1524,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -1507,7 +1534,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -1519,7 +1546,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1529,7 +1556,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1539,7 +1566,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1549,7 +1576,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1559,7 +1586,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1569,7 +1596,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1579,7 +1606,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1589,7 +1616,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1599,7 +1626,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1609,7 +1636,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1619,7 +1646,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1629,7 +1656,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1639,7 +1666,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1649,7 +1676,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1659,7 +1686,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1670,7 +1697,7 @@
             <var>aString</var>.
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1680,7 +1707,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1690,7 +1717,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1700,7 +1727,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1710,7 +1737,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -1719,7 +1746,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSString*">
@@ -1728,7 +1755,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="unsigned int">
@@ -1737,7 +1764,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSString*">
@@ -1747,7 +1774,7 @@
             window's title.
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1757,7 +1784,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSToolbar*">
@@ -1766,7 +1793,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -1778,7 +1805,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1787,7 +1814,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1796,7 +1823,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1806,7 +1833,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="id">
@@ -1818,7 +1845,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -1827,7 +1854,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="id">
@@ -1836,7 +1863,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void*">
@@ -1845,7 +1872,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="int">
@@ -1854,7 +1881,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void*">
@@ -1863,7 +1890,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -1872,7 +1899,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1882,18 +1909,19 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <standards>
-          <GNUstep /> <MacOS-X /> <OpenStep />
+          <MacOS-X /> <OpenStep /> <GNUstep />
         </standards>
       </class>
     </chapter>
     <chapter>
       <heading>
         Software documentation for the
-        NSObject(NSWindowDelegate) category
+        NSObject(NSWindowDelegate) informal
+        protocol
       </heading>
       <category name="NSWindowDelegate" class="NSObject">
         <declared>AppKit/NSWindow.h</declared>
@@ -1907,7 +1935,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1917,7 +1945,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1927,7 +1955,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1937,7 +1965,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1947,7 +1975,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1957,7 +1985,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1967,7 +1995,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1977,7 +2005,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1987,7 +2015,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -1997,7 +2025,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -2007,7 +2035,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -2017,7 +2045,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -2029,7 +2057,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -2039,7 +2067,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -2049,7 +2077,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -2059,7 +2087,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSSize">
@@ -2071,7 +2099,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="id">
@@ -2083,7 +2111,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSRect">
@@ -2095,11 +2123,11 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <standards>
-          <GNUstep /> <MacOS-X /> <OpenStep />
+          <MacOS-X /> <OpenStep /> <GNUstep />
         </standards>
       </category>
     </chapter>

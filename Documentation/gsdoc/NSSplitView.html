@@ -47,7 +47,7 @@
         <li>
           <a href="#002000000000">Software documentation for the
         NSObject(NSSplitViewDelegate)
-        category</a>
+        informal protocol</a>
         </li>
         <li>
           <a href="#003000000000">Software documentation for the
@@ -69,9 +69,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -82,20 +82,27 @@
     <b>Method summary</b>
     <ul>
       <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView-adjustSubviews">-adjustSubviews</a></li>
+      <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView-backgroundColor">-backgroundColor</a></li>
       <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView-delegate">-delegate</a></li>
+      <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView-dimpleImage">-dimpleImage</a></li>
+      <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView-dividerColor">-dividerColor</a></li>
       <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView-dividerThickness">-dividerThickness</a></li>
+      <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView-draggedBarWidth">-draggedBarWidth</a></li>
       <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView-drawDividerInRect:">-drawDividerInRect:</a></li>
       <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView-isPaneSplitter">-isPaneSplitter</a></li>
       <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView-isSubviewCollapsed:">-isSubviewCollapsed:</a></li>
       <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView-isVertical">-isVertical</a></li>
+      <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView-setBackgroundColor:">-setBackgroundColor:</a></li>
       <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView-setDelegate:">-setDelegate:</a></li>
+      <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView-setDimpleImage:resetDividerThickness:">-setDimpleImage:resetDividerThickness:</a></li>
+      <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView-setDividerColor:">-setDividerColor:</a></li>
+      <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView-setDraggedBarWidth:">-setDraggedBarWidth:</a></li>
       <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView-setIsPaneSplitter:">-setIsPaneSplitter:</a></li>
       <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView-setVertical:">-setVertical:</a></li>
     </ul>
-<hr width="50%" align="left" />
+    <hr width="50%" align="left" />
     <h3><a name="method$NSSplitView-adjustSubviews">adjustSubviews</a></h3>
     - (void) <b>adjustSubviews</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -104,7 +111,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSSplitView-delegate">delegate</a></h3>
     - (id) <b>delegate</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -113,7 +119,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSSplitView-dividerThickness">dividerThickness</a></h3>
     - (float) <b>dividerThickness</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -122,7 +127,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSSplitView-drawDividerInRect:">drawDividerInRect:</a></h3>
     - (void) <b>drawDividerInRect:</b> (NSRect)aRect;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -131,7 +135,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSSplitView-isPaneSplitter">isPaneSplitter</a></h3>
     - (BOOL) <b>isPaneSplitter</b>;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -140,7 +143,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSSplitView-isSubviewCollapsed:">isSubviewCollapsed:</a></h3>
     - (BOOL) <b>isSubviewCollapsed:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)subview;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -149,7 +151,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSSplitView-isVertical">isVertical</a></h3>
     - (BOOL) <b>isVertical</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -158,7 +159,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSSplitView-setDelegate:">setDelegate:</a></h3>
     - (void) <b>setDelegate:</b> (id)anObject;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -167,7 +167,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSSplitView-setIsPaneSplitter:">setIsPaneSplitter:</a></h3>
     - (void) <b>setIsPaneSplitter:</b> (BOOL)flag;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -176,7 +175,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSSplitView-setVertical:">setVertical:</a></h3>
     - (void) <b>setVertical:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -186,9 +184,9 @@
     <h1><a name="002000000000">
         Software documentation for the
         NSObject(NSSplitViewDelegate)
-        category
+        informal protocol
       </a></h1>
-    <h2><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a>(<a name="category$NSObject(NSSplitViewDelegate)">NSSplitViewDelegate</a>)</h2>
+    <h2>NSObject(<a name="category$NSObject(NSSplitViewDelegate)">NSSplitViewDelegate</a>)</h2>
     <blockquote>
       <dl>
         <dt><b>Declared in:</b></dt>
@@ -198,9 +196,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -210,82 +208,74 @@
     </p>
     <b>Method summary</b>
     <ul>
-      <li><a rel="gsdoc" href="NSSplitView.html#method$NSObject(NSSplitViewDelegate)-splitView:canCollapseSubview:">-splitView:canCollapseSubview:</a></li>
-      <li><a rel="gsdoc" href="NSSplitView.html#method$NSObject(NSSplitViewDelegate)-splitView:constrainMaxCoordinate:ofSubviewAt:">-splitView:constrainMaxCoordinate:ofSubviewAt:</a></li>
-      <li><a rel="gsdoc" href="NSSplitView.html#method$NSObject(NSSplitViewDelegate)-splitView:constrainMinCoordinate:maxCoordinate:ofSubviewAt:">-splitView:constrainMinCoordinate:maxCoordinate:ofSubviewAt:</a></li>
-      <li><a rel="gsdoc" href="NSSplitView.html#method$NSObject(NSSplitViewDelegate)-splitView:constrainMinCoordinate:ofSubviewAt:">-splitView:constrainMinCoordinate:ofSubviewAt:</a></li>
-      <li><a rel="gsdoc" href="NSSplitView.html#method$NSObject(NSSplitViewDelegate)-splitView:constrainSplitPosition:ofSubviewAt:">-splitView:constrainSplitPosition:ofSubviewAt:</a></li>
-      <li><a rel="gsdoc" href="NSSplitView.html#method$NSObject(NSSplitViewDelegate)-splitView:resizeSubviewsWithOldSize:">-splitView:resizeSubviewsWithOldSize:</a></li>
-      <li><a rel="gsdoc" href="NSSplitView.html#method$NSObject(NSSplitViewDelegate)-splitViewDidResizeSubviews:">-splitViewDidResizeSubviews:</a></li>
-      <li><a rel="gsdoc" href="NSSplitView.html#method$NSObject(NSSplitViewDelegate)-splitViewWillResizeSubviews:">-splitViewWillResizeSubviews:</a></li>
+      <li><a rel="gsdoc" href="NSSplitView.html#method$NSObject-splitView:canCollapseSubview:">-splitView:canCollapseSubview:</a></li>
+      <li><a rel="gsdoc" href="NSSplitView.html#method$NSObject-splitView:constrainMaxCoordinate:ofSubviewAt:">-splitView:constrainMaxCoordinate:ofSubviewAt:</a></li>
+      <li><a rel="gsdoc" href="NSSplitView.html#method$NSObject-splitView:constrainMinCoordinate:maxCoordinate:ofSubviewAt:">-splitView:constrainMinCoordinate:maxCoordinate:ofSubviewAt:</a></li>
+      <li><a rel="gsdoc" href="NSSplitView.html#method$NSObject-splitView:constrainMinCoordinate:ofSubviewAt:">-splitView:constrainMinCoordinate:ofSubviewAt:</a></li>
+      <li><a rel="gsdoc" href="NSSplitView.html#method$NSObject-splitView:constrainSplitPosition:ofSubviewAt:">-splitView:constrainSplitPosition:ofSubviewAt:</a></li>
+      <li><a rel="gsdoc" href="NSSplitView.html#method$NSObject-splitView:resizeSubviewsWithOldSize:">-splitView:resizeSubviewsWithOldSize:</a></li>
+      <li><a rel="gsdoc" href="NSSplitView.html#method$NSObject-splitViewDidResizeSubviews:">-splitViewDidResizeSubviews:</a></li>
+      <li><a rel="gsdoc" href="NSSplitView.html#method$NSObject-splitViewWillResizeSubviews:">-splitViewWillResizeSubviews:</a></li>
     </ul>
-<hr width="50%" align="left" />
-    <h3><a name="method$NSObject(NSSplitViewDelegate)-splitView:canCollapseSubview:">splitView:canCollapseSubview:</a></h3>
+    <hr width="50%" align="left" />
+    <h3><a name="method$NSObject-splitView:canCollapseSubview:">splitView:canCollapseSubview:</a></h3>
     - (BOOL) <b>splitView:</b> (<a rel="gsdoc" href="#class$NSSplitView">NSSplitView</a>*)sender<b> canCollapseSubview:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)subview;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSSplitViewDelegate)-splitView:constrainMaxCoordinate:ofSubviewAt:">splitView:constrainMaxCoordinate:ofSubviewAt:</a></h3>
+    <h3><a name="method$NSObject-splitView:constrainMaxCoordinate:ofSubviewAt:">splitView:constrainMaxCoordinate:ofSubviewAt:</a></h3>
     - (float) <b>splitView:</b> (<a rel="gsdoc" href="#class$NSSplitView">NSSplitView</a>*)sender<b> constrainMaxCoordinate:</b> (float)proposedMax<b> ofSubviewAt:</b> (int)offset;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSSplitViewDelegate)-splitView:constrainMinCoordinate:maxCoordinate:ofSubviewAt:">splitView:constrainMinCoordinate:maxCoordinate:ofSubviewAt:</a></h3>
+    <h3><a name="method$NSObject-splitView:constrainMinCoordinate:maxCoordinate:ofSubviewAt:">splitView:constrainMinCoordinate:maxCoordinate:ofSubviewAt:</a></h3>
     - (void) <b>splitView:</b> (<a rel="gsdoc" href="#class$NSSplitView">NSSplitView</a>*)sender<b> constrainMinCoordinate:</b> (float*)min<b> maxCoordinate:</b> (float*)max<b> ofSubviewAt:</b> (int)offset;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSSplitViewDelegate)-splitView:constrainMinCoordinate:ofSubviewAt:">splitView:constrainMinCoordinate:ofSubviewAt:</a></h3>
+    <h3><a name="method$NSObject-splitView:constrainMinCoordinate:ofSubviewAt:">splitView:constrainMinCoordinate:ofSubviewAt:</a></h3>
     - (float) <b>splitView:</b> (<a rel="gsdoc" href="#class$NSSplitView">NSSplitView</a>*)sender<b> constrainMinCoordinate:</b> (float)proposedMin<b> ofSubviewAt:</b> (int)offset;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSSplitViewDelegate)-splitView:constrainSplitPosition:ofSubviewAt:">splitView:constrainSplitPosition:ofSubviewAt:</a></h3>
+    <h3><a name="method$NSObject-splitView:constrainSplitPosition:ofSubviewAt:">splitView:constrainSplitPosition:ofSubviewAt:</a></h3>
     - (float) <b>splitView:</b> (<a rel="gsdoc" href="#class$NSSplitView">NSSplitView</a>*)sender<b> constrainSplitPosition:</b> (float)proposedPosition<b> ofSubviewAt:</b> (int)offset;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSSplitViewDelegate)-splitView:resizeSubviewsWithOldSize:">splitView:resizeSubviewsWithOldSize:</a></h3>
+    <h3><a name="method$NSObject-splitView:resizeSubviewsWithOldSize:">splitView:resizeSubviewsWithOldSize:</a></h3>
     - (void) <b>splitView:</b> (<a rel="gsdoc" href="#class$NSSplitView">NSSplitView</a>*)sender<b> resizeSubviewsWithOldSize:</b> (NSSize)oldSize;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSSplitViewDelegate)-splitViewDidResizeSubviews:">splitViewDidResizeSubviews:</a></h3>
-    - (void) <b>splitViewDidResizeSubviews:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)notification;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <h3><a name="method$NSObject-splitViewDidResizeSubviews:">splitViewDidResizeSubviews:</a></h3>
+    - (void) <b>splitViewDidResizeSubviews:</b> (NSNotification*)notification;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSSplitViewDelegate)-splitViewWillResizeSubviews:">splitViewWillResizeSubviews:</a></h3>
-    - (void) <b>splitViewWillResizeSubviews:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)notification;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <h3><a name="method$NSObject-splitViewWillResizeSubviews:">splitViewWillResizeSubviews:</a></h3>
+    - (void) <b>splitViewWillResizeSubviews:</b> (NSNotification*)notification;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -318,82 +308,74 @@
     </p>
     <b>Method summary</b>
     <ul>
-      <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView(GNUstepExtra)-backgroundColor">-backgroundColor</a></li>
-      <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView(GNUstepExtra)-dimpleImage">-dimpleImage</a></li>
-      <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView(GNUstepExtra)-dividerColor">-dividerColor</a></li>
-      <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView(GNUstepExtra)-draggedBarWidth">-draggedBarWidth</a></li>
-      <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView(GNUstepExtra)-setBackgroundColor:">-setBackgroundColor:</a></li>
-      <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView(GNUstepExtra)-setDimpleImage:resetDividerThickness:">-setDimpleImage:resetDividerThickness:</a></li>
-      <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView(GNUstepExtra)-setDividerColor:">-setDividerColor:</a></li>
-      <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView(GNUstepExtra)-setDraggedBarWidth:">-setDraggedBarWidth:</a></li>
+      <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView-backgroundColor">-backgroundColor</a></li>
+      <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView-dimpleImage">-dimpleImage</a></li>
+      <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView-dividerColor">-dividerColor</a></li>
+      <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView-draggedBarWidth">-draggedBarWidth</a></li>
+      <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView-setBackgroundColor:">-setBackgroundColor:</a></li>
+      <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView-setDimpleImage:resetDividerThickness:">-setDimpleImage:resetDividerThickness:</a></li>
+      <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView-setDividerColor:">-setDividerColor:</a></li>
+      <li><a rel="gsdoc" href="NSSplitView.html#method$NSSplitView-setDraggedBarWidth:">-setDraggedBarWidth:</a></li>
     </ul>
-<hr width="50%" align="left" />
-    <h3><a name="method$NSSplitView(GNUstepExtra)-backgroundColor">backgroundColor</a></h3>
+    <hr width="50%" align="left" />
+    <h3><a name="method$NSSplitView-backgroundColor">backgroundColor</a></h3>
     - (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*) <b>backgroundColor</b>;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSSplitView(GNUstepExtra)-dimpleImage">dimpleImage</a></h3>
+    <h3><a name="method$NSSplitView-dimpleImage">dimpleImage</a></h3>
     - (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*) <b>dimpleImage</b>;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSSplitView(GNUstepExtra)-dividerColor">dividerColor</a></h3>
+    <h3><a name="method$NSSplitView-dividerColor">dividerColor</a></h3>
     - (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*) <b>dividerColor</b>;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSSplitView(GNUstepExtra)-draggedBarWidth">draggedBarWidth</a></h3>
+    <h3><a name="method$NSSplitView-draggedBarWidth">draggedBarWidth</a></h3>
     - (float) <b>draggedBarWidth</b>;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSSplitView(GNUstepExtra)-setBackgroundColor:">setBackgroundColor:</a></h3>
+    <h3><a name="method$NSSplitView-setBackgroundColor:">setBackgroundColor:</a></h3>
     - (void) <b>setBackgroundColor:</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)aColor;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSSplitView(GNUstepExtra)-setDimpleImage:resetDividerThickness:">setDimpleImage:resetDividerThickness:</a></h3>
+    <h3><a name="method$NSSplitView-setDimpleImage:resetDividerThickness:">setDimpleImage:resetDividerThickness:</a></h3>
     - (void) <b>setDimpleImage:</b> (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*)anImage<b> resetDividerThickness:</b> (BOOL)flag;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSSplitView(GNUstepExtra)-setDividerColor:">setDividerColor:</a></h3>
+    <h3><a name="method$NSSplitView-setDividerColor:">setDividerColor:</a></h3>
     - (void) <b>setDividerColor:</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)aColor;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSSplitView(GNUstepExtra)-setDraggedBarWidth:">setDraggedBarWidth:</a></h3>
+    <h3><a name="method$NSSplitView-setDraggedBarWidth:">setDraggedBarWidth:</a></h3>
     - (void) <b>setDraggedBarWidth:</b> (float)newWidth;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>

@@ -114,10 +114,44 @@
             <GNUstep /> <MacOS-X /> <OpenStep />
           </standards>
         </method>
+        <method type="NSEvent*" factory="yes">
+          <sel>mouseEventWithType:</sel>
+          <arg type="NSEventType">type</arg>
+          <sel>location:</sel>
+          <arg type="NSPoint">location</arg>
+          <sel>modifierFlags:</sel>
+          <arg type="unsigned int">flags</arg>
+          <sel>timestamp:</sel>
+          <arg type="NSTimeInterval">time</arg>
+          <sel>windowNumber:</sel>
+          <arg type="int">windowNum</arg>
+          <sel>context:</sel>
+          <arg type="NSGraphicsContext*">context</arg>
+          <sel>eventNumber:</sel>
+          <arg type="int">eventNum</arg>
+          <sel>clickCount:</sel>
+          <arg type="int">clickNum</arg>
+          <sel>pressure:</sel>
+          <arg type="float">pressureValue</arg>
+          <sel>buttonNumber:</sel>
+          <arg type="int">buttonNum</arg>
+          <sel>deltaX:</sel>
+          <arg type="float">deltaX</arg>
+          <sel>deltaY:</sel>
+          <arg type="float">deltaY</arg>
+          <sel>deltaZ:</sel>
+          <arg type="float">deltaZ</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <NotOpenStep /> <NotMacOS-X /> <GNUstep />
+          </standards>
+        </method>
         <method type="NSPoint" factory="yes">
           <sel>mouseLocation</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Returns the current mouse location.
           </desc>
           <standards>
             <GNUstep /> <MacOS-X /> <OpenStep />
@@ -170,10 +204,26 @@
             <GNUstep /> <MacOS-X /> <OpenStep />
           </standards>
         </method>
+        <method type="int">
+          <sel>buttonNumber</sel>
+          <desc>
+            Returns the button number for the mouse button
+            pressed in a mouse event. Intended primarily for
+            the case where a mouse has three or more buttons, and
+            you want to know which button an 'other' mouse event
+            refers to.
+          </desc>
+          <standards>
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
+          </standards>
+        </method>
         <method type="NSString*">
           <sel>characters</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Returns the string of characters for a keyboard
+            event. <br /> Raises an
+            NSInternalInconsistencyException
+            if applied to any other type of event.
           </desc>
           <standards>
             <GNUstep /> <MacOS-X /> <OpenStep />
@@ -182,7 +232,11 @@
         <method type="NSString*">
           <sel>charactersIgnoringModifiers</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Returns the string of characters for a keyboard
+            event, as if no modifier keys had been pressed when
+            the keyboard event occirred. <br /> Raises an
+            NSInternalInconsistencyException
+            if applied to any other type of event.
           </desc>
           <standards>
             <GNUstep /> <MacOS-X /> <OpenStep />
@@ -191,7 +245,11 @@
         <method type="int">
           <sel>clickCount</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Return the number of clicks associated with the
+            mouse down or up event. This method is not applicable
+            for any event type other than a mouse down or mouse up.
+            <br /> Raises an NSInternalInconsistencyException if
+            applied to any other type of event.
           </desc>
           <standards>
             <GNUstep /> <MacOS-X /> <OpenStep />
@@ -200,7 +258,8 @@
         <method type="NSGraphicsContext*">
           <sel>context</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Returns the graphics context for which this event
+            was generated.
           </desc>
           <standards>
             <GNUstep /> <MacOS-X /> <OpenStep />
@@ -209,7 +268,11 @@
         <method type="int">
           <sel>data1</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Returns the 'data1' item associated with the event.
+            <br /> Raises NSInternalInconsistencyException if
+            the event is not of type NSAppKitDefined,
+            NSSystemDefined, NSApplicationDefined, or
+            NSPeriodic
           </desc>
           <standards>
             <GNUstep /> <MacOS-X /> <OpenStep />
@@ -218,7 +281,11 @@
         <method type="int">
           <sel>data2</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Returns the 'data2' item associated with the event.
+            <br /> Raises NSInternalInconsistencyException if
+            the event is not of type NSAppKitDefined,
+            NSSystemDefined, NSApplicationDefined, or
+            NSPeriodic
           </desc>
           <standards>
             <GNUstep /> <MacOS-X /> <OpenStep />
@@ -227,34 +294,58 @@
         <method type="float">
           <sel>deltaX</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            <p>Returns the movement of the mouse on the X axis.</p>
+            <p>
+              This method is only valid for NSMouseMoved,
+              NS*MouseDragged and NSScrollWheel events,
+              otherwise it will raise an
+              NSInternalInconsistencyException.
+            </p>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
           </standards>
         </method>
         <method type="float">
           <sel>deltaY</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            <p>Returns the movement of the mouse on the Y axis.</p>
+            <p>
+              This method is only valid for NSMouseMoved,
+              NS*MouseDragged and NSScrollWheel events,
+              otherwise it will raise an
+              NSInternalInconsistencyException.
+            </p>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
           </standards>
         </method>
         <method type="float">
           <sel>deltaZ</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            <p>Returns the movement of the mouse on the Z axis.</p>
+            <p>
+              This method is only valid for NSMouseMoved,
+              NS*MouseDragged and NSScrollWheel events,
+              otherwise it will raise an
+              NSInternalInconsistencyException.
+            </p>
+            <p>The value returned is 0.0 in most cases.</p>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <NotOpenStep /> <GNUstep /> <MacOS-X />
           </standards>
         </method>
         <method type="int">
           <sel>eventNumber</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Returns the event number associated with any mouse
+            event or tracking event. Event numbers are allocated
+            sequentially when the system creates these
+            events. <br /> Raises an
+            NSInternalInconsistencyException
+            if applied to any other type of event.
           </desc>
           <standards>
             <GNUstep /> <MacOS-X /> <OpenStep />
@@ -263,7 +354,11 @@
         <method type="BOOL">
           <sel>isARepeat</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Returns a flag to say if this is a keyboard repeat
+            event. <br /> Raises an
+            NSInternalInconsistencyException
+            if applied to any other type of event than an NSKeyUp or
+            NSKeyDown.
           </desc>
           <standards>
             <GNUstep /> <MacOS-X /> <OpenStep />
@@ -272,7 +367,10 @@
         <method type="unsigned short">
           <sel>keyCode</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Returns the numeric key code of a keyboard event.
+            <br /> Raises an NSInternalInconsistencyException if
+            applied to any other type of event than an NSKeyUp
+            or NSKeyDown.
           </desc>
           <standards>
             <GNUstep /> <MacOS-X /> <OpenStep />
@@ -281,7 +379,9 @@
         <method type="NSPoint">
           <sel>locationInWindow</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Returns the window location for which this event
+            was generated (in the base coordinate system of the
+            window).
           </desc>
           <standards>
             <GNUstep /> <MacOS-X /> <OpenStep />
@@ -290,7 +390,8 @@
         <method type="unsigned int">
           <sel>modifierFlags</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Returns the modifier flag bits associated with the
+            event.
           </desc>
           <standards>
             <GNUstep /> <MacOS-X /> <OpenStep />
@@ -299,7 +400,13 @@
         <method type="float">
           <sel>pressure</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Returns the pressure associated with a mouse event.
+            This is a value in the range 0.0 to 1.0 and for mormal
+            mouse events should be set to one of those extremes.
+            This is used by pressure sensitive input devices.
+            <br /> Raises an NSInternalInconsistencyException if
+            applied to any other type of event than a mouse
+            event.
           </desc>
           <standards>
             <GNUstep /> <MacOS-X /> <OpenStep />
@@ -308,7 +415,12 @@
         <method type="short">
           <sel>subtype</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Returns the 'subtype' item associated with the
+            event. <br /> Raises
+            NSInternalInconsistencyException
+            if the event is not of type NSAppKitDefined,
+            NSSystemDefined, NSApplicationDefined, or
+            NSPeriodic
           </desc>
           <standards>
             <GNUstep /> <MacOS-X /> <OpenStep />
@@ -317,7 +429,8 @@
         <method type="NSTimeInterval">
           <sel>timestamp</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Returns the time interval since system startup at
+            which this event was generated.
           </desc>
           <standards>
             <GNUstep /> <MacOS-X /> <OpenStep />
@@ -326,7 +439,11 @@
         <method type="int">
           <sel>trackingNumber</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Returns a number identifying the tracking rectangle
+            entered or exited. <br /> Raises an
+            NSInternalInconsistencyException
+            if applied to any other type of event than a mouse
+            entered or exited event.
           </desc>
           <standards>
             <GNUstep /> <MacOS-X /> <OpenStep />
@@ -335,7 +452,7 @@
         <method type="NSEventType">
           <sel>type</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            returns the type of this event.
           </desc>
           <standards>
             <GNUstep /> <MacOS-X /> <OpenStep />
@@ -344,7 +461,12 @@
         <method type="void*">
           <sel>userData</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Returns usder data associated with a tracking
+            event... the data assigned to the tracking
+            rectangle concerned when it was created.. <br />
+            Raises an NSInternalInconsistencyException if
+            applied to any other type of event than a mouse
+            entered or exited event.
           </desc>
           <standards>
             <GNUstep /> <MacOS-X /> <OpenStep />
@@ -353,7 +475,10 @@
         <method type="NSWindow*">
           <sel>window</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Returns the window for which this event was
+            generated. <br /> Periodic events have no
+            associated window, and you should not call this
+            method for those events.
           </desc>
           <standards>
             <GNUstep /> <MacOS-X /> <OpenStep />
@@ -362,7 +487,10 @@
         <method type="int">
           <sel>windowNumber</sel>
           <desc>
-            <em>Description forthcoming.</em>
+            Returns the window number of the window for which
+            this event was generated. <br /> Periodic events have
+            no associated window, and you should not call this
+            method for those events.
           </desc>
           <standards>
             <GNUstep /> <MacOS-X /> <OpenStep />

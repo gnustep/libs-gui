@@ -25,7 +25,7 @@
         <li>
           <a href="#002000000000">Software documentation for the
         NSObject(NSTextStorageDelegate)
-        category</a>
+        informal protocol</a>
         </li>
       </ol>
       <hr width="50%" align="left" />
@@ -33,7 +33,7 @@
     <h1><a name="001000000000">
         Software documentation for the NSTextStorage class
       </a></h1>
-    <h2><a name="class$NSTextStorage">NSTextStorage</a> : <a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSAttributedString.html#class$NSMutableAttributedString">NSMutableAttributedString</a></h2>
+    <h2><a name="class$NSTextStorage">NSTextStorage</a> : NSMutableAttributedString</h2>
     <blockquote>
       <dl>
         <dt><b>Declared in:</b></dt>
@@ -43,9 +43,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -71,10 +71,9 @@
       <li><a rel="gsdoc" href="NSTextStorage.html#method$NSTextStorage-removeLayoutManager:">-removeLayoutManager:</a></li>
       <li><a rel="gsdoc" href="NSTextStorage.html#method$NSTextStorage-setDelegate:">-setDelegate:</a></li>
     </ul>
-<hr width="50%" align="left" />
+    <hr width="50%" align="left" />
     <h3><a name="method$NSTextStorage-addLayoutManager:">addLayoutManager:</a></h3>
     - (void) <b>addLayoutManager:</b> (<a rel="gsdoc" href="NSLayoutManager.html#class$NSLayoutManager">NSLayoutManager</a>*)obj;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -83,7 +82,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSTextStorage-beginEditing">beginEditing</a></h3>
     - (void) <b>beginEditing</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -92,7 +90,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSTextStorage-changeInLength">changeInLength</a></h3>
     - (int) <b>changeInLength</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -101,7 +98,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSTextStorage-delegate">delegate</a></h3>
     - (id) <b>delegate</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -110,7 +106,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSTextStorage-edited:range:changeInLength:">edited:range:changeInLength:</a></h3>
     - (void) <b>edited:</b> (unsigned)mask<b> range:</b> (NSRange)old<b> changeInLength:</b> (int)delta;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -119,7 +114,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSTextStorage-editedMask">editedMask</a></h3>
     - (unsigned) <b>editedMask</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -128,7 +122,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSTextStorage-editedRange">editedRange</a></h3>
     - (NSRange) <b>editedRange</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -137,7 +130,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSTextStorage-endEditing">endEditing</a></h3>
     - (void) <b>endEditing</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -146,7 +138,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSTextStorage-ensureAttributesAreFixedInRange:">ensureAttributesAreFixedInRange:</a></h3>
     - (void) <b>ensureAttributesAreFixedInRange:</b> (NSRange)range;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -155,7 +146,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSTextStorage-fixesAttributesLazily">fixesAttributesLazily</a></h3>
     - (BOOL) <b>fixesAttributesLazily</b>;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -164,7 +154,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSTextStorage-invalidateAttributesInRange:">invalidateAttributesInRange:</a></h3>
     - (void) <b>invalidateAttributesInRange:</b> (NSRange)range;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -172,8 +161,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSTextStorage-layoutManagers">layoutManagers</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>layoutManagers</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSArray*) <b>layoutManagers</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -182,7 +170,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSTextStorage-processEditing">processEditing</a></h3>
     - (void) <b>processEditing</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -191,7 +178,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSTextStorage-removeLayoutManager:">removeLayoutManager:</a></h3>
     - (void) <b>removeLayoutManager:</b> (<a rel="gsdoc" href="NSLayoutManager.html#class$NSLayoutManager">NSLayoutManager</a>*)obj;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -199,8 +185,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSTextStorage-setDelegate:">setDelegate:</a></h3>
-    - (void) <b>setDelegate:</b> (id)delegate;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setDelegate:</b> (id)anObject;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -210,9 +195,9 @@
     <h1><a name="002000000000">
         Software documentation for the
         NSObject(NSTextStorageDelegate)
-        category
+        informal protocol
       </a></h1>
-    <h2><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a>(<a name="category$NSObject(NSTextStorageDelegate)">NSTextStorageDelegate</a>)</h2>
+    <h2>NSObject(<a name="category$NSObject(NSTextStorageDelegate)">NSTextStorageDelegate</a>)</h2>
     <blockquote>
       <dl>
         <dt><b>Declared in:</b></dt>
@@ -222,9 +207,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -234,22 +219,20 @@
     </p>
     <b>Method summary</b>
     <ul>
-      <li><a rel="gsdoc" href="NSTextStorage.html#method$NSObject(NSTextStorageDelegate)-textStorageDidProcessEditing:">-textStorageDidProcessEditing:</a></li>
-      <li><a rel="gsdoc" href="NSTextStorage.html#method$NSObject(NSTextStorageDelegate)-textStorageWillProcessEditing:">-textStorageWillProcessEditing:</a></li>
+      <li><a rel="gsdoc" href="NSTextStorage.html#method$NSObject-textStorageDidProcessEditing:">-textStorageDidProcessEditing:</a></li>
+      <li><a rel="gsdoc" href="NSTextStorage.html#method$NSObject-textStorageWillProcessEditing:">-textStorageWillProcessEditing:</a></li>
     </ul>
-<hr width="50%" align="left" />
-    <h3><a name="method$NSObject(NSTextStorageDelegate)-textStorageDidProcessEditing:">textStorageDidProcessEditing:</a></h3>
-    - (void) <b>textStorageDidProcessEditing:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)notification;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <hr width="50%" align="left" />
+    <h3><a name="method$NSObject-textStorageDidProcessEditing:">textStorageDidProcessEditing:</a></h3>
+    - (void) <b>textStorageDidProcessEditing:</b> (NSNotification*)notification;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSTextStorageDelegate)-textStorageWillProcessEditing:">textStorageWillProcessEditing:</a></h3>
-    - (void) <b>textStorageWillProcessEditing:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)notification;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <h3><a name="method$NSObject-textStorageWillProcessEditing:">textStorageWillProcessEditing:</a></h3>
+    - (void) <b>textStorageWillProcessEditing:</b> (NSNotification*)notification;<br />
     <p>
       
             <em>Description forthcoming.</em>

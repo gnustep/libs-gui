@@ -39,7 +39,7 @@
     <h1><a name="001000000000">
         Software documentation for the NSSpellChecker class
       </a></h1>
-    <h2><a name="class$NSSpellChecker">NSSpellChecker</a> : <a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a></h2>
+    <h2><a name="class$NSSpellChecker">NSSpellChecker</a> : NSObject</h2>
     <blockquote>
       <dl>
         <dt><b>Declared in:</b></dt>
@@ -49,9 +49,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -80,10 +80,9 @@
       <li><a rel="gsdoc" href="NSSpellChecker.html#method$NSSpellChecker-spellingPanel">-spellingPanel</a></li>
       <li><a rel="gsdoc" href="NSSpellChecker.html#method$NSSpellChecker-updateSpellingPanelWithMisspelledWord:">-updateSpellingPanelWithMisspelledWord:</a></li>
     </ul>
-<hr width="50%" align="left" />
+    <hr width="50%" align="left" />
     <h3><a name="method$NSSpellChecker+sharedSpellChecker">sharedSpellChecker</a></h3>
     + (<a rel="gsdoc" href="#class$NSSpellChecker">NSSpellChecker</a>*) <b>sharedSpellChecker</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -92,7 +91,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSSpellChecker+sharedSpellCheckerExists">sharedSpellCheckerExists</a></h3>
     + (BOOL) <b>sharedSpellCheckerExists</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -101,7 +99,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSSpellChecker+uniqueSpellDocumentTag">uniqueSpellDocumentTag</a></h3>
     + (int) <b>uniqueSpellDocumentTag</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -110,7 +107,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSSpellChecker-accessoryView">accessoryView</a></h3>
     - (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*) <b>accessoryView</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -118,8 +114,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSSpellChecker-checkSpellingOfString:startingAt:">checkSpellingOfString:startingAt:</a></h3>
-    - (NSRange) <b>checkSpellingOfString:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)stringToCheck<b> startingAt:</b> (int)startingOffset;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSRange) <b>checkSpellingOfString:</b> (NSString*)stringToCheck<b> startingAt:</b> (int)startingOffset;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -127,8 +122,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSSpellChecker-checkSpellingOfString:startingAt:language:wrap:inSpellDocumentWithTag:wordCount:">checkSpellingOfString:startingAt:language:wrap:inSpellDocumentWithTag:wordCount:</a></h3>
-    - (NSRange) <b>checkSpellingOfString:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)stringToCheck<b> startingAt:</b> (int)startingOffset<b> language:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)language<b> wrap:</b> (BOOL)wrapFlag<b> inSpellDocumentWithTag:</b> (int)tag<b> wordCount:</b> (int*)wordCount;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSRange) <b>checkSpellingOfString:</b> (NSString*)stringToCheck<b> startingAt:</b> (int)startingOffset<b> language:</b> (NSString*)language<b> wrap:</b> (BOOL)wrapFlag<b> inSpellDocumentWithTag:</b> (int)tag<b> wordCount:</b> (int*)wordCount;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -137,7 +131,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSSpellChecker-closeSpellDocumentWithTag:">closeSpellDocumentWithTag:</a></h3>
     - (void) <b>closeSpellDocumentWithTag:</b> (int)tag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -145,8 +138,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSSpellChecker-countWordsInString:language:">countWordsInString:language:</a></h3>
-    - (int) <b>countWordsInString:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString<b> language:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)language;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (int) <b>countWordsInString:</b> (NSString*)aString<b> language:</b> (NSString*)language;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -154,8 +146,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSSpellChecker-guessesForWord:">guessesForWord:</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>guessesForWord:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)word;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSArray*) <b>guessesForWord:</b> (NSString*)word;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -163,8 +154,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSSpellChecker-ignoreWord:inSpellDocumentWithTag:">ignoreWord:inSpellDocumentWithTag:</a></h3>
-    - (void) <b>ignoreWord:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)wordToIgnore<b> inSpellDocumentWithTag:</b> (int)tag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>ignoreWord:</b> (NSString*)wordToIgnore<b> inSpellDocumentWithTag:</b> (int)tag;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -172,8 +162,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSSpellChecker-ignoredWordsInSpellDocumentWithTag:">ignoredWordsInSpellDocumentWithTag:</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>ignoredWordsInSpellDocumentWithTag:</b> (int)tag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSArray*) <b>ignoredWordsInSpellDocumentWithTag:</b> (int)tag;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -181,8 +170,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSSpellChecker-language">language</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>language</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>language</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -191,7 +179,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSSpellChecker-setAccessoryView:">setAccessoryView:</a></h3>
     - (void) <b>setAccessoryView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)aView;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -199,8 +186,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSSpellChecker-setIgnoredWords:inSpellDocumentWithTag:">setIgnoredWords:inSpellDocumentWithTag:</a></h3>
-    - (void) <b>setIgnoredWords:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)someWords<b> inSpellDocumentWithTag:</b> (int)tag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setIgnoredWords:</b> (NSArray*)someWords<b> inSpellDocumentWithTag:</b> (int)tag;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -208,8 +194,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSSpellChecker-setLanguage:">setLanguage:</a></h3>
-    - (BOOL) <b>setLanguage:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aLanguage;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (BOOL) <b>setLanguage:</b> (NSString*)aLanguage;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -217,8 +202,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSSpellChecker-setWordFieldStringValue:">setWordFieldStringValue:</a></h3>
-    - (void) <b>setWordFieldStringValue:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setWordFieldStringValue:</b> (NSString*)aString;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -227,7 +211,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSSpellChecker-spellingPanel">spellingPanel</a></h3>
     - (<a rel="gsdoc" href="NSPanel.html#class$NSPanel">NSPanel</a>*) <b>spellingPanel</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -235,8 +218,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSSpellChecker-updateSpellingPanelWithMisspelledWord:">updateSpellingPanelWithMisspelledWord:</a></h3>
-    - (void) <b>updateSpellingPanelWithMisspelledWord:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)word;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>updateSpellingPanelWithMisspelledWord:</b> (NSString*)word;<br />
     <p>
       
             <em>Description forthcoming.</em>

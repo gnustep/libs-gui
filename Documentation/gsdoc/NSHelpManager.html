@@ -44,7 +44,7 @@
     <h1><a name="001000000000">
         Software documentation for the NSHelpManager class
       </a></h1>
-    <h2><a name="class$NSHelpManager">NSHelpManager</a> : <a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a></h2>
+    <h2><a name="class$NSHelpManager">NSHelpManager</a> : NSObject</h2>
     <blockquote>
       <dl>
         <dt><b>Declared in:</b></dt>
@@ -54,9 +54,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -74,10 +74,9 @@
       <li><a rel="gsdoc" href="NSHelpManager.html#method$NSHelpManager-setContextHelp:withObject:">-setContextHelp:withObject:</a></li>
       <li><a rel="gsdoc" href="NSHelpManager.html#method$NSHelpManager-showContextHelpForObject:locationHint:">-showContextHelpForObject:locationHint:</a></li>
     </ul>
-<hr width="50%" align="left" />
+    <hr width="50%" align="left" />
     <h3><a name="method$NSHelpManager+isContextHelpModeActive">isContextHelpModeActive</a></h3>
     + (BOOL) <b>isContextHelpModeActive</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -86,7 +85,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSHelpManager+setContextHelpModeActive:">setContextHelpModeActive:</a></h3>
     + (void) <b>setContextHelpModeActive:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -95,7 +93,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSHelpManager+sharedHelpManager">sharedHelpManager</a></h3>
     + (<a rel="gsdoc" href="#class$NSHelpManager">NSHelpManager</a>*) <b>sharedHelpManager</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -103,8 +100,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSHelpManager-contextHelpForObject:">contextHelpForObject:</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSAttributedString.html#class$NSAttributedString">NSAttributedString</a>*) <b>contextHelpForObject:</b> (id)object;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSAttributedString*) <b>contextHelpForObject:</b> (id)object;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -113,7 +109,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSHelpManager-removeContextHelpForObject:">removeContextHelpForObject:</a></h3>
     - (void) <b>removeContextHelpForObject:</b> (id)object;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -121,8 +116,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSHelpManager-setContextHelp:withObject:">setContextHelp:withObject:</a></h3>
-    - (void) <b>setContextHelp:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSAttributedString.html#class$NSAttributedString">NSAttributedString</a>*)help<b> withObject:</b> (id)object;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setContextHelp:</b> (NSAttributedString*)help<b> withObject:</b> (id)object;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -131,7 +125,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSHelpManager-showContextHelpForObject:locationHint:">showContextHelpForObject:locationHint:</a></h3>
     - (BOOL) <b>showContextHelpForObject:</b> (id)object<b> locationHint:</b> (NSPoint)point;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -153,9 +146,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -165,22 +158,20 @@
     </p>
     <b>Method summary</b>
     <ul>
-      <li><a rel="gsdoc" href="NSHelpManager.html#method$NSApplication(NSHelpManager)-activateContextHelpMode:">-activateContextHelpMode:</a></li>
-      <li><a rel="gsdoc" href="NSHelpManager.html#method$NSApplication(NSHelpManager)-showHelp:">-showHelp:</a></li>
+      <li><a rel="gsdoc" href="NSHelpManager.html#method$NSApplication-activateContextHelpMode:">-activateContextHelpMode:</a></li>
+      <li><a rel="gsdoc" href="NSHelpManager.html#method$NSApplication-showHelp:">-showHelp:</a></li>
     </ul>
-<hr width="50%" align="left" />
-    <h3><a name="method$NSApplication(NSHelpManager)-activateContextHelpMode:">activateContextHelpMode:</a></h3>
+    <hr width="50%" align="left" />
+    <h3><a name="method$NSApplication-activateContextHelpMode:">activateContextHelpMode:</a></h3>
     - (void) <b>activateContextHelpMode:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSApplication(NSHelpManager)-showHelp:">showHelp:</a></h3>
+    <h3><a name="method$NSApplication-showHelp:">showHelp:</a></h3>
     - (void) <b>showHelp:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -191,7 +182,7 @@
         Software documentation for the NSBundle(NSHelpManager)
         category
       </a></h1>
-    <h2><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSBundle.html#class$NSBundle">NSBundle</a>(<a name="category$NSBundle(NSHelpManager)">NSHelpManager</a>)</h2>
+    <h2>NSBundle(<a name="category$NSBundle(NSHelpManager)">NSHelpManager</a>)</h2>
     <blockquote>
       <dl>
         <dt><b>Declared in:</b></dt>
@@ -201,9 +192,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -213,12 +204,11 @@
     </p>
     <b>Method summary</b>
     <ul>
-      <li><a rel="gsdoc" href="NSHelpManager.html#method$NSBundle(NSHelpManager)-contextHelpForKey:">-contextHelpForKey:</a></li>
+      <li><a rel="gsdoc" href="NSHelpManager.html#method$NSBundle-contextHelpForKey:">-contextHelpForKey:</a></li>
     </ul>
-<hr width="50%" align="left" />
-    <h3><a name="method$NSBundle(NSHelpManager)-contextHelpForKey:">contextHelpForKey:</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSAttributedString.html#class$NSAttributedString">NSAttributedString</a>*) <b>contextHelpForKey:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)key;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <hr width="50%" align="left" />
+    <h3><a name="method$NSBundle-contextHelpForKey:">contextHelpForKey:</a></h3>
+    - (NSAttributedString*) <b>contextHelpForKey:</b> (NSString*)key;<br />
     <p>
       
             <em>Description forthcoming.</em>

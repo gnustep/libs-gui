@@ -33,7 +33,7 @@
     <h1><a name="001000000000">
         Software documentation for the NSScreen class
       </a></h1>
-    <h2><a name="class$NSScreen">NSScreen</a> : <a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a></h2>
+    <h2><a name="class$NSScreen">NSScreen</a> : NSObject</h2>
     <blockquote>
       <dl>
         <dt><b>Declared in:</b></dt>
@@ -43,9 +43,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -62,13 +62,13 @@
       <li><a rel="gsdoc" href="NSScreen.html#method$NSScreen-depth">-depth</a></li>
       <li><a rel="gsdoc" href="NSScreen.html#method$NSScreen-deviceDescription">-deviceDescription</a></li>
       <li><a rel="gsdoc" href="NSScreen.html#method$NSScreen-frame">-frame</a></li>
+      <li><a rel="gsdoc" href="NSScreen.html#method$NSScreen-screenNumber">-screenNumber</a></li>
       <li><a rel="gsdoc" href="NSScreen.html#method$NSScreen-supportedWindowDepths">-supportedWindowDepths</a></li>
       <li><a rel="gsdoc" href="NSScreen.html#method$NSScreen-visibleFrame">-visibleFrame</a></li>
     </ul>
-<hr width="50%" align="left" />
+    <hr width="50%" align="left" />
     <h3><a name="method$NSScreen+deepestScreen">deepestScreen</a></h3>
     + (<a rel="gsdoc" href="#class$NSScreen">NSScreen</a>*) <b>deepestScreen</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -77,7 +77,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSScreen+mainScreen">mainScreen</a></h3>
     + (<a rel="gsdoc" href="#class$NSScreen">NSScreen</a>*) <b>mainScreen</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -86,7 +85,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSScreen+resetScreens">resetScreens</a></h3>
     + (void) <b>resetScreens</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -94,8 +92,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSScreen+screens">screens</a></h3>
-    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>screens</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    + (NSArray*) <b>screens</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -103,8 +100,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSScreen-depth">depth</a></h3>
-    - (NSWindowDepth) <b>depth</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (<a rel="gsdoc" href="TypesAndConstants.html#type$NSWindowDepth">NSWindowDepth</a>) <b>depth</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -112,8 +108,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSScreen-deviceDescription">deviceDescription</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*) <b>deviceDescription</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSDictionary*) <b>deviceDescription</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -122,16 +117,22 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSScreen-frame">frame</a></h3>
     - (NSRect) <b>frame</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
+    <h3><a name="method$NSScreen-screenNumber">screenNumber</a></h3>
+    - (int) <b>screenNumber</b>;<br />
+    <p>
+      
+            Returns the screen number
+          
+    </p>
+    <hr width="25%" align="left" />
     <h3><a name="method$NSScreen-supportedWindowDepths">supportedWindowDepths</a></h3>
-    - (const NSWindowDepth*) <b>supportedWindowDepths</b>;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
+    - (const <a rel="gsdoc" href="TypesAndConstants.html#type$NSWindowDepth">NSWindowDepth</a>*) <b>supportedWindowDepths</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -140,7 +141,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSScreen-visibleFrame">visibleFrame</a></h3>
     - (NSRect) <b>visibleFrame</b>;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>

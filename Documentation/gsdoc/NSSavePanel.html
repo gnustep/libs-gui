@@ -40,7 +40,7 @@
         <li>
           <a href="#002000000000">Software documentation for the
         NSObject(NSSavePanelDelegate)
-        category</a>
+        informal protocol</a>
         </li>
       </ol>
       <hr width="50%" align="left" />
@@ -58,15 +58,15 @@
     <blockquote>
       <dl>
         <dt><b>Conforms to:</b></dt>
-        <dd><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#protocol$(NSCoding)">NSCoding</a></dd>
+        <dd>NSCoding</dd>
       </dl>
     </blockquote>
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -100,10 +100,9 @@
       <li><a rel="gsdoc" href="NSSavePanel.html#method$NSSavePanel-treatsFilePackagesAsDirectories">-treatsFilePackagesAsDirectories</a></li>
       <li><a rel="gsdoc" href="NSSavePanel.html#method$NSSavePanel-validateVisibleColumns">-validateVisibleColumns</a></li>
     </ul>
-<hr width="50%" align="left" />
+    <hr width="50%" align="left" />
     <h3><a name="method$NSSavePanel+savePanel">savePanel</a></h3>
     + (<a rel="gsdoc" href="#class$NSSavePanel">NSSavePanel</a>*) <b>savePanel</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -111,8 +110,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSSavePanel-URL">URL</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSURL.html#class$NSURL">NSURL</a>*) <b>URL</b>;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
+    - (NSURL*) <b>URL</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -121,7 +119,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSSavePanel-accessoryView">accessoryView</a></h3>
     - (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*) <b>accessoryView</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -129,8 +126,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSSavePanel-beginSheetForDirectory:file:modalForWindow:modalDelegate:didEndSelector:contextInfo:">beginSheetForDirectory:file:modalForWindow:modalDelegate:didEndSelector:contextInfo:</a></h3>
-    - (void) <b>beginSheetForDirectory:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)path<b> file:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)filename<b> modalForWindow:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)docWindow<b> modalDelegate:</b> (id)delegate<b> didEndSelector:</b> (SEL)didEndSelector<b> contextInfo:</b> (void*)contextInfo;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
+    - (void) <b>beginSheetForDirectory:</b> (NSString*)path<b> file:</b> (NSString*)filename<b> modalForWindow:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)docWindow<b> modalDelegate:</b> (id)delegate<b> didEndSelector:</b> (SEL)didEndSelector<b> contextInfo:</b> (void*)contextInfo;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -139,7 +135,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSSavePanel-cancel:">cancel:</a></h3>
     - (void) <b>cancel:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -147,8 +142,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSSavePanel-directory">directory</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>directory</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>directory</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -156,8 +150,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSSavePanel-filename">filename</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>filename</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>filename</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -166,7 +159,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSSavePanel-ok:">ok:</a></h3>
     - (void) <b>ok:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -174,8 +166,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSSavePanel-prompt">prompt</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>prompt</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>prompt</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -183,8 +174,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSSavePanel-requiredFileType">requiredFileType</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>requiredFileType</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>requiredFileType</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -193,7 +183,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSSavePanel-runModal">runModal</a></h3>
     - (int) <b>runModal</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -201,8 +190,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSSavePanel-runModalForDirectory:file:">runModalForDirectory:file:</a></h3>
-    - (int) <b>runModalForDirectory:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)path<b> file:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)filename;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (int) <b>runModalForDirectory:</b> (NSString*)path<b> file:</b> (NSString*)filename;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -210,8 +198,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSSavePanel-runModalForDirectory:file:relativeToWindow:">runModalForDirectory:file:relativeToWindow:</a></h3>
-    - (int) <b>runModalForDirectory:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)path<b> file:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)filename<b> relativeToWindow:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)window;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
+    - (int) <b>runModalForDirectory:</b> (NSString*)path<b> file:</b> (NSString*)filename<b> relativeToWindow:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)window;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -220,7 +207,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSSavePanel-selectText:">selectText:</a></h3>
     - (void) <b>selectText:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -229,7 +215,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSSavePanel-setAccessoryView:">setAccessoryView:</a></h3>
     - (void) <b>setAccessoryView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)aView;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -237,8 +222,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSSavePanel-setDirectory:">setDirectory:</a></h3>
-    - (void) <b>setDirectory:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)path;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setDirectory:</b> (NSString*)path;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -246,8 +230,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSSavePanel-setPrompt:">setPrompt:</a></h3>
-    - (void) <b>setPrompt:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)prompt;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setPrompt:</b> (NSString*)prompt;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -255,8 +238,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSSavePanel-setRequiredFileType:">setRequiredFileType:</a></h3>
-    - (void) <b>setRequiredFileType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)fileType;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setRequiredFileType:</b> (NSString*)fileType;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -264,8 +246,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSSavePanel-setTitle:">setTitle:</a></h3>
-    - (void) <b>setTitle:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)title;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setTitle:</b> (NSString*)title;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -274,7 +255,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSSavePanel-setTreatsFilePackagesAsDirectories:">setTreatsFilePackagesAsDirectories:</a></h3>
     - (void) <b>setTreatsFilePackagesAsDirectories:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -282,8 +262,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSSavePanel-title">title</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>title</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>title</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -292,7 +271,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSSavePanel-treatsFilePackagesAsDirectories">treatsFilePackagesAsDirectories</a></h3>
     - (BOOL) <b>treatsFilePackagesAsDirectories</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -301,7 +279,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSSavePanel-validateVisibleColumns">validateVisibleColumns</a></h3>
     - (void) <b>validateVisibleColumns</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -311,9 +288,9 @@
     <h1><a name="002000000000">
         Software documentation for the
         NSObject(NSSavePanelDelegate)
-        category
+        informal protocol
       </a></h1>
-    <h2><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a>(<a name="category$NSObject(NSSavePanelDelegate)">NSSavePanelDelegate</a>)</h2>
+    <h2>NSObject(<a name="category$NSObject(NSSavePanelDelegate)">NSSavePanelDelegate</a>)</h2>
     <blockquote>
       <dl>
         <dt><b>Declared in:</b></dt>
@@ -323,9 +300,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -335,42 +312,38 @@
     </p>
     <b>Method summary</b>
     <ul>
-      <li><a rel="gsdoc" href="NSSavePanel.html#method$NSObject(NSSavePanelDelegate)-panel:compareFilename:with:caseSensitive:">-panel:compareFilename:with:caseSensitive:</a></li>
-      <li><a rel="gsdoc" href="NSSavePanel.html#method$NSObject(NSSavePanelDelegate)-panel:isValidFilename:">-panel:isValidFilename:</a></li>
-      <li><a rel="gsdoc" href="NSSavePanel.html#method$NSObject(NSSavePanelDelegate)-panel:shouldShowFilename:">-panel:shouldShowFilename:</a></li>
-      <li><a rel="gsdoc" href="NSSavePanel.html#method$NSObject(NSSavePanelDelegate)-panel:userEnteredFilename:confirmed:">-panel:userEnteredFilename:confirmed:</a></li>
+      <li><a rel="gsdoc" href="NSSavePanel.html#method$NSObject-panel:compareFilename:with:caseSensitive:">-panel:compareFilename:with:caseSensitive:</a></li>
+      <li><a rel="gsdoc" href="NSSavePanel.html#method$NSObject-panel:isValidFilename:">-panel:isValidFilename:</a></li>
+      <li><a rel="gsdoc" href="NSSavePanel.html#method$NSObject-panel:shouldShowFilename:">-panel:shouldShowFilename:</a></li>
+      <li><a rel="gsdoc" href="NSSavePanel.html#method$NSObject-panel:userEnteredFilename:confirmed:">-panel:userEnteredFilename:confirmed:</a></li>
     </ul>
-<hr width="50%" align="left" />
-    <h3><a name="method$NSObject(NSSavePanelDelegate)-panel:compareFilename:with:caseSensitive:">panel:compareFilename:with:caseSensitive:</a></h3>
-    - (NSComparisonResult) <b>panel:</b> (id)sender<b> compareFilename:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)filename1<b> with:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)filename2<b> caseSensitive:</b> (BOOL)caseSensitive;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <hr width="50%" align="left" />
+    <h3><a name="method$NSObject-panel:compareFilename:with:caseSensitive:">panel:compareFilename:with:caseSensitive:</a></h3>
+    - (NSComparisonResult) <b>panel:</b> (id)sender<b> compareFilename:</b> (NSString*)filename1<b> with:</b> (NSString*)filename2<b> caseSensitive:</b> (BOOL)caseSensitive;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSSavePanelDelegate)-panel:isValidFilename:">panel:isValidFilename:</a></h3>
-    - (BOOL) <b>panel:</b> (id)sender<b> isValidFilename:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)filename;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <h3><a name="method$NSObject-panel:isValidFilename:">panel:isValidFilename:</a></h3>
+    - (BOOL) <b>panel:</b> (id)sender<b> isValidFilename:</b> (NSString*)filename;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSSavePanelDelegate)-panel:shouldShowFilename:">panel:shouldShowFilename:</a></h3>
-    - (BOOL) <b>panel:</b> (id)sender<b> shouldShowFilename:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)filename;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <h3><a name="method$NSObject-panel:shouldShowFilename:">panel:shouldShowFilename:</a></h3>
+    - (BOOL) <b>panel:</b> (id)sender<b> shouldShowFilename:</b> (NSString*)filename;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSSavePanelDelegate)-panel:userEnteredFilename:confirmed:">panel:userEnteredFilename:confirmed:</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>panel:</b> (id)sender<b> userEnteredFilename:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)fileName<b> confirmed:</b> (BOOL)okFlag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <h3><a name="method$NSObject-panel:userEnteredFilename:confirmed:">panel:userEnteredFilename:confirmed:</a></h3>
+    - (NSString*) <b>panel:</b> (id)sender<b> userEnteredFilename:</b> (NSString*)fileName<b> confirmed:</b> (BOOL)okFlag;<br />
     <p>
       
             <em>Description forthcoming.</em>

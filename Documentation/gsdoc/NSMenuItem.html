@@ -1,86 +1,533 @@
-<html><head>
- <title>NSMenuItem</title>
-</head>
-<body>
-<a href ="Gui.html">[Up] </a>
-<h1>NSMenuItem</h1>
-<h3>Authors </h3>
- <dl>
-<dt>Ovidiu Predescu
-<dd>
-<dt>David Lazaro Saz
-<dd>
-</dl>
-<blockquote>The menu cell class.</blockquote>
-<p>Copyright: 1996 Free Software Foundation, Inc.</p>
-<h1>Contents </h1>
-<ul>
-<li ><a href ="#cont-0">
+<html>
+  <head>
+    <title>NSMenuItem</title>
+  </head>
+  <body>
+    <a href="Gui.html">Up</a>
+    <br />
+    <h1><a name="title$NSMenuItem">NSMenuItem</a></h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Ovidiu Predescu(<a href="mailto:ovidiu@net-community.com"><code>
+        ovidiu@net-community.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>David Lazaro Saz(<a href="mailto:khelekir@encomix.es"><code>
+        khelekir@encomix.es
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <blockquote>
+      The menu cell class.
+    </blockquote>
+    <p><b>Copyright:</b> (C) 1996 Free Software Foundation, Inc.</p>
+    <div>
+      <hr width="50%" align="left" />
+      <h3>Contents -</h3>
+      <ol>
+        <li>
+          <a href="#001000000000">Software documentation for the NSMenuItem class</a>
+        </li>
+        <li>
+          <a href="#002000000000">Software documentation for the
+        NSMenuItem(GNUstepExtra) category</a>
+        </li>
+        <li>
+          <a href="#003000000000">Software documentation for the NSMenuItem protocol</a>
+        </li>
+      </ol>
+      <hr width="50%" align="left" />
+    </div>
+    <h1><a name="001000000000">
         Software documentation for the NSMenuItem class
-      </a>
-<li ><a href ="#cont-1">
-        Software documentation for the
-        NSMenuItem(GNUstepExtra) category
-      </a>
-<li ><a href ="#cont-2">
-        Software documentation for the NSMenuItem protocol
-      </a>
-</ul>
-<h2><a name ="cont-0">
-        Software documentation for the NSMenuItem class
-      </a></h2>
-<h2><a name ="NSMenuItem">NSMenuItem</a></h2>
-<p><b>Declared in: </b> AppKit/NSMenuItem.h</p>
-<p><b>Inherits from: </b> NSObject</p>
-<p><b>Conforms to: </b> NSMenuItem
-</p>
-<hr>
-
+      </a></h1>
+    <h2><a name="class$NSMenuItem">NSMenuItem</a> : NSObject</h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSMenuItem.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <dl>
+        <dt><b>Conforms to:</b></dt>
+        <dd><a rel="gsdoc" href="#protocol$(NSMenuItem)">NSMenuItem</a></dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+        <li>GNUstep</li>
+      </ul>
+    </blockquote>
+    <p>
+      
           <em>Description forthcoming.</em>
         
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-</ul>
-<h2><a name ="cont-1">
+    </p>
+    <h1><a name="002000000000">
         Software documentation for the
         NSMenuItem(GNUstepExtra) category
-      </a></h2>
-<h2>NSMenuItem <a name ="NSMenuItem (GNUstepExtra)">(GNUstepExtra) </a></h2>
-<p><b>Declared in: </b> AppKit/NSMenuItem.h</p>
-<hr>
-
+      </a></h1>
+    <h2><a rel="gsdoc" href="#class$NSMenuItem">NSMenuItem</a>(<a name="category$NSMenuItem(GNUstepExtra)">GNUstepExtra</a>)</h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSMenuItem.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+        <li>GNUstep</li>
+      </ul>
+    </blockquote>
+    <p>
+      
           <em>Description forthcoming.</em>
         
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSMenuItem.html#method-0">-changesState</a>
-<li ><a href ="NSMenuItem.html#method-1">-setChangesState:</a>
-</ul>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-0">changesState</a></h3>
-- (BOOL) <b>changesState</b>;<br>
-Standards:  GNUstep MacOS-X OpenStep<br>
-
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$NSMenuItem-changesState">-changesState</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$NSMenuItem-setChangesState:">-setChangesState:</a></li>
+    </ul>
+    <hr width="50%" align="left" />
+    <h3><a name="method$NSMenuItem-changesState">changesState</a></h3>
+    - (BOOL) <b>changesState</b>;<br />
+    <p>
+      
             <em>Description forthcoming.</em>
           
- <hr>
-<h3><a name ="method-1">setChangesState:</a></h3>
-- (void) <b>setChangesState:</b> (BOOL)flag;<br>
-Standards:  GNUstep MacOS-X OpenStep<br>
-
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSMenuItem-setChangesState:">setChangesState:</a></h3>
+    - (void) <b>setChangesState:</b> (BOOL)flag;<br />
+    <p>
+      
             <em>Description forthcoming.</em>
           
- <hr>
-<h2><a name ="cont-2">
+    </p>
+    <hr width="25%" align="left" />
+    <h1><a name="003000000000">
         Software documentation for the NSMenuItem protocol
-      </a></h2>
-<h2><a name ="NSMenuItem">NSMenuItem Protocol </a></h2>
-<p><b>Declared in: </b> AppKit/NSMenuItem.h</p>
-<ul>
-</ul>
-</body>
-
- </html>
+      </a></h1>
+    <h2><a name="protocol$(NSMenuItem)">NSMenuItem</a></h2>
+    <blockquote>
+      <dl>
+        <dt><b>Declared in:</b></dt>
+        <dd>AppKit/NSMenuItem.h</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <dl>
+        <dt><b>Conforms to:</b></dt>
+        <dd>NSCopying</dd>
+        <dd>NSCoding</dd>
+      </dl>
+    </blockquote>
+    <blockquote>
+      <b>Standards:</b>
+      <ul>
+        <li>MacOS-X</li>
+        <li>OpenStep</li>
+        <li>GNUstep</li>
+      </ul>
+    </blockquote>
+    <p>
+      
+          <em>Description forthcoming.</em>
+        
+    </p>
+    <b>Method summary</b>
+    <ul>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)+separatorItem">+separatorItem</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)+setUsesUserKeyEquivalents:">+setUsesUserKeyEquivalents:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)+usesUserKeyEquivalents">+usesUserKeyEquivalents</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-action">-action</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-hasSubmenu">-hasSubmenu</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-image">-image</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-initWithTitle:action:keyEquivalent:">-initWithTitle:action:keyEquivalent:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-isEnabled">-isEnabled</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-isSeparatorItem">-isSeparatorItem</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-keyEquivalent">-keyEquivalent</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-keyEquivalentModifierMask">-keyEquivalentModifierMask</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-menu">-menu</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-mixedStateImage">-mixedStateImage</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-mnemonic">-mnemonic</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-mnemonicLocation">-mnemonicLocation</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-offStateImage">-offStateImage</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-onStateImage">-onStateImage</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-representedObject">-representedObject</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-setAction:">-setAction:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-setEnabled:">-setEnabled:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-setImage:">-setImage:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-setKeyEquivalent:">-setKeyEquivalent:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-setKeyEquivalentModifierMask:">-setKeyEquivalentModifierMask:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-setMenu:">-setMenu:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-setMixedStateImage:">-setMixedStateImage:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-setMnemonicLocation:">-setMnemonicLocation:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-setOffStateImage:">-setOffStateImage:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-setOnStateImage:">-setOnStateImage:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-setRepresentedObject:">-setRepresentedObject:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-setState:">-setState:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-setSubmenu:">-setSubmenu:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-setTag:">-setTag:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-setTarget:">-setTarget:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-setTitle:">-setTitle:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-setTitleWithMnemonic:">-setTitleWithMnemonic:</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-state">-state</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-submenu">-submenu</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-tag">-tag</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-target">-target</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-title">-title</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-userKeyEquivalent">-userKeyEquivalent</a></li>
+      <li><a rel="gsdoc" href="NSMenuItem.html#method$(NSMenuItem)-userKeyEquivalentModifierMask">-userKeyEquivalentModifierMask</a></li>
+    </ul>
+    <hr width="50%" align="left" />
+    <h3><a name="method$(NSMenuItem)+separatorItem">separatorItem</a></h3>
+    + (id) <b>separatorItem</b>;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)+setUsesUserKeyEquivalents:">setUsesUserKeyEquivalents:</a></h3>
+    + (void) <b>setUsesUserKeyEquivalents:</b> (BOOL)flag;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)+usesUserKeyEquivalents">usesUserKeyEquivalents</a></h3>
+    + (BOOL) <b>usesUserKeyEquivalents</b>;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-action">action</a></h3>
+    - (SEL) <b>action</b>;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-hasSubmenu">hasSubmenu</a></h3>
+    - (BOOL) <b>hasSubmenu</b>;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-image">image</a></h3>
+    - (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*) <b>image</b>;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-initWithTitle:action:keyEquivalent:">initWithTitle:action:keyEquivalent:</a></h3>
+    - (id) <b>initWithTitle:</b> (NSString*)aString<b> action:</b> (SEL)aSelector<b> keyEquivalent:</b> (NSString*)charCode;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-isEnabled">isEnabled</a></h3>
+    - (BOOL) <b>isEnabled</b>;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-isSeparatorItem">isSeparatorItem</a></h3>
+    - (BOOL) <b>isSeparatorItem</b>;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-keyEquivalent">keyEquivalent</a></h3>
+    - (NSString*) <b>keyEquivalent</b>;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-keyEquivalentModifierMask">keyEquivalentModifierMask</a></h3>
+    - (unsigned int) <b>keyEquivalentModifierMask</b>;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-menu">menu</a></h3>
+    - (<a rel="gsdoc" href="NSMenu.html#class$NSMenu">NSMenu</a>*) <b>menu</b>;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-mixedStateImage">mixedStateImage</a></h3>
+    - (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*) <b>mixedStateImage</b>;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-mnemonic">mnemonic</a></h3>
+    - (NSString*) <b>mnemonic</b>;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-mnemonicLocation">mnemonicLocation</a></h3>
+    - (unsigned) <b>mnemonicLocation</b>;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-offStateImage">offStateImage</a></h3>
+    - (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*) <b>offStateImage</b>;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-onStateImage">onStateImage</a></h3>
+    - (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*) <b>onStateImage</b>;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-representedObject">representedObject</a></h3>
+    - (id) <b>representedObject</b>;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-setAction:">setAction:</a></h3>
+    - (void) <b>setAction:</b> (SEL)aSelector;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-setEnabled:">setEnabled:</a></h3>
+    - (void) <b>setEnabled:</b> (BOOL)flag;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-setImage:">setImage:</a></h3>
+    - (void) <b>setImage:</b> (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*)menuImage;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-setKeyEquivalent:">setKeyEquivalent:</a></h3>
+    - (void) <b>setKeyEquivalent:</b> (NSString*)aKeyEquivalent;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-setKeyEquivalentModifierMask:">setKeyEquivalentModifierMask:</a></h3>
+    - (void) <b>setKeyEquivalentModifierMask:</b> (unsigned int)mask;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-setMenu:">setMenu:</a></h3>
+    - (void) <b>setMenu:</b> (<a rel="gsdoc" href="NSMenu.html#class$NSMenu">NSMenu</a>*)menu;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-setMixedStateImage:">setMixedStateImage:</a></h3>
+    - (void) <b>setMixedStateImage:</b> (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*)image;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-setMnemonicLocation:">setMnemonicLocation:</a></h3>
+    - (void) <b>setMnemonicLocation:</b> (unsigned)location;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-setOffStateImage:">setOffStateImage:</a></h3>
+    - (void) <b>setOffStateImage:</b> (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*)image;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-setOnStateImage:">setOnStateImage:</a></h3>
+    - (void) <b>setOnStateImage:</b> (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*)image;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-setRepresentedObject:">setRepresentedObject:</a></h3>
+    - (void) <b>setRepresentedObject:</b> (id)anObject;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-setState:">setState:</a></h3>
+    - (void) <b>setState:</b> (int)state;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-setSubmenu:">setSubmenu:</a></h3>
+    - (void) <b>setSubmenu:</b> (<a rel="gsdoc" href="NSMenu.html#class$NSMenu">NSMenu</a>*)submenu;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-setTag:">setTag:</a></h3>
+    - (void) <b>setTag:</b> (int)anInt;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-setTarget:">setTarget:</a></h3>
+    - (void) <b>setTarget:</b> (id)anObject;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-setTitle:">setTitle:</a></h3>
+    - (void) <b>setTitle:</b> (NSString*)aString;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-setTitleWithMnemonic:">setTitleWithMnemonic:</a></h3>
+    - (void) <b>setTitleWithMnemonic:</b> (NSString*)stringWithAmpersand;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-state">state</a></h3>
+    - (int) <b>state</b>;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-submenu">submenu</a></h3>
+    - (<a rel="gsdoc" href="NSMenu.html#class$NSMenu">NSMenu</a>*) <b>submenu</b>;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-tag">tag</a></h3>
+    - (int) <b>tag</b>;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-target">target</a></h3>
+    - (id) <b>target</b>;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-title">title</a></h3>
+    - (NSString*) <b>title</b>;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-userKeyEquivalent">userKeyEquivalent</a></h3>
+    - (NSString*) <b>userKeyEquivalent</b>;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$(NSMenuItem)-userKeyEquivalentModifierMask">userKeyEquivalentModifierMask</a></h3>
+    - (unsigned int) <b>userKeyEquivalentModifierMask</b>;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <br />
+    <a href="Gui.html">Up</a>
+  </body>
+</html>

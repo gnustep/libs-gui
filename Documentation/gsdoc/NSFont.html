@@ -23,7 +23,7 @@
       <h3>Contents -</h3>
       <ol>
         <li>
-          <a href="#001000000000">Software documentation for the NSFont class</a>
+          <a href="#001000000000">NSFont</a>
         </li>
         <li>
           <a href="#002000000000">Software documentation for the NSFont(GNUstep)
@@ -32,10 +32,36 @@
       </ol>
       <hr width="50%" align="left" />
     </div>
-    <h1><a name="001000000000">
-        Software documentation for the NSFont class
-      </a></h1>
-    <h2><a name="class$NSFont">NSFont</a> : <a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a></h2>
+    <h1><a name="001000000000">NSFont</a></h1>
+    <p>
+
+        The NSFont class allows control of the fonts used for
+        displaying text anywhere on the screen. The primary
+        methods for getting a particular font are
+        <a rel="gsdoc" href="#method$(nil)-fontWithName:matrix:">
+          -fontWithName:matrix:
+        </a>
+
+        and
+        <a rel="gsdoc" href="#method$(nil)-fontWithName:size:">
+          -fontWithName:size:
+        </a>
+
+        which take the name and size of a particular font and
+        return the NSFont object associated with that font. In
+        addition there are several convenience mathods which
+        make it easier to get certain types of fonts.
+          </p>
+    <p>
+
+        In particular, there are several methods to get the standard
+        fonts used by the Application to display text for a
+        partiuclar purpose. See the class methods listed
+        below for more information. These default fonts can be
+        set using the user defaults system. The default font names
+        available are:
+            </p>
+    <h2><a name="class$NSFont">NSFont</a> : NSObject</h2>
     <blockquote>
       <dl>
         <dt><b>Declared in:</b></dt>
@@ -45,21 +71,20 @@
     <blockquote>
       <dl>
         <dt><b>Conforms to:</b></dt>
-        <dd><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#protocol$(NSCoding)">NSCoding</a></dd>
-        <dd><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#protocol$(NSCopying)">NSCopying</a></dd>
+        <dd>NSCoding</dd>
+        <dd>NSCopying</dd>
       </dl>
     </blockquote>
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
       
-          <em>Description forthcoming.</em>
         
     </p>
     <b>Method summary</b>
@@ -97,6 +122,7 @@
       <li><a rel="gsdoc" href="NSFont.html#method$NSFont-displayName">-displayName</a></li>
       <li><a rel="gsdoc" href="NSFont.html#method$NSFont-encodingScheme">-encodingScheme</a></li>
       <li><a rel="gsdoc" href="NSFont.html#method$NSFont-familyName">-familyName</a></li>
+      <li><a rel="gsdoc" href="NSFont.html#method$NSFont-fontInfo">-fontInfo</a></li>
       <li><a rel="gsdoc" href="NSFont.html#method$NSFont-fontName">-fontName</a></li>
       <li><a rel="gsdoc" href="NSFont.html#method$NSFont-glyphIsEncoded:">-glyphIsEncoded:</a></li>
       <li><a rel="gsdoc" href="NSFont.html#method$NSFont-glyphPacking">-glyphPacking</a></li>
@@ -123,10 +149,9 @@
       <li><a rel="gsdoc" href="NSFont.html#method$NSFont-widthOfString:">-widthOfString:</a></li>
       <li><a rel="gsdoc" href="NSFont.html#method$NSFont-xHeight">-xHeight</a></li>
     </ul>
-<hr width="50%" align="left" />
+    <hr width="50%" align="left" />
     <h3><a name="method$NSFont+boldSystemFontOfSize:">boldSystemFontOfSize:</a></h3>
     + (<a rel="gsdoc" href="#class$NSFont">NSFont</a>*) <b>boldSystemFontOfSize:</b> (float)fontSize;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -135,7 +160,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont+controlContentFontOfSize:">controlContentFontOfSize:</a></h3>
     + (<a rel="gsdoc" href="#class$NSFont">NSFont</a>*) <b>controlContentFontOfSize:</b> (float)fontSize;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -143,26 +167,35 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont+fontWithName:matrix:">fontWithName:matrix:</a></h3>
-    + (<a rel="gsdoc" href="#class$NSFont">NSFont</a>*) <b>fontWithName:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)name<b> matrix:</b> (const float*)fontMatrix;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    + (<a rel="gsdoc" href="#class$NSFont">NSFont</a>*) <b>fontWithName:</b> (NSString*)aFontName<b> matrix:</b> (const float*)fontMatrix;<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Creates a new font with name <var>aFontName</var>
+            and matrix <var>fontMatrix</var>. The
+            <var>fontMatrix</var> is a standard size element
+            matrix as used in PostScript to describe the scaling
+            of the font, typically it just includes the font size as
+            [fontSize 0 0 fontSize 0 0]. You can use the
+            constant NSFontIdentityMatrix in place of [1 0 0 1
+            0 0]. If NSFontIdentityMatrix, then the font will
+            automatically flip itself when set in a
+            flipped view
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont+fontWithName:size:">fontWithName:size:</a></h3>
-    + (<a rel="gsdoc" href="#class$NSFont">NSFont</a>*) <b>fontWithName:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)name<b> size:</b> (float)fontSize;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    + (<a rel="gsdoc" href="#class$NSFont">NSFont</a>*) <b>fontWithName:</b> (NSString*)aFontName<b> size:</b> (float)fontSize;<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Creates a new font with name <var>aFontName</var>
+            and size <var>fontSize</var>. Fonts created using this
+            method will automatically flip themselves when set
+            in a flipped view
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont+labelFontOfSize:">labelFontOfSize:</a></h3>
     + (<a rel="gsdoc" href="#class$NSFont">NSFont</a>*) <b>labelFontOfSize:</b> (float)fontSize;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -171,7 +204,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont+labelFontSize">labelFontSize</a></h3>
     + (float) <b>labelFontSize</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -180,7 +212,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont+menuFontOfSize:">menuFontOfSize:</a></h3>
     + (<a rel="gsdoc" href="#class$NSFont">NSFont</a>*) <b>menuFontOfSize:</b> (float)fontSize;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -189,7 +220,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont+messageFontOfSize:">messageFontOfSize:</a></h3>
     + (<a rel="gsdoc" href="#class$NSFont">NSFont</a>*) <b>messageFontOfSize:</b> (float)fontSize;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -198,7 +228,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont+paletteFontOfSize:">paletteFontOfSize:</a></h3>
     + (<a rel="gsdoc" href="#class$NSFont">NSFont</a>*) <b>paletteFontOfSize:</b> (float)fontSize;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -206,8 +235,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont+preferredFontNames">preferredFontNames</a></h3>
-    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>preferredFontNames</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    + (NSArray*) <b>preferredFontNames</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -215,8 +243,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont+setPreferredFontNames:">setPreferredFontNames:</a></h3>
-    + (void) <b>setPreferredFontNames:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)fontNames;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    + (void) <b>setPreferredFontNames:</b> (NSArray*)fontNames;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -224,8 +251,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont+setUserFixedPitchFont:">setUserFixedPitchFont:</a></h3>
-    + (void) <b>setUserFixedPitchFont:</b> (<a rel="gsdoc" href="#class$NSFont">NSFont</a>*)font;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    + (void) <b>setUserFixedPitchFont:</b> (<a rel="gsdoc" href="#class$NSFont">NSFont</a>*)aFont;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -233,8 +259,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont+setUserFont:">setUserFont:</a></h3>
-    + (void) <b>setUserFont:</b> (<a rel="gsdoc" href="#class$NSFont">NSFont</a>*)font;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    + (void) <b>setUserFont:</b> (<a rel="gsdoc" href="#class$NSFont">NSFont</a>*)aFont;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -243,7 +268,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont+smallSystemFontSize">smallSystemFontSize</a></h3>
     + (float) <b>smallSystemFontSize</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -252,7 +276,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont+systemFontOfSize:">systemFontOfSize:</a></h3>
     + (<a rel="gsdoc" href="#class$NSFont">NSFont</a>*) <b>systemFontOfSize:</b> (float)fontSize;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -261,7 +284,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont+systemFontSize">systemFontSize</a></h3>
     + (float) <b>systemFontSize</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -270,7 +292,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont+titleBarFontOfSize:">titleBarFontOfSize:</a></h3>
     + (<a rel="gsdoc" href="#class$NSFont">NSFont</a>*) <b>titleBarFontOfSize:</b> (float)fontSize;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -279,7 +300,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont+toolTipsFontOfSize:">toolTipsFontOfSize:</a></h3>
     + (<a rel="gsdoc" href="#class$NSFont">NSFont</a>*) <b>toolTipsFontOfSize:</b> (float)fontSize;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -287,8 +307,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont+useFont:">useFont:</a></h3>
-    + (void) <b>useFont:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)name;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    + (void) <b>useFont:</b> (NSString*)aFontName;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -297,7 +316,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont+userFixedPitchFontOfSize:">userFixedPitchFontOfSize:</a></h3>
     + (<a rel="gsdoc" href="#class$NSFont">NSFont</a>*) <b>userFixedPitchFontOfSize:</b> (float)fontSize;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -306,7 +324,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont+userFontOfSize:">userFontOfSize:</a></h3>
     + (<a rel="gsdoc" href="#class$NSFont">NSFont</a>*) <b>userFontOfSize:</b> (float)fontSize;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -314,8 +331,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-advancementForGlyph:">advancementForGlyph:</a></h3>
-    - (NSSize) <b>advancementForGlyph:</b> (NSGlyph)aGlyph;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSSize) <b>advancementForGlyph:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSGlyph">NSGlyph</a>)aGlyph;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -323,8 +339,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-afmDictionary">afmDictionary</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*) <b>afmDictionary</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSDictionary*) <b>afmDictionary</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -332,8 +347,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-afmFileContents">afmFileContents</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>afmFileContents</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>afmFileContents</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -342,7 +356,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-ascender">ascender</a></h3>
     - (float) <b>ascender</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -351,7 +364,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-boundingRectForFont">boundingRectForFont</a></h3>
     - (NSRect) <b>boundingRectForFont</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -359,8 +371,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-boundingRectForGlyph:">boundingRectForGlyph:</a></h3>
-    - (NSRect) <b>boundingRectForGlyph:</b> (NSGlyph)aGlyph;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSRect) <b>boundingRectForGlyph:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSGlyph">NSGlyph</a>)aGlyph;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -369,7 +380,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-capHeight">capHeight</a></h3>
     - (float) <b>capHeight</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -378,7 +388,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-defaultLineHeightForFont">defaultLineHeightForFont</a></h3>
     - (float) <b>defaultLineHeightForFont</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -387,7 +396,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-descender">descender</a></h3>
     - (float) <b>descender</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -395,8 +403,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-displayName">displayName</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>displayName</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>displayName</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -404,8 +411,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-encodingScheme">encodingScheme</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>encodingScheme</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>encodingScheme</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -413,8 +419,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-familyName">familyName</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>familyName</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>familyName</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -422,8 +427,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-fontName">fontName</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>fontName</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>fontName</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -431,8 +435,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-glyphIsEncoded:">glyphIsEncoded:</a></h3>
-    - (BOOL) <b>glyphIsEncoded:</b> (NSGlyph)aGlyph;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (BOOL) <b>glyphIsEncoded:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSGlyph">NSGlyph</a>)aGlyph;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -440,8 +443,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-glyphPacking">glyphPacking</a></h3>
-    - (NSMultibyteGlyphPacking) <b>glyphPacking</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (<a rel="gsdoc" href="TypesAndConstants.html#type$NSMultibyteGlyphPacking">NSMultibyteGlyphPacking</a>) <b>glyphPacking</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -449,8 +451,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-glyphWithName:">glyphWithName:</a></h3>
-    - (NSGlyph) <b>glyphWithName:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)glyphName;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (<a rel="gsdoc" href="TypesAndConstants.html#type$NSGlyph">NSGlyph</a>) <b>glyphWithName:</b> (NSString*)glyphName;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -459,7 +460,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-isBaseFont">isBaseFont</a></h3>
     - (BOOL) <b>isBaseFont</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -468,7 +468,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-isFixedPitch">isFixedPitch</a></h3>
     - (BOOL) <b>isFixedPitch</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -477,7 +476,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-italicAngle">italicAngle</a></h3>
     - (float) <b>italicAngle</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -486,7 +484,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-matrix">matrix</a></h3>
     - (const float*) <b>matrix</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -495,7 +492,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-maximumAdvancement">maximumAdvancement</a></h3>
     - (NSSize) <b>maximumAdvancement</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -504,7 +500,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-minimumAdvancement">minimumAdvancement</a></h3>
     - (NSSize) <b>minimumAdvancement</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -513,7 +508,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-mostCompatibleStringEncoding">mostCompatibleStringEncoding</a></h3>
     - (NSStringEncoding) <b>mostCompatibleStringEncoding</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -522,7 +516,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-pointSize">pointSize</a></h3>
     - (float) <b>pointSize</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -530,8 +523,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-positionOfGlyph:forCharacter:struckOverRect:">positionOfGlyph:forCharacter:struckOverRect:</a></h3>
-    - (NSPoint) <b>positionOfGlyph:</b> (NSGlyph)aGlyph<b> forCharacter:</b> (unichar)aChar<b> struckOverRect:</b> (NSRect)aRect;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSPoint) <b>positionOfGlyph:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSGlyph">NSGlyph</a>)aGlyph<b> forCharacter:</b> (unichar)aChar<b> struckOverRect:</b> (NSRect)aRect;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -539,8 +531,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-positionOfGlyph:precededByGlyph:isNominal:">positionOfGlyph:precededByGlyph:isNominal:</a></h3>
-    - (NSPoint) <b>positionOfGlyph:</b> (NSGlyph)curGlyph<b> precededByGlyph:</b> (NSGlyph)prevGlyph<b> isNominal:</b> (BOOL*)nominal;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSPoint) <b>positionOfGlyph:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSGlyph">NSGlyph</a>)curGlyph<b> precededByGlyph:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSGlyph">NSGlyph</a>)prevGlyph<b> isNominal:</b> (BOOL*)nominal;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -548,8 +539,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-positionOfGlyph:struckOverGlyph:metricsExist:">positionOfGlyph:struckOverGlyph:metricsExist:</a></h3>
-    - (NSPoint) <b>positionOfGlyph:</b> (NSGlyph)aGlyph<b> struckOverGlyph:</b> (NSGlyph)baseGlyph<b> metricsExist:</b> (BOOL*)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSPoint) <b>positionOfGlyph:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSGlyph">NSGlyph</a>)aGlyph<b> struckOverGlyph:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSGlyph">NSGlyph</a>)baseGlyph<b> metricsExist:</b> (BOOL*)flag;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -557,8 +547,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-positionOfGlyph:struckOverRect:metricsExist:">positionOfGlyph:struckOverRect:metricsExist:</a></h3>
-    - (NSPoint) <b>positionOfGlyph:</b> (NSGlyph)aGlyph<b> struckOverRect:</b> (NSRect)aRect<b> metricsExist:</b> (BOOL*)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSPoint) <b>positionOfGlyph:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSGlyph">NSGlyph</a>)aGlyph<b> struckOverRect:</b> (NSRect)aRect<b> metricsExist:</b> (BOOL*)flag;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -566,8 +555,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-positionOfGlyph:withRelation:toBaseGlyph:totalAdvancement:metricsExist:">positionOfGlyph:withRelation:toBaseGlyph:totalAdvancement:metricsExist:</a></h3>
-    - (NSPoint) <b>positionOfGlyph:</b> (NSGlyph)aGlyph<b> withRelation:</b> (NSGlyphRelation)relation<b> toBaseGlyph:</b> (NSGlyph)baseGlyph<b> totalAdvancement:</b> (NSSize*)offset<b> metricsExist:</b> (BOOL*)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSPoint) <b>positionOfGlyph:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSGlyph">NSGlyph</a>)aGlyph<b> withRelation:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSGlyphRelation">NSGlyphRelation</a>)relation<b> toBaseGlyph:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSGlyph">NSGlyph</a>)baseGlyph<b> totalAdvancement:</b> (NSSize*)offset<b> metricsExist:</b> (BOOL*)flag;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -575,8 +563,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-positionsForCompositeSequence:numberOfGlyphs:pointArray:">positionsForCompositeSequence:numberOfGlyphs:pointArray:</a></h3>
-    - (int) <b>positionsForCompositeSequence:</b> (NSGlyph*)glyphs<b> numberOfGlyphs:</b> (int)numGlyphs<b> pointArray:</b> (NSPoint*)points;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (int) <b>positionsForCompositeSequence:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSGlyph">NSGlyph</a>*)glyphs<b> numberOfGlyphs:</b> (int)numGlyphs<b> pointArray:</b> (NSPoint*)points;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -585,7 +572,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-printerFont">printerFont</a></h3>
     - (<a rel="gsdoc" href="#class$NSFont">NSFont</a>*) <b>printerFont</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -594,7 +580,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-screenFont">screenFont</a></h3>
     - (<a rel="gsdoc" href="#class$NSFont">NSFont</a>*) <b>screenFont</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -603,16 +588,19 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-set">set</a></h3>
     - (void) <b>set</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Sets the receiver as the font used for text drawing
+            operations. If the current view is a flipped
+            view, the reciever automatically flips itself to
+            display correctly in the flipped view, as long as
+            the font was created without explicitly setting the
+            font matrix
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-underlinePosition">underlinePosition</a></h3>
     - (float) <b>underlinePosition</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -621,7 +609,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-underlineThickness">underlineThickness</a></h3>
     - (float) <b>underlineThickness</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -629,8 +616,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-widthOfString:">widthOfString:</a></h3>
-    - (float) <b>widthOfString:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)string;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (float) <b>widthOfString:</b> (NSString*)string;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -639,7 +625,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFont-xHeight">xHeight</a></h3>
     - (float) <b>xHeight</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -660,9 +645,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
+        <li>MacOS-X</li>
         <li>NotOpenStep</li>
         <li>GNUstep</li>
-        <li>MacOS-X</li>
       </ul>
     </blockquote>
     <p>
@@ -672,12 +657,11 @@
     </p>
     <b>Method summary</b>
     <ul>
-      <li><a rel="gsdoc" href="NSFont.html#method$NSFont(GNUstep)-fontInfo">-fontInfo</a></li>
+      <li><a rel="gsdoc" href="NSFont.html#method$NSFont-fontInfo">-fontInfo</a></li>
     </ul>
-<hr width="50%" align="left" />
-    <h3><a name="method$NSFont(GNUstep)-fontInfo">fontInfo</a></h3>
+    <hr width="50%" align="left" />
+    <h3><a name="method$NSFont-fontInfo">fontInfo</a></h3>
     - (GSFontInfo*) <b>fontInfo</b>;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>

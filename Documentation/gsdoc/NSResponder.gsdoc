@@ -26,13 +26,18 @@
         <desc>
           <em>Description forthcoming.</em>
         </desc>
+        <ivariable type="" name="_rFlags">
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+        </ivariable>
         <method type="BOOL">
           <sel>acceptsFirstResponder</sel>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -41,137 +46,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>capitalizeWord:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>centerSelectionInVisibleArea:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>changeCaseOfLetter:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>complete:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>deleteBackward:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>deleteForward:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>deleteToBeginningOfLine:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>deleteToBeginningOfParagraph:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>deleteToEndOfLine:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>deleteToEndOfParagraph:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>deleteToMark:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>deleteWordBackward:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>deleteWordForward:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -181,7 +56,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -191,7 +66,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -201,7 +76,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -210,7 +85,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -220,17 +95,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>indent:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="id">
@@ -240,67 +105,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>insertBacktab:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>insertNewline:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>insertNewlineIgnoringFieldEditor:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>insertParagraphSeparator:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>insertTab:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>insertTabIgnoringFieldEditor:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -310,7 +115,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSInterfaceStyle">
@@ -319,7 +124,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -329,7 +134,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -339,7 +144,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -349,17 +154,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>lowercaseWord:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSMenu*">
@@ -368,37 +163,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>middleMouseDown:</sel>
-          <arg type="NSEvent*">theEvent</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <NotMacOS-X /> <GNUstep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>middleMouseDragged:</sel>
-          <arg type="NSEvent*">theEvent</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <NotMacOS-X /> <GNUstep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>middleMouseUp:</sel>
-          <arg type="NSEvent*">theEvent</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <NotMacOS-X /> <GNUstep />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -408,7 +173,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -418,7 +183,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -428,7 +193,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -438,7 +203,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -448,7 +213,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -458,207 +223,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>moveBackward:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>moveBackwardAndModifySelection:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>moveDown:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>moveDownAndModifySelection:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>moveForward:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>moveForwardAndModifySelection:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>moveLeft:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>moveRight:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>moveToBeginningOfDocument:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>moveToBeginningOfLine:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>moveToBeginningOfParagraph:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>moveToEndOfDocument:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>moveToEndOfLine:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>moveToEndOfParagraph:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>moveUp:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>moveUpAndModifySelection:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>moveWordBackward:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>moveWordBackwardAndModifySelection:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>moveWordForward:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>moveWordForwardAndModifySelection:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSResponder*">
@@ -667,7 +232,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -677,27 +242,37 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
-          <sel>pageDown:</sel>
-          <arg type="id">sender</arg>
+          <sel>otherMouseDown:</sel>
+          <arg type="NSEvent*">theEvent</arg>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
-          <sel>pageUp:</sel>
-          <arg type="id">sender</arg>
+          <sel>otherMouseDragged:</sel>
+          <arg type="NSEvent*">theEvent</arg>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>otherMouseUp:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -707,7 +282,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -717,7 +292,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -726,7 +301,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -736,7 +311,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -746,7 +321,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -756,47 +331,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>scrollLineDown:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>scrollLineUp:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>scrollPageDown:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>scrollPageUp:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -806,57 +341,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>selectAll:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>selectLine:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>selectParagraph:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>selectToMark:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>selectWord:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -866,7 +351,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -876,7 +361,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -886,47 +371,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>showContextHelp:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>swapWithMark:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>transpose:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>transposeWords:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -938,7 +383,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSUndoManager*">
@@ -947,17 +392,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>uppercaseWord:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="id">
@@ -969,7 +404,593 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <standards>
+          <MacOS-X /> <OpenStep /> <GNUstep />
+        </standards>
+      </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSResponder(OptionalActionMethods)
+        category
+      </heading>
+      <category name="OptionalActionMethods" class="NSResponder">
+        <declared>AppKit/NSResponder.h</declared>
+        <desc>
+          <em>Description forthcoming.</em>
+        </desc>
+        <method type="void">
+          <sel>capitalizeWord:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>centerSelectionInVisibleArea:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>changeCaseOfLetter:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>complete:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>deleteBackward:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>deleteForward:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>deleteToBeginningOfLine:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>deleteToBeginningOfParagraph:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>deleteToEndOfLine:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>deleteToEndOfParagraph:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>deleteToMark:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>deleteWordBackward:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>deleteWordForward:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>indent:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>insertBacktab:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>insertNewline:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>insertNewlineIgnoringFieldEditor:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>insertParagraphSeparator:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>insertTab:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>insertTabIgnoringFieldEditor:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>lowercaseWord:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>moveBackward:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>moveBackwardAndModifySelection:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>moveDown:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>moveDownAndModifySelection:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>moveForward:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>moveForwardAndModifySelection:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>moveLeft:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>moveRight:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>moveToBeginningOfDocument:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>moveToBeginningOfLine:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>moveToBeginningOfParagraph:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>moveToEndOfDocument:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>moveToEndOfLine:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>moveToEndOfParagraph:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>moveUp:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>moveUpAndModifySelection:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>moveWordBackward:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>moveWordBackwardAndModifySelection:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>moveWordForward:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>moveWordForwardAndModifySelection:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>pageDown:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>pageUp:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>scrollLineDown:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>scrollLineUp:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>scrollPageDown:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>scrollPageUp:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>selectAll:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>selectLine:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>selectParagraph:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>selectToMark:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>selectWord:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>showContextHelp:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>swapWithMark:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>transpose:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>transposeWords:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>uppercaseWord:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -979,13 +1000,13 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <NotOpenStep /> <GNUstep /> <MacOS-X />
+            <MacOS-X /> <NotOpenStep /> <GNUstep />
           </standards>
         </method>
         <standards>
-          <GNUstep /> <MacOS-X /> <OpenStep />
+          <MacOS-X /> <NotOpenStep /> <GNUstep />
         </standards>
-      </class>
+      </category>
     </chapter>
   </body>
 </gsdoc>

@@ -1144,7 +1144,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 /**
  * Returns the application bundle for the named application. Accepts
  * either a full path to an app or just the name. The extension (.app,
- * .debug, .profile) is optional, but if provided it will be used.< br />
+ * .debug, .profile) is optional, but if provided it will be used.<br />
  * Returns nil if the specified app does not exist as requested.
  */
 - (NSBundle*) bundleForApp: (NSString*)appName

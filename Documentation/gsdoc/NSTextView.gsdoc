@@ -13,7 +13,7 @@
         far@ix.netcom.com
       </email>
     </author>
-    <author name="Daniel Bðhringer">
+    <author name="Daniel BÃ°hringer">
       <email address="boehring@biomed.ruhr-uni-bochum.de">
         boehring@biomed.ruhr-uni-bochum.de
       </email>
@@ -50,7 +50,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSArray*">
@@ -59,7 +59,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -69,7 +69,25 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>allowsUndo</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>becomeFirstResponder</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -79,7 +97,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -88,7 +106,16 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>didChangeText</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSImage*">
@@ -100,7 +127,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="unsigned int">
@@ -112,7 +139,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -126,7 +153,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -140,7 +167,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="id">
@@ -150,7 +177,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="id">
@@ -162,7 +189,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -172,7 +199,16 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="NSColor*">
+          <sel>insertionPointColor</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -181,7 +217,16 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>isContinuousSpellCheckingEnabled</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSLayoutManager*">
@@ -190,7 +235,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -200,7 +245,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -210,7 +255,25 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="NSRange">
+          <sel>markedRange</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="NSDictionary*">
+          <sel>markedTextAttributes</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -220,7 +283,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -230,7 +293,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSString*">
@@ -242,7 +305,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -252,7 +315,34 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="NSRange">
+          <sel>rangeForUserCharacterAttributeChange</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="NSRange">
+          <sel>rangeForUserParagraphAttributeChange</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="NSRange">
+          <sel>rangeForUserTextChange</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -262,7 +352,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -274,7 +364,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSArray*">
@@ -283,7 +373,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -293,7 +383,16 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>resignFirstResponder</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -305,7 +404,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -317,7 +416,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -329,7 +428,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -341,7 +440,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -353,7 +452,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -365,7 +464,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -377,7 +476,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="float">
@@ -391,7 +490,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="float">
@@ -405,7 +504,43 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="NSRange">
+          <sel>selectedRange</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="NSDictionary*">
+          <sel>selectedTextAttributes</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="NSSelectionAffinity">
+          <sel>selectionAffinity</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="NSSelectionGranularity">
+          <sel>selectionGranularity</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSRange">
@@ -417,7 +552,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -429,7 +564,17 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setAllowsUndo:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -439,7 +584,37 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setContinuousSpellCheckingEnabled:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setInsertionPointColor:</sel>
+          <arg type="NSColor*">aColor</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setMarkedTextAttributes:</sel>
+          <arg type="NSDictionary*">attributes</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -451,7 +626,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -461,7 +636,61 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setSelectedRange:</sel>
+          <arg type="NSRange">range</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setSelectedRange:</sel>
+          <arg type="NSRange">range</arg>
+          <sel>affinity:</sel>
+          <arg type="NSSelectionAffinity">affinity</arg>
+          <sel>stillSelecting:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setSelectedTextAttributes:</sel>
+          <arg type="NSDictionary*">attributes</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setSelectionGranularity:</sel>
+          <arg type="NSSelectionGranularity">granularity</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setSmartInsertDeleteEnabled:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -471,7 +700,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -481,7 +710,39 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setTypingAttributes:</sel>
+          <arg type="NSDictionary*">dict</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>setUsesRuler:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>shouldChangeTextInRange:</sel>
+          <arg type="NSRange">affectedCharRange</arg>
+          <sel>replacementString:</sel>
+          <arg type="NSString*">replacementString</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -490,7 +751,51 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="NSRange">
+          <sel>smartDeleteRangeForProposedRange:</sel>
+          <arg type="NSRange">proposedCharRange</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>smartInsertDeleteEnabled</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>smartInsertForString:</sel>
+          <arg type="NSString*">aString</arg>
+          <sel>replacingRange:</sel>
+          <arg type="NSRange">charRange</arg>
+          <sel>beforeString:</sel>
+          <arg type="NSString**">beforeString</arg>
+          <sel>afterString:</sel>
+          <arg type="NSString**">afterString</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="int">
+          <sel>spellCheckerDocumentTag</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSTextContainer*">
@@ -499,7 +804,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSSize">
@@ -508,7 +813,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSPoint">
@@ -517,7 +822,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSTextStorage*">
@@ -526,7 +831,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -536,7 +841,17 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>toggleContinuousSpellChecking:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -546,7 +861,17 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>transpose:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -556,7 +881,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -566,7 +891,16 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="NSDictionary*">
+          <sel>typingAttributes</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -575,7 +909,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -584,7 +918,17 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>updateInsertionPointStateAndRestartTimer:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -593,7 +937,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -603,7 +947,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -613,7 +957,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -623,7 +967,28 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>usesRuler</sel>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="id">
+          <sel>validRequestorForSendType:</sel>
+          <arg type="NSString*">sendType</arg>
+          <sel>returnType:</sel>
+          <arg type="NSString*">returnType</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSArray*">
@@ -632,7 +997,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -644,7 +1009,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -656,11 +1021,11 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <standards>
-          <GNUstep /> <MacOS-X /> <OpenStep />
+          <MacOS-X /> <OpenStep /> <GNUstep />
         </standards>
       </class>
     </chapter>
@@ -668,7 +1033,7 @@
       <heading>
         Software documentation for the
         NSObject(NSTextViewDelegate)
-        category
+        informal protocol
       </heading>
       <category name="NSTextViewDelegate" class="NSObject">
         <declared>AppKit/NSTextView.h</declared>
@@ -686,7 +1051,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -702,7 +1067,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -714,7 +1079,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -728,7 +1093,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -740,7 +1105,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -754,7 +1119,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -770,7 +1135,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -786,7 +1151,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -804,7 +1169,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -818,7 +1183,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSRange">
@@ -832,7 +1197,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -842,7 +1207,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSUndoManager*">
@@ -852,11 +1217,11 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <standards>
-          <GNUstep /> <MacOS-X /> <OpenStep />
+          <MacOS-X /> <OpenStep /> <GNUstep />
         </standards>
       </category>
     </chapter>
@@ -877,571 +1242,11 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <standards>
-          <GNUstep /> <MacOS-X /> <OpenStep />
-        </standards>
-      </category>
-    </chapter>
-    <chapter>
-      <heading>
-        Software documentation for the NSTextView(NSSharing)
-        category
-      </heading>
-      <category name="NSSharing" class="NSTextView">
-        <declared>AppKit/NSTextView.h</declared>
-        <desc>
-          <em>Description forthcoming.</em>
-        </desc>
-        <method type="BOOL">
-          <sel>allowsUndo</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="NSColor*">
-          <sel>backgroundColor</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="BOOL">
-          <sel>becomeFirstResponder</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="id">
-          <sel>delegate</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>didChangeText</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="BOOL">
-          <sel>drawsBackground</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="BOOL">
-          <sel>importsGraphics</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="NSColor*">
-          <sel>insertionPointColor</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="BOOL">
-          <sel>isContinuousSpellCheckingEnabled</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="BOOL">
-          <sel>isEditable</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="BOOL">
-          <sel>isFieldEditor</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="BOOL">
-          <sel>isRichText</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="BOOL">
-          <sel>isRulerVisible</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="BOOL">
-          <sel>isSelectable</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="NSRange">
-          <sel>markedRange</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="NSDictionary*">
-          <sel>markedTextAttributes</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="NSRange">
-          <sel>rangeForUserCharacterAttributeChange</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="NSRange">
-          <sel>rangeForUserParagraphAttributeChange</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="NSRange">
-          <sel>rangeForUserTextChange</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="BOOL">
-          <sel>resignFirstResponder</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="NSRange">
-          <sel>selectedRange</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="NSDictionary*">
-          <sel>selectedTextAttributes</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="NSSelectionAffinity">
-          <sel>selectionAffinity</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="NSSelectionGranularity">
-          <sel>selectionGranularity</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>setAllowsUndo:</sel>
-          <arg type="BOOL">flag</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>setBackgroundColor:</sel>
-          <arg type="NSColor*">color</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>setContinuousSpellCheckingEnabled:</sel>
-          <arg type="BOOL">flag</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>setDelegate:</sel>
-          <arg type="id">anObject</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>setDrawsBackground:</sel>
-          <arg type="BOOL">flag</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>setEditable:</sel>
-          <arg type="BOOL">flag</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>setFieldEditor:</sel>
-          <arg type="BOOL">flag</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>setImportsGraphics:</sel>
-          <arg type="BOOL">flag</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>setInsertionPointColor:</sel>
-          <arg type="NSColor*">color</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>setMarkedTextAttributes:</sel>
-          <arg type="NSDictionary*">attributeDictionary</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>setRichText:</sel>
-          <arg type="BOOL">flag</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>setRulerVisible:</sel>
-          <arg type="BOOL">flag</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>setSelectable:</sel>
-          <arg type="BOOL">flag</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>setSelectedRange:</sel>
-          <arg type="NSRange">charRange</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>setSelectedRange:</sel>
-          <arg type="NSRange">charRange</arg>
-          <sel>affinity:</sel>
-          <arg type="NSSelectionAffinity">affinity</arg>
-          <sel>stillSelecting:</sel>
-          <arg type="BOOL">stillSelectingFlag</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>setSelectedTextAttributes:</sel>
-          <arg type="NSDictionary*">attributeDictionary</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>setSelectionGranularity:</sel>
-          <arg type="NSSelectionGranularity">granularity</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>setSmartInsertDeleteEnabled:</sel>
-          <arg type="BOOL">flag</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>setTypingAttributes:</sel>
-          <arg type="NSDictionary*">attrs</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>setUsesFontPanel:</sel>
-          <arg type="BOOL">flag</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>setUsesRuler:</sel>
-          <arg type="BOOL">flag</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="BOOL">
-          <sel>shouldChangeTextInRange:</sel>
-          <arg type="NSRange">affectedCharRange</arg>
-          <sel>replacementString:</sel>
-          <arg type="NSString*">replacementString</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="NSRange">
-          <sel>smartDeleteRangeForProposedRange:</sel>
-          <arg type="NSRange">proposedCharRange</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="BOOL">
-          <sel>smartInsertDeleteEnabled</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>smartInsertForString:</sel>
-          <arg type="NSString*">aString</arg>
-          <sel>replacingRange:</sel>
-          <arg type="NSRange">charRange</arg>
-          <sel>beforeString:</sel>
-          <arg type="NSString**">beforeString</arg>
-          <sel>afterString:</sel>
-          <arg type="NSString**">afterString</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="int">
-          <sel>spellCheckerDocumentTag</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>toggleContinuousSpellChecking:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="NSDictionary*">
-          <sel>typingAttributes</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="void">
-          <sel>updateInsertionPointStateAndRestartTimer:</sel>
-          <arg type="BOOL">restartFlag</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="BOOL">
-          <sel>usesFontPanel</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="BOOL">
-          <sel>usesRuler</sel>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <method type="id">
-          <sel>validRequestorForSendType:</sel>
-          <arg type="NSString*">sendType</arg>
-          <sel>returnType:</sel>
-          <arg type="NSString*">returnType</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
-          </standards>
-        </method>
-        <standards>
-          <GNUstep /> <MacOS-X /> <OpenStep />
+          <MacOS-X /> <OpenStep /> <GNUstep />
         </standards>
       </category>
     </chapter>

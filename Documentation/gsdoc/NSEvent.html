@@ -73,10 +73,12 @@
       <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent+enterExitEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:trackingNumber:userData:">+enterExitEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:trackingNumber:userData:</a></li>
       <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent+keyEventWithType:location:modifierFlags:timestamp:windowNumber:context:characters:charactersIgnoringModifiers:isARepeat:keyCode:">+keyEventWithType:location:modifierFlags:timestamp:windowNumber:context:characters:charactersIgnoringModifiers:isARepeat:keyCode:</a></li>
       <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent+mouseEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:clickCount:pressure:">+mouseEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:clickCount:pressure:</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent+mouseEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:clickCount:pressure:buttonNumber:deltaX:deltaY:deltaZ:">+mouseEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:clickCount:pressure:buttonNumber:deltaX:deltaY:deltaZ:</a></li>
       <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent+mouseLocation">+mouseLocation</a></li>
       <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent+otherEventWithType:location:modifierFlags:timestamp:windowNumber:context:subtype:data1:data2:">+otherEventWithType:location:modifierFlags:timestamp:windowNumber:context:subtype:data1:data2:</a></li>
       <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent+startPeriodicEventsAfterDelay:withPeriod:">+startPeriodicEventsAfterDelay:withPeriod:</a></li>
       <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent+stopPeriodicEvents">+stopPeriodicEvents</a></li>
+      <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-buttonNumber">-buttonNumber</a></li>
       <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-characters">-characters</a></li>
       <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-charactersIgnoringModifiers">-charactersIgnoringModifiers</a></li>
       <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-clickCount">-clickCount</a></li>
@@ -100,10 +102,9 @@
       <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-window">-window</a></li>
       <li><a rel="gsdoc" href="NSEvent.html#method$NSEvent-windowNumber">-windowNumber</a></li>
     </ul>
-<hr width="50%" align="left" />
+    <hr width="50%" align="left" />
     <h3><a name="method$NSEvent+enterExitEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:trackingNumber:userData:">enterExitEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:trackingNumber:userData:</a></h3>
-    + (<a rel="gsdoc" href="#class$NSEvent">NSEvent</a>*) <b>enterExitEventWithType:</b> (NSEventType)type<b> location:</b> (NSPoint)location<b> modifierFlags:</b> (unsigned int)flags<b> timestamp:</b> (NSTimeInterval)time<b> windowNumber:</b> (int)windowNum<b> context:</b> (<a rel="gsdoc" href="NSGraphicsContext.html#class$NSGraphicsContext">NSGraphicsContext</a>*)context<b> eventNumber:</b> (int)eventNum<b> trackingNumber:</b> (int)trackingNum<b> userData:</b> (void*)userData;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    + (<a rel="gsdoc" href="#class$NSEvent">NSEvent</a>*) <b>enterExitEventWithType:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSEventType">NSEventType</a>)type<b> location:</b> (NSPoint)location<b> modifierFlags:</b> (unsigned int)flags<b> timestamp:</b> (NSTimeInterval)time<b> windowNumber:</b> (int)windowNum<b> context:</b> (<a rel="gsdoc" href="NSGraphicsContext.html#class$NSGraphicsContext">NSGraphicsContext</a>*)context<b> eventNumber:</b> (int)eventNum<b> trackingNumber:</b> (int)trackingNum<b> userData:</b> (void*)userData;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -111,8 +112,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent+keyEventWithType:location:modifierFlags:timestamp:windowNumber:context:characters:charactersIgnoringModifiers:isARepeat:keyCode:">keyEventWithType:location:modifierFlags:timestamp:windowNumber:context:characters:charactersIgnoringModifiers:isARepeat:keyCode:</a></h3>
-    + (<a rel="gsdoc" href="#class$NSEvent">NSEvent</a>*) <b>keyEventWithType:</b> (NSEventType)type<b> location:</b> (NSPoint)location<b> modifierFlags:</b> (unsigned int)flags<b> timestamp:</b> (NSTimeInterval)time<b> windowNumber:</b> (int)windowNum<b> context:</b> (<a rel="gsdoc" href="NSGraphicsContext.html#class$NSGraphicsContext">NSGraphicsContext</a>*)context<b> characters:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)keys<b> charactersIgnoringModifiers:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)ukeys<b> isARepeat:</b> (BOOL)repeatKey<b> keyCode:</b> (unsigned short)code;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    + (<a rel="gsdoc" href="#class$NSEvent">NSEvent</a>*) <b>keyEventWithType:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSEventType">NSEventType</a>)type<b> location:</b> (NSPoint)location<b> modifierFlags:</b> (unsigned int)flags<b> timestamp:</b> (NSTimeInterval)time<b> windowNumber:</b> (int)windowNum<b> context:</b> (<a rel="gsdoc" href="NSGraphicsContext.html#class$NSGraphicsContext">NSGraphicsContext</a>*)context<b> characters:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)keys<b> charactersIgnoringModifiers:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)ukeys<b> isARepeat:</b> (BOOL)repeatKey<b> keyCode:</b> (unsigned short)code;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -120,8 +120,15 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent+mouseEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:clickCount:pressure:">mouseEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:clickCount:pressure:</a></h3>
-    + (<a rel="gsdoc" href="#class$NSEvent">NSEvent</a>*) <b>mouseEventWithType:</b> (NSEventType)type<b> location:</b> (NSPoint)location<b> modifierFlags:</b> (unsigned int)flags<b> timestamp:</b> (NSTimeInterval)time<b> windowNumber:</b> (int)windowNum<b> context:</b> (<a rel="gsdoc" href="NSGraphicsContext.html#class$NSGraphicsContext">NSGraphicsContext</a>*)context<b> eventNumber:</b> (int)eventNum<b> clickCount:</b> (int)clickNum<b> pressure:</b> (float)pressureValue;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    + (<a rel="gsdoc" href="#class$NSEvent">NSEvent</a>*) <b>mouseEventWithType:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSEventType">NSEventType</a>)type<b> location:</b> (NSPoint)location<b> modifierFlags:</b> (unsigned int)flags<b> timestamp:</b> (NSTimeInterval)time<b> windowNumber:</b> (int)windowNum<b> context:</b> (<a rel="gsdoc" href="NSGraphicsContext.html#class$NSGraphicsContext">NSGraphicsContext</a>*)context<b> eventNumber:</b> (int)eventNum<b> clickCount:</b> (int)clickNum<b> pressure:</b> (float)pressureValue;<br />
+    <p>
+      
+            <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent+mouseEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:clickCount:pressure:buttonNumber:deltaX:deltaY:deltaZ:">mouseEventWithType:location:modifierFlags:timestamp:windowNumber:context:eventNumber:clickCount:pressure:buttonNumber:deltaX:deltaY:deltaZ:</a></h3>
+    + (<a rel="gsdoc" href="#class$NSEvent">NSEvent</a>*) <b>mouseEventWithType:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSEventType">NSEventType</a>)type<b> location:</b> (NSPoint)location<b> modifierFlags:</b> (unsigned int)flags<b> timestamp:</b> (NSTimeInterval)time<b> windowNumber:</b> (int)windowNum<b> context:</b> (<a rel="gsdoc" href="NSGraphicsContext.html#class$NSGraphicsContext">NSGraphicsContext</a>*)context<b> eventNumber:</b> (int)eventNum<b> clickCount:</b> (int)clickNum<b> pressure:</b> (float)pressureValue<b> buttonNumber:</b> (int)buttonNum<b> deltaX:</b> (float)deltaX<b> deltaY:</b> (float)deltaY<b> deltaZ:</b> (float)deltaZ;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -130,16 +137,14 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent+mouseLocation">mouseLocation</a></h3>
     + (NSPoint) <b>mouseLocation</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Returns the current mouse location.
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent+otherEventWithType:location:modifierFlags:timestamp:windowNumber:context:subtype:data1:data2:">otherEventWithType:location:modifierFlags:timestamp:windowNumber:context:subtype:data1:data2:</a></h3>
-    + (<a rel="gsdoc" href="#class$NSEvent">NSEvent</a>*) <b>otherEventWithType:</b> (NSEventType)type<b> location:</b> (NSPoint)location<b> modifierFlags:</b> (unsigned int)flags<b> timestamp:</b> (NSTimeInterval)time<b> windowNumber:</b> (int)windowNum<b> context:</b> (<a rel="gsdoc" href="NSGraphicsContext.html#class$NSGraphicsContext">NSGraphicsContext</a>*)context<b> subtype:</b> (short)subType<b> data1:</b> (int)data1<b> data2:</b> (int)data2;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    + (<a rel="gsdoc" href="#class$NSEvent">NSEvent</a>*) <b>otherEventWithType:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSEventType">NSEventType</a>)type<b> location:</b> (NSPoint)location<b> modifierFlags:</b> (unsigned int)flags<b> timestamp:</b> (NSTimeInterval)time<b> windowNumber:</b> (int)windowNum<b> context:</b> (<a rel="gsdoc" href="NSGraphicsContext.html#class$NSGraphicsContext">NSGraphicsContext</a>*)context<b> subtype:</b> (short)subType<b> data1:</b> (int)data1<b> data2:</b> (int)data2;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -148,7 +153,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent+startPeriodicEventsAfterDelay:withPeriod:">startPeriodicEventsAfterDelay:withPeriod:</a></h3>
     + (void) <b>startPeriodicEventsAfterDelay:</b> (NSTimeInterval)delaySeconds<b> withPeriod:</b> (NSTimeInterval)periodSeconds;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -157,208 +161,313 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent+stopPeriodicEvents">stopPeriodicEvents</a></h3>
     + (void) <b>stopPeriodicEvents</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSEvent-buttonNumber">buttonNumber</a></h3>
+    - (int) <b>buttonNumber</b>;<br />
+    <p>
+      
+            Returns the button number for the mouse button
+            pressed in a mouse event. Intended primarily for
+            the case where a mouse has three or more buttons, and
+            you want to know which button an 'other' mouse event
+            refers to.
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent-characters">characters</a></h3>
     - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>characters</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Returns the string of characters for a keyboard
+            event. <br /> Raises an
+            NSInternalInconsistencyException
+            if applied to any other type of event.
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent-charactersIgnoringModifiers">charactersIgnoringModifiers</a></h3>
     - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>charactersIgnoringModifiers</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Returns the string of characters for a keyboard
+            event, as if no modifier keys had been pressed when
+            the keyboard event occirred. <br /> Raises an
+            NSInternalInconsistencyException
+            if applied to any other type of event.
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent-clickCount">clickCount</a></h3>
     - (int) <b>clickCount</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Return the number of clicks associated with the
+            mouse down or up event. This method is not applicable
+            for any event type other than a mouse down or mouse up.
+            <br /> Raises an NSInternalInconsistencyException if
+            applied to any other type of event.
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent-context">context</a></h3>
     - (<a rel="gsdoc" href="NSGraphicsContext.html#class$NSGraphicsContext">NSGraphicsContext</a>*) <b>context</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Returns the graphics context for which this event
+            was generated.
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent-data1">data1</a></h3>
     - (int) <b>data1</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Returns the 'data1' item associated with the event.
+            <br /> Raises NSInternalInconsistencyException if
+            the event is not of type NSAppKitDefined,
+            NSSystemDefined, NSApplicationDefined, or
+            NSPeriodic
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent-data2">data2</a></h3>
     - (int) <b>data2</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Returns the 'data2' item associated with the event.
+            <br /> Raises NSInternalInconsistencyException if
+            the event is not of type NSAppKitDefined,
+            NSSystemDefined, NSApplicationDefined, or
+            NSPeriodic
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent-deltaX">deltaX</a></h3>
     - (float) <b>deltaX</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            
+    </p>
+    <p>
+Returns the movement of the mouse on the X axis.    </p>
+    <p>
+      
+            
+    </p>
+    <p>
+
+              This method is only valid for NSMouseMoved,
+              NS*MouseDragged and NSScrollWheel events,
+              otherwise it will raise an
+              NSInternalInconsistencyException.
+                </p>
+    <p>
+      
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent-deltaY">deltaY</a></h3>
     - (float) <b>deltaY</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            
+    </p>
+    <p>
+Returns the movement of the mouse on the Y axis.    </p>
+    <p>
+      
+            
+    </p>
+    <p>
+
+              This method is only valid for NSMouseMoved,
+              NS*MouseDragged and NSScrollWheel events,
+              otherwise it will raise an
+              NSInternalInconsistencyException.
+                </p>
+    <p>
+      
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent-deltaZ">deltaZ</a></h3>
     - (float) <b>deltaZ</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            
+    </p>
+    <p>
+Returns the movement of the mouse on the Z axis.    </p>
+    <p>
+      
+            
+    </p>
+    <p>
+
+              This method is only valid for NSMouseMoved,
+              NS*MouseDragged and NSScrollWheel events,
+              otherwise it will raise an
+              NSInternalInconsistencyException.
+                </p>
+    <p>
+      
+            
+    </p>
+    <p>
+The value returned is 0.0 in most cases.    </p>
+    <p>
+      
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent-eventNumber">eventNumber</a></h3>
     - (int) <b>eventNumber</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Returns the event number associated with any mouse
+            event or tracking event. Event numbers are allocated
+            sequentially when the system creates these
+            events. <br /> Raises an
+            NSInternalInconsistencyException
+            if applied to any other type of event.
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent-isARepeat">isARepeat</a></h3>
     - (BOOL) <b>isARepeat</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Returns a flag to say if this is a keyboard repeat
+            event. <br /> Raises an
+            NSInternalInconsistencyException
+            if applied to any other type of event than an NSKeyUp or
+            NSKeyDown.
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent-keyCode">keyCode</a></h3>
     - (unsigned short) <b>keyCode</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Returns the numeric key code of a keyboard event.
+            <br /> Raises an NSInternalInconsistencyException if
+            applied to any other type of event than an NSKeyUp
+            or NSKeyDown.
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent-locationInWindow">locationInWindow</a></h3>
     - (NSPoint) <b>locationInWindow</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Returns the window location for which this event
+            was generated (in the base coordinate system of the
+            window).
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent-modifierFlags">modifierFlags</a></h3>
     - (unsigned int) <b>modifierFlags</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Returns the modifier flag bits associated with the
+            event.
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent-pressure">pressure</a></h3>
     - (float) <b>pressure</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Returns the pressure associated with a mouse event.
+            This is a value in the range 0.0 to 1.0 and for mormal
+            mouse events should be set to one of those extremes.
+            This is used by pressure sensitive input devices.
+            <br /> Raises an NSInternalInconsistencyException if
+            applied to any other type of event than a mouse
+            event.
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent-subtype">subtype</a></h3>
     - (short) <b>subtype</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Returns the 'subtype' item associated with the
+            event. <br /> Raises
+            NSInternalInconsistencyException
+            if the event is not of type NSAppKitDefined,
+            NSSystemDefined, NSApplicationDefined, or
+            NSPeriodic
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent-timestamp">timestamp</a></h3>
     - (NSTimeInterval) <b>timestamp</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Returns the time interval since system startup at
+            which this event was generated.
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent-trackingNumber">trackingNumber</a></h3>
     - (int) <b>trackingNumber</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Returns a number identifying the tracking rectangle
+            entered or exited. <br /> Raises an
+            NSInternalInconsistencyException
+            if applied to any other type of event than a mouse
+            entered or exited event.
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent-type">type</a></h3>
-    - (NSEventType) <b>type</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (<a rel="gsdoc" href="TypesAndConstants.html#type$NSEventType">NSEventType</a>) <b>type</b>;<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            returns the type of this event.
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent-userData">userData</a></h3>
     - (void*) <b>userData</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Returns usder data associated with a tracking
+            event... the data assigned to the tracking
+            rectangle concerned when it was created.. <br />
+            Raises an NSInternalInconsistencyException if
+            applied to any other type of event than a mouse
+            entered or exited event.
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent-window">window</a></h3>
     - (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*) <b>window</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Returns the window for which this event was
+            generated. <br /> Periodic events have no
+            associated window, and you should not call this
+            method for those events.
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSEvent-windowNumber">windowNumber</a></h3>
     - (int) <b>windowNumber</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Returns the window number of the window for which
+            this event was generated. <br /> Periodic events have
+            no associated window, and you should not call this
+            method for those events.
           
     </p>
     <hr width="25%" align="left" />

@@ -37,7 +37,8 @@
         </li>
         <li>
           <a href="#002000000000">Software documentation for the
-        NSObject(NSWindowDelegate) category</a>
+        NSObject(NSWindowDelegate) informal
+        protocol</a>
         </li>
         <li>
           <a href="#003000000000">Software documentation for the
@@ -101,15 +102,15 @@
     <blockquote>
       <dl>
         <dt><b>Conforms to:</b></dt>
-        <dd><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#protocol$(NSCoding)">NSCoding</a></dd>
+        <dd>NSCoding</dd>
       </dl>
     </blockquote>
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -124,6 +125,11 @@
       <li><a rel="gsdoc" href="NSWindow.html#method$NSWindow+menuChanged:">+menuChanged:</a></li>
       <li><a rel="gsdoc" href="NSWindow.html#method$NSWindow+minFrameWidthWithTitle:styleMask:">+minFrameWidthWithTitle:styleMask:</a></li>
       <li><a rel="gsdoc" href="NSWindow.html#method$NSWindow+removeFrameUsingName:">+removeFrameUsingName:</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSWindow-_captureMouse:">-_captureMouse:</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSWindow-_futureFirstResponder">-_futureFirstResponder</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSWindow-_initDefaults">-_initDefaults</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSWindow-_releaseMouse:">-_releaseMouse:</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSWindow-_setVisible:">-_setVisible:</a></li>
       <li><a rel="gsdoc" href="NSWindow.html#method$NSWindow-acceptsMouseMovedEvents">-acceptsMouseMovedEvents</a></li>
       <li><a rel="gsdoc" href="NSWindow.html#method$NSWindow-alphaValue">-alphaValue</a></li>
       <li><a rel="gsdoc" href="NSWindow.html#method$NSWindow-animationResizeTime:">-animationResizeTime:</a></li>
@@ -298,10 +304,9 @@
       <li><a rel="gsdoc" href="NSWindow.html#method$NSWindow-worksWhenModal">-worksWhenModal</a></li>
       <li><a rel="gsdoc" href="NSWindow.html#method$NSWindow-zoom:">-zoom:</a></li>
     </ul>
-<hr width="50%" align="left" />
+    <hr width="50%" align="left" />
     <h3><a name="method$NSWindow+contentRectForFrameRect:styleMask:">contentRectForFrameRect:styleMask:</a></h3>
     + (NSRect) <b>contentRectForFrameRect:</b> (NSRect)aRect<b> styleMask:</b> (unsigned int)aStyle;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -309,8 +314,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow+defaultDepthLimit">defaultDepthLimit</a></h3>
-    + (NSWindowDepth) <b>defaultDepthLimit</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    + (<a rel="gsdoc" href="TypesAndConstants.html#type$NSWindowDepth">NSWindowDepth</a>) <b>defaultDepthLimit</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -319,7 +323,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow+frameRectForContentRect:styleMask:">frameRectForContentRect:styleMask:</a></h3>
     + (NSRect) <b>frameRectForContentRect:</b> (NSRect)aRect<b> styleMask:</b> (unsigned int)aStyle;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -328,7 +331,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow+menuChanged:">menuChanged:</a></h3>
     + (void) <b>menuChanged:</b> (<a rel="gsdoc" href="NSMenu.html#class$NSMenu">NSMenu</a>*)aMenu;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -336,8 +338,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow+minFrameWidthWithTitle:styleMask:">minFrameWidthWithTitle:styleMask:</a></h3>
-    + (NSRect) <b>minFrameWidthWithTitle:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aTitle<b> styleMask:</b> (unsigned int)aStyle;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    + (NSRect) <b>minFrameWidthWithTitle:</b> (NSString*)aTitle<b> styleMask:</b> (unsigned int)aStyle;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -345,8 +346,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow+removeFrameUsingName:">removeFrameUsingName:</a></h3>
-    + (void) <b>removeFrameUsingName:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)name;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    + (void) <b>removeFrameUsingName:</b> (NSString*)name;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -355,7 +355,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-acceptsMouseMovedEvents">acceptsMouseMovedEvents</a></h3>
     - (BOOL) <b>acceptsMouseMovedEvents</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -364,7 +363,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-alphaValue">alphaValue</a></h3>
     - (float) <b>alphaValue</b>;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -373,7 +371,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-animationResizeTime:">animationResizeTime:</a></h3>
     - (NSTimeInterval) <b>animationResizeTime:</b> (NSRect)newFrame;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -382,7 +379,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-areCursorRectsEnabled">areCursorRectsEnabled</a></h3>
     - (BOOL) <b>areCursorRectsEnabled</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -391,7 +387,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-aspectRatio">aspectRatio</a></h3>
     - (NSSize) <b>aspectRatio</b>;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -400,7 +395,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-backgroundColor">backgroundColor</a></h3>
     - (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*) <b>backgroundColor</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -408,8 +402,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-backingType">backingType</a></h3>
-    - (NSBackingStoreType) <b>backingType</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (<a rel="gsdoc" href="TypesAndConstants.html#type$NSBackingStoreType">NSBackingStoreType</a>) <b>backingType</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -418,7 +411,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-becomeKeyWindow">becomeKeyWindow</a></h3>
     - (void) <b>becomeKeyWindow</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -427,7 +419,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-becomeMainWindow">becomeMainWindow</a></h3>
     - (void) <b>becomeMainWindow</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -436,7 +427,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-cacheImageInRect:">cacheImageInRect:</a></h3>
     - (void) <b>cacheImageInRect:</b> (NSRect)aRect;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -445,25 +435,33 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-canBecomeKeyWindow">canBecomeKeyWindow</a></h3>
     - (BOOL) <b>canBecomeKeyWindow</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Returns <code>YES</code> if the receiver can be
+            made key. If this method returns <code>NO</code>, the
+            window will not be made key. This implementation
+            returns <code>YES</code> if the window is resizable
+            or has a title bar. You can override this method to
+            change it's behavior
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-canBecomeMainWindow">canBecomeMainWindow</a></h3>
     - (BOOL) <b>canBecomeMainWindow</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Returns <code>YES</code> if the receiver can be the
+            main window. If this method returns <code>NO</code>,
+            the window will not become the main window. This
+            implementation returns <code>YES</code> if
+            the window is resizable or has a title bar and is
+            visible and is not an NSPanel. You can override
+            this method to change it's behavior
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-canHide">canHide</a></h3>
     - (BOOL) <b>canHide</b>;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -472,7 +470,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-canStoreColor">canStoreColor</a></h3>
     - (BOOL) <b>canStoreColor</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -481,7 +478,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-cascadeTopLeftFromPoint:">cascadeTopLeftFromPoint:</a></h3>
     - (NSPoint) <b>cascadeTopLeftFromPoint:</b> (NSPoint)topLeftPoint;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -490,7 +486,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-center">center</a></h3>
     - (void) <b>center</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -499,7 +494,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-close">close</a></h3>
     - (void) <b>close</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -508,7 +502,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-constrainFrameRect:toScreen:">constrainFrameRect:toScreen:</a></h3>
     - (NSRect) <b>constrainFrameRect:</b> (NSRect)frameRect<b> toScreen:</b> (id)screen;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -517,7 +510,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-contentView">contentView</a></h3>
     - (id) <b>contentView</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -526,7 +518,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-convertBaseToScreen:">convertBaseToScreen:</a></h3>
     - (NSPoint) <b>convertBaseToScreen:</b> (NSPoint)basePoint;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -535,7 +526,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-convertScreenToBase:">convertScreenToBase:</a></h3>
     - (NSPoint) <b>convertScreenToBase:</b> (NSPoint)screenPoint;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -544,7 +534,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-counterpart">counterpart</a></h3>
     - (<a rel="gsdoc" href="#class$NSWindow">NSWindow</a>*) <b>counterpart</b>;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -553,7 +542,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-currentEvent">currentEvent</a></h3>
     - (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*) <b>currentEvent</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -561,8 +549,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-dataWithEPSInsideRect:">dataWithEPSInsideRect:</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*) <b>dataWithEPSInsideRect:</b> (NSRect)rect;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSData*) <b>dataWithEPSInsideRect:</b> (NSRect)rect;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -570,8 +557,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-dataWithPDFInsideRect:">dataWithPDFInsideRect:</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*) <b>dataWithPDFInsideRect:</b> (NSRect)aRect;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
+    - (NSData*) <b>dataWithPDFInsideRect:</b> (NSRect)aRect;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -580,16 +566,16 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-deepestScreen">deepestScreen</a></h3>
     - (<a rel="gsdoc" href="NSScreen.html#class$NSScreen">NSScreen</a>*) <b>deepestScreen</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Returns the screen the window is on. Unlike
+            (apparently) OpenStep and MacOSX, GNUstep does
+            not support windows being split across multiple screens
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-defaultButtonCell">defaultButtonCell</a></h3>
     - (<a rel="gsdoc" href="NSButtonCell.html#class$NSButtonCell">NSButtonCell</a>*) <b>defaultButtonCell</b>;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -598,7 +584,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-delegate">delegate</a></h3>
     - (id) <b>delegate</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -607,7 +592,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-deminiaturize:">deminiaturize:</a></h3>
     - (void) <b>deminiaturize:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             Causes the window to deminiaturize. Normally you
@@ -618,8 +602,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-depthLimit">depthLimit</a></h3>
-    - (NSWindowDepth) <b>depthLimit</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (<a rel="gsdoc" href="TypesAndConstants.html#type$NSWindowDepth">NSWindowDepth</a>) <b>depthLimit</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -627,8 +610,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-deviceDescription">deviceDescription</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*) <b>deviceDescription</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSDictionary*) <b>deviceDescription</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -637,7 +619,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-disableCursorRects">disableCursorRects</a></h3>
     - (void) <b>disableCursorRects</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -646,7 +627,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-disableFlushWindow">disableFlushWindow</a></h3>
     - (void) <b>disableFlushWindow</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -655,7 +635,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-disableKeyEquivalentForDefaultButtonCell">disableKeyEquivalentForDefaultButtonCell</a></h3>
     - (void) <b>disableKeyEquivalentForDefaultButtonCell</b>;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -664,7 +643,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-discardCachedImage">discardCachedImage</a></h3>
     - (void) <b>discardCachedImage</b>;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -673,7 +651,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-discardCursorRects">discardCursorRects</a></h3>
     - (void) <b>discardCursorRects</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -682,7 +659,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-discardEventsMatchingMask:beforeEvent:">discardEventsMatchingMask:beforeEvent:</a></h3>
     - (void) <b>discardEventsMatchingMask:</b> (unsigned int)mask<b> beforeEvent:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)lastEvent;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -691,7 +667,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-display">display</a></h3>
     - (void) <b>display</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -700,7 +675,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-displayIfNeeded">displayIfNeeded</a></h3>
     - (void) <b>displayIfNeeded</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -709,7 +683,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-dragImage:at:offset:event:pasteboard:source:slideBack:">dragImage:at:offset:event:pasteboard:source:slideBack:</a></h3>
     - (void) <b>dragImage:</b> (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*)anImage<b> at:</b> (NSPoint)baseLocation<b> offset:</b> (NSSize)initialOffset<b> event:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)event<b> pasteboard:</b> (<a rel="gsdoc" href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pboard<b> source:</b> (id)sourceObject<b> slideBack:</b> (BOOL)slideFlag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -717,8 +690,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-drawers">drawers</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>drawers</b>;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
+    - (NSArray*) <b>drawers</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -727,7 +699,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-enableCursorRects">enableCursorRects</a></h3>
     - (void) <b>enableCursorRects</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -736,7 +707,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-enableFlushWindow">enableFlushWindow</a></h3>
     - (void) <b>enableFlushWindow</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -745,7 +715,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-enableKeyEquivalentForDefaultButtonCell">enableKeyEquivalentForDefaultButtonCell</a></h3>
     - (void) <b>enableKeyEquivalentForDefaultButtonCell</b>;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -754,7 +723,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-endEditingFor:">endEditingFor:</a></h3>
     - (void) <b>endEditingFor:</b> (id)anObject;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -763,7 +731,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-fax:">fax:</a></h3>
     - (void) <b>fax:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -772,7 +739,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-fieldEditor:forObject:">fieldEditor:forObject:</a></h3>
     - (<a rel="gsdoc" href="NSText.html#class$NSText">NSText</a>*) <b>fieldEditor:</b> (BOOL)createFlag<b> forObject:</b> (id)anObject;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -781,7 +747,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-firstResponder">firstResponder</a></h3>
     - (<a rel="gsdoc" href="NSResponder.html#class$NSResponder">NSResponder</a>*) <b>firstResponder</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -790,16 +755,16 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-flushWindow">flushWindow</a></h3>
     - (void) <b>flushWindow</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Flush all drawing in the windows buffer to the screen
+            unless the window is not buffered or flushing is not
+            enabled.
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-flushWindowIfNeeded">flushWindowIfNeeded</a></h3>
     - (void) <b>flushWindowIfNeeded</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -808,7 +773,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-frame">frame</a></h3>
     - (NSRect) <b>frame</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -816,8 +780,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-frameAutosaveName">frameAutosaveName</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>frameAutosaveName</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>frameAutosaveName</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -826,7 +789,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-gState">gState</a></h3>
     - (int) <b>gState</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -835,7 +797,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-hasDynamicDepthLimit">hasDynamicDepthLimit</a></h3>
     - (BOOL) <b>hasDynamicDepthLimit</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -844,7 +805,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-hasShadow">hasShadow</a></h3>
     - (BOOL) <b>hasShadow</b>;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -853,7 +813,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-hidesOnDeactivate">hidesOnDeactivate</a></h3>
     - (BOOL) <b>hidesOnDeactivate</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -861,8 +820,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-initWithContentRect:styleMask:backing:defer:">initWithContentRect:styleMask:backing:defer:</a></h3>
-    - (id) <b>initWithContentRect:</b> (NSRect)contentRect<b> styleMask:</b> (unsigned int)aStyle<b> backing:</b> (NSBackingStoreType)bufferingType<b> defer:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (id) <b>initWithContentRect:</b> (NSRect)contentRect<b> styleMask:</b> (unsigned int)aStyle<b> backing:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSBackingStoreType">NSBackingStoreType</a>)bufferingType<b> defer:</b> (BOOL)flag;<br />
     <p>
       
             
@@ -875,8 +833,6 @@
               <var>backingType</var>.
                 </p>
     <p>
-      
-            
     </p>
     <p>
 
@@ -891,8 +847,6 @@
               OR'd in any combination.
                 </p>
     <p>
-      
-            
     </p>
     <p>
 
@@ -902,13 +856,10 @@
               <code>NSBackingStoreNonretained</code>.
                 </p>
     <p>
-      
-          
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-initWithContentRect:styleMask:backing:defer:screen:">initWithContentRect:styleMask:backing:defer:screen:</a></h3>
-    - (id) <b>initWithContentRect:</b> (NSRect)contentRect<b> styleMask:</b> (unsigned int)aStyle<b> backing:</b> (NSBackingStoreType)bufferingType<b> defer:</b> (BOOL)flag<b> screen:</b> (<a rel="gsdoc" href="NSScreen.html#class$NSScreen">NSScreen</a>*)aScreen;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (id) <b>initWithContentRect:</b> (NSRect)contentRect<b> styleMask:</b> (unsigned int)aStyle<b> backing:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSBackingStoreType">NSBackingStoreType</a>)bufferingType<b> defer:</b> (BOOL)flag<b> screen:</b> (<a rel="gsdoc" href="NSScreen.html#class$NSScreen">NSScreen</a>*)aScreen;<br />
     <p>
       
             
@@ -924,8 +875,6 @@
               or when it is displayed (<code>YES</code>).
                 </p>
     <p>
-      
-            
     </p>
     <p>
 
@@ -940,8 +889,6 @@
               OR'd in any combination.
                 </p>
     <p>
-      
-            
     </p>
     <p>
 
@@ -951,13 +898,10 @@
               <code>NSBackingStoreNonretained</code>.
                 </p>
     <p>
-      
-          
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-initWithWindowRef:">initWithWindowRef:</a></h3>
     - (<a rel="gsdoc" href="#class$NSWindow">NSWindow</a>*) <b>initWithWindowRef:</b> (void*)windowRef;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -966,7 +910,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-initialFirstResponder">initialFirstResponder</a></h3>
     - (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*) <b>initialFirstResponder</b>;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -975,7 +918,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-invalidateCursorRectsForView:">invalidateCursorRectsForView:</a></h3>
     - (void) <b>invalidateCursorRectsForView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)aView;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -984,7 +926,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-isAutodisplay">isAutodisplay</a></h3>
     - (BOOL) <b>isAutodisplay</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -993,7 +934,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-isDocumentEdited">isDocumentEdited</a></h3>
     - (BOOL) <b>isDocumentEdited</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1002,7 +942,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-isExcludedFromWindowsMenu">isExcludedFromWindowsMenu</a></h3>
     - (BOOL) <b>isExcludedFromWindowsMenu</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1011,7 +950,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-isFlushWindowDisabled">isFlushWindowDisabled</a></h3>
     - (BOOL) <b>isFlushWindowDisabled</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1020,7 +958,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-isKeyWindow">isKeyWindow</a></h3>
     - (BOOL) <b>isKeyWindow</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1029,7 +966,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-isMainWindow">isMainWindow</a></h3>
     - (BOOL) <b>isMainWindow</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1038,7 +974,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-isMiniaturized">isMiniaturized</a></h3>
     - (BOOL) <b>isMiniaturized</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1047,7 +982,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-isOneShot">isOneShot</a></h3>
     - (BOOL) <b>isOneShot</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1056,7 +990,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-isOpaque">isOpaque</a></h3>
     - (BOOL) <b>isOpaque</b>;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1065,7 +998,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-isReleasedWhenClosed">isReleasedWhenClosed</a></h3>
     - (BOOL) <b>isReleasedWhenClosed</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1074,7 +1006,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-isVisible">isVisible</a></h3>
     - (BOOL) <b>isVisible</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1083,7 +1014,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-keyDown:">keyDown:</a></h3>
     - (void) <b>keyDown:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1091,8 +1021,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-keyViewSelectionDirection">keyViewSelectionDirection</a></h3>
-    - (NSSelectionDirection) <b>keyViewSelectionDirection</b>;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
+    - (<a rel="gsdoc" href="TypesAndConstants.html#type$NSSelectionDirection">NSSelectionDirection</a>) <b>keyViewSelectionDirection</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1101,7 +1030,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-level">level</a></h3>
     - (int) <b>level</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1110,7 +1038,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-makeFirstResponder:">makeFirstResponder:</a></h3>
     - (BOOL) <b>makeFirstResponder:</b> (<a rel="gsdoc" href="NSResponder.html#class$NSResponder">NSResponder</a>*)aResponder;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1119,7 +1046,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-makeKeyAndOrderFront:">makeKeyAndOrderFront:</a></h3>
     - (void) <b>makeKeyAndOrderFront:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1128,7 +1054,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-makeKeyWindow">makeKeyWindow</a></h3>
     - (void) <b>makeKeyWindow</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1137,7 +1062,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-makeMainWindow">makeMainWindow</a></h3>
     - (void) <b>makeMainWindow</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1146,7 +1070,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-maxSize">maxSize</a></h3>
     - (NSSize) <b>maxSize</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1155,7 +1078,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-minSize">minSize</a></h3>
     - (NSSize) <b>minSize</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1164,7 +1086,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-miniaturize:">miniaturize:</a></h3>
     - (void) <b>miniaturize:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             Causes the window to miniaturize, that is the window
@@ -1175,7 +1096,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-miniwindowImage">miniwindowImage</a></h3>
     - (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*) <b>miniwindowImage</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1183,8 +1103,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-miniwindowTitle">miniwindowTitle</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>miniwindowTitle</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>miniwindowTitle</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1193,7 +1112,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-mouseLocationOutsideOfEventStream">mouseLocationOutsideOfEventStream</a></h3>
     - (NSPoint) <b>mouseLocationOutsideOfEventStream</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1202,7 +1120,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-nextEventMatchingMask:">nextEventMatchingMask:</a></h3>
     - (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*) <b>nextEventMatchingMask:</b> (unsigned int)mask;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1210,8 +1127,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-nextEventMatchingMask:untilDate:inMode:dequeue:">nextEventMatchingMask:untilDate:inMode:dequeue:</a></h3>
-    - (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*) <b>nextEventMatchingMask:</b> (unsigned int)mask<b> untilDate:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDate.html#class$NSDate">NSDate</a>*)expiration<b> inMode:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)mode<b> dequeue:</b> (BOOL)deqFlag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*) <b>nextEventMatchingMask:</b> (unsigned int)mask<b> untilDate:</b> (NSDate*)expiration<b> inMode:</b> (NSString*)mode<b> dequeue:</b> (BOOL)deqFlag;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1220,7 +1136,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-orderBack:">orderBack:</a></h3>
     - (void) <b>orderBack:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1229,7 +1144,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-orderFront:">orderFront:</a></h3>
     - (void) <b>orderFront:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1238,7 +1152,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-orderFrontRegardless">orderFrontRegardless</a></h3>
     - (void) <b>orderFrontRegardless</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1247,7 +1160,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-orderOut:">orderOut:</a></h3>
     - (void) <b>orderOut:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1255,8 +1167,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-orderWindow:relativeTo:">orderWindow:relativeTo:</a></h3>
-    - (void) <b>orderWindow:</b> (NSWindowOrderingMode)place<b> relativeTo:</b> (int)otherWin;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>orderWindow:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSWindowOrderingMode">NSWindowOrderingMode</a>)place<b> relativeTo:</b> (int)otherWin;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1265,7 +1176,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-performClose:">performClose:</a></h3>
     - (void) <b>performClose:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1274,16 +1184,26 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-performMiniaturize:">performMiniaturize:</a></h3>
     - (void) <b>performMiniaturize:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Miniaturize the receiver... as long as its
+            style mask includes NSMiniaturizableWindowMask (and
+            as long as the receiver is not an icon or mini window
+            itsself). Calls
+            <a rel="gsdoc" href="#method$NSWindow-miniaturize">
+              -miniaturize
+            </a>
+
+            to do this. <br /> Beeps if the window can't be
+            miniaturised. <br /> Should ideally provide
+            visual feedback (highlighting the miniaturize button
+            as if it had been clicked) first... but that's not yet
+            implemented.
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-performZoom:">performZoom:</a></h3>
     - (void) <b>performZoom:</b> (id)sender;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1292,7 +1212,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-postEvent:atStart:">postEvent:atStart:</a></h3>
     - (void) <b>postEvent:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)event<b> atStart:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1301,7 +1220,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-print:">print:</a></h3>
     - (void) <b>print:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1309,8 +1227,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-registerForDraggedTypes:">registerForDraggedTypes:</a></h3>
-    - (void) <b>registerForDraggedTypes:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)newTypes;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>registerForDraggedTypes:</b> (NSArray*)newTypes;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1318,8 +1235,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-representedFilename">representedFilename</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>representedFilename</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>representedFilename</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1328,7 +1244,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-resetCursorRects">resetCursorRects</a></h3>
     - (void) <b>resetCursorRects</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1337,7 +1252,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-resignKeyWindow">resignKeyWindow</a></h3>
     - (void) <b>resignKeyWindow</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1346,7 +1260,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-resignMainWindow">resignMainWindow</a></h3>
     - (void) <b>resignMainWindow</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1355,7 +1268,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-resizeFlags">resizeFlags</a></h3>
     - (int) <b>resizeFlags</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1364,7 +1276,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-resizeIncrements">resizeIncrements</a></h3>
     - (NSSize) <b>resizeIncrements</b>;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1373,7 +1284,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-restoreCachedImage">restoreCachedImage</a></h3>
     - (void) <b>restoreCachedImage</b>;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1382,7 +1292,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-runToolbarCustomizationPalette:">runToolbarCustomizationPalette:</a></h3>
     - (void) <b>runToolbarCustomizationPalette:</b> (id)sender;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1390,8 +1299,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-saveFrameUsingName:">saveFrameUsingName:</a></h3>
-    - (void) <b>saveFrameUsingName:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)name;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>saveFrameUsingName:</b> (NSString*)name;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1400,16 +1308,14 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-screen">screen</a></h3>
     - (<a rel="gsdoc" href="NSScreen.html#class$NSScreen">NSScreen</a>*) <b>screen</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Returns the screen the window is on.
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-selectKeyViewFollowingView:">selectKeyViewFollowingView:</a></h3>
     - (void) <b>selectKeyViewFollowingView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)aView;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1418,7 +1324,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-selectKeyViewPrecedingView:">selectKeyViewPrecedingView:</a></h3>
     - (void) <b>selectKeyViewPrecedingView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)aView;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1427,7 +1332,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-selectNextKeyView:">selectNextKeyView:</a></h3>
     - (void) <b>selectNextKeyView:</b> (id)sender;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1436,7 +1340,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-selectPreviousKeyView:">selectPreviousKeyView:</a></h3>
     - (void) <b>selectPreviousKeyView:</b> (id)sender;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1445,16 +1348,15 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-sendEvent:">sendEvent:</a></h3>
     - (void) <b>sendEvent:</b> (<a rel="gsdoc" href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Handles mouse and other events sent to the received
+            by NSApplication. Do not invoke this method directly.
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setAcceptsMouseMovedEvents:">setAcceptsMouseMovedEvents:</a></h3>
     - (void) <b>setAcceptsMouseMovedEvents:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1463,7 +1365,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setAlphaValue:">setAlphaValue:</a></h3>
     - (void) <b>setAlphaValue:</b> (float)windowAlpha;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1472,7 +1373,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setAspectRatio:">setAspectRatio:</a></h3>
     - (void) <b>setAspectRatio:</b> (NSSize)ratio;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1481,7 +1381,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setAutodisplay:">setAutodisplay:</a></h3>
     - (void) <b>setAutodisplay:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1490,7 +1389,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setBackgroundColor:">setBackgroundColor:</a></h3>
     - (void) <b>setBackgroundColor:</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)color;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1498,8 +1396,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setBackingType:">setBackingType:</a></h3>
-    - (void) <b>setBackingType:</b> (NSBackingStoreType)type;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setBackingType:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSBackingStoreType">NSBackingStoreType</a>)type;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1508,7 +1405,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setCanHide:">setCanHide:</a></h3>
     - (void) <b>setCanHide:</b> (BOOL)flag;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1517,7 +1413,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setContentSize:">setContentSize:</a></h3>
     - (void) <b>setContentSize:</b> (NSSize)aSize;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1526,7 +1421,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setContentView:">setContentView:</a></h3>
     - (void) <b>setContentView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)aView;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             Sets the window's content view to <var>aView</var>,
@@ -1536,7 +1430,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setDefaultButtonCell:">setDefaultButtonCell:</a></h3>
     - (void) <b>setDefaultButtonCell:</b> (<a rel="gsdoc" href="NSButtonCell.html#class$NSButtonCell">NSButtonCell</a>*)aButtonCell;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1545,7 +1438,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setDelegate:">setDelegate:</a></h3>
     - (void) <b>setDelegate:</b> (id)anObject;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1553,8 +1445,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setDepthLimit:">setDepthLimit:</a></h3>
-    - (void) <b>setDepthLimit:</b> (NSWindowDepth)limit;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setDepthLimit:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSWindowDepth">NSWindowDepth</a>)limit;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1563,7 +1454,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setDocumentEdited:">setDocumentEdited:</a></h3>
     - (void) <b>setDocumentEdited:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1572,7 +1462,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setDynamicDepthLimit:">setDynamicDepthLimit:</a></h3>
     - (void) <b>setDynamicDepthLimit:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1581,7 +1470,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setExcludedFromWindowsMenu:">setExcludedFromWindowsMenu:</a></h3>
     - (void) <b>setExcludedFromWindowsMenu:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1590,7 +1478,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setFrame:display:">setFrame:display:</a></h3>
     - (void) <b>setFrame:</b> (NSRect)frameRect<b> display:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1599,7 +1486,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setFrame:display:animate:">setFrame:display:animate:</a></h3>
     - (void) <b>setFrame:</b> (NSRect)frameRect<b> display:</b> (BOOL)displayFlag<b> animate:</b> (BOOL)animationFlag;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1607,8 +1493,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setFrameAutosaveName:">setFrameAutosaveName:</a></h3>
-    - (BOOL) <b>setFrameAutosaveName:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)name;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (BOOL) <b>setFrameAutosaveName:</b> (NSString*)name;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1616,8 +1501,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setFrameFromString:">setFrameFromString:</a></h3>
-    - (void) <b>setFrameFromString:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)string;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setFrameFromString:</b> (NSString*)string;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1626,7 +1510,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setFrameOrigin:">setFrameOrigin:</a></h3>
     - (void) <b>setFrameOrigin:</b> (NSPoint)aPoint;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1635,7 +1518,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setFrameTopLeftPoint:">setFrameTopLeftPoint:</a></h3>
     - (void) <b>setFrameTopLeftPoint:</b> (NSPoint)aPoint;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1643,8 +1525,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setFrameUsingName:">setFrameUsingName:</a></h3>
-    - (BOOL) <b>setFrameUsingName:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)name;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (BOOL) <b>setFrameUsingName:</b> (NSString*)name;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1652,8 +1533,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setFrameUsingName:force:">setFrameUsingName:force:</a></h3>
-    - (BOOL) <b>setFrameUsingName:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)name<b> force:</b> (BOOL)force;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
+    - (BOOL) <b>setFrameUsingName:</b> (NSString*)name<b> force:</b> (BOOL)force;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1662,7 +1542,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setHasShadow:">setHasShadow:</a></h3>
     - (void) <b>setHasShadow:</b> (BOOL)hasShadow;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1671,7 +1550,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setHidesOnDeactivate:">setHidesOnDeactivate:</a></h3>
     - (void) <b>setHidesOnDeactivate:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1680,7 +1558,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setInitialFirstResponder:">setInitialFirstResponder:</a></h3>
     - (void) <b>setInitialFirstResponder:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)aView;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1689,7 +1566,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setLevel:">setLevel:</a></h3>
     - (void) <b>setLevel:</b> (int)newLevel;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1698,7 +1574,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setMaxSize:">setMaxSize:</a></h3>
     - (void) <b>setMaxSize:</b> (NSSize)aSize;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1707,7 +1582,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setMinSize:">setMinSize:</a></h3>
     - (void) <b>setMinSize:</b> (NSSize)aSize;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1716,7 +1590,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setMiniwindowImage:">setMiniwindowImage:</a></h3>
     - (void) <b>setMiniwindowImage:</b> (<a rel="gsdoc" href="NSImage.html#class$NSImage">NSImage</a>*)image;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1724,8 +1597,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setMiniwindowTitle:">setMiniwindowTitle:</a></h3>
-    - (void) <b>setMiniwindowTitle:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)title;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setMiniwindowTitle:</b> (NSString*)title;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1734,7 +1606,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setOneShot:">setOneShot:</a></h3>
     - (void) <b>setOneShot:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1743,7 +1614,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setOpaque:">setOpaque:</a></h3>
     - (void) <b>setOpaque:</b> (BOOL)isOpaque;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1752,7 +1622,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setReleasedWhenClosed:">setReleasedWhenClosed:</a></h3>
     - (void) <b>setReleasedWhenClosed:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1760,8 +1629,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setRepresentedFilename:">setRepresentedFilename:</a></h3>
-    - (void) <b>setRepresentedFilename:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setRepresentedFilename:</b> (NSString*)aString;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1770,7 +1638,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setResizeIncrements:">setResizeIncrements:</a></h3>
     - (void) <b>setResizeIncrements:</b> (NSSize)aSize;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1779,7 +1646,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setShowsResizeIndicator:">setShowsResizeIndicator:</a></h3>
     - (void) <b>setShowsResizeIndicator:</b> (BOOL)show;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1787,8 +1653,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setTitle:">setTitle:</a></h3>
-    - (void) <b>setTitle:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setTitle:</b> (NSString*)aString;<br />
     <p>
       
             Sets the window's title to the string
@@ -1797,8 +1662,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setTitleWithRepresentedFilename:">setTitleWithRepresentedFilename:</a></h3>
-    - (void) <b>setTitleWithRepresentedFilename:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setTitleWithRepresentedFilename:</b> (NSString*)aString;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1806,8 +1670,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setToolbar:">setToolbar:</a></h3>
-    - (void) <b>setToolbar:</b> (NSToolbar*)toolbar;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
+    - (void) <b>setToolbar:</b> (<a rel="gsdoc" href="NSToolbar.html#class$NSToolbar">NSToolbar</a>*)toolbar;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1816,7 +1679,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setViewsNeedDisplay:">setViewsNeedDisplay:</a></h3>
     - (void) <b>setViewsNeedDisplay:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1825,7 +1687,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-setWindowController:">setWindowController:</a></h3>
     - (void) <b>setWindowController:</b> (<a rel="gsdoc" href="NSWindowController.html#class$NSWindowController">NSWindowController</a>*)windowController;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1834,7 +1695,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-showsResizeIndicator">showsResizeIndicator</a></h3>
     - (BOOL) <b>showsResizeIndicator</b>;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1842,8 +1702,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-stringWithSavedFrame">stringWithSavedFrame</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>stringWithSavedFrame</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>stringWithSavedFrame</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1852,7 +1711,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-styleMask">styleMask</a></h3>
     - (unsigned int) <b>styleMask</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1860,8 +1718,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-title">title</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>title</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>title</b>;<br />
     <p>
       
             Returns an NSString containing the text of the
@@ -1871,7 +1728,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-toggleToolbarShown:">toggleToolbarShown:</a></h3>
     - (void) <b>toggleToolbarShown:</b> (id)sender;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1879,8 +1735,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-toolbar">toolbar</a></h3>
-    - (NSToolbar*) <b>toolbar</b>;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
+    - (<a rel="gsdoc" href="NSToolbar.html#class$NSToolbar">NSToolbar</a>*) <b>toolbar</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1889,7 +1744,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-tryToPerform:with:">tryToPerform:with:</a></h3>
     - (BOOL) <b>tryToPerform:</b> (SEL)anAction<b> with:</b> (id)anObject;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1898,7 +1752,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-unregisterDraggedTypes">unregisterDraggedTypes</a></h3>
     - (void) <b>unregisterDraggedTypes</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1907,7 +1760,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-update">update</a></h3>
     - (void) <b>update</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1916,7 +1768,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-useOptimizedDrawing:">useOptimizedDrawing:</a></h3>
     - (void) <b>useOptimizedDrawing:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1924,8 +1775,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-validRequestorForSendType:returnType:">validRequestorForSendType:returnType:</a></h3>
-    - (id) <b>validRequestorForSendType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)sendType<b> returnType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)returnType;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (id) <b>validRequestorForSendType:</b> (NSString*)sendType<b> returnType:</b> (NSString*)returnType;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1934,7 +1784,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-viewsNeedDisplay">viewsNeedDisplay</a></h3>
     - (BOOL) <b>viewsNeedDisplay</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1943,7 +1792,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-windowController">windowController</a></h3>
     - (id) <b>windowController</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1952,7 +1800,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-windowHandle">windowHandle</a></h3>
     - (void*) <b>windowHandle</b>;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1961,7 +1808,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-windowNumber">windowNumber</a></h3>
     - (int) <b>windowNumber</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1970,7 +1816,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-windowRef">windowRef</a></h3>
     - (void*) <b>windowRef</b>;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1979,7 +1824,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-worksWhenModal">worksWhenModal</a></h3>
     - (BOOL) <b>worksWhenModal</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1988,7 +1832,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSWindow-zoom:">zoom:</a></h3>
     - (void) <b>zoom:</b> (id)sender;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -1997,9 +1840,10 @@
     <hr width="25%" align="left" />
     <h1><a name="002000000000">
         Software documentation for the
-        NSObject(NSWindowDelegate) category
+        NSObject(NSWindowDelegate) informal
+        protocol
       </a></h1>
-    <h2><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a>(<a name="category$NSObject(NSWindowDelegate)">NSWindowDelegate</a>)</h2>
+    <h2>NSObject(<a name="category$NSObject(NSWindowDelegate)">NSWindowDelegate</a>)</h2>
     <blockquote>
       <dl>
         <dt><b>Declared in:</b></dt>
@@ -2009,9 +1853,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -2021,192 +1865,173 @@
     </p>
     <b>Method summary</b>
     <ul>
-      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject(NSWindowDelegate)-windowDidBecomeKey:">-windowDidBecomeKey:</a></li>
-      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject(NSWindowDelegate)-windowDidBecomeMain:">-windowDidBecomeMain:</a></li>
-      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject(NSWindowDelegate)-windowDidChangeScreen:">-windowDidChangeScreen:</a></li>
-      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject(NSWindowDelegate)-windowDidDeminiaturize:">-windowDidDeminiaturize:</a></li>
-      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject(NSWindowDelegate)-windowDidExpose:">-windowDidExpose:</a></li>
-      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject(NSWindowDelegate)-windowDidMiniaturize:">-windowDidMiniaturize:</a></li>
-      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject(NSWindowDelegate)-windowDidMove:">-windowDidMove:</a></li>
-      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject(NSWindowDelegate)-windowDidResignKey:">-windowDidResignKey:</a></li>
-      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject(NSWindowDelegate)-windowDidResignMain:">-windowDidResignMain:</a></li>
-      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject(NSWindowDelegate)-windowDidResize:">-windowDidResize:</a></li>
-      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject(NSWindowDelegate)-windowDidUpdate:">-windowDidUpdate:</a></li>
-      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject(NSWindowDelegate)-windowShouldClose:">-windowShouldClose:</a></li>
-      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject(NSWindowDelegate)-windowShouldZoom:toFrame:">-windowShouldZoom:toFrame:</a></li>
-      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject(NSWindowDelegate)-windowWillClose:">-windowWillClose:</a></li>
-      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject(NSWindowDelegate)-windowWillMiniaturize:">-windowWillMiniaturize:</a></li>
-      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject(NSWindowDelegate)-windowWillMove:">-windowWillMove:</a></li>
-      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject(NSWindowDelegate)-windowWillResize:toSize:">-windowWillResize:toSize:</a></li>
-      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject(NSWindowDelegate)-windowWillReturnFieldEditor:toObject:">-windowWillReturnFieldEditor:toObject:</a></li>
-      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject(NSWindowDelegate)-windowWillUseStandardFrame:defaultFrame:">-windowWillUseStandardFrame:defaultFrame:</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject-windowDidBecomeKey:">-windowDidBecomeKey:</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject-windowDidBecomeMain:">-windowDidBecomeMain:</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject-windowDidChangeScreen:">-windowDidChangeScreen:</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject-windowDidDeminiaturize:">-windowDidDeminiaturize:</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject-windowDidExpose:">-windowDidExpose:</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject-windowDidMiniaturize:">-windowDidMiniaturize:</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject-windowDidMove:">-windowDidMove:</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject-windowDidResignKey:">-windowDidResignKey:</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject-windowDidResignMain:">-windowDidResignMain:</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject-windowDidResize:">-windowDidResize:</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject-windowDidUpdate:">-windowDidUpdate:</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject-windowShouldClose:">-windowShouldClose:</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject-windowShouldZoom:toFrame:">-windowShouldZoom:toFrame:</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject-windowWillClose:">-windowWillClose:</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject-windowWillMiniaturize:">-windowWillMiniaturize:</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject-windowWillMove:">-windowWillMove:</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject-windowWillResize:toSize:">-windowWillResize:toSize:</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject-windowWillReturnFieldEditor:toObject:">-windowWillReturnFieldEditor:toObject:</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSObject-windowWillUseStandardFrame:defaultFrame:">-windowWillUseStandardFrame:defaultFrame:</a></li>
     </ul>
-<hr width="50%" align="left" />
-    <h3><a name="method$NSObject(NSWindowDelegate)-windowDidBecomeKey:">windowDidBecomeKey:</a></h3>
-    - (void) <b>windowDidBecomeKey:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <hr width="50%" align="left" />
+    <h3><a name="method$NSObject-windowDidBecomeKey:">windowDidBecomeKey:</a></h3>
+    - (void) <b>windowDidBecomeKey:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSWindowDelegate)-windowDidBecomeMain:">windowDidBecomeMain:</a></h3>
-    - (void) <b>windowDidBecomeMain:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <h3><a name="method$NSObject-windowDidBecomeMain:">windowDidBecomeMain:</a></h3>
+    - (void) <b>windowDidBecomeMain:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSWindowDelegate)-windowDidChangeScreen:">windowDidChangeScreen:</a></h3>
-    - (void) <b>windowDidChangeScreen:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <h3><a name="method$NSObject-windowDidChangeScreen:">windowDidChangeScreen:</a></h3>
+    - (void) <b>windowDidChangeScreen:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSWindowDelegate)-windowDidDeminiaturize:">windowDidDeminiaturize:</a></h3>
-    - (void) <b>windowDidDeminiaturize:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <h3><a name="method$NSObject-windowDidDeminiaturize:">windowDidDeminiaturize:</a></h3>
+    - (void) <b>windowDidDeminiaturize:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSWindowDelegate)-windowDidExpose:">windowDidExpose:</a></h3>
-    - (void) <b>windowDidExpose:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <h3><a name="method$NSObject-windowDidExpose:">windowDidExpose:</a></h3>
+    - (void) <b>windowDidExpose:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSWindowDelegate)-windowDidMiniaturize:">windowDidMiniaturize:</a></h3>
-    - (void) <b>windowDidMiniaturize:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <h3><a name="method$NSObject-windowDidMiniaturize:">windowDidMiniaturize:</a></h3>
+    - (void) <b>windowDidMiniaturize:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSWindowDelegate)-windowDidMove:">windowDidMove:</a></h3>
-    - (void) <b>windowDidMove:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <h3><a name="method$NSObject-windowDidMove:">windowDidMove:</a></h3>
+    - (void) <b>windowDidMove:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSWindowDelegate)-windowDidResignKey:">windowDidResignKey:</a></h3>
-    - (void) <b>windowDidResignKey:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <h3><a name="method$NSObject-windowDidResignKey:">windowDidResignKey:</a></h3>
+    - (void) <b>windowDidResignKey:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSWindowDelegate)-windowDidResignMain:">windowDidResignMain:</a></h3>
-    - (void) <b>windowDidResignMain:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <h3><a name="method$NSObject-windowDidResignMain:">windowDidResignMain:</a></h3>
+    - (void) <b>windowDidResignMain:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSWindowDelegate)-windowDidResize:">windowDidResize:</a></h3>
-    - (void) <b>windowDidResize:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <h3><a name="method$NSObject-windowDidResize:">windowDidResize:</a></h3>
+    - (void) <b>windowDidResize:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSWindowDelegate)-windowDidUpdate:">windowDidUpdate:</a></h3>
-    - (void) <b>windowDidUpdate:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <h3><a name="method$NSObject-windowDidUpdate:">windowDidUpdate:</a></h3>
+    - (void) <b>windowDidUpdate:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSWindowDelegate)-windowShouldClose:">windowShouldClose:</a></h3>
+    <h3><a name="method$NSObject-windowShouldClose:">windowShouldClose:</a></h3>
     - (BOOL) <b>windowShouldClose:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSWindowDelegate)-windowShouldZoom:toFrame:">windowShouldZoom:toFrame:</a></h3>
+    <h3><a name="method$NSObject-windowShouldZoom:toFrame:">windowShouldZoom:toFrame:</a></h3>
     - (BOOL) <b>windowShouldZoom:</b> (<a rel="gsdoc" href="#class$NSWindow">NSWindow</a>*)sender<b> toFrame:</b> (NSRect)aFrame;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSWindowDelegate)-windowWillClose:">windowWillClose:</a></h3>
-    - (void) <b>windowWillClose:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <h3><a name="method$NSObject-windowWillClose:">windowWillClose:</a></h3>
+    - (void) <b>windowWillClose:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSWindowDelegate)-windowWillMiniaturize:">windowWillMiniaturize:</a></h3>
-    - (void) <b>windowWillMiniaturize:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <h3><a name="method$NSObject-windowWillMiniaturize:">windowWillMiniaturize:</a></h3>
+    - (void) <b>windowWillMiniaturize:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSWindowDelegate)-windowWillMove:">windowWillMove:</a></h3>
-    - (void) <b>windowWillMove:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)aNotification;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <h3><a name="method$NSObject-windowWillMove:">windowWillMove:</a></h3>
+    - (void) <b>windowWillMove:</b> (NSNotification*)aNotification;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSWindowDelegate)-windowWillResize:toSize:">windowWillResize:toSize:</a></h3>
+    <h3><a name="method$NSObject-windowWillResize:toSize:">windowWillResize:toSize:</a></h3>
     - (NSSize) <b>windowWillResize:</b> (<a rel="gsdoc" href="#class$NSWindow">NSWindow</a>*)sender<b> toSize:</b> (NSSize)frameSize;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSWindowDelegate)-windowWillReturnFieldEditor:toObject:">windowWillReturnFieldEditor:toObject:</a></h3>
+    <h3><a name="method$NSObject-windowWillReturnFieldEditor:toObject:">windowWillReturnFieldEditor:toObject:</a></h3>
     - (id) <b>windowWillReturnFieldEditor:</b> (<a rel="gsdoc" href="#class$NSWindow">NSWindow</a>*)sender<b> toObject:</b> (id)client;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSWindowDelegate)-windowWillUseStandardFrame:defaultFrame:">windowWillUseStandardFrame:defaultFrame:</a></h3>
+    <h3><a name="method$NSObject-windowWillUseStandardFrame:defaultFrame:">windowWillUseStandardFrame:defaultFrame:</a></h3>
     - (NSRect) <b>windowWillUseStandardFrame:</b> (<a rel="gsdoc" href="#class$NSWindow">NSWindow</a>*)sender<b> defaultFrame:</b> (NSRect)aFrame;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -2239,42 +2064,38 @@
     </p>
     <b>Method summary</b>
     <ul>
-      <li><a rel="gsdoc" href="NSWindow.html#method$NSWindow(GNUstepBackend)-_captureMouse:">-_captureMouse:</a></li>
-      <li><a rel="gsdoc" href="NSWindow.html#method$NSWindow(GNUstepBackend)-_initDefaults">-_initDefaults</a></li>
-      <li><a rel="gsdoc" href="NSWindow.html#method$NSWindow(GNUstepBackend)-_releaseMouse:">-_releaseMouse:</a></li>
-      <li><a rel="gsdoc" href="NSWindow.html#method$NSWindow(GNUstepBackend)-_setVisible:">-_setVisible:</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSWindow-_captureMouse:">-_captureMouse:</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSWindow-_initDefaults">-_initDefaults</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSWindow-_releaseMouse:">-_releaseMouse:</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSWindow-_setVisible:">-_setVisible:</a></li>
     </ul>
-<hr width="50%" align="left" />
-    <h3><a name="method$NSWindow(GNUstepBackend)-_captureMouse:">_captureMouse:</a></h3>
+    <hr width="50%" align="left" />
+    <h3><a name="method$NSWindow-_captureMouse:">_captureMouse:</a></h3>
     - (void) <b>_captureMouse:</b> (id)sender;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSWindow(GNUstepBackend)-_initDefaults">_initDefaults</a></h3>
+    <h3><a name="method$NSWindow-_initDefaults">_initDefaults</a></h3>
     - (void) <b>_initDefaults</b>;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSWindow(GNUstepBackend)-_releaseMouse:">_releaseMouse:</a></h3>
+    <h3><a name="method$NSWindow-_releaseMouse:">_releaseMouse:</a></h3>
     - (void) <b>_releaseMouse:</b> (id)sender;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSWindow(GNUstepBackend)-_setVisible:">_setVisible:</a></h3>
+    <h3><a name="method$NSWindow-_setVisible:">_setVisible:</a></h3>
     - (void) <b>_setVisible:</b> (BOOL)flag;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -2307,12 +2128,11 @@
     </p>
     <b>Method summary</b>
     <ul>
-      <li><a rel="gsdoc" href="NSWindow.html#method$NSWindow(GNUstepTextView)-_futureFirstResponder">-_futureFirstResponder</a></li>
+      <li><a rel="gsdoc" href="NSWindow.html#method$NSWindow-_futureFirstResponder">-_futureFirstResponder</a></li>
     </ul>
-<hr width="50%" align="left" />
-    <h3><a name="method$NSWindow(GNUstepTextView)-_futureFirstResponder">_futureFirstResponder</a></h3>
+    <hr width="50%" align="left" />
+    <h3><a name="method$NSWindow-_futureFirstResponder">_futureFirstResponder</a></h3>
     - (id) <b>_futureFirstResponder</b>;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>

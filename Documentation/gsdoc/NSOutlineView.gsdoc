@@ -28,7 +28,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -37,7 +37,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -47,7 +47,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -59,7 +59,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -69,7 +69,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -81,7 +81,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -90,7 +90,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="float">
@@ -99,7 +99,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -109,7 +109,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -119,7 +119,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="id">
@@ -129,7 +129,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="int">
@@ -139,7 +139,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="int">
@@ -149,7 +149,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSTableColumn*">
@@ -158,7 +158,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -168,7 +168,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -180,7 +180,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="int">
@@ -190,7 +190,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -200,7 +200,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -210,19 +210,19 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
           <sel>setDropItem:</sel>
           <arg type="id">item</arg>
           <sel>dropChildIndex:</sel>
-          <arg type="int">index</arg>
+          <arg type="int">childIndex</arg>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -232,7 +232,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -242,7 +242,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -252,7 +252,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -262,11 +262,11 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <standards>
-          <GNUstep /> <MacOS-X /> <OpenStep />
+          <MacOS-X /> <OpenStep /> <GNUstep />
         </standards>
       </class>
     </chapter>
@@ -274,7 +274,7 @@
       <heading>
         Software documentation for the
         NSObject(NSOutlineViewDataSource)
-        category
+        informal protocol
       </heading>
       <category name="NSOutlineViewDataSource" class="NSObject">
         <declared>AppKit/NSOutlineView.h</declared>
@@ -294,7 +294,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="id">
@@ -308,7 +308,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -320,7 +320,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="id">
@@ -332,7 +332,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="int">
@@ -344,7 +344,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="id">
@@ -358,7 +358,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="id">
@@ -370,21 +370,23 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
           <sel>outlineView:</sel>
           <arg type="NSOutlineView*">outlineView</arg>
-          <sel>setObjectView:</sel>
+          <sel>setObjectValue:</sel>
           <arg type="id">object</arg>
           <sel>forTableColumn:</sel>
           <arg type="NSTableColumn*">tableColumn</arg>
+          <sel>byItem:</sel>
+          <arg type="id">item</arg>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="NSDragOperation">
@@ -400,7 +402,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
@@ -414,11 +416,11 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <standards>
-          <GNUstep /> <MacOS-X /> <OpenStep />
+          <MacOS-X /> <OpenStep /> <GNUstep />
         </standards>
       </category>
     </chapter>
@@ -426,7 +428,7 @@
       <heading>
         Software documentation for the
         NSObject(NSOutlineViewDelegate)
-        category
+        informal protocol
       </heading>
       <category name="NSOutlineViewDelegate" class="NSObject">
         <declared>AppKit/NSOutlineView.h</declared>
@@ -435,56 +437,96 @@
         </desc>
         <method type="BOOL">
           <sel>outlineView:</sel>
-          <arg type="NSOutlineView*">aOutlineView</arg>
+          <arg type="NSOutlineView*">outlineView</arg>
+          <sel>shouldCollapseItem:</sel>
+          <arg type="id">item</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>outlineView:</sel>
+          <arg type="NSOutlineView*">outlineView</arg>
           <sel>shouldEditTableColumn:</sel>
-          <arg type="NSTableColumn*">aTableColumn</arg>
-          <sel>row:</sel>
-          <arg type="int">rowIndex</arg>
+          <arg type="NSTableColumn*">tableColumn</arg>
+          <sel>item:</sel>
+          <arg type="id">item</arg>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
           <sel>outlineView:</sel>
-          <arg type="NSOutlineView*">aOutlineView</arg>
-          <sel>shouldSelectRow:</sel>
-          <arg type="int">rowIndex</arg>
+          <arg type="NSOutlineView*">outlineView</arg>
+          <sel>shouldExpandItem:</sel>
+          <arg type="id">item</arg>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="BOOL">
           <sel>outlineView:</sel>
-          <arg type="NSOutlineView*">aOutlineView</arg>
+          <arg type="NSOutlineView*">outlineView</arg>
+          <sel>shouldSelectItem:</sel>
+          <arg type="id">item</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>outlineView:</sel>
+          <arg type="NSOutlineView*">outlineView</arg>
           <sel>shouldSelectTableColumn:</sel>
-          <arg type="NSTableColumn*">aTableColumn</arg>
+          <arg type="NSTableColumn*">tableColumn</arg>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
           <sel>outlineView:</sel>
-          <arg type="NSOutlineView*">aOutlineView</arg>
+          <arg type="NSOutlineView*">outlineView</arg>
           <sel>willDisplayCell:</sel>
-          <arg type="id">aCell</arg>
+          <arg type="id">cell</arg>
           <sel>forTableColumn:</sel>
-          <arg type="NSTableColumn*">aTableColumn</arg>
-          <sel>row:</sel>
-          <arg type="int">rowIndex</arg>
+          <arg type="NSTableColumn*">tableColumn</arg>
+          <sel>item:</sel>
+          <arg type="id">item</arg>
           <desc>
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>outlineView:</sel>
+          <arg type="NSOutlineView*">outlineView</arg>
+          <sel>willDisplayOutlineCell:</sel>
+          <arg type="id">cell</arg>
+          <sel>forTableColumn:</sel>
+          <arg type="NSTableColumn*">tableColumn</arg>
+          <sel>item:</sel>
+          <arg type="id">item</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -494,7 +536,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -504,7 +546,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -514,7 +556,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -524,7 +566,27 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>outlineViewItemWillCollapse:</sel>
+          <arg type="NSNotification*">aNotification</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>outlineViewItemWillExpand:</sel>
+          <arg type="NSNotification*">aNotification</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -534,7 +596,7 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <method type="void">
@@ -544,11 +606,21 @@
             <em>Description forthcoming.</em>
           </desc>
           <standards>
-            <GNUstep /> <MacOS-X /> <OpenStep />
+            <MacOS-X /> <OpenStep /> <GNUstep />
+          </standards>
+        </method>
+        <method type="BOOL">
+          <sel>selectionShouldChangeInOutlineView:</sel>
+          <arg type="NSOutlineView*">outlineView</arg>
+          <desc>
+            <em>Description forthcoming.</em>
+          </desc>
+          <standards>
+            <MacOS-X /> <OpenStep /> <GNUstep />
           </standards>
         </method>
         <standards>
-          <GNUstep /> <MacOS-X /> <OpenStep />
+          <MacOS-X /> <OpenStep /> <GNUstep />
         </standards>
       </category>
     </chapter>

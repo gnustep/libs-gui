@@ -37,7 +37,7 @@
     <h1><a name="001000000000">
         Software documentation for the NSAffineTransform class
       </a></h1>
-    <h2><a name="class$NSAffineTransform">NSAffineTransform</a> : <a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a></h2>
+    <h2><a name="class$NSAffineTransform">NSAffineTransform</a> : NSObject</h2>
     <blockquote>
       <dl>
         <dt><b>Declared in:</b></dt>
@@ -47,16 +47,16 @@
     <blockquote>
       <dl>
         <dt><b>Conforms to:</b></dt>
-        <dd><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#protocol$(NSCopying)">NSCopying</a></dd>
-        <dd><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#protocol$(NSCoding)">NSCoding</a></dd>
+        <dd>NSCopying</dd>
+        <dd>NSCoding</dd>
       </dl>
     </blockquote>
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -64,30 +64,55 @@
           <em>Description forthcoming.</em>
         
     </p>
+    <hr width="50%" align="left" />
+    <h3>Instance variables</h3>
+    <h3><a name="ivariable$NSAffineTransform*matrix">matrix</a></h3>
+    @public  <b>matrix</b>;<br />
+    <hr width="25%" align="left" />
     <b>Method summary</b>
     <ul>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform+matrixFrom:">+matrixFrom:</a></li>
       <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform+transform">+transform</a></li>
       <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-appendTransform:">-appendTransform:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-boundingRectFor:result:">-boundingRectFor:result:</a></li>
       <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-concat">-concat</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-concatenateWith:">-concatenateWith:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-concatenateWithMatrix:">-concatenateWithMatrix:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-deltaPointInMatrixSpace:">-deltaPointInMatrixSpace:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-getMatrix:">-getMatrix:</a></li>
       <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-initWithTransform:">-initWithTransform:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-inverse">-inverse</a></li>
       <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-invert">-invert</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-isRotated">-isRotated</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-makeIdentityMatrix">-makeIdentityMatrix</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-pointInMatrixSpace:">-pointInMatrixSpace:</a></li>
       <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-prependTransform:">-prependTransform:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-rectInMatrixSpace:">-rectInMatrixSpace:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-rotateByAngle:">-rotateByAngle:</a></li>
       <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-rotateByDegrees:">-rotateByDegrees:</a></li>
       <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-rotateByRadians:">-rotateByRadians:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-rotationAngle">-rotationAngle</a></li>
       <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-scaleBy:">-scaleBy:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-scaleBy::">-scaleBy::</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-scaleTo::">-scaleTo::</a></li>
       <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-scaleXBy:yBy:">-scaleXBy:yBy:</a></li>
       <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-set">-set</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-setFrameOrigin:">-setFrameOrigin:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-setFrameRotation:">-setFrameRotation:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-setMatrix:">-setMatrix:</a></li>
       <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-setTransformStruct:">-setTransformStruct:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-sizeInMatrixSpace:">-sizeInMatrixSpace:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-takeMatrixFromTransform:">-takeMatrixFromTransform:</a></li>
       <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-transformBezierPath:">-transformBezierPath:</a></li>
       <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-transformPoint:">-transformPoint:</a></li>
       <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-transformSize:">-transformSize:</a></li>
       <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-transformStruct">-transformStruct</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-translateToPoint:">-translateToPoint:</a></li>
       <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-translateXBy:yBy:">-translateXBy:yBy:</a></li>
     </ul>
-<hr width="50%" align="left" />
+    <hr width="50%" align="left" />
     <h3><a name="method$NSAffineTransform+transform">transform</a></h3>
     + (<a rel="gsdoc" href="#class$NSAffineTransform">NSAffineTransform</a>*) <b>transform</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -96,7 +121,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSAffineTransform-appendTransform:">appendTransform:</a></h3>
     - (void) <b>appendTransform:</b> (<a rel="gsdoc" href="#class$NSAffineTransform">NSAffineTransform</a>*)aTransform;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -105,7 +129,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSAffineTransform-concat">concat</a></h3>
     - (void) <b>concat</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -114,7 +137,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSAffineTransform-initWithTransform:">initWithTransform:</a></h3>
     - (id) <b>initWithTransform:</b> (<a rel="gsdoc" href="#class$NSAffineTransform">NSAffineTransform</a>*)aTransform;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -123,7 +145,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSAffineTransform-invert">invert</a></h3>
     - (void) <b>invert</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -132,7 +153,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSAffineTransform-prependTransform:">prependTransform:</a></h3>
     - (void) <b>prependTransform:</b> (<a rel="gsdoc" href="#class$NSAffineTransform">NSAffineTransform</a>*)aTransform;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -141,7 +161,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSAffineTransform-rotateByDegrees:">rotateByDegrees:</a></h3>
     - (void) <b>rotateByDegrees:</b> (float)angle;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -150,7 +169,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSAffineTransform-rotateByRadians:">rotateByRadians:</a></h3>
     - (void) <b>rotateByRadians:</b> (float)angleRad;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -159,7 +177,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSAffineTransform-scaleBy:">scaleBy:</a></h3>
     - (void) <b>scaleBy:</b> (float)scale;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -168,7 +185,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSAffineTransform-scaleXBy:yBy:">scaleXBy:yBy:</a></h3>
     - (void) <b>scaleXBy:</b> (float)scaleX<b> yBy:</b> (float)scaleY;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -177,7 +193,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSAffineTransform-set">set</a></h3>
     - (void) <b>set</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -185,8 +200,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSAffineTransform-setTransformStruct:">setTransformStruct:</a></h3>
-    - (void) <b>setTransformStruct:</b> (NSAffineTransformStruct)val;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setTransformStruct:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSAffineTransformStruct">NSAffineTransformStruct</a>)val;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -195,7 +209,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSAffineTransform-transformBezierPath:">transformBezierPath:</a></h3>
     - (<a rel="gsdoc" href="NSBezierPath.html#class$NSBezierPath">NSBezierPath</a>*) <b>transformBezierPath:</b> (<a rel="gsdoc" href="NSBezierPath.html#class$NSBezierPath">NSBezierPath</a>*)aPath;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -204,7 +217,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSAffineTransform-transformPoint:">transformPoint:</a></h3>
     - (NSPoint) <b>transformPoint:</b> (NSPoint)aPoint;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -213,7 +225,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSAffineTransform-transformSize:">transformSize:</a></h3>
     - (NSSize) <b>transformSize:</b> (NSSize)aSize;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -221,8 +232,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSAffineTransform-transformStruct">transformStruct</a></h3>
-    - (NSAffineTransformStruct) <b>transformStruct</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (<a rel="gsdoc" href="TypesAndConstants.html#type$NSAffineTransformStruct">NSAffineTransformStruct</a>) <b>transformStruct</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -231,7 +241,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSAffineTransform-translateXBy:yBy:">translateXBy:yBy:</a></h3>
     - (void) <b>translateXBy:</b> (float)tranX<b> yBy:</b> (float)tranY;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -264,212 +273,167 @@
     </p>
     <b>Method summary</b>
     <ul>
-      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform(GNUstep)+matrixFrom:">+matrixFrom:</a></li>
-      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform(GNUstep)-boundingRectFor:result:">-boundingRectFor:result:</a></li>
-      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform(GNUstep)-concatenateWith:">-concatenateWith:</a></li>
-      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform(GNUstep)-concatenateWithMatrix:">-concatenateWithMatrix:</a></li>
-      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform(GNUstep)-deltaPointInMatrixSpace:">-deltaPointInMatrixSpace:</a></li>
-      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform(GNUstep)-getMatrix:">-getMatrix:</a></li>
-      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform(GNUstep)-inverse">-inverse</a></li>
-      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform(GNUstep)-isRotated">-isRotated</a></li>
-      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform(GNUstep)-makeIdentityMatrix">-makeIdentityMatrix</a></li>
-      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform(GNUstep)-pointInMatrixSpace:">-pointInMatrixSpace:</a></li>
-      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform(GNUstep)-rectInMatrixSpace:">-rectInMatrixSpace:</a></li>
-      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform(GNUstep)-rotateByAngle:">-rotateByAngle:</a></li>
-      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform(GNUstep)-rotationAngle">-rotationAngle</a></li>
-      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform(GNUstep)-scaleBy::">-scaleBy::</a></li>
-      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform(GNUstep)-scaleTo::">-scaleTo::</a></li>
-      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform(GNUstep)-setFrameOrigin:">-setFrameOrigin:</a></li>
-      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform(GNUstep)-setFrameRotation:">-setFrameRotation:</a></li>
-      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform(GNUstep)-setMatrix:">-setMatrix:</a></li>
-      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform(GNUstep)-sizeInMatrixSpace:">-sizeInMatrixSpace:</a></li>
-      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform(GNUstep)-takeMatrixFromTransform:">-takeMatrixFromTransform:</a></li>
-      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform(GNUstep)-translateToPoint:">-translateToPoint:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform+matrixFrom:">+matrixFrom:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-boundingRectFor:result:">-boundingRectFor:result:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-concatenateWith:">-concatenateWith:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-concatenateWithMatrix:">-concatenateWithMatrix:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-deltaPointInMatrixSpace:">-deltaPointInMatrixSpace:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-getMatrix:">-getMatrix:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-inverse">-inverse</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-isRotated">-isRotated</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-makeIdentityMatrix">-makeIdentityMatrix</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-pointInMatrixSpace:">-pointInMatrixSpace:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-rectInMatrixSpace:">-rectInMatrixSpace:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-rotateByAngle:">-rotateByAngle:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-rotationAngle">-rotationAngle</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-scaleBy::">-scaleBy::</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-scaleTo::">-scaleTo::</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-setFrameOrigin:">-setFrameOrigin:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-setFrameRotation:">-setFrameRotation:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-setMatrix:">-setMatrix:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-sizeInMatrixSpace:">-sizeInMatrixSpace:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-takeMatrixFromTransform:">-takeMatrixFromTransform:</a></li>
+      <li><a rel="gsdoc" href="NSAffineTransform.html#method$NSAffineTransform-translateToPoint:">-translateToPoint:</a></li>
     </ul>
-<hr width="50%" align="left" />
-    <h3><a name="method$NSAffineTransform(GNUstep)+matrixFrom:">matrixFrom:</a></h3>
-    + (<a rel="gsdoc" href="#class$NSAffineTransform">NSAffineTransform</a>*) <b>matrixFrom:</b> (const float[6])_matrix;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
-    <p>
-      
-            <em>Description forthcoming.</em>
-          
-    </p>
-    <hr width="25%" align="left" />
-    <h3><a name="method$NSAffineTransform(GNUstep)-boundingRectFor:result:">boundingRectFor:result:</a></h3>
+    <hr width="50%" align="left" />
+    <h3><a name="method$NSAffineTransform-boundingRectFor:result:">boundingRectFor:result:</a></h3>
     - (void) <b>boundingRectFor:</b> (NSRect)rect<b> result:</b> (NSRect*)new;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSAffineTransform(GNUstep)-concatenateWith:">concatenateWith:</a></h3>
+    <h3><a name="method$NSAffineTransform-concatenateWith:">concatenateWith:</a></h3>
     - (void) <b>concatenateWith:</b> (<a rel="gsdoc" href="#class$NSAffineTransform">NSAffineTransform</a>*)anotherMatrix;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSAffineTransform(GNUstep)-concatenateWithMatrix:">concatenateWithMatrix:</a></h3>
+    <h3><a name="method$NSAffineTransform-concatenateWithMatrix:">concatenateWithMatrix:</a></h3>
     - (void) <b>concatenateWithMatrix:</b> (const float[6])anotherMatrix;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSAffineTransform(GNUstep)-deltaPointInMatrixSpace:">deltaPointInMatrixSpace:</a></h3>
+    <h3><a name="method$NSAffineTransform-deltaPointInMatrixSpace:">deltaPointInMatrixSpace:</a></h3>
     - (NSPoint) <b>deltaPointInMatrixSpace:</b> (NSPoint)point;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSAffineTransform(GNUstep)-getMatrix:">getMatrix:</a></h3>
+    <h3><a name="method$NSAffineTransform-getMatrix:">getMatrix:</a></h3>
     - (void) <b>getMatrix:</b> (float[6])replace;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSAffineTransform(GNUstep)-inverse">inverse</a></h3>
+    <h3><a name="method$NSAffineTransform-inverse">inverse</a></h3>
     - (void) <b>inverse</b>;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSAffineTransform(GNUstep)-isRotated">isRotated</a></h3>
+    <h3><a name="method$NSAffineTransform-isRotated">isRotated</a></h3>
     - (BOOL) <b>isRotated</b>;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSAffineTransform(GNUstep)-makeIdentityMatrix">makeIdentityMatrix</a></h3>
+    <h3><a name="method$NSAffineTransform-makeIdentityMatrix">makeIdentityMatrix</a></h3>
     - (void) <b>makeIdentityMatrix</b>;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSAffineTransform(GNUstep)-pointInMatrixSpace:">pointInMatrixSpace:</a></h3>
+    <h3><a name="method$NSAffineTransform-pointInMatrixSpace:">pointInMatrixSpace:</a></h3>
     - (NSPoint) <b>pointInMatrixSpace:</b> (NSPoint)point;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSAffineTransform(GNUstep)-rectInMatrixSpace:">rectInMatrixSpace:</a></h3>
+    <h3><a name="method$NSAffineTransform-rectInMatrixSpace:">rectInMatrixSpace:</a></h3>
     - (NSRect) <b>rectInMatrixSpace:</b> (NSRect)rect;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSAffineTransform(GNUstep)-rotateByAngle:">rotateByAngle:</a></h3>
-    - (void) <b>rotateByAngle:</b> (float)angle;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
-    <p>
-      
-            <em>Description forthcoming.</em>
-          
-    </p>
-    <hr width="25%" align="left" />
-    <h3><a name="method$NSAffineTransform(GNUstep)-rotationAngle">rotationAngle</a></h3>
+    <h3><a name="method$NSAffineTransform-rotationAngle">rotationAngle</a></h3>
     - (float) <b>rotationAngle</b>;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSAffineTransform(GNUstep)-scaleBy::">scaleBy::</a></h3>
-    - (void) <b>scaleBy:</b> (float)sx<b> :</b> (float)sy;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
-    <p>
-      
-            <em>Description forthcoming.</em>
-          
-    </p>
-    <hr width="25%" align="left" />
-    <h3><a name="method$NSAffineTransform(GNUstep)-scaleTo::">scaleTo::</a></h3>
+    <h3><a name="method$NSAffineTransform-scaleTo::">scaleTo::</a></h3>
     - (void) <b>scaleTo:</b> (float)sx<b> :</b> (float)sy;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSAffineTransform(GNUstep)-setFrameOrigin:">setFrameOrigin:</a></h3>
+    <h3><a name="method$NSAffineTransform-setFrameOrigin:">setFrameOrigin:</a></h3>
     - (void) <b>setFrameOrigin:</b> (NSPoint)point;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSAffineTransform(GNUstep)-setFrameRotation:">setFrameRotation:</a></h3>
+    <h3><a name="method$NSAffineTransform-setFrameRotation:">setFrameRotation:</a></h3>
     - (void) <b>setFrameRotation:</b> (float)angle;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSAffineTransform(GNUstep)-setMatrix:">setMatrix:</a></h3>
+    <h3><a name="method$NSAffineTransform-setMatrix:">setMatrix:</a></h3>
     - (void) <b>setMatrix:</b> (const float[6])replace;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSAffineTransform(GNUstep)-sizeInMatrixSpace:">sizeInMatrixSpace:</a></h3>
+    <h3><a name="method$NSAffineTransform-sizeInMatrixSpace:">sizeInMatrixSpace:</a></h3>
     - (NSSize) <b>sizeInMatrixSpace:</b> (NSSize)size;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSAffineTransform(GNUstep)-takeMatrixFromTransform:">takeMatrixFromTransform:</a></h3>
+    <h3><a name="method$NSAffineTransform-takeMatrixFromTransform:">takeMatrixFromTransform:</a></h3>
     - (void) <b>takeMatrixFromTransform:</b> (<a rel="gsdoc" href="#class$NSAffineTransform">NSAffineTransform</a>*)aTransform;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSAffineTransform(GNUstep)-translateToPoint:">translateToPoint:</a></h3>
+    <h3><a name="method$NSAffineTransform-translateToPoint:">translateToPoint:</a></h3>
     - (void) <b>translateToPoint:</b> (NSPoint)point;<br />
-    <b>Standards:</b> NotOpenStep, NotMacOS-X, GNUstep<br />
     <p>
       
             <em>Description forthcoming.</em>

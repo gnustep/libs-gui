@@ -42,15 +42,15 @@
     <blockquote>
       <dl>
         <dt><b>Conforms to:</b></dt>
-        <dd><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#protocol$(NSCoding)">NSCoding</a></dd>
+        <dd>NSCoding</dd>
       </dl>
     </blockquote>
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -60,8 +60,11 @@
     </p>
     <b>Method summary</b>
     <ul>
+      <li><a rel="gsdoc" href="NSStepperCell.html#method$NSStepperCell-_drawText:">-_drawText:</a></li>
       <li><a rel="gsdoc" href="NSStepperCell.html#method$NSStepperCell-autorepeat">-autorepeat</a></li>
+      <li><a rel="gsdoc" href="NSStepperCell.html#method$NSStepperCell-downButtonRectWithFrame:">-downButtonRectWithFrame:</a></li>
       <li><a rel="gsdoc" href="NSStepperCell.html#method$NSStepperCell-encodeWithCoder:">-encodeWithCoder:</a></li>
+      <li><a rel="gsdoc" href="NSStepperCell.html#method$NSStepperCell-highlight:upButton:withFrame:inView:">-highlight:upButton:withFrame:inView:</a></li>
       <li><a rel="gsdoc" href="NSStepperCell.html#method$NSStepperCell-increment">-increment</a></li>
       <li><a rel="gsdoc" href="NSStepperCell.html#method$NSStepperCell-initWithCoder:">-initWithCoder:</a></li>
       <li><a rel="gsdoc" href="NSStepperCell.html#method$NSStepperCell-maxValue">-maxValue</a></li>
@@ -71,12 +74,12 @@
       <li><a rel="gsdoc" href="NSStepperCell.html#method$NSStepperCell-setMaxValue:">-setMaxValue:</a></li>
       <li><a rel="gsdoc" href="NSStepperCell.html#method$NSStepperCell-setMinValue:">-setMinValue:</a></li>
       <li><a rel="gsdoc" href="NSStepperCell.html#method$NSStepperCell-setValueWraps:">-setValueWraps:</a></li>
+      <li><a rel="gsdoc" href="NSStepperCell.html#method$NSStepperCell-upButtonRectWithFrame:">-upButtonRectWithFrame:</a></li>
       <li><a rel="gsdoc" href="NSStepperCell.html#method$NSStepperCell-valueWraps">-valueWraps</a></li>
     </ul>
-<hr width="50%" align="left" />
+    <hr width="50%" align="left" />
     <h3><a name="method$NSStepperCell-autorepeat">autorepeat</a></h3>
     - (BOOL) <b>autorepeat</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -84,8 +87,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSStepperCell-encodeWithCoder:">encodeWithCoder:</a></h3>
-    - (void) <b>encodeWithCoder:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSCoder.html#class$NSCoder">NSCoder</a>*)aCoder;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>encodeWithCoder:</b> (NSCoder*)aCoder;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -94,7 +96,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSStepperCell-increment">increment</a></h3>
     - (double) <b>increment</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -102,8 +103,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSStepperCell-initWithCoder:">initWithCoder:</a></h3>
-    - (id) <b>initWithCoder:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSCoder.html#class$NSCoder">NSCoder</a>*)aDecoder;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (id) <b>initWithCoder:</b> (NSCoder*)aDecoder;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -112,7 +112,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSStepperCell-maxValue">maxValue</a></h3>
     - (double) <b>maxValue</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -121,7 +120,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSStepperCell-minValue">minValue</a></h3>
     - (double) <b>minValue</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -129,8 +127,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSStepperCell-setAutorepeat:">setAutorepeat:</a></h3>
-    - (void) <b>setAutorepeat:</b> (BOOL)newAutorepeat;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setAutorepeat:</b> (BOOL)autorepeat;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -139,7 +136,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSStepperCell-setIncrement:">setIncrement:</a></h3>
     - (void) <b>setIncrement:</b> (double)newIncrement;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -147,8 +143,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSStepperCell-setMaxValue:">setMaxValue:</a></h3>
-    - (void) <b>setMaxValue:</b> (double)newMaxValue;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setMaxValue:</b> (double)maxValue;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -156,8 +151,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSStepperCell-setMinValue:">setMinValue:</a></h3>
-    - (void) <b>setMinValue:</b> (double)newMinValue;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setMinValue:</b> (double)minValue;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -165,8 +159,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSStepperCell-setValueWraps:">setValueWraps:</a></h3>
-    - (void) <b>setValueWraps:</b> (BOOL)newValueWraps;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setValueWraps:</b> (BOOL)valueWraps;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -175,7 +168,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSStepperCell-valueWraps">valueWraps</a></h3>
     - (BOOL) <b>valueWraps</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -196,9 +188,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -208,42 +200,38 @@
     </p>
     <b>Method summary</b>
     <ul>
-      <li><a rel="gsdoc" href="NSStepperCell.html#method$NSStepperCell(Private)-_drawText:">-_drawText:</a></li>
-      <li><a rel="gsdoc" href="NSStepperCell.html#method$NSStepperCell(Private)-downButtonRectWithFrame:">-downButtonRectWithFrame:</a></li>
-      <li><a rel="gsdoc" href="NSStepperCell.html#method$NSStepperCell(Private)-highlight:upButton:withFrame:inView:">-highlight:upButton:withFrame:inView:</a></li>
-      <li><a rel="gsdoc" href="NSStepperCell.html#method$NSStepperCell(Private)-upButtonRectWithFrame:">-upButtonRectWithFrame:</a></li>
+      <li><a rel="gsdoc" href="NSStepperCell.html#method$NSStepperCell-_drawText:">-_drawText:</a></li>
+      <li><a rel="gsdoc" href="NSStepperCell.html#method$NSStepperCell-downButtonRectWithFrame:">-downButtonRectWithFrame:</a></li>
+      <li><a rel="gsdoc" href="NSStepperCell.html#method$NSStepperCell-highlight:upButton:withFrame:inView:">-highlight:upButton:withFrame:inView:</a></li>
+      <li><a rel="gsdoc" href="NSStepperCell.html#method$NSStepperCell-upButtonRectWithFrame:">-upButtonRectWithFrame:</a></li>
     </ul>
-<hr width="50%" align="left" />
-    <h3><a name="method$NSStepperCell(Private)-_drawText:">_drawText:</a></h3>
+    <hr width="50%" align="left" />
+    <h3><a name="method$NSStepperCell-_drawText:">_drawText:</a></h3>
     - (void) <b>_drawText:</b> (NSRect)aRect;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSStepperCell(Private)-downButtonRectWithFrame:">downButtonRectWithFrame:</a></h3>
+    <h3><a name="method$NSStepperCell-downButtonRectWithFrame:">downButtonRectWithFrame:</a></h3>
     - (NSRect) <b>downButtonRectWithFrame:</b> (NSRect)frame;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSStepperCell(Private)-highlight:upButton:withFrame:inView:">highlight:upButton:withFrame:inView:</a></h3>
+    <h3><a name="method$NSStepperCell-highlight:upButton:withFrame:inView:">highlight:upButton:withFrame:inView:</a></h3>
     - (void) <b>highlight:</b> (BOOL)highlight<b> upButton:</b> (BOOL)upButton<b> withFrame:</b> (NSRect)frame<b> inView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSStepperCell(Private)-upButtonRectWithFrame:">upButtonRectWithFrame:</a></h3>
+    <h3><a name="method$NSStepperCell-upButtonRectWithFrame:">upButtonRectWithFrame:</a></h3>
     - (NSRect) <b>upButtonRectWithFrame:</b> (NSRect)frame;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>

@@ -58,10 +58,10 @@
         actual drawing. As a convenience, you can also access
         these through various function interfaces. One is a
         Display Postscript interface using PS and DPS
-        opeterations. Another is a Quartz interface (not
-        yet written).
+        operations. Another is a Quartz interface (not yet
+        written).
           </p>
-    <h2><a name="class$NSGraphicsContext">NSGraphicsContext</a> : <a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a></h2>
+    <h2><a name="class$NSGraphicsContext">NSGraphicsContext</a> : NSObject</h2>
     <blockquote>
       <dl>
         <dt><b>Declared in:</b></dt>
@@ -71,9 +71,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
+        <li>MacOS-X</li>
         <li>NotOpenStep</li>
         <li>GNUstep</li>
-        <li>MacOS-X</li>
       </ul>
     </blockquote>
     <p>
@@ -84,59 +84,24 @@
     <h3>Instance variables</h3>
     <h3><a name="ivariable$NSGraphicsContext*_antialias">_antialias</a></h3>
     @public  <b>_antialias</b>;<br />
-    <p>
-      
-            <em>Description forthcoming.</em>
-          
-    </p>
     <hr width="25%" align="left" />
     <h3><a name="ivariable$NSGraphicsContext*_interp">_interp</a></h3>
     @public  <b>_interp</b>;<br />
-    <p>
-      
-            <em>Description forthcoming.</em>
-          
-    </p>
     <hr width="25%" align="left" />
     <h3><a name="ivariable$NSGraphicsContext*context_data">context_data</a></h3>
     @public  <b>context_data</b>;<br />
-    <p>
-      
-            <em>Description forthcoming.</em>
-          
-    </p>
     <hr width="25%" align="left" />
     <h3><a name="ivariable$NSGraphicsContext*context_info">context_info</a></h3>
     @public  <b>context_info</b>;<br />
-    <p>
-      
-            <em>Description forthcoming.</em>
-          
-    </p>
     <hr width="25%" align="left" />
     <h3><a name="ivariable$NSGraphicsContext*focus_stack">focus_stack</a></h3>
     @public  <b>focus_stack</b>;<br />
-    <p>
-      
-            <em>Description forthcoming.</em>
-          
-    </p>
     <hr width="25%" align="left" />
     <h3><a name="ivariable$NSGraphicsContext*methods">methods</a></h3>
     @public  <b>methods</b>;<br />
-    <p>
-      
-            <em>Description forthcoming.</em>
-          
-    </p>
     <hr width="25%" align="left" />
     <h3><a name="ivariable$NSGraphicsContext*usedFonts">usedFonts</a></h3>
     @public  <b>usedFonts</b>;<br />
-    <p>
-      
-            <em>Description forthcoming.</em>
-          
-    </p>
     <hr width="25%" align="left" />
     <b>Method summary</b>
     <ul>
@@ -144,6 +109,7 @@
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext+currentContextDrawingToScreen">+currentContextDrawingToScreen</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext+graphicsContextWithAttributes:">+graphicsContextWithAttributes:</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext+graphicsContextWithWindow:">+graphicsContextWithWindow:</a></li>
+      <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext+handleExposeRect:forDriver:">+handleExposeRect:forDriver:</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext+restoreGraphicsState">+restoreGraphicsState</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext+saveGraphicsState">+saveGraphicsState</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext+setCurrentContext:">+setCurrentContext:</a></li>
@@ -227,6 +193,7 @@
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-DPSyshow:::">-DPSyshow:::</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-GSConcatCTM:">-GSConcatCTM:</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-GSCurrentCTM">-GSCurrentCTM</a></li>
+      <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-GSCurrentDevice:::">-GSCurrentDevice:::</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-GSDefineGState">-GSDefineGState</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-GSDrawImage::">-GSDrawImage::</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-GSGetTextCTM">-GSGetTextCTM</a></li>
@@ -237,6 +204,7 @@
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-GSSendBezierPath:">-GSSendBezierPath:</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-GSSetCTM:">-GSSetCTM:</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-GSSetCharacterSpacing:">-GSSetCharacterSpacing:</a></li>
+      <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-GSSetDevice:::">-GSSetDevice:::</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-GSSetFillColor:">-GSSetFillColor:</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-GSSetFillColorspace:">-GSSetFillColorspace:</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-GSSetFont:">-GSSetFont:</a></li>
@@ -295,7 +263,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSGraphicsContext+graphicsContextWithAttributes:">graphicsContextWithAttributes:</a></h3>
-    + (<a rel="gsdoc" href="#class$NSGraphicsContext">NSGraphicsContext</a>*) <b>graphicsContextWithAttributes:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*)attributes;<br />
+    + (<a rel="gsdoc" href="#class$NSGraphicsContext">NSGraphicsContext</a>*) <b>graphicsContextWithAttributes:</b> (NSDictionary*)attributes;<br />
     <p>
       
             
@@ -308,8 +276,6 @@
               context is to be initialized.
                 </p>
     <p>
-      
-          
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSGraphicsContext+graphicsContextWithWindow:">graphicsContextWithWindow:</a></h3>
@@ -355,7 +321,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSGraphicsContext-attributes">attributes</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*) <b>attributes</b>;<br />
+    - (NSDictionary*) <b>attributes</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -476,6 +442,7 @@
     </p>
     <b>Method summary</b>
     <ul>
+      <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext+handleExposeRect:forDriver:">+handleExposeRect:forDriver:</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext+setDefaultContextClass:">+setDefaultContextClass:</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-contextDevice:">-contextDevice:</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-focusView">-focusView</a></li>
@@ -487,16 +454,16 @@
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-usedFonts">-usedFonts</a></li>
     </ul>
     <hr width="50%" align="left" />
-    <h3><a name="method$NSGraphicsContext+setDefaultContextClass:">setDefaultContextClass:</a></h3>
-    + (void) <b>setDefaultContextClass:</b> (Class)defaultContextClass;<br />
+    <h3><a name="method$NSGraphicsContext+handleExposeRect:forDriver:">handleExposeRect:forDriver:</a></h3>
+    + (void) <b>handleExposeRect:</b> (NSRect)rect<b> forDriver:</b> (void*)driver;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSGraphicsContext-contextDevice:">contextDevice:</a></h3>
-    - (void) <b>contextDevice:</b> (int)num;<br />
+    <h3><a name="method$NSGraphicsContext+setDefaultContextClass:">setDefaultContextClass:</a></h3>
+    + (void) <b>setDefaultContextClass:</b> (Class)defaultContextClass;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -512,7 +479,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSGraphicsContext-initWithContextInfo:">initWithContextInfo:</a></h3>
-    - (id) <b>initWithContextInfo:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*)info;<br />
+    - (id) <b>initWithContextInfo:</b> (NSDictionary*)info;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -544,7 +511,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSGraphicsContext-useFont:">useFont:</a></h3>
-    - (void) <b>useFont:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)fontName;<br />
+    - (void) <b>useFont:</b> (NSString*)fontName;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -552,7 +519,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSGraphicsContext-usedFonts">usedFonts</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSSet.html#class$NSSet">NSSet</a>*) <b>usedFonts</b>;<br />
+    - (NSSet*) <b>usedFonts</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -574,9 +541,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
+        <li>MacOS-X</li>
         <li>NotOpenStep</li>
         <li>GNUstep</li>
-        <li>MacOS-X</li>
       </ul>
     </blockquote>
     <p>
@@ -597,7 +564,10 @@
     - (void) <b>GSWSetViewIsFlipped:</b> (BOOL)flipped;<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            This method is used by the backend, but has been
+            rendered obsolete. Do not use it in any code or in
+            any backend implementation as it may disappear at any
+            point.
           
     </p>
     <hr width="25%" align="left" />
@@ -605,7 +575,9 @@
     - (BOOL) <b>GSWViewIsFlipped</b>;<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Returns <code>YES</code> if the current focused
+            view is flipped. This is an obsolete method. Use
+            [[NSView focusView] isFlipped] instead
           
     </p>
     <hr width="25%" align="left" />
@@ -613,15 +585,18 @@
     - (void) <b>NSBeep</b>;<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Play the System Beep
           
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSGraphicsContext-NSDrawBitmap:::::::::::">NSDrawBitmap:::::::::::</a></h3>
-    - (void) <b>NSDrawBitmap:</b> (NSRect)rect<b> :</b> (int)pixelsWide<b> :</b> (int)pixelsHigh<b> :</b> (int)bitsPerSample<b> :</b> (int)samplesPerPixel<b> :</b> (int)bitsPerPixel<b> :</b> (int)bytesPerRow<b> :</b> (BOOL)isPlanar<b> :</b> (BOOL)hasAlpha<b> :</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)colorSpaceName<b> :</b> (const unsigned char*const[5])data;<br />
+    - (void) <b>NSDrawBitmap:</b> (NSRect)rect<b> :</b> (int)pixelsWide<b> :</b> (int)pixelsHigh<b> :</b> (int)bitsPerSample<b> :</b> (int)samplesPerPixel<b> :</b> (int)bitsPerPixel<b> :</b> (int)bytesPerRow<b> :</b> (BOOL)isPlanar<b> :</b> (BOOL)hasAlpha<b> :</b> (NSString*)colorSpaceName<b> :</b> (const unsigned char*const[5])data;<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Generic method to render bitmap images. This method
+            shouldn't be used anywhere except in the AppKit
+            itself. It will be replaced by the more flexible
+            GSDrawImage method sometime in the future.
           
     </p>
     <hr width="25%" align="left" />
@@ -629,7 +604,7 @@
     - (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*) <b>NSReadPixel:</b> (NSPoint)location;<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Read the Color at a Screen Position
           
     </p>
     <hr width="25%" align="left" />
@@ -647,9 +622,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
+        <li>MacOS-X</li>
         <li>NotOpenStep</li>
         <li>GNUstep</li>
-        <li>MacOS-X</li>
       </ul>
     </blockquote>
     <p>
@@ -737,6 +712,7 @@
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-DPSyshow:::">-DPSyshow:::</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-GSConcatCTM:">-GSConcatCTM:</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-GSCurrentCTM">-GSCurrentCTM</a></li>
+      <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-GSCurrentDevice:::">-GSCurrentDevice:::</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-GSDefineGState">-GSDefineGState</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-GSDrawImage::">-GSDrawImage::</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-GSGetTextCTM">-GSGetTextCTM</a></li>
@@ -747,6 +723,7 @@
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-GSSendBezierPath:">-GSSendBezierPath:</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-GSSetCTM:">-GSSetCTM:</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-GSSetCharacterSpacing:">-GSSetCharacterSpacing:</a></li>
+      <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-GSSetDevice:::">-GSSetDevice:::</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-GSSetFillColor:">-GSSetFillColor:</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-GSSetFillColorspace:">-GSSetFillColorspace:</a></li>
       <li><a rel="gsdoc" href="NSGraphicsContext.html#method$NSGraphicsContext-GSSetFont:">-GSSetFont:</a></li>
@@ -765,7 +742,9 @@
     - (void) <b>DPSPrintf:</b> (char*)fmt<b> :</b> (va_list)args;<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Write the string (with printf substitutions) to a
+            PostScript context. Other output contexts will
+            likely ignore this
           
     </p>
     <hr width="25%" align="left" />
@@ -773,7 +752,8 @@
     - (void) <b>DPSWriteData:</b> (char*)buf<b> :</b> (unsigned int)count;<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Write the encoded data to a PostScript context. Other
+            output contexts will likely ignore this
           
     </p>
     <hr width="25%" align="left" />
@@ -805,7 +785,24 @@
     - (void) <b>DPSashow:</b> (float)x<b> :</b> (float)y<b> :</b> (const char*)s;<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Displays a string as in the PostScript ashow
+            operator. This operator is obsolete. You should
+            instead use
+            <a rel="gsdoc" href="#method$NSGraphicsContext(Ops)-DPSshow:">
+              -DPSshow:
+            </a>
+
+            with appropriate
+            <a rel="gsdoc" href="#method$NSGraphicsContext(Ops)-DPSrmoveto:">
+              -DPSrmoveto:
+            </a>
+
+            operations and/or the
+            <a rel="gsdoc" href="#method$NSGraphicsContext(Ops)-GSSetCharacterSpacing:">
+              -GSSetCharacterSpacing:
+            </a>
+
+            method
           
     </p>
     <hr width="25%" align="left" />
@@ -813,7 +810,24 @@
     - (void) <b>DPSawidthshow:</b> (float)cx<b> :</b> (float)cy<b> :</b> (int)c<b> :</b> (float)ax<b> :</b> (float)ay<b> :</b> (const char*)s;<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Displays a string as in the PostScript awidthshow
+            operator. This operator is obsolete. You should
+            instead use
+            <a rel="gsdoc" href="#method$NSGraphicsContext(Ops)-DPSshow:">
+              -DPSshow:
+            </a>
+
+            with appropriate
+            <a rel="gsdoc" href="#method$NSGraphicsContext(Ops)-DPSrmoveto:">
+              -DPSrmoveto:
+            </a>
+
+            operations and/or the
+            <a rel="gsdoc" href="#method$NSGraphicsContext(Ops)-GSSetCharacterSpacing:">
+              -GSSetCharacterSpacing:
+            </a>
+
+            method
           
     </p>
     <hr width="25%" align="left" />
@@ -821,7 +835,10 @@
     - (void) <b>DPScharpath:</b> (const char*)s<b> :</b> (int)b;<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Appends to the current path a path that is
+            equivalent to the outlines of the glyphs in the
+            string. This results in a path that can be used for
+            stroking, filling or clipping
           
     </p>
     <hr width="25%" align="left" />
@@ -890,14 +907,6 @@
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSGraphicsContext-DPScurrentgcdrawable::::">DPScurrentgcdrawable::::</a></h3>
-    - (void) <b>DPScurrentgcdrawable:</b> (void**)gc<b> :</b> (void**)draw<b> :</b> (int*)x<b> :</b> (int*)y;<br />
-    <p>
-      
-            <em>Description forthcoming.</em>
-          
-    </p>
-    <hr width="25%" align="left" />
     <h3><a name="method$NSGraphicsContext-DPScurrentgray:">DPScurrentgray:</a></h3>
     - (void) <b>DPScurrentgray:</b> (float*)gray;<br />
     <p>
@@ -906,18 +915,6 @@
             color space. The value may depend on the current
             color space and may be 0 if the current color space
             has no notion of a <var>gray</var> value
-          
-    </p>
-    <hr width="25%" align="left" />
-    <h3><a name="method$NSGraphicsContext-DPScurrentgstate:">DPScurrentgstate:</a></h3>
-    - (void) <b>DPScurrentgstate:</b> (int)gst;<br />
-    <p>
-      
-            Depcreciated. Same as
-            <a rel="gsdoc" href="#method$NSGraphicsContext(Ops)-GSReplaceGState:">
-              -GSReplaceGState:
-            </a>
-
           
     </p>
     <hr width="25%" align="left" />
@@ -1062,19 +1059,6 @@
             information onto the gstate stack. This saves
             drawing information contained in the gstate, such
             as the current path, ctm and colors.
-          
-    </p>
-    <hr width="25%" align="left" />
-    <h3><a name="method$NSGraphicsContext-DPSgstate">DPSgstate</a></h3>
-    - (void) <b>DPSgstate</b>;<br />
-    <p>
-      
-            Depreciated. Use
-            <a rel="gsdoc" href="#method$NSGraphicsContext(Ops)-DPSDefineGState">
-              -DPSDefineGState
-            </a>
-
-            to create a gstate it and tag it with a id tag.
           
     </p>
     <hr width="25%" align="left" />
@@ -1245,14 +1229,6 @@
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSGraphicsContext-DPSsetgcdrawable::::">DPSsetgcdrawable::::</a></h3>
-    - (void) <b>DPSsetgcdrawable:</b> (void*)gc<b> :</b> (void*)draw<b> :</b> (int)x<b> :</b> (int)y;<br />
-    <p>
-      
-            <em>Description forthcoming.</em>
-          
-    </p>
-    <hr width="25%" align="left" />
     <h3><a name="method$NSGraphicsContext-DPSsetgray:">DPSsetgray:</a></h3>
     - (void) <b>DPSsetgray:</b> (float)gray;<br />
     <p>
@@ -1374,7 +1350,19 @@
     - (void) <b>DPSwidthshow:</b> (float)x<b> :</b> (float)y<b> :</b> (int)c<b> :</b> (const char*)s;<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Displays a string as in the PostScript widthshow
+            operator. This operator is obsolete. You should
+            instead use
+            <a rel="gsdoc" href="#method$NSGraphicsContext(Ops)-DPSshow:">
+              -DPSshow:
+            </a>
+
+            with appropriate
+            <a rel="gsdoc" href="#method$NSGraphicsContext(Ops)-DPSrmoveto:">
+              -DPSrmoveto:
+            </a>
+
+            operations.
           
     </p>
     <hr width="25%" align="left" />
@@ -1382,7 +1370,19 @@
     - (void) <b>DPSxshow:</b> (const char*)s<b> :</b> (const float*)numarray<b> :</b> (int)size;<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Displays a string as in the PostScript widthshow
+            operator. This operator is obsolete. You should
+            instead use
+            <a rel="gsdoc" href="#method$NSGraphicsContext(Ops)-DPSshow:">
+              -DPSshow:
+            </a>
+
+            with appropriate
+            <a rel="gsdoc" href="#method$NSGraphicsContext(Ops)-DPSrmoveto:">
+              -DPSrmoveto:
+            </a>
+
+            operations.
           
     </p>
     <hr width="25%" align="left" />
@@ -1390,7 +1390,19 @@
     - (void) <b>DPSxyshow:</b> (const char*)s<b> :</b> (const float*)numarray<b> :</b> (int)size;<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Displays a string as in the PostScript xyshow
+            operator. This operator is obsolete. You should
+            instead use
+            <a rel="gsdoc" href="#method$NSGraphicsContext(Ops)-DPSshow:">
+              -DPSshow:
+            </a>
+
+            with appropriate
+            <a rel="gsdoc" href="#method$NSGraphicsContext(Ops)-DPSrmoveto:">
+              -DPSrmoveto:
+            </a>
+
+            operations.
           
     </p>
     <hr width="25%" align="left" />
@@ -1398,7 +1410,19 @@
     - (void) <b>DPSyshow:</b> (const char*)s<b> :</b> (const float*)numarray<b> :</b> (int)size;<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Displays a string as in the PostScript yshow
+            operator. This operator is obsolete. You should
+            instead use
+            <a rel="gsdoc" href="#method$NSGraphicsContext(Ops)-DPSshow:">
+              -DPSshow:
+            </a>
+
+            with appropriate
+            <a rel="gsdoc" href="#method$NSGraphicsContext(Ops)-DPSrmoveto:">
+              -DPSrmoveto:
+            </a>
+
+            operations.
           
     </p>
     <hr width="25%" align="left" />
@@ -1415,6 +1439,22 @@
     <p>
       
             <em>Description forthcoming.</em>
+          
+    </p>
+    <hr width="25%" align="left" />
+    <h3><a name="method$NSGraphicsContext-GSCurrentDevice:::">GSCurrentDevice:::</a></h3>
+    - (void) <b>GSCurrentDevice:</b> (void**)device<b> :</b> (int*)x<b> :</b> (int*)y;<br />
+    <p>
+      
+            This is a private method used between the window
+            server and the context. It should not be used in any
+            application. Typically used by the window
+            server to find out what window the context is
+            drawing graphics to. The <var>device</var> pointer
+            is an opaque type that contains information about the
+            window. The <var>x</var> and <var>y</var> pointers
+            indicate the offset of the origin of the window
+            from the lower left-hand corner
           
     </p>
     <hr width="25%" align="left" />
@@ -1437,7 +1477,11 @@
     - (void) <b>GSDrawImage:</b> (NSRect)rect<b> :</b> (void*)imageref;<br />
     <p>
       
-            <em>Description forthcoming.</em>
+            Generic method to draw an image into a
+            <var>rect</var>. The image is defined by
+            <var>imageref</var>, an opaque structure. Support for
+            this method hasn't been implemented yet, so it should
+            not be used anywhere.
           
     </p>
     <hr width="25%" align="left" />
@@ -1507,6 +1551,24 @@
           
     </p>
     <hr width="25%" align="left" />
+    <h3><a name="method$NSGraphicsContext-GSSetDevice:::">GSSetDevice:::</a></h3>
+    - (void) <b>GSSetDevice:</b> (void*)device<b> :</b> (int)x<b> :</b> (int)y;<br />
+    <p>
+      
+            This is a private method used between the window
+            server and the context. It should not be used in any
+            application. Typically called by the window
+            server to tell the context what window it should
+            draw graphics to. The <var>device</var> pointer is an
+            opaque type that contains information about the
+            window. The <var>x</var> and <var>y</var> values
+            tell the context that it should put the origin of the
+            transform matrix at the indicated <var>x</var>
+            and <var>y</var> values from the lower left-hand corner
+            of the window
+          
+    </p>
+    <hr width="25%" align="left" />
     <h3><a name="method$NSGraphicsContext-GSSetFillColor:">GSSetFillColor:</a></h3>
     - (void) <b>GSSetFillColor:</b> (float*)values;<br />
     <p>
@@ -1520,7 +1582,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSGraphicsContext-GSSetFillColorspace:">GSSetFillColorspace:</a></h3>
-    - (void) <b>GSSetFillColorspace:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*)dict;<br />
+    - (void) <b>GSSetFillColorspace:</b> (NSDictionary*)dict;<br />
     <p>
       
             
@@ -1531,8 +1593,6 @@
               values in the supplied dictionary <var>dict</var>.
                 </p>
     <p>
-      
-            
     </p>
     <p>
 
@@ -1542,14 +1602,10 @@
               GSColorSpaceName key.
                 </p>
     <p>
-      
-            
     </p>
     <p>
 Other colorspaces will be documented later    </p>
     <p>
-      
-          
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSGraphicsContext-GSSetFont:">GSSetFont:</a></h3>
@@ -1572,7 +1628,7 @@ Other colorspaces will be documented later    </p>
     - (void) <b>GSSetStrokeColor:</b> (float*)values;<br />
     <p>
       
-            Sets the current color for fill operations. The
+            Sets the current color for stroke operations. The
             <var>values</var> array should have n components,
             where n corresponds to the number of color components
             required to specify the color in the current
@@ -1581,7 +1637,7 @@ Other colorspaces will be documented later    </p>
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSGraphicsContext-GSSetStrokeColorspace:">GSSetStrokeColorspace:</a></h3>
-    - (void) <b>GSSetStrokeColorspace:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSDictionary.html#class$NSDictionary">NSDictionary</a>*)dict;<br />
+    - (void) <b>GSSetStrokeColorspace:</b> (NSDictionary*)dict;<br />
     <p>
       
             Sets the colorspace for stroke operations based on the

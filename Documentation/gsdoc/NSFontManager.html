@@ -28,7 +28,7 @@
         <li>
           <a href="#002000000000">Software documentation for the
         NSObject(NSFontManagerDelegate)
-        category</a>
+        informal protocol</a>
         </li>
       </ol>
       <hr width="50%" align="left" />
@@ -36,7 +36,7 @@
     <h1><a name="001000000000">
         Software documentation for the NSFontManager class
       </a></h1>
-    <h2><a name="class$NSFontManager">NSFontManager</a> : <a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a></h2>
+    <h2><a name="class$NSFontManager">NSFontManager</a> : NSObject</h2>
     <blockquote>
       <dl>
         <dt><b>Declared in:</b></dt>
@@ -46,9 +46,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -96,10 +96,9 @@
       <li><a rel="gsdoc" href="NSFontManager.html#method$NSFontManager-traitsOfFont:">-traitsOfFont:</a></li>
       <li><a rel="gsdoc" href="NSFontManager.html#method$NSFontManager-weightOfFont:">-weightOfFont:</a></li>
     </ul>
-<hr width="50%" align="left" />
+    <hr width="50%" align="left" />
     <h3><a name="method$NSFontManager+setFontManagerFactory:">setFontManagerFactory:</a></h3>
     + (void) <b>setFontManagerFactory:</b> (Class)class;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -108,7 +107,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager+setFontPanelFactory:">setFontPanelFactory:</a></h3>
     + (void) <b>setFontPanelFactory:</b> (Class)class;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -117,7 +115,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager+sharedFontManager">sharedFontManager</a></h3>
     + (<a rel="gsdoc" href="#class$NSFontManager">NSFontManager</a>*) <b>sharedFontManager</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -126,7 +123,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-action">action</a></h3>
     - (SEL) <b>action</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -135,7 +131,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-addFontTrait:">addFontTrait:</a></h3>
     - (void) <b>addFontTrait:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -143,8 +138,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-availableFontFamilies">availableFontFamilies</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>availableFontFamilies</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSArray*) <b>availableFontFamilies</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -152,8 +146,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-availableFontNamesWithTraits:">availableFontNamesWithTraits:</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>availableFontNamesWithTraits:</b> (NSFontTraitMask)fontTraitMask;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSArray*) <b>availableFontNamesWithTraits:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSFontTraitMask">NSFontTraitMask</a>)fontTraitMask;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -161,8 +154,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-availableFonts">availableFonts</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>availableFonts</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSArray*) <b>availableFonts</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -170,8 +162,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-availableMembersOfFontFamily:">availableMembersOfFontFamily:</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>availableMembersOfFontFamily:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)family;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSArray*) <b>availableMembersOfFontFamily:</b> (NSString*)family;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -180,7 +171,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-convertFont:">convertFont:</a></h3>
     - (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*) <b>convertFont:</b> (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*)fontObject;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -188,8 +178,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-convertFont:toFace:">convertFont:toFace:</a></h3>
-    - (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*) <b>convertFont:</b> (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*)fontObject<b> toFace:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)typeface;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*) <b>convertFont:</b> (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*)fontObject<b> toFace:</b> (NSString*)typeface;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -197,8 +186,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-convertFont:toFamily:">convertFont:toFamily:</a></h3>
-    - (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*) <b>convertFont:</b> (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*)fontObject<b> toFamily:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)family;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*) <b>convertFont:</b> (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*)fontObject<b> toFamily:</b> (NSString*)family;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -206,8 +194,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-convertFont:toHaveTrait:">convertFont:toHaveTrait:</a></h3>
-    - (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*) <b>convertFont:</b> (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*)fontObject<b> toHaveTrait:</b> (NSFontTraitMask)trait;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*) <b>convertFont:</b> (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*)fontObject<b> toHaveTrait:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSFontTraitMask">NSFontTraitMask</a>)trait;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -215,8 +202,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-convertFont:toNotHaveTrait:">convertFont:toNotHaveTrait:</a></h3>
-    - (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*) <b>convertFont:</b> (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*)fontObject<b> toNotHaveTrait:</b> (NSFontTraitMask)trait;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*) <b>convertFont:</b> (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*)fontObject<b> toNotHaveTrait:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSFontTraitMask">NSFontTraitMask</a>)trait;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -225,7 +211,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-convertFont:toSize:">convertFont:toSize:</a></h3>
     - (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*) <b>convertFont:</b> (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*)fontObject<b> toSize:</b> (float)size;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -234,7 +219,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-convertWeight:ofFont:">convertWeight:ofFont:</a></h3>
     - (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*) <b>convertWeight:</b> (BOOL)upFlag<b> ofFont:</b> (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*)fontObject;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -243,7 +227,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-delegate">delegate</a></h3>
     - (id) <b>delegate</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -252,7 +235,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-fontMenu:">fontMenu:</a></h3>
     - (<a rel="gsdoc" href="NSMenu.html#class$NSMenu">NSMenu</a>*) <b>fontMenu:</b> (BOOL)create;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -260,8 +242,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-fontNamed:hasTraits:">fontNamed:hasTraits:</a></h3>
-    - (BOOL) <b>fontNamed:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)typeface<b> hasTraits:</b> (NSFontTraitMask)fontTraitMask;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (BOOL) <b>fontNamed:</b> (NSString*)typeface<b> hasTraits:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSFontTraitMask">NSFontTraitMask</a>)fontTraitMask;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -270,7 +251,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-fontPanel:">fontPanel:</a></h3>
     - (<a rel="gsdoc" href="NSFontPanel.html#class$NSFontPanel">NSFontPanel</a>*) <b>fontPanel:</b> (BOOL)create;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -278,8 +258,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-fontWithFamily:traits:weight:size:">fontWithFamily:traits:weight:size:</a></h3>
-    - (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*) <b>fontWithFamily:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)family<b> traits:</b> (NSFontTraitMask)traits<b> weight:</b> (int)weight<b> size:</b> (float)size;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*) <b>fontWithFamily:</b> (NSString*)family<b> traits:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSFontTraitMask">NSFontTraitMask</a>)traits<b> weight:</b> (int)weight<b> size:</b> (float)size;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -288,7 +267,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-isEnabled">isEnabled</a></h3>
     - (BOOL) <b>isEnabled</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -297,7 +275,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-isMultiple">isMultiple</a></h3>
     - (BOOL) <b>isMultiple</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -305,8 +282,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-localizedNameForFamily:face:">localizedNameForFamily:face:</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>localizedNameForFamily:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)family<b> face:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)face;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>localizedNameForFamily:</b> (NSString*)family<b> face:</b> (NSString*)face;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -315,7 +291,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-modifyFont:">modifyFont:</a></h3>
     - (void) <b>modifyFont:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -324,7 +299,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-modifyFontViaPanel:">modifyFontViaPanel:</a></h3>
     - (void) <b>modifyFontViaPanel:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -333,7 +307,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-orderFrontFontPanel:">orderFrontFontPanel:</a></h3>
     - (void) <b>orderFrontFontPanel:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -342,7 +315,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-removeFontTrait:">removeFontTrait:</a></h3>
     - (void) <b>removeFontTrait:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -351,7 +323,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-selectedFont">selectedFont</a></h3>
     - (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*) <b>selectedFont</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -360,7 +331,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-sendAction">sendAction</a></h3>
     - (BOOL) <b>sendAction</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -369,7 +339,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-setAction:">setAction:</a></h3>
     - (void) <b>setAction:</b> (SEL)aSelector;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -378,7 +347,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-setDelegate:">setDelegate:</a></h3>
     - (void) <b>setDelegate:</b> (id)anObject;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -387,7 +355,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-setEnabled:">setEnabled:</a></h3>
     - (void) <b>setEnabled:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -396,7 +363,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-setFontMenu:">setFontMenu:</a></h3>
     - (void) <b>setFontMenu:</b> (<a rel="gsdoc" href="NSMenu.html#class$NSMenu">NSMenu</a>*)newMenu;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -405,7 +371,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-setSelectedFont:isMultiple:">setSelectedFont:isMultiple:</a></h3>
     - (void) <b>setSelectedFont:</b> (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*)fontObject<b> isMultiple:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -413,8 +378,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-traitsOfFont:">traitsOfFont:</a></h3>
-    - (NSFontTraitMask) <b>traitsOfFont:</b> (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*)fontObject;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (<a rel="gsdoc" href="TypesAndConstants.html#type$NSFontTraitMask">NSFontTraitMask</a>) <b>traitsOfFont:</b> (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*)aFont;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -423,7 +387,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSFontManager-weightOfFont:">weightOfFont:</a></h3>
     - (int) <b>weightOfFont:</b> (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*)fontObject;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -433,9 +396,9 @@
     <h1><a name="002000000000">
         Software documentation for the
         NSObject(NSFontManagerDelegate)
-        category
+        informal protocol
       </a></h1>
-    <h2><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a>(<a name="category$NSObject(NSFontManagerDelegate)">NSFontManagerDelegate</a>)</h2>
+    <h2>NSObject(<a name="category$NSObject(NSFontManagerDelegate)">NSFontManagerDelegate</a>)</h2>
     <blockquote>
       <dl>
         <dt><b>Declared in:</b></dt>
@@ -445,9 +408,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -457,12 +420,11 @@
     </p>
     <b>Method summary</b>
     <ul>
-      <li><a rel="gsdoc" href="NSFontManager.html#method$NSObject(NSFontManagerDelegate)-fontManager:willIncludeFont:">-fontManager:willIncludeFont:</a></li>
+      <li><a rel="gsdoc" href="NSFontManager.html#method$NSObject-fontManager:willIncludeFont:">-fontManager:willIncludeFont:</a></li>
     </ul>
-<hr width="50%" align="left" />
-    <h3><a name="method$NSObject(NSFontManagerDelegate)-fontManager:willIncludeFont:">fontManager:willIncludeFont:</a></h3>
-    - (BOOL) <b>fontManager:</b> (id)sender<b> willIncludeFont:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)fontName;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <hr width="50%" align="left" />
+    <h3><a name="method$NSObject-fontManager:willIncludeFont:">fontManager:willIncludeFont:</a></h3>
+    - (BOOL) <b>fontManager:</b> (id)sender<b> willIncludeFont:</b> (NSString*)fontName;<br />
     <p>
       
             <em>Description forthcoming.</em>

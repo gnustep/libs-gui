@@ -31,7 +31,7 @@
     <h1><a name="001000000000">
         Software documentation for the NSDocument class
       </a></h1>
-    <h2><a name="class$NSDocument">NSDocument</a> : <a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a></h2>
+    <h2><a name="class$NSDocument">NSDocument</a> : NSObject</h2>
     <blockquote>
       <dl>
         <dt><b>Declared in:</b></dt>
@@ -41,9 +41,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -118,10 +118,9 @@
       <li><a rel="gsdoc" href="NSDocument.html#method$NSDocument-writeToURL:ofType:">-writeToURL:ofType:</a></li>
       <li><a rel="gsdoc" href="NSDocument.html#method$NSDocument-writeWithBackupToFile:ofType:saveOperation:">-writeWithBackupToFile:ofType:saveOperation:</a></li>
     </ul>
-<hr width="50%" align="left" />
+    <hr width="50%" align="left" />
     <h3><a name="method$NSDocument+isNativeType:">isNativeType:</a></h3>
-    + (BOOL) <b>isNativeType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)type;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    + (BOOL) <b>isNativeType:</b> (NSString*)type;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -129,8 +128,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument+readableTypes">readableTypes</a></h3>
-    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>readableTypes</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    + (NSArray*) <b>readableTypes</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -138,8 +136,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument+writableTypes">writableTypes</a></h3>
-    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>writableTypes</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    + (NSArray*) <b>writableTypes</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -148,7 +145,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-addWindowController:">addWindowController:</a></h3>
     - (void) <b>addWindowController:</b> (<a rel="gsdoc" href="NSWindowController.html#class$NSWindowController">NSWindowController</a>*)windowController;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -157,7 +153,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-canCloseDocument">canCloseDocument</a></h3>
     - (BOOL) <b>canCloseDocument</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -166,7 +161,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-canCloseDocumentWithDelegate:shouldCloseSelector:contextInfo:">canCloseDocumentWithDelegate:shouldCloseSelector:contextInfo:</a></h3>
     - (void) <b>canCloseDocumentWithDelegate:</b> (id)delegate<b> shouldCloseSelector:</b> (SEL)shouldCloseSelector<b> contextInfo:</b> (void*)contextInfo;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -175,7 +169,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-close">close</a></h3>
     - (void) <b>close</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -183,8 +176,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-dataRepresentationOfType:">dataRepresentationOfType:</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*) <b>dataRepresentationOfType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)type;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSData*) <b>dataRepresentationOfType:</b> (NSString*)type;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -192,8 +184,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-displayName">displayName</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>displayName</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>displayName</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -201,8 +192,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-fileName">fileName</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>fileName</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>fileName</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -210,8 +200,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-fileNameFromRunningSavePanelForSaveOperation:">fileNameFromRunningSavePanelForSaveOperation:</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>fileNameFromRunningSavePanelForSaveOperation:</b> (NSSaveOperationType)saveOperation;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>fileNameFromRunningSavePanelForSaveOperation:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSSaveOperationType">NSSaveOperationType</a>)saveOperation;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -219,8 +208,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-fileType">fileType</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>fileType</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>fileType</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -228,8 +216,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-fileTypeFromLastRunSavePanel">fileTypeFromLastRunSavePanel</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>fileTypeFromLastRunSavePanel</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>fileTypeFromLastRunSavePanel</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -237,8 +224,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-fileWrapperRepresentationOfType:">fileWrapperRepresentationOfType:</a></h3>
-    - (<a rel="gsdoc" href="NSFileWrapper.html#class$NSFileWrapper">NSFileWrapper</a>*) <b>fileWrapperRepresentationOfType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)type;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (<a rel="gsdoc" href="NSFileWrapper.html#class$NSFileWrapper">NSFileWrapper</a>*) <b>fileWrapperRepresentationOfType:</b> (NSString*)type;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -247,7 +233,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-hasUndoManager">hasUndoManager</a></h3>
     - (BOOL) <b>hasUndoManager</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -256,7 +241,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-init">init</a></h3>
     - (id) <b>init</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -264,8 +248,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-initWithContentsOfFile:ofType:">initWithContentsOfFile:ofType:</a></h3>
-    - (id) <b>initWithContentsOfFile:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)fileName<b> ofType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)fileType;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (id) <b>initWithContentsOfFile:</b> (NSString*)fileName<b> ofType:</b> (NSString*)fileType;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -273,8 +256,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-initWithContentsOfURL:ofType:">initWithContentsOfURL:ofType:</a></h3>
-    - (id) <b>initWithContentsOfURL:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSURL.html#class$NSURL">NSURL</a>*)url<b> ofType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)fileType;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (id) <b>initWithContentsOfURL:</b> (NSURL*)url<b> ofType:</b> (NSString*)fileType;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -283,7 +265,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-isDocumentEdited">isDocumentEdited</a></h3>
     - (BOOL) <b>isDocumentEdited</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -292,7 +273,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-keepBackupFile">keepBackupFile</a></h3>
     - (BOOL) <b>keepBackupFile</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -300,8 +280,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-loadDataRepresentation:ofType:">loadDataRepresentation:ofType:</a></h3>
-    - (BOOL) <b>loadDataRepresentation:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*)data<b> ofType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)type;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (BOOL) <b>loadDataRepresentation:</b> (NSData*)data<b> ofType:</b> (NSString*)type;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -309,8 +288,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-loadFileWrapperRepresentation:ofType:">loadFileWrapperRepresentation:ofType:</a></h3>
-    - (BOOL) <b>loadFileWrapperRepresentation:</b> (<a rel="gsdoc" href="NSFileWrapper.html#class$NSFileWrapper">NSFileWrapper</a>*)wrapper<b> ofType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)type;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (BOOL) <b>loadFileWrapperRepresentation:</b> (<a rel="gsdoc" href="NSFileWrapper.html#class$NSFileWrapper">NSFileWrapper</a>*)wrapper<b> ofType:</b> (NSString*)type;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -319,7 +297,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-makeWindowControllers">makeWindowControllers</a></h3>
     - (void) <b>makeWindowControllers</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -328,7 +305,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-prepareSavePanel:">prepareSavePanel:</a></h3>
     - (BOOL) <b>prepareSavePanel:</b> (<a rel="gsdoc" href="NSSavePanel.html#class$NSSavePanel">NSSavePanel</a>*)savePanel;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -337,7 +313,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-printDocument:">printDocument:</a></h3>
     - (IBAction) <b>printDocument:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -346,7 +321,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-printInfo">printInfo</a></h3>
     - (<a rel="gsdoc" href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*) <b>printInfo</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -355,7 +329,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-printShowingPrintPanel:">printShowingPrintPanel:</a></h3>
     - (void) <b>printShowingPrintPanel:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -363,8 +336,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-readFromFile:ofType:">readFromFile:ofType:</a></h3>
-    - (BOOL) <b>readFromFile:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)fileName<b> ofType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)type;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (BOOL) <b>readFromFile:</b> (NSString*)fileName<b> ofType:</b> (NSString*)type;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -372,8 +344,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-readFromURL:ofType:">readFromURL:ofType:</a></h3>
-    - (BOOL) <b>readFromURL:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSURL.html#class$NSURL">NSURL</a>*)url<b> ofType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)type;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (BOOL) <b>readFromURL:</b> (NSURL*)url<b> ofType:</b> (NSString*)type;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -382,7 +353,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-removeWindowController:">removeWindowController:</a></h3>
     - (void) <b>removeWindowController:</b> (<a rel="gsdoc" href="NSWindowController.html#class$NSWindowController">NSWindowController</a>*)windowController;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -391,7 +361,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-revertDocumentToSaved:">revertDocumentToSaved:</a></h3>
     - (IBAction) <b>revertDocumentToSaved:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -399,8 +368,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-revertToSavedFromFile:ofType:">revertToSavedFromFile:ofType:</a></h3>
-    - (BOOL) <b>revertToSavedFromFile:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)fileName<b> ofType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)type;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (BOOL) <b>revertToSavedFromFile:</b> (NSString*)fileName<b> ofType:</b> (NSString*)type;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -408,8 +376,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-revertToSavedFromURL:ofType:">revertToSavedFromURL:ofType:</a></h3>
-    - (BOOL) <b>revertToSavedFromURL:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSURL.html#class$NSURL">NSURL</a>*)url<b> ofType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)type;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (BOOL) <b>revertToSavedFromURL:</b> (NSURL*)url<b> ofType:</b> (NSString*)type;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -418,7 +385,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-runModalPageLayoutWithPrintInfo:">runModalPageLayoutWithPrintInfo:</a></h3>
     - (int) <b>runModalPageLayoutWithPrintInfo:</b> (<a rel="gsdoc" href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)printInfo;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -427,7 +393,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-runModalSavePanel:withAccessoryView:">runModalSavePanel:withAccessoryView:</a></h3>
     - (int) <b>runModalSavePanel:</b> (<a rel="gsdoc" href="NSSavePanel.html#class$NSSavePanel">NSSavePanel</a>*)savePanel<b> withAccessoryView:</b> (<a rel="gsdoc" href="NSView.html#class$NSView">NSView</a>*)accessoryView;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -435,8 +400,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-runModalSavePanelForSaveOperation:delegate:didSaveSelector:contextInfo:">runModalSavePanelForSaveOperation:delegate:didSaveSelector:contextInfo:</a></h3>
-    - (void) <b>runModalSavePanelForSaveOperation:</b> (NSSaveOperationType)saveOperation<b> delegate:</b> (id)delegate<b> didSaveSelector:</b> (SEL)didSaveSelector<b> contextInfo:</b> (void*)contextInfo;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>runModalSavePanelForSaveOperation:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSSaveOperationType">NSSaveOperationType</a>)saveOperation<b> delegate:</b> (id)delegate<b> didSaveSelector:</b> (SEL)didSaveSelector<b> contextInfo:</b> (void*)contextInfo;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -445,7 +409,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-runPageLayout:">runPageLayout:</a></h3>
     - (IBAction) <b>runPageLayout:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -454,7 +417,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-saveDocument:">saveDocument:</a></h3>
     - (IBAction) <b>saveDocument:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -463,7 +425,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-saveDocumentAs:">saveDocumentAs:</a></h3>
     - (IBAction) <b>saveDocumentAs:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -472,7 +433,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-saveDocumentTo:">saveDocumentTo:</a></h3>
     - (IBAction) <b>saveDocumentTo:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -481,7 +441,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-saveDocumentWithDelegate:didSaveSelector:contextInfo:">saveDocumentWithDelegate:didSaveSelector:contextInfo:</a></h3>
     - (void) <b>saveDocumentWithDelegate:</b> (id)delegate<b> didSaveSelector:</b> (SEL)didSaveSelector<b> contextInfo:</b> (void*)contextInfo;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -489,8 +448,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-saveToFile:saveOperation:delegate:didSaveSelector:contextInfo:">saveToFile:saveOperation:delegate:didSaveSelector:contextInfo:</a></h3>
-    - (void) <b>saveToFile:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)fileName<b> saveOperation:</b> (NSSaveOperationType)saveOperation<b> delegate:</b> (id)delegate<b> didSaveSelector:</b> (SEL)didSaveSelector<b> contextInfo:</b> (void*)contextInfo;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>saveToFile:</b> (NSString*)fileName<b> saveOperation:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSSaveOperationType">NSSaveOperationType</a>)saveOperation<b> delegate:</b> (id)delegate<b> didSaveSelector:</b> (SEL)didSaveSelector<b> contextInfo:</b> (void*)contextInfo;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -498,8 +456,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-setFileName:">setFileName:</a></h3>
-    - (void) <b>setFileName:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)fileName;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setFileName:</b> (NSString*)fileName;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -507,8 +464,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-setFileType:">setFileType:</a></h3>
-    - (void) <b>setFileType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)type;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setFileType:</b> (NSString*)type;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -517,7 +473,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-setHasUndoManager:">setHasUndoManager:</a></h3>
     - (void) <b>setHasUndoManager:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -526,7 +481,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-setPrintInfo:">setPrintInfo:</a></h3>
     - (void) <b>setPrintInfo:</b> (<a rel="gsdoc" href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)printInfo;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -534,8 +488,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-setUndoManager:">setUndoManager:</a></h3>
-    - (void) <b>setUndoManager:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSUndoManager.html#class$NSUndoManager">NSUndoManager</a>*)undoManager;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setUndoManager:</b> (NSUndoManager*)undoManager;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -543,8 +496,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-setWindow:">setWindow:</a></h3>
-    - (void) <b>setWindow:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)window;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setWindow:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)aWindow;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -553,7 +505,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-shouldChangePrintInfo:">shouldChangePrintInfo:</a></h3>
     - (BOOL) <b>shouldChangePrintInfo:</b> (<a rel="gsdoc" href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)newPrintInfo;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -562,7 +513,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-shouldCloseWindowController:">shouldCloseWindowController:</a></h3>
     - (BOOL) <b>shouldCloseWindowController:</b> (<a rel="gsdoc" href="NSWindowController.html#class$NSWindowController">NSWindowController</a>*)windowController;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -571,7 +521,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-shouldCloseWindowController:delegate:shouldCloseSelector:contextInfo:">shouldCloseWindowController:delegate:shouldCloseSelector:contextInfo:</a></h3>
     - (void) <b>shouldCloseWindowController:</b> (<a rel="gsdoc" href="NSWindowController.html#class$NSWindowController">NSWindowController</a>*)windowController<b> delegate:</b> (id)delegate<b> shouldCloseSelector:</b> (SEL)callback<b> contextInfo:</b> (void*)contextInfo;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -580,7 +529,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-shouldRunSavePanelWithAccessoryView">shouldRunSavePanelWithAccessoryView</a></h3>
     - (BOOL) <b>shouldRunSavePanelWithAccessoryView</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -589,7 +537,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-showWindows">showWindows</a></h3>
     - (void) <b>showWindows</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -597,8 +544,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-undoManager">undoManager</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSUndoManager.html#class$NSUndoManager">NSUndoManager</a>*) <b>undoManager</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSUndoManager*) <b>undoManager</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -606,8 +552,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-updateChangeCount:">updateChangeCount:</a></h3>
-    - (void) <b>updateChangeCount:</b> (NSDocumentChangeType)change;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>updateChangeCount:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSDocumentChangeType">NSDocumentChangeType</a>)change;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -616,7 +561,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-validateMenuItem:">validateMenuItem:</a></h3>
     - (BOOL) <b>validateMenuItem:</b> (<a rel="gsdoc" href="NSMenuItem.html#class$NSMenuItem">NSMenuItem</a>*)anItem;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -625,7 +569,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-validateUserInterfaceItem:">validateUserInterfaceItem:</a></h3>
     - (BOOL) <b>validateUserInterfaceItem:</b> (id)anItem;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -634,7 +577,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-windowControllerDidLoadNib:">windowControllerDidLoadNib:</a></h3>
     - (void) <b>windowControllerDidLoadNib:</b> (<a rel="gsdoc" href="NSWindowController.html#class$NSWindowController">NSWindowController</a>*)windowController;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -643,7 +585,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-windowControllerWillLoadNib:">windowControllerWillLoadNib:</a></h3>
     - (void) <b>windowControllerWillLoadNib:</b> (<a rel="gsdoc" href="NSWindowController.html#class$NSWindowController">NSWindowController</a>*)windowController;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -651,8 +592,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-windowControllers">windowControllers</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>windowControllers</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSArray*) <b>windowControllers</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -660,8 +600,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-windowNibName">windowNibName</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>windowNibName</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>windowNibName</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -669,8 +608,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-writeToFile:ofType:">writeToFile:ofType:</a></h3>
-    - (BOOL) <b>writeToFile:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)fileName<b> ofType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)type;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (BOOL) <b>writeToFile:</b> (NSString*)fileName<b> ofType:</b> (NSString*)type;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -678,8 +616,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-writeToURL:ofType:">writeToURL:ofType:</a></h3>
-    - (BOOL) <b>writeToURL:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSURL.html#class$NSURL">NSURL</a>*)url<b> ofType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)type;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (BOOL) <b>writeToURL:</b> (NSURL*)url<b> ofType:</b> (NSString*)type;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -687,8 +624,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSDocument-writeWithBackupToFile:ofType:saveOperation:">writeWithBackupToFile:ofType:saveOperation:</a></h3>
-    - (BOOL) <b>writeWithBackupToFile:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)fileName<b> ofType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)fileType<b> saveOperation:</b> (NSSaveOperationType)saveOp;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (BOOL) <b>writeWithBackupToFile:</b> (NSString*)fileName<b> ofType:</b> (NSString*)fileType<b> saveOperation:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSSaveOperationType">NSSaveOperationType</a>)saveOp;<br />
     <p>
       
             <em>Description forthcoming.</em>

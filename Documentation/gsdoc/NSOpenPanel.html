@@ -13,7 +13,7 @@
       </code></a>)</dt>
       <dd>
       </dd>
-      <dt>(<a href="mailto:boehring@biomed.ruhr-uni-bochum.de"><code>
+      <dt>Daniel Bðhringer(<a href="mailto:boehring@biomed.ruhr-uni-bochum.de"><code>
         boehring@biomed.ruhr-uni-bochum.de
       </code></a>)</dt>
       <dd>
@@ -60,15 +60,15 @@
     <blockquote>
       <dl>
         <dt><b>Conforms to:</b></dt>
-        <dd><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#protocol$(NSCoding)">NSCoding</a></dd>
+        <dd>NSCoding</dd>
       </dl>
     </blockquote>
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -92,10 +92,9 @@
       <li><a rel="gsdoc" href="NSOpenPanel.html#method$NSOpenPanel-setCanChooseDirectories:">-setCanChooseDirectories:</a></li>
       <li><a rel="gsdoc" href="NSOpenPanel.html#method$NSOpenPanel-setCanChooseFiles:">-setCanChooseFiles:</a></li>
     </ul>
-<hr width="50%" align="left" />
+    <hr width="50%" align="left" />
     <h3><a name="method$NSOpenPanel+openPanel">openPanel</a></h3>
     + (<a rel="gsdoc" href="#class$NSOpenPanel">NSOpenPanel</a>*) <b>openPanel</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -103,8 +102,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSOpenPanel-URLs">URLs</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>URLs</b>;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
+    - (NSArray*) <b>URLs</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -113,7 +111,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSOpenPanel-allowsMultipleSelection">allowsMultipleSelection</a></h3>
     - (BOOL) <b>allowsMultipleSelection</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -121,8 +118,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSOpenPanel-beginSheetForDirectory:file:types:modalForWindow:modalDelegate:didEndSelector:contextInfo:">beginSheetForDirectory:file:types:modalForWindow:modalDelegate:didEndSelector:contextInfo:</a></h3>
-    - (void) <b>beginSheetForDirectory:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)path<b> file:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)name<b> types:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)fileTypes<b> modalForWindow:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)docWindow<b> modalDelegate:</b> (id)delegate<b> didEndSelector:</b> (SEL)didEndSelector<b> contextInfo:</b> (void*)contextInfo;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
+    - (void) <b>beginSheetForDirectory:</b> (NSString*)path<b> file:</b> (NSString*)name<b> types:</b> (NSArray*)fileTypes<b> modalForWindow:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)docWindow<b> modalDelegate:</b> (id)delegate<b> didEndSelector:</b> (SEL)didEndSelector<b> contextInfo:</b> (void*)contextInfo;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -131,7 +127,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSOpenPanel-canChooseDirectories">canChooseDirectories</a></h3>
     - (BOOL) <b>canChooseDirectories</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -140,7 +135,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSOpenPanel-canChooseFiles">canChooseFiles</a></h3>
     - (BOOL) <b>canChooseFiles</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -148,8 +142,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSOpenPanel-filenames">filenames</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>filenames</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSArray*) <b>filenames</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -157,8 +150,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSOpenPanel-runModalForDirectory:file:types:">runModalForDirectory:file:types:</a></h3>
-    - (int) <b>runModalForDirectory:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)path<b> file:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)name<b> types:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)fileTypes;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (int) <b>runModalForDirectory:</b> (NSString*)path<b> file:</b> (NSString*)name<b> types:</b> (NSArray*)fileTypes;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -166,8 +158,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSOpenPanel-runModalForDirectory:file:types:relativeToWindow:">runModalForDirectory:file:types:relativeToWindow:</a></h3>
-    - (int) <b>runModalForDirectory:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)path<b> file:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)name<b> types:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)fileTypes<b> relativeToWindow:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)window;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
+    - (int) <b>runModalForDirectory:</b> (NSString*)path<b> file:</b> (NSString*)name<b> types:</b> (NSArray*)fileTypes<b> relativeToWindow:</b> (<a rel="gsdoc" href="NSWindow.html#class$NSWindow">NSWindow</a>*)window;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -175,8 +166,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSOpenPanel-runModalForTypes:">runModalForTypes:</a></h3>
-    - (int) <b>runModalForTypes:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)fileTypes;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (int) <b>runModalForTypes:</b> (NSArray*)fileTypes;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -185,7 +175,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSOpenPanel-setAllowsMultipleSelection:">setAllowsMultipleSelection:</a></h3>
     - (void) <b>setAllowsMultipleSelection:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -194,7 +183,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSOpenPanel-setCanChooseDirectories:">setCanChooseDirectories:</a></h3>
     - (void) <b>setCanChooseDirectories:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -203,7 +191,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSOpenPanel-setCanChooseFiles:">setCanChooseFiles:</a></h3>
     - (void) <b>setCanChooseFiles:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>

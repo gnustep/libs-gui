@@ -31,7 +31,7 @@
         <li>
           <a href="#002000000000">Software documentation for the
         NSObject(NSPasteboardOwner)
-        category</a>
+        informal protocol</a>
         </li>
         <li>
           <a href="#003000000000">Software documentation for the
@@ -48,7 +48,7 @@
     <h1><a name="001000000000">
         Software documentation for the NSPasteboard class
       </a></h1>
-    <h2><a name="class$NSPasteboard">NSPasteboard</a> : <a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a></h2>
+    <h2><a name="class$NSPasteboard">NSPasteboard</a> : NSObject</h2>
     <blockquote>
       <dl>
         <dt><b>Declared in:</b></dt>
@@ -58,9 +58,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -71,9 +71,11 @@
     <b>Method summary</b>
     <ul>
       <li><a rel="gsdoc" href="NSPasteboard.html#method$NSPasteboard+generalPasteboard">+generalPasteboard</a></li>
+      <li><a rel="gsdoc" href="NSPasteboard.html#method$NSPasteboard+mimeTypeForPasteboardType:">+mimeTypeForPasteboardType:</a></li>
       <li><a rel="gsdoc" href="NSPasteboard.html#method$NSPasteboard+pasteboardByFilteringData:ofType:">+pasteboardByFilteringData:ofType:</a></li>
       <li><a rel="gsdoc" href="NSPasteboard.html#method$NSPasteboard+pasteboardByFilteringFile:">+pasteboardByFilteringFile:</a></li>
       <li><a rel="gsdoc" href="NSPasteboard.html#method$NSPasteboard+pasteboardByFilteringTypesInPasteboard:">+pasteboardByFilteringTypesInPasteboard:</a></li>
+      <li><a rel="gsdoc" href="NSPasteboard.html#method$NSPasteboard+pasteboardTypeForMimeType:">+pasteboardTypeForMimeType:</a></li>
       <li><a rel="gsdoc" href="NSPasteboard.html#method$NSPasteboard+pasteboardWithName:">+pasteboardWithName:</a></li>
       <li><a rel="gsdoc" href="NSPasteboard.html#method$NSPasteboard+pasteboardWithUniqueName">+pasteboardWithUniqueName</a></li>
       <li><a rel="gsdoc" href="NSPasteboard.html#method$NSPasteboard+typesFilterableTo:">+typesFilterableTo:</a></li>
@@ -87,6 +89,7 @@
       <li><a rel="gsdoc" href="NSPasteboard.html#method$NSPasteboard-readFileContentsType:toFile:">-readFileContentsType:toFile:</a></li>
       <li><a rel="gsdoc" href="NSPasteboard.html#method$NSPasteboard-readFileWrapper">-readFileWrapper</a></li>
       <li><a rel="gsdoc" href="NSPasteboard.html#method$NSPasteboard-releaseGlobally">-releaseGlobally</a></li>
+      <li><a rel="gsdoc" href="NSPasteboard.html#method$NSPasteboard-setChangeCount:">-setChangeCount:</a></li>
       <li><a rel="gsdoc" href="NSPasteboard.html#method$NSPasteboard-setData:forType:">-setData:forType:</a></li>
       <li><a rel="gsdoc" href="NSPasteboard.html#method$NSPasteboard-setPropertyList:forType:">-setPropertyList:forType:</a></li>
       <li><a rel="gsdoc" href="NSPasteboard.html#method$NSPasteboard-setString:forType:">-setString:forType:</a></li>
@@ -95,10 +98,9 @@
       <li><a rel="gsdoc" href="NSPasteboard.html#method$NSPasteboard-writeFileContents:">-writeFileContents:</a></li>
       <li><a rel="gsdoc" href="NSPasteboard.html#method$NSPasteboard-writeFileWrapper:">-writeFileWrapper:</a></li>
     </ul>
-<hr width="50%" align="left" />
+    <hr width="50%" align="left" />
     <h3><a name="method$NSPasteboard+generalPasteboard">generalPasteboard</a></h3>
     + (<a rel="gsdoc" href="#class$NSPasteboard">NSPasteboard</a>*) <b>generalPasteboard</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -106,8 +108,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSPasteboard+pasteboardByFilteringData:ofType:">pasteboardByFilteringData:ofType:</a></h3>
-    + (<a rel="gsdoc" href="#class$NSPasteboard">NSPasteboard</a>*) <b>pasteboardByFilteringData:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*)data<b> ofType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)type;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    + (<a rel="gsdoc" href="#class$NSPasteboard">NSPasteboard</a>*) <b>pasteboardByFilteringData:</b> (NSData*)data<b> ofType:</b> (NSString*)type;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -115,8 +116,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSPasteboard+pasteboardByFilteringFile:">pasteboardByFilteringFile:</a></h3>
-    + (<a rel="gsdoc" href="#class$NSPasteboard">NSPasteboard</a>*) <b>pasteboardByFilteringFile:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)filename;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    + (<a rel="gsdoc" href="#class$NSPasteboard">NSPasteboard</a>*) <b>pasteboardByFilteringFile:</b> (NSString*)filename;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -125,7 +125,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSPasteboard+pasteboardByFilteringTypesInPasteboard:">pasteboardByFilteringTypesInPasteboard:</a></h3>
     + (<a rel="gsdoc" href="#class$NSPasteboard">NSPasteboard</a>*) <b>pasteboardByFilteringTypesInPasteboard:</b> (<a rel="gsdoc" href="#class$NSPasteboard">NSPasteboard</a>*)pboard;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -133,8 +132,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSPasteboard+pasteboardWithName:">pasteboardWithName:</a></h3>
-    + (<a rel="gsdoc" href="#class$NSPasteboard">NSPasteboard</a>*) <b>pasteboardWithName:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aName;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    + (<a rel="gsdoc" href="#class$NSPasteboard">NSPasteboard</a>*) <b>pasteboardWithName:</b> (NSString*)aName;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -143,7 +141,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSPasteboard+pasteboardWithUniqueName">pasteboardWithUniqueName</a></h3>
     + (<a rel="gsdoc" href="#class$NSPasteboard">NSPasteboard</a>*) <b>pasteboardWithUniqueName</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -151,8 +148,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSPasteboard+typesFilterableTo:">typesFilterableTo:</a></h3>
-    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>typesFilterableTo:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)type;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    + (NSArray*) <b>typesFilterableTo:</b> (NSString*)type;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -160,8 +156,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSPasteboard-addTypes:owner:">addTypes:owner:</a></h3>
-    - (int) <b>addTypes:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)newTypes<b> owner:</b> (id)newOwner;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (int) <b>addTypes:</b> (NSArray*)newTypes<b> owner:</b> (id)newOwner;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -169,8 +164,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSPasteboard-availableTypeFromArray:">availableTypeFromArray:</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>availableTypeFromArray:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)types;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>availableTypeFromArray:</b> (NSArray*)types;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -179,7 +173,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSPasteboard-changeCount">changeCount</a></h3>
     - (int) <b>changeCount</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -187,8 +180,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSPasteboard-dataForType:">dataForType:</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*) <b>dataForType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)dataType;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSData*) <b>dataForType:</b> (NSString*)dataType;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -196,8 +188,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSPasteboard-declareTypes:owner:">declareTypes:owner:</a></h3>
-    - (int) <b>declareTypes:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*)newTypes<b> owner:</b> (id)newOwner;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (int) <b>declareTypes:</b> (NSArray*)newTypes<b> owner:</b> (id)newOwner;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -205,8 +196,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSPasteboard-name">name</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>name</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>name</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -214,8 +204,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSPasteboard-propertyListForType:">propertyListForType:</a></h3>
-    - (id) <b>propertyListForType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)dataType;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (id) <b>propertyListForType:</b> (NSString*)dataType;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -223,8 +212,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSPasteboard-readFileContentsType:toFile:">readFileContentsType:toFile:</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>readFileContentsType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)type<b> toFile:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)filename;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>readFileContentsType:</b> (NSString*)type<b> toFile:</b> (NSString*)filename;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -233,7 +221,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSPasteboard-readFileWrapper">readFileWrapper</a></h3>
     - (<a rel="gsdoc" href="NSFileWrapper.html#class$NSFileWrapper">NSFileWrapper</a>*) <b>readFileWrapper</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -242,7 +229,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSPasteboard-releaseGlobally">releaseGlobally</a></h3>
     - (void) <b>releaseGlobally</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -250,8 +236,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSPasteboard-setData:forType:">setData:forType:</a></h3>
-    - (BOOL) <b>setData:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*)data<b> forType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)dataType;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (BOOL) <b>setData:</b> (NSData*)data<b> forType:</b> (NSString*)dataType;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -259,8 +244,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSPasteboard-setPropertyList:forType:">setPropertyList:forType:</a></h3>
-    - (BOOL) <b>setPropertyList:</b> (id)propertyList<b> forType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)dataType;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (BOOL) <b>setPropertyList:</b> (id)propertyList<b> forType:</b> (NSString*)dataType;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -268,8 +252,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSPasteboard-setString:forType:">setString:forType:</a></h3>
-    - (BOOL) <b>setString:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)string<b> forType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)dataType;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (BOOL) <b>setString:</b> (NSString*)string<b> forType:</b> (NSString*)dataType;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -277,8 +260,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSPasteboard-stringForType:">stringForType:</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>stringForType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)dataType;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>stringForType:</b> (NSString*)dataType;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -286,8 +268,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSPasteboard-types">types</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSArray.html#class$NSArray">NSArray</a>*) <b>types</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSArray*) <b>types</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -295,8 +276,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSPasteboard-writeFileContents:">writeFileContents:</a></h3>
-    - (BOOL) <b>writeFileContents:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)filename;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (BOOL) <b>writeFileContents:</b> (NSString*)filename;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -305,7 +285,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSPasteboard-writeFileWrapper:">writeFileWrapper:</a></h3>
     - (BOOL) <b>writeFileWrapper:</b> (<a rel="gsdoc" href="NSFileWrapper.html#class$NSFileWrapper">NSFileWrapper</a>*)wrapper;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -315,9 +294,9 @@
     <h1><a name="002000000000">
         Software documentation for the
         NSObject(NSPasteboardOwner)
-        category
+        informal protocol
       </a></h1>
-    <h2><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a>(<a name="category$NSObject(NSPasteboardOwner)">NSPasteboardOwner</a>)</h2>
+    <h2>NSObject(<a name="category$NSObject(NSPasteboardOwner)">NSPasteboardOwner</a>)</h2>
     <blockquote>
       <dl>
         <dt><b>Declared in:</b></dt>
@@ -327,9 +306,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -339,32 +318,29 @@
     </p>
     <b>Method summary</b>
     <ul>
-      <li><a rel="gsdoc" href="NSPasteboard.html#method$NSObject(NSPasteboardOwner)-pasteboard:provideDataForType:">-pasteboard:provideDataForType:</a></li>
-      <li><a rel="gsdoc" href="NSPasteboard.html#method$NSObject(NSPasteboardOwner)-pasteboard:provideDataForType:andVersion:">-pasteboard:provideDataForType:andVersion:</a></li>
-      <li><a rel="gsdoc" href="NSPasteboard.html#method$NSObject(NSPasteboardOwner)-pasteboardChangedOwner:">-pasteboardChangedOwner:</a></li>
+      <li><a rel="gsdoc" href="NSPasteboard.html#method$NSObject-pasteboard:provideDataForType:">-pasteboard:provideDataForType:</a></li>
+      <li><a rel="gsdoc" href="NSPasteboard.html#method$NSObject-pasteboard:provideDataForType:andVersion:">-pasteboard:provideDataForType:andVersion:</a></li>
+      <li><a rel="gsdoc" href="NSPasteboard.html#method$NSObject-pasteboardChangedOwner:">-pasteboardChangedOwner:</a></li>
     </ul>
-<hr width="50%" align="left" />
-    <h3><a name="method$NSObject(NSPasteboardOwner)-pasteboard:provideDataForType:">pasteboard:provideDataForType:</a></h3>
-    - (void) <b>pasteboard:</b> (<a rel="gsdoc" href="#class$NSPasteboard">NSPasteboard</a>*)sender<b> provideDataForType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)type;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <hr width="50%" align="left" />
+    <h3><a name="method$NSObject-pasteboard:provideDataForType:">pasteboard:provideDataForType:</a></h3>
+    - (void) <b>pasteboard:</b> (<a rel="gsdoc" href="#class$NSPasteboard">NSPasteboard</a>*)sender<b> provideDataForType:</b> (NSString*)type;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSPasteboardOwner)-pasteboard:provideDataForType:andVersion:">pasteboard:provideDataForType:andVersion:</a></h3>
-    - (void) <b>pasteboard:</b> (<a rel="gsdoc" href="#class$NSPasteboard">NSPasteboard</a>*)sender<b> provideDataForType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)type<b> andVersion:</b> (int)ver;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <h3><a name="method$NSObject-pasteboard:provideDataForType:andVersion:">pasteboard:provideDataForType:andVersion:</a></h3>
+    - (void) <b>pasteboard:</b> (<a rel="gsdoc" href="#class$NSPasteboard">NSPasteboard</a>*)sender<b> provideDataForType:</b> (NSString*)type<b> andVersion:</b> (int)ver;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSPasteboardOwner)-pasteboardChangedOwner:">pasteboardChangedOwner:</a></h3>
+    <h3><a name="method$NSObject-pasteboardChangedOwner:">pasteboardChangedOwner:</a></h3>
     - (void) <b>pasteboardChangedOwner:</b> (<a rel="gsdoc" href="#class$NSPasteboard">NSPasteboard</a>*)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -386,9 +362,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -398,32 +374,29 @@
     </p>
     <b>Method summary</b>
     <ul>
-      <li><a rel="gsdoc" href="NSPasteboard.html#method$NSPasteboard(GNUstepExtensions)+mimeTypeForPasteboardType:">+mimeTypeForPasteboardType:</a></li>
-      <li><a rel="gsdoc" href="NSPasteboard.html#method$NSPasteboard(GNUstepExtensions)+pasteboardTypeForMimeType:">+pasteboardTypeForMimeType:</a></li>
-      <li><a rel="gsdoc" href="NSPasteboard.html#method$NSPasteboard(GNUstepExtensions)-setChangeCount:">-setChangeCount:</a></li>
+      <li><a rel="gsdoc" href="NSPasteboard.html#method$NSPasteboard+mimeTypeForPasteboardType:">+mimeTypeForPasteboardType:</a></li>
+      <li><a rel="gsdoc" href="NSPasteboard.html#method$NSPasteboard+pasteboardTypeForMimeType:">+pasteboardTypeForMimeType:</a></li>
+      <li><a rel="gsdoc" href="NSPasteboard.html#method$NSPasteboard-setChangeCount:">-setChangeCount:</a></li>
     </ul>
-<hr width="50%" align="left" />
-    <h3><a name="method$NSPasteboard(GNUstepExtensions)+mimeTypeForPasteboardType:">mimeTypeForPasteboardType:</a></h3>
-    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>mimeTypeForPasteboardType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)type;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <hr width="50%" align="left" />
+    <h3><a name="method$NSPasteboard+mimeTypeForPasteboardType:">mimeTypeForPasteboardType:</a></h3>
+    + (NSString*) <b>mimeTypeForPasteboardType:</b> (NSString*)type;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSPasteboard(GNUstepExtensions)+pasteboardTypeForMimeType:">pasteboardTypeForMimeType:</a></h3>
-    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>pasteboardTypeForMimeType:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)mimeType;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <h3><a name="method$NSPasteboard+pasteboardTypeForMimeType:">pasteboardTypeForMimeType:</a></h3>
+    + (NSString*) <b>pasteboardTypeForMimeType:</b> (NSString*)mimeType;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSPasteboard(GNUstepExtensions)-setChangeCount:">setChangeCount:</a></h3>
+    <h3><a name="method$NSPasteboard-setChangeCount:">setChangeCount:</a></h3>
     - (void) <b>setChangeCount:</b> (int)count;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -434,7 +407,7 @@
         Software documentation for the NSURL(NSPasteboard)
         category
       </a></h1>
-    <h2><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSURL.html#class$NSURL">NSURL</a>(<a name="category$NSURL(NSPasteboard)">NSPasteboard</a>)</h2>
+    <h2>NSURL(<a name="category$NSURL(NSPasteboard)">NSPasteboard</a>)</h2>
     <blockquote>
       <dl>
         <dt><b>Declared in:</b></dt>
@@ -444,9 +417,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
+        <li>MacOS-X</li>
         <li>NotOpenStep</li>
         <li>GNUstep</li>
-        <li>MacOS-X</li>
       </ul>
     </blockquote>
     <p>
@@ -456,22 +429,20 @@
     </p>
     <b>Method summary</b>
     <ul>
-      <li><a rel="gsdoc" href="NSPasteboard.html#method$NSURL(NSPasteboard)+URLFromPasteboard:">+URLFromPasteboard:</a></li>
-      <li><a rel="gsdoc" href="NSPasteboard.html#method$NSURL(NSPasteboard)-writeToPasteboard:">-writeToPasteboard:</a></li>
+      <li><a rel="gsdoc" href="NSPasteboard.html#method$NSURL+URLFromPasteboard:">+URLFromPasteboard:</a></li>
+      <li><a rel="gsdoc" href="NSPasteboard.html#method$NSURL-writeToPasteboard:">-writeToPasteboard:</a></li>
     </ul>
-<hr width="50%" align="left" />
-    <h3><a name="method$NSURL(NSPasteboard)+URLFromPasteboard:">URLFromPasteboard:</a></h3>
-    + (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSURL.html#class$NSURL">NSURL</a>*) <b>URLFromPasteboard:</b> (<a rel="gsdoc" href="#class$NSPasteboard">NSPasteboard</a>*)pasteBoard;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
+    <hr width="50%" align="left" />
+    <h3><a name="method$NSURL+URLFromPasteboard:">URLFromPasteboard:</a></h3>
+    + (NSURL*) <b>URLFromPasteboard:</b> (<a rel="gsdoc" href="#class$NSPasteboard">NSPasteboard</a>*)pasteBoard;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSURL(NSPasteboard)-writeToPasteboard:">writeToPasteboard:</a></h3>
+    <h3><a name="method$NSURL-writeToPasteboard:">writeToPasteboard:</a></h3>
     - (void) <b>writeToPasteboard:</b> (<a rel="gsdoc" href="#class$NSPasteboard">NSPasteboard</a>*)pasteBoard;<br />
-    <b>Standards:</b> NotOpenStep, GNUstep, MacOS-X<br />
     <p>
       
             <em>Description forthcoming.</em>

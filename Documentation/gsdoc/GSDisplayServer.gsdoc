@@ -93,9 +93,31 @@
               which contains key/value pairs which describe the
               specifics of how the window server is to be
               initialized. Typically these values are
-              specific to the concrete implementation.
-              Currently there are no standard set of
-              <var>attributes</var> defined for GSDisplayServer.
+              specific to the concrete implementation. The
+              current set of <var>attributes</var> that can be
+              used with GSDisplayServer is.
+              <list>
+                <item>GSDisplayName</item>,
+                <item>GSDisplayNumber</item>,
+                <item>GSScreenNumber</item>,
+              </list>
+              GSDisplayName is window server specific and
+              shouldn't be used when creating a
+              GSDisplayServer (although you can
+              retrieve the value with the
+              <ref type="method" id="-attributes">
+                -attributes
+              </ref>
+              method). On X-Windows the value might be set to
+              something like "host:d.s" where host is the
+              host name, d is the display number and s is the
+              screen number. GSDisplayNumber indicates the
+              number of the display to open. GSScreenNumber
+              indicates the number of the screen to display
+              on. If not explicitly set, these
+              <var>attributes</var> may be taked from environment
+              variables or from other operating specific
+              information.
             </p>
             <p>
               In almost all applications one would only create a
@@ -168,6 +190,15 @@
           <desc>
             Returns a null terminated list of possible window
             depths for <var>screen</var>.
+          </desc>
+          <standards>
+            <NotOpenStep /> <NotMacOS-X /> <GNUstep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>beep</sel>
+          <desc>
+            Play the System Beep
           </desc>
           <standards>
             <NotOpenStep /> <NotMacOS-X /> <GNUstep />
@@ -266,7 +297,7 @@
           <desc>
             Returns an array of NSNumbers, where each number
             describes a screen that is available on this
-            display.
+            display. The default screen is listed first.
           </desc>
           <standards>
             <NotOpenStep /> <NotMacOS-X /> <GNUstep />
@@ -451,24 +482,6 @@
             <NotOpenStep /> <NotMacOS-X /> <GNUstep />
           </standards>
         </method>
-        <method type="BOOL">
-          <sel>findwindow:</sel>
-          <arg type="NSPoint">loc</arg>
-          <sel>:</sel>
-          <arg type="int">op</arg>
-          <sel>:</sel>
-          <arg type="int">otherWin</arg>
-          <sel>:</sel>
-          <arg type="NSPoint*">floc</arg>
-          <sel>:</sel>
-          <arg type="int*">winFound</arg>
-          <desc>
-            <em>Description forthcoming.</em>
-          </desc>
-          <standards>
-            <NotOpenStep /> <NotMacOS-X /> <GNUstep />
-          </standards>
-        </method>
         <method type="void">
           <sel>flushwindowrect:</sel>
           <arg type="NSRect">rect</arg>
@@ -523,9 +536,33 @@
           </standards>
         </method>
         <method type="NSPoint">
+          <sel>mouseLocationOnScreen:</sel>
+          <arg type="int">aScreen</arg>
+          <sel>window:</sel>
+          <arg type="int*">win</arg>
+          <desc>
+            Returns the current mouse location on
+            <var>aScreen</var>. If the pointer is not on
+            <var>aScreen</var>, this method acts like
+            <ref type="method" id="-mouselocation">
+              -mouselocation
+            </ref>
+            . If <var>aScreen</var> is -1, then the location of the
+            mouse on any screen is returned. The <var>win</var>
+            pointer returns the window number of the GNUstep
+            window that the mouse is in or 0 if it is not in a
+            window.
+          </desc>
+          <standards>
+            <NotOpenStep /> <NotMacOS-X /> <GNUstep />
+          </standards>
+        </method>
+        <method type="NSPoint">
           <sel>mouselocation</sel>
           <desc>
-            Returns the current mouse location
+            Returns the current mouse location on the default
+            screen. If the pointer is not on the default
+            screen, an invalid point (-1,-1} is returned.
           </desc>
           <standards>
             <NotOpenStep /> <NotMacOS-X /> <GNUstep />
@@ -772,7 +809,34 @@
             Creates a window whose location and size is
             described by <var>frame</var> and whose backing
             store is described by <var>type</var>. This window is
-            not mapped to the screen by this call
+            not mapped to the screen by this call. Note that
+            <var>frame</var> includes the title bar and all other
+            window decorations. In many cases the window manager
+            controls these aspects of the window. The actual
+            drawable area of the window may vary depending on
+            the window manager involved. Use
+            <ref type="method" id="-styleoffsets:::::">
+              -styleoffsets:::::
+            </ref>
+            to determine the extent of the window decorations.
+          </desc>
+          <standards>
+            <NotOpenStep /> <NotMacOS-X /> <GNUstep />
+          </standards>
+        </method>
+        <method type="int">
+          <sel>window:</sel>
+          <arg type="NSRect">frame</arg>
+          <sel>:</sel>
+          <arg type="NSBackingStoreType">type</arg>
+          <sel>:</sel>
+          <arg type="unsigned int">style</arg>
+          <sel>:</sel>
+          <arg type="int">screen</arg>
+          <desc>
+            Like window::: only there is an additional argument to
+            specify which <var>screen</var> the window will
+            display on
           </desc>
           <standards>
             <NotOpenStep /> <NotMacOS-X /> <GNUstep />
@@ -781,6 +845,8 @@
         <method type="void">
           <sel>windowbacking:</sel>
           <arg type="NSBackingStoreType">type</arg>
+          <sel>:</sel>
+          <arg type="int">win</arg>
           <desc>
             Changes window's the backing store to
             <var>type</var>
@@ -813,12 +879,11 @@
           <sel>windowdevice:</sel>
           <arg type="int">win</arg>
           <desc>
-            Sets the window drawable for the current
+            Sets the window device information for the current
             NSGraphicsContext, typically by calling
-            [NSGraphicsContext
-            -DPSsetgcdrawable::::], although
-            depending on the concrete implmentation, more
-            information than this may need to be exchanged.
+            [NSGraphicsContext -GSSetDevice:::],
+            although depending on the concrete implmentation,
+            more information than this may need to be exchanged.
           </desc>
           <standards>
             <NotOpenStep /> <NotMacOS-X /> <GNUstep />

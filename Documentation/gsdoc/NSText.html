@@ -18,7 +18,7 @@
       </code></a>)</dt>
       <dd>
       </dd>
-      <dt>(<a href="mailto:boehring@biomed.ruhr-uni-bochum.de"><code>
+      <dt>Daniel Bðhringer(<a href="mailto:boehring@biomed.ruhr-uni-bochum.de"><code>
         boehring@biomed.ruhr-uni-bochum.de
       </code></a>)</dt>
       <dd>
@@ -47,7 +47,8 @@
         </li>
         <li>
           <a href="#002000000000">Software documentation for the
-        NSObject(NSTextDelegate) category</a>
+        NSObject(NSTextDelegate) informal
+        protocol</a>
         </li>
         <li>
           <a href="#003000000000">Software documentation for the
@@ -76,9 +77,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -126,6 +127,7 @@
       <li><a rel="gsdoc" href="NSText.html#method$NSText-replaceCharactersInRange:withRTF:">-replaceCharactersInRange:withRTF:</a></li>
       <li><a rel="gsdoc" href="NSText.html#method$NSText-replaceCharactersInRange:withRTFD:">-replaceCharactersInRange:withRTFD:</a></li>
       <li><a rel="gsdoc" href="NSText.html#method$NSText-replaceCharactersInRange:withString:">-replaceCharactersInRange:withString:</a></li>
+      <li><a rel="gsdoc" href="NSText.html#method$NSText-replaceRange:withAttributedString:">-replaceRange:withAttributedString:</a></li>
       <li><a rel="gsdoc" href="NSText.html#method$NSText-replaceRange:withRTF:">-replaceRange:withRTF:</a></li>
       <li><a rel="gsdoc" href="NSText.html#method$NSText-replaceRange:withRTFD:">-replaceRange:withRTFD:</a></li>
       <li><a rel="gsdoc" href="NSText.html#method$NSText-replaceRange:withString:">-replaceRange:withString:</a></li>
@@ -162,16 +164,16 @@
       <li><a rel="gsdoc" href="NSText.html#method$NSText-superscript:">-superscript:</a></li>
       <li><a rel="gsdoc" href="NSText.html#method$NSText-text">-text</a></li>
       <li><a rel="gsdoc" href="NSText.html#method$NSText-textColor">-textColor</a></li>
+      <li><a rel="gsdoc" href="NSText.html#method$NSText-textLength">-textLength</a></li>
       <li><a rel="gsdoc" href="NSText.html#method$NSText-toggleRuler:">-toggleRuler:</a></li>
       <li><a rel="gsdoc" href="NSText.html#method$NSText-underline:">-underline:</a></li>
       <li><a rel="gsdoc" href="NSText.html#method$NSText-unscript:">-unscript:</a></li>
       <li><a rel="gsdoc" href="NSText.html#method$NSText-usesFontPanel">-usesFontPanel</a></li>
       <li><a rel="gsdoc" href="NSText.html#method$NSText-writeRTFDToFile:atomically:">-writeRTFDToFile:atomically:</a></li>
     </ul>
-<hr width="50%" align="left" />
+    <hr width="50%" align="left" />
     <h3><a name="method$NSText-RTFDFromRange:">RTFDFromRange:</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*) <b>RTFDFromRange:</b> (NSRange)aRange;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSData*) <b>RTFDFromRange:</b> (NSRange)aRange;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -179,8 +181,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-RTFFromRange:">RTFFromRange:</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*) <b>RTFFromRange:</b> (NSRange)aRange;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSData*) <b>RTFFromRange:</b> (NSRange)aRange;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -189,7 +190,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-alignCenter:">alignCenter:</a></h3>
     - (void) <b>alignCenter:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -198,7 +198,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-alignLeft:">alignLeft:</a></h3>
     - (void) <b>alignLeft:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -207,7 +206,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-alignRight:">alignRight:</a></h3>
     - (void) <b>alignRight:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -215,8 +213,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-alignment">alignment</a></h3>
-    - (NSTextAlignment) <b>alignment</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (<a rel="gsdoc" href="TypesAndConstants.html#type$NSTextAlignment">NSTextAlignment</a>) <b>alignment</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -225,7 +222,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-backgroundColor">backgroundColor</a></h3>
     - (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*) <b>backgroundColor</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -234,7 +230,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-changeFont:">changeFont:</a></h3>
     - (void) <b>changeFont:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -243,7 +238,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-changeSpelling:">changeSpelling:</a></h3>
     - (void) <b>changeSpelling:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -252,7 +246,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-checkSpelling:">checkSpelling:</a></h3>
     - (void) <b>checkSpelling:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -261,7 +254,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-copy:">copy:</a></h3>
     - (void) <b>copy:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -270,7 +262,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-copyFont:">copyFont:</a></h3>
     - (void) <b>copyFont:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -279,7 +270,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-copyRuler:">copyRuler:</a></h3>
     - (void) <b>copyRuler:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -288,7 +278,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-cut:">cut:</a></h3>
     - (void) <b>cut:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -297,7 +286,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-delegate">delegate</a></h3>
     - (id) <b>delegate</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -306,7 +294,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-delete:">delete:</a></h3>
     - (void) <b>delete:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -315,7 +302,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-drawsBackground">drawsBackground</a></h3>
     - (BOOL) <b>drawsBackground</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -323,8 +309,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-encodeWithCoder:">encodeWithCoder:</a></h3>
-    - (void) <b>encodeWithCoder:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSCoder.html#class$NSCoder">NSCoder</a>*)aCoder;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>encodeWithCoder:</b> (NSCoder*)aCoder;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -333,7 +318,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-font">font</a></h3>
     - (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*) <b>font</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -342,7 +326,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-ignoreSpelling:">ignoreSpelling:</a></h3>
     - (void) <b>ignoreSpelling:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -351,7 +334,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-importsGraphics">importsGraphics</a></h3>
     - (BOOL) <b>importsGraphics</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -359,8 +341,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-initWithCoder:">initWithCoder:</a></h3>
-    - (id) <b>initWithCoder:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSCoder.html#class$NSCoder">NSCoder</a>*)aDecoder;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (id) <b>initWithCoder:</b> (NSCoder*)aDecoder;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -369,7 +350,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-isEditable">isEditable</a></h3>
     - (BOOL) <b>isEditable</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -378,7 +358,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-isFieldEditor">isFieldEditor</a></h3>
     - (BOOL) <b>isFieldEditor</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -387,7 +366,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-isHorizontallyResizable">isHorizontallyResizable</a></h3>
     - (BOOL) <b>isHorizontallyResizable</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -396,7 +374,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-isRichText">isRichText</a></h3>
     - (BOOL) <b>isRichText</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -405,7 +382,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-isRulerVisible">isRulerVisible</a></h3>
     - (BOOL) <b>isRulerVisible</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -414,7 +390,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-isSelectable">isSelectable</a></h3>
     - (BOOL) <b>isSelectable</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -423,7 +398,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-isVerticallyResizable">isVerticallyResizable</a></h3>
     - (BOOL) <b>isVerticallyResizable</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -432,7 +406,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-maxSize">maxSize</a></h3>
     - (NSSize) <b>maxSize</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -441,7 +414,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-minSize">minSize</a></h3>
     - (NSSize) <b>minSize</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -450,7 +422,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-paste:">paste:</a></h3>
     - (void) <b>paste:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -459,7 +430,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-pasteFont:">pasteFont:</a></h3>
     - (void) <b>pasteFont:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -468,7 +438,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-pasteRuler:">pasteRuler:</a></h3>
     - (void) <b>pasteRuler:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -476,8 +445,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-readRTFDFromFile:">readRTFDFromFile:</a></h3>
-    - (BOOL) <b>readRTFDFromFile:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)path;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (BOOL) <b>readRTFDFromFile:</b> (NSString*)path;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -485,8 +453,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-replaceCharactersInRange:withRTF:">replaceCharactersInRange:withRTF:</a></h3>
-    - (void) <b>replaceCharactersInRange:</b> (NSRange)aRange<b> withRTF:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*)rtfData;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>replaceCharactersInRange:</b> (NSRange)aRange<b> withRTF:</b> (NSData*)rtfData;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -494,8 +461,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-replaceCharactersInRange:withRTFD:">replaceCharactersInRange:withRTFD:</a></h3>
-    - (void) <b>replaceCharactersInRange:</b> (NSRange)aRange<b> withRTFD:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*)rtfdData;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>replaceCharactersInRange:</b> (NSRange)aRange<b> withRTFD:</b> (NSData*)rtfdData;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -503,8 +469,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-replaceCharactersInRange:withString:">replaceCharactersInRange:withString:</a></h3>
-    - (void) <b>replaceCharactersInRange:</b> (NSRange)aRange<b> withString:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>replaceCharactersInRange:</b> (NSRange)aRange<b> withString:</b> (NSString*)aString;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -512,8 +477,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-replaceRange:withRTF:">replaceRange:withRTF:</a></h3>
-    - (void) <b>replaceRange:</b> (NSRange)aRange<b> withRTF:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*)rtfData;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>replaceRange:</b> (NSRange)aRange<b> withRTF:</b> (NSData*)rtfData;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -521,8 +485,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-replaceRange:withRTFD:">replaceRange:withRTFD:</a></h3>
-    - (void) <b>replaceRange:</b> (NSRange)aRange<b> withRTFD:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSData.html#class$NSData">NSData</a>*)rtfdData;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>replaceRange:</b> (NSRange)aRange<b> withRTFD:</b> (NSData*)rtfdData;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -530,8 +493,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-replaceRange:withString:">replaceRange:withString:</a></h3>
-    - (void) <b>replaceRange:</b> (NSRange)aRange<b> withString:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>replaceRange:</b> (NSRange)aRange<b> withString:</b> (NSString*)aString;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -540,7 +502,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-scrollRangeToVisible:">scrollRangeToVisible:</a></h3>
     - (void) <b>scrollRangeToVisible:</b> (NSRange)aRange;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -549,7 +510,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-selectAll:">selectAll:</a></h3>
     - (void) <b>selectAll:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -558,7 +518,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-selectedRange">selectedRange</a></h3>
     - (NSRange) <b>selectedRange</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -566,8 +525,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-setAlignment:">setAlignment:</a></h3>
-    - (void) <b>setAlignment:</b> (NSTextAlignment)mode;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setAlignment:</b> (<a rel="gsdoc" href="TypesAndConstants.html#type$NSTextAlignment">NSTextAlignment</a>)mode;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -576,7 +534,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-setBackgroundColor:">setBackgroundColor:</a></h3>
     - (void) <b>setBackgroundColor:</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)color;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -585,7 +542,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-setColor:ofRange:">setColor:ofRange:</a></h3>
     - (void) <b>setColor:</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)color<b> ofRange:</b> (NSRange)aRange;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -594,7 +550,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-setDelegate:">setDelegate:</a></h3>
     - (void) <b>setDelegate:</b> (id)anObject;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -603,7 +558,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-setDrawsBackground:">setDrawsBackground:</a></h3>
     - (void) <b>setDrawsBackground:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -612,7 +566,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-setEditable:">setEditable:</a></h3>
     - (void) <b>setEditable:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -621,7 +574,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-setFieldEditor:">setFieldEditor:</a></h3>
     - (void) <b>setFieldEditor:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -630,7 +582,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-setFont:">setFont:</a></h3>
     - (void) <b>setFont:</b> (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*)font;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -639,7 +590,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-setFont:ofRange:">setFont:ofRange:</a></h3>
     - (void) <b>setFont:</b> (<a rel="gsdoc" href="NSFont.html#class$NSFont">NSFont</a>*)font<b> ofRange:</b> (NSRange)aRange;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -648,7 +598,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-setHorizontallyResizable:">setHorizontallyResizable:</a></h3>
     - (void) <b>setHorizontallyResizable:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -657,7 +606,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-setImportsGraphics:">setImportsGraphics:</a></h3>
     - (void) <b>setImportsGraphics:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -666,7 +614,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-setMaxSize:">setMaxSize:</a></h3>
     - (void) <b>setMaxSize:</b> (NSSize)newMaxSize;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -675,7 +622,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-setMinSize:">setMinSize:</a></h3>
     - (void) <b>setMinSize:</b> (NSSize)newMinSize;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -684,7 +630,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-setRichText:">setRichText:</a></h3>
     - (void) <b>setRichText:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -693,7 +638,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-setSelectable:">setSelectable:</a></h3>
     - (void) <b>setSelectable:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -702,7 +646,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-setSelectedRange:">setSelectedRange:</a></h3>
     - (void) <b>setSelectedRange:</b> (NSRange)range;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -710,8 +653,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-setString:">setString:</a></h3>
-    - (void) <b>setString:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setString:</b> (NSString*)aString;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -719,8 +661,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-setText:">setText:</a></h3>
-    - (void) <b>setText:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)string;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setText:</b> (NSString*)aString;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -728,8 +669,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-setText:range:">setText:range:</a></h3>
-    - (void) <b>setText:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)aString<b> range:</b> (NSRange)aRange;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (void) <b>setText:</b> (NSString*)aString<b> range:</b> (NSRange)aRange;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -738,7 +678,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-setTextColor:">setTextColor:</a></h3>
     - (void) <b>setTextColor:</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)color;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -747,7 +686,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-setTextColor:range:">setTextColor:range:</a></h3>
     - (void) <b>setTextColor:</b> (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*)color<b> range:</b> (NSRange)aRange;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -756,7 +694,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-setUsesFontPanel:">setUsesFontPanel:</a></h3>
     - (void) <b>setUsesFontPanel:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -765,7 +702,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-setVerticallyResizable:">setVerticallyResizable:</a></h3>
     - (void) <b>setVerticallyResizable:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -774,7 +710,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-showGuessPanel:">showGuessPanel:</a></h3>
     - (void) <b>showGuessPanel:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -783,7 +718,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-sizeToFit">sizeToFit</a></h3>
     - (void) <b>sizeToFit</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -791,8 +725,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-string">string</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>string</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>string</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -801,7 +734,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-subscript:">subscript:</a></h3>
     - (void) <b>subscript:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -810,7 +742,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-superscript:">superscript:</a></h3>
     - (void) <b>superscript:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -818,8 +749,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-text">text</a></h3>
-    - (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*) <b>text</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (NSString*) <b>text</b>;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -828,7 +758,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-textColor">textColor</a></h3>
     - (<a rel="gsdoc" href="NSColor.html#class$NSColor">NSColor</a>*) <b>textColor</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -837,7 +766,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-toggleRuler:">toggleRuler:</a></h3>
     - (void) <b>toggleRuler:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -846,7 +774,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-underline:">underline:</a></h3>
     - (void) <b>underline:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -855,7 +782,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-unscript:">unscript:</a></h3>
     - (void) <b>unscript:</b> (id)sender;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -864,7 +790,6 @@
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-usesFontPanel">usesFontPanel</a></h3>
     - (BOOL) <b>usesFontPanel</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -872,8 +797,7 @@
     </p>
     <hr width="25%" align="left" />
     <h3><a name="method$NSText-writeRTFDToFile:atomically:">writeRTFDToFile:atomically:</a></h3>
-    - (BOOL) <b>writeRTFDToFile:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSString.html#class$NSString">NSString</a>*)path<b> atomically:</b> (BOOL)flag;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    - (BOOL) <b>writeRTFDToFile:</b> (NSString*)path<b> atomically:</b> (BOOL)flag;<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -882,9 +806,10 @@
     <hr width="25%" align="left" />
     <h1><a name="002000000000">
         Software documentation for the
-        NSObject(NSTextDelegate) category
+        NSObject(NSTextDelegate) informal
+        protocol
       </a></h1>
-    <h2><a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSObject.html#class$NSObject">NSObject</a>(<a name="category$NSObject(NSTextDelegate)">NSTextDelegate</a>)</h2>
+    <h2>NSObject(<a name="category$NSObject(NSTextDelegate)">NSTextDelegate</a>)</h2>
     <blockquote>
       <dl>
         <dt><b>Declared in:</b></dt>
@@ -894,9 +819,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -906,52 +831,47 @@
     </p>
     <b>Method summary</b>
     <ul>
-      <li><a rel="gsdoc" href="NSText.html#method$NSObject(NSTextDelegate)-textDidBeginEditing:">-textDidBeginEditing:</a></li>
-      <li><a rel="gsdoc" href="NSText.html#method$NSObject(NSTextDelegate)-textDidChange:">-textDidChange:</a></li>
-      <li><a rel="gsdoc" href="NSText.html#method$NSObject(NSTextDelegate)-textDidEndEditing:">-textDidEndEditing:</a></li>
-      <li><a rel="gsdoc" href="NSText.html#method$NSObject(NSTextDelegate)-textShouldBeginEditing:">-textShouldBeginEditing:</a></li>
-      <li><a rel="gsdoc" href="NSText.html#method$NSObject(NSTextDelegate)-textShouldEndEditing:">-textShouldEndEditing:</a></li>
+      <li><a rel="gsdoc" href="NSText.html#method$NSObject-textDidBeginEditing:">-textDidBeginEditing:</a></li>
+      <li><a rel="gsdoc" href="NSText.html#method$NSObject-textDidChange:">-textDidChange:</a></li>
+      <li><a rel="gsdoc" href="NSText.html#method$NSObject-textDidEndEditing:">-textDidEndEditing:</a></li>
+      <li><a rel="gsdoc" href="NSText.html#method$NSObject-textShouldBeginEditing:">-textShouldBeginEditing:</a></li>
+      <li><a rel="gsdoc" href="NSText.html#method$NSObject-textShouldEndEditing:">-textShouldEndEditing:</a></li>
     </ul>
-<hr width="50%" align="left" />
-    <h3><a name="method$NSObject(NSTextDelegate)-textDidBeginEditing:">textDidBeginEditing:</a></h3>
-    - (void) <b>textDidBeginEditing:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)notification;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <hr width="50%" align="left" />
+    <h3><a name="method$NSObject-textDidBeginEditing:">textDidBeginEditing:</a></h3>
+    - (void) <b>textDidBeginEditing:</b> (NSNotification*)notification;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSTextDelegate)-textDidChange:">textDidChange:</a></h3>
-    - (void) <b>textDidChange:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)notification;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <h3><a name="method$NSObject-textDidChange:">textDidChange:</a></h3>
+    - (void) <b>textDidChange:</b> (NSNotification*)notification;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSTextDelegate)-textDidEndEditing:">textDidEndEditing:</a></h3>
-    - (void) <b>textDidEndEditing:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSNotification.html#class$NSNotification">NSNotification</a>*)notification;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <h3><a name="method$NSObject-textDidEndEditing:">textDidEndEditing:</a></h3>
+    - (void) <b>textDidEndEditing:</b> (NSNotification*)notification;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSTextDelegate)-textShouldBeginEditing:">textShouldBeginEditing:</a></h3>
+    <h3><a name="method$NSObject-textShouldBeginEditing:">textShouldBeginEditing:</a></h3>
     - (BOOL) <b>textShouldBeginEditing:</b> (<a rel="gsdoc" href="#class$NSText">NSText</a>*)textObject;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSObject(NSTextDelegate)-textShouldEndEditing:">textShouldEndEditing:</a></h3>
+    <h3><a name="method$NSObject-textShouldEndEditing:">textShouldEndEditing:</a></h3>
     - (BOOL) <b>textShouldEndEditing:</b> (<a rel="gsdoc" href="#class$NSText">NSText</a>*)textObject;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
@@ -972,9 +892,9 @@
     <blockquote>
       <b>Standards:</b>
       <ul>
-        <li>GNUstep</li>
         <li>MacOS-X</li>
         <li>OpenStep</li>
+        <li>GNUstep</li>
       </ul>
     </blockquote>
     <p>
@@ -984,22 +904,20 @@
     </p>
     <b>Method summary</b>
     <ul>
-      <li><a rel="gsdoc" href="NSText.html#method$NSText(GNUstepExtensions)-replaceRange:withAttributedString:">-replaceRange:withAttributedString:</a></li>
-      <li><a rel="gsdoc" href="NSText.html#method$NSText(GNUstepExtensions)-textLength">-textLength</a></li>
+      <li><a rel="gsdoc" href="NSText.html#method$NSText-replaceRange:withAttributedString:">-replaceRange:withAttributedString:</a></li>
+      <li><a rel="gsdoc" href="NSText.html#method$NSText-textLength">-textLength</a></li>
     </ul>
-<hr width="50%" align="left" />
-    <h3><a name="method$NSText(GNUstepExtensions)-replaceRange:withAttributedString:">replaceRange:withAttributedString:</a></h3>
-    - (void) <b>replaceRange:</b> (NSRange)aRange<b> withAttributedString:</b> (<a rel="gsdoc" href="/usr/GNUstep-devel/System/Documentation/Base/NSAttributedString.html#class$NSAttributedString">NSAttributedString</a>*)attrString;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
+    <hr width="50%" align="left" />
+    <h3><a name="method$NSText-replaceRange:withAttributedString:">replaceRange:withAttributedString:</a></h3>
+    - (void) <b>replaceRange:</b> (NSRange)aRange<b> withAttributedString:</b> (NSAttributedString*)attrString;<br />
     <p>
       
             <em>Description forthcoming.</em>
           
     </p>
     <hr width="25%" align="left" />
-    <h3><a name="method$NSText(GNUstepExtensions)-textLength">textLength</a></h3>
+    <h3><a name="method$NSText-textLength">textLength</a></h3>
     - (unsigned) <b>textLength</b>;<br />
-    <b>Standards:</b> GNUstep, MacOS-X, OpenStep<br />
     <p>
       
             <em>Description forthcoming.</em>
