@@ -117,6 +117,19 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 
 @implementation NSWindow
 
+- (int) arc
+{
+  return [self retainCount] - [NSAutoreleasePool autoreleaseCountForObject: self];
+}
+- (void) release
+{
+  [super release];
+}
+- (id) retain
+{
+  return [super retain];
+}
+
 typedef struct NSView_struct
 {
   @defs(NSView)
@@ -214,6 +227,10 @@ static NSMapTable* windowmaps = NULL;
   NSGraphicsContext	*context = GSCurrentContext();
 
   [[NSNotificationCenter defaultCenter] removeObserver: self];
+  [[NSRunLoop currentRunLoop]
+	 cancelPerformSelector: @selector(_handleWindowNeedsDisplay:)
+			target: self
+		      argument: nil];
 
   [self setFrameAutosaveName: nil];
   TEST_RELEASE(_wv);
@@ -1314,15 +1331,7 @@ resetCursorRectsForView(NSView *theView)
 - (void) close
 {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-
-  /*
-   * If '_f.is_released_when_closed' then the window will be removed from the
-   * global list of windows (causing it to be released) - so we must
-   * bracket any work we do in a retain/release sequence in case that
-   * removal takes place when we post the notification.
-   */
-  if (_f.is_released_when_closed)
-    RETAIN(self);
+  CREATE_AUTORELEASE_POOL(arp);
 
   [nc postNotificationName: NSWindowWillCloseNotification object: self];
   _f.has_opened = NO;
@@ -1333,6 +1342,7 @@ resetCursorRectsForView(NSView *theView)
   [NSApp removeWindowsItem: self];
   [self orderOut: self];
 
+  RELEASE(arp);
   if (_f.is_released_when_closed)
     RELEASE(self);
 }
@@ -1499,9 +1509,7 @@ resetCursorRectsForView(NSView *theView)
 {
   if ([aView isKindOfClass: viewClass])
     {
-      if (_initial_first_responder)
-	[_initial_first_responder autorelease];
-      _initial_first_responder = [aView retain];
+      ASSIGN(_initial_first_responder, aView);
     }
 }
 
@@ -2362,7 +2370,7 @@ resetCursorRectsForView(NSView *theView)
       name = [name copy];
       [autosaveNames addObject: name];
       autosave_name = name;
-      [name release];
+      RELEASE(name);
     }
   else if (nameToRemove != nil)
     {

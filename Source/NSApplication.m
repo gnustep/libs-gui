@@ -833,6 +833,7 @@ static NSCell* tileCell = nil;
 
   NSDebugLog(@"NSApplication -run\n");
 
+  pool = [arpClass new];
   /*
    *  Set this flag here in case the application is actually terminated
    *  inside -finishLaunching.
@@ -845,6 +846,7 @@ static NSCell* tileCell = nil;
 
   [listener updateServicesMenu];
   [main_menu update];
+  RELEASE(pool);
   while (app_should_quit == NO)
     {
       pool = [arpClass new];
