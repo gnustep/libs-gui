@@ -6,153 +6,203 @@
     <author name="Yen-Ju Chen">
       <url url="http://www.gnustep.org/developers/whoiswho.html"/>
     </author>
+    <author name="Kazunobu Kuriyama">
+    </author>
     <version>$Revision$</version>
     <date>$Date$</date>
   </head>
   <body>
     <chapter>
       <heading>Using Traditional Chinese and Other Languages</heading>
-      <p>This is an introduction to using Traditional Chinese and
-  other languages in GNUstep. Note, however, that I have only tested
-  these instructions with Traditional Chinese of either BIG5 or
-  Unicode (iso10646-1) encoding. But since GNUstep is generally
-  internationalized, this introduction could be applied to other
-  languages with limited modification.</p>
+      <p>This brief article illustrates how to set up your GNUstep for
+      the East Asian languages known as CJK (Chinese, Japanese, and
+      Korean) in literature.  We assume that you already know how to
+      set up your X Window System for your language environment such
+      as locale, fonts, and input methods.  We also assume that you
+      selected 'art' as the backend of GNUstep's GUI.
+      </p>
+
+      <p>Like other computer software made outside the region, GNUstep
+      requires some adjustment to use those languages.  The adjustment
+      consists of the following steps:
+      </p>
+      <enum>
+        <item>
+        Prepare one or more true type font files which contain characters
+        of your native language, and organize them in a certain way so that
+        the art backend can use them.
+        </item>
+        <item>
+        Set the environmental variable GNUSTEP_STRING_ENCODING to an
+        appropriate value for the language in use.
+	</item>
+	<item>
+        Set the NSGlobalDomain variables such as NSFont, NSFontSize,
+        and NSUserFont, to name a few, to appropriate values using the
+        GNUstep's utility 'defaults'.
+	</item>
+      </enum>
+
+      <p>Now we explain each step in detail.</p>
+
+    <section>
+      <heading>Fonts</heading> 
+
+      <p>The art backend expects font files to be found in the
+      specified directories, such as
+      <file>$GNUSTEP_USER_ROOT/Library/Fonts</file> and
+      <file>$GNUSTEP_SYSTEM_ROOT/Library/Fonts</file>.  You need to
+      organize font files in a certain way so that the art
+      backend can recognize them.</p>
+
+      <p>
+      Check out these documents about installation and usage of nfonts:
+      <uref url="http://wiki.gnustep.org/index.php/back-art%20Installation">
+      back-art Installation</uref>,
+      <uref url=
+      "http://wiki.gnustep.org/index.php/nfont%20packages">nfont
+      package</uref>.</p>
+    </section>
+
+
+    <section>
+      <heading>Encoding</heading> 
+
+      <p>
+      By default, GNUstep assumes that a character is encoded in
+      ISO8859-1 unless the escape character \u precedes it (This
+      exception applies to other encodings).  Hence, if you want to
+      use the characters of your native language with GNUstep, you
+      have to tell it which encoding you use.  This can be done by
+      setting the environmental variable GNUSTEP_STRING_ENCODING to an
+      appropriate value.
+      </p>
+
+      <p>Some possible values for GNUSTEP_STRING_ENCODING are as follows:</p>
+      <list>
+      <item>NSJapaneseEUCStringEncoding		// Japanese</item>
+      <item>NSUTF8StringEncoding</item>
+      <item>NSISOLatin1StringEncoding		// ISO-8859-1; West European</item>
+      <item>NSShiftJISStringEncoding		// Japanese</item>
+      <item>NSISOLatin2StringEncoding		// ISO-8859-2; East European</item>
+      <item>NSUnicodeStringEncoding</item>
+      <item>NSWindowsCP1251StringEncoding</item>
+      <item>NSWindowsCP1252StringEncoding	// WinLatin1</item>
+      <item>NSWindowsCP1253StringEncoding	// Greek</item>
+      <item>NSWindowsCP1254StringEncoding	// Turkish</item>
+      <item>NSWindowsCP1250StringEncoding	// WinLatin2</item>
+      <item>NSISO2022JPStringEncoding		// Japanese</item>
+      <item>NSMacOSRomanStringEncoding</item>
+      <item>NSKOI8RStringEncoding		// Russian/Cyrillic</item>
+      <item>NSISOLatin3StringEncoding		// ISO-8859-3; South European</item>
+      <item>NSISOLatin4StringEncoding		// ISO-8859-4; North European</item>
+      <item>NSISOCyrillicStringEncoding		// ISO-8859-5</item>
+      <item>NSISOArabicStringEncoding		// ISO-8859-6</item>
+      <item>NSISOGreekStringEncoding		// ISO-8859-7</item>
+      <item>NSISOHebrewStringEncoding		// ISO-8859-8</item>
+      <item>NSISOLatin5StringEncoding		// ISO-8859-9; Turkish</item>
+      <item>NSISOLatin6StringEncoding		// ISO-8859-10; Nordic</item>
+      <item>NSISOThaiStringEncoding		// ISO-8859-11</item>
+      <item>NSISOLatin7StringEncoding		// ISO-8859-13</item>
+      <item>NSISOLatin8StringEncoding		// ISO-8859-14</item>
+      <item>NSISOLatin9StringEncoding		// ISO-8859-15; Replaces ISOLatin1</item>
+      <item>NSGB2312StringEncoding</item>
+      <item>NSUTF7StringEncoding		// RFC 2152</item>
+      <item>NSGSM0338StringEncoding		// GSM (mobile phone) default alphabet</item>
+      <item>NSBIG5StringEncoding		// Traditional chinese</item>
+      </list>
+
+      <p>
+      Of these values, choose an appropriate one for your purpose and
+      set the environmental variable to it.  For example, for sh or
+      bash,
+      </p>
+      <example>
+        export GNUSTEP_STRING_ENCODING=NSBIG5StringEncoding
+      </example>
+
+      <p>or, for csh,</p>
+      <example>
+        setenv GNUSTEP_STRING_ENCODING NSBIG5StringEncoding
+      </example>
+  </section>
+
+
   <section>
-    <heading>Default Encoding</heading>
+    <heading>User Default Values</heading>
+
     <p>
-    GNUstep uses Unicode internally. Everything it reads will be
-    converted into Unicode. It will assume that everything it reads is in
-    NSISOLatin1StringEncoding (iso8859-1) as the default encoding except
-    scripts with escape (\u) ahead. User can change the default encoding
-    by setting the environment variable <code>GNUSTEP_STRING_ENCODING</code>.
+    Now that you specify the encoding, you have to determine which fonts you
+    use to display the characters of your native language.</p>
+
+    <p>Becuase the fonts used in GNUstep GUI are initially set to
+    those that are appropriate for European languages, you have to
+    overwrite them to display the characters correctly.
     </p>
-    <p>For example, in bash:</p>
+
+    <p>At least, you need to change the user default value NSFont.
+    For example, suppose you have an .nfont package called MyFont
+    and want to use it to display the characters.  To do this, use
+    the GNUstep's utility 'defaults' as follows:
+    </p>
     <example>
-      GNUSTEP_STRING_ENCODING = NSBIG5StringEncoding
-      export GNUSTEP_STRING_ENCODING
+      defaults write NSGlobalDomain NSFont "MyFont"
+      defaults write NSGlobalDomain NSFontSize 16
     </example>
-    <p>Now, it will assume that everything it reads without an escape is
-    NSBIG5StringEncoding (BIG5). GNUstep will also write anything into
-    this default encoding. </p>
-    <p>There is a handy tool to convert between encodings:
-    cvtenc. Programmers should use this tool to convert property
-    lists to Unicode before releasing them.</p>
-  </section>
-  <section>
-    <heading>Input</heading>
-    <p>In XWindows, GNUstep use the XIM input method. Any XIM-server
-  should be able to input script into GNUstep. The way GNUstep knows
-  the encoding of the input is from the environment variable
-  <code>LC_CTYPE</code>. In order to input Traditional Chinese,
-  <code>LC_CTYPE</code> must be set for example, in .xinitrc</p>
-    <example>
-      LC_CTYPE=zh_TW.Big5
-      export LC_CTYPE
-    </example>
-  <p>Right now, GNUstep supports UTF8 and Big5 encoding in input. If it
-  doesn't work for your language, try to add more encoding support in
-  <code>-initWithDelegate:display:name:</code>
-  (back/Source/x11/XIMInputServer.m).</p>
-  </section>
-  <section>
-    <heading>Display</heading>
-    <p>Depending on the graphics library you use, GNUstep handles font
-  display slightly differently. You can choose the graphics library
-  when configuring the backend:</p>
-  <example>
-    ./configure --enable-server=x11 --enable-graphics=xlib
-  </example>
-  <p>the argument <code>--enable-graphics</code> could be either
-  <code>xlib</code> or <code>art</code> for now. Personally I would
-  suggest using art, which offer better font management.</p>
-  <p>You can specify the font and size you want to use with
-  the GNUstep defaults system. For exmample:
-  </p>
-  <example>
-    defaults write NSGlobalDomain NSFont "Ar Pl Kaitim Big5"
-    defaults write NSGlobalDomain NSFontSize 16
-  </example>
-  <p>The font name should be the same as the font name of `xlsfonts`
-  output, but each word has to be capitalized. If you don't know
-  what font names GNUstep supports, use the font panel in Ink.app
-  to find out the font name.</p>
-  </section>
-  <section>
-    <heading>Xlib</heading>
-    <p>GNUstep will use a font cache in ~/GNUstep/Library/Font/Cache/
-  to store the fonts of XWindows. Everytime you add more fonts to
-  XWindows, you have to delete this cache and let the program build a
-  new one. When you specify the default font, GNUstep will
-  look it up in the font cache, and pick up the matched font in XWindows,
-  then use this font to display text. GNUstep also support Xft for
-  anti-aliased font display. Add GSFontAntiAlias=YES to your defaults
-  to activate it. In order to use Traditional Chinese properly, always
-  set it.  In order to use Xft, you also need to set freetype or
-  xtt in your XF86Config (most of the time this is done for you.)</p>
-    <p>Here is the problem you might meet when using Chinese fonts
-  (arphic) in GNUstep:</p>
-    <p>Each font will be assigned as big-0 or iso8859-1
-  in fonts.dir by default, but actually arphic font is iso10646-1
-  encoding. XWindows usually does the encoding conversion internally. So
-  when you use "Ar Pl Kaitim Big5", you have a
-  chance of picking up either big5-0 or iso8859-1 encoding, and neither
-  works for GNUstep for unknown reason. The solution is:</p>
-    <list>
-      <item>Add iso10646-1 in fonts.dir, and it has to be in front of
-    big5-0. Order is important to pick the right one.</item>
-      <item>Set the default GSFontMask = *-iso* so that font cache
-      won't pick up the big5-0 encoding.</item>
-    </list> 
-    <p>That's it. GNUstep should pick up the right font
-  (iso10646-1). Since the mapping between NSFont in GNUstep (without
-  encoding information) and font in XWindows (with encoding
-  information) may not be unique ("Ar Pl Kaitim Big5" could be
-  "-arphic-ar pl kaitim big5-*-*..-big5-0" or "-arphic-ar pl kaitim
-  big5-*-*..-iso8859-1" or "-arphic-ar pl kaitim
-  big5-*-*..-iso10646-1"), you have to put the iso10646-1 font in
-  front of other encodings and use GSFontMask to filter out other
-  possible choices so that GNUstep can pick up the correct one. And
-  for now, I can only use the iso10646-1 font for Chinese
-  display. Font with other encoding (including big5) does not work
-  and is not well-tested.</p>
-  <p>If you still have problems, look at the
-  back/Source/xlib/XftFont.m and dump the font name of NSFont and
-  encoding of the corresponding XWindows font. Sometimes the font
-  cache can't find the matched XWindows font, and sometimes the
-  encoding of the XWindows font is different from what Xft got. An
-  example of the latter is that Xft will think the encoding of
-  "-arphic-ar pl kaitim big5-*-*..-big5-0" is "apple-roman". Only
-  "-arphic-ar pl kaitim big5-*-*..-iso10646-1" can be recognized as
-  "iso10646-1" correctly. Therefore, make sure GNUstep picks the right
-  XWindows font.</p>
+
+    <p>
+    Depending on situation, you may also need to set NSUserFont to
+    the same font.  For further details about the user default values, the
+    reader can refer to the documents DefaultsSummary.html and
+    NSFont.html shipped with the GNUstep packages.
+    </p>
   </section>
 
   <section>
-    <heading>Art</heading>
-    <p>The art backend use freetype for font management, and
-  minimizes encoding problems. Simply add a Chinese font into your
-  font collection as with other fonts, and enjoy the beautiful Chinese
-  characters.</p>
+    <heading>Examples</heading>
+
+    <subsect>
+      <heading>Chinese</heading>
+
+      <example>
+        export GNUSTEP_STRING_ENCODING=NSBIG5StringEncoding
+      </example>
+      <example>
+        defaults write NSGlobalDomain NSFont "Ar Pl Kaitim Big5"
+        defaults write NSGlobalDomain NSFontSize 16
+      </example>
+    </subsect>
+
+    <subsect>
+      <heading>Japanese</heading>
+
+    </subsect>
+
+    <subsect>
+      <heading>Korean</heading>
+
+    </subsect>
   </section>
+
 
   <section>
-    <heading>Summary</heading>
-    <p>GNUstep supports internationalization and
-  localization. In a few steps, you should be able to use it with your
-  language.</p>
-    <list>
-      <item>Set <code>GNUSTEP_STRING_ENCODING</code> to read/write
-    locally encoded files, including Localizable.strings.</item>
-      <item>Set the correct <code>LC_CTYPE</code>. If your XIM-Server
-    doesn't support UTF8 or Big5 encoding, try to add your encoding
-    into XIMInputServer.m</item>
-      <item>Assign the font using the GNUstep defaults tool, and use
-      the art backend.</item>
-    </list> 
+    <heading>Concluding Remarks</heading>
+
+    <p>
+    Although this article has focused on the CJK languages, most part of it
+    is also applicable to other languages if GNUstep supports the enconding
+    you need.  
+    </p>
+
+    <p>
+    If you find a way to set up GNUstep with your native language
+    other than CJK, please consider to contribute it to the GNUstep
+    community to share your invaluable experience with others.  We'll
+    greatly appreciate it.  Comments or suggestions are also welcome.
+    </p>
   </section>
 
-    </chapter>
+  </chapter>
   </body>
 </gsdoc>
 
