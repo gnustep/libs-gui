@@ -7,10 +7,10 @@
    Date: 1999
 
    A completely rewritten version of the original source by Scott Christley.
-   and:
+   and: 
    Author: Ovidiu Predescu <ovidiu@net-community.com>
    Date: May 1997
-   and:
+   and: 
    Author:  Felipe A. Rodriguez <far@ix.netcom.com>
    Date: July 1998
    
@@ -62,19 +62,19 @@ static NSZone *menuZone = NULL;
     }
 }
 
-+ (void)setMenuZone:(NSZone *)zone
++ (void) setMenuZone: (NSZone *)zone
 {
   menuZone = zone;
 }
 
 // Methods.
 
-- (id)init
+- (id) init
 {
-  return [self initWithTitle:@"Menu"];
+  return [self initWithTitle: @"Menu"];
 }
 
-- (id)initWithTitle:(NSString *)aTitle
+- (id) initWithTitle: (NSString *)aTitle
 {
   [super init];
 
@@ -85,23 +85,25 @@ static NSZone *menuZone = NULL;
   menu_items = [NSMutableArray new];
 
   // Create a NSMenuView to draw our cells.
-  menu_view = [[NSMenuView alloc] initWithFrame:NSMakeRect(0,0,50,50)];
+  menu_view = [[NSMenuView alloc] initWithFrame: NSMakeRect(0,0,50,50)];
 
   // Set ourself as the menu for this view.
-  [menu_view setMenu:self];
+  [menu_view setMenu: self];
 
   // We have no supermenu.
   menu_supermenu = nil;
   menu_is_tornoff = NO;
 
   menu_changed = YES;
+  /* According to the spec, menus do autoenable by default */
+  menu_autoenable = YES;
 
   return self;
 }
 
 /*
- * - (void)insertItem:(id <NSMenuItem>)newItem
- *            atIndex:(int)index
+ * - (void)insertItem: (id <NSMenuItem>)newItem
+ *            atIndex: (int)index
  *
  * This method has been modified to convert anything that conforms to the
  * <NSMenuItem> Protocol into a NSMenuItemCell which will be added to the
@@ -110,19 +112,19 @@ static NSZone *menuZone = NULL;
  * Blame: Michael
  */
 
-- (void)insertItem:(id <NSMenuItem>)newItem
-	   atIndex:(int)index
+- (void) insertItem: (id <NSMenuItem>)newItem
+	    atIndex: (int)index
 {
-  if ([(id)newItem conformsToProtocol:@protocol(NSMenuItem)])
+  if ([(id)newItem conformsToProtocol: @protocol(NSMenuItem)])
     {
-      if ([(id)newItem isKindOfClass:[NSMenuItemCell class]])
-        [menu_items insertObject:newItem atIndex:index];
+      if ([(id)newItem isKindOfClass: [NSMenuItemCell class]])
+        [menu_items insertObject: newItem atIndex: index];
       else
         {
-          [self insertItemWithTitle:[newItem title]
-			     action:[newItem action]
-		      keyEquivalent:[newItem keyEquivalent]
-			    atIndex:index];
+          [self insertItemWithTitle: [newItem title]
+			     action: [newItem action]
+		      keyEquivalent: [newItem keyEquivalent]
+			    atIndex: index];
 	  [(NSMenuItem *)newItem release];
         }
     }
@@ -132,63 +134,66 @@ static NSZone *menuZone = NULL;
   menu_changed = YES;
 }
 
-- (id <NSMenuItem>)insertItemWithTitle:(NSString *)aString
-			        action:(SEL)aSelector
-			 keyEquivalent:(NSString *)charCode 
-			       atIndex:(unsigned int)index
+- (id <NSMenuItem>) insertItemWithTitle: (NSString *)aString
+			        action: (SEL)aSelector
+			 keyEquivalent: (NSString *)charCode 
+			       atIndex: (unsigned int)index
 {
   id anItem = [NSMenuItemCell new];
-  [anItem setTitle:aString];
-  [anItem setAction:aSelector];
-  [anItem setKeyEquivalent:charCode];
 
-  [menu_items insertObject:anItem atIndex:index];
+  [anItem setTitle: aString];
+  [anItem setAction: aSelector];
+  [anItem setKeyEquivalent: charCode];
+
+  [menu_items insertObject: anItem atIndex: index];
 
   menu_changed = YES;
 
   return anItem;
 }
 
-- (void)addItem:(id <NSMenuItem>)newItem
+- (void) addItem: (id <NSMenuItem>)newItem
 {
-  [self insertItem:newItem atIndex:[menu_items count]];
+  [self insertItem: newItem atIndex: [menu_items count]];
 }
 
-- (id <NSMenuItem>)addItemWithTitle:(NSString *)aString
-			     action:(SEL)aSelector 
-		      keyEquivalent:(NSString *)keyEquiv
+- (id <NSMenuItem>) addItemWithTitle: (NSString *)aString
+			      action: (SEL)aSelector 
+		       keyEquivalent: (NSString *)keyEquiv
 {
-  return [self insertItemWithTitle:aString
-		     action:aSelector
-	      keyEquivalent:keyEquiv
-		    atIndex:[menu_items count]];
+  return [self insertItemWithTitle: aString
+			    action: aSelector
+		     keyEquivalent: keyEquiv
+			   atIndex: [menu_items count]];
 }
 
-- (void)removeItem:(id <NSMenuItem>)anItem
+- (void) removeItem: (id <NSMenuItem>)anItem
 {
-  if ([(NSMenuItemCell *)anItem isKindOfClass:[NSMenuItemCell class]])
-  {
-    int _index = [menu_items indexOfObject:anItem];
+  if ([(NSMenuItemCell *)anItem isKindOfClass: [NSMenuItemCell class]])
+    {
+      int _index = [menu_items indexOfObject: anItem];
 
-    if (_index == -1)
-      return;
+      if (_index == -1)
+	return;
 
-    [menu_items removeObjectAtIndex:_index];
-  } else {
-    NSLog(@"You must use an NSMenuItemCell, or a derivative thereof.\n");
-  }
+      [menu_items removeObjectAtIndex: _index];
+    }
+  else
+    {
+      NSLog(@"You must use an NSMenuItemCell, or a derivative thereof.\n");
+    }
 
   menu_changed = YES;
 }
 
-- (void)removeItemAtIndex:(int)index
+- (void) removeItemAtIndex: (int)index
 {
-  [menu_items removeObjectAtIndex:index];
+  [menu_items removeObjectAtIndex: index];
 
   menu_changed = YES;
 }
 
-- (void)itemChanged:(id <NSMenuItem>)anObject
+- (void) itemChanged: (id <NSMenuItem>)anObject
 {
   // another nebulous method in NSMenu.
 }
@@ -200,7 +205,7 @@ static NSZone *menuZone = NULL;
 
   for (i = 0; i < count; i++)
     {
-      menuCell = [menu_items objectAtIndex:i];
+      menuCell = [menu_items objectAtIndex: i];
       if ([menuCell tag] == aTag)
         return menuCell;
     }
@@ -221,74 +226,74 @@ static NSZone *menuZone = NULL;
   return nil;
 }
 
-- (id <NSMenuItem>)itemAtIndex:(int)index
+- (id <NSMenuItem>) itemAtIndex: (int)index
 {
   // FIXME should raise an exception if out of range.
-  return [menu_items objectAtIndex:index];
+  return [menu_items objectAtIndex: index];
 }
 
-- (int)numberOfItems
+- (int) numberOfItems
 {
   return [menu_items count];
 }
 
-- (NSArray *)itemArray
+- (NSArray *) itemArray
 {
   return (NSArray *)menu_items;
 }
 
-- (int)indexOfItem:(id <NSMenuItem>)anObject
+- (int) indexOfItem: (id <NSMenuItem>)anObject
 {
-  if (![(NSMenuItemCell *)anObject isKindOfClass:[NSMenuItemCell class]])
-  {
-    NSLog(@"You must use an NSMenuItemCell, or a derivative thereof.\n");
-    return -1;
-  }
-  return [menu_items indexOfObject:anObject];
+  if (![(NSMenuItemCell *)anObject isKindOfClass: [NSMenuItemCell class]])
+    {
+      NSLog(@"You must use an NSMenuItemCell, or a derivative thereof.\n");
+      return -1;
+    }
+  return [menu_items indexOfObject: anObject];
 }
 
-- (int)indexOfItemWithTitle:(NSString *)aTitle
+- (int) indexOfItemWithTitle: (NSString *)aTitle
 {
   id anItem;
 
-  if ((anItem = [self itemWithTitle:aTitle]))
-    return [menu_items indexOfObject:anItem];
+  if ((anItem = [self itemWithTitle: aTitle]))
+    return [menu_items indexOfObject: anItem];
   else
     return -1;
 }
 
-- (int)indexOfItemWithTag:(int)aTag
+- (int) indexOfItemWithTag: (int)aTag
 {
   id anItem;
 
-  if ((anItem = [self itemWithTag:aTag]))
-    return [menu_items indexOfObject:anItem];
+  if ((anItem = [self itemWithTag: aTag]))
+    return [menu_items indexOfObject: anItem];
   else
     return -1;
 }
 
-- (int)indexOfItemWithTarget:(id)anObject
-		   andAction:(SEL)actionSelector
+- (int) indexOfItemWithTarget: (id)anObject
+		   andAction: (SEL)actionSelector
 {
   return -1;
 }
 
-- (int)indexOfItemWithRepresentedObject:(id)anObject
+- (int) indexOfItemWithRepresentedObject: (id)anObject
 {
   return -1;
 }
 
-- (int)indexOfItemWithSubmenu:(NSMenu *)anObject
+- (int) indexOfItemWithSubmenu: (NSMenu *)anObject
 {
   return -1;
 }
 
 // Dealing with submenus.
 
-- (void)setSubmenu:(NSMenu *)aMenu
-	   forItem:(id <NSMenuItem>) anItem 
+- (void) setSubmenu: (NSMenu *)aMenu
+	    forItem: (id <NSMenuItem>) anItem 
 {
-  [anItem setTarget:aMenu];
+  [anItem setTarget: aMenu];
   [anItem setAction: @selector(submenuAction:)];
   if (aMenu)
     aMenu->menu_supermenu = self;
@@ -298,11 +303,11 @@ static NSZone *menuZone = NULL;
   // notification that the menu has changed.
 }
 
-- (void)submenuAction:(id)sender
+- (void) submenuAction: (id)sender
 {
 }
 
-- (NSMenu *)attachedMenu
+- (NSMenu *) attachedMenu
 {
   return menu_attached_menu;
 }
@@ -313,42 +318,42 @@ static NSZone *menuZone = NULL;
   return menu_supermenu && [menu_supermenu attachedMenu] == self;
 }
 
-- (BOOL)isTornOff
+- (BOOL) isTornOff
 {
   return menu_is_tornoff;
 }
 
-- (NSPoint)locationForSubmenu:(NSMenu *)aSubmenu
+- (NSPoint) locationForSubmenu: (NSMenu *)aSubmenu
 {
   return NSZeroPoint;
 }
 
-- (NSMenu *)supermenu
+- (NSMenu *) supermenu
 {
   return menu_supermenu;
 }
 
-- (void)setSupermenu:(NSMenu *)supermenu
+- (void) setSupermenu: (NSMenu *)supermenu
 {
   ASSIGN(menu_supermenu, supermenu);
 }
 
-- (void)setAutoenablesItems:(BOOL)flag
+- (void) setAutoenablesItems: (BOOL)flag
 {
   menu_autoenable = flag;
 }
 
-- (BOOL)autoenablesItems
+- (BOOL) autoenablesItems
 {
   return menu_autoenable;
 }
 
-- (void)update
+- (void) update
 {
   // FIXME: needs to be checked.
-  id cells;
-  int i, count;
-  id theApp = [NSApplication sharedApplication];
+  id		cells;
+  unsigned	i, count;
+  id		theApp = [NSApplication sharedApplication];
   
   if (menu_changed)
     [self sizeToFit];
@@ -363,16 +368,16 @@ static NSZone *menuZone = NULL;
       
   for (i = 0; i < count; i++)
     {
-      id<NSMenuItem> cell = [menu_items objectAtIndex: i];
-      SEL action = [cell action];
-      id target;
-      NSWindow* keyWindow;
-      NSWindow* mainWindow;
-      id responder;
-      id delegate;
-      id validator = nil;
-      BOOL wasEnabled = [cell isEnabled];
-      BOOL shouldBeEnabled;
+      id<NSMenuItem>	cell = [menu_items objectAtIndex: i];
+      SEL		action = [cell action];
+      id		target;
+      NSWindow		*keyWindow;
+      NSWindow		*mainWindow;
+      id		responder;
+      id		delegate;
+      id		validator = nil;
+      BOOL		 wasEnabled = [cell isEnabled];
+      BOOL		shouldBeEnabled;
   
       /* Update the submenu items if any */
       if ([cell hasSubmenu])
@@ -399,7 +404,7 @@ static NSZone *menuZone = NULL;
         {
           shouldBeEnabled = NO;
         }
-      else if ([validator respondsToSelector:@selector(validateMenuItem:)])
+      else if ([validator respondsToSelector: @selector(validateMenuItem:)])
         {
           shouldBeEnabled = [validator validateMenuItem: cell];
         }
@@ -446,7 +451,7 @@ static NSZone *menuZone = NULL;
         }
       else
         {
-          if ([[cell keyEquivalent] isEqual:
+          if ([[cell keyEquivalent] isEqual: 
             [theEvent charactersIgnoringModifiers]])
             {
               [menu_view lockFocus];
@@ -480,33 +485,33 @@ static NSZone *menuZone = NULL;
                                   userInfo: d];
 }
 
-- (void)setTitle: (NSString*)aTitle
+- (void) setTitle: (NSString*)aTitle
 {
   ASSIGN(menu_title, aTitle);
   [self sizeToFit];
 }
   
-- (NSString*)title
+- (NSString*) title
 {
   return menu_title;
 }
 
-- (void)setMenuRepresentation:(id)menuRep
+- (void) setMenuRepresentation: (id)menuRep
 {
   ASSIGN(menu_rep, menuRep);
 }
 
-- (id)menuRepresentation
+- (id) menuRepresentation
 {
   return menu_rep;
 }
 
-- (void)setMenuChangedMessagesEnabled: (BOOL)flag
+- (void) setMenuChangedMessagesEnabled: (BOOL)flag
 { 
   menu_ChangedMessagesEnabled = flag;
 }
  
-- (BOOL)menuChangedMessagesEnabled
+- (BOOL) menuChangedMessagesEnabled
 {
   return menu_ChangedMessagesEnabled;
 }
@@ -516,22 +521,22 @@ static NSZone *menuZone = NULL;
 //  NSLog(@"- sizeToFit called in NSMenu\n");
 //
 //  [menu_view sizeToFit];
-//  [menu_view setNeedsDisplay:YES];
+//  [menu_view setNeedsDisplay: YES];
 //  menu_changed = NO;
 }
 
-- (void)helpRequested:(NSEvent *)event
+- (void) helpRequested: (NSEvent *)event
 {
   // Won't be implemented until we have NSHelp*
 }
 
 // NSCoding
-- (id)  initWithCoder: (NSCoder*)aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
   return self;
 }
 
-- (void)  encodeWithCoder: (NSCoder*)aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
 }
 
