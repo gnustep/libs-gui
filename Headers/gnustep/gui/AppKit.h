@@ -117,6 +117,8 @@
 #include <AppKit/NSSpellProtocol.h>
 #include <AppKit/NSSpellServer.h>
 #include <AppKit/NSSplitView.h>
+#include <AppKit/NSStepper.h>
+#include <AppKit/NSStepperCell.h>
 #include <AppKit/NSStringDrawing.h>
 #include <AppKit/NSTableColumn.h>
 #include <AppKit/NSTableHeaderCell.h>
