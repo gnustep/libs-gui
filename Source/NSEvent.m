@@ -409,6 +409,14 @@ static Class eventClass;
 /*
  * Getting Mouse Event Information
  */
++ (NSPoint)mouseLocation
+{
+  float x, y;
+
+  PSmouselocation(&x, &y);
+  return NSMakePoint(x, y);
+}
+
 - (int) clickCount
 {
   /* Make sure it is one of the right event types */
@@ -493,6 +501,36 @@ static Class eventClass;
 		format: @"subtype requested for invalid event type"];
 
   return event_data.misc.sub_type;;
+}
+
+/*
+ * Scroll event data
+ */
+- (float)deltaX
+{
+  if (event_type != NSScrollWheel)
+    [NSException raise: NSInvalidArgumentException
+		format: @"deltaX requested for invalid event type"];
+  // FIXME
+  return 0.0;
+}
+
+- (float)deltaY
+{
+  if (event_type != NSScrollWheel)
+    [NSException raise: NSInvalidArgumentException
+		format: @"deltaY requested for invalid event type"];
+  // FIXME
+  return 0.0;
+}
+
+- (float)deltaZ
+{
+  if (event_type != NSScrollWheel)
+    [NSException raise: NSInvalidArgumentException
+		format: @"deltaZ requested for invalid event type"];
+  // FIXME
+  return 0.0;
 }
 
 /*
@@ -603,6 +641,25 @@ static Class eventClass;
     }
 
   return self;
+}
+
+/*
+ * Copying protocol
+ */
+
+- (id) copyWithZone: (NSZone*)zone
+{
+  NSEvent *e = (NSEvent*)NSCopyObject (self, 0, zone);
+
+  if ((event_type == NSKeyUp) || (event_type == NSKeyDown))
+    {
+      event_data.key.char_keys = [event_data.key.char_keys copyWithZone: zone];
+      event_data.key.unmodified_keys = [event_data.key.unmodified_keys copyWithZone: zone];
+    }
+  else if (event_type == NSCursorUpdate)
+    event_data.tracking.user_data = [event_data.tracking.user_data copyWithZone: zone];
+
+  return e;
 }
 
 - (NSString*) description
