@@ -46,6 +46,13 @@
 #include <AppKit/NSTextStorage.h>
 #include <AppKit/NSColorPanel.h>
 
+#define HUGE 1e7
+
+
+@interface NSText(GNUstepPrivate)
++ (NSDictionary*) defaultTypingAttributes;
+@end
+
 @interface NSTextView (GNUstepPrivate)
 - (NSTextContainer*) buildUpTextNetwork: (NSSize)aSize;
 @end
@@ -76,10 +83,39 @@
 
 /* Initializing Methods */
 
+/* Designated initializer */
 - (id) initWithFrame: (NSRect)frameRect
        textContainer: (NSTextContainer*)aTextContainer
 {
-  self = [super initWithFrame: frameRect textContainer: aTextContainer];
+  [super initWithFrame: frameRect];
+
+  [self setMinSize: frameRect.size];
+  [self setMaxSize: NSMakeSize (HUGE,HUGE)];
+
+  _tf.is_field_editor = NO;
+  _tf.is_editable = YES;
+  _tf.is_selectable = YES;
+  _tf.is_rich_text = NO;
+  _tf.imports_graphics = NO;
+  _tf.draws_background = YES;
+  _tf.is_horizontally_resizable = NO;
+  _tf.is_vertically_resizable = NO;
+  _tf.uses_font_panel = YES;
+  _tf.uses_ruler = YES;
+  _tf.is_ruler_visible = NO;
+  ASSIGN (_caret_color, [NSColor blackColor]); 
+  [self setTypingAttributes: [isa defaultTypingAttributes]];
+
+  [self setBackgroundColor: [NSColor textBackgroundColor]];
+
+  //[self setSelectedRange: NSMakeRange (0, 0)];
+
+  [aTextContainer setTextView: self];
+  [aTextContainer setWidthTracksTextView: YES];
+  [aTextContainer setHeightTracksTextView: YES];
+
+  // FIXME: ?? frame was given as an argument so we shouldn't resize.
+  [self sizeToFit];
 
   [self setEditable: YES];
   [self setUsesFontPanel: YES];
@@ -111,11 +147,29 @@
   return self;
 }
 
-- (id) initWithCoder: (NSCoder *)coder
+- (void) encodeWithCoder: (NSCoder *)aCoder
+{
+   BOOL flag;
+
+  [super encodeWithCoder: aCoder];
+
+  flag = _tvf.smart_insert_delete;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _tvf.allows_undo;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+}
+
+- (id) initWithCoder: (NSCoder *)aDecoder
 {
   NSTextContainer *aTextContainer; 
+  BOOL flag;
 
-  self = [super initWithCoder: coder];
+  self = [super initWithCoder: aDecoder];
+
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _tvf.smart_insert_delete = flag;
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _tvf.allows_undo = flag;
   
   /* build up the rest of the text system, which doesn't get stored 
      <doesn't even implement the Coding protocol>. */
@@ -129,14 +183,14 @@
 
 - (void)dealloc
 {
-  if (_tf.owns_text_network == YES)
+  if (_tvf.owns_text_network == YES)
     {
       /* Prevent recursive dealloc */
-      if (_tf.is_in_dealloc == YES)
+      if (_tvf.is_in_dealloc == YES)
 	{
 	  return;
 	}
-      _tf.is_in_dealloc = YES;
+      _tvf.is_in_dealloc = YES;
       /* This releases all the text objects (us included) in fall */
       RELEASE (_textStorage);
     }
@@ -177,7 +231,7 @@
 
   /* We keep a flag to remember that we are directly responsible for 
      managing the text objects. */
-  _tf.owns_text_network = YES;
+  _tvf.owns_text_network = YES;
 
   return textContainer;
 }
@@ -209,12 +263,12 @@
 /* This should only be called by [NSTextContainer -setTextView:] */
 - (void) setTextContainer: (NSTextContainer*)aTextContainer
 {
-  [super setTextContainer: aTextContainer];
-}
+  _textContainer = aTextContainer;
+  _layoutManager = [aTextContainer layoutManager];
+  _textStorage = [_layoutManager textStorage];
 
-- (NSTextContainer*) textContainer
-{
-  return _textContainer;
+  // FIXME: Hack to get the layout change
+  [_textContainer setContainerSize: _frame.size];
 }
 
 - (void) replaceTextContainer: (NSTextContainer*)aTextContainer
@@ -223,6 +277,11 @@
 
   /* Do not retain: text container is owning us. */
   _textContainer = aTextContainer;
+}
+
+- (NSTextContainer *) textContainer
+{
+  return _textContainer;
 }
 
 - (void) setTextContainerInset: (NSSize)inset
@@ -266,34 +325,14 @@
   return _textStorage;
 }
 
-- (void) setBackgroundColor: (NSColor*)aColor
-{
-  ASSIGN(_background_color, aColor);
-}
-
-- (NSColor*) backgroundColor
-{
-  return _background_color;
-}
-
 - (void) setAllowsUndo: (BOOL)flag
 {
-  _tf.allows_undo = flag;
+  _tvf.allows_undo = flag;
 }
 
 - (BOOL) allowsUndo
 {
-  return _tf.allows_undo;
-}
-
-- (void) setDrawsBackground: (BOOL)flag
-{
-  _tf.draws_background = flag;
-}
-
-- (BOOL) drawsBackground
-{
-  return _tf.draws_background;
+  return _tvf.allows_undo;
 }
 
 - (void) setNeedsDisplayInRect: (NSRect)aRect
@@ -344,73 +383,22 @@
 
 - (void) setEditable: (BOOL)flag
 {
-  if (flag)
-    _tf.is_selectable = flag;
-
-  _tf.is_editable = flag;
+  [super setEditable: flag];
+  /* FIXME/TODO: Update/show the insertion point */
 }
 
-- (BOOL) isEditable
-{
-  return _tf.is_editable;
-}
-
-- (void) setSelectable: (BOOL)flag
-{
-  _tf.is_selectable = flag;
-}
-
-- (BOOL) isSelectable
-{
-  return _tf.is_selectable;
-}
-
-- (void) setFieldEditor: (BOOL)flag
-{
-  _tf.is_field_editor = flag;
-}
-
-- (BOOL) isFieldEditor
-{
-  return _tf.is_field_editor;
-}
 
 - (void) setRichText: (BOOL)flag
 {
-  if (!flag)
-    _tf.imports_graphics = flag;
-
-  _tf.is_rich_text = flag;
+  [super setRichText: flag];
   [self updateDragTypeRegistration];
-}
-
-- (BOOL) isRichText
-{
-  return _tf.is_rich_text;
+  /* FIXME/TODO: Also convert text to plain text or to rich text */
 }
 
 - (void) setImportsGraphics: (BOOL)flag
 {
-  if (flag)
-    _tf.is_rich_text = flag;
-
-  _tf.imports_graphics = flag;
+  [super setImportsGraphics: flag];
   [self updateDragTypeRegistration];
-}
-
-- (BOOL) importsGraphics
-{
-  return _tf.imports_graphics;
-}
-
-- (void) setUsesFontPanel: (BOOL)flag
-{
-  _tf.uses_font_panel = flag;
-}
-
-- (BOOL) usesFontPanel
-{
-  return _tf.uses_font_panel;
 }
 
 - (void) setUsesRuler: (BOOL)flag
@@ -965,12 +953,12 @@ the affected range or replacement string before beginning changes, pass
 
 - (void) setSmartInsertDeleteEnabled: (BOOL)flag
 {
-  _tf.smart_insert_delete = flag;
+  _tvf.smart_insert_delete = flag;
 }
 
 - (BOOL) smartInsertDeleteEnabled
 {
-  return _tf.smart_insert_delete;
+  return _tvf.smart_insert_delete;
 }
 
 - (NSRange) smartDeleteRangeForProposedRange: (NSRange)proposedCharRange
