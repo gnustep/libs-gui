@@ -358,8 +358,12 @@ static int mouseDownFlags = 0;
   mode = aMode;
   [self setFrame: frameRect];
 
-  /* cellSize = NSMakeSize(DEFAULT_CELL_WIDTH, DEFAULT_CELL_HEIGHT); */
-  cellSize = NSMakeSize(frameRect.size.width/numCols, frameRect.size.height/numRows);
+  if ((numCols > 0) && (numRows > 0))
+    cellSize = NSMakeSize (frameRect.size.width/numCols, 
+			   frameRect.size.height/numRows);
+  else
+    cellSize = NSMakeSize (DEFAULT_CELL_WIDTH, DEFAULT_CELL_HEIGHT); 
+  
   intercell = NSMakeSize(1, 1);
   [self setBackgroundColor: [NSColor controlBackgroundColor]];
   [self setDrawsBackground: YES];
