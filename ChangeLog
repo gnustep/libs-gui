@@ -1,4 +1,8 @@
 <<<<<<< ChangeLog
+Tues Aug 11 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* externs.m further defined the NSStringAdditions globals. 
+
 Sat Aug 8 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* added NSStringDrawing.m and NSStringDrawing.h which implement the

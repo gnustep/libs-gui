@@ -37,21 +37,22 @@
 						// the respective property in a text attributes 
 						// dictionary.  if the key is not in the dictionary the 	
 						// default value is assumed  											
-NSString *NSFontAttributeName;    			// NSFont, defaults to Helvetica 12        
-NSString *NSParagraphStyleAttributeName;	// NSParagraphStyle, default to 
-											// defaultParagraphStyle
-NSString *NSForegroundColorAttributeName;  	// NSColor, default is blackColor
-NSString *NSUnderlineStyleAttributeName;   	// int, default 0 = no underline 
-NSString *NSSuperscriptAttributeName;      	// int, default 0 
-NSString *NSBackgroundColorAttributeName;	// NSColor,default nil =no back col 
-NSString *NSAttachmentAttributeName;       	// NSTextAttachment, default nil 
-NSString *NSLigatureAttributeName;         	// int, default 1 
-											// 1 = default ligatures, 
-											// 0 = no ligatures, 
-											// 2 = all ligatures 
-NSString *NSBaselineOffsetAttributeName;   	// float, default 0 in points; 
-											// offset from baseline, 
-NSString *NSKernAttributeName;             	// float, amount to modify default 
+extern NSString *NSFontAttributeName;    	// NSFont, defaults to Helvetica 12
+        				// NSParagraphStyle, default is defaultParagraphStyle
+extern NSString *NSParagraphStyleAttributeName;	 
+											// NSColor, default is blackColor 
+extern NSString *NSForegroundColorAttributeName; 
+											// int, default 0 = no	underline
+extern NSString *NSUnderlineStyleAttributeName;   	 	 
+extern NSString *NSSuperscriptAttributeName;      			// int, default 0 
+								// NSColor, default nil = no background color
+extern NSString *NSBackgroundColorAttributeName;		
+extern NSString *NSAttachmentAttributeName;    // NSTextAttachment, default nil     	 
+						// int, default 1, 0 = no ligatures, 2 = all ligatures
+extern NSString *NSLigatureAttributeName;			 
+extern NSString *NSBaselineOffsetAttributeName;  // float, default 0 in points; 
+											// float, offset from baseline, 
+extern NSString *NSKernAttributeName;		// amount to modify default
 											// kerning, if 0 kerning is off 
 enum 									
 {											// Currently supported values for

@@ -7,6 +7,8 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: August 1997
+   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Date: Aug 1998
    
    This file is part of the GNUstep GUI Library.
 
@@ -303,3 +305,16 @@ NSString *NSWorkspaceWillPowerOffNotification =
 NSString *NSWorkspaceWillUnmountNotification =
 @"NSWorkspaceWillUnmountNotification";
 
+//
+//	NSStringDrawing NSString additions
+//
+NSString *NSFontAttributeName = 			@"NSFontAttributeName";    	
+NSString *NSParagraphStyleAttributeName =	@"NSParagraphStyleAttributeName";	 
+NSString *NSForegroundColorAttributeName =	@"NSForegroundColorAttributeName"; 
+NSString *NSUnderlineStyleAttributeName =	@"NSUnderlineStyleAttributeName";   	 	 
+NSString *NSSuperscriptAttributeName =		@"NSSuperscriptAttributeName";      	 
+NSString *NSBackgroundColorAttributeName =	@"NSBackgroundColorAttributeName";		
+NSString *NSAttachmentAttributeName = 		@"NSAttachmentAttributeName";         	 
+NSString *NSLigatureAttributeName = 		@"NSLigatureAttributeName";			
+NSString *NSBaselineOffsetAttributeName = 	@"NSBaselineOffsetAttributeName";   	 
+NSString *NSKernAttributeName = 			@"NSKernAttributeName";        
