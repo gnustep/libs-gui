@@ -3507,7 +3507,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	    }
 	  (*appImp)(_matrixToWindow, appSel, _boundsMatrix);
 	  [_matrixFromWindow takeMatrixFromTransform: _matrixToWindow];
-	  [_matrixFromWindow inverse];
+	  [_matrixFromWindow invert];
 
 	  superviewsVisibleRect = [self convertRect: [_super_view visibleRect]
 					   fromView: _super_view];
