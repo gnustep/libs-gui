@@ -409,9 +409,9 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   float		howHigh = (howMany * cellSize.height);
   float		neededImageAndTitleWidth = [[NSFont boldSystemFontOfSize: 12]
 				   widthOfString: [menuv_menu title]] + 17;
-  float		neededKeyEquivalentWidth = 0.;
-  float		neededStateImageWidth = 0.;
-  float		accumulatedOffset = 0.;
+  float		neededKeyEquivalentWidth = 0.0;
+  float		neededStateImageWidth = 0.0;
+  float		accumulatedOffset = 0.0;
 
   // TODO: Optimize this loop.
   for (i = 0; i < howMany; i++)
@@ -710,7 +710,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 }
 
 #define MOVE_THRESHOLD_DELTA 1.0
-#define DELAY_MULTIPLIER     12
+#define DELAY_MULTIPLIER     6
 
 - (BOOL) trackWithEvent: (NSEvent *)event
 {
@@ -719,43 +719,81 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 			          | NSLeftMouseDraggedMask
                                   | NSPeriodicMask;
   NSDate        *theDistantFuture = [NSDate distantFuture];
-
-  int      index;
-  NSPoint  location;
-  NSPoint  lastLocation = {0,0};
-  NSMenu  *alreadyAttachedMenu = NO;
-  BOOL     delayedSelect = NO;
-  int      delayCount = DELAY_MULTIPLIER;
+  int		index;
+  NSPoint	location;
+  NSPoint	lastLocation = {0,0};
+  NSMenu	*alreadyAttachedMenu = NO;
+  BOOL		mouseMoved = NO;
+  BOOL		delayedSelect = NO;
+  int		delayCount = 0;
+  float		xDelta = MOVE_THRESHOLD_DELTA;
+  float		yDelta = 0.0;
 
   do
     {
       location     = [window mouseLocationOutsideOfEventStream];
       index        = [self indexOfItemAtPoint: location];
 
+      if (index != menuv_highlightedItemIndex)
+	{
+	  mouseMoved = YES;	/* Ok - had an initial movement. */
+	}
       if ([event type] == NSPeriodic)
 	{
 	  if ([menuv_menu isPartlyOffScreen])
 	    {
-	      NSPoint pointerLoc = [window convertBaseToScreen: 
-					     location];
+	      NSPoint pointerLoc = [window convertBaseToScreen: location];
 
 	      // TODO: Why 1 in the Y axis?
-	      if (pointerLoc.x == 0 || pointerLoc.y == 1 ||
-		  pointerLoc.x == [[window screen] frame].size.width
-		  - 1)
+	      if (pointerLoc.x == 0 || pointerLoc.y == 1
+		|| pointerLoc.x == [[window screen] frame].size.width - 1)
 		[menuv_menu shiftOnScreen];
 	    }
 
-	  if ([event type] == NSPeriodic && delayedSelect && !delayCount)
+	  if (delayedSelect && mouseMoved && [event type] == NSPeriodic)
 	    {
-	      if (location.x - lastLocation.x < MOVE_THRESHOLD_DELTA ||
-		  abs(location.y - lastLocation.y) < MOVE_THRESHOLD_DELTA)
-		delayedSelect = NO;
+	      float	xDiff = location.x - lastLocation.x;
+	      float	yDiff = location.y - lastLocation.y;
 
+	      /*
+               * Once the mouse movement has started in one vertical
+	       * direction, it must continue in the same direction if
+	       * selection is to be delayed.
+	       */
+	      if (yDelta == 0.0)
+		{
+		  if (yDiff < 0.0)
+		    yDelta = -MOVE_THRESHOLD_DELTA;
+		  else if (yDiff > 0.0)
+		    yDelta = MOVE_THRESHOLD_DELTA;
+		}
+	      /*
+               * Check to see if movement is less than the threshold.
+	       */
+	      if (xDiff < xDelta
+		|| (yDelta < 0.0 && yDiff > yDelta)
+		|| (yDelta > 0.0 && yDiff < yDelta))
+		{
+		  /*
+		   * if we have had too many successive small movements, or
+		   * a single movement too far in the wrong direction, we
+		   * leave 'delayedSelect' mode.
+		   */
+		  delayCount++;
+		  if (delayCount >= DELAY_MULTIPLIER
+		    || (xDiff < -xDelta)
+		    || (yDelta < 0.0 && yDiff > -yDelta)
+		    || (yDelta > 0.0 && yDiff < -yDelta))
+		    {
+		      delayedSelect = NO;
+		    }
+		}
+	      else
+		{
+		  delayCount = 0;
+		}
 	      lastLocation = location;
 	    }
-
-	  delayCount   = delayCount ? --delayCount : DELAY_MULTIPLIER;
 	}
 
       if (index == -1)
@@ -790,8 +828,10 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 		       [[menuv_items_link objectAtIndex: index] submenu]))
 		    {
 		      [self attachSubmenuForItemAtIndex: index];
+		      mouseMoved = NO;
 		      delayedSelect = YES;
-		      delayCount    = DELAY_MULTIPLIER;
+		      delayCount = 0;
+		      yDelta = 0.0;
 		    }
 		  else
 		    {
@@ -863,7 +903,7 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 
   masterMenuView->menuv_keepAttachedMenus = YES;
 
-  [NSEvent startPeriodicEventsAfterDelay: 0.2 withPeriod: 0.05];
+  [NSEvent startPeriodicEventsAfterDelay: 0.1 withPeriod: 0.05];
 
   [masterMenuView trackWithEvent: theEvent];
 

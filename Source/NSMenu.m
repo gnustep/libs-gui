@@ -51,15 +51,15 @@
 #include <AppKit/NSPopUpButtonCell.h>
 #include <AppKit/NSScreen.h>
 
-static NSZone *menuZone = NULL;
+static NSZone	*menuZone = NULL;
 
-static NSString* NSMenuLocationsKey = @"NSMenuLocations";
+static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 
 @implementation NSMenu
 
-//
-// Class Methods
-//
+/*
+ * Class Methods
+ */
 + (void) initialize
 {
   if (self == [NSMenu class])
@@ -68,19 +68,19 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
     }
 }
 
-+ (void) setMenuZone: (NSZone *)zone
++ (void) setMenuZone: (NSZone*)zone
 {
   menuZone = zone;
 }
 
-+ (NSZone *) menuZone
++ (NSZone*) menuZone
 {
   return menuZone;
 }
 
-//
-// Initializing a New NSMenu
-//
+/*
+ * Initializing a New NSMenu
+ */
 - (id) init
 {
   return [self initWithTitle: @"Menu"];
@@ -116,7 +116,7 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   [super dealloc];
 }
 
-- (id) initWithTitle: (NSString *)aTitle
+- (id) initWithTitle: (NSString*)aTitle
 {
   NSNotificationCenter *theCenter = [NSNotificationCenter defaultCenter];
   NSApplication        *theApp    = [NSApplication sharedApplication];
@@ -172,9 +172,9 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   return self;
 }
 
-//
-// Setting Up the Menu Commands
-//
+/*
+ * Setting Up the Menu Commands
+ */
 - (void) insertItem: (id <NSMenuItem>)newItem
 	    atIndex: (int)index
 {
@@ -185,8 +185,10 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
     {
       if ([(id)newItem isKindOfClass: [NSMenuItem class]])
         {
-	  // If the item is already attached to another menu it
-	  // isn't added.
+	  /*
+           * If the item is already attached to another menu it
+	   * isn't added.
+	   */
 	  if ([(NSMenuItem *)newItem menu] != nil)
 	    return;
 
@@ -222,9 +224,9 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   menu_changed = YES;
 }
 
-- (id <NSMenuItem>) insertItemWithTitle: (NSString *)aString
+- (id <NSMenuItem>) insertItemWithTitle: (NSString*)aString
 			         action: (SEL)aSelector
-			  keyEquivalent: (NSString *)charCode 
+			  keyEquivalent: (NSString*)charCode 
 			        atIndex: (unsigned int)index
 {
   id anItem = [NSMenuItem new];
@@ -247,9 +249,9 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   [self insertItem: newItem atIndex: [menu_items count]];
 }
 
-- (id <NSMenuItem>) addItemWithTitle: (NSString *)aString
+- (id <NSMenuItem>) addItemWithTitle: (NSString*)aString
 			      action: (SEL)aSelector 
-		       keyEquivalent: (NSString *)keyEquiv
+		       keyEquivalent: (NSString*)keyEquiv
 {
   return [self insertItemWithTitle: aString
 			    action: aSelector
@@ -321,9 +323,9 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   [self update];
 }
 
-//
-// Finding Menu Items
-//
+/*
+ * Finding Menu Items
+ */
 - (id <NSMenuItem>) itemWithTag: (int)aTag
 {
   unsigned i;
@@ -368,20 +370,20 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   return [menu_items count];
 }
 
-- (NSArray *) itemArray
+- (NSArray*) itemArray
 {
-  return (NSArray *)menu_items;
+  return (NSArray*)menu_items;
 }
 
-//
-// Finding Indices of Menu Items
-//
+/*
+ * Finding Indices of Menu Items
+ */
 - (int) indexOfItem: (id <NSMenuItem>)anObject
 {
   return [menu_items indexOfObjectIdenticalTo: anObject];
 }
 
-- (int) indexOfItemWithTitle: (NSString *)aTitle
+- (int) indexOfItemWithTitle: (NSString*)aTitle
 {
   id anItem;
 
@@ -411,9 +413,13 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
     {
       NSMenuItem *menuItem = [menu_items objectAtIndex: i];
 
-      if ([[menuItem target] isEqual: anObject]
-	  && (!actionSelector || [menuItem action] == actionSelector))
-        return i;
+      if (actionSelector == 0 || sel_eq([menuItem action], actionSelector))
+	{
+	  if ([[menuItem target] isEqual: anObject])
+	    {
+	      return i;
+	    }
+	}
     }
 
   return -1;

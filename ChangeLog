@@ -1,3 +1,9 @@
+Wed Jan  5 20:04:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSMenuView.m: Changes to mouse tracking loop to provide more
+	sophisticated handling of opening/closing of submenus in an attempt to
+	mimic the behavior of NeXTstep.
+
 Wed Jan  5 16:27:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSMenuItem.m: minor fixes and tidying.
