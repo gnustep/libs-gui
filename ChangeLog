@@ -1,3 +1,12 @@
+Sat Jan 20 23:38:03 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Patches by Alexander Malmberg <malmberg@malmberg.org>, modified:
+	* Source/NSMenu.m ([NSMenuWindowTitleView -titleHeight]): New
+	method.  ([NSMenu -initWithTitle:]): Use the new method to compute
+	menu title height.  ([NSMenu -sizeToFit]): Idem.
+	* Source/NSMenuView.m ([+menuBarHeight]): Compute from the font
+	height.  ([-initWithFrame:]): Compute cellSize from the font size.
+	
 2001-01-20  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSLayoutManager.m: Reorganize and tidy up glyph code
