@@ -1207,7 +1207,18 @@ static SEL getSel = @selector(objectAtIndex:);
 	}
       else
 	{
-	  // TODO: Select keyCell
+	  if (_keyCell != nil)
+	    {
+	      BOOL isValid;
+	      int row, column;
+	      
+	      isValid = [self getRow: &row  column: &column  
+			      ofCell: _keyCell];
+	      if (isValid == YES)
+		{
+		  [self selectTextAtRow: row  column: column];
+		}
+	    }
 	}
       break;
     }
@@ -1265,8 +1276,20 @@ static SEL getSel = @selector(objectAtIndex:);
 
 - (id) keyCell
 {
-  // TODO
-  return nil;
+  return _keyCell;
+}
+
+- (void) setKeyCell: (NSCell *)aCell 
+{
+  BOOL isValid;
+  int row, column;
+
+  isValid = [self getRow: &row  column: &column  ofCell: aCell];
+
+  if (isValid == YES)
+    {
+      ASSIGN (_keyCell, aCell);
+    }
 }
 
 - (id) nextText
@@ -2543,12 +2566,21 @@ static SEL getSel = @selector(objectAtIndex:);
 
 - (void) keyDown: (NSEvent *)theEvent;
 {
-  /*  unsigned int flags = [theEvent modifierFlags];
-      unsigned int key_code = [theEvent keyCode];*/
-
+  //  unsigned int flags = [theEvent modifierFlags];
+  unsigned int key_code = [theEvent keyCode];
+  
   // TODO
   // Selecting (not-editable, not-selectable cells) with the keyboard
-  NSLog (@"NSMatrix -keyDown:");
+  //  NSLog (@"NSMatrix -keyDown:");
+
+  switch (key_code)
+    {
+    case 0x000d: // Enter
+      [self selectText: self];
+      break;
+    default:
+      break;
+    }
 
   [super keyDown: theEvent];
 }
