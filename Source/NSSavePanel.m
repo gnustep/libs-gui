@@ -77,6 +77,7 @@ static BOOL _gs_display_reading_progress = NO;
 - (void) _selectCellName: (NSString *)title;
 - (void) _setupForDirectory: (NSString *)path file: (NSString *)name;
 - (BOOL) _shouldShowExtension: (NSString *)extension isDir: (BOOL *)isDir;
+- (void) _windowResized: (NSNotification*)n;
 @end /* NSSavePanel (PrivateMethods) */
 
 @implementation NSSavePanel (_PrivateMethods)
@@ -87,6 +88,12 @@ static BOOL _gs_display_reading_progress = NO;
   NSImage *image;
   NSRect r;
   id lastKeyView;
+
+  // Track window resizing so we can change number of browser columns.
+  [[NSNotificationCenter defaultCenter] addObserver: self
+    selector: @selector(_windowResized:)
+    name: NSWindowDidResizeNotification
+    object: self];
 
   //
   // WARNING: We create the panel sized (308, 317), which is the 
@@ -125,6 +132,7 @@ static BOOL _gs_display_reading_progress = NO;
   [_browser setTag: NSFileHandlingPanelBrowser];
   [_browser setAction:@selector(_selectText:)];
   [_browser setTarget:self];
+  [_browser setMinColumnWidth: 140];
   [_topView addSubview: _browser];
   [_browser release];
 
@@ -475,6 +483,11 @@ selectCellWithString: (NSString*)title
   return YES;
 }
 
+- (void) _windowResized: (NSNotification*)n
+{
+  [_browser setMaxVisibleColumns: [_browser frame].size.width / 140];
+}
+
 @end /* NSSavePanel (PrivateMethods) */
 
 //
@@ -530,8 +543,9 @@ selectCellWithString: (NSString*)title
 }
 //
 
--(void) dealloc
+- (void) dealloc
 {
+  [[NSNotificationCenter defaultCenter] removeObserver: self];
   TEST_RELEASE (_fullFileName);
   TEST_RELEASE (_directory);  
   TEST_RELEASE (_requiredFileType);

@@ -3047,7 +3047,8 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 	      if (_f.is_miniaturized)
 		{
 		  /* Window Manager just deminiaturized us */
-		  [self _didDeminiaturize: self];
+		  [self deminiaturize: self];
+		  //[self _didDeminiaturize: self];
 		}
 	      if ([NSApp isHidden])
 		{
