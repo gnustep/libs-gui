@@ -90,16 +90,25 @@ static NSLock *_gnustep_color_list_lock = nil;
 
   while ((dir = (NSString *)[e nextObject])) 
     {
+      BOOL flag;
+
       dir = [dir stringByAppendingPathComponent: @"Colors"];
+      if (![fm fileExistsAtPath: dir isDirectory: &flag] || !flag)
+        {
+	  // Only process existing directories
+	  continue;
+	}
+
       de = [fm enumeratorAtPath: dir];
       while ((file = [de nextObject])) 
 	{
 	  if ([[file pathExtension] isEqualToString: @"clr"])
 	    {
 	      file = [file stringByDeletingPathExtension];
-	      newList = AUTORELEASE ([[NSColorList alloc] initWithName: file
-							      fromFile: dir]);
+	      newList = [[NSColorList alloc] initWithName: file
+					     fromFile: dir];
 	      [_gnustep_available_color_lists addObject: newList];
+	      RELEASE(newList);
 	    }
 	}
     }  
