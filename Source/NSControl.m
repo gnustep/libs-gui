@@ -484,28 +484,6 @@ static Class actionCellClass;
   return [[self selectedCell] acceptsFirstResponder];
 }
 
-- (BOOL) becomeFirstResponder
-{
-  if ([[self selectedCell] showsFirstResponder])
-    {
-      // As this may add a dotted border round our cell, redraw. 
-      [self setNeedsDisplay: YES];
-    }
-
-  return YES;
-}
-
-- (BOOL) resignFirstResponder
-{
-  if ([[self selectedCell] showsFirstResponder])
-    {
-      // As this may remove the dotted border round our cell, redraw. 
-      [self setNeedsDisplay: YES];
-    }
-
-  return YES;
-}
-
 /*
  * Tracking the Mouse
  */
