@@ -1,4 +1,18 @@
-2000-07-31  Fred Kiefer <FredKiefer@gmx.de>
+2001-08-01  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSEvent.h
+	Decalre to support copying.
+	Added event type NSScrollWheel and mask NSScrollWheelMask.
+	Declare methods mouseLocation and deltaX...deltaZ.
+	* Source/NSEvent.m
+	Added [copyWithZone:], [mouseLocation] and dummy implemntation of
+	[deltaX], [deltaY] and [deltaZ].
+	* Headers/gnustep/gui/NSFontPanel.h
+	Declare method [reloadDefaultFontFamilies].
+	* Source/NSFontPanel.m
+	Implement [reloadDefaultFontFamilies] and use it in [init].
+	
+2001-07-31  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSDrawer.h
 	New header file for NSDrawer class.
@@ -45,7 +59,7 @@
 	[NSWindow initWithContentRect:styleMask:backing:defer:screen:] and
 	[NSWindow setFrame:]: constrain removed
 
-2000-07-28  Fred Kiefer <FredKiefer@gmx.de>
+2001-07-28  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSUserInterfaceValidation.h
 	New header file with protocols NSValidatedUserInterfaceItem and
@@ -98,7 +112,7 @@
         * Tools/GSspell.m implemented a working spell checker which depends
         on the ispell spell checker.
 
-2000-07-23  Fred Kiefer <FredKiefer@gmx.de>
+2001-07-23  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSCursor.h
 	Prefixed ivars with underscore. Added missing method
@@ -348,7 +362,7 @@ Sat Jun 16 14:53:05 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSMatrix.m (-updateCell:): Call abortEditing.
 
-2000-06-16  Fred Kiefer <FredKiefer@gmx.de>
+2001-06-16  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSImage.m
 	[compositeToPoint:fromRect:operation:] Move the drawing rectangle
@@ -414,7 +428,7 @@ Sun Jun 10 20:29:08 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 	enabled, we print out a message saying the the attribute requested
 	is not supported.
 	
-2000-06-10  Fred Kiefer <FredKiefer@gmx.de>
+2001-06-10  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSComboBox.m
 	Added [setDelegate:] method.
@@ -446,7 +460,7 @@ Sat Jun  9 02:54:37 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 	argument to the macro to prevent warning/problems with new
 	compilers.  Updated all calling code.
 
-2000-06-08  Fred Kiefer <FredKiefer@gmx.de>
+2001-06-08  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBitmapImageRep.m
 	Moved code to create the _imageData into
@@ -455,7 +469,7 @@ Sat Jun  9 02:54:37 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 	Implemented canInitWithData:, imageUnfilteredFileTypes
 	and imageUnfilteredPasteboardTypes. 
 	
-2000-06-07  Fred Kiefer <FredKiefer@gmx.de>
+2001-06-07  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSImageRep.m
 	Corrected some methods on this class so that subclasses may use
@@ -466,7 +480,7 @@ Sat Jun  9 02:54:37 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 	* Source/NSEPSImageRep.m
 	Added some basic implementation for this class.
 	
-2000-06-07  Fred Kiefer <FredKiefer@gmx.de>
+2001-06-07  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextAttachment.m 
 	Removed the copyWithZone: method as this has been fixed on
@@ -485,7 +499,7 @@ Sat Jun  9 02:54:37 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 	* Source/NSBox.m ([NSBox -minimumSize]): New method.
 	* Headers/gnustep/gui/NSBox.h: Declare it.
 
-2000-06-06  Fred Kiefer <FredKiefer@gmx.de>
+2001-06-06  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextAttachment.m 
 	Added copyWithZone: to NSTextAttachment to let it work as a
@@ -499,7 +513,7 @@ Wed Jun  6 05:38:28 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 	* Source/NSPopUpButtonCell.m ([-stringValue]): Added - this method
 	was missing (problem found by Gregory Casamento).
 
-2000-06-05  Fred Kiefer <FredKiefer@gmx.de>
+2001-06-05  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/NSTextAttachment.h
 	* Source/NSTextAttachment.m 
@@ -539,14 +553,14 @@ Wed Jun  6 05:38:28 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 	-_deactivateVisibleWindow:]): New method.
 	([GSNibContainer -awakeWithContext:]): Use it when app is not active.
 	
-2000-05-21  Fred Kiefer <FredKiefer@gmx.de>
+2001-05-21  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSFont.m
 	Cache all the fonts so we can returend a cached on if the same
 	font is required twice, this makes some of the caching in xdps
 	obsolte. 
 	
-2000-05-19  Fred Kiefer <FredKiefer@gmx.de>
+2001-05-19  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSBezierPath.h
 	* Source/NSBezierPath.m
@@ -558,7 +572,7 @@ Wed Jun  6 05:38:28 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 	Integrated patches from Frederic <frederic.chauvin@noos.fr> to
 	seed up drawing.
 	
-2000-05-13  Fred Kiefer <FredKiefer@gmx.de>
+2001-05-13  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSPasteboard.h
 	* Source/externs.m
@@ -627,7 +641,7 @@ Wed Jun  6 05:38:28 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 	([NSBrowser -moveRight:]): does nothing if multiple cells are selected
 	or if the cell is a leaf.
 
-2000-05-12  Fred Kiefer <FredKiefer@gmx.de>
+2001-05-12  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSFont.h
 	* Source/NSFontManager.m
@@ -656,7 +670,7 @@ Wed Jun  6 05:38:28 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 	-establishConnection]): Test for non-NULL sel (patch suggested by
 	Raphael Sebbe <raphael_sebbe@mac.com>).
 
-2000-05-08  Fred Kiefer <FredKiefer@gmx.de>
+2001-05-08  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSTabViewItem.h
 	* Source/NSTabViewItem.m
@@ -675,7 +689,7 @@ Wed Jun  6 05:38:28 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 	currentEvent. Fix to prevent theEvent to become nil.
 	Do not allow empty selection in NSRadioModeMatrix.
 
-2000-05-05  Fred Kiefer <FredKiefer@gmx.de>
+2001-05-05  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/AppKit/GSMethodTable.h: 
 	* Headers/gnustep/gui/NSGraphics.h
@@ -704,7 +718,7 @@ Wed Jun  6 05:38:28 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Documentation/gsdoc/NSWindow.gsdoc: Docs for [de]miniaturize.
 
-2000-05-01  Fred Kiefer <FredKiefer@gmx.de>
+2001-05-01  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSFont.h
 	* Source/NSFont.m
@@ -717,14 +731,14 @@ Wed Jun  6 05:38:28 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 	* Source/NSPanel.m
 	Added missing functions and some dummy implementations.
 	
-2000-04-30  Fred Kiefer <FredKiefer@gmx.de>
+2001-04-30  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSGraphicsContext.m
 	Implemented the button, bezel and groove drawing with
 	NSDrawTiledRects. The old implemention is still here. It should be
 	deleted later on.
 	
-2000-04-30  Fred Kiefer <FredKiefer@gmx.de>
+2001-04-30  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/GSMethodTable.h
 	* Headers/gnustep/gui/NSGraphics.h
@@ -739,7 +753,7 @@ Wed Jun  6 05:38:28 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 	Moved implementation of drawing functions from xgps
 	backend to here. Corrected some of them.
 	
-2000-04-28  Fred Kiefer <FredKiefer@gmx.de>
+2001-04-28  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSColor.m: 
 	Undid last change as this is now obsolete after Richards changes
