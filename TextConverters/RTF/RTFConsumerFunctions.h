@@ -61,6 +61,7 @@ void GSRTFgenericRTFcommand(void *ctxt, RTFcmd cmd);
 
 /* go, handle text */
 void GSRTFmangleText(void *ctxt, const char *text);
+void GSRTFunicode (void *ctxt, int uchar);
 
 /*
  * font functions
