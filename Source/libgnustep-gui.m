@@ -1,7 +1,7 @@
-/* 
-   NSScreen.h
+/*
+   libgnustep.m
 
-   Description...
+   Main initialization routine for the GNUstep GUI Library
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
@@ -28,37 +28,33 @@
    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */ 
 
-#ifndef _GNUstep_H_NSScreen
-#define _GNUstep_H_NSScreen
+#include <gnustep/gui/AppKit.h>
 
-#include <AppKit/stdappkit.h>
-#include <AppKit/TypesandConstants.h>
-#include <Foundation/NSDictionary.h>
+id NSApp;
 
-@interface NSScreen : NSObject
+char **NSArgv;
 
+//
+// The main entry point for X Windows
+//
+int
+GNUstepMain(int argc, char **argv)
 {
-  // Attributes
-  NSMutableDictionary *device_desc;
+	NSFontManager *fm;
 
-  // Reserved for backend use
-  void *be_screen_reserved;
+	// Create the global application object
+	NSApp = [[NSApplication alloc] init];
+
+	// Set the application default fonts
+	fm = [NSFontManager sharedFontManager];
+	[NSFont setUserFixedPitchFont: [fm fontWithFamily:@"Arial"
+		traits:0 weight:0 size:10]];
+	[NSFont setUserFont: [fm fontWithFamily:@"Times New Roman"
+		traits:0 weight:0 size:12]];
+
+	// Call the user's main
+	//user_main(0, NULL);
+
+	// Release the application
+	[NSApp release];
 }
-
-//
-// Creating NSScreen Instances
-//
-+ (NSScreen *)mainScreen;
-+ (NSScreen *)deepestScreen;
-+ (NSArray *)screens;
-
-//
-// Reading Screen Information
-//
-- (NSWindowDepth)depth;
-- (NSRect)frame;
-- (NSDictionary *)deviceDescription;
-
-@end
-
-#endif // _GNUstep_H_NSScreen

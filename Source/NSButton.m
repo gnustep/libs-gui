@@ -103,6 +103,14 @@ id MB_NSBUTTON_CLASS;
 }
 
 //
+// Identifying the Selected Cell 
+//
+- (id)selectedCell
+{
+  return cell;
+}
+
+//
 // Setting the State 
 //
 - (void)setState:(int)value
@@ -223,6 +231,7 @@ id MB_NSBUTTON_CLASS;
 
 - (void)highlight:(BOOL)flag
 {
+  [cell highlight: flag withFrame: bounds inView: self];
 }
 
 //
@@ -252,10 +261,14 @@ id MB_NSBUTTON_CLASS;
     NSApplication *theApp = [NSApplication sharedApplication];
     BOOL mouseUp, done;
     NSEvent *e;
-    unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask
-        | NSMouseMovedMask;
+    unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
+      NSMouseMovedMask | NSLeftMouseDraggedMask | NSRightMouseDraggedMask;
 
     NSDebugLog(@"NSButton mouseDown\n");
+
+    // If we are not enabled then ignore the mouse
+    if (![self isEnabled])
+      return;
 
     // capture mouse
     [[self window] captureMouse: self];

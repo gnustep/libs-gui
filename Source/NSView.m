@@ -31,6 +31,15 @@
 #include <gnustep/gui/NSView.h>
 #include <gnustep/gui/NSWindow.h>
 #include <gnustep/base/NSCoder.h>
+#include <gnustep/base/NSDictionary.h>
+#include <gnustep/base/NSThread.h>
+#include <gnustep/base/NSLock.h>
+
+//
+// Class variables
+//
+NSMutableDictionary *gnustep_gui_nsview_thread_dict;
+NSRecursiveLock *gnustep_gui_nsview_lock;
 
 // NSView notifications
 NSString *NSViewFrameChangedNotification;
@@ -52,15 +61,58 @@ NSString *NSViewFocusChangedNotification;
 
       // Initial version
       [self setVersion:1];
+
+      // Allocate dictionary for maintaining
+      // mapping of threads to focused views
+      gnustep_gui_nsview_thread_dict = [NSMutableDictionary dictionary];
+      // Create lock for serializing access to dictionary
+      gnustep_gui_nsview_lock = [[NSRecursiveLock alloc] init];
     }
 }
 
 //
 // Focusing
 //
+// +++ Really each thread should have a stack!
+//
++ (void)pushFocusView:(NSView *)focusView
+{
+  NSThread *current_thread = [NSThread currentThread];
+
+  // Obtain lock so we can edit the dictionary
+  [gnustep_gui_nsview_lock lock];
+
+  // If no context then remove from dictionary
+  if (!focusView)
+    {
+      [gnustep_gui_nsview_thread_dict removeObjectForKey: current_thread];
+    }
+  else
+    {
+      [gnustep_gui_nsview_thread_dict setObject: focusView 
+				      forKey: current_thread];
+    }
+
+  [gnustep_gui_nsview_lock unlock];
+}
+
++ (NSView *)popFocusView
+{}
+
 + (NSView *)focusView
 {
-  return nil;
+  NSThread *current_thread = [NSThread currentThread];
+  NSView *current_view = nil;
+
+  // Get focused view for current thread
+  [gnustep_gui_nsview_lock lock];
+
+  // current_view is nil if no focused view
+  current_view = [gnustep_gui_nsview_thread_dict objectForKey: current_thread];
+
+  [gnustep_gui_nsview_lock unlock];
+
+  return current_view;
 }
 
 //
@@ -102,7 +154,7 @@ NSString *NSViewFocusChangedNotification;
   disable_autodisplay = NO;
   needs_display = YES;
   post_frame_changes = NO;
-  autoresize_subviews = NO;
+  autoresize_subviews = YES;
 
   return self;
 }
@@ -151,7 +203,7 @@ NSString *NSViewFocusChangedNotification;
 
 - (void)addSubview:(NSView *)aView
 	positioned:(NSWindowOrderingMode)place
-relativeTo:(NSView *)otherView
+	relativeTo:(NSView *)otherView
 {
   // Not a NSView --then forget it
   if (![aView isKindOfClass:[NSView class]]) return;
@@ -313,8 +365,13 @@ relativeTo:(NSView *)otherView
 
 - (void)setFrame:(NSRect)frameRect
 {
+  NSSize old_size = bounds.size;
+
   frame = frameRect;
   bounds.size = frame.size;
+
+  // Resize subviews
+  [self resizeSubviewsWithOldSize: old_size];
 }
 
 - (void)setFrameOrigin:(NSPoint)newOrigin
@@ -327,8 +384,13 @@ relativeTo:(NSView *)otherView
 
 - (void)setFrameSize:(NSSize)newSize
 {
+  NSSize old_size = bounds.size;
+
   frame.size = newSize;
   bounds.size = newSize;
+
+  // Resize subviews
+  [self resizeSubviewsWithOldSize: old_size];
 }
 
 //
@@ -387,6 +449,53 @@ relativeTo:(NSView *)otherView
 //
 // Converting Coordinates 
 //
+- (NSRect)convertRectToWindow:(NSRect)r
+{
+  NSRect f, t, a;
+  id s;
+
+  a = r;
+  f = [self frame];
+  s = [self superview];
+  // climb up the superview chain
+  while (s)
+    {
+      t = [s frame];
+      // translate frame
+      f.origin.x += t.origin.x;
+      f.origin.y += t.origin.y;
+      s = [s superview];
+    }
+  a.origin.x += f.origin.x;
+  a.origin.y += f.origin.y;
+
+  return a;
+}
+
+- (NSPoint)convertPointToWindow:(NSPoint)p
+{
+  NSRect f, t;
+  NSPoint a;
+  id s;
+
+  a = p;
+  f = [self frame];
+  s = [self superview];
+  // climb up the superview chain
+  while (s)
+    {
+      t = [s frame];
+      // translate frame
+      f.origin.x += t.origin.x;
+      f.origin.y += t.origin.y;
+      s = [s superview];
+    }
+  a.x += f.origin.x;
+  a.y += f.origin.y;
+
+  return a;
+}
+
 - (NSRect)centerScanRect:(NSRect)aRect
 {
   return NSZeroRect;
@@ -395,17 +504,58 @@ relativeTo:(NSView *)otherView
 - (NSPoint)convertPoint:(NSPoint)aPoint
 	       fromView:(NSView *)aView
 {
-  return NSZeroPoint;
+  NSPoint p, q;
+  NSRect r;
+
+  // Must belong to the same window
+  if (([self window] != [aView window]) && (aView))
+    return NSZeroPoint;
+
+  // if aView is nil
+  // then converting from window
+  // so convert from the content from the content view of the window
+  if (aView == nil)
+    return [self convertPoint: aPoint fromView:[[self window] contentView]];
+
+  // Convert the point to window coordinates
+  p = [aView convertPointToWindow: aPoint];
+
+  // Convert out origin to window coordinates
+  q = [self convertPointToWindow: bounds.origin];
+
+  NSLog(@"point convert: %f %f %f %f\n", p.x, p.y, q.x, q.y);
+
+  // now translate
+  p.x -= q.x;
+  p.y -= q.y;
+
+  return p;
 }
 
 - (NSPoint)convertPoint:(NSPoint)aPoint
 		 toView:(NSView *)aView
 {
-  NSPoint p;
+  NSPoint p, q;
+  NSRect r;
 
   // Must belong to the same window
   if (([self window] != [aView window]) && (aView))
     return NSZeroPoint;
+
+  // if aView is nil
+  // then converting to window
+  if (aView == nil)
+    return [self convertPointToWindow: aPoint];
+
+  // convert everything to window coordinates
+  p = [self convertPointToWindow: aPoint];
+  r = [aView bounds];
+  q = [aView convertPointToWindow: r.origin];
+  NSLog(@"point convert: %f %f %f %f\n", p.x, p.y, q.x, q.y);
+
+  // now translate
+  p.x -= q.x;
+  p.y -= q.y;
 
   return p;
 }
@@ -472,7 +622,27 @@ relativeTo:(NSView *)otherView
 // Resizing Subviews 
 //
 - (void)resizeSubviewsWithOldSize:(NSSize)oldSize
-{}
+{
+  id e, o;
+
+  // Are we suppose to resize our subviews?
+  if (![self autoresizesSubviews])
+    return;
+
+  e = [sub_views objectEnumerator];
+  o = [e nextObject];
+  while (o)
+    {
+      NSRect b = [o bounds];
+      NSSize old_size = b.size;
+
+      // Resize the subview
+      // Then tell it to resize its subviews
+      [o resizeWithOldSuperviewSize: oldSize];
+      [o resizeSubviewsWithOldSize: old_size];
+      o = [e nextObject];
+    }
+}
 
 - (void)setAutoresizesSubviews:(BOOL)flag
 {
@@ -520,10 +690,12 @@ relativeTo:(NSView *)otherView
 //
 - (void)lockFocus
 {
+  [[self class] pushFocusView: self];
 }
 
 - (void)unlockFocus
 {
+  [[self class] popFocusView];
 }
 
 //

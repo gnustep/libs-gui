@@ -1,7 +1,7 @@
 /* 
-   NSScreen.h
+   NSMenuCell.h
 
-   Description...
+   Cell class for menu items
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
@@ -28,37 +28,53 @@
    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */ 
 
-#ifndef _GNUstep_H_NSScreen
-#define _GNUstep_H_NSScreen
+#ifndef _GNUstep_H_NSMenuCell
+#define _GNUstep_H_NSMenuCell
 
 #include <AppKit/stdappkit.h>
-#include <AppKit/TypesandConstants.h>
-#include <Foundation/NSDictionary.h>
+#include <AppKit/NSButtonCell.h>
+#include <Foundation/NSCoder.h>
 
-@interface NSScreen : NSObject
+@class NSMenu;
+
+@interface NSMenuCell : NSButtonCell <NSCoding>
 
 {
   // Attributes
-  NSMutableDictionary *device_desc;
+  NSString *key_equivalent;
+  NSMenu *sub_menu;
+  unsigned int menu_identifier;
 
-  // Reserved for backend use
-  void *be_screen_reserved;
+  // Reserved for back-end use
+  void *be_mc_reserved;
 }
 
 //
-// Creating NSScreen Instances
+// WIN32 methods
 //
-+ (NSScreen *)mainScreen;
-+ (NSScreen *)deepestScreen;
-+ (NSArray *)screens;
+- (unsigned int)menuIdentifier;
+- (void)setMenuIdentifier:(unsigned int)theID;
 
 //
-// Reading Screen Information
+// Checking for a Submenu 
 //
-- (NSWindowDepth)depth;
-- (NSRect)frame;
-- (NSDictionary *)deviceDescription;
+- (BOOL)hasSubmenu;
+- (NSMenu *)submenu;
+- (void)setSubmenu:(NSMenu *)aMenu;
+
+//
+// Managing User Key Equivalents 
+//
++ (void)setUsesUserKeyEquivalents:(BOOL)flag;
++ (BOOL)usesUserKeyEquivalents;
+- (NSString *)userKeyEquivalent;
+
+//
+// NSCoding protocol
+//
+- (void)encodeWithCoder:aCoder;
+- initWithCoder:aDecoder;
 
 @end
 
-#endif // _GNUstep_H_NSScreen
+#endif // _GNUstep_H_NSMenuCell

@@ -94,7 +94,7 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
 
     for (i = 0;i < num_rows; ++i)
 	{
-	    aRow = [NSMutableArray arrayWithCapacity: j];
+	    aRow = [NSMutableArray arrayWithCapacity: num_cols];
 	    [rows addObject: aRow];
 	    for (j = 0;j < num_cols; ++j)
 		{
