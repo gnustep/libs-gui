@@ -738,6 +738,31 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
 @implementation NSFontPanel (NSBrowserDelegate)
 
+
+static int score_difference(int weight1, int traits1,
+			    int weight2, int traits2)
+{
+  int score, t;
+
+  score = (weight1 - weight2);
+  score = 10 * score * score;
+
+  t = traits1 ^ traits2;
+
+  if (t & NSFixedPitchFontMask) score += 1000;
+  if (t & NSCompressedFontMask) score += 150;
+  if (t & NSPosterFontMask) score += 200;
+  if (t & NSSmallCapsFontMask) score += 200;
+  if (t & NSCondensedFontMask) score += 150;
+  if (t & NSExpandedFontMask) score += 150;
+  if (t & NSNarrowFontMask) score += 150;
+  if (t & NSBoldFontMask) score += 20;
+  if (t & NSItalicFontMask) score += 45;
+
+  return score;
+}
+
+
 - (void) _familySelectionChanged: (id)sender
 {
   NSFontManager *fm = [NSFontManager sharedFontManager];
@@ -749,16 +774,41 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   ASSIGN(_faceList, [fm availableMembersOfFontFamily: 
 			  [_familyList objectAtIndex: row]]);
   _family = row;
-	
-  // Select a face with similar properties
+
+  // Select a face with the same properties
   for (i = 0; i < [_faceList count]; i++)
     {
       NSArray *font_info = [_faceList objectAtIndex: i];
-	  
-      if (([[font_info objectAtIndex: 2]  intValue] == _weight) &&
-	  ([[font_info objectAtIndex: 3]  unsignedIntValue] == _traits))
-      break;
+
+      if (([[font_info objectAtIndex: 2] intValue] == _weight)
+	  && ([[font_info objectAtIndex: 3] unsignedIntValue] == _traits))
+	break;
     }
+
+  // Find the face that differs the least from what we want
+  if (i == [_faceList count])
+    {
+      int best, best_score, score;
+
+      best_score = 1e6;
+      best = -1;
+
+      for (i = 0; i < [_faceList count]; i++)
+	{
+	  NSArray *font_info = [_faceList objectAtIndex: i];
+	  score = score_difference(_weight, _traits,
+	    [[font_info objectAtIndex: 2] intValue],
+	    [[font_info objectAtIndex: 3] unsignedIntValue]);
+	  if (score < best_score)
+	    {
+	      best = i;
+	      best_score = score;
+	    }
+	}
+      if (best != -1)
+	i = best;
+    }
+
   if (i == [_faceList count])
     i = 0;
 

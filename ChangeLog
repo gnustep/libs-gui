@@ -1,4 +1,11 @@
-2002-09-29  Richard Frith-Macdonald <rfm@gnu.org>
+2002-09-21 17:48  Alexander Malmberg  <alexander@malmberg.org>
+
+	* Source/NSFontPanel.m (-_familySelectionChanged:, score_difference):
+	If an exact match for the wanted weight and traits can't be found,
+	score all faces in the new family and select the one that differs
+	the least.
+
+2002-09-19  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GNUmakefile: Set flags to generate documentation using
 	templates.
