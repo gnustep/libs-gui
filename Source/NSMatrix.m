@@ -1000,7 +1000,7 @@ static SEL getSel;
 
 - (void) selectAll: (id)sender
 {
-  unsigned	i, j;
+  int i, j;
 
   /* Can't select all if only one can be selected.  */
   if (_mode == NSRadioModeMatrix)
