@@ -123,15 +123,12 @@
 
 - (void) helpRequested: (NSEvent *)theEvent
 {
-  if([[NSHelpManager sharedHelpManager]
-       showContextHelpForObject: self
-       locationHint: [theEvent locationInWindow]])
-    {
-      [NSHelpManager setContextHelpModeActive: NO];
-    }
-  else
-  if (next_responder)
-    return [next_responder helpRequested: theEvent];
+  if(![[NSHelpManager sharedHelpManager]
+	showContextHelpForObject: self
+	locationHint: [theEvent locationInWindow]])
+    if (next_responder)
+      return [next_responder helpRequested: theEvent];
+  [NSHelpManager setContextHelpModeActive: NO];
 }
 
 - (void) keyDown: (NSEvent *)theEvent

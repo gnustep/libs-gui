@@ -42,10 +42,31 @@
 
 - (NSAttributedString*) contextHelpForKey: (NSString*) key
 {
-  // FIXME
-  /* There are some issues here. I still have to understand how
-     does Help.plist work. */
-  NSLog(@"contextHelpForKey not implemented yet.");
+  id helpFile = nil;
+  NSDictionary *contextHelp = 
+    [[NSDictionary dictionaryWithContentsOfFile: 
+		    [self pathForResource: @"Help" ofType: @"plist"]] retain];
+
+  if(contextHelp)
+    {
+      helpFile = [contextHelp objectForKey: key];
+    }
+
+  if(helpFile)
+    {
+      return [NSUnarchiver unarchiveObjectWithData:
+			     [helpFile objectForKey: @"NSHelpRTFContents"]];
+    }
+  else
+    {
+      helpFile = [self 
+		   pathForResource: key 
+		   ofType: @"rtf" 
+		   inDirectory: @"Help"];
+      return [[[NSAttributedString alloc] initWithPath: (NSString *)helpFile 
+				 documentAttributes: nil] autorelease];
+    }
+
   return nil;
 }
 
@@ -55,10 +76,19 @@
 
 - (void) showHelp: (id)sender
 {
-  // FIXME
-  /* This is obviously very restrictive. The ideal would be to check
-     the Resources first, but this can be done later. */
-  [[NSWorkspace sharedWorkspace] openFile: @"Help.rtf"];
+  NSBundle *mb = [NSBundle mainBundle];
+  NSDictionary *info = [mb infoDictionary];
+  NSString *help;
+
+  help = [info objectForKey: @"GSHelpContentsFile"];
+
+  if(!help)
+    {
+      help = [info objectForKey: @"NSExecutable"];
+      // If there's no specification, we look for a file named "appname.rtf"
+      [[NSWorkspace sharedWorkspace] 
+	openFile: [mb pathForResource: help ofType: @"rtf"]];
+    }
 }
 
 - (void) activateContextHelpMode: (id)sender
@@ -134,8 +164,9 @@ static BOOL _gnu_contextHelpActive = NO;
      loaded. 
      If it's nil, there's no help for this object, and that's what we return.
      If it's an NSString, it's the path for the help, and we ask NSBundle
-     for it (This part has to be written, so:) */
-  // FIXME
+     for it. */
+  // FIXME: Check this implementation when NSResponders finally store what
+  // their context help is.
      
   id hc = NSMapGet(contextHelpTopics, object);
   if(hc)
@@ -143,7 +174,13 @@ static BOOL _gnu_contextHelpActive = NO;
       if(![hc isKindOfClass: [NSAttributedString class]])
 	{
 	  hc = [[NSBundle mainBundle] contextHelpForKey: hc];
-	  NSMapInsert(contextHelpTopics, object, hc);
+	  /* We store the retrieved value, or remove the key from
+	     the table if nil returns (note that it's OK if the key
+	     does not exist already. */
+	  if (hc)
+	    NSMapInsert(contextHelpTopics, object, hc);
+	  else 	    
+	    NSMapRemove(contextHelpTopics, object);
 	}
     }
   return hc;

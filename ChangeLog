@@ -1,3 +1,31 @@
+1999-09-10  Pedro Ivo Andrade Tavares  <ptavares@iname.com>
+
+        * NSResponder.m ([NSResponder -helpRequested:]): 
+        Now the application exits context help mode regardless of whether
+        help was shown or not. Without it, the app would do nothing while
+        the user didn't click on a control with help, and would appear
+	broken.
+        * NSHelpManager.m
+        ([NSBundle -contextHelpForKey:]): implemented. See below.
+        ([NSApplication -showHelp:]): implemented. See below.
+        ([NSHelpManager -contextHelpForObject:]): minor change.
+
+        Context Help for an application is stored in a file called
+	Help.plist. Inside it are several dictionaries, each with the
+	name of what originally was an RTF or RTFD file. Inside each of
+	these dicts, a key called NSHelpRTFContents contains an
+	NSArchived NSAttributedString from the original file. NSBundle
+	receives the original RTF file name, and retrieves the
+	NSAttributedString from this file. Thanks to Richard
+        Frith-MacDonald for unearthing the format of Help.plist.
+
+        I've implemented an extension, in that NSBundle also looks inside
+	an directory called Help for a file of this name.
+
+        NSApplication -showHelp: asks the workspace to open in the default
+        editor a file of name "appname.rtf", or what is in the key 
+        GSHelpContentsFile in the Info-gnustep.plist file.
+
 Sat Sep 11 11:20:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Headers/AppKit/NSCell.h: Removed ([-_drawImage:inFrame:])
