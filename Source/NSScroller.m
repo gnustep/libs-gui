@@ -305,26 +305,38 @@ static NSColor *scrollBarColor = nil;
   if (_arrowsPosition == NSScrollerArrowsNone)
     {
       if (size >= scrollerWidth + 2)
-	_usableParts = NSAllScrollerParts;
+	{
+	  _usableParts = NSAllScrollerParts;
+	}
       else
-	_usableParts = NSNoScrollerParts;
+	{
+	  _usableParts = NSNoScrollerParts;
+	}
     }
   else
     {
       if (size >= 3 * scrollerWidth + 4)
-	_usableParts = NSAllScrollerParts;
+	{
+	  _usableParts = NSAllScrollerParts;
+	}
       else if (size >= 2 * scrollerWidth + 3)
-	_usableParts = NSOnlyScrollerArrows;
+	{
+	  _usableParts = NSOnlyScrollerArrows;
+	}
       else
-	_usableParts = NSNoScrollerParts;
+	{
+	  _usableParts = NSNoScrollerParts;
+	}
     }
 }
 
 - (void) setEnabled: (BOOL)flag
 {
   if (_isEnabled == flag)
-    return;
-
+    {
+      return;
+    }
+  
   _isEnabled = flag;
   _cacheValid = NO;
   [self setNeedsDisplay: YES];
@@ -333,8 +345,10 @@ static NSColor *scrollBarColor = nil;
 - (void) setArrowsPosition: (NSScrollArrowPosition)where
 {
   if (_arrowsPosition == where)
-    return;
-
+    {
+      return;
+    }
+  
   _arrowsPosition = where;
   _cacheValid = NO;
   [self setNeedsDisplay: YES];
@@ -408,9 +422,13 @@ static NSColor *scrollBarColor = nil;
   [super setFrame: frameRect];
 
   if (_isHorizontal)
-    _arrowsPosition = NSScrollerArrowsMinEnd;
+    {
+      _arrowsPosition = NSScrollerArrowsMinEnd;
+    }
   else
-    _arrowsPosition = NSScrollerArrowsMaxEnd;
+    {
+      _arrowsPosition = NSScrollerArrowsMaxEnd;
+    }
 
   _hitPart = NSScrollerNoPart;
   _cacheValid = NO;
@@ -864,7 +882,7 @@ static NSColor *scrollBarColor = nil;
 
 	  /* calc the slot Height */
 	  slotHeight = height - (_arrowsPosition == NSScrollerArrowsNone
-	    ?  0 : buttonsSize);
+				 ?  0 : buttonsSize);
 	  knobHeight = _knobProportion * slotHeight;
 	  knobHeight = (float)floor(knobHeight);
 	  if (knobHeight < buttonsWidth)
@@ -876,7 +894,8 @@ static NSColor *scrollBarColor = nil;
 
 	  /* calc actual position */
 	  y += knobPosition + (_arrowsPosition == NSScrollerArrowsMaxEnd
-	    || _arrowsPosition == NSScrollerArrowsNone ?  0 : buttonsSize);
+			       || _arrowsPosition == NSScrollerArrowsNone 
+			       ?  0 : buttonsSize);
 	  height = knobHeight;
 	  width = buttonsWidth;
 	  break;
