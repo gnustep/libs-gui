@@ -845,13 +845,18 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 @end /* NSMenu (GMArchiverMethods) */
 
+/* This class is special - to avoid having the cell encoded we encode 
+   it directly.  Perhaps it would be wiser to do differently. */
 @implementation NSPopUpButton (GMArchiverMethods)
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
-  [archiver encodeBOOL:[self pullsDown] withName:@"pullsDown"];
+  [archiver encodeBOOL:     [self pullsDown] withName: @"pullsDown"];
+  [archiver encodeBOOL:     [self isEnabled] withName: @"isEnabled"];
+  [archiver encodeInt:      [self tag]       withName: @"tag"];
+  [archiver encodeObject:   [self target]    withName: @"target"];
+  [archiver encodeSelector: [self action]    withName: @"action"];
   
-#if 1
   /* OUCH! This code crashes the translator; probably we interfere somehow with
      the way NSPopUpButton is handled by the NeXT's NIB code. Sorry, the
      popup buttons cannot be handled by the convertor! */
@@ -859,53 +864,60 @@ void __dummy_GMAppKit_functionForLinking() {}
   //[archiver encodeString:[self titleOfSelectedItem] withName:@"selectedItem"];
   //[archiver encodeString:[self title] withName:@"selectedItem"];
   //[super encodeWithModelArchiver:archiver];
-#endif
-  [archiver encodeRect:[self frame] withName:@"frame"];
+
+  [archiver encodeRect: [self frame] withName:@"frame"];
 }
 
 + (id)createObjectForModelUnarchiver:(GMUnarchiver*)unarchiver
 {
-  NSRect rect = [unarchiver decodeRectWithName:@"frame"];
-  NSPopUpButton *popup = \
-    [[[NSPopUpButton allocWithZone:[unarchiver objectZone]]
-                    initWithFrame:rect
-                        pullsDown:[unarchiver decodeBOOLWithName:@"pullsDown"]]
-    autorelease];
-  if (!popup)
-    NSLog (@"cannot create the requested view!");
+  NSRect         rect;
+  NSPopUpButton *popup;
+  BOOL           pullsDown;
 
+  rect      = [unarchiver decodeRectWithName: @"frame"];
+  pullsDown = [unarchiver decodeBOOLWithName: @"pullsDown"];
+
+  popup = [NSPopUpButton allocWithZone: [unarchiver objectZone]];
+  popup = [popup initWithFrame: rect pullsDown: pullsDown];
+  AUTORELEASE (popup);
+  
   return popup;
 }
 
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
 {
-  /* Check the following: the program simply crashes if there's nothing in the
-     model file */
-
-  int i, count;
-  NSMutableArray* decodedItems
-      = [unarchiver decodeArrayWithName:@"itemArray"];
-
-  self = [super initWithModelUnarchiver:unarchiver];
-
-  if (decodedItems) {
-      for (i = 0, count = [decodedItems count]; i < count; i++) {
+  int      i, count;
+  NSString *string;
+  NSArray  *decodedItems;
+  
+  decodedItems = [unarchiver decodeArrayWithName: @"itemArray"];
+  
+  if (decodedItems) 
+    {
+      count = [decodedItems count]; 
+      for (i = 0; i < count; i++) 
+	{
 	  id item = [decodedItems objectAtIndex:i];
 	  id myItem;
-	  
-	  [self addItemWithTitle:[item title]];
+      
+	  [self addItemWithTitle: [item title]];
 	  myItem = [self itemAtIndex:i];
-	  [myItem setTarget:[item target]];
-	  [myItem setAction:[item action]];
-	  [myItem setEnabled:[item isEnabled]];
-	  [myItem setTag:[item tag]];
-	  [myItem setKeyEquivalent:[item keyEquivalent]];
-      }
-  }
+	  [myItem setTarget:        [item target]];
+	  [myItem setAction:        [item action]];
+	  [myItem setEnabled:       [item isEnabled]];
+	  [myItem setTag:           [item tag]];
+	  [myItem setKeyEquivalent: [item keyEquivalent]];
+	}
+    }
+  
+  string = [unarchiver decodeStringWithName: @"selectedItem"];
+  [self selectItemWithTitle: string];
 
-  [self selectItemWithTitle:[unarchiver decodeStringWithName:@"selectedItem"]];
-  [self synchronizeTitleAndSelectedItem];
-
+  [self setEnabled: [unarchiver decodeBOOLWithName:     @"isEnabled"]];
+  [self setTag:     [unarchiver decodeIntWithName:      @"tag"]];
+  [self setTarget:  [unarchiver decodeObjectWithName:   @"target"]];
+  [self setAction:  [unarchiver decodeSelectorWithName: @"action"]];
+  
   return self;
 }
 
