@@ -345,7 +345,7 @@ static NSCell* tileCell = nil;
 - (void) drawRect: (NSRect)rect
 {
   NSColor *c = [[self window] backgroundColor];
-
+  
   [c set];
   NSRectFill(rect);
 }
@@ -3440,7 +3440,9 @@ resetCursorRectsForView(NSView *theView)
   r.origin = NSZeroPoint;
   r.size = aSize;
   if (_contentView)
-    [_contentView setFrame: r];
+    {
+      [_contentView setFrame: r];
+    }
 }
 
 - (void) _setVisible: (BOOL)flag

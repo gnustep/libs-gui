@@ -3120,12 +3120,18 @@ other than copy/paste or dragging. */
     return;
 
   [_textStorage beginEditing];
+
   if (_tf.is_rich_text)
-    [_textStorage replaceCharactersInRange: aRange
-		  withAttributedString: attrString];
+    {
+      [_textStorage replaceCharactersInRange: aRange
+		    withAttributedString: attrString];
+    }
   else
-    [_textStorage replaceCharactersInRange: aRange
-		  withString: [attrString string]];
+    {
+      [_textStorage replaceCharactersInRange: aRange
+		    withString: [attrString string]];
+    }
+  
   [_textStorage endEditing];
   [self didChangeText];
 }
