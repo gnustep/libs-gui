@@ -1,3 +1,8 @@
+Thu Nov 23 09:47:21 2000  Georg Fleischmann <georg@vhf.de>
+
+	* Source/NSTabViewItem.m ([NSTabViewItem -setView:]):
+	TEST_RELEASE() removed, since ASSIGN() manages retain/release.
+
 2000-11-21  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSPrintOperation.h: 
