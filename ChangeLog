@@ -1,6 +1,15 @@
+2001-02-14  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/NSColorWell.m 
+	Added methods to handle target and action.
+	* Headers/gnustep/gui/NSColorWell.h: 
+	Added ivars for action and target.
+
+
 2001-02-13  Adam Fedor  <fedor@gnu.org>
 
 	* Version: 0.6.7
+
 
 2001-02-11  Adam Fedor  <fedor@gnu.org>
 
