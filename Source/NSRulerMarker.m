@@ -159,10 +159,14 @@
 
 - (void)drawRect:(NSRect)aRect
 {
-  // FIXME
   NSPoint aPoint;
   NSRect rect = [self imageRectInRuler];
 
+  aPoint = rect.origin;
+  if ([_rulerView isFlipped])
+    {
+      aPoint.y += rect.size.height;
+    }
   rect = NSIntersectionRect(aRect, rect);
   if (NSIsEmptyRect(rect))
     return;
