@@ -338,18 +338,51 @@
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodeValueOfObjCType: @encode(NSInterfaceStyle)
-			     at: &_interface_style];
-  [aCoder encodeObject: _menu];
+  if([aCoder allowsKeyedCoding])
+    {
+      if(_interface_style != NSNoInterfaceStyle)
+	{
+	  [aCoder encodeInt: _interface_style
+		  forKey: @"NSInterfaceStyle"];
+	}
+
+      if([self menu] != nil)
+	{
+	  [aCoder encodeObject: [self menu]
+		  forKey: @"NSMenu"];	  
+	}
+    }
+  else
+    {
+      [aCoder encodeValueOfObjCType: @encode(NSInterfaceStyle)
+	      at: &_interface_style];
+      [aCoder encodeObject: _menu];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   id obj;
 
-  [aDecoder decodeValueOfObjCType: @encode(NSInterfaceStyle)
-			       at: &_interface_style];
-  obj = [aDecoder decodeObject];
+  if([aDecoder allowsKeyedCoding])
+    {
+      if([aDecoder containsValueForKey: @"NSInterfaceStyle"])
+	{
+	  _interface_style = [aDecoder decodeIntForKey: @"NSInterfaceStyle"];
+	}
+
+      if([aDecoder containsValueForKey: @"NSMenu"])
+	{
+	  obj = [aDecoder decodeObjectForKey: @"NSMenu"];
+	}
+    }
+  else
+    {
+      [aDecoder decodeValueOfObjCType: @encode(NSInterfaceStyle)
+		at: &_interface_style];
+      obj = [aDecoder decodeObject];
+    }
+
   [self setMenu: obj];
 
   return self;

@@ -1,4 +1,21 @@
+2004-10-17 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSCell.m: Added code to [NSCell initWithCoder:] which 
+	properly retains the formatter and menu.
+	* Source/GSNibCompatibility.m: Changed comment.
+	* Source/NSResponder.m: Added keyed archiving implementation in
+	initWithCoder:
+	* Source/NSTextView.m: Improved implementation of keyed coding
+	for NSTextView.  Also preparing to add details discovered about
+	the flag settings.
+	* Source/NSView.m: Improved NSView keyed decoding.  Also made
+	sure that [super initWithCoder:] is called in that method for both
+	the keyed and non-keyed archiving (as it should be).
+	* Source/NSWindow.m: Added implementation of undo: and redo: to 
+	NSWindow.m.  
+
 2004-10-17 Adrian Robert <arobert@cogsci.ucsd.edu>
+
 	* Source/Functions.m (NSBestDepth): Check outarg exactMatch is
 	non-null before setting.
 	* Source/NSFont.m (getNSFont): Use defaultSize for 'fontSize'

@@ -53,6 +53,7 @@
 #include "AppKit/NSColor.h"
 #include "AppKit/NSColorList.h"
 #include "AppKit/NSCursor.h"
+#include "AppKit/NSDocumentController.h"
 #include "AppKit/NSDocument.h"
 #include "AppKit/NSDragging.h"
 #include "AppKit/NSFont.h"
@@ -4147,6 +4148,15 @@ resetCursorRectsForView(NSView *theView)
   return (void *)_windowNum;
 }
 
+- (void) undo: (id)sender
+{
+  [[[[NSDocumentController sharedDocumentController] currentDocument] undoManager] undo];
+}
+
+- (void) redo: (id)sender
+{
+  [[[[NSDocumentController sharedDocumentController] currentDocument] undoManager] redo];
+}
 @end
 
 /*

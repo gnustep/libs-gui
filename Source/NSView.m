@@ -3736,41 +3736,84 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [super encodeWithCoder: aCoder];
+  if([aCoder allowsKeyedCoding])
+    {
+      int vFlags = 0;
 
-  NSDebugLLog(@"NSView", @"NSView: start encoding\n");
-  [aCoder encodeRect: _frame];
-  [aCoder encodeRect: _bounds];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_rotated_from_base];
-  [aCoder encodeValueOfObjCType: @encode(BOOL)
-			     at: &_is_rotated_or_scaled_from_base];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_post_frame_changes];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autoresizes_subviews];
-  [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_autoresizingMask];
-  [aCoder encodeConditionalObject: [self nextKeyView]];
-  [aCoder encodeConditionalObject: [self previousKeyView]];
-  [aCoder encodeObject: _sub_views];
-  NSDebugLLog(@"NSView", @"NSView: finish encoding\n");
+      // encoding
+      [aCoder encodeConditionalObject: [self nextKeyView] 
+	      forKey: @"NSNextKeyView"];
+      [aCoder encodeConditionalObject: [self previousKeyView] 
+	      forKey: @"NSPreviousKeyView"];
+      [aCoder encodeObject: _sub_views 
+	      forKey: @"NSSubviews"];
+      [aCoder encodeRect: _frame 
+	      forKey: @"NSFrame"];
+
+      // autosizing masks.
+      vFlags = _autoresizingMask;
+
+      // add the autoresize flag.
+      if(_autoresizes_subviews)
+	{
+	  vFlags |= 0x100;
+	}
+
+      // add the hidden flag
+      if(_is_hidden)
+	{
+	  vFlags |= 0x80000000;
+	}
+      
+      [aCoder encodeInt: vFlags 
+	      forKey: @"NSvFlags"];
+    }
+  else
+    {
+      NSDebugLLog(@"NSView", @"NSView: start encoding\n");
+      [super encodeWithCoder: aCoder];
+
+      [aCoder encodeRect: _frame];
+      [aCoder encodeRect: _bounds];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_rotated_from_base];
+      [aCoder encodeValueOfObjCType: @encode(BOOL)
+	      at: &_is_rotated_or_scaled_from_base];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_post_frame_changes];
+      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autoresizes_subviews];
+      [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_autoresizingMask];
+      [aCoder encodeConditionalObject: [self nextKeyView]];
+      [aCoder encodeConditionalObject: [self previousKeyView]];
+      [aCoder encodeObject: _sub_views];
+      NSDebugLLog(@"NSView", @"NSView: finish encoding\n");
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
+  // decode the superclass...
+  [super initWithCoder: aDecoder];
+
+  // initialize these here, since they're needed in either case.
+  _frameMatrix = [NSAffineTransform new];     // Map fromsuperview to frame
+  _boundsMatrix = [NSAffineTransform new];    // Map fromsuperview to bounds
+  _matrixToWindow = [NSAffineTransform new];  // Map to window coordinates
+  _matrixFromWindow = [NSAffineTransform new];// Map from window coordinates
+ 
   if ([aDecoder allowsKeyedCoding])
     {
-      NSRect frame = NSZeroRect;
-      //id next = [aDecoder decodeObjectForKey: @"NSNextResponder"];
-      //NSView *superView = [aDecoder decodeObjectForKey: @"NSSuperview"];
+      NSView *prevKeyView = [aDecoder decodeObjectForKey: @"NSPreviousKeyView"];
       NSView *nextKeyView = [aDecoder decodeObjectForKey: @"NSNextKeyView"];
       NSArray *subViews = [aDecoder decodeObjectForKey: @"NSSubviews"];
       
       if ([aDecoder containsValueForKey: @"NSFrame"])
-        {
-	  frame = [aDecoder decodeRectForKey: @"NSFrame"];
+	{
+	  _frame = [aDecoder decodeRectForKey: @"NSFrame"];
+	  [_frameMatrix setFrameOrigin: _frame.origin];
 	}
-      self = [self initWithFrame: frame];
-
+      self = [self initWithFrame: _frame];
+      
       if (subViews != nil)
-        {
+	{
 	  NSEnumerator *enumerator = [subViews objectEnumerator];
 	  NSView *sub;
 	  
@@ -3780,13 +3823,17 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	    }
 	}
       if (nextKeyView != nil)
-        {
+	{
 	  [self setNextKeyView: nextKeyView];
 	}
+      if (prevKeyView != nil)
+	{
+	  [self setPreviousKeyView: prevKeyView];
+	}
       if ([aDecoder containsValueForKey: @"NSvFlags"])
-        {
+	{
 	  int vFlags = [aDecoder decodeIntForKey: @"NSvFlags"];
-
+	  
 	  // We are lucky here, Apple use the same constants
 	  // in the lower bits of the flags
 	  [self setAutoresizingMask: vFlags & 0x3F];
@@ -3797,27 +3844,21 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   else
     {
       NSRect	rect;
-      NSEnumerator	*e;
+      NSEnumerator *e;
       NSView	*sub;
       NSArray	*subs;
       
-      self = [super initWithCoder: aDecoder];
-
       NSDebugLLog(@"NSView", @"NSView: start decoding\n");
 
       _frame = [aDecoder decodeRect];
+      
       _bounds.origin = NSZeroPoint;
       _bounds.size = _frame.size;
-      
-      _frameMatrix = [NSAffineTransform new];	  // Map fromsuperview to frame
-      _boundsMatrix = [NSAffineTransform new];	  // Map fromsuperview to bounds
-      _matrixToWindow = [NSAffineTransform new];  // Map to window coordinates
-      _matrixFromWindow = [NSAffineTransform new];// Map from window coordinates
       [_frameMatrix setFrameOrigin: _frame.origin];
-
+      
       rect = [aDecoder decodeRect];
       [self setBounds: rect];
-
+      
       _sub_views = [NSMutableArray new];
       _tracking_rects = [NSMutableArray new];
       _cursor_rects = [NSMutableArray new];
@@ -3842,7 +3883,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       [aDecoder decodeValueOfObjCType: @encode(id) at: &subs];
       e = [subs objectEnumerator];
       while ((sub = [e nextObject]) != nil)
-        {
+	{
 	  NSAssert(sub->_window == nil, NSInternalInconsistencyException);
 	  NSAssert(sub->_super_view == nil, NSInternalInconsistencyException);
 	  [sub viewWillMoveToWindow: _window];

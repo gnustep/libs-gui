@@ -133,6 +133,7 @@ Interface for a bunch of internal methods that need to be cleaned up.
   NSArray *linkAttr;
   NSArray *markAttr;
   NSArray *selectedAttr;
+  NSTextView *textView;
 }
 @end
 
@@ -656,20 +657,24 @@ that makes decoding and encoding compatible with the old code.
         {
 	  [self setMaxSize: [aDecoder decodeSizeForKey: @"NSMaxSize"]];
 	}
-      // Is this a mistype from Apple?
       if ([aDecoder containsValueForKey: @"NSMinize"])
         {
+	  // it's NSMinize in pre-10.3 formats.
 	  [self setMinSize: [aDecoder decodeSizeForKey: @"NSMinize"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSMinSize"])
+        {
+	  // However, if NSMinSize is present we want to use it.
+	  [self setMinSize: [aDecoder decodeSizeForKey: @"NSMinSize"]];
 	}
       if ([aDecoder containsValueForKey: @"NSTextContainer"])
         {
 	  [self setTextContainer: [aDecoder decodeObjectForKey: @"NSTextContainer"]];
 	}
 
-      // FIXME set the flags, shared data, storage
       if ([aDecoder containsValueForKey: @"NSTVFlags"])
         {
-	  //int vFlags = [aDecoder decodeIntForKey: @"NSTVFlags"];
+	  int vFlags = [aDecoder decodeIntForKey: @"NSTVFlags"];
 	  // FIXME set the flags
 	}
       if ([aDecoder containsValueForKey: @"NSSharedData"])

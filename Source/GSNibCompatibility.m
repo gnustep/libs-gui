@@ -6,8 +6,8 @@
    They will be removed from the GUI library in the next few versions as
    they need to be phased out gradually.
    <p/>
-   If you have any .gorm files which were created using custom classes, you
-   should load them into Gorm and save them so that they will use the new
+   If you have any older .gorm files which were created using custom classes, 
+   you should load them into Gorm and save them so that they will use the new
    system.   Updating the .gorm files should be as easy as that.   These
    classes are included ONLY for backwards compatibility.
    </abstract>

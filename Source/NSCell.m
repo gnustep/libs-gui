@@ -2079,7 +2079,8 @@ static NSColor	*shadowCol;
     {
       BOOL flag;
       unsigned int tmp_int;
-      
+      id formatter, menu;
+
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_contents];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_cell_image];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_font];
@@ -2132,10 +2133,12 @@ static NSColor	*shadowCol;
       [aDecoder decodeValueOfObjCType: @encode(unsigned int) 
 		                   at: &_mouse_down_flags];
       [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &_action_mask];
-      [aDecoder decodeValueOfObjCType: @encode(id) at: &_formatter];
-      [aDecoder decodeValueOfObjCType: @encode(id) at: &_menu];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &formatter];
+      [self setFormatter: formatter];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &menu];
+      [self setMenu: menu];
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_represented_object];
-      
+
       if (_formatter != nil)
         {
 	  NSString *contents;
