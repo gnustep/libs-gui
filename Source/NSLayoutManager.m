@@ -30,24 +30,6 @@
 #include <AppKit/NSLayoutManager.h>
 #include "GSSimpleLayoutManager.h"
 
-/*
- * A little utility function to determine the range of characters in a scanner
- * that are present in a specified character set.
- */
-static inline NSRange
-scanRange(NSScanner *scanner, NSCharacterSet* aSet)
-{
-  unsigned	start = [scanner scanLocation];
-  unsigned	end = start;
-
-  if ([scanner scanCharactersFromSet: aSet intoString: 0] == YES)
-    {
-      end = [scanner scanLocation];
-    }
-  return NSMakeRange(start, end - start);
-}
-
-
 // _GSRunSearchKey is an internal class which serves as the foundation for
 // all our searching. This may not be an elegant way to go about this, so
 // if someone wants to optimize this out, please do.
@@ -114,7 +96,6 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 {
 @public
   NSTextContainer	*textContainer;
-  NSString		*testString;
 }
 @end
 
@@ -154,6 +135,7 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
   unsigned int _count;
   void *_runs;
 }
+
 - (void) insertObject: (id)anObject;
 - (void) insertObject: (id)anObject atIndex: (unsigned)theIndex;
 - (id) objectAtIndex: (unsigned)theIndex;
@@ -218,6 +200,7 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
     NSLog(@"dead. VERY DEAD DEAD DEAD DEAD.");
 
 //  NSLog(@"==> %d item(s)", GSIArrayCount(_runs));
+  RELEASE(aKey);
 }
 
 - (void) insertObject: (id)anObject
@@ -259,10 +242,12 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
 
       if (NSLocationInRange(aLocation, aKey->glyphRange))
         {
+	  RELEASE(aKey);
 	  return (position - 1);
         }
     }
 
+  RELEASE(aKey);
   return -1;
 }
 
@@ -274,6 +259,7 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
   aKey->glyphRange.location = aLocation;
 
   position = GSIArrayInsertionPosition(_runs, (GSIArrayItem)aKey, aSort);
+  RELEASE(aKey);
 
   if (position >= 0 && position - 1 >= 0)
     {
@@ -310,7 +296,6 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
 @end
 
 
-
 @implementation NSLayoutManager
 
 + (id) allocWithZone: (NSZone*)z
@@ -326,9 +311,9 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
     }
 }
 
-// Designated Initializer.  Sets up this instance.  Finds the shared NSGlyphGenerator 
-// and the shared default NSTypesetter.  The NSLayoutManager starts off without a 
-// NSTextStorage
+// Designated Initializer. Sets up this instance. Finds the shared 
+// NSGlyphGenerator and the shared default NSTypesetter. 
+// The NSLayoutManager starts off without a NSTextStorage
 - (id) init
 {
   [super init];
@@ -380,11 +365,12 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
   return _textStorage;
 }
 
-// This method should be used instead of the primitive -setTextStorage: if you need to 
-// replace a NSLayoutManager's NSTextStorage with a new one leaving the rest of the 
-// web intact.  This method deals with all the work of making sure the NSLayoutManager 
-// doesn't get deallocated and transferring all the NSLayoutManager s on the old 
-// NSTextStorage to the new one.
+// This method should be used instead of the primitive -setTextStorage: 
+// if you need to replace a NSLayoutManager's NSTextStorage with a new 
+// one leaving the rest of the web intact.  This method deals with all 
+// the work of making sure the NSLayoutManager doesn't get deallocated 
+// and transferring all the NSLayoutManager s on the old NSTextStorage 
+// to the new one.
 - (void) replaceTextStorage: (NSTextStorage*)newTextStorage
 {
   NSArray *layoutManagers = [_textStorage layoutManagers];
@@ -422,9 +408,9 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
   }
 }
 
-// Insert a container into the array before the container at index.  Must invalidate 
-// layout of all glyphs in the containers from the one previously at index to the 
-// last container.
+// Insert a container into the array before the container at index.  
+// Must invalidate layout of all glyphs in the containers from the one 
+// previously at index to the last container.
 - (void) insertTextContainer: (NSTextContainer*)aTextContainer
 		     atIndex: (unsigned)index
 {
@@ -451,7 +437,6 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
 		      actualCharacterRange: (NSRange*)actualRange
 {
   // FIXME
-
   // Currently we don't have context information
   if (actualRange)
     {
@@ -472,7 +457,6 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
 				    isSoft: (BOOL)flag
 		      actualCharacterRange: (NSRange*)actualRange
 {
-
   [self _doLayout];
 }
 
@@ -492,9 +476,9 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
 // Invalidates layout of all glyphs in container and all subsequent containers.
 - (void) textContainerChangedGeometry: (NSTextContainer*)aContainer
 {
-  unsigned first = 0;
-
   // find the first character in that text container
+  NSRange aRange = [self glyphRangeForTextContainer: aContainer];
+  unsigned first = aRange.location;
 
   // invalidate the layout from here on
   [self invalidateLayoutForCharacterRange: 
@@ -645,7 +629,8 @@ invalidatedRange.length);
 // for all holes sequentially encountered until the desired index is available.
 - (unsigned) characterIndexForGlyphAtIndex: (unsigned)glyphIndex
 {
-  return 0;
+  // Currently gyphIndex is the same as character index
+  return glyphIndex;
 }
 
 // These two methods can cause glyph generation.
@@ -660,7 +645,11 @@ invalidatedRange.length);
 - (NSRange) characterRangeForGlyphRange: (NSRange)glyphRange
 		       actualGlyphRange: (NSRange*)actualGlyphRange
 {
-  return NSMakeRange(0, 0);
+  // Currently gyphIndex is the same as character index
+  if (actualGlyphRange != NULL)
+    *actualGlyphRange = glyphRange;
+
+  return glyphRange;
 }
 
 // Returns the range of glyphs that are generated from the unichars in
@@ -674,7 +663,11 @@ invalidatedRange.length);
 - (NSRange) glyphRangeForCharacterRange: (NSRange)charRange
 		   actualCharacterRange: (NSRange*)actualCharRange
 {
-  return NSMakeRange(0, 0);
+  // Currently gyphIndex is the same as character index
+  if (actualCharRange != NULL)
+    *actualCharRange = charRange;
+
+  return charRange;
 }
 
 //
@@ -1397,6 +1390,23 @@ aLine->lineFragmentRect.size.height);
 /* The methods laid out here are not correct, however the code they
 contain for the most part is. Therefore, my country and a handsome gift of
 Ghiradelli chocolate to he who puts all the pieces together : ) */
+
+/*
+ * A little utility function to determine the range of characters in a scanner
+ * that are present in a specified character set.
+ */
+static inline NSRange
+scanRange(NSScanner *scanner, NSCharacterSet* aSet)
+{
+  unsigned	start = [scanner scanLocation];
+  unsigned	end = start;
+
+  if ([scanner scanCharactersFromSet: aSet intoString: 0] == YES)
+    {
+      end = [scanner scanLocation];
+    }
+  return NSMakeRange(start, end - start);
+}
 
 @implementation NSLayoutManager (Private)
 - (int) _rebuildLayoutForTextContainer: (NSTextContainer*)aContainer
