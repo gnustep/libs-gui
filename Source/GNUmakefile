@@ -382,6 +382,13 @@ libgnustep-gui_HEADER_FILES = ${GUI_HEADERS}
 HEADERS_INSTALL = ${APPKIT_HEADERS} \
                   ${GUI_HEADERS}
 
+# Resources
+RESOURCE_SET_NAME = libgui-resources
+libgui-resources_RESOURCE_FILES_INSTALL_DIR = Library/Libraries/Resources/gnustep-gui
+libgui-resources_RESOURCE_DIRS =
+libgui-resources_RESOURCE_FILES = Info-gnustep.plist
+
+
 # Extra DLL exports file
 libgnustep-gui_DLL_DEF = libgnustep-gui.def
 
@@ -390,6 +397,7 @@ include GNUmakefile.preamble
 -include GNUmakefile.local
 
 include $(GNUSTEP_MAKEFILES)/library.make
+include $(GNUSTEP_MAKEFILES)/resource-set.make
 
 include GNUmakefile.postamble
 
