@@ -2732,7 +2732,7 @@ resetCursorRectsForView(NSView *theView)
   // Quietly discard an unused mouse down.
 }
 
-/** Handles mouse and other events sent to the received by NSApplication.
+/** Handles mouse and other events sent to the receiver by NSApplication.
     Do not invoke this method directly.
 */
 - (void) sendEvent: (NSEvent*)theEvent
@@ -2770,8 +2770,8 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 		{
 		  [self makeFirstResponder: v];
 		}
-	      if (_lastDragView)
-		DESTROY(_lastDragView);
+	      if (_lastView)
+		DESTROY(_lastView);
 	      if (wasKey == YES || [v acceptsFirstMouse: theEvent] == YES)
 		{
 		  if ([NSHelpManager isContextHelpModeActive])
@@ -2780,10 +2780,7 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 		    }
 		  else
 		    {
-		      /* Technically this should be just _lastView,
-			 but I don't think it's a problem reusing this
-			 ivar */
-		      ASSIGN(_lastDragView, v);
+		      ASSIGN(_lastView, v);
 		      [v mouseDown: theEvent];
 		    }
 		}
@@ -2797,8 +2794,8 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 	}
 
       case NSLeftMouseUp:
-	v = _lastDragView;
-	DESTROY(_lastDragView);
+	v = _lastView;
+	DESTROY(_lastView);
 	if (v == nil)
 	  break;
 	[v mouseUp: theEvent];

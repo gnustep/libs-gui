@@ -115,6 +115,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
   NSView        *_initialFirstResponder;
   id            _delegate;
   id            _fieldEditor;
+  id            _lastView;
   id            _lastDragView;
   int           _lastDragOperationMask;
   int           _windowNum;

@@ -1,3 +1,9 @@
+2002-10-03  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/gnustep/gui/NSWindow.h: New _lastView ivar.
+	* Source/NSWindow.m (-sendEvent:): Use it instead of _lastDragView
+	to remember mouseDown view.
+
 2002-10-02  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: ([-getInfoForFile:application:type:])
