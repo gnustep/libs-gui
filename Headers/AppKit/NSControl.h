@@ -38,6 +38,7 @@
 @class NSCell;
 @class NSFont;
 @class NSEvent;
+@class NSTextView;
 
 @interface NSControl : NSView
 {
@@ -186,6 +187,8 @@ APPKIT_EXPORT NSString *NSControlTextDidChangeNotification;
 // Methods Implemented by the Delegate
 //
 @interface NSObject (NSControlDelegate)
+- (BOOL) control: (NSControl *)control  isValidObject:(id)object;
+
 - (BOOL) control: (NSControl *)control
   textShouldBeginEditing: (NSText *)fieldEditor;
 
@@ -206,7 +209,18 @@ APPKIT_EXPORT NSString *NSControlTextDidChangeNotification;
   didFailToValidatePartialString: (NSString *)string 
   errorDescription: (NSString *)error;
 
-- (BOOL) control: (NSControl *)control  isValidObject:(id)object;
+#ifndef STRICT_OPENSTEP
+- (BOOL) control: (NSControl *)control 
+  textView: (NSTextView *)textView 
+  doCommandBySelector: (SEL)command;
+
+- (NSArray *) control: (NSControl *)control 
+  textView: (NSTextView *)textView 
+  completions: (NSArray *)words 
+  forPartialWordRange: (NSRange)charRange 
+  indexOfSelectedItem: (int *)index;
+#endif
+
 @end
 
 

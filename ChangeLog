@@ -1,5 +1,13 @@
 2004-09-24  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/AppKit/NSControl.h
+	Added new MacOSX delegate methods.
+	* Source/NSControl.m (-validateEditing, -currentEditor,
+	-abortEditing, -calcSize): Implemented these methods.
+	(-mouseDown:): Use method to check if mouse is inside cell.
+
+2004-09-24  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSMenuView.m (-setMenu:): Only call update when the new
 	menu is not nil.
 	* Source/NSMenu.m (-setMenuRepresentation:): Unset the menu of the

@@ -31,13 +31,15 @@
 
 #include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
+#include "AppKit/NSActionCell.h"
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSCell.h"
 #include "AppKit/NSControl.h"
 #include "AppKit/NSColor.h"
 #include "AppKit/NSEvent.h"
+#include "AppKit/NSTextStorage.h"
+#include "AppKit/NSTextView.h"
 #include "AppKit/NSWindow.h"
-#include "AppKit/NSApplication.h"
-#include "AppKit/NSCell.h"
-#include "AppKit/NSActionCell.h"
 
 /*
  * Class variables
@@ -344,23 +346,71 @@ static Class actionCellClass;
  */
 - (BOOL) abortEditing
 {
-  return NO;
+  NSText *t;
+
+  t = [self currentEditor];
+  if (t == nil)
+    {
+      return NO;
+    }
+
+  [t setString: @""];
+  [[self selectedCell] endEditing: t];
+  return YES;
 }
 
 - (NSText *) currentEditor
 {
+  if (_cell != nil)
+    {
+      NSText *t;
+
+      t = [_window fieldEditor: NO forObject: self];
+      if (([t delegate] == self) && ([_window firstResponder] == t))
+        {
+	  return t;
+	}
+    }
+
   return nil;
 }
 
 - (void) validateEditing
 {
-}			
+  NSText *t;
+
+  t = [self currentEditor];
+  if (t == nil)
+    {
+      return;
+    }
+
+  if ([t isRichText])
+    {
+      NSAttributedString *attr;
+      NSTextStorage *storage;
+      int len;
+      
+      storage = [(NSTextView*)t textStorage];
+      len = [storage length];
+      attr = [storage attributedSubstringFromRange: NSMakeRange(0, len)];
+      [[self selectedCell] setAttributedStringValue: attr];
+    }
+  else
+    {
+      NSString *string;
+
+      string = AUTORELEASE([[t string] copy]);
+      [[self selectedCell] setStringValue: string];
+    }
+}
 
 /*
  * Resizing the Control
  */
 - (void) calcSize
 {
+  [_cell calcDrawInfo: [self bounds]];
 }
 
 - (void) sizeToFit
@@ -570,14 +620,14 @@ static Class actionCellClass;
   [_window _captureMouse: self];
 
   e = theEvent;
-  while (!done) 		// loop until mouse goes up
+  // loop until mouse goes up
+  while (!done)
     {
       location = [e locationInWindow];
       location = [self convertPoint: location fromView: nil];
       // ask the cell to track the mouse only
       // if the mouse is within the cell
-      if ((location.x >= 0) && (location.x < _bounds.size.width) &&
-		      (location.y >= 0 && location.y < _bounds.size.height))
+      if ([self mouse: location inRect: _bounds])
 	{
 	  [_cell setHighlighted: YES];
 	  [self setNeedsDisplay: YES];
