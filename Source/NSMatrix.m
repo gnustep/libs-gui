@@ -977,6 +977,12 @@ static SEL getSel;
 {
   unsigned	i, j;
 
+  /* Can't select all if only one can be selected.  */
+  if (_mode == NSRadioModeMatrix)
+    {
+      return;
+    }
+
   _selectedCell = nil;
   _selectedRow = -1;
   _selectedColumn = -1;
