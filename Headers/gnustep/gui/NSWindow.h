@@ -33,6 +33,7 @@
 #ifndef _GNUstep_H_NSWindow
 #define _GNUstep_H_NSWindow
 
+#include <Foundation/NSDate.h>
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSResponder.h>
@@ -54,6 +55,7 @@
 @class NSPasteboard;
 @class NSScreen;
 @class NSText;
+@class NSToolbar;
 @class NSView;
 @class NSWindowController;
 
@@ -133,6 +135,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
   NSWindowDepth _depthLimit;
   NSWindowController *_windowController;
   int		_counterpart;
+  float         _alphaValue;
 
   struct GSWindowFlagsType {
     unsigned	accepts_drag:1;
@@ -155,6 +158,9 @@ APPKIT_EXPORT NSSize NSTokenSize;
     unsigned	has_opened:1;
     unsigned	has_closed:1;
     unsigned	default_button_cell_key_disabled:1;
+    unsigned	can_hide:1;
+    unsigned	has_shadow:1;
+    unsigned	is_opaque:1;
     // 3 bits reserved for subclass use
     unsigned subclass_bool_one: 1;
     unsigned subclass_bool_two: 1;
@@ -182,11 +188,6 @@ APPKIT_EXPORT NSSize NSTokenSize;
 
 
 /*
- * Saving and restoring the frame
- */
-+ (void) removeFrameUsingName: (NSString*)name;
-
-/*
  * Initializing and getting a new NSWindow object
  */
 - (id) initWithContentRect: (NSRect)contentRect
@@ -201,33 +202,209 @@ APPKIT_EXPORT NSSize NSTokenSize;
 		    screen: (NSScreen*)aScreen;
 
 /*
- * Accessing the content view
+ * Converting coordinates
  */
-- (id) contentView;
-- (void) setContentView: (NSView*)aView;
+- (NSPoint) convertBaseToScreen: (NSPoint)aPoint;
+- (NSPoint) convertScreenToBase: (NSPoint)aPoint;
 
 /*
- * Window graphics
+ * Moving and resizing the window
  */
-- (NSColor*) backgroundColor;
-- (NSString*) representedFilename;
-- (void) setBackgroundColor: (NSColor*)color;
-- (void) setRepresentedFilename: (NSString*)aString;
-- (void) setTitle: (NSString*)aString;
-- (void) setTitleWithRepresentedFilename: (NSString*)aString;
-- (unsigned int) styleMask;
-- (NSString*) title;
+- (NSRect) frame;
+- (void) setFrame: (NSRect)frameRect
+	  display: (BOOL)flag;
+- (void) setFrameOrigin: (NSPoint)aPoint;
+- (void) setFrameTopLeftPoint: (NSPoint)aPoint;
+- (void) setContentSize: (NSSize)aSize;
+- (NSPoint) cascadeTopLeftFromPoint: (NSPoint)topLeftPoint;
+- (void) center;
+- (int) resizeFlags;
+#ifndef STRICT_OPENSTEP
+- (void) setFrame: (NSRect)frameRect
+	  display: (BOOL)displayFlag
+	  animate: (BOOL)animationFlag;
+- (NSTimeInterval) animationResizeTime: (NSRect)newFrame;
+- (void) performZoom: (id)sender;
+- (void) zoom: (id)sender;
+- (BOOL) showsResizeIndicator;
+- (void) setShowsResizeIndicator: (BOOL)show;
+#endif
+
+/*
+ * Constraining size
+ */
+- (NSSize) minSize;
+- (NSSize) maxSize;
+- (void) setMinSize: (NSSize)aSize;
+- (void) setMaxSize: (NSSize)aSize;
+- (NSRect) constrainFrameRect: (NSRect)frameRect
+		     toScreen: (NSScreen*)screen;
+#ifndef STRICT_OPENSTEP
+- (NSSize) aspectRatio;
+- (void) setAspectRatio: (NSSize)ratio;
+- (NSSize) resizeIncrements;
+- (void) setResizeIncrements: (NSSize)aSize;
+#endif
+
+/*
+ * Saving and restoring the frame
+ */
++ (void) removeFrameUsingName: (NSString*)name;
+- (NSString*) frameAutosaveName;
+- (void) saveFrameUsingName: (NSString*)name;
+- (BOOL) setFrameAutosaveName: (NSString*)name;
+- (void) setFrameFromString: (NSString*)string;
+- (BOOL) setFrameUsingName: (NSString*)name;
+- (NSString*) stringWithSavedFrame;
+#ifndef STRICT_OPENSTEP
+- (BOOL) setFrameUsingName: (NSString *)name
+		    force: (BOOL)force;
+#endif
+
+/*
+ * Window status and ordering
+ */
+- (void) orderBack: sender;
+- (void) orderFront: sender;
+- (void) orderFrontRegardless;
+- (void) orderOut: (id)sender;
+- (void) orderWindow: (NSWindowOrderingMode)place
+	  relativeTo: (int)otherWin;
+- (BOOL) isVisible;
+- (int) level;
+- (void) setLevel: (int)newLevel;
+
+- (void) becomeKeyWindow;
+- (void) becomeMainWindow;
+- (BOOL) canBecomeKeyWindow;
+- (BOOL) canBecomeMainWindow;
+- (BOOL) isKeyWindow;
+- (BOOL) isMainWindow;
+- (void) makeKeyAndOrderFront: (id)sender;
+- (void) makeKeyWindow;
+- (void) makeMainWindow;
+- (void) resignKeyWindow;
+- (void) resignMainWindow;
+
+#ifndef STRICT_OPENSTEP
+- (NSButtonCell*) defaultButtonCell;
+- (void) setDefaultButtonCell: (NSButtonCell*)aCell;
+- (void) disableKeyEquivalentForDefaultButtonCell;
+- (void) enableKeyEquivalentForDefaultButtonCell;
+#endif
+
+/*
+ * Managing the display
+ */
+- (void) display;
+- (void) displayIfNeeded;
+- (BOOL) isAutodisplay;
+- (void) setAutodisplay: (BOOL)flag;
+- (void) setViewsNeedDisplay: (BOOL)flag;
+- (void) update;
+- (void) useOptimizedDrawing: (BOOL)flag;
+- (BOOL) viewsNeedDisplay;
+
+- (BOOL) isFlushWindowDisabled;
+- (void) disableFlushWindow;
+- (void) enableFlushWindow;
+- (void) flushWindow;
+- (void) flushWindowIfNeeded;
+
+#ifndef STRICT_OPENSTEP
+- (void) cacheImageInRect: (NSRect)aRect;
+- (void) discardCachedImage;
+- (void) restoreCachedImage;
+#endif
 
 /*
  * Window device attributes
  */
-- (NSBackingStoreType) backingType;
-- (NSDictionary*) deviceDescription;
-- (int) gState;
-- (BOOL) isOneShot;
-- (void) setBackingType: (NSBackingStoreType)type;
-- (void) setOneShot: (BOOL)flag;
 - (int) windowNumber;
+- (int) gState;
+- (NSDictionary*) deviceDescription;
+- (NSBackingStoreType) backingType;
+- (void) setBackingType: (NSBackingStoreType)type;
+- (BOOL) isOneShot;
+- (void) setOneShot: (BOOL)flag;
+
+/*
+ * Screens and window depths
+ */
++ (NSWindowDepth) defaultDepthLimit;
+- (BOOL) canStoreColor;
+- (NSWindowDepth) depthLimit;
+- (BOOL) hasDynamicDepthLimit;
+- (void) setDepthLimit: (NSWindowDepth)limit;
+- (void) setDynamicDepthLimit: (BOOL)flag;
+
+- (NSScreen*) deepestScreen;
+- (NSScreen*) screen;
+
+- (NSResponder*) firstResponder;
+- (BOOL) makeFirstResponder: (NSResponder*)aResponder;
+
+/*
+ * Aiding event handling
+ */
+- (NSEvent*) currentEvent;
+- (NSEvent*) nextEventMatchingMask: (unsigned int)mask;
+- (NSEvent*) nextEventMatchingMask: (unsigned int)mask
+			 untilDate: (NSDate*)expiration
+			    inMode: (NSString*)mode
+			   dequeue: (BOOL)deqFlag;
+- (void) discardEventsMatchingMask: (unsigned int)mask
+		       beforeEvent: (NSEvent*)lastEvent;
+- (void) postEvent: (NSEvent*)event
+	   atStart: (BOOL)flag;
+- (void) sendEvent: (NSEvent*)theEvent;
+- (BOOL) tryToPerform: (SEL)anAction with: (id)anObject;
+- (void) keyDown: (NSEvent*)theEvent;
+- (NSPoint) mouseLocationOutsideOfEventStream;
+- (BOOL) acceptsMouseMovedEvents;
+- (void) setAcceptsMouseMovedEvents: (BOOL)flag;
+
+/*
+ * The field editor
+ */
+- (void) endEditingFor: anObject;
+- (NSText*) fieldEditor: (BOOL)createFlag
+	      forObject: (id)anObject;
+
+#ifndef STRICT_OPENSTEP
+- (NSView*) initialFirstResponder;
+- (NSSelectionDirection) keyViewSelectionDirection;
+- (void) selectKeyViewFollowingView: (NSView*)aView;
+- (void) selectKeyViewPrecedingView: (NSView*)aView;
+- (void) selectNextKeyView: (id)sender;
+- (void) selectPreviousKeyView: (id)sender;
+- (void) setInitialFirstResponder: (NSView*)aView;
+#endif
+
+/*
+ * Window graphics
+ */
+- (NSString*) representedFilename;
+- (void) setRepresentedFilename: (NSString*)aString;
+- (void) setTitle: (NSString*)aString;
+- (void) setTitleWithRepresentedFilename: (NSString*)aString;
+- (NSString*) title;
+
+- (BOOL) isDocumentEdited;
+- (void) setDocumentEdited: (BOOL)flag;
+
+/*
+ * Handling user actions and events
+ */
+- (void) close;
+- (void) performClose: (id)sender;
+- (void) setReleasedWhenClosed: (BOOL)flag;
+- (BOOL) isReleasedWhenClosed;
+
+- (void) deminiaturize: (id)sender;
+- (void) miniaturize: (id)sender;
+- (void) performMiniaturize: (id)sender;
+- (BOOL) isMiniaturized;
 
 /*
  * The miniwindow
@@ -240,98 +417,15 @@ APPKIT_EXPORT NSSize NSTokenSize;
 - (NSWindow*) counterpart;
 #endif
 
-/*
- * The field editor
- */
-- (void) endEditingFor: anObject;
-- (NSText*) fieldEditor: (BOOL)createFlag
-	      forObject: (id)anObject;
+#ifndef STRICT_OPENSTEP
++ (void) menuChanged: (NSMenu*)aMenu;
+#endif
 
 /*
- * The window controller
+ * Windows menu support
  */
-- (void) setWindowController: (NSWindowController*)windowController;
-- (id) windowController;
-
-/*
- * Window status and ordering
- */
-- (void) becomeKeyWindow;
-- (void) becomeMainWindow;
-- (BOOL) canBecomeKeyWindow;
-- (BOOL) canBecomeMainWindow;
-- (BOOL) hidesOnDeactivate;
-- (BOOL) isKeyWindow;
-- (BOOL) isMainWindow;
-- (BOOL) isMiniaturized;
-- (BOOL) isVisible;
-- (int) level;
-- (void) makeKeyAndOrderFront: (id)sender;
-- (void) makeKeyWindow;
-- (void) makeMainWindow;
-- (void) orderBack: sender;
-- (void) orderFront: sender;
-- (void) orderFrontRegardless;
-- (void) orderOut: (id)sender;
-- (void) orderWindow: (NSWindowOrderingMode)place
-	  relativeTo: (int)otherWin;
-- (void) resignKeyWindow;
-- (void) resignMainWindow;
-- (void) setHidesOnDeactivate: (BOOL)flag;
-- (void) setLevel: (int)newLevel;
-
-/*
- * Moving and resizing the window
- */
-- (NSPoint) cascadeTopLeftFromPoint: (NSPoint)topLeftPoint;
-- (void) center;
-- (NSRect) constrainFrameRect: (NSRect)frameRect
-		     toScreen: (NSScreen*)screen;
-- (NSRect) frame;
-- (NSSize) minSize;
-- (NSSize) maxSize;
-- (void) setContentSize: (NSSize)aSize;
-- (void) setFrame: (NSRect)frameRect
-	  display: (BOOL)flag;
-- (void) setFrameOrigin: (NSPoint)aPoint;
-- (void) setFrameTopLeftPoint: (NSPoint)aPoint;
-- (void) setMinSize: (NSSize)aSize;
-- (void) setMaxSize: (NSSize)aSize;
-
-/*
- * Converting coordinates
- */
-- (NSPoint) convertBaseToScreen: (NSPoint)aPoint;
-- (NSPoint) convertScreenToBase: (NSPoint)aPoint;
-
-/*
- * Managing the display
- */
-- (void) display;
-- (void) disableFlushWindow;
-- (void) displayIfNeeded;
-- (void) enableFlushWindow;
-- (void) flushWindow;
-- (void) flushWindowIfNeeded;
-- (BOOL) isAutodisplay;
-- (BOOL) isFlushWindowDisabled;
-- (void) setAutodisplay: (BOOL)flag;
-- (void) setViewsNeedDisplay: (BOOL)flag;
-- (void) update;
-- (void) useOptimizedDrawing: (BOOL)flag;
-- (BOOL) viewsNeedDisplay;
-
-/*
- * Screens and window depths
- */
-+ (NSWindowDepth) defaultDepthLimit;
-- (BOOL) canStoreColor;
-- (NSScreen*) deepestScreen;
-- (NSWindowDepth) depthLimit;
-- (BOOL) hasDynamicDepthLimit;
-- (NSScreen*) screen;
-- (void) setDepthLimit: (NSWindowDepth)limit;
-- (void) setDynamicDepthLimit: (BOOL)flag;
+- (BOOL) isExcludedFromWindowsMenu;
+- (void) setExcludedFromWindowsMenu: (BOOL)flag;
 
 /*
  * Cursor management
@@ -342,43 +436,6 @@ APPKIT_EXPORT NSSize NSTokenSize;
 - (void) enableCursorRects;
 - (void) invalidateCursorRectsForView: (NSView*)aView;
 - (void) resetCursorRects;
-
-/*
- * Handling user actions and events
- */
-- (void) close;
-- (void) deminiaturize: (id)sender;
-- (BOOL) isDocumentEdited;
-- (BOOL) isReleasedWhenClosed;
-- (void) miniaturize: (id)sender;
-- (void) performClose: (id)sender;
-- (void) performMiniaturize: (id)sender;
-- (int) resizeFlags;
-- (void) setDocumentEdited: (BOOL)flag;
-- (void) setReleasedWhenClosed: (BOOL)flag;
-
-/*
- * Aiding event handling
- */
-- (BOOL) acceptsMouseMovedEvents;
-- (NSEvent*) currentEvent;
-- (void) discardEventsMatchingMask: (unsigned int)mask
-		       beforeEvent: (NSEvent*)lastEvent;
-- (NSResponder*) firstResponder;
-- (void) keyDown: (NSEvent*)theEvent;
-- (BOOL) makeFirstResponder: (NSResponder*)aResponder;
-- (NSPoint) mouseLocationOutsideOfEventStream;
-- (NSEvent*) nextEventMatchingMask: (unsigned int)mask;
-- (NSEvent*) nextEventMatchingMask: (unsigned int)mask
-			 untilDate: (NSDate*)expiration
-			    inMode: (NSString*)mode
-			   dequeue: (BOOL)deqFlag;
-- (void) postEvent: (NSEvent*)event
-	   atStart: (BOOL)flag;
-- (void) setAcceptsMouseMovedEvents: (BOOL)flag;
-- (void) sendEvent: (NSEvent*)theEvent;
-- (BOOL) tryToPerform: (SEL)anAction with: (id)anObject;
-- (BOOL) worksWhenModal;
 
 /*
  * Dragging
@@ -393,30 +450,46 @@ APPKIT_EXPORT NSSize NSTokenSize;
 - (void) registerForDraggedTypes: (NSArray*)newTypes;
 - (void) unregisterDraggedTypes;
 
+- (BOOL) hidesOnDeactivate;
+- (void) setHidesOnDeactivate: (BOOL)flag;
+- (BOOL) worksWhenModal;
+#ifndef STRICT_OPENSTEP
+- (void) setCanHide: (BOOL)flag;
+- (BOOL) canHide;
+#endif
+
 /*
- * Services and windows menu support
+ * Accessing the content view
  */
-- (BOOL) isExcludedFromWindowsMenu;
-- (void) setExcludedFromWindowsMenu: (BOOL)flag;
+- (id) contentView;
+- (void) setContentView: (NSView*)aView;
+- (void) setBackgroundColor: (NSColor*)color;
+- (NSColor*) backgroundColor;
+- (unsigned int) styleMask;
+#ifndef STRICT_OPENSTEP
+- (void) setHasShadow: (BOOL)hasShadow;
+- (BOOL) hasShadow;
+- (void) setAlphaValue: (float)windowAlpha;
+- (float) alphaValue;
+- (void) setOpaque: (BOOL)isOpaque;
+- (BOOL) isOpaque;
+#endif
+
+/*
+ * Services menu support
+ */
 - (id) validRequestorForSendType: (NSString*)sendType
 		      returnType: (NSString*)returnType;
 
 /*
- * Saving and restoring the frame
- */
-- (NSString*) frameAutosaveName;
-- (void) saveFrameUsingName: (NSString*)name;
-- (BOOL) setFrameAutosaveName: (NSString*)name;
-- (void) setFrameFromString: (NSString*)string;
-- (BOOL) setFrameUsingName: (NSString*)name;
-- (NSString*) stringWithSavedFrame;
-
-/*
  * Printing and postscript
  */
-- (NSData*) dataWithEPSInsideRect: (NSRect)rect;
 - (void) fax: (id)sender;
 - (void) print: (id)sender;
+- (NSData*) dataWithEPSInsideRect: (NSRect)rect;
+#ifndef STRICT_OPENSTEP
+- (NSData *)dataWithPDFInsideRect:(NSRect)aRect;
+#endif
 
 /*
  * Assigning a delegate
@@ -424,38 +497,20 @@ APPKIT_EXPORT NSSize NSTokenSize;
 - (id) delegate;
 - (void) setDelegate: (id)anObject;
 
-
 /*
- * NSCoding methods
+ * The window controller
  */
-- (void) encodeWithCoder: (NSCoder*)aCoder;
-- (id) initWithCoder: (NSCoder*)aDecoder;
+- (void) setWindowController: (NSWindowController*)windowController;
+- (id) windowController;
 
 #ifndef STRICT_OPENSTEP
-+ (void) menuChanged: (NSMenu*)aMenu;
-
-- (NSSize) aspectRatio;
-- (void) cacheImageInRect: (NSRect)aRect;
-- (NSButtonCell*) defaultButtonCell;
-- (void) disableKeyEquivalentForDefaultButtonCell;
-- (void) discardCachedImage;
-- (void) enableKeyEquivalentForDefaultButtonCell;
-- (NSView*) initialFirstResponder;
-- (NSInterfaceStyle) interfaceStyle;
-- (NSSelectionDirection) keyViewSelectionDirection;
-- (void) performZoom: (id)sender;
-- (NSSize) resizeIncrements;
-- (void) restoreCachedImage;
-- (void) selectKeyViewFollowingView: (NSView*)aView;
-- (void) selectKeyViewPrecedingView: (NSView*)aView;
-- (void) selectNextKeyView: (id)sender;
-- (void) selectPreviousKeyView: (id)sender;
-- (void) setAspectRatio: (NSSize)ratio;
-- (void) setDefaultButtonCell: (NSButtonCell*)aCell;
-- (void) setInitialFirstResponder: (NSView*)aView;
-- (void) setInterfaceStyle: (NSInterfaceStyle)aStyle;
-- (void) setResizeIncrements: (NSSize)aSize;
-- (void) zoom: (id)sender;
+- (NSArray *) drawers;
+- (void) setToolbar: (NSToolbar*)toolbar;
+- (NSToolbar *) toolbar;
+- (void) toggleToolbarShown: (id)sender;
+- (void) runToolbarCustomizationPalette: (id)sender;
+- (NSWindow *) initWithWindowRef: (void *)windowRef;
+- (void *)windowRef;
 - (void*) windowHandle;
 #endif
 @end
