@@ -113,6 +113,7 @@
 #include <AppKit/NSSelection.h>
 #include <AppKit/NSSlider.h>
 #include <AppKit/NSSliderCell.h>
+#include <AppKit/NSSound.h>
 #include <AppKit/NSSpellChecker.h>
 #include <AppKit/NSSpellProtocol.h>
 #include <AppKit/NSSpellServer.h>
