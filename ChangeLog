@@ -1,3 +1,8 @@
+Sat Jun  9 05:51:48 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSCell.m ([-cellAttribute:]), ([-setCellAttribute:to:]):
+	Removed unused default label at the end of statement.
+
 Sat Jun  9 04:04:46 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* gui.make: Moved to gui.make.in.
