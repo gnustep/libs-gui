@@ -1,11 +1,12 @@
 2004-05-23  Quentin Mathe <qmathe@lub-internet.fr>
 
-        * Source/NSWindow.m: Added a method -_windowView: which returns the root 
-	view (variable _wv).
+        * Source/NSWindow.m: Added a method -_windowView which returns the root 
+	view (variable _wv) and replaced _contentView by _wv in the tracking
+	implementation.
 	* Source/NSControl.m: Modified to call the associated superclass method
 	each time -mouseDown: is called to have the possibility to add behaviors
 	to the related NSView method.
-	Two modifications needed to fully support toolbar validation mechanism.
+	Modifications needed to fully support toolbar validation mechanism.
 
 2004-05-23  Quentin Mathe <qmathe@lub-internet.fr>
         
