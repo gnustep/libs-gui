@@ -1,3 +1,20 @@
+2004-11-09 Adrian Robert <arobert@cogsci.ucsd.edu>
+
+	* Source/NSTabView.m (-insertTabViewItem:): Update display.
+	(-removeTabViewItem:): Same.
+	(-selectTabViewItem:): Fix erroneous comment.
+	(-selectTabViewItemAtIndex:) Check index in range.
+	(-drawRect:) Don't try to select first tab if there are no tabs.
+	* Source/NSColorList.m (-initWithNameFromFile:) Treat filename
+	given as full path, not directory (but support this previous
+	behavior in case apps are relying on it).  Also, if fail to read
+	file as an archive, try text format.
+	(+loadAvavailableColorLists:) Adjust code for change to
+	-initWithName:fromFile:.
+	(-_readTextColorFile:) New utility method to support
+	-initWithNameFromFile:.
+	* Headers/AppKit/NSColorList.h: Document above changes.
+
 2004-11-09 22:36  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSInfoPanel.m (_value_from_info_plist_for_key): Rename to

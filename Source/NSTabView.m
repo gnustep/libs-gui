@@ -77,6 +77,9 @@
     {
       [_delegate tabViewDidChangeNumberOfTabViewItems: self];
     }
+
+  /* TODO (Optimize) - just mark the tabs rect as needing redisplay */
+  [self setNeedsDisplay: YES];
 }
 
 - (void) removeTabViewItem: (NSTabViewItem*)tabViewItem
@@ -88,6 +91,7 @@
 
   if ([tabViewItem isEqual: _selected])
     {
+      [[_selected view] removeFromSuperview];
       _selected = nil;
     }
 
@@ -98,6 +102,10 @@
     {
       [_delegate tabViewDidChangeNumberOfTabViewItems: self];
     }
+
+  /* TODO (Optimize) - just mark the tabs rect as needing redisplay unless
+                       removed tab was selected */
+  [self setNeedsDisplay: YES];
 }
 
 - (int) indexOfTabViewItem: (NSTabViewItem*)tabViewItem
@@ -209,7 +217,7 @@
 	  [_window makeFirstResponder: [_selected initialFirstResponder]];
 	}
       
-      /* FIXME - only mark the contentRect as needing redisplay! */
+      /* Will need to redraw tabs and content area. */
       [self setNeedsDisplay: YES];
       
       if ([_delegate respondsToSelector: 
@@ -222,7 +230,7 @@
 
 - (void) selectTabViewItemAtIndex: (int)index
 {
-  if (index < 0)
+  if (index < 0 || index >= [_items count])
     [self selectTabViewItem: nil];
   else
     [self selectTabViewItem: [_items objectAtIndex: index]];
@@ -383,7 +391,7 @@
 	break;
     }
 
-  if (!_selected)
+  if (!_selected && howMany > 0)
     [self selectFirstTabViewItem: nil];
 
   if (_type == NSNoTabsBezelBorder || _type == NSNoTabsLineBorder)

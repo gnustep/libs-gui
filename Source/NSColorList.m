@@ -32,9 +32,11 @@
 #include <Foundation/NSLock.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSArchiver.h>
+#include <Foundation/NSCharacterSet.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSPathUtilities.h>
+#include <Foundation/NSScanner.h>
 #include <Foundation/NSString.h>
 
 #include "AppKit/NSColorList.h"
@@ -104,9 +106,9 @@ static NSLock *_gnustep_color_list_lock = nil;
 	{
 	  if ([[file pathExtension] isEqualToString: @"clr"])
 	    {
-	      file = [file stringByDeletingPathExtension];
-	      newList = [[NSColorList alloc] initWithName: file
-					     fromFile: dir];
+	      NSString *name = [file stringByDeletingPathExtension];
+	      newList = [[NSColorList alloc] initWithName: name
+                fromFile: [dir stringByAppendingPathComponent: file]];
 	      [_gnustep_available_color_lists addObject: newList];
 	      RELEASE(newList);
 	    }
@@ -171,9 +173,78 @@ static NSLock *_gnustep_color_list_lock = nil;
     return nil;
 }
 
+
 /*
  * Instance methods
  */
+
+/*
+ * Private method for reading text color list files, with following format:
+ * first line  =  <#/colors>
+ * each subsequent line describes a color as <int float+ string>
+ * the first int describes the method (ARGB, etc.), the floats
+ * provide its arguments (e.g., r, g, b, alpha), and string is name.
+ */
+- (BOOL) _readTextColorFile: (NSString *) filepath
+{
+  int nColors;
+  int method;
+  float r;
+  float g;
+  float b;
+  float alpha;
+  NSString *cname;
+  int i;
+  BOOL st;
+  NSColor *color;
+  NSCharacterSet *newlineSet =
+    [NSCharacterSet characterSetWithCharactersInString: @"\n"];
+  NSScanner *scanner =
+    [NSScanner scannerWithString:
+                 [NSString stringWithContentsOfFile: _fullFileName]];
+
+  if ([scanner scanInt: &nColors] == NO)
+    {
+      NSLog(@"Unable to read color file at \"%@\" -- unknown format.",
+            _fullFileName);
+      return NO;
+    }
+
+  for (i = 0; i < nColors; i++)
+    {
+      if ([scanner scanInt: &method] == NO)
+        {
+          NSLog(@"Unable to read color file at \"%@\" -- unknown format.",
+                _fullFileName);
+          break;
+        }
+      //FIXME- replace this by switch on method to different
+      //       NSColor initializers
+      if (method != 0)
+        {
+          NSLog(@"Unable to read color file at \"%@\" -- only RGBA form "
+                @"supported.", _fullFileName);
+          break;
+        }
+      st = [scanner scanFloat: &r];
+      st = st && [scanner scanFloat: &g];
+      st = st && [scanner scanFloat: &b];
+      st = st && [scanner scanFloat: &alpha];
+      st = st && [scanner scanUpToCharactersFromSet: newlineSet
+                                         intoString: &cname];
+      if (st == NO)
+        {
+          NSLog(@"Unable to read color file at \"%@\" -- unknown format.",
+                _fullFileName);
+          break;
+        }
+      color = [NSColor colorWithCalibratedRed: r green: g blue: b alpha: alpha];
+      [self insertColor: color key: cname atIndex: i];
+    }
+
+  return i == nColors;
+}
+
 - (id) initWithName: (NSString *)name
 {
   return [self initWithName: name
@@ -190,16 +261,38 @@ static NSLock *_gnustep_color_list_lock = nil;
 
   if (path != nil)
     {
-      ASSIGN (_fullFileName, [[path stringByAppendingPathComponent: name] 
-	stringByAppendingPathExtension: @"clr"]);
+      BOOL isDir = NO;
+      // previously impl wrongly expected directory containing color file
+      // rather than color file; we support this for apps that rely on it
+      if (([[NSFileManager defaultManager] fileExistsAtPath: path
+                                                isDirectory: &isDir] == NO)
+          || (isDir == YES))
+        {
+          NSLog(@"NSColorList -initWithName:fromFile: warning: excluding "
+                @"filename from path (%@) is deprecated.", path);
+          ASSIGN (_fullFileName, [[path stringByAppendingPathComponent: name] 
+                                   stringByAppendingPathExtension: @"clr"]);
+        }
+      else
+        {
+          ASSIGN (_fullFileName, path);
+        }
   
       // Unarchive the color list
       
       // TODO [Optm]: Rewrite to initialize directly without unarchiving 
       // in another object
+      NS_DURING
+        {
+          cl =
+            (NSColorList*)[NSUnarchiver unarchiveObjectWithFile: _fullFileName];
+        }
+      NS_HANDLER
+        {
+          cl = nil;
+        }
+      NS_ENDHANDLER ;
 
-      cl = (NSColorList*)[NSUnarchiver unarchiveObjectWithFile: _fullFileName];
-      
       if (cl && [cl isKindOfClass: [NSColorList class]])
 	{
 	  could_load = YES;
@@ -213,6 +306,24 @@ static NSLock *_gnustep_color_list_lock = nil;
 	  ASSIGN(_orderedColorKeys, [NSMutableArray 
 	    arrayWithArray: cl->_orderedColorKeys]);
 	}
+      else if ([[NSFileManager defaultManager] fileExistsAtPath: path])
+        {
+          _colorDictionary = [[NSMutableDictionary alloc] init];
+          _orderedColorKeys = [[NSMutableArray alloc] init];
+	  _is_editable = YES;
+
+          if ([self _readTextColorFile: _fullFileName])
+            {
+              could_load = YES;
+              _is_editable = [[NSFileManager defaultManager] 
+                                   isWritableFileAtPath: _fullFileName];
+            }
+          else
+            {
+              RELEASE (_colorDictionary);
+              RELEASE (_orderedColorKeys);
+            }
+        }
     }
   
   if (could_load == NO)

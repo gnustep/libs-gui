@@ -62,7 +62,30 @@
 //
 // Initializing an NSColorList
 //
+/**
+ * Initializes a new, empty color list registered under given name.
+ */
 - (id)initWithName:(NSString *)name;
+
+/**
+ * <p>Initializes a new color list registered under given name, taking
+ * contents from the file specified in path.  (Path should include the
+ * filename with extension (usually ".clr"), and by convention name should be
+ * the same as filename <em>without</em> the extension.)</p>
+ *  
+ * <p>The format of the file can be either an archive of an NSColorList
+ * or an ASCII format.  ASCII files follow this format:</p>
+ *
+ * <p>first line  =  [#/colors] <br/>
+ * each subsequent line describes a color as [int float+ string] <br/>
+ * the first int describes the method (RGBA, etc.), the floats
+ * provide its arguments (e.g., r, g, b, alpha), and string is name.</p>
+ *
+ * <p>The <em>method</em> corresponds to one of the [NSColor] initializers.
+ * We are looking for documentation of the exact correspondence on OpenStep;
+ * for now the only supported method is "0", which is an RGBA format with
+ * the arguments in order R,G,B, A.</p>
+ */
 - (id)initWithName:(NSString *)name
 	  fromFile:(NSString *)path;
 
