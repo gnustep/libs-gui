@@ -5,7 +5,7 @@
 
    Author:  Jonathan Gapen <jagapen@smithlab.chem.wisc.edu>
    Date: 1999
-  
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -43,29 +43,31 @@
     {
       id	textView;
       NSSize	newTextViewSize;
-      NSSize	newSize;
+      NSSize	size;
       NSSize	inset;
 
       textView = [aNotification object];
       if (textView != _textView)
         {
-	    NSDebugLog(@"NSTextContainer got notification for wrong View %@", textView);
+	    NSDebugLog (@"NSTextContainer got notification for wrong View %@",
+			textView);
 	    return;
 	}
       newTextViewSize = [textView frame].size;
-      newSize = _containerRect.size;
+      size = _containerRect.size;
       inset = [textView textContainerInset];
 
       if (_widthTracksTextView)
 	{
-	  newSize.width = MAX(newTextViewSize.width - (inset.width * 2.0), 0.0);
+	  size.width = MAX (newTextViewSize.width - (inset.width * 2.0), 0.0);
 	}
       if (_heightTracksTextView)
 	{
-	  newSize.height = MAX(newTextViewSize.height - (inset.height * 2.0), 0.0);
+	  size.height = MAX (newTextViewSize.height - (inset.height * 2.0), 
+			     0.0);
 	}
 
-      [self setContainerSize: newSize];
+      [self setContainerSize: size];
     }
 }
 
@@ -83,7 +85,7 @@
 
 - (id) initWithContainerSize: (NSSize)aSize
 {
-  NSDebugLLog(@"NSText", @"NSTextContainer initWithContainerSize");
+  NSDebugLLog (@"NSText", @"NSTextContainer initWithContainerSize");
   _layoutManager = nil;
   _textView = nil;
   _containerRect.size = aSize;
@@ -129,10 +131,10 @@
 	{
 	  NSTextContainer	*container;
 
-	  container = RETAIN([textContainers objectAtIndex: i]);
+	  container = RETAIN ([textContainers objectAtIndex: i]);
 	  [_layoutManager removeTextContainerAtIndex: i];
 	  [newLayoutManager addTextContainer: container];
-	  RELEASE(container);
+	  RELEASE (container);
 	}
     }
 }
@@ -140,16 +142,19 @@
 - (void) setTextView: (NSTextView*)aTextView
 {
   NSNotificationCenter *nc;
+  BOOL informsLayoutManager = NO;
+
   nc = [NSNotificationCenter defaultCenter];
 	  
   if (_textView)
     {
+      informsLayoutManager = YES;
       [_textView setTextContainer: nil];
-      // May we realy switch this off, as somebody else might be listening 
-      // to those notifications?
-      [_textView setPostsFrameChangedNotifications: NO];
-      [nc removeObserver: self name: NSViewFrameDidChangeNotification 
+      [nc removeObserver: self  name: NSViewFrameDidChangeNotification 
 	  object: _textView];
+      /* NB: We do not set posts frame change notifications for the
+	 text view to NO because there could be other observers for
+	 the frame change notifications. */
     }
 
   ASSIGN (_textView, aTextView);
@@ -166,6 +171,11 @@
 	      object: _textView];
 	}
     }
+
+  if (informsLayoutManager == YES)
+    {
+      [_layoutManager textContainerChangedTextView: self];
+    }
 }
 
 - (NSTextView*) textView
@@ -175,13 +185,17 @@
 
 - (void) setContainerSize: (NSSize)aSize
 {
-  if (NSEqualSizes(_containerRect.size, aSize))
-    return;
+  if (NSEqualSizes (_containerRect.size, aSize))
+    {
+      return;
+    }
 
   _containerRect = NSMakeRect (0, 0, aSize.width, aSize.height);
 
   if (_layoutManager)
-    [_layoutManager textContainerChangedGeometry: self];
+    {
+      [_layoutManager textContainerChangedGeometry: self];
+    }
 }
 
 - (NSSize) containerSize
