@@ -1,3 +1,18 @@
+2000-10-17  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSPageLayout.h:
+	Added some ivars
+	* Headers/gnustep/gui/NSPrintInfo.h:
+	Prefixed ivar with underscore.
+	* Source/NSPrintInfo.m:
+	Change references to ivar info to _info.
+	[initPrintInfoDefaults] now works if there is no PrinterAdmin
+	resource. 
+	* Source/NSPageLayout.m:
+	Some basic implementation
+	* Source/NSApplication.m:
+	[runPageLayout:] use real panel.
+
 2000-10-15  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSWindow.m (-orderWindow:relativeTo:): Set visible flag
