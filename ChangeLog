@@ -1,3 +1,19 @@
+2000-05-04  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/NSText.m:
+	Always use the most appropriate RTF* method and other small 
+	internal improvements
+
+	* Source/NSAttributedString.m:
+	Corrected lineBreakBeforeIndex:withinRange: and reorganised the
+	initWithRTF* methods.
+
+	* Headers/gnustep/gui/NSAttributedString.h:
+	Moved two methods from NSTextAttachment.h here
+
+	* Headers/gnustep/gui/NSTextAttachment.h:
+	Moved two methods into NSAttributedString.h
+
 Thu May  4 19:11:48 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSPanel.m ([GSAlertPanel -initWithContentRect:styleMask:backing:defer:screen:]): 
