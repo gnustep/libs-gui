@@ -13,14 +13,18 @@
 		yjchenx@hotmail.com
 	    </email>
 	</author>
-	<version>2.1 Beta</version>
-	<date>2003-07-21</date>
+	<author name="Song Woo-il">
+	    <email address="bemess@kornet.net">
+	    </email>
+	</author>
+	<version>2.2 Alpha</version>
+	<date>2004-04-08</date>
 	<abstract>
 	    This article illustrates how to set up GNUstep for the East
 	    Asian languages with some working examples.  It also includes
 	    some useful information applicable to other non-European languages.
 	</abstract>
-	<copy>2003 Free Software Foundation, Inc.</copy>
+	<copy>2004, 2003 Free Software Foundation, Inc.</copy>
     </head>
     <body>
 	<chapter>
@@ -163,6 +167,7 @@
 		NSUTF7StringEncoding			// RFC 2152
 		NSGSM0338StringEncoding			// GSM (mobile phone) default alphabet
 		NSBIG5StringEncoding			// Traditional chinese
+		NSKoreanEUCStringEncoding		// Korean
 	    </example>
 	    <p>
 		Of these values, choose an appropriate one for your purpose and set the
@@ -395,9 +400,59 @@
 		<heading>
 		    Korean
 		</heading>
-		<p>
-		    (If someone could contribute some stuff here, we would appreciate it.)
-		</p>
+		<subsect>
+		    <heading>
+			Environmental Variables:
+		    </heading>
+		    <example>
+			GNUSTEP_STRING_ENCODING=NSKoreanEUCEncoding
+		    </example>
+		</subsect>
+		<subsect>
+		    <heading>
+			.nfont package:
+		    </heading>
+		    <p>
+			GPL'ed Korean fonts are available at
+			<code>http://chem.skku.ac.kr/~wkpark/project/font/UnFonts/</code>
+		    </p>
+		    <p>
+			Create a directory for a .nfont package for Korean fonts, say
+			<code>Un.nfont</code>:
+		    </p>
+		    <example>
+			$ cd $GNUSTEP_USER_ROOT/Library/Fonts
+			$ mkdir Un.nfont
+			$ cd Un
+		    </example>
+		    <p>
+			And write a <code>FontInfo.plist</code> (see below).
+		    </p>
+		</subsect>
+		<subsect>
+		    <heading>
+			Un.nfont/FontInfo.plist:
+		    </heading>
+		    <example>
+			{
+			    Faces = (
+				{
+				    PostScriptName = "Un";
+				    Name = "Regular";
+				    Files = ("UnDotum.ttf");
+				}
+			    );
+			}
+		    </example>
+		</subsect>
+		<subsect>
+		    <heading>
+			User Defaults:
+		    </heading>
+		    <example>
+			$ defaults write NSGlobalDomain NSFont Un
+		    </example>
+		</subsect>
 	    </section>
 	</chapter>
 	<chapter>
