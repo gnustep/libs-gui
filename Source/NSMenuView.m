@@ -140,7 +140,6 @@ static float GSMenuBarHeight = 25.0; // a guess.
 - (void)setHighlightedItemIndex: (int)index
 {
   id anItem;
-  BOOL _closeASubmenu = NO;
 
   [self lockFocus];
 
@@ -173,20 +172,24 @@ static float GSMenuBarHeight = 25.0; // a guess.
     }
 
     if (menuv_highlightedItemIndex != index) {
+
       anItem = [menuv_items_link objectAtIndex: index];
 
-      [anItem highlight: YES
-  	      withFrame: [self rectOfItemAtIndex: index]
-	         inView: self];
+      if ([anItem isEnabled])
+        {
+          [anItem highlight: YES
+  	          withFrame: [self rectOfItemAtIndex: index]
+	             inView: self];
 
-      [anItem setState: 1];
+          [anItem setState: 1];
 
-      if ([anItem hasSubmenu] && ![[anItem target] isTornOff])
-        [[anItem target] display];
+          if ([anItem hasSubmenu] && ![[anItem target] isTornOff])
+            [[anItem target] display];
+	}
 
       // set ivar to new index
       menuv_highlightedItemIndex = index;
-    } else {
+    } else {	      
       menuv_highlightedItemIndex = -1;
     }
   }

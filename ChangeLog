@@ -3,6 +3,8 @@
 	* Source/NSMenuView.m: some fixes to get things to work correctly
 	when calling menu item actions. Also autoenable should be working
 	a little better.
+	In setHighlightedItemIndex: if new item is disabled do not
+	highlight or target action.
 	* Source/NSMenuItemCell.m: drawing fixes for disabled cells.
 
 1999-07-20  Michael Hanni  <mhanni@sprintmail.com>
