@@ -1,3 +1,9 @@
+2003-10-25 12:53  Matt Rice <ratmice@yahoo.com>
+
+	* Source/NSWorkspace.m (-_connectApplication:): Ignore the path to
+	the application when extracting the port name. (Committed by
+	Alexander Malmberg.)
+
 2003-10-24  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: Change a few uses of '/' in stgrings to

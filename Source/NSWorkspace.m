@@ -2083,7 +2083,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	      host = @"";
 	    }
 	}
-      port = [appName stringByDeletingPathExtension];
+      port = [[appName lastPathComponent] stringByDeletingPathExtension];
       /*
        *	Try to contact a running application.
        */
