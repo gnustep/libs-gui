@@ -1,3 +1,23 @@
+2001-12-21  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSView.m
+	Implemented dragFile:fromRect:slideBack:event:]. Moved code from
+	[dragImage:...slideBack:] to NSWindow and call this.
+	* Source/NSWindow.m
+	New Implemantion of [dragImage:...slideBack:]. Replaced call to
+	[NSGraphicContext _postExternalEvents:] with [NSDragInfo
+	postDragEvent:]. 
+	Replaced most [NSScreen mainScreen] with [self screen].
+	* Headers/gnustep/gui/NSGraphicContext.h
+	Removed method [_postExternalEvents:]. Added method [GSResolutionForScreen:].
+	* Headers/gnustep/gui/NSGraphic.h
+	* Headers/gnustep/gui/GSMethodTable.h
+	Added GSResolutionForScreen.
+	* Source/NSGraphicContext.m
+	Implemented [GSResolutionForScreen:] with code from NSScreen.
+	* Source/NSScreen.m
+	[deviceDescription] call new function GSResolutionForScreen.
+	
 Wed Dec 19 17:55:25 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSTextView.m ([NSTextView -moveToEndOfLine:]): Fixed typo
