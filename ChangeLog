@@ -1,3 +1,15 @@
+Thu Feb  4  9:35:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Tools/dummy.m: renamed to Functions.m
+	* Tools/Functions.m: created from dummy.m -some functions added
+	* Tools/GNUmakefile: updated dummy.m to Functions.m
+	* Source/NSApplication.m: Fixed to update all only when necessary.
+	* Source/NSWindow.m: Fix to tell application when update required.
+	The following files revised by ... 
+	* Source/NSScroller.m: Drawing fixes
+	* Source/NSScrollView.m: Drawing fixes
+	* Source/NSClipViem.m: Drawing fixes
+
 1999-02-01  Adam Fedor  <fedor@gnu.org>
 
 	* Model/test.m (main): Fix LIB_FOUNDATION ifdef.
