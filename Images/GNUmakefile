@@ -51,6 +51,7 @@ common_HomeDirectory.tiff \
 common_Mount.tiff \
 common_Miniaturize.tiff \
 common_MiniaturizeH.tiff \
+common_MiniWindowTile.tiff \
 common_Unmount.tiff \
 common_RadioOn.tiff \
 common_RadioOff.tiff \
