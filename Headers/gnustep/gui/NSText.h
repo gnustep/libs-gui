@@ -112,16 +112,14 @@ typedef enum _NSSelectionAffinity {
     unsigned uses_ruler: 1;
     unsigned is_ruler_visible: 1;
     unsigned smart_insert_delete: 1;
+    unsigned allows_undo: 1;
   } _tf;
+  NSMutableDictionary *_typingAttributes;
+  NSColor *_background_color;
   NSRange _selected_range;
   NSColor *_caret_color;
   NSSize _minSize;
   NSSize _maxSize;
-  NSMutableDictionary *_typingAttributes;
-  NSTextAlignment _alignment;
-  NSFont *_default_font;
-  NSColor *_background_color;
-  NSColor *_text_color;
   
   int _spellCheckerDocumentTag;
   
@@ -296,19 +294,20 @@ typedef enum _NSSelectionAffinity {
 @end
 
 
-@interface NSText(GNUstepExtension)
-// GNU extension (override it if you want other characters treated 
-// as newline characters)
-+ (NSString*) newlineString;	
+@interface NSText(NSTextView)
+// Methods that should be declared on NSTextView, but are usable for NSText
+- (void) setRulerVisible: (BOOL)flag;
 
-// GNU extension
-- (void) replaceRange: (NSRange)range 
- withAttributedString: (NSAttributedString*)attrString;
-- (unsigned) textLength;
+- (NSRange)rangeForUserTextChange;
+- (NSRange)rangeForUserCharacterAttributeChange;
+- (NSRange)rangeForUserParagraphAttributeChange;
 
-//
-// these NSTextView methods are here only informally (GNU extensions)
-//
+- (BOOL)shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString;
+- (void)didChangeText;
+
+- (void) setAlignment: (NSTextAlignment)alignment
+                range: (NSRange)aRange;
+
 - (int) spellCheckerDocumentTag;
 
 // changed to only except class NSString
@@ -330,6 +329,19 @@ typedef enum _NSSelectionAffinity {
 
 - (NSArray*) acceptableDragTypes;
 - (void) updateDragTypeRegistration;
+@end
+
+
+@interface NSText(GNUstepExtension)
+// GNU extension (override it if you want other characters treated 
+// as newline characters)
++ (NSString*) newlineString;	
+
+// GNU extension
+- (void) replaceRange: (NSRange)range 
+ withAttributedString: (NSAttributedString*)attrString;
+- (unsigned) textLength;
+
 @end
 
 /* Notifications */
