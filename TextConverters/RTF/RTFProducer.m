@@ -198,7 +198,7 @@
     {
       NSMutableString	*result;
       unsigned int count = [colorDict count];
-      NSMutableArray *list = [NSMutableArray arrayWithCapacity: count];
+      id list[count];
       NSEnumerator *keyEnum = [colorDict keyEnumerator];
       id next;
       int i;
@@ -206,14 +206,14 @@
       while ((next = [keyEnum nextObject]) != nil)
 	{
 	  NSNumber *cn = [colorDict objectForKey: next];
-	  [list insertObject: next atIndex: [cn intValue]-1];
+	  list[[cn intValue]-1] =  next;
 	}
 
       result = (NSMutableString*)[NSMutableString stringWithString: @"{\\colortbl;"];
       for (i = 0; i < count; i++)
 	{
-	  NSColor *color = [[list objectAtIndex: i] 
-			       colorUsingColorSpaceName: NSCalibratedRGBColorSpace];
+	  NSColor *color = [list[i] colorUsingColorSpaceName: 
+				    NSCalibratedRGBColorSpace];
 	  [result appendString: [NSString stringWithFormat:
 					    @"\\red%d\\green%d\\blue%d;",
 					  (int)([color redComponent]*255),
