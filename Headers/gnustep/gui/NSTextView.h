@@ -115,8 +115,8 @@ therefore be stored in the NSLayoutManager to avoid problems.
        views in sync. */
     unsigned multiple_textviews:1;
 
-    /* These two really are shared, but they're cached, so sync shouldn't
-    be an issue. */
+    /* These two really are shared, but they're cached, They must be updated
+    whenever the delegate changes (including indirect changes). */
     /* YES if delegate responds to
        `shouldChangeTextInRange:replacementString:' */
     unsigned delegate_responds_to_should_change:1;
@@ -275,33 +275,44 @@ and the typing attributed will be used.
 -(void) replaceCharactersInRange: (NSRange)aRange /* GNUstep extension. */
 	    withAttributedString: (NSAttributedString *)aString;
 
-@end
 
 
-@interface NSTextView (user_actions)
+/*** Additional Font menu commands ***/
 
--(void) alignJustified: (id)sender; /* mosx */
-
--(void) turnOffKerning: (id)sender;
--(void) tightenKerning: (id)sender;
--(void) loosenKerning: (id)sender;
--(void) useStandardKerning: (id)sender;
-
--(void) turnOffLigatures: (id)sender;
--(void) useStandardLigatures: (id)sender;
--(void) useAllLigatures: (id)sender;
-
--(void) raiseBaseline: (id)sender;
--(void) lowerBaseline: (id)sender;
-
--(void) toggleTraditionalCharacterShape: (id)sender; /* mosx */
-
--(void) transpose: (id)sender; /* not OPENSTEP */
-
-@end
+/* These complete the set of range: type set methods. to be equivalent
+to the set of non-range taking varieties. */
+-(void) setAlignment: (NSTextAlignment)alignment  range: (NSRange)range;
 
 
-@interface NSTextView (leftovers)
+
+-(void) setRulerVisible: (BOOL)flag;
+-(BOOL) usesRuler;
+-(void) setUsesRuler: (BOOL)flag;
+-(BOOL) isContinuousSpellCheckingEnabled; /* mosx */
+-(void) setContinuousSpellCheckingEnabled: (BOOL)flag; /* mosx */
+-(BOOL) allowsUndo; /* mosx */
+-(void) setAllowsUndo: (BOOL)flag; /* mosx */
+-(BOOL) smartInsertDeleteEnabled;
+-(void) setSmartInsertDeleteEnabled: (BOOL)flag;
+
+
+/* These methods are like paste: (from NSResponder) but they restrict
+the acceptable type of the pasted data.  They are suitable as menu
+actions for appropriate "Paste As" submenu commands. */
+-(void) pasteAsPlainText: (id)sender;
+-(void) pasteAsRichText: (id)sender;
+
+
+/*** Dealing with user changes ***/
+
+-(BOOL) shouldChangeTextInRange: (NSRange)affectedCharRange
+	      replacementString: (NSString *)replacementString;
+-(void) didChangeText;
+
+-(NSRange) rangeForUserTextChange;
+-(NSRange) rangeForUserCharacterAttributeChange;
+-(NSRange) rangeForUserParagraphAttributeChange;
+
 
 
 /*** Text container stuff ***/
@@ -335,21 +346,63 @@ it yourself. */
 /*** Sizing methods ***/
 
 /* Sets the frame size of the view to desiredSize constrained within
-min. and max. size. */
+(effective) minimum size and maximum size, and to the directions in which
+the text view is resizable. */
 -(void) setConstrainedFrameSize: (NSSize)desiredSize;
 
 
-/*** Additional Font menu commands ***/
 
-/* These complete the set of range: type set methods. to be equivalent
-to the set of non-range taking varieties. */
--(void) setAlignment: (NSTextAlignment)alignment  range: (NSRange)range;
+-(void) setSelectedTextAttributes: (NSDictionary *)attributeDictionary;
+-(NSDictionary *) selectedTextAttributes;
+
+-(void) setInsertionPointColor: (NSColor *)color;
+-(NSColor *) insertionPointColor;
+
+
+/*** Marked range ***/
+
+-(void) setMarkedTextAttributes: (NSDictionary *)attributeDictionary;
+-(NSDictionary *) markedTextAttributes;
+
+
+@end
+
+
+/*
+These methods are implemented in NSTextView_actions.m. See the comment in
+that file for details on the split and which methods are for
+user/programmatic changes of the text.
+*/
+@interface NSTextView (user_actions)
+
+-(void) alignJustified: (id)sender; /* mosx */
+
+-(void) turnOffKerning: (id)sender;
+-(void) tightenKerning: (id)sender;
+-(void) loosenKerning: (id)sender;
+-(void) useStandardKerning: (id)sender;
+
+-(void) turnOffLigatures: (id)sender;
+-(void) useStandardLigatures: (id)sender;
+-(void) useAllLigatures: (id)sender;
+
+-(void) raiseBaseline: (id)sender;
+-(void) lowerBaseline: (id)sender;
+
+-(void) toggleTraditionalCharacterShape: (id)sender; /* mosx */
+
+-(void) transpose: (id)sender; /* not OPENSTEP */
+
+-(void) toggleContinuousSpellChecking: (id)sender; /* mosx */
+
+@end
+
+
+@interface NSTextView (leftovers)
 
 
 
 /*** Ruler support ***/
-
--(void) setRulerVisible: (BOOL)flag;
 
 -(void) rulerView: (NSRulerView *)ruler didMoveMarker: (NSRulerMarker *)marker;
 -(void) rulerView: (NSRulerView *)ruler didRemoveMarker: (NSRulerMarker *)marker;
@@ -430,33 +483,17 @@ already been laid out. */
 -(NSSelectionGranularity) selectionGranularity;
 -(void) setSelectionGranularity: (NSSelectionGranularity)granularity;
 
--(void) setSelectedTextAttributes: (NSDictionary *)attributeDictionary;
--(NSDictionary *) selectedTextAttributes;
-
--(void) setInsertionPointColor: (NSColor *)color;
--(NSColor *) insertionPointColor;
-
 -(void) updateInsertionPointStateAndRestartTimer: (BOOL)restartFlag;
 
-
-/*** Marked range ***/
-
--(void) setMarkedTextAttributes: (NSDictionary *)attributeDictionary;
--(NSDictionary *) markedTextAttributes;
 
 
 /*** Spell checking ***/
 
 -(int) spellCheckerDocumentTag;
--(BOOL) isContinuousSpellCheckingEnabled; /* mosx */
--(void) setContinuousSpellCheckingEnabled: (BOOL)flag; /* mosx */
--(void) toggleContinuousSpellChecking: (id)sender; /* mosx */
 
 
 /*** Smart copy/paste/delete support ***/
 
--(BOOL) smartInsertDeleteEnabled;
--(void) setSmartInsertDeleteEnabled: (BOOL)flag;
 -(NSRange) smartDeleteRangeForProposedRange: (NSRange)proposedCharRange;
 -(void) smartInsertForString: (NSString *)aString
 	      replacingRange: (NSRange)charRange
@@ -466,23 +503,9 @@ already been laid out. */
 
 /** TODO: categorize */
 
--(void) setRulerVisible: (BOOL)flag;
--(BOOL) usesRuler;
--(void) setUsesRuler: (BOOL)flag;
 
 -(NSDictionary *) typingAttributes;
 -(void) setTypingAttributes: (NSDictionary *)attrs;
-
--(BOOL) shouldChangeTextInRange: (NSRange)affectedCharRange
-	      replacementString: (NSString *)replacementString;
--(void) didChangeText;
-
--(NSRange) rangeForUserTextChange;
--(NSRange) rangeForUserCharacterAttributeChange;
--(NSRange) rangeForUserParagraphAttributeChange;
-
--(BOOL) allowsUndo; /* mosx */
--(void) setAllowsUndo: (BOOL)flag; /* mosx */
 
 -(void) updateRuler;
 -(void) updateFontPanel;
@@ -490,11 +513,6 @@ already been laid out. */
 -(NSArray *) acceptableDragTypes;
 -(void) updateDragTypeRegistration;
 
-/* These methods are like paste: (from NSResponder) but they restrict
-the acceptable type of the pasted data.  They are suitable as menu
-actions for appropriate "Paste As" submenu commands. */
--(void) pasteAsPlainText: (id)sender;
--(void) pasteAsRichText: (id)sender;
 
 
 @end
@@ -507,6 +525,10 @@ actions for appropriate "Paste As" submenu commands. */
  * first text view object.  The NSLayoutManager needs to call this
  * method to update this information. */
 -(void) _updateMultipleTextViews;
+
+/* For internal use. */
+-(void) _syncTextViewsByCalling: (SEL)action  withFlag: (BOOL)flag;
+-(void) _recacheDelegateResponses;
 @end
 
 

@@ -46,6 +46,9 @@ libgnustep-gui_C_FILES =
 
 # The Objective-C source files to be compiled
 libgnustep-gui_OBJC_FILES = Functions.m \
+NSTextView.m \
+NSTextView_actions.m \
+\
 NSActionCell.m \
 NSAffineTransform.m \
 NSApplication.m \
@@ -146,7 +149,6 @@ NSTextContainer.m \
 NSTextField.m \
 NSTextFieldCell.m \
 NSTextStorage.m \
-NSTextView.m \
 NSToolbar.m \
 NSToolbarItem.m \
 NSView.m \

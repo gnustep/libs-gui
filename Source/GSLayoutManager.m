@@ -1151,7 +1151,7 @@ it should still be safe. might lose opportunities to merge runs, though.
   if (actualRange)
     *actualRange = range;
 
-	[self _glyphDumpRuns];
+//	[self _glyphDumpRuns];
 }
 
 

@@ -56,23 +56,23 @@
 
 /* TODO */
 
-- (void) invalidateDisplayForGlyphRange: (NSRange)aRange;
-- (void) invalidateDisplayForCharacterRange: (NSRange)aRange; /* not STRICT_40 ?? */
+-(void) invalidateDisplayForGlyphRange: (NSRange)aRange;
+-(void) invalidateDisplayForCharacterRange: (NSRange)aRange; /* not STRICT_40 ?? */
 
 - (NSTextView *) firstTextView;
 - (NSTextView *) textViewForBeginningOfSelection;
 - (BOOL) layoutManagerOwnsFirstResponderInWindow: (NSWindow *)window;
 
-- (NSArray *) rulerMarkersForTextView: (NSTextView *)textView
-	paragraphStyle: (NSParagraphStyle *)style
-	ruler: (NSRulerView *)ruler;
-- (NSView *) rulerAccessoryViewForTextView: (NSTextView *)textView
-	paragraphStyle: (NSParagraphStyle *)style
-	ruler: (NSRulerView *)ruler
-	enabled: (BOOL)isEnabled;
+-(NSArray *) rulerMarkersForTextView: (NSTextView *)textView
+		      paragraphStyle: (NSParagraphStyle *)style
+			       ruler: (NSRulerView *)ruler;
+-(NSView *) rulerAccessoryViewForTextView: (NSTextView *)textView
+			   paragraphStyle: (NSParagraphStyle *)style
+				    ruler: (NSRulerView *)ruler
+				  enabled: (BOOL)isEnabled;
 
-- (float) hyphenationFactor;
-- (void) setHyphenationFactor: (float)factor;
+-(float) hyphenationFactor;
+-(void) setHyphenationFactor: (float)factor;
 
 @end
 

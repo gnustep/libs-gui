@@ -41,10 +41,11 @@ http://wiki.gnustep.org/index.php/NominallySpacedGlyphs
 #include "AppKit/NSLayoutManager.h"
 #include "AppKit/GSLayoutManager_internal.h"
 
+#include <AppKit/NSColor.h>
 #include <AppKit/NSTextContainer.h>
 #include <AppKit/NSTextStorage.h>
+#include <AppKit/NSWindow.h>
 #include <AppKit/DPSOperators.h>
-#include <AppKit/NSColor.h>
 
 
 
@@ -91,10 +92,19 @@ http://wiki.gnustep.org/index.php/NominallySpacedGlyphs
 - (void) textContainerChangedTextView: (NSTextContainer *)aContainer
 {
 /* TODO: what do we do here? invalidate the displayed range for that
-container? */
+container? necessary? */
   int i;
+
+  /* NSTextContainer will send the necessary messages to update the text
+  view that was disconnected from us. */
   for (i = 0; i < num_textcontainers; i++)
-    [[textcontainers[i].textContainer textView] _updateMultipleTextViews];
+    {
+      [[textcontainers[i].textContainer textView] _updateMultipleTextViews];
+      if (textcontainers[i].textContainer == aContainer)
+	{
+	  [[aContainer textView] setNeedsDisplay: YES];
+	}
+    }
 }
 
 
@@ -264,14 +274,127 @@ line frag rect. */
 }
 
 
-- (NSRange) glyphRangeForBoundingRect: (NSRect)bounds 
-		      inTextContainer: (NSTextContainer *)container
+-(NSRange) glyphRangeForBoundingRect: (NSRect)bounds
+		     inTextContainer: (NSTextContainer *)container
 {
+  int i, j;
+  int low, high, mid;
+  textcontainer_t *tc;
+  linefrag_t *lf;
+
+  NSRange range;
+
+
 /*  NSLog(@"%@ %s  (%g %g)+(%g %g) in %@\n", self, __PRETTY_FUNCTION__,
 	bounds.origin.x, bounds.origin.y,
 	bounds.size.width, bounds.size.height,
 	container);*/
-  return NSMakeRange(0, [self numberOfGlyphs]);
+
+  for (tc = textcontainers, i = 0; i < num_textcontainers; i++, tc++)
+    if (tc->textContainer == container)
+      break;
+  if (i == num_textcontainers)
+    {
+      NSLog(@"%s: invalid text container", __PRETTY_FUNCTION__);
+      return NSMakeRange(0, 0);
+    }
+
+  [self _doLayoutToContainer: i
+    point: NSMakePoint(NSMaxX(bounds),NSMaxY(bounds))];
+
+  if (!tc->num_linefrags)
+    return NSMakeRange(0, 0);
+
+
+  /* Find first glyph in bounds. */
+
+  /* Find right "line", ie. the first "line" not above bounds. */
+  for (low = 0, high = tc->num_linefrags - 1; low < high; )
+    {
+      mid = (low + high) / 2;
+      lf = &tc->linefrags[mid];
+      if (NSMaxY(lf->rect) > NSMinY(bounds))
+	{
+	  high = mid;
+	}
+      else
+	{
+	  low = mid + 1;
+	}
+    }
+
+  i = low;
+  lf = &tc->linefrags[i];
+
+//  printf("low=%i (%g+%g) %g\n",low,lf->rect.origin.y,lf->rect.size.height,NSMinY(bounds));
+
+  if (NSMaxY(lf->rect) < NSMinY(bounds))
+    {
+//      printf("  empty (bounds below text)\n");
+      return NSMakeRange(0, 0);
+    }
+
+  /* Scan to first line frag intersecting bounds horizontally. */
+  while (i < tc->num_linefrags - 1 &&
+	 NSMinY(lf[0].rect) == NSMinY(lf[1].rect) &&
+	 NSMaxX(lf[1].rect) < NSMinX(bounds))
+    i++, lf++;
+
+  /* TODO: find proper position in line frag rect */
+  range.location = lf->pos;
+
+
+  /* Find last glyph in bounds. */
+
+  /* Find right "line", ie. last "line" not below bounds. */
+  for (low = 0, high = tc->num_linefrags - 1; low < high; )
+    {
+      mid = (low + high) / 2;
+      lf = &tc->linefrags[mid];
+      if (NSMinY(lf->rect) > NSMaxY(bounds))
+	{
+	  high = mid;
+	}
+      else
+	{
+	  low = mid + 1;
+	}
+    }
+  i = low;
+  lf = &tc->linefrags[i];
+
+  if (i && NSMinY(lf->rect) > NSMaxY(bounds))
+    i--, lf--;
+
+//  printf("low=%i (%i) (%g+%g) %g\n",low,tc->num_linefrags,lf->rect.origin.y,lf->rect.size.height,NSMaxY(bounds));
+
+  if (NSMinY(lf->rect) > NSMaxY(bounds))
+    {
+//      printf("  empty (bounds above text)\n");
+      return NSMakeRange(0, 0);
+    }
+
+  /* Scan to last line frag intersecting bounds horizontally. */
+  while (i > 0 &&
+	 NSMinY(lf[0].rect) == NSMinY(lf[-1].rect) &&
+	 NSMinX(lf[1].rect) > NSMaxX(bounds))
+    i--, lf--;
+//  printf("i=%i\n",i);
+
+  /* TODO: find proper position in line frag rect */
+
+  j = lf->pos + lf->length;
+  if (j <= range.location)
+    {
+//      printf("  empty (bound between lines?)\n");
+      return NSMakeRange(0, 0);
+    }
+
+  range.length = j - range.location;
+/*  printf("  range= %i - %i  |%@|\n",
+	range.location,range.length,
+	[[_textStorage string] substringWithRange: range]);*/
+  return range;
 }
 
 - (NSRange) glyphRangeForBoundingRectWithoutAdditionalLayout: (NSRect)bounds
@@ -671,8 +794,14 @@ for (i = 0; i < gbuf_len; i++) printf("   %3i : %04x\n", i, gbuf[i]); */
 - (void) removeTextContainerAtIndex: (unsigned int)index
 {
   int i;
+  NSTextView *tv = [textcontainers[index].textContainer textView];
+
+  RETAIN(tv);
 
   [super removeTextContainerAtIndex: index];
+
+  [tv _updateMultipleTextViews];
+  RELEASE(tv);
 
   for (i = 0; i < num_textcontainers; i++)
     [[textcontainers[i].textContainer textView] _updateMultipleTextViews];
@@ -683,6 +812,159 @@ for (i = 0; i < gbuf_len; i++) printf("   %3i : %04x\n", i, gbuf[i]); */
 {
   DESTROY(_typingAttributes);
   [super dealloc];
+}
+
+
+/* TODO */
+-(float) hyphenationFactor
+{
+  return 0.0;
+}
+
+-(void) setHyphenationFactor: (float)factor
+{
+  NSLog(@"Warning: (NSLayoutManager) %@ not implemented",__PRETTY_FUNCTION__);
+}
+
+
+-(NSTextView *) firstTextView
+{
+  int i;
+  NSTextView *tv;
+  for (i = 0; i < num_textcontainers; i++)
+    {
+      tv = [textcontainers[i].textContainer textView];
+      if (tv)
+        return tv;
+    }
+  return nil;
+}
+
+-(NSTextView *) textViewForBeginningOfSelection
+{
+  /* TODO */
+  return [self firstTextView];
+}
+
+-(BOOL) layoutManagerOwnsFirstResponderInWindow: (NSWindow *)window
+{
+  int i;
+  NSView *tv;
+  NSView *v = [window firstResponder];
+
+  for (i = 0; i < num_textcontainers; i++)
+    {
+      tv = (NSView *)[textcontainers[i].textContainer textView];
+      if (tv == v)
+        return YES;
+    }
+  return NO;
+}
+
+
+-(NSArray *) rulerMarkersForTextView: (NSTextView *)textView
+		      paragraphStyle: (NSParagraphStyle *)style
+			       ruler: (NSRulerView *)ruler
+{
+  /* TODO */
+  return nil;
+}
+
+-(NSView *) rulerAccessoryViewForTextView: (NSTextView *)textView
+			   paragraphStyle: (NSParagraphStyle *)style
+				    ruler: (NSRulerView *)ruler
+				  enabled: (BOOL)isEnabled
+{
+  /* TODO */
+  return nil;
+}
+
+
+/*
+TODO: not really clear what these should do
+*/
+-(void) invalidateDisplayForGlyphRange: (NSRange)aRange
+{
+  int i;
+  unsigned int m;
+  NSRange r;
+  NSRect rect;
+  NSPoint p;
+  NSTextView *tv;
+
+  for (i = 0; i < num_textcontainers; i++)
+    {
+      if (!textcontainers[i].started)
+        break;
+
+      if (textcontainers[i].pos >= aRange.location + aRange.length)
+        break; /* we're past the end of the range */
+
+      m = textcontainers[i].pos + textcontainers[i].length;
+      if (m < aRange.location)
+        continue;
+
+      r.location = textcontainers[i].pos;
+      if (aRange.location > r.location)
+        r.location = aRange.location;
+
+      if (m > aRange.location + aRange.length)
+        m = aRange.location + aRange.length;
+
+      r.length = m - r.location;
+
+      /* Range r in this text view should be invalidated. */
+      rect = [self boundingRectForGlyphRange: r
+ 	       inTextContainer: textcontainers[i].textContainer];
+      tv = [textcontainers[i].textContainer textView];
+      p = [tv textContainerOrigin];
+      rect.origin.x += p.x;
+      rect.origin.y += p.y;
+
+      [tv setNeedsDisplayInRect: rect];
+    }
+}
+
+-(void) invalidateDisplayForCharacterRange: (NSRange)aRange
+{
+  if (layout_char < aRange.location)
+    return;
+  if (layout_char < aRange.location + aRange.length)
+    aRange.length = layout_char - aRange.location;
+  [self invalidateDisplayForGlyphRange:
+    [self glyphRangeForCharacterRange: aRange
+      actualCharacterRange: NULL]];
+
+}
+
+
+-(void) textStorage: (NSTextStorage *)aTextStorage
+	     edited: (unsigned int)mask
+	      range: (NSRange)range
+     changeInLength: (int)lengthChange
+   invalidatedRange: (NSRange)invalidatedRange
+{
+  unsigned int g;
+  int i;
+
+  [super textStorage: aTextStorage
+	edited: mask
+	range: range
+	changeInLength: lengthChange
+	invalidatedRange: invalidatedRange];
+
+  /* Invalidate display from the first glyph not laid out (which will
+  generally be the first glyph to have been invalidated). */
+  g = layout_glyph;
+
+  for (i = 0; i < num_textcontainers; i++)
+    {
+      if (textcontainers[i].complete &&
+	  g < textcontainers[i].pos + textcontainers[i].length)
+        continue;
+
+      [[textcontainers[i].textContainer textView] setNeedsDisplay: YES];
+    }
 }
 
 @end
