@@ -1005,7 +1005,26 @@ void __dummy_GMAppKit_functionForLinking() {}
 // subclasses may not want to encode all subviews...
 - (NSArray *)subviewsForModel
 {
+#ifdef GNU_GUI_LIBRARY  
   return [self subviews];
+#else /* Do not encode Apple's private classes */
+  NSArray        *views;
+  NSMutableArray *viewsToEncode;
+  id             e, o;
+  NSString       *classString;
+  
+  views = [self subviews];
+  viewsToEncode = [NSMutableArray array];
+  e = [views objectEnumerator];
+  while ((o = [e nextObject]))
+    {
+      classString = NSStringFromClass ([o class]);
+      if ([classString isEqualToString: @"_NSKeyboardFocusClipView"] == NO)
+	[viewsToEncode addObject: o];
+    }
+  
+  return viewsToEncode;
+#endif
 }
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
