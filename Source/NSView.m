@@ -1243,12 +1243,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 	  DPSsetgstate(ctxt, gstate);
 	  DPSgsave(ctxt);
 	}
-      else
-	{
-	  /* This is just temporary so subclasses have a gstate to do
-	     composite/disolve operations with */
-	  gstate = window_gstate;
-	}
     }
   GSWViewIsFlipped(ctxt, _rFlags.flipped_view);
 }
