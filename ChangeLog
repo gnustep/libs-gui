@@ -1,3 +1,15 @@
+Tue Dec 28 15:58:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Initial hack of support for encoding/decoding images - untested.
+	* Source/NSBitmapImageRep.m: Code for writing tiffs etc.
+	* Source/NSImage.m: Archiving support and tifying.
+	* Source/NSImageRep.m: Archiving support and tifying.
+	* Source/tiff.m: modifications for compression and for writing.
+	* Headers/gnustep/gui/NSBitmapImageRep.h: tidy and support writing.
+	* Headers/gnustep/gui/NSImage.h: ditto
+	* Headers/gnustep/gui/NSImageRep.h: ditto
+	* Headers/gnustep/gui/nsimage-tiff.h: ditto
+
 1999-12-24  David Lazaro  <khelekir@encomix.es>
 
 	* Source/NSMenuView.m ([NSMenuView -trackWithEvent:]): Added hysteresis

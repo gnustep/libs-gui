@@ -42,7 +42,7 @@ enum {
   NSImageRepMatchesDevice
 };
 
-@interface NSImageRep : NSObject <NSCoding>
+@interface NSImageRep : NSObject <NSCoding, NSCopying>
 {
   // Attributes
   NSString* _colorSpace;

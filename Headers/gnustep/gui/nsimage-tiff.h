@@ -48,6 +48,7 @@ typedef struct {
     u_short planarConfig;     /* meshed or separate */
     u_short photoInterp;      /* photometric interpretation of bitmap data, */
     u_short compression;
+    int     quality;	      /* compression quality (for jpeg) 1 to 255 */
     int     numImages;	      /* number of images in tiff */
     int     error;
 } NSTiffInfo; 
@@ -61,8 +62,8 @@ typedef struct {
 
 typedef char* realloc_data_callback(char* data, long size);
 
-extern TIFF* NSTiffOpenData(char* data, long size, const char* mode,
-			    realloc_data_callback* realloc_data);
+extern TIFF* NSTiffOpenDataRead(const char* data, long size);
+extern TIFF* NSTiffOpenDataWrite(char **data, long *size);
 extern int   NSTiffClose(TIFF* image);
 
 extern int   NSTiffWrite(TIFF* image, NSTiffInfo* info, char* data);

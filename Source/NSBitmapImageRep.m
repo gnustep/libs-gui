@@ -93,6 +93,7 @@
 		bytesPerRow: 0
 		bitsPerPixel: 0];
   compression = info->compression;
+  comp_factor = 255 * (1 - ((float)info->quality)/100.0);
 
   if (NSTiffRead(imageNumber, image, NULL, [self bitmapData]))
     {
@@ -112,15 +113,14 @@
   return nil;
 }
 
-+ (NSArray *) imageRepsWithData: (NSData *)tiffData
++ (NSArray*) imageRepsWithData: (NSData *)tiffData
 {
-  int images;
-  TIFF*       image;
-  NSTiffInfo* info;
-  NSMutableArray* array;
+  int		images;
+  TIFF		*image;
+  NSTiffInfo	*info;
+  NSMutableArray*array;
 
-  image = NSTiffOpenData((char *)[tiffData bytes], [tiffData length], 
-			 "r", NULL);
+  image = NSTiffOpenDataRead((char *)[tiffData bytes], [tiffData length]);
   if (!image)
     {
       [NSException raise:NSTIFFException format: @"Read invalid TIFF data"];
@@ -133,8 +133,8 @@
       NSBitmapImageRep* imageRep;
 
       OBJC_FREE(info);
-      imageRep = [[[[self class] alloc]
-		   _initFromImage: image number: images] autorelease];
+      imageRep = AUTORELEASE([[[self class] alloc]
+	_initFromImage: image number: images]);
       [array addObject: imageRep];
       images++;
     }
@@ -149,9 +149,8 @@
 {
   TIFF 	*image;
 
-  image = NSTiffOpenData((char *)[tiffData bytes], [tiffData length], 
-			 "r", NULL);
-  if (!image)
+  image = NSTiffOpenDataRead((char *)[tiffData bytes], [tiffData length]);
+  if (image == 0)
     {
       [NSException raise:NSTIFFException format: @"Read invalid TIFF data"];
     }
@@ -195,7 +194,7 @@
   numColors     = spp;
   hasAlpha   = alpha;  
   _isPlanar   = isPlanar;
-  _colorSpace = [colorSpaceName retain];
+  _colorSpace = RETAIN(colorSpaceName);
   if (!pixelBits)
     pixelBits = bps * ((_isPlanar) ? 1 : spp);
   bitsPerPixel            = pixelBits;
@@ -218,7 +217,7 @@
 - (void) dealloc
 {
   OBJC_FREE(imagePlanes);
-  [imageData release];
+  RELEASE(imageData);
   [super dealloc];
 }
 
@@ -232,16 +231,18 @@
   copy->numColors = numColors;
   copy->bitsPerPixel = bitsPerPixel;
   copy->compression = compression;
+  copy->comp_factor = comp_factor;
   copy->_isPlanar = _isPlanar;
   copy->imagePlanes = 0;
   copy->imageData = [imageData copy];
 
   return copy;
 }
+
 + (BOOL) canInitWithData: (NSData *)data
 {
-  TIFF *image = NULL;
-  image = NSTiffOpenData((char *)[data bytes], [data length], "r", NULL);
+  TIFF	*image = NULL;
+  image = NSTiffOpenDataRead((char *)[data bytes], [data length]);
   NSTiffClose(image);
 
   return (image) ? YES : NO;
@@ -249,8 +250,7 @@
 
 + (BOOL) canInitWithPasteboard: (NSPasteboard *)pasteboard
 {
-  [self notImplemented: _cmd];
-  return NO;
+  return [[pasteboard types] containsObject: NSTIFFPboardType]; 
 }
 
 + (NSArray *) imageFileTypes
@@ -327,7 +327,7 @@
       
       length = (long)numColors * bytesPerRow * _pixelsHigh 
  	* sizeof(unsigned char);
-      imageData = [[NSMutableData dataWithLength: length] retain];
+      imageData = RETAIN([NSMutableData dataWithLength: length]);
       if (!imagePlanes)
  	OBJC_MALLOC(imagePlanes, unsigned char*, MAX_PLANES);
       bits = [imageData mutableBytes];
@@ -359,64 +359,150 @@
 //
 // Producing a TIFF Representation of the Image 
 //
-+ (NSData *) TIFFRepresentationOfImageRepsInArray: (NSArray *)anArray
++ (NSData*) TIFFRepresentationOfImageRepsInArray: (NSArray *)anArray
 {
   [self notImplemented: _cmd];
   return nil;
 }
 
-+ (NSData *) TIFFRepresentationOfImageRepsInArray: (NSArray *)anArray
-		usingCompression: (NSTIFFCompression)compressionType
-		factor: (float)factor
++ (NSData*) TIFFRepresentationOfImageRepsInArray: (NSArray *)anArray
+				usingCompression: (NSTIFFCompression)type
+					  factor: (float)factor
 {
   [self notImplemented: _cmd];
   return nil;
 }
 
-- (NSData *) TIFFRepresentation
+- (NSData*) TIFFRepresentation
 {
-  [self notImplemented: _cmd];
-  return nil;
+  NSTiffInfo	info;
+  TIFF		*image;
+  char		*bytes = 0;
+  long		length = 0;
+
+  info.imageNumber = 0;
+  info.subfileType = 255;
+  info.width = _pixelsWide;
+  info.height = _pixelsHigh;
+  info.bitsPerSample = bitsPerSample;
+  info.samplesPerPixel = numColors;
+
+  if (_isPlanar)
+    info.planarConfig = PLANARCONFIG_SEPARATE;
+  else
+    info.planarConfig = PLANARCONFIG_CONTIG;
+
+  if (_colorSpace == NSDeviceRGBColorSpace)
+    info.photoInterp = PHOTOMETRIC_RGB;
+  else if (_colorSpace == NSDeviceWhiteColorSpace)
+    info.photoInterp = PHOTOMETRIC_MINISBLACK;
+  else if (_colorSpace == NSDeviceBlackColorSpace)
+    info.photoInterp = PHOTOMETRIC_MINISWHITE;
+  else
+    info.photoInterp = PHOTOMETRIC_RGB;
+
+  info.compression = compression;
+  info.quality = (1 - ((float)comp_factor)/255.0) * 100;
+  info.numImages = 1;
+  info.error = 0;
+
+  image = NSTiffOpenDataWrite(&bytes, &length);
+  if (image == 0)
+    {
+      [NSException raise: NSTIFFException format: @"Write TIFF open failed"];
+    }
+  if (NSTiffWrite(image, &info, [self bitmapData]) != 0)
+    {
+      [NSException raise: NSTIFFException format: @"Write TIFF data failed"];
+    }
+  NSTiffClose(image);
+  return [NSData dataWithBytesNoCopy: bytes length: length];
 }
 
-- (NSData *) TIFFRepresentationUsingCompression: (NSTIFFCompression)compressionType
-		factor: (float)factor
+- (NSData*) TIFFRepresentationUsingCompression: (NSTIFFCompression)type
+					factor: (float)factor
 {
-  [self notImplemented: _cmd];
-  return nil;
+  NSData		*data;
+  NSTIFFCompression	oldType = compression;
+  float			oldFact = comp_factor;
+
+  [self setCompression: type factor: factor];
+  data = [self TIFFRepresentation];
+  [self setCompression: oldType factor: oldFact];
+  return data;
 }
 
 //
 // Setting and Checking Compression Types 
 //
 + (void) getTIFFCompressionTypes: (const NSTIFFCompression **)list
-		count: (int *)numTypes
+			   count: (int *)numTypes
 {
-  [self notImplemented: _cmd];
+  static NSTIFFCompression	types[] = {
+    NSTIFFCompressionNone,
+    NSTIFFCompressionCCITTFAX3,
+    NSTIFFCompressionCCITTFAX4,
+    NSTIFFCompressionLZW,
+    NSTIFFCompressionJPEG,
+    NSTIFFCompressionPackBits
+  };
+
+  *list = types;
+  *numTypes = sizeof(types)/sizeof(*types);
 }
 
-+ (NSString *) localizedNameForTIFFCompressionType: (NSTIFFCompression)compression
++ (NSString*) localizedNameForTIFFCompressionType: (NSTIFFCompression)type
 {
-  [self notImplemented: _cmd];
-  return nil;
+  switch (type)
+    {
+      case NSTIFFCompressionNone: return @"NSTIFFCompressionNone";
+      case NSTIFFCompressionCCITTFAX3: return @"NSTIFFCompressionCCITTFAX3";
+      case NSTIFFCompressionCCITTFAX4: return @"NSTIFFCompressionCCITTFAX4";
+      case NSTIFFCompressionLZW: return @"NSTIFFCompressionLZW";
+      case NSTIFFCompressionJPEG: return @"NSTIFFCompressionJPEG";
+      case NSTIFFCompressionNEXT: return @"NSTIFFCompressionNEXT";
+      case NSTIFFCompressionPackBits: return @"NSTIFFCompressionPackBits";
+      case NSTIFFCompressionOldJPEG: return @"NSTIFFCompressionOldJPEG";
+      default: return nil;
+    }
 }
 
-- (BOOL) canBeCompressedUsing: (NSTIFFCompression)compression
+- (BOOL) canBeCompressedUsing: (NSTIFFCompression)type
 {
-  [self notImplemented: _cmd];
-  return NO;
+  switch (type)
+    {
+      case NSTIFFCompressionCCITTFAX3:
+      case NSTIFFCompressionCCITTFAX4:
+	if (numColors == 1 && bitsPerSample == 1)
+	  return YES;
+	else
+	  return NO;
+
+      case NSTIFFCompressionNone:
+      case NSTIFFCompressionLZW: 
+      case NSTIFFCompressionJPEG:
+      case NSTIFFCompressionPackBits:
+	return YES;
+
+      case NSTIFFCompressionNEXT:
+      case NSTIFFCompressionOldJPEG:
+      default:
+	return NO;
+    }
 }
 
-- (void) getCompression: (NSTIFFCompression *)compression
-		factor: (float *)factor
+- (void) getCompression: (NSTIFFCompression*)type
+		 factor: (float*)factor
 {
-  [self notImplemented: _cmd];
+  *type = compression;
+  *factor = comp_factor;
 }
 
-- (void) setCompression: (NSTIFFCompression)compression
-		factor: (float)factor
+- (void) setCompression: (NSTIFFCompression)type
+		 factor: (float)factor
 {
-  [self notImplemented: _cmd];
+  compression = type;
+  comp_factor = factor;
 }
 
 //
@@ -424,13 +510,19 @@
 //
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [self notImplemented: _cmd];
+  NSData	*data = [self TIFFRepresentation];
+
+  [super encodeWithCoder: aCoder];
+  [data encodeWithCoder: aCoder];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [self notImplemented: _cmd];
-  return nil;
+  NSData	*data;
+
+  self = [super initWithCoder: aDecoder];
+  data = [aDecoder decodeObject];
+  return [self initWithData: data];
 }
 
 @end

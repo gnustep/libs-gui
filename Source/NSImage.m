@@ -253,10 +253,11 @@ static Class			cacheClass = 0;
 
 	  image = [[self allocWithZone: NSDefaultMallocZone()]
 		initByReferencingFile: path];
-	  if (image)
+	  if (image != nil)
 	    {
 	      [image setName: aName];
 	      RELEASE(image);		// Retained in dictionary.
+	      image->_flags.archiveByName = YES;
 	    }
 	  return image;
 	}
@@ -763,11 +764,10 @@ static Class			cacheClass = 0;
   unsigned	i, count;
   GSRepData	*repd;
 
-  if (!imageRepArray)
-    return;
-
-  if (_flags.syncLoad)
-    [self _loadImageFilenames];
+  if (_flags.syncLoad == YES)
+    {
+      [self _loadImageFilenames];
+    }
   count = [imageRepArray count];
   for (i = 0; i < count; i++)
     {
@@ -1067,10 +1067,114 @@ NSDebugLLog(@"NSImage", @"Partial %@ ... %@ %d", repd->bg, _color, repd->rep);
 // NSCoding
 - (void) encodeWithCoder: (NSCoder*)coder
 {
+  BOOL	flag;
+
+  flag = _flags.archiveByName;
+  [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  if (flag == YES)
+    {
+      /*
+       * System image - just encode the name.
+       */
+      [coder encodeValueOfObjCType: @encode(id) at: &name];
+    }
+  else
+    {
+      NSMutableArray	*a;
+      NSEnumerator	*e;
+      NSImageRep	*r;
+
+      /*
+       * If the image is not yet loaded - load it now.
+       */
+      if (_flags.syncLoad)
+	{
+	  [self _loadImageFilenames];
+	}
+
+      /*
+       * Normal image - encode the ivars
+       */
+      [coder encodeValueOfObjCType: @encode(NSSize) at: &_size];
+      [coder encodeValueOfObjCType: @encode(id) at: &_color];
+      flag = _flags.scalable;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _flags.dataRetained;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _flags.flipDraw;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _flags.sizeWasExplicitlySet;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _flags.useEPSOnResolutionMismatch;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _flags.colorMatchPreferred;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _flags.multipleResolutionMatching;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _flags.cacheSeparately;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _flags.unboundedCacheDepth;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+
+      /*
+       * Now encode an array of all the image reps (excluding cache)
+       */
+      a = [NSMutableArray arrayWithCapacity: 2];
+      e = [[self representations] objectEnumerator];
+      while ((r = [e nextObject]) != nil)
+	{
+	  if ([r isKindOfClass: [NSCachedImageRep class]] == NO)
+	    {
+	      [a addObject: r];
+	    }
+	}
+      [coder encodeValueOfObjCType: @encode(id) at: &a];
+    }
 }
 
 - (id) initWithCoder: (NSCoder*)coder
 {
+  BOOL	flag;
+
+  [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  if (flag == YES)
+    {
+      NSString	*theName = [coder decodeObject];
+
+      RELEASE(self);
+      self = RETAIN([NSImage imageNamed: theName]);
+    }
+  else
+    {
+      NSArray	*a;
+
+      [coder decodeValueOfObjCType: @encode(NSSize) at: &_size];
+      [coder decodeValueOfObjCType: @encode(id) at: &_color];
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _flags.scalable = flag;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _flags.dataRetained = flag;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _flags.flipDraw = flag;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _flags.sizeWasExplicitlySet = flag;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _flags.useEPSOnResolutionMismatch = flag;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _flags.colorMatchPreferred = flag;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _flags.multipleResolutionMatching = flag;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _flags.cacheSeparately = flag;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _flags.unboundedCacheDepth = flag;
+
+      /*
+       * get the image reps and add them.
+       */
+      a = [coder decodeObject];
+      [self addRepresentations: a];
+    }
   return self;
 }
 

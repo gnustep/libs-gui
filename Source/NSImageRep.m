@@ -30,6 +30,7 @@
 #include <string.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSData.h>
+#include <Foundation/NSException.h>
 #include <Foundation/NSNotification.h>
 #include <AppKit/NSImageRep.h>
 #include <AppKit/NSBitmapImageRep.h>
@@ -85,20 +86,15 @@ static NSMutableArray*	imageReps = NULL;
   for (i = 0; i < count; i++)
     {
       Class rep = [imageReps objectAtIndex: i];
-#if 0
       if ([[rep imageFileTypes] indexOfObject: ext] != NSNotFound)
-#else
-	/* xxxFIXME: not implemented  in gcc-2.7.2 runtime. */
-        if ([rep respondsToSelector: @selector(imageFileTypes)]
-	    && [[rep imageFileTypes] indexOfObject: ext] != NSNotFound)
-#endif
-	  {
-	    NSData* data = [NSData dataWithContentsOfFile: filename];
-	    if ([rep respondsToSelector: @selector(imageRepsWithData:)])
-	      [array addObjectsFromArray: [rep imageRepsWithData: data]];
-	    else if ([rep respondsToSelector: @selector(imageRepWithData:)])
-	      [array addObject: [rep imageRepWithData: data]];
-	  }
+	{
+	  NSData* data = [NSData dataWithContentsOfFile: filename];
+
+	  if ([rep respondsToSelector: @selector(imageRepsWithData:)])
+	    [array addObjectsFromArray: [rep imageRepsWithData: data]];
+	  else if ([rep respondsToSelector: @selector(imageRepWithData:)])
+	    [array addObject: [rep imageRepWithData: data]];
+	}
     }
   return (NSArray *)array;
 }
@@ -125,11 +121,12 @@ static NSMutableArray*	imageReps = NULL;
     {
       NSString* ptype;
       Class rep = [imageReps objectAtIndex: i];
-      if ([rep respondsToSelector: @selector(imagePasteboardTypes)]
-	  && (ptype =
-	      [pasteboard availableTypeFromArray: [rep imagePasteboardTypes]]))
+
+      ptype = [pasteboard availableTypeFromArray: [rep imagePasteboardTypes]];
+      if (ptype != nil)
 	{
 	  NSData* data = [pasteboard dataForType: ptype];
+
 	  if ([rep respondsToSelector: @selector(imageRepsWithData:)])
 	    [array addObjectsFromArray: [rep imageRepsWithData: data]];
 	  else if ([rep respondsToSelector: @selector(imageRepWithData:)])
@@ -350,8 +347,7 @@ static NSMutableArray*	imageReps = NULL;
   for (i = 0; i < count; i++)
     {
       Class rep = [imageReps objectAtIndex: i];
-      if ([rep respondsToSelector: @selector(imageFileTypes)]
-	  && [[rep imageFileTypes] indexOfObject: type] != NSNotFound)
+      if ([[rep imageFileTypes] indexOfObject: type] != NSNotFound)
 	{
 	  return rep;
 	}
@@ -367,8 +363,8 @@ static NSMutableArray*	imageReps = NULL;
   for (i = 0; i < count; i++)
     {
       Class rep = [imageReps objectAtIndex: i];
-      if ([rep respondsToSelector: @selector(imagePasteboardTypes)]
-	  && ([[rep imagePasteboardTypes] indexOfObject: type] != NSNotFound))
+
+      if ([[rep imagePasteboardTypes] indexOfObject: type] != NSNotFound)
 	{
 	  return rep;
 	}
@@ -378,7 +374,21 @@ static NSMutableArray*	imageReps = NULL;
 
 + (void) registerImageRepClass: (Class)imageRepClass
 {
-  [imageReps addObject: imageRepClass];
+  if ([imageReps containsObject: imageRepClass] == NO)
+    {
+      Class		c = imageRepClass;
+
+      while (c != nil && c != [NSObject class] && c != [NSImageRep class])
+	{
+	  c = [c superclass];
+	}
+      if (c != [NSImageRep class])
+	{
+	  [NSException raise: NSInvalidArgumentException
+		      format: @"Attempt to register non-imagerep class"];
+	}
+      [imageReps addObject: imageRepClass];
+    }
   [[NSNotificationCenter defaultCenter]
     postNotificationName: NSImageRepRegistryChangedNotification
 		  object: self];

@@ -46,26 +46,20 @@
 @interface NSImage : NSObject <NSCoding>
 {
   // Attributes
-  NSString*	name;
+  NSString	*name;
   NSSize	_size;
   struct __imageFlags {
-    unsigned	scalable:1;
-    unsigned	dataRetained:1;
-    unsigned	flipDraw:1;
-    unsigned	uniqueWindow:1;
-    unsigned	uniqueWasExplicitlySet:1;
-    unsigned	sizeWasExplicitlySet:1;
-    unsigned	builtIn:1;
-    unsigned	needsToExpand:1;
-    unsigned	useEPSOnResolutionMismatch:1;
-    unsigned	colorMatchPreferred:1;
-    unsigned	multipleResolutionMatching:1;
-    unsigned	subImage:1;
-    unsigned	aSynch:1;
-    unsigned	archiveByName:1;
-    unsigned	cacheSeparately:1;
-    unsigned	unboundedCacheDepth:1;
-    unsigned	syncLoad:1;
+    unsigned	archiveByName: 1;
+    unsigned	scalable: 1;
+    unsigned	dataRetained: 1;
+    unsigned	flipDraw: 1;
+    unsigned	sizeWasExplicitlySet: 1;
+    unsigned	useEPSOnResolutionMismatch: 1;
+    unsigned	colorMatchPreferred: 1;
+    unsigned	multipleResolutionMatching: 1;
+    unsigned	cacheSeparately: 1;
+    unsigned	unboundedCacheDepth: 1;
+    unsigned	syncLoad: 1;
   } _flags;
   NSMutableArray	*_reps;
   NSColor		*_color;
@@ -76,131 +70,131 @@
 //
 // Initializing a New NSImage Instance 
 //
-- (id)initByReferencingFile:(NSString *)filename;
-- (id)initWithContentsOfFile:(NSString *)filename;
-- (id)initWithData:(NSData *)data;
-- (id)initWithPasteboard:(NSPasteboard *)pasteboard;
-- (id)initWithSize:(NSSize)aSize;
+- (id) initByReferencingFile: (NSString*)filename;
+- (id) initWithContentsOfFile: (NSString*)filename;
+- (id) initWithData: (NSData*)data;
+- (id) initWithPasteboard: (NSPasteboard*)pasteboard;
+- (id) initWithSize: (NSSize)aSize;
 
 //
 // Setting the Size of the Image 
 //
-- (void)setSize:(NSSize)aSize;
-- (NSSize)size;
+- (void) setSize: (NSSize)aSize;
+- (NSSize) size;
 
 //
 // Referring to Images by Name 
 //
-+ (id)imageNamed:(NSString *)name;
-- (BOOL)setName:(NSString *)name;
-- (NSString *)name;
++ (id) imageNamed: (NSString*)name;
+- (BOOL) setName: (NSString*)name;
+- (NSString*) name;
 
 //
 // Specifying the Image 
 //
-- (void)addRepresentation:(NSImageRep *)imageRep;
-- (void)addRepresentations:(NSArray *)imageRepArray;
-- (void)lockFocus;
-- (void)lockFocusOnRepresentation:(NSImageRep *)imageRep;
-- (void)unlockFocus;
+- (void) addRepresentation: (NSImageRep*)imageRep;
+- (void) addRepresentations: (NSArray*)imageRepArray;
+- (void) lockFocus;
+- (void) lockFocusOnRepresentation: (NSImageRep*)imageRep;
+- (void) unlockFocus;
 
 //
 // Using the Image 
 //
-- (void)compositeToPoint:(NSPoint)aPoint
-	       operation:(NSCompositingOperation)op;
-- (void)compositeToPoint:(NSPoint)aPoint
-		fromRect:(NSRect)aRect
-	       operation:(NSCompositingOperation)op;
-- (void)dissolveToPoint:(NSPoint)aPoint
-	       fraction:(float)aFloat;
-- (void)dissolveToPoint:(NSPoint)aPoint
-	       fromRect:(NSRect)aRect
-	       fraction:(float)aFloat;
+- (void) compositeToPoint: (NSPoint)aPoint
+		operation: (NSCompositingOperation)op;
+- (void) compositeToPoint: (NSPoint)aPoint
+		 fromRect: (NSRect)aRect
+		operation: (NSCompositingOperation)op;
+- (void) dissolveToPoint: (NSPoint)aPoint
+		fraction: (float)aFloat;
+- (void) dissolveToPoint: (NSPoint)aPoint
+		fromRect: (NSRect)aRect
+		fraction: (float)aFloat;
 
 //
 // Choosing Which Image Representation to Use 
 //
-- (void)setPrefersColorMatch:(BOOL)flag;
-- (BOOL)prefersColorMatch;
-- (void)setUsesEPSOnResolutionMismatch:(BOOL)flag;
-- (BOOL)usesEPSOnResolutionMismatch;
-- (void)setMatchesOnMultipleResolution:(BOOL)flag;
-- (BOOL)matchesOnMultipleResolution;
+- (void) setPrefersColorMatch: (BOOL)flag;
+- (BOOL) prefersColorMatch;
+- (void) setUsesEPSOnResolutionMismatch: (BOOL)flag;
+- (BOOL) usesEPSOnResolutionMismatch;
+- (void) setMatchesOnMultipleResolution: (BOOL)flag;
+- (BOOL) matchesOnMultipleResolution;
 
 //
 // Getting the Representations 
 //
-- (NSImageRep *)bestRepresentationForDevice:(NSDictionary *)deviceDescription;
-- (NSArray *)representations;
-- (void)removeRepresentation:(NSImageRep *)imageRep;
+- (NSImageRep*) bestRepresentationForDevice: (NSDictionary*)deviceDescription;
+- (NSArray*) representations;
+- (void) removeRepresentation: (NSImageRep*)imageRep;
 
 //
 // Determining How the Image is Stored 
 //
-- (void)setCachedSeparately:(BOOL)flag;
-- (BOOL)isCachedSeparately;
-- (void)setDataRetained:(BOOL)flag;
-- (BOOL)isDataRetained;
-- (void)setCacheDepthMatchesImageDepth:(BOOL)flag;
-- (BOOL)cacheDepthMatchesImageDepth;
+- (void) setCachedSeparately: (BOOL)flag;
+- (BOOL) isCachedSeparately;
+- (void) setDataRetained: (BOOL)flag;
+- (BOOL) isDataRetained;
+- (void) setCacheDepthMatchesImageDepth: (BOOL)flag;
+- (BOOL) cacheDepthMatchesImageDepth;
 
 //
 // Determining How the Image is Drawn 
 //
-- (BOOL)isValid;
-- (void)setScalesWhenResized:(BOOL)flag;
-- (BOOL)scalesWhenResized;
-- (void)setBackgroundColor:(NSColor *)aColor;
-- (NSColor *)backgroundColor;
-- (BOOL)drawRepresentation:(NSImageRep *)imageRep
-		    inRect:(NSRect)aRect;
-- (void)recache;
+- (BOOL) isValid;
+- (void) setScalesWhenResized: (BOOL)flag;
+- (BOOL) scalesWhenResized;
+- (void) setBackgroundColor: (NSColor*)aColor;
+- (NSColor*) backgroundColor;
+- (BOOL) drawRepresentation: (NSImageRep*)imageRep
+		     inRect: (NSRect)aRect;
+- (void) recache;
 
 //
 // Assigning a Delegate 
 //
-- (void)setDelegate:(id)anObject;
-- (id)delegate;
+- (void) setDelegate: (id)anObject;
+- (id) delegate;
 
 //
 // Producing TIFF Data for the Image 
 //
-- (NSData *)TIFFRepresentation;
-- (NSData *)TIFFRepresentationUsingCompression:(NSTIFFCompression)comp
-					factor:(float)aFloat;
+- (NSData*) TIFFRepresentation;
+- (NSData*) TIFFRepresentationUsingCompression: (NSTIFFCompression)comp
+					factor: (float)aFloat;
 
 //
 // Managing NSImageRep Subclasses 
 //
-+ (NSArray *)imageUnfilteredFileTypes;
-+ (NSArray *)imageUnfilteredPasteboardTypes;
++ (NSArray*) imageUnfilteredFileTypes;
++ (NSArray*) imageUnfilteredPasteboardTypes;
 
 //
 // Testing Image Data Sources 
 //
-+ (BOOL)canInitWithPasteboard:(NSPasteboard *)pasteboard;
-+ (NSArray *)imageFileTypes;
-+ (NSArray *)imagePasteboardTypes;
++ (BOOL) canInitWithPasteboard: (NSPasteboard*)pasteboard;
++ (NSArray*) imageFileTypes;
++ (NSArray*) imagePasteboardTypes;
 
 //
 // Methods Implemented by the Delegate 
 //
-- (NSImage *)imageDidNotDraw:(id)sender
-		      inRect:(NSRect)aRect;
+- (NSImage*) imageDidNotDraw: (id)sender
+		      inRect: (NSRect)aRect;
 
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
+- (void) encodeWithCoder: (NSCoder*)aCoder;
+- (id) initWithCoder: (NSCoder*)aDecoder;
 
 @end
 
 
 @interface NSBundle (NSImageAdditions)
 
-- (NSString *)pathForImageResource:(NSString *)name;
+- (NSString*) pathForImageResource: (NSString*)name;
 
 @end
 
