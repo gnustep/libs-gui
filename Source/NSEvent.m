@@ -293,21 +293,15 @@ static Class eventClass;
 		        @"this thread %x", GSCurrentThread()];
 
   /*
-   * If the delay time is 0 then register a timer immediately. Otherwise
-   * register a timer with no repeat that when fired registers the real timer
+   *  Register a timer that will fire in delaySeconds.
+   *  This timer will fire the first event and register
+   *  a repeat timer that will send the following events
    */
-  if (!delaySeconds)
-    timer = [NSTimer timerWithTimeInterval: periodSeconds
-				    target: self
-				  selector: @selector(_timerFired:)
-				  userInfo: nil
-				   repeats: YES];
-  else
-    timer = [NSTimer timerWithTimeInterval: delaySeconds
-				    target: self
-				  selector: @selector(_registerRealTimer:)
-				  userInfo: [NSNumber numberWithDouble: periodSeconds]
-				   repeats: NO];
+  timer = [NSTimer timerWithTimeInterval: delaySeconds
+		   target: self
+		   selector: @selector(_registerRealTimer:)
+		   userInfo: [NSNumber numberWithDouble: periodSeconds]
+		   repeats: NO];
 
   [[NSRunLoop currentRunLoop] addTimer: timer
 			       forMode: NSEventTrackingRunLoopMode];
@@ -343,6 +337,23 @@ static Class eventClass;
   NSMutableDictionary	*dict = GSCurrentThreadDictionary();
 
   NSDebugLog (@"_registerRealTimer: ");
+  {
+    NSTimeInterval	timeInterval;
+    NSEvent		*periodicEvent;
+    
+    timeInterval = [[NSDate date] timeIntervalSinceReferenceDate];
+    periodicEvent = [self otherEventWithType: NSPeriodic
+			  location: NSZeroPoint
+			  modifierFlags: 0
+			  timestamp: timeInterval
+			      windowNumber: 0
+			  context: [NSApp context]
+			  subtype: 0
+			  data1: 0
+			  data2: 0];
+    
+    [NSApp postEvent: periodicEvent atStart: NO];
+  }
 
   realTimer = [NSTimer timerWithTimeInterval: [[timer userInfo] doubleValue]
 				      target: self

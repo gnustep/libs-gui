@@ -241,7 +241,8 @@ static NSColor *scrollBarColor = nil;
   [upCell setAlternateImage: [NSImage imageNamed: @"common_ArrowUpH"]];
   [upCell setImagePosition: NSImageOnly];
   [upCell setContinuous: YES];
-  [upCell setPeriodicDelay: 0.05 interval: 0.05];
+  [upCell sendActionOn: (NSLeftMouseDownMask | NSPeriodicMask)];
+  [upCell setPeriodicDelay: 0.3 interval: 0.04];
 
   downCell = [NSButtonCell new];
   [downCell setHighlightsBy: NSChangeBackgroundCellMask|NSContentsCellMask];
@@ -249,7 +250,8 @@ static NSColor *scrollBarColor = nil;
   [downCell setAlternateImage: [NSImage imageNamed: @"common_ArrowDownH"]];
   [downCell setImagePosition: NSImageOnly];
   [downCell setContinuous: YES];
-  [downCell setPeriodicDelay: 0.05 interval: 0.05];
+  [downCell sendActionOn: (NSLeftMouseDownMask | NSPeriodicMask)];
+  [downCell setPeriodicDelay: 0.3 interval: 0.04];
 
   leftCell = [NSButtonCell new];
   [leftCell setHighlightsBy: NSChangeBackgroundCellMask|NSContentsCellMask];
@@ -257,7 +259,8 @@ static NSColor *scrollBarColor = nil;
   [leftCell setAlternateImage: [NSImage imageNamed: @"common_ArrowLeftH"]];
   [leftCell setImagePosition: NSImageOnly];
   [leftCell setContinuous: YES];
-  [leftCell setPeriodicDelay: 0.05 interval: 0.05];
+  [leftCell sendActionOn: (NSLeftMouseDownMask | NSPeriodicMask)];
+  [leftCell setPeriodicDelay: 0.3 interval: 0.04];
 
   rightCell = [NSButtonCell new];
   [rightCell setHighlightsBy: NSChangeBackgroundCellMask|NSContentsCellMask];
@@ -265,7 +268,8 @@ static NSColor *scrollBarColor = nil;
   [rightCell setAlternateImage: [NSImage imageNamed: @"common_ArrowRightH"]];
   [rightCell setImagePosition: NSImageOnly];
   [rightCell setContinuous: YES];
-  [rightCell setPeriodicDelay: 0.05 interval: 0.05];
+  [rightCell sendActionOn: (NSLeftMouseDownMask | NSPeriodicMask)];
+  [rightCell setPeriodicDelay: 0.3 interval: 0.04];
 
   knobCell = [NSButtonCell new];
   [knobCell setButtonType: NSMomentaryChangeButton];

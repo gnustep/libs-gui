@@ -1,3 +1,15 @@
+2002-03-21  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Source/NSEvent.m 
+	([NSEvent +startPeriodicEventsAfterDelay:withPeriod:]): 
+	([NSEvent +_registerRealTimer:]):
+	The first periodic event is sent after delay seconds.
+	It was incorrectly sent after delay+period seconds.
+	* Source/NSScroller.m ([NSScroller -drawParts]): 
+	Set the scrollbuttons to send actions on mouseDown instead of
+	mouseUp. Changed the initial delay (to reflect NSEvent changes)
+	and the period so that it feels smoother.
+	
 2002-03-20  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* configure.in: Use info from make package, and look in GNUstep
