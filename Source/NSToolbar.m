@@ -95,10 +95,6 @@ static const int current_version = 1;
 }
 @end
 
-@interface NSToolbar (GNUstepPrivate)
-- (GSToolbarView *) _toolbarView;
-@end
-
 @implementation NSToolbar (GNUstepPrivate)
 - (GSToolbarView *) _toolbarView
 {
