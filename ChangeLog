@@ -1,3 +1,10 @@
+Fri Sep  1 13:02:45 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSTableView.m ([-textDidEndEditing:]): Implemented Tab,
+	Shift+Tab.  ([-_editPreviousEditableCellBeforeRow:column:]),
+	([-_editPreviousEditableCellBeforeRow:column:]): New private
+	methods. (_isCellSelectable): New private inline function.
+
 Fri Sep  1 12:01:36 2000  Georg Fleischmann  <georg@vhf.de>
 
 	* Source/NSTabView.m ([-drawRect:]): Redraw using bounds instead
@@ -82,7 +89,7 @@ Tue Aug 29 20:07:23 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 	* Source/NSTableView.m ([-mouseDown:]): Double clicking starts 
 	editing only if row is selected.
 	
-2000-08-26 Georg Fleischmann
+2000-08-26  Georg Fleischmann
 
 	* gui/Source/NSApplication.m ([-NSApplication run]): Don't update
 	menu for NSPeriodic and NSMouseMoved events.
