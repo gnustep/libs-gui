@@ -1,7 +1,20 @@
 NEWS
 ****
 
-The currently released version of the library is `0.8.0'.
+The currently released version of the library is `0.8.1'.
+
+Noteworthy changes in version `0.8.1'
+=====================================
+
+   * Handle scaled curves correctly.
+
+   * Handle alpha channel with images correctly
+
+   * NSWindow frame string save without flipping coordinates.
+
+   * NSSound implemented. gssnd sound server.
+
+   * Spell checker starts correctly now.
 
 Noteworthy changes in version `0.8.0'
 =====================================
