@@ -211,16 +211,22 @@
 
 - (void)selectItemAtIndex:(int)index
 {
-  if (index == -1)
+  if (popb_selectedItem != index)
     {
-      popb_selectedItem = -1;
+      if (index == -1)
+	{
+	  popb_selectedItem = -1;
+	}
+      else
+	{
+	  popb_selectedItem = index;
+	}
+      // This works fine
+      [self setNeedsDisplay: YES];
+      // but replace it with the following
+      //  [self synchronizeTitleAndSelectedItem];
+      // as soon as it works.
     }
-  else
-    {
-      popb_selectedItem = index;
-    }
-
-  [self synchronizeTitleAndSelectedItem];
 }
 
 - (void)selectItemWithTitle:(NSString *)title
