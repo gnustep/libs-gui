@@ -41,6 +41,8 @@
   BOOL _is_active;
   BOOL _is_bordered;
   NSRect _wellRect;
+  id _target;
+  SEL _action;
 }
 
 //
