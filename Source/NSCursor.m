@@ -26,7 +26,6 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/config.h>
 #include <Foundation/NSArray.h>
 #include <AppKit/NSCursor.h>
 #include <AppKit/NSImage.h>
@@ -38,6 +37,7 @@
 static NSMutableArray *gnustep_gui_cursor_stack;
 static NSCursor *gnustep_gui_current_cursor;
 static BOOL gnustep_gui_hidden_until_move;
+static Class NSCursor_class;
 
 @implementation NSCursor
 
@@ -52,6 +52,7 @@ static BOOL gnustep_gui_hidden_until_move;
       [self setVersion:1];
 
       // Initialize class variables
+      NSCursor_class = self;
       gnustep_gui_cursor_stack = [[NSMutableArray alloc] initWithCapacity: 2];
       gnustep_gui_hidden_until_move = YES;
       [[self arrowCursor] push];
@@ -60,12 +61,42 @@ static BOOL gnustep_gui_hidden_until_move;
 
 - (void *) _cid
 {
-  return cid;
+  return _cid;
 }
 
 - (void) _setCid: (void *)val
 {
-  cid = val;
+  _cid = val;
+}
+
+- (void) _computeCid
+{
+  void *c;
+  NSBitmapImageRep *rep;
+  
+  if (_cursor_image == nil)
+    {
+      _cid = NULL;
+      return;
+    }
+
+  rep = (NSBitmapImageRep *)[_cursor_image bestRepresentationForDevice: nil];
+  /* FIXME: Handle cached image reps also */
+  if (!rep || ![rep respondsToSelector: @selector(samplesPerPixel)])
+    {
+      NSLog(@"NSCursor can only handle NSBitmapImageReps for now");
+      return;
+    }
+  if (_hot_spot.x >= [rep pixelsWide])
+    _hot_spot.x = [rep pixelsWide]-1;
+  
+  if (_hot_spot.y >= [rep pixelsHigh])
+    _hot_spot.y = [rep pixelsHigh]-1;
+
+  DPSimagecursor(GSCurrentContext(), _hot_spot.x, _hot_spot.y, 
+		 [rep pixelsWide], [rep pixelsHigh],
+		 [rep samplesPerPixel], [rep bitmapData], &c);
+  _cid = c;
 }
 
 /*
@@ -86,11 +117,7 @@ static BOOL gnustep_gui_hidden_until_move;
       [gnustep_gui_cursor_stack removeLastObject];
       gnustep_gui_current_cursor = [gnustep_gui_cursor_stack lastObject];
 
-      if ([gnustep_gui_current_cursor _cid])
-	{
-	  DPSsetcursorcolor(GSCurrentContext(), -1, 0, 0, 1, 1, 1, 
-	    [gnustep_gui_current_cursor _cid]);
-	}
+      [gnustep_gui_current_cursor set];
     }
 }
 
@@ -114,11 +141,14 @@ static BOOL gnustep_gui_hidden_until_move;
  */
 + (NSCursor*) arrowCursor
 {
-  void		*c;
-  NSCursor	*cur = AUTORELEASE([[NSCursor alloc] initWithImage: nil]);
-
+  NSCursor *cur;
+  void *c;
+    
+  cur = AUTORELEASE([[NSCursor_class alloc] initWithImage: nil]);
+    
   DPSstandardcursor(GSCurrentContext(), GSArrowCursor, &c);
   [cur _setCid: c];
+
   return cur;
 }
 
@@ -129,11 +159,14 @@ static BOOL gnustep_gui_hidden_until_move;
 
 + (NSCursor*) IBeamCursor
 {
-  void		*c;
-  NSCursor	*cur = AUTORELEASE([[NSCursor alloc] initWithImage: nil]);
+  NSCursor *cur;
+  void *c;
+    
+  cur = AUTORELEASE([[NSCursor_class alloc] initWithImage: nil]);
 
   DPSstandardcursor(GSCurrentContext(), GSIBeamCursor, &c);
   [cur _setCid: c];
+
   return cur;
 }
 
@@ -153,12 +186,20 @@ static BOOL gnustep_gui_hidden_until_move;
 
 - (id) initWithImage: (NSImage *)newImage hotSpot: (NSPoint)spot
 {
-  hot_spot = spot;
-  is_set_on_mouse_entered = NO;
-  is_set_on_mouse_exited = NO;
-  if (newImage)
-    [self setImage: newImage];
+  //_is_set_on_mouse_entered = NO;
+  //_is_set_on_mouse_exited = NO;
+  _hot_spot = spot;
+  [self setImage: newImage];
+
   return self;
+}
+
+- (id)initWithImage:(NSImage *)newImage 
+foregroundColorHint:(NSColor *)fg 
+backgroundColorHint:(NSColor *)bg
+	    hotSpot:(NSPoint)hotSpot
+{
+  return [self initWithImage: newImage hotSpot: hotSpot];
 }
 
 /*
@@ -166,42 +207,26 @@ static BOOL gnustep_gui_hidden_until_move;
  */
 - (NSPoint) hotSpot
 {
-  return hot_spot;
+  // FIXME: This wont work for the two standard cursor
+  return _hot_spot;
 }
 
 - (NSImage*) image
 {
-  return cursor_image;
+  // FIXME: This wont work for the two standard cursor
+  return _cursor_image;
 }
 
 - (void) setHotSpot: (NSPoint)spot
 {
-  hot_spot = spot;
+  _hot_spot = spot;
+  [self _computeCid];
 }
 
 - (void) setImage: (NSImage *)newImage
 {
-  void *c;
-  NSBitmapImageRep *rep;
-  
-  ASSIGN(cursor_image, newImage);
-
-  rep = [newImage bestRepresentationForDevice: nil];
-  /* FIXME: Handle cached image reps also */
-  if (!rep || ![rep respondsToSelector: @selector(samplesPerPixel)])
-    {
-      NSLog(@"NSCursor can only handle NSBitmapImageReps for now");
-      return;
-    }
-  if (hot_spot.x >= [rep pixelsWide])
-    hot_spot.x = [rep pixelsWide]-1;
-  
-  if (hot_spot.y >= [rep pixelsHigh])
-    hot_spot.y = [rep pixelsHigh]-1;
-  DPSimagecursor(GSCurrentContext(), hot_spot.x, hot_spot.y, 
-		 [rep pixelsWide], [rep pixelsHigh],
-		 [rep samplesPerPixel], [rep bitmapData], &c);
-  [self _setCid: c];
+  ASSIGN(_cursor_image, newImage);
+  [self _computeCid];
 }
 
 /*
@@ -209,21 +234,21 @@ static BOOL gnustep_gui_hidden_until_move;
  */
 - (BOOL) isSetOnMouseEntered
 {
-  return is_set_on_mouse_entered;
+  return _is_set_on_mouse_entered;
 }
 
 - (BOOL) isSetOnMouseExited
 {
-  return is_set_on_mouse_exited;
+  return _is_set_on_mouse_exited;
 }
 
 - (void) mouseEntered: (NSEvent*)theEvent
 {
-  if (is_set_on_mouse_entered == YES)
+  if (_is_set_on_mouse_entered == YES)
     {
       [self set];
     }
-  else if (is_set_on_mouse_exited == NO)
+  else if (_is_set_on_mouse_exited == NO)
     {
       /*
        * Undocumented behavior - if a cursor is not set on exit or entry,
@@ -235,11 +260,11 @@ static BOOL gnustep_gui_hidden_until_move;
 
 - (void) mouseExited: (NSEvent*)theEvent
 {
-  if (is_set_on_mouse_exited == YES)
+  if (_is_set_on_mouse_exited == YES)
     {
       [self set];
     }
-  else if (is_set_on_mouse_entered == NO)
+  else if (_is_set_on_mouse_entered == NO)
     {
       /*
        * Undocumented behavior - if a cursor is not set on exit or entry,
@@ -251,36 +276,32 @@ static BOOL gnustep_gui_hidden_until_move;
 
 - (void) pop
 {
-  [NSCursor pop];
+  [NSCursor_class pop];
 }
 
 - (void) push
 {
   [gnustep_gui_cursor_stack addObject: self];
-  gnustep_gui_current_cursor = self;
-  if (cid)
-    {
-      DPSsetcursorcolor(GSCurrentContext(), -1, 0, 0, 1, 1, 1, cid);
-    }
+  [self set];
 }
 
 - (void) set
 {
   gnustep_gui_current_cursor = self;
-  if (cid)
+  if (_cid)
     {
-      DPSsetcursorcolor(GSCurrentContext(), -1, 0, 0, 1, 1, 1, cid);
+      DPSsetcursorcolor(GSCurrentContext(), -1, 0, 0, 1, 1, 1, _cid);
     }
 }
 
 - (void) setOnMouseEntered: (BOOL)flag
 {
-  is_set_on_mouse_entered = flag;
+  _is_set_on_mouse_entered = flag;
 }
 
 - (void) setOnMouseExited: (BOOL)flag
 {
-  is_set_on_mouse_exited = flag;
+  _is_set_on_mouse_exited = flag;
 }
 
 /*
@@ -288,10 +309,21 @@ static BOOL gnustep_gui_hidden_until_move;
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
+  // FIXME: This wont work for the two standard cursor
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_set_on_mouse_entered];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_set_on_mouse_exited];
+  [aCoder encodeObject: _cursor_image];
+  [aCoder encodePoint: _hot_spot];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_set_on_mouse_entered];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_set_on_mouse_exited];
+  _cursor_image = [aDecoder decodeObject];
+  _hot_spot = [aDecoder decodePoint];
+  [self _computeCid];
+
   return self;
 }
 
