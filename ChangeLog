@@ -1,3 +1,9 @@
+2003-09-29  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBrowser.m
+	Patch by Christopher Culver:
+	Define empty [sizeToFit] method to override NSControl implementation.
+	
 2003-09-27 19:29 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibContainer.m: [GSNibContainer awakeWithContext:]
