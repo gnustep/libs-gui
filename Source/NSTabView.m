@@ -235,7 +235,7 @@
 
 - (NSRect)contentRect
 {
-  NSRect cRect = [self frame];
+  NSRect cRect = [self bounds];
 
   cRect.origin.x = 0;
   cRect.origin.y = 0;
@@ -258,6 +258,8 @@
   int i;
   NSRect previousRect;
   int previousState = 0;
+
+  rect = NSIntersectionRect(bounds, rect);
 
   DPSgsave(ctxt);
 
@@ -283,7 +285,7 @@
   if (!tab_selected)
     [self selectFirstTabViewItem:nil];
 
-  if (tab_type == NSNoTabsBezelBorder)
+  if (tab_type == NSNoTabsBezelBorder || tab_type == NSNoTabsLineBorder)
     {
       DPSgrestore(ctxt);
       return;
