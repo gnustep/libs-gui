@@ -39,10 +39,10 @@ INSTALL_DATA     = ${INSTALL} -m 644
 
 PANELS   =  SavePanel.gmodel
 
-all:
+all::
 	@
 
-install: all
+install:: all
 	if [ ! -e $(prefix)/Library ]; then \
 		mkdir $(prefix)/Library; \
 	fi
@@ -53,11 +53,13 @@ install: all
 		$(INSTALL_DATA) $$f $(prefix)/Library/Model/; \
 	done
 
-uninstall:
+uninstall::
 	for f in $(PANELS); do \
 		rm -f $(prefix)/Library/Model/$$f; \
 	done
 	rmdir $(prefix)/Library/Model
+
+clean::
 
 -include GNUmakefile.preamble
 

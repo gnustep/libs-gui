@@ -4,6 +4,8 @@ Thu Nov 26 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 		during merge.  Move method from _eventMatchingMask to tail of run 
 		method for performance reasons.
 	* Tools/dummy.m add various new dummy functions.
+	* Panels/GNUmakefile make local targets double colon, add local clean to
+		fix make clean failure.
 
 Wed Nov 25 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
