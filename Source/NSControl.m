@@ -294,7 +294,7 @@ static Class cellClass;
  */
 - (void) calcSize
 {
-}					// FIX ME
+}
 
 - (void) sizeToFit
 {
