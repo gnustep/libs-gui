@@ -1,3 +1,26 @@
+2003-08-20  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenuView.m
+	In [itemChanged:] call [setNeedsDisplayForItemAtIndex:] so that
+	changes get redisplayed.
+	* Source/NSPopUpButtonCell.m
+	Overall change to use method calls rather than direct ivar access.
+	[setMenu:] also call [setMenuView:]. [removeItemWithTitle],
+	[removeItemAtIndex] and [removeAllItems] make sure that the
+	selected item ivar gets unset, when this is
+	removed. [setMenuItem:] overwrite super method to set/unset the
+	image. [selectItem:] no longer changes the image of this
+	item. [synchronizeTitleAndSelectedItem] now works on the menu item
+	not the selected item. [attachPopUpWithFrame:inView:] added
+	listening for notifications. [dismissPopUp] remove listening for
+	notifications. Added [performClickWithFrame:inView:] and
+	[performClick:]. Further simplified [drawInteriorWithFrame:inView:].
+	[initWithCoder:] made sure that old stored objects still get read
+	in correctly even if most ivars may be set wrong.
+	* Source/NSPopUpButton.m
+	In [keyDown:] removed setting and unsetting of notification
+	listening, as this now gets handled in NSPopUpButtonCell.
+	
 2003-08-20 14:36  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSFontInfo.m (+sharedEnumerator,
