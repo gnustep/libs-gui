@@ -834,9 +834,6 @@ static NSColor *scrollBarColor = nil;
       rect = [self rectForPart: NSScrollerKnobSlot];
     }
 
-  if ((_usableParts == NSOnlyScrollerArrows) || (_usableParts == NSNoScrollerParts))
-    [[_window backgroundColor] set];
-  else
     [scrollBarColor set];
   NSRectFill (rect);
 }
