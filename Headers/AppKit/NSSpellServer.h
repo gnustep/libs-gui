@@ -66,28 +66,54 @@
 		   caseSensitive:(BOOL)flag;
 @end
 
-//
-// NOTE: This is an informal protocol since the
-//  NSSpellChecker will need to use a proxy object
-//  to call these methods.   If they are defined on
-//  NSObject, then the compiler won't complain
-//  about not being able to find the method. (GJC)
-//
+/**
+  This is an informal protocol since the
+  NSSpellChecker will need to use a proxy object
+  to call these methods.  
+
+  These methods need to be implemented by the spell service
+  so that the NSSpellServer instance call call them when
+  necessary.
+*/
 @interface NSObject (NSSpellServerDelegate)
+/**
+ * <p>
+ * This method is called when the user begins spell checking the document.
+ * The parameters are: <code>sender</code> the spell server instance which
+ * invoked this method, <code>stringToCheck</code> this is the string which
+ * the spell service is going to attempt to find misspelled words in,
+ * <code>language</code> the language to check in, <code>wordCount</code> the
+ * number of words checked, and <code>countOnly</code> a flag which dictates
+ * if them method checks the spelling or just counts the words in the given
+ * string.
+ * </p>
+ * <p>
+ * Returns a range for any word it finds that is misspelled.
+ * </p>
+ */
 - (NSRange)spellServer:(NSSpellServer *)sender
 findMisspelledWordInString:(NSString *)stringToCheck
                   language:(NSString *)language
                  wordCount:(int *)wordCount
                  countOnly:(BOOL)countOnly;
 
+/**
+ * Attempts to guess the correct spelling of <code>word</code>. 
+ */
 - (NSArray *)spellServer:(NSSpellServer *)sender
    suggestGuessesForWord:(NSString *)word
               inLanguage:(NSString *)language;
 
+/**
+ * Records the new word in the user's dictionary for the given language.
+ */
 - (void)spellServer:(NSSpellServer *)sender
        didLearnWord:(NSString *)word
          inLanguage:(NSString *)language;
 
+/**
+ * Forgets the given word in the user's dictionary for the given language.
+ */
 - (void)spellServer:(NSSpellServer *)sender
       didForgetWord:(NSString *)word
          inLanguage:(NSString *)language;

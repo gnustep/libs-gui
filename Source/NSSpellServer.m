@@ -99,6 +99,11 @@ GSSpellServerName(NSString *vendor, NSString *language)
 }
 
 // Checking in Your Service 
+
+/**
+ * This method vends the spell server to the Distributed Objects system
+ * so that it can be connected to by clients.
+ */
 - (BOOL)registerLanguage:(NSString *)language
 		byVendor:(NSString *)vendor
 {
@@ -123,11 +128,22 @@ GSSpellServerName(NSString *vendor, NSString *language)
 }
 
 // Assigning a Delegate 
+
+/**
+ * Return the spell server delegate.
+ */ 
 - (id)delegate
 {
   return _delegate;
 }
 
+/**
+ * This method is used to set the delegate of the spellserver.
+ * When a spelling service is run the spell server is vended out
+ * to DO.  The spelling service must instantiate an instance of 
+ * this class and set itself to be the delegate.   This allows
+ * the service to respond to messages sent by the client.
+ */
 - (void)setDelegate:(id)anObject
 {
   /* FIXME - we should not retain the delegate ! */
@@ -136,6 +152,12 @@ GSSpellServerName(NSString *vendor, NSString *language)
 }
 
 // Running the Service 
+/**
+ * Initiate the run loop of this service.  Once the spell server
+ * object is vended, this method is called so that the server can
+ * start responding to the messages sent by the client.  These
+ * messages are passed on to the NSSpellServer instance's delegate.
+ */
 - (void)run
 {
   // Start the runloop explicitly.
@@ -144,6 +166,9 @@ GSSpellServerName(NSString *vendor, NSString *language)
 
 // Private method
 // Determine the path to the dictionary
+/**
+ * Path to the dictionary for the specified language.
+ */
 - (NSString *)_pathToDictionary: (NSString *)currentLanguage
 {
   NSString *path = nil;
@@ -201,7 +226,7 @@ GSSpellServerName(NSString *vendor, NSString *language)
 }
 
 // Private method
-// Open up dictionary stored in the user's directory.          
+/** Open up dictionary stored in the user's directory.   */
 - (NSMutableSet *)_openUserDictionary: (NSString *)language
 {
   NSString *path = nil;
@@ -233,6 +258,7 @@ GSSpellServerName(NSString *vendor, NSString *language)
 }
 
 // Checking User Dictionaries
+/** Check if word is in dict, flag determines if the search is case sensitive. */
 - (BOOL)_isWord: (NSString *)word
    inDictionary: (NSSet *)dict
   caseSensitive: (BOOL)flag
@@ -298,6 +324,10 @@ GSSpellServerName(NSString *vendor, NSString *language)
 }
 
 // Checking User Dictionaries
+/** 
+Checks to see if the word is in the user's dictionary.  The user dictionary
+is a set of words learned by the spell service for that particular user.
+*/
 - (BOOL)isWordInUserDictionaries:(NSString *)word
 		   caseSensitive:(BOOL)flag
 {
@@ -314,7 +344,7 @@ GSSpellServerName(NSString *vendor, NSString *language)
   return result;
 }
 
-// Save the dictionary stored in user's directory.
+/** Save the dictionary stored in user's directory. */
 - (BOOL)_saveUserDictionary: (NSString *)language
 {
   NSString *path = nil;
@@ -337,7 +367,7 @@ GSSpellServerName(NSString *vendor, NSString *language)
   return YES; 
 }
 
-// Learn a new word and put it into the dictionary
+/** Learn a new word and put it into the dictionary. */
 -(BOOL)_learnWord: (NSString *)word
      inDictionary: (NSString *)language
 {
@@ -360,7 +390,7 @@ GSSpellServerName(NSString *vendor, NSString *language)
   return [self _saveUserDictionary: language];
 }
 
-// Forget a word and remove it from the dictionary
+/** Forget a word and remove it from the dictionary. */
 -(BOOL)_forgetWord: (NSString *)word
       inDictionary: (NSString *)language
 {
@@ -383,7 +413,7 @@ GSSpellServerName(NSString *vendor, NSString *language)
   return [self _saveUserDictionary: language];
 }
 
-// Find a misspelled word
+/** Find a misspelled word. */
 - (NSRange)_findMisspelledWordInString: (NSString *)stringToCheck
 			      language: (NSString *)language
 			  ignoredWords: (NSArray *)ignoredWords
@@ -413,6 +443,7 @@ GSSpellServerName(NSString *vendor, NSString *language)
   return r;
 }
 
+/** Suggest a correction for the word. */
 - (NSArray *)_suggestGuessesForWord: (NSString *)word
 		       inLanguage: (NSString *)language
 {
