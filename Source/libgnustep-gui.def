@@ -4,10 +4,7 @@
 ;   Exports for libgnustep-gui DLL
 ;   Specific to WIN32 operating systems
 ;
-;   Copyright (C) 1997 Free Software Foundation, Inc.
-;
-;   Author:  Scott Christley <scottc@net-community.com>
-;   Date: August 1997
+;   Copyright (C) 2003 Free Software Foundation, Inc.
 ;
 ;   This file is part of the GNUstep GUI Library.
 ;
@@ -46,8 +43,22 @@ __objc_class_name_GSKeyBindingTable
 __objc_class_name_GSLayoutManager
 __objc_class_name_GSMemoryPanel
 __objc_class_name_GSMemoryPanelEntry
+__objc_class_name_GSClassSwapper
+__objc_class_name_GSControlTemplate
+__objc_class_name_GSCustomView
+__objc_class_name_GSMenuTemplate
+__objc_class_name_GSNibContainer
+__objc_class_name_GSNibItem
+__objc_class_name_GSObjectTemplate
+__objc_class_name_GSTemplateFactory
+__objc_class_name_GSTextTemplate
+__objc_class_name_GSTextViewTemplate
+__objc_class_name_GSViewTemplate
+__objc_class_name_GSWindowTemplate
+__objc_class_name_NSWindowTemplate
 __objc_class_name_GSListener
 __objc_class_name_GSServicesManager
+__objc_class_name_GSSlideView
 __objc_class_name_GSTable
 __objc_class_name_GSTextInfo
 __objc_class_name_GSTextStorage
@@ -67,21 +78,9 @@ __objc_class_name_GSBrowserTitleCell
 __objc_class_name_NSBrowser
 __objc_class_name_NSBrowserColumn
 __objc_class_name_NSBrowserCell
-__objc_class_name_GSClassSwapper
-__objc_class_name_GSCustomView
-__objc_class_name_GSFontProxy
-__objc_class_name_GSNibContainer
-__objc_class_name_GSNibItem
-__objc_class_name_NSButtonTemplate
-__objc_class_name_NSControlTemplate
-__objc_class_name_NSMenuTemplate
 __objc_class_name_NSNibConnector
 __objc_class_name_NSNibControlConnector
 __objc_class_name_NSNibOutletConnector
-__objc_class_name_NSTextTemplate
-__objc_class_name_NSTextViewTemplate
-__objc_class_name_NSViewTemplate
-__objc_class_name_NSWindowTemplate
 __objc_class_name_NSButton
 __objc_class_name_NSButtonCell
 __objc_class_name_GSCacheW
@@ -110,6 +109,7 @@ __objc_class_name_NSCursor
 __objc_class_name_NSCustomImageRep
 __objc_class_name_NSDataLink
 __objc_class_name_NSDataLinkManager
+__objc_class_name_GSDataLinkPanelController
 __objc_class_name_NSDataLinkPanel
 __objc_class_name_NSDocument
 __objc_class_name_NSDocumentController
@@ -137,11 +137,11 @@ __objc_class_name_NSLayoutManager
 __objc_class_name_NSMatrix
 __objc_class_name_NSMenu
 __objc_class_name_NSMenuPanel
-__objc_class_name_NSMenuWindowTitleView
 __objc_class_name_GSMenuSeparator
 __objc_class_name_NSMenuItem
 __objc_class_name_NSMenuItemCell
 __objc_class_name_NSMenuView
+__objc_class_name_NSMenuWindowTitleView
 __objc_class_name_NSOpenGLContext
 __objc_class_name_NSOpenGLPixelFormat
 __objc_class_name_NSOpenGLView
@@ -153,7 +153,10 @@ __objc_class_name_NSPanel
 __objc_class_name_NSMutableParagraphStyle
 __objc_class_name_NSParagraphStyle
 __objc_class_name_NSTextTab
+__objc_class_name_GSFiltered
 __objc_class_name_NSPasteboard
+__objc_class_name_NSPasteboardObjectDummy
+__objc_class_name_NSPasteboardServerDummy
 __objc_class_name_NSPopUpButton
 __objc_class_name_NSPopUpButtonCell
 __objc_class_name_NSPrintInfo
