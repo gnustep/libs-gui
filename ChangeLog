@@ -1,4 +1,10 @@
-2004-02-11  Fred Kiefer <FredKiefer@gmx.de>
+2004-02-14  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSOutlineView.m: (-reloadItem:reloadChildren:) Simplified
+	and corrected code by inlining the method
+	[_findItem:childIndex:ofParent:]. 
+
+2004-02-13  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSButtonCel.m: (-setObjectValue:, -objectValue)
 	Implemented to set/return the state. 

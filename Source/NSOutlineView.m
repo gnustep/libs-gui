@@ -575,38 +575,6 @@ static NSImage *unexpandable  = nil;
   return _outlineTableColumn;
 }
 
-- (BOOL)_findItem: (id)item
-       childIndex: (int *)index
-	 ofParent: (id)parent
-{
-  NSArray *allKeys = NSAllMapTableKeys(_itemDict);
-  BOOL hasChildren = NO;
-  NSEnumerator *en = [allKeys objectEnumerator];
-  id object = nil;
-
-  // initial values for return parameters
-  *index = NSNotFound;
-  parent = nil;
-  
-  if([allKeys containsObject: item])
-    {
-      hasChildren = YES;
-    }
-  
-  while((object = [en nextObject]))
-    {
-      NSArray *childArray = NSMapGet(_itemDict, object);
-
-      if((*index = [childArray indexOfObject: item]) != NSNotFound)
-	{
-	  parent = object;
-	  break;
-	}
-    }
-
-  return hasChildren;
-}
-
 /**
  * Causes an item to be reloaded.  This is the equivalent of calling
  * [NSOutlineView-reloadItem:reloadChildren:] with reloadChildren set to NO.
@@ -623,33 +591,43 @@ static NSImage *unexpandable  = nil;
  */
 - (void)reloadItem: (id)item reloadChildren: (BOOL)reloadChildren
 {
-  id parent = nil;
-  id dsobj = nil;
-  BOOL haschildren = NO;
-  int index = 0;
-  id obj = nil;
+  int index;
+  BOOL hasChildren = NO;
+  id parent;
+  id dsobj;
   id object = (item == nil)?([NSNull null]):item;
+  NSArray *allKeys = NSAllMapTableKeys(_itemDict);
+  NSEnumerator *en = [allKeys objectEnumerator];
 
-  // find the item
-  haschildren = [self _findItem: object
-		   childIndex: &index
-		   ofParent: parent];
+  if ([allKeys containsObject: object])
+    {
+      hasChildren = YES;
+    }
 
-  dsobj = [_dataSource outlineView: self
-		       child: index
-		       ofItem: parent];
+  // find the parent of the item 
+  while ((parent = [en nextObject]))
+    {
+      NSMutableArray *childArray = NSMapGet(_itemDict, parent);
+
+      if ((index = [childArray indexOfObject: object]) != NSNotFound)
+	{
+	  dsobj = [_dataSource outlineView: self
+			       child: index
+			       ofItem: parent];
+
+	  [childArray removeObject: item];
+	  [childArray insertObject: dsobj atIndex: index];
+	  break;
+	}
+    }
   
-  obj = NSMapGet(_itemDict, parent);
-  [obj removeObject: item];
-  [obj insertObject: dsobj atIndex: index];
-  
-  if(reloadChildren && haschildren) // expand all
+  if (reloadChildren && hasChildren) // expand all
     {
       [self _loadDictionaryStartingWith: object
 	    atLevel: [self levelForItem: object]];
 
       // release the old array
-      if(_items != nil)
+      if (_items != nil)
 	{
 	  DESTROY(_items); 
 	}
