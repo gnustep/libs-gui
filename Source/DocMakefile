@@ -158,7 +158,6 @@ Gui_DOC_INSTALL_DIR = Developer/Gui/Reference
 GuiAdditions_DOC_INSTALL_DIR = Developer/Gui/Reference
 
 Gui_AGSDOC_FILES = ../Documentation/Gui/Gui.gsdoc \
-	../Documentation/Gui/Introduction.gsdoc \
 	../Documentation/Gui/NSMutableAttributedStringAdditions.gsdoc \
 	$(AUTOGSDOC_HEADERS_GUI)
 
