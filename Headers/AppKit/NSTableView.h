@@ -277,7 +277,7 @@ enum {
 
 /* sorting */
 - (void) setSortDescriptors: (NSArray *)array;
-- (NSArray *)sortDescriptors;
+- (NSArray *) sortDescriptors;
 
 @end /* interface of NSTableView */
 
