@@ -140,6 +140,7 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 //
 // Instance methods
 //
+
 //
 // Initialization
 //
@@ -149,11 +150,11 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   return [self initWithFrame: NSMakeRect (0, 0, 100, 100)];
 }
 
-- (void)dealloc
+- (void) dealloc
 {
-  RELEASE(_background_color);
-  RELEASE(_caret_color);
-  RELEASE(_typingAttributes);
+  RELEASE (_background_color);
+  RELEASE (_caret_color);
+  RELEASE (_typingAttributes);
 
   [super dealloc];
 }
@@ -196,29 +197,29 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 
 - (NSString*) string
 {
-  // FIXME: This should remove all the attachement characters.
-  return [_textStorage string];
+  [self subclassResponsibility: _cmd];
+  return nil;
 }
 
 // old methods
-- (void) replaceRange: (NSRange)aRange withRTFD: (NSData*)rtfdData
+- (void) replaceRange: (NSRange)aRange  withRTFD: (NSData*)rtfdData
 {
-  [self replaceCharactersInRange: aRange withRTFD: rtfdData];
+  [self replaceCharactersInRange: aRange  withRTFD: rtfdData];
 }
 
-- (void) replaceRange: (NSRange)aRange withRTF: (NSData*)rtfData
+- (void) replaceRange: (NSRange)aRange  withRTF: (NSData*)rtfData
 {
-  [self replaceCharactersInRange: aRange withRTF: rtfData];
+  [self replaceCharactersInRange: aRange  withRTF: rtfData];
 }
 
-- (void) replaceRange: (NSRange)aRange withString: (NSString*)aString
+- (void) replaceRange: (NSRange)aRange  withString: (NSString*)aString
 {
-  [self replaceCharactersInRange: aRange withString: aString];
+  [self replaceCharactersInRange: aRange  withString: aString];
 }
 
-- (void) setText: (NSString*)aString range: (NSRange)aRange
+- (void) setText: (NSString*)aString  range: (NSRange)aRange
 {
-  [self replaceCharactersInRange: aRange withString: aString];
+  [self replaceCharactersInRange: aRange  withString: aString];
 }
 
 - (void) setText: (NSString*)string
@@ -1528,7 +1529,7 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 
 @end
 
-@implementation NSText(NSTextView)
+@implementation NSText (NSTextView)
 
 - (void) setRulerVisible: (BOOL)flag
 {
@@ -1536,7 +1537,9 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 
   _tf.is_ruler_visible = flag;
   if (sv != nil)
-    [sv setRulersVisible: _tf.is_ruler_visible];
+    {
+      [sv setRulersVisible: _tf.is_ruler_visible];
+    }
 }
 
 - (int) spellCheckerDocumentTag
