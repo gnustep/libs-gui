@@ -36,16 +36,10 @@
 @class NSString;
 @class NSEvent;
 
-@interface NSButton : NSControl <NSCoding>
+@interface NSButton : NSControl
 {
   // Attributes
 }
-
-//
-// Initializing the NSButton Factory 
-//
-+ (Class)cellClass;
-+ (void)setCellClass:(Class)classId;
 
 //
 // Setting the Button Type 
@@ -57,8 +51,8 @@
 //
 - (void)setState:(int)value;
 - (int)state;
-- (BOOL) allowsMixedState;
-- (void) setAllowsMixedState: (BOOL)flag;
+- (BOOL)allowsMixedState;
+- (void)setAllowsMixedState: (BOOL)flag;
 - (void)setNextState;
 
 //
@@ -76,6 +70,13 @@
 - (void)setAlternateTitle:(NSString *)aString;
 - (void)setTitle:(NSString *)aString;
 - (NSString *)title;
+#ifndef STRICT_OPENSTEP
+- (NSAttributedString *)attributedAlternateTitle;
+- (NSAttributedString *)attributedTitle;
+- (void)setAttributedAlternateTitle:(NSAttributedString *)aString;
+- (void)setAttributedTitle:(NSAttributedString *)aString;
+- (void)setTitleWithMnemonic:(NSString *)aString;
+#endif
 
 //
 // Setting the Images 
@@ -94,6 +95,12 @@
 - (BOOL)isTransparent;
 - (void)setBordered:(BOOL)flag;
 - (void)setTransparent:(BOOL)flag;
+#ifndef STRICT_OPENSTEP
+- (NSBezelStyle)bezelStyle;
+- (void)setBezelStyle:(NSBezelStyle)bezelStyle;
+- (void)setShowsBorderOnlyWhileMouseInside:(BOOL)show;
+- (BOOL)showsBorderOnlyWhileMouseInside;
+#endif
 
 //
 // Displaying 
@@ -115,10 +122,12 @@
 - (BOOL)performKeyEquivalent:(NSEvent *)anEvent;
 
 //
-// NSCoding protocol
+// Sound
 //
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
+#ifndef STRICT_OPENSTEP
+- (void)setSound:(NSSound *)aSound;
+- (NSSound *)sound;
+#endif
 
 @end
 
