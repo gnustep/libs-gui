@@ -139,8 +139,9 @@ NSBestDepth(NSString *colorSpace, int bitsPerSample, int bitsPerPixel,
   const NSWindowDepth	*depths = NSAvailableWindowDepths();
   NSWindowDepth		bestDepth = NSDefaultDepth;
   
-  *exactMatch = NO;
-  
+  if (exactMatch != NULL)
+    *exactMatch = NO;
+
   if (components == 1)
     {	
       for (index = 0; depths[index] != 0; index++)
@@ -152,7 +153,8 @@ NSBestDepth(NSString *colorSpace, int bitsPerSample, int bitsPerPixel,
 	      bestDepth = depth;
 	      if (NSBitsPerSampleFromDepth(depth) == bitsPerSample)
 		{
-		  *exactMatch = YES;
+                  if (exactMatch != NULL)
+                    *exactMatch = YES;
 		}
 	    }
 	}
@@ -168,7 +170,8 @@ NSBestDepth(NSString *colorSpace, int bitsPerSample, int bitsPerPixel,
 	      bestDepth = depth;
 	      if (NSBitsPerSampleFromDepth(depth) == bitsPerSample)
 		{
-		  *exactMatch = YES;
+                  if (exactMatch != NULL)
+                    *exactMatch = YES;
 		}
 	    }
 	}

@@ -1,3 +1,9 @@
+2004-10-17 Adrian Robert <arobert@cogsci.ucsd.edu>
+	* Source/Functions.m (NSBestDepth): Check outarg exactMatch is
+	non-null before setting.
+	* Source/NSFont.m (getNSFont): Use defaultSize for 'fontSize'
+	args of <0 as well as ==0; documented.
+
 2004-10-11  Georg Fleischmann
 	
 	* Model/GMAppKit.m [-encodeWithModelArchiver:] remove title

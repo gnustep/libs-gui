@@ -329,7 +329,7 @@ static NSFont *getNSFont(float fontSize, int role)
 
   font_role = role * 2;
 
-  defaultSize = (fontSize == 0.0);
+  defaultSize = (fontSize <= 0.0);
   if (defaultSize)
     {
       if (font_roles[role].cachedFont)
@@ -451,7 +451,8 @@ static void setNSFont(NSString *key, NSFont *font)
 
 /** 
  * Return the default bold font for use in menus and heading in standard
- * gui components.<br />
+ * gui components.  If fontSize is <= 0, the default
+ * size is used.<br />
  * This is deprecated in MacOSX
  */
 + (NSFont*) boldSystemFontOfSize: (float)fontSize
@@ -461,7 +462,8 @@ static void setNSFont(NSString *key, NSFont *font)
 
 /** 
  * Return the default font for use in menus and heading in standard
- * gui components.<br />
+ * gui components.  If fontSize is <= 0, the default
+ * size is used.<br />
  * This is deprecated in MacOSX
  */
 + (NSFont*) systemFontOfSize: (float)fontSize
@@ -471,7 +473,8 @@ static void setNSFont(NSString *key, NSFont *font)
 
 /** 
  * Return the default fixed pitch font for use in locations other
- * than standard gui components.
+ * than standard gui components.  If fontSize is <= 0, the default
+ * size is used.
  */
 + (NSFont*) userFixedPitchFontOfSize: (float)fontSize
 {
@@ -480,7 +483,8 @@ static void setNSFont(NSString *key, NSFont *font)
 
 /** 
  * Return the default font for use in locations other
- * than standard gui components.
+ * than standard gui components.  If fontSize is <= 0, the default
+ * size is used.
  */
 + (NSFont*) userFontOfSize: (float)fontSize
 {
