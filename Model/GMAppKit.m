@@ -1375,6 +1375,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 
   return self;
 }
+@end
 
 @implementation NSTextFieldCell (GMArchiverMethods)
 
