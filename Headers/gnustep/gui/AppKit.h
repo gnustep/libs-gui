@@ -148,4 +148,7 @@ float MB_SCREEN_MAXHEIGHT();
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSWorkspace.h>
 
+#include <Foundation/NSBundle.h>
+#include <AppKit/NSBundle.h>
+
 #endif _GNUstep_H_AppKit

@@ -284,15 +284,14 @@
 {
   unsigned char *planes[MAX_PLANES];
   [self getBitmapDataPlanes: planes];
-  return (unsigned char *)[imageData mutableBytes];
-  //  return planes[0];
+  return planes[0];
 }
 
 - (void) getBitmapDataPlanes: (unsigned char **)data
 {
   int i;
 
-  if (!imagePlanes)
+  if (!imagePlanes || !imagePlanes[0])
     {
       long length;
       unsigned char* bits;

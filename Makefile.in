@@ -23,7 +23,7 @@ exeext =
 
 include $(srcdir)/Version
 
-SUBDIRS = Source Testing
+SUBDIRS = Source Testing Images
 
 DIST_FILES = \
 	Makefile.in configure config.guess \
@@ -59,55 +59,16 @@ config.status: configure
 
 mostlyclean-top:
 	rm -f *~
+	cd Headers ; cd gnustep ; cd gui ; rm -f *~
+	cd Headers ; cd gnustep ; cd dps ; rm -f *~
 clean-top: mostlyclean-top
-maintainer-clean-top: clean-top
+distclean-top: clean-top
+	rm -f Makefile config.status config.log config.cache TAGS
+	cd Headers ; cd gnustep ; cd gui ; rm -f config.h
+	cd Headers ; rm -rf AppKit ; rm -rf DPSClient
 
 mostlyclean: mostlyclean-top mostlyclean-subdirs
-clean: mostlyclean-top clean-subdirs
-distclean: clean-top distclean-subdirs
-	rm -f Makefile config.status config.log config.cache TAGS
-	cd Headers ; cd gnustep ; cd gui ; rm -f *~ config.h
-	cd Headers ; cd gnustep ; cd dps ; rm -f *~
-	cd Headers ; rm -f AppKit ; rm -f DPSClient
-maintainer-clean: maintainer-clean-subdirs
-
-snap: $(DIST_FILES)
-	rm -rf snap
-	mkdir snap
-	for i in $(SUBDIRS); do \
-	  (cd $$i; $(MAKE) $(MAKEDEFINES) copy-dist); \
-	done
-	mkdir snap/config
-	for file in $(DIST_FILES); do \
-	  ln $$file snap/$$file ; \
-	done
-
-snapshot: snap
-	ln README.first snap
-	rm -f .name
-	echo libobjects-`date +%y%m%d` >.name
-	rm -rf `cat .name`
-	mv snap `cat .name`
-	tar -chvf `cat .name`.tar `cat .name`
-	rm -f `cat .name`.tar.gz
-	gzip -9 `cat .name`.tar
-	rm -rf `cat .name`
-
-dist: snap
-	mv snap libobjects-$(OBJECTS_VERSION)
-	tar -chvf libobjects-$(OBJECTS_VERSION).tar \
-		libobjects-$(OBJECTS_VERSION)
-	rm -f libobjects-$(OBJECTS_VERSION).tar.gz
-	gzip -9 libobjects-$(OBJECTS_VERSION).tar
-	rm -rf libobjects-$(OBJECTS_VERSION)
-
-rcs-list-locked: 
-	@echo "===."
-	@rlog -L -R $(RCS_FILES)
-	@for i in $(SUBDIRS); do \
-	  echo "===$$i"; \
-	  (cd $$i; \
-	   $(MAKE) -s $(MAKEDEFINES) rcs-list-locked); \
-	done
+clean: clean-top clean-subdirs
+distclean: distclean-subdirs distclean-top
 
 FORCE:

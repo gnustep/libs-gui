@@ -43,6 +43,10 @@
 #include <Foundation/NSBundle.h>
 #include <string.h>
 
+#ifndef NSImage_PATH
+#define NSImage_PATH OBJC_STRINGIFY(GNUSTEP_INSTALL_LIBDIR) @"/Images"
+#endif
+
 /* Backend protocol - methods that must be implemented by the backend to
    complete the class */
 @protocol NSImageBackend
@@ -155,27 +159,65 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
   if (!nameDict || ![nameDict objectForKey:aName]) 
     {
       NSString* ext;
-      NSString* path;
+      NSString* path = nil;
       NSBundle* main;
       main = [NSBundle mainBundle];
       ext  = extension(aName);
+
+      NSLog(@"search locally\n");
+      NSLog(@"extension is %s\n", [ext cString]);
+      /* First search locally */
       if (ext)
 	path = [main pathForResource: aName ofType: ext];
       else 
 	{
-	  int i, count;
+	  id o, e;
 	  NSArray* array;
 
 	  array = [self imageFileTypes];
-	  count = [array count];
-	  for (i = 0; i < count; i++)
+	  if (!array)
+	    NSLog(@"array is nil\n");
+	  e = [array objectEnumerator];
+	  while ((o = [e nextObject]))
 	    {
+	      NSLog(@"extension %s\n", [o cString]);
 	      path = [main pathForResource:aName 
-		        ofType: [array objectAtIndex: i]];
+		        ofType: o];
 	      if ([path length] != 0)
 		break;
 	    }
 	}
+
+      /* If not found then search in system */
+      if (!path)
+	{
+	  if (ext)
+	    path = [NSBundle pathForResource: aName
+			     ofType: ext
+			     inDirectory: NSImage_PATH
+			     withVersion: 0];
+	  else 
+	    {
+	      id o, e;
+	      NSArray* array;
+
+	      array = [self imageFileTypes];
+	      if (!array)
+		NSLog(@"array is nil\n");
+	      e = [array objectEnumerator];
+	      while ((o = [e nextObject]))
+		{
+		  NSLog(@"extension %s\n", [o cString]);
+		  path = [NSBundle pathForResource: aName
+				   ofType: o
+				   inDirectory: NSImage_PATH
+				   withVersion: 0];
+		  if ([path length] != 0)
+		    break;
+		}
+	    }
+	}
+
       if ([path length] != 0) 
 	{
 	  NSImage* image = [[NSImage alloc] initByReferencingFile:path];
@@ -593,7 +635,7 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
   if (!ext)
     return NO;
   array = [[self class] imageFileTypes];
-  if (![array indexOfObject: ext])
+  if ([array indexOfObject: ext] == NSNotFound)
     return NO;
   repd.fileName = [fileName retain];
   [_reps addObject: [NSValue value: &repd withObjCType: @encode(rep_data_t)]];
@@ -906,7 +948,7 @@ iterate_reps_for_types(NSArray* imageReps, SEL method)
       obj = [e1 nextObject];
       while (obj)
 	{
-	  if (![types indexOfObject: obj])
+	  if ([types indexOfObject: obj] == NSNotFound)
 	    [types addObject: obj];
 	  obj = [e1 nextObject];
 	}

@@ -39,6 +39,7 @@ VPATH = @srcdir@
 prefix = @prefix@
 exec_prefix = @exec_prefix@
 libdir = @libdir@
+gnustep_libdir = $(libdir)/gnustep
 includedir = @includedir@
 bindir = @bindir@
 
@@ -47,6 +48,7 @@ MAKEDEFINES =
 CC = @CC@ -g
 CPPFLAGS = @CPPFLAGS@
 CFLAGS = -c $(GCCFLAGS) -I../Headers $(CPPFLAGS)
+DEFS = -DGNUSTEP_INSTALL_LIBDIR=$(gnustep_libdir) @DEFS@
 
 GCC_LIB = 
 OBJC_LIB = -lobjc
@@ -164,17 +166,6 @@ GNUSTEP_DPS_HEADERS = dps/NSDPSContext.h \
 dps/DPSOperators.h \
 dps/TypesandConstants.h
 
-GNUSTEP_RESOURCE = gui/common_ArrowDown.tiff \
-gui/common_ArrowLeft.tiff \
-gui/common_ArrowRight.tiff \
-gui/common_ArrowUp.tiff \
-gui/common_Dimple.tiff \
-gui/common_RadioOff.tiff \
-gui/common_RadioOn.tiff \
-gui/common_SwitchOff.tiff \
-gui/common_SwitchOn.tiff \
-gui/common_ret.tiff
-
 OBJS_WITHOUT_INIT = $(MAIN_FILE)$(oext) \
 NSActionCell$(oext) \
 NSApplication$(oext) \
@@ -249,9 +240,9 @@ OBJS = $(OBJS_WITHOUT_INIT)
 
 .SUFFIXES: .m
 .m$(oext):
-	$(CC) $(CFLAGS) $<
+	$(CC) $(CFLAGS) $(DEFS) $<
 .c$(oext):
-	$(CC) $(CFLAGS) $<
+	$(CC) $(CFLAGS) $(DEFS) $<
 
 #
 # libraries
@@ -266,9 +257,9 @@ all: header_links src
 
 header_links:
 	-rm -rf ../Headers/AppKit
-	cp -r ../Headers/gnustep/gui ../Headers/AppKit
+	$(LN_S) ../Headers/gnustep/gui ../Headers/AppKit
 	-rm -rf ../Headers/DPSClient
-	cp -r ../Headers/gnustep/dps ../Headers/DPSClient
+	$(LN_S) ../Headers/gnustep/dps ../Headers/DPSClient
 
 src: $(MAIN_FILE)$(libext)
 
@@ -286,14 +277,12 @@ $(INIT_FILE_OBJ): $(OBJS_WITHOUT_INIT)
 	$(CC) $(CFLAGS) $(INIT_FILE).c
 	rm tmpinit.c
 
-install: installdirs install-lib install-headers install-resource
+install: installdirs install-lib install-headers
 
 installdirs:
 	$(srcdir)/../mkinstalldirs \
 		$(libdir) \
 		$(libdir)/gnustep \
-		$(libdir)/gnustep/resource \
-		$(libdir)/gnustep/resource/gui \
 		$(includedir)/gnustep \
 		$(includedir)/gnustep/dps \
 		$(includedir)/gnustep/gui
@@ -319,14 +308,8 @@ install-headers:
 		$(INSTALL_DATA) ../Headers/gnustep/$$file \
 			$(includedir)/gnustep/$$file ; \
 	done
-	cd $(includedir); rm -rf AppKit; cp -r ./gnustep/gui ./AppKit
-	cd $(includedir); rm -rf DPSClient; cp -r ./gnustep/dps ./DPSClient
-
-install-resource:
-	for file in $(GNUSTEP_RESOURCE); do \
-		$(INSTALL_DATA) ../Headers/gnustep/resource/$$file \
-			$(libdir)/gnustep/resource/$$file ; \
-	done
+	cd $(includedir); rm -rf AppKit; $(LN_S) ./gnustep/gui ./AppKit
+	cd $(includedir); rm -rf DPSClient; $(LN_S) ./gnustep/dps ./DPSClient
 # end of install targets
 
 uninstall:
@@ -335,7 +318,6 @@ uninstall:
 	rm -rf $(includedir)/AppKit
 	rm -rf $(includedir)/DPSClient
 	rm -rf $(libdir)/$(MAIN_FILE)$(libext)
-	rm -rf $(libdir)/gnustep/resource/gui
 
 #
 # Cleaning

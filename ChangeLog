@@ -1,3 +1,21 @@
+Fri Jan 31 05:30:40 1997  Scott Christley <scottc@net-community.com>
+
+	* Makefile.in: Clean up code.
+	* configure.in: Update ftp messages; add Images directory.
+	* configure: Regenerate based upon configure.in changes.
+	* Headers/gnustep/gui/NSCell.h (support): Remove instance variable.
+	(cell_image, cell_font): New instance variables.
+	* gnustep/gui/resource: Remove directory and files; these resources
+	have been moved elsewhere like the new Images directory.
+	* Source/Makefile.in (GNUSTEP_RESOURCE, install-resource): Remove.
+	(GNUSTEP_INSTALL_LIBDIR): Add definition.
+	Correct some minor errors.
+	* Source/NSButtonCell.m: Modify for NSCell instance variables changes.
+	* Source/NSCell.m: Likewise.
+	* Source/NSTextFieldCell.m: Likewise.
+	* Source/NSImage.m (NSImage_PATH): Default path for where NSImage
+	tries to find system image resources.
+
 Thu Jan 30 12:34:30 1997  Scott Christley <scottc@net-community.com>
 
 	* Headers/gnustep/gui/NSDragging.h (NSDraggingInfo): Define
@@ -6,6 +24,18 @@ Thu Jan 30 12:34:30 1997  Scott Christley <scottc@net-community.com>
 	* Source/NSControl.m (-copyWithZone:): New method.
 	* Source/NSFontManager.m (-fontWithFamily:traits:weight:size:):
 	Add log error message when requesting invalid font.
+
+Thu Jan 29 13:07:11 1997  Adam Fedor  <fedor@boulder.Colorado.edu>
+
+	* Headers/gnustep/gui/AppKit.h: Add NSBundle definitions.
+
+	* Source/NSBitmapImageRep.m ([NSBitmapImageRep -bitmapData]):
+	planes instance variable always contains image data.
+	([NSBitmapImageRep -getBitmapDataPlanes]): Check for data in
+	imagePlanes before allocating data.
+	* Source/NSEPSImageRep.m ([NSEPSImageRep +imageRepWithData:]): Just
+	return nil instead of not implementing.
+	([NSEPSImageRep +imageRepsWithData:]): New method.
 
 Wed Jan 29 07:44:32 1997  Simon Frankau <sgf@frankau.demon.co.uk>
 

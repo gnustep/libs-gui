@@ -63,6 +63,8 @@
 {
   [super init];
   cell_type = NSNullCellType;
+  cell_image = nil;
+  cell_font = nil;
   image_position = NSNoImage;
   cell_state = NO;
   cell_highlighted = NO;
@@ -87,9 +89,10 @@
   if (![anImage isKindOfClass:[NSImage class]])
     return nil;
 
-  support = anImage;
   cell_type = NSImageCellType;
+  cell_image = anImage;
   image_position = NSImageOnly;
+  cell_font = [NSFont userFontOfSize:12];
   cell_state = NO;
   cell_highlighted = NO;
   cell_enabled = YES;
@@ -113,10 +116,11 @@
   //if (![aString isKindOfClass:[NSString class]])
   //	return nil;
 
-  support = [NSFont userFontOfSize:12];
+  cell_font = [NSFont userFontOfSize:12];
   contents = aString;
   cell_type = NSTextCellType;
   text_align = NSLeftTextAlignment;
+  cell_image = nil;
   image_position = NSNoImage;
   cell_state = NO;
   cell_highlighted = NO;
@@ -208,10 +212,7 @@
 //
 - (NSImage *)image
 {
-  if (cell_type == NSImageCellType)
-    return support;
-  else
-    return nil;
+  return cell_image;
 }
 
 - (void)setImage:(NSImage *)anImage
@@ -220,9 +221,8 @@
   if (![anImage isKindOfClass:[NSImage class]])
     return;
 
-	// Only set the image if we are an image cell
-  if (cell_type == NSImageCellType)
-    support = anImage;
+  // Only set the image if we are an image cell
+  cell_image = anImage;
 }
 
 //
@@ -330,10 +330,7 @@
 
 - (NSFont *)font
 {
-  if ([support isKindOfClass:[NSFont class]])
-    return support;
-  else
-    return nil;
+  return cell_font;
 }
 
 - (BOOL)isEditable
@@ -370,9 +367,7 @@
   if (![fontObject isKindOfClass:[NSFont class]])
     return;
 
-	// Only set the font if we are a text cell
-  if ([support isKindOfClass:[NSFont class]])
-    support = fontObject;
+  cell_font = fontObject;
 }
 
 - (void)setSelectable:(BOOL)flag
@@ -741,7 +736,8 @@
   [super encodeWithCoder:aCoder];
 
   [aCoder encodeObject: contents];
-  [aCoder encodeObject: support];
+  [aCoder encodeObject: cell_image];
+  [aCoder encodeObject: cell_font];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &cell_state];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &cell_highlighted];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &cell_enabled];
@@ -766,7 +762,8 @@
   [super initWithCoder:aDecoder];
 
   contents = [aDecoder decodeObject];
-  support = [aDecoder decodeObject];
+  cell_image = [aDecoder decodeObject];
+  cell_font = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &cell_state];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &cell_highlighted];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &cell_enabled];

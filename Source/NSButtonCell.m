@@ -63,6 +63,7 @@
 - initImageCell:(NSImage *)anImage
 {
   [super initImageCell:anImage];
+  contents = @"Button";
   cell_type = NSMomentaryPushButton;
   [self setEnabled:YES];
   transparent = NO;
@@ -73,7 +74,6 @@
 - initTextCell:(NSString *)aString
 {
   [super initTextCell:aString];
-  support = [NSFont userFontOfSize:12];
   alt_contents = @"Button";
   cell_type = NSMomentaryPushButton;
   [self setEnabled:YES];

@@ -42,7 +42,8 @@
 {
   // Attributes
   NSString *contents;
-  id support;
+  NSImage *cell_image;
+  NSFont *cell_font;
   BOOL cell_state;
   BOOL cell_highlighted;
   BOOL cell_enabled;

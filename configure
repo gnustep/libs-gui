@@ -1077,10 +1077,14 @@ done
 if test "x$HAVE_DPSCLIENT" = "x0"
 then
    echo You must have the DPSClient library installed.
-   echo The most recent version "(R6)", patched for GNUstep,
+   echo The most recent public release, patched for GNUstep,
    echo should be available at:
    echo
-   echo ftp://ftp.ocbi.com/pub/GNUstep
+   echo ftp://ftp.gnustep.org
+   echo
+   echo The most recent snapshot should be available at:
+   echo
+   echo ftp://ftp.net-community.com/pub/GNUstep
    echo
    echo Configuration of the GNUstep GUI Library cannot continue.
    exit 1
@@ -1195,7 +1199,7 @@ done
 ac_given_srcdir=$srcdir
 ac_given_INSTALL="$INSTALL"
 
-trap 'rm -fr `echo "Makefile Source/Makefile Testing/Makefile Headers/gnustep/gui/config.h Documentation/Makefile" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
+trap 'rm -fr `echo "Makefile Source/Makefile Testing/Makefile Headers/gnustep/gui/config.h Documentation/Makefile Images/Makefile" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
 
@@ -1239,7 +1243,7 @@ CEOF
 EOF
 cat >> $CONFIG_STATUS <<EOF
 
-CONFIG_FILES=\${CONFIG_FILES-"Makefile Source/Makefile Testing/Makefile Headers/gnustep/gui/config.h Documentation/Makefile"}
+CONFIG_FILES=\${CONFIG_FILES-"Makefile Source/Makefile Testing/Makefile Headers/gnustep/gui/config.h Documentation/Makefile Images/Makefile"}
 EOF
 cat >> $CONFIG_STATUS <<\EOF
 for ac_file in .. $CONFIG_FILES; do if test "x$ac_file" != x..; then

@@ -68,10 +68,14 @@ AC_CHECK_HEADERS(DPS/dpsclient.h, HAVE_DPSCLIENT=1, HAVE_DPSCLIENT=0)
 if test "x$HAVE_DPSCLIENT" = "x0"
 then
    echo You must have the DPSClient library installed.
-   echo The most recent version "(R6)", patched for GNUstep,
+   echo The most recent public release, patched for GNUstep,
    echo should be available at:
    echo
-   echo ftp://ftp.ocbi.com/pub/GNUstep
+   echo ftp://ftp.gnustep.org
+   echo
+   echo The most recent snapshot should be available at:
+   echo
+   echo ftp://ftp.net-community.com/pub/GNUstep
    echo
    echo Configuration of the GNUstep GUI Library cannot continue.
    exit 1
@@ -87,5 +91,5 @@ AC_SUBST(config_include)
 #--------------------------------------------------------------------
 # Write the Makefiles and configuration files
 #--------------------------------------------------------------------
-AC_OUTPUT(Makefile Source/Makefile Testing/Makefile Headers/gnustep/gui/config.h Documentation/Makefile)
+AC_OUTPUT(Makefile Source/Makefile Testing/Makefile Headers/gnustep/gui/config.h Documentation/Makefile Images/Makefile)
 

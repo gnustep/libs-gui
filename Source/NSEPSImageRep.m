@@ -33,9 +33,16 @@
 // Initializing a New Instance 
 + (id) imageRepWithData: (NSData *)epsData
 {
-  //  [self notImplemented: _cmd];
-  return [[self alloc] init];
+  //[self notImplemented: _cmd];
+  return nil;
 }
+
++ (NSArray *) imageRepsWithData: (NSData *)epsData
+{
+  //[self notImplemented: _cmd];
+  return nil;
+}
+
 - (id) initWithData: (NSData *)epsData
 {
   [self notImplemented: _cmd];

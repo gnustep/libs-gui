@@ -77,7 +77,7 @@
 	
   background_color = [NSColor whiteColor];
   text_color = [NSColor blackColor];
-  support = [NSFont systemFontOfSize:12];
+  cell_font = [NSFont systemFontOfSize:12];
   return self;
 }
 
