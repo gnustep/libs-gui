@@ -164,66 +164,67 @@ static NSMutableDictionary	*systemDict = nil;
 static
 void initSystemColors()
 {
+  NSString *white;
+  NSString *lightGray;
+  NSString *gray;
+  NSString *darkGray;
+  NSString *black;
+  
+  // Set up a dictionary containing the names of all the system colors
+  // as keys and with colors in string format as values.
+  white = [NSString stringWithFormat: @"%f %f %f",
+		    NSWhite, NSWhite, NSWhite];
+  lightGray = [NSString stringWithFormat: @"%f %f %f",
+			NSLightGray, NSLightGray, NSLightGray];
+  gray = [NSString stringWithFormat: @"%f %f %f",
+		   NSGray, NSGray, NSGray];
+  darkGray = [NSString stringWithFormat: @"%f %f %f",
+		       NSDarkGray, NSDarkGray, NSDarkGray];
+  black = [NSString stringWithFormat: @"%f %f %f",
+		    NSBlack, NSBlack, NSBlack];
+  
+  colorStrings = [[NSMutableDictionary alloc]
+		     initWithObjectsAndKeys:
+			 lightGray, @"controlBackgroundColor",
+		     lightGray, @"controlColor",
+		     lightGray, @"controlHighlightColor",
+		     white, @"controlLightHighlightColor",
+		     darkGray, @"controlShadowColor",
+		     black, @"controlDarkShadowColor",
+		     black, @"controlTextColor",
+		     darkGray, @"disabledControlTextColor",
+		     gray, @"gridColor",
+		     lightGray, @"headerColor",
+		     black, @"headerTextColor",
+		     white, @"highlightColor",
+		     black, @"keyboardFocusIndicatorColor",
+		     lightGray, @"knobColor",
+		     gray, @"scrollBarColor",
+		     white, @"selectedControlColor",
+		     black, @"selectedControlTextColor",
+		     lightGray, @"selectedKnobColor",
+		     white, @"selectedMenuItemColor",
+		     black, @"selectedMenuItemTextColor",
+		     lightGray, @"selectedTextBackgroundColor",
+		     black, @"selectedTextColor",
+		     black, @"shadowColor",
+		     white, @"textBackgroundColor",
+		     black, @"textColor",
+		     lightGray, @"windowBackgroundColor",
+		     black, @"windowFrameColor",
+		     white, @"windowFrameTextColor",
+		     //gray, @"windowFrameColor",
+		     //black, @"windowFrameTextColor",
+		     nil];
+  
   systemColors = [NSColorList colorListNamed: @"System"];
   if (systemColors == nil)
     {
-      NSString *white;
-      NSString *lightGray;
-      NSString *gray;
-      NSString *darkGray;
-      NSString *black;
       NSEnumerator *e;
       NSString *r;
 
       // Set up default system colors
       systemColors = [[NSColorList alloc] initWithName: @"System"];
-
-      // Set up a dictionary containing the names of all the system colors
-      // as keys and with colors in string format as values.
-      white = [NSString stringWithFormat: @"%f %f %f",
-			NSWhite, NSWhite, NSWhite];
-      lightGray = [NSString stringWithFormat: @"%f %f %f",
-			    NSLightGray, NSLightGray, NSLightGray];
-      gray = [NSString stringWithFormat: @"%f %f %f",
-		       NSGray, NSGray, NSGray];
-      darkGray = [NSString stringWithFormat: @"%f %f %f",
-			   NSDarkGray, NSDarkGray, NSDarkGray];
-      black = [NSString stringWithFormat: @"%f %f %f",
-			NSBlack, NSBlack, NSBlack];
-      
-      colorStrings = [[NSMutableDictionary alloc]
-		       initWithObjectsAndKeys:
-			 lightGray, @"controlBackgroundColor",
-		       lightGray, @"controlColor",
-		       lightGray, @"controlHighlightColor",
-		       white, @"controlLightHighlightColor",
-		       darkGray, @"controlShadowColor",
-		       black, @"controlDarkShadowColor",
-		       black, @"controlTextColor",
-		       darkGray, @"disabledControlTextColor",
-		       gray, @"gridColor",
-		       lightGray, @"headerColor",
-		       black, @"headerTextColor",
-		       white, @"highlightColor",
-		       black, @"keyboardFocusIndicatorColor",
-		       lightGray, @"knobColor",
-		       gray, @"scrollBarColor",
-		       white, @"selectedControlColor",
-		       black, @"selectedControlTextColor",
-		       lightGray, @"selectedKnobColor",
-		       white, @"selectedMenuItemColor",
-		       black, @"selectedMenuItemTextColor",
-		       lightGray, @"selectedTextBackgroundColor",
-		       black, @"selectedTextColor",
-		       black, @"shadowColor",
-		       white, @"textBackgroundColor",
-		       black, @"textColor",
-		       lightGray, @"windowBackgroundColor",
-		       black, @"windowFrameColor",
-		       white, @"windowFrameTextColor",
-		       //gray, @"windowFrameColor",
-		       //black, @"windowFrameTextColor",
-		       nil];
 
       e = [colorStrings keyEnumerator];
   
@@ -1251,10 +1252,9 @@ systemColorWithName(NSString *name)
 /*
  *	Go through all the names of system colors - for each color where
  *	there is a value in the defaults database, see if the current
- *	string value of the color differs from the old one.
+ *	value of the color differs from the old one.
  *	Where there is a difference, update the color strings dictionary
- *	and, where a color object exists, update the system colors list
- *	to contain the new color.
+ *	and update the system colors list to contain the new color.
  *	Finally, issue a notification if appropriate.
  */
 + (void) defaultsDidChange: (NSNotification*)notification
@@ -1273,30 +1273,21 @@ systemColorWithName(NSString *name)
 
       if (def != nil)
 	{
-	  NSString	*old = [colorStrings objectForKey: key];
+	  NSColor *old = [systemColors colorWithKey: key];
+	  NSColor *color = [NSColor colorFromString: def];
 
-	  if ([def isEqualToString: old] == NO)
+	  if (color == nil)
 	    {
-	      NSColor *color;
-
+	      NSLog(@"System color '%@' has bad string rep - '%@'\n",
+		    key, def);
+	    }
+	  else if ([color isEqual: old] == NO)
+	    {
 	      didChange = YES;
 	      [colorStrings setObject: def forKey: key];
-	      color = [systemColors colorWithKey: key];
-	      if (color != nil)
-		{
-		  color = [NSColor colorFromString: def];
-		  if (color == nil)
-		    {
-		      NSLog(@"System color '%@' has bad string rep - '%@'\n",
-			    key, def);
-		    }
-		  else
-		    {
-		      [systemColors setColor: color forKey: key];
-		      // Refresh the cach for this named colour
-		      [[systemDict objectForKey: key] recache];
-		    }
-		}
+	      [systemColors setColor: color forKey: key];
+	      // Refresh the cache for this named colour
+	      [[systemDict objectForKey: key] recache];
 	    }
 	}
     }
