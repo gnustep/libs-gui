@@ -1,7 +1,14 @@
+Tue Sep 26 09:36:07 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* NSControl.m ([-copyWithZone:]): Fixed memory problem (found  
+	by Frederic De Jaeger).
+
 2000-09-22  Lyndon Tremblay  <humasect@home.com>
 
-	* Source/NSBundleAdditions.m ([NSBundle +loadNibFile:externalNameTable:withZone:]):
-	access NSOwner from infoDict only when necessary, notify of loading nib.
+	* Source/NSBundleAdditions.m 
+	([+loadNibFile:externalNameTable:withZone:]): access NSOwner 
+	from infoDict only when necessary, notify of loading nib.
+
 	* Model/GMAppKit.m: Removed silly emacs C++ mode tag.
 	* Model/IMLoading.m: Likewise.
 
