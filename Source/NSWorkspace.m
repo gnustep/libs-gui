@@ -28,35 +28,6 @@
 
 #include <AppKit/NSWorkspace.h>
 
-// Workspace File Type Globals 
-NSString *NSPlainFileType = @"NSPlainFileType";
-NSString *NSDirectoryFileType = @"NSDirectoryFileType";
-NSString *NSApplicationFileType = @"NSApplicationFileType";
-NSString *NSFilesystemFileType = @"NSFilesystemFileType";
-NSString *NSShellCommandFileType = @"NSShellCommandFileType";
-
-// Workspace File Operation Globals 
-NSString *NSWorkspaceCompressOperation = @"NSWorkspaceCompressOperation";
-NSString *NSWorkspaceCopyOperation = @"NSWorkspaceCopyOperation";
-NSString *NSWorkspaceDecompressOperation = @"NSWorkspaceDecompressOperation";
-NSString *NSWorkspaceDecryptOperation = @"NSWorkspaceDecryptOperation";
-NSString *NSWorkspaceDestroyOperation = @"NSWorkspaceDestroyOperation";
-NSString *NSWorkspaceDuplicateOperation = @"NSWorkspaceDuplicateOperation";
-NSString *NSWorkspaceEncryptOperation = @"NSWorkspaceEncryptOperation";
-NSString *NSWorkspaceLinkOperation = @"NSWorkspaceLinkOperation";
-NSString *NSWorkspaceMoveOperation = @"NSWorkspaceMoveOperation";
-NSString *NSWorkspaceRecycleOperation = @"NSWorkspaceRecycleOperation";
-
-// NSWorkspace notifications
-NSString *NSWorkspaceDidLaunchApplicationNotification = @"NSWorkspaceDidLaunchApplicationNotification";
-NSString *NSWorkspaceDidMountNotification = @"NSWorkspaceDidMountNotification";
-NSString *NSWorkspaceDidPerformFileOperationNotification = @"NSWorkspaceDidPerformFileOperationNotification";
-NSString *NSWorkspaceDidTerminateApplicationNotification = @"NSWorkspaceDidTerminateApplicationNotification";
-NSString *NSWorkspaceDidUnmountNotification = @"NSWorkspaceDidUnmountNotification";
-NSString *NSWorkspaceWillLaunchApplicationNotification = @"NSWorkspaceWillLaunchApplicationNotification";
-NSString *NSWorkspaceWillPowerOffNotification = @"NSWorkspaceWillPowerOffNotification";
-NSString *NSWorkspaceWillUnmountNotification = @"NSWorkspaceWillUnmountNotification";
-
 @implementation NSWorkspace
 
 //

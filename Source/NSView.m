@@ -41,10 +41,6 @@
 static NSMutableDictionary *gnustep_gui_nsview_thread_dict = nil;
 static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
-// NSView notifications
-NSString *NSViewFrameChangedNotification = @"NSViewFrameChangedNotification";
-NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
-
 @implementation NSView
 
 //

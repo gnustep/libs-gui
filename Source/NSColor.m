@@ -29,27 +29,10 @@
 #include <AppKit/NSColor.h>
 #include <AppKit/NSColorPrivate.h>
 #include <AppKit/NSView.h>
+#include <AppKit/NSGraphics.h>
 
 // Class variables
 static BOOL gnustep_gui_ignores_alpha = YES;
-
-// Global strings
-NSString *NSCalibratedWhiteColorSpace = @"NSCalibratedWhiteColorSpace";
-NSString *NSCalibratedBlackColorSpace = @"NSCalibratedBlackColorSpace";
-NSString *NSCalibratedRGBColorSpace = @"NSCalibratedRGBColorSpace";
-NSString *NSDeviceWhiteColorSpace = @"NSDeviceWhiteColorSpace";
-NSString *NSDeviceBlackColorSpace = @"NSDeviceBlackColorSpace";
-NSString *NSDeviceRGBColorSpace = @"NSDeviceRGBColorSpace";
-NSString *NSDeviceCMYKColorSpace = @"NSDeviceCMYKColorSpace";
-NSString *NSNamedColorSpace = @"NSNamedColorSpace";
-NSString *NSCustomColorSpace = @"NSCustomColorSpace";
-
-// Global gray values
-const float NSBlack = 0;
-const float NSDarkGray = .333;
-const float NSGray = 0.5;
-const float NSLightGray = .667;
-const float NSWhite = 1;
 
 @implementation NSColor
 

@@ -53,6 +53,7 @@ extern const float NSBlack;
 extern const float NSDarkGray;
 extern const float NSWhite;
 extern const float NSLightGray;
+extern const float NSGray;
 
 //
 // Device Dictionary Keys 

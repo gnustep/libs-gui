@@ -29,9 +29,6 @@
 #include <AppKit/NSDataLink.h>
 #include <AppKit/NSDataLinkManager.h>
 
-// Global strings
-NSString *NSDataLinkFileNameExtension = @"dlf";
-
 @implementation NSDataLink
 
 //

@@ -35,9 +35,6 @@
 #include <AppKit/NSEPSImageRep.h>
 #include <AppKit/NSPasteboard.h>
 
-// NSImageRep notifications
-NSString *NSImageRepRegistryChangedNotification = @"NSImageRepRegistryChangedNotification";
-
 /* Backend protocol - methods that must be implemented by the backend to
    complete the class */
 @protocol NXImageRepBackend

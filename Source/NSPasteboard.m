@@ -28,27 +28,6 @@
 
 #include <AppKit/NSPasteboard.h>
 
-// Pasteboard Type Globals 
-NSString *NSStringPboardType = @"NSStringPboardType";
-NSString *NSColorPboardType = @"NSColorPboardType";
-NSString *NSFileContentsPboardType = @"NSFileContentsPboardType";
-NSString *NSFilenamesPboardType = @"NSFilenamesPboardType";
-NSString *NSFontPboardType = @"NSFontPboardType";
-NSString *NSRulerPboardType = @"NSRulerPboardType";
-NSString *NSPostScriptPboardType = @"NSPostScriptPboardType";
-NSString *NSTabularTextPboardType = @"NSTabularTextPboardType";
-NSString *NSRTFPboardType = @"NSRTFPboardType";
-NSString *NSTIFFPboardType = @"NSTIFFPboardType";
-NSString *NSDataLinkPboardType = @"NSDataLinkPboardType";
-NSString *NSGeneralPboardType = @"NSGeneralPboardType";
-
-// Pasteboard Name Globals 
-NSString *NSDragPboard = @"NSDragPboard";
-NSString *NSFindPboard = @"NSFindPboard";
-NSString *NSFontPboard = @"NSFontPboard";
-NSString *NSGeneralPboard = @"NSGeneralPboard";
-NSString *NSRulerPboard = @"NSRulerPboard";
-
 @implementation NSPasteboard
 
 //

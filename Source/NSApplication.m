@@ -43,77 +43,13 @@
 #include <AppKit/NSMenuItem.h>
 #include <AppKit/NSCursor.h>
 
+extern id NSApp;
+extern NSEvent *gnustep_gui_null_event;
+
 //
 // Class variables
 //
-// The global application instance
-extern id NSApp;
-NSEvent *gnustep_gui_null_event = nil;
 static BOOL gnustep_gui_app_is_in_dealloc;
-
-// Global strings
-NSString *NSModalPanelRunLoopMode = @"ModalPanelMode";
-NSString *NSEventTrackingRunLoopMode = @"EventTrackingMode";
-
-//
-// Global Exception Strings 
-//
-NSString *NSAbortModalException = @"AbortModal";
-NSString *NSAbortPrintingException = @"AbortPrinting";
-NSString *NSAppKitIgnoredException = @"AppKitIgnored";
-NSString *NSAppKitVirtualMemoryException = @"AppKitVirtualMemory";
-NSString *NSBadBitmapParametersException = @"BadBitmapParameters";
-NSString *NSBadComparisonException = @"BadComparison";
-NSString *NSBadRTFColorTableException = @"BadRTFColorTable";
-NSString *NSBadRTFDirectiveException = @"BadRTFDirective";
-NSString *NSBadRTFFontTableException = @"BadRTFFontTable";
-NSString *NSBadRTFStyleSheetException = @"BadRTFStyleSheet";
-NSString *NSBrowserIllegalDelegateException = @"BrowserIllegalDelegate";
-NSString *NSColorListIOException = @"ColorListIO";
-NSString *NSColorListNotEditableException = @"ColorListNotEditable";
-NSString *NSDraggingException = @"Draggin";
-NSString *NSFontUnavailableException = @"FontUnavailable";
-NSString *NSIllegalSelectorException = @"IllegalSelector";
-NSString *NSImageCacheException = @"ImageCache";
-NSString *NSNibLoadingException = @"NibLoading";
-NSString *NSPPDIncludeNotFoundException = @"PPDIncludeNotFound";
-NSString *NSPPDIncludeStackOverflowException = @"PPDIncludeStackOverflow";
-NSString *NSPPDIncludeStackUnderflowException = @"PPDIncludeStackUnderflow";
-NSString *NSPPDParseException = @"PPDParse";
-NSString *NSPasteboardCommunicationException = @"PasteboardCommunication";
-NSString *NSPrintOperationExistsException = @"PrintOperationExists";
-NSString *NSPrintPackageException = @"PrintPackage";
-NSString *NSPrintingCommunicationException = @"PrintingCommunication";
-NSString *NSRTFPropertyStackOverflowException = @"RTFPropertyStackOverflow";
-NSString *NSTIFFException = @"TIFF";
-NSString *NSTextLineTooLongException = @"TextLineTooLong";
-NSString *NSTextNoSelectionException = @"TextNoSelection";
-NSString *NSTextReadException = @"TextRead";
-NSString *NSTextWriteException = @"TextWrite";
-NSString *NSTypedStreamVersionException = @"TypedStreamVersion";
-NSString *NSWindowServerCommunicationException = @"WindowServerCommunication";
-NSString *NSWordTablesReadException = @"WordTablesRead";
-NSString *NSWordTablesWriteException = @"WordTablesWrite";
-
-// Application notifications
-NSString *NSApplicationDidBecomeActiveNotification 
-              = @"ApplicationDidBecomeActive";
-NSString *NSApplicationDidFinishLaunchingNotification 
-              = @"ApplicationDidFinishLaunching";
-NSString *NSApplicationDidHideNotification = @"ApplicationDidHide";
-NSString *NSApplicationDidResignActiveNotification 
-              = @"ApplicationDidResignActive";
-NSString *NSApplicationDidUnhideNotification = @"ApplicationDidUnhide";
-NSString *NSApplicationDidUpdateNotification = @"ApplicationDidUpdate";
-NSString *NSApplicationWillBecomeActiveNotification 
-              = @"ApplicationWillBecomeActive";
-NSString *NSApplicationWillFinishLaunchingNotification 
-              = @"ApplicationWillFinishLaunching";
-NSString *NSApplicationWillHideNotification = @"ApplicationWillHide";
-NSString *NSApplicationWillResignActiveNotification 
-              = @"ApplicationWillResignActive";
-NSString *NSApplicationWillUnhideNotification = @"ApplicationWillUnhide";
-NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 
 @implementation NSApplication
 

@@ -42,22 +42,6 @@
 #include <AppKit/NSScreen.h>
 #include <AppKit/NSCursor.h>
 
-// NSWindow notifications
-NSString *NSWindowDidBecomeKeyNotification = @"WindowDidBecomeKey";
-NSString *NSWindowDidBecomeMainNotification = @"WindowDidBecomeMain";
-NSString *NSWindowDidChangeScreenNotification = @"WindowDidChangeScreen";
-NSString *NSWindowDidDeminiaturizeNotification = @"WindowDidDeminiaturize";
-NSString *NSWindowDidExposeNotification = @"WindowDidExpose";
-NSString *NSWindowDidMiniaturizeNotification = @"WindowDidMiniaturize";
-NSString *NSWindowDidMoveNotification = @"WindowDidMove";
-NSString *NSWindowDidResignKeyNotification = @"WindowDidResignKey";
-NSString *NSWindowDidResignMainNotification = @"WindowDidResignMain";
-NSString *NSWindowDidResizeNotification = @"WindowDidResize";
-NSString *NSWindowDidUpdateNotification = @"WindowDidUpdate";
-NSString *NSWindowWillCloseNotification = @"WindowWillClose";
-NSString *NSWindowWillMiniaturizeNotification = @"WindowWillMiniaturize";
-NSString *NSWindowWillMoveNotification = @"WindowWillMove";
-
 #define ASSIGN(variable, value) \
   [value retain]; \
   [variable release]; \

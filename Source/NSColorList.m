@@ -34,9 +34,6 @@
 #include <AppKit/NSColorList.h>
 #include <AppKit/AppKitExceptions.h>
 
-// NSColorList notifications
-NSString *NSColorListChangedNotification = @"NSColorListChange";
-
 // global variable
 static NSMutableArray *gnustep_available_color_lists;
 static NSLock *gnustep_color_list_lock;

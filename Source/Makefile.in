@@ -73,6 +73,7 @@ LIBOUT =
 LIBFLAGS = rc
 RANLIB = @RANLIB@
 RC = 
+DLLTOOL = @DLLTOOL@
 
 INSTALL = @INSTALL@
 INSTALL_DATA = @INSTALL_DATA@
@@ -229,7 +230,8 @@ NSView$(oext) \
 NSWindow$(oext) \
 NSWorkspace$(oext) \
 TrackingRectangle$(oext) \
-tiff$(oext)
+tiff$(oext) \
+externs$(oext)
 
 OBJS = $(OBJS_WITHOUT_INIT)
 
@@ -244,6 +246,8 @@ OBJS = $(OBJS_WITHOUT_INIT)
 #
 LIBS = $(GCC_LIB) $(SYS_LIBS) $(ADD_LIBS)
 
+IMPORT_LIBRARY=@IMPORT_LIBRARY@
+
 #
 # targets
 #
@@ -256,12 +260,53 @@ header_links:
 	-rm -rf ../Headers/DPSClient
 	$(LN_S) ../Headers/gnustep/dps ../Headers/DPSClient
 
-src: $(MAIN_FILE)$(libext)
+src: @STATIC_LIBRARY@ @SHARED_LIBRARY@
 
 # library
 $(MAIN_FILE)$(libext): $(OBJS)
 	$(LIB) $(LIBFLAGS) $(LIBOUT)$(MAIN_FILE)$(libext) $(OBJS)
 	$(RANLIB) $(MAIN_FILE)$(libext)
+
+# static library when building DLL
+$(MAIN_FILE)_s$(libext): $(OBJS)
+	$(LIB) $(LIBFLAGS) $(LIBOUT)$(MAIN_FILE)_s$(libext) $(OBJS)
+	$(RANLIB) $(MAIN_FILE)_s$(libext)
+
+$(MAIN_FILE).def: FORCE
+	nm @STATIC_LIBRARY@ \
+		| grep '^........ [T] _' \
+		| sed 's/[^_]*_//' >> $(MAIN_FILE).lst
+	cat win32-def.top $(MAIN_FILE).lst > $(MAIN_FILE).def
+	rm $(MAIN_FILE).lst
+
+# build DLL
+$(MAIN_FILE).dll: @STATIC_LIBRARY@ win32-entry$(oext)
+	# Link DLL.
+	$(CC) -dll -Wl,--base-file -Wl,$(MAIN_FILE).base \
+		-o $(MAIN_FILE).dll @STATIC_LIBRARY@ win32-entry$(oext) \
+		-ltiff -lgnustep-base \
+		-lmoldname -lobjc -lkernel32 -lwsock32 -ladvapi32
+	$(DLLTOOL) --dllname $(MAIN_FILE).dll \
+		--def $(MAIN_FILE).def --base-file \
+		$(MAIN_FILE).base --output-exp $(MAIN_FILE).exp
+	$(CC) -dll -Wl,--base-file -Wl,$(MAIN_FILE).base \
+		$(MAIN_FILE).exp \
+		-o $(MAIN_FILE).dll @STATIC_LIBRARY@ win32-entry$(oext) \
+		-ltiff -lgnustep-base \
+		-lmoldname -lobjc -lkernel32 -lwsock32 -ladvapi32
+	$(DLLTOOL) --dllname $(MAIN_FILE).dll \
+		--def $(MAIN_FILE).def \
+		--base-file $(MAIN_FILE).base \
+		--output-exp $(MAIN_FILE).exp
+	$(CC) -dll $(MAIN_FILE).exp \
+		-o $(MAIN_FILE).dll @STATIC_LIBRARY@ win32-entry$(oext) \
+		-ltiff -lgnustep-base \
+		-lmoldname -lobjc -lkernel32 -lwsock32 -ladvapi32
+	# Build the import library to link to:
+	$(DLLTOOL) --dllname $(MAIN_FILE).dll \
+		--def $(MAIN_FILE).def \
+		--output-lib $(IMPORT_LIBRARY)
+	ar r $(IMPORT_LIBRARY) externs$(oext)
 
 #
 # Initialization routine
@@ -282,9 +327,18 @@ installdirs:
 		$(includedir)/gnustep/dps \
 		$(includedir)/gnustep/gui
 
-install-lib: $(MAIN_FILE)$(libext)
+install-lib: src
 	$(INSTALL_PROGRAM) $(MAIN_FILE)$(libext) $(libdir)
 	$(RANLIB) $(libdir)/$(MAIN_FILE)$(libext)
+	# Install the static library if it exists
+	if [ -e $(MAIN_FILE)_s$(libext) ]; then \
+	  $(INSTALL_DATA) $(MAIN_FILE)_s$(libext) $(libdir) ; \
+	  $(RANLIB) $(libdir)/$(MAIN_FILE)_s$(libext) ; \
+	fi
+	# Install the DLL if it exists
+	if [ -e $(MAIN_FILE).dll ]; then \
+	  $(INSTALL_DATA) $(MAIN_FILE).dll $(bindir) ; \
+	fi
 
 install-headers:
 	for file in $(GNUSTEP1_HEADERS); do \

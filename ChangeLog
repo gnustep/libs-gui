@@ -1,3 +1,40 @@
+Mon Aug 04 13:16:54 1997  Scott Christley  <scottc@ruth.net-community.com>
+
+	* Source/externs.m: New file.
+	* Source/libgnustep-gui.def: New file.
+	* Source/win32-def.top: New file.
+	* Source/win32-entry.c: New file.
+	* config.sub: New file.
+	* config.guess: Update.
+	* aclocal.m4: Rearrange checking of foundation library so that
+	it works properly on Windows.
+	* configure.in (DLLTOOL): Add support for building a DLL.
+	(enable-shared): New option to enable build of shared library.
+	(disable-static): New option to disable build of static library.
+	* configure: Regenerate.
+	* Headers/gnustep/gui/NSApplication.h (USE_RUN_LOOP): Delete macro.
+	* Headers/gnustep/gui/NSGraphics.h (NSGray): New global.
+	* Headers/gnustep/gui/NSMenuItem.h (be_mi_reserved): New
+ 	instance variable.
+	* Source/Makefile.in: Add support for building a DLL.
+	* Source/NSApplication.m: Move global variables to externs.m.
+	* Source/NSColor.m: Likewise.
+	* Source/NSColorList.m: Likewise.
+	* Source/NSColorPanel.m: Likewise.
+	* Source/NSControl.m: Likewise.
+	* Source/NSDataLink.m: Likewise.
+	* Source/NSFont.m: Likewise.
+	* Source/NSImageRep.m: Likewise.
+	* Source/NSPasteboard.m: Likewise.
+	* Source/NSPrinter.m: Likewise.
+	* Source/NSScreen.m: Likewise.
+	* Source/NSSplitView.m: Likewise.
+	* Source/NSText.m: Likewise.
+	* Source/NSView.m: Likewise.
+	* Source/NSWindow.m: Likewise.
+	* Source/NSWorkspace.m: Likewise.
+	* Source/libgnustep-gui.m: Likewise.
+
 Thu Jun 12 19:05:24 1997  Ovidiu Predescu <ovidiu@net-community.com>
 
 	Finished the second attempt in implementing menus.

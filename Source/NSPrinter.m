@@ -72,48 +72,6 @@
 #define NAMEMAPSIZE 0
 #define TYPEMAPSIZE 0
 
-// Printing Information Dictionary Keys 
-NSString *NSPrintAllPages = @"PrintAllPages";
-NSString *NSPrintBottomMargin = @"PrintBottomMargin";
-NSString *NSPrintCopies = @"PrintCopies";
-NSString *NSPrintFaxCoverSheetName = @"PrintFaxCoverSheetName";
-NSString *NSPrintFaxHighResolution = @"PrintFaxHighResolution";
-NSString *NSPrintFaxModem = @"PrintFaxModem";
-NSString *NSPrintFaxReceiverNames = @"PrintFaxReceiverNames";
-NSString *NSPrintFaxReceiverNumbers = @"PrintFaxReceiverNumbers";
-NSString *NSPrintFaxReturnReceipt = @"PrintFaxReturnReceipt";
-NSString *NSPrintFaxSendTime = @"PrintFaxSendTime";
-NSString *NSPrintFaxTrimPageEnds = @"PrintFaxTrimPageEnds";
-NSString *NSPrintFaxUseCoverSheet = @"PrintFaxUseCoverSheet";
-NSString *NSPrintFirstPage = @"PrintFirstPage";
-NSString *NSPrintHorizonalPagination = @"PrintHorizonalPagination";
-NSString *NSPrintHorizontallyCentered = @"PrintHorizontallyCentered";
-NSString *NSPrintJobDisposition = @"PrintJobDisposition";
-NSString *NSPrintJobFeatures = @"PrintJobFeatures";
-NSString *NSPrintLastPage = @"PrintLastPage";
-NSString *NSPrintLeftMargin = @"PrintLeftMargin";
-NSString *NSPrintManualFeed = @"PrintManualFeed";
-NSString *NSPrintOrientation = @"PrintOrientation";
-NSString *NSPrintPagesPerSheet = @"PrintPagesPerSheet";
-NSString *NSPrintPaperFeed = @"PrintPaperFeed";
-NSString *NSPrintPaperName = @"PrintPaperName";
-NSString *NSPrintPaperSize = @"PrintPaperSize";
-NSString *NSPrintPrinter = @"PrintPrinter";
-NSString *NSPrintReversePageOrder = @"PrintReversePageOrder";
-NSString *NSPrintRightMargin = @"PrintRightMargin";
-NSString *NSPrintSavePath = @"PrintSavePath";
-NSString *NSPrintScalingFactor = @"PrintScalingFactor";
-NSString *NSPrintTopMargin = @"PrintTopMargin";
-NSString *NSPrintVerticalPagination = @"PrintVerticalPagination";
-NSString *NSPrintVerticallyCentered = @"PrintVerticallyCentered";
-
-// Print Job Disposition Values 
-NSString  *NSPrintCancelJob = @"PrintCancelJob";
-NSString  *NSPrintFaxJob = @"PrintFaxJob";
-NSString  *NSPrintPreviewJob = @"PrintPreviewJob";
-NSString  *NSPrintSaveJob = @"PrintSaveJob";
-NSString  *NSPrintSpoolJob = @"PrintSpoolJob";
-
 // Class variables:
 
 // Maps  holding NSPrinters with the types of printers, and the real printers

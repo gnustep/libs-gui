@@ -33,11 +33,6 @@
 #include <AppKit/NSFont.h>
 #include <AppKit/NSColor.h>
 
-// NSText notifications
-NSString *NSTextDidBeginEditingNotification = @"NSTextDidBeginEditingNotification";
-NSString *NSTextDidEndEditingNotification = @"NSTextDidEndEditingNotification";
-NSString *NSTextDidChangeNotification = @"NSTextDidChangeNotification";
-
 //
 // NSText implementation
 //

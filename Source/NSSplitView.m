@@ -28,10 +28,6 @@
 
 #include <AppKit/NSSplitView.h>
 
-// NSSplitView notifications
-NSString *NSSplitViewDidResizeSubviewsNotification = @"NSSplitViewDidResizeSubviewsNotification";
-NSString *NSSplitViewWillResizeSubviewsNotification = @"NSSplitViewWillResizeSubviewsNotification";
-
 @implementation NSSplitView
 
 //

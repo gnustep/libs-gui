@@ -30,8 +30,6 @@
 #include <AppKit/NSFontManager.h>
 #include <AppKit/NSFont.h>
 
-id NSApp = nil;
-
 char **NSArgv = NULL;
 
 //

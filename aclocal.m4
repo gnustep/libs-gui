@@ -166,25 +166,26 @@ AC_REQUIRE([AC_C_CROSS])dnl
 AC_MSG_CHECKING(for the Foundation library)
 OBJC_LIBS=
 AC_CACHE_VAL(ac_cv_foundation_library,
-[AC_LANG_SAVE[]dnl
+[if test "$FOUNDATION" = ""; then
+AC_LANG_SAVE[]dnl
 AC_LANG_OBJECTIVE_C[]
+AC_TRY_CPP(
+#include <foundation/NSObject.h>
+, ac_cv_foundation_library=foundation)
 AC_TRY_COMPILE(
 #include <Foundation/preface.h>
 ,
-, ac_cv_foundation_library="$ac_cv_foundation_library gnustep-base")
+, ac_cv_foundation_library="gnustep-base")
 AC_TRY_COMPILE(
 #include <Foundation/exceptions/FoundationException.h>
 ,
 , ac_cv_foundation_library="$ac_cv_foundation_library libFoundation")
 AC_TRY_COMPILE(
-#include <objects/stdobjects.h>
+#import <Foundation/NSObject.h>
+#import <synch.h>
 ,
-, ac_cv_foundation_library="$ac_cv_foundation_library libobjects")
+, ac_cv_foundation_library=Sun)
 AC_LANG_RESTORE[]dnl
-if test "$FOUNDATION" = ""; then
-AC_TRY_CPP(
-#include <foundation/NSObject.h>
-, ac_cv_foundation_library=foundation)
 else
     ac_cv_foundation_library=$FOUNDATION
 fi

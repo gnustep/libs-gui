@@ -29,14 +29,6 @@
 #include <Foundation/NSDictionary.h>
 #include <AppKit/NSScreen.h>
 
-// Global device dictionary key strings
-NSString *NSDeviceResolution = @"Resolution";
-NSString *NSDeviceColorSpaceName = @"ColorSpaceName";
-NSString *NSDeviceBitsPerSample = @"BitsPerSample";
-NSString *NSDeviceIsScreen = @"IsScreen";
-NSString *NSDeviceIsPrinter = @"IsPrinter";
-NSString *NSDeviceSize = @"Size";
-
 @implementation NSScreen
 
 //

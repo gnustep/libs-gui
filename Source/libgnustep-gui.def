@@ -1,0 +1,125 @@
+;
+;   libgnustep-gui.def
+;
+;   Exports for libgnustep-gui DLL
+;   Specific to WIN32 operating systems
+;
+;   Copyright (C) 1997 Free Software Foundation, Inc.
+;
+;   Author:  Scott Christley <scottc@net-community.com>
+;   Date: August 1997
+;
+;   This file is part of the GNUstep GUI Library.
+;
+;   This library is free software; you can redistribute it and/or
+;   modify it under the terms of the GNU Library General Public
+;   License as published by the Free Software Foundation; either
+;   version 2 of the License, or (at your option) any later version.
+;
+;   This library is distributed in the hope that it will be useful,
+;   but WITHOUT ANY WARRANTY; without even the implied warranty of
+;   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+;   Library General Public License for more details.
+;
+;   If you are interested in a warranty or support for this source code,
+;   contact Scott Christley <scottc@net-community.com> for more information.
+;
+;   You should have received a copy of the GNU Library General Public
+;   License along with this library; if not, write to the Free
+;   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+;
+LIBRARY libgnustep-gui
+EXPORTS
+GNUstepMain
+__objc_class_name_NSActionCell
+__objc_category_name_NSApplication_GNUstepBackend
+__objc_class_name_NSApplication
+__objc_class_name_NSBitmapImageRep
+__objc_class_name_NSBox
+__objc_class_name_NSBrowser
+__objc_class_name_NSBrowserCell
+__objc_category_name_NSBundle_NSBundleAdditions
+__objc_class_name___dummy_class_in_NSBundle
+__objc_class_name_NSButton
+__objc_class_name_NSButtonCell
+__objc_class_name_NSCStringText
+__objc_class_name_NSCachedImageRep
+__objc_class_name_NSCell
+__objc_class_name_NSClipView
+NSBlack
+NSDarkGray
+NSGray
+NSLightGray
+NSWhite
+__objc_category_name_NSCoder_NSCoderAdditions
+__objc_category_name_NSColor_GNUstepPrivate
+__objc_class_name_NSColor
+__objc_category_name_NSColorList_GNUstepPrivate
+__objc_class_name_NSColorList
+__objc_class_name_NSColorPanel
+__objc_class_name_NSColorPicker
+__objc_category_name_NSColorWell_GNUstepBackend
+__objc_class_name_NSColorWell
+__objc_class_name_NSControl
+__objc_category_name_NSCursor_GNUstepBackend
+__objc_class_name_NSCursor
+__objc_class_name_NSCustomImageRep
+__objc_class_name_NSDataLink
+__objc_class_name_NSDataLinkManager
+__objc_class_name_NSDataLinkPanel
+__objc_class_name_NSDPSContext
+__objc_class_name_NSEPSImageRep
+__objc_class_name_NSEvent
+__objc_class_name_NSFont
+__objc_category_name_NSFontManager_GNUstepBackend
+__objc_class_name_NSFontManager
+__objc_class_name_NSFontPanel
+__objc_class_name_NSForm
+__objc_class_name_NSFormCell
+__objc_class_name_NSHelpPanel
+__objc_class_name_NSImage
+iterate_reps_for_types
+repd_for_rep
+set_repd_for_rep
+__objc_class_name_NSImageRep
+__objc_category_name_NSMatrix_PrivateMethods
+__objc_class_name_NSMatrix
+__objc_category_name_NSMenu_PrivateMethods2
+__objc_class_name_NSMenu
+__objc_class_name_NSMenuMatrix
+__objc_class_name_NSMenuItem
+__objc_class_name_NSOpenPanel
+__objc_class_name_NSPageLayout
+__objc_class_name_NSPanel
+__objc_class_name_NSPasteboard
+__objc_class_name_NSPrinter
+__objc_class_name_NSPrintInfo
+__objc_class_name_NSPrintOperation
+__objc_class_name_NSPrintPanel
+__objc_class_name_NSPopUpButton
+__objc_class_name_NSResponder
+__objc_class_name_NSSavePanel
+__objc_class_name_NSScreen
+__objc_category_name_NSScroller_GNUstepBackend
+__objc_class_name_NSScroller
+__objc_class_name_NSScrollView
+__objc_class_name_NSSelection
+__objc_class_name_NSSlider
+__objc_class_name_NSSliderCell
+__objc_class_name_NSSpellChecker
+__objc_class_name_NSSpellServer
+__objc_class_name_NSSplitView
+__objc_class_name_NSText
+__objc_class_name_NSTextField
+__objc_class_name_NSTextFieldCell
+__objc_class_name_NSView
+__objc_category_name_NSWindow_GNUstepBackend
+__objc_class_name_NSWindow
+__objc_class_name_NSWorkspace
+__objc_class_name_TrackingRectangle
+NSTiffClose
+NSTiffGetColormap
+NSTiffGetInfo
+NSTiffOpenData
+NSTiffRead
+NSWriteTiff

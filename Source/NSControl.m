@@ -35,11 +35,6 @@
 //
 static id MB_NSCONTROL_CELL_CLASS = nil;
 
-// NSControl notifications
-NSString *NSControlTextDidBeginEditingNotification = @"NSControlTextDidBeginEditingNotification";
-NSString *NSControlTextDidEndEditingNotification = @"NSControlTextDidEndEditingNotification";
-NSString *NSControlTextDidChangeNotification = @"NSControlTextDidChangeNotification";
-
 @implementation NSControl
 
 //

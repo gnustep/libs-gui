@@ -33,25 +33,6 @@
 #include <AppKit/NSFont.h>
 #include <AppKit/NSFontManager.h>
 
-// Global Strings
-NSString*NSAFMAscender = @"Ascender";
-NSString*NSAFMCapHeight = @"CapHeight";
-NSString*NSAFMCharacterSet = @"CharacterSet";
-NSString*NSAFMDescender = @"Descender";
-NSString*NSAFMEncodingScheme = @"EncodingScheme";
-NSString*NSAFMFamilyName = @"FamilyName";
-NSString*NSAFMFontName = @"FontName";
-NSString*NSAFMFormatVersion = @"FormatVersion";
-NSString*NSAFMFullName = @"FullName";
-NSString*NSAFMItalicAngle = @"ItalicAngle";
-NSString*NSAFMMappingScheme = @"MappingScheme";
-NSString*NSAFMNotice = @"Notice";
-NSString*NSAFMUnderlinePosition = @"UnderlinePosition";
-NSString*NSAFMUnderlineThickness = @"UnderlineThickness";
-NSString*NSAFMVersion = @"Version";
-NSString*NSAFMWeight = @"Weight";
-NSString*NSAFMXHeight = @"XHeight";
-
 @implementation NSFont
 
 /* Class variables */

@@ -28,9 +28,6 @@
 
 #include <AppKit/NSColorPanel.h>
 
-// NSColorPanel notifications
-NSString *NSColorPanelColorChangedNotification = @"NSColorPanelColorChangedNotification";
-
 @implementation NSColorPanel
 
 //

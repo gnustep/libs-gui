@@ -68,6 +68,9 @@
 {
   id representedObject;
   BOOL hasSubmenu;
+
+  // Reserved for back-end use
+  void *be_mi_reserved;
 }
 
 - (void)setTitle:(NSString*)aString;
