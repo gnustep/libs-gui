@@ -1271,7 +1271,7 @@ systemColorWithName(NSString *name)
   enumerator = [colorStrings keyEnumerator];
   while ((key = [enumerator nextObject]) != nil)
     {
-      NSString	*def = [defs stringForKey: key];
+      NSString	*def = [[defs objectForKey: key] description];
 
       if (def != nil)
 	{
