@@ -708,7 +708,9 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
 	|| (aPoint.y < myFrame.origin.y)
 	|| (aPoint.y > (myFrame.origin.y + myFrame.size.height)))
     {
-	NSDebugLog(@"NSMatrix not in frame rect\n");
+	NSDebugLog(@"NSMatrix point %f %f not in rect %f %f %f %f\n",
+		   aPoint.x, aPoint.y, myFrame.origin.x, myFrame.origin.y,
+		   myFrame.size.width, myFrame.size.height);
 	return NO;
     }
     else
@@ -1134,6 +1136,12 @@ Class NSMATRIX_DEFAULT_CELL_CLASS;
 #endif
     
     [(NSView *)self setFrameSize:newSize];
+}
+
+- (void)resizeWithOldSuperviewSize:(NSSize)oldSize
+{
+  NSDebugLog(@"NSMatrix resize %f %f old %f %f\n", bounds.size.width,
+	     bounds.size.height, oldSize.width, oldSize.height);
 }
 
 //

@@ -75,7 +75,7 @@
 - initTextCell:(NSString *)aString
 {
   [super initTextCell:aString];
-  support = [NSFont userFixedPitchFontOfSize:12];
+  support = [NSFont userFontOfSize:12];
   alt_contents = @"Button";
   cell_type = NSMomentaryPushButton;
   [self setEnabled:YES];

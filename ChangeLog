@@ -1,3 +1,11 @@
+Sat Sep 21 12:25:23 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
+
+	* Source/NSButtonCell.m (-initTextCell:): Make default font
+	be the user font instead of the user fixed pitch font.
+	* Source/NSColor.m: Use global variables for common colors.
+	* Source/NSView.m (+popFocusView): Remove dictionary object.
+	* Source/NSWindow.m: Make default background color light gray.
+
 Thu Sep 12 13:49:53 1996  GNUstep Development  <gnustep@ocbi.com>
 
 	* Headers/gnustep/gui/NSFontPrivate.h: New file.

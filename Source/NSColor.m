@@ -33,7 +33,23 @@
 #include <gnustep/gui/NSView.h>
 
 // Class variables
-BOOL gnustep_gui_ignores_alpha;
+BOOL gnustep_gui_ignores_alpha = YES;
+// Common colors
+NSColor *gnustep_gui_black = nil;
+NSColor *gnustep_gui_blue = nil;
+NSColor *gnustep_gui_brown = nil;
+NSColor *gnustep_gui_clear = nil;
+NSColor *gnustep_gui_cyan = nil;
+NSColor *gnustep_gui_dark_gray = nil;
+NSColor *gnustep_gui_gray = nil;
+NSColor *gnustep_gui_green = nil;
+NSColor *gnustep_gui_light_gray = nil;
+NSColor *gnustep_gui_magenta = nil;
+NSColor *gnustep_gui_orange = nil;
+NSColor *gnustep_gui_purple = nil;
+NSColor *gnustep_gui_red = nil;
+NSColor *gnustep_gui_white = nil;
+NSColor *gnustep_gui_yellow = nil;
 
 // Global strings
 NSString *NSCalibratedWhiteColorSpace = @"NSCalibratedWhiteColorSpace";
@@ -204,43 +220,63 @@ const float NSWhite = 1;
 //
 + (NSColor *)blackColor
 {
-  return [self colorWithCalibratedWhite: NSBlack alpha: 1.0];
+  if (!gnustep_gui_black)
+    {
+      gnustep_gui_black = [self colorWithCalibratedWhite: NSBlack alpha: 1.0];
+      [gnustep_gui_black retain];
+    }
+  return gnustep_gui_black;
 }
 
 + (NSColor *)blueColor
 {
-  return [self colorWithCalibratedRed:0
-	       green:0
-	       blue:1.0
-	       alpha:1.0];
+  if (!gnustep_gui_blue)
+    {
+      gnustep_gui_blue = [self colorWithCalibratedRed:0
+			       green:0
+			       blue:1.0
+			       alpha:1.0];
+      [gnustep_gui_blue retain];
+    }
+  return gnustep_gui_blue;
 }
 
 + (NSColor *)brownColor
 {
-  return [self colorWithCalibratedRed:0.6
-	       green:0.4
-	       blue:0.2
-	       alpha:1.0];
+  if (!gnustep_gui_brown)
+    {
+      gnustep_gui_brown = [self colorWithCalibratedRed:0.6
+				green:0.4
+				blue:0.2
+				alpha:1.0];
+      [gnustep_gui_brown retain];
+    }
+  return gnustep_gui_brown;
 }
 
 + (NSColor *)clearColor
 {
-  NSColor *c;
-  c = [self colorWithCalibratedRed:0
-	    green:1.0
-	    blue:1.0
-	    alpha:1.0];
-  [c setClear:YES];
-  return c;
+  if (!gnustep_gui_clear)
+    {
+      gnustep_gui_clear = [self colorWithCalibratedWhite: NSBlack alpha: 1.0];
+      [gnustep_gui_clear retain];
+      [gnustep_gui_clear setClear:YES];
+    }
+  return gnustep_gui_clear;
 }
 
 + (NSColor *)cyanColor
 {
   // Why does OpenStep say RGB color space instead of CMYK?
-  return [self colorWithCalibratedRed:0
-	       green:1.0
-	       blue:1.0
-	       alpha:1.0];
+  if (!gnustep_gui_cyan)
+    {
+      gnustep_gui_cyan = [self colorWithCalibratedRed:0
+			       green:1.0
+			       blue:1.0
+			       alpha:1.0];
+      [gnustep_gui_cyan retain];
+    }
+  return gnustep_gui_cyan;
 #if 0
   return [self colorWithCalibratedCyan: 1.0
 	       magenta:0
@@ -252,34 +288,62 @@ const float NSWhite = 1;
 
 + (NSColor *)darkGrayColor
 {
-  return [self colorWithCalibratedWhite: NSDarkGray alpha: 1.0];
+  if (!gnustep_gui_dark_gray)
+    {
+      gnustep_gui_dark_gray = [self colorWithCalibratedWhite: NSDarkGray 
+				    alpha: 1.0];
+      [gnustep_gui_dark_gray retain];
+    }
+  return gnustep_gui_dark_gray;
 }
 
 + (NSColor *)grayColor
 {
-  return [self colorWithCalibratedWhite: NSGray alpha: 1.0];
+  if (!gnustep_gui_gray)
+    {
+      gnustep_gui_gray = [self colorWithCalibratedWhite: NSGray 
+				    alpha: 1.0];
+      [gnustep_gui_gray retain];
+    }
+  return gnustep_gui_gray;
 }
 
 + (NSColor *)greenColor
 {
-  return [self colorWithCalibratedRed:0
-	       green:1.0
-	       blue:0
-	       alpha:1.0];
+  if (!gnustep_gui_green)
+    {
+      gnustep_gui_green = [self colorWithCalibratedRed:0
+				green:1.0
+				blue:0
+				alpha:1.0];
+      [gnustep_gui_green retain];
+    }
+  return gnustep_gui_green;
 }
 
 + (NSColor *)lightGrayColor
 {
-  return [self colorWithCalibratedWhite: NSLightGray alpha: 1];
+  if (!gnustep_gui_light_gray)
+    {
+      gnustep_gui_light_gray = [self colorWithCalibratedWhite: NSLightGray 
+				    alpha: 1.0];
+      [gnustep_gui_light_gray retain];
+    }
+  return gnustep_gui_light_gray;
 }
 
 + (NSColor *)magentaColor
 {
   // Why does OpenStep say RGB color space instead of CMYK?
-  return [self colorWithCalibratedRed:1.0
-	       green:0
-	       blue:1.0
-	       alpha:1.0];
+  if (!gnustep_gui_magenta)
+    {
+      gnustep_gui_magenta = [self colorWithCalibratedRed:1.0
+				  green:0
+				  blue:1.0
+				  alpha:1.0];
+      [gnustep_gui_magenta retain];
+    }
+  return gnustep_gui_magenta;
 #if 0
   return [self colorWithCalibratedCyan:0
 	       magenta:1.0
@@ -291,40 +355,65 @@ const float NSWhite = 1;
 
 + (NSColor *)orangeColor;
 {
-  return [self colorWithCalibratedRed:1.0
-	       green:0.5
-	       blue:0
-	       alpha:1.0];
+  if (!gnustep_gui_orange)
+    {
+      gnustep_gui_orange = [self colorWithCalibratedRed:1.0
+				 green:0.5
+				 blue:0
+				 alpha:1.0];
+      [gnustep_gui_orange retain];
+    }
+  return gnustep_gui_orange;
 }
 
 + (NSColor *)purpleColor;
 {
-  return [self colorWithCalibratedRed:0.5
-	       green:0
-	       blue:0.5
-	       alpha:1.0];
+  if (!gnustep_gui_purple)
+    {
+      gnustep_gui_purple = [self colorWithCalibratedRed:0.5
+				 green:0
+				 blue:0.5
+				 alpha:1.0];
+      [gnustep_gui_purple retain];
+    }
+  return gnustep_gui_purple;
 }
 
 + (NSColor *)redColor;
 {
-  return [self colorWithCalibratedRed:1.0
-	       green:0
-	       blue:0
-	       alpha:1.0];
+  if (!gnustep_gui_red)
+    {
+      gnustep_gui_red = [self colorWithCalibratedRed:1.0
+			      green:0
+			      blue:0
+			      alpha:1.0];
+      [gnustep_gui_red retain];
+    }
+  return gnustep_gui_red;
 }
 
 + (NSColor *)whiteColor;
 {
-  return [self colorWithCalibratedWhite: NSWhite alpha: 1.0];
+  if (!gnustep_gui_white)
+    {
+      gnustep_gui_white = [self colorWithCalibratedWhite: NSWhite alpha: 1.0];
+      [gnustep_gui_white retain];
+    }
+  return gnustep_gui_white;
 }
 
 + (NSColor *)yellowColor
 {
   // Why does OpenStep say RGB color space instead of CMYK?
-  return [self colorWithCalibratedRed:1.0
-	       green:1.0
-	       blue:0
-	       alpha:1.0];
+  if (!gnustep_gui_yellow)
+    {
+      gnustep_gui_yellow = [self colorWithCalibratedRed:1.0
+				 green:1.0
+				 blue:0
+				 alpha:1.0];
+      [gnustep_gui_yellow retain];
+    }
+  return gnustep_gui_yellow;
 #if 0
   return [self colorWithCalibratedCyan:0
 	       magenta:0

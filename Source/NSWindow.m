@@ -180,7 +180,7 @@ NSString *NSWindowWillMoveNotification;
   first_responder = nil;
   delegate = nil;
   window_num = 0;
-  background_color = [NSColor grayColor];
+  background_color = [NSColor lightGrayColor];
   represented_filename = @"Window";
   miniaturized_title = @"Window";
   window_title = @"Window";

@@ -97,7 +97,17 @@ NSString *NSViewFocusChangedNotification;
 }
 
 + (NSView *)popFocusView
-{}
+{
+  NSThread *current_thread = [NSThread currentThread];
+
+  // Obtain lock so we can edit the dictionary
+  [gnustep_gui_nsview_lock lock];
+
+  // Remove from dictionary
+  [gnustep_gui_nsview_thread_dict removeObjectForKey: current_thread];
+
+  [gnustep_gui_nsview_lock unlock];
+}
 
 + (NSView *)focusView
 {
