@@ -48,4 +48,4 @@ SUBPROJECTS = Source Images Model Tools Panels PrinterTypes
 
 include $(GNUSTEP_MAKEFILES)/aggregate.make
 
--include GNUmakefile.postamble
+include GNUmakefile.postamble

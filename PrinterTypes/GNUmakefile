@@ -50,4 +50,4 @@ RESOURCE_FILES = Printers
 # just include the common makefile rules
 include $(GNUSTEP_MAKEFILES)/rules.make
 
--include GNUmakefile.postamble
+include GNUmakefile.postamble
