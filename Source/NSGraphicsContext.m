@@ -25,6 +25,7 @@
 */
    
 
+#include <Foundation/NSGeometry.h> 
 #include <Foundation/NSString.h> 
 #include <Foundation/NSArray.h> 
 #include <Foundation/NSValue.h> 
@@ -2543,6 +2544,33 @@ NSGraphicsContext	*GSCurrentContext()
  */
 - (void) NSDrawButton: (const NSRect) aRect : (const NSRect) clipRect
 {
+#if 1
+  NSRectEdge up_sides[] = {NSMinXEdge, NSMaxYEdge, 
+			   NSMaxXEdge, NSMinYEdge, 
+			   NSMaxXEdge, NSMinYEdge};
+  NSRectEdge down_sides[] = {NSMinXEdge, NSMinYEdge, 
+			     NSMaxXEdge, NSMaxYEdge, 
+			     NSMaxXEdge, NSMaxYEdge};
+  float grays[] = {NSWhite, NSWhite, 
+		   NSBlack, NSBlack, 
+		   NSDarkGray, NSDarkGray};
+  NSRect rect;
+
+  if (GSWViewIsFlipped(self) == YES)
+    {
+      rect = NSDrawTiledRects(aRect, clipRect,
+			       down_sides, grays, 6);
+    }
+  else
+    {
+      rect = NSDrawTiledRects(aRect, clipRect,
+			       up_sides, grays, 6);
+    }
+
+  DPSsetgray(self, NSLightGray);
+  DPSrectfill(self, NSMinX(rect), NSMinY(rect), 
+	      NSWidth(rect), NSHeight(rect));
+#else
   float x, y, w, h, v;
 
   if (!NSIsEmptyRect(clipRect) && NSIntersectsRect(aRect, clipRect) == NO)
@@ -2591,10 +2619,35 @@ NSGraphicsContext	*GSCurrentContext()
   DPSrlineto(self, w, 0);
   DPSrlineto(self, 0, h);
   DPSstroke(self);
+#endif 
 }
 
 - (void) NSDrawGrayBezel: (const NSRect) aRect : (const NSRect) clipRect
 {
+#if 1
+  NSRectEdge up_sides[] = {NSMinXEdge, NSMaxYEdge, NSMinXEdge, NSMaxYEdge, 
+			   NSMaxXEdge, NSMinYEdge, NSMaxXEdge, NSMinYEdge};
+  NSRectEdge down_sides[] = {NSMinXEdge, NSMinYEdge, NSMinXEdge, NSMinYEdge, 
+			     NSMaxXEdge, NSMaxYEdge, NSMaxXEdge, NSMaxYEdge};
+  float grays[] = {NSDarkGray, NSDarkGray, NSBlack, NSBlack, 
+		   NSWhite, NSWhite, NSLightGray, NSLightGray};
+  NSRect rect;
+
+  if (GSWViewIsFlipped(self) == YES)
+    {
+      rect = NSDrawTiledRects(aRect, clipRect,
+			       down_sides, grays, 8);
+    }
+  else
+    {
+      rect = NSDrawTiledRects(aRect, clipRect,
+			       up_sides, grays, 8);
+    }
+
+  DPSsetgray(self, NSLightGray);
+  DPSrectfill(self, NSMinX(rect), NSMinY(rect), 
+	      NSWidth(rect), NSHeight(rect));
+#else
   float		x, y, w, h, v;
 
   if (!NSIsEmptyRect(clipRect) && NSIntersectsRect(aRect, clipRect) == NO)
@@ -2650,15 +2703,41 @@ NSGraphicsContext	*GSCurrentContext()
   DPSrlineto(self, w-2, 0);
   DPSrlineto(self, 0, h-2*v);
   DPSstroke(self);
+#endif
 }
 
 - (void) NSDrawBezel: (const NSRect) aRect : (const NSRect) clipRect
 {
+  // This method is never called, but optimized away in NSGraphics.h
   NSDrawGrayBezel(aRect, clipRect);
 }
 
 - (void) NSDrawGroove: (const NSRect) aRect : (const NSRect) clipRect
 {
+#if 1
+  NSRectEdge up_sides[] = {NSMinXEdge, NSMaxYEdge, NSMinXEdge, NSMaxYEdge, 
+			   NSMaxXEdge, NSMinYEdge, NSMaxXEdge, NSMinYEdge};
+  NSRectEdge down_sides[] = {NSMinXEdge, NSMinYEdge, NSMinXEdge, NSMinYEdge, 
+			     NSMaxXEdge, NSMaxYEdge, NSMaxXEdge, NSMaxYEdge};
+  float grays[] = {NSDarkGray, NSDarkGray, NSWhite, NSWhite,
+		   NSWhite, NSWhite, NSDarkGray, NSDarkGray};
+  NSRect rect;
+
+  if (GSWViewIsFlipped(self) == YES)
+    {
+      rect = NSDrawTiledRects(aRect, clipRect,
+			       down_sides, grays, 8);
+    }
+  else
+    {
+      rect = NSDrawTiledRects(aRect, clipRect,
+			       up_sides, grays, 8);
+    }
+
+  DPSsetgray(self, NSLightGray);
+  DPSrectfill(self, NSMinX(rect), NSMinY(rect), 
+	      NSWidth(rect), NSHeight(rect));
+#else
   float		x, y, w, h, v;
 
   if (!NSIsEmptyRect(clipRect) && NSIntersectsRect(aRect, clipRect) == NO)
@@ -2703,10 +2782,35 @@ NSGraphicsContext	*GSCurrentContext()
   // Draw remaining white lines using a single white rect
   DPSsetgray(self, 1.0);
   DPSrectstroke(self, x+1, y-v, w, h);
+#endif
 }
 
 - (void) NSDrawWhiteBezel: (const NSRect) aRect :  (const NSRect) clipRect
 {
+#if 1
+  NSRectEdge up_sides[] = {NSMinXEdge, NSMaxYEdge, NSMinXEdge, NSMaxYEdge, 
+			   NSMaxXEdge, NSMinYEdge, NSMaxXEdge, NSMinYEdge};
+  NSRectEdge down_sides[] = {NSMinXEdge, NSMinYEdge, NSMinXEdge, NSMinYEdge, 
+			     NSMaxXEdge, NSMaxYEdge, NSMaxXEdge, NSMaxYEdge};
+  float grays[] = {NSDarkGray, NSDarkGray, NSDarkGray, NSDarkGray,
+		   NSWhite, NSWhite, NSLightGray, NSLightGray};
+  NSRect rect;
+
+  if (GSWViewIsFlipped(self) == YES)
+    {
+      rect = NSDrawTiledRects(aRect, clipRect,
+			       down_sides, grays, 8);
+    }
+  else
+    {
+      rect = NSDrawTiledRects(aRect, clipRect,
+			       up_sides, grays, 8);
+    }
+
+  DPSsetgray(self, NSWhite);
+  DPSrectfill(self, NSMinX(rect), NSMinY(rect), 
+	      NSWidth(rect), NSHeight(rect));
+#else
   float x, y, w, h, v;
 
   if (!NSIsEmptyRect(clipRect) && NSIntersectsRect(aRect, clipRect) == NO)
@@ -2761,6 +2865,7 @@ NSGraphicsContext	*GSCurrentContext()
   DPSrlineto(self, w-2, 0);
   DPSrlineto(self, 0, h-3*v);
   DPSstroke(self);
+#endif
 }
 
 - (void) NSDottedFrameRect: (const NSRect) aRect
