@@ -11,7 +11,10 @@
    Date: August 1998
    Source by Daniel Bðhringer integrated into Scott Christley's preliminary
    implementation by Felipe A. Rodriguez <far@ix.netcom.com> 
-   
+
+   Author: Nicola Pero <n.pero@mi.flashnet.it>
+   Date: 1999
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -41,25 +44,14 @@
 
 @interface NSOpenPanel : NSSavePanel <NSCoding>
 {
-  // Attributes
-  NSMutableArray *the_filenames;
-  BOOL multiple_select;
-  BOOL choose_dir;
-  BOOL choose_file;
-									// integrated from Daniel's source FAR
-	BOOL canChooseDirectories;
-  	BOOL canChooseFiles;
-  	BOOL allowsMultipleSelection;
+  NSArray *_fileTypes;
+  BOOL _canChooseDirectories;
+  BOOL _canChooseFiles;
 }
-
-//
-// Accessing the NSOpenPanel 
-//
+// Accessing the NSOpenPanel shared instance
 + (NSOpenPanel *)openPanel;
 
-//
 // Filtering Files 
-//
 - (BOOL)allowsMultipleSelection;
 - (BOOL)canChooseDirectories;
 - (BOOL)canChooseFiles;
@@ -67,28 +59,17 @@
 - (void)setCanChooseDirectories:(BOOL)flag;
 - (void)setCanChooseFiles:(BOOL)flag;
 
-//
-// Querying the Chosen Files 
-//
-				// Returns an array containing the absolute paths (as NSString 
-				// objects) of the selected files and directories.  If multiple 
-				// selections aren't allowed, the array contains a single name.
+// Querying the Chosen Files
+// Returns an array containing the absolute paths (as NSString
+// objects) of the selected files and directories.  If multiple
+// selections aren't allowed, the array contains a single name.
 - (NSArray *)filenames;
 
-//
-// Running the NSOpenPanel 
-//
+// Running an NSOpenPanel 
 - (int)runModalForTypes:(NSArray *)fileTypes;
 - (int)runModalForDirectory:(NSString *)path
                        file:(NSString *)name
-                       types:(NSArray *)fileTypes;
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
-
+                      types:(NSArray *)fileTypes;
 @end
 
 #endif // _GNUstep_H_NSOpenPanel
