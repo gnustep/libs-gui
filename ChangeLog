@@ -1,3 +1,13 @@
+Mon Nov 2 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* NSApplication.m optimize event translation, matching and dispatch.  Add
+		a possible temporary regulation hack to control event translation in
+		backend.
+	* NSApplication.h remove unused private methods
+	* NSAttributedString.m polish
+	* NSScrollView.m _doScroll: fix button scrolling direction when view is 
+		not flipped.
+
 Tue Oct 27 15:20:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSDPSContext.m: Fixed per-thread code to be OpenStep
