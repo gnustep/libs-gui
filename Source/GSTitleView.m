@@ -364,8 +364,7 @@
 {
   NSNotificationCenter *theCenter = [NSNotificationCenter defaultCenter];
 
-  if ([owner class] == [NSWindow class] 
-      || [owner class] == [NSPanel class])
+  if ([owner isKindOfClass:[NSWindow class]])
     {
       NSDebugLLog(@"GSTitleView", @"owner is NSWindow or NSPanel");
       _owner = owner;
@@ -389,7 +388,7 @@
                         name: NSWindowDidResignKeyNotification
                       object: _owner];
     }
-  else if ([owner respondsToSelector:@selector(menuRepresentation)])
+  else if ([owner isKindOfClass:[NSMenu class]])
     {
       NSDebugLLog(@"GSTitleView", @"owner is NSMenu");
       _owner = owner;
