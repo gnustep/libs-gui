@@ -47,6 +47,7 @@
 //
 id _nsTextfieldCellClass = nil;
 
+
 //
 // Class methods
 //
@@ -82,10 +83,20 @@ id _nsTextfieldCellClass = nil;
 
 - (id) initWithFrame: (NSRect)frameRect
 {
-  NSTextFieldCell	*c;
+  return [self _initFieldWithFrame:frameRect cellClass:_nsTextfieldCellClass];
+}
+
+/*
+===============
+-_initFieldWithFrame:cellClass:
+===============
+*/
+- (id)_initFieldWithFrame:(NSRect)frameRect cellClass:(Class)cellClass
+{
+  id c;
 
   [super initWithFrame: frameRect];
-  c = [_nsTextfieldCellClass new];
+  c = [cellClass new];
   [self setCell: c];
   [c release];
   [cell setState: 1];
