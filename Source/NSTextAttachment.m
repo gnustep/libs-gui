@@ -166,7 +166,7 @@
       id delegate = [textView delegate];
       NSEventType type = [theEvent type];
       
-      if (type == NSLeftMouseUp)
+      if (type == NSLeftMouseDown)
         { 
 	  if ([theEvent clickCount] == 2)
 	    {
@@ -335,11 +335,4 @@
   return self;
 }
 
-- (id) copyWithZone: (NSZone*)z
-{
-  // This method should not be here it is just a hack to work around a problem  
-  // in NSAttributedString. There a dictionary including a NSTextAttachment gets copied,
-  // which fails without this. 
-  return RETAIN(self);
-}
 @end
