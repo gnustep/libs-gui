@@ -42,7 +42,7 @@
  * placed in a menu as a menu item.  The [NSMenuItem] class provides
  * a reference implementation suitable for most uses.
  */
-@protocol NSMenuItem <NSCopying, NSCoding>
+@protocol NSMenuItem <NSCopying, NSCoding, NSObject>
 
 + (id<NSMenuItem>) separatorItem;
 + (void) setUsesUserKeyEquivalents: (BOOL)flag;
