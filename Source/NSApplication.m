@@ -462,10 +462,15 @@ NSApplication	*NSApp = nil;
   do
     {
       event = DPSGetEvent(ctxt, NSAnyEventMask, limit, NSDefaultRunLoopMode);
-      if (event != nil && [event window] == theSession->window)
+      if (event != nil)
 	{
-	  DPSPostEvent(ctxt, event, YES);
-	  found = YES;
+	  NSWindow	*eventWindow = [event window];
+
+	  if (eventWindow == theSession->window || [eventWindow worksWhenModal])
+	    {
+	      DPSPostEvent(ctxt, event, YES);
+	      found = YES;
+	    }
 	}
     }
   while (found == NO && theSession->runState == NSRunContinuesResponse);
@@ -479,10 +484,18 @@ NSApplication	*NSApp = nil;
       pool = [NSAutoreleasePool new];
 
       event = DPSGetEvent(ctxt, NSAnyEventMask, limit, NSDefaultRunLoopMode);
-      if (event != nil && [event window] == theSession->window)
+      if (event != nil)
 	{
-	  ASSIGN(current_event, event);
-	  found = YES;
+	  NSWindow	*eventWindow = [event window];
+
+	  if (eventWindow == theSession->window || [eventWindow worksWhenModal])
+	    {
+	      ASSIGN(current_event, event);
+	    }
+	  else
+	    {
+	      found = NO;
+	    }
 	}
       else
 	{

@@ -1,3 +1,8 @@
+Tue Jul 13  6:44:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSApplication.m: In ([-runModalSession:]) pay attention to
+	([NSWindow worksWhenModal]).
+
 1999-07-12  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Source/NSMenu.m: added code to convert anything that conforms to
