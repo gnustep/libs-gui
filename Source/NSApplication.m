@@ -1670,7 +1670,7 @@ image.
   while ((current = [iterator nextObject]) != nil)
     {
       if ([current miniwindowImage] == old_app_icon)
-	[current setMiniwindowImage: anImage],printf("update window %@\n",current);
+	[current setMiniwindowImage: anImage];
     }
 
   DESTROY(old_app_icon);
