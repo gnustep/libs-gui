@@ -2,6 +2,9 @@
 
 	* configure.ac: Add openbsd flags like freebsd.
 
+	* Documentation/Gui/DefaultsSummary.gsdoc: Move backend defaults
+	to back/Documentation/Back/DefaultsSummary.gsdoc.
+
 2003-07-05 18:02  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSLayoutManager.m
