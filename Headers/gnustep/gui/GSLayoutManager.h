@@ -333,5 +333,13 @@ layout information.
 
 @end
 
+
+@interface NSObject (GSLayoutManagerDelegate)
+-(void) layoutManager: (GSLayoutManager *)layoutManager
+	didCompleteLayoutForTextContainer: (NSTextContainer *)textContainer
+	atEnd: (BOOL)atEnd;
+@end
+
+
 #endif
 
