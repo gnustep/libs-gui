@@ -943,39 +943,41 @@ init(int argc, char** argv)
 int
 main(int argc, char** argv)
 {
-    init(argc, argv);
+  init(argc, argv);
 
-    [NSObject enableDoubleReleaseCheck: YES];
+  // [NSObject enableDoubleReleaseCheck: YES];
 
-    server = [[PasteboardServer alloc] init];
+  server = [[PasteboardServer alloc] init];
 
-    if (server == nil) {
-	NSLog(@"Unable to create server object.\n");
-	exit(1);
+  if (server == nil)
+    {
+      NSLog(@"Unable to create server object.\n");
+      exit(1);
     }
 
-    /* Register a connection that provides the server object to the network */
-    conn = [NSConnection newRegisteringAtName:PBSNAME
-		  withRootObject:server];
+  /* Register a connection that provides the server object to the network */
+  conn = [NSConnection newRegisteringAtName:PBSNAME
+			     withRootObject:server];
   
-    if (conn == nil) {
-	NSLog(@"Unable to register with name server.\n");
-	exit(1);
+  if (conn == nil)
+    {
+      NSLog(@"Unable to register with name server.\n");
+      exit(1);
     }
 
-    [conn setDelegate:server];
-    [NotificationDispatcher
-	    addObserver: server
-    	    selector: @selector(connectionBecameInvalid:)
-    	    name: NSConnectionDidDieNotification
-    	    object: conn];
+  [conn setDelegate:server];
+  [NotificationDispatcher addObserver: server
+			     selector: @selector(connectionBecameInvalid:)
+				 name: NSConnectionDidDieNotification
+			       object: conn];
 
-    if (verbose) {
-	NSLog(@"GNU pasteboard server startup.\n");
+  if (verbose)
+    {
+      NSLog(@"GNU pasteboard server startup.\n");
     }
-    [[NSRunLoop currentRunLoop] run];
+  [[NSRunLoop currentRunLoop] run];
 
-    exit(0);
+  exit(0);
 }
 
 
