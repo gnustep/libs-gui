@@ -594,15 +594,11 @@ static Class rulerViewClass = nil;
 #endif
 }
 
-#if 0
-/* Don't need to override if we can trust the default autoresizing */
 - (void) resizeSubviewsWithOldSize: (NSSize)oldSize
 {
-  fprintf (stderr, "NSScrollView	resizeSubviewsWithOldSize \n");
   [super resizeSubviewsWithOldSize: oldSize];
   [self tile];
 }
-#endif
 
 - (id) documentView
 {
