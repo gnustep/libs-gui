@@ -136,10 +136,47 @@ static NSColor *scrollBarColor = nil;
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
+  [super encodeWithCoder: aCoder];
+
+  [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_arrowsPosition];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_isEnabled];
+  [aCoder encodeConditionalObject: _target];
+  [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
+  /* We do not save float value, knob proportion. */
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
+  self = [super initWithCoder: aDecoder];
+
+  if (_frame.size.width > _frame.size.height)
+    {
+      _isHorizontal = YES;
+    }
+  else
+    {
+      _isHorizontal = NO;
+    }
+
+  if (_isHorizontal)
+    {
+      _floatValue = 0.0;
+    }
+  else
+    {
+      _floatValue = 1.0;
+    }
+
+  _hitPart = NSScrollerNoPart;
+
+  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &_arrowsPosition];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_isEnabled];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_target];
+  [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
+
+  [self drawParts];
+  [self checkSpaceForParts];
+
   return self;
 }
 

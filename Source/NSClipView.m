@@ -415,4 +415,33 @@
   return (_documentView != nil) ? [_documentView becomeFirstResponder] : NO;
 }
 
+/*
+ * NSCoding protocol
+ */
+- (void) encodeWithCoder: (NSCoder*)aCoder
+{
+  [super encodeWithCoder: aCoder];
+
+  [aCoder encodeObject: _backgroundColor];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_copiesOnScroll];
+  [aCoder encodeObject: _cursor];
+  [aCoder encodeObject: _documentView];
+}
+
+- (id) initWithCoder: (NSCoder*)aDecoder
+{
+  NSView *document;
+
+  self = [super initWithCoder: aDecoder];
+  [self setAutoresizesSubviews: YES];
+
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_backgroundColor];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_copiesOnScroll];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_cursor];
+
+  document = [aDecoder decodeObject];
+  [self setDocumentView: document];
+
+  return self;
+}
 @end
