@@ -24,9 +24,9 @@
 
 GNUSTEP_INSTALLATION_DIR = $(GNUSTEP_SYSTEM_ROOT)
 
-GNUSTEP_MAKEFILE_DIR = $(GNUSTEP_SYSTEM_ROOT)/Makefiles
+GNUSTEP_MAKEFILES = $(GNUSTEP_SYSTEM_ROOT)/Makefiles
 
-include $(GNUSTEP_MAKEFILE_DIR)/common.make
+include $(GNUSTEP_MAKEFILES)/common.make
 
 LIBRARY_NAME = libgmodel
 
@@ -73,8 +73,8 @@ LIBRARIES_DEPEND_UPON = -lFoundationExt $(FND_LIBS) $(GUI_LIBS) \
 
 -include GNUmakefile.local
 
-include $(GNUSTEP_MAKEFILE_DIR)/library.make
-include $(GNUSTEP_MAKEFILE_DIR)/tool.make
-include $(GNUSTEP_MAKEFILE_DIR)/application.make
+include $(GNUSTEP_MAKEFILES)/library.make
+include $(GNUSTEP_MAKEFILES)/tool.make
+include $(GNUSTEP_MAKEFILES)/application.make
 
 -include GNUmakefile.postamble

@@ -25,9 +25,9 @@
 #  If not, write to the Free Software Foundation,
 #  59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-GNUSTEP_MAKEFILE_DIR = $(GNUSTEP_SYSTEM_ROOT)/Makefiles
+GNUSTEP_MAKEFILES = $(GNUSTEP_SYSTEM_ROOT)/Makefiles
 
-include $(GNUSTEP_MAKEFILE_DIR)/common.make
+include $(GNUSTEP_MAKEFILES)/common.make
 
 # The application to be compiled
 TEST_TOOL_NAME = testpb
@@ -37,6 +37,6 @@ testpb_OBJC_FILES = testpb.m
 
 -include GNUmakefile.preamble
 
-include $(GNUSTEP_MAKEFILE_DIR)/test-tool.make
+include $(GNUSTEP_MAKEFILES)/test-tool.make
 
 -include GNUmakefile.postamble
