@@ -1,5 +1,11 @@
 2001-10-08  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSPopUpButtonCell.m
+	[insertItemWithTitle:atIndex:] don't set the action and target for
+	the item, so it will use the action from the popup button.
+	
+2001-10-08  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/gnustep/gui/NSMenu.h
 	Replace ivar _isBeholden_byPopup with _popUpButtonCell. Change
 	method [_setOwnedByPopUp:] to take an NSPopUpButtonCell instead
