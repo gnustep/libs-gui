@@ -39,6 +39,8 @@
 @interface NSScreen : NSObject
 {
   // Attributes
+  NSWindowDepth depth;
+  NSRect frame;
   NSMutableDictionary *device_desc;
 
   // Reserved for backend use

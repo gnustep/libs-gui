@@ -32,7 +32,7 @@
 
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSEvent.h>
-
+#include <AppKit/GSContext.h>
 
 char **NSArgv = NULL;
 
@@ -58,6 +58,12 @@ extern char** environ;
   [[NSApplication sharedApplication] run];
 
   return 0;
+}
+
+void
+initialize_gnustep_backend(void)
+{
+  [GSContext initializeGUIBackend];
 }
 
 //

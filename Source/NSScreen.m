@@ -77,7 +77,8 @@ NSScreen *mainScreen = nil;
 	[super init];				// Create our device description dictionary
 								// The backend will have to fill the dictionary
 	device_desc = [NSMutableDictionary dictionary];
-
+    depth = 0;
+    frame = NSZeroRect;
 	return self;
 }
 
@@ -86,12 +87,12 @@ NSScreen *mainScreen = nil;
 //
 - (NSWindowDepth)depth
 {
-	return 0;
+	return depth;
 }
 
 - (NSRect)frame
 {
-	return NSZeroRect;
+	return frame;
 }
 
 - (NSDictionary *)deviceDescription					// Make a copy of device 

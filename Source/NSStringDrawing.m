@@ -35,6 +35,16 @@
 
 @implementation NSString (NSStringDrawing)
 
+- (void) drawAtPoint: (NSPoint)aPoint withAttributes: (NSDictionary *)attr
+{
+  [self notImplemented: _cmd];
+}
+
+- (void) drawInRect: (NSRect)aRect withAttributes: (NSDictionary *)attr
+{
+  [self notImplemented: _cmd];
+}
+
 - (NSSize)sizeWithAttributes:(NSDictionary *)attrs
 {
 NSFont *font;

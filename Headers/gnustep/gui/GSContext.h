@@ -32,6 +32,7 @@
 #define _GSContext_h_INCLUDE
 
 #include <Foundation/NSObject.h>
+#include <AppKit/gsdefs.h>
 #include <stdarg.h>
 
 @class NSMutableData;
@@ -78,13 +79,21 @@ typedef enum _NSWindowOrderingMode {
 
 } NSWindowOrderingMode;
 
-
+extern NSString *NSBackendContext;
 
 @interface GSContext : NSObject
 {
 	NSDictionary  *context_info;
 	NSMutableData *context_data;
+
+@public
+  const gsMethodTable *methods;
 }
+
+//
+// Setup the Backend library
+//
++ (void) initializeGUIBackend;
 
 //
 // Setting and Identifying the concrete class

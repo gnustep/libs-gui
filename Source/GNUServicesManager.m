@@ -726,7 +726,12 @@ static NSString         *disabledName = @".GNUstepDisabled";
   NSString          *appName;
 
   appName = [[[NSProcessInfo processInfo] processName] lastPathComponent];
-  NSRegisterServicesProvider(self, appName);
+  NS_DURING
+    NSRegisterServicesProvider(self, appName);
+  NS_HANDLER
+    NSLog(@"Warning: Could not access services due to exception: %@\n",
+          [localException reason]);
+  NS_ENDHANDLER
 }
 
 /*

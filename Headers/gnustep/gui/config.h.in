@@ -32,8 +32,6 @@
 /* Define NSDebugLog if not defined */
 #include <Foundation/NSDebug.h>
 
-extern BOOL initialize_gnustep_backend (void);
-
 #ifndef OBJC_MALLOC
 # define OBJC_MALLOC(pointer, type, elements) \
 	(pointer = calloc (sizeof(type), elements))

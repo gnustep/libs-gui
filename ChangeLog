@@ -1,3 +1,24 @@
+Thu Dec 10 15:03:05 1998  Adam Fedor  <fedor@ultra.doc.com>
+
+	* Headers/gnustep/gui/GSContext.h: New backend initialization.
+	* Headers/gnustep/gui/NSApplication.h: Remove backend
+	initialization declaration.
+	* Source/Functions.m (initialize_gnustep_backend): New function.
+	* Source/GSContext.m (+initialize): Set up method table.
+	(+initializeGUIBackend): New method.
+	(+initializeMethodTable): Likewise.
+
+	* Headers/gnustep/gui/NSScreen.h: New ivars.
+	* Source/NSScreen.m: Use them.
+	
+	* Headers/gnustep/gui/NSStringDrawing.h: New methods.
+	* Source/NSStringDrawing.m: Implement stub.
+
+	* Source/GNUServicesManager.m (-registerAsServiceProvider): Add
+	exception handler.
+
+	* Tools/GNUmakefile: Don't make example tool.
+
 Thu Dec 10 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* NSWindow.h change window style enum to match WindowMaker's definition.
