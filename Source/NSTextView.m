@@ -85,7 +85,7 @@
 {
   NSTextContainer *aTextContainer = 
       [[NSTextContainer alloc] initWithContainerSize: frameRect.size];
-  NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
+/*  NSLayoutManager *layoutManager = [[NSLayoutManager alloc] init];
 
   [layoutManager addTextContainer: aTextContainer];
   RELEASE(aTextContainer);
@@ -93,7 +93,7 @@
   _textStorage = [[NSTextStorage alloc] init];
   [_textStorage addLayoutManager: layoutManager];
   RELEASE(layoutManager);
-
+*/
   return [self initWithFrame: frameRect textContainer: aTextContainer];
 }
 
