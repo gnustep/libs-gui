@@ -543,6 +543,10 @@ static NSImage	*arrowImageH = nil;
   if (NSIsEmptyRect(cellFrame))
     return;
 
+  // Do nothing if the window is deferred
+  if ([[controlView window] gState] == 0)
+    return;
+
   [controlView lockFocus];
 
   // Draw the border if needed
@@ -561,6 +565,14 @@ static NSImage	*arrowImageH = nil;
 
   // Transparent buttons never draw
   if (_buttoncell_is_transparent)
+    return;
+
+  // Do nothing if the cell frame is empty
+  if (NSIsEmptyRect(cellFrame))
+    return;
+  
+  // Do nothing if the window is deferred
+  if ([[controlView window] gState] == 0)
     return;
 
   cellFrame = [self drawingRectForBounds: cellFrame];
