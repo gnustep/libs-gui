@@ -248,7 +248,9 @@
   return [NSArray arrayWithObjects: NSTIFFPboardType, nil];
 }
 
+//
 // Getting Information about the Image 
+//
 - (int) bitsPerPixel
 {
   return bitsPerPixel;
@@ -279,7 +281,9 @@
   return bytesPerRow;
 }
 
+//
 // Getting Image Data 
+//
 - (unsigned char *) bitmapData
 {
   unsigned char *planes[MAX_PLANES];
@@ -324,11 +328,12 @@
 
 - (BOOL) draw
 {
-  [self bitmapData];
   return NO;
 }
 
+//
 // Producing a TIFF Representation of the Image 
+//
 + (NSData *) TIFFRepresentationOfImageRepsInArray: (NSArray *)anArray
 {
   [self notImplemented: _cmd];
@@ -356,8 +361,9 @@
   return nil;
 }
 
-
+//
 // Setting and Checking Compression Types 
+//
 + (void) getTIFFCompressionTypes: (const NSTIFFCompression **)list
 		count: (int *)numTypes
 {
@@ -388,8 +394,9 @@
   [self notImplemented: _cmd];
 }
 
-
+//
 // NSCoding protocol
+//
 - (void) encodeWithCoder: aCoder
 {
   [self notImplemented: _cmd];

@@ -50,10 +50,6 @@
 /* Backend protocol - methods that must be implemented by the backend to
    complete the class */
 @protocol NSImageBackend
-- (void) _displayEraseRect: (NSRect)bounds view: (NSView *)view
-        color: (NSColor *)color;
-	  // Info: This Backend function needs to erase the "view" area
-          // defined by "rect" to the color "color".
 - (void) compositeToPoint: (NSPoint)point fromRect: (NSRect)rect
 	operation: (NSCompositingOperation)op;
 - (void) dissolveToPoint: (NSPoint)point fromRect: (NSRect)rect
@@ -502,16 +498,19 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
 // a cache and no cache exists, create one and draw the representation in it
 // If a cache exists, but is not valid, redraw the cache from the original
 // image (if there is one).
-- _doImageCache
+- (NSImageRep *)_doImageCache
 {
-  NSImageRep *rep;
+  NSImageRep *rep = nil;
   rep_data_t repd;
+
   repd = repd_for_rep(_reps, [self bestRepresentationForDevice: nil]);
   rep = repd.rep;
   if (repd.cache)
     rep = repd.cache;
+
   if (![rep isKindOfClass: [NSCachedImageRep class]]) 
     {
+#if 0
       [self lockFocus];
 	{
 	  rep_data_t cached;
@@ -519,21 +518,19 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
 	  _lockedView = [NSView focusView];
 	  bounds = [_lockedView bounds];
 	  [self _displayEraseRect: bounds view: _lockedView color: _color];
-	  [self drawRepresentation: rep
-	    inRect: NSMakeRect(0, 0, _size.width, _size.height)];
 	  [self unlockFocus];
-#if 0
 	  [[_reps lastObject] getValue: &cached];
 	  cached.original = rep;
 	  cached.validCache = YES;
 	  [_reps removeLastObject];
 	  [_reps addObject:
 	    [NSValue value: &cached withObjCType: @encode(rep_data_t)]];
-#endif
 	}
+#endif
     } 
   else if (!repd.validCache) 
     {
+#if 0
       [self lockFocusOnRepresentation: rep];
 	{
 	  NSRect bounds;
@@ -546,9 +543,10 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
 	  repd.validCache = YES;
 	  set_repd_for_rep(_reps, repd.rep, &repd);
 	}
+#endif
     }
   
-  return self;
+  return rep;
 }
 
 // Using the Image 
@@ -564,7 +562,16 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
 - (void) compositeToPoint: (NSPoint)aPoint fromRect: (NSRect)aRect
 	operation: (NSCompositingOperation)op;
 {
-  [self _doImageCache];
+  NSImageRep *rep;
+  NSRect rect = NSMakeRect(aPoint.x, aPoint.y, _size.width, _size.height);
+
+  // xxx If fromRect specifies something other than full image
+  // then we need to construct a subimage to draw
+
+  rep = [self _doImageCache];
+  [self lockFocusOnRepresentation: rep];
+  [self drawRepresentation: rep inRect: rect];
+  [self unlockFocus];
 }
 
 - (void) dissolveToPoint: (NSPoint)aPoint fraction: (float)aFloat;
@@ -578,7 +585,16 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
 - (void) dissolveToPoint: (NSPoint)aPoint fromRect: (NSRect)aRect 
 	fraction: (float)aFloat;
 {
-  [self _doImageCache];
+  NSImageRep *rep;
+  NSRect rect = NSMakeRect(aPoint.x, aPoint.y, _size.width, _size.height);
+
+  // xxx If fromRect specifies something other than full image
+  // then we need to construct a subimage to draw
+
+  rep = [self _doImageCache];
+  [self lockFocusOnRepresentation: rep];
+  [self drawRepresentation: rep inRect: rect];
+  [self unlockFocus];
 }
 
 - (BOOL)drawRepresentation: (NSImageRep *)imageRep inRect: (NSRect)rect

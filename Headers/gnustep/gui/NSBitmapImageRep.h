@@ -45,6 +45,9 @@
   BOOL            _isPlanar;
   unsigned char** imagePlanes;
   NSMutableData*  imageData;
+
+  // Reserved for back-end use
+  void *back_end_reserved;
 }
 
 //
