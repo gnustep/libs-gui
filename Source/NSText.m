@@ -2111,12 +2111,18 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
 - (void) scrollRangeToVisible: (NSRange) aRange
 {
-  [self scrollRectToVisible:
-	  NSUnionRect ([self rectForCharacterIndex:
-			       _selected_range.location],
-		       [self rectForCharacterIndex:
-			       NSMaxRange (_selected_range)])];
+  // Don't try scrolling an ancestor clipview if we are field editor.
+  // This makes things so much simpler and stabler for now.
+  if (_tf.is_field_editor == NO)
+    {
+      [self scrollRectToVisible:
+	      NSUnionRect ([self rectForCharacterIndex: 
+				   _selected_range.location],
+			   [self rectForCharacterIndex:
+				   NSMaxRange (_selected_range)])];
+    }
 }
+
 
 /*
  * Managing the Delegate
