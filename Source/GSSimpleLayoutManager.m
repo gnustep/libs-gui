@@ -916,7 +916,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	  addObject: [_GNULineLayoutInfo
 			 lineLayoutWithRange: NSMakeRange (0, 0)
 			 rect: NSMakeRect (0, 0, width, 12)
-			 usedRect: NSMakeRect (0, 0, 0, 12)]];
+			 usedRect: NSMakeRect (0, 0, 1, 12)]];
       return NSMakeRange(0,1);
     }
       
@@ -942,9 +942,10 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 		     options: NSLiteralSearch
 		     range: para];
 
-      if (eol.length == 0)
+      if (eol.location == NSNotFound)
 	{
 	  eol.location = length;
+	  eol.length = 0;
 	}
       else
 	{
@@ -1066,8 +1067,8 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 		}
 	      
 	      // line to long
-	      if (usedLineRect.size.width + advanceSize.width > width || 
-		  isBuckled)
+	      if (usedLineRect.size.width + advanceSize.width > width 
+		  || isBuckled)
 	        {
 		  // end of line -> word wrap
 		  // undo layout of last word
@@ -1158,6 +1159,24 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	}
       while ([lScanner isAtEnd] == NO);
     }
+
+  /* Now test for the special case - there is a newline at the end of
+     the text?  The last newline is not displayed by the previous
+     engine, so we do it manually.  */
+  if ([newlines characterIsMember: [allText characterAtIndex: (length - 1)]])
+    {
+      float width = [aTextContainer containerSize].width;
+
+      [_lineLayoutInformation
+	addObject: [_GNULineLayoutInfo
+		     lineLayoutWithRange: NSMakeRange (length, 0)
+		     rect: NSMakeRect (drawingPoint.x, drawingPoint.y, 
+				       width, 12)
+		     usedRect: NSMakeRect (drawingPoint.x, drawingPoint.y, 
+					   1, 12)]];      
+    }
+  
+
   
   // lines actually updated (optimized drawing)
   return NSMakeRange(aLine, MAX(1, [_lineLayoutInformation count] - aLine));
