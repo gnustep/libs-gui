@@ -27,17 +27,17 @@ GNUSTEP_MAKEFILES = $(GNUSTEP_SYSTEM_ROOT)/Makefiles
 include $(GNUSTEP_MAKEFILES)/common.make
 
 # The applications to be compiled
-TOOL_NAME = gsnd
+TOOL_NAME = gnustep_sndd
 
 # The source files to be compiled
-gsnd_OBJC_FILES = gsnd.m
+gnustep_sndd_OBJC_FILES = gsnd.m
 
 ifeq (mingw32, $(GNUSTEP_TARGET_OS))
-  gsnd_C_FILES = portaudio/pa_common/pa_lib.c \
+  gnustep_sndd_C_FILES = portaudio/pa_common/pa_lib.c \
                  portaudio/pa_win_ds/dsound_wrapper.c \
                  portaudio/pa_win_ds/pa_dsound.c
 else
-  gsnd_C_FILES = portaudio/pa_common/pa_lib.c \
+  gnustep_sndd_C_FILES = portaudio/pa_common/pa_lib.c \
                  portaudio/pa_unix_oss/pa_unix_oss.c \
                  portaudio/pa_common/pa_trace.c
 endif

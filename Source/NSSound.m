@@ -176,26 +176,26 @@ static id<GSSoundSvr> the_server = nil;
 	      cmd = RETAIN([[NSSearchPathForDirectoriesInDomains(
 				 GSToolsDirectory, NSSystemDomainMask, YES) 
 								objectAtIndex: 0]
-			     stringByAppendingPathComponent: @"gsnd"]);
+			     stringByAppendingPathComponent: @"gnustep_sndd"]);
 #else
 	      cmd = RETAIN([[@GNUSTEP_INSTALL_PREFIX 
 			      stringByAppendingPathComponent: @"Tools"] 
-			     stringByAppendingPathComponent: @"gsnd"]);
+			     stringByAppendingPathComponent: @"gnustep_sndd"]);
 #endif
 	    }
 
 	  if (recursion == YES || cmd == nil) 
 	    {
 	      NSLog(@"Unable to contact sound server - "
-		    @"please ensure that gsnd is running for %@.", description);
+		    @"please ensure that gnustep_sndd is running for %@.", description);
 	      return nil;
 	    } 
 	  else 
 	    {
 	      NSLog(@"\nI couldn't contact the sound server for %@ -\n"
 		    @"so I'm attempting to to start one - which will take a few seconds.\n"
-		    @"Trying to launch gsnd from %@ or a machine/operating-system subdirectory.\n"
-		    @"It is recommended that you start the sound server (gsnd) when\n"
+		    @"Trying to launch gnustep_sndd from %@ or a machine/operating-system subdirectory.\n"
+		    @"It is recommended that you start the sound server (gnustep_sndd) when\n"
 		    @"your windowing system is started up.\n", description,
 		    [cmd stringByDeletingLastPathComponent]);
 
