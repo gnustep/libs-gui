@@ -217,12 +217,8 @@ static NSMapTable* windowmaps = NULL;
 
   [[NSNotificationCenter defaultCenter] removeObserver: self];
 
-  if (content_view)
-    {
-      RELEASE([content_view superview]);	/* Release the window view */
-      RELEASE(content_view);
-    }
   [self setFrameAutosaveName: nil];
+  TEST_RELEASE(_wv);
   TEST_RELEASE(_fieldEditor);
   TEST_RELEASE(background_color);
   TEST_RELEASE(represented_filename);
@@ -296,6 +292,12 @@ static NSMapTable* windowmaps = NULL;
   _f.cursor_rects_enabled = YES;
   _f.cursor_rects_valid = NO;
 
+  /* Create the window view */
+  cframe.origin = NSZeroPoint;
+  cframe.size = frame.size;
+  _wv = [[GSWindowView allocWithZone: [self zone]] initWithFrame: cframe];
+  [_wv viewWillMoveToWindow: self];
+
   /* Create the content view */
   cframe.origin = NSZeroPoint;
   cframe.size = frame.size;
@@ -321,15 +323,6 @@ static NSMapTable* windowmaps = NULL;
 
   NSMapInsert (windowmaps, (void*)window_num, self);
 
-  if (_f.menu_exclude == NO)
-    {
-      BOOL	isDoc = [window_title isEqual: represented_filename];
-
-      [NSApp addWindowsItem: self
-		      title: window_title
-		   filename: isDoc];
-    }
-
   NSDebugLog(@"NSWindow end of init\n");
   return self;
 }
@@ -344,33 +337,20 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) setContentView: (NSView *)aView
 {
-  NSView *wv;
-
-  if (!aView)
-    aView = AUTORELEASE([[NSView alloc] initWithFrame: frame]);
-
-  /* If window view has not been created, create it */
-  if ((!content_view) || ([content_view superview] == nil))
+  if (aView == nil)
     {
-      NSRect	rect = frame;
-
-      rect.origin = NSZeroPoint;
-      wv = [[GSWindowView allocWithZone: [self zone]] initWithFrame: rect];
-      [wv viewWillMoveToWindow: self];
+      aView = AUTORELEASE([[NSView alloc] initWithFrame: frame]);
     }
-  else
-    wv = [content_view superview];
-
-  if (content_view)
-    [content_view removeFromSuperview];
-
-  ASSIGN(content_view, aView);
-
-  [content_view setFrame: [wv frame]];		    // Resize to fill window.
+  if (content_view != nil)
+    {
+      [content_view removeFromSuperview];
+    }
+  content_view = aView;
+  [content_view setFrame: [_wv frame]];		    // Resize to fill window.
   [content_view setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
-  [wv addSubview: content_view];		    // Add to our window view
-  NSAssert1 ([[wv subviews] count] == 1, @"window's view has %d	 subviews!",
-		[[wv subviews] count]);
+  [_wv addSubview: content_view];		    // Add to our window view
+  NSAssert1 ([[_wv subviews] count] == 1,
+    @"window's view has %d	 subviews!", [[_wv subviews] count]);
 
   [content_view setNextResponder: self];
 }
@@ -405,7 +385,7 @@ static NSMapTable* windowmaps = NULL;
       ASSIGN(window_title, aString);
       [self setMiniwindowTitle: aString];
       DPStitlewindow(GSCurrentContext(), [aString cString], window_num);
-      if (_f.menu_exclude == NO)
+      if (_f.menu_exclude == NO && _f.has_opened == YES)
 	{
 	  [NSApp changeWindowsItem: self
 			     title: aString
@@ -425,7 +405,7 @@ static NSMapTable* windowmaps = NULL;
       ASSIGN(window_title, aString);
       [self setMiniwindowTitle: aString];
       DPStitlewindow(GSCurrentContext(), [aString cString], window_num);
-      if (_f.menu_exclude == NO)
+      if (_f.menu_exclude == NO && _f.has_opened == YES)
 	{
 	  [NSApp changeWindowsItem: self
 			     title: aString
@@ -776,6 +756,20 @@ static NSMapTable* windowmaps = NULL;
 					   NSModalPanelRunLoopMode,
 					   NSEventTrackingRunLoopMode, nil]];
 	}
+      if (_f.has_opened == NO)
+	{
+	  _f.has_opened = YES;
+	  if (_f.menu_exclude == NO)
+	    {
+	      BOOL	isFileName;
+
+	      isFileName = [window_title isEqual: represented_filename];
+
+	      [NSApp addWindowsItem: self
+			      title: window_title
+			   filename: isFileName];
+	    }
+	}
     }
   DPSorderwindow(GSCurrentContext(), place, otherWin, [self windowNumber]);
 }
@@ -964,47 +958,21 @@ static NSMapTable* windowmaps = NULL;
  */
 - (NSPoint) convertBaseToScreen: (NSPoint)basePoint
 {
-  NSView	*wv = [content_view superview];
   NSPoint	screenPoint;
 
   screenPoint.x = frame.origin.x + basePoint.x;
   screenPoint.y = frame.origin.y + basePoint.y;
 
-  /*
-   * Window coordiates are relative to the windowview - but the windowview
-   * may be offset from the windows position on the screen to allow for a
-   * title-bar and border, so we allow for that here.
-   */
-  if (wv != nil)
-    {
-      NSPoint	offset = [wv bounds].origin;
-
-      screenPoint.x += offset.x;
-      screenPoint.y += offset.y;
-    }
   return screenPoint;
 }
 
 - (NSPoint) convertScreenToBase: (NSPoint)screenPoint
 {
-  NSView	*wv = [content_view superview];
   NSPoint basePoint;
 
   basePoint.x = screenPoint.x - frame.origin.x;
   basePoint.y = screenPoint.y - frame.origin.y;
 
-  /*
-   * Window coordiates are relative to the windowview - but the windowview
-   * may be offset from the windows position on the screen to allow for a
-   * title-bar and border, so we allow for that here.
-   */
-  if (wv != nil)
-    {
-      NSPoint	offset = [wv bounds].origin;
-
-      basePoint.x -= offset.x;
-      basePoint.y -= offset.y;
-    }
   return basePoint;
 }
 
@@ -1146,26 +1114,32 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) setViewsNeedDisplay: (BOOL)flag
 {
-  _rFlags.needs_display = flag;
-  if (flag)
+  if (_rFlags.needs_display != flag)
     {
-      [NSApp setWindowsNeedUpdate: YES];
-      [[NSRunLoop currentRunLoop]
-             performSelector: @selector(_handleWindowNeedsDisplay:)
-                      target: self
-                    argument: nil
-                       order: 600000 /*NSDisplayWindowRunLoopOrdering in OS*/
-                       modes: [NSArray arrayWithObjects:
-                                       NSDefaultRunLoopMode,
-                                       NSModalPanelRunLoopMode,
-                                       NSEventTrackingRunLoopMode, nil]];
-    }
-  else
-    {
-      [[NSRunLoop currentRunLoop]
-             cancelPerformSelector: @selector(_handleWindowNeedsDisplay:)
-                            target: self
-                          argument: nil];
+      _rFlags.needs_display = flag;
+      if (flag)
+	{
+	  [NSApp setWindowsNeedUpdate: YES];
+	  if (_f.visible && _f.has_opened)
+	    {
+	      [[NSRunLoop currentRunLoop]
+		 performSelector: @selector(_handleWindowNeedsDisplay:)
+			  target: self
+			argument: nil
+			   order: 600000 /*NSDisplayWindowRunLoopOrdering OS*/
+			   modes: [NSArray arrayWithObjects:
+					   NSDefaultRunLoopMode,
+					   NSModalPanelRunLoopMode,
+					   NSEventTrackingRunLoopMode, nil]];
+	    }
+	}
+      else
+	{
+	  [[NSRunLoop currentRunLoop]
+		 cancelPerformSelector: @selector(_handleWindowNeedsDisplay:)
+				target: self
+			      argument: nil];
+	}
     }
 }
 
@@ -1332,6 +1306,11 @@ resetCursorRectsForView(NSView *theView)
     RETAIN(self);
 
   [nc postNotificationName: NSWindowWillCloseNotification object: self];
+  _f.has_opened = NO;
+  [[NSRunLoop currentRunLoop]
+     cancelPerformSelector: @selector(_handleWindowNeedsDisplay:)
+		    target: self
+		  argument: nil];
   [NSApp removeWindowsItem: self];
   [self orderOut: self];
 
@@ -1432,7 +1411,7 @@ resetCursorRectsForView(NSView *theView)
   if (_f.is_edited != flag)
     {
       _f.is_edited = flag;
-      if (_f.menu_exclude == NO)
+      if (_f.menu_exclude == NO && _f.has_opened == YES)
 	{
 	  [NSApp updateWindowsItem: self];
 	}
@@ -1996,15 +1975,13 @@ resetCursorRectsForView(NSView *theView)
 		  {
 		    [self saveFrameUsingName: autosave_name];
 		  }
-		if (content_view)
-		  {
-		    NSView	*wv = [content_view superview];			
-		    NSRect	rect = frame;
+		{
+		  NSRect	rect = frame;
 
-		    rect.origin = NSZeroPoint;
-		    [wv setFrame: rect];
-		    [wv setNeedsDisplay: YES];
-		  }
+		  rect.origin = NSZeroPoint;
+		  [_wv setFrame: rect];
+		  [_wv setNeedsDisplay: YES];
+		}
 		[self _processResizeEvent];
 		[nc postNotificationName: NSWindowDidResizeNotification
 				  object: self];
@@ -2285,15 +2262,22 @@ resetCursorRectsForView(NSView *theView)
   if (_f.menu_exclude != flag)
     {
       _f.menu_exclude = flag;
-      if (_f.menu_exclude == NO)
+      if (_f.has_opened == YES)
 	{
-	  [NSApp addWindowsItem: self
-			  title: window_title
-		       filename: [window_title isEqual: represented_filename]];
-	}
-      else
-	{
-	  [NSApp removeWindowsItem: self];
+	  if (_f.menu_exclude == NO)
+	    {
+	      BOOL	isFileName;
+
+	      isFileName = [window_title isEqual: represented_filename];
+
+	      [NSApp addWindowsItem: self
+			      title: window_title
+			   filename: isFileName];
+	    }
+	  else
+	    {
+	      [NSApp removeWindowsItem: self];
+	    }
 	}
     }
 }
@@ -3007,6 +2991,7 @@ resetCursorRectsForView(NSView *theView)
   _f.menu_exclude = NO;
   _f.hides_on_deactivate = NO;
   _f.accepts_mouse_moved = NO;
+  _f.has_opened = NO;
 }
 
 - (id) cleanInit

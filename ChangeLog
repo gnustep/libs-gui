@@ -1,3 +1,15 @@
+Wed Dec  8 14:59:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/AppKit/NSWindow.m: Added new ivar for window view and a
+	boolean to say whether the window has been opened (ordered in) since
+	it was created or closed.
+	* Source/NSWindow.m: Use ivar for window view so that the
+	([NSView -removeFromSuperview]) method will work for a window
+	content view.  Add code so that windows are not added to the app
+	window menu until they are first ordered in.  Also ensure that
+	windows are removed from that menu (and run loop performers are
+	cancelled) when a window is closed.
+
 Tue Dec  7 21:30:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSColor.m: Implemented ([-isEqual:])

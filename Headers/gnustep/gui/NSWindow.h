@@ -92,6 +92,7 @@ extern NSSize NSTokenSize;
   NSSize        maximum_size;
   NSSize        increments;
   NSString	*autosave_name;
+  id		_wv;
   id            content_view;
   id            first_responder;
   id            original_responder;
@@ -136,6 +137,7 @@ extern NSSize NSTokenSize;
     unsigned	menu_exclude:1;
     unsigned	hides_on_deactivate:1;
     unsigned	accepts_mouse_moved:1;
+    unsigned	has_opened:1;
   } _f;
  
   /* Reserved for back-end use */
@@ -180,7 +182,7 @@ extern NSSize NSTokenSize;
 /*
  * Accessing the content view
  */
-- contentView;
+- (id) contentView;
 - (void) setContentView: (NSView *)aView;
 
 /*
