@@ -1,3 +1,8 @@
+1999-02-13 Michael Hanni <mhanni@sprintmail.com>
+
+	* Small change to gui/Tools/GNUmakefile.preamble to allow for easy
+	  linking on FreeBSD 3.x. (added -ljpeg)
+
 Fri Feb 12 21:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSView.m: Tidied some more.
