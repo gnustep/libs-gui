@@ -53,15 +53,15 @@
      * not change during the views lifetime - if it does, the view must
      * be sure to change the flag accordingly.
      */
-    unsigned	flipped_view: 1;
-    unsigned	has_subviews: 1;		/* The view has subviews.	*/
-    unsigned	has_currects: 1;		/* The view has cursor rects.	*/
-    unsigned	has_trkrects: 1;		/* The view has tracking rects.	*/
-    unsigned	has_draginfo: 1;		/* View/window has drag types.	*/
-    unsigned	opaque_view: 1;		/* For views whose opacity may	*/
+    unsigned	flipped_view:1;
+    unsigned	has_subviews:1;		/* The view has subviews.	*/
+    unsigned	has_currects:1;		/* The view has cursor rects.	*/
+    unsigned	has_trkrects:1;		/* The view has tracking rects.	*/
+    unsigned	has_draginfo:1;		/* View/window has drag types.	*/
+    unsigned	opaque_view:1;		/* For views whose opacity may	*/
 					/* change to keep track of it.	*/
-    unsigned	valid_rects: 1;		/* Some cursor rects may be ok.	*/
-    unsigned	needs_display: 1;	/* Window/view needs display.	*/
+    unsigned	valid_rects:1;		/* Some cursor rects may be ok.	*/
+    unsigned	needs_display:1;	/* Window/view needs display.	*/
   } _rFlags;
 }
 
