@@ -1,3 +1,10 @@
+2001-11-09  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSView.m (-addSubview:): Raise exception on adding nil
+	subview or superview of view.
+	(-addSubview:positioned:relativeTo:): Likewise.
+	(-beginDocument): Change NSLog to exception.
+
 Thu Nov  8 23:30:47 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSMatrix.m ([-sizeToFit]): Reverted last change.

@@ -285,10 +285,15 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) addSubview: (NSView*)aView
 {
+  if (aView == nil)
+    {
+      [NSException raise: NSInvalidArgumentException
+		  format: @"Adding a nil subview"];
+    }
   if ([self isDescendantOf: aView])
     {
-      NSLog(@"Operation addSubview: creates a loop in the views tree!\n");
-      return;
+      [NSException raise: NSInvalidArgumentException
+		format: @"addSubview: creates a loop in the views tree!\n"];
     }
 
   RETAIN(aView);
@@ -313,11 +318,15 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 {
   unsigned	index;
 
+  if (aView == nil)
+    {
+      [NSException raise: NSInvalidArgumentException
+		  format: @"Adding a nil subview"];
+    }
   if ([self isDescendantOf: aView])
     {
-      NSLog(@"addSubview: positioned: relativeTo: will create a cycle "
-		    @"in the views tree!\n");
-      return;
+      [NSException raise: NSInvalidArgumentException
+		  format: @"addSubview: positioned: relativeTo: creates a loop in the views tree!\n"];
     }
 
   if (aView == otherView)
@@ -2852,8 +2861,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   dict = [[printOp printInfo] dictionary];
   if (printOp == nil)
     {
-      NSLog(@"[NSView -beginDocument] called without a current print op");
-      return;
+      [NSException raise: NSInternalInconsistencyException
+		  format: @"beginDocument called without a current print op"];
     }
   /* Inform ourselves and subviews that we're printing so we adjust
      the PostScript accordingly. Perhaps this could be in the thread
