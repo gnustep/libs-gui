@@ -1,3 +1,9 @@
+2004-04-27  Quentin mathe <qmathe@club-internet.fr>
+       
+        * Source/NSToolbarItem.m: Modified to have the action message sent by
+	NSToolbarItem instances (not by GSToolbarButton instances) in order to
+	match the Mac OS X behavior. (Bug reported by Ludovic Marcotte)
+
 2004-04-16 15:33  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSTableView.m (-dragImageForRows:event:dragImageOffset:):
@@ -11,17 +17,17 @@
 
 2004-04-13  Quentin Mathe <qmathe@club-internet.fr>
 
-       * Source/NSToolbarItem.m:
-       * Headers/AppKit/NSToolbarItem.h: 
-       * Source/NSToolbar.m:
-       * Headers/AppKit/NSToolbar.h:
-       * Source/GSToolbar.m:
-       * Headers/GNUstepGUI/GSToolbar.h:
-       * Source/GSToolbarView.m:
-       * Headers/GNUstepGUI/GSToolbarView.h:
-       * Source/NSWindow+Toolbar.m:
-       * Headers/AppKit/NSWindow+Toolbar.h:
-       Added support for display mode and size mode and other minor changes.
+        * Source/NSToolbarItem.m:
+        * Headers/AppKit/NSToolbarItem.h: 
+        * Source/NSToolbar.m:
+        * Headers/AppKit/NSToolbar.h:
+        * Source/GSToolbar.m:
+        * Headers/GNUstepGUI/GSToolbar.h:
+        * Source/GSToolbarView.m:
+        * Headers/GNUstepGUI/GSToolbarView.h:
+        * Source/NSWindow+Toolbar.m:
+        * Headers/AppKit/NSWindow+Toolbar.h:
+        Added support for display mode and size mode and other minor changes.
 
 2004-04-09  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
 

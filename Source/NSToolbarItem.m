@@ -32,6 +32,7 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSDebug.h>
 
+#include "AppKit/NSApplication.h"
 #include "AppKit/NSToolbarItem.h"
 #include "AppKit/NSMenu.h"
 #include "AppKit/NSMenuItem.h"
@@ -78,11 +79,14 @@
 @interface GSToolbarButton : NSButton
 {
   NSToolbarItem *_toolbarItem;
+  SEL _toolbarItemAction;
 }
 
 - (id) initWithToolbarItem: (NSToolbarItem *)toolbarItem;
 - (void) layout;
+- (void) setToolbarItemAction: (SEL)action;
 - (NSToolbarItem *) toolbarItem;
+- (SEL) toolbarItemAction;
 @end
 
 @implementation GSToolbarButton
@@ -171,10 +175,33 @@
    
 }
 
+- (BOOL) sendAction: (SEL)action to: (id)target
+{ 
+  if (_toolbarItemAction)
+    {
+      return [NSApp sendAction: _toolbarItemAction to: target from: _toolbarItem];
+    }
+  else
+    {
+      return NO;
+    }
+}
+
 - (NSToolbarItem *) toolbarItem
 {
   return _toolbarItem;
 }
+
+- (void) setToolbarItemAction: (SEL) action
+{
+  _toolbarItemAction = action;
+}
+
+- (SEL) toolbarItemAction
+{
+  return _toolbarItemAction;
+}
+
 @end
 
 /*
@@ -653,13 +680,13 @@
       // gets
       _flags._isEnabled  = [_backView respondsToSelector: @selector(isEnabled)];
       _flags._tag        = YES;
-      _flags._action     = [_backView respondsToSelector: @selector(action)];
+      _flags._action     = [_backView respondsToSelector: @selector(toolbarItemAction)];	
       _flags._target     = [_backView respondsToSelector: @selector(target)];
       _flags._image      = [_backView respondsToSelector: @selector(image)];
       // sets
       _flags._setEnabled = [_backView respondsToSelector: @selector(setEnabled:)];
       _flags._setTag     = YES;
-      _flags._setAction  = [_backView respondsToSelector: @selector(setAction:)];
+      _flags._setAction  = [_backView respondsToSelector: @selector(setToolbarItemAction:)];
       _flags._setTarget  = [_backView respondsToSelector: @selector(setTarget:)];
       _flags._setImage   = [_backView respondsToSelector: @selector(setImage:)];
     
@@ -726,8 +753,8 @@
 {
   if(_flags._setAction)
     {
-      if ([_backView isKindOfClass: [NSButton class]])
-        [(NSButton *)_backView setAction: action];
+      if ([_backView isKindOfClass: [GSToolbarButton class]])
+        [(GSToolbarButton *)_backView setToolbarItemAction: action];
 	if (action != NULL)
 	  {
 	    [(NSButton *)_backView setEnabled: YES];
@@ -819,12 +846,12 @@
     {
       // gets
       _flags._isEnabled  = [_backView respondsToSelector: @selector(isEnabled)];
-      _flags._action     = [_backView respondsToSelector: @selector(action)];
+      _flags._action     = [_backView respondsToSelector: @selector(toolbarItemAction)];
       _flags._target     = [_backView respondsToSelector: @selector(target)];
       _flags._image      = [_backView respondsToSelector: @selector(image)];
       // sets
       _flags._setEnabled = [_backView respondsToSelector: @selector(setEnabled:)];
-      _flags._setAction  = [_backView respondsToSelector: @selector(setAction:)];
+      _flags._setAction  = [_backView respondsToSelector: @selector(setToolbarItemAction:)];
       _flags._setTarget  = [_backView respondsToSelector: @selector(setTarget:)];
       _flags._setImage   = [_backView respondsToSelector: @selector(setImage:)];
     }
@@ -907,8 +934,8 @@
 {
   if(_flags._action)
     {
-      if ([_backView isKindOfClass: [NSButton class]])
-        return [(NSButton *)_backView action];
+      if ([_backView isKindOfClass: [GSToolbarButton class]])
+        return [(GSToolbarButton *)_backView toolbarItemAction];
     }
   return 0;
 }
