@@ -76,6 +76,17 @@
   NSRectFill(rect);
 }
 
+/*
+ * Special setFrame: implementation - don't use the autosize mechanism
+ * Just resize the windows content-view to this size.
+ */
+- (void) setFrame: (NSRect)frameRect
+{
+  autoresize_subviews = NO;
+  [super setFrame: frameRect];
+  [[window contentView] setFrame: frameRect];
+}
+
 - (Class) classForCoder: (NSCoder*)aCoder
 {
   if ([self class] == [GSWindowView class])
@@ -301,7 +312,6 @@ static NSRecursiveLock	*windowsLock;
   ASSIGN(content_view, aView);
 
   [content_view setFrame: [wv frame]];		    // Resize to fill window.
-  [content_view setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
   [wv addSubview: content_view];		    // Add to our window view
   NSAssert1 ([[wv subviews] count] == 1, @"window's view has %d	 subviews!",
 		[[wv subviews] count]);
