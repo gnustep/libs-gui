@@ -28,6 +28,7 @@
 #include <AppKit/GSTable.h>
 
 @interface GSTable (Private)
+-(void) _updateForNewFrameSize: (NSSize)newFrameSize;
 -(void) _updateRowSize: (int)row;
 -(void) _updateColumnSize: (int)column;
 -(void) _updateRowOrigin: (int)row;
@@ -187,7 +188,7 @@
   
   _minimumSize.width += borderChange;
   tableSize.width += borderChange; 
-  [self setFrameSize: tableSize];
+  [super setFrameSize: tableSize];
 
   _minXBorder = aBorder;
 }
@@ -203,7 +204,7 @@
   
   _minimumSize.width += borderChange;
   tableSize.width += borderChange; 
-  [self setFrameSize: tableSize];
+  [super setFrameSize: tableSize];
 
   _maxXBorder = aBorder;
 }
@@ -227,7 +228,7 @@
   
   _minimumSize.height += borderChange;
   tableSize.height += borderChange; 
-  [self setFrameSize: tableSize];
+  [super setFrameSize: tableSize];
 
   _minYBorder = aBorder;
 }
@@ -243,7 +244,7 @@
   
   _minimumSize.height += borderChange;
   tableSize.height += borderChange; 
-  [self setFrameSize: tableSize];
+  [super setFrameSize: tableSize];
 
   _maxYBorder = aBorder;
 }
@@ -402,7 +403,7 @@
   
   if (tableNeedResize)
     {
-      [self setFrameSize: tableFrame.size];
+      [super setFrameSize: tableFrame.size];
     }
   
       
@@ -463,101 +464,21 @@
     [_jails[jailNumber] setFrame: theFrame];
   _havePrisoner[jailNumber] = YES;
 } 
--(void) resizeWithOldSuperviewSize: (NSSize)oldSize
+
+/* resizeWithOldSuperviewSize: automatically calls setFrame: */
+
+- (void) setFrame: (NSRect)frame
 {
-  float originShift;
-  float dimensionIncrement;
-  unsigned int i;
-  // YES if the whole GSTable needs an update
-  BOOL tableNeedUpdate = NO;
-  NSSize oldFrameSize = [self frame].size;
-  NSSize newFrameSize;
-  
-  [super resizeWithOldSuperviewSize: oldSize];
-  newFrameSize = [self frame].size; 
-
-  //
-  // Width
-  //
-  if (newFrameSize.width <= _minimumSize.width)
-    {
-      if (oldFrameSize.width > _minimumSize.width)
-	{
-	  originShift = _minXBorder;
-	  for (i = 0; i < _numberOfColumns; i++)
-	    {  
-	      _columnDimension[i] = _minColumnDimension[i];
-	      _columnXOrigin[i] = originShift;
-	      originShift += _minColumnDimension[i];
-	    }
-	  tableNeedUpdate = YES;
-	}
-    }
-    else // newFrameSize.width > _minimumSize.width
-    {
-      if (oldFrameSize.width < _minimumSize.width)
-	oldFrameSize.width = _minimumSize.width;
-
-      if ((newFrameSize.width != oldFrameSize.width) && _expandingColumnNumber)
-	{  
-	  originShift = 0;
-	  dimensionIncrement = newFrameSize.width - oldFrameSize.width;
-	  dimensionIncrement = dimensionIncrement / _expandingColumnNumber; 
-	  for (i = 0; i < _numberOfColumns; i++)
-	    {
-	      _columnXOrigin[i] += originShift;
-	      if (_expandColumn[i])
-		{
-		  _columnDimension[i] += dimensionIncrement;
-		  originShift += dimensionIncrement;
-		}
-	    }
-	  tableNeedUpdate = YES;
-	}
-    }
-  //
-  // Height 
-  //
-  if (newFrameSize.height <= _minimumSize.height)
-    {
-      if (oldFrameSize.height > _minimumSize.height)
-	{
-	  originShift = _minYBorder;
-	  for (i = 0; i < _numberOfRows; i++)
-	    {  
-	      _rowDimension[i] = _minRowDimension[i];
-	      _rowYOrigin[i] = originShift;
-	      originShift += _minRowDimension[i];
-	    }
-	  tableNeedUpdate = YES;
-	}
-    }
-    else // newFrameSize.height > _minimumSize.height
-    {
-      if (oldFrameSize.height < _minimumSize.height)
-	oldFrameSize.height = _minimumSize.height;
-
-      if ((newFrameSize.height != oldFrameSize.height) && _expandingRowNumber)
-	{  
-	  originShift = 0;
-	  dimensionIncrement = newFrameSize.height - oldFrameSize.height;
-	  dimensionIncrement = dimensionIncrement / _expandingRowNumber; 
-	  for (i = 0; i < _numberOfRows; i++)
-	    {
-	      _rowYOrigin[i] += originShift;
-	      if (_expandRow[i])
-		{
-		  _rowDimension[i] += dimensionIncrement;
-		  originShift += dimensionIncrement;
-		}
-	    }
-	  tableNeedUpdate = YES;
-	}
-    }
-
-  if (tableNeedUpdate)
-    [self _updateWholeTable];
+  [self _updateForNewFrameSize: frame.size];
+  [super setFrame: frame];
 }
+
+- (void) setFrameSize: (NSSize)newFrameSize
+{
+  [self _updateForNewFrameSize: newFrameSize];
+  [super setFrameSize: newFrameSize];
+}
+
 //
 // Minimum Size
 //
@@ -575,7 +496,7 @@
   // This should never happen but anyway. 
   if ((_numberOfColumns == 0) || (_numberOfRows == 0))
     {
-      [self setFrameSize: NSZeroSize];
+      [super setFrameSize: NSZeroSize];
       return;
     }
   
@@ -596,7 +517,7 @@
       _rowDimension[i] = _minRowDimension[i];
     }
   [self _updateWholeTable];
-  [self setFrameSize: _minimumSize];
+  [super setFrameSize: _minimumSize];
 }
 //
 // Adding Rows and Columns
@@ -907,16 +828,105 @@
 
   return self;
 }
-// These are meant to speed things up, since the table is invisible. 
--(void) lockFocusInRect: (NSRect)rect 
-{
-}
--(void) unlockFocusNeedsFlush: (BOOL)flush 
-{
-}
 @end
 
 @implementation GSTable (Private)
+/* Updates the subviews and locations for a new frame size.  */
+- (void) _updateForNewFrameSize: (NSSize)newFrameSize
+{
+  NSSize oldFrameSize = [self frame].size;
+  float originShift;
+  float dimensionIncrement;
+  unsigned int i;
+  // YES if the whole GSTable needs an update
+  BOOL tableNeedUpdate = NO;
+
+  //
+  // Width
+  //
+  if (newFrameSize.width <= _minimumSize.width)
+    {
+      if (oldFrameSize.width > _minimumSize.width)
+	{
+	  originShift = _minXBorder;
+	  for (i = 0; i < _numberOfColumns; i++)
+	    {  
+	      _columnDimension[i] = _minColumnDimension[i];
+	      _columnXOrigin[i] = originShift;
+	      originShift += _minColumnDimension[i];
+	    }
+	  tableNeedUpdate = YES;
+	}
+    }
+    else // newFrameSize.width > _minimumSize.width
+    {
+      if (oldFrameSize.width < _minimumSize.width)
+	oldFrameSize.width = _minimumSize.width;
+
+      if ((newFrameSize.width != oldFrameSize.width) && _expandingColumnNumber)
+	{  
+	  originShift = 0;
+	  dimensionIncrement = newFrameSize.width - oldFrameSize.width;
+	  dimensionIncrement = dimensionIncrement / _expandingColumnNumber; 
+	  for (i = 0; i < _numberOfColumns; i++)
+	    {
+	      _columnXOrigin[i] += originShift;
+	      if (_expandColumn[i])
+		{
+		  _columnDimension[i] += dimensionIncrement;
+		  originShift += dimensionIncrement;
+		}
+	    }
+	  tableNeedUpdate = YES;
+	}
+    }
+  //
+  // Height 
+  //
+  if (newFrameSize.height <= _minimumSize.height)
+    {
+      if (oldFrameSize.height > _minimumSize.height)
+	{
+	  originShift = _minYBorder;
+	  for (i = 0; i < _numberOfRows; i++)
+	    {  
+	      _rowDimension[i] = _minRowDimension[i];
+	      _rowYOrigin[i] = originShift;
+	      originShift += _minRowDimension[i];
+	    }
+	  tableNeedUpdate = YES;
+	}
+    }
+    else // newFrameSize.height > _minimumSize.height
+    {
+      if (oldFrameSize.height < _minimumSize.height)
+	oldFrameSize.height = _minimumSize.height;
+
+      if ((newFrameSize.height != oldFrameSize.height) && _expandingRowNumber)
+	{  
+	  originShift = 0;
+	  dimensionIncrement = newFrameSize.height - oldFrameSize.height;
+	  dimensionIncrement = dimensionIncrement / _expandingRowNumber; 
+	  for (i = 0; i < _numberOfRows; i++)
+	    {
+	      _rowYOrigin[i] += originShift;
+	      if (_expandRow[i])
+		{
+		  _rowDimension[i] += dimensionIncrement;
+		  originShift += dimensionIncrement;
+		}
+	    }
+	  tableNeedUpdate = YES;
+	}
+    }
+
+  if (tableNeedUpdate)
+    {
+      [self _updateWholeTable];
+    }
+}
+
+
 //
 // After computing new theoretical sizes/positions,
 // use the following methods to update the real table view
