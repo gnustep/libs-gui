@@ -188,15 +188,8 @@ main(int argc, char** argv, char **env_c)
    *
    *	Make sure that the users 'GNUstep/Services' directory exists.
    */
-  str = [env objectForKey: @"GNUSTEP_USER_ROOT"];
-  if (str != nil)
-    {
-      usrRoot = str;
-    }
-  else
-    {
-      usrRoot = [sClass stringWithFormat: @"%@/GNUstep", NSHomeDirectory()];
-    }
+  usrRoot = [NSSearchPathForDirectoriesInDomains(NSUserDirectory,
+    NSUserDomainMask, YES) lastObject];
 
   mgr = [NSFileManager defaultManager];
   if (([mgr fileExistsAtPath: usrRoot isDirectory: &isDir] && isDir) == 0)
