@@ -311,7 +311,7 @@ static NSCell* tileCell = nil;
 }
 
 - (void) drawRect: (NSRect)rect
-{                                                
+{
   [tileCell drawWithFrame: NSMakeRect(0,0,64,64) inView: self];
   [dragCell drawWithFrame: NSMakeRect(8,8,48,48) inView: self];
 }
@@ -1248,15 +1248,12 @@ static NSCell* tileCell = nil;
 
 	  if (!theEvent)
 	    NSDebugLLog(@"NSEvent", @"NSEvent is nil!\n");
-	  NSDebugLLog(@"NSEvent", @"NSEvent type: %d", type);
-	  NSDebugLLog(@"NSEvent", @"send event to window");
-	  NSDebugLLog(@"NSEvent", [window description]);
+	  NSDebugLLog(@"NSEvent", @"Send NSEvent type: %d to window %@", 
+		      type, (window) ? window : @"No window");
 	  if (window)
 	    [window sendEvent: theEvent];
 	  else if (type == NSRightMouseDown)
 	    [self rightMouseDown: theEvent];
-	  else
-	    NSDebugLLog(@"NSEvent", @"no window");
 	}
     }
 }

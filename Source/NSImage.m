@@ -796,7 +796,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (BOOL) drawRepresentation: (NSImageRep *)imageRep inRect: (NSRect)aRect
 {
-  if (_color != nil && [_color alphaComponent] != 0.0)
+  if (_color != nil)
     {
       [_color set];
       NSRectFill(aRect);

@@ -1,3 +1,13 @@
+2001-12-07  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSImage.m (-drawRepresentation:inRect:): Draw
+	background even when alpha == 0.
+
+	* Source/NSApplication.m (-sendEvent:): Simplify NSDebugLog.
+
+	* Documentation/gsdoc/DefaultsSummary.gsdoc: Update
+	* Documentation/gsdoc/Gui.gsdoc: Remove NSDPSContext.
+
 2001-12-07  Pierre-Yves Rivaille  <pyrivail@ens-lyon.fr>
 
 	* Headers/gnustep/gui/NSTableColumn.h: 

@@ -163,12 +163,13 @@
           limit the range of red, green, and blue values that could be used.
           </p>
 	  </desc>
-	  <term>XGPS-Shm</term>
+	  <term>GSBorderedBorderlessWindows</term>
 	  <desc>
           <p>
-          A boolean value which defaults to <code>YES</code> (as long as shared
-          memory is available). If set to <code>NO</code>, shared memory is not
-          used for various display specific operations.
+          A boolean value which defaults to <code>NO</code>. Some Window
+          Managers and/or X servers put a border around windows that are
+          supposed to be borderless. Set this to <code>YES</code> if you
+          have odd problems of menus/windows moving when you click on them.
           </p>
 	  </desc>
 	  <term>GSFontAntiAlias</term>
@@ -190,8 +191,59 @@
           recommended anyway, particularly on fast systems.
           </p>
 	  </desc>
+	  <term>Keyboard Modifiers</term>
+	  <desc>
+          <p>
+          The OPENstep specification requires 3 main different
+          keyboard modifiers: <code>CONTROL</code>,
+          <code>COMMAND</code> and <code>ALTERNATE</code>. Some systems
+          may not have these set up correctly. You can changed the defaults
+          with the default keys.
+          </p>
+           <list>
+	      <item>GSFirstControlKey</item>
+	      <item>GSSecondControlKey</item>
+	      <item>GSFirstCommandKey</item>
+	      <item>GSSecondCommandKey</item>
+	      <item>GSFirstAlternateKey</item>
+	      <item>GSSecondAlternateKey</item>
+	    </list>
+          <p>
+          Default values are respectively:
+          </p>
+           <list>
+	      <item>Control_L</item>
+	      <item>Control_R</item>
+	      <item>Alt_L</item>
+	      <item>NoSymbol</item>
+	      <item>Alt_R</item>
+	      <item>NoSymbol</item>
+	    </list>
+          <p>
+          This is described more completely in the GUI documentation.
+          </p>
+	  </desc>
+	  <term>UseWindowMakerIcons</term>
+	  <desc>
+          <p>
+          A boolean value which defaults to <code>YES</code>. If set to
+          <code>YES</code> then icon windows are controlled by the
+          window manager, otherwise they are controlled by the GNUstep
+          application.
+          </p>
+	  </desc>
+	  <term>XGPS-Shm</term>
+	  <desc>
+          <p>
+          A boolean value which defaults to <code>YES</code> (as long as shared
+          memory is available). If set to <code>NO</code>, shared memory is not
+          used for various display specific operations.
+          </p>
+	  </desc>
 	</deflist>
       </section>
     </chapter>
   </body>
 </gsdoc>
+
+
