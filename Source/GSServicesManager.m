@@ -391,9 +391,9 @@ NSRegisterServicesProvider(id provider, NSString *name)
 
 - (void) activateIgnoringOtherApps: (BOOL)flag
 {
-  [NSApp activateIgnoringOtherApps:flag];
+  [NSApp activateIgnoringOtherApps: flag];
 }
-  
+
 - (id) self
 {
   return self;
@@ -1388,8 +1388,8 @@ GSContactApplication(NSString *appName, NSString *port, NSDate *expire)
   return app;
 }
 
-NSDictionary *
-_serviceFromAnyLocalizedTitle(NSString *title)
+static NSDictionary *
+serviceFromAnyLocalizedTitle(NSString *title)
 {
   NSDictionary	*allServices;
   NSEnumerator	*e1;
@@ -1453,7 +1453,7 @@ NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
   NSString		*userData;
   NSString		*error = nil;
 
-  service = _serviceFromAnyLocalizedTitle(serviceItem);
+  service = serviceFromAnyLocalizedTitle(serviceItem);
   if (service == nil)
     {
       NSRunAlertPanel(nil,

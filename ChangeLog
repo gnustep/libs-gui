@@ -1,3 +1,10 @@
+2004-09-18 15:15  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSServicesManager.m (_serviceFromAnyLocalizedTitle): Rename
+	to serviceFromAnyLocalizedTitle and make static.
+	* Source/tiff.m (NSTiffWarning): Log tiff warnings using NSDebugLLog
+	instead of NSLog.
+
 2004-09-17  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextFieldCell.m (-initWithCoder:): Moved special

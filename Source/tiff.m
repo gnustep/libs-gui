@@ -59,6 +59,7 @@
 #include "config.h"
 #include "nsimage-tiff.h"
 #include <Foundation/NSArray.h>
+#include <Foundation/NSDebug.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSUtilities.h>
 
@@ -95,7 +96,8 @@ NSTiffWarning(const char *func, const char *msg, va_list ap)
   NSString *format;
 
   format = [NSString stringWithFormat: @"Tiff Warning (%s) %s", func, msg];
-  NSLogv (format, ap);
+  format = [NSString stringWithFormat: format  arguments: ap];
+  NSDebugLLog (@"NSTiff", @"%@", format);
 }
 
 /* Client functions that provide reading/writing of data for libtiff */
