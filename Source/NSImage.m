@@ -51,8 +51,8 @@
 #include <AppKit/NSScreen.h>
 #include <AppKit/NSColor.h>
 
-BOOL	NSImageDoesCaching = NO;	/* enable caching	*/
-BOOL	NSImageForceCaching = NO;	/* use on missmatch	*/
+BOOL	NSImageDoesCaching = YES;	/* enable caching	*/
+BOOL	NSImageForceCaching = YES;	/* use on missmatch	*/
 
 // Resource directories
 static NSString* gnustep_libdir = @GNUSTEP_INSTALL_LIBDIR;
@@ -108,18 +108,19 @@ NSArray *iterate_reps_for_types(NSArray *imageReps, SEL method);
 GSRepData*
 repd_for_rep(NSArray *_reps, NSImageRep *rep)
 {
-  unsigned	i, count;
+  NSEnumerator	*enumerator = [_reps objectEnumerator];
+  IMP		nextImp = [enumerator methodForSelector: @selector(nextObject)];
   GSRepData	*repd;
 
-  count = [_reps count];
-  for (i = 0; i < count; i++) 
+  while ((repd = (*nextImp)(enumerator, @selector(nextObject))) != nil)
     {
-      repd = [_reps objectAtIndex: i];
       if (repd->rep == rep)
-        return repd;
+	{
+	  return repd;
+	}
     }
   [NSException raise: NSInternalInconsistencyException
-  	format: @"Cannot find stored representation"];
+	      format: @"Cannot find stored representation"];
   /* NOT REACHED */
   return nil;
 }
@@ -286,6 +287,7 @@ static Class			cacheClass = 0;
     }
   _flags.colorMatchPreferred = YES;
   _flags.multipleResolutionMatching = YES;
+  _color = RETAIN(clearColor);
   
   return self;
 }
@@ -528,13 +530,15 @@ static Class			cacheClass = 0;
 
 - (void) setBackgroundColor: (NSColor *)aColor
 {
+  if (aColor == nil)
+    {
+      aColor = clearColor;
+    }
   ASSIGN(_color, aColor);
 }
 
 - (NSColor *) backgroundColor
 {
-  if (_color == nil)
-    _color = RETAIN(clearColor);
   return _color;
 }
 
@@ -578,17 +582,16 @@ static Class			cacheClass = 0;
   repd = repd_for_rep(_reps, [self bestRepresentationForDevice: deviceDesc]);
   rep = repd->rep;
 
+  NSDebugLLog(@"NSImage", @"Getting image rep %d", (int)rep);
   if (NSImageDoesCaching == YES)
     {
       /*
        * If this is not a cached image rep - create a cache to be used to
        * render the image rep into, and switch to the cached rep.
        */
-      if ([rep isKindOfClass: cacheClass] == NO) 
-	{
-	  rep = [self cacheForRep: rep onDevice: deviceDesc];
-	  repd = repd_for_rep(_reps, rep);
-	} 
+      rep = [self cacheForRep: rep onDevice: deviceDesc];
+      repd = repd_for_rep(_reps, rep);
+      NSDebugLLog(@"NSImage", @"Cached image rep is %d", (int)rep);
 
       /*
        * if the cache is not valid, it's background color will not exist
@@ -609,7 +612,14 @@ static Class			cacheClass = 0;
 	  [self drawRepresentation: repd->original 
 	    inRect: NSMakeRect(0, 0, _size.width, _size.height)];
 	  [self unlockFocus];
-	  repd->bg = _color ? [_color copy] : [clearColor copy];
+	  if (_color == nil)
+	    {
+	      repd->bg = [clearColor copy];
+	    }
+	  else
+	    {
+	      repd->bg = [_color copy];
+	    }
 	  if ([repd->bg alphaComponent] == 1.0)
 	    {
 	      [rep setOpaque: YES];
@@ -618,6 +628,7 @@ static Class			cacheClass = 0;
 	    {
 	      [rep setOpaque: [repd->original isOpaque]];
 	    }
+	  NSDebugLLog(@"NSImage", @"Rendered rep %d", (int)rep);
 	}
     }
   
@@ -792,10 +803,7 @@ static Class			cacheClass = 0;
 
   if (!(rep = [self bestRepresentationForDevice: nil])) 
     {
-      if ([rep isKindOfClass: cacheClass] == NO) 
-	{
-	  rep = [self cacheForRep: rep onDevice: nil];
-	}
+      rep = [self cacheForRep: rep onDevice: nil];
     }
   [self lockFocusOnRepresentation: rep];
 }
@@ -810,10 +818,7 @@ static Class			cacheClass = 0;
     {
       NSWindow	*window;
 
-      if ([imageRep isKindOfClass: cacheClass] == NO) 
-	{
-	  imageRep = [self cacheForRep: imageRep onDevice: nil];
-	} 
+      imageRep = [self cacheForRep: imageRep onDevice: nil];
       window = [(NSCachedImageRep *)imageRep window];
       _lockedView = [window contentView];
       [_lockedView lockFocus];
@@ -928,7 +933,6 @@ static Class			cacheClass = 0;
 		  if ([validCache->bg alphaComponent] != 1.0)
 		    {
 		      DESTROY(validCache->bg);
-		      [validCache->rep setOpaque: YES];
 		    }
 		}
 	      cacheRep = validCache->rep;
@@ -949,7 +953,6 @@ static Class			cacheClass = 0;
 		  else
 		    {
 		      DESTROY(partialCache->bg);
-		      [partialCache->rep setOpaque: YES];
 		    }
 		}
 	      cacheRep = partialCache->rep;
@@ -975,8 +978,8 @@ static Class			cacheClass = 0;
 						alpha: NO];
 	  [self addRepresentation: cacheRep];
 	  RELEASE(cacheRep);		/* Retained in _reps array.	*/
-	  repd = repd_for_rep(_reps, cacheRep);
-	  repd->original = rep;
+          repd = repd_for_rep(_reps, cacheRep);
+          repd->original = rep;
 	}
       return cacheRep;
     }
