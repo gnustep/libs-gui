@@ -269,8 +269,15 @@ static Class fontPanelClass = Nil;
 - (void)setSelectedFont:(NSFont *)fontObject
 	     isMultiple:(BOOL)flag
 {
-  ASSIGN(_selectedFont, fontObject);
   _multiple = flag;
+
+  if (fontPanel != nil)
+    [fontPanel setPanelFont: fontObject isMultiple: flag];
+
+  if (_selectedFont == fontObject)
+    return;
+
+  ASSIGN(_selectedFont, fontObject);
 
   if (_fontMenu != nil)
     {
@@ -319,9 +326,6 @@ static Class fontPanelClass = Nil;
 
       // TODO Update the rest of the font menu to reflect this font
     }
-
-  if (fontPanel != nil)
-    [fontPanel setPanelFont: fontObject isMultiple: flag];
 }
 
 - (NSFont *)selectedFont
@@ -419,7 +423,7 @@ static Class fontPanelClass = Nil;
 	{
 	  if (sizes[i] > size)
 	    {
-	      size = sizes [i];
+	      size = sizes[i];
 	      break;
 	    }
 	}
@@ -519,6 +523,10 @@ static Class fontPanelClass = Nil;
       float size = [fontObject pointSize];
       NSString *family = [fontObject familyName];
 
+      // We cannot reuse the weight in a bold
+      if (trait == NSBoldFontMask)
+	weight = 9;
+
       t = t | trait;
       newFont = [self fontWithFamily: family 
 		      traits: t
@@ -550,6 +558,10 @@ static Class fontPanelClass = Nil;
       float size = [fontObject pointSize];
       NSString *family = [fontObject familyName];
 
+      // We cannot reuse the weight in an unbold
+      if (trait == NSBoldFontMask)
+	weight = 5;
+
       t = t ^ trait;
       newFont = [self fontWithFamily: family 
 		      traits: t
@@ -575,14 +587,8 @@ static Class fontPanelClass = Nil;
       // Else convert it
       NSFont *newFont;
 
-      NSFontTraitMask trait = [self traitsOfFont: fontObject];
-      int weight = [self weightOfFont: fontObject];
-      NSString *family = [fontObject familyName];
-
-      newFont = [self fontWithFamily: family 
-		      traits: trait
-		      weight: weight
-		      size: size];
+      newFont = [NSFont fontWithName: [fontObject fontName] 
+			size: size];
       if (newFont == nil)
 	return fontObject;
       else 
@@ -609,6 +615,10 @@ static Class fontPanelClass = Nil;
       // sometimes it says 0 to 9 and sometimes 0 to 15
       int next_w = 15;
 
+      // Correct the trait
+      if (w == 8)
+	trait |= NSBoldFontMask;
+
       for (i = 0; i < [fontDefs count]; i++)
 	{
 	  NSArray *fontDef = [fontDefs objectAtIndex: i];
@@ -625,6 +635,10 @@ static Class fontPanelClass = Nil;
     {
       int i;
       int next_w = 0;
+
+      // Correct the trait
+      if (w == 9)
+	trait &= ~NSBoldFontMask;
 
       for (i = 0; i < [fontDefs count]; i++)
 	{
@@ -834,14 +848,17 @@ static Class fontPanelClass = Nil;
 - (NSFontPanel *)fontPanel:(BOOL)create
 {
   if ((fontPanel == nil) && (create))
-    fontPanel = [[fontPanelClass alloc] init];
+    {
+      fontPanel = [[fontPanelClass alloc] init];
+      [fontPanel setPanelFont: _selectedFont isMultiple: _multiple];
+    }
   return fontPanel;
 }
 
 - (void)orderFrontFontPanel:(id)sender
 {
   if (fontPanel == nil)
-    fontPanel = [[fontPanelClass alloc] init];
+    fontPanel = [self fontPanel: YES];
   [fontPanel orderFront: nil];
 }
 

@@ -1206,8 +1206,9 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
       else 
 	currentFont = [[self defaultTypingAttributes] 
 			objectForKey: NSFontAttributeName];
-      [[NSFontPanel sharedFontPanel] setPanelFont: currentFont 
-				     isMultiple: isMultiple];
+      //[[NSFontPanel sharedFontPanel] setPanelFont: currentFont 
+      [[NSFontManager sharedFontManager] setSelectedFont: currentFont 
+					 isMultiple: isMultiple];
     }
   // display
   if (range.length)

@@ -1,3 +1,11 @@
+Mon Feb 28 06:42:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Font fixes - mostly from Fred Keifer.
+	* Source/NSText.m: Use font manager.
+	* Source/NSFontManager.m: some menu improvments.
+	* Source/NSFontPanel.m: Correect setting of font and correct
+	preview code for when there is no 'set' font
+
 Fri Feb 25 16:20:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Headers/AppKit/NSWindow.h: added has_closed flag

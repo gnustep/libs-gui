@@ -5,7 +5,7 @@
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
+   Author: Scott Christley <scottc@net-community.com>
    Date: 1996
    Modified:  Fred Kiefer <FredKiefer@gmx.de>
    Date: Febuary 2000
@@ -50,7 +50,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 		 14.0, 16.0, 18.0, 24.0, 36.0, 48.0, 64.0};
 
 @interface NSFontPanel (Private)
-- (NSFont *) _fontForSelection: (NSFont *) fontObject;
+- (NSFont*) _fontForSelection: (NSFont*) fontObject;
 
 // Some action methods
 - (void) cancel: (id) sender;
@@ -62,10 +62,10 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
 @implementation NSFontPanel
 
-//
-// Class methods
-//
-+ (void)initialize
+/*
+ * Class methods
+ */
++ (void) initialize
 {
   if (self == [NSFontPanel class])
     {
@@ -76,27 +76,27 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
     }
 }
 
-//
-// Creating an NSFontPanel 
-//
-+ (NSFontPanel *)sharedFontPanel
+/*
+ * Creating an NSFontPanel 
+ */
++ (NSFontPanel*) sharedFontPanel
 {
-  NSFontManager *fm = [NSFontManager sharedFontManager];
+  NSFontManager	*fm = [NSFontManager sharedFontManager];
 
   return [fm fontPanel: YES];
 }
 
-+ (BOOL)sharedFontPanelExists
++ (BOOL) sharedFontPanelExists
 {
-  NSFontManager *fm = [NSFontManager sharedFontManager];
+  NSFontManager	*fm = [NSFontManager sharedFontManager];
 
   return ([fm fontPanel: NO] != nil);
 }
 
-//
-// Instance methods
-//
--(id) init
+/*
+ * Instance methods
+ */
+- (id) init
 {
   //  if (![GMModel loadIMFile: @"FontPanel" owner: self]);
   [self _initWithoutGModel];
@@ -126,24 +126,24 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   [super dealloc];
 }
 
-//
-// Enabling
-//
-- (BOOL)isEnabled
+/*
+ * Enabling
+ */
+- (BOOL) isEnabled
 {
   return [_setButton isEnabled];
 }
 
-- (void)setEnabled: (BOOL)flag
+- (void) setEnabled: (BOOL)flag
 {
   [_setButton setEnabled: flag];
 }
 
-//
-// Setting the Font 
-//
-- (void)setPanelFont: (NSFont *)fontObject
-	  isMultiple: (BOOL)flag
+/*
+ * Setting the Font 
+ */
+- (void) setPanelFont: (NSFont*)fontObject
+	   isMultiple: (BOOL)flag
 {
   ASSIGN(_panelFont, fontObject);
   _multiple = flag;
@@ -176,10 +176,15 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 	    break;
 	}
       if (i < [_familyList count])
-	[_familyBrowser selectRow: i inColumn: 1];
+	{
+	  [_familyBrowser selectRow: i inColumn: 0];
+	  _family = i;
+	  ASSIGN(_faceList, [fm availableMembersOfFontFamily: family]);
+	  [_faceBrowser validateVisibleColumns];
+	  _face = -1;
+	}
 
-      ASSIGN(_faceList, [fm availableMembersOfFontFamily: family]);
-      // Select the row for the font family
+      // Select the row for the font face
       for (i = 0; i < [_faceList count]; i++)
 	{
 	  if ([[[_faceList objectAtIndex: i] objectAtIndex: 0] 
@@ -188,7 +193,8 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 	}
       if (i < [_faceList count])
 	{
-	  [_faceBrowser selectRow: i inColumn: 1];
+	  [_faceBrowser selectRow: i inColumn: 0];
+	  _face = i;
 	  face = [[_faceList objectAtIndex: i] objectAtIndex: 1];
 	}
       // show point size and select the row if there is one
@@ -196,7 +202,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
       for (i = 0; i < sizeof(sizes)/sizeof(float); i++)
 	{
 	  if (size == sizes[i])
-	    [_sizeBrowser selectRow: i inColumn: 1];
+	    [_sizeBrowser selectRow: i inColumn: 0];
 	}
       
       [_previewArea setStringValue: [NSString stringWithFormat: @"%@ %@ %d PT",
@@ -204,12 +210,12 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
     }
 }
 
-//
-// Converting
-//
-- (NSFont *)panelConvertFont: (NSFont *)fontObject
+/*
+ * Converting
+ */
+- (NSFont*) panelConvertFont: (NSFont*)fontObject
 {
-  NSFont *newFont;
+  NSFont	*newFont;
 
   if (_multiple)
     {
@@ -225,23 +231,23 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   return newFont;
 }
 
-//
-// Works in modal loops
-//
-- (BOOL)worksWhenModal
+/*
+ * Works in modal loops
+ */
+- (BOOL) worksWhenModal
 {
   return YES;
 }
 
-//
-// Configuring the NSFontPanel 
-//
-- (NSView *)accessoryView
+/*
+ * Configuring the NSFontPanel 
+ */
+- (NSView*) accessoryView
 {
   return _accessoryView;
 }
 
-- (void)setAccessoryView: (NSView *)aView
+- (void) setAccessoryView: (NSView*)aView
 {
   // FIXME: We have to resize
   // Perhaps we could copy the code from NSSavePanel over to here
@@ -252,9 +258,9 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   [[self contentView] addSubview: aView];
 }
 
-//
-// NSCoding protocol
-//
+/*
+ * NSCoding protocol
+ */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
@@ -279,7 +285,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
 @implementation NSFontPanel (Privat)
 
-- (id)_initWithoutGModel
+- (id) _initWithoutGModel
 {
   NSRect pf = {{100,100}, {300,300}};
   NSRect ta = {{0,50}, {300,250}};
@@ -356,7 +362,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   [_familyBrowser setTitled: YES];
   [_familyBrowser setTakesTitleFromPreviousColumn: NO];
   [_familyBrowser setTarget: self];
-  [_familyBrowser setDoubleAction: @selector(familySelected:)];
+  [_familyBrowser setDoubleAction: @selector(familySelected: )];
   [_familyBrowser setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
   [bottomSplit addSubview: _familyBrowser];
 
@@ -371,7 +377,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   [_faceBrowser setTitled: YES];
   [_faceBrowser setTakesTitleFromPreviousColumn: NO];
   [_faceBrowser setTarget: self];
-  [_faceBrowser setDoubleAction: @selector(faceSelected:)];
+  [_faceBrowser setDoubleAction: @selector(faceSelected: )];
   [_faceBrowser setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
   [bottomSplit addSubview: _faceBrowser];
 
@@ -407,7 +413,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   [_sizeBrowser setTitled: NO];
   [_sizeBrowser setTakesTitleFromPreviousColumn: NO];
   [_sizeBrowser setTarget: self];
-  [_sizeBrowser setDoubleAction: @selector(sizeSelected:)];
+  [_sizeBrowser setDoubleAction: @selector(sizeSelected: )];
   [_sizeBrowser setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
   [bottomSplit addSubview: _sizeBrowser];
 
@@ -432,7 +438,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   // cancle button
   revertButton = [[NSButton alloc] initWithFrame: rb];
   [revertButton setStringValue: @"Revert"];
-  [revertButton setAction: @selector(cancel:)];
+  [revertButton setAction: @selector(cancel: )];
   [revertButton setTarget: self];
   [bottomArea addSubview: revertButton];
   RELEASE(revertButton);
@@ -441,7 +447,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   previewButton = [[NSButton alloc] initWithFrame: pb];
   [previewButton setStringValue: @"Preview"];
   [previewButton setButtonType: NSOnOffButton];
-  [previewButton setAction: @selector(_togglePreview:)];
+  [previewButton setAction: @selector(_togglePreview: )];
   [previewButton setTarget: self];
   [bottomArea addSubview: previewButton];
   RELEASE(previewButton);
@@ -449,7 +455,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   // button to set the font
   _setButton = [[NSButton alloc] initWithFrame: db];
   [_setButton setStringValue: @"Set"];
-  [_setButton setAction: @selector(ok:)];
+  [_setButton setAction: @selector(ok: )];
   [_setButton setTarget: self];
   [bottomArea addSubview: _setButton];
   // make it the default button
@@ -469,7 +475,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 }
 
 
-- (void) _togglePreview: (id) sender
+- (void) _togglePreview: (id)sender
 {
   _preview = [sender state];
   if (_preview)
@@ -478,7 +484,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
     }    
 }
 
-- (void) ok: (id) sender
+- (void) ok: (id)sender
 {
   // The set button has been pushed
   NSFontManager *fm = [NSFontManager sharedFontManager];
@@ -487,29 +493,42 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   [self close];  
 }
 
-- (void) cancel: (id) sender
+- (void) cancel: (id)sender
 {
   // The cancel button has been pushed
   // we should reset the items in the panel 
   // and close the window
   [self setPanelFont: _panelFont
-	isMultiple: _multiple];
+	  isMultiple: _multiple];
   [self close];
 }
 
-- (NSFont *) _fontForSelection: (NSFont *) fontObject
+- (NSFont*) _fontForSelection: (NSFont*)fontObject
 {
   float size;
   NSString *fontName;
 
   size = [_sizeField floatValue];
   if (size == 0.0)
-    size = [fontObject pointSize];
+    {
+      if (fontObject == nil)
+	{
+	  size = 12.0;
+	}
+      else
+	{
+	  size = [fontObject pointSize];
+	}
+    }
   if (_face == -1)
-    // FIXME: This uses the first face of the font family
-    fontName = [[_faceList objectAtIndex: 0] objectAtIndex: 0];
+    {
+      // FIXME: This uses the first face of the font family
+      fontName = [[_faceList objectAtIndex: 0] objectAtIndex: 0];
+    }
   else
-    fontName = [[_faceList objectAtIndex: _face] objectAtIndex: 0];
+    {
+      fontName = [[_faceList objectAtIndex: _face] objectAtIndex: 0];
+    }
   
   // FIXME: We should check if the font is correct
   return [NSFont fontWithName: fontName size: size];
@@ -520,9 +539,9 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
 @implementation NSFontPanel (NSBrowserDelegate)
 
-- (BOOL)browser:(NSBrowser *)sender 
-      selectRow: (int)row
-       inColumn:(int)column
+- (BOOL) browser: (NSBrowser*)sender 
+       selectRow: (int)row
+	inColumn: (int)column
 {
   if (sender == _familyBrowser)
     {
@@ -545,10 +564,14 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
   if (_preview)
     {
-      float size = [_sizeField floatValue];
-      NSString *faceName;
-      NSString *familyName;
+      NSFont	*font = [self _fontForSelection: _panelFont];
+      float	size = [_sizeField floatValue];
+      NSString	*faceName;
+      NSString	*familyName;
       
+      if (size == 0)
+	size = [font pointSize];
+
       if (_family == -1)
 	familyName = @"";
       else
@@ -560,15 +583,15 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 	faceName = [[_faceList objectAtIndex: _face] objectAtIndex: 1];
 
       // build up a font and use it in the preview area
-      [_previewArea setFont: [self _fontForSelection: _panelFont]];
+      [_previewArea setFont: font];
       [_previewArea setStringValue: [NSString stringWithFormat: @"%@ %@ %d PT",
-					      familyName, faceName, (int)size]];
+	familyName, faceName, (int)size]];
     }
 
   return YES;
 }
 
-- (int)browser:(NSBrowser *)sender numberOfRowsInColumn:(int)column
+- (int) browser: (NSBrowser*)sender numberOfRowsInColumn: (int)column
 {
   if (sender == _familyBrowser)
     return [_familyList count];
@@ -580,7 +603,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   return 0;
 }
 
-- (NSString *)browser:(NSBrowser *)sender titleOfColumn:(int)column
+- (NSString*) browser: (NSBrowser*)sender titleOfColumn: (int)column
 {
   if (sender == _familyBrowser)
     return @"Family";
@@ -590,10 +613,10 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   return @"";
 }
 
-- (void)browser:(NSBrowser *)sender 
-willDisplayCell:(id)cell 
-	  atRow:(int)row 
-	 column:(int)column
+- (void) browser: (NSBrowser*)sender 
+ willDisplayCell: (id)cell 
+	   atRow: (int)row 
+	  column: (int)column
 {
   NSString *value = nil;
   
@@ -620,7 +643,7 @@ willDisplayCell:(id)cell
   [cell setLeaf: YES];
 }
 
-- (BOOL) browser: (NSBrowser *)sender 
+- (BOOL) browser: (NSBrowser*)sender 
    isColumnValid: (int)column;
 {
   return NO;
