@@ -2690,49 +2690,43 @@ resetCursorRectsForView(NSView *theView)
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   BOOL	flag;
+  id	nxt = RETAIN([self nextResponder]);
 
   [self setNextResponder: nil];
 
   [super encodeWithCoder: aCoder];
 
   NSDebugLog(@"NSWindow: start encoding\n");
-  [aCoder encodeRect: frame];
+  [aCoder encodeRect: [[self contentView] frame]];
+  [aCoder encodeValueOfObjCType: @encode(unsigned) at: &style_mask];
+  [aCoder encodeValueOfObjCType: @encode(NSBackingStoreType) at: &backing_type];
+
   [aCoder encodeObject: content_view];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &window_num];
   [aCoder encodeObject: background_color];
   [aCoder encodeObject: represented_filename];
   [aCoder encodeObject: miniaturized_title];
   [aCoder encodeObject: window_title];
-  [aCoder encodePoint: last_point];
+
+  [aCoder encodeSize: minimum_size];
+  [aCoder encodeSize: maximum_size];
+
+  [aCoder encodeValueOfObjCType: @encode(int) at: &window_level];
+
+  flag = _f.menu_exclude;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _f.visible;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _f.is_key;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _f.is_main;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _f.is_edited;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _f.is_miniaturized;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  [aCoder encodeValueOfObjCType: @encode(unsigned) at: &style_mask];
-  flag = _f.menu_exclude;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
 
-  // Version 2
-  [aCoder encodeSize: minimum_size];
-  [aCoder encodeSize: maximum_size];
-  [aCoder encodeObject: miniaturized_image];
-  [aCoder encodeConditionalObject: _initial_first_responder];
-  [aCoder encodeValueOfObjCType: @encode(NSBackingStoreType) at: &backing_type];
-  [aCoder encodeValueOfObjCType: @encode(int) at: &window_level];
-  [aCoder encodeValueOfObjCType: @encode(unsigned) at: &disable_flush_window];
   flag = _f.is_one_shot;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _f.is_autodisplay;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _f.optimize_drawing;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  [aCoder encodeValueOfObjCType: @encode(NSWindowDepth) at: &depth_limit];
   flag = _f.dynamic_depth_limit;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _f.cursor_rects_enabled;
@@ -2744,66 +2738,102 @@ resetCursorRectsForView(NSView *theView)
   flag = _f.accepts_mouse_moved;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
 
+  [aCoder encodeObject: miniaturized_image];
+  [aCoder encodeConditionalObject: _initial_first_responder];
+
   NSDebugLog(@"NSWindow: finish encoding\n");
+
+  [self setNextResponder: nxt];
+  RELEASE(nxt);
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
+  id	oldself = self;
   BOOL	flag;
 
-  [super initWithCoder: aDecoder];
+  if ((self = [super initWithCoder: aDecoder]) == oldself)
+    {
+      NSSize			aSize;
+      NSRect			aRect;
+      unsigned			aStyle;
+      NSBackingStoreType	aBacking;
+      int			anInt;
+      id			obj;
 
-  NSDebugLog(@"NSWindow: start decoding\n");
-  frame = [aDecoder decodeRect];
-  content_view = [aDecoder decodeObject];
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &window_num];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &background_color];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &represented_filename];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &miniaturized_title];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &window_title];
-  last_point = [aDecoder decodePoint];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _f.visible = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _f.is_key = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _f.is_main = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _f.is_edited = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _f.is_miniaturized = flag;
-  [aDecoder decodeValueOfObjCType: @encode(unsigned) at: &style_mask];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _f.menu_exclude = flag;
+      NSDebugLog(@"NSWindow: start decoding\n");
+      aRect = [aDecoder decodeRect];
+      [aDecoder decodeValueOfObjCType: @encode(unsigned)
+				   at: &aStyle];
+      [aDecoder decodeValueOfObjCType: @encode(NSBackingStoreType)
+				   at: &aBacking];
 
-  // Version 2
-  minimum_size = [aDecoder decodeSize];
-  maximum_size = [aDecoder decodeSize];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &miniaturized_image];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_initial_first_responder];
-  [aDecoder decodeValueOfObjCType: @encode(NSBackingStoreType)
-	at: &backing_type];
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &window_level];
-  [aDecoder decodeValueOfObjCType: @encode(unsigned) at: &disable_flush_window];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _f.is_one_shot = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _f.is_autodisplay = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _f.optimize_drawing = flag;
-  [aDecoder decodeValueOfObjCType: @encode(NSWindowDepth) at: &depth_limit];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _f.dynamic_depth_limit = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _f.cursor_rects_enabled = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _f.is_released_when_closed = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _f.hides_on_deactivate = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _f.accepts_mouse_moved = flag;
+      self = [self initWithContentRect: aRect
+			     styleMask: aStyle
+			       backing: aBacking
+				 defer: NO
+				screen: nil];
 
-  NSDebugLog(@"NSWindow: finish decoding\n");
+      obj = [aDecoder decodeObject];
+      [self setContentView: obj];
+      obj = [aDecoder decodeObject];
+      [self setBackgroundColor: obj];
+      obj = [aDecoder decodeObject];
+      [self setRepresentedFilename: obj];
+      obj = [aDecoder decodeObject];
+      [self setMiniwindowTitle: obj];
+      obj = [aDecoder decodeObject];
+      [self setTitle: obj];
+
+      aSize = [aDecoder decodeSize];
+      [self setMinSize: aSize];
+      aSize = [aDecoder decodeSize];
+      [self setMaxSize: aSize];
+
+      [aDecoder decodeValueOfObjCType: @encode(int)
+				   at: &anInt];
+      [self setLevel: anInt];
+
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [self setExcludedFromWindowsMenu: flag];
+
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      if (flag)
+        [self orderFrontRegardless];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      if (flag)
+        [self makeKeyWindow];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      if (flag)
+        [self makeMainWindow];
+  
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [self setOneShot: flag];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [self setAutodisplay: flag];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [self useOptimizedDrawing: flag];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [self setDynamicDepthLimit: flag];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      if (flag)
+	[self enableCursorRects];
+      else
+	[self disableCursorRects];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [self setReleasedWhenClosed: flag];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [self setHidesOnDeactivate: flag];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [self setAcceptsMouseMovedEvents: flag];
+
+      [aDecoder decodeValueOfObjCType: @encode(id)
+				   at: &miniaturized_image];
+      [aDecoder decodeValueOfObjCType: @encode(id)
+				   at: &_initial_first_responder];
+
+      NSDebugLog(@"NSWindow: finish decoding\n");
+    }
 
   return self;
 }
