@@ -2008,10 +2008,13 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	   */
 	  for (i = 0; i < count; i++)
 	    {
-	      view = array[i];
+	      NSView *subView = array[i];
 
-	      if ([view tag] == aTag)
-		break;
+	      if ([subView tag] == aTag)
+	        {
+		  view = subView;
+		  break;
+		}
 	    }
 
 	  if (view == nil)
