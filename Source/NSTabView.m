@@ -725,6 +725,7 @@
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_truncated_label];
   _delegate = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: "i" at: &_selected_item];
+  _selected = [_items objectAtIndex: _selected_item];
 
   return self;
 }

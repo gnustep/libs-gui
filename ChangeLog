@@ -1,3 +1,8 @@
+2002-08-02  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Source/NSTabView.m ([NSTabView -initWithCoder:]):
+	Set _selected ivar based on _selected_item value.
+
 2002-08-01  Adam Fedor  <fedor@gnu.org>
 
 	* configure.ac: Check for recent version of audiofile
