@@ -533,6 +533,7 @@ static NSCell* tileCell = nil;
   NSString		*mainModelFile;
   NSString		*appIconFile;
   NSUserDefaults	*defs = [NSUserDefaults standardUserDefaults];
+  NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
   NSString		*filePath;
   NSDictionary		*userInfo;
   NSArray		*windows_list;
@@ -653,6 +654,7 @@ static NSCell* tileCell = nil;
 	}
       else
 	{
+	  // FIXME: Should remember that this is a temp file
 	  [[NSDocumentController sharedDocumentController]
 	    openDocumentWithContentsOfFile: filePath display: YES];
 	}
@@ -666,9 +668,9 @@ static NSCell* tileCell = nil;
   userInfo = [NSDictionary dictionaryWithObject:
     [[NSProcessInfo processInfo] processName] forKey: @"NSApplicationName"];
   NS_DURING
-    [[[NSWorkspace sharedWorkspace] notificationCenter]
+    [[workspace notificationCenter]
       postNotificationName: NSWorkspaceDidLaunchApplicationNotification
-      object: self
+      object: workspace
       userInfo: userInfo];
   NS_HANDLER
     NSLog(@"Problem during launch app notification: %@", 
@@ -2170,7 +2172,8 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 
   if (shouldTerminate)
     {
-      NSDictionary	*userInfo;
+      NSDictionary *userInfo;
+      NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
 
       [nc postNotificationName: NSApplicationWillTerminateNotification
 	  object: self];
@@ -2182,9 +2185,9 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
       // Tell the Workspace that we really did terminate
       userInfo = [NSDictionary dictionaryWithObject:
 	[[NSProcessInfo processInfo] processName] forKey: @"NSApplicationName"];
-      [[[NSWorkspace sharedWorkspace] notificationCenter]
+      [[workspace notificationCenter]
         postNotificationName: NSWorkspaceDidTerminateApplicationNotification
-		      object: self
+		      object: workspace
 		    userInfo: userInfo];
       // Free the memory of self
       DESTROY(NSApp);
