@@ -1,3 +1,8 @@
+2003-06-21  David Ayers  <d.ayers@inode.at>
+
+	* PrinterTypes/GNUmakefile.postamble: Add -f option to rm in
+	uninstall of resource files.
+
 2003-06-17  Adam Fedor  <fedor@gnu.org>
 
 	* GNUmakefile (SUBPROJECTS): Add Documentation

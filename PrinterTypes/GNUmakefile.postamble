@@ -1,4 +1,4 @@
-#
+#  -*-makefile-*-
 #  GNUmakefile.postamble
 #
 #  Copyright (C) 1997 Free Software Foundation, Inc.
@@ -68,7 +68,7 @@ after-uninstall::
 	  rm -rf $(PPD_INSTALL_DIR)/$$file ; \
 	done
 	for file in $(RESOURCE_FILES); do         \
-	  rm $(RES_INSTALL_DIR)/$$file ; \
+	  rm -f $(RES_INSTALL_DIR)/$$file ; \
 	done
 
 # Things to do before cleaning
