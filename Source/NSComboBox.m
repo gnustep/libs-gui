@@ -28,6 +28,8 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSComboBox.h>
 #include <AppKit/NSComboBoxCell.h>
+#include <AppKit/NSEvent.h>
+#include <AppKit/NSWindow.h>
 
 @interface NSObject(MouseUpping)
 - (NSEvent *)_mouseUpEvent;
