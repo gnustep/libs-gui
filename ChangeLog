@@ -1,3 +1,24 @@
+2004-01-08 00:47  Alexander Malmberg <alexander@malmberg.org>
+
+	* configure.ac: Fail with a verbose error message if libjpeg or
+	libpng can't be found. Add --disable-jpeg/--disable-png options that
+	override this.
+	* configure: Regenerate.
+
+	* Source/GNUmakefile: Add NSBitmapImageRep+JPEG.m,
+	NSBitmapImageRep+PNG.m, and NSBitmapImageRep+PNM.m .
+
+	* Source/NSBitmapImageRep.m (+canInitWithData:) Check if one of the
+	new loaders can handle the data.
+	(+imageUnfilteredFileTypes): Include the types from the new loaders.
+	(+imageRepsWithData:, -initWithData:): Use the new loaders to load
+	images.
+
+	* Source/NSBitmapImageRep+JPEG.m, Source/NSBitmapImageRep+JPEG.h,
+	Source/NSBitmapImageRep+PNG.m, Source/NSBitmapImageRep+PNG.h,
+	Source/NSBitmapImageRep+PNM.m, Source/NSBitmapImageRep+PNM.h:
+	New files with image loaders for JPEG, PNG, and PNM.
+
 2003-01-07  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/GSHbox.h:

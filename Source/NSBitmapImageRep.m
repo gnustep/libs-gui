@@ -2,7 +2,7 @@
 
    <abstract>Bitmap image representation.</abstract>
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996, 2003, 2004 Free Software Foundation, Inc.
    
    Author:  Adam Fedor <fedor@gnu.org>
    Date: Feb 1996
@@ -30,6 +30,12 @@
 #include <math.h>
 #include <tiff.h>
 
+#include "AppKit/NSBitmapImageRep.h"
+
+#include "NSBitmapImageRep+JPEG.h"
+#include "NSBitmapImageRep+PNG.h"
+#include "NSBitmapImageRep+PNM.h"
+
 #include <Foundation/NSArray.h>
 #include <Foundation/NSData.h>
 #include <Foundation/NSDebug.h>
@@ -37,7 +43,6 @@
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSValue.h>
 #include "AppKit/AppKitExceptions.h"
-#include "AppKit/NSBitmapImageRep.h"
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSGraphicsContext.h"
 #include "AppKit/NSPasteboard.h"
@@ -94,6 +99,15 @@ static BOOL supports_lzw_compression = NO;
       return NO;
     }
 
+  if ([self _bitmapIsPNG: data])
+    return YES;
+
+  if ([self _bitmapIsPNM: data])
+    return YES;
+
+  if ([self _bitmapIsJPEG: data])
+    return YES;
+
   image = NSTiffOpenDataRead ((char *)[data bytes], [data length]);
 
   if (image != NULL)
@@ -117,15 +131,20 @@ static BOOL supports_lzw_compression = NO;
     {
       NSArray *wtypes = [self _wrasterFileTypes];
 
+      types = [[NSMutableArray alloc] initWithObjects:
+	@"tiff", @"tif",
+	@"pnm", @"ppm",
+#if HAVE_LIBJPEG
+	@"jpeg", @"jpg",
+#endif
+#if HAVE_LIBPNG
+	@"png",
+#endif
+	nil];
+
       if (wtypes != nil)
-        {
-	  types = [wtypes mutableCopy];
-	  [(NSMutableArray *)types insertObject: @"tiff" atIndex: 0];
-	  [(NSMutableArray *)types insertObject: @"tif" atIndex: 1];
-	}
-      else
 	{
-	  types = [[NSArray alloc] initWithObjects: @"tiff", @"tif", nil];
+	  [(NSMutableArray *)types addObjectsFromArray: wtypes];
 	}
     }
 
@@ -175,6 +194,47 @@ static BOOL supports_lzw_compression = NO;
       return [NSArray array];
     }
 
+  if ([self _bitmapIsPNG: imageData])
+    {
+      NSBitmapImageRep *rep;
+      NSArray *a;
+
+      rep=[[self alloc] _initBitmapFromPNG: imageData];
+      if (!rep)
+        return [NSArray array];
+      a = [NSArray arrayWithObject: rep];
+      DESTROY(rep);
+      return a;
+    }
+
+  if ([self _bitmapIsPNM: imageData])
+    {
+      NSBitmapImageRep *rep;
+      NSArray *a;
+
+      rep=[[self alloc] _initBitmapFromPNM: imageData
+			      errorMessage: NULL];
+      if (!rep)
+        return [NSArray array];
+      a = [NSArray arrayWithObject: rep];
+      DESTROY(rep);
+      return a;
+    }
+
+  if ([self _bitmapIsJPEG: imageData])
+    {
+      NSBitmapImageRep *rep;
+      NSArray *a;
+
+      rep=[[self alloc] _initBitmapFromJPEG: imageData
+			       errorMessage: NULL];
+      if (!rep)
+        return [NSArray array];
+      a = [NSArray arrayWithObject: rep];
+      DESTROY(rep);
+      return a;
+    }
+
   image = NSTiffOpenDataRead((char *)[imageData bytes], [imageData length]);
   if (image == NULL)
     {
@@ -210,6 +270,18 @@ static BOOL supports_lzw_compression = NO;
       RELEASE(self);
       return nil;
     }
+
+  if ([isa _bitmapIsPNG: imageData])
+    return [self _initBitmapFromPNG: imageData];
+
+  if ([isa _bitmapIsPNM: imageData])
+    return [self _initBitmapFromPNM: imageData
+		       errorMessage: NULL];
+
+  if ([isa _bitmapIsJPEG: imageData])
+    return [self _initBitmapFromJPEG: imageData
+			errorMessage: NULL];
+
 
   image = NSTiffOpenDataRead((char *)[imageData bytes], [imageData length]);
   if (image == NULL)

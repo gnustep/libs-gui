@@ -50,6 +50,9 @@ NSApplication.m \
 NSAttributedString.m \
 NSBezierPath.m \
 NSBitmapImageRep.m \
+NSBitmapImageRep+JPEG.m \
+NSBitmapImageRep+PNG.m \
+NSBitmapImageRep+PNM.m \
 NSBox.m \
 NSBrowser.m \
 NSBrowserCell.m \
