@@ -766,6 +766,15 @@ static NSCell* tileCell = nil;
 	  [self unhide: nil];
 	}
 
+      if ([[self keyWindow] != nil)
+	{
+	  [[self keyWindow] orderFront: self];
+	}
+      else if ([[self mainWindow] != nil)
+	{
+	  [[self mainWindow] orderFront: self];
+	}
+
       NSDebugLog(@"activateIgnoringOtherApps end.");
 
       [nc postNotificationName: NSApplicationDidBecomeActiveNotification
