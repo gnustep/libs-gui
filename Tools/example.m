@@ -42,12 +42,43 @@
 #include	<signal.h>
 
 @interface ExampleServices : NSObject
+- (void) tolower: (NSPasteboard*)bp
+	userData: (NSString*)ud
+	   error: (NSString**)err;
 - (void) toupper: (NSPasteboard*)bp
 	userData: (NSString*)ud
 	   error: (NSString**)err;
 @end
 
 @implementation ExampleServices
+- (void) tolower: (NSPasteboard*)pb
+	userData: (NSString*)ud
+	   error: (NSString**)err
+{
+  NSString	*in;
+  NSString	*out;
+  NSArray	*types;
+
+  types = [pb types];
+  if (![types containsObject: NSStringPboardType])
+    {
+      *err = @"No string type supplied on pasteboard";
+      return;
+    }
+
+  in = [pb stringForType: NSStringPboardType];
+  if (in == nil)
+    {
+      *err = @"No string value supplied on pasteboard";
+      return;
+    }
+
+  out = [in lowercaseString];
+  types = [NSArray arrayWithObject: NSStringPboardType];
+  [pb declareTypes: types owner: nil];
+  [pb setString: out forType: NSStringPboardType];
+
+}
 - (void) toupper: (NSPasteboard*)pb
 	userData: (NSString*)ud
 	   error: (NSString**)err
