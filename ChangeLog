@@ -1,3 +1,26 @@
+2001-09-28  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Header/gnustep/gui/NSCell.h
+	Added enumerator NSControlSize.
+	* Header/gnustep/gui/NSProgressIndicator.h
+	Prefixed all ivars with an underscore and added ivars for
+	indeterminate progress. Added some constant definitions and
+	control size and tint methods.
+	* Source/NSProgressIndicator.m
+	Adopted to changes in header and added some code for displaying
+	indeterminate progress. 
+	* Header/gnustep/gui/NSRulerMarker.h
+	* Header/gnustep/gui/NSRulerView.h
+	Added copyright notice and defined some ivars.
+	* Source/NSRulerMarker.m
+	* Source/NSRulerView.m
+	Some basic implementation of these classes.
+	* Source/GNUmakefile
+	Compile NSRulerMarker and NSRulerView.
+	* Source/NSAttributedString.m
+	Protected all initXXX methods so that for empty input nil will be
+	returned. 
+	
 Sat Oct  6 17:23:49 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSWindowController.m ([-initWithWindowNibName:owner:]):
