@@ -1,10 +1,10 @@
 /*
    GSLayoutManager_internal.h
 
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2003 Free Software Foundation, Inc.
 
    Author: Alexander Malmberg <alexander@malmberg.org>
-   Date: 2002
+   Date: November 2002 - February 2003
 
    This file is part of the GNUstep GUI Library.
 

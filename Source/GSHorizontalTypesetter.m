@@ -1,10 +1,10 @@
 /*
    GSHorizontalTypesetter.m
 
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2003 Free Software Foundation, Inc.
 
    Author: Alexander Malmberg <alexander@malmberg.org>
-   Date: 2002
+   Date: November 2002 - February 2003
 
    This file is part of the GNUstep GUI Library.
 
@@ -418,7 +418,21 @@ typedef struct GSHorizontalTypesetter_line_frag_s
 	  */
 	  shift.width = 0;
 	  shift.height = curPoint.y - r0.origin.y;
-	  for (i = 1; 1; i++)
+	  if (shift.height == 0)
+	    {
+	      /*
+	      If we don't need to shift, we know that everything will fit,
+	      so we just need the last rectangle so we can update the
+	      current point and glyph.
+	      */
+	      i = [curLayoutManager _softInvalidateNumberOfLineFragsInTextContainer: curTextContainer];
+	      i--;
+	    }
+	  else
+	    {
+	      i = 1;
+	    }
+	  for (; 1; i++)
 	    {
 	      r = [curLayoutManager _softInvalidateLineFragRect: i
 						      nextGlyph: &g2

@@ -1,10 +1,10 @@
 /*
    GSLayoutManager.m
 
-   Copyright (C) 2002 Free Software Foundation, Inc.
+   Copyright (C) 2002, 2003 Free Software Foundation, Inc.
 
    Author: Alexander Malmberg <alexander@malmberg.org>
-   Date: 2002
+   Date: November 2002 - February 2003
 
    This file is part of the GNUstep GUI Library.
 
@@ -1164,9 +1164,7 @@ places where we switch.
 		next->glyphs = NULL;
 	      }
 	    /* TODO: this creates really large runs at times */
-	    printf("at %i, length is %i, max is %i\n",cpos,next->head.char_length,max);
 	    next->head.char_length -= max - cpos;
-	    printf("extend?? to %i\n",next->head.char_length);
 
 	    hn = &next->head;
 	    hn--;
@@ -1213,7 +1211,7 @@ places where we switch.
   adjust their heads with updated information. When we're done, we update
   all the remaining heads.
   */
-  printf("create runs for %i+%i\n", range.location, range.length);
+//  printf("create runs for %i+%i\n", range.location, range.length);
   { /* OPT: this is creating more runs than it needs to */
     NSDictionary *attributes;
     glyph_run_t *new;
@@ -2283,16 +2281,20 @@ forStartOfGlyphRange: (NSRange)glyphRange
       return;
     }
 
-  for (i = 0, lf = &tc->linefrags[tc->num_linefrags]; i < num; i++, lf++)
+  if (shift.width || shift.height)
     {
-      lf->rect.origin.x += shift.width;
-      lf->rect.origin.y += shift.height;
-      lf->used_rect.origin.x += shift.width;
-      lf->used_rect.origin.y += shift.height;
-      tc->length += lf->length;
+      for (i = 0, lf = &tc->linefrags[tc->num_linefrags]; i < num; i++, lf++)
+	{
+	  lf->rect.origin.x += shift.width;
+	  lf->rect.origin.y += shift.height;
+	  lf->used_rect.origin.x += shift.width;
+	  lf->used_rect.origin.y += shift.height;
+	}
     }
   tc->num_soft -= num;
   tc->num_linefrags += num;
+  lf = &tc->linefrags[tc->num_linefrags - 1];
+  tc->length = lf->pos + lf->length - tc->pos;
 
   layout_glyph = tc->pos + tc->length;
   /*
@@ -2347,6 +2349,20 @@ forStartOfGlyphRange: (NSRange)glyphRange
     return (unsigned int)-1;
 }
 
+-(unsigned int) _softInvalidateNumberOfLineFragsInTextContainer: (NSTextContainer *)textContainer
+{
+  int i;
+  textcontainer_t *tc;
+  for (i = 0, tc = textcontainers; i < num_textcontainers; i++, tc++)
+    if (tc->textContainer == textContainer)
+      break;
+  if (i == num_textcontainers)
+    {
+      NSLog(@"(%s): does not own text container", __PRETTY_FUNCTION__);
+      return (unsigned int)-1;
+    }
+  return tc->num_soft;
+}
 
 @end
 

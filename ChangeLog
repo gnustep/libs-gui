@@ -1,3 +1,9 @@
+2003-02-19 00:31  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/GSLayoutManager.h,
+	Source/GSHorizontalTypesetter.m, Source/GSLayoutManager.m: Optimize
+	reuse of soft-invalidated layout a bit in a common case.
+
 2003-02-19 00:10  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSLayoutManager.m (-invalidateGlyphsForCharacterRange:
