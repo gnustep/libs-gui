@@ -24,7 +24,10 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
+#include <math.h>                  // (float)rintf(float x)
+#include <gnustep/gui/config.h>
 #include <Foundation/NSString.h>
+#include <Foundation/NSException.h>
 
 #include <AppKit/NSSliderCell.h>
 #include <AppKit/NSColor.h>
@@ -33,6 +36,7 @@
 #include <AppKit/NSImage.h>
 #include <AppKit/NSTextFieldCell.h>
 
+DEFINE_RINT_IF_MISSING
 
 /**
   <unit>
@@ -55,6 +59,16 @@
   </unit> 
 */
 @implementation NSSliderCell
+
++ (void) initialize
+{
+  if (self == [NSSliderCell class])
+    {
+      /* Set the class version to 2, as tick information is now 
+	 stored in the encoding */
+      [self setVersion: 2];
+    }
+}
 
 - (id) init
 {
@@ -96,7 +110,7 @@
   only.</p> */
 - (void) drawBarInside: (NSRect)rect flipped: (BOOL)flipped
 {
-  [[NSColor scrollBarColor] set];					
+  [[NSColor scrollBarColor] set];
   NSRectFill(rect);
 }
 
@@ -237,6 +251,12 @@
     size.width = thickness;
 
   [image setSize: size];
+
+  if ((_control_view != nil) &&  
+      ([_control_view isKindOfClass: [NSControl class]]))
+    {
+      [(NSControl*)_control_view updateCell: self];
+    }
 }
 
 /** Sets the value by which the slider will be be incremented when with the
@@ -379,22 +399,39 @@
 
 - (double) closestTickMarkValueToValue: (double)aValue
 {
-  if (aValue < _minValue)
-    return _minValue;
-  else if (aValue > _maxValue)
-    return _maxValue; 
-  
+  double f;
+
   if (_numberOfTickMarks == 0)
     return aValue;
 
-  // FIXME
-  return 0.0;
+  if (aValue < _minValue)
+    {
+      aValue = _minValue;
+    }
+  else if (aValue > _maxValue)
+    {
+      aValue = _maxValue; 
+    }
+
+  f = ((aValue - _minValue)  * _numberOfTickMarks) / (_maxValue - _minValue);
+  f = ((rint(f) * (_maxValue - _minValue)) / _numberOfTickMarks) + _minValue;
+
+  return f;
 }
 
 - (int) indexOfTickMarkAtPoint: (NSPoint)point
 {
-  // FIXME
-  return 0;
+  int i;
+
+  for (i = 0; i < _numberOfTickMarks; i++)
+    {
+      if (NSPointInRect(point, [self rectOfTickMarkAtIndex: i])) 
+        {
+	  return i;
+	}
+    }
+
+  return NSNotFound;
 }
 
 - (int) numberOfTickMarks
@@ -404,8 +441,29 @@
 
 - (NSRect) rectOfTickMarkAtIndex: (int)index
 {
-  // FIXME
-  return NSZeroRect;
+  NSRect rect = _trackRect;
+  float d;
+
+  if ((index < 0) || (index >= _numberOfTickMarks))
+    {
+      [NSException raise: NSRangeException
+		   format: @"Index of tick mark out of bound."];
+    }
+
+  if (_isVertical)
+    {
+      d = NSHeight(rect) / _numberOfTickMarks;
+      rect.size.height = d;
+      rect.origin.y += d * index;
+    }
+  else
+    {
+      d = NSWidth(rect) / _numberOfTickMarks;
+      rect.size.width = d;
+      rect.origin.x += d * index;
+    }
+
+  return rect;
 }
 
 - (void) setAllowsTickMarkValuesOnly: (BOOL)flag
@@ -416,11 +474,21 @@
 - (void) setNumberOfTickMarks: (int)numberOfTickMarks
 {
   _numberOfTickMarks = numberOfTickMarks;
+  if ((_control_view != nil) &&  
+      ([_control_view isKindOfClass: [NSControl class]]))
+    {
+      [(NSControl*)_control_view updateCell: self];
+    }
 }
 
 - (void) setTickMarkPosition: (NSTickMarkPosition)position
 {
   _tickMarkPosition = position;
+  if ((_control_view != nil) &&  
+      ([_control_view isKindOfClass: [NSControl class]]))
+    {
+      [(NSControl*)_control_view updateCell: self];
+    }
 }
 
 - (NSTickMarkPosition) tickMarkPosition
@@ -445,6 +513,12 @@
     &_minValue, &_maxValue, &_altIncrementValue, &_isVertical];
   [decoder decodeValueOfObjCType: @encode(id) at: &_titleCell];
   [decoder decodeValueOfObjCType: @encode(id) at: &_knobCell];
+  if ([decoder versionForClassName: @"NSSliderCell"] >= 2)
+    {
+      [decoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsTickMarkValuesOnly];
+      [decoder decodeValueOfObjCType: @encode(int) at: &_numberOfTickMarks];
+      [decoder decodeValueOfObjCType: @encode(int) at: &_tickMarkPosition];
+    }
   return self;
 }
 
@@ -455,6 +529,10 @@
     &_minValue, &_maxValue, &_altIncrementValue, &_isVertical];
   [coder encodeValueOfObjCType: @encode(id) at: &_titleCell];
   [coder encodeValueOfObjCType: @encode(id) at: &_knobCell];
+  // New for version 2
+  [coder encodeValueOfObjCType: @encode(BOOL) at: &_allowsTickMarkValuesOnly];
+  [coder encodeValueOfObjCType: @encode(int) at: &_numberOfTickMarks];
+  [coder encodeValueOfObjCType: @encode(int) at: &_tickMarkPosition];
 }
 
 @end
