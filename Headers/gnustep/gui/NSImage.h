@@ -120,6 +120,16 @@
 		fromRect: (NSRect)aRect
 		fraction: (float)aFloat;
 
+#ifndef STRICT_OPENSTEP
+- (void) compositeToPoint: (NSPoint)aPoint
+		 fromRect: (NSRect)srcRect
+		operation: (NSCompositingOperation)op
+		 fraction: (float)delta;
+- (void) compositeToPoint: (NSPoint)aPoint
+		operation: (NSCompositingOperation)op
+		 fraction: (float)delta;
+#endif 
+
 //
 // Choosing Which Image Representation to Use 
 //
@@ -148,6 +158,22 @@
 - (BOOL) cacheDepthMatchesImageDepth;
 
 //
+// Drawing 
+//
+- (BOOL) drawRepresentation: (NSImageRep*)imageRep
+		     inRect: (NSRect)aRect;
+#ifndef STRICT_OPENSTEP
+- (void) drawAtPoint: (NSPoint)point
+	    fromRect: (NSRect)srcRect
+	   operation: (NSCompositingOperation)op
+	    fraction: (float)delta;
+- (void) drawInRect: (NSRect)dstRect
+	   fromRect: (NSRect)srcRect
+	  operation: (NSCompositingOperation)op
+	   fraction: (float)delta;
+#endif 
+
+//
 // Determining How the Image is Drawn 
 //
 - (BOOL) isValid;
@@ -155,8 +181,6 @@
 - (BOOL) scalesWhenResized;
 - (void) setBackgroundColor: (NSColor*)aColor;
 - (NSColor*) backgroundColor;
-- (BOOL) drawRepresentation: (NSImageRep*)imageRep
-		     inRect: (NSRect)aRect;
 - (void) recache;
 - (void) setFlipped: (BOOL)flag;
 - (BOOL) isFlipped;
@@ -209,3 +233,4 @@
 #endif
 
 #endif // _GNUstep_H_NSImage
+
