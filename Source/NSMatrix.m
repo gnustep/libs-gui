@@ -50,6 +50,7 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSMatrix.h>
 
+static NSNotificationCenter *nc;
 
 #define	STRICT	0
 
@@ -146,6 +147,8 @@ static SEL getSel = @selector(objectAtIndex:);
        * MacOS-X docs say default cell class is NSActionCell
        */
       defaultCellClass = [NSActionCell class];
+      //
+      nc = [NSNotificationCenter defaultCenter];
     }
 }
 
@@ -1278,7 +1281,6 @@ static SEL getSel = @selector(objectAtIndex:);
 
 - (void) textDidBeginEditing: (NSNotification *)aNotification
 {
-  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
   NSMutableDictionary *d;
 
   d = [[NSMutableDictionary alloc] initWithDictionary: 
@@ -1291,9 +1293,8 @@ static SEL getSel = @selector(objectAtIndex:);
 
 - (void) textDidChange: (NSNotification *)aNotification
 {
-  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
   NSMutableDictionary *d;
-
+  NSFormatter *formatter;
 
   // MacOS-X asks us to inform the cell if possible.
   if ((_selectedCell != nil) && [_selectedCell respondsToSelector: 
@@ -1307,11 +1308,52 @@ static SEL getSel = @selector(objectAtIndex:);
   [nc postNotificationName: NSControlTextDidChangeNotification
       object: self
       userInfo: d];
+
+  formatter = [_cell formatter];
+  if (formatter != nil)
+    {
+      /*
+       * FIXME: This part needs heavy interaction with the yet to finish 
+       * text system.
+       *
+       */
+      NSString *partialString;
+      NSString *newString = nil;
+      NSString *error = nil;
+      BOOL wasAccepted;
+      
+      partialString = [_textObject string];
+      wasAccepted = [formatter isPartialStringValid: partialString 
+			       newEditingString: &newString 
+			       errorDescription: &error];
+
+      if (wasAccepted == NO)
+	{
+	  [_delegate control:self 
+		     didFailToValidatePartialString: partialString 
+		     errorDescription: error];
+	}
+
+      if (newString != nil)
+	{
+	  NSLog (@"Unimplemented: should set string to %@", newString);
+	  // FIXME ! This would reset editing !
+	  //[_textObject setString: newString];
+	}
+      else
+	{
+	  if (wasAccepted == NO)
+	    {
+	      // FIXME: Need to delete last typed character (?!)
+	      NSLog (@"Unimplemented: should delete last typed character");
+	    }
+	}
+      
+    }
 }
 
 - (void) textDidEndEditing: (NSNotification *)aNotification
 {
-  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
   NSMutableDictionary *d;
   id textMovement;
 
@@ -1385,6 +1427,24 @@ static SEL getSel = @selector(objectAtIndex:);
 	}
     }
 
+  if ([_delegate respondsToSelector: 
+		   @selector(control:isValidObject:)] == YES)
+    {
+      NSFormatter *formatter;
+      id newObjectValue;
+      
+      formatter = [_cell formatter];
+      
+      if ([formatter getObjectValue: &newObjectValue 
+		     forString: [_textObject text] 
+		     errorDescription: NULL] == YES)
+	{
+	  if ([_delegate control: self
+			 isValidObject: newObjectValue] == NO)
+	    return NO;
+	}
+    }
+
   // In all other cases
   return YES;
 }
@@ -1411,7 +1471,7 @@ static SEL getSel = @selector(objectAtIndex:);
 
 - (void) setValidateSize: (BOOL)flag
 {
-// TODO
+  // TODO
 }
 
 - (void) sizeToCells
@@ -1506,6 +1566,16 @@ static SEL getSel = @selector(objectAtIndex:);
 - (BOOL) isOpaque
 {
   return drawsBackground;
+}
+
+- (void) drawCell: (NSCell *)aCell
+{
+  int row, column;
+
+  if ([self getRow: &row  column: &column  ofCell: aCell] == YES)
+    {
+      [self drawCellAtRow: row  column: column];
+    }
 }
 
 - (void) drawCellAtRow: (int)row column: (int)column
@@ -2233,8 +2303,6 @@ static SEL getSel = @selector(objectAtIndex:);
 
 - (void) setDelegate: (id)object
 {
-  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
-
   if (_delegate)
     [nc removeObserver: _delegate name: nil object: self];
   _delegate = object;
@@ -2514,8 +2582,41 @@ static SEL getSel = @selector(objectAtIndex:);
 
 - (void) validateEditing
 {
-  if (_textObject)
-    [_selectedCell setStringValue: [_textObject text]];
+   if (_textObject)
+    {
+      NSFormatter *formatter;
+      NSString *string;
+
+      formatter = [_selectedCell formatter];
+      string = [_textObject text];
+
+      if (formatter == nil)
+	{
+	  [_selectedCell setStringValue: string];
+	}
+      else
+	{
+	  id newObjectValue;
+	  NSString *error;
+ 
+	  if ([formatter getObjectValue: &newObjectValue 
+			 forString: string 
+			 errorDescription: &error] == YES)
+	    {
+	      [_selectedCell setObjectValue: newObjectValue];
+	    }
+	  else
+	    {
+	      if ([_delegate control: self 
+			     didFailToFormatString: string 
+			     errorDescription: error] == YES)
+		{
+		  [_selectedCell setStringValue: string];
+		}
+	      
+	    }
+	}
+    }
 }
 
 @end

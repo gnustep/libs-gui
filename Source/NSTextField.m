@@ -32,6 +32,7 @@
 
 #include <gnustep/gui/config.h>
 
+#include <Foundation/NSFormatter.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSString.h>
 
@@ -40,6 +41,8 @@
 #include <AppKit/NSTextField.h>
 #include <AppKit/NSTextFieldCell.h>
 #include <AppKit/NSWindow.h>
+
+static NSNotificationCenter *nc;
 
 @implementation NSTextField
 //
@@ -51,6 +54,7 @@
     {
       [self setVersion: 1];
       [self setCellClass: [NSTextFieldCell class]];
+      nc = [NSNotificationCenter defaultCenter];
     }
 }
 
@@ -168,8 +172,6 @@
 //
 - (void) setDelegate: (id)anObject
 {
-  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
-
   if (_delegate)
     [nc removeObserver: _delegate name: nil object: self];
   _delegate = anObject;
@@ -331,12 +333,44 @@
 - (void) validateEditing 
 {
   if (_text_object)
-    [_cell setStringValue: [_text_object text]];
+    {
+      NSFormatter *formatter;
+      NSString *string;
+
+      formatter = [_cell formatter];
+      string = [_text_object text];
+
+      if (formatter == nil)
+	{
+	  [_cell setStringValue: string];
+	}
+      else
+	{
+	  id newObjectValue;
+	  NSString *error;
+ 
+	  if ([formatter getObjectValue: &newObjectValue 
+			 forString: string 
+			 errorDescription: &error] == YES)
+	    {
+	      [_cell setObjectValue: newObjectValue];
+	    }
+	  else
+	    {
+	      if ([_delegate control: self 
+			     didFailToFormatString: string 
+			     errorDescription: error] == YES)
+		{
+		  [_cell setStringValue: string];
+		}
+	      
+	    }
+	}
+    }
 }
 
 - (void) textDidBeginEditing: (NSNotification *)aNotification
 {
-  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
   NSDictionary *d;
   
   d = [NSDictionary dictionaryWithObject:[aNotification object] 
@@ -348,19 +382,60 @@
 
 - (void) textDidChange: (NSNotification *)aNotification
 {
-  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
   NSDictionary *d;
-  
+  NSFormatter *formatter;
+
   d = [NSDictionary dictionaryWithObject: [aNotification object] 
 		    forKey: @"NSFieldEditor"];
   [nc postNotificationName: NSControlTextDidChangeNotification
       object: self
       userInfo: d];
+
+  formatter = [_cell formatter];
+  if (formatter != nil)
+    {
+      /*
+       * FIXME: This part needs heavy interaction with the yet to finish 
+       * text system.
+       *
+       */
+      NSString *partialString;
+      NSString *newString = nil;
+      NSString *error = nil;
+      BOOL wasAccepted;
+      
+      partialString = [_text_object string];
+      wasAccepted = [formatter isPartialStringValid: partialString 
+			       newEditingString: &newString 
+			       errorDescription: &error];
+
+      if (wasAccepted == NO)
+	{
+	  [_delegate control:self 
+		     didFailToValidatePartialString: partialString 
+		     errorDescription: error];
+	}
+
+      if (newString != nil)
+	{
+	  NSLog (@"Unimplemented: should set string to %@", newString);
+	  // FIXME ! This would reset editing !
+	  //[_text_object setString: newString];
+	}
+      else
+	{
+	  if (wasAccepted == NO)
+	    {
+	      // FIXME: Need to delete last typed character (?!)
+	      NSLog (@"Unimplemented: should delete last typed character");
+	    }
+	}
+
+    }
 }
 
 - (void) textDidEndEditing: (NSNotification *)aNotification
 {
-  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
   NSDictionary *d;
   id textMovement;
 
@@ -422,6 +497,24 @@
 	{
 	  NSBeep ();
 	  return NO;
+	}
+    }
+
+  if ([_delegate respondsToSelector: 
+		   @selector(control:isValidObject:)] == YES)
+    {
+      NSFormatter *formatter;
+      id newObjectValue;
+      
+      formatter = [_cell formatter];
+      
+      if ([formatter getObjectValue: &newObjectValue 
+		     forString: [_text_object text] 
+		     errorDescription: NULL] == YES)
+	{
+	  if ([_delegate control: self
+			 isValidObject: newObjectValue] == NO)
+	    return NO;
 	}
     }
 
