@@ -1,3 +1,8 @@
+Tue Sep  8 16:30:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSScroller.m: Minor efficiency hacks (inspired by xraw) plus
+	tidying.
+
 Thu Sep  3 15:18:39 1998  Adam Fedor  <fedor@ultra.doc.com>
 
 	* Source/GNUmakefile.postamble: Don't move config.h
