@@ -354,6 +354,7 @@ enum {
 - (NSRect)_boundingRectFor:(NSRect)rect;
 
 - (void)_recursivelyResetNeedsDisplayInAllViews;
+- (void)_removeSubviewFromViewsThatNeedDisplay:(NSView*)view;
 - (void)_displayNeededViews;
 
 /* Collects into `array' the invalid rectangles that need to be displayed. All

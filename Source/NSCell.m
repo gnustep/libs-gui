@@ -109,7 +109,7 @@
   cell_type = NSImageCellType;
   cell_image = [anImage retain];
   image_position = NSImageOnly;
-  cell_font = [[NSFont userFontOfSize:12] retain];
+  cell_font = [[NSFont userFontOfSize:0] retain];
   return self;
 }
 
@@ -119,7 +119,7 @@
 
   [self _init];
 
-  cell_font = [[NSFont userFontOfSize:12] retain];
+  cell_font = [[NSFont userFontOfSize:0] retain];
   contents = [aString retain];
   cell_type = NSTextCellType;
   text_align = NSCenterTextAlignment;

@@ -37,6 +37,7 @@
 #include <AppKit/NSColor.h>
 #include <AppKit/NSScrollView.h>
 #include <AppKit/NSMatrix.h>
+#include <AppKit/NSTextFieldCell.h>
 
 #define COLUMN_SEP 6
 
@@ -342,7 +343,7 @@
   _browserCellClass = classId;
 
   // set the prototype for the new class
-  [self setCellPrototype: [[_browserCellClass alloc] init]];
+  [self setCellPrototype: [[[_browserCellClass alloc] init] autorelease]];
 }
 
 - (void)setCellPrototype:(NSCell *)aCell
@@ -523,7 +524,7 @@
   NSScrollView *sc;
   int n = [_browserColumns count];
 
-  bc = [[NSBrowserColumn alloc] init];
+  bc = [[[NSBrowserColumn alloc] init] autorelease];
 
   // Create a scrollview
   sc = [[NSScrollView alloc]
@@ -1001,7 +1002,8 @@
     return;
 
   // Ask delegate if selection is ok
-  if ([_browserDelegate respondsTo: @selector(browser:selectRow:inColumn:)])
+  if ([_browserDelegate respondsToSelector:
+				@selector(browser:selectRow:inColumn:)])
     {
       int row = [sender selectedRow];
       shouldSelect = [_browserDelegate browser: self selectRow: row
@@ -1010,8 +1012,8 @@
   else
     {
       // Try the other method
-      if ([_browserDelegate
-	    respondsTo: @selector(browser:selectCellWithString:inColumn:)])
+      if ([_browserDelegate respondsToSelector:
+			    @selector(browser:selectCellWithString:inColumn:)])
 	{
 	  id c = [sender selectedCell];
 	  shouldSelect = [_browserDelegate browser: self

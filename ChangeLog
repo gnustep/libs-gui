@@ -1,3 +1,20 @@
+Sat Nov  1 11:30:40 1997  Ovidiu Predescu <ovidiu@net-community.com>
+
+	* Source/GNUmakefile: Don't compile NSPasteboard.m if using
+	libFoundation.
+	* Source/NSBrowser.m: Include NSTextFieldCell.h to elimate compiler
+	warning.
+	(setCellClass:): Autorelease the newly created cell.
+	(addColumn): Autorelease the column.
+	(doClick:): Use respondsToSelector: instead of respondsTo:.
+	* Source/NSCell.m (initImageCell:): Changed the font size to be 0 so
+	that the font size from the defaults database is taken if it's
+	specified.
+	(initTextCell:): Likewise.
+	* Source/NSTextFieldCell.m (initTextCell:): Likewise.
+	* Headers/gnustep/gui/NSView.h: Add a definition for
+	_removeSubviewFromViewsThatNeedDisplay:.
+
 Thu Oct 30 15:51:43 1997  Scott Christley  <scottc@net-community.com>
 
 	* GNUmakefile: Add Tools directory.

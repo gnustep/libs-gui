@@ -76,7 +76,6 @@ NSMenuItem.m \
 NSOpenPanel.m \
 NSPageLayout.m \
 NSPanel.m \
-NSPasteboard.m \
 NSPrinter.m \
 NSPrintInfo.m \
 NSPrintOperation.m \
@@ -103,6 +102,10 @@ TrackingRectangle.m \
 PSMatrix.m \
 tiff.m \
 externs.m
+
+ifneq ($(FOUNDATION_LIB), fd)
+libgnustep-gui_OBJC_FILES += NSPasteboard.m
+endif
 
 libgnustep-gui_HEADER_FILES_DIR = ../Headers
 libgnustep-gui_HEADER_FILES_INSTALL_DIR = /gnustep/gui
