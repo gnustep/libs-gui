@@ -1,3 +1,9 @@
+2002-07-04  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSColor.m
+	Changed initSystemColors() and [defaultsDidChange:] so that
+	setting a system colour in the defaults file works again.
+
 Tue Jul  2 17:01:25 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/GNUmakefile (libgnustep-gui_HEADER_FILES): Removed -
