@@ -1183,7 +1183,7 @@ static NSNotificationCenter *nc;
 
 #define NSTEXTVIEW_SYNC(X) \
   if (_tvf.multiple_textviews && (IS_SYNCHRONIZING_FLAGS == NO)) \
-    {  [self _syncTextViewsByCalling: @selector(##X##)  withFlag: flag]; \
+    {  [self _syncTextViewsByCalling: X  withFlag: flag]; \
     return; }
 
 /*
@@ -1202,14 +1202,14 @@ static NSNotificationCenter *nc;
 
 - (void) setEditable: (BOOL)flag
 {
-  NSTEXTVIEW_SYNC (setEditable:);
+  NSTEXTVIEW_SYNC (@selector(setEditable:));
   [super setEditable: flag];
   /* FIXME/TODO: Update/show the insertion point */
 }
 
 - (void) setFieldEditor: (BOOL)flag
 {
-  NSTEXTVIEW_SYNC (setFieldEditor:);
+  NSTEXTVIEW_SYNC (@selector(setFieldEditor:));
   [self setHorizontallyResizable: NO];
   [self setVerticallyResizable: NO];
   [super setFieldEditor: flag];
@@ -1217,13 +1217,13 @@ static NSNotificationCenter *nc;
 
 - (void) setSelectable: (BOOL)flag
 {
-  NSTEXTVIEW_SYNC (setSelectable:);
+  NSTEXTVIEW_SYNC (@selector(setSelectable:));
   [super setSelectable: flag];
 }
 
 - (void) setRichText: (BOOL)flag
 {
-  NSTEXTVIEW_SYNC (setRichText:);
+  NSTEXTVIEW_SYNC (@selector(setRichText:));
 
   [super setRichText: flag];
   [self updateDragTypeRegistration];
@@ -1232,7 +1232,7 @@ static NSNotificationCenter *nc;
 
 - (void) setImportsGraphics: (BOOL)flag
 {
-  NSTEXTVIEW_SYNC (setImportsGraphics:);
+  NSTEXTVIEW_SYNC (@selector(setImportsGraphics:));
 
   [super setImportsGraphics: flag];
   [self updateDragTypeRegistration];
@@ -1240,7 +1240,7 @@ static NSNotificationCenter *nc;
 
 - (void) setUsesRuler: (BOOL)flag
 {
-  NSTEXTVIEW_SYNC (setUsesRuler:);
+  NSTEXTVIEW_SYNC (@selector(setUsesRuler:));
   _tf.uses_ruler = flag;
 }
 
@@ -1251,7 +1251,7 @@ static NSNotificationCenter *nc;
 
 - (void) setUsesFontPanel: (BOOL)flag
 {
-  NSTEXTVIEW_SYNC (setUsesFontPanel:);
+  NSTEXTVIEW_SYNC (@selector(setUsesFontPanel:));
   [super setUsesFontPanel: flag];
 }
 
@@ -1259,7 +1259,7 @@ static NSNotificationCenter *nc;
 {
   NSScrollView *sv;
 
-  NSTEXTVIEW_SYNC (setRulerVisible:);
+  NSTEXTVIEW_SYNC (@selector(setRulerVisible:));
 
   sv = [self enclosingScrollView];
   _tf.is_ruler_visible = flag;
