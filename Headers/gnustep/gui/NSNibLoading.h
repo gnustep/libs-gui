@@ -62,38 +62,7 @@
 
 #ifndef	NO_GNUSTEP
 - (NSString *) pathForNibResource: (NSString *)fileName;
-#endif
+#endif // NO_GNUSTEP
 @end
-
-#ifndef	NO_GNUSTEP
-
-/*
- * This is the class that holds objects within a nib.
- */
-@interface GSNibContainer : NSObject <NSCoding>
-{
-  NSMutableDictionary	*nameTable;
-  NSMutableArray	*connections;
-  BOOL			_isAwake;
-}
-- (void) awakeWithContext: (NSDictionary*)context;
-- (NSMutableDictionary*) nameTable;
-- (NSMutableArray*) connections;
-@end
-
-@interface GSNibItem : NSObject <NSCoding>
-{
-  NSString		*theClass;
-  NSRect		theFrame;
-  unsigned int          autoresizingMask;
-}
-@end
-
-@interface GSCustomView : GSNibItem <NSCoding>
-{
-}
-@end
-#endif	/* NO_GNUSTEP */
 
 #endif /* _GNUstep_H_NSNibLoading */
-

@@ -319,6 +319,7 @@ GSServicesManager.h \
 GSTextConverter.h \
 GSTrackingRect.h \
 GSHelpManagerPanel.h \
+GSNibTemplates.h \
 $(AUTOGSDOC_HEADERS) \
 IMConnectors.h \
 IMCustomObject.h \

@@ -1,3 +1,17 @@
+2002-10-06  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSBundleAdditions.m: Implemented the following classes:
+	NSWindowTemplate, NSViewTemplate, NSControlTemplate, NSTextTemplate,
+	NSTextViewTemplate, NSMenuTemplate, GSClassSwapper.   These classes
+	are used to allow the .gorm files to have placeholders for custom
+	classes defined by the developer.   This is similar to the approach
+	used in OPENSTEP 4.2/Mach and MOSX.
+	* Headers/gnustep/gui/NSNibLoading.h: Removed declarations for classes
+	which should be considered private to GNUstep.	
+	* Headers/gnustep/gui/GSNibTemplates.h: Moved GSNibContainer,
+	GSNibItem, GSCustomView here.   Added declarations for new template
+	classes.
+	
 2002-10-04  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSBrowser.m: Implement non-separated columns.

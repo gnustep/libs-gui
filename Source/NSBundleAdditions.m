@@ -28,6 +28,7 @@
 */ 
 
 #include <gnustep/gui/config.h>
+#include <Foundation/NSClassDescription.h>
 #include <Foundation/NSArchiver.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSBundle.h>
@@ -43,16 +44,25 @@
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSUserDefaults.h>
+#include <Foundation/NSKeyValueCoding.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSControl.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSSound.h>
 #include <AppKit/NSView.h>
+#include <AppKit/NSTextView.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSNibConnector.h>
 #include <AppKit/NSNibLoading.h>
+#include <AppKit/GSNibTemplates.h>
 #include <AppKit/IMLoading.h>
+
+//
+// For the template classes since they need to know about any and all subclasses
+// of the parent classes covered by them.
+//
+#include <AppKit/AppKit.h>
 
 static const int currentVersion = 1;
 
@@ -250,7 +260,7 @@ Class gmodel_class(void)
   NS_DURING
     {
       NSData	*data = [NSData dataWithContentsOfFile: fileName];
-
+      NSDebugLog(@"Loaded data...");
       if (data != nil)
 	{
 	  unarchiver = [[NSUnarchiver alloc] initForReadingWithData: data];
@@ -258,12 +268,14 @@ Class gmodel_class(void)
 	    {
 	      id	obj;
 
+	      NSDebugLog(@"Invoking unarchiver");
 	      [unarchiver setObjectZone: zone];
 	      obj = [unarchiver decodeObject];
 	      if (obj != nil)
 		{
 		  if ([obj isKindOfClass: [GSNibContainer class]])
 		    {
+		      NSDebugLog(@"Calling awakeWithContext");
 		      [obj awakeWithContext: context];
 		      /*
 		       *Ok - it's all done now - just retain the nib container
@@ -284,6 +296,7 @@ Class gmodel_class(void)
     }
   NS_HANDLER
     {
+      NSLog(@"Exception occured while loading model: %@",[localException reason]);
       TEST_RELEASE(unarchiver);
     }
   NS_ENDHANDLER
@@ -666,9 +679,7 @@ Class gmodel_class(void)
 
 @end
 
-
 @implementation	GSCustomView
-
 + (void) initialize
 {
   if (self == [GSCustomView class])
@@ -685,5 +696,660 @@ Class gmodel_class(void)
 - (id) initWithCoder: (NSCoder*)aCoder
 {
   return [super initWithCoder: aCoder];
+}
+@end
+
+// Template for any class which derives from NSWindow.
+@implementation NSWindowTemplate
++ (void) initialize
+{
+  if (self == [NSWindowTemplate class]) 
+    { 
+      [self setVersion: 0];
+    }
+}
+
+- (void) dealloc
+{
+  RELEASE(_className);
+  [super dealloc];
+}
+
+- init
+{
+  [super init];
+
+  // Start initially with the highest level class...
+  ASSIGN(_className, NSStringFromClass([super class]));
+  RETAIN(_className);
+
+  // defer flag...
+  _deferFlag = NO;
+
+  return self;
+}
+
+- (id) initWithCoder: (NSCoder *)aCoder
+{
+  [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
+  [aCoder decodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];  
+  //  return [super _initWithCoder: aCoder defer: YES];
+  return [super initWithCoder: aCoder];
+}
+
+- (void) encodeWithCoder: (NSCoder *)aCoder
+{
+  [aCoder encodeValueOfObjCType: @encode(id) at: &_className];  
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];  
+  [super encodeWithCoder: aCoder];
+}
+
+- (id) awakeAfterUsingCoder: (NSCoder *)coder
+{
+  return [self instantiateObject: coder];
+}
+
+- (id) instantiateObject: (NSCoder *)coder
+{
+  id obj = nil;
+  Class aClass = NSClassFromString(_className);      
+
+  if (aClass == nil)
+    {
+      [NSException raise: NSInternalInconsistencyException
+		   format: @"Unable to find class '%@'", _className];
+    }
+  
+  obj = [[aClass allocWithZone: [self zone]] 
+	  initWithContentRect: [self frame]
+	  styleMask: [self styleMask]
+	  backing: [self backingType]
+	  defer: _deferFlag];
+  
+  // NSLog(@"Instantiated window %@",obj);
+  
+  [obj setBackgroundColor: [self backgroundColor]];
+  [obj setContentView: [self contentView]];
+  [obj setFrameAutosaveName: [self frameAutosaveName]];
+  [obj setHidesOnDeactivate: [self hidesOnDeactivate]];
+  [obj setInitialFirstResponder: [self initialFirstResponder]];
+  [obj setAutodisplay: [self isAutodisplay]];
+  [obj setReleasedWhenClosed: [self isReleasedWhenClosed]];
+  [obj _setVisible: [self isVisible]];
+  [obj setTitle: [self title]];
+  [obj setFrame: [self frame] display: NO];
+
+  RELEASE(self);
+  return obj;
+}
+
+// setters and getters...
+- (void) setClassName: (NSString *)name
+{
+  ASSIGN(_className, name);
+}
+
+- (NSString *)className
+{
+  return _className;
+}
+
+- (BOOL)deferFlag
+{
+  return _deferFlag;
+}
+
+- (void)setDeferFlag: (BOOL)flag
+{
+  _deferFlag = flag;
+}
+@end
+
+// Template for any classes which derive from NSView
+@implementation NSViewTemplate
++ (void) initialize
+{
+  if (self == [NSViewTemplate class]) 
+    {
+      [self setVersion: 0];
+    }
+}
+
+- (void) dealloc
+{
+  RELEASE(_className);
+  [super dealloc];
+}
+
+- initWithFrame: (NSRect)frame
+{
+  // Start initially with the highest level class...
+  ASSIGN(_className, NSStringFromClass([super class]));
+  RETAIN(_className);
+  [super initWithFrame: frame];
+
+  return self;
+}
+
+- init
+{
+  // Start initially with the highest level class...
+  [super init];
+  ASSIGN(_className, NSStringFromClass([super class]));
+  RETAIN(_className);
+  return self;
+}
+
+- (id) initWithCoder: (NSCoder *)aCoder
+{
+  [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
+  [super initWithCoder: aCoder];
+
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)aCoder
+{
+  [aCoder encodeValueOfObjCType: @encode(id) at: &_className];  
+  [super encodeWithCoder: aCoder];
+}
+
+- (id) awakeAfterUsingCoder: (NSCoder *)coder
+{
+  return [self instantiateObject: coder];
+}
+
+- (id) instantiateObject: (NSCoder *)coder
+{
+  Class       aClass = NSClassFromString(_className);
+  NSRect theFrame = [self frame];
+  id obj = nil;
+
+  if (aClass == nil)
+    {
+      [NSException raise: NSInternalInconsistencyException
+		   format: @"Unable to find class '%@'", _className];
+    }
+
+  obj =  [[aClass allocWithZone: NSDefaultMallocZone()]
+	   initWithFrame: theFrame];
+
+  // set the attributes for the view
+  [obj setBounds: [self bounds]];
+  
+  RELEASE(self);
+  return obj;
+}
+
+// setters and getters
+- (void) setClassName: (NSString *)name
+{
+  ASSIGN(_className, name);
+}
+
+- (NSString *)className
+{
+  return _className;
+}
+
+@end
+
+// Template for any classes which derive from NSText
+@implementation NSTextTemplate
++ (void) initialize
+{
+  if (self == [NSTextTemplate class]) 
+    {
+      [self setVersion: 0];
+    }
+}
+
+- (void) dealloc
+{
+  RELEASE(_className);
+  [super dealloc];
+}
+
+- initWithFrame: (NSRect)frame
+{
+  // Start initially with the highest level class...
+  ASSIGN(_className, NSStringFromClass([super class]));
+  RETAIN(_className);
+  [super initWithFrame: frame];
+  return self;
+}
+
+- init
+{
+  // Start initially with the highest level class...
+  [super init];
+  ASSIGN(_className, NSStringFromClass([super class]));
+  RETAIN(_className);
+  return self;
+}
+
+- (id) initWithCoder: (NSCoder *)aCoder
+{
+  [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
+  [super initWithCoder: aCoder];
+
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)aCoder
+{
+  [aCoder encodeValueOfObjCType: @encode(id) at: &_className];  
+  [super encodeWithCoder: aCoder];
+}
+
+- (id) awakeAfterUsingCoder: (NSCoder *)coder
+{
+  return [self instantiateObject: coder];
+}
+
+- (id) instantiateObject: (NSCoder *)coder
+{
+  Class  aClass = NSClassFromString(_className);
+  NSRect theFrame = [self frame];
+  id     obj = nil;
+
+  if (aClass == nil)
+    {
+      [NSException raise: NSInternalInconsistencyException
+		   format: @"Unable to find class '%@'", _className];
+    }
+
+  obj = [[aClass allocWithZone: NSDefaultMallocZone()]
+	  initWithFrame: theFrame];
+
+  // set the attributes for the view
+  [obj setBounds: [self bounds]];
+
+  // set the attributes for text
+  [obj setBackgroundColor: [self backgroundColor]];
+  [obj setDrawsBackground: [self drawsBackground]];
+  [obj setEditable: [self isEditable]];
+  [obj setSelectable: [self isSelectable]];
+  [obj setFieldEditor: [self isFieldEditor]];
+  [obj setRichText: [self isRichText]];
+  [obj setImportsGraphics: [self importsGraphics]];
+  [obj setDelegate: [self delegate]];
+
+  RELEASE(self);
+  return obj;
+}
+
+// accessor methods...
+- (void) setClassName: (NSString *)name
+{
+  ASSIGN(_className, name);
+}
+
+- (NSString *)className
+{
+  return _className;
+}
+@end
+
+// Template for any classes which derive from NSTextView
+@implementation NSTextViewTemplate
++ (void) initialize
+{
+  if (self == [NSTextViewTemplate class]) 
+    {
+      [self setVersion: 0];
+    }
+}
+
+- (void) dealloc
+{
+  RELEASE(_className);
+  [super dealloc];
+}
+
+- initWithFrame: (NSRect)frame
+{
+  // Start initially with the highest level class...
+  ASSIGN(_className, NSStringFromClass([super class]));
+  RETAIN(_className);
+  [super initWithFrame: frame];
+  return self;
+}
+
+- init
+{
+  [super init];
+  ASSIGN(_className, NSStringFromClass([super class]));
+  RETAIN(_className);
+  return self;
+}
+
+- (id) initWithCoder: (NSCoder *)aCoder
+{
+  [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
+  [super initWithCoder: aCoder];
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)aCoder
+{
+  [aCoder encodeValueOfObjCType: @encode(id) at: &_className];  
+  [super encodeWithCoder: aCoder];
+}
+
+- (id) awakeAfterUsingCoder: (NSCoder *)coder
+{
+  return [self instantiateObject: coder];
+}
+
+- (id) instantiateObject: (NSCoder *)coder
+{
+  Class  aClass = NSClassFromString(_className);
+  NSRect theFrame = [self frame];
+  id     obj = nil;
+
+  if (aClass == nil)
+    {
+      [NSException raise: NSInternalInconsistencyException
+		   format: @"Unable to find class '%@'", _className];
+    }
+
+  obj = [[aClass allocWithZone: NSDefaultMallocZone()]
+	  initWithFrame: theFrame];
+
+  // set the attributes for the view
+  [obj setBounds: [self bounds]];
+
+  // set the attributes for text
+  [obj setBackgroundColor: [self backgroundColor]];
+  [obj setDrawsBackground: [self drawsBackground]];
+  [obj setEditable: [self isEditable]];
+  [obj setSelectable: [self isSelectable]];
+  [obj setFieldEditor: [self isFieldEditor]];
+  [obj setRichText: [self isRichText]];
+  [obj setImportsGraphics: [self importsGraphics]];
+  [obj setDelegate: [self delegate]];
+
+  // text view
+  [obj setRulerVisible: [self isRulerVisible]];
+  [obj setInsertionPointColor: [self insertionPointColor]];
+
+  RELEASE(self);
+  return obj;
+}
+
+// accessors
+- (void) setClassName: (NSString *)name
+{
+  ASSIGN(_className, name);
+}
+
+- (NSString *)className
+{
+  return _className;
+}
+@end
+
+// Template for any classes which derive from NSMenu.
+@implementation NSMenuTemplate
++ (void) initialize
+{
+  if (self == [NSMenuTemplate class]) 
+    {
+      [self setVersion: 0];
+    }
+}
+
+- (void) dealloc
+{
+  RELEASE(_className);
+  [super dealloc];
+}
+
+- init
+{
+  [super init];
+  // Start initially with the highest level class...
+  ASSIGN(_className, NSStringFromClass([super class]));
+  RETAIN(_className);
+  return self;
+}
+
+- (id) initWithCoder: (NSCoder *)aCoder
+{
+  [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
+  [super initWithCoder: aCoder];
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)aCoder
+{
+  [aCoder encodeValueOfObjCType: @encode(id) at: &_className];  
+  [super encodeWithCoder: aCoder];
+}
+
+- (id) awakeAfterUsingCoder: (NSCoder *)coder
+{
+  return [self instantiateObject: coder];
+}
+
+- (id) instantiateObject: (NSCoder *)coder
+{
+  Class       aClass = NSClassFromString(_className);
+  id          obj = nil;
+
+  if (aClass == nil)
+    {
+      [NSException raise: NSInternalInconsistencyException
+		   format: @"Unable to find class '%@'", _className];
+    }
+
+  obj = [[aClass allocWithZone: NSDefaultMallocZone()] init];
+
+  // copy attributes
+  [obj setAutoenablesItems: [self autoenablesItems]];
+  [obj setTitle: [self title]];
+
+  RELEASE(self);
+  return obj;
+}
+
+// accessors
+- (void) setClassName: (NSString *)name
+{
+  ASSIGN(_className, name);
+}
+
+- (NSString *)className
+{
+  return _className;
+}
+@end
+
+
+// Template for any classes which derive from NSControl
+@implementation NSControlTemplate
++ (void) initialize
+{
+  if (self == [NSControlTemplate class]) 
+    {
+      [self setVersion: 0];
+    }
+}
+
+- (void) dealloc
+{
+  RELEASE(_className);
+  [super dealloc];
+}
+
+- initWithFrame: (NSRect)frame
+{
+  // Start initially with the highest level class...
+  ASSIGN(_className, NSStringFromClass([super class]));
+  RETAIN(_className);
+  [super initWithFrame: frame];
+
+  return self;
+}
+
+- init
+{
+  // Start initially with the highest level class...
+  [super init];
+  ASSIGN(_className, NSStringFromClass([super class]));
+  RETAIN(_className);
+  return self;
+}
+
+- (id) initWithCoder: (NSCoder *)aCoder
+{
+  [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
+  [aCoder decodeValueOfObjCType: @encode(id) at: &_delegate];  
+  [super initWithCoder: aCoder];
+
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)aCoder
+{
+  [aCoder encodeValueOfObjCType: @encode(id) at: &_className];  
+  [aCoder encodeValueOfObjCType: @encode(id) at: &_delegate];  
+  [super encodeWithCoder: aCoder];
+}
+
+- (id) awakeAfterUsingCoder: (NSCoder *)coder
+{
+  return [self instantiateObject: coder];
+}
+
+- (id) instantiateObject: (NSCoder *)coder
+{
+  Class       aClass = NSClassFromString(_className);
+  NSRect theFrame = [self frame];
+  id obj = nil;
+
+  if (aClass == nil)
+    {
+      [NSException raise: NSInternalInconsistencyException
+		   format: @"Unable to find class '%@'", _className];
+    }
+
+  obj =  [[aClass allocWithZone: NSDefaultMallocZone()]
+	   initWithFrame: theFrame];
+
+  // set the attributes for the view
+  [obj setBounds: [self bounds]];
+
+  // set the attributes for the control
+  [obj setDoubleValue: [self doubleValue]];
+  [obj setFloatValue: [self floatValue]];
+  [obj setIntValue: [self intValue]];
+  [obj setObjectValue: [self objectValue]];
+  [obj setStringValue: [self stringValue]];
+  [obj setTag: [self tag]];
+  [obj setFont: [self font]];
+  [obj setAlignment: [self alignment]];
+  [obj setEnabled: [self isEnabled]];
+
+  // since only some controls have delegates, we need to test...
+  if([obj respondsToSelector: @selector(setDelegate:)])
+    {
+      [obj setDelegate: _delegate];
+    }
+
+  // since only some controls have data sources, we need to test...
+  if([obj respondsToSelector: @selector(setDataSource:)])
+    {
+      [obj setDataSource: _dataSource];
+    }
+
+  // since only some controls have data sources, we need to test...
+  if([obj respondsToSelector: @selector(setUsesDataSource:)])
+    {
+      [obj setUsesDataSource: _usesDataSource];
+    }
+
+  // for buttons...
+  if([obj respondsToSelector: @selector(setButtonType:)] )
+    {
+      [obj setButtonType: _buttonType];
+      [obj setBezelStyle: _bezelStyle];
+      [obj setBordered: _bordered];
+    }
+
+  RELEASE(self);
+  return obj;
+}
+
+// accessors
+- (void) setClassName: (NSString *)name
+{
+  ASSIGN(_className, name);
+}
+
+- (NSString *)className
+{
+  return _className;
+}
+@end
+
+
+// This class uses the templates above to persist the correct type of
+// custom object into the nib file.
+@implementation GSClassSwapper
++ (void) initialize
+{
+  if (self == [GSClassSwapper class]) 
+    {
+      [self setVersion: 0];
+    }
+}
+
+- (id) init
+{
+  _className = nil;
+  _template = nil;
+  return self;
+}
+
+- (id) initWithCoder: (NSCoder *)aCoder
+{
+  [aCoder decodeValueOfObjCType: @encode(id) at: &_className]; 
+  [aCoder decodeValueOfObjCType: @encode(id) at: &_template];
+  return self;
+}
+
+- (void) encodeWithCoder: (NSCoder *)aCoder
+{
+  [aCoder encodeValueOfObjCType: @encode(id) at: &_className]; 
+  [aCoder encodeValueOfObjCType: @encode(id) at: &_template];
+}
+
+- (void) dealloc
+{
+  RELEASE(_className);
+  RELEASE(_template);
+  [super dealloc];
+}
+
+- (NSString *) className
+{
+  return _className;
+}
+
+- (void) setClassName: (NSString *)name
+{
+  ASSIGN(_className, name);
+}
+
+- (id) template
+{
+  return _template;
+}
+
+- (void) setTemplate: (id)template
+{
+  ASSIGN(_template, template);
 }
 @end
