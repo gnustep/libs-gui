@@ -1,3 +1,9 @@
+Thu Aug 31 00:30:15 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSSavePanel.m ([-_initWithoutGModel]), Fixed setting of
+	min size.  ([-_getOriginalSize]): Fixed getting content size.
+	([-setAccessoryView:]): Updated, fixed.
+
 Wed Aug 30 19:36:19 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSForm.m ([-insertEntry:atIndex:]): Moved some code to
