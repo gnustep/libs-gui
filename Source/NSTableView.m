@@ -28,6 +28,7 @@
 #import <AppKit/NSCell.h>
 #import <AppKit/NSClipView.h>
 #import <AppKit/NSColor.h>
+#import <AppKit/NSEvent.h>
 #import <AppKit/NSGraphics.h>
 #import <AppKit/NSScroller.h>
 #import <AppKit/NSTableColumn.h>
@@ -254,7 +255,6 @@
 
 - (void) setDoubleAction: (SEL)aSelector
 {
-  // TODO - implement this in mouseDown:
   _doubleAction = aSelector;
 }
 
@@ -263,17 +263,37 @@
   return _doubleAction;
 }
 
+- (void) setTarget:(id)anObject
+{
+  _target = anObject;
+}
+
+- (id) target
+{
+  return _target;
+}
+
 - (int) clickedColumn
 {
-  // TODO
-  return -1;
+  return _clickedColumn;
 }
 
 - (int) clickedRow
 {
-  // TODO
-  return -1;
+  return _clickedRow;
 }
+
+/*
+ * The NSTableHeaderView calls this method when it receives a double click.
+ */
+
+- (void) _sendDoubleActionForColumn: (int)columnIndex
+{
+  _clickedColumn = columnIndex;
+  _clickedRow = -1;
+  [self sendAction: _doubleAction  to: _target]; 
+}
+
 
 /*
  *Configuration 
@@ -507,6 +527,55 @@ byExtendingSelection: (BOOL) flag
   // TODO
   return -1;
 }
+
+- (void) mouseDown: (NSEvent *)theEvent
+{
+  NSPoint location = [theEvent locationInWindow];
+  NSTableColumn *tb;
+  int clickCount;  
+  
+  //
+  // Pathological case -- ignore mouse down
+  //
+  if ((_numberOfRows == 0) || (_numberOfColumns == 0))
+    {
+      [super mouseDown: theEvent];
+      return; 
+    }
+  
+  clickCount = [theEvent clickCount];
+  
+  if (clickCount > 2)
+    return;
+  
+  // Determine row and column which were clicked
+  location = [self convertPoint: location  fromView: nil];
+  _clickedRow = [self rowAtPoint: location];
+  _clickedColumn = [self columnAtPoint: location];
+
+  // Selection 
+  if (clickCount == 1)
+    {
+      // TODO: Selection
+      return;
+    }
+
+  // Double-click events
+  if ([_delegate respondsToSelector: 
+		   @selector(tableView:shouldEditTableColumn:row:)])
+    {
+      tb = [_tableColumns objectAtIndex: _clickedColumn];
+      if ([_delegate tableView: self shouldEditTableColumn: tb 
+		     row: _clickedRow] == NO)
+	{
+	  // Send double-action
+	  [self sendAction: _doubleAction to: _target];
+	}
+    }
+
+  // TODO: Edit the cell
+}
+
 
 /* 
  * Auxiliary Components 
@@ -1057,6 +1126,7 @@ byExtendingSelection: (BOOL) flag
 	  
 	  newOrigin.x = visibleRect.origin.x;
 	  newOrigin.y = rowRect.origin.y;
+	  newOrigin = [self convertPoint: newOrigin  toView: _super_view];
 	  [(NSClipView *)_super_view scrollToPoint: newOrigin];
 	  return;
 	}
@@ -1070,6 +1140,7 @@ byExtendingSelection: (BOOL) flag
 	  newOrigin.x = visibleRect.origin.x;
 	  newOrigin.y = visibleRect.origin.y;
 	  newOrigin.y += NSMaxY (rowRect) - NSMaxY (visibleRect);
+	  newOrigin = [self convertPoint: newOrigin  toView: _super_view];
 	  [(NSClipView *)_super_view scrollToPoint: newOrigin];
 	  return;
 	}
@@ -1094,6 +1165,7 @@ byExtendingSelection: (BOOL) flag
 	  
 	  newOrigin.x = columnRect.origin.x;
 	  newOrigin.y = visibleRect.origin.y;
+	  newOrigin = [self convertPoint: newOrigin  toView: _super_view];
 	  [(NSClipView *)_super_view scrollToPoint: newOrigin];
 	  return;
 	}
@@ -1108,6 +1180,7 @@ byExtendingSelection: (BOOL) flag
 	  newOrigin.x = visibleRect.origin.x;
 	  newOrigin.y = visibleRect.origin.y;
 	  newOrigin.x += diff;
+	  newOrigin = [self convertPoint: newOrigin  toView: _super_view];
 	  [(NSClipView *)_super_view scrollToPoint: newOrigin];
 	  return;
 	}
