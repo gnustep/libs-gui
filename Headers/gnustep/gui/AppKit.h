@@ -137,6 +137,7 @@
 #include <AppKit/NSLayoutManager.h>
 #include <AppKit/NSTextContainer.h>
 #include <AppKit/NSTextStorage.h>
+#include <AppKit/NSUserInterfaceValidation.h>
 #include <AppKit/NSWindowController.h>
 #endif
 
