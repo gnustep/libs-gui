@@ -481,6 +481,8 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 - (BOOL) autoscroll: (NSEvent*)theEvent
 {
   NSPoint new;
+  NSPoint delta;
+  NSRect r;
 
   if (_documentView == nil)
     {
@@ -489,12 +491,29 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
   
   new = [_documentView convertPoint: [theEvent locationInWindow] 
 		       fromView: nil];
-  new = [self constrainScrollPoint: new];
 
-  if (NSPointInRect(new, [self documentVisibleRect]))
-  {
+  r = [self documentVisibleRect];
+
+  if (new.x < NSMinX(r))
+    delta.x = new.x - NSMinX(r);
+  else if (new.x > NSMaxX(r))
+    delta.x = new.x - NSMaxX(r);
+  else
+    delta.x = 0;
+
+  if (new.y < NSMinY(r))
+    delta.y = new.y - NSMinY(r);
+  else if (new.y > NSMaxY(r))
+    delta.y = new.y - NSMaxY(r);
+  else
+    delta.y = 0;
+
+  new.x = _bounds.origin.x + delta.x;
+  new.y = _bounds.origin.y + delta.y;
+
+  new = [self constrainScrollPoint: new];
+  if (NSEqualPoints(new, _bounds.origin))
     return NO;
-  }
 
   [self setBoundsOrigin: new];
   return YES;

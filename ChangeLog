@@ -1,3 +1,10 @@
+2003-11-19 03:17  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSClipView.m (-autoscroll:): Reimplement correctly.
+
+	* Source/NSTextView.m (-mouseDown:): When the mouse is outside
+	the view, autoscroll smoothly using periodic events.
+
 2003-11-18 21:43  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSEvent.m (-description): Remove a stray , that was messing
