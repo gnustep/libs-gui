@@ -172,13 +172,21 @@ static const int currentVersion = 1;
 	}
       else
 	{
+	  const char	*nam = [_tag cString];
+	  const char	*type;
+	  unsigned int	size;
+	  unsigned int	offset;
+
 	  /*
-	   * Use the GNUstep additional function to set the instance variable
-	   * directly.
-	   * FIXME - need some way to do this for libFoundation and Foundation
-	   * based systems.
+	   * Use the GNUstep additional function to set the instance
+	   * variable directly.
+	   * FIXME - need some way to do this for libFoundation and
+	   * Foundation based systems.
 	   */
-	  GSSetInstanceVariable(_src, _tag, (void*)&_dst); 
+	  if (GSObjCFindInstanceVariable(_src, nam, &type, &size, &offset))
+	    {
+	      GSObjCSetVariable(_src, offset, size, (void*)&_dst); 
+	    }
 	}
     }
 }

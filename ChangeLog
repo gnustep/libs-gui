@@ -1,3 +1,7 @@
+2002-11-27  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSBundleAdditions.m: Quick hack for setting ivars.
+
 2002-11-27  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSTabView.m ([NSTabView -selectedTabViewItem]): Check
