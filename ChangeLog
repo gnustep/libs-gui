@@ -1,3 +1,20 @@
+Tue Jun 11 14:11:22 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Patch by Jeff Teunissen with changes by myself:
+	* TextConverters/RTF/RTFConsumer.h (GSTextConsumer): Added ivar _class.
+	* TextConverters/RTF/RTFConsumer.m: Changed everywhere to support the 
+	caller specifying the type of class it needs to be produced.
+	* Headers/gnustep/gui/GSTextConverter.h: Added a class argument to
+	have the text converter save the results of parsing into
+	attributed strings of different classes depending on the case.
+	* Source/NSAttributedString.m: When parsing using the text converters,
+	have them create attributed strings of our own class.
+	
+Tue Jun 11 13:35:41 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* TextConverters/RTF/GNUmakefile.preamble (ADDITIONAL_CPPFLAGS):
+	Use -Wall when compiling.
+	
 2002-06-10  Adam Fedor  <fedor@gnu.org>
 
 	* Version 0.7.8
@@ -5,7 +22,7 @@
 
 2002-06-11  Alexander Malmberg  <alexander@malmberg.org>
 
-        * Source/GSServicesManager.m,
+	* Source/GSServicesManager.m,
 	Headers/gnustep/gui/GSServicesManager.h: Fix handling of
 	NSMenuItem:s (were being handled as NSCell:s in many places; this
         broke submenus of the services menu).
