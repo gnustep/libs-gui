@@ -1,781 +1,872 @@
-/* NSInputManager                              -*-objc-*-
+/*
+    NSInputManager.m
 
-   Copyright (C) 2001, 2002 Free Software Foundation, Inc.
+    Copyright (C) 2004 Free Software Foundation, Inc.
 
-   Author: Nicola Pero <n.pero@mi.flashnet.it>
-   Date: December 2001, January 2002, February 2002
+    Author: Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
+    Date:   March, 2004
 
-   This file is part of the GNUstep GUI Library.
+    This file is part of the GNUstep GUI Library.
 
-   This library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Library General Public
-   License as published by the Free Software Foundation; either
-   version 2 of the License, or (at your option) any later version.
-   
-   This library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Library General Public License for more details.
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Library General Public
+    License as published by the Free Software Foundation; either
+    version 2 of the License, or (at your option) any later version.
 
-   You should have received a copy of the GNU Library General Public
-   License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/ 
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Library General Public License for more details.
 
-#include <Foundation/NSException.h>
+    You should have received a copy of the GNU Library General Public
+    License along with this library; see the file COPYING.LIB.
+    If not, write to the Free Software Foundation,
+    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+/*
+    FIXME: In the implementation of NSInputManager, some methods use
+           the private method -client.  Currently  there are no error
+	   check against the cases where it returns nil.  If a method
+	   using -client must return some value to the caller, this is
+	   problematic.  But then, should we raise an exception for such
+	   cases (but who handles it?), or should we return an arbitrary
+	   value, expecting the caller recovers something from such
+	   garbage?
+ */
+
+#include <Foundation/NSString.h>
+#include <Foundation/NSAttributedString.h>
+#include <Foundation/NSArray.h>
+#include <Foundation/NSDictionary.h>
+#include <Foundation/NSUserDefaults.h>
+#include <Foundation/NSConnection.h>
+#include <Foundation/NSDistantObject.h>
+#include <Foundation/NSPathUtilities.h>
+#include <Foundation/NSFileManager.h>
+#include <Foundation/NSNotification.h>
+#include <Foundation/NSTask.h>
+#include <Foundation/NSAutoreleasePool.h>
 #include "AppKit/NSEvent.h"
-#include "AppKit/NSInputManager.h"
+#include "AppKit/NSResponder.h"
+#include "AppKit/NSApplication.h"
+#include "AppKit/NSWindow.h"
 #include "AppKit/NSInputServer.h"
-#include "AppKit/NSText.h"
+#include "AppKit/NSInputManager.h"
 
-/* For NSBeep () */
-#include "AppKit/NSGraphics.h"
 
-#include "GSKeyBindingAction.h"
-#include "GSKeyBindingTable.h"
+@interface NSInputManager (Private)
++ (void)addToInputServerList: (id)inputServer;
++ (void)removeFromInputServerList: (id)inputServer;
 
-/* A table mapping character names to characters, used to interpret
-   the character names found in KeyBindings dictionaries.  */
-#define CHARACTER_TABLE_SIZE 77
+- (BOOL)readInputServerInfo: (NSString *)inputServerName;
+- (BOOL)createKeyBindingsTable;
+- (BOOL)establishConnectionToInputServer: (NSString *)host;
+- (void)becomeObserver;
+- (void)resignObserver;
 
-static struct 
+- (void)setServerInfo: (id)info;
+- (id)serverInfo;
+- (void)setServerProxy: (id)proxy;
+- (id)serverProxy;
+
+- (NSString *)standardKeyBindingAbsolutePath;
+- (NSString *)defaultKeyBindingAbsolutePath;
+- (id)client;
+- (void)lostConnection: (NSNotification *)aNotification;
+@end /* @interface NSInputManager (Private) */
+
+
+/* To ease traffic jam */
+@protocol UnifiedProtocolForInputServer <NSInputServiceProvider,
+                                         NSInputServerMouseTracker>
+@end /* @protocol UnifiedProtocolForInputServer */
+
+
+/* Class encapsulating input server's Info file */
+@interface InputServerInfo : NSObject
 {
-  NSString *name;
-  unichar character;
-} 
-character_table[CHARACTER_TABLE_SIZE] =
+  NSString	*serverName;
+  NSDictionary	*info;
+}
+
+- (id)initWithName: (NSString *)inputServerName;
+
+- (void)setServerName: (NSString *)inputServerName;
+- (NSString *)serverName;
+
+- (void)setInfo: (NSDictionary *)inputServerInfo;
+- (NSDictionary *)info;
+
+/* Value for each key */
+- (NSString *)executableName;
+- (NSString *)connectionName;
+- (NSString *)displayName;
+- (NSString *)defaultKeyBindings;
+- (NSString *)localizedName;
+- (NSString *)languageName;
+
+- (NSString *)serverHomeDir;
+- (NSString *)infoAbsolutePath;
+- (NSString *)executableAbsolutePath;
+- (NSString *)defaultKeyBindingsAbsolutePath;
+@end /* @interface ServerInfo : NSObject */
+
+
+@implementation InputServerInfo
+
+/* Possible keys of the file Info */
+static NSString *_executableNameKey	= @"ExecutableName";
+static NSString *_connectionNameKey	= @"ConnectionName";
+static NSString *_displayNameKey	= @"DisplayName";
+static NSString *_defaultKeyBindingsKey	= @"DefaultKeyBindings";
+static NSString *_localizedNamesKey	= @"LocalizedNames";
+static NSString *_languageNameKey	= @"LanguageName";
+
+/*
+    Possible prefixes are 
+	(1) $(GNUSTEP_USER_ROOT)/Library/InputManager and
+	(2) $(GNUSTEP_SYSTEM_ROOT)/Library/InputManager.
+   The file Info is to be searched in that order.
+ */
+static NSString *_parentComponent	= @"InputManagers";
+static NSString *_extName		= @"app";
+static NSString *_resourcesComponent	= @"Resources";
+static NSString *_infoFileName		= @"Info";
+
+
+- (id)initWithName: (NSString *)inputServerName
 {
-  /* Function keys.  */
-  { @"UpArrow", NSUpArrowFunctionKey },
-  { @"DownArrow", NSDownArrowFunctionKey },
-  { @"LeftArrow", NSLeftArrowFunctionKey },
-  { @"RightArrow", NSRightArrowFunctionKey },
-  { @"F1", NSF1FunctionKey },
-  { @"F2", NSF2FunctionKey },
-  { @"F3", NSF3FunctionKey },
-  { @"F4", NSF4FunctionKey },
-  { @"F5", NSF5FunctionKey },
-  { @"F6", NSF6FunctionKey },
-  { @"F7", NSF7FunctionKey },
-  { @"F8", NSF8FunctionKey },
-  { @"F9", NSF9FunctionKey },
-  { @"F10", NSF10FunctionKey },
-  { @"F11", NSF11FunctionKey },
-  { @"F12", NSF12FunctionKey },
-  { @"F13", NSF13FunctionKey },
-  { @"F14", NSF14FunctionKey },
-  { @"F15", NSF15FunctionKey },
-  { @"F16", NSF16FunctionKey },
-  { @"F17", NSF17FunctionKey },
-  { @"F18", NSF18FunctionKey },
-  { @"F19", NSF19FunctionKey },
-  { @"F20", NSF20FunctionKey },
-  { @"F21", NSF21FunctionKey },
-  { @"F22", NSF22FunctionKey },
-  { @"F23", NSF23FunctionKey },
-  { @"F24", NSF24FunctionKey },
-  { @"F25", NSF25FunctionKey },
-  { @"F26", NSF26FunctionKey },
-  { @"F27", NSF27FunctionKey },
-  { @"F28", NSF28FunctionKey },
-  { @"F29", NSF29FunctionKey },
-  { @"F30", NSF30FunctionKey },
-  { @"F31", NSF31FunctionKey },
-  { @"F32", NSF32FunctionKey },
-  { @"F33", NSF33FunctionKey },
-  { @"F34", NSF34FunctionKey },
-  { @"F35", NSF35FunctionKey },
-  { @"Insert", NSInsertFunctionKey },
-  { @"Delete", NSDeleteFunctionKey },
-  { @"Home", NSHomeFunctionKey },
-  { @"Begin", NSBeginFunctionKey },
-  { @"End", NSEndFunctionKey },
-  { @"PageUp", NSPageUpFunctionKey },
-  { @"PageDown", NSPageDownFunctionKey },
-  { @"PrintScreen", NSPrintScreenFunctionKey },
-  { @"ScrollLock", NSScrollLockFunctionKey },
-  { @"Pause", NSPauseFunctionKey },
-  { @"SysReq", NSSysReqFunctionKey },
-  { @"Break", NSBreakFunctionKey },
-  { @"Reset", NSResetFunctionKey },
-  { @"Stop", NSStopFunctionKey },
-  { @"Menu", NSMenuFunctionKey },
-  { @"User", NSUserFunctionKey },
-  { @"System", NSSystemFunctionKey },
-  { @"Print", NSPrintFunctionKey },
-  { @"ClearLine", NSClearLineFunctionKey },
-  { @"ClearDisplay", NSClearDisplayFunctionKey },
-  { @"InsertLine", NSInsertLineFunctionKey },
-  { @"DeleteLine", NSDeleteLineFunctionKey },
-  { @"InsertChar", NSInsertCharFunctionKey },
-  { @"DeleteChar", NSDeleteCharFunctionKey },
-  { @"Prev", NSPrevFunctionKey },
-  { @"Next", NSNextFunctionKey },
-  { @"Select", NSSelectFunctionKey },
-  { @"Execute", NSExecuteFunctionKey },
-  { @"Undo", NSUndoFunctionKey },
-  { @"Redo", NSRedoFunctionKey },
-  { @"Find", NSFindFunctionKey },
-  { @"Help", NSHelpFunctionKey },
-  { @"ModeSwitch", NSModeSwitchFunctionKey },
+  NSString	*path;
+  NSDictionary	*dict;
 
-  /* Special characters by name.  Useful if you want, for example,
-     to associate some special action to C-Tab or similar evils.  */
-  { @"Backspace", NSBackspaceCharacter },
-  { @"Tab", NSTabCharacter },
-  { @"Enter", NSEnterCharacter },
-  { @"FormFeed", NSFormFeedCharacter },
-  { @"CarriageReturn", NSCarriageReturnCharacter }
-};
+  if ((self = [super init]) == nil)
+    {
+      NSLog(@"NSInputManager: Initialization for %@ failed",
+	    inputServerName);
+      return nil;
+    }
 
-static NSInputManager *currentInputManager = nil;
+  if (inputServerName == nil)
+    {
+      NSLog(@"NSInputManager: Input server name wasn't specified");
+      [self release];
+      return nil;
+    }
+  [self setServerName: inputServerName];
+
+  if ((path = [self infoAbsolutePath]) == nil)
+    {
+      NSLog(@"%@: Couldn't find Info for %@", self, inputServerName);
+      [self release];
+      return nil;
+    }
+  if ((dict = [NSDictionary dictionaryWithContentsOfFile: path]) == nil)
+    {
+      NSLog(@"%@: Couldn't read Info for %@", self, inputServerName);
+      [self release];
+      return nil;
+    }
+  [self setInfo: dict];
+
+  return self;
+}
+
+
+- (void)dealloc
+{
+  [self setInfo: nil];
+  [self setServerName: nil];
+  [super dealloc];
+}
+
+
+- (void)setServerName: (NSString *)inputServerName
+{
+  [inputServerName retain];
+  [serverName release];
+  serverName = inputServerName;
+}
+
+
+- (NSString *)serverName
+{
+  return serverName;
+}
+
+
+- (void)setInfo: (NSDictionary *)inputServerInfo
+{
+  [inputServerInfo retain];
+  [info release];
+  info = inputServerInfo;
+}
+
+
+- (NSDictionary *)info
+{
+  return info;
+}
+
+
+- (NSString *)executableName
+{
+  return [info objectForKey: _executableNameKey];
+}
+
+
+- (NSString *)connectionName
+{
+  return [info objectForKey: _connectionNameKey];
+}
+
+
+- (NSString *)displayName
+{
+  return [info objectForKey: _displayNameKey];
+}
+
+
+- (NSString *)defaultKeyBindings
+{
+  return [info objectForKey: _defaultKeyBindingsKey];
+}
+
+
+- (NSString *)localizedName
+{
+  NSString	*lang;
+  NSDictionary	*dict;
+  NSEnumerator	*keyEnum;
+  id		key;
+
+  if ((lang = [[NSUserDefaults standardUserDefaults]
+       stringForKey: NSLanguageName]) == nil)
+    {
+      return [self displayName];
+    }
+
+  if ((dict = [info objectForKey: _localizedNamesKey]) == nil)
+    {
+      return [self displayName];
+    }
+
+  keyEnum = [dict keyEnumerator];
+  while ((key = [keyEnum nextObject]) != nil)
+    {
+      if ([key isKindOfClass: [NSString class]] == NO)
+	{
+	  continue;
+	}
+
+      if ([(NSString *)key isEqualToString: lang])
+	{
+	  return [dict objectForKey: key];
+	}
+    }
+
+  return [self displayName];
+}
+
+
+- (NSString *)languageName
+{
+  return [info objectForKey: _languageNameKey];
+}
+
+
+/* Return nil if the directory is not found. */
+- (NSString *)serverHomeDir
+{
+  NSArray	*prefixes   = nil;
+  NSEnumerator	*objEnum    = nil;
+  id		obj	    = nil;
+  NSString	*path	    = nil;
+  BOOL		isDir;
+
+  prefixes = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+						 NSUserDomainMask
+						 | NSSystemDomainMask,
+						 YES);
+  objEnum = [prefixes objectEnumerator];
+  /* Assuming the user domain directory comes first, */
+  for (path = nil; (obj = [objEnum nextObject]) != nil; path = nil)
+    {
+      path = [NSString stringWithString: obj];
+      path = [path stringByAppendingPathComponent: _parentComponent];
+      path = [path stringByAppendingPathComponent: serverName];
+      path = [path stringByAppendingPathExtension: _extName];
+
+      if ([[NSFileManager defaultManager] fileExistsAtPath: path
+					       isDirectory: &isDir] && isDir)
+	{
+	  break;
+	}
+    }
+  return path;
+}
+
+
+/* Return nil if the file is not readable. */
+- (NSString *)infoAbsolutePath
+{
+  NSString *absPath = [self serverHomeDir];
+
+  absPath = [absPath stringByAppendingPathComponent: _resourcesComponent];
+  absPath = [absPath stringByAppendingPathComponent: _infoFileName];
+
+  if ([[NSFileManager defaultManager] isReadableFileAtPath: absPath] == NO)
+    {
+      absPath = nil;
+    }
+
+  return absPath;
+}
+
+
+/* Return nil if the file is not executable. */
+- (NSString *)executableAbsolutePath
+{
+  NSString *absPath = [self serverHomeDir];
+  NSString *relPath = [self executableName];
+
+  absPath = [absPath stringByDeletingLastPathComponent];
+  absPath = [absPath stringByAppendingPathComponent: relPath];
+
+  if ([[NSFileManager defaultManager] isExecutableFileAtPath: absPath] == NO)
+    {
+      absPath = nil;
+    }
+
+  return absPath;
+}
+
+
+/* Return nil if the file is not readable. */
+- (NSString *)defaultKeyBindingsAbsolutePath
+{
+  NSString *absPath = [self serverHomeDir];
+  NSString *file = [self defaultKeyBindings];
+
+  absPath = [absPath stringByAppendingPathComponent: _resourcesComponent];
+  absPath = [absPath stringByAppendingPathComponent: file];
+
+  if ([[NSFileManager defaultManager] isReadableFileAtPath: absPath] == NO)
+    {
+      absPath = nil;
+    }
+  return absPath;
+}
+
+@end /* @implementation	InputServerInfo */
+
 
 @implementation NSInputManager
 
-+ (NSInputManager *) currentInputManager
+static NSMutableArray *_inputServerList = nil;
+
+
++ (NSInputManager *)currentInputManager
 {
-  if (currentInputManager == nil)
-    {
-      currentInputManager = [[self alloc] initWithName: nil  host: nil];
-    }
-  
-  return currentInputManager;
+  return [_inputServerList lastObject];
 }
 
-+ (BOOL) parseKey: (NSString *)key 
-    intoCharacter: (unichar *)character
-     andModifiers: (unsigned int *)modifiers
+
+/* Deprecated */
++ (void)cycleToNextInputLanguage: (id)sender
+{ }
+
+
+/* Deprecated */
++ (void)cycleToNextInputServerInLanguage: (id)sender
+{ }
+
+
+- (void)dealloc
 {
-  int flags = 0;
-  unichar c = 0;
+  [serverProxy inputClientResignActive: self];
+  [serverProxy terminate: self];
+  [self resignObserver];
+  [NSInputManager removeFromInputServerList: self]; 
+  [self setServerProxy: nil];
+  [self setServerInfo: nil];
+  [super dealloc];
+}
 
-  /* Parse the key: first break it into segments separated by - */
-  NSArray *components = [key componentsSeparatedByString: @"-"];
-  NSString *name;
 
-  /* Then, parse the modifiers.  The modifiers are the components 
-     - all of them except the last one!  */
-  int i, count = [components count];
+- (BOOL)handleMouseEvent: (NSEvent *)theMouseEvent
+{
+  unsigned int	flags;
+  NSPoint	point;
+  unsigned	index;
+  BOOL		consumed;
 
-  for (i = 0; i < count - 1; i++)
+  flags = [theMouseEvent modifierFlags];
+  point = [theMouseEvent locationInWindow];
+  index = [[self client] characterIndexForPoint: point];
+
+  switch ([theMouseEvent type])
     {
-      NSString *modifier = [components objectAtIndex: i];
-      
-      if ([modifier isEqualToString: @"Control"] 
-	  || [modifier isEqualToString: @"Ctrl"] 
-	  || [modifier isEqualToString: @"C"])
-	{
-	  flags |= NSControlKeyMask;
-	}
-      else if ([modifier isEqualToString: @"Alternate"] 
-	       || [modifier isEqualToString: @"Alt"] 
-	       || [modifier isEqualToString: @"A"]
-	       || [modifier isEqualToString: @"Meta"]
-	       || [modifier isEqualToString: @"M"])
-	{
-	  flags |= NSAlternateKeyMask;
-	}
-      /* The Shift modifier is only meaningful when used in
-       * conjunction with function keys.  'Shift-LeftArrow' is
-       * meaningful; 'Control-Shift-g' is not - you should use
-       * 'Control-G' instead.  */
-      else if ([modifier isEqualToString: @"Shift"] 
-	       || [modifier isEqualToString: @"S"])
-	{
-	  flags |= NSShiftKeyMask;
-	}
-      else if ([modifier isEqualToString: @"NumericPad"]
-	       ||  [modifier isEqualToString: @"Numeric"]
-	       ||  [modifier isEqualToString: @"N"])
-	{
-	  flags |= NSNumericPadKeyMask;
-	}
-      else
-	{
-	  NSLog (@"NSInputManager - unknown modifier '%@' ignored", modifier);
-	  return NO;
-	}
+    case NSLeftMouseDown:
+      consumed = [serverProxy mouseDownOnCharacterIndex: index
+					   atCoordinate: point
+					   withModifier: flags
+						 client: [self client]];
+      return YES;
+
+    case NSLeftMouseDragged:
+      consumed = [serverProxy mouseDraggedOnCharacterIndex: index
+					      atCoordinate: point
+					      withModifier: flags
+						    client: [self client]];
+      return YES;
+
+    case NSLeftMouseUp:
+      [serverProxy mouseUpOnCharacterIndex: index
+			      atCoordinate: point
+			      withModifier: flags
+				    client: [self client]];
+      return YES;
+
+    default:
+      return NO;
     }
+  /* Not reached */
+}
 
-  /* Now, parse the actual key.  */
-  name = [components objectAtIndex: (count - 1)];
-  
-  if ([name isEqualToString: @""])
+
+/* Deprecated */
+- (NSImage *)image
+{ return nil; }
+
+
+- (NSInputManager *)initWithName: (NSString *)inputServerName
+			    host: (NSString *)host
+{
+  NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+
+  if ((self = [super init]) == nil)
     {
-      /* This happens if '-' was the character.  */
-      c = '-';
+      NSLog(@"NSInputManager: Initialization failed");
+      return nil;
     }
-  else if ([name length] == 1)
+  if ([self standardKeyBindingAbsolutePath] == nil)
     {
-      /* A single character, such as 'a'.  */
-      c = [name characterAtIndex: 0];
+      NSLog(@"%@: Couldn't read StandardKeyBinding.dict",
+	    self, [self standardKeyBindingAbsolutePath]);
+      [self release];
+      return nil;
+    }
+  if (inputServerName)
+    {
+      if ([self readInputServerInfo: inputServerName] == NO ||
+	  [self createKeyBindingsTable] == NO ||
+	  [self establishConnectionToInputServer: host] == NO)
+	{
+	  [self release];
+	  return nil;
+	}
     }
   else
     {
-      /* A descriptive string, such as Tab or Home.  */
-      for (i = 0; i < CHARACTER_TABLE_SIZE; i++)
+#if 0
+      if ([self createKeyBindingsTable] == NO)
 	{
-	  if ([name isEqualToString: (character_table[i]).name])
-	    {
-	      c = (character_table[i]).character;
-	      flags |= NSFunctionKeyMask;
-	      break;
-	    }
+	  [self release];
+	  return nil;
 	}
-      if (i == CHARACTER_TABLE_SIZE)
-	{
-	  NSLog (@"NSInputManager - unknown character '%@' ignored", name);
-	  return NO;
-	}
-    }  
-  if (character != NULL)
+#endif
+    }
+  [NSInputManager addToInputServerList: self];
+
+  [pool release], pool = nil;
+
+  return self;
+}
+
+
+- (NSString *)language
+{
+  return [serverInfo languageName];
+}
+
+
+- (NSString *)localizedInputManagerName
+{
+  return [serverInfo localizedName];
+}
+
+
+- (void)markedTextAbandoned: (id)client
+{
+  [serverProxy markedTextAbandoned: client];
+}
+
+
+- (void)markedTextSelectionChanged: (NSRange)newSel
+			    client: (id)client
+{
+  [serverProxy markedTextSelectionChanged: newSel
+				   client: client];
+}
+
+
+/* Deprecated */
+- (NSInputServer *)server
+{
+  return serverProxy;
+}
+
+
+- (BOOL)wantsToDelayTextChangeNotifications
+{
+  if (serverProxy)
     {
-      *character = c;
+      return [serverProxy wantsToDelayTextChangeNotifications];
+    }
+  else
+    {
+      return NO;
+    }
+}
+
+
+- (BOOL)wantsToHandleMouseEvents
+{
+  if (serverProxy)
+    {
+      return [serverProxy wantsToHandleMouseEvent];
+    }
+  else
+    {
+      return NO;
+    }
+}
+
+
+- (BOOL)wantsToInterpretAllKeystrokes
+{
+  if (serverProxy)
+    {
+      return [serverProxy wantsToInterpretAllKeystrokes];
+    }
+  else
+    {
+      return NO;
+    }
+}
+
+
+/* ----------------------------------------------------------------------------
+    NSTextInput protocol methods
+ --------------------------------------------------------------------------- */
+- (NSAttributedString *)attributedSubstringFromRange: (NSRange)theRange
+{
+  return [[self client] attributedSubstringFromRange: theRange];
+}
+
+
+- (unsigned int)characterIndexForPoint: (NSPoint)thePoint
+{
+  return [[self client] characterIndexForPoint: thePoint];
+}
+
+
+- (long)conversationIdentifier
+{
+  return [[self client] conversationIdentifier];
+}
+
+
+/* text view -> input server */
+- (void)doCommandBySelector: (SEL)aSelector
+{
+  if (serverProxy)
+    {
+      [serverProxy doCommandBySelector: aSelector
+				client: [self client]];
+    }
+  else
+    {
+      [[self client] doCommandBySelector: aSelector];
+    }
+}
+
+
+- (NSRect)firstRectForCharacterRange: (NSRange)theRange
+{
+  return [[self client] firstRectForCharacterRange: theRange];
+}
+
+
+- (BOOL)hasMarkedText
+{
+  return [[self client] hasMarkedText];
+}
+
+
+/* text view -> input server */
+- (void)insertText: (id)aString
+{
+  if (serverProxy)
+    {
+      [serverProxy insertText: aString
+		       client: [self client]];
+    }
+  else
+    {
+      [[self client] insertText: aString];
+    }
+}
+
+
+- (NSRange)markedRange
+{
+  return [[self client] markedRange];
+}
+
+
+- (NSRange)selectedRange
+{
+  return [[self client] selectedRange];
+}
+
+
+- (void)setMarkedText: (id)aString
+	selectedRange: (NSRange)selRange
+{
+  return [[self client] setMarkedText: aString
+			selectedRange: selRange];
+}
+
+
+- (void)unmarkText
+{
+  [[self client] unmarkText];
+}
+
+
+- (NSArray *)validAttributesForMarkedText
+{
+  return [[self client] validAttributesForMarkedText];
+}
+
+@end /* @implementation NSInputManager */
+
+
+@implementation NSInputManager (Private)
+
++ (void)addToInputServerList: (id)inputServer
+{
+  if (_inputServerList == nil)
+    {
+      _inputServerList = [[NSMutableArray alloc] init];
+    }
+  [_inputServerList addObject: inputServer];
+}
+
+
++ (void)removeFromInputServerList: (id)inputServer
+{
+  [_inputServerList removeObjectIdenticalTo: inputServer];
+  if ([_inputServerList count] == 0)
+    {
+      [_inputServerList release];
+      _inputServerList = nil;
+    }
+}
+
+
+/* Return YES if succeeded, NO otherwise. */
+- (BOOL)readInputServerInfo: (NSString *)inputServerName
+{
+  InputServerInfo *info;
+
+  if ((info = [[InputServerInfo alloc] initWithName: inputServerName]) == nil)
+    {
+      NSLog(@"%@: Couldn't read Info for %@", self, inputServerName);
+      return NO;
+    }
+  else if ([info executableAbsolutePath] == nil)
+    {
+      NSLog(@"%@: Couldn't find the executable for %@", self, inputServerName);
+      [self release];
+      return NO;
+    }
+  [self setServerInfo: [info autorelease]];
+  return YES;
+}
+
+
+/* Return YES if succeeded, NO otherwise. */
+- (BOOL)createKeyBindingsTable
+{
+  /* Not implemented */
+  return NO;
+}
+
+
+/* Return YES if succeeded, NO otherwise. */
+- (BOOL)establishConnectionToInputServer: (NSString *)host
+{
+  NSString	*name	    = [serverInfo connectionName];
+  NSString	*exec	    = [serverInfo executableAbsolutePath];
+  const float	interval    = 2.0;
+  int		count	    = 0;
+  const int	limit	    = 5;
+  id		proxy;
+
+  if (host == nil)
+    {
+      NSLog(@"%@: Host name wasn't specified", self);
+      return NO;
     }
 
-  if (modifiers != NULL)
+  do
     {
-      *modifiers = flags;
+      proxy = [NSConnection rootProxyForConnectionWithRegisteredName: name
+								host: host];
+      if (proxy)
+	{
+	  break;
+	}
+
+      NSLog(@"%@: Trying to launch %@", self, exec);
+      [NSTask launchedTaskWithLaunchPath: exec
+			       arguments: nil];
+      [NSTimer scheduledTimerWithTimeInterval: interval
+				   invocation: nil
+				      repeats: NO];
+      [[NSRunLoop currentRunLoop] runUntilDate:
+	  [NSDate dateWithTimeIntervalSinceNow: interval]];
     }
+  while (count++ < limit && proxy == nil);
+
+  if (proxy == nil)
+    {
+      NSLog(@"%@: Failed to connect to server", self);
+      return NO;
+    }
+
+  [self setServerProxy: proxy];
+
+  [self becomeObserver];
+  [proxy setProtocolForProxy: @protocol(UnifiedProtocolForInputServer)];
+  [proxy inputClientBecomeActive: self];
+
 
   return YES;
 }
 
-+ (NSString *) describeKeyStroke: (unichar)character
-		   withModifiers: (unsigned int)modifiers
+
+- (void)becomeObserver
 {
-  NSMutableString *description = [NSMutableString new];
-  int i;
+  [[NSNotificationCenter defaultCenter]
+    addObserver: self
+       selector: @selector(lostConnection:)
+	   name: NSConnectionDidDieNotification
+	 object: [serverProxy connectionForProxy]];
+}
 
-  if (modifiers & NSCommandKeyMask)
+
+- (void)resignObserver
+{
+  [[NSNotificationCenter defaultCenter]
+    removeObserver: self
+	      name: NSConnectionDidDieNotification
+	    object: [serverProxy connectionForProxy]];
+}
+
+
+/* Return YES if succeeded, NO otherwise. */
+- (void)setServerInfo: (id)info
+{
+  [info retain];
+  [serverInfo release];
+  serverInfo = info;
+}
+
+
+- (id)serverInfo
+{
+  return serverInfo;
+}
+
+
+- (void)setServerProxy: (id)proxy
+{
+  [proxy retain];
+  [serverProxy release];
+  serverProxy = proxy;
+}
+
+
+- (id)serverProxy
+{
+  return serverProxy;
+}
+
+
+/* Return nil if not readable. */
+- (NSString *)standardKeyBindingAbsolutePath
+{
+  NSArray *array = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+						       NSSystemDomainMask,
+						       YES);
+  NSString *path = [array objectAtIndex: 0];
+  path = [path stringByAppendingPathComponent: _parentComponent];
+  path = [path stringByAppendingPathComponent: @"StandardKeyBinding"];
+  path = [path stringByAppendingPathExtension: @"dict"];
+  if ([[NSFileManager defaultManager] isReadableFileAtPath: path] == NO)
     {
-      [description appendString: @"Command-"];
+      path = nil;
     }
+  return path;
+}
 
-  if (modifiers & NSControlKeyMask)
+
+/* Return nil if not readable. */
+- (NSString *)defaultKeyBindingAbsolutePath;
+{
+  NSArray *array = NSSearchPathForDirectoriesInDomains(NSLibraryDirectory,
+						       NSUserDomainMask,
+						       YES);
+  NSString *path = [array objectAtIndex: 0];
+  path = [path stringByAppendingPathComponent: @"KeyBindings"];
+  path = [path stringByAppendingPathComponent: @"DefaultKeyBinding"];
+  path = [path stringByAppendingPathExtension: @"dict"];
+  if ([[NSFileManager defaultManager] isReadableFileAtPath: path] == NO)
     {
-      [description appendString: @"Control-"];
+      path = nil;
     }
+  return path;
+}
 
-  if (modifiers & NSAlternateKeyMask)
-    {
-      [description appendString: @"Alternate-"];
-    }
 
-  if (modifiers & NSShiftKeyMask)
-    {
-      [description appendString: @"Shift-"];
-    }
+- (id)client
+{
+  id obj = [[[NSApplication sharedApplication] keyWindow] firstResponder];
 
-  if (modifiers & NSNumericPadKeyMask)
+  while (obj)
     {
-      [description appendString: @"NumericPad-"];
-    }
-
-  for (i = 0; i < CHARACTER_TABLE_SIZE; i++)
-    {
-      if (character == ((character_table[i]).character))
+      if ([obj conformsToProtocol: @protocol(NSTextInput)])
 	{
-	  [description appendString: character_table[i].name];
-	  break;
+	  return obj;
 	}
-    }  
-
-  if (i == CHARACTER_TABLE_SIZE)
-    {
-      NSString *c = [NSString stringWithCharacters: &character  length: 1];
-      [description appendString: c];
+      obj = [obj isKindOfClass: [NSResponder class]]
+		? [obj nextResponder]
+		: nil;
     }
-  return description;
-}
-
-- (void) loadBindingsFromFile: (NSString *)fullPath
-{
-  NSDictionary *bindings;
-      
-  bindings = [NSDictionary dictionaryWithContentsOfFile: fullPath];
-  if (bindings == nil)
-    {
-      NSLog (@"Unable to load KeyBindings from file %@", fullPath);
-    }
-  else
-    {
-      [_rootBindingTable loadBindingsFromDictionary: bindings];
-    }
-}
-
-- (void) loadBindingsWithName: (NSString *)fileName
-{
-  NSArray *paths;
-  NSEnumerator *enumerator;
-  NSString *libraryPath;
-  NSFileManager *fileManager = [NSFileManager defaultManager];
-
-  paths = NSSearchPathForDirectoriesInDomains (NSLibraryDirectory,
-					       NSAllDomainsMask, YES);
-  /* paths are in the order - user, network, local, root. Instead we
-     want to load keybindings in the order root, local, network, user
-     - so that user can override root - for this reason we use a
-     reverseObjectEnumerator.  */
-  enumerator = [paths reverseObjectEnumerator];
-  while ((libraryPath = [enumerator nextObject]) != nil)
-    {
-      NSString *fullPath;
-      fullPath =
-	[[[libraryPath stringByAppendingPathComponent: @"KeyBindings"]
-	  stringByAppendingPathComponent: fileName]
-	  stringByAppendingPathExtension: @"dict"];
-      if ([fileManager fileExistsAtPath: fullPath])
-	{
-	  [self loadBindingsFromFile: fullPath];
-	}
-    }
-}
-
-- (NSInputManager *) initWithName: (NSString *)inputServerName
-			     host: (NSString *)hostName
-{
-  NSUserDefaults *defaults;
-  CREATE_AUTORELEASE_POOL (pool);
-
-  defaults = [NSUserDefaults standardUserDefaults];
-
-  self = [super init];
-
-  _rootBindingTable = [GSKeyBindingTable new];
-  
-  /* Read the abort key from the user defaults.  */
-  {
-    NSString *abortKey = [defaults stringForKey: @"GSAbortKey"];
-
-    if (abortKey == nil)
-      {
-	_abortCharacter = 'g';
-	_abortFlags = NSControlKeyMask;		
-      }
-    else if (![NSInputManager parseKey: abortKey  
-			      intoCharacter: &_abortCharacter
-			      andModifiers: &_abortFlags])
-      {
-	NSLog (@"Could not parse GSAbortKey - using Control-g");
-	_abortCharacter = 'g';
-	_abortFlags = NSControlKeyMask;		
-      }
-  }
-
-  /* Read if we should insert Control- keystrokes into the text.  
-     This defaults to NO.  */
-  _insertControlKeystrokes = [defaults boolForKey: 
-					 @"GSInsertControlKeystrokes"];
-
-  /* Read the quote key from the user defaults.  */
-  {
-    NSString *quoteKey = [defaults stringForKey: @"GSQuoteKey"];
-    GSKeyBindingActionQuoteNextKeyStroke *quoteAction;
-    
-    quoteAction = [[GSKeyBindingActionQuoteNextKeyStroke alloc] init];
-
-    if (quoteKey == nil)
-      {
-	quoteKey = @"Control-q";
-      }
-
-    [_rootBindingTable bindKey: quoteKey  toAction: quoteAction];
-    RELEASE (quoteAction);
-  }
-  
-
-  /* Normally, when we start up, we load all the keybindings we find
-     in the following files, in this order:
-
-     $GNUSTEP_SYSTEM_ROOT/Library/KeyBindings/DefaultKeyBindings.dict
-     $GNUSTEP_LOCAL_ROOT/Library/KeyBindings/DefaultKeyBindings.dict
-     $GNUSTEP_NETWORK_ROOT/Library/KeyBindings/DefaultKeyBindings.dict
-     $GNUSTEP_USER_ROOT/Library/KeyBindings/DefaultKeyBindings.dict
-     
-     This gives you a first way of adding your customized keybindings
-     - adding a DefaultKeyBindings.dict to your GNUSTEP_USER_ROOT, and
-     putting additional keybindings in there.  This allows you to add
-     new keybindings to the standard ones, or override standard ones
-     with your own.  These keybindings are normally used by all your
-     applications (this is why they are in 'DefaultKeyBindings').
-
-     You can change this behaviour, by setting the GSKeyBindingsFiles
-     default to something else.  The GSKeyBindingsFiles default
-     contains an array of files which is loaded, in that order.  Each
-     file is searched first in GNUSTEP_SYSTEM_ROOT, then
-     GNUSTEP_LOCAL_ROOT, the GNUSTEP_NETWORK_ROOT, then
-     GNUSTEP_USER_ROOT.
-
-     Examples - 
-
-       GSKeyBindingsFiles = (DefaultKeyBindings, NicolaKeyBindings);
-
-     will first load DefaultKeyBindings.dict (as by default), then
-     NicolaKeyBindings.dict.
-
-       GSKeyBindingsFiles = (NicolaKeyBindings);
-
-     will not load DefaultKeyBindings.dict but only
-     NicolaKeyBindings.dict.
-
-     The default of course is 
-
-       GSKeyBindingsFiles = (DefaultKeyBindings);
-
-  */
-
-  /* First, load the DefaultKeyBindings.  */
-  {
-    NSArray *keyBindingsFiles = [defaults arrayForKey: @"GSKeyBindingsFiles"];
-    
-    if (keyBindingsFiles == nil)
-      {
-	keyBindingsFiles = [NSArray arrayWithObject: @"DefaultKeyBindings"];
-      }
-    
-    {
-      Class string = [NSString class];
-      unsigned int i;
-    
-      for (i = 0; i < [keyBindingsFiles count]; i++)
-	{
-	  NSString *filename = [keyBindingsFiles objectAtIndex: i];
-	  
-	  if ([filename isKindOfClass: string])
-	    {
-	      [self loadBindingsWithName: filename];
-	    }
-	}
-    }
-  }
-
-  /* Then, load any manually specified keybinding.  */
-  {
-     NSDictionary *keyBindings = [defaults dictionaryForKey: @"GSKeyBindings"];
-
-     if ([keyBindings isKindOfClass: [NSDictionary class]])
-       {
-	 [_rootBindingTable loadBindingsFromDictionary: keyBindings];
-       }
-  }
-
-  RELEASE (pool);
-  
-  return self;
-}
-
-- (void) dealloc
-{
-  TEST_RELEASE (_pendingKeyEvents);
-  RELEASE (_rootBindingTable);
-  [super dealloc];
-}
-
-- (void) handleKeyboardEvents: (NSArray *)eventArray
-		       client: (id)client
-{
-  NSEvent *theEvent;
-  NSEnumerator *eventEnum = [eventArray objectEnumerator];
-
-  /* If the client has changed, reset our internal state before going
-     on.  */
-  if (client != _currentClient)
-    {
-      [self resetInternalState];
-    }
-
-  _currentClient = client;
-
-  while ((theEvent = [eventEnum nextObject]) != nil)
-    {
-      NSString *characters = [theEvent characters];
-      NSString *unmodifiedCharacters = [theEvent charactersIgnoringModifiers];
-      unichar character = 0;
-      unsigned flags = [theEvent modifierFlags] & (NSShiftKeyMask 
-						   | NSAlternateKeyMask 
-						   | NSControlKeyMask
-						   | NSNumericPadKeyMask);
-      BOOL isFunctionKey = [theEvent modifierFlags] & NSFunctionKeyMask;
-
-      if ([unmodifiedCharacters length] > 0)
-	{
-	  character = [unmodifiedCharacters characterAtIndex: 0];
-	}
-
-      if (!_interpretNextKeyStrokeLiterally)
-	{
-	  GSKeyBindingAction *action;
-	  GSKeyBindingTable *table;
-	  BOOL found;
-	  unsigned adaptedFlags;
-
-	  /* If the keystroke is a function key, then we need to use
-	   * the full modifier flags to compare it against stored
-	   * keybindings, so that we can make a difference for example
-	   * between Shift-LeftArrow and LeftArrow.  But if it's not a
-	   * function key, then we should ignore the shift modifier -
-	   * for example Control-g is a keystroke, and Control-G is
-	   * another one.  The shift modifier flag is not used to
-	   * match these keystrokes - the fact that it's 'G' rather
-	   * than 'g' already contains the fact that it's typed in
-	   * with Shift.  */
-	  if (!isFunctionKey)
-	    {
-	      adaptedFlags = flags & (~NSShiftKeyMask); 
-	    }
-	  else
-	    {
-	      adaptedFlags = flags;
-	    }
-
-	  /* Special keybinding recognized in all contexts - abort -
-	     normally bound to Control-g.  The user is confused and
-	     wants to go home.  Abort whatever train of thoughts we
-	     were following, discarding whatever pending keystrokes we
-	     have, and return into default state.  */
-	  if (character == _abortCharacter  &&  adaptedFlags == _abortFlags)
-	    {
-	      [self resetInternalState];
-	      break;
-	    }
-
-	  /* Look up the character in the current keybindings table.  */
-	  found = [_currentBindingTable lookupKeyStroke: character
-					modifiers: adaptedFlags
-					returningActionIn: &action
-					tableIn: &table];
-	  
-	  if (found)
-	    {
-	      if (action != nil)
-		{
-		  /* First reset our internal state - we are done
-		     interpreting this keystroke sequence.  */
-		  [self resetInternalState];
-		  
-		  /* Then perform the action.  The action might actually
-		     modify our internal state, which is why we reset it
-		     before calling the action! (for example, performing
-		     the action might cause us to interpret the next
-		     keystroke literally).  */
-		  [action performActionWithInputManager: self];
-		  break;
-		}
-	      else if (table != nil)
-		{
-		  /* It's part of a composite multi-stroke
-		     keybinding.  */
-		  _currentBindingTable = table;
-		  [_pendingKeyEvents addObject: theEvent];
-		  break;
-		}
-	      /* Else it is as if we didn't find it! */
-	    }
-	  
-	  /* Ok - the keybinding wasn't found.  If we were tracking a
-	     multi-stroke keybinding, it means we were on a false
-	     track.  */
-	  if ([_pendingKeyEvents count] > 0)
-	    {
-	      NSEvent *e;
-
-	      /* Save the pending events locally in this stack
-		 frame.  */
-	      NSMutableArray *a = _pendingKeyEvents;
-	      RETAIN (a);
-	      
-	      /* Reset our internal state.  */
-	      [self resetInternalState];
-	      
-	      /* Take the very first event we received and which we
-		 tried to interpret as a key binding, which now we
-		 know was the wrong thing to do.  */	      
-	      e = [a objectAtIndex: 0];
-
-	      /* Interpret it literally, since interpreting it as a
-		 keybinding failed.  */
-	      _interpretNextKeyStrokeLiterally = YES;
-	      [self handleKeyboardEvents: [NSArray arrayWithObject: e]
-		    client: client];
-
-	      /* Now feed the remaining pending key events to
-		 ourselves for interpretation - again from
-		 scratch.  */
-	      [a removeObjectAtIndex: 0];
-	      [a addObject: theEvent];
-	      
-	      [self handleKeyboardEvents: a
-		    client: client];
-
-	      RELEASE (a);
-	      break;
-	    }	  
-	}
-      
-      /* We couldn't (or shouldn't) find the keybinding ... perform
-	 the default action - literally interpreting the
-	 keystroke.  */
-
-      /* If this was a forced literal interpretation, make sure the
-	 next one is interpreted normally.  */
-      _interpretNextKeyStrokeLiterally = NO;
-
-      /* During literal interpretation, function keys are ignored.
-	 Trying to insert 'PageUp' literally makes simply no sense.  */
-      if (isFunctionKey)
-	{
-	  NSBeep ();
-	  break;
-	}
-
-      /* During literal interpretation, control characters are ignored
-	 if GSInsertControlKeystrokes was NO.  */
-      if (_insertControlKeystrokes == NO)
-	{
-	  if (flags & NSControlKeyMask)
-	    {
-	      NSBeep ();
-	      break;
-	    }
-	}
-
-      switch (character)
-	{
-	case NSBackspaceCharacter:
-	  [self doCommandBySelector: @selector (deleteBackward:)];
-	  break;
-	  
-	case NSTabCharacter:
-	  if (flags & NSShiftKeyMask)
-	    {
-	      [self doCommandBySelector: @selector (insertBacktab:)];
-	    }
-	  else
-	    {
-	      [self doCommandBySelector: @selector (insertTab:)];
-	    }
-	  break;
-	  
-	case NSEnterCharacter:
-	case NSFormFeedCharacter:
-	case NSCarriageReturnCharacter:
-	  [self doCommandBySelector: @selector (insertNewline:)];
-	  break;
-	  
-	default:
-	  [self insertText: characters];
-	  break;
-	}
-    }
-}
-
-- (void) resetInternalState
-{
-  _currentBindingTable = _rootBindingTable;
-  ASSIGN (_pendingKeyEvents, [NSMutableArray array]);
-  _interpretNextKeyStrokeLiterally = NO;
-}
-
-- (void) quoteNextKeyStroke
-{
-  _interpretNextKeyStrokeLiterally = YES;
-}
-
-- (BOOL) handleMouseEvent: (NSEvent *)theMouseEvent
-{
-  return NO;
-}
-
-- (NSString *) language
-{
-  return @"English";
-}
-
-
-- (NSString *) localizedInputManagerName
-{
+  NSLog(@"%@: Couldn't specify client", self);
   return nil;
 }
 
-- (void) markedTextAbandoned: (id)client
-{}
 
-- (void) markedTextSelectionChanged: (NSRange)newSel
-			     client: (id)client
-{}
-
-- (BOOL) wantsToDelayTextChangeNotifications
+- (void)lostConnection: (NSNotification *)aNotification
 {
-  return NO;
+  [self resignObserver];
+  [self setServerProxy: nil];
+  NSLog(@"%@: Lost connection to input server");
 }
 
-- (BOOL) wantsToHandleMouseEvents
-{
-  return NO;
-}
-
-- (BOOL) wantsToInterpretAllKeystrokes
-{
-  return NO;
-}
-
-- (void) setMarkedText: (id)aString 
-	 selectedRange: (NSRange)selRange
-{}
-
-- (BOOL) hasMarkedText
-{
-  return NO;
-}
-
-- (NSRange) markedRange
-{
-  return NSMakeRange (NSNotFound, 0);
-}
-
-- (NSRange) selectedRange
-{
-  return NSMakeRange (NSNotFound, 0);
-}
-
-- (void) unmarkText
-{}
-
-- (NSArray*) validAttributesForMarkedText
-{
-  return nil;
-}
-
-- (NSAttributedString *) attributedSubstringFromRange: (NSRange)theRange
-{
-  return nil;
-}
-
-- (unsigned int) characterIndexForPoint: (NSPoint)thePoint
-{
-  return 0;
-}
-
-- (long) conversationIdentifier
-{
-  return 0;
-}
-
-- (void) doCommandBySelector: (SEL)aSelector
-{
-  [_currentClient doCommandBySelector: aSelector];
-}
-
-- (NSRect) firstRectForCharacterRange: (NSRange)theRange
-{
-  return NSZeroRect;
-}
-
-- (void) insertText: (id)aString
-{
-  [_currentClient insertText: aString];
-}
-
-@end
+@end /* @implementation NSInputManager (Private) */

@@ -35,7 +35,7 @@
 #include "AppKit/NSEvent.h"
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSHelpManager.h"
-#include "AppKit/NSInputManager.h"
+#include "NSInputManagerPriv.h"
 
 @implementation NSResponder
 
@@ -50,7 +50,9 @@
       
       /* Gets the current input manager - this forces it to read the
          key binding files at this stage.  */
-      [NSInputManager currentInputManager];
+      /* NSInputManager needs somehow to interact with the NSApplication.
+         Perhap, the right place of the instantiation may be there... */
+      [[NSInputManager alloc] initWithName: nil host: nil];
     }
 }
 
@@ -140,8 +142,7 @@
 
 - (void) interpretKeyEvents:(NSArray*)eventArray
 {
-  [[NSInputManager currentInputManager] handleKeyboardEvents: eventArray
-					client: self];
+  [[NSInputManager currentInputManager] interpretKeyEvents: eventArray];
 }
 
 - (void) flushBufferedKeyEvents
