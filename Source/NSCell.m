@@ -324,6 +324,7 @@ static NSColor	*shadowCol;
 {
   NSString *string = aString;
 
+  /* We refuse nil for compatibiliy with MacOS X, which refuses nil */
   NSAssert (string != nil, NSInvalidArgumentException);
 
   _cell.type = NSTextCellType;
