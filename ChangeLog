@@ -1,3 +1,8 @@
+Thu Jan  7 16:15:18 1999  Adam Fedor  <fedor@ultra.doc.com>
+
+	* Headers/gnustep/gui/GSContext.h: Add new backend instance
+ 	variable for storing method pointers.
+
 Thu Jan  7 15:15:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
         * Tools/make_services.m: Extended to build a map of extensions to

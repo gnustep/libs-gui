@@ -84,6 +84,8 @@ typedef enum _NSWindowOrderingMode {
 {
 	NSDictionary  *context_info;
 	NSMutableData *context_data;
+@public
+    void *be_reserved;
 }
 
 //
