@@ -1,8 +1,19 @@
+Wed Mar 10 12:56:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSAffineTransform.m: Improved debug logging.
+	* Source/NSView.m: Add loads of checks to ensure that you can't set
+	illegal (negative) dimensions in frame or bounds.  Add loads of code
+	to cope with scaling when bounds dimensions are zero.
+	Added logged warning if you set bounds dimensions to zero.
+	Changed debug logging to use the 'NSView' logging level.
+
 Tue Mar  9 19:57:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Headers/AppKit/NSParagraphStyle.h: Tidied
+	* Headers/AppKit/NSTextStorage.h: Tidied
 	* Source/NSParagraphStyle.m: Implemented NSTextTab, NSParagraphStyle,
 	and NSMutableParagraphStyle classes.
+	* Source/NSTextStorage.m: Added incomplete implementation.
 
 1999-03-08  Adam Fedor  <fedor@gnu.org>
 

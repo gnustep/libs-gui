@@ -82,7 +82,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
       flip = [matrixClass new];
       [flip setTransformStruct: ats];
 
-      NSDebugLog(@"Initialize NSView class\n");
+      NSDebugLLog(@"NSView", @"Initialize NSView class\n");
       [self setVersion: 1];
     }
 }
@@ -107,6 +107,9 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 - (id) initWithFrame: (NSRect)frameRect
 {
   [super init];				// super is NSResponder
+
+  NSAssert(frameRect.size.width >= 0 && frameRect.size.height >= 0,
+	@"illegal frame dimensions supplied");
 
   frame = frameRect;			// Set frame rectangle
   bounds.origin = NSZeroPoint;		// Set bounds rectangle
@@ -393,6 +396,9 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 {
   NSSize old_size = frame.size;
 
+  NSAssert(frameRect.size.width >= 0 && frameRect.size.height >= 0,
+	@"illegal frame dimensions supplied");
+
   if (coordinates_valid)
     (*invalidateImp)(self, invalidateSel);
   frame = frameRect;
@@ -423,6 +429,8 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 {
   NSSize old_size = frame.size;
 
+  NSAssert(newSize.width >= 0 && newSize.height >= 0,
+	@"illegal frame dimensions supplied");
   if (coordinates_valid)
     (*invalidateImp)(self, invalidateSel);
   frame.size = bounds.size = newSize;
@@ -469,20 +477,44 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 - (void) scaleUnitSquareToSize: (NSSize)newSize
 {
+  float	sx;
+  float	sy;
+
+  NSAssert(newSize.width > 0 && newSize.height > 0, @"illegal size supplied");
+
   if (coordinates_valid)
     (*invalidateImp)(self, invalidateSel);
-  if (!newSize.width)
-    newSize.width = 1;
-  if (!newSize.height)
-    newSize.height = 1;
 
   bounds.size.width = frame.size.width / newSize.width;
   bounds.size.height = frame.size.height / newSize.height;
 
   is_rotated_or_scaled_from_base = YES;
 
-  [boundsMatrix scaleBy: frame.size.width / bounds.size.width
-		       : frame.size.height / bounds.size.height];
+  if (bounds.size.width == 0)
+    {
+      if (frame.size.width == 0)
+	sx = 1;
+      else
+	sx = FLT_MAX;
+    }
+  else
+    {
+      sx = frame.size.width / bounds.size.width;
+    }
+
+  if (bounds.size.height == 0)
+    {
+      if (frame.size.height == 0)
+	sy = 1;
+      else
+	sy = FLT_MAX;
+    }
+  else
+    {
+      sy = frame.size.height / bounds.size.height;
+    }
+
+  [boundsMatrix scaleBy: sx : sy];
 
   if (post_bounds_changes)
     [[NSNotificationCenter defaultCenter]
@@ -494,15 +526,39 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 {
   float sx, sy;
 
+  NSAssert(aRect.size.width >= 0 && aRect.size.height >= 0,
+	@"illegal bounds dimensions supplied");
+
   if (coordinates_valid)
     (*invalidateImp)(self, invalidateSel);
-  if (aRect.size.width <= 0 || aRect.size.height <= 0)
-    [NSException raise: NSInvalidArgumentException
-		format: @"illegal bounds size supplied"];
+
   bounds = aRect;
   [boundsMatrix setFrameOrigin: NSMakePoint(-bounds.origin.x,-bounds.origin.y)];
-  sx = frame.size.width / bounds.size.width;
-  sy = frame.size.height / bounds.size.height;
+
+  if (bounds.size.width == 0)
+    {
+      if (frame.size.width == 0)
+	sx = 1;
+      else
+	sx = FLT_MAX;
+    }
+  else
+    {
+      sx = frame.size.width / bounds.size.width;
+    }
+
+  if (bounds.size.height == 0)
+    {
+      if (frame.size.height == 0)
+	sy = 1;
+      else
+	sy = FLT_MAX;
+    }
+  else
+    {
+      sy = frame.size.height / bounds.size.height;
+    }
+
   [boundsMatrix scaleTo: sx : sy];
 
   if (sx != 1 || sy != 1)
@@ -532,14 +588,48 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 {
   float sx, sy;
 
+  NSAssert(newSize.width >= 0 && newSize.height >= 0,
+	@"illegal bounds dimensions supplied");
+
   if (coordinates_valid)
-    (*invalidateImp)(self, invalidateSel);
-  if (newSize.width <= 0 || newSize.height <= 0)
-    [NSException raise: NSInvalidArgumentException
-		format: @"illegal bounds size supplied"];
-    bounds.size = newSize;
-  sx = frame.size.width / bounds.size.width;
-  sy = frame.size.height / bounds.size.height;
+    {
+      (*invalidateImp)(self, invalidateSel);
+    }
+  if (newSize.width == 0)
+    {
+      NSLog(@"[NSView -setBoundsSize:] zero width supplied");
+    }
+  if (newSize.height == 0)
+    {
+      NSLog(@"[NSView -setBoundsSize:] zero height supplied");
+    }
+
+  bounds.size = newSize;
+
+  if (bounds.size.width == 0)
+    {
+      if (frame.size.width == 0)
+	sx = 1;
+      else
+	sx = FLT_MAX;
+    }
+  else
+    {
+      sx = frame.size.width / bounds.size.width;
+    }
+
+  if (bounds.size.height == 0)
+    {
+      if (frame.size.height == 0)
+	sy = 1;
+      else
+	sy = FLT_MAX;
+    }
+  else
+    {
+      sy = frame.size.height / bounds.size.height;
+    }
+
   [boundsMatrix scaleTo: sx : sy];
 
   if (sx != 1 || sy != 1)
@@ -578,7 +668,27 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 - (NSRect) centerScanRect: (NSRect)aRect
 {
-  return NSZeroRect;
+  NSAffineTransform	*matrix;
+
+  /*
+   *	Hmm - we assume that the windows coordinate system is centered on the
+   *	pixels of the screen - this may not be correct of course.
+   *	Plus - this is all pretty meaningless is we are not in a window!
+   */
+  matrix = [self _matrixToWindow];
+  aRect.origin = [matrix pointInMatrixSpace: aRect.origin];
+  aRect.size = [matrix sizeInMatrixSpace: aRect.size];
+
+  aRect.origin.x = floor(aRect.origin.x);
+  aRect.origin.y = floor(aRect.origin.y);
+  aRect.size.width = floor(aRect.size.width);
+  aRect.size.height = floor(aRect.size.height);
+
+  matrix = [self _matrixFromWindow];
+  aRect.origin = [matrix pointInMatrixSpace: aRect.origin];
+  aRect.size = [matrix sizeInMatrixSpace: aRect.size];
+
+  return aRect;
 }
 
 - (NSPoint) convertPoint: (NSPoint)aPoint fromView: (NSView*)aView
@@ -845,8 +955,32 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
   if (changedSize && is_rotated_or_scaled_from_base)
     {
-      float sx = frame.size.width / bounds.size.width;
-      float sy = frame.size.height / bounds.size.height;
+      float sx;
+      float sy;
+
+      if (bounds.size.width == 0)
+	{
+	  if (frame.size.width == 0)
+	    sx = 1;
+	  else
+	    sx = FLT_MAX;
+	}
+      else
+	{
+	  sx = frame.size.width / bounds.size.width;
+	}
+
+      if (bounds.size.height == 0)
+	{
+	  if (frame.size.height == 0)
+	    sy = 1;
+	  else
+	    sy = FLT_MAX;
+	}
+      else
+	{
+	  sy = frame.size.height / bounds.size.height;
+	}
 
       [boundsMatrix scaleTo: sx : sy];
     }
@@ -1071,9 +1205,8 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   if (!window)
     return;
 
-  if (!boundsMatrix || !frameMatrix)
-    NSLog (@"warning: %@ %p does not have it's PS matrices configured!",
-	  			NSStringFromClass(isa), self);
+  if (coordinates_valid == NO)
+    [self _rebuildCoordinates];
 
   [self lockFocus];
   [self drawRect: aRect];
@@ -1569,7 +1702,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 {
   [super encodeWithCoder: aCoder];
 
-  NSDebugLog(@"NSView: start encoding\n");
+  NSDebugLLog(@"NSView", @"NSView: start encoding\n");
   [aCoder encodeRect: frame];
   [aCoder encodeRect: bounds];
   [aCoder encodeConditionalObject: super_view];
@@ -1583,14 +1716,14 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &disable_autodisplay];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &post_frame_changes];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &autoresize_subviews];
-  NSDebugLog(@"NSView: finish encoding\n");
+  NSDebugLLog(@"NSView", @"NSView: finish encoding\n");
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   [super initWithCoder: aDecoder];
 
-  NSDebugLog(@"NSView: start decoding\n");
+  NSDebugLLog(@"NSView", @"NSView: start decoding\n");
   frame = [aDecoder decodeRect];
   bounds = [aDecoder decodeRect];
   super_view = [aDecoder decodeObject];
@@ -1604,7 +1737,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &disable_autodisplay];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &post_frame_changes];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &autoresize_subviews];
-  NSDebugLog(@"NSView: finish decoding\n");
+  NSDebugLLog(@"NSView", @"NSView: finish decoding\n");
 
   return self;
 }

@@ -29,6 +29,7 @@
 #include <math.h>
 
 #include <Foundation/NSArray.h>
+#include <Foundation/NSException.h>
 #include <Foundation/NSString.h>
 
 #include <AppKit/config.h>
@@ -124,7 +125,7 @@ static NSAffineTransformStruct identityTransform = {
   float det;
 
   det = A * D - B * C;
-  if (!det)
+  if (det == 0)
     {
       NSLog (@"error: determinant of matrix is 0!");
       return;
@@ -137,7 +138,8 @@ static NSAffineTransformStruct identityTransform = {
   newTX = (-D * TX + C * TY) / det;
   newTY = (B * TX - A * TY) / det;
 
-  NSDebugLog (@"inverse of matrix ((%f, %f) (%f, %f) (%f, %f))\n"
+  NSDebugLLog(@"NSAffineTransform",
+	@"inverse of matrix ((%f, %f) (%f, %f) (%f, %f))\n"
 	@"is ((%f, %f) (%f, %f) (%f, %f))",
 	A, B, C, D, TX, TY,
 	newA, newB, newC, newD, newTX, newTY);
