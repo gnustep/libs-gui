@@ -1,7 +1,7 @@
 Thu Apr 11 08:54:16 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/GSTable.m ([+new]): New method working around a bug in
-	OSX ... with this, except for #include fixups, the box code work
+	OSX ... with this, except for #include fixups, the box code works
 	on OSX.  (Suggested by Helge Hess).
 
 2002-04-10  Adam Fedor  <fedor@gnu.org>
