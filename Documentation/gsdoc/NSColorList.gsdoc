@@ -16,59 +16,88 @@
       <class name="NSColorList" super="NSObject">
         <declared>AppKit/NSColorList.h</declared>
         <conform>NSCoding</conform>
-        <desc>
-        </desc>
-        <method type="NSArray*" factory="yes"><sel>availableColorLists</sel>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="NSArray*" factory="yes">
+          <sel>availableColorLists</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSColorList*" factory="yes"><sel>colorListNamed:</sel><arg type="NSString*">name</arg>
-        <desc>
-        </desc>
+        <method type="NSColorList*" factory="yes">
+          <sel>colorListNamed:</sel>
+          <arg type="NSString*">name</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSArray*"><sel>allKeys</sel>
-        <desc>
-        </desc>
+        <method type="NSArray*">
+          <sel>allKeys</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSColor*"><sel>colorWithKey:</sel><arg type="NSString*">key</arg>
-        <desc>
-        </desc>
+        <method type="NSColor*">
+          <sel>colorWithKey:</sel>
+          <arg type="NSString*">key</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="id"><sel>initWithName:</sel><arg type="NSString*">name</arg>
-        <desc>
-        </desc>
+        <method type="id">
+          <sel>initWithName:</sel>
+          <arg type="NSString*">name</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="id"><sel>initWithName:</sel><arg type="NSString*">name</arg><sel>fromFile:</sel><arg type="NSString*">path</arg>
-        <desc>
-        </desc>
+        <method type="id">
+          <sel>initWithName:</sel>
+          <arg type="NSString*">name</arg>
+          <sel>fromFile:</sel>
+          <arg type="NSString*">path</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>insertColor:</sel><arg type="NSColor*">color</arg><sel>key:(NSString *)key atIndex:</sel><arg type="unsigned">location</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>insertColor:</sel>
+          <arg type="NSColor*">color</arg>
+          <sel>key:</sel>
+          <arg type="NSString *">key</arg>
+          <sel>atIndex:</sel>
+          <arg type="unsigned">location</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>isEditable</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>isEditable</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSString*"><sel>name</sel>
-        <desc>
-        </desc>
+        <method type="NSString*">
+          <sel>name</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>removeColorWithKey:</sel><arg type="NSString*">key</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>removeColorWithKey:</sel>
+          <arg type="NSString*">key</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>removeFile</sel>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>removeFile</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setColor:</sel><arg type="NSColor*">color</arg><sel>forKey:</sel><arg type="NSString*">key</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setColor:</sel>
+          <arg type="NSColor*">color</arg>
+          <sel>forKey:</sel>
+          <arg type="NSString*">key</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>writeToFile:</sel><arg type="NSString*">path</arg>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>writeToFile:</sel>
+          <arg type="NSString*">path</arg>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

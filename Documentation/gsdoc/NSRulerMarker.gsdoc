@@ -16,83 +16,117 @@
       <class name="NSRulerMarker" super="NSObject">
         <declared>AppKit/NSRulerMarker.h</declared>
         <conform>NSCopying</conform>
-        <desc>
-        </desc>
-        <method type="void"><sel>drawRect:</sel><arg type="NSRect">aRect</arg>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="void">
+          <sel>drawRect:</sel>
+          <arg type="NSRect">aRect</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSImage*"><sel>image</sel>
-        <desc>
-        </desc>
+        <method type="NSImage*">
+          <sel>image</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSPoint"><sel>imageOrigin</sel>
-        <desc>
-        </desc>
+        <method type="NSPoint">
+          <sel>imageOrigin</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSRect"><sel>imageRectInRuler</sel>
-        <desc>
-        </desc>
+        <method type="NSRect">
+          <sel>imageRectInRuler</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="id"><sel>initWithRulerView:</sel><arg type="NSRulerView*">aRulerView</arg><sel>markerLocation:</sel><arg type="float">location</arg><sel>image:(NSImage *)anImage imageOrigin:</sel><arg type="NSPoint">imageOrigin</arg>
-        <desc>
-        </desc>
+        <method type="id">
+          <sel>initWithRulerView:</sel>
+          <arg type="NSRulerView*">aRulerView</arg>
+          <sel>markerLocation:</sel>
+          <arg type="float">location</arg>
+          <sel>image:</sel>
+          <arg type="NSImage *">anImage</arg>
+          <sel>imageOrigin:</sel>
+          <arg type="NSPoint">imageOrigin</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>isDragging</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>isDragging</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>isMovable</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>isMovable</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>isRemovable</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>isRemovable</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="float"><sel>makerLocation</sel>
-        <desc>
-        </desc>
+        <method type="float">
+          <sel>makerLocation</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="id&lt;NSCopying&gt;"><sel>representedObject</sel>
-        <desc>
-        </desc>
+        <method type="id&lt;NSCopying&gt;">
+          <sel>representedObject</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSRulerView*"><sel>ruler</sel>
-        <desc>
-        </desc>
+        <method type="NSRulerView*">
+          <sel>ruler</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setImage:</sel><arg type="NSImage*">anImage</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setImage:</sel>
+          <arg type="NSImage*">anImage</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setImageOrigin:</sel><arg type="NSPoint">aPoint</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setImageOrigin:</sel>
+          <arg type="NSPoint">aPoint</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setMarkerLocation:</sel><arg type="float">location</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setMarkerLocation:</sel>
+          <arg type="float">location</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setMovable:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setMovable:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setRemovable:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setRemovable:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setRepresentedObject:</sel><arg type="id&lt;NSCopying&gt;">anObject</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setRepresentedObject:</sel>
+          <arg type="id&lt;NSCopying&gt;">anObject</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="float"><sel>thicknessRequiredInRuler</sel>
-        <desc>
-        </desc>
+        <method type="float">
+          <sel>thicknessRequiredInRuler</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>trackMouse:</sel><arg type="NSEvent*">theEvent</arg>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>trackMouse:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

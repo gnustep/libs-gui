@@ -16,187 +16,266 @@
       <class name="NSPopUpButtonCell" super="NSMenuItemCell">
         <declared>AppKit/NSPopUpButtonCell.h</declared>
         <conform>NSCoding</conform>
-        <desc>
-        </desc>
-        <method type="void"><sel>addItemWithTitle:</sel><arg type="NSString*">title</arg>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="void">
+          <sel>addItemWithTitle:</sel>
+          <arg type="NSString*">title</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>addItemsWithTitles:</sel><arg type="NSArray*">itemTitles</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>addItemsWithTitles:</sel>
+          <arg type="NSArray*">itemTitles</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>altersStateOfSelectedItem</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>altersStateOfSelectedItem</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSPopUpArrowPosition"><sel>arrowPosition</sel>
-        <desc>
-        </desc>
+        <method type="NSPopUpArrowPosition">
+          <sel>arrowPosition</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>attachPopUpWithFrame:</sel><arg type="NSRect">cellFrame</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>attachPopUpWithFrame:</sel>
+          <arg type="NSRect">cellFrame</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>autoenablesItems</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>autoenablesItems</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>dismissPopUp</sel>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>dismissPopUp</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="int"><sel>indexOfItem:</sel><arg type="id&lt;NSMenuItem&gt;">item</arg>
-        <desc>
-        </desc>
+        <method type="int">
+          <sel>indexOfItem:</sel>
+          <arg type="id&lt;NSMenuItem&gt;">item</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="int"><sel>indexOfItemWithRepresentedObject:</sel><arg type="id">obj</arg>
-        <desc>
-        </desc>
+        <method type="int">
+          <sel>indexOfItemWithRepresentedObject:</sel>
+          <arg type="id">obj</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="int"><sel>indexOfItemWithTag:</sel><arg type="int">tag</arg>
-        <desc>
-        </desc>
+        <method type="int">
+          <sel>indexOfItemWithTag:</sel>
+          <arg type="int">tag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="int"><sel>indexOfItemWithTarget:</sel><arg type="id">target</arg><sel>andAction:</sel><arg type="SEL">actionSelector</arg>
-        <desc>
-        </desc>
+        <method type="int">
+          <sel>indexOfItemWithTarget:</sel>
+          <arg type="id">target</arg>
+          <sel>andAction:</sel>
+          <arg type="SEL">actionSelector</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="int"><sel>indexOfItemWithTitle:</sel><arg type="NSString*">title</arg>
-        <desc>
-        </desc>
+        <method type="int">
+          <sel>indexOfItemWithTitle:</sel>
+          <arg type="NSString*">title</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="int"><sel>indexOfSelectedItem</sel>
-        <desc>
-        </desc>
+        <method type="int">
+          <sel>indexOfSelectedItem</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="id"><sel>initTextCell:</sel><arg type="NSString*">stringValue</arg>
-        <desc>
-        </desc>
+        <method type="id">
+          <sel>initTextCell:</sel>
+          <arg type="NSString*">stringValue</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>insertItemWithTitle:</sel><arg type="NSString*">title</arg><sel>atIndex:</sel><arg type="int">index</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>insertItemWithTitle:</sel>
+          <arg type="NSString*">title</arg>
+          <sel>atIndex:</sel>
+          <arg type="int">index</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSArray*"><sel>itemArray</sel>
-        <desc>
-        </desc>
+        <method type="NSArray*">
+          <sel>itemArray</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="id&lt;NSMenuItem&gt;"><sel>itemAtIndex:</sel><arg type="int">index</arg>
-        <desc>
-        </desc>
+        <method type="id&lt;NSMenuItem&gt;">
+          <sel>itemAtIndex:</sel>
+          <arg type="int">index</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSString*"><sel>itemTitleAtIndex:</sel><arg type="int">index</arg>
-        <desc>
-        </desc>
+        <method type="NSString*">
+          <sel>itemTitleAtIndex:</sel>
+          <arg type="int">index</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSArray*"><sel>itemTitles</sel>
-        <desc>
-        </desc>
+        <method type="NSArray*">
+          <sel>itemTitles</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="id&lt;NSMenuItem&gt;"><sel>itemWithTitle:</sel><arg type="NSString*">title</arg>
-        <desc>
-        </desc>
+        <method type="id&lt;NSMenuItem&gt;">
+          <sel>itemWithTitle:</sel>
+          <arg type="NSString*">title</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="id&lt;NSMenuItem&gt;"><sel>lastItem</sel>
-        <desc>
-        </desc>
+        <method type="id&lt;NSMenuItem&gt;">
+          <sel>lastItem</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSMenu*"><sel>menu</sel>
-        <desc>
-        </desc>
+        <method type="NSMenu*">
+          <sel>menu</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="int"><sel>numberOfItems</sel>
-        <desc>
-        </desc>
+        <method type="int">
+          <sel>numberOfItems</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>performClick:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>performClick:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>performClickWithFrame:</sel><arg type="NSRect">frame</arg><sel>inView:</sel><arg type="NSView*">controlView</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>performClickWithFrame:</sel>
+          <arg type="NSRect">frame</arg>
+          <sel>inView:</sel>
+          <arg type="NSView*">controlView</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSRectEdge"><sel>preferredEdge</sel>
-        <desc>
-        </desc>
+        <method type="NSRectEdge">
+          <sel>preferredEdge</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>pullsDown</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>pullsDown</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>removeAllItems</sel>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>removeAllItems</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>removeItemAtIndex:</sel><arg type="int">index</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>removeItemAtIndex:</sel>
+          <arg type="int">index</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>removeItemWithTitle:</sel><arg type="NSString*">title</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>removeItemWithTitle:</sel>
+          <arg type="NSString*">title</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="id&lt;NSMenuItem&gt;"><sel>selectedItem</sel>
-        <desc>
-        </desc>
+        <method type="id&lt;NSMenuItem&gt;">
+          <sel>selectedItem</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>selectItem:</sel><arg type="id&lt;NSMenuItem&gt;">item</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>selectItem:</sel>
+          <arg type="id&lt;NSMenuItem&gt;">item</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>selectItemAtIndex:</sel><arg type="int">index</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>selectItemAtIndex:</sel>
+          <arg type="int">index</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>selectItemWithTitle:</sel><arg type="NSString*">title</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>selectItemWithTitle:</sel>
+          <arg type="NSString*">title</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setAltersStateOfSelectedItem:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setAltersStateOfSelectedItem:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setArrowPosition:</sel><arg type="NSPopUpArrowPosition">position</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setArrowPosition:</sel>
+          <arg type="NSPopUpArrowPosition">position</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setAutoenablesItems:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setAutoenablesItems:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setMenu:</sel><arg type="NSMenu*">menu</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setMenu:</sel>
+          <arg type="NSMenu*">menu</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setPreferredEdge:</sel><arg type="NSRectEdge">edge</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setPreferredEdge:</sel>
+          <arg type="NSRectEdge">edge</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setPullsDown:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setPullsDown:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setTitle:</sel><arg type="NSString*">aString</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setTitle:</sel>
+          <arg type="NSString*">aString</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setUsesItemFromMenu:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setUsesItemFromMenu:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>synchronizeTitleAndSelectedItem</sel>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>synchronizeTitleAndSelectedItem</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSString*"><sel>titleOfSelectedItem</sel>
-        <desc>
-        </desc>
+        <method type="NSString*">
+          <sel>titleOfSelectedItem</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>usesItemFromMenu</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>usesItemFromMenu</sel>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

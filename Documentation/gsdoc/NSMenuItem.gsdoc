@@ -15,8 +15,8 @@
       <heading>NSMenuItem</heading>
       <class name="NSMenuItem" super="NSObject">
         <declared>AppKit/NSMenuItem.h</declared>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
       </class>
     </chapter>
   </body>

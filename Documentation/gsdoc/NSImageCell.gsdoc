@@ -16,31 +16,40 @@
       <class name="NSImageCell" super="NSCell">
         <declared>AppKit/NSImageCell.h</declared>
         <conform>NSCopying</conform>
-        <desc>
-        </desc>
-        <method type="NSImageAlignment"><sel>imageAlignment</sel>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="NSImageAlignment">
+          <sel>imageAlignment</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSImageFrameStyle"><sel>imageFrameStyle</sel>
-        <desc>
-        </desc>
+        <method type="NSImageFrameStyle">
+          <sel>imageFrameStyle</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSImageScaling"><sel>imageScaling</sel>
-        <desc>
-        </desc>
+        <method type="NSImageScaling">
+          <sel>imageScaling</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setImageAlignment:</sel><arg type="NSImageAlignment">alignment</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setImageAlignment:</sel>
+          <arg type="NSImageAlignment">alignment</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setImageFrameStyle:</sel><arg type="NSImageFrameStyle">frameStyle</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setImageFrameStyle:</sel>
+          <arg type="NSImageFrameStyle">frameStyle</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setImageScaling:</sel><arg type="NSImageScaling">scaling</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setImageScaling:</sel>
+          <arg type="NSImageScaling">scaling</arg>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

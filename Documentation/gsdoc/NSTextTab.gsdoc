@@ -16,19 +16,25 @@
       <class name="NSTextTab" super="NSObject">
         <declared>AppKit/NSParagraphStyle.h</declared>
         <conform>NSCopying</conform>
-        <desc>
-        </desc>
-        <method type="id"><sel>initWithType:</sel><arg type="NSTextTabType">type</arg><sel>location:</sel><arg type="float">location</arg>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="id">
+          <sel>initWithType:</sel>
+          <arg type="NSTextTabType">type</arg>
+          <sel>location:</sel>
+          <arg type="float">location</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="float"><sel>location</sel>
-        <desc>
-        </desc>
+        <method type="float">
+          <sel>location</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSTextTabType"><sel>tabStopType</sel>
-        <desc>
-        </desc>
+        <method type="NSTextTabType">
+          <sel>tabStopType</sel>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

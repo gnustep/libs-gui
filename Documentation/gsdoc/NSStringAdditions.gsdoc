@@ -15,19 +15,29 @@
       <heading>NSStringAdditions</heading>
       <class name="NSStringAdditions" super="NSObject">
         <declared>AppKit/NSStringDrawing.h</declared>
-        <desc>
-        </desc>
-        <method type="void"><sel>drawAtPoint:</sel><arg type="NSPoint">aPoint</arg><sel>withAttributes:</sel><arg type="NSDictionary*">attributes</arg>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="void">
+          <sel>drawAtPoint:</sel>
+          <arg type="NSPoint">aPoint</arg>
+          <sel>withAttributes:</sel>
+          <arg type="NSDictionary*">attributes</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>drawInRect:</sel><arg type="NSRect">aRect</arg><sel>withAttributes:</sel><arg type="NSDictionary*">attributes</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>drawInRect:</sel>
+          <arg type="NSRect">aRect</arg>
+          <sel>withAttributes:</sel>
+          <arg type="NSDictionary*">attributes</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSSize"><sel>sizeWithAttributes:</sel><arg type="NSDictionary*">attributes</arg>
-        <desc>
-        </desc>
+        <method type="NSSize">
+          <sel>sizeWithAttributes:</sel>
+          <arg type="NSDictionary*">attributes</arg>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

@@ -16,11 +16,13 @@
       <class name="NSTableHeaderCell" super="NSTextFieldCell">
         <declared>AppKit/NSTableHeaderCell.h</declared>
         <conform>NSCoding</conform>
-        <desc>
-        </desc>
-        <method type="void"><sel>drawInteriorWithFrame:</sel><arg type="NSRect">cellFrame</arg>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="void">
+          <sel>drawInteriorWithFrame:</sel>
+          <arg type="NSRect">cellFrame</arg>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

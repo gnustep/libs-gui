@@ -16,39 +16,47 @@
       <class name="NSScreen" super="NSObject">
         <declared>AppKit/NSScreen.h</declared>
         <conform>NSObject</conform>
-        <desc>
-        </desc>
-        <method type="NSScreen*" factory="yes"><sel>deepestScreen</sel>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="NSScreen*" factory="yes">
+          <sel>deepestScreen</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSScreen*" factory="yes"><sel>mainScreen</sel>
-        <desc>
-        </desc>
+        <method type="NSScreen*" factory="yes">
+          <sel>mainScreen</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSArray*" factory="yes"><sel>screens</sel>
-        <desc>
-        </desc>
+        <method type="NSArray*" factory="yes">
+          <sel>screens</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSWindowDepth"><sel>depth</sel>
-        <desc>
-        </desc>
+        <method type="NSWindowDepth">
+          <sel>depth</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSDictionary*"><sel>deviceDescription</sel>
-        <desc>
-        </desc>
+        <method type="NSDictionary*">
+          <sel>deviceDescription</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSRect"><sel>frame</sel>
-        <desc>
-        </desc>
+        <method type="NSRect">
+          <sel>frame</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="constNSWindowDepth*"><sel>supportedWindowDepths</sel>
-        <desc>
-        </desc>
+        <method type="constNSWindowDepth*">
+          <sel>supportedWindowDepths</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSRect"><sel>visibleFrame</sel>
-        <desc>
-        </desc>
+        <method type="NSRect">
+          <sel>visibleFrame</sel>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

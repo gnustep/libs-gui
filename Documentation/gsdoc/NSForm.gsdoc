@@ -16,71 +16,104 @@
       <class name="NSForm" super="NSMatrix">
         <declared>AppKit/NSForm.h</declared>
         <conform>NSCoding</conform>
-        <desc>
-        </desc>
-        <method type="NSFormCell*"><sel>addEntry:</sel><arg type="NSString*">title</arg>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="NSFormCell*">
+          <sel>addEntry:</sel>
+          <arg type="NSString*">title</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="id"><sel>cellAtIndex:</sel><arg type="int">entryIndex</arg>
-        <desc>
-        </desc>
+        <method type="id">
+          <sel>cellAtIndex:</sel>
+          <arg type="int">entryIndex</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>drawCellAtIndex:</sel><arg type="int">entryIndex</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>drawCellAtIndex:</sel>
+          <arg type="int">entryIndex</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="int"><sel>indexOfCellWithTag:</sel><arg type="int">tag</arg>
-        <desc>
-        </desc>
+        <method type="int">
+          <sel>indexOfCellWithTag:</sel>
+          <arg type="int">tag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="int"><sel>indexOfSelectedItem</sel>
-        <desc>
-        </desc>
+        <method type="int">
+          <sel>indexOfSelectedItem</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSFormCell*"><sel>insertEntry:</sel><arg type="NSString*">title</arg><sel>atIndex:</sel><arg type="int">entryIndex</arg>
-        <desc>
-        </desc>
+        <method type="NSFormCell*">
+          <sel>insertEntry:</sel>
+          <arg type="NSString*">title</arg>
+          <sel>atIndex:</sel>
+          <arg type="int">entryIndex</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>removeEntryAtIndex:</sel><arg type="int">entryIndex</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>removeEntryAtIndex:</sel>
+          <arg type="int">entryIndex</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>selectTextAtIndex:</sel><arg type="int">entryIndex</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>selectTextAtIndex:</sel>
+          <arg type="int">entryIndex</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setBezeled:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setBezeled:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setBordered:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setBordered:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setEntryWidth:</sel><arg type="float">width</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setEntryWidth:</sel>
+          <arg type="float">width</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setInterlineSpacing:</sel><arg type="float">spacing</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setInterlineSpacing:</sel>
+          <arg type="float">spacing</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setTextAlignment:</sel><arg type="int">alignment</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setTextAlignment:</sel>
+          <arg type="int">alignment</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setTextFont:</sel><arg type="NSFont*">font</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setTextFont:</sel>
+          <arg type="NSFont*">font</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setTitleAlignment:</sel><arg type="NSTextAlignment">alignment</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setTitleAlignment:</sel>
+          <arg type="NSTextAlignment">alignment</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setTitleFont:</sel><arg type="NSFont*">font</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setTitleFont:</sel>
+          <arg type="NSFont*">font</arg>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

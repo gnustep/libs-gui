@@ -16,47 +16,60 @@
       <class name="NSBrowserCell" super="NSCell">
         <declared>AppKit/NSBrowserCell.h</declared>
         <conform>NSCoding</conform>
-        <desc>
-        </desc>
-        <method type="NSImage*" factory="yes"><sel>branchImage</sel>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="NSImage*" factory="yes">
+          <sel>branchImage</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSImage*" factory="yes"><sel>highlightedBranchImage</sel>
-        <desc>
-        </desc>
+        <method type="NSImage*" factory="yes">
+          <sel>highlightedBranchImage</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSImage*"><sel>alternateImage</sel>
-        <desc>
-        </desc>
+        <method type="NSImage*">
+          <sel>alternateImage</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>isLeaf</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>isLeaf</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>isLoaded</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>isLoaded</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>reset</sel>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>reset</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>set</sel>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>set</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setAlternateImage:</sel><arg type="NSImage*">newAltImage</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setAlternateImage:</sel>
+          <arg type="NSImage*">newAltImage</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setLeaf:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setLeaf:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setLoaded:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setLoaded:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

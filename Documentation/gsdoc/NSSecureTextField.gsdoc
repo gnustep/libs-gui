@@ -16,8 +16,8 @@
       <class name="NSSecureTextField" super="NSTextField">
         <declared>AppKit/NSSecureTextField.h</declared>
         <conform>NSCoding</conform>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
       </class>
     </chapter>
   </body>

@@ -16,15 +16,24 @@
       <class name="NSTextAttachmentCell" super="NSCell">
         <declared>NSTextAttachment.h</declared>
         <conform>NSTextAttachmentCell</conform>
-        <desc>
-        </desc>
-        <method type="BOOL"><sel>trackMouse:</sel><arg type="NSEvent*">theEvent</arg><sel>inRect:(NSRect)cellFrame ofView:</sel><arg type="NSView*">aTextView</arg><sel>untilMouseUp:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="BOOL">
+          <sel>trackMouse:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <sel>inRect:</sel>
+          <arg type="NSRect">cellFrame</arg>
+          <sel>ofView:</sel>
+          <arg type="NSView*">aTextView</arg>
+          <sel>untilMouseUp:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>wantsToTrackMouse</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>wantsToTrackMouse</sel>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

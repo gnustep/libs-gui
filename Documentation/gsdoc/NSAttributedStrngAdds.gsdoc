@@ -15,8 +15,8 @@
       <heading>NSAttributedStrngAdds</heading>
       <class name="NSAttributedStrngAdds">
         <declared>AppKit/NSApplication.h</declared>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
       </class>
     </chapter>
   </body>

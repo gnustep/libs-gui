@@ -16,43 +16,58 @@
       <class name="NSFontPanel" super="NSPanel">
         <declared>AppKit/NSFontPanel.h</declared>
         <conform>NSCoding</conform>
-        <desc>
-        </desc>
-        <method type="NSFontPanel*" factory="yes"><sel>sharedFontPanel</sel>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="NSFontPanel*" factory="yes">
+          <sel>sharedFontPanel</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL" factory="yes"><sel>sharedFontPanelExists</sel>
-        <desc>
-        </desc>
+        <method type="BOOL" factory="yes">
+          <sel>sharedFontPanelExists</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSView*"><sel>accessoryView</sel>
-        <desc>
-        </desc>
+        <method type="NSView*">
+          <sel>accessoryView</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>isEnabled</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>isEnabled</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSFont*"><sel>panelConvertFont:</sel><arg type="NSFont*">aFont</arg>
-        <desc>
-        </desc>
+        <method type="NSFont*">
+          <sel>panelConvertFont:</sel>
+          <arg type="NSFont*">aFont</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setAccessoryView:</sel><arg type="NSView*">aView</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setAccessoryView:</sel>
+          <arg type="NSView*">aView</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setEnabled:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setEnabled:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setPanelFont:</sel><arg type="NSFont*">aFont</arg><sel>isMultiple:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setPanelFont:</sel>
+          <arg type="NSFont*">aFont</arg>
+          <sel>isMultiple:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>worksWhenModal</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>worksWhenModal</sel>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

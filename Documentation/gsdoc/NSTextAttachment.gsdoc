@@ -16,27 +16,35 @@
       <class name="NSTextAttachment" super="NSObject">
         <declared>AppKit/NSTextAttachment.h</declared>
         <conform>NSObject</conform>
-        <desc>
-        </desc>
-        <method type="id&lt;NSTextAttachmentCell&gt;"><sel>attachmentCell</sel>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="id&lt;NSTextAttachmentCell&gt;">
+          <sel>attachmentCell</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSFileWrapper*"><sel>fileWrapper</sel>
-        <desc>
-        </desc>
+        <method type="NSFileWrapper*">
+          <sel>fileWrapper</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="id"><sel>initWithFileWrapper:</sel><arg type="NSFileWrapper*">aWrapper</arg>
-        <desc>
-        </desc>
+        <method type="id">
+          <sel>initWithFileWrapper:</sel>
+          <arg type="NSFileWrapper*">aWrapper</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setAttachmentCell:</sel><arg type="id&lt;NSTextAttachmentCell&gt;">aCell</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setAttachmentCell:</sel>
+          <arg type="id&lt;NSTextAttachmentCell&gt;">aCell</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setFileWrapper:</sel><arg type="NSFileWrapper*">aWrapper</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setFileWrapper:</sel>
+          <arg type="NSFileWrapper*">aWrapper</arg>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

@@ -16,35 +16,46 @@
       <class name="NSTextFieldCell" super="NSActionCell">
         <declared>AppKit/NSTextFieldCell.h</declared>
         <conform>NSCoding</conform>
-        <desc>
-        </desc>
-        <method type="NSColor*"><sel>backgroundColor</sel>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="NSColor*">
+          <sel>backgroundColor</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>drawsBackground</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>drawsBackground</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setBackgroundColor:</sel><arg type="NSColor*">aColor</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setBackgroundColor:</sel>
+          <arg type="NSColor*">aColor</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setDrawsBackground:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setDrawsBackground:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setTextColor:</sel><arg type="NSColor*">aColor</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setTextColor:</sel>
+          <arg type="NSColor*">aColor</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSText*"><sel>setUpFieldEditorAttributes:</sel><arg type="NSText*">textObj</arg>
-        <desc>
-        </desc>
+        <method type="NSText*">
+          <sel>setUpFieldEditorAttributes:</sel>
+          <arg type="NSText*">textObj</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSColor*"><sel>textColor</sel>
-        <desc>
-        </desc>
+        <method type="NSColor*">
+          <sel>textColor</sel>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

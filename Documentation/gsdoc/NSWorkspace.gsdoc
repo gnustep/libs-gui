@@ -16,123 +16,216 @@
       <class name="NSWorkspace" super="NSObject">
         <declared>AppKit/NSWorkspace.h</declared>
         <conform>NSObject</conform>
-        <desc>
-        </desc>
-        <method type="NSWorkspace*" factory="yes"><sel>sharedWorkspace</sel>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="NSWorkspace*" factory="yes">
+          <sel>sharedWorkspace</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>checkForRemovableMedia</sel>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>checkForRemovableMedia</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="int"><sel>extendPowerOffBy:</sel><arg type="int">requested</arg>
-        <desc>
-        </desc>
+        <method type="int">
+          <sel>extendPowerOffBy:</sel>
+          <arg type="int">requested</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>fileSystemChanged</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>fileSystemChanged</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>findApplications</sel>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>findApplications</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSString*"><sel>fullPathForApplication:</sel><arg type="NSString*">appName</arg>
-        <desc>
-        </desc>
+        <method type="NSString*">
+          <sel>fullPathForApplication:</sel>
+          <arg type="NSString*">appName</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>getFileSystemInfoForPath:</sel><arg type="NSString*">fullPath</arg><sel>isRemovable:</sel><arg type="BOOL*">removableFlag</arg><sel>isWritable:(BOOL *)writableFlag isUnmountable:</sel><arg type="BOOL*">unmountableFlag</arg><sel>description:(NSString **)description type:</sel><arg type="NSString**">fileSystemType</arg>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>getFileSystemInfoForPath:</sel>
+          <arg type="NSString*">fullPath</arg>
+          <sel>isRemovable:</sel>
+          <arg type="BOOL*">removableFlag</arg>
+          <sel>isWritable:</sel>
+          <arg type="BOOL *">writableFlag</arg>
+          <sel>isUnmountable:</sel>
+          <arg type="BOOL*">unmountableFlag</arg>
+          <sel>description:</sel>
+          <arg type="NSString **">description</arg>
+          <sel>type:</sel>
+          <arg type="NSString**">fileSystemType</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>getInfoForFile:</sel><arg type="NSString*">fullPath</arg><sel>application:</sel><arg type="NSString**">appName</arg>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>getInfoForFile:</sel>
+          <arg type="NSString*">fullPath</arg>
+          <sel>application:</sel>
+          <arg type="NSString**">appName</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>hideOtherApplications</sel>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>hideOtherApplications</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSImage*"><sel>iconForFile:</sel><arg type="NSString*">fullPath</arg>
-        <desc>
-        </desc>
+        <method type="NSImage*">
+          <sel>iconForFile:</sel>
+          <arg type="NSString*">fullPath</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSImage*"><sel>iconForFileType:</sel><arg type="NSString*">fileType</arg>
-        <desc>
-        </desc>
+        <method type="NSImage*">
+          <sel>iconForFileType:</sel>
+          <arg type="NSString*">fileType</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSImage*"><sel>iconForFiles:</sel><arg type="NSArray*">fullPaths</arg>
-        <desc>
-        </desc>
+        <method type="NSImage*">
+          <sel>iconForFiles:</sel>
+          <arg type="NSArray*">fullPaths</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>launchApplication:</sel><arg type="NSString*">appName</arg>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>launchApplication:</sel>
+          <arg type="NSString*">appName</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>launchApplication:</sel><arg type="NSString*">appName</arg><sel>showIcon:</sel><arg type="BOOL">showIcon</arg><sel>autolaunch:</sel><arg type="BOOL">autolaunch</arg>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>launchApplication:</sel>
+          <arg type="NSString*">appName</arg>
+          <sel>showIcon:</sel>
+          <arg type="BOOL">showIcon</arg>
+          <sel>autolaunch:</sel>
+          <arg type="BOOL">autolaunch</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSArray*"><sel>mountNewRemovableMedia</sel>
-        <desc>
-        </desc>
+        <method type="NSArray*">
+          <sel>mountNewRemovableMedia</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSArray*"><sel>mountedRemovableMedia</sel>
-        <desc>
-        </desc>
+        <method type="NSArray*">
+          <sel>mountedRemovableMedia</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>noteFileSystemChanged</sel>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>noteFileSystemChanged</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>noteUserDefaultsChanged</sel>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>noteUserDefaultsChanged</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSNotificationCenter*"><sel>notificationCenter</sel>
-        <desc>
-        </desc>
+        <method type="NSNotificationCenter*">
+          <sel>notificationCenter</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>openFile:</sel><arg type="NSString*">fullPath</arg>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>openFile:</sel>
+          <arg type="NSString*">fullPath</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>openFile:</sel><arg type="NSString*">fullPath</arg><sel>fromImage:</sel><arg type="NSImage*">anImage</arg><sel>at:(NSPoint)point inView:</sel><arg type="NSView*">aView</arg>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>openFile:</sel>
+          <arg type="NSString*">fullPath</arg>
+          <sel>fromImage:</sel>
+          <arg type="NSImage*">anImage</arg>
+          <sel>at:</sel>
+          <arg type="NSPoint">point</arg>
+          <sel>inView:</sel>
+          <arg type="NSView*">aView</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>openFile:</sel><arg type="NSString*">fullPath</arg><sel>withApplication:</sel><arg type="NSString*">appName</arg>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>openFile:</sel>
+          <arg type="NSString*">fullPath</arg>
+          <sel>withApplication:</sel>
+          <arg type="NSString*">appName</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>openFile:</sel><arg type="NSString*">fullPath</arg><sel>withApplication:</sel><arg type="NSString*">appName</arg><sel>andDeactivate:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>openFile:</sel>
+          <arg type="NSString*">fullPath</arg>
+          <sel>withApplication:</sel>
+          <arg type="NSString*">appName</arg>
+          <sel>andDeactivate:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>openTempFile:</sel><arg type="NSString*">fullPath</arg>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>openTempFile:</sel>
+          <arg type="NSString*">fullPath</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>performFileOperation:</sel><arg type="NSString*">operation</arg><sel>source:(NSString *)source destination:</sel><arg type="NSString*">destination</arg><sel>files:(NSArray *)files tag:</sel><arg type="int*">tag</arg>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>performFileOperation:</sel>
+          <arg type="NSString*">operation</arg>
+          <sel>source:</sel>
+          <arg type="NSString *">source</arg>
+          <sel>destination:</sel>
+          <arg type="NSString*">destination</arg>
+          <sel>files:</sel>
+          <arg type="NSArray *">files</arg>
+          <sel>tag:</sel>
+          <arg type="int*">tag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>selectFile:</sel><arg type="NSString*">fullPath</arg><sel>inFileViewerRootedAtPath:</sel><arg type="NSString*">rootFullPath</arg>
-        <desc>
-        </desc>
+        <method type="BOOL">
+	  
+          <sel>selectFile:</sel>
+	  
+          <arg type="NSString*">fullPath</arg>
+	  
+          <sel>inFileViewerRootedAtPath:</sel>
+	  
+          <arg type="NSString*">rootFullPath</arg>
+	    <desc>
+	    </desc>
         </method>
-        <method type="void"><sel>slideImage:</sel><arg type="NSImage*">image</arg><sel>from:(NSPoint)fromPoint to:</sel><arg type="NSPoint">toPoint</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>slideImage:</sel>
+          <arg type="NSImage*">image</arg>
+          <sel>from:</sel>
+          <arg type="NSPoint">fromPoint</arg>
+          <sel>to:</sel>
+          <arg type="NSPoint">toPoint</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>unmountAndEjectDeviceAtPath:</sel><arg type="NSString*">path</arg>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>unmountAndEjectDeviceAtPath:</sel>
+          <arg type="NSString*">path</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>userDefaultsChanged</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>userDefaultsChanged</sel>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

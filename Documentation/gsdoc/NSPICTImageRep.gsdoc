@@ -16,23 +16,29 @@
       <class name="NSPICTImageRep" super="NSImageRep">
         <declared>AppKit/NSPICTImageRep.h</declared>
         <conform>NSCoding</conform>
-        <desc>
-        </desc>
-        <method type="id" factory="yes"><sel>imageRepWithData:</sel><arg type="NSData*">pictData</arg>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="id" factory="yes">
+          <sel>imageRepWithData:</sel>
+          <arg type="NSData*">pictData</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSRect"><sel>boundingBox</sel>
-        <desc>
-        </desc>
+        <method type="NSRect">
+          <sel>boundingBox</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="id"><sel>initWithData:</sel><arg type="NSData*">pictData</arg>
-        <desc>
-        </desc>
+        <method type="id">
+          <sel>initWithData:</sel>
+          <arg type="NSData*">pictData</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSData*"><sel>PICTRepresentation</sel>
-        <desc>
-        </desc>
+        <method type="NSData*">
+          <sel>PICTRepresentation</sel>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

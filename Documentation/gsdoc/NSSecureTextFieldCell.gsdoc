@@ -16,15 +16,18 @@
       <class name="NSSecureTextFieldCell" super="NSTextFieldCell">
         <declared>AppKit/NSSecureTextField.h</declared>
         <conform>NSCoding</conform>
-        <desc>
-        </desc>
-        <method type="BOOL"><sel>echosBullets</sel>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="BOOL">
+          <sel>echosBullets</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setEchosBullets:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setEchosBullets:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

@@ -16,27 +16,34 @@
       <class name="NSEPSImageRep" super="NSImageRep">
         <declared>AppKit/NSEPSImageRep.h</declared>
         <conform>NSCoding</conform>
-        <desc>
-        </desc>
-        <method type="id" factory="yes"><sel>imageRepWithData:</sel><arg type="NSData*">epsData</arg>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="id" factory="yes">
+          <sel>imageRepWithData:</sel>
+          <arg type="NSData*">epsData</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSData*"><sel>EPSRepresentation</sel>
-        <desc>
-        </desc>
+        <method type="NSData*">
+          <sel>EPSRepresentation</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSRect"><sel>boundingBox</sel>
-        <desc>
-        </desc>
+        <method type="NSRect">
+          <sel>boundingBox</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="id"><sel>initWithData:</sel><arg type="NSData*">epsData</arg>
-        <desc>
-        </desc>
+        <method type="id">
+          <sel>initWithData:</sel>
+          <arg type="NSData*">epsData</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>prepareGState</sel>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>prepareGState</sel>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

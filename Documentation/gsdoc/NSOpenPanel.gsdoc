@@ -16,51 +16,71 @@
       <class name="NSOpenPanel" super="NSSavePanel">
         <declared>AppKit/NSOpenPanel.h</declared>
         <conform>NSObject</conform>
-        <desc>
-        </desc>
-        <method type="NSOpenPanel*" factory="yes"><sel>openPanel</sel>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="NSOpenPanel*" factory="yes">
+          <sel>openPanel</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>allowsMultipleSelection</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>allowsMultipleSelection</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>canChooseDirectories</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>canChooseDirectories</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>canChooseFiles</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>canChooseFiles</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSArray*"><sel>filenames</sel>
-        <desc>
-        </desc>
+        <method type="NSArray*">
+          <sel>filenames</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="int"><sel>runModalForDirectory:</sel><arg type="NSString*">directory</arg><sel>file:(NSString *)filename types:</sel><arg type="NSArray*">fileTypes</arg>
-        <desc>
-        </desc>
+        <method type="int">
+          <sel>runModalForDirectory:</sel>
+          <arg type="NSString*">directory</arg>
+          <sel>file:</sel>
+          <arg type="NSString *">filename</arg>
+          <sel>types:</sel>
+          <arg type="NSArray*">fileTypes</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="int"><sel>runModalForTypes:</sel><arg type="NSArray*">fileTypes</arg>
-        <desc>
-        </desc>
+        <method type="int">
+          <sel>runModalForTypes:</sel>
+          <arg type="NSArray*">fileTypes</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setAllowsMultipleSelection:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setAllowsMultipleSelection:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setCanChooseDirectories:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setCanChooseDirectories:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setCanChooseFiles:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setCanChooseFiles:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSArray*"><sel>URLs</sel>
-        <desc>
-        </desc>
+        <method type="NSArray*">
+          <sel>URLs</sel>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

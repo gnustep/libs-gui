@@ -16,227 +16,340 @@
       <class name="NSBezierPath" super="NSObject">
         <declared>AppKit/NSBezierPath.h</declared>
         <conform>NSCoding</conform>
-        <desc>
-        </desc>
-        <method type="NSBezierPath*" factory="yes"><sel>bezierPath</sel>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="NSBezierPath*" factory="yes">
+          <sel>bezierPath</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSBezierPath*" factory="yes"><sel>bezierPathWithRect:</sel><arg type="NSRect">aRect</arg>
-        <desc>
-        </desc>
+        <method type="NSBezierPath*" factory="yes">
+          <sel>bezierPathWithRect:</sel>
+          <arg type="NSRect">aRect</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void" factory="yes"><sel>clipRect:</sel><arg type="NSRect">aRect</arg>
-        <desc>
-        </desc>
+        <method type="void" factory="yes">
+          <sel>clipRect:</sel>
+          <arg type="NSRect">aRect</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void" factory="yes"><sel>drawPackedGlyphs:</sel><arg type="constchar*">packedGlyphs</arg>
-        <desc>
-        </desc>
+        <method type="void" factory="yes">
+          <sel>drawPackedGlyphs:</sel>
+          <arg type="constchar*">packedGlyphs</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void" factory="yes"><sel>fillRect:</sel><arg type="NSRect">aRect</arg>
-        <desc>
-        </desc>
+        <method type="void" factory="yes">
+          <sel>fillRect:</sel>
+          <arg type="NSRect">aRect</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void" factory="yes"><sel>setFlatness:</sel><arg type="float">flatness</arg>
-        <desc>
-        </desc>
+        <method type="void" factory="yes">
+          <sel>setFlatness:</sel>
+          <arg type="float">flatness</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void" factory="yes"><sel>setHalftonePhase:</sel><arg type="NSPoint">aPoint</arg>
-        <desc>
-        </desc>
+        <method type="void" factory="yes">
+          <sel>setHalftonePhase:</sel>
+          <arg type="NSPoint">aPoint</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void" factory="yes"><sel>setLineCapStyle:</sel><arg type="NSLineCapStyle">lineCap</arg>
-        <desc>
-        </desc>
+        <method type="void" factory="yes">
+          <sel>setLineCapStyle:</sel>
+          <arg type="NSLineCapStyle">lineCap</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void" factory="yes"><sel>setLineJoinStyle:</sel><arg type="NSLineJoinStyle">lineJoinStyle</arg>
-        <desc>
-        </desc>
+        <method type="void" factory="yes">
+          <sel>setLineJoinStyle:</sel>
+          <arg type="NSLineJoinStyle">lineJoinStyle</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void" factory="yes"><sel>setLineWidth:</sel><arg type="float">width</arg>
-        <desc>
-        </desc>
+        <method type="void" factory="yes">
+          <sel>setLineWidth:</sel>
+          <arg type="float">width</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void" factory="yes"><sel>setMiterLimit:</sel><arg type="float">limit</arg>
-        <desc>
-        </desc>
+        <method type="void" factory="yes">
+          <sel>setMiterLimit:</sel>
+          <arg type="float">limit</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void" factory="yes"><sel>strokeLineFromPoint:</sel><arg type="NSPoint">point1</arg><sel>toPoint:</sel><arg type="NSPoint">point2</arg>
-        <desc>
-        </desc>
+        <method type="void" factory="yes">
+          <sel>strokeLineFromPoint:</sel>
+          <arg type="NSPoint">point1</arg>
+          <sel>toPoint:</sel>
+          <arg type="NSPoint">point2</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void" factory="yes"><sel>strokeRect:</sel><arg type="NSRect">aRect</arg>
-        <desc>
-        </desc>
+        <method type="void" factory="yes">
+          <sel>strokeRect:</sel>
+          <arg type="NSRect">aRect</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>addClip</sel>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>addClip</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>appendBezierPath:</sel><arg type="NSBezierPath*">aPath</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>appendBezierPath:</sel>
+          <arg type="NSBezierPath*">aPath</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>appendBezierPathWithArcWithCenter:</sel><arg type="NSPoint">center</arg><sel>radius:(float)radius  startAngle:</sel><arg type="float">startAngle</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>appendBezierPathWithArcWithCenter:</sel>
+          <arg type="NSPoint">center</arg>
+          <sel>radius:</sel>
+          <arg type="float">radius</arg>
+          <sel>startAngle:</sel>
+          <arg type="float">startAngle</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>appendBezierPathWithGlyph:</sel><arg type="NSGlyph">aGlyph</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>appendBezierPathWithGlyph:</sel>
+          <arg type="NSGlyph">aGlyph</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>appendBezierPathWithGlyphs:</sel><arg type="NSGlyph*">glyphs</arg><sel>count:(int)count  inFont:</sel><arg type="NSFont*">fontObj</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>appendBezierPathWithGlyphs:</sel>
+          <arg type="NSGlyph*">glyphs</arg>
+          <sel>count:</sel>
+          <arg type="int">count</arg>
+          <sel>inFont:</sel>
+          <arg type="NSFont*">fontObj</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>appendBezierPathWithOvalInRect:</sel><arg type="NSRect">aRect</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>appendBezierPathWithOvalInRect:</sel>
+          <arg type="NSRect">aRect</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>appendBezierPathWithPackedGlyphs:</sel><arg type="constchar*">packedGlyphs</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>appendBezierPathWithPackedGlyphs:</sel>
+          <arg type="constchar*">packedGlyphs</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>appendBezierPathWithPoints:</sel><arg type="NSPoint*">points</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>appendBezierPathWithPoints:</sel>
+          <arg type="NSPoint*">points</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>appendBezierPathWithRect:</sel><arg type="NSRect">aRect</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>appendBezierPathWithRect:</sel>
+          <arg type="NSRect">aRect</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSRect"><sel>bounds</sel>
-        <desc>
-        </desc>
+        <method type="NSRect">
+          <sel>bounds</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>cachesBezierPath</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>cachesBezierPath</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>closePath</sel>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>closePath</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSRect"><sel>controlPointBounds</sel>
-        <desc>
-        </desc>
+        <method type="NSRect">
+          <sel>controlPointBounds</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSPoint"><sel>currentPoint</sel>
-        <desc>
-        </desc>
+        <method type="NSPoint">
+          <sel>currentPoint</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>curveToPoint:</sel><arg type="NSPoint">aPoint</arg><sel>controlPoint1:</sel><arg type="NSPoint">controlPoint1</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>curveToPoint:</sel>
+          <arg type="NSPoint">aPoint</arg>
+          <sel>controlPoint1:</sel>
+          <arg type="NSPoint">controlPoint1</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="int"><sel>elementCount</sel>
-        <desc>
-        </desc>
+        <method type="int">
+          <sel>elementCount</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSBezierPathElementType"><sel>elementTypeAtIndex:</sel><arg type="int">index</arg>
-        <desc>
-        </desc>
+        <method type="NSBezierPathElementType">
+          <sel>elementTypeAtIndex:</sel>
+          <arg type="int">index</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSBezierPathElementType"><sel>elementTypeAtIndex:</sel><arg type="int">index</arg><sel>associatedPoints:</sel><arg type="NSPoint*">points</arg>
-        <desc>
-        </desc>
+        <method type="NSBezierPathElementType">
+          <sel>elementTypeAtIndex:</sel>
+          <arg type="int">index</arg>
+          <sel>associatedPoints:</sel>
+          <arg type="NSPoint*">points</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>fill</sel>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>fill</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>isHitByPath:</sel><arg type="NSBezierPath*">aBezierPath</arg>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>isHitByPath:</sel>
+          <arg type="NSBezierPath*">aBezierPath</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>isHitByPoint:</sel><arg type="NSPoint">aPoint</arg>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>isHitByPoint:</sel>
+          <arg type="NSPoint">aPoint</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>isHitByRect:</sel><arg type="NSRect">aRect</arg>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>isHitByRect:</sel>
+          <arg type="NSRect">aRect</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>isStrokeHitByPath:</sel><arg type="NSBezierpath*">aBezierPath</arg>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>isStrokeHitByPath:</sel>
+          <arg type="NSBezierpath*">aBezierPath</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>isStrokeHitByPoint:</sel><arg type="NSPoint">aPoint</arg>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>isStrokeHitByPoint:</sel>
+          <arg type="NSPoint">aPoint</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>isStrokeHitByRect:</sel><arg type="NSRect">aRect</arg>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>isStrokeHitByRect:</sel>
+          <arg type="NSRect">aRect</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>lineToPoint:</sel><arg type="NSPoint">aPoint</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>lineToPoint:</sel>
+          <arg type="NSPoint">aPoint</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>moveToPoint:</sel><arg type="NSPoint">aPoint</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>moveToPoint:</sel>
+          <arg type="NSPoint">aPoint</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="int"><sel>pathElementIndexForPointIndex:</sel><arg type="int">index</arg>
-        <desc>
-        </desc>
+        <method type="int">
+          <sel>pathElementIndexForPointIndex:</sel>
+          <arg type="int">index</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSPoint"><sel>pointAtIndex:</sel><arg type="int">index</arg>
-        <desc>
-        </desc>
+        <method type="NSPoint">
+          <sel>pointAtIndex:</sel>
+          <arg type="int">index</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="int"><sel>pointCount</sel>
-        <desc>
-        </desc>
+        <method type="int">
+          <sel>pointCount</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="int"><sel>pointIndexForPathElementIndex:</sel><arg type="int">index</arg>
-        <desc>
-        </desc>
+        <method type="int">
+          <sel>pointIndexForPathElementIndex:</sel>
+          <arg type="int">index</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>relativeCurveToPoint:</sel><arg type="NSPoint">aPoint</arg><sel>controlPoint1:</sel><arg type="NSPoint">controlPoint1</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>relativeCurveToPoint:</sel>
+          <arg type="NSPoint">aPoint</arg>
+          <sel>controlPoint1:</sel>
+          <arg type="NSPoint">controlPoint1</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>relativeLineToPoint:</sel><arg type="NSPoint">aPoint</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>relativeLineToPoint:</sel>
+          <arg type="NSPoint">aPoint</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>relativeMoveToPoint:</sel><arg type="NSPoint">aPoint</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>relativeMoveToPoint:</sel>
+          <arg type="NSPoint">aPoint</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>removeLastElement</sel>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>removeLastElement</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>reset</sel>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>reset</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setCachesBezierPath:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setCachesBezierPath:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setClip</sel>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setClip</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setPointAtIndex:</sel><arg type="int">index</arg><sel>toPoint:</sel><arg type="NSPoint">aPoint</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setPointAtIndex:</sel>
+          <arg type="int">index</arg>
+          <sel>toPoint:</sel>
+          <arg type="NSPoint">aPoint</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setWindingRule:</sel><arg type="NSWindingRule">aWindingRule</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setWindingRule:</sel>
+          <arg type="NSWindingRule">aWindingRule</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>stroke</sel>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>stroke</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSWindingRule"><sel>windingRule</sel>
-        <desc>
-        </desc>
+        <method type="NSWindingRule">
+          <sel>windingRule</sel>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

@@ -16,59 +16,81 @@
       <class name="NSPageLayout" super="NSObject">
         <declared>AppKit/NSPageLayout.h</declared>
         <conform>NSObject</conform>
-        <desc>
-        </desc>
-        <method type="NSPageLayout*" factory="yes"><sel>pageLayout</sel>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="NSPageLayout*" factory="yes">
+          <sel>pageLayout</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSView*"><sel>accessoryView</sel>
-        <desc>
-        </desc>
+        <method type="NSView*">
+          <sel>accessoryView</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>convertOldFactor:</sel><arg type="float*">old</arg><sel>newFactor:</sel><arg type="float*">new</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>convertOldFactor:</sel>
+          <arg type="float*">old</arg>
+          <sel>newFactor:</sel>
+          <arg type="float*">new</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>pickedButton:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>pickedButton:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>pickedOrientation:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>pickedOrientation:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>pickedPaperSize:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>pickedPaperSize:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>pickedUnits:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>pickedUnits:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSPrintInfo*"><sel>printInfo</sel>
-        <desc>
-        </desc>
+        <method type="NSPrintInfo*">
+          <sel>printInfo</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>readPrintInfo</sel>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>readPrintInfo</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="int"><sel>runModal</sel>
-        <desc>
-        </desc>
+        <method type="int">
+          <sel>runModal</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="int"><sel>runModalWithPrintInfo:</sel><arg type="NSPrintInfo*">printInfo</arg>
-        <desc>
-        </desc>
+        <method type="int">
+          <sel>runModalWithPrintInfo:</sel>
+          <arg type="NSPrintInfo*">printInfo</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setAccessoryView:</sel><arg type="NSView*">aView</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setAccessoryView:</sel>
+          <arg type="NSView*">aView</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>writePrintInfo</sel>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>writePrintInfo</sel>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

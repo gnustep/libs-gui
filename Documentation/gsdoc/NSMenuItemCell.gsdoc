@@ -16,107 +16,147 @@
       <class name="NSMenuItemCell" super="NSButtonCell">
         <declared>AppKit/NSMenuItemCell.h</declared>
         <conform>NSCoding</conform>
-        <desc>
-        </desc>
-        <method type="void"><sel>calcSize</sel>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="void">
+          <sel>calcSize</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>drawBorderAndBackgroundWithFrame:</sel><arg type="NSRect">cellFrame</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>drawBorderAndBackgroundWithFrame:</sel>
+          <arg type="NSRect">cellFrame</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>drawImageWithFrame:</sel><arg type="NSRect">cellFrame</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>drawImageWithFrame:</sel>
+          <arg type="NSRect">cellFrame</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>drawKeyEquivalentWithFrame:</sel><arg type="NSRect">cellFrame</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>drawKeyEquivalentWithFrame:</sel>
+          <arg type="NSRect">cellFrame</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>drawSeparatorItemWithFrame:</sel><arg type="NSRect">cellFrame</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>drawSeparatorItemWithFrame:</sel>
+          <arg type="NSRect">cellFrame</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>drawStateImageWithFrame:</sel><arg type="NSRect">cellFrame</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>drawStateImageWithFrame:</sel>
+          <arg type="NSRect">cellFrame</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>drawTitleWithFrame:</sel><arg type="NSRect">cellFrame</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>drawTitleWithFrame:</sel>
+          <arg type="NSRect">cellFrame</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSRect"><sel>imageRectForBounds:</sel><arg type="NSRect">cellFrame</arg>
-        <desc>
-        </desc>
+        <method type="NSRect">
+          <sel>imageRectForBounds:</sel>
+          <arg type="NSRect">cellFrame</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="float"><sel>imageWidth</sel>
-        <desc>
-        </desc>
+        <method type="float">
+          <sel>imageWidth</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>isHighlighted</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>isHighlighted</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSRect"><sel>keyEquivalentRectForBounds:</sel><arg type="NSRect">cellFrame</arg>
-        <desc>
-        </desc>
+        <method type="NSRect">
+          <sel>keyEquivalentRectForBounds:</sel>
+          <arg type="NSRect">cellFrame</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="float"><sel>keyEquivalentWidth</sel>
-        <desc>
-        </desc>
+        <method type="float">
+          <sel>keyEquivalentWidth</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSMenuItem*"><sel>menuItem</sel>
-        <desc>
-        </desc>
+        <method type="NSMenuItem*">
+          <sel>menuItem</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSMenuView*"><sel>menuView</sel>
-        <desc>
-        </desc>
+        <method type="NSMenuView*">
+          <sel>menuView</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>needsDisplay</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>needsDisplay</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>needsSizing</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>needsSizing</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setHighlighted:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setHighlighted:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setMenuItem:</sel><arg type="NSMenuItem*">item</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setMenuItem:</sel>
+          <arg type="NSMenuItem*">item</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setMenuView:</sel><arg type="NSMenuView*">menuView</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setMenuView:</sel>
+          <arg type="NSMenuView*">menuView</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setNeedsDisplay:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setNeedsDisplay:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setNeedsSizing:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setNeedsSizing:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSRect"><sel>stateImageRectForBounds:</sel><arg type="NSRect">cellFrame</arg>
-        <desc>
-        </desc>
+        <method type="NSRect">
+          <sel>stateImageRectForBounds:</sel>
+          <arg type="NSRect">cellFrame</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="float"><sel>stateImageWidth</sel>
-        <desc>
-        </desc>
+        <method type="float">
+          <sel>stateImageWidth</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSRect"><sel>titleRectForBounds:</sel><arg type="NSRect">cellFrame</arg>
-        <desc>
-        </desc>
+        <method type="NSRect">
+          <sel>titleRectForBounds:</sel>
+          <arg type="NSRect">cellFrame</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="float"><sel>titleWidth</sel>
-        <desc>
-        </desc>
+        <method type="float">
+          <sel>titleWidth</sel>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

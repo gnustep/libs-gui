@@ -16,23 +16,35 @@
       <class name="NSCachedImageRep" super="NSImageRep">
         <declared>AppKit/NSImageRep.h</declared>
         <conform>NSCoding</conform>
-        <desc>
-        </desc>
-        <method type="id"><sel>initWithSize:</sel><arg type="NSSize">size</arg><sel>depth:</sel><arg type="NSWindowDepth">depth</arg><sel>separate:</sel><arg type="BOOL">flag</arg><sel>alpha:</sel><arg type="BOOL">alpha</arg>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="id">
+          <sel>initWithSize:</sel>
+          <arg type="NSSize">size</arg>
+          <sel>depth:</sel>
+          <arg type="NSWindowDepth">depth</arg>
+          <sel>separate:</sel>
+          <arg type="BOOL">flag</arg>
+          <sel>alpha:</sel>
+          <arg type="BOOL">alpha</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="id"><sel>initWithWindow:</sel><arg type="NSWindow*">aWindow</arg>
-        <desc>
-        </desc>
+        <method type="id">
+          <sel>initWithWindow:</sel>
+          <arg type="NSWindow*">aWindow</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSRect"><sel>rect</sel>
-        <desc>
-        </desc>
+        <method type="NSRect">
+          <sel>rect</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSWindow*"><sel>window</sel>
-        <desc>
-        </desc>
+        <method type="NSWindow*">
+          <sel>window</sel>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

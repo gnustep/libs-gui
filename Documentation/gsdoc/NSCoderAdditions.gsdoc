@@ -15,11 +15,12 @@
       <heading>NSCoderAdditions</heading>
       <class name="NSCoderAdditions" super="NSObject">
         <declared>AppKit/NSColor.h</declared>
-        <desc>
-        </desc>
-        <method type="NSColor*"><sel>decodeNXColor</sel>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="NSColor*">
+          <sel>decodeNXColor</sel>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

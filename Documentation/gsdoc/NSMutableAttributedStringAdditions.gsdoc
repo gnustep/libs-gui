@@ -15,47 +15,69 @@
       <heading>NSMutableAttributedStringAdditions</heading>
       <class name="NSMutableAttributedStringAdditions" super="NSAttributedString">
         <declared>AppKit/NSAttributedString.h</declared>
-        <desc>
-        </desc>
-        <method type="void"><sel>applyFontTraits:</sel><arg type="NSFontTraitMask">mask</arg><sel>range:</sel><arg type="NSRange">aRange</arg>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="void">
+          <sel>applyFontTraits:</sel>
+          <arg type="NSFontTraitMask">mask</arg>
+          <sel>range:</sel>
+          <arg type="NSRange">aRange</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>fixAttachmentAttributeInRange:</sel><arg type="NSRange">aRange</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>fixAttachmentAttributeInRange:</sel>
+          <arg type="NSRange">aRange</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>fixAttributesInRange:</sel><arg type="NSRange">aRange</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>fixAttributesInRange:</sel>
+          <arg type="NSRange">aRange</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>fixFontAttributeInRange:</sel><arg type="NSRange">aRange</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>fixFontAttributeInRange:</sel>
+          <arg type="NSRange">aRange</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>fixParagraphStyleAttributeInRange:</sel><arg type="NSRange">aRange</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>fixParagraphStyleAttributeInRange:</sel>
+          <arg type="NSRange">aRange</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setAlignment:</sel><arg type="NSTextAlignment">alignment</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setAlignment:</sel>
+          <arg type="NSTextAlignment">alignment</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>subscriptRange:</sel><arg type="NSRange">aRange</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>subscriptRange:</sel>
+          <arg type="NSRange">aRange</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>superscriptRange:</sel><arg type="NSRange">aRange</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>superscriptRange:</sel>
+          <arg type="NSRange">aRange</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>unscriptRange:</sel><arg type="NSRange">aRange</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>unscriptRange:</sel>
+          <arg type="NSRange">aRange</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>updateAttachmentsFromPath:</sel><arg type="NSString*">path</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>updateAttachmentsFromPath:</sel>
+          <arg type="NSString*">path</arg>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

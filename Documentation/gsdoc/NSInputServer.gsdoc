@@ -16,59 +16,104 @@
       <class name="NSInputServer" super="NSObject">
         <declared>AppKit/NSInputServer.h</declared>
         <conform>NSObject</conform>
-        <desc>
-        </desc>
-        <method type="void"><sel>activeConversationWillChange:</sel><arg type="id">sender</arg><sel>oldConversation:</sel><arg type="long">conv</arg><sel>newConversation:</sel><arg type="long">new</arg>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="void">
+          <sel>activeConversationWillChange:</sel>
+          <arg type="id">sender</arg>
+          <sel>oldConversation:</sel>
+          <arg type="long">conv</arg>
+          <sel>newConversation:</sel>
+          <arg type="long">new</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>canBeDisabled</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>canBeDisabled</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>cancelInput:</sel><arg type="id">sender</arg><sel>conversation:</sel><arg type="long">conv</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>cancelInput:</sel>
+          <arg type="id">sender</arg>
+          <sel>conversation:</sel>
+          <arg type="long">conv</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>doCommandBySelector:</sel><arg type="SEL">aSelector</arg><sel>sender:(id)sender conversation:</sel><arg type="long">conv</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>doCommandBySelector:</sel>
+          <arg type="SEL">aSelector</arg>
+          <sel>sender:</sel>
+          <arg type="id">sender</arg>
+          <sel>conversation:</sel>
+          <arg type="long">conv</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="id"><sel></sel>
-        <desc>
-        </desc>
+        <method type="id">
+          <sel></sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>insertText:</sel><arg type="NSString*">aString</arg><sel>sender:(id)sender conversation:</sel><arg type="long">conv</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>insertText:</sel>
+          <arg type="NSString*">aString</arg>
+          <sel>sender:</sel>
+          <arg type="id">sender</arg>
+          <sel>conversation:</sel>
+          <arg type="long">conv</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>markedTextSelectionChanged:</sel><arg type="NSRange">aRange</arg><sel>sender:(id)sender conversation:</sel><arg type="long">conv</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>markedTextSelectionChanged:</sel>
+          <arg type="NSRange">aRange</arg>
+          <sel>sender:</sel>
+          <arg type="id">sender</arg>
+          <sel>conversation:</sel>
+          <arg type="long">conv</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>markedTextWillBeAbandoned:</sel><arg type="id">sender</arg><sel>conversation:</sel><arg type="long">conv</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>markedTextWillBeAbandoned:</sel>
+          <arg type="id">sender</arg>
+          <sel>conversation:</sel>
+          <arg type="long">conv</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>senderDidBecomeActive:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>senderDidBecomeActive:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>senderDidResignActive:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>senderDidResignActive:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setActivated:</sel><arg type="BOOL">flag</arg><sel>sender:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setActivated:</sel>
+          <arg type="BOOL">flag</arg>
+          <sel>sender:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>terminate:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>terminate:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>wantsToInterpretAllKeystrokes</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>wantsToInterpretAllKeystrokes</sel>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

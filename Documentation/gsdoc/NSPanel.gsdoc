@@ -16,31 +16,40 @@
       <class name="NSPanel" super="NSWindow">
         <declared>AppKit/NSPanel.h</declared>
         <conform>NSCoding</conform>
-        <desc>
-        </desc>
-        <method type="BOOL"><sel>becomesKeyOnlyIfNeeded</sel>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="BOOL">
+          <sel>becomesKeyOnlyIfNeeded</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>isFloatingPanel</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>isFloatingPanel</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setBecomesKeyOnlyIfNeeded:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setBecomesKeyOnlyIfNeeded:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setFloatingPanel:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setFloatingPanel:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setWorksWhenModal:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setWorksWhenModal:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>worksWhenModal</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>worksWhenModal</sel>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

@@ -16,107 +16,151 @@
       <class name="NSDocumentController" super="NSObject">
         <declared>AppKit/NSDocumentController.h</declared>
         <conform>NSObject</conform>
-        <desc>
-        </desc>
-        <method type="id" factory="yes"><sel>sharedDocumentController</sel>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="id" factory="yes">
+          <sel>sharedDocumentController</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>closeAllDocuments</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>closeAllDocuments</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSString*"><sel>currentDirectory</sel>
-        <desc>
-        </desc>
+        <method type="NSString*">
+          <sel>currentDirectory</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="id"><sel>currentDocument</sel>
-        <desc>
-        </desc>
+        <method type="id">
+          <sel>currentDocument</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSString*"><sel>displayNameForType:</sel><arg type="NSString*">docType</arg>
-        <desc>
-        </desc>
+        <method type="NSString*">
+          <sel>displayNameForType:</sel>
+          <arg type="NSString*">docType</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="Class"><sel>documentClassForType:</sel><arg type="NSString*">docType</arg>
-        <desc>
-        </desc>
+        <method type="Class">
+          <sel>documentClassForType:</sel>
+          <arg type="NSString*">docType</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="id"><sel>documentForFileName:</sel><arg type="NSString*">fileName</arg>
-        <desc>
-        </desc>
+        <method type="id">
+          <sel>documentForFileName:</sel>
+          <arg type="NSString*">fileName</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="id"><sel>documentForWindow:</sel><arg type="NSWindow*">window</arg>
-        <desc>
-        </desc>
+        <method type="id">
+          <sel>documentForWindow:</sel>
+          <arg type="NSWindow*">window</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSArray*"><sel>documents</sel>
-        <desc>
-        </desc>
+        <method type="NSArray*">
+          <sel>documents</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSArray*"><sel>fileExtensionsFromType:</sel><arg type="NSString*">docType</arg>
-        <desc>
-        </desc>
+        <method type="NSArray*">
+          <sel>fileExtensionsFromType:</sel>
+          <arg type="NSString*">docType</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSArray*"><sel>fileNamesFromRunningOpenPanel</sel>
-        <desc>
-        </desc>
+        <method type="NSArray*">
+          <sel>fileNamesFromRunningOpenPanel</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>hasEditedDocuments</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>hasEditedDocuments</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="id"><sel>makeDocumentWithContentsOfFile:</sel><arg type="NSString*">fileName</arg>
-        <desc>
-        </desc>
+        <method type="id">
+          <sel>makeDocumentWithContentsOfFile:</sel>
+          <arg type="NSString*">fileName</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="id"><sel>makeUntitledDocumentOfType:</sel><arg type="NSString*">type</arg>
-        <desc>
-        </desc>
+        <method type="id">
+          <sel>makeUntitledDocumentOfType:</sel>
+          <arg type="NSString*">type</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>newDocument:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>newDocument:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>openDocument:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>openDocument:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="id"><sel>openDocumentWithContentsOfFile:</sel><arg type="NSString*">fileName</arg>
-        <desc>
-        </desc>
+        <method type="id">
+          <sel>openDocumentWithContentsOfFile:</sel>
+          <arg type="NSString*">fileName</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="id"><sel>openUntitledDocumentOfType:</sel><arg type="NSString*">docType</arg>
-        <desc>
-        </desc>
+        <method type="id">
+          <sel>openUntitledDocumentOfType:</sel>
+          <arg type="NSString*">docType</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>reviewUnsavedDocumentsWithAlertTitle:</sel><arg type="NSString*">title</arg><sel>cancellable:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>reviewUnsavedDocumentsWithAlertTitle:</sel>
+          <arg type="NSString*">title</arg>
+          <sel>cancellable:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="int"><sel>runModalOpenPanel:</sel><arg type="NSOpenPanel*">openPanel</arg>
-        <desc>
-        </desc>
+        <method type="int">
+          <sel>runModalOpenPanel:</sel>
+          <arg type="NSOpenPanel*">openPanel</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>saveAllDocuments:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>saveAllDocuments:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setShouldCreateUI:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setShouldCreateUI:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>shouldCreateUI</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>shouldCreateUI</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSString*"><sel>typeFromFileExtension:</sel><arg type="NSString*">fileExtension</arg>
-        <desc>
-        </desc>
+        <method type="NSString*">
+          <sel>typeFromFileExtension:</sel>
+          <arg type="NSString*">fileExtension</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>validateMenuItem:</sel><arg type="NSMenuItem*">anItem</arg>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>validateMenuItem:</sel>
+          <arg type="NSMenuItem*">anItem</arg>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

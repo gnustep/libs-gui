@@ -15,99 +15,148 @@
       <heading>NSSavePanel</heading>
       <class name="NSSavePanel">
         <declared>AppKit/NSSavePanel.h</declared>
-        <desc>
-        </desc>
-        <method type="NSSavePanel*" factory="yes"><sel>savePanel</sel>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="NSSavePanel*" factory="yes">
+          <sel>savePanel</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>cancel:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>cancel:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSString*"><sel>directory</sel>
-        <desc>
-        </desc>
+        <method type="NSString*">
+          <sel>directory</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>encodeWithCoder:</sel><arg type="NSCoder*">coder</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>encodeWithCoder:</sel>
+          <arg type="NSCoder*">coder</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="id"><sel>initWithCoder:</sel><arg type="NSCoder*">coder</arg>
-        <desc>
-        </desc>
+        <method type="id">
+          <sel>initWithCoder:</sel>
+          <arg type="NSCoder*">coder</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>ok:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>ok:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSString*"><sel>prompt</sel>
-        <desc>
-        </desc>
+        <method type="NSString*">
+          <sel>prompt</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSString*"><sel>requiredFileType</sel>
-        <desc>
-        </desc>
+        <method type="NSString*">
+          <sel>requiredFileType</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="int"><sel>runModalForDirectory:</sel><arg type="NSString*">path</arg>
-        <desc>
-        </desc>
+        <method type="int">
+          <sel>runModalForDirectory:</sel>
+          <arg type="NSString*">path</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>selectText:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>selectText:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setAccessoryView:</sel><arg type="NSView*">aView</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setAccessoryView:</sel>
+          <arg type="NSView*">aView</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setDelegate:</sel><arg type="id">anObject</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setDelegate:</sel>
+          <arg type="id">anObject</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setDirectory:</sel><arg type="NSString*">path</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setDirectory:</sel>
+          <arg type="NSString*">path</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setPrompt:</sel><arg type="NSString*">prompt</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setPrompt:</sel>
+          <arg type="NSString*">prompt</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setRequiredFileType:</sel><arg type="NSString*">type</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setRequiredFileType:</sel>
+          <arg type="NSString*">type</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setTreatsFilePackagesAsDirectories:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setTreatsFilePackagesAsDirectories:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>setTitle:</sel><arg type="NSString*">title</arg>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>setTitle:</sel>
+          <arg type="NSString*">title</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="NSString*"><sel>title</sel>
-        <desc>
-        </desc>
+        <method type="NSString*">
+          <sel>title</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>treatsFilePackagesAsDirectories</sel>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>treatsFilePackagesAsDirectories</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="void"><sel>validateVisibleColumns</sel>
-        <desc>
-        </desc>
+        <method type="void">
+          <sel>validateVisibleColumns</sel>
+          <desc>
+          </desc>
         </method>
-        <method type="NSComparisonResult"><sel>panel:</sel><arg type="id">sender</arg><sel>compareFilename:</sel><arg type="NSString*">fileName1</arg><sel>with:(NSString *)fileName2 caseSensitive:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
+        <method type="NSComparisonResult">
+          <sel>panel:</sel>
+          <arg type="id">sender</arg>
+          <sel>compareFilename:</sel>
+          <arg type="NSString*">fileName1</arg>
+          <sel>with:</sel>
+          <arg type="NSString *">fileName2</arg>
+          <sel>caseSensitive:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>panel:</sel><arg type="id">sender</arg><sel>shouldShowFilename:</sel><arg type="NSString*">filename</arg>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>panel:</sel>
+          <arg type="id">sender</arg>
+          <sel>shouldShowFilename:</sel>
+          <arg type="NSString*">filename</arg>
+          <desc>
+          </desc>
         </method>
-        <method type="BOOL"><sel>panel:</sel><arg type="id">sender</arg><sel>isValidFilename:</sel><arg type="NSString*">filename</arg>
-        <desc>
-        </desc>
+        <method type="BOOL">
+          <sel>panel:</sel>
+          <arg type="id">sender</arg>
+          <sel>isValidFilename:</sel>
+          <arg type="NSString*">filename</arg>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

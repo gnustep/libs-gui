@@ -16,483 +16,764 @@
       <class name="NSTextView" super="NSText">
         <declared>AppKit/NSTextView.h</declared>
         <conform>NSTextInput</conform>
-        <desc>
-        </desc>
-        <method type="void" factory="yes"><sel>registerForServices</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSArray*"><sel>acceptableDragTypes</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>alignJustified:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>allowsUndo;</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSColor*"><sel>backgroundColor</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>becomeFirstResponder</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>changeColor:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>cleanUpAfterDragOperation</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>clickedOnLink:</sel><arg type="id">link</arg><sel>atIndex:</sel><arg type="unsigned int">charIndex</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="id"><sel>delegate</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>didChangeText</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="unsigned int"><sel>dragOperationForDraggingInfo:</sel><arg type="id&lt;NSDraggingInfo&gt;">dragInfo</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>drawInsertionPointInRect:</sel><arg type="NSRect">aRect</arg><sel>color:(NSColor *)aColor turnedOn:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>drawsBackground</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>encodeWithCoder:</sel><arg type="NSCoder*">encoder</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>importsGraphics</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="id"><sel>initWithCoder:</sel><arg type="NSCoder*">decoder</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="id"><sel>initWithFrame:</sel><arg type="NSRect">frameRect</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="id"><sel>initWithFrame:</sel><arg type="NSRect">frameRect</arg><sel>textContainer:</sel><arg type="NSTextContainer*">aTextContainer</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>insertText:</sel><arg type="NSString*">aString</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSColor*"><sel>insertionPointColor</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>invalidateTextContainerOrigin</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>isEditable</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>isFieldEditor</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>isRichText</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>isRulerVisible</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>isSelectable</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSLayoutManager*"><sel>layoutManager</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>loosenKerning:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>lowerBaseline:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSRange"><sel>markedRange</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSDictionary*"><sel>markedTextAttributes</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>pasteAsPlainText:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>pasteAsRichText:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSString*"><sel>preferredPasteboardTypeFromArray:</sel><arg type="NSArray*">availableTypes</arg><sel>restrictedToTypesFromArray:</sel><arg type="NSArray*">allowedTypes</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>raiseBaseline:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSArray*"><sel>readablePasteboardTypes</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>readSelectionFromPasteboard:</sel><arg type="NSPasteboard*">pboard</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>readSelectionFromPasteboard:</sel><arg type="NSPasteboard*">pboard</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>replaceTextContainer:</sel><arg type="NSTextContainer*">aTextContainer</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>resignFirstResponder</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>rulerView:</sel><arg type="NSRulerView*">aRulerView</arg><sel>didAddMarker:</sel><arg type="NSRulerMarker*">aMarker</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>rulerView:</sel><arg type="NSRulerView*">aRulerView</arg><sel>didMoveMarker:</sel><arg type="NSRulerMarker*">aMarker</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>rulerView:</sel><arg type="NSRulerView*">aRulerView</arg><sel>didRemoveMarker:</sel><arg type="NSRulerMarker*">aMarker</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>rulerView:</sel><arg type="NSRulerView*">aRulerView</arg><sel>handleMouseDown:</sel><arg type="NSEvent*">theEvent</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>rulerView:</sel><arg type="NSRulerView*">aRulerView</arg><sel>shouldAddMarker:</sel><arg type="NSRulerMarker*">aMarker</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>rulerView:</sel><arg type="NSRulerView*">aRulerView</arg><sel>shouldMoveMarker:</sel><arg type="NSRulerMarker*">aMarker</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>rulerView:</sel><arg type="NSRulerView*">aRulerView</arg><sel>shouldRemoveMarker:</sel><arg type="NSRulerMarker*">aMarker</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="float"><sel>rulerView:</sel><arg type="NSRulerView*">aRulerView</arg><sel>willAddMarker:</sel><arg type="NSRulerMarker*">aMarker</arg><sel>atLocation:</sel><arg type="float">location</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="float"><sel>rulerView:</sel><arg type="NSRulerView*">aRulerView</arg><sel>willMoveMarker:</sel><arg type="NSRulerMarker*">aMarker</arg><sel>toLocation:</sel><arg type="float">location</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSRange"><sel>selectedRange</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSDictionary*"><sel>selectedTextAttributes</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSSelectionAffinity"><sel>selectionAffinity</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSSelectionGranularity"><sel>selectionGranularity</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSRange"><sel>selectionRangeForProposedRange:</sel><arg type="NSRange">proposedSelRange</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setAllowsUndo:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setAlignment:</sel><arg type="NSTextAlignment">alignment</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setBackgroundColor:</sel><arg type="NSColor*">aColor</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setConstrainedFrameSize:</sel><arg type="NSSize">desiredSize</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setDelegate:</sel><arg type="id">anObject</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setDrawsBackground:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setEditable:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setFieldEditor:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setImportsGraphics:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setInsertionPointColor:</sel><arg type="NSColor*">aColor</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setMarkedTextAttributes:</sel><arg type="NSDictionary*">attributes</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setNeedsDisplayInRect:</sel><arg type="NSRect">aRect</arg><sel>avoidAdditionalLayout:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setRichText:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setRulerVisible:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setSelectable:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setSelectedRange:</sel><arg type="NSRange">charRange</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setSelectedRange:</sel><arg type="NSRange">charRange</arg><sel>affinity:(NSSelectionAffinity)affinity stillSelecting:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setSelectedTextAttributes:</sel><arg type="NSDictionary*">attributes</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setSelectionGranularity:</sel><arg type="NSSelectionGranularity">granularity</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setSmartInsertDeleteEnabled:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setTextContainerInset:</sel><arg type="NSSize">inset</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setTypingAttributes:</sel><arg type="NSDictionary*">attributes</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setUsesFontPanel:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setUsesRuler:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>shouldChangeTextInRange:</sel><arg type="NSRange">affectedCharRange</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>shouldDrawInsertionPoint</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSRange"><sel>smartDeleteRangeForProposedRange:</sel><arg type="NSRange">proposedCharRange</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSString*"><sel>smartInsertAfterStringForString:</sel><arg type="NSString*">aString</arg><sel>replacingRange:</sel><arg type="NSRange">charRange</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSString*"><sel>smartInsertBeforeStringForString:</sel><arg type="NSString*">aString</arg><sel>replacingRange:</sel><arg type="NSRange">charRange</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="int"><sel>spellCheckerDocumentTag</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSTextContainer*"><sel>textContainer</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSSize"><sel>textContainerInset</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSPoint"><sel>textContainerOrigin</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSTextStorage*"><sel>textStorage</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>tightenKerning:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>turnOffKerning:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>turnOffLigatures:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSDictionary*"><sel>typingAttributes</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>updateDragTypeRegistration</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>updateFontPanel</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>updateInsertionPointStateAndRestartTimer:</sel><arg type="BOOL">flag</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>updateRuler</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>useAllLigatures:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>usesFontPanel</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>usesRuler</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>useStandardKerning:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>useStandardLigatures:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="id"><sel>validRequestorForSendType:</sel><arg type="NSString*">sendType</arg><sel>returnType:</sel><arg type="NSString*">returnType</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSArray*"><sel>writablePasteboardTypes</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>writeSelectionToPasteboard:</sel><arg type="NSPasteboard*">pboard</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>writeSelectionToPasteboard:</sel><arg type="NSPasteboard*">pboard</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>textView:</sel><arg type="NSTextView*">aTextView</arg><sel>clickedOnCell:</sel><arg type="id&lt;NSTextAttachmentCell&gt;">attachmentCell</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>textView:</sel><arg type="NSTextView*">textView</arg><sel>clickedOnCell:</sel><arg type="id&lt;NSTextAttachmentCell&gt;">cell</arg><sel>inRect:</sel><arg type="NSRect">cellFrame</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>textView:</sel><arg type="NSTextView*">textView</arg><sel>clickedOnLink:</sel><arg type="id">link</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>textView:</sel><arg type="NSTextView*">textView</arg><sel>clickedOnLink:</sel><arg type="id">link</arg><sel>atIndex:</sel><arg type="unsigned">charIndex</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>textView:</sel><arg type="NSTextView*">aTextView</arg><sel>doCommandBySelector:</sel><arg type="SEL">aSelector</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>textView:</sel><arg type="NSTextView*">aTextView</arg><sel>doubleClickedOnCell:</sel><arg type="id&lt;NSTextAttachmentCell&gt;">attachmentCell</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>textView:</sel><arg type="NSTextView*">textView</arg><sel>doubleClickedOnCell:</sel><arg type="id&lt;NSTextAttachmentCell&gt;">cell</arg><sel>inRect:</sel><arg type="NSRect">cellFrame</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>textView:</sel><arg type="NSTextView*">aTextView</arg><sel>draggedCell:</sel><arg type="id&lt;NSTextAttachmentCell&gt;">attachmentCell</arg><sel>inRect:(NSRect)aRect event:</sel><arg type="NSEvent*">theEvent</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>textView:</sel><arg type="NSTextView*">view</arg><sel>draggedCell:</sel><arg type="id&lt;NSTextAttachmentCell&gt;">cell</arg><sel>inRect:</sel><arg type="NSRect">rect</arg><sel>event:</sel><arg type="NSEvent*">event</arg><sel>atIndex:</sel><arg type="unsigned int">charIndex</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>textView:</sel><arg type="NSTextView*">aTextView</arg><sel>shouldChangeTextInRange:</sel><arg type="NSRange">affectedCharRange</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSRange"><sel>textView:</sel><arg type="NSTextView*">aTextView</arg><sel>willChangeSelectionFromCharacterRange:</sel><arg type="NSRange">oldSelectedCharRange</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>textViewDidChangeSelection:</sel><arg type="NSNotification*">aNotification</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSUndoManager*"><sel>undoManagerForTextView:</sel><arg type="NSTextView*">view</arg>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="void" factory="yes">
+          <sel>registerForServices</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSArray*">
+          <sel>acceptableDragTypes</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>alignJustified:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>allowsUndo;</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSColor*">
+          <sel>backgroundColor</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>becomeFirstResponder</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>changeColor:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>cleanUpAfterDragOperation</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>clickedOnLink:</sel>
+          <arg type="id">link</arg>
+          <sel>atIndex:</sel>
+          <arg type="unsigned int">charIndex</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="id">
+          <sel>delegate</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>didChangeText</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="unsigned int">
+          <sel>dragOperationForDraggingInfo:</sel>
+          <arg type="id&lt;NSDraggingInfo&gt;">dragInfo</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>drawInsertionPointInRect:</sel>
+          <arg type="NSRect">aRect</arg>
+          <sel>color:</sel>
+          <arg type="NSColor *">aColor</arg>
+          <sel>turnedOn:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>drawsBackground</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>encodeWithCoder:</sel>
+          <arg type="NSCoder*">encoder</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>importsGraphics</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="id">
+          <sel>initWithCoder:</sel>
+          <arg type="NSCoder*">decoder</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="id">
+          <sel>initWithFrame:</sel>
+          <arg type="NSRect">frameRect</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="id">
+          <sel>initWithFrame:</sel>
+          <arg type="NSRect">frameRect</arg>
+          <sel>textContainer:</sel>
+          <arg type="NSTextContainer*">aTextContainer</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>insertText:</sel>
+          <arg type="NSString*">aString</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSColor*">
+          <sel>insertionPointColor</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>invalidateTextContainerOrigin</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>isEditable</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>isFieldEditor</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>isRichText</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>isRulerVisible</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>isSelectable</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSLayoutManager*">
+          <sel>layoutManager</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>loosenKerning:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>lowerBaseline:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSRange">
+          <sel>markedRange</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSDictionary*">
+          <sel>markedTextAttributes</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>pasteAsPlainText:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>pasteAsRichText:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSString*">
+          <sel>preferredPasteboardTypeFromArray:</sel>
+          <arg type="NSArray*">availableTypes</arg>
+          <sel>restrictedToTypesFromArray:</sel>
+          <arg type="NSArray*">allowedTypes</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>raiseBaseline:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSArray*">
+          <sel>readablePasteboardTypes</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>readSelectionFromPasteboard:</sel>
+          <arg type="NSPasteboard*">pboard</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>readSelectionFromPasteboard:</sel>
+          <arg type="NSPasteboard*">pboard</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>replaceTextContainer:</sel>
+          <arg type="NSTextContainer*">aTextContainer</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>resignFirstResponder</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>rulerView:</sel>
+          <arg type="NSRulerView*">aRulerView</arg>
+          <sel>didAddMarker:</sel>
+          <arg type="NSRulerMarker*">aMarker</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>rulerView:</sel>
+          <arg type="NSRulerView*">aRulerView</arg>
+          <sel>didMoveMarker:</sel>
+          <arg type="NSRulerMarker*">aMarker</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>rulerView:</sel>
+          <arg type="NSRulerView*">aRulerView</arg>
+          <sel>didRemoveMarker:</sel>
+          <arg type="NSRulerMarker*">aMarker</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>rulerView:</sel>
+          <arg type="NSRulerView*">aRulerView</arg>
+          <sel>handleMouseDown:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>rulerView:</sel>
+          <arg type="NSRulerView*">aRulerView</arg>
+          <sel>shouldAddMarker:</sel>
+          <arg type="NSRulerMarker*">aMarker</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>rulerView:</sel>
+          <arg type="NSRulerView*">aRulerView</arg>
+          <sel>shouldMoveMarker:</sel>
+          <arg type="NSRulerMarker*">aMarker</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>rulerView:</sel>
+          <arg type="NSRulerView*">aRulerView</arg>
+          <sel>shouldRemoveMarker:</sel>
+          <arg type="NSRulerMarker*">aMarker</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="float">
+          <sel>rulerView:</sel>
+          <arg type="NSRulerView*">aRulerView</arg>
+          <sel>willAddMarker:</sel>
+          <arg type="NSRulerMarker*">aMarker</arg>
+          <sel>atLocation:</sel>
+          <arg type="float">location</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="float">
+          <sel>rulerView:</sel>
+          <arg type="NSRulerView*">aRulerView</arg>
+          <sel>willMoveMarker:</sel>
+          <arg type="NSRulerMarker*">aMarker</arg>
+          <sel>toLocation:</sel>
+          <arg type="float">location</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSRange">
+          <sel>selectedRange</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSDictionary*">
+          <sel>selectedTextAttributes</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSSelectionAffinity">
+          <sel>selectionAffinity</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSSelectionGranularity">
+          <sel>selectionGranularity</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSRange">
+          <sel>selectionRangeForProposedRange:</sel>
+          <arg type="NSRange">proposedSelRange</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setAllowsUndo:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setAlignment:</sel>
+          <arg type="NSTextAlignment">alignment</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setBackgroundColor:</sel>
+          <arg type="NSColor*">aColor</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setConstrainedFrameSize:</sel>
+          <arg type="NSSize">desiredSize</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setDelegate:</sel>
+          <arg type="id">anObject</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setDrawsBackground:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setEditable:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setFieldEditor:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setImportsGraphics:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setInsertionPointColor:</sel>
+          <arg type="NSColor*">aColor</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setMarkedTextAttributes:</sel>
+          <arg type="NSDictionary*">attributes</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setNeedsDisplayInRect:</sel>
+          <arg type="NSRect">aRect</arg>
+          <sel>avoidAdditionalLayout:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setRichText:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setRulerVisible:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setSelectable:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setSelectedRange:</sel>
+          <arg type="NSRange">charRange</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setSelectedRange:</sel>
+          <arg type="NSRange">charRange</arg>
+          <sel>affinity:</sel>
+          <arg type="NSSelectionAffinity">affinity</arg>
+          <sel>stillSelecting:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setSelectedTextAttributes:</sel>
+          <arg type="NSDictionary*">attributes</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setSelectionGranularity:</sel>
+          <arg type="NSSelectionGranularity">granularity</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setSmartInsertDeleteEnabled:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setTextContainerInset:</sel>
+          <arg type="NSSize">inset</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setTypingAttributes:</sel>
+          <arg type="NSDictionary*">attributes</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setUsesFontPanel:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setUsesRuler:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>shouldChangeTextInRange:</sel>
+          <arg type="NSRange">affectedCharRange</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>shouldDrawInsertionPoint</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSRange">
+          <sel>smartDeleteRangeForProposedRange:</sel>
+          <arg type="NSRange">proposedCharRange</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSString*">
+          <sel>smartInsertAfterStringForString:</sel>
+          <arg type="NSString*">aString</arg>
+          <sel>replacingRange:</sel>
+          <arg type="NSRange">charRange</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSString*">
+          <sel>smartInsertBeforeStringForString:</sel>
+          <arg type="NSString*">aString</arg>
+          <sel>replacingRange:</sel>
+          <arg type="NSRange">charRange</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="int">
+          <sel>spellCheckerDocumentTag</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSTextContainer*">
+          <sel>textContainer</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSSize">
+          <sel>textContainerInset</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSPoint">
+          <sel>textContainerOrigin</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSTextStorage*">
+          <sel>textStorage</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>tightenKerning:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>turnOffKerning:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>turnOffLigatures:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSDictionary*">
+          <sel>typingAttributes</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>updateDragTypeRegistration</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>updateFontPanel</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>updateInsertionPointStateAndRestartTimer:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>updateRuler</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>useAllLigatures:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>usesFontPanel</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>usesRuler</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>useStandardKerning:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>useStandardLigatures:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="id">
+          <sel>validRequestorForSendType:</sel>
+          <arg type="NSString*">sendType</arg>
+          <sel>returnType:</sel>
+          <arg type="NSString*">returnType</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSArray*">
+          <sel>writablePasteboardTypes</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>writeSelectionToPasteboard:</sel>
+          <arg type="NSPasteboard*">pboard</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>writeSelectionToPasteboard:</sel>
+          <arg type="NSPasteboard*">pboard</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>textView:</sel>
+          <arg type="NSTextView*">aTextView</arg>
+          <sel>clickedOnCell:</sel>
+          <arg type="id&lt;NSTextAttachmentCell&gt;">attachmentCell</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>textView:</sel>
+          <arg type="NSTextView*">textView</arg>
+          <sel>clickedOnCell:</sel>
+          <arg type="id&lt;NSTextAttachmentCell&gt;">cell</arg>
+          <sel>inRect:</sel>
+          <arg type="NSRect">cellFrame</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>textView:</sel>
+          <arg type="NSTextView*">textView</arg>
+          <sel>clickedOnLink:</sel>
+          <arg type="id">link</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>textView:</sel>
+          <arg type="NSTextView*">textView</arg>
+          <sel>clickedOnLink:</sel>
+          <arg type="id">link</arg>
+          <sel>atIndex:</sel>
+          <arg type="unsigned">charIndex</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>textView:</sel>
+          <arg type="NSTextView*">aTextView</arg>
+          <sel>doCommandBySelector:</sel>
+          <arg type="SEL">aSelector</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>textView:</sel>
+          <arg type="NSTextView*">aTextView</arg>
+          <sel>doubleClickedOnCell:</sel>
+          <arg type="id&lt;NSTextAttachmentCell&gt;">attachmentCell</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>textView:</sel>
+          <arg type="NSTextView*">textView</arg>
+          <sel>doubleClickedOnCell:</sel>
+          <arg type="id&lt;NSTextAttachmentCell&gt;">cell</arg>
+          <sel>inRect:</sel>
+          <arg type="NSRect">cellFrame</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>textView:</sel>
+          <arg type="NSTextView*">aTextView</arg>
+          <sel>draggedCell:</sel>
+          <arg type="id&lt;NSTextAttachmentCell&gt;">attachmentCell</arg>
+          <sel>inRect:</sel>
+          <arg type="NSRect">aRect</arg>
+          <sel>event:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>textView:</sel>
+          <arg type="NSTextView*">view</arg>
+          <sel>draggedCell:</sel>
+          <arg type="id&lt;NSTextAttachmentCell&gt;">cell</arg>
+          <sel>inRect:</sel>
+          <arg type="NSRect">rect</arg>
+          <sel>event:</sel>
+          <arg type="NSEvent*">event</arg>
+          <sel>atIndex:</sel>
+          <arg type="unsigned int">charIndex</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>textView:</sel>
+          <arg type="NSTextView*">aTextView</arg>
+          <sel>shouldChangeTextInRange:</sel>
+          <arg type="NSRange">affectedCharRange</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSRange">
+          <sel>textView:</sel>
+          <arg type="NSTextView*">aTextView</arg>
+          <sel>willChangeSelectionFromCharacterRange:</sel>
+          <arg type="NSRange">oldSelectedCharRange</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>textViewDidChangeSelection:</sel>
+          <arg type="NSNotification*">aNotification</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSUndoManager*">
+          <sel>undoManagerForTextView:</sel>
+          <arg type="NSTextView*">view</arg>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>

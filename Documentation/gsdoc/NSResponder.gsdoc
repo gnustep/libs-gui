@@ -16,371 +16,547 @@
       <class name="NSResponder" super="NSObject">
         <declared>AppKit/NSResponder.h</declared>
         <conform>NSCoding</conform>
-        <desc>
-        </desc>
-        <method type="BOOL"><sel>acceptsFirstResponder</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>becomeFirstResponder</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>capitalizeWord:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>centerSelectionInVisibleArea:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>changeCaseOfLetter:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>complete:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>deleteBackward:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>deleteForward:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>deleteToBeginningOfLine:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>deleteToBeginningOfParagraph:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>deleteToEndOfLine:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>deleteToEndOfParagraph:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>deleteToMark:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>deleteWordBackward:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>deleteWordForward:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>doCommandBySelector:</sel><arg type="SEL">aSelector</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>flagsChanged:</sel><arg type="NSEvent*">theEvent</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>flushBufferedKeyEvents</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>helpRequested:</sel><arg type="NSEvent*">theEvent</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>indent:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>insertBacktab:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>insertNewline:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>insertNewlineIgnoringFieldEditor:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>insertParagraphSeparator:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>insertTab:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>insertTabIgnoringFieldEditor:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>insertText:</sel><arg type="NSString*">aString</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSInterfaceStyle"><sel>interfaceStyle</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>interpretKeyEvents:</sel><arg type="NSArray*">eventArray</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>keyDown:</sel><arg type="NSEvent*">theEvent</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>keyUp:</sel><arg type="NSEvent*">theEvent</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>lowercaseWord:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSMenu*"><sel>menu</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>mouseDown:</sel><arg type="NSEvent*">theEvent</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>mouseDragged:</sel><arg type="NSEvent*">theEvent</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>mouseEntered:</sel><arg type="NSEvent*">theEvent</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>mouseExited:</sel><arg type="NSEvent*">theEvent</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>mouseMoved:</sel><arg type="NSEvent*">theEvent</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>mouseUp:</sel><arg type="NSEvent*">theEvent</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>moveBackward:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>moveBackwardAndModifySelection:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>moveDown:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>moveDownAndModifySelection:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>moveForward:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>moveForwardAndModifySelection:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>moveLeft:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>moveRight:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>moveToBeginningOfDocument:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>moveToBeginningOfLine:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>moveToBeginningOfParagraph:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>moveToEndOfDocument:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>moveToEndOfLine:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>moveToEndOfParagraph:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>moveUp:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>moveUpAndModifySelection:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>moveWordBackward:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>moveWordBackwardAndModifySelection:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>moveWordForward:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>moveWordForwardAndModifySelection:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSResponder*"><sel>nextResponder</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>noResponderFor:</sel><arg type="SEL">eventSelector</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>pageDown:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>pageUp:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>performKeyEquivalent:</sel><arg type="NSEvent*">theEvent</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>performMnemonic:</sel><arg type="NSString*">aString</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>resignFirstResponder</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>rightMouseDown:</sel><arg type="NSEvent*">theEvent</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>rightMouseDragged:</sel><arg type="NSEvent*">theEvent</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>rightMouseUp:</sel><arg type="NSEvent*">theEvent</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>scrollLineDown:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>scrollLineUp:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>scrollPageDown:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>scrollPageUp:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>selectAll:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>selectLine:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>selectParagraph:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>selectToMark:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>selectWord:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setInterfaceStyle:</sel><arg type="NSInterfaceStyle">interfaceStyle</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setMark:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setMenu:</sel><arg type="NSMenu*">aMenu</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>setNextResponder:</sel><arg type="NSResponder*">aResponder</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>showContextHelp:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>swapWithMark:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>transpose:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>transposeWords:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="BOOL"><sel>tryToPerform:</sel><arg type="SEL">anAction</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="NSUndoManager*"><sel>undoManager</sel>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>uppercaseWord:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="id"><sel>validRequestorForSendType:</sel><arg type="NSString*">sendType</arg><sel>returnType:</sel><arg type="NSString*">returnType</arg>
-        <desc>
-        </desc>
-        </method>
-        <method type="void"><sel>yank:</sel><arg type="id">sender</arg>
-        <desc>
-        </desc>
+          <desc>
+          </desc>
+        <method type="BOOL">
+          <sel>acceptsFirstResponder</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>becomeFirstResponder</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>capitalizeWord:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>centerSelectionInVisibleArea:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>changeCaseOfLetter:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>complete:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>deleteBackward:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>deleteForward:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>deleteToBeginningOfLine:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>deleteToBeginningOfParagraph:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>deleteToEndOfLine:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>deleteToEndOfParagraph:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>deleteToMark:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>deleteWordBackward:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>deleteWordForward:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>doCommandBySelector:</sel>
+          <arg type="SEL">aSelector</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>flagsChanged:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>flushBufferedKeyEvents</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>helpRequested:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>indent:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>insertBacktab:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>insertNewline:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>insertNewlineIgnoringFieldEditor:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>insertParagraphSeparator:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>insertTab:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>insertTabIgnoringFieldEditor:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>insertText:</sel>
+          <arg type="NSString*">aString</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSInterfaceStyle">
+          <sel>interfaceStyle</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>interpretKeyEvents:</sel>
+          <arg type="NSArray*">eventArray</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>keyDown:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>keyUp:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>lowercaseWord:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSMenu*">
+          <sel>menu</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>mouseDown:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>mouseDragged:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>mouseEntered:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>mouseExited:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>mouseMoved:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>mouseUp:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>moveBackward:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>moveBackwardAndModifySelection:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>moveDown:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>moveDownAndModifySelection:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>moveForward:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>moveForwardAndModifySelection:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>moveLeft:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>moveRight:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>moveToBeginningOfDocument:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>moveToBeginningOfLine:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>moveToBeginningOfParagraph:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>moveToEndOfDocument:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>moveToEndOfLine:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>moveToEndOfParagraph:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>moveUp:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>moveUpAndModifySelection:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>moveWordBackward:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>moveWordBackwardAndModifySelection:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>moveWordForward:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>moveWordForwardAndModifySelection:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSResponder*">
+          <sel>nextResponder</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>noResponderFor:</sel>
+          <arg type="SEL">eventSelector</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>pageDown:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>pageUp:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>performKeyEquivalent:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>performMnemonic:</sel>
+          <arg type="NSString*">aString</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>resignFirstResponder</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>rightMouseDown:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>rightMouseDragged:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>rightMouseUp:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>scrollLineDown:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>scrollLineUp:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>scrollPageDown:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>scrollPageUp:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>selectAll:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>selectLine:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>selectParagraph:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>selectToMark:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>selectWord:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setInterfaceStyle:</sel>
+          <arg type="NSInterfaceStyle">interfaceStyle</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setMark:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setMenu:</sel>
+          <arg type="NSMenu*">aMenu</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setNextResponder:</sel>
+          <arg type="NSResponder*">aResponder</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>showContextHelp:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>swapWithMark:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>transpose:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>transposeWords:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>tryToPerform:</sel>
+          <arg type="SEL">anAction</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSUndoManager*">
+          <sel>undoManager</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>uppercaseWord:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="id">
+          <sel>validRequestorForSendType:</sel>
+          <arg type="NSString*">sendType</arg>
+          <sel>returnType:</sel>
+          <arg type="NSString*">returnType</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>yank:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
         </method>
       </class>
     </chapter>
