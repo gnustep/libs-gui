@@ -24,6 +24,8 @@
    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
    */
 
+#ifndef	STRICT_OPENSTEP
+
 #ifndef _NSGraphicsContext_h_INCLUDE
 #define _NSGraphicsContext_h_INCLUDE
 
@@ -320,4 +322,6 @@ typedef enum _NSWindowOrderingMode
 @end
 
 #endif /* _NSGraphicsContext_h_INCLUDE */
+
+#endif	/* STRICT_OPENSTEP	*/
 

@@ -26,6 +26,8 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
+#ifndef	STRICT_MACOS_X
+
 #ifndef _GNUstep_H_NSHelpPanel
 #define _GNUstep_H_NSHelpPanel
 
@@ -82,3 +84,5 @@
 @end
 
 #endif // _GNUstep_H_NSHelpPanel
+#endif // STRICT_MACOS_X
+
