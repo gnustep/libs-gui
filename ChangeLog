@@ -8,6 +8,9 @@
 	Some comments added.
 	(-sizePanelToFit): Center message text horizontally.
 
+	* Images/common_ret.tiff: Edit to be more NeXTish.
+	* Images/common_retH.tiff: Ditto.
+
 2003-11-29  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWindow.m (+initialize) cache runloop modes. 
