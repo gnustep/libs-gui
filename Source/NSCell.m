@@ -183,7 +183,7 @@ static NSColor	*shadowCol;
   TEST_RELEASE (_objectValue);
   TEST_RELEASE (_formatter);
 
-  [super dealloc];
+  NSDeallocateObject (self);
 }
 
 /*
