@@ -34,6 +34,7 @@
 
 
 @interface NSBundle (IMLoading)
++ (BOOL)loadGModelNamed:(NSString *)gmodelName owner:(id)owner;
 - (BOOL)loadIMFile:(NSString*)filename owner:(id)owner;
 @end
 

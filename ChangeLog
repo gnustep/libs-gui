@@ -1,3 +1,10 @@
+2000-03-22  Richard Frith-Macdonald <rfm@gnu.org>
+
+	Patch from jagapen@whitewater.chem.wisc.edu
+	* Model/IMLoading.m: new method ([+loadGModelNamed:owner:])
+	* Headers/AppKit/IMGmodel.h: ditto
+	* Source/NSApplication.m: Use new method.
+
 Sun Mar 19 22:26:55 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Model/GMAppKit.m ([NSApplication -initWithModelUnarchiver:]): 

@@ -44,6 +44,25 @@ void __dummy_IMLoading_functionForLinking()
   return [GMModel loadIMFile:path owner:owner bundle:self];
 }
 
++ (BOOL)loadGModelNamed:(NSString *)gmodelName owner:(id)owner
+{
+  NSBundle *bundle;
+  NSString *path;
+
+  /* Pull off the .gmodel extension (if any) for pathForResource:ofType: */
+  if ([[gmodelName pathExtension] isEqualToString:@"gmodel"])
+    gmodelName = [gmodelName stringByDeletingPathExtension];
+
+  /* Use owner's bundle (if any) just like +loadNibNamed:owner: does. */
+  bundle = [NSBundle bundleForClass: owner];
+  if (bundle == nil)
+    bundle = [NSBundle mainBundle];
+
+  path = [bundle pathForResource:gmodelName ofType:@"gmodel"];
+
+  return [GMModel loadIMFile:path owner:owner bundle:bundle];
+}
+
 @end /* NSBundle(IMLoading) */
 
 
