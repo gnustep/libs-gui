@@ -2023,6 +2023,12 @@ resetCursorRectsForView(NSView *theView)
  */
 - (void) close
 {
+  if (_f.has_closed == YES)
+    {
+      // already closed
+      return;
+    }
+
   CREATE_AUTORELEASE_POOL(pool);
 
   [nc postNotificationName: NSWindowWillCloseNotification object: self];
@@ -2042,11 +2048,6 @@ resetCursorRectsForView(NSView *theView)
 	  RELEASE(self);
 	}
     }
-  else
-    {
-      NSWarnMLog(@"closing window (%@) that's already closed.", self);
-    }
-
 }
 
 /* Private Method. Many X Window managers will just deminiaturize us without
