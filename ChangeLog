@@ -1,3 +1,24 @@
+Thu Sep  7 17:47:46 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSStringDrawing.m ([NSAttributedString -drawInRect:]): 
+	Use NSRectClip as a temporary workaround for the fact that 
+	the string is to be drawn only inside rect.
+
+Thu Sep  7 17:01:58 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Headers/gnustep/gui/NSTableHeaderView.h: Added ivar for
+	resized column.
+	* Source/NSTableHeaderView.m ([-setTableView:]): Initialize
+	resized column ivar.  ([-resizedColumn:]): Implemented.
+	([-mouseDown:]): Implemented resizing of columns.
+	* Headers/gnustep/gui/NSTableView.h: Added ivar for allowing
+	column resizing.
+	* Source/NSTableView.m ([-allowsColumnResizing]),
+	([-setAllowsColumnResizing:]): Implemented.  ([-initWithFrame:]):
+	Allow column resizing by default.
+	([-_userResizedTableColumn:leftWidth:rightWidth:]): New private
+	method.
+	
 Thu Sep  7 14:56:47 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSSplitView.m ([-mouseDown:]): Removed periodic events.
