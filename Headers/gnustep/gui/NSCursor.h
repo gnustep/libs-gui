@@ -38,6 +38,13 @@
 
 {
   // Attributes
+  NSImage *cursor_image;
+  NSPoint hot_spot;
+  BOOL is_set_on_mouse_entered;
+  BOOL is_set_on_mouse_exited;
+
+  // Reserved for back-end use
+  void *be_cursor_reserved;
 }
 
 //
@@ -59,6 +66,7 @@
 + (void)hide;
 + (void)pop;
 + (void)setHiddenUntilMouseMoves:(BOOL)flag;
++ (BOOL)isHiddenUntilMouseMoves;
 + (void)unhide;
 - (BOOL)isSetOnMouseEntered;
 - (BOOL)isSetOnMouseExited;
@@ -82,6 +90,15 @@
 //
 - (void)encodeWithCoder:aCoder;
 - initWithCoder:aDecoder;
+
+@end
+
+//
+// Methods implemented by the backend
+//
+@interface NSCursor (GNUstepBackend)
+
++ (void)currentCursorHasChanged;
 
 @end
 

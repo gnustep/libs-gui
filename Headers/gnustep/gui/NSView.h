@@ -52,6 +52,7 @@
   NSMutableArray *sub_views;
   id window;
   NSMutableArray *tracking_rects;
+  NSMutableArray *cursor_rects;
 
   BOOL is_flipped;
   BOOL is_rotated_from_base;
@@ -77,7 +78,7 @@
 - (void)addSubview:(NSView *)aView;
 - (void)addSubview:(NSView *)aView
 	positioned:(NSWindowOrderingMode)place
-relativeTo:(NSView *)otherView;
+	relativeTo:(NSView *)otherView;
 - (NSView *)ancestorSharedWithView:(NSView *)aView;
 - (BOOL)isDescendantOf:(NSView *)aView;
 - (NSView *)opaqueAncestor;
@@ -207,6 +208,7 @@ relativeTo:(NSView *)otherView;
 - (void)removeCursorRect:(NSRect)aRect
 		  cursor:(NSCursor *)anObject;
 - (void)resetCursorRects;
+- (NSArray *)cursorRectangles;
 
 //
 // Assigning a Tag 
@@ -226,8 +228,8 @@ relativeTo:(NSView *)otherView;
 - (BOOL)shouldDelayWindowOrderingForEvent:(NSEvent *)anEvent;
 - (NSTrackingRectTag)addTrackingRect:(NSRect)aRect
 			       owner:(id)anObject
-userData:(void *)data
-			       assumeInside:(BOOL)flag;
+			    userData:(void *)data
+			assumeInside:(BOOL)flag;
 - (NSArray *)trackingRectangles;
 
 //
@@ -235,15 +237,15 @@ userData:(void *)data
 //
 - (BOOL)dragFile:(NSString *)filename
 	fromRect:(NSRect)rect
-slideBack:(BOOL)slideFlag
-	event:(NSEvent *)event;
+       slideBack:(BOOL)slideFlag
+	   event:(NSEvent *)event;
 - (void)dragImage:(NSImage *)anImage
 	       at:(NSPoint)viewLocation
-offset:(NSSize)initialOffset
-	       event:(NSEvent *)event
-pasteboard:(NSPasteboard *)pboard
-	       source:(id)sourceObject
-slideBack:(BOOL)slideFlag;
+	   offset:(NSSize)initialOffset
+	    event:(NSEvent *)event
+       pasteboard:(NSPasteboard *)pboard
+	   source:(id)sourceObject
+	slideBack:(BOOL)slideFlag;
 - (void)registerForDraggedTypes:(NSArray *)newTypes;
 - (void)unregisterDraggedTypes;
 
@@ -261,12 +263,12 @@ slideBack:(BOOL)slideFlag;
 //
 - (void)adjustPageHeightNew:(float *)newBottom
 			top:(float)oldTop
-bottom:(float)oldBottom
-			limit:(float)bottomLimit;
+		     bottom:(float)oldBottom
+		      limit:(float)bottomLimit;
 - (void)adjustPageWidthNew:(float *)newRight
 		      left:(float)oldLeft
-right:(float)oldRight	 
-		      limit:(float)rightLimit;
+		     right:(float)oldRight	 
+		     limit:(float)rightLimit;
 - (float)heightAdjustLimit;
 - (BOOL)knowsPagesFirst:(int *)firstPageNum
 		   last:(int *)lastPageNum;
@@ -280,17 +282,17 @@ right:(float)oldRight
 - (void)addToPageSetup;
 - (void)beginPage:(int)ordinalNum
 	    label:(NSString *)aString
-bBox:(NSRect)pageRect
+	     bBox:(NSRect)pageRect
 	    fonts:(NSString *)fontNames;
 - (void)beginPageSetupRect:(NSRect)aRect
 		 placement:(NSPoint)location;
 - (void)beginPrologueBBox:(NSRect)boundingBox
 	     creationDate:(NSString *)dateCreated
-createdBy:(NSString *)anApplication
-	     fonts:(NSString *)fontNames
-forWhom:(NSString *)user
-	     pages:(int)numPages
-title:(NSString *)aTitle;
+		createdBy:(NSString *)anApplication
+		    fonts:(NSString *)fontNames
+		  forWhom:(NSString *)user
+		    pages:(int)numPages
+		    title:(NSString *)aTitle;
 - (void)beginSetup;
 - (void)beginTrailer;
 - (void)drawPageBorderWithSize:(NSSize)borderSize;

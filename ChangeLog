@@ -1,3 +1,19 @@
+Wed Feb 12 14:14:47 1997  GNUstep Development  <gnustep@net-community.com>
+
+	* Initial implementation of NSCursor.
+	* Headers/gnustep/gui/NSCursor.h: Likewise.
+	* Source/NSCursor.m: Likewise.
+	* Headers/gnustep/gui/NSWindow.h: Implement cursor rectangles.
+	* Source/NSView.m: Likewise.
+	* Source/NSWindow.m: Likewise.
+	* Source/Makefile.in: Clean up variables
+	* Source/NSApplication.m: Fixes to event posting.  Unhide the
+	cursor when a mouse event occurs.
+	* Source/NSEvent.m: NSCursorUpdate events are implemented
+	as enter/exit events instead of other events.
+	* Headers/gnustep/gui/NSTextField.h: Add text field cursor.
+	* Source/NSTextField.m: Likewise.
+
 Thu Feb  6 19:31:54 1997  GNUstep Development  <gnustep@net-community.com>
 
 	* Fill out implementation of NSColorWell.

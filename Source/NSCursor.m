@@ -1,7 +1,7 @@
 /* 
    NSCursor.m
 
-   Description...
+   Holds an image to use as a cursor
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
@@ -27,6 +27,12 @@
 */ 
 
 #include <gnustep/gui/NSCursor.h>
+#include <gnustep/base/Stack.h>
+
+// Class variables
+static Stack *gnustep_gui_cursor_stack;
+static NSCursor *gnustep_gui_current_cursor;
+static BOOL gnustep_gui_hidden_until_move;
 
 @implementation NSCursor
 
@@ -39,6 +45,11 @@
     {
       // Initial version
       [self setVersion:1];
+
+      // Initialize class variables
+      gnustep_gui_cursor_stack = [[Stack alloc] initWithCapacity: 2];
+      gnustep_gui_hidden_until_move = YES;
+      gnustep_gui_current_cursor = [NSCursor arrowCursor];
     }
 }
 
@@ -46,16 +57,36 @@
 // Setting the Cursor
 //
 + (void)hide
-{}
+{
+}
 
 + (void)pop
-{}
+{
+  // The object we pop is the current cursor
+  if (![gnustep_gui_cursor_stack isEmpty])
+    gnustep_gui_current_cursor = [gnustep_gui_cursor_stack popObject];
+
+  // If the stack isn't empty then get the new current cursor
+  // Otherwise the cursor will stay the same
+  if (![gnustep_gui_cursor_stack isEmpty])
+    gnustep_gui_current_cursor = [gnustep_gui_cursor_stack topObject];
+
+  [self currentCursorHasChanged];
+}
 
 + (void)setHiddenUntilMouseMoves:(BOOL)flag
-{}
+{
+  gnustep_gui_hidden_until_move = flag;
+}
+
++ (BOOL)isHiddenUntilMouseMoves
+{
+  return gnustep_gui_hidden_until_move;
+}
 
 + (void)unhide
-{}
+{
+}
 
 //
 // Getting the Cursor
@@ -67,7 +98,7 @@
 
 + (NSCursor *)currentCursor
 {
-  return nil;
+  return gnustep_gui_current_cursor;
 }
 
 + (NSCursor *)IBeamCursor
@@ -82,9 +113,20 @@
 //
 // Initializing a New NSCursor Object
 //
+- init
+{
+  return [self initWithImage: nil];
+}
+
 - (id)initWithImage:(NSImage *)newImage
 {
-  return nil;
+  [super init];
+
+  cursor_image = newImage;
+  is_set_on_mouse_entered = NO;
+  is_set_on_mouse_exited = NO;
+
+  return self;
 }
 
 //
@@ -92,53 +134,80 @@
 //
 - (NSPoint)hotSpot
 {
-  return NSZeroPoint;
+  return hot_spot;
 }
 
 - (NSImage *)image
 {
-  return nil;
+  return cursor_image;
 }
 
 - (void)setHotSpot:(NSPoint)spot
-{}
+{
+  hot_spot = spot;
+}
 
 - (void)setImage:(NSImage *)newImage
-{}
+{
+  cursor_image = newImage;
+}
 
 //
 // Setting the Cursor
 //
 - (BOOL)isSetOnMouseEntered
 {
-  return NO;
+  return is_set_on_mouse_entered;
 }
 
 - (BOOL)isSetOnMouseExited
 {
-  return NO;
+  return is_set_on_mouse_exited;
 }
 
+// Hmm, how is this mouse entered/exited suppose to work?
+// Is it simply what the doc says?
+// If the cursor is set when the mouse enters
+// then how does it get unset when the mouse exits?
 - (void)mouseEntered:(NSEvent *)theEvent
-{}
+{
+  if (is_set_on_mouse_entered)
+    [self set];
+}
 
 - (void)mouseExited:(NSEvent *)theEvent
-{}
+{
+  if (is_set_on_mouse_exited)
+    [self set];
+}
 
 - (void)pop
-{}
+{
+  [NSCursor pop];
+}
 
 - (void)push
-{}
+{
+  [gnustep_gui_cursor_stack pushObject: self];
+  gnustep_gui_current_cursor = self;
+  [NSCursor currentCursorHasChanged];
+}
 
 - (void)set
-{}
+{
+  gnustep_gui_current_cursor = self;
+  [NSCursor currentCursorHasChanged];
+}
 
 - (void)setOnMouseEntered:(BOOL)flag
-{}
+{
+  is_set_on_mouse_entered = flag;
+}
 
 - (void)setOnMouseExited:(BOOL)flag
-{}
+{
+  is_set_on_mouse_exited = flag;
+}
 
 //
 // NSCoding protocol
@@ -154,5 +223,15 @@
 
   return self;
 }
+
+@end
+
+//
+// Methods implemented by the backend
+//
+@implementation NSCursor (GNUstepBackend)
+
++ (void)currentCursorHasChanged
+{}
 
 @end

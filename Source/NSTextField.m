@@ -82,6 +82,7 @@ id MB_NSTEXTFIELDCELL_CLASS;
   [[self cell] release];
   [self setCell:[[MB_NSTEXTFIELDCELL_CLASS alloc] init]];
   [cell setState:1];
+  text_cursor = [NSCursor IBeamCursor];
 
   return self;
 }
@@ -393,6 +394,14 @@ id MB_NSTEXTFIELDCELL_CLASS;
 - (BOOL)textShouldEndEditing:(NSText *)textObject
 {
   return YES;
+}
+
+//
+// Manage the cursor
+//
+- (void)resetCursorRects
+{
+  [self addCursorRect: bounds cursor: text_cursor];
 }
 
 //

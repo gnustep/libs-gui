@@ -153,6 +153,9 @@ NSString *NSViewFocusChangedNotification;
   // Initialize tracking rectangle list
   tracking_rects = [NSMutableArray array];
 
+  // Initialize cursor rect list
+  cursor_rects = [NSMutableArray array];
+
   super_view = nil;
   window = nil;
   is_flipped = NO;
@@ -184,6 +187,11 @@ NSString *NSViewFocusChangedNotification;
   j = [tracking_rects count];
   for (i = 0;i < j; ++i)
     [[tracking_rects objectAtIndex:i] release];
+
+  // Free the cursor rectangles
+  j = [cursor_rects count];
+  for (i = 0;i < j; ++i)
+    [[cursor_rects objectAtIndex:i] release];
 
   [super dealloc];
 }
@@ -847,19 +855,54 @@ NSString *NSViewFocusChangedNotification;
 //
 // Managing the Cursor 
 //
+// We utilize the tracking rectangle class
+// to also maintain the cursor rects
+//
 - (void)addCursorRect:(NSRect)aRect
 	       cursor:(NSCursor *)anObject
-{}
+{
+  TrackingRectangle *m;
+
+  m = [[TrackingRectangle alloc] initWithRect: aRect tag: 0 owner: anObject
+				 userData: NULL inside: YES];
+  [cursor_rects addObject:m];
+}
 
 - (void)discardCursorRects
-{}
+{
+  [cursor_rects removeAllObjects];
+}
 
 - (void)removeCursorRect:(NSRect)aRect
 		  cursor:(NSCursor *)anObject
-{}
+{
+  id e = [cursor_rects objectEnumerator];
+  TrackingRectangle *o;
+  NSCursor *c;
+  BOOL found = NO;
+
+  // Base remove test upon cursor object
+  o = [e nextObject];
+  while (o && (!found))
+    {
+      c = [o owner];
+      if (c == anObject)
+	found = YES;
+      else
+	o = [e nextObject];
+    }
+
+  if (found)
+    [cursor_rects removeObject: o];
+}
 
 - (void)resetCursorRects
 {}
+
+- (NSArray *)cursorRectangles
+{
+  return cursor_rects;
+}
 
 //
 // Assigning a Tag 

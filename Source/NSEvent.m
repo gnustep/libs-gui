@@ -163,7 +163,8 @@
   e = [[[NSEvent alloc] init] autorelease];
 
   // Make sure it is one of the right event types
-  if ((type != NSMouseEntered) && (type != NSMouseExited))
+  if ((type != NSMouseEntered) && (type != NSMouseExited)
+       && (type != NSCursorUpdate))
     return nil;
 
   // Set the event fields
@@ -264,8 +265,7 @@
   e = [[[NSEvent alloc] init] autorelease];
 
   // Make sure it is one of the right event types
-  if ((type != NSFlagsChanged) && (type != NSCursorUpdate) &&
-      (type != NSPeriodic))
+  if ((type != NSFlagsChanged) && (type != NSPeriodic))
     return nil;
 
   // Set the event fields
@@ -428,7 +428,8 @@
 //
 - (int)trackingNumber
 {
-  if ((event_type != NSMouseEntered) && (event_type != NSMouseExited))
+  if ((event_type != NSMouseEntered) && (event_type != NSMouseExited)
+       && (event_type != NSCursorUpdate))
     return 0;
 
   return event_data.tracking.tracking_num;
@@ -436,7 +437,8 @@
 
 - (void *)userData
 {
-  if ((event_type != NSMouseEntered) && (event_type != NSMouseExited))
+  if ((event_type != NSMouseEntered) && (event_type != NSMouseExited)
+      && (event_type != NSCursorUpdate))
     return NULL;
 
   return event_data.tracking.user_data;
@@ -448,8 +450,7 @@
 - (int)data1
 {
   // Make sure it is one of the right event types
-  if ((event_type != NSFlagsChanged) && (event_type != NSCursorUpdate) &&
-      (event_type != NSPeriodic))
+  if ((event_type != NSFlagsChanged) && (event_type != NSPeriodic))
     return 0;
 
   return event_data.misc.data1;
@@ -458,8 +459,7 @@
 - (int)data2
 {
   // Make sure it is one of the right event types
-  if ((event_type != NSFlagsChanged) && (event_type != NSCursorUpdate) &&
-      (event_type != NSPeriodic))
+  if ((event_type != NSFlagsChanged) && (event_type != NSPeriodic))
     return 0;
 
   return event_data.misc.data2;
@@ -468,8 +468,7 @@
 - (short)subtype
 {
   // Make sure it is one of the right event types
-  if ((event_type != NSFlagsChanged) && (event_type != NSCursorUpdate) &&
-      (event_type != NSPeriodic))
+  if ((event_type != NSFlagsChanged) && (event_type != NSPeriodic))
     return 0;
 
   return event_data.misc.sub_type;;
@@ -507,6 +506,7 @@
 
     case NSMouseEntered:
     case NSMouseExited:
+    case NSCursorUpdate:
       // Can't do anything with the user_data!?
       [aCoder encodeValuesOfObjCTypes: "ii", &event_data.tracking.event_num,
 	      &event_data.tracking.tracking_num];
@@ -522,7 +522,6 @@
 
     case NSFlagsChanged:
     case NSPeriodic:
-    case NSCursorUpdate:
       [aCoder encodeValuesOfObjCTypes: "sii", &event_data.misc.sub_type,
 	      &event_data.misc.data1, &event_data.misc.data2];
       break;
@@ -555,6 +554,7 @@
 
     case NSMouseEntered:
     case NSMouseExited:
+    case NSCursorUpdate:
       // Can't do anything with the user_data!?
       [aDecoder decodeValuesOfObjCTypes: "ii", &event_data.tracking.event_num,
 		&event_data.tracking.tracking_num];
@@ -571,7 +571,6 @@
 
     case NSFlagsChanged:
     case NSPeriodic:
-    case NSCursorUpdate:
       [aDecoder decodeValuesOfObjCTypes: "sii", &event_data.misc.sub_type,
 	      &event_data.misc.data1, &event_data.misc.data2];
       break;

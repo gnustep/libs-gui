@@ -45,9 +45,11 @@ bindir = @bindir@
 
 MAKEDEFINES =
 
-CC = @CC@ -g
+CC = @CC@
 CPPFLAGS = @CPPFLAGS@
-CFLAGS = -c $(GCCFLAGS) -I../Headers $(CPPFLAGS)
+CFLAGS = -g -O -Wall $(GCCFLAGS)
+ALL_CPPFLAGS = $(CPPFLAGS) -I../Headers
+ALL_CFLAGS = $(ALL_CPPFLAGS) $(CFLAGS)
 DEFS = -DGNUSTEP_INSTALL_LIBDIR=$(gnustep_libdir) @DEFS@
 
 GCC_LIB = 
@@ -240,9 +242,9 @@ OBJS = $(OBJS_WITHOUT_INIT)
 
 .SUFFIXES: .m
 .m$(oext):
-	$(CC) $(CFLAGS) $(DEFS) $<
+	$(CC) -c $(ALL_CFLAGS) $(DEFS) $<
 .c$(oext):
-	$(CC) $(CFLAGS) $(DEFS) $<
+	$(CC) -c $(ALL_CFLAGS) $(DEFS) $<
 
 #
 # libraries
@@ -274,7 +276,7 @@ $(MAIN_FILE)$(libext): $(OBJS)
 $(INIT_FILE_OBJ): $(OBJS_WITHOUT_INIT)
 	nm $(OBJS_WITHOUT_INIT) | grep "  __GLOBAL_" > tmpinit.c
 	collect tmpinit.c $(INIT_FILE)
-	$(CC) $(CFLAGS) $(INIT_FILE).c
+	$(CC) $(ALL_CFLAGS) $(INIT_FILE).c
 	rm tmpinit.c
 
 install: installdirs install-lib install-headers
@@ -318,6 +320,9 @@ uninstall:
 	rm -rf $(includedir)/AppKit
 	rm -rf $(includedir)/DPSClient
 	rm -rf $(libdir)/$(MAIN_FILE)$(libext)
+
+Makefile: $(srcdir)/Makefile.in ../config.status
+	cd ..; $(SHELL) config.status
 
 #
 # Cleaning
