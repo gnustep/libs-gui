@@ -31,16 +31,29 @@
   NSComboBox *cb;
   NSBrowser *browser;  
   NSColorList *currentList;
-  NSArray *lists;
+  NSMutableArray *lists;
 }
 
 - (void) loadViews;
 - (void) listSelected: (int)index;
-- (void) colorSelected: (int)index;
+- (void) colorSelected: (id)sender;
 
 @end
 
 @implementation GSNamedColorPicker
+
+- (id) initWithPickerMask: (int)aMask
+	       colorPanel: (NSColorPanel *)colorPanel
+{
+  if (aMask & NSColorPanelColorListModeMask)
+    {
+      lists =  [[NSColorList availableColorLists] mutableCopy];
+      return [super initWithPickerMask: aMask
+		    colorPanel: colorPanel];
+    }
+  RELEASE(self);
+  return nil;
+}
 
 - (void) dealloc
 {
@@ -55,30 +68,29 @@
 {
 }
 
-- (id)initWithPickerMask:(int)aMask
-	      colorPanel:(NSColorPanel *)colorPanel
+- (void) attachColorList: (NSColorList *)colorList
 {
-  if (aMask & NSColorPanelColorListModeMask)
-    {
-      ASSIGN(lists, [NSColorList availableColorLists]);
-      return [super initWithPickerMask: aMask
-		    colorPanel: colorPanel];
-    }
-  RELEASE(self);
-  return nil;
+  [lists addObject: colorList];
+  [cb noteNumberOfItemsChanged];
 }
 
-- (int)currentMode
+- (void) detachColorList: (NSColorList *)colorList
+{
+  [lists removeObjectIdenticalTo: colorList];
+  [cb noteNumberOfItemsChanged];
+}
+
+- (int) currentMode
 {
   return NSColorListModeColorPanel;
 }
 
-- (BOOL)supportsMode:(int)mode
+- (BOOL) supportsMode: (int)mode
 {
   return mode == NSColorListModeColorPanel;
 }
 
-- (NSView *)provideNewView:(BOOL)initialRequest
+- (NSView *) provideNewView: (BOOL)initialRequest
 {
   if (initialRequest)
     {
@@ -87,7 +99,7 @@
   return baseView;
 }
 
-- (void)setColor:(NSColor *)color
+- (void) setColor: (NSColor *)color
 {
   NSColor *c = [color colorUsingColorSpaceName: NSNamedColorSpace];
   NSString *list;
@@ -131,22 +143,28 @@
 - (void) listSelected: (int)index
 {
   currentList = [lists objectAtIndex: index];
-  [browser validateVisibleColumns];
+  [browser loadColumnZero];
 }
 
-- (void) colorSelected: (int)index
+- (void) colorSelected: (id)sender
 {
+  NSCell *aCell;
+  NSColor *col;
+
+  aCell = [sender selectedCell];
+  col = [aCell representedObject];
+  [_colorPanel setColor: col];
 }
 
--(NSString *)browser: (NSBrowser *)sender 
-       titleOfColumn: (int)column
+-(NSString *) browser: (NSBrowser *)sender 
+	titleOfColumn: (int)column
 {
   return nil;
 }
 
--(void)browser: (NSBrowser *)sender 
+-(void) browser: (NSBrowser *)sender 
 createRowsForColumn: (int)column
-      inMatrix: (NSMatrix *)matrix
+       inMatrix: (NSMatrix *)matrix
 {
   int i;
   int count;
@@ -156,7 +174,7 @@ createRowsForColumn: (int)column
   NSString *name;
 
   count = [keys count];
-  NSLog(@"In create with %@ %d", currentList, count);
+  //NSLog(@"In create with %@ %d", currentList, count);
   
   if (count)
     {
@@ -166,7 +184,9 @@ createRowsForColumn: (int)column
 	  if (i > 0)
 	    [matrix addRow];
 	  name = [keys objectAtIndex: i];
-	  cl = [currentList colorWithKey: name];
+	  //cl = [currentList colorWithKey: name];
+	  cl = [NSColor colorWithCatalogName: [currentList name] 
+			colorName: name];
 	  cell = [matrix cellAtRow: i
 			 column: 0];
 	  [cell setStringValue: name];
@@ -182,33 +202,32 @@ createRowsForColumn: (int)column
 {
 }
 
-- (void)browser: (NSBrowser *)sender 
-willDisplayCell: (id)cell
-	  atRow: (int)row 
-	 column: (int)column
+- (void) browser: (NSBrowser *)sender 
+ willDisplayCell: (id)cell
+	   atRow: (int)row 
+	  column: (int)column
 {
 }
 
-- (int)numberOfItemsInComboBox:(NSComboBox *)aComboBox
+- (int) numberOfItemsInComboBox: (NSComboBox *)aComboBox
 {
    return [lists count];
 }
 
-- (id)comboBox:(NSComboBox *)aComboBox 
-objectValueForItemAtIndex:(int)index
+- (id) comboBox: (NSComboBox *)aComboBox 
+objectValueForItemAtIndex: (int)index
 {
    return [(NSColorList*)[lists objectAtIndex: index] name];
 }
 
-- (unsigned int)comboBox:(NSComboBox *)aComboBox
-    indexOfItemWithStringValue:(NSString *)string
+- (unsigned int) comboBox: (NSComboBox *)aComboBox
+indexOfItemWithStringValue: (NSString *)string
 {
    return [lists indexOfObject: [NSColorList colorListNamed: string]];
 }
 
-- (void)comboBoxSelectionDidChange:(NSNotification *)notification
+- (void) comboBoxSelectionDidChange: (NSNotification *)notification
 {
-    NSLog(@"Selection changed");
   [self listSelected: [cb indexOfSelectedItem]];
 }
 
