@@ -23,6 +23,8 @@ Tue Mar  4 09:28:57 1997  GNUstep Development  <gnustep@net-community.com>
 
 	* Source/NSFont.m (getFont): Return font not font name.
 	* Images/Makefile.in: Install common_Dimple.tiff.
+	* Source/NSBundle.m (+imageNamed:): Create a bundle with
+	gnustep library install path for searching system resources.
 
 Mon Feb 17 19:30:50 1997  Ovidiu Predescu <ovidiu@bx.logicnet.ro>
 

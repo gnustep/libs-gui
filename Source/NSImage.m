@@ -45,8 +45,9 @@
 #include <AppKit/NSScreen.h>
 #include <AppKit/NSColor.h>
 
-static NSString* NSImage_PATH
-    = @GNUSTEP_INSTALL_LIBDIR @"/Images";
+// Resource directories
+static NSString* gnustep_libdir = @GNUSTEP_INSTALL_LIBDIR;
+static NSString* NSImage_PATH = @"Images";
 
 /* Backend protocol - methods that must be implemented by the backend to
    complete the class */
@@ -188,12 +189,12 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
       /* If not found then search in system */
       if (!path)
 	{
-	  NSArray* dirsArray = [NSArray arrayWithObject:NSImage_PATH];
+	  NSBundle *system = [NSBundle bundleWithPath: gnustep_libdir];
 
 	  if (ext)
-	    path = [NSBundle pathForResource: aName
-			     ofType: ext
-			     inDirectories:dirsArray];
+	    path = [system pathForResource: aName
+			   ofType: ext
+			   inDirectory: NSImage_PATH];
 	  else 
 	    {
 	      id o, e;
@@ -205,10 +206,9 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
 	      e = [array objectEnumerator];
 	      while ((o = [e nextObject]))
 		{
-		  NSDebugLog(@"extension %s, array = %@\n", [o cString], dirsArray);
-		  path = [NSBundle pathForResource: aName
-				   ofType: o
-				   inDirectories:dirsArray];
+		  path = [system pathForResource: aName
+				 ofType: o
+				 inDirectory: NSImage_PATH];
 		  if ([path length] != 0)
 		    break;
 		}
