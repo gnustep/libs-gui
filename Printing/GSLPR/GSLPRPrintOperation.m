@@ -81,14 +81,15 @@
   self = [super initWithView: aView
                    printInfo: aPrintInfo];
 
-  _path = [NSTemporaryDirectory() stringByAppendingPathComponent: @"GSLPRPrintJob-"];
+  _path = [NSTemporaryDirectory()
+	    stringByAppendingPathComponent: @"GSLPRPrintJob-"];
   
   _path = [_path stringByAppendingString: 
 		       [[NSProcessInfo processInfo] globallyUniqueString]];
            
   _path = [_path stringByAppendingPathExtension: @"ps"];
   
-  RETAIN( _path ); 
+  RETAIN(_path);
   
   return self;
 }
@@ -132,6 +133,7 @@
 - (NSGraphicsContext*)createContext
 {
   NSMutableDictionary *info;
+  NSString *output;
   
   //NSDebugMLLog(@"GSPrinting", @"_path is %@", _path);
   if (_context)
@@ -142,14 +144,11 @@
   NSDebugMLLog(@"GSPrinting", @"Creating context.");
 
   info = [_printInfo dictionary];
-  if (_path == nil)
+
+  output = [info objectForKey: NSPrintSavePath];
+  if (output)
     {
-      NSString *output = [info objectForKey: NSPrintSavePath];
-      
-      if (output)
-        {
-          ASSIGN(_path, output);
-        }        
+      ASSIGN(_path, output);
     }
     
   NSDebugMLLog(@"GSPrinting", @"_path is %@", _path); 

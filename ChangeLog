@@ -1,3 +1,8 @@
+2004-09-23 18:01  Alexander Malmberg <alexander@malmberg.org>
+
+	* Printing/GSLPR/GSLPRPrintOperation.m (-createContext): Always use
+	the path from the info dictionary if it's set.
+
 2004-09-21 23:57  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSCursor.m (_getStandardCursor): Rename to
