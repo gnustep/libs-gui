@@ -1,3 +1,15 @@
+2002-03-01  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Source/NSBundleAdditions.m
+	([GSNibItem -initWithCoder:]): 
+	([GSNibItem -encodeWithCoder:]): 
+	new encoding (support for autoresizingMask).
+	([GSNibItem +initialize]):
+	([GSCustomView +initialize]):
+	new methods, set the version number.
+	* Headers/gnustep/gui/NSNibLoading.h:
+	new autoresizingMask ivar in GSNibItem.
+
 2002-02-28  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Headers/gnustep/gui/NSEvent.h:

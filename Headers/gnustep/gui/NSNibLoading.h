@@ -85,6 +85,7 @@
 {
   NSString		*theClass;
   NSRect		theFrame;
+  unsigned int          autoresizingMask;
 }
 @end
 

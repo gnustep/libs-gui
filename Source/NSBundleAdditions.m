@@ -50,6 +50,8 @@
 #include <AppKit/NSNibLoading.h>
 #include <AppKit/IMLoading.h>
 
+static const int currentVersion = 1;
+
 @implementation	NSNibConnector
 
 - (void) dealloc
@@ -590,6 +592,13 @@ Class gmodel_class(void)
 @end
 
 @implementation	GSNibItem
++ (void) initialize
+{
+  if (self == [GSNibItem class])
+    {
+      [self setVersion: currentVersion];
+    }
+}
 
 - (void) dealloc
 {
@@ -601,36 +610,91 @@ Class gmodel_class(void)
 {
   [aCoder encodeObject: theClass];
   [aCoder encodeRect: theFrame];
+  [aCoder encodeValueOfObjCType: @encode(unsigned int) 
+	  at: &autoresizingMask];
 }
 
 - (id) initWithCoder: (NSCoder*)aCoder
 {
-  id		obj;
-  Class		cls;
+  int version = [aCoder versionForClassName: 
+			  NSStringFromClass([self class])];
 
-  [aCoder decodeValueOfObjCType: @encode(id) at: &theClass];
-  theFrame = [aCoder decodeRect];
-
-  cls = NSClassFromString(theClass);
-  if (cls == nil)
+  if (version == 1)
     {
-      [NSException raise: NSInternalInconsistencyException
-		  format: @"Unable to find class '%@'", theClass];
+      id		obj;
+      Class		cls;
+      unsigned int      mask;
+      
+      [aCoder decodeValueOfObjCType: @encode(id) at: &theClass];
+      theFrame = [aCoder decodeRect];
+      [aCoder decodeValueOfObjCType: @encode(unsigned int) 
+	      at: &mask];
+      
+      cls = NSClassFromString(theClass);
+      if (cls == nil)
+	{
+	  [NSException raise: NSInternalInconsistencyException
+		       format: @"Unable to find class '%@'", theClass];
+	}
+      
+      obj = [cls allocWithZone: [self zone]];
+      if (theFrame.size.height > 0 && theFrame.size.width > 0)
+	obj = [obj initWithFrame: theFrame];
+      else
+	obj = [obj init];
+
+      if ([obj respondsToSelector: @selector(setAutoresizingMask:)])
+	{
+	  [obj setAutoresizingMask: mask];
+	}
+      
+      RELEASE(self);
+      return obj;
     }
-
-  obj = [cls allocWithZone: [self zone]];
-  if (theFrame.size.height > 0 && theFrame.size.width > 0)
-    obj = [obj initWithFrame: theFrame];
+  else if (version == 0)
+    {
+      id		obj;
+      Class		cls;
+      
+      [aCoder decodeValueOfObjCType: @encode(id) at: &theClass];
+      theFrame = [aCoder decodeRect];
+      
+      cls = NSClassFromString(theClass);
+      if (cls == nil)
+	{
+	  [NSException raise: NSInternalInconsistencyException
+		       format: @"Unable to find class '%@'", theClass];
+	}
+      
+      obj = [cls allocWithZone: [self zone]];
+      if (theFrame.size.height > 0 && theFrame.size.width > 0)
+	obj = [obj initWithFrame: theFrame];
+      else
+	obj = [obj init];
+      
+      RELEASE(self);
+      return obj;
+    }
   else
-    obj = [obj init];
-
-  RELEASE(self);
-  return obj;
+    {
+      NSLog(@"no initWithCoder for this version");
+      RELEASE(self);
+      return nil;
+    }
 }
 
 @end
 
+
 @implementation	GSCustomView
+
++ (void) initialize
+{
+  if (self == [GSCustomView class])
+    {
+      [self setVersion: currentVersion];
+    }
+}
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
