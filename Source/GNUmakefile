@@ -177,7 +177,9 @@ Gui_AGSDOC_FLAGS = \
 	-HeaderDirectory ../Headers/AppKit \
 	-Declared AppKit \
 	-Standards YES \
-	-Up Gui
+	-WordMap '{\
+	APPKIT_EXPORT=extern;APPKIT_DECLARE="";\
+	}' -Up Gui
 
 AUTOGSDOC_HEADERS = \
 GSTable.h \
