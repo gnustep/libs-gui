@@ -69,7 +69,7 @@ be stored in the NSTextView. Non-persistant attributes don't, and should
 therefore be stored in the NSLayoutManager to avoid problems.
 */
 
-@interface NSTextView : NSText
+@interface NSTextView : NSText <NSTextInput>
 {
   /** These attributes are shared by all text views attached to a layout
   manager. Any changes must be replicated in all those text views. **/
@@ -162,6 +162,11 @@ therefore be stored in the NSLayoutManager to avoid problems.
 
 
   /* TODO: move to NSLayoutManager? */
+  /* Probably not necessary; the insertion point is always drawn in the
+  text view that is the first responder, so there shouldn't be any
+  problems with keeping track of it locally. Still need to think hard
+  about handling of it, though. */
+#if 0
   /* Timer used to redraw the insertion point ... FIXME - think what 
      happens with multiple textviews */
   NSTimer *_insertionPointTimer;
@@ -179,7 +184,6 @@ therefore be stored in the NSLayoutManager to avoid problems.
      need to be recomputed <eg, relayout>. */
   NSRect _insertionPointRect;
 
-#if 0
   /* This is used when you move the insertion point up or down.  The
      system remembers the horizontal position of the insertion point
      at the beginning of the process, and always tries to put the
@@ -211,10 +215,10 @@ therefore be stored in the NSLayoutManager to avoid problems.
 
 /* Returns the default typing attributes: black text, default paragraph
 style, default user font and size. */
-+ (NSDictionary*) defaultTypingAttributes; /* GNUstep extension */
++(NSDictionary*) defaultTypingAttributes; /* GNUstep extension */
 
 
-/*** Initializing ***/
+/**** Initializing ****/
 
 /* This is sent each time a view is initialized.  If you subclass you
 should ensure that you only register once. */
@@ -230,7 +234,7 @@ releasing it will release all parts of the network. */
 -(id) initWithFrame:(NSRect)frameRect;
 
 
-/*** the Text Network ***/
+/**** Text network management ****/
 
 /* The set method should not be called directly, but you might want to
 override it. Gets or sets the text container for this view.
@@ -251,9 +255,6 @@ and replacing it with the new one. */
 -(NSTextStorage *) textStorage;
 
 
-@end
-
-@interface NSTextView (NSTextInput) <NSTextInput>
 @end
 
 @interface NSTextView (leftovers)
@@ -379,16 +380,16 @@ already been laid out. */
 			offset: (NSSize)mouseOffset
 		     slideBack: (BOOL)slideBack; /* mosx */
 
-- (void) cleanUpAfterDragOperation; /* mosx */
+-(void) cleanUpAfterDragOperation; /* mosx */
 
 
 /*** Selected range ***/
 
 -(NSRange) selectionRangeForProposedRange: (NSRange)proposedCharRange
-			       granularity: (NSSelectionGranularity)gr;
+			      granularity: (NSSelectionGranularity)gr;
 
 -(NSRange) selectedRange;
--(void) setSelectedRange:(NSRange)charRange;
+-(void) setSelectedRange: (NSRange)charRange;
 
 -(void) setSelectedRange: (NSRange)charRange
 		affinity: (NSSelectionAffinity)affinity
@@ -420,12 +421,6 @@ already been laid out. */
 -(BOOL) isContinuousSpellCheckingEnabled; /* mosx */
 -(void) setContinuousSpellCheckingEnabled: (BOOL)flag; /* mosx */
 -(void) toggleContinuousSpellChecking: (id)sender; /* mosx */
-
-
-/*** NSResponder methods ***/
-
--(BOOL) resignFirstResponder;
--(BOOL) becomeFirstResponder;
 
 
 /*** Smart copy/paste/delete support ***/
@@ -483,7 +478,7 @@ actions for appropriate "Paste As" submenu commands. */
  * text views, and saves this information in a flag, and caches the
  * first text view object.  The NSLayoutManager needs to call this
  * method to update this information. */
-- (void) _updateMultipleTextViews;
+-(void) _updateMultipleTextViews;
 @end
 
 
@@ -492,53 +487,53 @@ layout manager. */
 
 @interface NSObject (NSTextViewDelegate)
 
-- (void) textView: (NSTextView *)textView 
-    clickedOnCell: (id <NSTextAttachmentCell>)cell 
-	   inRect: (NSRect)cellFrame;
-- (void) textView: (NSTextView *)textView 
-    clickedOnCell: (id <NSTextAttachmentCell>)cell 
-	   inRect: (NSRect)cellFrame
-	  atIndex: (unsigned)charIndex;
+-(void) textView: (NSTextView *)textView
+   clickedOnCell: (id <NSTextAttachmentCell>)cell
+	  inRect: (NSRect)cellFrame;
+-(void) textView: (NSTextView *)textView
+   clickedOnCell: (id <NSTextAttachmentCell>)cell
+	  inRect: (NSRect)cellFrame
+	 atIndex: (unsigned)charIndex;
 
-- (BOOL) textView: (NSTextView *)textView  clickedOnLink: (id)link;
-- (BOOL) textView: (NSTextView *)textView 
-    clickedOnLink: (id)link 
-	  atIndex: (unsigned)charIndex;
+-(BOOL) textView: (NSTextView *)textView  clickedOnLink: (id)link;
+-(BOOL) textView: (NSTextView *)textView
+   clickedOnLink: (id)link
+	 atIndex: (unsigned)charIndex;
 
-- (void) textView: (NSTextView *)textView 
+-(void) textView: (NSTextView *)textView
 doubleClickedOnCell: (id <NSTextAttachmentCell>)cell 
-	   inRect: (NSRect)cellFrame;
-- (void) textView: (NSTextView *)textView 
+	  inRect: (NSRect)cellFrame;
+-(void) textView: (NSTextView *)textView
 doubleClickedOnCell: (id <NSTextAttachmentCell>)cell 
-	   inRect: (NSRect)cellFrame
-	  atIndex: (unsigned)charIndex;
+	  inRect: (NSRect)cellFrame
+	 atIndex: (unsigned)charIndex;
 
-- (void) textView: (NSTextView *)view 
-      draggedCell: (id <NSTextAttachmentCell>)cell 
-	   inRect: (NSRect)rect event:(NSEvent *)event;
-- (void) textView: (NSTextView *)view 
-      draggedCell: (id <NSTextAttachmentCell>)cell 
-	   inRect: (NSRect)rect 
-	    event: (NSEvent *)event
-	  atIndex: (unsigned)charIndex;
+-(void) textView: (NSTextView *)view
+     draggedCell: (id <NSTextAttachmentCell>)cell
+	  inRect: (NSRect)rect event:(NSEvent *)event;
+-(void) textView: (NSTextView *)view
+     draggedCell: (id <NSTextAttachmentCell>)cell
+	  inRect: (NSRect)rect
+	   event: (NSEvent *)event
+	 atIndex: (unsigned)charIndex;
 
-- (NSRange) textView: (NSTextView *)textView 
+-(NSRange) textView: (NSTextView *)textView
 willChangeSelectionFromCharacterRange: (NSRange)oldSelectedCharRange 
-    toCharacterRange: (NSRange)newSelectedCharRange;
+   toCharacterRange: (NSRange)newSelectedCharRange;
 
-- (void) textViewDidChangeSelection: (NSNotification *)notification;
+-(void) textViewDidChangeSelection: (NSNotification *)notification;
 
 /* If characters are changing, replacementString is what will replace
 the affectedCharRange.  If attributes only are changing,
 replacementString will be nil. */
-- (BOOL) textView: (NSTextView *)textView 
-shouldChangeTextInRange: (NSRange)affectedCharRange 
-replacementString: (NSString *)replacementString;
+-(BOOL) textView: (NSTextView *)textView
+  shouldChangeTextInRange: (NSRange)affectedCharRange
+  replacementString: (NSString *)replacementString;
 
-- (BOOL) textView: (NSTextView *)textView 
-doCommandBySelector: (SEL)commandSelector;
+-(BOOL) textView: (NSTextView *)textView
+  doCommandBySelector: (SEL)commandSelector;
 
-- (NSUndoManager *) undoManagerForTextView: (NSTextView *)view;
+-(NSUndoManager *) undoManagerForTextView: (NSTextView *)view;
 @end
 
 /* NSOldNotifyingTextView -> the old view, NSNewNotifyingTextView ->

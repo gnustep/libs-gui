@@ -72,6 +72,13 @@
 #include <AppKit/NSTextStorage.h>
 #include <AppKit/NSWindow.h>
 
+/*
+TODO:
+
+think hard about insertion point management
+*/
+
+
 
 /**** Misc. helpers and stuff ****/
 
@@ -95,8 +102,651 @@ static NSNotificationCenter *notificationCenter;
 #define HUGE 1e7
 
 
+/**** Synchronization stuff ****/
 
-@implementation NSTextView (NSTextInput)
+/* For when more than one text view is connected to a layout
+manager. */
+@implementation NSTextView (GSTextView_sync)
+
+#define SET_DELEGATE_NOTIFICATION(notif_name) \
+  if ([_delegate respondsToSelector: @selector(text##notif_name: )]) \
+    [notificationCenter addObserver: _delegate \
+           selector: @selector(text##notif_name: ) \
+               name: NSText##notif_name##Notification \
+             object: _notifObject]
+
+
+/*
+ * Synchronizing flags.  Used to manage synchronizing shared
+ * attributes between textviews coupled with the same layout manager.
+ * These synchronizing flags are only accessed when
+ * _tf.multiple_textviews == YES and this can only happen if we have
+ * a non-nil NSLayoutManager - so we don't check. */
+
+/* YES when in the process of synchronizing text view attributes.  
+   Used to avoid recursive synchronizations. */
+#define IS_SYNCHRONIZING_FLAGS _layoutManager->_isSynchronizingFlags 
+/* YES when in the process of synchronizing delegates.
+   Used to avoid recursive synchronizations. */ 
+#define IS_SYNCHRONIZING_DELEGATES _layoutManager->_isSynchronizingDelegates
+
+
+-(void) _updateMultipleTextViews
+{
+  id oldNotifObject = _notifObject;
+
+  if ([[_layoutManager textContainers] count] > 1)
+    {
+      _tf.multiple_textviews = YES;
+      _notifObject = [_layoutManager firstTextView];
+    }
+  else
+    {
+      _tf.multiple_textviews = NO;
+      _notifObject = self;
+    }  
+
+  if ((_delegate != nil) && (oldNotifObject != _notifObject))
+    {
+      [notificationCenter removeObserver: _delegate  name: nil  object: oldNotifObject];
+
+      if ([_delegate respondsToSelector: 
+		       @selector(shouldChangeTextInRange:replacementString:)])
+	{
+	  _tf.delegate_responds_to_should_change = YES;
+	}
+      else
+	{
+	  _tf.delegate_responds_to_should_change = NO;
+	}
+
+      /* SET_DELEGATE_NOTIFICATION defined at the beginning of file */
+
+      /* NSText notifications */
+      SET_DELEGATE_NOTIFICATION(DidBeginEditing);
+      SET_DELEGATE_NOTIFICATION(DidChange);
+      SET_DELEGATE_NOTIFICATION(DidEndEditing);
+      /* NSTextView notifications */
+      SET_DELEGATE_NOTIFICATION(ViewDidChangeSelection);
+      SET_DELEGATE_NOTIFICATION(ViewWillChangeNotifyingTextView);
+    }
+}
+
+@end
+
+
+
+@implementation NSTextView
+
+
++(void) initialize
+{
+  if ([self class] == [NSTextView class])
+    {
+      [self setVersion: currentVersion];
+      notificationCenter = [NSNotificationCenter defaultCenter];
+      [self registerForServices];
+    }
+}
+
++(void) registerForServices
+{
+  NSArray *types;
+      
+  types = [NSArray arrayWithObjects: NSStringPboardType,
+		    NSRTFPboardType, NSRTFDPboardType, nil];
+ 
+  [[NSApplication sharedApplication] registerServicesMenuSendTypes: types
+						       returnTypes: types];
+}
+
++(NSDictionary *) defaultTypingAttributes
+{
+static NSDictionary *defaultTypingAttributes;
+
+  if (!defaultTypingAttributes)
+    {
+      defaultTypingAttributes = [[NSDictionary alloc] initWithObjectsAndKeys:
+	[NSParagraphStyle defaultParagraphStyle], NSParagraphStyleAttributeName,
+	[NSFont userFontOfSize: 0], NSFontAttributeName,
+	[NSColor textColor], NSForegroundColorAttributeName,
+	nil];
+    }
+  return defaultTypingAttributes;
+}
+
+
+/**** Initialization ****/
+
+/*
+Note that -init* must be completely side-effect-less (outside this
+NSTextView). In particular, they must _not_ touch the font panel or rulers
+until whoever created us has a chance to eg. -setUsesFontPanel: NO.
+Calling any other methods here is dangerous as a sub-class might have
+overridden them and given them side-effects, so we don't.
+
+
+Note also that if a text view is added to an existing text network, the
+new text view must not change any attributes of the existing text views.
+Instead, it sets its own attributes to match the others'. This also applies
+when a text view's moves to another text network.
+
+The only method that is allowed to change which text network a text view
+belongs to is -setTextContainer:, and it must be called when it changes
+(NSLayoutManager and NSTextContainer do this for us).
+
+Since we can't have any side-effects, we can't call methods to set the
+values. A sub-class that wants to react to changes caused by moving to
+a different text network will have to override -setTextContainer: and do
+whatever it needs to do after calling [super setTextContainer: foo].
+(TODO: check that this behavior is acceptable)
+
+If a text view is added to an empty text network, it keeps its attributes.
+*/
+
+
+-(NSTextContainer *) buildUpTextNetwork: (NSSize)aSize
+{
+  NSTextContainer *textContainer;
+  NSLayoutManager *layoutManager;
+  NSTextStorage *textStorage;
+
+  textStorage = [[NSTextStorage alloc] init];
+
+  layoutManager = [[NSLayoutManager alloc] init];
+
+  [textStorage addLayoutManager: layoutManager];
+  RELEASE(layoutManager);
+
+  textContainer = [[NSTextContainer alloc] initWithContainerSize: aSize];
+  [layoutManager addTextContainer: textContainer];
+  RELEASE(textContainer);
+
+  /* The situation at this point is as follows: 
+
+     textView (us) --RETAINs--> textStorage 
+     textStorage   --RETAINs--> layoutManager 
+     layoutManager --RETAINs--> textContainer */
+
+  /* We keep a flag to remember that we are directly responsible for 
+     managing the text network. */
+  _tf.owns_text_network = YES;
+
+  return textContainer;
+}
+
+
+/* Designated initializer. */
+-(id) initWithFrame: (NSRect)frameRect
+      textContainer: (NSTextContainer *)container
+{
+  self = [super initWithFrame: frameRect];
+  if (!self)
+    return nil;
+
+  _minSize = NSMakeSize(0, 0);
+  _maxSize = NSMakeSize(HUGE,HUGE);
+
+  ASSIGN(_insertionPointColor, [NSColor textColor]); /* TODO: was +blackColor; check */
+  ASSIGN(_backgroundColor, [NSColor textBackgroundColor]);
+
+  _tf.draws_background = YES;
+  _tf.is_horizontally_resizable = NO;
+  _tf.is_vertically_resizable = NO;
+
+  /* We set defaults for all shared attributes here. If container is already
+  part of a text network, we reset the attributes in -setTextContainer:. */
+  _tf.is_field_editor = NO;
+  _tf.is_editable = YES;
+  _tf.is_selectable = YES;
+  _tf.is_rich_text = NO;
+  _tf.imports_graphics = NO;
+  _tf.uses_font_panel = YES;
+  _tf.uses_ruler = YES;
+  _tf.is_ruler_visible = NO;
+  _tf.allows_undo = NO;
+  _tf.smart_insert_delete = NO;
+
+  [container setTextView: self];
+
+  return self;
+}
+
+
+-(id) initWithFrame: (NSRect)frameRect
+{
+  NSTextContainer *aTextContainer;
+
+  aTextContainer = [self buildUpTextNetwork: frameRect.size];
+
+  self = [self initWithFrame: frameRect  textContainer: aTextContainer];
+
+  /* At this point the situation is as follows: 
+
+     textView (us)  --RETAINs--> textStorage
+     textStorage    --RETAINs--> layoutManager 
+     layoutManager  --RETAINs--> textContainer 
+     textContainer  --RETAINs--> textView (us) */
+
+  /* The text system should be destroyed when the textView (us) is
+     released.  To get this result, we send a RELEASE message to us
+     breaking the RETAIN cycle. */
+  RELEASE(self);
+
+  return self;
+}
+
+
+/*
+In earlier versions, some of these ivar:s were in NSText instead of
+NSTextView, and parts of their handling (including encoding and decoding)
+were there. This has been fixed and the ivar:s moved here, but in a way
+that makes decoding and encoding compatible with the old code.
+*/
+-(void) encodeWithCoder: (NSCoder *)aCoder
+{
+  BOOL flag;
+  NSSize containerSize = [_textContainer containerSize];
+
+  [super encodeWithCoder: aCoder];
+
+  [aCoder encodeConditionalObject: _delegate];
+
+  flag = _tf.is_field_editor;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _tf.is_editable;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _tf.is_selectable;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _tf.is_rich_text;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _tf.imports_graphics;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _tf.draws_background;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _tf.is_horizontally_resizable;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _tf.is_vertically_resizable;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _tf.uses_font_panel;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _tf.uses_ruler;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _tf.is_ruler_visible;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+
+  [aCoder encodeObject: _backgroundColor];
+  [aCoder encodeValueOfObjCType: @encode(NSSize) at: &_minSize];
+  [aCoder encodeValueOfObjCType: @encode(NSSize) at: &_maxSize];
+
+  flag = _tf.smart_insert_delete;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _tf.allows_undo;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  [aCoder encodeObject: _insertionPointColor];
+  [aCoder encodeValueOfObjCType: @encode(NSSize) at: &containerSize];
+  flag = [_textContainer widthTracksTextView];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = [_textContainer heightTracksTextView];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+}
+
+-(id) initWithCoder: (NSCoder *)aDecoder
+{
+  int version = [aDecoder versionForClassName: 
+			    @"NSTextView"];
+
+  /* Common stuff for version 1 and 2. */
+  {
+    BOOL flag;
+
+    self = [super initWithCoder: aDecoder];
+
+    _delegate  = [aDecoder decodeObject];
+
+    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+    _tf.is_field_editor = flag;
+    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+    _tf.is_editable = flag;
+    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+    _tf.is_selectable = flag;
+    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+    _tf.is_rich_text = flag;
+    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+    _tf.imports_graphics = flag;
+    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+    _tf.draws_background = flag;
+    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+    _tf.is_horizontally_resizable = flag;
+    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+    _tf.is_vertically_resizable = flag;
+    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+    _tf.uses_font_panel = flag;
+    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+    _tf.uses_ruler = flag;
+    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+    _tf.is_ruler_visible = flag;
+
+    _backgroundColor  = RETAIN([aDecoder decodeObject]);
+    [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &_minSize];
+    [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &_maxSize];
+  }
+
+  if (version == currentVersion)
+    {
+      NSTextContainer *aTextContainer; 
+      BOOL flag;
+      NSSize containerSize;
+
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _tf.smart_insert_delete = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _tf.allows_undo = flag;
+      
+      _insertionPointColor  = RETAIN([aDecoder decodeObject]);
+      [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &containerSize];
+      /* build up the rest of the text system, which doesn't get stored 
+	 <doesn't even implement the Coding protocol>. */
+      aTextContainer = [self buildUpTextNetwork: _frame.size];
+      [aTextContainer setTextView: (NSTextView *)self];
+      [aTextContainer setContainerSize: containerSize];
+
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [aTextContainer setWidthTracksTextView: flag];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [aTextContainer setHeightTracksTextView: flag];
+
+      /* See initWithFrame: for comments on this RELEASE */
+      RELEASE(self);
+      
+      [self setSelectedRange: NSMakeRange(0, 0)]; /* TODO: check */
+    }
+  else if (version == 1)
+    {
+      NSTextContainer *aTextContainer; 
+      BOOL flag;
+      
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _tf.smart_insert_delete = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _tf.allows_undo = flag;
+      
+      /* build up the rest of the text system, which doesn't get stored 
+	 <doesn't even implement the Coding protocol>. */
+      aTextContainer = [self buildUpTextNetwork: _frame.size];
+      [aTextContainer setTextView: (NSTextView *)self];
+      /* See initWithFrame: for comments on this RELEASE */
+      RELEASE(self);
+      
+      [self setSelectedRange: NSMakeRange(0, 0)]; /* TODO: check */
+    }
+
+  return self;
+}
+
+-(void) dealloc
+{
+  if (_tf.owns_text_network == YES)
+    {
+      if (_textStorage != nil)
+	{
+	  /*
+	   * Destroying our _textStorage releases all the text objects
+	   * (us included) which means this method will be called again ...
+	   * so this time round we should just return, and the rest of
+	   * the deallocation can be done on the next call to dealloc.
+	   *
+	   * However, the dealloc methods of any subclasses should
+	   * already have been called before this method is called,
+	   * and those subclasses don't know how to cope with being
+	   * deallocated more than once ... to deal with that we
+	   * set the isa pointer so that the subclass dealloc methods
+	   * won't get called again.
+	   */
+	  isa = [NSTextView class];
+	  DESTROY(_textStorage);
+	  return;
+	}
+    }
+
+  DESTROY(_selectedTextAttributes);
+  DESTROY(_markedTextAttributes);
+  DESTROY(_insertionPointColor);
+  DESTROY(_backgroundColor);
+
+  /* TODO: delegate notifications */
+
+  [super dealloc];
+}
+
+
+/**** Managing the text network ****/
+
+/* This should only be called by [NSTextContainer -setTextView:]. If the
+text container has had its layout manager changed, it will make a dummy call
+to this method and container==_textContainer. We still need to do a full
+update in that case.
+
+This is assumed to be the __only__ place where _textContainer,
+_layoutManager, or _textStorage changes. Re-synchronizing the text network
+is hairy, and this is the only place where it happens.
+
+TODO: Make sure the assumption holds; might need to add more dummy calls
+to this method from the text container or layout manager.
+*/
+-(void) setTextContainer: (NSTextContainer*)container
+{
+  unsigned int i, c;
+  NSArray *tcs;
+  NSTextView *other;
+
+  /* Any of these three might be nil. */
+  _textContainer = container;
+  _layoutManager = (NSLayoutManager *)[container layoutManager];
+  _textStorage = [_layoutManager textStorage];
+
+  /* Search for an existing text view attached to this layout manager. */
+  tcs = [_layoutManager textContainers];
+  c = [tcs count];
+  for (i = 0; i < c; i++)
+    {
+      other = [[tcs objectAtIndex: i] textView];
+      if (other && other != self)
+        break;
+    }
+
+  if (i < c)
+    {
+      /* There is already an NSTextView attached to this text network, so
+      all shared attributes, including those in the layout manager, are
+      already set up. We copy the shared attributes to us. */
+
+      _delegate = other->_delegate;
+      _tf.is_field_editor = other->_tf.is_field_editor;
+      _tf.is_editable = other->_tf.is_editable;
+      _tf.is_selectable = other->_tf.is_selectable;
+      _tf.is_rich_text = other->_tf.is_rich_text;
+      _tf.imports_graphics = other->_tf.imports_graphics;
+      _tf.uses_font_panel = other->_tf.uses_font_panel;
+      _tf.uses_ruler = other->_tf.uses_ruler;
+      _tf.is_ruler_visible = other->_tf.is_ruler_visible;
+      _tf.allows_undo = other->_tf.allows_undo;
+      _tf.smart_insert_delete = other->_tf.smart_insert_delete;
+    }
+  else if (_layoutManager)
+    {
+      /* There is no text network, and the layout manager's attributes
+      might not be set up. We reset them to standard values. */
+
+      ASSIGN(_layoutManager->_typingAttributes, [isa defaultTypingAttributes]);
+      _layoutManager->_original_selected_range.location = NSNotFound;
+      _layoutManager->_selected_range = NSMakeRange(0,0);
+    }
+
+  [self _updateMultipleTextViews];
+}
+
+-(void) replaceTextContainer: (NSTextContainer*)newContainer
+{
+  NSLog(@"TODO! [NSTextView -replaceTextContainer:] isn't implemented");
+}
+
+-(NSTextContainer *) textContainer
+{
+  return _textContainer;
+}
+
+-(NSLayoutManager*) layoutManager
+{
+  return _layoutManager;
+}
+
+-(NSTextStorage*) textStorage
+{
+  return _textStorage;
+}
+
+
+/**** Basic view stuff ****/
+
+-(BOOL) isFlipped
+{
+  return YES;
+}
+
+-(BOOL) isOpaque
+{
+  if (_tf.draws_background == NO
+      || _backgroundColor == nil
+      || [_backgroundColor alphaComponent] < 1.0)
+    return NO;
+  else
+    return YES;
+}
+
+-(BOOL) needsPanelToBecomeKey
+{
+  return _tf.is_editable;
+}
+
+-(BOOL) acceptsFirstResponder
+{
+  if (_tf.is_selectable)
+    {
+      return YES;
+    }
+  else
+    {
+      return NO;
+    }
+}
+
+-(BOOL) resignFirstResponder
+{
+  /* Check if another text view attached to the same layout manager is the
+  new first responder. If so, we always let it become first responder, and
+  we don't send any notifications. */
+  if (_tf.multiple_textviews == YES)
+    {
+      id futureFirstResponder;
+      NSArray *textContainers;
+      int i, count;
+      
+      futureFirstResponder = [_window _futureFirstResponder];
+      textContainers = [_layoutManager textContainers];
+      count = [textContainers count];
+      for (i = 0; i < count; i++)
+	{
+	  NSTextContainer *container;
+	  NSTextView *view;
+	  
+	  container = (NSTextContainer *)[textContainers objectAtIndex: i];
+	  view = [container textView];
+
+	  if (view == futureFirstResponder)
+	    {
+	      /* NB: We do not reset the BEGAN_EDITING flag so that no
+		 spurious notification is generated. */
+	      return YES;
+	    }
+	}
+    }
+
+
+  /* NB: Possible change: ask always - not only if editable - but we
+     need to change NSTextField etc to allow this. */
+  if ((_tf.is_editable)
+      && ([_delegate respondsToSelector: @selector(textShouldEndEditing:)])
+      && ([_delegate textShouldEndEditing: self] == NO))
+    {
+      return NO;
+    }
+
+
+  /* Add any clean-up stuff here */
+
+  if ([self shouldDrawInsertionPoint])
+    {
+      [self updateInsertionPointStateAndRestartTimer: NO];
+    }    
+
+  if (_layoutManager != nil)
+    {
+      _layoutManager->_beganEditing = NO;
+    }
+
+  /* NB: According to the doc (and to the tradition), we post this
+     notification even if no real editing was actually done (only
+     selection of text) [Note: in this case, no editing was started,
+     so the notification does not come after a
+     NSTextDidBeginEditingNotification!].  The notification only means
+     that we are resigning first responder status.  This makes sense
+     because many objects inside the gui need this notification anyway
+     - typically, it is needed to remove a field editor (editable or
+     not) when the user presses TAB to move to the next view.  Anyway
+     yes, the notification name is misleading. */
+  [notificationCenter postNotificationName: NSTextDidEndEditingNotification
+      object: _notifObject];
+
+  return YES;
+}
+
+/* Note that when this method is called, editing might already have
+started (in another text view attached to the same layout manager). */
+-(BOOL) becomeFirstResponder
+{
+  if (_tf.is_selectable == NO)
+    {
+      return NO;
+    }
+
+  /* Note: Notifications (NSTextBeginEditingNotification etc) are sent
+  the first time the user tries to edit us. */
+
+  /* Draw selection, update insertion point */
+  if ([self shouldDrawInsertionPoint])
+    {
+      [self updateInsertionPointStateAndRestartTimer: YES];
+    }
+
+  return YES;
+}
+
+-(void) resignKeyWindow
+{
+  if ([self shouldDrawInsertionPoint])
+    {
+      [self updateInsertionPointStateAndRestartTimer: NO];
+    }
+}
+
+-(void) becomeKeyWindow
+{
+  if ([self shouldDrawInsertionPoint])
+    {
+      [self updateInsertionPointStateAndRestartTimer: YES];
+    }
+}
 
 
 /**** Methods of the NSTextInput protocol ****/
@@ -183,9 +833,9 @@ here. */
 
 /* Unlike NSResponder, we should _not_ send the selector down the responder
 chain if we can't handle it. */
+/* TODO: ask delegate */
 -(void) doCommandBySelector: (SEL)aSelector
 {
-  /* TODO: just ignore the command? */
   if (!_layoutManager)
     {
       NSBeep();
@@ -202,540 +852,141 @@ chain if we can't handle it. */
     }
 }
 
-/* TODO: insertString may be an NSAttributedString */
+/* insertString may actually be an NSAttributedString. */
 -(void) insertText: (NSString *)insertString
 {
   NSRange insertRange = [self rangeForUserTextChange];
+  NSString *string;
+  BOOL isAttributed;
 
   if (insertRange.location == NSNotFound)
     return;
 
+  isAttributed = [insertString isKindOfClass: [NSAttributedString class]];
+
+  if (isAttributed)
+    string = [(NSAttributedString *)insertString string];
+  else
+    string = insertString;
+
+  if (![self shouldChangeTextInRange: insertRange
+		   replacementString: string])
+    {
+      return;
+    }
+
   if (_tf.is_rich_text)
     {
-      [self replaceRange: insertRange
-	    withAttributedString: AUTORELEASE([[NSAttributedString alloc]
-				     initWithString: insertString
-				     attributes: _layoutManager->_typingAttributes])];
-    }
-  else
-    {      
-      [self replaceCharactersInRange: insertRange
-	    withString: insertString];
-    }
-
-  // move cursor <!> [self selectionRangeForProposedRange: ]
-  [self setSelectedRange:
-	  NSMakeRange (insertRange.location + [insertString length], 0)];
-}
-
-@end
-
-
-
-/**** Synchronization stuff ****/
-
-/* For when more than one text view is connected to a layout
-manager. */
-@implementation NSTextView (GSTextView_sync)
-
-#define SET_DELEGATE_NOTIFICATION(notif_name) \
-  if ([_delegate respondsToSelector: @selector(text##notif_name: )]) \
-    [notificationCenter addObserver: _delegate \
-           selector: @selector(text##notif_name: ) \
-               name: NSText##notif_name##Notification \
-             object: _notifObject]
-
-
-/*
- * Synchronizing flags.  Used to manage synchronizing shared
- * attributes between textviews coupled with the same layout manager.
- * These synchronizing flags are only accessed when
- * _tf.multiple_textviews == YES and this can only happen if we have
- * a non-nil NSLayoutManager - so we don't check. */
-
-/* YES when in the process of synchronizing text view attributes.  
-   Used to avoid recursive synchronizations. */
-#define IS_SYNCHRONIZING_FLAGS _layoutManager->_isSynchronizingFlags 
-/* YES when in the process of synchronizing delegates.
-   Used to avoid recursive synchronizations. */ 
-#define IS_SYNCHRONIZING_DELEGATES _layoutManager->_isSynchronizingDelegates
-
-
--(void) _updateMultipleTextViews
-{
-  id oldNotifObject = _notifObject;
-
-  if ([[_layoutManager textContainers] count] > 1)
-    {
-      _tf.multiple_textviews = YES;
-      _notifObject = [_layoutManager firstTextView];
-    }
-  else
-    {
-      _tf.multiple_textviews = NO;
-      _notifObject = self;
-    }  
-
-  if ((_delegate != nil) && (oldNotifObject != _notifObject))
-    {
-      [notificationCenter removeObserver: _delegate  name: nil  object: oldNotifObject];
-
-      if ([_delegate respondsToSelector: 
-		       @selector(shouldChangeTextInRange:replacementString:)])
+      if (isAttributed)
 	{
-	  _tf.delegate_responds_to_should_change = YES;
+	  [_textStorage replaceCharactersInRange: insertRange
+	    withAttributedString: (NSAttributedString *)insertString];
 	}
       else
 	{
-	  _tf.delegate_responds_to_should_change = NO;
+	  [_textStorage replaceCharactersInRange: insertRange
+	    withAttributedString: AUTORELEASE([[NSAttributedString alloc]
+	      initWithString: insertString
+	      attributes: _layoutManager->_typingAttributes])];
 	}
-
-      /* SET_DELEGATE_NOTIFICATION defined at the beginning of file */
-
-      /* NSText notifications */
-      SET_DELEGATE_NOTIFICATION (DidBeginEditing);
-      SET_DELEGATE_NOTIFICATION (DidChange);
-      SET_DELEGATE_NOTIFICATION (DidEndEditing);
-      /* NSTextView notifications */
-      SET_DELEGATE_NOTIFICATION (ViewDidChangeSelection);
-      SET_DELEGATE_NOTIFICATION (ViewWillChangeNotifyingTextView);
     }
-}
-
-@end
-
-
-
-@implementation NSTextView
-
-
-+(void) initialize
-{
-  if ([self class] == [NSTextView class])
+  else
     {
-      [self setVersion: currentVersion];
-      notificationCenter = [NSNotificationCenter defaultCenter];
-      [self registerForServices];
-    }
-}
-
-+(void) registerForServices
-{
-  NSArray *types;
-      
-  types = [NSArray arrayWithObjects: NSStringPboardType,
-		    NSRTFPboardType, NSRTFDPboardType, nil];
- 
-  [[NSApplication sharedApplication] registerServicesMenuSendTypes: types
-						       returnTypes: types];
-}
-
-+(NSDictionary *) defaultTypingAttributes
-{
-static NSDictionary *defaultTypingAttributes;
-
-  if (!defaultTypingAttributes)
-    {
-      defaultTypingAttributes = [[NSDictionary alloc] initWithObjectsAndKeys:
-	[NSParagraphStyle defaultParagraphStyle], NSParagraphStyleAttributeName,
-	[NSFont userFontOfSize: 0], NSFontAttributeName,
-	[NSColor textColor], NSForegroundColorAttributeName,
-	nil];
-    }
-  return defaultTypingAttributes;
-}
-
-
-/**** Initialization ****/
-
-/*
-Note that -init* must be completely side-effect-less (outside this
-NSTextView). In particular, they must _not_ touch the font panel or rulers
-until whoever created us has a chance to eg. -setUsesFontPanel: NO.
-Calling any other methods here is dangerous as a sub-class might have
-overridden them and given them side-effects.
-
-
-Note also that if a text view is added to an existing text network, the
-new text view must not change any attributes of the existing text views.
-Instead, it sets its own attributes to match the others'. This also applies
-to methods that change which text network the text view is part of.
-
-Since we can't have any side-effects, we can't call attributes to set the
-values. A sub-class that wants to react to changes caused by moving to
-a different text network will have to override -setTextContainer: and do
-whatever it needs to do after calling [super setTextContainer: foo].
-(TODO: check that this behavior is acceptable)
-
-If a text view is added to an empty text network, it keeps its attributes.
-*/
-
-
--(NSTextContainer *) buildUpTextNetwork: (NSSize)aSize
-{
-  NSTextContainer *textContainer;
-  NSLayoutManager *layoutManager;
-  NSTextStorage *textStorage;
-
-  textStorage = [[NSTextStorage alloc] init];
-
-  layoutManager = [[NSLayoutManager alloc] init];
-
-  [textStorage addLayoutManager: layoutManager];
-  RELEASE(layoutManager);
-
-  textContainer = [[NSTextContainer alloc] initWithContainerSize: aSize];
-  [layoutManager addTextContainer: textContainer];
-  RELEASE(textContainer);
-
-  /* The situation at this point is as follows: 
-
-     textView (us) --RETAINs--> textStorage 
-     textStorage   --RETAINs--> layoutManager 
-     layoutManager --RETAINs--> textContainer */
-
-  /* We keep a flag to remember that we are directly responsible for 
-     managing the text network. */
-  _tf.owns_text_network = YES;
-
-  return textContainer;
-}
-
-
-/* Designated initializer. */
--(id) initWithFrame: (NSRect)frameRect
-      textContainer: (NSTextContainer *)container
-{
-  self = [super initWithFrame: frameRect];
-  if (!self)
-    return nil;
-
-  _minSize = NSMakeSize (0, 0);
-  _maxSize = NSMakeSize (HUGE,HUGE);
-
-  ASSIGN(_insertionPointColor, [NSColor textColor]); /* TODO: was +blackColor; check */
-  ASSIGN(_backgroundColor, [NSColor textBackgroundColor]);
-
-  _tf.draws_background = YES;
-  _tf.is_horizontally_resizable = NO;
-  _tf.is_vertically_resizable = NO;
-
-  /* We set defaults for all shared attributes here. If container is already
-  part of a text network, we reset the attributes in -setTextContainer:. */
-  _tf.is_field_editor = NO;
-  _tf.is_editable = YES;
-  _tf.is_selectable = YES;
-  _tf.is_rich_text = NO;
-  _tf.imports_graphics = NO;
-  _tf.uses_font_panel = YES;
-  _tf.uses_ruler = YES;
-  _tf.is_ruler_visible = NO;
-  _tf.allows_undo = NO;
-  _tf.smart_insert_delete = NO;
-
-  [container setTextView: self];
-
-  return self;
-}
-
-
-- (id) initWithFrame: (NSRect)frameRect
-{
-  NSTextContainer *aTextContainer;
-
-  aTextContainer = [self buildUpTextNetwork: frameRect.size];
-
-  self = [self initWithFrame: frameRect  textContainer: aTextContainer];
-
-  /* At this point the situation is as follows: 
-
-     textView (us)  --RETAINs--> textStorage
-     textStorage    --RETAINs--> layoutManager 
-     layoutManager  --RETAINs--> textContainer 
-     textContainer  --RETAINs--> textView (us) */
-
-  /* The text system should be destroyed when the textView (us) is
-     released.  To get this result, we send a RELEASE message to us
-     breaking the RETAIN cycle. */
-  RELEASE (self);
-
-  return self;
-}
-
-
-/*
-In earlier versions, some of these ivar:s were in NSText instead of
-NSTextView, and parts of their handling (including encoding and decoding)
-were there. This has been fixed and the ivar:s moved here, but in a way
-that makes decoding and encoding compatible with the old code.
-*/
-- (void) encodeWithCoder: (NSCoder *)aCoder
-{
-  BOOL flag;
-  NSSize containerSize = [_textContainer containerSize];
-
-  [super encodeWithCoder: aCoder];
-
-  [aCoder encodeConditionalObject: _delegate];
-
-  flag = _tf.is_field_editor;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.is_editable;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.is_selectable;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.is_rich_text;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.imports_graphics;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.draws_background;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.is_horizontally_resizable;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.is_vertically_resizable;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.uses_font_panel;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.uses_ruler;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.is_ruler_visible;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-
-  [aCoder encodeObject: _backgroundColor];
-  [aCoder encodeValueOfObjCType: @encode(NSSize) at: &_minSize];
-  [aCoder encodeValueOfObjCType: @encode(NSSize) at: &_maxSize];
-
-  flag = _tf.smart_insert_delete;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _tf.allows_undo;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  [aCoder encodeObject: _insertionPointColor];
-  [aCoder encodeValueOfObjCType: @encode(NSSize) at: &containerSize];
-  flag = [_textContainer widthTracksTextView];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = [_textContainer heightTracksTextView];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-}
-
-- (id) initWithCoder: (NSCoder *)aDecoder
-{
-  int version = [aDecoder versionForClassName: 
-			    @"NSTextView"];
-
-  /* Common stuff for version 1 and 2. */
-  {
-    BOOL flag;
-
-    self = [super initWithCoder: aDecoder];
-
-    _delegate  = [aDecoder decodeObject];
-
-    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-    _tf.is_field_editor = flag;
-    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-    _tf.is_editable = flag;
-    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-    _tf.is_selectable = flag;
-    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-    _tf.is_rich_text = flag;
-    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-    _tf.imports_graphics = flag;
-    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-    _tf.draws_background = flag;
-    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-    _tf.is_horizontally_resizable = flag;
-    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-    _tf.is_vertically_resizable = flag;
-    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-    _tf.uses_font_panel = flag;
-    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-    _tf.uses_ruler = flag;
-    [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-    _tf.is_ruler_visible = flag;
-
-    _backgroundColor  = RETAIN([aDecoder decodeObject]);
-    [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &_minSize];
-    [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &_maxSize];
-  }
-
-  if (version == currentVersion)
-    {
-      NSTextContainer *aTextContainer; 
-      BOOL flag;
-      NSSize containerSize;
-
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-      _tf.smart_insert_delete = flag;
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-      _tf.allows_undo = flag;
-      
-      _insertionPointColor  = RETAIN([aDecoder decodeObject]);
-      [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &containerSize];
-      /* build up the rest of the text system, which doesn't get stored 
-	 <doesn't even implement the Coding protocol>. */
-      aTextContainer = [self buildUpTextNetwork: _frame.size];
-      [aTextContainer setTextView: (NSTextView*)self];
-      [aTextContainer setContainerSize: containerSize];
-
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-      [aTextContainer setWidthTracksTextView: flag];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-      [aTextContainer setHeightTracksTextView: flag];
-
-      /* See initWithFrame: for comments on this RELEASE */
-      RELEASE (self);
-      
-      [self setSelectedRange: NSMakeRange (0, 0)]; /* TODO: check */
-    }
-  else if (version == 1)
-    {
-      NSTextContainer *aTextContainer; 
-      BOOL flag;
-      
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-      _tf.smart_insert_delete = flag;
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-      _tf.allows_undo = flag;
-      
-      /* build up the rest of the text system, which doesn't get stored 
-	 <doesn't even implement the Coding protocol>. */
-      aTextContainer = [self buildUpTextNetwork: _frame.size];
-      [aTextContainer setTextView: (NSTextView*)self];
-      /* See initWithFrame: for comments on this RELEASE */
-      RELEASE (self);
-      
-      [self setSelectedRange: NSMakeRange (0, 0)]; /* TODO: check */
-    }
-
-  return self;
-}
-
-- (void) dealloc
-{
-  if (_tf.owns_text_network == YES)
-    {
-      if (_textStorage != nil)
+      if (isAttributed)
 	{
-	  /*
-	   * Destroying our _textStorage releases all the text objects
-	   * (us included) which means this method will be called again ...
-	   * so this time round we should just return, and the rest of
-	   * the deallocation can be done on the next call to dealloc.
-	   *
-	   * However, the dealloc methods of any subclasses should
-	   * already have been called before this method is called,
-	   * and those subclasses don't know how to cope with being
-	   * deallocated more than once ... to deal with that we
-	   * set the isa pointer so that the subclass dealloc methods
-	   * won't get called again.
-	   */
-	  isa = [NSTextView class];
-	  DESTROY(_textStorage);
-	  return;
+	  [self replaceCharactersInRange: insertRange
+	    withString: [(NSAttributedString *)insertString string]];
+	}
+      else
+	{
+	  [self replaceCharactersInRange: insertRange
+	    withString: insertString];
 	}
     }
 
-  if (_insertionPointTimer != nil)
-    {
-      [_insertionPointTimer invalidate];
-      DESTROY(_insertionPointTimer);
-    }
+  [self didChangeText];
 
-  DESTROY(_selectedTextAttributes);
-  DESTROY(_markedTextAttributes);
-  DESTROY(_insertionPointColor);
-  DESTROY(_backgroundColor);
-
-  /* TODO: delegate notifications */
-
-  [super dealloc];
+  /* TODO: move cursor <!> [self selectionRangeForProposedRange: ] */
+  [self setSelectedRange:
+	  NSMakeRange(insertRange.location + [insertString length], 0)];
 }
 
 
-/**** Managing the text network ****/
+/**** Text modification primitives (programmatic) ****/
 
-/* This should only be called by [NSTextContainer -setTextView:]. If the
-text container has had its layout manager changed, it will make a dummy call
-to this method and container==_textContainer. We still need to do a full
-update in that case.
+/* These are methods for programmatic changes, ie. they should _not_ check
+with the delegate, and they work in un-editable text views. */
 
-This is assumed to be the __only__ place where _textContainer,
-_layoutManager, or _textStorage changes. Re-synchronizing the text network
-is hairy, and this is the only place where it happens.
 
-TODO: Make sure the assumption holds; might need to add more dummy calls
-to this method from the text container or layout manager.
+/*
+Replace the characters in the given range with the given string.
+
+In a non-rich-text view, we use the same attributes as the rest of the
+text storage (ie. the typing attributes).
+
+In a rich-text text view, attributes for the new characters are computed
+thusly:
+
+1. If there is a first character in the replaced range, its attributes are
+   used.
+
+   (If not, the range must have length 0.)
+
+2. If there is a character right before the range, its attributed are used.
+
+   (If not, the range must have location 0, so the range must be length=0,
+   location=0.)
+
+3. If there is a character after the range, we use its attributes.
+
+   (If not, the text storage must be empty.)
+
+4. We use the typing attributes. (Note that if the text storage is empty,
+   this is the only valid case.)
+
+Since 1. - 3. correspond to the normal NSMutableAttributedString
+behavior, we only need to handle 4. explicitly, and we can detect it
+by checking if the text storage is empty.
+
 */
-- (void) setTextContainer: (NSTextContainer*)container
+- (void) replaceCharactersInRange: (NSRange)aRange
+		       withString: (NSString *)aString
 {
-  unsigned int i, c;
-  NSArray *tcs;
-  NSTextView *other;
+  if (aRange.location == NSNotFound) /* TODO: throw exception instead? */
+    return;
 
-  /* Any of these three might be nil. */
-  _textContainer = container;
-  _layoutManager = (NSLayoutManager *)[container layoutManager];
-  _textStorage = [_layoutManager textStorage];
-
-  /* Search for an existing text view attached to this layout manager. */
-  tcs = [_layoutManager textContainers];
-  c = [tcs count];
-  for (i = 0; i < c; i++)
+  if ([_textStorage length] == 0)
     {
-      other = [[tcs objectAtIndex: i] textView];
-      if (other && other != self)
-        break;
+      NSAttributedString *as;
+      as = [[NSAttributedString alloc]
+	initWithString: aString
+	attributes: _layoutManager->_typingAttributes];
+      [_textStorage replaceCharactersInRange: aRange
+	withAttributedString: as];
+      DESTROY(as);
     }
-
-  if (i < c)
+  else
     {
-      /* There is already an NSTextView attached to this text network, so
-      all shared attributes, including those in the layout manager, are
-      already set up. We copy the shared attributes to us. */
-
-      _delegate = other->_delegate;
-      _tf.is_field_editor = other->_tf.is_field_editor;
-      _tf.is_editable = other->_tf.is_editable;
-      _tf.is_selectable = other->_tf.is_selectable;
-      _tf.is_rich_text = other->_tf.is_rich_text;
-      _tf.imports_graphics = other->_tf.imports_graphics;
-      _tf.uses_font_panel = other->_tf.uses_font_panel;
-      _tf.uses_ruler = other->_tf.uses_ruler;
-      _tf.is_ruler_visible = other->_tf.is_ruler_visible;
-      _tf.allows_undo = other->_tf.allows_undo;
-      _tf.smart_insert_delete = other->_tf.smart_insert_delete;
+      [_textStorage replaceCharactersInRange: aRange  withString: aString];
     }
-  else if (_layoutManager)
-    {
-      /* There is no text network, and the layout manager's attributes
-      might not be set up. We reset them to standard values. */
-
-      ASSIGN(_layoutManager->_typingAttributes, [isa defaultTypingAttributes]);
-      _layoutManager->_original_selected_range.location = NSNotFound;
-      _layoutManager->_selected_range = NSMakeRange(0,0);
-    }
-
-  [self _updateMultipleTextViews];
 }
 
-- (void) replaceTextContainer: (NSTextContainer*)newContainer
+
+/**** Text access primitives ****/
+
+-(NSData*) RTFDFromRange: (NSRange)aRange
 {
-  NSLog(@"TODO! [NSTextView -replaceTextContainer:] isn't implemented");
+  return [_textStorage RTFDFromRange: aRange  documentAttributes: nil];
 }
 
-- (NSTextContainer *) textContainer
+-(NSData*) RTFFromRange: (NSRange)aRange
 {
-  return _textContainer;
+  return [_textStorage RTFFromRange: aRange  documentAttributes: nil];
 }
 
-- (NSLayoutManager*) layoutManager
+-(NSString*) string
 {
-  return _layoutManager;
-}
-
-- (NSTextStorage*) textStorage
-{
-  return _textStorage;
+  return [_textStorage string];
 }
 
 @end
@@ -750,9 +1001,9 @@ static inline
 NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 {
   if (a1 < a2)
-    return NSMakeRange (a1, a2 - a1);
+    return NSMakeRange(a1, a2 - a1);
   else
-    return NSMakeRange (a2, a1 - a2);
+    return NSMakeRange(a2, a1 - a2);
 }
 
 
@@ -781,20 +1032,20 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
 /*
  * Used to implement the blinking insertion point
  */
-- (void) _blink: (NSTimer *)t;
+-(void) _blink: (NSTimer *)t;
 
 /*
  * these NSLayoutManager- like method is here only informally
  */
-- (NSRect) rectForCharacterRange: (NSRange)aRange;
+-(NSRect) rectForCharacterRange: (NSRange)aRange;
 
 //
 // GNU utility methods
 //
-- (void) setAttributes: (NSDictionary *) attributes  range: (NSRange) aRange;
-- (void) _illegalMovement: (int) notNumber;
-- (void) copySelection;
-- (void) pasteSelection;
+-(void) setAttributes: (NSDictionary *) attributes  range: (NSRange) aRange;
+-(void) _illegalMovement: (int) notNumber;
+-(void) copySelection;
+-(void) pasteSelection;
 @end
 
 
@@ -804,91 +1055,7 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
  * Implementation of methods declared in superclass but depending 
  * on the internals of the NSTextView
  */
-- (void) replaceCharactersInRange: (NSRange)aRange
-		       withString: (NSString *)aString
-{
-  if (aRange.location == NSNotFound)
-    return;
 
-  if ([self shouldChangeTextInRange: aRange  
-	    replacementString: aString] == NO)
-    return; 
- 
-  [_textStorage beginEditing];
-
-  if (_tf.is_rich_text  &&  [_textStorage length] == 0)
-    {
-      /* In this case, there is nothing in the _textStorage ... so the
-	 _textStorage can't choose appropriate formatting attributes
-	 for the string ... we want the typingAttributes to be used in
-	 this case.  So we set the attributes manually. */
-      NSAttributedString *as;
-      
-      if ([aString length] == 0)
-	{
-	  as = AUTORELEASE ([[NSAttributedString alloc]
-			  initWithString: @" "
-			  attributes: _layoutManager->_typingAttributes]);
-	  [self replaceRange: aRange  withAttributedString: as];
-	  as = AUTORELEASE ([[NSAttributedString alloc]
-			      initWithString: aString
-			      attributes: _layoutManager->_typingAttributes]);
-	  [self replaceRange: NSMakeRange(0, 1) withAttributedString: as];
-	}
-      else
-	{
-	  as = AUTORELEASE ([[NSAttributedString alloc]
-			      initWithString: aString
-			      attributes: _layoutManager->_typingAttributes]);
-	  [self replaceRange: aRange  withAttributedString: as];
-	}
-    }
-  // BEGIN: following code added by pyr
-  else if ([_textStorage length] == 0)
-    {
-      NSAttributedString *as;
-      if ([aString length] == 0)
-	{
-	  as = AUTORELEASE ([[NSAttributedString alloc]
-			  initWithString: @" "
-			  attributes: _layoutManager->_typingAttributes]);
-	  [_textStorage replaceCharactersInRange: aRange  withAttributedString: as];
-	  as = AUTORELEASE ([[NSAttributedString alloc]
-			      initWithString: aString
-			      attributes: _layoutManager->_typingAttributes]);  
-	  [_textStorage replaceCharactersInRange: NSMakeRange(0, 1) withAttributedString: as];
-	}
-      else
-	{
-	  as = AUTORELEASE ([[NSAttributedString alloc]
-			      initWithString: aString
-			      attributes: _layoutManager->_typingAttributes]);  
-	  [_textStorage replaceCharactersInRange: aRange
-			withAttributedString: as];
-	}
-    }
-  // END
-  else
-    {
-      [_textStorage replaceCharactersInRange: aRange  withString: aString];
-    }
-  [_textStorage endEditing];
-  [self didChangeText];
-}
-
-
-- (NSData*) RTFDFromRange: (NSRange)aRange
-{
-  return [_textStorage RTFDFromRange: aRange  documentAttributes: nil];
-}
-- (NSData*) RTFFromRange: (NSRange)aRange
-{
-  return [_textStorage RTFFromRange: aRange  documentAttributes: nil];
-}
-- (NSString*) string
-{
-  return [_textStorage string];
-}
 
 
 /*
@@ -1766,12 +1933,7 @@ ugly_hack_done:
     }   
   else
     {
-      if (_insertionPointTimer != nil)
-	{
-	  [_insertionPointTimer invalidate];
-	  DESTROY (_insertionPointTimer);
-	  _drawInsertionPointNow = NO;
-	}
+      /* TODO: insertion point */
     }
 }
 
@@ -1918,12 +2080,7 @@ ugly_hack_done:
 	  // Store the selected text in the selection pasteboard
 	  [self copySelection];
 
-	  if (_insertionPointTimer != nil)
-	    {
-	      [_insertionPointTimer invalidate];
-	      DESTROY (_insertionPointTimer);
-	      _drawInsertionPointNow = YES;
-	    }
+	  /* TODO: insertion point */
 	}
       else  /* no selection, only insertion point */
 	{
@@ -2049,6 +2206,7 @@ ugly_hack_done:
 
 - (void) updateInsertionPointStateAndRestartTimer: (BOOL)restartFlag
 {
+#if 0 /* TODO */
   /* Update insertion point rect */
   NSRange charRange;
   NSRange glyphRange;
@@ -2179,6 +2337,7 @@ ugly_hack_done:
 
 	}
     }
+#endif
 }
 
 - (void) setSelectedTextAttributes: (NSDictionary *)attributeDictionary
@@ -3607,8 +3766,8 @@ afterString in order over charRange. */
  * swap the last two characters which were inserted, thus swapping the
  * 'a' and the 'l', and changing the text to read 'Nicola'.  */
 /*
-TODO: should swap characters on either side of the insertion point.
-see also: miswart
+TODO: description incorrect. should swap characters on either side of the
+insertion point. (see also: miswart)
 */
 - (void) transpose: (id)sender
 {
@@ -3638,126 +3797,11 @@ see also: miswart
   
   /* Replace the original chars with the swapped ones.  */
   replacementString = [NSString stringWithCharacters: chars  length: 2];
+  /* TODO: wrap with shouldChange.../didChange */
   [self replaceCharactersInRange: range  withString: replacementString];
 }
 
 
-- (BOOL) acceptsFirstResponder
-{
-  if (_tf.is_selectable)
-    {
-      return YES;
-    }
-  else
-    {
-      return NO;
-    }
-}
-
-- (BOOL) resignFirstResponder
-{
-  if (_insertionPointTimer != nil)
-    {
-      [_insertionPointTimer invalidate];
-      DESTROY (_insertionPointTimer);
-      _drawInsertionPointNow = NO;
-    }
-
-  if (_tf.multiple_textviews == YES)
-    {
-      id futureFirstResponder;
-      NSArray *textContainers;
-      int i, count;
-      
-      futureFirstResponder = [_window _futureFirstResponder];
-      textContainers = [_layoutManager textContainers];
-      count = [textContainers count];
-      for (i = 0; i < count; i++)
-	{
-	  NSTextContainer *container;
-	  NSTextView *view;
-	  
-	  container = (NSTextContainer *)[textContainers objectAtIndex: i];
-	  view = [container textView];
-
-	  if (view == futureFirstResponder)
-	    {
-	      /* NB: We do not reset the BEGAN_EDITING flag so that no
-		 spurious notification is generated. */
-	      return YES;
-	    }
-	}
-    }
-  
-  /* NB: Possible change: ask always - not only if editable - but we
-     need to change NSTextField etc to allow this. */
-  if ((_tf.is_editable)
-      && ([_delegate respondsToSelector: @selector(textShouldEndEditing:)])
-      && ([_delegate textShouldEndEditing: self] == NO))
-    {
-      return NO;
-    }
-  
-  /* Add any clean-up stuff here */
-
-  if ([self shouldDrawInsertionPoint])
-    {
-      [self updateInsertionPointStateAndRestartTimer: NO];
-    }    
-
-  SET_BEGAN_EDITING (NO);
-
-  /* NB: According to the doc (and to the tradition), we post this
-     notification even if no real editing was actually done (only
-     selection of text) [Note: in this case, no editing was started,
-     so the notification does not come after a
-     NSTextDidBeginEditingNotification!].  The notification only means
-     that we are resigning first responder status.  This makes sense
-     because many objects inside the gui need this notification anyway
-     - typically, it is needed to remove a field editor (editable or
-     not) when the user presses TAB to move to the next view.  Anyway
-     yes, the notification name is misleading. */
-  [notificationCenter postNotificationName: NSTextDidEndEditingNotification
-      object: _notifObject];
-
-  return YES;
-}
-
-- (BOOL) becomeFirstResponder
-{
-  if (_tf.is_selectable == NO)
-    {
-      return NO;
-    }
-
-  /* NB: Notifications (NSTextBeginEditingNotification etc) are managed 
-     on the first time the user tries to edit us. */
-
-  /* Draw selection, update insertion point */
-
-  if ([self shouldDrawInsertionPoint])
-    {
-      [self updateInsertionPointStateAndRestartTimer: YES];
-    }
-
-  return YES;
-}
-
-- (void) resignKeyWindow
-{
-  if ([self shouldDrawInsertionPoint])
-    {
-      [self updateInsertionPointStateAndRestartTimer: NO];
-    }
-}
-
-- (void) becomeKeyWindow
-{
-  if ([self shouldDrawInsertionPoint])
-    {
-      [self updateInsertionPointStateAndRestartTimer: YES];
-    }
-}
 
 - (void) drawRect: (NSRect)rect
 {
@@ -3800,12 +3844,14 @@ see also: miswart
       if (NSLocationInRange (location, drawnRange) 
 	  || location == NSMaxRange (drawnRange))
 	{
+#if 0 /* TODO: insertion point */
 	  if (_drawInsertionPointNow && viewIsPrinting != self)
 	    {
 	      [self drawInsertionPointInRect: _insertionPointRect  
 		    color: _insertionPointColor
 		    turnedOn: YES];
 	    }
+#endif
 	}
     }
 }
@@ -4307,6 +4353,7 @@ shouldRemoveMarker: (NSRulerMarker*)marker
       return YES;
     } 
 
+  /* TODO: wrap calls with shouldChange.../didChange... */
   if (_tf.is_rich_text)
     {
       if ([type isEqualToString: NSRTFPboardType])
@@ -4672,6 +4719,7 @@ other than copy/paste or dragging. */
 
 - (void) _blink: (NSTimer *)t
 {
+#if 0 /* TODO: insertion point */
   if (_drawInsertionPointNow)
     {
       _drawInsertionPointNow = NO;
@@ -4687,6 +4735,7 @@ other than copy/paste or dragging. */
      event processing in the gui runloop, we need to manually update
      the window.  */
   [self displayIfNeeded];
+#endif
 }
 
 - (void) setAttributes: (NSDictionary*)attributes  range: (NSRange)aRange
@@ -4728,12 +4777,7 @@ other than copy/paste or dragging. */
       && ([_delegate textShouldEndEditing: self] == NO))
     return;
 
-  /* FIXME */
-  if (_insertionPointTimer != nil)
-    {
-      [_insertionPointTimer invalidate];
-      DESTROY (_insertionPointTimer);
-    }
+  /* TODO: insertion point */
 
   number = [NSNumber numberWithInt: textMovement];
   uiDictionary = [NSDictionary dictionaryWithObject: number
@@ -5005,28 +5049,6 @@ never used */
 }
 
 
-
-/**** Misc. methods to get us to act as a view. ****/
-
-- (BOOL) isFlipped
-{
-  return YES;
-}
-
--(BOOL) needsPanelToBecomeKey
-{
-  return _tf.is_editable;
-}
-
-- (BOOL) isOpaque
-{
-  if (_tf.draws_background == NO
-      || _backgroundColor == nil
-      || [_backgroundColor alphaComponent] < 1.0)
-    return NO;
-  else
-    return YES;
-}
 
 @end
 

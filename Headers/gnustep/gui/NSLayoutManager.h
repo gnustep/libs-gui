@@ -46,6 +46,7 @@
   NSRange _selected_range;
   NSRange _original_selected_range;
   NSSelectionGranularity _selectionGranularity;
+  NSSelectionAffinity _selectionAffinity;
 
   /* Retained by the NSLayoutManager. NSTextView:s that change this value
   should release the old value and retain the new one. It is nil originally
