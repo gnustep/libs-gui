@@ -56,7 +56,7 @@
 /* 
  * Initializing an NSTableColumn instance 
  */
-- (NSTableColumn*)initWithIdentifier: (id)anObject
+- (id)initWithIdentifier: (id)anObject
 {
   self = [super init];
   _width = 0;
