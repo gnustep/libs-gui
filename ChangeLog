@@ -1,3 +1,7 @@
+Sun Jan 28 16:53:16 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSView.m ([-mouse:inRect:]): Use NSMouseInRect.
+
 Sun Jan 28 16:15:05 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/gnustep/gui/NSSplitView.h: Added delegate method 
