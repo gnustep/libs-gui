@@ -1,3 +1,12 @@
+2000-06-07  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextAttachment.m 
+	Removed the copyWithZone: method as this has been fixed on
+	GSTextStorage.
+	Changed NSLeftMouseUp to the correct NSLeftMouseDown. (Fix by
+	Ludovic Marcotte <ludovic@Sophos.ca>, who is the fist user of
+	NSTextAttachment) 
+	
 2001-06-07  Richard Frith-Macdonald <rfm@gnu.org>
 
         * Source/GSAttributedString.m: When caching attribute dictionaries
