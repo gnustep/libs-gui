@@ -29,6 +29,7 @@
 	* Source/GSToolbarView: 
 	* Source/NSToolbar.m:
 	* Source/NSWindow+Toolbar.m:
+	* Source/NSToolbarItem.m:
 	Related changes and lot of memory leaks fixed permitting to have now
 	the toolbar system properly deallocated when the toolbar is not anymore
 	retained by the user and the toolbar view.
@@ -36,7 +37,7 @@
 	a window, you need to have the option "Window released when closed"
 	checked.
 	Actual retain logic is strictly : 
-	- Superview in the view hierachy retains toolbar view
+	- Superview in the view hierarchy retains toolbar view
 	- Toolbar view retains toolbar
 	- Toolbar view retains toolbar items view
 	- Toolbar retains toolbar items
@@ -48,6 +49,7 @@
 	* Headers/Additions/GNUstepGUI/GSToolbar.h:
 	* Headers/AppKit/NSToolbar.h:
 	Moved the _window ivar from GSToolbar class to NSToolbar class.
+	* Headers/AppKit/NSToolbarItem.h: Added a _tag ivar and other minor changes.
 
 2004-07-07 01:23  Alexander Malmberg <alexander@malmberg.org>
 

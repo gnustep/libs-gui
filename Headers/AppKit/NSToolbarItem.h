@@ -62,14 +62,15 @@ APPKIT_EXPORT NSString *NSToolbarPrintItemIdentifier;
   BOOL _allowsDuplicatesInToolbar;
   NSString *_itemIdentifier;
   NSString *_label;
-  NSMenuItem *_menuFormRepresentation;
   NSString *_paletteLabel;
   NSImage *_image;
+  id _view;
+  NSMenuItem *_menuFormRepresentation;
+  NSString *_toolTip;
+  int _tag;
 
   // toolbar
   GSToolbar *_toolbar;
-  NSString *_toolTip;
-  id _view;
   NSView *_backView;
   BOOL _modified;
   BOOL _selectable;
