@@ -1572,7 +1572,9 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   // then the column must be visible
   if ((_lastColumnLoaded == 0) ||
       (_lastColumnLoaded <= (_maxVisibleColumns - 1)))
-    [_horizontalScroller setEnabled: NO];
+    {
+      [_horizontalScroller setEnabled: NO];
+    }
   else
     {
       if (!_skipUpdateScroller)
@@ -2818,15 +2820,14 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
       [matrix setCellSize: ms];
       mr = [matrix frame];
 
-      // matrix smaller than scrollview's content
-      if (mr.size.height < cs.height)
-	{
-	  // view requires origin adjustment for it to appear at top
-	  mr.origin.y = cs.height;
-	  [matrix setFrame: mr];
-	}
-
+      // this will automatically move the matrix on top if it's not
+      // yet the sc's document view, otherwise it will not move it
       [sc setDocumentView: matrix];
+
+      // so we do it manually anyway - the clipview's coordinate
+      // system is flipped - we want the matrix to appear on top
+      mr.origin.y = cs.height;
+      [matrix setFrame: mr];
     }
 }
 
