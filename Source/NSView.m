@@ -851,21 +851,21 @@ int i, count;
     	NSView* subview = [sub_views objectAtIndex:i];
     	NSRect subviewFrame = subview->frame;
     	NSRect intersection;
-									// If the subview is rotated compute its 
-									// bounding rectangle and use this one 
-									// instead of the subview's frame. 
+										// If the subview is rotated compute 
+										// its bounding rectangle and use this 
+										// one instead of the subview's frame. 
 		if ([subview->frameMatrix isRotated])
       		[subview->frameMatrix boundingRectFor:subviewFrame 
 								  result:&subviewFrame];
 
-									// Determine if the subview's frame 
-									// intersects "rect" so that we can display 
-									// the subview. 
+											// Determine if the subview's frame 
+											// intersects "rect" so that we can 
+											// display the subview. 
     	intersection = NSIntersectionRect (rect, subviewFrame);
 		if (intersection.origin.x || intersection.origin.y || 
 				intersection.size.width || intersection.size.height) 
-			{						// Convert the intersection rectangle to
-									// the subview's coordinates 
+			{							// Convert the intersection rectangle
+										// to the subview's coordinates 
       		intersection = [subview convertRect:intersection fromView:self];
       		[subview displayRect:intersection];
     		}

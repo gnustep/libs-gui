@@ -63,6 +63,7 @@ extern NSString *NSEventTrackingRunLoopMode;
   // Attributes
   NSMutableArray *window_list;
   NSMutableArray *event_queue;
+  NSMutableArray *recycled_event_queue;
   NSEvent *current_event;
   id key_window;
   id main_window;
@@ -77,6 +78,8 @@ extern NSString *NSEventTrackingRunLoopMode;
   BOOL app_is_hidden;
   BOOL windows_need_update;
   NSImage *app_icon;
+
+  BOOL inTrackingLoop;
 
   // Reserved for back-end use
   void *be_app_reserved;
@@ -125,18 +128,12 @@ extern NSString *NSEventTrackingRunLoopMode;
 //
 - (NSEvent *)currentEvent;
 - (void)discardEventsMatchingMask:(unsigned int)mask
-		      beforeEvent:(NSEvent *)lastEvent;
+						beforeEvent:(NSEvent *)lastEvent;
 - (NSEvent *)nextEventMatchingMask:(unsigned int)mask
-			 untilDate:(NSDate *)expiration
-			    inMode:(NSString *)mode
-			   dequeue:(BOOL)flag;
+						untilDate:(NSDate *)expiration
+						inMode:(NSString *)mode
+						dequeue:(BOOL)flag;
 - (void)postEvent:(NSEvent *)event atStart:(BOOL)flag;
-
-// xxx Not part of OpenStep, should be removed someday
-- (NSEvent *)peekEventMatchingMask:(unsigned int)mask
-			 untilDate:(NSDate *)expiration
-			    inMode:(NSString *)mode
-			   dequeue:(BOOL)flag;
 
 //
 // Sending action messages
@@ -271,15 +268,10 @@ extern NSString *NSEventTrackingRunLoopMode;
 + (void)setNullEvent:(NSEvent *)e;
 + (NSEvent *)getNullEvent;
 
-// Get next event
-- (void)getNextEvent;
-- (NSEvent *)peekNextEvent;
-
-// handle a non-translated event
-- (void)handleNullEvent;
-
 /* Private methods */
-- (void)_flushCommunicationChannels;
+
+// Get next event
+- (void)_nextEvent;
 
 @end
 

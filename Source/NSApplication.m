@@ -74,30 +74,25 @@ static id NSApp;
 //
 + (void)initialize
 {
-  if (self == [NSApplication class])
-    {
-      NSDebugLog(@"Initialize NSApplication class\n");
-
-      // Initial version
-      [self setVersion:1];
-
-      // So the application knows its within dealloc
-      // and can prevent -release loops.
-      gnustep_gui_app_is_in_dealloc = NO;
-    }
-}
+	if (self == [NSApplication class])
+		{
+		NSDebugLog(@"Initialize NSApplication class\n");
+													// Initial version
+		[self setVersion:1];
+													// So the application knows 
+		gnustep_gui_app_is_in_dealloc = NO;			// its within dealloc and
+		}											// can prevent -release 
+}													// loops.
 
 + (NSApplication *)sharedApplication
-{
-  // If the global application does not exist yet then create it
-  if (!NSApp) {
-    /* Don't combine the following two statements into one to avoid problems
-       with some classes initialization code that tries to get the shared
-       application. */
-    NSApp = [self alloc];
-    [NSApp init];
-  }
-  return NSApp;
+{											// If the global application does 
+	if (!NSApp) 							// not exist yet then create it
+		{
+		NSApp = [self alloc];				// Don't combine the following two
+		[NSApp init];						// statements into one to avoid
+		}									// problems with some classes'
+											// initialization code that tries
+	return NSApp;							// to get the shared application.
 }
 
 //
@@ -109,79 +104,76 @@ static id NSApp;
 //
 - init
 {
-  [super init];
+	[super init];
 
-  NSDebugLog(@"Begin of NSApplication -init\n");
+	NSDebugLog(@"Begin of NSApplication -init\n");
 
-  // allocate the window list
-  window_list = [NSMutableArray new];
-  window_count = 1;
+	window_list = [NSMutableArray new];					// allocate window list
+	window_count = 1;
 
-  main_menu = nil;
-  windows_need_update = YES;
-  //
-  // Event handling setup
-  //
-  // allocate the event queue
-  event_queue = [NSMutableArray new];
-  // No current event
-  current_event = nil;
-  // The NULL event
-  gnustep_gui_null_event = [NSEvent new];
+	main_menu = nil;
+	windows_need_update = YES;
+  
+	event_queue = [NSMutableArray new];					// allocate event queue
+	recycled_event_queue = [NSMutableArray new];		// alloc recycle queue
+	current_event = [NSEvent new];						// no current event
+	gnustep_gui_null_event = [NSEvent new];				// create a NULL event
 
-  //
-  // We are the end of the responder chain
-  //
-  [self setNextResponder:NULL];
+	[self setNextResponder:NULL];						// We are the end of 
+														// the responder chain
 
-  /* Set up the run loop object for the current thread */
-  [self setupRunLoopInputSourcesForMode:NSDefaultRunLoopMode];
-  [self setupRunLoopInputSourcesForMode:NSConnectionReplyMode];
-  [self setupRunLoopInputSourcesForMode:NSModalPanelRunLoopMode];
-  [self setupRunLoopInputSourcesForMode:NSEventTrackingRunLoopMode];
+														// Set up the run loop 
+														// object for the 
+														// current thread 
+	[self setupRunLoopInputSourcesForMode:NSDefaultRunLoopMode];
+	[self setupRunLoopInputSourcesForMode:NSConnectionReplyMode];
+	[self setupRunLoopInputSourcesForMode:NSModalPanelRunLoopMode];
+	[self setupRunLoopInputSourcesForMode:NSEventTrackingRunLoopMode];
 
-  return self;
+	return self;
 }
 
 - (void)finishLaunching
 {
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-  NSBundle* mainBundle = [NSBundle mainBundle];
-  NSString* resourcePath = [mainBundle resourcePath];
-  NSString* infoFilePath
-      = [resourcePath stringByAppendingPathComponent:@"Info-gnustep.plist"];
-  NSDictionary* infoDict = [[NSString stringWithContentsOfFile:infoFilePath]
-				propertyList];
-  NSString* mainModelFile = [infoDict objectForKey:@"NSMainNibFile"];
+NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+NSBundle* mainBundle = [NSBundle mainBundle];
+NSString* resourcePath = [mainBundle resourcePath];
+NSString* infoFilePath = [resourcePath 
+						stringByAppendingPathComponent:@"Info-gnustep.plist"];
+NSDictionary* infoDict;
+NSString* mainModelFile;
 
-  if (mainModelFile && ![mainModelFile isEqual:@""]) {
-    if (![GMModel loadIMFile:mainModelFile
-			  owner:[NSApplication sharedApplication]])
-      NSLog (@"Cannot load the main model file '%@", mainModelFile);
-  }
+	infoDict = [[NSString stringWithContentsOfFile:infoFilePath] propertyList];
+	mainModelFile = [infoDict objectForKey:@"NSMainNibFile"];
 
-  // notify that we will finish the launching
-  [nc postNotificationName: NSApplicationWillFinishLaunchingNotification
-      object: self];
-
-  // finish the launching
-
-  // notify that the launching has finished
-  [nc postNotificationName: NSApplicationDidFinishLaunchingNotification
-      object: self];
+	if (mainModelFile && ![mainModelFile isEqual:@""]) 
+		{
+		if (![GMModel loadIMFile:mainModelFile
+					  owner:[NSApplication sharedApplication]])
+		NSLog (@"Cannot load the main model file '%@", mainModelFile);
+		}
+													// post notification that 
+													// launch will finish
+	[nc postNotificationName: NSApplicationWillFinishLaunchingNotification
+		object: self];
+													// finish the launching
+													// post notification that 
+													// launching has finished
+	[nc postNotificationName: NSApplicationDidFinishLaunchingNotification
+		object: self];
 }
 
 - (void)dealloc
 {
-  NSDebugLog(@"Freeing NSApplication\n");
-
-  // Let ourselves know we are within dealloc
-  gnustep_gui_app_is_in_dealloc = YES;
-
-  [window_list release];
-  [event_queue release];
-  [current_event release];
-  [super dealloc];
+	NSDebugLog(@"Freeing NSApplication\n");
+													// Let ourselves know we 
+	gnustep_gui_app_is_in_dealloc = YES;			// are within dealloc
+	
+	[window_list release];
+	[event_queue release];
+	[recycled_event_queue release];
+	[current_event release];
+	[super dealloc];
 }
 
 //
@@ -189,17 +181,17 @@ static id NSApp;
 //
 - (void)activateIgnoringOtherApps:(BOOL)flag
 {
-  app_is_active = YES;
+	app_is_active = YES;
 }
 
 - (void)deactivate
 {
-  app_is_active = NO;
+	app_is_active = NO;
 }
 
 - (BOOL)isActive
 {
-  return app_is_active;
+	return app_is_active;
 }
 
 //
@@ -211,7 +203,7 @@ static id NSApp;
 
 - (NSModalSession)beginModalSessionForWindow:(NSWindow *)theWindow
 {
-  return NULL;
+	return NULL;
 }
 
 - (void)endModalSession:(NSModalSession)theSession
@@ -220,7 +212,7 @@ static id NSApp;
 
 - (BOOL)isRunning
 {
-  return app_is_running;
+	return app_is_running;
 }
 
 - (void)run
@@ -244,8 +236,6 @@ NSAutoreleasePool* pool;
 				  dequeue:YES];
 		if (e)
 			[self sendEvent: e];
-		else										// if Null event call back
-			[self handleNullEvent];					// end method to handle it
 
 		if(windows_need_update)						// send an update message
 			[self updateWindows];					// to all visible windows
@@ -259,68 +249,63 @@ NSAutoreleasePool* pool;
 
 - (int)runModalForWindow:(NSWindow *)theWindow
 {
-  [theWindow display];
-  [theWindow makeKeyAndOrderFront: self];
-  return 0;
+	[theWindow display];
+	[theWindow makeKeyAndOrderFront: self];
+
+	return 0;
 }
 
 - (int)runModalSession:(NSModalSession)theSession
 {
-  return 0;
+	return 0;
 }
 
 - (void)sendEvent:(NSEvent *)theEvent
 {
-  // Don't send the null event
-  if (theEvent == gnustep_gui_null_event)
-    {
-      NSDebugLog(@"Not sending the Null Event\n");
-      return;
-    }
+	if (theEvent == gnustep_gui_null_event)			// Don't send null event
+		{
+		NSDebugLog(@"Not sending the Null Event\n");
+		return;
+		}
 
-  // What is the event type
-  switch ([theEvent type])
-    {
+	switch ([theEvent type])						// determine the event type					
+		{
+		case NSPeriodic:							// NSApplication traps the 
+			break;									// periodic events
 
-      //
-      // NSApplication traps the periodic events
-      //
-    case NSPeriodic:
-      break;
+		case NSKeyDown:
+			{
+			NSDebugLog(@"send key down event\n");
+			[[theEvent window] sendEvent:theEvent];
+			break;
+			}
 
-    case NSKeyDown:
-      {
-	NSDebugLog(@"send key down event\n");
-	[[theEvent window] sendEvent:theEvent];
-	break;
-      }
-    case NSKeyUp:
-      {
-	NSDebugLog(@"send key up event\n");
-	[[theEvent window] sendEvent:theEvent];
-	break;
-      }
-      //
-      // All others get passed to the window
-      //
-    default:
-      {
-	NSWindow* window = [theEvent window];
+		case NSKeyUp:
+			{
+			NSDebugLog(@"send key up event\n");
+			[[theEvent window] sendEvent:theEvent];
+			break;
+			}
 
-	if (!theEvent) NSDebugLog(@"NSEvent is nil!\n");
-	NSDebugLog(@"NSEvent type: %d", [theEvent type]);
-	NSDebugLog(@"send event to window");
-	NSDebugLog([window description]);
-	if (!window)
-	  NSDebugLog(@"no window");
-	[window sendEvent:theEvent];
-      }
-    }
+		default:									// pass all other events to 
+			{										// the event's window
+			NSWindow* window = [theEvent window];
+
+			if (!theEvent) 
+				NSDebugLog(@"NSEvent is nil!\n");
+			NSDebugLog(@"NSEvent type: %d", [theEvent type]);
+			NSDebugLog(@"send event to window");
+			NSDebugLog([window description]);
+			if (!window)
+				NSDebugLog(@"no window");
+			[window sendEvent:theEvent];
+			}
+		}
 }
 
 - (void)stop:sender
 {
-  app_is_running = NO;
+	app_is_running = NO;
 }
 
 - (void)stopModal
@@ -334,95 +319,6 @@ NSAutoreleasePool* pool;
 //
 // Getting, removing, and posting events
 //
-- (BOOL)event:(NSEvent *)theEvent matchMask:(unsigned int)mask
-{													 
-    if (mask == NSAnyEventMask)						// If mask is for any event
-        return YES;									// then return success
-
-    if (!theEvent) 
-		return NO;
-													
-    if (theEvent == gnustep_gui_null_event) 		// Don't check a null event
-		return NO;
-
-	switch([theEvent type])
-		{
-		case NSLeftMouseDown:
-    		if (mask & NSLeftMouseDownMask)
-        		return YES;
-			break;
-
- 		case NSLeftMouseUp:
-    		if (mask & NSLeftMouseUpMask)
-        		return YES;
-			break;
-
-  		case NSRightMouseDown:
-    		if (mask & NSRightMouseDownMask)
-        		return YES;
-			break;
-
-  		case NSRightMouseUp:
-    		if (mask & NSRightMouseUpMask)
-        		return YES;
-			break;
-
-  		case NSMouseMoved:
-    		if (mask & NSMouseMovedMask)
-        		return YES;
-			break;
-
-  		case NSMouseEntered:
-    		if (mask & NSMouseEnteredMask)
-        		return YES;
-			break;
-
-  		case NSMouseExited:
-    		if (mask & NSMouseExitedMask)
-        		return YES;
-			break;
-
-  		case NSLeftMouseDragged:
-    		if (mask & NSLeftMouseDraggedMask)
-        		return YES;
-			break;
-
-  		case NSRightMouseDragged:
-    		if (mask & NSRightMouseDraggedMask)
-        		return YES;
-			break;
-
-  		case NSKeyDown:
-    		if (mask & NSKeyDownMask)
-        		return YES;
-			break;
-
-  		case NSKeyUp:
-    		if (mask & NSKeyUpMask)
-        		return YES;
-			break;
-
-  		case NSFlagsChanged:
-    		if (mask & NSFlagsChangedMask)
-        		return YES;
-			break;
-
-  		case NSPeriodic:
-    		if (mask & NSPeriodicMask)
-        		return YES;
-			break;
-
-  		case NSCursorUpdate:
-    		if (mask & NSCursorUpdateMask)
-        		return YES;
-			break;
-
-		default:
-			break;
-		}
-
-    return NO;
-}
 
 - (NSEvent *)currentEvent;
 {
@@ -430,65 +326,156 @@ NSAutoreleasePool* pool;
 }
 
 - (void)discardEventsMatchingMask:(unsigned int)mask
-		      beforeEvent:(NSEvent *)lastEvent
+					  beforeEvent:(NSEvent *)lastEvent
 {
 }
 
-- (NSEvent*)_eventMatchingMask:(unsigned int)mask
-{
-NSEvent* event;
+- (NSEvent*)_eventMatchingMask:(unsigned int)mask		// return the next 
+{														// event in the queue
+NSEvent* event;											// which matches mask
 int i, count;
+BOOL match = NO;
 
-	[self getNextEvent];
+	[self _nextEvent];
 
 	if ((count = [event_queue count])) 					// Get an event from
 		{												// the events queue
-//fprintf(stderr,"NSAppliation  _eventMatchingMask:  count %d\n", count);
 		for (i = 0; i < count; i++) 
 			{
 			event = [event_queue objectAtIndex:i];
-			if ([self event:event matchMask:mask]) 
+
+    		if (mask == NSAnyEventMask)					// any event is a match
+				match = YES;									
+			else
+				{
+    			if (event == gnustep_gui_null_event) 	// do nothing if null
+					match = NO;							// event 
+				else
+					{											
+					switch([event type])
+						{
+						case NSLeftMouseDown:
+							if (mask & NSLeftMouseDownMask)
+								match = YES;
+							break;
+				
+						case NSLeftMouseUp:
+							if (mask & NSLeftMouseUpMask)
+								match = YES;
+							break;
+				
+						case NSRightMouseDown:
+							if (mask & NSRightMouseDownMask)
+								match = YES;
+							break;
+				
+						case NSRightMouseUp:
+							if (mask & NSRightMouseUpMask)
+								match = YES;
+							break;
+				
+						case NSMouseMoved:
+							if (mask & NSMouseMovedMask)
+								match = YES;
+							break;
+				
+						case NSMouseEntered:
+							if (mask & NSMouseEnteredMask)
+								match = YES;
+							break;
+				
+						case NSMouseExited:
+							if (mask & NSMouseExitedMask)
+								match = YES;
+							break;
+				
+						case NSLeftMouseDragged:
+							if (mask & NSLeftMouseDraggedMask)
+								match = YES;
+							break;
+				
+						case NSRightMouseDragged:
+							if (mask & NSRightMouseDraggedMask)
+								match = YES;
+							break;
+				
+						case NSKeyDown:
+							if (mask & NSKeyDownMask)
+								match = YES;
+							break;
+				
+						case NSKeyUp:
+							if (mask & NSKeyUpMask)
+								match = YES;
+							break;
+				
+						case NSFlagsChanged:
+							if (mask & NSFlagsChangedMask)
+								match = YES;
+							break;
+				
+						case NSPeriodic:
+							if (mask & NSPeriodicMask)
+								match = YES;
+							break;
+				
+						case NSCursorUpdate:
+							if (mask & NSCursorUpdateMask)
+								match = YES;
+							break;
+				
+						default:
+							match = NO;
+							break;
+						}
+					}
+				}
+
+			if (match) 
 				{
 				[event retain];
 				[event_queue removeObjectAtIndex:i];
 				ASSIGN(current_event, event);
 
-				return [event autorelease];
-      			}
-    		}
+				return [event autorelease];				// return an event from
+      			}										// the queue which 
+    		}											// matches the mask
   		}
 
-	return nil;
-}
+	return nil;											// no event in the 
+}														// queue matches mask
 
 - (NSEvent *)nextEventMatchingMask:(unsigned int)mask
 			 			untilDate:(NSDate *)expiration
 			    		inMode:(NSString *)mode
 			   			dequeue:(BOOL)flag
 {
-NSRunLoop* currentLoop = [NSRunLoop currentRunLoop];
 NSEventType type;
 NSEvent *event;
 BOOL done = NO;
 
-	event = [self _eventMatchingMask:mask];
-	if (event)
+	if(mode == NSEventTrackingRunLoopMode)				// temporary hack to
+		inTrackingLoop = YES;							// regulate translation 
+	else												// of X motion events
+		inTrackingLoop = NO;							// while not in a 
+														// tracking loop
+	if (event = [self _eventMatchingMask:mask])
 		done = YES;
-	else if (!expiration)
-		expiration = [NSDate distantFuture];
-   
+	else 
+		if (!expiration)
+			expiration = [NSDate distantFuture];
+
 	while (!done) 										// Not in queue so wait
 		{												// for next event
 		NSDate *limitDate, *originalLimitDate;
-								// Retain the limitDate so it doesn't get 
-								// released accidentally by runMode:beforeDate: 
-								// if a timer which has this date as fire date 
-								// gets released.
+		NSRunLoop* currentLoop = [NSRunLoop currentRunLoop];
+						// Retain the limitDate so that it doesn't get released 
+						// accidentally by runMode:beforeDate: if a timer which 
+						// has this date as fire date gets released.
 		limitDate = [[currentLoop limitDateForMode:mode] retain];
 		originalLimitDate = limitDate;
 
-		event = [self _eventMatchingMask:mask];
-		if (event) 
+		if (event = [self _eventMatchingMask:mask]) 
 			{
       		[limitDate release];
       		break;
@@ -499,15 +486,15 @@ BOOL done = NO;
     	else
       		limitDate = expiration;
 
-    	[currentLoop runMode:mode beforeDate:limitDate];
+		[currentLoop runMode:mode beforeDate:limitDate];
     	[originalLimitDate release];
 
-    	event = [self _eventMatchingMask:mask];
-    	if (event)
+    	if (event = [self _eventMatchingMask:mask])
       		break;
-  		}
-											// Unhide the cursor if necessary
-	if (event != gnustep_gui_null_event)	// and event is not a null event
+  		}											// no need to unhide cursor
+													// while in a tracking loop
+	if (event != gnustep_gui_null_event && 			// or if event is the null
+			(!inTrackingLoop))						// event		
 		{											
 		if ([NSCursor isHiddenUntilMouseMoves])		// do so only if we should
 			{		 								// unhide when mouse moves
@@ -515,107 +502,59 @@ BOOL done = NO;
 			if ((type == NSLeftMouseDown) || (type == NSLeftMouseUp)
 					|| (type == NSRightMouseDown) || (type == NSRightMouseUp)
 					|| (type == NSMouseMoved))
+				{
 	    		[NSCursor unhide];
+				}
 			}
     	}
 
 	return event;
 }
 
-- (NSEvent *)peekEventMatchingMask:(unsigned int)mask
-			 untilDate:(NSDate *)expiration
-			    inMode:(NSString *)mode
-			   dequeue:(BOOL)flag
-{
-  NSEvent *event = nil;
-
-  event = [self _eventMatchingMask:mask];
-
-  if (!event)
-    {
-      // Not in queue so peek for event
-      event = [self peekNextEvent];
-
-      event = [self _eventMatchingMask:mask];
-    }
-
-  // Unhide the cursor if necessary
-  if (event && (event != gnustep_gui_null_event))
-    {
-      NSEventType type;
-
-      // Only if we should unhide when mouse moves
-      if ([NSCursor isHiddenUntilMouseMoves])
-	{
-	  // Make sure the event is a mouse event before unhiding
-	  type = [event type];
-	  if ((type == NSLeftMouseDown) || (type == NSLeftMouseUp)
-	      || (type == NSRightMouseDown) || (type == NSRightMouseUp)
-	      || (type == NSMouseMoved))
-	    [NSCursor unhide];
-	}
-    }
-
-  return event;
-}
-
 - (void)postEvent:(NSEvent *)event atStart:(BOOL)flag
 {
-  if (!flag)
-    [event_queue addObject: event];
-  else
-    [event_queue insertObject: event atIndex: 0];
+	if (!flag)
+		[event_queue addObject: event];
+	else
+		[event_queue insertObject: event atIndex: 0];
 }
 
 //
 // Sending action messages
 //
-- (BOOL)sendAction:(SEL)aSelector
-		to:aTarget
-	      from:sender
-{
-  //
-  // If the target responds to the selector
-  // then have it perform it
-  //
-  if ([aTarget respondsToSelector:aSelector])
-    {
-      [aTarget performSelector:aSelector withObject:sender];
-      return YES;
-    }
+- (BOOL)sendAction:(SEL)aSelector to:aTarget from:sender
+{														// If target responds 
+	if ([aTarget respondsToSelector:aSelector])			// to the selector then
+		{												// have it perform it
+		[aTarget performSelector:aSelector withObject:sender];
 
-  //
-  // Otherwise traverse the responder chain
-  //
+		return YES;
+		}
 
-  return NO;
-}
+	return NO;											// Otherwise traverse 
+}														// the responder chain
 
 - targetForAction:(SEL)aSelector
 {
-  return self;
+	return self;
 }
 
-- (BOOL)tryToPerform:(SEL)aSelector
-		with:anObject
+- (BOOL)tryToPerform:(SEL)aSelector with:anObject
 {
-  return NO;
+	return NO;
 }
 
-// Setting the application's icon
 - (void)setApplicationIconImage:(NSImage *)anImage
-{
+{														// Set the app's icon
     if (app_icon != nil)
-    {
         [app_icon release];
-    }
 
     app_icon = [anImage retain];
 }
 
 - (NSImage *)applicationIconImage
 {
-  return app_icon;
+	return app_icon;
 }
 
 //
@@ -623,58 +562,52 @@ BOOL done = NO;
 //
 - (void)hide:sender
 {
-  int i, count;
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+int i, count;
+NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
-  // notify that we will hide
-  [nc postNotificationName: NSApplicationWillHideNotification
-      object: self];
+													// notify that we will hide
+	[nc postNotificationName: NSApplicationWillHideNotification
+		object: self];
+													// TODO: hide the menu
 
-  // TODO: hide the menu
+													// Tell the windows to hide
+	for (i = 0, count = [window_list count]; i < count; i++)
+		[[window_list objectAtIndex:i] performHide:sender];
 
-  // Tell the windows to hide
-  for (i = 0, count = [window_list count]; i < count; i++)
-    [[window_list objectAtIndex:i] performHide:sender];
-
-  app_is_hidden = YES;
-
-  // notify that we did hide
-  [nc postNotificationName: NSApplicationDidHideNotification
-      object: self];
+	app_is_hidden = YES;
+													// notify that we did hide
+	[nc postNotificationName: NSApplicationDidHideNotification
+		object: self];
 }
 
 - (BOOL)isHidden
 {
-  return app_is_hidden;
+	return app_is_hidden;
 }
 
 - (void)unhide:sender
 {
-  int i, count;
+int i, count;
+													// Tell windows to unhide
+	for (i = 0, count = [window_list count]; i < count; i++)
+		[[window_list objectAtIndex:i] performUnhide:sender];
 
-  // Tell the windows to unhide
-  for (i = 0, count = [window_list count]; i < count; i++)
-    [[window_list objectAtIndex:i] performUnhide:sender];
+													// TODO: unhide the menu
 
-  // TODO: unhide the menu
-
-  app_is_hidden = NO;
-
-  // Bring the key window to the front
-  [[self keyWindow] makeKeyAndOrderFront:self];
+	app_is_hidden = NO;
+													// Bring the key window to
+	[[self keyWindow] makeKeyAndOrderFront:self];	// the front
 }
 
 - (void)unhideWithoutActivation
 {
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-
-  // notify that we will unhide
+NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+													// notify we will unhide
   [nc postNotificationName: NSApplicationWillUnhideNotification
       object: self];
 
   [self unhide: self];
-
-  // notify that we did unhide
+													// notify we did unhide
   [nc postNotificationName: NSApplicationDidUnhideNotification
       object: self];
 }
@@ -684,44 +617,47 @@ BOOL done = NO;
 //
 - (NSWindow *)keyWindow
 {
-  int i, j;
-  id w;
+int i, j;
+id w;
 
-  j = [window_list count];
-  for (i = 0;i < j; ++i)
-    {
-      w = [window_list objectAtIndex:i];
-      if ([w isKeyWindow]) return w;
-    }
-  return nil;
+	j = [window_list count];
+	for (i = 0;i < j; ++i)
+		{
+		w = [window_list objectAtIndex:i];
+		if ([w isKeyWindow]) 
+			return w;
+		}
+
+	return nil;
 }
 
 - (NSWindow *)mainWindow
 {
-  int i, j;
-  id w;
+int i, j;
+id w;
 
-  j = [window_list count];
-  for (i = 0;i < j; ++i)
-    {
-      w = [window_list objectAtIndex:i];
-      if ([w isMainWindow]) return w;
-    }
-  return nil;
+	j = [window_list count];
+	for (i = 0;i < j; ++i)
+		{
+		w = [window_list objectAtIndex:i];
+		if ([w isMainWindow]) 
+			return w;
+		}
+
+	return nil;
 }
 
-- (NSWindow *)makeWindowsPerform:(SEL)aSelector
-			 inOrder:(BOOL)flag
+- (NSWindow *)makeWindowsPerform:(SEL)aSelector inOrder:(BOOL)flag
 {
-  return nil;
+	return nil;
 }
 
 - (void)miniaturizeAll:sender
 {
-  int i, count;
+int i, count;
 
-  for (i = 0, count = [window_list count]; i < count; i++)
-    [[window_list objectAtIndex:i] miniaturize:sender];
+	for (i = 0, count = [window_list count]; i < count; i++)
+		[[window_list objectAtIndex:i] miniaturize:sender];
 }
 
 - (void)preventWindowOrdering
@@ -733,41 +669,43 @@ BOOL done = NO;
 	windows_need_update = flag;
 }
 
-- (void)updateWindows							// send an update message to
-{												// all visible windows
+- (void)updateWindows								// send an update message
+{													// to all visible windows
 int i, count;									
 NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-
-  												// notify that we will update
+  													// notify that an update is 
+													// imminent
 	[nc postNotificationName:NSApplicationWillUpdateNotification object:self];
 
 	for (i = 0, count = [window_list count]; i < count; i++)
 		{
 		NSWindow *win = [window_list objectAtIndex:i];
-		if([win isVisible])								// send update only if
-    		[win update];								// window is visible
+		if([win isVisible])							// send update only if the
+    		[win update];							// window is visible
 		}
-  												// notify that we did update
+  													// notify update did occur
 	[nc postNotificationName:NSApplicationDidUpdateNotification object:self];
 }
 
 - (NSArray *)windows
 {
-  return window_list;
+ return window_list;
 }
 
 - (NSWindow *)windowWithWindowNumber:(int)windowNum
 {
-  int i, j;
-  NSWindow *w;
+int i, j;
+NSWindow *w;
 
-  j = [window_list count];
-  for (i = 0;i < j; ++i)
-    {
-      w = [window_list objectAtIndex:i];
-      if ([w windowNumber] == windowNum) return w;
-    }
-  return nil;
+	j = [window_list count];
+	for (i = 0;i < j; ++i)
+		{
+		w = [window_list objectAtIndex:i];
+		if ([w windowNumber] == windowNum) 
+			return w;
+		}
+
+	return nil;
 }
 
 //
@@ -794,96 +732,85 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 //
 - (NSMenu *)mainMenu
 {
-  return main_menu;
+	return main_menu;
 }
 
 - (void)setMainMenu:(NSMenu *)aMenu
 {
-  int i, j;
-  NSMenuItem *mc;
-  NSArray *mi;
+int i, j;
+NSMenuItem *mc;
+NSArray *mi;
 
-  // Release old and retain new
-  [aMenu retain];
-  if(main_menu)
- 	 [main_menu release];
-  main_menu = aMenu;
+	[aMenu retain];										// Release old menu and 
+	if(main_menu)										// retain new
+		[main_menu release];
+	main_menu = aMenu;
 
-  // Search for a menucell with the name Windows
-  // This is the default windows menu
-  mi = [main_menu itemArray];
-  j = [mi count];
-  windows_menu = nil;
-  for (i = 0;i < j; ++i)
-    {
-      mc = [mi objectAtIndex:i];
-      if ([[mc stringValue] compare:@"Windows"] == NSOrderedSame)
-	{
-	  // Found it!
-	  windows_menu = mc;
-	  break;
-	}
-    }
+	mi = [main_menu itemArray];							// find a menucell with
+	j = [mi count];										// the title Windows
+	windows_menu = nil;									// this is the default
+	for (i = 0;i < j; ++i)								// windows menu
+		{
+		mc = [mi objectAtIndex:i];
+		if ([[mc stringValue] compare:@"Windows"] == NSOrderedSame)
+			{
+			windows_menu = mc;							// Found it!
+			break;
+			}
+		}
 }
 
 //
 // Managing the Windows menu
 //
 - (void)addWindowsItem:aWindow
-		 title:(NSString *)aString
-	      filename:(BOOL)isFilename
+				title:(NSString *)aString
+				filename:(BOOL)isFilename
 {
-  int i;
+int i;
 
-  // Not a subclass of window --forget it
-  if (![aWindow isKindOfClass:[NSWindow class]])
-    return;
+	if (![aWindow isKindOfClass:[NSWindow class]])	// proceed only if subclass
+		return;										// of window
 
-  // Add to our window list, the array retains it
-  i = [window_list count];
-  [window_list addObject:aWindow];
+	i = [window_list count];						// Add to our window list,
+	[window_list addObject:aWindow];				// the array retains it
 
-  // set its window number
-  [aWindow setWindowNumber:window_count];
-  ++window_count;
+	[aWindow setWindowNumber:window_count];			// set its window number
+	++window_count;
 	
-  // If this was the first window then
-  //   make it the main and key window
-  if (i == 0)
-    {
-      [aWindow becomeMainWindow];
-      [aWindow becomeKeyWindow];
-    }
+	if (i == 0)										// If this was the first 
+		{											// window then make it the
+		[aWindow becomeMainWindow];					// main and key window
+		[aWindow becomeKeyWindow];
+		}
 }
 
 - (void)arrangeInFront:sender
 {
 }
 
-- (void)changeWindowsItem:aWindow
-		    title:(NSString *)aString
-		 filename:(BOOL)isFilename
+- (void)changeWindowsItem:aWindow 
+					title:(NSString *)aString 
+					filename:(BOOL)isFilename
 {
 }
 
 - (void)removeWindowsItem:aWindow
 {
-  // +++ This should be different
-  if (aWindow == key_window)
-	key_window = nil;
-  if (aWindow == main_window)
-	main_window = nil;
+	if (aWindow == key_window)						// This should be different
+		key_window = nil;
+	if (aWindow == main_window)
+		main_window = nil;
 
-  // If we are within our dealloc then don't remove the window
-  // Most likely dealloc is removing windows from our window list
-  // and subsequently NSWindow is caling us to remove itself.
-  if (gnustep_gui_app_is_in_dealloc)
-      return;
+				// If we are within our dealloc then don't remove the window
+				// Most likely dealloc is removing windows from our window list
+				// and subsequently NSWindow is caling us to remove itself.
+	if (gnustep_gui_app_is_in_dealloc)
+		return;
+													// Remove window from the 
+	[window_list removeObject: aWindow];			// window list
 
-  // Remove it from the window list
-  [window_list removeObject: aWindow];
-
-  return;
+	return;
 }
 
 - (void)setWindowsMenu:aMenu
@@ -899,60 +826,58 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 - (NSMenu *)windowsMenu
 {
 //  return [windows_menu submenu];
-  return nil;
+	return nil;
 }
 
 //
 // Managing the Service menu
 //
 - (void)registerServicesMenuSendTypes:(NSArray *)sendTypes
-			  returnTypes:(NSArray *)returnTypes
+						  returnTypes:(NSArray *)returnTypes
 {
 }
 
 - (NSMenu *)servicesMenu
 {
-  return nil;
+	return nil;
 }
 
 - (void)setServicesMenu:(NSMenu *)aMenu
 {
 }
 
-- validRequestorForSendType:(NSString *)sendType
-		 returnType:(NSString *)returnType
+- validRequestorForSendType:(NSString *)sendType 
+				 returnType:(NSString *)returnType
 {
-  return nil;
+	return nil;
 }
 
-// Getting the display postscript context
-- (NSDPSContext *)context
+- (NSDPSContext *)context							// return the DPS context
 {
     return [NSDPSContext currentContext];
 }
-
-// Reporting an exception
+													// Reporting an exception
 - (void)reportException:(NSException *)anException
-{}
+{
+}
 
 //
 // Terminating the application
 //
 - (void)terminate:sender
 {
-  if ([self applicationShouldTerminate:sender])
-    app_should_quit = YES;
+	if ([self applicationShouldTerminate:sender])
+		app_should_quit = YES;
 }
 
-// Assigning a delegate
-- delegate
+- delegate											// Assigning a delegate
 {
-  return delegate;
+	return delegate;
 }
 
 - (void)setDelegate:anObject
 {
-  NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
+NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
 
   delegate = anObject;
 
@@ -981,7 +906,7 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 //
 - (BOOL)application:sender openFileWithoutUI:(NSString *)filename
 {
-  BOOL result = NO;
+BOOL result = NO;
 
   if ([delegate respondsToSelector:@selector(application:openFileWithoutUI:)])
     result = [delegate application:sender openFileWithoutUI:filename];
@@ -991,7 +916,7 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 	
 - (BOOL)application:(NSApplication *)app openFile:(NSString *)filename
 {
-  BOOL result = NO;
+BOOL result = NO;
 
   if ([delegate respondsToSelector:@selector(application:openFile:)])
     result = [delegate application:app openFile:filename];
@@ -1001,7 +926,7 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
 - (BOOL)application:(NSApplication *)app openTempFile:(NSString *)filename
 {
-  BOOL result = NO;
+BOOL result = NO;
 
   if ([delegate respondsToSelector:@selector(application:openTempFile:)])
     result = [delegate application:app openTempFile:filename];
@@ -1047,7 +972,7 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
 - (BOOL)applicationOpenUntitledFile:(NSApplication *)app
 {
-  BOOL result = NO;
+BOOL result = NO;
 
   if ([delegate respondsToSelector:@selector(applicationOpenUntitledFile:)])
     result = [delegate applicationOpenUntitledFile:app];
@@ -1057,7 +982,7 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
 - (BOOL)applicationShouldTerminate:sender
 {
-  BOOL result = YES;
+BOOL result = YES;
 
   if ([delegate respondsToSelector:@selector(applicationShouldTerminate:)])
     result = [delegate applicationShouldTerminate:sender];
@@ -1131,34 +1056,21 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
 + (void)setNullEvent:(NSEvent *)e
 {
-  ASSIGN(gnustep_gui_null_event, e);
+	ASSIGN(gnustep_gui_null_event, e);
 }
 
 + (NSEvent *)getNullEvent;
-{
-  return gnustep_gui_null_event;
+{															// return the class
+	return gnustep_gui_null_event;							// dummy event
 }
 
-// Get next event
-- (void)getNextEvent
-{
-  [event_queue addObject:gnustep_gui_null_event];
-}
-
-- (NSEvent *)peekNextEvent
-{
-  return gnustep_gui_null_event;
-}
-
-// handle a non-translated event
-- (void)handleNullEvent
-{}
-
-- (void)_flushCommunicationChannels
-{}
+- (void)_nextEvent											// get next event	
+{															// implemented in
+}															// backend
 
 - (void)setupRunLoopInputSourcesForMode:(NSString*)mode
-{}
+{															// implemented in
+}															// backend
 
 @end
 
@@ -1166,11 +1078,11 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 /* Some utilities */
 NSString *NSOpenStepRootDirectory(void)
 {
-  NSString* root = [[[NSProcessInfo processInfo] environment]
-				objectForKey:@"GNUSTEP_SYSTEM_ROOT"];
+NSString* root = [[[NSProcessInfo processInfo] environment]
+					objectForKey:@"GNUSTEP_SYSTEM_ROOT"];
 
-  if (!root)
-    root = @"/";
+	if (!root)
+    	root = @"/";
 
-  return root;
+	return root;
 }

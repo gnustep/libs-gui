@@ -223,27 +223,21 @@ NSPoint point;
 			_knobMoved = YES;
 		}
 
-
 	if (!_knobMoved) 										// button scrolling
 		{
-		if (scroller == _horizScroller) 
+		if (scroller == _horizScroller) 				
 			{
 			point.x = clipViewBounds.origin.x + amount;
 			point.y = clipViewBounds.origin.y;
     		}
     	else 
 			{
-			if (scroller == _vertScroller) 				// For the vertical
-				{										// scroller the amount
-     			point.x = clipViewBounds.origin.x;		// should be reversed
-     			amount = -amount;
-
-									// If the view is flipped we also have to 
-									// reverse the meanings of increasing or 
-									// decreasing of the y coordinate 
-//    			if (![_contentView isFlipped])
-//					amount = -amount;
-
+			if (scroller == _vertScroller) 				
+				{										
+     			point.x = clipViewBounds.origin.x;		
+														// If view is flipped 
+				if ([_contentView isFlipped])			// reverse the scroll 
+					amount = -amount;					// direction 
       			NSDebugLog (@"increment/decrement: amount = %f, flipped = %d",
 	     					 amount, [_contentView isFlipped]);
       			point.y = clipViewBounds.origin.y + amount;
@@ -253,9 +247,9 @@ NSPoint point;
      			return;										// do nothing
 			}
   		}
-  	else 												
-		{													// knob scolling
-    	if (scroller == _horizScroller) 
+  	else 													// knob scolling
+		{													
+    	if (scroller == _horizScroller) 				
 			{
      		point.x = floatValue * (documentRect.size.width
 			      		- clipViewBounds.size.width);

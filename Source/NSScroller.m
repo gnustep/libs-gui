@@ -444,69 +444,72 @@ static NSButtonCell* knobCell = nil;
 
 - (void)trackScrollButtons:(NSEvent*)theEvent
 {
-  NSApplication *theApp = [NSApplication sharedApplication];
-  unsigned int eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask | 
-			   NSLeftMouseDraggedMask | NSMouseMovedMask;
-  NSPoint location;
-  BOOL shouldReturn = NO;
-  id theCell = nil;
-  NSRect rect;
+NSApplication *theApp = [NSApplication sharedApplication];
+unsigned int eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask | 
+							NSLeftMouseDraggedMask | NSMouseMovedMask;
+NSPoint location;
+BOOL shouldReturn = NO;
+id theCell = nil;
+NSRect rect;
 
-  NSDebugLog (@"trackScrollButtons");
-  do {
-    location = [self convertPoint:[theEvent locationInWindow]fromView:nil];
-    _hitPart = [self testPart:location];
-    rect = [self rectForPart:_hitPart];
+	NSDebugLog (@"trackScrollButtons");
+	do {
+		location = [self convertPoint:[theEvent locationInWindow]fromView:nil];
+		_hitPart = [self testPart:location];
+		rect = [self rectForPart:_hitPart];
+		
+		switch (_hitPart) 									// determine which 
+			{												// cell was hit
+			case NSScrollerIncrementLine:
+			case NSScrollerIncrementPage:
+				theCell = (_isHorizontal ? rightCell : upCell);
+				break;
 
-    switch (_hitPart) {
-      // determine which cell was hit
+			case NSScrollerDecrementLine:
+			case NSScrollerDecrementPage:
+				theCell = (_isHorizontal ? leftCell : downCell);
+				break;
 
-      case NSScrollerIncrementLine:
-      case NSScrollerIncrementPage:
-	theCell = (_isHorizontal ? rightCell : upCell);
-	break;
+			default:
+				theCell = nil;
+				break;
+			}
 
-      case NSScrollerDecrementLine:
-      case NSScrollerDecrementPage:
-	theCell = (_isHorizontal ? leftCell : downCell);
-	break;
+		if (theCell) 
+			{
+			[theCell highlight:YES withFrame:rect inView:self];	
+//			[self setNeedsDisplayInRect:rect];		// not needed by XRAW
+			[window flushWindow];
 
-      default:
-	theCell = nil;
-	break;
-    }
+			NSLog (@"tracking cell %x", theCell);
+       
+			shouldReturn = [theCell trackMouse:theEvent		// Track the mouse
+									inRect:rect				// until left mouse
+									ofView:self				// goes up
+									untilMouseUp:YES];
 
-    if (theCell) {
-      [theCell highlight:YES withFrame:rect inView:self];	
-//      [self setNeedsDisplayInRect:rect];		// not needed by XRAW
-      [window flushWindow];
-      NSLog (@"tracking cell %x", theCell);
-      // Track the mouse until mouse goes up 
-      shouldReturn = [theCell trackMouse:theEvent
-				  inRect:rect
-				  ofView:self
-			    untilMouseUp:YES];
+			if([_target isKindOf:[NSScrollView class]])		// a hack for XRAW
+				{											// FIX ME
+				if([[_target contentView] respondsTo:@selector(_freeMatrix)])
+					[[_target contentView] _freeMatrix];
+				}
 
-	if([_target isKindOf:[NSScrollView class]])			// a hack for XRAW
-		{												// FIX ME
-		if([[_target contentView] respondsTo:@selector(_freeMatrix)])
-			[[_target contentView] _freeMatrix];
-		}
-      [theCell highlight:NO withFrame:rect inView:self];
-//      [self setNeedsDisplayInRect:rect];		// not needed by XRAW
-      [window flushWindow];
-    }
+			[theCell highlight:NO withFrame:rect inView:self];
+//      	[self setNeedsDisplayInRect:rect];		// not needed by XRAW
+			[window flushWindow];
+			}
 
-    if (shouldReturn)
-      break;
+		if (shouldReturn)
+			break;
 
-    theEvent = [theApp nextEventMatchingMask:eventMask
-				   untilDate:[NSDate distantFuture] 
-				      inMode:NSEventTrackingRunLoopMode
-				     dequeue:YES];
-  } while ([theEvent type] != NSLeftMouseUp);
+		theEvent = [theApp nextEventMatchingMask:eventMask
+							untilDate:[NSDate distantFuture] 
+							inMode:NSEventTrackingRunLoopMode
+							dequeue:YES];
+		} 
+	while ([theEvent type] != NSLeftMouseUp);
 
-  NSDebugLog (@"return from trackScrollButtons");
+	NSDebugLog (@"return from trackScrollButtons");
 }
 
 - (BOOL)sendActionO:(SEL)theAction to:(id)theTarget

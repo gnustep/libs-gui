@@ -45,12 +45,12 @@ float tabSize;
 	while(*str != '\0')								// calc the additional size 
 		{											// to be added for tabs.  
 		if(*str++ == '\t')			
-			{						
-			i += j;							// j is the max number of spaces					  
-			j = TABWIDTH;					// needed per tab.  this number
-			}								// varies in order to align tabs 
-		else								// at even multiples of TABWIDTH+1.  
-			j = j-- > 0 ? j : TABWIDTH;	
+			{										// j is initialized to the 
+			i += j;									// max number of spaces					  
+			j = TABWIDTH;							// needed per tab.  it then 
+			}										// varies in order to align 
+		else										// tabs to even multiples   
+			j = j-- > 0 ? j : TABWIDTH;				// of TABWIDTH + 1.
 		};							
 															// if font is not
 	if(!(font = [attrs objectForKey:NSFontAttributeName]))	// specified, use

@@ -53,13 +53,11 @@ static NSString	*timerKey = @"NSEventTimersKey";
 //
 + (void)initialize
 {
-  if (self == [NSEvent class])
-	{
-	  NSDebugLog(@"Initialize NSEvent class\n");
-
-	  // Initial version
-	  [self setVersion:1];
-	}
+	if (self == [NSEvent class])
+		{
+		NSDebugLog(@"Initialize NSEvent class\n");
+		[self setVersion:1];								// Initial version
+		}
 }
 
 //
@@ -191,14 +189,14 @@ NSEvent *e = [[[NSEvent alloc] init] autorelease];
 + (void)startPeriodicEventsAfterDelay:(NSTimeInterval)delaySeconds
 						   withPeriod:(NSTimeInterval)periodSeconds
 {
-  NSTimer* timer;
-  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
+NSTimer* timer;
+NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
 
-  NSDebugLog (@"startPeriodicEventsAfterDelay:withPeriod:");
+	NSDebugLog (@"startPeriodicEventsAfterDelay:withPeriod:");
 														// Check this thread 
-  if ([dict objectForKey: timerKey])			// for a pending timer
-	[NSException raise:NSInternalInconsistencyException
-			format:@"Periodic events are already being generated for "
+	if ([dict objectForKey: timerKey])					// for a pending timer
+		[NSException raise:NSInternalInconsistencyException
+					 format:@"Periodic events are already being generated for "
 					 @"this thread %x", [NSThread currentThread]];
 										// If the delay time is 0 then register	 
 										// a timer immediately. Otherwise  
@@ -216,9 +214,9 @@ NSEvent *e = [[[NSEvent alloc] init] autorelease];
 						 userInfo:[NSNumber numberWithDouble:periodSeconds]
 						 repeats:NO];
 
-  [[NSRunLoop currentRunLoop] addTimer: timer 
-				   forMode: NSEventTrackingRunLoopMode];
-  [dict setObject: timer forKey: timerKey];
+	[[NSRunLoop currentRunLoop] addTimer: timer 
+								forMode: NSEventTrackingRunLoopMode];
+	[dict setObject: timer forKey: timerKey];
 }
 
 + (void)_timerFired:(NSTimer*)timer
@@ -239,37 +237,34 @@ NSEvent* periodicEvent = [self otherEventWithType:NSPeriodic
 	[theApp postEvent:periodicEvent atStart:NO];		// place a periodic
 }														// event in the queue 
 
-+ (void)_registerRealTimer:(NSTimer*)timer
-{													// this method provides a
-  NSTimer* realTimer;								  // means of delaying the
-													// start of periodic events
-  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
++ (void)_registerRealTimer:(NSTimer*)timer			// this method provides a
+{													// means of delaying the
+NSTimer* realTimer;								  	// start of periodic events
+NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
 
-  NSDebugLog (@"_registerRealTimer:");		  
+	NSDebugLog (@"_registerRealTimer:");		  
 
-  realTimer = [NSTimer timerWithTimeInterval:[[timer userInfo] doubleValue]
+	realTimer = [NSTimer timerWithTimeInterval:[[timer userInfo] doubleValue]
 						 target:self
 						 selector:@selector(_timerFired:)
 						 userInfo:nil
 						 repeats:YES];		// Add the real timer to the timers
 											// dictionary and to the run loop
-  /* xxx what if there is already a timer - are we sure there isn't? */
-  [dict setObject: realTimer forKey: timerKey];		
-  [[NSRunLoop currentRunLoop] addTimer: realTimer	   
-				   forMode: NSEventTrackingRunLoopMode];
+	[dict setObject: realTimer forKey: timerKey];		
+	[[NSRunLoop currentRunLoop] addTimer: realTimer	   
+				   				forMode: NSEventTrackingRunLoopMode];
 }
 
 + (void)stopPeriodicEvents
 {
-  NSTimer* timer;
-  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
+NSTimer* timer;
+NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
 
-  NSDebugLog (@"stopPeriodicEvents");
-
-  /* Remove any existing timer for this thread */
-  timer = [dict objectForKey: timerKey];
-  [timer invalidate];
-  [dict removeObjectForKey: timerKey];
+	NSDebugLog (@"stopPeriodicEvents");
+													// Remove any existing 
+	timer = [dict objectForKey: timerKey];			// timer for this thread
+	[timer invalidate];
+	[dict removeObjectForKey: timerKey];
 }
 
 //
@@ -277,13 +272,13 @@ NSEvent* periodicEvent = [self otherEventWithType:NSPeriodic
 //
 - (void)dealloc
 {
-  if ((event_type == NSKeyUp) || (event_type == NSKeyDown))
-	{
-	  [event_data.key.char_keys release];
-	  [event_data.key.unmodified_keys release];
-	}
+	if ((event_type == NSKeyUp) || (event_type == NSKeyDown))
+		{
+		[event_data.key.char_keys release];
+		[event_data.key.unmodified_keys release];
+		}
 
-  [super dealloc];
+	[super dealloc];
 }
 
 //
@@ -291,37 +286,37 @@ NSEvent* periodicEvent = [self otherEventWithType:NSPeriodic
 //
 - (NSDPSContext *)context
 {
-  return event_context;
+	return event_context;
 }
 
 - (NSPoint)locationInWindow
 {
-  return location_point;
+	return location_point;
 }
 
 - (unsigned int)modifierFlags
 {
-  return modifier_flags;
+	return modifier_flags;
 }
 
 - (NSTimeInterval)timestamp
 {
-  return event_time;
+	return event_time;
 }
 
 - (NSEventType)type
 {
-  return event_type;
+	return event_type;
 }
 
 - (NSWindow *)window
 {
-  return [NSWindow windowWithNumber:window_num];
+	return [NSWindow windowWithNumber:window_num];
 }
 
 - (int)windowNumber
 {
-  return window_num;
+	return window_num;
 }
 
 //
@@ -329,34 +324,34 @@ NSEvent* periodicEvent = [self otherEventWithType:NSPeriodic
 //
 - (NSString *)characters
 {
-  if ((event_type != NSKeyUp) && (event_type != NSKeyDown))
-	return nil;
+	if ((event_type != NSKeyUp) && (event_type != NSKeyDown))
+		return nil;
 
-  return event_data.key.char_keys;
+	return event_data.key.char_keys;
 }
 
 - (NSString *)charactersIgnoringModifiers
 {
-  if ((event_type != NSKeyUp) && (event_type != NSKeyDown))
-	return nil;
+	if ((event_type != NSKeyUp) && (event_type != NSKeyDown))
+		return nil;
 
-  return event_data.key.unmodified_keys;
+	return event_data.key.unmodified_keys;
 }
 
 - (BOOL)isARepeat
 {
-  if ((event_type != NSKeyUp) && (event_type != NSKeyDown))
-	return NO;
+	if ((event_type != NSKeyUp) && (event_type != NSKeyDown))
+		return NO;
 
-  return event_data.key.repeat;
+	return event_data.key.repeat;
 }
 
 - (unsigned short)keyCode
 {
-  if ((event_type != NSKeyUp) && (event_type != NSKeyDown))
-	return 0;
+	if ((event_type != NSKeyUp) && (event_type != NSKeyDown))
+		return 0;
 
-  return event_data.key.key_code;
+	return event_data.key.key_code;
 }
 
 //
