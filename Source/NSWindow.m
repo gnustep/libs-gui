@@ -70,6 +70,7 @@
 #include "AppKit/NSToolbar.h"
 #include "GNUstepGUI/GSTrackingRect.h"
 #include "GNUstepGUI/GSDisplayServer.h"
+#include "GNUstepGUI/GSToolbarView.h"
 
 BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 
@@ -4015,8 +4016,10 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 
 - (void) setToolbar: (NSToolbar*)toolbar
 {
+  // assign and setup the toolbar...
   ASSIGN(_toolbar, toolbar);
-  // FIXME The toolbar needs to know about the window!
+  _toolbarView = [GSToolbarView initWithToolbar: _toolbar];
+  
 }
 
 - (NSToolbar *) toolbar

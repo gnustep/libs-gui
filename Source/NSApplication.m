@@ -1693,10 +1693,22 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 	{
 	  return mainWindow;
 	}
+
       resp = [mainWindow delegate];
       if (resp != nil && [resp respondsToSelector: aSelector])
 	{
 	  return resp;
+	}
+
+      if ([NSDocumentController isDocumentBasedApplication])
+	{
+	  resp = [[NSDocumentController sharedDocumentController]
+		   documentForWindow: mainWindow];
+	  
+	  if (resp != nil  && [resp respondsToSelector: aSelector])
+	    {
+	      return resp;
+	    }	  
 	}
     }
 

@@ -1,3 +1,11 @@
+2003-11-11 14:41  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSApplication.m: (-targetForAction:): Added code to check the
+	document of the main window as well.
+	* NSToolbar.m: Additional implementation.
+	* NSWindow.[hm]: Added some code for drawing the toolbar.
+	* GSToolbarView.h: added initWithToolbar: method.
+	
 2003-11-07 15:28  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSControl.m (-mouseDown:): Rewrite to use -setHighlighted:

@@ -140,7 +140,7 @@ APPKIT_EXPORT NSSize NSTokenSize;
   float         _alphaValue;
 
   NSToolbar    *_toolbar;
-
+  id            _toolbarView;
   NSCachedImageRep *_cachedImage;
   NSPoint       _cachedImageOrigin;
 

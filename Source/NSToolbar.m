@@ -45,6 +45,15 @@ static NSNotificationCenter *nc = nil;
 static const int current_version = 1;
 
 @implementation GSToolbarView
+- (id) initWithToolbar: (NSToolbar *)toolbar
+{
+  if((self = [super init]) != nil)
+    {
+      ASSIGN(_toolbar,toolbar);
+    }
+  return self;
+}
+
 - (void) dealloc
 {
   RELEASE(_toolbar);
@@ -80,33 +89,6 @@ static const int current_version = 1;
       [itemView drawRect: itemFrame];
       x += NSWidth(itemFrame) + 2; // move over by the frame width plus 2 pixels.
     }
-}
-@end
-
-@interface GSToolbarButton : NSButton
-{
-  NSToolbarItem *_item;
-}
-@end
-
-@implementation GSToolbarButton
-- (id) initWithItem: (NSToolbarItem *)item
-{
-  [super init];
-  ASSIGN(_item, item);
-  return self;
-}
-
-- (void) dealloc
-{
-  RELEASE (_item);
-  [super dealloc];
-}
-
-- (void) drawRect: (NSRect)aRect
-{
-  // set the image and draw using the super class...
-  [super drawRect: aRect];
 }
 @end
 

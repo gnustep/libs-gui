@@ -39,6 +39,7 @@
 {
   NSToolbar *_toolbar;
 }
+- (id) initWithToolbar: (NSToolbar *)toolbar;
 - (void) setToolbar: (NSToolbar *)toolbar;
 - (NSToolbar *) toolbar;
 @end
