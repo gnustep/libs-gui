@@ -116,11 +116,6 @@ typedef enum _NSButtonType {
 - (int)showsStateBy;
 
 //
-// Simulating a Click 
-//
-- (void)performClick:(id)sender;
-
-//
 // NSCoding protocol
 //
 - (void)encodeWithCoder:aCoder;
