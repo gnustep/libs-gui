@@ -1,3 +1,12 @@
+2004-01-25  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSAffineTransform.m: Exchanged the code of
+	appendTransform: and prePendTransform: to be Cocoa compatibile.
+	(-concatenateWith:) replaced appendTransform: with prependTransform:.
+	* Source/NSPrintOperation.m: (NSView
+	-_displayPageInRect:atPlacement:withInfo:) Item.
+	* Source/NSView.m (+initialize, -_rebuildCoordinates) Item.
+	
 2004-01-25 16:16  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSStringDrawing.m: Big redesign.

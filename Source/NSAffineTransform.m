@@ -96,12 +96,12 @@ static NSAffineTransformStruct identityTransform = {
 {
   float newA, newB, newC, newD, newTX, newTY;
 
-  newA = aTransform->A * A + aTransform->B * C;
-  newB = aTransform->A * B + aTransform->B * D;
-  newC = aTransform->C * A + aTransform->D * C;
-  newD = aTransform->C * B + aTransform->D * D;
-  newTX = aTransform->TX * A + aTransform->TY * C + TX;
-  newTY = aTransform->TX * B + aTransform->TY * D + TY;
+  newA = A * aTransform->A + B * aTransform->C;
+  newB = A * aTransform->B + B * aTransform->D;
+  newC = C * aTransform->A + D * aTransform->C;
+  newD = C * aTransform->B + D * aTransform->D;
+  newTX = TX * aTransform->A + TY * aTransform->C + aTransform->TX;
+  newTY = TX * aTransform->B + TY * aTransform->D + aTransform->TY;
 
   A = newA; B = newB;
   C = newC; D = newD;
@@ -182,12 +182,12 @@ static NSAffineTransformStruct identityTransform = {
 {
   float newA, newB, newC, newD, newTX, newTY;
 
-  newA = A * aTransform->A + B * aTransform->C;
-  newB = A * aTransform->B + B * aTransform->D;
-  newC = C * aTransform->A + D * aTransform->C;
-  newD = C * aTransform->B + D * aTransform->D;
-  newTX = TX * aTransform->A + TY * aTransform->C + aTransform->TX;
-  newTY = TX * aTransform->B + TY * aTransform->D + aTransform->TY;
+  newA = aTransform->A * A + aTransform->B * C;
+  newB = aTransform->A * B + aTransform->B * D;
+  newC = aTransform->C * A + aTransform->D * C;
+  newD = aTransform->C * B + aTransform->D * D;
+  newTX = aTransform->TX * A + aTransform->TY * C + TX;
+  newTY = aTransform->TX * B + aTransform->TY * D + TY;
 
   A = newA; B = newB;
   C = newC; D = newD;
@@ -444,7 +444,7 @@ static NSAffineTransformStruct identityTransform = {
 
 - (void) concatenateWith: (NSAffineTransform*)anotherMatrix
 {
-  [self appendTransform: anotherMatrix];
+  [self prependTransform: anotherMatrix];
 }
 
 - (void) concatenateWithMatrix: (const float[6])anotherMatrix

@@ -125,10 +125,10 @@ static NSAffineTransform	*flip = nil;
 
 static NSNotificationCenter *nc = nil;
 
-static SEL	appSel;
+static SEL	preSel;
 static SEL	invalidateSel;
 
-static void	(*appImp)(NSAffineTransform*, SEL, NSAffineTransform*);
+static void	(*preImp)(NSAffineTransform*, SEL, NSAffineTransform*);
 static void	(*invalidateImp)(NSView*, SEL);
 
 /*
@@ -211,11 +211,11 @@ GSSetDragTypes(NSView* obj, NSArray *types)
                 NSObjectMapValueCallBacks, 0);
       typesLock = [NSLock new];
 
-      appSel = @selector(appendTransform:);
+      preSel = @selector(prependTransform:);
       invalidateSel = @selector(_invalidateCoordinates);
 
-      appImp = (void (*)(NSAffineTransform*, SEL, NSAffineTransform*))
-		[matrixClass instanceMethodForSelector: appSel];
+      preImp = (void (*)(NSAffineTransform*, SEL, NSAffineTransform*))
+		[matrixClass instanceMethodForSelector: preSel];
 
       invalidateImp = (void (*)(NSView*, SEL))
 		[self instanceMethodForSelector: invalidateSel];
@@ -3988,7 +3988,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	  NSAffineTransform	*pMatrix = [_super_view _matrixToWindow];
 
 	  [_matrixToWindow takeMatrixFromTransform: pMatrix];
-	  (*appImp)(_matrixToWindow, appSel, _frameMatrix);
+	  (*preImp)(_matrixToWindow, preSel, _frameMatrix);
 	  if (_rFlags.flipped_view != wasFlipped)
 	    {
 	      /*
@@ -3997,9 +3997,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	       * the origin by the height of the view.
 	       */
 	      flip->matrix.tY = _frame.size.height;
-	      (*appImp)(_matrixToWindow, appSel, flip);
+	      (*preImp)(_matrixToWindow, preSel, flip);
 	    }
-	  (*appImp)(_matrixToWindow, appSel, _boundsMatrix);
+	  (*preImp)(_matrixToWindow, preSel, _boundsMatrix);
 	  [_matrixFromWindow takeMatrixFromTransform: _matrixToWindow];
 	  [_matrixFromWindow invert];
 

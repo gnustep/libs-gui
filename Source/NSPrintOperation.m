@@ -1062,14 +1062,14 @@ scaleRect(NSRect rect, double scale)
       flip = [NSAffineTransform new];
       matrix = [NSAffineTransform new];
       [matrix makeIdentityMatrix];
-      [matrix appendTransform: _boundsMatrix];
+      [matrix prependTransform: _boundsMatrix];
       /*
        * The flipping process must result in a coordinate system that
        * exactly overlays the original.	 To do that, we must translate
        * the origin by the height of the view.
        */
       [flip setTransformStruct: ats];
-      [matrix appendTransform: flip];
+      [matrix prependTransform: flip];
       [matrix concat];
       yoffset = NSHeight(_frame) - NSMaxY(pageRect);
     }
