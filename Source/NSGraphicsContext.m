@@ -119,7 +119,7 @@ NSGraphicsContext	*GSCurrentContext()
 	   @"Internal Error: No default NSGraphicsContext set\n");
   ctxt = [[defaultNSGraphicsContextClass allocWithZone: _globalGSZone]
 	   initWithContextInfo: info];
-  [ctxt autorelease];
+  AUTORELEASE(ctxt);
   return ctxt;
 }
 
@@ -142,6 +142,37 @@ NSGraphicsContext	*GSCurrentContext()
 + (NSGraphicsContext *) currentContext
 {
   return GSCurrentContext();
+}
+
++ (BOOL) currentContextDrawingToScreen
+{
+  return [GSCurrentContext() isDrawingToScreen];
+}
+
++ (NSGraphicsContext *) graphicsContextWithAttributes: (NSDictionary *)attributes
+{
+  // FIXME: The attributes should determine the concrete class
+  return [self defaultContextWithInfo: attributes];
+}
+
++ (NSGraphicsContext *) graphicsContextWithWindow: (NSWindow *)aWindow
+{
+  return [self graphicsContextWithAttributes: [aWindow deviceDescription]];
+}
+
++ (void) restoreGraphicsState
+{
+// FIXME
+}
+
++ (void) saveGraphicsState
+{
+// FIXME
+}
+
++ (void) setGraphicsState: (int)graphicsState
+{
+// FIXME
 }
 
 - (void) dealloc
@@ -175,7 +206,7 @@ NSGraphicsContext	*GSCurrentContext()
 {
   [super init];
 
-  context_info = [info retain];
+  ASSIGN(context_info, info);
   focus_stack = [[NSMutableArray allocWithZone: [self zone]]
 			initWithCapacity: 1];
   event_queue = [[NSMutableArray allocWithZone: [self zone]]
@@ -198,6 +229,21 @@ NSGraphicsContext	*GSCurrentContext()
   [contextLock unlock];
 
   return self;
+}
+
+- (NSDictionary *) attributes
+{
+  return context_info;
+}
+
+- (void)flushGraphics
+{
+  [self flush];
+}
+
+- (void *)graphicsPort
+{
+  return NULL;
 }
 
 - (void) flush
