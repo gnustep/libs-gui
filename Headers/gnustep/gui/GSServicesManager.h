@@ -66,6 +66,7 @@
 - (BOOL) application: (NSApplication*)theApp
 	   printFile: (NSString*)file;
 - (void) doService: (NSMenuItem*)item;
+- (NSDictionary*) filters;
 - (BOOL) hasRegisteredTypes: (NSDictionary*)service;
 - (NSString*) item2title: (NSMenuItem*)item;
 - (void) loadServices;

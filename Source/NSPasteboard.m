@@ -3,7 +3,7 @@
    <abstract>Implementation of class for communicating with the
 			pasteboard server.</abstract>
 
-   Copyright (C) 1997,1999 Free Software Foundation, Inc.
+   Copyright (C) 1997,1999,2003 Free Software Foundation, Inc.
 
    Author: Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: 1997
@@ -48,9 +48,11 @@
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSMethodSignature.h>
 #include <Foundation/NSRunLoop.h>
+#include <Foundation/NSSet.h>
 #include <Foundation/NSTask.h>
 #include <Foundation/NSTimer.h>
 
+#include "gnustep/gui/GSServicesManager.h"
 #include "gnustep/gui/GSPasteboardServer.h"
 
 @interface NSPasteboard (Private)
@@ -276,11 +278,28 @@ static  NSMapTable              *mimeMap = NULL;
   return p;
 }
 
+/**
+ * Returns the general pasteboard found by calling +pasteboardWithName:
+ * with NSGeneralPboard as the name.
+ */
 + (NSPasteboard*) generalPasteboard
 {
   return [self pasteboardWithName: NSGeneralPboard];
 }
 
+/**
+ * <p>Returns the pastebaord for the specified name.  Creates a new pasreboard
+ * if (and only if) one with the given name does not exist.
+ * </p>
+ * Standard pastebaord names are -
+ * <list>
+ *   <item>NSGeneralPboard</item>
+ *   <item>NSFontPboard</item>
+ *   <item>NSRulerPboard</item>
+ *   <item>NSFindPboard</item>
+ *   <item>NSDragPboard</item>
+ * </list>
+ */
 + (NSPasteboard*) pasteboardWithName: (NSString*)aName
 {
   NS_DURING
@@ -306,6 +325,10 @@ static  NSMapTable              *mimeMap = NULL;
   return nil;
 }
 
+/**
+ * Creates and returns a new pasteboard with a name guaranteed to be unique
+ * within the pasteboard server.
+ */
 + (NSPasteboard*) pasteboardWithUniqueName
 {
   NS_DURING
@@ -337,8 +360,14 @@ static  NSMapTable              *mimeMap = NULL;
   return nil;
 }
 
-/*
- * Getting Data in Different Formats 
+/**
+ * <p>Returns a pasteboard from which the data (of the specified type)
+ * can be read in all the types to which it can be converted by
+ * filter services.
+ * </p>
+ * <p>Also registers the pasteboard as providing information of the
+ * specified type.
+ * </p>
  */
 + (NSPasteboard*) pasteboardByFilteringData: (NSData*)data
 				     ofType: (NSString*)type
@@ -374,6 +403,13 @@ static  NSMapTable              *mimeMap = NULL;
   return nil;
 }
 
+/**
+ * <p>Creates and returns a pasteboard from which the data in the named
+ * file can be read in all the types to which it can be converted by
+ * filter services.<br />
+ * The type of data in the file is inferred from the file extension.
+ * </p>
+ */
 + (NSPasteboard*) pasteboardByFilteringFile: (NSString*)filename
 {
   NSData	*data;
@@ -412,6 +448,17 @@ static  NSMapTable              *mimeMap = NULL;
   return nil;
 }
 
+/**
+ * <p>Creates and returns a pasteboard in where the data contained in pboard
+ * is available for reading in as many types as it can be converted to by
+ * available filter services.  This normally expands on the range of types
+ * available in pboard.
+ * </p>
+ * <p>NB. This only permits a singlke level of filtering ... if pboard was
+ * previously returned by another filtering method, it is returned instead
+ * of a new pastebaord.
+ * </p>
+ */
 + (NSPasteboard*) pasteboardByFilteringTypesInPasteboard: (NSPasteboard*)pboard
 {
   NS_DURING
@@ -448,22 +495,36 @@ static  NSMapTable              *mimeMap = NULL;
   return nil;
 }
 
+/**
+ * Returns an array of the types to which data of the specified type
+ * can be converted by registered filter services.<br />
+ * The original type is always present in this array.<br />
+ * Raises an exception if type is nil.
+ */
 + (NSArray*) typesFilterableTo: (NSString*)type
 {
-  NSArray*	types = nil;
+  NSMutableSet	*types = [NSMutableSet setWithCapacity: 8];
+  NSDictionary	*info = [[GSServicesManager manager] filters];
+  NSEnumerator	*enumerator = [info objectEnumerator];
 
-  NS_DURING
+  [types addObject: type];	// Always include original type
+
+  /*
+   * Step through the filters looking for those which handle the type
+   */
+  while ((info = [enumerator nextObject]) != nil)
     {
-      types = [[self _pbs] typesFilterableTo: type];
+      NSArray	*sendTypes = [info objectForKey: @"NSSendTypes"];
+
+      if ([sendTypes containsObject: type] == YES)
+	{
+	  NSArray	*returnTypes = [info objectForKey: @"NSReturnTypes"];
+
+	  [types addObjectsFromArray: returnTypes];
+	}
     }
-  NS_HANDLER
-    {
-      types = nil;
-      [NSException raise: NSPasteboardCommunicationException
-		  format: @"%@", [localException reason]];
-    }
-  NS_ENDHANDLER
-  return types;
+
+  return [types allObjects];
 }
 
 /*
@@ -486,22 +547,43 @@ static  NSMapTable              *mimeMap = NULL;
   [super dealloc];
 }
 
+/**
+ * Releases the receiver in the pastebaord server so that no other application
+ * can use the pasteboard.  This should not be called for any of the standard
+ * pasteboards, only for temporary ones.
+ */
 - (void) releaseGlobally
 {
+  if ([name isEqualToString: NSGeneralPboard] == YES
+    || [name isEqualToString: NSFontPboard] == YES
+    || [name isEqualToString: NSRulerPboard] == YES
+    || [name isEqualToString: NSFindPboard] == YES
+    || [name isEqualToString: NSDragPboard] == YES)
+    {
+      [NSException raise: NSGenericException
+		  format: @"Illegal attempt to globally release %@", name];
+    }
   [target releaseGlobally];
   [pasteboards removeObjectForKey: name];
 }
 
-/*
- * Referring to a Pasteboard by Name 
+/**
+ * Returns the pasteboard name for the receiver.
  */
 - (NSString*) name
 {
   return name;
 }
 
-/*
- * Writing Data 
+/**
+ * <p>Adds newTypes to the pasteboard and declares newOwner to be the owner
+ * of the pasteboard.  Use only after -declareTypes:owner: has been called
+ * for the same owner, because the new owner may not support all the types
+ * declared by a previous owner.
+ * </p>
+ * <p>Returns the new change count for the pastebaord, or zero if an error
+ * occurs.
+ * </p>
  */
 - (int) addTypes: (NSArray*)newTypes
 	   owner: (id)newOwner
@@ -529,6 +611,14 @@ static  NSMapTable              *mimeMap = NULL;
   return count;
 }
 
+/**
+ * <p>Sets the owner of the pastebaord to be newOwner and declares newTypes
+ * as the types of data supported by it.
+ * </p>
+ * <p>Returns the new change count for the pastebaord, or zero if an error
+ * occurs.
+ * </p>
+ */
 - (int) declareTypes: (NSArray*)newTypes
 	       owner: (id)newOwner
 {
@@ -566,6 +656,15 @@ static  NSMapTable              *mimeMap = NULL;
   RELEASE(super);
 }
 
+/**
+ * <p>Writes data of type dataType to the pasteboard server so that other
+ * applications can read it.  The dataType must be one of the types
+ * previously declared for the pastebaord.
+ * </p>
+ * <p>Returns YES on success, NO if the data could not be written for some
+ * reason.
+ * </p>
+ */
 - (BOOL) setData: (NSData*)data
 	 forType: (NSString*)dataType
 {
@@ -588,6 +687,10 @@ static  NSMapTable              *mimeMap = NULL;
   return ok;
 }
 
+/**
+ * Serialises the data in the supplied property list and writes it to the
+ * pastebaord server using the -setData:forType: method.
+ */
 - (BOOL) setPropertyList: (id)propertyList
 		 forType: (NSString*)dataType
 {
@@ -596,27 +699,50 @@ static  NSMapTable              *mimeMap = NULL;
   return [self setData: d forType: dataType];
 }
 
+/**
+ * Writes  string it to the pastebaord server using the
+ * -setPropertyList:forType: method.
+ */
 - (BOOL) setString: (NSString*)string
 	   forType: (NSString*)dataType
 {
   return [self setPropertyList: string forType: dataType];
 }
 
+/**
+ * Writes the contents of the file filename to the pasteboard server
+ * after declaring the type NSFileContentsPboardType as well as a type
+ * based on the file extension (given by the NSCreateFileContentsPboardType()
+ * function) if there is one.
+ */
 - (BOOL) writeFileContents: (NSString*)filename
 {
   NSFileWrapper *wrapper;
   NSData	*data;
-  NSString	*type;
+  NSArray	*types;
+  NSString	*ext = [filename pathExtension];
   BOOL		ok = NO;
 
   wrapper = [[NSFileWrapper alloc] initWithPath: filename];
   data = [wrapper serializedRepresentation];
   RELEASE(wrapper);
-  type = NSCreateFileContentsPboardType([filename pathExtension]);
+  if ([ext length] > 0)
+    {
+      types = [NSArray arrayWithObjects: NSFileContentsPboardType,
+	NSCreateFileContentsPboardType(ext), nil];
+    }
+  else
+    {
+      types = [NSArray arrayWithObject: NSFileContentsPboardType];
+    }
+  if ([self declareTypes: types owner: owner] == 0)
+    {
+      return NO;	// Unable to declare types.
+    }
   NS_DURING
     {
       ok = [target setData: data
-		   forType: type
+		   forType: NSFileContentsPboardType
 		    isFile: YES
 		  oldCount: changeCount];
     }
@@ -630,11 +756,20 @@ static  NSMapTable              *mimeMap = NULL;
   return ok;
 }
 
+/**
+ * <p>Writes the contents of the file wrapper to the pasteboard server
+ * after declaring the type NSFileContentsPboardType as well as a type
+ * based on the file extension of the wrappers preferred filename.
+ * </p>
+ * <p>Raises an exception if there is no preferred filename.
+ * </p>
+ */
 - (BOOL) writeFileWrapper: (NSFileWrapper *)wrapper
 {
   NSString	*filename = [wrapper preferredFilename];
   NSData	*data;
-  NSString	*type;
+  NSArray	*types;
+  NSString	*ext = [filename pathExtension];
   BOOL		ok = NO;
 
   if (filename == nil)
@@ -643,13 +778,24 @@ static  NSMapTable              *mimeMap = NULL;
 		  format: @"Cannot put file on pastboard with "
 	@"no preferred filename"];
     }
-
   data = [wrapper serializedRepresentation];
-  type = NSCreateFileContentsPboardType([filename pathExtension]);
+  if ([ext length] > 0)
+    {
+      types = [NSArray arrayWithObjects: NSFileContentsPboardType,
+	NSCreateFileContentsPboardType(ext), nil];
+    }
+  else
+    {
+      types = [NSArray arrayWithObject: NSFileContentsPboardType];
+    }
+  if ([self declareTypes: types owner: owner] == 0)
+    {
+      return NO;	// Unable to declare types.
+    }
   NS_DURING
     {
       ok = [target setData: data
-		   forType: type
+		   forType: NSFileContentsPboardType
 		    isFile: YES
 		  oldCount: changeCount];
     }
@@ -663,8 +809,9 @@ static  NSMapTable              *mimeMap = NULL;
   return ok;
 }
 
-/*
- * Determining Types 
+/**
+ * Returns the first type listed in types which the receiver has been
+ * declared to support.
  */
 - (NSString*) availableTypeFromArray: (NSArray*)types
 {
@@ -688,6 +835,9 @@ static  NSMapTable              *mimeMap = NULL;
   return type;
 }
 
+/**
+ * Returns all the types that the receiver has been declared to support.
+ */
 - (NSArray*) types
 {
   NSArray *result = nil;
@@ -709,8 +859,9 @@ static  NSMapTable              *mimeMap = NULL;
   return result;
 }
 
-/*
- * Reading Data 
+/**
+ * Returns the change count for the receiving pastebaord.  This count
+ * is incremented whenever the owner of the pastebaord is changed.
  */
 - (int) changeCount
 {
@@ -730,6 +881,11 @@ static  NSMapTable              *mimeMap = NULL;
   return changeCount;
 }
 
+/**
+ * Returns data from the pasteboard of the specified dataType, or nil
+ * if no such data is available.<br />
+ * May raise an exception if communication with the pasteboard server fails.
+ */
 - (NSData*) dataForType: (NSString*)dataType
 {
   NSData	*d = nil;
@@ -750,6 +906,10 @@ static  NSMapTable              *mimeMap = NULL;
   return d;
 }
 
+/**
+ * Calls -dataForType: to obtain data (expected to be a serialized property
+ * list) and returns the object produced by deserializing it.
+ */
 - (id) propertyListForType: (NSString*)dataType
 {
   NSData	*d = [self dataForType: dataType];
@@ -761,6 +921,10 @@ static  NSMapTable              *mimeMap = NULL;
     return nil;
 }
 
+/**
+ * Obtains data of the specified dataType from the pastebaord, deserializes
+ * it to the specified filename and returns the file name (or nil on failure).
+ */
 - (NSString*) readFileContentsType: (NSString*)type
 			    toFile: (NSString*)filename
 {
@@ -789,7 +953,11 @@ static  NSMapTable              *mimeMap = NULL;
   return filename;
 }
 
-- (NSFileWrapper *)readFileWrapper
+/**
+ * Obtains data of the specified dataType from the pastebaord, deserializes
+ * it and returns the resulting file wrapper (or nil).
+ */
+- (NSFileWrapper*) readFileWrapper
 {
   NSData *d = [self dataForType: NSFileContentsPboardType];
 
@@ -800,9 +968,19 @@ static  NSMapTable              *mimeMap = NULL;
     AUTORELEASE([[NSFileWrapper alloc] initWithSerializedRepresentation: d]);
 }
 
+/**
+ * Obtains data of the specified dataType from the pastebaord, deserializes
+ * it and returns the resulting string (or nil).
+ */
 - (NSString*) stringForType: (NSString*)dataType
 {
-  return [self propertyListForType: dataType];
+  NSString	*s = [self propertyListForType: dataType];
+
+  if ([s isKindOfClass: [NSString class]] == NO)
+    {
+      s = nil;
+    }
+  return s;
 }
 
 /*
@@ -827,12 +1005,12 @@ static  NSMapTable              *mimeMap = NULL;
 
 @implementation NSPasteboard (GNUstepExtensions)
 
-/*
- *	Once the '[-setChangeCount: ]' message has been sent to an NSPasteboard
- *	the object will gain an extra GNUstep behaviour - when geting data
- *	from the pasteboard, the data need no longer be from the latest
- *	version but may be a version from a previous representation with
- *	the specified change count.
+/**
+ * Once the -setChangeCount: message has been sent to an NSPasteboard
+ * the object will gain an extra GNUstep behaviour - when geting data
+ * from the pasteboard, the data need no longer be from the latest
+ * version but may be a version from a previous representation with
+ * the specified change count.
  */
 - (void) setChangeCount: (int)count
 {
@@ -840,6 +1018,10 @@ static  NSMapTable              *mimeMap = NULL;
   changeCount = count;
 }
 
+/**
+ * Sets the number of changes for which pasteboard data is kept.<br />
+ * This is 1 by default.
+ */
 - (void) setHistory: (unsigned)length
 {
   NS_DURING
@@ -877,7 +1059,7 @@ static  NSMapTable              *mimeMap = NULL;
     (void *)@"text/plain");
 }
 
-/*
+/**
  * Return the mapping for pasteboard->mime, or return the original pasteboard
  * type if no mapping is found
  */
@@ -897,7 +1079,7 @@ static  NSMapTable              *mimeMap = NULL;
   return mime;
 }
 
-/*
+/**
  * Return the mapping for mime->pasteboard, or return the original pasteboard
  * type if no mapping is found. This method may not have a one-to-one 
  * mapping
@@ -950,12 +1132,20 @@ static  NSMapTable              *mimeMap = NULL;
 static NSString*	contentsPrefix = @"NSTypedFileContentsPboardType:";
 static NSString*	namePrefix = @"NSTypedFilenamesPboardType:";
 
+/**
+ * Returns a standardised pasteboard type for file contents,
+ * formed from the supplied file extension.
+ */
 NSString*
 NSCreateFileContentsPboardType(NSString *fileType)
 {
   return [NSString stringWithFormat: @"%@%@", contentsPrefix, fileType];
 }
 
+/**
+ * Returns a standardised pasteboard type for file names,
+ * formed from the supplied file extension.
+ */
 NSString*
 NSCreateFilenamePboardType(NSString *filename)
 {

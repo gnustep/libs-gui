@@ -1,3 +1,8 @@
+2003-06-27  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSPasteboard.m: Documented all methods, fixed minor bugs
+	writign fiels to pastebaords, implemented ([+typesFilterableTo:])
+
 2003-06-26  Ludovic Marcotte <ludovic@Sophos.ca>
 
 	* Fixed the transparency of Images/common_ret.tiff

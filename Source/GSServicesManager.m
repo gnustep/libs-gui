@@ -545,6 +545,14 @@ static NSString         *disabledName = @".GNUstepDisabled";
     }
 }
 
+/**
+ * Return a dictionary of information about registered filter services.
+ */
+- (NSDictionary*) filters
+{
+  return [_allServices objectForKey: @"ByFilter"];
+}
+
 - (BOOL) hasRegisteredTypes: (NSDictionary*)service
 {
   NSArray       *sendTypes = [service objectForKey: @"NSSendTypes"];
@@ -1438,7 +1446,10 @@ NSShowsServicesMenuItem(NSString *name)
 
 /**
  * A services providing application may use this to update the list of
- * services it provides.
+ * services it provides.<br />
+ * In order to update the services advertised, the application must
+ * create a <em>.service</em> bundle and place it in
+ * <code>~/Library/Services</code> before invoking this function.
  */
 void
 NSUpdateDynamicServices(void)
