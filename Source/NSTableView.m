@@ -2100,6 +2100,70 @@ byExtendingSelection: (BOOL)flag
 - (void) noteNumberOfRowsChanged
 {
   _numberOfRows = [_dataSource numberOfRowsInTableView: self];
+  
+  /* If we are selecting rows, we have to check that we have no
+     selected rows below the new end of the table */
+  if (!_selectingColumns)
+    {
+      int i, count = [_selectedRows count]; 
+      int row = -1;
+      
+      /* Check that all selected rows are in the new range of rows */
+      for (i = 0; i < count; i++)
+	{
+	  row = [[_selectedRows objectAtIndex: i] intValue];
+
+	  if (row >= _numberOfRows)
+	    {
+	      break;
+	    }
+	}
+
+      if (i < count  &&  row > -1)
+	{
+	  /* Some of them are outside the table ! - Remove them */
+	  for (; i < count; i++)
+	    {
+	      [_selectedRows removeLastObject];
+	    }
+	  /* Now if the _selectedRow is outside the table, reset it to be
+	     the last selected row (if any) */
+	  if (_selectedRow >= _numberOfRows)
+	    {
+	      if ([_selectedRows count] > 0)
+		{
+		  _selectedRow = [[_selectedRows lastObject] intValue];
+		}
+	      else
+		{
+		  /* Argh - all selected rows were outside the table */
+		  if (_allowsEmptySelection)
+		    {
+		      _selectedRow = -1;
+		    }
+		  else
+		    {
+		      /* We shouldn't allow empty selection - try
+                         selecting the last row */
+		      int lastRow = _numberOfRows - 1;
+		      
+		      if (lastRow > -1)
+			{
+			  [_selectedRows addObject: 
+					   [NSNumber numberWithInt: lastRow]];
+			  _selectedRow = lastRow;
+			}
+		      else
+			{
+			  /* problem - there are no rows at all */
+			  _selectedRow = -1;
+			}
+		    }
+		}
+	    }
+	}
+    }
+
   [self setFrame: NSMakeRect (_frame.origin.x, 
 			      _frame.origin.y,
 			      _frame.size.width, 
