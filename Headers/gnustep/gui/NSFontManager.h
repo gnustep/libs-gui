@@ -75,7 +75,7 @@ typedef enum {
   id _delegate;
   SEL _action;
   NSFont *_selectedFont;
-  BOOL _multible;
+  BOOL _multiple;
   NSMenu *_fontMenu;
   NSFontTag _storedTag;
   NSFontTraitMask _trait;
