@@ -1,5 +1,12 @@
 2003-10-03  Benhur Stein <benhur@inf.ufsm.br>
 
+	* Source/NSWindow.m (-setFrameAutosaveName:): remove previous frame
+	name from defaults; if there is a saved frame with the new name in
+	defaults, set window frame to it, otherwise store current frame in
+	defaults.
+
+2003-10-03  Benhur Stein <benhur@inf.ufsm.br>
+
 	* Source/NSWindow.m (class variables, +initialize,
 	+removeFrameUsingName:, -dealloc, -saveFrameUsingName:,
 	-setFrameAutosaveName:): removed variable windowsLock

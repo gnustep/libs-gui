@@ -3510,8 +3510,6 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 
 - (BOOL) setFrameAutosaveName: (NSString*)name
 {
-  NSString	*nameToRemove = nil;
-
   if ([name isEqual: _autosaveName])
     {
       return YES;		/* That's our name already.	*/
@@ -3523,10 +3521,7 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
     }
   if (_autosaveName != nil)
     {
-      if (name == nil || [name isEqual: @""] == YES)
-	{
-	  nameToRemove = RETAIN(_autosaveName);
-	}
+      [[self class] removeFrameUsingName: _autosaveName];
       [autosaveNames removeObject: _autosaveName];
       _autosaveName = nil;
     }
@@ -3536,19 +3531,10 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
       [autosaveNames addObject: name];
       _autosaveName = name;
       RELEASE(name);
-    }
-  else if (nameToRemove != nil)
-    {
-      NSUserDefaults	*defs;
-      NSString		*key;
-
-      /*
-       * Autosave name cleared - remove from defaults database.
-       */
-      defs = [NSUserDefaults standardUserDefaults];
-      key = [NSString stringWithFormat: @"NSWindow Frame %@", nameToRemove];
-      [defs removeObjectForKey: key];
-      RELEASE(nameToRemove);
+      if (![self setFrameUsingName: _autosaveName])
+        {
+          [self saveFrameUsingName: _autosaveName];
+        }
     }
   return YES;
 }
