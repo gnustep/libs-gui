@@ -513,6 +513,9 @@ SANITY();
        */
       [textChars appendString: aString];
 SANITY();
+      [self edited: NSTextStorageEditedCharacters
+	    range: range
+	    changeInLength: [aString length] - range.length];
       return;
     }
 
@@ -525,6 +528,9 @@ SANITY();
        */
       [textChars replaceCharactersInRange: range withString: aString];
 SANITY();
+      [self edited: NSTextStorageEditedCharacters
+	    range: range
+	    changeInLength: [aString length] - range.length];
       return;
     }
 
@@ -547,6 +553,7 @@ SANITY();
       info = NEWINFO(z, attrs, NSMaxRange(range));
       INSOBJECT(info, arrayIndex);
       arraySize++;
+SANITY();
     }
   else if (NSMaxRange(effectiveRange) < NSMaxRange(range))
     {
@@ -569,10 +576,12 @@ SANITY();
 		  arraySize--;
 		  info = n;
 		}
-	      break;
+	      else
+		  break;
 	    }
 	}
       info->loc = NSMaxRange(range);
+SANITY();
     }
 
   moveLocations = [aString length] - range.length;
@@ -599,8 +608,8 @@ SANITY();
       info->loc += moveLocations;
       arrayIndex++;
     }
-SANITY();
   [textChars replaceCharactersInRange: range withString: aString];
+SANITY();
 
   [self edited: NSTextStorageEditedCharacters
          range: range
