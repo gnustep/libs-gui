@@ -13,6 +13,8 @@
    Date: August 1998
    Cell handling rewritten: <richard@brainstorm.co.uk>
    Date: November 1999
+   Implementation of Editing: Nicola Pero <n.pero@mi.flashnet.it>
+   Date: November 1999
 
    This file is part of the GNUstep GUI Library.
 
@@ -112,6 +114,10 @@ static inline MPoint MakePoint (int x, int y)
 	 highlight: (BOOL)highlight
 	startIndex: (int)start
 	  endIndex: (int)end;
+-(BOOL) _selectNextSelectableCellAfterRow: (int)row
+				   column: (int)column;
+-(BOOL) _selectPreviousSelectableCellBeforeRow: (int)row
+					column: (int)column;
 @end
 
 enum {
@@ -190,6 +196,7 @@ static SEL getSel = @selector(objectAtIndex:);
     cellSize = NSMakeSize (DEFAULT_CELL_WIDTH, DEFAULT_CELL_HEIGHT); 
   
   intercell = NSMakeSize(1, 1);
+  _tabKeyTraversesCells = YES;
   [self setBackgroundColor: [NSColor controlBackgroundColor]];
   [self setDrawsBackground: YES];
   [self setCellBackgroundColor: [NSColor controlBackgroundColor]];
@@ -201,7 +208,7 @@ static SEL getSel = @selector(objectAtIndex:);
     }
   else
     {
-      selectedRow = selectedColumn = 0;
+      _selectedRow = _selectedColumn = 0;
     }
   return self;
 }
@@ -356,7 +363,7 @@ static SEL getSel = @selector(objectAtIndex:);
 	}
     }
 
-  if (mode == NSRadioModeMatrix && !allowsEmptySelection && selectedCell == nil)
+  if (mode == NSRadioModeMatrix && !allowsEmptySelection && _selectedCell == nil)
     [self selectCellAtRow: 0 column: 0];
 }
 
@@ -433,7 +440,7 @@ static SEL getSel = @selector(objectAtIndex:);
 	}
     }
 
-  if (mode == NSRadioModeMatrix && !allowsEmptySelection && selectedCell == nil)
+  if (mode == NSRadioModeMatrix && !allowsEmptySelection && _selectedCell == nil)
     [self selectCellAtRow: 0 column: 0];
 }
 
@@ -518,9 +525,9 @@ static SEL getSel = @selector(objectAtIndex:);
       numCols--;
       maxCols--;
 
-      if (col == selectedColumn)
+      if (col == _selectedColumn)
 	{
-	  selectedCell = nil;
+	  _selectedCell = nil;
 	  [self selectCellAtRow: 0 column: 0];
 	}
     }
@@ -557,9 +564,9 @@ static SEL getSel = @selector(objectAtIndex:);
       maxRows--;
       numRows--;
 
-      if (row == selectedRow)
+      if (row == _selectedRow)
 	{
-	  selectedCell = nil;
+	  _selectedCell = nil;
 	  [self selectCellAtRow: 0 column: 0];
 	}
     }
@@ -744,10 +751,10 @@ static SEL getSel = @selector(objectAtIndex:);
     {
       if (value)
 	{
-	  selectedCell = aCell;
-	  selectedRow = row;
-	  selectedColumn = column;
-	  [selectedCell setState: 1];
+	  _selectedCell = aCell;
+	  _selectedRow = row;
+	  _selectedColumn = column;
+	  [_selectedCell setState: 1];
 	  selectedCells[row][column] = YES;
 	}
       else if (allowsEmptySelection)
@@ -791,14 +798,14 @@ static SEL getSel = @selector(objectAtIndex:);
 
 - (void) deselectSelectedCell
 {
-  if (!selectedCell || (!allowsEmptySelection && (mode == NSRadioModeMatrix)))
+  if (!_selectedCell || (!allowsEmptySelection && (mode == NSRadioModeMatrix)))
     return;
   
-  selectedCells[selectedRow][selectedColumn] = NO;
-  [selectedCell setState: 0];
-  selectedCell = nil;
-  selectedRow = 0;
-  selectedColumn = 0;
+  selectedCells[_selectedRow][_selectedColumn] = NO;
+  [_selectedCell setState: 0];
+  _selectedCell = nil;
+  _selectedRow = 0;
+  _selectedColumn = 0;
 }
 
 - (void) selectAll: (id)sender
@@ -808,9 +815,9 @@ static SEL getSel = @selector(objectAtIndex:);
   /*
    * Make the selected cell the cell at (0, 0)
    */
-  selectedCell = [self cellAtRow: 0 column: 0];
-  selectedRow = 0;
-  selectedColumn = 0;
+  _selectedCell = [self cellAtRow: 0 column: 0];
+  _selectedRow = 0;
+  _selectedColumn = 0;
 
   for (i = 0; i < numRows; i++)
     {
@@ -832,21 +839,21 @@ static SEL getSel = @selector(objectAtIndex:);
    * We always deselect the current selection unless the new selection
    * is the same.
    */
-  if (selectedCell != nil && selectedCell != aCell)
+  if (_selectedCell != nil && _selectedCell != aCell)
     {
-      selectedCells[selectedRow][selectedColumn] = NO;
-      [selectedCell setState: 0];
-      [self setNeedsDisplayInRect: [self cellFrameAtRow: selectedRow 
-					 column: selectedColumn]];
+      selectedCells[_selectedRow][_selectedColumn] = NO;
+      [_selectedCell setState: 0];
+      [self setNeedsDisplayInRect: [self cellFrameAtRow: _selectedRow 
+					 column: _selectedColumn]];
     }
 
   if (aCell != nil)
     {
-      selectedCell = aCell;
-      selectedRow = row;
-      selectedColumn = column;
+      _selectedCell = aCell;
+      _selectedRow = row;
+      _selectedColumn = column;
       selectedCells[row][column] = YES;
-      [selectedCell setState: 1];
+      [_selectedCell setState: 1];
       
       [self setNeedsDisplayInRect: [self cellFrameAtRow: row column: column]];
     }
@@ -1108,24 +1115,90 @@ static SEL getSel = @selector(objectAtIndex:);
 
 - (void) selectText: (id)sender
 {
-fprintf(stderr, " NSMatrix: selectText --- ");
-// TODO
-}
+  // Attention, we are *not* doing what MacOS-X does.
+  // But they are *not* doing what the OpenStep specification says.
+  // This is a compromise -- and fully OpenStep compliant.
+  NSSelectionDirection s =  NSDirectSelection;
 
+  if (window)
+    s = [window keyViewSelectionDirection];
+  
+  switch (s)
+    {
+      // window selecting backwards
+    case NSSelectingPrevious:
+      [self _selectPreviousSelectableCellBeforeRow: numRows 
+	    column: numCols];
+      break;
+      // Window selecting forward
+    case NSSelectingNext:
+      [self _selectNextSelectableCellAfterRow: -1
+	    column: -1];
+      break;
+    case NSDirectSelection:
+      // Someone else -- we have some freedom here
+      if ([_selectedCell isSelectable])
+	{
+	  [self selectTextAtRow: _selectedRow
+		column: _selectedColumn];
+	}
+      else
+	{
+	  // TODO: Select keyCell
+	}
+      break;
+    }
+}
+      
 - (id) selectTextAtRow: (int)row column: (int)column
 {
-// TODO
-//  NSCell* aCell = [self cellAtRow: row column: column];
+  if (row < 0 || row >= numRows || column < 0 || column >= numCols)
+    return self;
 
-fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
-
-
-  return nil;
+  if ([cells[row][column] isSelectable] == NO)
+    return nil;
+  
+  if (_textObject)
+    {
+      if (_selectedCell == cells[row][column])
+	{
+	  [_textObject selectAll: self];
+	  return _selectedCell;
+	}
+      else
+	{
+	  [self validateEditing];
+	  [self abortEditing];
+	}
+    }
+  
+  // Now _textObject == nil
+  {
+    NSText *t = [window fieldEditor: YES 
+			forObject: self];
+    
+    if ([t superview] != nil)
+      if ([t resignFirstResponder] == NO)
+	return nil;
+    
+    _selectedCell = cells[row][column];
+    _selectedRow = row;
+    _selectedColumn = column;
+    _textObject = [_selectedCell setUpFieldEditorAttributes: t];
+    [_selectedCell selectWithFrame: [self cellFrameAtRow: _selectedRow
+					  column: _selectedColumn]
+		   inView: self
+		   editor: _textObject
+		   delegate: self
+		   start: 0
+		   length: [[_selectedCell stringValue] length]];
+    return _selectedCell;
+  }
 }
 
 - (id) keyCell
 {
-// TODO
+  // TODO
   return nil;
 }
 
@@ -1139,26 +1212,118 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
   return _previousKeyView;
 }
 
-- (void) textDidBeginEditing: (NSNotification*)notification
+- (void) textDidBeginEditing: (NSNotification *)aNotification
 {
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+  NSDictionary *d;
+  
+  d = [NSDictionary dictionaryWithObject:[aNotification object] 
+		    forKey: @"NSFieldEditor"];
+  [nc postNotificationName: NSControlTextDidBeginEditingNotification
+      object: self
+      userInfo: d];
 }
 
-- (void) textDidChange: (NSNotification*)notification
+- (void) textDidChange: (NSNotification *)aNotification
 {
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+  NSDictionary *d;
+  
+  d = [NSDictionary dictionaryWithObject: [aNotification object] 
+		    forKey: @"NSFieldEditor"];
+  [nc postNotificationName: NSControlTextDidChangeNotification
+      object: self
+      userInfo: d];
 }
 
-- (void) textDidEndEditing: (NSNotification*)notification
+- (void) textDidEndEditing: (NSNotification *)aNotification
 {
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+  NSDictionary *d;
+  id textMovement;
+
+  [self validateEditing];
+
+  d = [NSDictionary dictionaryWithObject: [aNotification object] 
+		    forKey: @"NSFieldEditor"];
+  [nc postNotificationName: NSControlTextDidEndEditingNotification
+      object: self
+      userInfo: d];
+
+  [_selectedCell endEditing: [aNotification object]];
+  _textObject = nil;
+
+  textMovement = [[aNotification userInfo] objectForKey: @"NSTextMovement"];
+  if (textMovement)
+    {
+      switch ([(NSNumber *)textMovement intValue])
+	{
+	case NSReturnTextMovement:
+	  [self sendAction];
+	  break;
+	case NSTabTextMovement:
+	  if (_tabKeyTraversesCells)
+	    {
+	      if([self _selectNextSelectableCellAfterRow: _selectedRow
+		       column: _selectedColumn])
+		break;
+	    }
+	  [window selectKeyViewFollowingView: self];
+	  break;
+	case NSBacktabTextMovement:
+	  if (_tabKeyTraversesCells)
+	    {
+	      if([self _selectPreviousSelectableCellBeforeRow: _selectedRow
+		       column: _selectedColumn])
+		break;
+	    }
+	  [window selectKeyViewPrecedingView: self];
+	  break;
+	}
+    }
 }
 
-- (BOOL) textShouldBeginEditing: (NSText*)textObject
+- (BOOL) textShouldBeginEditing: (NSText *)textObject
 {
+  if (_delegate && [_delegate respondsToSelector: 
+				@selector(control:textShouldBeginEditing:)])
+    return [_delegate control: self 
+		      textShouldBeginEditing: textObject];
+  else 
+    return YES;
+}
+
+- (BOOL) textShouldEndEditing: (NSText *)aTextObject
+{
+  if ([_selectedCell isEntryAcceptable: [aTextObject text]] == NO)
+    {
+      [self sendAction: _errorAction to: [self target]];
+      return NO;
+    }
+  
+  if ([_delegate respondsToSelector: 
+		   @selector(control:textShouldEndEditing:)])
+    {
+      if ([_delegate control: self 
+		     textShouldEndEditing: aTextObject] == NO)
+	{
+	  NSBeep ();
+	  return NO;
+	}
+    }
+
+  // In all other cases
   return YES;
 }
 
-- (BOOL) textShouldEndEditing: (NSText*)textObject
+- (BOOL) tabKeyTraversesCells
 {
-  return YES;
+  return _tabKeyTraversesCells;
+}
+
+- (void) setTabKeyTraversesCells: (BOOL)flag
+{
+  _tabKeyTraversesCells = flag;
 }
 
 - (void) setNextText: (id)anObject
@@ -1334,11 +1499,11 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 
 - (BOOL) sendAction
 {
-  if (![selectedCell isEnabled])
+  if (![_selectedCell isEnabled])
     {
       return NO;
     }
-  return [self sendAction: [selectedCell action] to: [selectedCell target]];
+  return [self sendAction: [_selectedCell action] to: [_selectedCell target]];
 }
 
 - (void) sendAction: (SEL)aSelector
@@ -1386,13 +1551,13 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 
 - (void) sendDoubleAction
 {
-  if (![selectedCell isEnabled])
+  if (![_selectedCell isEnabled])
     {
       return;
     }
-  if (doubleAction != 0)
+  if (_doubleAction != 0)
     {
-      [target performSelector: doubleAction withObject: self];
+      [_target performSelector: _doubleAction withObject: self];
     }
   else
     {
@@ -1402,7 +1567,10 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 
 - (BOOL) acceptsFirstMouse: (NSEvent*)theEvent
 {
-  return mode == NSListModeMatrix ? NO : YES;
+  if (mode == NSListModeMatrix)
+    return NO;
+  else 
+    return YES;
 }
 
 - (void) _mouseDownNonListMode: (NSEvent *)theEvent
@@ -1419,14 +1587,14 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
   unsigned eventMask = NSLeftMouseUpMask | NSLeftMouseDownMask
                      | NSMouseMovedMask  | NSLeftMouseDraggedMask;
 
-  if ((mode == NSRadioModeMatrix) && selectedCell != nil)
+  if ((mode == NSRadioModeMatrix) && _selectedCell != nil)
     {
-      [selectedCell setState: NSOffState];
-      [self drawCellAtRow: selectedRow column: selectedColumn];
+      [_selectedCell setState: NSOffState];
+      [self drawCellAtRow: _selectedRow column: _selectedColumn];
       [window flushWindow];
-      selectedCells[selectedRow][selectedColumn] = NO;
-      selectedCell = nil;
-      selectedRow = selectedColumn = -1;
+      selectedCells[_selectedRow][_selectedColumn] = NO;
+      _selectedCell = nil;
+      _selectedRow = _selectedColumn = -1;
     }
 
   while (!mouseUpInCell && ([theEvent type] != NSLeftMouseUp))
@@ -1441,10 +1609,10 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
         {
           mouseCell = [self cellAtRow: mouseRow column: mouseColumn];
 
-          selectedCell = mouseCell;
-          selectedRow = mouseRow;
-          selectedColumn = mouseColumn;
-          selectedCells[selectedRow][selectedColumn] = YES;
+          _selectedCell = mouseCell;
+          _selectedRow = mouseRow;
+          _selectedColumn = mouseColumn;
+          selectedCells[_selectedRow][_selectedColumn] = YES;
 
           if (((mode == NSRadioModeMatrix) || (mode == NSHighlightModeMatrix))
               && (highlightedCell != mouseCell))
@@ -1500,23 +1668,23 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 
     // the mouse went up.
     // if it was inside a cell, the cell has already sent the action.
-    // if not, selectedCell is the last cell that had the mouse, and
+    // if not, _selectedCell is the last cell that had the mouse, and
     // it's state is Off. It must be set into a consistent state.
     // anyway, the action has to be sent
     if (!mouseUpInCell)
       {
         if ((mode == NSRadioModeMatrix) && !allowsEmptySelection)
           {
-            [selectedCell setState: NSOnState];
+            [_selectedCell setState: NSOnState];
             [window flushWindow];
           }
         else
           {
-            if (selectedCell != nil)
+            if (_selectedCell != nil)
               {
-                selectedCells[selectedRow][selectedColumn] = NO;
-                selectedCell = nil;
-                selectedRow = selectedColumn = -1;
+                selectedCells[_selectedRow][_selectedColumn] = NO;
+                _selectedCell = nil;
+                _selectedRow = _selectedColumn = -1;
               }
           }
         [self sendAction];
@@ -1548,6 +1716,51 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
   NSApplication *app = [NSApplication sharedApplication];
   static MPoint anchor = {0, 0};
 
+  lastLocation = [self convertPoint: lastLocation 
+		       fromView: nil];
+  
+  // If mouse down was on a selectable cell, start editing/selecting.
+  if([self getRow: &row 
+	   column: &column 
+	   forPoint: lastLocation])
+    {
+      if ([cells[row][column] isSelectable])
+	{
+	  NSText* t = [window fieldEditor: YES forObject: self];
+
+	  if ([t superview] != nil)
+	    {
+	      if ([t resignFirstResponder] == NO)
+		{
+		  if ([window makeFirstResponder: window] == NO)
+		    return;
+		}
+	    }
+	  // During editing, the selected cell is the cell being edited
+	  _selectedCell = cells[row][column];
+	  _selectedRow = row;
+	  _selectedColumn = column;
+	  _textObject = [_selectedCell setUpFieldEditorAttributes: t];
+	  [_selectedCell editWithFrame: [self cellFrameAtRow: row 
+					      column: column]
+			inView: self
+			editor: _textObject
+			delegate: self
+			event: theEvent];
+	  return;
+	}
+    }
+  
+  // Paranoia check -- _textObject should already be nil, since we
+  // accept first responder, so NSWindow should have already given
+  // us first responder status (thus already ending editing with _textObject).
+  if (_textObject)
+    {
+      NSLog (@"Hi, I am a bug.");
+      [self validateEditing];
+      [self abortEditing];
+    }
+
   mouseDownFlags = [theEvent modifierFlags];
 
   if (mode != NSListModeMatrix)
@@ -1556,9 +1769,9 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
       return;
     }
 
-  lastLocation = [self convertPoint: lastLocation fromView: nil];
   if ((mode != NSTrackModeMatrix) && (mode != NSHighlightModeMatrix))
-    [NSEvent startPeriodicEventsAfterDelay: 0.05 withPeriod: 0.05];
+    [NSEvent startPeriodicEventsAfterDelay: 0.05 
+	     withPeriod: 0.05];
   ASSIGN(lastEvent, theEvent);
 
   // selection involves two steps, first
@@ -1569,11 +1782,15 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
     {
       BOOL shouldProceedEvent = NO;
 
-      onCell = [self getRow: &row column: &column forPoint: lastLocation];
+      onCell = [self getRow: &row 
+		     column: &column 
+		     forPoint: lastLocation];
       if (onCell)
 	{
-	  aCell = [self cellAtRow: row column: column];
-	  rect = [self cellFrameAtRow: row column: column];
+	  aCell = [self cellAtRow: row 
+			column: column];
+	  rect = [self cellFrameAtRow: row 
+		       column: column];
 	  if (aCell != previousCell)
 	    {
 	      switch (mode)
@@ -1582,9 +1799,9 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 		    // in Track mode the cell should track the mouse
 		    // until the cursor either leaves the cellframe or
 		    // NSLeftMouseUp occurs
-		    selectedCell = aCell;
-		    selectedRow = row;
-		    selectedColumn = column;
+		    _selectedCell = aCell;
+		    _selectedRow = row;
+		    _selectedColumn = column;
 		    if ([aCell trackMouse: lastEvent
 				   inRect: rect
 				   ofView: self
@@ -1597,9 +1814,9 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 		    // the cell is lit before begins tracking and
 		    // unlit afterwards
 		    [aCell setState: 1];
-		    selectedCell = aCell;
-		    selectedRow = row;
-		    selectedColumn = column;
+		    _selectedCell = aCell;
+		    _selectedRow = row;
+		    _selectedColumn = column;
 		    [aCell highlight: YES withFrame: rect inView: self];
 		    [window flushWindow];
 
@@ -1620,21 +1837,21 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 		      break;
 
 		    // deselect previously selected cell
-		    if (selectedCell != nil)
+		    if (_selectedCell != nil)
 		      {
-			[selectedCell setState: 0];
+			[_selectedCell setState: 0];
 			if (!previousCell)
-			  previousCellRect = [self cellFrameAtRow: selectedRow
-			   column: selectedColumn];
-			[selectedCell highlight: NO
+			  previousCellRect = [self cellFrameAtRow: _selectedRow
+			   column: _selectedColumn];
+			[_selectedCell highlight: NO
 				      withFrame: previousCellRect
 					 inView: self];
-			selectedCells[selectedRow][selectedColumn] = NO;
+			selectedCells[_selectedRow][_selectedColumn] = NO;
 		      }
 		    // select current cell
-		    selectedCell = aCell;
-		    selectedRow = row;
-		    selectedColumn = column;
+		    _selectedCell = aCell;
+		    _selectedRow = row;
+		    _selectedColumn = column;
 		    [aCell setState: 1];
 		    [aCell highlight: YES withFrame: rect inView: self];
 		    selectedCells[row][column] = YES;
@@ -1664,12 +1881,12 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 			  // selection to the current cell
 			  if (!(modifiers & NSAlternateKeyMask))
 			    {
-			      selectedCell = aCell;
-			      selectedRow = row;
-			      selectedColumn = column;
+			      _selectedCell = aCell;
+			      _selectedRow = row;
+			      _selectedColumn = column;
 
-			      [selectedCell setState: 1];
-			      [selectedCell highlight: YES
+			      [_selectedCell setState: 1];
+			      [_selectedCell highlight: YES
 					    withFrame: rect
 					       inView: self];
 			      selectedCells[row][column]=YES;
@@ -1678,15 +1895,15 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 			    }
 			}
 		      [self setSelectionFrom:
-			INDEX_FROM_COORDS(selectedColumn, selectedRow)
+			INDEX_FROM_COORDS(_selectedColumn, _selectedRow)
 			to: INDEX_FROM_COORDS(column, row)
 			anchor: INDEX_FROM_POINT(anchor)
 			highlight: YES];
 
 		      [window flushWindow];
-		      selectedCell = aCell;
-		      selectedRow = row;
-		      selectedColumn = column;
+		      _selectedCell = aCell;
+		      _selectedRow = row;
+		      _selectedColumn = column;
 		      break;
 		    }
 		}
@@ -1736,8 +1953,8 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
   switch (mode)
     {
       case NSRadioModeMatrix: 
-	if (selectedCell != nil)
-	  [selectedCell highlight: NO withFrame: rect inView: self];
+	if (_selectedCell != nil)
+	  [_selectedCell highlight: NO withFrame: rect inView: self];
       case NSListModeMatrix: 
 	[self setNeedsDisplayInRect: rect];
 	[window flushWindow];
@@ -1746,15 +1963,15 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 	break;
     }
 
-  if (selectedCell != nil)
+  if (_selectedCell != nil)
     {
       // send single click action
-      if (!(selectedCellTarget = [selectedCell target]))
+      if (!(selectedCellTarget = [_selectedCell target]))
 	{
 	  // selected cell has no target so send single
 	  // click action to matrix's (self's) target
-	  if (target)
-	    [target performSelector: action withObject: self];
+	  if (_target)
+	    [_target performSelector: _action withObject: self];
 	}
       else
 	{
@@ -1762,13 +1979,13 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 	  // click action has already been sent by the
 	  // cell to it's target (if it has one)
 	  if ((mode != NSTrackModeMatrix) && (mode != NSHighlightModeMatrix))
-	    [selectedCellTarget performSelector: [selectedCell action]
+	    [selectedCellTarget performSelector: [_selectedCell action]
 				     withObject: self];
 	}
     }
   // click count > 1 indicates a double click
-  if (target && doubleAction && ([lastEvent clickCount] > 1))
-    [target performSelector: doubleAction withObject: self];
+  if (_target && _doubleAction && ([lastEvent clickCount] > 1))
+    [_target performSelector: _doubleAction withObject: self];
 
   if ((mode != NSTrackModeMatrix) && (mode != NSHighlightModeMatrix))
     [NSEvent stopPeriodicEvents];
@@ -1804,14 +2021,14 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 	  if ([aCell isEnabled]
 	    && [[aCell keyEquivalent] isEqualToString: key])
 	    {
-	      NSCell	*oldSelectedCell = selectedCell;
+	      NSCell	*oldSelectedCell = _selectedCell;
 
-	      selectedCell = aCell;
+	      _selectedCell = aCell;
 	      [self highlightCell: YES atRow: i column: j];
 	      [aCell setState: ![aCell state]];
 	      [self sendAction];
 	      [self highlightCell: NO atRow: i column: j];
-	      selectedCell = oldSelectedCell;
+	      _selectedCell = oldSelectedCell;
 
 	      return YES;
 	    }
@@ -1832,20 +2049,22 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
       for (j = 0; j < numCols; j++)
 	{
 	  NSCell	*aCell = cells[i][j];
-
+	  
 	  [aCell resetCursorRect: [self cellFrameAtRow: i column: j]
-			  inView: self];
+		 inView: self];
 	}
     }
 }
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
+  // TODO
   [super encodeWithCoder: aCoder];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
+  // TODO
   [super initWithCoder: aDecoder];
 
   return self;
@@ -1930,52 +2149,69 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 
 - (void) setDelegate: (id)object
 {
-  ASSIGN(delegate, object);
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+
+  if (_delegate)
+    [nc removeObserver: _delegate name: nil object: self];
+  _delegate = object;
+
+#define SET_DELEGATE_NOTIFICATION(notif_name) \
+  if ([_delegate respondsToSelector: @selector(controlText##notif_name:)]) \
+    [nc addObserver: _delegate \
+      selector: @selector(controlText##notif_name:) \
+      name: NSControlText##notif_name##Notification object: self]
+
+  if (_delegate)
+    {
+      SET_DELEGATE_NOTIFICATION(DidBeginEditing);
+      SET_DELEGATE_NOTIFICATION(DidEndEditing);
+      SET_DELEGATE_NOTIFICATION(DidChange);
+    }
 }
 
 - (id) delegate
 {
-  return delegate;
+  return _delegate;
 }
 
 - (void) setTarget: anObject
 {
-  ASSIGN(target, anObject);
+  ASSIGN(_target, anObject);
 }
 
 - (id) target
 {
-  return target;
+  return _target;
 }
 
 - (void) setAction: (SEL)sel
 {
-  action = sel;
+  _action = sel;
 }
 
 - (SEL) action
 {
-  return action;
+  return _action;
 }
 
 - (void) setDoubleAction: (SEL)sel
 {
-  doubleAction = sel;
+  _doubleAction = sel;
 }
 
 - (SEL) doubleAction
 {
-  return doubleAction;
+  return _doubleAction;
 }
 
 - (void) setErrorAction: (SEL)sel
 {
-  errorAction = sel;
+  _errorAction = sel;
 }
 
 - (SEL) errorAction
 {
-  return errorAction;
+  return _errorAction;
 }
 
 - (void) setAllowsEmptySelection: (BOOL)f
@@ -2045,17 +2281,17 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 
 - (id) selectedCell
 {
-  return selectedCell;
+  return _selectedCell;
 }
 
 - (int) selectedColumn
 {
-  return selectedColumn;
+  return _selectedColumn;
 }
 
 - (int) selectedRow
 {
-  return selectedRow;
+  return _selectedRow;
 }
 
 - (int) mouseDownFlags
@@ -2150,50 +2386,45 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 
 - (void) keyDown: (NSEvent *)theEvent;
 {
-  unsigned int flags = [theEvent modifierFlags];
-  unsigned int key_code = [theEvent keyCode];
-  NSRect rect = [self cellFrameAtRow: selectedRow column: selectedColumn];
+  /*  unsigned int flags = [theEvent modifierFlags];
+      unsigned int key_code = [theEvent keyCode];*/
 
-  fprintf(stderr, " NSMatrix: keyDown --- ");
-
-  // If not editable then don't recognize the key down
-  if (![selectedCell isEditable])
-    return;
-
-  // If RETURN key then make the next text the first responder
-  if (key_code == 0x0d)
-    {
-      [selectedCell endEditing: nil];
-      [selectedCell drawInteriorWithFrame: rect inView: self];
-      return;
-    }
-
-  // Hide the cursor during typing
-  // [NSCursor hide];
-
-  [selectedCell _handleKeyEvent: theEvent];
-  [selectedCell drawInteriorWithFrame: rect inView: self];
+  // TODO
+  // Selecting (not-editable, not-selectable cells) with the keyboard
+  NSLog (@"NSMatrix -keyDown:");
 }
 
 - (BOOL) acceptsFirstResponder
 {
-  if ([selectedCell isSelectable])
-    return YES;
-  else
+  // We gratefully accept keyboard events.
+  return YES;
+}
+
+- (BOOL) abortEditing
+{
+  if (_textObject)
+    {
+      [_textObject setString: @""];
+      [_selectedCell endEditing: _textObject];
+      _textObject = nil;
+      return YES;
+    }
+  else 
     return NO;
 }
 
-- (BOOL) becomeFirstResponder
+- (NSText *) currentEditor
 {
-  if ([selectedCell isSelectable])
-    {
-//      [selectedCell selectText: self];
-      return YES;
-    }
+  if (_textObject && ([window firstResponder] == _textObject))
+    return _textObject;
   else
-    {
-      return NO;
-    }
+    return nil;
+}
+
+- (void) validateEditing 
+{
+  if (_textObject)
+    [_selectedCell setStringValue: [_textObject text]];
 }
 
 @end
@@ -2375,4 +2606,73 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
     }
 }
 
+// Return YES on success; NO if no selectable cell found.
+-(BOOL) _selectNextSelectableCellAfterRow: (int)row
+				   column: (int)column
+{
+  int i,j;
+  if (row > -1)
+    {
+      // First look for cells in the same row
+      for (j = column + 1; j < numCols; j++)
+	{
+	  if ([cells[row][j] isSelectable])
+	    {
+	      _selectedCell = [self selectTextAtRow: row
+				    column: j];
+	      _selectedRow = row;
+	      _selectedColumn = j;
+	      return YES;
+	    }
+	}
+    }
+  // Otherwise, make the big cycle.
+  for (i = row + 1; i < numRows; i++)
+    for (j = 0; j < numCols; j++)
+      {
+	if ([cells[i][j] isSelectable])
+	  {
+	    _selectedCell = [self selectTextAtRow: i
+				  column: j];
+	    _selectedRow = i;
+	    _selectedColumn = j;
+	    return YES;
+	  }
+      }  
+  return NO;
+}
+-(BOOL) _selectPreviousSelectableCellBeforeRow: (int)row
+					column: (int)column
+{
+  int i,j;
+  if (row < numCols)
+    {
+      // First look for cells in the same row
+      for (j = column - 1; j > -1; j--)
+	{
+	  if ([cells[row][j] isSelectable])
+	    {
+	      _selectedCell = [self selectTextAtRow: row
+				    column: j];
+	      _selectedRow = row;
+	      _selectedColumn = j;
+	      return YES;
+	    }
+	}
+    }
+  // Otherwise, make the big cycle.
+  for (i = row - 1; i > -1; i--)
+    for (j = numCols - 1; j > -1; j--)
+      {
+	if ([cells[i][j] isSelectable])
+	  {
+	    _selectedCell = [self selectTextAtRow: i
+				  column: j];
+	    _selectedRow = i;
+	    _selectedColumn = j;
+	    return YES;
+	  }
+      }  
+  return NO;
+}
 @end
