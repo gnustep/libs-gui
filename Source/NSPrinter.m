@@ -894,7 +894,7 @@ static NSMutableDictionary* printerCache;
 
   
   //See if this ppd has been processed before
-  if( [inclusionSet member: ppdPath] )
+  if ([inclusionSet member: ppdPath])
     {
       //this ppd has been done already!
       [NSException raise: NSPPDIncludeStackOverflowException

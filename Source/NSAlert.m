@@ -631,9 +631,9 @@ setControl(NSView* content, id control, NSString *title)
 	    = srect.origin.y + srect.size.height - mrect.size.height;
 	  [messageField setFrame: mrect];
 	  [scroll setDocumentView: messageField];
-	  [[scroll contentView]scrollToPoint:
+	  [[scroll contentView] scrollToPoint:
 	    NSMakePoint(mrect.origin.x, mrect.origin.y + mrect.size.height
-	      -[[scroll contentView] bounds].size.height)];
+	      - [[scroll contentView] bounds].size.height)];
 	  [scroll reflectScrolledClipView: [scroll contentView]];
 	}
       else

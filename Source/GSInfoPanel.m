@@ -36,8 +36,8 @@
 #include <Foundation/NSString.h>
 #include <Foundation/NSProcessInfo.h>
 
-static id 
-_value_from_info_plist_for_key (NSString *key)
+static id
+value_from_info_plist_for_key (NSString *key)
 {
   static NSDictionary *d = nil;
   /* We use this additional BOOL so that if loading Info-gnustep.plist
@@ -63,14 +63,14 @@ _value_from_info_plist_for_key (NSString *key)
   return nil;
 }
 
-static inline BOOL 
-_nil_or_not_of_class (id object, Class class)
+static BOOL
+nil_or_not_of_class (id object, Class class)
 {
   return ((object == nil) || ([object isKindOfClass: class] == NO));
 }
 
 static NSTextField *
-_new_label (NSString *value)
+new_label (NSString *value)
 {
   NSTextField *t;
 
@@ -126,7 +126,7 @@ _new_label (NSString *value)
 
 	  if ([item isKindOfClass: [NSString class]] == NO)
 	    continue;
-	  field = _new_label (item);
+	  field = new_label (item);
 	  [field setFont: font];
 	  [field sizeToFit];
 	  [field setAutoresizingMask: NSViewNotSizable];
@@ -201,15 +201,15 @@ _new_label (NSString *value)
   if (dictionary)
     name = [dictionary objectForKey: @"ApplicationName"];
 
-  if (_nil_or_not_of_class (name, [NSString class]))
+  if (nil_or_not_of_class (name, [NSString class]))
     {
-      name = _value_from_info_plist_for_key (@"ApplicationName");
+      name = value_from_info_plist_for_key (@"ApplicationName");
       
-      if (_nil_or_not_of_class (name, [NSString class]))
+      if (nil_or_not_of_class (name, [NSString class]))
 	{
-	  name = _value_from_info_plist_for_key (@"NSHumanReadableShortName");
+	  name = value_from_info_plist_for_key (@"NSHumanReadableShortName");
 
-	  if (_nil_or_not_of_class (name, [NSString class]))
+	  if (nil_or_not_of_class (name, [NSString class]))
 	    name = [[NSProcessInfo processInfo] processName]; 
 	}
     }
@@ -217,9 +217,9 @@ _new_label (NSString *value)
   if (dictionary)
     description = [dictionary objectForKey: @"ApplicationDescription"];
 
-  if (_nil_or_not_of_class (description, [NSString class]))
+  if (nil_or_not_of_class (description, [NSString class]))
     {
-      description = _value_from_info_plist_for_key 
+      description = value_from_info_plist_for_key
 	(@"ApplicationDescription");
       
       if ([description isKindOfClass: [NSString class]] == NO)
@@ -230,31 +230,31 @@ _new_label (NSString *value)
   if (dictionary)
     icon = [dictionary objectForKey: @"ApplicationIcon"];
   
-  if (_nil_or_not_of_class (icon, [NSImage class]))
+  if (nil_or_not_of_class (icon, [NSImage class]))
     {
       icon = [NSImage imageNamed: @"NSApplicationIcon"];
       
-      if (_nil_or_not_of_class (icon, [NSImage class]))
+      if (nil_or_not_of_class (icon, [NSImage class]))
 	icon = [NSApp applicationIconImage];
     }
   /* Release */
   if (dictionary)
     release = [dictionary objectForKey: @"ApplicationRelease"];
   
-  if (_nil_or_not_of_class (release, [NSString class]))
+  if (nil_or_not_of_class (release, [NSString class]))
     {
       if (dictionary)
 	release = [dictionary objectForKey: @"ApplicationVersion"];
       
-      if (_nil_or_not_of_class (release, [NSString class]))
+      if (nil_or_not_of_class (release, [NSString class]))
 	{
-	  release = _value_from_info_plist_for_key (@"ApplicationRelease");
+	  release = value_from_info_plist_for_key (@"ApplicationRelease");
   
-	  if (_nil_or_not_of_class (release, [NSString class]))
+	  if (nil_or_not_of_class (release, [NSString class]))
 	    {
-	      release = _value_from_info_plist_for_key (@"NSAppVersion");
+	      release = value_from_info_plist_for_key (@"NSAppVersion");
 	      
-	      if (_nil_or_not_of_class (release, [NSString class]))
+	      if (nil_or_not_of_class (release, [NSString class]))
 		release = @"Unknown";
 	    }
 	}
@@ -263,14 +263,14 @@ _new_label (NSString *value)
   if (dictionary)
     fullVersionID = [dictionary objectForKey: @"FullVersionID"];
 
-  if (_nil_or_not_of_class (fullVersionID, [NSString class]))
+  if (nil_or_not_of_class (fullVersionID, [NSString class]))
     {
       if (dictionary)
 	fullVersionID = [dictionary objectForKey: @"Version"];
 
-      if (_nil_or_not_of_class (fullVersionID, [NSString class]))
+      if (nil_or_not_of_class (fullVersionID, [NSString class]))
 	{
-	  fullVersionID = _value_from_info_plist_for_key (@"NSBuildVersion");
+	  fullVersionID = value_from_info_plist_for_key (@"NSBuildVersion");
 	  if ([fullVersionID isKindOfClass: [NSString class]] == NO)
 	    fullVersionID = nil;
 	}
@@ -289,11 +289,11 @@ _new_label (NSString *value)
   if (dictionary)
     authors = [dictionary objectForKey: @"Authors"];
 
-  if (_nil_or_not_of_class (authors, [NSArray class]))
+  if (nil_or_not_of_class (authors, [NSArray class]))
     {
-      authors = _value_from_info_plist_for_key (@"Authors");
+      authors = value_from_info_plist_for_key (@"Authors");
 
-      if (_nil_or_not_of_class (authors, [NSArray class]))
+      if (nil_or_not_of_class (authors, [NSArray class]))
 	authors = [NSArray arrayWithObject: @"Unknown"];
     }
   /* URL */
@@ -308,16 +308,16 @@ _new_label (NSString *value)
   if (dictionary)
     copyright = [dictionary objectForKey: @"Copyright"];
 
-  if (_nil_or_not_of_class (copyright, [NSString class]))
+  if (nil_or_not_of_class (copyright, [NSString class]))
     {
-      copyright = _value_from_info_plist_for_key (@"Copyright");
+      copyright = value_from_info_plist_for_key (@"Copyright");
 
-      if (_nil_or_not_of_class (copyright, [NSString class]))
+      if (nil_or_not_of_class (copyright, [NSString class]))
 	{
-	  copyright = _value_from_info_plist_for_key 
+	  copyright = value_from_info_plist_for_key
 	    (@"NSHumanReadableCopyright");
 	  
-	  if (_nil_or_not_of_class (copyright, [NSString class]))
+	  if (nil_or_not_of_class (copyright, [NSString class]))
 	    copyright = @"Copyright Information Not Available";
 	}
     }
@@ -325,9 +325,9 @@ _new_label (NSString *value)
   if (dictionary)
     copyrightDescription = [dictionary objectForKey: @"CopyrightDescription"];
 
-  if (_nil_or_not_of_class (copyrightDescription, [NSString class]))
+  if (nil_or_not_of_class (copyrightDescription, [NSString class]))
     {
-      copyrightDescription = _value_from_info_plist_for_key 
+      copyrightDescription = value_from_info_plist_for_key
 	(@"CopyrightDescription");
 
       if ([copyrightDescription isKindOfClass: [NSString class]] == NO)
@@ -349,30 +349,30 @@ _new_label (NSString *value)
   [iconButton setTarget: NSApp];
   [iconButton setAction: @selector(orderFrontSharedMemoryPanel:)];
 
-  nameLabel = _new_label (name);
+  nameLabel = new_label (name);
   [nameLabel setFont: [NSFont boldSystemFontOfSize: 32]];
   [nameLabel sizeToFit];
 
   if (description)
     {
-      descriptionLabel = _new_label (description);
+      descriptionLabel = new_label (description);
       [descriptionLabel setFont: [NSFont boldSystemFontOfSize: 14]];
       [descriptionLabel sizeToFit];
     }
 
   smallFont = [NSFont systemFontOfSize: 12];
   
-  versionLabel = _new_label (release);
+  versionLabel = new_label (release);
   [versionLabel setFont: smallFont];
   [versionLabel sizeToFit];
 
   if ([authors count] == 1)
     {
-      authorTitleLabel = _new_label (@"Author: ");
+      authorTitleLabel = new_label (@"Author: ");
     }
   else
     {
-      authorTitleLabel = _new_label (@"Authors: ");
+      authorTitleLabel = new_label (@"Authors: ");
     }
   [authorTitleLabel setFont: smallFont];
   [authorTitleLabel sizeToFit];
@@ -382,18 +382,18 @@ _new_label (NSString *value)
   
   if (url)
     {
-      urlLabel = _new_label (url);
+      urlLabel = new_label (url);
       [urlLabel setFont: smallFont];
       [urlLabel sizeToFit];
     }
 
-  copyrightLabel = _new_label (copyright);
+  copyrightLabel = new_label (copyright);
   [copyrightLabel setFont: smallFont];
   [copyrightLabel sizeToFit];
 
   if (copyrightDescription)
     {
-      copyrightDescriptionLabel = _new_label (copyrightDescription);
+      copyrightDescriptionLabel = new_label (copyrightDescription);
       [copyrightDescriptionLabel setFont: smallFont];
       [copyrightDescriptionLabel sizeToFit];
     }
@@ -514,7 +514,7 @@ _new_label (NSString *value)
 
   f = [nameLabel frame];
   f.origin.x = tmp_a;
-  /* NB: We relay upon the fact that the text in a text field is
+  /* NB: We rely upon the fact that the text in a text field is
      vertically centered in its frame */
   if (description)
     f.origin.y = tmp_b + 10;
