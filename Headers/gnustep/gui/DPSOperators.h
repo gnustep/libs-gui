@@ -929,6 +929,33 @@ DPSdocedited(GSCTXT *ctxt, int edited, int window)
 __attribute__((unused));
 
 /* ----------------------------------------------------------------------- */
+/* GNUstep Event and other I/O extensions */
+/* ----------------------------------------------------------------------- */
+static inline NSEvent*
+DPSGetEvent(GSCTXT *ctxt, unsigned mask, NSDate* limit, NSString *mode)
+__attribute__((unused));
+
+static inline NSEvent*
+DPSPeekEvent(GSCTXT *ctxt, unsigned mask, NSDate* limit, NSString *mode)
+__attribute__((unused));
+
+static inline void
+DPSDiscardEvents(GSCTXT *ctxt, unsigned mask, NSEvent* limit)
+__attribute__((unused));
+
+static inline void
+DPSPostEvent(GSCTXT *ctxt, NSEvent* anEvent, BOOL atStart)
+__attribute__((unused));
+
+static inline void
+DPSmouselocation(GSCTXT *ctxt, float *x, float *y)
+__attribute__((unused));
+
+static inline void
+DPSsetinputstate(GSCTXT *ctxt, int window, int state)
+__attribute__((unused));
+
+/* ----------------------------------------------------------------------- */
 /* Color operations */
 /* ----------------------------------------------------------------------- */
 static inline void
@@ -2514,6 +2541,13 @@ DPSmouselocation(GSCTXT *ctxt, float *x, float *y)
 {
   (ctxt->methods->DPSmouselocation__)
     (ctxt, @selector(DPSmouselocation::), x, y);
+}
+
+static inline void
+DPSsetinputstate(GSCTXT *ctxt, int window, int state)
+{
+  (ctxt->methods->DPSsetinputstate__)
+    (ctxt, @selector(DPSsetinputstate::), window, state);
 }
 
 #endif	

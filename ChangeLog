@@ -1,3 +1,12 @@
+Mon Mar 06 20:09:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/gnustep/gui/GSMethodTable.h: Added method to set titlebar.
+	* Headers/gnustep/gui/DPSOperators.h: ditto
+	* Headers/gnustep/gui/NSGraphicsContext.h: ditto
+	* Headers/gnustep/gui/PSOperators.h: ditto
+	* Source/NSWindow.m: Make calls to DPSsetinputstate() to set the
+	titlebar for the window on change of key/main/normal state.
+
 Mon Mar 06 10:36:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSWindow.m: Various tidyups by Fred kiefer and myself.

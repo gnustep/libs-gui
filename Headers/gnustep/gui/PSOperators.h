@@ -743,6 +743,33 @@ PScurrentalpha(float *a)
 __attribute__((unused));
 
 /* ----------------------------------------------------------------------- */
+/* GNUstep Event and other I/O extensions */
+/* ----------------------------------------------------------------------- */
+static inline NSEvent*
+PSGetEvent(unsigned mask, NSDate* limit, NSString *mode)
+__attribute__((unused));
+
+static inline NSEvent*
+PSPeekEvent(unsigned mask, NSDate* limit, NSString *mode)
+__attribute__((unused));
+
+static inline void
+PSDiscardEvents(unsigned mask, NSEvent* limit)
+__attribute__((unused));
+
+static inline void
+PSPostEvent(NSEvent* anEvent, BOOL atStart)
+__attribute__((unused));
+
+static inline void
+PSmouselocation(float *x, float *y)
+__attribute__((unused));
+
+static inline void
+PSsetinputstate(int window, int state)
+__attribute__((unused));
+
+/* ----------------------------------------------------------------------- */
 /* Color operations */
 /* ----------------------------------------------------------------------- */
 static inline void
@@ -1821,6 +1848,12 @@ static inline void
 PSmouselocation(float *x, float *y)
 {
   DPSmouselocation(DEFCTXT, x, y);
+}
+
+static inline void
+PSsetinputstate(int window, int state)
+{
+  DPSsetinputstate(DEFCTXT, window, state);
 }
 
 #endif	

@@ -514,6 +514,8 @@ typedef struct {
 	(NSGraphicsContext*, SEL, NSEvent*, BOOL);
   void (*DPSmouselocation__)
 	(NSGraphicsContext*, SEL, float*, float*);
+  void (*DPSsetinputstate__)
+	(NSGraphicsContext*, SEL, int, int);
 
 } gsMethodTable;
 

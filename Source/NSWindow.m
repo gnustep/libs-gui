@@ -481,7 +481,8 @@ static NSMapTable* windowmaps = NULL;
 				 NSNonRetainedObjectMapValueCallBacks, 20);
 
   /* Initialize attributes and flags */
-  [self cleanInit];
+  [super init];
+  [self _initDefaults];
 
   backing_type = bufferingType;
   style_mask = aStyle;
@@ -791,7 +792,7 @@ static NSMapTable* windowmaps = NULL;
 	[first_responder becomeKeyWindow];
 
       _f.is_key = YES;
-      DPSsetinputfocus(GSCurrentContext(), window_num);
+      DPSsetinputstate(GSCurrentContext(), window_num, GSTitleBarKey);
       [self resetCursorRects];
       [nc postNotificationName: NSWindowDidBecomeKeyNotification object: self];
     }
@@ -804,6 +805,10 @@ static NSMapTable* windowmaps = NULL;
       NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
       _f.is_main = YES;
+      if (_f.is_key == NO)
+	{
+	  DPSsetinputstate(GSCurrentContext(), window_num, GSTitleBarMain);
+	}
       [nc postNotificationName: NSWindowDidBecomeMainNotification object: self];
     }
 }
@@ -1058,6 +1063,15 @@ static NSMapTable* windowmaps = NULL;
       //[first_responder resignKeyWindow];
 
       _f.is_key = NO;
+
+      if (_f.is_main == YES)
+	{
+	  DPSsetinputstate(GSCurrentContext(), window_num, GSTitleBarMain);
+	}
+      else
+	{
+	  DPSsetinputstate(GSCurrentContext(), window_num, GSTitleBarNormal);
+	}
       [self discardCursorRects];
 
       [nc postNotificationName: NSWindowDidResignKeyNotification object: self];
@@ -1071,7 +1085,14 @@ static NSMapTable* windowmaps = NULL;
       NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
       _f.is_main = NO;
-
+      if (_f.is_key == YES)
+	{
+	  DPSsetinputstate(GSCurrentContext(), window_num, GSTitleBarKey);
+	}
+      else
+	{
+	  DPSsetinputstate(GSCurrentContext(), window_num, GSTitleBarNormal);
+	}
       [nc postNotificationName: NSWindowDidResignMainNotification object: self];
     }
 }
@@ -3209,14 +3230,6 @@ resetCursorRectsForView(NSView *theView)
   _f.accepts_mouse_moved = NO;
   _f.has_opened = NO;
   _f.has_closed = NO;
-}
-
-- (id) cleanInit
-{
-  [super init];
-
-  [self _initDefaults];
-  return self;
 }
 
 @end
