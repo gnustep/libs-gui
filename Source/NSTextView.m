@@ -1093,8 +1093,10 @@ static NSNotificationCenter *nc;
   if (flag)
     {
       if (color == nil)
-	color = _caret_color;
-
+	{
+	  color = _caret_color;
+	}
+      
       [color set];
       NSRectFill (rect);
     }
@@ -1872,15 +1874,16 @@ static NSNotificationCenter *nc;
 - (void) clickedOnLink: (id)link
 	       atIndex: (unsigned int)charIndex
 {
-
-/* Notifies the delegate that the user clicked in a link at the
-   specified charIndex. The delegate may take any appropriate actions
-   to handle the click in its textView: clickedOnLink: atIndex:
-   method. */
+  /* Notifies the delegate that the user clicked in a link at the
+     specified charIndex. The delegate may take any appropriate actions
+     to handle the click in its textView: clickedOnLink: atIndex:
+     method. */
   if (_delegate != nil && 
       [_delegate respondsToSelector: 
 		   @selector(textView:clickedOnLink:atIndex:)])
+    {
       [_delegate textView: self clickedOnLink: link atIndex: charIndex];
+    }
 }
 
 /*
@@ -3308,7 +3311,7 @@ other than copy/paste or dragging. */
 
   glyphRange = [_layoutManager glyphRangeForCharacterRange: aRange 
 			       actualCharacterRange: NULL];
-
+  
   return [_layoutManager boundingRectForGlyphRange: glyphRange 
 			 inTextContainer: _textContainer];
 }
