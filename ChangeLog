@@ -1,3 +1,18 @@
+2002-11-10  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/GSComboSupport.h
+	* Source/GSComboSupport.m
+	Removed files.
+	* GNUmakefile
+	Removed GSComboSupport.m
+	* Source/NSComboBoxCell.m
+	Moved all ComboBox code to here to make further changes easier.
+	* Headers/gnustep/gui/NSSound.h:
+	Prefixed all ivars with underscore
+	* Source/NSSound.m
+	Adopted to change in header and simplified [copyWithZone:] and 
+	[initWithCoder:].
+	
 2002-11-09  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSDocumentController.m: Don't try to store NSURL objects in

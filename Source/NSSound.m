@@ -76,13 +76,9 @@ static NSDictionary *nsmapping = nil;
 @protocol GSSoundSvr
 
 - (BOOL) playSound: (id)aSound;
-
 - (BOOL) stopSoundWithIdentifier: (NSString *)identifier;
-
 - (BOOL) pauseSoundWithIdentifier: (NSString *)identifier;
-
 - (BOOL) resumeSoundWithIdentifier: (NSString *)identifier;
-
 - (BOOL) isPlayingSoundWithIdentifier: (NSString *)identifier;
 
 @end 
@@ -92,23 +88,15 @@ static id<GSSoundSvr> the_server = nil;
 @interface NSSound (PrivateMethods)
 
 + (id<GSSoundSvr>) gsnd;
-
 + (void) localServer: (id<GSSoundSvr>)s;
-
 + (id) lostServer: (NSNotification*)notification;
 
 - (BOOL) getDataFromFileAtPath: (NSString *)path;
-
 - (void) setIdentifier: (NSString *)identifier;
-
 - (NSString *) identifier;
-
 - (float) samplingRate;
-
 - (float) frameSize;
-
 - (long) frameCount;
-
 - (NSData *) data;
 
 @end
@@ -186,7 +174,8 @@ static id<GSSoundSvr> the_server = nil;
 	    {
 #ifdef GNUSTEP_BASE_LIBRARY
 	      cmd = RETAIN([[NSSearchPathForDirectoriesInDomains(
-								 GSToolsDirectory, NSSystemDomainMask, YES) objectAtIndex: 0]
+				 GSToolsDirectory, NSSystemDomainMask, YES) 
+								objectAtIndex: 0]
 			     stringByAppendingPathComponent: @"gsnd"]);
 #else
 	      cmd = RETAIN([[@GNUSTEP_INSTALL_PREFIX 
@@ -200,7 +189,6 @@ static id<GSSoundSvr> the_server = nil;
 	      NSLog(@"Unable to contact sound server - "
 		    @"please ensure that gsnd is running for %@.", description);
 	      return nil;
-
 	    } 
 	  else 
 	    {
@@ -222,7 +210,7 @@ static id<GSSoundSvr> the_server = nil;
 		       invocation: nil repeats: NO];
 
 	      [[NSRunLoop currentRunLoop] runUntilDate: 
-					    [NSDate dateWithTimeIntervalSinceNow: 5.0]];
+					      [NSDate dateWithTimeIntervalSinceNow: 5.0]];
 
 	      recursion = YES;
 	      [self gsnd];
@@ -254,6 +242,7 @@ static id<GSSoundSvr> the_server = nil;
 
 - (BOOL) getDataFromFileAtPath: (NSString *)path
 {
+  NSMutableData *d;
   AFfilehandle file;
   AFframecount framesRead;
   void *buffer;
@@ -270,28 +259,30 @@ return NO; \
       return NO;
     }
 
-  dataFormat = AF_SAMPFMT_TWOSCOMP;
-  CHECK_AF_ERR (afSetVirtualSampleFormat(file, AF_DEFAULT_TRACK, dataFormat, 16));
-  channelCount = DEFAULT_CHANNELS;
-  CHECK_AF_ERR (afSetVirtualChannels(file, AF_DEFAULT_TRACK, channelCount));
-  CHECK_AF_ERR (samplingRate = afGetRate(file, AF_DEFAULT_TRACK));	
-  CHECK_AF_ERR (frameCount = afGetFrameCount(file, AF_DEFAULT_TRACK));	
-  CHECK_AF_ERR (frameSize = afGetVirtualFrameSize(file, AF_DEFAULT_TRACK, 1));	
-  CHECK_AF_ERR (dataLocation = afGetDataOffset(file, AF_DEFAULT_TRACK));
+  _dataFormat = AF_SAMPFMT_TWOSCOMP;
+  CHECK_AF_ERR (afSetVirtualSampleFormat(file, AF_DEFAULT_TRACK, _dataFormat, 16));
+  _channelCount = DEFAULT_CHANNELS;
+  CHECK_AF_ERR (afSetVirtualChannels(file, AF_DEFAULT_TRACK, _channelCount));
+  CHECK_AF_ERR (_samplingRate = afGetRate(file, AF_DEFAULT_TRACK));	
+  CHECK_AF_ERR (_frameCount = afGetFrameCount(file, AF_DEFAULT_TRACK));	
+  CHECK_AF_ERR (_frameSize = afGetVirtualFrameSize(file, AF_DEFAULT_TRACK, 1));	
+  CHECK_AF_ERR (_dataLocation = afGetDataOffset(file, AF_DEFAULT_TRACK));
 		
-  buffer = NSZoneMalloc(NSDefaultMallocZone(), BUFFER_SIZE_IN_FRAMES * frameSize);		
-  data = [[NSMutableData alloc] initWithCapacity: 1];
+  buffer = NSZoneMalloc(NSDefaultMallocZone(), BUFFER_SIZE_IN_FRAMES * _frameSize);
+  d = [[NSMutableData alloc] initWithCapacity: 1];
 
-  CHECK_AF_ERR (framesRead = afReadFrames(file, AF_DEFAULT_TRACK, buffer, BUFFER_SIZE_IN_FRAMES));
-
+  CHECK_AF_ERR (framesRead = afReadFrames(file, AF_DEFAULT_TRACK, buffer, 
+					  BUFFER_SIZE_IN_FRAMES));
   while (framesRead > 0) 
     {	
-      [data appendBytes: (const void *)buffer 
-	    length: framesRead * frameSize];
-      CHECK_AF_ERR (framesRead = afReadFrames(file, AF_DEFAULT_TRACK, buffer, BUFFER_SIZE_IN_FRAMES));		
+      [d appendBytes: (const void *)buffer 
+	 length: framesRead * _frameSize];
+      CHECK_AF_ERR (framesRead = afReadFrames(file, AF_DEFAULT_TRACK, buffer, 
+					      BUFFER_SIZE_IN_FRAMES));		
     }
-	
-  dataSize = [data length];
+
+  _data = d;	
+  _dataSize = [_data length];
   NSZoneFree(NSDefaultMallocZone(), buffer);
   afCloseFile(file);
 	
@@ -324,32 +315,32 @@ return NO; \
 
 - (void) setIdentifier: (NSString *)identifier
 {
-  ASSIGN (uniqueIdentifier, identifier);
+  ASSIGN (_uniqueIdentifier, identifier);
 }
 
 - (NSString *) identifier
 {
-  return uniqueIdentifier;
+  return _uniqueIdentifier;
 }
 
 - (float) samplingRate
 {
-  return samplingRate;
+  return _samplingRate;
 }
 
 - (float) frameSize
 {
-  return frameSize;
+  return _frameSize;
 }
 
 - (long) frameCount
 {
-  return frameCount;
+  return _frameCount;
 }
 
 - (NSData *) data
 {
-  return data;
+  return _data;
 }
 
 @end
@@ -385,13 +376,13 @@ return NO; \
 
 - (void) dealloc
 {
-  TEST_RELEASE (data);
-  if (name && self == [nameDict objectForKey: name]) 
+  TEST_RELEASE (_data);
+  if ((_name != nil) && self == [nameDict objectForKey: _name]) 
     { 
-      [nameDict removeObjectForKey: name];
+      [nameDict removeObjectForKey: _name];
     }
-  TEST_RELEASE (name);
-  TEST_RELEASE (uniqueIdentifier);
+  TEST_RELEASE (_name);
+  TEST_RELEASE (_uniqueIdentifier);
   [super dealloc];
 }
 
@@ -404,9 +395,9 @@ return NO; \
 	
   if (self) 
     {			
-      onlyReference = byRef;			
-      ASSIGN (name, [path lastPathComponent]);
-      uniqueIdentifier = nil;
+      _onlyReference = byRef;			
+      ASSIGN (_name, [path lastPathComponent]);
+      _uniqueIdentifier = nil;
       if ([self getDataFromFileAtPath: path] == NO) 
 	{
 	  NSLog(@"Could not get sound data from %@", path);
@@ -419,7 +410,7 @@ return NO; \
 
 - (id) initWithContentsOfURL: (NSURL *)url byReference:(BOOL)byRef
 {
-  onlyReference = byRef;	
+  _onlyReference = byRef;	
   return [self initWithData: [NSData dataWithContentsOfURL: url]];
 }
 
@@ -444,9 +435,9 @@ return NO; \
 //
 - (BOOL) pause 
 {
-  if (uniqueIdentifier) 
+  if (_uniqueIdentifier) 
     {
-      return [[NSSound gsnd] pauseSoundWithIdentifier: uniqueIdentifier];
+      return [[NSSound gsnd] pauseSoundWithIdentifier: _uniqueIdentifier];
     }	
   return NO;
 }
@@ -458,27 +449,27 @@ return NO; \
 
 - (BOOL) resume
 {
-  if (uniqueIdentifier) 
+  if (_uniqueIdentifier) 
     {
-      return [[NSSound gsnd] resumeSoundWithIdentifier: uniqueIdentifier];
+      return [[NSSound gsnd] resumeSoundWithIdentifier: _uniqueIdentifier];
     }	
   return NO;
 }
 
 - (BOOL) stop
 {
-  if (uniqueIdentifier) 
+  if (_uniqueIdentifier) 
     {
-      return [[NSSound gsnd] stopSoundWithIdentifier: uniqueIdentifier];
+      return [[NSSound gsnd] stopSoundWithIdentifier: _uniqueIdentifier];
     }	
   return NO;
 }
 
 - (BOOL) isPlaying
 {
-  if (uniqueIdentifier) 
+  if (_uniqueIdentifier) 
     {
-      return [[NSSound gsnd] isPlayingSoundWithIdentifier: uniqueIdentifier];
+      return [[NSSound gsnd] isPlayingSoundWithIdentifier: _uniqueIdentifier];
     }	
   return NO;
 }
@@ -515,12 +506,12 @@ return NO; \
 //
 - (id) delegate
 {
-  return delegate;
+  return _delegate;
 }
 
 - (void) setDelegate: (id)aDelegate
 {
-  delegate = aDelegate;
+  _delegate = aDelegate;
 }
 
 //
@@ -566,7 +557,6 @@ return NO; \
 	  /* Extension is one of the sound types
 	     So remove from the name */
 	  the_name = [name stringByDeletingPathExtension];
-
 	} 
       else 
 	{
@@ -580,7 +570,6 @@ return NO; \
       if (extension) 
 	{
 	  path = [main_bundle pathForResource: the_name ofType: extension];
-
 	} 
       else 
 	{
@@ -657,7 +646,7 @@ return NO; \
 	    {
 	      [sound setName: name];
 	      RELEASE(sound);	
-	      sound->onlyReference = YES;
+	      sound->_onlyReference = YES;
 	    }
 
 	  return sound;
@@ -674,7 +663,7 @@ return NO; \
 
 - (NSString *) name
 {
-  return name;
+  return _name;
 }
 
 - (BOOL) setName: (NSString *)aName
@@ -686,18 +675,18 @@ return NO; \
       return NO;
     }
 	
-  if (name && self == [nameDict objectForKey: name]) 
+  if ((_name != nil) && self == [nameDict objectForKey: _name]) 
     {
       /* We retain self in case removing from the dictionary releases
 	 us */
       RETAIN (self);
       retained = YES;
-      [nameDict removeObjectForKey: name];
+      [nameDict removeObjectForKey: _name];
     }
   
-  ASSIGN(name, aName);
+  ASSIGN(_name, aName);
   
-  [nameDict setObject: self forKey: name];
+  [nameDict setObject: self forKey: _name];
   if (retained) 
     {
       RELEASE (self);
@@ -711,86 +700,59 @@ return NO; \
 //
 - (void) encodeWithCoder: (NSCoder *)coder
 {
-  [coder encodeValueOfObjCType: @encode(BOOL) at: &onlyReference];
-  [coder encodeObject: name];
+  [coder encodeValueOfObjCType: @encode(BOOL) at: &_onlyReference];
+  [coder encodeObject: _name];
 	
-  if (onlyReference == YES) 
+  if (_onlyReference == YES) 
     {
       return;
     }
 
-  if (uniqueIdentifier != nil) 
+  if (_uniqueIdentifier != nil) 
     {
-      [coder encodeObject: uniqueIdentifier];
+      [coder encodeObject: _uniqueIdentifier];
     }
 
-  [coder encodeConditionalObject: delegate];
-  [coder encodeValueOfObjCType: @encode(long) at: &dataLocation];
-  [coder encodeValueOfObjCType: @encode(long) at: &dataSize];
-  [coder encodeValueOfObjCType: @encode(int) at: &dataFormat];
-  [coder encodeValueOfObjCType: @encode(float) at: &samplingRate];
-  [coder encodeValueOfObjCType: @encode(float) at: &frameSize];
-  [coder encodeValueOfObjCType: @encode(long) at: &frameCount];
-  [coder encodeValueOfObjCType: @encode(int) at: &channelCount];
+  [coder encodeConditionalObject: _delegate];
+  [coder encodeValueOfObjCType: @encode(long) at: &_dataLocation];
+  [coder encodeValueOfObjCType: @encode(long) at: &_dataSize];
+  [coder encodeValueOfObjCType: @encode(int) at: &_dataFormat];
+  [coder encodeValueOfObjCType: @encode(float) at: &_samplingRate];
+  [coder encodeValueOfObjCType: @encode(float) at: &_frameSize];
+  [coder encodeValueOfObjCType: @encode(long) at: &_frameCount];
+  [coder encodeValueOfObjCType: @encode(int) at: &_channelCount];
 
-  [coder encodeObject: data];
+  [coder encodeObject: _data];
 }
 
 - (id) initWithCoder: (NSCoder*)decoder
 {	
-  [decoder decodeValueOfObjCType: @encode(BOOL) at: &onlyReference];
+  [decoder decodeValueOfObjCType: @encode(BOOL) at: &_onlyReference];
 
-  if (onlyReference == YES) 
+  if (_onlyReference == YES) 
     {
       NSString *theName = [decoder decodeObject];
 
       RELEASE (self);
       self = RETAIN ([NSSound soundNamed: theName]);
-      [self setName: theName];
-		
-    } else 
-      {
-	NSData *d;
-		
-	name = [decoder decodeObject];
-  	TEST_RETAIN (name);
-
-	uniqueIdentifier = [decoder decodeObject];
-  	if (uniqueIdentifier != nil) {
-	  RETAIN (uniqueIdentifier);
-  	} 
-	else 
-	  {
-	    uniqueIdentifier = nil;
-	  }
-
-	delegate = [decoder decodeObject];
-  	if (delegate != nil) 
-	  {
-	    [self setDelegate: delegate];
-	  } 
-	else 
-	  {
-	    delegate = nil;
-	  }
-
-	[decoder decodeValueOfObjCType: @encode(long) at: &dataLocation];
-	[decoder decodeValueOfObjCType: @encode(long) at: &dataSize];
-	[decoder decodeValueOfObjCType: @encode(int) at: &dataFormat];
-	[decoder decodeValueOfObjCType: @encode(float) at: &samplingRate];
-	[decoder decodeValueOfObjCType: @encode(float) at: &frameSize];
-	[decoder decodeValueOfObjCType: @encode(long) at: &frameCount];
-	[decoder decodeValueOfObjCType: @encode(int) at: &channelCount];
-
-	d = [decoder decodeObject];
-	if (d != nil) {
-	  data = [d mutableCopy];
-  	} 
-	else 
-	  {
-	    data = nil;
-	  }		
-      }
+      [self setName: theName];	
+    } 
+  else 
+    {
+      _name = TEST_RETAIN ([decoder decodeObject]);
+      _uniqueIdentifier = TEST_RETAIN ([decoder decodeObject]);
+      [self setDelegate: [decoder decodeObject]];
+      
+      [decoder decodeValueOfObjCType: @encode(long) at: &_dataLocation];
+      [decoder decodeValueOfObjCType: @encode(long) at: &_dataSize];
+      [decoder decodeValueOfObjCType: @encode(int) at: &_dataFormat];
+      [decoder decodeValueOfObjCType: @encode(float) at: &_samplingRate];
+      [decoder decodeValueOfObjCType: @encode(float) at: &_frameSize];
+      [decoder decodeValueOfObjCType: @encode(long) at: &_frameCount];
+      [decoder decodeValueOfObjCType: @encode(int) at: &_channelCount];
+      
+      _data = RETAIN([decoder decodeObject]);
+    }
 	
   return self;
 }
@@ -807,25 +769,9 @@ return NO; \
 {
   NSSound *newSound = (NSSound *)NSCopyObject(self, 0, zone);
 	
-  newSound->dataLocation = dataLocation;
-  newSound->dataSize = dataSize;
-  newSound->dataFormat = dataFormat;
-  newSound->samplingRate = samplingRate;
-  newSound->frameSize = frameSize;
-  newSound->frameCount = frameCount;
-  newSound->channelCount = channelCount;
-  newSound->data = [data mutableCopy];		
-  newSound->name = [name copy];		
-  if (uniqueIdentifier != nil) 
-    {
-      newSound->uniqueIdentifier = [uniqueIdentifier copy];	
-    } 
-  else 
-    {
-      newSound->uniqueIdentifier = nil;
-    }
-  newSound->onlyReference = onlyReference;
-  newSound->delegate = delegate;
+  newSound->_data = [_data copyWithZone: zone];	
+  newSound->_name = [_name copyWithZone: zone];		
+  newSound->_uniqueIdentifier = [_uniqueIdentifier copyWithZone: zone];
 	
   return newSound;
 }

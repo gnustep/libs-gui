@@ -41,21 +41,19 @@
 
 @interface NSSound : NSObject <NSCoding, NSCopying>
 {		
-	id gsnd;
-
-	NSString *name;
-	NSString *uniqueIdentifier;	
-	BOOL onlyReference;
-	id delegate;	
+  NSString *_name;
+  NSString *_uniqueIdentifier;	
+  BOOL _onlyReference;
+  id _delegate;	
 	
-	long dataLocation;
-	long dataSize;
-	int dataFormat;
-	float samplingRate;
-	float frameSize;
-	long frameCount;
-	int channelCount;	
-	NSMutableData *data;
+  NSData *_data;
+  float _samplingRate;
+  float _frameSize;
+  long _dataLocation;
+  long _dataSize;
+  long _frameCount;
+  int _channelCount;	
+  int _dataFormat;
 }
 
 //

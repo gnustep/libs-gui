@@ -150,7 +150,6 @@ NSView.m \
 NSWindow.m \
 NSWindowController.m \
 NSWorkspace.m \
-GSComboSupport.m \
 GSDisplayServer.m \
 GSFusedSilica.m \
 GSFusedSilicaContext.m \
