@@ -54,6 +54,7 @@
 + (NSScreen*) mainScreen;
 + (NSScreen*) deepestScreen;
 + (NSArray*) screens;
++ (void)resetScreens;
 
 /*
  * Reading Screen Information
