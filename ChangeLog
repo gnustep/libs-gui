@@ -1,3 +1,8 @@
+2004-09-26 22:18  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSTabViewItem.m (-drawLabel:inRect:): Adjust the label
+	position to match the text height change (of 2004-09-21).
+
 2004-09-25  Matt Rice <ratmice@yahoo.com>
 	
 	* Source/NSScrollView.m: Remove corner view when we have one, but no 

@@ -198,7 +198,6 @@
 			       nil];
 
   lRect = tabRect;
-  lRect.origin.y += 3;
   [string drawInRect: lRect withAttributes: attr];
   RELEASE(attr);
 
