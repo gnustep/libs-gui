@@ -1,6 +1,24 @@
 2000-12-07  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSCell.h: 
+	Remove float formating ivars, as they were never used.
+	* Headers/gnustep/gui/NSActionCell.h: 
+	Removed all methods, as they are defined for super class.
+	* Headers/gnustep/gui/NSAffineTransform.h: 
+	Added NSCoding Protocol and moved extension methods into seperate
+	interface.
+	* Source/NSCell.m
+	Moved the initialisation of the _typingAttributes from the init
+	method to its first use.	
+	* Source/NSActionCell.m
+	Remove initialisation and copy method, as this were mere super
+	calls. Added getter methods with validation.
+	* Source/NSAffineTransform.m
+	Added coding methods.
+	
+2000-12-07  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSCell.h: 
 	Added missing ivars and rearranged them all.
 	* Headers/gnustep/gui/NSPopupButtonCell.h: 
 	Remove now unneeded ivar _menu.
