@@ -45,6 +45,9 @@
    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#ifndef _GNUstep_H_NSTextStorage
+#define _GNUstep_H_NSTextStorage
+
 #import <Foundation/Foundation.h>
 #import <AppKit/NSStringDrawing.h>
 
@@ -137,3 +140,4 @@ enum
 extern NSString *NSTextStorageWillProcessEditingNotification;
 extern NSString *NSTextStorageDidProcessEditingNotification;
 
+#endif

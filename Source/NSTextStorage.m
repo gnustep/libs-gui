@@ -28,6 +28,7 @@
 #include <AppKit/NSAttributedString.h>
 #include <Foundation/NSGAttributedString.h>
 #include <AppKit/NSTextStorage.h>
+#include <AppKit/NSLayoutManager.h>
 
 @implementation NSTextStorage
 
@@ -193,7 +194,7 @@ static	Class	concrete;
 
   for (i=0;i<[layoutManagers count];i++)
     {
-      id lManager = [layoutManagers objectAtIndex:i];
+      NSLayoutManager *lManager = [layoutManagers objectAtIndex:i];
 
       [lManager textStorage:self edited:editedMask range:editedRange
 	changeInLength:editedDelta invalidatedRange:r];

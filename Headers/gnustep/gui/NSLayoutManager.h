@@ -202,7 +202,12 @@ typedef enum {
 
 /******************* Invalidation sent by NSTextStorage *******************/
 
-- (void)textStorage:(NSTextStorage *)str edited:(unsigned)editedMask range:(NSRange)newCharRange changeInLength:(int)delta invalidatedRange:(NSRange)invalidatedCharRange;
+- (void)textStorage: (NSTextStorage *)aTextStorage
+             edited: (unsigned)mask
+              range: (NSRange)range
+     changeInLength: (int)lengthChange
+   invalidatedRange: (NSRange)invalidatedRange;
+
     // Sent from processEditing in NSTextStorage. newCharRange is the range in the final string which was explicitly edited. invalidatedRange includes stuff which was changed as a result of attribute fixing. invalidatedRange is either equal to newCharRange or larger. Layout managers should not change the contents of the text storage during the execution of this message.
 
 /*********************** Global layout manager options ***********************/
