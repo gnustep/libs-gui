@@ -88,6 +88,11 @@ static NSColor *scrollBarColor = nil;
   return YES;
 }
 
+- (BOOL) acceptsFirstResponder
+{
+  return NO;
+}
+
 - (NSScrollArrowPosition) arrowsPosition
 {
   return _arrowsPosition;

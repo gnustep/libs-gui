@@ -1,3 +1,8 @@
+2003-05-01 21:48  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSScroller.m (-acceptsFirstResponder): Implement to
+	return NO.
+
 2003-05-01 20:02  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSInputManager.m (-loadBindingsWithName:): Update for file
