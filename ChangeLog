@@ -1,3 +1,8 @@
+Mon Dec  7 15:55:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Model/GMAppKit.m: Fix errors in creating new objects - was messing
+	up subclasses by creating new objects of the superclass instead.
+
 Mon Dec  7 12:15:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Tools/make_services.m: Serialize cache info in compact format
