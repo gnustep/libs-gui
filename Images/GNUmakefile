@@ -34,10 +34,14 @@ IMAGE_FILES = \
 GNUstep_Images_Copyright \
 common_3DArrowDown.tiff \
 common_ArrowDown.tiff \
+common_ArrowDownH.tiff \
 common_ArrowUp.tiff \
+common_ArrowUpH.tiff \
 common_ArrowRight.tiff \
+common_ArrowRightH.tiff \
 common_3DArrowRight.tiff \
 common_ArrowLeft.tiff \
+common_ArrowLeftH.tiff \
 common_3DArrowRightH.tiff \
 common_2DCheckMark.tiff \
 common_Close.tiff \
