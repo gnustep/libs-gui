@@ -1,3 +1,19 @@
+Tue Aug 21 19:38:00 2001  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Headers/gnustep/gui/NSTableView.h: Added ivars for autosaving of
+	table columns.
+	* Source/NSTableView.m ([-autosaveName]): Implemented.
+	([-autosaveTableColumns]): Implemented.
+	([-setAutosaveName:]): Implemented.
+	([-setAutosaveTableColumns:]): Implemented.
+	([-_autoloadTableColumns]): New method.
+	([-_autosaveTableColumns]): New methods.
+	([-moveColumn:toColumn:]): Invoke _autosaveTableColumns.
+	([-dealloc]): Release _autosaveName if needed.  Remove self from
+	observing notifications about column resizings.
+	(Patches by Marko Mikulicic <mikulici@die.supsi.ch> mostly
+	rewritten)
+
 Tue Aug 21 18:28:39 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSTableView.m ([-moveColumn:toColumn:]): Use the cached
