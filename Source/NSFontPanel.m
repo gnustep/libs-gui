@@ -569,6 +569,8 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   [previewButton setTarget: self];
   [previewButton setTag: NSFPPreviewButton];
   [previewButton setAutoresizingMask: NSViewMinXMargin];
+  [previewButton setState: NSOnState];
+  _preview = YES;
   [bottomArea addSubview: previewButton];
   RELEASE(previewButton);
 
