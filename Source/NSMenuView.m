@@ -309,13 +309,20 @@ static float GSMenuBarHeight = 25.0; // a guess.
 
   cellSize.width = 7 + neededWidth + 7 + 7 + 5;
 
-  [self setFrame: NSMakeRect(0,0,cellSize.width,howHigh)];
+  if ([window contentView] == self)
+    [window setContentSize: NSMakeSize(cellSize.width,howHigh)];
+  else
+    [self setFrame: NSMakeRect(0,0,cellSize.width,howHigh)];
 }
 
 - (void)sizeToFitForPopUpButton
 {
   int howHigh = ([menuv_items_link count] * cellSize.height);
-  [self setFrame: NSMakeRect(0,0,cellSize.width,howHigh)];
+
+  if ([window contentView] == self)
+    [window setContentSize: NSMakeSize(cellSize.width,howHigh)];
+  else
+    [self setFrame: NSMakeRect(0,0,cellSize.width,howHigh)];
 }
 
 - (float)stateImageOffset
