@@ -1,3 +1,8 @@
+Wed Nov 18 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSPasteboard.m: make filename and file content pasteboard
+	types conform to documentation.
+
 Mon Nov 16 15:13:39 1998  Adam Fedor  <fedor@ultra.doc.com>
 
 	* Preliminary implementation of a device independant drawing
