@@ -38,7 +38,7 @@
 @interface GSSimpleLayoutManager: NSLayoutManager
 {
   // contains private _GNULineLayoutInfo objects
-  NSMutableArray	*lineLayoutInformation;
+  NSMutableArray	*_lineLayoutInformation;
   NSRect _rects[4];
 }
 

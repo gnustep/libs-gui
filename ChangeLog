@@ -1,3 +1,25 @@
+2000-10-12  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSLayoutManager.h:
+	Added some missing methods and move comments to .m file.
+	Other clean ups.
+	* Headers/gnustep/gui/NSDocumentFrameworkPrivate.h:
+	Removed unneeded method _removeDocument
+	* Source/NSDocument.m:
+	In [close] use removeDocument instead of _removeDocument.
+	[initWithContentsOfFile:ofType:] call [self init] instead of
+	[super init].
+	* Source/NSDocumentController.m:
+	Use explicit Private interface.
+	* Source/NSLayoutManager.m:
+	Added comments from .h file.
+	Return a GSSimpleLayoutManager from [allocWithZone].
+	Removed all compiler warnings.
+	* Source/NSText.m:
+	Use NSLayoutManager instead of GSSimpleLayoutManager.
+	* Source/NSStringDrawing.m: 
+	Started reorganising the code.
+	
 Wed Oct 11 10:51:56 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSApplication.m ([-run]), ([-runModalSession:]): Reverted
