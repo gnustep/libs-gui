@@ -1,4 +1,16 @@
-2003-07-16  Fred Kiefer <FredKiefer@gmx.de>
+2003-07-19  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPopUpButtonCell.m
+	Added methods [init], [objectValue], [setObjectValue:],
+	[setImage:]. In [initTextCell:pullsDown:] create the menu first,
+	so that the first item gets entered to it. In [setPullsDown:] and
+	[setAltersStateOfSelectedItem] set the values that depend on these
+	flags. In [insertItemWithTitle:atIndex:] remove duplicates. 
+	[selectItem:] the used image now depends on the arrow
+	position. Removed [drawWithFrame:inView:] and rewrote
+	[drawInteriorWithFrame:inView:].
+	
+2003-07-18  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSControl.h
 	* Source/NSControl.m
