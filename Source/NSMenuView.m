@@ -147,11 +147,6 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
   // Create an array to store our menu item cells.
   _itemCells = [NSMutableArray new];
 
-  // Create title view and add it.  CHECKME, should we do this here?
-  _titleView = [[NSMenuWindowTitleView alloc] init];
-
-  [self addSubview: _titleView];
-  
   return self;
 }
 
@@ -215,7 +210,7 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
                     name: NSMenuDidRemoveItemNotification
                   object: _menu];
 
-  [_titleView setMenu: _menu];  // WO CHECKME does this needs reorganizing?
+  [self update];
   // Force menu view's layout to be recalculated.
   [self setNeedsSizing: YES];
 }
@@ -472,7 +467,24 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
  */
 - (void) update
 {
-  [_menu update];
+  NSDebugLLog (@"NSMenu", @"update called on menu view");
+
+  if ([_menu _ownedByPopUp] && _titleView) 
+    {
+      [_titleView removeFromSuperview];
+      _titleView = nil;
+    }
+  if (![_menu _ownedByPopUp] && !_titleView)
+    {
+      _titleView = [[NSMenuWindowTitleView alloc] init];
+      [_titleView setMenu: _menu];  
+      [self addSubview: _titleView];
+      [_titleView release];
+    }
+  [_titleView setMenu: _menu];
+
+  if (_needsSizing)
+    [self sizeToFit];
 
   if ([_menu isTornOff] && ![_menu isTransient])
     {
@@ -482,9 +494,6 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
     {
       [_titleView removeCloseButton];
     }
-  
-  if (_needsSizing)
-    [self sizeToFit];
 }
 
 - (void) setNeedsSizing: (BOOL)flag
@@ -499,148 +508,153 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 
 - (void) sizeToFit
 {
-	unsigned i;
-	unsigned howMany = [_itemCells count];
-	unsigned wideTitleView = 1;
-	float    neededImageAndTitleWidth = [_titleView titleSize].width;
-	float    neededKeyEquivalentWidth = 0.0;
-	float    neededStateImageWidth = 0.0;
-	float    accumulatedOffset = 0.0;
-	float    popupImageWidth = 0.0;
-	float    menuBarHeight = 0.0;
-
-	// Popup menu doesn't need title bar
-	if (![_menu _ownedByPopUp])
-		menuBarHeight = [[self class] menuBarHeight];
-	else
-		menuBarHeight += _leftBorderOffset;
-
-	// TODO: Optimize this loop.
-	for (i = 0; i < howMany; i++)
-	{
-		float		    aStateImageWidth = 0.0;
-		float		    aTitleWidth = 0.0;
-		float		    anImageWidth = 0.0;
-		float		    anImageAndTitleWidth = 0.0;
-		float		    aKeyEquivalentWidth = 0.0;
-		NSMenuItemCell	*aCell = [_itemCells objectAtIndex: i];
-
-		// State image area.
-		aStateImageWidth = [aCell stateImageWidth];
-
-		// Title and Image area.
-		aTitleWidth = [aCell titleWidth];
-		anImageWidth = [aCell imageWidth];
-
-		// Key equivalent area.
-		aKeyEquivalentWidth = [aCell keyEquivalentWidth];
-
-		switch ([aCell imagePosition])
-		{
-			case NSNoImage: 
-				anImageAndTitleWidth = aTitleWidth;
-				break;
-
-			case NSImageOnly: 
-				anImageAndTitleWidth = anImageWidth;
-				break;
-
-			case NSImageLeft: 
-			case NSImageRight: 
-				anImageAndTitleWidth = anImageWidth + aTitleWidth + xDist;
-				break;
-
-			case NSImageBelow: 
-			case NSImageAbove: 
-			case NSImageOverlaps: 
-			default: 
-				if (aTitleWidth > anImageWidth)
-					anImageAndTitleWidth = aTitleWidth;
-				else
-					anImageAndTitleWidth = anImageWidth;
-				break;
-		}
-		anImageAndTitleWidth += aStateImageWidth;
-
-		if (aStateImageWidth > neededStateImageWidth)
-			neededStateImageWidth = aStateImageWidth;
-
-		if (anImageAndTitleWidth > neededImageAndTitleWidth)
-		{
-			neededImageAndTitleWidth = anImageAndTitleWidth;
-			wideTitleView = 0;
-		}
-
-		if (aKeyEquivalentWidth > neededKeyEquivalentWidth)
-			neededKeyEquivalentWidth = aKeyEquivalentWidth;
-
-		// Popup menu has only one item with nibble image
-		if (anImageWidth)
-			popupImageWidth = anImageWidth;
-	}
-
-	// Cache the needed widths.
-	_stateImageWidth = neededStateImageWidth;
-	_imageAndTitleWidth = neededImageAndTitleWidth;
-	_keyEqWidth = neededKeyEquivalentWidth;
-
-	if (howMany)
-	{
-		// Calculate the offsets and cache them.
-		if (neededStateImageWidth)
-		{
-			_stateImageOffset = accumulatedOffset += _horizontalEdgePad;
-			accumulatedOffset += neededStateImageWidth;
-		}
-
-		_imageAndTitleOffset = accumulatedOffset += _horizontalEdgePad;
-		accumulatedOffset += neededImageAndTitleWidth;
-
-		if (neededKeyEquivalentWidth)
-		{
-			_keyEqOffset = accumulatedOffset += (2 * _horizontalEdgePad);
-			accumulatedOffset += neededKeyEquivalentWidth + _horizontalEdgePad;
-		}
-		else
-		{
-			if (wideTitleView && [_menu supermenu] != nil)
-				accumulatedOffset += 15 + 3 + 2;
-			else
-				accumulatedOffset += 3 * _horizontalEdgePad;
-		}
-	}
-	else
-	{
-		accumulatedOffset += 5 + neededImageAndTitleWidth + 3 + 2;
-		if (wideTitleView && [_menu supermenu] != nil)
-			accumulatedOffset += 15;
-	}
-
-	// Calculate frame size.
-	if (![_menu _ownedByPopUp])
-	{
-		// Add the border width: 1 for left, 2 for right sides
-		_cellSize.width = accumulatedOffset + 3;
-	}
-	else
-	{
-		_keyEqOffset = _cellSize.width - _keyEqWidth - popupImageWidth;
-	}
-
-	if (_horizontal == NO)
-	{
-		[self setFrameSize: NSMakeSize(_cellSize.width + _leftBorderOffset, 
-				(howMany * _cellSize.height) + menuBarHeight)];
-		[_titleView setFrame: NSMakeRect (0, howMany * _cellSize.height,
-				NSWidth (_bounds), menuBarHeight)];
-	}
-	else
-	{
-		[self setFrameSize: NSMakeSize((howMany * _cellSize.width), 
-				_cellSize.height + _leftBorderOffset)];
-	}
-
-	_needsSizing = NO;
+  unsigned i;
+  unsigned howMany = [_itemCells count];
+  unsigned wideTitleView = 1;
+  float    neededImageAndTitleWidth = 0.0;
+  float    neededKeyEquivalentWidth = 0.0;
+  float    neededStateImageWidth = 0.0;
+  float    accumulatedOffset = 0.0;
+  float    popupImageWidth = 0.0;
+  float    menuBarHeight = 0.0;
+  
+  // Popup menu doesn't need title bar
+  if (![_menu _ownedByPopUp] && _titleView)
+    {
+      menuBarHeight = [[self class] menuBarHeight];
+      neededStateImageWidth = [_titleView titleSize].width;
+    }
+  else
+    {
+      menuBarHeight += _leftBorderOffset;
+    }
+  
+  // TODO: Optimize this loop.
+  for (i = 0; i < howMany; i++)
+    {
+      float		    aStateImageWidth = 0.0;
+      float		    aTitleWidth = 0.0;
+      float		    anImageWidth = 0.0;
+      float		    anImageAndTitleWidth = 0.0;
+      float		    aKeyEquivalentWidth = 0.0;
+      NSMenuItemCell	*aCell = [_itemCells objectAtIndex: i];
+      
+      // State image area.
+      aStateImageWidth = [aCell stateImageWidth];
+      
+      // Title and Image area.
+      aTitleWidth = [aCell titleWidth];
+      anImageWidth = [aCell imageWidth];
+      
+      // Key equivalent area.
+      aKeyEquivalentWidth = [aCell keyEquivalentWidth];
+      
+      switch ([aCell imagePosition])
+        {
+        case NSNoImage: 
+          anImageAndTitleWidth = aTitleWidth;
+          break;
+          
+        case NSImageOnly: 
+          anImageAndTitleWidth = anImageWidth;
+          break;
+          
+        case NSImageLeft: 
+        case NSImageRight: 
+          anImageAndTitleWidth = anImageWidth + aTitleWidth + xDist;
+          break;
+          
+        case NSImageBelow: 
+        case NSImageAbove: 
+        case NSImageOverlaps: 
+        default: 
+          if (aTitleWidth > anImageWidth)
+            anImageAndTitleWidth = aTitleWidth;
+          else
+            anImageAndTitleWidth = anImageWidth;
+          break;
+        }
+      anImageAndTitleWidth += aStateImageWidth;
+      
+      if (aStateImageWidth > neededStateImageWidth)
+        neededStateImageWidth = aStateImageWidth;
+      
+      if (anImageAndTitleWidth > neededImageAndTitleWidth)
+        {
+          neededImageAndTitleWidth = anImageAndTitleWidth;
+          wideTitleView = 0;
+        }
+      
+      if (aKeyEquivalentWidth > neededKeyEquivalentWidth)
+        neededKeyEquivalentWidth = aKeyEquivalentWidth;
+      
+      // Popup menu has only one item with nibble image
+      if (anImageWidth)
+        popupImageWidth = anImageWidth;
+    }
+  
+  // Cache the needed widths.
+  _stateImageWidth = neededStateImageWidth;
+  _imageAndTitleWidth = neededImageAndTitleWidth;
+  _keyEqWidth = neededKeyEquivalentWidth;
+  
+  if (howMany)
+    {
+      // Calculate the offsets and cache them.
+      if (neededStateImageWidth)
+        {
+          _stateImageOffset = accumulatedOffset += _horizontalEdgePad;
+          accumulatedOffset += neededStateImageWidth;
+        }
+      
+      _imageAndTitleOffset = accumulatedOffset += _horizontalEdgePad;
+      accumulatedOffset += neededImageAndTitleWidth;
+      
+      if (neededKeyEquivalentWidth)
+        {
+          _keyEqOffset = accumulatedOffset += (2 * _horizontalEdgePad);
+          accumulatedOffset += neededKeyEquivalentWidth + _horizontalEdgePad;
+        }
+      else
+        {
+          if (wideTitleView && [_menu supermenu] != nil)
+            accumulatedOffset += 15 + 3 + 2;
+          else
+            accumulatedOffset += 3 * _horizontalEdgePad;
+        }
+    }
+  else
+    {
+      accumulatedOffset += 5 + neededImageAndTitleWidth + 3 + 2;
+      if (wideTitleView && [_menu supermenu] != nil)
+        accumulatedOffset += 15;
+    }
+  
+  // Calculate frame size.
+  if (![_menu _ownedByPopUp])
+    {
+      // Add the border width: 1 for left, 2 for right sides
+      _cellSize.width = accumulatedOffset + 3;
+    }
+  else
+    {
+      _keyEqOffset = _cellSize.width - _keyEqWidth - popupImageWidth;
+    }
+  
+  if (_horizontal == NO)
+    {
+      [self setFrameSize: NSMakeSize(_cellSize.width + _leftBorderOffset, 
+                                     (howMany * _cellSize.height) + menuBarHeight)];
+      [_titleView setFrame: NSMakeRect (0, howMany * _cellSize.height,
+                                        NSWidth (_bounds), menuBarHeight)];
+    }
+  else
+    {
+      [self setFrameSize: NSMakeSize((howMany * _cellSize.width), 
+                                     _cellSize.height + _leftBorderOffset)];
+    }
+  
+  _needsSizing = NO;
 }
 
 - (float) stateImageOffset
@@ -845,69 +859,67 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 			    preferredEdge: (NSRectEdge)edge
 			popUpSelectedItem: (int)selectedItemIndex
 {
-	NSRect r;
-	NSRect cellFrame;
-	NSRect screenFrame;
-	int items = [_itemCells count];
-
-	[_titleView removeFromSuperview];
-
-	// Convert the screen rect to our view
-	cellFrame.size = screenRect.size;
-	cellFrame.origin = [_window convertScreenToBase: screenRect.origin];
-	cellFrame = [self convertRect: cellFrame fromView: nil];
-
-	_cellSize = cellFrame.size;
-	[self sizeToFit];
-
-	/*
-	 * Compute the frame
-	 */
-	screenFrame = screenRect;
-	if (items > 1)
-	{
-		float f;
-
-		if (_horizontal == NO)
-		{
-			f = screenRect.size.height * (items - 1);
-			screenFrame.size.height += f + _leftBorderOffset;
-			screenFrame.origin.y -= f;
-			screenFrame.size.width += _leftBorderOffset;
-			screenFrame.origin.x -= _leftBorderOffset;
-		}
-		else
-		{
-			f = screenRect.size.width * (items - 1);
-			screenFrame.size.width += f;
-		}
-	}  
-
-	// Move the menu window to screen?
-	// TODO
-
-	// Compute position for popups, if needed
-	if (selectedItemIndex != -1) 
-	{
-		if (_horizontal == NO)
-		{
-			screenFrame.origin.y += screenRect.size.height * selectedItemIndex;
-		}
-		else
-		{
-			screenFrame.origin.x -= screenRect.size.width * selectedItemIndex;
-		}
-	}
-
-	// Get the frameRect
-	r = [NSWindow frameRectForContentRect: screenFrame
+  NSRect r;
+  NSRect cellFrame;
+  NSRect screenFrame;
+  int items = [_itemCells count];
+  
+  // Convert the screen rect to our view
+  cellFrame.size = screenRect.size;
+  cellFrame.origin = [_window convertScreenToBase: screenRect.origin];
+  cellFrame = [self convertRect: cellFrame fromView: nil];
+  
+  _cellSize = cellFrame.size;
+  [self sizeToFit];
+  
+  /*
+   * Compute the frame
+   */
+  screenFrame = screenRect;
+  if (items > 1)
+    {
+      float f;
+      
+      if (_horizontal == NO)
+        {
+          f = screenRect.size.height * (items - 1);
+          screenFrame.size.height += f + _leftBorderOffset;
+          screenFrame.origin.y -= f;
+          screenFrame.size.width += _leftBorderOffset;
+          screenFrame.origin.x -= _leftBorderOffset;
+        }
+      else
+        {
+          f = screenRect.size.width * (items - 1);
+          screenFrame.size.width += f;
+        }
+    }  
+  
+  // Move the menu window to screen?
+  // TODO
+  
+  // Compute position for popups, if needed
+  if (selectedItemIndex != -1) 
+    {
+      if (_horizontal == NO)
+        {
+          screenFrame.origin.y += screenRect.size.height * selectedItemIndex;
+        }
+      else
+        {
+          screenFrame.origin.x -= screenRect.size.width * selectedItemIndex;
+        }
+    }
+  
+  // Get the frameRect
+  r = [NSWindow frameRectForContentRect: screenFrame
 		styleMask: [_window styleMask]];
-
-	// Update position,if needed, using the preferredEdge;
-	// TODO
-
-	// Set the window frame
-	[_window setFrame: r display: NO]; 
+  
+  // Update position,if needed, using the preferredEdge;
+  // TODO
+  
+  // Set the window frame
+  [_window setFrame: r display: NO]; 
 }
 
 /*
@@ -915,27 +927,27 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
  */
 - (void) drawRect: (NSRect)rect
 {
-	int        i;
-	int        howMany = [_itemCells count];
-	NSRectEdge sides[] = {NSMinXEdge, NSMaxYEdge};
-	float      grays[] = {NSDarkGray, NSDarkGray};
-
-	// Draw the dark gray upper left lines.
-	NSDrawTiledRects(rect, rect, sides, grays, 2);
-
-	// Draw the menu cells.
-	for (i = 0; i < howMany; i++)
-	{
-		NSRect		aRect;
-		NSMenuItemCell	*aCell;
-
-		aRect = [self rectOfItemAtIndex: i];
-		if (NSIntersectsRect(rect, aRect) == YES)
-		{
-			aCell = [_itemCells objectAtIndex: i];
-			[aCell drawWithFrame: aRect inView: self];
-		}
-	}
+  int        i;
+  int        howMany = [_itemCells count];
+  NSRectEdge sides[] = {NSMinXEdge, NSMaxYEdge};
+  float      grays[] = {NSDarkGray, NSDarkGray};
+  
+  // Draw the dark gray upper left lines.
+  NSDrawTiledRects(rect, rect, sides, grays, 2);
+  
+  // Draw the menu cells.
+  for (i = 0; i < howMany; i++)
+    {
+      NSRect		aRect;
+      NSMenuItemCell	*aCell;
+      
+      aRect = [self rectOfItemAtIndex: i];
+      if (NSIntersectsRect(rect, aRect) == YES)
+        {
+          aCell = [_itemCells objectAtIndex: i];
+          [aCell drawWithFrame: aRect inView: self];
+        }
+    }
 }
 
 /*
@@ -1430,11 +1442,17 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 
 - (id) init
 {
-	[super init];
+  self = [super init];
+  
+  attr = nil;
+  
+  return self;
+}
 
-	attr = nil;
-
-	return self;
+- (void) dealloc
+{
+  RELEASE (button);
+  [super dealloc];
 }
 
 - (BOOL) acceptsFirstMouse: (NSEvent *)theEvent
@@ -1454,93 +1472,93 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
   
 - (NSSize) titleSize
 {
-	if (attr == nil)
-	{
-		attr = [[NSDictionary alloc] initWithObjectsAndKeys: 
-			[NSFont boldSystemFontOfSize: 0], NSFontAttributeName,
-		  [NSColor windowFrameTextColor], NSForegroundColorAttributeName,
-		  nil];
-	}
-
-	return [[menu title] sizeWithAttributes: attr];
+  if (attr == nil)
+    {
+      attr = [[NSDictionary alloc] initWithObjectsAndKeys: 
+                                     [NSFont boldSystemFontOfSize: 0], NSFontAttributeName,
+                                   [NSColor windowFrameTextColor], NSForegroundColorAttributeName,
+                                   nil];
+    }
+  
+  return [[menu title] sizeWithAttributes: attr];
 }
 
 - (void) drawRect: (NSRect)rect
 {
-	NSRect     workRect = [self bounds];
-	NSSize     titleSize;
-	NSRectEdge sides[] = {NSMinXEdge, NSMaxYEdge};
-	float      grays[] = {NSDarkGray, NSDarkGray};
+  NSRect     workRect = [self bounds];
+  NSSize     titleSize;
+  NSRectEdge sides[] = {NSMinXEdge, NSMaxYEdge};
+  float      grays[] = {NSDarkGray, NSDarkGray};
 
-	// Draw the dark gray upper left lines.
-	workRect = NSDrawTiledRects(workRect, workRect, sides, grays, 2);
-
-	// Draw the title box's button.
-	NSDrawButton(workRect, workRect);
-
-	// Paint it Black!
-	workRect.origin.x += 1;
-	workRect.origin.y += 2;
-	workRect.size.height -= 3;
-	workRect.size.width -= 3;
-	[[NSColor windowFrameColor] set];
-	NSRectFill(workRect);
-
-	// Draw the title
-	titleSize = [self titleSize];
-	workRect.origin.x += 4;
-	workRect.origin.y = NSMidY (workRect) - titleSize.height / 2;
-	workRect.size.height = titleSize.height;
-	[[menu title] drawInRect: workRect  withAttributes: attr];
+  // Draw the dark gray upper left lines.
+  workRect = NSDrawTiledRects(workRect, workRect, sides, grays, 2);
+  
+  // Draw the title box's button.
+  NSDrawButton(workRect, workRect);
+  
+  // Paint it Black!
+  workRect.origin.x += 1;
+  workRect.origin.y += 2;
+  workRect.size.height -= 3;
+  workRect.size.width -= 3;
+  [[NSColor windowFrameColor] set];
+  NSRectFill(workRect);
+  
+  // Draw the title
+  titleSize = [self titleSize];
+  workRect.origin.x += 4;
+  workRect.origin.y = NSMidY (workRect) - titleSize.height / 2;
+  workRect.size.height = titleSize.height;
+  [[menu title] drawInRect: workRect  withAttributes: attr];
 }
 
 - (void) mouseDown: (NSEvent*)theEvent
 {
-	NSPoint		lastLocation;
-	NSPoint		location;
-	unsigned	eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask;
-	BOOL		done = NO;
-	NSDate		*theDistantFuture = [NSDate distantFuture];
+  NSPoint		lastLocation;
+  NSPoint		location;
+  unsigned	eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask;
+  BOOL		done = NO;
+  NSDate		*theDistantFuture = [NSDate distantFuture];
 
-	NSDebugLLog (@"NSMenu", @"Mouse down in title!");
+  NSDebugLLog (@"NSMenu", @"Mouse down in title!");
 
-	lastLocation = [theEvent locationInWindow];
-
-	if (![menu isTornOff] && [menu supermenu])
-	{
-		[menu setTornOff: YES];
-	}
-
-	while (!done)
-	{
-		theEvent = [NSApp nextEventMatchingMask: eventMask
+  lastLocation = [theEvent locationInWindow];
+  
+  if (![menu isTornOff] && [menu supermenu])
+    {
+      [menu setTornOff: YES];
+    }
+  
+  while (!done)
+    {
+      theEvent = [NSApp nextEventMatchingMask: eventMask
 			untilDate: theDistantFuture
 			inMode: NSEventTrackingRunLoopMode
 			dequeue: YES];
-
-		switch ([theEvent type])
-		{
-			case NSRightMouseUp:
-			case NSLeftMouseUp: 
-				done = YES; 
-				break;
-			case NSRightMouseDragged:
-			case NSLeftMouseDragged:   
-				location = [_window mouseLocationOutsideOfEventStream];
-				if (NSEqualPoints(location, lastLocation) == NO)
-				{
-					NSPoint origin = [_window frame].origin;
-
-					origin.x += (location.x - lastLocation.x);
-					origin.y += (location.y - lastLocation.y);
-					[menu nestedSetFrameOrigin: origin];
-				}
-				break;
-
-			default: 
-				break;
-		}
-	}
+      
+      switch ([theEvent type])
+        {
+        case NSRightMouseUp:
+        case NSLeftMouseUp: 
+          done = YES; 
+          break;
+        case NSRightMouseDragged:
+        case NSLeftMouseDragged:   
+          location = [_window mouseLocationOutsideOfEventStream];
+          if (NSEqualPoints(location, lastLocation) == NO)
+            {
+              NSPoint origin = [_window frame].origin;
+              
+              origin.x += (location.x - lastLocation.x);
+              origin.y += (location.y - lastLocation.y);
+              [menu nestedSetFrameOrigin: origin];
+            }
+          break;
+          
+        default: 
+          break;
+        }
+    }
 }
 
 - (void) createButton
@@ -1550,10 +1568,10 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
   NSImage *closeHImage = [NSImage imageNamed: @"common_CloseH"];
   NSSize  imageSize = [closeImage size];
   NSRect  rect = { 
-	  { _frame.size.width - imageSize.width - 4,
-		  (_frame.size.height - imageSize.height) / 2 },
-		  { imageSize.width, imageSize.height } };
-
+    { _frame.size.width - imageSize.width - 4,
+      (_frame.size.height - imageSize.height) / 2 },
+    { imageSize.width, imageSize.height } };
+  
   button = [[NSButton alloc] initWithFrame: rect];
   [button setRefusesFirstResponder: YES];
   [button setButtonType: NSMomentaryChangeButton];
@@ -1566,7 +1584,7 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
   [button setAction: @selector(_performMenuClose:)];
   
   [self setAutoresizingMask:
-    NSViewMinXMargin | NSViewMinYMargin | NSViewMaxYMargin];
+          NSViewMinXMargin | NSViewMinYMargin | NSViewMaxYMargin];
 }
             
 - (void) removeCloseButton
