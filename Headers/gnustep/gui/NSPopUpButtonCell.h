@@ -11,17 +11,17 @@ typedef enum {
 
 @interface NSPopUpButtonCell : NSMenuItemCell
 {
-    NSMenu *_menu;
-    int _selectedIndex;
-    struct __pbcFlags {
-        unsigned int pullsDown:1;
-        unsigned int preferredEdge:3;
-        unsigned int menuIsAttached:1;
-        unsigned int usesItemFromMenu:1;
-        unsigned int altersStateOfSelectedItem:1;
-        unsigned int decoding:1;
-        unsigned int arrowPosition:2;
-    } _pbcFlags;
+  NSMenu	*_menu;
+  NSMenuItem	*_selectedItem;
+  struct __pbcFlags {
+      unsigned int pullsDown:1;
+      unsigned int preferredEdge:3;
+      unsigned int menuIsAttached:1;
+      unsigned int usesItemFromMenu:1;
+      unsigned int altersStateOfSelectedItem:1;
+      unsigned int decoding:1;
+      unsigned int arrowPosition:2;
+  } _pbcFlags;
 }
 
 - (id)initTextCell:(NSString *)stringValue pullsDown:(BOOL)pullDown;

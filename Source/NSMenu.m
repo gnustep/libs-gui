@@ -91,9 +91,24 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   return menu_is_beholdenToPopUpButton;
 }
 
-- (void)_setOwnedByPopUp:(BOOL)flag
+- (void)_setOwnedByPopUp: (BOOL)flag
 {
   menu_is_beholdenToPopUpButton = flag;
+}
+
+- (void) dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver: self];
+
+  RELEASE(menu_notifications);
+  RELEASE(menu_title);
+  RELEASE(menu_items);
+  RELEASE(menu_view);
+  RELEASE(aWindow);
+  RELEASE(bWindow);
+  RELEASE(titleView);
+
+  [super dealloc];
 }
 
 - (id) initWithTitle: (NSString *)aTitle
@@ -171,7 +186,7 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 	    return;
 
   	  d = [NSDictionary
-		dictionaryWithObject: [NSNumber numberWithInt:index]
+		dictionaryWithObject: [NSNumber numberWithInt: index]
 		              forKey: @"NSMenuItemIndex"];
 
           [menu_items insertObject: newItem atIndex: index];
@@ -224,7 +239,7 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 
   // Insert the new item into the stream.
 
-  [self insertItem:anItem atIndex:index];
+  [self insertItem: anItem atIndex: index];
 
   // For returns sake.
 
@@ -248,21 +263,21 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 
 - (void) removeItem: (id <NSMenuItem>)anItem
 {
-  [self removeItemAtIndex:[menu_items indexOfObject: anItem]];
+  [self removeItemAtIndex: [menu_items indexOfObjectIdenticalTo: anItem]];
 }
 
 - (void) removeItemAtIndex: (int)index
 {
-  NSNotification *removed;
-  NSDictionary   *d;
-  id              anItem = [menu_items objectAtIndex:index];
+  NSNotification	*removed;
+  NSDictionary		*d;
+  id			anItem = [menu_items objectAtIndex: index];
 
   if (!anItem)
     return;
 
   if ([anItem isKindOfClass: [NSMenuItem class]])
     {
-      d = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt:index]
+      d = [NSDictionary dictionaryWithObject: [NSNumber numberWithInt: index]
 				      forKey: @"NSMenuItemIndex"];
 
       [anItem setMenu: nil];
@@ -293,7 +308,7 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 
   d = [NSDictionary
 	dictionaryWithObject: [NSNumber
-				numberWithInt:[self indexOfItem: anObject]]
+				numberWithInt: [self indexOfItem: anObject]]
 	              forKey: @"NSMenuItemIndex"];
 
   changed = [NSNotification
@@ -347,7 +362,7 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 {
   if (index >= [menu_items count] || index < 0)
     [NSException  raise: NSRangeException
-		 format: @"Range error in method -itemAtIndex:"];
+		 format: @"Range error in method -itemAtIndex: "];
 
   return [menu_items objectAtIndex: index];
 }
@@ -367,7 +382,7 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 //
 - (int) indexOfItem: (id <NSMenuItem>)anObject
 {
-  return [menu_items indexOfObject: anObject];
+  return [menu_items indexOfObjectIdenticalTo: anObject];
 }
 
 - (int) indexOfItemWithTitle: (NSString *)aTitle
@@ -375,7 +390,7 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   id anItem;
 
   if ((anItem = [self itemWithTitle: aTitle]))
-    return [menu_items indexOfObject: anItem];
+    return [menu_items indexOfObjectIdenticalTo: anItem];
   else
     return -1;
 }
@@ -385,13 +400,13 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   id anItem;
 
   if ((anItem = [self itemWithTag: aTag]))
-    return [menu_items indexOfObject: anItem];
+    return [menu_items indexOfObjectIdenticalTo: anItem];
   else
     return -1;
 }
 
 - (int) indexOfItemWithTarget: (id)anObject
-		   andAction: (SEL)actionSelector
+		    andAction: (SEL)actionSelector
 {
   unsigned i;
   unsigned count = [menu_items count];
@@ -414,8 +429,8 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 
   for (i = 0; i < count; i++)
     {
-      if ([[[menu_items objectAtIndex:i] representedObject]
-	isEqual:anObject])
+      if ([[[menu_items objectAtIndex: i] representedObject]
+	isEqual: anObject])
 	{
 	  return i;
 	}
@@ -430,8 +445,8 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 
   for (i = 0; i < count; i++)
     {
-      if ([[[menu_items objectAtIndex:i] title]
-	    isEqual:[anObject title]])
+      if ([[[menu_items objectAtIndex: i] title]
+	    isEqual: [anObject title]])
 	{
 	  return i;
 	}
@@ -509,9 +524,9 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   if (NSInterfaceStyleForKey(@"NSMenuInterfaceStyle", nil)
       == GSWindowMakerInterfaceStyle)
     {
-      NSRect aRect = [menu_view rectOfItemAtIndex:
-				[self indexOfItemWithTitle:[aSubmenu title]]];
-      NSPoint subOrigin = [win_link convertBaseToScreen:
+      NSRect aRect = [menu_view rectOfItemAtIndex: 
+				[self indexOfItemWithTitle: [aSubmenu title]]];
+      NSPoint subOrigin = [win_link convertBaseToScreen: 
 				      NSMakePoint(aRect.origin.x,
 						  aRect.origin.y)];
 
@@ -871,13 +886,13 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 #define IS_OFFSCREEN(WINDOW) \
   !(NSContainsRect([[NSScreen mainScreen] frame], [WINDOW frame]))
 
-- (void) _setTornOff:(BOOL)flag
+- (void) _setTornOff: (BOOL)flag
 {
   NSMenu *supermenu = [self supermenu];
 
   menu_is_tornoff = flag;
 
-  [[supermenu menuRepresentation] setHighlightedItemIndex:-1];
+  [[supermenu menuRepresentation] setHighlightedItemIndex: -1];
   supermenu->menu_attachedMenu = nil;
 }
 
@@ -899,7 +914,7 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
       if (array && [array isKindOfClass: [NSArray class]])
 	{
 	  [titleView windowBecomeTornOff];
-	  [self _setTornOff:YES];
+	  [self _setTornOff: YES];
 	  [self display];
 	}
     }
@@ -924,7 +939,7 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   menu_isPartlyOffScreen = IS_OFFSCREEN(aWindow);
 }
 
-- (void) _performMenuClose:(id)sender
+- (void) _performMenuClose: (id)sender
 {
   NSUserDefaults* defaults;
   NSMutableDictionary* menuLocations;
@@ -935,7 +950,7 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 
   [menu_view setHighlightedItemIndex: -1];
 
-  [self _setTornOff:NO];
+  [self _setTornOff: NO];
   [self close];
   [titleView _releaseCloseButton];
 
@@ -964,7 +979,7 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 
   if (menu_supermenu && ![self isTornOff])      // query super menu for
     {                                           // position
-      [aWindow setFrameOrigin:[menu_supermenu locationForSubmenu: self]];
+      [aWindow setFrameOrigin: [menu_supermenu locationForSubmenu: self]];
       menu_supermenu->menu_attachedMenu = self;
     }
   else
@@ -995,15 +1010,15 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 	      float aPoint =   [[NSScreen mainScreen] frame].size.height
 		             - [aWindow frame].size.height;
 
-	      [aWindow setFrameOrigin:NSMakePoint(0,aPoint)];
-	      [bWindow setFrameOrigin:NSMakePoint(0,aPoint)];
+	      [aWindow setFrameOrigin: NSMakePoint(0,aPoint)];
+	      [bWindow setFrameOrigin: NSMakePoint(0,aPoint)];
 	    }
 	}
     }
 
   menu_is_visible = YES;
 
-  [aWindow orderFront:nil];
+  [aWindow orderFront: nil];
 
   menu_isPartlyOffScreen = IS_OFFSCREEN(aWindow);
 }
@@ -1029,17 +1044,17 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   if (menu_is_tornoff)
     [titleView _releaseCloseButton];
 
-  [[bWindow contentView] addSubview:menu_view];
-  [[bWindow contentView] addSubview:titleView];
+  [[bWindow contentView] addSubview: menu_view];
+  [[bWindow contentView] addSubview: titleView];
 
-  [bWindow orderFront:self];
+  [bWindow orderFront: self];
 
   menu_isPartlyOffScreen = IS_OFFSCREEN(bWindow);
 }
 
 - (void) close
 {
-  [aWindow orderOut:self];
+  [aWindow orderOut: self];
   menu_is_visible = NO;
 
   if (menu_supermenu)
@@ -1048,18 +1063,18 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 
 - (void) closeTransient
 {
-  [bWindow orderOut:self];
+  [bWindow orderOut: self];
   [menu_view removeFromSuperviewWithoutNeedingDisplay];
   [titleView removeFromSuperviewWithoutNeedingDisplay];
 
-  [[aWindow contentView] addSubview:menu_view];
+  [[aWindow contentView] addSubview: menu_view];
 
   if (menu_is_tornoff)
     [titleView _addCloseButton];
 
-  [[aWindow contentView] addSubview:titleView];
+  [[aWindow contentView] addSubview: titleView];
 
-  [[aWindow contentView] setNeedsDisplay:YES];
+  [[aWindow contentView] setNeedsDisplay: YES];
 
   // Restore the old submenu.
   menu_supermenu->menu_attachedMenu = _oldAttachedMenu;
@@ -1297,7 +1312,7 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   if (![menu isTornOff] && [menu supermenu])
     {
       [self windowBecomeTornOff];
-      [menu _setTornOff:YES];
+      [menu _setTornOff: YES];
     }
  
   while (!done)
@@ -1309,7 +1324,7 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   
       switch ([theEvent type])
         {
-	case NSLeftMouseUp:
+	case NSLeftMouseUp: 
 	  done = YES; 
 	  break;
 	case NSLeftMouseDragged:   
@@ -1325,7 +1340,7 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 	    }
 	  break;
          
-	default:
+	default: 
 	  break;
         }
     }
@@ -1338,7 +1353,7 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   if (!menuLocations)
     menuLocations = [NSMutableDictionary dictionaryWithCapacity: 2];
   origin = [[menu window] frame].origin;
-  array = [NSArray arrayWithObjects:
+  array = [NSArray arrayWithObjects: 
 		     [[NSNumber numberWithInt: origin.x] stringValue],
 		     [[NSNumber numberWithInt: origin.y] stringValue], nil];
 
@@ -1380,7 +1395,7 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
       [self setAutoresizingMask: mask];
                        
       [button display]; 
-      [self setNeedsDisplay:YES]; 
+      [self setNeedsDisplay: YES]; 
     }
 }
             
@@ -1392,6 +1407,6 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   
 - (void) _addCloseButton
 {
-  [self addSubview:button];
+  [self addSubview: button];
 }
 @end /* NSMenuWindowTitleView */

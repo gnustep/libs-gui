@@ -52,12 +52,12 @@ id _nspopupbuttonCellClass = nil;
 //
 // Class methods
 //
-+ (void)initialize
++ (void) initialize
 {
   if (self == [NSPopUpButton class])
     {
       // Initial version
-      [self setVersion:1];
+      [self setVersion: 1];
       [self setCellClass: [NSPopUpButtonCell class]];
     } 
 }
@@ -65,22 +65,22 @@ id _nspopupbuttonCellClass = nil;
 //
 // Initializing an NSPopUpButton 
 //
-- (id)init
+- (id) init
 {
-  return [self initWithFrame:NSZeroRect pullsDown:NO];
+  return [self initWithFrame: NSZeroRect pullsDown: NO];
 }
 
-- (id)initWithFrame:(NSRect)frameRect
+- (id) initWithFrame: (NSRect)frameRect
 {
-  return [self initWithFrame:frameRect pullsDown:NO];
+  return [self initWithFrame: frameRect pullsDown: NO];
 }
 
-- (id)initWithFrame:(NSRect)frameRect
-	  pullsDown:(BOOL)flag
+- (id) initWithFrame: (NSRect)frameRect
+	   pullsDown: (BOOL)flag
 {
-  NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
+  NSNotificationCenter	*defaultCenter = [NSNotificationCenter defaultCenter];
 
-  [super initWithFrame:frameRect];
+  [super initWithFrame: frameRect];
 
   [defaultCenter addObserver: self
 		    selector: @selector(_popup:)
@@ -90,208 +90,208 @@ id _nspopupbuttonCellClass = nil;
   return self;
 }
 
-- (void)setMenu:(NSMenu *)menu
+- (void) setMenu: (NSMenu *)menu
 {
   [cell setMenu: menu];
 }
 
-- (NSMenu *)menu
+- (NSMenu *) menu
 {
   return [cell menu];
 }
 
-- (void)setPullsDown:(BOOL)flag
+- (void) setPullsDown: (BOOL)flag
 {
   [cell setPullsDown: flag];
 }
 
-- (BOOL)pullsDown
+- (BOOL) pullsDown
 {
   return [cell pullsDown];
 }
 
-- (void)setAutoenablesItems:(BOOL)flag
+- (void) setAutoenablesItems: (BOOL)flag
 {
   [cell setAutoenablesItems: flag];
 }
 
-- (BOOL)autoenablesItems
+- (BOOL) autoenablesItems
 {
   return [cell autoenablesItems];
 }
 
-- (void)addItemWithTitle:(NSString *)title
+- (void) addItemWithTitle: (NSString *)title
 {
   [cell addItemWithTitle: title];
 
   [self synchronizeTitleAndSelectedItem];
 }
 
-- (void)addItemsWithTitles:(NSArray *)itemTitles
+- (void) addItemsWithTitles: (NSArray *)itemTitles
 {
   [cell addItemWithTitles: itemTitles];
 
   [self synchronizeTitleAndSelectedItem];
 }
 
-- (void)insertItemWithTitle:(NSString *)title
-		    atIndex:(int)index
+- (void) insertItemWithTitle: (NSString *)title
+		    atIndex: (int)index
 {
   [cell insertItemWithTitle: title adIndex: index];
 
   [self synchronizeTitleAndSelectedItem];
 }
 
-- (void)removeAllItems
+- (void) removeAllItems
 {
   [cell removeAllItems];
 
   [self synchronizeTitleAndSelectedItem];
 }
 
-- (void)removeItemWithTitle:(NSString *)title
+- (void) removeItemWithTitle: (NSString *)title
 {
   [cell removeItemWithTitle];
 
   [self synchronizeTitleAndSelectedItem];
 }
 
-- (void)removeItemAtIndex:(int)index
+- (void) removeItemAtIndex: (int)index
 {
   [cell removeItemAtIndex: index];
 
   [self synchronizeTitleAndSelectedItem];
 }
 
-- (id <NSMenuItem>)selectedItem
+- (id <NSMenuItem>) selectedItem
 {
   return [cell selectedItem];
 }
 
-- (NSString *)titleOfSelectedItem
+- (NSString *) titleOfSelectedItem
 {
   return [cell titleOfSelectedItem];
 }
 
-- (int)indexOfSelectedItem
+- (int) indexOfSelectedItem
 {
   return [cell indexOfSelectedItem];
 }
 
-- (void)selectItem:(id <NSMenuItem>)anObject
+- (void) selectItem: (id <NSMenuItem>)anObject
 {
   [cell selectedItem: anObject];
 }
 
-- (void)selectItemAtIndex:(int)index
+- (void) selectItemAtIndex: (int)index
 {
   [cell selectItemAtIndex: index];
 
   [self synchronizeTitleAndSelectedItem];
 }
 
-- (void)selectItemWithTitle:(NSString *)title
+- (void) selectItemWithTitle: (NSString *)title
 {
   [cell selectItemWithTitle: title];
 
   [self synchronizeTitleAndSelectedItem];
 }
 
-- (int)numberOfItems
+- (int) numberOfItems
 {
   return [cell numberOfItems];
 }
 
-- (NSArray *)itemArray 
+- (NSArray *) itemArray 
 {
   return [cell itemArray];
 }
 
-- (id <NSMenuItem>)itemAtIndex:(int)index
+- (id <NSMenuItem>) itemAtIndex: (int)index
 {
   return [cell itemAtIndex: index];
 }
 
-- (NSString *)itemTitleAtIndex:(int)index
+- (NSString *) itemTitleAtIndex: (int)index
 {
   return [cell itemTitleAtIndex: index];
 }
 
-- (NSArray *)itemTitles
+- (NSArray *) itemTitles
 {
   return [cell itemTitles];
 }
 
-- (id <NSMenuItem>)itemWithTitle:(NSString *)title
+- (id <NSMenuItem>) itemWithTitle: (NSString *)title
 {
   return [cell itemWithTitle: title];
 }
 
-- (id <NSMenuItem>)lastItem
+- (id <NSMenuItem>) lastItem
 {
   return [cell lastItem];
 }
 
-- (int)indexOfItem:(id <NSMenuItem>)anObject
+- (int) indexOfItem: (id <NSMenuItem>)anObject
 {
   return [cell indexOfItem: anObject];
 }
 
-- (int)indexOfItemWithTag:(int)tag
+- (int) indexOfItemWithTag: (int)tag
 {
   return [cell indexOfItemWithTag: tag];
 }
 
-- (int)indexOfItemWithTitle:(NSString *)title
+- (int) indexOfItemWithTitle: (NSString *)title
 {
   return [cell indexOfItemWithTitle: title];
 }
 
-- (int)indexOfItemWithRepresentedObject:(id)anObject
+- (int) indexOfItemWithRepresentedObject: (id)anObject
 {
   return [cell indexOfItemWithRepresentedObject: anObject];
 }
 
-- (int)indexOfItemWithTarget:(id)target
-		   andAction:(SEL)actionSelector
+- (int) indexOfItemWithTarget: (id)target
+		    andAction: (SEL)actionSelector
 {
   return [cell indexOfItemWithTarget: target andAction: actionSelector];
 }
 
-- (void)setPreferredEdge:(NSRectEdge)edge
+- (void) setPreferredEdge: (NSRectEdge)edge
 {
   [cell setPreferredEdge: edge];
 }
 
-- (NSRectEdge)preferredEdge
+- (NSRectEdge) preferredEdge
 {
   return [cell preferredEdge];
 }
 
-- (void)setTitle:(NSString *)aString
+- (void) setTitle: (NSString *)aString
 {
   [cell setTitle: aString];
 }
 
-- (void)synchronizeTitleAndSelectedItem
+- (void) synchronizeTitleAndSelectedItem
 {
   [cell synchronizeTitleAndSelectedItem];
 
   [self sizeToFit];
 }
 
-- (void)sizeToFit
+- (void) sizeToFit
 {
   [[popb_menu menuRepresentation] sizeToFit];
 } 
 
-- (void)_popup:(NSNotification*)notification
+- (void) _popup: (NSNotification*)notification
 {
   [cell performClickWithFrame: [[notification object] frame]
                        inView: self];
 }
 
-- (void)mouseDown:(NSEvent *)theEvent
+- (void) mouseDown: (NSEvent *)theEvent
 {
   NSNotificationCenter *nc;
 

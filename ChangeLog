@@ -1,3 +1,13 @@
+Thu Nov 25 11:44:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSMenu.m: Tidying, performnce tweaks, memory leak fixes.
+	* Source/NSPopUpButton.m: Tidied.
+	* Headers/AppKit/NSPopUpButtonCell.h: Use _selectedItem ivar rather
+	than _selectedIndex.
+	* Source/NSPopUpButtonCell.m: Use _selectedItem ivar rather than
+	_selectedIndex, fix memory leaks, and various hacks to stop things
+	crashing.
+
 Thu Nov 25  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSMenuView.m ([-trackWithEvent:]): Fixed bug which was
