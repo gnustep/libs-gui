@@ -151,6 +151,12 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
   [_the_color drawSwatchInRect: insideRect];
 }
 
+- (BOOL) acceptsFirstMouse: (NSEvent *)event
+{
+  return YES;
+}
+
+
 - (void) mouseDown: (NSEvent *)theEvent
 {
   NSPoint point = [self convertPoint: [theEvent locationInWindow]
