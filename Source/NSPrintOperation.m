@@ -34,6 +34,7 @@
 #include <Foundation/NSData.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSThread.h>
+#include <Foundation/NSFileManager.h>
 #include <AppKit/AppKitExceptions.h>
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSView.h>
@@ -41,18 +42,52 @@
 #include <AppKit/NSPrintInfo.h>
 #include <AppKit/NSPrintOperation.h>
 
-@interface NSPrintOperation (Private)
+@interface NSGraphicsContext (Printing)
 
-- (void) setPath: (NSString *) path;
++ (NSGraphicsContext*) postscriptContextWithInfo: (NSDictionary*)info;
+
+@end
+
+@interface NSPrintOperation (Private)
 
 - (id) initWithView:(NSView *)aView
 	 insideRect:(NSRect)rect
 	     toData:(NSMutableData *)data
 	  printInfo:(NSPrintInfo *)aPrintInfo;
 
+@end
+
+// Subclass for the regular printing
+@interface GSPrintOperation: NSPrintOperation
+{
+}
+
+@end
+
+// subclass for EPS output
+@interface GSEPSPrintOperation: NSPrintOperation
+{
+}
+
+- (id) initEPSOperationWithView:(NSView *)aView	
+		     insideRect:(NSRect)rect
+			 toPath:(NSString *)path
+		      printInfo:(NSPrintInfo *)aPrintInfo;
+
+@end
+
+// subclass for PDF output
+@interface GSPDFPrintOperation: NSPrintOperation
+{
+}
+
 - (id) initPDFOperationWithView:(NSView *)aView 
 		     insideRect:(NSRect)rect 
 			 toData:(NSMutableData *)data 
+		      printInfo:(NSPrintInfo*)aPrintInfo;
+- (id) initPDFOperationWithView:(NSView *)aView 
+		     insideRect:(NSRect)rect 
+			 toPath:(NSString *)path 
 		      printInfo:(NSPrintInfo*)aPrintInfo;
 
 @end
@@ -91,10 +126,10 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 				    toData:(NSMutableData *)data
 				 printInfo:(NSPrintInfo *)aPrintInfo
 {
-  return [[self alloc] initEPSOperationWithView: aView
-		    insideRect: rect
-			toData: data
-		     printInfo: aPrintInfo];
+  return AUTORELEASE([[GSEPSPrintOperation alloc] initEPSOperationWithView: aView
+						  insideRect: rect
+						  toData: data
+						  printInfo: aPrintInfo]);
 }
 
 + (NSPrintOperation *)EPSOperationWithView:(NSView *)aView	
@@ -102,14 +137,10 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 				    toPath:(NSString *)path
 				 printInfo:(NSPrintInfo *)aPrintInfo
 {
-  NSMutableData *data = [NSMutableData data];
-  NSPrintOperation *new = [self EPSOperationWithView: aView	
-				insideRect: rect
-				toData: data
-				printInfo: aPrintInfo];
-
-  [new setPath: path];
-  return new;
+  return AUTORELEASE([[GSEPSPrintOperation alloc] initEPSOperationWithView: aView	
+						  insideRect: rect
+						  toPath: path
+						  printInfo: aPrintInfo]);
 }
 
 + (NSPrintOperation *)printOperationWithView:(NSView *)aView
@@ -121,8 +152,8 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 + (NSPrintOperation *)printOperationWithView:(NSView *)aView
 				   printInfo:(NSPrintInfo *)aPrintInfo
 {
-  return [[self alloc] initWithView: aView
-		       printInfo: aPrintInfo];
+  return AUTORELEASE([[GSPrintOperation alloc] initWithView: aView
+					       printInfo: aPrintInfo]);
 }
 
 + (NSPrintOperation *)PDFOperationWithView:(NSView *)aView 
@@ -140,10 +171,10 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 				    toData:(NSMutableData *)data 
 				 printInfo:(NSPrintInfo*)aPrintInfo
 {
-  return [[self alloc] initPDFOperationWithView: aView 
-		       insideRect: rect 
-		       toData: data 
-		       printInfo: aPrintInfo];
+  return AUTORELEASE([[self alloc] initPDFOperationWithView: aView 
+				   insideRect: rect 
+				   toData: data 
+				   printInfo: aPrintInfo]);
 }
 
 + (NSPrintOperation *)PDFOperationWithView:(NSView *)aView 
@@ -151,14 +182,10 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 				    toPath:(NSString *)path 
 				 printInfo:(NSPrintInfo*)aPrintInfo
 {
-  NSMutableData *data = [NSMutableData data];
-  NSPrintOperation *new = [self PDFOperationWithView: aView	
-				insideRect: rect
-				toData: data
-				printInfo: aPrintInfo];
-
-  [new setPath: path];
-  return new;
+  return AUTORELEASE([[self alloc] initPDFOperationWithView: aView 
+				   insideRect: rect 
+				   toPath: path 
+				   printInfo: aPrintInfo]);
 }
 
 //
@@ -193,26 +220,21 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 			toData:(NSMutableData *)data
 		     printInfo:(NSPrintInfo *)aPrintInfo
 {
-  self = [self initWithView: aView
-	       insideRect: rect
-	       toData: data
-	       printInfo: aPrintInfo];
-
-  return self;
+  RELEASE(self);
+  
+  return [[GSEPSPrintOperation alloc] initEPSOperationWithView: aView	
+				      insideRect: rect
+				      toData: data
+				      printInfo: aPrintInfo];
 }
 
 - (id)initWithView:(NSView *)aView
 	 printInfo:(NSPrintInfo *)aPrintInfo
 {
-  NSMutableData *data = [NSMutableData data];
-    
-  self = [self initWithView: aView
-	       insideRect: [aView bounds]
-	       toData: data
-	       printInfo: aPrintInfo];
-  _showPanels = YES;
-
-  return self;
+  RELEASE(self);
+  
+  return [[GSPrintOperation alloc] initWithView: aView
+				   printInfo: aPrintInfo];
 }
 
 - (void) dealloc
@@ -220,10 +242,11 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
   RELEASE(_printInfo);
   RELEASE(_view);  
   RELEASE(_data);
-  TEST_RELEASE(_path);  
   TEST_RELEASE(_context);
   TEST_RELEASE(_printPanel);  
   TEST_RELEASE(_accessoryView);  
+
+  [super dealloc];
 }
 
 //
@@ -281,7 +304,7 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 - (NSGraphicsContext*)createContext
 {
   // FIXME
-  return _context;
+  return nil;
 }
 
 - (NSGraphicsContext *)context
@@ -324,13 +347,12 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 - (BOOL)deliverResult
 {
   // FIXME
-  return NO;
+  return YES;
 }
 
 - (BOOL)runOperation
 {
   BOOL result;
-  NSGraphicsContext *oldContext;
 
   if (_showPanels)
     {
@@ -341,20 +363,36 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 	[panel updateFromPrintInfo];
 	button = [panel runModal];
 	[panel setAccessoryView: nil];
-
+/*
 	if (button != NSOKButton)
 	{
 	  [self cleanUpOperation];
 	  return NO;
 	}
+*/
 	[panel finalWritePrintInfo];
     }
 
-  // This is the actual printing
-  oldContext = [NSGraphicsContext currentContext];
-  [NSGraphicsContext setCurrentContext: [self createContext]];
-  [_view displayRect: _rect];
-  [NSGraphicsContext setCurrentContext: oldContext];
+  ASSIGN(_context, [self createContext]);
+
+  if (_context != nil)
+    {
+      NSGraphicsContext *oldContext = [NSGraphicsContext currentContext];
+
+      [NSGraphicsContext setCurrentContext: _context];
+      // This is the actual printing
+      NS_DURING
+	{
+	  [_view displayRect: _rect];
+	}
+      NS_HANDLER
+	{
+	   NSLog(@"Error while printing: %@\n", localException);
+	}
+      NS_ENDHANDLER
+      [NSGraphicsContext setCurrentContext: oldContext];
+      [self destroyContext];
+    }
 
   result = [self deliverResult];
   [self cleanUpOperation];
@@ -390,11 +428,6 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 
 @implementation NSPrintOperation (Private)
 
-- (void) setPath: (NSString *) path
-{
-  ASSIGN(_path, path);
-}
-
 - (id) initWithView:(NSView *)aView
 	 insideRect:(NSRect)rect
 	     toData:(NSMutableData *)data
@@ -411,8 +444,120 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
   _showPanels = NO;
   [self setPrintInfo: aPrintInfo];
 
+  ASSIGN(_path, @"/tmp/NSTempPrintFile");
+  _pathSet = NO;
+
   [NSPrintOperation setCurrentOperation: self];
   return self;
+}
+
+@end
+
+
+@implementation GSPrintOperation
+
+- (id)initWithView:(NSView *)aView
+	 printInfo:(NSPrintInfo *)aPrintInfo
+{
+  NSMutableData *data = [NSMutableData data];
+    
+  self = [self initWithView: aView
+	       insideRect: [aView bounds]
+	       toData: data
+	       printInfo: aPrintInfo];
+  _showPanels = YES;
+
+  return self;
+}
+
+- (NSGraphicsContext*)createContext
+{
+  NSMutableDictionary *info = [_printInfo dictionary];
+  NSGraphicsContext *psContext;
+
+  [info setObject: _path forKey: @"NSOutputFile"];
+  psContext = [NSGraphicsContext postscriptContextWithInfo: info];
+
+  return psContext;
+}
+
+- (BOOL)deliverResult
+{
+  // FIXME
+
+/*
+  if (!_pathSet)
+    [[NSFileManager defaultManager] removeFileAtPath: _path
+				    handler: nil];
+*/    
+  return YES;
+}
+
+@end
+
+@implementation GSEPSPrintOperation
+
+-(void) dealloc
+{
+  TEST_RELEASE(_path);  
+
+  [super dealloc];
+}
+
+- (id)initEPSOperationWithView:(NSView *)aView
+		    insideRect:(NSRect)rect
+			toData:(NSMutableData *)data
+		     printInfo:(NSPrintInfo *)aPrintInfo
+{
+  self = [self initWithView: aView
+	       insideRect: rect
+	       toData: data
+	       printInfo: aPrintInfo];
+
+  return self;
+}
+
+- (id) initEPSOperationWithView:(NSView *)aView	
+		     insideRect:(NSRect)rect
+			 toPath:(NSString *)path
+		      printInfo:(NSPrintInfo *)aPrintInfo
+{
+  NSMutableData *data = [NSMutableData data];
+  
+  self = [self initEPSOperationWithView: aView	
+	       insideRect: rect
+	       toData: data
+	       printInfo: aPrintInfo];
+
+  ASSIGN(_path, path);
+  _pathSet = YES;
+
+  return self;
+}
+
+- (NSGraphicsContext*)createContext
+{
+  // FIXME
+  return nil;
+}
+
+- (BOOL)deliverResult
+{
+  if (_data != nil && _path != nil && [_data length])
+    return [_data writeToFile: _path atomically: NO];
+
+  return YES;
+}
+
+@end
+
+@implementation GSPDFPrintOperation
+
+-(void) dealloc
+{
+  TEST_RELEASE(_path);  
+
+  [super dealloc];
 }
 
 - (id) initPDFOperationWithView:(NSView *)aView 
@@ -426,6 +571,39 @@ static NSString *NSPrintOperationThreadKey = @"NSPrintOperationThreadKey";
 	       printInfo: aPrintInfo];
 
   return self;
+}
+
+- (id) initPDFOperationWithView:(NSView *)aView 
+		     insideRect:(NSRect)rect 
+			 toPath:(NSString *)path 
+		      printInfo:(NSPrintInfo*)aPrintInfo
+{
+  NSMutableData *data = [NSMutableData data];
+
+  self = [self initPDFOperationWithView: aView	
+	       insideRect: rect
+	       toData: data
+	       printInfo: aPrintInfo];
+
+  ASSIGN(_path, path);
+  _pathSet = YES;
+
+  return self;
+}
+
+- (NSGraphicsContext*)createContext
+{
+  // FIXME
+  return nil;
+}
+
+- (BOOL)deliverResult
+{
+  if (_data != nil && _path != nil && [_data length])
+    return [_data writeToFile: _path atomically: NO];
+  // FIXME Until we can create PDF we shoud convert the file with GhostScript
+  
+  return YES;
 }
 
 @end
