@@ -642,9 +642,6 @@ The displayed menus on the screen have the following structure:
 /* Popup behaviour */
 - (BOOL) _ownedByPopUp;
 - (void) _setOwnedByPopUp: (NSPopUpButtonCell*)popUp;
-
-/* Show menu on right mouse down */
-- (void) _rightMouseDisplay: (NSEvent*)theEvent;
 @end
 #endif
 
