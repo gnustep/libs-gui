@@ -45,14 +45,14 @@ typedef enum _NSPrinterTableStatus {
 
 @interface NSPrinter : NSObject <NSCoding>
 {
-  NSString *printerHost, *printerName, *printerNote, *printerType;
-  int cacheAcceptsBinary, cacheOutputOrder;
-  BOOL isRealPrinter;
-  NSMutableDictionary *PPD;
-  NSMutableDictionary *PPDOptionTranslation;
-  NSMutableDictionary *PPDArgumentTranslation;
-  NSMutableDictionary *PPDOrderDependency;
-  NSMutableDictionary *PPDUIConstraints;
+  NSString *_printerHost, *_printerName, *_printerNote, *_printerType;
+  int _cacheAcceptsBinary, _cacheOutputOrder;
+  BOOL _isRealPrinter;
+  NSMutableDictionary *_PPD;
+  NSMutableDictionary *_PPDOptionTranslation;
+  NSMutableDictionary *_PPDArgumentTranslation;
+  NSMutableDictionary *_PPDOrderDependency;
+  NSMutableDictionary *_PPDUIConstraints;
 }
 
 //
