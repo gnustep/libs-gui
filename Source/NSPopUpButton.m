@@ -324,6 +324,11 @@ Class _nspopupbuttonCellClass = 0;
   
   // Dismiss the popUp
   [cell dismissPopUp];
+
+  // Send action to target
+  [super sendAction: [self action]
+	 to: [self target]];
+  
 }
 
 //
