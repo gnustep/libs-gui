@@ -1,3 +1,9 @@
+Sat Sep 18  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSFormCell.m ([-initTextCell:]): Follow the doc: init
+	bezeled. ([-drawWithFrame:inView:]): Tiny fix to have some space
+	between title and text.	([-cellSize]): New method
+
 Thu Sep 16  8:38:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSBrowserCell.m: Fix for positioning of leaf images.

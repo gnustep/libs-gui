@@ -43,7 +43,6 @@
 - initTextCell: (NSString *)aString
 {
   self = [super initTextCell:@""];
-  [self setBordered:YES];
   [self setBezeled:YES];
   [self setAlignment:NSLeftTextAlignment];
   titleWidth = -1;
@@ -114,6 +113,25 @@
   return 0;
 }
 
+- (NSSize)cellSize
+{
+  NSSize returnedSize;
+  NSSize titleSize = [titleCell cellSize];
+  NSSize textSize = [super cellSize];
+  
+  textSize.width = [cell_font widthOfString: @"minimum"];
+  textSize.height = [cell_font pointSize] + (2 * yDist) 
+    + 2 * ([NSCell sizeForBorderType: NSBezelBorder].height); 
+ 
+  returnedSize.width = titleSize.width + 4 + textSize.width;
+  if (titleSize.height > textSize.height)
+    returnedSize.height = titleSize.height;
+  else
+    returnedSize.height = textSize.height; 
+  
+  return returnedSize;
+}
+
 - (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
   NSRect titleFrame;
@@ -121,6 +139,7 @@
 
   NSDivideRect(cellFrame, &titleFrame, &textFrame,
                [self titleWidth] + 4, NSMinXEdge);
+  titleFrame.size.width -= 4; 
 
   [titleCell drawWithFrame: titleFrame inView: controlView];
   [super drawWithFrame: textFrame inView: controlView];
@@ -139,3 +158,4 @@
 }
 
 @end
+
