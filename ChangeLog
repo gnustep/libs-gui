@@ -1,3 +1,8 @@
+Mon Dec 20 11:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSSavePanel.m: Use symbolic constants for resize mask.
+	* Source/NSBrowser.m: size the matrix to fit when it is created.
+
 Sat Dec 18 16:05:46 1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/AppKit/NSSplitView.h: Prefixed ivars with underscores;

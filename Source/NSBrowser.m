@@ -2601,6 +2601,7 @@
 	}
     }
 
+  [matrix sizeToFit];
   [sc setNeedsDisplay: YES];
   [bc setIsLoaded: YES];
 }
