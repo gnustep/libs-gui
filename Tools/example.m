@@ -81,10 +81,9 @@
 
   path = @"/bin/sh";
   args = [NSArray arrayWithObjects:
-		@"-c",
-		[NSString stringWithFormat: @"netscape -remote \"openURL(%@)\"",
-			url],
-		nil];
+	@"-c",
+	[NSString stringWithFormat: @"netscape -remote \"openURL (%@)\"", url],
+	nil];
   task = [NSTask launchedTaskWithLaunchPath: path
 				  arguments: args];
 }
