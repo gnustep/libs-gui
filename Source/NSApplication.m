@@ -905,7 +905,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
   /*
    * If target responds to the selector then have it perform it.
    */
-  if ([aTarget respondsToSelector: aSelector])
+  if (aTarget && [aTarget respondsToSelector: aSelector])
     {
       [aTarget performSelector: aSelector withObject: sender];
       return YES;
