@@ -1,3 +1,15 @@
+2003-02-09 21:08  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSLayoutManager.m: Clean up old debugging code, whitespace,
+	and error handling.
+	(-_doLayout): Track next glyph index correctly if we have multiple
+	text containers.
+
+	* Source/NSLayoutManager.m (-rectArrayForGlyphRange:
+	withinSelectedGlyphRange:inTextContainer:rectCount:,
+	-_insertionPointRectForCharacterIndex:textContainer:): Fix handling of
+	glyphs that aren't nominally spaced.
+
 2003-02-09 18:34  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSHorizontalTypesetter.m (-breakLineByWordWrappingBefore:):

@@ -238,8 +238,6 @@ static glyph_run_t *run_for_character_index(unsigned int charIndex,
   if (glyphs->char_length <= charIndex)
     return NULL;
 
-//printf("run_for_character_index(%i)\n",charIndex);
-
   pos = cpos = 0;
   level = SKIP_LIST_DEPTH;
   h = glyphs;
@@ -272,7 +270,6 @@ static glyph_run_t *run_for_character_index(unsigned int charIndex,
       *glyph_pos = pos;
       if (char_pos)
 	*char_pos = cpos;
-//printf("got %p (at %i %i)\n",h,pos,cpos);
       return (glyph_run_t *)h;
     }
 }
@@ -406,8 +403,6 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
 
       [self _run_cache_attributes: new : attributes];
 
-//		printf("created new run for %i + %i\n", pos, new->head.char_length);
-
       h = &new->head;
       for (i = 0; i <= new_level; i++, h--)
 	{
@@ -437,7 +432,6 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
   int total_new = 0, new;
   BOOL c, seen_incomplete;
 
-//	printf("generate_r: %i %i %i %p %p\n",last,pos,level,h,stop);
   *all_complete = YES;
   seen_incomplete = NO;
   while (h != stop && (pos <= last || *all_complete))
@@ -479,7 +473,6 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
     }
   if (h != stop)
     *all_complete = NO;
-//	printf("total_new=%i done %i\n",total_new,*all_complete);
   return total_new;
 }
 
@@ -488,7 +481,6 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
   int length;
   BOOL dummy;
 
-//	printf("generate to %i\n",last);
   if (!_textStorage)
     return;
   length = [_textStorage length];
@@ -516,8 +508,6 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
   /* OPT: this can be done __much__ more efficiently */
   while (glyphs->glyph_length <= last && (glyphs->char_length < length || !glyphs->complete))
     {
-/*		printf("want to glyph %i, got %i, length=%i char_length=%i\n",
-			last,glyphs->glyph_length,length,glyphs->char_length);*/
       [self _generateGlyphsUpToCharacter: glyphs->char_length];
     }
 }
@@ -743,11 +733,9 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
     r2 = r;
     adj = pos;
     cadj = cpos;
-//		printf("scan backwards from %p %i\n", r2, i);
     while (r2->glyphs[i].char_offset + cadj == j)
       {
 	i--;
-//			printf("  got %i\n", i);
 	while (i < 0)
 	  {
 	    if (!r2->prev)
@@ -756,12 +744,10 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
 	    i = r2->head.glyph_length - 1;
 	    adj -= r2->head.glyph_length;
 	    cadj -= r2->head.char_length;
-//				printf("  adjust to %p %i\n", r2, i);
 	  }
 	if (i < 0)
 	  break;
       }
-//		printf("got %i+1+%i\n", i, adj);
     real_range.location = i + 1 + adj;
   }
 
@@ -769,7 +755,6 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
      search */
   r = run_for_glyph_index(glyphRange.location + glyphRange.length - 1,
 			glyphs, &pos, &cpos);
-//	printf("run for glyph index got %p %i\n", r, cpos);
   if (!r)
     {
       [NSException raise: NSRangeException
@@ -789,16 +774,13 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
     r2 = r;
     adj = pos;
     cadj = cpos;
-//		printf("scan forwards from %p %i, char pos %i\n", r2, i, cadj);
     while (r2->glyphs[i].char_offset + cadj == j)
       {
 	i++;
-//			printf("got %i\n", i);
 	while (i == r2->head.glyph_length)
 	  {
 	    if (!r2->head.next || !r2->head.next->complete)
 	      {
-//					printf("no next, at %i, length %i\n", cadj+r2->head.char_length, [_textStorage length]);
 		if (cadj + r2->head.char_length == [_textStorage length])
 		  {
 		    last = cadj + r2->head.char_length;
@@ -810,7 +792,6 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
 	    cadj += r2->head.char_length;
 	    r2 = (glyph_run_t *)r2->head.next;
 	    i = 0;
-//				printf("adjust to %p %i\n", r2, i);
 	  }
       }
     last = r2->glyphs[i].char_offset + cadj;
@@ -1274,7 +1255,6 @@ it should still be safe. might lose opportunities to merge runs, though.
   textcontainer_t *tc;
   linefrag_t *lf;
 
-//	printf("invalidate from %i\n", idx);
   extra_textcontainer = nil;
 
   for (i = idx, tc = textcontainers + idx; i < num_textcontainers; i++, tc++)
@@ -1325,14 +1305,12 @@ it should still be safe. might lose opportunities to merge runs, though.
   unsigned int next;
   NSRect prev;
 
-//	printf("_doLayout\n");
+  next = 0;
   for (i = 0, tc = textcontainers; i < num_textcontainers; i++, tc++)
     {
-/*		printf("_doLayout in %i  (size (%g %g))\n",
-			i, [tc->textContainer containerSize].width, [tc->textContainer containerSize].height);*/
       if (tc->complete)
 	{
-//			printf("  already done\n");
+	  next = tc->pos + tc->length;
 	  continue;
 	}
 
@@ -1344,11 +1322,10 @@ it should still be safe. might lose opportunities to merge runs, though.
 	    prev = NSZeroRect;
 	  j = [typesetter layoutGlyphsInLayoutManager: self
 			inTextContainer: tc->textContainer
-			startingAtGlyphIndex: tc->pos + tc->length
+			startingAtGlyphIndex: next
 			previousLineFragmentRect: prev
 			nextGlyphIndex: &next
 			numberOfLineFragments: 0];
-//			printf("  got j = %i\n", j);
 	  if (j)
 	    break;
 	}
@@ -1467,15 +1444,15 @@ it should still be safe. might lose opportunities to merge runs, though.
 
 
 #define SETUP_STUFF \
-	unsigned int max = glyphRange.location + glyphRange.length; \
-	\
-	[self _generateGlyphsUpToGlyph: max - 1]; \
-	if (glyphs->glyph_length < max) \
-	{ \
-		[NSException raise: NSRangeException \
-			format: @"%s glyph range out of range", __PRETTY_FUNCTION__]; \
-		return; \
-	}
+  unsigned int max = glyphRange.location + glyphRange.length; \
+  \
+  [self _generateGlyphsUpToGlyph: max - 1]; \
+  if (glyphs->glyph_length < max) \
+    { \
+      [NSException raise: NSRangeException \
+		  format: @"%s: glyph range out of range", __PRETTY_FUNCTION__]; \
+      return; \
+    }
 
 - (void) setTextContainer: (NSTextContainer *)aTextContainer 
 	forGlyphRange: (NSRange)glyphRange
@@ -1497,7 +1474,9 @@ it should still be safe. might lose opportunities to merge runs, though.
     {
       if (glyphRange.location != tc->pos + tc->length)
 	{
-	  NSLog(@"%s: invalid range", __PRETTY_FUNCTION__);
+	  [NSException raise: NSRangeException
+		      format: @"%s: glyph range not consistent with existing layout",
+			      __PRETTY_FUNCTION__];
 	  return;
 	}
       tc->length += glyphRange.length;
@@ -1506,7 +1485,9 @@ it should still be safe. might lose opportunities to merge runs, though.
     {
       if (glyphRange.location)
 	{
-	  NSLog(@"%s: invalid range", __PRETTY_FUNCTION__);
+	  [NSException raise: NSRangeException
+		      format: @"%s: glyph range not consistent with existing layout",
+			      __PRETTY_FUNCTION__];
 	  return;
 	}
       tc->pos = 0;
@@ -1517,7 +1498,9 @@ it should still be safe. might lose opportunities to merge runs, though.
     {
       if (tc[-1].pos + tc[-1].length != glyphRange.location)
 	{
-	  NSLog(@"%s: invalid range", __PRETTY_FUNCTION__);
+	  [NSException raise: NSRangeException
+		      format: @"%s: glyph range not consistent with existing layout",
+			      __PRETTY_FUNCTION__];
 	  return;
 	}
       tc->pos = glyphRange.location;
@@ -1568,7 +1551,9 @@ it should still be safe. might lose opportunities to merge runs, though.
     }
   if (i == num_textcontainers)
     {
-      NSLog(@"%s: text container not set for range", __PRETTY_FUNCTION__);
+      [NSException raise: NSRangeException
+		  format: @"%s: glyph range not consistent with existing layout",
+			  __PRETTY_FUNCTION__];
       return;
     }
 
@@ -1576,7 +1561,9 @@ it should still be safe. might lose opportunities to merge runs, though.
     {
       if (glyphRange.location != tc->pos)
 	{
-	  NSLog(@"%s: invalid range", __PRETTY_FUNCTION__);
+	  [NSException raise: NSRangeException
+		      format: @"%s: glyph range not consistent with existing layout",
+			      __PRETTY_FUNCTION__];
 	  return;
 	}
       tc->linefrags = malloc(sizeof(linefrag_t));
@@ -1588,7 +1575,9 @@ it should still be safe. might lose opportunities to merge runs, though.
       lf = &tc->linefrags[tc->num_linefrags - 1];
       if (lf->pos + lf->length != glyphRange.location)
 	{
-	  NSLog(@"%s: invalid range", __PRETTY_FUNCTION__);
+	  [NSException raise: NSRangeException
+		      format: @"%s: glyph range not consistent with existing layout",
+			      __PRETTY_FUNCTION__];
 	  return;
 	}
       tc->num_linefrags++;
@@ -1620,7 +1609,9 @@ forStartOfGlyphRange: (NSRange)glyphRange
     }
   if (i == num_textcontainers)
     {
-      NSLog(@"%s: text container not set for range", __PRETTY_FUNCTION__);
+      [NSException raise: NSRangeException
+		  format: @"%s: glyph range not consistent with existing layout",
+			  __PRETTY_FUNCTION__];
       return;
     }
 
@@ -1632,7 +1623,9 @@ forStartOfGlyphRange: (NSRange)glyphRange
     }
   if (i == tc->num_linefrags)
     {
-      NSLog(@"%s: line fragment rect not set for range", __PRETTY_FUNCTION__);
+      [NSException raise: NSRangeException
+		  format: @"%s: glyph range not consistent with existing layout",
+			  __PRETTY_FUNCTION__];
       return;
     }
 
@@ -1640,7 +1633,9 @@ forStartOfGlyphRange: (NSRange)glyphRange
     {
       if (glyphRange.location != lf->pos)
 	{
-	  NSLog(@"%s: line fragment rect not set for range", __PRETTY_FUNCTION__);
+	  [NSException raise: NSRangeException
+		      format: @"%s: glyph range not consistent with existing layout",
+			      __PRETTY_FUNCTION__];
 	  return;
 	}
       lp = lf->points = malloc(sizeof(linefrag_point_t));
@@ -1651,7 +1646,9 @@ forStartOfGlyphRange: (NSRange)glyphRange
       lp = &lf->points[lf->num_points - 1];
       if (lp->pos + lp->length != glyphRange.location)
 	{
-	  NSLog(@"%s: line fragment rect not set for range", __PRETTY_FUNCTION__);
+	  [NSException raise: NSRangeException
+		      format: @"%s: glyph range not consistent with existing layout",
+			      __PRETTY_FUNCTION__];
 	  return;
 	}
       lf->num_points++;
@@ -1689,7 +1686,9 @@ forStartOfGlyphRange: (NSRange)glyphRange
     }
   if (i == num_textcontainers)
     {
-      NSLog(@"%s: text container not set for range", __PRETTY_FUNCTION__);
+      [NSException raise: NSRangeException
+		  format: @"%s: glyph range not consistent with existing layout",
+			  __PRETTY_FUNCTION__];
       return;
     }
 
@@ -1701,7 +1700,9 @@ forStartOfGlyphRange: (NSRange)glyphRange
     }
   if (i == tc->num_linefrags)
     {
-      NSLog(@"%s: line fragment rect not set for range", __PRETTY_FUNCTION__);
+      [NSException raise: NSRangeException
+		  format: @"%s: glyph range not consistent with existing layout",
+			  __PRETTY_FUNCTION__];
       return;
     }
 

@@ -36,6 +36,11 @@ points inside line frag rects.
 
 "Nominally spaced", to this layout manager, is described at:
 http://wiki.gnustep.org/index.php/NominallySpacedGlyphs
+
+
+TODO: We often need to deal with the case where a glyph can't be typeset
+(because there's nowhere to typeset it, eg. all text containers are full).
+Need to figure out how to handle it.
 */
 
 #include <math.h>
@@ -75,6 +80,12 @@ http://wiki.gnustep.org/index.php/NominallySpacedGlyphs
 
   r = [self rangeOfNominallySpacedGlyphsContainingIndex: glyphIndex
 	    startLocation: &p];
+  if (r.location == NSNotFound)
+    {
+      /* The glyph hasn't been typeset yet, probably because there isn't
+      enough space in the text containers to fit them. */
+      return NSMakePoint(0,0);
+    }
 
   i = r.location;
   f = [self effectiveFontForGlyphAtIndex: i
@@ -167,9 +178,11 @@ container? necessary? */
 	  glyph_run_t *r;
 	  unsigned int gpos, cpos;
 
-	  for (j = 0, lp = lf->points; j < lf->num_points; j++)
+	  for (j = 0, lp = lf->points; j < lf->num_points; j++, lp++)
 	    if (lp->pos + lp->length > glyphRange.location)
 	      break;
+
+	  NSAssert(j < lf->num_points, @"can't find starting point of glyph");
 
 	  x0 = lp->p.x + lf->rect.origin.x;
 	  r = run_for_glyph_index(lp->pos, glyphs, &gpos, &cpos);
@@ -198,9 +211,11 @@ container? necessary? */
 	  /* At this point there is a glyph in our range that is in this
 	     line frag rect. If we're on the first line frag rect, it's
 	     trivially true. If not, the check before the lf++; ensures it. */
-	  for (j = 0, lp = lf->points; j < lf->num_points; j++)
-	    if (lp->pos < last)
+	  for (j = 0, lp = lf->points; j < lf->num_points; j++, lp++)
+	    if (lp->pos + lp->length > last)
 	      break;
+
+	  NSAssert(j < lf->num_points, @"can't find starting point of glyph");
 
 	  x1 = lp->p.x + lf->rect.origin.x;
 	  r = run_for_glyph_index(lp->pos, glyphs, &gpos, &cpos);
@@ -636,7 +651,7 @@ has the same y origin and height as the line frag rect it is in.
     glyph_run_t *r;
     unsigned int gpos, cpos;
 
-    for (j = 0, lp = lf->points; j < lf->num_points; j++)
+    for (j = 0, lp = lf->points; j < lf->num_points; j++, lp++)
       if (lp->pos + lp->length > glyph_index)
 	break;
 
