@@ -105,12 +105,9 @@ _NSAppKitUncaughtExceptionHandler (NSException *exception)
    * quit.  */
   if (GSCurrentContext() == nil)
     {
-      _NSUncaughtExceptionHandler = _preventRecursion;
-      fprintf (stderr, 
-	       "Uncaught exception %s, reason: %s\n",
-	       [[exception name] lossyCString], 
-	       [[exception reason] lossyCString]);
-      abort();
+      /* The following will raise again the exception using the base 
+	 library exception handler */
+      [exception raise];
     }
 
   retVal = NSRunCriticalAlertPanel 
@@ -122,7 +119,9 @@ _NSAppKitUncaughtExceptionHandler (NSException *exception)
   /* The user wants to abort */
   if (retVal == NSAlertDefault)
     {
-      defaultUncaughtExceptionHandler (exception);
+      /* The following will raise again the exception using the base 
+	 library exception handler */
+      [exception raise];
     }
 
   /* The user said to go on - more fun I guess - turn the AppKit
