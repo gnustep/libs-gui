@@ -139,7 +139,7 @@
 {
   // recompute the textContainerOrigin
   // use bounds, inset, and used rect.
-  NSRect bRect = [self bounds];
+    //NSRect bRect = [self bounds];
 }
 
 - (NSLayoutManager*) layoutManager
@@ -193,26 +193,9 @@
 			    color: (NSColor*)aColor
 			 turnedOn: (BOOL)flag
 {
-  [self lockFocus];
-
-  NSDebugLLog(@"NSText", 
-    @"drawInsertionPointInRect: (%f, %f)", aRect.size.width, aRect.size.height);
-
-  aRect.size.width = 1;
-
-  if (flag)
-    {
-      [aColor set];
-      NSRectFill(aRect);
-    }
-  else
-    {
-      [[self backgroundColor] set];
-      NSRectFill(aRect);
-    }
-
-  [self unlockFocus];
-  [_window flushWindow];
+  [super drawInsertionPointInRect: aRect
+	 color: aColor
+	 turnedOn: flag];
 }
 
 - (void) setConstrainedFrameSize: (NSSize)desiredSize
@@ -307,7 +290,7 @@
 
 - (void) setRulerVisible: (BOOL)flag
 {
-  _tf.is_ruler_visible = flag;
+  [super setRulerVisible: flag];
 }
 
 - (BOOL) isRulerVisible
@@ -339,12 +322,15 @@
 		 affinity: (NSSelectionAffinity)affinity
 	   stillSelecting: (BOOL)flag
 {
-  NSDebugLLog(@"NSText", @"setSelectedRange stillSelecting.");
+  // Use affinity to determine the insertion point
 
-  _selected_range = charRange;
-  [self setSelectionGranularity: NSSelectByCharacter];
-
-  // FIXME, more.
+  if (flag)
+    {
+      _selected_range = charRange;
+      [self setSelectionGranularity: NSSelectByCharacter];
+    }
+  else
+      [self setSelectedRange: charRange];
 }
 
 - (NSSelectionAffinity) selectionAffinity
@@ -482,121 +468,242 @@ You should not need to override this method. You might need to invoke this
 method if you are implementing a new type of pasteboard to handle services
 other than copy/paste or dragging. */
 
-  return NO;
+  NSArray      *mytypes;
+  NSString     *string;
+
+  if ([types containsObject: NSStringPboardType] == NO)
+    {
+      return NO;
+    }
+  mytypes = [NSArray arrayWithObjects: NSStringPboardType, nil];
+  [pboard declareTypes: mytypes owner: nil];
+  string = [self string];
+  string = [string substringWithRange: _selected_range];
+  return [pboard setString: string forType: NSStringPboardType];
 }
 
 - (void) alignJustified: (id)sender
 {
-/*
-  if (!_tf.is_rich_text)
-    // if plain all text is jsutified.
-  else
-    // selected range is fully justified.
-*/
+  [self setAlignment: NSJustifiedTextAlignment
+	range: [self rangeForUserParagraphAttributeChange]];   
 }
 
 - (void) changeColor: (id)sender
 {
-//  NSColor *aColor = [sender color];
+  NSColor *aColor = (NSColor*)[sender color];
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+
+  if (aRange.location == NSNotFound)
+    return;
 
   // sets the color for the selected range.
+  [self setTextColor: aColor
+	range: aRange];
 }
 
 - (void) setAlignment: (NSTextAlignment)alignment
 		range: (NSRange)aRange
 { 
-/*
-Sets the alignment of the paragraphs containing characters in aRange to
-alignment. alignment is one of: 
-
-      NSLeftTextAlignment
-      NSRightTextAlignment 
-      NSCenterTextAlignment 
-      NSJustifiedTextAlignment 
-      NSNaturalTextAlignment
-*/
+  [super setAlignment: alignment
+	 range: aRange];
 }
 
 - (void) setTypingAttributes: (NSDictionary*)attributes
 {
-  // more?
-
-  ASSIGN(_typingAttributes, attributes);
+  [super setTypingAttributes: attributes];
 }
 
 - (NSDictionary*) typingAttributes
 {
-  return _typingAttributes;
+  return [super typingAttributes];
 }
 
 - (void) useStandardKerning: (id)sender
 {
   // rekern for selected range if rich text, else rekern entire document.
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+
+  if (aRange.location == NSNotFound)
+    return;
+  
+  if (![self shouldChangeTextInRange: aRange
+	    replacementString: nil])
+    return;
+  [_textStorage beginEditing];
+  [_textStorage removeAttribute: NSKernAttributeName
+		range: aRange];
+  [_textStorage endEditing];
+  [self didChangeText];
 }
 
 - (void) lowerBaseline: (id)sender
 {
-/*
-  if (_tf.is_rich_text)
-    // lower baseline by one point for selected text
+  id value;
+  float sValue;
+  NSRange effRange;
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+
+  if (aRange.location == NSNotFound)
+    return;
+
+  if (![self shouldChangeTextInRange: aRange
+	    replacementString: nil])
+    return;
+  [_textStorage beginEditing];
+  // We take the value form the first character and use it for the whole range
+  value = [_textStorage attribute: NSBaselineOffsetAttributeName
+			atIndex: aRange.location
+			effectiveRange: &effRange];
+
+  if (value != nil)
+    sValue = [value floatValue] + 1.0;
   else
-    // lower baseline for entire document.
-*/
+    sValue = 1.0;
+
+  [_textStorage addAttribute: NSBaselineOffsetAttributeName
+		value: [NSNumber numberWithFloat: sValue]
+		range: aRange];
 }
 
 - (void) raiseBaseline: (id)sender
 {
-/*
-  if (_tf.is_rich_text)
-    // raise baseline by one point for selected text
+  id value;
+  float sValue;
+  NSRange effRange;
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+
+  if (aRange.location == NSNotFound)
+    return;
+
+  if (![self shouldChangeTextInRange: aRange
+	    replacementString: nil])
+    return;
+  [_textStorage beginEditing];
+  // We take the value form the first character and use it for the whole range
+  value = [_textStorage attribute: NSBaselineOffsetAttributeName
+			atIndex: aRange.location
+			effectiveRange: &effRange];
+
+  if (value != nil)
+    sValue = [value floatValue] - 1.0;
   else
-    // raise baseline for entire document.
-*/
+    sValue = -1.0;
+
+  [_textStorage addAttribute: NSBaselineOffsetAttributeName
+		value: [NSNumber numberWithFloat: sValue]
+		range: aRange];
+  [_textStorage endEditing];
+  [self didChangeText];
 }
 
 - (void) turnOffKerning: (id)sender
 {
-/*
-  if (_tf.is_rich_text)
-    // turn off kerning in selection.
-  else
-    // turn off kerning document wide.
-*/
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+
+  if (aRange.location == NSNotFound)
+    return;
+  
+  if (![self shouldChangeTextInRange: aRange
+	    replacementString: nil])
+    return;
+  [_textStorage beginEditing];
+  [_textStorage addAttribute: NSKernAttributeName
+		value: [NSNumber numberWithFloat: 0.0]
+		range: aRange];
+  [_textStorage endEditing];
+  [self didChangeText];
 }
 
 - (void) loosenKerning: (id)sender
 {
-/*
-  if (_tf.is_rich_text)
-    // loosen kerning in selection.
-  else
-    // loosen kerning document wide.
-*/
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+
+  if (aRange.location == NSNotFound)
+    return;
+
+  if (![self shouldChangeTextInRange: aRange
+	    replacementString: nil])
+    return;
+  [_textStorage beginEditing];
+  // FIXME: Should use the current kerning and work relative to point size
+  [_textStorage addAttribute: NSKernAttributeName
+		value: [NSNumber numberWithFloat: 1.0]
+		range: aRange];
+  [_textStorage endEditing];
+  [self didChangeText];
 }
 
 - (void) tightenKerning: (id)sender
 {
-/*
-  if (_tf.is_rich_text)
-    // tighten kerning in selection.
-  else
-    // tighten kerning document wide.
-*/
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+
+  if (aRange.location == NSNotFound)
+    return;
+
+  if (![self shouldChangeTextInRange: aRange
+	    replacementString: nil])
+    return;
+  [_textStorage beginEditing];
+  // FIXME: Should use the current kerning and work relative to point size
+  [_textStorage addAttribute: NSKernAttributeName
+		value: [NSNumber numberWithFloat: -1.0]
+		range: aRange];
+  [_textStorage endEditing];
+  [self didChangeText];
 }
 
 - (void) useStandardLigatures: (id)sender
 {
-  // well.
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+
+  if (aRange.location == NSNotFound)
+    return;
+
+  if (![self shouldChangeTextInRange: aRange
+	    replacementString: nil])
+    return;
+  [_textStorage beginEditing];
+  [_textStorage addAttribute: NSLigatureAttributeName
+		value: [NSNumber numberWithInt: 1]
+		range: aRange];
+  [_textStorage endEditing];
+  [self didChangeText];
 }
 
 - (void) turnOffLigatures: (id)sender
 {
-  // sure.
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+
+  if (aRange.location == NSNotFound)
+    return;
+
+  if (![self shouldChangeTextInRange: aRange
+	    replacementString: nil])
+    return;
+  [_textStorage beginEditing];
+  [_textStorage addAttribute: NSLigatureAttributeName
+		value: [NSNumber numberWithInt: 0]
+		range: aRange];
+  [_textStorage endEditing];
+  [self didChangeText];
 }
 
 - (void) useAllLigatures: (id)sender
 {
-  // as you say.
+  NSRange aRange = [self rangeForUserCharacterAttributeChange];
+
+  if (aRange.location == NSNotFound)
+    return;
+
+  if (![self shouldChangeTextInRange: aRange
+	    replacementString: nil])
+    return;
+  [_textStorage beginEditing];
+  [_textStorage addAttribute: NSLigatureAttributeName
+		value: [NSNumber numberWithInt: 2]
+		range: aRange];
+  [_textStorage endEditing];
+  [self didChangeText];
 }
 
 - (void) clickedOnLink: (id)link
@@ -629,7 +736,7 @@ replacing the selection.
 
 - (void) updateFontPanel
 {
-  // [fontPanel setFont: [self fontFromRange]];
+  [super updateFontPanel];
 }
 
 - (void) updateRuler
@@ -649,52 +756,23 @@ replacing the selection.
 - (NSRange) selectionRangeForProposedRange: (NSRange)proposedSelRange
 			       granularity: (NSSelectionGranularity)granularity
 {
-  NSRange retRange;
-
-  switch (granularity)
-    {
-      case NSSelectByParagraph: 
-        // we need to: 1, find how far to end of paragraph; 2, increase
-        // range.
-      case NSSelectByWord: 
-        // we need to: 1, find how far to end of word; 2, increase range.
-      case NSSelectByCharacter: 
-      default: 
-        retRange = proposedSelRange;
-    }
-
-  return retRange;
+  return [super selectionRangeForProposedRange: proposedSelRange
+		granularity: granularity];
 }
 
 - (NSRange) rangeForUserCharacterAttributeChange
 {
-  if (!_tf.is_editable || !_tf.uses_font_panel)
-    return NSMakeRange(NSNotFound, 0);
-
-  if (_tf.is_rich_text)
-    return _selected_range;
-  else
-    return NSMakeRange(NSNotFound, 0); // should be entire contents.
+  return [super rangeForUserCharacterAttributeChange];
 }
 
 - (NSRange) rangeForUserParagraphAttributeChange
 {
-  if (!_tf.is_editable)
-    return NSMakeRange(NSNotFound, 0);
-
-  if (_tf.is_rich_text)
-    return [self selectionRangeForProposedRange: _selected_range
-		granularity: NSSelectByParagraph];
-  else
-    return NSMakeRange(NSNotFound, 0); // should be entire contents.
+  return [super rangeForUserParagraphAttributeChange];
 }
 
 - (NSRange) rangeForUserTextChange
 {
-  if (!_tf.is_editable || !_tf.uses_ruler)
-    return NSMakeRange(NSNotFound, 0);
-
-  return _selected_range;
+  return [super rangeForUserTextChange];
 }
 
 - (BOOL) shouldChangeTextInRange: (NSRange)affectedCharRange
@@ -715,7 +793,7 @@ Text in the class description for more information. If you can't determine
 the affected range or replacement string before beginning changes, pass
 (NSNotFound, 0) and nil for these values. */
 
-  return NO;
+  return YES;
 }
 
 - (void) didChangeText
@@ -942,62 +1020,14 @@ container, returning the modified location. */
   SET_DELEGATE_NOTIFICATION(WillChangeNotifyingTextView);
 }
 
-- (void) setString: (NSString*)string
-{
-  NSAttributedString	*aString;
-
-  aString = [NSAttributedString alloc];
-  aString = [aString initWithString: string
-			 attributes: [self typingAttributes]];
-  AUTORELEASE(aString);
-
-//  [_textStorage replaceRange: NSMakeRange(0, [string length])
-//	withString: aString];
-
-  [_textStorage setAttributedString: aString];
-
-//replaceCharactersInRange: NSMakeRange(0, [string length])
-//                   withAttributedString: aString];
-
-//  [_textStorage insertAttributedString: aString atIndex: 0];
-}
-
-- (void) setText: (NSString*)string
-{
-  [self setString: string];
-}
-
 - (void) insertText: (NSString*)aString
 {
-  NSDebugLLog(@"NSText", @"%@", aString);
-
-  if (![aString isKindOfClass: [NSAttributedString class]])
-    aString = [[NSAttributedString alloc] initWithString: aString
-		attributes: [self typingAttributes]];
-
-  [_textStorage replaceCharactersInRange: [self selectedRange]
-       withAttributedString: (NSAttributedString*)aString];
-
-  [self sizeToFit];                       // ScrollView interaction
-
-  [self setSelectedRange: NSMakeRange([self 
-    selectedRange].location+[aString length],0)];
-
-  [self display];
-  [_window update]; 
-
-  NSLog(@"%@", [_textStorage string]);
-  /*
-   * broadcast notification
-   */
-  [[NSNotificationCenter defaultCenter]
-    postNotificationName: NSTextDidChangeNotification
-    object: self];
+  [super insertText: aString];
 }
 
 - (void) sizeToFit
 {
-  NSLog(@"sizeToFit called.\n");
+  [super sizeToFit];
 }
 
 - (void) drawRect: (NSRect)aRect
