@@ -1,5 +1,15 @@
 Wed Oct 27  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
+	Changings suggested by Andrew Lindesay:
+	* Source/NSBrowser.m: draw a border around its horizontal scroller.  
+	Updated code to compute the border during calculation of sizes; 
+	([NSBrowser -drawRect:]): draw horizontal scroller border.
+	* Source/NSSavePanel.m ([NSSavePanel -_initWithoutGModel]): 
+	Changed Ok button from 'Ok' to 'OK'.
+	* Panels/SavePanel.gmodel: idem.
+	
+Wed Oct 27  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
 	Minor improvements on last days' changings.
 	* Source/NSBrowserCell.m: Use simple bold and no color 
 	when fontifying.
