@@ -424,7 +424,7 @@ static NSAffineTransformStruct identityTransform = {
 
   if (rotationAngle == 0)
     {
-      *new = NSZeroRect;
+      *new = rect;
       return;
     }
 
