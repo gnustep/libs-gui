@@ -39,20 +39,26 @@
 
 - (void) _textViewFrameChanged: (NSNotification*)aNotification
 {
-  id		textView;
-  NSSize	newSize;
-  NSSize	inset;
-
   if (_observingFrameChanges)
     {
+      id	textView;
+      NSSize	newTextViewSize;
+      NSSize	newSize;
+      NSSize	inset;
+
       textView = [aNotification object];
-      newSize = [textView frame].size;
+      newTextViewSize = [textView frame].size;
+      newSize = _containerRect.size;
       inset = [textView textContainerInset];
 
       if (_widthTracksTextView)
-	newSize.width = MAX(newSize.width - (inset.width * 2.0), 0.0);
+	{
+	  newSize.width = MAX(newTextViewSize.width - (inset.width * 2.0), 0.0);
+	}
       if (_heightTracksTextView)
-	newSize.height = MAX(newSize.height - (inset.height * 2.0), 0.0);
+	{
+	  newSize.height = MAX(newTextViewSize.height - (inset.height * 2.0), 0.0);
+	}
 
       [self setContainerSize: newSize];
     }
@@ -120,21 +126,28 @@
 
 - (void) setTextView: (NSTextView*)aTextView
 {
+  NSNotificationCenter *nc;
+  nc = [NSNotificationCenter defaultCenter];
+	  
   if (_textView)
     {
       [_textView setTextContainer: nil];
-      [[NSNotificationCenter defaultCenter] removeObserver: self];
+      [nc removeObserver: self name: NSViewFrameDidChangeNotification 
+	  object: _textView];
     }
 
   ASSIGN(_textView, aTextView);
 
-  if (aTextView)
+  if (aTextView != nil)
     {
       [_textView setTextContainer: self];
-      [[NSNotificationCenter defaultCenter] addObserver: self
-	selector: @selector(_textViewFrameChanged:)
-	    name: NSViewFrameDidChangeNotification
-	  object: _textView];
+      if (_observingFrameChanges)
+	{
+	  [nc addObserver: self
+	      selector: @selector(_textViewFrameChanged:)
+	      name: NSViewFrameDidChangeNotification
+	      object: _textView];
+	}
     }
 }
 
@@ -145,7 +158,7 @@
 
 - (void) setContainerSize: (NSSize)aSize
 {
-  _containerRect = NSMakeRect(0, 0, aSize.width, aSize.height);
+  _containerRect = NSMakeRect (0, 0, aSize.width, aSize.height);
 
   if (_layoutManager)
     [_layoutManager textContainerChangedGeometry: self];
@@ -158,8 +171,23 @@
 
 - (void) setWidthTracksTextView: (BOOL)flag
 {
+  NSNotificationCenter *nc;
+  nc = [NSNotificationCenter defaultCenter];
+
   _widthTracksTextView = flag;
   _observingFrameChanges = _widthTracksTextView | _heightTracksTextView;
+  if (_observingFrameChanges)
+    {      
+      [nc addObserver: self
+	  selector: @selector(_textViewFrameChanged:)
+	  name: NSViewFrameDidChangeNotification
+	  object: _textView];
+    }
+  else
+    {
+      [nc removeObserver: self name: NSViewFrameDidChangeNotification 
+	  object: _textView];
+    }
 }
 
 - (BOOL) widthTracksTextView
@@ -169,8 +197,23 @@
 
 - (void) setHeightTracksTextView: (BOOL)flag
 {
+  NSNotificationCenter *nc;
+  nc = [NSNotificationCenter defaultCenter];
+
   _heightTracksTextView = flag;
   _observingFrameChanges = _widthTracksTextView | _heightTracksTextView;
+  if (_observingFrameChanges)
+    {      
+      [nc addObserver: self
+	  selector: @selector(_textViewFrameChanged:)
+	  name: NSViewFrameDidChangeNotification
+	  object: _textView];
+    }
+  else
+    {
+      [nc removeObserver: self name: NSViewFrameDidChangeNotification 
+	  object: _textView];
+    }
 }
 
 - (BOOL) heightTracksTextView
@@ -198,7 +241,7 @@
 {
   // line fragment rectangle simply must fit within the container rectangle
   *remainingRect = NSZeroRect;
-  return NSIntersectionRect(proposedRect, _containerRect);
+  return NSIntersectionRect (proposedRect, _containerRect);
 }
 
 - (BOOL) isSimpleRectangularTextContainer
@@ -209,7 +252,7 @@
 
 - (BOOL) containsPoint: (NSPoint)aPoint
 {
-  return NSPointInRect(aPoint, _containerRect);
+  return NSPointInRect (aPoint, _containerRect);
 }
 
 @end /* NSTextContainer */
