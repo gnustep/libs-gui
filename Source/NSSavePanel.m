@@ -48,6 +48,8 @@
 #include "AppKit/NSImage.h"
 #include "AppKit/NSImageView.h"
 #include "AppKit/NSMatrix.h"
+#include "AppKit/NSPasteboard.h"
+#include "AppKit/NSDragging.h"
 #include "AppKit/NSSavePanel.h"
 #include "AppKit/NSTextField.h"
 #include "AppKit/NSWorkspace.h"
@@ -90,6 +92,64 @@ static BOOL _gs_display_reading_progress = NO;
 - (NSComparisonResult) _compareFilename: (NSString *)n1 with: (NSString *)n2;
 @end /* NSSavePanel (PrivateMethods) */
 
+@interface PanelView : NSView
+{
+  NSSavePanel	*owner;
+}
+- (id) initWithFrame: (NSRect)r owner: (NSSavePanel*)p;
+- (BOOL) performDragOperation: (id<NSDraggingInfo>)sender;
+- (BOOL) prepareForDragOperation: (id<NSDraggingInfo>)sender;
+@end
+
+@implementation	PanelView
+
+- (unsigned int) draggingEntered: (id <NSDraggingInfo>)sender
+{
+  NSPasteboard *pb;
+
+  pb = [sender draggingPasteboard];
+  if ([[pb types] indexOfObject: NSFilenamesPboardType] == NSNotFound)
+    {
+      return NSDragOperationNone;
+    }
+  return NSDragOperationAll;
+}
+    
+- (id) initWithFrame: (NSRect)r owner: (NSSavePanel*)p
+{
+  if ((self = [super initWithFrame: r]) != nil)
+    {
+      owner = p;
+      [self registerForDraggedTypes: [NSArray arrayWithObjects:
+	    NSFilenamesPboardType, nil]];
+    }
+  return self;
+}
+
+- (BOOL) performDragOperation: (id<NSDraggingInfo>)sender
+{
+  NSArray	*types;
+  NSPasteboard	*dragPb;
+
+  dragPb = [sender draggingPasteboard];
+  types = [dragPb types];
+  if ([types containsObject: NSFilenamesPboardType] == YES)
+    {
+      NSArray	*names = [dragPb propertyListForType: NSFilenamesPboardType];
+      NSString	*file = [names lastObject];
+
+      [owner setDirectory: file];
+      return YES;
+    }
+  return NO;
+}
+
+- (BOOL) prepareForDragOperation: (id<NSDraggingInfo>)sender
+{
+  return YES;
+}
+@end
+  
 @implementation NSSavePanel (_PrivateMethods)
 -(id) _initWithoutGModel
 {
@@ -98,6 +158,7 @@ static BOOL _gs_display_reading_progress = NO;
   NSImage *image;
   NSRect r;
   id lastKeyView;
+  id panelView;
 
   // Track window resizing so we can change number of browser columns.
   [[NSNotificationCenter defaultCenter] addObserver: self
@@ -114,10 +175,15 @@ static BOOL _gs_display_reading_progress = NO;
 	 styleMask: (NSTitledWindowMask | NSResizableWindowMask) 
 	 backing: 2 defer: YES];
   [self setMinSize: [self frame].size];
-  [[self contentView] setBounds: NSMakeRect (0, 0, 308, 317)];
+
+  r = NSMakeRect (0, 0, 308, 317);
+  panelView = [[PanelView alloc] initWithFrame: r owner: self];
+  [self setContentView: panelView];
+  RELEASE(panelView);
+  [[self contentView] setBounds: r];
   
   r = NSMakeRect (0, 64, 308, 245);
-  _topView = [[NSView alloc] initWithFrame: r]; 
+  _topView = [[PanelView alloc] initWithFrame: r owner: self]; 
   [_topView setBounds:  r];
   [_topView setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
   [_topView setAutoresizesSubviews: YES];
@@ -125,7 +191,7 @@ static BOOL _gs_display_reading_progress = NO;
   [_topView release];
   
   r = NSMakeRect (0, 0, 308, 64);
-  _bottomView = [[NSView alloc] initWithFrame: r];
+  _bottomView = [[PanelView alloc] initWithFrame: r owner: self];
   [_bottomView setBounds:  r];
   [_bottomView setAutoresizingMask: NSViewWidthSizable|NSViewMaxYMargin];
   [_bottomView setAutoresizesSubviews: YES];
@@ -333,7 +399,7 @@ static BOOL _gs_display_reading_progress = NO;
   NSBrowserCell *selectedCell;
   BOOL           isLeaf;
 
-  if(column == -1)
+  if (column == -1)
     return;
 
   matrix = [_browser matrixInColumn:column];
@@ -349,7 +415,7 @@ static BOOL _gs_display_reading_progress = NO;
     }
   else
     {
-      if([[[_form cellAtIndex: 0] stringValue] length] > 0)
+      if ([[[_form cellAtIndex: 0] stringValue] length] > 0)
 	{
 	  [_okButton setEnabled:YES];
 	  [self _selectCellName:[[_form cellAtIndex: 0] stringValue]];
@@ -375,34 +441,34 @@ static BOOL _gs_display_reading_progress = NO;
   int                 i, titleLength, cellLength, numberOfCells;
 
   matrix = [_browser matrixInColumn:[_browser lastColumn]];
-  if([matrix selectedCell])
+  if ([matrix selectedCell])
     return;
 
   titleLength = [title length];
-  if(!titleLength)
+  if (!titleLength)
     return;
 
   cells = [matrix cells];
   numberOfCells = [cells count];
 
-  for(i = 0; i < numberOfCells; i++)
+  for (i = 0; i < numberOfCells; i++)
     {
       cellString = [[matrix cellAtRow:i column:0] stringValue];
 
       cellLength = [cellString length];
-      if(cellLength != titleLength)
+      if (cellLength != titleLength)
 	continue;
 
       result = [self _compareFilename:cellString with:title];
 
-      if(result == NSOrderedSame)
+      if (result == NSOrderedSame)
 	{
 	  [matrix selectCellAtRow:i column:0];
 	  [matrix scrollCellToVisibleAtRow:i column:0];
 	  [_okButton setEnabled:YES];
 	  return;
 	}
-      else if(result == NSOrderedDescending)
+      else if (result == NSOrderedDescending)
 	break;
     }
 }
@@ -939,6 +1005,7 @@ selectCellWithString: (NSString*)title
   NSMatrix      *matrix;
   NSBrowserCell *selectedCell;
   NSString      *filename;
+  BOOL		isDir = NO;
 
   matrix = [_browser matrixInColumn: [_browser lastColumn]];
   selectedCell = [matrix selectedCell];
@@ -976,9 +1043,50 @@ selectCellWithString: (NSString*)title
     }
 
   ASSIGN (_directory, [_browser pathToColumn:[_browser lastColumn]]);
-  ASSIGN (_fullFileName, [_directory stringByAppendingPathComponent:
-				       [[_form cellAtIndex: 0] stringValue]]);
+  filename = [[_form cellAtIndex: 0] stringValue];
+  if ([filename isAbsolutePath] == YES)
+    {
+      ASSIGN (_fullFileName, filename);
+    }
+  else
+    {
+      ASSIGN (_fullFileName, [_directory stringByAppendingPathComponent:
+				       filename]);
+    }
 
+  filename = [_fullFileName stringByDeletingLastPathComponent];
+  if ([_fm fileExistsAtPath: filename isDirectory: &isDir] == NO)
+    {
+      int	result;
+
+      result = NSRunAlertPanel(_(@"Save"),
+	_(@"The directory '%@' does not exist, do you want to create it?"),
+	_(@"Yes"), _(@"No"), nil,
+	filename
+	);
+
+      if (result == NSAlertDefaultReturn)
+	{
+	  if ([_fm createDirectoryAtPath: filename attributes: nil] == NO)
+	    {
+	      NSRunAlertPanel(_(@"Save"),
+		_(@"The directory '%@' could not be created."),
+		_(@"Dismiss"), nil, nil,
+		filename
+		);
+	      return;
+	    }
+	}
+    }
+  else if (isDir == NO)
+    {
+      NSRunAlertPanel(_(@"Save"),
+	_(@"The path '%@' is not a directory."),
+	_(@"Dismiss"), nil, nil,
+	filename
+	);
+      return;
+    }
   if ([_fm fileExistsAtPath: [self filename] isDirectory: NULL])
     {
       int result;
@@ -1433,14 +1541,22 @@ createRowsForColumn: (int)column
   NSComparisonResult  result;
   NSRange             range;
 
-  matrix = [_browser matrixInColumn:[_browser lastColumn]];
   s = [[[aNotification userInfo] objectForKey:@"NSFieldEditor"] string];
+
+  /*
+   * If the user typed in an absolute path, display it.
+   */
+  if ([s isAbsolutePath] == YES)
+    {
+      [self setDirectory: s];
+    }
 
   sLength = [s length];
   range.location = 0;
   range.length = sLength;
 
-  if(sLength == 0)
+  matrix = [_browser matrixInColumn:[_browser lastColumn]];
+  if (sLength == 0)
     {
       [matrix deselectAllCells];
       [_okButton setEnabled:NO];
@@ -1452,31 +1568,31 @@ createRowsForColumn: (int)column
   selectedRow = [matrix selectedRow];
   cells = [matrix cells];
 
-  if(selectedString)
+  if (selectedString)
     {
       result = [s compare:selectedString options:0 range:range];
 
-      if(result == NSOrderedSame)
+      if (result == NSOrderedSame)
 	return;
     }
   else
     result = NSOrderedDescending;
 
-  if(result == NSOrderedDescending)
+  if (result == NSOrderedDescending)
     {
       int numberOfCells = [cells count];
 
-      for(i = selectedRow+1; i < numberOfCells; i++)
+      for (i = selectedRow+1; i < numberOfCells; i++)
 	{
 	  selectedString = [[matrix cellAtRow:i column:0] stringValue];
 
 	  cellLength = [selectedString length];
-	  if(cellLength != sLength)
+	  if (cellLength != sLength)
 	    continue;
 
 	  result = [selectedString compare:s options:0 range:range];
 
-	  if(result == NSOrderedSame)
+	  if (result == NSOrderedSame)
 	    {
 	      [matrix deselectAllCells];
 	      [matrix selectCellAtRow:i column:0];
@@ -1488,17 +1604,17 @@ createRowsForColumn: (int)column
     }
   else
     {
-      for(i = selectedRow; i >= 0; --i)
+      for (i = selectedRow; i >= 0; --i)
 	{
 	  selectedString = [[matrix cellAtRow:i column:0] stringValue];
 
 	  cellLength = [selectedString length];
-	  if(cellLength != sLength)
+	  if (cellLength != sLength)
 	    continue;
 
 	  result = [selectedString compare:s options:0 range:range];
 
-	  if(result == NSOrderedSame)
+	  if (result == NSOrderedSame)
 	    {
 	      [matrix deselectAllCells];
 	      [matrix selectCellAtRow:i column:0];

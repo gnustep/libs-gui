@@ -1,5 +1,13 @@
 2003-10-27  Richard Frith-Macdonald <rfm@gnu.org>
 
+	* Source/NSOpenPanel.m: Allow users to type in an absolute path name.
+	Support DnD of filename into panel.
+	* Source/NSSavePanel.m: ditto.  Also, if the name of a non-existent
+	directory is typed in, provide a prompt to create the directory as
+	in NeXTstep/OPENSTEP.
+
+2003-10-27  Richard Frith-Macdonald <rfm@gnu.org>
+
 	* Source/GSServicesManager.m: Tidy last patch to match use of
 	whitespace etc in GNUstep code.
 	* Source/GSDisplayManager.m:

@@ -104,10 +104,10 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 {
   NSMatrix *matrix;
 
-  if(column == -1)
+  if (column == -1)
     return;
 
-  matrix = [_browser matrixInColumn:column];
+  matrix = [_browser matrixInColumn: column];
 
   if ([_browser allowsMultipleSelection])
     {
@@ -115,41 +115,41 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 
       selectedCells = [matrix selectedCells];
 
-      if([selectedCells count] <= 1)
+      if ([selectedCells count] <= 1)
 	{
-	  if(_canChooseDirectories == NO ||
+	  if (_canChooseDirectories == NO ||
 	     [[matrix selectedCell] isLeaf] == YES)
-	    [super _selectTextInColumn:column];
+	    [super _selectTextInColumn: column];
 	  else
 	    {
-	      [self _selectCellName:[[_form cellAtIndex: 0] stringValue]];
-	      //	      [_form selectTextAtIndex:0];
-	      [_okButton setEnabled:YES];
+	      [self _selectCellName: [[_form cellAtIndex: 0] stringValue]];
+	      //	      [_form selectTextAtIndex: 0];
+	      [_okButton setEnabled: YES];
 	    }
 	}
       else
 	{
 	  [_form abortEditing];
 	  [[_form cellAtIndex: 0] setStringValue:@""];
-	  //	  [_form selectTextAtIndex:0];
-	  [_form setNeedsDisplay:YES];
-	  [_okButton setEnabled:YES];
+	  //	  [_form selectTextAtIndex: 0];
+	  [_form setNeedsDisplay: YES];
+	  [_okButton setEnabled: YES];
 	}
     }
   else
     {
-      if(_canChooseDirectories == NO || [[matrix selectedCell] isLeaf] == YES)
-	[super _selectTextInColumn:column];
+      if (_canChooseDirectories == NO || [[matrix selectedCell] isLeaf] == YES)
+	[super _selectTextInColumn: column];
       else
 	{
-	  if([[[_form cellAtIndex: 0] stringValue] length] > 0)
+	  if ([[[_form cellAtIndex: 0] stringValue] length] > 0)
 	    {
-	      [self _selectCellName:[[_form cellAtIndex: 0] stringValue]];
-	      //	      [_form selectTextAtIndex:0];
-	      [_form setNeedsDisplay:YES];
+	      [self _selectCellName: [[_form cellAtIndex: 0] stringValue]];
+	      //	      [_form selectTextAtIndex: 0];
+	      [_form setNeedsDisplay: YES];
 	    }
 
-	  [_okButton setEnabled:YES];
+	  [_okButton setEnabled: YES];
 	}
     }
 }
@@ -163,14 +163,14 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   NSRange             range;
   int                 i, titleLength, cellLength, numberOfCells;
 
-  matrix = [_browser matrixInColumn:[_browser lastColumn]];
-  if([matrix selectedCell])
+  matrix = [_browser matrixInColumn: [_browser lastColumn]];
+  if ([matrix selectedCell])
     return;
 
   titleLength = [title length];
-  if(!titleLength)
+  if (!titleLength)
     {
-      [_okButton setEnabled:NO];
+      [_okButton setEnabled: NO];
       return;
     }
 
@@ -180,25 +180,25 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   cells = [matrix cells];
   numberOfCells = [cells count];
 
-  for(i = 0; i < numberOfCells; i++)
+  for (i = 0; i < numberOfCells; i++)
     {
-      cellString = [[matrix cellAtRow:i column:0] stringValue];
+      cellString = [[matrix cellAtRow: i column: 0] stringValue];
 
       cellLength = [cellString length];
-      if(cellLength < titleLength)
+      if (cellLength < titleLength)
 	continue;
 
-      result = [self _compareFilename:[cellString substringWithRange:range]
-                                 with:title];
+      result = [self _compareFilename: [cellString substringWithRange: range]
+                                 with: title];
 
-      if(result == NSOrderedSame)
+      if (result == NSOrderedSame)
 	{
-	  [matrix selectCellAtRow:i column:0];
-	  [matrix scrollCellToVisibleAtRow:i column:0];
-	  [_okButton setEnabled:YES];
+	  [matrix selectCellAtRow: i column: 0];
+	  [matrix scrollCellToVisibleAtRow: i column: 0];
+	  [_okButton setEnabled: YES];
 	  return;
 	}
-      else if(result == NSOrderedDescending)
+      else if (result == NSOrderedDescending)
 	break;
     }
 }
@@ -215,13 +215,13 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 
   if (filename == nil)
     filename = @"";
-  else if([filename isEqual: @""] == NO)
+  else if ([filename isEqual: @""] == NO)
     [_okButton setEnabled: YES];
 
   if (_canChooseDirectories == NO)
     {
-      if([_browser allowsMultipleSelection] == YES)
-	[_browser setAllowsBranchSelection:NO];
+      if ([_browser allowsMultipleSelection] == YES)
+	[_browser setAllowsBranchSelection: NO];
     }
   
   [super _setupForDirectory: path file: filename];
@@ -430,11 +430,11 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 /** Displays the open panel in a modal session, with the directory
     path shown and file name (if any) selected. Files are filtered for the
     specified types. If the directory is nil, then the directory shown in 
-    the opena panel is the last directory selected.
+    the open panel is the last directory selected.
 */
 - (int) runModalForDirectory: (NSString *)path
 			file: (NSString *)name
-			types: (NSArray *)fileTypes
+		       types: (NSArray *)fileTypes
 {
   ASSIGN (_fileTypes, fileTypes);
 
@@ -442,10 +442,10 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 			       file: name];  
 }
 
-- (int)runModalForDirectory:(NSString *)path
-		       file:(NSString *)name
-		      types:(NSArray *)fileTypes
-	   relativeToWindow:(NSWindow*)window
+- (int) runModalForDirectory: (NSString *)path
+			file: (NSString *)name
+		       types: (NSArray *)fileTypes
+	    relativeToWindow: (NSWindow*)window
 {
   ASSIGN (_fileTypes, fileTypes);
 
@@ -454,22 +454,22 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 		   relativeToWindow: window];
 }
 
-- (void)beginSheetForDirectory:(NSString *)path
-			  file:(NSString *)name
-			 types:(NSArray *)fileTypes
-		modalForWindow:(NSWindow *)docWindow
-		 modalDelegate:(id)delegate
-		didEndSelector:(SEL)didEndSelector
-		   contextInfo:(void *)contextInfo
+- (void) beginSheetForDirectory: (NSString *)path
+			   file: (NSString *)name
+			  types: (NSArray *)fileTypes
+		 modalForWindow: (NSWindow *)docWindow
+		  modalDelegate: (id)delegate
+		 didEndSelector: (SEL)didEndSelector
+		    contextInfo: (void *)contextInfo
 {
   ASSIGN (_fileTypes, fileTypes);
 
   [self beginSheetForDirectory: path
-	file: name
-	modalForWindow: docWindow
-	modalDelegate: delegate
-	didEndSelector: didEndSelector
-	contextInfo: contextInfo];
+			  file: name
+		modalForWindow: docWindow
+		 modalDelegate: delegate
+		didEndSelector: didEndSelector
+		   contextInfo: contextInfo];
 }
 
 - (void) ok: (id)sender
@@ -478,6 +478,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   NSBrowserCell *selectedCell = nil;
   NSArray       *selectedCells = nil;
   int            selectedColumn, lastColumn;
+  NSString	*tmp;
 
   selectedColumn = [_browser selectedColumn];
   lastColumn = [_browser lastColumn];
@@ -489,8 +490,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 	{
 	  selectedCells = [matrix selectedCells];
 
-	  if (selectedColumn == lastColumn &&
-	      [selectedCells count] == 1)
+	  if (selectedColumn == lastColumn && [selectedCells count] == 1)
 	    selectedCell = [selectedCells objectAtIndex: 0];
 	}
       else
@@ -518,21 +518,29 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 	}
     }
   else if (_canChooseDirectories == NO
-	   && (![_browser allowsMultipleSelection] || !selectedCells
-	       || selectedColumn != lastColumn || ![selectedCells count]))
+    && (![_browser allowsMultipleSelection] || !selectedCells
+	 || selectedColumn != lastColumn || ![selectedCells count]))
     {
       [_form selectTextAtIndex: 0];
       [_form setNeedsDisplay: YES];
       return;
     }
 
-  ASSIGN (_directory, [_browser pathToColumn:[_browser lastColumn]]);
+  ASSIGN (_directory, [_browser pathToColumn: [_browser lastColumn]]);
+
   if (selectedCell)
-    ASSIGN (_fullFileName, [_directory stringByAppendingPathComponent:
-					 [selectedCell stringValue]]);
+    tmp = [selectedCell stringValue];
   else
-    ASSIGN (_fullFileName, [_directory stringByAppendingPathComponent:
-					 [[_form cellAtIndex: 0] stringValue]]);
+    tmp = [[_form cellAtIndex: 0] stringValue];
+
+  if ([tmp isAbsolutePath] == YES)
+    {
+      ASSIGN (_fullFileName, tmp);
+    }
+  else
+    {
+      ASSIGN (_fullFileName, [_directory stringByAppendingPathComponent: tmp]);
+    }
 
   if (_delegateHasValidNameFilter)
     {
@@ -550,6 +558,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 
   _OKButtonPressed = YES;
   [NSApp stopModal];
+
   [self close];
 }
 
@@ -604,17 +613,26 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   NSComparisonResult  result;
   NSRange             range;
 
-  matrix = [_browser matrixInColumn: [_browser lastColumn]];
   s = [[[aNotification userInfo] objectForKey: @"NSFieldEditor"] string];
+
+  /*
+   * If the user typed in an absolute path, display it.
+   */
+  if ([s isAbsolutePath] == YES)
+    {
+      [self setDirectory: s];
+    }
 
   sLength = [s length];
   range.location = 0;
   range.length = sLength;
 
-  if(sLength == 0)
+  matrix = [_browser matrixInColumn: [_browser lastColumn]];
+
+  if (sLength == 0)
     {
       [matrix deselectAllCells];
-      if(_canChooseDirectories == NO)
+      if (_canChooseDirectories == NO)
 	[_okButton setEnabled: NO];
       return;
     }
@@ -624,20 +642,20 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   selectedRow = [matrix selectedRow];
   cells = [matrix cells];
 
-  if(selectedString)
+  if (selectedString)
     {
       cellLength = [selectedString length];
 
-      if(cellLength < sLength)
+      if (cellLength < sLength)
 	range.length = cellLength;
 
       result = [selectedString compare: s options: 0 range: range];
 
-      if(result == NSOrderedSame)
+      if (result == NSOrderedSame)
 	return;
-      else if(result == NSOrderedAscending)
+      else if (result == NSOrderedAscending)
 	result = NSOrderedDescending;
-      else if(result == NSOrderedDescending)
+      else if (result == NSOrderedDescending)
 	result = NSOrderedAscending;
 
       range.length = sLength;
@@ -645,21 +663,21 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   else
     result = NSOrderedDescending;
 
-  if(result == NSOrderedDescending)
+  if (result == NSOrderedDescending)
     {
       int numberOfCells = [cells count];
 
-      for(i = selectedRow+1; i < numberOfCells; i++)
+      for (i = selectedRow+1; i < numberOfCells; i++)
 	{
 	  selectedString = [[matrix cellAtRow: i column: 0] stringValue];
 
 	  cellLength = [selectedString length];
-	  if(cellLength < sLength)
+	  if (cellLength < sLength)
 	    continue;
 
 	  result = [selectedString compare: s options: 0 range: range];
 
-	  if(result == NSOrderedSame)
+	  if (result == NSOrderedSame)
 	    {
 	      [matrix deselectAllCells];
 	      [matrix selectCellAtRow: i column: 0];
@@ -671,17 +689,17 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
     }
   else
     {
-      for(i = selectedRow; i >= 0; --i)
+      for (i = selectedRow; i >= 0; --i)
 	{
 	  selectedString = [[matrix cellAtRow: i column: 0] stringValue];
 
 	  cellLength = [selectedString length];
-	  if(cellLength < sLength)
+	  if (cellLength < sLength)
 	    continue;
 
 	  result = [selectedString compare: s options: 0 range: range];
 
-	  if(result == NSOrderedSame)
+	  if (result == NSOrderedSame)
 	    {
 	      [matrix deselectAllCells];
 	      [matrix selectCellAtRow: i column: 0];
