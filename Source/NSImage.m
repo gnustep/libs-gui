@@ -600,17 +600,17 @@ static Class			cacheClass = 0;
        */
       if (repd->bg == nil) 
 	{
-	  NSRect	bounds;
+	  NSRect	drawRect = NSMakeRect(0, 0, _size.width, _size.height);
 
 	  [self lockFocusOnRepresentation: rep];
-	  bounds = [_lockedView bounds];
 	  if (_color != nil && [_color alphaComponent] != 0.0)
 	    {
+	      NSRect	bounds = [_lockedView bounds];
+
 	      [_color set];
-	      NSEraseRect(bounds);
+	      NSRectFill(bounds);
 	    }
-	  [self drawRepresentation: repd->original 
-	    inRect: NSMakeRect(0, 0, _size.width, _size.height)];
+	  [self drawRepresentation: repd->original inRect: drawRect];
 	  [self unlockFocus];
 	  if (_color == nil)
 	    {

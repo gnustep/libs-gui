@@ -1,3 +1,9 @@
+Wed Dec 22 12:04:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSImage.m: When creating an off-screen cache, fill with
+	the background color (so having multiple caches for different
+	backgrounds will work).
+
 Wed Dec 22 10:08:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSWindow.m: ([-sendEvent:]) reset _lastDragView on exit from
