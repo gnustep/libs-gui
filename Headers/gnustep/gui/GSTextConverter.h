@@ -44,11 +44,18 @@
 		documentAttributes: (NSDictionary*)dict;
 @end
 
+/* 
+ * The 'class' argument must be NSAttributedString (or a subclass);
+ * the results of parsing will be saved into a newly created object of
+ * that class, which is then returned.
+ */
 @protocol GSTextConsumer
 + (NSAttributedString*) parseData: (NSData *)aData 
-	       documentAttributes: (NSDictionary **)dict;
+	       documentAttributes: (NSDictionary **)dict
+			    class: (Class)class;
 + (NSAttributedString*) parseFile: (NSFileWrapper *)aFile 
-	       documentAttributes: (NSDictionary **)dict;
+	       documentAttributes: (NSDictionary **)dict
+			    class: (Class)class;
 @end
 
 #endif // _GNUstep_H_GSTextConverter
