@@ -1,4 +1,9 @@
-<<<<<<< ChangeLog
+Fri Dec 11 08:52:03 1998  Adam Fedor  <fedor@ultra.doc.com>
+
+	* Headers/gnustep/gui/GSContext.h: Remove method table.
+	* Source/GSContext.m: Remove method table initialization.
+	(+initializeMethodTable): Remove.
+
 Thu Dec 10 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* GNUAlertPanel rename to GSAlertPanel (to maintain a common naming style
@@ -7,15 +12,7 @@ Thu Dec 10 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 	NS* panel functions. 
 	* GNUServicesManager.m/.h rename to GSServicesManager (to maintain a 
 	common naming style along the NS* lines within the AppKit public API).  
-Thu Dec 10 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
-
-	* GNUAlertPanel rename to GSAlertPanel (to maintain a common naming style
-	along the NS* lines within the AppKit public API).  Move code to NSPanel 
-	as it is conceptually a private panel class for the sake of the public 
-	NS* panel functions. 
-	* GNUServicesManager.m/.h rename to GSServicesManager (to maintain a 
-	common naming style along the NS* lines within the AppKit public API).  
-
+	
 Thu Dec 10 15:03:05 1998  Adam Fedor  <fedor@ultra.doc.com>
 
 	* Headers/gnustep/gui/GSContext.h: New backend initialization.

@@ -32,7 +32,6 @@
 #define _GSContext_h_INCLUDE
 
 #include <Foundation/NSObject.h>
-#include <AppKit/gsdefs.h>
 #include <stdarg.h>
 
 @class NSMutableData;
@@ -85,9 +84,6 @@ extern NSString *NSBackendContext;
 {
 	NSDictionary  *context_info;
 	NSMutableData *context_data;
-
-@public
-  const gsMethodTable *methods;
 }
 
 //
