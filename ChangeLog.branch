@@ -1,6 +1,24 @@
 2004-04-03  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
 
-	* Logging for kazunobu_input_management started.
+	Replace the prefix IM with GSTIM (GNUstep Text Input Management)
+	to avoid possible namespace conflict.  Not completed yet.
+
+	Abandon IMInputServerInfo and move its functionality to the new
+	class GSTIMInputServerInfo.
+
+	* Source/GSTIMInputServerInfo.m: Created
+	* Source/GSTIMInputServerInfo.h: Created
+	* Source/NSInputManager.m: Replace IMInputServerInfo class with
+	  GSTIMInputServerInfo class.  Delete interface and implementation
+	  of IMInputServerInfo.
+	* Headers/AppKit/NSInputManager.h: Replace IMInputServerInfo class
+	  with GSTIMInputServerInfo class.
+	* Source/GNUmakefile: Add GSTIMInputServer.m to
+	  libgnustep-gui_OBJC_FILES.
+
+2004-04-03  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
+
+	Log for the branch kazunobu_input_management started.
 
 	* ChangeLog.branch: Created. 
 	* GSKeyBindingAction.m: Deleted
