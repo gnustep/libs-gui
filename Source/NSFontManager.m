@@ -7,6 +7,9 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
+   Modified:  Fred Kiefer <FredKiefer@gmx.de>
+   Date: January 2000
+   Almost complete rewrite.
    
    This file is part of the GNUstep GUI Library.
 
@@ -28,9 +31,51 @@
 
 #include <gnustep/gui/config.h>
 #include <Foundation/NSArray.h>
+#include <Foundation/NSSet.h>
 #include <AppKit/NSFontManager.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSFont.h>
+#include <AppKit/NSFontPanel.h>
+#include <AppKit/NSMenu.h>
+#include <AppKit/NSMenuItem.h>
+
+
+@interface NSFontManager (GNUstepBackend)
+/*
+ * A backend for this class must always implement the methods 
+ * traitsOfFont: and weightOfFont:
+ * It can either implement the method _allFonts to return an array
+ * of all the known fonts for the backend (as NSFont objects) or,
+ * supply a differnt implementation of the methods that use this:
+ * availableFonts, availableFontFamilies, availableFontNamesWithTraits,
+ * availableMembersOfFontFamily and  fontNamed:hasTraits:
+ * The second is the more efficent way and should be prefered.
+ * A backend should also provide a better implementation for the method
+ * fontWithFamily:traits:weight:size:
+ * And it can also provide differnt implemantions for the basic font 
+ * conversion methods.
+ * The idea is that the front end class defines an easy to subclass 
+ * set of methods, so that a backend can start of with just a few methods but
+ * can become as fast and flexible as it wants.
+ */
+
+//
+// Have the backend determine the fonts and families available
+// FIXME: This method should rather be part of a subclass initialize method
+- (void)enumerateFontsAndFamilies;
+
+//
+// The backend can use this method to check if a font
+// is accepted by the delegate. Otherwise it should not be listed.
+//
+- (BOOL)_includeFont:(NSString *)fontName;
+
+//
+// List all the fonts as NSFont objects
+//
+- (NSArray *)_allFonts;
+
+@end
 
 //
 // Class variables
@@ -56,7 +101,7 @@ static Class fontPanelClass = Nil;
 
       // Set the factories
       [self setFontManagerFactory:[NSFontManager class]];
-      [self setFontPanelFactory:[NSFontManager class]];
+      [self setFontPanelFactory:[NSFontPanel class]];
     }
 }
 
@@ -79,6 +124,7 @@ static Class fontPanelClass = Nil;
     {
       NSDebugLog(@"Initializing NSFontManager fonts\n");
       sharedFontManager = [[fontManagerClass alloc] init];
+      // enumerate the available fonts
       [sharedFontManager enumerateFontsAndFamilies];
     }
   return sharedFontManager;
@@ -91,27 +137,276 @@ static Class fontPanelClass = Nil;
 {
   self = [super init];
 
-  // Allocate the font list
-  fontsList = [NSMutableArray array];
+  _action = @selector(fontChanged:);
+  _storedTag = NSNoFontChangeAction;
 
   return self;
 }
 
-#if 0
-/* This code needs to be reworked */
+//
+// information on available fonts
+//
+- (NSArray *)availableFonts
+{
+  int i;
+  NSArray *fontsList = [self _allFonts];
+  NSMutableArray *fontNames = [NSMutableArray arrayWithCapacity: 
+						[fontsList count]];
+
+  for (i=0; i < [fontsList count]; i++)
+    {
+      NSFont *font = (NSFont *)[fontsList objectAtIndex: i];
+
+      [fontNames addObject: [font fontName]];
+    }
+
+  return fontNames;
+}
+
+- (NSArray *)availableFontFamilies
+{
+  int i;
+  NSArray *fontsList = [self _allFonts];
+  // Cannot use [NSMutableSet set] as this generates a compiler error
+  NSMutableSet *fontFamilies = [NSMutableSet setWithCapacity: 
+					       [fontsList count]];
+
+  for (i=0; i < [fontsList count]; i++)
+    {
+      NSFont *font = (NSFont *)[fontsList objectAtIndex: i];
+
+      [fontFamilies addObject: [font familyName]];
+    }
+
+  return [fontFamilies allObjects];
+}
+
+- (NSArray *)availableFontNamesWithTraits:(NSFontTraitMask)fontTraitMask
+{
+  int i;
+  NSArray *fontsList = [self _allFonts];
+  NSMutableSet *fontNames = [NSMutableSet setWithCapacity: 
+					       [fontsList count]];
+  NSFontTraitMask traits;
+
+  for (i=0; i < [fontsList count]; i++)
+    {
+      NSFont *font = (NSFont *)[fontsList objectAtIndex: i];
+
+      traits = [self traitsOfFont: font];
+      // Check if the font has exactly the given mask
+      if (traits == fontTraitMask)
+	{
+	  [fontNames addObject: [font fontName]];
+	}
+    }
+
+  return [fontNames allObjects];
+}
+
+// This are somewhat strange methods, as they are not in the list,
+// but their implementation is defined.
+- (NSArray *)availableMembersOfFontFamily:(NSString *)family
+{
+  int i;
+  NSArray *fontsList = [self _allFonts];
+  NSMutableArray *fontDefs = [NSMutableArray array];
+
+  for (i=0; i < [fontsList count]; i++)
+    {
+      NSFont *font = (NSFont *)[fontsList objectAtIndex: i];
+
+      if ([[font familyName] isEqualToString: family])
+	{
+	  NSMutableArray *fontDef = [NSMutableArray arrayWithCapacity: 4];
+	  
+	  [fontDef addObject: [font fontName]];
+	  // TODO How do I get the font extention name?
+	  [fontDef addObject: @""];
+	  [fontDef addObject: [NSNumber numberWithInt: 
+					  [self weightOfFont: font]]];
+	  [fontDef addObject: [NSNumber numberWithUnsignedInt:
+					  [self traitsOfFont: font]]];
+	  [fontDefs addObject: fontDef];
+	}
+    }
+
+  return fontDefs;
+}
+
+- (NSString *) localizedNameForFamily:(NSString *)family 
+				 face:(NSString *)face
+{
+  // TODO
+  return [NSString stringWithFormat: @"%@-%@", family, face];
+}
+
+//
+// Selecting fonts
+//
+
+- (void)setSelectedFont:(NSFont *)fontObject
+	     isMultiple:(BOOL)flag
+{
+  _selectedFont = fontObject;
+  _multible = flag;
+
+  if (_fontMenu != nil)
+    {
+      NSMenuItem *menuItem;
+      NSFontTraitMask trait = [self traitsOfFont: fontObject];
+
+      // FIXME: We should check if that trait is available
+      // We keep the tag, to mark the item
+      if (trait & NSItalicFontMask)
+	{
+	  menuItem = [_fontMenu itemWithTag: NSItalicFontMask];
+	  if (menuItem != nil)
+	    {
+	      [menuItem setTitle: @"Unitalic"];
+	      [menuItem setAction: @selector(removeFontTrait:)];
+	    }
+	}
+      else
+	{
+	  menuItem = [_fontMenu itemWithTag: NSItalicFontMask];
+	  if (menuItem != nil)
+	    {
+	      [menuItem setTitle: @"Italic"];
+	      [menuItem setAction: @selector(addFontTrait:)];
+	    }
+	}
+
+      if (trait & NSBoldFontMask)
+	{
+	  menuItem = [_fontMenu itemWithTag: NSBoldFontMask];
+	  if (menuItem != nil)
+	    {
+	      [menuItem setTitle: @"Unbold"];
+	      [menuItem setAction: @selector(removeFontTrait:)];
+	    }
+	}
+      else
+	{
+	  menuItem = [_fontMenu itemWithTag: NSBoldFontMask];
+	  if (menuItem != nil)
+	    {
+	      [menuItem setTitle: @"Bold"];
+	      [menuItem setAction: @selector(addFontTrait:)];
+	    }
+	}
+
+      // TODO Update the rest of the font menu to reflect this font
+    }
+
+  [fontPanel setPanelFont: fontObject isMultiple: flag];
+}
+
+- (NSFont *)selectedFont
+{
+  return _selectedFont;
+}
+
+- (BOOL)isMultiple
+{
+  return _multible;
+}
+
+//
+// Action methods
+//
+- (void)addFontTrait:(id)sender
+{
+  _storedTag = NSAddTraitFontAction;
+  _trait = [sender tag];
+  [self sendAction];
+
+  // We update our own selected font
+  [self setSelectedFont: [self convertFont: _selectedFont]
+	isMultiple: _multible];
+}
+
+- (void)removeFontTrait:(id)sender
+{
+  _storedTag = NSRemoveTraitFontAction;
+  _trait = [sender tag];
+  [self sendAction];
+
+  // We update our own selected font
+  [self setSelectedFont: [self convertFont: _selectedFont]
+	isMultiple: _multible];
+}
+
+- (void)modifyFont:(id)sender
+{
+  _storedTag = [sender tag];
+  [self sendAction];
+
+  // We update our own selected font
+  [self setSelectedFont: [self convertFont: _selectedFont]
+	isMultiple: _multible];
+}
+
+- (void)modifyFontViaPanel:(id)sender
+{
+  _storedTag = NSViaPanelFontAction;
+  [self sendAction];
+
+  // We update our own selected font
+  [self setSelectedFont: [self convertFont: _selectedFont]
+	isMultiple: _multible];
+}
+
+//
+//Automatic font conversion
+//
+- (NSFont *)convertFont:(NSFont *)fontObject
+{
+  NSFont *newFont = fontObject;
+
+  switch (_storedTag)
+    {
+    case NSNoFontChangeAction: 
+      break;
+    case NSViaPanelFontAction:
+      // TODO get the panel to convert the font with panelConvertFont:
+      break;
+    case NSAddTraitFontAction:
+      newFont = [self convertFont: fontObject toHaveTrait: _trait];
+      break;
+    case NSRemoveTraitFontAction:
+       newFont = [self convertFont: fontObject toNotHaveTrait: _trait];
+      break;
+    case NSSizeUpFontAction:
+      // FIXME: How much should we size up? 
+      newFont = [self convertFont: fontObject 
+		      toSize: [fontObject pointSize]+1.0];
+      break;
+    case NSSizeDownFontAction:
+      // FIXME: How much should we size down? 
+      newFont = [self convertFont: fontObject 
+		      toSize: [fontObject pointSize]-1.0];
+      break;
+    case NSHeavierFontAction:
+      newFont = [self convertWeight: YES ofFont: fontObject]; 
+      break;
+    case NSLighterFontAction:
+      newFont = [self convertWeight: NO ofFont: fontObject]; 
+      break;
+    }
+
+  return newFont;
+}
+
 
 //
 // Converting Fonts
 //
-- (NSFont *)convertFont:(NSFont *)fontObject
-{
-  return fontObject;
-}
 
 - (NSFont *)convertFont:(NSFont *)fontObject
 	       toFamily:(NSString *)family
 {
-  if ([family compare:[fontObject familyName]] == NSOrderedSame)
+  if ([family isEqualToString: [fontObject familyName]])
     {
       // If already of that family then just return it
       return fontObject;
@@ -119,23 +414,44 @@ static Class fontPanelClass = Nil;
   else
     {
       // Else convert it
-      NSFont *f = [fontObject mutableCopy];
-      [f setFamilyName:family];
-      return f;
+      NSFont *newFont;
+      NSFontTraitMask trait = [self traitsOfFont: fontObject];
+      int weight = [self weightOfFont: fontObject];
+      float size = [fontObject pointSize];
+
+      newFont = [self fontWithFamily: family 
+		      traits: trait
+		      weight: weight
+		      size: size];
+      if (newFont == nil)
+	return fontObject;
+      else 
+	return newFont;
     }
 }
 
 - (NSFont *)convertFont:(NSFont *)fontObject
 		 toFace:(NSString *)typeface
 {
-  // +++ How to do this conversion?
-  return fontObject;
+  NSFont *newFont;
+
+  // TODO: How to do this conversion?
+  if ([[fontObject fontName] isEqualToString: typeface])
+    {
+      return fontObject;
+    }
+
+  newFont = [NSFont fontWithName: typeface size: [fontObject pointSize]];
+  if (newFont == nil)
+    return fontObject;
+  else 
+    return newFont;
 }
 
 - (NSFont *)convertFont:(NSFont *)fontObject
 	    toHaveTrait:(NSFontTraitMask)trait
 {
-  NSFontTraitMask t = [fontObject traits];
+  NSFontTraitMask t = [self traitsOfFont: fontObject];
 
   if (t & trait)
     {
@@ -145,17 +461,28 @@ static Class fontPanelClass = Nil;
   else
     {
       // Else convert it
-      NSFont *f = [fontObject mutableCopy];
+      NSFont *newFont;
+
+      int weight = [self weightOfFont: fontObject];
+      float size = [fontObject pointSize];
+      NSString *family = [fontObject familyName];
+
       t = t | trait;
-      [f setTraits:t];
-      return f;
+      newFont = [self fontWithFamily: family 
+		      traits: t
+		      weight: weight
+		      size: size];
+      if (newFont == nil)
+	return fontObject;
+      else 
+	return newFont;
     }
 }
 
 - (NSFont *)convertFont:(NSFont *)fontObject
 	 toNotHaveTrait:(NSFontTraitMask)trait
 {
-  NSFontTraitMask t = [fontObject traits];
+  NSFontTraitMask t = [self traitsOfFont: fontObject];
 
   if (!(t & trait))
     {
@@ -165,10 +492,21 @@ static Class fontPanelClass = Nil;
   else
     {
       // Else convert it
-      NSFont *f = [fontObject mutableCopy];
+      NSFont *newFont;
+
+      int weight = [self weightOfFont: fontObject];
+      float size = [fontObject pointSize];
+      NSString *family = [fontObject familyName];
+
       t = t ^ trait;
-      [f setTraits:t];
-      return f;
+      newFont = [self fontWithFamily: family 
+		      traits: t
+		      weight: weight
+		      size: size];
+      if (newFont == nil)
+	return fontObject;
+      else 
+	return newFont;
     }
 }
 
@@ -183,189 +521,228 @@ static Class fontPanelClass = Nil;
   else
     {
       // Else convert it
-      NSFont *f = [fontObject mutableCopy];
-      [f setPointSize:size];
-      return f;
+      NSFont *newFont;
+
+      NSFontTraitMask trait = [self traitsOfFont: fontObject];
+      int weight = [self weightOfFont: fontObject];
+      NSString *family = [fontObject familyName];
+
+      newFont = [self fontWithFamily: family 
+		      traits: trait
+		      weight: weight
+		      size: size];
+      if (newFont == nil)
+	return fontObject;
+      else 
+	return newFont;
     }
 }
 
 - (NSFont *)convertWeight:(BOOL)upFlag
 		   ofFont:(NSFont *)fontObject
 {
-  int w = [fontObject weight];
-  NSFont *f = [fontObject mutableCopy];
+  NSFont *newFont;
+  NSFontTraitMask trait = [self traitsOfFont: fontObject];
+  float size = [fontObject pointSize];
+  NSString *family = [fontObject familyName];
+  int w = [self weightOfFont: fontObject];
 
-  // Weight are sort of arbitrary, so we will use
-  // 0 - light, 400 - normal, 700 - bold
   if (upFlag)
     {
-      if (w == 0)
-	w = 400;
-      else if (w == 400)
-	w = 700;
+      // The documentation is a bit unclear about the range of weights
+      // sometimes it says 0 to 9 and sometimes 0 to 15
+      w = MIN(15, w+1);
     }
   else
     {
-      if (w == 700)
-	w = 400;
-      else if (w == 400)
-	w = 0;
+      w = MAX(0, w-1);
     }
 
-  [f setWeight: w];
-  return f;
+  newFont = [self fontWithFamily: family 
+		  traits: trait
+		  weight: w
+		  size: size];
+  if (newFont == nil)
+    return fontObject;
+  else 
+    return newFont;
 }
 
+//
+// Getting a font
+//
 - (NSFont *)fontWithFamily:(NSString *)family
 		    traits:(NSFontTraitMask)traits
 		    weight:(int)weight
 		      size:(float)size
 {
-  int i, j;
-  BOOL found = NO;
-  NSString *name;
-  NSFont *f;
+  NSArray *fontDefs = [self availableMembersOfFontFamily: family];
+  int i;
 
-  // Make sure it is a legitimate family name
-  j = [fontsList count];
-  for (i = 0;i < j; ++i)
+  for (i = 0; i < [fontDefs count]; i++)
     {
-      name = [fontsList objectAtIndex:i];
-      if ([family compare:name] == NSOrderedSame)
+      NSArray *fontDef = [fontDefs objectAtIndex: i];
+
+      if (([[fontDef objectAtIndex: 3] intValue] == weight) &&
+	  ([[fontDef objectAtIndex: 4] unsignedIntValue] == traits))
 	{
-	  found = YES;
-	  break;
+	  return [NSFont fontWithName: [fontDef objectAtIndex: 1] 
+			 size: size];
 	}
     }
-
-  // Create the font
-  if (found)
-    {
-      f = [[NSFont alloc] init];
-      [f setFamilyName: family];
-      [f setTraits: traits];
-      [f setWeight: weight];
-      [f setPointSize: size];		
-      return f;
-    }
-  else
-    {
-      NSLog(@"Invalid font request\n");
-      return nil;
-    }
-}
-#else
-- (NSFont *)convertFont:(NSFont *)fontObject
-	       toFamily:(NSString *)family
-{
-  return fontObject;
-}
-
-- (NSFont *)convertFont:(NSFont *)fontObject
-		 toFace:(NSString *)typeface
-{
-  return fontObject;
-}
-
-- (NSFont *)convertFont:(NSFont *)fontObject
-	    toHaveTrait:(NSFontTraitMask)trait
-{
-  return fontObject;
-}
-
-- (NSFont *)convertFont:(NSFont *)fontObject
-		 toSize:(float)size
-{
-  return fontObject;
-}
-#endif
-
-//
-// Setting and Getting Parameters
-//
-- (SEL)action
-{
-  return action;
-}
-
-- (NSArray *)availableFonts
-{
-  return fontsList;
-}
-
-- (NSMenu *)fontMenu:(BOOL)create
-{
-  return font_menu;
-}
-
-// Get the font panel...
-
-- (NSFontPanel *)fontPanel:(BOOL)create
-{
-  if ((!fontPanel) && (create))
-    fontPanel = [[fontPanelClass alloc] init];
-  return fontPanel;
-}
-
-// Bring the font panel to the front... MacOSX only?
-
-- (void)orderFrontFontPanel:(id)sender
-{
-  if (!fontPanel)
-    fontPanel = [[fontPanelClass alloc] init];
-  [fontPanel orderFront:nil];
-}
-
-- (BOOL)isEnabled
-{
-  return NO;
-}
-
-- (BOOL)isMultiple
-{
-  return NO;
-}
-
-- (NSFont *)selectedFont
-{
+  
   return nil;
 }
 
-- (void)setAction:(SEL)aSelector
-{
-  action = aSelector;
-}
-
-- (void)setEnabled:(BOOL)flag
-{}
-
-- (void)setFontMenu:(NSMenu *)newMenu
-{}
-
-- (void)setSelectedFont:(NSFont *)fontObject
-	     isMultiple:(BOOL)flag
-{
-  selected_font = fontObject;
-}
-
-#if 0
+//
+// Examining a font
+//
 - (NSFontTraitMask)traitsOfFont:(NSFont *)fontObject
 {
-  return [fontObject traits];
+  // TODO
+  return 0;
 }
 
 - (int)weightOfFont:(NSFont *)fontObject
 {
-  return [fontObject weight];
+  // TODO
+  return 5;
 }
-#endif
+
+- (BOOL)fontNamed:(NSString *)typeface 
+        hasTraits:(NSFontTraitMask)fontTraitMask;
+{
+  int i;
+  NSArray *fontsList = [self _allFonts];
+
+  for (i=0; i < [fontsList count]; i++)
+    {
+      NSFont *font = (NSFont *)[fontsList objectAtIndex: i];
+
+      if ([[font fontName] isEqualToString: typeface])
+	{
+	  // FIXME: This is not exactly the right condition
+	  if (([self traitsOfFont: font] & fontTraitMask) == fontTraitMask)
+	    {
+	      return YES;
+	    }
+	  else
+	    return NO;
+	}
+    }
+  
+  return NO;
+}
 
 //
-// Target and Action Methods
+// Enabling
 //
-- (BOOL)sendAction
+- (BOOL)isEnabled
 {
-  return NO;
+  if (fontPanel != nil)
+    {
+      return [fontPanel isEnabled];
+    }
+  else
+    return NO;
+}
+
+- (void)setEnabled:(BOOL)flag
+{
+  int i;
+
+  if (_fontMenu != nil)
+    {
+      for (i = 0; i < [_fontMenu numberOfItems]; i++)
+	{
+	  [[_fontMenu itemAtIndex: i] setEnabled: flag];
+	}
+    }
+  [fontPanel setEnabled: flag];
+}
+
+//
+// Font menu
+//
+- (NSMenu *)fontMenu:(BOOL)create
+{
+  if (create && _fontMenu == nil)
+    {
+      NSMenuItem *menuItem;
+
+      _fontMenu = [NSMenu new];
+      [_fontMenu setTitle: @"Font Menu"];
+
+      // First an entry to start the font panel
+      menuItem = [_fontMenu addItemWithTitle: @"Font Panel"
+			    action: @selector(orderFrontFontPanel:)
+			    keyEquivalent: @"f"];
+      [menuItem setTarget: self];
+
+      // Entry for italic
+      menuItem = [_fontMenu addItemWithTitle: @"Italic"
+			    action: @selector(addFontTrait:)
+			    keyEquivalent: @"i"];
+      [menuItem setTag: NSItalicFontMask];
+      [menuItem setTarget: self];
+
+      // Entry for bold
+      menuItem = [_fontMenu addItemWithTitle: @"Bold"
+			    action: @selector(addFontTrait:)
+			    keyEquivalent: @"b"];
+      [menuItem setTag: NSBoldFontMask];
+      [menuItem setTarget: self];
+
+      // Entry to increase weight
+      menuItem = [_fontMenu addItemWithTitle: @"Heavier"
+			    action: @selector(modifyFont:)
+			    keyEquivalent: @"h"];
+      [menuItem setTag: NSHeavierFontAction];
+      [menuItem setTarget: self];
+ 
+      // Entry to decrease weight
+      menuItem = [_fontMenu addItemWithTitle: @"Lighter"
+			    action: @selector(modifyFont:)
+			    keyEquivalent: @"g"];
+      [menuItem setTag: NSLighterFontAction];
+      [menuItem setTarget: self];
+ 
+      // Entry to increase size
+      menuItem = [_fontMenu addItemWithTitle: @"Larger"
+			    action: @selector(modifyFont:)
+			    keyEquivalent: @"l"];
+      [menuItem setTag: NSSizeUpFontAction];
+      [menuItem setTarget: self];
+
+      // Entry to decrease size
+      menuItem = [_fontMenu addItemWithTitle: @"Smaller"
+			    action: @selector(modifyFont:)
+			    keyEquivalent: @"s"];
+      [menuItem setTag: NSSizeDownFontAction];
+      [menuItem setTarget: self];
+    }
+  return _fontMenu;
+}
+
+- (void)setFontMenu:(NSMenu *)newMenu
+{
+  ASSIGN(_fontMenu, newMenu); 
+}
+
+// Font panel
+
+- (NSFontPanel *)fontPanel:(BOOL)create
+{
+  if ((fontPanel == nil) && (create))
+    fontPanel = [[fontPanelClass alloc] init];
+  return fontPanel;
+}
+
+- (void)orderFrontFontPanel:(id)sender
+{
+  if (fontPanel == nil)
+    fontPanel = [[fontPanelClass alloc] init];
+  [fontPanel orderFront: nil];
 }
 
 //
@@ -373,23 +750,35 @@ static Class fontPanelClass = Nil;
 //
 - (id)delegate
 {
-  return delegate;
+  return _delegate;
 }
 
 - (void)setDelegate:(id)anObject
 {
-  delegate = anObject;
+  ASSIGN(_delegate, anObject);
 }
 
 //
-// Methods Implemented by the Delegate
+// Setting and Getting Parameters
 //
-- (BOOL)fontManager:(id)sender willIncludeFont:(NSString *)fontName
+- (SEL)action
 {
-  if ([delegate respondsToSelector:@selector(fontManager:willIncludeFont:)])
-    return [delegate fontManager:self willIncludeFont:fontName];
+  return _action;
+}
+
+- (void)setAction:(SEL)aSelector
+{
+  _action = aSelector;
+}
+
+- (BOOL)sendAction
+{
+  NSApplication *theApp = [NSApplication sharedApplication];
+
+  if (_action)
+    return [theApp sendAction: _action to: nil from: self];
   else
-    return YES;
+    return NO;
 }
 
 @end
@@ -398,6 +787,28 @@ static Class fontPanelClass = Nil;
 
 - (void)enumerateFontsAndFamilies
 {
+}
+
+//
+// Ask delegate if to include a font
+//
+- (BOOL)_includeFont:(NSString *)fontName
+{
+  if ((_delegate != nil) &&
+      [_delegate respondsToSelector:@selector(fontManager:willIncludeFont:)])
+    return [_delegate fontManager:self willIncludeFont:fontName];
+  else
+    return YES;
+}
+
+- (NSArray *) _allFonts
+{
+  NSArray *fontsList;
+
+  // Allocate the font list
+  fontsList = [NSMutableArray array];
+
+  return fontsList;
 }
 
 @end

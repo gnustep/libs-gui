@@ -65,6 +65,13 @@
   return [fm fontPanel: YES];
 }
 
++ (BOOL)sharedFontPanelExists
+{
+  NSFontManager *fm = [NSFontManager sharedFontManager];
+
+  return ([fm fontPanel: NO] != nil);
+}
+
 //
 // Instance methods
 //
@@ -220,6 +227,8 @@
   setButton = [[NSButton alloc] initWithFrame: b];
   [setButton setStringValue: @"Set"];
   [bottomArea addSubview: setButton];
+  // Store this button
+  ASSIGN(_setButton, setButton);
 
   [splitView addSubview: bottomSplit];
   [splitView addSubview: topSplit];
@@ -230,10 +239,19 @@
   return self;
 }
 
-- (NSFont *)panelConvertFont: (NSFont *)fontObject
+//
+// Enabling
+//
+- (BOOL)isEnabled
 {
-  return panel_font;
+  return [_setButton isEnabled];
 }
+
+- (void)setEnabled: (BOOL)flag
+{
+  [_setButton setEnabled: flag];
+}
+
 
 //
 // Setting the Font 
@@ -241,7 +259,38 @@
 - (void)setPanelFont: (NSFont *)fontObject
 	  isMultiple: (BOOL)flag
 {
-  ASSIGN(panel_font, fontObject);
+  ASSIGN(_panelFont, fontObject);
+  if (flag)
+    {
+      // TODO: Show the font in the items
+    }
+  else
+    {
+      // TODO: Unselect all items and show a message
+    }
+}
+
+//
+// Converting
+//
+- (NSFont *)panelConvertFont: (NSFont *)fontObject
+{
+  NSFontManager *fm = [NSFontManager sharedFontManager];
+  NSFont *newFont;
+
+  //TODO: We go over every item in the panel and check if a 
+  // value is selected. If so we send it on to the manager
+  newFont = [fm convertFont: fontObject toHaveTrait: NSItalicFontMask];
+
+  return newFont;
+}
+
+//
+// Works in modal loops
+//
+- (BOOL)worksWhenModal
+{
+  return YES;
 }
 
 //
@@ -249,23 +298,14 @@
 //
 - (NSView *)accessoryView
 {
-  return nil;
-}
-
-- (BOOL)isEnabled
-{
-  return NO;
+  return _accessoryView;
 }
 
 - (void)setAccessoryView: (NSView *)aView
-{}
-
-- (void)setEnabled: (BOOL)flag
-{}
-
-- (BOOL)worksWhenModal
 {
-  return NO;
+  ASSIGN(_accessoryView, aView);
+  [[self contentView] addSubview: aView];
+  // We propably have to resize
 }
 
 //
@@ -275,14 +315,14 @@
 {
   [super encodeWithCoder: aCoder];
 
-  [aCoder encodeObject: panel_font];
+  [aCoder encodeObject: _panelFont];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   [super initWithCoder: aDecoder];
 
-  panel_font = RETAIN([aDecoder decodeObject]);
+  _panelFont = RETAIN([aDecoder decodeObject]);
 
   return self;
 }

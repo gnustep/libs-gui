@@ -33,6 +33,7 @@
 
 @class NSFont;
 @class NSView;
+@class NSButton;
 
 enum {
   NSFPPreviewButton,
@@ -47,42 +48,47 @@ enum {
 @interface NSFontPanel : NSPanel <NSCoding>
 {
   // Attributes
-  NSFont *panel_font;
+  NSFont *_panelFont;
+  NSButton *_setButton;
+  NSView *_accessoryView;
 }
 
 //
 // Creating an NSFontPanel 
 //
 + (NSFontPanel *)sharedFontPanel;
-- (NSFont *)panelConvertFont:(NSFont *)fontObject;
++ (BOOL)sharedFontPanelExists;
 
 //
-// Setting the Font 
+// Enabling
+//
+- (BOOL)isEnabled;
+- (void)setEnabled:(BOOL)flag;
+
+//
+// Updating font
 //
 - (void)setPanelFont:(NSFont *)fontObject
 	  isMultiple:(BOOL)flag;
 
 //
-// Configuring the NSFontPanel 
+// Converting
 //
-- (NSView *)accessoryView;
-- (BOOL)isEnabled;
-- (void)setAccessoryView:(NSView *)aView;
-- (void)setEnabled:(BOOL)flag;
+- (NSFont *)panelConvertFont:(NSFont *)fontObject;
+
+//
+// Works in modal loops
+//
 - (BOOL)worksWhenModal;
 
 //
-// Displaying the NSFontPanel 
+// Configuring the NSFontPanel 
 //
-- (void)orderWindow:(NSWindowOrderingMode)place	 
-	 relativeTo:(int)otherWindows;
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
+- (NSView *)accessoryView;
+- (void)setAccessoryView:(NSView *)aView;
 
 @end
 
 #endif // _GNUstep_H_NSFontPanel
+
+

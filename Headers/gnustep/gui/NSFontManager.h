@@ -7,7 +7,10 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
-   
+   Modified:  Fred Kiefer <FredKiefer@gmx.de>
+   Date: January 2000
+   Almost complete rewrite.
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -42,26 +45,40 @@ typedef unsigned int NSFontTraitMask;
 
 enum {
   NSItalicFontMask = 1,
+  NSUnitalicFontMask = 0, //1024,
   NSBoldFontMask = 2,
-  NSUnboldFontMask = 4,
-  NSNonStandardCharacterSetFontMask = 8,
-  NSNarrowFontMask = 16,
-  NSExpandedFontMask = 32,
-  NSCondensedFontMask = 64,
-  NSSmallCapsFontMask = 128,
-  NSPosterFontMask = 256,
-  NSCompressedFontMask = 512,
-  NSUnitalicFontMask = 1024
+  NSUnboldFontMask = 0, //2048,
+  NSNarrowFontMask = 4,
+  NSExpandedFontMask = 8,
+  NSCondensedFontMask = 16,
+  NSSmallCapsFontMask = 32,
+  NSPosterFontMask = 64,
+  NSCompressedFontMask = 128,
+  NSNonStandardCharacterSetFontMask = 256,
+  NSFixedPitchFontMask = 512
 };
+
+typedef enum {
+  NSNoFontChangeAction,
+  NSViaPanelFontAction,
+  NSAddTraitFontAction,
+  NSRemoveTraitFontAction,
+  NSSizeUpFontAction,
+  NSSizeDownFontAction,
+  NSHeavierFontAction,
+  NSLighterFontAction,
+} NSFontTag;
 
 @interface NSFontManager : NSObject
 {
   // Attributes
-  id delegate;
-  SEL action;
-  NSFont *selected_font;
-  NSArray *fontsList;
-  NSMenu *font_menu;
+  id _delegate;
+  SEL _action;
+  NSFont *_selectedFont;
+  BOOL _multible;
+  NSMenu *_fontMenu;
+  NSFontTag _storedTag;
+  NSFontTraitMask _trait;
 }
 
 //
@@ -72,9 +89,39 @@ enum {
 + (NSFontManager *)sharedFontManager;
 
 //
-// Converting Fonts
+// information on available fonts
+//
+- (NSArray *)availableFonts;
+- (NSArray *)availableFontFamilies;
+- (NSArray *)availableFontNamesWithTraits:(NSFontTraitMask)fontTraitMask;
+- (NSArray *)availableMembersOfFontFamily:(NSString *)family;
+- (NSString *) localizedNameForFamily:(NSString *)family face:(NSString *)face;
+
+//
+// Selecting fonts
+//
+- (void)setSelectedFont:(NSFont *)fontObject
+	     isMultiple:(BOOL)flag;
+- (NSFont *)selectedFont;
+- (BOOL)isMultiple;
+- (BOOL)sendAction;
+
+//
+// Action methods
+//
+- (void)addFontTrait:(id)sender;
+- (void)removeFontTrait:(id)sender;
+- (void)modifyFont:(id)sender;
+- (void)modifyFontViaPanel:(id)sender;
+
+//
+//Automatic font conversion
 //
 - (NSFont *)convertFont:(NSFont *)fontObject;
+
+//
+// Converting Fonts
+//
 - (NSFont *)convertFont:(NSFont *)fontObject
 	       toFamily:(NSString *)family;
 - (NSFont *)convertFont:(NSFont *)fontObject
@@ -87,34 +134,39 @@ enum {
 		 toSize:(float)size;
 - (NSFont *)convertWeight:(BOOL)upFlag
 		   ofFont:(NSFont *)fontObject;
+
+//
+// Getting a font
+//
 - (NSFont *)fontWithFamily:(NSString *)family
 		    traits:(NSFontTraitMask)traits
 		    weight:(int)weight
 		      size:(float)size;
+//
+// Examining a font
+//
+- (NSFontTraitMask)traitsOfFont:(NSFont *)aFont;
+- (int)weightOfFont:(NSFont *)fontObject;
+- (BOOL)fontNamed:(NSString *)typeface 
+        hasTraits:(NSFontTraitMask)fontTraitMask;
 
 //
-// Setting and Getting Parameters
+// Enabling
 //
-- (SEL)action;
-- (NSArray *)availableFonts;
+- (BOOL)isEnabled;
+- (void)setEnabled:(BOOL)flag;
+
+//
+// Font menu
+//
 - (NSMenu *)fontMenu:(BOOL)create;
+- (void)setFontMenu:(NSMenu *)newMenu;
+
+//
+// Font panel
+//
 - (NSFontPanel *)fontPanel:(BOOL)create;
 - (void)orderFrontFontPanel:(id)sender;
-- (BOOL)isEnabled;
-- (BOOL)isMultiple;
-- (NSFont *)selectedFont;
-- (void)setAction:(SEL)aSelector;
-- (void)setEnabled:(BOOL)flag;
-- (void)setFontMenu:(NSMenu *)newMenu;
-- (void)setSelectedFont:(NSFont *)fontObject
-	     isMultiple:(BOOL)flag;
-- (NSFontTraitMask)traitsOfFont:(NSFont *)fontObject;
-- (int)weightOfFont:(NSFont *)fontObject;
-
-//
-// Target and Action Methods
-//
-- (BOOL)sendAction;
 
 //
 // Assigning a Delegate
@@ -123,19 +175,20 @@ enum {
 - (void)setDelegate:(id)anObject;
 
 //
+// Action Methods
+//
+- (SEL)action;
+- (void)setAction:(SEL)aSelector;
+
+@end
+
+@interface NSObject (NSFontManagerDelegate)
+//
 // Methods Implemented by the Delegate
 //
 - (BOOL)fontManager:(id)sender willIncludeFont:(NSString *)fontName;
-
-@end
-
-@interface NSFontManager (GNUstepBackend)
-
-//
-// Have the backend determine the fonts and families available
-//
-- (void)enumerateFontsAndFamilies;
-
 @end
 
 #endif // _GNUstep_H_NSFontManager
+
+
