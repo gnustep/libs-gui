@@ -1199,4 +1199,48 @@ NSReleaseAlertPanel(id alertPanel)
     }
 }
 
+//
+// New alert interface of Mac OS X
+//
+void NSBeginAlertSheet(NSString *title, 
+		       NSString *defaultButton, 
+		       NSString *alternateButton, 
+		       NSString *otherButton, 
+		       NSWindow *docWindow, 
+		       id modalDelegate, 
+		       SEL willEndSelector, 
+		       SEL didEndSelector, 
+		       void *contextInfo, 
+		       NSString *msg, ...)
+{
+// TODO
+}
+
+void NSBeginCriticalAlertSheet(NSString *title, 
+			       NSString *defaultButton, 
+			       NSString *alternateButton, 
+			       NSString *otherButton, 
+			       NSWindow *docWindow, 
+			       id modalDelegate, 
+			       SEL willEndSelector, 
+			       SEL didEndSelector, 
+			       void *contextInfo, 
+			       NSString *msg, ...)
+{
+// TODO
+}
+
+void NSBeginInformationalAlertSheet(NSString *title, 
+				    NSString *defaultButton, 
+				    NSString *alternateButton, 
+				    NSString *otherButton,
+				    NSWindow *docWindow, 
+				    id modalDelegate, 
+				    SEL willEndSelector, 
+				    SEL didEndSelector, 
+				    void *contextInfo, 
+				    NSString *msg, ...)
+{
+// TODO
+}
 

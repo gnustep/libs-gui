@@ -34,6 +34,7 @@
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSGraphics.h>
+#include <AppKit/NSColor.h>
 
 #ifdef STRICT_OPENSTEP
 // This is used for the old text functions.
@@ -298,6 +299,149 @@ NSPlanarFromDepth(NSWindowDepth depth)
       planar = YES;
     }
   return planar;
+}
+
+/*
+ * Rectangle Drawing 
+ */
+
+void 
+NSRectFillListWithColors(const NSRect *rects, NSColor **colors, int count)
+{
+  int i;
+
+  for (i = 0; i < count; i++)
+    {
+      [colors[i] set];
+      NSRectFill(rects[i]);
+    }
+}
+
+void 
+NSRectFillUsingOperation(NSRect aRect, NSCompositingOperation op)
+{
+  // FIXME
+  NSRectFill(aRect);
+}
+
+void 
+NSRectFillListUsingOperation(const NSRect *rects, int count, 
+			     NSCompositingOperation op)
+{
+  int i;
+
+  for (i = 0; i < count; i++)
+    {
+      NSRectFillUsingOperation(rects[i], op);
+    }
+}
+
+void 
+NSRectFillListWithColorsUsingOperation(const NSRect *rects, 
+				       NSColor **colors, 
+				       int num, 
+				       NSCompositingOperation op)
+{
+  int i;
+
+  for (i = 0; i < num; i++)
+    {
+      [colors[i] set];
+      NSRectFillUsingOperation(rects[i], op);
+    }
+}
+
+
+NSRect 
+NSDrawColorTiledRects(NSRect boundsRect, NSRect clipRect, 
+		      const NSRectEdge *sides, NSColor **colors, 
+		      int count)
+{
+  int i;
+  NSRect slice;
+  NSRect remainder = boundsRect;
+  NSRect rects[count];
+  BOOL hasClip = !NSIsEmptyRect(clipRect);
+
+  if (hasClip && NSIntersectsRect(boundsRect, clipRect) == NO)
+    return remainder;
+
+  for (i = 0; i < count; i++)
+    {
+      NSDivideRect(remainder, &slice, &remainder, 1.0, sides[i]);
+      if (hasClip)
+	rects[i] = NSIntersectionRect(slice, clipRect);
+      else
+	rects[i] = slice;
+    }
+
+  NSRectFillListWithColors(rects, colors, count);
+
+  return remainder;
+}
+
+void 
+NSDrawDarkBezel(NSRect aRect, NSRect clipRect)
+{
+}
+
+void 
+NSDrawLightBezel(NSRect aRect, NSRect clipRect)
+{
+}
+
+void 
+NSDrawWindowBackground(NSRect aRect)
+{
+// TODO
+}
+
+void 
+NSFrameLinkRect(NSRect aRect, BOOL isDestination)
+{
+// TODO
+}
+
+float 
+NSLinkFrameThickness(void)
+{
+// TODO
+  return 1.5;
+}
+
+void 
+NSConvertGlobalToWindowNumber(int globalNum, unsigned int *winNum)
+{
+// TODO
+  *winNum = 0;
+}
+
+void 
+NSConvertWindowNumberToGlobal(int winNum, unsigned int *globalNum)
+{
+// TODO
+  *globalNum = 0;
+}
+
+void 
+NSCountWindowsForContext(int context, int *count)
+{
+// TODO
+  *count = 0;
+}
+
+void 
+NSWindowListForContext(int context, int size, int list[][])
+{
+// TODO
+}
+
+int 
+NSGetWindowServerMemory(int context, int *virtualMemory, 
+			int *windowBackingMemory, NSString **windowDumpStream)
+{
+// TODO
+  return -1;
 }
 
 
