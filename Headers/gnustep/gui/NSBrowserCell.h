@@ -40,12 +40,8 @@
   NSImage *_alternateImage;
   NSImage *_branchImage;
   NSImage *_highlightBranchImage;
-  NSCell *_browserText;
   BOOL _isLeaf;
   BOOL _isLoaded;
-
-  // reserved for the backend
-  void *_be_bfc_reserved;
 }
 
 //
