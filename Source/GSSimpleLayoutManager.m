@@ -771,7 +771,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
       
       currReloc = [ghostArray objectAtIndex: 0];
       firstChar =  currReloc->glyphRange.location;
-NSLog(@"Reloc %@", NSStringFromRange(currReloc->glyphRange));
+NSDebugLog(@"Reloc %@ to %d", NSStringFromRange(currReloc->glyphRange), nextChar);
       if (firstChar == nextChar)
 	break;
       else if (firstChar > nextChar)
