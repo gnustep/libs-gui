@@ -127,6 +127,10 @@
 - (BOOL) launchApplication: (NSString*)appName
 		  showIcon: (BOOL)showIcon
 		autolaunch: (BOOL)autolaunch;
+#ifndef STRICT_OPENSTEP
+- (NSDictionary*) activeApplication;
+- (NSArray*) launchedApplications;
+#endif
 
 //
 // Unmounting a Device	
