@@ -70,8 +70,9 @@
 	border_type = NSLineBorder;
 	title_position = NSAtTop;
 	title_rect = NSZeroRect;
-	ASSIGN(content_view, [NSView new]);
+	content_view = [NSView new];
 	[super addSubview:content_view];
+	[content_view release];
 
 	return self;
 }
@@ -80,8 +81,6 @@
 {
 	if (cell) 
 		[cell release];
-	if (content_view) 
-		[content_view release];
 
 	[super dealloc];
 }
@@ -173,12 +172,12 @@
 
 - (void)setContentView:(NSView *)aView
 {
-  [aView retain];
-  [content_view release];
-  content_view = aView;
-
-  [self replaceSubview:content_view with:aView];
-  [content_view setFrame: [self calcSizes]];
+  if (aView)
+    {
+      [super replaceSubview: content_view with: aView];
+      content_view = aView;
+      [content_view setFrame: [self calcSizes]];
+    }
 }
 
 - (void)setContentViewMargins:(NSSize)offsetSize
@@ -235,10 +234,21 @@
 //
 // Managing the NSView Hierarchy 
 //
-- (void)addSubview:(NSView *)aView
+- (void) addSubview: (NSView*)aView
 {
-  // Subviews get added to our content view's list
-  [content_view addSubview:aView];
+  [content_view addSubview: aView];
+}
+
+- (void) addSubview: (NSView*)aView
+         positioned: (NSWindowOrderingMode)place
+         relativeTo: (NSView*)otherView
+{
+  [content_view addSubview: aView positioned: place relativeTo: otherView];
+}
+
+- (void) replaceSubview: (NSView *)aView with: (NSView*) newView
+{
+  [content_view replaceSubview: aView with: newView];
 }
 
 //
@@ -332,8 +342,8 @@
 	title_rect = NSZeroRect;
 
 	// Add the offsets to the border rect
-	r.origin.x = border_rect.origin.x + offsets.width + borderSize.width;
-	r.origin.y = border_rect.origin.y + offsets.height + borderSize.height;
+	r.origin.x = offsets.width + borderSize.width;
+	r.origin.y = offsets.height + borderSize.height;
 	r.size.width = border_rect.size.width - (2 * offsets.width)
 	  - (2 * borderSize.width);
 	r.size.height = border_rect.size.height - (2 * offsets.height)
