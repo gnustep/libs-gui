@@ -34,13 +34,12 @@
 //
 // Class methods
 //
-+ (void)initialize
++ (void) initialize
 {
-	if (self == [GSTrackingRect class])
-	{
-		// Initial version
-		[self setVersion:1];
-	}
+  if (self == [GSTrackingRect class])
+    {
+      [self setVersion: 1];
+    }
 }
 
 //
@@ -49,19 +48,20 @@
 //
 // Initialization
 //
-- initWithRect:(NSRect)aRect
- tag:(NSTrackingRectTag)aTag
- owner:anObject
- userData:(void *)theData
- inside:(BOOL)flag
+- initWithRect: (NSRect)aRect
+	   tag: (NSTrackingRectTag)aTag
+	 owner: anObject
+      userData: (void *)theData
+        inside: (BOOL)flag
 {
-	rectangle = aRect;
-	tag = aTag;
-	owner = anObject;
-	[owner retain];
-	user_data = theData;
-	inside = flag;
-	return self;
+  rectangle = aRect;
+  tag = aTag;
+  owner = anObject;
+  [owner retain];
+  user_data = theData;
+  inside = flag;
+  isValid = YES;
+  return self;
 }
 
 - (void) dealloc
@@ -75,24 +75,39 @@
   return rectangle;
 }
 
-- (NSTrackingRectTag)tag
+- (NSTrackingRectTag) tag
 {
   return tag;
 }
 
 - owner
 {
-	return owner;
+  return owner;
 }
 
-- (void *)userData
+- (void *) userData
 {
-	return user_data;
+  return user_data;
 }
 
-- (BOOL)inside
+- (BOOL) inside
 {
-	return inside;
+  return inside;
+}
+
+- (BOOL) isValid
+{
+  return isValid;
+}
+
+- (void) invalidate
+{
+  if (isValid)
+    {
+      isValid = NO;
+      [owner release];
+      owner = nil;
+    }
 }
 
 //

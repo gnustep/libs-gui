@@ -1377,16 +1377,19 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 {
   GSTrackingRect	*m;
 
-  m = [[[GSTrackingRect alloc] initWithRect: aRect
-					tag: 0
-				      owner: anObject
-				   userData: NULL
-				     inside: YES] autorelease];
+  m = [GSTrackingRect allocWithZone: NSDefaultMallocZone()];
+  m = [m initWithRect: aRect
+		  tag: 0
+		owner: anObject
+	     userData: NULL
+	       inside: YES];
   [cursor_rects addObject: m];
+  [m release];
 }
 
 - (void) discardCursorRects
 {
+  [cursor_rects makeObjectsPerformSelector: @selector(invalidate)];
   [cursor_rects removeAllObjects];
 }
 
@@ -1402,6 +1405,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
       c = [o owner];
       if (c == anObject)
 	{
+	  [o invalidate];
 	  [cursor_rects removeObject: o];
 	  break;
 	}

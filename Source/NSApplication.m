@@ -238,6 +238,9 @@ NSString* mainModelFile;
 
       app_is_active = YES;
 
+      if (unhide_on_activation)
+	[self unhide: nil];
+
       [nc postNotificationName: NSApplicationDidBecomeActiveNotification
                         object: self];
     }
@@ -256,6 +259,7 @@ NSString* mainModelFile;
       [nc postNotificationName: NSApplicationWillResignActiveNotification
                         object: self];
 
+      unhide_on_activation = NO;
       app_is_active = NO;
 
       [nc postNotificationName: NSApplicationDidResignActiveNotification
@@ -289,6 +293,8 @@ NSString* mainModelFile;
 
   app_is_running = YES;
 
+  [listener updateServicesMenu];
+  [main_menu update];
   while (app_should_quit == NO)
     {
       pool = [arpClass new];
@@ -300,13 +306,11 @@ NSString* mainModelFile;
       if (e)
 	[self sendEvent: e];
 
-					// update (en/disable) the
-                                        // services menu's items
+      // update (en/disable) the services menu's items
       [listener updateServicesMenu];
       [main_menu update];
 
-			       		// send an update message
-			       		// to all visible windows
+      // send an update message to all visible windows
       if (windows_need_update)
 	[self updateWindows];
 
@@ -1041,15 +1045,16 @@ BOOL done = NO;
             }
         }
       app_is_hidden = YES;
-
-      [nc postNotificationName: NSApplicationDidHideNotification
-                        object: self];
-
       /*
        * On hiding we also deactivate the application which will make the menus
        * go away too.
        */
       [self deactivate];
+      unhide_on_activation = YES;
+
+
+      [nc postNotificationName: NSApplicationDidHideNotification
+                        object: self];
     }
 }
 
@@ -1077,6 +1082,7 @@ BOOL done = NO;
 {
   if (app_is_hidden == YES)
     {
+      NSWindow  *key = [self keyWindow];
       NSMenu    *menu;
       NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
@@ -1096,9 +1102,9 @@ BOOL done = NO;
             {
               id    win = [[itemArray objectAtIndex: i] target];
 
-              if ([win isKindOfClass: [NSWindow class]])
+              if (win != key && [win isKindOfClass: [NSWindow class]])
                 {
-                  [win orderBack: self];
+                  [win orderFront: self];
                 }
             }
         }
@@ -1107,6 +1113,8 @@ BOOL done = NO;
       [nc postNotificationName: NSApplicationDidUnhideNotification
                         object: self];
 
+      if ([self keyWindow] != key)
+	[key orderFront: self];
       [[self keyWindow] makeKeyAndOrderFront: self];
     }
 }

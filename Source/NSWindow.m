@@ -630,7 +630,6 @@
 
 - (void) display
 {
-  visible = YES;
   needs_display = NO;                             // inform first responder
 						  // of it's status so it can
   [first_responder becomeFirstResponder];         // set the focus to itself
@@ -839,7 +838,6 @@
   [nc postNotificationName: NSWindowWillCloseNotification object: self];
   [theApp removeWindowsItem: self];
   [self orderOut: self];
-  visible = NO;
 
   if (is_released_when_closed)
     [self release];
@@ -850,7 +848,6 @@
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
   is_miniaturized = NO;
-  visible = YES;
 
   [self performDeminiaturize: self];
   [nc postNotificationName: NSWindowDidDeminiaturizeNotification object: self];
@@ -1097,6 +1094,8 @@
     {
       r = (GSTrackingRect *)[tr objectAtIndex: i];
 
+      if ([r isValid] == NO)
+	continue;
       lastPointConverted = [theView convertPoint: last_point fromView: nil];
       locationConverted = [theView convertPoint: loc fromView: nil];
 
@@ -1250,6 +1249,7 @@
 	  GSTrackingRect *r =(GSTrackingRect *)[theEvent userData];
 	  NSCursor *c = (NSCursor *)[r owner];
 
+	  c = (NSCursor *)[r owner];
 	  if ([theEvent trackingNumber])          // It's a mouse entered
 	    {
 	      if (c && [c isSetOnMouseEntered])

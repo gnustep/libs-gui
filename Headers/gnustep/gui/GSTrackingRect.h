@@ -33,32 +33,36 @@
 
 @interface GSTrackingRect : NSObject <NSCoding>
 {
-	// Attributes
-	NSRect rectangle;
-	NSTrackingRectTag tag;
-	id owner;
-	void *user_data;
-	BOOL inside;
+  // Attributes
+  NSRect rectangle;
+  NSTrackingRectTag tag;
+  id owner;
+  void *user_data;
+  BOOL inside;
+  BOOL isValid;
 }
 
 // Instance methods
-- initWithRect:(NSRect)aRect
-  tag:(NSTrackingRectTag)aTag
-  owner:anObject
-  userData:(void *)theData
-  inside:(BOOL)flag;
+- initWithRect: (NSRect)aRect
+	   tag: (NSTrackingRectTag)aTag
+	 owner: anObject
+      userData: (void *)theData
+	inside: (BOOL)flag;
 
-- (NSRect)rectangle;
-- (NSTrackingRectTag)tag;
+- (NSRect) rectangle;
+- (NSTrackingRectTag) tag;
 - owner;
-- (void *)userData;
-- (BOOL)inside;
+- (void*) userData;
+- (BOOL) inside;
+
+- (BOOL) isValid;
+- (void) invalidate;
 
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
+- (void) encodeWithCoder: aCoder;
+- initWithCoder: aDecoder;
 
 @end
 
