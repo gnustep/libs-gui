@@ -2615,107 +2615,253 @@ afterString in order over charRange. */
 - (void) rulerView: (NSRulerView*)aRulerView
      didMoveMarker: (NSRulerMarker*)aMarker
 {
-/*
-NSTextView checks for permission to make the change in its
-rulerView: shouldMoveMarker: method, which invokes
-shouldChangeTextInRange: replacementString: to send out the proper request
-and notifications, and only invokes this
-method if permission is granted.
+  NSTextTab *old_tab = [aMarker representedObject];
+  NSTextTab *new_tab = [[NSTextTab alloc] initWithType: [old_tab tabStopType]
+					  location: [aMarker makerLocation]];
+  NSRange range = [self rangeForUserParagraphAttributeChange];
+  unsigned	loc = range.location;
+  NSParagraphStyle *style;
+  NSMutableParagraphStyle *mstyle;
 
+  [_textStorage beginEditing];
+  while (loc < NSMaxRange(range))
+    {
+      id	value;
+      BOOL	copiedStyle = NO;
+      NSRange	effRange;
+      NSRange	newRange;
+
+      value = [_textStorage attribute: NSParagraphStyleAttributeName
+		      atIndex: loc
+	       effectiveRange: &effRange];
+      newRange = NSIntersectionRange (effRange, range);
+
+      if (value == nil)
+	{
+	  value = [NSMutableParagraphStyle defaultParagraphStyle];
+	}
+      else
+	{
+	  value = [value mutableCopy];
+	  copiedStyle = YES;
+	}
+
+      [value removeTabStop: old_tab];
+      [value addTabStop: new_tab];
+
+      [_textStorage addAttribute: NSParagraphStyleAttributeName
+		   value: value
+		   range: newRange];
+      if (copiedStyle == YES)
+	{
+	  RELEASE(value);
+	}
+      loc = NSMaxRange (effRange);
+    }
+  [_textStorage endEditing];
   [self didChangeText];
-*/
+
+  // Set the typing attributes
+  style = [_typingAttributes objectForKey: NSParagraphStyleAttributeName];
+  if (style == nil)
+    style = [NSParagraphStyle defaultParagraphStyle];
+
+  mstyle = [style mutableCopy];
+
+  [mstyle removeTabStop: old_tab];
+  [mstyle addTabStop: new_tab];
+  // FIXME: Should use setTypingAttributes
+  [_typingAttributes setObject: mstyle forKey: NSParagraphStyleAttributeName];
+  RELEASE (mstyle); 
+
+  [aMarker setRepresentedObject: new_tab];
 }
 
 - (void) rulerView: (NSRulerView*)aRulerView
    didRemoveMarker: (NSRulerMarker*)aMarker
 {
-/*
-NSTextView checks for permission to move or remove a tab stop in its
-rulerView: shouldMoveMarker: method, which invokes
-shouldChangeTextInRange: replacementString: to send out the proper request
-and notifications, and only invokes this method if permission is granted.
-*/
+  NSTextTab *tab = [aMarker representedObject];
+  NSRange range = [self rangeForUserParagraphAttributeChange];
+  unsigned	loc = range.location;
+  NSParagraphStyle *style;
+  NSMutableParagraphStyle *mstyle;
+
+  [_textStorage beginEditing];
+  while (loc < NSMaxRange(range))
+    {
+      id	value;
+      BOOL	copiedStyle = NO;
+      NSRange	effRange;
+      NSRange	newRange;
+
+      value = [_textStorage attribute: NSParagraphStyleAttributeName
+		      atIndex: loc
+	       effectiveRange: &effRange];
+      newRange = NSIntersectionRange (effRange, range);
+
+      if (value == nil)
+	{
+	  value = [NSMutableParagraphStyle defaultParagraphStyle];
+	}
+      else
+	{
+	  value = [value mutableCopy];
+	  copiedStyle = YES;
+	}
+
+      [value removeTabStop: tab];
+
+      [_textStorage addAttribute: NSParagraphStyleAttributeName
+		   value: value
+		   range: newRange];
+      if (copiedStyle == YES)
+	{
+	  RELEASE(value);
+	}
+      loc = NSMaxRange (effRange);
+    }
+  [_textStorage endEditing];
+  [self didChangeText];
+
+  // Set the typing attributes
+  style = [_typingAttributes objectForKey: NSParagraphStyleAttributeName];
+  if (style == nil)
+    style = [NSParagraphStyle defaultParagraphStyle];
+
+  mstyle = [style mutableCopy];
+
+  [mstyle removeTabStop: tab];
+  // FIXME: Should use setTypingAttributes
+  [_typingAttributes setObject: mstyle forKey: NSParagraphStyleAttributeName];
+  RELEASE (mstyle); 
 }
 
 - (void)rulerView:(NSRulerView *)ruler 
      didAddMarker:(NSRulerMarker *)marker
 {
+  NSTextTab *tab = [marker representedObject];
+  NSRange range = [self rangeForUserParagraphAttributeChange];
+  unsigned	loc = range.location;
+  NSParagraphStyle *style;
+  NSMutableParagraphStyle *mstyle;
+
+  [_textStorage beginEditing];
+  while (loc < NSMaxRange(range))
+    {
+      id	value;
+      BOOL	copiedStyle = NO;
+      NSRange	effRange;
+      NSRange	newRange;
+
+      value = [_textStorage attribute: NSParagraphStyleAttributeName
+		      atIndex: loc
+	       effectiveRange: &effRange];
+      newRange = NSIntersectionRange (effRange, range);
+
+      if (value == nil)
+	{
+	  value = [NSMutableParagraphStyle defaultParagraphStyle];
+	}
+      else
+	{
+	  value = [value mutableCopy];
+	  copiedStyle = YES;
+	}
+
+      [value addTabStop: tab];
+
+      [_textStorage addAttribute: NSParagraphStyleAttributeName
+		   value: value
+		   range: newRange];
+      if (copiedStyle == YES)
+	{
+	  RELEASE(value);
+	}
+      loc = NSMaxRange (effRange);
+    }
+  [_textStorage endEditing];
+  [self didChangeText];
+
+  // Set the typing attributes
+  style = [_typingAttributes objectForKey: NSParagraphStyleAttributeName];
+  if (style == nil)
+    style = [NSParagraphStyle defaultParagraphStyle];
+
+  mstyle = [style mutableCopy];
+
+  [mstyle addTabStop: tab];
+  // FIXME: Should use setTypingAttributes
+  [_typingAttributes setObject: mstyle forKey: NSParagraphStyleAttributeName];
+  RELEASE (mstyle); 
 }
 
 - (void) rulerView: (NSRulerView*)aRulerView
    handleMouseDown: (NSEvent*)theEvent
 {
-/*
-This NSRulerView client method adds a left tab marker to the ruler, but a
-subclass can override this method to provide other behavior, such as
-creating guidelines. This method is invoked once with theEvent when the
-user first clicks in the aRulerView's ruler area, as described in the
-NSRulerView class specification.
-*/
+  NSPoint point = [aRulerView convertPoint: [theEvent locationInWindow] 
+			      fromView: nil];
+  float location = point.x;
+  // FIXME This image does not exist.
+  NSRulerMarker *marker = [[NSRulerMarker alloc] 
+			      initWithRulerView: aRulerView
+			      markerLocation: location
+			      image: [NSImage imageNamed: @"common_LeftTabStop"]
+			      imageOrigin: NSMakePoint(0, 0)];
+  NSTextTab *tab = [[NSTextTab alloc] initWithType: NSLeftTabStopType
+					  location: location];
+
+  [marker setRepresentedObject: tab];
+  [aRulerView addMarker: marker];
 }
 
 - (BOOL) rulerView: (NSRulerView*)aRulerView
    shouldAddMarker: (NSRulerMarker*)aMarker
 {
-
-/* This NSRulerView client method controls whether a new tab stop can be
-added. The receiver checks for permission to make the change by invoking
-shouldChangeTextInRange: replacementString: and returning the return value
-of that message. If the change is allowed, the receiver is then sent a
-rulerView: didAddMarker: message. */
-
-  return NO;
+  return [self shouldChangeTextInRange: [self rangeForUserParagraphAttributeChange]
+	       replacementString: nil];
 }
 
 - (BOOL) rulerView: (NSRulerView*)aRulerView
   shouldMoveMarker: (NSRulerMarker*)aMarker
 {
-
-/* This NSRulerView client method controls whether an existing tab stop
-can be moved. The receiver checks for permission to make the change by
-invoking shouldChangeTextInRange: replacementString: and returning the
-return value of that message. If the change is allowed, the receiver is
-then sent a rulerView: didAddMarker: message. */
-
-  return NO;
+  return [self shouldChangeTextInRange: [self rangeForUserParagraphAttributeChange]
+	       replacementString: nil];
 }
 
 - (BOOL) rulerView: (NSRulerView*)aRulerView
 shouldRemoveMarker: (NSRulerMarker*)aMarker
 {
-
-/* This NSRulerView client method controls whether an existing tab stop
-can be removed. Returns YES if aMarker represents an NSTextTab, NO
-otherwise. Because this method can be invoked repeatedly as the user drags
-a ruler marker, it returns that value immediately. If the change is allows
-and the user actually removes the marker, the receiver is also sent a
-rulerView: didRemoveMarker: message. */
-
-  return NO;
+  return [(id)[aMarker representedObject] isKindOfClass: [NSTextTab class]];
 }
 
 - (float) rulerView: (NSRulerView*)aRulerView
       willAddMarker: (NSRulerMarker*)aMarker 
 	 atLocation: (float)location
 {
+  NSSize size = [_textContainer containerSize];
 
-/* This NSRulerView client method ensures that the proposed location of
-aMarker lies within the appropriate bounds for the receiver's text
-container, returning the modified location. */
+  if (location < 0.0)
+    return 0.0;
 
-  return 0.0;
+  if (location > size.width)
+    return size.width;
+
+  return location;
 }
 
 - (float) rulerView: (NSRulerView*)aRulerView
      willMoveMarker: (NSRulerMarker*)aMarker 
 	 toLocation: (float)location
 {
+  NSSize size = [_textContainer containerSize];
 
-/* This NSRulerView client method ensures that the proposed location of
-aMarker lies within the appropriate bounds for the receiver's text
-container, returning the modified location. */
+  if (location < 0.0)
+    return 0.0;
 
-  return 0.0;
+  if (location > size.width)
+    return size.width;
+
+  return location;
 }
 
 - (void) setDelegate: (id)anObject
