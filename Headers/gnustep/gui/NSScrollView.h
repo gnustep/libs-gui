@@ -56,6 +56,9 @@
   BOOL _scrollsDynamically;
   BOOL _rulersVisible;
   BOOL _knobMoved;
+  BOOL _hasHeaderView;
+  BOOL _hasCornerView;
+  NSClipView *_headerClipView;
 }
 
 /* Calculating layout */
