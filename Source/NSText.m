@@ -787,7 +787,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   int aLine = 0;
   int insertionLineIndex = 0;
   unsigned oldMax = NSMaxRange(aRange);
-  unsigned newMax = oldMax + insertionDelta;
+  //unsigned newMax = oldMax + insertionDelta;
   NSPoint drawingPoint = NSZeroPoint;
   NSScanner *pScanner;
   float	width = [self frame].size.width;
@@ -1354,7 +1354,10 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 - (void) replaceCharactersInRange: (NSRange)aRange
 			  withRTF: (NSData*)rtfData
 {
-  [self replaceCharactersInRange: aRange withRTFD: rtfData];
+  [self replaceRange: aRange
+	withAttributedString: AUTORELEASE([[NSAttributedString alloc]
+				 initWithRTF: rtfData
+				 documentAttributes: NULL])];
 }
 
 - (void) replaceCharactersInRange: (NSRange)aRange
@@ -1478,7 +1481,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 - (void)setEditable: (BOOL)flag
 {
   _tf.is_editable = flag;
-  // If we are editable then we  are selectable
+  // If we are editable then we are selectable
   if (flag)
     {
       _tf.is_selectable = YES;
@@ -1534,11 +1537,16 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 //
 - (BOOL) isRulerVisible
 {
-  return NO;
+  return _tf.is_ruler_visible;
 }
 
 - (void) toggleRuler: (id)sender
 {
+  NSScrollView *sv = [self enclosingScrollView];
+
+  _tf.is_ruler_visible = !_tf.is_ruler_visible;
+  if (sv != nil)
+    [sv setRulersVisible: _tf.is_ruler_visible];
 }
 
 //
@@ -1637,12 +1645,13 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   NSMutableArray *types = [NSMutableArray arrayWithObject:
 					    NSFontPboardType];
   NSPasteboard *pboard = [NSPasteboard pasteboardWithName: NSFontPboard];
-  // FIXME: We should get the font from the selection
+
+  // FIXME: We should use fontAttributesInRange: with the selection
   NSFont *font = [self font];
   NSData *data = nil;
 
   if (font != nil)
-    // FIXME: Should use diverent format here
+    // FIXME: Should use different format here
     data = [NSArchiver archivedDataWithRootObject: font];
 
   if (data != nil)
@@ -1664,6 +1673,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   if (![self isRichText])
     return;
 
+  // FIXME: Should use rulerAttributesInRange:
   style = [_textStorage attribute: NSParagraphStyleAttributeName
 			atIndex: _selected_range.location
 			effectiveRange: &_selected_range];
@@ -2005,12 +2015,11 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 //
 - (BOOL) readRTFDFromFile: (NSString*)path
 {
-  NSData *data = [NSData dataWithContentsOfFile: path];
-  id peek;
+  NSAttributedString *peek = [[NSAttributedString alloc] 
+				 initWithPath: path
+				 documentAttributes: NULL];
 
-  if (data && (peek = AUTORELEASE([[NSAttributedString alloc] initWithRTF: data
-						   documentAttributes: NULL]
-			)))
+  if (peek != nil)
     {
       if (!_tf.is_rich_text)
 	{
@@ -2020,6 +2029,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	}
       [self replaceRange: NSMakeRange (0, [self textLength])
 	    withAttributedString: peek];
+      RELEASE(peek);
       return YES;
     }
   return NO;
@@ -2041,7 +2051,8 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
 - (NSData*) RTFFromRange: (NSRange) aRange
 {
-  return [self RTFDFromRange: aRange];
+  return [_textStorage RTFFromRange: aRange
+		       documentAttributes: nil];
 }
 
 //
@@ -2997,7 +3008,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
       if (data != nil)
 	{
-	  // FIXME: Should use diverent format here
+	  // FIXME: Should use different format here
 	  NSFont *font = [NSUnarchiver unarchiveObjectWithData: data];
 
 	  if (font != nil)
@@ -3019,6 +3030,8 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
       //return NO;
     }
 
+  // FIXME: Pasting of ruler is missing
+ 
   if (_tf.imports_graphics)
     {
       NSArray *types = [NSArray arrayWithObjects: NSFileContentsPboardType,
