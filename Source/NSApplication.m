@@ -1775,10 +1775,6 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 
 - (void) setMainMenu: (NSMenu*)aMenu
 {
-  unsigned	i, j;
-  NSMenuItem	*anItem;
-  NSArray	*menuItems;
-
   if (_main_menu != nil && _main_menu != aMenu)
     {
       [_main_menu close];
@@ -1793,57 +1789,6 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
   [[_main_menu window] setTitle: [[NSProcessInfo processInfo] processName]];
   [[_main_menu window] setLevel: NSMainMenuWindowLevel];
   [_main_menu sizeToFit];
-
-  /* If the Windows menu was not set (by using setWindowsMenu:), try
-   * to set it automatically - find a menucell with the title Windows:
-   * this is the default windows menu.  Applications are advised not
-   * to rely on this, and to use setWindowsMenu: instead (if possible)
-   * because that works better when the application is translated into
-   * another language, otherwise if the application translates
-   * 'Windows' in one way, and we translate it in another one, then
-   * you're in trouble!  */
-  if (_windows_menu == nil)
-    {
-      NSString *windows = GSGuiLocalizedString (@"Windows",
-						@"Title of Windows menu");
-      
-      menuItems = [_main_menu itemArray];
-      j = [menuItems count];
-      
-      for (i = 0; i < j; ++i)
-	{
-	  NSString *title;
-	  anItem = [menuItems objectAtIndex: i];
-	  title = [anItem title];
-	  if ([title compare: windows] == NSOrderedSame)
-	    {
-	      _windows_menu = anItem;
-	      break;
-	    }
-	}
-      /* Not yet found - try untranslated 'Windows' or 'Window'
-         ('Window' is for compatibility with menus coming from Apple).  */
-      if (_windows_menu == nil)
-	{
-	  for (i = 0; i < j; ++i)
-	    {
-	      NSString *title;
-	      anItem = [menuItems objectAtIndex: i];
-	      title = [anItem title];
-	      /* "Window" is for compatibility with menus ported from apple */
-	      if ([title compare: @"Windows"] == NSOrderedSame
-		  || [title compare: @"Window"] == NSOrderedSame)
-		{
-		  /* The menu title was not translated ... well we
-		     translate it ourselves.  */
-		  [anItem setTitle: windows];
-		  [[anItem submenu] setTitle: windows];		  
-		  _windows_menu = anItem;
-		  break;
-		}
-	    }
-	}
-    }
 
   if ([self isActive])
     {
@@ -1882,7 +1827,6 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 		     title: (NSString*)aString
 		  filename: (BOOL)isFilename
 {
-  NSMenu	*menu;
   NSArray	*itemArray;
   unsigned	count;
   unsigned	i;
@@ -1919,27 +1863,17 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
    * remove it so it can be re-inserted in the correct place.
    * If the menu doesn't exist - create it.
    */
-  menu = [self windowsMenu];
-  if (menu)
+  itemArray = [_windows_menu itemArray];
+  count = [itemArray count];
+  for (i = 0; i < count; i++)
     {
-      itemArray = [menu itemArray];
-      count = [itemArray count];
-      for (i = 0; i < count; i++)
+      id	item = [itemArray objectAtIndex: i];
+      
+      if ([item target] == aWindow)
 	{
-	  id	item = [itemArray objectAtIndex: i];
-
-	  if ([item target] == aWindow)
-	    {
-	      [menu removeItem: item];
-	      break;
-	    }
+	  [_windows_menu removeItem: item];
+	  break;
 	}
-    }
-  else
-    {
-      menu = [[NSMenu alloc] initWithTitle: [_windows_menu title]];
-      [self setWindowsMenu: menu];
-      RELEASE(menu);
     }
 
   /*
@@ -1949,7 +1883,7 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
    * window entries should stay after the first one and before the
    * other two.
    */
-  itemArray = [menu itemArray];
+  itemArray = [_windows_menu itemArray];
   count = [itemArray count];
 
   i = 0;
@@ -1971,25 +1905,22 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 	break;
       i++;
     }
-  item = [menu insertItemWithTitle: aString
-			    action: @selector(makeKeyAndOrderFront:)
-		     keyEquivalent: @""
-			   atIndex: i];
+  item = [_windows_menu insertItemWithTitle: aString
+			action: @selector(makeKeyAndOrderFront:)
+			keyEquivalent: @""
+			atIndex: i];
   [item setTarget: aWindow];
   // TODO: When changing for a window with a file, we should also set the image.
 }
 
 - (void) removeWindowsItem: (NSWindow*)aWindow
 {
-  NSMenu	*menu;
-
-  menu = [self windowsMenu];
-  if (menu)
+  if (_windows_menu)
     {
       NSArray	*itemArray;
       unsigned	count;
 
-      itemArray = [menu itemArray];
+      itemArray = [_windows_menu itemArray];
       count = [itemArray count];
       while (count-- > 0)
 	{
@@ -1997,7 +1928,7 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 
 	  if ([item target] == aWindow)
 	    {
-	      [menu removeItemAtIndex: count];
+	      [_windows_menu removeItemAtIndex: count];
 	      return;
 	    }
 	}
@@ -2006,106 +1937,57 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 
 - (void) setWindowsMenu: (NSMenu*)aMenu
 {
-  NSMenuItem	*anItem;
-  NSArray	*windows;
-  NSArray	*itemArray;
-  NSMenu	*menu;
-  unsigned	count;
-  unsigned	i;
-
-  if (_windows_menu == nil)
+  if (_windows_menu == aMenu)
     {
-      /* First search for a properly translated Windows menu item.  If
-	 the translation done in your application is different from
-	 the one done in the gui library, you're in trouble.  For this
-	 reason, you better not create the menu item but let us create
-	 it for you.  */
-      itemArray = [_main_menu itemArray];
-      count = [itemArray count];
-      for (i = 0; i < count; ++i)
-	{
-	  anItem = [itemArray objectAtIndex: i];
-	  if ([[anItem title] compare: GSGuiLocalizedString (@"Windows", nil)]
-	      == NSOrderedSame)
-	    {
-	      _windows_menu = anItem;
-	      break;
-	    }
-	}
-      /* Then search for an untranslated one.  */
-      if (_windows_menu == nil)
-	{
-	  for (i = 0; i < count; ++i)
-	    {
-	      anItem = [itemArray objectAtIndex: i];
-	      if ([[anItem title] compare: @"Windows"] == NSOrderedSame)
-		{
-		  /* It's not translated, so we translate it
-                     ourselves.  */
-		  [anItem setTitle: GSGuiLocalizedString (@"Windows", nil)];
-		  _windows_menu = anItem;
-		  break;
-		}
-	    }
-	}
-      /* Still not found - create our own menu item (the preferred
-         solution anyway :-).  */
-      if (_windows_menu == nil)
-	{
-	  _windows_menu = [_main_menu insertItemWithTitle: 
-					GSGuiLocalizedString (@"Windows", nil)
-						 action: 0 
-					  keyEquivalent: @""
-	                 		        atIndex: count];
-	}
+      return;
     }
-
-  menu = [self windowsMenu];
-  if (menu == aMenu)
-    return;
 
   /*
    * Remove all the windows from the old windows menu.
    */
-  if (menu)
+  if (_windows_menu != nil)
     {
-      id	win;
-
-      itemArray = [menu itemArray];
-      count = [itemArray count];
+      NSArray *itemArray = [_windows_menu itemArray];
+      unsigned i, count = [itemArray count];
+      
       for (i = 0; i < count; i++)
 	{
-	  anItem = [itemArray objectAtIndex: i];
-	  win = [anItem target];
+	  NSMenuItem *anItem = [itemArray objectAtIndex: i];
+	  id win = [anItem target];
 
 	  if ([win isKindOfClass: [NSWindow class]])
 	    {
-	      [menu removeItem: anItem];
+	      [_windows_menu removeItem: anItem];
 	    }
 	}
     }
 
-  /*
-   * Now use [-changeWindowsItem:title:filename:] to build the new menu.
-   */
-  [_main_menu setSubmenu: aMenu forItem: (id<NSMenuItem>)_windows_menu];
-  windows = [self windows];
-  count = [windows count];
-  for (i = 0; i < count; i++)
-    {
-      NSWindow	*win = [windows objectAtIndex: i];
-
-      if ([win isExcludedFromWindowsMenu] == NO)
-	{
-	  NSString	*t = [win title];
-	  NSString	*f = [win representedFilename];
-
-	  [self changeWindowsItem: win
-			    title: t
-			 filename: [t isEqual: f]];
-	}
-    }
+  /* Set the new _windows_menu.  */
+  ASSIGN (_windows_menu, aMenu);
+  
+  {
+    /*
+     * Now use [-changeWindowsItem:title:filename:] to build the new menu.
+     */
+    NSArray * windows = [self windows];
+    unsigned i, count = [windows count];
+    for (i = 0; i < count; i++)
+      {
+	NSWindow	*win = [windows objectAtIndex: i];
+	
+	if ([win isExcludedFromWindowsMenu] == NO)
+	  {
+	    NSString	*t = [win title];
+	    NSString	*f = [win representedFilename];
+	    
+	    [self changeWindowsItem: win
+		  title: t
+		  filename: [t isEqual: f]];
+	  }
+      }
+  }
 }
+
 
 - (void) updateWindowsItem: (NSWindow*)aWindow
 {
@@ -2183,10 +2065,7 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
 
 - (NSMenu*) windowsMenu
 {
-  if (_windows_menu)
-    return [_windows_menu submenu];
-  else
-    return nil;
+  return _windows_menu;
 }
 
 /*
