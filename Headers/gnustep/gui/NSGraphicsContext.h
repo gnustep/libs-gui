@@ -168,12 +168,13 @@ APPKIT_DECLARE NSGraphicsContext	*GSCurrentContext();
 - (void) unlockFocusView: (NSView*)aView needsFlush: (BOOL)flush;
 
 /*
- *	Drag and drop support
+ *	Drag and drop support etc
  */
 - (BOOL) _addDragTypes: (NSArray*)types toWindow: (NSWindow *)win;
 - (BOOL) _removeDragTypes: (NSArray*)types fromWindow: (NSWindow *)win;
 - (NSCountedSet*) _dragTypesForWindow: (NSWindow *)win;
 - (id <NSDraggingInfo>)_dragInfo;
+- (BOOL) _slideImage: (NSImage*)image from: (NSPoint)from to: (NSPoint)to;
 
 /* Private methods for printing */
 - (void) useFont: (NSString *)fontName;

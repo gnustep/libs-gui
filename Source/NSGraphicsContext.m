@@ -385,6 +385,12 @@ NSGraphicsContext	*GSCurrentContext()
   return nil;
 }
 
+- (BOOL) _slideImage: (NSImage*)image from: (NSPoint)from to: (NSPoint)to
+{
+  [self subclassResponsibility: _cmd];
+  return NO;
+}
+
 - (void) _postExternalEvent: (NSEvent *)event
 {
   [self subclassResponsibility: _cmd];

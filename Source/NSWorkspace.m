@@ -971,7 +971,7 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 	       from: (NSPoint)fromPoint
 		 to: (NSPoint)toPoint
 {
-  // FIXME
+  [GSCurrentContext() _slideImage: image from: fromPoint to: toPoint];
 }
 
 /*
