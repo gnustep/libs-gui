@@ -2436,25 +2436,24 @@ _GLog(self,_cmd);
 			 usedRect: (NSRect)usedRect
 		    textContainer: (NSTextContainer*)aTextContainer
 {
-  /* TODO */
+  _extraLineFragmentRect = aRect;
+  _extraLineFragmentUsedRect = usedRect;
+  _extraLineFragmentContainer = aTextContainer;
 }
 
 - (NSRect) extraLineFragmentRect 
 {
-  /* TODO */
-  return NSZeroRect;
+  return _extraLineFragmentRect;
 }
 
 - (NSRect) extraLineFragmentUsedRect 
 {
-  /* TODO */
-  return NSZeroRect;
+  return _extraLineFragmentUsedRect;
 }
 
 - (NSTextContainer*) extraLineFragmentTextContainer 
 {
-  /* TODO */
-  return nil;
+  return _extraLineFragmentContainer;
 }
 
 - (NSRect)usedRectForTextContainer:(NSTextContainer *)container
