@@ -165,6 +165,13 @@ Gui_AGSDOC_FLAGS = \
 
 include $(GNUSTEP_MAKEFILES)/documentation.make
 
+before-all::    ../Documentation/Gui
+	cp ../Documentation/Gui/Gui.gsdoc .
+
+../Documentation/Gui:
+	$(MKDIRS) ../Documentation/Gui
+
+
 #
 # Clean up temporary files used while generating documentation.
 #
