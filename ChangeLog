@@ -1,5 +1,14 @@
 1999-11-17  David Lazaro Saz  <khelekir@encomix.es>
 
+	* Source/NSApplication.m ([NSApplication -setMainMenu:]): The window
+	level for the main menu is set here to NSMainMenuWindowLevel.  The old
+	main menu window level is reverted to NSSubmenuWindowLevel.
+
+	* Source/NSMenu.m ([NSMenu -initWithTitle:]): Changed init code to take
+	into account changes made in the NSMenuWindow class.
+	([NSMenuWindow -init]): This is the main init method for this class.
+	It is responsible of setting the window level to NSSubmenuWindowLevel.
+
 	* Model/GMAppKit.m (NSMenu, NSMenuItem): Added preliminary changes to
 	support new menuing code.
 

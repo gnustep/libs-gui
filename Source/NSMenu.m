@@ -175,15 +175,9 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
   _oldAttachedMenu = nil;
 
   // Create the windows that will display the menu.
-  aWindow = [[NSMenuWindow alloc] initWithContentRect: winRect
-                                            styleMask: NSBorderlessWindowMask
-                                              backing: NSBackingStoreRetained
-                                                defer: NO];
-  bWindow = [[NSMenuWindow alloc] initWithContentRect: winRect
-                                            styleMask: NSBorderlessWindowMask
-                                              backing: NSBackingStoreRetained
-                                                defer: NO];
-  
+  aWindow = [[NSMenuWindow alloc] init];
+  bWindow = [[NSMenuWindow alloc] init];
+
   titleView = [NSMenuWindowTitleView new];
   [titleView setFrameOrigin: NSMakePoint(0, winRect.size.height - 23)];
   [titleView setFrameSize: NSMakeSize (winRect.size.width, 23)];
@@ -1230,10 +1224,14 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 
 - (id) init
 {
-  return [self initWithContentRect: NSZeroRect
-			 styleMask: NSBorderlessWindowMask
-			   backing: NSBackingStoreBuffered
-			     defer: NO];
+  [self initWithContentRect: NSZeroRect
+	          styleMask: NSBorderlessWindowMask
+	            backing: NSBackingStoreBuffered
+	              defer: NO];
+
+  window_level = NSSubmenuWindowLevel;
+
+  return self;
 }
 
 - (BOOL) canBecomeMainWindow

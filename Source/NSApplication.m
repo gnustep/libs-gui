@@ -1302,11 +1302,13 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
   if (main_menu != nil && main_menu != aMenu)
     {
       [main_menu close];
+      [[main_menu window] setLevel: NSSubmenuWindowLevel];
     }
 
   ASSIGN(main_menu, aMenu);
 
   [main_menu setTitle: [[NSProcessInfo processInfo] processName]];
+  [[main_menu window] setLevel: NSMainMenuWindowLevel];
   [main_menu sizeToFit];
   /*
    * Find a menucell with the title Windows this is the default windows menu
