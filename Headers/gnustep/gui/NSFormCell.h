@@ -5,8 +5,8 @@
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+   Author: Ovidiu Predescu <ovidiu@net-community.com>
+   Date: March 1997
    
    This file is part of the GNUstep GUI Library.
 
@@ -31,20 +31,13 @@
 
 #include <AppKit/NSActionCell.h>
 
+@class NSTextFieldCell;
+
 @interface NSFormCell : NSActionCell <NSCoding>
 {
-  // Attributes
+  float titleWidth;
+  NSTextFieldCell* textCell;
 }
-
-//
-// Initializing an NSFormCell 
-//
-- (id)initTextCell:(NSString *)aString;
-
-//
-// Determining an NSFormCell's Size 
-//
-- (NSSize)cellSizeForBounds:(NSRect)aRect;
 
 //
 // Determining Graphic Attributes 
@@ -54,13 +47,13 @@
 //
 // Modifying the Title 
 //
-- (void)setTitle:(NSString *)aString;
+- (void)setTitle:(NSString*)aString;
 - (void)setTitleAlignment:(NSTextAlignment)mode;
-- (void)setTitleFont:(NSFont *)fontObject;
+- (void)setTitleFont:(NSFont*)fontObject;
 - (void)setTitleWidth:(float)width;
-- (NSString *)title;
+- (NSString*)title;
 - (NSTextAlignment)titleAlignment;
-- (NSFont *)titleFont;
+- (NSFont*)titleFont;
 - (float)titleWidth;
 - (float)titleWidth:(NSSize)aSize;
 
@@ -68,7 +61,7 @@
 // Displaying 
 //
 - (void)drawInteriorWithFrame:(NSRect)cellFrame
-		       inView:(NSView *)controlView;
+		       inView:(NSView*)controlView;
 
 //
 // NSCoding protocol

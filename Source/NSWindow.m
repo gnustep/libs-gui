@@ -936,7 +936,7 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
 {
   NSApplication *theApp = [NSApplication sharedApplication];
   return [theApp nextEventMatchingMask: mask untilDate: nil
-		 inMode: @"" dequeue: YES];
+		 inMode:NSEventTrackingRunLoopMode dequeue: YES];
 }
 
 - (NSEvent *)nextEventMatchingMask:(unsigned int)mask

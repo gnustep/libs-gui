@@ -30,6 +30,7 @@
 
 #include <Foundation/NSArray.h>
 #include <Foundation/NSNotification.h>
+#include <Foundation/NSRunLoop.h>
 #include <DPSClient/NSDPSContext.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSPopUpButton.h>
@@ -172,6 +173,12 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
   //
   [self setNextResponder:NULL];
 
+  /* Set up the run loop object for the current thread */
+  [self setupRunLoopInputSourcesForMode:NSDefaultRunLoopMode];
+  [self setupRunLoopInputSourcesForMode:NSConnectionReplyMode];
+  [self setupRunLoopInputSourcesForMode:NSModalPanelRunLoopMode];
+  [self setupRunLoopInputSourcesForMode:NSEventTrackingRunLoopMode];
+
   return self;
 }
 
@@ -267,9 +274,10 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 
   do
     {
-      e = [self nextEventMatchingMask:NSAnyEventMask untilDate:nil 
-		inMode:nil dequeue:YES];
-      if (e != gnustep_gui_null_event)
+      e = [self nextEventMatchingMask:NSAnyEventMask
+		untilDate:[NSDate distantFuture]
+		inMode:NSDefaultRunLoopMode dequeue:YES];
+      if (e)
 	[self sendEvent: e];
       else
 	{
@@ -447,14 +455,16 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
   if ([event_queue count])
     {
       j = [event_queue count];
-      for (i = j-1;i >= 0; --i)
+//      for (i = j-1;i >= 0; --i)
+      for (i = 0; i < j; i++)
 	{
 	  e = [event_queue objectAtIndex: i];
 	  if ([self event: e matchMask: mask])
 	    {
+	      [e retain];
 	      [event_queue removeObjectAtIndex: i];
 	      [self setCurrentEvent: e];
-	      return e;
+	      return [e autorelease];
 	    }
 	}
     }
@@ -463,18 +473,39 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
   done = NO;
   while (!done)
     {
-      e = [self getNextEvent];
+#if USE_RUN_LOOP
+      NSRunLoop* currentLoop = [NSRunLoop currentRunLoop];
+      NSDate* limitDate = [currentLoop limitDateForMode:mode];
 
-      // Check mask
-      if ([self event: e matchMask: mask])
-	{
-	  if (e)
-	    {
-	      [event_queue removeObject: e];
-	    }
-	  done = YES;
+      if (!expiration)
+        expiration = [NSDate distantFuture];
+
+      if (limitDate)
+        limitDate = [expiration earlierDate:limitDate];
+      else
+	limitDate = expiration;
+
+//      NSLog (@"calling runMode:beforeDate:");
+      [currentLoop runMode:mode beforeDate:limitDate];
+//      NSLog (@"return from runMode:beforeDate:");
+#else
+      e = [self getNextEvent];
+#endif
+
+      if ([event_queue count]) {
+	e = [[event_queue lastObject] retain];
+
+	// Check mask
+	if ([self event: e matchMask: mask])
+	  {
+	    if (e)
+	      {
+		[event_queue removeObject: e];
+	      }
+	    done = YES;
+	  }
 	}
-    }
+      }
 
   // Unhide the cursor if necessary
   // but only if its not a null event
@@ -495,7 +526,7 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
     }
 
   [self setCurrentEvent: e];
-  return e;
+  return [e autorelease];
 }
 
 - (NSEvent *)peekEventMatchingMask:(unsigned int)mask
@@ -1127,6 +1158,9 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 
 // handle a non-translated event
 - (void)handleNullEvent
+{}
+
+- (void)setupRunLoopInputSourcesForMode:(NSString*)mode
 {}
 
 @end

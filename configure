@@ -1098,6 +1098,373 @@ fi
 config_include=''
 
 
+# Checking for some additional libraries we might need
+echo $ac_n "checking for -ldl""... $ac_c" 1>&6
+ac_lib_var=`echo dl'_'dlopen | tr './+\055' '__p_'`
+if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  ac_save_LIBS="$LIBS"
+LIBS="-ldl  $LIBS"
+cat > conftest.$ac_ext <<EOF
+#line 1111 "configure"
+#include "confdefs.h"
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char dlopen();
+
+int main() { return 0; }
+int t() {
+dlopen()
+; return 0; }
+EOF
+if { (eval echo configure:1123: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }; then
+  rm -rf conftest*
+  eval "ac_cv_lib_$ac_lib_var=yes"
+else
+  rm -rf conftest*
+  eval "ac_cv_lib_$ac_lib_var=no"
+fi
+rm -f conftest*
+LIBS="$ac_save_LIBS"
+
+fi
+if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
+  echo "$ac_t""yes" 1>&6
+    ac_tr_lib=HAVE_LIB`echo dl | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
+  cat >> confdefs.h <<EOF
+#define $ac_tr_lib 1
+EOF
+
+  LIBS="-ldl $LIBS"
+
+else
+  echo "$ac_t""no" 1>&6
+fi
+
+echo $ac_n "checking for -lpthread""... $ac_c" 1>&6
+ac_lib_var=`echo pthread'_'pthread_create | tr './+\055' '__p_'`
+if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  ac_save_LIBS="$LIBS"
+LIBS="-lpthread  $LIBS"
+cat > conftest.$ac_ext <<EOF
+#line 1155 "configure"
+#include "confdefs.h"
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char pthread_create();
+
+int main() { return 0; }
+int t() {
+pthread_create()
+; return 0; }
+EOF
+if { (eval echo configure:1167: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }; then
+  rm -rf conftest*
+  eval "ac_cv_lib_$ac_lib_var=yes"
+else
+  rm -rf conftest*
+  eval "ac_cv_lib_$ac_lib_var=no"
+fi
+rm -f conftest*
+LIBS="$ac_save_LIBS"
+
+fi
+if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
+  echo "$ac_t""yes" 1>&6
+    ac_tr_lib=HAVE_LIB`echo pthread | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
+  cat >> confdefs.h <<EOF
+#define $ac_tr_lib 1
+EOF
+
+  LIBS="-lpthread $LIBS"
+
+else
+  echo "$ac_t""no" 1>&6
+fi
+
+echo $ac_n "checking for -lm""... $ac_c" 1>&6
+ac_lib_var=`echo m'_'sqrt | tr './+\055' '__p_'`
+if eval "test \"`echo '$''{'ac_cv_lib_$ac_lib_var'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  ac_save_LIBS="$LIBS"
+LIBS="-lm  $LIBS"
+cat > conftest.$ac_ext <<EOF
+#line 1199 "configure"
+#include "confdefs.h"
+/* Override any gcc2 internal prototype to avoid an error.  */
+/* We use char because int might match the return type of a gcc2
+    builtin and then its argument prototype would still apply.  */
+char sqrt();
+
+int main() { return 0; }
+int t() {
+sqrt()
+; return 0; }
+EOF
+if { (eval echo configure:1211: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }; then
+  rm -rf conftest*
+  eval "ac_cv_lib_$ac_lib_var=yes"
+else
+  rm -rf conftest*
+  eval "ac_cv_lib_$ac_lib_var=no"
+fi
+rm -f conftest*
+LIBS="$ac_save_LIBS"
+
+fi
+if eval "test \"`echo '$ac_cv_lib_'$ac_lib_var`\" = yes"; then
+  echo "$ac_t""yes" 1>&6
+    ac_tr_lib=HAVE_LIB`echo m | tr 'abcdefghijklmnopqrstuvwxyz' 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'`
+  cat >> confdefs.h <<EOF
+#define $ac_tr_lib 1
+EOF
+
+  LIBS="-lm $LIBS"
+
+else
+  echo "$ac_t""no" 1>&6
+fi
+
+
+# Determine the Foundation library
+echo $ac_n "checking for the Foundation library""... $ac_c" 1>&6
+if eval "test \"`echo '$''{'ac_cv_foundation_library'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  ac_ext=m
+# CFLAGS is not in ac_cpp because -g, -O, etc. are not valid cpp options.
+ac_cpp='$CPP $OBJC_RUNTIME_FLAG'
+ac_compile='${CC-cc} -c $OBJC_RUNTIME_FLAG $CFLAGS conftest.$ac_ext 1>&5 2>&5'
+ac_link='${CC-cc} -o conftest $OBJC_RUNTIME_FLAG $CFLAGS $LDFLAGS conftest.$ac_ext $LIBS $OBJC_LIBS 1>&5 2>&5'
+
+cat > conftest.$ac_ext <<EOF
+#line 1248 "configure"
+#include "confdefs.h"
+#include <Foundation/preface.h>
+
+int main() { return 0; }
+int t() {
+
+; return 0; }
+EOF
+if { (eval echo configure:1257: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+  rm -rf conftest*
+  ac_cv_foundation_library="$ac_cv_foundation_library gnustep-base"
+fi
+rm -f conftest*
+
+cat > conftest.$ac_ext <<EOF
+#line 1264 "configure"
+#include "confdefs.h"
+#include <Foundation/exceptions/FoundationException.h>
+
+int main() { return 0; }
+int t() {
+
+; return 0; }
+EOF
+if { (eval echo configure:1273: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+  rm -rf conftest*
+  ac_cv_foundation_library="$ac_cv_foundation_library libFoundation"
+fi
+rm -f conftest*
+
+cat > conftest.$ac_ext <<EOF
+#line 1280 "configure"
+#include "confdefs.h"
+#include <objects/stdobjects.h>
+
+int main() { return 0; }
+int t() {
+
+; return 0; }
+EOF
+if { (eval echo configure:1289: \"$ac_compile\") 1>&5; (eval $ac_compile) 2>&5; }; then
+  rm -rf conftest*
+  ac_cv_foundation_library="$ac_cv_foundation_library libobjects"
+fi
+rm -f conftest*
+
+ac_ext=c
+# CFLAGS is not in ac_cpp because -g, -O, etc. are not valid cpp options.
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='${CC-cc} -c $CFLAGS $CPPFLAGS conftest.$ac_ext 1>&5'
+ac_link='${CC-cc} -o conftest $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS 1>&5'
+if test "$FOUNDATION" = ""; then
+cat > conftest.$ac_ext <<EOF
+#line 1302 "configure"
+#include "confdefs.h"
+#include <foundation/NSObject.h>
+
+EOF
+ac_try="$ac_cpp conftest.$ac_ext >/dev/null 2>conftest.out"
+{ (eval echo configure:1308: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }
+ac_err=`grep -v '^ *+' conftest.out`
+if test -z "$ac_err"; then
+  rm -rf conftest*
+  ac_cv_foundation_library=foundation
+else
+  echo "$ac_err" >&5
+fi
+rm -f conftest*
+else
+    ac_cv_foundation_library=$FOUNDATION
+fi
+
+fi
+libs_found=`echo ${ac_cv_foundation_library} | awk '{print NF}' -`
+if test $libs_found -gt 1; then
+    echo "" 1>&2
+    { echo "configure: error: More than one Foundation library installed on your system. In the FOUNDATION variable you must specify exactly one of the following libraries: ${ac_cv_foundation_library}" 1>&2; exit 1; }
+fi
+FOUNDATION_LIBRARY=`echo ${ac_cv_foundation_library} | awk '{print }'`
+case "$FOUNDATION_LIBRARY" in
+    foundation)
+	OBJC_RUNTIME=next
+
+	# save the prefix
+	old_prefix=$prefix
+	prefix=$ac_default_prefix
+	CFLAGS="-I`eval \"echo $includedir\"`/next $CFLAGS"
+	# restore the value of prefix
+	prefix=$old_prefix
+
+	LIBS="$LIBS -lFoundation_s"; 
+	cat >> confdefs.h <<\EOF
+#define NeXT_foundation_LIBRARY 1
+EOF
+;;
+    libobjects)
+	LIBS="$LIBS -lobjects"
+	cat >> confdefs.h <<\EOF
+#define GNUSTEP_BASE_LIBRARY 1
+EOF
+;;
+    gnustep-base)
+	LIBS="$LIBS -lgnustep-base"
+	cat >> confdefs.h <<\EOF
+#define GNUSTEP_BASE_LIBRARY 1
+EOF
+;;
+    libFoundation)
+	if test "$FOUNDATION_LIB" = ""; then
+	    FOUNDATION_LIB=Foundation
+	fi
+	LIBS="-l${FOUNDATION_LIB} $LIBS"
+	cat >> confdefs.h <<\EOF
+#define LIB_FOUNDATION_LIBRARY 1
+EOF
+;;
+    *)
+	{ echo "configure: error: Unknown $FOUNDATION_LIBRARY library!" 1>&2; exit 1; };;
+esac
+echo "$ac_t""${ac_cv_foundation_library}" 1>&6
+echo $ac_n "checking for the Objective-C runtime""... $ac_c" 1>&6
+if eval "test \"`echo '$''{'ac_cv_objc_runtime'+set}'`\" = set"; then
+  echo $ac_n "(cached) $ac_c" 1>&6
+else
+  if test "$OBJC_RUNTIME" = ""; then
+    ac_ext=m
+# CFLAGS is not in ac_cpp because -g, -O, etc. are not valid cpp options.
+ac_cpp='$CPP $OBJC_RUNTIME_FLAG'
+ac_compile='${CC-cc} -c $OBJC_RUNTIME_FLAG $CFLAGS conftest.$ac_ext 1>&5 2>&5'
+ac_link='${CC-cc} -o conftest $OBJC_RUNTIME_FLAG $CFLAGS $LDFLAGS conftest.$ac_ext $LIBS $OBJC_LIBS 1>&5 2>&5'
+
+  cat > conftest.$ac_ext <<EOF
+#line 1381 "configure"
+#include "confdefs.h"
+#include <Foundation/NSString.h>
+int main() { return 0; }
+int t() {
+extern id objc_lookUpClass(char*);
+  id class = objc_lookUpClass("NSObject");
+  id obj = [class alloc];
+  puts([[obj description] cString]);
+  
+; return 0; }
+EOF
+if { (eval echo configure:1393: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }; then
+  rm -rf conftest*
+  ac_cv_objc_runtime=NeXT
+else
+  rm -rf conftest*
+  ac_cv_objc_runtime=unknown
+fi
+rm -f conftest*
+
+  if test $ac_cv_objc_runtime = unknown; then
+    OBJC_RUNTIME_FLAG=-fgnu-runtime
+    LIBS="$LIBS -lobjc"
+    cat > conftest.$ac_ext <<EOF
+#line 1406 "configure"
+#include "confdefs.h"
+#include <Foundation/NSString.h>
+    #include <objc/objc-api.h>
+int main() { return 0; }
+int t() {
+id class = objc_lookup_class("NSObject");
+    id obj = [class alloc];
+    puts([[obj description] cString]);
+    
+; return 0; }
+EOF
+if { (eval echo configure:1418: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; }; then
+  rm -rf conftest*
+  ac_cv_objc_runtime=GNU
+else
+  rm -rf conftest*
+  ac_cv_objc_runtime=unknown
+fi
+rm -f conftest*
+
+  fi
+  ac_ext=c
+# CFLAGS is not in ac_cpp because -g, -O, etc. are not valid cpp options.
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='${CC-cc} -c $CFLAGS $CPPFLAGS conftest.$ac_ext 1>&5'
+ac_link='${CC-cc} -o conftest $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS 1>&5'
+
+fi
+
+fi
+OBJC_RUNTIME=$ac_cv_objc_runtime
+if test "`echo ${OBJC_RUNTIME} | tr a-z A-Z`" = "GNU"; then
+  OBJC_RUNTIME=GNU
+  OBJC_RUNTIME_FLAG=-fgnu-runtime
+  ac_cv_objc_runtime=GNU
+  LIBS="$LIBS -lobjc"
+  cat >> confdefs.h <<\EOF
+#define GNU_RUNTIME 1
+EOF
+
+elif test "`echo ${OBJC_RUNTIME} | tr a-z A-Z`" = "NEXT"; then
+  OBJC_RUNTIME=NeXT
+  OBJC_RUNTIME_FLAG=-fnext-runtime
+  ac_cv_objc_runtime=NeXT
+  cat >> confdefs.h <<\EOF
+#define NeXT_RUNTIME 1
+EOF
+
+else
+  OBJC_RUNTIME=unknown
+fi
+if test ${OBJC_RUNTIME} = unknown; then
+  echo
+  rm -f conftest* confdefs* core core.* *.core
+  { echo "configure: error: Cannot determine the Objective-C runtime! Probably you have
+to specify some additional libraries needed to link an ObjC program, so please
+take a look in the config.log file to see the reason and try again." 1>&2; exit 1; }
+fi
+echo "$ac_t""${ac_cv_objc_runtime}" 1>&6
+
+
+
 #--------------------------------------------------------------------
 # Write the Makefiles and configuration files
 #--------------------------------------------------------------------
@@ -1225,6 +1592,9 @@ s%@INSTALL_DATA@%$INSTALL_DATA%g
 s%@RANLIB@%$RANLIB%g
 s%@LN_S@%$LN_S%g
 s%@config_include@%$config_include%g
+s%@FOUNDATION_LIBRARY@%$FOUNDATION_LIBRARY%g
+s%@OBJC_RUNTIME@%$OBJC_RUNTIME%g
+s%@OBJC_RUNTIME_FLAG@%$OBJC_RUNTIME_FLAG%g
 
 CEOF
 EOF

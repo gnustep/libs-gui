@@ -5,8 +5,8 @@
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+   Author: Ovidiu Predescu <ovidiu@net-community.com>
+   Date: March 1997
    
    This file is part of the GNUstep GUI Library.
 
@@ -27,83 +27,101 @@
 */ 
 
 #include <AppKit/NSFormCell.h>
+#include <AppKit/NSFont.h>
+#include <AppKit/NSTextFieldCell.h>
 
 @implementation NSFormCell
 
-//
-// Initializing an NSFormCell 
-//
-- (id)initTextCell:(NSString *)aString
+/* The title attributes are those inherited from the NSActionCell class. */
+
+- init
 {
-  return nil;
+  self = [super init];
+  [self setBordered:NO];
+  [self setBezeled:NO];
+  titleWidth = -1;
+  textCell = [NSTextFieldCell new];
+  [textCell setBordered:YES];
+  [textCell setBezeled:YES];
+  return self;
 }
 
-//
-// Determining an NSFormCell's Size 
-//
-- (NSSize)cellSizeForBounds:(NSRect)aRect
+- (void)dealloc
 {
-  return NSZeroSize;
+  [textCell release];
+  [super dealloc];
 }
 
-//
-// Determining Graphic Attributes 
-//
 - (BOOL)isOpaque
 {
-  return NO;
+  return [super isOpaque] && [textCell isOpaque];
 }
 
-//
-// Modifying the Title 
-//
-- (void)setTitle:(NSString *)aString
-{}
+- (void)setTitle:(NSString*)aString
+{
+  [self setStringValue:aString];
+}
 
 - (void)setTitleAlignment:(NSTextAlignment)mode
-{}
+{
+  [self setAlignment:mode];
+}
 
-- (void)setTitleFont:(NSFont *)fontObject
-{}
+- (void)setTitleFont:(NSFont*)fontObject
+{
+  [self setFont:fontObject];
+}
 
 - (void)setTitleWidth:(float)width
-{}
-
-- (NSString *)title
 {
-  return nil;
+  titleWidth = width;
+}
+
+- (NSString*)title
+{
+  return [self stringValue];
 }
 
 - (NSTextAlignment)titleAlignment
 {
-  return 0;
+  return [self alignment];
 }
 
-- (NSFont *)titleFont
+- (NSFont*)titleFont
 {
-  return nil;
+  return [self font];
 }
 
 - (float)titleWidth
 {
-  return 0;
+  if (titleWidth < 0)
+    return [[self font] widthOfString:[self title]];
+  else
+    return titleWidth;
 }
 
-- (float)titleWidth:(NSSize)aSize
+- (float)titleWidth:(NSSize)size
 {
+  // TODO
   return 0;
 }
 
-//
-// Displaying 
-//
 - (void)drawInteriorWithFrame:(NSRect)cellFrame
-		       inView:(NSView *)controlView
-{}
+  inView:(NSView*)controlView
+{
+  NSRect titleRect = cellFrame;
+  NSRect textRect;
 
-//
-// NSCoding protocol
-//
+  titleRect.size.width = [self titleWidth] + 4;
+  [super drawInteriorWithFrame:titleRect inView:controlView];
+
+  textRect.origin.x = cellFrame.origin.x + titleRect.size.width;
+  textRect.origin.y = cellFrame.origin.y;
+  textRect.size.width = cellFrame.size.width - titleRect.size.width;
+  textRect.size.height = cellFrame.size.height;
+  [textCell drawInteriorWithFrame:textRect inView:controlView];
+}
+
 - (void)encodeWithCoder:aCoder
 {
   [super encodeWithCoder:aCoder];

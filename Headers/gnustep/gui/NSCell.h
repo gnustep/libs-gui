@@ -94,7 +94,7 @@ enum {
   NSChangeBackgroundCellMask	= 8
 };
 
-@interface NSCell : NSObject <NSCoding>
+@interface NSCell : NSObject <NSCopying, NSCoding>
 {
   // Attributes
   NSString *contents;

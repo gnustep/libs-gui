@@ -288,7 +288,7 @@ id gnustep_gui_nsscroller_class = nil;
     {
       last_point = point;
       e = [theApp nextEventMatchingMask:event_mask untilDate:nil 
-		  inMode:nil dequeue:YES];
+		  inMode:NSEventTrackingRunLoopMode dequeue:YES];
       point = [self convertPoint: [e locationInWindow] fromView: nil];
 
       if (is_horizontal)
@@ -383,7 +383,7 @@ id gnustep_gui_nsscroller_class = nil;
     {
       last_point = point;
       e = [theApp nextEventMatchingMask:event_mask untilDate:nil 
-		  inMode:nil dequeue:YES];
+		  inMode:NSEventTrackingRunLoopMode dequeue:YES];
 
       point = [self convertPoint: [e locationInWindow] fromView: nil];
 

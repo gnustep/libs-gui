@@ -31,6 +31,8 @@
 
 #include <AppKit/NSResponder.h>
 
+#define USE_RUN_LOOP 1
+
 @class NSArray;
 @class NSMutableArray;
 @class NSString;
@@ -276,6 +278,9 @@ extern NSString *NSEventTrackingRunLoopMode;
 
 // handle a non-translated event
 - (void)handleNullEvent;
+
+/* Set up the run loop input sources for a given mode */
+- (void)setupRunLoopInputSourcesForMode:(NSString*)mode;
 
 @end
 

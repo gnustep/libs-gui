@@ -1,3 +1,141 @@
+Mon Apr 21 18:57:30 1997  Ovidiu Predescu <ovidiu@net-community.com>
+
+	* Implement NSCopying protocol to cell classes.
+	* Headers/gnustep/gui/NSCell.h: Declare class to conform to
+	NSCopying.
+	* Headers/gnustep/gui/NSActionCell.h: Likewise.
+	* Headers/gnustep/gui/NSButtonCell.h: Likewise.
+	* Source/NSCell.m: Implement copyWithZone:.
+	* Source/NSActionCell.m: Likewise.
+	* Source/NSButtonCell.m: Likewise.
+
+	* Use NSRunLoop to get the events.
+	* Headers/gnustep/gui/NSApplication.h: Define USE_RUN_LOOP macro if you
+	want NSRunLoop class to be used instead of the default busy wait. Note
+	that some classes will not work with the "default" loop. This macro
+	should be removed eventually.
+	(-setupRunLoopInputSourcesForMode:): New method to be implemented in
+	backend. In this method the backend should register to run loop the
+	input sources it uses.
+	* Source/NSApplication.m (-init): Call backend method
+	-setupRunLoopInputSourcesForMode: to setup the input source is several
+	modes used by NSApp.
+	(-run): Get the events from NSDefaultRunLoopMode mode instead of nil.
+	(-nextEventMatchingMask:untilDate:inMode:dequeue:): Check for a
+	matching event into the events queue in the order in which the events
+	occured. Temporary retain the event found before removing it from the
+	events queue to avoid an unneeded deallocation.
+	Inside the loop fire the timers then wait for inputs on the input
+	sources of run loop.
+	* Source/NSButton.m: Call the nextEventMatchingMask:... using the
+	NSEventTrackingRunLoopMode mode instead of nil.
+	* Source/NSCell.m: (-trackMouse:inRect:ofView:untilMouseUp:): Likewise.
+	(-trackScrollButtons:): Likewise.
+	* Source/NSScroller.m (-trackKnob:): Likewise.
+	* Source/NSWindow.m (-nextEventMatchingMask:): Likewise.
+
+	* NSMatrix class completely reworked to be compliant to the OpenStep
+	specification.
+	* Source/NSMatrix.m: The second implementation.
+	* Headers/gnustep/gui/NSMatrix.h: Likewise.
+
+	* Implementation of NSForm, not tested.
+	* Source/NSForm.m: Initial implementation.
+	* Headers/gnustep/gui/NSForm.h: Likewise.
+	* Source/NSFormCell.m: Initial implementation.
+	* Headers/gnustep/gui/NSFormCell.h: Likewise.
+
+	* Added support in configure and makefiles for libFoundation.
+	* configure.in: Configure checks now for the underlaying Foundation
+	library and the Objective-C runtime for whom the library was compiled
+	for. The code is copied with copy/paste from libFoundation sources.
+	* aclocal.m4: Likewise.
+	* Source/Makefile.in: New OBJC_RUNTIME_FLAG that gets replaced by
+	configure. Remove OBJC_LIB since the runtime library is added to LIBS
+	by configure.
+
+	* Source/NSButton.m: Comment out captureMouse: method call to make
+	possible debugging. Anyway it seems we don't need to capture the mouse.
+	* Source/NSButtonCell.m: Remove the -prefersTrackingUntilMouseUp
+	method.
+
+	* Source/NSCell.m: Changed the way in which a cell gets initialized.
+	Moved all the common things into the -_init method.
+
+	* Added support for periodic events.
+	* Source/NSEvent.m: (+startPeriodicEventsAfterDelay:withPeriod:,
+	+stopPeriodicEvents): New public methods.
+	(+_timerFired:, +_registerRealTimer:): New private methods.
+
+Mon Apr 21 18:57:30 1997  Ovidiu Predescu <ovidiu@net-community.com>
+
+	* Implement NSCopying protocol to cell classes.
+	* Headers/gnustep/gui/NSCell.h: Declare class to conform to
+	NSCopying.
+	* Headers/gnustep/gui/NSActionCell.h: Likewise.
+	* Headers/gnustep/gui/NSButtonCell.h: Likewise.
+	* Source/NSCell.m: Implement copyWithZone:.
+	* Source/NSActionCell.m: Likewise.
+	* Source/NSButtonCell.m: Likewise.
+
+	* Use NSRunLoop to get the events.
+	* Headers/gnustep/gui/NSApplication.h: Define USE_RUN_LOOP macro if you
+	want NSRunLoop class to be used instead of the default busy wait. Note
+	that some classes will not work with the "default" loop. This macro
+	should be removed eventually.
+	(-setupRunLoopInputSourcesForMode:): New method to be implemented in
+	backend. In this method the backend should register to run loop the
+	input sources it uses.
+	* Source/NSApplication.m (-init): Call backend method
+	-setupRunLoopInputSourcesForMode: to setup the input source is several
+	modes used by NSApp.
+	(-run): Get the events from NSDefaultRunLoopMode mode instead of nil.
+	(-nextEventMatchingMask:untilDate:inMode:dequeue:): Check for a
+	matching event into the events queue in the order in which the events
+	occured. Temporary retain the event found before removing it from the
+	events queue to avoid an unneeded deallocation.
+	Inside the loop fire the timers then wait for inputs on the input
+	sources of run loop.
+	* Source/NSButton.m: Call the nextEventMatchingMask:... using the
+	NSEventTrackingRunLoopMode mode instead of nil.
+	* Source/NSCell.m: (-trackMouse:inRect:ofView:untilMouseUp:): Likewise.
+	(-trackScrollButtons:): Likewise.
+	* Source/NSScroller.m (-trackKnob:): Likewise.
+	* Source/NSWindow.m (-nextEventMatchingMask:): Likewise.
+
+	* NSMatrix class completely reworked to be compliant to the OpenStep
+	specification.
+	* Source/NSMatrix.m: The second implementation.
+	* Headers/gnustep/gui/NSMatrix.h: Likewise.
+
+	* Implementation of NSForm, not tested.
+	* Source/NSForm.m: Initial implementation.
+	* Headers/gnustep/gui/NSForm.h: Likewise.
+	* Source/NSFormCell.m: Initial implementation.
+	* Headers/gnustep/gui/NSFormCell.h: Likewise.
+
+	* Added support in configure and makefiles for libFoundation.
+	* configure.in: Configure checks now for the underlaying Foundation
+	library and the Objective-C runtime for whom the library was compiled
+	for. The code is copied with copy/paste from libFoundation sources.
+	* aclocal.m4: Likewise.
+	* Source/Makefile.in: New OBJC_RUNTIME_FLAG that gets replaced by
+	configure. Remove OBJC_LIB since the runtime library is added to LIBS
+	by configure.
+
+	* Source/NSButton.m: Comment out captureMouse: method call to make
+	possible debugging. Anyway it seems we don't need to capture the mouse.
+	* Source/NSButtonCell.m: Remove the -prefersTrackingUntilMouseUp
+	method.
+
+	* Source/NSCell.m: Changed the way in which a cell gets initialized.
+	Moved all the common things into the -_init method.
+
+	* Added support for periodic events.
+	* Source/NSEvent.m: (+startPeriodicEventsAfterDelay:withPeriod:,
+	+stopPeriodicEvents): New public methods.
+	(+_timerFired:, +_registerRealTimer:): New private methods.
+
 Fri Apr 04 14:03:40 1997  Scott Christley  <scottc@net-community.com>
 
 	* Source/NSSlider.m (MB_NSSLIDER_CLASS): Rename to follow GNU

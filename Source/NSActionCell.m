@@ -219,6 +219,17 @@
   return tag;
 }
 
+- (id)copyWithZone:(NSZone*)zone
+{
+  NSActionCell* c = [super copyWithZone:zone];
+
+  [c setTag:tag];
+  [c setTarget:target];
+  [c setAction:action];
+
+  return c;
+}
+
 //
 // NSCoding protocol
 //

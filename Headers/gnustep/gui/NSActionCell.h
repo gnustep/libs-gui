@@ -31,7 +31,7 @@
 
 #include <AppKit/NSCell.h>
 
-@interface NSActionCell : NSCell <NSCoding>
+@interface NSActionCell : NSCell <NSCopying, NSCoding>
 {
   // Attributes
   int tag;

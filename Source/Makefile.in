@@ -53,7 +53,6 @@ ALL_CFLAGS = $(ALL_CPPFLAGS) $(CFLAGS)
 DEFS = -DGNUSTEP_INSTALL_LIBDIR=\"$(gnustep_libdir)\" @DEFS@
 
 GCC_LIB = 
-OBJC_LIB = -lobjc
 SYS_LIBS =  
 ADD_LIBS = @LIBS@
 
@@ -236,14 +235,14 @@ OBJS = $(OBJS_WITHOUT_INIT)
 
 .SUFFIXES: .m
 .m$(oext):
-	$(CC) -c $(ALL_CFLAGS) $(DEFS) -o $@ $<
+	$(CC) @OBJC_RUNTIME_FLAG@ -c $(ALL_CFLAGS) $(DEFS) -o $@ $<
 .c$(oext):
 	$(CC) -c $(ALL_CFLAGS) $(DEFS) -o $@ $<
 
 #
 # libraries
 #
-LIBS = $(GCC_LIB) $(OBJC_LIB) $(SYS_LIBS) $(ADD_LIBS)
+LIBS = $(GCC_LIB) $(SYS_LIBS) $(ADD_LIBS)
 
 #
 # targets

@@ -1,14 +1,12 @@
 /* 
    NSMatrix.h
 
-   This is the Matrix class. This class corresponds to NSMatrix
-   of the OpenStep specification, but it also allows for rows
-   and columns of different sizes.
-
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Pascal Forget <pascal@wsc.com>
-   Date: 1996
+   Author:  Ovidiu Predescu <ovidiu@net-community.com>
+   Date: March 1997
+   A completely rewritten version of the original source by Pascal Forget and
+   Scott Christley.
    
    This file is part of the GNUstep GUI Library.
 
@@ -51,26 +49,31 @@ typedef enum _NSMatrixMode {
 
 @interface NSMatrix : NSControl <NSCoding>
 {
-    // Attributes
-    NSMutableArray *rows;
-    NSMutableArray *col_widths;
-    NSMutableArray *row_heights;
-    int num_cols;
-    int num_rows;
-    NSCell *cell_prototype;
-    NSSize inter_cell;
-    Class cell_class;
-    BOOL allows_empty_selection;
-    BOOL selection_by_rect;
-    BOOL draws_background;
-    BOOL draws_cell_background;
-    NSMutableArray *selected_cells;
-    BOOL autoscroll;
-    BOOL scrollable;
-    BOOL autosize;
-    NSMatrixMode mode;
-    SEL double_action;
-    SEL error_action;
+  NSMutableArray* cells;
+  NSMatrixMode mode;
+  int numRows;
+  int numCols;
+  Class cellClass;
+  id cellPrototype;
+  NSSize cellSize;
+  NSSize intercell;
+  NSColor* backgroundColor;
+  NSColor* cellBackgroundColor;
+  id delegate;
+  id target;
+  SEL action;
+  SEL doubleAction;
+  SEL errorAction;
+  id selectedCell;
+  int selectedRow;
+  int selectedColumn;
+  void* selectedCells;
+  BOOL allowsEmptySelection;
+  BOOL selectionByRect;
+  BOOL drawsBackground;
+  BOOL drawsCellBackground;
+  BOOL autosizesCells;
+  BOOL autoscroll;
 }
 
 //
@@ -147,6 +150,8 @@ typedef enum _NSMatrixMode {
 - (void)sortUsingFunction:(int (*)(id element1, id element2, void *userData))comparator
 		  context:(void *)context;
 - (void)sortUsingSelector:(SEL)comparator;
+- (int)numberOfColumns;
+- (int)numberOfRows;
 
 //
 // Finding Matrix Coordinates 
@@ -258,8 +263,11 @@ typedef enum _NSMatrixMode {
 //
 //Target and Action 
 //
-- (SEL)doubleAction;
+- (void)setAction:(SEL)aSelector;
+- (SEL)action;
 - (void)setDoubleAction:(SEL)aSelector;
+- (SEL)doubleAction;
+- (void)setErrorAction:(SEL)aSelector;
 - (SEL)errorAction;
 - (BOOL)sendAction;
 - (void)sendAction:(SEL)aSelector
@@ -280,12 +288,6 @@ typedef enum _NSMatrixMode {
 // Managing the Cursor 
 //
 - (void)resetCursorRects;
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
 
 @end
 

@@ -1,12 +1,12 @@
-/* 
+/*
    NSForm.m
 
    Form class, a text field with a label
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+   Author: Ovidiu Predescu <ovidiu@net-community.com>
+   Date: March 1997
    
    This file is part of the GNUstep GUI Library.
 
@@ -27,103 +27,145 @@
 */ 
 
 #include <AppKit/NSForm.h>
+#include <AppKit/NSFormCell.h>
 
 @implementation NSForm
 
-//
-// Laying Out the Form 
-//
-- (NSFormCell *)addEntry:(NSString *)title
+- (NSFormCell*)addEntry:(NSString*)title
 {
-  return nil;
+  return [self insertEntry:title atIndex:[self numberOfRows]];
 }
 
-- (NSFormCell *)insertEntry:(NSString *)title
+- (NSFormCell*)insertEntry:(NSString*)title
 		    atIndex:(int)index
 {
-  return nil;
+  [self insertRow:index];
+  return [self cellAtRow:index column:0];
 }
 
 - (void)removeEntryAtIndex:(int)index
-{}
+{
+  [self removeRow:index];
+}
+
+- (void)setBezeled:(BOOL)flag
+{
+  int i, count = [self numberOfRows];
+
+  /* Set the bezeled attribute to the cell prototype */
+  [[self prototype] setBezeled:flag];
+
+  for (i = 0; i < count; i++)
+    [[self cellAtRow:i column:0] setBezeled:flag];
+}
+
+- (void)setBordered:(BOOL)flag
+{
+  int i, count = [self numberOfRows];
+
+  /* Set the bordered attribute to the cell prototype */
+  [[self prototype] setBordered:flag];
+
+  for (i = 0; i < count; i++)
+    [[self cellAtRow:i column:0] setBordered:flag];
+}
+
+- (void)setEntryWidth:(float)width
+{
+  NSSize size = [self cellSize];
+
+  size.width = width;
+  [self setCellSize:size];
+}
 
 - (void)setInterlineSpacing:(float)spacing
-{}
+{
+  [self setIntercellSpacing:NSMakeSize(0, spacing)];
+}
 
-//
-// Finding Indices
-//
+/* For the title attributes we use the corresponding attributes from the cell.
+   For the text attributes we use instead the attributes inherited from the
+   NSCell class. */
+- (void)setTitleAlignment:(NSTextAlignment)aMode
+{
+  int i, count = [self numberOfRows];
+
+  /* Set the title alignment attribute to the cell prototype */
+  [[self prototype] setTitleAlignment:aMode];
+
+  for (i = 0; i < count; i++)
+    [[self cellAtRow:i column:0] setTitleAlignment:aMode];
+}
+
+- (void)setTextAlignment:(int)aMode
+{
+  int i, count = [self numberOfRows];
+
+  /* Set the text alignment attribute to the cell prototype */
+  [[self prototype] setAlignment:aMode];
+
+  for (i = 0; i < count; i++)
+    [[self cellAtRow:i column:0] setAlignment:aMode];
+}
+
+- (void)setTitleFont:(NSFont*)fontObject
+{
+  int i, count = [self numberOfRows];
+
+  /* Set the title font attribute to the cell prototype */
+  [[self prototype] setTitleFont:fontObject];
+
+  for (i = 0; i < count; i++)
+    [[self cellAtRow:i column:0] setTitleFont:fontObject];
+}
+
+- (void)setTextFont:(NSFont*)fontObject
+{
+  int i, count = [self numberOfRows];
+
+  /* Set the text font attribute to the cell prototype */
+  [[self prototype] setFont:fontObject];
+
+  for (i = 0; i < count; i++)
+    [[self cellAtRow:i column:0] setFont:fontObject];
+}
+
 - (int)indexOfCellWithTag:(int)aTag
 {
-  return 0;
+  int i, count = [self numberOfRows];
+
+  for (i = 0; i < count; i++)
+    if ([[self cellAtRow:i column:0] tag] == aTag)
+      return i;
+  return -1;
 }
 
 - (int)indexOfSelectedItem
 {
-  return 0;
+  return [self selectedRow];
 }
 
-//
-// Modifying Graphic Attributes 
-//
-- (void)setBezeled:(BOOL)flag
-{}
-
-- (void)setBordered:(BOOL)flag
-{}
-
-- (void)setTextAlignment:(int)mode
-{}
-
-- (void)setTextFont:(NSFont *)fontObject
-{}
-
-- (void)setTitleAlignment:(NSTextAlignment)mode
-{}
-
-- (void)setTitleFont:(NSFont *)fontObject
-{}
-
-//
-// Setting the Cell Class
-//
-+ (Class)cellClass
-{
-  return nil;
-}
-
-+ (void)setCellClass:(Class)classId
-{}
-
-//
-// Getting a Cell 
-//
 - (id)cellAtIndex:(int)index
 {
-  return nil;
+  return [self cellAtRow:index column:0];
 }
 
-//
-// Displaying a Cell
-//
 - (void)drawCellAtIndex:(int)index
-{}
+{
+  id theCell = [self cellAtIndex:index];
 
-//
-// Editing Text 
-//
+  [theCell drawWithFrame:[self cellFrameAtRow:index column:0]
+	   inView:self];
+}
+
+- (void)drawCellAtRow:(int)row column:(int)column
+{
+  [self drawCellAtIndex:row];
+}
+
 - (void)selectTextAtIndex:(int)index
 {}
 
-//
-// Resizing the Form 
-//
-- (void)setEntryWidth:(float)width
-{}
-
-//
-// NSCoding protocol
-//
 - (void)encodeWithCoder:aCoder
 {
   [super encodeWithCoder:aCoder];

@@ -6,6 +6,7 @@
    Copyright (C) 1996 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
+   Author:  Ovidiu Predescu <ovidiu@net-community.com>
    Date: 1996
    
    This file is part of the GNUstep GUI Library.
@@ -26,10 +27,22 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
+#include <Foundation/NSDictionary.h>
+#include <Foundation/NSLock.h>
+#include <Foundation/NSTimer.h>
+#include <Foundation/NSRunLoop.h>
+#include <Foundation/NSThread.h>
+#include <Foundation/NSValue.h>
+#include <Foundation/NSException.h>
+
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSApplication.h>
 
 @implementation NSEvent
+
+// Class variables
+static NSMutableDictionary* timers = nil;
+static NSRecursiveLock* timersLock = nil;
 
 //
 // Private methods
@@ -142,6 +155,8 @@
 
       // Initial version
       [self setVersion:1];
+      timers = [NSMutableDictionary new];
+      timersLock = [NSRecursiveLock new];
     }
 }
 
@@ -287,10 +302,95 @@
 //
 + (void)startPeriodicEventsAfterDelay:(NSTimeInterval)delaySeconds
 			   withPeriod:(NSTimeInterval)periodSeconds
-{}
+{
+  NSTimer* timer;
+  NSThread* currentThread = [NSThread currentThread];
+
+  [timersLock lock];
+
+  NSDebugLog (@"startPeriodicEventsAfterDelay:withPeriod:");
+  /* Check for any pending timer for this thread */
+  if ([timers objectForKey:currentThread])
+    [NSException raise:NSInternalInconsistencyException
+		 format:@"Periodic events are already being generated for "
+			@"this thread %x", currentThread];
+
+  /* If the delay time is 0 then register a timer right now. Otherwise register
+     a timer with no repeat that when fired registers the real timer */
+  if (!delaySeconds)
+    timer = [NSTimer timerWithTimeInterval:periodSeconds
+		      target:self
+		      selector:@selector(_timerFired:)
+		      userInfo:nil
+		      repeats:YES];
+  else
+    timer = [NSTimer timerWithTimeInterval:delaySeconds
+		      target:self
+		      selector:@selector(_registerRealTimer:)
+		      userInfo:[NSNumber numberWithDouble:periodSeconds]
+		      repeats:NO];
+
+  [[NSRunLoop currentRunLoop]
+      addTimer:timer forMode:NSEventTrackingRunLoopMode];
+  [timers setObject:timer forKey:currentThread];
+
+  [timersLock unlock];
+}
+
++ (void)_timerFired:(NSTimer*)timer
+{
+  NSEvent* periodicEvent
+      = [self otherEventWithType:NSPeriodic
+	      location:NSZeroPoint
+	      modifierFlags:0
+	      timestamp:[[NSDate date] timeIntervalSinceReferenceDate]
+	      windowNumber:0
+	      context:[NSApp context]
+	      subtype:0
+	      data1:0
+	      data2:0];
+
+  NSDebugLog (@"_timerFired:");
+  [NSApp postEvent:periodicEvent atStart:NO];
+}
+
++ (void)_registerRealTimer:(NSTimer*)timer
+{
+  NSTimeInterval periodSeconds = [[timer userInfo] doubleValue];
+  NSTimer* realTimer = [NSTimer timerWithTimeInterval:periodSeconds
+				target:self
+				selector:@selector(_timerFired:)
+				userInfo:nil
+				repeats:YES];
+  NSThread* currentThread = [NSThread currentThread];
+
+  NSDebugLog (@"_registerRealTimer:");
+  [timersLock lock];
+
+  /* Add the real timer into the timers dictionary and to the run loop */
+  [timers setObject:realTimer forKey:currentThread];
+  [[NSRunLoop currentRunLoop]
+      addTimer:realTimer forMode:NSEventTrackingRunLoopMode];
+
+  [timersLock unlock];
+}
 
 + (void)stopPeriodicEvents
-{}
+{
+  NSTimer* timer;
+  NSThread* currentThread;
+
+  NSDebugLog (@"stopPeriodicEvents");
+  [timersLock lock];
+
+  currentThread = [NSThread currentThread];
+  /* Remove any existing timer for this thread */
+  timer = [timers objectForKey:currentThread];
+  [timer invalidate];
+  [timers removeObjectForKey:currentThread];
+
+  [timersLock unlock];
+}
 
 //
 // Instance methods

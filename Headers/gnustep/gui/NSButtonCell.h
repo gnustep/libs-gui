@@ -44,7 +44,7 @@ typedef enum _NSButtonType {
   NSMomentaryLight
 } NSButtonType;
 
-@interface NSButtonCell : NSActionCell <NSCoding>
+@interface NSButtonCell : NSActionCell <NSCopying, NSCoding>
 {
   // Attributes
   NSString *altContents;

@@ -319,16 +319,27 @@
   control_view = controlView;
 }
 
-+ (BOOL)prefersTrackingUntilMouseUp
-{
-  return YES;
-}
-
 //
 // Simulating a Click 
 //
 - (void)performClick:(id)sender
 {
+}
+
+- (id)copyWithZone:(NSZone*)zone
+{
+  NSButtonCell* c = [super copyWithZone:zone];
+
+  [c setAlternateTitle:altContents];
+  [c setAlternateImage:altImage];
+  [c setKeyEquivalent:keyEquivalent];
+  [c setKeyEquivalentFont:keyEquivalentFont];
+  [c setKeyEquivalentModifierMask:keyEquivalentModifierMask];
+  [c setTransparent:transparent];
+  c->highlightsByMask = highlightsByMask;
+  c->showAltStateMask = showAltStateMask;
+
+  return c;
 }
 
 //

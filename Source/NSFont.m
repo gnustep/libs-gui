@@ -5,7 +5,7 @@
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author: Ovidiu Predescu <ovidiu@bx.logicnet.ro>
+   Author: Ovidiu Predescu <ovidiu@net-community.com>
    Date: February 1997
    A completely rewritten version of the original source by Scott Christley.
    

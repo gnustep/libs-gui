@@ -64,9 +64,8 @@
 //
 // Initializing an NSCell 
 //
-- init
+- _init
 {
-  [super init];
   cell_type = NSNullCellType;
   cell_image = nil;
   cell_font = nil;
@@ -86,9 +85,16 @@
   return self;
 }
 
+- init
+{
+  self = [super init];
+  [self _init];
+  return self;
+}
+
 - (id)initImageCell:(NSImage *)anImage
 {
-  [super init];
+  [self _init];
 
   // Not an image class --then forget it
   if (![anImage isKindOfClass:[NSImage class]])
@@ -98,24 +104,12 @@
   cell_image = [anImage retain];
   image_position = NSImageOnly;
   cell_font = [[NSFont userFontOfSize:16] retain];
-  cell_state = NO;
-  cell_highlighted = NO;
-  cell_enabled = YES;
-  cell_editable = NO;
-  cell_bordered = NO;
-  cell_bezeled = NO;
-  cell_scrollable = NO;
-  cell_selectable = NO;
-  cell_continuous = NO;
-  cell_float_autorange = NO;
-  cell_float_left = 0;
-  cell_float_right = 0;
   return self;
 }
 
 - (id)initTextCell:(NSString *)aString
 {
-  [super init];
+  [self _init];
 
   // Not a string class --then forget it
   //if (![aString isKindOfClass:[NSString class]])
@@ -127,15 +121,6 @@
   text_align = NSCenterTextAlignment;
   cell_image = nil;
   image_position = NSNoImage;
-  cell_state = NO;
-  cell_highlighted = NO;
-  cell_enabled = YES;
-  cell_editable = NO;
-  cell_bordered = NO;
-  cell_bezeled = NO;
-  cell_scrollable = NO;
-  cell_selectable = NO;
-  cell_continuous = NO;
   cell_float_autorange = YES;
   cell_float_left = 0;
   cell_float_right = 6;
@@ -649,7 +634,7 @@
 	{
 	    last_point = point;
 	    e = [theApp nextEventMatchingMask:event_mask untilDate:nil 
-			inMode:nil dequeue:YES];
+			inMode:NSEventTrackingRunLoopMode dequeue:YES];
 	    location = [e locationInWindow];
 	    point = [controlView convertPoint: location fromView: nil];
 	    NSDebugLog(@"NSCell location %f %f\n", location.x, location.y);
@@ -750,6 +735,36 @@
 
 - (void)setRepresentedObject:(id)anObject
 {}
+
+- (id)copyWithZone:(NSZone*)zone
+{
+  NSCell* c = NSAllocateObject (isa, 0, zone);
+
+  [c setStringValue:contents];
+  [c setImage:cell_image];
+  [c setFont:cell_font];
+  [c setState:cell_state];
+  c->cell_highlighted = cell_highlighted;
+  [c setEnabled:cell_enabled];
+  [c setEditable:cell_editable];
+  [c setBordered:cell_bordered];
+  [c setBezeled:cell_bezeled];
+  [c setScrollable:cell_scrollable];
+  [c setSelectable:cell_selectable];
+  [c setContinuous:cell_continuous];
+  [c setFloatingPointFormat:cell_float_autorange
+	left:cell_float_left
+	right:cell_float_right];
+  c->image_position = image_position;
+  [c setType:cell_type];
+  [c setAlignment:text_align];
+  [c setEntryType:entry_type];
+  c->control_view = control_view;
+  c->cell_size = cell_size;
+  c->represented_object = [represented_object retain];
+
+  return c;
+}
 
 //
 // NSCoding protocol

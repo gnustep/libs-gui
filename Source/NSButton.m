@@ -293,7 +293,7 @@ id gnustep_gui_nsbutton_class = nil;
     return;
 
   // capture mouse
-  [[self window] captureMouse: self];
+//  [[self window] captureMouse: self];
   [self lockFocus];
 
   done = NO;
@@ -311,12 +311,12 @@ id gnustep_gui_nsbutton_class = nil;
 	{
 	  NSDebugLog(@"NSButton process another event\n");
 	  e = [theApp nextEventMatchingMask:event_mask untilDate:nil
-		      inMode:nil dequeue:YES];
+		      inMode:NSEventTrackingRunLoopMode dequeue:YES];
 	}
     }
 
   // Release mouse
-  [[self window] releaseMouse: self];
+//  [[self window] releaseMouse: self];
 
   // If the mouse went up in the button
   if (mouseUp)

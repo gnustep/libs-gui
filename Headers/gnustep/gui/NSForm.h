@@ -5,9 +5,9 @@
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
-   
+   Author: Ovidiu Predescu <ovidiu@net-community.com>
+   Date: March 1997
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -35,15 +35,12 @@
 @class NSFont;
 
 @interface NSForm : NSMatrix <NSCoding>
-{
-  // Attributes
-}
 
 //
 // Laying Out the Form 
 //
-- (NSFormCell *)addEntry:(NSString *)title;
-- (NSFormCell *)insertEntry:(NSString *)title
+- (NSFormCell*)addEntry:(NSString*)title;
+- (NSFormCell*)insertEntry:(NSString*)title
 		    atIndex:(int)index;
 - (void)removeEntryAtIndex:(int)index;
 - (void)setInterlineSpacing:(float)spacing;
@@ -60,15 +57,9 @@
 - (void)setBezeled:(BOOL)flag;
 - (void)setBordered:(BOOL)flag;
 - (void)setTextAlignment:(int)mode;
-- (void)setTextFont:(NSFont *)fontObject;
+- (void)setTextFont:(NSFont*)fontObject;
 - (void)setTitleAlignment:(NSTextAlignment)mode;
-- (void)setTitleFont:(NSFont *)fontObject;
-
-//
-// Setting the Cell Class
-//
-+ (Class)cellClass;
-+ (void)setCellClass:(Class)classId;
+- (void)setTitleFont:(NSFont*)fontObject;
 
 //
 // Getting a Cell 
@@ -89,12 +80,6 @@
 // Resizing the Form 
 //
 - (void)setEntryWidth:(float)width;
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
 
 @end
 

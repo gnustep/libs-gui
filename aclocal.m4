@@ -2,7 +2,8 @@
 #
 #   Copyright (C) 1995, 1996 Free Software Foundation, Inc.
 #
-#   Written by:  Adam Fedor <fedor@boulder.colorado.edu>
+#   Author:  Adam Fedor <fedor@boulder.colorado.edu>
+#   Author:  Ovidiu Predescu <ovidiu@bx.logicnet.ro>
 #
 #   This file is part of the GNU Objective-C library.
 #
@@ -145,3 +146,138 @@ AC_SUBST(DYNAMIC_BUNDLER_LINKER)dnl
 AC_SUBST(DYNAMIC_LDFLAGS)dnl
 AC_SUBST(DYNAMIC_CFLAGS)dnl
 ])
+
+AC_DEFUN(AC_LANG_OBJECTIVE_C,
+[AC_REQUIRE([AC_PROG_CC])dnl
+define([AC_LANG], [AC_LANG_OBJECTIVE_C])dnl
+ac_ext=m
+# CFLAGS is not in ac_cpp because -g, -O, etc. are not valid cpp options.
+ac_cpp='$CPP $OBJC_RUNTIME_FLAG'
+ac_compile='${CC-cc} -c $OBJC_RUNTIME_FLAG $CFLAGS conftest.$ac_ext 1>&AC_FD_CC 2>&AC_FD_CC'
+ac_link='${CC-cc} -o conftest $OBJC_RUNTIME_FLAG $CFLAGS $LDFLAGS conftest.$ac_ext $LIBS $OBJC_LIBS 1>&AC_FD_CC 2>&AC_FD_CC'
+])dnl
+
+AC_DEFUN(AC_FIND_FOUNDATION,
+[dnl
+AC_SUBST(FOUNDATION_LIBRARY)dnl
+dnl
+AC_REQUIRE([AC_PROG_CC])dnl
+AC_REQUIRE([AC_C_CROSS])dnl
+AC_MSG_CHECKING(for the Foundation library)
+AC_CACHE_VAL(ac_cv_foundation_library,
+[AC_LANG_SAVE[]dnl
+AC_LANG_OBJECTIVE_C[]
+AC_TRY_COMPILE(
+#include <Foundation/preface.h>
+,
+, ac_cv_foundation_library="$ac_cv_foundation_library gnustep-base")
+AC_TRY_COMPILE(
+#include <Foundation/exceptions/FoundationException.h>
+,
+, ac_cv_foundation_library="$ac_cv_foundation_library libFoundation")
+AC_TRY_COMPILE(
+#include <objects/stdobjects.h>
+,
+, ac_cv_foundation_library="$ac_cv_foundation_library libobjects")
+AC_LANG_RESTORE[]dnl
+if test "$FOUNDATION" = ""; then
+AC_TRY_CPP(
+#include <foundation/NSObject.h>
+, ac_cv_foundation_library=foundation)
+else
+    ac_cv_foundation_library=$FOUNDATION
+fi
+])dnl
+libs_found=`echo ${ac_cv_foundation_library} | awk '{print NF}' -`
+if test $libs_found -gt 1; then
+    echo "" 1>&2
+    AC_MSG_ERROR([More than one Foundation library installed on your system. In the FOUNDATION variable you must specify exactly one of the following libraries: ${ac_cv_foundation_library}])
+fi
+FOUNDATION_LIBRARY=`echo ${ac_cv_foundation_library} | awk '{print $1}'`
+case "$FOUNDATION_LIBRARY" in
+    foundation)
+	OBJC_RUNTIME=next
+
+	# save the prefix
+	old_prefix=$prefix
+	prefix=$ac_default_prefix
+	CFLAGS="-I`eval \"echo $includedir\"`/next $CFLAGS"
+	# restore the value of prefix
+	prefix=$old_prefix
+
+	LIBS="$LIBS -lFoundation_s"; 
+	AC_DEFINE(NeXT_foundation_LIBRARY);;
+    libobjects)
+	LIBS="$LIBS -lobjects"
+	AC_DEFINE(GNUSTEP_BASE_LIBRARY);;
+    gnustep-base)
+	LIBS="$LIBS -lgnustep-base"
+	AC_DEFINE(GNUSTEP_BASE_LIBRARY);;
+    libFoundation)
+	if test "$FOUNDATION_LIB" = ""; then
+	    FOUNDATION_LIB=Foundation
+	fi
+	LIBS="-l${FOUNDATION_LIB} $LIBS"
+	AC_DEFINE(LIB_FOUNDATION_LIBRARY);;
+    *)
+	AC_MSG_ERROR(Unknown $FOUNDATION_LIBRARY library!);;
+esac
+AC_MSG_RESULT(${ac_cv_foundation_library})
+AC_DETERMINE_FOUNDATION_RUNTIME
+])dnl
+
+AC_DEFUN(AC_DETERMINE_FOUNDATION_RUNTIME,
+[dnl
+AC_SUBST(OBJC_RUNTIME)dnl
+AC_SUBST(OBJC_RUNTIME_FLAG)dnl
+dnl
+AC_REQUIRE([AC_PROG_CC])dnl
+AC_REQUIRE([AC_C_CROSS])dnl
+AC_MSG_CHECKING(for the Objective-C runtime)
+AC_CACHE_VAL(ac_cv_objc_runtime,
+[if test "$OBJC_RUNTIME" = ""; then
+  AC_LANG_SAVE[]dnl
+  AC_LANG_OBJECTIVE_C[]
+  AC_TRY_LINK([#include <Foundation/NSString.h>],
+  [extern id objc_lookUpClass(char*);
+  id class = objc_lookUpClass("NSObject");
+  id obj = [class alloc];
+  puts([[obj description] cString]);
+  ], ac_cv_objc_runtime=NeXT, ac_cv_objc_runtime=unknown)
+  if test $ac_cv_objc_runtime = unknown; then
+    OBJC_RUNTIME_FLAG=-fgnu-runtime
+    LIBS="$LIBS -lobjc"
+    AC_TRY_LINK([#include <Foundation/NSString.h>
+    #include <objc/objc-api.h>],
+    [id class = objc_lookup_class("NSObject");
+    id obj = [class alloc];
+    puts([[obj description] cString]);
+    ], ac_cv_objc_runtime=GNU, ac_cv_objc_runtime=unknown)
+  fi
+  AC_LANG_RESTORE[]
+fi
+])dnl
+OBJC_RUNTIME=$ac_cv_objc_runtime
+if test "`echo ${OBJC_RUNTIME} | tr a-z A-Z`" = "GNU"; then
+  OBJC_RUNTIME=GNU
+  OBJC_RUNTIME_FLAG=-fgnu-runtime
+  ac_cv_objc_runtime=GNU
+  LIBS="$LIBS -lobjc"
+  AC_DEFINE(GNU_RUNTIME)
+elif test "`echo ${OBJC_RUNTIME} | tr a-z A-Z`" = "NEXT"; then
+  OBJC_RUNTIME=NeXT
+  OBJC_RUNTIME_FLAG=-fnext-runtime
+  ac_cv_objc_runtime=NeXT
+  AC_DEFINE(NeXT_RUNTIME)
+else
+  OBJC_RUNTIME=unknown
+fi
+if test ${OBJC_RUNTIME} = unknown; then
+  echo
+  rm -f conftest* confdefs* core core.* *.core
+  AC_MSG_ERROR([Cannot determine the Objective-C runtime! Probably you have
+to specify some additional libraries needed to link an ObjC program, so please
+take a look in the config.log file to see the reason and try again.])
+fi
+AC_MSG_RESULT(${ac_cv_objc_runtime})
+])dnl
