@@ -2790,7 +2790,7 @@ afterString in order over charRange. */
 
 - (void) selectLine: (id)sender
 {
-  if ( [_textStorage length] > 0 )
+  if ([_textStorage length] > 0)
     {
       NSRange aRange;
       NSRect ignored;
