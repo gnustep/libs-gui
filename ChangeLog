@@ -1,3 +1,7 @@
+2003-07-31  Yen-Ju Chen <yjchenx@hotmail.com>
+
+	* Documentation/Gui/LanguageSetup.gsdoc: Updated.
+
 2003-07-27 17:53  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSColor.m (+colorFromString:):	Use NSScanner instead of

@@ -13,7 +13,7 @@
 		yjchenx@hotmail.com
 	    </email>
 	</author>
-	<version>2.0</version>
+	<version>2.1 Beta</version>
 	<date>2003-07-21</date>
 	<abstract>
 	    This article illustrates how to set up GNUstep for the East
@@ -49,7 +49,8 @@
 		</item>
 		<item>
 		    Set the <code>NSGlobalDomain</code> variables such as <code>NSFont</code>,
-		    <code>NSFontSize</code>, and <code>NSUserFont</code>, to name a few, to
+		    <code>NSFontSize</code>, <code>NSUserFont</code>, and <code>NSLanguages</code>
+                    , to name a few, to
 		    appropriate values using the GNUstep's utility <code>defaults</code>.
 		</item>
 	    </enum>
@@ -189,13 +190,16 @@
 		the characters correctly.
 	    </p>
 	    <p>
-		At least, you need to change the user default value <code>NSFont</code>.
+		At least, you need to change the user default value <code>NSFont</code>,
+                and <code>NSBoldFont</code>.
 		For example, suppose you have a hypothetical <code>.nfont</code> package
-		called <code>MyFont</code> and want to use it to display the characters.
+		called <code>MyFont</code> and <code>MyBoldFont</code>,
+                and want to use it to display the characters.
 		To do this, use the GNUstep's utility <code>defaults</code>as follows:
 	    </p>
 	    <example>
 		$ defaults write NSGlobalDomain NSFont MyFont
+		$ defaults write NSGlobalDomain NSBoldFont MyBoldFont
 	    </example>
 	    <p>
 		Depending on a situation, you may also need to set <code>NSUserFont</code>
@@ -214,12 +218,26 @@
 	    </p>
 	    <example>
 		$ defaults delete NSGlobalDomain NSFont
+		$ defaults delete NSGlobalDomain NSBoldFont
 	    </example>
 	    <p>
 		For further details about the user default values, the reader can refer to
 		the documents <code>DefaultsSummary.html</code> and <code>NSFont.html</code>
 		shipped with the GNUstep core library package.
 	    </p>
+            <p>
+		You can also change the default language (English) into your native language.
+		If an application has a directory called MyLanguage.lproj in the bundle
+                (could be in Resources/ directory),
+                it may be localized for that language. To enable this functionality,
+                which displays the interface in that language, you need to set the user
+                default value NSLanguages to the language.
+                Otherwise, it will fall back to the default one (English).
+                To change the default language, use
+            </p>
+            <example>
+                $ defaults write NSGlobalDomain NSLanguages "(MyLanguage)"
+            </example>
 	</chapter>
 	<chapter>
 	    <heading>Examples</heading>
@@ -233,54 +251,68 @@
 		<code>LC_CTYPE</code>, and <code>LANG</code>.
 	    </p>
 	    <section>
-		<heading>
-		    Chinese
+  	        <heading>
+	  	    Traditional Chinese
 		</heading>
 		<subsect>
 		    <heading>
-			Traditional Chinese
+		        Environmental Variables:
 		    </heading>
-		    <subsubsect>
-			<heading>
-			    Environmental Variables:
-			</heading>
-			<example>
-			    GNUSTEP_STRING_ENCODING=NSBIG5StringEncoding
-			    LC_CTYPE=zh_TW.Big5
-			</example>
-		    </subsubsect>
-		    <subsubsect>
-			<heading>
-			    .nfont package:
-			</heading>
-			<p>
-			    MingTi.nfont (using Arphic font as example)
-			</p>
-		    </subsubsect>
-		    <subsubsect>
-			<heading>
-			    MingTi.nfont/FontInfo.plist:
-			</heading>
-			<example>
-			    {
-				Face = (
-				    {
-					PostScriptName = "MingTi";
-					Name = "Regular";
-					Files = ("bsmi00lp.ttf")
-				    }
-				);
-			    }
-			</example>
-		    </subsubsect>
-		    <subsubsect>
-			<heading>
-			    User Defaults:
-			</heading>
-			<example>
-			    $ defaults write NSGlobalDomain NSFont MingTi
-			</example>
-		    </subsubsect>
+		    <example>
+		        GNUSTEP_STRING_ENCODING=NSBIG5StringEncoding
+		        LC_CTYPE=zh_TW.Big5
+		    </example>
+		</subsect>
+		<subsect>
+		    <heading>
+		        .nfont package:
+		    </heading>
+                    <p>
+		        Here, use Arphic MingTi font as example
+                    </p>
+                    <p>
+                        First, make a directory for an .nfont package you are going to make:
+                    </p>
+                    <example>
+                        $ cd $GNUSTEP_USER_ROOT/Library/Fonts (or $GNUSTEP_SYSTEM_ROOT/Library/Fonts)
+                        $ mkdir 'MingTi.nfont'
+                        $ cd 'MingTi'
+                    </example>
+                    <p>
+                        Make a copy of the font file in the directory.
+                    </p>
+                    <example>
+                        $ ln -s /usr/X11R6/lib/X11/fonts/local/bsmi00lp.ttf ./
+                    </example>
+                    <p>
+                        And write a <code>FontInfo.plist</code> (see below).
+                    </p>
+		</subsect>
+		<subsect>
+		    <heading>
+		        MingTi.nfont/FontInfo.plist:
+		    </heading>
+		    <example>
+		        {
+			    Face = (
+			       {
+				    PostScriptName = "MingTi";
+				    Name = "Regular";
+				    Files = ("bsmi00lp.ttf")
+			       }
+			    );
+		        }
+		    </example>
+	        </subsect>
+		<subsect>
+		    <heading>
+		        User Defaults:
+		    </heading>
+		    <example>
+		        $ defaults write NSGlobalDomain NSFont MingTi
+		        $ defaults write NSGlobalDomain NSBoldFont MingTi
+		        $ defaults write NSGlobalDomain NSLanguages "(TraditionalChinese)"
+		    </example>
 		</subsect>
 	    </section>
 	    <section>
@@ -386,3 +418,4 @@
 	</chapter>
     </body>
 </gsdoc>
+
