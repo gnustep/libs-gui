@@ -1220,23 +1220,25 @@ BOOL done = NO;
   windows_need_update = flag;
 }
 
-- (void)updateWindows                               // send an update message
+- (void) updateWindows                               // send an update message
 {                                                   // to all visible windows
-int i, count;
-NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  int i, count;
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
   NSArray *window_list = [self windows];
+
+  windows_need_update = NO;
                                                     // notify that an update is
                                                     // imminent
-    [nc postNotificationName:NSApplicationWillUpdateNotification object:self];
+  [nc postNotificationName:NSApplicationWillUpdateNotification object: self];
 
-    for (i = 0, count = [window_list count]; i < count; i++)
-        {
-        NSWindow *win = [window_list objectAtIndex:i];
-        if ([win isVisible])                        // send update only if the
-            [win update];                           // window is visible
-        }
-                                                    // notify update did occur
-    [nc postNotificationName:NSApplicationDidUpdateNotification object:self];
+  for (i = 0, count = [window_list count]; i < count; i++)
+    {
+      NSWindow *win = [window_list objectAtIndex: i];
+      if ([win isVisible])                        // send update only if the
+	[win update];                           // window is visible
+    }
+						  // notify update did occur
+  [nc postNotificationName:NSApplicationDidUpdateNotification object:self];
 }
 
 - (NSArray*) windows

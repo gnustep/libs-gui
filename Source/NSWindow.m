@@ -561,7 +561,13 @@ NSPoint basePoint;
 - (BOOL)isAutodisplay                       { return is_autodisplay; }
 - (BOOL)isFlushWindowDisabled               { return disable_flush_window; }
 - (void)setAutodisplay:(BOOL)flag           { is_autodisplay = flag; }
-- (void)setViewsNeedDisplay:(BOOL)flag      { needs_display = flag; }
+
+- (void) setViewsNeedDisplay: (BOOL)flag
+{
+  needs_display = flag;
+  [[NSApplication sharedApplication] setWindowsNeedUpdate: YES];
+}
+
 - (BOOL)viewsNeedDisplay                    { return needs_display; }
 - (void)useOptimizedDrawing:(BOOL)flag      { optimize_drawing = flag; }
 
