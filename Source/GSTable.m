@@ -45,6 +45,15 @@
   if (self == [GSTable class])
     [self setVersion: 1];
 }
+
+/* It was reported that the inherited +new implementation doesn't work
+ * on OSX.  Override it with a sane implementation to get portability
+ * to OSX.  */
++(id) new
+{
+  return [[self alloc] init];
+}
+
 //
 // Instance Methods
 //
