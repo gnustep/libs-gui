@@ -46,7 +46,7 @@
 #include <Foundation/NSObjCRuntime.h>
 #include <AppKit/NSPasteboard.h>
 
-#include <AppKit/PasteboardServer.h>
+#include "PasteboardServer.h"
 
 #include <signal.h>
 
