@@ -1,3 +1,10 @@
+2000-09-11  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
+
+	* Source/NSBrowser.m ([NSBrowser -_performLoadOfColumn:]): set
+	intercell spacing to 0.
+	* Source/NSMatrix.m ([NSMatrix -mouseDown:]): in NSRadioModeMatrix
+	deselect the previous selected cell only if the cell is valid.
+
 2000-09-10  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
 
 	* Tools/gpbs.m ([PasteboardEntry -lostOwnership]): workaround to avoid

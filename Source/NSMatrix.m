@@ -1917,6 +1917,16 @@ static SEL getSel = @selector(objectAtIndex:);
 	   column: &column
 	   forPoint: lastLocation])
     {
+      if ((_mode == NSRadioModeMatrix) && _selectedCell != nil)
+	{
+	  [_selectedCell setState: NSOffState];
+	  [self drawCellAtRow: _selectedRow column: _selectedColumn];
+	  [_window flushWindow];
+	  _selectedCells[_selectedRow][_selectedColumn] = NO;
+	  _selectedCell = nil;
+	  _selectedRow = _selectedColumn = -1;
+	}
+
       if ([_cells[row][column] isSelectable])
 	{
 	  NSText* t = [_window fieldEditor: YES forObject: self];
@@ -1968,16 +1978,6 @@ static SEL getSel = @selector(objectAtIndex:);
     [NSEvent startPeriodicEventsAfterDelay: 0.05
 	     withPeriod: 0.05];
   ASSIGN(lastEvent, theEvent);
-
-  if ((_mode == NSRadioModeMatrix) && _selectedCell != nil)
-    {
-      [_selectedCell setState: NSOffState];
-      [self drawCellAtRow: _selectedRow column: _selectedColumn];
-      [_window flushWindow];
-      _selectedCells[_selectedRow][_selectedColumn] = NO;
-      _selectedCell = nil;
-      _selectedRow = _selectedColumn = -1;
-    }
 
   // selection involves two steps, first
   // a loop that continues until the left mouse goes up; then a series of
@@ -2036,7 +2036,7 @@ static SEL getSel = @selector(objectAtIndex:);
 
 		  case NSRadioModeMatrix:
 		    // Radio mode allows no more than one cell to be selected
-		    if (previousCell == aCell)
+		    if (previousCell == aCell || aCell == nil)
 		      break;
 
 		    // deselect previously selected cell

@@ -2815,6 +2815,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 {
   id bc, sc, matrix = nil;
   NSRect matrixRect = {{0, 0}, {100, 100}};
+  NSSize matrixIntercellSpace = {{0, 0}};
 
 #if defined NSBTRACE__performLoadOfColumn || defined NSBTRACE_all
   fprintf(stderr, "NSBrowser - (void)_performLoadOfColumn: %d\n", column);
@@ -2846,6 +2847,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 			   prototype: _browserCellPrototype
 			   numberOfRows: n
 			   numberOfColumns: 1];
+	  [matrix setIntercellSpacing:matrixIntercellSpace];
 	  [matrix setAllowsEmptySelection: _allowsEmptySelection];
 	  if (!_allowsMultipleSelection)
 	    [matrix setMode: NSRadioModeMatrix];
@@ -2877,6 +2879,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 		  prototype: _browserCellPrototype
 		  numberOfRows: 0
 		  numberOfColumns: 0];
+	  [matrix setIntercellSpacing:matrixIntercellSpace];
 	  [matrix setAllowsEmptySelection: _allowsEmptySelection];
 	  if (_allowsMultipleSelection)
 	    [matrix setMode: NSListModeMatrix];
