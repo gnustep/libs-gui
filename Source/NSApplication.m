@@ -1894,8 +1894,6 @@ delegate.
 		  title: (NSString*)aString
 	       filename: (BOOL)isFilename
 {
-  // TODO: This is not fully correct, as we should not change the menu, 
-  // if an entry for this window already exists
   [self changeWindowsItem: aWindow  title: aString  filename: isFilename];
 }
 
@@ -1923,21 +1921,13 @@ delegate.
     }
 
   /*
-   * Can't permit an untitled window in the window menu.
-   */
-  if (aString == nil || [aString isEqualToString: @""])
-    return;
-
-  /*
    * If there is no menu and nowhere to put one, we can't do anything.
    */
   if (_windows_menu == nil)
     return;
 
   /*
-   * If the menu exists and the window is already in the menu -
-   * remove it so it can be re-inserted in the correct place.
-   * If the menu doesn't exist - create it.
+   * Check if the window is already in the menu.  
    */
   itemArray = [_windows_menu itemArray];
   count = [itemArray count];
@@ -1948,12 +1938,35 @@ delegate.
       if ([item target] == aWindow)
 	{
 	  /*
-	   * If our menu item already exists we need not continue.
+	   * If our menu item already exists and with the correct
+	   * title, we need not continue.  
 	   */
-	  return;
+	  if ([[item title] isEqualToString: aString])
+	    {
+	      return;
+	    }
+	  else
+	    {
+	      /* 
+	       * Else, we need to remove the old item and add it again
+	       * with the new title.  Then new item might be located
+	       * somewhere else in the menu than the old one (because
+	       * items in the menu are sorted by title) ... this is
+	       * why we remove the old one and then insert it again.
+	       */
+	      [_windows_menu removeItem: item];
+	      break;
+	    }
 	}
     }
 
+  /*
+   * Can't permit an untitled window in the window menu ... so if the 
+   * window has not title, we don't add it to the menu.
+   */
+  if (aString == nil || [aString isEqualToString: @""])
+    return;
+  
   /*
    * Now we insert a menu item for the window in the correct order.
    * Make special allowance for menu entries to 'arrangeInFront: '
