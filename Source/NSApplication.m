@@ -464,6 +464,9 @@ static NSCell* tileCell = nil;
       DPSsetinputfocus(context, [kw windowNumber]);
       NSDebugLog(@"activateIgnoringOtherApps end.");
 
+      [main_menu update];
+      [main_menu display];
+
       [nc postNotificationName: NSApplicationDidBecomeActiveNotification
 			object: self];
     }
@@ -1105,10 +1108,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 	    && ![win isKindOfClass: [NSMenuWindow class]]
 	    && ![win isKindOfClass: [NSIconWindow class]])
 	    {
-	      if (win != key && [win isKindOfClass: [NSWindow class]])
-		{
-		  [win orderFrontRegardless];
-		}
+	      [win orderFrontRegardless];
 	    }
 	}
       app_is_hidden = NO;
@@ -1464,60 +1464,84 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 
 - (void) setWindowsMenu: (NSMenu*)aMenu
 {
-  if (windows_menu)
+  NSMenuItem	*anItem;
+  NSArray	*windows;
+  NSArray	*itemArray;
+  NSMenu	*menu;
+  unsigned	count;
+  unsigned	i;
+
+  if (windows_menu == nil)
     {
-      NSArray	*windows;
-      NSMenu	*menu;
-      unsigned  count;
-      unsigned  i;
-
-      menu = [self windowsMenu];
-      if (menu == aMenu)
-	return;
-
-      /*
-       * Remove all the windows from the old windows menu.
-       */
-      if (menu)
+      itemArray = [main_menu itemArray];
+      count = [itemArray count];
+      for (i = 0; i < count; ++i)
 	{
-	  NSArray   *itemArray = [menu itemArray];
-
-	  count = [itemArray count];
-	  for (i = 0; i < count; i++)
+	  anItem = [itemArray objectAtIndex: i];
+	  if ([[anItem title] compare: @"Windows"] == NSOrderedSame)
 	    {
-	      id	item = [itemArray objectAtIndex: i];
-	      id	win = [item target];
-
-	      if ([win isKindOfClass: [NSWindow class]])
-		{
-		  [menu removeItem: item];
-		}
+	      windows_menu = anItem;
+	      break;
 	    }
 	}
+      if (windows_menu == nil)
+	{
+	  windows_menu = [main_menu insertItemWithTitle: @"Windows"
+						 action: 0 
+					  keyEquivalent: @""
+					        atIndex: count];
+	  [main_menu sizeToFit];
+	  [main_menu update];
+	}
+    }
 
-      /*
-       * Now use [-changeWindowsItem:title:filename:] to build the new menu.
-       */
-      [main_menu setSubmenu: aMenu forItem: (id<NSMenuItem>)windows_menu];
-      windows = [self windows];
-      count = [windows count];
+  menu = [self windowsMenu];
+  if (menu == aMenu)
+    return;
+
+  /*
+   * Remove all the windows from the old windows menu.
+   */
+  if (menu)
+    {
+      id	win;
+
+      itemArray = [menu itemArray];
+      count = [itemArray count];
       for (i = 0; i < count; i++)
 	{
-	  NSWindow	*win = [windows objectAtIndex: i];
+	  anItem = [itemArray objectAtIndex: i];
+	  win = [anItem target];
 
-	  if ([win isExcludedFromWindowsMenu] == NO)
+	  if ([win isKindOfClass: [NSWindow class]])
 	    {
-	      NSString	*t = [win title];
-	      NSString	*f = [win representedFilename];
-
-	      [self changeWindowsItem: win
-				title: t
-			     filename: [t isEqual: f]];
+	      [menu removeItem: anItem];
 	    }
 	}
-      [aMenu sizeToFit];
-      [aMenu update];
     }
+
+  /*
+   * Now use [-changeWindowsItem:title:filename:] to build the new menu.
+   */
+  [main_menu setSubmenu: aMenu forItem: (id<NSMenuItem>)windows_menu];
+  windows = [self windows];
+  count = [windows count];
+  for (i = 0; i < count; i++)
+    {
+      NSWindow	*win = [windows objectAtIndex: i];
+
+      if ([win isExcludedFromWindowsMenu] == NO)
+	{
+	  NSString	*t = [win title];
+	  NSString	*f = [win representedFilename];
+
+	  [self changeWindowsItem: win
+			    title: t
+			 filename: [t isEqual: f]];
+	}
+    }
+  [aMenu sizeToFit];
+  [aMenu update];
 }
 
 - (void) updateWindowsItem: (NSWindow*)aWindow
@@ -1607,7 +1631,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 - (NSMenu*) windowsMenu
 {
   if (windows_menu)
-    return [windows_menu target];
+    return [windows_menu submenu];
   else
     return nil;
 }

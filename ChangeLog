@@ -1,3 +1,8 @@
+Mon Nov 22  7:33:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSWindow.m: Tidied activation/deactivation code.
+	* Source/NSApplication.m: Fixed Windows menu for new menu API.
+
 Sat Nov 20  6:56:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSMenu.m: Implemented ([-initDefaults]) to set window level

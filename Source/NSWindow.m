@@ -192,6 +192,31 @@ static NSMapTable* windowmaps = NULL;
   return 8;
 }
 
+- (void) _appNotification: (NSNotification*)aNotification
+{
+  NSString	*name = [aNotification name];
+
+  if ([name isEqualToString: NSApplicationWillBecomeActiveNotification])
+    {
+      if (_f.is_deactivated == YES && _f.is_closed == NO)
+	{
+	  [self orderFrontRegardless];
+	}
+    }
+  else if ([name isEqualToString: NSApplicationWillResignActiveNotification])
+    {
+      if (_f.hides_on_deactivate == YES && _f.visible == YES)
+	{
+	  _f.is_deactivated = YES;
+	  [self orderOut: self];
+	}
+    }
+  else
+    {
+      NSLog(@"Unexpected notification - %@", aNotification);
+    }
+}
+
 /*
  * Instance methods
  */
@@ -212,7 +237,10 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) dealloc
 {
-  NSGraphicsContext *context = GSCurrentContext();
+  NSGraphicsContext	*context = GSCurrentContext();
+
+  [[NSNotificationCenter defaultCenter] removeObserver: self];
+
   if (content_view)
     {
       RELEASE([content_view superview]);	/* Release the window view */
@@ -264,9 +292,10 @@ static NSMapTable* windowmaps = NULL;
 		     defer: (BOOL)flag
 		    screen: (NSScreen*)aScreen
 {
-  NSGraphicsContext *context = GSCurrentContext();
-  NSRect r = [[NSScreen mainScreen] frame];
-  NSRect cframe;
+  NSGraphicsContext	*context = GSCurrentContext();
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+  NSRect		r = [[NSScreen mainScreen] frame];
+  NSRect		cframe;
 
   NSDebugLog(@"NSWindow default initializer\n");
   if (!NSApp)
@@ -325,6 +354,16 @@ static NSMapTable* windowmaps = NULL;
 		      title: window_title
 		   filename: isDoc];
     }
+
+  [nc addObserver: self
+	 selector: @selector(_appNotification:)
+	     name: NSApplicationWillBecomeActiveNotification
+	   object: NSApp];
+  [nc addObserver: self
+	 selector: @selector(_appNotification:)
+	     name: NSApplicationWillResignActiveNotification
+	   object: NSApp];
+
   NSDebugLog(@"NSWindow end of init\n");
   return self;
 }
@@ -663,6 +702,11 @@ static NSMapTable* windowmaps = NULL;
 - (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (int)otherWin
 {
   DPSorderwindow(GSCurrentContext(), place, otherWin, [self windowNumber]);
+  if (place != NSWindowOut)
+    {
+      _f.is_deactivated = NO;
+      _f.is_closed = NO;
+    }
 }
 
 - (void) resignKeyWindow
@@ -682,49 +726,10 @@ static NSMapTable* windowmaps = NULL;
   [nc postNotificationName: NSWindowDidResignMainNotification object: self];
 }
 
-- (void) _appWillBecomeActive: (NSNotification*)aNotification
-{
-  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
-
-  [nc removeObserver: self
-		name: NSApplicationWillBecomeActiveNotification
-	      object: NSApp];
-  [self orderFrontRegardless];
-}
-
-- (void) _appWillResignActive: (NSNotification*)aNotification
-{
-  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
-
-  if (_f.visible)
-    {
-      [nc addObserver: self
-	     selector: @selector(_appWillBecomeActive:)
-		 name: NSApplicationWillBecomeActiveNotification
-	       object: NSApp];
-      [self orderOut: self];
-    }
-}
-
 - (void) setHidesOnDeactivate: (BOOL)flag
 {
   if (flag != _f.hides_on_deactivate)
     {
-      NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
-
-      if (flag == YES)
-	{
-	  [nc addObserver: self
-		 selector: @selector(_appWillResignActive:)
-		     name: NSApplicationWillResignActiveNotification
-		   object: NSApp];
-	}
-      else
-	{
-	  [nc removeObserver: self
-			name: NSApplicationWillResignActiveNotification
-		      object: NSApp];
-	}
       _f.hides_on_deactivate = flag;
     }
 }

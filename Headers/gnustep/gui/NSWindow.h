@@ -136,6 +136,8 @@ extern NSSize NSTokenSize;
     unsigned	menu_exclude:1;
     unsigned	hides_on_deactivate:1;
     unsigned	accepts_mouse_moved:1;
+    unsigned	is_closed:1;
+    unsigned	is_deactivated:1;
   } _f;
  
   /* Reserved for back-end use */
