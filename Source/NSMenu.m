@@ -1006,38 +1006,38 @@ static NSNotificationCenter *nc;
  
 	// Main
   oldWindowFrame = [_aWindow frame];
-	newWindowFrame = [NSWindow frameRectForContentRect: menuFrame
+  newWindowFrame = [NSWindow frameRectForContentRect: menuFrame
                              styleMask: [_aWindow styleMask]];
-
-	if (oldWindowFrame.size.height > 1)
-		{
-			newWindowFrame.origin = NSMakePoint (oldWindowFrame.origin.x,
-						 															 oldWindowFrame.origin.y
-																					 + oldWindowFrame.size.height
-																					 - newWindowFrame.size.height);
-		}
-	[_aWindow setFrame: newWindowFrame display: NO];
-
-	// Transient
+  
+  if (oldWindowFrame.size.height > 1)
+    {
+      newWindowFrame.origin = NSMakePoint (oldWindowFrame.origin.x,
+                                           oldWindowFrame.origin.y
+                                           + oldWindowFrame.size.height
+                                           - newWindowFrame.size.height);
+    }
+  [_aWindow setFrame: newWindowFrame display: NO];
+  
+  // Transient
   oldWindowFrame = [_bWindow frame];
   newWindowFrame = [NSWindow frameRectForContentRect: menuFrame
                              styleMask: [_bWindow styleMask]];
-	if (oldWindowFrame.size.height > 1)
-		{
-			newWindowFrame.origin = NSMakePoint (oldWindowFrame.origin.x,
-																					 oldWindowFrame.origin.y
-																					 + oldWindowFrame.size.height
-																					 - newWindowFrame.size.height);
-		}
-	[_bWindow setFrame: newWindowFrame display: NO];
+  if (oldWindowFrame.size.height > 1)
+    {
+      newWindowFrame.origin = NSMakePoint (oldWindowFrame.origin.x,
+                                           oldWindowFrame.origin.y
+                                           + oldWindowFrame.size.height
+                                           - newWindowFrame.size.height);
+    }
+  [_bWindow setFrame: newWindowFrame display: NO];
   
   if (_popUpButtonCell == nil)
     {
       [_view setFrameOrigin: NSMakePoint (0, 0)];
     }
-
+  
   [_view setNeedsDisplay: YES];
-
+  
   _changed = NO;
 }
 
@@ -1226,14 +1226,14 @@ static NSNotificationCenter *nc;
   if (_transient)
     {
       NSDebugLLog (@"NSMenu", 
-									 @"trying to display while alreay displayed transient");
+                   @"trying to display while alreay displayed transient");
     }
-
+  
   if (_changed)
-		{
-			[self sizeToFit];
-		}
-
+    {
+      [self sizeToFit];
+    }
+  
   if (_superMenu && ![self isTornOff])
     {                 
       // query super menu for position
@@ -1241,15 +1241,15 @@ static NSNotificationCenter *nc;
       _superMenu->_attachedMenu = self;
     }
   else if ([_aWindow frame].origin.y <= 0 
-					 && _popUpButtonCell == nil)   // get geometry only if not set
+           && _popUpButtonCell == nil)   // get geometry only if not set
     {
       [self setGeometry];
     }
-
+  
   NSDebugLLog (@"NSMenu", 
-							 @"Display, origin: %@", 
-							 NSStringFromPoint ([_aWindow frame].origin));
-							 
+               @"Display, origin: %@", 
+               NSStringFromPoint ([_aWindow frame].origin));
+  
   [_aWindow orderFrontRegardless];
 }
 
@@ -1464,26 +1464,26 @@ static NSNotificationCenter *nc;
 	= -MIN (SHIFT_DELTA, NSMaxX (frameRect) - NSMaxX (screenRect) + 3);
       moveIt = YES;
     }
-
+  
   if (moveIt)
     {
-        NSMenu  *candidateMenu;
-	NSMenu  *masterMenu;
-	NSPoint  masterLocation;
-	NSPoint  destinationPoint;
-
-	// Look for the "master" menu, i.e. the one to move from.
-	for (candidateMenu = masterMenu = self;
-	     (candidateMenu = masterMenu->_superMenu)
-	       && (!masterMenu->_is_tornoff
-		   || masterMenu->_transient);
-	     masterMenu = candidateMenu);
-
-	masterLocation = [[masterMenu window] frame].origin;
-	destinationPoint.x = masterLocation.x + vector.x;
-	destinationPoint.y = masterLocation.y + vector.y;
-
-	[masterMenu nestedSetFrameOrigin: destinationPoint];
+      NSMenu  *candidateMenu;
+      NSMenu  *masterMenu;
+      NSPoint  masterLocation;
+      NSPoint  destinationPoint;
+      
+      // Look for the "master" menu, i.e. the one to move from.
+      for (candidateMenu = masterMenu = self;
+           (candidateMenu = masterMenu->_superMenu)
+             && (!masterMenu->_is_tornoff
+                 || masterMenu->_transient);
+           masterMenu = candidateMenu);
+      
+      masterLocation = [[masterMenu window] frame].origin;
+      destinationPoint.x = masterLocation.x + vector.x;
+      destinationPoint.y = masterLocation.y + vector.y;
+      
+      [masterMenu nestedSetFrameOrigin: destinationPoint];
     }
 }
 
