@@ -659,7 +659,7 @@ static float default_miter_limit = 10.0;
 
   if (closed)
     [path closePath];
-  return self;
+  return path;
 }
 
 //
@@ -1144,10 +1144,162 @@ static float default_miter_limit = 10.0;
 //
 // Hit detection  
 // 
+/*
+ * Return the contribution of a path segment from start to end to 
+ * the containsPoint method for point.
+ */
+static 
+int contribution(NSPoint point, float dir, NSPoint start, NSPoint end, BOOL *hit)
+{
+  double t;
+  double len;
+  double a;
+
+  start.x -= point.x;
+  start.y -= point.y;
+  len = sqrt(start.x * start.x +  start.y * start.y);
+  a = atan2(start.y, start.x);
+  start.x = cos(a - dir) * len;
+  start.y = sin(a - dir) * len;
+  end.x -= point.x;
+  end.y -= point.y;
+  len = sqrt(end.x * end.x +  end.y * end.y);
+  a = atan2(end.y, end.x);
+  end.x = cos(a - dir) * len;
+  end.y = sin(a - dir) * len;
+
+  if ((start.y == 0) || (end.y == 0))
+    {
+      *hit = YES;
+      return 0;
+    }
+  *hit = NO;
+
+  // Both point on the same half plain
+  if ((start.y < 0) == (end.y < 0))
+    {
+      return 0;
+    }
+  
+  // Does the line hit the coordinate line on the positive side?
+  t = (0 - start.y) * (end.x - start.x) / (end.y - start.y) + start.x;
+
+  if (t > 0)
+    {
+      if (start.y > 0)
+	  return 1;
+      else 
+	  return -1;
+    }
+  else 
+    {
+      if (t == 0)
+	*hit = YES;
+      return 0;
+    }
+}
+
+- (int) contributionToContains: (NSPoint)point
+{
+  int i;
+  // Full total of contribution
+  int sum = 0;
+  // running total for the current subpath
+  int sub = 0;
+  NSBezierPathElement type;
+  NSPoint p, pts[3];
+  NSPoint first_p, last_p;
+  int count = [self elementCount];
+  BOOL first = YES;
+  float dir = 2 * PI * random() / RAND_MAX; 
+  BOOL hit;
+
+  for(i = 0; i < count; i++) 
+    {
+      type = [self elementAtIndex: i associatedPoints: pts];
+      
+      switch(type) 
+        {
+	  case NSMoveToBezierPathElement:
+	      // Was the last sub path closed without close?
+	      if (!first && NSEqualPoints(first_p, last_p))
+	        {
+		  sum += sub;
+		}
+	      sub = 0;
+	      first_p = last_p = pts[0];
+	      first = NO;
+	      break;
+	  case NSLineToBezierPathElement:
+	      p = pts[0];
+	      if (first)
+	        {
+		  first_p = last_p = p;
+		  first = NO;
+		}
+	      else
+	        {
+		  sub += contribution(point, dir, last_p, p, &hit);
+		  if (hit)
+		    return 0;
+		  last_p = p;
+		}
+	      break;
+	  case NSCurveToBezierPathElement:
+	      // Not possible as flattend!
+	      break;
+	  case NSClosePathBezierPathElement:
+	      sub +=  contribution(point, dir, last_p, first_p, &hit);
+	      if (hit)
+		return 0;
+	      sum += sub;
+	      sub = 0;
+	      last_p = first_p;
+	      first = YES;
+	      break;
+	  default:
+	      break;
+	}
+    }  
+
+  /*
+   * Check if the last sub path was closed.
+   * It wont do any harm, if there was only one point in the subpath, 
+   * as this will result in a subtotal of 0.
+   */
+  if (!first && NSEqualPoints(first_p, last_p))
+    {
+      sum += sub;
+    }
+  
+  return sum;
+}
+
 - (BOOL)containsPoint:(NSPoint)point
 {
-  [self subclassResponsibility:_cmd];
-  return NO;
+  int sum;
+
+  if(![self elementCount])
+    return NO;
+
+  if (!NSPointInRect(point, [self bounds]))
+    return NO;
+
+  sum = [[self bezierPathByFlatteningPath] contributionToContains: point];
+  if ([self windingRule] == NSNonZeroWindingRule)
+    {
+      if (sum == 0)
+	return NO;
+      else	
+	return YES;
+    }
+  else 
+    {
+      if ((sum % 2) == 0)
+	return NO;
+      else	
+	return YES;
+    }
 }
 
 //
@@ -1663,112 +1815,6 @@ typedef struct _PathElement
   path->pathElements = GSIArrayCopyWithZone(pathElements, zone);
 
   return path;
-}
-
-//
-// Hit detection  
-// 
-
-#define PMAX 10000
-
-- (BOOL)containsPoint:(NSPoint)point
-{
-  NSPoint draftPolygon[PMAX];
-  int pcount = 0;
-  // Coordinates of the current point
-  double cx, cy;
-  // Coordinates of the last point
-  double lx, ly;
-  int i;
-  int Rcross = 0;
-  int Lcross = 0;	
-  NSBezierPathElement bpt;
-  NSPoint p, pts[3];
-  double x, y, t, k = 0.25;
-  int count = [self elementCount];
-
-  if(!count)
-    return NO;
-		
-  if (!NSPointInRect(point, [self bounds]))
-    return NO;
-
-  // FIXME: This does not handle multiple segments!
-  for(i = 0; i < count; i++) 
-    {
-      bpt = [self elementAtIndex: i associatedPoints: pts];
-      
-      if(bpt == NSMoveToBezierPathElement || bpt == NSLineToBezierPathElement) 
-        {
-	  draftPolygon[pcount].x = pts[0].x;
-	  draftPolygon[pcount].y = pts[0].y;
-	  
-	  pcount++;
-	} 
-      else if(bpt == NSCurveToBezierPathElement) 
-        {
-	  if(pcount) 
-	    {
-	      p.x = draftPolygon[pcount -1].x;
-	      p.y = draftPolygon[pcount -1].y;
-	    } 
-	  else 
-	    {
-	      p.x = pts[0].x;
-	      p.y = pts[0].y;
-	    }
-				
-	  for(t = k; t <= 1+k; t += k) 
-	    {
-      	      x = (p.x+t*(-p.x*3+t*(3*p.x-p.x*t)))+
-		  t*(3*pts[0].x+t*(-6*pts[0].x+pts[0].x*3*t))+
-		  t*t*(pts[1].x*3-pts[1].x*3*t)+pts[2].x*t*t*t;
-	      y = (p.y+t*(-p.y*3+t*(3*p.y-p.y*t)))+
-		  t*(3*pts[0].y+t*(-6*pts[0].y+pts[0].y*3*t))+
-		  t*t*(pts[1].y*3-pts[1].y*3*t)+pts[2].y*t*t*t;
-	      
-	      draftPolygon[pcount].x = x;
-	      draftPolygon[pcount].y = y;
-	      pcount++;
-	    }
-	}
-
-      // Simple overflow check
-      if (pcount == PMAX)
-	return NO;
-    }  
-
-  lx = draftPolygon[pcount - 1].x - point.x;
-  ly = draftPolygon[pcount - 1].y - point.y;
-  for(i = 0; i < pcount; i++) 
-    {
-      cx = draftPolygon[i].x - point.x;
-      cy = draftPolygon[i].y - point.y;
-      if(cx == 0 && cy == 0) 
-	// on a vertex
-	return NO;
-					
-      if((cy > 0)  && !(ly > 0)) 
-        {
-	  if (((cx * ly - lx * cy) / (ly - cy)) > 0)
-	    Rcross++;
-	}
-      if((cy < 0 ) && !(ly < 0)) 
-        { 
-	  if (((cx * ly - lx * cy) / (ly - cy)) < 0);
-	    Lcross++;		
-	}
-      lx = cx;
-      ly = cy;
-    }
-
-  if((Rcross % 2) != (Lcross % 2))
-    // On the border
-    return NO;
-  if((Rcross % 2) == 1)
-    return YES;
-  else	
-    return NO;
 }
 
 @end // GSBezierPath

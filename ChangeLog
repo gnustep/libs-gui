@@ -1,3 +1,9 @@
+2003-11-28  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBezierPath.m (-bezierPathByReversingPath) return create
+	path not self. 
+	(-containsPoint) new implementation, that respects the winding rule.
+
 2003-11-26 23:55  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSWindow.m (-sendEvent:): Ignore most events sent to
