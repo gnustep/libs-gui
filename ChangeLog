@@ -1,3 +1,8 @@
+Tue Jun 13 19:36:37 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSTableView.m ([-scrollRowToVisible:]): Implemented.
+	([-scrollColumnToVisible:]): Implemented.
+	
 Tue Jun 13 17:22:24 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSCell.m ([-copyWithZone:]): Copy all cell's attributes
