@@ -1,3 +1,17 @@
+2003-03-28  Serg Stoyan  <stoyan@on.com.ua>
+
+	* Source/NSMenuView.m:
+	(attachSubmenuForItemAtIndex:): Documentation comment moved to 
+	NSMenuView.h.
+	(indexOfItemAtPoint:): ditto.
+	(locationForSubmenu:): ditto.
+	(trackWithEvent:): ditto.
+	(setWindowFrameForAttachingToRect:): Removed "move menu to the screen"
+	TODO since it is out of this method scope.
+	
+	* Headers/NSMenuView.m: Added documentation for almost all methods.
+	Cleanup.
+	
 2003-03-27 23:52  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSMatrix.m (-setSelectionFrom:to:anchor:highlight:): Update
