@@ -50,6 +50,8 @@
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSScreen.h>
 #include <AppKit/NSColor.h>
+#include <AppKit/NSPasteboard.h>
+#include <AppKit/PSOperators.h>
 
 BOOL	NSImageDoesCaching = YES;	/* enable caching	*/
 BOOL	NSImageForceCaching = NO;	/* use on missmatch	*/
@@ -58,21 +60,9 @@ BOOL	NSImageForceCaching = NO;	/* use on missmatch	*/
 static NSString* gnustep_libdir = @GNUSTEP_INSTALL_LIBDIR;
 static NSString* NSImage_PATH = @"Images";
 
-/* Backend protocol - methods that must be implemented by the backend to
-   complete the class */
-@protocol NSImageBackend
-- (void) compositeToPoint: (NSPoint)point
-		 fromRect: (NSRect)rect
-		operation: (NSCompositingOperation)op;
-- (void) dissolveToPoint: (NSPoint)point
-		fromRect: (NSRect)rect
-		fraction: (float)aFloat;
-@end
-
 @interface	GSRepData : NSObject
 {
 @public
-  NSString	*fileName;
   NSImageRep	*rep;
   NSImageRep	*original;
   NSColor	*bg;
@@ -84,23 +74,27 @@ static NSString* NSImage_PATH = @"Images";
 {
   GSRepData	*c = (GSRepData*)NSCopyObject(self, 0, z);
 
-  if (c->fileName)
-    c->fileName = [c->fileName copy];
   if (c->rep)
-    c->rep = [c->rep copy];
+    c->rep = [c->rep copyWithZone: z];
   if (c->bg)
-    c->bg = [c->bg copy];
+    c->bg = [c->bg copyWithZone: z];
   return c;
 }
 
 - (void) dealloc
 {
-  TEST_RELEASE(fileName);
   TEST_RELEASE(rep);
   TEST_RELEASE(bg);
   NSDeallocateObject(self);
 }
 @end
+
+/* Class variables and functions for class methods */
+static NSMutableDictionary	*nameDict = nil;
+static NSDictionary		*nsmapping = nil;
+static NSColor			*clearColor = nil;
+static Class			cachedClass = 0;
+static Class			bitmapClass = 0;
 
 NSArray *iterate_reps_for_types(NSArray *imageReps, SEL method);
 
@@ -125,25 +119,16 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   return nil;
 }
 
-@interface NSImage (Backend) <NSImageBackend>
-@end
-
 @interface NSImage (Private)
-- (BOOL) useFromFile: (NSString *)fileName;
-- (BOOL) loadFromData: (NSData *)data;
-- (BOOL) loadFromFile: (NSString *)fileName;
-- (NSImageRep*) cacheForRep: (NSImageRep*)rep
-		   onDevice: (NSDictionary*)deviceDescription;
-- (NSImageRep*) _doImageCache: (NSDictionary*)deviceDescription;
+- (BOOL) _useFromFile: (NSString *)fileName;
+- (BOOL) _loadFromData: (NSData *)data;
+- (BOOL) _loadFromFile: (NSString *)fileName;
+- (NSImageRep*) _cacheForRep: (NSImageRep*)rep;
+- (NSImageRep*) _doImageCache;
+- (void) _loadImageFilenames;
 @end
 
 @implementation NSImage
-
-/* Class variables and functions for class methods */
-static NSMutableDictionary	*nameDict = nil;
-static NSDictionary		*nsmapping = nil;
-static NSColor			*clearColor = nil;
-static Class			cacheClass = 0;
 
 + (void) initialize
 {
@@ -162,19 +147,22 @@ static Class			cacheClass = 0;
 	nsmapping = RETAIN([[NSString stringWithContentsOfFile: path]
 				propertyListFromStringsFileFormat]);
       clearColor = RETAIN([NSColor clearColor]);
-      cacheClass = [NSCachedImageRep class];
+      cachedClass = [NSCachedImageRep class];
+      bitmapClass = [NSBitmapImageRep class];
     }
 }
 
 + (id) imageNamed: (NSString *)aName
 {
   NSString	*realName = [nsmapping objectForKey: aName];
+  NSImage	*image;
 
   if (realName)
     aName = realName;
 
-  /* If there is no image with that name, search in the main bundle */
-  if (!nameDict || ![nameDict objectForKey: aName]) 
+  image = (NSImage*)[nameDict objectForKey: aName];
+ 
+  if (image == nil)
     {
       NSString	*ext;
       NSString	*path = nil;
@@ -182,6 +170,7 @@ static Class			cacheClass = 0;
       NSArray	*array;
       NSString	*the_name = aName;
 
+      /* If there is no image with that name, search in the main bundle */
       main_bundle = [NSBundle mainBundle];
       ext = [aName pathExtension];
       if (ext != nil && [ext length] == 0)
@@ -235,11 +224,7 @@ static Class			cacheClass = 0;
 	  else 
 	    {
 	      id o, e;
-	      NSArray* array;
 
-	      array = [self imageFileTypes];
-	      if (!array)
-		NSDebugLog(@"array is nil\n");
 	      e = [array objectEnumerator];
 	      while ((o = [e nextObject]))
 		{
@@ -254,8 +239,6 @@ static Class			cacheClass = 0;
 
       if ([path length] != 0) 
 	{
-	  NSImage	*image;
-
 	  image = [[self allocWithZone: NSDefaultMallocZone()]
 		initByReferencingFile: path];
 	  if (image != nil)
@@ -268,7 +251,7 @@ static Class			cacheClass = 0;
 	}
     }
   
-  return [nameDict objectForKey: aName];
+  return image;
 }
 
 - (BOOL) isFlipped
@@ -279,6 +262,11 @@ static Class			cacheClass = 0;
 - (void) setFlipped: (BOOL)flag
 {
   _flags.flipDraw = flag;
+}
+
+- (id) init
+{
+  return [self initWithSize: NSMakeSize(0, 0)];
 }
 
 // Designated initializer for nearly everything.
@@ -293,82 +281,104 @@ static Class			cacheClass = 0;
     }
   _flags.colorMatchPreferred = YES;
   _flags.multipleResolutionMatching = YES;
-  _flags.flipDraw = NO;
+  //_flags.usesEPSOnResolutionMismatch = NO;
+  //_flags.flipDraw = NO;
   _color = RETAIN(clearColor);
   
   return self;
 }
 
-- (id) init
-{
-  self = [self initWithSize: NSMakeSize(0, 0)];
-  return self;
-}
-
 - (id) initByReferencingFile: (NSString *)fileName
 {
-  id	o = self;
-
-  if ((self = [self init]) == o)
+  self = [self init];
+  // FIXME: The documentation says to archive only the file name,
+  // this has to be stored somewhere!
+  _flags.dataRetained = YES;
+  if (![self _useFromFile: fileName])
     {
-      _flags.dataRetained = NO;
-      if (![self useFromFile: fileName])
-	{
-	  RELEASE(self);
-	  return nil;
-	}
+      RELEASE(self);
+      return nil;
     }
+
   return self;
 }
 
 - (id) initWithContentsOfFile: (NSString *)fileName
 {
-  id	o = self;
-
-  if ((self = [self init]) == o)
+  self = [self init];
+  //_flags.dataRetained = YES;
+  if (![self _loadFromFile: fileName])
     {
-      _flags.dataRetained = YES;
-      if (![self useFromFile: fileName])
-	{
-	  RELEASE(self);
-	  return nil;
-	}
+      RELEASE(self);
+      return nil;
     }
+
   return self;
 }
 
 - (id) initWithData: (NSData *)data;
 {
-  id	o = self;
-
-  if ((self = [self init]) == o)
+  self = [self init];
+  if (![self _loadFromData: data])
     {
-      if (![self loadFromData: data])
-	{
-	  RELEASE(self);
-	  return nil;
-	}
+      RELEASE(self);
+      return nil;
     }
+
   return self;
+}
+
+- (id)initWithBitmapHandle:(void *)bitmap
+{
+  // Only needed on MS Windows
+  return nil;
+}
+
+- (id)initWithIconHandle:(void *)icon
+{
+  // Only needed on MS Windows
+  return nil;
+}
+
+- (id)initWithContentsOfURL:(NSURL *)anURL
+{
+  // TODO
+  return nil;
 }
 
 - (id) initWithPasteboard: (NSPasteboard *)pasteboard
 {
-  [self notImplemented: _cmd];
-  return nil;
+  NSArray *reps = [NSImageRep imageRepsWithPasteboard: pasteboard];
+  self = [self init];
+
+  if (reps != nil)
+    [self addRepresentations: reps]; 
+  else
+    {
+      NSString* file = [pasteboard propertyListForType: NSFilenamesPboardType];
+      
+      if (file != nil || ![self _loadFromFile: file])
+        {
+	  RELEASE(self);
+	  return nil;
+	} 
+    }
+  
+  return self;
 }
 
 - (void) setSize: (NSSize)aSize
 {
   _size = aSize;
   _flags.sizeWasExplicitlySet = YES;
+  // TODO: This invalidates any cached data
 }
 
 - (NSSize) size
 {
   if (_size.width == 0) 
     {
-      NSImageRep	*rep = [self bestRepresentationForDevice: nil];
+      NSImageRep *rep = [self bestRepresentationForDevice: nil];
 
       _size = [rep size];
     }
@@ -377,13 +387,15 @@ static Class			cacheClass = 0;
 
 - (void) dealloc
 {
-  [self representations];
   RELEASE(_reps);
   /* Make sure we don't remove name from the nameDict if we are just a copy
      of the named image, not the original image */
-  if (name && self == [nameDict objectForKey: name]) 
-    [nameDict removeObjectForKey: name];
-  RELEASE(name);
+  if (_name && self == [nameDict objectForKey: _name]) 
+    [nameDict removeObjectForKey: _name];
+  RELEASE(_name);
+  TEST_RELEASE(_fileName);
+  RELEASE(_color);
+
   [super dealloc];
 }
 
@@ -394,10 +406,12 @@ static Class			cacheClass = 0;
   // FIXME: maybe we should retain if _flags.dataRetained = NO
   copy = (NSImage*)NSCopyObject (self, 0, zone);
 
-  RETAIN(name);
-  copy->_reps = [NSMutableArray new];
+  RETAIN(_name);
+  RETAIN(_fileName);
   RETAIN(_color);
-  _lockedView = nil;
+  copy->_lockedView = nil;
+  copy->_reps = [NSMutableArray new];
+  // FIXME: We should not copy cached reps.
   [copy addRepresentations: [self representations]];
   
   return copy;
@@ -405,21 +419,18 @@ static Class			cacheClass = 0;
 
 - (BOOL) setName: (NSString *)string
 {
-  if (!nameDict)
-    nameDict = [[NSMutableDictionary alloc] initWithCapacity: 2];
-
   if (!string || [nameDict objectForKey: string])
     return NO;
 
-  ASSIGN(name, string);
+  ASSIGN(_name, string);
 
-  [nameDict setObject: self forKey: name];
+  [nameDict setObject: self forKey: _name];
   return YES;
 }
 
 - (NSString *) name
 {
-  return name;
+  return _name;
 }
 
 // Choosing Which Image Representation to Use 
@@ -498,7 +509,7 @@ static Class			cacheClass = 0;
     {
       GSRepData	 *repd = (GSRepData*)[_reps objectAtIndex: i];
 
-      if (repd->bg != nil || [repd->rep isKindOfClass: cacheClass] == NO)
+      if (repd->bg != nil || [repd->rep isKindOfClass: cachedClass] == NO)
 	{
 	  valid = YES;
 	  break;
@@ -511,6 +522,7 @@ static Class			cacheClass = 0;
 {
   unsigned i, count;
 
+  // FIXME: Not sure if this is correct
   count = [_reps count];
   for (i = 0; i < count; i++) 
     {
@@ -549,108 +561,16 @@ static Class			cacheClass = 0;
   return _color;
 }
 
-/* Make sure any images that were added with useFromFile: are loaded
-   in and added to the representation list. */
-- _loadImageFilenames
-{
-  unsigned	i, count;
-  GSRepData	*repd;
-
-  _flags.syncLoad = NO;
-  count = [_reps count];
-  for (i = 0; i < count; i++) 
-    {
-      repd = (GSRepData*)[_reps objectAtIndex: i];
-      if (repd->fileName)
-	[self loadFromFile: repd->fileName];
-    }
-  // Now get rid of them since they are already loaded
-  count = [_reps count];
-  while (count--) 
-    {
-      repd = (GSRepData*)[_reps objectAtIndex: count];
-      if (repd->fileName) 
-	{
-	  [_reps removeObjectAtIndex: count];
-	}
-    }
-  return self;
-}
-    
-// Cache the bestRepresentation.  If the bestRepresentation is not itself
-// a cache and no cache exists, create one and draw the representation in it
-// If a cache exists, but is not valid, redraw the cache from the original
-// image (if there is one).
-- (NSImageRep *)_doImageCache: (NSDictionary*)deviceDesc
-{
-  NSImageRep	*rep = nil;
-  GSRepData	*repd;
-
-  repd = repd_for_rep(_reps, [self bestRepresentationForDevice: deviceDesc]);
-  rep = repd->rep;
-
-  NSDebugLLog(@"NSImage", @"Getting image rep %d", (int)rep);
-  if (NSImageDoesCaching == YES)
-    {
-      /*
-       * If this is not a cached image rep - create a cache to be used to
-       * render the image rep into, and switch to the cached rep.
-       */
-      rep = [self cacheForRep: rep onDevice: deviceDesc];
-      repd = repd_for_rep(_reps, rep);
-      NSDebugLLog(@"NSImage", @"Cached image rep is %d", (int)rep);
-
-      /*
-       * if the cache is not valid, it's background color will not exist
-       * and we must draw the background then render from the original
-       * image rep into the cache.
-       */
-      if (repd->bg == nil) 
-	{
-	  NSRect	drawRect = NSMakeRect(0, 0, _size.width, _size.height);
-
-	  [self lockFocusOnRepresentation: rep];
-	  if (_color != nil && [_color alphaComponent] != 0.0)
-	    {
-	      NSRect	bounds = [_lockedView bounds];
-
-	      [_color set];
-	      NSRectFill(bounds);
-	    }
-	  [self drawRepresentation: repd->original inRect: drawRect];
-	  [self unlockFocus];
-	  if (_color == nil)
-	    {
-	      repd->bg = [clearColor copy];
-	    }
-	  else
-	    {
-	      repd->bg = [_color copy];
-	    }
-	  if ([repd->bg alphaComponent] == 1.0)
-	    {
-	      [rep setOpaque: YES];
-	    }
-	  else
-	    {
-	      [rep setOpaque: [repd->original isOpaque]];
-	    }
-	  NSDebugLLog(@"NSImage", @"Rendered rep %d on background %@",
-	    (int)rep, repd->bg);
-	}
-    }
-  
-  return rep;
-}
 
 // Using the Image 
 - (void) compositeToPoint: (NSPoint)aPoint 
 		operation: (NSCompositingOperation)op;
 {
   NSRect rect;
+  // Might not be computed up to now
+  NSSize size = [self size];
 
-  [self size];
-  rect = NSMakeRect(0, 0, _size.width, _size.height);
+  rect = NSMakeRect(0, 0, size.width, size.height);
   [self compositeToPoint: aPoint fromRect: rect operation: op];
 }
 
@@ -659,20 +579,52 @@ static Class			cacheClass = 0;
 		operation: (NSCompositingOperation)op;
 {
   NSImageRep *rep;
-  NSRect rect = NSMakeRect(aPoint.x, aPoint.y, _size.width, _size.height);
 
-  // xxx If fromRect specifies something other than full image
-  // then we need to construct a subimage to draw
+  NS_DURING
+    {
+      rep = [self _doImageCache];
+      
+      if (NSImageDoesCaching == YES && [rep isKindOfClass: cachedClass])
+        {
+	  NSRect rect = [(NSCachedImageRep *)rep rect];
+	  NSGraphicsContext *ctxt = GSCurrentContext();	  
+	  float y = aPoint.y;
 
-  rep = [self _doImageCache: nil];
-  [self drawRepresentation: rep inRect: rect];
+	  // FIXME: This undos the change done in NSCell, perhaps we can remove both?
+	  if ([[ctxt focusView] isFlipped])
+	    y -= rect.size.height;
+	  // FIXME This should be able to cut out part of the image
+	  PScomposite(NSMinX(rect), NSMinY(rect), NSWidth(rect), NSHeight(rect),
+		      [[(NSCachedImageRep *)rep window] gState], aPoint.x, y, op);
+	}
+      else	
+        {
+	  NSRect rect =  NSMakeRect(aPoint.x, aPoint.y, _size.width, _size.height);
+
+	  [self drawRepresentation: rep inRect: rect];
+	}
+    }
+  NS_HANDLER
+    {
+      if ([_delegate respondsToSelector: @selector(imageDidNotDraw:inRect:)])
+        {
+	  NSImage *image = [_delegate imageDidNotDraw: self inRect: aRect];
+
+	  if (image != nil)
+	    [image compositeToPoint: aPoint
+		   fromRect: aRect 
+		   operation: op];
+	}
+    }
+  NS_ENDHANDLER
 }
 
 - (void) dissolveToPoint: (NSPoint)aPoint fraction: (float)aFloat;
 {
   NSRect rect;
-  [self size];
-  rect = NSMakeRect(0, 0, _size.width, _size.height);
+  NSSize size = [self size];
+
+  rect = NSMakeRect(0, 0, size.width, size.height);
   [self dissolveToPoint: aPoint fromRect: rect fraction: aFloat];
 }
 
@@ -681,88 +633,60 @@ static Class			cacheClass = 0;
 		fraction: (float)aFloat;
 {
   NSImageRep *rep;
-  NSRect rect = NSMakeRect(aPoint.x, aPoint.y, _size.width, _size.height);
 
-  // xxx If fromRect specifies something other than full image
-  // then we need to construct a subimage to draw
+  NS_DURING
+    {
+      rep = [self _doImageCache];
 
-  rep = [self _doImageCache: nil];
-  [self drawRepresentation: rep inRect: rect];
+      if (NSImageDoesCaching == YES && [rep isKindOfClass: cachedClass])
+        {
+	  NSRect rect = [(NSCachedImageRep *)rep rect];
+	  NSGraphicsContext *ctxt = GSCurrentContext();	  
+	  float y = aPoint.y;
+
+	  if ([[ctxt focusView] isFlipped])
+	    y -= rect.size.height;
+	  // FIXME This should be able to cut out part of the image
+	  PSdissolve(NSMinX(rect), NSMinY(rect), NSWidth(rect), NSHeight(rect),
+		     [[(NSCachedImageRep *)rep window] gState], aPoint.x, y, aFloat);
+	}
+      else
+        {
+	  NSRect rect =  NSMakeRect(aPoint.x, aPoint.y, _size.width, _size.height);
+
+	  [self drawRepresentation: rep inRect: rect];
+	}
+    }
+  NS_HANDLER
+    {
+      if ([_delegate respondsToSelector: @selector(imageDidNotDraw:inRect:)])
+        {
+	  NSImage *image = [_delegate imageDidNotDraw: self inRect: aRect];
+
+	  if (image != nil)
+	    [image dissolveToPoint: aPoint
+		   fromRect: aRect 
+		   fraction: aFloat];
+	}
+    }
+  NS_ENDHANDLER
 }
 
-- (BOOL)drawRepresentation: (NSImageRep *)imageRep inRect: (NSRect)rect
+- (BOOL)drawRepresentation: (NSImageRep *)imageRep inRect: (NSRect)aRect
 {
   if (!_flags.scalable) 
-    return [imageRep drawAtPoint: rect.origin];
-  return [imageRep drawInRect: rect];
-}
-
-- (BOOL)loadFromData: (NSData *)data
-{
-  BOOL ok;
-  Class rep;
-
-  ok = NO;
-  rep = [NSImageRep imageRepClassForData: data];
-  if (rep && [rep respondsToSelector: @selector(imageRepsWithData:)])
-    {
-      NSArray* array;
-      array = [rep imageRepsWithData: data];
-      if (array)
-	ok = YES;
-      [self addRepresentations: array];
-    }
-  else if (rep)
-    {
-      NSImageRep* image;
-      image = [rep imageRepWithData: data];
-      if (image)
-	ok = YES;
-      [self addRepresentation: image];
-    }
-  return ok;
-}
-
-- (BOOL) loadFromFile: (NSString *)fileName
-{
-  NSArray* array;
-
-  array = [NSImageRep imageRepsWithContentsOfFile: fileName];
-  if (array)
-    [self addRepresentations: array];
-
-  return (array) ? YES : NO;
-}
-
-- (BOOL) useFromFile: (NSString *)fileName
-{
-  NSArray	*array;
-  NSString	*ext;
-  GSRepData	*repd;
-  NSFileManager *manager = [NSFileManager defaultManager];
-
-  if ([manager fileExistsAtPath: fileName] == NO)
-    {
-      return NO;
-    }
-
-  ext = [fileName pathExtension];
-  if (!ext)
-    return NO;
-  array = [[self class] imageFileTypes];
-  if ([array indexOfObject: ext] == NSNotFound)
-    return NO;
-  repd = [GSRepData new];
-  repd->fileName = RETAIN(fileName);
-  [_reps addObject: repd];
-  RELEASE(repd);
-  _flags.syncLoad = YES;
-  return YES;
+    return [imageRep drawAtPoint: aRect.origin];
+  return [imageRep drawInRect: aRect];
 }
 
 - (void) addRepresentation: (NSImageRep *)imageRep
 {
-  [self addRepresentations: [NSArray arrayWithObject: imageRep]];
+  GSRepData	*repd;
+
+  repd = [GSRepData new];
+  repd->rep = RETAIN(imageRep);
+  [_reps addObject: repd]; 
+  RELEASE(repd);
 }
 
 - (void) addRepresentations: (NSArray *)imageRepArray
@@ -770,10 +694,6 @@ static Class			cacheClass = 0;
   unsigned	i, count;
   GSRepData	*repd;
 
-  if (_flags.syncLoad == YES)
-    {
-      [self _loadImageFilenames];
-    }
   count = [imageRepArray count];
   for (i = 0; i < count; i++)
     {
@@ -806,28 +726,21 @@ static Class			cacheClass = 0;
 
 - (void) lockFocus
 {
-  NSImageRep	*rep;
-
-  if (!(rep = [self bestRepresentationForDevice: nil])) 
-    {
-      rep = [self cacheForRep: rep onDevice: nil];
-    }
-  [self lockFocusOnRepresentation: rep];
+  [self lockFocusOnRepresentation: nil];
 }
 
 - (void) lockFocusOnRepresentation: (NSImageRep *)imageRep
 {
-  if (imageRep == nil)
-    [NSException raise: NSInvalidArgumentException
-      format: @"Cannot lock focus on nil rep"];
-
   if (NSImageDoesCaching == YES)
     {
       NSWindow	*window;
 
-      imageRep = [self cacheForRep: imageRep onDevice: nil];
+      imageRep = [self _cacheForRep: imageRep];
       window = [(NSCachedImageRep *)imageRep window];
       _lockedView = [window contentView];
+      if (_lockedView == nil)
+	[NSException raise: NSImageCacheException
+		     format: @"Cannot lock focus on nil rep"];
       [_lockedView lockFocus];
     }
 }
@@ -867,7 +780,7 @@ static Class			cacheClass = 0;
 	{
 	  GSRepData	*repd = reps[i];
     
-	  if ([repd->rep isKindOfClass: [NSBitmapImageRep class]])
+	  if ([repd->rep isKindOfClass: bitmapClass])
 	    {
 	      rep = repd->rep;
 	    }
@@ -880,10 +793,408 @@ static Class			cacheClass = 0;
   return rep;
 }
 
-- (NSImageRep*) cacheForRep: (NSImageRep*)rep
-		   onDevice: (NSDictionary*)deviceDescription
+- (NSArray *) representations
 {
-  if (NSImageDoesCaching == YES && [rep isKindOfClass: cacheClass] == NO)
+  unsigned	count;
+
+  if (_flags.syncLoad)
+    {
+      [self _loadImageFilenames];
+    }
+  count = [_reps count];
+  if (count == 0)
+    {
+      return [NSArray array];
+    }
+  else
+    {
+      id	repList[count];
+      unsigned	i;
+
+      [_reps getObjects: repList];
+      for (i = 0; i < count; i++) 
+	{
+	  repList[i] = ((GSRepData*)repList[i])->rep;
+	}
+      return [NSArray arrayWithObjects: repList count: count];
+    }
+}
+
+- (void) setDelegate: anObject
+{
+  _delegate = anObject;
+}
+
+- (id) delegate
+{
+  return _delegate;
+}
+
+// Producing TIFF Data for the Image 
+- (NSData *) TIFFRepresentation
+{
+  NSArray *reps = [self representations];
+  NSEnumerator *enumerator = [reps objectEnumerator];
+  NSImageRep *rep;
+
+  while ((rep = [enumerator nextObject]) != nil)
+    {
+      if ([rep isKindOfClass: bitmapClass])
+        {
+	  return [(NSBitmapImageRep*)rep TIFFRepresentation];
+	}
+    }
+
+  return nil;
+}
+
+- (NSData *) TIFFRepresentationUsingCompression: (NSTIFFCompression)comp
+	factor: (float)aFloat
+{
+  NSArray *reps = [self representations];
+  NSEnumerator *enumerator = [reps objectEnumerator];
+  NSImageRep *rep;
+
+  while ((rep = [enumerator nextObject]) != nil)
+    {
+      if ([rep isKindOfClass: bitmapClass])
+        {
+	  return [(NSBitmapImageRep*)rep TIFFRepresentationUsingCompression: comp
+		      factor: aFloat];
+	}
+    }
+
+  return nil;
+}
+
+// NSCoding
+- (void) encodeWithCoder: (NSCoder*)coder
+{
+  BOOL	flag;
+
+  flag = _flags.archiveByName;
+  [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  if (flag == YES)
+    {
+      /*
+       * System image - just encode the name.
+       */
+      [coder encodeValueOfObjCType: @encode(id) at: &_name];
+    }
+  else
+    {
+      NSMutableArray	*a;
+      NSEnumerator	*e;
+      NSImageRep	*r;
+
+      /*
+       * Normal image - encode the ivars
+       */
+      [coder encodeValueOfObjCType: @encode(NSSize) at: &_size];
+      [coder encodeValueOfObjCType: @encode(id) at: &_color];
+      flag = _flags.scalable;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _flags.dataRetained;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _flags.flipDraw;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _flags.sizeWasExplicitlySet;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _flags.useEPSOnResolutionMismatch;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _flags.colorMatchPreferred;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _flags.multipleResolutionMatching;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _flags.cacheSeparately;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      flag = _flags.unboundedCacheDepth;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+
+      /*
+       * Now encode an array of all the image reps (excluding cache)
+       */
+      a = [NSMutableArray arrayWithCapacity: 2];
+      e = [[self representations] objectEnumerator];
+      while ((r = [e nextObject]) != nil)
+	{
+	  if ([r isKindOfClass: cachedClass] == NO)
+	    {
+	      [a addObject: r];
+	    }
+	}
+      [coder encodeValueOfObjCType: @encode(id) at: &a];
+    }
+}
+
+- (id) initWithCoder: (NSCoder*)coder
+{
+  BOOL	flag;
+
+  [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  if (flag == YES)
+    {
+      NSString	*theName = [coder decodeObject];
+
+      RELEASE(self);
+      self = RETAIN([NSImage imageNamed: theName]);
+    }
+  else
+    {
+      NSArray	*a;
+
+      [coder decodeValueOfObjCType: @encode(NSSize) at: &_size];
+      [coder decodeValueOfObjCType: @encode(id) at: &_color];
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _flags.scalable = flag;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _flags.dataRetained = flag;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _flags.flipDraw = flag;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _flags.sizeWasExplicitlySet = flag;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _flags.useEPSOnResolutionMismatch = flag;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _flags.colorMatchPreferred = flag;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _flags.multipleResolutionMatching = flag;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _flags.cacheSeparately = flag;
+      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _flags.unboundedCacheDepth = flag;
+
+      /*
+       * get the image reps and add them.
+       */
+      a = [coder decodeObject];
+      [self addRepresentations: a];
+    }
+  return self;
+}
+
+- (id) awakeAfterUsingCoder: (NSCoder*)aDecoder
+{
+  if (_name && [nameDict objectForKey: _name]) 
+    {
+      return [nameDict objectForKey: _name];
+    }
+    
+  return self;
+}
+
++ (BOOL) canInitWithPasteboard: (NSPasteboard *)pasteboard
+{
+  int i, count;
+  NSArray* array = [NSImageRep registeredImageRepClasses];
+
+  count = [array count];
+  for (i = 0; i < count; i++)
+    if ([[array objectAtIndex: i] canInitWithPasteboard: pasteboard])
+      return YES;
+  
+  return NO;
+}
+
++ (NSArray *) imageUnfilteredFileTypes
+{
+  return iterate_reps_for_types([NSImageRep registeredImageRepClasses],
+				@selector(imageUnfilteredFileTypes));
+}
+
++ (NSArray *) imageFileTypes
+{
+  return iterate_reps_for_types([NSImageRep registeredImageRepClasses],
+				@selector(imageFileTypes));
+}
+
++ (NSArray *) imageUnfilteredPasteboardTypes
+{
+  return iterate_reps_for_types([NSImageRep registeredImageRepClasses],
+				@selector(imageUnfilteredPasteboardTypes));
+}
+
++ (NSArray *) imagePasteboardTypes
+{
+  return iterate_reps_for_types([NSImageRep registeredImageRepClasses],
+				@selector(imagePasteboardTypes));
+}
+
+@end
+
+/* For every image rep, call the specified method to obtain an
+   array of objects.  Add these together, with duplicates
+   weeded out.  Used by imageUnfilteredPasteboardTypes,
+   imageUnfilteredFileTypes, etc. */
+NSArray *
+iterate_reps_for_types(NSArray* imageReps, SEL method)
+{
+  NSImageRep	*rep;
+  NSEnumerator	*e;
+  NSMutableArray	*types;
+
+  types = [NSMutableArray arrayWithCapacity: 2];
+
+  // Iterate through all the image reps
+  e = [imageReps objectEnumerator];
+  rep = [e nextObject];
+  while (rep)
+    {
+      id e1;
+      id obj;
+      NSArray* pb_list;
+
+      // Have the image rep perform the operation
+      pb_list = [rep performSelector: method];
+
+      // Iterate through the returned array
+      // and add elements to types list, duplicates weeded.
+      e1 = [pb_list objectEnumerator];
+      obj = [e1 nextObject];
+      while (obj)
+	{
+	  if ([types indexOfObject: obj] == NSNotFound)
+	    [types addObject: obj];
+	  obj = [e1 nextObject];
+	}
+
+      rep = [e nextObject];
+    }
+    
+  return (NSArray *)types;
+}
+
+@implementation NSImage (Private)
+
+/* Make sure any images that were added with _useFromFile: are loaded
+   in and added to the representation list. */
+- (void) _loadImageFilenames
+{
+  [self _loadFromFile: _fileName];
+  _flags.syncLoad = NO;
+}
+    
+- (BOOL)_loadFromData: (NSData *)data
+{
+  BOOL ok;
+  Class rep;
+
+  ok = NO;
+  rep = [NSImageRep imageRepClassForData: data];
+  if (rep && [rep respondsToSelector: @selector(imageRepsWithData:)])
+    {
+      NSArray* array;
+      array = [rep imageRepsWithData: data];
+      if (array)
+	ok = YES;
+      [self addRepresentations: array];
+    }
+  else if (rep)
+    {
+      NSImageRep* image;
+      image = [rep imageRepWithData: data];
+      if (image)
+	ok = YES;
+      [self addRepresentation: image];
+    }
+  return ok;
+}
+
+- (BOOL) _loadFromFile: (NSString *)fileName
+{
+  NSArray* array;
+
+  array = [NSImageRep imageRepsWithContentsOfFile: fileName];
+  if (array)
+    [self addRepresentations: array];
+
+  return (array) ? YES : NO;
+}
+
+- (BOOL) _useFromFile: (NSString *)fileName
+{
+  NSArray	*array;
+  NSString	*ext;
+  NSFileManager *manager = [NSFileManager defaultManager];
+
+  if ([manager fileExistsAtPath: fileName] == NO)
+    {
+      return NO;
+    }
+
+  ext = [fileName pathExtension];
+  if (!ext)
+    return NO;
+  array = [isa imageFileTypes];
+  if ([array indexOfObject: ext] == NSNotFound)
+    return NO;
+  _fileName = RETAIN(fileName);
+  _flags.syncLoad = YES;
+  return YES;
+}
+
+// Cache the bestRepresentation.  If the bestRepresentation is not itself
+// a cache and no cache exists, create one and draw the representation in it
+// If a cache exists, but is not valid, redraw the cache from the original
+// image (if there is one).
+- (NSImageRep *)_doImageCache
+{
+  NSImageRep *rep = [self _cacheForRep: nil];
+
+  if (NSImageDoesCaching == YES)
+    {
+      GSRepData *repd = repd_for_rep(_reps, rep);
+
+      NSDebugLLog(@"NSImage", @"Cached image rep is %d", (int)rep);
+      /*
+       * if the cache is not valid, it's background color will not exist
+       * and we must draw the background then render from the original
+       * image rep into the cache.
+       */
+      if (repd->bg == nil) 
+	{
+	  NSRect drawRect = NSMakeRect(0, 0, _size.width, _size.height);
+
+	  [self lockFocusOnRepresentation: rep];
+	  if (_color != nil && [_color alphaComponent] != 0.0)
+	    {
+	      [_color set];
+	      NSRectFill(drawRect);
+	      repd->bg = [_color copy];
+	    }
+	  else
+	    {
+	      repd->bg = [clearColor copy];
+	    }
+
+	  [self drawRepresentation: repd->original inRect: drawRect];
+	  [self unlockFocus];
+	  if ([repd->bg alphaComponent] == 1.0)
+	    {
+	      [rep setOpaque: YES];
+	    }
+	  else
+	    {
+	      [rep setOpaque: [repd->original isOpaque]];
+	    }
+	  NSDebugLLog(@"NSImage", @"Rendered rep %d on background %@",
+	    (int)rep, repd->bg);
+	}
+    }
+  
+  return rep;
+}
+
+- (NSImageRep*) _cacheForRep: (NSImageRep*)rep
+{
+  if (rep == nil)
+    rep = [self bestRepresentationForDevice: nil];
+
+  /*
+   * If this is not a cached image rep - create a cache to be used to
+   * render the image rep into, and switch to the cached rep.
+   */
+  if (NSImageDoesCaching == YES && [rep isKindOfClass: cachedClass] == NO)
     {
       NSImageRep	*cacheRep = nil;
       unsigned		count = [_reps count];
@@ -992,7 +1303,7 @@ NSDebugLLog(@"NSImage", @"Partial %@ ... %@ %d", repd->bg, _color, repd->rep);
 	  if (imageSize.width == 0 || imageSize.height == 0)
 	    return nil;
 
-	  cacheRep = [[cacheClass alloc] initWithSize: _size
+	  cacheRep = [[cachedClass alloc] initWithSize: _size
 						depth: [cur depth]
 					     separate: NO
 						alpha: NO];
@@ -1009,269 +1320,4 @@ NSDebugLLog(@"NSImage", @"Partial %@ ... %@ %d", repd->bg, _color, repd->rep);
     }
 }
 
-- (NSArray *) representations
-{
-  unsigned	count;
-
-  if (_flags.syncLoad)
-    {
-      [self _loadImageFilenames];
-    }
-  count = [_reps count];
-  if (count == 0)
-    {
-      return [NSArray array];
-    }
-  else
-    {
-      id	repList[count];
-      unsigned	i;
-
-      [_reps getObjects: repList];
-      for (i = 0; i < count; i++) 
-	{
-	  repList[i] = ((GSRepData*)repList[i])->rep;
-	}
-      return [NSArray arrayWithObjects: repList count: count];
-    }
-}
-
-- (void) setDelegate: anObject
-{
-  delegate = anObject;
-}
-
-- (id) delegate
-{
-  return delegate;
-}
-
-// Producing TIFF Data for the Image 
-- (NSData *) TIFFRepresentation;
-{
-  [self notImplemented: _cmd];
-  return nil;
-}
-
-- (NSData *) TIFFRepresentationUsingCompression: (NSTIFFCompression)comp
-	factor: (float)aFloat
-{
-  [self notImplemented: _cmd];
-  return nil;
-}
-
-// Methods Implemented by the Delegate 
-- (NSImage *)imageDidNotDraw: (id)sender
-		      inRect: (NSRect)aRect
-{
-  if ([delegate respondsToSelector: @selector(imageDidNotDraw:inRect:)])
-    return [delegate imageDidNotDraw: sender inRect: aRect];
-  else
-    return self;
-}
-
-// NSCoding
-- (void) encodeWithCoder: (NSCoder*)coder
-{
-  BOOL	flag;
-
-  flag = _flags.archiveByName;
-  [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  if (flag == YES)
-    {
-      /*
-       * System image - just encode the name.
-       */
-      [coder encodeValueOfObjCType: @encode(id) at: &name];
-    }
-  else
-    {
-      NSMutableArray	*a;
-      NSEnumerator	*e;
-      NSImageRep	*r;
-
-      /*
-       * If the image is not yet loaded - load it now.
-       */
-      if (_flags.syncLoad)
-	{
-	  [self _loadImageFilenames];
-	}
-
-      /*
-       * Normal image - encode the ivars
-       */
-      [coder encodeValueOfObjCType: @encode(NSSize) at: &_size];
-      [coder encodeValueOfObjCType: @encode(id) at: &_color];
-      flag = _flags.scalable;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      flag = _flags.dataRetained;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      flag = _flags.flipDraw;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      flag = _flags.sizeWasExplicitlySet;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      flag = _flags.useEPSOnResolutionMismatch;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      flag = _flags.colorMatchPreferred;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      flag = _flags.multipleResolutionMatching;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      flag = _flags.cacheSeparately;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      flag = _flags.unboundedCacheDepth;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-
-      /*
-       * Now encode an array of all the image reps (excluding cache)
-       */
-      a = [NSMutableArray arrayWithCapacity: 2];
-      e = [[self representations] objectEnumerator];
-      while ((r = [e nextObject]) != nil)
-	{
-	  if ([r isKindOfClass: [NSCachedImageRep class]] == NO)
-	    {
-	      [a addObject: r];
-	    }
-	}
-      [coder encodeValueOfObjCType: @encode(id) at: &a];
-    }
-}
-
-- (id) initWithCoder: (NSCoder*)coder
-{
-  BOOL	flag;
-
-  [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  if (flag == YES)
-    {
-      NSString	*theName = [coder decodeObject];
-
-      RELEASE(self);
-      self = RETAIN([NSImage imageNamed: theName]);
-    }
-  else
-    {
-      NSArray	*a;
-
-      [coder decodeValueOfObjCType: @encode(NSSize) at: &_size];
-      [coder decodeValueOfObjCType: @encode(id) at: &_color];
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      _flags.scalable = flag;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      _flags.dataRetained = flag;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      _flags.flipDraw = flag;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      _flags.sizeWasExplicitlySet = flag;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      _flags.useEPSOnResolutionMismatch = flag;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      _flags.colorMatchPreferred = flag;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      _flags.multipleResolutionMatching = flag;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      _flags.cacheSeparately = flag;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-      _flags.unboundedCacheDepth = flag;
-
-      /*
-       * get the image reps and add them.
-       */
-      a = [coder decodeObject];
-      [self addRepresentations: a];
-    }
-  return self;
-}
-
-- (id) awakeAfterUsingCoder: (NSCoder*)aDecoder
-{
-  if (name && [nameDict objectForKey: name]) 
-    {
-      return [nameDict objectForKey: name];
-    }
-    
-  return self;
-}
-
-// FIXME: Implement
-+ (BOOL) canInitWithPasteboard: (NSPasteboard *)pasteboard
-{
-  int i, count;
-  NSArray* array = [NSImageRep registeredImageRepClasses];
-
-  count = [array count];
-  for (i = 0; i < count; i++)
-    if ([[array objectAtIndex: i] canInitWithPasteboard: pasteboard])
-      return YES;
-  
-  return NO;
-}
-
-+ (NSArray *) imageUnfilteredFileTypes
-{
-  return iterate_reps_for_types([NSImageRep registeredImageRepClasses],
-				@selector(imageUnfilteredFileTypes));
-}
-
-+ (NSArray *) imageFileTypes
-{
-  return iterate_reps_for_types([NSImageRep registeredImageRepClasses],
-				@selector(imageFileTypes));
-}
-
-+ (NSArray *) imageUnfilteredPasteboardTypes
-{
-  return iterate_reps_for_types([NSImageRep registeredImageRepClasses],
-				@selector(imageUnfilteredPasteboardTypes));
-}
-
-+ (NSArray *) imagePasteboardTypes
-{
-  return iterate_reps_for_types([NSImageRep registeredImageRepClasses],
-				@selector(imagePasteboardTypes));
-}
-
 @end
-
-/* For every image rep, call the specified method to obtain an
-   array of objects.  Add these together, with duplicates
-   weeded out.  Used by imageUnfilteredPasteboardTypes,
-   imageUnfilteredFileTypes, etc. */
-NSArray *
-iterate_reps_for_types(NSArray* imageReps, SEL method)
-{
-  NSImageRep	*rep;
-  NSEnumerator	*e;
-  NSMutableArray	*types;
-
-  types = [NSMutableArray arrayWithCapacity: 2];
-
-  // Iterate through all the image reps
-  e = [imageReps objectEnumerator];
-  rep = [e nextObject];
-  while (rep)
-    {
-      id e1;
-      id obj;
-      NSArray* pb_list;
-
-      // Have the image rep perform the operation
-      pb_list = [rep performSelector: method];
-
-      // Iterate through the returned array
-      // and add elements to types list, duplicates weeded.
-      e1 = [pb_list objectEnumerator];
-      obj = [e1 nextObject];
-      while (obj)
-	{
-	  if ([types indexOfObject: obj] == NSNotFound)
-	    [types addObject: obj];
-	  obj = [e1 nextObject];
-	}
-
-      rep = [e nextObject];
-    }
-    
-  return (NSArray *)types;
-}
