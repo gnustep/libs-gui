@@ -43,7 +43,6 @@
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSColor.h>
-#include <AppKit/PSMatrix.h>
 #include <AppKit/PSOperators.h>
 
 

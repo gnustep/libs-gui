@@ -1,3 +1,14 @@
+Mon Mar  1 20:06:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/AppKit/NSAffineTransform.h: New file based on PSMatrix.h
+	* Source/NSAffineTransform.m: New file based on PSMatrix.m
+	* Source/NSView.m: Modified to use NSAffineTransformAffineTransform
+	* Source/GNUmakefile: Added NSAffineTransform
+	* Source/NSCell.m: Don't include PSMatrix.h
+	* Source/NSScroller.m: Don't include PSMatrix.h
+	* Source/NSView.m: Use NSAffineTransform
+	* Source/NSWindow.m: Don't include PSMatrix.h
+
 Mon Mar  1 17:12:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Headers/AppKit/NSCell.h: Added MacOS-X cell state constants.

@@ -351,7 +351,7 @@ enum {
 @end
 
 
-@class PSMatrix;
+@class NSAffineTransform;
 
 //
 // GNUstep extensions
@@ -375,8 +375,8 @@ enum {
 - (void) _invalidateCoordinates;
 - (void) _rebuildCoordinates;
 
-- (PSMatrix*)_matrixToWindow;
-- (PSMatrix*)_matrixFromWindow;
+- (NSAffineTransform*)_matrixToWindow;
+- (NSAffineTransform*)_matrixFromWindow;
 @end
 #endif
 

@@ -47,7 +47,7 @@
 #include <AppKit/NSView.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/GSTrackingRect.h>
-#include <AppKit/PSMatrix.h>
+#include <AppKit/NSAffineTransform.h>
 
 
 @implementation NSView
@@ -56,9 +56,9 @@
 //  Class variables
 //
 static NSString	*viewThreadKey = @"NSViewThreadKey";
-static PSMatrix	*flip = nil;
+static NSAffineTransform	*flip = nil;
 
-static void	(*concatImp)(PSMatrix*, SEL, PSMatrix*) = 0;
+static void	(*concatImp)(NSAffineTransform*, SEL, NSAffineTransform*) = 0;
 static SEL	concatSel = @selector(concatenateWith:);
 
 static void	(*invalidateImp)(NSView*, SEL) = 0;
@@ -71,16 +71,17 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 {
   if (self == [NSView class])
     {
-      Class	matrixClass = [PSMatrix class];
-      float	vals[6] = { 1, 0, 0, -1, 0, 1 };
+      Class	matrixClass = [NSAffineTransform class];
+      NSAffineTransformStruct	ats = { 1, 0, 0, -1, 0, 1 };
 
-      concatImp = (void (*)(PSMatrix*, SEL, PSMatrix*))
+      concatImp = (void (*)(NSAffineTransform*, SEL, NSAffineTransform*))
 		[matrixClass instanceMethodForSelector: concatSel];
 
       invalidateImp = (void (*)(NSView*, SEL))
 		[self instanceMethodForSelector: invalidateSel];
 
-      flip = [[matrixClass matrixFrom: vals] retain];
+      flip = [matrixClass new];
+      [flip setTransformStruct: ats];
 
       NSDebugLog(@"Initialize NSView class\n");
       [self setVersion: 1];
@@ -174,10 +175,10 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   bounds.origin = NSZeroPoint;		// Set bounds rectangle
   bounds.size = frame.size;
 
-  frameMatrix = [PSMatrix new];		// Map fromsuperview to frame
-  boundsMatrix = [PSMatrix new];	// Map fromsuperview to bounds
-  matrixToWindow = [PSMatrix new];	// Map to window coordinates
-  matrixFromWindow = [PSMatrix new];	// Map from window coordinates
+  frameMatrix = [NSAffineTransform new];	// Map fromsuperview to frame
+  boundsMatrix = [NSAffineTransform new];	// Map fromsuperview to bounds
+  matrixToWindow = [NSAffineTransform new];	// Map to window coordinates
+  matrixFromWindow = [NSAffineTransform new];	// Map from window coordinates
   [frameMatrix setFrameOrigin: frame.origin];
 
   sub_views = [NSMutableArray new];
@@ -630,7 +631,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 - (NSPoint) convertPoint: (NSPoint)aPoint fromView: (NSView*)aView
 {
   NSPoint	new;
-  PSMatrix	*matrix;
+  NSAffineTransform	*matrix;
 
   if (!aView)
     aView = [window contentView];
@@ -653,7 +654,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 - (NSPoint) convertPoint: (NSPoint)aPoint toView: (NSView*)aView
 {
   NSPoint	new;
-  PSMatrix	*matrix;
+  NSAffineTransform	*matrix;
 
   if (!aView)
     aView = [window contentView];
@@ -675,7 +676,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 - (NSRect) convertRect: (NSRect)aRect fromView: (NSView*)aView
 {
-  PSMatrix	*matrix;
+  NSAffineTransform	*matrix;
   NSRect	r;
 
   if (!aView)
@@ -703,7 +704,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 - (NSRect) convertRect: (NSRect)aRect toView: (NSView*)aView
 {
-  PSMatrix	*matrix;
+  NSAffineTransform	*matrix;
   NSRect	r;
 
   if (!aView)
@@ -732,7 +733,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 - (NSSize) convertSize: (NSSize)aSize fromView: (NSView*)aView
 {
   NSSize	new;
-  PSMatrix	*matrix;
+  NSAffineTransform	*matrix;
 
   if (!aView)
     aView = [window contentView];
@@ -755,7 +756,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 - (NSSize) convertSize: (NSSize)aSize toView: (NSView*)aView
 {
   NSSize	new;
-  PSMatrix	*matrix;
+  NSAffineTransform	*matrix;
 
   if (!aView)
     aView = [window contentView];
@@ -1826,7 +1827,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
  *	visible rectangle cache if necessary.
  *	All coordinate transformations use this matrix.
  */
-- (PSMatrix*) _matrixFromWindow
+- (NSAffineTransform*) _matrixFromWindow
 {
   if (coordinates_valid == NO)
     [self _rebuildCoordinates];
@@ -1840,7 +1841,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
  *	visible rectangle cache if necessary.
  *	All coordinate transformations use this matrix.
  */
-- (PSMatrix*) _matrixToWindow
+- (NSAffineTransform*) _matrixToWindow
 {
   if (coordinates_valid == NO)
     [self _rebuildCoordinates];
@@ -1874,14 +1875,14 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 	  NSRect	superviewsVisibleRect;
 	  BOOL		wasFlipped = [super_view isFlipped];
 	  float		vals[6];
-	  PSMatrix	*pMatrix = [super_view _matrixToWindow];
+	  NSAffineTransform	*pMatrix = [super_view _matrixToWindow];
 
 	  [pMatrix getMatrix: vals];
 	  [matrixToWindow setMatrix: vals];
 	  (*concatImp)(matrixToWindow, concatSel, frameMatrix);
 	  if ([self isFlipped] != wasFlipped)
 	    {
-	      flip->matrix[5] = bounds.size.height;
+	      flip->matrix.ty = bounds.size.height;
 	      (*concatImp)(matrixToWindow, concatSel, flip);
 	    }
 	  (*concatImp)(matrixToWindow, concatSel, boundsMatrix);

@@ -38,6 +38,7 @@ LIBRARY_NAME=libgnustep-gui
 # The Objective-C source files to be compiled
 libgnustep-gui_OBJC_FILES = Functions.m \
 NSActionCell.m \
+NSAffineTransform.m \
 NSApplication.m \
 NSBitmapImageRep.m \
 NSBox.m \
@@ -121,6 +122,7 @@ libgnustep-gui_HEADER_FILES_INSTALL_DIR = /gnustep/gui
 libgnustep-gui_HEADER_FILES = \
 AppKit/AppKit.h \
 AppKit/NSActionCell.h \
+AppKit/NSAffineTransform.h \
 AppKit/NSApplication.h \
 AppKit/NSBitmapImageRep.h \
 AppKit/NSBox.h \

@@ -38,7 +38,6 @@
 #include <AppKit/NSButtonCell.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSImage.h>
-#include <AppKit/PSMatrix.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/NSGraphics.h>
 
