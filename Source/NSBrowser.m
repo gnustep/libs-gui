@@ -58,7 +58,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 #endif
 
 #define NSBR_COLUMN_SEP 6
-#define NSBR_VOFFSET 3
+#define NSBR_VOFFSET 2
 
 #define NSBR_COLUMN_IS_VISIBLE(i) \
 (((i)>=_firstVisibleColumn)&&((i)<=_lastVisibleColumn))
@@ -165,6 +165,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
 @end
 
+// NB: this is used in the NSFontPanel too
 @interface GSBrowserTitleCell: NSTextFieldCell
 @end
 
@@ -183,15 +184,17 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
   return self;
 }
-- (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
+- (void) drawWithFrame: (NSRect)cellFrame  inView: (NSView*)controlView
 {
   if (NSIsEmptyRect (cellFrame) || ![controlView window])
-    return;
+    {
+      return;
+    }
 
   [controlView lockFocus];
   NSDrawGrayBezel (cellFrame, NSZeroRect);
   [controlView unlockFocus];
-  [super drawInteriorWithFrame: cellFrame inView: controlView];
+  [super drawInteriorWithFrame: cellFrame  inView: controlView];
 }
 @end
 
@@ -199,13 +202,13 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 // Private NSBrowser methods
 //
 @interface NSBrowser (Private)
-- (NSString *)_getTitleOfColumn: (int)column;
-- (void)_performLoadOfColumn: (int)column;
-- (void)_unloadFromColumn: (int)column;
-- (void)_remapColumnSubviews: (BOOL)flag;
-- (void)_adjustMatrixOfColumn: (int)column;
-- (void)_setColumnSubviewsNeedDisplay;
-- (void)_setColumnTitlesNeedDisplay;
+- (NSString *) _getTitleOfColumn: (int)column;
+- (void) _performLoadOfColumn: (int)column;
+- (void) _unloadFromColumn: (int)column;
+- (void) _remapColumnSubviews: (BOOL)flag;
+- (void) _adjustMatrixOfColumn: (int)column;
+- (void) _setColumnSubviewsNeedDisplay;
+- (void) _setColumnTitlesNeedDisplay;
 @end
 
 //
@@ -315,10 +318,14 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
   // Nothing selected
   if ((i = [self selectedColumn]) == -1)
-    return nil;
-
+    {
+      return nil;
+    }
+  
   if (!(matrix = [self matrixInColumn: i]))
-    return nil;
+    {
+      return nil;
+    }
 
   return [matrix selectedCell];
 }
@@ -336,7 +343,9 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 #endif
 
   if (!(matrix = [self matrixInColumn: column]))
-    return nil;
+    {
+      return nil;
+    }
 
   return [matrix selectedCell];
 }
@@ -356,10 +365,14 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
   // Nothing selected
   if ((i = [self selectedColumn]) == -1)
-    return nil;
-
+    {
+      return nil;
+    }
+  
   if (!(matrix = [self matrixInColumn: i]))
-    return nil;
+    {
+      return nil;
+    }
 
   return [matrix selectedCells];
 }
@@ -377,7 +390,9 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 #endif
 
   if (!(matrix = [self matrixInColumn: _lastVisibleColumn]))
-    return;
+    {
+      return;
+    }
 
   [matrix selectAll: sender];
 }
@@ -396,7 +411,9 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 #endif
 
   if (!(matrix = [self matrixInColumn: column]))
-    return -1;
+    {
+      return -1;
+    }
 
   return [matrix selectedRow];
 }
@@ -414,7 +431,9 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 #endif
 
   if (!(matrix = [self matrixInColumn: column]))
-    return;
+    {
+      return;
+    }
 
   [matrix selectCellAtRow: row column: 0];
 }
@@ -438,36 +457,52 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
   // column range check
   if (column >= count)
-    return nil;
+    {
+      return nil;
+    }
 
   if (!(bc = [_browserColumns objectAtIndex: column]))
-    return nil;
-  
+    {
+      return nil;
+    }
+
   if (!(matrix = [bc columnMatrix]))
-    return nil;
+    {
+      return nil;
+    }
 
   if (!(columnCells = [matrix cells]))
-    return nil;
+    {
+      return nil;
+    }
 
   count = [columnCells count];
 
   // row range check
   if (row >= count)
-    return nil;
+    {
+      return nil;
+    }
 
   // Get the cell
   if (!(aCell = [matrix cellAtRow: row column: 0]))
-    return nil;
+    {
+      return nil;
+    }
 
   // Load if not already loaded
   if ([aCell isLoaded])
-    return aCell;
+    {
+      return aCell;
+    }
   else
     {
       if (_passiveDelegate || [_browserDelegate respondsToSelector: 
 		  @selector(browser:willDisplayCell:atRow:column:)])
-	[_browserDelegate browser: self willDisplayCell: aCell
-			  atRow: row column: column];
+	{
+	  [_browserDelegate browser: self  willDisplayCell: aCell
+			    atRow: row  column: column];
+	}
       [aCell setLoaded: YES];
     }
 
@@ -487,10 +522,14 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 #endif
   
   if (!(bc = [_browserColumns objectAtIndex: column]))
-    return nil;
-    
+    {
+      return nil;
+    }
+  
   if (![bc isLoaded])
-    return nil;
+    {
+      return nil;
+    }
 
   return [bc columnMatrix];
 }
@@ -640,7 +679,9 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
    * Cannot go past the number of loaded columns
    */
   if (column > _lastColumnLoaded)
-    column = _lastColumnLoaded + 1;
+    {
+      column = _lastColumnLoaded + 1;
+    }
 
   for (i = 0; i < column; ++i)
     {
@@ -768,7 +809,9 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
   // If not visible then nothing to display
   if ((column < _firstVisibleColumn) || (column > _lastVisibleColumn))
-    return;
+    {
+      return;
+    }
 
   [self tile];
 
@@ -917,15 +960,19 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   // If delegate doesn't care, just return
   if (![_browserDelegate respondsToSelector: 
 			   @selector(browser:isColumnValid:)])
-    return;
+    {
+      return;
+    }
 
   // Loop through the visible columns
   for (i = _firstVisibleColumn; i <= _lastVisibleColumn; ++i)
     {
       // Ask delegate if the column is valid and if not
       // then reload the column
-      if (![_browserDelegate browser: self isColumnValid: i])
-	[self reloadColumn: i];
+      if (![_browserDelegate browser: self  isColumnValid: i])
+	{
+	  [self reloadColumn: i];
+	}
     }
 }
 
@@ -1122,12 +1169,17 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   // Scroll left as needed
   delta = columnCount - _maxVisibleColumns;
   if ((delta > 0) && (_lastVisibleColumn <= _lastColumnLoaded))
-    _firstVisibleColumn = (_firstVisibleColumn - delta > 0) ?
-                           _firstVisibleColumn - delta : 0;
+    {
+      _firstVisibleColumn = (_firstVisibleColumn - delta > 0) ?
+	_firstVisibleColumn - delta : 0;
+    }
+  
 
   // Adds columns as needed
   for (i = [_browserColumns count]; i < columnCount; i++)
-    [self addColumn];
+    {
+      [self addColumn];
+    }
 
   // Sets other variables
   _lastVisibleColumn = _firstVisibleColumn + columnCount - 1;
@@ -1333,14 +1385,12 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
 - (float)titleHeight
 {
-  NSSize bs = _sizeForBorderType (NSBezelBorder);
-
 #if defined NSBTRACE_titleHeight || defined NSBTRACE_all
   fprintf(stderr, "NSBrowser - (void)titleHeight\n");
 #endif
-
-  // Same as horizontal scroller with borders
-  return (scrollerWidth + (2 * bs.height));
+  
+  // Nextish look requires 21 here
+  return 21;
 }
 
 // -------------------
@@ -1355,7 +1405,9 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
   // Not titled then no frame
   if (!_isTitled)
-    return NSZeroRect;
+    {
+      return NSZeroRect;
+    }
   else
     {
       // Number of columns over from the first
@@ -1365,16 +1417,24 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
       // Calculate origin
       if (_separatesColumns)
-        r.origin.x = n * (_columnSize.width + NSBR_COLUMN_SEP);
+	{
+	  r.origin.x = n * (_columnSize.width + NSBR_COLUMN_SEP);
+	}
       else
-      	r.origin.x = n * _columnSize.width;
+	{
+	  r.origin.x = n * _columnSize.width;
+	}
       r.origin.y = _frame.size.height - h;
       
       // Calculate size
       if (column == _lastVisibleColumn)
-	r.size.width = _frame.size.width - r.origin.x;
+	{
+	  r.size.width = _frame.size.width - r.origin.x;
+	}
       else
-      	r.size.width = _columnSize.width;
+	{
+	  r.size.width = _columnSize.width;
+	}
       r.size.height = h;
 
       return r;
@@ -1703,20 +1763,30 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   r.origin.x = n * _columnSize.width;
 
   if (_separatesColumns)
-    r.origin.x += n * NSBR_COLUMN_SEP;
+    {
+      r.origin.x += n * NSBR_COLUMN_SEP;
+    }
 
   // Adjust for horizontal scroller
   if (_hasHorizontalScroller)
-    r.origin.y = scrollerWidth + (2 * bs.height) + NSBR_VOFFSET;
+    {
+      r.origin.y = scrollerWidth + (2 * bs.height) + NSBR_VOFFSET;
+    }
 
   // Padding : _columnSize.width is rounded in "tile" method
   if (column == _lastVisibleColumn)
-    r.size.width = _frame.size.width - r.origin.x;
+    {
+      r.size.width = _frame.size.width - r.origin.x;
+    }
 
   if (r.size.width < 0)
-    r.size.width = 0;
+    {
+      r.size.width = 0;
+    }
   if (r.size.height < 0)
-    r.size.height = 0;
+    {
+      r.size.height = 0;
+    }
 
 #if defined NSBTRACE_frameOfColumn || defined NSBTRACE_all
   fprintf(stderr, " -> %s\n", [NSStringFromRect(r) cString]);
@@ -1767,13 +1837,17 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 #endif
 
   if (num <= 0)
-    return;
+    {
+      return;
+    }
 
   _columnSize.height = _frame.size.height;
   
   // Titles (there is no real frames to resize)
   if (_isTitled)
-    _columnSize.height -= [self titleHeight] + NSBR_VOFFSET;
+    {
+      _columnSize.height -= [self titleHeight] + NSBR_VOFFSET;
+    }
 
   // Horizontal scroller
   if (_hasHorizontalScroller)
@@ -1786,7 +1860,9 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
       _columnSize.height -= scrollerWidth + (2 * bs.height) + NSBR_VOFFSET;
     }
   else
-    _scrollerRect = NSZeroRect;
+    {
+      _scrollerRect = NSZeroRect;
+    }
 
   if (!NSEqualRects(_scrollerRect, [_horizontalScroller frame]))
     {
@@ -1796,20 +1872,31 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
   // Columns
   if (_separatesColumns)
-    _columnSize.width = (int)((_frame.size.width - ((num - 1) * NSBR_COLUMN_SEP))
-                              / (float)num);
+    {
+      _columnSize.width = (int)((_frame.size.width - ((num - 1) * NSBR_COLUMN_SEP)) 
+				/ (float)num);
+    }
   else
-    _columnSize.width = (int)(_frame.size.width / (float)num);
+    {
+      _columnSize.width = (int)(_frame.size.width / (float)num);
+    }
 
   if (_columnSize.height < 0)
-    _columnSize.height = 0;
+    {
+      _columnSize.height = 0;
+    }
+  
 
   for (i = _firstVisibleColumn; i <= _lastVisibleColumn; i++)
     {
       if (!(bc = [_browserColumns objectAtIndex: i]))
-      	return;
+	{
+	  return;
+	}
       if (!(sc = [bc columnScrollView]))
-      	return;
+	{
+	  return;
+	}
       [sc setFrame: [self frameOfColumn: i]];
       [self _adjustMatrixOfColumn: i];
     }
@@ -2312,7 +2399,9 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
   // Load the first column if not already done
   if (!_isLoaded)
-    [self loadColumnZero];
+    {
+      [self loadColumnZero];
+    }
 
   // Draws titles
   if (_isTitled)
