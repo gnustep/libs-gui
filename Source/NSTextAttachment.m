@@ -39,6 +39,7 @@
 #include <AppKit/NSCell.h>
 #include <AppKit/NSFileWrapper.h>
 #include <AppKit/NSImage.h>
+#include <AppKit/NSEvent.h>
 #include <AppKit/NSTextContainer.h>
 #include <AppKit/NSTextAttachment.h>
 
@@ -51,6 +52,16 @@
 {
   [self drawWithFrame: cellFrame 
 	inView: controlView];
+}
+
+- (void)drawWithFrame:(NSRect)cellFrame 
+	       inView:(NSView *)controlView 
+       characterIndex:(unsigned)charIndex
+	layoutManager:(NSLayoutManager *)layoutManager
+{
+  [self drawWithFrame: cellFrame 
+	inView: controlView
+	characterIndex: charIndex];
 }
 
 - (NSPoint)cellBaselineOffset
@@ -76,12 +87,67 @@
   return YES;
 }
 
+- (BOOL)wantsToTrackMouseForEvent:(NSEvent *)theEvent 
+			   inRect:(NSRect)cellFrame 
+			   ofView:(NSView *)controlView
+		 atCharacterIndex:(unsigned)charIndex
+{
+  return [self wantsToTrackMouse];
+}
+
 - (BOOL)trackMouse:(NSEvent *)theEvent 
 	    inRect:(NSRect)cellFrame 
 	    ofView:(NSView *)controlView 
       untilMouseUp:(BOOL)flag
 {
-  // FIXME: This is not the correct behaviour
+  if ([controlView respondsToSelector: @selector(delegate)])
+    {
+      NSTextView *textView = (NSTextView*)controlView;
+      id delegate = [textView delegate];
+      NSEventType type = [theEvent type];
+      
+      if (type == NSLeftMouseUp)
+        {
+	  if ([theEvent clickCount] == 2)
+	    {
+	      if (delegate != nil && 
+		  [delegate respondsToSelector: 
+				@selector(textView:doubleClickedOnCell:inRect:)])
+	        {
+		  [delegate textView: textView 
+			    doubleClickedOnCell: self 
+			    inRect: cellFrame];
+		  return YES;
+		}
+	    }
+	  else
+	    {
+	      if (delegate != nil && 
+		  [delegate respondsToSelector: 
+				@selector(textView:clickedOnCell:inRect:)])
+	        {
+		  [delegate textView: textView 
+			    clickedOnCell: self 
+			    inRect: cellFrame];
+		  return YES;
+		}
+	    }
+	}
+      else if (type == NSLeftMouseDragged)
+        {
+	  if (delegate != nil && 
+	      [delegate respondsToSelector: 
+			    @selector(textView:draggedCell:inRect:event:)])
+	    {
+	      [delegate textView: textView 
+			draggedCell: self 
+			inRect: cellFrame
+			event: theEvent];
+	      return YES;
+	    }
+	}
+    }
+     
   return [super trackMouse: theEvent 
 		inRect: cellFrame 
 		ofView: controlView 
@@ -94,7 +160,57 @@
   atCharacterIndex:(unsigned)charIndex 
       untilMouseUp:(BOOL)flag
 {
-  // FIXME: This is not the correct behaviour
+  if ([controlView respondsToSelector: @selector(delegate)])
+    {
+      NSTextView *textView = (NSTextView*)controlView;
+      id delegate = [textView delegate];
+      NSEventType type = [theEvent type];
+      
+      if (type == NSLeftMouseUp)
+        { 
+	  if ([theEvent clickCount] == 2)
+	    {
+	      if (delegate != nil && 
+		  [delegate respondsToSelector: 
+				@selector(textView:doubleClickedOnCell:inRect:atIndex:)])
+	        {
+		  [delegate textView: textView 
+			    doubleClickedOnCell: self 
+			    inRect: cellFrame
+			    atIndex: charIndex];
+		  return YES;
+		}
+	    }
+	  else
+	    {
+	      if (delegate != nil && 
+		  [delegate respondsToSelector: 
+				@selector(textView:clickedOnCell:inRect:atIndex:)])
+	        {
+		  [delegate textView: textView 
+			    clickedOnCell: self 
+			    inRect: cellFrame
+			    atIndex: charIndex];
+		  return YES;
+		}
+	    }
+	}
+      else if (type == NSLeftMouseDragged)
+        {
+	  if (delegate != nil && 
+	      [delegate respondsToSelector: 
+			    @selector(textView:draggedCell:inRect:event:atIndex:)])
+	    {
+	      [delegate textView: textView 
+			draggedCell: self 
+			inRect: cellFrame
+			event: theEvent
+			atIndex: charIndex];
+	      return YES;
+	    }
+	}
+    }
+  
   return [self trackMouse: theEvent 
 	       inRect: cellFrame 
 	       ofView: controlView 
@@ -180,6 +296,8 @@
 - (void)setFileWrapper:(NSFileWrapper *)fileWrapper
 {
   ASSIGN(_fileWrapper, fileWrapper);
+  // Reset the cell, so it shows the new attachment
+  [_cell setAttachment: self];
 }
 
 - (NSFileWrapper *)fileWrapper

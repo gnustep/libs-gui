@@ -48,6 +48,7 @@
 @class NSTextContainer;
 @class NSFileWrapper;
 @class NSTextAttachment;
+@class NSLayoutManager;
 
 enum {
     NSAttachmentCharacter = 0xfffc	/* To denote attachments. */
@@ -64,6 +65,10 @@ enum {
 - (void)drawWithFrame:(NSRect)cellFrame 
 	       inView:(NSView *)controlView 
        characterIndex:(unsigned)charIndex;
+- (void)drawWithFrame:(NSRect)cellFrame 
+	       inView:(NSView *)controlView 
+       characterIndex:(unsigned)charIndex
+	layoutManager:(NSLayoutManager *)layoutManager;
 - (void)highlight:(BOOL)flag 
 	withFrame:(NSRect)cellFrame 
 	   inView:(NSView *)controlView;
@@ -74,6 +79,10 @@ enum {
 		      glyphPosition:(NSPoint)position 
 		     characterIndex:(unsigned)charIndex;
 - (BOOL)wantsToTrackMouse;
+- (BOOL)wantsToTrackMouseForEvent:(NSEvent *)theEvent 
+			   inRect:(NSRect)cellFrame 
+			   ofView:(NSView *)controlView
+		 atCharacterIndex:(unsigned)charIndex;
 - (BOOL)trackMouse:(NSEvent *)theEvent 
 	    inRect:(NSRect)cellFrame 
 	    ofView:(NSView *)controlView 
