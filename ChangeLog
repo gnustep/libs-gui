@@ -1,3 +1,9 @@
+Sun Mar  5 01:19:21 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSMenu.m ([NSMenu -indexOfItem:]): Bug fix: return -1 if
+	the item is not in the menu.  This was crashing the popup button 
+	on selectItemWithTitle: nil.
+
 Sat Mar  4 20:39:02 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Model/GMAppKit.m ([NSWindow -initWithModelUnarchiver:]):
