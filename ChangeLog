@@ -1,3 +1,9 @@
+Sat Jun 22 15:06:44 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSAffineTransform.m ([-isRotated]): Rewritten - efficient
+	implementation by simply checking that the cross matrix elements
+	are not 0.
+
 Sat Jun 22 14:59:36 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSAffineTransform.m ([-set]): Removed code to create a
