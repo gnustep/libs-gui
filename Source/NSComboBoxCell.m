@@ -106,6 +106,7 @@ static const BOOL ForceArrowIcon = NO;
 - (GSComboWindow *) _popUp;
 - (NSRect) _textCellFrame;
 - (void) _setSelectedItem: (int)index;
+- (void) _loadButtonCell;
 @end
 
 // ---
@@ -719,7 +720,7 @@ numberOfRowsInColumn: (int)column
 {
   if (self == [NSComboBoxCell class])
     {
-      [self setVersion: 1];
+      [NSComboBoxCell setVersion: 2];
       nc = [NSNotificationCenter defaultCenter];
     }
 }
@@ -740,24 +741,8 @@ numberOfRowsInColumn: (int)column
   _intercellSpacing = NSMakeSize(3.0, 2.0);
   _itemHeight = 16;
   _selectedItem = -1;
-
-  if (!ForceArrowIcon)
-    {
-      _buttonCell = [[NSButtonCell alloc] initImageCell: 
-        [NSImage imageNamed: @"common_ComboBoxEllipsis"]];
-    }
-  else
-    {
-       _buttonCell = [[NSButtonCell alloc] initImageCell: 
-        [NSImage imageNamed: @"NSComboArrow"]];
-    }
-    
-  [_buttonCell setImagePosition: NSImageOnly];
-  [_buttonCell setButtonType: NSMomentaryPushButton];
-  [_buttonCell setHighlightsBy: NSPushInCellMask];
-  [_buttonCell setBordered: YES];
-  [_buttonCell setTarget: self];
-  [_buttonCell setAction: @selector(_didClickWithinButton:)];
+  
+  [self _loadButtonCell];
 
   return self;
 }
@@ -1249,7 +1234,6 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 {
   [super encodeWithCoder: coder];
 
-  [coder encodeValueOfObjCType: @encode(id) at: &_buttonCell];
   [coder encodeValueOfObjCType: @encode(id) at: &_popUpList];
   [coder encodeValueOfObjCType: @encode(BOOL) at: &_usesDataSource];
   [coder encodeValueOfObjCType: @encode(BOOL) at: &_hasVerticalScroller];
@@ -1289,9 +1273,12 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
   else
     {
       BOOL dummy;
+      id previouslyEncodedButton;
       
-      [aDecoder decodeValueOfObjCType: @encode(id) at: &_buttonCell];
-      RETAIN(_buttonCell);
+      if ([aDecoder versionForClassName: @"NSComboBoxCell"] < 2)
+        [aDecoder decodeValueOfObjCType: @encode(id) at: &previouslyEncodedButton];
+      // In previous version we decode _buttonCell, we just discard the decoded value here
+      
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_popUpList];
       RETAIN(_popUpList);
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_usesDataSource];
@@ -1306,6 +1293,8 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
       if (_usesDataSource == YES)
 	[self setDataSource: [aDecoder decodeObject]];      
     }
+  
+  [self _loadButtonCell];
 
   return self;
 }
@@ -1511,6 +1500,27 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 - (void) _setSelectedItem: (int)index
 {
   _selectedItem = index;
+}
+
+- (void) _loadButtonCell
+{
+  if (!ForceArrowIcon)
+    {
+      _buttonCell = [[NSButtonCell alloc] initImageCell: 
+        [NSImage imageNamed: @"NSComboBoxEllipsis"]];
+    }
+  else
+    {
+       _buttonCell = [[NSButtonCell alloc] initImageCell: 
+        [NSImage imageNamed: @"NSComboArrow"]];
+    }
+    
+  [_buttonCell setImagePosition: NSImageOnly];
+  [_buttonCell setButtonType: NSMomentaryPushButton];
+  [_buttonCell setHighlightsBy: NSPushInCellMask];
+  [_buttonCell setBordered: YES];
+  [_buttonCell setTarget: self];
+  [_buttonCell setAction: @selector(_didClickWithinButton:)];
 }
 
 @end

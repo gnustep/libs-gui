@@ -1,3 +1,8 @@
+2004-05-29  Quentin Mathe <qmathe@lub-internet.fr>
+        
+	* Source/NSComboBoxCell.m: Fixed problems related to decoding an encoded
+	combo box previous version (Bug reported by Gregory Casamento).
+
 2004-05-29  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Images/page_landscape.tiff: Removed the tags in the image
