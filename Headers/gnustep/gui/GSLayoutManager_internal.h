@@ -168,7 +168,7 @@ typedef struct GSLayoutManager_textcontainer_s
 {
   NSTextContainer *textContainer;
 
-  BOOL started, complete;
+  BOOL complete;
   unsigned int pos, length;
 
   /*

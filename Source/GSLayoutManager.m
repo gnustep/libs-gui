@@ -1447,7 +1447,7 @@ places where we switch.
 
   for (i = idx, tc = textcontainers + idx; i < num_textcontainers; i++, tc++)
     {
-      tc->started = tc->complete = NO;
+      tc->complete = NO;
       if (tc->linefrags)
 	{
 	  for (j = 0, lf = tc->linefrags; j < tc->num_linefrags + tc->num_soft; j++, lf++)
@@ -1468,7 +1468,7 @@ places where we switch.
     }
   for (i = idx - 1, tc = textcontainers + idx - 1; i >= 0; i--, tc--)
     {
-      if (tc->started)
+      if (tc->num_linefrags)
 	{
 	  layout_glyph = tc->pos + tc->length;
 	  if (layout_glyph == glyphs->glyph_length)
@@ -1641,7 +1641,8 @@ by calling this incorrectly.
       return;
     }
 
-  if (tc->started)
+  /* Assume that no line frags means that layout hasn't started yet. */
+  if (tc->num_linefrags)
     {
       if (glyphRange.location != tc->pos + tc->length)
 	{
@@ -1663,7 +1664,6 @@ by calling this incorrectly.
 	}
       tc->pos = 0;
       tc->length = glyphRange.length;
-      tc->started = YES;
     }
   else
     {
@@ -1676,7 +1676,6 @@ by calling this incorrectly.
 	}
       tc->pos = glyphRange.location;
       tc->length = glyphRange.length;
-      tc->started = YES;
     }
 
   {

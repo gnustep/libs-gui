@@ -1666,7 +1666,7 @@ TODO: not really clear what these should do
 
   for (i = 0; i < num_textcontainers; i++)
     {
-      if (!textcontainers[i].started)
+      if (!textcontainers[i].num_linefrags)
         break;
 
       if (textcontainers[i].pos >= aRange.location + aRange.length)
@@ -1742,7 +1742,8 @@ TODO: not really clear what these should do
 
   for (i = 0, tc = textcontainers; i < num_textcontainers; i++, tc++)
     {
-      printf("tc %2i, %5i+%5i\n",i,tc->pos,tc->length);
+      printf("tc %2i, %5i+%5i  (complete %i)\n",
+	i,tc->pos,tc->length,tc->complete);
       printf("  lfs: (%3i)\n", tc->num_linefrags);
       for (j = 0, lf = tc->linefrags; j < tc->num_linefrags; j++, lf++)
 	{
@@ -1768,6 +1769,7 @@ TODO: not really clear what these should do
 	    printf("               a%3i : %5i+%5i\n",k,la->pos,la->length);
 	}
     }
+    printf("layout to: char %i, glyph %i\n",layout_char,layout_glyph);
 }
 
 
@@ -1953,7 +1955,6 @@ this file describes this.
 	  else
 	    {
 	      tc->pos = tc->length = 0;
-	      tc->started = NO;
 	    }
 
 	  j++, tc++;
@@ -1985,12 +1986,11 @@ this file describes this.
       tc->complete = NO;
       if (new_num)
 	{
-	  tc->length = tc->linefrags[new_num-1].pos + tc->linefrags[new_num-1].length - tc->pos;
+	  tc->length = tc->linefrags[new_num - 1].pos + tc->linefrags[new_num - 1].length - tc->pos;
 	}
       else
 	{
 	  tc->pos = tc->length = 0;
-	  tc->started = NO;
 	}
 
       /*
@@ -2019,7 +2019,7 @@ no_soft_invalidation:
       /* Set layout_glyph and layout_char. */
       for (i = num_textcontainers - 1, tc = textcontainers + i; i >= 0; i--, tc--)
 	{
-	  if (tc->started)
+	  if (tc->num_linefrags)
 	    {
 	      layout_glyph = tc->pos + tc->length;
 	      if (layout_glyph == glyphs->glyph_length)

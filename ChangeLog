@@ -1,3 +1,10 @@
+2003-02-23 01:59  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/GSLayoutManager_internal.h,
+	Source/GSLayoutManager.m, Source/NSLayoutManager.m: Use num_linefrags
+	to tell whether layout has started for a text container or not,
+	instead of tracking the status separately.
+
 2003-02-22 12:29  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSApplication.m (-sendEvent:):	Only bring up the main
