@@ -30,9 +30,11 @@
 
 #include <gnustep/gui/config.h>
 #include <AppKit/NSActionCell.h>
+#include <AppKit/NSColorPanel.h>
 #include <AppKit/NSColorWell.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/NSGraphics.h>
+#include <AppKit/NSPasteboard.h>
 
 
 @implementation NSColorWell
@@ -66,12 +68,16 @@
   is_active = NO;
   the_color = [[NSColor blackColor] retain];
 
+  [self registerForDraggedTypes:
+      [NSArray arrayWithObjects: NSColorPboardType, nil]];
+
   return self;
 }
 
 - (void)dealloc
 {
   [the_color release];
+  [self unregisterDraggedTypes];
   [super dealloc];
 }
 
@@ -125,6 +131,13 @@
   if (NSIsEmptyRect(insideRect))
     return;
   [the_color drawSwatchInRect: insideRect];
+}
+
+- (void) mouseDown: (NSEvent *)theEvent
+{
+  [NSColorPanel dragColor: the_color
+                withEvent: theEvent
+                 fromView: self];
 }
 
 - (BOOL) isOpaque
@@ -185,6 +198,53 @@
   [self display];
 }
 
+//
+// NSDraggingSource
+//
+  
+- (unsigned int) draggingSourceOperationMaskForLocal: (BOOL)flag
+{
+  return NSDragOperationCopy;
+}
+
+//
+// NSDraggingDestination
+//
+  
+- (unsigned int) draggingEntered: (id <NSDraggingInfo>)sender
+{
+  NSPasteboard *pb;
+  NSDragOperation sourceDragMask;
+       
+  NSDebugLLog(@"NSColorWell", @"%@: draggingEntered", self);
+  sourceDragMask = [sender draggingSourceOperationMask];
+  pb = [sender draggingPasteboard];
+ 
+  if ([[pb types] indexOfObject: NSColorPboardType] != NSNotFound)
+    {
+      if (sourceDragMask & NSDragOperationCopy)
+        {
+          return NSDragOperationCopy;
+        }
+    }
+ 
+  return NSDragOperationNone;
+} 
+
+- (BOOL) prepareForDragOperation: (id <NSDraggingInfo>)sender
+{
+  return YES;
+}
+ 
+- (BOOL) performDragOperation: (id <NSDraggingInfo>)sender
+{
+  NSPasteboard *pb = [sender draggingPasteboard];
+         
+  NSDebugLLog(@"NSColorWell", @"%@: performDragOperation", self);
+  [self setColor: [NSColor colorFromPasteboard: pb]];
+  return YES;
+}
+ 
 //
 // NSCoding protocol
 //
