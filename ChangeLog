@@ -10,6 +10,10 @@
 	* Source/NSPopUpButtonCell.m: ditto
 	* Source/NSTextContainer.m: ditto
 	* Source/NSWorkspace.m: ditto
+	* Source/NSFont.m: ditto
+	* Source/NSOpenPanel.m: ditto
+	* Source/NSPasteboard.m: ditto
+	* Source/NSView.m: ditto
 
 2003-07-22  Andrew Ruder <aeruder@ksu.edu>
 

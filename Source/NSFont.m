@@ -79,7 +79,7 @@ newNameWithMatrix(NSString *name, const float *matrix, BOOL fix,
 
   <p>The NSFont class allows control of the fonts used for displaying
   text anywhere on the screen. The primary methods for getting a
-  particular font are -fontWithName:matrix: and -fontWithName:size: which
+  particular font are +fontWithName:matrix: and +fontWithName:size: which
   take the name and size of a particular font and return the NSFont object
   associated with that font. In addition there are several convenience
   mathods which make it easier to get certain types of fonts. </p>

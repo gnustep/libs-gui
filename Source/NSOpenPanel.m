@@ -247,7 +247,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
     or NSCancelButton depending on which button the user pressed.
     </p>
     <p>
-    Use the -filename or -filenames: method to retrieve the name of the
+    Use the -filename or -filenames method to retrieve the name of the
     file the user selected.
     </p>
  */

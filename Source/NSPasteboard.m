@@ -2257,6 +2257,7 @@ NSCreateFileContentsPboardType(NSString *fileType)
  * [NSPasteboard-propertyListForType:] method.
  * </p>
  * <p>See also the NSGetFileType() and NSGetFileTypes() functions.
+ * </p>
  */
 NSString*
 NSCreateFilenamePboardType(NSString *fileType)

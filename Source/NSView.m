@@ -2113,7 +2113,7 @@ in the main thread.
 }
 
 /**
- * As an exception to the general rules for threads and -gui, this
+ * As an exception to the general rules for threads and gui, this
  * method is thread-safe and may be called from any thread. Display
  * will always be done in the main thread. (Note that other methods are
  * in general not thread-safe; if you want to access other properties of
@@ -2181,7 +2181,7 @@ in the main thread.
  * requires updating.  This automatically informs any superviews of
  * any updating they need to do.
  *
- * As an exception to the general rules for threads and -gui, this
+ * As an exception to the general rules for threads and gui, this
  * method is thread-safe and may be called from any thread. Display
  * will always be done in the main thread. (Note that other methods are
  * in general not thread-safe; if you want to access other properties of
@@ -2634,7 +2634,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
 
 /**
- * <p>The effect of the -setNextkeyView: method is to set aView to be the
+ * <p>The effect of the -setNextKeyView: method is to set aView to be the
  * value returned by subsequent calls to the receivers -nextKeyView method.
  * This also has the effect of setting the previous key view of aView,
  * so that subsequent calls to its -previousKeyView method will return
@@ -2642,7 +2642,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
  * </p>
  * <p>As a special case, if you pass nil as aView then the -previousKeyView
  * of the receivers current -nextKeyView is set to nil as well as the
- * receivers -nextKeyView: being set to nil.<br />
+ * receivers -nextKeyView being set to nil.<br />
  * This behavior provides MacOS-X compatibility.
  * </p>
  * <p>If you pass a non-view object other than nil, an
