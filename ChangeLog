@@ -1,3 +1,12 @@
+2003-01-03  Ludovic Marcotte <ludovic@Sophos.ca>
+
+        * Source/NSOutlineView.m: Started to fix the DnD code.
+          Modified -mouseDown: to not select the row when clicking
+          only on the expand/collapse image. Rewrote
+          -noteNumberOfRowsChanged to correctly restore the list
+          of selected rows after an expand/collapse operation.
+          Also did some general cleanups. More to come on this class.
+
 2004-01-03 19:00  Gregory John Casamento  <greg_casamento@yahoo.com>
 
 	* Source/NSBundleAdditions.m: Removed some uneeded includes.
