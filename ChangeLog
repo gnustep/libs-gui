@@ -1,3 +1,8 @@
+2001-10-03  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/gnustep/gui/NSNibLoading.h: New GSCustomView class.
+	* Source/NSBundleAdditions.m: Implement it.
+
 2001-10-02  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSWindow.m (-orderWindow:relativeTo:): setFrame: to the

@@ -85,6 +85,10 @@
 }
 @end
 
+@interface GSCustomView : GSNibItem <NSCoding>
+{
+}
+@end
 #endif	/* NO_GNUSTEP */
 
 #endif /* _GNUstep_H_NSNibLoading */

@@ -598,3 +598,15 @@ Class gmodel_class(void)
 
 @end
 
+@implementation	GSCustomView
+
+- (void) encodeWithCoder: (NSCoder*)aCoder
+{
+  [super encodeWithCoder: aCoder];
+}
+
+- (id) initWithCoder: (NSCoder*)aCoder
+{
+  return [super initWithCoder: aCoder];
+}
+@end
