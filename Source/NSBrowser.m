@@ -1726,25 +1726,33 @@ static NSTextFieldCell *titleCell;
   return _browserDelegate;
 }
 
-/** Sets the NSBrowser's delegate to anObject.  Raises
- NSBrowserIllegalDelegateException if the delegate specified by
- anObject doesn't respond to browser:willDisplayCell:atRow:column: (if
- passive) and either of the methods browser:numberOfRowsInColumn: or
- browser:createRowsForColumn:inMatrix:. */
+/**
+ * Sets the delegate of the receiver.
+ * If not nil, the delegate must either be passive and respond to
+ * [NSObject-browser:numberOfRowsInColumn:] or be active and respond to
+ * [NSObject-browser:createRowsForColumn:inMatrix:] but not both.  
+ * If the delegate is active it must also respond to
+ * [NSObject-browser:willDisplayCell:atRow:column:].  
+ * If the delegate is not nil but does not meet these condictions,
+ * an NSBrowserIllegalDelegateException will be raised.
+ */
 - (void) setDelegate: (id)anObject
 {
   BOOL flag = NO;
 
+  /* Default to YES for nil delegate.  */
+  _passiveDelegate = YES;
+
   if ([anObject respondsToSelector: 
 		  @selector(browser:numberOfRowsInColumn:)])
     {
-      _passiveDelegate = YES;
       flag = YES;
       if (![anObject respondsToSelector: 
 			 @selector(browser:willDisplayCell:atRow:column:)])
 	[NSException raise: NSBrowserIllegalDelegateException
 		     format: @"(Passive) Delegate does not respond to %s\n",
-		     "browser: willDisplayCell: atRow: column: "];
+		     GSNameFromSelector
+		       (@selector(browser:willDisplayCell:atRow:column:))];
     }
 
   if ([anObject respondsToSelector: 
@@ -1752,14 +1760,16 @@ static NSTextFieldCell *titleCell;
     {
       _passiveDelegate = NO;
 
-      // If flag is already set
-      // then delegate must respond to both methods
+      /* If flag is already set
+	 then the delegate must respond to both methods.  */
       if (flag)
         {
 	  [NSException raise: NSBrowserIllegalDelegateException
 		       format: @"Delegate responds to both %s and %s\n",
-		       "browser: numberOfRowsInColumn: ",
-		       "browser: createRowsForColumn: inMatrix: "];
+		       GSNameFromSelector
+		         (@selector(browser:numberOfRowsInColumn:)),
+		       GSNameFromSelector
+		         (@selector(browser:createRowsForColumn:inMatrix:))];
 	}
 
       flag = YES;
@@ -1768,8 +1778,10 @@ static NSTextFieldCell *titleCell;
   if (!flag && anObject)
     [NSException raise: NSBrowserIllegalDelegateException
 		 format: @"Delegate does not respond to %s or %s\n",
-		 "browser: numberOfRowsInColumn: ",
-		 "browser: createRowsForColumn: inMatrix: "];
+		 GSNameFromSelector
+		   (@selector(browser:numberOfRowsInColumn:)),
+		 GSNameFromSelector
+		   (@selector(browser:createRowsForColumn:inMatrix:))];
 
   _browserDelegate = anObject;
 }
