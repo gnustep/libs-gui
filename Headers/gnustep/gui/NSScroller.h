@@ -31,6 +31,7 @@
 #define _GNUstep_H_NSScroller
 
 #include <AppKit/NSControl.h>
+#include <AppKit/NSCell.h>
 
 @class NSEvent;
 
@@ -98,6 +99,7 @@ typedef enum _NSScrollerArrow {
 - (void)drawKnobSlot;
 - (void)drawKnob;
 - (void)drawParts;
+- (void)highlight:(BOOL)flag;
 
 //
 // Handling Events 
@@ -107,9 +109,13 @@ typedef enum _NSScrollerArrow {
 - (void)trackKnob:(NSEvent *)theEvent;
 - (void)trackScrollButtons:(NSEvent *)theEvent;
 
-// Other methods 
-- (void)setFrameSize:(NSSize)size;
-- (void)setEnabled:(BOOL)flag;
+#ifndef	STRICT_OPENSTEP
++ (float)scrollerWidthForControlSize:(NSControlSize)controlSize;
+- (void)setControlSize:(NSControlSize)controlSize;
+- (NSControlSize)controlSize;
+- (void)setControlTint:(NSControlTint)controlTint;
+- (NSControlTint)controlTint;
+#endif
 
 @end
 
