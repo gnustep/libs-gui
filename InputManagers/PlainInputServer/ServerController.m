@@ -27,6 +27,7 @@
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSConnection.h>
 #include <Foundation/NSRunLoop.h>
+#include <Foundation/NSDebug.h>
 #include <AppKit/NSInputServer.h>
 #include "PlainInputServer.h"
 #include "ServerController.h"
@@ -111,7 +112,7 @@ static ServerController	*controller = nil;
 
 - (void)connectionDidDie: (NSNotification *)aNotification
 {
-  NSLog(@"%@: connection to %@ died", server, [aNotification object]);
+  NSDebugMLLog(@"%@: connection to %@ died", server, [aNotification object]);
 }
 
 @end /* @implementation ServerController (Connection) */

@@ -638,9 +638,20 @@ static NSMutableArray *_inputServerList = nil;
 {
   id obj = [[[NSApplication sharedApplication] keyWindow] firstResponder];
 
-  if ([obj conformsToProtocol: @protocol(NSTextInput)])
+  while (obj)
     {
-      return obj;
+      if ([obj conformsToProtocol: @protocol(NSTextInput)])
+	{
+	  return obj;
+	}
+      if ([obj isKindOfClass: [NSResponder class]])
+	{
+	  obj = [obj nextResponder];
+	}
+      else
+	{
+	  obj = nil;
+	}
     }
   return nil;
 }

@@ -238,8 +238,8 @@ static IMRecord _maskTable[] = {
   static unsigned int	count	    = 0;
   /* Adjust the following two constants so that most of the users feel
      the resulting cursor movements look natural.  (Or fix the crawling
-     re-drawing of NSTextView, which is primarily responsible for this
-     hack. ) */
+     re-drawing of NSTextView's cursor movement, which is primarily
+     responsible for this hack. ) */
   const NSTimeInterval	interval    = 50.0;
   static const int	skips	    = 80;
 #endif /* SKIP_MOST_OF_REPEATED_EVENTS_TO_EASE_SUDDEN_CURSOR_JUMP */
@@ -843,7 +843,7 @@ static IMRecord _maskTable[] = {
 {
   [bindings release];
   /* Don't release 'branch' because it is a pointer to either 'bindings'
-     or a dictionary inside 'branch'. */
+     or a nested dictionary within it. */
   [super dealloc];
 }
 
