@@ -1,3 +1,9 @@
+2004-04-14 00:36  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSBrowser.m (-keyDown:): When the user selects a cell
+	by typing a partial name, make sure all other cells are
+	deselected.
+
 2004-04-13  Quentin Mathe <qmathe@club-internet.fr>
 
        * Source/NSToolbarItem.m:

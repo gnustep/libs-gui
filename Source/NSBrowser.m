@@ -2254,10 +2254,11 @@ static NSTextFieldCell *titleCell;
       NSMatrix *matrix;
       NSString *sv;
       int i, n, s;
+      int match;
       int selectedColumn;
       SEL lcarcSel = @selector(loadedCellAtRow:column:);
       IMP lcarc = [self methodForSelector: lcarcSel];
-      
+
       selectedColumn = [self selectedColumn];
       if(selectedColumn != -1)
 	{
@@ -2290,7 +2291,7 @@ static NSTextFieldCell *titleCell;
 		  RETAIN(_charBuffer);
 		}
 	    }
-	  
+
 	  _alphaNumericalLastColumn = selectedColumn;
 	  _lastKeyPressed = [theEvent timestamp];
 	  
@@ -2300,34 +2301,41 @@ static NSTextFieldCell *titleCell;
 	  if (([sv length] > 0)
 	      && ([sv hasPrefix: _charBuffer]))
 	    return;
-	  
-	  for (i = s+1; i < n; i++)
+
+	  match = -1;
+	  for (i = s + 1; i < n; i++)
 	    {
 	      sv = [((*lcarc)(self, lcarcSel, i, selectedColumn))
 		     stringValue];
 	      if (([sv length] > 0)
 		  && ([sv hasPrefix: _charBuffer]))
 		{
-		  [self selectRow: i
-			inColumn: selectedColumn];	
-		  [matrix scrollCellToVisibleAtRow: i column: 0];
-		  [matrix performClick: self];
-		  return;
+		  match = i;
+		  break;
 		}
 	    }
-	  for (i = 0; i < s; i++)
+	  if (i == n)
 	    {
-	      sv = [((*lcarc)(self, lcarcSel, i, selectedColumn))
-		     stringValue];
-	      if (([sv length] > 0)
-		  && ([sv hasPrefix: _charBuffer]))
+	      for (i = 0; i < s; i++)
 		{
-		  [self selectRow: i
-			inColumn: selectedColumn];
-		  [matrix scrollCellToVisibleAtRow: i column: 0];
-		  [matrix performClick: self];
-		  return;
+		  sv = [((*lcarc)(self, lcarcSel, i, selectedColumn))
+			 stringValue];
+		  if (([sv length] > 0)
+		      && ([sv hasPrefix: _charBuffer]))
+		    {
+		      match = i;
+		      break;
+		    }
 		}
+	    }
+	  if (match != -1)
+	    {
+	      [matrix deselectAllCells];
+	      [self selectRow: match
+		inColumn: selectedColumn];
+	      [matrix scrollCellToVisibleAtRow: match column: 0];
+	      [matrix performClick: self];
+	      return;
 	    }
 	}
       _lastKeyPressed = 0.;
