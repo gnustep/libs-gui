@@ -44,10 +44,11 @@
 @class NSMutableData;
 @class NSString;
 @class NSView;
+@class NSWindow;
 
-//
-// Backing Store Types
-//
+/*
+ * Backing Store Types
+ */
 typedef enum _NSBackingStoreType
 {
   NSBackingStoreRetained,
@@ -56,9 +57,9 @@ typedef enum _NSBackingStoreType
 
 } NSBackingStoreType;
 
-//
-// Compositing operators
-//
+/*
+ * Compositing operators
+ */
 typedef enum _NSCompositingOperation
 {
   NSCompositeClear,
@@ -78,9 +79,9 @@ typedef enum _NSCompositingOperation
 
 } NSCompositingOperation;
 
-//
-// Window ordering
-//
+/*
+ * Window ordering
+ */
 typedef enum _NSWindowOrderingMode
 {
   NSWindowAbove,
@@ -121,10 +122,10 @@ NSGraphicsContext	*GSCurrentContext();
 
 @interface NSGraphicsContext (GNUstep)
 + (void) setDefaultContextClass: (Class)defaultContextClass;
-+ (NSGraphicsContext*) defaultContextWithInfo: (NSDictionary *)info;
-- (id) initWithContextInfo: (NSDictionary *)info;
++ (NSGraphicsContext*) defaultContextWithInfo: (NSDictionary*)info;
+- (id) initWithContextInfo: (NSDictionary*)info;
 - (void) destroyContext;
-- (NSMutableData *) mutableData;
+- (NSMutableData*) mutableData;
 /*
  * Focus management methods - lock and unlock should only be used by NSView
  * in it's implementation of lockFocus and unlockFocus.
@@ -140,7 +141,7 @@ NSGraphicsContext	*GSCurrentContext();
 - (BOOL) _removeDragTypes: (NSArray*)types fromWindow: (int)winNum;
 - (NSCountedSet*) _dragTypesForWindow: (int)winNum;
 - (id <NSDraggingInfo>)_dragInfo;
-- (void) _postExternalEvent: (NSEvent *)event;
+- (void) _postExternalEvent: (NSEvent*)event;
 
 @end
 #endif
@@ -166,8 +167,8 @@ NSGraphicsContext	*GSCurrentContext();
 - (void) DPSclear;
 - (void) DPScleartomark;
 - (void) DPScopy: (int)n ;
-- (void) DPScount: (int *)n ;
-- (void) DPScounttomark: (int *)n ;
+- (void) DPScount: (int*)n ;
+- (void) DPScounttomark: (int*)n ;
 - (void) DPSdup;
 - (void) DPSexch;
 - (void) DPSexecstack;
@@ -189,12 +190,12 @@ NSGraphicsContext	*GSCurrentContext();
 - (void) DPScurrentcacheparams;
 - (void) DPScurrentfont;
 - (void) DPSdefinefont;
-- (void) DPSfindfont: (const char *)name ;
+- (void) DPSfindfont: (const char*)name ;
 - (void) DPSmakefont;
 - (void) DPSscalefont: (float)size ;
-- (void) DPSselectfont: (const char *)name : (float)scale ;
+- (void) DPSselectfont: (const char*)name : (float)scale ;
 - (void) DPSsetfont: (int)f ;
-- (void) DPSundefinefont: (const char *)name ;
+- (void) DPSundefinefont: (const char*)name ;
 /* ----------------------------------------------------------------------- */
 /* Gstate operations */
 /* ----------------------------------------------------------------------- */
@@ -206,15 +207,15 @@ NSGraphicsContext	*GSCurrentContext();
 - (void) DPScurrenthalftone;
 - (void) DPScurrenthalftonephase: (float*)x : (float*)y ;
 - (void) DPScurrenthsbcolor: (float*)h : (float*)s : (float*)b ;
-- (void) DPScurrentlinecap: (int *)linecap ;
-- (void) DPScurrentlinejoin: (int *)linejoin ;
+- (void) DPScurrentlinecap: (int*)linecap ;
+- (void) DPScurrentlinejoin: (int*)linejoin ;
 - (void) DPScurrentlinewidth: (float*)width ;
 - (void) DPScurrentmatrix;
 - (void) DPScurrentmiterlimit: (float*)limit ;
 - (void) DPScurrentpoint: (float*)x : (float*)y ;
 - (void) DPScurrentrgbcolor: (float*)r : (float*)g : (float*)b ;
 - (void) DPScurrentscreen;
-- (void) DPScurrentstrokeadjust: (int *)b ;
+- (void) DPScurrentstrokeadjust: (int*)b ;
 - (void) DPScurrenttransfer;
 - (void) DPSdefaultmatrix;
 - (void) DPSgrestore;
@@ -262,25 +263,25 @@ NSGraphicsContext	*GSCurrentContext();
 - (void) DPSdefineuserobject;
 - (void) DPSexecuserobject: (int)index ;
 - (void) DPSundefineuserobject: (int)index ;
-- (void) DPSgetboolean: (int *)it ;
-- (void) DPSgetchararray: (int)size : (char *)s ;
+- (void) DPSgetboolean: (int*)it ;
+- (void) DPSgetchararray: (int)size : (char*)s ;
 - (void) DPSgetfloat: (float*)it ;
 - (void) DPSgetfloatarray: (int)size : (float*)a ;
-- (void) DPSgetint: (int *)it ;
-- (void) DPSgetintarray: (int)size : (int *)a ;
-- (void) DPSgetstring: (char *)s ;
+- (void) DPSgetint: (int*)it ;
+- (void) DPSgetintarray: (int)size : (int*)a ;
+- (void) DPSgetstring: (char*)s ;
 - (void) DPSsendboolean: (int)it ;
-- (void) DPSsendchararray: (const char *)s : (int)size ;
+- (void) DPSsendchararray: (const char*)s : (int)size ;
 - (void) DPSsendfloat: (float)it ;
 - (void) DPSsendfloatarray: (const float*)a : (int)size ;
 - (void) DPSsendint: (int)it ;
-- (void) DPSsendintarray: (const int *)a : (int)size ;
-- (void) DPSsendstring: (const char *)s ;
+- (void) DPSsendintarray: (const int*)a : (int)size ;
+- (void) DPSsendstring: (const char*)s ;
 /* ----------------------------------------------------------------------- */
 /* Paint operations */
 /* ----------------------------------------------------------------------- */
-- (void) DPSashow: (float)x : (float)y : (const char *)s ;
-- (void) DPSawidthshow: (float)cx : (float)cy : (int)c : (float)ax : (float)ay : (const char *)s ;
+- (void) DPSashow: (float)x : (float)y : (const char*)s ;
+- (void) DPSawidthshow: (float)cx : (float)cy : (int)c : (float)ax : (float)ay : (const char*)s ;
 - (void) DPScopypage;
 - (void) DPSeofill;
 - (void) DPSerasepage;
@@ -289,21 +290,21 @@ NSGraphicsContext	*GSCurrentContext();
 - (void) DPSimagemask;
 - (void) DPScolorimage;
 - (void) DPSalphaimage;
-- (void) DPSkshow: (const char *)s ;
+- (void) DPSkshow: (const char*)s ;
 - (void) DPSrectfill: (float)x : (float)y : (float)w : (float)h ;
 - (void) DPSrectstroke: (float)x : (float)y : (float)w : (float)h ;
-- (void) DPSshow: (const char *)s ;
+- (void) DPSshow: (const char*)s ;
 - (void) DPSshowpage;
 - (void) DPSstroke;
 - (void) DPSstrokepath;
-- (void) DPSueofill: (const char *)nums : (int)n : (const char *)ops : (int)l ;
-- (void) DPSufill: (const char *)nums : (int)n : (const char *)ops : (int)l ;
-- (void) DPSustroke: (const char *)nums : (int)n : (const char *)ops : (int)l ;
-- (void) DPSustrokepath: (const char *)nums : (int)n : (const char *)ops : (int)l ;
-- (void) DPSwidthshow: (float)x : (float)y : (int)c : (const char *)s ;
-- (void) DPSxshow: (const char *)s : (const float*)numarray : (int)size ;
-- (void) DPSxyshow: (const char *)s : (const float*)numarray : (int)size ;
-- (void) DPSyshow: (const char *)s : (const float*)numarray : (int)size ;
+- (void) DPSueofill: (const char*)nums : (int)n : (const char*)ops : (int)l ;
+- (void) DPSufill: (const char*)nums : (int)n : (const char*)ops : (int)l ;
+- (void) DPSustroke: (const char*)nums : (int)n : (const char*)ops : (int)l ;
+- (void) DPSustrokepath: (const char*)nums : (int)n : (const char*)ops : (int)l ;
+- (void) DPSwidthshow: (float)x : (float)y : (int)c : (const char*)s ;
+- (void) DPSxshow: (const char*)s : (const float*)numarray : (int)size ;
+- (void) DPSxyshow: (const char*)s : (const float*)numarray : (int)size ;
+- (void) DPSyshow: (const char*)s : (const float*)numarray : (int)size ;
 /* ----------------------------------------------------------------------- */
 /* Path operations */
 /* ----------------------------------------------------------------------- */
@@ -311,7 +312,7 @@ NSGraphicsContext	*GSCurrentContext();
 - (void) DPSarcn: (float)x : (float)y : (float)r : (float)angle1 : (float)angle2 ;
 - (void) DPSarct: (float)x1 : (float)y1 : (float)x2 : (float)y2 : (float)r ;
 - (void) DPSarcto: (float)x1 : (float)y1 : (float)x2 : (float)y2 : (float)r : (float*)xt1 : (float*)yt1 : (float*)xt2 : (float*)yt2 ;
-- (void) DPScharpath: (const char *)s : (int)b ;
+- (void) DPScharpath: (const char*)s : (int)b ;
 - (void) DPSclip;
 - (void) DPSclippath;
 - (void) DPSclosepath;
@@ -338,16 +339,16 @@ NSGraphicsContext	*GSCurrentContext();
 /* ----------------------------------------------------------------------- */
 /* Window system ops */
 /* ----------------------------------------------------------------------- */
-- (void) DPScurrentdrawingfunction: (int *)function ;
-- (void) DPScurrentgcdrawable: (void* *)gc : (void* *)draw : (int *)x : (int *)y ;
-- (void) DPScurrentgcdrawablecolor: (void* *)gc : (void* *)draw : (int *)x : (int *)y : (int *)colorInfo ;
-- (void) DPScurrentoffset: (int *)x : (int *)y ;
+- (void) DPScurrentdrawingfunction: (int*)function ;
+- (void) DPScurrentgcdrawable: (void**)gc : (void**)draw : (int*)x : (int*)y ;
+- (void) DPScurrentgcdrawablecolor: (void**)gc : (void**)draw : (int*)x : (int*)y : (int*)colorInfo ;
+- (void) DPScurrentoffset: (int*)x : (int*)y ;
 - (void) DPSsetdrawingfunction: (int)function ;
 - (void) DPSsetgcdrawable: (void*)gc : (void*)draw : (int)x : (int)y ;
-- (void) DPSsetgcdrawablecolor: (void*)gc : (void*)draw : (int)x : (int)y : (const int *)colorInfo ;
+- (void) DPSsetgcdrawablecolor: (void*)gc : (void*)draw : (int)x : (int)y : (const int*)colorInfo ;
 - (void) DPSsetoffset: (short int)x : (short int)y ;
-- (void) DPSsetrgbactual: (double)r : (double)g : (double)b : (int *)success ;
-- (void) DPScapturegstate: (int *)gst ;
+- (void) DPSsetrgbactual: (double)r : (double)g : (double)b : (int*)success ;
+- (void) DPScapturegstate: (int*)gst ;
 
 /*-------------------------------------------------------------------------*/
 /* Graphics Extensions Ops */
@@ -358,44 +359,44 @@ NSGraphicsContext	*GSCurrentContext();
  : (float)dx : (float)dy : (float)delta;
 - (void) DPSreadimage;
 - (void) DPSsetalpha: (float)a;
-- (void) DPScurrentalpha: (float *)a;
+- (void) DPScurrentalpha: (float*)a;
 
 /*-------------------------------------------------------------------------*/
 /* Window Extensions Ops */
 /*-------------------------------------------------------------------------*/
-- (void) DPSwindow: (float) x : (float) y : (float) w : (float) h : (int) type : (int *) num ;
+- (void) DPSwindow: (float) x : (float) y : (float) w : (float) h : (int) type : (int*) num ;
 - (void) DPStermwindow: (int) num ;
 - (void) DPSstylewindow: (int) style : (int) num ;
-- (void) DPStitlewindow: (const char *) window_title : (int) num ;
+- (void) DPStitlewindow: (const char*) window_title : (int) num ;
 - (void) DPSminiwindow: (int) num ;
 - (void) DPSwindowdevice: (int) num ;
 - (void) DPSwindowdeviceround: (int) num ;
-- (void) DPScurrentwindow: (int *) num ;
+- (void) DPScurrentwindow: (int*) num ;
 - (void) DPSorderwindow: (int) op : (int) otherWin : (int) winNum ;
 - (void) DPSmovewindow: (float) x : (float) y : (int) num ;
 - (void) DPSupdatewindow: (int) win ;
 - (void) DPSplacewindow: (float) x : (float) y : (float) w : (float) h : (int) win ;
-- (void) DPSfrontwindow: (int *) num ;
-- (void) DPSfindwindow: (float) x : (float) y : (int) op : (int) otherWin : (float *) lx : (float *) ly : (int *) winFound : (int *) didFind ;
-- (void) DPScurrentwindowbounds: (int) num : (float *) x : (float *) y : (float *) w : (float *) h ;
+- (void) DPSfrontwindow: (int*) num ;
+- (void) DPSfindwindow: (float) x : (float) y : (int) op : (int) otherWin : (float*) lx : (float*) ly : (int*) winFound : (int*) didFind ;
+- (void) DPScurrentwindowbounds: (int) num : (float*) x : (float*) y : (float*) w : (float*) h ;
 - (void) DPSsetexposurecolor;
 - (void) DPSsetsendexposed: (int) truth : (int) num ;
 - (void) DPSsetautofill: (int) truth : (int) num ;
-- (void) DPScurrentwindowalpha: (int) win : (int *) alpha ;
-- (void) DPScountscreenlist: (int) context : (int *) count ;
-- (void) DPSscreenlist: (int) context : (int) count : (int *) windows ;
+- (void) DPScurrentwindowalpha: (int) win : (int*) alpha ;
+- (void) DPScountscreenlist: (int) context : (int*) count ;
+- (void) DPSscreenlist: (int) context : (int) count : (int*) windows ;
 - (void) DPSsetowner: (int) owner : (int) win ;
-- (void) DPScurrentowner: (int) win : (int *) owner ;
+- (void) DPScurrentowner: (int) win : (int*) owner ;
 - (void) DPSsetwindowtype: (int) type : (int) win ;
 - (void) DPSsetwindowlevel: (int) level : (int) win ;
-- (void) DPScurrentwindowlevel: (int) win : (int *) level ;
-- (void) DPScountwindowlist: (int) context : (int *) count ;
-- (void) DPSwindowlist: (int) context : (int) count : (int *) windows ;
+- (void) DPScurrentwindowlevel: (int) win : (int*) level ;
+- (void) DPScountwindowlist: (int) context : (int*) count ;
+- (void) DPSwindowlist: (int) context : (int) count : (int*) windows ;
 - (void) DPSsetwindowdepthlimit: (int) limit : (int) win ;
-- (void) DPScurrentwindowdepthlimit: (int) win : (int *) limit ;
-- (void) DPScurrentwindowdepth: (int) win : (int *) depth ;
+- (void) DPScurrentwindowdepthlimit: (int) win : (int*) limit ;
+- (void) DPScurrentwindowdepth: (int) win : (int*) depth ;
 - (void) DPSsetdefaultdepthlimit: (int) limit ;
-- (void) DPScurrentdefaultdepthlimit: (int *) limit ;
+- (void) DPScurrentdefaultdepthlimit: (int*) limit ;
 - (void) DPSsetmaxsize: (float) width : (float) height : (int) win ;
 - (void) DPSsetminsize: (float) width : (float) height : (int) win ;
 - (void) DPSsetresizeincrements: (float) width : (float) height : (int) win ;
@@ -405,9 +406,9 @@ NSGraphicsContext	*GSCurrentContext();
 - (void) DPSsetinputfocus: (int) win ;
 - (void) DPShidecursor;
 - (void) DPSshowcursor;
-- (void) DPSstandardcursor: (int) style : (void **) cid ;
-- (void) DPSimagecursor: (float) hotx : (float) hoty : (float) w : (float) h : (int) colors : (const char *) image : (void **) cid ;
-- (void) DPSsetcursorcolor: (float) fr : (float) fg : (float) fb : (float) br : (float) bg : (float) bb : (void *) cid ;
+- (void) DPSstandardcursor: (int) style : (void**) cid ;
+- (void) DPSimagecursor: (float) hotx : (float) hoty : (float) w : (float) h : (int) colors : (const char*) image : (void**) cid ;
+- (void) DPSsetcursorcolor: (float) fr : (float) fg : (float) fb : (float) br : (float) bg : (float) bb : (void*) cid ;
 - (void) DPSstyleoffsets: (float*) l : (float*) r : (float*) t : (float*) b : (int) style ;
 - (void) DPSdocedited: (int) edited : (int) window ;
 

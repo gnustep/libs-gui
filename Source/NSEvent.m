@@ -44,6 +44,7 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSGraphicsContext.h>
+#include <AppKit/NSGraphics.h>
 
 /*
  *	gstep-base has a faster mechanism to get the current thread.
@@ -355,7 +356,7 @@ static Class eventClass;
 
 - (NSWindow *) window
 {
-  return [NSWindow _windowWithNumber: window_num];
+  return GSWindowWithNumber(window_num);
 }
 
 - (int) windowNumber

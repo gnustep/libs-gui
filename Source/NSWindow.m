@@ -61,9 +61,28 @@
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSHelpManager.h>
 #include <AppKit/NSGraphicsContext.h>
+#include <AppKit/NSGraphics.h>
 #include <AppKit/GSWraps.h>
 
 BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
+
+/*
+ * Catagory for internal methods (for use only within the
+ * NSWindow class itsself)
+ */
+@interface	NSWindow (GNUstepPrivate)
+- (void) _handleWindowNeedsDisplay: (id)bogus;
+@end
+
+@implementation	NSWindow (GNUstepPrivate)
+- (void) _handleWindowNeedsDisplay: (id)bogus
+{
+  [self displayIfNeeded];
+}
+@end
+
+
+
 
 @interface	NSMiniWindow : NSWindow
 @end
@@ -80,9 +99,9 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
   return NO;
 }
 
-- (void) initDefaults
+- (void) _initDefaults
 {
-  [super initDefaults];
+  [super _initDefaults];
   [self setExcludedFromWindowsMenu: YES];
   [self setReleasedWhenClosed: NO];
   window_level = NSDockWindowLevel;
@@ -893,7 +912,7 @@ static NSMapTable* windowmaps = NULL;
 {
   if (place == NSWindowOut)
     {
-      NSArray	*windowList = [NSWindow _windowList];
+      NSArray	*windowList = GSAllWindows();
       unsigned	pos = [windowList indexOfObjectIdenticalTo: self];
       unsigned	c = [windowList count];
       unsigned	i;
@@ -1379,11 +1398,6 @@ static NSMapTable* windowmaps = NULL;
 - (void) setAutodisplay: (BOOL)flag
 {
   _f.is_autodisplay = flag;
-}
-
-- (void) _handleWindowNeedsDisplay: (id)bogus
-{
-  [self displayIfNeeded];
 }
 
 - (void) setViewsNeedDisplay: (BOOL)flag
@@ -2954,128 +2968,6 @@ resetCursorRectsForView(NSView *theView)
   SET_DELEGATE_NOTIFICATION(WillMove);
 }
 
-#if 0
-/*
- * Implemented by the delegate
- */
-- (BOOL) windowShouldClose: (id)sender
-{
-  if ([_delegate respondsToSelector: @selector(windowShouldClose:)])
-    {
-      BOOL ourReturn;
-
-      ourReturn = [_delegate windowShouldClose: sender];
-
-      if (ourReturn)
-	{
-	  ourReturn = [[_windowController document]
-	    shouldCloseWindowController: _windowController];
-	}
-
-      return ourReturn;
-    }
-  else
-    return YES;
-}
-
-- (NSSize) windowWillResize: (NSWindow *)sender toSize: (NSSize)frameSize
-{
-  if ([_delegate respondsToSelector: @selector(windowWillResize:toSize:)])
-    return [_delegate windowWillResize: sender toSize: frameSize];
-  else
-    return frameSize;
-}
-
-- (id) windowWillReturnFieldEditor: (NSWindow *)sender toObject: client
-{
-  return nil;
-}
-
-- (void) windowDidBecomeKey: (NSNotification *)aNotification
-{
-  if ([_delegate respondsToSelector: @selector(windowDidBecomeKey:)])
-    return [_delegate windowDidBecomeKey: aNotification];
-}
-
-- (void) windowDidBecomeMain: (NSNotification *)aNotification
-{
-  if ([_delegate respondsToSelector: @selector(windowDidBecomeMain:)])
-    return [_delegate windowDidBecomeMain: aNotification];
-}
-
-- (void) windowDidChangeScreen: (NSNotification *)aNotification
-{
-  if ([_delegate respondsToSelector: @selector(windowDidChangeScreen:)])
-    return [_delegate windowDidChangeScreen: aNotification];
-}
-
-- (void) windowDidDeminiaturize: (NSNotification *)aNotification
-{
-  if ([_delegate respondsToSelector: @selector(windowDidDeminiaturize:)])
-    return [_delegate windowDidDeminiaturize: aNotification];
-}
-
-- (void) windowDidExpose: (NSNotification *)aNotification
-{
-  if ([_delegate respondsToSelector: @selector(windowDidExpose:)])
-    return [_delegate windowDidExpose: aNotification];
-}
-
-- (void) windowDidMiniaturize: (NSNotification *)aNotification
-{
-  if ([_delegate respondsToSelector: @selector(windowDidMiniaturize:)])
-    return [_delegate windowDidMiniaturize: aNotification];
-}
-
-- (void) windowDidMove: (NSNotification *)aNotification
-{
-  if ([_delegate respondsToSelector: @selector(windowDidMove:)])
-    return [_delegate windowDidMove: aNotification];
-}
-
-- (void) windowDidResignKey: (NSNotification *)aNotification
-{
-  if ([_delegate respondsToSelector: @selector(windowDidResignKey:)])
-    return [_delegate windowDidResignKey: aNotification];
-}
-
-- (void) windowDidResignMain: (NSNotification *)aNotification
-{
-  if ([_delegate respondsToSelector: @selector(windowDidResignMain:)])
-    return [_delegate windowDidResignMain: aNotification];
-}
-
-- (void) windowDidResize: (NSNotification *)aNotification
-{
-  if ([_delegate respondsToSelector: @selector(windowDidResize:)])
-    return [_delegate windowDidResize: aNotification];
-}
-
-- (void) windowDidUpdate: (NSNotification *)aNotification
-{
-  if ([_delegate respondsToSelector: @selector(windowDidUpdate:)])
-    return [_delegate windowDidUpdate: aNotification];
-}
-
-- (void) windowWillClose: (NSNotification *)aNotification
-{
-  if ([_delegate respondsToSelector: @selector(windowWillClose:)])
-    return [_delegate windowWillClose: aNotification];
-}
-
-- (void) windowWillMiniaturize: (NSNotification *)aNotification
-{
-  if ([_delegate respondsToSelector: @selector(windowWillMiniaturize:)])
-    return [_delegate windowWillMiniaturize: aNotification];
-}
-
-- (void) windowWillMove: (NSNotification *)aNotification
-{
-  if ([_delegate respondsToSelector: @selector(windowWillMove:)])
-    return [_delegate windowWillMove: aNotification];
-}
-#endif
-
 /*
  * NSCoding protocol
  */
@@ -3232,17 +3124,7 @@ resetCursorRectsForView(NSView *theView)
 /*
  * GNUstep backend methods
  */
-@implementation NSWindow (GNUstepPrivate)
-
-+ (NSWindow *) _windowWithNumber: (int)windowNumber
-{
-  return NSMapGet(windowmaps, (void *)windowNumber);
-}
-
-+ (NSArray *) _windowList
-{
-  return NSAllMapTableValues(windowmaps);
-}
+@implementation NSWindow (GNUstepBackend)
 
 /*
  * Mouse capture/release
@@ -3291,7 +3173,7 @@ resetCursorRectsForView(NSView *theView)
  * Allow subclasses to init without the backend
  * class attempting to create an actual window
  */
-- (void) initDefaults
+- (void) _initDefaults
 {
   first_responder = self;
   original_responder = nil;
@@ -3333,7 +3215,7 @@ resetCursorRectsForView(NSView *theView)
 {
   [super init];
 
-  [self initDefaults];
+  [self _initDefaults];
   return self;
 }
 
@@ -3346,4 +3228,35 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo)
     return YES;
   return NO;
 }
+
+void NSCountWindows(int *count)
+{
+  *count = (int)NSCountMapTable(windowmaps);
+}
+
+void NSWindowList(int size, int list[])
+{
+  NSMapEnumerator	me = NSEnumerateMapTable(windowmaps);
+  int			num;
+  id			win;
+  int			i = 0;
+
+  while (i < size && NSNextMapEnumeratorPair(&me, (void*)&num, (void*)&win))
+    {
+      list[i++] = num;
+    }
+/* FIXME - the list produced should be in window stacking order */
+}
+
+NSArray* GSAllWindows()
+{
+  return NSAllMapTableValues(windowmaps);
+}
+
+NSWindow* GSWindowWithNumber(int num)
+{
+  return (NSWindow*)NSMapGet(windowmaps, (void*)num);
+}
+
+
 

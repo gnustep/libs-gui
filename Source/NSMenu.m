@@ -1272,9 +1272,9 @@ static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
     }
 }
 
-- (void) initDefaults
+- (void) _initDefaults
 {
-  [super initDefaults];
+  [super _initDefaults];
   window_level = NSSubmenuWindowLevel;
 }
 

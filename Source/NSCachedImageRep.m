@@ -48,9 +48,9 @@ static BOOL NSImageCompositing = YES;
 
 @implementation GSCacheW
 
-- (void) initDefaults
+- (void) _initDefaults
 {
-  [super initDefaults];
+  [super _initDefaults];
   [self setExcludedFromWindowsMenu: YES];
   [self setAutodisplay: NO];
 }

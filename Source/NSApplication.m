@@ -122,9 +122,9 @@ NSApplication	*NSApp = nil;
     }
 }
 
-- (void) initDefaults
+- (void) _initDefaults
 {
-  [super initDefaults];
+  [super _initDefaults];
   [self setExcludedFromWindowsMenu: YES];
   [self setReleasedWhenClosed: NO];
   window_level = NSDockWindowLevel;
@@ -1604,12 +1604,12 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 
 - (NSArray*) windows
 {
-  return [NSWindow _windowList];
+  return GSAllWindows();
 }
 
 - (NSWindow *) windowWithWindowNumber: (int)windowNum
 {
-  return [NSWindow _windowWithNumber: windowNum];
+  return GSWindowWithNumber(windowNum);
 }
 
 /*

@@ -76,9 +76,9 @@
 			     defer: NO];
 }
 
-- (void) initDefaults
+- (void) _initDefaults
 {
-  [super initDefaults];
+  [super _initDefaults];
   [self setReleasedWhenClosed: NO];
   [self setHidesOnDeactivate: YES];
   [self setExcludedFromWindowsMenu: YES];

@@ -27,6 +27,7 @@
 
 #include <Foundation/NSObject.h>
 #include <Foundation/NSGeometry.h>
+#include <AppKit/PSOperators.h>
 
 @class NSString;
 @class NSColor;
@@ -46,18 +47,18 @@ extern NSString *NSCustomColorSpace;
 
 typedef int NSWindowDepth;
 
-//
-// Gray Values 
-//
+/*
+ * Gray Values 
+ */
 extern const float NSBlack;
 extern const float NSDarkGray;
 extern const float NSWhite;
 extern const float NSLightGray;
 extern const float NSGray;
 
-//
-// Device Dictionary Keys 
-//
+/*
+ * Device Dictionary Keys 
+ */
 extern NSString *NSDeviceResolution;
 extern NSString *NSDeviceColorSpaceName;
 extern NSString *NSDeviceBitsPerSample;
@@ -65,9 +66,9 @@ extern NSString *NSDeviceIsScreen;
 extern NSString *NSDeviceIsPrinter;
 extern NSString *NSDeviceSize;
 
-//
-// Rectangle Drawing Functions
-//
+/*
+ * Rectangle Drawing Functions
+ */
 void NSEraseRect(NSRect aRect);
 void NSHighlightRect(NSRect aRect);
 void NSRectClip(NSRect aRect);
@@ -77,9 +78,9 @@ void NSRectFillList(const NSRect *rects, int count);
 void NSRectFillListWithGrays(const NSRect *rects, 
 			     const float *grays, int count);
 
-//
-// Draw a Bordered Rectangle
-//
+/*
+ * Draw a Bordered Rectangle
+ */
 void NSDrawButton(const NSRect aRect, const NSRect clipRect);
 void NSDrawGrayBezel(const NSRect aRect, const NSRect clipRect);
 void NSDrawGroove(const NSRect aRect, const NSRect clipRect);
@@ -90,9 +91,9 @@ void NSDrawWhiteBezel(const NSRect aRect, const NSRect clipRect);
 void NSFrameRect(const NSRect aRect);
 void NSFrameRectWithWidth(const NSRect aRect, float frameWidth);
 
-//
-// Get Information About Color Space and Window Depth
-//
+/*
+ * Get Information About Color Space and Window Depth
+ */
 const NSWindowDepth *NSAvailableWindowDepths(void);
 NSWindowDepth NSBestDepth(NSString *colorSpace, 
 			  int bitsPerSample, int bitsPerPixel, 
@@ -103,20 +104,20 @@ NSString *NSColorSpaceFromDepth(NSWindowDepth depth);
 int NSNumberOfColorComponents(NSString *colorSpaceName);
 BOOL NSPlanarFromDepth(NSWindowDepth depth);
 
-//
-// Read the Color at a Screen Position
-//
+/*
+ * Read the Color at a Screen Position
+ */
 NSColor *NSReadPixel(NSPoint location);
 
-//
-// Copy an image
-//
+/*
+ * Copy an image
+ */
 void NSCopyBitmapFromGState(int srcGstate, NSRect srcRect, NSRect destRect);
 void NSCopyBits(int srcGstate, NSRect srcRect, NSPoint destPoint);
 
-//
-// Render Bitmap Images
-//
+/*
+ * Render Bitmap Images
+ */
 void NSDrawBitmap(NSRect rect,
                   int pixelsWide,
                   int pixelsHigh,
@@ -129,10 +130,20 @@ void NSDrawBitmap(NSRect rect,
                   NSString *colorSpaceName, 
                   const unsigned char *const data[5]);
 
-//
-// Play the System Beep
-//
+/*
+ * Play the System Beep
+ */
 void NSBeep(void);
 
+/*
+ * Functions for getting information about windows.
+ */
+void NSCountWindows(int *count);
+void NSWindowList(int size, int list[]);
+
+#ifndef	NO_GNUSTEP
+NSArray* GSAllWindows();
+NSWindow* GSWindowWithNumber(int num);
+#endif
 
 #endif /* __NSGraphics_h__ */

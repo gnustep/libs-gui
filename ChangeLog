@@ -1,3 +1,13 @@
+Mon Mar 06 10:36:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSWindow.m: Various tidyups by Fred kiefer and myself.
+	scrapped private class methods for querying window map in favour
+	of more efficient function based lookup.
+	* Source/NSApplication.m: ditto
+	* Source/NSMenu.m: ditto
+	* Headers/AppKit/NSWindow.h tidyup.
+	* Headers/AppKit/NSGraphics.h new functions.
+
 Sun Mar  5 23:39:33 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSButtonCell.m ([-setPeriodicDelay:interval:]): Bug fix:
