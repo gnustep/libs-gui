@@ -2,6 +2,8 @@ Fri Jan  7 18:37:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSApplication.m: ([-finishLoading]) add support for loading
 	main nib.
+	* Source/Functions.m: NSApplicationMain() trivial update to make use
+	of NSPrincipalClass info.
 
 Wed Jan  5 20:04:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 

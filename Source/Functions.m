@@ -27,6 +27,7 @@
 */ 
 
 #include <Foundation/NSAutoreleasePool.h>
+#include <Foundation/NSBundle.h>
 
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSEvent.h>
@@ -41,6 +42,9 @@ int
 NSApplicationMain(int argc, const char **argv)
 {
   NSAutoreleasePool	*pool;
+  NSDictionary		*infoDict;
+  NSString		*className;
+  Class			appClass;
 
 #if LIB_FOUNDATION_LIBRARY
   extern char		**environ;
@@ -56,7 +60,16 @@ NSApplicationMain(int argc, const char **argv)
   initialize_gnustep_backend();
 #endif
 
-  [[NSApplication sharedApplication] run];
+  infoDict = [[NSBundle mainBundle] infoDictionary];
+  className = [infoDict objectForKey: @"NSPrincipalClass"];
+  appClass = NSClassFromString(className);
+
+  if (appClass == 0)
+    {
+      appClass = [NSApplication class];
+    }
+
+  [[appClass sharedApplication] run];
 
   [pool release];
 
