@@ -114,24 +114,24 @@ static NSColor	*shadowCol;
 
 - (id) initImageCell: (NSImage*)anImage
 {
-  [super init];
-
   _cell.type = NSImageCellType;
   _cell_image = RETAIN(anImage);
   _cell.image_position = NSImageOnly;
   _cell_font = RETAIN([fontClass userFontOfSize: 0]);
-  _cell.state = 0;
-  _cell.is_highlighted = NO;
-  _cell.is_enabled = YES;
-  _cell.is_editable = NO;
-  _cell.is_bordered = NO;
-  _cell.is_bezeled = NO;
-  _cell.is_scrollable = NO;
-  _cell.is_selectable = NO;
-  _cell.is_continuous = NO;
-  _cell.float_autorange = NO;
-  _cell_float_left = 0;
-  _cell_float_right = 0;
+  // Implicitly set by allocation:
+  //
+  //_cell.is_disabled = NO;
+  //_cell.state = 0;
+  //_cell.is_highlighted = NO;
+  //_cell.is_editable = NO;
+  //_cell.is_bordered = NO;
+  //_cell.is_bezeled = NO;
+  //_cell.is_scrollable = NO;
+  //_cell.is_selectable = NO;
+  //_cell.is_continuous = NO;
+  //_cell.float_autorange = NO;
+  //_cell_float_left = 0;
+  //_cell_float_right = 0;
   _action_mask = NSLeftMouseUpMask;
 
   return self;
@@ -139,26 +139,26 @@ static NSColor	*shadowCol;
 
 - (id) initTextCell: (NSString*)aString
 {
-  [super init];
-
   _cell.type = NSTextCellType;
   _cell_font = RETAIN([fontClass userFontOfSize: 0]);
   _contents = RETAIN(aString);
   _cell.text_align = NSCenterTextAlignment;
-  _cell_image = nil;
-  _cell.image_position = NSNoImage;
-  _cell.state = 0;
-  _cell.is_highlighted = NO;
-  _cell.is_enabled = YES;
-  _cell.is_editable = NO;
-  _cell.is_bordered = NO;
-  _cell.is_bezeled = NO;
-  _cell.is_scrollable = NO;
-  _cell.is_selectable = NO;
-  _cell.is_continuous = NO;
+  // Implicitly set by allocation:
+  //
+  //_cell_image = nil;
+  //_cell.image_position = NSNoImage;
+  //_cell.is_disabled = NO;
+  //_cell.state = 0;
+  //_cell.is_highlighted = NO;
+  //_cell.is_editable = NO;
+  //_cell.is_bordered = NO;
+  //_cell.is_bezeled = NO;
+  //_cell.is_scrollable = NO;
+  //_cell.is_selectable = NO;
+  //_cell.is_continuous = NO;
   _cell.float_autorange = YES;
   _cell_float_right = 6;
-  _cell_float_left = 0;
+  //_cell_float_left = 0;
   _action_mask = NSLeftMouseUpMask;
 
   return self;
@@ -281,12 +281,12 @@ static NSColor	*shadowCol;
  */
 - (BOOL) isEnabled
 {
-  return _cell.is_enabled;
+  return !_cell.is_disabled;
 }
 
 - (void) setEnabled: (BOOL)flag
 {
-  _cell.is_enabled = flag;
+  _cell.is_disabled = !flag;
 }
 
 /*
@@ -294,7 +294,7 @@ static NSColor	*shadowCol;
  */
 - (BOOL) acceptsFirstResponder
 {
-  return _cell.is_enabled;
+  return !_cell.is_disabled;
 }
 
 /*
@@ -483,10 +483,10 @@ static NSColor	*shadowCol;
  */
 - (NSText*) setUpFieldEditorAttributes: (NSText*)textObject
 {
-  if (_cell.is_enabled)
-    [textObject setTextColor: txtCol];
-  else
+  if (_cell.is_disabled)
     [textObject setTextColor: dtxtCol];
+  else
+    [textObject setTextColor: txtCol];
   
   [textObject setFont: _cell_font];
   [textObject setAlignment: _cell.text_align];
@@ -626,10 +626,10 @@ static NSColor	*shadowCol;
 
 - (NSColor*) textColor
 {
-  if (_cell.is_enabled)
-    return txtCol;
-  else
+  if (_cell.is_disabled)
     return dtxtCol;
+  else
+    return txtCol;
 }
 
 - (void) _drawText: (NSString *) title inFrame: (NSRect) cellFrame
@@ -1016,8 +1016,8 @@ static NSColor	*shadowCol;
 	{
 	  NSDebugLog(@"NSCell point not in cell frame\n");
 
-	  pointIsInCell = NO;	// Do we return now or keep tracking?
-	  if (![[self class] prefersTrackingUntilMouseUp] && flag)
+	  pointIsInCell = NO;	
+	  if (flag == NO) 
 	    {
 	      NSDebugLog(@"NSCell return immediately\n");
 	      done = YES;
@@ -1055,12 +1055,11 @@ static NSColor	*shadowCol;
 	}
     }
 
-  // Tell ourselves to stop tracking
+  // Hook called when stop tracking
   [self stopTracking: last_point
 		  at: point
 	      inView: controlView
 	   mouseIsUp: mouseWentUp];
-
 
   if (_cell.is_continuous)
     [NSEvent stopPeriodicEvents];
@@ -1081,7 +1080,7 @@ static NSColor	*shadowCol;
  */
 - (void) resetCursorRect: (NSRect)cellFrame inView: (NSView *)controlView
 {
-  if (_cell.type == NSTextCellType && _cell.is_enabled == YES
+  if (_cell.type == NSTextCellType && _cell.is_disabled == NO
     && (_cell.is_selectable == YES || _cell.is_editable == YES))
     {
       static NSCursor	*c = nil;
@@ -1140,7 +1139,7 @@ static NSColor	*shadowCol;
   ASSIGN(c->_cell_font, _cell_font);
   c->_cell.state = _cell.state;
   c->_cell.is_highlighted = _cell.is_highlighted;
-  c->_cell.is_enabled = _cell.is_enabled;
+  c->_cell.is_disabled = _cell.is_disabled;
   c->_cell.is_editable = _cell.is_editable;
   c->_cell.is_bordered = _cell.is_bordered;
   c->_cell.is_bezeled = _cell.is_bezeled;
@@ -1174,7 +1173,7 @@ static NSColor	*shadowCol;
   [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
   flag = _cell.is_highlighted;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
-  flag = _cell.is_enabled;
+  flag = _cell.is_disabled;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _cell.is_editable;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
@@ -1216,7 +1215,7 @@ static NSColor	*shadowCol;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
   _cell.is_highlighted = flag;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _cell.is_enabled = flag;
+  _cell.is_disabled = flag;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
   _cell.is_editable = flag;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
