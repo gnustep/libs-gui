@@ -37,6 +37,7 @@
 
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSApplication.h>
+#include <AppKit/NSWindow.h>
 
 @implementation NSEvent
 
@@ -435,9 +436,7 @@ static NSRecursiveLock* timersLock = nil;
 
 - (NSWindow *)window
 {
-  NSApplication *theApp = [NSApplication sharedApplication];
-
-  return [theApp windowWithWindowNumber:window_num];
+  return [NSWindow windowWithNumber:window_num];
 }
 
 - (int)windowNumber

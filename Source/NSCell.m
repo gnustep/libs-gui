@@ -132,6 +132,7 @@
   [contents release];
   [cell_image release];
   [cell_font release];
+  [represented_object release];
   [super dealloc];
 }
 
@@ -223,6 +224,7 @@
   [anImage retain];
   [cell_image release];
   cell_image = anImage;
+  [self setType:NSImageCellType];
 }
 
 //
@@ -254,6 +256,7 @@
 
   [contents release];
   contents = [[number stringValue] retain];
+  [self setType:NSTextCellType];
 }
 
 - (void)setFloatValue:(float)aFloat
@@ -262,6 +265,7 @@
 
   [contents release];
   contents = [[number stringValue] retain];
+  [self setType:NSTextCellType];
 }
 
 - (void)setIntValue:(int)anInt
@@ -270,6 +274,7 @@
 
   [contents release];
   contents = [[number stringValue] retain];
+  [self setType:NSTextCellType];
 }
 
 - (void)setStringValue:(NSString *)aString
@@ -537,6 +542,10 @@
   return nil;
 }
 
+- (void)performClick:(id)sender
+{
+}
+
 //
 // Assigning a Tag 
 //
@@ -730,11 +739,15 @@
 //
 - (id)representedObject
 {
-  return nil;
+  return represented_object;
 }
 
 - (void)setRepresentedObject:(id)anObject
-{}
+{
+  [anObject retain];
+  [represented_object release];
+  represented_object = anObject;
+}
 
 - (id)copyWithZone:(NSZone*)zone
 {
@@ -761,7 +774,7 @@
   [c setEntryType:entry_type];
   c->control_view = control_view;
   c->cell_size = cell_size;
-  c->represented_object = [represented_object retain];
+  [c setRepresentedObject:represented_object];
 
   return c;
 }

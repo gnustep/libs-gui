@@ -125,7 +125,7 @@ gui/NSImage.h \
 gui/NSImageRep.h \
 gui/NSMatrix.h \
 gui/NSMenu.h \
-gui/NSMenuCell.h \
+gui/NSMenuItem.h \
 gui/NSNibLoading.h \
 gui/NSOpenPanel.h \
 gui/NSPageLayout.h \
@@ -201,7 +201,7 @@ NSImage$(oext) \
 NSImageRep$(oext) \
 NSMatrix$(oext) \
 NSMenu$(oext) \
-NSMenuCell$(oext) \
+NSMenuItem$(oext) \
 NSOpenPanel$(oext) \
 NSPageLayout$(oext) \
 NSPanel$(oext) \

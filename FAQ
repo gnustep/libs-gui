@@ -76,7 +76,7 @@ is available at:
 
   5. Where can I get a copy?
 
-     The gstep-gui-0.2.0.tar.gz distribution file has been placed on
+     The gstep-gui-0.3.0.tar.gz distribution file has been placed on
      `ftp.gnustep.org' in `pub/gnustep'.
 
      The program requires gcc 2.7.0 or higher.
@@ -85,8 +85,9 @@ is available at:
      TIFF Graphics library version 3.4.
 
      It also requires a FoundationKit library as specified by the
-     OpenStep specification.  The FoundationKit library known to work
-     is the GNUstep Base Library version `0.2.12'.
+     OpenStep specification.  The FoundationKit libraries known to work
+     are the GNUstep Base Library version `0.2.12' and libFoundation
+     version `0.7.1'.
 
      The `.tar' file is compressed with GNU gzip.  Gzip can be obtained
      by anonymous ftp at any of the GNU archive sites.

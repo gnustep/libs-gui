@@ -31,6 +31,8 @@
 #include <Foundation/NSArray.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSRunLoop.h>
+#include <Foundation/NSAutoreleasePool.h>
+
 #include <DPSClient/NSDPSContext.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSPopUpButton.h>
@@ -38,7 +40,7 @@
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSMenu.h>
-#include <AppKit/NSMenuCell.h>
+#include <AppKit/NSMenuItem.h>
 #include <AppKit/NSCursor.h>
 
 //
@@ -264,6 +266,7 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 - (void)run
 {
   NSEvent *e;
+  NSAutoreleasePool* pool;
 
   NSDebugLog(@"NSApplication -run\n");
 
@@ -274,6 +277,7 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 
   do
     {
+      pool = [NSAutoreleasePool new];
       e = [self nextEventMatchingMask:NSAnyEventMask
 		untilDate:[NSDate distantFuture]
 		inMode:NSDefaultRunLoopMode dequeue:YES];
@@ -285,6 +289,7 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 	  // Call the back-end method to handle it
 	  [self handleNullEvent];
 	}
+      [pool release];
     } while (!app_should_quit);
   app_is_running = YES;
 
@@ -442,82 +447,76 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 {
 }
 
+- (NSEvent*)_eventMatchingMask:(unsigned int)mask
+{
+  NSEvent* event;
+  int i, count;
+
+  /* Get an event from the events queue */
+  if ((count = [event_queue count])) {
+    for (i = 0; i < count; i++) {
+      event = [event_queue objectAtIndex:i];
+      if ([self event:event matchMask:mask]) {
+	[event retain];
+	[event_queue removeObjectAtIndex:i];
+	[self setCurrentEvent:event];
+	return [event autorelease];
+      }
+    }
+  }
+
+  return nil;
+}
+
 - (NSEvent *)nextEventMatchingMask:(unsigned int)mask
 			 untilDate:(NSDate *)expiration
 			    inMode:(NSString *)mode
 			   dequeue:(BOOL)flag
 {
-  NSEvent *e;
-  BOOL done;
-  int i, j;
+  NSRunLoop* currentLoop = [NSRunLoop currentRunLoop];
+  NSEventType type;
+  NSEvent *event;
+  BOOL done = NO;
 
-  // If the queue isn't empty then check those messages
-  if ([event_queue count])
-    {
-      j = [event_queue count];
-//      for (i = j-1;i >= 0; --i)
-      for (i = 0; i < j; i++)
-	{
-	  e = [event_queue objectAtIndex: i];
-	  if ([self event: e matchMask: mask])
-	    {
-	      [e retain];
-	      [event_queue removeObjectAtIndex: i];
-	      [self setCurrentEvent: e];
-	      return [e autorelease];
-	    }
-	}
-    }
+  event = [self _eventMatchingMask:mask];
+  if (event)
+    done = YES;
 
   // Not in queue so wait for next event
-  done = NO;
-  while (!done)
-    {
-#if USE_RUN_LOOP
-      NSRunLoop* currentLoop = [NSRunLoop currentRunLoop];
-      NSDate* limitDate = [currentLoop limitDateForMode:mode];
+  while (!done) {
+    NSDate* limitDate = [currentLoop limitDateForMode:mode];
 
-      if (!expiration)
-        expiration = [NSDate distantFuture];
+    /* -limitDateForMode: can fire timers and timer events can be quueued in
+       events queue so check for them. */
+    event = [self _eventMatchingMask:mask];
+    if (event)
+      break;
 
-      if (limitDate)
-        limitDate = [expiration earlierDate:limitDate];
-      else
-	limitDate = expiration;
+    if (!expiration)
+      expiration = [NSDate distantFuture];
 
-//      NSLog (@"calling runMode:beforeDate:");
-      [currentLoop runMode:mode beforeDate:limitDate];
-//      NSLog (@"return from runMode:beforeDate:");
-#else
-      e = [self getNextEvent];
-#endif
+    if (limitDate)
+      limitDate = [expiration earlierDate:limitDate];
+    else
+      limitDate = expiration;
 
-      if ([event_queue count]) {
-	e = [[event_queue lastObject] retain];
+    [currentLoop runMode:mode beforeDate:limitDate];
 
-	// Check mask
-	if ([self event: e matchMask: mask])
-	  {
-	    if (e)
-	      {
-		[event_queue removeObject: e];
-	      }
-	    done = YES;
-	  }
-	}
-      }
+    event = [self _eventMatchingMask:mask];
+    if (event)
+      done = YES;
+  }
+
+  type = [event type];
 
   // Unhide the cursor if necessary
   // but only if its not a null event
-  if (e != gnustep_gui_null_event)
+  if (event != gnustep_gui_null_event)
     {
-      NSEventType type;
-
       // Only if we should unhide when mouse moves
       if ([NSCursor isHiddenUntilMouseMoves])
 	{
 	  // Make sure the event is a mouse event before unhiding
-	  type = [e type];
 	  if ((type == NSLeftMouseDown) || (type == NSLeftMouseUp)
 	      || (type == NSRightMouseDown) || (type == NSRightMouseUp)
 	      || (type == NSMouseMoved))
@@ -525,8 +524,7 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 	}
     }
 
-  [self setCurrentEvent: e];
-  return [e autorelease];
+  return event;
 }
 
 - (NSEvent *)peekEventMatchingMask:(unsigned int)mask
@@ -810,13 +808,13 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 - (void)setMainMenu:(NSMenu *)aMenu
 {
   int i, j;
-  NSMenuCell *mc;
+  NSMenuItem *mc;
   NSArray *mi;
 
   // Release old and retain new
+  [aMenu retain];
   [main_menu release];
   main_menu = aMenu;
-  [main_menu retain];
 
   // Search for a menucell with the name Windows
   // This is the default windows menu
@@ -897,8 +895,8 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 
 - (void)setWindowsMenu:aMenu
 {
-  if (windows_menu)
-    [windows_menu setSubmenu:aMenu];
+//  if (windows_menu)
+//    [windows_menu setSubmenu:aMenu];
 }
 
 - (void)updateWindowsItem:aWindow
@@ -907,7 +905,8 @@ NSString *NSApplicationWillUpdateNotification = @"ApplicationWillUpdate";
 
 - (NSMenu *)windowsMenu
 {
-  return [windows_menu submenu];
+//  return [windows_menu submenu];
+  return nil;
 }
 
 //

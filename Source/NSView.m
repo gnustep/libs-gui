@@ -153,13 +153,13 @@ NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
   bounds.size = frame.size;
 
 	// Initialize subview list
-  sub_views = [NSMutableArray array];
+  sub_views = [NSMutableArray new];
 
   // Initialize tracking rectangle list
-  tracking_rects = [NSMutableArray array];
+  tracking_rects = [NSMutableArray new];
 
   // Initialize cursor rect list
-  cursor_rects = [NSMutableArray array];
+  cursor_rects = [NSMutableArray new];
 
   super_view = nil;
   window = nil;
@@ -177,26 +177,9 @@ NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
 
 - (void)dealloc
 {
-  int i, j;
-
-  //NSArray doesn't know -removeAllObjects yet
-  //[sub_views removeAllObjects];
-  j = [sub_views count];
-  for (i = 0;i < j; ++i)
-    [[sub_views objectAtIndex:i] release];
-
-  // no need -array is autoreleased
-  //[sub_views release];
-
-  // Free the tracking rectangles
-  j = [tracking_rects count];
-  for (i = 0;i < j; ++i)
-    [[tracking_rects objectAtIndex:i] release];
-
-  // Free the cursor rectangles
-  j = [cursor_rects count];
-  for (i = 0;i < j; ++i)
-    [[cursor_rects objectAtIndex:i] release];
+  [sub_views release];
+  [tracking_rects release];
+  [cursor_rects release];
 
   [super dealloc];
 }
@@ -224,9 +207,6 @@ NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
       return;
     }
 
-  // retain the object
-  [aView retain];
-
   // Add to our subview list
   [sub_views addObject:(id)aView];
   [aView setSuperview:self];
@@ -245,9 +225,6 @@ NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
 #if 0
   if (![aView isKindOfClass:[NSView class]]) return;
 #endif
-
-  // retain the object
-  [aView retain];
 
   // Add to our subview list
   [sub_views addObject:(id)aView];
@@ -314,52 +291,22 @@ NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
 
 - (void)removeFromSuperview
 {
-  int i, j;
-  NSMutableArray *v;
+  NSMutableArray *views;
 
   // No superview then just return
   if (!super_view) return;
 
-  v = [super_view subviews];
-  j = [v count];
-  for (i = 0;i < j; ++i)
-    {
-      if ([v objectAtIndex:i] == self)
-	[v removeObjectAtIndex:i];
-    }
+  views = [super_view subviews];
+  [views removeObjectIdenticalTo:self];
 }
 
 - (void)replaceSubview:(NSView *)oldView
 		  with:(NSView *)newView
 {
-  int i, j;
-  NSView *v;
+  int index = [sub_views indexOfObjectIdenticalTo:oldView];
 
-  // Not a NSView --then forget it
-  // xxx but NSView will really be the backend class
-  // so how do we check that its really a subclass of NSView
-  // and not of the backend class?
-#if 0
-  if (![newView isKindOfClass:[NSView class]]) return;
-#endif
-
-  j = [sub_views count];
-  for (i = 0;i < j; ++i)
-    {
-      v = [sub_views objectAtIndex:i];
-      if (v == oldView)
-	{
-	  // Found it then replace
-	  [sub_views replaceObjectAtIndex:i withObject:newView];
-	  // release it as well
-	  [v release];
-	  // and retain the new view
-	  [newView retain];
-	}
-      else
-	// Didn't find then pass down view hierarchy
-	[v replaceSubview:oldView with:newView];
-    }
+  if (index != NSNotFound)
+    [sub_views replaceObjectAtIndex:index withObject:newView];
 }
 
 - (void)sortSubviewsUsingFunction:(int (*)(id ,id ,void *))compare 
@@ -378,14 +325,6 @@ NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
 
 - (void)setSuperview:(NSView *)superview
 {
-  // Not a NSView --then forget it
-  // xxx but NSView will really be the backend class
-  // so how do we check that its really a subclass of NSView
-  // and not of the backend class?
-#if 0
-  if (![superview isKindOfClass:[NSView class]]) return;
-#endif
-
   super_view = superview;
 }
 
@@ -400,16 +339,13 @@ NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
 
 - (void)viewWillMoveToWindow:(NSWindow *)newWindow
 {
-  int i, j;
-
-  // not a window --then forget it
-  // if (![newWindow isKindOfClass:[NSWindow class]]) return;
+  int i, count;
 
   window = newWindow;
 
   // Pass new window down to subviews
-  j = [sub_views count];
-  for (i = 0;i < j; ++i)
+  count = [sub_views count];
+  for (i = 0; i < count; ++i)
     [[sub_views objectAtIndex:i] viewWillMoveToWindow:newWindow];
 
 }
@@ -900,8 +836,9 @@ NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
 {
   TrackingRectangle *m;
 
-  m = [[TrackingRectangle alloc] initWithRect: aRect tag: 0 owner: anObject
-				 userData: NULL inside: YES];
+  m = [[[TrackingRectangle alloc] initWithRect: aRect tag: 0 owner: anObject
+				 userData: NULL inside: YES]
+		autorelease];
   [cursor_rects addObject:m];
 }
 
@@ -916,21 +853,18 @@ NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
   id e = [cursor_rects objectEnumerator];
   TrackingRectangle *o;
   NSCursor *c;
-  BOOL found = NO;
 
   // Base remove test upon cursor object
   o = [e nextObject];
-  while (o && (!found))
-    {
-      c = [o owner];
-      if (c == anObject)
-	found = YES;
-      else
-	o = [e nextObject];
+  while (o) {
+    c = [o owner];
+    if (c == anObject) {
+      [cursor_rects removeObject: o];
+      break;
     }
-
-  if (found)
-    [cursor_rects removeObject: o];
+    else
+      o = [e nextObject];
+  }
 }
 
 - (void)resetCursorRects
@@ -951,13 +885,15 @@ NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
 
 - (id)viewWithTag:(int)aTag
 {
-  int i, j;
+  int i, count;
 
-  j = [sub_views count];
-  for (i = 0;i < j; ++i)
+  count = [sub_views count];
+  for (i = 0; i < count; ++i)
     {
-      if ([[sub_views objectAtIndex:i] tag] == aTag)
-	return [sub_views objectAtIndex:i];
+      id view = [sub_views objectAtIndex:i];
+
+      if ([view tag] == aTag)
+	return view;
     }
   return nil;
 }
@@ -1062,8 +998,9 @@ NSString *NSViewFocusChangedNotification = @"NSViewFocusChangedNotification";
     }
   ++t;
 
-  m = [[TrackingRectangle alloc] initWithRect:aRect tag:t owner:anObject
-				 userData:data inside:flag];
+  m = [[[TrackingRectangle alloc] initWithRect:aRect tag:t owner:anObject
+				 userData:data inside:flag]
+		autorelease];
   [tracking_rects addObject:m];
 
   return t;

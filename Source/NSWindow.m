@@ -30,8 +30,10 @@
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSNotification.h>
+
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSApplication.h>
+#include <AppKit/NSImage.h>
 #include <AppKit/NSTextFieldCell.h>
 #include <AppKit/NSTextField.h>
 #include <AppKit/NSColor.h>
@@ -55,6 +57,11 @@ NSString *NSWindowDidUpdateNotification = @"WindowDidUpdate";
 NSString *NSWindowWillCloseNotification = @"WindowWillClose";
 NSString *NSWindowWillMiniaturizeNotification = @"WindowWillMiniaturize";
 NSString *NSWindowWillMoveNotification = @"WindowWillMove";
+
+#define ASSIGN(variable, value) \
+  [value retain]; \
+  [variable release]; \
+  variable = value;
 
 //
 // NSWindow implementation
@@ -125,17 +132,15 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
 
 - (void)dealloc
 {
-  NSApplication *theApp = [NSApplication sharedApplication];
-
-  NSDebugLog(@"Remove NSWindow from application\n");
-  // Remove ourselves from the application window list
-  [theApp removeWindowsItem:self];
-
   // Release the content view
-  NSDebugLog(@"Release content view\n");
   if (content_view) [content_view release];
 
-  NSDebugLog(@"NSWindow dealloc super\n");
+  [background_color release];
+  [represented_filename release];
+  [miniaturized_title release];
+  [miniaturized_image release];
+  [window_title release];
+
   [super dealloc];
 }
 
@@ -160,6 +165,7 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
 {
   NSApplication *theApp = [NSApplication sharedApplication];
   NSRect r = [[NSScreen mainScreen] frame];
+  NSRect cframe;
 
   NSDebugLog(@"NSWindow default initializer\n");
   if (!theApp)
@@ -186,7 +192,9 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
   cursor_rects_valid = NO;
 
   // Create our content view
-  [self setContentView:[[NSView alloc] initWithFrame:frame]];
+  cframe.origin = NSZeroPoint;
+  cframe.size = frame.size;
+  [self setContentView:[[[NSView alloc] initWithFrame:cframe] autorelease]];
 
   // Register ourselves with the Application object
   [theApp addWindowsItem:self title:window_title filename:NO];
@@ -205,22 +213,14 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
 
 - (void)setContentView:(NSView *)aView
 {
-  // Not an NSView -then forget it
-  if (![aView isKindOfClass:[NSView class]])
-    return;
-
-	// Release current content view
   if (content_view)
-    {
-      // Tell view it is no longer in a window
-      [content_view viewWillMoveToWindow:nil];
-      [content_view release];
-    }
+    [content_view viewWillMoveToWindow:nil];
 
-  content_view = aView;
-  [content_view retain];
+  ASSIGN(content_view, aView);
+
   // Tell the view its changing windows
   [content_view viewWillMoveToWindow:self];
+
   // Make us the view's next responder
   [content_view setNextResponder:self];
 }
@@ -240,17 +240,17 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
 
 - (void)setBackgroundColor:(NSColor *)color
 {
-  background_color = color;
+  ASSIGN(background_color, color);
 }
 
 - (void)setRepresentedFilename:(NSString *)aString
 {
-  represented_filename = aString;
+  ASSIGN(represented_filename, aString);
 }
 
 - (void)setTitle:(NSString *)aString
 {
-  window_title = aString;
+  ASSIGN(window_title, aString);
 }
 
 - (void)setTitleWithRepresentedFilename:(NSString *)aString
@@ -327,12 +327,12 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
 
 - (void)setMiniwindowImage:(NSImage *)image
 {
-  miniaturized_image = image;
+  ASSIGN(miniaturized_image, image);
 }
 
 - (void)setMiniwindowTitle:(NSString *)title;
 {
-  miniaturized_title = title;
+  ASSIGN(miniaturized_title, title);
 }
 
 //
@@ -469,7 +469,7 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
 
 - (void)orderOut:sender
 {
-  visible = YES;
+  visible = NO;
 }
 
 - (void)orderWindow:(NSWindowOrderingMode)place
@@ -636,7 +636,7 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
 
 - (void)flushWindowIfNeeded
 {
-  if (!disable_flush_window)
+  if (!disable_flush_window && needs_flush)
     [self flushWindow];
 }
 
@@ -1344,6 +1344,9 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
 - (void)print:sender
 {}
 
+- (void)_setNeedsFlush:(BOOL)flag		{ needs_flush = flag; }
+- (BOOL)_needsFlush				{ return needs_flush; }
+
 //
 // Assigning a delegate
 //
@@ -1577,6 +1580,11 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
 //
 @implementation NSWindow (GNUstepBackend)
 
++ (NSWindow*)windowWithNumber:(int)windowNumber
+{
+  return nil;
+}
+
 //
 // Mouse capture/release
 //
@@ -1598,7 +1606,7 @@ NSString *NSWindowWillMoveNotification = @"WindowWillMove";
   original_responder = nil;
   delegate = nil;
   window_num = 0;
-  background_color = [NSColor lightGrayColor];
+  background_color = [[NSColor lightGrayColor] retain];
   represented_filename = @"Window";
   miniaturized_title = @"Window";
   miniaturized_image = nil;

@@ -69,6 +69,13 @@ static NSFont* getFont(NSString* key, NSString* defaultFontName, float fontSize)
   if (!fontName)
     fontName = defaultFontName;
 
+  if (!fontSize) {
+    fontSize = [[NSUserDefaults standardUserDefaults]
+		    floatForKey:[NSString stringWithFormat:@"%@Size", key]];
+    if (!fontSize)
+      fontSize = 12;
+  }
+
   return [NSFont fontWithName:fontName size:fontSize];
 }
 

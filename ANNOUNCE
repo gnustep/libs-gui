@@ -1,7 +1,7 @@
 ANNOUNCE
 ********
 
-This is version 0.2.0 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.3.0 of the GNUstep GUI library (`gnustep-gui').
 
 What is the GNUstep GUI Library?
 ================================
@@ -31,41 +31,38 @@ component like the GNUstep X/DPS GUI Backend.
 What's new in this release?
 ===========================
 
-   The currently released version of the library is `0.2.0'.
+   The currently released version of the library is `0.3.0'.
 
-Noteworthy changes in version `0.2.0'
+Noteworthy changes in version `0.3.0'
 =====================================
 
-   * Additional NSImage and NSImageRep class work.  Incorporated common
-     images for use with controls that were designed by Andrew Lindesay.
+   * Completely reworked the menu class. The NSMenu class is now
+     inherited from NSObject and using the new implementation menus
+     have been implemented for the XDPS backend (they have the look and
+     feel of the NeXTStep menus!).
 
-   * Fill out implementation of NSColorWell class.
+   * NSRunLoop has been integrated with NSApplication. Using this
+     capability time events have been implemented to NSEvent class.
+     These events allow several improvements in the interaction between
+     user and the graphic interface.
 
-   * Fill out implementation of NSColorList class.
+   * NSMatrix has been reworked, it is now conforming to the OpenStep
+     specification and it knows all the selection modes. It uses time
+     events to enhance the drawing speed during mouse drags.
 
-   * Cleaned up the header files and added missing headers, methods,
-     categories, and protocols; thanks to Simon Frankau for much of this
-     work.  Major reorganization of header files.  Types and constants
-     were moved in the files they belong.  Each header file includes
-     only the headers it really needs.  Use `@class' to forward class
-     definitions instead of including the corresponding class file.
+   * The initial implementation of NSForm has been made although it has
+     not been tested yet.
 
-   * Completely reworked the NSFont and NSFontManager classes so that
-     NSUserDefaults is used for getting defaults and list of known
-     fonts are maintained.
+   * NSPrinter has been implemented though it was not throughly tested;
+     thanks to Simon Frankau.
 
-   * Initial implementation of NSCursor class.
+   * Configure script has been changed to detect the underlaying
+     Foundation library.  The currently supported libraries are
+     gnustep-base and libFoundation.
 
-   * Almost complete implementation of NSButton and NSButtonCell class.
-     Buttons can not display images and/or text, handles all of the
-     OpenStep button types and styles.
-
-   * Fill out implementation of NSScroller class.
-
-   * Put in underlying support for optimizing drawing; flushing of
-     windows, backing store, and only display when needed.
-
-   * Many bug fixes and minor enhancements.
+   * Several cleanups have been made in a lot of classes: the
+     retain/release policy has been fixed, the cell classes correctly
+     implement the NSCopying protocol and many others.
 
 How can I get support for this software?
 ========================================
@@ -82,7 +79,7 @@ GNUstep GUI Library, see the file `SUPPORT' for more information.
 Where can you get it?  How can you compile it?
 ==============================================
 
-   The gstep-gui-0.2.0.tar.gz distribution file has been placed on
+   The gstep-gui-0.3.0.tar.gz distribution file has been placed on
 `ftp.gnustep.org' in `pub/gnustep'.
 
    The program requires gcc 2.7.0 or higher.
@@ -91,8 +88,9 @@ Where can you get it?  How can you compile it?
 TIFF Graphics library version 3.4.
 
    It also requires a FoundationKit library as specified by the OpenStep
-specification.  The FoundationKit library known to work is the GNUstep
-Base Library version `0.2.12'.
+specification.  The FoundationKit libraries known to work are the
+GNUstep Base Library version `0.2.12' and libFoundation version
+`0.7.1'.
 
    The `.tar' file is compressed with GNU gzip.  Gzip can be obtained by
 anonymous ftp at any of the GNU archive sites.

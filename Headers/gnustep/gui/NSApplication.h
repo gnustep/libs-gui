@@ -43,7 +43,7 @@
 @class NSEvent;
 @class NSPasteboard;
 @class NSMenu;
-@class NSMenuCell;
+@class NSMenuItem;
 @class NSImage;
 @class NSWindow;
 @class NSDPSContext;
@@ -72,7 +72,7 @@ extern NSString *NSEventTrackingRunLoopMode;
   id delegate;
   int window_count;
   NSMenu *main_menu;
-  NSMenuCell *windows_menu;
+  NSMenuItem *windows_menu;
   unsigned int current_mod;
   BOOL app_is_running;
   BOOL app_should_quit;

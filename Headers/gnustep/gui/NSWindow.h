@@ -91,6 +91,7 @@ extern NSSize NSTokenSize;
 
   BOOL is_one_shot;
   BOOL needs_display;
+  BOOL needs_flush;
   BOOL is_autodisplay;
   BOOL optimize_drawing;
   BOOL views_need_display;
@@ -394,12 +395,18 @@ extern NSSize NSTokenSize;
 - (void)encodeWithCoder:aCoder;
 - initWithCoder:aDecoder;
 
+// Private methods
+- (void)_setNeedsFlush:(BOOL)flag;
+- (BOOL)_needsFlush;
+
 @end
 
 //
 // GNUstep backend methods
 //
 @interface NSWindow (GNUstepBackend)
+
++ (NSWindow*)windowWithNumber:(int)windowNumber;
 
 //
 // Mouse capture/release

@@ -1,7 +1,38 @@
 NEWS
 ****
 
-The currently released version of the library is `0.2.0'.
+The currently released version of the library is `0.3.0'.
+
+Noteworthy changes in version `0.3.0'
+=====================================
+
+   * Completely reworked the menu class. The NSMenu class is now
+     inherited from NSObject and using the new implementation menus
+     have been implemented for the XDPS backend (they have the look and
+     feel of the NeXTStep menus!).
+
+   * NSRunLoop has been integrated with NSApplication. Using this
+     capability time events have been implemented to NSEvent class.
+     These events allow several improvements in the interaction between
+     user and the graphic interface.
+
+   * NSMatrix has been reworked, it is now conforming to the OpenStep
+     specification and it knows all the selection modes. It uses time
+     events to enhance the drawing speed during mouse drags.
+
+   * The initial implementation of NSForm has been made although it has
+     not been tested yet.
+
+   * NSPrinter has been implemented though it was not throughly tested;
+     thanks to Simon Frankau.
+
+   * Configure script has been changed to detect the underlaying
+     Foundation library.  The currently supported libraries are
+     gnustep-base and libFoundation.
+
+   * Several cleanups have been made in a lot of classes: the
+     retain/release policy has been fixed, the cell classes correctly
+     implement the NSCopying protocol and many others.
 
 Noteworthy changes in version `0.2.0'
 =====================================

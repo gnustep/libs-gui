@@ -5,7 +5,7 @@
 @include version.texi
 @end ifset
 
-Last updated March 1997.  The most up-to-date version of this status
+Last updated July 1997.  The most up-to-date version of this status
 report is available at:
 
 @example
@@ -45,9 +45,9 @@ backend as it is an abstract class which only defines behaviour.  All
 methods are implemented; the only thing lacking is a test, if needed.
 
 @item NSApplication:: [6]
-The event handling is pretty good though it
-does not take advantage of the NSRunLoop class.  Many of the minor
-methods are implemented.  No window ordering is being maintained, and
+The event handling has been integrated with the NSRunLoop class.
+Many of the minor methods are implemented.
+No window ordering is being maintained, and
 a number of the methods that perform operations on windows are
 empty.  Modal loops are not implemented.
 
@@ -138,7 +138,9 @@ Ghostscript System, but still requires additional work.
 @item NSFontPanel:: [2]
 May be usable with backend implementation.
 
-@item NSForm:: [2]
+@item NSForm:: [9]
+The code has been written, it greatly depends on NSMatrix, but no tests have
+been made.
 
 @item NSFormCell:: [2]
 
@@ -153,16 +155,19 @@ classes.
 Additional implementation to the point where TIFF images can be
 displayed; requires sufficient backend implementation.
 
-@item NSMatrix:: [6]
-Many methods are implemented but more thorough testing needs to be done.
+@item NSMatrix:: [9]
+The class is almost completely implemented, only the methods that deal with
+text selection and moving from a text field to another using TAB and SHIFT-TAB
+are empty.
 
-@item NSMenu:: [2]
-Implementation was removed until a more efficient mechanism can be
-devised.  The OpenStep specification has changed regarding this class.
+@item NSMenu:: [10]
+The class is complete now, all the logic is here, the backend needs to
+write only the code that deals with displaying the menu windows on screen. For
+an example of how this is achieved take a look to the XDPS backend.
 
-@item NSMenuCell:: [8]
-Almost complete implementation; actual ability to use depends upon
-backend implementation.
+@item NSMenuItem:: [10]
+The logic is here, but needs support for drawing the cell in the backend. Also
+take a look to the XDPS backend to see how this works.
 
 @item NSOpenPanel:: [6]
 Usability greatly depends upon backend implementation.
@@ -176,7 +181,10 @@ Usability greatly depends upon backend implementation.
 @item NSPopUpButton:: [4]
 Usability greatly depends upon backend implementation.
 
-@item NSPrinter:: [2]
+@item NSPrinter:: [9]
+The code was written but not tested very much. We also need to add printer
+description files to the PrinterTypes directory inside the gnustep instalation
+directory.
 
 @item NSPrintinfo:: [2]
 

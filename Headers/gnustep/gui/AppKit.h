@@ -105,7 +105,7 @@
 #include <AppKit/NSImageRep.h>
 #include <AppKit/NSMatrix.h>
 #include <AppKit/NSMenu.h>
-#include <AppKit/NSMenuCell.h>
+#include <AppKit/NSMenuItem.h>
 #include <AppKit/NSNibLoading.h>
 #include <AppKit/NSOpenPanel.h>
 #include <AppKit/NSPageLayout.h>

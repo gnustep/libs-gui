@@ -51,8 +51,13 @@ common_ArrowDown.tiff \
 common_ArrowUp.tiff \
 common_ArrowRight.tiff \
 common_ArrowLeft.tiff \
+common_Close.tiff \
+common_CloseH.tiff \
+common_CloseBroken.tiff \
 common_RadioOn.tiff \
 common_RadioOff.tiff \
+common_Right.tiff \
+common_RightH.tiff \
 common_SwitchOn.tiff \
 common_SwitchOff.tiff \
 common_Dimple.tiff \

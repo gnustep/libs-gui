@@ -3,10 +3,10 @@
 
    Class representing a printer's or printer model's capabilities.
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1997 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+   Authors:  Simon Frankau <sgf@frankau.demon.co.uk>
+   Date: June 1997
    
    This file is part of the GNUstep GUI Library.
 
@@ -29,12 +29,13 @@
 #ifndef _GNUstep_H_NSPrinter
 #define _GNUstep_H_NSPrinter
 
-#include <gnustep/gui/config.h>
 #include <Foundation/NSCoder.h>
+#include <Foundation/NSGeometry.h>
 
 @class NSString;
 @class NSArray;
 @class NSDictionary;
+@class NSMutableDictionary;
 
 typedef enum _NSPrinterTableStatus {
   NSPrinterTableOK,
@@ -44,7 +45,14 @@ typedef enum _NSPrinterTableStatus {
 
 @interface NSPrinter : NSObject <NSCoding>
 {
-  // Attributes
+  NSString *printerHost, *printerName, *printerNote, *printerType;
+  int cacheAcceptsBinary, cacheOutputOrder;
+  BOOL isRealPrinter;
+  NSMutableDictionary *PPD;
+  NSMutableDictionary *PPDOptionTranslation;
+  NSMutableDictionary *PPDArgumentTranslation;
+  NSMutableDictionary *PPDOrderDependency;
+  NSMutableDictionary *PPDUIConstraints;
 }
 
 //

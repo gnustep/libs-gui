@@ -108,6 +108,7 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
 	  [_reps replaceObjectAtIndex: i withObject:
 	    [NSValue value: new_repd withObjCType: @encode(rep_data_t)]];
 	  found = YES;
+	  break;
 	}
     }
   if (!found)
@@ -217,7 +218,8 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
 
       if ([path length] != 0) 
 	{
-	  NSImage* image = [[NSImage alloc] initByReferencingFile:path];
+	  NSImage* image = [[[NSImage alloc] initByReferencingFile:path]
+				autorelease];
 	  if (image)
 	    [image setName: [[path lastPathComponent] 
 				stringByDeletingPathExtension]];
@@ -325,12 +327,15 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
   NSImage* copy;
 
   // FIXME: maybe we should retain if _flags.dataRetained = NO
-  copy = (NSImage*)NSAllocateObject (isa, 0, zone);
+  copy = (NSImage*)NSCopyObject (self, 0, zone);
 
   [name retain];
+  copy->_reps = [NSMutableArray new];
+  copy->_repList = [NSMutableArray new];
   [_color retain];
   _lockedView = nil;
-  [copy addRepresentations: [[self representations] copyWithZone: zone]];
+  [copy addRepresentations: [[[self representations] copyWithZone: zone]
+				autorelease]];
   
   return copy;
 }
@@ -686,7 +691,7 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
   for (i = 0; i < count; i++)
     {
       repd.fileName = NULL;
-      repd.rep = [imageRepArray objectAtIndex: i];
+      repd.rep = [[imageRepArray objectAtIndex: i] retain];
       repd.cache = NULL;
       repd.original = NULL;
       repd.validCache = NO;

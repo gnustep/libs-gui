@@ -1,7 +1,7 @@
 Status Report
 *************
 
-Last updated March 1997.  The most up-to-date version of this status
+Last updated July 1997.  The most up-to-date version of this status
 report is available at:
 
      `http://www.gnustep.org/Documentation/gnustep-gui/gnustep-gui_toc.html'
@@ -42,11 +42,10 @@ Classes
      implemented; the only thing lacking is a test, if needed.
 
 *NSApplication:: [6]*
-     The event handling is pretty good though it does not take
-     advantage of the NSRunLoop class.  Many of the minor methods are
-     implemented.  No window ordering is being maintained, and a number
-     of the methods that perform operations on windows are empty.
-     Modal loops are not implemented.
+     The event handling has been integrated with the NSRunLoop class.
+     Many of the minor methods are implemented.  No window ordering is
+     being maintained, and a number of the methods that perform
+     operations on windows are empty.  Modal loops are not implemented.
 
 *NSBitmapImageRep:: [4]*
      Implementation has been filled out enough so that TIFF images can
@@ -124,7 +123,10 @@ Classes
 *NSFontPanel:: [2]*
      May be usable with backend implementation.
 
-*NSForm:: [2]*
+*NSForm:: [9]*
+     The code has been written, it greatly depends on NSMatrix, but no
+     tests have been made.
+
 *NSFormCell:: [2]*
 *NSHelpPanel:: [2]*
 *NSImage:: [8]*
@@ -136,18 +138,21 @@ Classes
      Additional implementation to the point where TIFF images can be
      displayed; requires sufficient backend implementation.
 
-*NSMatrix:: [6]*
-     Many methods are implemented but more thorough testing needs to be
-     done.
+*NSMatrix:: [9]*
+     The class is almost completely implemented, only the methods that
+     deal with text selection and moving from a text field to another
+     using TAB and SHIFT-TAB are empty.
 
-*NSMenu:: [2]*
-     Implementation was removed until a more efficient mechanism can be
-     devised.  The OpenStep specification has changed regarding this
-     class.
+*NSMenu:: [10]*
+     The class is complete now, all the logic is here, the backend
+     needs to write only the code that deals with displaying the menu
+     windows on screen. For an example of how this is achieved take a
+     look to the XDPS backend.
 
-*NSMenuCell:: [8]*
-     Almost complete implementation; actual ability to use depends upon
-     backend implementation.
+*NSMenuItem:: [10]*
+     The logic is here, but needs support for drawing the cell in the
+     backend. Also take a look to the XDPS backend to see how this
+     works.
 
 *NSOpenPanel:: [6]*
      Usability greatly depends upon backend implementation.
@@ -158,7 +163,11 @@ Classes
 *NSPopUpButton:: [4]*
      Usability greatly depends upon backend implementation.
 
-*NSPrinter:: [2]*
+*NSPrinter:: [9]*
+     The code was written but not tested very much. We also need to add
+     printer description files to the PrinterTypes directory inside the
+     gnustep instalation directory.
+
 *NSPrintinfo:: [2]*
 *NSPrintOperation:: [2]*
 *NSPrintPanel:: [2]*

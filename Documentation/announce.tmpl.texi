@@ -65,8 +65,9 @@ It requires the Display Ghostscript System version
 @value{GNUSTEP-GUI-LIBTIFF}.
 
 It also requires a FoundationKit library as specified by the OpenStep
-specification.  The FoundationKit library known to work is the GNUstep
-Base Library version @samp{@value{GNUSTEP-GUI-BASE}}.
+specification.  The FoundationKit libraries known to work are the GNUstep
+Base Library version @samp{@value{GNUSTEP-GUI-BASE}} and libFoundation
+version @samp{@value{LIB-FOUNDATION}}.
 
 The @samp{.tar} file is compressed with GNU gzip.  Gzip can be obtained by
 anonymous ftp at any of the GNU archive sites.

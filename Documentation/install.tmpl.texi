@@ -30,10 +30,10 @@ Install @samp{gcc}.  The library requires gcc version
 @value{GNUSTEP-GUI-GCC} or later.
 
 @item
-Install @samp{gnustep-base}.  This library requires the classes in 
-the GNUstep Base Library.  You must also apply the Objective-C 
-Runtime patches to GCC which makes the runtime thread-safe, if
-your version of GCC lacks them.
+Install @samp{gnustep-base} or @samp{libFoundation}.  This library requires the 
+classes either in the GNUstep Base Library or libFoundation. You must also
+apply the Objective-C Runtime patches to GCC which makes the runtime
+thread-safe, if your version of GCC lacks them.
 
 @item
 Install the @samp{TIFF} library.  This library requires the header files

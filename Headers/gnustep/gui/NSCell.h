@@ -267,6 +267,7 @@ enum {
 - (void)setContinuous:(BOOL)flag;
 - (void)setTarget:(id)anObject;
 - (id)target;
+- (void)performClick:(id)sender;
 
 //
 // Assigning a Tag 

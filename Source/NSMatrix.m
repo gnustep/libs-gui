@@ -32,6 +32,8 @@
 
 #include <Foundation/NSValue.h>
 #include <Foundation/NSArray.h>
+#include <Foundation/NSAutoreleasePool.h>
+
 #include <AppKit/NSColor.h>
 #include <AppKit/NSActionCell.h>
 #include <AppKit/NSWindow.h>
@@ -960,11 +962,15 @@ static int mouseDownFlags = 0;
 - (void)sizeToCells
 {
   NSSize newSize;
+  int nc = numCols;
+  int nr = numRows;
 
-  newSize.width = numCols * (cellSize.width + intercell.width)
-		  - intercell.width;
-  newSize.height = numRows * (cellSize.height + intercell.height)
-		  - intercell.height;
+  if (!nc)
+    nc = 1;
+  if (!nr)
+    nr = 1;
+  newSize.width = nc * (cellSize.width + intercell.width) - intercell.width;
+  newSize.height = nr * (cellSize.height + intercell.height) - intercell.height;
   [self setFrameSize:newSize];
 }
 
@@ -1155,7 +1161,8 @@ static int mouseDownFlags = 0;
 
   mouseDownFlags = [theEvent modifierFlags];
   lastLocation = [self convertPoint:lastLocation fromView:nil];
-  [NSEvent startPeriodicEventsAfterDelay:0.05 withPeriod:0.05];
+  if (mode != NSTrackModeMatrix)
+    [NSEvent startPeriodicEventsAfterDelay:0.05 withPeriod:0.05];
   ASSIGN(lastEvent, theEvent);
   [self lockFocus];
 
@@ -1325,7 +1332,8 @@ static int mouseDownFlags = 0;
 
   [[self window] flushWindow];
   [self unlockFocus];
-  [NSEvent stopPeriodicEvents];
+  if (mode != NSTrackModeMatrix)
+    [NSEvent stopPeriodicEvents];
   [lastEvent release];
 }
 
@@ -1548,10 +1556,10 @@ static int mouseDownFlags = 0;
 		      last:(MPoint)last
 		   current:(MPoint)current
 {
-  /* We use an imaginar coordinate system whose center is the `anchor' point. We
-    should determine in which quadrants are located the `last' and the `current'
-    points. Based on this we extend the selection to the rectangle determined
-    by `anchor' and `current' points.
+  /* We use an imaginar coordinate system whose center is the `anchor' point.
+    We should determine in which quadrants are located the `last' and the
+    `current' points. Based on this we extend the selection to the rectangle
+    determined by `anchor' and `current' points.
 
     The algorithm uses two rectangles: one determined by `anchor' and
     `current' that defines how the final selection rectangle will look, and
@@ -1981,5 +1989,81 @@ static int mouseDownFlags = 0;
     rect.origin.y -= cellSize.height + intercell.height;
   }
 }
+
+#ifdef DEBUG
+#include <stdio.h>
+
+/* A test to exhaustively check if the list selection mode works correctly. */
+- (void)_selectRect2UsingAnchor:(MPoint)anchor
+		      last:(MPoint)last
+		   current:(MPoint)current
+{
+  MRect selectRect;
+  MRect unselectRect;
+
+  selectRect.x = MIN(anchor.x, current.x);
+  selectRect.y = MIN(anchor.y, current.y);
+  selectRect.width = ABS(current.x - anchor.x);
+  selectRect.height = ABS(current.y - anchor.y);
+
+  unselectRect.x = MIN(anchor.x, last.x);
+  unselectRect.y = MIN(anchor.y, last.y);
+  unselectRect.width = ABS(current.x - last.x);
+  unselectRect.height = ABS(current.y - last.y);
+
+  [self _setState:0 inRect:unselectRect];
+  [self _setState:1 inRect:selectRect];
+}
+
+/* This method assumes the receiver matrix has at least 5 rows and 5 columns.
+ */
+- (void)_test
+{
+  NSArray* selectedCellsByMethod1;
+  NSArray* selectedCellsByMethod2;
+  NSAutoreleasePool* pool;
+  MPoint anchor, last, current;
+  int i = 1;
+  int noOfErrors = 0;
+
+  if (numRows < 5 || numCols < 5) {
+    NSLog (@"matrix should have at least 5 rows and 5 columns!");
+    return;
+  }
+
+  for (anchor.x = 0; anchor.x < 5; anchor.x++)
+    for (anchor.y = 0; anchor.y < 5; anchor.y++)
+      for (last.x = 0; last.x < 5; last.x++)
+	for (last.y = 0; last.y < 5; last.y++)
+	  for (current.x = 0; current.x < 5; current.x++)
+	    for (current.y = 0; current.y < 5; current.y++) {
+	      pool = [NSAutoreleasePool new];
+
+	      printf ("%d\r", i++);
+	      fflush (stdout);
+
+	      /* First determine the selected cells using the sure method */
+	      [self _selectRect2UsingAnchor:anchor last:last current:current];
+	      selectedCellsByMethod2 = [self selectedCells];
+
+	      /* Then determine the same using the optimized method */
+	      [self _selectRectUsingAnchor:anchor last:last current:current];
+	      selectedCellsByMethod1 = [self selectedCells];
+
+	      /* Compare the selected cells determined by the two methods */
+	      if (![selectedCellsByMethod1 isEqual:selectedCellsByMethod2]) {
+		NSLog (@"\nSelected cells are different for:\n"
+		    @"anchor = (%d, %d)\nlast = (%d, %d)\ncurrent = (%d, %d)",
+		    anchor.x, anchor.y, last.x, last.y, current.x, current.y);
+		noOfErrors++;
+	      }
+
+	      [pool release];
+	    }
+
+  printf ("\nready!\nnumber of errors = %d\n", noOfErrors);
+  fflush (stdout);
+}
+#endif
 
 @end

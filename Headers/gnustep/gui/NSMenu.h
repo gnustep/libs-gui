@@ -1,13 +1,11 @@
 /* 
    NSMenu.h
 
-   The menu class
-   Here is your menu sir, our specials today are...
-
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+   Author:  Ovidiu Predescu <ovidiu@net-community.com>
+   Date: May 1997
+   A completely rewritten version of the original source by Scott Christley.
    
    This file is part of the GNUstep GUI Library.
 
@@ -30,97 +28,128 @@
 #ifndef _GNUstep_H_NSMenu
 #define _GNUstep_H_NSMenu
 
-#include <Foundation/NSCoder.h>
-#include <Foundation/NSGeometry.h>
+#include <AppKit/NSMenuItem.h>
+#include <AppKit/NSControl.h>
 
 @class NSString;
-@class NSArray;
-@class NSMutableArray;
-
+@class NSEvent;
 @class NSMatrix;
-@class NSMenuCell;
 
-@interface NSMenu : NSObject <NSCoding>
+@class NSMenuMatrix;
+
+@interface NSMenu : NSObject <NSCoding, NSCopying>
 {
-  // Attributes
-  NSString *window_title;
-  NSMutableArray *menu_items;
-  NSMenu *super_menu;
-  BOOL autoenables_items;
-  NSMatrix *menu_matrix;
-  BOOL is_torn_off;
+  NSString* title;
+  NSMenuMatrix* menuCells;
+  NSMenu* supermenu;
+  NSMenu* attachedMenu;
+  BOOL autoenablesItems;
+  BOOL menuChangedMessagesEnabled;
+  BOOL menuHasChanged;
 
   // Reserved for back-end use
   void *be_menu_reserved;
 }
 
-//
-// Controlling Allocation Zones
-//
-+ (NSZone *)menuZone;
-+ (void)setMenuZone:(NSZone *)zone;
+/* Controlling allocation zones */
++ (void)setMenuZone:(NSZone*)zone;
++ (NSZone*)menuZone;
 
-//
-// Initializing a New NSMenu 
-//
-- (id)initWithTitle:(NSString *)aTitle;
+/* Setting the menu cell class */
++ (void)setCellClass:(Class)aClass;
++ (Class)cellClass;
 
-//
-// Setting Up the Menu Commands 
-//
-- (id)addItemWithTitle:(NSString *)aString
-		action:(SEL)aSelector
-	 keyEquivalent:(NSString *)charCode;
-- (id)insertItemWithTitle:(NSString *)aString
-		   action:(SEL)aSelector
-	    keyEquivalent:(NSString *)charCode
-		  atIndex:(unsigned int)index;
-- (NSArray *)itemArray;
-- (NSMatrix *)itemMatrix;
-- (void)setItemMatrix:(NSMatrix *)aMatrix;
+/* Initializing a new NSMenu */
+- (id)initWithTitle:(NSString*)aTitle;
 
-//
-// Finding Menu Items 
-//
-- (id)cellWithTag:(int)aTag;
+/* Setting up the menu commands */
+- (id <NSMenuItem>)addItemWithTitle:(NSString*)aString
+			     action:(SEL)aSelector
+		      keyEquivalent:(NSString*)charCode;
+- (id <NSMenuItem>)insertItemWithTitle:(NSString*)aString
+				action:(SEL)aSelector
+			 keyEquivalent:(NSString*)charCode
+			       atIndex:(unsigned int)index;
+- (void)removeItem:(id <NSMenuItem>)anItem;
+- (NSArray*)itemArray;
 
-//
-// Building Submenus 
-//
-- (NSMenuCell *)setSubmenu:(NSMenu *)aMenu
-		   forItem:(NSMenuCell *)aCell;
+/* Finding menu items */
+- (id <NSMenuItem>)itemWithTag:(int)aTag;
+- (id <NSMenuItem>)itemWithTitle:(NSString*)aString;
+
+/* Managing submenus */
+- (void)setSubmenu:(NSMenu*)aMenu forItem:(id <NSMenuItem>)anItem;
 - (void)submenuAction:(id)sender;
-
-//
-// Managing NSMenu Windows 
-//
-- (NSMenu *)attachedMenu;
+- (NSMenu*)attachedMenu;
 - (BOOL)isAttached;
 - (BOOL)isTornOff;
-- (NSPoint)locationForSubmenu:(NSMenu *)aSubmenu;
-- (void)sizeToFit;
-- (NSMenu *)supermenu;
+- (NSPoint)locationForSubmenu:(NSMenu*)aSubmenu;
+- (NSMenu*)supermenu;
 
-//
-// Displaying the Menu 
-//
-- (BOOL)autoenablesItems;
+/* Enabling and disabling menu items */
 - (void)setAutoenablesItems:(BOOL)flag;
+- (BOOL)autoenablesItems;
+- (void)update;
 
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
+/* Perform a menu item action (not an OpenStep method) */
+- (void)performActionForItem:(id <NSMenuItem>)anItem;
+
+/* Handling keyboard equivalents */
+- (BOOL)performKeyEquivalent:(NSEvent*)theEvent;
+
+/* Updating menu layout */
+- (void)setMenuChangedMessagesEnabled:(BOOL)flag;
+- (BOOL)menuChangedMessagesEnabled;
+- (void)sizeToFit;
+
+/* Getting the menu title */
+- (NSString*)title;
+
+/* Getting the menu cells matrix */
+- (NSMenuMatrix*)menuCells;
 
 @end
 
-@interface NSObject (NSMenuActionResponder)
 
-//
-// Updating NSMenuCells
-//
-- (BOOL)validateCell:(id)aCell;
+@interface NSObject (NSMenuActionResponder)
+- (BOOL)validateMenuItem:(NSMenuItem*)aMenuItem;
+@end
+
+
+@interface NSMenu (PrivateMethods)
+/* Shows the menu window on screen */
+- (void)display;
+
+/* Close the associated window menu */
+- (void)close;
+@end
+
+
+/* Private class used to display the menu cells and respond to user actions */
+@interface NSMenuMatrix : NSControl <NSCopying>
+{
+  NSMutableArray* cells;
+  NSSize cellSize;
+  NSMenu* menu;
+  id selectedCell;
+  NSRect selectedCellRect;
+}
+
+- initWithFrame:(NSRect)rect;
+- (id <NSMenuItem>)insertItemWithTitle:(NSString*)aString
+				action:(SEL)aSelector
+			 keyEquivalent:(NSString*)charCode
+			       atIndex:(unsigned int)index;
+- (void)removeItem:(id <NSMenuItem>)anItem;
+- (NSArray*)itemArray;
+- (id <NSMenuItem>)itemWithTitle:(NSString*)aString;
+- (id <NSMenuItem>)itemWithTag:(int)aTag;
+- (NSRect)cellFrameAtRow:(int)index;
+- (NSSize)cellSize;
+- (void)setMenu:(NSMenu*)menu;
+- (void)setSelectedCell:(id)aCell;
+- (id)selectedCell;
+- (NSRect)selectedCellRect;
 
 @end
 
