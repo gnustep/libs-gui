@@ -2769,8 +2769,6 @@ resetCursorRectsForView(NSView *theView)
   NSPoint	p;
   id		nxt = RETAIN([self nextResponder]);
 
-  [self setNextResponder: nil];
-
   [super encodeWithCoder: aCoder];
 
   NSDebugLog(@"NSWindow: start encoding\n");
@@ -2815,7 +2813,6 @@ resetCursorRectsForView(NSView *theView)
 
   NSDebugLog(@"NSWindow: finish encoding\n");
 
-  [self setNextResponder: nxt];
   RELEASE(nxt);
 }
 

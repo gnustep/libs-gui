@@ -1,3 +1,11 @@
+Wed Dec 15 11:13:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSResponder.m: Don't try to encode/decode next responder -
+	this info should be reconstructed by subclasses.
+	* Source/NSWindow.m: Remove code to save/restore next responder in
+	order to defeat NSResponder archiving.
+	* Source/NSView.m: Rewrite encoding/decoding.
+
 Tue Dec 14 19:40:12 1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSBrowserCell.m: Tiny tidings in initialization;

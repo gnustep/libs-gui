@@ -2412,68 +2412,76 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  BOOL	flag;
-
   [super encodeWithCoder: aCoder];
 
   NSDebugLLog(@"NSView", @"NSView: start encoding\n");
   [aCoder encodeRect: frame];
   [aCoder encodeRect: bounds];
-  [aCoder encodeConditionalObject: super_view];
-  [aCoder encodeObject: sub_views];
-  [aCoder encodeConditionalObject: window];
-  [aCoder encodeObject: tracking_rects];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_rotated_from_base];
   [aCoder encodeValueOfObjCType: @encode(BOOL)
-	  at: &is_rotated_or_scaled_from_base];
-  flag = _rFlags.needs_display;
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+			     at: &is_rotated_or_scaled_from_base];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &post_frame_changes];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &autoresize_subviews];
   [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &autoresizingMask];
   [aCoder encodeConditionalObject: _nextKeyView];
   [aCoder encodeConditionalObject: _previousKeyView];
+  [aCoder encodeObject: sub_views];
   NSDebugLLog(@"NSView", @"NSView: finish encoding\n");
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  BOOL	flag;
+  NSRect	rect;
+  NSEnumerator	*e;
+  NSView	*sub;
+  NSArray	*subs;		
 
-  [super initWithCoder: aDecoder];
+  self = [super initWithCoder: aDecoder];
 
   NSDebugLLog(@"NSView", @"NSView: start decoding\n");
+
   frame = [aDecoder decodeRect];
-  bounds = [aDecoder decodeRect];
-  super_view = [aDecoder decodeObject];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &sub_views];
-  window = [aDecoder decodeObject];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &tracking_rects];
+  bounds.origin = NSZeroPoint;
+  bounds.size = frame.size;
+
+  frameMatrix = [NSAffineTransform new];	// Map fromsuperview to frame
+  boundsMatrix = [NSAffineTransform new];	// Map fromsuperview to bounds
+  matrixToWindow = [NSAffineTransform new];	// Map to window coordinates
+  matrixFromWindow = [NSAffineTransform new];	// Map from window coordinates
+  [frameMatrix setFrameOrigin: frame.origin];
+
+  rect = [aDecoder decodeRect];
+  [self setBounds: rect];
+
+  sub_views = [NSMutableArray new];
+  tracking_rects = [NSMutableArray new];
+  cursor_rects = [NSMutableArray new];
+
+  super_view = nil;
+  window = nil;
+  _rFlags.needs_display = YES;
+  coordinates_valid = NO;
+
+  _rFlags.flipped_view = [self isFlipped];
+
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_rotated_from_base];
   [aDecoder decodeValueOfObjCType: @encode(BOOL)
-	  at: &is_rotated_or_scaled_from_base];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _rFlags.needs_display = flag;
+			       at: &is_rotated_or_scaled_from_base];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &post_frame_changes];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &autoresize_subviews];
   [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &autoresizingMask];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_nextKeyView];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_previousKeyView];
+  _nextKeyView = [aDecoder decodeObject];
+  _previousKeyView = [aDecoder decodeObject];
+
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &subs];
+  e = [subs objectEnumerator];
+  while ((sub = [e nextObject]) != nil)
+    {
+      [self addSubview: sub];
+    }
+  RELEASE(subs);
+
   NSDebugLLog(@"NSView", @"NSView: finish decoding\n");
-
-  frameMatrix = [NSAffineTransform new];
-  boundsMatrix = [NSAffineTransform new];
-  matrixToWindow = [NSAffineTransform new];
-  matrixFromWindow = [NSAffineTransform new];
-  [frameMatrix setFrameOrigin: frame.origin];
-
-  /*
-   *	Keep a note of whether this is a flipped view or not.
-   */
-  _rFlags.flipped_view = [self isFlipped];
-
-  if ([sub_views count])
-    _rFlags.has_subviews = 1;
 
   return self;
 }
