@@ -1,4 +1,4 @@
-/* -*- C++ -*-
+/* -*-objc-*-
    NSOpenPanel.m
 
    Standard open panel for opening files
@@ -7,10 +7,15 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
+
    Author:  Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
    Date: August 1998
+
    Source by Daniel Bðhringer integrated into Scott Christley's preliminary
    implementation by Felipe A. Rodriguez <far@ix.netcom.com>
+
+   Author: Nicola Pero <n.pero@mi.flashnet.it>
+   Date: October 1999 Completely Rewritten.
 
    This file is part of the GNUstep GUI Library.
 
@@ -38,15 +43,40 @@
 #include <AppKit/GMArchiver.h>
 #include <AppKit/IMLoading.h>
 #include <AppKit/NSApplication.h>
+#include <AppKit/NSBrowser.h>
+#include <AppKit/NSBrowserCell.h>
+#include <AppKit/NSMatrix.h>
 #include <AppKit/NSOpenPanel.h>
 
 /*
- * toDo:    - canChooseFiles unimplemented
- *          - allowsMultipleSelection untested
- *          - setCanChooseDirectories untested
+ * TODO: Test Everything More, debug, make sure all delegate's methods 
+ * are used; simplify, arrange so no code is repeated between NSOpenPanel 
+ * and NSSavePanel; check better prompts, titles, textfield stuff.
+ *
  */
 
-static NSOpenPanel *gnustep_gui_open_panel = nil;
+// Pacify the compiler
+@interface NSFileManager (SavePanelExtensions)
+- (NSArray *) directoryContentsAtPath: (NSString *)path showHidden: (BOOL)flag;
+@end 
+
+@interface NSSavePanel (PrivateMethods)
+- (void) _setDirectory: (NSString *)path updateBrowser: (BOOL)flag;
+@end
+//
+
+static NSOpenPanel *_gs_gui_open_panel = nil;
+
+@interface NSOpenPanel (PrivateMethods)
+- (void) _enableOKButton;
+@end
+
+@implementation NSOpenPanel (PrivateMethods)
+- (void) _enableOKButton
+{
+  [_okButton setEnabled: YES];
+}
+@end
 
 @implementation NSOpenPanel
 
@@ -62,51 +92,34 @@ static NSOpenPanel *gnustep_gui_open_panel = nil;
 }
 
 /*
- * Accessing the NSOpenPanel
+ * Accessing the NSOpenPanel shared instance
  */
 + (NSOpenPanel *) openPanel
 {
-  if (!gnustep_gui_open_panel)
-  {
-    //    [GMUnarchiver decodeClassName:@"NSSavePanel"
-    //                          asClassName:@"NSOpenPanel"];
+  if (!_gs_gui_open_panel)
+    _gs_gui_open_panel = [[NSOpenPanel alloc] init];
 
-    //if( ![GMModel loadIMFile:@"SavePanel" owner:NSApp] )
-      [[NSOpenPanel alloc] _initWithoutGModel];
-
-    [gnustep_gui_open_panel _setDefaults];
-    [gnustep_gui_open_panel setTitle:@"Open"];
-
-    // [GMUnarchiver decodeClassName:@"NSSavePanel"
-    //                          asClassName:@"NSSavePanel"];
-  }
-
-  return gnustep_gui_open_panel;
+  [_gs_gui_open_panel setDirectory: [[NSFileManager defaultManager] 
+				    currentDirectoryPath]];
+  [_gs_gui_open_panel setPrompt: @"Name:"];
+  [_gs_gui_open_panel setTitle: @"Open"];
+  [_gs_gui_open_panel setRequiredFileType: @""];
+  [_gs_gui_open_panel setTreatsFilePackagesAsDirectories: NO];
+  [_gs_gui_open_panel setDelegate: nil];
+  [_gs_gui_open_panel setAccessoryView: nil];
+  [_gs_gui_open_panel setCanChooseFiles: YES];
+  [_gs_gui_open_panel setCanChooseDirectories: YES];
+  [_gs_gui_open_panel setAllowsMultipleSelection: NO];
+  [_gs_gui_open_panel _enableOKButton];
+  
+  return _gs_gui_open_panel;
 }
 
-+ (id)allocWithZone:(NSZone*)z
-{
-  NSDebugLLog(@"NSOpenPanel", @"NSOpenPanel +allocWithZone");
-  if( !gnustep_gui_open_panel)
-    gnustep_gui_open_panel = (NSOpenPanel *)NSAllocateObject(self, 0, z);
-
-  return gnustep_gui_open_panel;
-}
-
-/*
- * Instance methods
- */
-
-/*
- * Initialization
- */
 - (id) init
 {
-  self = [super init];
-  [self setTitle: @"Open"];
-  [self setCanChooseFiles: YES];
-  multiple_select = NO;
-
+  [super init];
+  _canChooseDirectories = YES;
+  _canChooseFiles = YES;
   return self;
 }
 
@@ -115,38 +128,45 @@ static NSOpenPanel *gnustep_gui_open_panel = nil;
  */
 - (void) setAllowsMultipleSelection: (BOOL)flag
 {
-  allowsMultipleSelection=flag;
   [_browser setAllowsMultipleSelection: flag];
 }
 
 - (BOOL) allowsMultipleSelection
 {
-  return allowsMultipleSelection;
+  return [_browser allowsMultipleSelection];
 }
 
 - (void) setCanChooseDirectories: (BOOL)flag
 {
-  canChooseDirectories = flag;
+  _canChooseDirectories = flag;
+  [_browser setAllowsBranchSelection: flag];
 }
 
 - (BOOL) canChooseDirectories
 {
-  return canChooseDirectories;
+  return _canChooseDirectories;
 }
 
 - (void) setCanChooseFiles: (BOOL)flag
 {
-  canChooseFiles = flag;
+  _canChooseFiles = flag;
 }
 
 - (BOOL) canChooseFiles
 {
-  return canChooseFiles;
+  return _canChooseFiles;
 }
 
 - (NSString*) filename
 {
-  return [_browser path];
+  NSArray *ret;
+
+  ret = [self filenames];
+
+  if ([ret count] == 1)
+    return [ret objectAtIndex: 0];
+  else 
+    return nil;
 }
 
 /*
@@ -154,24 +174,23 @@ static NSOpenPanel *gnustep_gui_open_panel = nil;
  */
 - (NSArray *) filenames
 {
-  if (!allowsMultipleSelection)
-    return [NSArray arrayWithObject: [self filename]];
-  else
+  if ([_browser allowsMultipleSelection])
     {
-      NSArray         *cells=[_browser selectedCells];
-      NSEnumerator    *cellEnum;
-      id              currCell;
+      NSArray         *cells = [_browser selectedCells];
+      NSEnumerator    *cellEnum = [cells objectEnumerator];
+      NSBrowserCell   *currCell;
       NSMutableArray  *ret = [NSMutableArray array];
-      NSString        *dir=[self directory];
-
-      for(cellEnum=[cells objectEnumerator];(currCell=[cellEnum nextObject]);)
+      NSString        *dir = [self directory];
+      
+      while ((currCell = [cellEnum nextObject]))
 	{
-	  [ret addObject: [NSString
-		      stringWithFormat: @"%@/%@",dir,[currCell stringValue]]];
+	  [ret addObject: [NSString stringWithFormat: @"%@/%@", dir, 
+				    [currCell stringValue]]];
 	}
-
       return ret;
     }
+  else 
+    return [NSArray arrayWithObject: [super filename]];
 }
 
 /*
@@ -179,8 +198,8 @@ static NSOpenPanel *gnustep_gui_open_panel = nil;
  */
 - (int) runModalForTypes: (NSArray *)fileTypes
 {
-  return [self runModalForDirectory: [self directory]
-			       file: @""
+  return [self runModalForDirectory: nil
+			       file: nil
 			      types: fileTypes];
 }
 
@@ -188,60 +207,26 @@ static NSOpenPanel *gnustep_gui_open_panel = nil;
 			file: (NSString *)name
 			types: (NSArray *)fileTypes
 {
-  if (_requiredFileType)
-    [_requiredFileType autorelease];
-  _requiredFileType = [fileTypes retain];
+  ASSIGN (_fileTypes, fileTypes);
 
-  return [self runModalForDirectory: path file: name];
-}
+  if (name == nil)
+    name = @"";
 
-/*
- * Target and Action Methods
- */
-- (void) ok_ORIGINAL_NOT_USED: (id)sender         // excess? fix me FAR
-{
-  char *sp, files[4096], *p;
-  NSMutableString *m;
+  if (path == nil)
+    path = @"";
 
-  if (the_filenames) [the_filenames release];
-  the_filenames = [NSMutableArray array];
-  // Search for space
-  strcpy(files, [file_name cString]);
-  sp = strchr(files, ' ');
-  if (sp == NULL)
+  if (_canChooseDirectories == NO)
     {
-      // No space then only one file selected
-      [the_filenames addObject: file_name];
-      sp = strrchr(files, '\\');
-      sp++;
-      *sp = '\0';
-      directory = [NSString stringWithCString: files];
+      BOOL isDir;
+      NSString *file = [path stringByAppendingPathComponent: name];
+
+      if ((![[NSFileManager defaultManager] fileExistsAtPath: file
+					    isDirectory: &isDir]) 
+	  || isDir)
+	[_okButton setEnabled: NO];
     }
-  else
-    {
-      // Multiple files selected
-      *sp = '\0';
-      directory = [NSString stringWithCString: files];
-      p = sp + 1;
-      sp = strchr(p, ' ');
-      while (sp != NULL)
-    {
-      *sp = '\0';
-      m = (NSMutableString *)[NSMutableString stringWithCString: files];
-      [m appendString: @"\\"];
-      [m appendString: [NSString stringWithCString: p]];
-      [the_filenames addObject: m];
-      p = sp + 1;
-      sp = strchr(p, ' ');
-    }
-      if (strchr(p, '\0'))
-    {
-      m = (NSMutableString *)[NSMutableString stringWithCString: files];
-      [m appendString: @"\\"];
-      [m appendString: [NSString stringWithCString: p]];
-      [the_filenames addObject: m];
-    }
-  }
+
+  return [self runModalForDirectory: path file: name];  
 }
 
 /*
@@ -251,22 +236,157 @@ static NSOpenPanel *gnustep_gui_open_panel = nil;
 {
   [super encodeWithCoder: aCoder];
 
-  [aCoder encodeObject: the_filenames];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &multiple_select];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &choose_dir];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &choose_file];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_canChooseDirectories];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_canChooseFiles];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   [super initWithCoder: aDecoder];
 
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &the_filenames];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &multiple_select];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &choose_dir];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &choose_file];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_canChooseDirectories];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_canChooseFiles];
 
   return self;
 }
+@end
+//
+// NSOpenPanel browser delegate methods
+//
+@interface NSOpenPanel (BrowserDelegate)
+- (void) browser: (id)sender 
+createRowsForColumn: (int)column
+	inMatrix: (NSMatrix *)matrix;
 
+- (BOOL) browser: (NSBrowser *)sender
+selectCellWithString: (NSString *)title
+	inColumn: (int)column;
+@end
+
+@implementation NSOpenPanel (BrowserDelegate)
+- (void) browser: (id)sender 
+createRowsForColumn: (int)column
+	inMatrix: (NSMatrix *)matrix
+{
+  NSFileManager *fm = [NSFileManager defaultManager];
+  NSString	*path = [sender pathToColumn: column], *file;
+  NSArray	*files = [fm directoryContentsAtPath: path showHidden: NO];
+  NSArray       *extArray = [NSArray arrayWithObjects: @"app", 
+				     @"bundle", @"debug", @"profile", nil];
+  unsigned	i, count;
+  BOOL		exists, isDir;
+  NSBrowserCell *cell;
+  NSString      *theFile;
+  NSString      *theExtension;
+  unsigned int  addedRows = 0;
+  
+  // if array is empty, just return (nothing to display)
+  if ([files lastObject] == nil)
+    return;
+
+
+  // sort list of files to display
+  if (_delegateHasCompareFilter == YES)
+    {
+      int compare(id elem1, id elem2, void *context)
+      {
+	return (int)[_delegate panel: self
+		     compareFilename: elem1
+				with: elem2
+		       caseSensitive: YES];
+      }
+      files = [files sortedArrayUsingFunction: compare context: nil];
+    }
+  else
+    files = [files sortedArrayUsingSelector: @selector(compare:)];
+
+  count = [files count];
+  for (i = 0; i < count; i++)
+    {
+      theFile = [files objectAtIndex: i];
+      theExtension = [theFile pathExtension];
+
+      file = [path stringByAppendingPathComponent: theFile];
+      exists = [fm fileExistsAtPath: file
+		   isDirectory: &isDir];
+      
+      if (_treatsFilePackagesAsDirectories == NO && isDir == YES)
+	{
+	  if ([extArray containsObject: theExtension])
+	    isDir = NO;
+	}
+
+      if (isDir)
+	{
+	  [matrix insertRow: addedRows];
+	  cell = [matrix cellAtRow: addedRows column: 0];
+	  [cell setStringValue: theFile];
+	  [cell setLeaf: NO];
+	  addedRows++;
+	}
+      else
+	{
+	  if (_canChooseFiles == YES)
+	    {
+	      if (_fileTypes)
+		if ([_fileTypes containsObject: theExtension] == NO)
+		  continue;
+	      
+	      [matrix insertRow: addedRows];
+	      cell = [matrix cellAtRow: addedRows column: 0];
+	      [cell setStringValue: theFile];
+	      [cell setLeaf: YES];
+	      addedRows++;
+	    }
+	}
+      
+    }
+}
+
+- (BOOL) browser: (NSBrowser *)sender
+selectCellWithString: (NSString *)title
+	inColumn: (int)column
+{
+  if (([_browser allowsMultipleSelection] == NO) 
+      || ([[_browser selectedCells] count] == 1))
+    {
+      [self _setDirectory: [sender pathToColumn: [_browser lastColumn]] 
+				   updateBrowser: NO];
+      
+      if (_canChooseDirectories)
+	{
+	  if ([[sender selectedCell] isLeaf])
+	    {
+	      [_form setStringValue: title];
+	    }
+	}
+      else 
+	{
+	  if ([[sender selectedCell] isLeaf])
+	    {
+	      [_form setStringValue: title];
+	      [_okButton setEnabled: YES];
+	    }
+	  else
+	    {
+	      [_form setStringValue: nil];
+	      [_okButton setEnabled: NO];
+	    }
+	}
+    }
+  else // Multiple Selection 
+    {
+      // This will be useless when NSBrowser works.
+      // NSBrowser, when we ask not to allow to select 
+      // branches on multiple selections, should select only leaves
+      // when the user is doing a multiple selection.
+      // For now, use the following *unsatisfactory* hack.
+      // (unsatisfactory because if the user selects and then 
+      // deselects a directory, we don't re-enable the OK button).
+      if (_canChooseDirectories)      
+	if ([[sender selectedCell] isLeaf] == NO)
+	  [_okButton setEnabled: NO];
+    }
+  return YES;
+}
 @end

@@ -8,6 +8,9 @@
    Author:  Jonathan Gapen <jagapen@smithlab.chem.wisc.edu>
    Date: 1999
 
+   Author:  Nicola Pero <n.pero@mi.flashnet.it>
+   Date: October 1999
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -40,7 +43,6 @@
 #include <AppKit/NSScreen.h>
 #include <AppKit/NSTextField.h>
 #include <AppKit/NSWorkspace.h>
-#include <Foundation/NSDebug.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSPathUtilities.h>
@@ -48,13 +50,7 @@
 #define _SAVE_PANEL_X_PAD	5
 #define _SAVE_PANEL_Y_PAD	4
 
-// After loading the save panel, we store in these 
-// variables its size (used when restoring the panel
-// after removing an accessory view)
-static NSSize _savePanelSize;
-static float _savePanelTopViewOriginY;
-
-static NSSavePanel *gnustep_gui_save_panel = nil;
+static NSSavePanel *_gs_gui_save_panel = nil;
 
 //
 // NSFileManager extensions
@@ -63,9 +59,6 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 
 - (NSArray *) directoryContentsAtPath: (NSString *)path showHidden: (BOOL)flag;
 - (NSArray *) hiddenFilesAtPath: (NSString *)path;
-- (BOOL) fileExistsAtPath: (NSString *)path
-	      isDirectory: (BOOL *)flag1
-		isPackage: (BOOL *)flag2;
 
 @end
 
@@ -97,127 +90,7 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
   return [hiddenFilesString componentsSeparatedByString: @"\n"];
 }
 
-- (BOOL) fileExistsAtPath: (NSString *)path
-	      isDirectory: (BOOL *)isDir
-		isPackage: (BOOL *)isPackage
-{
-  NSArray *extArray;
-
-  extArray = [NSArray arrayWithObjects:
-    @"app", @"bundle", @"debug", @"profile", nil];
-
-  if ([extArray indexOfObject: [path pathExtension]] == NSNotFound)
-    *isPackage = NO;
-  else
-    *isPackage = YES;
-  return [self fileExistsAtPath: path isDirectory: isDir];
-}
-
 @end /* NSFileManager (SavePanelExtensions) */
-
-//
-// NSSavePanel browser delegate methods
-//
-@implementation NSSavePanel (BrowserDelegate)
-
-- (void) browser: (id)sender
-    createRowsForColumn: (int)column
-	inMatrix: (NSMatrix *)matrix
-{
-  NSFileManager *fm = [NSFileManager defaultManager];
-  NSString	*path = [sender pathToColumn: column], *file;
-  NSArray	*files = [fm directoryContentsAtPath: path showHidden: NO];
-  unsigned	i, count;
-  BOOL		exists, isDir, isPackage;
-
-  NSDebugLLog(@"NSSavePanel",
-    @"NSSavePanel -browser: createRowsForColumn: %d inMatrix:", column);
-
-  // if array is empty, just return (nothing to display)
-  if ([files lastObject] == nil)
-    return;
-
-  // sort list of files to display
-  if (_delegateHasCompareFilter == YES)
-    {
-      int compare(id elem1, id elem2, void *context)
-      {
-	return (int)[_delegate panel: self
-		     compareFilename: elem1
-				with: elem2
-		       caseSensitive: YES];
-      }
-      files = [files sortedArrayUsingFunction: compare context: nil];
-    }
-  else
-    files = [files sortedArrayUsingSelector: @selector(compare:)];
-
-  count = [files count];
-  for (i = 0; i < count; i++)
-    {
-      NSBrowserCell *cell;
-
-      //if (i != 0)
-	[matrix insertRow: i];
-
-      cell = [matrix cellAtRow: i column: 0];
-      [cell setStringValue: [files objectAtIndex: i]];
-
-      file = [path stringByAppendingPathComponent: [files objectAtIndex: i]];
-      exists = [fm fileExistsAtPath: file
-			isDirectory: &isDir
-			  isPackage: &isPackage];
-
-      if (isPackage == YES && _treatsFilePackagesAsDirectories == NO)
-	isDir = NO;
-
-      if (exists == YES && isDir == NO)
-	[cell setLeaf: YES];
-      else
-	[cell setLeaf: NO];
-    }
-}
-
-- (BOOL) browser: (NSBrowser *)sender
-   isColumnValid: (int)column
-{
-  NSArray	*cells = [[sender matrixInColumn: column] cells];
-  unsigned	count = [cells count], i;
-  
-  NSDebugLLog(@"NSSavePanel", @"NSSavePanel -browser: isColumnValid:");
-
-  // iterate through the cells asking the delegate if each filename is valid
-  // if it says no for any filename, the column is not valid
-  if (_delegateHasFilenameFilter == YES)
-    for (i = 0; i < count; i++)
-      {
-	if (![_delegate panel: self shouldShowFilename:
-	  [[cells objectAtIndex: i] stringValue]])
-	  return NO;
-      }
-
-  return YES;
-}
-
-- (BOOL) browser: (NSBrowser *)sender
-       selectRow: (int)row
-	inColumn: (int)column
-{
-  NSDebugLLog(@"NSSavePanel",
-    @"NSSavePanel -browser: selectRow:%d inColumn:%d", row, column);
-  return YES;
-}
-
-- (void) browser: (id)sender
- willDisplayCell: (id)cell
-	   atRow: (int)row
-	  column: (int)column
-{
-  NSDebugLLog(@"NSSavePanel",
-    @"NSSavePanel -browser: willDisplayCell: atRow: column:");
-}
-
-@end /* NSSavePanel (BrowserDelegate) */
 
 //
 // NSSavePanel private methods
@@ -226,49 +99,56 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 
 - (id) _initWithoutGModel;
 - (void) _getOriginalSize;
-- (void) _setDefaults;
 - (void) _setDirectory: (NSString *)path updateBrowser: (BOOL)flag;
+- (void) _setHomeDirectory;
+- (void) _mountMedia;
+- (void) _unmountMedia;
 
 @end /* NSSavePanel (PrivateMethods) */
 
 @implementation NSSavePanel (PrivateMethods)
 -(id) _initWithoutGModel
 {
-  [super initWithContentRect: NSMakeRect (100, 100, 280, 350)
+  //
+  // WARNING: We create the panel sized (308, 317), which is the 
+  // minimum size we want it to have.  Then, we resize it at the 
+  // comfortable size of (384, 426).
+  //
+  [super initWithContentRect: NSMakeRect (100, 100, 308, 317)
 	 styleMask: (NSTitledWindowMask | NSResizableWindowMask) 
 	 backing: 2 defer: YES];
-  [self setMinSize: NSMakeSize (280, 350)];
+  [self setMinSize: NSMakeSize (308, 317)];
   // The horizontal resize increment has to be divided between 
-  // the two columns of the browser.  If it is odd, we would get 
-  // a non integer pixel origin of the second column, and the back-end 
-  // could have problems in drawing it.
+  // the two columns of the browser.  Avoid non integer values
   [self setResizeIncrements: NSMakeSize (2, 1)];
-  [[self contentView] setBounds: NSMakeRect (0, 0, 280, 350)];
+  [[self contentView] setBounds: NSMakeRect (0, 0, 308, 317)];
   
-  _topView = [[NSView alloc] initWithFrame: NSMakeRect (0, 60, 280, 290)];
-  [_topView setBounds:  NSMakeRect (0, 0, 280, 290)];
+  _topView = [[NSView alloc] initWithFrame: NSMakeRect (0, 64, 308, 245)];
+  [_topView setBounds:  NSMakeRect (0, 64, 308, 245)];
   [_topView setAutoresizingMask: 18];
   [_topView setAutoresizesSubviews: YES];
   [[self contentView] addSubview: _topView];
   [_topView release];
   
-  _bottomView = [[NSView alloc] initWithFrame: NSMakeRect (0, 0, 280, 60)];
-  [_bottomView setBounds:  NSMakeRect (0, 0, 280, 60)];
+  _bottomView = [[NSView alloc] initWithFrame: NSMakeRect (0, 0, 308, 64)];
+  [_bottomView setBounds:  NSMakeRect (0, 0, 308, 64)];
   [_bottomView setAutoresizingMask: 2];
   [_bottomView setAutoresizesSubviews: YES];
   [[self contentView] addSubview: _bottomView];
   [_bottomView release];
 
-  _browser = [[NSBrowser alloc] initWithFrame: NSMakeRect (10, 10, 260, 196)];
+  _browser = [[NSBrowser alloc] initWithFrame: NSMakeRect (8, 68, 292, 177)];
   [_browser setDelegate: self];
   [_browser setMaxVisibleColumns: 2]; 
   [_browser setHasHorizontalScroller: YES];
   [_browser setAllowsMultipleSelection: NO];
-  [_browser setTarget: self];
-  [_browser setAction: @selector(_processCellSelection)];
   [_browser setAutoresizingMask: 18];
+  [_browser setTag: NSFileHandlingPanelBrowser];
   [_topView addSubview: _browser];
   [_browser release];
+
+  // NB: We must use NSForm, because in the tag list 
+  // there is the tag NSFileHandlingPanelForm
 
   //  { 
   //  NSForm *_formControl;
@@ -277,10 +157,11 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
   //  [_formControl addEntry: @"Name:"];
   //  [_formControl setFrame: NSMakeRect (5, 38, 264, 22)];
   //  [_formControl setEntryWidth: 264];
+  // [_formControl setTag: NSFileHandlingPanelForm];
   //  [_bottomView addSubview: _formControl];
   //  _form = [_formControl cellAtIndex: 0];
   //}
-  _prompt = [[NSTextField alloc] initWithFrame: NSMakeRect (5, 38, 38, 18)];
+  _prompt = [[NSTextField alloc] initWithFrame: NSMakeRect (8, 45, 36, 11)];
   [_prompt setSelectable: NO];
   [_prompt setEditable: NO];
   [_prompt setEnabled: NO];
@@ -293,20 +174,22 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 
   // The gmodel says (44, 40, 226, 22), but that makes the upper border 
   // clipped. 
-  _form = [[NSTextField alloc] initWithFrame: NSMakeRect (44, 38, 226, 22)];
+  _form = [[NSTextField alloc] initWithFrame: NSMakeRect (48, 39, 251, 21)];
   [_form setEditable: YES];
   [_form setBordered: NO];
   [_form setBezeled: YES];
   [_form setDrawsBackground: YES];
   [_form setContinuous: NO];
   [_form setAutoresizingMask: 2];
+  // I think the following is not correct, we should have a NSForm instead.
+  [_form setTag: NSFileHandlingPanelForm];
   [_bottomView addSubview: _form];
   [_form release];
 
   {
     NSButton *button;
 
-    button = [[NSButton alloc] initWithFrame: NSMakeRect (18, 5, 28, 28)];
+    button = [[NSButton alloc] initWithFrame: NSMakeRect (43, 6, 26, 26)];
     [button setBordered: YES];
     [button setButtonType: NSMomentaryPushButton];
     [button setImage:  [NSImage imageNamed: @"common_Home"]]; 
@@ -315,10 +198,11 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
     [button setAction: @selector(_setHomeDirectory)];
     //    [_form setNextView: button];
     [button setAutoresizingMask: 1];
+    [button setTag: NSFileHandlingPanelHomeButton];
     [_bottomView addSubview: button];
     [button release];
 
-    button = [[NSButton alloc] initWithFrame: NSMakeRect (52, 5, 28, 28)];
+    button = [[NSButton alloc] initWithFrame: NSMakeRect (78, 6, 26, 26)];
     [button setBordered: YES];
     [button setButtonType: NSMomentaryPushButton];
     [button setImage:  [NSImage imageNamed: @"common_Mount"]]; 
@@ -326,10 +210,11 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
     [button setTarget: self];
     [button setAction: @selector(_mountMedia)];
     [button setAutoresizingMask: 1];
+    [button setTag: NSFileHandlingPanelDiskButton];
     [_bottomView addSubview: button];
     [button release];
 
-    button = [[NSButton alloc] initWithFrame: NSMakeRect (86, 5, 28, 28)];
+    button = [[NSButton alloc] initWithFrame: NSMakeRect (112, 6, 26, 26)];
     [button setBordered: YES];
     [button setButtonType: NSMomentaryPushButton];
     [button setImage:  [NSImage imageNamed: @"common_Unmount"]]; 
@@ -337,10 +222,11 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
     [button setTarget: self];
     [button setAction: @selector(_unmountMedia)];
     [button setAutoresizingMask: 1];
+    [button setTag: NSFileHandlingPanelDiskEjectButton];
     [_bottomView addSubview: button];
     [button release];
 
-    button = [[NSButton alloc] initWithFrame: NSMakeRect (122, 5, 70, 28)];
+    button = [[NSButton alloc] initWithFrame: NSMakeRect (148, 6, 71, 26)];
     [button setBordered: YES];
     [button setButtonType: NSMomentaryPushButton];
     [button setTitle:  @"Cancel"];
@@ -348,35 +234,39 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
     [button setTarget: self];
     [button setAction: @selector(cancel:)];
     [button setAutoresizingMask: 1];
-    [_bottomView addSubview: button];
-    [button release];
-
-    button = [[NSButton alloc] initWithFrame: NSMakeRect (200, 5, 70, 28)];
-    [button setBordered: YES];
-    [button setButtonType: NSMomentaryPushButton];
-    [button setTitle:  @"OK"];
-    [button setImagePosition: NSNoImage]; 
-    [button setTarget: self];
-    [button setAction: @selector(ok:)];
-    //    [button setNextView: _form];
-    [button setAutoresizingMask: 1];
+    [button setTag: NSFileHandlingPanelCancelButton];
     [_bottomView addSubview: button];
     [button release];
   }
+  
+  _okButton = [[NSButton alloc] initWithFrame: NSMakeRect (228, 6, 71, 26)];
+  [_okButton setBordered: YES];
+  [_okButton setButtonType: NSMomentaryPushButton];
+  [_okButton setTitle:  @"OK"];
+  [_okButton setImagePosition: NSNoImage]; 
+  [_okButton setTarget: self];
+  [_okButton setAction: @selector(ok:)];
+  //    [_okButton setNextView: _form];
+  [_okButton setAutoresizingMask: 1];
+  [_okButton setTag: NSFileHandlingPanelOKButton];
+  [_bottomView addSubview: _okButton];
+  [_okButton release];
+  
   {
     NSImageView *imageView;
-
+    
     imageView
-      = [[NSImageView alloc] initWithFrame: NSMakeRect (8, 218, 64, 64)];
+      = [[NSImageView alloc] initWithFrame: NSMakeRect (8, 261, 48, 48)];
     [imageView setImageFrameStyle: NSImageFrameNone];
     [imageView setImage:
       [[NSApplication sharedApplication] applicationIconImage]];
     [imageView setAutoresizingMask: 8];
+    [imageView setTag: NSFileHandlingPanelImageButton];
     [_topView addSubview: imageView];
     [imageView release];
   }
   _titleField
-    = [[NSTextField alloc] initWithFrame: NSMakeRect (80, 240, 224, 21)];
+    = [[NSTextField alloc] initWithFrame: NSMakeRect (67, 281, 200, 14)];
   [_titleField setSelectable: NO];
   [_titleField setEditable: NO];
   [_titleField setDrawsBackground: NO];
@@ -384,45 +274,33 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
   [_titleField setBordered: NO];
   [_titleField setFont: [NSFont messageFontOfSize: 18]];
   [_titleField setAutoresizingMask: 8];
+  [_titleField setTag: NSFileHandlingPanelTitleField];
   [_topView addSubview: _titleField];
   [_titleField release];
   { 
     NSBox *bar;
-    bar = [[NSBox alloc] initWithFrame: NSMakeRect (0, 210, 310, 2)];
+    bar = [[NSBox alloc] initWithFrame: NSMakeRect (0, 252, 308, 2)];
     [bar setBorderType: NSGrooveBorder];
     [bar setTitlePosition: NSNoTitle];
     [bar setAutoresizingMask: 10];
     [_topView addSubview: bar];
     [bar release];
   }
+  [self setMinSize: NSMakeSize (308, 317)];
+  [self setContentSize: NSMakeSize (384, 426)];
   return self;
 }
 
 - (void) _getOriginalSize
 {
-  _savePanelSize = [self frame].size;
-  _savePanelTopViewOriginY = [_topView frame].origin.y;
-}
-
-- (void) _setDefaults
-{
-  NSDebugLLog(@"NSSavePanel", @"NSSavePanel -_setDefaults");
-  [self setDirectory: [[NSFileManager defaultManager] currentDirectoryPath]];
-  [self setPrompt: @"Name:"];
-  [self setTitle: @"Save"];
-  [self setRequiredFileType: @""];
-  [self setTreatsFilePackagesAsDirectories: NO];
-  [self setDelegate: nil];
-  [self setAccessoryView: nil];
+  _originalMinSize = [self minSize];
+  _originalSize = [self frame].size;
 }
 
 - (void) _setDirectory: (NSString *)path updateBrowser: (BOOL)flag
 {
   NSString	*standardizedPath = [path stringByStandardizingPath];
   BOOL		isDir;
-
-  NSDebugLLog(@"NSSavePanel",
-    @"NSSavePanel -_setDirectory: %@ updateBrowser:", path);
 
   // check that path exists, and if so save it
   if (standardizedPath
@@ -438,34 +316,18 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
     [_browser setPath: _lastValidPath];
 }
 
-- (void) _processCellSelection
-{
-  id	selectedCell = [_browser selectedCell];
-
-  NSDebugLLog(@"NSSavePanel", @"NSSavePanel -_processCellSelection");
-
-  [self _setDirectory:
-    [_browser pathToColumn: [_browser lastColumn]] updateBrowser: NO];
-
-  if ([selectedCell isLeaf])
-    [_form setStringValue: [selectedCell stringValue]];
-}
-
 - (void) _setHomeDirectory
 {
-  NSDebugLLog(@"NSSavePanel", @"NSSavePanel -_setHomeDirectory");
   [self setDirectory: NSHomeDirectory()];
 }
 
 - (void) _mountMedia
 {
-  NSDebugLLog(@"NSSavePanel", @"NSSavePanel -_mountMedia");
   [[NSWorkspace sharedWorkspace] mountNewRemovableMedia];
 }
 
 - (void) _unmountMedia
 {
-  NSDebugLLog(@"NSSavePanel", @"NSSavePanel -_unmountMedia");
   [[NSWorkspace sharedWorkspace] unmountAndEjectDeviceAtPath: [self directory]];
 }
 
@@ -478,67 +340,100 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 
 + (id) savePanel
 {
-  NSDebugLLog(@"NSSavePanel", @"NSSavePanel +savePanel");
-  if (!gnustep_gui_save_panel)
-    {
-      // if (![GMModel loadIMFile:@"SavePanel" owner:NSApp])
-	[[NSSavePanel alloc] _initWithoutGModel];
-	[gnustep_gui_save_panel _getOriginalSize];
-    }
-  if (gnustep_gui_save_panel)
-    [gnustep_gui_save_panel _setDefaults];
+  if (!_gs_gui_save_panel)
+    _gs_gui_save_panel = [[NSSavePanel alloc] init];
 
-  return gnustep_gui_save_panel;
+  [_gs_gui_save_panel setDirectory: [[NSFileManager defaultManager] 
+				      currentDirectoryPath]];
+  [_gs_gui_save_panel setPrompt: @"Name:"];
+  [_gs_gui_save_panel setTitle: @"Save"];
+  [_gs_gui_save_panel setRequiredFileType: @""];
+  [_gs_gui_save_panel setTreatsFilePackagesAsDirectories: NO];
+  [_gs_gui_save_panel setDelegate: nil];
+  [_gs_gui_save_panel setAccessoryView: nil];
+
+  return _gs_gui_save_panel;
 }
+//
 
-+ (id) allocWithZone:(NSZone *)z
+// If you do a simple -init, we initialize the panel with
+// the system size/mask/appearance/subviews/etc.  If you do more
+// complicated initializations, you get a simple panel from super.
+-(id) init
 {
-  NSDebugLLog(@"NSSavePanel", @"NSSavePanel +allocWithZone");
+  //  if (![GMModel loadIMFile: @"SavePanel" owner: self]);
+  [self _initWithoutGModel];
+  
+  _requiredFileType = nil;
+  _lastValidPath = nil;
+  _delegate = nil;
+  
+  _treatsFilePackagesAsDirectories = NO;
+  _delegateHasCompareFilter = NO;
+  _delegateHasFilenameFilter = NO;
+  _delegateHasValidNameFilter = NO;
 
-  if (!gnustep_gui_save_panel)
-    gnustep_gui_save_panel = (NSSavePanel *)NSAllocateObject(self, 0, z);
-
-  return gnustep_gui_save_panel;
+  _fullFileName = nil;
+  [self _getOriginalSize];
+  return self;
 }
 
 - (void) setAccessoryView: (NSView *)aView
 {
   NSView *contentView = [self contentView];
   NSRect addedFrame, bottomFrame, topFrame;
-  NSSize contentSize;
-  NSDebugLLog(@"NSSavePanel", @"NSSavePanel -setAccessoryView");
-  
+  NSSize contentSize, contentMinSize;
+  NSSize accessoryViewSize;
+
   if (aView == _accessoryView)
     return;
   
+  // Remove accessory view
   if (_accessoryView)
-    [_accessoryView removeFromSuperview];
-  
-  _accessoryView = aView;
-  
-  if (_accessoryView == nil)
     {
-      // Restore original size
-      [self setMinSize: _savePanelSize];
+      accessoryViewSize = [_accessoryView frame].size;
+      [_accessoryView removeFromSuperview];
+      contentSize = [[self contentView] frame].size;
+      contentSize.height -= (accessoryViewSize.height 
+			     + (_SAVE_PANEL_Y_PAD * 2));
+      [self setMinSize: _originalMinSize];
       [_topView setAutoresizingMask: NSViewWidthSizable];
       [_bottomView setAutoresizingMask: NSViewWidthSizable];
-      [self setContentSize: _savePanelSize];
+      [self setContentSize: contentSize];
       [_topView setAutoresizingMask: 18];
       [_bottomView setAutoresizingMask: 2];
-      // 
-      [_topView setFrameOrigin: NSMakePoint (0, _savePanelTopViewOriginY)];
-      [_topView setNeedsDisplay: YES];
+      topFrame = [_topView frame];
+      topFrame.origin.y -= (accessoryViewSize.height + (_SAVE_PANEL_Y_PAD * 2));
+      [_topView setFrameOrigin: topFrame.origin];
+      // Restore original size
+      [self setMinSize: _originalMinSize];
+      [self setContentSize: _originalSize];
     }
-  else // we have an _accessoryView
+
+  _accessoryView = aView;
+  
+  if (_accessoryView)
     {
+      // The new accessory view must not play tricks in the vertical direction
+      [_accessoryView setAutoresizingMask: ([aView autoresizingMask] 
+					    & !NSViewHeightSizable 
+					    & !NSViewMaxYMargin
+					    & !NSViewMinYMargin)];  
       //
       // Resize ourselves to make room for the accessory view
       //
       addedFrame = [_accessoryView frame];
-      contentSize = _savePanelSize;
+      contentSize = _originalSize;
       contentSize.height += (addedFrame.size.height + (_SAVE_PANEL_Y_PAD * 2));
       if ((addedFrame.size.width + (_SAVE_PANEL_X_PAD * 2)) > contentSize.width)
 	contentSize.width = (addedFrame.size.width + (_SAVE_PANEL_X_PAD * 2));  
+      contentMinSize = _originalMinSize;
+      contentMinSize.height += (addedFrame.size.height 
+				+ (_SAVE_PANEL_Y_PAD * 2));
+      if ((addedFrame.size.width + (_SAVE_PANEL_X_PAD * 2)) 
+	  > contentMinSize.width)
+	contentMinSize.width = (addedFrame.size.width 
+				+ (_SAVE_PANEL_X_PAD * 2));  
 
       // Our views should resize horizontally, but not vertically
       [_topView setAutoresizingMask: NSViewWidthSizable];
@@ -549,7 +444,7 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
       [_bottomView setAutoresizingMask: 2];
 
       // Set new min size
-      [self setMinSize: contentSize];
+      [self setMinSize: contentMinSize];
 
       //
       // Pack the Views
@@ -571,15 +466,15 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
       
       // Add the accessory view
       [contentView addSubview:_accessoryView];
-      [contentView setNeedsDisplay: YES];
     }
 }
 
 - (void) setTitle: (NSString *)title
 {
-  NSDebugLLog(@"NSSavePanel", @"NSSavePanel -setTitle: %@", title);
   [super setTitle:@""];
   [_titleField setStringValue: title];
+  // TODO: Improve on the following.
+  [_titleField sizeToFit];
 }
 
 - (NSString *) title
@@ -589,7 +484,6 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 
 - (void) setPrompt: (NSString *)prompt
 {
-  NSDebugLLog(@"NSSavePanel", @"NSSavePanel -setPrompt: %@", prompt);
   // [_form setTitle: prompt];
   [_prompt setStringValue: prompt];
 }
@@ -607,7 +501,6 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 
 - (void) setDirectory: (NSString *)path
 {
-  NSDebugLLog(@"NSSavePanel", @"NSSavePanel -setDirectory: %@", path);
   [self _setDirectory: path updateBrowser: YES];
 }
 
@@ -633,7 +526,6 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 
 - (void) validateVisibleColumns
 {
-  NSDebugLLog(@"NSSavePanel", @"NSSavePanel -validateVisibleColumns");
   [_browser validateVisibleColumns];
 }
 
@@ -644,17 +536,13 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 
 - (int) runModalForDirectory:(NSString *) path file:(NSString *) filename
 {
-  NSDebugLLog(@"NSSavePanel", @"NSSavePanel -runModalForDirectory: filename:");
-
   if (path == nil || filename == nil)
     [NSException raise: NSInvalidArgumentException
 		format: @"NSSavePanel runModalForDirectory:file: "
 		 @"does not accept nil arguments."];
 
-  // must display here so that...
-  [self display];
-  // ...this statement works (need browser to start displaying)
   [self setDirectory: path];
+  // TODO: Should set it in the browser, if it's there! 
   [_form setStringValue: filename];
 
   return [NSApp runModalForWindow: self];
@@ -663,27 +551,32 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 - (NSString *) directory
 {
   if (_browser != nil)
-    return [_browser pathToColumn:[_browser lastColumn]];
+    return [_browser pathToColumn: [_browser lastColumn]];
   else
     return _lastValidPath;
 }
 
 - (NSString *) filename
 {
-  NSString *filename = [_form stringValue];
+  if (_fullFileName == nil)
+   return @"";
+
+  if (_requiredFileType == nil)
+    return _fullFileName;
 
   if ([_requiredFileType isEqual: @""] == YES)
-    return filename;
-
+    return _fullFileName;
+					    
   // add filetype extension only if the filename does not include it already
-  if ([[filename pathExtension] isEqual: _requiredFileType] == YES)
-    return filename;
+  if ([[_fullFileName pathExtension] isEqual: _requiredFileType] == YES)
+    return _fullFileName;
   else
-    return [filename stringByAppendingPathExtension:_requiredFileType];
+    return [_fullFileName stringByAppendingPathExtension: _requiredFileType];
 }
 
 - (void) cancel: (id)sender
 {
+  _fullFileName = nil;
   [NSApp stopModalWithCode: NSCancelButton];
   [self orderOut: self];
 }
@@ -704,7 +597,6 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 
 - (void) setDelegate: (id)aDelegate
 {
-  NSDebugLLog(@"NSSavePanel", @"NSSavePanel -setDelegate");
   if (aDelegate == nil)
     {
       _delegate = nil;
@@ -724,11 +616,6 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
     = [aDelegate respondsToSelector:
       @selector(panel:isValidFilename:)] ? YES : NO;
 
-  if (!_delegateHasCompareFilter && !_delegateHasFilenameFilter
-    && !_delegateHasValidNameFilter)
-    [NSException raise:NSInvalidArgumentException
-		format: @"Delegate supports no save panel delegete methods."];
-
   _delegate = aDelegate;
   [super setDelegate: aDelegate];
 }
@@ -738,17 +625,145 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 //
 - (id) initWithCoder: (NSCoder *)aCoder
 {
-  [NSException raise:NSInvalidArgumentException
-	       format:@"The save panel does not get decoded."];
+  // TODO
 
   return nil;
 }
 
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
-  [NSException raise:NSInvalidArgumentException
-	       format:@"The save panel does not get encoded."];
+  // TODO
+}
+@end
+
+//
+// NSSavePanel browser delegate methods
+//
+@interface NSSavePanel (BrowserDelegate)
+- (void) browser: (id)sender
+createRowsForColumn: (int)column
+        inMatrix: (NSMatrix *)matrix;
+
+- (BOOL) browser: (NSBrowser *)sender
+   isColumnValid: (int)column;
+
+- (BOOL) browser: (NSBrowser *)sender
+selectCellWithString: (NSString *)title
+	inColumn: (int)column;
+
+- (void) browser:(NSBrowser *)sender
+ willDisplayCell:(id)cell
+           atRow:(int)row
+          column:(int)column;
+@end 
+
+@implementation NSSavePanel (BrowserDelegate)
+//
+// TODO: Add support for delegate's shouldShowFile: 
+// Is it certainly possible to simplify things so that NSOpenPanel 
+// does not have to rewrite all the following code, but some 
+// inheritance is possible.
+//
+- (void) browser: (id)sender
+    createRowsForColumn: (int)column
+	inMatrix: (NSMatrix *)matrix
+{
+  NSFileManager *fm = [NSFileManager defaultManager];
+  NSString	*path = [sender pathToColumn: column], *file;
+  NSArray	*files = [fm directoryContentsAtPath: path showHidden: NO];
+  NSArray       *extArray = [NSArray arrayWithObjects: @"app", 
+				     @"bundle", @"debug", @"profile", nil];
+  unsigned	i, count;
+  BOOL		exists, isDir;
+  NSBrowserCell *cell;
+  NSString      *theFile;
+  
+  // if array is empty, just return (nothing to display)
+  if ([files lastObject] == nil)
+    return;
+
+  // sort list of files to display
+  if (_delegateHasCompareFilter == YES)
+    {
+      int compare(id elem1, id elem2, void *context)
+      {
+	return (int)[_delegate panel: self
+		     compareFilename: elem1
+				with: elem2
+		       caseSensitive: YES];
+      }
+      files = [files sortedArrayUsingFunction: compare context: nil];
+    }
+  else
+    files = [files sortedArrayUsingSelector: @selector(compare:)];
+
+  count = [files count];
+  [matrix renewRows: count columns: 1];
+  for (i = 0; i < count; i++)
+    {
+      theFile = [files objectAtIndex: i];
+      
+      cell = [matrix cellAtRow: i column: 0];
+      [cell setStringValue: theFile];
+      
+      file = [path stringByAppendingPathComponent: theFile];
+      exists = [fm fileExistsAtPath: file
+		   isDirectory: &isDir];
+      
+      if (_treatsFilePackagesAsDirectories == NO && isDir == YES)
+	{
+	  if ([extArray containsObject: [theFile pathExtension]] == YES)
+	    isDir = NO;
+	}
+      
+      if (exists == YES && isDir == NO)
+	[cell setLeaf: YES];
+      else
+	[cell setLeaf: NO];
+    }
 }
 
+- (BOOL) browser: (NSBrowser *)sender
+   isColumnValid: (int)column
+{
+  NSArray	*cells = [[sender matrixInColumn: column] cells];
+  unsigned	count = [cells count], i;
+  
+  // iterate through the cells asking the delegate if each filename is valid
+  // if it says no for any filename, the column is not valid
+  if (_delegateHasFilenameFilter == YES)
+    for (i = 0; i < count; i++)
+      {
+	if (![_delegate panel: self shouldShowFilename:
+			  [[cells objectAtIndex: i] stringValue]])
+	  return NO;
+      }
+
+  return YES;
+}
+
+- (BOOL) browser: (NSBrowser *)sender
+selectCellWithString: (NSString *)title
+	inColumn: (int)column
+{
+  [self _setDirectory: [sender pathToColumn: [_browser lastColumn]] 
+	updateBrowser: NO];
+  
+  if ([[sender selectedCell] isLeaf])
+    {
+      ASSIGN (_fullFileName, [sender path]);
+      [_form setStringValue: title];
+    }
+  return YES;
+}
+
+- (void)browser:(NSBrowser *)sender
+  willDisplayCell:(id)cell
+  atRow:(int)row
+  column:(int)column
+{
+}
 @end /* NSSavePanel */
+
+
 
