@@ -477,7 +477,7 @@ setupChunk(GSTextChunk *chunk, NSAttributedString *str, NSRange range,
       attr = [str attributesAtIndex: loc effectiveRange: &range];
       if (range.location < loc)
 	{
-	  range.length -= (range.location - loc);
+	  range.length -= (loc - range.location);
 	  range.location = loc;
 	}
       if (NSMaxRange(range) > end)
@@ -485,7 +485,6 @@ setupChunk(GSTextChunk *chunk, NSAttributedString *str, NSRange range,
 
       where = loc - start;
       length = range.length;
-
       if (lastRun == 0)
 	{
 	  setupRun(&chunk->run0, length, &chars[where], loc, attr, g, 0);
