@@ -83,15 +83,57 @@ static NSImage *_pbc_image[2];
   return self;
 }
 
+- (void) dealloc
+{
+  [self selectItem: nil];
+  [self setMenu: nil];
+  [super dealloc];
+}
+
+/*
+ * Notification Method
+ */
+
+- (void) itemChanged: (NSNotification*)notification
+{
+  int index = [[[notification userInfo] objectForKey: @"NSMenuItemIndex"]
+		intValue];
+  id <NSMenuItem> item = [self itemAtIndex: index];
+
+  if (item == _menuItem)
+    {
+      [self setEnabled: [[self menuItem] isEnabled]];
+      [[self controlView] setNeedsDisplay: YES];
+    }
+}
+
 - (void) setMenu: (NSMenu *)menu
 {
-  [_menu _setOwnedByPopUp: nil];    
+  if (_menu == menu)
+    {
+      return;
+    }
+
+  if (_menu != nil)
+    {
+      [_menu _setOwnedByPopUp: nil];
+      [[NSNotificationCenter defaultCenter] removeObserver: self  
+					    name: nil
+					    object: _menu];
+    }
   ASSIGN(_menu, menu);
-  [_menu _setOwnedByPopUp: self];
-  /* We need to set the menu view so we trigger the special case 
-   * popupbutton code in super class NSMenuItemCell
-   */
-  [self setMenuView: [_menu menuRepresentation]];
+  if (_menu != nil)
+    {
+      [_menu _setOwnedByPopUp: self];
+      [[NSNotificationCenter defaultCenter] addObserver: self
+					    selector: @selector(itemChanged:)
+					    name: NSMenuDidChangeItemNotification
+					    object: _menu];
+      /* We need to set the menu view so we trigger the special case 
+       * popupbutton code in super class NSMenuItemCell
+       */
+      [self setMenuView: [_menu menuRepresentation]];
+    }
 }
 
 - (NSMenu *) menu
@@ -305,7 +347,14 @@ static NSImage *_pbc_image[2];
 
 - (id <NSMenuItem>) itemAtIndex: (int)index
 {
-  return [_menu itemAtIndex: index];
+  if ((index > 0) && (index < [_menu numberOfItems]))
+    {
+      return [_menu itemAtIndex: index];
+    }
+  else 
+    {
+      retun nil;
+    }
 }
 
 - (id <NSMenuItem>) itemWithTitle: (NSString *)title
@@ -374,6 +423,8 @@ static NSImage *_pbc_image[2];
     {
       [_menuItem setImage: image];
     }
+
+  [self setEnabled: [_menuItem isEnabled]];
 }
 
 // Dealing with selection
@@ -676,9 +727,6 @@ static NSImage *_pbc_image[2];
       new = YES;
     }      
 
-  /* Enable the menu item cell */
-  [self setEnabled: [[self menuItem] isEnabled]];
-
   /* We need to calc our size to get images placed correctly */
   [self calcSize];
   [super drawInteriorWithFrame: cellFrame inView: controlView];
@@ -786,6 +834,13 @@ static NSImage *_pbc_image[2];
 
   self = [super initWithCoder: aDecoder];
   menu = [aDecoder decodeObject];
+  /* 
+     FIXME: This same ivar already gets set in NSCell initWithCoder, 
+     but there it is used directly not via a method call. So here we first 
+     unset it and than set it again as our setMenu: method tries to optimize 
+     duplicate calls.
+   */
+  [self setMenu: nil];
   [self setMenu: menu];
   selectedItem = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: @encode(int) at: &flag];
@@ -801,11 +856,21 @@ static NSImage *_pbc_image[2];
 
   if (version < 2)
     {
+      int i;
+
       // Not the stored format did change but the interpretation of it.
       // in version 1 most of the ivars were not used, so their values may
       // be arbitray. We overwrite them with valid settings.
       [self setPullsDown: _pbcFlags.pullsDown];
       _pbcFlags.usesItemFromMenu = YES;
+      
+      for (i = 0; i < [_menu numberOfItems]; i++)
+        {
+	  id <NSMenuItem> anItem = [menu itemAtIndex: i];
+	 
+	  [anItem setOnStateImage: nil];
+	  [anItem setMixedStateImage: nil];
+	}
     }
 
   [self selectItem: selectedItem];
