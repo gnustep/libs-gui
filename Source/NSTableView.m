@@ -3387,9 +3387,10 @@ inline float computePeriod(NSPoint mouseLocationWin,
 				| NSPeriodicMask);
       unsigned selectionMode;
       NSPoint mouseLocationWin;
+      NSPoint mouseLocationView;
       NSDate *distantFuture = [NSDate distantFuture];
       NSEvent *lastEvent;
-      NSIndexSet *_oldSelectedRows;
+      NSIndexSet *oldSelectedRows;
       BOOL startedPeriodicEvents = NO;
       BOOL mouseUp = NO;
       BOOL done = NO;
@@ -3446,9 +3447,58 @@ inline float computePeriod(NSPoint mouseLocationWin,
       [self _setSelectingColumns: NO];
 
       // let's sort the _selectedRows
-      _oldSelectedRows = [_selectedRows copy];
+      oldSelectedRows = [_selectedRows copy];
 
+      mouseLocationView = location;
       lastEvent = theEvent;
+      if ([self mouse: mouseLocationView inRect: _bounds])
+        {
+	  NSTableColumn *tb;
+	  NSCell *cell;
+	  NSRect rect;
+	  int columnIndex; 
+	  int rowIndex; 
+	  
+	  rowIndex  = [self rowAtPoint: mouseLocationView];
+	  columnIndex = [self columnAtPoint: mouseLocationView];
+	  // Prepare the cell
+	  tb = [_tableColumns objectAtIndex: columnIndex];
+	  // NB: need to be released when no longer used
+	  cell = [[tb dataCellForRow: rowIndex] copy];
+	  [cell setEditable: YES];
+	  [cell setObjectValue: [self _objectValueForTableColumn: tb
+				      row: rowIndex]];
+	  rect = [self frameOfCellAtColumn: columnIndex 
+		       row: rowIndex];
+	  
+	  [cell setHighlighted: YES];
+	  [self setNeedsDisplayInRect: rect];
+	  if ([cell trackMouse: lastEvent
+		    inRect: rect
+		    ofView: self
+		    untilMouseUp: [[cell class] prefersTrackingUntilMouseUp]])
+	    {
+	      done = YES;
+	      currentRow = rowIndex;
+	      computeNewSelection(self,
+				  oldSelectedRows, 
+				  _selectedRows,
+				  originalRow,
+				  oldRow,
+				  currentRow,
+				  &_selectedRow,
+				  selectionMode);
+	      [self displayIfNeeded];
+	    }
+	  else
+	    {
+	      [cell setHighlighted: NO];
+	      [self setNeedsDisplayInRect: rect];
+	    }
+
+	  DESTROY(cell);
+	}
+
       while (done != YES)
 	{
 	  /*
@@ -3467,8 +3517,6 @@ inline float computePeriod(NSPoint mouseLocationWin,
 		  && (mouseLocationWin.y < maxYVisible))
 		{
 		  // mouse dragged within table
-		  NSPoint mouseLocationView;
-		  
 		  if (startedPeriodicEvents == YES)
 		    {
 		      [NSEvent stopPeriodicEvents];
@@ -3495,6 +3543,8 @@ inline float computePeriod(NSPoint mouseLocationWin,
 	    case NSLeftMouseDown:
 	    case NSLeftMouseDragged:
 	      mouseLocationWin = [lastEvent locationInWindow];
+	      mouseLocationView = [self convertPoint: mouseLocationWin 
+					fromView: nil];
 
 	      if (fabs(mouseLocationWin.x - initialLocation.x) > 1
 	          || fabs(mouseLocationWin.y - initialLocation.y) > 1)
@@ -3512,13 +3562,9 @@ inline float computePeriod(NSPoint mouseLocationWin,
 		  else if (mouseLocationWin.x - initialLocation.x >= 4
 			   || mouseLocationWin.x - initialLocation.x <= -4)
 		    {
-		      NSPoint mouseLocationView;
 		      NSPasteboard *pboard;
 		      NSArray *rows;
 
-		      mouseLocationView = [self convertPoint: 
-					      mouseLocationWin 
-					    fromView: nil];
 		      mouseLocationView.x = _bounds.origin.x;
 		      oldRow = currentRow;
 		      currentRow = [self rowAtPoint: mouseLocationView];
@@ -3527,7 +3573,7 @@ inline float computePeriod(NSPoint mouseLocationWin,
 			  /* Mouse drag in a row that wasn't selected.
 			     select the new row before dragging */
 			  computeNewSelection(self,
-					      _oldSelectedRows, 
+					      oldSelectedRows, 
 					      _selectedRows,
 					      originalRow,
 					      oldRow,
@@ -3567,8 +3613,6 @@ inline float computePeriod(NSPoint mouseLocationWin,
 		       && (mouseLocationWin.y < maxYVisible))
 		{
 		  // mouse dragged within table
-		  NSPoint mouseLocationView;
-		  
 		  if (startedPeriodicEvents == YES)
 		    {
 		      [NSEvent stopPeriodicEvents];
@@ -3645,7 +3689,7 @@ inline float computePeriod(NSPoint mouseLocationWin,
 	  if (shouldComputeNewSelection == YES)
 	    {
 	      computeNewSelection(self,
-				  _oldSelectedRows, 
+				  oldSelectedRows, 
 				  _selectedRows,
 				  originalRow,
 				  oldRow,
@@ -3667,7 +3711,7 @@ inline float computePeriod(NSPoint mouseLocationWin,
       if (startedPeriodicEvents == YES)
 	[NSEvent stopPeriodicEvents];
 
-      if (![_selectedRows isEqualToIndexSet: _oldSelectedRows])
+      if (![_selectedRows isEqualToIndexSet: oldSelectedRows])
 	{
 	  [self _postSelectionDidChangeNotification];
 	}

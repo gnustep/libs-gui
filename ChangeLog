@@ -1,5 +1,12 @@
 2004-06-16  Fred Kiefer <FredKiefer@gmx.de>
 
+        * Source/NSTableView.m: (-mouseDown:) Added mouse tracking in the cell.
+        * Source/NSComboBoxCell.m: (-trackMouse:...untilMouseUp:) Set _lastValidFrame
+	[GSComboWindow positionWithComboBoxCell:] compute position based on
+	_lastValidFrame not the frame from the control view.
+	
+2004-06-16  Fred Kiefer <FredKiefer@gmx.de>
+
         * Source/NSTableView.m: (-mouseDown:) Reordered code and
 	simplified. (-textShouldEndEditing:) Get formatter from
 	_editedCell not _cell. (-_unselectAllColumns) Clear the header

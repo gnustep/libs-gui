@@ -313,27 +313,19 @@ static GSComboWindow *gsWindow = nil;
   [self layoutWithComboBoxCell: comboBoxCell];
   
   // Now we can ask for the size
-  
   comboWindowFrame = [self frame];
   if (comboWindowFrame.size.width == 0 || comboWindowFrame.size.height == 0)
     return;
   
   screenFrame = [[[viewWithComboCell window] screen] frame];
-  viewWithComboCellFrame = [viewWithComboCell frame];
-  
+  viewWithComboCellFrame = [comboBoxCell _textCellFrame];
   point = viewWithComboCellFrame.origin;
   
   // Switch to the window coordinates
-  point = [[viewWithComboCell superview] convertPoint: point toView: nil];
+  point = [viewWithComboCell convertPoint: point toView: nil];
   
   // Switch to the screen coordinates
   point = [[viewWithComboCell window] convertBaseToScreen: point];
-  
-  // Take in account flipped view
-  if ([superview isFlipped])
-    point.y += NSHeight([superview frame]) 
-      - (viewWithComboCellFrame.origin.y * 2 + NSHeight(viewWithComboCellFrame));
-  
   point.y -= 1 + NSHeight(comboWindowFrame);
   
   if (point.y < 0)
@@ -345,16 +337,10 @@ static GSComboWindow *gsWindow = nil;
       point.y = NSMaxY(viewWithComboCellFrame);
       
       // Switch to the window coordinates  
-      point = [[viewWithComboCell superview] convertPoint: point toView: nil];
+      point = [viewWithComboCell convertPoint: point toView: nil];
   
       // Switch to the screen coordiantes
       point = [[viewWithComboCell window] convertBaseToScreen: point];
-        
-      // Take in account flipped view
-      if ([superview isFlipped])
-        point.y += NSHeight([superview frame]) 
-          - (viewWithComboCellFrame.origin.y * 2 + NSHeight(viewWithComboCellFrame));
-	
       point.y += 1;  
       
       if (point.y + NSHeight(comboWindowFrame) > NSHeight(screenFrame))
@@ -1405,7 +1391,9 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
   // Should this be set by NSActionCell ?
   if (_control_view != controlView)
     _control_view = controlView;
-
+  
+  // Used by GSComboWindow to appear in the right position
+  _lastValidFrame = cellFrame;
   point = [controlView convertPoint: [theEvent locationInWindow]
 			   fromView: nil];
 
@@ -1415,7 +1403,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
     {
       if (NSMouseInRect(point, textCellFrameFromRect(cellFrame), isFlipped))
 	{
-	  return YES;// Continue
+	  return NO;
 	}
       else if (NSMouseInRect(point, buttonCellFrameFromRect(cellFrame), isFlipped))
  	{
@@ -1429,16 +1417,14 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 	                             ofView: controlView
 		  	       untilMouseUp: NO];
 
-          /* We can do the call below but it is already done by the target/action we have set for the button cell
-	  if (clicked)
-	    [self _didClickWithinButton: self]; // Not to be used */
+          /* The click will be send by the target/action we have set for the button cell. */
 	  	       
 	  [controlView lockFocus];
           [_buttonCell highlight: NO withFrame: buttonCellFrameFromRect(cellFrame) inView: controlView];
 	  [controlView unlockFocus];
 	  [cvWindow flushWindow];
 	  
-	  return NO;
+	  return clicked;
         }
     }
     
