@@ -1,3 +1,9 @@
+2003-03-05 17:07  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSLayoutManager.m (-drawGlyphsForGlyphRange:atPoint:):
+	Use the focused view as the control view instead of the text
+	container's text view (it might not have one).
+
 2003-03-03 19:26  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSLayoutManager.m (-usedRectForTextContainer:): Don't add

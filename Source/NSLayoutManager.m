@@ -1416,7 +1416,7 @@ container
 		  NSRect cellFrame;
 
 		  if (!controlView)
-		    controlView = [tc->textContainer textView];
+		    controlView = [NSView focusView];
 
 		  while (la->pos != g && la_i < lf->num_attachments)
 		    {
