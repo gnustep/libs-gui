@@ -375,7 +375,7 @@ The displayed menus on the screen have the following structure:
   NSMutableArray *_notifications;
   BOOL _changedMessagesEnabled;
   BOOL _autoenable;
-  BOOL _changed;
+  BOOL _needsSizing;
   BOOL _is_tornoff;
 
   // GNUstepExtra category
