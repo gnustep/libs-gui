@@ -1188,17 +1188,17 @@ container
       if (NSMaxRange(r) > NSMaxRange(range))
 	r.length = NSMaxRange(range) - r.location;
 
-      rects = [self rectArrayForGlyphRange: r
-		    withinSelectedGlyphRange: NSMakeRange(NSNotFound, 0)
-		    inTextContainer: textContainer
-		    rectCount: &count];
-
-      if (count)
+      color = [_textStorage attribute: NSBackgroundColorAttributeName
+			      atIndex: char_pos
+		       effectiveRange: NULL];
+      if (color)
 	{
-	  color = [_textStorage attribute: NSBackgroundColorAttributeName
-				atIndex: char_pos
-				effectiveRange: NULL];
-	  if (color)
+	  rects = [self rectArrayForGlyphRange: r
+		      withinSelectedGlyphRange: NSMakeRange(NSNotFound, 0)
+			       inTextContainer: textContainer
+				     rectCount: &count];
+
+	  if (count)
 	    {
 	      if (last_color != color)
 		{

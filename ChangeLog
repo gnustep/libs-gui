@@ -4,7 +4,7 @@
 	Fix handling of the case where the exact glyph is found during
 	the binary search.
 
-	* Source/NSLayoutManager.m (-drawGlyphsForGlyphRange:atPoint:):
+	* Source/NSLayoutManager.m (-drawBackgroundForGlyphRange:atPoint:):
 	Check that a range has a background color before checking that there
 	are rectangles for it (since ranges practically always have
 	rectangles, and very rarely a background color).
