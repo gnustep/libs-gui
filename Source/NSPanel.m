@@ -188,21 +188,21 @@ static NSString	*defaultTitle = @" ";
  |       |           |   |    |                                             |
  |  ...........      |   |    |                                             |
  |  :       | :      |   |    |                                             |
- |--:  Icon | : ----Title |    |                                             |
- |  : -------|-:          |    |                                             |
- |  : .........:          |    |                                             |
- |                       |    |
- |- =========================== |=============~~~~~~=========================-|
+ |--:  Icon | :----Title |    |                                             |
+ |  :-------|-:          |    |                                             |
+ |  :.........:          |    |                                             |
+ |                       |    |                                             |
+ |-===========================|=============~~~~~~=========================-|
  |                       s    |                                             |
  |                       s    |                                             |
  |    ...................s....|.........................................    |
- |    : Message           s                    s                        ;    |
+ |    :Message           s                    s                        ;    |
  |    :                  s                    s                        :    |
  |    :                  s                    s                        :    |
- |----:                  s                    s                        : ----|
- |    : ~~~~~~~~~~~~~~~~~~s~~~~~~~~~~~~~~~~~~~~s~~~~~~~~~~~~~~~~~~~~~~~~:    |
+ |----:                  s                    s                        :----|
+ |    :~~~~~~~~~~~~~~~~~~s~~~~~~~~~~~~~~~~~~~~s~~~~~~~~~~~~~~~~~~~~~~~~:    |
  |    :                  s                    s                        :    |
- |    : ..................s.............................................:    |
+ |    :..................s.............................................:    |
  |             |         s                                                  |
  |             |         s +-----------+   +-----------+   +-----------+    |
  |             |         s |  Altern   |---|  Cancel   |---|    OK     |----|
@@ -234,7 +234,7 @@ static NSString	*defaultTitle = @" ";
 
 
     Some rules (which are implemented in sizePanelToFit):
-     =====================================================
+    =====================================================
 
 
     IF   the messageField is too big either vertically or horizontally and
@@ -557,11 +557,6 @@ setControl(NSView* content, id control, NSString *title)
 
       altButton = [self _makeButtonWithRect: rect];
       othButton = [self _makeButtonWithRect: rect];
-
-      /* Create the nextKeyView chain */
-      [defButton setNextKeyView: othButton];
-      [othButton setNextKeyView: altButton];
-      [altButton setNextKeyView: defButton];
 
       rect.size.height = 80.0;
       scroll = makeScrollViewWithRect(rect);
@@ -907,6 +902,59 @@ setControl(NSView* content, id control, NSString *title)
     {
       [self makeFirstResponder: self];
     }
+
+  /* a *working* nextKeyView chain:
+     the trick is that the 3 buttons are not always used (displayed)
+     so we have to set the nextKeyView *each* time.
+     Maybe some optimisation in the logic of this block will be good,
+     however it seems too risky for a (so) small reward
+     */
+  {
+    BOOL ud, ua, uo;
+    ud = useControl(defButton);
+    ua = useControl(altButton);
+    uo = useControl(othButton);
+    
+    if (ud)
+      {
+	if (uo)
+	  [defButton setNextKeyView: othButton];
+	else if (ua)
+	  [defButton setNextKeyView: altButton];
+	else
+	  {
+	    [defButton setPreviousKeyView:nil];
+	    [defButton setNextKeyView: nil];
+	  }
+      }
+    
+    if (uo)
+      {
+	if (ua)
+	  [othButton setNextKeyView: altButton];
+	else if (ud)
+	  [othButton setNextKeyView: defButton];
+	else
+	  {
+	    [othButton setPreviousKeyView:nil];
+	    [othButton setNextKeyView: nil];
+	  }
+      }
+
+    if (ua)
+      {
+	if (ud)
+	  [altButton setNextKeyView: defButton];
+	else if (uo)
+	  [altButton setNextKeyView: othButton];
+	else
+	  {
+	    [altButton setPreviousKeyView:nil];
+	    [altButton setNextKeyView: nil];
+	  }
+      }
+  }
+
   isGreen = YES;
   result = NSAlertErrorReturn; 	/* If no button was pressed	*/
 }
