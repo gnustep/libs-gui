@@ -48,7 +48,7 @@ id MB_THE_FONT_PANEL_FACTORY;
 {
   if (self == [NSFontManager class])
     {
-      NSLog(@"Initialize NSFontManager class\n");
+      NSDebugLog(@"Initialize NSFontManager class\n");
 
       // Initial version
       [self setVersion:1];

@@ -108,7 +108,7 @@ NSString *NSApplicationWillUpdateNotification;
 {
   if (self == [NSApplication class])
     {
-      NSLog(@"Initialize NSApplication class\n");
+      NSDebugLog(@"Initialize NSApplication class\n");
 
       // Initial version
       [self setVersion:1];
@@ -138,7 +138,7 @@ NSString *NSApplicationWillUpdateNotification;
 {
   [super init];
 
-  NSLog(@"Begin of NSApplication -init\n");
+  NSDebugLog(@"Begin of NSApplication -init\n");
 
   // allocate the window list
   window_list = [NSMutableArray array];
@@ -177,7 +177,7 @@ NSString *NSApplicationWillUpdateNotification;
 {
   int i, j;
 
-  //NSLog(@"Freeing NSApplication\n");
+  NSDebugLog(@"Freeing NSApplication\n");
 
   // Let ourselves know we are within dealloc
   gnustep_gui_app_is_in_dealloc = YES;
@@ -243,7 +243,7 @@ NSString *NSApplicationWillUpdateNotification;
 {
   NSEvent *e;
 
-  NSLog(@"NSApplication -run\n");
+  NSDebugLog(@"NSApplication -run\n");
 
   [self finishLaunching];
 
@@ -265,7 +265,7 @@ NSString *NSApplicationWillUpdateNotification;
     } while (!app_should_quit);
   app_is_running = YES;
 
-  NSLog(@"NSApplication end of run loop\n");
+  NSDebugLog(@"NSApplication end of run loop\n");
 }
 
 - (int)runModalForWindow:(NSWindow *)theWindow
@@ -283,7 +283,7 @@ NSString *NSApplicationWillUpdateNotification;
   // Don't send the null event
   if (theEvent == NullEvent)
     {
-      NSLog(@"Not sending the Null Event\n");
+      NSDebugLog(@"Not sending the Null Event\n");
       return;
     }
 
@@ -299,7 +299,7 @@ NSString *NSApplicationWillUpdateNotification;
 
     case NSKeyDown:
       {
-	NSLog(@"send key down event\n");
+	NSDebugLog(@"send key down event\n");
 	[[theEvent window] sendEvent:theEvent];
 	break;
       }
@@ -314,13 +314,13 @@ NSString *NSApplicationWillUpdateNotification;
       //
     default:
       {
-	if (!theEvent) NSLog(@"NSEvent is nil!\n");
-	NSLog(@"NSEvent type: %d\n", [theEvent type]);
-	NSLog(@"send event to window\n");
-	NSLog([[theEvent window] description]);
-	NSLog(@"\n");
+	if (!theEvent) NSDebugLog(@"NSEvent is nil!\n");
+	NSDebugLog(@"NSEvent type: %d\n", [theEvent type]);
+	NSDebugLog(@"send event to window\n");
+	NSDebugLog([[theEvent window] description]);
+	NSDebugLog(@"\n");
 	if (![theEvent window])
-	  NSLog(@"no window\n");
+	  NSDebugLog(@"no window\n");
 	[[theEvent window] sendEvent:theEvent];
       }
     }

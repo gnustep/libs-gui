@@ -50,7 +50,7 @@ NSString *NSControlTextDidChangeNotification;
 {
   if (self == [NSControl class])
     {
-      NSLog(@"Initialize NSControl class\n");
+      NSDebugLog(@"Initialize NSControl class\n");
 
       // Initial version
       [self setVersion:1];

@@ -41,7 +41,7 @@
 {
   if (self == [NSActionCell class])
     {
-      NSLog(@"Initialize NSActionCell class\n");
+      NSDebugLog(@"Initialize NSActionCell class\n");
 
       // Initial version
       [self setVersion:1];

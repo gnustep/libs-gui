@@ -62,7 +62,7 @@ NSString *NSAFMXHeight;
 {
   if (self == [NSFont class])
     {
-      NSLog(@"Initialize NSFont class\n");
+      NSDebugLog(@"Initialize NSFont class\n");
 
       // Initial version
       [self setVersion:1];

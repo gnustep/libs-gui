@@ -1,5 +1,18 @@
 Wed Jul 10 17:11:53 1996  Scott Christley <scottc@net-community.com>
 
+	* Source/NSView.m: Use NSDebugLog instead of NSLog.
+	* Source/NSWindow.m: Likewise.
+	* Source/NSResponder.m: Likewise.
+	* Source/NSMatrix.m: Likewise.
+	* Source/NSFontPanel.m: Likewise.
+	* Source/NSFontManager.m: Likewise.
+	* Source/NSFont.m: Likewise.
+	* Source/NSEvent.m: Likewise.
+	* Source/NSControl.m: Likewise.
+	* Source/NSButtonCell.m: Likewise.
+	* Source/NSApplication.m: Likewise.
+	* Source/NSActionCell.m: Likewise.
+	
 	* Source/Makefile.sed.nt: Disable debugging by default.
 
 Wed Jun 26 12:43:17 1996  GNUstep Development  <gnustep@duncan.ocbi.com>

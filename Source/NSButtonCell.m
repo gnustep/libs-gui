@@ -260,22 +260,22 @@
 {
   [super encodeWithCoder:aCoder];
 
-  NSLog(@"NSButtonCell: start encoding\n");
+  NSDebugLog(@"NSButtonCell: start encoding\n");
   [aCoder encodeObject: alt_contents];
   [aCoder encodeObject: alt_image];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &transparent];
-  NSLog(@"NSButtonCell: finish encoding\n");
+  NSDebugLog(@"NSButtonCell: finish encoding\n");
 }
 
 - initWithCoder:aDecoder
 {
   [super initWithCoder:aDecoder];
 
-  NSLog(@"NSButtonCell: start decoding\n");
+  NSDebugLog(@"NSButtonCell: start decoding\n");
   alt_contents = [aDecoder decodeObject];
   alt_image = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &transparent];
-  NSLog(@"NSButtonCell: finish decoding\n");
+  NSDebugLog(@"NSButtonCell: finish decoding\n");
   return self;
 }
 

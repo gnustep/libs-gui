@@ -66,7 +66,7 @@ NSString *NSWindowWillMoveNotification;
 {
   if (self == [NSWindow class])
     {
-      NSLog(@"Initialize NSWindow class\n");
+      NSDebugLog(@"Initialize NSWindow class\n");
 
       // Initial version
       [self setVersion:1];
@@ -113,7 +113,7 @@ NSString *NSWindowWillMoveNotification;
 {
   int style;
 
-  NSLog(@"NSWindow -init\n");
+  NSDebugLog(@"NSWindow -init\n");
   style = NSTitledWindowMask | NSClosableWindowMask
     | NSMiniaturizableWindowMask | NSResizableWindowMask;
   return [self initWithContentRect:NSZeroRect styleMask:style
@@ -144,7 +144,7 @@ NSString *NSWindowWillMoveNotification;
 	      backing:(NSBackingStoreType)bufferingType
 		defer:(BOOL)flag
 {
-  NSLog(@"NSWindow -initWithContentRect:\n");
+  NSDebugLog(@"NSWindow -initWithContentRect:\n");
   return [self initWithContentRect:contentRect styleMask:aStyle
 	       backing:bufferingType defer:flag screen:nil];
 }
@@ -157,13 +157,13 @@ NSString *NSWindowWillMoveNotification;
 {
   NSApplication *theApp = [NSApplication sharedApplication];
 
-  NSLog(@"NSWindow default initializer\n");
+  NSDebugLog(@"NSWindow default initializer\n");
   if (!theApp)
     NSLog(@"No application!\n");
 
   [super init];
 
-  NSLog(@"NSWindow start of init\n");
+  NSDebugLog(@"NSWindow start of init\n");
 
   frame = contentRect;
   style_mask = aStyle;
@@ -193,7 +193,7 @@ NSString *NSWindowWillMoveNotification;
   // Register ourselves with the Application object
   [theApp addWindowsItem:self title:window_title filename:NO];
 
-  NSLog(@"NSWindow end of init\n");
+  NSDebugLog(@"NSWindow end of init\n");
   return self;
 }
 
@@ -884,8 +884,8 @@ NSString *NSWindowWillMoveNotification;
     case NSLeftMouseDown:
       {
 	NSView *v = [content_view hitTest:[theEvent locationInWindow]];
-	NSLog([content_view description]);
-	NSLog(@"\n");
+	NSDebugLog([content_view description]);
+	NSDebugLog(@"\n");
 	[v mouseDown:theEvent];
 	last_point = [theEvent locationInWindow];
 	break;
@@ -1235,7 +1235,7 @@ NSString *NSWindowWillMoveNotification;
 
   [super encodeWithCoder:aCoder];
 
-  NSLog(@"NSWindow: start encoding\n");
+  NSDebugLog(@"NSWindow: start encoding\n");
   [aCoder encodeRect:frame];
   [aCoder encodeObject:content_view];
 //  [aCoder encodeObjectReference: first_responder withName:NULL];
@@ -1254,7 +1254,7 @@ NSString *NSWindowWillMoveNotification;
   [aCoder encodeValueOfObjCType:@encode(BOOL) at: &is_miniaturized];
   [aCoder encodeValueOfObjCType:"I" at: &style_mask];
   [aCoder encodeValueOfObjCType:@encode(BOOL) at: &menu_exclude];
-  NSLog(@"NSWindow: finish encoding\n");
+  NSDebugLog(@"NSWindow: finish encoding\n");
 }
 
 - initWithCoder:aDecoder
@@ -1263,7 +1263,7 @@ NSString *NSWindowWillMoveNotification;
 
   [super initWithCoder:aDecoder];
 
-  NSLog(@"NSWindow: start decoding\n");
+  NSDebugLog(@"NSWindow: start decoding\n");
   frame = [aDecoder decodeRect];
   content_view = [aDecoder decodeObject];
 //  [aDecoder decodeObjectAt: &first_responder withName:NULL];
@@ -1288,7 +1288,7 @@ NSString *NSWindowWillMoveNotification;
   //     better to do it in the awakeFromCoder method
   theApp = [NSApplication sharedApplication];
   [theApp addWindowsItem:self title:nil filename:NO];
-  NSLog(@"NSWindow: finish decoding\n");
+  NSDebugLog(@"NSWindow: finish decoding\n");
 
   return self;
 }

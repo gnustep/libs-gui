@@ -57,7 +57,7 @@ NSString *NSViewFocusChangedNotification;
 {
   if (self == [NSView class])
     {
-      NSLog(@"Initialize NSView class\n");
+      NSDebugLog(@"Initialize NSView class\n");
 
       // Initial version
       [self setVersion:1];
@@ -523,7 +523,7 @@ NSString *NSViewFocusChangedNotification;
   // Convert out origin to window coordinates
   q = [self convertPointToWindow: bounds.origin];
 
-  NSLog(@"point convert: %f %f %f %f\n", p.x, p.y, q.x, q.y);
+  NSDebugLog(@"point convert: %f %f %f %f\n", p.x, p.y, q.x, q.y);
 
   // now translate
   p.x -= q.x;
@@ -551,7 +551,7 @@ NSString *NSViewFocusChangedNotification;
   p = [self convertPointToWindow: aPoint];
   r = [aView bounds];
   q = [aView convertPointToWindow: r.origin];
-  NSLog(@"point convert: %f %f %f %f\n", p.x, p.y, q.x, q.y);
+  NSDebugLog(@"point convert: %f %f %f %f\n", p.x, p.y, q.x, q.y);
 
   // now translate
   p.x -= q.x;
@@ -1106,7 +1106,7 @@ title:(NSString *)aTitle
 {
   [super encodeWithCoder:aCoder];
 
-  NSLog(@"NSView: start encoding\n");
+  NSDebugLog(@"NSView: start encoding\n");
   [aCoder encodeRect: frame];
   [aCoder encodeRect: bounds];
   [aCoder encodeObjectReference: super_view withName: @"Superview"];
@@ -1122,14 +1122,14 @@ title:(NSString *)aTitle
   [aCoder encodeValueOfObjCType:@encode(BOOL) at: &disable_autodisplay];
   [aCoder encodeValueOfObjCType:@encode(BOOL) at: &post_frame_changes];
   [aCoder encodeValueOfObjCType:@encode(BOOL) at: &autoresize_subviews];
-  NSLog(@"NSView: finish encoding\n");
+  NSDebugLog(@"NSView: finish encoding\n");
 }
 
 - initWithCoder:aDecoder
 {
   [super initWithCoder:aDecoder];
 
-  NSLog(@"NSView: start decoding\n");
+  NSDebugLog(@"NSView: start decoding\n");
   frame = [aDecoder decodeRect];
   bounds = [aDecoder decodeRect];
   [aDecoder decodeObjectAt: &super_view withName: NULL];
@@ -1145,7 +1145,7 @@ title:(NSString *)aTitle
   [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &disable_autodisplay];
   [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &post_frame_changes];
   [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &autoresize_subviews];
-  NSLog(@"NSView: finish decoding\n");
+  NSDebugLog(@"NSView: finish decoding\n");
 
   return self;
 }

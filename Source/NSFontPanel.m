@@ -41,7 +41,7 @@
 {
   if (self == [NSFontPanel class])
     {
-      NSLog(@"Initialize NSFontPanel class\n");
+      NSDebugLog(@"Initialize NSFontPanel class\n");
 
       // Initial version
       [self setVersion:1];
