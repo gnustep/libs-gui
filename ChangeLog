@@ -1,3 +1,25 @@
+2003-02-18 01:23  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/GSLayoutManager_internal.h,
+	Source/GSLayoutManager.m: Many minor cleanups and optimizations.
+	Much commenting.
+
+	* Source/GSHorizontalTypesetter.m (-layoutGlyphsInLayoutManager:
+	inTextContainer:startingAtGlyphIndex:previousLineFragmentRect:
+	nextGlyphIndex:numberOfLineFragments:): Determine the initial value
+	for newParagraph correctly.
+
+	* Source/NSLayoutManager.m
+	(-textStorage:edited:range:changeInLength:invalidatedRange:): Don't
+	invalidate all layout on each change. Now, all layout information
+	for glyphs before the change will be reused. (Layout for glyphs
+	after the change is still invalidated, until I finish the soft
+	invalidation.)
+
+	* Source/GSTextStorage.m (-setAttributes:range:): Call
+	-edited:range:changeInLength: with the range that was changed (and
+	not the range attributes could be merged for).
+
 2003-02-17 21:25  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/GSLayoutManager.h,

@@ -49,6 +49,13 @@ Only the head may actually have the maximum level. */
 #define SKIP_LIST_LEVEL_PROBABILITY 2
 
 
+/*
+We try to keep runs no larger than about this size. See the comment in
+-_generateRunsToCharacter: for more details.
+*/
+#define MAX_RUN_LENGTH 16384
+
+
 typedef struct GSLayoutManager_glyph_run_head_s
 {
   struct GSLayoutManager_glyph_run_head_s *next;

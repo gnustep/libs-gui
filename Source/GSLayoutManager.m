@@ -417,6 +417,19 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
 	  curRange.location = pos;
 	}
 
+      /*
+      TODO: this shouldn't really be necessary if all searches inside runs
+      were binary. but for now, it helps performance, and it keeps things
+      more balanced when there are long runs of text.
+      */
+      if (curRange.length > MAX_RUN_LENGTH)
+	{
+	  unsigned int ch = curRange.location + MAX_RUN_LENGTH;
+	  ch = [self _findSafeBreakMovingForwardFrom: ch];
+	  if (ch < NSMaxRange(curRange))
+	    curRange.length = ch - curRange.location;
+	}
+
       new_level = random_level();
 
       /* Since we'll be creating these in order, we can be smart about
@@ -915,7 +928,13 @@ continued runs. this will only happen at safe break spots, though, so
 it should still be safe. might lose opportunities to merge runs, though.
 */
 
-/* This is hairy. */
+/*
+This is hairy.
+
+The ranges passed in and out of this method are ranges _after_ the change.
+Internally, we switch between before- and after-indices. Comments mark the
+places where we switch.
+*/
 - (void) invalidateGlyphsForCharacterRange: (NSRange)range
 	changeInLength: (int)lengthChange
 	actualCharacterRange: (NSRange *)actualRange
@@ -946,14 +965,23 @@ it should still be safe. might lose opportunities to merge runs, though.
   if (actualRange)
     *actualRange = range;
 
-//	printf("range=(%i+%i) lengthChange=%i\n", range.location, range.length, lengthChange);
+
+//  printf("range=(%i+%i) lengthChange=%i\n", range.location, range.length, lengthChange);
   [self _sanityChecks];
-//[self _glyphDumpRuns];
+//  [self _glyphDumpRuns];
+
+
+  /* Switch to before-incides. */
   range.length -= lengthChange;
-//	printf("invalidate %i+%i=%i\n", range.location, range.length, range.location+range.length);
+//  printf("invalidate %i+%i=%i\n", range.location, range.length, range.location+range.length);
 
   ts_length = [_textStorage length];
 
+
+  /*
+  Find out what range we actually need to invalidate. This depends on how
+  context affects glyph generation.
+  */
   ch = range.location;
   if (ch > 0)
     {
@@ -971,10 +999,17 @@ it should still be safe. might lose opportunities to merge runs, though.
       range.length = ch - range.location;
     }
 
-//	printf("adjusted to %i+%i\n", range.location, range.length);
+  /*
+  We now have the range to invalidate in 'range' (indices before the
+  change).
+  */
+//  printf("adjusted to %i+%i\n", range.location, range.length);
 
   ch = range.location;
 
+  /*
+  Find the first run (and context) for the range.
+  */
   h = glyphs;
   cpos = 0;
   for (level = SKIP_LIST_DEPTH - 1; level >= 0; level--)
@@ -983,9 +1018,13 @@ it should still be safe. might lose opportunities to merge runs, though.
 	{
 	  cpos += h->char_length;
 	  h = h->next;
-	  if (!h) /* no runs created yet */
+	  if (!h)
 	    {
-//				printf("no runs created yet\n");
+	      /*
+	      No runs have been created for the range, so there's nothing
+	      to invalidate.
+	      */
+//	      printf("no runs created yet\n");
 	      return;
 	    }
 	}
@@ -996,15 +1035,22 @@ it should still be safe. might lose opportunities to merge runs, though.
   h--;
   r = (glyph_run_t *)h;
 
-  /* assumes that first glyph for a character is in the same run as
-     the character. should be valid, but need to make sure temporary attributes
-     and glyph generation maintain it.
-
-     Not an issue since temporary attributes are character based, and the glyph
-     run issues have been resolved. (2002-11-18)
+  /*
+  Now we have the first run that intersects the range we're invalidating
+  in 'r' (and context in 'context' and 'position').
   */
 
-//	printf("split if %i+%i > %i+%i\n", cpos, r->head.char_length, ch, range.length);
+//  printf("split if %i+%i > %i+%i\n", cpos, r->head.char_length, ch, range.length);
+  /*
+  If 'r' extends beyond the invalidated range, split off the trailing, valid
+  part to a new run.
+
+  (It seems unnecessary to do this here, since in most cases, the splitting
+  in the deletion loop will cover it. It seems to me (now) that this only
+  needs to be done if ch > cpos, since otherwise we can't split off the
+  valid front part of the run. Need to figure out exactly what's going
+  on.)
+  */
   if (cpos + r->head.char_length > ch + range.length && range.length)
     {
       glyph_run_t *new;
@@ -1014,7 +1060,9 @@ it should still be safe. might lose opportunities to merge runs, though.
       new = run_insert(context);
       new->head.char_length = cpos + r->head.char_length - (ch + range.length);
       [self _run_copy_attributes: new : r];
-      /* OPT!!! keep valid glyphs */
+      /* OPT: keep valid glyphs
+      this seems to be a fairly rare case
+      */
       hn = &new->head;
       hn--;
       for (i = 1; i <= new->level; i++, hn--)
@@ -1026,8 +1074,17 @@ it should still be safe. might lose opportunities to merge runs, though.
       r->head.char_length -= new->head.char_length;
     }
 
+  /*
+  Set things up. We want 'r' to be the last run we want to keep.
+  */
   if (ch == cpos)
     {
+      /*
+      This run begins exactly at the beginning of the invalidated range.
+      Since we want 'r' to be the last run to keep, we actually want it
+      to be the previous run. Thus, we step backwards in the skip list
+      to get the previous run.
+      */
       glyph_run_head_t *h2;
 
       h2 = h - r->level;
@@ -1052,6 +1109,10 @@ it should still be safe. might lose opportunities to merge runs, though.
     }
   else
     {
+      /*
+      This run begins before the invalidated range. Resize it so it ends
+      just before it.
+      */
       gap = r->head.char_length + cpos - ch;
       r->head.char_length = ch - cpos;
       /* OPT!!! keep valid glyphs */
@@ -1064,28 +1125,34 @@ it should still be safe. might lose opportunities to merge runs, though.
 	}
     }
 
-  /* r is the last run we should keep, context and positions are set up
-     for it, gap is the number of characters already deleted */
+  /*
+  'r' is the last run we should keep, 'context' and 'position' are set up
+  for it, 'gap' is the number of characters already deleted.
 
+  Now we delete all runs completely invalidated.
+  */
   {
     glyph_run_t *next;
     unsigned int max = range.location + range.length;
     int i;
 
-    /* delete all runs completely invalidated */
     cpos += gap + r->head.char_length;
     while (1)
       {
 	next = (glyph_run_t *)r->head.next;
 
-	/* we reached the end of all created runs */
+	/* We reached the end of all created runs. */
 	if (!next)
 	  break;
 
-	/* clean cut, just stop */
+	/* Clean cut, just stop. */
 	if (max == cpos)
 	  break;
 
+	/*
+	Part of this run extends beyond the invalidated range. Resize it
+	so it's completely beyond the invalidated range and stop.
+	*/
 	if (max < cpos + next->head.char_length)
 	  {
 	    glyph_run_head_t *hn;
@@ -1098,6 +1165,7 @@ it should still be safe. might lose opportunities to merge runs, though.
 		free(next->glyphs);
 		next->glyphs = NULL;
 	      }
+	    /* TODO: this creates really large runs at times */
 	    next->head.char_length -= max - cpos;
 
 	    hn = &next->head;
@@ -1110,7 +1178,10 @@ it should still be safe. might lose opportunities to merge runs, though.
 
 	cpos += next->head.char_length;
 
-	/* remove the run, will update heads later */
+	/*
+	This run is completely inside the invalidated range. Remove it.
+	The context run heads will be adjusted later.
+	*/
 	if (next->head.next)
 	  ((glyph_run_t *)next->head.next)->prev = &r->head;
 
@@ -1127,15 +1198,23 @@ it should still be safe. might lose opportunities to merge runs, though.
     trailing = !next;
   }
 
-//	printf("deleted\n");
-//	[self _glyphDumpRuns];
+/*  printf("deleted\n");
+  [self _glyphDumpRuns];*/
 
-  /* r is the last run we want to keep, and the next run is the next
-     uninvalidated run. need to insert new runs for range */
+  /* Switch back to after-indices. */
   range.length += lengthChange;
-//	printf("create runs for %i+%i\n", range.location, range.length);
-  /* OPT: this is creating more runs than it needs to */
-  {
+
+  /*
+  'r' is the last run we want to keep, and the next run is the next
+  uninvalidated run. We need to insert new runs for invalidated range
+  after 'r'.
+
+  As we create new runs, we move the context forward. When we do this, we
+  adjust their heads with updated information. When we're done, we update
+  all the remaining heads.
+  */
+//  printf("create runs for %i+%i\n", range.location, range.length);
+  { /* OPT: this is creating more runs than it needs to */
     NSDictionary *attributes;
     glyph_run_t *new;
     unsigned int max = range.location + range.length;
@@ -1148,23 +1227,86 @@ it should still be safe. might lose opportunities to merge runs, though.
 				 longestEffectiveRange: &rng
 				 inRange: NSMakeRange(0, [_textStorage length])];
 
-/*			printf("at %i, max=%i, effective range (%i+%i)\n",
-				ch, max, rng.location, rng.length);*/
+/*	printf("at %i, max=%i, effective range (%i+%i)\n",
+	       ch, max, rng.location, rng.length);*/
+
+	/*
+	Catch a common case. If the new run would be a continuation of the
+	previous run, and the previous run is short, we resize the previous
+	run instead of creating a new run.
+
+	(Note that we must make sure that we don't merge with the dummy runs
+	at the very front.)
+
+	This happens a lot with repeated single-character insertions, aka.
+	typing in a text view.
+	*/
+	if (rng.location < ch && context[0]->char_length &&
+	    context[0]->char_length < 16)
+	  {
+	    rng.length -= ch - rng.location;
+	    rng.location = ch;
+	    if (ch + rng.length > max)
+	      {
+		rng.length = max - ch;
+	      }
+	    new = (glyph_run_t *)context[0];
+	    if (new->head.complete)
+	      {
+		free(new->glyphs);
+		new->glyphs = NULL;
+		new->head.glyph_length = 0;
+		new->head.complete = 0;
+	      }
+	    new->head.char_length += rng.length;
+	    ch += new->head.char_length;
+	    continue;
+	  }
 
 	new = run_insert(context);
+
+	/*
+	We have the longest range the attributes allow us to create a run
+	for. Since this might overlap the previous and next runs, we might
+	need to adjust the location and length of the range we create a
+	run for.
+
+	OPT: If the overlapped run is short, we might want to clear out
+	its glyphs and extend it to cover our range. This should result
+	in fewer runs being created for large sequences of single character
+	adds.
+	*/
 	if (rng.location < ch)
 	  {
+	    /*
+	    The new run has the same attributes as the previous run, so we
+	    mark it is as a continued run.
+	    */
 	    new->continued = 1;
 	    rng.length -= ch - rng.location;
 	    rng.location = ch;
 	  }
 	if (ch + rng.length > max)
 	  {
+	    /*
+	    The new run has the same attributes as the next run, so we mark
+	    the next run as a continued run.
+	    */
 	    if (new->head.next)
 	      ((glyph_run_t *)new->head.next)->continued = 1;
 	    rng.length = max - ch;
 	  }
-//			printf("adjusted length: %i\n", rng.length);
+
+	/* See comment in -_generateRunsToCharacter:. */
+	if (rng.length > MAX_RUN_LENGTH)
+	  {
+	    unsigned int safe_break = rng.location + MAX_RUN_LENGTH;
+	    safe_break = [self _findSafeBreakMovingForwardFrom: safe_break];
+	    if (safe_break < NSMaxRange(rng))
+	      rng.length = safe_break - rng.location;
+	  }
+
+//	printf("adjusted length: %i\n", rng.length);
 	new->head.char_length = rng.length;
 
 	[self _run_cache_attributes: new : attributes];
@@ -1183,7 +1325,7 @@ it should still be safe. might lose opportunities to merge runs, though.
       ((glyph_run_t *)context[0]->next)->prev = context[0];
   }
 
-  /* fix all heads */
+  /* Fix up the remaining context run heads. */
   {
     int i;
     for (i = 1; i < SKIP_LIST_DEPTH; i++)
@@ -1195,7 +1337,7 @@ it should still be safe. might lose opportunities to merge runs, though.
   if (actualRange)
     *actualRange = range;
 
-//	[self _glyphDumpRuns];
+//  [self _glyphDumpRuns];
   [self _sanityChecks];
 }
 
