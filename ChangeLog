@@ -1,3 +1,9 @@
+Sun Feb 16 04:13:46 2003  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSSplitView.m ([-mouseDown:]): Fixed calling delegate
+	method to constrain split position.  Patch By Enrico Sersale,
+	with changes.
+
 2003-02-16 04:14  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/GSLayoutManager.h, Source/GSLayoutManager.m:
