@@ -1,3 +1,20 @@
+2003-06-23  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPanel.m
+	Commented out unused variables WTitleHeight, ScrollMinSize,
+	MessageMinHeight. 
+	* Source/NSTabView.m (selectNextTabViewItem:):
+	* Source/NSTableView.m (selectAll:):
+	* Source/NSTextStorage.m (edited:range:changeInLength:,
+	processEditing):
+	* Source/GSTextStorage.m (replaceCharactersInRange:withString:)
+	* Source/tiff.m (NSTIFFRead, NSTIFFWrite, CheckAndCorrectColormap):
+	* Source/GSTable.m (_updateForNewFrameSize:)
+	* Source/NSTextView.m (changeFont:):
+	Removed compiler warning about signed/unsigned comparision. 
+	* Source/GSHorizontalTypesetter.m
+	Changed element char_index of structure glyph_cache_t to unsigned.
+
 2003-06-22  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWorkspace.m: Implement autolaunch flag and add
