@@ -1,5 +1,11 @@
 2005-02-12  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Model/GMAppKit.m (NSButtonCell-initWithModelUnarchiver:):
+	Resorted code to work around AppKit change on button type
+	handling. Patch by Georg Fleischmann <georg@vhf.de>	
+
+2005-02-12  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Source/NSAffineTransform.m (-boundingRectFor:result:): Further
 	corrections on last change.
 
