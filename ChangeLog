@@ -1,3 +1,9 @@
+Wed Jan  5 16:27:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSMenuItem.m: minor fixes and tidying.
+	* Source/NSMenuView.m: reverted to previous version - last change
+	broke much more than it fixed.
+
 Mon Jan  3 18:35:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSBundleAdditions.m: Added ([-awakeWithContext:]) method for

@@ -708,7 +708,8 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
   [targetMenuView setHighlightedItemIndex: -1];
 }
 
-#define MENU_SELECT_DELAY 4
+#define MOVE_THRESHOLD_DELTA 1.0
+#define DELAY_MULTIPLIER     12
 
 - (BOOL)trackWithEvent: (NSEvent *)event
 {
@@ -720,73 +721,82 @@ static float GSMenuBarHeight = 25.0; // A wild guess.
 
   int      index;
   NSPoint  location;
-  float    lastX = [window mouseLocationOutsideOfEventStream].x;
+  NSPoint  lastLocation = {0,0};
   NSMenu  *alreadyAttachedMenu = NO;
   BOOL     delayedSelect = NO;
-  int      delayCount = 0;
+  int      delayCount = DELAY_MULTIPLIER;
 
   do
     {
-      lastX    = location.x;
-      location = [window mouseLocationOutsideOfEventStream];
-      index    = [self indexOfItemAtPoint: location];
+      location     = [window mouseLocationOutsideOfEventStream];
+      index        = [self indexOfItemAtPoint: location];
 
       if ([event type] == NSPeriodic)
 	{
 	  if ([menuv_menu isPartlyOffScreen])
 	    {
-	      NSPoint pointerLoc = [window convertBaseToScreen: location];
+	      NSPoint pointerLoc = [window convertBaseToScreen:
+					     location];
 
 	      // TODO: Why 1 in the Y axis?
 	      if (pointerLoc.x == 0 || pointerLoc.y == 1 ||
-		  pointerLoc.x == [[window screen] frame].size.width - 1)
+		  pointerLoc.x == [[window screen] frame].size.width
+		  - 1)
 		[menuv_menu shiftOnScreen];
 	    }
-	  else if (delayedSelect && !--delayCount)
+
+	  if ([event type] == NSPeriodic && delayedSelect && !delayCount)
 	    {
-	      delayedSelect = NO;
+	      if (location.x - lastLocation.x < MOVE_THRESHOLD_DELTA ||
+		  abs(location.y - lastLocation.y) < MOVE_THRESHOLD_DELTA)
+		delayedSelect = NO;
+
+	      lastLocation = location;
 	    }
+
+	  delayCount   = delayCount ? --delayCount : DELAY_MULTIPLIER;
 	}
 
       if (index == -1)
 	{
-	  if (delayedSelect)
-	    {
-	      delayedSelect = NO;
-	    }
-
 	  if ([menuv_menu attachedMenu])
 	    {
 	      if ([[self attachedMenuView] trackWithEvent: event])
 		return YES;
 	    }
-	  else if (index != menuv_highlightedItemIndex)
+	  else
 	    {
-	      [self setHighlightedItemIndex: index];
+	      if (index != menuv_highlightedItemIndex)
+		[self setHighlightedItemIndex: index];
 	    }
 
 	  if (([menuv_menu supermenu] && ![menuv_menu isTornOff])
 	      || [menuv_menu isFollowTransient])
 	    return NO;
 	}
-      else if (index != menuv_highlightedItemIndex && !delayedSelect)
+      else
 	{
-	  if (location.x - lastX > 0 && [menuv_menu attachedMenu])
+	  if (index != menuv_highlightedItemIndex)
 	    {
-	      delayCount = MENU_SELECT_DELAY;
-	      delayedSelect = YES;
-	    }
+	      if (![menuv_menu attachedMenu] || !delayedSelect)
+		{
+		  [self setHighlightedItemIndex: index];
 
-	  if (!delayedSelect)
-	    {
-	      [self setHighlightedItemIndex: index];
+		  if ([menuv_menu attachedMenu])
+		    [self detachSubmenu];
 
-	      if ([menuv_menu attachedMenu])
-		[self detachSubmenu];
-
-	      if ((alreadyAttachedMenu =
-		   [[menuv_items_link objectAtIndex: index] submenu]))
-		[self attachSubmenuForItemAtIndex: index];
+		  if ((alreadyAttachedMenu =
+		       [[menuv_items_link objectAtIndex: index] submenu]))
+		    {
+		      [self attachSubmenuForItemAtIndex: index];
+		      delayedSelect = YES;
+		      delayCount    = DELAY_MULTIPLIER;
+		    }
+		  else
+		    {
+		      delayedSelect = NO;
+		    }
+		}
 	    }
 	}
 
