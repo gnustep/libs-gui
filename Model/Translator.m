@@ -32,8 +32,8 @@
 
 #import <Foundation/NSNotification.h>
 #import <AppKit/AppKit.h>
-#import <AppKit/GMArchiver.h>
-#import "AppKit/IMLoading.h"
+#import "gnustep/gui/GMArchiver.h"
+#import "gnustep/gui/IMLoading.h"
 #import "IBClasses.h"
 #import "Translator.h"
 

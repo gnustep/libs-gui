@@ -24,8 +24,8 @@
 */
 
 #include <Foundation/NSObjCRuntime.h>
-#include <AppKit/GMArchiver.h>
-#include "AppKit/IMCustomObject.h"
+#include "gnustep/gui/GMArchiver.h"
+#include "gnustep/gui/IMCustomObject.h"
 
 @implementation NSObject(ModelUnarchiving)
 

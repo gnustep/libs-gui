@@ -42,7 +42,7 @@ int main ()
     printf ("Convert nib files to GNU model files.\n");
     printf ("usage: %s nib-file gmodel-file\n",
 	    [[processInfo processName] cString]);
-    exit (1);
+    return (1);
   }
 
   translator = [[Translator new] autorelease];

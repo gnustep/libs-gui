@@ -73,7 +73,7 @@ endif
 ADDITIONAL_OBJC_FLAGS += $(BACKEND_DEFINE)
 
 # Additional include directories the compiler should search
-ADDITIONAL_INCLUDE_DIRS = -I../Headers -I../Headers/gnustep
+ADDITIONAL_INCLUDE_DIRS = -I../Headers
 
 # What are the libraries this library depends upon. This is needed for some
 # systems where building a shared library requires to pass to the linker
