@@ -827,6 +827,7 @@ static NSMapTable* windowmaps = NULL;
 
       _f.is_key = YES;
       DPSsetinputstate(GSCurrentContext(), window_num, GSTitleBarKey);
+      DPSsetinputfocus(GSCurrentContext(), window_num);
       [self resetCursorRects];
       [nc postNotificationName: NSWindowDidBecomeKeyNotification object: self];
     }
@@ -1081,6 +1082,7 @@ static NSMapTable* windowmaps = NULL;
 	}
       if ([self isKeyWindow] == YES)
 	{
+	  DPSsetinputstate(GSCurrentContext(), window_num, GSTitleBarKey);
 	  DPSsetinputfocus(GSCurrentContext(), window_num);
 	}
     }
