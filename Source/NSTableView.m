@@ -2099,8 +2099,6 @@ byExtendingSelection: (BOOL)flag
 
 - (void) noteNumberOfRowsChanged
 {
-  NSRect superviewBounds; // Get this *after* [self setFrame:]
-  
   _numberOfRows = [_dataSource numberOfRowsInTableView: self];
   [self setFrame: NSMakeRect (_frame.origin.x, 
 			      _frame.origin.y,
@@ -2109,11 +2107,15 @@ byExtendingSelection: (BOOL)flag
   
   /* If we are shorter in height than the enclosing clipview, we
      should redraw us now. */
-  superviewBounds = [_super_view bounds];
-  if ((superviewBounds.origin.x <= _frame.origin.x) 
-      && (NSMaxY (superviewBounds) >= NSMaxY (_frame)))
+  if (_super_view != nil)
     {
-      [self setNeedsDisplay: YES];
+      NSRect superviewBounds; // Get this *after* [self setFrame:]
+      superviewBounds = [_super_view bounds];
+      if ((superviewBounds.origin.x <= _frame.origin.x) 
+          && (NSMaxY (superviewBounds) >= NSMaxY (_frame)))
+	{
+	  [self setNeedsDisplay: YES];
+	}
     }
 }
 
