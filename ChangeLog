@@ -1,3 +1,11 @@
+Wed Aug 30 13:07:06 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Headers/gnustep/gui/NSMatrix.h: Added ivar for key cell; 
+	added declaration of ([-setKeyCell:]).
+	* Source/NSMatrix.m ([-keyCell]), ([-setKeyCell:]): Implemented.
+	([-selectText:]): Select keyCell if appropriate.  ([-keyDown:]):
+	Select text if the key is enter.
+
 Wed Aug 30 12:07:46 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSSavePanel.m ([-_initWithoutGModel]): Set browser's
