@@ -29,7 +29,7 @@
 #include <AppKit/NSText.h>
 
 /* For NSBeep () */
-#include <AppKit/NSApplication.h>
+#include <AppKit/NSGraphics.h>
 
 #include "GSKeyBindingAction.h"
 #include "GSKeyBindingTable.h"
