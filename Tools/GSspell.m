@@ -361,7 +361,7 @@ int main(int argc, char** argv)
 {
   CREATE_AUTORELEASE_POOL (_pool);
   NSSpellServer *aServer = [[NSSpellServer alloc] init];
-  if ([aServer registerLanguage: @"English" byVendor: @"GNU"]) //&& 
+  if ([aServer registerLanguage: @"AmericanEnglish" byVendor: @"GNU"]) //&& 
     //  [aServer registerLanguage: @"Spanish" byVendor: @"GNU"] &&
     //  [aServer registerLanguage: @"French"  byVendor: @"GNU"] )
     {

@@ -1,3 +1,13 @@
+2002-07-18  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSOutlineView.m: Removed an extraneous NSLog.
+	* Tools/GSspell.m: Changed registration of spell checker to
+	AmericanEnglish.   
+	* Tools/GSspellInfo.plist: Changed .plist to reflect the new
+	name. The spell checker was registering itself for simply 
+	"English" and was not being started when a request to check
+	spelling in a document was being issued.  It should work now.
+	
 2002-07-17  Adam Fedor  <fedor@gnu.org>
 
 	* Version: 0.7.9

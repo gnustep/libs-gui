@@ -1581,7 +1581,6 @@ static NSImage *unexpandable  = nil;
   // of editing.
   if (_dataSource_editable == NO)
     {
-      NSLog(@"Data source not editable...");
       return;
     }
   
