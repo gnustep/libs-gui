@@ -50,44 +50,6 @@ static Class controlClass;
 /*
  * Instance methods
  */
-- (id) init
-{
-  [super init];
-
-  // Implicitly set by allocation:
-  //
-  //_target = nil;
-  //_action = NULL;
-  //_tag = 0;
-  //_control_view = nil;
-  return self;
-}
-
-- (id) initImageCell: (NSImage*)anImage
-{
-  [super initImageCell: anImage];
-
-  // Implicitly set by allocation:
-  //
-  //_target = nil;
-  //_action = NULL;
-  //_tag = 0;
-  //_control_view = nil;
-  return self;
-}
-
-- (id) initTextCell: (NSString*)aString
-{
-  [super initTextCell: aString];
-
-  // Implicitly set by allocation:
-  //
-  //_target = nil;
-  //_action = NULL;
-  //_tag = 0;
-  //_control_view = nil;
-  return self;
-}
 
 /*
  * Configuring an NSActionCell 
@@ -132,9 +94,9 @@ static Class controlClass;
 			   left: (unsigned int)leftDigits
 			  right: (unsigned int)rightDigits
 {
-  _cell.float_autorange = autoRange;
-  _cell_float_left = leftDigits;
-  _cell_float_right = rightDigits;
+  [super setFloatingPointFormat: autoRange
+	 left: leftDigits
+	 right: rightDigits];
   if (_control_view)
     if ([_control_view isKindOfClass: controlClass])
       [(NSControl *)_control_view updateCell: self];
@@ -146,6 +108,7 @@ static Class controlClass;
   if (_control_view)
     if ([_control_view isKindOfClass: controlClass])
       [(NSControl *)_control_view updateCell: self];
+  // TODO: This should also set the font of the text object, when selected
 }
 
 - (void) setImage: (NSImage*)image
@@ -159,6 +122,39 @@ static Class controlClass;
 /*
  * Manipulating NSActionCell Values 
  */
+
+- (NSString *)stringValue
+{
+  if (_control_view)
+    if ([_control_view isKindOfClass: controlClass])
+      [(NSControl *)_control_view validateEditing];
+  return [super stringValue];
+}
+
+- (double)doubleValue
+{
+  if (_control_view)
+    if ([_control_view isKindOfClass: controlClass])
+      [(NSControl *)_control_view validateEditing];
+  return [super doubleValue];
+}
+
+- (float)floatValue
+{
+  if (_control_view)
+    if ([_control_view isKindOfClass: controlClass])
+      [(NSControl *)_control_view validateEditing];
+  return [super floatValue];
+}
+
+- (int)intValue
+{
+  if (_control_view)
+    if ([_control_view isKindOfClass: controlClass])
+      [(NSControl *)_control_view validateEditing];
+  return [super intValue];
+}
+
 - (void) setStringValue: (NSString*)aString
 {
   [super setStringValue: aString];
@@ -226,19 +222,6 @@ static Class controlClass;
 - (int) tag
 {
   return _tag;
-}
-
-- (id) copyWithZone: (NSZone*)zone
-{
-  NSActionCell	*c = [super copyWithZone: zone];
-
-  // All done automatically
-  //c->_tag = _tag;
-  //c->_target = _target;
-  //c->_action = _action;
-  //c->_control_view = _control_view;
-
-  return c;
 }
 
 -(NSView *)controlView
