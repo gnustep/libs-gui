@@ -1,3 +1,9 @@
+2002-10-10  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBezierPath.m
+	Handle seting of an empty dash in [setLineDash:count:phase:]. 
+	[_doPath] now always sends the dash pattern, even when empty.
+
 2002-08-30  Georg Fleischmann
 	
 	* Source/NSWindow.m ([-constrainFrameRect]): Move window inside
