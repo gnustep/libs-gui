@@ -155,10 +155,10 @@ static float scrollerWidth;
 
 - (void) dealloc
 {
-  TEST_RELEASE(_horizScroller);
-  TEST_RELEASE(_vertScroller);
-  TEST_RELEASE(_horizRuler);
-  TEST_RELEASE(_vertRuler);
+  DESTROY(_horizScroller);
+  DESTROY(_vertScroller);
+  DESTROY(_horizRuler);
+  DESTROY(_vertRuler);
 
   [super dealloc];
 }
