@@ -1,3 +1,9 @@
+2000-05-06  James Dessart <skwirl@cam.org>
+
+	* Documentation/gsdoc/NSWindow.gsdoc :
+	* Documentation/gsdoc/NSWindow.html  :
+	Added some very basic documentation.
+	
 2000-05-04  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Source/NSText.m:
