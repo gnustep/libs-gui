@@ -1,3 +1,21 @@
+2001-11-03  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSSpellChecker.h
+	Added [guessesForWord:].
+	* Source/NSSpellChecker.m
+	Implement [guessesForWord:] and use it in
+	[browser:createRowsForColumn:inMatrix:]. Don't create the server
+	in [init], but check it before each use. Check if ther server
+	proxy exists before all method calls that return a NSRange.
+	In [checkSpellingOfString:...wordCount:] don't call
+	[updateSpellingPanelWithMisspelledWord:]. Beep in this method,
+	when the string is empty. [_findNext:], [_ignore:] and [_correct:]
+	now use [[NSApp sendAction:to:from:] instead of explicit responder.
+	* Source/NSTextView.m
+	Adopted implemtantion of [checkSpelling:] to changes in
+	NSSpellChecker. [updateSpellingPanelWithMisspelledWord:] is now
+	called from here.
+	
 2001-11-02  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSSavePanel.m (-_resetDefaults): Set directory only
