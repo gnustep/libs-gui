@@ -145,7 +145,9 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
 - (void) drawWellInside: (NSRect)insideRect
 {
   if (NSIsEmptyRect(insideRect))
-    return;
+    {
+      return;
+    }
   [_the_color drawSwatchInRect: insideRect];
 }
 
@@ -224,32 +226,34 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
 //
 // Managing Color 
 //
-- (NSColor *)color
+- (NSColor *) color
 {
   return _the_color;
 }
 
-- (void)setColor: (NSColor *)color
+- (void) setColor: (NSColor *)color
 {
   ASSIGN(_the_color, color);
   [self setNeedsDisplay: YES];
 }
 
-- (void)takeColorFrom: (id)sender
+- (void) takeColorFrom: (id)sender
 {
   if ([sender respondsToSelector: @selector(color)])
-    ASSIGN(_the_color, [sender color]);
+    {
+      ASSIGN(_the_color, [sender color]);
+    }
 }
 
 //
 // Managing Borders 
 //
-- (BOOL)isBordered
+- (BOOL) isBordered
 {
   return _is_bordered;
 }
 
-- (void)setBordered: (BOOL)bordered
+- (void) setBordered: (BOOL)bordered
 {
   _is_bordered = bordered;
   [self setNeedsDisplay: YES];
