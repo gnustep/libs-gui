@@ -58,6 +58,23 @@ enum {
   NSRunContinuesResponse
 };
 
+#ifndef STRICT_OPENSTEP
+#define NSUpdateWindowsRunLoopOrdering 600000
+
+typedef enum {
+  NSTerminateCancel = NO,
+  NSTerminateNow = YES, 
+  NSTerminateLater
+} NSApplicationTerminateReply;
+
+typedef enum {
+  NSCriticalRequest,
+  NSInformationalRequest
+} NSRequestUserAttentionType;
+
+#define NSAppKitVersionNumber10_0 0
+#endif
+
 APPKIT_EXPORT NSString	*NSModalPanelRunLoopMode;
 APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 
@@ -72,7 +89,7 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
   id			_listener;
   NSMenu		*_main_menu;
   NSMenu		*_windows_menu;
-  // 8 bits
+  // 5 bits
   BOOL			_app_is_running;
   BOOL			_app_is_active;
   BOOL			_app_is_hidden;
@@ -97,7 +114,9 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
  */
 
 #ifndef STRICT_OPENSTEP
-+ (void)detachDrawingThread:(SEL)selector toTarget:(id)target withObject:(id)argument;
++ (void) detachDrawingThread: (SEL)selector 
+		    toTarget: (id)target 
+		  withObject: (id)argument;
 #endif
 
 /*
@@ -212,21 +231,20 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 /*
  * Showing Standard Panels
  */
-- (void) orderFrontColorPanel: (id)sender;
-- (void) orderFrontDataLinkPanel: (id)sender;
-- (void) orderFrontHelpPanel: (id)sender;
-- (void) runPageLayout: (id)sender;
+#ifndef	NO_GNUSTEP
 /* GNUstep extensions displaying an infoPanel, title is 'Info' */
 /* For a list of the useful values in the dictionary, see GSInfoPanel.h. 
    The entries are mostly compatible with macosx. */
 - (void) orderFrontStandardInfoPanel: (id)sender;
 - (void) orderFrontStandardInfoPanelWithOptions: (NSDictionary *)dictionary;
+#endif 
+#ifndef STRICT_OPENSTEP
 /* macosx extensions displaying an aboutPanel, title is 'About'. 
    NB: These two methods do exactly the same as the two methods above, 
    only the title is different. */
 - (void) orderFrontStandardAboutPanel: (id)sender;
 - (void) orderFrontStandardAboutPanelWithOptions: (NSDictionary *)dictionary;
-
+#endif 
 
 /*
  * Getting the main menu
@@ -277,6 +295,9 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 /*
  * Terminating the application
  */
+#ifndef STRICT_OPENSTEP
+- (void) replyToApplicationShouldTerminate: (BOOL)shouldTerminate;
+#endif 
 - (void) terminate: (id)sender;
 
 /*
@@ -285,11 +306,18 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 - (id) delegate;
 - (void) setDelegate: (id)anObject;
 
+#ifndef STRICT_OPENSTEP
 /*
- * NSCoding protocol
+ * Methods for scripting
  */
-- (void) encodeWithCoder: (NSCoder*)aCoder;
-- (id) initWithCoder: (NSCoder*)aDecoder;
+- (NSArray *) orderedDocuments;
+- (NSArray *) orderedWindows;
+/*
+ * Methods for user attention requests
+ */
+- (void) cancelUserAttentionRequest: (int)request;
+- (int) requestUserAttention: (NSRequestUserAttentionType)requestType;
+#endif
 
 @end
 
@@ -322,7 +350,11 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
            printFile:(NSString *)filename;
 - (BOOL) applicationOpenUntitledFile: (NSApplication*)app;
 - (BOOL) applicationShouldOpenUntitledFile:(NSApplication *)sender;
+#ifndef STRICT_OPENSTEP
 - (BOOL) applicationShouldTerminate: (id)sender;
+#else
+- (NSApplicationTerminateReply) applicationShouldTerminate: (NSApplication *)sender;
+#endif 
 - (BOOL) applicationShouldTerminateAfterLastWindowClosed: (id)sender;
 
 - (void) applicationDidBecomeActive: (NSNotification*)aNotification;
@@ -338,6 +370,14 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 - (void) applicationWillTerminate:(NSNotification *)aNotification;
 - (void) applicationWillUnhide: (NSNotification*)aNotification;
 - (void) applicationWillUpdate: (NSNotification*)aNotification;
+#ifndef STRICT_OPENSTEP
+- (BOOL) application: (NSApplication *)sender 
+  delegateHandlesKey: (NSString *)key;
+- (NSMenu *) applicationDockMenu: (NSApplication *)sender;
+- (BOOL) applicationShouldHandleReopen: (NSApplication *)theApplication 
+		   hasVisibleWindows: (BOOL)flag;
+- (void) applicationDidChangeScreenParameters: (NSNotification *)aNotification;
+#endif 
 @end
 #endif
 
