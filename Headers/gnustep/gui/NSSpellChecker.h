@@ -97,6 +97,7 @@
 			    wrap:(BOOL)wrapFlag
 	  inSpellDocumentWithTag:(int)tag
 		       wordCount:(int *)wordCount;
+- (NSArray *)guessesForWord:(NSString *)word;
 
 //
 // Setting the Language 
