@@ -1,10 +1,15 @@
+2002-08-27  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSBrowser.m (-tile): Set horizontal scroller frame
+	only if we have one.
+
 2002-08-26  Adam Fedor  <fedor@gnu.org>
 
 	* Model/GMAppKit.m (-initWithModelUnarchiver:): Don't add ourselves
 	to the superview if we are the contentView of an NSBox.
 
 	* Tools/example.m ([ExampleServices -openURL:userData:error:]): 
-	Get browser from defualts. Use mozilla if non. (Modified patch from
+	Get browser from defualts. Use mozilla if none. (Modified patch from
 	Stefan Urbanek).
 
 2002-08-24  Adam Fedor  <fedor@gnu.org>

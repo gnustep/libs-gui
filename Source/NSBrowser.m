@@ -1769,17 +1769,17 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
       _scrollerRect.size.height = scrollerWidth;
 
       _columnSize.height -= scrollerWidth + (2 * bs.height) + NSBR_VOFFSET;
+
+      if (!NSEqualRects(_scrollerRect, [_horizontalScroller frame]))
+        {
+          [_horizontalScroller setFrame: _scrollerRect];
+        }
     }
   else
     {
       _scrollerRect = NSZeroRect;
     }
 
-  if (!NSEqualRects(_scrollerRect, [_horizontalScroller frame]))
-    {
-      [_horizontalScroller setFrame: _scrollerRect];
-    }
-  
   num = _lastVisibleColumn - _firstVisibleColumn + 1;
 
   if (_minColumnWidth > 0)
