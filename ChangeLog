@@ -15,7 +15,8 @@
 	* Source/NSMenu.m: removed isTornOff: from frontend and it is in
 	the backend where it should be.
 	* Source/NSMenuView.m: added code that does quite a bit of the
-	transient menu code.
+	transient menu code. Added code to close transients when the mouse
+	goes up.
 
 	The event code needs to be finessed so that the transient menu is
 	not allowed to remain on screen unless the mouse button stays down.

@@ -412,7 +412,8 @@ static float GSMenuBarHeight = 25.0; // a guess.
 {
   // The MacOSX API says that this method calls - rectOfItemAtIndex for
   // *every* cell to figure this out. Well, instead we will just do some
-  // simple math.
+  // simple math. (NOTE: if we get horizontal methods we will have to do
+  // this. Very much like NSTabView.
   NSRect aRect = [self rectOfItemAtIndex: 0];
 
   // this will need some finnessing but should be close.
@@ -525,6 +526,7 @@ static float GSMenuBarHeight = 25.0; // a guess.
 	{
 	  case NSRightMouseUp: 
 	  case NSLeftMouseUp: 
+//	    [self setHighlightedItemIndex:-1];
 	  /* right mouse up or left mouse up means we're done */
 	    done = YES;
 	    break;
@@ -629,11 +631,11 @@ static float GSMenuBarHeight = 25.0; // a guess.
 		    [window flushWindow];
 		  }
 	      }
-/* FIXME this code is just plain nasty.
 	    else
 	      {
       // FIXME, Michael. This might be needed... or not?
       NSLog(@"This is the final else... its evil\n");
+/* FIXME this code is just plain nasty.
 		if (lastIndex >= 0 && lastIndex < theCount)
 		  {
 		    [self setHighlightedItemIndex: -1];
@@ -641,8 +643,8 @@ static float GSMenuBarHeight = 25.0; // a guess.
 		    weWereOut = YES;
 		    [window flushWindow];
 		  }
-	      }
 */
+	      }
 	    [window flushWindow];
 	  default: 
 	    break;
@@ -694,7 +696,6 @@ cell do the following */
 
 	      while (!finished)
 	        { // Recursive menu close & deselect.
-//	          if ([aMenu supermenu] && ![aMenu isTornOff])
 	          if ([aMenu supermenu])
 		    {
 		      [[[aMenu supermenu] menuView] setHighlightedItemIndex: -1];
@@ -715,6 +716,51 @@ cell do the following */
 	    }
 
         }
+      else
+	{
+	  BOOL finished = NO;
+	  NSMenu *aMenu = menuv_menu;
+
+	  if (index >= 0 && index < theCount)
+	    selectedCell = [menuv_items_link objectAtIndex: index];
+	  else
+	    selectedCell = nil;
+
+	  if (![[selectedCell target] isTornOff])
+	    return;
+
+	  [self setHighlightedItemIndex: -1];
+
+	  /* If we are a menu */
+
+	  if (menuv_menu)
+	    {
+	      while (!finished)
+	        { // "forward"cursive menu find.
+	          if ([aMenu attachedMenu])
+		    {
+		      aMenu = [aMenu attachedMenu];
+		    }
+	          else
+		    finished = YES;
+	        }
+
+	      finished = NO;
+
+	      while (!finished)
+	        { // Recursive menu close & deselect.
+	          if ([aMenu supermenu])
+		    {
+		      [[[aMenu supermenu] menuView] setHighlightedItemIndex: -1];
+		      aMenu = [aMenu supermenu];
+		    } 
+	          else
+		    finished = YES;
+
+	          [window flushWindow];
+	        }
+	    }
+	}
     }
 
   /* If the mouse is released and there is no highlighted cell */
