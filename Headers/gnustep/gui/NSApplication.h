@@ -61,37 +61,35 @@ extern NSString	*NSEventTrackingRunLoopMode;
 
 @interface NSApplication : NSResponder <NSCoding>
 {
-  NSEvent		*current_event;
-  NSModalSession	session;
+  NSEvent		*_current_event;
+  NSModalSession	_session;
   NSWindow		*_key_window;
   NSWindow		*_main_window;
-  id			delegate;
-  id			listener;
-  NSMenu		*main_menu;
-  NSMenuItem		*windows_menu;
-  unsigned		current_mod;
+  id			_delegate;
+  id			_listener;
+  NSMenu		*_main_menu;
+  NSMenuItem		*_windows_menu;
   // 8 bits
-  BOOL			app_is_running;
-  BOOL			app_should_quit;
-  BOOL			app_is_active;
-  BOOL			app_is_hidden;
-  BOOL			unhide_on_activation;
-  BOOL			windows_need_update;
-  BOOL			inTrackingLoop;
-  NSImage		*app_icon;
+  BOOL			_app_is_running;
+  BOOL			_app_is_active;
+  BOOL			_app_is_hidden;
+  BOOL			_unhide_on_activation;
+  BOOL			_windows_need_update;
+  NSImage		*_app_icon;
+  NSWindow		*_app_icon_window;
   NSMutableArray	*_hidden;
   NSMutableArray	*_inactive;
   NSWindow		*_hidden_key;
-  NSWindow		*_app_icon_window;
   GSInfoPanel           *_infoPanel;
-
-  // Reserved for back-end use
-  void *be_app_reserved;
 }
 
 /*
  * Class methods
  */
+
+#ifndef STRICT_OPENSTEP
++ (void)detachDrawingThread:(SEL)selector toTarget:(id)target withObject:(id)argument;
+#endif
 
 /*
  * Creating and initializing the NSApplication
@@ -149,6 +147,11 @@ extern NSString	*NSEventTrackingRunLoopMode;
 		 to: (id)aTarget
 	       from: (id)sender;
 - (id) targetForAction: (SEL)aSelector;
+#ifndef STRICT_OPENSTEP
+- (id)targetForAction: (SEL)theAction 
+                   to: (id)theTarget 
+                 from: (id)sender;
+#endif
 - (BOOL) tryToPerform: (SEL)aSelector
 		 with: (id)anObject;
 
@@ -186,6 +189,8 @@ extern NSString	*NSEventTrackingRunLoopMode;
 - (void) orderFrontColorPanel: (id)sender;
 - (void) orderFrontDataLinkPanel: (id)sender;
 - (void) orderFrontHelpPanel: (id)sender;
+- (void)showHelp:(id)sender;
+- (void)activateContextHelpMode:(id)sender;
 - (void) runPageLayout: (id)sender;
 /* GNUstep extensions displaying an infoPanel, title is 'Info' */
 /* For a list of the useful values in the dictionary, see GSInfoPanel.h. 
@@ -204,6 +209,9 @@ extern NSString	*NSEventTrackingRunLoopMode;
  */
 - (NSMenu*) mainMenu;
 - (void) setMainMenu: (NSMenu*)aMenu;
+#ifndef STRICT_OPENSTEP
+- (void) setAppleMenu: (NSMenu*)aMenu;
+#endif
 
 /*
  * Managing the Windows menu
@@ -290,19 +298,24 @@ extern BOOL initialize_gnustep_backend (void);
 	    openFile: (NSString*)filename;
 - (BOOL) application: (NSApplication*)app
 	openTempFile: (NSString*)filename;
+- (BOOL) application: (NSApplication *)theApplication 
+           printFile:(NSString *)filename;
+- (BOOL) applicationOpenUntitledFile: (NSApplication*)app;
+- (BOOL) applicationShouldOpenUntitledFile:(NSApplication *)sender;
+- (BOOL) applicationShouldTerminate: (id)sender;
+- (BOOL) applicationShouldTerminateAfterLastWindowClosed: (id)sender;
+
 - (void) applicationDidBecomeActive: (NSNotification*)aNotification;
 - (void) applicationDidFinishLaunching: (NSNotification*)aNotification;
 - (void) applicationDidHide: (NSNotification*)aNotification;
 - (void) applicationDidResignActive: (NSNotification*)aNotification;
 - (void) applicationDidUnhide: (NSNotification*)aNotification;
 - (void) applicationDidUpdate: (NSNotification*)aNotification;
-- (BOOL) applicationOpenUntitledFile: (NSApplication*)app;
-- (BOOL) applicationShouldTerminate: (id)sender;
-- (BOOL) applicationShouldTerminateAfterLastWindowClosed: (id)sender;
 - (void) applicationWillBecomeActive: (NSNotification*)aNotification;
 - (void) applicationWillFinishLaunching: (NSNotification*)aNotification;
 - (void) applicationWillHide: (NSNotification*)aNotification;
 - (void) applicationWillResignActive: (NSNotification*)aNotification;
+- (void) applicationWillTerminate:(NSNotification *)aNotification;
 - (void) applicationWillUnhide: (NSNotification*)aNotification;
 - (void) applicationWillUpdate: (NSNotification*)aNotification;
 @end
@@ -319,9 +332,9 @@ extern NSString	*NSApplicationDidUnhideNotification;
 extern NSString	*NSApplicationDidUpdateNotification;
 extern NSString	*NSApplicationWillBecomeActiveNotification;
 extern NSString	*NSApplicationWillFinishLaunchingNotification;
-extern NSString	*NSApplicationWillTerminateNotification;
 extern NSString	*NSApplicationWillHideNotification;
 extern NSString	*NSApplicationWillResignActiveNotification;
+extern NSString	*NSApplicationWillTerminateNotification;
 extern NSString	*NSApplicationWillUnhideNotification;
 extern NSString	*NSApplicationWillUpdateNotification;
 
@@ -352,11 +365,17 @@ NSUpdateDynamicServices(void);
 void
 NSRegisterServicesProvider(id provider, NSString *name);
 
+void 
+NSUnRegisterServicesProvider(NSString *name);
+
 int
 NSApplicationMain(int argc, const char **argv);
 
 NSString*
 NSOpenStepRootDirectory(void);
+
+void 
+NSShowSystemInfoPanel(NSDictionary *options);
 
 /*
  * The NSApp global variable.
