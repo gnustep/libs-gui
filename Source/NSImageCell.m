@@ -191,7 +191,7 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
 
   // get the smaller ratio and scale the image size by it
   ratio = MIN(NSWidth(canvasRect) / imageSize.width,
-    NSHeight(canvasRect) / imageSize.height);
+	      NSHeight(canvasRect) / imageSize.height);
 
   imageSize.width *= ratio;
   imageSize.height *= ratio;
