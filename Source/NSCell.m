@@ -36,6 +36,10 @@
 #include <Foundation/NSGeometry.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSValue.h>
+#include <Foundation/NSNotification.h>
+#include <Foundation/NSDebug.h>
+#include <Foundation/NSFormatter.h>
+#include <Foundation/NSRunLoop.h>
 
 #include <AppKit/AppKitExceptions.h>
 #include <AppKit/NSAttributedString.h>

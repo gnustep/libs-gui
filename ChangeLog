@@ -1,3 +1,7 @@
+2003-01-26 20:30  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSCell.m: Add missing includes.
+
 2003-01-26 20:24  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/NSMenu.h: Add missing class declaration
