@@ -1,3 +1,8 @@
+2004-09-27 17:49  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSServicesManager.m (NSPerformService): Check whether the
+	service provider is remote by checking the class of the object.
+
 2004-09-26 22:18  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSTabViewItem.m (-drawLabel:inRect:): Adjust the label

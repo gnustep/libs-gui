@@ -1497,7 +1497,19 @@ NSPerformService(NSString *serviceItem, NSPasteboard *pboard)
    * If the service provider is a remote object, we can set timeouts on
    * the NSConnection so we don't hang waiting for it to reply.
    */
-  if ([provider isProxy] == YES)
+  /*
+  This check for a remote object is ugly. When GSListener is reworked,
+  this should be improved.
+
+  For now, we can't use -isProxy since GSListener is a proxy, and we can't
+  use -isKindOfClass: since it gets forwarded. Fortunately, -class isn't
+  forwarded, so that's what we use.
+
+  (Note, though, that we can't even use
+  [provider class] == [GSListener class] since [GSListener -class] returns
+  NULL instead of the real class.)
+  */
+  if ([provider class] == [NSDistantObject class])
     {
       NSConnection	*connection;
 
