@@ -267,8 +267,9 @@
 @implementation GSToolbarSeperatorItem
 - (id) initWithItemIdentifier: (NSString *)itemIdentifier
 {
-  NSImage *image = [NSImage imageNamed: @"GSToolbarSeperatorItem"];
+  NSImage *image = [NSImage imageNamed: @"common_ToolbarSeperatorItem"];
   NSButton *button = [[NSButton alloc] initWithFrame: NSMakeRect(0,0,48,48)];
+  [button setBordered: NO];
   [super initWithItemIdentifier: itemIdentifier];
   [self setView: button];
   [self setImage: image];
@@ -285,8 +286,9 @@
 @implementation GSToolbarSpaceItem
 - (id) initWithItemIdentifier: (NSString *)itemIdentifier
 {
-  NSImage *image = [NSImage imageNamed: @"GSToolbarSpaceItem"];
+  NSImage *image = [NSImage imageNamed: @"common_ToolbarSpaceItem"];
   NSButton *button = [[NSButton alloc] initWithFrame: NSMakeRect(0,0,48,48)];
+  [button setBordered: NO];
   [super initWithItemIdentifier: itemIdentifier];
   [self setView: button];
   [self setImage: image];
@@ -303,8 +305,9 @@
 @implementation GSToolbarFlexibleSpaceItem
 - (id) initWithItemIdentifier: (NSString *)itemIdentifier
 {
-  NSImage *image = [NSImage imageNamed: @"GSToolbarFlexibleSpaceItem"];
+  NSImage *image = [NSImage imageNamed: @"common_ToolbarFlexibleSpaceItem"];
   NSButton *button = [[NSButton alloc] initWithFrame: NSMakeRect(0,0,48,48)];
+  [button setBordered: NO];
   [super initWithItemIdentifier: itemIdentifier];
   [self setView: button];
   [self setImage: image];
@@ -321,11 +324,18 @@
 @implementation GSToolbarShowColorsItem
 - (id) initWithItemIdentifier: (NSString *)itemIdentifier
 {
-  NSImage *image = [NSImage imageNamed: @"GSToolbarShowColorsItem"];
+  NSImage *image = [NSImage imageNamed: @"common_ToolbarShowColorsItem"];
   NSButton *button = [[NSButton alloc] initWithFrame: NSMakeRect(0,0,48,48)];
+  [button setBordered: YES];
   [super initWithItemIdentifier: itemIdentifier];
   [self setView: button];
   [self setImage: image];
+
+  // set action...
+  [self setTarget: nil]; // goes to first responder..
+  [self setAction: @selector(orderFrontColorPanel:)];
+
+  // return
   return self;
 }
 @end
@@ -339,11 +349,18 @@
 @implementation GSToolbarShowFontsItem
 - (id) initWithItemIdentifier: (NSString *)itemIdentifier
 {
-  NSImage *image = [NSImage imageNamed: @"GSToolbarShowFontsItem"];
+  NSImage *image = [NSImage imageNamed: @"common_ToolbarShowFontsItem"];
   NSButton *button = [[NSButton alloc] initWithFrame: NSMakeRect(0,0,48,48)];
+  [button setBordered: YES];
   [super initWithItemIdentifier: itemIdentifier];
   [self setView: button];
   [self setImage: image];
+
+  // set action...
+  [self setTarget: nil]; // goes to first responder..
+  [self setAction: @selector(orderFrontFontPanel:)];
+
+  // return
   return self;
 }
 @end
@@ -357,11 +374,18 @@
 @implementation GSToolbarCustomizeToolbarItem
 - (id) initWithItemIdentifier: (NSString *)itemIdentifier
 {
-  NSImage *image = [NSImage imageNamed: @"GSToolbarCustomizeToolbarItem"];
+  NSImage *image = [NSImage imageNamed: @"common_ToolbarCustomizeToolbarItem"];
   NSButton *button = [[NSButton alloc] initWithFrame: NSMakeRect(0,0,48,48)];
+  [button setBordered: YES];
   [super initWithItemIdentifier: itemIdentifier];
   [self setView: button];
   [self setImage: image];
+
+  // set action...
+  [self setTarget: nil]; // goes to first responder..
+  [self setAction: @selector(runCustomizationPalette:)];
+
+  // return
   return self;
 }
 @end
@@ -375,11 +399,18 @@
 @implementation GSToolbarPrintItem
 - (id) initWithItemIdentifier: (NSString *)itemIdentifier
 {
-  NSImage *image = [NSImage imageNamed: @"GSToolbarPrintItem"];
+  NSImage *image = [NSImage imageNamed: @"common_Printer"];
   NSButton *button = [[NSButton alloc] initWithFrame: NSMakeRect(0,0,48,48)];
   [super initWithItemIdentifier: itemIdentifier];
+  [button setBordered: YES];
   [self setView: button];
   [self setImage: image];
+
+  // set action...
+  [self setTarget: nil]; // goes to first responder..
+  [self setAction: @selector(print:)];
+
+  // return
   return self;
 }
 @end

@@ -103,7 +103,12 @@ common_RightTabStop.tiff \
 common_CenterTabStop.tiff \
 common_LeftTabStop.tiff \
 common_DecimalTabStop.tiff \
-common_Diamond.tiff
+common_Diamond.tiff \
+common_Printer.tiff \
+common_ToolbarSeperatorItem.tiff \
+common_ToolbarShowColorsItem.tiff \
+common_ToolbarShowFontsItem.tiff \
+common_ToolbarSpaceItem.tiff
 
 -include GNUmakefile.preamble
 
