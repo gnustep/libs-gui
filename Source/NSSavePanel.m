@@ -82,6 +82,7 @@ static BOOL _gs_display_reading_progress = NO;
 - (void) _unmountMedia;
 - (void) _selectTextInColumn: (int)column;
 - (void) _selectCellName: (NSString *)title;
+- (void) _performReturn: (id)sender;
 
 @end /* NSSavePanel (PrivateMethods) */
 
@@ -147,6 +148,9 @@ static BOOL _gs_display_reading_progress = NO;
   [_form setDelegate: self];
   [_bottomView addSubview: _form];
   [_form release];
+
+  [[_form cellAtIndex:0] setAction: @selector(_performReturn:)];
+  [[_form cellAtIndex:0] setTarget: self];
 
   r = NSMakeRect (43, 6, 27, 27);
   button = [[NSButton alloc] initWithFrame: r]; 
@@ -220,8 +224,8 @@ static BOOL _gs_display_reading_progress = NO;
   [self setDefaultButtonCell:[_okButton cell]];
   [_okButton release];
 
-  [_browser setDoubleAction:@selector(performClick:)];
-  [_browser setTarget:_okButton];
+  [_browser setDoubleAction: @selector(performClick:)];
+  [_browser setTarget: _okButton];
 
   r = NSMakeRect (8, 261, 48, 48);
   button = [[NSButton alloc] initWithFrame: r]; 
@@ -380,6 +384,30 @@ static BOOL _gs_display_reading_progress = NO;
 	}
       else if(result == NSOrderedDescending)
 	break;
+    }
+}
+
+- (void) _performReturn: (id)sender
+{
+  if ([_okButton isEnabled] == YES)
+    {
+      NSMatrix *matrix;
+      int       selectedColumn;
+
+      selectedColumn = [_browser selectedColumn];
+
+      if (selectedColumn != -1 && selectedColumn == [_browser lastColumn])
+	{
+	  matrix = [_browser matrixInColumn: selectedColumn];
+
+	  if ([[matrix selectedCell] isLeaf] == NO)
+	    {
+	      [_form abortEditing];
+	      [[_form cellAtIndex: 0] setStringValue: nil];
+	    }
+	}
+
+      [_okButton performClick: self];
     }
 }
 
@@ -1147,9 +1175,33 @@ selectCellWithString: (NSString*)title
 // NSForm delegate methods
 //
 @interface NSSavePanel (FormDelegate)
+- (void) controlTextDidEndEditing: (NSNotification*)aNotification;
 - (void) controlTextDidChange: (NSNotification *)aNotification;
 @end
 @implementation NSSavePanel (FormDelegate)
+
+- (void) controlTextDidEndEditing: (NSNotification*)aNotification
+{
+  id textMovement = [[aNotification userInfo] objectForKey: @"NSTextMovement"];
+
+  if (textMovement)
+    {
+      switch ([(NSNumber *)textMovement intValue])
+	{
+	case NSTabTextMovement:
+	case NSBacktabTextMovement:
+	case NSUpTextMovement:
+	case NSDownTextMovement:
+	case NSLeftTextMovement:
+	case NSRightTextMovement:
+	  [self selectText:self];
+	  return;
+
+	case NSReturnTextMovement:
+	  break;
+	}
+    }
+}
 
 - (void) controlTextDidChange: (NSNotification *)aNotification;
 {

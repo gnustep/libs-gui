@@ -1,3 +1,26 @@
+2000-09-13  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
+
+	* Source/NSBrowser.m ([NSBrowser -_performLoadOfColumn:]): fixed
+	intercell space values.
+
+	* Source/NSText.m ([NSText -keyDown:]): removed forward for illegal
+	text field events.
+
+	* Source/NSSavePanel.m ([NSSavePanel -controlTextDidEndEditing:]):
+	implemented for text field movement.
+	([NSSavePanel -_performReturn:]): new private method.
+	([NSSavePanel -_initWithoutGModel]): set form cell action to
+	_performReturn:
+
+	* Source/NSOpenPanel.m ([NSOpenPanel -controlTextDidEndEditing:]): call
+	super.
+	([NSOpenPanel -_selectCellName:]):,
+	([NSOpenPanel -controlTextDidChange:]): enable okButton if there is
+	text in the text field.
+	([NSOpenPanel -ok:]): returns if nothing selected.
+
+	* Tools/gpbs.m ([PasteboardEntry -lostOwnership]): removed workaround.
+
 2000-09-13  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Source/GSFontInfo.m: 

@@ -2815,7 +2815,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 {
   id bc, sc, matrix = nil;
   NSRect matrixRect = {{0, 0}, {100, 100}};
-  NSSize matrixIntercellSpace = {{0, 0}};
+  NSSize matrixIntercellSpace = {0, 0};
 
 #if defined NSBTRACE__performLoadOfColumn || defined NSBTRACE_all
   fprintf(stderr, "NSBrowser - (void)_performLoadOfColumn: %d\n", column);

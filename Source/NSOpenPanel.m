@@ -156,7 +156,10 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 
   titleLength = [title length];
   if(!titleLength)
-    return;
+    {
+      [_okButton setEnabled:NO];
+      return;
+    }
 
   range.location = 0;
   range.length = titleLength;
@@ -184,9 +187,6 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
       else if(result == NSOrderedDescending)
 	break;
     }
-
-  if(_canChooseDirectories == NO)
-    [_okButton setEnabled:NO];
 }
 
 @end
@@ -369,43 +369,51 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
   NSMatrix      *matrix;
   NSBrowserCell *selectedCell = nil;
   NSArray       *selectedCells;
-  int            selectedColumn;
+  int            selectedColumn, lastColumn;
 
   selectedColumn = [_browser selectedColumn];
-  if(selectedColumn == -1)
-    return;
-
-  matrix = [_browser matrixInColumn:selectedColumn];
-
-  if([_browser allowsMultipleSelection] == YES)
+  if (selectedColumn >= 0)
     {
-      selectedCells = [matrix selectedCells];
+      matrix = [_browser matrixInColumn: selectedColumn];
+      lastColumn = [_browser lastColumn];
 
-      if(selectedColumn == [_browser lastColumn] &&
-	 [selectedCells count] == 1)
-	selectedCell = [selectedCells objectAtIndex:0];
-    }
-  else
-    {
-      if(_canChooseDirectories == NO || selectedColumn == [_browser lastColumn])
-	selectedCell = [matrix selectedCell];
-    }
-
-  if(selectedCell)
-    {
-      if ([selectedCell isLeaf] == NO)
+      if ([_browser allowsMultipleSelection] == YES)
 	{
-	  [_browser doClick:matrix];
-	  return;
+	  selectedCells = [matrix selectedCells];
+
+	  if (selectedColumn == lastColumn &&
+	      [selectedCells count] == 1)
+	    selectedCell = [selectedCells objectAtIndex: 0];
+	}
+      else
+	{
+	  if (_canChooseDirectories == NO)
+	    {
+	      if (selectedColumn == lastColumn
+		  || [[[_form cellAtIndex: 0] stringValue] length] == 0)
+		selectedCell = [matrix selectedCell];
+	    }
+	  else if (selectedColumn == lastColumn)
+	    selectedCell = [matrix selectedCell];
+	}
+
+      if (selectedCell)
+	{
+	  if ([selectedCell isLeaf] == NO)
+	    {
+	      [_browser doClick: matrix];
+	      return;
+	    }
 	}
     }
 
   ASSIGN (_directory, [_browser pathToColumn:[_browser lastColumn]]);
-  if(selectedCell)
+  if (selectedCell)
     ASSIGN (_fullFileName, [_directory stringByAppendingPathComponent:
 					 [selectedCell stringValue]]);
   else
-    ASSIGN (_fullFileName, nil);
+    ASSIGN (_fullFileName, [_directory stringByAppendingPathComponent:
+					 [[_form cellAtIndex: 0] stringValue]]);
 
   if (_delegateHasValidNameFilter)
     {
@@ -414,9 +422,9 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
       NSString     *filename;
 
       enumerator = [filenames objectEnumerator];
-      while((filename = [enumerator nextObject]))
+      while ((filename = [enumerator nextObject]))
 	{
-	  if (![_delegate panel:self isValidFilename: filename])
+	  if ([_delegate panel: self isValidFilename: filename] == NO)
 	    return;
 	}
     }
@@ -516,6 +524,8 @@ selectCellWithString: (NSString *)title
 
   if (!selectedCell)
     [_form selectTextAtIndex:0];
+
+  [super controlTextDidEndEditing:aNotification];
 }
 
 - (void) controlTextDidChange: (NSNotification *)aNotification;
@@ -621,8 +631,7 @@ selectCellWithString: (NSString *)title
     }
 
   [matrix deselectAllCells];
-  if(_canChooseDirectories == NO)
-    [_okButton setEnabled:NO];
+  [_okButton setEnabled:YES];
 }
 
 @end /* NSOpenPanel */

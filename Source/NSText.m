@@ -2389,29 +2389,6 @@ static NSNotificationCenter *nc;
   else
     {
       [self interpretKeyEvents: [NSArray arrayWithObject: theEvent]];
-
-      if (_tf.is_field_editor)
-	{
-	  NSString *characters = [theEvent characters];
-	  unichar character = 0;
-
-	  if ([characters length] > 0)
-	    {
-	      character = [characters characterAtIndex: 0];
-	    }
-
-	  switch (character)
-	    {
-	    case NSUpArrowFunctionKey:
-	    case NSDownArrowFunctionKey:
-	    case NSTabCharacter:
-	    case NSEnterCharacter:
-	    case NSFormFeedCharacter:
-	    case NSCarriageReturnCharacter:
-	      [super keyDown:theEvent];
-	      break;
-	    }
-	}
     }
 }
 
