@@ -290,6 +290,7 @@ void __dummy_GMAppKit_functionForLinking() {}
     [self getPeriodicDelay:&delay interval:&interval];
     [archiver encodeFloat:delay withName:@"delay"];
     [archiver encodeFloat:interval withName:@"interval"];
+    [archiver encodeString:[self title] withName:@"title"];
     [archiver encodeString:[self alternateTitle] withName:@"alternateTitle"];
     [archiver encodeObject:[self alternateImage] withName:@"alternateImage"];
     [archiver encodeInt:[self imagePosition] withName:@"imagePosition"];
@@ -313,6 +314,8 @@ void __dummy_GMAppKit_functionForLinking() {}
     interval = [unarchiver decodeFloatWithName:@"interval"];
     [self setPeriodicDelay:delay interval:interval];
 
+    obj = [unarchiver decodeStringWithName:@"title"];
+    if (obj) [self setTitle:obj];
     obj = [unarchiver decodeStringWithName:@"alternateTitle"];
     if (obj) [self setAlternateTitle:obj];
     obj = [unarchiver decodeObjectWithName:@"alternateImage"];

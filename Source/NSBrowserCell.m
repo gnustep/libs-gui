@@ -131,7 +131,7 @@ static NSImage *highlight_image;
   _isLeaf = NO;
   _isLoaded = NO;
 
-  [self setEditable: YES];
+  [self setEditable:NO];
 
   return self;
 }

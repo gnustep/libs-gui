@@ -965,11 +965,9 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   return [map objectForKey: ext];
 }
 
-- (NSString*) locateApplicationBinary: (NSString*)appName
+- (NSBundle *)bundleForApp:(NSString *)appName
 {
   NSString	*path;
-  NSString	*file;
-  NSBundle	*bundle;
 
   if (appName == nil)
     return nil;
@@ -993,14 +991,43 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   if (path == nil)
     return nil;
 
-  /*
-   *	See if the 'Info-gnustep.plist' specifies the location of the
-   *	executable - if it does, replace our app name with the specified
-   *	value.  If the executable name is an absolute path name, we also
-   *	replace the path with that specified.
-   */
-  bundle = [NSBundle bundleWithPath: path];
+  return [NSBundle bundleWithPath: path];
+}
+
+/** Returns the application icon for the given app.
+ * Or null if none defined or appName is not a valid application name.
+ */
+- (NSImage *)appIconForApp:(NSString *)appName
+{
+  NSBundle *bundle = [self bundleForApp:appName];
+  NSImage *appImage;
+  NSString *iconPath;
+
+  if (bundle == nil)
+	return nil;
+
+  iconPath = [[bundle infoDictionary] objectForKey: @"NSIcon"];
+
+  if (![iconPath isAbsolutePath])
+  {
+	iconPath = [[bundle bundlePath] stringByAppendingPathComponent:iconPath];
+  }
+  
+  return [[NSImage alloc] initWithContentsOfFile:iconPath];
+}
+
+- (NSString*) locateApplicationBinary: (NSString*)appName
+{
+  NSString	*path;
+  NSString	*file;
+  NSBundle	*bundle = [self bundleForApp:appName];;
+
+  if (bundle == nil)
+    return nil;
+
+  path = [bundle bundlePath];
   file = [[bundle infoDictionary] objectForKey: @"NSExecutable"];
+
   if (file != nil)
     {
       NSString	*exepath;
