@@ -726,11 +726,19 @@ static NSTextFieldCell *titleCell;
   bc = [[NSBrowserColumn alloc] init];
 
   // Create a scrollview
-  sc = [[NSScrollView alloc]
-	 initWithFrame: rect];
+  sc = [[NSScrollView alloc] initWithFrame: rect];
   [sc setHasHorizontalScroller: NO];
   [sc setHasVerticalScroller: YES];
-  [sc setBorderType: NSBezelBorder];
+  
+  if (_separatesColumns)
+    {
+      [sc setBorderType: NSBezelBorder];
+    }
+  else
+    {
+      [sc setBorderType: NSNoBorder];
+    }
+  
   [bc setColumnScrollView: sc];
   [self addSubview: sc];
   RELEASE(sc);

@@ -1,3 +1,9 @@
+2003-07-01 Serg Stoyan <stoyan@hologr.com>
+
+	* Source/NSBrowser.m (_createColumn):
+	Set border type of column's scroll view according to 
+	_separateColumns flag.
+	
 2003-06-29 20:15  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSWorkspace.m (-launchApplication:showIcon:autolaunch:):
