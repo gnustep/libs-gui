@@ -1,3 +1,10 @@
+2004-06-16  Fred Kiefer <FredKiefer@gmx.de>
+
+        * Source/NSTableView.m: (-mouseDown:) Reordered code and
+	simplified. (-textShouldEndEditing:) Get formatter from
+	_editedCell not _cell. (-_unselectAllColumns) Clear the header
+	view as well.
+
 2004-06-15  Fred Kiefer <FredKiefer@gmx.de>
 
         * Source/NSComboBoxCell.m: (-copyWithZone:) Added missing method.

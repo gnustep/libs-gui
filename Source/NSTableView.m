@@ -104,6 +104,7 @@ static unsigned currentDragOperation;
 @end
 
 @interface NSTableView (SelectionHelper)
+- (void) _setSelectingColumns: (BOOL)flag;
 - (NSArray *) _selectedRowArray;
 - (BOOL) _selectRow: (int)rowIndex;
 - (BOOL) _selectUnselectedRow: (int)rowIndex;
@@ -2331,7 +2332,6 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 	}
 
       [self deselectColumn: columnIndex];
-      //      [self setNeedsDisplayInRect: [self rectOfColumn: columnIndex]];
       return;
     }
   else // column is not selected 
@@ -2358,7 +2358,6 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 	{
 	  return;
 	}
-
       
       {
 	NSTableColumn *tc = [_tableColumns objectAtIndex: columnIndex];
@@ -2376,25 +2375,12 @@ _isCellEditable (id delegate, NSArray *tableColumns,
       if (newSelection == YES)
 	{
 	  /* No shift or alternate key pressed: clear the old selection */
-	  
-	  /* Compute rect to redraw to clear the old selection */
-	  /*
-	  int column, i, count = [_selectedColumns count];
-	  
-	  for (i = 0; i < count; i++)
-	    {
-	      column = [[_selectedColumns objectAtIndex: i] intValue];
-	      [self setNeedsDisplayInRect: [self rectOfColumn: column]];
-	    }
-	  */
-	  /* Draw the new selection */
 	  [self selectColumn: columnIndex  byExtendingSelection: NO];
-	  //	  [self setNeedsDisplayInRect: [self rectOfColumn: columnIndex]];
 	}
-      else /* Simply add to the old selection */
+      else
 	{
+	  /* Simply add to the old selection */
 	  [self selectColumn: columnIndex  byExtendingSelection: YES];
-	  //	  [self setNeedsDisplayInRect: [self rectOfColumn: columnIndex]];
 	}
     }
 }
@@ -2536,13 +2522,7 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 	 only column - because we have been called to select it. */
       if (_numberOfColumns > 1)
 	{
-	  [_selectedColumns removeAllIndexes];
-	  [self setNeedsDisplay: YES];
-	  if (_headerView)
-	    {
-	      [_headerView setNeedsDisplay: YES];
-	    }
-	  _selectedColumn = -1;
+	  [self _unselectAllColumns];
 	}
     }
   else // flag == YES
@@ -2621,9 +2601,7 @@ byExtendingSelection: (BOOL)flag
 	 only row - because we have been called to select it. */
       if (_numberOfRows > 1)
 	{
-	  [_selectedRows removeAllIndexes];
-	  _selectedRow = -1;
-	  [self setNeedsDisplay: YES];
+	  [self _unselectAllRows];
 	}
     }
   else // flag == YES
@@ -3041,8 +3019,6 @@ byExtendingSelection: (BOOL)flag
   [self _postSelectionDidChangeNotification];
 }
 
-
-
 - (void) deselectAll: (id) sender
 {
   if (_allowsEmptySelection == NO)
@@ -3324,37 +3300,41 @@ byExtendingSelection: (BOOL)flag
   return _editedColumn;
 }
 
-- (void) _setSelectingColumns: (BOOL)flag
+
+inline float computePeriod(NSPoint mouseLocationWin, 
+			   float minYVisible, 
+			   float maxYVisible)
 {
-  if (flag == _selectingColumns)
-    return;
-  
-  if (flag == NO)
-    {
-      [self _unselectAllColumns];
-      _selectingColumns = NO;
-    }
-  else
-    {
-      [self _unselectAllRows];
-      _selectingColumns = YES;
-    }
+    /* We have three zones of speed. 
+       0   -  50 pixels: period 0.2  <zone 1>
+       50  - 100 pixels: period 0.1  <zone 2>
+       100 - 150 pixels: period 0.01 <zone 3> */
+    float distance = 0;
+    
+    if (mouseLocationWin.y < minYVisible) 
+      {
+	distance = minYVisible - mouseLocationWin.y; 
+      }
+    else if (mouseLocationWin.y > maxYVisible)
+      {
+	distance = mouseLocationWin.y - maxYVisible;
+      }
+    
+    if (distance < 50)
+      return 0.2;
+    else if (distance < 100)
+      return 0.1;
+    else 
+      return 0.01;
 }
 
 - (void) mouseDown: (NSEvent *)theEvent
 {
-  NSPoint location = [theEvent locationInWindow];
   NSPoint initialLocation = [theEvent locationInWindow];
-  NSTableColumn *tb;
+  NSPoint location;
   int clickCount;
-  BOOL shouldEdit;
-  int _originalRow;
-  int _oldRow = -1;
-  int _currentRow = -1;
 
-  //
   // Pathological case -- ignore mouse down
-  //
   if ((_numberOfRows == 0) || (_numberOfColumns == 0))
     {
       [super mouseDown: theEvent];
@@ -3362,21 +3342,45 @@ byExtendingSelection: (BOOL)flag
     }
   
   clickCount = [theEvent clickCount];
-
   if (clickCount > 2)
-    return;
+    {
+      return;
+    }
 
   // Determine row and column which were clicked
-  location = [self convertPoint: location  fromView: nil];
+  location = [self convertPoint: initialLocation fromView: nil];
   _clickedRow  = [self rowAtPoint: location];
   _clickedColumn = [self columnAtPoint: location];
-  _originalRow = _clickedRow;
 
-  // Selection
-  if (clickCount == 1)
+  if (clickCount == 2)
     {
+      // Double-click event
+      NSTableColumn *tb;
+
+      if ([self isRowSelected: _clickedRow] == NO)
+        {
+	  return;
+	}
+
+      tb = [_tableColumns objectAtIndex: _clickedColumn];
+      if (([tb isEditable] == NO) || 
+	  ([self _shouldEditTableColumn: tb 
+		 row: _clickedRow] == NO))
+        {
+	  // Send double-action but don't edit
+	  [self sendAction: _doubleAction to: _target];
+	}
+      else
+        {
+	  // It is OK to edit column.  Go on, do it.
+	  [self editColumn: _clickedColumn row: _clickedRow
+		withEvent: theEvent select: NO];
+	}
+    }
+  else 
+    {
+      // Selection
       unsigned int modifiers = [theEvent modifierFlags];
-      BOOL startedPeriodicEvents = NO;
       unsigned int eventMask = (NSLeftMouseUpMask 
 				| NSLeftMouseDownMask
 				| NSLeftMouseDraggedMask 
@@ -3386,40 +3390,19 @@ byExtendingSelection: (BOOL)flag
       NSDate *distantFuture = [NSDate distantFuture];
       NSEvent *lastEvent;
       NSIndexSet *_oldSelectedRows;
+      BOOL startedPeriodicEvents = NO;
       BOOL mouseUp = NO;
       BOOL done = NO;
+      BOOL mouseMoved = NO;
       BOOL draggingPossible = [self _isDraggingSource];
       NSRect visibleRect = [self convertRect: [self visibleRect]
 				 toView: nil];
       float minYVisible = NSMinY (visibleRect);
       float maxYVisible = NSMaxY (visibleRect);
-      BOOL mouseMoved = NO;
-
-      /* We have three zones of speed. 
-	 0   -  50 pixels: period 0.2  <zone 1>
-	 50  - 100 pixels: period 0.1  <zone 2>
-	 100 - 150 pixels: period 0.01 <zone 3> */
       float oldPeriod = 0;
-      inline float computePeriod(void)
-	{
-	  float distance = 0;
-	  
-	  if (mouseLocationWin.y < minYVisible) 
-	    {
-	      distance = minYVisible - mouseLocationWin.y; 
-	    }
-	  else if (mouseLocationWin.y > maxYVisible)
-	    {
-	      distance = mouseLocationWin.y - maxYVisible;
-	    }
-	  
-	  if (distance < 50)
-	    return 0.2;
-	  else if (distance < 100)
-	    return 0.1;
-	  else 
-	    return 0.01;
-	}
+      int originalRow = _clickedRow;
+      int oldRow = -1;
+      int currentRow = -1;
       
       selectionMode = 0;
       if (_allowsMultipleSelection == YES)
@@ -3447,7 +3430,7 @@ byExtendingSelection: (BOOL)flag
 	  selectionMode |= CONTROL_DOWN;
 	  if (_allowsMultipleSelection == YES)
 	    {
-	      _originalRow = _selectedRow;
+	      originalRow = _selectedRow;
 	      selectionMode |= SHIFT_DOWN;
 	      selectionMode |= ADDING_ROW;
 	    }
@@ -3460,20 +3443,7 @@ byExtendingSelection: (BOOL)flag
 	}
 
       // if we are in column selection mode, stop it
-      if (_selectingColumns == YES)
-	{
-	  if (_headerView)
-	    {
-	      int i;
-	      for (i = 0; i < _numberOfColumns; i++)
-		{
-		  if ([self isColumnSelected: i])
-		    [_headerView setNeedsDisplayInRect: 
-				   [_headerView headerRectOfColumn: i]];
-		}
-	    }
-	  [self _setSelectingColumns: NO];
-	}
+      [self _setSelectingColumns: NO];
 
       // let's sort the _selectedRows
       _oldSelectedRows = [_selectedRows copy];
@@ -3488,14 +3458,15 @@ byExtendingSelection: (BOOL)flag
 	  */
 	  CREATE_AUTORELEASE_POOL(arp);
 	  BOOL shouldComputeNewSelection = NO;
+
 	  switch ([lastEvent type])
 	    {
 	    case NSLeftMouseUp:
 	      mouseLocationWin = [lastEvent locationInWindow]; 
 	      if ((mouseLocationWin.y > minYVisible) 
 		  && (mouseLocationWin.y < maxYVisible))
-		// mouse dragged within table
 		{
+		  // mouse dragged within table
 		  NSPoint mouseLocationView;
 		  
 		  if (startedPeriodicEvents == YES)
@@ -3503,20 +3474,19 @@ byExtendingSelection: (BOOL)flag
 		      [NSEvent stopPeriodicEvents];
 		      startedPeriodicEvents = NO;
 		    }
-		  mouseLocationView = [self convertPoint: 
-					      mouseLocationWin 
+		  mouseLocationView = [self convertPoint: mouseLocationWin 
 					    fromView: nil];
 		  mouseLocationView.x = _bounds.origin.x;
-		  _oldRow = _currentRow;
-		  _currentRow = [self rowAtPoint: mouseLocationView];
-		  if (_oldRow != _currentRow)
+		  oldRow = currentRow;
+		  currentRow = [self rowAtPoint: mouseLocationView];
+		  if (oldRow != currentRow)
 		    {
 		      shouldComputeNewSelection = YES;
 		    }
 		}
 	      else
-		// Mouse dragged out of the table
 		{
+		  // Mouse dragged out of the table
 		  // we don't care
 		}
 	      done = YES;
@@ -3539,35 +3509,36 @@ byExtendingSelection: (BOOL)flag
 		    {
 		      draggingPossible = NO;
 		    }
-		  else if (mouseLocationWin.x - initialLocation.x >=4
+		  else if (mouseLocationWin.x - initialLocation.x >= 4
 			   || mouseLocationWin.x - initialLocation.x <= -4)
 		    {
 		      NSPoint mouseLocationView;
 		      NSPasteboard *pboard;
 		      NSArray *rows;
 
-		      pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
 		      mouseLocationView = [self convertPoint: 
 					      mouseLocationWin 
 					    fromView: nil];
 		      mouseLocationView.x = _bounds.origin.x;
-		      _oldRow = _currentRow;
-		      _currentRow = [self rowAtPoint: mouseLocationView];
-		      if (_oldRow != _currentRow)
+		      oldRow = currentRow;
+		      currentRow = [self rowAtPoint: mouseLocationView];
+		      if (oldRow != currentRow)
 			{
 			  /* Mouse drag in a row that wasn't selected.
 			     select the new row before dragging */
 			  computeNewSelection(self,
 					      _oldSelectedRows, 
 					      _selectedRows,
-					      _originalRow,
-					      _oldRow,
-					      _currentRow,
+					      originalRow,
+					      oldRow,
+					      currentRow,
 					      &_selectedRow,
 					      selectionMode);
 			  
 			}
+
 		      rows = [self _selectedRowArray];
+		      pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
 		      if ([self _writeRows: rows
 				toPasteboard: pboard] == YES)
 			{
@@ -3594,8 +3565,8 @@ byExtendingSelection: (BOOL)flag
 		}
 	      else if ((mouseLocationWin.y > minYVisible) 
 		       && (mouseLocationWin.y < maxYVisible))
-		// mouse dragged within table
 		{
+		  // mouse dragged within table
 		  NSPoint mouseLocationView;
 		  
 		  if (startedPeriodicEvents == YES)
@@ -3603,33 +3574,35 @@ byExtendingSelection: (BOOL)flag
 		      [NSEvent stopPeriodicEvents];
 		      startedPeriodicEvents = NO;
 		    }
-		  mouseLocationView = [self convertPoint: 
-					      mouseLocationWin 
+
+		  mouseLocationView = [self convertPoint: mouseLocationWin 
 					    fromView: nil];
 		  mouseLocationView.x = _bounds.origin.x;
-		  _oldRow = _currentRow;
-		  _currentRow = [self rowAtPoint: mouseLocationView];
-
-		  if (_oldRow != _currentRow)
+		  oldRow = currentRow;
+		  currentRow = [self rowAtPoint: mouseLocationView];
+		  if (oldRow != currentRow)
 		    {
 		      shouldComputeNewSelection = YES;
 		    }
 		}
 	      else
-		// Mouse dragged out of the table
 		{
+		  // Mouse dragged out of the table
+		  float period = computePeriod(mouseLocationWin, 
+					       minYVisible, 
+					       maxYVisible);
+
 		  if (startedPeriodicEvents == YES)
 		    {
 		      /* Check - if the mouse did not change zone, 
 			 we do nothing */
-		      if (computePeriod () == oldPeriod)
+		      if (period == oldPeriod)
 			break;
 
 		      [NSEvent stopPeriodicEvents];
 		    }
 		  /* Start periodic events */
-		  oldPeriod = computePeriod ();
-			
+		  oldPeriod = period;
 		  [NSEvent startPeriodicEventsAfterDelay: 0
 			   withPeriod: oldPeriod];
 		  startedPeriodicEvents = YES;
@@ -3643,23 +3616,23 @@ byExtendingSelection: (BOOL)flag
 	      if (mouseUp == NO)
 		{
 		  /* mouse below the table */
-		  if (_currentRow < _numberOfRows - 1)
+		  if (currentRow < _numberOfRows - 1)
 		    {
-		      _oldRow = _currentRow;
-		      _currentRow++;
-		      [self scrollRowToVisible: _currentRow];
+		      oldRow = currentRow;
+		      currentRow++;
+		      [self scrollRowToVisible: currentRow];
 		      if (draggingPossible == NO)
 			shouldComputeNewSelection = YES;
 		    }
 		}
 	      else
 		{
-		  if (_currentRow > 0)
+		  if (currentRow > 0)
 		    {
 		      /* mouse above the table */
-		      _oldRow = _currentRow;
-		      _currentRow--;
-		      [self scrollRowToVisible: _currentRow];
+		      oldRow = currentRow;
+		      currentRow--;
+		      [self scrollRowToVisible: currentRow];
 		      if (draggingPossible == NO)
 			shouldComputeNewSelection = YES;
 		    }
@@ -3668,14 +3641,15 @@ byExtendingSelection: (BOOL)flag
 	    default:
 	      break;
 	    }
+
 	  if (shouldComputeNewSelection == YES)
 	    {
 	      computeNewSelection(self,
 				  _oldSelectedRows, 
 				  _selectedRows,
-				  _originalRow,
-				  _oldRow,
-				  _currentRow,
+				  originalRow,
+				  oldRow,
+				  currentRow,
 				  &_selectedRow,
 				  selectionMode);
 	      [self displayIfNeeded];
@@ -3693,7 +3667,7 @@ byExtendingSelection: (BOOL)flag
       if (startedPeriodicEvents == YES)
 	[NSEvent stopPeriodicEvents];
 
-      if (![_selectedRows  isEqualToIndexSet: _oldSelectedRows])
+      if (![_selectedRows isEqualToIndexSet: _oldSelectedRows])
 	{
 	  [self _postSelectionDidChangeNotification];
 	}
@@ -3712,35 +3686,6 @@ byExtendingSelection: (BOOL)flag
 	}
       return;
     }
-
-  // Double-click events
-
-  if ([self isRowSelected: _clickedRow] == NO)
-    return;
-
-  tb = [_tableColumns objectAtIndex: _clickedColumn];
-
-  shouldEdit = YES;
-
-  if ([tb isEditable] == NO)
-    {
-      shouldEdit = NO;
-    }
-  else if ([self _shouldEditTableColumn: tb 
-		 row: _clickedRow] == NO)
-    {
-      shouldEdit = NO;
-    }
-  if (shouldEdit == NO)
-    {
-      // Send double-action but don't edit
-      [self sendAction: _doubleAction to: _target];
-      return;
-    }
-
-  // It is OK to edit column.  Go on, do it.
-  [self editColumn: _clickedColumn  row: _clickedRow
-	withEvent: theEvent  select: NO];
 }
 
 /* 
@@ -4824,8 +4769,7 @@ byExtendingSelection: (BOOL)flag
   [self setNeedsDisplayInRect: 
 	  [self frameOfCellAtColumn: _editedColumn row: _editedRow]];
   _textObject = nil;
-  RELEASE (_editedCell);
-  _editedCell = nil;
+  DESTROY (_editedCell);
   /* Save values */
   row = _editedRow;
   column = _editedColumn;
@@ -4897,7 +4841,7 @@ byExtendingSelection: (BOOL)flag
       NSFormatter *formatter;
       id newObjectValue;
       
-      formatter = [_cell formatter];
+      formatter = [_editedCell formatter];
       
       if ([formatter getObjectValue: &newObjectValue 
 		     forString: [_textObject text] 
@@ -5925,6 +5869,23 @@ byExtendingSelection: (BOOL)flag
 
 @implementation NSTableView (SelectionHelper)
 
+- (void) _setSelectingColumns: (BOOL)flag
+{
+  if (flag == _selectingColumns)
+    return;
+  
+  if (flag == NO)
+    {
+      [self _unselectAllColumns];
+      _selectingColumns = NO;
+    }
+  else
+    {
+      [self _unselectAllRows];
+      _selectingColumns = YES;
+    }
+}
+
 - (NSArray *) _selectedRowArray
 {
   NSMutableArray *selected = [NSMutableArray array];
@@ -6023,6 +5984,11 @@ byExtendingSelection: (BOOL)flag
   while (column != NSNotFound)
     {
       [self setNeedsDisplayInRect: [self rectOfColumn: column]];
+      if (_headerView)
+        {		
+	  [_headerView setNeedsDisplayInRect: 
+			   [_headerView headerRectOfColumn: column]];
+	}
       column = [_selectedColumns indexGreaterThanIndex: column];
     }	  
   [_selectedColumns removeAllIndexes];
