@@ -248,7 +248,11 @@ drawRun(GSTextRun *run, NSPoint origin, GSDrawInfo *draw)
 	  if ((enc != NSASCIIStringEncoding) && 
 	      (enc != NSUnicodeStringEncoding))
 	    {
-	      buf[0] = encode_unitochar(run->glyphs[i].glyph, enc);
+	      unsigned int  size = 1;
+	      unsigned char c = 0;
+	      unsigned char *dst = buf;
+
+	      GSFromUnicode(&dst, &size, &(run->glyphs[i].glyph), 1, enc, 0, 0);
 	    }
 	  else
 	    {

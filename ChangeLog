@@ -1,3 +1,8 @@
+2002-05-11  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSStringDrawing.m: drawRun() use GSFromUnicode() API for
+	conversion.
+
 Fri May 10 11:24:38 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSRulerView.m ([NSRulerView -dealloc]): Do not release the 
