@@ -126,7 +126,7 @@ static NSFont *_leafFont;
 
 - (void) dealloc
 {
-  TEST_RELEASE(_alternateImage);
+  TEST_RELEASE (_alternateImage);
 
   [super dealloc];
 }
@@ -135,8 +135,7 @@ static NSFont *_leafFont;
 {
   NSBrowserCell	*c = [super copyWithZone: zone];
 
-  if (_alternateImage)
-    c->_alternateImage = RETAIN(_alternateImage);
+  TEST_RETAIN (_alternateImage);
   //c->_browsercell_is_leaf = _browsercell_is_leaf;
   //c->_browsercell_is_loaded = _browsercell_is_loaded;
 
