@@ -118,7 +118,7 @@ extern NSString	*NSEventTrackingRunLoopMode;
 - (void) run;
 - (int) runModalForWindow: (NSWindow*)theWindow;
 - (int) runModalSession: (NSModalSession)theSession;
-- (BOOL) isRunningModalForWindow: (NSWindow *)theWindow;
+- (NSWindow *) modalWindow;
 - (void) sendEvent: (NSEvent*)theEvent;
 - (void) stop: (id)sender;
 - (void) stopModal;
