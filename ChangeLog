@@ -1,9 +1,11 @@
-Wed Jan 31 00:15:06 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+Fri Feb  2 21:16:32 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
-	* Source/NSTableView.m ([-selectColumn:byExtendingSelection:]):
-	Fixed selecting the only column in a single column table (patch by
-	Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>).
-
+	* Source/NSTableView.m ([-selectRow:byExtendingSelection:]): Fixed
+	selecting the only row in a single row table (patch by Pierre-Yves
+	Rivaille <pyrivail@ens-lyon.fr> modified).
+	* Source/NSTableView.m ([-selectColumn:byExtendingSelection:]): 
+	The same for columns.
+	
 2001-01-30  Adam Fedor  <fedor@gnu.org>
 
 	* Tools/GNUmakefile: Don't make gbps since it conflicts with gpbs
