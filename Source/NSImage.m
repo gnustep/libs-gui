@@ -241,7 +241,6 @@ static NSDictionary* nsmapping = nil;
 	  if (image)
 	    [image setName: [[path lastPathComponent] 
 				stringByDeletingPathExtension]];
-	  [nameDict setObject: image forKey: [image name]];
 	  return image;
 	}
     }
