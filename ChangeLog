@@ -1,6 +1,12 @@
 2003-09-14  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPopUpButtonCell.m
+	Corrected bug in previous change. In [itemAtIndex:] the index 0
+	was handled wrong.
+	
+2003-09-14  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSPopUpButtonCell.m
 	According to Gregory John Casamento <greg_casamento@yahoo.com> the
 	popup button does not change its enable state when the selected item
 	does. To adopt this behaviour all setEnable: calls have been
