@@ -186,7 +186,6 @@ static NSNotificationCenter *nc;
   // _superMenu = nil;
   // _is_tornoff = NO;
   // _follow_transient = NO;
-  // _is_beholdenToPopUpButton = NO;
 
   _changedMessagesEnabled = YES;
   _notifications = [[NSMutableArray alloc] init];
@@ -615,7 +614,25 @@ static NSNotificationCenter *nc;
 		  validator = [NSApp targetForAction: action];
 		}
 	    }
-      
+	  else if (_popUpButtonCell != nil)
+	    {
+	      if (NULL != (action = [_popUpButtonCell action]))
+	        {
+		  // If there is a target use that for validation (or nil).
+		  if (nil != (target = [_popUpButtonCell target]))
+		    {
+		      if ([target respondsToSelector: action])
+		        {  
+			  validator = target;
+			}
+		    }
+		  else
+		    {
+		      validator = [NSApp targetForAction: action];
+		    }
+		}
+	    }
+
 	  if (validator == nil)
 	    {
 	      shouldBeEnabled = NO;
@@ -693,6 +710,7 @@ static NSNotificationCenter *nc;
 {
   id<NSMenuItem> item = [_items objectAtIndex: index];
   NSDictionary *d;
+  SEL action;
 
   if (![item isEnabled])
     return;
@@ -702,12 +720,20 @@ static NSNotificationCenter *nc;
   [nc postNotificationName: NSMenuWillSendActionNotification
                     object: self
                   userInfo: d];
-  if ([item action])
+  if (NULL != (action = [item action]))
     {
-      [NSApp sendAction: [item action]
+      [NSApp sendAction: action
 	     to: [item target]
 	     from: item];
     }
+  else if (_popUpButtonCell != nil)
+    {
+      if (NULL != (action = [_popUpButtonCell action]))
+	[NSApp sendAction: action
+	       to: [_popUpButtonCell target]
+	       from: [_popUpButtonCell controlView]];
+    }
+
   [nc postNotificationName: NSMenuDidSendActionNotification
                     object: self
                   userInfo: d];
@@ -801,7 +827,7 @@ static NSNotificationCenter *nc;
 
   windowFrame = [_aWindow frame];
 
-  if (!_is_beholdenToPopUpButton)
+  if (_popUpButtonCell == nil)
     {
       float height = [[_view class] menuBarHeight];
 
@@ -1274,20 +1300,21 @@ static NSNotificationCenter *nc;
 
 - (BOOL)_ownedByPopUp
 {
-  return _is_beholdenToPopUpButton;
+  return _popUpButtonCell != nil;
 }
 
-- (void)_setOwnedByPopUp: (BOOL)flag
+- (void)_setOwnedByPopUp: (NSPopUpButtonCell*)popUp
 {
-  if (_is_beholdenToPopUpButton != flag)
+  if (_popUpButtonCell != popUp)
     {
-      _is_beholdenToPopUpButton = flag;
-      if (flag == YES)
+      _popUpButtonCell = popUp;
+      if (popUp != nil)
 	{
 	  [_titleView removeFromSuperviewWithoutNeedingDisplay];
 	  [_aWindow setLevel: NSPopUpMenuWindowLevel];
 	  [_bWindow setLevel: NSPopUpMenuWindowLevel];
 	}
+      // FIXME
     }
 }
 
