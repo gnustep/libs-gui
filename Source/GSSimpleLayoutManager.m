@@ -477,6 +477,9 @@ static NSCharacterSet *invSelectionWordGranularitySet;
   [[aTextContainer textView] sizeToFit];
   [[aTextContainer textView] invalidateTextContainerOrigin];
 
+  /* FIXME - it was reported that at this point lineRange is no longer
+   * correct ...  looks like sizeToFit / invalidateTextContainerOrigin
+   * migth cause additional relayout.  */
   [self setNeedsDisplayForLineRange: lineRange
 	inTextContainer: aTextContainer];
 }
@@ -740,7 +743,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
 		     inTextContainer: (NSTextContainer *)aTextContainer 
 {
   if ([_lineLayoutInformation count]
-      && redrawLineRange.location < [_lineLayoutInformation count]
+      && NSMaxRange (redrawLineRange) < [_lineLayoutInformation count]
       && redrawLineRange.length)
     {
       _GNULineLayoutInfo *firstInfo
