@@ -1410,6 +1410,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
 - (void) dealloc
 {
+  RELEASE (attr);
   RELEASE (button);
   [super dealloc];
 }

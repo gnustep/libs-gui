@@ -277,6 +277,17 @@ static GSMemoryPanel *sharedGSMemoryPanel = nil;
   return self;
 }
 
+- (void) dealloc
+{
+  RELEASE(table);
+  RELEASE(classArray);
+  RELEASE(countArray);
+  RELEASE(totalArray);
+  RELEASE(peakArray);
+
+  [super dealloc];
+}
+
 - (int) numberOfRowsInTableView: (NSTableView *)aTableView
 {
   return [countArray count];

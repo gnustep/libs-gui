@@ -52,11 +52,16 @@ static const int current_version = 1;
 @end
 
 @implementation GSToolbarView
+- (void) dealloc
+{
+  RELEASE(_toolbar);
+
+  [super dealloc];
+}
 - (void) setToolbar: (NSToolbar *)toolbar
 {
   ASSIGN(_toolbar, toolbar);
 }
-
 - (NSToolbar *) toolbar
 {
   return _toolbar;
@@ -182,6 +187,7 @@ static const int current_version = 1;
 - (void) dealloc
 {
   DESTROY (_identifier);
+  DESTROY (_configurationDictionary);
 
   if (_delegate != nil)
     {
@@ -242,10 +248,6 @@ static const int current_version = 1;
 
 - (void) setConfigurationFromDictionary: (NSDictionary *)configDict
 {
-  if(!_configurationDictionary)
-    {
-      RELEASE(_configurationDictionary);
-    }
   ASSIGN(_configurationDictionary, configDict);
 }
 

@@ -179,6 +179,13 @@ static NSPageLayout *shared_instance;
   return self;
 }
 
+- (void) dealloc
+{
+  RELEASE (_accessoryView);
+
+  [super dealloc];
+}
+
 //
 // Running the Panel 
 //

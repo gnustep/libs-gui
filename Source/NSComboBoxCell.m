@@ -47,7 +47,7 @@
 {
    NSBrowser	*browser;
 
-@private;
+@private
    NSComboBoxCell *_cell;
    BOOL		_stopped;
 }

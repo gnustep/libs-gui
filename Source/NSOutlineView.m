@@ -129,16 +129,11 @@ static NSImage *unexpandable  = nil;
   _itemDict = NSCreateMapTable(NSObjectMapKeyCallBacks,
 			       NSObjectMapValueCallBacks,
 			       64);
-  _items = [NSMutableArray array];
-  _expandedItems = [NSMutableArray array];
+  _items = [NSMutableArray new];
+  _expandedItems = [NSMutableArray new];
   _levelOfItems = NSCreateMapTable(NSObjectMapKeyCallBacks,
 				   NSObjectMapValueCallBacks,
 				   64);
-
-
-  // Retain items
-  RETAIN(_items);
-  RETAIN(_expandedItems);
 
   return self;
 }

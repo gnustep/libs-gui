@@ -440,11 +440,11 @@ static NSString         *disabledName = @".GNUstepDisabled";
    *	Check for changes to the services cache every thirty seconds.
    */
   manager->_timer =
-	[NSTimer scheduledTimerWithTimeInterval: 30.0
+	RETAIN([NSTimer scheduledTimerWithTimeInterval: 30.0
 					 target: manager
 				       selector: @selector(loadServices)
 				       userInfo: nil
-					repeats: YES];
+					repeats: YES]);
 
   [manager loadServices];
   return manager;
@@ -522,6 +522,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
 
   appName = [[NSProcessInfo processInfo] processName];
   [_timer invalidate];
+  RELEASE(_timer);
   NSUnregisterServicesProvider(appName);
   RELEASE(_languages);
   RELEASE(_returnInfo);

@@ -44,7 +44,7 @@
    float		_itemHeight;
    int                  _selectedItem;
   
-@private;
+@private
    id		_popup;
 }
 

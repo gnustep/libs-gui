@@ -176,6 +176,14 @@ typedef enum
   return self;
 }
 
+- (void) dealloc
+{
+  RELEASE(_descriptionData);
+
+  [super dealloc];
+}
+
+
 //
 // Describing a Selection
 //
