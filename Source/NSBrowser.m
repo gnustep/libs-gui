@@ -1024,6 +1024,10 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 - (void)reloadColumn: (int)column
 {
   id bc;
+  NSArray *selectedCells;
+  NSMatrix *matrix;
+  int i, count, max;
+  int *selectedIndexes = NULL;
 
 #if defined NSBTRACE_reloadColumn || defined NSBTRACE_all
   fprintf(stderr, "NSBrowser - (void)reloadColumn: %d\n", column);
@@ -1049,9 +1053,46 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
       return;
     }
 
+  // Save the index of the previously selected cells
+  matrix = [self matrixInColumn: column];
+  selectedCells = [matrix selectedCells];
+  count = [selectedCells count];
+  if (count > 0)
+    {
+      selectedIndexes = NSZoneMalloc (NSDefaultMallocZone (), 
+				      sizeof (int) * count);
+      for (i = 0; i < count; i++)
+	{
+	  NSCell *cell = [selectedCells objectAtIndex: i];
+	  int sRow, sColumn;
+	  
+	  [matrix getRow: &sRow  column: &sColumn  ofCell: cell];
+	  selectedIndexes[i] = sRow;
+	}
+    }
+  
+
   // Perform the data load
   [self _performLoadOfColumn: column];
   [self _adjustMatrixOfColumn: column];
+
+  // Restore the selected cells
+  if (count > 0)
+    {
+      matrix = [self matrixInColumn: column];
+      max = [matrix numberOfRows];
+      for (i = 0; i < count; i++)
+	{
+	  // Abort when it stops making sense
+	  if (selectedIndexes[i] > max)
+	    {
+	      break;
+	    }
+	  
+	  [matrix selectCellAtRow: selectedIndexes[i]  column: 0];
+	}
+      NSZoneFree (NSDefaultMallocZone (), selectedIndexes);
+    }
 
   // set last column loaded
   [self setLastColumn: column];
