@@ -141,7 +141,7 @@
   ASSIGN(_fileName, fileName);
 	
   [_windowControllers makeObjectsPerformSelector:
-			@selector(_synchronizeWindowTitleWithDocumentName)];
+			@selector(synchronizeWindowTitleWithDocumentName)];
 }
 
 - (NSString *)fileType
@@ -240,7 +240,7 @@
 
   for (i=0; i<count; i++)
     {
-      [[[_windowControllers objectAtIndex:i] window] setDocumentEdited:isEdited];
+      [[_windowControllers objectAtIndex: i] setDocumentEdited: isEdited];
     }
 }
 
