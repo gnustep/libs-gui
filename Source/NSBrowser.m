@@ -544,7 +544,7 @@
   [self loadColumnZero];
 
   // If that's all, return.
-  if ([path isEqualToString: _pathSeparator])
+  if (path == nil || [path isEqualToString: _pathSeparator])
     {
       [self tile];
       [self updateScroller];
