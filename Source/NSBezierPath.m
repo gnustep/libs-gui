@@ -29,6 +29,7 @@
 
 #include <AppKit/NSAffineTransform.h>
 #include <AppKit/NSBezierPath.h>
+#include <AppKit/NSFont.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/PSOperators.h>
 #include <math.h>
@@ -85,7 +86,7 @@ static float default_miter_limit = 10.0;
 {
   if (self != NSBezierPath_concrete_class)
     {
-      return [NSBezierPath_concrete_class alloc];
+      return [NSBezierPath_concrete_class allocWithZone: z];
     }
   else
     {
@@ -101,59 +102,20 @@ static float default_miter_limit = 10.0;
 + (NSBezierPath *)bezierPathWithRect: (NSRect)aRect
 {
   NSBezierPath *path;
-  NSPoint p;
 	
-  path = [NSBezierPath bezierPath];
-  [path moveToPoint: aRect.origin];
-  p.x = aRect.origin.x + aRect.size.width;
-  p.y = aRect.origin.y;
-  [path lineToPoint: p];
-  p.x = aRect.origin.x + aRect.size.width;
-  p.y = aRect.origin.y + aRect.size.height;
-  [path lineToPoint: p];
-  p.x = aRect.origin.x;
-  p.y = aRect.origin.y + aRect.size.height;
-  [path lineToPoint: p];
-  [path closePath];
+  path = [self bezierPath];
+  [path appendBezierPathWithRect: aRect];
 	
   return path;
 }
 
-+ (NSBezierPath *)bezierPathWithOvalInRect: (NSRect)rect
++ (NSBezierPath *)bezierPathWithOvalInRect: (NSRect)aRect
 {
   NSBezierPath *path;
-  NSPoint p, p1, p2;
-  double originx = rect.origin.x;
-  double originy = rect.origin.y;
-  double width = rect.size.width;
-  double height = rect.size.height;
-  double hdiff = width / 2 * KAPPA;
-  double vdiff = height / 2 * KAPPA;
   
-  path = [NSBezierPath bezierPath];
-  p = NSMakePoint(originx + width / 2, originy + height);
-  [path moveToPoint: p];
-  
-  p = NSMakePoint(originx, originy + height / 2);
-  p1 = NSMakePoint(originx + width / 2 - hdiff, originy + height);
-  p2 = NSMakePoint(originx, originy + height / 2 + vdiff);
-  [path curveToPoint: p controlPoint1: p1 controlPoint2: p2];
-  
-  p = NSMakePoint(originx + width / 2, originy);
-  p1 = NSMakePoint(originx, originy + height / 2 - vdiff);
-  p2 = NSMakePoint(originx + width / 2 - hdiff, originy);
-  [path curveToPoint: p controlPoint1: p1 controlPoint2: p2];	
-  
-  p = NSMakePoint(originx + width, originy + height / 2);
-  p1 = NSMakePoint(originx + width / 2 + hdiff, originy);
-  p2 = NSMakePoint(originx + width, originy + height / 2 - vdiff);
-  [path curveToPoint: p controlPoint1: p1 controlPoint2: p2];	
-  
-  p = NSMakePoint(originx + width / 2, originy + height);
-  p1 = NSMakePoint(originx + width, originy + height / 2 + vdiff);
-  p2 = NSMakePoint(originx + width / 2 + hdiff, originy + height);
-  [path curveToPoint: p controlPoint1: p1 controlPoint2: p2];	
-  
+  path = [self bezierPath];
+  [path appendBezierPathWithOvalInRect: aRect];
+
   return path;
 }
 
@@ -177,20 +139,22 @@ static float default_miter_limit = 10.0;
 
 + (void)strokeLineFromPoint: (NSPoint)point1  toPoint: (NSPoint)point2
 {
-  NSBezierPath *path = [NSBezierPath bezierPath];
+  NSBezierPath *path = [[self alloc] init];
   
   [path moveToPoint: point1];
   [path lineToPoint: point2];
   [path stroke];
+  RELEASE(path);
 }
 
 + (void)drawPackedGlyphs: (const char *)packedGlyphs  atPoint: (NSPoint)aPoint
 {
-  NSBezierPath *path = [NSBezierPath bezierPath];
+  NSBezierPath *path = [[self alloc] init];
   
   [path moveToPoint: aPoint];
   [path appendBezierPathWithPackedGlyphs: packedGlyphs];
   [path stroke];  
+  RELEASE(path);
 }
 
 //
@@ -850,9 +814,21 @@ static float default_miter_limit = 10.0;
     }
 }
 
-- (void)appendBezierPathWithRect:(NSRect)rect
+- (void)appendBezierPathWithRect:(NSRect)aRect
 {
-  [self appendBezierPath: [isa bezierPathWithRect: rect]];
+  NSPoint p;
+	
+  [self moveToPoint: aRect.origin];
+  p.x = aRect.origin.x + aRect.size.width;
+  p.y = aRect.origin.y;
+  [self lineToPoint: p];
+  p.x = aRect.origin.x + aRect.size.width;
+  p.y = aRect.origin.y + aRect.size.height;
+  [self lineToPoint: p];
+  p.x = aRect.origin.x;
+  p.y = aRect.origin.y + aRect.size.height;
+  [self lineToPoint: p];
+  [self closePath];
 }
 
 - (void)appendBezierPathWithPoints:(NSPoint *)points count:(int)count
@@ -864,20 +840,51 @@ static float default_miter_limit = 10.0;
 
   if ([self isEmpty])
     {
-	[self moveToPoint: points[0]];
+      [self moveToPoint: points[0]];
     }
   else
     {
-	[self lineToPoint: points[0]];
+      [self lineToPoint: points[0]];
     }
   
   for (i = 1; i < count; i++)
-    [self lineToPoint: points[i]];
+    {
+      [self lineToPoint: points[i]];
+    }
 }
 
-- (void) appendBezierPathWithOvalInRect: (NSRect)aRect
+- (void) appendBezierPathWithOvalInRect: (NSRect)rect
 {
-  [self appendBezierPath: [isa bezierPathWithOvalInRect: aRect]];
+  NSPoint p, p1, p2;
+  double originx = rect.origin.x;
+  double originy = rect.origin.y;
+  double width = rect.size.width;
+  double height = rect.size.height;
+  double hdiff = width / 2 * KAPPA;
+  double vdiff = height / 2 * KAPPA;
+  
+  p = NSMakePoint(originx + width / 2, originy + height);
+  [self moveToPoint: p];
+  
+  p = NSMakePoint(originx, originy + height / 2);
+  p1 = NSMakePoint(originx + width / 2 - hdiff, originy + height);
+  p2 = NSMakePoint(originx, originy + height / 2 + vdiff);
+  [self curveToPoint: p controlPoint1: p1 controlPoint2: p2];
+  
+  p = NSMakePoint(originx + width / 2, originy);
+  p1 = NSMakePoint(originx, originy + height / 2 - vdiff);
+  p2 = NSMakePoint(originx + width / 2 - hdiff, originy);
+  [self curveToPoint: p controlPoint1: p1 controlPoint2: p2];	
+  
+  p = NSMakePoint(originx + width, originy + height / 2);
+  p1 = NSMakePoint(originx + width / 2 + hdiff, originy);
+  p2 = NSMakePoint(originx + width, originy + height / 2 - vdiff);
+  [self curveToPoint: p controlPoint1: p1 controlPoint2: p2];	
+  
+  p = NSMakePoint(originx + width / 2, originy + height);
+  p1 = NSMakePoint(originx + width, originy + height / 2 + vdiff);
+  p2 = NSMakePoint(originx + width / 2 + hdiff, originy + height);
+  [self curveToPoint: p controlPoint1: p1 controlPoint2: p2];	
 }
 
 /* startAngle and endAngle are in degrees, counterclockwise, from the
@@ -1112,14 +1119,17 @@ static float default_miter_limit = 10.0;
 
 - (void)appendBezierPathWithGlyph:(NSGlyph)glyph inFont:(NSFont *)font
 {
-  // TODO
+  [self appendBezierPathWithGlyphs: &glyph count: 1 inFont: font];
 }
 
 - (void)appendBezierPathWithGlyphs:(NSGlyph *)glyphs 
 			     count:(int)count
 			    inFont:(NSFont *)font
 {
-  // TODO
+  char buffer[4 * count + 1];
+
+  NSConvertGlyphsToPackedGlyphs(glyphs, count, [font glyphPacking], buffer);
+  [self appendBezierPathWithPackedGlyphs: buffer];
 }
 				 
 - (void)appendBezierPathWithPackedGlyphs:(const char *)packedGlyphs
