@@ -1,3 +1,10 @@
+Tue Jul 16 19:40:04 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSWindow.m ([-cacheImageInRect:]): Intersect the
+	rectangle with the window view frame, not the content view frame.
+	([-restoreCachedImage]): Draw in the window view, not in the
+	content view.
+
 Mon Jul 15 15:55:21 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSWindow.m ([NSWindow +initialize]): Removed left-over
