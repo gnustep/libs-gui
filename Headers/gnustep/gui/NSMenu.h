@@ -41,6 +41,7 @@
 @class NSString;
 @class NSEvent;
 @class NSMatrix;
+@class NSMenuView;
 @class NSMenuWindow;
 
 @interface      NSMenuWindow : NSWindow
