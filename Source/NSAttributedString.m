@@ -1,12 +1,117 @@
 #include <AppKit/NSAttributedString.h>
 
-//@implementation NSAttributedString (AppKit)
+@implementation NSAttributedString (AppKit)
+
+- (BOOL)containsAttachments
+{
+  // Currently there are no attachment in GNUstep.
+  // FIXME.
+  return NO;
+}
+
+- (NSDictionary*) fontAttributesInRange: (NSRange)range
+{
+}
+
+- (NSDictionary*) rulerAttributesInRange: (NSRange)range
+{
+}
+
+- (unsigned) lineBreakBeforeIndex: (unsigned)location
+                      withinRange: (NSRange)aRange
+{
+  NSScanner *tScanner;
+  unsigned int sL;
+
+  tScanner = [[NSScanner alloc] initWithString:[[self string]
+	substringWithRange:aRange]];
+  [tScanner scanUpToString:[NSText newlineString] intoString:NULL];
+  sL = [tScanner scanLocation] + 2;
+
+  [tScanner release];
+
+  if (sL > aRange.length)
+    return NSNotFound;
+  else
+    return sL;
+}
+
+- (NSRange) doubleClickAtIndex: (unsigned)location
+{
+}
+
+- (unsigned) nextWordFromIndex: (unsigned)location
+		       forward: (BOOL)isForward
+{
+}
 
 /*
  * This is where the fun begins with RTF/RTFD/HTML
+ * This is currently ALL FIXME. :-)
+ * With love from Michael, hehe.
  */
 
-//@end
+- (id) initWithRTF: (NSData*)data
+  documentAttributes: (NSDictionary**)dict
+{
+  return self;
+}
+
+- (id) initWithRTFD: (NSData*)data
+ documentAttributes: (NSDictionary**)dict
+{
+  return self;
+}
+
+- (id) initWithPath: (NSString*)path
+ documentAttributes: (NSDictionary**)dict
+{
+  return self;
+}
+
+- (id) initWithURL: (NSURL*)url 
+documentAttributes: (NSDictionary**)dict
+{
+  return self;
+}
+
+- (id) initWithRTFDFileWrapper: (NSFileWrapper*)wrapper
+            documentAttributes: (NSDictionary**)dict
+{
+  return self;
+}
+
+- (id) initWithHTML: (NSData*)data
+ documentAttributes: (NSDictionary**)dict
+{
+  return self;
+}
+
+- (id) initWithHTML: (NSData*)data
+            baseURL: (NSURL*)base
+ documentAttributes: (NSDictionary**)dict
+{
+  return self;
+}
+
+- (NSData*) RTFFromRange: (NSRange)range
+  documentAttributes: (NSDictionary*)dict
+{
+  return (NSData *)self;
+}
+
+- (NSData*) RTFDFromRange: (NSRange)range
+  documentAttributes: (NSDictionary*)dict
+{
+  return (NSData *)self;
+}
+
+- (NSFileWrapper*) RTFDFileWrapperFromRange: (NSRange)range
+  documentAttributes: (NSDictionary*)dict
+{
+  return (NSFileWrapper *)self;
+}
+@end
 
 @implementation NSMutableAttributedString (AppKit)
 - (void)superscriptRange:(NSRange)range
