@@ -28,16 +28,11 @@
 #ifndef _GNUstep_H_NSMenu
 #define _GNUstep_H_NSMenu
 
-#include <AppKit/NSView.h>
+#include <Foundation/NSObject.h>
+#include <Foundation/NSGeometry.h>
+
 #include <AppKit/NSMenuItem.h>
-#include <AppKit/NSButton.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSControl.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSMenuView.h>
-#include <AppKit/PSOperators.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSPanel.h>
+#include <AppKit/AppKitDefines.h>
 
 @class NSString;
 @class NSEvent;
@@ -45,6 +40,8 @@
 @class NSMenuView;
 @class NSPopUpButton;
 @class NSPopUpButtonCell;
+@class NSView;
+@class NSWindow;
 
 @interface NSMenu : NSObject <NSCoding, NSCopying>
 {
