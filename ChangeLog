@@ -1,3 +1,10 @@
+Thu Nov  8 23:30:47 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSMatrix.m ([-sizeToFit]): Reverted last change.
+	* Source/NSBrowser.m ([-_performLoadOfColumn:]): Do not call
+	sizeToFit on the matrix, just set the cellSize to the result of
+	calling -cellSize on the first browsercell in the matrix.
+	
 2001-11-08  Adam Fedor  <fedor@gnu.org>
 
 	* Simple printing/pagination implementation
