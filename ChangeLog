@@ -1,3 +1,10 @@
+Tue Oct 23 10:32:18 2001  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSCell.m ([-setStringValue:]): Check with an assertion
+	that the string value is not nil - for Mac OS-X
+	compatibility. (Suggested by Ludovic Marcotte
+	<ludovic@sophos.ca>).
+
 Mon Oct 22 01:10:24 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSWindow.m ([NSWindow -dealloc]): Remove all subviews
