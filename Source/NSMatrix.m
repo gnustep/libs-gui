@@ -1485,6 +1485,20 @@ static SEL getSel = @selector(objectAtIndex:);
     }
 }
 
+- (BOOL) sendAction
+{
+  if (_selectedCell)
+    {
+      if ([_selectedCell isEnabled] == NO)
+	return NO;
+
+      return [self sendAction: [_selectedCell action] 
+		   to:         [_selectedCell target]]; 
+    }
+
+  // _selectedCell == nil
+  return [super sendAction: _action to: _target];
+}
 
 - (BOOL) sendAction: (SEL)theAction
 		 to: (id)theTarget
@@ -1497,23 +1511,13 @@ static SEL getSel = @selector(objectAtIndex:);
 	}
       else
 	{
-	  return [super sendAction: theAction to: [self target]];
+	  return [super sendAction: theAction to: _target];
 	}
     }
   else
     {
-      return [super sendAction: [self action] to: [self target]];
+      return [super sendAction: _action to: _target];
     }
-}
-
-
-- (BOOL) sendAction
-{
-  if (![_selectedCell isEnabled])
-    {
-      return NO;
-    }
-  return [self sendAction: [_selectedCell action] to: [_selectedCell target]];
 }
 
 - (void) sendAction: (SEL)aSelector
@@ -1561,18 +1565,10 @@ static SEL getSel = @selector(objectAtIndex:);
 
 - (void) sendDoubleAction
 {
-  if (![_selectedCell isEnabled])
-    {
-      return;
-    }
-  if (_doubleAction != 0)
-    {
-      [_target performSelector: _doubleAction withObject: self];
-    }
+  if (_doubleAction)
+    [self sendAction: _doubleAction to: _target];
   else
-    {
-      [self sendAction];
-    }
+    [self sendAction];
 }
 
 - (BOOL) acceptsFirstMouse: (NSEvent*)theEvent
@@ -1583,6 +1579,7 @@ static SEL getSel = @selector(objectAtIndex:);
     return YES;
 }
 
+// FIXME mouseDown code
 - (void) _mouseDownNonListMode: (NSEvent *)theEvent
 {
   BOOL mouseUpInCell = NO;
@@ -1614,7 +1611,7 @@ static SEL getSel = @selector(objectAtIndex:);
       [self getRow: &mouseRow column: &mouseColumn forPoint: mouseLocation];
       mouseCellFrame = [self cellFrameAtRow: mouseRow column: mouseColumn];
 
-      if (((mode == NSRadioModeMatrix) && ![self allowsEmptySelection])
+      if (((mode == NSRadioModeMatrix) && !allowsEmptySelection)
 	|| [self mouse: mouseLocation inRect: mouseCellFrame])
         {
           mouseCell = [self cellAtRow: mouseRow column: mouseColumn];
@@ -1644,7 +1641,7 @@ static SEL getSel = @selector(objectAtIndex:);
           mouseUpInCell = [mouseCell trackMouse: theEvent
                                          inRect: mouseCellFrame
                                          ofView: self
-                                   untilMouseUp: YES];
+                                   untilMouseUp: NO];
 
           if (mode == NSHighlightModeMatrix)
             {
@@ -1700,9 +1697,6 @@ static SEL getSel = @selector(objectAtIndex:);
       [self sendAction];
     }
 
-  if (_target && _doubleAction && ([theEvent clickCount] > 1))
-    [_target performSelector: _doubleAction withObject: self];
-
   if (highlightedCell)
     {
       [self highlightCell: NO
@@ -1728,6 +1722,21 @@ static SEL getSel = @selector(objectAtIndex:);
   NSRect previousCellRect;
   NSApplication *app = [NSApplication sharedApplication];
   static MPoint anchor = {0, 0};
+  int clickCount;
+
+  // Manage multi-click events
+  clickCount = [theEvent clickCount];
+
+  if (clickCount > 2)
+    return;
+
+  if (clickCount == 2 && (_ignoresMultiClick == NO))
+    {
+      [self sendDoubleAction];
+      return;
+    }
+
+  // From now on, code to manage simple-click events
 
   lastLocation = [self convertPoint: lastLocation
 		       fromView: nil];
@@ -1776,6 +1785,7 @@ static SEL getSel = @selector(objectAtIndex:);
 
   mouseDownFlags = [theEvent modifierFlags];
 
+  // TODO: clean this up -- remove code in excess!
   if (mode != NSListModeMatrix)
     {
       [self _mouseDownNonListMode: theEvent];
@@ -1818,7 +1828,7 @@ static SEL getSel = @selector(objectAtIndex:);
 		    if ([aCell trackMouse: lastEvent
 				   inRect: rect
 				   ofView: self
-			     untilMouseUp: YES])
+			     untilMouseUp: NO])
 		      done = YES;
 		    break;
 
@@ -1836,7 +1846,7 @@ static SEL getSel = @selector(objectAtIndex:);
 		    if ([aCell trackMouse: lastEvent
 				      inRect: rect
 				      ofView: self
-				      untilMouseUp: YES])
+				      untilMouseUp: NO])
 		      done = YES;
 
 		    [aCell setState: 0];
@@ -1996,10 +2006,6 @@ static SEL getSel = @selector(objectAtIndex:);
 				     withObject: self];
 	}
     }
-  // click count > 1 indicates a double click
-  if (_target && _doubleAction && ([lastEvent clickCount] > 1))
-    [_target performSelector: _doubleAction withObject: self];
-
   if ((mode != NSTrackModeMatrix) && (mode != NSHighlightModeMatrix))
     [NSEvent stopPeriodicEvents];
 
@@ -2207,6 +2213,9 @@ static SEL getSel = @selector(objectAtIndex:);
   return _action;
 }
 
+// NB: In GNUstep the following method does *not* set 
+// ignoresMultiClick to NO as in the MacOS-X spec. 
+// It simply sets the doubleAction, as in OpenStep spec.
 - (void) setDoubleAction: (SEL)sel
 {
   _doubleAction = sel;
