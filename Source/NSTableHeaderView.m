@@ -443,6 +443,7 @@
 			  NSHighlightRect (oldRect);
 			}
 		      NSHighlightRect (r);
+		      [_window flushWindow];
 		      lit = YES;
 		      oldRect = r;
 		    }
@@ -456,6 +457,7 @@
 		      if (lit)
 			{
 			  NSHighlightRect (oldRect);
+			  [_window flushWindow];
 			  lit = NO;
 			}
 		      tvRect = [_tableView visibleRect];
@@ -500,6 +502,7 @@
 	  if (lit == YES)
 	    {
 	      NSHighlightRect(oldRect);
+	      [_window flushWindow];
 	    }
 
 	  [self unlockFocus];
@@ -530,7 +533,7 @@
 	[[currentColumn headerCell]
 	  setBackgroundColor: [NSColor controlColor]];
 
-	[[currentColumn headerCell] 
+	[[currentColumn headerCell]
 	  highlight: YES
 	  withFrame: rect
 	  inView: self];
@@ -651,10 +654,12 @@
 			      if (lit)
 				NSHighlightRect(oldRect);
 			      NSHighlightRect(highlightRect);
+			      [_window flushWindow];
 			    }
 			  else if (!lit)
 			    {
 			      NSHighlightRect(highlightRect);
+			      [_window flushWindow];
 			    }
 			  oldRect = highlightRect;
 			  lit = YES;
@@ -672,13 +677,15 @@
 			    {
 			      if (lit)
 				NSHighlightRect(oldRect);
-			      //			      NSHighlightRect(highlightRect);
+			      //  NSHighlightRect(highlightRect);
+			      [_window flushWindow];
 			    }
 			  else if (!lit)
 			    {
-			      //			      NSHighlightRect(highlightRect);
+			      //  NSHighlightRect(highlightRect);
+			      // [_window flushWindow];
 			    }
-			  //			  oldRect = highlightRect;
+			  // oldRect = highlightRect;
 			  oldRect = NSZeroRect;
 			  lit = NO; //lit = YES;
 			}
@@ -690,6 +697,7 @@
 		      if (lit)
 			{
 			  NSHighlightRect(oldRect);
+			  [_window flushWindow];
 			  lit = NO;
 			  oldRect = NSZeroRect;
 			}
@@ -731,6 +739,7 @@
 	  if (lit)
 	    {
 	      NSHighlightRect(highlightRect);
+	      [_window flushWindow];
 	      lit = NO;
 	    }
 
