@@ -1,4 +1,5 @@
 @c -*-texinfo-*-
+@ifclear GLOBAL-TODO
 @chapter TODO
 
 @ifset TEXT-ONLY
@@ -9,12 +10,86 @@
 
 If you think you can do one of these projects, please let me know.  Your
 help is greatly appreciated.  Send email to @email{scottc@@net-community.com}. 
+@end ifclear
 
 @itemize @bullet
 
 @item
-Write code!  The GNUstep GUI Library is far from complete, so there are
-plenty of areas awaiting contribution.
+flipped views; should be really simple to implement, using a
+simple Postscript transformation (see how scalation and
+rotation
+are implemented in NSView), but it probably has implications in
+how other classes are implemented - NSMatrix, NSClipView and
+NSScrollView are some of them. I don't have enough time to
+implement it, if somebody else can come up with an implementation
+and test all the implications it would be great. Flipped views
+affect for example the look of NSBrowser right now, it will work
+as expected when flipped views will be available.
+
+@item
+the implementation for NSImage should be completed. The current
+implementation is buggy, that's why you can see those ugly arrow
+images inside the scroll buttons. All the image representations
+should be added, including full support for various TIFF formats
+and for EPS images.
+
+@item
+NSColorList should be implemented such that it stores the color
+lists into an implementation independent format. The current
+implementation uses NSArchiver which is not good because the files
+are dependent on the Foundation library used. A simple ASCII file
+should be sufficient; alternatively Foundation .strings or
+property list files could be used.
+
+@item
+various panels should be implemented: NSOpenPanel, NSSavePanel,
+NSColorPanel, NSFontPanel. This should be really simple once we
+have model handling. The implementation of a panel should have
+associated with it a model file which contains the description of
+the graphical objects inside a panel; the behavior is implemented
+by the corresponding class. Having the model file describe the
+aspect of the panel makes the look of panel independent on the
+actual backend, each backend could come with its own model file to
+describe a panel. This is in theory, most probably some minimal
+support in backend would still be required.
+
+@item
+automatic resizing of views should be done. Also pretty simple to
+do.
+
+@item
+sending of -display to a view doesn't work as expected because the
+optimization I've done for displaying and flushing of windows
+doesn't mark the view as needing flush, in the case of buffered
+windows; you should use -setNeedsDisplay: instead. This is a known
+problem and should be fixed.
+
+@item
+the interaction between the X/DPS library and the window manager
+should be defined so that we can implement modal windows, window
+ordering (which should really not depend on the window manager),
+drag&drop, the display of window decorations and the handling of
+window resizing, closing and miniaturizing.
+
+@item
+the NSFormCell should be able to edit the text value
+
+@item
+the NSTextField class should be finished to make the cursor flush.
+ should also be hidden when the text field resigns as
+first responder. Another thing to be done is to handle text
+selections. Cursor flushing is fairly simple to implement with
+timer events; selection should also be simple enough.
+
+@item
+the biggest challange is the text system. Some work has been done
+by ANOQ of the Sun, but it is a mixture between the old and the
+new API for NSText from the newer OPENSTEP. In my opinion we
+should try implement the new API only, the old one is too hard to
+program and extend by users. Also the Johnny's implementation is
+view-only, you can't really use the code to edit the text. My
+estimate for a fairly complete version of it would be 2 good
+people working full time for 3-4 months.
 
 @item
 Printing architecture.  Careful thoughts needs to go into how the
@@ -39,10 +114,6 @@ The spell server and checker; along with this would be to create an
 interface with the GNU Dictionary project.
 
 @item
-GNUstep window manager.  Though not part of the GUI Library per se, an X
-Window manager that gives the complete desktop the GNUstep look and feel
-would be a great thing to have.  There is actually some work that has
-been started; a clearly defined interface between GNUstep and the X
-Window manager needs to be defined and implemented.
+Work with WindowMaker folks on a workspace manager.
 
 @end itemize
