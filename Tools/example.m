@@ -36,6 +36,8 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSPasteboard.h>
 
+#include "wgetopt.h"
+
 #include	<signal.h>
 
 @interface ExampleServices : NSObject

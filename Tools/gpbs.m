@@ -43,6 +43,8 @@
 
 #include <gnustep/gui/GSPasteboardServer.h>
 
+#include "wgetopt.h"
+
 #include <signal.h>
 
 @class PasteboardServer;
