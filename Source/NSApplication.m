@@ -156,8 +156,8 @@ static NSCell* tileCell = nil;
 
 - (void) drawRect: (NSRect)rect
 {                                                
-  [tileCell drawWithFrame: rect inView: self];
-  [dragCell drawWithFrame: rect inView: self];
+  [tileCell drawWithFrame: NSMakeRect(0,0,64,64) inView: self];
+  [dragCell drawWithFrame: NSMakeRect(8,8,48,48) inView: self];
 }
 
 - (void) mouseDown: (NSEvent*)theEvent
@@ -194,14 +194,14 @@ static NSCell* tileCell = nil;
 		done = YES;
 		break;
 	      case NSPeriodic:
-		location = [window mouseLocationOutsideOfEventStream];
+		location = [_window mouseLocationOutsideOfEventStream];
 		if (NSEqualPoints(location, lastLocation) == NO)
 		  {
-		    NSPoint	origin = [window frame].origin;
+		    NSPoint	origin = [_window frame].origin;
 
 		    origin.x += (location.x - lastLocation.x);
 		    origin.y += (location.y - lastLocation.y);
-		    [window setFrameOrigin: origin];
+		    [_window setFrameOrigin: origin];
 		  }
 		break;
 
@@ -219,7 +219,7 @@ static NSCell* tileCell = nil;
   [tileCell drawWithFrame: NSMakeRect(0,0,64,64) inView: self];
   [dragCell setImage: anImage];
   [dragCell drawWithFrame: NSMakeRect(8,8,48,48) inView: self];
-  [window flushWindow];
+  [_window flushWindow];
   [self unlockFocus];
 }
 
