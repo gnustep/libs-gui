@@ -92,6 +92,7 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
 - (void) setMenuItem:(NSMenuItem *)item
 {
   ASSIGN (_menuItem, item);
+  [self setEnabled: [_menuItem isEnabled]];
 }
 
 - (NSMenuItem *) menuItem
@@ -485,11 +486,6 @@ static NSImage	*arrowImage = nil;	/* Cache arrow image.	*/
 - (void) drawTitleWithFrame:(NSRect)cellFrame
 		    inView:(NSView *)controlView
 {
-  if ([_menuItem isEnabled])
-    _cell.is_disabled = NO;
-  else
-    _cell.is_disabled = YES;
-
   [self _drawText: [_menuItem title]
 	  inFrame: [self titleRectForBounds: cellFrame]];
 }
