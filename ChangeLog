@@ -1,3 +1,12 @@
+2003-08-30  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWindowController.m
+	Changed [setWindow:] to manage the notification connection to the window.
+	[initWithWindow:], [dealloc] and [_windowWillClose:] now use [setWindow:].
+	[setDocument:] now no longer retains the document, as this is
+	already retaining the window controller. Simplified [loadWindow]
+	by using the method [windowNibPath].
+	
 2003-08-30  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* GSNibTemplates.m: Added code to templates to conditionally
