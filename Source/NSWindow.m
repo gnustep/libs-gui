@@ -96,7 +96,10 @@ BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 @implementation	NSWindow (GNUstepPrivate)
 - (void) _handleWindowNeedsDisplay: (id)bogus
 {
-  [self displayIfNeeded];
+  if (_f.is_autodisplay && _rFlags.needs_display)
+    {
+      [self displayIfNeeded];
+    }
 }
 
 /* We get here if we were ordered out or miniaturized. In this case if
@@ -1821,13 +1824,6 @@ static NSNotificationCenter *nc = nil;
 
 - (void) update
 {
-  /*
-   *	if autodisplay is enabled and window display
-   */
-  if (_f.is_autodisplay && _rFlags.needs_display)
-    {
-      [self displayIfNeeded];
-    }
   [nc postNotificationName: NSWindowDidUpdateNotification object: self];
 }
 

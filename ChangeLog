@@ -1,3 +1,7 @@
+2003-02-23 13:30  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSWindow (-update): Don't redisplay the window.
+
 2003-02-22  Benhur Stein <benhur@inf.ufsm.br>
 
 	* Source/NSView.m (-displayIfNeededInRectIgnoringOpacity:): Disable
