@@ -1,3 +1,10 @@
+2000-10-24  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/GSSimpleLayoutManager.m: Removed some 300 lines
+	* Source/NSLayoutManager.m: Added simple glyph cahracter mapping methods
+	* Source/NSText.m: Set the TextConatainer to track its view
+	again. But switch this of if the view is scrollable.
+
 2000-10-31  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/GSServicesManager.m: Use new GSObjCClass() function
