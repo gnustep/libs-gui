@@ -888,6 +888,7 @@ static NSColor	*shadowCol;
   [textObject setRichText: _cell.is_rich_text];
   [textObject setImportsGraphics: _cell.imports_graphics];
   [textObject setSelectedRange: NSMakeRange(0, 0)];
+  [textObject scrollRangeToVisible: NSMakeRange(0, 0)];
 
   return textObject;
 }
@@ -1903,6 +1904,7 @@ static NSColor	*shadowCol;
 
   [textObject sizeToFit];
   [textObject setSelectedRange: NSMakeRange (selStart, selLength)];
+  [textObject scrollRangeToVisible: NSMakeRange(selStart, selLength)];
   [textObject setDelegate: anObject];
   [[controlView window] makeFirstResponder: textObject];
 }

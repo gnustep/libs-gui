@@ -691,17 +691,20 @@ added to the selection (1,3).
 	  [self setSelectedRange: NSMakeRange(anchor, cindex - anchor)
 			affinity: NSSelectionAffinityDownstream
 		  stillSelecting: NO];
+	  [self scrollRangeToVisible: NSMakeRange(anchor, cindex - anchor)];
 	}
       else
  	{
 	  [self setSelectedRange: NSMakeRange(cindex, anchor - cindex)
 			affinity: NSSelectionAffinityUpstream
 		  stillSelecting: NO];
+	  [self scrollRangeToVisible: NSMakeRange(cindex, anchor - cindex)];
 	}
     }
   else
     {
       [self setSelectedRange: NSMakeRange(cindex, 0)];
+      [self scrollRangeToVisible: NSMakeRange(cindex, 0)];
     }
 }
 

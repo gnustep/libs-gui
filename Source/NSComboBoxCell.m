@@ -720,8 +720,9 @@ static GSComboWindow *gsWindow = nil;
       
       if  (textObject != nil)
         {
-          [textObject setSelectedRange: 
-	    NSMakeRange(0, [[textObject string] length])];	
+	  NSRange selectionRange = NSMakeRange(0, [[textObject string] length]);
+	  [textObject setSelectedRange: selectionRange];
+	  [textObject scrollRangeToVisible: selectionRange];
 	}	
       
       [cv sendAction: [_cell action] to: [_cell target]];
@@ -1798,6 +1799,7 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
 	      location = myStringLength;
               length = [more length] - location;
 	      [textObject setSelectedRange: NSMakeRange(location, length)];
+	      [textObject scrollRangeToVisible: NSMakeRange(location, length)];
 	    }
         }
     }

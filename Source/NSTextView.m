@@ -2215,6 +2215,7 @@ After each user-induced change, this method should be called.
 */
 -(void) didChangeText
 {
+  [self scrollRangeToVisible: [self selectedRange]];
   [notificationCenter postNotificationName: NSTextDidChangeNotification
     object: _notifObject];
 
@@ -2940,21 +2941,6 @@ afterString in order over charRange.
     {
       NSRange overlap;
 
-      if (stillSelectingFlag == NO)
-	{
-	  /*
-	  TODO: should we really do this here?
-
-	  Make the insertion point (or the moving endpoint of the selection)
-	  visible.
-	  */
-	  if (affinity == NSSelectionAffinityUpstream)
-	    [self scrollRangeToVisible: charRange];
-	  else
-	    [self scrollRangeToVisible:
-	      NSMakeRange(charRange.location + charRange.length, 0)];
-	}
-
       /*
       If this call is caused by text being deleted, oldDisplayedRange might
       extend outside the current text. We clamp it to the current length here
@@ -3609,6 +3595,7 @@ shouldRemoveMarker: (NSRulerMarker *)marker
   if (errorRange.length)
     {
       [self setSelectedRange: errorRange];
+      [self scrollRangeToVisible: errorRange];
 
       misspelledWord = [[self string] substringFromRange: errorRange];
       [sp updateSpellingPanelWithMisspelledWord: misspelledWord];
