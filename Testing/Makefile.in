@@ -36,7 +36,7 @@ DYNAMIC_BUNDLER_LINKER=@DYNAMIC_BUNDLER_LINKER@
 DYNAMIC_LDFLAGS=@DYNAMIC_LDFLAGS@
 DYNAMIC_CFLAGS=@DYNAMIC_CFLAGS@
 DEFS = @DEFS@
-LIBS = -L.. -lobj1 -lobj2 -lobjc -lAppKit @LIBS@ -lm -lieee
+LIBS = -L../Source -lgnustep-gui @LIBS@ -lm
 EXEEXT = 
 OEXT = .o
 LIBEXT = .a
@@ -55,7 +55,8 @@ ALL_LDFLAGS = $(LDFLAGS) $(LIBS)
 	$(CC) -c $(ALL_CPPFLAGS) $(DEFS) $(ALL_CFLAGS) $< -o $*$(OEXT)
 
 SRCS = \
-nsarchiver.m
+nsarchiver.m \
+testpb.m
 
 HDRS =
 
@@ -90,9 +91,13 @@ all: $(EXCS)
 
 LINK_CMD = $(CC) $(ALL_CFLAGS) $@$(OEXT) -o $@ $(ALL_LDFLAGS)
 
-nsarchiver: nsarchiver$(OEXT) ../libAppKit$(LIBEXT)
+diningPhilosophers: diningPhilosophers$(OEXT) ../libgnustep-gui$(LIBEXT)
 	$(LINK_CMD)
-diningPhilosophers: diningPhilosophers$(OEXT) ../libAppKit$(LIBEXT)
+
+nsarchiver: nsarchiver$(OEXT) ../Source/libgnustep-gui$(LIBEXT)
+	$(LINK_CMD)
+
+testpb: testpb$(OEXT) ../Source/libgnustep-gui$(LIBEXT)
 	$(LINK_CMD)
 
 install:
