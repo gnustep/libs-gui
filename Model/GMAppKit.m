@@ -1489,6 +1489,38 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 @end
 
+@implementation NSSliderCell (GMArchiverMethods)
+
+- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+{
+  [super encodeWithModelArchiver:archiver];
+
+  [archiver encodeFloat:[self knobThickness] withName:@"knobThickness"];
+  [archiver encodeObject:[self image] withName:@"image"];
+  [archiver encodeDouble:[self maxValue] withName:@"maxValue"];
+  [archiver encodeDouble:[self minValue] withName:@"minValue"];
+
+  // title, color, and font info is encoded by the title cell
+  [archiver encodeObject:[self titleCell] withName:@"titleCell"];
+}
+
+- (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
+{
+  [super initWithModelUnarchiver:unarchiver];
+
+  [self setKnobThickness:[unarchiver decodeFloatWithName:@"knobThickness"]];
+  [self setImage:[unarchiver decodeObjectWithName:@"image"]];
+  [self setMaxValue:[unarchiver decodeDoubleWithName:@"maxValue"]];
+  [self setMinValue:[unarchiver decodeDoubleWithName:@"minValue"]];
+
+  // title, color, and font info is encoded by the title cell
+  [self setTitleCell:[unarchiver decodeObjectWithName:@"titleCell"]];
+
+  return self;
+}
+
+@end /* NSSliderCell (GMArchiverMethods) */
+
 @implementation NSTextFieldCell (GMArchiverMethods)
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
