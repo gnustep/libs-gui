@@ -32,6 +32,7 @@
 
 #include "AppKit/NSBitmapImageRep.h"
 
+#include "NSBitmapImageRep+GIF.h"
 #include "NSBitmapImageRep+JPEG.h"
 #include "NSBitmapImageRep+PNG.h"
 #include "NSBitmapImageRep+PNM.h"
@@ -108,6 +109,9 @@ static BOOL supports_lzw_compression = NO;
   if ([self _bitmapIsJPEG: data])
     return YES;
 
+  if ([self _bitmapIsGIF: data])
+    return YES;
+
   image = NSTiffOpenDataRead ((char *)[data bytes], [data length]);
 
   if (image != NULL)
@@ -134,6 +138,9 @@ static BOOL supports_lzw_compression = NO;
       types = [[NSMutableArray alloc] initWithObjects:
 	@"tiff", @"tif",
 	@"pnm", @"ppm",
+#if HAVE_LIBUNGIF
+	@"gif",
+#endif
 #if HAVE_LIBJPEG
 	@"jpeg", @"jpg",
 #endif
@@ -235,6 +242,20 @@ static BOOL supports_lzw_compression = NO;
       return a;
     }
 
+  if ([self _bitmapIsGIF: imageData])
+    {
+      NSBitmapImageRep *rep;
+      NSArray *a;
+
+      rep=[[self alloc] _initBitmapFromGIF: imageData
+			      errorMessage: NULL];
+      if (!rep)
+        return [NSArray array];
+      a = [NSArray arrayWithObject: rep];
+      DESTROY(rep);
+      return a;
+    }
+
   image = NSTiffOpenDataRead((char *)[imageData bytes], [imageData length]);
   if (image == NULL)
     {
@@ -281,6 +302,10 @@ static BOOL supports_lzw_compression = NO;
   if ([isa _bitmapIsJPEG: imageData])
     return [self _initBitmapFromJPEG: imageData
 			errorMessage: NULL];
+
+  if ([isa _bitmapIsGIF: imageData])
+    return [self _initBitmapFromGIF: imageData
+		       errorMessage: NULL];
 
 
   image = NSTiffOpenDataRead((char *)[imageData bytes], [imageData length]);

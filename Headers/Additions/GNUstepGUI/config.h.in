@@ -24,6 +24,9 @@
 /* Define to 1 if you have the `tiff' library (-ltiff). */
 #undef HAVE_LIBTIFF
 
+/* Define to 1 if you have the `ungif' library (-lungif). */
+#undef HAVE_LIBUNGIF
+
 /* Define to 1 if you have the `z' library (-lz). */
 #undef HAVE_LIBZ
 

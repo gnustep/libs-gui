@@ -1,3 +1,19 @@
+2004-01-08 19:41  Alexander Malmberg <alexander@malmberg.org>
+
+	* configure.ac: Add a check for libungif.
+	* configure, Headers/Additions/GNUstepGUI/config.h.in: Regenerate.
+
+	* Source/GNUmakefile: Add NSBitmapImageRep+GIF.m.
+
+	* Source/NSBitmapImageRep+GIF.m, Source/NSBitmapImageRep+GIF.h:
+	New files with the GIF image loader.
+
+	* Source/NSBitmapImageRep.m (+canInitWithData:)	Check if the GIF
+	loader can handle the data.
+	(+imageUnfilteredFileTypes): Add ".gif".
+	(+imageRepsWithData:, -initWithData:): Use the GIF loader to load
+	GIF images.
+
 2004-01-08  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSActionCell.m (-initWithCoder:) Don't decode the control
