@@ -37,7 +37,7 @@
 //
 // class variables
 //
-id gnustep_gui_nsbutton_class = nil;
+id _nsbuttonCellClass = nil;
 
 //
 // NSButton implementation
@@ -61,12 +61,12 @@ id gnustep_gui_nsbutton_class = nil;
 //
 + (Class)cellClass
 {
-  return gnustep_gui_nsbutton_class;
+  return _nsbuttonCellClass;
 }
 
 + (void)setCellClass:(Class)classId
 {
-  gnustep_gui_nsbutton_class = classId;
+  _nsbuttonCellClass = classId;
 }
 
 //
@@ -85,7 +85,7 @@ id gnustep_gui_nsbutton_class = nil;
   [super initWithFrame:frameRect];
 
   // set our cell
-  [self setCell:[[gnustep_gui_nsbutton_class new] autorelease]];
+  [self setCell:[[_nsbuttonCellClass new] autorelease]];
 
   return self;
 }
@@ -288,7 +288,7 @@ id gnustep_gui_nsbutton_class = nil;
 //
 - (BOOL)acceptsFirstResponder
 {														
-	return [cell acceptsFirstResponder] && ([self keyEquivalent] != nil);				
+	return [cell acceptsFirstResponder] || ([self keyEquivalent] != nil);				
 }														
 
 - (void) keyDown: (NSEvent*)theEvent
