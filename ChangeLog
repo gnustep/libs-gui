@@ -1,3 +1,11 @@
+2004-06-25  Serg Stoyan <stoyan255@ukr.net>
+
+        * Source/NSBrowser.m:
+	(setPath:): Deselect all cells in first column before setting
+	absolute path if first column's selection changed.
+	(doClick:): Fix problem with deselection of already selected item.
+	Update scroller after setting selection.
+
 2004-06-24  Fred Kiefer <FredKiefer@gmx.de>
 
         * Source/NSTableView.m: (-noteNumberOfRowsChanged) corrected off
