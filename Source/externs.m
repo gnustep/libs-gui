@@ -305,6 +305,12 @@ NSString *NSTextDidBeginEditingNotification =
 NSString *NSTextDidEndEditingNotification = @"NSTextDidEndEditingNotification";
 NSString *NSTextDidChangeNotification = @"NSTextDidChangeNotification";
 
+// NSTextStorage Notifications
+NSString *NSTextStorageWillProcessEditingNotification =
+  @"NSTextStorageWillProcessEditingNotification";
+NSString *NSTextStorageDidProcessEditingNotification =
+  @"NSTextStorageDidProcessEditingNotification";
+
 // NSTextView notifications
 NSString *NSTextViewDidChangeSelectionNotification =
 @"NSTextViewDidChangeSelectionNotification";
