@@ -377,6 +377,14 @@ setNSFont(NSString* key, NSFont* font)
   [super dealloc];
 }
 
+/* FIXME - appropriate description */
+/*
+- (NSString *) description
+{
+  return [self fontName];
+}
+*/
+
 - (BOOL) isEqual: (id)anObject
 {
   int i;
@@ -473,7 +481,7 @@ setNSFont(NSString* key, NSFont* font)
   return [fontInfo widthOfString: string];
 }
 
-/* The following methods have to implemented by backends*/
+/* The following methods have to be implemented by backends */
 
 //
 // Manipulating Glyphs
@@ -490,17 +498,17 @@ setNSFont(NSString* key, NSFont* font)
 
 - (BOOL) glyphIsEncoded: (NSGlyph)aGlyph
 {
-  return [fontInfo glyphIsEncoded: aGlyph ];
+  return [fontInfo glyphIsEncoded: aGlyph];
 }
 
-- (NSMultibyteGlyphPacking)glyphPacking
+- (NSMultibyteGlyphPacking) glyphPacking
 {
   return [fontInfo glyphPacking];
 }
 
 - (NSGlyph) glyphWithName: (NSString*)glyphName
 {
-  return [fontInfo glyphWithName: glyphName ];
+  return [fontInfo glyphWithName: glyphName];
 }
 
 - (NSPoint) positionOfGlyph: (NSGlyph)curGlyph
@@ -511,49 +519,49 @@ setNSFont(NSString* key, NSFont* font)
                          isNominal: nominal];
 }
 
-- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
-              forCharacter:(unichar)aChar 
-            struckOverRect:(NSRect)aRect
+- (NSPoint) positionOfGlyph:(NSGlyph)aGlyph 
+	       forCharacter:(unichar)aChar 
+	     struckOverRect:(NSRect)aRect
 {
   return [fontInfo positionOfGlyph: aGlyph 
 		   forCharacter: aChar 
 		   struckOverRect: aRect];
 }
 
-- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
-           struckOverGlyph:(NSGlyph)baseGlyph 
-              metricsExist:(BOOL *)flag
+- (NSPoint) positionOfGlyph:(NSGlyph)aGlyph 
+	    struckOverGlyph:(NSGlyph)baseGlyph 
+	       metricsExist:(BOOL *)flag
 {
   return [fontInfo positionOfGlyph: aGlyph 
 		   struckOverGlyph: baseGlyph 
 		   metricsExist: flag];
 }
 
-- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
-            struckOverRect:(NSRect)aRect 
-              metricsExist:(BOOL *)flag
+- (NSPoint) positionOfGlyph:(NSGlyph)aGlyph 
+	     struckOverRect:(NSRect)aRect 
+	       metricsExist:(BOOL *)flag
 {
   return [fontInfo positionOfGlyph: aGlyph 
 		   struckOverRect: aRect 
 		   metricsExist: flag];
 }
 
-- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
-              withRelation:(NSGlyphRelation)relation 
-               toBaseGlyph:(NSGlyph)baseGlyph
-          totalAdvancement:(NSSize *)offset 
-              metricsExist:(BOOL *)flag
+- (NSPoint) positionOfGlyph:(NSGlyph)aGlyph 
+	       withRelation:(NSGlyphRelation)relation 
+		toBaseGlyph:(NSGlyph)baseGlyph
+	   totalAdvancement:(NSSize *)offset 
+	       metricsExist:(BOOL *)flag
 {
   return [fontInfo positionOfGlyph: aGlyph 
-              withRelation: relation 
-               toBaseGlyph: baseGlyph
-          totalAdvancement: offset 
-              metricsExist: flag];
+		   withRelation: relation 
+		   toBaseGlyph: baseGlyph
+		   totalAdvancement: offset 
+		   metricsExist: flag];
 }
 
-- (int)positionsForCompositeSequence:(NSGlyph *)glyphs 
-                      numberOfGlyphs:(int)numGlyphs 
-                          pointArray:(NSPoint *)points
+- (int) positionsForCompositeSequence: (NSGlyph *)glyphs 
+		       numberOfGlyphs: (int)numGlyphs 
+			   pointArray: (NSPoint *)points
 {
   int i;
   NSGlyph base = glyphs[0];
@@ -575,7 +583,7 @@ setNSFont(NSString* key, NSFont* font)
   return i;
 }
 
-- (NSStringEncoding)mostCompatibleStringEncoding
+- (NSStringEncoding) mostCompatibleStringEncoding
 {
   return [fontInfo mostCompatibleStringEncoding];
 }
@@ -591,7 +599,7 @@ setNSFont(NSString* key, NSFont* font)
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [aCoder encodeObject: fontName];
-  [aCoder encodeArrayOfObjCType: @encode(float) count: 6 at: matrix];
+  [aCoder encodeArrayOfObjCType: @encode(float)  count: 6  at: matrix];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -600,8 +608,8 @@ setNSFont(NSString* key, NSFont* font)
   float	fontMatrix[6];
 
   name = [aDecoder decodeObject];
-  [aDecoder decodeArrayOfObjCType: @encode(float) count: 6 at: fontMatrix];
-  return [self initWithName: name matrix: fontMatrix];
+  [aDecoder decodeArrayOfObjCType: @encode(float)  count: 6  at: fontMatrix];
+  return [self initWithName: name  matrix: fontMatrix];
 }
 
 @end /* NSFont */
