@@ -1220,11 +1220,8 @@ static float scrollerWidth;
       
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasCornerView];
 
-      /* This recreates all the info about headerView, cornerView, etc */
-      /*
-      [self setDocumentView: [_contentView documentView]];
       [self tile];
-      */
+      
       NSDebugLLog(@"NSScrollView", @"NSScrollView: finish decoding\n");
       
       return self;
