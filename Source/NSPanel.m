@@ -468,7 +468,7 @@ makeScrollViewWithRect(NSRect rect)
   NSScrollView	*scroll = [[NSScrollView alloc]initWithFrame: rect];
 
   [scroll setBorderType: NSLineBorder];
-  [scroll setBackgroundColor: [NSColor lightGrayColor]];
+  [scroll setBackgroundColor: [NSColor controlBackgroundColor]];
   [scroll setHasHorizontalScroller: YES];
   [scroll setHasVerticalScroller: YES];
   [scroll setScrollsDynamically: YES];
@@ -596,7 +596,7 @@ setControl(NSView* content, id control, NSString *title)
   */
   [messageField setBezeled: NO];
   [messageField setDrawsBackground: YES];
-  [messageField setBackgroundColor: [NSColor lightGrayColor]];
+  [messageField setBackgroundColor: [NSColor controlBackgroundColor]];
   [messageField setAlignment: NSCenterTextAlignment];
   [messageField setStringValue: @""];
   [messageField setFont: MessageFont];
