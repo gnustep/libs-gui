@@ -833,7 +833,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   if (!aView)
     aView = [window contentView];
-  if (aView == self)
+  if (aView == self || aView == nil)
     return aPoint;
   NSAssert(window == [aView window], NSInvalidArgumentException);
 
@@ -856,7 +856,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   if (!aView)
     aView = [window contentView];
-  if (aView == self)
+  if (aView == self || aView == nil)
     return aPoint;
   NSAssert(window == [aView window], NSInvalidArgumentException);
 
@@ -879,7 +879,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   if (!aView)
     aView = [window contentView];
-  if (aView == self)
+  if (aView == self || aView == nil)
     return aRect;
   NSAssert(window == [aView window], NSInvalidArgumentException);
 
@@ -907,7 +907,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   if (!aView)
     aView = [window contentView];
-  if (aView == self)
+  if (aView == self || aView == nil)
     return aRect;
   NSAssert(window == [aView window], NSInvalidArgumentException);
 
@@ -935,7 +935,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   if (!aView)
     aView = [window contentView];
-  if (aView == self)
+  if (aView == self || aView == nil)
     return aSize;
   NSAssert(window == [aView window], NSInvalidArgumentException);
 
@@ -958,7 +958,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   if (!aView)
     aView = [window contentView];
-  if (aView == self)
+  if (aView == self || aView == nil)
     return aSize;
   NSAssert(window == [aView window], NSInvalidArgumentException);
 
@@ -1754,6 +1754,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 {
   GSTrackingRect	*m;
 
+  if (window)
   aRect = [self convertRect: aRect toView: nil];
   m = [rectClass allocWithZone: NSDefaultMallocZone()];
   m = [m initWithRect: aRect
