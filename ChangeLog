@@ -1,3 +1,8 @@
+2004-10-05  Adam Fedor  <fedor@gnu.org>
+
+	* Source/GNUmakefile.postamble (libgnustep-gui.def): Search for both
+	T and R symbols to work with multiple mingw/cygwin flavors.
+
 2004-10-01  Adam Fedor  <fedor@gnu.org>
 
 	* Documentation/ReleaseNotes.gsdoc: Format fixes.
