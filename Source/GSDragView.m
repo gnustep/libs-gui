@@ -234,6 +234,7 @@ static	GSDragView *sharedDragView = nil;
 	 slideBack: (BOOL)slideFlag
 {
   NSPoint	eventPoint;
+
   ASSIGN(dragPasteboard, pboard);
   ASSIGN(dragSource, sourceObject);
   dragSequence = [event timestamp];
@@ -274,7 +275,7 @@ static	GSDragView *sharedDragView = nil;
    * Convert point from coordinates of image to coordinates of mouse
    * cursor for internal use.
    */
-  point.y += offset.height;
+  point.x += offset.width;
   point.y += offset.height;
   [self _slideDraggedImageTo: point 
 	       numberOfSteps: SLIDE_NR_OF_STEPS 

@@ -104,7 +104,7 @@
   NSMutableDictionary	*cursors;
 }
 
-+ (GSDragView*) sharedDragView;
++ (id) sharedDragView;
 - (void) dragImage: (NSImage*)anImage
 		at: (NSPoint)screenLocation
 	    offset: (NSSize)initialOffset
@@ -112,6 +112,6 @@
 	pasteboard: (NSPasteboard*)pboard
 	    source: (id)sourceObject
          slideBack: (BOOL)slideFlag;
-- (void) postDragEvent: (NSEvent *)theEvent;
+- (void) postDragEvent: (NSEvent*)theEvent;
 
 @end
