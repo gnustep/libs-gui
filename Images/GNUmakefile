@@ -43,6 +43,7 @@ common_2DCheckMark.tiff \
 common_Close.tiff \
 common_CloseH.tiff \
 common_CloseBroken.tiff \
+common_CloseBrokenH.tiff \
 common_ColorSwatch.tiff \
 common_2DDash.tiff \
 common_Home.tiff \
@@ -80,8 +81,6 @@ common_Nibble.tiff \
 common_Dimple.tiff \
 common_ret.tiff \
 common_retH.tiff \
-common_WMClose.tiff \
-common_WMCloseBroken.tiff \
 common_Unknown.tiff \
 common_UnknownApplication.tiff \
 common_UnknownTool.tiff \
