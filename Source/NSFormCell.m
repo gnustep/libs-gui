@@ -203,11 +203,11 @@ static NSColor	*shadowCol;
   NSSize titleSize = [_titleCell cellSize];
   NSSize textSize;
   
-  if (_contents)
+  if ((_contents != nil) && ([_contents isEqualToString: @""] == NO))
     textSize = [super cellSize];
   else
     {
-      ASSIGN (_contents, @"minimum");
+      ASSIGN (_contents, @"Minimum");
       textSize = [super cellSize];
       RELEASE (_contents);
       _contents = nil;
