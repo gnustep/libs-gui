@@ -49,6 +49,78 @@
 
 #define		SANITY_CHECKS	0
 
+#define	GSI_MAP_RETAIN_KEY(X)	
+#define	GSI_MAP_RELEASE_KEY(X)	
+#define	GSI_MAP_RETAIN_VAL(X)	
+#define	GSI_MAP_RELEASE_VAL(X)	
+#define	GSI_MAP_EQUAL(X,Y)	[(X).obj isEqualToDictionary: (Y).obj]
+#define GSI_MAP_KTYPES	GSUNION_OBJ
+#define GSI_MAP_VTYPES	GSUNION_INT
+
+#include <base/GSIMap.h>
+
+static NSLock		*attrLock = nil;
+static GSIMapTable_t	attrMap;
+static SEL		lockSel;
+static SEL		unlockSel;
+static IMP		lockImp;
+static IMP		unlockImp;
+
+#define	ALOCK()	if (attrLock != nil) (*lockImp)(attrLock, lockSel)
+#define	AUNLOCK() if (attrLock != nil) (*unlockImp)(attrLock, unlockSel)
+
+/*
+ * Add a dictionary to the cache - if it was not already there, return
+ * the copy added to the cache, if it was, count it and return retained
+ * object that was there.
+ */
+static NSDictionary*
+cacheAttributes(NSDictionary *attrs)
+{
+  GSIMapNode	node;
+
+  ALOCK();
+  node = GSIMapNodeForKey(&attrMap, (GSIMapKey)attrs);
+  if (node == 0)
+    {
+      attrs = [attrs copy];
+      GSIMapAddPair(&attrMap, (GSIMapKey)attrs, (GSIMapVal)(unsigned)1);
+    }
+  else
+    {
+      node->value.uint++;
+      attrs = RETAIN(node->key.obj);
+    }
+  AUNLOCK();
+  return attrs;
+}
+
+static void
+unCacheAttributes(NSDictionary *attrs)
+{
+  GSIMapBucket       bucket;
+
+  ALOCK();
+  bucket = GSIMapBucketForKey(&attrMap, (GSIMapKey)attrs);
+  if (bucket != 0)
+    {
+      GSIMapNode     node;
+
+      node = GSIMapNodeForKeyInBucket(bucket, (GSIMapKey)attrs);
+      if (node != 0)
+	{
+	  if (--node->value.uint == 0)
+	    {
+	      GSIMapRemoveNodeFromMap(&attrMap, bucket, node);
+	      GSIMapFreeNode(&attrMap, node);
+	    }
+	}
+    }
+  AUNLOCK();
+}
+
+
+
 @interface GSTextStorage : NSTextStorage
 {
   NSMutableString       *textChars;
@@ -56,7 +128,7 @@
 }
 @end
 
-@interface	GSTextInfo : NSObject
+@interface	GSTextInfo : NSObject <GCFinalization>
 {
 @public
   unsigned	loc;
@@ -69,18 +141,28 @@
 
 @implementation	GSTextInfo
 
+/*
+ * Called to record attributes at a particular location - the given attributes
+ * dictionary must have been produced by 'cacheAttributes()' so that it is
+ * already copied/retained and this method doesn't need to do it.
+ */
 + (GSTextInfo*) newWithZone: (NSZone*)z value: (NSDictionary*)a at: (unsigned)l;
 {
   GSTextInfo	*info = (GSTextInfo*)NSAllocateObject(self, 0, z);
 
   info->loc = l;
-  info->attrs = [a copyWithZone: z];
+  info->attrs = a;
   return info;
+}
+
+- (Class) classForPortCoder
+{
+  return [self class];
 }
 
 - (void) dealloc
 {
-  RELEASE(attrs);
+  [self gcFinalize];
   NSDeallocateObject(self);
 }
 
@@ -90,26 +172,30 @@
     loc, attrs];
 }
 
-- (Class) classForPortCoder
-{
-  return [self class];
-}
-
-- (id) replacementObjectForPortCoder: (NSPortCoder*)aCoder
-{
-  return self;
-}
-
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [aCoder encodeValueOfObjCType: @encode(unsigned) at: &loc];
   [aCoder encodeValueOfObjCType: @encode(id) at: &attrs];
 }
 
+- (void) gcFinalize
+{
+  unCacheAttributes(attrs);
+  DESTROY(attrs);
+}
+
 - (id) initWithCoder: (NSCoder*)aCoder
 {
+  NSDictionary	*a;
+
   [aCoder decodeValueOfObjCType: @encode(unsigned) at: &loc];
-  [aCoder decodeValueOfObjCType: @encode(id) at: &attrs];
+  a = [aCoder decodeObject];
+  attrs = cacheAttributes(a);
+  return self;
+}
+
+- (id) replacementObjectForPortCoder: (NSPortCoder*)aCoder
+{
   return self;
 }
 
@@ -150,6 +236,8 @@ static void _setup()
   if (infCls == 0)
     {
       NSMutableArray	*a;
+
+      GSIMapInitWithZoneAndCapacity(&attrMap, NSDefaultMallocZone(), 32);
 
       infSel = @selector(newWithZone:value:at:);
       addSel = @selector(addObject:);
@@ -194,7 +282,8 @@ _setAttributesFrom(
 
   attr = [attributedString attributesAtIndex: aRange.location
 			      effectiveRange: &range];
-  info = [GSTextInfo newWithZone: z value: attr at: 0];
+  attr = cacheAttributes(attr);
+  info = NEWINFO(z, attr, 0);
   ADDOBJECT(info);
   RELEASE(info);
 
@@ -202,7 +291,8 @@ _setAttributesFrom(
     {
       attr = [attributedString attributesAtIndex: loc
 				  effectiveRange: &range];
-      info = [GSTextInfo newWithZone: z value: attr at: loc - aRange.location];
+      attr = cacheAttributes(attr);
+      info = NEWINFO(z, attr, loc - aRange.location);
       ADDOBJECT(info);
       RELEASE(info);
     }
@@ -321,9 +411,34 @@ _attributesAtIndexEffectiveRange(
 #define	SANITY()	
 #endif
 
+/*
+ * If we are multi-threaded, we must guard access to the uniquing set.
+ */
++ (void) _becomeThreaded: (id)notification
+{
+  attrLock = [NSLock new];
+  lockSel = @selector(lock);
+  unlockSel = @selector(unlock);
+  lockImp = [attrLock methodForSelector: lockSel];
+  unlockImp = [attrLock methodForSelector: unlockSel];
+}
+
 + (void) initialize
 {
   _setup();
+
+  if ([NSThread isMultiThreaded])
+    {
+      [self _becomeThreaded: nil];
+    }
+  else
+    {
+      [[NSNotificationCenter defaultCenter]
+	addObserver: self
+	   selector: @selector(_becomeThreaded:)
+	       name: NSWillBecomeMultiThreadedNotification
+	     object: nil];
+    }
 }
 
 - (Class) classForPortCoder
@@ -369,6 +484,11 @@ _attributesAtIndexEffectiveRange(
     {
       GSTextInfo	*info;
 
+      if (attributes == nil)
+        {
+          attributes = [NSDictionary dictionary];
+        }
+      attributes = cacheAttributes(attributes);
       info = NEWINFO(z, attributes, 0);
       ADDOBJECT(info);
       RELEASE(info);
@@ -423,6 +543,7 @@ _attributesAtIndexEffectiveRange(
     {
       attributes = [NSDictionary dictionary];
     }
+  attributes = cacheAttributes(attributes);
 SANITY();
   tmpLength = [textChars length];
   GS_RANGE_CHECK(range, tmpLength);
@@ -436,7 +557,25 @@ SANITY();
        */
       attrs = _attributesAtIndexEffectiveRange(
 	afterRangeLoc, &effectiveRange, tmpLength, infoArray, &arrayIndex);
-      if (effectiveRange.location > beginRangeLoc)
+      if (attrs == attributes)
+	{
+	  /*
+	   * The located range has the same attributes as us - so we can
+	   * extend our range to include it.
+	   */
+	  if (effectiveRange.location < beginRangeLoc)
+	    {
+	      range.length += beginRangeLoc - effectiveRange.location;
+	      range.location = effectiveRange.location;
+	      beginRangeLoc = range.location;
+	    }
+	  if (NSMaxRange(effectiveRange) > afterRangeLoc)
+	    {
+	      range.length = NSMaxRange(effectiveRange) - range.location;
+	      afterRangeLoc = NSMaxRange(range);
+	    }
+	}
+      else if (effectiveRange.location > beginRangeLoc)
 	{
 	  /*
 	   * The located range also starts at or after our range.
@@ -445,13 +584,13 @@ SANITY();
 	  info->loc = afterRangeLoc;
 	  arrayIndex--;
 	}
-      else
+      else if (effectiveRange.location < beginRangeLoc)
 	{
 	  /*
 	   * The located range starts before our range.
 	   * Create a subrange to go from our end to the end of the old range.
 	   */
-	  info = NEWINFO(z, attrs, afterRangeLoc);
+	  info = NEWINFO(z, cacheAttributes(attrs), afterRangeLoc);
 	  arrayIndex++;
 	  INSOBJECT(info, arrayIndex);
 	  RELEASE(info);
@@ -475,11 +614,17 @@ SANITY();
       arrayIndex--;
     }
 
+  /*
+   * Use the location/attribute info in the current slot if possible,
+   * otherwise, add a new slot and use that.
+   */
   info = OBJECTAT(arrayIndex);
-  if (info->loc >= beginRangeLoc)
+  if (info->loc >= beginRangeLoc || info->attrs == attributes)
     {
       info->loc = beginRangeLoc;
-      ASSIGNCOPY(info->attrs, attributes);
+      unCacheAttributes(info->attrs);
+      RELEASE(info->attrs);
+      info->attrs = attributes;
     }
   else
     {
@@ -548,14 +693,7 @@ SANITY();
     tmpLength, infoArray, &arrayIndex);
 
   arrayIndex++;
-  if (NSMaxRange(effectiveRange) > NSMaxRange(range))
-    {
-      info = NEWINFO(z, attrs, NSMaxRange(range));
-      INSOBJECT(info, arrayIndex);
-      arraySize++;
-SANITY();
-    }
-  else if (NSMaxRange(effectiveRange) < NSMaxRange(range))
+  if (NSMaxRange(effectiveRange) < NSMaxRange(range))
     {
       /*
        * Remove all range info for ranges enclosed within the one
