@@ -71,14 +71,14 @@ static Class		fontPanelClass = Nil;
 /*
  * Managing the FontManager
  */
-+ (void) setFontManagerFactory: (Class)class
++ (void) setFontManagerFactory: (Class)aClass
 {
-  fontManagerClass = class;
+  fontManagerClass = aClass;
 }
 
-+ (void) setFontPanelFactory: (Class)class
++ (void) setFontPanelFactory: (Class)aClass
 {
-  fontPanelClass = class;
+  fontPanelClass = aClass;
 }
 
 + (NSFontManager*) sharedFontManager

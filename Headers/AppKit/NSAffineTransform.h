@@ -80,7 +80,7 @@ typedef	struct {
 
 - (BOOL) isRotated;
 
-- (void) boundingRectFor: (NSRect)rect result: (NSRect*)new;
+- (void) boundingRectFor: (NSRect)rect result: (NSRect*)newRect;
 
 /* Returns anotherMatrix * self */
 - (void) concatenateWith: (NSAffineTransform*)anotherMatrix;

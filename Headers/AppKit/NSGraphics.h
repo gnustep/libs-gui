@@ -176,7 +176,7 @@ NSDrawBitmap(NSRect rect,
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
   (ctxt->methods->NSDrawBitmap___________)
-    (ctxt, @selector(NSDrawBitmap:::::::::::),  rect,
+    (ctxt, @selector(NSDrawBitmap: : : : : : : : : : :),  rect,
      pixelsWide,
      pixelsHigh,
      bitsPerSample,

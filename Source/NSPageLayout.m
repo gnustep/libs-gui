@@ -321,7 +321,7 @@ enum {
 /** This method has been depreciated. It doesn't do anything useful.
 */
 - (void)convertOldFactor:(float *)old
-               newFactor:(float *)new
+               newFactor:(float *)newFactor
 {
   NSLog(@"[NSPageLayout -convertOldFactor:newFactor:] method depreciated");
 }

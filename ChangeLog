@@ -1,3 +1,13 @@
+2005-03-19  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/AppKit/DPSOperators.h, Headers/AppKit/NSGraphics.h:
+	Modify selectors to play nice with C++ compiler.	
+	* Headers/AppKit/NSAffineTransform.h, Headers/AppKit/NSFontManager.h,
+	Headers/AppKit/NSPageLayout.h: Modify arg name for same purpose.
+	* Source/NSAffineTransform.m, Source/NSFontManager.m,
+	Source/NSPageLayout.m: Modify to match header. (Patch from 
+	Francis Franklin, with some modifications).
+
 2005-03-14  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSMatrix.m:

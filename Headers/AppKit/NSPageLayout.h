@@ -97,7 +97,7 @@ enum {
 // Updating the Panel's Display 
 //
 - (void)convertOldFactor:(float *)old
-               newFactor:(float *)new;
+               newFactor:(float *)newFactor;
 - (void)pickedButton:(id)sender;
 - (void)pickedOrientation:(id)sender;
 - (void)pickedPaperSize:(id)sender;

@@ -481,7 +481,7 @@ static NSAffineTransformStruct identityTransform = {
     }
 }
 
-- (void) boundingRectFor: (NSRect)rect result: (NSRect*)new
+- (void) boundingRectFor: (NSRect)rect result: (NSRect*)newRect
 {
   /* Shortcuts of the usual rect values */
   float x = rect.origin.x;
@@ -521,10 +521,10 @@ static NSAffineTransformStruct identityTransform = {
 	max_y = yc[i];
     }
 
-  new->origin.x = min_x;
-  new->origin.y = min_y;
-  new->size.width = max_x -min_x;
-  new->size.height = max_y -min_y;
+  newRect->origin.x = min_x;
+  newRect->origin.y = min_y;
+  newRect->size.width = max_x -min_x;
+  newRect->size.height = max_y -min_y;
 }
 
 - (NSPoint) pointInMatrixSpace: (NSPoint)point

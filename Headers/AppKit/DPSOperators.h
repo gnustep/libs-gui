@@ -477,7 +477,7 @@ static inline void
 DPScurrentcmykcolor(GSCTXT *ctxt, float* c, float* m, float* y, float* k)
 {
   (ctxt->methods->DPScurrentcmykcolor____)
-    (ctxt, @selector(DPScurrentcmykcolor::::), c, m, y, k);
+    (ctxt, @selector(DPScurrentcmykcolor: : : : :), c, m, y, k);
 }
 
 static inline void
@@ -491,14 +491,14 @@ static inline void
 DPScurrenthsbcolor(GSCTXT *ctxt, float* h, float* s, float* b)
 {
   (ctxt->methods->DPScurrenthsbcolor___)
-    (ctxt, @selector(DPScurrenthsbcolor:::), h, s, b);
+    (ctxt, @selector(DPScurrenthsbcolor: : :), h, s, b);
 }
 
 static inline void
 DPScurrentrgbcolor(GSCTXT *ctxt, float* r, float* g, float* b)
 {
   (ctxt->methods->DPScurrentrgbcolor___)
-    (ctxt, @selector(DPScurrentrgbcolor:::), r, g, b);
+    (ctxt, @selector(DPScurrentrgbcolor: : :), r, g, b);
 }
 
 static inline void
@@ -512,7 +512,7 @@ static inline void
 DPSsetcmykcolor(GSCTXT *ctxt, float c, float m, float y, float k)
 {
   (ctxt->methods->DPSsetcmykcolor____)
-    (ctxt, @selector(DPSsetcmykcolor::::), c, m, y, k);
+    (ctxt, @selector(DPSsetcmykcolor: : : :), c, m, y, k);
 }
 
 static inline void
@@ -526,14 +526,14 @@ static inline void
 DPSsethsbcolor(GSCTXT *ctxt, float h, float s, float b)
 {
   (ctxt->methods->DPSsethsbcolor___)
-    (ctxt, @selector(DPSsethsbcolor:::), h, s, b);
+    (ctxt, @selector(DPSsethsbcolor: : :), h, s, b);
 }
 
 static inline void
 DPSsetrgbcolor(GSCTXT *ctxt, float r, float g, float b)
 {
   (ctxt->methods->DPSsetrgbcolor___)
-    (ctxt, @selector(DPSsetrgbcolor:::), r, g, b);
+    (ctxt, @selector(DPSsetrgbcolor: : :), r, g, b);
 }
 
 
@@ -573,21 +573,21 @@ static inline void
 DPSashow(GSCTXT *ctxt, float x, float y, const char* s)
 {
   (ctxt->methods->DPSashow___)
-    (ctxt, @selector(DPSashow:::), x, y, s);
+    (ctxt, @selector(DPSashow: : :), x, y, s);
 }
 
 static inline void
 DPSawidthshow(GSCTXT *ctxt, float cx, float cy, int c, float ax, float ay, const char* s)
 {
   (ctxt->methods->DPSawidthshow______)
-    (ctxt, @selector(DPSawidthshow::::::), cx, cy, c, ax, ay, s);
+    (ctxt, @selector(DPSawidthshow: : : : : :), cx, cy, c, ax, ay, s);
 }
 
 static inline void
 DPScharpath(GSCTXT *ctxt, const char* s, int b)
 {
   (ctxt->methods->DPScharpath__)
-    (ctxt, @selector(DPScharpath::), s, b);
+    (ctxt, @selector(DPScharpath: :), s, b);
 }
 
 static inline void
@@ -601,28 +601,28 @@ static inline void
 DPSwidthshow(GSCTXT *ctxt, float x, float y, int c, const char* s)
 {
   (ctxt->methods->DPSwidthshow____)
-    (ctxt, @selector(DPSwidthshow::::), x, y, c, s);
+    (ctxt, @selector(DPSwidthshow: : : :), x, y, c, s);
 }
 
 static inline void
 DPSxshow(GSCTXT *ctxt, const char* s, const float* numarray, int size)
 {
   (ctxt->methods->DPSxshow___)
-    (ctxt, @selector(DPSxshow:::), s, numarray, size);
+    (ctxt, @selector(DPSxshow: : :), s, numarray, size);
 }
 
 static inline void
 DPSxyshow(GSCTXT *ctxt, const char* s, const float* numarray, int size)
 {
   (ctxt->methods->DPSxyshow___)
-    (ctxt, @selector(DPSxyshow:::), s, numarray, size);
+    (ctxt, @selector(DPSxyshow: : :), s, numarray, size);
 }
 
 static inline void
 DPSyshow(GSCTXT *ctxt, const char* s, const float* numarray, int size)
 {
   (ctxt->methods->DPSyshow___)
-    (ctxt, @selector(DPSyshow:::), s, numarray, size);
+    (ctxt, @selector(DPSyshow: : :), s, numarray, size);
 }
 
 
@@ -686,14 +686,14 @@ static inline void
 GSShowText(GSCTXT *ctxt, const char * string, size_t length)
 {
   (ctxt->methods->GSShowText__)
-    (ctxt, @selector(GSShowText::), string, length);
+    (ctxt, @selector(GSShowText: :), string, length);
 }
 
 static inline void
 GSShowGlyphs(GSCTXT *ctxt, const NSGlyph * glyphs, size_t length)
 {
   (ctxt->methods->GSShowGlyphs__)
-    (ctxt, @selector(GSShowGlyphs::), glyphs, length);
+    (ctxt, @selector(GSShowGlyphs: :), glyphs, length);
 }
 
 
@@ -792,7 +792,7 @@ static inline void
 DPScurrentpoint(GSCTXT *ctxt, float* x, float* y)
 {
   (ctxt->methods->DPScurrentpoint__)
-    (ctxt, @selector(DPScurrentpoint::), x, y);
+    (ctxt, @selector(DPScurrentpoint: :), x, y);
 }
 
 static inline void
@@ -806,7 +806,7 @@ static inline void
 DPSsetdash(GSCTXT *ctxt, const float* pat, int size, float offset)
 {
   (ctxt->methods->DPSsetdash___)
-    (ctxt, @selector(DPSsetdash:::), pat, size, offset);
+    (ctxt, @selector(DPSsetdash: : :), pat, size, offset);
 }
 
 static inline void
@@ -820,7 +820,7 @@ static inline void
 DPSsethalftonephase(GSCTXT *ctxt, float x, float y)
 {
   (ctxt->methods->DPSsethalftonephase__)
-    (ctxt, @selector(DPSsethalftonephase::), x, y);
+    (ctxt, @selector(DPSsethalftonephase: :), x, y);
 }
 
 static inline void
@@ -887,14 +887,14 @@ static inline void
 DPSscale(GSCTXT *ctxt, float x, float y)
 {
   (ctxt->methods->DPSscale__)
-    (ctxt, @selector(DPSscale::), x, y);
+    (ctxt, @selector(DPSscale: :), x, y);
 }
 
 static inline void
 DPStranslate(GSCTXT *ctxt, float x, float y)
 {
   (ctxt->methods->DPStranslate__)
-    (ctxt, @selector(DPStranslate::), x, y);
+    (ctxt, @selector(DPStranslate: :), x, y);
 }
 
 
@@ -927,21 +927,21 @@ static inline void
 DPSarc(GSCTXT *ctxt, float x, float y, float r, float angle1, float angle2)
 {
   (ctxt->methods->DPSarc_____)
-    (ctxt, @selector(DPSarc:::::), x, y, r, angle1, angle2);
+    (ctxt, @selector(DPSarc: : : : :), x, y, r, angle1, angle2);
 }
 
 static inline void
 DPSarcn(GSCTXT *ctxt, float x, float y, float r, float angle1, float angle2)
 {
   (ctxt->methods->DPSarcn_____)
-    (ctxt, @selector(DPSarcn:::::), x, y, r, angle1, angle2);
+    (ctxt, @selector(DPSarcn: : : : :), x, y, r, angle1, angle2);
 }
 
 static inline void
 DPSarct(GSCTXT *ctxt, float x1, float y1, float x2, float y2, float r)
 {
   (ctxt->methods->DPSarct_____)
-    (ctxt, @selector(DPSarct:::::), x1, y1, x2, y2, r);
+    (ctxt, @selector(DPSarct: : : : :), x1, y1, x2, y2, r);
 }
 
 static inline void
@@ -962,7 +962,7 @@ static inline void
 DPScurveto(GSCTXT *ctxt, float x1, float y1, float x2, float y2, float x3, float y3)
 {
   (ctxt->methods->DPScurveto______)
-    (ctxt, @selector(DPScurveto::::::), x1, y1, x2, y2, x3, y3);
+    (ctxt, @selector(DPScurveto: : : : : :), x1, y1, x2, y2, x3, y3);
 }
 
 static inline void
@@ -1004,14 +1004,14 @@ static inline void
 DPSlineto(GSCTXT *ctxt, float x, float y)
 {
   (ctxt->methods->DPSlineto__)
-    (ctxt, @selector(DPSlineto::), x, y);
+    (ctxt, @selector(DPSlineto: :), x, y);
 }
 
 static inline void
 DPSmoveto(GSCTXT *ctxt, float x, float y)
 {
   (ctxt->methods->DPSmoveto__)
-    (ctxt, @selector(DPSmoveto::), x, y);
+    (ctxt, @selector(DPSmoveto: :), x, y);
 }
 
 static inline void
@@ -1025,35 +1025,35 @@ static inline void
 DPSpathbbox(GSCTXT *ctxt, float* llx, float* lly, float* urx, float* ury)
 {
   (ctxt->methods->DPSpathbbox____)
-    (ctxt, @selector(DPSpathbbox::::), llx, lly, urx, ury);
+    (ctxt, @selector(DPSpathbbox: : : :), llx, lly, urx, ury);
 }
 
 static inline void
 DPSrcurveto(GSCTXT *ctxt, float x1, float y1, float x2, float y2, float x3, float y3)
 {
   (ctxt->methods->DPSrcurveto______)
-    (ctxt, @selector(DPSrcurveto::::::), x1, y1, x2, y2, x3, y3);
+    (ctxt, @selector(DPSrcurveto: : : : : :), x1, y1, x2, y2, x3, y3);
 }
 
 static inline void
 DPSrectclip(GSCTXT *ctxt, float x, float y, float w, float h)
 {
   (ctxt->methods->DPSrectclip____)
-    (ctxt, @selector(DPSrectclip::::), x, y, w, h);
+    (ctxt, @selector(DPSrectclip: : : :), x, y, w, h);
 }
 
 static inline void
 DPSrectfill(GSCTXT *ctxt, float x, float y, float w, float h)
 {
   (ctxt->methods->DPSrectfill____)
-    (ctxt, @selector(DPSrectfill::::), x, y, w, h);
+    (ctxt, @selector(DPSrectfill: : : :), x, y, w, h);
 }
 
 static inline void
 DPSrectstroke(GSCTXT *ctxt, float x, float y, float w, float h)
 {
   (ctxt->methods->DPSrectstroke____)
-    (ctxt, @selector(DPSrectstroke::::), x, y, w, h);
+    (ctxt, @selector(DPSrectstroke: : : :), x, y, w, h);
 }
 
 static inline void
@@ -1067,14 +1067,14 @@ static inline void
 DPSrlineto(GSCTXT *ctxt, float x, float y)
 {
   (ctxt->methods->DPSrlineto__)
-    (ctxt, @selector(DPSrlineto::), x, y);
+    (ctxt, @selector(DPSrlineto: :), x, y);
 }
 
 static inline void
 DPSrmoveto(GSCTXT *ctxt, float x, float y)
 {
   (ctxt->methods->DPSrmoveto__)
-    (ctxt, @selector(DPSrmoveto::), x, y);
+    (ctxt, @selector(DPSrmoveto: :), x, y);
 }
 
 static inline void
@@ -1103,14 +1103,14 @@ static inline void
 GSRectClipList(GSCTXT *ctxt, const NSRect * rects, int count)
 {
   (ctxt->methods->GSRectClipList__)
-    (ctxt, @selector(GSRectClipList::), rects, count);
+    (ctxt, @selector(GSRectClipList: :), rects, count);
 }
 
 static inline void
 GSRectFillList(GSCTXT *ctxt, const NSRect * rects, int count)
 {
   (ctxt->methods->GSRectFillList__)
-    (ctxt, @selector(GSRectFillList::), rects, count);
+    (ctxt, @selector(GSRectFillList: :), rects, count);
 }
 
 
@@ -1121,28 +1121,28 @@ static inline void
 GSCurrentDevice(GSCTXT *ctxt, void** device, int* x, int* y)
 {
   (ctxt->methods->GSCurrentDevice___)
-    (ctxt, @selector(GSCurrentGCDevice:::), device, x, y);
+    (ctxt, @selector(GSCurrentGCDevice: : :), device, x, y);
 }
 
 static inline void
 DPScurrentoffset(GSCTXT *ctxt, int* x, int* y)
 {
   (ctxt->methods->DPScurrentoffset__)
-    (ctxt, @selector(DPScurrentoffset::), x, y);
+    (ctxt, @selector(DPScurrentoffset: :), x, y);
 }
 
 static inline void
 GSSetDevice(GSCTXT *ctxt, void* device, int x, int y)
 {
   (ctxt->methods->GSSetDevice___)
-    (ctxt, @selector(GSSetGCDevice:::), device, x, y);
+    (ctxt, @selector(GSSetGCDevice: : :), device, x, y);
 }
 
 static inline void
 DPSsetoffset(GSCTXT *ctxt, short int x, short int y)
 {
   (ctxt->methods->DPSsetoffset__)
-    (ctxt, @selector(DPSsetoffset::), x, y);
+    (ctxt, @selector(DPSsetoffset: :), x, y);
 }
 
 
@@ -1153,21 +1153,21 @@ static inline void
 DPScomposite(GSCTXT *ctxt, float x, float y, float w, float h, int gstateNum, float dx, float dy, int op)
 {
   (ctxt->methods->DPScomposite________)
-    (ctxt, @selector(DPScomposite::::::::), x, y, w, h, gstateNum, dx, dy, op);
+    (ctxt, @selector(DPScomposite: : : : : : : :), x, y, w, h, gstateNum, dx, dy, op);
 }
 
 static inline void
 DPScompositerect(GSCTXT *ctxt, float x, float y, float w, float h, int op)
 {
   (ctxt->methods->DPScompositerect_____)
-    (ctxt, @selector(DPScompositerect:::::), x, y, w, h, op);
+    (ctxt, @selector(DPScompositerect: : : : :), x, y, w, h, op);
 }
 
 static inline void
 DPSdissolve(GSCTXT *ctxt, float x, float y, float w, float h, int gstateNum, float dx, float dy, float delta)
 {
   (ctxt->methods->DPSdissolve________)
-    (ctxt, @selector(DPSdissolve::::::::), x, y, w, h, gstateNum, dx, dy, delta);
+    (ctxt, @selector(DPSdissolve: : : : : : : :), x, y, w, h, gstateNum, dx, dy, delta);
 }
 
 
@@ -1175,7 +1175,7 @@ static inline void
 GSDrawImage(GSCTXT *ctxt, NSRect rect, void * imageref)
 {
   (ctxt->methods->GSDrawImage__)
-    (ctxt, @selector(GSDrawImage::), rect, imageref);
+    (ctxt, @selector(GSDrawImage: :), rect, imageref);
 }
 
 
@@ -1190,7 +1190,7 @@ DPSPrintf(GSCTXT *ctxt, const char * fmt, ...)
   va_start(ap, fmt);
   if (fmt != NULL)
     (ctxt->methods->DPSPrintf__)
-      (ctxt, @selector(DPSPrintf::), fmt, ap);
+      (ctxt, @selector(DPSPrintf: :), fmt, ap);
   va_end(ap);
 }
 
@@ -1198,7 +1198,7 @@ static inline void
 DPSWriteData(GSCTXT *ctxt, const char * buf, unsigned int count)
 {
   (ctxt->methods->DPSWriteData__)
-    (ctxt, @selector(DPSWriteData::), buf, count);
+    (ctxt, @selector(DPSWriteData: :), buf, count);
 }
 
 #endif	
