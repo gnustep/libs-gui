@@ -2772,18 +2772,21 @@ resetCursorRectsForView(NSView *theView)
  */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  BOOL	flag;
-  id	nxt = RETAIN([self nextResponder]);
+  BOOL		flag;
+  NSPoint	p;
+  id		nxt = RETAIN([self nextResponder]);
 
   [self setNextResponder: nil];
 
   [super encodeWithCoder: aCoder];
 
   NSDebugLog(@"NSWindow: start encoding\n");
+
   [aCoder encodeRect: [[self contentView] frame]];
   [aCoder encodeValueOfObjCType: @encode(unsigned) at: &style_mask];
   [aCoder encodeValueOfObjCType: @encode(NSBackingStoreType) at: &backing_type];
 
+  [aCoder encodePoint: NSMakePoint(NSMinX([self frame]), NSMaxY([self frame]))];
   [aCoder encodeObject: content_view];
   [aCoder encodeObject: background_color];
   [aCoder encodeObject: represented_filename];
@@ -2839,6 +2842,7 @@ resetCursorRectsForView(NSView *theView)
     {
       NSSize			aSize;
       NSRect			aRect;
+      NSPoint			p;
       unsigned			aStyle;
       NSBackingStoreType	aBacking;
       int			anInt;
@@ -2857,6 +2861,7 @@ resetCursorRectsForView(NSView *theView)
 				 defer: NO
 				screen: nil];
 
+      p = [aDecoder decodePoint];
       obj = [aDecoder decodeObject];
       [self setContentView: obj];
       obj = [aDecoder decodeObject];
@@ -2915,6 +2920,7 @@ resetCursorRectsForView(NSView *theView)
       [aDecoder decodeValueOfObjCType: @encode(id)
 				   at: &_initial_first_responder];
 
+      [self setFrameTopLeftPoint: p];
       NSDebugLog(@"NSWindow: finish decoding\n");
     }
 

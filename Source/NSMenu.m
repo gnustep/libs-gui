@@ -765,9 +765,11 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
 
 - (void) sizeToFit
 {
+  NSRect windowFrame;
   NSRect menuFrame;
   NSSize size;
 
+  windowFrame = [aWindow frame];
   [menu_view sizeToFit];
 
   menuFrame = [menu_view frame];
@@ -779,13 +781,20 @@ static NSString* NSMenuLocationsKey = @"NSMenuLocations";
     {
       size.height += 23;
       [aWindow setContentSize: size];
+      [aWindow setFrameTopLeftPoint:
+	NSMakePoint(NSMinX(windowFrame),NSMaxY(windowFrame))];
+      windowFrame = [bWindow frame];
       [bWindow setContentSize: size];
+      [bWindow setFrameTopLeftPoint:
+	NSMakePoint(NSMinX(windowFrame),NSMaxY(windowFrame))];
       [menu_view setFrameOrigin: NSMakePoint(0, 0)];
       [titleView setFrame: NSMakeRect(0,size.height-23,size.width,23)];
     }
   else
     {
       [aWindow setContentSize: size];
+      [aWindow setFrameTopLeftPoint:
+	NSMakePoint(NSMinX(windowFrame),NSMaxY(windowFrame))];
     }
 
   [aWindow display];

@@ -1,8 +1,10 @@
-Fri Dec  3 14:38:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+Fri Dec  3 14:53:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
-	* Source/NSOpenPanel.m ([-browser:selectCellWithString:inColumn:])
+	* Source/NSOpenPanel.m: ([-browser:selectCellWithString:inColumn:])
 	fixed to set the _fullFileName ivar so that the panel can return
 	the selected filename.
+	* Source/NSWindow.m: Encode/decode top-left point of window for
+	positioning.
 
 Fri Dec  3 11:34:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 

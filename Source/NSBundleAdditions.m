@@ -89,6 +89,18 @@
 
 - (void) replaceObject: (id)anObject withObject: (id)anotherObject
 {
+  if (_src == anObject)
+    {
+      ASSIGN(_src, anotherObject);
+    }
+  if (_dst == anObject)
+    {
+      ASSIGN(_dst, anotherObject);
+    }
+  if (_tag == anObject)
+    {
+      ASSIGN(_tag, anotherObject);
+    }
 }
 
 - (id) source
@@ -240,7 +252,6 @@
 		      [connection setSource: val];
 		      val = [nameTable objectForKey: [connection destination]];
 		      [connection setDestination: val];
-		      [connection establishConnection];
 		      [connection establishConnection];
 		    }
 
