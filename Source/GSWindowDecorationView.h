@@ -39,6 +39,10 @@
 			 styleMask: (unsigned int)aStyle;
 - (NSRect) frameRectForContentRect: (NSRect)aRect
 			 styleMask: (unsigned int)aStyle;
+- (NSRect) screenRectForFrameRect: (NSRect)aRect
+			styleMask: (unsigned int)aStyle;
+- (NSRect) frameRectForScreenRect: (NSRect)aRect
+			styleMask: (unsigned int)aStyle;
 - (float) minFrameWidthWithTitle: (NSString *)aTitle
 		       styleMask: (unsigned int)aStyle;
 @end

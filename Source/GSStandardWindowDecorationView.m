@@ -64,6 +64,12 @@
     }
 }
 
++(void) screenOffsets: (float *)l : (float *)r : (float *)t : (float *)b
+   forStyleMask: (unsigned int)style
+{
+  *l = *r = *r = *b = 0.0;
+}
+
 + (float) minFrameWidthWithTitle: (NSString *)aTitle
 		       styleMask: (unsigned int)aStyle
 {

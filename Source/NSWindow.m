@@ -609,6 +609,26 @@ static NSNotificationCenter *nc = nil;
 					styleMask: aStyle];
 }
 
++ (NSRect) screenRectForFrameRect: (NSRect)aRect
+			styleMask: (unsigned int)aStyle
+{
+  if (!windowDecorator)
+    windowDecorator = [GSWindowDecorationView windowDecorator];
+
+  return [windowDecorator screenRectForFrameRect: aRect
+				       styleMask: aStyle];
+}
+
++ (NSRect) frameRectForScreenRect: (NSRect)aRect
+			styleMask: (unsigned int)aStyle
+{
+  if (!windowDecorator)
+    windowDecorator = [GSWindowDecorationView windowDecorator];
+
+  return [windowDecorator frameRectForScreenRect: aRect
+				       styleMask: aStyle];
+}
+
 + (float) minFrameWidthWithTitle: (NSString *)aTitle
 		       styleMask: (unsigned int)aStyle
 {
@@ -773,13 +793,12 @@ many times.
   _gstate = GSDefineGState(context);
   DPSgrestore(context);
 
-  if (NSIsEmptyRect([_wv frame]))
-    {
-      NSRect frame = _frame;
-      frame.origin = NSZeroPoint;
-      [_wv setFrame: frame];
-    }
-  [_wv setNeedsDisplay: YES];
+  {
+    NSRect frame = _frame;
+    frame.origin = NSZeroPoint;
+    [_wv setFrame: frame];
+    [_wv setNeedsDisplay: YES];
+  }
 
   /* Ok, now add the drag types back */
   if (dragTypes)

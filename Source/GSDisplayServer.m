@@ -499,11 +499,13 @@ GSCurrentServer(void)
 
 /** Creates a window whose location and size is described by frame and
     whose backing store is described by type. This window is not
-    mapped to the screen by this call. Note that frame includes the title
-    bar and all other window decorations. In many cases the window
-    manager controls these aspects of the window. The actual drawable
-    area of the window may vary depending on the window manager involved.
-    Use -styleoffsets::::: to determine the extent of the window decorations.
+    mapped to the screen by this call.
+
+    Note that frame is the frame of the drawable window and does not include
+    any external window decorations. If handlesWindowDecorations returns YES,
+    a window manager (or something equivalent) might add decorations outside
+    the drawable window. Use -styleoffsets::::: to determine the extent of
+    those decorations.
 */
 - (int) window: (NSRect)frame : (NSBackingStoreType)type : (unsigned int)style
 {
@@ -654,9 +656,12 @@ GSCurrentServer(void)
   [self subclassResponsibility: _cmd];
 }
 
-/** Returns the dimensions of the window that are inside the window
-    frame but are controlled by the window manager. For instance, t
-    gives the height of the title bar for the window */
+/** Returns the dimensions of window decorations added outside the drawable
+    window frame by a window manager or equivalent. For instance, t
+    gives the height of the title bar for the window. The values returned
+    may be approximations. If handlesWindowDecorations returns NO, there
+    are no decorations outside the drawable window frame and this method
+    shouldn't be called. */
 - (void) styleoffsets: (float*) l : (float*) r : (float*) t : (float*) b 
 		     : (unsigned int) style
 {

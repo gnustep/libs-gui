@@ -74,6 +74,12 @@ GSWindowDecorationView implementation.
   [self subclassResponsibility: _cmd];
 }
 
++(void) screenOffsets: (float *)l : (float *)r : (float *)t : (float *)b
+   forStyleMask: (unsigned int)style
+{
+  [self subclassResponsibility: _cmd];
+}
+
 + (NSRect) contentRectForFrameRect: (NSRect)aRect
 			 styleMask: (unsigned int)aStyle
 {
@@ -99,6 +105,34 @@ GSWindowDecorationView implementation.
   aRect.size.height += t + b;
   aRect.origin.x -= l;
   aRect.origin.y -= b;
+  return aRect;
+}
+
++ (NSRect) screenRectForFrameRect: (NSRect)aRect
+			styleMask: (unsigned int)aStyle
+{
+  float t, b, l, r;
+
+  [self screenOffsets: &l : &r : &t : &b
+	 forStyleMask: aStyle];
+  aRect.size.width += l + r;
+  aRect.size.height += t + b;
+  aRect.origin.x -= l;
+  aRect.origin.y -= b;
+  return aRect;
+}
+
++ (NSRect) frameRectForScreenRect: (NSRect)aRect
+			styleMask: (unsigned int)aStyle
+{
+  float t, b, l, r;
+
+  [self screenOffsets: &l : &r : &t : &b
+	 forStyleMask: aStyle];
+  aRect.size.width -= l + r;
+  aRect.size.height -= t + b;
+  aRect.origin.x += l;
+  aRect.origin.y += b;
   return aRect;
 }
 
@@ -266,8 +300,15 @@ Returns the content rect for a given window frame.
 +(void) offsets: (float *)l : (float *)r : (float *)t : (float *)b
    forStyleMask: (unsigned int)style
 {
+  *l = *r = *t = *b = 0.0;
+}
+
++(void) screenOffsets: (float *)l : (float *)r : (float *)t : (float *)b
+   forStyleMask: (unsigned int)style
+{
   [GSCurrentServer() styleoffsets: l : r : t : b : style];
 }
+
 + (float) minFrameWidthWithTitle: (NSString *)aTitle
 		       styleMask: (unsigned int)aStyle
 {

@@ -1,3 +1,21 @@
+2004-08-09 14:38  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/AppKit/NSWindow.h: _frame is the window frame.
+	(+screenRectForFrameRect:styleMask:,
+	+frameRectForScreenRect:styleMask:): New methods.
+	* Source/GSDisplayServer.m (-window:::, -styleoffsets:::::):
+	Update documentation.
+	* Source/GSStandardWindowDecorationView.m
+	(+screenOffsets::::forStyleMask:): Implement new method.
+	* Source/GSWindowDecorationView.h (+screenRectForFrameRect:styleMask:,
+	+frameRectForScreenRect:styleMask:): New methods.
+	* Source/GSWindowDecorationView.m (+screenOffsets::::forStyleMask:,
+	+screenRectForFrameRect:styleMask:,
+	+frameRectForScreenRect:styleMask:): Implement them.
+	* Source/NSWindow.m (+screenRectForFrameRect:styleMask:,
+	+frameRectForScreenRect:styleMask:): Implement new methods.
+	(-_initBackendWindow): Always update _wv's frame.
+
 2004-08-08  Quentin Mathe <qmathe@club-internet.fr>
 
 	* Source/NSComboBox.m:

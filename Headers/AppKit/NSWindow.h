@@ -123,10 +123,12 @@ APPKIT_EXPORT NSSize NSTokenSize;
 
 
   To get coordinate transforms and stuff right wrt. OpenStep, we really want
-  the window frame here. However, for hysterical reasons, _frame is actually
-  the screen frame. (The other rectangles/sizes passed around in NSWindow
-  methods are likely a mix of screen and window frames.) Only if -gui manages
-  decorations will this match the semantics properly.
+  the window frame here.
+
+  For hysterical reasons, _frame used to be the screen frame. However, the
+  resulting inconsistencies caused a bunch of problems. Thus, _frame is the
+  window frame. The other rectangles/sizes passed around in NSWindow
+  methods are supposed to all be window frames.
   */
   NSRect        _frame;
 
@@ -216,12 +218,22 @@ APPKIT_EXPORT NSSize NSTokenSize;
 /*
  * Computing frame and content rectangles
  */
+
+/* These methods convert between the various frames discussed above. */
 + (NSRect) contentRectForFrameRect: (NSRect)aRect
 			 styleMask: (unsigned int)aStyle;
 
 + (NSRect) frameRectForContentRect: (NSRect)aRect
 			 styleMask: (unsigned int)aStyle;
 
++ (NSRect) screenRectForFrameRect: (NSRect)aRect
+			styleMask: (unsigned int)aStyle;
+
++ (NSRect) frameRectForScreenRect: (NSRect)aRect
+			styleMask: (unsigned int)aStyle;
+
+/* Returns the smallest window width that will fit the given title and
+style. */
 + (float) minFrameWidthWithTitle: (NSString *)aTitle
 		       styleMask: (unsigned int)aStyle;
 
