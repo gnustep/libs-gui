@@ -1053,7 +1053,7 @@ void __dummy_GMAppKit_functionForLinking() {}
   if (frameAutosaveName)
     [self setFrameAutosaveName:frameAutosaveName];
 
-  [self setLevel:[unarchiver decodeIntWithName:@"level"]];
+  window_level = [unarchiver decodeIntWithName:@"level"];
 
   [self setAutodisplay:[unarchiver decodeBOOLWithName:@"isAutodisplay"]];
   [self setTitle:[unarchiver decodeStringWithName:@"title"]];
@@ -1138,7 +1138,7 @@ void __dummy_GMAppKit_functionForLinking() {}
     if (frameAutosaveName)
 	[self setFrameAutosaveName:frameAutosaveName];
     
-    [self setLevel:[unarchiver decodeIntWithName:@"level"]];
+    window_level = [unarchiver decodeIntWithName:@"level"];
     
     [self setAutodisplay:[unarchiver decodeBOOLWithName:@"isAutodisplay"]];
     [self setTitle:[unarchiver decodeStringWithName:@"title"]];
@@ -1241,7 +1241,7 @@ void __dummy_GMAppKit_functionForLinking() {}
     if (frameAutosaveName)
 	[self setFrameAutosaveName:frameAutosaveName];
     
-    [self setLevel:[unarchiver decodeIntWithName:@"level"]];
+    window_level = [unarchiver decodeIntWithName:@"level"];
     
     [self setAutodisplay:[unarchiver decodeBOOLWithName:@"isAutodisplay"]];
     [self setTitle:[unarchiver decodeStringWithName:@"title"]];
