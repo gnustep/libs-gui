@@ -1,3 +1,25 @@
+2001-08-20  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Source/NSStepper.m
+	* Headers/gnustep/gui/NSStepper.h
+	new NSStepper class, basic implementation
+	* Source/NSStepperCell.m
+	* Headers/gnustep/gui/NSStepperCell.h
+	new NSStepperCell class, basic implementation
+	* Source/GNUmakefile : NSStepper and NSStepperCell addition
+	* Headers/gnustep/gui/AppKit.h : 
+	NSStepper.h and NSStepperCell.h addition
+
+2001-08-20  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Source/NSBrowser.m ([NSBrowser -_performLoadOfColumn:]):
+	improved performance when loading previously unloaded column 
+	with a passive delegate
+	* Source/NSMatrix.m ([NSMatrix -sizeToFit]):
+	This method now assumes that all cells have the same size (this 
+	is what specification says). If it is not the case, weird behaviour 
+	can happen ... Performance is better when loading large matrices.
+
 2001-08-19  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSTextView.m (-setSelectedRange:affinity:stillSelecting:): 
@@ -69,7 +91,7 @@
 	* Source/GSServicesManager.m
 	Implemented missing NSUpdateDynamicServices().
 	
-2001-08-13  Pierre-Yves  <pyrivail@ens-lyon.fr>
+2001-08-13  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSTableView.m
 	* Source/NSTableHeaderView.m
@@ -77,7 +99,7 @@
 	New implementation of column resizing.
 	Implementation of column reordering.
 
-2001-08-13  Pierre-Yves  <pyrivail@ens-lyon.fr>
+2001-08-13  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSSavePanel.m ([-runModalForDirectory:file:])
 	* Source/NSOpenPanel.m ([-runModalForDirectory:file:types:])
@@ -377,7 +399,7 @@ Tue Aug  7 05:08:01 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 	Implemented coding protocol.
 	Cache the class and use it for standard cursor and in [pop].
 	
-2001-07-23  Pierre-Yves  <pyrivail@ens-lyon.fr>
+2001-07-23  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSPopUpItemCell.m (-drawInteriorWithFrame:inView:): updates to
 	have a cuter displaying of NSPopUpButton
@@ -385,12 +407,12 @@ Tue Aug  7 05:08:01 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 	(-drawBorderAndBackgroundWithFrame:inView:): idem
 	(-drawInteriorWithFrame:inView:): idem
 
-2001-07-23  Pierre-Yves  <pyrivail@ens-lyon.fr>
+2001-07-23  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSFontPanel.m (_initWithoutGModel): call setMinColumnWidth on 
 	familyBrowser and on faceBrowser (they were not displayed)
 
-2001-07-23  Pierre-Yves  <pyrivail@ens-lyon.fr>
+2001-07-23  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSBrowser.h: Add instance variables to support alphanumerical
 	keys. Add GNUstepExtensions category with alpahnumerical-key-related
