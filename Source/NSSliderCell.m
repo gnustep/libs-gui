@@ -37,30 +37,35 @@
 
 @implementation NSSliderCell
 
-- init
+- (id) init
 {
-  [self initImageCell:nil];
+  [self initImageCell: nil];
   _altIncrementValue = -1;
   _isVertical = -1;
   _minValue = 0;
   _maxValue = 1;
   _floatValue = 0;
-  [self setBordered:YES];
-  [self setBezeled:YES];
+  [self setBordered: YES];
+  [self setBezeled: YES];
 
   _knobCell = [NSCell new];
 
   return self;
 }
 
-- (void)dealloc
+- (void) dealloc
 {
   [_titleCell release];
   [_knobCell release];
   [super dealloc];
 }
 
-- (void)setFloatValue:(float)aFloat
+- (BOOL) isFliped
+{
+  return YES;
+}
+
+- (void) setFloatValue: (float)aFloat
 {
   if (aFloat < _minValue)
     _floatValue = _minValue;
@@ -70,16 +75,13 @@
     _floatValue = aFloat;
 }
 
-- (void)drawBarInside:(NSRect)rect flipped:(BOOL)flipped
-{														// not per spec FIX ME
-	if ([self image])
-		return;
-
-	[[NSColor darkGrayColor] set];					
-	NSRectFill(rect);									// draw the bar
+- (void) drawBarInside: (NSRect)rect flipped: (BOOL)flipped
+{
+  [[NSColor scrollBarColor] set];					
+  NSRectFill(rect);
 }
 
-- (NSRect)knobRectFlipped:(BOOL)flipped
+- (NSRect) knobRectFlipped: (BOOL)flipped
 {
   NSImage* image = [_knobCell image];
   NSSize size;
@@ -107,17 +109,17 @@
   return NSMakeRect (origin.x, origin.y, size.width, size.height); 
 }
 
-- (void)drawKnob
+- (void) drawKnob
 {
-  [self drawKnob:[self knobRectFlipped:[[self controlView] isFlipped]]];
+  [self drawKnob: [self knobRectFlipped: [[self controlView] isFlipped]]];
 }
 
-- (void)drawKnob:(NSRect)knobRect
+- (void) drawKnob: (NSRect)knobRect
 {
-  [_knobCell drawInteriorWithFrame:knobRect inView:[self controlView]];
+  [_knobCell drawInteriorWithFrame: knobRect inView: [self controlView]];
 }
 
-- (void)drawInteriorWithFrame:(NSRect)cellFrame inView:(NSView*)controlView
+- (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
   BOOL vertical = (cellFrame.size.height > cellFrame.size.width);
   NSImage* image;
@@ -125,16 +127,16 @@
 
   if (vertical != _isVertical) {
     if (vertical) {
-      image = [NSImage imageNamed:@"common_SliderVert"];
+      image = [NSImage imageNamed: @"common_SliderVert"];
       size = [image size];
-      [_knobCell setImage:image];
-      [image setSize:NSMakeSize (cellFrame.size.width, size.height)];
+      [_knobCell setImage: image];
+      [image setSize: NSMakeSize (cellFrame.size.width, size.height)];
     }
     else {
-      image = [NSImage imageNamed:@"common_SliderHoriz"];
+      image = [NSImage imageNamed: @"common_SliderHoriz"];
       size = [image size];
-      [_knobCell setImage:image];
-      [image setSize:NSMakeSize (size.width, cellFrame.size.height)];
+      [_knobCell setImage: image];
+      [image setSize: NSMakeSize (size.width, cellFrame.size.height)];
     }
   }
   _isVertical = vertical;
@@ -142,13 +144,13 @@
   _trackRect = cellFrame;
 
   if (_titleCell)
-    [_titleCell drawInteriorWithFrame:cellFrame inView:controlView];
+    [_titleCell drawInteriorWithFrame: cellFrame inView: controlView];
 
-  [self drawBarInside:cellFrame flipped:[controlView isFlipped]];
+  [self drawBarInside: cellFrame flipped: [controlView isFlipped]];
   [self drawKnob];
 }
 
-- (float)knobThickness
+- (float) knobThickness
 {
   NSImage* image = [_knobCell image];
   NSSize size = [image size];
@@ -156,7 +158,7 @@
   return _isVertical ? size.height : size.width;
 }
 
-- (void)setKnobThickness:(float)thickness
+- (void) setKnobThickness: (float)thickness
 {
   NSImage* image = [_knobCell image];
   NSSize size = [image size];
@@ -166,48 +168,48 @@
   else
     size.width = thickness;
 
-  [image setSize:size];
+  [image setSize: size];
 }
 
-- (void)setAltIncrementValue:(double)increment
+- (void) setAltIncrementValue: (double)increment
 {
   _altIncrementValue = increment;
 }
 
-- (void)setMinValue:(double)aDouble
+- (void) setMinValue: (double)aDouble
 {
   _minValue = aDouble;
   if (_floatValue < _minValue)
     _floatValue = _minValue;
 }
 
-- (void)setMaxValue:(double)aDouble
+- (void) setMaxValue: (double)aDouble
 {
   _maxValue = aDouble;
   if (_floatValue > _maxValue)
     _floatValue = _maxValue;
 }
 
-- (id)titleCell				{ return _titleCell; }
-- (NSColor*)titleColor			{ return [_titleCell textColor]; }
-- (NSFont*)titleFont			{ return [_titleCell font]; }
-- (void)setTitle:(NSString*)title	{ [_titleCell setStringValue:title]; }
-- (NSString*)title			{ return [_titleCell stringValue]; }
-- (void)setTitleCell:(NSCell*)aCell	{ ASSIGN(_titleCell, aCell); }
-- (void)setTitleColor:(NSColor*)color	{ [_titleCell setTextColor:color]; }
-- (void)setTitleFont:(NSFont*)font	{ [_titleCell setFont:font]; }
-- (int)isVertical			{ return _isVertical; }
-- (double)altIncrementValue		{ return _altIncrementValue; }
-+ (BOOL)prefersTrackingUntilMouseUp	{ return YES; }
-- (NSRect)trackRect			{ return _trackRect; }
-- (double)minValue			{ return _minValue; }
-- (double)maxValue			{ return _maxValue; }
-- (float)floatValue			{ return _floatValue; }
+- (id) titleCell				{ return _titleCell; }
+- (NSColor*) titleColor			{ return [_titleCell textColor]; }
+- (NSFont*) titleFont			{ return [_titleCell font]; }
+- (void) setTitle: (NSString*)title	{ [_titleCell setStringValue: title]; }
+- (NSString*) title			{ return [_titleCell stringValue]; }
+- (void) setTitleCell: (NSCell*)aCell	{ ASSIGN(_titleCell, aCell); }
+- (void) setTitleColor: (NSColor*)color	{ [_titleCell setTextColor: color]; }
+- (void) setTitleFont: (NSFont*)font	{ [_titleCell setFont: font]; }
+- (int) isVertical			{ return _isVertical; }
+- (double) altIncrementValue		{ return _altIncrementValue; }
++ (BOOL) prefersTrackingUntilMouseUp	{ return YES; }
+- (NSRect) trackRect			{ return _trackRect; }
+- (double) minValue			{ return _minValue; }
+- (double) maxValue			{ return _maxValue; }
+- (float) floatValue			{ return _floatValue; }
 
 - (id) initWithCoder: (NSCoder*)decoder
 {
   self = [super initWithCoder: decoder];
-  [decoder decodeValuesOfObjCTypes:"ffff",
+  [decoder decodeValuesOfObjCTypes: "ffff",
 	      &_minValue, &_maxValue, &_floatValue, &_altIncrementValue];
   return self;
 }
@@ -215,7 +217,7 @@
 - (void) encodeWithCoder: (NSCoder*)coder
 {
   [super encodeWithCoder: coder];
-  [coder encodeValuesOfObjCTypes:"ffff",
+  [coder encodeValuesOfObjCTypes: "ffff",
 	      &_minValue, &_maxValue, &_floatValue, &_altIncrementValue];
 }
 
