@@ -1,3 +1,9 @@
+Mon Apr 28 13:14:15 2003  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSApplication.m ([NSApplication -targetForAction:]): If this
+	is a document-based application, check if the key window's document
+	responds to the action; if it does, use it.
+
 2003-04-28  Nicola Pero  <nicola@nicola.brainstorm.co.uk>
 
 	* Resources/GNUmakefile (gui-resources_RESOURCE_FILES_INSTALL_DIR): Define
