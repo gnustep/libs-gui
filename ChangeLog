@@ -1,3 +1,9 @@
+2001-01-15  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Headers/gnustep/gui/NSLayoutManager.h: New _endCharIndex ivar
+	to keep track of last char converted to glyph.
+	* Source/NSLayoutManager.m: More glyph handling code implemented.
+
 Sat Jan 13 22:16:45 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/GSSimpleLayoutManager.m ([-glyphIndexForPoint:

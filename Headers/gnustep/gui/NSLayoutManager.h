@@ -109,6 +109,7 @@ typedef enum {
   NSTypesetter		*_typesetter;
 
   void			*_glyphChunks;	// Private glyph storage.
+  unsigned		_endCharIndex;	// After last char with generated glyph.
   
   NSGlyphGenerator		*_glyphGenerator;
   NSStorage			*_containerUsedRects;
