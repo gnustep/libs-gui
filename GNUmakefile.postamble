@@ -78,7 +78,16 @@ after-clean::
 
 # Things to do after distcleaning
 after-distclean:: remove-header-links
-	rm -f config.status config.log config.cache TAGS config.mak
+	rm -f config.status config.log config.cache TAGS config.mak gui.make
+
+configure: configure.in
+	autoreconf
+
+gui.make: gui.make.in
+	./configure
+
+config.make: config.make.in
+	./configure
 
 # Things to do before checking
 # before-check::
