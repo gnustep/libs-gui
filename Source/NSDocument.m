@@ -308,8 +308,6 @@
 
   if (delegate != nil && shouldCloseSelector != NULL)
     {
-      // FIXME: This is the only way I know to call a callback with 
-      // irregular arguments
       void (*meth)(id, SEL, id, BOOL, void*);
       meth = (void (*)(id, SEL, id, BOOL, void*))[delegate methodForSelector: 
 							       shouldCloseSelector];
@@ -342,8 +340,6 @@
 
   if (delegate != nil && callback != NULL)
     {
-      // FIXME: This is the only way I know to call a callback with 
-      // irregular argumetns
       void (*meth)(id, SEL, id, BOOL, void*);
       meth = (void (*)(id, SEL, id, BOOL, void*))[delegate methodForSelector: 
 							       callback];
@@ -515,7 +511,6 @@
    }
   
   [savePanel setTitle: title];
-
   
   if ([self fileName])
     directory = [[self fileName] stringByDeletingLastPathComponent];
@@ -523,6 +518,11 @@
     directory = [controller currentDirectory];
   [savePanel setDirectory: directory];
 	
+  if (![self prepareSavePanel: savePanel])
+    {
+      return nil;
+    }
+
   if ([self runModalSavePanel: savePanel withAccessoryView: accessory])
     {
       return [savePanel filename];
@@ -662,7 +662,9 @@
 	      [self setFileType: fileType];
 	      [self updateChangeCount: NSChangeCleared];
 	    }
-	  
+
+	  // FIXME: Should set the file attributes
+
 	  if (backupFilename && ![self keepBackupFile])
 	    {
 	      [fileManager removeFileAtPath: backupFilename handler: nil];
@@ -716,7 +718,10 @@
 		 didSaveSelector: (SEL)didSaveSelector 
 		     contextInfo: (void *)contextInfo
 {
-  // FIXME
+  [self runModalSavePanelForSaveOperation: NSSaveOperation 
+	delegate: delegate
+	didSaveSelector: didSaveSelector 
+	contextInfo: contextInfo];
 }
 
 - (void)saveToFile: (NSString *)fileName 
@@ -725,7 +730,23 @@
    didSaveSelector: (SEL)didSaveSelector 
        contextInfo: (void *)contextInfo
 {
-  // FIXME
+  BOOL saved = NO;
+ 
+  if (fileName != nil)
+  {
+    saved = [self writeWithBackupToFile: fileName 
+		  ofType: [self fileTypeFromLastRunSavePanel]
+		  saveOperation: saveOperation];
+  }
+
+  if (delegate != nil && didSaveSelector != NULL)
+    {
+      void (*meth)(id, SEL, id, BOOL, void*);
+      meth = (void (*)(id, SEL, id, BOOL, void*))[delegate methodForSelector: 
+							       didSaveSelector];
+      if (meth)
+	meth(delegate, didSaveSelector, self, saved, contextInfo);
+    }
 }
 
 - (BOOL)prepareSavePanel: (NSSavePanel *)savePanel
@@ -738,7 +759,15 @@
 			  didSaveSelector: (SEL)didSaveSelector 
 			      contextInfo: (void *)contextInfo
 {
-  // FIXME
+  NSString *fileName;
+
+  // FIXME: Setting of the delegate of the save panel is missing
+  fileName = [self fileNameFromRunningSavePanelForSaveOperation: saveOperation];
+  [self saveToFile: fileName 
+	saveOperation: saveOperation 
+	delegate: delegate
+	didSaveSelector: didSaveSelector 
+	contextInfo: contextInfo];
 }
 
 - (IBAction)revertDocumentToSaved: (id)sender

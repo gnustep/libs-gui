@@ -2682,12 +2682,163 @@ byExtendingSelection: (BOOL)flag
 
 - (void) selectColumnIndexes: (NSIndexSet *)indexes byExtendingSelection: (BOOL)extend
 {
-  // FIXME
+  BOOL empty = ([indexes firstIndex] == NSNotFound);
+  BOOL changed = NO;
+  unsigned int col;
+  
+  if (!_selectingColumns)
+    {
+      _selectingColumns = YES;
+      if (_headerView)
+	{
+	  [_headerView setNeedsDisplay: YES];
+	}
+    }
+
+  /* Stop editing if any */
+  if (_textObject != nil)
+    {
+      [self validateEditing];
+      [self abortEditing];
+    }
+  
+  if (extend == NO)
+    {
+      /* If the current selection is the one we want, just ends editing
+       * This is not just a speed up, it prevents us from sending
+       * a NSTableViewSelectionDidChangeNotification.
+       * This behaviour is required by the specifications */
+      if ([_selectedColumns isEqualToIndexSet: indexes])
+        {
+	  if (!empty)
+	    {
+	      _selectedColumn = [indexes lastIndex];
+	    }
+	  return;
+	}
+
+      [self _unselectAllColumns];
+      changed = YES;
+    }
+
+  if (!empty)
+    {
+      if ([indexes lastIndex] >= _numberOfColumns)
+        {
+	  [NSException raise: NSInvalidArgumentException
+		       format: @"Column index out of table in selectColumn"];
+	}
+
+      /* This check is not fully correct, as both sets may contain just 
+	 the same entry, but works according to the old specification. */
+      if (_allowsMultipleSelection == NO && 
+	  [_selectedColumns count] + [indexes count] > 1)
+        {
+	  [NSException raise: NSInternalInconsistencyException
+		       format: @"Can not set multiple selection in table view when multiple selection is disabled"];  
+	}
+
+      col = [indexes firstIndex];
+      while (col != NSNotFound)
+        {
+	  if (![_selectedColumns containsIndex: col])
+	    {
+	      [self setNeedsDisplayInRect: [self rectOfColumn: col]];
+	      if (_headerView)
+	        {
+		  [_headerView setNeedsDisplayInRect: 
+				   [_headerView headerRectOfColumn: col]];
+		}
+	      changed = YES;
+	    }
+	  col = [indexes indexGreaterThanIndex: col];
+	}
+      [_selectedColumns addIndexes: indexes];
+      _selectedColumn = [indexes lastIndex];
+    }
+
+  if (changed)
+    {
+      [self _postSelectionDidChangeNotification];
+    }
 }
 
 - (void) selectRowIndexes: (NSIndexSet *)indexes byExtendingSelection: (BOOL)extend
 {
-  // FIXME
+  BOOL empty = ([indexes firstIndex] == NSNotFound);
+  BOOL changed = NO;
+  unsigned int row;
+  
+  if (_selectingColumns)
+    {
+      _selectingColumns = NO;
+      if (_headerView)
+	{
+	  [_headerView setNeedsDisplay: YES];
+	}
+    }
+
+  /* Stop editing if any */
+  if (_textObject != nil)
+    {
+      [self validateEditing];
+      [self abortEditing];
+    }
+  
+  if (extend == NO)
+    {
+      /* If the current selection is the one we want, just ends editing
+       * This is not just a speed up, it prevents us from sending
+       * a NSTableViewSelectionDidChangeNotification.
+       * This behaviour is required by the specifications */
+      if ([_selectedRows isEqualToIndexSet: indexes])
+        {
+	  if (!empty)
+	    {
+	      _selectedRow = [indexes lastIndex];
+	    }
+	  return;
+	}
+
+      [self _unselectAllRows];
+      changed = YES;
+    }
+
+  if (!empty)
+    {
+      if ([indexes lastIndex] >= _numberOfRows)
+        {
+	  [NSException raise: NSInvalidArgumentException
+		       format: @"Row index out of table in selectRow"];
+	}
+
+      /* This check is not fully correct, as both sets may contain just 
+	 the same entry, but works according to the old specification. */
+      if (_allowsMultipleSelection == NO && 
+	  [_selectedRows count] + [indexes count] > 1)
+        {
+	  [NSException raise: NSInternalInconsistencyException
+		       format: @"Can not set multiple selection in table view when multiple selection is disabled"];  
+	}
+
+      row = [indexes firstIndex];
+      while (row != NSNotFound)
+        {
+	  if (![_selectedRows containsIndex: row])
+	    {
+	      [self setNeedsDisplayInRect: [self rectOfRow: row]];
+	    }
+	  row = [indexes indexGreaterThanIndex: row];
+	}
+      [_selectedRows addIndexes: indexes];
+      _selectedRow = [indexes lastIndex];
+      changed = YES;
+    }
+
+  if (changed)
+    {
+      [self _postSelectionDidChangeNotification];
+    }
 }
 
 - (NSIndexSet *) selectedColumnIndexes;

@@ -1,3 +1,16 @@
+2004-05-08  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Header/Cocoa/Cocoa.h:
+	New header file for Cocoa compatibility. Currently not installed.
+	* Source/NSTableView.m:
+	Implemented [selectColumnIndexes:byExtendingSelection:] and
+	[selectRowIndexes:byExtendingSelection:].
+	* Source/NSDocument.m:
+	Implemented [runModalSavePanelForSaveOperation:..contextInfo:], 
+	[saveDocumentWithDelegate:didSaveSelector:contextInfo:] and
+	[saveToFile:..contextInfo:]. Added call to [prepareSavePanel] in
+	[fileNameFromRunningSavePanelForSaveOperation:]. 
+
 2004-05-04  Enrico Sersale  <enrico@imago.ro>
 
 	* Source/NSWindow.m ([NSWindow -sendEvent:]): Doesn't makeKeyAndOrderFront
