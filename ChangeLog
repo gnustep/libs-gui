@@ -1,3 +1,9 @@
+2002-09-16 19:28  Alexander Malmberg  <alexander@malmberg.org>
+
+	* Source/NSFont (+initialize, -initWithCoder:, -encodeWithCoder:):
+	Encode and decode matrixExplicitlySet, and guess its value when
+	loading old encoded objects.
+
 2002-09-16 19:05  Alexander Malmberg  <alexander@malmberg.org>
 
 	* Source/NSWindow.m (-close): Retain and release self to make sure

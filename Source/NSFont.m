@@ -165,6 +165,8 @@ setNSFont(NSString* key, NSFont* font)
 	{
 	  defaults = RETAIN([NSUserDefaults standardUserDefaults]);
 	}
+
+      [self setVersion: 2];
     }
 }
 
@@ -771,16 +773,34 @@ setNSFont(NSString* key, NSFont* font)
 {
   [aCoder encodeObject: fontName];
   [aCoder encodeArrayOfObjCType: @encode(float)  count: 6  at: matrix];
+  [aCoder encodeValueOfObjCType: @encode(BOOL)  at: &matrixExplicitlySet];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
+  int version = [aDecoder versionForClassName: 
+			    @"NSFont"];
   id	name;
   float	fontMatrix[6];
 
   name = [aDecoder decodeObject];
   [aDecoder decodeArrayOfObjCType: @encode(float)  count: 6  at: fontMatrix];
-  return [self initWithName: name  matrix: fontMatrix];
+  self = [self initWithName: name  matrix: fontMatrix];
+
+  if (version == 2)
+    {
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &matrixExplicitlySet];
+    }
+  else
+    {
+      if (fontMatrix[0] == fontMatrix[3]
+	  && fontMatrix[1]==0.0
+	  && fontMatrix[2]==0.0)
+	{
+	  matrixExplicitlySet = NO;
+	}
+    }
+  return self;
 }
 
 @end /* NSFont */
