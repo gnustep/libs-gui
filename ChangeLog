@@ -1,3 +1,23 @@
+2001-09-01  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSMenuItemCell.h
+	Removed ivars mcell_highlighted and mcell_has_submenu. 
+	Renamed all ivars.
+	* Source/NSMenuItemCell.m
+	Replaced use of mcell_highlighted with _cell.is_highlighted. 
+	Removed this ivar and mcell_has_submenu from the coding methods.
+	Removed method [highlight:withFrame:inView:]. in
+	[drawBorderAndBackgroundWithFrame:inView:] moved duplicated out of
+	if clause. in [calcSize] use cached arrow image for submenu sizing and
+	changed image size code. Change all composite operators from
+	NSCompositeCopy to NSCompositeSourceOver. Use the cached colour if
+	it is computed otherwise ignore it. In [drawWithFrame:inView:] allways call 
+	[drawBorderAndBackgroundWithFrame:inView:] and check for border there.
+	Moved lockfocus calls down one level. In [drawInteriorWithFrame:inView:]
+	removed some of the checks already done in [drawWithFrame:inView:].
+	Replaced all the highlight/state logic with the one used in
+	NSButtonCell.
+	
 2001-08-31  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSBitmapImageRep.m (-encodeWithCoder:): Encode data correctly.
