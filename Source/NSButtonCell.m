@@ -185,7 +185,6 @@
 {
   _delayInterval = delay;
   _repeatInterval = interval;
-  [self setContinuous: YES];
 }
 
 //
