@@ -456,6 +456,7 @@ typedef enum _NSControlSize {
 		     inFrame: (NSRect)aRect;
 - (void) _drawImage: (NSImage *)anImage inFrame: (NSRect)aRect 
   isFlipped: (BOOL)flipped;
+- (BOOL) _sendsActionOn:(int)eventTypeMask;
 @end
 
 //

@@ -3457,45 +3457,73 @@ inline float computePeriod(NSPoint mouseLocationWin,
 	  NSTableColumn *tb;
 	  NSCell *cell;
 	  NSRect cellFrame;
+	  int actionMaskForCurrentEvent;
 	  
+	  switch ([lastEvent type])
+	    {
+	    case NSLeftMouseDown:
+	      actionMaskForCurrentEvent = NSLeftMouseDownMask 
+		| NSLeftMouseUpMask 
+		| NSLeftMouseDraggedMask;
+	      break;
+	    case NSRightMouseDown:
+	      actionMaskForCurrentEvent = NSRightMouseDownMask
+		| NSRightMouseUpMask
+		| NSRightMouseDraggedMask;
+	      break;
+	    case NSOtherMouseDown:
+	      actionMaskForCurrentEvent = NSOtherMouseDownMask 
+		| NSOtherMouseUpMask 
+		| NSOtherMouseDraggedMask;
+	      break;
+	    default:
+	      /* Can't happen */
+	      actionMaskForCurrentEvent = -1;
+	      break;
+	    } 
+	    
 	  // Prepare the cell
 	  tb = [_tableColumns objectAtIndex: _clickedColumn];
 	  cell = [tb dataCellForRow: _clickedRow];
-	  [cell setObjectValue: [self _objectValueForTableColumn: tb
-				      row: _clickedRow]];
-	  cellFrame = [self frameOfCellAtColumn: _clickedColumn 
-		       row: _clickedRow];
-	  [cell setHighlighted: YES];
-	  [self setNeedsDisplayInRect: cellFrame];
-	  /* give delegate a chance to i.e set target */
-	  [self _willDisplayCell: cell
-		forTableColumn: tb
-		row: _clickedRow];
-	  if ([cell trackMouse: lastEvent
-		    inRect: cellFrame
-		    ofView: self
-		    untilMouseUp: [[cell class] prefersTrackingUntilMouseUp]])
+	  if ([cell _sendsActionOn: actionMaskForCurrentEvent])
 	    {
-	      if ([tb isEditable])
-	        {
-		  [self _setObjectValue: [cell objectValue]
-			forTableColumn: tb
-			row: _clickedRow];
-		} 
-	      done = YES;
-	      currentRow = _clickedRow;
-	      computeNewSelection(self,
-				  oldSelectedRows, 
-				  _selectedRows,
-				  originalRow,
-				  oldRow,
-				  currentRow,
-				  &_selectedRow,
-				  selectionMode);
+	      [cell setObjectValue: [self _objectValueForTableColumn: tb
+					  row: _clickedRow]];
+	      cellFrame = [self frameOfCellAtColumn: _clickedColumn 
+				row: _clickedRow];
+	      [cell setHighlighted: YES];
+	      [self setNeedsDisplayInRect: cellFrame];
+	      /* give delegate a chance to i.e set target */
+	      [self _willDisplayCell: cell
+		    forTableColumn: tb
+		    row: _clickedRow];
+	      if ([cell trackMouse: lastEvent
+			inRect: cellFrame
+			ofView: self
+			untilMouseUp: [[cell class] prefersTrackingUntilMouseUp]])
+		{
+		  if ([tb isEditable])
+		    {
+		      [self _setObjectValue: [cell objectValue]
+			    forTableColumn: tb
+			    row: _clickedRow];
+		    } 
+		  done = YES;
+		  currentRow = _clickedRow;
+		  computeNewSelection(self,
+				      oldSelectedRows, 
+				      _selectedRows,
+				      originalRow,
+				      oldRow,
+				      currentRow,
+				      &_selectedRow,
+				      selectionMode);
+		}
+	      
+	      [cell setHighlighted: NO];
+	      [self setNeedsDisplayInRect: cellFrame];
+	      lastEvent = [NSApp currentEvent];
 	    }
-	  [cell setHighlighted: NO];
-	  [self setNeedsDisplayInRect: cellFrame];
-	  lastEvent = [NSApp currentEvent];
 	}
 
       while (done != YES)

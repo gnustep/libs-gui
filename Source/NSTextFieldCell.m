@@ -35,6 +35,7 @@
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSTextFieldCell.h"
 #include "AppKit/NSText.h"
+#include "AppKit/NSEvent.h"
 
 static NSColor	*bgCol;
 static NSColor	*txtCol;
@@ -94,6 +95,7 @@ static NSColor	*txtCol;
   ASSIGN(_background_color, bgCol);
   _textfieldcell_draws_background = NO;
   _textfieldcell_is_opaque = NO;
+  _action_mask = NSKeyUpMask | NSKeyDownMask;
   return self;
 }
 

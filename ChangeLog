@@ -1,3 +1,12 @@
+2004-09-12 Matt Rice <ratmice@yahoo.com>
+	* Headers/AppKit/NSCell.h (-_sendsActionOn:): New method.
+	* Source/NSCell.m (-_sendsActionOn:): Implement it.
+	* Source/NSTextFieldCell.m (-initTextCell:): Change _action_mask to a
+	key press.
+	* Source/NSTableView.m (-mouseDown:): Use _sendsActionOn: to only modify
+	the object value and send the event to the cell if the cell works on
+	mouse events. (Fixes #9609).
+
 2004-09-12 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/NSDataLinkPanel.h: Added new attributes.

@@ -2213,6 +2213,10 @@ static NSColor	*shadowCol;
   
   [anImage compositeToPoint: position operation: NSCompositeSourceOver];
 }
+- (BOOL) _sendsActionOn:(int)eventTypeMask
+{
+  return (_action_mask & eventTypeMask);
+}
 
 @end
 
