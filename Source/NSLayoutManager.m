@@ -1450,13 +1450,11 @@ container
 		    characterIndex: char_index
 		    layoutManager: self];
 		  [f set];
-		  if (color)
-		    [color set];
-		  else
+		  if (color == nil)
 		    {
-		      DPSsetgray(ctxt, 0.0);
-		      DPSsetalpha(ctxt, 1.0);
+		      color = defaultTextColor;
 		    }
+		  [color set];
 		}
 	      continue;
 	    }

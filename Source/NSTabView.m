@@ -442,7 +442,7 @@
 	      r.size.height = 15 + iFlex;
 
 	      DPSsetlinewidth(ctxt,1);
-	      DPSsetgray(ctxt,1);
+	      DPSsetgray(ctxt, NSWhite);
 	      DPSmoveto(ctxt, r.origin.x, r.origin.y-1);
 	      DPSrlineto(ctxt, r.size.width, 0);
 	      DPSstroke(ctxt);      
@@ -500,7 +500,7 @@
 	      iFlex = 0;
 
 	      DPSsetlinewidth(ctxt,1);
-	      DPSsetgray(ctxt,1);
+	      DPSsetgray(ctxt, NSWhite);
 	      DPSmoveto(ctxt, r.origin.x, r.origin.y - 1);
 	      DPSrlineto(ctxt, r.size.width, 0);
 	      DPSstroke(ctxt);      
@@ -568,7 +568,7 @@
 	      r.size.height = 15;
 	      
 	      DPSsetlinewidth(ctxt,1);
-	      DPSsetgray(ctxt,1);
+	      DPSsetgray(ctxt, NSWhite);
 	      DPSmoveto(ctxt, r.origin.x, r.origin.y+16);
 	      DPSrlineto(ctxt, r.size.width, 0);
 	      DPSstroke(ctxt);      
@@ -616,7 +616,7 @@
 	      r.size.height = 15;
 
 	      DPSsetlinewidth(ctxt,1);
-	      DPSsetgray(ctxt,1);
+	      DPSsetgray(ctxt, NSWhite);
 	      DPSmoveto(ctxt, r.origin.x, r.origin.y+16);
 	      DPSrlineto(ctxt, r.size.width, 0);
 	      DPSstroke(ctxt);      
