@@ -1,3 +1,8 @@
+2001-11-18  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Tools/gopen.m: added a tool which works like the OPENSTEP 4.2/Mach 
+	"open" command to the tools directory.
+	
 2001-11-15  Laurent Julliard <laurent@julliard-online.org>
 	
 	* Source/NSBrowser.m: NSBrowser encoder and decoder added
