@@ -569,31 +569,42 @@ static inline NSRect integralRect (NSRect rect, NSView *view)
 
 - (void) setBackgroundColor: (NSColor*)aColor
 {
-  ASSIGN (_backgroundColor, aColor);
-
-  if (_drawsBackground == NO || _backgroundColor == nil
-      || [_backgroundColor alphaComponent] < 1.0)
+  if (![_backgroundColor isEqual: aColor])
     {
-      _isOpaque = NO;
+      ASSIGN (_backgroundColor, aColor);
+  
+      [self setNeedsDisplay: YES];
+    
+      if (_drawsBackground == NO || _backgroundColor == nil
+	  || [_backgroundColor alphaComponent] < 1.0)
+	{
+	  _isOpaque = NO;
+	}
+      else
+	{
+	  _isOpaque = YES;
+	}
     }
-  else
-    {
-      _isOpaque = YES;
-    }
+  
 }
 
 - (void) setDrawsBackground:(BOOL)flag
 {
-  _drawsBackground = flag; 
+  if (_drawsBackground != flag)
+    {
+      _drawsBackground = flag; 
 
-  if (_drawsBackground == NO || _backgroundColor == nil
-      || [_backgroundColor alphaComponent] < 1.0)
-    {
-      _isOpaque = NO;
-    }
-  else
-    {
-      _isOpaque = YES;
+      [self setNeedsDisplay: YES];
+
+      if (_drawsBackground == NO || _backgroundColor == nil
+	  || [_backgroundColor alphaComponent] < 1.0)
+	{
+	  _isOpaque = NO;
+	}
+      else
+	{
+	  _isOpaque = YES;
+	}
     }
 }
 
