@@ -48,6 +48,20 @@
 
 #define HUGE 1e7
 
+#define SET_DELEGATE_NOTIFICATION(notif_name) \
+  if ([_delegate respondsToSelector: @selector(textView##notif_name: )]) \
+    [nc addObserver: _delegate \
+           selector: @selector(textView##notif_name: ) \
+               name: NSTextView##notif_name##Notification \
+             object: _notifObject]
+ 
+/* YES when in the process of synchronizing text view attributes.  
+   It is used to avoid recursive synchronizations. */
+static BOOL isSynchronizingFlags = NO;
+static BOOL isSynchronizingDelegate = NO;
+
+/* The shared notification center */
+static NSNotificationCenter *nc;
 
 @interface NSText(GNUstepPrivate)
 + (NSDictionary*) defaultTypingAttributes;
@@ -67,6 +81,7 @@
     {
       [self setVersion: 1];
       [self registerForServices];
+      nc = [NSNotificationCenter defaultCenter];
     }
 }
 
@@ -256,9 +271,37 @@
   [self didChangeText];
 }
 
+- (NSString *) string
+{
+  return [_textStorage string];
+}
+
 /* 
  *  NSTextView's specific methods 
  */
+
+- (void) _updateMultipleTextViews
+{
+  id oldNotifObject = _notifObject;
+
+  if ([[_layoutManager textContainers] count] > 1)
+    {
+      _tvf.multiple_textviews = YES;
+      _notifObject = [_layoutManager firstTextView];
+    }
+  else
+    {
+      _tvf.multiple_textviews = NO;
+      _notifObject = self;
+    }  
+
+  if ((_delegate != nil) && (oldNotifObject != _notifObject))
+    {
+      [nc removeObserver: _delegate  name: nil  object: oldNotifObject];
+      SET_DELEGATE_NOTIFICATION (DidChangeSelection);
+      SET_DELEGATE_NOTIFICATION (WillChangeNotifyingTextView);
+    }
+}
 
 /* This should only be called by [NSTextContainer -setTextView:] */
 - (void) setTextContainer: (NSTextContainer*)aTextContainer
@@ -266,6 +309,8 @@
   _textContainer = aTextContainer;
   _layoutManager = [aTextContainer layoutManager];
   _textStorage = [_layoutManager textStorage];
+
+  [self _updateMultipleTextViews];
 
   // FIXME: Hack to get the layout change
   [_textContainer setContainerSize: _frame.size];
@@ -277,6 +322,10 @@
 
   /* Do not retain: text container is owning us. */
   _textContainer = aTextContainer;
+
+  [self _updateMultipleTextViews];
+
+  /* Update multiple_textviews flag */
 }
 
 - (NSTextContainer *) textContainer
@@ -381,15 +430,88 @@
   return NSDragOperationNone;
 }
 
+/* 
+ * Code to share settings between multiple textviews
+ *
+ */
+
+/* 
+   _syncTextViewsCalling:withFlag: calls a set method on all text
+   views sharing the same layout manager as this one.  It sets the
+   isSynchronizingFlags flag to YES to prevent recursive calls; calls the
+   specified action on all the textviews (this one included) with the
+   specified flag; sets back the isSynchronizingFlags flag to NO; then
+   returns.
+
+   We need to explicitly call the methods - we can't copy the flags
+   directly from one textview to another, to allow subclasses to
+   override eg setEditable: to take some particular action when
+   editing is turned on or off. */
+- (void) _syncTextViewsByCalling: (SEL)action  withFlag: (BOOL)flag
+{
+  NSArray *array;
+  int i, count;
+  void (*msg)(id, SEL, BOOL);
+
+  if (isSynchronizingFlags == YES)
+    {
+      [NSException raise: NSGenericException
+		   format: @"_syncTextViewsCalling:withFlag: "
+		   @"called recursively"];
+    }
+
+  array = [_layoutManager textContainers];
+  count = [array count];
+
+  msg = (void (*)(id, SEL, BOOL))[self methodForSelector: action];
+
+  if (!msg)
+    {
+      [NSException raise: NSGenericException
+		   format: @"invalid selector in "
+		   @"_syncTextViewsCalling:withFlag:"];
+    }
+
+  isSynchronizingFlags = YES;
+
+  for (i = 0; i < count; i++)
+    {
+      NSTextView *tv; 
+
+      tv = [(NSTextContainer *)[array objectAtIndex: i] textView];
+      (*msg) (tv, action, flag);
+    }
+
+  isSynchronizingFlags = NO;
+}
+
+#define NSTEXTVIEW_SYNC(X) \
+  if (_tvf.multiple_textviews && (isSynchronizingFlags == NO)) \
+      [self _syncTextViewsByCalling: @selector(##X##)  withFlag: flag]
+
 - (void) setEditable: (BOOL)flag
 {
+  NSTEXTVIEW_SYNC (setEditable:);
   [super setEditable: flag];
   /* FIXME/TODO: Update/show the insertion point */
 }
 
+- (void) setFieldEditor: (BOOL)flag
+{
+  NSTEXTVIEW_SYNC (setFieldEditor:);
+  [super setFieldEditor: flag];
+}
+
+- (void) setSelectable: (BOOL)flag
+{
+  NSTEXTVIEW_SYNC (setSelectable:);
+  [super setSelectable: flag];
+}
 
 - (void) setRichText: (BOOL)flag
 {
+  NSTEXTVIEW_SYNC (setRichText:);
+
   [super setRichText: flag];
   [self updateDragTypeRegistration];
   /* FIXME/TODO: Also convert text to plain text or to rich text */
@@ -397,12 +519,15 @@
 
 - (void) setImportsGraphics: (BOOL)flag
 {
+  NSTEXTVIEW_SYNC (setImportsGraphics:);
+
   [super setImportsGraphics: flag];
   [self updateDragTypeRegistration];
 }
 
 - (void) setUsesRuler: (BOOL)flag
 {
+  NSTEXTVIEW_SYNC (setUsesRuler:);
   _tf.uses_ruler = flag;
 }
 
@@ -411,15 +536,19 @@
   return _tf.uses_ruler;
 }
 
+- (void) setUsesFontPanel: (BOOL)flag
+{
+  NSTEXTVIEW_SYNC (setUsesFontPanel:);
+  [super setUsesFontPanel: flag];
+}
+
 - (void) setRulerVisible: (BOOL)flag
 {
+  NSTEXTVIEW_SYNC (setRulerVisible:);
   [super setRulerVisible: flag];
 }
 
-- (BOOL) isRulerVisible
-{
-  return _tf.is_ruler_visible;
-}
+#undef NSTEXTVIEW_SYNC
 
 - (void) setSelectedRange: (NSRange)charRange
 {
@@ -947,8 +1076,8 @@ the affected range or replacement string before beginning changes, pass
 
 - (void) didChangeText
 {
-  [[NSNotificationCenter defaultCenter]
-    postNotificationName: NSTextDidChangeNotification object: self];
+  [nc postNotificationName: NSTextDidChangeNotification  
+      object: _notifObject];
 }
 
 - (void) setSmartInsertDeleteEnabled: (BOOL)flag
@@ -1153,19 +1282,35 @@ container, returning the modified location. */
 
 - (void) setDelegate: (id) anObject
 {
-  NSNotificationCenter  *nc = [NSNotificationCenter defaultCenter];
+  if (_tvf.multiple_textviews && (isSynchronizingDelegate == NO))
+    {
+      /* Invoke setDelegate: on all the textviews which share this
+         delegate. */
+      NSArray *array;
+      int i, count;
 
+      isSynchronizingDelegate = YES;
+
+      array = [_layoutManager textContainers];
+      count = [array count];
+
+      for (i = 0; i < count; i++)
+	{
+	  NSTextView *view;
+
+	  view = [(NSTextContainer *)[array objectAtIndex: i] textView];
+	  [view setDelegate: anObject];
+	}
+      
+      isSynchronizingDelegate = NO;
+    }
+
+  /* Now the real code to set the delegate */
   [super setDelegate: anObject];
- 
-#define SET_DELEGATE_NOTIFICATION(notif_name) \
-  if ([_delegate respondsToSelector: @selector(textView##notif_name: )]) \
-    [nc addObserver: _delegate \
-           selector: @selector(textView##notif_name: ) \
-               name: NSTextView##notif_name##Notification \
-             object: self]
- 
-  SET_DELEGATE_NOTIFICATION(DidChangeSelection);
-  SET_DELEGATE_NOTIFICATION(WillChangeNotifyingTextView);
+
+  /* SET_DELEGATE_NOTIFICATION defined at the beginning of file */
+  SET_DELEGATE_NOTIFICATION (DidChangeSelection);
+  SET_DELEGATE_NOTIFICATION (WillChangeNotifyingTextView);
 }
 
 @end
