@@ -1986,12 +1986,15 @@ replacing the selection.
 
 - (void) updateRuler
 {
+  NSScrollView *sv;
+  NSRulerView *rv;
+
   /* Update ruler view only if told so */
-  if (_tf.uses_ruler && _tf.is_ruler_visible)
+  if (_tf.uses_ruler && _tf.is_ruler_visible &&
+      (sv = [self enclosingScrollView]) != nil && 
+      (rv = [sv horizontalRulerView]) != nil)
     {
       NSParagraphStyle *paraStyle;
-      NSScrollView *sv = [self enclosingScrollView];
-      NSRulerView *rv = [sv horizontalRulerView];
       NSArray *makers;
 
       if (_selected_range.length > 0) /* Multiple chars selection */
