@@ -1,3 +1,9 @@
+2003-11-25 17:16  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSWindow.m (-orderWindow:relativeTo:): Start the window
+	auto-display performer when a window is ordered in regardless of
+	whether it needs display right now or not.
+
 2003-11-23  Adam Fedor  <fedor@gnu.org>
 
 	* Version 0.9.1

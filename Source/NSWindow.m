@@ -1433,22 +1433,20 @@ many times.
 
   if (place != NSWindowOut)
     {
-      if (_rFlags.needs_display == YES)
-	{
-	  /*
-	   * Once we are ordered back in, we will want to update the window
-	   * whenever there is anything to do.
-	   */
-	  [[NSRunLoop currentRunLoop]
-		 performSelector: @selector(_handleWindowNeedsDisplay:)
-			  target: self
-			argument: nil
-			   order: 600000
-			   modes: [NSArray arrayWithObjects:
-					   NSDefaultRunLoopMode,
-					   NSModalPanelRunLoopMode,
-					   NSEventTrackingRunLoopMode, nil]];
-	}
+      /*
+       * Once we are ordered back in, we will want to update the window
+       * whenever there is anything to do.
+       */
+      [[NSRunLoop currentRunLoop]
+	performSelector: @selector(_handleWindowNeedsDisplay:)
+		 target: self
+	       argument: nil
+		  order: 600000
+		  modes: [NSArray arrayWithObjects:
+			    NSDefaultRunLoopMode,
+			    NSModalPanelRunLoopMode,
+			    NSEventTrackingRunLoopMode, nil]];
+
       if (_f.has_closed == YES)
 	{
 	  _f.has_closed = NO;	/* A closed window has re-opened	*/
