@@ -1,3 +1,7 @@
+Fri Nov 20 10:59:55 1998  Adam Fedor  <fedor@ultra.doc.com>
+
+	* Source/NSDPSContext.m: Moved to xdps backend.
+
 1998-11-20 01:50  Lyndon Tremblay   <tremblay2@home.com>
 
 	* GMAppKit.h: Added NSBrowser
