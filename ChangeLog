@@ -1,3 +1,8 @@
+2002-02-09  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Source/GSFontInfo.m: ([GSFontInfo -defaultLineHeightForFont]): 
+	descender is substracted not added to ascender to give the lineHeight
+
 2002-02-09  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWindow.m: ([performMiniaturize:]) patch to check style
