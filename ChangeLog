@@ -1,3 +1,22 @@
+Tue Jan 21 00:39:52 2003  Serg Stoyan <stoyan@on.com.ua>
+
+	* Source/NSMenu.m ([-performKeyEquivalent:]): Only perform the
+	higlighting if the item is enabled.
+	* Source/NSMenuView.m
+	([-performActionWithHighlightingForItemAtIndex:]): Run the run
+	loop for a fraction of a second before executing the action, so
+	that the highlighted item is displayed.  Do not remove the
+	highlighted item if a popup menu.
+	* Source/NSPopUpButton.m ([-mouseDown:]): Leave the selection
+	unchanged if the item which was selected is disabled.
+	([-performKeyEquivalent:]): Mark the popup button as needing
+	redisplay if the key equivalent is performed.
+	
+Mon Jan 20 00:37:39 2003  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSWorkspace.m ([NSWorkspace +initialize]): Wrap in
+	an exception handler so we are sure to release the lock.
+
 2003-01-14  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSSound.m ([NSSound +gsnd]): Rename daemon to gnustep_sndd
