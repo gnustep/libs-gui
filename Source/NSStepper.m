@@ -79,11 +79,6 @@ id _nsstepperCellClass = nil;
 //
 // Determining the first responder
 //
-- (BOOL) acceptsFirstResponder
-{
-  return [self isEnabled];
-}
-
 - (BOOL) becomeFirstResponder
 {
   [_cell setShowsFirstResponder: YES];

@@ -317,11 +317,6 @@ id _nsbuttonCellClass = nil;
 //
 // Determining the first responder
 //
-- (BOOL) acceptsFirstResponder
-{
-  return [self isEnabled];
-}
-
 - (BOOL) becomeFirstResponder
 {
   [_window disableKeyEquivalentForDefaultButtonCell];
