@@ -38,10 +38,10 @@
 {
   NSMutableArray *_items;
   NSMutableArray *_expandedItems;
-  BOOL _resize;
-  BOOL _followsCell;
+  BOOL _autoResizesOutlineColumn;
+  BOOL _indentationMarkerFollowsCell;
   BOOL _autosaveExpandedItems;
-  float _indentLevel;
+  float _indentationPerLevel;
   NSTableColumn *_outlineTableColumn;
   BOOL _shouldCollapse;
 }

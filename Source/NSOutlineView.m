@@ -229,12 +229,10 @@ _selectionChange (NSOutlineView *ov, id delegate, int numberOfRows,
 {
   [super initWithFrame: frame];
 
-  NSLog(@"Intializing NSOutlineView");
-
-  _resize = NO;
-  _followsCell = NO;
+  _indentationMarkerFollowsCell = NO;
+  _autoResizesOutlineColumn = NO;
   _autosaveExpandedItems = NO;
-  _indentLevel = 0.0;
+  _indentationPerLevel = 0.0;
   _outlineTableColumn = nil;
   _shouldCollapse = NO;
   _items = [NSMutableArray array];
@@ -249,7 +247,7 @@ _selectionChange (NSOutlineView *ov, id delegate, int numberOfRows,
 
 - (BOOL)autoResizesOutlineColumn
 {
-  return _resize;
+  return _autoResizesOutlineColumn;
 }
 
 - (BOOL)autosaveExpandedItems
@@ -413,6 +411,7 @@ _selectionChange (NSOutlineView *ov, id delegate, int numberOfRows,
   const SEL shouldExpandSelector = @selector(outlineView:shouldExpandItem:);
   BOOL canExpand = YES;
 
+  NSLog(@"HELLO!!!!!!!!");
   if([_delegate respondsToSelector: shouldExpandSelector])
     {
       canExpand = [_delegate outlineView: self shouldExpandItem: item];
@@ -420,7 +419,7 @@ _selectionChange (NSOutlineView *ov, id delegate, int numberOfRows,
 
   if([self isExpandable: item] && ![self isItemExpanded: item] && canExpand)
     {
-      NSMutableDictionary *infoDict = [NSDictionary dictionary];
+      NSMutableDictionary *infoDict = [NSMutableDictionary dictionary];
       
       [infoDict setObject: item forKey: @"NSObject"];
       
@@ -475,12 +474,12 @@ _selectionChange (NSOutlineView *ov, id delegate, int numberOfRows,
 
 - (BOOL)indentationMarkerFollowsCell
 {
-  return _followsCell;
+  return _indentationMarkerFollowsCell;
 }
 
 - (float)indentationPerLevel
 {
-  return _indentLevel;
+  return _indentationPerLevel;
 }
 
 - (BOOL)isExpandable: (id)item
@@ -514,7 +513,7 @@ _selectionChange (NSOutlineView *ov, id delegate, int numberOfRows,
 {
   if(item == nil)
     {
-      return -1;
+      return 0;
     }
   
   return 0;
@@ -547,7 +546,7 @@ _selectionChange (NSOutlineView *ov, id delegate, int numberOfRows,
 
 - (void)setAutoresizesOutlineColumn: (BOOL)resize
 {
-  _resize = resize;
+  _autoResizesOutlineColumn = resize;
 }
 
 - (void)setAutosaveExpandedItems: (BOOL)flag
@@ -562,12 +561,12 @@ _selectionChange (NSOutlineView *ov, id delegate, int numberOfRows,
 
 - (void)setIndentationMarkerFollowsCell: (BOOL)followsCell
 {
-  _followsCell = followsCell;
+  _indentationMarkerFollowsCell = followsCell;
 }
 
 - (void)setIndentationPerLevel: (float)newIndentLevel
 {
-  _indentLevel = newIndentLevel;
+  _indentationPerLevel = newIndentLevel;
 }
 
 - (void)setOutlineTableColumn: (NSTableColumn *)outlineTableColumn
@@ -741,10 +740,10 @@ _selectionChange (NSOutlineView *ov, id delegate, int numberOfRows,
 {
   [super encodeWithCoder: aCoder];
 
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_resize];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_followsCell];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autoResizesOutlineColumn];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_indentationMarkerFollowsCell];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_autosaveExpandedItems];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &_indentLevel];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &_indentationPerLevel];
   [aCoder encodeConditionalObject: _outlineTableColumn];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_shouldCollapse];
 }
@@ -754,10 +753,10 @@ _selectionChange (NSOutlineView *ov, id delegate, int numberOfRows,
   // Since we only have one version....
   self = [super initWithCoder: aDecoder];
   
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_resize];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_followsCell];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_autoResizesOutlineColumn];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_indentationMarkerFollowsCell];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_autosaveExpandedItems];
-  [aDecoder decodeValueOfObjCType: @encode(float) at: &_indentLevel];
+  [aDecoder decodeValueOfObjCType: @encode(float) at: &_indentationPerLevel];
   _outlineTableColumn = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_shouldCollapse];
 
@@ -1291,6 +1290,11 @@ byExtendingSelection: (BOOL)flag
 	{
 	  BOOL newSelection;
 
+	  NSLog(@"row which was clicked %d, item %@", 
+		_clickedRow,
+		[self itemAtRow: _clickedRow]);
+	  [self expandItem: [self itemAtRow: _clickedRow]];
+
 	  if ((modifiers & (NSShiftKeyMask | NSAlternateKeyMask)) 
 	      && _allowsMultipleSelection)
 	    newSelection = NO;
@@ -1306,7 +1310,7 @@ byExtendingSelection: (BOOL)flag
 		}
 	    }
 	  
-	  selector = @selector (outlineView:shouldSelectRow:);
+	  selector = @selector (outlineView:shouldSelectItem:);
 	  if ([_delegate respondsToSelector: selector] == YES) 
 	    {
 	      id clickedItem = [self itemAtRow: _clickedRow];
@@ -1628,7 +1632,6 @@ byExtendingSelection: (BOOL)flag
   NSRect imageRect;
   int i;
   float x_pos;
-  id item; 
 
   NSLog(@"In the drawing code...");
   if (_dataSource == nil)
@@ -1695,17 +1698,34 @@ byExtendingSelection: (BOOL)flag
 
 	  if(tb == _outlineTableColumn)
 	    {
+	      NSImage *arrow = nil;
+
+	      // display the correct arrow...
+	      if([self isItemExpanded: item])
+		{
+		  arrow = downArrow;
+		}
+	      else
+		{
+		  arrow = rightArrow;
+		}
+
 	      NSLog(@"outlineColumn: %@", item);
-	      imageCell = [[NSCell alloc] initImageCell: rightArrow];
+	      imageCell = [[NSCell alloc] initImageCell: arrow];
 	      imageRect.origin.x = drawingRect.origin.x;
 	      imageRect.origin.y = drawingRect.origin.y;
-	      imageRect.size.width = [rightArrow size].width;
-	      imageRect.size.height = [rightArrow size].height;
-	      [imageCell drawWithFrame: imageRect inView: self];
+	      imageRect.size.width = [arrow size].width;
+	      imageRect.size.height = [arrow size].height;
+
+	      // Draw the arrow if the item is expandable..
+	      if([self isExpandable: item])
+		{
+		  [imageCell drawWithFrame: imageRect inView: self];
+		}
 
 	      // reformat drawing rect, so that there is no overlap
-	      drawingRect.origin.x += [rightArrow size].width + 1;
-	      drawingRect.size.width -= [rightArrow size].width + 1;
+	      drawingRect.origin.x += [arrow size].width + 1;
+	      drawingRect.size.width -= [arrow size].width + 1;
 	    }
 
 	  [cell drawWithFrame: drawingRect inView: self];
