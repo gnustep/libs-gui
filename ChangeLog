@@ -2,6 +2,8 @@
 
 	* Source/GSServicesManager.m: on opening file, only activate for
 	document based applications as suggested by Alexander.
+	* Source/NSWorkspace.m: ([_connectApplication:]) fix to handle
+	retries and timeouts correctly.
 
 2003-04-10 01:53  Alexander Malmberg <alexander@malmberg.org>
 

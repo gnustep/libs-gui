@@ -1908,10 +1908,9 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
   NSString	*host;
   NSString	*port;
   NSDate	*when = nil;
-  BOOL		done = NO;
   id		app = nil;
 
-  while (done == NO)
+  while (app == nil)
     {
       host = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
       if (host == nil)
@@ -1944,51 +1943,53 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	}
       NS_ENDHANDLER
 
-      done = YES;
       if (app == nil)
 	{
 	  NSTask	*task = [_launched objectForKey: appName];
+	  NSDate	*limit;
 
-	  if (task != nil && [task isRunning] == YES)
+	  if (task == nil || [task isRunning] == NO)
 	    {
-	      if (when == nil)
+	      if (task != nil)	// Not running
 		{
-		  when = [[NSDate alloc] init];
-		  done = NO;
+		  [_launched removeObjectForKey: appName];
 		}
-	      else if ([when timeIntervalSinceNow] > 5.0)
+	      break;		// Need to launch the app
+	    }
+
+	  if (when == nil)
+	    {
+	      when = [[NSDate alloc] init];
+	    }
+	  else if ([when timeIntervalSinceNow] < -5.0)
+	    {
+	      int		result;
+
+	      DESTROY(when);
+	      result = NSRunAlertPanel(appName,
+		@"Application seems to have hung",
+		@"Continue", @"Terminate", @"Wait");
+
+	      if (result == NSAlertDefaultReturn)
 		{
-		  int		result;
-
-		  DESTROY(when);
-		  result = NSRunAlertPanel(appName,
-		    @"Application seems to have hung",
-		    @"Continue", @"Terminate", @"Wait");
-
-		  if (result == NSAlertDefaultReturn)
-		    {
-		      done = YES;
-		    }
-		  else if (result == NSAlertOtherReturn)
-		    {
-		      done = NO;
-		    }
-		  else
-		    {
-		      [task terminate];
-		      [_launched removeObjectForKey: appName];
-		      done = YES;
-		    }
+		  break;		// Finished without app
 		}
-	      if (done == NO)
+	      else if (result == NSAlertOtherReturn)
 		{
-		  NSDate	*limit;
-
-		  limit = [[NSDate alloc] initWithTimeIntervalSinceNow: 0.5];
-		  [[NSRunLoop currentRunLoop] runUntilDate: limit];
-		  RELEASE(limit);
+		  // Continue to wait for app startup.
+		}
+	      else
+		{
+		  [task terminate];
+		  [_launched removeObjectForKey: appName];
+		  break;		// Terminate hung app
 		}
 	    }
+
+	  // Give it another 0.5 of a second to start up.
+	  limit = [[NSDate alloc] initWithTimeIntervalSinceNow: 0.5];
+	  [[NSRunLoop currentRunLoop] runUntilDate: limit];
+	  RELEASE(limit);
 	}
     }
   TEST_RELEASE(when);
