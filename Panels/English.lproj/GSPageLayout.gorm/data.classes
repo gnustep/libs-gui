@@ -145,36 +145,55 @@
 	    "pickedUnits:",
 	    "pickedButton:",
 	    "pickedPaperSize:",
-	    "buttonClicked:",
-	    "paperSelected:",
-	    "unitsSelected:",
-	    "orientationMatrixClicked:",
-	    "scaleSelected:",
-	    "widthSelected:",
-	    "heightSelected:"
+	    "okButtonClicked:",
+	    "cancelButtonClicked:",
+	    "customPaperButtonsClicked:",
+	    "paperRadioMatrixClicked:",
+	    "printerPopUpClicked:",
+	    "paperPopUpClicked:",
+	    "paperOrientationMatrixClicked:"
 	);
 	Super = NSObject;
     };
     GSPageLayoutController = {
 	Actions = (
-	    "buttonClicked:",
-	    "paperSelected:",
-	    "unitsSelected:",
-	    "orientationMatrixClicked:",
-	    "scaleSelected:",
-	    "widthSelected:",
-	    "heightSelected:"
+	    "okButtonClicked:",
+	    "cancelButtonClicked:",
+	    "customPaperButtonsClicked:",
+	    "paperRadioMatrixClicked:",
+	    "printerPopUpClicked:",
+	    "paperPopUpClicked:",
+	    "paperOrientationMatrixClicked:"
 	);
 	Outlets = (
-	    _panel,
-	    _orientationMatrix,
-	    _widthField,
-	    _heightField,
-	    _unitsButton,
-	    _paperNameButton,
-	    _scaleField,
-	    _imageButton,
-	    _miniPageView
+	    panel,
+	    paperRadioMatrix,
+	    standardPaperSizePopUp,
+	    customPaperSizePopUp,
+	    dimensionsTextField,
+	    paperOrientationMatrix,
+	    paperAttributesPreview,
+	    scaleTextField,
+	    customPaperTableView,
+	    customPaperWidthTextField,
+	    customPaperHeightTextField,
+	    customPaperMarginTopTextField,
+	    customPaperMarginBottomTextField,
+	    customPaperMarginRightTextField,
+	    customPaperMarginLeftTextField,
+	    customPaperPreview,
+	    summaryTableView,
+	    newCustomPaperButton,
+	    duplicateCustomPaperButton,
+	    deleteCustomPaperButton,
+	    saveCustomPaperButton,
+	    applicationImageButton,
+	    panelTitleField,
+	    customPaperNameColumn,
+	    summarySettingColumn,
+	    summaryValueColumn,
+	    printerPopUp,
+	    tabView
 	);
 	Super = NSObject;
     };
@@ -185,6 +204,13 @@
 	    _pageLayoutController
 	);
 	Super = NSView;
+    };
+    NSNumberFormatter = {
+	Actions = (
+	);
+	Outlets = (
+	);
+	Super = NSFormatter;
     };
     NSPageLayout = {
 	Actions = (

@@ -239,20 +239,21 @@ static NSPrintInfo *sharedPrintInfo = nil;
 - (void)setBottomMargin:(float)value
 {
   [_info setObject:[NSNumber numberWithFloat:value]
-	forKey:NSPrintBottomMargin];
+            forKey:NSPrintBottomMargin];
 }
 
 - (void)setLeftMargin:(float)value
 {
   [_info setObject:[NSNumber numberWithFloat:value]
-	forKey:NSPrintLeftMargin];
+            forKey:NSPrintLeftMargin];
 }
 
 - (void)setOrientation:(NSPrintingOrientation)mode
 {
   NSSize size;
   [_info setObject:[NSNumber numberWithInt:mode]
-	forKey:NSPrintOrientation];
+            forKey:NSPrintOrientation];
+		
   /* Set the paper size accordingly */
   size = [self paperSize];
   if ((mode == NSPortraitOrientation && size.width > size.height)
@@ -262,7 +263,7 @@ static NSPrintInfo *sharedPrintInfo = nil;
       size.width = size.height;
       size.height = tmp;
       [_info setObject: [NSValue valueWithSize: size] 
-	        forKey: NSPrintPaperSize];
+                forKey: NSPrintPaperSize];
     }
 }
 
@@ -270,15 +271,16 @@ static NSPrintInfo *sharedPrintInfo = nil;
 {
   DICTSET(_info, name, NSPrintPaperName);
   DICTSET(_info, 
-	  [NSValue valueWithSize: [NSPrintInfo sizeForPaperName: name]],
-	  NSPrintPaperSize);
+          [NSValue valueWithSize: [NSPrintInfo sizeForPaperName: name]],
+          NSPrintPaperSize);
 }
 
 - (void)setPaperSize:(NSSize)size
 {
   NSPrintingOrientation orient;
   [_info setObject:[NSValue valueWithSize:size]
-	forKey:NSPrintPaperSize];
+            forKey:NSPrintPaperSize];
+		
   /* Set orientation accordingly */
   if (size.width <= size.height)
     orient = NSPortraitOrientation;
@@ -290,13 +292,13 @@ static NSPrintInfo *sharedPrintInfo = nil;
 - (void)setRightMargin:(float)value
 {
   [_info setObject:[NSNumber numberWithFloat:value]
-	forKey:NSPrintRightMargin];
+            forKey:NSPrintRightMargin];
 }
 
 - (void)setTopMargin:(float)value
 {
   [_info setObject:[NSNumber numberWithFloat:value]
-	forKey:NSPrintTopMargin];
+            forKey:NSPrintTopMargin];
 }
 
 - (float)topMargin
@@ -309,20 +311,19 @@ static NSPrintInfo *sharedPrintInfo = nil;
 //
 - (NSPrintingPaginationMode)horizontalPagination
 {
-  return [(NSNumber *)[_info objectForKey:NSPrintHorizontalPagination]
-		      intValue];
+  return [(NSNumber*)[_info objectForKey:NSPrintHorizontalPagination] intValue];
 }
 
 - (void)setHorizontalPagination:(NSPrintingPaginationMode)mode
 {
   [_info setObject:[NSNumber numberWithInt:mode]
-	forKey:NSPrintHorizontalPagination];
+            forKey:NSPrintHorizontalPagination];
 }
 
 - (void)setVerticalPagination:(NSPrintingPaginationMode)mode
 {
   [_info setObject:[NSNumber numberWithInt:mode]
-	forKey:NSPrintVerticalPagination];
+            forKey:NSPrintVerticalPagination];
 }
 
 - (NSPrintingPaginationMode)verticalPagination
@@ -335,8 +336,7 @@ static NSPrintInfo *sharedPrintInfo = nil;
 //
 - (BOOL)isHorizontallyCentered
 {
-  return [(NSNumber *)[_info objectForKey:NSPrintHorizontallyCentered] 
-		      boolValue];
+  return [(NSNumber*)[_info objectForKey:NSPrintHorizontallyCentered]boolValue];
 }
 
 - (BOOL)isVerticallyCentered
@@ -347,13 +347,13 @@ static NSPrintInfo *sharedPrintInfo = nil;
 - (void)setHorizontallyCentered:(BOOL)flag
 {
   [_info setObject:[NSNumber numberWithBool:flag]
-	forKey:NSPrintHorizontallyCentered];
+            forKey:NSPrintHorizontallyCentered];
 }
 
 - (void)setVerticallyCentered:(BOOL)flag
 {
   [_info setObject:[NSNumber numberWithBool:flag]
-	forKey:NSPrintVerticallyCentered];
+            forKey:NSPrintVerticallyCentered];
 }
 
 //
@@ -366,7 +366,8 @@ static NSPrintInfo *sharedPrintInfo = nil;
 
 - (void)setPrinter:(NSPrinter *)aPrinter
 {
-  [_info setObject:aPrinter forKey:NSPrintPrinter];
+  [_info setObject:aPrinter 
+            forKey:NSPrintPrinter];
 }
 
 //
@@ -379,7 +380,8 @@ static NSPrintInfo *sharedPrintInfo = nil;
 
 - (void)setJobDisposition:(NSString *)disposition
 {
-  [_info setObject:disposition forKey:NSPrintJobDisposition];
+  [_info setObject:disposition 
+            forKey:NSPrintJobDisposition];
 }
 
 - (void)setUpPrintOperationDefaultValues

@@ -138,7 +138,7 @@
 
   /* Set up other defaults from the printer object */
   pageSize = [printer stringForKey: @"DefaultPageSize" 
-                         inTable: @"PPD"];
+                           inTable: @"PPD"];
                       
   /* FIXME: Need to check for AutoSelect and probably a million other things... */
   if (pageSize == nil)

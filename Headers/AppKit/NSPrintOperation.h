@@ -77,41 +77,41 @@ typedef enum _NSPrintingPageOrder {
 // Creating and Initializing an NSPrintOperation Object
 //
 + (NSPrintOperation *)EPSOperationWithView:(NSView *)aView
-				insideRect:(NSRect)rect
-				    toData:(NSMutableData *)data;
+                                insideRect:(NSRect)rect
+                                    toData:(NSMutableData *)data;
 + (NSPrintOperation *)EPSOperationWithView:(NSView *)aView	
-				insideRect:(NSRect)rect
-				    toData:(NSMutableData *)data
-				 printInfo:(NSPrintInfo *)aPrintInfo;
+                                insideRect:(NSRect)rect
+                                    toData:(NSMutableData *)data
+                                 printInfo:(NSPrintInfo *)aPrintInfo;
 + (NSPrintOperation *)EPSOperationWithView:(NSView *)aView	
-				insideRect:(NSRect)rect
-				    toPath:(NSString *)path
-				printInfo:(NSPrintInfo *)aPrintInfo;
+                                insideRect:(NSRect)rect
+                                    toPath:(NSString *)path
+                                 printInfo:(NSPrintInfo *)aPrintInfo;
 
 + (NSPrintOperation *)printOperationWithView:(NSView *)aView;
 + (NSPrintOperation *)printOperationWithView:(NSView *)aView
-				   printInfo:(NSPrintInfo *)aPrintInfo;
+                                   printInfo:(NSPrintInfo *)aPrintInfo;
 
 #ifndef	STRICT_OPENSTEP
 + (NSPrintOperation *)PDFOperationWithView:(NSView *)aView 
-				insideRect:(NSRect)rect 
-				    toData:(NSMutableData *)data;
+                                insideRect:(NSRect)rect 
+                                    toData:(NSMutableData *)data;
 + (NSPrintOperation *)PDFOperationWithView:(NSView *)aView 
-				insideRect:(NSRect)rect 
-				    toData:(NSMutableData *)data 
-				 printInfo:(NSPrintInfo*)aPrintInfo;
+                                insideRect:(NSRect)rect 
+                                    toData:(NSMutableData *)data 
+                                 printInfo:(NSPrintInfo*)aPrintInfo;
 + (NSPrintOperation *)PDFOperationWithView:(NSView *)aView 
-				insideRect:(NSRect)rect 
-				    toPath:(NSString *)path 
-				 printInfo:(NSPrintInfo*)aPrintInfo;
+                                insideRect:(NSRect)rect 
+                                    toPath:(NSString *)path 
+                                 printInfo:(NSPrintInfo*)aPrintInfo;
 #endif
 
 - (id)initEPSOperationWithView:(NSView *)aView
-		    insideRect:(NSRect)rect
-			toData:(NSMutableData *)data
-		    printInfo:(NSPrintInfo *)aPrintInfo;
+                    insideRect:(NSRect)rect
+                        toData:(NSMutableData *)data
+                     printInfo:(NSPrintInfo *)aPrintInfo;
 - (id)initWithView:(NSView *)aView
-	 printInfo:(NSPrintInfo *)aPrintInfo;
+         printInfo:(NSPrintInfo *)aPrintInfo;
 
 //
 // Setting the Print Operation
@@ -163,9 +163,9 @@ typedef enum _NSPrintingPageOrder {
 - (BOOL)runOperation;
 #ifndef STRICT_OPENSTEP
 - (void)runOperationModalForWindow: (NSWindow *)docWindow 
-			  delegate: (id)delegate 
-		    didRunSelector: (SEL)didRunSelector 
-		       contextInfo:(void *)contextInfo;
+                          delegate: (id)delegate 
+                    didRunSelector: (SEL)didRunSelector 
+                       contextInfo:(void *)contextInfo;
 #endif
 
 //
@@ -192,9 +192,9 @@ typedef enum _NSPrintingPageOrder {
 @interface NSPrintOperation (Private)
 
 - (id) initWithView:(NSView *)aView
-      	 insideRect:(NSRect)rect
-	           toData:(NSMutableData *)data
-	        printInfo:(NSPrintInfo *)aPrintInfo;
+         insideRect:(NSRect)rect
+             toData:(NSMutableData *)data
+          printInfo:(NSPrintInfo *)aPrintInfo;
 
 @end
 

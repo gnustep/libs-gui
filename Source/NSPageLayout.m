@@ -28,7 +28,9 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
 */ 
-
+#include <Foundation/NSNumberFormatter.h>
+#include <Foundation/NSDecimalNumber.h>
+#include <Foundation/NSUserDefaults.h>
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSFont.h"
 #include "AppKit/NSTextField.h"
@@ -46,6 +48,8 @@
 #include "AppKit/NSFormCell.h"
 #include "AppKit/NSPrintInfo.h"
 #include "AppKit/NSPageLayout.h"
+#include "AppKit/NSTableView.h"
+#include "AppKit/NSTabView.h"
 #include "AppKit/NSPrinter.h"
 #include "GSGuiPrivate.h"
 #include "GNUstepGUI/GSPrinting.h"
@@ -53,7 +57,24 @@
 static NSPageLayout *shared_instance;
 
 
-//#define CONTROL(panel, name) [[panel contentView] viewWithTag: name]
+//
+// The buttons on the panel for controlling
+// the addition, deletion, etc, of custom
+// papers.
+// The panel is also filled with NSTextFields
+// that appear as "un" when opened in GORM.
+// These have tags that start with 100 and
+// are numbered up from there.  They are programatically
+// set to text for the user's prefered measuremnt
+// unit, by looking at NSMeasurementUnit.
+enum {
+  GSPLNewCustomPaperButton = 200,
+  GSPLDuplicateCustomPaperButton = 201,
+  GSPLDeleteCustomPaperButton = 202,
+  GSPLSaveCustomPaperButton = 203
+};
+
+
 
 @implementation NSApplication (NSPageLayout)
 
@@ -64,51 +85,116 @@ static NSPageLayout *shared_instance;
 
 @end
 
-
-@interface GSPageLayoutController : NSObject
+//
+// This is the controller for NSPageLayout, it does most of the
+// work.  Implementation is near the end of the file
+//
+@interface GSPageLayoutController : NSObject //<NSTableDataSource>
 {
-  NSSize _size;
-  double _scale;
-  id _panel;
-  id _orientationMatrix;
-  id _widthField;
-  id _heightField;
-  id _unitsButton;
-  id _paperNameButton;
-  id _scaleField;
-  id _imageButton;
-  id _miniPageView;
+  NSMutableDictionary *customPapers;  //a dictionary of dictionaries
+  BOOL customPapersNeedSaving;
+  NSString *measurementString; //examples are "in", "pt", or "cm"
+  double factorValue;  //how to convert from points to cm or in
+  NSTabViewItem *attributesTabViewItem;
+  NSTabViewItem *customTabViewItem;
+  NSTabViewItem *summaryTabViewItem;
+  
+  //IBOutlets
+  id panel;
+  id tabView;
+  id applicationImageButton;
+  id panelTitleField;
+  id printerPopUp;
+  id paperRadioMatrix;
+  id standardPaperSizePopUp;
+  id customPaperSizePopUp;
+  id dimensionsTextField;
+  id paperOrientationMatrix;
+  id paperAttributesPreview;
+  id scaleTextField;
+  id customPaperTableView;
+  id customPaperNameColumn;
+  id customPaperWidthTextField;
+  id customPaperHeightTextField;
+  id customPaperMarginTopTextField;
+  id customPaperMarginBottomTextField;
+  id customPaperMarginRightTextField;
+  id customPaperMarginLeftTextField;
+  id customPaperPreview;
+  id newCustomPaperButton;
+  id duplicateCustomPaperButton;
+  id deleteCustomPaperButton;
+  id saveCustomPaperButton;
+  id summaryTableView;
+  id summarySettingColumn;
+  id summaryValueColumn;
+  
+  //What used to be NSPageLayout's ivars
   NSPrintInfo *_printInfo;
   NSView *_accessoryView;
 }
 -(NSPageLayout*) panel;
 
 //IBActions
--(void) buttonClicked: (id)sender;
--(void) paperSelected: (id)sender;
--(void) unitsSelected: (id)sender;
--(void) scaleSelected: (id)sender;
--(void) widthSelected: (id)sender;
--(void) heightSelected: (id)sender;
--(void) orientationMatrixClicked: (id)sender;
+-(void) okButtonClicked: (id)sender;
+-(void) cancelButtonClicked: (id)sender;
+-(void) printerPopUpClicked: (id)sender;
+-(void) paperRadioMatrixClicked: (id)sender;
+-(void) paperPopUpClicked: (id)sender;
+-(void) paperOrientationMatrixClicked: (id) sender;
+-(void) customPaperButtonsClicked: (id)sender;
 
 //internal
--(void)  setNewPageSize;
--(float) factorForIndex: (int)sel;
+-(void) determineMeasurements;
+-(void) processAttributes;
+-(void) syncInterface;
 
 //access to ivars
 -(NSPrintInfo*) printInfo;
 -(void) setPrintInfo:(NSPrintInfo*)printInfo;
 -(NSView*) accessoryView;
 -(void) setAccessoryView:(NSView*)accessoryView;
--(NSSize) pageSize;
 
 
 //Handling of NSPageLayout implementation
--(void)convertOldFactor:(float *)old
-	             newFactor:(float *)new;
 -(void)readPrintInfo;
 -(void)writePrintInfo;
+
+//A NSTextField delegate handler we care about
+-(void) controlTextDidChange:(NSNotification*) notification;
+
+//NSTableView datasource handlers
+-(int) numberOfRowsInTableView:(NSTableView*) tableView;
+
+-(id)                 tableView: (NSTableView*) tableView
+      objectValueForTableColumn: (NSTableColumn*) tableColumn
+                            row: (int) index;
+
+//NSTabView delegate handler we care about
+-(void)          tabView: (NSTabView*) tabView
+   willSelectTabViewItem: (NSTabViewItem*) tabViewItem;
+@end
+
+
+
+//
+// This NSView subclass shows a preview of a
+// page, including the margins.  Implementation
+// is at the end of the file.
+//
+@interface GSPageLayoutMiniPageView : NSView
+{
+  NSSize _paperSize;
+  NSRect _marginsRect;
+  BOOL   _drawsMargins;
+}
+
+-(void) setPaperSize: (NSSize) paperSize;
+
+-(void) setMarginsRect: (NSRect) marginsRect;
+
+-(void) setDrawsMargins: (BOOL) drawsMargins;
+
 @end
 
 
@@ -187,7 +273,7 @@ static NSPageLayout *shared_instance;
   int result;
   
   [_controller setPrintInfo: printInfo];
-  [self readPrintInfo];
+  [_controller readPrintInfo];
 
   result = [NSApp runModalForWindow: self];
   [self orderOut: self];
@@ -195,19 +281,19 @@ static NSPageLayout *shared_instance;
 }
 
 - (void)beginSheetWithPrintInfo:(NSPrintInfo *)printInfo
-		 modalForWindow:(NSWindow *)docWindow
-		       delegate:(id)delegate
-		 didEndSelector:(SEL)didEndSelector
-		    contextInfo:(void *)contextInfo
+                 modalForWindow:(NSWindow *)docWindow
+                       delegate:(id)delegate
+                 didEndSelector:(SEL)didEndSelector
+                    contextInfo:(void *)contextInfo
 {
   [_controller setPrintInfo: printInfo];
-  [self readPrintInfo];
+  [_controller readPrintInfo];
 
   [NSApp beginSheet: self
-	   modalForWindow: docWindow
-	    modalDelegate: delegate
-	   didEndSelector: didEndSelector
-	      contextInfo: contextInfo];
+     modalForWindow: docWindow
+      modalDelegate: delegate
+     didEndSelector: didEndSelector
+        contextInfo: contextInfo];
 
   [self orderOut: self];
 }
@@ -231,17 +317,12 @@ static NSPageLayout *shared_instance;
 
 
 
-//
-// Updating the Panel's Display 
-//
-/** Convert the old value to a new one based on the current units. This
-    method has been depreciated. It doesn't do anything useful
+/** This method has been depreciated. It doesn't do anything useful.
 */
 - (void)convertOldFactor:(float *)old
-	             newFactor:(float *)new
+               newFactor:(float *)new
 {
-  [_controller convertOldFactor: old
-	                   newFactor: new];
+  NSLog(@"[NSPageLayout -convertOldFactor:newFactor:] method depreciated");
 }
 
 
@@ -319,190 +400,312 @@ static NSPageLayout *shared_instance;
   NSString *panelPath;
   NSDictionary *table;
   NSImage *image;
+  NSNumberFormatter *sizeFormatter;
+  NSNumberFormatter *scaleFormatter;
 
   self = [super init];
+  
   panelPath = [GSGuiBundle() pathForResource: @"GSPageLayout" 
-			                                ofType: @"gorm"
-			                           inDirectory: nil];
+                                      ofType: @"gorm"
+                                 inDirectory: nil];
                                  
   NSLog(@"Panel path=%@",panelPath);
   table = [NSDictionary dictionaryWithObject: self 
                                       forKey: @"NSOwner"];
                                       
   if ([NSBundle loadNibFile: panelPath 
-	        externalNameTable: table
-		               withZone: [self zone]] == NO)
+          externalNameTable: table
+                   withZone: [self zone]] == NO)
     {
       NSRunAlertPanel(@"Error", @"Could not load page layout panel resource", 
-		                  @"OK", NULL, NULL);
+                      @"OK", NULL, NULL);
       return nil;
     }
+
+  //
+  //find out what the user's preffered measurements are
+  //and what the scaleFactor will be
+  //
+  [self determineMeasurements];
     
+  //Put the applications icon image in the panel
   image = [[NSApplication sharedApplication] applicationIconImage];
-  [_imageButton setImage: image];
+  [applicationImageButton setImage: image];
   
+  //
+  //Put NSNumberFormatters in ALL the NSTextFields
+  //since GORMS is not to good at this yet.
+  //I look forward to the day when this code can
+  //be removed.
+  
+  { //for the Scale field
+    scaleFormatter = AUTORELEASE([[NSNumberFormatter alloc] init]);
+    [scaleFormatter setAllowsFloats: NO];
+    [scaleFormatter setMinimum: 
+                  [NSDecimalNumber decimalNumberWithString: @"1.0"]];
+		     
+    [scaleFormatter setMaximum: 
+                  [NSDecimalNumber decimalNumberWithString: @"100000.0"]];
+  
+    [scaleFormatter setHasThousandSeparators: NO];
+    [scaleTextField setFormatter: scaleFormatter];  
+  }
+  
+  { //For the the width and height of custom papers ONLY.
+    //The NSFormatters for the margins are made on the fly
+    //because they change based upon the values of the width
+    //and height.  Makes sense, right?
+    sizeFormatter = AUTORELEASE([[NSNumberFormatter alloc] init]);
+    [sizeFormatter setAllowsFloats: YES];
+    [sizeFormatter setMinimum: 
+                 [NSDecimalNumber decimalNumberWithString: @"0.00001"]];
+  
+    [sizeFormatter setHasThousandSeparators: NO];
+		     
+    [customPaperWidthTextField  setFormatter: sizeFormatter];
+    [customPaperHeightTextField setFormatter: sizeFormatter];
+  }
+  
+  //
+  // Load the custom paper sizes
+  //
+  {
+    NSUserDefaults *defaults;
+    NSDictionary *globalDomain;
+    
+    customPapersNeedSaving = NO;
+    
+    defaults = [NSUserDefaults standardUserDefaults];
+    globalDomain = [defaults persistentDomainForName: NSGlobalDomain];
+    
+    customPapers = [globalDomain objectForKey: @"GSPageLayoutCustomPaperSizes"];
+    
+    if( customPapers )
+      {
+        customPapers = [customPapers mutableCopy];
+      }
+    else
+      {
+        customPapers = RETAIN( [NSMutableDictionary dictionary] );
+      }
+  } 
+
+  //
+  //Set the proper measurement strings on the "Custom Paper Size" tab
+  //There are six NSTextFields with ids ranging from 100 to 105.  Set them.
+  //the string used, measurementString, was determined by the call made
+  //to [self determineMeasurements] earlier in -init.  measurementString is
+  //an ivar.
+  {
+    int n;
+    for( n = 100; n <= 105; n++ )
+      {
+        NSTextField *textField;
+        textField = [tabView viewWithTag: n];
+        [textField setStringValue: measurementString];
+      }
+    //doing the above puts selects the 2nd tab, we don't want that.
+    [tabView selectFirstTabViewItem: self];
+  }
+
+  //assign the tab views items
+  {
+    attributesTabViewItem = [tabView tabViewItemAtIndex: 0];
+    customTabViewItem = [tabView tabViewItemAtIndex: 1];
+    summaryTabViewItem = [tabView tabViewItemAtIndex: 2];
+  }
+
+
   return self;
 }
 
-- (NSPageLayout*) panel
+-(void) dealloc
 {
-  return (NSPageLayout*)_panel;
+  RELEASE( customPapers );
+  RELEASE( measurementString );
+
+  [super release];
 }
 
 
-/* Private communication with our panel objects */
-- (void) buttonClicked: (id)sender
+- (NSPageLayout*) panel
 {
-  int picked;
-  int tag = [sender tag];
+  return (NSPageLayout*)panel;
+}
 
-  NSLog(@"buttonClicked:");
-  if (tag == NSPLOKButton)
+
+
+- (void) okButtonClicked: (id)sender
+{
+  [self writePrintInfo];
+  [NSApp stopModalWithCode: NSPLOKButton];
+}
+
+
+- (void) cancelButtonClicked: (id)sender
+{
+  [NSApp stopModalWithCode: NSPLCancelButton];
+}
+
+
+-(void) printerPopUpClicked: (id)sender
+{
+  NSPrinter *printer;
+  NSString *prevPaperName;
+  NSArray *newPaperNames;
+  
+  printer = [NSPrinter printerWithName: [printerPopUp titleOfSelectedItem]];
+
+  /* Setup standardPaperSizePopUp for the new printer */
+  prevPaperName = [standardPaperSizePopUp titleOfSelectedItem];
+
+  newPaperNames = [printer stringListForKey:@"PageSize" 
+                                    inTable:@"PPD"];
+
+  [standardPaperSizePopUp removeAllItems];
+  [standardPaperSizePopUp addItemsWithTitles: newPaperNames];
+
+  //be nice and try to select the previous selection
+  [standardPaperSizePopUp selectItemWithTitle: prevPaperName];
+
+  [self processAttributes];
+}
+
+
+
+-(void) paperRadioMatrixClicked: (id) sender
+{
+  if( [sender selectedRow] == 0) //Standard Paper Sizes
     {
-      picked = NSOKButton;
-      [self writePrintInfo];
+      [customPaperSizePopUp   setEnabled: NO];
+      [standardPaperSizePopUp setEnabled: YES];
     }
-  else if (tag == NSPLCancelButton)
+  else  //Custom Paper Sizes
     {
-      picked = NSCancelButton;
+      [standardPaperSizePopUp setEnabled: NO];
+      [customPaperSizePopUp   setEnabled: YES];
+    }
+  [self processAttributes];
+}
+
+-(void) paperPopUpClicked: (id) sender
+{
+  [self processAttributes];
+}
+
+-(void) paperOrientationMatrixClicked: (id) sender
+{
+  [self processAttributes];
+}
+
+
+-(void) customPaperButtonsClicked: (id) sender
+{
+}
+
+
+
+//determine the measurement string and factor value to use
+-(void) determineMeasurements
+{
+  NSUserDefaults *defaults;
+  NSString *string;
+  
+  defaults = [NSUserDefaults standardUserDefaults];
+  string = [defaults objectForKey: @"NSMeasurementUnit"];
+  NSLog(@"NSMeasurementUnit is %@", string);
+
+  if( string == nil ) //default to cm, most of the world is metric...
+    {
+      measurementString = @"cm";
+      factorValue = 2.54/72.0;
     }
   else
     {
-      NSLog(@"NSPageLayout button press from unknown sender %@ tag %d", 
-	            sender, tag);
-      picked = NSOKButton;
-    }
-  [NSApp stopModalWithCode: picked];
+      if( [string caseInsensitiveCompare: @"CENTIMETERS"] == NSOrderedSame )
+        {
+          measurementString = @"cm";
+          factorValue = 2.54/72.0;
+        }
+      else if( [string caseInsensitiveCompare: @"INCHES"] == NSOrderedSame )
+        {
+          measurementString = @"in";
+          factorValue = 1.0/72.0;
+        }
+      else if( [string caseInsensitiveCompare: @"POINTS"] == NSOrderedSame )
+        {
+          measurementString = @"pt";
+          factorValue = 1.0;
+        }
+      else if( [string caseInsensitiveCompare: @"PICAS"] == NSOrderedSame )
+        {
+          measurementString = @"pi";
+          factorValue = 1.0/12.0;
+        }
+      else //default to cm, most of the world is metric...
+        {
+          measurementString = @"cm";
+          factorValue = 2.54/72.0;
+        }
+   }
 }
 
-- (void) setNewPageSize
-{
-  double factor;
- 
-  factor = [self factorForIndex: [_unitsButton indexOfSelectedItem]];
-  [_widthField setDoubleValue: _size.width * factor];
-  [_heightField setDoubleValue: _size.height * factor];
-}
+
+
 
 //
-// Converts between points, millimeters, centimeters, and inches, in that order.
-// Dependent upon the order of which the values appear in the Gorm popup.
-//
-- (float) factorForIndex: (int)sel
+// Reads in the values of the controls and responds accordingly
+// This updates two ivars: (NSTextField*)dimensionsTextField and
+// (GSPageLayoutMiniPageView*)paperAttributesPreview.
+-(void) processAttributes
 {
-  switch (sel)
-    {
-      default:
-      case 0: return 1.0;
-      case 1: return 25.4/72;
-      case 2: return 2.54/72;
-      case 3: return 1.0/72;	    
-    }    
-}
-
-
-
-- (void) paperSelected: (id)sender
-{
+  NSString *paperName;
   NSPrinter *printer;
+  NSSize paperSize;  
   
-  _scale = 100;
-  [_scaleField setDoubleValue: _scale];
-  
-  printer = [_printInfo printer];
-  _size = [printer pageSizeForPaper: [sender titleOfSelectedItem]];
+  //Get the printer
+  printer = [NSPrinter printerWithName: [printerPopUp titleOfSelectedItem]];
+
+  //Get the paper name and size
+  if( [paperRadioMatrix selectedRow] == 0) //Standard Papers
+    {
+      paperName = [standardPaperSizePopUp titleOfSelectedItem];
+      paperSize = [printer pageSizeForPaper: paperName];
+    }
+  else //Custom Papers
+   {
+     NSMutableDictionary *customPaperDict;
+     paperName = [customPaperSizePopUp titleOfSelectedItem];
+     customPaperDict = [customPapers objectForKey: paperName];
+     paperSize = [[customPaperDict objectForKey: @"PaperSize"] sizeValue];
+   }
+
   
   //check if the user selected landscape mode, if so, switch out the 
   //width and height
-  if ([_orientationMatrix selectedColumn] > 0)
-	  {
-	    double temp  = _size.width;
-	    _size.width  = _size.height;
-	    _size.height = temp;
-	  }
-  [self setNewPageSize];
-  [_miniPageView setNeedsDisplay: YES];
+  if ([paperOrientationMatrix selectedColumn] > 0)
+    {
+      double temp      = paperSize.width;
+      paperSize.width  = paperSize.height;
+      paperSize.height = temp;
+    }
+
+  //construct the string for the dimensions NSTextField and set it
+  {
+    NSString *dimensionsString;
+    dimensionsString = [NSString stringWithFormat: @"%.2f %@ x %.2f %@",
+                        paperSize.width * factorValue, 
+                        measurementString,
+                        paperSize.height * factorValue,
+                        measurementString];
+
+    [dimensionsTextField setStringValue: dimensionsString];
+  }
+
+  //tell the preview view what the new paper size is
+  [paperAttributesPreview setPaperSize: paperSize]; 
 }
 
-- (void) unitsSelected: (id)sender
-{
-  [self setNewPageSize];
-  [_miniPageView setNeedsDisplay: YES];
-}
-
--(void) scaleSelected: (id)sender
-{
-  float scale;
-  
-  scale = [_scaleField doubleValue];
-  
-  if( scale == 0.0 )
-    {
-      [_scaleField setDoubleValue: _scale];
-    }
-  else
-    {
-      _scale = scale;
-      _size.width  *= (_scale/100);
-      _size.height *= (_scale/100); 
-    }
-  
-  [self setNewPageSize];
-  [_miniPageView setNeedsDisplay: YES];
-}
-
--(void) widthSelected: (id)sender
-{
-  double width;
-  
-  width = [_widthField doubleValue];
-  
-  if( width == 0.0 )
-    {
-      [_widthField setDoubleValue: _size.width];
-    }
-  else
-    {
-      _size.width = width;
-      [_miniPageView setNeedsDisplay: YES];
-    }
-}
-
--(void) heightSelected: (id)sender
-{
-  double height;
-  
-  height = [_heightField doubleValue];
-  
-  if( height == 0.0 )
-    {
-      [_heightField setDoubleValue: _size.height];
-    }
-  else
-    {
-      _size.height = height;
-      [_miniPageView setNeedsDisplay: YES];
-    }
-}
-
-- (void) orientationMatrixClicked: (id)sender
-{
-  double temp;
-  
-  if ([sender selectedColumn] > 0)
-	  {
-	    temp = MIN(_size.width, _size.height);
-	    _size.width = MAX(_size.width, _size.height);
-	  }
-  else
-	  {
-	    temp = MAX(_size.width, _size.height);
-	    _size.width = MIN(_size.width, _size.height);
-	  }
-  _size.height = temp;
-  [self setNewPageSize];
-  [_miniPageView setNeedsDisplay: YES];
-}
 
 -(NSPrintInfo*) printInfo
 {
@@ -524,192 +727,403 @@ static NSPageLayout *shared_instance;
   ASSIGN( _accessoryView, accessoryView);
 }
 
--(NSSize) pageSize
+
+//
+// Syncs the interface with the current printers (if any)
+// and its papers.  Also makes sure that the custom papers
+// pop up is up to date.  This method is called by 
+// readPrintInfo.
+-(void) syncInterface
 {
-  return _size;
+  NSArray *printerNames;
+  id radioButton;
+
+  [printerPopUp removeAllItems];
+  [standardPaperSizePopUp removeAllItems];
+  
+  //Fill in the printers
+  printerNames = [NSPrinter printerNames];
+  if( [printerNames count] == 0 )  //NO PRINTERS
+    {
+      [printerPopUp addItemWithTitle: @"(none)"];
+      [printerPopUp setEnabled: NO];
+      [standardPaperSizePopUp addItemWithTitle: @"(none)"];
+      [standardPaperSizePopUp setEnabled: NO];
+      radioButton = [paperRadioMatrix cellAtRow: 0
+                                         column: 0];
+      [radioButton setEnabled: NO];
+      
+    }
+  else //THERE ARE PRINTERS
+    {
+      NSPrinter *printer;
+      NSArray *paperNames;
+
+      printer = [_printInfo printer];
+      [printerPopUp addItemsWithTitles: printerNames];
+      [printerPopUp setEnabled: YES];
+      [printerPopUp selectItemWithTitle: [printer name]];
+
+      //fill in the standardPaperSizePopUp based upon what the printer supports
+      paperNames = [printer stringListForKey:@"PageSize" 
+                                     inTable:@"PPD"];
+ 
+      [standardPaperSizePopUp addItemsWithTitles: paperNames];
+      [standardPaperSizePopUp setEnabled: YES];
+      radioButton = [paperRadioMatrix cellAtRow: 0
+                                         column: 0];
+
+      [radioButton setEnabled: YES];
+    }
 }
 
-- (void)convertOldFactor:(float *)old
-	       newFactor:(float *)new
-{
-  int sel;
 
-  if (old == NULL)
-    return;
-
-  sel = [_unitsButton indexOfSelectedItem];
-  if (new)
-    *new = [self factorForIndex: sel];
-}
 
 - (void)readPrintInfo
 {
-  NSString *string;
   NSPrinter *printer;
-  NSDictionary *dict;
+  NSString *paperName;
+  NSNumber *scaleNumber; 
+
+  NSLog( @"readPrintInfo: %@", [[_printInfo dictionary] description]);
 
   printer = [_printInfo printer];
-  dict = [_printInfo dictionary];
 
-  /* Setup the paper name popup */
-  {
-    [_paperNameButton removeAllItems];
-    string = [_printInfo paperName];
-    if (string)
-      {
-        NSArray *paperNames;
-        paperNames = [printer stringListForKey:@"PageSize" 
-                                       inTable:@"PPD"];
-        if ([paperNames count])
-	        {
-            NSEnumerator *paperNamesEnum;
-            NSString *paperName;
-	          paperNamesEnum = [paperNames objectEnumerator];
+  [self syncInterface];
+    
+  //set the paper.  Try to set the custom paper first.
+  paperName = [_printInfo paperName];
 
-            while( (paperName = [paperNamesEnum nextObject]) )
-              {
-                [_paperNameButton addItemWithTitle: paperName];
-              }
-	          [_paperNameButton selectItemWithTitle: string];
-	        }
-        else //PPD was empty!
-	        {
-	          [_paperNameButton addItemWithTitle: string];
-	        }
-      }
-    else //this really should not happen man.
-      {
-        [_paperNameButton addItemWithTitle: @"Unknown"];
-      }
-  }
+  if(([customPaperSizePopUp isEnabled] == YES) &&
+     ([customPaperSizePopUp indexOfItemWithTitle: paperName] != -1 ))
+    {
+      [paperRadioMatrix selectCellAtRow: 1
+                                 column: 0];
+
+      [customPaperSizePopUp selectItemWithTitle: paperName]; 
+    }
+  else if( [standardPaperSizePopUp isEnabled] == YES)
+    {
+      [paperRadioMatrix selectCellAtRow: 0
+                                 column: 0];
+
+      [standardPaperSizePopUp selectItemWithTitle: paperName];
+    }
+
+  //set the orientation
+  if( [_printInfo orientation] == NSPortraitOrientation)
+    {
+      [paperOrientationMatrix selectCellAtRow: 0 
+                                       column: 0];
+    }
+  else
+    {
+      [paperOrientationMatrix selectCellAtRow: 0 
+                                       column: 1];
+    }
+ 
+
+  //set the scaling
+  scaleNumber = [[_printInfo dictionary] objectForKey: NSPrintScalingFactor];
+
+  if (scaleNumber == nil)
+    {
+      NSLog(@"NSPrintScalingFactor was nil in NSPrintInfo");
+      scaleNumber = [NSNumber numberWithFloat: 100.0];
+    }
+
+  [scaleTextField setObjectValue: scaleNumber];
   
-  /* Set up units */
-  {
-    //The loading of the GORM file should ensure this is ok.
-    [_unitsButton selectItemAtIndex: 0];
-  }
-     
-  /* Set up size form */
-  {
-    _size = [_printInfo paperSize];
-    [_widthField setDoubleValue: _size.width];
-    [_heightField setDoubleValue: _size.height];
-  }
-  
-  /* Set up the orientation */
-  {
-    NSPrintingOrientation orient = [_printInfo orientation];
-    [_orientationMatrix selectCellAtRow: 0 
-                                 column: (orient - NSPortraitOrientation)];
-  }
-
-  //TODO Scaling 
-  {
-    float scale = 100;
-    NSNumber *scaleNumber; 
-    if ((scaleNumber = [dict objectForKey:NSPrintScalingFactor]))
-      {
-	      scale = [scaleNumber floatValue];
-      }
-
-    [_scaleField setFloatValue: scale];
-    _scale = scale;
-  }
-
+  [self processAttributes];
 }
+
 
 - (void)writePrintInfo
 {
-  NSString *string;
   NSPrinter *printer;
-  float scale; 
-  NSMutableDictionary *dict = [_printInfo dictionary];
+  NSString *paperName;
+  NSNumber *scaleNumber;
 
-  printer = [_printInfo printer];
+  //Write printer object
+  if( [printerPopUp isEnabled] == NO) //NO PRINTERS
+    {
+      printer = nil;
+    }
+  else //HAS PRINTERS
+    {
+      printer = [NSPrinter printerWithName: [printerPopUp titleOfSelectedItem]];
+    }
+  [_printInfo setPrinter: printer];
+
+  //write paper name
+  if(([paperRadioMatrix selectedRow] == 0) &&
+     ([standardPaperSizePopUp isEnabled] == YES)) //standard paper sizes
+    {
+      paperName = [standardPaperSizePopUp titleOfSelectedItem];
+      [_printInfo setPaperName: paperName];
+    }
+  else if(([paperRadioMatrix selectedRow] == 1) &&
+     ([customPaperSizePopUp isEnabled] == YES)) //custom paper size
+    {
+     NSDictionary *customPaper;
+     NSNumber *number;
+     NSSize size;
+
+     paperName = [customPaperSizePopUp titleOfSelectedItem];
+     [_printInfo setPaperName: paperName];
+
+     customPaper = [customPapers objectForKey: paperName];
+
+     number = [customPaper objectForKey: @"TopMargin"];
+     [_printInfo setTopMargin: [number floatValue]];
+
+     number = [customPaper objectForKey: @"BottomMargin"];
+     [_printInfo setBottomMargin: [number floatValue]];
+
+     number = [customPaper objectForKey: @"LeftMargin"];
+     [_printInfo setLeftMargin: [number floatValue]];
+
+     number = [customPaper objectForKey: @"RightMargin"];
+     [_printInfo setRightMargin: [number floatValue]];
+
+     size = [[customPaper objectForKey: @"PaperSize"] sizeValue];
+     [_printInfo setPaperSize: size];
+    }
+  else //NO PAPER CAN BE SET
+    {
+      [_printInfo setPaperName: nil];
+    }
   
-  /* Write Paper Name */
-  {
-    string = [_paperNameButton titleOfSelectedItem];
-    [_printInfo setPaperName: string];
-  }
+  //Write orientation
+  if( [paperOrientationMatrix selectedColumn] == 0)
+    {
+      [_printInfo setOrientation: NSPortraitOrientation];
+    }
+  else
+    {
+      [_printInfo setOrientation: NSLandscapeOrientation];
+    }
 
-  /* Write Orientation */
-  {
-    [_printInfo setOrientation: 
-                [_orientationMatrix selectedColumn]+NSPortraitOrientation];
-  }
+  //Write scaling
+  scaleNumber = [NSNumber numberWithFloat: [scaleTextField floatValue]];
+  [[_printInfo dictionary] setObject: scaleNumber
+                              forKey: NSPrintScalingFactor];
 
-  /* Write Scaling Factor */
-  {
-    scale = _scale;
-    [dict setObject: [NSNumber numberWithFloat:scale] 
-             forKey: NSPrintScalingFactor];
-  }
-  
-  
-  /* Write Size */
-  /* FIXME: Currently don't allow writing custom size. */
-
+  NSLog( @"writePrintInfo: %@", [[_printInfo dictionary] description]);
 }
 
-@end
 
-
-
-
-//
-// Show the preview of the page's dimensions
-//
-
-@interface GSPageLayoutMiniPageView : NSView
+//NSTextField delegate handlers
+-(void) textDidBeginEditing:(NSNotification*) notification
 {
-  id _pageLayoutController;
+  NSLog(@"textDidBeginEditing: %@", [notification description]);
 }
+
+
+-(void) textDidEndEditing:(NSNotification*) notification
+{
+  NSLog(@"textDidEndEditing: %@", [notification description]);
+}
+
+
+-(void) textDidChange:(NSNotification*) notification
+{
+  NSLog(@"textDidChange: %@", [notification description]);
+}
+
+
+-(void) controlTextDidChange:(NSNotification*) notification
+{
+  NSLog(@"controlTextDidChange: %@", [notification description]);
+}
+
+
+
+//NSTableView datasource handlers
+-(int) numberOfRowsInTableView:(NSTableView*) tableView
+{
+  if( tableView == customPaperTableView)
+    {
+      return [customPapers count];
+    }
+  else  //summaryTableView
+    {
+      return 8;
+    }
+}
+
+
+-(id)                 tableView: (NSTableView*) tableView
+      objectValueForTableColumn: (NSTableColumn*) tableColumn
+                            row: (int) index
+{
+  if( tableView == customPaperTableView)
+    {
+      
+      return [[customPapers allKeys] objectAtIndex: index];
+    }
+  else  //summaryTableView
+    {
+      if( tableColumn == summarySettingColumn )
+        {
+          switch( index )
+            {
+              case 0:  return @"Name";
+              case 1:  return @"Dimensions";
+              case 2:  return @"Orientation";
+              case 3:  return @"Scale";
+              case 4:  return @"Top Margin";
+              case 5:  return @"Bottom Margin";
+              case 6:  return @"Left Margin";
+              case 7:  return @"Right Margin";
+              default: return @"Unknown";
+            }
+        }
+      else //The value column
+        {
+          //These vars are used to calculate the margins
+          NSString *printerName;
+          NSPrinter *printer;
+          NSString *paperName;
+          double topMargin, bottomMargin, leftMargin, rightMargin;
+
+          printerName = [printerPopUp titleOfSelectedItem];
+          printer = [NSPrinter printerWithName: printerName];
+
+          if( [paperRadioMatrix selectedRow] == 0 ) //standard papers
+            {
+              NSRect imageRect;
+              NSSize paperSize;
+
+              paperName = [standardPaperSizePopUp titleOfSelectedItem];
+              paperSize = [printer pageSizeForPaper: paperName];
+              imageRect = [printer imageRectForPaper: paperName];
+              topMargin    = paperSize.height - imageRect.size.height;
+              bottomMargin = imageRect.origin.x;
+              leftMargin   = imageRect.origin.y;
+              rightMargin  = paperSize.width - imageRect.size.width;
+            }
+          else  //Custom Papers
+            {
+              paperName = [customPaperSizePopUp titleOfSelectedItem];
+
+              topMargin    = [[customPapers objectForKey: @"TopMargin"] 
+                               doubleValue];
+              bottomMargin = [[customPapers objectForKey: @"BottomMargin"]
+                               doubleValue];
+              leftMargin   = [[customPapers objectForKey: @"LeftMargin"]
+                               doubleValue];
+              rightMargin  = [[customPapers objectForKey: @"RightMargin"]
+                               doubleValue];
+            }
+          switch( index )
+            {    
+              case 0:  
+                return paperName;
+              case 1:
+                return [dimensionsTextField stringValue];
+              case 2:
+                if( [paperOrientationMatrix selectedColumn] == 0)
+                  {
+                    return @"Portrait";
+                  }
+                else
+                  {
+                    return @"Landscape" ;
+                  }
+              case 3:
+                return [NSString stringWithFormat: @"%@%%",
+                        [scaleTextField stringValue]];
+              case 4:  
+                return [NSString stringWithFormat: @"%.2f %@", topMargin,
+                        measurementString];
+              case 5:
+                return [NSString stringWithFormat: @"%.2f %@", bottomMargin,
+                        measurementString];
+              case 6:
+                return [NSString stringWithFormat: @"%.2f %@", leftMargin,
+                        measurementString];
+              case 7:
+                return [NSString stringWithFormat: @"%.2f %@", rightMargin,
+                        measurementString];
+              default: 
+                return @"Unknown";
+            }
+        }
+    }
+}
+
+//NSTabView delegate handler we care about
+-(void)          tabView: (NSTabView*) tabView
+   willSelectTabViewItem: (NSTabViewItem*) tabViewItem
+{
+  if( tabViewItem == summaryTabViewItem )
+    {
+      [summaryTableView sizeToFit];
+    }
+}
+
 @end
+
+
+
+
 
 
 //
 // Show the preview of the page's dimensions
 //
 @implementation GSPageLayoutMiniPageView
-
--(int) tag
+-(void) setPaperSize: (NSSize) paperSize
 {
-  return NSPLMiniPageView;
+  _paperSize = paperSize;
+  [self setNeedsDisplay: YES];
 }
+
+-(void) setMarginsRect: (NSRect) marginsRect
+{
+  _marginsRect = marginsRect;
+  [self setNeedsDisplay: YES];
+}
+
+-(void) setDrawsMargins: (BOOL) drawsMargins
+{
+  _drawsMargins = drawsMargins;
+  [self setNeedsDisplay: YES];
+}
+
 
 - (void) drawRect: (NSRect)rect
 {
-  NSSize pageSize;
-  NSRect paper;
-  NSRect shadow;
+  NSRect bounds;
+  NSRect paper;  //the size on the screen
+  NSRect shadow; 
   double ratio;
   double width, height;
   NSColor *shadowColor;
   
-  //Draw the background
-  NSRect bounds = [self bounds];
-	//[[NSColor windowBackgroundColor] set];
-	//[NSBezierPath fillRect: bounds];
+  bounds = [self bounds];
   
-  pageSize = [_pageLayoutController pageSize];
-  
-  if( pageSize.width >= pageSize.height)
+  //
+  //Figure out if we we should scale according to the
+  //the width or the height
+  //
+  if( _paperSize.width >= _paperSize.height)
     {
-      ratio = pageSize.height/ pageSize.width;
+      ratio = _paperSize.height/ _paperSize.width;
       width  = bounds.size.width;
       height = width * ratio;
     }
   else
     {
-      ratio =  pageSize.width / pageSize.height;
+      ratio =  _paperSize.width / _paperSize.height;
       height = bounds.size.height;
       width  = height * ratio;
     }
   
   //make the page a bit smaller
-  width  *= 0.75;
-  height *= 0.75;
+  width  *= 0.95;
+  height *= 0.95;
   
   paper.origin.x = (bounds.size.width  - width)  / 2;
   paper.origin.y = (bounds.size.height - height) / 2;
@@ -718,16 +1132,15 @@ static NSPageLayout *shared_instance;
   
   shadow = paper;
   if( [self isFlipped] == NO)
-      shadow.origin.y -= 2;
+    shadow.origin.y -= 2;
   else
-      shadow.origin.y += 2;
+    shadow.origin.y += 2;
       
   shadow.origin.x += 2;
   
   
   //first draw the shadow
   shadowColor = [[NSColor windowBackgroundColor] shadowWithLevel: 0.5];
-  
   [shadowColor set];
   [NSBezierPath fillRect: shadow];
   
@@ -736,6 +1149,26 @@ static NSPageLayout *shared_instance;
   [NSBezierPath fillRect: paper];
   [[NSColor blackColor] set];
   [NSBezierPath strokeRect: paper];
+
+  //Draw the margins?
+  if( _drawsMargins == YES )
+    {
+      NSRect margins;
+      double scale;
+
+      scale = paper.size.width / _paperSize.width;
+
+      margins.size.height = (_marginsRect.size.height * scale);
+
+      margins.size.width  = (_marginsRect.size.width * scale);
+ 
+      margins.origin.x = paper.origin.x + (_marginsRect.origin.x * scale);
+      
+      margins.origin.y = paper.origin.y + (_marginsRect.origin.y * scale);
+
+      [[NSColor redColor] set];
+      [NSBezierPath strokeRect: margins];
+    }
 }
 
 @end

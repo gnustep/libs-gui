@@ -52,19 +52,19 @@
 @implementation GSPDFPrintOperation
 
 - (id) initWithView:(NSView *)aView 
-		     insideRect:(NSRect)rect 
-			       toData:(NSMutableData *)data 
-		      printInfo:(NSPrintInfo*)aPrintInfo
+         insideRect:(NSRect)rect 
+             toData:(NSMutableData *)data 
+          printInfo:(NSPrintInfo*)aPrintInfo
 {
   self = [super initWithView: aView
-	                insideRect: rect
-	                    toData: data
-	                 printInfo: aPrintInfo];
+                  insideRect: rect
+                      toData: data
+                   printInfo: aPrintInfo];
                    
   _path = [NSTemporaryDirectory() stringByAppendingPathComponent: @"GSPrint-"];
   
   _path = [_path stringByAppendingString: 
-		       [[NSProcessInfo processInfo] globallyUniqueString]];
+		               [[NSProcessInfo processInfo] globallyUniqueString]];
            
   _path = [_path stringByAppendingPathExtension: @"pdf"];
   RETAIN( _path );
@@ -73,16 +73,16 @@
 }
 
 - (id) initWithView:(NSView *)aView 
-		     insideRect:(NSRect)rect 
-			       toPath:(NSString *)path 
-		      printInfo:(NSPrintInfo*)aPrintInfo
+         insideRect:(NSRect)rect 
+             toPath:(NSString *)path 
+          printInfo:(NSPrintInfo*)aPrintInfo
 {
   NSMutableData *data = [NSMutableData data];
 
   self = [super initWithView: aView	
-	                insideRect: rect
-	                    toData: data
-	                 printInfo: aPrintInfo];
+                  insideRect: rect
+                      toData: data
+                   printInfo: aPrintInfo];
 
   ASSIGN(_path, path);
 

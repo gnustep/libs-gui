@@ -1,3 +1,26 @@
+2004-07-22 04:46  Chad Hardin <cehardin@mac.com>
+
+	* Headers/AppKit/NSPageLayout.h: Changed to MVC and a whole new UI.
+	* Headers/AppKit/NSPrintInfo.h: Format cleanup.
+	* Headers/AppKit/NSPrintOperation.h: Format cleanup.
+	* Headers/AppKit/NSPrintPanel.h: Format cleanup.
+	* Headers/AppKit/NSPrinter.h: Format cleanup.
+	* Panels/English.lproj/GSPageLayout.gorm/data.classes:  New UI.
+	* Panels/English.lproj/GSPageLayout.gorm/objects.gorm:  New UI.
+	* Printing/GSLPR/GSLPRPrintInfo.m: Format cleanup.
+	* Printing/GSLPR/GSLPRPrintOperation.m: Format cleanup.
+	* Printing/GSLPR/GSLPRPrintPanel.m: Format cleanup.
+	* Printing/GSLPR/GSLPRPrinter.m: Format cleanup.
+	* Source/GSEPSPrintOperation.m: Format cleanup.
+	* Source/GSPDFPrintOperation.m: Format cleanup.
+	* Source/GSPrintOperation.m: Format cleanup.
+	* Source/GSPrinting.m: Format cleanup.
+	* Source/NSPageLayout.m: Changed to MVS and a whole new UI.
+	* Source/NSPrintInfo.m: Format cleanup.
+	The big thing changed here is that NSPageLayout has a whole new
+	UI and is MVC based.  I have not yet implemented the ability
+	to create and edit custom papers, that is next.
+
 2004-07-22 00:18  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/GSNibContainer.m: Corrected spelling mistake in comment.

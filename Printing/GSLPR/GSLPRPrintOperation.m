@@ -148,7 +148,7 @@
       
       if (output)
         {
-	        ASSIGN(_path, output);
+          ASSIGN(_path, output);
         }        
     }
     
@@ -158,7 +158,7 @@
            forKey: @"NSOutputFile"];
   
   [info setObject: NSGraphicsContextPSFormat
-	         forKey: NSGraphicsContextRepresentationFormatAttributeName];
+           forKey: NSGraphicsContextRepresentationFormatAttributeName];
            
   _context = RETAIN([NSGraphicsContext graphicsContextWithAttributes: info]);
 

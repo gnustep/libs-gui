@@ -58,19 +58,19 @@
 @implementation GSEPSPrintOperation
 
 - (id)initWithView:(NSView *)aView
-		    insideRect:(NSRect)rect
-		        toData:(NSMutableData *)data
-		     printInfo:(NSPrintInfo *)aPrintInfo
+        insideRect:(NSRect)rect
+            toData:(NSMutableData *)data
+         printInfo:(NSPrintInfo *)aPrintInfo
 {
   self = [super initWithView: aView
-	                insideRect: rect
-	                    toData: data
-	                 printInfo: aPrintInfo];
+                  insideRect: rect
+                      toData: data
+                   printInfo: aPrintInfo];
                    
   _path = [NSTemporaryDirectory() stringByAppendingPathComponent: @"GSPrint-"];
   
   _path = [_path stringByAppendingString: 
-		       [[NSProcessInfo processInfo] globallyUniqueString]];
+		               [[NSProcessInfo processInfo] globallyUniqueString]];
            
   _path = [_path stringByAppendingPathExtension: @"ps"];
   RETAIN( _path ); 
@@ -78,16 +78,16 @@
 }
 
 - (id) initWithView:(NSView *)aView	
-		     insideRect:(NSRect)rect
-			       toPath:(NSString *)path
-		      printInfo:(NSPrintInfo *)aPrintInfo
+         insideRect:(NSRect)rect
+             toPath:(NSString *)path
+          printInfo:(NSPrintInfo *)aPrintInfo
 {
   NSMutableData *data = [NSMutableData data];
   
   self = [super initWithView: aView	
-	                insideRect: rect
+                  insideRect: rect
                       toData: data
-	                 printInfo: aPrintInfo];
+                   printInfo: aPrintInfo];
 
   ASSIGN(_path, path);
 
@@ -99,7 +99,7 @@
   /* Save this for the view to look at. Seems like there should
      be a better way to pass it to beginDocument */
   [[_printInfo dictionary] setObject: [NSValue valueWithRect: _rect]
-			                        forKey: @"NSPrintSheetBounds"];
+                              forKey: @"NSPrintSheetBounds"];
                               
   [_view beginDocument];
   
@@ -142,7 +142,7 @@
            forKey: @"NSOutputFile"];
   
   [info setObject: NSGraphicsContextPSFormat
-	         forKey: NSGraphicsContextRepresentationFormatAttributeName];
+           forKey: NSGraphicsContextRepresentationFormatAttributeName];
            
   _context = RETAIN([NSGraphicsContext graphicsContextWithAttributes: info]);
   return _context;

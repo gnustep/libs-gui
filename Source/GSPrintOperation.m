@@ -79,13 +79,13 @@
 
 
 - (id)initWithView:(NSView *)aView
-	       printInfo:(NSPrintInfo *)aPrintInfo
+         printInfo:(NSPrintInfo *)aPrintInfo
 {
       
   self = [self initWithView: aView
-	               insideRect: [aView bounds]
-	                   toData: [NSMutableData data]
-	                printInfo: aPrintInfo];
+                 insideRect: [aView bounds]
+                     toData: [NSMutableData data]
+                  printInfo: aPrintInfo];
                   
   _showPanels = YES;
 
@@ -130,23 +130,23 @@
       preview = [ws getBestAppInRole: @"Viewer" 
                         forExtension: @"ps"];
       if (preview)
-	      {
-	        [ws openFile: _path withApplication: preview];
-	      }
+        {
+          [ws openFile: _path withApplication: preview];
+        }
       else
-	      {
-	        NSUserDefaults *def = [NSUserDefaults standardUserDefaults];
-	        preview = [def objectForKey: @"NSPreviewApp"];
+        {
+          NSUserDefaults *def = [NSUserDefaults standardUserDefaults];
+          preview = [def objectForKey: @"NSPreviewApp"];
           
-	        if (preview == nil || [preview length] == 0)
-	          preview = @"gv";
+	    if (preview == nil || [preview length] == 0)
+	      preview = @"gv";
             
-	        task = [NSTask new];
-	        [task setLaunchPath: preview];
-	        [task setArguments: [NSArray arrayWithObject: _path]];
-	        [task launch];
-	        AUTORELEASE(task);
-	      }
+          task = [NSTask new];
+          [task setLaunchPath: preview];
+          [task setArguments: [NSArray arrayWithObject: _path]];
+          [task launch];
+	    AUTORELEASE(task);
+        }
     }
   else if ([job isEqual: NSPrintSpoolJob])
     {
@@ -161,7 +161,7 @@
   if ( _path )
     {
       [[NSFileManager defaultManager] removeFileAtPath: _path
-				                                       handler: nil];
+                                               handler: nil];
     }
   */
   return success;

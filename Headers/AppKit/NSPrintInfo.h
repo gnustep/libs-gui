@@ -130,16 +130,6 @@ typedef enum _NSPrintingPaginationMode {
 
 
 //
-// Used by printing backend bundles
-//
-@interface NSPrintInfo (Private)
-
-+(NSPrinter*) _resolvePrinterName: (NSString*) printerName;
-
-@end
-
-
-//
 // Printing Information Dictionary Keys 
 //
 APPKIT_EXPORT NSString *NSPrintAllPages;

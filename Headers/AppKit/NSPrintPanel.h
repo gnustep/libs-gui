@@ -92,10 +92,10 @@ enum {
 - (int) runModal;
 #ifndef STRICT_OPENSTEP
 - (void) beginSheetWithPrintInfo: (NSPrintInfo *)printInfo 
-		  modalForWindow: (NSWindow *)docWindow 
-			delegate: (id)delegate 
-		  didEndSelector: (SEL)didEndSelector 
-		     contextInfo: (void *)contextInfo;
+                  modalForWindow: (NSWindow *)docWindow 
+                        delegate: (id)delegate 
+                  didEndSelector: (SEL)didEndSelector 
+                     contextInfo: (void *)contextInfo;
 #endif
 
 //

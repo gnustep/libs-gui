@@ -106,20 +106,20 @@ typedef enum _NSPrinterTableStatus {
 // Querying the NSPrinter Tables 
 //
 - (BOOL)booleanForKey:(NSString *)key
-	      inTable:(NSString *)table;
+              inTable:(NSString *)table;
 - (NSDictionary *)deviceDescription;
 - (float)floatForKey:(NSString *)key
-	     inTable:(NSString *)table;
+             inTable:(NSString *)table;
 - (int)intForKey:(NSString *)key
-	 inTable:(NSString *)table;
+         inTable:(NSString *)table;
 - (NSRect)rectForKey:(NSString *)key
-	     inTable:(NSString *)table;
+             inTable:(NSString *)table;
 - (NSSize)sizeForKey:(NSString *)key
-	     inTable:(NSString *)table;
+             inTable:(NSString *)table;
 - (NSString *)stringForKey:(NSString *)key
-		   inTable:(NSString *)table;
+                   inTable:(NSString *)table;
 - (NSArray *)stringListForKey:(NSString *)key
-		      inTable:(NSString *)table;
+                      inTable:(NSString *)table;
 - (NSPrinterTableStatus)statusForTable:(NSString *)table;
 - (BOOL)isKey:(NSString *)key
       inTable:(NSString *)table;
