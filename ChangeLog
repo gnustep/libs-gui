@@ -1,3 +1,10 @@
+Tue Sep  5 23:13:21 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSControl.m ([-objectValue]), ([-takeObjectValueFrom:]),
+	([-setObjectValue:]): Implemented.
+	* Headers/gnustep/gui/NSControl.h: Added declarations 
+	of the new methods.
+	
 Tue Sep  5 18:52:57 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Headers/gnustep/gui/NSWindow.h, Source/NSWindow.m: Prefixed all
