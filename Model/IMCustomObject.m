@@ -47,15 +47,19 @@ extern BOOL _fileOwnerDecoded;
   IMCustomObject* customObject = [[self new] autorelease];
   Class class;
 
-  customObject->className = [unarchiver decodeStringWithName:@"className"];
-  customObject->extension = [unarchiver decodeObjectWithName:@"extension"];
-  customObject->realObject = [unarchiver decodeObjectWithName:@"realObject"];
-
   if (!_fileOwnerDecoded) {
     _fileOwnerDecoded = YES;
+    customObject->className = [unarchiver decodeStringWithName:@"className"];
+    customObject->extension = [unarchiver decodeObjectWithName:@"extension"];
+    customObject->realObject = [unarchiver decodeObjectWithName:@"realObject"];
+
     customObject->realObject = _nibOwner;
     return customObject;
   }
+
+  customObject->className = [unarchiver decodeStringWithName:@"className"];
+  customObject->extension = [unarchiver decodeObjectWithName:@"extension"];
+  customObject->realObject = [unarchiver decodeObjectWithName:@"realObject"];
 
   class = NSClassFromString (customObject->className);
   if (class)
@@ -96,15 +100,18 @@ extern BOOL _fileOwnerDecoded;
   IMCustomView* customView = [[self new] autorelease];
   Class class;
 
-  customView->className = [unarchiver decodeStringWithName:@"className"];
-  customView->extension = [unarchiver decodeObjectWithName:@"extension"];
-  customView->realObject = [unarchiver decodeObjectWithName:@"realObject"];
-
   if (!_fileOwnerDecoded) {
     _fileOwnerDecoded = YES;
+    customView->className = [unarchiver decodeStringWithName:@"className"];
+    customView->extension = [unarchiver decodeObjectWithName:@"extension"];
+    customView->realObject = [unarchiver decodeObjectWithName:@"realObject"];
     customView->realObject = _nibOwner;
     return customView;
   }
+
+  customView->className = [unarchiver decodeStringWithName:@"className"];
+  customView->extension = [unarchiver decodeObjectWithName:@"extension"];
+  customView->realObject = [unarchiver decodeObjectWithName:@"realObject"];
 
   class = NSClassFromString (customView->className);
   if (class)
@@ -113,6 +120,7 @@ extern BOOL _fileOwnerDecoded;
     NSLog (@"Class %@ not linked into application!", customView->className);
   }
 
+return customView->realObject;
   return customView;
 }
 

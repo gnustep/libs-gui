@@ -84,18 +84,18 @@ BOOL _fileOwnerDecoded = NO;
   }
   else {
     /* The path is a relative path; search it in the current bundle. */
-      //path = [resourcePath stringByAppendingPathComponent:path];
-      if (![[NSFileManager defaultManager] fileExistsAtPath:
-                 [resourcePath stringByAppendingPathComponent:path]]) {
+      NSString *abspath = [resourcePath stringByAppendingPathComponent:path];
+      if (![[NSFileManager defaultManager] fileExistsAtPath:abspath]) {
 	  //try in GNUSTEP_ROOT/Library/Model/...
 	  NSString *root;
 	  
 	  root = [NSString stringWithCString:getenv("GNUSTEP_SYSTEM_ROOT")];
 	  root = [root stringByAppendingPathComponent:@"Library/Model/"];
-	  path = [root stringByAppendingPathComponent:path];
-	  if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+	  abspath = [root stringByAppendingPathComponent:path];
+	  if (![[NSFileManager defaultManager] fileExistsAtPath:abspath])
 	      return NO;
       }
+      path = abspath;
   }
 
   NSLog (@"loading model file %@...", path);

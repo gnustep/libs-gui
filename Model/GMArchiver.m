@@ -764,6 +764,9 @@ static NSMutableDictionary* classToAliasMappings = nil;
     return nil;
   }
 
+  if ([string isEqualToString: @"nil"])
+    return nil;
+
   return string;
 }
 

@@ -1,3 +1,11 @@
+Wed Mar 24 08:23:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Incorporated patches by Benhur-de-Oliveira.Stein@imag.fr
+	* Model/GMAppKit.m: various fixes.
+	* Model/GMArchiver.m: various fixes.
+	* Model/IMCustomObject.m: various fixes.
+	* Model/IMLoading.m: various fixes.
+
 Tue Mar 23 22:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSWindow.m: Tidied up and added ([-setResizeIncrements:])

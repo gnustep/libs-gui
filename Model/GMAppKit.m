@@ -144,8 +144,8 @@ void __dummy_GMAppKit_functionForLinking() {}
   float delay, interval;
   id theCell = [self cell];
 
-  [self getPeriodicDelay:&delay interval:&interval];
   [archiver encodeInt:[self state] withName:@"state"];
+  [self getPeriodicDelay:&delay interval:&interval];
   [archiver encodeFloat:delay withName:@"delay"];
   [archiver encodeFloat:interval withName:@"interval"];
   [archiver encodeString:[self title] withName:@"title"];
@@ -196,20 +196,252 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
-  [archiver encodeObject:[self font] withName:@"font"];
+    [archiver encodeInt:[self type] withName:@"type"];
+    [archiver encodeObject:[self font] withName:@"font"];
+    [archiver encodeString:[self stringValue] withName:@"stringValue"];
+    [archiver encodeInt:[self entryType] withName:@"entryType"];
+    [archiver encodeInt:[self alignment] withName:@"alignment"];
+    [archiver encodeBOOL:[self wraps] withName:@"wraps"];
+    [archiver encodeObject:[self image] withName:@"image"];
+    [archiver encodeInt:[self state] withName:@"state"];
+    [archiver encodeBOOL:[self isEnabled] withName:@"isEnabled"];
+    [archiver encodeBOOL:[self isBordered] withName:@"isBordered"];
+    [archiver encodeBOOL:[self isBezeled] withName:@"isBezeled"];
+    [archiver encodeBOOL:[self isEditable] withName:@"isEditable"];
+    [archiver encodeBOOL:[self isSelectable] withName:@"isSelectable"];
+    [archiver encodeBOOL:[self isScrollable] withName:@"isScrollable"];
+    [archiver encodeBOOL:[self isContinuous] withName:@"isContinuous"];
+    [archiver encodeInt:[self sendActionOn:0] withName:@"sendActionMask"];
 }
 
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
 {
-  NSFont* font = [unarchiver decodeObjectWithName:@"font"];
-  if (!font)
-    font = [NSFont userFontOfSize:0];
+    NSFont* font = [unarchiver decodeObjectWithName:@"font"];
+    if (!font)
+        font = [NSFont userFontOfSize:0];
 
-  [self setFont:font];
-  return self;
+    [self setFont:font];
+
+    // if (model_version >= 2) {
+    [self setType:[unarchiver decodeIntWithName:@"type"]];
+    [self setStringValue:[unarchiver decodeStringWithName:@"stringValue"]];
+    [self setEntryType:[unarchiver decodeIntWithName:@"entryType"]];
+    [self setAlignment:[unarchiver decodeIntWithName:@"alignment"]];
+    [self setWraps:[unarchiver decodeBOOLWithName:@"wraps"]];
+    [self setImage:[unarchiver decodeObjectWithName:@"image"]];
+    [self setState:[unarchiver decodeIntWithName:@"state"]];
+    [self setEnabled:[unarchiver decodeBOOLWithName:@"isEnabled"]];
+    [self setBordered:[unarchiver decodeBOOLWithName:@"isBordered"]];
+    [self setBezeled:[unarchiver decodeBOOLWithName:@"isBezeled"]];
+    [self setEditable:[unarchiver decodeBOOLWithName:@"isEditable"]];
+    [self setSelectable:[unarchiver decodeBOOLWithName:@"isSelectable"]];
+    [self setScrollable:[unarchiver decodeBOOLWithName:@"isScrollable"]];
+    [self setContinuous:[unarchiver decodeBOOLWithName:@"isContinuous"]];
+    [self sendActionOn:[unarchiver decodeIntWithName:@"sendActionMask"]];
+    // }
+
+    return self;
 }
 
 @end /* NSCell (GMArchiverMethods) */
+
+
+
+@implementation NSActionCell (GMArchiverMethods)
+
+- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+{
+    [super encodeWithModelArchiver:archiver];
+
+    [archiver encodeInt:[self tag] withName:@"tag"];
+    [archiver encodeObject:[self target] withName:@"target"];
+    [archiver encodeSelector:[self action] withName:@"action"];
+}
+
+- (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
+{
+    self = [super initWithModelUnarchiver:unarchiver];
+
+    // if (model_version >= 2) {
+    [self setTag:[unarchiver decodeIntWithName:@"tag"]];
+    [self setTarget:[unarchiver decodeObjectWithName:@"target"]];
+    [self setAction:[unarchiver decodeSelectorWithName:@"action"]];
+    // }
+
+    return self;
+}
+
+@end /* NSActionCell (GMArchiverMethods) */
+
+
+@implementation NSButtonCell (GMArchiverMethods)
+
+- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+{
+    float delay, interval;
+
+    [super encodeWithModelArchiver:archiver];
+
+    [self getPeriodicDelay:&delay interval:&interval];
+    [archiver encodeFloat:delay withName:@"delay"];
+    [archiver encodeFloat:interval withName:@"interval"];
+    [archiver encodeString:[self alternateTitle] withName:@"alternateTitle"];
+    [archiver encodeObject:[self alternateImage] withName:@"alternateImage"];
+    [archiver encodeInt:[self imagePosition] withName:@"imagePosition"];
+    [archiver encodeBOOL:[self isTransparent] withName:@"isTransparent"];
+    [archiver encodeString:[self keyEquivalent] withName:@"keyEquivalent"];
+    [archiver encodeObject:[self keyEquivalentFont] withName:@"keyEquivalentFont"];
+    [archiver encodeInt:[self keyEquivalentModifierMask] withName:@"keyEquivalentModifierMask"];
+    [archiver encodeInt:[self highlightsBy] withName:@"highlightsBy"];
+    [archiver encodeInt:[self showsStateBy] withName:@"showsStateBy"];
+}
+
+- (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
+{
+    float delay, interval;
+    id obj;
+
+    self = [super initWithModelUnarchiver:unarchiver];
+
+    // if (model_version >= 2) {
+    delay = [unarchiver decodeFloatWithName:@"delay"];
+    interval = [unarchiver decodeFloatWithName:@"interval"];
+    [self setPeriodicDelay:delay interval:interval];
+
+    obj = [unarchiver decodeStringWithName:@"alternateTitle"];
+    if (obj) [self setAlternateTitle:obj];
+    obj = [unarchiver decodeObjectWithName:@"alternateImage"];
+    [self setAlternateImage:obj];
+    [self setImagePosition:[unarchiver decodeIntWithName:@"imagePosition"]];
+    [self setTransparent:[unarchiver decodeBOOLWithName:@"isTransparent"]];
+    [self setKeyEquivalent:[unarchiver decodeStringWithName:@"keyEquivalent"]];
+    [self setKeyEquivalentFont:[unarchiver decodeObjectWithName:@"keyEquivalentFont"]];
+    [self setKeyEquivalentModifierMask:[unarchiver decodeIntWithName:@"keyEquivalentModifierMask"]];
+    [self setHighlightsBy:[unarchiver decodeIntWithName:@"highlightsBy"]];
+    [self setShowsStateBy:[unarchiver decodeIntWithName:@"showsStateBy"]];
+    // }
+
+    return self;
+}
+
+@end /* NSButtonCell (GMArchiverMethods) */
+
+
+@implementation NSMatrix (GMArchiverMethods)
+
+- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+{
+    [super encodeWithModelArchiver:archiver];
+
+    [archiver encodeInt:[self mode] withName:@"mode"];
+    [archiver encodeBOOL:[self allowsEmptySelection] withName:@"allowsEmptySelection"];
+    [archiver encodeBOOL:[self isSelectionByRect] withName:@"isSelectionByRect"];
+
+    [archiver encodeBOOL:[self autosizesCells] withName:@"autosizesCells"];
+    [archiver encodeBOOL:[self isAutoscroll] withName:@"isAutoscroll"];
+    [archiver encodeSize:[self cellSize] withName:@"cellSize"];
+    [archiver encodeSize:[self intercellSpacing] withName:@"intercellSpacing"];
+    [archiver encodeObject:[self backgroundColor] withName:@"backgroundColor"];
+    [archiver encodeObject:[self cellBackgroundColor] withName:@"cellBackgroundColor"];
+    [archiver encodeBOOL:[self drawsBackground] withName:@"drawsBackground"];
+    [archiver encodeBOOL:[self drawsCellBackground] withName:@"drawsCellBackground"];
+
+    [archiver encodeClass:[self cellClass] withName:@"cellClass"];
+    [archiver encodeObject:[self prototype] withName:@"prototype"];
+    [archiver encodeInt:[self numberOfRows] withName:@"numberOfRows"];
+    [archiver encodeInt:[self numberOfColumns] withName:@"numberOfColumns"];
+    [archiver encodeObject:[self cells] withName:@"cells"];
+    [archiver encodeObject:[self delegate] withName:@"delegate"];
+
+    [archiver encodeObject:[self target] withName:@"target"];
+    [archiver encodeSelector:[self action] withName:@"action"];
+    [archiver encodeSelector:[self doubleAction] withName:@"doubleAction"];
+    [archiver encodeSelector:[self errorAction] withName:@"errorAction"];
+}
+
+- (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
+{
+    int nr, nc;
+    NSArray *cell_array;
+    int i;
+    
+    self = [super initWithModelUnarchiver:unarchiver];
+
+    // if (model_version >= 2) {
+    [self setMode:[unarchiver decodeIntWithName:@"mode"]];
+    [self setAllowsEmptySelection:[unarchiver decodeBOOLWithName:@"allowsEmptySelection"]];
+    [self setSelectionByRect:[unarchiver decodeBOOLWithName:@"isSelectionByRect"]];
+
+    [self setAutosizesCells:[unarchiver decodeBOOLWithName:@"autosizesCells"]];
+    [self setAutoscroll:[unarchiver decodeBOOLWithName:@"isAutoscroll"]];
+    [self setCellSize:[unarchiver decodeSizeWithName:@"cellSize"]];
+    [self setIntercellSpacing:[unarchiver decodeSizeWithName:@"intercellSpacing"]];
+    [self setBackgroundColor:[unarchiver decodeObjectWithName:@"backgroundColor"]];
+    [self setCellBackgroundColor:[unarchiver decodeObjectWithName:@"cellBackgroundColor"]];
+    [self setDrawsBackground:[unarchiver decodeBOOLWithName:@"drawsBackground"]];
+    [self setDrawsCellBackground:[unarchiver decodeBOOLWithName:@"drawsCellBackground"]];
+
+    [self setCellClass:[unarchiver decodeClassWithName:@"cellClass"]];
+    [self setPrototype:[unarchiver decodeObjectWithName:@"prototype"]];
+    
+    nr = [unarchiver decodeIntWithName:@"numberOfRows"];
+    nc = [unarchiver decodeIntWithName:@"numberOfColumns"];
+    cell_array = [unarchiver decodeObjectWithName:@"cells"];
+    [self renewRows:nr columns:nc];
+    for (i = 0; (i < [cell_array count]) && (i < nr*nc); i++) {
+        [self putCell:[cell_array objectAtIndex:i] atRow:i/nc column:i%nc];
+    }
+    
+    [self setDelegate:[unarchiver decodeObjectWithName:@"delegate"]];
+    
+
+    [self setTarget:[unarchiver decodeObjectWithName:@"target"]];
+    [self setAction:[unarchiver decodeSelectorWithName:@"action"]];
+    [self setDoubleAction:[unarchiver decodeSelectorWithName:@"doubleAction"]];
+    [self setErrorAction:[unarchiver decodeSelectorWithName:@"errorAction"]];
+    [self sizeToCells];
+    // }
+
+    return self;
+}
+
+@end /* NSMatrix (GMArchiverMethods) */
+
+
+@implementation NSScrollView (GMArchiverMethods)
+
+// do not encode our subviews in NSView (it would encode the clipview and 
+// the scroller, which are not necessary).
+- (NSArray *)subviewsForModel
+{
+    return [NSArray array];
+}
+
+- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+{
+    [super encodeWithModelArchiver:archiver];
+
+    [archiver encodeObject:[self backgroundColor] withName:@"backgroundColor"];
+    [archiver encodeInt:[self borderType] withName:@"borderType"];
+    [archiver encodeBOOL:[self hasHorizontalScroller] withName:@"hasHorizontalScroller"];
+    [archiver encodeBOOL:[self hasVerticalScroller] withName:@"hasVerticalScroller"];
+    [archiver encodeObject:[self documentView] withName:@"documentView"];
+}
+
+- (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
+{
+    self = [super initWithModelUnarchiver:unarchiver];
+
+    [self setBackgroundColor:[unarchiver decodeObjectWithName:@"backgroundColor"]];
+    [self setBorderType:[unarchiver decodeIntWithName:@"borderType"]];
+    [self setHasHorizontalScroller:[unarchiver decodeBOOLWithName:@"hasHorizontalScroller"]];
+    [self setHasVerticalScroller:[unarchiver decodeBOOLWithName:@"hasVerticalScroller"]];
+    [self setDocumentView:[unarchiver decodeObjectWithName:@"documentView"]];
+
+    return self;
+}
+
+@end /* NSScrollView (GMArchiverMethods) */
 
 
 @implementation NSClipView (GMArchiverMethods)
@@ -349,39 +581,36 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
-  id target;
-  SEL action;
+    [archiver encodeObject:[self cell] withName:@"cell"];
+    [archiver encodeBOOL:[self isEnabled] withName:@"isEnabled"];
+    [archiver encodeInt:[self tag] withName:@"tag"];
+    [archiver encodeBOOL:[self ignoresMultiClick] withName:@"ignoresMultiClick"];
 
-  if ((target = [self target]))
-    [archiver encodeObject:target withName:@"target"];
-  if ((action = [self action]))
-    [archiver encodeSelector:action withName:@"action"];
-
-  [archiver encodeBOOL:[self isEnabled] withName:@"isEnabled"];
-  [archiver encodeInt:[self alignment] withName:@"alignment"];
-  [archiver encodeObject:[self font] withName:@"font"];
-  [archiver encodeBOOL:[self isContinuous] withName:@"isContinuous"];
-  [archiver encodeInt:[self tag] withName:@"tag"];
-  [archiver encodeBOOL:[self ignoresMultiClick] withName:@"ignoresMultiClick"];
-
-  [super encodeWithModelArchiver:archiver];
+    [super encodeWithModelArchiver:archiver];
 }
 
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
 {
-  self = [super initWithModelUnarchiver:unarchiver];
+    self = [super initWithModelUnarchiver:unarchiver];
 
-  [self setTarget:[unarchiver decodeObjectWithName:@"target"]];
-  [self setAction:[unarchiver decodeSelectorWithName:@"action"]];
-  [self setEnabled:[unarchiver decodeBOOLWithName:@"isEnabled"]];
-  [self setAlignment:[unarchiver decodeIntWithName:@"alignment"]];
-  [self setFont:[unarchiver decodeObjectWithName:@"font"]];
-  [self setContinuous:[unarchiver decodeBOOLWithName:@"isContinuous"]];
-  [self setTag:[unarchiver decodeIntWithName:@"tag"]];
-  [self setIgnoresMultiClick:
-	      [unarchiver decodeBOOLWithName:@"ignoresMultiClick"]];
-
-  return self;
+    // if (model_version == 1) {
+    //[self setTarget:[unarchiver decodeObjectWithName:@"target"]];
+    //[self setAction:[unarchiver decodeSelectorWithName:@"action"]];
+    //[self setEnabled:[unarchiver decodeBOOLWithName:@"isEnabled"]];
+    //[self setAlignment:[unarchiver decodeIntWithName:@"alignment"]];
+    //[self setFont:[unarchiver decodeObjectWithName:@"font"]];
+    //[self setContinuous:[unarchiver decodeBOOLWithName:@"isContinuous"]];
+    //[self setTag:[unarchiver decodeIntWithName:@"tag"]];
+    //[self setIgnoresMultiClick:
+    //            [unarchiver decodeBOOLWithName:@"ignoresMultiClick"]];
+    // } else {
+    [self setCell:[unarchiver decodeObjectWithName:@"cell"]];
+    [self setEnabled:[unarchiver decodeBOOLWithName:@"isEnabled"]];
+    [self setTag:[unarchiver decodeIntWithName:@"tag"]];
+    [self setIgnoresMultiClick:
+                [unarchiver decodeBOOLWithName:@"ignoresMultiClick"]];
+    // }
+    return self;
 }
 
 @end /* NSControl (GMArchiverMethods) */
@@ -664,12 +893,18 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 @implementation NSView (GMArchiverMethods)
 
+// subclasses may not want to encode all subviews...
+- (NSArray *)subviewsForModel
+{
+  return [self subviews];
+}
+
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
   [super encodeWithModelArchiver:archiver];
 
   [archiver encodeConditionalObject:[self superview] withName:@"superview"];
-  [archiver encodeObject:[self subviews] withName:@"subviews"];
+  [archiver encodeObject:[self subviewsForModel] withName:@"subviews"];
   [archiver encodeRect:[self frame] withName:@"frame"];
   [archiver encodeRect:[self bounds] withName:@"bounds"];
   [archiver encodeBOOL:[self postsFrameChangedNotifications]
@@ -708,7 +943,7 @@ void __dummy_GMAppKit_functionForLinking() {}
   for (i = 0, count = [subviews count]; i < count; i++)
     [self addSubview:[subviews objectAtIndex:i]];
 
-  [self setBounds:[unarchiver decodeRectWithName:@"bounds"]];
+//  [self setBounds:[unarchiver decodeRectWithName:@"bounds"]];
   [self setPostsFrameChangedNotifications:
 	[unarchiver decodeBOOLWithName:@"postsFrameChangedNotifications"]];
   [self setPostsBoundsChangedNotifications:
