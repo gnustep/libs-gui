@@ -31,16 +31,21 @@ GNUSTEP_MAKEFILES = $(GNUSTEP_SYSTEM_ROOT)/Makefiles
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
-# The application to be compiled
-TOOL_NAME = gpbs
+# The applications to be compiled
+TOOL_NAME = gpbs make_services
+SERVICE_NAME = example
 
 # The source files to be compiled
-gpbs_OBJC_FILES = gpbs.m
+gpbs_OBJC_FILES = gpbs.m dummy.m
+make_services_OBJC_FILES = make_services.m dummy.m
+
+example_OBJC_FILES = example.m dummy.m
 
 -include GNUmakefile.preamble
 
 -include GNUmakefile.local
 
 include $(GNUSTEP_MAKEFILES)/tool.make
+include $(GNUSTEP_MAKEFILES)/service.make
 
 -include GNUmakefile.postamble

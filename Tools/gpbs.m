@@ -48,29 +48,6 @@
 #include "PasteboardServer.h"
 
 #include <signal.h>
-					// dummy definitions provided here to
-					// avoid errors when not linking with
-					// a back end
-BOOL
-initialize_gnustep_backend(void)
-{
-  return YES;							// dummy define
-}
-void NSHighlightRect(NSRect aRect)				// dummy define
-{}
-void NSRectFill(NSRect aRect)					// dummy define
-{}
-void NSBeep(void)						// dummy define
-{}
-
-@interface  GMModel: NSObject
-{
-}
-@end
-
-@implementation GMModel
-@end
-
 
 @class PasteboardServer;
 
