@@ -60,22 +60,34 @@ enum {
 	NSRightTextMovement	 = 0x14,
 	NSUpTextMovement	 = 0x15,
 	NSDownTextMovement	 = 0x16
-};	 	
+};
+	 	
+enum {
+  NSParagraphSeparatorCharacter = 0x2029,
+  NSLineSeparatorCharacter = 0x2028,
+  NSTabCharacter = 0x0009,
+  NSFormFeedCharacter = 0x000c,
+  NSNewlineCharacter = 0x000a,
+  NSCarriageReturnCharacter = 0x000d,
+  NSEnterCharacter = 0x0003,
+  NSBackspaceCharacter = 0x0008,
+  NSBackTabCharacter = 0x0019,
+  NSDeleteCharacter = 0x007f,
+};
 
 #include <AppKit/NSStringDrawing.h>
 
 // these definitions should migrate to NSTextView when implemented
-
-typedef enum _NSSelectionGranularity
-{	NSSelectByCharacter = 0,
-    NSSelectByWord = 1,
-    NSSelectByParagraph = 2,
+typedef enum _NSSelectionGranularity {	
+  NSSelectByCharacter = 0,
+  NSSelectByWord = 1,
+  NSSelectByParagraph = 2,
 } NSSelectionGranularity;
 
 #if GNUSTEP
-typedef enum _NSSelectionAffinity
-{	NSSelectionAffinityUpstream = 0,
-    NSSelectionAffinityDownstream = 1,
+typedef enum _NSSelectionAffinity {	
+  NSSelectionAffinityUpstream = 0,
+  NSSelectionAffinityDownstream = 1,
 } NSSelectionAffinity;
 #endif
 
@@ -101,7 +113,6 @@ typedef enum _NSSelectionAffinity
 // added by Daniel Bðhringer
 
 	NSSize	minSize,maxSize;
-
 	NSMutableDictionary *typingAttributes;
 
 	// content
@@ -109,26 +120,36 @@ typedef enum _NSSelectionAffinity
 	NSMutableAttributedString	*rtfContent;
 
 	// internal stuff
-	NSMutableArray 				*lineLayoutInformation;		// contains private _GNULineLayoutInfo objects
-	int							 spellCheckerDocumentTag;
-	NSCharacterSet				*selectionWordGranularitySet,*selectionParagraphGranularitySet;
-	BOOL						 displayDisabled;
-	float						 currentCursorX;			// column-stable cursor up/down
-	float						 currentCursorY; // column-stable cursor up/down
+
+	// contains private _GNULineLayoutInfo objects
+	NSMutableArray *lineLayoutInformation; 
+
+	int spellCheckerDocumentTag;
+	NSCharacterSet *selectionWordGranularitySet; 
+	NSCharacterSet  *selectionParagraphGranularitySet;
+	BOOL  displayDisabled;
+	float currentCursorX; // column-stable cursor up/down
+	float currentCursorY; // column-stable cursor up/down
 }
 
 
 // GNU utility methods
-// return value is guaranteed to be a NSAttributedString even if data contains only NSString
+// return value is guaranteed to be a NSAttributedString, 
+// even if data contains only NSString
 +(NSAttributedString*) attributedStringForData:(NSData*) aData;
 +(NSData*) dataForAttributedString:(NSAttributedString*) aString;
 
-+(NSString*) newlineString;	// GNU extension (override it if you want other characters treated as newline characters)
+// GNU extension (override it if you want other characters treated 
+// as newline characters)
++(NSString*) newlineString;	
+
 
 //
-// Getting and Setting Contents (low level: no selection handling, relayout or display)
+// Getting and Setting Contents (low level: no selection handling, 
+// relayout or display)
 //
--(void) replaceRange:(NSRange)range withAttributedString:(NSAttributedString*)attrString;	// GNU extension
+-(void) replaceRange:(NSRange)range 
+withAttributedString:(NSAttributedString*)attrString;	// GNU extension
 -(void) replaceRange:(NSRange)range withString:(NSString*) aString;
 -(void) replaceRange:(NSRange)range withRTF:(NSData *)rtfData;
 -(void) replaceRange:(NSRange)range withRTFD:(NSData *)rtfdData;
@@ -136,7 +157,8 @@ typedef enum _NSSelectionAffinity
 -(NSData*) RTFFromRange:(NSRange)range;
 -(void) setString:(NSString *)string;
 -(void) setText:(NSString *)string;	// old fashioned
--(void) setText:(NSString*) aString range:(NSRange) aRange;		// old fashioned
+-(void) setText:(NSString*) aString 
+          range:(NSRange) aRange;		// old fashioned
 -(NSString*) string;
 -(NSString*) text;				// old fashioned
 
