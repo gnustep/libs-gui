@@ -1,5 +1,28 @@
 2001-11-03  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSMenu.m
+	In [performActionForItemAtIndex:] select the item of the popup
+	before sending the action. 
+	* Headers/gnustep/gui/NSSplitView.h
+	Removed unused ivar _splitCursor. Added some MacOSX methods. Moved
+	extension methods to separate category.
+	* Source/NSSplitView.m
+	Adopted to changes in header. Dummy implementation of new
+	methods. Changed incudes. In [mouseDown:] also check for new delegate
+	methods. [_adjustSubviews:] now takes the old size as an argument
+	to hand it on to delegate. Changed all places that call
+	this. En-/decode the image instead of the cursor.
+	* Headers/gnustep/gui/NSTabView.h
+	Renamed all ivars and added some new MacOSX methods. Added two new
+	unsupported NSTabViewType values.
+	* Source/NSTabView.m
+	Adopted to changes in header. Use [insertTabViewItem:atIndex:] in
+	[addTabViewItem:]. Corrected [selectNextTabViewItem:] and
+	[selectPreviousTabViewItem:]. In [selectTabViewItem:] set the
+	first responder of the tab view. Other small cleanup.
+	
+2001-11-03  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/gnustep/gui/NSSpellChecker.h
 	Added [guessesForWord:].
 	* Source/NSSpellChecker.m
