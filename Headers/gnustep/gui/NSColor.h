@@ -41,41 +41,18 @@ typedef enum _NSControlTint {
     NSClearControlTint
 } NSControlTint;
 
+/*
+ * NSColor is an abstract super class of the class cluster of the real colour classes.
+ * For each colour space exists a specific subclass that implements the behaviour for 
+ * this colour space.
+ * The colour spaces NSDeviceBlackColorSpace and NSCalibratedBlackColorSpace
+ * are no longer supported by this class. They were not in the old OpenStep 
+ * specification, and are not used in the new Apple specification. The names are
+ * used as synonyms to NSDeviceWhiteColorSpace and NSCalibratedWhiteColorSpace.
+ */
+
 @interface NSColor : NSObject <NSCoding, NSCopying>
 {
-  // Attributes
-  NSString *_colorspace_name;
-  NSString *_catalog_name;
-  NSString *_color_name;
-
-  struct _GNU_RGB_component
-  {
-    float red;
-    float green;
-    float blue;
-  } _RGB_component;
-
-  struct _GNU_CMYK_component
-  {
-    float cyan;
-    float magenta;
-    float yellow;
-    float black;
-  } _CMYK_component;
-
-  struct _GNU_HSB_component
-  {
-    float hue;
-    float saturation;
-    float brightness;
-  } _HSB_component;
-
-  float _white_component;
-
-  float _alpha_component;
-
-  int _active_component;
-  int _valid_components;
 }
 
 //
@@ -242,6 +219,8 @@ typedef enum _NSControlTint {
 + (NSColor*) windowFrameColor;
 + (NSColor*) windowFrameTextColor;
 
+// Pattern colour
+- (NSImage*) patternImage;
 #endif
 
 @end
