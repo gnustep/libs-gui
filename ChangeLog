@@ -1,3 +1,13 @@
+2003-02-18  Fred Kiefer <FredKiefer@gmx.de>
+
+	* TextConverters/RTF/RTFProducer.m
+	[colorTable] corrected the output of the colour table, by using a
+	C array instead of an NSMutableArray.
+	* TextConverters/RTF/RTFConsumer.m
+	GSRTFcolorfg(), GSRTFcolorbg(), GSRTFlineSpace(),
+	GSRTFspaceAbove() set the state of the context to changed, so that
+	new attributes get used.
+
 2003-02-18 18:03  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/gnustep/gui/GSLayoutManager_internal.h,
