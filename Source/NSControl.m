@@ -119,7 +119,7 @@ static Class cellClass;
   [cell setControlView: nil];
   [aCell setControlView: self];
 
-  ASSIGN(ell, aCell);
+  ASSIGN(cell, aCell);
 }
 
 /*

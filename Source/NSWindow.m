@@ -1322,7 +1322,7 @@ static Class	responderClass;
 	break;
 
       case NSLeftMouseUp:                                 // Left mouse up
-	v = [content_view hitTest: [theEvent locationInWindow]];
+	v = first_responder;	/* Send to the view that got the mouse down. */
 	[v mouseUp: theEvent];
 	last_point = [theEvent locationInWindow];
 	break;
