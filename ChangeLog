@@ -1,3 +1,22 @@
+2003-06-08  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBitmapImageRep.m
+	In [initWithBitmapDataPlanes:...bitsPerPixel:],
+	[getBitmapDataPlanes:] and [copyWithZone:] changed type of i
+	to unsigned int.
+	* Source/NSBrowser.m (-setPath:, pathToColumn:, -addColumn):
+	Removed compiler warning about signed/unsigned comparision. 
+	* Source/NSComboBoxCell.m (-completedString:): ditto.
+	* Source/NSFontPanel.m (-setPanelFont:isMultiple:,
+	-_trySelectSize:, -_familySelectionChanged:, -browser:...column:)
+	: ditto 
+	* Source/NSFontmanager.m (-availableFonts,
+	-availableFontNamesWithTraits:, -availableMembersOfFontFamily:,
+	-convertFont:, convertWeight:ofFont:,
+	-fontWithFamily:traits:weight:size:, -fontNamed:hasTraits:): ditto.
+	[setSelectedFont:isMultiple:] and [fontMenu:] changed menuItem to
+	type (id <NSMenuItem>). 
+	
 2003-06-05 16:42  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSMenu.m: Check the types of all defaults values before
