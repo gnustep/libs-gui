@@ -762,7 +762,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   NSView	*cv = [self controlView];
 
   [self highlight: YES withFrame: [cv frame] inView: cv];
-  if ([self action] && [self target])
+  if ([self action])
     {
       NS_DURING
 	{

@@ -188,7 +188,7 @@
   NSView	*cv = [self controlView];
 
   [self highlight: YES withFrame: [cv frame] inView: cv];
-  if (action && target)
+  if (action)
     {
       NS_DURING
 	{

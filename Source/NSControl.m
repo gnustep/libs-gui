@@ -361,7 +361,7 @@ static id _NSCONTROL_CELL_CLASS = nil;
 {
   NSApplication *theApp = [NSApplication sharedApplication];
 
-  if (theAction && theTarget)
+  if (theAction)
     return [theApp sendAction: theAction to: theTarget from: self];
   else
     return NO;

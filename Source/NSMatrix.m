@@ -1100,7 +1100,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 
 
 - (BOOL) sendAction: (SEL)theAction
-		to: (id)theTarget
+		 to: (id)theTarget
 {
   if (theAction)
     {
