@@ -195,6 +195,7 @@ static void setFont(NSString* key, NSFont* font)
 - (float)capHeight			{ return 0.0; }
 - (float)italicAngle			{ return 0.0; }
 - (NSSize)maximumAdvancement		{ return NSZeroSize; }
+- (NSSize)minimumAdvancement		{ return NSZeroSize; }
 - (float)underlinePosition		{ return 0.0; }
 - (float)underlineThickness		{ return 0.0; }
 - (float)xHeight			{ return 0.0; }

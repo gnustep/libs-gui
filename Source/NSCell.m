@@ -94,7 +94,7 @@
     return nil;
 
   cell_type = NSImageCellType;
-  cell_image = anImage;
+  cell_image = [anImage retain];
   image_position = NSImageOnly;
   cell_font = [[NSFont userFontOfSize:12] retain];
   cell_state = NO;
@@ -121,7 +121,7 @@
   //	return nil;
 
   cell_font = [[NSFont userFontOfSize:12] retain];
-  contents = aString;
+  contents = [aString retain];
   cell_type = NSTextCellType;
   text_align = NSCenterTextAlignment;
   cell_image = nil;
@@ -234,7 +234,9 @@
     return;
 
   // Only set the image if we are an image cell
-  cell_image = [anImage retain];
+  [anImage retain];
+  [cell_image release];
+  cell_image = anImage;
 }
 
 //
@@ -264,6 +266,7 @@
 {
   NSNumber* number = [NSNumber numberWithDouble:aDouble];
 
+  [contents release];
   contents = [[number stringValue] retain];
 }
 
@@ -271,6 +274,7 @@
 {
   NSNumber* number = [NSNumber numberWithFloat:aFloat];
 
+  [contents release];
   contents = [[number stringValue] retain];
 }
 
@@ -278,15 +282,19 @@
 {
   NSNumber* number = [NSNumber numberWithInt:anInt];
 
+  [contents release];
   contents = [[number stringValue] retain];
 }
 
 - (void)setStringValue:(NSString *)aString
 {
+  [self setType:NSTextCellType];
+  aString = [aString copy];
+  [contents release];
   if (!aString)
     contents = @"";
   else
-    contents = [aString copy];
+    contents = aString;
 }
 
 //
@@ -359,7 +367,9 @@
   if (![fontObject isKindOfClass:[NSFont class]])
     return;
 
-  cell_font = [fontObject retain];
+  [fontObject retain];
+  [cell_font release];
+  cell_font = fontObject;
 }
 
 - (void)setSelectable:(BOOL)flag

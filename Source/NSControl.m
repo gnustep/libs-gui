@@ -83,7 +83,7 @@ NSString *NSControlTextDidChangeNotification = @"NSControlTextDidChangeNotificat
   [super initWithFrame:frameRect];
 
   // create our cell
-  [self setCell:[[MB_NSCONTROL_CELL_CLASS alloc] init]];
+  [self setCell:[[MB_NSCONTROL_CELL_CLASS new] autorelease]];
 
   tag = 0;
 
@@ -109,7 +109,7 @@ NSString *NSControlTextDidChangeNotification = @"NSControlTextDidChangeNotificat
   NSLog(@"NSControl: copyWithZone\n");
 
   // make sure the new copy also has a new copy of the cell
-  [c setCell: [cell copy]];
+  [c setCell: [[cell copy] autorelease]];
   return c;
 }
 
@@ -127,6 +127,8 @@ NSString *NSControlTextDidChangeNotification = @"NSControlTextDidChangeNotificat
   if (![aCell isKindOfClass:[NSCell class]])
     return;
 
+  [aCell retain];
+  [cell release];
   cell = aCell;
 }
 

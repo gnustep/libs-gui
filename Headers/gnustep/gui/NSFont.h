@@ -96,6 +96,7 @@ extern const float *NSFontIdentityMatrix;
 - (float)capHeight;
 - (float)italicAngle;
 - (NSSize)maximumAdvancement;
+- (NSSize)minimumAdvancement;
 - (float)underlinePosition;
 - (float)underlineThickness;
 - (float)xHeight;

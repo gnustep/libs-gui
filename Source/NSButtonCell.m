@@ -319,6 +319,11 @@
   control_view = controlView;
 }
 
++ (BOOL)prefersTrackingUntilMouseUp
+{
+  return YES;
+}
+
 //
 // Simulating a Click 
 //

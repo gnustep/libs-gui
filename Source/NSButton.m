@@ -85,8 +85,7 @@ id gnustep_gui_nsbutton_class = nil;
   [super initWithFrame:frameRect];
 
   // set our cell
-  [[self cell] release];
-  [self setCell:[[gnustep_gui_nsbutton_class alloc] init]];
+  [self setCell:[[gnustep_gui_nsbutton_class new] autorelease]];
 
   return self;
 }

@@ -575,4 +575,73 @@
   return self;
 }
 
+- (NSString*)description
+{
+  const char* eventTypes[] = { "leftMouseDown", "leftMouseUp",
+      "rightMouseDown", "rightMouseUp", "mouseMoved", "leftMouseDragged",
+      "rightMouseDragged", "mouseEntered", "mouseExited", "keyDown", "keyUp",
+      "flagsChanged", "periodic", "cursorUpdate"
+  };
+
+  switch (event_type) {
+    case NSLeftMouseDown:
+    case NSLeftMouseUp:
+    case NSRightMouseDown:
+    case NSRightMouseUp:
+    case NSMouseMoved:
+    case NSLeftMouseDragged:
+    case NSRightMouseDragged:
+      return [NSString stringWithFormat:
+		@"NSEvent: eventType = %s, point = { %f, %f }, modifiers = %u,"
+		@" time = %f, window = %d, dpsContext = %p,"
+		@" event number = %d, click = %d, pressure = %f",
+		eventTypes[event_type], location_point.x, location_point.y,
+		modifier_flags, event_time, window_num, event_context,
+		event_data.mouse.event_num, event_data.mouse.click,
+		event_data.mouse.pressure];
+      break;
+
+    case NSMouseEntered:
+    case NSMouseExited:
+      return [NSString stringWithFormat:
+		@"NSEvent: eventType = %s, point = { %f, %f }, modifiers = %u,"
+		@" time = %f, window = %d, dpsContext = %p, "
+		@" event number = %d, tracking number = %d, user data = %p",
+		eventTypes[event_type], location_point.x, location_point.y,
+		modifier_flags, event_time, window_num, event_context,
+		event_data.tracking.event_num,
+		event_data.tracking.tracking_num,
+		event_data.tracking.user_data];
+      break;
+
+    case NSKeyDown:
+    case NSKeyUp:
+      return [NSString stringWithFormat:
+		@"NSEvent: eventType = %s, point = { %f, %f }, modifiers = %u,"
+		@" time = %f, window = %d, dpsContext = %p, "
+		@" repeat = %s, keys = %@, ukeys = %@, keyCode = 0x%x",
+		eventTypes[event_type], location_point.x, location_point.y,
+		modifier_flags, event_time, window_num, event_context,
+		(event_data.key.repeat ? "YES" : "NO"),
+		event_data.key.char_keys, event_data.key.unmodified_keys,
+		event_data.key.key_code];
+      break;
+
+    case NSFlagsChanged:
+    case NSPeriodic:
+    case NSCursorUpdate:
+      return [NSString stringWithFormat:
+		@"NSEvent: eventType = %s, point = { %f, %f }, modifiers = %u,"
+		@" time = %f, window = %d, dpsContext = %p, "
+		@" subtype = %d, data1 = %p, data2 = %p",
+		eventTypes[event_type], location_point.x, location_point.y,
+		modifier_flags, event_time, window_num, event_context,
+		event_data.misc.sub_type, event_data.misc.data1,
+		event_data.misc.data2];
+      break;
+  }
+
+  return [super description];
+}
+
 @end

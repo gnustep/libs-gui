@@ -181,6 +181,7 @@
 {
   // Save last view drawn to
   control_view = controlView;
+  [super drawWithFrame:cellFrame inView:controlView];
 }
 
 //

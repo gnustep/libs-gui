@@ -79,8 +79,7 @@ static id MB_NSSLIDER_CLASS = nil;
   [super initWithFrame:frameRect];
 
   // set our cell
-  [[self cell] release];
-  [self setCell:[[MB_NSSLIDER_CLASS alloc] init]];
+  [self setCell:[[MB_NSSLIDER_CLASS new] autorelease]];
   if (frame.size.width > frame.size.height)
     [cell setVertical:NO];
   else

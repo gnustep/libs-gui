@@ -80,8 +80,7 @@ static id MB_NSTEXTFIELDCELL_CLASS = nil;
   [super initWithFrame:frameRect];
 
   // set our cell
-  [[self cell] release];
-  [self setCell:[[MB_NSTEXTFIELDCELL_CLASS alloc] init]];
+  [self setCell:[[MB_NSTEXTFIELDCELL_CLASS new] autorelease]];
   [cell setState:1];
   text_cursor = [NSCursor IBeamCursor];
 
