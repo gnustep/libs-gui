@@ -1,3 +1,7 @@
+2003-11-26 23:54  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSView.m (-autoscroll:): Document.
+
 2003-11-26 15:00  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSGuiPrivate.h: Fix GSGuiBundle() prototype.

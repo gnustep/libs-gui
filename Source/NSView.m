@@ -2221,6 +2221,16 @@ in the main thread.
   return newVisible;
 }
 
+/**
+ * Finds the nearest enclosing NSClipView and, if the location of the event
+ * is outside it, scrolls the NSClipView in the direction of the event. The
+ * amount scrolled is proportional to how far outside the NSClipView the
+ * event's location is.
+ *
+ * This method is suitable for calling periodically from a modal event
+ * tracking loop when the mouse is dragged outside the tracking view. The
+ * suggested period of the calls is 0.1 seconds.
+ */
 - (BOOL) autoscroll: (NSEvent*)theEvent
 {
   if (_super_view)
