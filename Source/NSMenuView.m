@@ -452,8 +452,8 @@
   _keyEqWidth = neededKeyEquivalentWidth;
 
   // Calculate the offsets and cache them.
-  _stateImageOffset = _imageAndTitleOffset = accumulatedOffset =
-    _horizontalEdgePad;
+  _stateImageOffset = _imageAndTitleOffset = accumulatedOffset 
+    = _horizontalEdgePad;
   accumulatedOffset += 2 * _horizontalEdgePad + neededImageAndTitleWidth;
 
   _keyEqOffset = accumulatedOffset += _horizontalEdgePad;
@@ -461,7 +461,9 @@
 
   // Calculate frame size.
   if (![_menu _ownedByPopUp])
-    _cellSize.width = accumulatedOffset + 3; // Add the border width
+    {
+      _cellSize.width = accumulatedOffset + 3; // Add the border width
+    }
 
   if (_horizontal == NO)
     {
