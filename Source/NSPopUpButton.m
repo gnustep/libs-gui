@@ -40,7 +40,7 @@
 //
 // class variables
 //
-id _nspopupbuttonCellClass = nil;
+Class _nspopupbuttonCellClass = 0;
 
 //
 // NSPopUpButton implementation
@@ -61,7 +61,17 @@ id _nspopupbuttonCellClass = nil;
       [self setCellClass: [NSPopUpButtonCell class]];
     } 
 }
-  
+
++ (Class) cellClass
+{
+  return _nspopupbuttonCellClass;
+}
+
++ (void) setCellClass: (Class)classId
+{
+  _nspopupbuttonCellClass = classId;
+}
+
 //
 // Initializing an NSPopUpButton 
 //
@@ -135,7 +145,7 @@ id _nspopupbuttonCellClass = nil;
 }
 
 - (void) insertItemWithTitle: (NSString *)title
-		    atIndex: (int)index
+		     atIndex: (int)index
 {
   [cell insertItemWithTitle: title adIndex: index];
 

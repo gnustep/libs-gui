@@ -75,17 +75,21 @@ id _nsbuttonCellClass = nil;
 //
 // Initialization
 //
-- init
+- (id) init
 {
   return [self initWithFrame: NSZeroRect];
 }
 
-- initWithFrame: (NSRect)frameRect
+- (id) initWithFrame: (NSRect)frameRect
 {
+  NSCell	*aCell;
+
   [super initWithFrame: frameRect];
 
   // set our cell
-  [self setCell: [[_nsbuttonCellClass new] autorelease]];
+  aCell = [[[self class] cellClass] new];
+  [self setCell: aCell];
+  RELEASE(aCell);
 
   return self;
 }
