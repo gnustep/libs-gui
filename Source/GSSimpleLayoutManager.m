@@ -476,7 +476,9 @@ static NSCharacterSet *invSelectionWordGranularitySet;
 
   // No editing
   if (!mask)
-    return;
+    {
+      return;
+    }
   
   [self invalidateGlyphsForCharacterRange: invalidatedCharRange
 	changeInLength: delta
