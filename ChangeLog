@@ -1,3 +1,8 @@
+2004-07-01  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSOutlineView.m (-reloadItem:reloadChildren:): Convert
+	possible NSNull key to nil.
+
 2004-06-28  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/Additions/GNUstepGUI/GSNibTemplates.h: Updated the 

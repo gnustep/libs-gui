@@ -611,6 +611,7 @@ static NSImage *unexpandable  = nil;
 
       if ((index = [childArray indexOfObject: object]) != NSNotFound)
 	{
+	  parent = (parent == [NSNull null])?nil:parent;
 	  dsobj = [_dataSource outlineView: self
 			       child: index
 			       ofItem: parent];
