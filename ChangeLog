@@ -1,3 +1,8 @@
+2005-01-18 15:50  Alexander Malmberg  <alexander@malmberg.org>
+
+	* Source/NSApplication.m (-runModalSession:): Don't order the window
+	to the front or make it the key/main window.
+
 2005-01-18 15:46  Alexander Malmberg  <alexander@malmberg.org>
 
 	* Source/NSApplication.m (-finishLaunching): Don't attempt to open

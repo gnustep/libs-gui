@@ -1374,20 +1374,6 @@ See Also: -runModalForWindow:
 		  format: @"runModalSession: with wrong session"];
     }
 
-  IF_NO_GC(pool = [arpClass new]);
-
-  [theSession->window orderFrontRegardless];
-  if ([theSession->window canBecomeKeyWindow] == YES)
-    {
-      [theSession->window makeKeyWindow];
-    }
-  else if ([theSession->window canBecomeMainWindow] == YES)
-    {
-      [theSession->window makeMainWindow];
-    }
-
-  RELEASE (pool);
-
   // Use the default context for all events.
   srv = GSCurrentServer();
 
