@@ -9,7 +9,9 @@
 	* Source/NSApplication.m: ditto
 	* Source/NSCell.m: ditto
 	* Source/NSControl.m: ditto
-	* Source/NSEvent.m: ditto
+	* Source/NSEvent.m: ditto.  Also added lots of documentation, a
+	couple of fixmes, and several bugfixes (wrong exceptions being
+	raised etc).
 	* Source/NSMenuView.m: ditto
 	* Source/NSResponder.m: ditto
 	* Source/NSTextView.m: ditto
