@@ -1,3 +1,11 @@
+1999-06-17  Michael Hanni  <mhanni@sprintmail.com>
+
+	* Source/NSPopUpButton.m: half way implemented. Most still in
+	backend, but that will change soon. PopUp and PullDown work,
+	however the entire event mechanism needs to be implemented.
+	* Tools/Functions.m: added definitions for new NSDraw* functions
+	used in NSPopUp.
+
 Thu Jun 17 16:20:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSTextContainer.m: New by jagapen@whitewater.chem.wisc.edu

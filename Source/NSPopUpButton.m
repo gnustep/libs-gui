@@ -7,6 +7,8 @@
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
+   Author: Michael Hanni <mhanni@sprintmail.com>
+   Date: June 1999
    
    This file is part of the GNUstep GUI Library.
 
@@ -31,6 +33,41 @@
 #include <AppKit/NSPopUpButton.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSMenu.h>
+
+@implementation NSPopUpButtonMatrix
+- (id) initWithFrame: (NSRect)rect
+{
+  [super initWithFrame: rect];
+ 
+  cellSize = NSMakeSize (rect.size.width, rect.size.height);
+  return self;
+}
+
+- (void) _resizeMenuForCellSize
+{
+}
+
+/* This is here so we can overide the use of NSMenuItem with
+NSPopUpButtonCell once that cellClass is finished.
+
+- (id <NSMenuItem>)insertItemWithTitle: (NSString*)aString
+                                action: (SEL)aSelector
+                         keyEquivalent: (NSString*)charCode
+                               atIndex: (unsigned int)index
+{ 
+  id menuCell = [[[NSPopUpButton cellClass] new] autorelease];
+ 
+  [menuCell setFont: menuFont];
+  [menuCell setTitle: aString];
+  [menuCell setAction: aSelector];
+  [menuCell setKeyEquivalent: charCode];
+      
+  [cells insertObject: menuCell atIndex: index];
+ 
+  return menuCell;
+}
+*/
+@end
 
 //
 // NSPopUpButton implementation
@@ -67,7 +104,7 @@
 	  pullsDown:(BOOL)flag
 {
   [super initWithFrame:frameRect];
-  list_items = [NSMutableArray new];
+  list_items = [[NSPopUpButtonMatrix alloc] initWithFrame:frameRect];
   is_up = NO;
   pulls_down = flag;
   selected_item = 0;
@@ -109,10 +146,10 @@
 //
 - (void)addItemWithTitle:(NSString *)title
 {
-  id item = [[[NSMenu cellClass] new] autorelease];
-
-  [list_items addObject:item];
-  [item setTitle:title];
+  [list_items insertItemWithTitle:title
+			   action:nil
+		    keyEquivalent:nil
+                          atIndex:[[list_items itemArray] count]];
   [self synchronizeTitleAndSelectedItem];
 }
 
@@ -127,10 +164,10 @@
 - (void)insertItemWithTitle:(NSString *)title
 		    atIndex:(unsigned int)index
 {
-  id item = [[[NSMenu cellClass] new] autorelease];
-
-  [list_items insertObject:item atIndex:index];
-  [item setTitle:title];
+  [list_items insertItemWithTitle:title
+			   action:@selector(iveBeenHitCaptain:)
+		    keyEquivalent:nil
+                          atIndex:index];
   [self synchronizeTitleAndSelectedItem];
 }
 
@@ -139,7 +176,7 @@
 //
 - (void)removeAllItems
 {
-  [list_items removeAllObjects];
+  [(NSMutableArray *)[list_items itemArray] removeAllObjects];
 }
 
 - (void)removeItemWithTitle:(NSString *)title
@@ -147,12 +184,12 @@
   int index = [self indexOfItemWithTitle:title];
 
   if (index != NSNotFound)
-    [list_items removeObjectAtIndex:index];
+    [(NSMutableArray *)[list_items itemArray] removeObjectAtIndex:index];
 }
 
 - (void)removeItemAtIndex:(int)index
 {
-  [list_items removeObjectAtIndex:index];
+  [(NSMutableArray *)[list_items itemArray] removeObjectAtIndex:index];
 }
 
 //
@@ -160,10 +197,10 @@
 //
 - (int)indexOfItemWithTitle:(NSString *)title
 {
-  int i, count = [list_items count];
+  int i, count = [[list_items itemArray] count];
 
   for (i = 0; i < count; i++)
-    if ([[[list_items objectAtIndex:i] title] isEqual:title])
+    if ([[[[list_items itemArray] objectAtIndex:i] title] isEqual:title])
       return i;
 
   return NSNotFound;
@@ -176,31 +213,31 @@
 
 - (int)numberOfItems
 {
-  return [list_items count];
+  return [[list_items itemArray] count];
 }
 
 - (id <NSMenuItem>)itemAtIndex:(int)index
 {
-  return [list_items objectAtIndex:index];
+  return [[list_items itemArray] objectAtIndex:index];
 }
 
 - (NSArray *)itemArray
 {
-  return list_items;
+  return [list_items itemArray];
 }
 
 - (NSString *)itemTitleAtIndex:(int)index
 {
-  return [[list_items objectAtIndex:index] title];
+  return [[[list_items itemArray] objectAtIndex:index] title];
 }
 
 - (NSArray *)itemTitles
 {
-  int i, count = [list_items count];
+  int i, count = [[list_items itemArray] count];
   NSMutableArray* titles = [NSMutableArray arrayWithCapacity:count];
 
   for (i = 0; i < count; i++)
-    [titles addObject:[[list_items objectAtIndex:i] title]];
+    [titles addObject:[[[list_items itemArray] objectAtIndex:i] title]];
 
   return titles;
 }
@@ -210,21 +247,21 @@
   int index = [self indexOfItemWithTitle:title];
 
   if (index != NSNotFound)
-    return [list_items objectAtIndex:index];
+    return [[list_items itemArray] objectAtIndex:index];
   return nil;
 }
 
 - (id <NSMenuItem>)lastItem
 {
-  if ([list_items count])
-    return [list_items lastObject];
+  if ([[list_items itemArray] count])
+    return [[list_items itemArray] lastObject];
   else
     return nil;
 }
 
 - (id <NSMenuItem>)selectedItem
 {
-  return [list_items objectAtIndex:selected_item];
+  return [[list_items itemArray] objectAtIndex:selected_item];
 }
 
 - (NSString *)titleOfSelectedItem
@@ -247,7 +284,7 @@
 
 - (void)selectItemAtIndex:(int)index
 {
-  if ((index >= 0) && (index < [list_items count]))
+  if ((index >= 0) && (index < [[list_items itemArray] count]))
     {
       selected_item = index;
       [self synchronizeTitleAndSelectedItem];
@@ -298,10 +335,12 @@
 //
 - (void)mouseDown:(NSEvent *)theEvent
 {
+  NSLog(@"mouseDown:");
 }
 
 - (void)mouseUp:(NSEvent *)theEvent
 {
+  NSLog(@"mouseUp:");
 }
 
 - (void)mouseMoved:(NSEvent *)theEvent
@@ -310,8 +349,11 @@
 
 - (NSView *)hitTest:(NSPoint)aPoint
 {
+  NSLog(@"hitTest:");
+
   // First check ourselves
-  if ([self mouse:aPoint inRect:bounds]) return self;
+//  if ([self mouse:aPoint inRect:bounds]) return self;
+  if ([self mouse:aPoint inRect:[self frame]]) return self;
 
   return nil;
 }
@@ -321,6 +363,19 @@
 //
 - (void)drawRect:(NSRect)rect
 {
+   id aCell;
+
+   aCell  = [[list_items itemArray] objectAtIndex:selected_item]; 
+
+   [aCell drawWithFrame:rect inView: self]; 
+
+   rect.origin.x = rect.size.width - 14;
+   rect.origin.y = rect.size.height/2 - 3;
+
+   if (pulls_down == NO)
+     NSDrawPopupNibble(NSMakePoint(rect.origin.x, rect.origin.y));
+   else
+     NSDrawDownArrow(NSMakePoint(rect.origin.x, rect.origin.y));
 }
 
 //

@@ -31,6 +31,7 @@
 
 #include <AppKit/NSButton.h>
 #include <AppKit/NSMenuItem.h>
+#include <AppKit/NSMenu.h>
 
 @class NSString;
 @class NSArray;
@@ -39,10 +40,16 @@
 @class NSFont;
 @class NSMatrix;
 
+@interface NSPopUpButtonMatrix : NSMenuMatrix
+{
+}
+- (id) initWithFrame: (NSRect)rect;
+@end
+
 @interface NSPopUpButton : NSButton <NSCoding>
 {
   // Attributes
-  NSMutableArray *list_items;
+  NSPopUpButtonMatrix *list_items;
   NSRect list_rect;
   int selected_item;
   id pub_target;

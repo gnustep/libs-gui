@@ -55,6 +55,10 @@ void NSDrawGrayBezel(NSRect aRect, NSRect clipRect)
 {}
 void NSDrawGroove(NSRect aRect, NSRect clipRect)
 {}
+void NSDrawPopupNibble(NSPoint aPoint)
+{}
+void NSDrawDownArrow(NSPoint aPoint)
+{}
 void PSlineto(float x, float y)
 {}
 void PSmoveto(float x, float y)
