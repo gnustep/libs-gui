@@ -3,13 +3,16 @@
 
    Standard save panel for saving files
 
-   Copyright (C) 1999 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2000 Free Software Foundation, Inc.
 
    Author:  Jonathan Gapen <jagapen@smithlab.chem.wisc.edu>
    Date: 1999
 
    Author:  Nicola Pero <n.pero@mi.flashnet.it>
    Date: 1999
+
+   Author:  Mirko Viviani <mirko.viviani@rccr.cremona.it>
+   Date: September 2000
 
    This file is part of the GNUstep GUI Library.
 
@@ -41,6 +44,7 @@
 #include <AppKit/NSImageView.h>
 #include <AppKit/NSMatrix.h>
 #include <AppKit/NSSavePanel.h>
+#include <AppKit/NSOpenPanel.h>
 #include <AppKit/NSTextField.h>
 #include <AppKit/NSWorkspace.h>
 #include <Foundation/NSException.h>
@@ -76,6 +80,8 @@ static BOOL _gs_display_reading_progress = NO;
 - (void) _setHomeDirectory;
 - (void) _mountMedia;
 - (void) _unmountMedia;
+- (void) _selectTextInColumn: (int)column;
+- (void) _selectCellName: (NSString *)title;
 
 @end /* NSSavePanel (PrivateMethods) */
 
@@ -117,13 +123,13 @@ static BOOL _gs_display_reading_progress = NO;
   r = NSMakeRect (8, 68, 292, 177);
   _browser = [[NSBrowser alloc] initWithFrame: r]; 
   [_browser setDelegate: self];
-  [_browser setDoubleAction: @selector (ok:)];
-  [_browser setTarget: self];
   [_browser setMaxVisibleColumns: 2]; 
   [_browser setHasHorizontalScroller: YES];
   [_browser setAllowsMultipleSelection: NO];
   [_browser setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
   [_browser setTag: NSFileHandlingPanelBrowser];
+  [_browser setAction:@selector(_selectText:)];
+  [_browser setTarget:self];
   [_topView addSubview: _browser];
   [_browser release];
 
@@ -206,12 +212,17 @@ static BOOL _gs_display_reading_progress = NO;
   [_okButton setImagePosition: NSNoImage]; 
   [_okButton setTarget: self];
   [_okButton setAction: @selector(ok:)];
+  [_okButton setEnabled: NO];
   //    [_okButton setNextKeyView: _form];
   [_okButton setAutoresizingMask: NSViewMinXMargin];
   [_okButton setTag: NSFileHandlingPanelOKButton];
   [_bottomView addSubview: _okButton];
+  [self setDefaultButtonCell:[_okButton cell]];
   [_okButton release];
-  
+
+  [_browser setDoubleAction:@selector(performClick:)];
+  [_browser setTarget:_okButton];
+
   r = NSMakeRect (8, 261, 48, 48);
   button = [[NSButton alloc] initWithFrame: r]; 
   image = [[NSApplication sharedApplication] applicationIconImage];
@@ -247,6 +258,7 @@ static BOOL _gs_display_reading_progress = NO;
 
   [self setContentSize: NSMakeSize (384, 426)];
   [super setTitle: @""];
+
   return self;
 }
 
@@ -285,6 +297,90 @@ static BOOL _gs_display_reading_progress = NO;
 - (void) _unmountMedia
 {
   [[NSWorkspace sharedWorkspace] unmountAndEjectDeviceAtPath: [self directory]];
+}
+
+- (void) _selectTextInColumn: (int)column
+{
+  NSMatrix      *matrix;
+  NSBrowserCell *selectedCell;
+  BOOL           isLeaf;
+
+  if(column == -1)
+    return;
+
+  matrix = [_browser matrixInColumn:column];
+  selectedCell = [matrix selectedCell];
+  isLeaf = [selectedCell isLeaf];
+
+  if (isLeaf)
+    {
+      [[_form cellAtIndex: 0] setStringValue: [selectedCell stringValue]];
+      [_form selectTextAtIndex:0];
+      [_form setNeedsDisplay:YES];
+      [_okButton setEnabled:YES];
+    }
+  else
+    {
+      if([[[_form cellAtIndex: 0] stringValue] length] > 0)
+	{
+	  [_okButton setEnabled:YES];
+	  [self _selectCellName:[[_form cellAtIndex: 0] stringValue]];
+	  [_form selectTextAtIndex:0];
+	  [_form setNeedsDisplay:YES];
+	}
+      else
+	[_okButton setEnabled:NO];
+    }
+}
+
+- (void) _selectText: (id)sender
+{
+  [self _selectTextInColumn:[_browser selectedColumn]];
+}
+
+- (void) _selectCellName: (NSString *)title
+{
+  NSString           *cellString;
+  NSArray            *cells;
+  NSMatrix           *matrix;
+  NSComparisonResult  result;
+  NSRange             range;
+  int                 i, titleLength, cellLength, numberOfCells;
+
+  matrix = [_browser matrixInColumn:[_browser lastColumn]];
+  if([matrix selectedCell])
+    return;
+
+  titleLength = [title length];
+  if(!titleLength)
+    return;
+
+  range.location = 0;
+  range.length = titleLength;
+
+  cells = [matrix cells];
+  numberOfCells = [cells count];
+
+  for(i = 0; i < numberOfCells; i++)
+    {
+      cellString = [[matrix cellAtRow:i column:0] stringValue];
+
+      cellLength = [cellString length];
+      if(cellLength != titleLength)
+	continue;
+
+      result = [cellString compare:title options:0 range:range];
+
+      if(result == NSOrderedSame)
+	{
+	  [matrix selectCellAtRow:i column:0];
+	  [matrix scrollCellToVisibleAtRow:i column:0];
+	  [_okButton setEnabled:YES];
+	  return;
+	}
+      else if(result == NSOrderedDescending)
+	break;
+    }
 }
 
 @end /* NSSavePanel (PrivateMethods) */
@@ -568,8 +664,17 @@ static BOOL _gs_display_reading_progress = NO;
   ASSIGN (_directory, path);
   ASSIGN (_fullFileName, [path stringByAppendingPathComponent: filename]);
   [_browser setPath: _fullFileName];
+
+  [self _selectCellName:filename];
   [[_form cellAtIndex: 0] setStringValue: filename];
+  [_form selectTextAtIndex:0];
   [_form setNeedsDisplay: YES];
+
+  if([self isKindOfClass:[NSOpenPanel class]] == NO)
+    {
+      if([filename isEqual:@""] == NO)
+	[_okButton setEnabled:YES];
+    }
 
   /*
    * We need to take care of the possibility of 
@@ -622,6 +727,22 @@ static BOOL _gs_display_reading_progress = NO;
 
 - (void) ok: (id)sender
 {
+  NSMatrix      *matrix;
+  NSBrowserCell *selectedCell;
+
+  matrix = [_browser matrixInColumn:[_browser lastColumn]];
+  selectedCell = [matrix selectedCell];
+
+  if (selectedCell && [selectedCell isLeaf] == NO)
+    {
+      [_browser doClick:matrix];
+      return;
+    }
+
+  ASSIGN (_directory, [_browser pathToColumn:[_browser lastColumn]]);
+  ASSIGN (_fullFileName, [_directory stringByAppendingPathComponent:
+				       [[_form cellAtIndex:0] stringValue]]);
+
   if (_delegateHasValidNameFilter)
     if (![_delegate panel:self isValidFilename: [self filename]])
       return;
@@ -633,7 +754,100 @@ static BOOL _gs_display_reading_progress = NO;
 
 - (void) selectText: (id)sender
 {
-  // TODO
+  NSEvent  *theEvent = [self currentEvent];
+  NSString *characters = [theEvent characters], *keyString;
+  unichar   character = 0;
+
+  if ([characters length] > 0)
+    {
+      character = [characters characterAtIndex: 0];
+    }
+
+  switch (character)
+    {
+    case NSTabCharacter:
+      if ([theEvent modifierFlags] & NSShiftKeyMask)
+	{
+	  character = NSUpArrowFunctionKey;
+	  keyString = [NSString stringWithCharacters:&character
+				length:1];
+	}
+      else
+	{
+	  character = NSDownArrowFunctionKey;
+	  keyString = [NSString stringWithCharacters:&character
+				length:1];
+	}
+
+      [[_form cellAtIndex:0] setStringValue:nil];
+
+      [_browser keyDown:[NSEvent keyEventWithType:NSKeyDown
+				 location:[theEvent locationInWindow]
+				 modifierFlags:0
+				 timestamp:[theEvent timestamp]
+				 windowNumber:[theEvent windowNumber]
+				 context:[theEvent context]
+				 characters:keyString
+				 charactersIgnoringModifiers:keyString
+				 isARepeat:NO
+				 keyCode:0]];
+      break;
+
+    case NSUpArrowFunctionKey:
+    case NSDownArrowFunctionKey:
+    case NSLeftArrowFunctionKey:
+    case NSRightArrowFunctionKey:
+      [_form abortEditing];
+      [[_form cellAtIndex:0] setStringValue:nil];
+      [_browser keyDown:theEvent];
+      break;
+    }
+}
+
+- (void) keyDown: (NSEvent *)theEvent
+{
+  NSString *characters = [theEvent characters];
+  unichar character = 0;
+
+  if ([characters length] > 0)
+    {
+      character = [characters characterAtIndex: 0];
+    }
+
+  switch (character)
+    {
+    case NSTabCharacter:
+    case NSUpArrowFunctionKey:
+    case NSDownArrowFunctionKey:
+    case NSLeftArrowFunctionKey:
+    case NSRightArrowFunctionKey:
+      [self selectText:self];
+      return;
+
+    case NSEnterCharacter:
+    case NSFormFeedCharacter:
+    case NSCarriageReturnCharacter:
+      if([_okButton isEnabled] == YES)
+	{
+	  NSMatrix *matrix;
+	  int       selectedColumn;
+
+	  selectedColumn = [_browser selectedColumn];
+	  if(selectedColumn == -1 || selectedColumn != [_browser lastColumn])
+	    break;
+
+	  matrix = [_browser matrixInColumn:selectedColumn];
+
+	  if([[matrix selectedCell] isLeaf] == NO)
+	    {
+	      [_form abortEditing];
+	      [[_form cellAtIndex: 0] setStringValue: nil];
+	    }
+	}
+      break;
+    }
+
+  [super keyDown:theEvent];
 }
 
 - (void) setDelegate: (id)aDelegate
@@ -699,33 +913,44 @@ selectCellWithString: (NSString*)title
 createRowsForColumn: (int)column
 	inMatrix: (NSMatrix*)matrix
 {
-  NSString      *path, *file, *pathAndFile, *extension, *h; 
-  NSArray       *files, *hiddenFiles;
-  unsigned	i, count, addedRows; 
-  BOOL		exists, isDir;
-  NSBrowserCell *cell;
+  NSString              *path, *pathTmp, *file, *pathAndFile, *extension, *h; 
+  NSArray               *files, *hiddenFiles;
+  unsigned	         i, count, addedRows; 
+  BOOL		         exists, isDir;
+  NSBrowserCell         *cell;
   // _gs_display_reading_progress variables
-  unsigned      reached_frac = 0;
-  unsigned      base_frac = 1;
-  BOOL          display_progress = NO;
-  NSString*     progressString = nil;
+  unsigned               reached_frac = 0;
+  unsigned               base_frac = 1;
+  BOOL                   display_progress = NO;
+  NSString              *progressString = nil;
   /* We create lot of objects in this method, so we use a pool */
-  NSAutoreleasePool *pool;
+  NSAutoreleasePool     *pool;
+  NSDirectoryEnumerator *dirEnum;
+  IMP			 nxtImp;
+  IMP			 addImp;
 
   pool = [NSAutoreleasePool new];
   
   path = [_browser pathToColumn: column];
-  files = [_fm directoryContentsAtPath: path];
-    
+  dirEnum = AUTORELEASE([[NSDirectoryEnumerator alloc]
+			  initWithDirectoryPath: path 
+			  recurseIntoSubdirectories: NO
+			  followSymlinks: NO
+			  prefixFiles: NO]);
+  files = [NSMutableArray arrayWithCapacity: 16];
+
+  nxtImp = [dirEnum methodForSelector: @selector(nextObject)];
+  addImp = [files   methodForSelector: @selector(addObject:)];
+
+  while ((pathTmp = (*nxtImp)(dirEnum, @selector(nextObject))) != nil)
+    (*addImp)(files, @selector(addObject:), pathTmp);
+
   // Remove hidden files
   h = [path stringByAppendingPathComponent: @".hidden"];
   h = [NSString stringWithContentsOfFile: h];
   hiddenFiles = [h componentsSeparatedByString: @"\n"];
   if (hiddenFiles)
-    {
-      files = [NSMutableArray arrayWithArray: files];
-      [(NSMutableArray*)files removeObjectsInArray: hiddenFiles];
-    }
+    [(NSMutableArray*)files removeObjectsInArray: hiddenFiles];
   
   count = [files count];
 
@@ -869,25 +1094,43 @@ selectCellWithString: (NSString*)title
   NSMatrix *m;
   BOOL isLeaf;
   NSString *path;
+  NSEvent *event;
 
   m = [sender matrixInColumn: column];
   isLeaf = [[m selectedCell] isLeaf];
   path = [sender pathToColumn: column];
 
+  if([self isKindOfClass:[NSOpenPanel class]] == NO)
+    {
+      event = [self currentEvent];
+      if(event && [event type] == NSKeyDown && isLeaf == YES)
+	{
+	  NSString *characters = [event characters];
+	  unichar character = 0;
+
+	  if ([characters length] > 0)
+	    {
+	      character = [characters characterAtIndex: 0];
+	    }
+
+	  if(character != NSRightArrowFunctionKey ||
+	     [sender selectedRowInColumn:column] != 0)
+	    return NO;
+	}
+    }
+
   if (isLeaf)
     {
       ASSIGN (_directory, path);
       ASSIGN (_fullFileName, [path stringByAppendingPathComponent: title]);
-      [[_form cellAtIndex: 0] setStringValue: title];
-      [_form setNeedsDisplay: YES];
     }
   else
     {
       ASSIGN (_directory, [path stringByAppendingPathComponent: title]);
       ASSIGN (_fullFileName, nil);
-      [[_form cellAtIndex: 0] setStringValue: @""];
-      [_form setNeedsDisplay: YES];
     }
+
+  [self _selectTextInColumn:column];
   
   return YES;
 }
@@ -904,26 +1147,102 @@ selectCellWithString: (NSString*)title
 // NSForm delegate methods
 //
 @interface NSSavePanel (FormDelegate)
-- (void) controlTextDidEndEditing: (NSNotification*)aNotification;
+- (void) controlTextDidChange: (NSNotification *)aNotification;
 @end
 @implementation NSSavePanel (FormDelegate)
-- (void) controlTextDidEndEditing: (NSNotification*)aNotification
+
+- (void) controlTextDidChange: (NSNotification *)aNotification;
 {
-  NSString *s;
+  NSString           *s, *selectedString;
+  NSArray            *cells;
+  NSMatrix           *matrix;
+  NSCell             *selectedCell;
+  int                 i, sLength, cellLength, selectedRow;
+  NSComparisonResult  result;
+  NSRange             range;
 
-  s = [self directory];
-  s = [s stringByAppendingPathComponent: [[_form cellAtIndex: 0] stringValue]];
-  if (1) // TODO: condition when the filename is acceptable
+  matrix = [_browser matrixInColumn:[_browser lastColumn]];
+  s = [[[aNotification userInfo] objectForKey:@"NSFieldEditor"] string];
+
+  sLength = [s length];
+  range.location = 0;
+  range.length = sLength;
+
+  if(sLength == 0)
     {
-      ASSIGN (_fullFileName, s);
-      [_browser setPath: s];
+      [matrix deselectAllCells];
+      [_okButton setEnabled:NO];
+      return;
     }
-  else   // typed filename is not acceptable
+
+  selectedCell = [matrix selectedCell];
+  selectedString = [selectedCell stringValue];
+  selectedRow = [matrix selectedRow];
+  cells = [matrix cells];
+
+  if(selectedString)
     {
-      // TODO
+      result = [s compare:selectedString options:0 range:range];
+
+      if(result == NSOrderedSame)
+	return;
     }
+  else
+    result = NSOrderedDescending;
+
+  if(result == NSOrderedDescending)
+    {
+      int numberOfCells = [cells count];
+
+      for(i = selectedRow+1; i < numberOfCells; i++)
+	{
+	  selectedString = [[matrix cellAtRow:i column:0] stringValue];
+
+	  cellLength = [selectedString length];
+	  if(cellLength != sLength)
+	    continue;
+
+	  result = [selectedString compare:s options:0 range:range];
+
+	  if(result == NSOrderedSame)
+	    {
+	      [matrix deselectAllCells];
+	      [matrix selectCellAtRow:i column:0];
+	      [matrix scrollCellToVisibleAtRow:i column:0];
+	      [_okButton setEnabled:YES];
+	      return;
+	    }
+	  else if(result == NSOrderedDescending)
+	    break;
+	}
+    }
+  else
+    {
+      for(i = selectedRow; i >= 0; --i)
+	{
+	  selectedString = [[matrix cellAtRow:i column:0] stringValue];
+
+	  cellLength = [selectedString length];
+	  if(cellLength != sLength)
+	    continue;
+
+	  result = [selectedString compare:s options:0 range:range];
+
+	  if(result == NSOrderedSame)
+	    {
+	      [matrix deselectAllCells];
+	      [matrix selectCellAtRow:i column:0];
+	      [matrix scrollCellToVisibleAtRow:i column:0];
+	      [_okButton setEnabled:YES];
+	      return;
+	    }
+	  else if(result == NSOrderedAscending)
+	    break;
+	}
+    }
+
+  [matrix deselectAllCells];
+  [_okButton setEnabled:YES];
 }
+
 @end /* NSSavePanel */
-
-
-

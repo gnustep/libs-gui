@@ -146,10 +146,13 @@ extern NSSize NSTokenSize;
     unsigned	accepts_mouse_moved:1;
     unsigned	has_opened:1;
     unsigned	has_closed:1;
+    unsigned	default_button_cell_key_disabled:1;
   } _f;
  
   /* Reserved for back-end use */
   void *_be_wind_reserved;
+
+  id _defaultButtonCell;
 }
 
 /*

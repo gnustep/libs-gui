@@ -545,6 +545,7 @@ static NSMapTable* windowmaps = NULL;
   TEST_RELEASE(_windowTitle);
   TEST_RELEASE(_rectsBeingDrawn);
   TEST_RELEASE(_initialFirstResponder);
+  TEST_RELEASE(_defaultButtonCell);
 
   /*
    * FIXME This should not be necessary - the views should have removed
@@ -1989,7 +1990,21 @@ resetCursorRectsForView(NSView *theView)
 	}
       return;
     }
-  // FIXME: The return key should trigger the default botton
+
+  if(character == NSEnterCharacter ||
+     character == NSFormFeedCharacter ||
+     character == NSCarriageReturnCharacter)
+    {
+      if(_defaultButtonCell && _f.default_button_cell_key_disabled == NO)
+	{
+	  [_defaultButtonCell performClick:self];
+	  return;
+	}
+    }
+
+  // Discard null character events such as a Shift event after a tab key
+  if([characters length] == 0)
+    return;
 
   // Try to process the event as a key equivalent
   // without Command having being pressed
@@ -3056,23 +3071,23 @@ resetCursorRectsForView(NSView *theView)
 
 - (NSButtonCell*) defaultButtonCell
 {
-  // FIXME: Method is missing
-  return nil;
+  return _defaultButtonCell;
 }
 
 - (void) setDefaultButtonCell: (NSButtonCell*)aButtonCell
 {
-  // FIXME: Method is missing
+  ASSIGN(_defaultButtonCell, aButtonCell);
+  _f.default_button_cell_key_disabled = NO;
 }
 
 - (void) disableKeyEquivalentForDefaultButtonCell
 {
-  // FIXME: Method is missing
+  _f.default_button_cell_key_disabled = YES;
 }
 
 - (void) enableKeyEquivalentForDefaultButtonCell
 {
-  // FIXME: Method is missing
+  _f.default_button_cell_key_disabled = NO;
 }
 
 /*

@@ -417,9 +417,9 @@ static NSColor	*shadowCol;
    * differently in the future, so please use always symbolic
    * constants when calling this method, this way your code won't be
    * broken by changes. */
-  if (value > 0)
+  if (value > 0 || (value < 0 && _cell.allows_mixed_state == NO))
     _cell.state = NSOnState;
-  else if (value == 0 || (_cell.allows_mixed_state == NO))
+  else if (value == 0)
     _cell.state = NSOffState;
   else 
     _cell.state = NSMixedState;
@@ -813,6 +813,9 @@ static NSColor	*shadowCol;
 {
   SEL action = [self action];
   NSView *cv = [self controlView];
+
+  if(_cell.is_disabled == YES)
+    return;
 
   if (cv)
     {  

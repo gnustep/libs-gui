@@ -1,3 +1,77 @@
+2000-09-10  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
+
+	* Tools/gpbs.m ([PasteboardEntry -lostOwnership]): workaround to avoid
+	core dump due to NSConnection bug.
+
+	* Source/NSWindow.m ([NSWindow -keyDown:]): discard and do not perform
+	key equivalent for null character events. Triggered return key for
+	default button cell.
+	([NSWindow -defaultButtonCell]), ([NSWindow -setDefaultButtonCell:]),
+	([NSWindow -disableKeyEquivalentForDefaultButtonCell]),
+	([NSWindow -enableKeyEquivalentForDefaultButtonCell]): implemented.
+	([NSWindow -dealloc]): release _defaultButtonCell
+
+	* Headers/AppKit/NSWindow.h: added ivar and flag.
+
+	* Source/NSOpenPanel.m ([NSOpenPanel -controlTextDidEndEditing:]),
+	([NSOpenPanel -controlTextDidChange:]), ([NSOpenPanel -ok:]):
+	implemented keyboard navigation.
+	([NSOpenPanel -runModalForDirectory:file:types:]): do not allow
+	branch selection if can't choose directories.
+	([NSOpenPanel -_selectTextInColumn:]),
+	([NSOpenPanel -_selectCellName:]): new private methods.
+	([NSOpenPanel -filenames]): change for choose dirs.
+
+	* Source/NSText.m ([NSText -keyDown:]): forwards text field illegal
+	events to the next responder.
+
+	* Source/NSBrowser.m ([NSBrowser -moveUp:]), ([NSBrowser -moveDown:]),
+	([NSBrowser -moveLeft:]), ([NSBrowser -moveRight:]),
+	([NSBrowser -keyDown:]): implemented keyboard navigation
+	([NSBrowser -selectedCell]), ([NSBrowser -selectedCells]), 
+	([NSBrowser -columnOfMatrix:]), ([NSBrowser -selectedColumn]): 
+	changed return value from NSNotFound to -1 to conforms to NSMatrix
+	([NSBrowser -doClick:]): fix for new return values, added support for
+	multiple and branch selection.
+	([NSBrowser -setLastColumn:]): mark column titles need display
+	([NSBrowser -_getTitleOfColumn:]): fix for multiple selection.
+
+	* Source/NSCell.m ([NSCell -setState:]): bug fix: set value to
+	NSOnState if someone try to set NSMixedState in a two state cell.
+	([NSCell -performClick:]): do not perform click if the cell is
+	disabled.
+
+	* Source/NSMatrix.m ([NSMatrix
+	-_privateFrame:mode:numberOfRows:numberOfColumns:]),
+	([NSMatrix -deselectAllCells]), ([NSMatrix -deselectSelectedCell]), 
+	([NSMatrix -selectAll:]): bug fix: set _selectRow and _selectColumn
+	to -1 when no cells are selected
+	([NSMatrix -performKeyEquivalent:]): saves _selectedRow and
+	_selectedColumn.
+	([NSMatrix -getRow:column:ofCell:]): check for null values for row and
+	column.
+	([NSMatrix -selectCellAtRow:column:]): deselect the current selection
+	only in NSRadioModeMatrix mode.
+	([NSMatrix -mouseDown:]): use the new code also for NSRadioModeMatrix
+	and fix for this mode.
+
+	* Source/NSSavePanel.m ([NSSavePanel -selectCellWithString:]): select
+	text of the cell and enable okButton.
+	([NSSavePanel -controlTextDidChange:]): implemented.
+	([NSSavePanel -controlTextDidEndEditing:]): removed.
+	([NSSavePanel -browser:createRowsForColumn:inMatrix:]): follows
+	symbolic links.
+	([NSSavePanel -_initWithoutGModel]): set browser doubleAction to
+	performClick: of the _okButton. Set _okButton as default window button.
+	Disable _okButton.
+	([NSSavePanel -browser:selectCellWithString:inColumn:]),
+	([NSSavePanel -selectText:]), ([NSSavePanel -keyDown:]): implemented
+	keyboard navigation.
+	([NSSavePanel -runModalForDirectory:file:]): enable _okButton if
+	filename is valid.
+	([NSSavePanel -_selectTextInColumn:]), ([NSSavePanel -_selectText:]),
+	([NSSavePanel -_selectCellName:]): new private methods.
+
 Sun Sep 10 23:33:55 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSTextView.m ([-initWithFrame:textContainer:]): Fixed the

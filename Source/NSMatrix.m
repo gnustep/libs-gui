@@ -211,7 +211,7 @@ static SEL getSel = @selector(objectAtIndex:);
     }
   else
     {
-      _selectedRow = _selectedColumn = 0;
+      _selectedRow = _selectedColumn = -1;
     }
   return self;
 }
@@ -753,8 +753,10 @@ static SEL getSel = @selector(objectAtIndex:);
 	{
 	  if (_cells[i][j] == aCell)
 	    {
-	      *row = i;
-	      *column = j;
+	      if(row)
+		*row = i;
+	      if(column)
+		*column = j;
 	      return YES;
 	    }
 	}
@@ -819,8 +821,8 @@ static SEL getSel = @selector(objectAtIndex:);
 	}
     }
   _selectedCell = nil;
-  _selectedRow = 0;
-  _selectedColumn = 0;
+  _selectedRow = -1;
+  _selectedColumn = -1;
 }
 
 - (void) deselectSelectedCell
@@ -846,8 +848,8 @@ static SEL getSel = @selector(objectAtIndex:);
     }
 
   _selectedCell = nil;
-  _selectedRow = 0;
-  _selectedColumn = 0;
+  _selectedRow = -1;
+  _selectedColumn = -1;
 }
 
 - (void) selectAll: (id)sender
@@ -875,8 +877,8 @@ static SEL getSel = @selector(objectAtIndex:);
   else
     {
       _selectedCell = nil;
-      _selectedRow = 0;
-      _selectedColumn = 0;
+      _selectedRow = -1;
+      _selectedColumn = -1;
     }
 
   [self setNeedsDisplay: YES];
@@ -896,9 +898,10 @@ static SEL getSel = @selector(objectAtIndex:);
 
   /*
    * We always deselect the current selection unless the new selection
-   * is the same.
+   * is the same. (in NSRadioModeMatrix)
    */
-  if (_selectedCell != nil && _selectedCell != aCell)
+  if (_selectedCell != nil && _selectedCell != aCell &&
+      _mode == NSRadioModeMatrix)
     {
       _selectedCells[_selectedRow][_selectedColumn] = NO;
       [_selectedCell setState: 0];
@@ -1955,7 +1958,7 @@ static SEL getSel = @selector(objectAtIndex:);
 
   // TODO: clean this up -- remove code in excess! 
   // While doing that, FIXME! because all this code has bugs!
-  if (_mode != NSListModeMatrix)
+  if (_mode != NSListModeMatrix && _mode != NSRadioModeMatrix)
     {
       [self _mouseDownNonListMode: theEvent];
       return;
@@ -1965,6 +1968,16 @@ static SEL getSel = @selector(objectAtIndex:);
     [NSEvent startPeriodicEventsAfterDelay: 0.05
 	     withPeriod: 0.05];
   ASSIGN(lastEvent, theEvent);
+
+  if ((_mode == NSRadioModeMatrix) && _selectedCell != nil)
+    {
+      [_selectedCell setState: NSOffState];
+      [self drawCellAtRow: _selectedRow column: _selectedColumn];
+      [_window flushWindow];
+      _selectedCells[_selectedRow][_selectedColumn] = NO;
+      _selectedCell = nil;
+      _selectedRow = _selectedColumn = -1;
+    }
 
   // selection involves two steps, first
   // a loop that continues until the left mouse goes up; then a series of
@@ -2198,7 +2211,9 @@ static SEL getSel = @selector(objectAtIndex:);
 	  if ([aCell isEnabled]
 	    && [[aCell keyEquivalent] isEqualToString: key])
 	    {
-	      NSCell	*oldSelectedCell = _selectedCell;
+	      NSCell *oldSelectedCell = _selectedCell;
+	      int     oldSelectedRow = _selectedRow; 
+	      int     oldSelectedColumn = _selectedColumn;
 
 	      _selectedCell = aCell;
 	      [self highlightCell: YES atRow: i column: j];
@@ -2206,6 +2221,8 @@ static SEL getSel = @selector(objectAtIndex:);
 	      [self sendAction];
 	      [self highlightCell: NO atRow: i column: j];
 	      _selectedCell = oldSelectedCell;
+	      _selectedRow = oldSelectedRow;
+	      _selectedColumn = oldSelectedColumn;
 
 	      return YES;
 	    }

@@ -11,6 +11,8 @@
    Date: August 1998
    Author:  Franck Wolff <wolff@cybercable.fr>
    Date: November 1999
+   Author:  Mirko Viviani <mirko.viviani@rccr.cremona.it>
+   Date: September 2000
 
    This file is part of the GNUstep GUI Library.
 
@@ -46,6 +48,7 @@
 #include <AppKit/NSMatrix.h>
 #include <AppKit/NSTextFieldCell.h>
 #include <AppKit/PSOperators.h>
+#include <AppKit/NSEvent.h>
 
 /* Cache */
 static float scrollerWidth; // == [NSScroller scrollerWidth]
@@ -314,11 +317,11 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 #if defined NSBTRACE_selectedCell || defined NSBTRACE_all
   fprintf(stderr, "NSBrowser - (id)selectedCell\n");
   fprintf(stderr, "----------- i: %d (%d)\n",
-          [self selectedColumn], NSNotFound);
+          [self selectedColumn], -1);
 #endif
 
   // Nothing selected
-  if ((i = [self selectedColumn]) == NSNotFound)
+  if ((i = [self selectedColumn]) == -1)
     return nil;
 
   if (!(matrix = [self matrixInColumn: i]))
@@ -359,7 +362,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 #endif
 
   // Nothing selected
-  if ((i = [self selectedColumn]) == NSNotFound)
+  if ((i = [self selectedColumn]) == -1)
     return nil;
 
   if (!(matrix = [self matrixInColumn: i]))
@@ -400,7 +403,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 #endif
 
   if (!(matrix = [self matrixInColumn: column]))
-    return NSNotFound;
+    return -1;
 
   return [matrix selectedRow];
 }
@@ -805,7 +808,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
     }
 
   // Not found
-  return NSNotFound;
+  return -1;
 }
 
 // -------------------
@@ -832,7 +835,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
       	return i;
     }
   
-  return NSNotFound;
+  return -1;
 }
 
 // -------------------
@@ -856,6 +859,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
   _lastColumnLoaded = column;
   [self _unloadFromColumn: column + 1];
+  [self _setColumnTitlesNeedDisplay];
 }
 
 // -------------------
@@ -1925,9 +1929,12 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
 - (void)doClick: (id)sender
 {
-  int column;
-  NSArray *a;
-  BOOL shouldSelect = YES;
+  NSArray        *a;
+  NSMutableArray *selectedCells;
+  NSEnumerator   *enumerator;
+  NSBrowserCell  *cell;
+  BOOL            shouldSelect = YES;
+  int             row, column, aCount, selectedCellsCount;
 
 #if defined NSBTRACE_doClick || defined NSBTRACE_all
   fprintf(stderr, "NSBrowser - (void)doClick\n");
@@ -1938,48 +1945,103 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   
   column = [self columnOfMatrix: sender];
   // If the matrix isn't ours then just return
-  if (column == NSNotFound)
+  if (column == -1)
     return;
 
-  // Ask delegate if selection is ok
-  if ([_browserDelegate respondsToSelector: 
-				@selector(browser:selectRow:inColumn:)])
+  a = [sender selectedCells];
+  aCount = [a count];
+  if(aCount == 0)
+    return;
+
+  selectedCells = [a mutableCopy];
+
+  enumerator = [a objectEnumerator];
+  while((cell = [enumerator nextObject]))
     {
-      int row = [sender selectedRow];
-      shouldSelect = [_browserDelegate browser: self
-                                       selectRow: row
-				       inColumn: column];
-    }
-  // Try the other method
-  else if ([_browserDelegate respondsToSelector: 
-			    @selector(browser:selectCellWithString:inColumn:)])
-    {
-      id c = [sender selectedCell];
-      shouldSelect = [_browserDelegate browser: self
-				       selectCellWithString: [c stringValue]
-				       inColumn: column];
+      if(_allowsBranchSelection == NO && [cell isLeaf] == NO)
+	{
+	  [selectedCells removeObject:cell];
+	  continue;
+	}
     }
 
-  // If we should not select the cell
-  // then deselect it and return
-  if (!shouldSelect)
+  if([selectedCells count] == 0)
+    [selectedCells addObject:[sender selectedCell]];
+
+  enumerator = [a objectEnumerator];
+  while((cell = [enumerator nextObject]))
     {
+      if([selectedCells containsObject:cell] == YES)
+	{
+	  // Ask delegate if selection is ok
+	  if ([_browserDelegate respondsToSelector: 
+				  @selector(browser:selectRow:inColumn:)])
+	    {
+	      [sender getRow:&row column:NULL ofCell:cell];
+
+	      shouldSelect = [_browserDelegate browser: self
+					       selectRow: row
+					       inColumn: column];
+	    }
+	  // Try the other method
+	  else if ([_browserDelegate
+		     respondsToSelector: 
+		       @selector(browser:selectCellWithString:inColumn:)])
+	    {
+	      shouldSelect = [_browserDelegate browser: self
+					       selectCellWithString:
+						 [cell stringValue]
+					       inColumn: column];
+	    }
+
+	  if (shouldSelect == NO)
+	    [selectedCells removeObject:cell];
+	}
+    }
+
+  selectedCellsCount = [selectedCells count];
+
+  if(selectedCellsCount == 0)
+    {
+      // If we should not select the cell
+      // then deselect it and return
+
       [sender deselectSelectedCell];
+      RELEASE(selectedCells);
       return;
     }
+  else if(selectedCellsCount < aCount)
+    {
+      [sender deselectSelectedCell];
 
-  a = [sender selectedCells];
+      enumerator = [selectedCells objectEnumerator];
+      while((cell = [enumerator nextObject]))
+	{
+	  [sender getRow:&row column:NULL ofCell:cell];
+	  [sender selectCellAtRow:row column:0];
+	}
 
-  if ([a count] > 0)
+      enumerator = [a objectEnumerator];
+      while((cell = [enumerator nextObject]))
+	{
+	  if([selectedCells containsObject:cell] == NO)
+	    {
+	      [sender getRow:&row column:NULL ofCell:cell];
+	      [sender highlightCell:NO atRow:row column:0];
+	    }
+	}
+    }
+
+  if (selectedCellsCount > 0)
     {
       // Single selection
-      if ([a count] == 1)
+      if (selectedCellsCount == 1)
       	{
-      	  id c = [a objectAtIndex: 0];
+      	  cell = [selectedCells objectAtIndex: 0];
 	  
 	  // If the cell is a leaf
 	  // then unload the columns after
-	  if ([c isLeaf])
+	  if ([cell isLeaf])
 	    [self setLastColumn: column];
 	  // The cell is not a leaf so we need to load a column
 	  else
@@ -1991,15 +2053,16 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
 	      // Load column
 	      [self _performLoadOfColumn: column + 1];
-	      [self _adjustMatrixOfColumn: column + 1];
 	      [self setLastColumn: column + 1];
+	      [self _adjustMatrixOfColumn: column + 1];
 
 	      // If this column is the last visible
 	      // then scroll right by one column
 	      if (column == _lastVisibleColumn)
 		[self scrollColumnsRightBy: 1];
-
 	    }
+
+	  [sender scrollCellToVisibleAtRow:[sender selectedRow] column:column];
 	}
       // Multiple selection
       else
@@ -2013,6 +2076,8 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
   // Marks titles band as needing display.
   [self _setColumnTitlesNeedDisplay];
+
+  RELEASE(selectedCells);
 
 #if defined NSBTRACE_doClick || defined NSBTRACE_all
   fprintf(stderr, "---------- (void)doClick ---------\n");
@@ -2299,7 +2364,242 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 {
 }
 
+- (void)moveUp:(id)sender
+{
+  if(_acceptsArrowKeys == YES)
+    {
+      NSArray       *cells;
+      NSMatrix      *matrix;
+      NSBrowserCell *selectedCell;
+      BOOL           firstPass = YES;
+      int            selectedRow, oldSelectedRow, selectedColumn, numberOfRows;
 
+      selectedColumn = [self selectedColumn];
+      if(selectedColumn == -1)
+	{
+	  matrix = [self matrixInColumn:0];
+	  cells = [matrix cells];
+	  numberOfRows = [cells count];
+	  oldSelectedRow = selectedRow = numberOfRows - 1;
+	}
+      else
+	{
+	  matrix = [self matrixInColumn:selectedColumn];
+	  cells = [matrix cells];
+	  numberOfRows = [cells count];
+	  oldSelectedRow = selectedRow = [matrix selectedRow];
+	}
+
+      while(1)
+	{
+	  if(selectedColumn == -1)
+	    {
+	      if(numberOfRows)
+		{
+		  [matrix selectCellAtRow:selectedRow column:0];
+		  [self doClick:matrix];
+		  selectedColumn = 0;
+		}
+	      else
+		return;
+	    }
+	  else
+	    {
+	      if(!selectedRow)
+		{
+		  numberOfRows = [cells count];
+		  if(numberOfRows <= 1)
+		    return;
+
+		  selectedRow = numberOfRows;
+		  firstPass = NO;
+		}
+
+	      selectedRow--;
+
+	      [matrix deselectAllCells];
+	      [matrix selectCellAtRow:selectedRow column:0];
+	      [self doClick:matrix];
+	    }
+
+	  selectedCell = [matrix selectedCell];
+
+	  if(selectedCell ||
+	     (firstPass == NO && selectedRow == oldSelectedRow))
+	    break;
+	}
+
+      if(_sendsActionOnArrowKeys == YES)
+	[super sendAction:_action to:_target];
+    }
+}
+
+- (void)moveDown:(id)sender
+{
+  if(_acceptsArrowKeys)
+    {
+      NSArray       *cells;
+      NSMatrix      *matrix;
+      NSBrowserCell *selectedCell;
+      BOOL           firstPass = YES;
+      int            selectedRow, oldSelectedRow, selectedColumn, numberOfRows;
+
+      selectedColumn = [self selectedColumn];
+      if(selectedColumn == -1)
+	{
+	  matrix = [self matrixInColumn:0];
+	  oldSelectedRow = selectedRow = 0;
+	}
+      else
+	{
+	  matrix = [self matrixInColumn:selectedColumn];
+	  oldSelectedRow = selectedRow = [matrix selectedRow];
+	}
+
+      cells = [matrix cells];
+      numberOfRows = [cells count];
+
+      while(1)
+	{
+	  if(selectedColumn == -1)
+	    {
+	      if(numberOfRows)
+		{
+		  [matrix selectCellAtRow:0 column:0];
+		  [self doClick:matrix];
+		  selectedColumn = 0;
+		}
+	      else
+		return;
+	    }
+	  else
+	    {
+	      selectedRow++;
+
+	      if(selectedRow >= numberOfRows)
+		{
+		  if(numberOfRows <= 1)
+		    return;
+
+		  selectedRow = 0;
+		  firstPass = NO;
+		}
+
+	      [matrix deselectAllCells];
+	      [matrix selectCellAtRow:selectedRow column:0];
+	      [self doClick:matrix];
+	    }
+
+	  selectedCell = [matrix selectedCell];
+
+	  if(selectedCell ||
+	     (firstPass == NO && selectedRow == oldSelectedRow))
+	    break;
+	}
+
+      if(_sendsActionOnArrowKeys == YES)
+	[super sendAction:_action to:_target];
+    }
+}
+
+- (void)moveLeft:(id)sender
+{
+  if(_acceptsArrowKeys)
+    {
+      NSMatrix *matrix;
+      NSCell   *selectedCell;
+      int       selectedRow, selectedColumn;
+
+      selectedColumn = [self selectedColumn];
+      if(selectedColumn >= 0)
+	{
+	  matrix = [self matrixInColumn:selectedColumn];
+	  selectedCell = [matrix selectedCell];
+	  selectedRow = [matrix selectedRow];
+
+	  [matrix deselectAllCells];
+
+	  if(selectedColumn+1 <= [self lastColumn])
+	    [self setLastColumn:selectedColumn];
+
+	  if(_sendsActionOnArrowKeys == YES)
+	    [super sendAction:_action to:_target];
+	}
+    }
+}
+
+- (void)moveRight:(id)sender
+{
+  if(_acceptsArrowKeys)
+    {
+      NSMatrix *matrix;
+      BOOL      selectFirstRow = NO;
+      int       selectedColumn;
+
+      selectedColumn = [self selectedColumn];
+      if(selectedColumn == -1)
+	{
+	  matrix = [self matrixInColumn:0];
+
+	  if([[matrix cells] count])
+	    {
+	      [matrix selectCellAtRow:0 column:0];
+	      [self doClick:matrix];
+	      selectedColumn = 0;
+	    }
+	}
+      else
+	{
+	  matrix = [self matrixInColumn:selectedColumn];
+	  selectFirstRow = YES;
+	}
+
+      if(selectFirstRow == YES)
+	{
+	  matrix = [self matrixInColumn:[self lastColumn]];
+	  if([[matrix cells] count])
+	    {
+	      [matrix selectCellAtRow:0 column:0];
+	      [self doClick:matrix];
+	    }
+	}
+
+      if(_sendsActionOnArrowKeys == YES)
+	[super sendAction:_action to:_target];
+    }
+}
+
+- (void) keyDown: (NSEvent *)theEvent
+{
+  NSString *characters = [theEvent characters];
+  unichar character = 0;
+
+  if ([characters length] > 0)
+    {
+      character = [characters characterAtIndex: 0];
+    }
+
+  if(_acceptsArrowKeys)
+    {
+      switch (character)
+	{
+	case NSUpArrowFunctionKey:
+	  [self moveUp:self];
+	  return;
+	case NSDownArrowFunctionKey:
+	  [self moveDown:self];
+	  return;
+	case NSLeftArrowFunctionKey:
+	  [self moveLeft:self];
+	  return;
+	case NSRightArrowFunctionKey:
+	  [self moveRight:self];
+	  return;
+	}
+    }
+
+  [super keyDown: theEvent];
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // NSCoding protocol
@@ -2687,7 +2987,24 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
       // Get the selected cell
       // Use its string value as the title
       // Only if it is not a leaf
-      c = [self selectedCellInColumn: column - 1];
+      if(_allowsMultipleSelection == NO)
+	c = [self selectedCellInColumn: column - 1];
+      else
+	{
+	  NSMatrix *matrix;
+	  NSArray  *selectedCells;
+
+	  if (!(matrix = [self matrixInColumn: column - 1]))
+	    return @"";
+
+	  selectedCells = [matrix selectedCells];
+
+	  if([selectedCells count] == 1)
+	    c = [selectedCells objectAtIndex:0];
+	  else
+	    return @"";
+	}
+
       if ([c isLeaf])
 	return @"";
       else

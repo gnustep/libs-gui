@@ -436,7 +436,10 @@ NSMutableDictionary	*pasteboards = nil;
 
       if (wantsChangedOwner)
 	{
-	  [a removeObject: owner];
+	  /* workaround for NSConnection/NSDistantObject bug with methods
+	   * like (SEL)methodForSelector:
+	   *  [a removeObject: owner]; */
+	  [a removeObjectAtIndex:0];
 	  [owner pasteboardChangedOwner: pboard];
 	}
 
