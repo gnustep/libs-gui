@@ -35,7 +35,7 @@ include $(GNUSTEP_MAKEFILES)/common.make
 include ../Version
 prefix = $(GNUSTEP_INSTALLATION_DIR)
 
-PANELS = SavePanel.gmodel
+PANELS = ColorPanel.gmodel SavePanel.gmodel
 
 before-install::
 	if [ ! -d $(prefix)/Library ]; then \
