@@ -41,6 +41,10 @@
 #include <Foundation/NSValue.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSAutoreleasePool.h>
+#include <Foundation/NSException.h>
+#include <Foundation/NSNotification.h>
+#include <Foundation/NSFormatter.h>
+#include <Foundation/NSDebug.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSZone.h>
 
@@ -258,6 +262,12 @@ static SEL getSel;
 - (void) dealloc
 {
   int		i;
+
+  if (_textObject != nil)
+    {
+      [_selectedCell endEditing: _textObject];
+      _textObject = nil;
+    }
 
   for (i = 0; i < _maxRows; i++)
     {
