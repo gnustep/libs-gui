@@ -35,6 +35,11 @@
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSGraphics.h>
 
+#ifdef STRICT_OPENSTEP
+// This is used for the old text functions.
+#include <AppKit/NSCStringText.h>
+#endif 
+
 char **NSArgv = NULL;
 
 /*
@@ -294,3 +299,134 @@ NSPlanarFromDepth(NSWindowDepth depth)
     }
   return planar;
 }
+
+
+#ifdef STRICT_OPENSTEP
+//
+// Old Text Functions, this come from a very old version of the 
+// OpenStep specification and will probably never be implemented in GNUstep
+//
+
+//
+// Filter Characters Entered into a Text Object
+//
+unsigned short
+NSEditorFilter(unsigned short theChar,
+	       int flags, NSStringEncoding theEncoding)
+{
+  return 0;
+}
+
+unsigned short
+NSFieldFilter(unsigned short theChar,
+	      int flags, NSStringEncoding theEncoding)
+{
+  return 0;
+}
+
+//
+// Calculate or Draw a Line of Text (in Text Object)
+//
+int
+NSDrawALine(id self, NSLayInfo *layInfo)
+{
+  return 0;
+}
+
+int
+NSScanALine(id self, NSLayInfo *layInfo)
+{
+  return 0;
+}
+
+//
+// Calculate Font Ascender, Descender, and Line Height (in Text Object)
+//
+void
+NSTextFontInfo(id fid, float *ascender, float *descender, float *lineHeight)
+{}
+
+//
+// Access Text Object's Word Tables
+//
+NSData*
+NSDataWithWordTable(const unsigned char *smartLeft,
+		    const unsigned char *smartRight,
+		    const unsigned char *charClasses,
+		    const NSFSM *wrapBreaks,
+		    int wrapBreaksCount,
+		    const NSFSM *clickBreaks,
+		    int clickBreaksCount,
+		    BOOL charWrap)
+{
+  return nil;
+}
+
+void
+NSReadWordTable(NSZone *zone,
+		NSData *data,
+		unsigned char **smartLeft,
+		unsigned char **smartRight,
+		unsigned char **charClasses,
+		NSFSM **wrapBreaks,
+		int *wrapBreaksCount,
+		NSFSM **clickBreaks,
+		int *clickBreaksCount,
+		BOOL *charWrap)
+{}
+
+//
+// Array Allocation Functions for use by the old NSText Class
+//
+
+NSTextChunk*
+NSChunkCopy(NSTextChunk *pc, NSTextChunk *dpc)
+{
+  return NULL;
+}
+
+NSTextChunk*
+NSChunkGrow(NSTextChunk *pc, int newUsed)
+{
+  return NULL;
+}
+
+NSTextChunk*
+NSChunkMalloc(int growBy, int initUsed)
+{
+  return NULL;
+}
+
+NSTextChunk*
+NSChunkRealloc(NSTextChunk *pc)
+{
+  return NULL;
+}
+
+NSTextChunk*
+NSChunkZoneCopy(NSTextChunk *pc,
+		NSTextChunk *dpc,
+		NSZone *zone)
+{
+  return NULL;
+}
+
+NSTextChunk*
+NSChunkZoneGrow(NSTextChunk *pc, int newUsed, NSZone *zone)
+{
+  return NULL;
+}
+
+NSTextChunk*
+NSChunkZoneMalloc(int growBy, int initUsed, NSZone *zone)
+{
+  return NULL;
+}
+
+NSTextChunk*
+NSChunkZoneRealloc(NSTextChunk *pc, NSZone *zone)
+{
+  return NULL;
+}
+
+#endif 
