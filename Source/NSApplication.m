@@ -1765,6 +1765,9 @@ IF_NO_GC(NSAssert([event retainCount] > 0, NSInternalInconsistencyException));
   ASSIGN(_main_menu, aMenu);
 
   [_main_menu setTitle: [[NSProcessInfo processInfo] processName]];
+  // Set the title of the window also. 
+  // This wont be displayed, but the window manager may need it.
+  [[_main_menu window] setTitle: [[NSProcessInfo processInfo] processName]];
   [[_main_menu window] setLevel: NSMainMenuWindowLevel];
   [_main_menu sizeToFit];
   /*
