@@ -70,11 +70,13 @@
   offsets.width = 5;
   offsets.height = 5;
   border_rect = bounds;
-  border_type = NSLineBorder;
+  border_type = NSGrooveBorder;
   title_position = NSAtTop;
   title_rect = NSZeroRect;
+  [self setAutoresizesSubviews: NO];
   content_view = [NSView new];
   [super addSubview: content_view];
+  [content_view setFrame: [self calcSizesAllowingNegative: NO]];
   [content_view release];
 
   return self;
@@ -111,12 +113,15 @@
     }
 }
 
+// TODO: implement the macosx behaviour for setTitle:
 - (void) setTitle: (NSString *)aString
 {
   [cell setStringValue: aString];
   [content_view setFrame: [self calcSizesAllowingNegative: NO]];
   [self setNeedsDisplay: YES];
 }
+
+// TODO: - (void) setTitleWithMnemonic: (NSString *)aString
 
 - (void) setTitleFont: (NSFont *)fontObj
 {
@@ -189,13 +194,21 @@
 	@"illegal margins supplied");
 
   offsets = offsetSize;
-  [content_view setFrame: [self calcSizesAllowingNegative: NO]];
-  [self setNeedsDisplay: YES];
 }
 
 //
 // Resizing the Box 
 //
+- (void) setFrame: (NSRect)frameRect
+{
+  [super setFrame: frameRect];
+  [content_view setFrame: [self calcSizesAllowingNegative: NO]];
+}
+- (void) setFrameSize: (NSSize)newSize
+{
+  [super setFrameSize: newSize];
+  [content_view setFrame: [self calcSizesAllowingNegative: NO]];
+}
 - (void) setFrameFromContentFrame: (NSRect)contentFrame
 {
   // First calc the sizes to see how much we are off by
@@ -205,34 +218,76 @@
   NSAssert(contentFrame.size.width >= 0 && contentFrame.size.height >= 0,
 	@"illegal content frame supplied");
 
+  if ([self superview])
+    r = [[self superview] convertRect: r fromView: self];
+  
   // Add the difference to the frame
   f.size.width = f.size.width + (contentFrame.size.width - r.size.width);
   f.size.height = f.size.height + (contentFrame.size.height - r.size.height);
+  f.origin.x = f.origin.x + (contentFrame.origin.x - r.origin.x);
+  f.origin.y = f.origin.y + (contentFrame.origin.y - r.origin.y);
 
   [self setFrame: f];
-  [content_view setFrame: [self calcSizesAllowingNegative: NO]];  
+  if ([self superview])
+    [content_view setFrame: [self convertRect: contentFrame
+				  fromView: [self superview]]];  
+  else // ![self superview]
+    [content_view setFrame: contentFrame];
 }
 
 - (void) sizeToFit
 {
-  NSRect r = NSZeroRect;
-  id o, e = [[content_view subviews] objectEnumerator];
+  NSRect f;
 
-  // Loop through subviews and calculate rect to encompass all
-  while ((o = [e nextObject]))
-    {
-      NSRect f = [o frame];
-      if (f.origin.x < r.origin.x)
-	r.origin.x = f.origin.x;
-      if (f.origin.y < f.origin.y)
-	r.origin.y = f.origin.y;
-      if ((f.origin.x + f.size.width) > (r.origin.x + r.size.width))
-	r.size.width = (f.origin.x + f.size.width) - r.origin.x;
-      if ((f.origin.y + f.size.height) > (r.origin.y + r.size.height))
-	r.size.height = (f.origin.y + f.size.height) - r.origin.y;
+  if ([content_view respondsToSelector: @selector(sizeToFit)])
+    [content_view sizeToFit];
+  else // content_view !respondsToSelector: sizeToFit
+    {   
+      NSArray *subviewArray = [content_view subviews];
+      if ([subviewArray count])
+	{
+	  id o, e = [subviewArray objectEnumerator];
+	  NSRect r = [[e nextObject] frame];
+	  // Loop through subviews and calculate rect to encompass all
+	  while ((o = [e nextObject]))
+	    {
+	      f = [o frame];
+	      if (f.origin.x < r.origin.x)
+		r.origin.x = f.origin.x;
+	      if (f.origin.y < f.origin.y)
+		r.origin.y = f.origin.y;
+	      if ((f.origin.x + f.size.width) > (r.origin.x + r.size.width))
+		r.size.width = (f.origin.x + f.size.width) - r.origin.x;
+	      if ((f.origin.y + f.size.height) > (r.origin.y + r.size.height))
+		r.size.height = (f.origin.y + f.size.height) - r.origin.y;
+	    }
+	  [content_view setBoundsOrigin: r.origin];
+	  r.size = [self convertSize: r.size fromView: content_view];
+	  [content_view setAutoresizesSubviews: NO];
+	  [content_view setFrameSize: r.size];
+	  [content_view setAutoresizesSubviews: YES];
+	}
+      else // content_view has no subviews
+	{
+	  [content_view setFrame: NSZeroRect];
+	}
     }
 
-  [self setFrameFromContentFrame: r];
+  f = [content_view frame];
+
+  // The box width should be enough to display the title
+  if (title_position != NSNoTitle)
+    {
+      NSSize titleSize = [cell cellSize];
+      titleSize.width += 1;
+      if (f.size.width < titleSize.width)
+	f.size.width = titleSize.width;
+    }
+  
+  if ([self superview])
+    [self setFrameFromContentFrame: [self convertRect: f toView: [self superview]]];
+  else // ![self superview]
+    [self setFrameFromContentFrame: f]; 
 }
 
 - (void) resizeWithOldSuperviewSize: (NSSize)oldSize

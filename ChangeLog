@@ -1,3 +1,24 @@
+Wed Sep  1  9:17:00 1999  n.pero@mi.flashnet.it
+	* Source/NSBox.m: (-initWithFrame:) changed default border type to 
+	NSGrooveBorder (as in MacOS-X).  Resize content view to fit the box. 
+	Turn off autoresizing of subviews. 
+	(-setContentViewMargins:) removed the code which resized the content 
+	view (as required by MacOS-X specs). 
+	(-setFrame:) added method.  It resizes also the content view when 
+	the box is resized, as required by MacOS-X specs. 
+	(-setFrameSize:) idem. 
+	(-setFrameFromContentFrame:) Tried to make the GNUstep method compliant 
+	with MacOS-X specs.  In particular, the origin of the NSBox has to be 
+	changed too, and contentFrame is relative to the superview's coordinate 
+	system.
+	(-sizeToFit) Tried to make the GNUstep method compliant with MacOS-X 
+	specs.  In particular, try the sizeToFit message to the content_view 
+	before resizing it; check that the title fits, otherwise make the box 
+	bigger to have the title displayed; modified slightly the loop to give 
+	correct answer in case the min of the origin's of the subviews is
+	positive; keep better care of the fact that frames are not expressed
+	always in the same coordinate system. 
+
 Tue Aug 31  9:45:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	Fixes to remove hard-coded colors from gui.  I'm not sure this is
