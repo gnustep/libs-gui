@@ -1,7 +1,7 @@
 /* 
    NSForm.h
 
-   Form class, a text field with a label
+   Form class, a matrix of text fields with labels
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
