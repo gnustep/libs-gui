@@ -508,6 +508,12 @@ static double rint(double a)
 {
   NSBrowserColumn *bc;
 
+  // No column selected.
+  if (column == -1)
+    {
+      return nil;
+    }
+
   bc = [_browserColumns objectAtIndex: column];
   
   if (![bc isLoaded])
