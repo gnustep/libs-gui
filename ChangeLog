@@ -1,3 +1,19 @@
+Wed Oct 13  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	You should now be able to use key equivalents for buttons.  
+	See core/Testing/Calculator.app for a running example. 
+	* Source/NSApplication.m ([-sendEvent:]): Changed modifier used
+ 	for key equivalents to NSControlKeyMask.
+	* Source/NSButtonCell.m ([-_init]): By default, set
+ 	keyEquivalentModifierMask to NSControlKeyMask.
+	* Source/NSButton.m ([-keyDown:]): Removed invocation of
+ 	peformKeyEquivalent:. Key equivalents are not processed here. 
+	* Source/NSWindow.m ([-keyDown:]): After all else fails, try 
+	considering the key as a keyEquivalent without Control pressed.
+	* Source/NSWindow.m ([-initDefaults]): Make the default first 
+	responder the window itself. ([-display]): Modified initial first
+ 	responder stuff accordingly.
+
 Tue Oct 12  1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSApplication.m: Attempts to fix ordering of application
