@@ -60,19 +60,9 @@ NSString *DPSCantConnectException = @"DPSCantConnectException";
 //
 // Class variables
 //
-static NSMutableDictionary *GNU_CONTEXT_THREAD_DICT = nil;
-static NSRecursiveLock *GNU_CONTEXT_LOCK = nil;
+static NSString *GNU_CONTEXT_THREAD_KEY = @"GnuContextThreadKey";
 static BOOL GNU_CONTEXT_TRACED = NO;
 static BOOL GNU_CONTEXT_SYNCHRONIZED = NO;
-
-#if defined(NeXT_PDO)
-@implementation NSThread (Containers)
-- copyWithZone:(NSZone*)zone
-{
-  return [self retain];
-}
-@end
-#endif
 
 @implementation NSDPSContext
 
@@ -82,12 +72,6 @@ static BOOL GNU_CONTEXT_SYNCHRONIZED = NO;
     {
       // Set initial version
       [self setVersion: 1];
-
-      // Allocate dictionary for maintaining
-      // mapping of threads to contexts
-     GNU_CONTEXT_THREAD_DICT = [NSMutableDictionary new];
-     // Create lock for serializing access to dictionary
-     GNU_CONTEXT_LOCK = [[NSRecursiveLock alloc] init];
 
      GNU_CONTEXT_TRACED = NO;
      GNU_CONTEXT_SYNCHRONIZED = NO;
@@ -162,9 +146,8 @@ static BOOL GNU_CONTEXT_SYNCHRONIZED = NO;
   current_thread = [NSThread currentThread];
 
   // Get current context for current thread
-  [GNU_CONTEXT_LOCK lock];
 
-  current_context = [GNU_CONTEXT_THREAD_DICT objectForKey: current_thread];
+  current_context = [[current_thread threadDictionary] objectForKey: GNU_CONTEXT_THREAD_KEY];
 
   // If not in dictionary then create one
   if (!current_context)
@@ -172,7 +155,6 @@ static BOOL GNU_CONTEXT_SYNCHRONIZED = NO;
       current_context = [[NSDPSContext alloc] init];
       [self setCurrentContext: current_context];
     }
-  [GNU_CONTEXT_LOCK unlock];
 
   return current_context;
 }
@@ -181,20 +163,15 @@ static BOOL GNU_CONTEXT_SYNCHRONIZED = NO;
 {
   NSThread *current_thread = [NSThread currentThread];
 
-  [GNU_CONTEXT_LOCK lock];
-
   // If no context then remove from dictionary
   if (!context)
     {
-      [GNU_CONTEXT_THREAD_DICT removeObjectForKey: current_thread];
+      [[current_thread threadDictionary] removeObjectForKey: GNU_CONTEXT_THREAD_KEY];
     }
   else
     {
-      [GNU_CONTEXT_THREAD_DICT setObject: context 
-			       forKey: current_thread];
+      [[current_thread threadDictionary] setObject: context forKey: GNU_CONTEXT_THREAD_KEY];
     }
-
-  [GNU_CONTEXT_LOCK unlock];
 }
 
 - (NSDPSContext *)DPSContext

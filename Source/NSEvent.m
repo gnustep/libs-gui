@@ -5,10 +5,10 @@
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
-   Author:  Ovidiu Predescu <ovidiu@net-community.com>
+   Author:	Scott Christley <scottc@net-community.com>
+   Author:	Ovidiu Predescu <ovidiu@net-community.com>
    Date: 1996
-   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Author:	Felipe A. Rodriguez <far@ix.netcom.com>
    Date: Sept 1998
    
    This file is part of the GNUstep GUI Library.
@@ -20,7 +20,7 @@
    
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
    Library General Public License for more details.
 
    You should have received a copy of the GNU Library General Public
@@ -46,8 +46,7 @@
 @implementation NSEvent
 
 // Class variables
-static NSMutableDictionary* timers = nil;
-static NSRecursiveLock* timersLock = nil;
+static NSString	*timerKey = @"NSEventTimersKey";
 
 //
 // Class methods
@@ -55,32 +54,30 @@ static NSRecursiveLock* timersLock = nil;
 + (void)initialize
 {
   if (self == [NSEvent class])
-    {
-      NSDebugLog(@"Initialize NSEvent class\n");
+	{
+	  NSDebugLog(@"Initialize NSEvent class\n");
 
-      // Initial version
-      [self setVersion:1];
-      timers = [NSMutableDictionary new];
-      timersLock = [NSRecursiveLock new];
-    }
+	  // Initial version
+	  [self setVersion:1];
+	}
 }
 
 //
 // Creating NSEvent objects
 //
 + (NSEvent *)enterExitEventWithType:(NSEventType)type	
-			   			   location:(NSPoint)location
-		      			   modifierFlags:(unsigned int)flags
-			  			   timestamp:(NSTimeInterval)time
-		       			   windowNumber:(int)windowNum
-			    		   context:(NSDPSContext *)context	
-				 		   eventNumber:(int)eventNum
-		     			   trackingNumber:(int)trackingNum
-			   			   userData:(void *)userData
+						   location:(NSPoint)location
+						   modifierFlags:(unsigned int)flags
+						   timestamp:(NSTimeInterval)time
+						   windowNumber:(int)windowNum
+						   context:(NSDPSContext *)context	
+						   eventNumber:(int)eventNum
+						   trackingNumber:(int)trackingNum
+						   userData:(void *)userData
 {
 NSEvent *e = [[[NSEvent alloc] init] autorelease];
 															// do nothing if
-	if ((type != NSMouseEntered) && (type != NSMouseExited)	// event is not of
+	if ((type != NSMouseEntered) && (type != NSMouseExited) // event is not of
 			&& (type != NSCursorUpdate))					// a desired type
 		return nil;											
 
@@ -98,15 +95,15 @@ NSEvent *e = [[[NSEvent alloc] init] autorelease];
 }
 
 + (NSEvent *)keyEventWithType:(NSEventType)type
-		     		 location:(NSPoint)location
+					 location:(NSPoint)location
 					 modifierFlags:(unsigned int)flags
-		    		 timestamp:(NSTimeInterval)time
-		 			 windowNumber:(int)windowNum
-		      		 context:(NSDPSContext *)context	
-		   			 characters:(NSString *)keys	
-  					 charactersIgnoringModifiers:(NSString *)ukeys
-		    		 isARepeat:(BOOL)repeatKey	
-		      		 keyCode:(unsigned short)code
+					 timestamp:(NSTimeInterval)time
+					 windowNumber:(int)windowNum
+					 context:(NSDPSContext *)context	
+					 characters:(NSString *)keys	
+					 charactersIgnoringModifiers:(NSString *)ukeys
+					 isARepeat:(BOOL)repeatKey	
+					 keyCode:(unsigned short)code
 {
 NSEvent *e = [[[NSEvent alloc] init] autorelease];
 															// do nothing if
@@ -131,13 +128,13 @@ NSEvent *e = [[[NSEvent alloc] init] autorelease];
 
 + (NSEvent *)mouseEventWithType:(NSEventType)type	
 						location:(NSPoint)location
-		  				modifierFlags:(unsigned int)flags
-		      			timestamp:(NSTimeInterval)time
-		   				windowNumber:(int)windowNum	
-						context:(NSDPSContext *)context	
-		    			eventNumber:(int)eventNum	
-		     			clickCount:(int)clickNum	
-		       			pressure:(float)pressureValue
+						modifierFlags:(unsigned int)flags
+						timestamp:(NSTimeInterval)time
+						windowNumber:(int)windowNum 
+						context:(NSDPSContext *)context 
+						eventNumber:(int)eventNum	
+						clickCount:(int)clickNum	
+						pressure:(float)pressureValue
 {
 NSEvent *e = [[[NSEvent alloc] init] autorelease];			// do nothing if
 															// event is not of
@@ -145,7 +142,7 @@ NSEvent *e = [[[NSEvent alloc] init] autorelease];			// do nothing if
 			&& (type != NSLeftMouseDown) && (type != NSRightMouseDown) 
 			&& (type != NSRightMouseUp) && (type != NSLeftMouseDragged) 
 			&& (type != NSRightMouseDragged))
-    	return nil;
+		return nil;
 
 	e->event_type = type;									// Set the event's
 	e->location_point = location;							// fields
@@ -161,14 +158,14 @@ NSEvent *e = [[[NSEvent alloc] init] autorelease];			// do nothing if
 }
 
 + (NSEvent *)otherEventWithType:(NSEventType)type	
-		       			location:(NSPoint)location
-		  				modifierFlags:(unsigned int)flags
-		      			timestamp:(NSTimeInterval)time
-		   				windowNumber:(int)windowNum	
-						context:(NSDPSContext *)context	
+						location:(NSPoint)location
+						modifierFlags:(unsigned int)flags
+						timestamp:(NSTimeInterval)time
+						windowNumber:(int)windowNum 
+						context:(NSDPSContext *)context 
 						subtype:(short)subType	
-			  			data1:(int)data1	
-			  			data2:(int)data2
+						data1:(int)data1	
+						data2:(int)data2
 {
 NSEvent *e = [[[NSEvent alloc] init] autorelease];
 															// do nothing if
@@ -192,22 +189,20 @@ NSEvent *e = [[[NSEvent alloc] init] autorelease];
 // Requesting Periodic Events
 //
 + (void)startPeriodicEventsAfterDelay:(NSTimeInterval)delaySeconds
-			   			   withPeriod:(NSTimeInterval)periodSeconds
+						   withPeriod:(NSTimeInterval)periodSeconds
 {
-NSTimer* timer;
-NSThread* currentThread = [NSThread currentThread];
+  NSTimer* timer;
+  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
 
-	[timersLock lock];
-
-	NSDebugLog (@"startPeriodicEventsAfterDelay:withPeriod:");
+  NSDebugLog (@"startPeriodicEventsAfterDelay:withPeriod:");
 														// Check this thread 
-	if ([timers objectForKey:currentThread])			// for a pending timer
-		[NSException raise:NSInternalInconsistencyException
-		 			 format:@"Periodic events are already being generated for "
-					 @"this thread %x", currentThread];
-										// If the delay time is 0 then register  
+  if ([dict objectForKey: timerKey])			// for a pending timer
+	[NSException raise:NSInternalInconsistencyException
+			format:@"Periodic events are already being generated for "
+					 @"this thread %x", [NSThread currentThread]];
+										// If the delay time is 0 then register	 
 										// a timer immediately. Otherwise  
-										// register a timer with no repeat that  
+										// register a timer with no repeat that	 
 	if (!delaySeconds)					// when fired registers the real timer
 		timer = [NSTimer timerWithTimeInterval:periodSeconds	// register an
 						 target:self							// immediate
@@ -215,17 +210,15 @@ NSThread* currentThread = [NSThread currentThread];
 						 userInfo:nil
 						 repeats:YES];
 	else													// register a one
-		timer = [NSTimer timerWithTimeInterval:delaySeconds	// shot timer to 
+		timer = [NSTimer timerWithTimeInterval:delaySeconds // shot timer to 
 						 target:self						// register a timer 
 						 selector:@selector(_registerRealTimer:)
 						 userInfo:[NSNumber numberWithDouble:periodSeconds]
 						 repeats:NO];
 
-	[[NSRunLoop currentRunLoop] addTimer:timer 
-								forMode:NSEventTrackingRunLoopMode];
-	[timers setObject:timer forKey:currentThread];
-
-	[timersLock unlock];
+  [[NSRunLoop currentRunLoop] addTimer: timer 
+				   forMode: NSEventTrackingRunLoopMode];
+  [dict setObject: timer forKey: timerKey];
 }
 
 + (void)_timerFired:(NSTimer*)timer
@@ -248,39 +241,35 @@ NSEvent* periodicEvent = [self otherEventWithType:NSPeriodic
 
 + (void)_registerRealTimer:(NSTimer*)timer
 {													// this method provides a
-NSTimer* realTimer;									// means of delaying the
+  NSTimer* realTimer;								  // means of delaying the
 													// start of periodic events
-	[timersLock lock];								  															
-	NSDebugLog (@"_registerRealTimer:");		
+  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
 
-	realTimer = [NSTimer timerWithTimeInterval:[[timer userInfo] doubleValue]
+  NSDebugLog (@"_registerRealTimer:");		  
+
+  realTimer = [NSTimer timerWithTimeInterval:[[timer userInfo] doubleValue]
 						 target:self
 						 selector:@selector(_timerFired:)
 						 userInfo:nil
 						 repeats:YES];		// Add the real timer to the timers
 											// dictionary and to the run loop
-	[timers setObject:realTimer forKey:[NSThread currentThread]];	  
-	[[NSRunLoop currentRunLoop] addTimer:realTimer 		
-								forMode:NSEventTrackingRunLoopMode];
-
-	[timersLock unlock];
+  /* xxx what if there is already a timer - are we sure there isn't? */
+  [dict setObject: realTimer forKey: timerKey];		
+  [[NSRunLoop currentRunLoop] addTimer: realTimer	   
+				   forMode: NSEventTrackingRunLoopMode];
 }
 
 + (void)stopPeriodicEvents
 {
   NSTimer* timer;
-  NSThread* currentThread;
+  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
 
   NSDebugLog (@"stopPeriodicEvents");
-  [timersLock lock];
 
-  currentThread = [NSThread currentThread];
   /* Remove any existing timer for this thread */
-  timer = [timers objectForKey:currentThread];
+  timer = [dict objectForKey: timerKey];
   [timer invalidate];
-  [timers removeObjectForKey:currentThread];
-
-  [timersLock unlock];
+  [dict removeObjectForKey: timerKey];
 }
 
 //
@@ -289,10 +278,10 @@ NSTimer* realTimer;									// means of delaying the
 - (void)dealloc
 {
   if ((event_type == NSKeyUp) || (event_type == NSKeyDown))
-    {
-      [event_data.key.char_keys release];
-      [event_data.key.unmodified_keys release];
-    }
+	{
+	  [event_data.key.char_keys release];
+	  [event_data.key.unmodified_keys release];
+	}
 
   [super dealloc];
 }
@@ -341,7 +330,7 @@ NSTimer* realTimer;									// means of delaying the
 - (NSString *)characters
 {
   if ((event_type != NSKeyUp) && (event_type != NSKeyDown))
-    return nil;
+	return nil;
 
   return event_data.key.char_keys;
 }
@@ -349,7 +338,7 @@ NSTimer* realTimer;									// means of delaying the
 - (NSString *)charactersIgnoringModifiers
 {
   if ((event_type != NSKeyUp) && (event_type != NSKeyDown))
-    return nil;
+	return nil;
 
   return event_data.key.unmodified_keys;
 }
@@ -357,7 +346,7 @@ NSTimer* realTimer;									// means of delaying the
 - (BOOL)isARepeat
 {
   if ((event_type != NSKeyUp) && (event_type != NSKeyDown))
-    return NO;
+	return NO;
 
   return event_data.key.repeat;
 }
@@ -365,7 +354,7 @@ NSTimer* realTimer;									// means of delaying the
 - (unsigned short)keyCode
 {
   if ((event_type != NSKeyUp) && (event_type != NSKeyDown))
-    return 0;
+	return 0;
 
   return event_data.key.key_code;
 }
@@ -377,10 +366,10 @@ NSTimer* realTimer;									// means of delaying the
 {
   // Make sure it is one of the right event types
   if ((event_type != NSLeftMouseDown) && (event_type != NSLeftMouseUp) &&
-      (event_type != NSRightMouseDown) && (event_type != NSRightMouseUp) &&
-      (event_type != NSLeftMouseDragged) && (event_type != NSRightMouseDragged) &&
-      (event_type != NSMouseMoved))
-    return 0;
+	  (event_type != NSRightMouseDown) && (event_type != NSRightMouseUp) &&
+	  (event_type != NSLeftMouseDragged) && (event_type != NSRightMouseDragged) &&
+	  (event_type != NSMouseMoved))
+	return 0;
 
   return event_data.mouse.click;
 }
@@ -389,26 +378,26 @@ NSTimer* realTimer;									// means of delaying the
 {
   // Make sure it is one of the right event types
   if ((event_type != NSLeftMouseDown) && (event_type != NSLeftMouseUp) &&
-      (event_type != NSRightMouseDown) && (event_type != NSRightMouseUp) &&
-      (event_type != NSLeftMouseDragged) && (event_type != NSRightMouseDragged) &&
-      (event_type != NSMouseMoved) &&
-      (event_type != NSMouseEntered) && (event_type != NSMouseExited))
-    return 0;
+	  (event_type != NSRightMouseDown) && (event_type != NSRightMouseUp) &&
+	  (event_type != NSLeftMouseDragged) && (event_type != NSRightMouseDragged) &&
+	  (event_type != NSMouseMoved) &&
+	  (event_type != NSMouseEntered) && (event_type != NSMouseExited))
+	return 0;
 
   if ((event_type == NSMouseEntered) || (event_type == NSMouseExited))
-    return event_data.tracking.event_num;
+	return event_data.tracking.event_num;
   else
-    return event_data.mouse.event_num;
+	return event_data.mouse.event_num;
 }
 
 - (float)pressure
 {
   // Make sure it is one of the right event types
   if ((event_type != NSLeftMouseDown) && (event_type != NSLeftMouseUp) &&
-      (event_type != NSRightMouseDown) && (event_type != NSRightMouseUp) &&
-      (event_type != NSLeftMouseDragged) && (event_type != NSRightMouseDragged) &&
-      (event_type != NSMouseMoved))
-    return 0;
+	  (event_type != NSRightMouseDown) && (event_type != NSRightMouseUp) &&
+	  (event_type != NSLeftMouseDragged) && (event_type != NSRightMouseDragged) &&
+	  (event_type != NSMouseMoved))
+	return 0;
 
   return event_data.mouse.pressure;
 }
@@ -419,8 +408,8 @@ NSTimer* realTimer;									// means of delaying the
 - (int)trackingNumber
 {
   if ((event_type != NSMouseEntered) && (event_type != NSMouseExited)
-       && (event_type != NSCursorUpdate))
-    return 0;
+	   && (event_type != NSCursorUpdate))
+	return 0;
 
   return event_data.tracking.tracking_num;
 }
@@ -428,8 +417,8 @@ NSTimer* realTimer;									// means of delaying the
 - (void *)userData
 {
   if ((event_type != NSMouseEntered) && (event_type != NSMouseExited)
-      && (event_type != NSCursorUpdate))
-    return NULL;
+	  && (event_type != NSCursorUpdate))
+	return NULL;
 
   return event_data.tracking.user_data;
 }
@@ -441,7 +430,7 @@ NSTimer* realTimer;									// means of delaying the
 {
   // Make sure it is one of the right event types
   if ((event_type != NSFlagsChanged) && (event_type != NSPeriodic))
-    return 0;
+	return 0;
 
   return event_data.misc.data1;
 }
@@ -450,7 +439,7 @@ NSTimer* realTimer;									// means of delaying the
 {
   // Make sure it is one of the right event types
   if ((event_type != NSFlagsChanged) && (event_type != NSPeriodic))
-    return 0;
+	return 0;
 
   return event_data.misc.data2;
 }
@@ -459,7 +448,7 @@ NSTimer* realTimer;									// means of delaying the
 {
   // Make sure it is one of the right event types
   if ((event_type != NSFlagsChanged) && (event_type != NSPeriodic))
-    return 0;
+	return 0;
 
   return event_data.misc.sub_type;;
 }
@@ -480,40 +469,40 @@ NSTimer* realTimer;									// means of delaying the
 
   // Encode the event date based upon the event type
   switch (event_type)
-    {
-    case NSLeftMouseDown:
-    case NSLeftMouseUp:
-    case NSRightMouseDown:
-    case NSRightMouseUp:
-    case NSMouseMoved:
-    case NSLeftMouseDragged:
-    case NSRightMouseDragged:
-      [aCoder encodeValuesOfObjCTypes: "iif", &event_data.mouse.event_num,
-	      &event_data.mouse.click, &event_data.mouse.pressure];
-      break;
+	{
+	case NSLeftMouseDown:
+	case NSLeftMouseUp:
+	case NSRightMouseDown:
+	case NSRightMouseUp:
+	case NSMouseMoved:
+	case NSLeftMouseDragged:
+	case NSRightMouseDragged:
+	  [aCoder encodeValuesOfObjCTypes: "iif", &event_data.mouse.event_num,
+		  &event_data.mouse.click, &event_data.mouse.pressure];
+	  break;
 
-    case NSMouseEntered:
-    case NSMouseExited:
-    case NSCursorUpdate:
-      // Can't do anything with the user_data!?
-      [aCoder encodeValuesOfObjCTypes: "ii", &event_data.tracking.event_num,
-	      &event_data.tracking.tracking_num];
-      break;
+	case NSMouseEntered:
+	case NSMouseExited:
+	case NSCursorUpdate:
+	  // Can't do anything with the user_data!?
+	  [aCoder encodeValuesOfObjCTypes: "ii", &event_data.tracking.event_num,
+		  &event_data.tracking.tracking_num];
+	  break;
 
-    case NSKeyDown:
-    case NSKeyUp:
-      [aCoder encodeValueOfObjCType: @encode(BOOL) at: &event_data.key.repeat];
-      [aCoder encodeObject: event_data.key.char_keys];
-      [aCoder encodeObject: event_data.key.unmodified_keys];
-      [aCoder encodeValueOfObjCType: "S" at: &event_data.key.key_code];
-      break;
+	case NSKeyDown:
+	case NSKeyUp:
+	  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &event_data.key.repeat];
+	  [aCoder encodeObject: event_data.key.char_keys];
+	  [aCoder encodeObject: event_data.key.unmodified_keys];
+	  [aCoder encodeValueOfObjCType: "S" at: &event_data.key.key_code];
+	  break;
 
-    case NSFlagsChanged:
-    case NSPeriodic:
-      [aCoder encodeValuesOfObjCTypes: "sii", &event_data.misc.sub_type,
-	      &event_data.misc.data1, &event_data.misc.data2];
-      break;
-    }
+	case NSFlagsChanged:
+	case NSPeriodic:
+	  [aCoder encodeValuesOfObjCTypes: "sii", &event_data.misc.sub_type,
+		  &event_data.misc.data1, &event_data.misc.data2];
+	  break;
+	}
 }
 
 - initWithCoder:aDecoder
@@ -526,41 +515,41 @@ NSTimer* realTimer;									// means of delaying the
 
   // Decode the event date based upon the event type
   switch (event_type)
-    {
-    case NSLeftMouseDown:
-    case NSLeftMouseUp:
-    case NSRightMouseDown:
-    case NSRightMouseUp:
-    case NSMouseMoved:
-    case NSLeftMouseDragged:
-    case NSRightMouseDragged:
-      [aDecoder decodeValuesOfObjCTypes: "iif", &event_data.mouse.event_num,
+	{
+	case NSLeftMouseDown:
+	case NSLeftMouseUp:
+	case NSRightMouseDown:
+	case NSRightMouseUp:
+	case NSMouseMoved:
+	case NSLeftMouseDragged:
+	case NSRightMouseDragged:
+	  [aDecoder decodeValuesOfObjCTypes: "iif", &event_data.mouse.event_num,
 		&event_data.mouse.click, &event_data.mouse.pressure];
-      break;
+	  break;
 
-    case NSMouseEntered:
-    case NSMouseExited:
-    case NSCursorUpdate:
-      // Can't do anything with the user_data!?
-      [aDecoder decodeValuesOfObjCTypes: "ii", &event_data.tracking.event_num,
+	case NSMouseEntered:
+	case NSMouseExited:
+	case NSCursorUpdate:
+	  // Can't do anything with the user_data!?
+	  [aDecoder decodeValuesOfObjCTypes: "ii", &event_data.tracking.event_num,
 		&event_data.tracking.tracking_num];
-      break;
+	  break;
 
-    case NSKeyDown:
-    case NSKeyUp:
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) 
+	case NSKeyDown:
+	case NSKeyUp:
+	  [aDecoder decodeValueOfObjCType: @encode(BOOL) 
 		at: &event_data.key.repeat];
-      event_data.key.char_keys = [aDecoder decodeObject];
-      event_data.key.unmodified_keys = [aDecoder decodeObject];
-      [aDecoder decodeValueOfObjCType: "S" at: &event_data.key.key_code];
-      break;
+	  event_data.key.char_keys = [aDecoder decodeObject];
+	  event_data.key.unmodified_keys = [aDecoder decodeObject];
+	  [aDecoder decodeValueOfObjCType: "S" at: &event_data.key.key_code];
+	  break;
 
-    case NSFlagsChanged:
-    case NSPeriodic:
-      [aDecoder decodeValuesOfObjCTypes: "sii", &event_data.misc.sub_type,
-	      &event_data.misc.data1, &event_data.misc.data2];
-      break;
-    }
+	case NSFlagsChanged:
+	case NSPeriodic:
+	  [aDecoder decodeValuesOfObjCTypes: "sii", &event_data.misc.sub_type,
+		  &event_data.misc.data1, &event_data.misc.data2];
+	  break;
+	}
 
   return self;
 }
@@ -568,20 +557,20 @@ NSTimer* realTimer;									// means of delaying the
 - (NSString*)description
 {
   const char* eventTypes[] = { "leftMouseDown", "leftMouseUp",
-      "rightMouseDown", "rightMouseUp", "mouseMoved", "leftMouseDragged",
-      "rightMouseDragged", "mouseEntered", "mouseExited", "keyDown", "keyUp",
-      "flagsChanged", "periodic", "cursorUpdate"
+	  "rightMouseDown", "rightMouseUp", "mouseMoved", "leftMouseDragged",
+	  "rightMouseDragged", "mouseEntered", "mouseExited", "keyDown", "keyUp",
+	  "flagsChanged", "periodic", "cursorUpdate"
   };
 
   switch (event_type) {
-    case NSLeftMouseDown:
-    case NSLeftMouseUp:
-    case NSRightMouseDown:
-    case NSRightMouseUp:
-    case NSMouseMoved:
-    case NSLeftMouseDragged:
-    case NSRightMouseDragged:
-      return [NSString stringWithFormat:
+	case NSLeftMouseDown:
+	case NSLeftMouseUp:
+	case NSRightMouseDown:
+	case NSRightMouseUp:
+	case NSMouseMoved:
+	case NSLeftMouseDragged:
+	case NSRightMouseDragged:
+	  return [NSString stringWithFormat:
 		@"NSEvent: eventType = %s, point = { %f, %f }, modifiers = %u,"
 		@" time = %f, window = %d, dpsContext = %p,"
 		@" event number = %d, click = %d, pressure = %f",
@@ -589,11 +578,11 @@ NSTimer* realTimer;									// means of delaying the
 		modifier_flags, event_time, window_num, event_context,
 		event_data.mouse.event_num, event_data.mouse.click,
 		event_data.mouse.pressure];
-      break;
+	  break;
 
-    case NSMouseEntered:
-    case NSMouseExited:
-      return [NSString stringWithFormat:
+	case NSMouseEntered:
+	case NSMouseExited:
+	  return [NSString stringWithFormat:
 		@"NSEvent: eventType = %s, point = { %f, %f }, modifiers = %u,"
 		@" time = %f, window = %d, dpsContext = %p, "
 		@" event number = %d, tracking number = %d, user data = %p",
@@ -602,11 +591,11 @@ NSTimer* realTimer;									// means of delaying the
 		event_data.tracking.event_num,
 		event_data.tracking.tracking_num,
 		event_data.tracking.user_data];
-      break;
+	  break;
 
-    case NSKeyDown:
-    case NSKeyUp:
-      return [NSString stringWithFormat:
+	case NSKeyDown:
+	case NSKeyUp:
+	  return [NSString stringWithFormat:
 		@"NSEvent: eventType = %s, point = { %f, %f }, modifiers = %u,"
 		@" time = %f, window = %d, dpsContext = %p, "
 		@" repeat = %s, keys = %@, ukeys = %@, keyCode = 0x%x",
@@ -615,12 +604,12 @@ NSTimer* realTimer;									// means of delaying the
 		(event_data.key.repeat ? "YES" : "NO"),
 		event_data.key.char_keys, event_data.key.unmodified_keys,
 		event_data.key.key_code];
-      break;
+	  break;
 
-    case NSFlagsChanged:
-    case NSPeriodic:
-    case NSCursorUpdate:
-      return [NSString stringWithFormat:
+	case NSFlagsChanged:
+	case NSPeriodic:
+	case NSCursorUpdate:
+	  return [NSString stringWithFormat:
 		@"NSEvent: eventType = %s, point = { %f, %f }, modifiers = %u,"
 		@" time = %f, window = %d, dpsContext = %p, "
 		@" subtype = %d, data1 = %p, data2 = %p",
@@ -628,7 +617,7 @@ NSTimer* realTimer;									// means of delaying the
 		modifier_flags, event_time, window_num, event_context,
 		event_data.misc.sub_type, event_data.misc.data1,
 		event_data.misc.data2];
-      break;
+	  break;
   }
 
   return [super description];
