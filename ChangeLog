@@ -1,3 +1,8 @@
+2003-04-26  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWindow.m: ([setFrameFromString:]) try to adjust sensibly
+	for changes to screen size.
+
 2003-04-26  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPanel.m

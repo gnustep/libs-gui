@@ -3625,12 +3625,29 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
   nRect = [[self screen] visibleFrame];
 
   /*
-   * FIXME - if the stored screen area is not the same as that currently
-   * available, we should probably adjust the window frame (position) in
-   * some way to try to make layout sensible.
+   * If the new screen drawable area has moved relative to the one in
+   * which the window was saved, adjust the window position accordingly.
    */
-  if (NSEqualRects(nRect, sRect) == NO)
+  if (NSEqualPoints(nRect.origin, sRect.origin) == NO)
     {
+      fRect.origin.x += nRect.origin.x - sRect.origin.x;
+      fRect.origin.y += nRect.origin.y - sRect.origin.y;
+    }
+
+  /*
+   * If the stored screen area is not the same as that currently
+   * available, we adjust the window frame (position) to try to
+   * make layout sensible.
+   */
+  if (nRect.size.width != sRect.size.width)
+    {
+      fRect.origin.x = nRect.origin.x + (fRect.origin.x - nRect.origin.x)
+	* (nRect.size.width / sRect.size.width);
+    }
+  if (nRect.size.height != sRect.size.height)
+    {
+      fRect.origin.y = nRect.origin.y + (fRect.origin.y - nRect.origin.y)
+	* (nRect.size.height / sRect.size.height);
     }
 
   /*
