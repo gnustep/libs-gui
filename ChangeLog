@@ -1,3 +1,84 @@
+Sat Feb  1 05:34:09 2003   Benhur Stein <benhur@inf.ufsm.br>, 
+	                   Nicola Pero  <n.pero@mi.flashnet.it>
+
+	The focus is now expected to have been locked on the control view
+	before cell's drawXXXWithFrame:inView: and similar methods are
+	called.  This makes drawing much more efficient.
+	* Source/NSApplication.m ([NSAppIconView -setImage:]): Lock/unlock
+	focus if it can draw.
+	* Source/NSBrowser.m ([GSBrowserTitleCell
+	-drawWithFrame:inView:]): Do not lock/unlock focus.
+	([-displayColumn:]): Lock/unlock focus before drawing.
+	([-doClick:]): Lock/unlock focus.
+	* Source/NSBrowserCell.m ([-drawInteriorWithFrame:inView:]): Do
+	not lock/unlock focus.
+	* Source/NSButtonCell.m ([-drawWithFrame:inView:]): Do not
+	lock/unlock focus.
+	([-drawInteriorWithFrame:inView:]): Do not lock unlock focus.
+	* Source/NSCell.m ([-drawInteriorWithFrame:inView:]): Do not
+	lock/unlock focus.
+	([-drawWithFrame:inView:]): Do not lock/unlock focus.
+	([-performClick:]): Lock/unlock focus.
+	* Source/NSComboBoxCell.m ([-_didClickInRect:ofView:]):
+	Lock/unlock focus.
+	* Source/NSControl.m ([-mouseDown:]): Lock/unlock focus.
+	* Source/NSFormCell.m ([-drawWithFrame:inView:]): Do not
+	lock/unlock focus.
+	* Source/NSImageCell.m ([-drawInteriorWithFrame:inView:]): Do not
+	lock/unlock focus.
+	([-drawWithFrame:inView:]): Do not lock/unlock focus.
+	* Source/NSMatrix.m ([-deselectAllCells]): Mark the cell as
+	needing redisplay, but do not redraw immediately.
+	([-_selectCell:atRow:column:]): Same change.
+	([-setSelectionFrom:to:anchor:highlight:]): Same change.
+	([-highlightCell:atRow:column:]): Lock/unlock focus.
+	([-_mouseDownNonListMode:]): Lock/unlock focus, flush window,
+	select cell better.
+	([-mouseDown:]): Lock/unlock focus; removed 2 flush windows.
+	([-performKeyEquivalent:]): Lock/unlock focus; flush window.
+	([-_altModifier:]): Added a displayIfNeeded call.
+	([-keyDown:]): Same change.
+	([-_move:]): Always deselect all cells in before selecting new
+	ones.  Do not display cell immediately, but mark it for redisplay.
+	Removed a few flush windows.  Commented out unclear code.
+	([-_shiftModifier:]): Lock/unlock focus.
+	([-_setState:highlight:startIndex:endIndex:]): Do not flush the
+	window.
+	([_setState:highlight:startIndex:endIndex:]): Do not display the
+	cell directly; mark it as needing redisplay.
+	([-drawCellAtRow:column:]): Do not lock/unlock focus.
+	([-highlightCell:atRow:column:]): Do not lock/unlock focus.
+	([-_drawCellAtRow:column:]): Do not lock/unlock focus.
+	* Source/NSMenuItemCell.m
+	([-drawBorderAndBackgroundWithFrame:inView:]): Do not lock/unlock
+	focus.
+	([-drawInteriorWithFrame:inView:]): Do not lock/unlock focus.
+	* Source/NSOutlineView.m
+	([-editColumn:columnIndexrow:rowIndexwithEvent:theEventselect:flag]):
+	Lock/unlock focus.
+	* Source/NSPopUpButtonCell.m ([-drawInteriorWithFrame:inView:]):
+	Do not lock/unlock focus.
+	* Source/NSScroller.m ([-trackScrollButtons:]): Lock/unlock focus.
+	* Source/NSSlider.m ([-mouseDown:]): Lock/unlock focus.
+	([-trackKnob:knobRect:]): Lock/unlock focus.
+	* Source/NSSliderCell.m ([-drawInteriorWithFrame:inView:]): Do not
+	lock/unlock focus.
+	* Source/NSStepper.m ([-mouseDown:]): Lock/unlock focus.
+	* Source/NSStepperCell.m ([-drawInteriorWithFrame:inView:]): Do
+	not lock/unlock focus.
+	([-highlight:highlightupButton:upButtonwithFrame:frameinView:
+	controlView]): Do not lock/unlock focus.
+	* Source/NSTextFieldCell.m ([-drawInteriorWithFrame:inView:]): Do
+	not lock/unlock focus.
+	* Source/NSTableHeaderCell.m ([-drawInteriorWithFrame:inView:]):
+	Do not lock/unlock focus.
+	([-drawWithFrame:inView:]): Do not lock/unlocks focus.
+	* Source/NSTableHeaderView.m ([-drawRect:]): Do not lock/unlock
+	focus while drawing.
+	([-mouseDown:]): Lock/unlock focus.
+	* Source/NSWindow.m ([NSMiniWindowView -setImage:, -setTitle:]):
+	Lock focus if can draw rather than checking _window != nil.
+	
 2003-02-01 03:26  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSLayoutManager.m (-removeTextContainerAtIndex:): Set
