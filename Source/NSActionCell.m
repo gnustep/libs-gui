@@ -3,7 +3,7 @@
 
    Abstract cell for target/action paradigm
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996-1999 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -33,24 +33,26 @@
 
 @implementation NSActionCell
 
-//
-// Class methods
-//
-+ (void)initialize
+static Class controlClass;
+
+/*
+ * Class methods
+ */
++ (void) initialize
 {
   if (self == [NSActionCell class])
     {
       NSDebugLog(@"Initialize NSActionCell class\n");
 
-      // Initial version
-      [self setVersion:1];
+      controlClass = [NSControl class];
+      [self setVersion: 1];
     }
 }
 
-//
-// Instance methods
-//
-- init
+/*
+ * Instance methods
+ */
+- (id) init
 {
   [super init];
   target = nil;
@@ -59,153 +61,153 @@
   return self;
 }
 
-- initImageCell:(NSImage *)anImage
+- (id) initImageCell: (NSImage*)anImage
 {
-  [super initImageCell:anImage];
+  [super initImageCell: anImage];
   target = nil;
   action = NULL;
   tag = 0;
   return self;
 }
 
-- initTextCell:(NSString *)aString
+- (id) initTextCell: (NSString*)aString
 {
-  [super initTextCell:aString];
+  [super initTextCell: aString];
   target = nil;
   action = NULL;
   tag = 0;
   return self;
 }
 
-//
-// Configuring an NSActionCell 
-//
-- (void)setAlignment:(NSTextAlignment)mode
+/*
+ * Configuring an NSActionCell 
+ */
+- (void) setAlignment: (NSTextAlignment)mode
 {
-  [super setAlignment:mode];
+  [super setAlignment: mode];
   if (control_view)
-    if ([control_view isKindOfClass: [NSControl class]])
+    if ([control_view isKindOfClass: controlClass])
       [(NSControl *)control_view updateCell: self];
 }
 
-- (void)setBezeled:(BOOL)flag
+- (void) setBezeled: (BOOL)flag
 {
-  [super setBezeled:flag];
+  [super setBezeled: flag];
   if (control_view)
-    if ([control_view isKindOfClass: [NSControl class]])
+    if ([control_view isKindOfClass: controlClass])
       [(NSControl *)control_view updateCell: self];
 }
 
-- (void)setBordered:(BOOL)flag
+- (void) setBordered: (BOOL)flag
 {
-  [super setBordered:flag];
+  [super setBordered: flag];
   if (control_view)
-    if ([control_view isKindOfClass: [NSControl class]])
+    if ([control_view isKindOfClass: controlClass])
       [(NSControl *)control_view updateCell: self];
 }
 
-- (void)setEnabled:(BOOL)flag
+- (void) setEnabled: (BOOL)flag
 {
-  [super setEnabled:flag];
+  [super setEnabled: flag];
   if (control_view)
-    if ([control_view isKindOfClass: [NSControl class]])
+    if ([control_view isKindOfClass: controlClass])
       [(NSControl *)control_view updateCell: self];
 }
 
-- (void)setFloatingPointFormat:(BOOL)autoRange
-			  left:(unsigned int)leftDigits
-			 right:(unsigned int)rightDigits
+- (void) setFloatingPointFormat: (BOOL)autoRange
+			   left: (unsigned int)leftDigits
+			  right: (unsigned int)rightDigits
 {
-  [super setFloatingPointFormat:autoRange left:leftDigits right:rightDigits];
+  [super setFloatingPointFormat: autoRange left: leftDigits right: rightDigits];
   if (control_view)
-    if ([control_view isKindOfClass: [NSControl class]])
+    if ([control_view isKindOfClass: controlClass])
       [(NSControl *)control_view updateCell: self];
 }
 
-- (void)setFont:(NSFont *)fontObject
+- (void) setFont: (NSFont*)fontObject
 {
-  [super setFont:fontObject];
+  [super setFont: fontObject];
   if (control_view)
-    if ([control_view isKindOfClass: [NSControl class]])
+    if ([control_view isKindOfClass: controlClass])
       [(NSControl *)control_view updateCell: self];
 }
 
-- (void)setImage:(NSImage *)image
+- (void) setImage: (NSImage*)image
 {
-  [super setImage:image];
+  [super setImage: image];
   if (control_view)
-    if ([control_view isKindOfClass: [NSControl class]])
+    if ([control_view isKindOfClass: controlClass])
       [(NSControl *)control_view updateCell: self];
 }
 
-//
-// Manipulating NSActionCell Values 
-//
-- (void)setStringValue:(NSString *)aString
+/*
+ * Manipulating NSActionCell Values 
+ */
+- (void) setStringValue: (NSString*)aString
 {
-  [super setStringValue:aString];
+  [super setStringValue: aString];
   if (control_view)
-    if ([control_view isKindOfClass: [NSControl class]])
+    if ([control_view isKindOfClass: controlClass])
       [(NSControl *)control_view updateCell: self];
 }
 
-- (void)setDoubleValue:(double)aDouble
+- (void) setDoubleValue: (double)aDouble
 {
-  [super setDoubleValue:aDouble];
+  [super setDoubleValue: aDouble];
   if (control_view)
-    if ([control_view isKindOfClass: [NSControl class]])
+    if ([control_view isKindOfClass: controlClass])
       [(NSControl *)control_view updateCell: self];
 }
 
-- (void)setFloatValue:(float)aFloat
+- (void) setFloatValue: (float)aFloat
 {
-  [super setFloatValue:aFloat];
+  [super setFloatValue: aFloat];
   if (control_view)
-    if ([control_view isKindOfClass: [NSControl class]])
+    if ([control_view isKindOfClass: controlClass])
       [(NSControl *)control_view updateCell: self];
 }
 
-- (void)setIntValue:(int)anInt
+- (void) setIntValue: (int)anInt
 {
-  [super setIntValue:anInt];
+  [super setIntValue: anInt];
   if (control_view)
-    if ([control_view isKindOfClass: [NSControl class]])
+    if ([control_view isKindOfClass: controlClass])
       [(NSControl *)control_view updateCell: self];
 }
 
-//
-// Target and Action 
-//
-- (SEL)action
+/*
+ * Target and Action 
+ */
+- (SEL) action
 {
   return action;
 }
 
-- (void)setAction:(SEL)aSelector
+- (void) setAction: (SEL)aSelector
 {
   action = aSelector;
 }
 
 /* NSActionCell does not retain its target! */
-- (void)setTarget:(id)anObject
+- (void) setTarget: (id)anObject
 {
   target = anObject;
 }
 
-- (id)target
+- (id) target
 {
   return target;
 }
 
-//
-// Assigning a Tag 
-//
-- (void)setTag:(int)anInt
+/*
+ * Assigning a Tag 
+ */
+- (void) setTag: (int)anInt
 {
   tag = anInt;
 }
 
-- (int)tag
+- (int) tag
 {
   return tag;
 }
@@ -221,13 +223,13 @@
   return c;
 }
 
-//
-// NSCoding protocol
-//
+/*
+ * NSCoding protocol
+ */
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-  [aCoder encodeValueOfObjCType: "i" at: &tag];
+  [aCoder encodeValueOfObjCType: @encode(int) at: &tag];
   [aCoder encodeConditionalObject: target];
   [aCoder encodeValueOfObjCType: @encode(SEL) at: &action];
 }
@@ -235,7 +237,7 @@
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   [super initWithCoder: aDecoder];
-  [aDecoder decodeValueOfObjCType: "i" at: &tag];
+  [aDecoder decodeValueOfObjCType: @encode(int) at: &tag];
   target = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: @encode(SEL) at: &action];
   return self;
