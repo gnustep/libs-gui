@@ -565,8 +565,11 @@ static NSColor *scrollBarColor = nil;
 	  float floatValue = [self _floatValueForMousePoint: 
 				     [self convertPoint: location
 					   fromView: nil]];
-	  [self setFloatValue: floatValue];
-	  [self sendAction: _action to: _target];
+	  if (floatValue != _floatValue)
+	    {
+	      [self setFloatValue: floatValue];
+	      [self sendAction: _action to: _target];
+	    }
 	  [self trackKnob: theEvent];
 	  break;
 	}
@@ -647,9 +650,12 @@ static NSColor *scrollBarColor = nil;
               point = NSMakePoint(newPosition, newPosition);
 	      floatValue = [self _floatValueForMousePoint: point];
 
-	      [self setFloatValue: floatValue];
-	      [self sendAction: _action to: _target];
-
+	      if (floatValue != _floatValue)
+		{
+		  [self setFloatValue: floatValue];
+		  [self sendAction: _action to: _target];
+		}
+	      
 	      lastPosition = newPosition;
             }
 	}
