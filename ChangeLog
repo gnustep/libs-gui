@@ -1,3 +1,10 @@
+Wed Mar  8 23:19:08 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSPopUpButton.m ([-sizeToFit]): Invoke super's implementation.
+	* Source/NSPopUpButton.m ([-synchronizeTitleAndSelectedItem]):
+	Removed call to sizeToFit.
+	* Source/NSPopUpButtonCell.m ([-cellSize]): Implemented.
+
 Wed Mar 08 20:56:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSFontPanel.m: A few bug fixes and tidyups.
