@@ -56,6 +56,7 @@
 #include <AppKit/PSOperators.h>
 #include <AppKit/NSDragging.h>
 #include <AppKit/NSPasteboard.h>
+#include <AppKit/NSHelpManager.h>
 
 BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 
@@ -1446,10 +1447,28 @@ static NSRecursiveLock	*windowsLock;
 	  {
 	    [self makeFirstResponder: v];
 	    if (is_key || [v acceptsFirstMouse: theEvent] == YES)
-	      [v mouseDown: theEvent];
+	      {
+		if([NSHelpManager isContextHelpModeActive])
+		  {
+		    [v helpRequested: theEvent];
+		  }
+		else
+		  {
+		    [v mouseDown: theEvent];
+		  }
+	      }
 	  }
 	else
-	  [v mouseDown: theEvent];
+	  {
+	    if([NSHelpManager isContextHelpModeActive])
+	      {
+		[v helpRequested: theEvent];
+	      }
+	    else
+	      {
+		[v mouseDown: theEvent];
+	      }
+	  }
 	last_point = [theEvent locationInWindow];
 	break;
 

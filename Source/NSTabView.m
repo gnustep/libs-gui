@@ -154,6 +154,9 @@
 
         tab_selected_item = [tab_items indexOfObject:tab_selected];
         [tab_selected _setTabState:NSSelectedTab];
+
+	[self setNeedsDisplay:YES];
+
         if ([tab_selected view])
           [self addSubview:[tab_selected view]];
 
@@ -162,8 +165,6 @@
 	  {
 	    [tab_delegate tabView:self didSelectTabViewItem:tab_selected];
           }
-
-	[self setNeedsDisplay:YES];
     }
 }
 
@@ -571,7 +572,7 @@
 
   //  [self setNeedsDisplay:YES];
 
-  [window update];
+//  [window update];
 
   return [super hitTest:aPoint];
 }

@@ -130,6 +130,12 @@ NSString *NSControlTextDidChangeNotification =
 // NSDataLink global strings
 NSString *NSDataLinkFileNameExtension = @"dlf";
 
+// NSHelpManager notifications;
+NSString *NSContextHelpModeDidActivateNotification =
+@"NSContextHelpModeDidActivateNotification";
+NSString *NSContextHelpModeDidDeactivateNotification =
+@"NSContextHelpModeDidDeactivateNotification";
+
 // NSFont Global Strings
 NSString *NSAFMAscender = @"Ascender";
 NSString *NSAFMCapHeight = @"CapHeight";

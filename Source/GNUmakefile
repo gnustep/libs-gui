@@ -75,6 +75,7 @@ NSForm.m \
 NSFormCell.m \
 NSGraphicsContext.m \
 NSHelpPanel.m \
+NSHelpManager.m \
 NSImage.m \
 NSImageCell.m \
 NSImageRep.m \
@@ -126,6 +127,7 @@ NSView.m \
 NSWindow.m \
 NSWorkspace.m \
 GSComboSupport.m \
+GSHelpManagerPanel.m \
 GSTextStorage.m \
 GSTrackingRect.m \
 GSServicesManager.m \
@@ -181,6 +183,7 @@ AppKit/NSFormCell.h \
 AppKit/NSGraphics.h \
 AppKit/NSGraphicsContext.h \
 AppKit/NSHelpPanel.h \
+AppKit/NSHelpManager.h \
 AppKit/NSImage.h \
 AppKit/NSImageCell.h \
 AppKit/NSImageRep.h \

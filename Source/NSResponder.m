@@ -32,6 +32,7 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSGraphics.h>
+#include <AppKit/NSHelpManager.h>
 #include <objc/objc.h>
 
 @implementation NSResponder
@@ -122,10 +123,15 @@
 
 - (void) helpRequested: (NSEvent *)theEvent
 {
+  if([[NSHelpManager sharedHelpManager]
+       showContextHelpForObject: self
+       locationHint: [theEvent locationInWindow]])
+    {
+      [NSHelpManager setContextHelpModeActive: NO];
+    }
+  else
   if (next_responder)
     return [next_responder helpRequested: theEvent];
-  else
-    return [self noResponderFor: @selector(helpRequested:)];
 }
 
 - (void) keyDown: (NSEvent *)theEvent

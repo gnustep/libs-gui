@@ -1,4 +1,35 @@
-iThu Sep  9 1999  Nicola Pero  <n.pero@mi.flashnet.it>
+1999-09-10  Pedro Ivo Andrade Tavares  <ptavares@iname.com>
+
+        * Source/NSHelpManager.m: new file. See below for an explanation.
+        * Headers/AppKit/NSHelpManager.h: new file.
+        * Source/GSHelpManagerPanel.h: new file.
+        * Source/GSHelpManagerPanel.m: new file, defines the help window
+        used by NSHelpManager.
+	* Source/NSWindow.m ([NSWindow -sendEvent:]): if we're in context
+	help mode, call -helpRequested: instead of -mouseDown.
+        * NSResponder.m ([NSResponder -helpRequested:]): if the current
+        responder has context help, show it using NSHelpManager; else,
+        pass to the next responder.
+
+        These changes and new files implement the NSHelpManager context
+	help interface, which is defined on OpenStep 4.1 onward and Mac
+	OS X Server.
+        To define context help for any responder, call [[NSHelpManager 
+        sharedHelpManager] setContextHelp: (an NSAttributedString with the 
+        help) forObject: (the responder)]. For the user to see it, call 
+        [[NSApplication sharedApplication] activateContextHelpMode] for
+	now, and the next time a user clicks on a responder, its help
+	will be shown.
+        The actiation of the context help mode will be automatic in the
+	future.
+
+1999-09-10  Michael Hanni   <mhanni@sprintmail.com>
+
+	* Source/NSTabView.m: fixed a display problem. Tabs on the bottom
+	of the view work, but some display niggles remain. (Note: we beat
+	Apple on this one, heh.)
+
+Thu Sep  9 1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSButtonCell.m: implemented missing method ([-cellSize]).
 
