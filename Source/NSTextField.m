@@ -173,7 +173,7 @@ id _nsTextfieldCellClass = nil;
 
   // Tell the object that we are the previous text Unless it already is
   next_text = anObject;
-  if ([anObject respondsToSelector: @selector(setPreviousText: )])
+  if ([anObject respondsToSelector: @selector(setPreviousText:)])
     {
       t = [anObject previousText];
       if (t != self)
@@ -187,7 +187,7 @@ id _nsTextfieldCellClass = nil;
 
   // Tell the object that we are the next text Unless it already knows
   previous_text = anObject;
-  if ([anObject respondsToSelector: @selector(setNextText: )])
+  if ([anObject respondsToSelector: @selector(setNextText:)])
     {
       t = [anObject nextText];
       if (t != self)

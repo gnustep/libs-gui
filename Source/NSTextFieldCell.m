@@ -46,12 +46,11 @@
 // Class methods
 //
 
-+ (void)initialize
++ (void) initialize
 {
   if (self == [NSTextFieldCell class])
     {
-      // Initial version
-      [self setVersion:1];
+      [self setVersion: 1];
     }
 }
 
@@ -62,31 +61,31 @@
 //
 // Initialization
 //
-- init
+- (id) init
 {
-  [self initTextCell:@""];
+  [self initTextCell: @""];
   return self;
 }
 
-- initTextCell:(NSString *)aString
+- (id) initTextCell: (NSString *)aString
 {
-  [super initTextCell:aString];
+  [super initTextCell: aString];
 
-  [self setEnabled:YES];
-  [self setBordered:YES];
-  [self setBezeled:YES];
-  [self setScrollable:YES];
-  [self setEditable:YES];
-  [self setAlignment:NSLeftTextAlignment];
+  [self setEnabled: YES];
+  [self setBordered: YES];
+  [self setBezeled: YES];
+  [self setScrollable: YES];
+  [self setEditable: YES];
+  [self setAlignment: NSLeftTextAlignment];
 
   [self setBackgroundColor: [NSColor textBackgroundColor]];
   [self setTextColor: [NSColor textColor]];
-  [self setFont: [NSFont systemFontOfSize:0]];
+  [self setFont: [NSFont systemFontOfSize: 0]];
   draw_background = NO;
   return self;
 }
 
-- (void)dealloc
+- (void) dealloc
 {
   [background_color release];
   [text_color release];
@@ -107,7 +106,7 @@
 //
 // Determining Component Sizes 
 //
-- (NSSize)cellSize
+- (NSSize) cellSize
 {
   NSFont *f;
   NSSize borderSize, s;
@@ -138,95 +137,95 @@
 //
 // Modifying Graphic Attributes 
 //
-- (NSColor *)backgroundColor
+- (NSColor *) backgroundColor
 {
   return background_color;
 }
 
-- (BOOL)drawsBackground
+- (BOOL) drawsBackground
 {
   return draw_background;
 }
 
-- (void)setBackgroundColor:(NSColor *)aColor
+- (void) setBackgroundColor: (NSColor *)aColor
 {
   [aColor retain];
   [background_color release];
   background_color = aColor;
 }
 
-- (void)setDrawsBackground:(BOOL)flag
+- (void) setDrawsBackground: (BOOL)flag
 {
   draw_background = flag;
 }
 
-- (void)setTextColor:(NSColor *)aColor
+- (void) setTextColor: (NSColor *)aColor
 {
   [aColor retain];
   [text_color release];
   text_color = aColor;
 }
 
-- (id)setUpFieldEditorAttributes:(id)textObject
+- (id) setUpFieldEditorAttributes: (id)textObject
 {
   return nil;
 }
 
-- (NSColor *)textColor
+- (NSColor *) textColor
 {
   return text_color;
 }
 
-- (void)setFont:(NSFont *)fontObject
+- (void) setFont: (NSFont *)fontObject
 {
-  [super setFont:fontObject];
+  [super setFont: fontObject];
 }
 
 //
 // Editing Text 
 //
-- (void)selectText:(id)sender
+- (void) selectText: (id)sender
 {
 }
 
-- (double)doubleValue
+- (double) doubleValue
 {
   return [super doubleValue];
 }
 
-- (void)setDoubleValue:(double)aDouble
+- (void) setDoubleValue: (double)aDouble
 {
-  [super setDoubleValue:aDouble];
+  [super setDoubleValue: aDouble];
 }
 
-- (float)floatValue
+- (float) floatValue
 {
   return [super floatValue];
 }
 
-- (void)setFloatValue:(float)aFloat
+- (void) setFloatValue: (float)aFloat
 {
-  [super setFloatValue:aFloat];
+  [super setFloatValue: aFloat];
 }
 
-- (int)intValue
+- (int) intValue
 {
   return [super intValue];
 }
 
-- (void)setIntValue:(int)anInt
+- (void) setIntValue: (int)anInt
 {
-  [super setIntValue:anInt];
+  [super setIntValue: anInt];
 }
 
-- (NSString *)stringValue
+- (NSString *) stringValue
 {
   return [super stringValue];
 }
 
-- (void)setStringValue:(NSString *)aString
+- (void) setStringValue: (NSString *)aString
 {
-  [super setStringValue:aString];
+  [super setStringValue: aString];
 }
 
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
