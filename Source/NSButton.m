@@ -72,27 +72,6 @@ id _nsbuttonCellClass = nil;
 //
 // Instance methods
 //
-//
-// Initialization
-//
-- (id) init
-{
-  return [self initWithFrame: NSZeroRect];
-}
-
-- (id) initWithFrame: (NSRect)frameRect
-{
-  NSCell	*aCell;
-
-  [super initWithFrame: frameRect];
-
-  // set our cell
-  aCell = [[[self class] cellClass] new];
-  [self setCell: aCell];
-  RELEASE(aCell);
-
-  return self;
-}
 
 - (BOOL) acceptsFirstMouse: (NSEvent *)theEvent
 {
@@ -105,7 +84,7 @@ id _nsbuttonCellClass = nil;
 - (void) setButtonType: (NSButtonType)aType
 {
   [_cell setButtonType: aType];
-  [self display];
+  [self setNeedsDisplay: YES];
 }
 
 //
@@ -150,6 +129,7 @@ id _nsbuttonCellClass = nil;
 - (void)setNextState
 {
   [_cell setNextState];
+  [self display];
 }
 
 //
@@ -178,18 +158,46 @@ id _nsbuttonCellClass = nil;
 - (void) setAlternateTitle: (NSString *)aString
 {
   [_cell setAlternateTitle: aString];
-  [self display];
+  [self setNeedsDisplay: YES];
 }
 
 - (void) setTitle: (NSString *)aString
 {
   [_cell setTitle: aString];
-  [self display];
+  [self setNeedsDisplay: YES];
 }
 
 - (NSString *) title
 {
   return [_cell title];
+}
+
+- (NSAttributedString *)attributedAlternateTitle
+{
+  return [_cell attributedAlternateTitle];
+}
+
+- (NSAttributedString *)attributedTitle
+{
+  return [_cell attributedTitle];
+}
+
+- (void)setAttributedAlternateTitle:(NSAttributedString *)aString
+{
+  [_cell setAttributedAlternateTitle: aString];
+  [self setNeedsDisplay: YES];
+}
+
+- (void)setAttributedTitle:(NSAttributedString *)aString
+{
+  [_cell setAttributedTitle: aString];
+  [self setNeedsDisplay: YES];
+}
+
+- (void)setTitleWithMnemonic:(NSString *)aString
+{
+  [_cell setTitleWithMnemonic: aString];
+  [self setNeedsDisplay: YES];
 }
 
 //
@@ -213,29 +221,19 @@ id _nsbuttonCellClass = nil;
 - (void) setAlternateImage: (NSImage *)anImage
 {
   [_cell setAlternateImage: anImage];
-  [self display];
+  [self setNeedsDisplay: YES];
 }
 
 - (void) setImage: (NSImage *)anImage
 {
   [_cell setImage: anImage];
-  [self display];
+  [self setNeedsDisplay: YES];
 }
 
 - (void) setImagePosition: (NSCellImagePosition)aPosition
 {
   [_cell setImagePosition: aPosition];
-  [self display];
-}
-
-- (void) setAlignment: (NSTextAlignment)mode
-{
-  [_cell setAlignment: mode];
-}
-
-- (NSTextAlignment) alignment
-{
-  return [_cell alignment];
+  [self setNeedsDisplay: YES];
 }
 
 //
@@ -254,13 +252,35 @@ id _nsbuttonCellClass = nil;
 - (void) setBordered: (BOOL)flag
 {
   [_cell setBordered: flag];
-  [self display];
+  [self setNeedsDisplay: YES];
 }
 
 - (void) setTransparent: (BOOL)flag
 {
   [_cell setTransparent: flag];
-  [self display];
+  [self setNeedsDisplay: YES];
+}
+
+- (NSBezelStyle)bezelStyle
+{
+  return [_cell bezelStyle];
+}
+
+- (void)setBezelStyle:(NSBezelStyle)bezelStyle
+{
+  [_cell setBezelStyle: bezelStyle];
+  [self setNeedsDisplay: YES];
+}
+
+- (BOOL)showsBorderOnlyWhileMouseInside
+{
+  return [_cell showsBorderOnlyWhileMouseInside];
+}
+
+- (void)setShowsBorderOnlyWhileMouseInside:(BOOL)show
+{
+  [_cell setShowsBorderOnlyWhileMouseInside: show];
+  [self setNeedsDisplay: YES];
 }
 
 //
@@ -356,6 +376,16 @@ id _nsbuttonCellClass = nil;
 	}
     }
   return NO;
+}
+
+- (void)setSound:(NSSound *)aSound
+{
+  [_cell setSound: aSound];
+}
+
+- (NSSound *)sound
+{
+  return [_cell sound];
 }
 
 //
