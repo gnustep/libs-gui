@@ -52,6 +52,7 @@ common_CloseBroken.tiff \
 common_ColorSwatch.tiff \
 common_2DDash.tiff \
 common_Home.tiff \
+common_HomeDirectory.tiff \
 common_Mount.tiff \
 common_Unmount.tiff \
 common_RadioOn.tiff \
