@@ -39,8 +39,8 @@
 #else /* NeXT_RUNTIME */
 
 #include <objc/objc-class.h>
-#include <extensions/objc-api.h>
-#include <extensions/encoding.h>
+//#include <extensions/objc-api.h>
+//#include <extensions/encoding.h>
 #endif
 
 static void
