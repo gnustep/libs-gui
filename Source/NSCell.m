@@ -189,7 +189,7 @@ static NSColor	*shadowCol;
 - (id) objectValue
 {
   // TODO
-  return nil;
+  return [self stringValue];
 }
 
 - (BOOL) hasValidObjectValue
