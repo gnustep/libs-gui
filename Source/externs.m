@@ -265,6 +265,9 @@ NSString* const NSMenuDidAddItemNotification = @"MenuDidAddItem";
 NSString* const NSMenuDidRemoveItemNotification = @"MenuDidRemoveItem";
 NSString* const NSMenuDidChangeItemNotification = @"MenuDidChangeItem";
 
+// NSPopUpButton notification
+NSString *NSPopUpButtonWillPopUpNotification = @"PopUpButtonWillPopUp";
+
 // NSWindow notifications
 NSString *NSWindowDidBecomeKeyNotification = @"WindowDidBecomeKey";
 NSString *NSWindowDidBecomeMainNotification = @"WindowDidBecomeMain";

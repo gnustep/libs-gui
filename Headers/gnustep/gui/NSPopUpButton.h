@@ -130,4 +130,6 @@
 
 @end
 
+extern NSString *NSPopUpButtonWillPopUpNotification;
+
 #endif // _GNUstep_H_NSPopUpButton

@@ -17,7 +17,12 @@
 		NSMenuDidRemoveItemNotification
 		NSMenuDidChangeItemNotification.
 	I think we need some setDelegate/delegate methods in here, no?
-	* Source/externs.m: added references to new NSMenu notifications.
+	* Source/NSPopUpButton.m: when creating NSPopUpButtonCell's we
+	make sure to make set the cell enabled so to better work with
+	some of the new menu code. Also added code to post the one
+	notification that this class has.
+	* Source/externs.m: added references to new NSMenu
+	and NSPopUpButton notifications.
 
 1999-07-25  Michael Hanni  <mhanni@sprintmail.com>
 

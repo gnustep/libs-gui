@@ -161,7 +161,8 @@
   [menuCell setTitle: title];
   [menuCell setTarget: self];
   [menuCell setAction: @selector(buttonSelected:)];
-                                
+  [menuCell setEnabled:YES];                                
+
   [list_items insertObject: menuCell atIndex: index];   
 
   [self synchronizeTitleAndSelectedItem];
@@ -335,6 +336,12 @@
 //
 - (void)mouseDown:(NSEvent *)theEvent
 {
+  NSNotificationCenter *nc;
+
+  nc = [NSNotificationCenter defaultCenter];
+  [nc postNotificationName: NSPopUpButtonWillPopUpNotification
+                    object: self
+                  userInfo: nil];
 }
 
 - (void)mouseUp:(NSEvent *)theEvent
