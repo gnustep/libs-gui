@@ -28,7 +28,6 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
-#include <gnustep/gui/config.h>
 #include <math.h>
 
 #include <Foundation/NSDate.h>
@@ -929,6 +928,34 @@ static NSColor *scrollBarColor = nil;
     {
       return NSMakeRect (x, y, width, height);
     }
+}
+
++ (float) scrollerWidthForControlSize: (NSControlSize)controlSize
+{
+  // FIXME
+  return scrollerWidth;
+}
+
+- (void) setControlSize: (NSControlSize)controlSize
+{
+  // FIXME
+}
+
+- (NSControlSize) controlSize
+{
+  // FIXME
+  return NSRegularControlSize;
+}
+
+- (void) setControlTint: (NSControlTint)controlTint
+{
+  // FIXME 
+}
+
+- (NSControlTint) controlTint
+{
+  // FIXME
+  return NSDefaultControlTint;
 }
 
 @end
