@@ -10,8 +10,10 @@
 <dl>
 <dt><a href="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
 <dd>
+<dt>James Dessart
+<dd>
 </dl>
-<p>Version: 0.1</p>
+<p>Version: 0.2</p>
 <p>Date: 28 February, 2000</p>
 <h2><a name="cont-0">NSWindow</a></h2>
 <h2><a name="NSWindow">NSWindow</a></h2>
@@ -20,6 +22,43 @@
 <p><b>Conforms to:</b> NSCoding
 </p>
 <hr>
+
+          <p>
+
+          Instances of the NSWindow class handle on-screen windows, their associated
+          NSViews, and events generate by the user.  An NSWindow's size is defined by its
+          frame rectangle, which encompasses its entire structure, and its content rectangle,
+          which includes only the content.
+          </p>
+
+
+          <p>
+
+          Every NSWindow has a content view, the NSView which forms the root of the
+          window's view hierarchy.  This view can be set using the <code>setContentView:</code>
+          method, and accessed through the <code>contentView</code> method.  
+          <code>setContentView:</code> replaces the default content view created by NSWindow.
+          </p>
+
+
+          <p>
+
+          Other views may be added to the window by using the content view's 
+          <code>addSubview:</code> method.  These subviews can also have subviews added, forming
+          a tree structure, the view hierarchy.  When an NSWindow must display itself, it causes
+          this hierarchy to draw itself.  Leaf nodes in the view hierarchy are drawn last,
+          causing them to potentially obscure views further up in the hierarchy.
+          </p>
+
+
+          <p>
+
+          A delegate can be specified for an NSWindow, which will receive notifications of
+          events pertaining to the window.  The delegate is set using <code>setDelegate:</code>,
+          and can be retrieved using <code>delegate</code>.  The delegate can restrain resizing
+          by implementing the <code>windowWillResize: toSize:</code> method, or control the closing
+          of the window by implementing <code>windowShouldClose:</code>.
+          </p>
 
           
 <ul>
@@ -293,6 +332,11 @@
 <h2><a name="method-21">contentView</a></h2>
 - (id) <b>contentView</b><br>
 
+          <p>
+
+          Returns the NSWindow's content view.
+          </p>
+
           
 <hr>
 <h2><a name="method-22">convertBaseToScreen:</a></h2>
@@ -468,10 +512,54 @@
 <h2><a name="method-56">initWithContentRect:styleMask:backing:</a></h2>
 - (id) <b>initWithContentRect:</b> (NSRect)contentRect <b>styleMask:</b> (unsigned int)styleMask <b>backing:</b> (NSBackingStoreType)backingType<br>
 
+          <p>
+
+          Initializes the receiver with a content rect of <var>contentRect</var>, a style mask of
+          <var>styleMask</var>, and a backing store type of <var>backingType</var>.
+          </p>
+
+          <p>
+
+          The style mask values are <code>NSTitledWindowMask</code>, for a window with a title,
+          <code>NSClosableWindowMask</code>, for a window with a close widget, 
+          <code>NSMiniaturizableWindowMask</code>, for a window with a miniaturize widget,
+          and <code>NSResizableWindowMask</code>, for a window with a resizing widget.  These
+          mask values can be OR'd in any combination.
+          </p>
+
+          <p>
+
+          Backing store values are <code>NSBackingStoreBuffered</code>, 
+          <code>NSBackingStoreRetained</code> and <code>NSBackingStoreNonretained</code>.
+          </p>
+
           
 <hr>
 <h2><a name="method-57">initWithContentRect:styleMask:backing:defer:screen:</a></h2>
 - (id) <b>initWithContentRect:</b> (NSRect)contentRect <b>styleMask:</b> (unsigned int)styleMask <b>backing:</b> (NSBackingStoreType)bufferingType <b>defer:</b> (BOOL)flag <b>screen:</b> (NSScreen*)aScreen<br>
+
+          <p>
+
+          Initializes the receiver with a content rect of <var>contentRect</var>, a style mask of
+          <var>styleMask</var>, a backing store type of <var>backingType</var> and a boolean
+          <var>flag</var>.  <var>flag</var> specifies whether the window should be created now
+          (<code>NO</code>), or when it is displayed (<code>YES</code>).
+          </p>
+
+          <p>
+
+          The style mask values are <code>NSTitledWindowMask</code>, for a window with a title,
+          <code>NSClosableWindowMask</code>, for a window with a close widget, 
+          <code>NSMiniaturizableWindowMask</code>, for a window with a miniaturize widget,
+          and <code>NSResizableWindowMask</code>, for a window with a resizing widget.  These
+          mask values can be OR'd in any combination.
+          </p>
+
+          <p>
+
+          Backing store values are <code>NSBackingStoreBuffered</code>, 
+          <code>NSBackingStoreRetained</code> and <code>NSBackingStoreNonretained</code>.
+          </p>
 
           
 <hr>
@@ -773,6 +861,11 @@
 <h2><a name="method-117">setContentView:</a></h2>
 - (void) <b>setContentView:</b> (NSView*)aView<br>
 
+          <p>
+
+          Sets the window's content view to <var>aView</var>, replacing any previous content view.
+          </p>
+
           
 <hr>
 <h2><a name="method-118">setDefaultButtonCell:</a></h2>
@@ -898,6 +991,11 @@
 <h2><a name="method-142">setTitle:</a></h2>
 - (void) <b>setTitle:</b> (NSString*)aString<br>
 
+          <p>
+
+          Sets the window's title to the string <var>aString</var>.
+          </p>
+
           
 <hr>
 <h2><a name="method-143">setTitleWithRepresentedFilename:</a></h2>
@@ -927,6 +1025,11 @@
 <hr>
 <h2><a name="method-148">title</a></h2>
 - (NSString*) <b>title</b><br>
+
+          <p>
+
+          Returns an NSString containing the text of the window's title.
+          </p>
 
           
 <hr>
