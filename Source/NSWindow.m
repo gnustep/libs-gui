@@ -1016,15 +1016,22 @@ NSView *v;
             break;
 
         case NSCursorUpdate:                                // Cursor update
-            if ([theEvent trackingNumber])          // if it's a mouse entered
-                {                                   // push the cursor
-                GSTrackingRect *r =(GSTrackingRect *)[theEvent userData];
-                NSCursor *c = (NSCursor *)[r owner];
-                [c push];
-                }                                   // it is a mouse exited
-            else                                    // so pop the cursor
-                [NSCursor pop];
-            break;
+	  {
+	    GSTrackingRect *r =(GSTrackingRect *)[theEvent userData];
+	    NSCursor *c = (NSCursor *)[r owner];
+
+            if ([theEvent trackingNumber])          // It's a mouse entered
+	      {
+		if (c && [c isSetOnMouseEntered])
+		  [c set];
+	      }
+            else                                    // it is a mouse exited
+	      {
+		if (c && [c isSetOnMouseExited])
+		  [c set];
+	      }
+	  }
+	  break;
 
         case NSPeriodic:
             break;
