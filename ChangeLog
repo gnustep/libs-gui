@@ -1,3 +1,12 @@
+2004-01-10 18:53 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibTemplates.m: The unarchiver was failing when 
+	decoding objects which contain references to themselves 
+	(e.g. NSTabView).  When an object contains a class/item which
+	refers to it's parent it should receive the new object and not
+	the template.   I modified the initWithCoder: method of GSClassSwapper
+	to correct the issue.
+
 2004-01-10  Adam Fedor  <fedor@gnu.org>
 
 	* orderFront fixes

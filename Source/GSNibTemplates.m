@@ -41,6 +41,7 @@
 #include <Foundation/NSUserDefaults.h>
 #include <Foundation/NSKeyValueCoding.h>
 #include <Foundation/NSNotification.h>
+#include <Foundation/NSArchiver.h>
 #include <AppKit/NSMenu.h>
 #include <AppKit/NSView.h>
 #include <AppKit/NSTextView.h>
@@ -519,6 +520,8 @@ static const int currentVersion = 1; // GSNibItem version number...
     {
       if((self = [super init]) != nil)
 	{
+	  NSUnarchiver *unarchiver = (NSUnarchiver *)coder;
+
 	  // decode class/superclass...
 	  [coder decodeValueOfObjCType: @encode(id) at: &_className];  
 	  [coder decodeValueOfObjCType: @encode(Class) at: &_superClass];
@@ -527,7 +530,7 @@ static const int currentVersion = 1; // GSNibItem version number...
 	  // morph into the subclass.
 	  if([self respondsToSelector: @selector(isInInterfaceBuilder)])
 	    {
-	      obj = [[_superClass alloc] initWithCoder: coder]; // unarchive the object...
+	      obj = [_superClass alloc];
 	    }
 	  else
 	    {
@@ -540,8 +543,12 @@ static const int currentVersion = 1; // GSNibItem version number...
 	  
 	      // Initialize the object...  dont call decode, since this wont 
 	      // allow us to instantiate the class we want. 
-	      obj = [[aClass alloc] initWithCoder: coder]; // unarchive the object...
+	      obj = [aClass alloc];
 	    }
+
+	  // inform the coder that this object is to replace the template in all cases.
+	  [unarchiver replaceObject: self withObject: obj];
+	  obj = [obj initWithCoder: coder]; // unarchive the object... 
 	}
     }
 
@@ -651,6 +658,15 @@ static const int currentVersion = 1; // GSNibItem version number...
     }
   return obj;
 }
+
+/*
+- (NSFont *)font
+{
+  NSLog(@"Whose calling me...");
+  return nil;
+}
+*/
+
 @end
 
 // Template for any classes which derive from NSText
