@@ -1,3 +1,9 @@
+2001-01-20  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/NSBezierPath.m 
+	Corrected some bugs. Opimized the concret subclass to use a
+	GSIArray.
+	
 Sun Jan 21 14:10:52 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSClipView.m ([-setBoundsOrigin:]): Rewritten/fixed
@@ -11,6 +17,18 @@ Sat Jan 20 23:38:03 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 	menu title height.  ([NSMenu -sizeToFit]): Idem.
 	* Source/NSMenuView.m ([+menuBarHeight]): Compute from the font
 	height.  ([-initWithFrame:]): Compute cellSize from the font size.
+	
+2001-01-20  Fred Kiefer  <FredKiefer@gmx.de>
+
+        * Headers/gnustep/gui/NSBezierPath.h
+	Added missing methods and changed the ivars.
+	* Source/NSBezierPath.m 
+	Almost complete rewrite. The abstract class implements now most of
+	the methods leaving only 9 methods to the concrete class. (And
+	the hit test should also go into the abstract class) Simplified
+	and corrected most methods.
+	* Source/NSAffineTransform.m
+	[transformBezierPath:] autorelease the returned object.
 	
 2001-01-20  Richard Frith-Macdonald <rfm@gnu.org>
 
