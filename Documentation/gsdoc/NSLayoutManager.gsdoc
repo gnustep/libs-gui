@@ -162,7 +162,7 @@
           <desc>
           </desc>
         </method>
-        <method type="unsigned">
+        <method type="unsigned int">
           <sel>glyphIndexForPoint:</sel>
           <arg type="NSPoint">aPoint</arg>
           <sel>inTextContainer:</sel>
@@ -278,7 +278,7 @@
         </method>
         <method type="BOOL">
           <sel>isValidGlyphIndex:</sel>
-          <arg type="unsigned">glyphIndex</arg>
+          <arg type="unsigned int">glyphIndex</arg>
           <desc>
           </desc>
         </method>
@@ -499,7 +499,7 @@
           <sel>inRect:</sel>
           <arg type="NSRect">rect</arg>
           <sel>characterIndex:</sel>
-          <arg type="unsigned">attachmentIndex;</arg>
+          <arg type="unsigned int">attachmentIndex;</arg>
           <desc>
           </desc>
         </method>

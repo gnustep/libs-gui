@@ -60,7 +60,7 @@
           <sel>key:</sel>
           <arg type="NSString *">key</arg>
           <sel>atIndex:</sel>
-          <arg type="unsigned">location</arg>
+          <arg type="unsigned int">location</arg>
           <desc>
           </desc>
         </method>

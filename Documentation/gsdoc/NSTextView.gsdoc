@@ -691,7 +691,7 @@
           <sel>clickedOnLink:</sel>
           <arg type="id">link</arg>
           <sel>atIndex:</sel>
-          <arg type="unsigned">charIndex</arg>
+          <arg type="unsigned int">charIndex</arg>
           <desc>
           </desc>
         </method>

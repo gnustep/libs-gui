@@ -58,7 +58,7 @@
           <desc>
           </desc>
         </method>
-        <method type="unsignedchar*">
+        <method type="unsigned char*">
           <sel>bitmapData</sel>
           <desc>
           </desc>
@@ -86,7 +86,7 @@
         </method>
         <method type="void">
           <sel>getBitmapDataPlanes:</sel>
-          <arg type="unsignedchar**">data</arg>
+          <arg type="unsigned char**">data</arg>
           <desc>
           </desc>
         </method>
@@ -98,7 +98,7 @@
         </method>
         <method type="id">
           <sel>initWithBitmapDataPlanes:</sel>
-          <arg type="unsignedchar**">planes</arg>
+          <arg type="unsigned char**">planes</arg>
           <sel>pixelsWide:</sel>
           <arg type="int">width</arg>
           <sel>pixelsHigh:</sel>

@@ -428,9 +428,9 @@
           <sel>setFloatingPointFormat:</sel>
           <arg type="BOOL">autoRange</arg>
           <sel>left:</sel>
-          <arg type="unsigned">leftDigits</arg>
+          <arg type="unsigned int">leftDigits</arg>
           <sel>right:</sel>
-          <arg type="unsigned">rightDigits</arg>
+          <arg type="unsigned int">rightDigits</arg>
           <desc>
           </desc>
         </method>

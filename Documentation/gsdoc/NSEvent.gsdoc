@@ -58,7 +58,7 @@
           <sel>isARepeat:</sel>
           <arg type="BOOL">repeatKey</arg>
           <sel>keyCode:</sel>
-          <arg type="unsignedshortint">code</arg>
+          <arg type="unsigned short int">code</arg>
           <desc>
           </desc>
         </method>
@@ -151,7 +151,7 @@
           <desc>
           </desc>
         </method>
-        <method type="unsignedshortint">
+        <method type="unsigned short int">
           <sel>keyCode</sel>
           <desc>
           </desc>

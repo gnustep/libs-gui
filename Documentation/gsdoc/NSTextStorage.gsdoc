@@ -36,7 +36,7 @@
         </method>
         <method type="void">
           <sel>edited:</sel>
-          <arg type="unsigned">mask</arg>
+          <arg type="unsigned int">mask</arg>
           <sel>range:</sel>
           <arg type="NSRange">oldRange</arg>
           <sel>changeInLength:</sel>

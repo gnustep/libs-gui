@@ -28,7 +28,7 @@
           <desc>
           </desc>
         </method>
-        <method type="unsigned">
+        <method type="unsigned int">
           <sel>alternateMnemonicLocation</sel>
           <desc>
           </desc>
@@ -132,7 +132,7 @@
         </method>
         <method type="void">
           <sel>setAlternateMnemonicLocation:</sel>
-          <arg type="unsigned">location</arg>
+          <arg type="unsigned int">location</arg>
           <desc>
           </desc>
         </method>
