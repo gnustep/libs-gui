@@ -301,16 +301,25 @@ this to return nil to indicate that we have no context menu.
 
 - (BOOL) performKeyEquivalent: (NSEvent*)theEvent
 {
-  NSMenu *m = [self menu];
+  NSMenu     *m = [self menu];
+  NSMenuItem *oldSelectedItem = [_cell selectedItem];
 
   if (m != nil)
     {
       if ([m performKeyEquivalent: theEvent])
 	{
-	  /* If the key equivalent was performed, redisplay ourselves
-	   * to account for potential changes in the selected item.
-	   */
-	  [self setNeedsDisplay: YES];
+	  // pullsDown does not change selected item
+	  if ([_cell pullsDown])
+	    {
+	      [self selectItem: oldSelectedItem];
+	    }
+	  else
+	    {
+	      /* If the key equivalent was performed, redisplay ourselves
+	       * to account for potential changes in the selected item.
+	       */
+	      [self setNeedsDisplay: YES];
+	    }
 	  return YES;
 	}
     }
@@ -323,7 +332,7 @@ this to return nil to indicate that we have no context menu.
   NSWindow   *menuWindow = [mr window];
   NSEvent    *e;
   NSPoint    p;
-  int        lastSelectedItem = [mr highlightedItemIndex];
+  int        lastSelectedItem = [_cell indexOfSelectedItem];
   int        highlightedItemIndex;
 
   if ([self isEnabled] == NO)
@@ -350,13 +359,17 @@ this to return nil to indicate that we have no context menu.
   [NSApp sendEvent: e];
 
   // Selection remains unchanged if selected item is disabled
-  highlightedItemIndex = [mr highlightedItemIndex];
-  if (highlightedItemIndex >= 0)
+  // or mouse left menu.
+  highlightedItemIndex = [_cell indexOfSelectedItem];
+  if ((highlightedItemIndex >= 0 
+      && [[self itemAtIndex: highlightedItemIndex] isEnabled] == NO)
+      || highlightedItemIndex == lastSelectedItem)
     {
-      if ([[self itemAtIndex: highlightedItemIndex] isEnabled] == NO)
-        {
-          [mr setHighlightedItemIndex: lastSelectedItem];
-        }
+      [mr setHighlightedItemIndex: lastSelectedItem];
+    }
+  else
+    {
+      [mr setHighlightedItemIndex: highlightedItemIndex];
     }
 
   // Dismiss the popUp
