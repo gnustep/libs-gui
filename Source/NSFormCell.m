@@ -208,6 +208,7 @@ static NSColor	*shadowCol;
   else
     {
       ASSIGN (_contents, @"Minimum");
+      _cell.contents_is_attributed_string = NO;
       textSize = [super cellSize];
       RELEASE (_contents);
       _contents = nil;
@@ -288,6 +289,23 @@ static NSColor	*shadowCol;
   //
   [self drawInteriorWithFrame: cellFrame inView: controlView];
 }
+
+/*
+ * Copying
+ */
+- (id) copyWithZone: (NSZone*)zone
+{
+  NSFormCell *c = (NSFormCell *)[super copyWithZone:zone];
+  
+  /* We need to copy the title cell (as opposed to simply copying the
+     pointer to it), otherwise if eg we change the string value of the
+     title cell of the copied cell, the string value of the title cell
+     of the original cell would be changed too ! */
+  c->_titleCell = [_titleCell copyWithZone: zone];
+  
+  return c;
+}
+
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
