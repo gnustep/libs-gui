@@ -80,6 +80,7 @@ enum {
 //
 - (BOOL)isEnabled;
 - (void)setEnabled:(BOOL)flag;
+- (void)reloadDefaultFontFamilies;
 
 //
 // Updating font
