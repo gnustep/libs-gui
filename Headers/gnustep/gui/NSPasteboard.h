@@ -59,6 +59,7 @@ APPKIT_EXPORT NSString *NSGeneralPboardType;
 APPKIT_EXPORT NSString *NSPDFPboardType;
 APPKIT_EXPORT NSString *NSPICTPboardType;
 APPKIT_EXPORT NSString *NSURLPboardType;
+APPKIT_EXPORT NSString *NSHTMLPboardType;
 #endif
 
 //
