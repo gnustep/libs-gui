@@ -1,3 +1,22 @@
+2001-06-11  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
+
+	* Source/NSSavePanel.m ([NSSavePanel -_initWithoutGModel]): do not set
+	the max number of columns for the browser.
+
+	* Source/NSBrowser.m ([NSBrowser -tile]): control column width and
+	recalculate number of visible columns.
+	([NSBrowser -setMaxVisibleColumns:]): moved code in -tile.
+	([NSBrowser -displayAllColumns]): removed redundant methods.
+	([NSBrowser -initWithFrame:]): set _minColumnWidth to 100.0
+	([NSBrowser -numberOfVisibleColumns]): fixed. Return the number or
+	_visible_ columns. (not number of all loaded columns)
+	([NSBrowser -scrollColumnToVisible:]): use -numberOfVisibleColumns
+	instead of _maxVisibleColumns that could be 0.
+	([NSBrowser -updateScroller]): likewise.
+	([NSBrowser -scrollViaScroller:]): likewise.
+	([NSBrowser -_unloadFromColumn:]): likewise.
+	Removed all the fprintf() debug.
+
 Sun Jun 10 21:54:10 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSBrowser.m ([-_unloadFromColumn:]): Remove the column

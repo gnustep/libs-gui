@@ -125,7 +125,6 @@ static BOOL _gs_display_reading_progress = NO;
   _browser = [[NSBrowser alloc] initWithFrame: r]; 
   lastKeyView = _browser;
   [_browser setDelegate: self];
-  [_browser setMaxVisibleColumns: 2]; 
   [_browser setHasHorizontalScroller: YES];
   [_browser setAllowsMultipleSelection: NO];
   [_browser setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
