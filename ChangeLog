@@ -1,4 +1,9 @@
 <<<<<<< ChangeLog
+Sat Aug 8 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* added NSStringDrawing.m and NSStringDrawing.h which implement the
+		frontend portion of the NSString additions Category from 4.1.
+
 Tues Aug 4 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* NSSplitView in initWithFrame changed default back color to light gray. 

@@ -42,10 +42,10 @@
 ADDITIONAL_CPPFLAGS = -DGNUSTEP_INSTALL_LIBDIR=\"$(GNUSTEP_LIBRARIES_ROOT)\"
 
 # Additional flags to pass to the Objective-C compiler
-ADDITIONAL_OBJCFLAGS = -Wall
+ADDITIONAL_OBJCFLAGS = -g -Wall
 
 # Additional flags to pass to the C compiler
-ADDITIONAL_CFLAGS = 
+ADDITIONAL_CFLAGS = -g
 
 # Additional include directories the compiler should search
 ADDITIONAL_INCLUDE_DIRS = -I../Headers

@@ -95,6 +95,7 @@ NSSliderCell.m \
 NSSpellChecker.m \
 NSSpellServer.m \
 NSSplitView.m \
+NSStringDrawing.m \
 NSText.m \
 NSTextField.m \
 NSTextFieldCell.m \
@@ -179,6 +180,7 @@ AppKit/NSSpellChecker.h \
 AppKit/NSSpellProtocol.h \
 AppKit/NSSpellServer.h \
 AppKit/NSSplitView.h \
+AppKit/NSStringDrawing.h \
 AppKit/NSText.h \
 AppKit/NSTextField.h \
 AppKit/NSTextFieldCell.h \
