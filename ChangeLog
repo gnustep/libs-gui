@@ -1,3 +1,26 @@
+2003-03-27  Serg Stoyan  <stoyan@on.com.ua>
+
+	* Source/NSMenuView.m:
+	([NSMenuWindowTitleView createButton:]): Made imageSize an ivar and 
+	removed	declaration. Made rect setting with NSMakeRect().
+	([NSMenuWindowTitleView addCloseButton:]): Added button location update.
+	(initWithFrame:): Title adding moved int update method.
+	(setWindowFrameForAttachingToRect:): Title removing moved into update 
+	method. Call update instead sizeToFit.
+	
+	* Source/NSMenu.m: 
+	(initWithTitle:): Create NSMenuView with NSZeroRect frame.
+	(insertItem:atIndex): removed [menu update] call, because itemChanged:
+	calls it.
+	(removeItemAtIndex:): ditto.
+	(sizeToFit:): Added NSMenuView update. Removed [_view sizeToFit], 
+	beacuse [_view update] calls it. Don't set window's origin if size less
+	than 1 (window is just created).
+	(display): Removed [self update] call (sizeToFit calls it). Reformatting.
+	Do not call setGeometry if menu is owned by popup.
+	(close): Removed [self update] call.
+	(closeTransient): ditto.
+	
 2003-03-18 Benhur Stein <benhur@inf.ufsm.br>
 
         * Fix mouse tracking in NSMatrix
