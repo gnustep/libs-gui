@@ -3,7 +3,7 @@
 
    Description...
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996-1999 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -31,6 +31,7 @@
 #include <gnustep/gui/config.h>
 #include <AppKit/NSWorkspace.h>
 #include <AppKit/NSApplication.h>
+#include <AppKit/NSImage.h>
 #include <AppKit/NSPanel.h>
 #include <AppKit/GSServicesManager.h>
 #include <Foundation/NSBundle.h>
@@ -57,6 +58,10 @@ static BOOL 			userDefaultsChanged = NO;
 
 static NSString			*appListName = @".GNUstepAppList";
 static NSString			*appListPath = nil;
+static NSDictionary		*_suffixes = nil;
+static NSString			*defaultIconPath = nil;
+static NSString			*_rootPath = @"/";
+
 
 static NSString* gnustep_target_dir = 
 #ifdef GNUSTEP_TARGET_DIR
@@ -144,8 +149,13 @@ static NSString* library_combo =
             newApps = [NSDeserializer deserializePropertyListFromData: data
                                                     mutableContainers: NO];
           applications = [newApps retain];
-	  [gnustep_global_lock unlock];
 	}
+
+      _suffixes = [NSDictionary dictionaryWithContentsOfFile:@"Suffixes.plist"];
+      _suffixes = [_suffixes retain];
+      defaultIconPath = [_suffixes objectForKey: @"ICON_PATH"];       
+
+      [gnustep_global_lock unlock];
     }
 }
 
@@ -174,6 +184,71 @@ static NSString* library_combo =
     }
   return sharedWorkspace;
 }
+
+- (NSImage*) _getImageWithName: (NSString *)name
+		     alternate: (NSString *)alternate
+{
+  NSString	*iconName = nil;
+  NSImage	*image = nil;
+
+  iconName = (NSString *)[_suffixes objectForKey: name];
+  if (iconName != nil)
+    {
+      NSString	*iconPath;
+
+      iconPath = [defaultIconPath stringByAppendingPathComponent: iconName];
+      image = [[NSImage alloc] initWithContentsOfFile: iconPath];
+    }
+  if ((image == nil) && (alternate != nil))
+    {
+	image = [[NSImage imageNamed: alternate] retain]; // !!! was retained
+    }
+
+  return image;
+}
+
+/** Returns the default icon to display for a directory */
+- (NSImage *) folderImage
+{
+  static NSImage *image = nil;
+
+  if (image == nil)
+    {
+      image = [self _getImageWithName: @"FOLDER_ICON"
+			    alternate: @"Folder.tiff"];
+    }
+
+  return image;
+}
+
+/** Returns the default icon to display for a directory */
+- (NSImage *) unknownFiletypeImage
+{
+  static NSImage *image = nil;
+
+  if (image == nil)
+    {
+      image = [self _getImageWithName: @"UNKNOWN_ICON"
+			    alternate: @"Unknown"];
+    }
+
+  return image;
+}
+
+/** Returns the default icon to display for a directory */
+- (NSImage *)rootImage
+{
+  static NSImage *image = nil;
+
+  if (image == nil)
+    {
+      image = [self _getImageWithName: @"ROOT_ICON"
+			    alternate: @"Unknown"];
+    }
+
+  return image;
+}
+
 
 //
 // Instance methods
@@ -348,14 +423,95 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
   return NO;
 }
 
-- (NSImage *) iconForFile: (NSString *)fullPath
+- (NSImage *) iconForFile: (NSString *)aPath
 {
-  return nil;
+  NSImage	*image = nil;
+  BOOL		isDir = NO;
+  NSString	*iconPath = nil;
+  NSString	*pathExtension = nil;
+  NSFileManager	*mgr = [NSFileManager defaultManager];
+
+  if ([mgr fileExistsAtPath: aPath isDirectory: &isDir] && isDir)
+    {
+      // we have a directory
+      iconPath = [aPath stringByAppendingPathComponent: @".dir.tiff"];
+
+      NSLog(@"iconPath is '%@'", iconPath);
+
+      NS_DURING
+	{
+	  image = [[NSImage alloc] initWithContentsOfFile: iconPath];
+	  [image autorelease];
+	}
+      NS_HANDLER
+	{
+	  NSLog(@"BAD TIFF FILE '%@'", iconPath);
+	}
+      NS_ENDHANDLER
+
+      NSLog(@"aPath is '%@'", aPath);
+
+
+      if (((!image)
+	&& (pathExtension = [aPath pathExtension]))
+	&& ([pathExtension isEqual: @""] == NO))
+	{
+	  if ((iconPath = [[_suffixes objectForKey: pathExtension]
+	    objectForKey: @"ICON"]) != nil)
+	    {
+	      NSLog(@"using '%@'",
+		[defaultIconPath stringByAppendingPathComponent: iconPath]);
+
+	      image = [[NSImage alloc] initWithContentsOfFile: 
+	        [defaultIconPath stringByAppendingPathComponent: iconPath]];
+	      [image autorelease];
+	    }
+	}
+      if (image == nil)
+	{
+	  if ([aPath isEqual: _rootPath])
+	    image = [self rootImage];
+	  else
+	    image= [self folderImage];
+	}
+    }
+  else							// not a directory
+    {
+      if (((!image) && (pathExtension = [aPath pathExtension]))
+	&& ([pathExtension isEqual: @""] == NO))
+	{
+	  NSLog(@"pathExtension is '%@'",pathExtension);
+	  if ((iconPath = [[_suffixes objectForKey: pathExtension]
+	    objectForKey: @"ICON"]) != nil)
+	    {
+	      NSLog(@"using '%@'",
+		[defaultIconPath stringByAppendingPathComponent: iconPath]);
+
+	      image = [[NSImage alloc] initWithContentsOfFile: 
+	        [defaultIconPath stringByAppendingPathComponent: iconPath]];
+	      [image autorelease];
+	    }
+	}
+    }
+
+  if (image == nil)
+    {
+      image = [self unknownFiletypeImage];
+    }
+
+  return image;
 }
 
 - (NSImage *) iconForFiles: (NSArray *)pathArray
 {
-  return nil;
+  static NSImage	*multipleFiles = nil;
+
+  if (multipleFiles == nil)
+    {
+      multipleFiles = [NSImage imageNamed: @"FileIcon_multi"];
+    }
+
+  return multipleFiles;
 }
 
 - (NSImage *) iconForFileType: (NSString *)fileType
