@@ -805,28 +805,57 @@ void __dummy_GMAppKit_functionForLinking() {}
 			     decodeObjectWithName:@"mixedStateImage"]];
   [self setKeyEquivalent:[unarchiver decodeStringWithName:@"keyEquivalent"]];
   [self setState:[unarchiver decodeIntWithName:@"state"]];
-  [self setTarget:[unarchiver decodeObjectWithName:@"target"]];
   [self setAction:[unarchiver decodeSelectorWithName:@"action"]];
   [self setTag:[unarchiver decodeIntWithName:@"tag"]];
   [self setEnabled:[unarchiver decodeBOOLWithName:@"isEnabled"]];
   [self setChangesState:[unarchiver decodeBOOLWithName:@"changesState"]];
-  [self setMenu:nil];
-  [self setSubmenu:[unarchiver decodeObjectWithName:@"submenu"]];
   [self setRepresentedObject:[unarchiver
 			       decodeObjectWithName:@"representedObject"]];
 
+  /* 
+   * Here we have quite a delicate point. 
+   * In OPENSTEP 4.x, NSMenuItems with submenus have their submenu 
+   * as target; they do not answer to -submenu, so the encoded submenu 
+   * is nil; the submenu is actually encoded as the target.
+   *
+   * In GNUstep the target is instead the menu, and the submenu 
+   * is stored in an additional ivar.
+   *
+   * I don't know about MacOS-X.
+   *
+   * This code needs to be able to decode gmodels created on OPENSTEP 4.x too,
+   * that's why we have the following.
+   */
+
+  /* Safety assignment. */
+  [self setMenu: nil];
+  /* Set submenu.  If submenu is nil, this will set target to nil too. */
+  [self setSubmenu: [unarchiver decodeObjectWithName: @"submenu"]];
+  /* Set target.  This does not touch submenu. */
+  [self setTarget: [unarchiver decodeObjectWithName: @"target"]];
+
+  /* Now we fix the submenu from the target if needed: */
 #ifdef GNU_GUI_LIBRARY
   /*
-   * Set submenu from target if not set
+   * Set submenu from target if not set (this happens if the gmodel 
+   * was created on OPENSTEP).
    */
   if ([NSStringFromSelector ([self action]) 
       isEqualToString: @"submenuAction:"])
     {
       if ([self submenu] == nil)
-	[self setSubmenu: [self target]];
+	{
+	  [self setSubmenu: [self target]];
+	}
     }
 #endif
-  
+
+  /* NB: The target might now be wrong (in case the gmodel was encoded
+     in a platform where the target is the submenu while we now want
+     the target to be the menu) !  This is automatically fixed later,
+     because after the NSMenuItem is decoded, it is added to its
+     container NSMenu, which will fix the target. */
+
 #if 0
   NSLog (@"menu item %@: target = %@, isEnabled = %d",
 	[self title], [self target], [self isEnabled]);
@@ -859,24 +888,20 @@ void __dummy_GMAppKit_functionForLinking() {}
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
 {
   int i, count;
-  NSMutableArray* itemArray = [self itemArray];
-  NSMutableArray* decodedItems
-      = [unarchiver decodeObjectWithName:@"itemArray"];
+  NSMutableArray* decodedItems;
 
-  for (i = 0, count = [decodedItems count]; i < count; i++)
-    [self addItem:[decodedItems objectAtIndex:i]];
+  decodedItems = [unarchiver decodeObjectWithName: @"itemArray"];
+  count = [decodedItems count];
 
   for (i = 0; i < count; i++)
     {
-      id item = [itemArray objectAtIndex:i];
-
-      if ([item hasSubmenu])
-	[self setSubmenu:[item submenu] forItem:item];
+      id item = [decodedItems objectAtIndex: i];
+      
+      [self addItem: item];
     }
 
-  [self setAutoenablesItems:
-	  [unarchiver decodeBOOLWithName:@"autoenablesItems"]];
-
+  [self setAutoenablesItems: [unarchiver decodeBOOLWithName: 
+					   @"autoenablesItems"]];
   [self sizeToFit];
 
   return self;
