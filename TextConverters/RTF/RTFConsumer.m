@@ -580,7 +580,6 @@ void GSRTFmangleText (void *ctxt, const char *text)
     {
       [RESULT replaceCharactersInRange: insertionRange 
 	      withString: [NSString stringWithCString:text]];
-
       if (CHANGED)
         {
 	  attributes = [NSMutableDictionary 
@@ -861,6 +860,7 @@ void GSRTFspaceAbove (void *ctxt, int space)
   if (fspace >= 0.0)
     {
       [para setParagraphSpacing: fspace];
+      CHANGED = YES;
     }
 }
 
@@ -873,14 +873,17 @@ void GSRTFlineSpace (void *ctxt, int space)
     {
       [para setMinimumLineHeight: 0.0];
       [para setMaximumLineHeight: 0.0];
+      CHANGED = YES;
     }
   else if (fspace < 0.0)
     {
       [para setMaximumLineHeight: -fspace];
+      CHANGED = YES;
     }
   else
     {
       [para setMinimumLineHeight: fspace];
+      CHANGED = YES;
     }
 }
 
@@ -923,6 +926,7 @@ void GSRTFcolorbg (void *ctxt, int color)
     {
       ASSIGN (BGCOLOUR, [COLOURS objectAtIndex: color]);
     }
+  CHANGED = YES;
 }
 
 void GSRTFcolorfg (void *ctxt, int color)
@@ -935,6 +939,7 @@ void GSRTFcolorfg (void *ctxt, int color)
     {
       ASSIGN (FGCOLOUR, [COLOURS objectAtIndex: color]);
     }
+  CHANGED = YES;
 }
 
 void GSRTFsubscript (void *ctxt, int script)
