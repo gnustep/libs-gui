@@ -1,3 +1,22 @@
+Wed Apr 28 11:37:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Images for FileViewer.
+	* Images/GNUmakefile: new images
+	* Images/common_Unknown.tiff: new
+	* Images/common_Folder.tiff: new
+	* Images/common_Root_PC.tiff: new
+	* Images/common_Root_SGI.tiff: new
+	* Images/common_Root_Sparc.tiff: new
+	* Images/common_Root_Sparc2.tiff: new
+	* Images/common_Root_Apple.tiff: new
+	* Source/NSImageRep.m: A few bugfixes.
+	* Source/NSCachedImageRep.m: A few bugfixes.
+	* Source/NSImage.m: Partial support for caching.
+	* Source/NSWorkspace.m: Support for finding file icons and finding
+	the correct application to open an app with a given extension.
+	* Headers/AppKit/NSWorkspace.h: GNUstep specific API for handling the
+	preferred icon and the preferred app to edit/view a file.
+
 1999-04-27  Michael Hanni  <mhanni@sprintmail.com>
 
 	Changes based on report by Tim Bissell <Tim.Bissell@dresdnerkb.com>
