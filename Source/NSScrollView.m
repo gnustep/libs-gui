@@ -974,18 +974,24 @@ static Class rulerViewClass = nil;
   [aCoder encodeValueOfObjCType: @encode(float) at: &_hPageScroll];
   [aCoder encodeValueOfObjCType: @encode(float) at: &_vLineScroll];
   [aCoder encodeValueOfObjCType: @encode(float) at: &_vPageScroll];
+
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasHorizScroller];
   if (_hasHorizScroller)
     [aCoder encodeObject: _horizScroller];
+
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasVertScroller];
   if (_hasVertScroller)
     [aCoder encodeObject: _vertScroller];
+
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasHorizRuler];
   if (_hasHorizRuler)
     [aCoder encodeObject: _horizRuler];
+
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_hasVertRuler];
   if (_hasVertRuler)
     [aCoder encodeObject: _vertRuler];
+
+  /* We do not need to encode headerview, cornerview stuff */
   NSDebugLLog(@"NSScrollView", @"NSScrollView: finish encoding\n");
 }
 
@@ -1002,18 +1008,27 @@ static Class rulerViewClass = nil;
   [aDecoder decodeValueOfObjCType: @encode(float) at: &_hPageScroll];
   [aDecoder decodeValueOfObjCType: @encode(float) at: &_vLineScroll];
   [aDecoder decodeValueOfObjCType: @encode(float) at: &_vPageScroll];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_horizScroller];
-  if (_horizScroller)
+
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasHorizScroller];
+  if (_hasHorizScroller)
     [aDecoder decodeValueOfObjCType: @encode(id) at: &_horizScroller];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_vertScroller];
-  if (_vertScroller)
+
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasVertScroller];
+  if (_hasVertScroller)
     [aDecoder decodeValueOfObjCType: @encode(id) at: &_vertScroller];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_horizRuler];
-  if (_horizRuler)
+
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasHorizRuler];
+  if (_hasHorizRuler)
     [aDecoder decodeValueOfObjCType: @encode(id) at: &_horizRuler];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_vertRuler];
-  if (_vertRuler)
+
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasVertRuler];
+  if (_hasVertRuler)
     [aDecoder decodeValueOfObjCType: @encode(id) at: &_vertRuler];
+  
+  /* This recreates all the info about headerView, cornerView, etc */
+  [self setDocumentView: [_contentView documentView]];
+  [self tile];
+
   NSDebugLLog(@"NSScrollView", @"NSScrollView: finish decoding\n");
 
   return self;
