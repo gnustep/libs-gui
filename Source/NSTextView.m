@@ -126,9 +126,8 @@ static NSNotificationCenter *nc;
 - (void) _blink;
 
 /*
- * these NSLayoutManager- like methods are here only informally
+ * these NSLayoutManager- like method is here only informally
  */
-- (unsigned) characterIndexForPoint: (NSPoint)point;
 - (NSRect) rectForCharacterRange: (NSRange)aRange;
 
 /*
@@ -872,7 +871,6 @@ static NSNotificationCenter *nc;
 
 - (void) changeSpelling: (id)sender
 {
-  /* FIXME: Replace, not insert */
   [self insertText: [[(NSControl*)sender selectedCell] stringValue]];
 }
 
@@ -1156,18 +1154,6 @@ static NSNotificationCenter *nc;
     {
       [self setFrameSize: newSize];
     }
-}
-
-- (void) cleanUpAfterDragOperation
-{
-  // release drag information
-}
-
-- (unsigned int) dragOperationForDraggingInfo: (id <NSDraggingInfo>)dragInfo 
-					 type: (NSString *)type
-{
-  //FIXME
-  return NSDragOperationNone;
 }
 
 /* 
@@ -1930,6 +1916,13 @@ static NSNotificationCenter *nc;
   [self didChangeText];
 }
 
+- (void) toggleTraditionalCharacterShape: (id)sender
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"toggleTraditionalCharacterShape:", "NSTextView");
+}
+
 - (void) clickedOnLink: (id)link
 	       atIndex: (unsigned int)charIndex
 {
@@ -1990,7 +1983,31 @@ replacing the selection.
 
 - (void) updateRuler
 {
-  // ruler!
+  /* Update ruler view only if told so */
+  if (_tf.uses_ruler && _tf.is_ruler_visible)
+    {
+      NSParagraphStyle *paraStyle;
+      NSScrollView *sv = [self enclosingScrollView];
+      NSRulerView *rv = [sv horizontalRulerView];
+      NSArray *makers;
+
+      if (_selected_range.length > 0) /* Multiple chars selection */
+	{
+	  paraStyle = [_textStorage attribute: NSParagraphStyleAttributeName
+			     atIndex: _selected_range.location
+			     effectiveRange: NULL];
+	}
+      else
+        {
+	  paraStyle = [_typingAttributes objectForKey: 
+					     NSParagraphStyleAttributeName];
+	}
+
+      makers = [_layoutManager rulerMarkersForTextView: self
+			       paragraphStyle: paraStyle
+			       ruler: rv];
+      [rv setMarkers: makers];
+    }
 }
 
 - (NSArray*) acceptableDragTypes
@@ -2675,6 +2692,7 @@ afterString in order over charRange. */
   RELEASE (mstyle); 
 
   [aMarker setRepresentedObject: new_tab];
+  RELEASE(new_tab);
 }
 
 - (void) rulerView: (NSRulerView*)aRulerView
@@ -2812,6 +2830,8 @@ afterString in order over charRange. */
 
   [marker setRepresentedObject: tab];
   [aRulerView addMarker: marker];
+  RELEASE(marker);
+  AUTORELEASE(tab);
 }
 
 - (BOOL) rulerView: (NSRulerView*)aRulerView
@@ -2939,6 +2959,27 @@ shouldRemoveMarker: (NSRulerMarker*)aMarker
     _spellCheckerDocumentTag = [NSSpellChecker uniqueSpellDocumentTag];
 
   return _spellCheckerDocumentTag;
+}
+
+- (BOOL) isContinuousSpellCheckingEnabled
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"isContinuousSpellCheckingEnabled", "NSTextView");
+  return NO;
+}
+
+- (void) setContinuousSpellCheckingEnabled: (BOOL)flag
+{
+  // TODO
+  NSLog(@"Method %s is not implemented for class %s",
+	"setContinuousSpellCheckingEnabled:", "NSTextView");
+}
+
+- (void) toggleContinuousSpellChecking: (id)sender
+{
+  [self setContinuousSpellCheckingEnabled: 
+	    ![self isContinuousSpellCheckingEnabled]];
 }
 
 - (NSRange) selectionRangeForProposedRange: (NSRange)proposedCharRange
@@ -3356,6 +3397,163 @@ other than copy/paste or dragging. */
   return ret;
 }
 
+// dragging of text, colors and files
+- (unsigned int) draggingEntered: (id <NSDraggingInfo>)sender
+{
+  NSPasteboard *pboard = [sender draggingPasteboard];
+  NSString *type = [self preferredPasteboardTypeFromArray: [pboard types]
+			 restrictedToTypesFromArray: [self readablePasteboardTypes]];
+
+  return [self dragOperationForDraggingInfo: sender
+	       type: type];
+}
+
+- (unsigned int) draggingUpdated: (id <NSDraggingInfo>)sender
+{
+  NSPasteboard *pboard = [sender draggingPasteboard];
+  NSString *type = [self preferredPasteboardTypeFromArray: [pboard types]
+			 restrictedToTypesFromArray: [self readablePasteboardTypes]];
+
+  return [self dragOperationForDraggingInfo: sender
+	       type: type];
+}
+
+- (void) draggingExited: (id <NSDraggingInfo>)sender
+{
+}
+
+- (BOOL) prepareForDragOperation: (id <NSDraggingInfo>)sender
+{
+  return YES;
+}
+
+- (BOOL) performDragOperation: (id <NSDraggingInfo>)sender
+{
+  return [self readSelectionFromPasteboard: [sender draggingPasteboard]];
+}
+
+- (void) concludeDragOperation: (id <NSDraggingInfo>)sender
+{
+}
+
+- (void) cleanUpAfterDragOperation
+{
+  // release drag information
+}
+
+- (unsigned int) dragOperationForDraggingInfo: (id <NSDraggingInfo>)dragInfo 
+					 type: (NSString *)type
+{
+  //FIXME
+  return NSDragOperationGeneric;
+}
+
+- (NSImage *) dragImageForSelectionWithEvent: (NSEvent *)event
+				      origin: (NSPoint *)origin
+{
+  if (origin)
+    *origin = NSMakePoint(0, 0);
+
+  return nil;
+}
+
+- (BOOL) dragSelectionWithEvent: (NSEvent *)event
+			 offset: (NSSize)mouseOffset
+		      slideBack: (BOOL)slideBack
+{
+  NSPoint point;
+  NSImage *image = [self dragImageForSelectionWithEvent: event
+			 origin: &point];
+  NSPasteboard *pboard = [NSPasteboard pasteboardWithName: NSDragPboard];
+  NSPoint location = [self convertPoint: [event locationInWindow] fromView: nil];
+  NSMutableArray *types = [NSMutableArray array];
+
+  if (_tf.imports_graphics)
+    [types addObject: NSRTFDPboardType];
+
+  if (_tf.is_rich_text)
+    [types addObject: NSRTFPboardType];
+
+  [types addObject: NSStringPboardType];
+
+  [self writeSelectionToPasteboard: pboard types: types];
+
+  [self dragImage: image at: location offset: mouseOffset event: event  
+	pasteboard: pboard source: self slideBack: slideBack];
+
+  return YES;
+}
+
+// This are all the NSTextInput methods that are not implemented on NSTextView
+
+- (NSAttributedString *) attributedSubstringFromRange: (NSRange)theRange
+{
+  return [_textStorage attributedSubstringFromRange: theRange];
+}
+
+- (unsigned) characterIndexForPoint: (NSPoint)point
+{
+  unsigned	index;
+  float		fraction;
+
+  index = [_layoutManager glyphIndexForPoint: point 
+			     inTextContainer: _textContainer
+	      fractionOfDistanceThroughGlyph: &fraction];
+
+  index = [_layoutManager characterIndexForGlyphAtIndex: index];
+  if (fraction > 0.5)
+    {
+      index++;
+    }
+  return index;
+}
+
+- (void) setMarkedText:(NSString *)aString  selectedRange:(NSRange)selRange
+{
+}
+
+- (BOOL) hasMarkedText
+{
+  return NO;
+}
+
+- (void) unmarkText
+{
+}
+
+- (NSArray*) validAttributesForMarkedText
+{
+  return nil;
+}
+
+- (long) conversationIdentifier
+{
+  return 0;
+}
+
+- (NSRect) firstRectForCharacterRange: (NSRange)theRange
+{
+  unsigned rectCount;
+  NSRect *rects = [_layoutManager 
+		      rectArrayForCharacterRange: theRange
+		      withinSelectedCharacterRange: NSMakeRange(NSNotFound, 0)
+		      inTextContainer: _textContainer
+		      rectCount: &rectCount];
+
+  if (rectCount)
+    return rects[0];
+  else
+    return NSZeroRect;
+}
+
+// This are here to keep compiler quite. 
+// Somehow gcc does not recognize when a super class already implements 
+// a method needed by a protocol.
+- (void) doCommandBySelector: (SEL)aSelector
+{
+  [super doCommandBySelector: aSelector];
+}
+
 @end
 
 @implementation NSTextView (GNUstepExtensions)
@@ -3478,52 +3676,6 @@ other than copy/paste or dragging. */
   return;
 }
 
-// begin: dragging of colors and files---------------
-- (unsigned int) draggingEntered: (id <NSDraggingInfo>)sender
-{
-  return NSDragOperationGeneric;
-}
-
-- (unsigned int) draggingUpdated: (id <NSDraggingInfo>)sender
-{
-  return NSDragOperationGeneric;
-}
-
-- (void) draggingExited: (id <NSDraggingInfo>)sender
-{
-}
-
-- (BOOL) prepareForDragOperation: (id <NSDraggingInfo>)sender
-{
-  return YES;
-}
-
-- (BOOL) performDragOperation: (id <NSDraggingInfo>)sender
-{
-  return [self readSelectionFromPasteboard: [sender draggingPasteboard]];
-}
-
-- (void) concludeDragOperation: (id <NSDraggingInfo>)sender
-{
-}
-// end: drag accepting---------------------------------
-
-- (unsigned) characterIndexForPoint: (NSPoint)point
-{
-  unsigned	index;
-  float		fraction;
-
-  index = [_layoutManager glyphIndexForPoint: point 
-			     inTextContainer: _textContainer
-	      fractionOfDistanceThroughGlyph: &fraction];
-
-  index = [_layoutManager characterIndexForGlyphAtIndex: index];
-  if (fraction > 0.5)
-    {
-      index++;
-    }
-  return index;
-}
 
 - (NSRect) rectForCharacterRange: (NSRange)aRange
 {
@@ -3537,36 +3689,4 @@ other than copy/paste or dragging. */
 }
 @end
 
-@implementation NSTextView(NSTextInput)
-// This are all the NSTextInput methods that are not implemented on NSTextView
-// or one of its super classes.
-
-- (void) setMarkedText:(NSString *)aString  selectedRange:(NSRange)selRange
-{
-}
-
-- (BOOL) hasMarkedText
-{
-  return NO;
-}
-
-- (void) unmarkText
-{
-}
-
-- (NSArray*) validAttributesForMarkedText
-{
-  return nil;
-}
-
-- (long) conversationIdentifier
-{
-  return 0;
-}
-
-- (NSRect) firstRectForCharacterRange: (NSRange)theRange
-{
-  return NSZeroRect;
-}
-@end
 
