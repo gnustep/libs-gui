@@ -1,3 +1,30 @@
+Wed Sep 25 03:37:27 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/NSInterfaceStyle.h: Put include guards in
+	the canonical form, by swapping them with #ifndef STRICT_OPENSTEP;
+	this arrangement is more efficient when the file is included
+	multiple times with GCC.
+
+Wed Sep 25 03:30:35 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/GSGuiPrivate.h: Redefine both _() and
+	NSLocalizedString() to be wrappers for GSGuiLocalizedString()
+	(Idea from Stefan Urbanek <urbanek@host.sk>).
+	* Source/NSApplication.m: Use _() and NSLocalizedString()
+	everywhere for localized strings, instead of
+	GSGuiLocalizedString().  (NSAppKitUncaughtExceptionHandler):
+	Small rearrangement of code to make it easier for make_strings
+	to parse localization calls.
+	* Source/NSDocument.m: Include GSGuiPrivate.h, and localize strings
+	(from a patch by Stefan Urbanek <urbanek@host.sk>).
+	* Resources/GNUmakefile: Completely rewritten to use
+	resource-set.make to install the files; added experimental
+	'strings' target which runs make_strings and updates the
+	Localizable.strings files.
+	* Resources/English.lproj/Localizable.strings: Updated using make strings.
+	* Resources/Italian.lproj/Localizable.strings: Updated using make strings,
+	then manually updated all translations; added missing ones.
+
 Tue Sep 24 16:32:30 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	After discussions with David Ayers:
