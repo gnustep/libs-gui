@@ -30,6 +30,7 @@
 
 #include <gnustep/gui/config.h>
 #import <Foundation/Foundation.h>
+#include <AppKit/NSMenu.h>
 #include <AppKit/NSPopUpButton.h>
 #include <AppKit/NSPopUpButtonCell.h>
 #include <AppKit/NSApplication.h>
@@ -88,14 +89,8 @@ Class _nspopupbuttonCellClass = 0;
 - (id) initWithFrame: (NSRect)frameRect
 	   pullsDown: (BOOL)flag
 {
-  NSNotificationCenter	*defaultCenter = [NSNotificationCenter defaultCenter];
-
   [super initWithFrame: frameRect];
-
-  [defaultCenter addObserver: self
-		    selector: @selector(_popup:)
-			name: NSPopUpButtonWillPopUpNotification
-		      object: self];
+  [self setPullsDown: flag];
 
   return self;
 }
@@ -139,7 +134,7 @@ Class _nspopupbuttonCellClass = 0;
 
 - (void) addItemsWithTitles: (NSArray *)itemTitles
 {
-  [cell addItemWithTitles: itemTitles];
+  [cell addItemsWithTitles: itemTitles];
 
   [self synchronizeTitleAndSelectedItem];
 }
@@ -147,7 +142,8 @@ Class _nspopupbuttonCellClass = 0;
 - (void) insertItemWithTitle: (NSString *)title
 		     atIndex: (int)index
 {
-  [cell insertItemWithTitle: title adIndex: index];
+  [cell insertItemWithTitle: title 
+	atIndex: index];
 
   [self synchronizeTitleAndSelectedItem];
 }
@@ -161,7 +157,7 @@ Class _nspopupbuttonCellClass = 0;
 
 - (void) removeItemWithTitle: (NSString *)title
 {
-  [cell removeItemWithTitle];
+  [cell removeItemWithTitle: title];
 
   [self synchronizeTitleAndSelectedItem];
 }
@@ -190,7 +186,7 @@ Class _nspopupbuttonCellClass = 0;
 
 - (void) selectItem: (id <NSMenuItem>)anObject
 {
-  [cell selectedItem: anObject];
+  [cell selectItem: anObject];
 }
 
 - (void) selectItemAtIndex: (int)index
@@ -245,6 +241,7 @@ Class _nspopupbuttonCellClass = 0;
 
 - (int) indexOfItemWithTag: (int)tag
 {
+  // FIXME: This clashes with an ivar!!
   return [cell indexOfItemWithTag: tag];
 }
 
@@ -295,20 +292,38 @@ Class _nspopupbuttonCellClass = 0;
   [[popb_menu menuRepresentation] sizeToFit];
 } 
 
-- (void) _popup: (NSNotification*)notification
-{
-  [cell performClickWithFrame: [[notification object] frame]
-                       inView: self];
-}
-
 - (void) mouseDown: (NSEvent *)theEvent
-{
-  NSNotificationCenter *nc;
+{ 
+  NSMenuView *mr = [[cell menu] menuRepresentation];
+  NSEvent    *e;
 
-  nc = [NSNotificationCenter defaultCenter];
-  [nc postNotificationName: NSPopUpButtonWillPopUpNotification
-                    object: self
-                  userInfo: nil];
+  if ([self isEnabled] == NO)
+    return;
+
+  // Attach the popUp
+  [cell attachPopUpWithFrame: bounds
+	inView: self];
+
+  // Process events; we start menu events processing by converting 
+  // this event to the menu window, and sending it there. 
+  e = [NSEvent mouseEventWithType: [theEvent type]
+	       location: [[mr window] convertScreenToBase: 
+					[window convertBaseToScreen: 
+						  [theEvent locationInWindow]]]
+	       modifierFlags: [theEvent modifierFlags]
+	       timestamp: [theEvent timestamp]
+	       windowNumber: [[mr window] windowNumber]
+	       context: nil // TODO ? 
+	       eventNumber: [theEvent eventNumber]
+	       clickCount: [theEvent clickCount] 
+	       pressure: [theEvent pressure]];
+  [[mr window] sendEvent: e];
+
+  // Update our selected item
+  [self synchronizeTitleAndSelectedItem];
+  
+  // Dismiss the popUp
+  [cell dismissPopUp];
 }
 
 //
@@ -342,4 +357,5 @@ Class _nspopupbuttonCellClass = 0;
 */
   return self;
 }
+
 @end
