@@ -366,12 +366,6 @@ static NSAffineTransformStruct identityTransform = {
   return m;
 }
 
-- (void) scaleBy: (float)sx :(float)sy
-{
-  A *= sx; B *= sx;
-  C *= sy; D *= sy;
-}
-
 - (void) scaleTo: (float)sx : (float)sy
 {
   float angle = rotationAngle < 0 ? [self rotationAngle] : rotationAngle;
