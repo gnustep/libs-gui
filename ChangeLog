@@ -1,3 +1,10 @@
+2004-02-11  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMatrix.m: (-setBackgroundColor:,
+	-setCellBackgroundColor:, -setDrawsBackground:,
+	-setDrawsCellBackground:) call setNeedsDisplay: to give better
+	feedback on change.
+
 2004-02-11 17:27  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/Additions/GNUstepGUI/GSServicesManager.h,

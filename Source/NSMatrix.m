@@ -2612,6 +2612,7 @@ static SEL getSel;
 - (void) setBackgroundColor: (NSColor*)aColor
 {
   ASSIGN(_backgroundColor, aColor);
+  [self setNeedsDisplay: YES];
 }
 
 - (NSColor*) backgroundColor
@@ -2622,6 +2623,7 @@ static SEL getSel;
 - (void) setCellBackgroundColor: (NSColor*)aColor
 {
   ASSIGN(_cellBackgroundColor, aColor);
+  [self setNeedsDisplay: YES];
 }
 
 - (NSColor*) cellBackgroundColor
@@ -2730,6 +2732,7 @@ static SEL getSel;
 - (void) setDrawsBackground: (BOOL)flag
 {
   _drawsBackground = flag;
+  [self setNeedsDisplay: YES];
 }
 
 - (BOOL) drawsBackground
@@ -2744,6 +2747,7 @@ static SEL getSel;
 - (void) setDrawsCellBackground: (BOOL)flag
 {
   _drawsCellBackground = flag;
+  [self setNeedsDisplay: YES];
 }
 
 - (BOOL) drawsCellBackground
