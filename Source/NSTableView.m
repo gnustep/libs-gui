@@ -1057,8 +1057,6 @@ byExtendingSelection: (BOOL) flag
 	  
 	  newOrigin.x = visibleRect.origin.x;
 	  newOrigin.y = rowRect.origin.y;
-	  newOrigin = [(NSClipView *)_super_view constrainScrollPoint: 
-				       newOrigin];
 	  [(NSClipView *)_super_view scrollToPoint: newOrigin];
 	  return;
 	}
@@ -1072,8 +1070,6 @@ byExtendingSelection: (BOOL) flag
 	  newOrigin.x = visibleRect.origin.x;
 	  newOrigin.y = visibleRect.origin.y;
 	  newOrigin.y += NSMaxY (rowRect) - NSMaxY (visibleRect);
-	  newOrigin = [(NSClipView *)_super_view constrainScrollPoint: 
-				       newOrigin];
 	  [(NSClipView *)_super_view scrollToPoint: newOrigin];
 	  return;
 	}
@@ -1098,8 +1094,6 @@ byExtendingSelection: (BOOL) flag
 	  
 	  newOrigin.x = columnRect.origin.x;
 	  newOrigin.y = visibleRect.origin.y;
-	  newOrigin = [(NSClipView *)_super_view constrainScrollPoint: 
-				       newOrigin];
 	  [(NSClipView *)_super_view scrollToPoint: newOrigin];
 	  return;
 	}
@@ -1114,8 +1108,6 @@ byExtendingSelection: (BOOL) flag
 	  newOrigin.x = visibleRect.origin.x;
 	  newOrigin.y = visibleRect.origin.y;
 	  newOrigin.x += diff;
-	  newOrigin = [(NSClipView *)_super_view constrainScrollPoint: 
-				       newOrigin];
 	  [(NSClipView *)_super_view scrollToPoint: newOrigin];
 	  return;
 	}

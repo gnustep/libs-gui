@@ -1791,13 +1791,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   aPoint = [self convertPoint: aPoint toView: s];
   if (NSEqualPoints(aPoint, [s bounds].origin) == NO)
     {
-      id	cSuper = [s superview];
-
-      aPoint = [s constrainScrollPoint: aPoint];
       [s scrollToPoint: aPoint];
-
-      if ([cSuper respondsToSelector:@selector(reflectScrolledClipView:)])
-	[(NSScrollView *)cSuper reflectScrolledClipView: s];
     }
 }
 
@@ -1854,7 +1848,6 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       if (shouldScroll)
 	{
 	  aPoint = [self convertPoint: aPoint toView: s];
-	  aPoint = [s constrainScrollPoint: aPoint];
 	  [s scrollToPoint: aPoint];
 	  return YES;
 	}

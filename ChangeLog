@@ -1,3 +1,12 @@
+Fri Jun 16 18:59:44 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSTableView.m ([NSTableView -scrollRowToVisible:]): Don't
+	need to constrainScrollPoint before calling scrollToPoint.
+	([-scrollColumnToVisible:]): Idem.
+	* Source/NSView.m ([-scrollPoint:]): Idem.
+	([-scrollRectToVisible:]): Idem.  ([-scrollPoint:]): Don't send
+	reflectScrolledClipView to the clipview's superview.
+	
 Fri Jun 16 10:18:29 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSTableView.m ([-scrollColumnToVisible:]): Updated for
