@@ -94,7 +94,7 @@ static Class defaultCellClass = nil;
 }
 
 - (NSFormCell*)insertEntry:(NSString*)title
-		    atIndex:(int)index
+		   atIndex:(int)index
 {
   NSFormCell *new_cell = [[[isa cellClass] alloc] initTextCell:title];
 
