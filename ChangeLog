@@ -1,3 +1,9 @@
+Tue Feb 26 18:26:53 2002  Nicola Pero <nicola@brainstorm.co.uk>
+
+	Patch from Alexander Malmberg <alexander@malmberg.org>:
+	* Source/NSFont.m ([+fontWithName:size:]): If size is 0, use
+	NSUserFontSize instead.
+
 2002-02-26  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSImage.m
@@ -14,7 +20,7 @@ Mon Feb 25 17:53:19 2002  Nicola Pero <nicola@brainstorm.co.uk>
 
 	* Source/NSMenuItemCell.m ([-initWithCoder:]): Added code to decode old
 	version as well, since it is used by the popup button cell.
-	
+
 2002-02-25  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSGraphicsContext.m (_postExternalEvent:) Removed, not used.
