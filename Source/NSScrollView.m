@@ -207,10 +207,15 @@ static Class rulerViewClass = nil;
 		format: @"Attempt to set non-view object as content view"];
   if (aView != _contentView)
     {
+      NSView *docView = [aView documentView];
+
       RETAIN(aView);
       [_contentView removeFromSuperview];
       _contentView = aView;
       [self addSubview: _contentView];
+
+      if (docView != nil)
+	[self setDocumentView: docView];
     }
   [_contentView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
   [self tile];
@@ -508,6 +513,8 @@ static Class rulerViewClass = nil;
 
 - (void) setRulersVisible: (BOOL)flag
 {
+  // FIX ME
+  _rulersVisible = flag;
 }
 
 - (void) setFrame: (NSRect)rect
@@ -749,6 +756,16 @@ static Class rulerViewClass = nil;
   return [_contentView backgroundColor];
 }
 
+- (void)setDrawsBackground:(BOOL)flag
+{
+  [_contentView setDrawsBackground: flag];
+}
+
+- (BOOL)drawsBackground
+{
+  return [_contentView drawsBackground];
+}
+
 - (void) setBorderType: (NSBorderType)borderType
 {
   _borderType = borderType;
@@ -940,6 +957,7 @@ static Class rulerViewClass = nil;
 
 - (void) setScrollsDynamically: (BOOL)flag
 {
+  // FIX ME: This should change the behaviour of the scrollers
   _scrollsDynamically = flag;
 }
 
