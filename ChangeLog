@@ -1,3 +1,12 @@
+2002-10-08  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSButtonCell.h
+	Adoped the enums NSButtonType and NSBezelStyle to the new MacOSX names.
+	* Source/NSButtonCell.m
+	[setButtonType:] use those new names. Corrected [cellAttribute:]
+	and [setCellAttribute:] to use the right tests. [performClick:]
+	now play the sound, if provided.
+	
 2002-10-07  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSBrowser.m (-frameOfColumn:, -tile): Change distance
