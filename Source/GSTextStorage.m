@@ -50,7 +50,6 @@
 
 #define		SANITY_CHECKS	0
 
-#define	GSI_NEW	1
 #define	GSI_MAP_RETAIN_KEY(M, X)	
 #define	GSI_MAP_RELEASE_KEY(M, X)	
 #define	GSI_MAP_RETAIN_VAL(M, X)	

@@ -149,7 +149,6 @@ typedef	struct {
  * pointers, objects, glyphs (long) and attributes.
  */
 #define GSI_ARRAY_TYPES		GSUNION_PTR|GSUNION_OBJ|GSUNION_LONG
-#define	GSI_NEW	1
 #define	GSI_ARRAY_TYPE		GSGlyphAttrs
 
 /*
