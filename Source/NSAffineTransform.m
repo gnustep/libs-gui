@@ -607,5 +607,16 @@ static NSAffineTransformStruct identityTransform = {
   replace[5] = matrix.ty;
 }
 
+- (void) getMatrixFromTransform: (NSAffineTransform *)other
+{
+  matrix.m11 = other->matrix.m11;
+  matrix.m12 = other->matrix.m12;
+  matrix.m21 = other->matrix.m21;
+  matrix.m22 = other->matrix.m22;
+  matrix.tx = other->matrix.tx;
+  matrix.ty = other->matrix.ty;
+}
+
+
 @end /* NSAffineTransform (GNUstep) */
 
