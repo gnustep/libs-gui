@@ -115,8 +115,8 @@
 		r = [prev frame];
 	      else
 		{
-		  NSLog(@"NSSplitView got mouseDown above top subview");
-		  r = NSZeroRect; // should not occur.
+		  /* This happens if user pressed exactly on the top of the top subview */
+		  goto RETURN_LABEL;
 		}
 	      if (v)
 		r1 = [v frame];
@@ -138,8 +138,8 @@
 		r = [prev frame];
 	      else
 		{
-		  NSLog(@"NSSplitView got mouseDown before left subview");
-		  r = NSZeroRect;
+		  /* This happens if user pressed exactly on the left of the left subview */
+		  goto RETURN_LABEL;
 		}
 	      if (v)
 		r1 = [v frame];
