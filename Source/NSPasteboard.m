@@ -164,11 +164,17 @@ static	id<PasteboardServer>	the_server = nil;
 
 + (NSPasteboard *)pasteboardWithName:(NSString *)aName
 {
-  id<PasteboardObject>	anObj = nil;
-
   NS_DURING
   {
+    id<PasteboardObject>	anObj;
+
     anObj = [[self _pbs] pasteboardWithName: aName];
+    if (anObj) {
+      NSPasteboard	*ret;
+
+      ret = [self _pasteboardWithTarget:anObj name:aName];
+      NS_VALRETURN(ret);
+    }
   }
   NS_HANDLER
   {
@@ -176,21 +182,28 @@ static	id<PasteboardServer>	the_server = nil;
 		format: @"%s", [[localException reason] cString]];
   }
   NS_ENDHANDLER
-  if (anObj) {
-    return [self _pasteboardWithTarget:anObj name:aName];
-  }
+
   return nil;
 }
 
 + (NSPasteboard *)pasteboardWithUniqueName
 {
-  id<PasteboardObject>	anObj = nil;
-  NSString		*aName = nil;
-
   NS_DURING
   {
+    id<PasteboardObject>	anObj;
+
     anObj = [[self _pbs] pasteboardWithUniqueName];
-    aName = [anObj name];
+    if (anObj) {
+      NSString	*aName;
+
+      aName = [anObj name];
+      if (aName) {
+	NSPasteboard	*ret;
+
+        ret = [self _pasteboardWithTarget:anObj name:aName];
+	NS_VALRETURN(ret);
+      }
+    }
   }
   NS_HANDLER
   {
@@ -198,9 +211,7 @@ static	id<PasteboardServer>	the_server = nil;
 		format: @"%s", [[localException reason] cString]];
   }
   NS_ENDHANDLER
-  if (anObj) {
-    return [self _pasteboardWithTarget:anObj name:aName];
-  }
+
   return nil;
 }
 
@@ -210,15 +221,24 @@ static	id<PasteboardServer>	the_server = nil;
 + (NSPasteboard *)pasteboardByFilteringData:(NSData *)data
 				     ofType:(NSString *)type
 {
-  id<PasteboardObject>	anObj = nil;
-  NSString 		*aName = nil;
-
   NS_DURING
   {
+    id<PasteboardObject>	anObj;
+
     anObj = [[self _pbs] pasteboardByFilteringData: data
-					     ofType: type
-					     isFile: NO];
-    aName = [anObj name];
+					    ofType: type
+					    isFile: NO];
+    if (anObj) {
+      NSString 	*aName;
+
+      aName = [anObj name];
+      if (aName) {
+	NSPasteboard	*ret;
+
+	ret = [self _pasteboardWithTarget:anObj name: aName];
+	NS_VALRETURN(ret);
+      }
+    }
   }
   NS_HANDLER
   {
@@ -226,25 +246,33 @@ static	id<PasteboardServer>	the_server = nil;
 		format: @"%s", [[localException reason] cString]];
   }
   NS_ENDHANDLER
-  if (anObj) {
-    return [self _pasteboardWithTarget:anObj name: aName];
-  }
+
   return nil;
 }
 
 + (NSPasteboard *)pasteboardByFilteringFile:(NSString *)filename
 {
-  id<PasteboardObject>	anObj = nil;
-  NSString*	aName = nil;
   NSData*	data = [NSData dataWithContentsOfFile:filename];
   NSString*	type = NSCreateFileContentsPboardType([filename pathExtension]);
 
   NS_DURING
   {
+    id<PasteboardObject>	anObj;
+
     anObj = [[self _pbs] pasteboardByFilteringData: data
 					     ofType: type
 					     isFile: YES];
-    aName = [anObj name];
+    if (anObj) {
+      NSString	*aName;
+
+      aName = [anObj name];
+      if (aName) {
+	NSPasteboard	*ret;
+
+	ret = [self _pasteboardWithTarget:anObj name: aName];
+	NS_VALRETURN(ret);
+      }
+    }
   }
   NS_HANDLER
   {
@@ -252,22 +280,31 @@ static	id<PasteboardServer>	the_server = nil;
 		format: @"%s", [[localException reason] cString]];
   }
   NS_ENDHANDLER
-  if (anObj) {
-    return [self _pasteboardWithTarget:anObj name: aName];
-  }
+
   return nil;
 }
 
 + (NSPasteboard *)pasteboardByFilteringTypesInPasteboard:(NSPasteboard *)pboard
 {
-  id<PasteboardObject>	anObj = nil;
-  NSString		*aName = nil;
-
   NS_DURING
   {
+    id<PasteboardObject>	anObj;
+
     anObj = [pboard _target];
-    anObj = [[self _pbs] pasteboardByFilteringTypesInPasteboard: anObj];
-    aName = [anObj name];
+    if (anObj) {
+      anObj = [[self _pbs] pasteboardByFilteringTypesInPasteboard: anObj];
+      if (anObj) {
+	NSString	*aName;
+
+        aName = [anObj name];
+	if (aName) {
+	  NSPasteboard	*ret;
+
+	  ret = [self _pasteboardWithTarget: anObj name: (NSString*)aName];
+	  NS_VALRETURN(ret);
+	}
+      }
+    }
   }
   NS_HANDLER
   {
@@ -275,9 +312,7 @@ static	id<PasteboardServer>	the_server = nil;
 		format: @"%s", [[localException reason] cString]];
   }
   NS_ENDHANDLER
-  if (anObj) {
-    return [self _pasteboardWithTarget:anObj name: aName];
-  }
+
   return nil;
 }
 
@@ -291,6 +326,7 @@ static	id<PasteboardServer>	the_server = nil;
   }
   NS_HANDLER
   {
+    types = nil;
     [NSException raise: NSPasteboardCommunicationException
 		format: @"%s", [[localException reason] cString]];
   }
@@ -352,6 +388,7 @@ static	id<PasteboardServer>	the_server = nil;
   }
   NS_HANDLER
   {
+    count = 0;
     [NSException raise: NSPasteboardCommunicationException
 		format: @"%s", [[localException reason] cString]];
   }
@@ -409,6 +446,7 @@ static	id<PasteboardServer>	the_server = nil;
   }
   NS_HANDLER
   {
+    ok = NO;
     [NSException raise: NSPasteboardCommunicationException
 		format: @"%s", [[localException reason] cString]];
   }
@@ -445,6 +483,7 @@ static	id<PasteboardServer>	the_server = nil;
   }
   NS_HANDLER
   {
+    ok = NO;
     [NSException raise: NSPasteboardCommunicationException
 		format: @"%s", [[localException reason] cString]];
   }
@@ -469,6 +508,7 @@ static	id<PasteboardServer>	the_server = nil;
   }
   NS_HANDLER
   {
+    type = nil;
     [NSException raise: NSPasteboardCommunicationException
 		format: @"%s", [[localException reason] cString]];
   }
@@ -489,6 +529,7 @@ static	id<PasteboardServer>	the_server = nil;
   }
   NS_HANDLER
   {
+    result = nil;
     [NSException raise: NSPasteboardCommunicationException
 		format: @"%s", [[localException reason] cString]];
   }
@@ -529,6 +570,7 @@ static	id<PasteboardServer>	the_server = nil;
   }
   NS_HANDLER
   {
+    d = nil;
     [NSException raise: NSPasteboardCommunicationException
 		format: @"%s", [[localException reason] cString]];
   }
@@ -582,18 +624,6 @@ provideDataForType:(NSString *)type
 @end
 
 @implementation NSPasteboard (GNUstepExtensions)
-
-- (id)askOwner:(id)anObject toProvideDataForType:(NSString*)type
-{
-  [anObject pasteboard:self provideDataForType:type];
-  return self;
-}
-
-- (id)askOwner:(id)obj toProvideDataForType:(NSString*)type andVersion:(int)v
-{
-  [obj pasteboard:self provideDataForType:type andVersion:v];
-  return self;
-}
 
 /*
  *	Once the '[-setChangeCount:]' message has been sent to an NSPasteboard
