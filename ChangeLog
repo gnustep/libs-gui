@@ -1,3 +1,14 @@
+Wed Jul 17 15:24:54 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/NSTextView.h ([-becomeKeyWindow]): Declare.
+
+Wed Jul 17 15:23:28 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Patch from David Ayers <d.ayers@inode.at>:
+	* Source/NSTextView.m ([-becomeKeyWindow]): Implemented.
+	* Source/NSWindow.m ([-becomeKeyWindow]): Set the _f.is_key flag
+	immediately after checking it.
+
 Tue Jul 16 19:40:04 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSWindow.m ([-cacheImageInRect:]): Intersect the
