@@ -1,3 +1,10 @@
+Wed Apr 25 22:31:34 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSTableView.m ([-noteNumberOfRowsChanged]): Added code
+	which checks that the old range of selected rows is still valid -
+	ie, it still falls inside the table - and if not, the code
+	rearranges it to fit into the table.
+	
 2001-04-23  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
 
 	* Source/NSMatrix.m ([NSMatrix -_mouseDownNonListMode:]): does not
