@@ -1,3 +1,22 @@
+2000-12-28  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSButtonCell.h:
+	Corrected definition of NSBezelStyle.
+	* Source/NSButtonCell.m
+	Simplified mask definition in [drawInteriorWithFrame:inView:] and
+	[cellSize].
+	* Headers/gnustep/gui/NSColor.h:
+	Prefixed all ivars with underscores, removed unneded ivars and
+	added some missing methods and types. 
+	* Headers/gnustep/gui/NSColorPrivate.h: Removed
+	* Source/GNUmakefile: Removed reference of NSColorPrivate.h
+	* Source/externs.m
+	Added notifiaction string from NSColor.m
+	* Source/NSColor.m
+	Added missing methods, restructured all the private methods, so
+	there are no changing methods left. Made systemColorWithName() a
+	function and optimized system color retrival.
+	
 2000-12-27  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSAttributedString.m: ([-doubleClickAtIndex:]),
