@@ -451,6 +451,7 @@ static NSCharacterSet *invSelectionWordGranularitySet;
 		    delta: 0
 		    inTextContainer: aTextContainer];
   [[aTextContainer textView] sizeToFit];
+  [[aTextContainer textView] invalidateTextContainerOrigin];
 
   if (actualRange)
     *actualRange = [self glyphRangeForLineLayoutRange: lineRange];
@@ -478,13 +479,15 @@ static NSCharacterSet *invSelectionWordGranularitySet;
   lineRange = [self rebuildForRange: aRange
 		    delta: delta
 		    inTextContainer: aTextContainer];
-  // ScrollView interaction
   [[aTextContainer textView] sizeToFit];
+  [[aTextContainer textView] invalidateTextContainerOrigin];
 
   [self setNeedsDisplayForLineRange: lineRange
 	inTextContainer: aTextContainer];
 }
 
+/* FIXME: According to the doc, the following method should be able to
+ * draw in any view after the focus has been locked on it. */
 - (void)drawBackgroundForGlyphRange:(NSRange)glyphRange 
 			    atPoint:(NSPoint)containerOrigin
 {
@@ -493,6 +496,8 @@ static NSCharacterSet *invSelectionWordGranularitySet;
   NSRect rect = [self boundingRectForGlyphRange: glyphRange 
 		      inTextContainer: aTextContainer];
 
+  /* FIXME: Which means that the following <which assumes we are
+     drawing in a text view> can't be correct */
   // clear area under text
   [[[aTextContainer textView] backgroundColor] set];
   NSRectFill(rect);
@@ -699,20 +704,22 @@ forStartOfGlyphRange: (NSRange)glyphRange
 		   rect.size.height);
 }
 
-- (void) drawSelectionAsRangeNoCaret: (NSRange) aRange
+- (void) drawSelectionAsRangeNoCaret: (NSRange)aRange
 {
-  int i;
-  unsigned count;
-  NSTextContainer *aTextContainer = [self textContainerForGlyphAtIndex: aRange.location
-					  effectiveRange: NULL];
-  NSRect *rects = [self rectArrayForCharacterRange: aRange 
-			withinSelectedCharacterRange: aRange
-			inTextContainer: aTextContainer
-			rectCount: &count];
+  unsigned i, count;
+  NSTextContainer *aTextContainer;
+  NSRect *rects;
+
+  aTextContainer = [self textContainerForGlyphAtIndex: aRange.location
+			 effectiveRange: NULL];
+  rects = [self rectArrayForCharacterRange: aRange 
+		withinSelectedCharacterRange: aRange
+		inTextContainer: aTextContainer
+		rectCount: &count];
 
   for (i = 0; i < count; i++)
     {
-	NSHighlightRect(rects[i]);
+	NSHighlightRect (rects[i]);
     }
 }
 
@@ -746,7 +753,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
 }
 
 - (void) setNeedsDisplayForLineRange: (NSRange)redrawLineRange
-		     inTextContainer:(NSTextContainer *)aTextContainer 
+		     inTextContainer: (NSTextContainer *)aTextContainer 
 {
   if ([_lineLayoutInformation count]
       && redrawLineRange.location < [_lineLayoutInformation count]
@@ -931,8 +938,9 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
       // Process a paragraph
       do
 	{
-	  // Temporary added a autorelease pool, as the current layout mechnism 
-          // uses up much memory space, that should be freed as soon as possible.
+	  // Temporary added a autorelease pool, as the current layout
+	  // mechanism uses up much memory space, that should be freed
+	  // as soon as possible.
 	  CREATE_AUTORELEASE_POOL(pool);
 	  NSRect fragmentRect;
 	  NSRect usedLineRect;
