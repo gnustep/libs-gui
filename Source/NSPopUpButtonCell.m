@@ -185,6 +185,11 @@ static NSImage *_pbc_image[2];
 		  action: NULL
 		  keyEquivalent: @""
 		  atIndex: index];
+  /* Disable showing the On/Off/Mixed state.  We change the state of
+     menu items when selected, according to the doc, but we don't want
+     it to appear on the screen.  */
+  [anItem setOnStateImage: nil];
+  [anItem setMixedStateImage: nil];
 }
 
 - (void) removeItemWithTitle: (NSString *)title
@@ -271,7 +276,6 @@ static NSImage *_pbc_image[2];
       if (_pbcFlags.altersStateOfSelectedItem)
 	{
 	  [_selectedItem setState: NSOffState];
-	  [_selectedItem setChangesState: NO];
 	}
       [_selectedItem setImage: nil];
     }
@@ -283,7 +287,6 @@ static NSImage *_pbc_image[2];
       if (_pbcFlags.altersStateOfSelectedItem)
         {
 	  [_selectedItem setState: NSOnState];
-	  [_selectedItem setChangesState: NO];
         }
       [_selectedItem setImage: _pbc_image[_pbcFlags.pullsDown]];
     }
