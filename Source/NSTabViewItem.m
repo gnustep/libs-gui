@@ -30,24 +30,25 @@
 #include <AppKit/NSTabViewItem.h>
 #include <AppKit/PSOperators.h>
 #include <AppKit/NSGraphics.h>
+#include <AppKit/NSAttributedString.h>
 
 @implementation NSTabViewItem
 - (id) initWithIdentifier:(id)identifier
 {
   [super init];
 
-  ASSIGN(item_ident, identifier);
-  item_state = NSBackgroundTab;
+  ASSIGN(_ident, identifier);
+  _state = NSBackgroundTab;
 
   return self;
 }
 
 - (void) dealloc
 {
-  TEST_RELEASE(item_ident);
-  RELEASE(item_label);
-  RELEASE(item_view);
-  RELEASE(item_color);
+  TEST_RELEASE(_ident);
+  RELEASE(_label);
+  RELEASE(_view);
+  RELEASE(_color);
   [super dealloc];
 }
 
@@ -55,100 +56,98 @@
 
 - (void)setIdentifier:(id)identifier
 {
-  ASSIGN(item_ident, identifier);
+  ASSIGN(_ident, identifier);
 }
 
 - (id)identifier
 {
-  return item_ident;
+  return _ident;
 }
 
 // Set label for item.
 
 - (void)setLabel:(NSString *)label
 {
-  ASSIGN(item_label, label);
+  ASSIGN(_label, label);
 }
 
 - (NSString *)label
 {
-  return item_label;
+  return _label;
 }
 
 - (NSSize)sizeOfLabel:(BOOL)shouldTruncateLabel
 {
+  NSDictionary *  attr = [[NSDictionary alloc] initWithObjectsAndKeys: 
+			       [_tabview font], NSFontAttributeName,
+			       nil];
+  NSString *string;
   NSSize rSize;
 
-  rSize.height = 12;
+  if (shouldTruncateLabel) 
+    {
+      string = [self _truncatedLabel];
+    } 
+  else 
+    {
+	string = _label;
+    }
 
-  if (shouldTruncateLabel) {
-    // what is the algo to truncate?
-    rSize.width = [[item_tabview font] widthOfString:item_label];
-    return rSize;
-  } else {
-    rSize.width = [[item_tabview font] widthOfString:item_label];
-    return rSize;
-  }
-  return NSZeroSize;
+  rSize = [string sizeWithAttributes: attr];
+  RELEASE(attr);
+  return rSize;
 }
 
 // Set view to display when item is clicked.
 
 - (void)setView:(NSView *)view
 {
-  ASSIGN(item_view, view);
+  ASSIGN(_view, view);
 }
 
 - (NSView *)view
 {
-  return item_view;
+  return _view;
 }
 
 // Set color of tab surface.
 
 - (void)setColor:(NSColor *)color
 {
-  ASSIGN(item_color, color);
+  ASSIGN(_color, color);
 }
 
 - (NSColor *)color
 {
-  return item_color;
+  return _color;
 }
 
 // tab state
 
 - (NSTabState)tabState
 {
-  return item_state;
+  return _state;
 }
 
-- (void)_setTabState:(NSTabState)tabState
-{
-  item_state = tabState;
-}
 
 // Tab view, this is the "super" view.
 
-- (void)_setTabView:(NSTabView *)tabView
-{
-  item_tabview = tabView;
-}
-
 - (NSTabView *)tabView
 {
-  return item_tabview;
+  return _tabview;
 }
 
 // First responder.
 
 - (void)setInitialFirstResponder:(NSView *)view
 {
+  // We don't retain this.  
+  _first_responder = view;
 }
 
 - (id)initialFirstResponder
 {
-  return nil;
+  return _first_responder;
 }
 
 // Draw item.
@@ -157,23 +156,34 @@
 	   inRect:(NSRect)tabRect
 {
   NSGraphicsContext     *ctxt = GSCurrentContext();
-  NSRect lRect;
+//  NSRect lRect;
   NSRect fRect;
+  NSDictionary *attr;
+  NSString *string;
 
-  item_rect = tabRect;
+  if (shouldTruncateLabel) 
+    {
+      string = [self _truncatedLabel];
+    } 
+  else 
+    {
+	string = _label;
+    }
+
+  _rect = tabRect;
 
   DPSgsave(ctxt);
 
   fRect = tabRect;
 
-  if (item_state == NSSelectedTab)
+  if (_state == NSSelectedTab)
     {
       fRect.origin.y -= 1;
       fRect.size.height += 1;
       [[NSColor controlBackgroundColor] set];
       NSRectFill(fRect);
     }
-  else if (item_state == NSBackgroundTab)
+  else if (_state == NSBackgroundTab)
     {
       [[NSColor controlBackgroundColor] set];
       NSRectFill(fRect);
@@ -183,49 +193,73 @@
       [[NSColor controlBackgroundColor] set];
     }
 
-  lRect = tabRect;
-  lRect.origin.y += 3;
-  [[item_tabview font] set];
+  attr = [[NSDictionary alloc] initWithObjectsAndKeys: 
+			       [_tabview font], NSFontAttributeName,
+			       [NSColor blackColor], NSForegroundColorAttributeName,
+			       nil];
 
-  DPSsetgray(ctxt, 0);
-  DPSmoveto(ctxt, lRect.origin.x, lRect.origin.y);
-  DPSshow(ctxt, [item_label cString]);
+  // For some unclear reason, somehow connected with clipping,
+  // drawInRect does not work here. But drawAtPoint works fine.
+  [string drawAtPoint: NSMakePoint(tabRect.origin.x, NSMaxY(tabRect)) 
+	  withAttributes: attr];
+//  lRect = tabRect;
+//  lRect.origin.y += 3;
+//  [_label drawInRect: lRect withAttributes: attr];
+  RELEASE(attr);
 
   DPSgrestore(ctxt);
-}
-
-// Non spec
-
-- (NSRect) _tabRect
-{
-  return item_rect;
 }
 
 // NSCoding protocol.
 
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [super encodeWithCoder: aCoder];
-
-  [aCoder encodeObject:item_ident];
-  [aCoder encodeObject:item_label];
-  [aCoder encodeObject:item_view];
-  [aCoder encodeObject:item_color];
-  [aCoder encodeValueOfObjCType: @encode(NSTabState) at: &item_state];
-  [aCoder encodeObject:item_tabview];
+  [aCoder encodeObject:_ident];
+  [aCoder encodeObject:_label];
+  [aCoder encodeObject:_view];
+  [aCoder encodeObject:_color];
+  [aCoder encodeValueOfObjCType: @encode(NSTabState) at: &_state];
+  [aCoder encodeObject:_first_responder];
+  [aCoder encodeObject:_tabview];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder: aDecoder];
-
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &item_ident];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &item_label];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &item_view];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &item_color];
-  [aDecoder decodeValueOfObjCType: @encode(NSTabState) at:&item_state];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &item_tabview];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_ident];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_label];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_view];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_color];
+  [aDecoder decodeValueOfObjCType: @encode(NSTabState) at:&_state];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_first_responder];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_tabview];
 
   return self;
 }
+@end
+
+@implementation NSTabViewItem (GNUstep)
+
+// Non spec
+
+- (NSRect) _tabRect
+{
+  return _rect;
+}
+
+- (void)_setTabState:(NSTabState)tabState
+{
+  _state = tabState;
+}
+
+- (void)_setTabView:(NSTabView *)tabView
+{
+  _tabview = tabView;
+}
+
+- (NSString*)_truncatedLabel
+{
+  // FIXME: What is the algo to truncate?
+  return _label;
+}
+
 @end

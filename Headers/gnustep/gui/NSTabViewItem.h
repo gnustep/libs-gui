@@ -39,13 +39,14 @@ typedef enum {
 
 @interface NSTabViewItem : NSObject <NSCoding>
 {
-  id item_ident;
-  NSString *item_label;
-  NSView *item_view;
-  NSColor *item_color;
-  NSTabState item_state;
-  NSTabView *item_tabview;
-  NSRect item_rect; // cached
+  id _ident;
+  NSString *_label;
+  NSView *_view;
+  NSColor *_color;
+  NSTabState _state;
+  NSView *_first_responder;
+  NSTabView *_tabview;
+  NSRect _rect; // cached
 }
 - (id) initWithIdentifier:(id)identifier;
 
@@ -70,14 +71,15 @@ typedef enum {
 
 - (void)drawLabel:(BOOL)shouldTruncateLabel
            inRect:(NSRect)tabRect;
+@end
+
+@interface NSTabViewItem (GNUstep)
 
 // Non-spec
 - (void)_setTabState:(NSTabState)tabState;
 - (void)_setTabView:(NSTabView *)tabView;
 - (NSRect) _tabRect;
-
-- (void) encodeWithCoder: (NSCoder*)aCoder;
-- (id) initWithCoder: (NSCoder*)aDecoder;
+- (NSString*)_truncatedLabel;
 @end
 
 #endif // _GNUstep_H_NSTabViewItem
