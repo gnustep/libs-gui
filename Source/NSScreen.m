@@ -30,7 +30,6 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#include <gnustep/gui/config.h>
 #include <Foundation/Foundation.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSScreen.h>
@@ -40,35 +39,105 @@
 #include <AppKit/NSGraphics.h>
 #include <AppKit/AppKitExceptions.h>
 
-/* 
- * Forward references
- */ 
-#include <AppKit/NSGraphics.h>
-
-/*
- * Returns a list of the screens attached to the system.
- */
-static int*
-_screenNumbers(int *count)
-{
-  int			*list;
-  NSGraphicsContext	*ctxt = GSCurrentContext();
-
-  DPScountscreenlist(ctxt, 0, count);
-
-  // If the list is empty quit...
-  if (*count == 0)
-    {
-      NSLog(@"Internal error: No screens detected.");
-      return NULL; // something is wrong. This shouldn't happen.
-    }
-
-  list = NSZoneMalloc(NSDefaultMallocZone(), (*count+1)*sizeof(int));
-  DPSscreenlist(ctxt, 0, *count, list);
-  return list;
-}
+@interface NSScreen (Private)
+- (id) _initWithScreenNumber: (int)screen;
+@end
 
 @implementation NSScreen
+
+/*
+ * Class methods
+ */
+
++ (void) initialize
+{
+  if (self == [NSScreen class])
+    {
+      [self setVersion: 1];
+    }
+}
+
+static NSMutableArray *screenArray = nil;
+
++ (void) resetScreens
+{
+  screenArray = nil;
+}
+
++ (NSArray*) screens
+{
+  int count = 0, index = 0;
+  int *windows = NULL;
+  NSGraphicsContext	*ctxt;
+
+  if (screenArray != nil)
+    return screenArray;
+
+  ctxt = [NSApp context];
+  // Get the number of screens.
+  DPScountscreenlist(ctxt, 0, &count);
+
+  // If the list is empty quit...
+  if (count == 0)
+    {
+      // something is wrong. This shouldn't happen.
+      [NSException raise: NSWindowServerCommunicationException
+		   format: @"Unable to retrieve list of screens from window server."];
+      return nil;
+    }
+
+  windows = NSZoneMalloc(NSDefaultMallocZone(), (count+1)*sizeof(int));
+  DPSscreenlist(ctxt, 0, count, windows);
+
+  screenArray = [NSMutableArray new];
+
+  // Iterate over the list
+  for (index = 0; index < count; index++)
+    {
+      NSScreen *screen = nil;
+      
+      screen = [[NSScreen alloc] _initWithScreenNumber: windows[index]];
+      [screenArray addObject: AUTORELEASE(screen)];
+    }
+
+  // free the list
+  NSZoneFree(NSDefaultMallocZone(), windows);
+  
+  return [NSArray arrayWithArray: screenArray];
+}
+
+// Creating NSScreen Instances
++ (NSScreen*) mainScreen
+{
+  return [[self screens] objectAtIndex: 0];
+}
+
++ (NSScreen*) deepestScreen
+{
+  NSArray *screenArray = [self screens];
+  NSEnumerator *screenEnumerator = nil;
+  NSScreen *deepestScreen = nil, *screen = nil;  
+  int maxBits = 0;
+
+  // Iterate over the list of screens and find the
+  // one with the most depth.
+  screenEnumerator = [screenArray objectEnumerator];
+  while ((screen = [screenEnumerator nextObject]) != nil)
+    {
+      int bits = 0;
+      
+      bits = [screen depth];
+      
+      if (bits > maxBits)
+	{
+	  maxBits = bits;
+	  deepestScreen = screen;
+	}
+    }
+
+  return deepestScreen;
+}
+
 
 /*
  * Instance methods
@@ -85,7 +154,7 @@ _screenNumbers(int *count)
 - (id) _initWithScreenNumber: (int)screen
 {
   float			x, y, w, h;
-  NSGraphicsContext	*ctxt = GSCurrentContext();
+  NSGraphicsContext	*ctxt = [NSApp context];
 
   self = [super init];
 
@@ -97,7 +166,7 @@ _screenNumbers(int *count)
   // Check for problems
   if (screen < 0)
     {
-      NSLog(@"Internal error: Invalid screen number %d\n",screen);
+      NSLog(@"Internal error: Invalid screen number %d\n", screen);
       RELEASE(self);
       return nil;
     }
@@ -200,9 +269,8 @@ _screenNumbers(int *count)
   // store it for the future.
   if (_supportedWindowDepths == NULL)
     {
-      NSGraphicsContext	*ctxt = GSCurrentContext();
-      _supportedWindowDepths =
-	(NSWindowDepth *)GSAvailableDepthsForScreen(ctxt, _screenNumber);
+      _supportedWindowDepths = (NSWindowDepth*)GSAvailableDepthsForScreen(
+	  [NSApp context], _screenNumber);
 
       // Check the results
       if (_supportedWindowDepths == NULL)
@@ -231,98 +299,6 @@ _screenNumbers(int *count)
       default:
 	return _frame;
     }
-}
-
-/*
- * Class methods
- */
-
-+ (void) initialize
-{
-  if (self == [NSScreen class])
-    {
-      [self setVersion:1];
-    }
-}
-
-static NSScreen *mainScreen = nil;
-
-// Creating NSScreen Instances
-+ (NSScreen*) mainScreen
-{
-  int *windows = 0, count;
-  if (mainScreen)
-    return mainScreen;
-
-  // Initialize the window list.
-  windows = _screenNumbers(&count);
-
-  // If the list is empty quit...
-  if (windows == NULL)
-    return nil; // something is wrong. This shouldn't happen.
-
-  // main screen is always first in the array.
-  mainScreen = [[NSScreen alloc] _initWithScreenNumber: windows[0]];
-  NSZoneFree(NSDefaultMallocZone(), windows); // free the list
-
-  return mainScreen;
-}
-
-+ (NSScreen*) deepestScreen
-{
-  NSArray *screenArray = [NSScreen screens];
-  NSEnumerator *screenEnumerator = nil;
-  NSScreen *deepestScreen = nil, *screen = nil;  
-  int maxBits = 0;
-
-  // Iterate over the list of screens and find the
-  // one with the most depth.
-  screenEnumerator = [screenArray objectEnumerator];
-  while ((screen = [screenEnumerator nextObject]) != nil)
-    {
-      int bits = 0;
-      
-      bits = [screen depth];
-      
-      if (bits > maxBits)
-	{
-	  maxBits = bits;
-	  deepestScreen = screen;
-	}
-    }
-
-  return deepestScreen;
-}
-
-+ (NSArray*) screens
-{
-  int count = 0, index = 0, *windows = 0;
-  NSMutableArray *screenArray = [NSMutableArray array];
-
-  // Get the number of screens.
-  windows = _screenNumbers(&count);
-
-  // If the list is empty throw the appropriate exception and quit...
-  if (windows == NULL)
-    {
-      [NSException
-	raise:NSWindowServerCommunicationException
-	format:@"Unable to retrieve list of screens from window server."];
-      return nil; // something is wrong. This shouldn't happen.
-    }
-
-  // Iterate over the list
-  for (index = 0; index < count; index++)
-    {
-      NSScreen *screen = nil;
-      
-      screen = [[NSScreen alloc] _initWithScreenNumber: windows[index]];
-      [screenArray addObject: AUTORELEASE(screen)];
-    }
-
-  NSZoneFree(NSDefaultMallocZone(), windows); // free the list
-  
-  return [NSArray arrayWithArray: screenArray];
 }
 
 // Release the memory for the depths array.
