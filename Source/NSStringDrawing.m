@@ -1167,7 +1167,6 @@ setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
       NSRange	line;		// Range of current line.
       NSRange	eol;		// Range of newline character.
       unsigned	position;	// Position in NSString.
-      BOOL	firstLine = YES;
 
       /*
        * Determine the range of the next paragraph of text (in 'para') and set
@@ -1185,18 +1184,15 @@ setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
       paraPos = NSMaxRange(eol);
       position = para.location;
 
+      style = (NSParagraphStyle*)[self
+                                     attribute: NSParagraphStyleAttributeName
+                                     atIndex: position
+                                     effectiveRange: 0];
+      if (style == nil)
+          style = defStyle;
+
       do
 	{
-	  if (firstLine == YES)
-	    {
-	      style = (NSParagraphStyle*)[self
-				    attribute: NSParagraphStyleAttributeName
-				      atIndex: position
-			       effectiveRange: 0];
-	      if (style == nil)
-		style = defStyle;
-	    }
-    
 	  /*
 	   * Assemble drawing information for the entire line.
 	   */
@@ -1261,7 +1257,6 @@ setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
       NSRange	line;		// Range of current line.
       NSRange	eol;		// Range of newline character.
       unsigned	position;	// Position in NSString.
-      BOOL	firstLine = YES;
 
       /*
        * Determine the range of the next paragraph of text (in 'para') and set
@@ -1279,18 +1274,15 @@ setupLine(GSTextLine *line, NSAttributedString *str, NSRange range,
       paraPos = NSMaxRange(eol);
       position = para.location;
 
+      style = (NSParagraphStyle*)[self
+                                     attribute: NSParagraphStyleAttributeName
+                                     atIndex: position
+                                     effectiveRange: 0];
+      if (style == nil)
+          style = defStyle;
+
       do
 	{
-	  if (firstLine == YES)
-	    {
-	      style = (NSParagraphStyle*)[self
-				    attribute: NSParagraphStyleAttributeName
-				      atIndex: position
-			       effectiveRange: 0];
-	      if (style == nil)
-		style = defStyle;
-	    }
-    
 	  /*
 	   * Assemble drawing information for the entire line.
 	   */
