@@ -41,16 +41,13 @@
 #include <AppKit/NSNibLoading.h>
 #include <AppKit/NSSpellChecker.h>
 #include <AppKit/NSSpellServer.h>
-#include <AppKit/NSTextField.h>
-#include <AppKit/NSTextView.h>
-#include <AppKit/NSPopUpButton.h>
-#include <AppKit/IMLoading.h>
 #include <AppKit/GSServicesManager.h>
 #include <AppKit/NSApplication.h>
+#include <AppKit/NSTextField.h>
 #include <AppKit/NSMatrix.h>
 #include <AppKit/NSBrowser.h>
 #include <AppKit/NSBrowserCell.h>
-#include <AppKit/NSScrollView.h>
+#include <AppKit/NSPopUpButton.h>
 
 // prototype for function to create name for server
 NSString *GSSpellServerName(NSString *checkerDictionary, NSString *language);
@@ -219,6 +216,8 @@ static int __documentTag = 0;
 {
   if(_serverProxy == nil)
     {
+      // Start the server and retain the reference to the
+      // proxy.
       id proxy = [self _startServerForLanguage: _language];
       if(proxy != nil)
 	{
@@ -238,17 +237,14 @@ static int __documentTag = 0;
 
 - (void)_populateAccessoryView
 {
-  // Make sure that the spell server is up &
   // refresh the columns in the browser
-  [self _serverProxy]; 
   [_accessoryView reloadColumn: 0];
 }
 
 - (void)_handleServerDeath: (NSNotification *)notification
 {
   NSLog(@"Spell server died");
-  RELEASE(_serverProxy);
-  _serverProxy = nil;
+  DESTROY(_serverProxy);
 }
 
 //
@@ -266,12 +262,7 @@ static int __documentTag = 0;
   _spellPanel = nil;
   _serverProxy = nil;
   _currentTag = 0;
-  _ignoredWords = [NSMutableDictionary dictionary];
-  
-  // Start the server and retain the reference to the
-  // proxy.
-  [self _serverProxy];
-  RETAIN(_ignoredWords);
+  _ignoredWords = [NSMutableDictionary new];
 
   // Load the gmodel file
   if(![NSBundle loadNibFile: @"SpellPanel.gmodel"
@@ -319,11 +310,14 @@ static int __documentTag = 0;
 {
   int count = 0;
   NSRange r = NSMakeRange(0,0);
-  r = [[self _serverProxy] _findMisspelledWordInString: aString
-			                      language: _language
-			                  ignoredWords: nil
-			                     wordCount: &count
-			                     countOnly: YES];
+  id proxy = [self _serverProxy];
+
+  if (proxy != nil)
+    r = [proxy _findMisspelledWordInString: aString
+	       language: _language
+	       ignoredWords: nil
+	       wordCount: &count
+	       countOnly: YES];
   
   return count;
 }
@@ -351,8 +345,7 @@ static int __documentTag = 0;
           inSpellDocumentWithTag:(int)tag
 		       wordCount:(int *)wordCount
 {
-  NSRange r = NSMakeRange(0,0);
-  NSString *misspelledWord = nil;
+  NSRange r;
   NSArray *dictForTag = [self ignoredWordsInSpellDocumentWithTag: tag];
   
   _currentTag = tag;
@@ -372,13 +365,18 @@ static int __documentTag = 0;
   // spellserver does not bring down the application.
   NS_DURING
     {
+      id proxy = [self _serverProxy];
+
       // Get the substring and check it.
       NSString *substringToCheck = [stringToCheck substringFromIndex: startingOffset];
-      r = [[self _serverProxy] _findMisspelledWordInString: substringToCheck
-			                          language: _language
-			                      ignoredWords: dictForTag
-			                         wordCount: wordCount
-			                         countOnly: NO];
+      if (proxy == nil)
+	NS_VALUERETURN(NSMakeRange(0,0), NSRange);
+
+      r = [proxy _findMisspelledWordInString: substringToCheck
+		 language: _language
+		 ignoredWords: dictForTag
+		 wordCount: wordCount
+		 countOnly: NO];
       
       if(r.length != 0)
 	{
@@ -392,15 +390,14 @@ static int __documentTag = 0;
 	      // Check the second half of the string
 	      NSString *firstHalfOfString = [stringToCheck 
 					      substringToIndex: startingOffset];
-	      r = [[self _serverProxy] _findMisspelledWordInString: firstHalfOfString
-				                          language: _language
-				                      ignoredWords: dictForTag
-				                         wordCount: wordCount
-				                         countOnly: NO];
+	      r = [proxy _findMisspelledWordInString: firstHalfOfString
+			 language: _language
+			 ignoredWords: dictForTag
+			 wordCount: wordCount
+			 countOnly: NO];
 	    }
 	}
-
-      misspelledWord = [stringToCheck substringFromRange: r];
+      NS_VALUERETURN(r, NSRange);
     }
   NS_HANDLER
     {
@@ -408,10 +405,27 @@ static int __documentTag = 0;
     }
   NS_ENDHANDLER
     
-  [self updateSpellingPanelWithMisspelledWord: misspelledWord];
-  [self _populateAccessoryView];
+  return NSMakeRange(0,0);
+}
 
-  return r;
+- (NSArray *)guessesForWord:(NSString *)word
+{
+  NSArray   *guesses;
+ 
+  // Make the call to the server to get the guesses.
+  NS_DURING
+    {
+      guesses = [[self _serverProxy] _suggestGuessesForWord: word
+				     inLanguage: _language];
+      NS_VALUERETURN(guesses, id);
+    }
+  NS_HANDLER
+    {
+      NSLog(@"%@",[localException reason]);
+    }
+  NS_ENDHANDLER
+
+  return nil;
 }
 
 //
@@ -495,18 +509,26 @@ inSpellDocumentWithTag:(int)tag
 
 - (void)updateSpellingPanelWithMisspelledWord:(NSString *)word
 {
+  if ((word == nil) || ([word isEqualToString: @""]))
+    {
+      [_ignoreButton setEnabled: NO];
+      [_guessButton setEnabled: NO];
+      NSBeep();
+      return;
+    }
+
   [_ignoreButton setEnabled: YES];
   [_guessButton setEnabled: NO];
   [self setWordFieldStringValue: word];
+  [self _populateAccessoryView];
 }
 
 - _findNext: (id)sender
 {
-  BOOL processed = NO;
-  id responder = [[[NSApplication sharedApplication] mainWindow] firstResponder];
+  BOOL processed = [NSApp sendAction: @selector(checkSpelling:) 
+			  to: nil 
+			  from: _spellPanel];
 
-  processed = [responder tryToPerform: @selector(checkSpelling:)
-			 with: _spellPanel];
   if(!processed)
     {
       NSLog(@"No responder found");
@@ -562,11 +584,10 @@ inSpellDocumentWithTag:(int)tag
 
 - _ignore: (id)sender
 {
-  BOOL processed = NO;
-  id responder = [[[NSApplication sharedApplication] mainWindow] firstResponder];
+  BOOL processed = [NSApp sendAction: @selector(ignoreSpelling:) 
+			  to: nil 
+			  from: _wordField];
 
-  processed = [responder tryToPerform: @selector(ignoreSpelling:)
-			 with: _wordField];
   if(!processed)
     {
       NSLog(@"_ignore: No responder found");
@@ -586,11 +607,10 @@ inSpellDocumentWithTag:(int)tag
 
 - _correct: (id)sender
 {
-  BOOL processed = NO;
-  id responder = [[[NSApplication sharedApplication] mainWindow] firstResponder];
+  BOOL processed = [NSApp sendAction: @selector(changeSpelling:) 
+			  to: nil 
+			  from: _wordField];
 
-  processed = [responder tryToPerform: @selector(changeSpelling:)
-			         with: _wordField];
   if(!processed)
     {
       NSLog(@"No responder found");
@@ -614,9 +634,7 @@ inSpellDocumentWithTag:(int)tag
       if(proxy != nil)
 	{
 	  ASSIGN(_language, language);
-	  RELEASE(_serverProxy);
-	  _serverProxy = proxy;
-	  RETAIN(_serverProxy);
+	  ASSIGN(_serverProxy, proxy);
 	}
       else
 	{
@@ -685,25 +703,12 @@ inSpellDocumentWithTag:(int)tag
 - (void) browser: (NSBrowser *)sender createRowsForColumn: (int)column
 	inMatrix: (NSMatrix *)matrix
 {
-  NSArray   *guesses = nil;
-  NSEnumerator    *e = nil;
+  NSArray   *guesses = [self guessesForWord: [_wordField stringValue]];
+  NSEnumerator    *e = [guesses objectEnumerator];
   NSString     *word = nil;
   NSBrowserCell *cell= nil;
   int i = 0;
 
-  // Make the call to the server to get the guesses.
-  NS_DURING
-    {
-      guesses = [_serverProxy _suggestGuessesForWord: [_wordField stringValue]
-			                  inLanguage: _language];
-    }
-  NS_HANDLER
-    {
-      NSLog(@"%@",[localException reason]);
-    }
-  NS_ENDHANDLER
-
-  e = [guesses objectEnumerator];  
   while((word = [e nextObject]) != nil)
     {
       [matrix insertRow: i withCells: nil];
