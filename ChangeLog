@@ -1,3 +1,8 @@
+Tue Oct 22 02:13:55 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Resources/GNUmakefile (string): Renamed to after-strings so 
+	that it works with the new gnustep-make strings targets.
+
 2002-10-21  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSView.m: Key view code ... complete rewrite to match
