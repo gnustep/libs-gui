@@ -1,3 +1,22 @@
+Sat Feb 23 12:11:44 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Patches by Alexander Malmberg <alexander@malmber.org> with many
+	changes -
+	* Source/NSMenuView.m ([-setMenu:]): Do not retain menu.
+	([-dealloc]): Do not release menu.
+	* Source/NSMenuItemCell.m ([-setMenuView:]): Do not retain the menu view.
+	([-dealloc]): Do not release the menu view.
+	([-copyWithZone:]): Set the menuView of the new cell to nil.
+	* Source/NSMenuItemCell.m ([+initialize]): Set version to 2.
+	([-encodeWithCoder:]): Do not encode the menu view.
+	([-initWithCoder:]): Do not decode the menu view.  Retain the
+	decoded menu item.  Do not bother with decoding old versions since
+	this is unused when encoding/decoding menus anyway. :-)
+	* Source/NSMenuView.m ([-dealloc]): Set the menuView of all the
+	menu item cells to nil before releasing them.
+	* Source/NSMenuView.m ([-initWithCoder:]): Set the menu view of
+	all the menu item cells to self after decoding.
+	
 Sat Feb 23 01:28:15 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSTableView.m ([-editColumn:row:withEvent:select:]):
@@ -318,7 +337,6 @@ Sun Feb  3 11:53:13 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 	* Source/GSTextStorage.m: Use new GSI API from latest CVS base
 	* library.
 
->>>>>>> 1.1333
 2002-01-31  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSCell.m
