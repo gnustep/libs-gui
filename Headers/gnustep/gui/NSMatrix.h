@@ -55,6 +55,8 @@ typedef enum _NSMatrixMode {
   int		maxCols;
   int		numRows;
   int		numCols;
+  int		insertingColWithCells;
+  int		insertingRowWithCells;
   NSZone	*myZone;
   Class		cellClass;
   id		cellPrototype;
