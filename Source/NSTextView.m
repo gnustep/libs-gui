@@ -100,6 +100,10 @@ with attributes to make sure this holds.
 How should resizing work? If the text view is set to track the used part
 of the text container, when does it actually update its size? Might need
 a new internal method called from NSLayoutManager when text has changed.
+(Currently NSLayoutManager calls -sizeToFit when text has changed.)
+
+
+Selecting with the keyboard behaves weirdly. Need to check if it's correct.
 
 */
 
@@ -2767,11 +2771,11 @@ Figure out how the additional layout stuff is supposed to work.
       [_backgroundColor set];
       NSRectFill (rect);
 
-      /* Then draw the special background of the new glyphs.  */
-      [_layoutManager drawBackgroundForGlyphRange: drawnRange
-		      atPoint: _textContainerOrigin];
-
     }
+
+  /* Then draw the special background of the new glyphs.  */
+  [_layoutManager drawBackgroundForGlyphRange: drawnRange
+				      atPoint: _textContainerOrigin];
 
 /*printf("%@ drawRect: (%g %g)+(%g %g)\n",
 	self,rect.origin.x,rect.origin.y,
@@ -3811,6 +3815,11 @@ other than copy/paste or dragging. */
 
   startPoint = [self convertPoint: [theEvent locationInWindow] fromView: nil];
   startIndex = [self characterIndexForPoint: startPoint];
+
+  if (startIndex == (unsigned int)-1)
+    {
+      return;
+    }
   
   if ([theEvent modifierFlags] & NSShiftKeyMask)
     {

@@ -1,3 +1,12 @@
+2003-01-27 16:13  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSLayoutManager.m (-setHyphenationFactor:): Fix format
+	string.
+
+	* Source/NSTextView.m (-mouseDown:): Handle empty text views.
+	(-drawRect:): Always draw glyphs' backgrounds (even when not drawing
+	the text view's background).
+
 Mon Jan 27 04:01:32 2003  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSScroller.m ([-mouseDown:]): When the knob slot if
