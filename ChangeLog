@@ -1,3 +1,24 @@
+2001-01-08  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSAffineTransform.h: 
+	* Source/NSAffineTransform.m
+	Added new GS methods [concatenateWithMatrix:] and
+	[deltaPointInMatrixSpace:] to avoid the creation of a new
+	NSAffineTransform in the backend. 
+	* Source/NSScroller.m
+	[setTarget:] don't retain target to avoid retain cycle in
+	NSScrollView. [initWithCoder:] release target after decoding.
+	* Source/NSColorWell.m
+	In [dealloc] call [deactivate] for active colour wells.
+	* Source/NSColorPanel.m
+	Better interaction with the current colour picker. [setTarget:]
+	don't retain target. In [sharedColorPanel] the picker mode is used
+	only to create the panel, not each time the panel is shown. Show
+	the alpha value multiplied by 100.
+	* Source/NSPageLayout.m
+	* Source/NSPrintOperation.m
+	Small improvements.
+	
 Sun Jan  7 03:28:14 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/GSSimpleLayoutManager.m
