@@ -72,9 +72,6 @@ enum {
   BOOL _delegateHasCompareFilter;
   BOOL _delegateHasFilenameFilter;
   BOOL _delegateHasValidNameFilter;
-
-  NSRect _oldContentFrame;
-  NSRect _oldTopViewFrame;
 }
 
 /*
