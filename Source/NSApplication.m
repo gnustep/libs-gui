@@ -2017,6 +2017,48 @@ image.
   [self changeWindowsItem: aWindow  title: aString  filename: isFilename];
 }
 
+- (void) removeWindowsItem: (NSWindow*)aWindow
+{
+  if (_windows_menu)
+    {
+      NSArray	*itemArray;
+      unsigned	count;
+
+      itemArray = [_windows_menu itemArray];
+      count = [itemArray count];
+      while (count-- > 0)
+	{
+	  id item = [itemArray objectAtIndex: count];
+
+	  if ([item target] == aWindow)
+	    {
+	      [_windows_menu removeItemAtIndex: count];
+	      return;
+	    }
+	}
+    }
+}
+
+- (void) setImageForWindowsItem: (NSMenuItem *)item
+{
+  NSImage *oldImage = [item image];
+  NSImage *newImage;
+
+  if ([[item target] isDocumentEdited])
+    {
+      newImage = [NSImage imageNamed: @"common_WMCloseBroken"];
+    }
+  else
+    {
+      newImage = [NSImage imageNamed: @"common_WMClose"];
+    }
+
+  if (newImage != oldImage)
+    {
+      [item setImage: newImage];
+    }
+}
+
 - (void) changeWindowsItem: (NSWindow*)aWindow
 		     title: (NSString*)aString
 		  filename: (BOOL)isFilename
@@ -2121,27 +2163,44 @@ image.
 			keyEquivalent: @""
 			atIndex: i];
   [item setTarget: aWindow];
-  // TODO: When changing for a window with a file, we should also set the image.
+
+  // When changing for a window with a file, we should also set the image.
+  [self setImageForWindowsItem: item];
 }
 
-- (void) removeWindowsItem: (NSWindow*)aWindow
+- (void) updateWindowsItem: (NSWindow*)aWindow
 {
-  if (_windows_menu)
+  NSMenu *menu;
+
+  menu = [self windowsMenu];
+  if (menu != nil)
     {
       NSArray	*itemArray;
       unsigned	count;
+      unsigned	i;
+      BOOL	found = NO;
 
-      itemArray = [_windows_menu itemArray];
+      itemArray = [menu itemArray];
       count = [itemArray count];
-      while (count-- > 0)
+      for (i = 0; i < count; i++)
 	{
-	  id item = [itemArray objectAtIndex: count];
+	  id	item = [itemArray objectAtIndex: i];
 
 	  if ([item target] == aWindow)
 	    {
-	      [_windows_menu removeItemAtIndex: count];
-	      return;
+	      [self setImageForWindowsItem: item];
+	      break;
 	    }
+	}
+
+      if (found == NO)
+	{
+	  NSString	*t = [aWindow title];
+	  NSString	*f = [aWindow representedFilename];
+
+	  [self changeWindowsItem: aWindow
+			    title: t
+			 filename: [t isEqual: f]];
 	}
     }
 }
@@ -2197,81 +2256,6 @@ image.
 	  }
       }
   }
-}
-
-
-- (void) updateWindowsItem: (NSWindow*)aWindow
-{
-  NSMenu	*menu;
-  NSMenuView	*view;
-
-  menu = [self windowsMenu];
-  if (menu != nil)
-    {
-      NSArray	*itemArray;
-      unsigned	count;
-      unsigned	i;
-      BOOL	found = NO;
-
-      view = [menu menuRepresentation];
-      itemArray = [menu itemArray];
-      count = [itemArray count];
-      for (i = 0; i < count; i++)
-	{
-	  id	item = [itemArray objectAtIndex: i];
-
-	  if ([item target] == aWindow)
-	    {
-	      NSMenuItemCell		*cell;
-	      NSCellImagePosition	oldPos;
-	      NSImage			*oldImage;
-	      NSImage			*newImage;
-	      BOOL			changed;
-
-	      found = YES;
-	      cell = [view menuItemCellForItemAtIndex: i];
-	      oldPos = [cell imagePosition];
-	      oldImage = [cell image];
-	      newImage = oldImage;
-	      changed = NO;
-
-	      if (oldPos != NSImageLeft)
-		{
-		  [cell setImagePosition: NSImageLeft];
-		  changed = YES;
-		}
-	      if ([aWindow isDocumentEdited])
-		{
-		  newImage = [NSImage imageNamed: @"common_WMCloseBroken"];
-		}
-	      else
-		{
-		  newImage = [NSImage imageNamed: @"common_WMClose"];
-		}
-	      if (newImage != oldImage)
-		{
-		  [item setImage: newImage];
-		  [cell setImage: newImage];
-		  changed = YES;
-		}
-	      if (changed)
-		{
-		  [menu sizeToFit];
-		  [view setNeedsDisplayForItemAtIndex: i];
-		}
-	      break;
-	    }
-	}
-      if (found == NO)
-	{
-	  NSString	*t = [aWindow title];
-	  NSString	*f = [aWindow representedFilename];
-
-	  [self changeWindowsItem: aWindow
-			    title: t
-			 filename: [t isEqual: f]];
-	}
-    }
 }
 
 - (NSMenu*) windowsMenu
