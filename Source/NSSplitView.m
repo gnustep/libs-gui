@@ -84,36 +84,52 @@
       r = [v frame];
       /* if the click is inside of a subview, return.
 	 this should never happen */
+      if (NSPointInRect(p, r))
+	{
+	  NSLog(@"NSSplitView got mouseDown that should have gone to subview");
+	  goto RETURN_LABEL;
+	}
       if ([self isVertical] == NO)
         {
-	  if ((p.y > NSMinY(r)) && (p.y < NSMaxY(r)))
-	    goto RETURN_LABEL;
-	  if (NSMaxY(r) > p.y)
-            {
-	      offset = i;
+	  if (NSMaxY(r) < p.y)
+	    {				// can happen only when i>0.
+ 	      NSView	*tempView;
+
+	      offset = i-1;
 
 	      /* get the enclosing rect for the two views */
-	      if (prev) r = [prev frame];
-	      else r = NSZeroRect;
-	      if (v) r1= [v frame];
+	      if (prev)
+		r = [prev frame];
+	      else
+		{
+		  NSLog(@"NSSplitView got mouseDown above top subview");
+		  r = NSZeroRect; // should not occur.
+		}
+	      if (v)
+		r1 = [v frame];
 	      bigRect = r;
-	      bigRect = NSUnionRect(r1 , bigRect);
+	      bigRect = NSUnionRect(r1, bigRect);
+	      tempView = prev; prev = v; v = tempView;
 	      break;
             }
 	  prev = v;
         }
       else
         {
-	  if ((p.x > NSMinX(r)) && (p.x < NSMaxX(r)))
-	    goto RETURN_LABEL;
-	  if ((NSMinX(r) + NSWidth(r)) > p.x)
+	  if (NSMinX(r) > p.x)
             {
 	      offset = i;
 
 	      /* get the enclosing rect for the two views */
-	      if (prev) r = [prev frame];
-	      else r = NSZeroRect;
-	      if (v) r1= [v frame];
+	      if (prev)
+		r = [prev frame];
+	      else
+		{
+		  NSLog(@"NSSplitView got mouseDown before left subview");
+		  r = NSZeroRect;
+		}
+	      if (v)
+		r1 = [v frame];
 	      bigRect = r;
 	      bigRect = NSUnionRect(r1 , bigRect);
 	      break;
@@ -151,8 +167,10 @@
 		    maxCoordinate: &delMaxY
 		    ofSubviewAt: offset];
 	  /* we are still constrained by the original bounds */
-	  if (delMinY > minCoord) minCoord = delMinY;
-	  if (delMaxY < maxCoord) maxCoord = delMaxY;
+	  if (delMinY > minCoord)
+	    minCoord = delMinY;
+	  if (delMaxY < maxCoord)
+	    maxCoord = delMaxY;
         }
       else
         {
@@ -162,8 +180,10 @@
 		    maxCoordinate: &delMaxX
 		    ofSubviewAt: offset];
 	  /* we are still constrained by the original bounds */
-	  if (delMinX > minCoord) minCoord = delMinX;
-	  if (delMaxX < maxCoord) maxCoord = delMaxX;
+	  if (delMinX > minCoord)
+	    minCoord = delMinX;
+	  if (delMaxX < maxCoord)
+	    maxCoord = delMaxX;
         }
     }
 
@@ -227,12 +247,14 @@
   if ([self isVertical] == NO)
     {
       r.size.height = p.y - NSMinY(bigRect) - (divVertical/2.);
-      if (NSHeight(r) < 1.) r.size.height = 1.;
+      if (NSHeight(r) < 1.)
+	r.size.height = 1.;
     }
   else
     {
       r.size.width = p.x - NSMinX(bigRect) - (divHorizontal/2.);
-      if (NSWidth(r) < 1.) r.size.width = 1.;
+      if (NSWidth(r) < 1.)
+	r.size.width = 1.;
     }
   [prev setFrame: r];
   NSDebugLog(@"drawing PREV at x: %d, y: %d, w: %d, h: %d\n",
@@ -242,16 +264,20 @@
   if ([self isVertical] == NO)
     {
       r1.origin.y = p.y + (divVertical/2.);
-      if (NSMinY(r1) < 0.) r1.origin.y = 0.;
+      if (NSMinY(r1) < 0.)
+	r1.origin.y = 0.;
       r1.size.height = NSHeight(bigRect) - NSHeight(r) - divVertical;
-      if (NSHeight(r) < 1.) r.size.height = 1.;
+      if (NSHeight(r) < 1.)
+	r.size.height = 1.;
     }
   else
     {
       r1.origin.x = p.x + (divHorizontal/2.);
-      if (NSMinX(r1) < 0.) r1.origin.x = 0.;
+      if (NSMinX(r1) < 0.)
+	r1.origin.x = 0.;
       r1.size.width = NSWidth(bigRect) - NSWidth(r) - divHorizontal;
-      if (NSWidth(r1) < 1.) r1.size.width = 1.;
+      if (NSWidth(r1) < 1.)
+	r1.size.width = 1.;
     }
   [v setFrame: r1];
   NSDebugLog(@"drawing LAST at x: %d, y: %d, w: %d, h: %d\n",
@@ -308,7 +334,7 @@ RETURN_LABEL:
 	      oldTotal +=  NSHeight(frames[i]);
 	    }
 	  scale = newTotal/oldTotal;
-	  running = 0.0;
+	  running = newTotal;
 	  for (i = 0; i < count; i++)
 	    {
 	      float	newHeight;
@@ -320,8 +346,9 @@ RETURN_LABEL:
 	      else
 		newHeight = ceil(newHeight);
 	      newSize = NSMakeSize(NSWidth(bd), newHeight);
+	      running -= newHeight;
 	      newPoint = NSMakePoint(0.0, running);
-	      running += newHeight + thickness;
+	      running -= thickness;
 	      [views[i] setFrameSize: newSize];
 	      [views[i] setFrameOrigin: newPoint];
 	    }
@@ -466,8 +493,8 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 	divRect = [v frame];
 	if ([self isVertical] == NO)
 	  {
-	    divRect.origin.y = NSMaxY(divRect);
 	    divRect.size.height = [self dividerThickness];
+	    divRect.origin.y -= divRect.size.height;
 	  }
 	else
 	  {
