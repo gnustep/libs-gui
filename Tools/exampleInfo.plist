@@ -9,7 +9,7 @@
 	default = "Open URL";
 	English = "Open URL";
 	Italian = "Apri URL";
-	German = "URL öffnen";
+	German = "URL \U00F6ffnen";
       };
       NSKeyEquivalent = {
 	default = O;
