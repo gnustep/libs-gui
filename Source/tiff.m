@@ -406,9 +406,6 @@ NSTiffRead(TIFF* image, NSTiffInfo* info, char* data)
 		inP++;
 	      }
 	  }
-	free(map->red);
-	free(map->green);
-	free(map->blue);
 	free(map);
       }
       break;
@@ -584,3 +581,5 @@ NSTiffGetColormap(TIFF* image)
   free(info);
   return map;
 }
+
+

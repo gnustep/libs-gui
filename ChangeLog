@@ -1,3 +1,8 @@
+2000-09-27  Adam Fedor  <fedor@gnu.org>
+
+	* Source/tiff.m (NSTiffRead): For PHOTOMETRIC_PALETTE, don't free
+	colormap tables, they are owned by libtiff.
+
 2000-09-26  Lyndon Tremblay  <humasect@home.com>
 
 
