@@ -36,10 +36,9 @@
 
 @class NSTextAttachment;
 
-// global NSString attribute names used in accessing  
-// the respective property in a text attributes 
-// dictionary.  if the key is not in the dictionary 	
-// the default value is assumed  											
+/* Global NSString attribute names used in accessing the respective
+   property in a text attributes dictionary.  if the key is not in the
+   dictionary the default value is assumed.  */
 APPKIT_EXPORT NSString *NSFontAttributeName;
 APPKIT_EXPORT NSString *NSParagraphStyleAttributeName;
 APPKIT_EXPORT NSString *NSForegroundColorAttributeName;
@@ -52,7 +51,7 @@ APPKIT_EXPORT NSString *NSBaselineOffsetAttributeName;
 APPKIT_EXPORT NSString *NSKernAttributeName;
 APPKIT_EXPORT NSString *NSLinkAttributeName;
 
-// Currently supported values for NSUnderlineStyleAttributeName
+/* Currently supported values for NSUnderlineStyleAttributeName.  */
 enum 									
 {
   GSNoUnderlineStyle = 0,
