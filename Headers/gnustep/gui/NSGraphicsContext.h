@@ -366,6 +366,49 @@ NSGraphicsContext	*GSCurrentContext();
 - (void) DPSsetalpha: (float)a;
 - (void) DPScurrentalpha: (float *)a;
 
+/*-------------------------------------------------------------------------*/
+/* Window Extensions Ops */
+/*-------------------------------------------------------------------------*/
+- (void) DPSwindow: (float) x : (float) y : (float) w : (float) h : (int) type : (int *) num ;
+- (void) DPStermwindow: (int) num ;
+- (void) DPSstylewindow: (int) style : (int) num ;
+- (void) DPStitlewindow: (const char *) window_title : (int) num ;
+- (void) DPSminiwindow: (int) num ;
+- (void) DPSwindowdevice: (int) num ;
+- (void) DPSwindowdeviceround: (int) num ;
+- (void) DPScurrentwindow: (int *) num ;
+- (void) DPSorderwindow: (int) op : (int) otherWin : (int) winNum ;
+- (void) DPSmovewindow: (float) x : (float) y : (int) num ;
+- (void) DPSupdatewindow: (int) win ;
+- (void) DPSplacewindow: (float) x : (float) y : (float) w : (float) h : (int) win ;
+- (void) DPSfrontwindow: (int *) num ;
+- (void) DPSfindwindow: (float) x : (float) y : (int) op : (int) otherWin : (float *) lx : (float *) ly : (int *) winFound : (int *) didFind ;
+- (void) DPScurrentwindowbounds: (int) num : (float *) x : (float *) y : (float *) w : (float *) h ;
+- (void) DPSsetexposurecolor;
+- (void) DPSsetsendexposed: (int) truth : (int) num ;
+- (void) DPSsetautofill: (int) truth : (int) num ;
+- (void) DPScurrentwindowalpha: (int) win : (int *) alpha ;
+- (void) DPScountscreenlist: (int) context : (int *) count ;
+- (void) DPSscreenlist: (int) context : (int) count : (int *) windows ;
+- (void) DPSsetowner: (int) owner : (int) win ;
+- (void) DPScurrentowner: (int) win : (int *) owner ;
+- (void) DPSsetwindowtype: (int) type : (int) win ;
+- (void) DPSsetwindowlevel: (int) level : (int) win ;
+- (void) DPScurrentwindowlevel: (int) win : (int *) level ;
+- (void) DPScountwindowlist: (int) context : (int *) count ;
+- (void) DPSwindowlist: (int) context : (int) count : (int *) windows ;
+- (void) DPSsetwindowdepthlimit: (int) limit : (int) win ;
+- (void) DPScurrentwindowdepthlimit: (int) win : (int *) limit ;
+- (void) DPScurrentwindowdepth: (int) win : (int *) depth ;
+- (void) DPSsetdefaultdepthlimit: (int) limit ;
+- (void) DPScurrentdefaultdepthlimit: (int *) limit ;
+- (void) DPSsetmaxsize: (float) width : (float) height : (int) win ;
+- (void) DPSsetminsize: (float) width : (float) height : (int) win ;
+- (void) DPSsetresizeincrements: (float) width : (float) height : (int) win ;
+- (void) DPSflushwindowrect: (float) x : (float) y : (float) w : (float) h : (int) win ;
+- (void) DPScapturemouse: (int) win ;
+- (void) DPSreleasemouse;
+
 /* ----------------------------------------------------------------------- */
 /* GNUstep Event and other I/O extensions */
 /* ----------------------------------------------------------------------- */

@@ -730,6 +730,165 @@ DPScurrentalpha(GSCTXT *ctxt, float *alpha)
 __attribute__((unused));
 
 /* ----------------------------------------------------------------------- */
+/* Window ops extensions */
+/* ----------------------------------------------------------------------- */
+static inline void
+DPSwindow(GSCTXT *ctxt, float x, float y, float w, float h, int type, int * num)
+__attribute__((unused));
+
+static inline void
+DPStermwindow(GSCTXT *ctxt, int num)
+__attribute__((unused));
+
+static inline void
+DPSstylewindow(GSCTXT *ctxt, int style, int num)
+__attribute__((unused));
+
+static inline void
+DPStitlewindow(GSCTXT *ctxt, const char * window_title, int num)
+__attribute__((unused));
+
+static inline void
+DPSminiwindow(GSCTXT *ctxt, int num)
+__attribute__((unused));
+
+static inline void
+DPSwindowdevice(GSCTXT *ctxt, int num)
+__attribute__((unused));
+
+static inline void
+DPSwindowdeviceround(GSCTXT *ctxt, int num)
+__attribute__((unused));
+
+static inline void
+DPScurrentwindow(GSCTXT *ctxt, int * num)
+__attribute__((unused));
+
+static inline void
+DPSorderwindow(GSCTXT *ctxt, int op, int otherWin, int winNum)
+__attribute__((unused));
+
+static inline void
+DPSmovewindow(GSCTXT *ctxt, float x, float y, int num)
+__attribute__((unused));
+
+static inline void
+DPSupdatewindow(GSCTXT *ctxt, int win)
+__attribute__((unused));
+
+static inline void
+DPSplacewindow(GSCTXT *ctxt, float x, float y, float w, float h, int win)
+__attribute__((unused));
+
+static inline void
+DPSfrontwindow(GSCTXT *ctxt, int * num)
+__attribute__((unused));
+
+static inline void
+DPSfindwindow(GSCTXT *ctxt, float x, float y, int op, int otherWin, float * lx, float * ly, int * winFound, int * didFind)
+__attribute__((unused));
+
+static inline void
+DPScurrentwindowbounds(GSCTXT *ctxt, int num, float * x, float * y, float * w, float * h)
+__attribute__((unused));
+
+static inline void
+DPSsetexposurecolor(GSCTXT *ctxt)
+__attribute__((unused));
+
+static inline void
+DPSsetsendexposed(GSCTXT *ctxt, int truth, int num)
+__attribute__((unused));
+
+static inline void
+DPSsetautofill(GSCTXT *ctxt, int truth, int num)
+__attribute__((unused));
+
+static inline void
+DPScurrentwindowalpha(GSCTXT *ctxt, int win, int * alpha)
+__attribute__((unused));
+
+static inline void
+DPScountscreenlist(GSCTXT *ctxt, int context, int * count)
+__attribute__((unused));
+
+static inline void
+DPSscreenlist(GSCTXT *ctxt, int context, int count, int * windows)
+__attribute__((unused));
+
+static inline void
+DPSsetowner(GSCTXT *ctxt, int owner, int win)
+__attribute__((unused));
+
+static inline void
+DPScurrentowner(GSCTXT *ctxt, int win, int * owner)
+__attribute__((unused));
+
+static inline void
+DPSsetwindowtype(GSCTXT *ctxt, int type, int win)
+__attribute__((unused));
+
+static inline void
+DPSsetwindowlevel(GSCTXT *ctxt, int level, int win)
+__attribute__((unused));
+
+static inline void
+DPScurrentwindowlevel(GSCTXT *ctxt, int win, int * level)
+__attribute__((unused));
+
+static inline void
+DPScountwindowlist(GSCTXT *ctxt, int context, int * count)
+__attribute__((unused));
+
+static inline void
+DPSwindowlist(GSCTXT *ctxt, int context, int count, int * windows)
+__attribute__((unused));
+
+static inline void
+DPSsetwindowdepthlimit(GSCTXT *ctxt, int limit, int win)
+__attribute__((unused));
+
+static inline void
+DPScurrentwindowdepthlimit(GSCTXT *ctxt, int win, int * limit)
+__attribute__((unused));
+
+static inline void
+DPScurrentwindowdepth(GSCTXT *ctxt, int win, int * depth)
+__attribute__((unused));
+
+static inline void
+DPSsetdefaultdepthlimit(GSCTXT *ctxt, int limit)
+__attribute__((unused));
+
+static inline void
+DPScurrentdefaultdepthlimit(GSCTXT *ctxt, int * limit)
+__attribute__((unused));
+
+static inline void
+DPSsetmaxsize(GSCTXT *ctxt, float width, float height, int win)
+__attribute__((unused));
+
+static inline void
+DPSsetminsize(GSCTXT *ctxt, float width, float height, int win)
+__attribute__((unused));
+
+static inline void
+DPSsetresizeincrements(GSCTXT *ctxt, float width, float height, int win)
+__attribute__((unused));
+
+static inline void
+DPSflushwindowrect(GSCTXT *ctxt, float x, float y, float w, float h, int win)
+__attribute__((unused));
+
+static inline void
+DPScapturemouse(GSCTXT *ctxt, int win)
+__attribute__((unused));
+
+static inline void
+DPSreleasemouse(GSCTXT *ctxt)
+__attribute__((unused));
+
+/* ----------------------------------------------------------------------- */
 /* Color operations */
 /* ----------------------------------------------------------------------- */
 static inline void
@@ -1929,6 +2088,282 @@ DPScurrentalpha(GSCTXT *ctxt, float *a)
 {
   (ctxt->methods->DPScurrentalpha_)
     (ctxt, @selector(DPScurrentalpha:), a);
+}
+
+/* ----------------------------------------------------------------------- */
+/* Window ops extensions */
+/* ----------------------------------------------------------------------- */
+static inline void
+DPSwindow(GSCTXT *ctxt, float x, float y, float w, float h, int type, int * num)
+{
+  (ctxt->methods->DPSwindow______)
+    (ctxt, @selector(DPSwindow::::::), x, y, w, h, type, num);
+}
+
+static inline void
+DPStermwindow(GSCTXT *ctxt, int num)
+{
+  (ctxt->methods->DPStermwindow_)
+    (ctxt, @selector(DPStermwindow:), num);
+}
+
+static inline void
+DPSstylewindow(GSCTXT *ctxt, int style, int num)
+{
+  (ctxt->methods->DPSstylewindow__)
+    (ctxt, @selector(DPSstylewindow::), style, num);
+}
+
+static inline void
+DPStitlewindow(GSCTXT *ctxt, const char * window_title, int num)
+{
+  (ctxt->methods->DPStitlewindow__)
+    (ctxt, @selector(DPStitlewindow::), window_title, num);
+}
+
+static inline void
+DPSminiwindow(GSCTXT *ctxt, int num)
+{
+  (ctxt->methods->DPSminiwindow_)
+    (ctxt, @selector(DPSminiwindow:), num);
+}
+
+static inline void
+DPSwindowdevice(GSCTXT *ctxt, int num)
+{
+  (ctxt->methods->DPSwindowdevice_)
+    (ctxt, @selector(DPSwindowdevice:), num);
+}
+
+static inline void
+DPSwindowdeviceround(GSCTXT *ctxt, int num)
+{
+  (ctxt->methods->DPSwindowdeviceround_)
+    (ctxt, @selector(DPSwindowdeviceround:), num);
+}
+
+static inline void
+DPScurrentwindow(GSCTXT *ctxt, int * num)
+{
+  (ctxt->methods->DPScurrentwindow_)
+    (ctxt, @selector(DPScurrentwindow:), num);
+}
+
+static inline void
+DPSorderwindow(GSCTXT *ctxt, int op, int otherWin, int winNum)
+{
+  (ctxt->methods->DPSorderwindow___)
+    (ctxt, @selector(DPSorderwindow:::), op, otherWin, winNum);
+}
+
+static inline void
+DPSmovewindow(GSCTXT *ctxt, float x, float y, int num)
+{
+  (ctxt->methods->DPSmovewindow___)
+    (ctxt, @selector(DPSmovewindow:::), x, y, num);
+}
+
+static inline void
+DPSupdatewindow(GSCTXT *ctxt, int win)
+{
+  (ctxt->methods->DPSupdatewindow_)
+    (ctxt, @selector(DPSupdatewindow:), win);
+}
+
+static inline void
+DPSplacewindow(GSCTXT *ctxt, float x, float y, float w, float h, int win)
+{
+  (ctxt->methods->DPSplacewindow_____)
+    (ctxt, @selector(DPSplacewindow:::::), x, y, w, h, win);
+}
+
+static inline void
+DPSfrontwindow(GSCTXT *ctxt, int * num)
+{
+  (ctxt->methods->DPSfrontwindow_)
+    (ctxt, @selector(DPSfrontwindow:), num);
+}
+
+static inline void
+DPSfindwindow(GSCTXT *ctxt, float x, float y, int op, int otherWin, float * lx, float * ly, int * winFound, int * didFind)
+{
+  (ctxt->methods->DPSfindwindow________)
+    (ctxt, @selector(DPSfindwindow::::::::), x, y, op, otherWin, lx, ly, winFound, didFind);
+}
+
+static inline void
+DPScurrentwindowbounds(GSCTXT *ctxt, int num, float * x, float * y, float * w, float * h)
+{
+  (ctxt->methods->DPScurrentwindowbounds_____)
+    (ctxt, @selector(DPScurrentwindowbounds:::::), num, x, y, w, h);
+}
+
+static inline void
+DPSsetexposurecolor(GSCTXT *ctxt)
+{
+  (ctxt->methods->DPSsetexposurecolor)
+    (ctxt, @selector(DPSsetexposurecolor));
+}
+
+static inline void
+DPSsetsendexposed(GSCTXT *ctxt, int truth, int num)
+{
+  (ctxt->methods->DPSsetsendexposed__)
+    (ctxt, @selector(DPSsetsendexposed::), truth, num);
+}
+
+static inline void
+DPSsetautofill(GSCTXT *ctxt, int truth, int num)
+{
+  (ctxt->methods->DPSsetautofill__)
+    (ctxt, @selector(DPSsetautofill::), truth, num);
+}
+
+static inline void
+DPScurrentwindowalpha(GSCTXT *ctxt, int win, int * alpha)
+{
+  (ctxt->methods->DPScurrentwindowalpha__)
+    (ctxt, @selector(DPScurrentwindowalpha::), win, alpha);
+}
+
+static inline void
+DPScountscreenlist(GSCTXT *ctxt, int context, int * count)
+{
+  (ctxt->methods->DPScountscreenlist__)
+    (ctxt, @selector(DPScountscreenlist::), context, count);
+}
+
+static inline void
+DPSscreenlist(GSCTXT *ctxt, int context, int count, int * windows)
+{
+  (ctxt->methods->DPSscreenlist___)
+    (ctxt, @selector(DPSscreenlist:::), context, count, windows);
+}
+
+static inline void
+DPSsetowner(GSCTXT *ctxt, int owner, int win)
+{
+  (ctxt->methods->DPSsetowner__)
+    (ctxt, @selector(DPSsetowner::), owner, win);
+}
+
+static inline void
+DPScurrentowner(GSCTXT *ctxt, int win, int * owner)
+{
+  (ctxt->methods->DPScurrentowner__)
+    (ctxt, @selector(DPScurrentowner::), win, owner);
+}
+
+static inline void
+DPSsetwindowtype(GSCTXT *ctxt, int type, int win)
+{
+  (ctxt->methods->DPSsetwindowtype__)
+    (ctxt, @selector(DPSsetwindowtype::), type, win);
+}
+
+static inline void
+DPSsetwindowlevel(GSCTXT *ctxt, int level, int win)
+{
+  (ctxt->methods->DPSsetwindowlevel__)
+    (ctxt, @selector(DPSsetwindowlevel::), level, win);
+}
+
+static inline void
+DPScurrentwindowlevel(GSCTXT *ctxt, int win, int * level)
+{
+  (ctxt->methods->DPScurrentwindowlevel__)
+    (ctxt, @selector(DPScurrentwindowlevel::), win, level);
+}
+
+static inline void
+DPScountwindowlist(GSCTXT *ctxt, int context, int * count)
+{
+  (ctxt->methods->DPScountwindowlist__)
+    (ctxt, @selector(DPScountwindowlist::), context, count);
+}
+
+static inline void
+DPSwindowlist(GSCTXT *ctxt, int context, int count, int * windows)
+{
+  (ctxt->methods->DPSwindowlist___)
+    (ctxt, @selector(DPSwindowlist:::), context, count, windows);
+}
+
+static inline void
+DPSsetwindowdepthlimit(GSCTXT *ctxt, int limit, int win)
+{
+  (ctxt->methods->DPSsetwindowdepthlimit__)
+    (ctxt, @selector(DPSsetwindowdepthlimit::), limit, win);
+}
+
+static inline void
+DPScurrentwindowdepthlimit(GSCTXT *ctxt, int win, int * limit)
+{
+  (ctxt->methods->DPScurrentwindowdepthlimit__)
+    (ctxt, @selector(DPScurrentwindowdepthlimit::), win, limit);
+}
+
+static inline void
+DPScurrentwindowdepth(GSCTXT *ctxt, int win, int * depth)
+{
+  (ctxt->methods->DPScurrentwindowdepth__)
+    (ctxt, @selector(DPScurrentwindowdepth::), win, depth);
+}
+
+static inline void
+DPSsetdefaultdepthlimit(GSCTXT *ctxt, int limit)
+{
+  (ctxt->methods->DPSsetdefaultdepthlimit_)
+    (ctxt, @selector(DPSsetdefaultdepthlimit:), limit);
+}
+
+static inline void
+DPScurrentdefaultdepthlimit(GSCTXT *ctxt, int * limit)
+{
+  (ctxt->methods->DPScurrentdefaultdepthlimit_)
+    (ctxt, @selector(DPScurrentdefaultdepthlimit:), limit);
+}
+
+static inline void
+DPSsetmaxsize(GSCTXT *ctxt, float width, float height, int win)
+{
+  (ctxt->methods->DPSsetmaxsize___)
+    (ctxt, @selector(DPSsetmaxsize:::), width, height, win);
+}
+
+static inline void
+DPSsetminsize(GSCTXT *ctxt, float width, float height, int win)
+{
+  (ctxt->methods->DPSsetminsize___)
+    (ctxt, @selector(DPSsetminsize:::), width, height, win);
+}
+
+static inline void
+DPSsetresizeincrements(GSCTXT *ctxt, float width, float height, int win)
+{
+  (ctxt->methods->DPSsetresizeincrements___)
+    (ctxt, @selector(DPSsetresizeincrements:::), width, height, win);
+}
+
+static inline void
+DPSflushwindowrect(GSCTXT *ctxt, float x, float y, float w, float h, int win)
+{
+  (ctxt->methods->DPSflushwindowrect_____)
+    (ctxt, @selector(DPSflushwindowrect:::::), x, y, w, h, win);
+}
+
+static inline void
+DPScapturemouse(GSCTXT *ctxt, int win)
+{
+  (ctxt->methods->DPScapturemouse_)
+    (ctxt, @selector(DPScapturemouse:), win);
+}
+
+static inline void
+DPSreleasemouse(GSCTXT *ctxt)
+{
+  (ctxt->methods->DPSreleasemouse)
+    (ctxt, @selector(DPSreleasemouse));
 }
 
 /* ----------------------------------------------------------------------- */

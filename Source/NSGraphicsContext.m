@@ -363,7 +363,6 @@ NSGraphicsContext	*GSCurrentContext()
 
 #define	GET_IMP(X) ((void*) [self instanceMethodForSelector: (X)])
 
-  methodTable.DPScurrentcmykcolor____ =
 /* ----------------------------------------------------------------------- */
 /* Color operations */
 /* ----------------------------------------------------------------------- */
@@ -731,6 +730,87 @@ NSGraphicsContext	*GSCurrentContext()
     GET_IMP(@selector(DPSsetalpha:));
   methodTable.DPScurrentalpha_ = 
     GET_IMP(@selector(DPScurrentalpha:));
+/*-------------------------------------------------------------------------*/
+/* Window Extension Ops */
+/*-------------------------------------------------------------------------*/
+  methodTable.DPSwindow______ = 
+    GET_IMP(@selector(DPSwindow::::::));
+  methodTable.DPStermwindow_ = 
+    GET_IMP(@selector(DPStermwindow:));
+  methodTable.DPSstylewindow__ = 
+    GET_IMP(@selector(DPSstylewindow::));
+  methodTable.DPStitlewindow__ = 
+    GET_IMP(@selector(DPStitlewindow::));
+  methodTable.DPSminiwindow_ = 
+    GET_IMP(@selector(DPSminiwindow:));
+  methodTable.DPSwindowdevice_ = 
+    GET_IMP(@selector(DPSwindowdevice:));
+  methodTable.DPSwindowdeviceround_ = 
+    GET_IMP(@selector(DPSwindowdeviceround:));
+  methodTable.DPScurrentwindow_ = 
+    GET_IMP(@selector(DPScurrentwindow:));
+  methodTable.DPSorderwindow___ = 
+    GET_IMP(@selector(DPSorderwindow:::));
+  methodTable.DPSmovewindow___ = 
+    GET_IMP(@selector(DPSmovewindow:::));
+  methodTable.DPSupdatewindow_ = 
+    GET_IMP(@selector(DPSupdatewindow:));
+  methodTable.DPSplacewindow_____ = 
+    GET_IMP(@selector(DPSplacewindow:::::));
+  methodTable.DPSfrontwindow_ = 
+    GET_IMP(@selector(DPSfrontwindow:));
+  methodTable.DPSfindwindow________ = 
+    GET_IMP(@selector(DPSfindwindow::::::::));
+  methodTable.DPScurrentwindowbounds_____ = 
+    GET_IMP(@selector(DPScurrentwindowbounds:::::));
+  methodTable.DPSsetexposurecolor = 
+    GET_IMP(@selector(DPSsetexposurecolor));
+  methodTable.DPSsetsendexposed__ = 
+    GET_IMP(@selector(DPSsetsendexposed::));
+  methodTable.DPSsetautofill__ = 
+    GET_IMP(@selector(DPSsetautofill::));
+  methodTable.DPScurrentwindowalpha__ = 
+    GET_IMP(@selector(DPScurrentwindowalpha::));
+  methodTable.DPScountscreenlist__ = 
+    GET_IMP(@selector(DPScountscreenlist::));
+  methodTable.DPSscreenlist___ = 
+    GET_IMP(@selector(DPSscreenlist:::));
+  methodTable.DPSsetowner__ = 
+    GET_IMP(@selector(DPSsetowner::));
+  methodTable.DPScurrentowner__ = 
+    GET_IMP(@selector(DPScurrentowner::));
+  methodTable.DPSsetwindowtype__ = 
+    GET_IMP(@selector(DPSsetwindowtype::));
+  methodTable.DPSsetwindowlevel__ = 
+    GET_IMP(@selector(DPSsetwindowlevel::));
+  methodTable.DPScurrentwindowlevel__ = 
+    GET_IMP(@selector(DPScurrentwindowlevel::));
+  methodTable.DPScountwindowlist__ = 
+    GET_IMP(@selector(DPScountwindowlist::));
+  methodTable.DPSwindowlist___ = 
+    GET_IMP(@selector(DPSwindowlist:::));
+  methodTable.DPSsetwindowdepthlimit__ = 
+    GET_IMP(@selector(DPSsetwindowdepthlimit::));
+  methodTable.DPScurrentwindowdepthlimit__ = 
+    GET_IMP(@selector(DPScurrentwindowdepthlimit::));
+  methodTable.DPScurrentwindowdepth__ = 
+    GET_IMP(@selector(DPScurrentwindowdepth::));
+  methodTable.DPSsetdefaultdepthlimit_ = 
+    GET_IMP(@selector(DPSsetdefaultdepthlimit:));
+  methodTable.DPScurrentdefaultdepthlimit_ = 
+    GET_IMP(@selector(DPScurrentdefaultdepthlimit:));
+  methodTable.DPSsetmaxsize___ = 
+    GET_IMP(@selector(DPSsetmaxsize:::));
+  methodTable.DPSsetminsize___ = 
+    GET_IMP(@selector(DPSsetminsize:::));
+  methodTable.DPSsetresizeincrements___ = 
+    GET_IMP(@selector(DPSsetresizeincrements:::));
+  methodTable.DPSflushwindowrect_____ = 
+    GET_IMP(@selector(DPSflushwindowrect:::::));
+  methodTable.DPScapturemouse_ = 
+    GET_IMP(@selector(DPScapturemouse:));
+  methodTable.DPSreleasemouse = 
+    GET_IMP(@selector(DPSreleasemouse));
 /* ----------------------------------------------------------------------- */
 /* GNUstep Event and other I/O extensions */
 /* ----------------------------------------------------------------------- */
@@ -1644,6 +1724,204 @@ NSGraphicsContext	*GSCurrentContext()
 }
 
 - (void) DPScurrentalpha: (float *)alpha
+{
+  [self subclassResponsibility: _cmd];
+}
+
+/*-------------------------------------------------------------------------*/
+/* Window Extension Ops */
+/*-------------------------------------------------------------------------*/
+- (void) DPSwindow: (float) x : (float) y : (float) w : (float) h : (int) type : (int *) num ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPStermwindow: (int) num ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSstylewindow: (int) style : (int) num ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPStitlewindow: (const char *) window_title : (int) num ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSminiwindow: (int) num ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSwindowdevice: (int) num ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSwindowdeviceround: (int) num ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPScurrentwindow: (int *) num ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSorderwindow: (int) op : (int) otherWin : (int) winNum ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSmovewindow: (float) x : (float) y : (int) num ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSupdatewindow: (int) win ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSplacewindow: (float) x : (float) y : (float) w : (float) h : (int) win ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSfrontwindow: (int *) num ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSfindwindow: (float) x : (float) y : (int) op : (int) otherWin : (float *) lx : (float *) ly : (int *) winFound : (int *) didFind ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPScurrentwindowbounds: (int) num : (float *) x : (float *) y : (float *) w : (float *) h ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSsetexposurecolor;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSsetsendexposed: (int) truth : (int) num ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSsetautofill: (int) truth : (int) num ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPScurrentwindowalpha: (int) win : (int *) alpha ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPScountscreenlist: (int) context : (int *) count ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSscreenlist: (int) context : (int) count : (int *) windows ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSsetowner: (int) owner : (int) win ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPScurrentowner: (int) win : (int *) owner ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSsetwindowtype: (int) type : (int) win ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSsetwindowlevel: (int) level : (int) win ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPScurrentwindowlevel: (int) win : (int *) level ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPScountwindowlist: (int) context : (int *) count ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSwindowlist: (int) context : (int) count : (int *) windows ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSsetwindowdepthlimit: (int) limit : (int) win ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPScurrentwindowdepthlimit: (int) win : (int *) limit ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPScurrentwindowdepth: (int) win : (int *) depth ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSsetdefaultdepthlimit: (int) limit ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPScurrentdefaultdepthlimit: (int *) limit ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSsetmaxsize: (float) width : (float) height : (int) win ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSsetminsize: (float) width : (float) height : (int) win ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSsetresizeincrements: (float) width : (float) height : (int) win ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSflushwindowrect: (float) x : (float) y : (float) w : (float) h : (int) win ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPScapturemouse: (int) win ;
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) DPSreleasemouse;
 {
   [self subclassResponsibility: _cmd];
 }

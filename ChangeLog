@@ -1,3 +1,19 @@
+1999-10-21  Adam Fedor  <fedor@gnu.org>
+
+	* Remove backend window class and use new window ops.
+	* Headers/gnustep/gui/DPSOperators.h: New window ops.
+	* Headers/gnustep/gui/GSMethodTable.h: Likewise.
+	* Headers/gnustep/gui/NSGraphicsContext.h: Likewise.
+	* NSGraphicsContext.m: Likewise.
+
+	* Headers/gnustep/gui/NSEvent.h: Add GSAppKitWindowClose event type.
+	* Headers/gnustep/gui/NSWindow.h: Move some backend methods here.
+
+	* Source/NSEvent.m (-window): Use new NSWindow method.
+	* Source/NSWindow.m (-dealloc): Use window ops.
+	(-init:...): Likewise. (-flushWindow): Implement using window ops.
+	(-processResizeEvent): New method. (-sendEvent:) Tidy.
+	
 Thu Oct 21  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSPopUpButton.m ([-selectItemAtIndex:]): Mark the button

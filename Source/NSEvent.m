@@ -355,7 +355,7 @@ static Class eventClass;
 
 - (NSWindow *) window
 {
-  return [NSWindow _windowWithTag: window_num];
+  return [NSWindow _windowWithNumber: window_num];
 }
 
 - (int) windowNumber

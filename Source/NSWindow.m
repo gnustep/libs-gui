@@ -59,6 +59,8 @@
 #include <AppKit/NSDragging.h>
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSHelpManager.h>
+#include <AppKit/NSGraphicsContext.h>
+#include <AppKit/GSWraps.h>
 
 BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 
@@ -127,6 +129,7 @@ static Class	responderClass;
 static Class	viewClass;
 static NSMutableSet	*autosaveNames;
 static NSRecursiveLock	*windowsLock;
+static NSMapTable* windowmaps = NULL;
 
 /*
  * Class methods
@@ -203,6 +206,7 @@ static NSRecursiveLock	*windowsLock;
 
 - (void) dealloc
 {
+  NSGraphicsContext *context = GSCurrentContext();
   if (content_view)
     {
       RELEASE([content_view superview]);	/* Release the window view */
@@ -222,8 +226,17 @@ static NSRecursiveLock	*windowsLock;
    * FIXME This should not be necessary - the views should have removed
    * their drag types, so we should already have been removed.
    */
-  [GSCurrentContext() _removeDragTypes: nil fromWindow: [self windowNumber]];
+  [context _removeDragTypes: nil fromWindow: [self windowNumber]];
 
+  /* Often, when an app is terminated, an NSWindow is autoreleased after the
+     context, so we forget about this if there is no more context */
+  if (context)
+    {
+      if (gstate)
+	DPSundefineuserobject(context, gstate);
+      DPStermwindow(context, window_num);
+    }
+  NSMapRemove(windowmaps, (void*)window_num);
   [super dealloc];
 }
 
@@ -250,6 +263,7 @@ static NSRecursiveLock	*windowsLock;
 		     defer: (BOOL)flag
 		    screen: (NSScreen*)aScreen
 {
+  NSGraphicsContext *context = GSCurrentContext();
   NSRect r = [[NSScreen mainScreen] frame];
   NSRect cframe;
 
@@ -258,6 +272,9 @@ static NSRecursiveLock	*windowsLock;
     NSLog(@"No application!\n");
 
   NSDebugLog(@"NSWindow start of init\n");
+  if (!windowmaps)
+    windowmaps = NSCreateMapTable(NSIntMapKeyCallBacks,
+				 NSNonRetainedObjectMapValueCallBacks, 20);
 
   /* Initialize attributes and flags */
   [self cleanInit];
@@ -280,11 +297,25 @@ static NSRecursiveLock	*windowsLock;
   [self setContentView: AUTORELEASE([[NSView alloc] initWithFrame: cframe])];
 
   /* rectBeingDrawn is variable used to optimize flushing the backing store.
-     It is set by NSGraphicContext during a lockFocus to tell NSWindow what
+     It is set by NSGraphicsContext during a lockFocus to tell NSWindow what
      part a view is drawing in, so NSWindow only has to flush that portion */
   rectsBeingDrawn = RETAIN([NSMutableArray arrayWithCapacity: 10]); 
-  NSDebugLog(@"NSWindow end of init\n");
 
+  DPSwindow(context, NSMinX(contentRect), NSMinY(contentRect),
+	    NSWidth(contentRect), NSHeight(contentRect), 
+	    bufferingType, &window_num);
+  DPSstylewindow(context, aStyle, window_num);
+  DPSsetwindowlevel(context, [self level], window_num);
+
+  // Set window in new gstate
+  DPSgsave(context);
+  DPSwindowdevice(context, window_num);
+  DPSgstate(context);
+  gstate = GSWDefineAsUserObj(context);
+  DPSgrestore(context);
+
+  NSMapInsert (windowmaps, (void*)window_num, self);
+  NSDebugLog(@"NSWindow end of init\n");
   return self;
 }
 
@@ -364,6 +395,7 @@ static NSRecursiveLock	*windowsLock;
 - (void) setTitle: (NSString*)aString
 {
   ASSIGN(window_title, aString);
+  DPStitlewindow(GSCurrentContext(), [window_title cString], window_num);
   [self setMiniwindowTitle: aString];
 }
 
@@ -753,6 +785,7 @@ static NSRecursiveLock	*windowsLock;
   if (aSize.height < 1)
     aSize.height = 1;
   minimum_size = aSize;
+  DPSsetminsize(GSCurrentContext(), aSize.width, aSize.height, window_num);
 }
 
 - (void) setMaxSize: (NSSize)aSize
@@ -765,6 +798,7 @@ static NSRecursiveLock	*windowsLock;
   if (aSize.height > 10000)
     aSize.height = 10000;
   maximum_size = aSize;
+  DPSsetmaxsize(GSCurrentContext(), aSize.width, aSize.height, window_num);
 }
 
 - (NSSize) resizeIncrements
@@ -775,6 +809,8 @@ static NSRecursiveLock	*windowsLock;
 - (void) setResizeIncrements: (NSSize)aSize
 {
   increments = aSize;
+  DPSsetresizeincrements(GSCurrentContext(), aSize.width, aSize.height, 
+			 window_num);
 }
 
 /*
@@ -848,6 +884,7 @@ static NSRecursiveLock	*windowsLock;
       [self enableFlushWindow];
       [self flushWindowIfNeeded];
     }
+  [GSCurrentContext() flush];
   [nc postNotificationName: NSWindowDidUpdateNotification object: self];
 }
 
@@ -862,7 +899,49 @@ static NSRecursiveLock	*windowsLock;
 
 - (void) flushWindow
 {
-  // implemented in back end
+  int i;
+  NSGraphicsContext* context = GSCurrentContext();
+
+  // do nothing if backing is not buffered
+  if (backing_type == NSBackingStoreNonretained)
+    {
+      [context flush];
+      return;
+    }
+
+  if (disable_flush_window)		// if flushWindow is called
+    {					// while flush is disabled
+      needs_flush = YES;		// mark self as needing a
+      return;				// flush, then return
+    }
+
+  /* Check for special case of flushing while we are lock focused.
+     For instance, when we are highlighting a button. */
+  if (NSIsEmptyRect(rectNeedingFlush))
+    {
+      if ([rectsBeingDrawn count] == 0)
+	{
+	  needs_flush = NO;
+	  return;
+	}
+    }
+
+  /*
+   * Accumulate the rectangles from all nested focus locks.
+   */
+  i = [rectsBeingDrawn count];
+  while (i-- > 0)
+    {
+      rectNeedingFlush = NSUnionRect(rectNeedingFlush, 
+       [[rectsBeingDrawn objectAtIndex: i] rectValue]);
+    }
+  
+  DPSflushwindowrect(context, 
+		     NSMinX(rectNeedingFlush), NSMinY(rectNeedingFlush),
+		     NSWidth(rectNeedingFlush), NSHeight(rectNeedingFlush),
+		     window_num);
+  needs_flush = NO;
+  rectNeedingFlush = NSZeroRect;
 }
 
 - (void) enableFlushWindow
@@ -1147,6 +1226,7 @@ static NSRecursiveLock	*windowsLock;
 
 - (void) performMiniaturize: (id)sender
 {
+  DPSminiwindow(GSCurrentContext(), window_num);
   is_miniaturized = YES;
 }
 
@@ -1512,6 +1592,23 @@ static NSRecursiveLock	*windowsLock;
     }
 }
 
+- (void) _processResizeEvent
+{
+  NSGraphicsContext* context = GSCurrentContext();
+
+  if (gstate)
+    {
+      DPSgsave(context);
+      DPSsetgstate(context, gstate);
+    }
+  DPSupdatewindow(context, window_num);
+  if (gstate)
+    DPSgrestore(context);
+
+  [self update];
+}
+
+
 - (void) sendEvent: (NSEvent *)theEvent
 {
   NSView	*v;
@@ -1697,8 +1794,12 @@ static NSRecursiveLock	*windowsLock;
 		    [wv setFrame: rect];
 		    [wv setNeedsDisplay: YES];
 		  }
+		[self _processResizeEvent];
 		[nc postNotificationName: NSWindowDidResizeNotification
 				  object: self];
+		break;
+	      case GSAppKitWindowClose:
+		[self performClose: NSApp];
 		break;
 
 #define     GSPerformDragSelector(view, sel, info, action)		     \
@@ -1720,15 +1821,21 @@ static NSRecursiveLock	*windowsLock;
 		v = content_view;
 	      dragInfo = [GSCurrentContext() _dragInfo];
 	      if (_lastDragView && _lastDragView != v && accepts_drag)
-		GSPerformVoidDragSelector(_lastDragView, 
+		{
+		  GSPerformVoidDragSelector(_lastDragView, 
 				      @selector(draggingExited:), dragInfo);
+		}
 	      accepts_drag = GSViewAcceptsDrag(v, dragInfo);
 	      if (_lastDragView != v && accepts_drag)
-		GSPerformDragSelector(v, @selector(draggingEntered:), 
+		{
+		  GSPerformDragSelector(v, @selector(draggingEntered:), 
 				      dragInfo, action);
+		}
 	      else
-		GSPerformDragSelector(v, @selector(draggingUpdated:), 
+		{
+		  GSPerformDragSelector(v, @selector(draggingUpdated:), 
 				      dragInfo, action);
+		}
 	      e = [NSEvent otherEventWithType: NSAppKitDefined
 			   location: [theEvent locationInWindow]
 			   modifierFlags: 0
@@ -1749,9 +1856,11 @@ static NSRecursiveLock	*windowsLock;
 	    case GSAppKitDraggingExit:
 	      dragInfo = [GSCurrentContext() _dragInfo];
 	      if (_lastDragView && accepts_drag)
-		GSPerformDragSelector(_lastDragView, 
+		{
+		  GSPerformDragSelector(_lastDragView, 
 				      @selector(draggingExited:), dragInfo,
 				      action);
+		}
 	      break;
 
 	    case GSAppKitDraggingDrop:
@@ -1762,13 +1871,17 @@ static NSRecursiveLock	*windowsLock;
 					@selector(prepareForDragOperation:), 
 					dragInfo, action);
 		  if (action)
-		    GSPerformDragSelector(_lastDragView, 
+		    {
+		      GSPerformDragSelector(_lastDragView, 
 					  @selector(performDragOperation:),  
 					  dragInfo, action);
+		    }
 		  if (action)
-		    GSPerformVoidDragSelector(_lastDragView, 
+		    {
+		      GSPerformVoidDragSelector(_lastDragView, 
 					  @selector(concludeDragOperation:),  
 					  dragInfo);
+		    }
 		}
 	      e = [NSEvent otherEventWithType: NSAppKitDefined
 			   location: [theEvent locationInWindow]
@@ -2305,23 +2418,40 @@ static NSRecursiveLock	*windowsLock;
 /*
  * GNUstep backend methods
  */
-@implementation NSWindow (GNUstepBackend)
+@implementation NSWindow (GNUstepPrivate)
 
-+ (NSWindow*) _windowWithTag: (int)windowNumber
++ (NSWindow*) _windowWithNumber: (int)windowNumber
 {
-  return nil;
-}
-
-- (void) setWindowNumber: (int)windowNum
-{
-  window_num = windowNum;
+  return NSMapGet(windowmaps, (void *)windowNumber);
 }
 
 /*
  * Mouse capture/release
  */
-- (void) _captureMouse: sender		 {}	     // Do nothing, should be
-- (void) _releaseMouse: sender		 {}	     // implemented by back-end
+- (void) _captureMouse: sender
+{
+  DPScapturemouse(GSCurrentContext(), window_num);
+}
+
+- (void) _releaseMouse: sender
+{
+  DPSreleasemouse(GSCurrentContext());
+}
+
+- (void) setContentViewSize: (NSSize)aSize
+{
+  NSRect r;
+
+  r.origin = NSZeroPoint;
+  r.size = aSize;
+  if (content_view)
+    [content_view setFrame: r];
+}
+
+- (void) _setVisible: (BOOL)flag
+{
+  visible = flag;
+}
 
 - (void) performDeminiaturize: sender	  {}
 - (void) performHide: sender		  {}

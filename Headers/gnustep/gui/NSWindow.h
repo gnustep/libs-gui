@@ -466,11 +466,9 @@ extern NSSize NSTokenSize;
 /*
  * GNUstep backend methods
  */
-@interface NSWindow (GNUstepBackend)
+@interface NSWindow (GNUstepPrivate)
 
-+ (NSWindow*) _windowWithTag: (int)windowNumber;
-
-- (void) setWindowNumber: (int)windowNum;
++ (NSWindow*) _windowWithNumber: (int)windowNumber;
 
 /*
  * Mouse capture/release
@@ -488,6 +486,8 @@ extern NSSize NSTokenSize;
 - (void) performDeminiaturize: sender;
 - (void) performHide: sender;
 - (void) performUnhide: sender;
+- (void) setContentViewSize: (NSSize)aSize;
+- (void) _setVisible: (BOOL)flag;
 
 @end
 #endif

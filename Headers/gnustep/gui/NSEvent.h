@@ -314,6 +314,7 @@ unsigned int NSEventMaskFromType(NSEventType type);
 typedef enum {
   GSAppKitWindowMoved = 1,
   GSAppKitWindowResized,
+  GSAppKitWindowClose,
   GSAppKitDraggingEnter,
   GSAppKitDraggingUpdate,
   GSAppKitDraggingStatus,

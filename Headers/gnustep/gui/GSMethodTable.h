@@ -402,6 +402,87 @@ typedef struct {
   void (*DPScurrentalpha_)
         (NSGraphicsContext*, SEL, float*);
 
+/*-------------------------------------------------------------------------*/
+/* Window Extensions Ops */
+/*-------------------------------------------------------------------------*/
+  void (*DPSwindow______)
+        (NSGraphicsContext*, SEL, float, float, float, float, int, int *);
+  void (*DPStermwindow_)
+        (NSGraphicsContext*, SEL, int);
+  void (*DPSstylewindow__)
+        (NSGraphicsContext*, SEL, int, int);
+  void (*DPStitlewindow__)
+        (NSGraphicsContext*, SEL, const char *, int);
+  void (*DPSminiwindow_)
+        (NSGraphicsContext*, SEL, int);
+  void (*DPSwindowdevice_)
+        (NSGraphicsContext*, SEL, int);
+  void (*DPSwindowdeviceround_)
+        (NSGraphicsContext*, SEL, int);
+  void (*DPScurrentwindow_)
+        (NSGraphicsContext*, SEL, int *);
+  void (*DPSorderwindow___)
+        (NSGraphicsContext*, SEL, int, int, int);
+  void (*DPSmovewindow___)
+        (NSGraphicsContext*, SEL, float, float, int);
+  void (*DPSupdatewindow_)
+        (NSGraphicsContext*, SEL, int);
+  void (*DPSplacewindow_____)
+        (NSGraphicsContext*, SEL, float, float, float, float, int);
+  void (*DPSfrontwindow_)
+        (NSGraphicsContext*, SEL, int *);
+  void (*DPSfindwindow________)
+        (NSGraphicsContext*, SEL, float, float, int, int, float *, float *, int *, int *);
+  void (*DPScurrentwindowbounds_____)
+        (NSGraphicsContext*, SEL, int, float *, float *, float *, float *);
+  void (*DPSsetexposurecolor)
+        (NSGraphicsContext*, SEL);
+  void (*DPSsetsendexposed__)
+        (NSGraphicsContext*, SEL, int, int);
+  void (*DPSsetautofill__)
+        (NSGraphicsContext*, SEL, int, int);
+  void (*DPScurrentwindowalpha__)
+        (NSGraphicsContext*, SEL, int, int *);
+  void (*DPScountscreenlist__)
+        (NSGraphicsContext*, SEL, int, int *);
+  void (*DPSscreenlist___)
+        (NSGraphicsContext*, SEL, int, int, int *);
+  void (*DPSsetowner__)
+        (NSGraphicsContext*, SEL, int, int);
+  void (*DPScurrentowner__)
+        (NSGraphicsContext*, SEL, int, int *);
+  void (*DPSsetwindowtype__)
+        (NSGraphicsContext*, SEL, int, int);
+  void (*DPSsetwindowlevel__)
+        (NSGraphicsContext*, SEL, int, int);
+  void (*DPScurrentwindowlevel__)
+        (NSGraphicsContext*, SEL, int, int *);
+  void (*DPScountwindowlist__)
+        (NSGraphicsContext*, SEL, int, int *);
+  void (*DPSwindowlist___)
+        (NSGraphicsContext*, SEL, int, int, int *);
+  void (*DPSsetwindowdepthlimit__)
+        (NSGraphicsContext*, SEL, int, int);
+  void (*DPScurrentwindowdepthlimit__)
+        (NSGraphicsContext*, SEL, int, int *);
+  void (*DPScurrentwindowdepth__)
+        (NSGraphicsContext*, SEL, int, int *);
+  void (*DPSsetdefaultdepthlimit_)
+        (NSGraphicsContext*, SEL, int);
+  void (*DPScurrentdefaultdepthlimit_)
+        (NSGraphicsContext*, SEL, int *);
+  void (*DPSsetmaxsize___)
+        (NSGraphicsContext*, SEL, float, float, int);
+  void (*DPSsetminsize___)
+        (NSGraphicsContext*, SEL, float, float, int);
+  void (*DPSsetresizeincrements___)
+        (NSGraphicsContext*, SEL, float, float, int);
+  void (*DPSflushwindowrect_____)
+        (NSGraphicsContext*, SEL, float, float, float, float, int);
+  void (*DPScapturemouse_)
+        (NSGraphicsContext*, SEL, int);
+  void (*DPSreleasemouse)
+        (NSGraphicsContext*, SEL);
 /* ----------------------------------------------------------------------- */
 /* GNUstep Event and other I/O extensions */
 /* ----------------------------------------------------------------------- */
