@@ -417,18 +417,4 @@ id _nsbuttonCellClass = nil;
   return [_cell sound];
 }
 
-//
-// NSCoding protocol
-//
-- (void) encodeWithCoder: (NSCoder *)aCoder
-{
-  [super encodeWithCoder: aCoder];
-}
-
-- (id) initWithCoder: (NSCoder *)aDecoder
-{
-  [super initWithCoder: aDecoder];
-
-  return self;
-}
 @end
