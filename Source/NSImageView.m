@@ -30,6 +30,7 @@
 #include "AppKit/NSImageCell.h"
 #include "AppKit/NSImageView.h"
 #include "AppKit/NSPasteboard.h"
+#include "AppKit/NSWindow.h"
 
 /*
  * Class variables

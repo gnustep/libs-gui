@@ -29,10 +29,9 @@
 #include "AppKit/NSAttributedString.h"
 #include "AppKit/NSTextStorage.h"
 #include "GNUstepGUI/GSLayoutManager.h"
+#include "GSTextStorage.h"
 
 @implementation NSTextStorage
-
-@class	GSTextStorage;
 
 static	Class	abstract;
 static	Class	concrete;

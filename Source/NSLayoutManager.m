@@ -419,7 +419,7 @@ container? necessary? */
 {
   NSRect *r;
   NSRect result;
-  int i, c;
+  unsigned int i, c;
 
 /* TODO: This isn't correct. Need to handle glyphs that extend outside the
 line frag rect. */
@@ -1139,7 +1139,7 @@ container
   unsigned int glyph_pos, char_pos, first_char_pos;
   int i, j;
   NSRect *rects;
-  int count;
+  unsigned int count;
   NSColor *color, *last_color;
 
   NSGraphicsContext *ctxt = GSCurrentContext();
@@ -1303,7 +1303,7 @@ container
 #define GBUF_SIZE 16 /* TODO: tweak */
   NSGlyph gbuf[GBUF_SIZE];
   int gbuf_len, gbuf_size;
-  NSPoint gbuf_point;
+  NSPoint gbuf_point = NSZeroPoint;
 
   NSView *controlView = nil;
 
@@ -2158,7 +2158,7 @@ no_soft_invalidation:
 	{ /* before before */
 	}
 
-      /* If there are text views attached to use, let them handle the
+      /* If there are text views attached to us, let them handle the
       change. */
       if ([self firstTextView])
 	[[self firstTextView] setSelectedRange: newRange];

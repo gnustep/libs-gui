@@ -1,3 +1,66 @@
+2005-01-21 21:43  Alexander Malmberg  <alexander@malmberg.org>
+
+	Various whitespace cleanups, comment type fixes, and changes
+	to avoid warnings from recent versions of gcc.
+
+	* Headers/Additions/GNUstepGUI/GSToolbar.h (-_toolbars): Declare.
+	* Source/NSWindow+Toolbar.m: Remove conflicting declaration of
+	[NSToolbar -_toolbars].
+
+	* Headers/Additions/GNUstepGUI/GSServicesManager.h,
+ 	Source/GSServicesMananger.m (-item2title:, -validateMenuItem:):
+	Adjust argument types.
+	* Headers/AppKit/NSMenu.h (-validateMenuItem:): Adjust argument
+	type.
+
+	* Source/NSTextView.m (-sizeToFit): Don't use size uninitialized
+	if neither resizable flags is set.
+	(-insertText:): Adjust argument type.
+	* Headers/AppKit/NSResponder.h, Source/NSResponder.m (-insertText:):
+	Adjust argument type. Document.
+
+	* Headers/AppKit/NSView.h: Change type of ivar _window to NSWindow *.
+
+	* Source/GSTitleView.m (-mouseDown:): Always initialize
+	startWindowOrigin.
+	* Source/NSApplication.m (-setApplicationIconImage:): Add casts
+	to avoid warnings.
+	* Source/NSCell.m (-cellSize): Add default: case.
+	* Source/NSPasteboard.m
+	([GSFiltered -pasteboard:provideDataForType:]): Detect and warn if we
+	can't find a filter that will get us the desired type.
+	* Source/NSProgressIndicator.m: Comment out unused variable 'images'.
+	* Source/NSBezierPath.m: Declare GSBezierPath fully before using it.
+	(-bezierPathByFlatteningPath, -bezierPathByReversingPath): Make sure
+	variables are always initialized.
+
+	* Source/NSMenuView.m,
+	* Source/NSPrintOperation.m,
+	* Source/NSSplitView.m,
+	* Source/NSTableHeaderView.m: Make sure variables are always
+	initialized.
+
+	* Source/NSBox.m,
+	* Source/NSImageview.m,
+	* Source/NSText.m,
+	* Source/NSTextStorage.m: Add missing includes.
+
+	* Source/GSKeyBindingTable.m,
+	* Source/GSLayoutManager.m,
+	* Source/NSBitmapImageRep+PNM.m,
+	* Source/NSBundleAdditions.m,
+	* Source/NSLayoutManager.m,
+	* Source/nsimage-tiff.h,
+	* Source/tiff.m,
+	* Headers/Additions/GNUstepGUI/GSDisplayServer.h,
+	* Source/GSDisplayServer.m: Change signedness of various variables.
+
+	* Source/NSPanel.m (-sendEvent:): Remove.
+	* Source/NSWindow.m (-becomesKeyOnlyIfNeeded): New method.
+	(-_sendEvent:becomesKeyOnlyIfNeeded:): Remove. Move code ...
+	(-sendEvent:): ... here. Use -becomesKeyOnlyIfNeeded instead
+	of the argument.
+
 2005-01-21  Quentin Mathe  <qmathe@club-internet.fr>
 
 	* Source/GSToolbarView.m:

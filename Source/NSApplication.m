@@ -1870,7 +1870,7 @@ image.
 
   if (_app_icon_window != nil)
     {
-      [[_app_icon_window contentView] setImage: anImage];
+      [(NSAppIconView *)[_app_icon_window contentView] setImage: anImage];
     }
 
   // Swap the old image for the new one wherever it's used

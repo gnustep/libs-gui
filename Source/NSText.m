@@ -36,10 +36,10 @@
 */
 
 #include "AppKit/NSText.h"
-//#include "AppKit/NSTextView.h"
-@class NSTextView;
-#include "AppKit/NSSpellChecker.h"
+
 #include "AppKit/NSPanel.h"
+#include "AppKit/NSSpellChecker.h"
+#include "AppKit/NSTextView.h"
 
 
 static	Class	abstract;

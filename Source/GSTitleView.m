@@ -281,10 +281,7 @@
   NSDebugLLog (@"NSMenu", @"Mouse down in title!");
 
   // Remember start position of window
-  if (_ownedByMenu)
-    {
-      startWindowOrigin = [_window frame].origin;
-    }
+  startWindowOrigin = [_window frame].origin;
 
   // Remember start location of cursor in window
   lastLocation = [theEvent locationInWindow];

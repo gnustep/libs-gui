@@ -32,7 +32,7 @@
 #include "AppKit/NSWindow.h"
 #include "AppKit/NSApplication.h"
 
-static inline 
+static inline
 float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 				NSRect slotRect, BOOL isVertical, 
 				float minValue, float maxValue, 

@@ -126,6 +126,10 @@ static NSNotificationCenter *nc = nil;
       return;
     }
 
+  /* Silence compiler warnings.  */
+  r1 = NSZeroRect;
+  bigRect = NSZeroRect;
+
   vis = [self visibleRect];
 
   /* find out which divider it is */

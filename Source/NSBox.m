@@ -36,6 +36,7 @@
 #include "AppKit/NSColor.h"
 #include "AppKit/NSGraphics.h"
 #include "AppKit/NSTextFieldCell.h"
+#include "AppKit/NSWindow.h"
 #include "GNUstepGUI/GSDrawFunctions.h"
 
 #include <math.h>

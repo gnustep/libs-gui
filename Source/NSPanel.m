@@ -164,11 +164,5 @@
   return self;
 }
 
-
-- (void) sendEvent: (NSEvent*)theEvent
-{
-  [self _sendEvent: theEvent
-    becomesKeyOnlyIfNeeded: _becomesKeyOnlyIfNeeded];
-}
-
 @end /* NSPanel */
+

@@ -192,14 +192,14 @@ enum {
 
 + (NSPoint)mouseLocation;
 
-+ (NSEvent*) otherEventWithType: (NSEventType)type	
++ (NSEvent*) otherEventWithType: (NSEventType)type
 		       location: (NSPoint)location
 		  modifierFlags: (unsigned int)flags
 		      timestamp: (NSTimeInterval)time
-		   windowNumber: (int)windowNum	
-			context: (NSGraphicsContext*)context	
-			subtype: (short)subType	
-			  data1: (int)data1	
+		   windowNumber: (int)windowNum
+			context: (NSGraphicsContext*)context
+			subtype: (short)subType
+			  data1: (int)data1
 			  data2: (int)data2;
 
 + (void) startPeriodicEventsAfterDelay: (NSTimeInterval)delaySeconds

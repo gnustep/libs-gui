@@ -49,7 +49,7 @@
   NSResponder		*_next_responder;
 
   /*
-  Due to interface brain-damage, but NSResponder and NSMenuView have -menu
+  Due to interface brain-damage, both NSResponder and NSMenuView have -menu
   and -setMenu: methods, but for different menus. Thus, to prevent (future,
   there have already been some) problems and confusion, this ivar is
   private (iow, it can't be accidentally used in NSMenuView).
@@ -144,7 +144,18 @@
 - (BOOL) performMnemonic: (NSString*)aString;
 - (void) flushBufferedKeyEvents;
 - (void) doCommandBySelector: (SEL)aSelector;
-- (void) insertText: (NSString*)aString;
+
+/** <p>Tells the receiver to insert the given string. In a text view
+    the text is typically inserted at the insertion point, and replaces
+    any selection.
+    </p><p>
+    Subclasses should override this method. The implementation in
+    NSResponder just sends the message on to the next responder.
+    </p><p>
+    Normally, aString will be an NSString, but in some cases, it might
+    be an NSAttributedString.
+    </p>  */
+- (void) insertText: (id)aString;
 - (NSUndoManager*) undoManager;
 
 /*

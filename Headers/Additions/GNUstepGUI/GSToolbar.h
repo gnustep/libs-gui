@@ -112,6 +112,11 @@ APPKIT_EXPORT NSString *NSToolbarWillAddItemNotification;
 - (void) setUsesStandardBackgroundColor: (BOOL)standard;
 - (NSToolbarSizeMode) sizeMode;
 
+
+// Private class method
+
++ (NSMutableArray *) _toolbars;
+
 @end /* interface of NSToolbar */
 
 /*

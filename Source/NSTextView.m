@@ -674,7 +674,7 @@ that makes decoding and encoding compatible with the old code.
 
       if ([aDecoder containsValueForKey: @"NSTVFlags"])
         {
-	  int vFlags = [aDecoder decodeIntForKey: @"NSTVFlags"];
+	  //int vFlags = [aDecoder decodeIntForKey: @"NSTVFlags"];
 	  // FIXME set the flags
 	}
       if ([aDecoder containsValueForKey: @"NSSharedData"])
@@ -1492,26 +1492,25 @@ incorrectly. */
   if (!_layoutManager)
     return;
 
+  size = _bounds.size;
+
   if (_tf.is_horizontally_resizable || _tf.is_vertically_resizable)
     {
       NSRect r = [_layoutManager usedRectForTextContainer: _textContainer];
+      NSSize s2;
       if (_textContainer == [_layoutManager extraLineFragmentTextContainer])
 	{
 	  r = NSUnionRect(r, [_layoutManager extraLineFragmentUsedRect]);
 	}
 
-      size = NSMakeSize(NSMaxX(r), NSMaxY(r));
-    }
-  
-  if (!_tf.is_horizontally_resizable)
-    size.width = _bounds.size.width;
-  else
-    size.width += 2 * _textContainerInset.width;
+      s2 = NSMakeSize(NSMaxX(r), NSMaxY(r));
 
-  if (!_tf.is_vertically_resizable)
-    size.height = _bounds.size.height;
-  else
-    size.height += 2 * _textContainerInset.height;
+      if (_tf.is_horizontally_resizable)
+	size.width = s2.width + 2 * _textContainerInset.width;
+
+      if (_tf.is_vertically_resizable)
+	size.height = s2.height + 2 * _textContainerInset.height;
+    }
 
   [self setConstrainedFrameSize: size];
 }
@@ -1728,11 +1727,11 @@ chain if we can't handle it. */
 
 /* insertString may actually be an NSAttributedString. If it is, and the
 text view isn't rich-text, we ignore the attributes and use the typing
-attributed.
+attributes.
 
 This method is for user changes; see NSTextView_actions.m.
 */
--(void) insertText: (NSString *)insertString
+-(void) insertText: (id)insertString
 {
   NSRange insertRange = [self rangeForUserTextChange];
   NSString *string;

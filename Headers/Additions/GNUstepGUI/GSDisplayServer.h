@@ -150,7 +150,8 @@ APPKIT_EXPORT NSString * GSScreenNumber;
 - (void) hidecursor;
 - (void) showcursor;
 - (void) standardcursor: (int) style : (void**) cid;
-- (void) imagecursor: (NSPoint)hotp : (int)w : (int)h : (int) colors : (const char*) image : (void**) cid;
+- (void) imagecursor: (NSPoint)hotp : (int)w : (int)h : (int) colors
+		    : (const unsigned char *) image : (void**) cid;
 - (void) setcursorcolor: (NSColor *)fg : (NSColor *)bg : (void*) cid;
 
 @end

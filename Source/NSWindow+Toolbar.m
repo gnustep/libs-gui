@@ -35,7 +35,6 @@
 
 
 @interface NSToolbar (GNUstepPrivate)
-+ (NSArray *) _toolbars;
 - (GSToolbarView *) _toolbarView;
 - (void) _setWindow: (NSWindow *)window;
 - (NSWindow *) _window;

@@ -98,7 +98,7 @@ typedef enum _NSFocusRingType {
 
   NSView* _super_view;
   NSMutableArray *_sub_views;
-  id _window;
+  NSWindow *_window;
   NSMutableArray *_tracking_rects;
   NSMutableArray *_cursor_rects;
   NSRect _invalidRect;

@@ -69,8 +69,8 @@ extern TIFF* NSTiffOpenDataWrite(char **data, long *size);
 extern int   NSTiffClose(TIFF* image);
 
 extern int   NSTiffGetImageCount(TIFF* image);
-extern int   NSTiffWrite(TIFF* image, NSTiffInfo* info, char* data);
-extern int   NSTiffRead(TIFF* image, NSTiffInfo* info, char* data);
+extern int   NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data);
+extern int   NSTiffRead(TIFF *image, NSTiffInfo *info, unsigned char *data);
 extern NSTiffInfo* NSTiffGetInfo(int imageNumber, TIFF* image);
 
 extern NSTiffColormap* NSTiffGetColormap(TIFF* image);

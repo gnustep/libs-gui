@@ -76,7 +76,8 @@
 {
   int num, xsize, ysize, levels;
   char ptype;
-  char buffer[256], *pchar;
+  char buffer[256];
+  unsigned char *pchar;
   unsigned length;
   id colorspace;
   const char *ptr;

@@ -672,7 +672,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
  *      contains the full title of the service.
  *      Return nil if this is not one of our service menu items.
  */
-- (NSString*) item2title: (NSMenuItem*)item
+- (NSString*) item2title: (id<NSMenuItem>)item
 {
   unsigned      pos;
 
@@ -1132,7 +1132,7 @@ static NSString         *disabledName = @".GNUstepDisabled";
   return NO;
 }
 
-- (BOOL) validateMenuItem: (NSMenuItem*)item
+- (BOOL) validateMenuItem: (id<NSMenuItem>)item
 {
   NSString      *title = [self item2title: item];
   NSDictionary  *info = [_title2info objectForKey: title];

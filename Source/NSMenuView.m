@@ -1284,7 +1284,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   NSRect	currentFrame;
   NSRect	originalFrame;
   NSPoint	currentTopLeft;
-  NSPoint	originalTopLeft;
+  NSPoint	originalTopLeft = NSZeroPoint; /* Silence compiler.  */
   BOOL          restorePosition;
   /*
    * Only for non transient menus do we want

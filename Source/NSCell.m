@@ -1556,6 +1556,7 @@ static NSColor	*shadowCol;
 	  }
 	break;
 
+      default:
       case NSNullCellType:
 	//  macosx instead returns a 'very big size' here; we return NSZeroSize
 	s = NSZeroSize;

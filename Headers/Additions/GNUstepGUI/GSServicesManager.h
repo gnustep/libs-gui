@@ -39,6 +39,7 @@
 @class	NSMutableSet;
 @class	NSString;
 @class	NSTimer;
+@protocol NSMenuItem;
 
 @interface      GSServicesManager : NSObject
 {
@@ -70,7 +71,7 @@
 - (void) doService: (NSMenuItem*)item;
 - (NSArray*) filters;
 - (BOOL) hasRegisteredTypes: (NSDictionary*)service;
-- (NSString*) item2title: (NSMenuItem*)item;
+- (NSString*) item2title: (id<NSMenuItem>)item;
 - (void) loadServices;
 - (NSDictionary*) menuServices;
 - (void) rebuildServices;
@@ -84,7 +85,7 @@
 - (void) setServicesProvider: (id)anObject;
 - (int) setShowsServicesMenuItem: (NSString*)item to: (BOOL)enable;
 - (BOOL) showsServicesMenuItem: (NSString*)item;
-- (BOOL) validateMenuItem: (NSMenuItem*)item;
+- (BOOL) validateMenuItem: (id<NSMenuItem>)item;
 - (void) updateServicesMenu;
 @end
 

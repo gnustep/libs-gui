@@ -767,7 +767,7 @@ GSCurrentServer(void)
     device representation that can be used later to make this cursor
     the current one */
 - (void) imagecursor: (NSPoint)hotp : (int)w : (int)h : (int) colors 
-		    : (const char*) image : (void**) cid
+		    : (const unsigned char *) image : (void**) cid
 {
   [self subclassResponsibility: _cmd];
 }

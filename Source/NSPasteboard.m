@@ -688,6 +688,7 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
        * Locate the filter information needed, including the type we are
        * converting from and the name of the filter to use.
        */
+      info = nil;
       filters = [[GSServicesManager manager] filters];
       count = [filters count];
       while (fromType == nil && filterNumber < count)
@@ -712,6 +713,11 @@ static NSString	*namePrefix = @"NSTypedFilenamesPboardType:";
 		  fromType = nil;
 		}
 	    }
+	}
+      if (!info)
+	{
+	  NSWarnMLog(@"Unable to provide data of type '%@'.", type);
+	  return;
 	}
     }
 

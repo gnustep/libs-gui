@@ -45,7 +45,7 @@
 - (void) bindKey: (id)key  toAction: (id)action
 {
   unichar character;
-  int modifiers;
+  unsigned int modifiers;
   GSKeyBindingAction *a = nil;
   GSKeyBindingTable *t = nil;
   BOOL isTable = NO;

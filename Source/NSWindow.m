@@ -2915,11 +2915,15 @@ resetCursorRectsForView(NSView *theView)
   // Quietly discard an unused mouse down.
 }
 
+- (BOOL) becomesKeyOnlyIfNeeded
+{
+  return NO;
+}
+
 /** Handles mouse and other events sent to the receiver by NSApplication.
     Do not invoke this method directly.
 */
-- (void) _sendEvent: (NSEvent*)theEvent
-	becomesKeyOnlyIfNeeded: (BOOL)becomesKeyOnlyIfNeeded
+- (void) sendEvent: (NSEvent*)theEvent
 {
   NSView	*v;
   NSEventType	type;
@@ -2955,7 +2959,8 @@ resetCursorRectsForView(NSView *theView)
 	      if (_f.is_key == NO && _windowLevel != NSDesktopWindowLevel)
 		{
 		  /* NSPanel modification: check becomesKeyOnlyIfNeeded. */
-		  if (!becomesKeyOnlyIfNeeded || [v needsPanelToBecomeKey])
+		  if (![self becomesKeyOnlyIfNeeded]
+		      || [v needsPanelToBecomeKey])
 		    [self makeKeyAndOrderFront: self];
 		}
 	      /* Activate the app *after* making the receiver key, as app
@@ -3035,13 +3040,13 @@ resetCursorRectsForView(NSView *theView)
 	switch (type)
 	  {
 	    case NSLeftMouseDragged:
-              [_lastView mouseDragged: theEvent];
+	      [_lastView mouseDragged: theEvent];
 	      break;
 	    case NSOtherMouseDragged:
-              [_lastView otherMouseDragged: theEvent];
+	      [_lastView otherMouseDragged: theEvent];
 	      break;
 	    case NSRightMouseDragged:
-  	      [_lastView rightMouseDragged: theEvent];
+	      [_lastView rightMouseDragged: theEvent];
 	      break;
 	    default:
 	      if (_f.accepts_mouse_moved)
@@ -3415,15 +3420,6 @@ resetCursorRectsForView(NSView *theView)
       case NSApplicationDefined:
 	break;
     }
-}
-
-/** Handles mouse and other events sent to the receiver by NSApplication.
-    Do not invoke this method directly.
-*/
-- (void) sendEvent: (NSEvent*)theEvent
-{
-  [self _sendEvent: theEvent
-    becomesKeyOnlyIfNeeded: NO];
 }
 
 

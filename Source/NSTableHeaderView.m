@@ -547,7 +547,7 @@
 	  NSDate *distantFuture = [NSDate distantFuture];
 	  NSRect visibleRect = [self visibleRect];
 	  NSRect tvRect;
-	  NSRect highlightRect, oldRect;
+	  NSRect highlightRect = NSZeroRect, oldRect = NSZeroRect;
 	  BOOL outside = NO;
 	  BOOL lit = NO;
 	

@@ -33,7 +33,7 @@
 
 static NSColor *fillColour = nil;
 #define maxCount 1
-static NSImage *images[maxCount];
+//static NSImage *images[maxCount];
 
 + (void) initialize
 {

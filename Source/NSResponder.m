@@ -156,7 +156,7 @@
     }
 }
 
-- (void) insertText: (NSString*)aString
+- (void) insertText: (id)aString
 {
   if (_next_responder)
     [_next_responder insertText: aString];

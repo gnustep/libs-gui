@@ -691,7 +691,7 @@ not completely accurate).
 	isValidIndex: (BOOL *)isValidIndex
 {
   glyph_run_t *r;
-  int pos;
+  unsigned int pos;
 
   *isValidIndex = NO;
 
@@ -803,7 +803,7 @@ not completely accurate).
 - (unsigned int) characterIndexForGlyphAtIndex: (unsigned int)glyphIndex
 {
   glyph_run_t *r;
-  int pos, cpos;
+  unsigned int pos, cpos;
 
   if (glyphs->glyph_length <= glyphIndex)
     {
@@ -1421,7 +1421,7 @@ places where we switch.
 
 #define GET_GLYPH \
 	glyph_run_t *r; \
-	int pos, cpos; \
+	unsigned int pos, cpos; \
 \
 	if (glyphs->glyph_length <= idx) \
 	{ \

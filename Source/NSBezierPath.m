@@ -56,13 +56,36 @@ static NSLineCapStyle default_line_cap_style = NSButtLineCapStyle;
 static float default_miter_limit = 10.0;
 
 @interface NSBezierPath (PrivateMethods)
-
 - (void)_invalidateCache;
 - (void)_recalculateBounds;
-
 @end
 
-@class GSBezierPath;
+
+typedef struct _PathElement
+{
+  NSBezierPathElement type;
+  NSPoint points[3];
+} PathElement;
+
+//#define GSUNION_TYPES GSUNION_OBJ
+#define GSI_ARRAY_TYPES       0
+#define GSI_ARRAY_TYPE	PathElement
+
+#define GSI_ARRAY_NO_RETAIN
+#define GSI_ARRAY_NO_RELEASE
+
+#ifdef GSIArray
+#undef GSIArray
+#endif
+#include <GNUstepBase/GSIArray.h>
+
+@interface GSBezierPath : NSBezierPath
+{
+  GSIArray pathElements;
+  BOOL flat;
+}
+@end
+
 
 @implementation NSBezierPath
 
@@ -541,6 +564,10 @@ static float default_miter_limit = 10.0;
   int i, count;
   BOOL first = YES;
 
+  /* Silence compiler warnings.  */
+  p = NSZeroPoint;
+  last_p = NSZeroPoint;
+
   count = [self elementCount];
   for(i = 0; i < count; i++) 
     {
@@ -566,10 +593,10 @@ static float default_miter_limit = 10.0;
 	      coeff[1] = pts[0];
 	      coeff[2] = pts[1];
 	      coeff[3] = pts[2];
-      	      flatten(coeff, [self flatness], path);
+	      flatten(coeff, [self flatness], path);
 	      p = pts[2];
 	      if (first)
-	        {
+		{
 		  last_p = pts[2];
 		  first = NO;
 		}
@@ -594,6 +621,9 @@ static float default_miter_limit = 10.0;
   NSPoint p, cp1, cp2;
   int i, j, count;
   BOOL closed = NO;
+
+  /* Silence compiler warnings.  */
+  p = NSZeroPoint;
 
   last_type = NSMoveToBezierPathElement;
   count = [self elementCount];
@@ -1777,32 +1807,6 @@ static NSPoint point_on_curve(double t, NSPoint a, NSPoint b, NSPoint c,
 
 @end
 
-
-typedef struct _PathElement
-{
-  NSBezierPathElement type;
-  NSPoint points[3];
-} PathElement;
-
-//#define GSUNION_TYPES GSUNION_OBJ
-#define GSI_ARRAY_TYPES       0
-#define GSI_ARRAY_TYPE	PathElement
-
-#define GSI_ARRAY_NO_RETAIN
-#define GSI_ARRAY_NO_RELEASE
-
-#ifdef GSIArray
-#undef GSIArray
-#endif
-#include <GNUstepBase/GSIArray.h>
-
-@interface GSBezierPath : NSBezierPath
-{
-  GSIArray pathElements;
-  BOOL flat;
-}
-
-@end
 
 @implementation GSBezierPath
 

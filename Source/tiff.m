@@ -334,7 +334,7 @@ NSTiffGetInfo(int imageNumber, TIFF* image)
    direct color images. Thus the data array should be large 
    enough to hold this information. */
 int
-NSTiffRead(TIFF* image, NSTiffInfo* info, char* data)
+NSTiffRead(TIFF *image, NSTiffInfo *info, unsigned char *data)
 {
   int     i;
   unsigned int row, col;
@@ -443,7 +443,7 @@ NSTiffRead(TIFF* image, NSTiffInfo* info, char* data)
 	}
 
 int  
-NSTiffWrite(TIFF* image, NSTiffInfo* info, char* data)
+NSTiffWrite(TIFF *image, NSTiffInfo *info, unsigned char *data)
 {
   tdata_t	buf = (tdata_t)data;
   uint16        sample_info[2];

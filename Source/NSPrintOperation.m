@@ -94,8 +94,8 @@ typedef struct _page_info_t {
 		              xpage: (int *)xptr
 		              ypage: (int *)yptr;
 - (NSRect) _adjustPagesFirst: (int)first 
-			                  last: (int)last 
-			                  info: (page_info_t *)info;
+			last: (int)last
+			info: (page_info_t *)info;
 - (void) _print;
 @end
 
@@ -832,7 +832,7 @@ scaleRect(NSRect rect, double scale)
 {
   int i, xpage, ypage;
   double hlimit, wlimit;
-  NSRect pageRect;
+  NSRect pageRect = NSZeroRect; /* Silence compiler warning.  */
   hlimit = [_view heightAdjustLimit];
   wlimit = [_view widthAdjustLimit];
   for (i = first; i <= last; i++)

@@ -325,7 +325,7 @@ static int __documentTag = 0;
 	       ignoredWords: nil
 	       wordCount: &count
 	       countOnly: YES];
-  
+
   return count;
 }
 

@@ -564,7 +564,7 @@ The displayed menus on the screen have the following structure:
 
 #ifndef	NO_GNUSTEP
 @interface NSObject (NSMenuActionResponder)
-- (BOOL) validateMenuItem: (NSMenuItem*)aMenuItem;
+- (BOOL) validateMenuItem: (id<NSMenuItem>)aMenuItem;
 @end
 
 /**
