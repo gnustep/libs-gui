@@ -291,12 +291,15 @@
   return nil;
 }
 
+/*
 - (NSView*) hitTest: (NSPoint)aPoint
-{}
+{
+}
 
 - (BOOL) mouse: (NSPoint)aPoint inRect: (NSRect)aRect
 {
 }
+*/
 
 // Coding.
 
