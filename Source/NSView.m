@@ -2920,7 +2920,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 
   [pboard declareTypes: [NSArray arrayWithObject: NSFilenamesPboardType] 
 	  owner: self];
-  if (![pboard setPropertyList: filename
+  if (![pboard setPropertyList: [NSArray arrayWithObject: filename]
 	       forType: NSFilenamesPboardType])
     return NO;
 

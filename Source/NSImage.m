@@ -400,9 +400,12 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
     [self addRepresentations: reps]; 
   else
     {
-      NSString* file = [pasteboard propertyListForType: NSFilenamesPboardType];
+      NSArray *array = [pasteboard propertyListForType: NSFilenamesPboardType];
+      NSString* file; 
       
-      if (file != nil || ![self _loadFromFile: file])
+      if ((array == nil) || ([array count] == 0) ||
+	  (file = [array objectAtIndex: 0]) == nil || 
+	  ![self _loadFromFile: file])
         {
 	  RELEASE(self);
 	  return nil;

@@ -1,3 +1,9 @@
+2003-06-25  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSImage.m (initWithPasteboard:):
+	* Source/NSView.m (dragFile:fromRect:slideBack:event:):
+	Corrected handling of pasteboard data of type NSFilenamesPboardType.
+ 
 2003-06-24 01:05  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSTabViewItem.m (-drawLabel:inRect:): Update for change
