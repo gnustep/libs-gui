@@ -144,7 +144,7 @@ static NSInputManager *currentInputManager = nil;
 
 + (BOOL) parseKey: (NSString *)key 
     intoCharacter: (unichar *)character
-     andModifiers: (int *)modifiers
+     andModifiers: (unsigned int *)modifiers
 {
   int flags = 0;
   unichar c = 0;
@@ -242,7 +242,7 @@ static NSInputManager *currentInputManager = nil;
 }
 
 + (NSString *) describeKeyStroke: (unichar)character
-		   withModifiers: (int)modifiers
+		   withModifiers: (unsigned int)modifiers
 {
   NSMutableString *description = [NSMutableString new];
   int i;
@@ -442,7 +442,7 @@ static NSInputManager *currentInputManager = nil;
     
     {
       Class string = [NSString class];
-      int i;
+      unsigned int i;
     
       for (i = 0; i < [keyBindingsFiles count]; i++)
 	{
