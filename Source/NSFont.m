@@ -35,6 +35,7 @@
 #include <AppKit/NSFont.h>
 #include <AppKit/NSFontManager.h>
 #include <AppKit/GSFontInfo.h>
+#include <AppKit/NSView.h>
 
 /* We cache all the 4 default fonts after we first get them.
    But when a default font is changed, the variable is set to YES 
@@ -374,6 +375,13 @@ setNSFont(NSString* key, NSFont* font)
   return 12.0;
 }
 
+/** Creates a new font with name aFontName and matrix fontMatrix.  The
+    fontMatrix is a standard size element matrix as used in PostScript
+    to describe the scaling of the font, typically it just includes
+    the font size as [fontSize 0 0 fontSize 0 0].  You can use the constant
+    NSFontIdentityMatrix in place of [1 0 0 1 0 0]. If NSFontIdentityMatrix, 
+    then the font will automatically flip itself when set in a
+    flipped view */
 + (NSFont*) fontWithName: (NSString*)aFontName 
 		  matrix: (const float*)fontMatrix
 {
@@ -381,6 +389,9 @@ setNSFont(NSString* key, NSFont* font)
 						matrix: fontMatrix]);
 }
 
+/** Creates a new font with name aFontName and size fontSize. Fonts created
+    using this method will automatically flip themselves when set in a flipped 
+    view */
 + (NSFont*) fontWithName: (NSString*)aFontName
 		    size: (float)fontSize
 {
@@ -411,6 +422,12 @@ setNSFont(NSString* key, NSFont* font)
 //
 // Instance methods
 //
+/** <init /> Initializes a newly created font class from the name and
+    information given in the fontMatrix. The fontMatrix is a standard
+    size element matrix as used in PostScript to describe the scaling
+    of the font, typically it just includes the font size as
+    [fontSize 0 0 fontSize 0 0].
+*/
 - (id) initWithName: (NSString*)name matrix: (const float*)fontMatrix
 {
   NSFont *font;
@@ -435,6 +452,10 @@ setNSFont(NSString* key, NSFont* font)
 
   fontName = [name copy];
   memcpy(matrix, fontMatrix, sizeof(matrix));
+  if (fontMatrix == NSFontIdentityMatrix)
+    matrixExplicitlySet = NO;
+  else
+    matrixExplicitlySet = YES;
   fontInfo = RETAIN([GSFontInfo fontInfoForFontName: fontName
 					     matrix: fontMatrix]);
   return self;
@@ -498,14 +519,30 @@ setNSFont(NSString* key, NSFont* font)
   return new_font;
 }
 
+- (NSFont *)_flippedViewFont
+{
+  float fontMatrix[6];
+  memcpy(fontMatrix, matrix, sizeof(matrix));
+  fontMatrix[3] *= -1;
+  return [NSFont fontWithName: fontName matrix: fontMatrix];
+}
+
 //
 // Setting the Font
 //
+/** Sets the receiver as the font used for text drawing operations. If the
+    current view is a flipped view, the reciever automatically flips itself
+    to display correctly in the flipped view, as long as the font was created
+    without explicitly setting the font matrix */
 - (void) set
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
 
-  [ctxt GSSetFont: self];
+  if (matrixExplicitlySet == NO && [[NSView focusView] isFlipped])
+    [ctxt GSSetFont: [self _flippedViewFont]];
+  else
+    [ctxt GSSetFont: self];
+
   [ctxt useFont: fontName];
 }
 

@@ -1,3 +1,10 @@
+2002-05-07  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSFont.m (-initWithName:matrix:): If matrix
+	is ident, set matrixExplicitlySet to NO
+	(-set): If the focus view is flipped and matrix not set, set our
+	flipped font equivalent.
+
 2002-05-06  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSGraphicsContext.m: More documentation.
