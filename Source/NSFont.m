@@ -106,10 +106,7 @@ setNSFont(NSString* key, NSFont* font)
     }
 }
 
-/* Getting the preferred user fonts.  
-
-   Important: caching (this also implies sharing) the default fonts of
-   cells and views has a considerable impact on performance.  */
+/* Getting the preferred user fonts.  */
 
 // This is deprecated in MacOSX
 + (NSFont*) boldSystemFontOfSize: (float)fontSize
