@@ -2493,6 +2493,121 @@ afterString in order over charRange. */
   [self setSelectedRange: NSMakeRange (newLocation, 0)];
 }
 
+- (void) moveToBeginningOfDocument: (id)sender
+{
+  [self setSelectedRange: NSMakeRange (0,0)];
+}
+
+- (void) moveToBeginningOfLine: (id)sender
+{
+  NSRange aRange;
+  NSRect ignored;
+  
+  /* We do nothing if we are at the beginning of the text.  */
+  if (_selected_range.location == 0)
+    {
+      return;
+    }
+  
+  ignored = [_layoutManager lineFragmentRectForGlyphAtIndex: 
+			      _selected_range.location
+			    effectiveRange: &aRange];
+
+  [self setSelectedRange: NSMakeRange (aRange.location, 0)];
+}
+
+- (void) moveToEndOfDocument: (id)sender
+{
+  unsigned length = [_textStorage length];
+  
+  if (length > 0)
+    {
+      [self setSelectedRange: NSMakeRange (length, 0)];
+    }
+  else
+    {
+      [self setSelectedRange: NSMakeRange (0, 0)];
+    }
+}
+
+- (void) moveToEndOfLine: (id)sender
+{
+  NSRange aRange;
+  NSRect ignored;
+
+  /* We do nothing if we are at the end of the text.  */
+  if (_selected_range.location == [_textStorage length])
+    {
+      return;
+    }
+
+  ignored = [_layoutManager lineFragmentRectForGlyphAtIndex: 
+			      _selected_range.location
+			    effectiveRange: &aRange];
+
+  /* FIXME the following  */
+  if (NSMaxRange (aRange) == [_textStorage length])
+    {
+      [self setSelectedRange: NSMakeRange (NSMaxRange (aRange), 0) ];
+    }
+  else
+    {
+      [self setSelectedRange: NSMakeRange ((NSMaxRange (aRange)) - 1, 0) ];
+    }
+}
+
+- (void) moveWordBackward: (id)sender
+{
+  if (_selected_range.location == 0 || [_textStorage length] == 0)
+    {
+      return;
+    }
+  else
+    {
+      unsigned int i;
+
+      i = [_textStorage nextWordFromIndex: _selected_range.location  
+			forward: NO];
+      [self setSelectedRange: NSMakeRange (i, 0)];
+    }
+}
+
+- (void) moveWordForward: (id)sender
+{
+  unsigned int length;
+  
+  length = [_textStorage length];
+  
+  if (_selected_range.location == length || length == 0)
+    {
+      return;
+    }
+  else
+    {
+      unsigned int i;
+      
+      i = [_textStorage nextWordFromIndex: _selected_range.location  
+			forward: YES];
+      [self setSelectedRange: NSMakeRange (i, 0)];
+    }
+}
+
+/* -selectAll: inherited from NSText  */
+
+- (void) selectLine: (id)sender
+{
+  if ( [_textStorage length] > 0 )
+    {
+      NSRange aRange;
+      NSRect ignored;
+      
+      ignored = [_layoutManager lineFragmentRectForGlyphAtIndex: 
+				  _selected_range.location
+				effectiveRange: &aRange];
+      
+      [self setSelectedRange: aRange];
+    }
+}
 
 - (BOOL) acceptsFirstResponder
 {
