@@ -1340,12 +1340,12 @@
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder: aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
 }
 
-- initWithCoder: aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
   [super initWithCoder: aDecoder];
 

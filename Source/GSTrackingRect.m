@@ -64,20 +64,20 @@
 	return self;
 }
 
-- (void)dealloc
+- (void) dealloc
 {
-	[owner release];
-	[super dealloc];
+  [owner release];
+  [super dealloc];
 }
 
-- (NSRect)rectangle
+- (NSRect) rectangle
 {
-	return rectangle;
+  return rectangle;
 }
 
 - (NSTrackingRectTag)tag
 {
-	return tag;
+  return tag;
 }
 
 - owner
@@ -98,21 +98,21 @@
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
-	[aCoder encodeRect:rectangle];
-	[aCoder encodeValueOfObjCType:@encode(NSTrackingRectTag) at:&tag];
-	[aCoder encodeObject:owner];
-	[aCoder encodeValueOfObjCType:@encode(BOOL) at:&inside];
+  [aCoder encodeRect: rectangle];
+  [aCoder encodeValueOfObjCType: @encode(NSTrackingRectTag) at: &tag];
+  [aCoder encodeObject: owner];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &inside];
 }
 
-- initWithCoder:aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
-	rectangle = [aDecoder decodeRect];
-	[aDecoder decodeValueOfObjCType:@encode(NSTrackingRectTag) at:&tag];
-	[aDecoder decodeValueOfObjCType:@encode(BOOL) at:&inside];
-	owner = [aDecoder decodeObject];
-	return self;
+  rectangle = [aDecoder decodeRect];
+  [aDecoder decodeValueOfObjCType: @encode(NSTrackingRectTag) at: &tag];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &owner];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &inside];
+  return self;
 }
 
 @end

@@ -238,22 +238,14 @@
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
-#if 0
-  [aCoder encodeObjectReference: next_responder withName: @"Next responder"];
-#else
-  [aCoder encodeConditionalObject:next_responder];
-#endif
+  [aCoder encodeConditionalObject: next_responder];
 }
 
-- initWithCoder:aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
-#if 0
-  [aDecoder decodeObjectAt: &next_responder withName: NULL];
-#else
   next_responder = [aDecoder decodeObject];
-#endif
 
   return self;
 }

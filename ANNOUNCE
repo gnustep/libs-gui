@@ -1,7 +1,7 @@
 ANNOUNCE
 ********
 
-This is version 0.5.0 of the GNUstep GUI library (`gnustep-gui').
+This is version 0.5.5 of the GNUstep GUI library (`gnustep-gui').
 
 What is the GNUstep GUI Library?
 ================================
@@ -31,7 +31,15 @@ component like the GNUstep X/DPS GUI Backend.
 What's new in this release?
 ===========================
 
-   The currently released version of the library is `0.5.0'.
+   The currently released version of the library is `0.5.5'.
+
+Noteworthy changes in version `0.5.5'
+=====================================
+
+   Probably to extensive to list.
+
+   * A lot of rewritting has been done to the classes, with general
+     cleanup of coordinate conversion code, etc.
 
 Noteworthy changes in version `0.5.0'
 =====================================
@@ -91,24 +99,20 @@ discussion mailing list for general questions and discussion.  Look at
 the GNUstep Web Pages for more information regarding GNUstep resources
 `http://www.gnustep.org/'
 
-   There are also companies which provide commercial support for the
-GNUstep GUI Library, see the file `SUPPORT' for more information.
-
 Where can you get it?  How can you compile it?
 ==============================================
 
-   The gstep-gui-0.5.0.tar.gz distribution file has been placed on
+   The gstep-gui-0.5.5.tar.gz distribution file has been placed on
 `ftp.gnustep.org' in `pub/gnustep/core'.
 
    The program requires gcc 2.8.0 or higher.
 
-   It requires the Display Ghostscript System version 0.5.0 and the
-TIFF Graphics library version 3.4.
+   The Display Ghostscript System version 0.5.0 and the TIFF Graphics
+library version 3.4 may be required depending on the backend you choose.
 
    It also requires a FoundationKit library as specified by the OpenStep
 specification.  The FoundationKit libraries known to work are the
-GNUstep Base Library version `0.5.0' and libFoundation version
-`0.7.1'.
+GNUstep Base Library version `0.5.5'.
 
    The `.tar' file is compressed with GNU gzip.  Gzip can be obtained by
 anonymous ftp at any of the GNU archive sites.
@@ -124,8 +128,7 @@ Where do I send bug reports?
 ============================
 
    Bug reports can be sent to the GNUstep discussion list
-<discussion@gnustep.org> or to NET-Community Technical Support
-<support@net-community.com>.
+<discuss-gnustep@gnu.org>.
 
 Creators rejoice!
 Scott Christley

@@ -86,14 +86,14 @@ static id _NSCONTROL_CELL_CLASS = nil;
 //
 // Creating copies
 //
-- copyWithZone:(NSZone *)zone
+- (id) copyWithZone: (NSZone*)zone
 {
-id c = NSCopyObject (self, 0, zone);
+  id		c = NSCopyObject(self, 0, zone);
+  NSCell	*o = [cell copy];
 
-	[cell retain];											// give new control 
-	[c setCell: [[cell copy] autorelease]];					// a copy of cell
-
-	return c;
+  [c setCell: o];
+  [o release];
+  return c;
 }
 
 //
@@ -439,22 +439,22 @@ unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
-	[super encodeWithCoder:aCoder];
+  [super encodeWithCoder: aCoder];
 	
-	[aCoder encodeValueOfObjCType: "i" at: &tag];
-	[aCoder encodeObject: cell];
+  [aCoder encodeValueOfObjCType: @encode(int) at: &tag];
+  [aCoder encodeObject: cell];
 }
 
-- initWithCoder:aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
-	[super initWithCoder:aDecoder];
+  [super initWithCoder: aDecoder];
 	
-	[aDecoder decodeValueOfObjCType: "i" at: &tag];
-	cell = [aDecoder decodeObject];
-	
-	return self;
+  [aDecoder decodeValueOfObjCType: @encode(int) at: &tag];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &cell];
+
+  return self;
 }
 
 @end

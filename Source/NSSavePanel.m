@@ -428,7 +428,7 @@ shouldShowFilename:(NSString *)filename
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [aCoder encodeObject: _accessoryView];
   [aCoder encodeObject: panel_title];
@@ -437,14 +437,10 @@ shouldShowFilename:(NSString *)filename
   [aCoder encodeObject: file_name];
   [aCoder encodeObject: required_type];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at:&required_type];
-#if 0
-  [aCoder encodeObjectReference: delegate withName: @"Delegate"];
-#else
-  [aCoder encodeConditionalObject:delegate];
-#endif
+  [aCoder encodeConditionalObject: delegate];
 }
 
-- initWithCoder:aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
   _accessoryView = [aDecoder decodeObject];
   panel_title = [aDecoder decodeObject];
@@ -453,11 +449,7 @@ shouldShowFilename:(NSString *)filename
   file_name = [aDecoder decodeObject];
   required_type = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at:&required_type];
-#if 0
-  [aDecoder decodeObjectAt: &delegate withName: NULL];
-#else
   delegate = [aDecoder decodeObject];
-#endif
 
   return self;
 }

@@ -1062,7 +1062,7 @@ static NSMutableDictionary	*colorStrings = nil;
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
   // Version 1
   [aCoder encodeValueOfObjCType: @encode(float) at: &RGB_component.red];
@@ -1087,7 +1087,7 @@ static NSMutableDictionary	*colorStrings = nil;
   [aCoder encodeValueOfObjCType: @encode(int) at: &valid_components];
 }
 
-- initWithCoder:aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
   NSString *s;
 
@@ -1105,9 +1105,9 @@ static NSMutableDictionary	*colorStrings = nil;
   // +++ Coding cannot return class version yet
   //  if ([aDecoder versionForClassName: s] > 1)
     {
-      colorspace_name = [[aDecoder decodeObject] retain];
-      catalog_name = [[aDecoder decodeObject] retain];
-      color_name = [[aDecoder decodeObject] retain];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &colorspace_name];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &catalog_name];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &color_name];
       [aDecoder decodeValueOfObjCType: @encode(float) at: &CMYK_component.cyan];
       [aDecoder decodeValueOfObjCType: @encode(float) at: &CMYK_component.magenta];
       [aDecoder decodeValueOfObjCType: @encode(float) at: &CMYK_component.yellow];

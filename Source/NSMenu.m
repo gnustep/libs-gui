@@ -302,16 +302,16 @@ static Class menuCellClass = nil;
 
 - (id)copyWithZone:(NSZone*)zone
 {
-  NSMenu* copy = NSAllocateObject (isa, 0, zone);
-  int i, count;
-  NSArray* cells;
+  NSMenu	*copy = NSAllocateObject (isa, 0, zone);
+  unsigned	i, count;
+  NSArray	*cells;
 
   NSDebugLog (@"copy menu with title '%@'", [self title]);
 
-  copy->title = [title copyWithZone:zone];
+  copy->title = [title copyWithZone: zone];
 
-  copy->menuCells = [menuCells copyWithZone:zone];
-  [copy->menuCells setMenu:copy];
+  copy->menuCells = [menuCells copyWithZone: zone];
+  [copy->menuCells setMenu: copy];
 
   /* Change the supermenu object of the new cells to the new menu */
   cells = [copy->menuCells itemArray];
@@ -602,12 +602,12 @@ static Class menuCellClass = nil;
   return menuCells;
 }
 
-- initWithCoder:(NSCoder*)aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
   return self;
 }
 
-- (void)encodeWithCoder:(NSCoder*)aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
 }
 

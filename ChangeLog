@@ -1,3 +1,7 @@
+Tue Mar  2 08:04:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Merge in 'dawn' CVS branch.
+
 Mon Mar  1 20:06:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	Removed PSMatrix - replaced by NSAffineTransform
@@ -13,6 +17,10 @@ Mon Mar  1 20:06:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 Mon Mar  1 17:12:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Headers/AppKit/NSCell.h: Added MacOS-X cell state constants.
+
+1999-03-01  Adam Fedor  <fedor@gnu.org>
+
+	* Update documentation.
 
 Thu Feb 25 15:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
@@ -67,6 +75,51 @@ Sun Feb 21 20:36:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 	* Headers/gnustep/gui/NSView.h: Added matrix for coordinate conversion
 	* Source/NSView.m: Bugfix in update, plus partial code for improved
 	coordinate handling.
+
+Wed Feb 24  8:56:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Benhur reported oddity in cell drawing code - cells were drawing their
+	backgrounds in the method to draw the frame.  Fixed this by moving
+	background drawing code to the drawInterior methods - also removed
+	a lot of redundant code to workaround bugs in clipping that are now
+	fixed.
+	* Source/NSBrowserCell.m: update drawing code.
+	* Source/NSButtonCell.m: ditto.
+	* Source/NSCell.m: ditto.
+	* Source/NSFormCell.m: ditto.
+	* Source/NSSliderCell.m: ditto.
+	* Source/NSTextFieldCell.m: ditto.
+
+Tue Feb 23 19:30:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Practically every file - I went through all the classes that conform
+	to the NSCoding protocol and checked and tidied their initWithCoder
+	and encodeWithCoder methods.  In some cases they simply needed the
+	method prototypes fixing, but in most the initWithCoder method
+	needed modifying to retain decoded ivar objects correctly!
+	No guarantees that coding/decoding is correct now - but it's
+	certainly a lot better.
+
+Tue Feb 23 15:18:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Various files - fixed all the copyWithZone: methods where objects are
+	both copied AND retained.
+
+1999-02-22  Adam Fedor  <fedor@gnu.org>
+
+	* Version: update version.
+
+Mon Feb 22  5:52:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSView.m: ([-displayIfNeededInRectIgnoringOpacity:]) a two
+	character change to fix a redisplay problem - already in the main
+	cvs branch.
+	Also merged in changes to coordinate conversion code.
+
+Sun Feb 21 14:43:57 1999  Masatake Yamato  <masata-y@is.aist-nara.ac.jp>
+
+	* Panels/GNUmakefile (before-uninstall): Use -d instead of -e.
+        test command in sh of solaris2.6 doesn't support -e option.
 
 Fri Feb 19 20:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 

@@ -5,13 +5,7 @@
 @include version.texi
 @end ifset
 
-Last updated March 1998.  The most up-to-date version of this status
-report is available at:
-
-@example
-@url{http://www.gnustep.org/Documentation/gnustep-gui/gnustep-gui_toc.html}
-@end example
-
+Last updated March 1998.  This list is probably out of date.
 Please send corrections to @email{scottc@@net-community.com}.
 
 @emph{Key:}

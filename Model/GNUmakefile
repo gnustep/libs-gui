@@ -59,7 +59,7 @@ endif
 ADDITIONAL_OBJCFLAGS = -Wall
 ADDITIONAL_CPPFLAGS += $(RUNTIME_DEFINE) $(GUI_DEFINE) $(BACKEND_DEFINE)
 
-ADDITIONAL_LIB_DIRS += -L$(GNUSTEP_OBJ_DIR)
+ADDITIONAL_LIB_DIRS += -L$(GNUSTEP_OBJ_DIR) -L../Source/$(GNUSTEP_OBJ_DIR)
 
 ADDITIONAL_TOOL_LIBS += -lgmodel
 ADDITIONAL_OBJC_FLAGS += $(BACKEND_DEFINE)
@@ -71,8 +71,11 @@ ADDITIONAL_INCLUDE_DIRS = -I../Headers -I../Headers/gnustep
 # systems where building a shared library requires to pass to the linker
 # all the libraries the target library depends upon.
 
-LIBRARIES_DEPEND_UPON = $(FND_LIBS) $(GUI_LIBS) \
-		$(BACKEND_LIBS) $(SYSTEM_LIBS)
+#LIBRARIES_DEPEND_UPON = $(BACKEND_LIBS) $(GUI_LIBS) $(FND_LIBS) $(SYSTEM_LIBS)
+
+libgmodel_LIBRARIES_DEPEND_UPON = -lgnustep-gui $(FND_LIBS)
+nib2gmodel_LIBRARIES_DEPEND_UPON = $(BACKEND_LIBS) $(GUI_LIBS) \
+	$(FND_LIBS) $(SYSTEM_LIBS)
 
 -include GNUmakefile.local
 

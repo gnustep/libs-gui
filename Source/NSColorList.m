@@ -280,7 +280,7 @@ static NSLock *gnustep_color_list_lock;
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [aCoder encodeObject: list_name];
   [aCoder encodeObject: color_list];
@@ -288,12 +288,12 @@ static NSLock *gnustep_color_list_lock;
   [aCoder encodeValueOfObjCType:@encode(BOOL) at: &is_editable];
 }
 
-- initWithCoder:aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
-  list_name = [aDecoder decodeObject];
-  color_list = [aDecoder decodeObject];
-  color_list_keys = [aDecoder decodeObject];
-  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_editable];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &list_name];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &color_list];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &color_list_keys];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_editable];
 
   return self;
 }

@@ -26,14 +26,10 @@ The file @file{INSTALL} gives instructions for installing the library.
 @section How can you help?
 
 @itemize @bullet
-@item
-Read the projects and questions in the @file{TODO} file.  If you can
-volunteer for any of the projects, or if you have any useful
-comments send me email!  @email{scottc@@net-community.com}
 
 @item
-Give me feedback!  Tell me what you like; tell me what you think
-could be better.  Send me bug reports.
+Give us feedback!  Tell us what you like; tell us what you think
+could be better.  Send bug reports to @email{bug-gnustep@@gnu.org}.
 @end itemize
 
 @noindent

@@ -74,7 +74,7 @@ static BOOL usesUserKeyEquivalents = YES;
 
 - (id) copyWithZone: (NSZone*)zone
 {
-  NSMenuItem* copy = [super copyWithZone:zone];
+  NSMenuItem	*copy = [super copyWithZone: zone];
 
   NSDebugLog (@"menu item '%@' copy", [self title]);
   copy->representedObject = [representedObject retain];

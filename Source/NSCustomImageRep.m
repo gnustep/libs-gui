@@ -32,7 +32,7 @@
 @implementation NSCustomImageRep
 
 - (id) initWithDrawSelector: (SEL)aSelector
-		delegate: (id)anObject
+		   delegate: (id)anObject
 {
   [super init];
 
@@ -66,20 +66,20 @@
 }
 
 // NSCoding protocol
-- (void) encodeWithCoder: aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
   
   [aCoder encodeObject: delegate];
-// FIXME:  [aCoder encodeSelector: selector];
+  [aCoder encodeValueOfObjCType: @encode(SEL) at: &selector];
 }
 
-- initWithCoder: aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
   self = [super initWithCoder: aDecoder];
 
-  delegate = [[aDecoder decodeObject] retain];
-// FIXME:   selector = [aDecoder decodeSelector];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &delegate];
+  [aDecoder decodeValueOfObjCType: @encode(SEL) at: &selector];
   return self;
 }
 

@@ -78,12 +78,12 @@
 	return self;
 }
 
-- (void)dealloc
+- (void) dealloc
 {
-	if (cell) 
-		[cell release];
+  if (cell) 
+    [cell release];
 
-	[super dealloc];
+  [super dealloc];
 }
 
 //
@@ -297,9 +297,9 @@
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [super encodeWithCoder:aCoder];
+  [super encodeWithCoder: aCoder];
 
   [aCoder encodeObject: cell];
   [aCoder encodeObject: content_view];
@@ -310,18 +310,19 @@
   [aCoder encodeValueOfObjCType: @encode(NSTitlePosition) at: &title_position];
 }
 
-- initWithCoder:aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder:aDecoder];
+  [super initWithCoder: aDecoder];
 
-  cell = [aDecoder decodeObject];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &cell];
   content_view = [aDecoder decodeObject];
   offsets = [aDecoder decodeSize];
   border_rect = [aDecoder decodeRect];
   title_rect = [aDecoder decodeRect];
-  [aDecoder decodeValueOfObjCType: @encode(NSBorderType) at: &border_type];
+  [aDecoder decodeValueOfObjCType: @encode(NSBorderType)
+			       at: &border_type];
   [aDecoder decodeValueOfObjCType: @encode(NSTitlePosition) 
-	    at: &title_position];
+			       at: &title_position];
 
   return self;
 }

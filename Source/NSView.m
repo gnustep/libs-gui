@@ -58,8 +58,8 @@
 static NSString	*viewThreadKey = @"NSViewThreadKey";
 static NSAffineTransform	*flip = nil;
 
-static void	(*concatImp)(NSAffineTransform*, SEL, NSAffineTransform*) = 0;
-static SEL	concatSel = @selector(concatenateWith:);
+static void	(*appImp)(NSAffineTransform*, SEL, NSAffineTransform*) = 0;
+static SEL	appSel = @selector(appendTransform:);
 
 static void	(*invalidateImp)(NSView*, SEL) = 0;
 static SEL	invalidateSel = @selector(_invalidateCoordinates);
@@ -74,8 +74,8 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
       Class	matrixClass = [NSAffineTransform class];
       NSAffineTransformStruct	ats = { 1, 0, 0, -1, 0, 1 };
 
-      concatImp = (void (*)(NSAffineTransform*, SEL, NSAffineTransform*))
-		[matrixClass instanceMethodForSelector: concatSel];
+      appImp = (void (*)(NSAffineTransform*, SEL, NSAffineTransform*))
+		[matrixClass instanceMethodForSelector: appSel];
 
       invalidateImp = (void (*)(NSView*, SEL))
 		[self instanceMethodForSelector: invalidateSel];
@@ -1879,13 +1879,13 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 	  [pMatrix getMatrix: vals];
 	  [matrixToWindow setMatrix: vals];
-	  (*concatImp)(matrixToWindow, concatSel, frameMatrix);
+	  (*appImp)(matrixToWindow, appSel, frameMatrix);
 	  if ([self isFlipped] != wasFlipped)
 	    {
 	      flip->matrix.ty = bounds.size.height;
-	      (*concatImp)(matrixToWindow, concatSel, flip);
+	      (*appImp)(matrixToWindow, appSel, flip);
 	    }
-	  (*concatImp)(matrixToWindow, concatSel, boundsMatrix);
+	  (*appImp)(matrixToWindow, appSel, boundsMatrix);
 	  [matrixToWindow getMatrix: vals];
 	  [matrixFromWindow setMatrix: vals];
 	  [matrixFromWindow inverse];

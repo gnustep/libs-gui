@@ -38,10 +38,10 @@ prefix = $(GNUSTEP_INSTALLATION_DIR)
 PANELS = SavePanel.gmodel
 
 before-install::
-	if [ ! -e $(prefix)/Library ]; then \
+	if [ ! -d $(prefix)/Library ]; then \
 		mkdir $(prefix)/Library; \
 	fi
-	if [ ! -e $(prefix)/Library/Model ]; then \
+	if [ ! -d $(prefix)/Library/Model ]; then \
 		mkdir $(prefix)/Library/Model; \
 	fi
 	for f in $(PANELS); do \

@@ -93,9 +93,9 @@
   [super dealloc];
 }
 
-- (id)copyWithZone:(NSZone*)zone
+- (id) copyWithZone: (NSZone*)zone
 {
-  NSTextFieldCell* c = [super copyWithZone:zone];
+  NSTextFieldCell	*c = [super copyWithZone: zone];
 
   [c setBackgroundColor: background_color];
   [c setTextColor: text_color];
@@ -230,34 +230,23 @@
 }
 
 //
-// Displaying
-//
-- (void)drawWithFrame:(NSRect)cellFrame
-	       inView:(NSView *)controlView
-{
-  // Save last view drawn to
-  control_view = controlView;
-  [super drawWithFrame:cellFrame inView:controlView];
-}
-
-//
 // NSCoding protocol
 //
-- (void)encodeWithCoder:aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [super encodeWithCoder:aCoder];
+  [super encodeWithCoder: aCoder];
 
-  [aCoder encodeObject: background_color];
-  [aCoder encodeObject: text_color];
+  [aCoder encodeValueOfObjCType: @encode(id) at: &background_color];
+  [aCoder encodeValueOfObjCType: @encode(id) at: &text_color];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &draw_background];
 }
 
-- initWithCoder:aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder:aDecoder];
+  [super initWithCoder: aDecoder];
 
-  background_color = [aDecoder decodeObject];
-  text_color = [aDecoder decodeObject];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &background_color];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &text_color];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &draw_background];
 
   return self;

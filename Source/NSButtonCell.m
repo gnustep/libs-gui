@@ -1,4 +1,4 @@
-/* 
+/*
    NSButtonCell.m
 
    The button cell class
@@ -10,14 +10,14 @@
    Date: 1996
    Author:  Felipe A. Rodriguez <far@ix.netcom.com>
    Date: August 1998
-   
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -27,7 +27,7 @@
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/ 
+*/
 
 #include <gnustep/gui/config.h>
 #include <Foundation/NSLock.h>
@@ -72,45 +72,45 @@
 	delayInterval = 0.4;
 	repeatInterval = 0.075;
 	altContents = nil;
-	
+
 	return self;
 }
 
 - init
 {
 	[self initTextCell:@"Button"];
-	
+
 	return self;
 }
 
 - initImageCell:(NSImage *)anImage
 {
 	[super initImageCell:anImage];
-	
+
 	contents = nil;
-	
+
 	return [self _init];
 }
 
 - initTextCell:(NSString *)aString
 {
-	[super initTextCell:aString];
-	
-	return [self _init];
+  [super initTextCell:aString];
+
+  return [self _init];
 }
 
-- (void)dealloc
+- (void) dealloc
 {
-	[altContents release];
-	[altImage release];
-	[keyEquivalent release];
-	[keyEquivalentFont release];
-	
-	[super dealloc];
+  [altContents release];
+  [altImage release];
+  [keyEquivalent release];
+  [keyEquivalentFont release];
+
+  [super dealloc];
 }
 
 //
-// Setting the Titles 
+// Setting the Titles
 //
 - (NSString *)title								{ return [self stringValue]; }
 - (NSString *)alternateTitle					{ return altContents; }
@@ -132,7 +132,7 @@
 }
 
 //
-// Setting the Images 
+// Setting the Images
 //
 - (NSImage *)alternateImage						{ return altImage; }
 - (NSCellImagePosition)imagePosition			{ return image_position; }
@@ -144,7 +144,7 @@
 }
 
 //
-// Setting the Repeat Interval 
+// Setting the Repeat Interval
 //
 - (void)getPeriodicDelay:(float *)delay interval:(float *)interval
 {
@@ -161,8 +161,8 @@
 
 - (void) performClick: (id)sender
 {
-  NSView	*cv = [self controlView];  
-  
+  NSView	*cv = [self controlView];
+
   [self highlight: YES withFrame: [cv frame] inView: cv];
   if (action && target)
     {
@@ -181,7 +181,7 @@
 }
 
 //
-// Setting the Key Equivalent 
+// Setting the Key Equivalent
 //
 - (NSString*) keyEquivalent
 {
@@ -193,13 +193,13 @@
   return keyEquivalentFont;
 }
 
-- (unsigned int) keyEquivalentModifierMask 
-{ 
+- (unsigned int) keyEquivalentModifierMask
+{
   return keyEquivalentModifierMask;
 }
 
-- (void) setKeyEquivalent: (NSString*)key	
-{ 
+- (void) setKeyEquivalent: (NSString*)key
+{
   if (keyEquivalent != key)
     {
       [keyEquivalent release];
@@ -223,18 +223,18 @@
 }
 
 //
-// Modifying Graphic Attributes 
+// Modifying Graphic Attributes
 //
 - (BOOL)isTransparent					{ return transparent; }
 - (void)setTransparent:(BOOL)flag		{ transparent = flag; }
 
-- (BOOL)isOpaque				
-{ 
-	return !transparent && [self isBordered]; 
+- (BOOL)isOpaque
+{
+	return !transparent && [self isBordered];
 }
 
 //
-// Modifying Graphic Attributes 
+// Modifying Graphic Attributes
 //
 - (int)highlightsBy						{ return highlightsByMask; }
 - (void)setHighlightsBy:(int)mask		{ highlightsByMask = mask; }
@@ -245,7 +245,7 @@
 {
   [super setType:buttonType];
 
-  switch (buttonType) 
+  switch (buttonType)
 	{
     case NSMomentaryLight:
       [self setHighlightsBy:NSChangeBackgroundCellMask];
@@ -307,37 +307,60 @@
 - (NSColor *)textColor
 {
   if (([self state] && ([self showsStateBy] & NSChangeGrayCellMask))
-      || ([self isHighlighted] && ([self highlightsBy] & NSChangeGrayCellMask))) 
+      || ([self isHighlighted] && ([self highlightsBy] & NSChangeGrayCellMask)))
     return [NSColor lightGrayColor];
   return [NSColor blackColor];
 }
 
-- (void)drawWithFrame:(NSRect)cellFrame inView:(NSView *)controlView
+- (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
-  float backgroundGray = NSLightGray;
+  // Save last view drawn to
+  [self setControlView: controlView];
 
   // do nothing if cell's frame rect is zero
   if (NSIsEmptyRect(cellFrame))
     return;
 
-  PSgsave ();
-  NSRectClip (cellFrame);
+  // draw the border if needed
+  if ([self isBordered])
+    {
+      if ([self isHighlighted] && ([self highlightsBy] & NSPushInCellMask))
+        {
+          NSDrawGrayBezel(cellFrame, cellFrame);
+        }
+      else
+        {
+          NSDrawButton(cellFrame, cellFrame);
+        }
+    }
 
-  // Save last view drawn to
-  [self setControlView: controlView];
+  [self drawInteriorWithFrame: cellFrame inView: controlView];
+}
+
+- (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
+{
+  BOOL		showAlternate = NO;
+  unsigned	mask;
+  NSImage	*imageToDisplay;
+  NSString	*titleToDisplay;
+  NSSize	imageSize = {0, 0};
+  NSRect	rect;
+  float		backgroundGray = NSLightGray;
+
+  cellFrame = NSInsetRect(cellFrame, xDist, yDist);
 
   // determine the background color
   if ([self state])
     {
-      if ( [self showsStateBy] 
-           & (NSChangeGrayCellMask | NSChangeBackgroundCellMask) ) 
+      if ( [self showsStateBy]
+           & (NSChangeGrayCellMask | NSChangeBackgroundCellMask) )
         backgroundGray = NSWhite;
     }
 
   if ([self isHighlighted])
     {
       if ( [self highlightsBy]
-           & (NSChangeGrayCellMask | NSChangeBackgroundCellMask) ) 
+           & (NSChangeGrayCellMask | NSChangeBackgroundCellMask) )
         backgroundGray = NSWhite;
     }
 
@@ -345,57 +368,28 @@
   [[NSColor colorWithCalibratedWhite:backgroundGray alpha:1.0] set];
   NSRectFill(cellFrame);
 
-  // draw the border if needed
-  if ([self isBordered])
-    {
-      if ([self isHighlighted] && ([self highlightsBy] & NSPushInCellMask)) 
-        {
-          NSDrawGrayBezel (cellFrame, cellFrame);		
-          cellFrame = NSInsetRect (cellFrame, 2, 2);
-        }
-      else
-        {
-          NSDrawButton (cellFrame, cellFrame);
-          cellFrame = NSInsetRect (cellFrame, 2, 2);
-        }
-    }
-
-  [self drawInteriorWithFrame: cellFrame inView: controlView];
-
-  PSgrestore ();
-}
-
-- (void)drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView *)controlView
-{
-  BOOL showAlternate = NO;
-  unsigned int mask;
-  NSImage *imageToDisplay;
-  NSString *titleToDisplay;
-  NSSize imageSize = {0, 0};
-  NSRect rect;
-
-  cellFrame = NSInsetRect (cellFrame, xDist, yDist);
-
-  // Determine the image and the title that will be 
-  // displayed. If the NSContentsCellMask is set the 
-  // image and title are swapped only if state is 1 or 
-  // if highlighting is set (when a button is pushed it's 
+  // Determine the image and the title that will be
+  // displayed. If the NSContentsCellMask is set the
+  // image and title are swapped only if state is 1 or
+  // if highlighting is set (when a button is pushed it's
   // content is changed to the face of reversed state).
   if ([self isHighlighted])
     mask = [self highlightsBy];
   else
     mask = [self showsStateBy];
-  if (mask & NSContentsCellMask) 
-    showAlternate = [self state];                     
+  if (mask & NSContentsCellMask)
+    showAlternate = [self state];
 
-  if (showAlternate || [self isHighlighted]) 
+  if (showAlternate || [self isHighlighted])
     {
       imageToDisplay = [self alternateImage];
+      if (!imageToDisplay)
+	imageToDisplay = [self image];
       titleToDisplay = [self alternateTitle];
       if (!titleToDisplay)
         titleToDisplay = [self title];
     }
-  else 
+  else
     {
       imageToDisplay = [self image];
       titleToDisplay = [self title];
@@ -403,83 +397,85 @@
 
   if (imageToDisplay)
     imageSize = [imageToDisplay size];
+
   rect = NSMakeRect (cellFrame.origin.x, cellFrame.origin.y,
                      imageSize.width, imageSize.height);
 
-  switch ([self imagePosition]) 
+  switch ([self imagePosition])
     {
-      case NSNoImage:                           
-           // draw title only
-           [self _drawText: titleToDisplay inFrame: cellFrame];
-           break;
+      case NSNoImage:
+	 // draw title only
+	 [self _drawText: titleToDisplay inFrame: cellFrame];
+	 break;
 
-      case NSImageOnly:                        
-           // draw image only
-           [self _drawImage: imageToDisplay inFrame: cellFrame];
-           break;
+      case NSImageOnly:
+	 // draw image only
+	 [self _drawImage: imageToDisplay inFrame: cellFrame];
+	 break;
 
-      case NSImageLeft:                   
-           // draw image to the left of the title
-           rect.origin = cellFrame.origin;
-           rect.size.width = imageSize.width;
-           rect.size.height = cellFrame.size.height;
-           [self _drawImage: imageToDisplay inFrame: rect];
+      case NSImageLeft:
+	 // draw image to the left of the title
+	 rect.origin = cellFrame.origin;
+	 rect.size.width = imageSize.width;
+	 rect.size.height = cellFrame.size.height;
+	 [self _drawImage: imageToDisplay inFrame: rect];
 
-           // draw title
-           rect.origin.x += imageSize.width + xDist;
-           rect.size.width = cellFrame.size.width - imageSize.width - xDist;
-           [self _drawText: titleToDisplay inFrame: rect];
-           break;
+	 // draw title
+	 rect.origin.x += imageSize.width + xDist;
+	 rect.size.width = cellFrame.size.width - imageSize.width - xDist;
+	 [self _drawText: titleToDisplay inFrame: rect];
+	 break;
 
-      case NSImageRight:                 
-           // draw image to the right of the title
-           rect.origin.x = NSMaxX (cellFrame) - imageSize.width;
-           rect.origin.y = cellFrame.origin.y;
-           rect.size.width = imageSize.width;
-           rect.size.height = cellFrame.size.height;
-           [self _drawImage:imageToDisplay inFrame:rect];
-  
-           // draw title
-           rect.origin = cellFrame.origin;
-           rect.size.width = cellFrame.size.width - imageSize.width - xDist;
-           rect.size.height = cellFrame.size.height;
-           [self _drawText: titleToDisplay inFrame: rect];
-           break;
-      case NSImageBelow:                      
-           // draw image below title
-           cellFrame.size.height /= 2;
-           [self _drawImage: imageToDisplay inFrame: cellFrame];
-           cellFrame.origin.y += cellFrame.size.height;
-           [self _drawText: titleToDisplay inFrame: cellFrame];
-           break;
-                                                                                                              
-      case NSImageAbove:                                                                     
-           // draw image above title
-           cellFrame.size.height /= 2;
-           [self _drawText: titleToDisplay inFrame: cellFrame];
-           cellFrame.origin.y += cellFrame.size.height;
-           [self _drawImage: imageToDisplay inFrame: cellFrame];
-           break;
-                                                                                                             
+      case NSImageRight:
+	 // draw image to the right of the title
+	 rect.origin.x = NSMaxX (cellFrame) - imageSize.width;
+	 rect.origin.y = cellFrame.origin.y;
+	 rect.size.width = imageSize.width;
+	 rect.size.height = cellFrame.size.height;
+	 [self _drawImage:imageToDisplay inFrame:rect];
+
+	 // draw title
+	 rect.origin = cellFrame.origin;
+	 rect.size.width = cellFrame.size.width - imageSize.width - xDist;
+	 rect.size.height = cellFrame.size.height;
+	 [self _drawText: titleToDisplay inFrame: rect];
+	 break;
+
+      case NSImageBelow:
+	 // draw image below title
+	 cellFrame.size.height /= 2;
+	 [self _drawImage: imageToDisplay inFrame: cellFrame];
+	 cellFrame.origin.y += cellFrame.size.height;
+	 [self _drawText: titleToDisplay inFrame: cellFrame];
+	 break;
+
+      case NSImageAbove:
+	 // draw image above title
+	 cellFrame.size.height /= 2;
+	 [self _drawText: titleToDisplay inFrame: cellFrame];
+	 cellFrame.origin.y += cellFrame.size.height;
+	 [self _drawImage: imageToDisplay inFrame: cellFrame];
+	 break;
+
       case NSImageOverlaps:
-           // draw title over the image
-           [self _drawImage: imageToDisplay inFrame: cellFrame];
-           [self _drawText: titleToDisplay inFrame: cellFrame];
-           break;
+	 // draw title over the image
+	 [self _drawImage: imageToDisplay inFrame: cellFrame];
+	 [self _drawText: titleToDisplay inFrame: cellFrame];
+	 break;
     }
 }
 
 
-- (id)copyWithZone:(NSZone*)zone
+- (id) copyWithZone: (NSZone*)zone
 {
-  NSButtonCell* c = [super copyWithZone:zone];
+  NSButtonCell	*c = [super copyWithZone: zone];
 
-  c->altContents = [[altContents copy] retain];
-  if(altImage)
-  	c->altImage = [altImage retain];
-  c->keyEquivalent = [[keyEquivalent copy] retain];
-  if(keyEquivalentFont)
-	c->keyEquivalentFont = [keyEquivalentFont retain];
+  c->altContents = [altContents copyWithZone: zone];
+  if (altImage)
+    c->altImage = [altImage retain];
+  c->keyEquivalent = [keyEquivalent copyWithZone: zone];
+  if (keyEquivalentFont)
+    c->keyEquivalentFont = [keyEquivalentFont retain];
   c->keyEquivalentModifierMask = keyEquivalentModifierMask;
   c->transparent = transparent;
   c->highlightsByMask = highlightsByMask;
@@ -491,24 +487,28 @@
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder:aCoder];
 
   NSDebugLog(@"NSButtonCell: start encoding\n");
+  [aCoder encodeObject: keyEquivalent];
+  [aCoder encodeObject: keyEquivalentFont];
   [aCoder encodeObject: altContents];
   [aCoder encodeObject: altImage];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &transparent];
   NSDebugLog(@"NSButtonCell: finish encoding\n");
 }
 
-- initWithCoder:aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder:aDecoder];
+  [super initWithCoder: aDecoder];
 
   NSDebugLog(@"NSButtonCell: start decoding\n");
-  altContents = [aDecoder decodeObject];
-  altImage = [aDecoder decodeObject];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &keyEquivalent];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &keyEquivalentFont];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &altContents];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &altImage];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &transparent];
   NSDebugLog(@"NSButtonCell: finish decoding\n");
 

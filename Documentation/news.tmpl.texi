@@ -9,6 +9,17 @@
 
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 
+@section Noteworthy changes in version @samp{0.5.5}
+
+Probably to extensive to list.
+
+@itemize @bullet
+
+@item A lot of rewritting has been done to the classes, with general 
+cleanup of coordinate conversion code, etc.
+
+@end itemize
+
 @section Noteworthy changes in version @samp{0.5.0}
 
 @itemize @bullet

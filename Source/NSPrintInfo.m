@@ -338,14 +338,14 @@ NSDictionary *paperSizes = nil;
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder:aCoder
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  [aCoder encodePropertyList:info];
+  [aCoder encodePropertyList: info];
 }
 
-- initWithCoder:aDecoder
+- (id) initWithCoder: (NSCoder*)aDecoder
 {
-  info = [aDecoder decodePropertyList];
+  info = [[aDecoder decodePropertyList] retain];
   return self;
 }
 
