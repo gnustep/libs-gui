@@ -203,7 +203,7 @@ void setNSFont(NSString* key, NSFont* font)
 - (BOOL) isEqual: (id)anObject
 {
   int i;
-  float *obj_matrix;
+  const float *obj_matrix;
   if (anObject == self)
     return YES;
   if ([anObject isKindOfClass: self->isa] == NO)
