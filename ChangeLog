@@ -1,4 +1,4 @@
-2002-06-15  Gregory John Casamento <greg_casamerto@yahoo.com>
+2002-06-15  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSOutlineView.m a number of improvements:
 	-setDataSource now uses the CHECK_REQUIRED macro to check 
