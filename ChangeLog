@@ -1,3 +1,8 @@
+Sun Jan  6 13:56:53 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSSpellChecker.m ([-_launchSpellCheckerForLanguage:]): 
+	Updated for change in GSServicesManager's ivars.
+	
 Sun Jan  6 11:16:30 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/gnustep/gui/GSServicesManager.h: Prefixed all ivars with
