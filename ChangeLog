@@ -1,3 +1,15 @@
+Wed Apr 18 00:14:33 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Model/IMConnectors.m: Use #import rather than #include.
+	([IMControlConnector -establishConnection]): Do not retain target
+	when setting it directly.
+
+2001-04-18  Georg Fleischmann <georg@vhf.de>
+
+	* Model/IMConnectors.m ([IMOutletConnector
+	-establishConnection:]): Do not retain destination when setting it
+	directly.
+
 2001-04-16  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSWindow.m (-miniaturize:): Set visible flag to NO.
