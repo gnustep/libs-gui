@@ -825,7 +825,7 @@ NSShowSystemInfoPanel(NSDictionary *options)
 }
 
 void 
-NSWindowListForContext(int context, int size, int list[][])
+NSWindowListForContext(int context, int size, int **list)
 {
 // TODO
 }

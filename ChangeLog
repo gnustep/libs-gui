@@ -1,3 +1,9 @@
+2005-03-13  Richard Frith-Macdoanld <rfm@gnu.org>
+
+	* Headers/AppKit/NSGraphics.h: Fix prototype for stricter compiler.
+	* Source/Functions.m: ditto
+	Deal with bug #12296
+
 2005-03-10  Nicola Pero <n.pero@mi.flashnet.it>
 
 	* Headers/AppKit/AppKitDefines.h (GS_EXPORT): Use extern, not
