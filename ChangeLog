@@ -1,3 +1,18 @@
+2000-04-30  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/GSMethodTable.h
+	* Headers/gnustep/gui/NSGraphics.h
+	Added GSWViewIsFlipped and changed GSWSetViewIsFlipped_.
+	* Headers/gnustep/gui/NSGraphicsContext.h
+	Use same interface for optimisation methods, as in the subclasses.
+	* Source/Functions.m
+	Moved the old text functions from backend to here.
+	* Source/NSView.m
+	Call GSWSetViewIsFlipped instead of GSWViewIsFlipped.
+	* Source/NSGraphicsContext.m
+	Moved implementation of drawing functions from xgps
+	backend to here. Corrected some of them.
+	
 2000-04-28  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSColor.m: 
