@@ -72,7 +72,7 @@
   if (count < 2)
     return;
 
-  [[self window] setAcceptsMouseMovedEvents: YES];
+  [window setAcceptsMouseMovedEvents: YES];
   vis = [self visibleRect];
 
   /* find out which divider it is */
@@ -140,7 +140,7 @@
   if ([self isVertical] == NO)
     {
       divVertical = div;
-      divHorizontal = NSWidth([self frame]);
+      divHorizontal = NSWidth(frame);
       /* set the default limits on the dragging */
       minCoord = NSMinY(bigRect) + divVertical;
       maxCoord = NSHeight(bigRect) + NSMinY(bigRect) - divVertical;
@@ -148,7 +148,7 @@
   else
     {
       divHorizontal = div;
-      divVertical = NSHeight([self frame]);
+      divVertical = NSHeight(frame);
       /* set the default limits on the dragging */
       minCoord = NSMinX(bigRect) + divHorizontal;
       maxCoord = NSWidth(bigRect) + NSMinX(bigRect) - divHorizontal;
@@ -284,10 +284,10 @@
 	     (int)NSMinX(r1),(int)NSMinY(r1),(int)NSWidth(r1),
 	     (int)NSHeight(r1));
 
-  [[self window] invalidateCursorRectsForView: self];
+  [window invalidateCursorRectsForView: self];
 
 RETURN_LABEL:
-  [[self window] setAcceptsMouseMovedEvents: NO];
+  [window setAcceptsMouseMovedEvents: NO];
   [self setNeedsDisplay: YES];
 
   [self display];
@@ -312,7 +312,6 @@ RETURN_LABEL:
       unsigned	count = [subs count];
       NSView	*views[count];
       NSRect	frames[count];
-      NSRect	bd = [self bounds];
       float	thickness = [self dividerThickness];
       NSSize	newSize;
       NSPoint	newPoint;
@@ -326,7 +325,7 @@ RETURN_LABEL:
       [subs getObjects: views];
       if ([self isVertical] == NO)
 	{
-	  newTotal = NSHeight(bd) - thickness*(count - 1);
+	  newTotal = NSHeight(bounds) - thickness*(count - 1);
 	  oldTotal = 0.0;
 	  for (i = 0; i < count; i++)
 	    {
@@ -345,7 +344,7 @@ RETURN_LABEL:
 		newHeight = floor(newHeight);
 	      else
 		newHeight = ceil(newHeight);
-	      newSize = NSMakeSize(NSWidth(bd), newHeight);
+	      newSize = NSMakeSize(NSWidth(bounds), newHeight);
 	      running -= newHeight;
 	      newPoint = NSMakePoint(0.0, running);
 	      running -= thickness;
@@ -355,7 +354,7 @@ RETURN_LABEL:
 	}
       else
 	{
-	  newTotal = NSWidth(bd) - thickness*(count - 1);
+	  newTotal = NSWidth(bounds) - thickness*(count - 1);
 	  oldTotal = 0.0;
 	  for (i = 0; i < count; i++)
 	    {
@@ -373,7 +372,7 @@ RETURN_LABEL:
 		newWidth = floor(newWidth);
 	      else
 		newWidth = ceil(newWidth);
-	      newSize = NSMakeSize(newWidth, NSHeight(bd));
+	      newSize = NSMakeSize(newWidth, NSHeight(bounds));
 	      newPoint = NSMakePoint(running, 0.0);
 	      running += newWidth + thickness;
 	      [views[i] setFrameSize: newSize];
@@ -541,7 +540,7 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 {
   [super resizeWithOldSuperviewSize: oldSize];
   [self adjustSubviews];
-  [[self window] invalidateCursorRectsForView: self];
+  [window invalidateCursorRectsForView: self];
 }
 
 - (id) delegate

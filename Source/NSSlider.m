@@ -259,7 +259,7 @@ static Class cellClass;
 	      if (floatValue != oldFloatValue)
 		{
 		  [theCell setFloatValue: floatValue];
-		  [theCell drawWithFrame: [self bounds] inView: self];
+		  [theCell drawWithFrame: bounds inView: self];
 		  [window flushWindow];
 		  if (isContinuous)
 		    [target performSelector: action withObject: self];
@@ -294,7 +294,7 @@ static Class cellClass;
       if ([self isContinuous])
 	[[theCell target] performSelector: [theCell action]
 			       withObject: self];
-      [theCell drawWithFrame: [self bounds] inView: self];
+      [theCell drawWithFrame: bounds inView: self];
       [window flushWindow];
     }
 

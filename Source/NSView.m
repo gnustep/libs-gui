@@ -313,14 +313,14 @@ GSSetDragTypes(NSView* obj, NSArray *types)
    * If neither are descendants of each other and either does not have a
    * superview then they cannot have a common ancestor
    */
-  if (![self superview])
+  if (!super_view)
     return nil;
 
   if (![aView superview])
     return nil;
 
   /* Find the common ancestor of superviews */
-  return [[self superview] ancestorSharedWithView: [aView superview]];
+  return [super_view ancestorSharedWithView: [aView superview]];
 }
 
 - (BOOL) isDescendantOf: (NSView*)aView
@@ -999,7 +999,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     {
       id e, o;
 
-      if ([self autoresizesSubviews] == NO || is_rotated_from_base == YES)
+      if (autoresize_subviews == NO || is_rotated_from_base == YES)
 	return;
 
       e = [sub_views objectEnumerator];

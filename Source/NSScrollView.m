@@ -467,8 +467,7 @@ static Class rulerViewClass = nil;
 
 - (void) tile
 {
-  NSRect boundsRect = [self bounds];
-  NSSize contentSize = [isa contentSizeForFrameSize: boundsRect.size
+  NSSize contentSize = [isa contentSizeForFrameSize: bounds.size
 			      hasHorizontalScroller: _hasHorizScroller
 				hasVerticalScroller: _hasVertScroller
 					 borderType: _borderType];
@@ -498,10 +497,10 @@ static Class rulerViewClass = nil;
 
   if (_hasVertScroller)
     {
-      vertScrollerRect.origin.x = boundsRect.origin.x + borderThickness;
-      vertScrollerRect.origin.y = boundsRect.origin.y + borderThickness;
+      vertScrollerRect.origin.x = bounds.origin.x + borderThickness;
+      vertScrollerRect.origin.y = bounds.origin.y + borderThickness;
       vertScrollerRect.size.width = scrollerWidth;
-      vertScrollerRect.size.height =bounds.size.height - 2 * borderThickness;
+      vertScrollerRect.size.height = bounds.size.height - 2 * borderThickness;
 
       contentRect.origin.x += scrollerWidth + 1;
     }
@@ -509,7 +508,7 @@ static Class rulerViewClass = nil;
   if (_hasHorizScroller)
     {
       horizScrollerRect.origin.x = contentRect.origin.x;
-      horizScrollerRect.origin.y = boundsRect.origin.y + borderThickness;
+      horizScrollerRect.origin.y = bounds.origin.y + borderThickness;
       horizScrollerRect.size.width = contentRect.size.width;
       horizScrollerRect.size.height = scrollerWidth;
 

@@ -683,11 +683,10 @@ static int mouseDownFlags = 0;
   float	approxRowsHeight = approxRow * (cellSize.height + intercell.height);
   int	approxCol = point.x / (cellSize.width + intercell.width);
   float	approxColsWidth = approxCol * (cellSize.width + intercell.width);
-  NSRect theBounds = [self bounds];
 
   /* First check the limit cases */
-  beyondCols = (point.x > theBounds.size.width || point.x < 0);
-  beyondRows = (point.y > theBounds.size.height || point.y < 0);
+  beyondCols = (point.x > bounds.size.width || point.x < 0);
+  beyondRows = (point.y > bounds.size.height || point.y < 0);
 
   /* Determine if the point is inside the cell */
   betweenRows = !(point.y > approxRowsHeight

@@ -262,7 +262,7 @@ static BOOL preCalcValues = NO;
 
 - (void) checkSpaceForParts
 {
-  NSSize	frameSize = [self frame].size;
+  NSSize	frameSize = frame.size;
   float		size = (_isHorizontal ? frameSize.width : frameSize.height);
   float		scrollerWidth = [isa scrollerWidth];
 

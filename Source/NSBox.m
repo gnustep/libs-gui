@@ -213,7 +213,7 @@
 {
   // First calc the sizes to see how much we are off by
   NSRect r = [self calcSizesAllowingNegative: YES];
-  NSRect f = [self frame];
+  NSRect f = frame;
 
   NSAssert(contentFrame.size.width >= 0 && contentFrame.size.height >= 0,
 	@"illegal content frame supplied");

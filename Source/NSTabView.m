@@ -235,7 +235,7 @@
 
 - (NSRect)contentRect
 {
-  NSRect cRect = [self frame];
+  NSRect cRect = frame;
 
   cRect.origin.x = 0;
   cRect.origin.y = 0;

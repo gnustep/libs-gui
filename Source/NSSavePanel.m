@@ -386,7 +386,7 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 
 - (int) runModalForDirectory:(NSString *) path file:(NSString *) filename
 {
-  NSRect panelFrame = [self frame];
+  NSRect panelFrame = frame;
   NSRect screenFrame = [[NSScreen mainScreen] frame];
   NSDebugLLog(@"NSSavePanel", @"NSSavePanel -runModalForDirectory: filename:");
 

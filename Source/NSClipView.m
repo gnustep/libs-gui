@@ -89,12 +89,12 @@
   _rFlags.flipped_view = [self isFlipped];
 
   /* TODO: invoke superview's reflectScrolledClipView: ? */
-  [[self superview] reflectScrolledClipView: self];
+  [super_view reflectScrolledClipView: self];
 }
 
 - (void) resetCursorRects
 {
-  [self addCursorRect: [self bounds] cursor: _cursor];
+  [self addCursorRect: bounds cursor: _cursor];
 }
 
 - (void) scrollToPoint: (NSPoint)point
@@ -104,7 +104,7 @@
 
 - (void) setBoundsOrigin: (NSPoint)point
 {
-  NSRect originalBounds = [self bounds];
+  NSRect originalBounds = bounds;
   NSRect newBounds = originalBounds;
   NSRect intersection;
 
@@ -116,7 +116,7 @@
   if (_documentView == nil)
     return;
 
-  if (_copiesOnScroll && [self window])
+  if (_copiesOnScroll && window)
     {
       // copy the portion of the view that is common before and after scrolling.
       // then tell docview to draw the exposed parts.
@@ -127,7 +127,7 @@
 	  // no intersection -- docview should draw everything
 	  [super setBoundsOrigin: newBounds.origin];
 	  [_documentView setNeedsDisplayInRect: 
-                  [self convertRect: newBounds toView: _documentView]];
+	    [self convertRect: newBounds toView: _documentView]];
 	}
       else
 	{
@@ -165,7 +165,7 @@
 					+ intersection.size.width;
 		}
 	      [_documentView setNeedsDisplayInRect: 
-                      [self convertRect: redrawRect toView: _documentView]];
+		[self convertRect: redrawRect toView: _documentView]];
 	    }
 
 	  if (dy != 0)
@@ -190,7 +190,7 @@
 					+ intersection.size.height;
 		}
 	      [_documentView setNeedsDisplayInRect: 
-                      [self convertRect: redrawRect toView: _documentView]];
+		[self convertRect: redrawRect toView: _documentView]];
 	    }
 	}
     }
@@ -199,7 +199,7 @@
       // dont copy anything -- docview draws it all
       [super setBoundsOrigin: newBounds.origin];
       [_documentView setNeedsDisplayInRect: 
-              [self convertRect: newBounds toView: _documentView]];
+	[self convertRect: newBounds toView: _documentView]];
     }
   [super_view reflectScrolledClipView: self];
 }
@@ -275,7 +275,7 @@
 
 - (void) drawRect: (NSRect)rect
 {
-  [[self backgroundColor] set];
+  [_backgroundColor set];
   NSRectFill(rect);
 }
 

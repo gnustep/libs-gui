@@ -1,3 +1,22 @@
+Wed Sep  1  9:55:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Added patches from n.pero@mi.flashnet.it to access ivars of
+	superclasses directly.  Generated changes for NSClipView.m myself.
+	* NSBox.m: (frame)
+	* NSClipView.m: (superview, window, bounds)
+	* NSMatrix.m: (bounds)
+	* NSMenuView.m: (frame, window, bounds)
+	* NSPopUpButton.m: (frame, window)
+	* NSProgressIndicator   (window, bounds)
+	* NSSavePanel.m: (frame)
+	* NSScroller.m: (frame)
+	* NSScrollView.m: (bounds)
+	* NSSlider.m: (bounds)
+	* NSSplitView.m: (frame, window, bounds)
+	* NSTabView.m: (frame)
+	* NSTableView.m: (superview)
+	* NSView.m: (superview, autoresizeSubviews)
+
 Wed Sep  1  9:28:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
         * Tools/GNUmakefile.preamble: patch by doko@cs.tu-berlin.de so that

@@ -149,24 +149,22 @@
 
 - (void)drawRect:(NSRect)rect
 {
-   NSRect	bnds,r;
-
-   bnds = [self bounds];
+   NSRect	r;
 
    // Draw the Bezel
    if (isBezeled)
-      NSDrawGrayBezel(bnds,rect);
+      NSDrawGrayBezel(bounds,rect);
 
    // Calc the inside rect to be drawn
    if (isBezeled)
    {
-      r = NSMakeRect(NSMinX(bnds) + 2.0,
-		     NSMinY(bnds) + 2.0,
-		     NSWidth(bnds) - 4.0,
-		     NSHeight(bnds) - 4.0);
+      r = NSMakeRect(NSMinX(bounds) + 2.0,
+		     NSMinY(bounds) + 2.0,
+		     NSWidth(bounds) - 4.0,
+		     NSHeight(bounds) - 4.0);
    }
    else
-      r = bnds;
+      r = bounds;
 
    if (isIndeterminate)		// Draw indeterminate
    {
@@ -263,10 +261,10 @@
 
 - (void)_update
 {
-   if ([self window] != nil)
-      if ([[self window] isVisible])
+   if (window != nil)
+      if ([window isVisible])
       {
-	 [[self window] display];
+	 [window display];
 #warning It does not seem that GNUstep has a NSDPSContext
 //	 [[NSDPSContext currentContext] flush];
       }

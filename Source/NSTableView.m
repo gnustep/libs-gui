@@ -613,12 +613,12 @@ object with the NSTableView as the text delegate. */
 
 - (void)scrollRowToVisible:(int)rowIndex
 {
-  [(NSClipView *)[self superview] scrollToPoint:NSZeroPoint];
+  [(NSClipView *)super_view scrollToPoint:NSZeroPoint];
 }
 
 - (void)scrollColumnToVisible:(int)columnIndex
 {
-  [(NSClipView *)[self superview] scrollToPoint:NSZeroPoint];
+  [(NSClipView *)super_view scrollToPoint:NSZeroPoint];
 }
 
 - (BOOL)textShouldBeginEditing:(NSText *)textObject

@@ -451,7 +451,7 @@
 {
   NSPoint cP;
 
-  cP = [[self window] convertBaseToScreen: [theEvent locationInWindow]];
+  cP = [window convertBaseToScreen: [theEvent locationInWindow]];
   cP = [popb_win convertScreenToBase: cP];
  
 //NSLog(@"location x = %d, y = %d\n", (int)cP.x, (int)cP.y);
@@ -475,7 +475,7 @@
 {
   // First check ourselves
 //  if ([self mouse:aPoint inRect:bounds]) return self;
-  if ([self mouse:aPoint inRect:[self frame]]) return self;
+  if ([self mouse:aPoint inRect:frame]) return self;
 
   return nil;
 }
