@@ -1,3 +1,12 @@
+Fri Mar 10 02:12:34 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSSplitView.m ([-mouseDown:]): Better management of the
+	case a subview passed mouse down to next responder so the
+	splitview got it - made log message milder and do not redraw the
+	splitview.  ([-mouseDown:]): Fixed bug causing hard misbehaviour
+	when the mouse drags starting exactly on the borderline between
+	the divider and a subview.
+	
 Thu Mar  9 23:32:36 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Model/GMAppKit.m ([NSView -subviewsForModel]): Fixed fatal
