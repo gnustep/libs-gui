@@ -1,3 +1,13 @@
+Thu Mar 28 11:08:56 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Patches by Jeff Teunissen <deek@d2dc.net>:
+	* Source/NSWorkspace.m ([-homeDirectoryImage]): New method.
+	([-iconForFile:]): Use the new method to return an image for
+	NSHomeDirectory().
+	* Images/GNUmakefile (IMAGE_FILES): Added Common_HomeDirectory.tiff.
+	* Images/common_HomeDirectory.tiff: New image created by simply
+	putting common_Home.tiff over common_Folder.tiff.
+
 2002-03-27  Adam Fedor  <fedor@gnu.org>
 
 	* Splitup backend into Server and Graphics Contexts. Revise list
