@@ -33,6 +33,61 @@
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSApplication.h>
 
+static inline 
+float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
+				NSRect slotRect, BOOL isVertical, 
+				float minValue, float maxValue, 
+				NSSliderCell *theCell, BOOL flipped)
+{
+  float floatValue = 0;
+  float position;
+
+  // Adjust the point to lie inside the knob slot. We don't
+  // have to worry whether the view is flipped or not.
+  if (isVertical)
+    {
+      if (point.y < slotRect.origin.y + knobRect.size.height / 2)
+	{
+	  position = slotRect.origin.y + knobRect.size.height / 2;
+	}
+      else if (point.y > slotRect.origin.y + slotRect.size.height
+	- knobRect.size.height / 2)
+	{
+	  position = slotRect.origin.y + slotRect.size.height
+	    - knobRect.size.height / 2;
+	}
+      else
+	position = point.y;
+										      // Compute the float value
+      floatValue = (position - (slotRect.origin.y + knobRect.size.height/2))
+	/ (slotRect.size.height - knobRect.size.height);
+      if (flipped)
+	floatValue = 1 - floatValue;
+    }
+  else
+    {
+      if (point.x < slotRect.origin.x + knobRect.size.width / 2)
+	{
+	  position = slotRect.origin.x + knobRect.size.width / 2;
+	}
+      else if (point.x > slotRect.origin.x + slotRect.size.width
+	- knobRect.size.width / 2)
+	{
+	  position = slotRect.origin.x + slotRect.size.width
+	    - knobRect.size.width / 2;
+	}
+      else
+	position = point.x;
+
+      // Compute the float value given the knob size
+      floatValue = (position - (slotRect.origin.x + knobRect.size.width / 2))
+	/ (slotRect.size.width - knobRect.size.width);
+    }
+
+  return floatValue * (maxValue - minValue) + minValue;
+}
+
+
 @implementation NSSlider
 
 static Class cellClass;
@@ -172,74 +227,24 @@ static Class cellClass;
   [_cell drawWithFrame: _bounds inView: self];
 }
 
-- (float)_floatValueForMousePoint: (NSPoint)point knobRect: (NSRect)knobRect
-{
-  NSSliderCell* theCell = _cell;
-  NSRect slotRect = [theCell trackRect];
-  BOOL isVertical = [theCell isVertical];
-  float minValue = [theCell minValue];
-  float maxValue = [theCell maxValue];
-  float floatValue = 0;
-  float position;
-
-  // Adjust the point to lie inside the knob slot. We don't
-  // have to worry whether the view is flipped or not.
-  if (isVertical)
-    {
-      if (point.y < slotRect.origin.y + knobRect.size.height / 2)
-	{
-	  position = slotRect.origin.y + knobRect.size.height / 2;
-	}
-      else if (point.y > slotRect.origin.y + slotRect.size.height
-	- knobRect.size.height / 2)
-	{
-	  position = slotRect.origin.y + slotRect.size.height
-	    - knobRect.size.height / 2;
-	}
-      else
-	position = point.y;
-										      // Compute the float value
-      floatValue = (position - (slotRect.origin.y + knobRect.size.height/2))
-	/ (slotRect.size.height - knobRect.size.height);
-      if (_rFlags.flipped_view)
-	floatValue = 1 - floatValue;
-    }
-  else
-    {
-      if (point.x < slotRect.origin.x + knobRect.size.width / 2)
-	{
-	  position = slotRect.origin.x + knobRect.size.width / 2;
-	}
-      else if (point.x > slotRect.origin.x + slotRect.size.width
-	- knobRect.size.width / 2)
-	{
-	  position = slotRect.origin.x + slotRect.size.width
-	    - knobRect.size.width / 2;
-	}
-      else
-	position = point.x;
-
-      // Compute the float value given the knob size
-      floatValue = (position - (slotRect.origin.x + knobRect.size.width / 2))
-	/ (slotRect.size.width - knobRect.size.width);
-    }
-
-  return floatValue * (maxValue - minValue) + minValue;
-}
-
 - (void) trackKnob: (NSEvent*)theEvent knobRect: (NSRect)knobRect
 {
   NSApplication *app = [NSApplication sharedApplication];
   unsigned int eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
 			  | NSLeftMouseDraggedMask | NSMouseMovedMask
 			  | NSPeriodicMask;
-  NSPoint point = [self convertPoint: [theEvent locationInWindow] fromView: nil];
+  NSPoint point = [self convertPoint: [theEvent locationInWindow] 
+			fromView: nil];
   NSEventType eventType = [theEvent type];
   BOOL isContinuous = [_cell isContinuous];
-  NSSliderCell* theCell = _cell;
-  float oldFloatValue = [theCell floatValue];
-  id target = [theCell target];
-  SEL action = [theCell action];
+  float oldFloatValue = [_cell floatValue];
+  id target = [_cell target];
+  SEL action = [_cell action];
+  NSDate *distantFuture = [NSDate distantFuture];
+  NSRect slotRect = [_cell trackRect];
+  BOOL isVertical = [_cell isVertical];
+  float minValue = [_cell minValue];
+  float maxValue = [_cell maxValue];
 
   [NSEvent startPeriodicEventsAfterDelay: 0.05 withPeriod: 0.05];
   [[NSRunLoop currentRunLoop] limitDateForMode: NSEventTrackingRunLoopMode];
@@ -247,28 +252,35 @@ static Class cellClass;
   while (eventType != NSLeftMouseUp)
     {
       theEvent = [app nextEventMatchingMask: eventMask
-				  untilDate: [NSDate distantFuture]
+				  untilDate: distantFuture
 				     inMode: NSEventTrackingRunLoopMode
 				    dequeue: YES];
       eventType = [theEvent type];
 
       if (eventType != NSPeriodic)
-	point = [self convertPoint: [theEvent locationInWindow]
-			  fromView: nil];
+	{
+	  point = [self convertPoint: [theEvent locationInWindow]
+			fromView: nil];
+	}
       else
 	{
 	  if (point.x != knobRect.origin.x || point.y != knobRect.origin.y)
 	    {
-	      float floatValue = [self _floatValueForMousePoint: point
-						       knobRect: knobRect];
-
+	      float floatValue;
+	      floatValue = _floatValueForMousePoint (point, knobRect,
+						     slotRect, isVertical, 
+						     minValue, maxValue, 
+						     _cell, 
+						     _rFlags.flipped_view); 
 	      if (floatValue != oldFloatValue)
 		{
-		  [theCell setFloatValue: floatValue];
-		  [theCell drawWithFrame: _bounds inView: self];
+		  [_cell setFloatValue: floatValue];
+		  [_cell drawWithFrame: _bounds inView: self];
 		  [_window flushWindow];
 		  if (isContinuous)
-		    [target performSelector: action withObject: self];
+		    {
+		      [target performSelector: action withObject: self];
+		    }
 		  oldFloatValue = floatValue;
 		}
 	      knobRect.origin = point;
@@ -277,28 +289,35 @@ static Class cellClass;
     }
   // If the control is not continuous send the action at the end of the drag
   if (!isContinuous)
-    [target performSelector: action withObject: self];
+    {
+      [target performSelector: action withObject: self];
+    }
   [NSEvent stopPeriodicEvents];
 }
 
 - (void) mouseDown: (NSEvent *)theEvent
 {
-  NSPoint location = [self convertPoint: [theEvent locationInWindow]fromView: nil];
-  NSSliderCell* theCell = _cell;
+  NSPoint location = [self convertPoint: [theEvent locationInWindow] 
+			   fromView: nil];
   NSRect rect;
 
-  rect = [theCell knobRectFlipped: [self isFlipped]];
+  rect = [_cell knobRectFlipped: _rFlags.flipped_view];
   if (![self mouse: location inRect: rect])
     {
       // Mouse is not on the knob, move the knob to the mouse position
-      float floatValue = [self _floatValueForMousePoint: location
-					       knobRect: rect];
-
-      [theCell setFloatValue: floatValue];
-      if ([theCell isContinuous])
-	[[theCell target] performSelector: [theCell action]
-			       withObject: self];
-      [theCell drawWithFrame: _bounds inView: self];
+      float floatValue;
+      floatValue = _floatValueForMousePoint (location, rect, 
+					     [_cell trackRect], 
+					     [_cell isVertical], 
+					     [_cell minValue], 
+					     [_cell maxValue], _cell, 
+					     _rFlags.flipped_view); 
+      [_cell setFloatValue: floatValue];
+      if ([_cell isContinuous])
+	{
+	  [[_cell target] performSelector: [_cell action]  withObject: self];
+	}
+      [_cell drawWithFrame: _bounds inView: self];
       [_window flushWindow];
     }
 
