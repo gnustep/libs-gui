@@ -405,7 +405,10 @@ static NSCell	*tileCell = nil;
 - (void) drawRect: (NSRect)rect
 {
   NSColor *c = [[self window] backgroundColor];
-  
+
+  NSDebugLLog(@"NSView", @"-drawRect: %@  for %@ in window %p (%@)",
+	      NSStringFromRect(rect), self, _window,
+	      NSStringFromRect([_window frame]));
   [c set];
   NSRectFill(rect);
 }
@@ -2855,7 +2858,9 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 		  [self makeFirstResponder: v];
 		}
 	      if (_lastView)
-		DESTROY(_lastView);
+ 		{
+		  DESTROY(_lastView);
+		}
 	      if (wasKey == YES || [v acceptsFirstMouse: theEvent] == YES)
 		{
 		  if ([NSHelpManager isContextHelpModeActive])

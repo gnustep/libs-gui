@@ -1,3 +1,8 @@
+2003-07-26 18:50  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSView.m, Source/NSWindow.m: Make drawing debug logging
+	more detailed.
+
 2003-07-26  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Panel/English.proj/GSPageLayout.gorm/objects.gorm

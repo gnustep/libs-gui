@@ -1558,8 +1558,12 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
   [ctxt lockFocusView: self inRect: rect];
   wrect = [self convertRect: rect toView: nil];
-  NSDebugLLog(@"NSView", @"Displaying rect \n\t%@\n\t window %p, flip %d", 
-	      NSStringFromRect(wrect), _window, _rFlags.flipped_view);
+  NSDebugLLog(@"NSView", @"-lockFocusInRect: %@\n"
+	      @"\t for view %@ in window %p (%@)\n"
+	      @"\t frame %@, flip %d",
+	      NSStringFromRect(wrect),
+	      self, _window, NSStringFromRect([_window frame]),
+	      NSStringFromRect(_frame),_rFlags.flipped_view);
   if (viewIsPrinting == nil)
     {
       struct NSWindow_struct *window_t = (struct NSWindow_struct *)_window;
@@ -1642,6 +1646,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
 
+  NSDebugLLog(@"NSView_details", @"-unlockFocusNeedsFlush: %i for view %@\n",
+	      flush, self);
+
   if (viewIsPrinting == nil)
     {
       NSAssert(_window != nil, NSInternalInconsistencyException);
@@ -1682,7 +1689,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) unlockFocus
 {
-  [self unlockFocusNeedsFlush: YES ];
+  [self unlockFocusNeedsFlush: YES];
 }
 
 - (BOOL) lockFocusIfCanDraw
