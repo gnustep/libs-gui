@@ -340,9 +340,10 @@ readNSString(StringContext *ctxt)
   CREATE_AUTORELEASE_POOL(pool);
   RTFscannerCtxt scanner;
   StringContext stringCtxt;
+  // We should read in the first few characters to find out which encoding we have
   NSString *rtfString = [[NSString alloc] 
 			    initWithData: rtfData
-			    encoding: NSISOLatin1StringEncoding];
+			    encoding: NSASCIIStringEncoding];
 
   // Reset this RFTConsumer, as it might already have been used!
   [self reset];
