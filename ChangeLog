@@ -1,3 +1,15 @@
+Thu Feb 14 10:45:48 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+                          Michael Hanni <mhanni@yahoo.com>
+
+	* Source/NSMenuItemCell.m ([-drawStateImageWithFrame:inView:]):
+	Exit as soon as possible if we have no state image to draw.
+	([-imageRectForBounds:]), ([-titleRectForBounds:]): Do not pad for
+	the state image if the state image has no width.
+	* Source/NSPopUpButtonCell.m ([-insertItemWithTitle:atIndex:]):
+	Set the On and Mixed image of the new menu item to nil.
+	([-selectItem:]): Do not call setChangesState: NO on the selected
+	menu item.
+	
 2002-02-13  Richard Frith-Macdonald  <rfm@gnu.org>
 
 	* Source/GSTextStoarge.m: Add GSIMap option for minor performance
