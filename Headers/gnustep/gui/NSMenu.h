@@ -43,43 +43,30 @@
 @class NSEvent;
 @class NSMatrix;
 @class NSMenuView;
-@class NSMenuWindow;
 @class NSPopUpButton;
-
-@interface      NSMenuWindow : NSPanel
-
-- (void)moveToPoint:(NSPoint)aPoint;
-
-@end
 
 @interface NSMenu : NSObject <NSCoding, NSCopying>
 {
-  NSString *menu_title;
-  NSMutableArray *menu_items;
-  NSMenuView *menu_view;
-  NSMenu *menu_supermenu;
-  NSMenu *menu_attachedMenu;
-  BOOL menu_changedMessagesEnabled;
-  NSMutableArray *menu_notifications;
-  BOOL menu_autoenable;
-  BOOL menu_changed;
-  BOOL menu_is_tornoff;
-
-  id menu_popb;
+  NSString *_title;
+  NSMutableArray *_items;
+  NSMenuView *_view;
+  NSMenu *_superMenu;
+  NSMenu *_attachedMenu;
+  NSMutableArray *_notifications;
+  BOOL _changedMessagesEnabled;
+  BOOL _autoenable;
+  BOOL _changed;
+  BOOL _is_tornoff;
 
   // GNUstepExtra category
-  BOOL menu_is_beholdenToPopUpButton;
-  BOOL menu_follow_transient;
-  BOOL menu_is_visible;
-  BOOL menu_isPartlyOffScreen;
-
-  // Reserved for back-end use
-  void *be_menu_reserved;
+  BOOL _is_beholdenToPopUpButton;
+  BOOL _follow_transient;
+  BOOL _isPartlyOffScreen;
 
 @private
-  NSMenuWindow *aWindow;
-  NSMenuWindow *bWindow;
-  id titleView;
+  NSWindow *_aWindow;
+  NSWindow *_bWindow;
+  id _titleView;
   NSMenu *_oldAttachedMenu;
 }
 
@@ -157,6 +144,9 @@
 
 /* Displaying Context-Sensitive Help */
 - (void) helpRequested: (NSEvent*)event;
++ (void) popUpContextMenu: (NSMenu*)menu
+		withEvent: (NSEvent*)event
+		  forView: (NSView*)view;
 
 @end
 
@@ -188,31 +178,17 @@
 - (void)nestedCheckOffScreen;
 - (void)shiftOnScreen;
 
+/* Popup behaviour */
+- (BOOL)_ownedByPopUp;
+- (void)_setOwnedByPopUp: (BOOL)flag;
+
 @end
 #endif
-
-/* A menu's title is an instance of this class */
-@interface NSMenuWindowTitleView : NSView
-{
-  int titleHeight;
-  id  menu;
-  NSButton* button;
-  NSButtonCell* buttonCell;
-}
-
-- (void) _addCloseButton;
-- (void) _releaseCloseButton;
-- (void) windowBecomeTornOff;
-- (void) setMenu: (NSMenu*)menu;
-- (NSMenu*) menu;
-
-@end
 
 APPKIT_EXPORT NSString* const NSMenuDidSendActionNotification;
 APPKIT_EXPORT NSString* const NSMenuWillSendActionNotification;
 APPKIT_EXPORT NSString* const NSMenuDidAddItemNotification;
 APPKIT_EXPORT NSString* const NSMenuDidRemoveItemNotification;
 APPKIT_EXPORT NSString* const NSMenuDidChangeItemNotification;
-
 
 #endif // _GNUstep_H_NSMenu
