@@ -81,6 +81,7 @@ APPKIT_EXPORT NSString * GSScreenNumber;
 - (NSCountedSet*) dragTypesForWindow: (NSWindow *)win;
 - (id <NSDraggingInfo>) dragInfo;
 - (BOOL) slideImage: (NSImage*)image from: (NSPoint)from to: (NSPoint)to;
+- (void) restrictWindow: (int)win toImage: (NSImage*)image;
 
 /* Screen information */
 - (NSSize) resolutionForScreen: (int)screen;
