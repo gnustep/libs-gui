@@ -69,6 +69,19 @@ static const float pi = 3.1415926535897932384626433;
   return new;
 }
 
+- (BOOL) isEqual: (id)anObject
+{
+  if ([anObject class] == [PSMatrix class])
+    {
+      PSMatrix	*o = anObject;
+
+      if (A == o->A && B == o->B && C == o->C
+	&& D == o->D && TX == o->TX && TY == o->TY)
+	return YES;
+    }
+  return NO;
+}
+
 - (void)scaleBy:(float)sx :(float)sy
 {
   A *= sx; B *= sx;

@@ -176,6 +176,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
   frameMatrix = [PSMatrix new];		// init PS matrix for
   boundsMatrix = [PSMatrix new];	// frame and bounds
+  windowMatrix = [PSMatrix new];	// map to window coordinates
   [frameMatrix setFrameOrigin: frame.origin];
 
   sub_views = [NSMutableArray new];
@@ -191,12 +192,14 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   post_frame_changes = NO;
   autoresize_subviews = YES;
   autoresizingMask = NSViewNotSizable;
+  coordinates_valid = NO;
 
   return self;
 }
 
 - (void) dealloc
 {
+  [windowMatrix release];
   [frameMatrix release];
   [boundsMatrix release];
   [sub_views release];
@@ -626,10 +629,17 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 {
   NSPoint	new;
   PSMatrix	*matrix;
+  NSPoint	yyy;
+  PSMatrix	*xxx;
 
   if (!aView)
     aView = [window contentView];
 
+  xxx = [[aView _windowMatrix] copy];
+  [xxx inverse];
+  (*concatImp)(xxx, concatSel, [self _windowMatrix]);
+  yyy = [xxx pointInMatrixSpace: aPoint];
+  
   if ([self isDescendantOf: aView])
     {
       NSMutableArray	*path;
@@ -655,6 +665,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
       new = [self convertPoint: new fromView: nil];
     }
 
+//  NSAssert(NSEqualPoints(new, yyy), NSInternalInconsistencyException);
   return new;
 }
 
@@ -1004,7 +1015,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 		   * Having drawn ourself into the rect, we must unconditionally
 		   * draw any subviews that are also in that rectangle.
 		   */
-		  isect = NSIntersectionRect(rect, subviewFrame);
+		  isect = NSIntersectionRect(aRect, subviewFrame);
 		  if (NSIsEmptyRect(isect) == NO)
 		    {
 		      isect = [subview convertRect: isect
@@ -1170,24 +1181,10 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 - (NSRect) visibleRect
 {
-  if (coordinates_valid)
-    return visibleRect;
-  if (!window)
-    visibleRect = NSZeroRect;
-  else if (!super_view)
-    visibleRect = bounds;
-  else
-    {
-      NSRect	superviewsVisibleRect;
-
-      superviewsVisibleRect = [self convertRect: [super_view visibleRect]
-				       fromView: super_view];
-
-      visibleRect = NSIntersectionRect(superviewsVisibleRect, bounds);
-      if (needs_display)
-	invalidRect = NSIntersectionRect(invalidRect, visibleRect);
-    }
-  coordinates_valid = YES;
+  if (coordinates_valid == NO)
+    [self _rebuildCoordinates];
+  if (needs_display)
+    invalidRect = NSIntersectionRect(invalidRect, visibleRect);
   return visibleRect;
 }
 
@@ -1865,10 +1862,57 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   while (view && view != _superview)
     {
       [array addObject: view];
-      view = view->super_view;
+     view = view->super_view;
     }
 
   return array;
+}
+
+- (void) _rebuildCoordinates
+{
+  if (coordinates_valid == NO)
+    {
+      coordinates_valid = YES;
+      if (!window)
+	{
+	  visibleRect = NSZeroRect;
+	  [windowMatrix makeIdentityMatrix];
+	}
+      if (!super_view)
+	{
+	  visibleRect = bounds;
+	  [windowMatrix makeIdentityMatrix];
+	}
+      else
+	{
+	  NSRect	superviewsVisibleRect;
+	  BOOL		wasFlipped = [super_view isFlipped];
+	  float		vals[6];
+	  PSMatrix	*pMatrix = [super_view _windowMatrix];
+
+	  [pMatrix getMatrix: vals];
+	  [windowMatrix setMatrix: vals];
+	  (*concatImp)(windowMatrix, concatSel, frameMatrix);
+	  if ([self isFlipped] != wasFlipped)
+	    {
+	      flip->matrix[5] = bounds.size.height;
+	      (*concatImp)(windowMatrix, concatSel, flip);
+	    }
+	  (*concatImp)(windowMatrix, concatSel, boundsMatrix);
+
+	  superviewsVisibleRect = [self convertRect: [super_view visibleRect]
+					   fromView: super_view];
+
+	  visibleRect = NSIntersectionRect(superviewsVisibleRect, bounds);
+	}
+    }
+}
+
+- (PSMatrix*) _windowMatrix
+{
+  if (coordinates_valid == NO)
+    [self _rebuildCoordinates];
+  return windowMatrix;
 }
 
 @end

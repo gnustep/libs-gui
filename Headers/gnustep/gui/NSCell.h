@@ -343,5 +343,15 @@ enum {
 
 @end
 
+//
+// Methods that are private GNUstep extensions
+//
+@interface NSCell (PrivateMethods)
+
+- (void) _drawImage: (NSImage*)anImage inFrame: (NSRect)aRect;
+- (void) _drawText: (NSString*)aString inFrame: (NSRect)aRect;
+
+@end
+
 #endif // _GNUstep_H_NSCell
 

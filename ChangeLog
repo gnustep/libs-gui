@@ -1,3 +1,10 @@
+Sun Feb 21 20:36:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/gnustep/gui/NSCell.h: tidyup
+	* Headers/gnustep/gui/NSView.h: Added matrix for coordinate conversion
+	* Source/NSView.m: Bugfix in update, plus partial code for improved
+	coordinate handling.
+
 Fri Feb 19 20:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSClipView.m: coordinate fixes.

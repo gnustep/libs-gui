@@ -76,6 +76,7 @@ enum {
   NSRect bounds;
   id frameMatrix;
   id boundsMatrix;
+  id windowMatrix;
 
   NSView* super_view;
   NSMutableArray *sub_views;
@@ -371,10 +372,11 @@ enum {
  * forcing recalculation of cached values next time they are needed.
  */
 - (void) _invalidateCoordinates;
-
+- (void) _rebuildCoordinates;
 
 - (PSMatrix*)_frameMatrix;
 - (PSMatrix*)_boundsMatrix;
+- (PSMatrix*)_windowMatrix;
 - (PSMatrix*) _concatenateBoundsMatricesInReverseOrderFromPath: (NSArray*)p;
 - (PSMatrix*) _concatenateMatricesInReverseOrderFromPath: (NSArray*)p;
 - (NSMutableArray*) _pathBetweenSubview: (NSView*)subview
