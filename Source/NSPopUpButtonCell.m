@@ -36,16 +36,6 @@
 #include <AppKit/NSPopUpButtonCell.h>
 #include <AppKit/PSOperators.h>
 
-@interface NSMenuItemCell (GNUStepPrivate)
-- (void) setBelongsToPopUpButton: (BOOL)flag;
-@end
-@implementation NSMenuItemCell (GNUStepPrivate)
-- (void) setBelongsToPopUpButton: (BOOL)flag
-{
-  _mcell_belongs_to_popupbutton = flag;
-}
-@end
-
 /* The image to use in a specific popupbutton is
  * _pbc_image[_pbcFlags.pullsDown]; that is, _pbc_image[0] if it is a
  * popup menu, _pbc_image[1] if it is a pulls down list.  */
@@ -183,7 +173,6 @@ static NSImage *_pbc_image[2];
 - (void) insertItemWithTitle: (NSString *)title atIndex: (int)index
 {
   NSMenuItem *anItem;
-  NSMenuItemCell *aCell;
   int count = [_menu numberOfItems];
 
   if (index < 0)
@@ -196,10 +185,6 @@ static NSImage *_pbc_image[2];
 		  keyEquivalent: @""
 		  atIndex: index];
   [anItem setTarget: [self target]];
-
-  aCell = [[_menu menuRepresentation] menuItemCellForItemAtIndex: index];
-  [aCell setBelongsToPopUpButton: YES];
-  [aCell setImagePosition: NSImageRight];
 }
 
 - (void) removeItemWithTitle: (NSString *)title
@@ -278,7 +263,10 @@ static NSImage *_pbc_image[2];
 // Dealing with selection
 - (void) selectItem: (id <NSMenuItem>)item
 {
-  if (!item)
+  if (_selectedItem == item)
+    return;
+
+  if (_selectedItem != nil)
     {
       if (_pbcFlags.altersStateOfSelectedItem)
 	{
@@ -286,19 +274,12 @@ static NSImage *_pbc_image[2];
 	  [_selectedItem setChangesState: NO];
 	}
       [_selectedItem setImage: nil];
-      _selectedItem = nil;
     }
-  else
+
+  _selectedItem = item;
+
+  if (_selectedItem != nil)
     {
-      if (_pbcFlags.altersStateOfSelectedItem)
-        {
-          [_selectedItem setState: NSOffState];
-	  [_selectedItem setChangesState: NO];
-      	}
-      [_selectedItem setImage: nil];
-
-      _selectedItem = item;
-
       if (_pbcFlags.altersStateOfSelectedItem)
         {
 	  [_selectedItem setState: NSOnState];
@@ -306,8 +287,9 @@ static NSImage *_pbc_image[2];
         }
       [_selectedItem setImage: _pbc_image[_pbcFlags.pullsDown]];
     }
+
   /* Set the item in the menu */
-  [(NSMenuView *)[_menu menuRepresentation] setHighlightedItemIndex: 
+  [[_menu menuRepresentation] setHighlightedItemIndex: 
 		   [_menu indexOfItem: _selectedItem]];
 }
 
@@ -430,58 +412,31 @@ static NSImage *_pbc_image[2];
   NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
   NSWindow              *cvWin = [controlView window];
   NSMenuView            *mr = [_menu menuRepresentation];
-  int                   items;
+  int                   selectedItem;
 
   [nc postNotificationName: NSPopUpButtonCellWillPopUpNotification
 		    object: self];
 
-  [nc postNotificationName: NSPopUpButtonCellWillPopUpNotification
+  [nc postNotificationName: NSPopUpButtonWillPopUpNotification
 		    object: controlView];
 
-  [mr _setCellSize: cellFrame.size];
-  [_menu sizeToFit];
-
-  /*
-   * Compute the frame (NB: the temporary frame to be passed 
-   * to mr as per spec, not yet the definitive frame where 
-   * the menu is going to appear)
-   */
-  items = [_menu numberOfItems];
-  if (items > 1)
-    {
-      float f;
-      
-      f = cellFrame.size.height * (items - 1);
-      cellFrame.size.height += f;
-      cellFrame.origin.y -= f;
-    }
-
   // Convert to Screen Coordinates
-
-  /* Convert to content view */
-  cellFrame = [controlView convertRect: cellFrame 
-				toView: nil];
-
+  cellFrame = [controlView convertRect: cellFrame toView: nil];
   cellFrame.origin = [cvWin convertBaseToScreen: cellFrame.origin];
 
-  // Ask the MenuView to attach the menu to this rect
   if (_pbcFlags.pullsDown)
-    {
-      [mr setWindowFrameForAttachingToRect: cellFrame
-	  onScreen: [cvWin screen]
-	  preferredEdge: _pbcFlags.preferredEdge
-	  popUpSelectedItem: -1];
-    }
+    selectedItem = -1;
   else 
-    {
-      [mr setWindowFrameForAttachingToRect: cellFrame
-	  onScreen: [cvWin screen]
-	  preferredEdge: _pbcFlags.preferredEdge
-	  popUpSelectedItem: [self indexOfSelectedItem]];
-    }
+    selectedItem = [self indexOfSelectedItem];
+
+  // Ask the MenuView to attach the menu to this rect
+  [mr setWindowFrameForAttachingToRect: cellFrame
+      onScreen: [cvWin screen]
+      preferredEdge: _pbcFlags.preferredEdge
+      popUpSelectedItem: selectedItem];
   
   // Last, display the window
-  [[_menu window] orderFrontRegardless];
+  [[mr window] orderFrontRegardless];
 }
 
 - (void) dismissPopUp
@@ -636,4 +591,5 @@ static NSImage *_pbc_image[2];
   
   return s;
 }
+
 @end
