@@ -640,7 +640,7 @@ static NSNotificationCenter *nc;
   [_typingAttributes setObject: font  forKey: NSFontAttributeName];
 }
 
-- (void) setFont: (NSFont*)font  ofRange: (NSRange)aRange
+- (void) setFont: (NSFont*)font  range: (NSRange)aRange
 {
   if (font != nil)
     {
