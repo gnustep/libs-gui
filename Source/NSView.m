@@ -2082,8 +2082,28 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   return _visibleRect;
 }
 
+
+extern NSThread *GSAppKitThread; /* TODO */
+
+- (void) _setNeedsDisplay_helper: (NSNumber *)v
+{
+  [self setNeedsDisplay: [v boolValue]];
+}
+
+/**
+ * As an exception to the general rules for threads and -gui, this
+ * method is thread-safe and may be called from any thread.
+ */
 - (void) setNeedsDisplay: (BOOL)flag
 {
+  if (GSCurrentThread() != GSAppKitThread)
+    {
+      [self performSelectorOnMainThread: @selector(_setNeedsDisplay_helper:)
+	withObject: [NSNumber numberWithBool: flag]
+	waitUntilDone: NO];
+      return;
+    }
+
   if (flag)
     {
       [self setNeedsDisplayInRect: _bounds];
@@ -2095,14 +2115,31 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     }
 }
 
+
+- (void) _setNeedsDisplayInRect_helper: (NSValue *)v
+{
+  [self setNeedsDisplayInRect: [v rectValue]];
+}
+
 /**
  * Inform the view system that the specified rectangle is invalid and
  * requires updating.  This automatically informs any superviews of
  * any updating they need to do.
+ *
+ * As an exception to the general rules for threads and -gui, this
+ * method is thread-safe and may be called from any thread.
  */
 - (void) setNeedsDisplayInRect: (NSRect)invalidRect
 {
   NSView	*currentView = _super_view;
+
+  if (GSCurrentThread() != GSAppKitThread)
+    {
+      [self performSelectorOnMainThread: @selector(_setNeedsDisplayInRect_helper:)
+	withObject: [NSValue valueWithRect: invalidRect]
+	waitUntilDone: NO];
+      return;
+    }
 
   /*
    *	Limit to bounds, combine with old _invalidRect, and then check to see

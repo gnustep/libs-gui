@@ -72,6 +72,9 @@
 #include <AppKit/GSGuiPrivate.h>
 #include <AppKit/GSInfoPanel.h>
 
+/* The -gui thread. See the comment in initialize_gnustep_backend. */
+NSThread *GSAppKitThread;
+
 /*
  * Base library exception handler
  */
@@ -156,6 +159,14 @@ initialize_gnustep_backend(void)
   if (first)
     {
       Class backend;
+
+      /*
+      Remember which thread we are running in. This thread will be the
+      -gui thread, ie. the only thread that may do any rendering. With
+      the exception of a few methods explicitly marked as thread-safe,
+      other threads should not call any methods in -gui.
+      */
+      GSAppKitThread = [NSThread currentThread];
 
       first = 0;
 #ifdef BACKEND_BUNDLE

@@ -1,3 +1,11 @@
+2003-04-08 02:12  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSApplication.m: Note which thread is the -gui thread.
+
+	* Source/NSView.m (-setNeedsDisplay:, -setNeedsDisplayInRect:):
+	If the current thread isn't the -gui thread, perform the call
+	in the main thread instead.
+
 2003-04-07 13:05  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSFont.m (-initWithName:matrix:fix:screenFont:): Release
