@@ -337,6 +337,11 @@ static NSColor *scrollBarColor = nil;
 
 - (void) setFloatValue: (float)aFloat
 {
+  if (_floatValue == aFloat)
+    {
+      /* Most likely our trackKnob method initiated this via NSScrollView */
+      return;
+    }
   if (aFloat < 0)
     {
       _floatValue = 0;
@@ -355,6 +360,11 @@ static NSColor *scrollBarColor = nil;
 
 - (void) setFloatValue: (float)aFloat knobProportion: (float)ratio
 {
+  if (_floatValue == aFloat && _knobProportion == ratio)
+    {
+      /* Most likely our trackKnob method initiated this via NSScrollView */
+      return;
+    }
   if (ratio < 0)
     {
       _knobProportion = 0;

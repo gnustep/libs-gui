@@ -1,3 +1,17 @@
+2002-02-25  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSGraphicsContext.m (_postExternalEvent:) Removed, not used.
+	* Source/NSInterfaceStyle.m: Updated comments.
+	* Source/NSScroller.m (-setFloatValue:): Don't update
+	if the new float is the same as our current value.
+	(-setFloatValue:knobProportion:): Likewise.
+
+2002-02-18  Willem Rein Oudshoorn  <woudshoo@xs4all.nl>
+
+	* gui/Source/NSImage.m ([NSImage -initWithSize:]): removed the
+	round size down temporary fix.
+	([NSImage -setSize:]): removed the round size down temporary fix.
+
 Mon Feb 25 14:51:56 2002  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSSavePanel.m (createRowsForColumn:): Use

@@ -391,11 +391,6 @@ NSGraphicsContext	*GSCurrentContext()
   return NO;
 }
 
-- (void) _postExternalEvent: (NSEvent *)event
-{
-  [self subclassResponsibility: _cmd];
-}
-
 - (void) useFont: (NSString*)name
 {
   if ([self isDrawingToScreen] == YES)

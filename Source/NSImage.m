@@ -289,12 +289,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   //_flags.flipDraw = NO;
   if (aSize.width && aSize.height) 
     {
-      // FIXME:  rounding down is just a quick fix.
-      // the non-integrality of the image should be
-      // taken care of in the composite methods in
-      // the backend.
-      _size.width = (int) aSize.width;
-      _size.height = (int) aSize.height;
+      _size = aSize;
       _flags.sizeWasExplicitlySet = YES;
     }
   //_flags.usesEPSOnResolutionMismatch = NO;
@@ -493,12 +488,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (void) setSize: (NSSize)aSize
 {
-  // FIXME:  the rounding down is just a quick fix
-  // it should actually be handled in composite in
-  // the backend.
-  _size.width =  (int) aSize.width;
-  _size.height = (int) aSize.height;
-    
+  _size = aSize;
   _flags.sizeWasExplicitlySet = YES;
   // TODO: This invalidates any cached data
 }
