@@ -167,15 +167,12 @@ To turn it off:
 defaults delete NSGlobalDomain GSBrowserCellFontify
 @end smallexample
 
-When the feature is on, NSBrowserCell draws its text with a different 
-font and color depending on whether it is a leaf or not a leaf.  
+When the feature is on, NSBrowserCell draws non leaf cells 
+in bold system font (as opposed to the leaf cells, 
+which are drawn in (non bold) system font).
 
 For example, when the feature is on, in a SavePanel (or OpenPanel), directory 
-entries are drawn in darkgray bold system font, while non-directory 
-entries are drawn in black non-bold system font.  
-
-This feature is experimental, and is very likely to be changed 
-if not completely removed in future versions of GNUstep. 
+entries are drawn in bold, while simple files are drawn in non bold. 
 
 @node Tools, Implementation, Classes, Top
 @chapter Tools Included with gstep-gui.
