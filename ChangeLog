@@ -1,3 +1,10 @@
+Thu Jan  9 05:17:22 2003  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSApplication.m ([-_appIconInit]): If no app icon has
+	been set, set GNUstep as the applicationIcon by calling
+	setApplicationIconImage: so that the default image gets also
+	registered with name NSApplicationIconImage.
+
 2003-01-08  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m
@@ -16,7 +23,7 @@
 	* Source/NSClipView.m
 	Use method calls in [initWithCoder:] so opaque flag is set
 	correctly.
-	
+
 Tue Dec 31 16:30:32 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Model/GNUmakefile: Build gmodel bundle when GUI_LIB is gnu, not

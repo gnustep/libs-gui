@@ -2456,7 +2456,9 @@ delegate.
   NSAppIconView	*iv;
 
   if (_app_icon == nil)
-    _app_icon = RETAIN([NSImage imageNamed: @"GNUstep"]);
+    {
+      [self setApplicationIconImage: [NSImage imageNamed: @"GNUstep"]];
+    }
 
   _app_icon_window = [[NSIconWindow alloc] initWithContentRect: 
 					    NSMakeRect(0,0,64,64)
