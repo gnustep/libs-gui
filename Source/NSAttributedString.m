@@ -566,9 +566,7 @@ documentAttributes: (NSDictionary**)dict
 
       if (value == nil)
 	value = [NSMutableParagraphStyle defaultParagraphStyle];
-      else if (!NSLocationInRange(effRange.location, range) || 
-	       !NSLocationInRange(NSMaxRange(effRange)-1, range))
-	// the range is not fully enclosed in the range that is changed 
+      else
 	value = [value mutableCopy];
 
       [value setAlignment: alignment];
