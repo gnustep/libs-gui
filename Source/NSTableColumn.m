@@ -115,6 +115,8 @@
  */
 - (void)setWidth: (float)newWidth
 {
+  float oldWidth = _width;
+
   if (newWidth > _max_width)
     newWidth = _max_width;
   else if (newWidth < _min_width)
@@ -132,7 +134,10 @@
       
       [[NSNotificationCenter defaultCenter] 
 	postNotificationName: NSTableViewColumnDidResizeNotification
-	object: _tableView];
+	object: _tableView
+	userInfo: [NSDictionary dictionaryWithObjectsAndKeys:
+				  [NSNumber numberWithFloat: oldWidth],
+				@"NSOldWidth", nil]];
     }
 }
 
