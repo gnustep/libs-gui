@@ -50,4 +50,5 @@ example_OBJC_FILES = example.m Functions.m
 include $(GNUSTEP_MAKEFILES)/tool.make
 include $(GNUSTEP_MAKEFILES)/service.make
 
+-include GNUmakefile.local.service
 -include GNUmakefile.postamble
