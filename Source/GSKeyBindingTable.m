@@ -46,10 +46,8 @@
 {
   unichar character;
   int modifiers;
-  BOOL isFunctionKey;
   GSKeyBindingAction *a = nil;
   GSKeyBindingTable *t = nil;
-  BOOL noNeedToInsert = NO;
   int i;
   
   if (![NSInputManager parseKey: key 
@@ -60,16 +58,25 @@
       return;
     }
 
-  /* If it is not a function key, we automatically bind the key both
-     with Shift and without (because we don't know if it's typed with
-     shift or without).  */
-  isFunctionKey = modifiers & NSFunctionKeyMask;
+  /* If it is not a function key, we automatically ignore the Shift
+   * modifier.  You shouldn't use it unless you are describing a modification
+   * of a function key.  The NSInputManager will ignore Shift modifiers
+   * as well for non-function keys.  */
+  if (modifiers & NSFunctionKeyMask)
+    {
+      /* Ignore all other modifiers when storing the keystroke modifiers.  */
+      modifiers = modifiers & (NSShiftKeyMask 
+			       | NSAlternateKeyMask 
+			       | NSControlKeyMask 
+			       | NSNumericPadKeyMask);
+    }
+  else
+    {
+      modifiers = modifiers & (NSAlternateKeyMask 
+			       | NSControlKeyMask 
+			       | NSNumericPadKeyMask);
+    }
 
-  /* Ignore all other modifiers when storing the keystroke modifiers.  */
-  modifiers = modifiers & (NSShiftKeyMask 
-			   | NSAlternateKeyMask 
-			   | NSControlKeyMask 
-			   | NSNumericPadKeyMask);
 
   /* Now build the associated action/table.  */
   if ([action isKindOfClass: [NSString class]])
@@ -110,98 +117,38 @@
   /* Check if there are already some bindings for this keystroke.  */
   for (i = 0; i < _bindingsCount; i++)
     {
-      if (_bindings[i].character == character)
+      if ((_bindings[i].character == character)  
+	  &&  (_bindings[i].modifiers == modifiers))
 	{
-	  /* Uhmm ... suspiciously similar.  Let's check the
-	     modifiers.  */
-	  BOOL found = NO;
-	  
-	  if (isFunctionKey)
-	    {
-	      /* Function keys must have all modifiers perfectly the
-		 same.  */
-	      if (_bindings[i].modifiers == modifiers)
-		{
-		  found = YES;
-		}
-	    }
-	  else
-	    {
-	      /* Non function keys might differ by a Shift.  */
-	      int mask = ~NSShiftKeyMask;
-	      
-	      if ((_bindings[i].modifiers & mask) == (modifiers & mask))
-		{
-		  found = YES;
-		}
-	    }
-	  
-	  if (found)
-	    {
-	      /* Replace/override the existing action/table with the
-		 new ones.  */
-	      RETAIN (a);
-	      _bindings[i].action = a;
-
-	      RETAIN (t);
-	      _bindings[i].table = t;
-
-	      noNeedToInsert = YES;
-	    }
+	  /* Replace/override the existing action/table with the new
+	     ones.  */
+	  ASSIGN (_bindings[i].action, a);
+	  ASSIGN (_bindings[i].table, t);
+	  return;
 	}
     }
 
-  if (noNeedToInsert)
-    {
-      return;
-    }
-
   /* Ok - allocate memory for the new binding.  */
-  {
-    int newKeyBindings;
+  if (_bindingsCount == 0)
+    {
+      _bindingsCount = 1;
+      _bindings = objc_malloc (sizeof (struct _GSKeyBinding));
+    }
+  else
+    {
+      _bindingsCount++;
+      _bindings = objc_realloc (_bindings, sizeof (struct _GSKeyBinding) 
+				* _bindingsCount);
+    }
+  _bindings[_bindingsCount - 1].character = character;
+  _bindings[_bindingsCount - 1].modifiers = modifiers;
 
-    if (isFunctionKey)
-      {
-	newKeyBindings = 1;
-      }
-    else
-      {
-	/* Need to allocate two, for the binding with and without
-	   Shift.  */
-	newKeyBindings = 2;
-      }
-    
-    
-    if (_bindingsCount == 0)
-      {
-	_bindingsCount = newKeyBindings;
-	_bindings = objc_malloc (sizeof (struct _GSKeyBinding) 
-				 * newKeyBindings);
-      }
-    else
-      {
-	_bindingsCount += newKeyBindings;
-	_bindings = objc_realloc (_bindings, sizeof (struct _GSKeyBinding) 
-				  * _bindingsCount);
-      }
-    _bindings[_bindingsCount - 1].character = character;
-    _bindings[_bindingsCount - 1].modifiers = modifiers;
-    _bindings[_bindingsCount - 1].action = a;
-    RETAIN (a);
-    _bindings[_bindingsCount - 1].table = t;
-    RETAIN (t);
-    
-    if (!isFunctionKey)
-      {
-	modifiers |= NSShiftKeyMask;
-	_bindings[_bindingsCount - 2].character = character;
-	_bindings[_bindingsCount - 2].modifiers = modifiers;
-	_bindings[_bindingsCount - 2].action = a;
-	RETAIN (a);
-	_bindings[_bindingsCount - 2].table = t;
-	RETAIN (t);
-      }
-  }
+  /* Don't use ASSIGN here because that uses the previous value of
+     _bindings[_bindingsCount - 1] ... which is undefined.  */
+  _bindings[_bindingsCount - 1].action = a;
+  RETAIN (a);
+  _bindings[_bindingsCount - 1].table = t;
+  RETAIN (t);
 }
 
 - (BOOL) lookupKeyStroke: (unichar)character

@@ -172,6 +172,10 @@ static NSInputManager *currentInputManager = nil;
 	{
 	  flags |= NSAlternateKeyMask;
 	}
+      /* The Shift modifier is only meaningful when used in
+       * conjunction with function keys.  'Shift-LeftArrow' is
+       * meaningful; 'Control-Shift-g' is not - you should use
+       * 'Control-G' instead.  */
       else if ([modifier isEqualToString: @"Shift"] 
 	       || [modifier isEqualToString: @"S"])
 	{
@@ -262,7 +266,7 @@ static NSInputManager *currentInputManager = nil;
 
   if (modifiers & NSNumericPadKeyMask)
     {
-      [description appendString: @"Numeric-"];
+      [description appendString: @"NumericPad-"];
     }
 
   for (i = 0; i < CHARACTER_TABLE_SIZE; i++)
@@ -476,25 +480,47 @@ static NSInputManager *currentInputManager = nil;
       unichar character = 0;
       unsigned flags = [theEvent modifierFlags] & (NSShiftKeyMask 
 						   | NSAlternateKeyMask 
-						   | NSControlKeyMask);
+						   | NSControlKeyMask
+						   | NSNumericPadKeyMask);
+      BOOL isFunctionKey = [theEvent modifierFlags] & NSFunctionKeyMask;
 
       if ([unmodifiedCharacters length] > 0)
 	{
 	  character = [unmodifiedCharacters characterAtIndex: 0];
 	}
-      
+
       if (!_interpretNextKeyStrokeLiterally)
 	{
 	  GSKeyBindingAction *action;
 	  GSKeyBindingTable *table;
 	  BOOL found;
+	  unsigned adaptedFlags;
+
+	  /* If the keystroke is a function key, then we need to use
+	   * the full modifier flags to compare it against stored
+	   * keybindings, so that we can make a difference for example
+	   * between Shift-LeftArrow and LeftArrow.  But if it's not a
+	   * function key, then we should ignore the shift modifier -
+	   * for example Control-g is a keystroke, and Control-G is
+	   * another one.  The shift modifier flag is not used to
+	   * match these keystrokes - the fact that it's 'G' rather
+	   * than 'g' already contains the fact that it's typed in
+	   * with Shift.  */
+	  if (!isFunctionKey)
+	    {
+	      adaptedFlags = flags & (~NSShiftKeyMask); 
+	    }
+	  else
+	    {
+	      adaptedFlags = flags;
+	    }
 
 	  /* Special keybinding recognized in all contexts - abort -
 	     normally bound to Control-g.  The user is confused and
 	     wants to go home.  Abort whatever train of thoughts we
 	     were following, discarding whatever pending keystrokes we
 	     have, and return into default state.  */
-	  if (character == _abortCharacter  &&  flags == _abortFlags)
+	  if (character == _abortCharacter  &&  adaptedFlags == _abortFlags)
 	    {
 	      [self resetInternalState];
 	      break;
@@ -502,7 +528,7 @@ static NSInputManager *currentInputManager = nil;
 
 	  /* Look up the character in the current keybindings table.  */
 	  found = [_currentBindingTable lookupKeyStroke: character
-					modifiers: flags
+					modifiers: adaptedFlags
 					returningActionIn: &action
 					tableIn: &table];
 	  
@@ -580,6 +606,13 @@ static NSInputManager *currentInputManager = nil;
       /* If this was a forced literal interpretation, make sure the
 	 next one is interpreted normally.  */
       _interpretNextKeyStrokeLiterally = NO;
+
+      /* During literal interpretation, function keys are ignored.
+	 Trying to insert 'PageUp' literally makes simply no sense.  */
+      if (isFunctionKey)
+	{
+	  break;
+	}
 
       switch (character)
 	{
