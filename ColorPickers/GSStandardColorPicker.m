@@ -212,6 +212,7 @@
     }
 
   [pickerMatrix addRowWithCells: cells];
+  RELEASE(cells);
   [pickerMatrix setCellSize: NSMakeSize(1, 36)];
   [pickerMatrix setTarget: self];
   [pickerMatrix setAction: @selector(_showNewPicker:)];
