@@ -31,8 +31,10 @@
 
 #include <AppKit/GSMethodTable.h>
 
+@class NSMutableArray;
 @class NSMutableData;
 @class NSDictionary;
+@class NSView;
 
 //
 // Backing Store Types
@@ -81,11 +83,16 @@ typedef enum _NSWindowOrderingMode
 
 @interface NSGraphicsContext : NSObject
 {
-  NSDictionary  *context_info;
-  NSMutableData *context_data;
-
+  /* Make the one public instance variable first in the object so that, if we
+   * add or remove others, we don't necessarily need to recompile everything.
+   */
 @public
-  const gsMethodTable *methods;
+  const gsMethodTable	*methods;
+
+@protected
+  NSDictionary		*context_info;
+  NSMutableData		*context_data;
+  NSMutableArray	*focus_stack;
 }
 
 + (NSGraphicsContext*) currentContext;
@@ -105,6 +112,13 @@ typedef enum _NSWindowOrderingMode
 - (id) initWithContextInfo: (NSDictionary *)info;
 - (void) destroyContext;
 - (NSMutableData *) mutableData;
+/*
+ * Focus management methods - lock and unlock should only be used by NSView
+ * in it's implementation of lockFocus and unlockFocus.
+ */
+- (NSView*) focusView;
+- (void) lockFocusView: (NSView*)aView;
+- (void) unlockFocusView: (NSView*)aView;
 @end
 #endif
 

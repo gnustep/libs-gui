@@ -5,6 +5,7 @@
    Written by:  Adam Fedor <fedor@gnu.org>
    Date: Nov 1998
    Updated by:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+   Date: Feb 1999
    
    This file is part of the GNUStep GUI Library.
 
@@ -30,15 +31,14 @@
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSException.h>
 #include <Foundation/NSData.h>
+#include <Foundation/NSLock.h>
+#include <Foundation/NSThread.h>
 #include <Foundation/NSZone.h>
 #include "AppKit/NSGraphicsContext.h"
 
 /* The memory zone where all global objects are allocated from (Contexts
    are also allocated from this zone) */
 NSZone *_globalGSZone = NULL;
-
-/* The current context */
-NSGraphicsContext *_currentNSGraphicsContext = nil;
 
 /* The current concrete class */
 static Class defaultNSGraphicsContextClass = NULL;
@@ -49,6 +49,11 @@ static NSMutableArray	*contextList;
 /* Class variable for holding pointers to method functions */
 static NSMutableDictionary *classMethodTable;
 
+/* Lock for use when creating contexts */
+static NSRecursiveLock  *contextLock = nil;
+
+static NSString	*NSGraphicsContextThredKey = @"NSGraphicsContextThredKey";
+
 @interface NSGraphicsContext (Private)
 + (gsMethodTable *) _initializeMethodTable;
 @end
@@ -57,22 +62,19 @@ static NSMutableDictionary *classMethodTable;
 
 + (void) initialize
 {
-  if (defaultNSGraphicsContextClass == nil)
+  if (contextLock == nil)
     {
-      defaultNSGraphicsContextClass = [NSGraphicsContext class];
-    }
-  if (_globalGSZone == 0)
-    {
-      _globalGSZone = NSDefaultMallocZone();
-    }
-  if (contextList == nil)
-    {
-      contextList = [[NSMutableArray allocWithZone: _globalGSZone] init];
-    }
-  if (classMethodTable == 0)
-    {
-      classMethodTable =
-	[[NSMutableDictionary allocWithZone: _globalGSZone] init];
+      [gnustep_global_lock lock];
+      if (contextLock == nil)
+	{
+	  contextLock = [NSRecursiveLock new];
+	  defaultNSGraphicsContextClass = [NSGraphicsContext class];
+	  _globalGSZone = NSDefaultMallocZone();
+	  contextList = [[NSMutableArray allocWithZone: _globalGSZone] init];
+	  classMethodTable =
+	    [[NSMutableDictionary allocWithZone: _globalGSZone] init];
+	}
+      [gnustep_global_lock unlock];
     }
 }
 
@@ -95,16 +97,21 @@ static NSMutableDictionary *classMethodTable;
 
 + (void) setCurrentContext: (NSGraphicsContext *)context
 {
-  _currentNSGraphicsContext = context;
+  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
+
+  [dict setObject: context forKey: NSGraphicsContextThredKey];
 }
 
 + (NSGraphicsContext *) currentContext
 {
-  return _currentNSGraphicsContext;
+  NSMutableDictionary *dict = [[NSThread currentThread] threadDictionary];
+
+  return (NSGraphicsContext*) [dict objectForKey: NSGraphicsContextThredKey];
 }
 
 - (void) dealloc
 {
+  DESTROY(focus_stack);
   DESTROY(context_data);
   DESTROY(context_info);
   [super dealloc];
@@ -114,7 +121,9 @@ static NSMutableDictionary *classMethodTable;
    the next autorelease pool end */
 - (void) destroyContext;
 {
+  [contextLock lock];
   [contextList removeObject: self];
+  [contextLock unlock];
 }
 
 - (id) init
@@ -126,15 +135,25 @@ static NSMutableDictionary *classMethodTable;
 - (id) initWithContextInfo: (NSDictionary *)info
 {
   [super init];
-  [contextList addObject: self];
+
   context_info = [info retain];
+  focus_stack = [[NSMutableArray allocWithZone: [self zone]]
+			initWithCapacity: 1];
+
+  /*
+   * The classMethodTable dictionary and the list of all contexts must both
+   * be protected from other threads.
+   */
+  [contextLock lock];
   if (!(methods = [[classMethodTable objectForKey: [self class]] pointerValue]))
     {
       methods = [[self class] _initializeMethodTable];
       [classMethodTable setObject: [NSValue valueWithPointer: methods]
 			   forKey: [self class]];
     }
-      
+  [contextList addObject: self];
+  [contextLock unlock];
+
   return self;
 }
 
@@ -162,6 +181,24 @@ static NSMutableDictionary *classMethodTable;
 
 - (void) wait
 {
+}
+
+- (NSView*) focusView
+{
+  return [focus_stack lastObject];
+}
+
+- (void) lockFocusView: (NSView*)aView
+{
+  [focus_stack addObject: aView];
+}
+
+- (void) unlockFocusView: (NSView*)aView
+{
+  NSView	*v = [focus_stack lastObject];
+
+  NSAssert(v == aView, NSInvalidArgumentException);
+  [focus_stack removeLastObject];
 }
 
 @end
