@@ -26,14 +26,24 @@ MAKEFILE_NAME = DocMakefile
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
+ADD_THESE_QUESTION_MARK = \
+NSAttributedString.h \
+NSColorPicking.h \
+NSGraphics.h \
+NSNibConnector.h \
+NSNibDeclarations.h \
+NSNibLoading.h \
+NSSpellProtocol.h \
+NSUserInterfaceValidation.h \
+
 # These are gui headers that are also classes documented with autogsdoc
 AUTOGSDOC_HEADERS_GUI = \
 NSActionCell.h \
 NSAffineTransform.h \
 NSApplication.h \
 NSBezierPath.h \
-NSBox.h \
 NSBitmapImageRep.h \
+NSBox.h \
 NSBrowser.h \
 NSBrowserCell.h \
 NSButton.h \
@@ -66,8 +76,8 @@ NSFontPanel.h \
 NSForm.h \
 NSFormCell.h \
 NSGraphicsContext.h \
-NSHelpPanel.h \
 NSHelpManager.h \
+NSHelpPanel.h \
 NSImage.h \
 NSImageCell.h \
 NSImageRep.h \
@@ -81,6 +91,9 @@ NSMenu.h \
 NSMenuItem.h \
 NSMenuItemCell.h \
 NSMenuView.h \
+NSNib.h \
+NSOpenGL.h \
+NSOpenGLView.h \
 NSOpenPanel.h \
 NSOutlineView.h \
 NSPageLayout.h \
