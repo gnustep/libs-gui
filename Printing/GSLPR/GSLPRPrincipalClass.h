@@ -25,8 +25,8 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */ 
 
-#ifndef _GSLPRPRINCIPALCLASS_H_
-#define _GSLPRPRINCIPALCLASS_H_
+#ifndef _GNUstep_H_GSLPRPrincipalClass
+#define _GNUstep_H_GSLPRPrincipalClass
 
 #include <GNUstepGUI/GSPrinting.h>
 
@@ -36,5 +36,5 @@
 
 @end
 
-#endif // _GSLPRPRINCIPALCLASS_H_
+#endif // _GNUstep_H_GSLPRPrincipalClass
 

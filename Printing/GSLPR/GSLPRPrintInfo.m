@@ -78,16 +78,16 @@
   
   if( name == nil )
     {
-      name = [[GSLPRPrinter printerNames] objectAtIndex: 0];
+      name = [[NSPrinter printerNames] objectAtIndex: 0];
     }
   else
     {
-      if( [GSLPRPrinter printerWithName: name] == nil )
+      if( [NSPrinter printerWithName: name] == nil )
         {
           name = [[GSLPRPrinter printerNames] objectAtIndex: 0];
         }
     }
-  return [GSLPRPrinter printerWithName: name];
+  return [NSPrinter printerWithName: name];
 }
 
 

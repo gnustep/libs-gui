@@ -40,6 +40,7 @@
 {
 }
 
++(NSDictionary*) printersDictionary;
 @end
 
 #endif // _GNUstep_H_GSLPRPrinter

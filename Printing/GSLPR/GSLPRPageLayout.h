@@ -44,4 +44,4 @@
 
 @end
 
-#endif // _GNUstep_H_NSPageLayout
+#endif // _GNUstep_H_GSLPRPageLayout

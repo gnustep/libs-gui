@@ -1,3 +1,14 @@
+2004-10-08 09:17  Chad Hardin  <cehardin@mac.com>
+
+	* Printing/GSLPR/GSLPRPageLayout.m: Fixed a #define
+	* Printing/GSLPR/GSLPRPrintInfo.m: Made it so the code calls 
+	NSPrinter's printerWithName rather than GSLPR's, because the former
+	caches NSPrinter objects.
+	* Printing/GSLPR/GSLPRPrinter.h: Moved a method out of a (Private) 
+	catagory and place it into the header file, directly into the class.
+	* Printing/GSLPR/GSLPRPrinter.m: Simplified the class by taking out
+	an unnecesary initializer.
+
 2004-10-08  Chad Hardin  <cehardin@mac.com>
 
 	* Printing/GSLPR/GSLPRPrintOperation: Removed useless #defines and

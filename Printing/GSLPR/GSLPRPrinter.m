@@ -63,18 +63,6 @@
 
 
 
-@interface GSLPRPrinter (Private)
-
-+(NSDictionary*) printersDictionary;
-
--(id) initWithName: (NSString*) name
-          withType: (NSString*) type
-          withHost: (NSString*) host
-          withNote: (NSString*) note
-       withPPDPath: (NSString*) ppdPath;
-@end
-
-
 @implementation GSLPRPrinter
 
 //
@@ -124,10 +112,11 @@
                     initWithName: name
                         withType: [printerEntry objectForKey: @"Type"]
                         withHost: [printerEntry objectForKey: @"Host"]
-                        withNote: [printerEntry objectForKey: @"Note"]
-                     withPPDPath: [printerEntry objectForKey: @"PPDPath"]];
+                        withNote: [printerEntry objectForKey: @"Note"]];
+
+  [printer parsePPDAtPath: [printerEntry objectForKey: @"PPDPath"]];
                          
-  return [printer autorelease];
+  return AUTORELEASE(printer);
 }
 
 
@@ -151,13 +140,8 @@
   [super encodeWithCoder: coder];
 }
 
-@end
 
 
-
-
-
-@implementation GSLPRPrinter (Private)
 //
 // Load the printer setup from NSUserDefaults
 //
@@ -211,32 +195,6 @@
 
   return printers;
 }
-
-
-
-
-//
-// Initialisation method
-//
-// To keep loading of PPDs relatively fast, not much checking is done on it.
--(id) initWithName: (NSString*) name
-          withType: (NSString*) type
-          withHost: (NSString*) host
-          withNote: (NSString*) note
-       withPPDPath: (NSString*) ppdPath
-{
-  NSDebugMLLog(@"GSPrinting", @"");
-  
-  self = [super initWithName: name
-                    withType: type
-                    withHost: host
-                    withNote: note];
-
-  [self parsePPDAtPath: ppdPath];
-  
-  return self;
-}
-
 
 
 @end
