@@ -1,3 +1,11 @@
+2001-12-23  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView.m
+	[writeSelectionToPasteboard:types:] corrected C binary operator
+	short cut logic	that prevented us froam adding more than one
+	string type to the pasteboard. Remember that || wont evaluate the
+	second operand if the first is true.
+	
 Fri Dec 21 18:50:17 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Headers/gnustep/gui/GSGuiPrivate.h: New file.
