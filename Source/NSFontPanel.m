@@ -696,7 +696,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
   // cancel button
   revertButton = [[NSButton alloc] initWithFrame: revertButtonRect];
-  [revertButton setStringValue: @"Revert"];
+  [revertButton setTitle: @"Revert"];
   [revertButton setAction: @selector(cancel:)];
   [revertButton setTarget: self];
   [revertButton setTag: NSFPRevertButton];
@@ -706,7 +706,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
   // toggle button for preview
   previewButton = [[NSButton alloc] initWithFrame: previewButtonRect];
-  [previewButton setStringValue: @"Preview"];
+  [previewButton setTitle: @"Preview"];
   [previewButton setButtonType: NSOnOffButton];
   [previewButton setAction: @selector(_togglePreview:)];
   [previewButton setTarget: self];
@@ -719,7 +719,7 @@ static float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
 
   // button to set the font
   setButton = [[NSButton alloc] initWithFrame: setButtonRect];
-  [setButton setStringValue: @"Set"];
+  [setButton setTitle: @"Set"];
   [setButton setAction: @selector(ok:)];
   [setButton setTarget: self];
   [setButton setTag: NSFPSetButton];
