@@ -106,16 +106,6 @@ typedef enum _NSSelectionAffinity {
 
   // Attributes
   struct GSTextFlagsType {
-    /* owns_text_network is YES if we have created the whole network
-       of text classes (and thus we are responsible to release them
-       when we are released).
-
-       owns_text_network in NO if the text network was assembled by
-       hand, and the text storage owns everything - thus we need to
-       release nothing.  */
-    unsigned owns_text_network: 1;
-    /* Always NO except when we own text network and are deallocating */
-    unsigned is_in_dealloc: 1;
     unsigned is_field_editor: 1;
     unsigned is_editable: 1;
     unsigned is_selectable: 1;
@@ -127,8 +117,6 @@ typedef enum _NSSelectionAffinity {
     unsigned uses_font_panel: 1;
     unsigned uses_ruler: 1;
     unsigned is_ruler_visible: 1;
-    unsigned smart_insert_delete: 1;
-    unsigned allows_undo: 1;
   } _tf;
   NSMutableDictionary *_typingAttributes;
   NSColor *_background_color;
@@ -308,8 +296,6 @@ typedef enum _NSSelectionAffinity {
 
 @interface NSText(NSTextView)
 // Methods that should be declared on NSTextView, but are usable for NSText
-- (id)initWithFrame:(NSRect)frameRect textContainer:(NSTextContainer *)container;
-- (void)setTextContainer:(NSTextContainer*) container;
 - (NSTextContainer *)textContainer;
 - (NSPoint)textContainerOrigin;
 - (NSSize) textContainerInset;
@@ -319,7 +305,8 @@ typedef enum _NSSelectionAffinity {
 - (NSRange)rangeForUserCharacterAttributeChange;
 - (NSRange)rangeForUserParagraphAttributeChange;
 
-- (BOOL)shouldChangeTextInRange:(NSRange)affectedCharRange replacementString:(NSString *)replacementString;
+- (BOOL)shouldChangeTextInRange:(NSRange)affectedCharRange 
+              replacementString:(NSString *)replacementString;
 - (void)didChangeText;
 
 - (void) setAlignment: (NSTextAlignment)alignment
