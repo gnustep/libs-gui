@@ -900,7 +900,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 	  frame.size.width += changePerOption;
 	  if (is_rotated_or_scaled_from_base)
 	    {
-	      bounds.size.width*= frame.size.width/oldFrameWidth;
+	      bounds.size.width *= frame.size.width/oldFrameWidth;
 	      bounds.size.width = floor(bounds.size.width);
 	    }
 	  else
@@ -936,7 +936,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 	  frame.size.height += changePerOption;
 	  if (is_rotated_or_scaled_from_base)
 	    {
-	      bounds.size.height*= frame.size.height/oldFrameHeight;
+	      bounds.size.height *= frame.size.height/oldFrameHeight;
 	      bounds.size.height = floor(bounds.size.height);
 	    }
 	  else
@@ -945,7 +945,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 	}
       if (autoresizingMask & (NSViewMaxYMargin | NSViewMinYMargin))
 	{
-	  if ([self isFlipped] == YES)
+	  if ([super_view isFlipped] == YES)
 	    {
 	      if (autoresizingMask & NSViewMaxYMargin)
 		{
@@ -1955,6 +1955,11 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 	  (*appImp)(matrixToWindow, appSel, frameMatrix);
 	  if ([self isFlipped] != wasFlipped)
 	    {
+	      /*
+	       * The flipping process must result in a coordinate system that
+	       * exactly overlays the original.  To do that, we must translate
+	       * the origin by the height of the view.
+	       */
 	      flip->matrix.ty = bounds.size.height;
 	      (*appImp)(matrixToWindow, appSel, flip);
 	    }
