@@ -1,3 +1,22 @@
+2002-02-27  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView.m
+	Added method [copySelection] and [pasteSelection] to put the
+	selected text in special pasteboard. The first gets called by 
+	[setSelectedRange:affinity:stillSelecting:] while the later is
+	bound to [middleMouseUp:]. (This is hard coded, could the key
+	binding code handle this?)
+	
+2002-02-27  Fred Kiefer <FredKiefer@gmx.de>
+
+	Patch from Alexander Malmberg <alexander@malmberg.org>:
+	* Source/NSGraphicsContext.m
+	[graphicsContextWithAttributes] always autorelease the context.
+	Moved the unsetting of the current context from [dealloc] to
+	[destroyContext] otherwise the current context can never be freed.
+	* Source/NSApplication.m
+	Removed some now unneeded FIXME.
+	
 Wed Feb 27 01:03:58 2002  Gregory Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSOutlineView.m implemented indentation and enabled
