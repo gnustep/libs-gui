@@ -96,6 +96,7 @@ NSSplitView.m \
 NSText.m \
 NSTextField.m \
 NSTextFieldCell.m \
+NSTextView.m \
 NSView.m \
 NSWindow.m \
 NSWindowView.m \
@@ -179,6 +180,7 @@ AppKit/NSSplitView.h \
 AppKit/NSText.h \
 AppKit/NSTextField.h \
 AppKit/NSTextFieldCell.h \
+AppKit/NSTextView.h \
 AppKit/NSView.h \
 AppKit/NSWindow.h \
 AppKit/NSWindowView.h \

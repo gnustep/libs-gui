@@ -30,6 +30,7 @@
 #include <Foundation/NSArray.h>
 #include <AppKit/NSPopUpButton.h>
 #include <AppKit/NSApplication.h>
+#include <AppKit/NSMenu.h>
 
 //
 // NSPopUpButton implementation
@@ -108,35 +109,64 @@
 //
 - (void)addItemWithTitle:(NSString *)title
 {
-  [list_items addObject:title];
+  id item = [[[NSMenu cellClass] new] autorelease];
+
+  [list_items addObject:item];
+  [item setTitle:title];
   [self synchronizeTitleAndSelectedItem];
 }
 
 - (void)addItemsWithTitles:(NSArray *)itemTitles
-{}
+{
+  int i, count = [itemTitles count];
+
+  for (i = 0; i < count; i++)
+    [self addItemWithTitle:[itemTitles objectAtIndex:i]];
+}
 
 - (void)insertItemWithTitle:(NSString *)title
 		    atIndex:(unsigned int)index
-{}
+{
+  id item = [[[NSMenu cellClass] new] autorelease];
+
+  [list_items insertObject:item atIndex:index];
+  [item setTitle:title];
+  [self synchronizeTitleAndSelectedItem];
+}
 
 //
 // Removing Items 
 //
 - (void)removeAllItems
-{}
+{
+  [list_items removeAllObjects];
+}
 
 - (void)removeItemWithTitle:(NSString *)title
-{}
+{
+  int index = [self indexOfItemWithTitle:title];
+
+  if (index != NSNotFound)
+    [list_items removeObjectAtIndex:index];
+}
 
 - (void)removeItemAtIndex:(int)index
-{}
+{
+  [list_items removeObjectAtIndex:index];
+}
 
 //
 // Querying the NSPopUpButton about Its Items 
 //
 - (int)indexOfItemWithTitle:(NSString *)title
 {
-  return 0;
+  int i, count = [list_items count];
+
+  for (i = 0; i < count; i++)
+    if ([[[list_items objectAtIndex:i] title] isEqual:title])
+      return i;
+
+  return NSNotFound;
 }
 
 - (int)indexOfSelectedItem
@@ -149,32 +179,42 @@
   return [list_items count];
 }
 
-- (NSMenuCell *)itemAtIndex:(int)index
+- (id <NSMenuItem>)itemAtIndex:(int)index
 {
-  return nil;
+  return [list_items objectAtIndex:index];
 }
 
-- (NSMatrix *)itemMatrix
-{
-  return nil;
-}
-
-- (NSString *)itemTitleAtIndex:(int)index
-{
-  return nil;
-}
-
-- (NSArray *)itemTitles
+- (NSArray *)itemArray
 {
   return list_items;
 }
 
-- (NSMenuCell *)itemWithTitle:(NSString *)title
+- (NSString *)itemTitleAtIndex:(int)index
 {
+  return [[list_items objectAtIndex:index] title];
+}
+
+- (NSArray *)itemTitles
+{
+  int i, count = [list_items count];
+  NSMutableArray* titles = [NSMutableArray arrayWithCapacity:count];
+
+  for (i = 0; i < count; i++)
+    [titles addObject:[[list_items objectAtIndex:i] title]];
+
+  return titles;
+}
+
+- (id <NSMenuItem>)itemWithTitle:(NSString *)title
+{
+  int index = [self indexOfItemWithTitle:title];
+
+  if (index != NSNotFound)
+    return [list_items objectAtIndex:index];
   return nil;
 }
 
-- (NSMenuCell *)lastItem
+- (id <NSMenuItem>)lastItem
 {
   if ([list_items count])
     return [list_items lastObject];
@@ -182,17 +222,14 @@
     return nil;
 }
 
-- (NSMenuCell *)selectedItem
+- (id <NSMenuItem>)selectedItem
 {
-  return nil;
+  return [list_items objectAtIndex:selected_item];
 }
 
 - (NSString *)titleOfSelectedItem
 {
-  if ([list_items count])
-    return [list_items objectAtIndex:selected_item];
-  else
-    return nil;
+  return [[self selectedItem] title];
 }
 
 //
@@ -218,7 +255,12 @@
 }
 
 - (void)selectItemWithTitle:(NSString *)title
-{}
+{
+  int index = [self indexOfItemWithTitle:title];
+
+  if (index != NSNotFound)
+    [self selectItemAtIndex:index];
+}
 
 - (void)setFont:(NSFont *)fontObject
 {}

@@ -34,7 +34,7 @@
 
 
 @interface NSBundle (IMLoading)
-+ (BOOL)loadIMFile:(NSString*)filename owner:(id)owner;
+- (BOOL)loadIMFile:(NSString*)filename owner:(id)owner;
 @end
 
 
@@ -44,6 +44,7 @@
   NSArray* connections;
 }
 + (BOOL)loadIMFile:(NSString*)path owner:(id)owner;
++ (BOOL)loadIMFile:(NSString*)path owner:(id)owner bundle:(NSBundle*)bundle;
 - (void)_makeConnections;
 - (void)_setObjects:objects connections:connections;
 @end

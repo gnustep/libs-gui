@@ -132,6 +132,7 @@
 #include <AppKit/NSText.h>
 #include <AppKit/NSTextField.h>
 #include <AppKit/NSTextFieldCell.h>
+#include <AppKit/NSTextView.h>
 #include <AppKit/NSView.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSWorkspace.h>

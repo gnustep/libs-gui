@@ -82,6 +82,9 @@
 
 - (void)dealloc
 {
+  [_columnScrollView release];
+  [_columnMatrix release];
+  [_emptyView release];
   [_columnTitle release];
   [super dealloc];
 }
@@ -98,6 +101,8 @@
 
 - (void)setColumnScrollView:(id)aView
 {
+  [aView retain];
+  [_columnScrollView release];
   _columnScrollView = aView;
 }
 
@@ -108,6 +113,8 @@
 
 - (void)setColumnMatrix:(id)aMatrix
 {
+  [aMatrix retain];
+  [_columnMatrix release];
   _columnMatrix = aMatrix;
 }
 
@@ -194,7 +201,7 @@
   _browserCellClass = [NSBrowser cellClass];
   _browserCellPrototype = [[_browserCellClass alloc] init];
   _browserMatrixClass = [NSMatrix class];
-  _pathSeparator = [[NSString alloc] initWithCString: "/"];
+  _pathSeparator = @"/";
   _isLoaded = NO;
   _allowsBranchSelection = YES;
   _allowsEmptySelection = YES;
@@ -527,8 +534,9 @@
   bc = [[[NSBrowserColumn alloc] init] autorelease];
 
   // Create a scrollview
-  sc = [[NSScrollView alloc]
-	 initWithFrame: [self frameOfInsideOfColumn: n]];
+  sc = [[[NSScrollView alloc]
+	 initWithFrame: [self frameOfInsideOfColumn: n]]
+	 autorelease];
   [sc setHasHorizontalScroller: NO];
   [sc setHasVerticalScroller: YES];
   [bc setColumnScrollView: sc];
@@ -1470,12 +1478,13 @@
 	  // If we are not reusing matrixes
 	  // then delete the old matrix and create a new one
 	  [oldm release];
-	  matrix = [[_browserMatrixClass alloc]
+	  matrix = [[[_browserMatrixClass alloc]
 		     initWithFrame: matrixRect
 		     mode: NSListModeMatrix
 		     prototype: _browserCellPrototype
 		     numberOfRows: n
-		     numberOfColumns: 1];
+		     numberOfColumns: 1]
+		     autorelease];
 	  [matrix setAllowsEmptySelection: _allowsEmptySelection];
 	  if (!_allowsMultipleSelection)
 	    [matrix setMode: NSRadioModeMatrix];
@@ -1506,12 +1515,13 @@
 	  // If we are not reusing matrixes
 	  // then delete the old matrix and create a new one
 	  [oldm release];
-	  matrix = [[_browserMatrixClass alloc]
+	  matrix = [[[_browserMatrixClass alloc]
 		     initWithFrame: matrixRect
 		     mode: NSListModeMatrix
 		     prototype: _browserCellPrototype
 		     numberOfRows: 0
-		     numberOfColumns: 0];
+		     numberOfColumns: 0]
+		     autorelease];
 	  [matrix setAllowsEmptySelection: _allowsEmptySelection];
 	  if (!_allowsMultipleSelection)
 	    [matrix setMode: NSRadioModeMatrix];

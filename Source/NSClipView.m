@@ -69,18 +69,21 @@
     [_documentView removeFromSuperview];
 
   ASSIGN(_documentView, aView);
-  [self addSubview:_documentView];
 
-  /* Register to notifications sent by the document view */
-  [_documentView setPostsFrameChangedNotifications:YES];
-  [_documentView setPostsBoundsChangedNotifications:YES];
+  if (_documentView) {
+    [self addSubview:_documentView];
 
-  [[NSNotificationCenter defaultCenter] addObserver:self
-      selector:@selector(viewFrameChanged:)
-      name:NSViewFrameDidChangeNotification object:_documentView];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-      selector:@selector(viewBoundsChanged:)
-      name:NSViewBoundsDidChangeNotification object:_documentView];
+    /* Register to notifications sent by the document view */
+    [_documentView setPostsFrameChangedNotifications:YES];
+    [_documentView setPostsBoundsChangedNotifications:YES];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+	selector:@selector(viewFrameChanged:)
+	name:NSViewFrameDidChangeNotification object:_documentView];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+	selector:@selector(viewBoundsChanged:)
+	name:NSViewBoundsDidChangeNotification object:_documentView];
+  }
 
   /* TODO: invoke superview's reflectScrolledClipView:? */
   [[self superview] reflectScrolledClipView:self];

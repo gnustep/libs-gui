@@ -151,12 +151,10 @@ static id NSApp;
 				propertyList];
   NSString* mainModelFile = [infoDict objectForKey:@"NSMainNibFile"];
 
-  if (mainModelFile) {
+  if (mainModelFile && ![mainModelFile isEqual:@""]) {
     if (![GMModel loadIMFile:mainModelFile
 			  owner:[NSApplication sharedApplication]])
       NSLog (@"Cannot load the main model file '%@", mainModelFile);
-    else
-      NSLog (@"Model loading ready!");
   }
 
   // notify that we will finish the launching

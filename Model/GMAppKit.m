@@ -148,12 +148,10 @@ void __dummy_GMAppKit_functionForLinking() {}
   [archiver encodeInt:[self state] withName:@"state"];
   [archiver encodeFloat:delay withName:@"delay"];
   [archiver encodeFloat:interval withName:@"interval"];
-#if 1
   [archiver encodeString:[self title] withName:@"title"];
   [archiver encodeString:[self alternateTitle] withName:@"alternateTitle"];
   [archiver encodeObject:[self image] withName:@"image"];
   [archiver encodeObject:[self alternateImage] withName:@"alternateImage"];
-#endif
   [archiver encodeInt:[self imagePosition] withName:@"imagePosition"];
   [archiver encodeBOOL:[self isBordered] withName:@"isBordered"];
   [archiver encodeBOOL:[self isTransparent] withName:@"isTransparent"];
@@ -212,6 +210,30 @@ void __dummy_GMAppKit_functionForLinking() {}
 }
 
 @end /* NSCell (GMArchiverMethods) */
+
+
+@implementation NSClipView (GMArchiverMethods)
+
+- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+{
+  [super encodeWithModelArchiver:archiver];
+
+  [archiver encodeObject:[self documentView] withName:@"documentView"];
+  [archiver encodeBOOL:[self copiesOnScroll] withName:@"copiesOnScroll"];
+  [archiver encodeObject:[self backgroundColor] withName:@"backgroundColor"];
+}
+
+- (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
+{
+  self = [super initWithModelUnarchiver:unarchiver];
+
+  [self setDocumentView:[unarchiver decodeObjectWithName:@"documentView"]];
+  [self setCopiesOnScroll:[unarchiver decodeBOOLWithName:@"copiesOnScroll"]];
+  [self setBackgroundColor:[unarchiver decodeObjectWithName:@"backgroundColor"]];
+  return self;
+}
+
+@end /* NSClipView (GMArchiverMethods) */
 
 
 @implementation NSColor (GMArchiverMethods)
@@ -535,6 +557,9 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
 {
+  /* Check the following: the program simply crashes if there's nothing in the
+     model file */
+#if 0
   int i, count;
   NSMutableArray* decodedItems
       = [unarchiver decodeObjectWithName:@"itemArray"];
@@ -556,6 +581,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 
   [self selectItemWithTitle:[unarchiver decodeStringWithName:@"selectedItem"]];
   [self synchronizeTitleAndSelectedItem];
+#endif
 
   return self;
 }
@@ -666,6 +692,8 @@ void __dummy_GMAppKit_functionForLinking() {}
   NSView* view = [[[self allocWithZone:[unarchiver objectZone]]
 				initWithFrame:rect]
 				autorelease];
+  if (!view)
+    NSLog (@"cannot create the requested view!");
   return view;
 }
 

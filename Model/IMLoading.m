@@ -26,6 +26,8 @@
 #import <Foundation/NSDictionary.h>
 #import <Foundation/NSArray.h>
 #import <Foundation/NSFileManager.h>
+#import <Foundation/NSPathUtilities.h>
+
 #include <extensions/GMArchiver.h>
 #include "IMLoading.h"
 #include "IMCustomObject.h"
@@ -37,9 +39,9 @@ void __dummy_IMLoading_functionForLinking()
 
 @implementation NSBundle (IMLoading)
 
-+ (BOOL)loadIMFile:(NSString*)path owner:(id)owner
+- (BOOL)loadIMFile:(NSString*)path owner:(id)owner
 {
-  return [GMModel loadIMFile:path owner:owner];
+  return [GMModel loadIMFile:path owner:owner bundle:self];
 }
 
 @end /* NSBundle(IMLoading) */
@@ -59,7 +61,11 @@ BOOL _fileOwnerDecoded = NO;
 
 + (BOOL)loadIMFile:(NSString*)path owner:(id)owner
 {
-  NSBundle* mainBundle = [NSBundle mainBundle];
+  return [self loadIMFile:path owner:owner bundle:[NSBundle mainBundle]];
+}
+
++ (BOOL)loadIMFile:(NSString*)path owner:(id)owner bundle:(NSBundle*)mainBundle
+{
   NSString* resourcePath = [mainBundle resourcePath];
   GMUnarchiver* unarchiver;
   id previousNibOwner = _nibOwner;
@@ -67,9 +73,21 @@ BOOL _fileOwnerDecoded = NO;
 
   if (![path hasSuffix:@".gmodel"])
     path = [path stringByAppendingPathExtension:@"gmodel"];
-  path = [resourcePath stringByAppendingPathComponent:path];
-  if (![[NSFileManager defaultManager] fileExistsAtPath:path])
-    return NO;
+
+  /* First check to see if path is an absolute path; if so try to load the
+     pointed file. */
+  if ([path isAbsolutePath]) {
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
+      /* The file is an absolute path name but the model file doesn't exist. */
+      return NO;
+    }
+  }
+  else {
+    /* The path is a relative path; search it in the current bundle. */
+    path = [resourcePath stringByAppendingPathComponent:path];
+    if (![[NSFileManager defaultManager] fileExistsAtPath:path])
+      return NO;
+  }
 
   NSLog (@"loading model file %@...", path);
   unarchiver = [GMUnarchiver unarchiverWithContentsOfFile:path];

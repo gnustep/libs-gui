@@ -1,3 +1,33 @@
+Thu Jan 29 12:02:08  Ovidiu Predescu  <ovidiu@net-community.com>
+
+	* Model/IBClasses.h: New class NSCustomView.
+	* Model/IBClasses.m: Likewise.
+	* Model/GMAppKit.h: Moved to Headers/AppKit.
+	* Model/IMCustomObject.m: Likewise.
+	* Model/IMLoading.h: Likewise.
+	* Model/GMAppKit.m ([NSApplication -encodeWithModelArchiver:]):
+ 	Encode the delegate.
+	(NSBox): Support for encoding and decoding it.
+	([NSCell -initWithModelUnarchiver:]): Check for the font.
+	(NSClipView): Support for encoding and decoding.
+	(NSImage): Return a dummy image in case the requested one doesn't
+ 	exist. Don't return nil as it breaks the code, maybe we should
+ 	raise an exception.
+	(NSPopUpButton): Code to support encoding and
+ 	decoding. Unfortunately it doesn't work properly, it causes a
+ 	crash when loading.
+	* Model/test.nib: Added a custom view to test loading.
+	* Source/GNUmakefile: Added NSTextView.m.
+	* Source/NSApplication.m ([NSApplication -finishLaunching]): Add support
+	for loading the model file.
+	* Source/NSBrowser.m: Fixed several allocation bugs.
+	* Source/NSClipView.m ([NSClipView -setDocumentView:]): Check for
+ 	invalid document view.
+	* Source/NSPopUpButton.m: Minimaly fill out the implementation so
+ 	we don't get a crash at the loading time.
+	* Source/NSTextView.m: Define the class so we don't linking errors
+ 	while trying to link with OPENSTEP converted applications.
+
 Fri Jan  9 14:06:57 1998  Ovidiu Predescu <ovidiu@net-community.com>
 
 	* Model/GNUmakefile: Copy the header files to the AppKit directory

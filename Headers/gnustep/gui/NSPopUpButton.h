@@ -30,12 +30,12 @@
 #define _GNUstep_H_NSPopUpButton
 
 #include <AppKit/NSButton.h>
+#include <AppKit/NSMenuItem.h>
 
 @class NSString;
 @class NSArray;
 @class NSMutableArray;
 
-@class NSMenuCell;
 @class NSFont;
 @class NSMatrix;
 
@@ -89,14 +89,14 @@
 - (int)indexOfItemWithTitle:(NSString *)title;
 - (int)indexOfSelectedItem;
 - (int)numberOfItems;
-- (NSMenuCell *)itemAtIndex:(int)index;
-- (NSMatrix *)itemMatrix;
+- (id <NSMenuItem>)itemAtIndex:(int)index;
+- (NSArray *)itemArray;
 - (NSString *)itemTitleAtIndex:(int)index;
 - (NSArray *)itemTitles;
-- (NSMenuCell *)itemWithTitle:(NSString *)title;
-- (NSMenuCell *)lastItem;
-- (NSMenuCell *)selectedItem;
-- (NSString *)titleOfSelectedItem;
+- (id <NSMenuItem>)itemWithTitle:(NSString *)title;
+- (id <NSMenuItem>)lastItem;
+- (id <NSMenuItem>)selectedItem;
+- (NSString*)titleOfSelectedItem;
 
 //
 // Manipulating the NSPopUpButton

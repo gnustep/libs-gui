@@ -74,6 +74,45 @@
 @end /* NSCustomObject */
 
 
+@implementation NSCustomView (NibToGModel)
+
+- (id)awakeAfterUsingCoder:(NSCoder*)aDecoder
+{
+#ifdef DEBUG
+  NSLog (@"%x awakeAfterUsingCoder NSCustomView: className = %@, realObject = %@, "
+	 @"extension = %@", self, className, realObject, extension);
+#endif
+  [objects addObject:self];
+  return self;
+}
+
+- description
+{
+  return [NSString stringWithFormat:@"className = %@, realObject = %@, extension = %@", className, realObject, extension];
+}
+
+- nibInstantiate
+{
+  return self;
+}
+
+- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+{
+  [archiver encodeString:className withName:@"className"];
+  if (realObject)
+    [archiver encodeObject:realObject withName:@"realObject"];
+  if (extension)
+    [archiver encodeObject:extension withName:@"extension"];
+}
+
+- (Class)classForModelArchiver
+{
+  return [IMCustomView class];
+}
+
+@end
+
+
 @implementation NSIBConnector (NibToGModel)
 - (id)awakeAfterUsingCoder:(NSCoder*)aDecoder
 {

@@ -29,7 +29,7 @@
 #ifndef _GNUstep_H_IBClasses
 #define _GNUstep_H_IBClasses
 
-#import <Foundation/NSObject.h>
+#import <AppKit/NSView.h>
 
 @class NSString;
 
@@ -39,6 +39,18 @@
     id realObject;
     id extension;
 }
+@end
+
+
+@interface NSCustomView : NSView
+{
+    id className;
+    id realObject;
+    id extension;
+}
+
+- (id)nibInstantiate;
+
 @end
 
 

@@ -87,3 +87,52 @@ extern BOOL _fileOwnerDecoded;
 }
 
 @end
+
+
+@implementation IMCustomView
+
++ (id)createObjectForModelUnarchiver:(GMUnarchiver*)unarchiver
+{
+  IMCustomView* customView = [[self new] autorelease];
+  Class class;
+
+  customView->className = [unarchiver decodeStringWithName:@"className"];
+  customView->extension = [unarchiver decodeObjectWithName:@"extension"];
+  customView->realObject = [unarchiver decodeObjectWithName:@"realObject"];
+
+  if (!_fileOwnerDecoded) {
+    _fileOwnerDecoded = YES;
+    customView->realObject = _nibOwner;
+    return customView;
+  }
+
+  class = NSClassFromString (customView->className);
+  if (class)
+    customView->realObject = [[class alloc] init];
+  else {
+    NSLog (@"Class %@ not linked into application!", customView->className);
+  }
+
+  return customView;
+}
+
+- (id)nibInstantiate
+{
+  return realObject;
+}
+
+- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+{
+  [archiver encodeString:className withName:@"className"];
+  if (realObject)
+    [archiver encodeObject:realObject withName:@"realObject"];
+  if (extension)
+    [archiver encodeObject:extension withName:@"extension"];
+}
+
+- (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
+{
+  return self;
+}
+
+@end

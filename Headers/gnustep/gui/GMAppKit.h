@@ -41,6 +41,9 @@
 @interface NSCell (GMArchiverMethods) <ModelCoding>
 @end
 
+@interface NSClipView (GMArchiverMethods) <ModelCoding>
+@end
+
 @interface NSColor (GMArchiverMethods) <ModelCoding>
 @end
 
