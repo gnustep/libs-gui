@@ -204,7 +204,7 @@
   _minimumSize.width += borderChange;
   tableSize.width += borderChange; 
   [self setFrameSize: tableSize];
-  
+
   _minXBorder = aBorder;
 }
 -(void) setMaxXBorder: (float)aBorder
@@ -220,7 +220,7 @@
   _minimumSize.width += borderChange;
   tableSize.width += borderChange; 
   [self setFrameSize: tableSize];
-  
+
   _maxXBorder = aBorder;
 }
 
@@ -244,7 +244,7 @@
   _minimumSize.height += borderChange;
   tableSize.height += borderChange; 
   [self setFrameSize: tableSize];
-  
+
   _minYBorder = aBorder;
 }
 -(void) setMaxYBorder: (float)aBorder
@@ -260,7 +260,7 @@
   _minimumSize.height += borderChange;
   tableSize.height += borderChange; 
   [self setFrameSize: tableSize];
-  
+
   _maxYBorder = aBorder;
 }
 // 
@@ -417,8 +417,11 @@
     }
   
   if (tableNeedResize)
-    [self setFrameSize: tableFrame.size];
+    {
+      [self setFrameSize: tableFrame.size];
+    }
   
+      
   if (_minColumnDimension[column] < theFrame.size.width)
     {
       _minimumSize.width += (theFrame.size.width - _minColumnDimension[column]);
