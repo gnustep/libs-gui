@@ -426,6 +426,7 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 		  showIcon: (BOOL)showIcon
 	        autolaunch: (BOOL)autolaunch
 {
+  NSFileManager	*mgr;
   NSString	*path;
   NSString	*file;
   NSDictionary	*info;
@@ -459,14 +460,30 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
    *	replace the path with that specified.
    */
   file = [path stringByAppendingPathComponent: @"Resources/Info-gnustep.plist"];
-  info = [NSDictionary dictionaryWithContentsOfFile: file];
+  mgr = [NSFileManager defaultManager];
+  if ([mgr isReadableFileAtPath: file])
+    info = [NSDictionary dictionaryWithContentsOfFile: file];
+  else
+    {
+      file = [path stringByAppendingPathComponent: @"Resources/Info.plist"];
+      if ([mgr isReadableFileAtPath: file])
+	info = [NSDictionary dictionaryWithContentsOfFile: file];
+      else
+	info = nil;
+    }
   file = [info objectForKey: @"NSExecutable"];
   if (file != nil)
     {
+      NSString	*exepath;
+
       appName = [file lastPathComponent];
-      if ([file isAbsolutePath] == YES)
+      exepath = [file stringByDeletingLastPathComponent];
+      if ([exepath isEqualToString: @""] == NO)
 	{
-	  path = [file stringByDeletingLastPathComponent];
+	  if ([file isAbsolutePath] == YES)
+	    path = exepath;
+	  else
+	    path = [path stringByAppendingPathComponent: exepath];
 	}
     }
 
