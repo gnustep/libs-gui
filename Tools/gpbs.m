@@ -949,6 +949,7 @@ NSMutableDictionary	*pasteboards = nil;
 static int
 ihandler(int sig)
 {
+  signal(sig, SIG_DFL);
   abort();
 }
 

@@ -1,3 +1,7 @@
+Fri Jul 23 11:45:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Tools/gpbs.m: In ihandler() reset signal handler.
+
 1999-07-22  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Source/NSMenuView.m: some fixes to get things to work correctly
