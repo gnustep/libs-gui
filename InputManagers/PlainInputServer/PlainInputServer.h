@@ -28,12 +28,15 @@
 #define PlainInputServer_h
 
 #include <Foundation/NSObject.h>
-#include <AppKit/NSInputServer.h>
+#include "AppKit/NSInputServer.h"
+
+@class ClientManager;
 
 
 @interface PlainInputServer : NSObject <NSInputServiceProvider,
                                         NSInputServerMouseTracker>
 {
+  ClientManager	    *clientManager;
 }
 
 + (id)sharedInstance;

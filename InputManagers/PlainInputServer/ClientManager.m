@@ -43,7 +43,7 @@
       return nil;
     }
 
-  if ((dict = [[NSMutableDictionary alloc] init]) == nil)
+  if ((dict = [[NSMutableDictionary alloc] initWithCapacity: 1]) == nil)
     {
       [self release];
       return nil;
@@ -180,6 +180,7 @@
       return;
     }
   [subManager deactivate];
+
   [clients removeObjectForKey: [self keyFromClientID: inputManager]];
 }
 

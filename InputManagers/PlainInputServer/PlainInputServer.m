@@ -27,6 +27,8 @@
 
 #include <AppKit/NSResponder.h>
 #include <AppKit/NSTextView.h>
+#include "ConversationManager.h"
+#include "Context.h"
 #include "PlainInputServer.h"
 
 
@@ -45,18 +47,47 @@ static PlainInputServer *sharedInstance = nil;
 }
 
 
+- (id)init
+{
+  if ((self = [super init]) == nil)
+    {
+      return nil;
+    }
+
+  clientManager = [[ClientManager alloc]
+    initWithConversationManagerClass: [ConversationManager class]
+			contextClass: [Context class]];
+  if (clientManager == nil)
+    {
+      [self release];
+      return nil;
+    }
+
+  return self;
+}
+
+
+- (void)dealloc
+{
+  [clientManager release];
+  [super dealloc];
+}
+
+
 /* ----------------------------------------------------------------------------
     NSInputServiceProvider protocol methods
  --------------------------------------------------------------------------- */
 - (void)activeConversationChanged: (id)sender
 		toNewConversation: (long)newConversation
 {
+  // Not implemented yet
 }
 
 
 - (void)activeConversationWillChange: (id)sender
 		 fromOldConversation: (long)oldConversation
 {
+  // Not implemented yet
 }
 
 
@@ -69,6 +100,16 @@ static PlainInputServer *sharedInstance = nil;
 - (void)doCommandBySelector: (SEL)aSelector
 		     client: (id)sender
 {
+  if ([clientManager enabledConversationIdentifier]
+      != [sender conversationIdentifier])
+    {
+      NSLog(@"%@: Mismatch conversation ID's: sender's: %x -- server's: %x",
+	    self,
+	    [sender conversationIdentifier],
+	    [clientManager enabledConversationIdentifier]);
+      return;
+    }
+
   if ([self respondsToSelector: aSelector])
     {
       [self performSelector: aSelector
@@ -83,44 +124,65 @@ static PlainInputServer *sharedInstance = nil;
 
 - (void)inputClientBecomeActive: (id)sender
 {
+  [clientManager clientBecomeActive: sender];
 }
 
 
 - (void)inputClientDisabled: (id)sender
 {
+  NSLog(@"%@: disabled: %x", self, [sender conversationIdentifier]);
+
+  [clientManager clientDisabled: sender];
 }
 
 
 - (void)inputClientEnabled: (id)sender
 {
+  NSLog(@"%@: enabled: %x", self, [sender conversationIdentifier]);
+
+  [clientManager clientEnabled: sender];
 }
 
 
 - (void)inputClientResignActive: (id)sender
 {
+  [clientManager clientResignActive: sender];
 }
 
 
 - (void)insertText: (id)aString
 	    client: (id)sender
 {
+  if ([clientManager enabledConversationIdentifier]
+      != [sender conversationIdentifier])
+    {
+      NSLog(@"%@: Mismatch conversation ID's: sender's: %x -- server's: %x",
+	    self,
+	    [sender conversationIdentifier],
+	    [clientManager enabledConversationIdentifier]);
+      return;
+    }
+
   [sender insertText: aString];
 }
 
 
 - (void)markedTextAbandoned: (id)sender
 {
+  // Not implemented yet
 }
 
 
 - (void)markedTextSelectionChanged: (NSRange)newSelection
 			    client: (id)sender
 {
+  // Not implemented yet
 }
 
 
 - (void)terminate: (id)sender
 {
+  [clientManager terminateClient: sender];
 }
 
 

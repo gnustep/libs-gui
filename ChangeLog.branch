@@ -1,3 +1,41 @@
+2004-04-30  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
+
+	* InputManagers/PlainInputServer/PlainInputServer.h:
+	  <AppKit/NSInputServer.h> is replaced by "AppKit/NSInputServer.h".
+	  The new iver clientManager is added.
+	* InputManagers/PlainInputServer/PlainInputServer.m (-init): New.
+	  Initialization of clientManager.
+	  (-dealloc): New.  Deallocation of clientManager and routine stuff.
+	  (-inputClientBecomeActive:): Implemented.
+	  (-inputClientDisabled:): Implemented.
+	  (-inputClientEnabled:): Implemented.
+	  (-inputClientResignActive:): Implemented.
+	  (-terminate:): Implemented.
+	* InputManagers/PlainInputServer/ClientManager.m
+	  (-initWithConversationManagerClass::): In the initialization of
+	  the NSMutableDictionary instance, replace -init with
+	  -initWithCapacity.
+	* InputManagers/PlainInputServer/ConversationManager.m
+	  (-initWithContextClass:): Replace [NSDictionary alloc]
+	  with [NSMutableDictionary alloc] (bug fix). In the initialization of
+	  the NSMutableDictionary instance, replace -init with
+	  -initWithCapacity.
+	* Source/NSInputManager.m (-clientWillTerminate:): New.
+	  (-becomeObserverOfClient:): Register an
+	  NSApplicationWillTerminateNotification observer which calls
+	  -terminateClient: when receiving the notification.
+	  (-resignObserverofClient:): Unregister the
+	  NSApplicationWillTerminateNotification observer.
+	  (-establishConnectionToInputServer:): Call -inputClientBecomeActive
+	  of the input server if the shared instance of NSApplication is
+	  active.
+	* Source/NSTextView.m: Experimental implementation of the
+	  client/conversation management mechanism.
+	  (-resignFirstResponder): Invoke -inputClientDisabled.
+	  (-becomeFirstResponder): Invoke -inputClientEnabled.
+	  (-resignKeyWindow): Invoke -inputClientDisabled.
+	  (-becomeKeyWindow): Invoke -inputClientEnabled.
+
 2004-04-29  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
 
 	Preliminary work for a client/conversation management mechanism.

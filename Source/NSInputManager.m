@@ -84,6 +84,7 @@
 
 - (void)clientBecomeActive: (NSNotification *)aNotification;
 - (void)clientResignActive: (NSNotification *)aNotification;
+- (void)clientWillTerminate: (NSNotification *)aNotificatioin;
 - (void)connectionDidDie: (NSNotification *)aNotification;
 @end /* @interface NSInputManager (Private) */
 
@@ -553,6 +554,21 @@ static NSMutableArray *_inputServerList = nil;
 
   [self setServerProxy: proxy];
 
+  /* For the case where the user tries to switch from another input manager
+     to this particular one while the application is already running: */
+  if ([[NSApplication sharedApplication] isActive])
+    {
+      id fr;
+
+      [serverProxy inputClientBecomeActive: self];
+
+      fr = [[NSApp keyWindow] firstResponder];
+      if ([fr conformsToProtocol: @protocol(NSTextInput)])
+	{
+	  [serverProxy inputClientEnabled: fr];
+	}
+    }
+
   return YES;
 }
 
@@ -701,6 +717,10 @@ static NSMutableArray *_inputServerList = nil;
 	     selector: @selector(clientResignActive:)
 		 name: NSApplicationWillResignActiveNotification
 	       object: nil];
+  [center addObserver: self
+	     selector: @selector(clientWillTerminate:)
+		 name: NSApplicationWillTerminateNotification
+	       object: nil];
 }
 
 
@@ -728,6 +748,9 @@ static NSMutableArray *_inputServerList = nil;
   [center removeObserver: self
 		    name: NSApplicationWillResignActiveNotification
 		  object: nil];
+  [center removeObserver: self
+		    name: NSApplicationWillTerminateNotification
+		  object: nil];
 }
 
 
@@ -740,6 +763,12 @@ static NSMutableArray *_inputServerList = nil;
 - (void)clientResignActive: (NSNotification *)aNotification
 {
   [serverProxy inputClientResignActive: self];
+}
+
+
+- (void)clientWillTerminate: (NSNotification *)aNotification
+{
+  [serverProxy terminate: self];
 }
 
 

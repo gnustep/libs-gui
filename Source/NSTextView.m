@@ -1225,6 +1225,8 @@ to make sure syncing is handled properly in all cases.
       _layoutManager->_beganEditing = NO;
     }
 
+  [[[NSInputManager currentInputManager] server] inputClientDisabled: self];
+
   /* NB: According to the doc (and to the tradition), we post this
      notification even if no real editing was actually done (only
      selection of text) [Note: in this case, no editing was started,
@@ -1259,6 +1261,8 @@ started (in another text view attached to the same layout manager). */
       [self updateInsertionPointStateAndRestartTimer: YES];
     }
 
+  [[[NSInputManager currentInputManager] server] inputClientEnabled: self];
+
   return YES;
 }
 
@@ -1268,6 +1272,7 @@ started (in another text view attached to the same layout manager). */
     {
       [self updateInsertionPointStateAndRestartTimer: NO];
     }
+  [[[NSInputManager currentInputManager] server] inputClientDisabled: self];
 }
 
 -(void) becomeKeyWindow
@@ -1276,6 +1281,7 @@ started (in another text view attached to the same layout manager). */
     {
       [self updateInsertionPointStateAndRestartTimer: YES];
     }
+  [[[NSInputManager currentInputManager] server] inputClientEnabled: self];
 }
 
 

@@ -42,7 +42,7 @@
       return nil;
     }
 
-  dict = [[NSDictionary alloc] init];
+  dict = [[NSMutableDictionary alloc] initWithCapacity: 1];
   if (dict == nil)
     {
       [self release];
@@ -151,10 +151,12 @@
   BOOL	shouldRelease;
   id	context;
 
+#if 0
   if ([textView conformsToProtocol: @protocol(NSTextInput)] == NO)
     {
       return;
     }
+#endif
   convID = [textView conversationIdentifier];
 
   shouldRelease = NO;
@@ -186,10 +188,12 @@
   long	convID;
   id	context;
 
+#if 0
   if ([textView conformsToProtocol: @protocol(NSTextInput)] == NO)
     {
       return;
     }
+#endif
   convID = [textView conversationIdentifier];
 
   context = [self lookupContextOfConversationID: convID];
