@@ -1,3 +1,8 @@
+Wed Feb  7 21:44:41 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSBrowser.m ([-reloadColumn:]): Save the selected cells
+	in the column, then restore them after reloading the column.
+
 Wed Feb  7 20:21:36 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSSplitView.m ([-_adjustSubviews]): New method so that we
