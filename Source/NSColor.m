@@ -1133,95 +1133,91 @@ static NSMutableDictionary	*colorStrings = nil;
 
 + (NSColor*) colorFromString: (NSString*)str
 {
-  id		plist = [str propertyList];
-  NSDictionary	*dict;
-  NSString	*space;
-  float		alpha;
-
-  if (plist == nil)
-    return nil;
-
-  if ([plist isKindOfClass: [NSString class]] == YES)
+  if ([str hasPrefix: @"{"])
     {
-      const char	*str = [(NSString*)plist cString];
+      NSDictionary	*dict;
+      NSString		*space;
+      float		alpha;
+
+      dict = [str propertyList];
+      if (dict == nil)
+	return nil;
+      if ((space = [dict objectForKey: @"ColorSpace"]) == nil)
+	return nil;
+
+      alpha = [[dict objectForKey: @"Alpha"] floatValue];
+
+      if ([space isEqual: NSCalibratedWhiteColorSpace])
+	{
+	  float	white = [[dict objectForKey: @"W"] floatValue];
+
+	  return [self colorWithCalibratedWhite: white alpha: alpha];
+	}
+      if ([space isEqual: NSCalibratedBlackColorSpace])
+	{
+	  float	white = [[dict objectForKey: @"W"] floatValue];
+
+	  return [self colorWithCalibratedWhite: white
+					  alpha: alpha];
+	}
+      if ([space isEqual: NSCalibratedRGBColorSpace])
+	{
+	  if ([dict objectForKey: @"H"] != nil)
+	    {
+	      float	hue = [[dict objectForKey: @"H"] floatValue];
+	      float	saturation = [[dict objectForKey: @"S"] floatValue];
+	      float	brightness = [[dict objectForKey: @"B"] floatValue];
+
+	      return [self colorWithCalibratedHue: hue
+				       saturation: saturation
+				       brightness: brightness
+					    alpha: alpha];
+	    }
+	  else
+	    {
+	      float	red = [[dict objectForKey: @"R"] floatValue];
+	      float	green = [[dict objectForKey: @"G"] floatValue];
+	      float	blue = [[dict objectForKey: @"B"] floatValue];
+
+	      return [self colorWithCalibratedRed: red
+					    green: green
+					     blue: blue
+					    alpha: alpha];
+	    }
+	}
+      if ([space isEqual: NSDeviceCMYKColorSpace])
+	{
+	  float	cyan = [[dict objectForKey: @"C"] floatValue];
+	  float	magenta = [[dict objectForKey: @"M"] floatValue];
+	  float	yellow = [[dict objectForKey: @"Y"] floatValue];
+	  float	black = [[dict objectForKey: @"B"] floatValue];
+
+	  return [self colorWithDeviceCyan: cyan
+				   magenta: magenta
+				    yellow: yellow
+				     black: black
+				     alpha: alpha];
+	}
+      if ([space isEqual: NSNamedColorSpace])
+	{
+	  NSString	*cat = [dict objectForKey: @"Catalog"];
+	  NSString	*col = [dict objectForKey: @"Color"];
+
+	  return [self colorWithCatalogName: cat
+				  colorName: col];
+	}
+    }
+  else if (str)
+    {
+      const char	*ptr = [str cString];
       float	r, g, b;
 
-      sscanf(str, "%f %f %f", &r, &g, &b);
+      sscanf(ptr, "%f %f %f", &r, &g, &b);
       return [self colorWithCalibratedRed: r
 				    green: g
 				     blue: b
 				    alpha: 0];
     }
-
-  if ([plist isKindOfClass: [NSDictionary class]] == NO)
-    return nil;
-
-  dict = (NSDictionary*)plist;
-  if ((space = [dict objectForKey: @"ColorSpace"]) == nil)
-    return nil;
-
-  alpha = [[dict objectForKey: @"Alpha"] floatValue];
-
-  if ([space isEqual: NSCalibratedWhiteColorSpace])
-    {
-      float	white = [[dict objectForKey: @"W"] floatValue];
-
-      return [self colorWithCalibratedWhite: white alpha: alpha];
-    }
-  if ([space isEqual: NSCalibratedBlackColorSpace])
-    {
-      float	white = [[dict objectForKey: @"W"] floatValue];
-
-      return [self colorWithCalibratedWhite: white
-				      alpha: alpha];
-    }
-  if ([space isEqual: NSCalibratedRGBColorSpace])
-    {
-      if ([dict objectForKey: @"H"] != nil)
-	{
-	  float	hue = [[dict objectForKey: @"H"] floatValue];
-	  float	saturation = [[dict objectForKey: @"S"] floatValue];
-	  float	brightness = [[dict objectForKey: @"B"] floatValue];
-
-	  return [self colorWithCalibratedHue: hue
-				   saturation: saturation
-				   brightness: brightness
-					alpha: alpha];
-	}
-      else
-	{
-	  float	red = [[dict objectForKey: @"R"] floatValue];
-	  float	green = [[dict objectForKey: @"G"] floatValue];
-	  float	blue = [[dict objectForKey: @"B"] floatValue];
-
-	  return [self colorWithCalibratedRed: red
-				        green: green
-					 blue: blue
-					alpha: alpha];
-	}
-    }
-  if ([space isEqual: NSDeviceCMYKColorSpace])
-    {
-      float	cyan = [[dict objectForKey: @"C"] floatValue];
-      float	magenta = [[dict objectForKey: @"M"] floatValue];
-      float	yellow = [[dict objectForKey: @"Y"] floatValue];
-      float	black = [[dict objectForKey: @"B"] floatValue];
-
-      return [self colorWithDeviceCyan: cyan
-			       magenta: magenta
-				yellow: yellow
-				 black: black
-				 alpha: alpha];
-    }
-  if ([space isEqual: NSNamedColorSpace])
-    {
-      NSString	*cat = [dict objectForKey: @"Catalog"];
-      NSString	*col = [dict objectForKey: @"Color"];
-
-      return [self colorWithCatalogName: cat
-			      colorName: col];
-    }
-
   return nil;
 }
 
