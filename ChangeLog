@@ -1,4 +1,12 @@
+Sun Dec  2 08:54:36 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSAttributedString.m ([NSMutableAttributedString
+	-fixParagraphStyleAttributeInRange:]): Fixes, particularly for
+	case in which a style is not found at the beginning of paragraph.
+	(Bug reported by Ludovic Marcotte <ludovic@Sophos.ca>).
+
 2001-12-02  Gregory Casamento <greg_casamento@yahoo.com>
+
 	* Tools/gopen.m 
 	Modified to eliminate the output of "No application for extension 
 	'app'"  when launching an application using gopen.  The code now 
