@@ -37,11 +37,11 @@ TOOL_NAME = gpbs make_services set_show_service
 #SERVICE_NAME = example
 
 # The source files to be compiled
-gpbs_OBJC_FILES = gpbs.m dummy.m
-make_services_OBJC_FILES = make_services.m dummy.m
-set_show_service_OBJC_FILES = set_show_service.m dummy.m
+gpbs_OBJC_FILES = gpbs.m Functions.m
+make_services_OBJC_FILES = make_services.m Functions.m
+set_show_service_OBJC_FILES = set_show_service.m Functions.m
 
-example_OBJC_FILES = example.m dummy.m
+example_OBJC_FILES = example.m Functions.m
 
 -include GNUmakefile.preamble
 
