@@ -911,8 +911,20 @@ static float default_miter_limit = 10.0;
   /* Start point */
   p0 = NSMakePoint (center.x + radius * cos (startAngle_rad), 
 		    center.y + radius * sin (startAngle_rad));
-  [self moveToPoint: p0];
-
+  if ([self elementCount] == 0)
+    {
+      [self moveToPoint: p0];
+    }
+  else
+    {
+      NSPoint ps = [self currentPoint];
+      
+      if (p0.x != ps.x  ||  p0.y != ps.y)
+	{
+	  [self lineToPoint: p0];
+	}
+    }
+  
   while ((clockwise) ? (startAngle_rad > endAngle_rad) 
 	 : (startAngle_rad < endAngle_rad))
     {
