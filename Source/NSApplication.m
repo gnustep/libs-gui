@@ -1268,6 +1268,7 @@ whether it is still running or has been stopped, etc)
 </p>
 <p>If there are no pending events for the session, this method returns
 immediately.
+</p>
 <p>
 See Also: -runModalForWindow:
 </p>
@@ -2132,7 +2133,7 @@ image.
    <term>Authors</term> 
    <desc> An array of strings, each one with the name
    of an author (eg, <var>[NSArray arrayWithObject: "Nicola Pero
-   <n.peromi.flashnet.it>"]</var>).  If not found,
+   &lt;n.peromi.flashnet.it&gt;"]</var>).  If not found,
    <file>Info-gnustep.plist</file> is searched for <var>Authors</var>,
    if this fails, <var>"Unknown"</var> is displayed.
    </desc>
@@ -2161,6 +2162,7 @@ image.
    <var>CopyrightDescription</var>.  If this fails, no copyright
    description is shown.
    </desc>
+   </deflist>
  */
 - (void) orderFrontStandardInfoPanelWithOptions: (NSDictionary *)dictionary
 {

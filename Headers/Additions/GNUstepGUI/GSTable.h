@@ -73,7 +73,7 @@
   You should not force a GSTable in a size different from the one
   it has automatically computed.  The only acceptable, reasonable and
   meaningful way of resizing a GSTable is through the appropriate
-  -resizeWithOldSuperviewSize: message when the GSTable is
+  [NSView-resizeWithOldSuperviewSize:] message when the GSTable is
   in the view hierarchy.
   </p>
   <p>
@@ -92,8 +92,9 @@
   -sizeToFit.
   </p>
   <p>
-  When the GSTable receives a -resizeWithOldSuperviewSize:
+  When the GSTable receives a [NSView-resizeWithOldSuperviewSize:]
   message, it automatically rearranges the views it contains:
+  </p>
   <list>
   <item>
   If the new width or height is equal or less than the table's minimum
@@ -149,7 +150,7 @@
   the dimension of the prisoner plus its margins.  Since the
   GSTable manages directly the jails, each prisoner is managed
   together with its margins.  When the jail is resized, the prisoner
-  receives a -resizeWithOldSuperviewSize:, which makes it resize
+  receives a [NSView-resizeWithOldSuperviewSize:], which makes it resize
   itself and its margins in the new jail size, according to its
   autoresizingMask.
   </p>
@@ -281,18 +282,18 @@ margins. */
    withXMargins: (float)xMargins
        yMargins: (float)yMargins;
 
-/** Put aView in the GSTabl}, using the specified margins.
+/** <p>Put aView in the GSTable, using the specified margins.
   The names for the margins are chosen as to be as close as possible to
   the autoresizingMask convention.  The margins are to be interpreted as
-  follows:
+  follows:</p>
   <deflist>
-  <item> minXMargin </item>
+  <term> minXMargin </term>
   <desc>Left Margin</desc>
-  <item> maxXMargin </item>
+  <term> maxXMargin </term>
   <desc>Right Margin</desc>
-  <item> minYMargin </item>
+  <term> minYMargin </term>
   <desc>Lower Margin (Upper if view is flipped)</desc>
-  <item> maxYMargin </item>
+  <term> maxYMargin </term>
   <desc>Upper Margin (Lower if view is flipped)</desc>
   </deflist>
 

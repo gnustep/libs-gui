@@ -54,6 +54,7 @@
   To initialize a GSHbox, you should always use -init
   method.  Don't use GSTable methods.  The correct way to start
   using a new GSHbox is simply:
+  </p>
   <example>
   hbox = [GSHbox new];
   </example>
@@ -74,9 +75,11 @@
   contents.  Usually, you simply add objects to the GSHbox, and let
   it compute its size (this is the minimum size); you may get this
   resulting size by
+  </p>
   <example>
   size = [yourHBox size];
   </example>
+  <p>
   for example, if the GSHbox is to be used as the content view of a window,
   you may create the window exactly with this size.
   </p>
@@ -122,6 +125,7 @@
   <p>
   When the GSHbox is resized in the vertical direction (as a
   consequence of user intervertion, for example), what happens is:
+  </p>
   <list>
   <item> if the new height is less than the minimum height of the GSHbox 
   (computed as the maximum of the minimum height of the added views), it
@@ -244,6 +248,7 @@ enablingXResizing: (BOOL)aFlag;
   By changing the autoresizingMask you may decide whether the space 
   should go to the view or to its vertical margins; this for example 
   lets you center vertically or flush up/down your view.
+  </p>
 */
 -(void) addView: (NSView *)aView
   enablingXResizing: (BOOL)aFlag

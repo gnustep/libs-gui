@@ -153,7 +153,8 @@ Gui_AGSDOC_FILES = ../Documentation/Gui/Gui.gsdoc \
 	../Documentation/Gui/NSStringAdditions.gsdoc \
 	$(AUTOGSDOC_HEADERS_GUI)
 
-GuiAdditions_AGSDOC_FILES = $(AUTOGSDOC_HEADERS_GUIADD)
+GuiAdditions_AGSDOC_FILES = $(AUTOGSDOC_HEADERS_GUIADD) \
+	../Documentation/GuiAdditions/GuiAdditions.gsdoc
 
 GuiUser_AGSDOC_FILES =	\
 	../Documentation/Gui/DefaultsSummary.gsdoc \
@@ -192,7 +193,7 @@ GuiAdditions_AGSDOC_FLAGS = \
 	-WordMap '{\
 	APPKIT_EXPORT=extern;APPKIT_DECLARE="";\
 	DEFINE_RINT_IF_MISSING=""; \
-	}' -Up Gui
+	}' -Up GuiAdditions
 
 GuiUser_AGSDOC_FLAGS = \
 	-DocumentationDirectory ../Documentation/GuiUser \

@@ -1,3 +1,12 @@
+2004-01-26  Adam Fedor  <fedor@gnu.org>
+
+	* /Headers/Additions/GNUstepGUI/GSHbox.h: Fix doc markup.
+	* Headers/Additions/GNUstepGUI/GSTable.h: Idem.
+	* Source/NSApplication.m: Idem.
+
+	* Source/DocMakefile (GuiAdditions_AGSDOC_FILES): 
+	  Add GuiAdditions.gsdoc
+
 2004-01-26  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSPopUpButton.m (-setTitle:) Call
