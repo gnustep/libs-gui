@@ -21,31 +21,31 @@
         <method type="NSColor*"><sel>backgroundColor</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>drawsBackground</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setBackgroundColor:</sel><arg type="NSColor*">aColor</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setDrawsBackground:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setTextColor:</sel><arg type="NSColor*">aColor</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSText*"><sel>setUpFieldEditorAttributes:</sel><arg type="NSText*">textObj</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSColor*"><sel>textColor</sel>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

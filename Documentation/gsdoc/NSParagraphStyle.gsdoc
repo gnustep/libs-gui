@@ -21,47 +21,47 @@
         <method type="NSParagraphStyle*" factory="yes"><sel>defaultParagraphStyle</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSTextAlignment"><sel>alignment</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="float"><sel>firstLineHeadIndent</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="float"><sel>headIndent</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSLineBreakMode"><sel>lineBreakMode</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="float"><sel>lineSpacing</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="float"><sel>maximumLineHeight</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="float"><sel>minimumLineHeight</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="float"><sel>paragraphSpacing</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSArray*"><sel>tabStops</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="float"><sel>tailIndent</sel>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

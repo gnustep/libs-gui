@@ -21,59 +21,59 @@
         <method type="NSAttributedString*"><sel>attributedTitle</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>initTextCell:</sel><arg type="NSString*">aString</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isOpaque</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setAttributedTitle:</sel><arg type="NSAttributedString*">anAttributedString</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setTitle:</sel><arg type="NSString*">aString</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setTitleAlignment:</sel><arg type="NSTextAlignment">alignment</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setTitleFont:</sel><arg type="NSFont*">font</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setTitleWidth:</sel><arg type="float">width</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setTitleWithMnemonic:</sel><arg type="NSString*">titleWithAmpersand</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSString*"><sel>title</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSTextAlignment"><sel>titleAlignment</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSFont*"><sel>titleFont</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="float"><sel>titleWidth</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="float"><sel>titleWidth:</sel><arg type="NSSize">aSize</arg>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

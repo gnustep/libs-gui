@@ -21,99 +21,99 @@
         <method type="void" factory="yes"><sel>getTIFFCompressionTypes:</sel><arg type="constNSTIFFCompression**">list</arg><sel>count:</sel><arg type="int*">numTypes</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSArray*" factory="yes"><sel>imageRepsWithData:</sel><arg type="NSData*">bitmapData</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id" factory="yes"><sel>imageRepWithData:</sel><arg type="NSData*">bitmapData</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSString*" factory="yes"><sel>localizedNameForTIFFCompressionType:</sel><arg type="NSTIFFCompression">compression</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSData*" factory="yes"><sel>TIFFRepresentationOfImageRepsInArray:</sel><arg type="NSArray*">array</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSData*" factory="yes"><sel>TIFFRepresentationOfImageRepsInArray:</sel><arg type="NSArray*">array</arg><sel>usingCompression:</sel><arg type="NSTIFFCompression">compression</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="unsignedchar*"><sel>bitmapData</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="int"><sel>bitsPerPixel</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="int"><sel>bytesPerPlane</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="int"><sel>bytesPerRow</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>canBeCompressedUsing:</sel><arg type="NSTIFFCompression">compression</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>getBitmapDataPlanes:</sel><arg type="unsignedchar**">data</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>getCompression:</sel><arg type="NSTIFFCompression*">compression</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>initWithBitmapDataPlanes:</sel><arg type="unsignedchar**">planes</arg><sel>pixelsWide:</sel><arg type="int">width</arg><sel>pixelsHigh:</sel><arg type="int">height</arg><sel>bitsPerSample:</sel><arg type="int">bps</arg><sel>samplesPerPixel:</sel><arg type="int">spp</arg><sel>hasAlpha:</sel><arg type="BOOL">alpha</arg><sel>isPlanar:</sel><arg type="BOOL">isPlanar</arg><sel>colorSpaceName:</sel><arg type="NSString*">colorSpaceName</arg><sel>bytesPerRow:(int)rowBytes bitsPerPixel:</sel><arg type="int">pixelBits</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>initWithBitmapHandle:</sel><arg type="void*">bitmap</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>initWithData:</sel><arg type="NSData*">bitmapData</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>initWithFocusedViewRect:</sel><arg type="NSRect">rect</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>initWithIconHandle:</sel><arg type="void*">icon</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isPlanar</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="int"><sel>numberOfPlanes</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="int"><sel>samplesPerPixel</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setCompression:</sel><arg type="NSTIFFCompression">compression</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSData*"><sel>TIFFRepresentation</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSData*"><sel>TIFFRepresentationUsingCompression:</sel><arg type="NSTIFFCompression">comp</arg><sel>factor:</sel><arg type="float">factor</arg>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

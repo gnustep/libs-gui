@@ -21,115 +21,115 @@
         <method type="BOOL"><sel>acceptsFirstResponder</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>autoscroll:</sel><arg type="NSEvent*">theEvent</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSColor*"><sel>backgroundColor</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>becomeFirstResponder</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSPoint"><sel>constrainScrollPoint:</sel><arg type="NSPoint">proposedNewOrigin</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>copiesOnScroll</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSCursor*"><sel>documentCursor</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSRect"><sel>documentRect</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>documentView</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSRect"><sel>documentVisibleRect</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isFlipped</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>rotateByAngle:</sel><arg type="float">angle</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>scaleUnitSquareToSize:</sel><arg type="NSSize">newUnitSize</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>scrollToPoint:</sel><arg type="NSPoint">newOrigin</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setBackgroundColor:</sel><arg type="NSColor*">aColor</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setBoundsOrigin:</sel><arg type="NSPoint">aPoint</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setBoundsRotation:</sel><arg type="float">angle</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setBoundsSize:</sel><arg type="NSSize">aSize</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setCopiesOnScroll:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setDocumentCursor:</sel><arg type="NSCursor*">aCursor</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setDocumentView:</sel><arg type="NSView*">aView</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setFrameOrigin:</sel><arg type="NSPoint">aPoint</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setFrameRotation:</sel><arg type="float">angle</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setFrameSize:</sel><arg type="NSSize">aSize</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setNextKeyView:</sel><arg type="NSView*">aView</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>translateOriginToPoint:</sel><arg type="NSPoint">aPoint</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>viewBoundsChanged:</sel><arg type="NSNotification*">aNotification</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>viewFrameChanged:</sel><arg type="NSNotification*">aNotification</arg>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

@@ -21,39 +21,39 @@
         <method type="NSPrintPanel*" factory="yes"><sel>printPanel</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSView*"><sel>accessoryView</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>finalWritePrintInfo</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>pickedAllPages:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>pickedButton:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>pickedLayoutList:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="int"><sel>runModal</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setAccessoryView:</sel><arg type="NSView*">aView</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>updateFromPrintInfo</sel>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

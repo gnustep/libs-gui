@@ -21,87 +21,87 @@
         <method type="void"><sel>close</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>document</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>initWithWindow:</sel><arg type="NSWindow*">window</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>initWithWindowNibName:</sel><arg type="NSString*">windowNibName</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>initWithWindowNibName:</sel><arg type="NSString*">windowNibName</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isWindowLoaded</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>loadWindow</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>owner</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setDocument:</sel><arg type="NSDocument*">document</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setShouldCascadeWindows:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setShouldCloseDocument:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setWindowFrameAutosaveName:</sel><arg type="NSString*">name</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>shouldCascadeWindows</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>shouldCloseDocument</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>showWindow:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSWindow*"><sel>window</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>windowDidLoad</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSString*"><sel>windowFrameAutosaveName</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSString*"><sel>windowNibName</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSString*"><sel>windowTitleForDocumentDisplayName:</sel><arg type="NSString*">displayName</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>windowWillLoad</sel>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

@@ -21,11 +21,11 @@
         <method type="BOOL"><sel>echosBullets</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setEchosBullets:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

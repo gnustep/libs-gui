@@ -21,211 +21,211 @@
         <method type="NSSize" factory="yes"><sel>contentSizeForFrameSize:</sel><arg type="NSSize">frameSize</arg><sel>hasHorizontalScroller:</sel><arg type="BOOL">hFlag</arg><sel>hasVerticalScroller:</sel><arg type="BOOL">vFlag</arg><sel>borderType:</sel><arg type="NSBorderType">borderType</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSSize" factory="yes"><sel>frameSizeForContentSize:</sel><arg type="NSSize">contentSize</arg><sel>hasHorizontalScroller:</sel><arg type="BOOL">hFlag</arg><sel>hasVerticalScroller:</sel><arg type="BOOL">vFlag</arg><sel>borderType:</sel><arg type="NSBorderType">borderType</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="Class" factory="yes"><sel>rulerViewClass</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void" factory="yes"><sel>setRulerViewClass:</sel><arg type="Class">aClass</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSColor*"><sel>backgroundColor</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSBorderType"><sel>borderType</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSSize"><sel>contentSize</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSClipView*"><sel>contentView</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSCursor*"><sel>documentCursor</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>documentView</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSRect"><sel>documentVisibleRect</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>hasHorizontalRuler</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>hasHorizontalScroller</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>hasVerticalRuler</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>hasVerticalScroller</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="float"><sel>horizontalLineScroll</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="float"><sel>horizontalPageScroll</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSRulerView*"><sel>horizontalRulerView</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSScroller*"><sel>horizontalScroller</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isRulerVisible</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="float"><sel>lineScroll</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="float"><sel>pageScroll</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>reflectScrolledClipView:</sel><arg type="NSClipView*">aClipView</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>rulersVisible</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>scrollsDynamically</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setBackgroundColor:</sel><arg type="NSColor*">aColor</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setBorderType:</sel><arg type="NSBorderType">borderType</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setContentView:</sel><arg type="NSClipView*">aView</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setDocumentCursor:</sel><arg type="NSCursor*">aCursor</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setDocumentView:</sel><arg type="NSView*">aView</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setHasHorizontalRuler:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setHasHorizontalScroller:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setHasVerticalRuler:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setHasVerticalScroller:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setHorizontalLineScroll:</sel><arg type="float">aFloat</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setHorizontalPageScroll:</sel><arg type="float">aFloat</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setHorizontalRulerView:</sel><arg type="NSRulerView*">aRulerView</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setHorizontalScroller:</sel><arg type="NSScroller*">aScroller</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setLineScroll:</sel><arg type="float">aFloat</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setPageScroll:</sel><arg type="float">aFloat</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setRulersVisible:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setScrollsDynamically:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setVerticalLineScroll:</sel><arg type="float">aFloat</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setVerticalPageScroll:</sel><arg type="float">aFloat</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setVerticalRulerView:</sel><arg type="NSRulerView*">aRulerView</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setVerticalScroller:</sel><arg type="NSScroller*">aScroller</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>tile</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>toggleRuler:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="float"><sel>verticalLineScroll</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="float"><sel>verticalPageScroll</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSRulerView*"><sel>verticalRulerView</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSScroller*"><sel>verticalScroller</sel>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

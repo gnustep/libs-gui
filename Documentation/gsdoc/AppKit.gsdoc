@@ -14,7 +14,6 @@
     <chapter>
       <heading>AppKit</heading>
       <list>
-        <item><uref url="NSArchiver.html">NSArchiver</uref></item>
         <item><uref url="NSActionCell.html">NSActionCell</uref></item>
         <item><uref url="NSAffineTransform.html">NSAffineTransform</uref></item>
         <item><uref url="NSApplication.html">NSApplication</uref></item>

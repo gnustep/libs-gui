@@ -21,83 +21,83 @@
         <method type="NSCursor*" factory="yes"><sel>arrowCursor</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSCursor*" factory="yes"><sel>currentCursor</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void" factory="yes"><sel>hide</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSCursor*" factory="yes"><sel>IBeamCursor</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void" factory="yes"><sel>pop</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void" factory="yes"><sel>setHiddenUntilMouseMoves:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void" factory="yes"><sel>unhide</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSPoint"><sel>hotSpot</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSImage*"><sel>image</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>initWithImage:</sel><arg type="NSImage*">newImage</arg><sel>foregroundColorHint:</sel><arg type="NSColor*">fg</arg><sel>backgroundColorHint:</sel><arg type="NSColor*">bg</arg><sel>hotSpot:</sel><arg type="NSPoint">hotSpot</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>initWithImage:</sel><arg type="NSImage*">newImage</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isSetOnMouseEntered</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isSetOnMouseExited</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>mouseEntered:</sel><arg type="NSEvent*">anEvent</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>mouseExited:</sel><arg type="NSEvent*">anEvent</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>pop</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>push</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>set</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setOnMouseEntered:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setOnMouseExited:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

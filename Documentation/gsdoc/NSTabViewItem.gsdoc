@@ -21,63 +21,63 @@
         <method type="NSColor*"><sel>color</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>drawLabel:</sel><arg type="BOOL">shouldTruncateLabel</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>identifier</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>initialFirstResponder</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>initWithIdentifier:</sel><arg type="id">identifier</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSString*"><sel>label</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setColor:</sel><arg type="NSColor*">color</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setIdentifier:</sel><arg type="id">identifier</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setInitialFirstResponder:</sel><arg type="NSView*">view</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setLabel:</sel><arg type="NSString*">label</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setView:</sel><arg type="NSView*">view</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSSize"><sel>sizeOfLabel:</sel><arg type="BOOL">shouldTruncateLabel</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSTabState"><sel>tabState</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSTabView*"><sel>tabView</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>view</sel>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

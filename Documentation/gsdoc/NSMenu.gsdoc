@@ -21,187 +21,187 @@
         <method type="NSZone*" factory="yes"><sel>menuZone</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void" factory="yes"><sel>setMenuZone:</sel><arg type="NSZone*">zone</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>addItem:</sel><arg type="id&lt;NSMenuItem&gt;">newItem</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id&lt;NSMenuItem&gt;"><sel>addItemWithTitle:</sel><arg type="NSString*">aString</arg><sel>action:(SEL)aSelector  keyEquivalent:</sel><arg type="NSString*">keyEquiv</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSMenu*"><sel>attachedMenu</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>autoenablesItems</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>contextMenuRepresentation</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>helpRequested:</sel><arg type="NSEvent*">event</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="int"><sel>indexOfItem:</sel><arg type="id&lt;NSMenuItem&gt;">anObject</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="int"><sel>indexOfItemWithRepresentedObject:</sel><arg type="id">anObject</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="int"><sel>indexOfItemWithSubmenu:</sel><arg type="NSMenu*">anObject</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="int"><sel>indexOfItemWithTag:</sel><arg type="int">aTag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="int"><sel>indexOfItemWithTarget:</sel><arg type="id">anObject</arg><sel>andAction:</sel><arg type="SEL">actionSelector</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="int"><sel>indexOfItemWithTitle:</sel><arg type="NSString*">aTitle</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>initWithTitle:</sel><arg type="NSString*">aTitle</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>insertItem:</sel><arg type="id&lt;NSMenuItem&gt;">newItem</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id&lt;NSMenuItem&gt;"><sel>insertItemWithTitle:</sel><arg type="NSString*">aString</arg><sel>action:(SEL)aSelector  keyEquivalent:</sel><arg type="NSString*">keyEquiv</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isAttached</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isTornOff</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSArray*"><sel>itemArray</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id&lt;NSMenuItem&gt;"><sel>itemAtIndex:</sel><arg type="int">index</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>itemChanged:</sel><arg type="id&lt;NSMenuItem&gt;">anObject</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id&lt;NSMenuItem&gt;"><sel>itemWithTag:</sel><arg type="int">aTag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id&lt;NSMenuItem&gt;"><sel>itemWithTitle:</sel><arg type="NSString*">aString</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSPoint"><sel>locationForSubmenu:</sel><arg type="NSMenu*">aSubmenu</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>menuChangedMessagesEnabled</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>menuRepresentation</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="int"><sel>numberOfItems</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>performActionForItemAtIndex:</sel><arg type="int">index</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>performKeyEquivalent:</sel><arg type="NSEvent*">theEvent</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>removeItem:</sel><arg type="id&lt;NSMenuItem&gt;">anItem</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>removeItemAtIndex:</sel><arg type="int">index</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setAutoenablesItems:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setContextMenuRepresentation:</sel><arg type="id">menuRep</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setMenuChangedMessagesEnabled:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setMenuRepresentation:</sel><arg type="id">menuRep</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setSubmenu:</sel><arg type="NSMenu*">aMenu</arg><sel>forItem:</sel><arg type="id&lt;NSMenuItem&gt;">anItem</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setSupermenu:</sel><arg type="NSMenu*">supermenu</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setTearOffMenuRepresentation:</sel><arg type="id">menuRep</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setTitle:</sel><arg type="NSString*">aString</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>sizeToFit</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>submenuAction:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSMenu*"><sel>supermenu</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>tearOffMenuRepresentation</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSString*"><sel>title</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>update</sel>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

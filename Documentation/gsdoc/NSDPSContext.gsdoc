@@ -21,167 +21,167 @@
         <method type="BOOL" factory="yes"><sel>areAllContextsOutputTraced</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL" factory="yes"><sel>areAllContextsSynchronized</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id" factory="yes"><sel>currentContext</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void" factory="yes"><sel>setAllContextsOutputTraced:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void" factory="yes"><sel>setAllContextsSynchronized:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void" factory="yes"><sel>setCurrentContext:</sel><arg type="NSGraphicsContext*">context</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSString*" factory="yes"><sel>stringForDPSError:</sel><arg type="constDPSBinObjSeqRec*">error</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="DPSContext"><sel>DPSContext</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>awaitReturnValues</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>chainChildContext:</sel><arg type="NSDPSContext*">child</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSDPSContext*"><sel>childContext</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="DPSErrorProc"><sel>errorProc</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>flush</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel></sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>interruptExecution</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isDrawingToScreen</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isOutputTraced</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isSynchronized</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isWaitCursorEnabled</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSMutableData*"><sel>mutableData</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>notifyObjectWhenFinishedExecuting:</sel><arg type="id&lt;NSDPSContextNotification&gt;">object</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSDPSContext*"><sel>parentContext</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>printFormat:</sel><arg type="NSString*">format,...</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>printFormat:</sel><arg type="NSString*">format</arg><sel>arguments:</sel><arg type="va_list">argList</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>resetCommunication</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setErrorProc:</sel><arg type="DPSErrorProc">proc</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setOutputTraced:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setSynchronized:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setTextProc:</sel><arg type="DPSTextProc">proc</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setWaitCursorEnabled:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>startWaitCursorTimer</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="DPSTextProc"><sel>textProc</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>unchainContext</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>updateNameMap</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>wait</sel>
         <desc>
         </desc>
-</method>
-        <method type="void"><sel>writeBOSArray:</sel><arg type="constvoid*">data</arg><sel>count:</sel><arg type="unsignedint">items</arg><sel>ofType:</sel><arg type="DPSDefinedType">type</arg>
+        </method>
+        <method type="void"><sel>writeBOSArray:</sel><arg type="constvoid*">data</arg><sel>count:</sel><arg type="unsigned int">items</arg><sel>ofType:</sel><arg type="DPSDefinedType">type</arg>
         <desc>
         </desc>
-</method>
-        <method type="void"><sel>writeBOSNumString:</sel><arg type="constvoid*">data</arg><sel>length:</sel><arg type="unsignedint">count</arg><sel>ofType(DPSDefinedType)type  scale:</sel><arg type="int">scale</arg>
+        </method>
+        <method type="void"><sel>writeBOSNumString:</sel><arg type="constvoid*">data</arg><sel>length:</sel><arg type="unsigned int">count</arg><sel>ofType(DPSDefinedType)type  scale:</sel><arg type="int">scale</arg>
         <desc>
         </desc>
-</method>
-        <method type="void"><sel>writeBOSString:</sel><arg type="constvoid*">data</arg><sel>length:</sel><arg type="unsignedint">bytes</arg>
+        </method>
+        <method type="void"><sel>writeBOSString:</sel><arg type="constvoid*">data</arg><sel>length:</sel><arg type="unsigned int">bytes</arg>
         <desc>
         </desc>
-</method>
-        <method type="void"><sel>writeBinaryObjectSequence:</sel><arg type="constvoid*">data</arg><sel>length:</sel><arg type="unsignedint">bytes</arg>
+        </method>
+        <method type="void"><sel>writeBinaryObjectSequence:</sel><arg type="constvoid*">data</arg><sel>length:</sel><arg type="unsigned int">bytes</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>writeData:</sel><arg type="NSData*">buf</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>writePostScriptWithLanguageEncodingConversion:</sel><arg type="NSData*">buf</arg>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

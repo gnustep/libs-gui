@@ -20,23 +20,23 @@
         <method type="BOOL" factory="yes"><sel>loadNibFile:</sel><arg type="NSString*">fileName</arg><sel>externalNameTable:</sel><arg type="NSDictionary*">context</arg><sel>withZone:</sel><arg type="NSZone*">zone</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL" factory="yes"><sel>loadNibNamed:</sel><arg type="NSString*">aNibName</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSAttributedString*"><sel>contextHelpForKey:</sel><arg type="NSString*">key</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>loadNibFile:</sel><arg type="NSString*">fileName</arg><sel>externalNameTable:</sel><arg type="NSDictionary*">context</arg><sel>withZone:</sel><arg type="NSZone*">zone</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSString*"><sel>pathForImageResource:</sel><arg type="NSString*">name</arg>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

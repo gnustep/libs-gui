@@ -21,139 +21,139 @@
         <method type="NSPrinter*" factory="yes"><sel>defaultPrinter</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void" factory="yes"><sel>setDefaultPrinter:</sel><arg type="NSPrinter*">aPrinter</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void" factory="yes"><sel>setSharedPrintInfo:</sel><arg type="NSPrintInfo*">printInfo</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSPrintInfo*" factory="yes"><sel>sharedPrintInfo</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSSize" factory="yes"><sel>sizeForPaperName:</sel><arg type="NSString*">name</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="float"><sel>bottomMargin</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSMutableDictionary*"><sel>dictionary</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSPrintingPaginationMode"><sel>horizontalPagination</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>initWithDictionary:</sel><arg type="NSDictionary*">aDictionary</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isHorizontallyCentered</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isVerticallyCentered</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSString*"><sel>jobDisposition</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="float"><sel>leftMargin</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSPrintingOrientation"><sel>orientation</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSString*"><sel>paperName</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSSize"><sel>paperSize</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSPrinter*"><sel>printer</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="float"><sel>rightMargin</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setBottomMargin:</sel><arg type="float">margin</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setHorizontalPagination:</sel><arg type="NSPrintingPaginationMode">mode</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setHorizontallyCentered:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setJobDisposition:</sel><arg type="NSString*">disposition</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setLeftMargin:</sel><arg type="float">margin</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setOrientation:</sel><arg type="NSPrintingOrientation">orientation</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setPaperName:</sel><arg type="NSString*">name</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setPaperSize:</sel><arg type="NSSize">aSize</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setPrinter:</sel><arg type="NSPrinter*">aPrinter</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setRightMargin:</sel><arg type="float">margin</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setTopMargin:</sel><arg type="float">margin</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setUpPrintOperationDefaultValues</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setVerticalPagination:</sel><arg type="NSPrintingPaginationMode">mode</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setVerticallyCentered:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="float"><sel>topMargin</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSPrintingPaginationMode"><sel>verticalPagination</sel>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

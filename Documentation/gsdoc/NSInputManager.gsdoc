@@ -21,27 +21,27 @@
         <method type="NSInputManager*" factory="yes"><sel>currentInputManager</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSInputManager*"><sel>initWithName:</sel><arg type="NSString*">inputServerName</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSString*"><sel>localizedInputManagerName</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>markedTextSelectionChanged:</sel><arg type="NSRange">aRange</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>markedTextWillBeAbandoned:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>wantsToInterpretAllKeystrokes</sel>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

@@ -21,55 +21,55 @@
         <method type="void"><sel>addLayoutManager:</sel><arg type="NSLayoutManager*">aLayoutManager</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="int"><sel>changeInLength</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>delegate</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>edited:</sel><arg type="unsigned">mask</arg><sel>range:</sel><arg type="NSRange">oldRange</arg><sel>changeInLength:</sel><arg type="int">lengthChange</arg>
         <desc>
         </desc>
-</method>
-        <method type="unsignedint"><sel>editedMask</sel>
+        </method>
+        <method type="unsigned int"><sel>editedMask</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSRange"><sel>editedRange</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>endEditing</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSArray*"><sel>layoutManagers</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>processEditing</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>removeLayoutManager:</sel><arg type="NSLayoutManager*">aLayoutManager</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setDelegate:</sel><arg type="id">anObject</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>textStorageDidProcessEditing:</sel><arg type="NSNotification*">aNotification</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>textStorageWillProcessEditing:</sel><arg type="NSNotification*">aNotification</arg>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

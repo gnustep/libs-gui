@@ -21,35 +21,35 @@
         <method type="NSGraphicsContext*" factory="yes"><sel>currentContext</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void" factory="yes"><sel>setCurrentContext:</sel><arg type="NSGraphicsContext*">context</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>flush</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>flushGraphics</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isDrawingToScreen</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>restoreGraphicsState</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>saveGraphicsState</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>wait</sel>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

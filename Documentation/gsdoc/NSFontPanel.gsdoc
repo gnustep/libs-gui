@@ -21,39 +21,39 @@
         <method type="NSFontPanel*" factory="yes"><sel>sharedFontPanel</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL" factory="yes"><sel>sharedFontPanelExists</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSView*"><sel>accessoryView</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isEnabled</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSFont*"><sel>panelConvertFont:</sel><arg type="NSFont*">aFont</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setAccessoryView:</sel><arg type="NSView*">aView</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setEnabled:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setPanelFont:</sel><arg type="NSFont*">aFont</arg><sel>isMultiple:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>worksWhenModal</sel>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

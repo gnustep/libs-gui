@@ -21,391 +21,391 @@
         <method type="BOOL"><sel>acceptsFirstMouse:</sel><arg type="NSEvent*">theEvent</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>addColumn</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>addColumnWithCells:</sel><arg type="NSArray*">newCells</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>addRow</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>addRowWithCells:</sel><arg type="NSArray*">newCells</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>allowsEmptySelection</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>autosizesCells</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSColor*"><sel>backgroundColor</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>cellAtRow:</sel><arg type="int">row</arg><sel>column:</sel><arg type="int">column</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSColor*"><sel>cellBackgroundColor</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="Class"><sel>cellClass</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSRect"><sel>cellFrameAtRow:</sel><arg type="int">row</arg><sel>column:</sel><arg type="int">column</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSSize"><sel>cellSize</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>cellWithTag:</sel><arg type="int">anInt</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSArray*"><sel>cells</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>delegate</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>deselectAllCells</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="SEL"><sel>doubleAction</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>drawCellAtRow:</sel><arg type="int">row</arg><sel>column:</sel><arg type="int">column</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>drawsBackground</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>drawsCellBackground</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="SEL"><sel>errorAction</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>getNumberOfRows:</sel><arg type="int*">rowCount</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>getRow:</sel><arg type="int*">row</arg><sel>column:</sel><arg type="int*">column</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>highlightCell:</sel><arg type="BOOL">flag</arg><sel>atRow:</sel><arg type="int">row</arg><sel>column:</sel><arg type="int">column</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>initWithFrame:</sel><arg type="NSRect">frameRect</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>initWithFrame:</sel><arg type="NSRect">frameRect</arg><sel>mode:(int)aMode cellClass:</sel><arg type="Class">factoryId</arg><sel>numberOfRows:</sel><arg type="int">numRows</arg><sel>numberOfColumns:</sel><arg type="int">numColumns</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>initWithFrame:</sel><arg type="NSRect">frameRect</arg><sel>mode:(int)aMode prototype:</sel><arg type="NSCell*">aCell</arg><sel>numberOfRows:</sel><arg type="int">numRows</arg><sel>numberOfColumns:</sel><arg type="int">numColumns</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>insertColumn:</sel><arg type="int">column</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>insertColumn:</sel><arg type="int">column</arg><sel>withCells:</sel><arg type="NSArray*">newCells</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>insertRow:</sel><arg type="int">row</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>insertRow:</sel><arg type="int">row</arg><sel>withCells:</sel><arg type="NSArray*">newCells</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSSize"><sel>intercellSpacing</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isAutoscroll</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isSelectionByRect</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>keyCell</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSCell*"><sel>makeCellAtRow:</sel><arg type="int">row</arg><sel>column:</sel><arg type="int">column</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSMatrixMode"><sel>mode</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>mouseDown:</sel><arg type="NSEvent*">theEvent</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="int"><sel>mouseDownFlags</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>nextText</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="int"><sel>numberOfColumns</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="int"><sel>numberOfRows</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>performKeyEquivalent:</sel><arg type="NSEvent*">theEvent</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>previousText</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>prototype</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>putCell:</sel><arg type="NSCell*">newCell</arg><sel>atRow:(int)row column:</sel><arg type="int">column</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>removeColumn:</sel><arg type="int">column</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>removeRow:</sel><arg type="int">row</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>renewRows:</sel><arg type="int">newRows</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>resetCursorRects</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>scrollCellToVisibleAtRow:</sel><arg type="int">row</arg><sel>column:</sel><arg type="int">column</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>selectAll:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>selectCellAtRow:</sel><arg type="int">row</arg><sel>column:</sel><arg type="int">column</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>selectCellWithTag:</sel><arg type="int">anInt</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>selectText:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>selectTextAtRow:</sel><arg type="int">row</arg><sel>column:</sel><arg type="int">column</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>selectedCell</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSArray*"><sel>selectedCells</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="int"><sel>selectedColumn</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="int"><sel>selectedRow</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>sendAction</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>sendAction:</sel><arg type="SEL">aSelector</arg><sel>to:(id)anObject forAllCells:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>sendDoubleAction</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setAllowsEmptySelection:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setAutoscroll:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setAutosizesCells:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setBackgroundColor:</sel><arg type="NSColor*">aColor</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setCellBackgroundColor:</sel><arg type="NSColor*">aColor</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setCellClass:</sel><arg type="Class">aClass</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setCellSize:</sel><arg type="NSSize">aSize</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setDelegate:</sel><arg type="id">anObject</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setDoubleAction:</sel><arg type="SEL">aSelector</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setDrawsBackground:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setDrawsCellBackground:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setErrorAction:</sel><arg type="SEL">aSelector</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setIntercellSpacing:</sel><arg type="NSSize">aSize</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setKeyCell:</sel><arg type="NSCell*">aCell</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setMode:</sel><arg type="NSMatrixMode">aMode</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setNextText:</sel><arg type="id">anObject</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setPreviousText:</sel><arg type="id">anObject</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setPrototype:</sel><arg type="NSCell*">aCell</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setScrollable:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setSelectionByRect:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setSelectionFrom:</sel><arg type="int">startPos</arg><sel>to:(int)endPos anchor:</sel><arg type="int">anchorPos</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setState:</sel><arg type="int">value</arg><sel>atRow:(int)row column:</sel><arg type="int">column</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setTabKeyTraversesCells:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setValidateSize:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>sizeToCells</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>sortUsingFunction:</sel><arg type="int(*">(id,</arg><sel>id, void *))comparator context:</sel><arg type="void*">context</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>sortUsingSelector:</sel><arg type="SEL">comparator</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>tabKeyTraversesCells</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>textDidBeginEditing:</sel><arg type="NSNotification*">notification</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>textDidChange:</sel><arg type="NSNotification*">notification</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>textDidEndEditing:</sel><arg type="NSNotification*">notification</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>textShouldBeginEditing:</sel><arg type="NSText*">textObject</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>textShouldEndEditing:</sel><arg type="NSText*">textObject</arg>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

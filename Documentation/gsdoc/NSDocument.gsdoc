@@ -21,203 +21,203 @@
         <method type="BOOL" factory="yes"><sel>isNativeType:</sel><arg type="NSString*">aType</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSArray*" factory="yes"><sel>readableTypes</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSArray*" factory="yes"><sel>writableTypes</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>addWindowController:</sel><arg type="NSWindowController*">aController</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>canCloseDocument</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>close</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="IBAction"><sel>closeDocument:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSData*"><sel>dataRepresentationOfType:</sel><arg type="NSString*">aType</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSString*"><sel>displayName</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSString*"><sel>fileName</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSString*"><sel>fileNameFromRunningSavePanelForSaveOperation:</sel><arg type="NSSaveOperationType">saveOperation</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSString*"><sel>fileType</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSFileWrapper*"><sel>fileWrapperRepresentationOfType:</sel><arg type="NSString*">aType</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>hasUndoManager</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>init</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>initWithContentsOfFile:</sel><arg type="NSString*">fileName</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isDocumentEdited</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>keepBackupFile</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>loadDataRepresentation:</sel><arg type="NSData*">docData</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>loadFileWrapperRepresentation:</sel><arg type="NSFileWrapper*">wrapper</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSArray*"><sel>makeWindowControllers</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>printDocument:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSPrintInfo*"><sel>printInfo</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>printShowingPrintPanel:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>readFromFile:</sel><arg type="NSString*">fileName</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>revertDocumentToSaved:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>revertToSavedFromFile:</sel><arg type="NSString*">fileName</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="int"><sel>runModalPageLayoutWithPrintInfo:</sel><arg type="NSPrintInfo*">printInfo</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="int"><sel>runModalSavePanel:</sel><arg type="NSSavePanel*">savePanel</arg><sel>withAccessoryView:</sel><arg type="NSView*">accessoryView</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>runPageLayout:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>saveDocument:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>saveDocumentAs:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>saveDocumentTo:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setFileName:</sel><arg type="NSString*">fileName</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setFileType:</sel><arg type="NSString*">docType</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setHasUndoManager:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setPrintInfo:</sel><arg type="NSPrintInfo*">printInfo</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setUndoManager:</sel><arg type="NSUndoManager*">undoManager</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>shouldChangePrintInfo:</sel><arg type="NSPrintInfo*">newPrintInfo</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>shouldCloseWindowController:</sel><arg type="NSWindowController*">windowController</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>shouldRunSavePanelWithAccessoryView</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>showWindows</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSUndoManager*"><sel>undoManager</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>updateChangeCount:</sel><arg type="NSDocumentChangeType">changeType</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>validateMenuItem:</sel><arg type="NSMenuItem*">anItem</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>windowControllerDidLoadNib:</sel><arg type="NSWindowController*">windowController</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>windowControllerWillLoadNib:</sel><arg type="NSWindowController*">windowController</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSArray*"><sel>windowControllers</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSString*"><sel>windowNibName</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>writeToFile:</sel><arg type="NSString*">fileName</arg>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

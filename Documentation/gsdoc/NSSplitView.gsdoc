@@ -21,31 +21,31 @@
         <method type="void"><sel>adjustSubviews</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>delegate</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="float"><sel>dividerThickness</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>drawDividerInRect:</sel><arg type="NSRect">aRect</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isVertical</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setDelegate:</sel><arg type="id">anObject</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setVertical:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

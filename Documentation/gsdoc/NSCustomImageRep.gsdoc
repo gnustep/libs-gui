@@ -21,15 +21,15 @@
         <method type="id"><sel>delegate</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="SEL"><sel>drawSelector</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>initWithDrawSelector:</sel><arg type="SEL">aMethod</arg><sel>delegate:</sel><arg type="id">anObject</arg>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

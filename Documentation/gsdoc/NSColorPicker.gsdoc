@@ -21,35 +21,35 @@
         <method type="void"><sel>attachColorList:</sel><arg type="NSColorList*">colorList</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSColorPanel*"><sel>colorPanel</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>detachColorList:</sel><arg type="NSColorList*">colorList</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>initWithPickerMask:</sel><arg type="int">mask</arg><sel>colorPanel:</sel><arg type="NSColorPanel*">owningColorPanel</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>insertNewButtonImage:</sel><arg type="NSImage*">newButtonImage</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSImage*"><sel>provideNewButtonImage</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setMode:</sel><arg type="int">mode</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>viewSizeChanged:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

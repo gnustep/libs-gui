@@ -21,31 +21,31 @@
         <method type="BOOL" factory="yes"><sel>isContextHelpModeActive</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void" factory="yes"><sel>setContextHelpModeActive:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSHelpManager*" factory="yes"><sel>sharedHelpManager</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSAttributedString*"><sel>contextHelpForObject:</sel><arg type="id">object</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>removeContextHelpForObject:</sel><arg type="id">object</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setContextHelp:</sel><arg type="NSAttributedString*">help</arg><sel>forObject:</sel><arg type="id">object</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>showContextHelpForObject:</sel><arg type="id">object</arg><sel>locationHint:</sel><arg type="NSPoint">point</arg>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

@@ -21,123 +21,123 @@
         <method type="void"><sel>addTabViewItem:</sel><arg type="NSTabViewItem*">tabViewItem</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>allowsTruncatedLabels</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSRect"><sel>contentRect</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>delegate</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel> drawsBackground</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSFont*"><sel>font</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="int"><sel>indexOfTabViewItem:</sel><arg type="NSTabViewItem*">tabViewItem</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="int"><sel>indexOfTabViewItemWithIdentifier:</sel><arg type="id">identifier</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>insertTabViewItem:</sel><arg type="NSTabViewItem*">tabViewItem</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSSize"><sel>minimumSize</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="int"><sel>numberOfTabViewItems</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>removeTabViewItem:</sel><arg type="NSTabViewItem*">tabViewItem</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>selectFirstTabViewItem:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>selectLastTabViewItem:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>selectNextTabViewItem:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>selectPreviousTabViewItem:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSTabViewItem*"><sel>selectedTabViewItem</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>selectTabViewItem:</sel><arg type="NSTabViewItem*">tabViewItem</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>selectTabViewItemAtIndex:</sel><arg type="int">index</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>selectTabViewItemWithIdentifier:</sel><arg type="id">identifier;</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setAllowsTruncatedLabels:</sel><arg type="BOOL">allowTruncatedLabels</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setDelegate:</sel><arg type="id">anObject</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setDrawsBackground:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setFont:</sel><arg type="NSFont*">font</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setTabViewType:</sel><arg type="NSTabViewType">tabViewType</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSTabViewItem*"><sel>tabViewItemAtIndex:</sel><arg type="int">index</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSTabViewItem*"><sel>tabViewItemAtPoint:</sel><arg type="NSPoint">point</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSArray*"><sel>tabViewItems</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSTabViewType"><sel>tabViewType</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>takeSelectedTabViewItemFromSender:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

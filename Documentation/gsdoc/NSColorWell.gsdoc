@@ -21,39 +21,39 @@
         <method type="void"><sel>activate:</sel><arg type="BOOL">exclusive</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSColor*"><sel>color</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>deactivate</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>drawWellInside:</sel><arg type="NSRect">insideRect</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isActive</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isBordered</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setBordered:</sel><arg type="BOOL">bordered</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setColor:</sel><arg type="NSColor*">color</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>takeColorFrom:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

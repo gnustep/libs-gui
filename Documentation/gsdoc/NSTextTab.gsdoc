@@ -21,15 +21,15 @@
         <method type="id"><sel>initWithType:</sel><arg type="NSTextTabType">type</arg><sel>location:</sel><arg type="float">location</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="float"><sel>location</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSTextTabType"><sel>tabStopType</sel>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

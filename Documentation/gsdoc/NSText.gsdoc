@@ -21,295 +21,295 @@
         <method type="void"><sel>alignCenter:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>alignLeft:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>alignRight:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSTextAlignment"><sel>alignment</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSColor*"><sel>backgroundColor</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>changeFont:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>checkSpelling:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>copy:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>copyFont:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>copyRuler:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>cut:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>delegate</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>delete:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>drawsBackground</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSFont*"><sel>font</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>importsGraphics</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>initWithFrame:</sel><arg type="NSRect">frameRect</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isEditable</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isFieldEditor</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isHorizontallyResizable</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isRichText</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isRulerVisible</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isSelectable</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isVerticallyResizable</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSSize"><sel>maxSize</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSSize"><sel>minSize</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>paste:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>pasteFont:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>pasteRuler:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>readRTFDFromFile:</sel><arg type="NSString*">path</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>replaceCharactersInRange:</sel><arg type="NSRange">aRange</arg><sel>withRTF:</sel><arg type="NSData*">rtfData</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>replaceCharactersInRange:</sel><arg type="NSRange">aRange</arg><sel>withRTFD:</sel><arg type="NSData*">rtfdData</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>replaceCharactersInRange:</sel><arg type="NSRange">aRange</arg><sel>withString:</sel><arg type="NSString*">aString</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSData*"><sel>RTFDFromRange:</sel><arg type="NSRange">aRange</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>scrollRangeToVisible:</sel><arg type="NSRange">aRange</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>selectAll:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSRange"><sel>selectedRange</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setAlignment:</sel><arg type="NSTextAlignment">mode</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setBackgroundColor:</sel><arg type="NSColor*">aColor</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setDelegate:</sel><arg type="id">anObject</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setDrawsBackground:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setEditable:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setFieldEditor:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setFont:</sel><arg type="NSFont*">aFont</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setFont:</sel><arg type="NSFont*">aFont</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setHorizontallyResizable:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setImportsGraphics:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setMaxSize:</sel><arg type="NSSize">aSize</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setMinSize:</sel><arg type="NSSize">aSize</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setRichText:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setSelectable:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setSelectedRange:</sel><arg type="NSRange">aRange</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setString:</sel><arg type="NSString*">aString</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setTextColor:</sel><arg type="NSColor*">aColor</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setTextColor:</sel><arg type="NSColor*">aColor</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setUsesFontPanel:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setVerticallyResizable:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>showGuessPanel:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>sizeToFit</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSString*"><sel>string</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>subscript:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>superscript:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSColor*"><sel>textColor</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>toggleRuler:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>underline:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>unscript:</sel><arg type="id">sender</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>usesFontPanel</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>writeRTFDToFile:</sel><arg type="NSString*">path</arg><sel>atomically:</sel><arg type="BOOL">atomicFlag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>textDidBeginEditing:</sel><arg type="NSNotification*">aNotification</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>textDidChange:</sel><arg type="NSNotification*">aNotification</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>textDidEndEditing:</sel><arg type="NSNotification*">aNotification</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>textShouldBeginEditing:</sel><arg type="NSText*">aTextObject</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>textShouldEndEditing:</sel><arg type="NSText*">aTextObject</arg>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

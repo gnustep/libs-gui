@@ -21,31 +21,31 @@
         <method type="int"><sel>columnAtPoint:</sel><arg type="NSPoint">aPoint</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="int"><sel>draggedColumn</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="float"><sel>draggedDistance</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSRect"><sel>headerRectOfColumn:</sel><arg type="int">columnIndex</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="int"><sel>resizedColumn</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setTableView:</sel><arg type="NSTableView*">aTableView</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSTableView*"><sel>tableView</sel>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

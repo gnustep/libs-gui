@@ -21,19 +21,19 @@
         <method type="id" factory="yes"><sel>imageRepWithData:</sel><arg type="NSData*">pictData</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSRect"><sel>boundingBox</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="id"><sel>initWithData:</sel><arg type="NSData*">pictData</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSData*"><sel>PICTRepresentation</sel>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

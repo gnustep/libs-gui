@@ -21,55 +21,55 @@
         <method type="void"><sel>addTabStop:</sel><arg type="NSTextTab*">tabStop</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>removeTabStop:</sel><arg type="NSTextTab*">tabStop</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setAlignment:</sel><arg type="NSTextAlignment">alignment</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setFirstLineHeadIndent:</sel><arg type="float">aFloat</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setHeadIndent:</sel><arg type="float">aFloat</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setLineBreakMode:</sel><arg type="NSLineBreakMode">mode</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setLineSpacing:</sel><arg type="float">aFloat</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setMaximumLineHeight:</sel><arg type="float">aFloat</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setMinimumLineHeight:</sel><arg type="float">aFloat</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setParagraphSpacing:</sel><arg type="float">aFloat</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setParagraphStyle:</sel><arg type="NSParagraphStyle*">aStyle</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setTabStops:</sel><arg type="NSArray*">tabStops</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setTailIndent:</sel><arg type="float">aFloat</arg>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

@@ -21,39 +21,39 @@
         <method type="id"><sel>delegate</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>isWordInUserDictionaries:</sel><arg type="NSString*">word</arg><sel>caseSensitive:</sel><arg type="BOOL">flag</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="BOOL"><sel>registerLanguage:</sel><arg type="NSString*">language</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>run</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>setDelegate:</sel><arg type="id">anObject</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>spellServer:</sel><arg type="NSSpellServer*">sender</arg><sel>didForgetWord:</sel><arg type="NSString*">word</arg><sel>inLanguage:</sel><arg type="NSString*">language</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="void"><sel>spellServer:</sel><arg type="NSSpellServer*">sender</arg><sel>didLearnWord:</sel><arg type="NSString*">word</arg><sel>inLanguage:</sel><arg type="NSString*">language</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSRange"><sel>spellServer:</sel><arg type="NSSpellServer*">sender</arg><sel>findMisspelledWordInString:</sel><arg type="NSString*">stringToCheck</arg><sel>language:(NSString *)language wordCount:</sel><arg type="int*">wordCount</arg>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSArray*"><sel>spellServer:</sel><arg type="NSSpellServer*">sender</arg><sel>suggestGuessesForWord:</sel><arg type="NSString*">word</arg><sel>inLanguage:</sel><arg type="NSString*">language</arg>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

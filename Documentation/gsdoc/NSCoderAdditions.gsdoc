@@ -20,7 +20,7 @@
         <method type="NSColor*"><sel>decodeNXColor</sel>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

@@ -21,7 +21,7 @@
         <method type="void"><sel>drawInteriorWithFrame:</sel><arg type="NSRect">cellFrame</arg>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>

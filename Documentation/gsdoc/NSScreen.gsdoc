@@ -21,35 +21,35 @@
         <method type="NSScreen*" factory="yes"><sel>deepestScreen</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSScreen*" factory="yes"><sel>mainScreen</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSArray*" factory="yes"><sel>screens</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSWindowDepth"><sel>depth</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSDictionary*"><sel>deviceDescription</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSRect"><sel>frame</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="constNSWindowDepth*"><sel>supportedWindowDepths</sel>
         <desc>
         </desc>
-</method>
+        </method>
         <method type="NSRect"><sel>visibleFrame</sel>
         <desc>
         </desc>
-</method>
+        </method>
       </class>
     </chapter>
   </body>
