@@ -236,7 +236,7 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
          fromView:(NSView *)sourceView
 {
   NSPasteboard *pb = [NSPasteboard pasteboardWithName: NSDragPboard];
-  NSImage *image = [NSImage imageNamed: @"colorwell_DragImage"];
+  NSImage *image = [NSImage imageNamed: @"common_ColorSwatch"];
 
   [pb declareTypes: [NSArray arrayWithObjects: NSColorPboardType, nil]
              owner: aColor];
