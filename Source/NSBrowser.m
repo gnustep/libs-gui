@@ -437,7 +437,9 @@ static double rint(double a)
 // -------------------
 // Loads if necessary and returns the NSCell at row in column.
 //
-
+// if you change this code, you may want to look at the
+// _loadColumn method in which the following code is integrated
+// (for speed)
 - (id)loadedCellAtRow: (int)row
 	       column: (int)column
 {
@@ -2879,10 +2881,35 @@ static double rint(double a)
 	  [sc setDocumentView: matrix];
 
 	  // Now loop through the cells and load each one
-	  for (i = 0; i < n; i++)
-	    {
-	      [self loadedCellAtRow: i column: column];
-	    }
+	  {
+	    NSBrowserColumn *bc;
+	    id matrix;
+	    id aCell;
+	    bc = [_browserColumns objectAtIndex: column];
+	    matrix = [bc columnMatrix];
+	    if (_passiveDelegate || [_browserDelegate respondsToSelector: 
+							@selector(browser:willDisplayCell:atRow:column:)])
+	      {
+		SEL sel1 = 
+		  @selector(browser:willDisplayCell:atRow:column:);
+		IMP imp1 =
+		  [_browserDelegate methodForSelector: sel1];
+		SEL sel2 = 
+		  @selector(cellAtRow:column:);
+		IMP imp2 =
+		  [matrix methodForSelector: sel2];
+		for (i = 0; i < n; i++)
+		  {
+		    aCell = (*imp2)(matrix, sel2, i, 0);
+		    if (![aCell isLoaded])
+		      {
+			(*imp1)(_browserDelegate, sel1,
+			       self, aCell, i, column);
+			[aCell setLoaded: YES];
+		      }
+		  }
+	      }
+	  }
 	}
     }
   else
