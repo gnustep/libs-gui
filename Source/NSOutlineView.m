@@ -49,6 +49,7 @@ static const int current_version = 1;
 // Cache the arrow images...
 static NSImage *collapsed = nil;
 static NSImage *expanded  = nil;
+static NSImage *unexpandable  = nil;
 
 // Some necessary things which should not become ivars....
 static float widest = 0.0;
@@ -223,7 +224,7 @@ _selectionChange (NSOutlineView *ov, id delegate, int numberOfRows,
       nc = [NSNotificationCenter defaultCenter];
       collapsed = [NSImage imageNamed: @"common_outlineCollapsed.tiff"];
       expanded  = [NSImage imageNamed: @"common_outlineExpanded.tiff"];
-      //      NSLog(@"%@ %@",rightArrow, downArrow);
+      unexpandable = [NSImage imageNamed: @"common_outlineUnexpandable.tiff"];
     }
 }
 
@@ -258,13 +259,43 @@ _selectionChange (NSOutlineView *ov, id delegate, int numberOfRows,
   return _autosaveExpandedItems;
 }
 
-- (void)_closeItem: (id)item
+// Collect all of the items under a given element.
+static void _collectItems(NSOutlineView *outline,
+		     id startitem,
+		     NSMutableArray *allChildren)
 {
-  int numchildren = [_dataSource outlineView: self 
-				 numberOfChildrenOfItem: item];
+  int num = [[outline dataSource] outlineView: outline
+				  numberOfChildrenOfItem: startitem];
   int i = 0;
 
-  NSLog(@"closing: %@", item);
+  for(i = 1; i <= num; i++)
+    {
+      id anitem = [[outline dataSource] outlineView: outline
+					child: i
+					ofItem: startitem];
+
+      // Only collect the children if the item is expanded
+      if([outline isItemExpanded: startitem])
+	{
+	  [allChildren addObject: anitem];
+	}
+
+      _collectItems(outline, anitem, allChildren); 
+    }
+}
+
+- (void)_closeItem: (id)item
+{
+  int numchildren = 0;
+  int i = 0;
+  NSMutableArray *removeAll = [NSMutableArray array];
+
+  //  [_dataSource outlineView: self 
+  //       numberOfChildrenOfItem: item];
+
+  _collectItems(self, item, removeAll);
+  numchildren = [removeAll count];
+
   // close the item...
   if(item == nil)
     {
@@ -277,12 +308,10 @@ _selectionChange (NSOutlineView *ov, id delegate, int numberOfRows,
 
   // For the close method it doesn't matter what order they are 
   // removed in.
-  for(i=1;i<=numchildren;i++)
+  
+  for(i=0; i < numchildren; i++)
     {
-      id child = [_dataSource outlineView: self
-			      child: i
-			      ofItem: item];
-      NSLog(@"child = %@",child);
+      id child = [removeAll objectAtIndex: i];
       [_items removeObject: child];
     }
 }
@@ -294,7 +323,6 @@ _selectionChange (NSOutlineView *ov, id delegate, int numberOfRows,
   int i = 0;
   int insertionPoint = 0;
 
-  NSLog(@"opening: %@", item);
   // open the item...
   if(item == nil)
     {
@@ -315,19 +343,30 @@ _selectionChange (NSOutlineView *ov, id delegate, int numberOfRows,
       insertionPoint++;
     }
 
-  // [self setNeedsDisplayInRect: [self rectOfRow: [self rowForItem: item]]];  
   [self setNeedsDisplay: YES];  
-  NSLog(@"Insertion point = %d",insertionPoint);
   for(i=numchildren; i > 0; i--)
     {
       id child = [_dataSource outlineView: self
 			      child: i
 			      ofItem: item];
-      NSLog(@"In here....");
-      NSLog(@"child = %@",child);
+
+      // Add all of the children...
+      if([self isItemExpanded: child])
+	{
+	  NSMutableArray *insertAll = [NSMutableArray array];
+	  int i = 0, numitems = 0;
+
+	  _collectItems(self, child, insertAll);
+	  numitems = [insertAll count];
+	  for(i = numitems-1; i >= 0; i--)
+	    {
+	      [_items insertObject: [insertAll objectAtIndex: i]
+		      atIndex: insertionPoint];
+	    }
+	}
+      
+      // Add the parent
       [_items insertObject: child atIndex: insertionPoint];
-      // [self setNeedsDisplayInRect: [self rectOfRow: [self rowForItem: child]]]; 
-      NSLog(@"_items = %@",_items);
     }
 }
 
@@ -507,7 +546,6 @@ _selectionChange (NSOutlineView *ov, id delegate, int numberOfRows,
 
 - (id)itemAtRow: (int)row
 {
-  NSLog(@"itemAtRow %d",row);
   return [_items objectAtIndex: row];
 }
 
@@ -540,6 +578,7 @@ static int _levelForItem(NSOutlineView *outline,
 					child: i
 					ofItem: startitem];
       finallevel = _levelForItem(outline, anitem, searchitem, level + 1, found); 
+      if(*found) break;
     }
 
   return finallevel;
@@ -547,7 +586,6 @@ static int _levelForItem(NSOutlineView *outline,
 
 - (int)levelForItem: (id)item
 {
-  //  NSLog(@"Getting level for %@", item);
   if(item != nil)
     {
       BOOL found = NO;
@@ -620,7 +658,6 @@ static int _levelForItem(NSOutlineView *outline,
 - (void) noteNumberOfRowsChanged
 {
   _numberOfRows = [_items count];
-  NSLog(@"_numberOfRows = %d", _numberOfRows);
   
   /* If we are selecting rows, we have to check that we have no
      selected rows below the new end of the table */
@@ -1290,8 +1327,6 @@ byExtendingSelection: (BOOL)flag
   _clickedRow = [self rowAtPoint: location];
   _clickedColumn = [self columnAtPoint: location];
 
-  NSLog(@"location (%f,%f)",location.x,location.y);
-
   // Selection
   if (clickCount == 1)
     {
@@ -1327,10 +1362,6 @@ byExtendingSelection: (BOOL)flag
       else // row is not selected 
 	{
 	  BOOL newSelection;
-
-	  NSLog(@"row which was clicked %d, item %@", 
-		_clickedRow,
-		[self itemAtRow: _clickedRow]);
 
 	  if(![self isItemExpanded: [self itemAtRow: _clickedRow]])
 	    {
@@ -1678,7 +1709,6 @@ byExtendingSelection: (BOOL)flag
   int i;
   float x_pos;
 
-  NSLog(@"In the drawing code...");
   if (_dataSource == nil)
     {
       return;
@@ -1734,11 +1764,6 @@ byExtendingSelection: (BOOL)flag
 					     byItem: item]]; 
 	  drawingRect = [self frameOfCellAtColumn: i
 			      row: rowIndex];
-	  NSLog(@"Drawing rect (%f, %f, %f, %f)",
-		drawingRect.origin.x, 
-		drawingRect.origin.y, 
-		drawingRect.size.width, 
-		drawingRect.size.height);
 
 	  if(tb == _outlineTableColumn)
 	    {
@@ -1757,8 +1782,12 @@ byExtendingSelection: (BOOL)flag
 		  image = collapsed;
 		}
 
+	      if(![self isExpandable: item])
+		{
+		  image = unexpandable;
+		}
+
 	      level = [self levelForItem: item];
-	      //	      NSLog(@"outlineColumn: %@ level = %d", item, level);
 	      indentationFactor = _indentationPerLevel * level;
 	      imageCell = [[NSCell alloc] initImageCell: image];
 
@@ -1776,11 +1805,7 @@ byExtendingSelection: (BOOL)flag
 	      imageRect.size.width = [image size].width;
 	      imageRect.size.height = [image size].height;
 
-	      // Draw the arrow if the item is expandable..
-	      if([self isExpandable: item])
-		{
-		  [imageCell drawWithFrame: imageRect inView: self];
-		}
+	      [imageCell drawWithFrame: imageRect inView: self];
 
 	      drawingRect.origin.x += indentationFactor + [image size].width + 1;
 	      drawingRect.size.width -= indentationFactor + [image size].width + 1;
@@ -1788,11 +1813,10 @@ byExtendingSelection: (BOOL)flag
 	      if (widest < (drawingRect.origin.x + originalWidth))
 		{
 		  widest = (drawingRect.origin.x + originalWidth);
-		  NSLog(@"widest = %lf", widest);
 		}
 	      else
 		{
-		  NSLog(@"Still widest = %lf", widest);
+		  // NSLog(@"Still widest = %lf", widest);
 		}
 	    }
 
@@ -1810,10 +1834,8 @@ byExtendingSelection: (BOOL)flag
     {
       NSRect drawingRect;
 
-      NSLog(@"Row = %d",index);
       drawingRect = [self frameOfCellAtColumn: 1
 			  row: index];
-      NSLog(@"Width = %d",drawingRect.size.width);
     }
 
   [super drawRect: aRect];

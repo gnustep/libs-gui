@@ -97,6 +97,7 @@ common_copyCursor.tiff \
 common_linkCursor.tiff \
 common_outlineCollapsed.tiff \
 common_outlineExpanded.tiff \
+common_outlineUnexpandable.tiff \
 GNUstep.tiff \
 GNUstepMenuImage.tiff \
 nsmapping.strings \

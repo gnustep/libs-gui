@@ -1,3 +1,13 @@
+2002-03-03  Gregory Casamento <greg_casamento@yahoo.com>
+	
+	* Images/common_outlineUnexpandable.tiff added.
+	* Images/GNUmakefile modified to install images
+	* Source/NSOutlineView.m modified to use new images.
+	Also made several fixes which should now make NSOutlineView
+	usable.  The graphics used are consistent with the look of
+	the outline view in the OPENSTEP Interface Builder classes
+	tab.
+
 2002-03-02  Gregory Casamento <greg_casamento@yahoo.com>
 	
 	* Images/common_outlineExpanded.tiff added.
