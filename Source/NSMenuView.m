@@ -522,17 +522,23 @@ static float GSMenuBarHeight = 25.0; // a guess.
 	  case NSRightMouseDragged: 
 	  case NSLeftMouseDragged: 
 	    lastLocation = [[self window] mouseLocationOutsideOfEventStream];
+	    lastLocation = [self convertPoint: lastLocation fromView: nil];
 
 #if 0
 	    NSLog (@"location = (%f, %f, %f)", lastLocation.x, [[self window]
 	      frame].origin.x, [[self window] frame].size.width);  
+	    NSLog (@"location = %f (%f, %f)", lastLocation.y, [[self window]
+	      frame].origin.y, [[self window] frame].size.height);  
 #endif
+
+	    /* If the location of the mouse is inside the window on the
+	       x-axis. */
 
 	    if (lastLocation.x > 0
 	      && lastLocation.x < [[self window] frame].size.width)
 	      {
-		lastLocation = [self convertPoint: lastLocation
-					 fromView: nil];
+
+		/* Get the index from some simple math. */
 
 		index = (height - lastLocation.y) / cellSize.height;
 #if 0                                         
@@ -540,6 +546,8 @@ static float GSMenuBarHeight = 25.0; // a guess.
 		  lastLocation.x, lastLocation.y);  
 		NSLog (@"index = %d\n", index);
 #endif
+		/* If the index generated above is valid, use it. */
+
 		if (index >= 0 && index < theCount)
 		  {
 		    if (index != lastIndex)
@@ -557,7 +565,23 @@ static float GSMenuBarHeight = 25.0; // a guess.
 			  } 
 		      }
 		  }
+
+		/* If we leave the bottom or top deselect menu items in
+		   the current view. This should check to see if the
+		   current item, if any, has an open submenu. */
+
+	        if (lastLocation.y > [[self window] frame].size.height
+	           || lastLocation.y < 0)
+	          {
+		    [self setHighlightedItemIndex: -1];
+	          }
+
 	      }
+
+	    /* If the location of the mouse is greater than the width of
+	       the current window we need to see if we should display a
+	       submenu. */
+
 	    else if (lastLocation.x > [[self window] frame].size.width)
 	      {
 		NSRect aRect = [self rectOfItemAtIndex: lastIndex];
@@ -577,6 +601,10 @@ static float GSMenuBarHeight = 25.0; // a guess.
 		    [window flushWindow];
 		  }
 	      }
+
+	    /* If the mouse location is less than 0 we moved to the left,
+	       perhaps into a supermenu? */
+
 	    else if (lastLocation.x < 0)
 	      {
 		if ([menuv_menu supermenu])
@@ -592,6 +620,7 @@ static float GSMenuBarHeight = 25.0; // a guess.
 		    [window flushWindow];
 		  }
 	      }
+/* FIXME this code is just plain nasty.
 	    else
 	      {
       // FIXME, Michael. This might be needed... or not?
@@ -604,11 +633,16 @@ static float GSMenuBarHeight = 25.0; // a guess.
 		    [window flushWindow];
 		  }
 	      }
+*/
 	    [window flushWindow];
 	  default: 
 	    break;
 	}
     }
+
+  /* If we didn't move out of the window to the left or right, and if we
+didn't move beyond the bounds of the menu (?) and if we have a selected
+cell do the following */
 
   if (!weLeftMenu && !weRightMenu && !weWereOut
     && menuv_highlightedItemIndex != -1)
@@ -631,6 +665,8 @@ static float GSMenuBarHeight = 25.0; // a guess.
 	      [menuv_items_link objectAtIndex: lastIndex]];
 	  else if ([selectedCell action] && [selectedCell target])
 	    [menuv_popb performSelector:[selectedCell action] withObject:selectedCell];
+
+	  /* If we are a menu */
 
 	  if (menuv_menu)
 	    {
@@ -659,7 +695,9 @@ static float GSMenuBarHeight = 25.0; // a guess.
 	          [window flushWindow];
 	        }
 	    }
-	
+
+	  /* If we are a popup */
+
 	  if (menuv_popb)
 	    {
 	      [menuv_popb close];
@@ -667,6 +705,21 @@ static float GSMenuBarHeight = 25.0; // a guess.
 
         }
     }
+
+  /* If the mouse is released and there is no highlighted cell */
+
+  else if (menuv_highlightedItemIndex == -1)
+    {
+      NSLog(@"This is the popupbutton close if not selected test.\n");
+
+      if (menuv_popb)
+        {
+          [menuv_popb close];
+        }
+    }
+
+  /* We went to the left of the current NSMenuView. BOOL is a misnomer. */
+
   else if (weRightMenu)
     {
       NSPoint cP = [[self window] convertBaseToScreen: lastLocation];
@@ -698,11 +751,12 @@ static float GSMenuBarHeight = 25.0; // a guess.
 		    pressure: [event pressure]]];
 	}
     }
+
+  /* We went to the right of the current NSMenuView. BOOL is a misnomer. */
+
   else if (weLeftMenu)
     { /* The weLeftMenu case */
       NSPoint cP = [[self window] convertBaseToScreen: lastLocation];
-
-      NSLog(@"Urph.\n");
 
       selectedCell = [menuv_items_link objectAtIndex: lastIndex];
       if ([selectedCell hasSubmenu])

@@ -6,6 +6,10 @@
 	setMenu:, that will make the code sharing between NSMenu and
 	NSPopUp complete.
 
+	Also documented the event code a little. Interestingly enough by
+	doing this I know what needs to be looked at better. Suprise,
+	suprise.
+
 1999-07-19  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Source/NSTableView.m: very incomplete implementation.
