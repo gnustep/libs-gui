@@ -9,7 +9,7 @@
 	(winding_line, winding_curve): New functions.
 	(-windingCountAtPoint:): New method.
 	(-containsPoint:): Use -windingCountAtPoint: instead of
-	(-contributionToContains:): Don't flatten the path.
+	-contributionToContains:. Don't flatten the path.
 
 2005-01-09  Matt Rice  <ratmice@yahoo.com>
 	
