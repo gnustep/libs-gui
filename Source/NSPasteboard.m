@@ -322,12 +322,14 @@
   NSString	*d;
 
   if ([pboard types] containsObject: NSStringPboardType] == NO)
-    { *error = @"Bad types for encrypt service ... no string data";
+    {
+      *error = @"Bad types for encrypt service ... no string data";
       return;
     }
   s = [pboard stringForType: NSStringPboardType];
   if ([d length] == 0)
-    { *error = @"No data supplied for encrypt service";
+    {
+      *error = @"No data supplied for encrypt service";
       return;
     }
   s = [self encryptString: s];	// Do the real work
