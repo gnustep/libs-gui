@@ -1,3 +1,15 @@
+2002-09-22  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSBrowser.m
+	Removed unused ivar _numberOfRows from NSBrowserColumn. 
+	Made GSBrowserTitleCell a subclass of NSTableHeaderCell.
+	Corrected [scrollColumnToVisible:], so that the column becomes
+	visible but not always last. Adopted [scrollViaScroller:] to this
+	change. Inlined most private methods and optimized the
+	code. Reorganized [_performLoadOfColumn:] to remove code
+	duplication. Set the title of a column here and not each time
+	when drawing. 
+	
 2002-09-22 16:33  Alexander Malmberg  <alexander@malmberg.org>
 
 	* Source/NSTextView.m (-initWithFrame:textContainer:): Set
