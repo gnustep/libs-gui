@@ -1,10 +1,13 @@
-/*                                                    -*-objc-*-
+/* -*-objc-*-
    NSInputManager.h
 
    Copyright (C) 2001 Free Software Foundation, Inc.
 
    Author: Fred Kiefer <FredKiefer@gmx.de>
    Date: August 2001
+
+   Author: Nicola Pero <n.pero@mi.flashnet.it>
+   Date: December 2001
 
    This file is part of the GNUstep GUI Library.
 
@@ -28,6 +31,7 @@
 #define _GNUstep_H_NSInputManager
 
 #include <objc/Protocol.h>
+#include <objc/objc.h>
 #include <Foundation/NSGeometry.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSAttributedString.h>
@@ -37,9 +41,7 @@
 @class NSImage;
 
 @protocol NSTextInput
-// Marking text
-- (void) setMarkedText: (id)aString 
-	 selectedRange: (NSRange)selRange;
+- (void) setMarkedText: (id)aString  selectedRange: (NSRange)selRange;
 - (BOOL) hasMarkedText;
 - (NSRange) markedRange;
 - (NSRange) selectedRange;
@@ -55,25 +57,54 @@
 - (void) insertText: (id)aString;
 @end
 
+struct _GSInputManagerBinding 
+{
+  /* The character this binding is about.  */
+  unichar character;
+
+  /* The character is bound to different selectors according to the
+     various modifiers which can be used with the character.
+
+     There are eight selectors for the eight possibilities - each of
+     NSShiftKeyMask, NSControlKeyMask, NSAlternateKeyMask might be on
+     or off and each combination gives a different selector.
+
+     The index of the selector to use is given by
+
+     (modifiers & (NSShiftKeyMask | NSControlKeyMask | NSAlternateKeyMask)) / 2
+     
+     a NULL selector means use the default action */
+  SEL selector[8];
+};
+
+
+
 @interface NSInputManager: NSObject <NSTextInput>
+{
+  id _currentClient;
+  
+  /* An array of bindings.  */
+  struct _GSInputManagerBinding *_bindings;
+
+  /* The size of the array.  */
+  int _bindingsCount;
+}
 + (NSInputManager *) currentInputManager;
-+ (void) cycleToNextInputLanguage: (id)sender;
-+ (void) cycleToNextInputServerInLanguage: (id)sender;
+
+- (id) initWithName: (NSString *)inputServerName
+	       host: (NSString *)hostName;
 
 - (BOOL) handleMouseEvent: (NSEvent *)theMouseEvent;
-- (NSImage *) image;
-- (NSInputManager *) initWithName: (NSString *)inputServerName
-			    host: (NSString *)hostName;
+- (void) handleKeyboardEvents: (NSArray *)eventArray
+		       client: (id)client;
 - (NSString *) language;
 - (NSString *) localizedInputManagerName;
 - (void) markedTextAbandoned: (id)client;
 - (void) markedTextSelectionChanged: (NSRange)newSel
 			    client: (id)client;
-- (NSInputServer *) server;
 - (BOOL) wantsToDelayTextChangeNotifications;
 - (BOOL) wantsToHandleMouseEvents;
 - (BOOL) wantsToInterpretAllKeystrokes;
 @end
 
-#endif //_GNUstep_H_NSInputManager
-
+#endif /* _GNUstep_H_NSInputManager */
