@@ -110,7 +110,6 @@ APPKIT_EXPORT NSSize NSTokenSize;
   id		_wv;
   id            _contentView;
   id            _firstResponder;
-  id            _originalResponder;
   id            _futureFirstResponder;
   NSView        *_initialFirstResponder;
   id            _delegate;
