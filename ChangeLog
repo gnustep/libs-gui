@@ -1,3 +1,8 @@
+Thu Nov  9 09:49:07 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/GSInfoPanel.m ([GSInfoPanel -initWithDictionary:]): Use
+	Helvetica-Bold rather than Helvetica-BoldOblique for titles.
+
 2000-11-06  Adam Fedor  <fedor@gnu.org>
 
 	* Documentation: Move tmpl.texi files to texi and update GNUmakefile
