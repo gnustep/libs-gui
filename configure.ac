@@ -240,8 +240,8 @@ AC_CHECK_LIB(audiofile, afGetVirtualFrameSize, audio_ok=yes, audio_ok=no)
 if test $audio_ok = yes -a $enable_gsnd = yes; then
   AC_CHECK_HEADERS(audiofile.h)
   ADDITIONAL_DEPENDS="$ADDITIONAL_DEPENDS -laudiofile"
-  ADDITIONAL_INCLUDE_DIRS="$GRAPHIC_CFLAGS ${with_audiofile_include}"
-  ADDITIONAL_LIB_DIRS="$GRAPHIC_LFLAGS ${with_audiofile_library}"
+  ADDITIONAL_INCLUDE_DIRS="$ADDITIONAL_INCLUDE_DIRS ${with_audiofile_include}"
+  ADDITIONAL_LIB_DIRS="$ADDITIONAL_LIB_DIRS ${with_audiofile_library}"
   BUILD_GSND=gsnd
 fi
 AC_SUBST(BUILD_GSND)
