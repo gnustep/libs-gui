@@ -1177,7 +1177,7 @@ void __dummy_GMAppKit_functionForLinking() {}
     [self setFrameAutosaveName:frameAutosaveName];
 
 #ifdef GNU_GUI_LIBRARY
-  window_level = [unarchiver decodeIntWithName:@"level"];
+  _windowLevel = [unarchiver decodeIntWithName:@"level"];
 #endif
 
   [self setInitialFirstResponder: 
