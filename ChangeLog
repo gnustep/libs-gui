@@ -1,3 +1,15 @@
+1999-06-19  Michael Hanni  <mhanni@sprintmail.com>
+
+	* Images/common_Nibble.tiff: made inner gray area transparent.
+	* Source/NSTabView.m: new file. implemented, save for drawing and
+	event.
+	* Source/NSTabViewItem.m: new file. implemented, save for drawing
+	and event.
+
+	TabView should be fun to get drawing. :-) I'm going to follow
+Alfredo's lead by using a few drawn lines instead of bezier curves to draw
+the tabs for now (since xgps doesn't do bezier).
+
 1999-06-18  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Images/common_Nibble.tiff: new image for NSPopUpButton.

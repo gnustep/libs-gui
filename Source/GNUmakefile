@@ -102,6 +102,8 @@ NSSpellChecker.m \
 NSSpellServer.m \
 NSSplitView.m \
 NSStringDrawing.m \
+NSTabView.m \
+NSTabViewItem.m \
 NSText.m \
 NSTextContainer.m \
 NSTextField.m \
@@ -198,6 +200,8 @@ AppKit/NSSpellProtocol.h \
 AppKit/NSSpellServer.h \
 AppKit/NSSplitView.h \
 AppKit/NSStringDrawing.h \
+AppKit/NSTabView.h \
+AppKit/NSTabViewItem.h \
 AppKit/NSText.h \
 AppKit/NSTextAttachment.h \
 AppKit/NSTextContainer.h \

@@ -118,7 +118,7 @@
   list_items = [[NSPopUpButtonMatrix alloc] initWithFrame:frameRect];
   is_up = NO;
   pulls_down = flag;
-  selected_item = 2;
+  selected_item = 0;
 
   return self;
 }
