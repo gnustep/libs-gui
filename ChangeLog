@@ -1,7 +1,7 @@
 Wed Nov 24  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	The three new autolayout classes; code extremely stable, API
- 	experimental.  Documentation/example code forthcoming,
+ 	experimental.  Documentation/example code forthcoming.
 	* Source/GSHbox.m: New file.
 	* Source/GSTable.m: New file.
 	* Source/GSVbox.m: New file.
