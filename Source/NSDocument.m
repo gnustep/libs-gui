@@ -579,12 +579,56 @@
 
 - (BOOL)validateMenuItem: (NSMenuItem *)anItem
 {
-  if ([anItem action] == @selector(revertDocumentToSaved:))
-    return ([self fileName] != nil && [self isDocumentEdited]);
+  BOOL result = YES;
+  SEL  action = [anItem action];
 
   // FIXME should validate spa popup items; return YES if it's a native type.
+  if (sel_eq(action, @selector(revertDocumentToSaved:)))
+    {
+      result = ([self fileName] != nil && [self isDocumentEdited]);
+    }
+  else if (sel_eq(action, @selector(undo:)))
+    {
+      if(_undoManager == nil)
+	{
+	  result = NO;
+	}
+      else
+	{
+	  if([_undoManager canUndo])
+	    {
+	      [anItem setTitle: [_undoManager undoMenuItemTitle]];
+	      result = YES;
+	    }
+	  else
+	    {
+	      [anItem setTitle: [_undoManager undoMenuTitleForUndoActionName: @""]];
+	      result = NO;
+	    }
+	}
+    }
+  else if (sel_eq(action, @selector(redo:)))
+    {
+      if(_undoManager == nil)
+	{
+	  result = NO;
+	}
+      else
+	{
+	  if([_undoManager canRedo])
+	    {
+	      [anItem setTitle: [_undoManager redoMenuItemTitle]];
+	      result = YES;
+	    }
+	  else
+	    {
+	      [anItem setTitle: [_undoManager redoMenuTitleForUndoActionName: @""]];
+	      result = NO;
+	    }
+	}
+    }
     
-  return YES;
+  return result;
 }
 
 - (BOOL)validateUserInterfaceItem: (id <NSValidatedUserInterfaceItem>)anItem

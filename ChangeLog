@@ -1,3 +1,9 @@
+2005-01-16 06:39 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSDocument.m: In validateMenuItem: added code to 
+	properly set the undo/redo title and disable the menus when
+	appropriate.
+
 2005-01-15 05:59 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSDocument.m: Added undo:/redo: here.  Smarter use
