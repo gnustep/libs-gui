@@ -1,12 +1,11 @@
-/*
-   NSAffineTransform.m
+/** <title>NSAffineTransform.m</title>
 
    Copyright (C) 1996,1999 Free Software Foundation, Inc.
 
    Author: Ovidiu Predescu <ovidiu@net-community.com>
    Date: August 1997
    Author: Richard Frith-Macdonald <richard@brainstorm.co.uk>
-   Date: Mark 1999
+   Date: March 1999
    
    This file is part of the GNUstep GUI Library.
 

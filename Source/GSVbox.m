@@ -1,7 +1,6 @@
-/*
-   GSVbox.m
+/** <title>GSVbox</title>
 
-   The GSVbox class (a GNU extension)
+   <abstract>The GSVbox class (a GNU extension)</abstract>
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 

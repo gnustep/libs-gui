@@ -1,5 +1,4 @@
-/*
-   NSWindowController.m
+/** <title>NSWindowController</title>
 
    Copyright (C) 2000 Free Software Foundation, Inc.
 
@@ -184,7 +183,7 @@
     }
 }
 
-- (NSString *) windowFrameAutosaveName;
+- (NSString *) windowFrameAutosaveName
 {
   return _windowFrameAutosaveName;
 }

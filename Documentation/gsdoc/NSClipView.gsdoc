@@ -1,23 +1,29 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSClipView" prev="NSCell.html" next="NSCoderAdditions.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSClipView" next="NSColor" prev="NSCell" up="NSActionCell">
   <head>
     <title>NSClipView</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Ovidiu Predescu">
+      <email address="ovidiu@net-community.com">
+        ovidiu@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Richard Frith-Macdonald">
+      <email address="richard@brainstorm.co.uk">
+        richard@brainstorm.co.uk
+      </email>
+    </author>
+    <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSClipView</heading>
+      <heading>
+        Software documentation for the NSClipView class
+      </heading>
       <class name="NSClipView" super="NSView">
-        <declared>Gui/NSClipView.h</declared>
-        <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSClipView.h</declared>
+        <desc>
+        </desc>
         <method type="BOOL">
           <sel>acceptsFirstResponder</sel>
           <desc>
@@ -31,11 +37,6 @@
         </method>
         <method type="NSColor*">
           <sel>backgroundColor</sel>
-          <desc>
-          </desc>
-        </method>
-        <method type="BOOL">
-          <sel>becomeFirstResponder</sel>
           <desc>
           </desc>
         </method>
@@ -71,6 +72,11 @@
           </desc>
         </method>
         <method type="BOOL">
+          <sel>drawsBackground</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
           <sel>isFlipped</sel>
           <desc>
           </desc>
@@ -89,7 +95,7 @@
         </method>
         <method type="void">
           <sel>scrollToPoint:</sel>
-          <arg type="NSPoint">newOrigin</arg>
+          <arg type="NSPoint">point</arg>
           <desc>
           </desc>
         </method>
@@ -101,7 +107,7 @@
         </method>
         <method type="void">
           <sel>setBoundsOrigin:</sel>
-          <arg type="NSPoint">aPoint</arg>
+          <arg type="NSPoint">point</arg>
           <desc>
           </desc>
         </method>
@@ -136,6 +142,12 @@
           </desc>
         </method>
         <method type="void">
+          <sel>setDrawsBackground:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
           <sel>setFrameOrigin:</sel>
           <arg type="NSPoint">aPoint</arg>
           <desc>
@@ -150,12 +162,6 @@
         <method type="void">
           <sel>setFrameSize:</sel>
           <arg type="NSSize">aSize</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
-          <sel>setNextKeyView:</sel>
-          <arg type="NSView*">aView</arg>
           <desc>
           </desc>
         </method>
@@ -178,6 +184,25 @@
           </desc>
         </method>
       </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSClipView(BackendMethods) category
+      </heading>
+      <category name="BackendMethods" class="NSClipView">
+        <declared>AppKit/NSClipView.h</declared>
+        <desc>
+        </desc>
+        <method type="void">
+          <sel>_translateToPoint:</sel>
+          <arg type="NSPoint">point</arg>
+          <sel>oldPoint:</sel>
+          <arg type="NSPoint">oldPoint</arg>
+          <desc>
+          </desc>
+        </method>
+      </category>
     </chapter>
   </body>
 </gsdoc>

@@ -1,5 +1,4 @@
-/*
-   NSImageView.m
+/** <title>NSImageView</title>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 

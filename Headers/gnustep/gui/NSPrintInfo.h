@@ -2,11 +2,11 @@
 
    <abstract>Stores information used in printing.</abstract>
 
-   Copyright <copy>(C) 1996,1997 Free Software Foundation, Inc.</copy>
+   Copyright (C) 1996,1997 Free Software Foundation, Inc.
 
-   Author: <author name="Simon Frankau"><email>sgf@frankau.demon.co.uk</email></author>
+   Author: Simon Frankau <sgf@frankau.demon.co.uk>
    Date: July 1997
-   Author: <author name="Adam Fedor"><email>fedor@gnu.org</email></author>
+   Author: Adam Fedor <fedor@gnu.org>
    Date: Oct 2001
    
    This file is part of the GNUstep GUI Library.

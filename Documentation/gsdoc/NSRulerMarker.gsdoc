@@ -1,23 +1,27 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSRulerMarker" prev="NSResponder.html" next="NSRulerView.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSRulerMarker" next="NSRulerView" prev="NSResponder" up="NSActionCell">
   <head>
     <title>NSRulerMarker</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Fred Kiefer">
+      <email address="FredKiefer@gmx.de">
+        FredKiefer@gmx.de
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>Displays a symbol in a NSRulerView.</abstract>
+    <copy>2001 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSRulerMarker</heading>
+      <heading>
+        Software documentation for the NSRulerMarker class
+      </heading>
       <class name="NSRulerMarker" super="NSObject">
-        <declared>Gui/NSRulerMarker.h</declared>
+        <declared>AppKit/NSRulerMarker.h</declared>
         <conform>NSCopying</conform>
-          <desc>
-          </desc>
+        <conform>NSCoding</conform>
+        <desc>
+        </desc>
         <method type="void">
           <sel>drawRect:</sel>
           <arg type="NSRect">aRect</arg>
@@ -45,7 +49,7 @@
           <sel>markerLocation:</sel>
           <arg type="float">location</arg>
           <sel>image:</sel>
-          <arg type="NSImage *">anImage</arg>
+          <arg type="NSImage*">anImage</arg>
           <sel>imageOrigin:</sel>
           <arg type="NSPoint">imageOrigin</arg>
           <desc>
@@ -125,6 +129,8 @@
         <method type="BOOL">
           <sel>trackMouse:</sel>
           <arg type="NSEvent*">theEvent</arg>
+          <sel>adding:</sel>
+          <arg type="BOOL">flag</arg>
           <desc>
           </desc>
         </method>

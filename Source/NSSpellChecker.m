@@ -1,15 +1,14 @@
-/* 
-   NSSpellChecker.m
+/** <title>NSSpellChecker</title>
 
-   Class to provide the graphical interface to the spell checking
-   service.
+   <abstract>Class to provide the graphical interface to the spell checking
+   service.</abstract>
 
    Copyright (C) 2001, 1996 Free Software Foundation, Inc.
 
-   Author:  Gregory John Casamento <greg_casamento@yahoo.com>
+   Author: Gregory John Casamento <borgheron@yahoo.com>
    Date: 2001
 
-   Author:  Scott Christley <scottc@net-community.com>
+   Author: Scott Christley <scottc@net-community.com>
    Date: 1996
    
    This file is part of the GNUstep GUI Library.
@@ -228,7 +227,7 @@ static int __documentTag = 0;
   return _serverProxy;
 }
 
-- (void)_populateDictionaryPulldown: (NSArray *)dictionaries;
+- (void)_populateDictionaryPulldown: (NSArray *)dictionaries
 {
   [_dictionaryPulldown removeAllItems];
   [_dictionaryPulldown addItemsWithTitles: dictionaries];

@@ -1,7 +1,6 @@
-/*
-   NSTextAttachment.m
+/** <title>NSTextAttachment</title>
 
-   Classes to represent text attachments.
+   <abstract>Classes to represent text attachments.</abstract>
    
    NSTextAttachment is used to represent text attachments. When inline, 
    text attachments appear as the value of the NSAttachmentAttributeName 
@@ -15,7 +14,7 @@
 
    Copyright (C) 2000 Free Software Foundation, Inc.
 
-   Author:  Fred Kiefer <fredkiefer@gmx.de>
+   Author: Fred Kiefer <FredKiefer@gmx.de>
    Date: June 2000
    
    This file is part of the GNUstep GUI Library.

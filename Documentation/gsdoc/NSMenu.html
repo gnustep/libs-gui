@@ -1,311 +1,408 @@
-<html><head>
- <title>NSMenu</title>
-</head>
-<body>
-<a href ="NSMatrix.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSMenuItem.html">[Next] </a>
-<h1>NSMenu</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSMenu</a></h2>
-<h2><a name ="NSMenu">NSMenu</a></h2>
-<p><b>Declared in: </b> Gui/NSMenu.h</p>
-<p><b>Inherits from: </b> NSObject</p>
-<p><b>Conforms to: </b> NSCoding
-</p>
-<hr>
+<html>
+  <head>
+    <title>NSMenu</title>
+  </head>
+  <body>
+    <h1>NSMenu</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Fred Kiefer(<a href="mailto:FredKiefer@gmx.de"><code>
+        FredKiefer@gmx.de
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>David Lazaro Saz(<a href="mailto:khelekir@encomix.es"><code>
+        khelekir@encomix.es
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Michael Hanni(<a href="mailto:mhanni@sprintmail.com"><code>
+        mhanni@sprintmail.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Felipe A. Rodriguez(<a href="mailto:far@ix.netcom.com"><code>
+        far@ix.netcom.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Ovidiu Predescu(<a href="mailto:ovidiu@net-community.com"><code>
+        ovidiu@net-community.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <p>Copyright: (C) 1999 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the NSMenu class
+      </h1>
+    <h2><a name="class$NSMenu">NSMenu</a> : NSObject</h2>
+    Declared: AppKit/NSMenu.h<br />
+    Conform: NSCoding<br />
+    Conform: NSCopying<br />
+    <p>
 
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSMenu.html#method-0">+menuZone</a>
-<li ><a href ="NSMenu.html#method-1">+setMenuZone:</a>
-<li ><a href ="NSMenu.html#method-2">-addItem:</a>
-<li ><a href ="NSMenu.html#method-3">-addItemWithTitle:action:keyEquivalent:</a>
-<li ><a href ="NSMenu.html#method-4">-attachedMenu</a>
-<li ><a href ="NSMenu.html#method-5">-autoenablesItems</a>
-<li ><a href ="NSMenu.html#method-6">-contextMenuRepresentation</a>
-<li ><a href ="NSMenu.html#method-7">-helpRequested:</a>
-<li ><a href ="NSMenu.html#method-8">-indexOfItem:</a>
-<li ><a href ="NSMenu.html#method-9">-indexOfItemWithRepresentedObject:</a>
-<li ><a href ="NSMenu.html#method-10">-indexOfItemWithSubmenu:</a>
-<li ><a href ="NSMenu.html#method-11">-indexOfItemWithTag:</a>
-<li ><a href ="NSMenu.html#method-12">-indexOfItemWithTarget:andAction:</a>
-<li ><a href ="NSMenu.html#method-13">-indexOfItemWithTitle:</a>
-<li ><a href ="NSMenu.html#method-14">-initWithTitle:</a>
-<li ><a href ="NSMenu.html#method-15">-insertItem:</a>
-<li ><a href ="NSMenu.html#method-16">-insertItemWithTitle:action:keyEquivalent:</a>
-<li ><a href ="NSMenu.html#method-17">-isAttached</a>
-<li ><a href ="NSMenu.html#method-18">-isTornOff</a>
-<li ><a href ="NSMenu.html#method-19">-itemArray</a>
-<li ><a href ="NSMenu.html#method-20">-itemAtIndex:</a>
-<li ><a href ="NSMenu.html#method-21">-itemChanged:</a>
-<li ><a href ="NSMenu.html#method-22">-itemWithTag:</a>
-<li ><a href ="NSMenu.html#method-23">-itemWithTitle:</a>
-<li ><a href ="NSMenu.html#method-24">-locationForSubmenu:</a>
-<li ><a href ="NSMenu.html#method-25">-menuChangedMessagesEnabled</a>
-<li ><a href ="NSMenu.html#method-26">-menuRepresentation</a>
-<li ><a href ="NSMenu.html#method-27">-numberOfItems</a>
-<li ><a href ="NSMenu.html#method-28">-performActionForItemAtIndex:</a>
-<li ><a href ="NSMenu.html#method-29">-performKeyEquivalent:</a>
-<li ><a href ="NSMenu.html#method-30">-removeItem:</a>
-<li ><a href ="NSMenu.html#method-31">-removeItemAtIndex:</a>
-<li ><a href ="NSMenu.html#method-32">-setAutoenablesItems:</a>
-<li ><a href ="NSMenu.html#method-33">-setContextMenuRepresentation:</a>
-<li ><a href ="NSMenu.html#method-34">-setMenuChangedMessagesEnabled:</a>
-<li ><a href ="NSMenu.html#method-35">-setMenuRepresentation:</a>
-<li ><a href ="NSMenu.html#method-36">-setSubmenu:forItem:</a>
-<li ><a href ="NSMenu.html#method-37">-setSupermenu:</a>
-<li ><a href ="NSMenu.html#method-38">-setTearOffMenuRepresentation:</a>
-<li ><a href ="NSMenu.html#method-39">-setTitle:</a>
-<li ><a href ="NSMenu.html#method-40">-sizeToFit</a>
-<li ><a href ="NSMenu.html#method-41">-submenuAction:</a>
-<li ><a href ="NSMenu.html#method-42">-supermenu</a>
-<li ><a href ="NSMenu.html#method-43">-tearOffMenuRepresentation</a>
-<li ><a href ="NSMenu.html#method-44">-title</a>
-<li ><a href ="NSMenu.html#method-45">-update</a>
-</ul>
-<hr><h2>Class Methods </h2>
-<h3><a name ="method-0">menuZone</a></h3>
-+ (NSZone*) <b>menuZone</b>;<br>
+            </p>
+    <h3>menuZone</a></h3>
+    + (NSZone*) <b>menuZone</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-1">setMenuZone:</a></h3>
-+ (void) <b>setMenuZone:</b> (NSZone*)zone;<br>
+              </p>
+    <hr />
+    <h3>popUpContextMenu:withEvent:forView:</a></h3>
+    + (void) <b>popUpContextMenu:</b> (<a href="#class$NSMenu">NSMenu</a>*)menu<b> withEvent:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)event<b> forView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)view;<br />
+    <p>
 
-          
- <hr>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-2">addItem:</a></h3>
-- (void) <b>addItem:</b> (id&#60;NSMenuItem>)newItem;<br>
+              </p>
+    <hr />
+    <h3>setMenuZone:</a></h3>
+    + (void) <b>setMenuZone:</b> (NSZone*)zone;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-3">addItemWithTitle:action:keyEquivalent:</a></h3>
-- (id&#60;NSMenuItem>) <b>addItemWithTitle:</b> (NSString*)aString <b>action:</b> (SEL)aSelector <b>keyEquivalent:</b> (NSString*)keyEquiv;<br>
+              </p>
+    <hr />
+    <h3>addItem:</a></h3>
+    - (void) <b>addItem:</b> (id)newItem;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-4">attachedMenu</a></h3>
-- (NSMenu*) <b>attachedMenu</b>;<br>
+              </p>
+    <hr />
+    <h3>addItemWithTitle:action:keyEquivalent:</a></h3>
+    - (id) <b>addItemWithTitle:</b> (NSString*)aString<b> action:</b> (SEL)aSelector<b> keyEquivalent:</b> (NSString*)keyEquiv;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-5">autoenablesItems</a></h3>
-- (BOOL) <b>autoenablesItems</b>;<br>
+              </p>
+    <hr />
+    <h3>attachedMenu</a></h3>
+    - (<a href="#class$NSMenu">NSMenu</a>*) <b>attachedMenu</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-6">contextMenuRepresentation</a></h3>
-- (id) <b>contextMenuRepresentation</b>;<br>
+              </p>
+    <hr />
+    <h3>autoenablesItems</a></h3>
+    - (BOOL) <b>autoenablesItems</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-7">helpRequested:</a></h3>
-- (void) <b>helpRequested:</b> (NSEvent*)event;<br>
+              </p>
+    <hr />
+    <h3>helpRequested:</a></h3>
+    - (void) <b>helpRequested:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)event;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-8">indexOfItem:</a></h3>
-- (int) <b>indexOfItem:</b> (id&#60;NSMenuItem>)anObject;<br>
+              </p>
+    <hr />
+    <h3>indexOfItem:</a></h3>
+    - (int) <b>indexOfItem:</b> (id)anObject;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-9">indexOfItemWithRepresentedObject:</a></h3>
-- (int) <b>indexOfItemWithRepresentedObject:</b> (id)anObject;<br>
+              </p>
+    <hr />
+    <h3>indexOfItemWithRepresentedObject:</a></h3>
+    - (int) <b>indexOfItemWithRepresentedObject:</b> (id)anObject;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-10">indexOfItemWithSubmenu:</a></h3>
-- (int) <b>indexOfItemWithSubmenu:</b> (NSMenu*)anObject;<br>
+              </p>
+    <hr />
+    <h3>indexOfItemWithSubmenu:</a></h3>
+    - (int) <b>indexOfItemWithSubmenu:</b> (<a href="#class$NSMenu">NSMenu</a>*)anObject;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-11">indexOfItemWithTag:</a></h3>
-- (int) <b>indexOfItemWithTag:</b> (int)aTag;<br>
+              </p>
+    <hr />
+    <h3>indexOfItemWithTag:</a></h3>
+    - (int) <b>indexOfItemWithTag:</b> (int)aTag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-12">indexOfItemWithTarget:andAction:</a></h3>
-- (int) <b>indexOfItemWithTarget:</b> (id)anObject <b>andAction:</b> (SEL)actionSelector;<br>
+              </p>
+    <hr />
+    <h3>indexOfItemWithTarget:andAction:</a></h3>
+    - (int) <b>indexOfItemWithTarget:</b> (id)anObject<b> andAction:</b> (SEL)actionSelector;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-13">indexOfItemWithTitle:</a></h3>
-- (int) <b>indexOfItemWithTitle:</b> (NSString*)aTitle;<br>
+              </p>
+    <hr />
+    <h3>indexOfItemWithTitle:</a></h3>
+    - (int) <b>indexOfItemWithTitle:</b> (NSString*)aTitle;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-14">initWithTitle:</a></h3>
-- (id) <b>initWithTitle:</b> (NSString*)aTitle;<br>
+              </p>
+    <hr />
+    <h3>initWithTitle:</a></h3>
+    - (id) <b>initWithTitle:</b> (NSString*)aTitle;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-15">insertItem:</a></h3>
-- (void) <b>insertItem:</b> (id&#60;NSMenuItem>)newItem;<br>
+              </p>
+    <hr />
+    <h3>insertItem:atIndex:</a></h3>
+    - (void) <b>insertItem:</b> (id)newItem<b> atIndex:</b> (int)index;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-16">insertItemWithTitle:action:keyEquivalent:</a></h3>
-- (id&#60;NSMenuItem>) <b>insertItemWithTitle:</b> (NSString*)aString <b>action:</b> (SEL)aSelector <b>keyEquivalent:</b> (NSString*)keyEquiv;<br>
+              </p>
+    <hr />
+    <h3>insertItemWithTitle:action:keyEquivalent:atIndex:</a></h3>
+    - (id) <b>insertItemWithTitle:</b> (NSString*)aString<b> action:</b> (SEL)aSelector<b> keyEquivalent:</b> (NSString*)charCode<b> atIndex:</b> (unsigned int)index;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-17">isAttached</a></h3>
-- (BOOL) <b>isAttached</b>;<br>
+              </p>
+    <hr />
+    <h3>isAttached</a></h3>
+    - (BOOL) <b>isAttached</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-18">isTornOff</a></h3>
-- (BOOL) <b>isTornOff</b>;<br>
+              </p>
+    <hr />
+    <h3>isTornOff</a></h3>
+    - (BOOL) <b>isTornOff</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-19">itemArray</a></h3>
-- (NSArray*) <b>itemArray</b>;<br>
+              </p>
+    <hr />
+    <h3>itemArray</a></h3>
+    - (NSArray*) <b>itemArray</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-20">itemAtIndex:</a></h3>
-- (id&#60;NSMenuItem>) <b>itemAtIndex:</b> (int)index;<br>
+              </p>
+    <hr />
+    <h3>itemAtIndex:</a></h3>
+    - (id) <b>itemAtIndex:</b> (int)index;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-21">itemChanged:</a></h3>
-- (void) <b>itemChanged:</b> (id&#60;NSMenuItem>)anObject;<br>
+              </p>
+    <hr />
+    <h3>itemChanged:</a></h3>
+    - (void) <b>itemChanged:</b> (id)anObject;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-22">itemWithTag:</a></h3>
-- (id&#60;NSMenuItem>) <b>itemWithTag:</b> (int)aTag;<br>
+              </p>
+    <hr />
+    <h3>itemWithTag:</a></h3>
+    - (id) <b>itemWithTag:</b> (int)aTag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-23">itemWithTitle:</a></h3>
-- (id&#60;NSMenuItem>) <b>itemWithTitle:</b> (NSString*)aString;<br>
+              </p>
+    <hr />
+    <h3>itemWithTitle:</a></h3>
+    - (id) <b>itemWithTitle:</b> (NSString*)aString;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-24">locationForSubmenu:</a></h3>
-- (NSPoint) <b>locationForSubmenu:</b> (NSMenu*)aSubmenu;<br>
+              </p>
+    <hr />
+    <h3>locationForSubmenu:</a></h3>
+    - (NSPoint) <b>locationForSubmenu:</b> (<a href="#class$NSMenu">NSMenu</a>*)aSubmenu;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-25">menuChangedMessagesEnabled</a></h3>
-- (BOOL) <b>menuChangedMessagesEnabled</b>;<br>
+              </p>
+    <hr />
+    <h3>menuChangedMessagesEnabled</a></h3>
+    - (BOOL) <b>menuChangedMessagesEnabled</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-26">menuRepresentation</a></h3>
-- (id) <b>menuRepresentation</b>;<br>
+              </p>
+    <hr />
+    <h3>menuRepresentation</a></h3>
+    - (id) <b>menuRepresentation</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-27">numberOfItems</a></h3>
-- (int) <b>numberOfItems</b>;<br>
+              </p>
+    <hr />
+    <h3>numberOfItems</a></h3>
+    - (int) <b>numberOfItems</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-28">performActionForItemAtIndex:</a></h3>
-- (void) <b>performActionForItemAtIndex:</b> (int)index;<br>
+              </p>
+    <hr />
+    <h3>performActionForItemAtIndex:</a></h3>
+    - (void) <b>performActionForItemAtIndex:</b> (int)index;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-29">performKeyEquivalent:</a></h3>
-- (BOOL) <b>performKeyEquivalent:</b> (NSEvent*)theEvent;<br>
+              </p>
+    <hr />
+    <h3>performKeyEquivalent:</a></h3>
+    - (BOOL) <b>performKeyEquivalent:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-30">removeItem:</a></h3>
-- (void) <b>removeItem:</b> (id&#60;NSMenuItem>)anItem;<br>
+              </p>
+    <hr />
+    <h3>removeItem:</a></h3>
+    - (void) <b>removeItem:</b> (id)anItem;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-31">removeItemAtIndex:</a></h3>
-- (void) <b>removeItemAtIndex:</b> (int)index;<br>
+              </p>
+    <hr />
+    <h3>removeItemAtIndex:</a></h3>
+    - (void) <b>removeItemAtIndex:</b> (int)index;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-32">setAutoenablesItems:</a></h3>
-- (void) <b>setAutoenablesItems:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>setAutoenablesItems:</a></h3>
+    - (void) <b>setAutoenablesItems:</b> (BOOL)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-33">setContextMenuRepresentation:</a></h3>
-- (void) <b>setContextMenuRepresentation:</b> (id)menuRep;<br>
+              </p>
+    <hr />
+    <h3>setMenuChangedMessagesEnabled:</a></h3>
+    - (void) <b>setMenuChangedMessagesEnabled:</b> (BOOL)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-34">setMenuChangedMessagesEnabled:</a></h3>
-- (void) <b>setMenuChangedMessagesEnabled:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>setMenuRepresentation:</a></h3>
+    - (void) <b>setMenuRepresentation:</b> (id)menuRep;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-35">setMenuRepresentation:</a></h3>
-- (void) <b>setMenuRepresentation:</b> (id)menuRep;<br>
+              </p>
+    <hr />
+    <h3>setSubmenu:forItem:</a></h3>
+    - (void) <b>setSubmenu:</b> (<a href="#class$NSMenu">NSMenu</a>*)aMenu<b> forItem:</b> (id)anItem;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-36">setSubmenu:forItem:</a></h3>
-- (void) <b>setSubmenu:</b> (NSMenu*)aMenu <b>forItem:</b> (id&#60;NSMenuItem>)anItem;<br>
+              </p>
+    <hr />
+    <h3>setSupermenu:</a></h3>
+    - (void) <b>setSupermenu:</b> (<a href="#class$NSMenu">NSMenu</a>*)supermenu;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-37">setSupermenu:</a></h3>
-- (void) <b>setSupermenu:</b> (NSMenu*)supermenu;<br>
+              </p>
+    <hr />
+    <h3>setTitle:</a></h3>
+    - (void) <b>setTitle:</b> (NSString*)aTitle;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-38">setTearOffMenuRepresentation:</a></h3>
-- (void) <b>setTearOffMenuRepresentation:</b> (id)menuRep;<br>
+              </p>
+    <hr />
+    <h3>sizeToFit</a></h3>
+    - (void) <b>sizeToFit</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-39">setTitle:</a></h3>
-- (void) <b>setTitle:</b> (NSString*)aString;<br>
+              </p>
+    <hr />
+    <h3>submenuAction:</a></h3>
+    - (void) <b>submenuAction:</b> (id)sender;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-40">sizeToFit</a></h3>
-- (void) <b>sizeToFit</b>;<br>
+              </p>
+    <hr />
+    <h3>supermenu</a></h3>
+    - (<a href="#class$NSMenu">NSMenu</a>*) <b>supermenu</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-41">submenuAction:</a></h3>
-- (void) <b>submenuAction:</b> (id)sender;<br>
+              </p>
+    <hr />
+    <h3>title</a></h3>
+    - (NSString*) <b>title</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-42">supermenu</a></h3>
-- (NSMenu*) <b>supermenu</b>;<br>
+              </p>
+    <hr />
+    <h3>update</a></h3>
+    - (void) <b>update</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-43">tearOffMenuRepresentation</a></h3>
-- (id) <b>tearOffMenuRepresentation</b>;<br>
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the NSMenu(GNUstepExtra)
+        category
+      </h1>
+    <h2><a href="#class$NSMenu">NSMenu</a>(<a name="category$NSMenu(GNUstepExtra)">GNUstepExtra</a>)</h2>
+    Declared: AppKit/NSMenu.h<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-44">title</a></h3>
-- (NSString*) <b>title</b>;<br>
+            </p>
+    <h3>_ownedByPopUp</a></h3>
+    - (BOOL) <b>_ownedByPopUp</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-45">update</a></h3>
-- (void) <b>update</b>;<br>
+              </p>
+    <hr />
+    <h3>_rightMouseDisplay:</a></h3>
+    - (void) <b>_rightMouseDisplay:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+    <p>
 
-          
- <hr>
-</body>
+              </p>
+    <hr />
+    <h3>_setOwnedByPopUp:</a></h3>
+    - (void) <b>_setOwnedByPopUp:</b> (<a href="NSPopUpButtonCell.html#class$NSPopUpButtonCell">NSPopUpButtonCell</a>*)popUp;<br />
+    <p>
 
- </html>
+              </p>
+    <hr />
+    <h3>close</a></h3>
+    - (void) <b>close</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>closeTransient</a></h3>
+    - (void) <b>closeTransient</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>display</a></h3>
+    - (void) <b>display</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>displayTransient</a></h3>
+    - (void) <b>displayTransient</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isFollowTransient</a></h3>
+    - (BOOL) <b>isFollowTransient</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isPartlyOffScreen</a></h3>
+    - (BOOL) <b>isPartlyOffScreen</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>nestedCheckOffScreen</a></h3>
+    - (void) <b>nestedCheckOffScreen</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>nestedSetFrameOrigin:</a></h3>
+    - (void) <b>nestedSetFrameOrigin:</b> (NSPoint)aPoint;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>shiftOnScreen</a></h3>
+    - (void) <b>shiftOnScreen</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>window</a></h3>
+    - (<a href="NSWindow.html#class$NSWindow">NSWindow</a>*) <b>window</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the
+        NSObject(NSMenuActionResponder)
+        category
+      </h1>
+    <h2>NSObject(<a name="category$NSObject(NSMenuActionResponder)">NSMenuActionResponder</a>)</h2>
+    Declared: AppKit/NSMenu.h<br />
+    <p>
+
+            </p>
+    <h3>validateMenuItem:</a></h3>
+    - (BOOL) <b>validateMenuItem:</b> (NSMenuItem*)aMenuItem;<br />
+    <p>
+
+              </p>
+    <hr />
+  </body>
+</html>

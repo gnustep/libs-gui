@@ -1,7 +1,6 @@
-/* 
-   NSBox.m
+/** <title>NSBox</title>
 
-   Simple box view that can display a border and title
+   <abstract>Simple box view that can display a border and title</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 

@@ -1,23 +1,29 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSResponder" prev="NSProgressIndicator.html" next="NSRulerMarker.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSResponder" next="NSRulerMarker" prev="NSProgressIndicator" up="NSActionCell">
   <head>
     <title>NSResponder</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>
+      Abstract class which is basis of command and event
+      processing
+    </abstract>
+    <copy>1996,1999 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSResponder</heading>
+      <heading>
+        Software documentation for the NSResponder class
+      </heading>
       <class name="NSResponder" super="NSObject">
-        <declared>Gui/NSResponder.h</declared>
+        <declared>AppKit/NSResponder.h</declared>
         <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <desc>
+        </desc>
         <method type="BOOL">
           <sel>acceptsFirstResponder</sel>
           <desc>
@@ -113,6 +119,12 @@
           </desc>
         </method>
         <method type="void">
+          <sel>encodeWithCoder:</sel>
+          <arg type="NSCoder*">aCoder</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
           <sel>flagsChanged:</sel>
           <arg type="NSEvent*">theEvent</arg>
           <desc>
@@ -132,6 +144,12 @@
         <method type="void">
           <sel>indent:</sel>
           <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="id">
+          <sel>initWithCoder:</sel>
+          <arg type="NSCoder*">aDecoder</arg>
           <desc>
           </desc>
         </method>
@@ -208,6 +226,24 @@
         </method>
         <method type="NSMenu*">
           <sel>menu</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>middleMouseDown:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>middleMouseDragged:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>middleMouseUp:</sel>
+          <arg type="NSEvent*">theEvent</arg>
           <desc>
           </desc>
         </method>
@@ -450,6 +486,12 @@
           </desc>
         </method>
         <method type="void">
+          <sel>scrollWheel:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
           <sel>selectAll:</sel>
           <arg type="id">sender</arg>
           <desc>
@@ -481,13 +523,7 @@
         </method>
         <method type="void">
           <sel>setInterfaceStyle:</sel>
-          <arg type="NSInterfaceStyle">interfaceStyle</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
-          <sel>setMark:</sel>
-          <arg type="id">sender</arg>
+          <arg type="NSInterfaceStyle">aStyle</arg>
           <desc>
           </desc>
         </method>
@@ -530,6 +566,8 @@
         <method type="BOOL">
           <sel>tryToPerform:</sel>
           <arg type="SEL">anAction</arg>
+          <sel>with:</sel>
+          <arg type="id">anObject</arg>
           <desc>
           </desc>
         </method>
@@ -546,9 +584,9 @@
         </method>
         <method type="id">
           <sel>validRequestorForSendType:</sel>
-          <arg type="NSString*">sendType</arg>
+          <arg type="NSString*">typeSent</arg>
           <sel>returnType:</sel>
-          <arg type="NSString*">returnType</arg>
+          <arg type="NSString*">typeReturned</arg>
           <desc>
           </desc>
         </method>

@@ -1,10 +1,12 @@
-/* NSGraphicsContext - GNUstep drawing context class.
+/** <title>NSGraphicsContext</title>
+
+   <abstract>GNUstep drawing context class.</abstract>
 
    Copyright (C) 1998 Free Software Foundation, Inc.
 
-   Written by:  Adam Fedor <fedor@gnu.org>
+   Written by: Adam Fedor <fedor@gnu.org>
    Date: Nov 1998
-   Updated by:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+   Updated by: Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: Feb 1999
    
    This file is part of the GNUStep GUI Library.
@@ -137,7 +139,7 @@ NSGraphicsContext	*GSCurrentContext()
   return [GSCurrentContext() isDrawingToScreen];
 }
 
-+ defaultContextWithInfo: (NSDictionary *)info;
++ defaultContextWithInfo: (NSDictionary *)info
 {
   return [self graphicsContextWithAttributes: info];
 }
@@ -192,7 +194,7 @@ NSGraphicsContext	*GSCurrentContext()
 
 /* Just remove ourselves from the context list so we will be dealloced on
    the next autorelease pool end */
-- (void) destroyContext;
+- (void) destroyContext
 {
   [contextLock lock];
   [contextList removeObject: self];
@@ -1936,77 +1938,77 @@ NSGraphicsContext	*GSCurrentContext()
 /*-------------------------------------------------------------------------*/
 /* Window Extension Ops */
 /*-------------------------------------------------------------------------*/
-- (void) DPSwindow: (float) x : (float) y : (float) w : (float) h : (int) type : (int *) num ;
+- (void) DPSwindow: (float) x : (float) y : (float) w : (float) h : (int) type : (int *) num 
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPStermwindow: (int) num ;
+- (void) DPStermwindow: (int) num
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSstylewindow: (int) style : (int) num ;
+- (void) DPSstylewindow: (int) style : (int) num
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPStitlewindow: (const char *) window_title : (int) num ;
+- (void) DPStitlewindow: (const char *) window_title : (int) num
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSminiwindow: (int) num ;
+- (void) DPSminiwindow: (int) num
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSwindowdevice: (int) num ;
+- (void) DPSwindowdevice: (int) num
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSwindowdeviceround: (int) num ;
+- (void) DPSwindowdeviceround: (int) num
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPScurrentwindow: (int *) num ;
+- (void) DPScurrentwindow: (int *) num
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSorderwindow: (int) op : (int) otherWin : (int) winNum ;
+- (void) DPSorderwindow: (int) op : (int) otherWin : (int) winNum
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSmovewindow: (float) x : (float) y : (int) num ;
+- (void) DPSmovewindow: (float) x : (float) y : (int) num
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSupdatewindow: (int) win ;
+- (void) DPSupdatewindow: (int) win
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSplacewindow: (float) x : (float) y : (float) w : (float) h : (int) win ;
+- (void) DPSplacewindow: (float) x : (float) y : (float) w : (float) h : (int) win
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSfrontwindow: (int *) num ;
+- (void) DPSfrontwindow: (int *) num
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSfindwindow: (float) x : (float) y : (int) op : (int) otherWin : (float *) lx : (float *) ly : (int *) winFound : (int *) didFind ;
+- (void) DPSfindwindow: (float) x : (float) y : (int) op : (int) otherWin : (float *) lx : (float *) ly : (int *) winFound : (int *) didFind
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPScurrentwindowbounds: (int) num : (float *) x : (float *) y : (float *) w : (float *) h ;
+- (void) DPScurrentwindowbounds: (int) num : (float *) x : (float *) y : (float *) w : (float *) h
 {
   [self subclassResponsibility: _cmd];
 }
@@ -2016,112 +2018,112 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSsetsendexposed: (int) truth : (int) num ;
+- (void) DPSsetsendexposed: (int) truth : (int) num
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSsetautofill: (int) truth : (int) num ;
+- (void) DPSsetautofill: (int) truth : (int) num
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPScurrentwindowalpha: (int) win : (int *) alpha ;
+- (void) DPScurrentwindowalpha: (int) win : (int *) alpha
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPScountscreenlist: (int) context : (int *) count ;
+- (void) DPScountscreenlist: (int) context : (int *) count
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSscreenlist: (int) context : (int) count : (int *) windows ;
+- (void) DPSscreenlist: (int) context : (int) count : (int *) windows
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSsetowner: (int) owner : (int) win ;
+- (void) DPSsetowner: (int) owner : (int) win
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPScurrentowner: (int) win : (int *) owner ;
+- (void) DPScurrentowner: (int) win : (int *) owner
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSsetwindowtype: (int) type : (int) win ;
+- (void) DPSsetwindowtype: (int) type : (int) win
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSsetwindowlevel: (int) level : (int) win ;
+- (void) DPSsetwindowlevel: (int) level : (int) win
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPScurrentwindowlevel: (int) win : (int *) level ;
+- (void) DPScurrentwindowlevel: (int) win : (int *) level
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPScountwindowlist: (int) context : (int *) count ;
+- (void) DPScountwindowlist: (int) context : (int *) count
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSwindowlist: (int) context : (int) count : (int *) windows ;
+- (void) DPSwindowlist: (int) context : (int) count : (int *) windows
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSsetwindowdepthlimit: (int) limit : (int) win ;
+- (void) DPSsetwindowdepthlimit: (int) limit : (int) win
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPScurrentwindowdepthlimit: (int) win : (int *) limit ;
+- (void) DPScurrentwindowdepthlimit: (int) win : (int *) limit
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPScurrentwindowdepth: (int) win : (int *) depth ;
+- (void) DPScurrentwindowdepth: (int) win : (int *) depth
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSsetdefaultdepthlimit: (int) limit ;
+- (void) DPSsetdefaultdepthlimit: (int) limit
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPScurrentdefaultdepthlimit: (int *) limit ;
+- (void) DPScurrentdefaultdepthlimit: (int *) limit
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSsetmaxsize: (float) width : (float) height : (int) win ;
+- (void) DPSsetmaxsize: (float) width : (float) height : (int) win
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSsetminsize: (float) width : (float) height : (int) win ;
+- (void) DPSsetminsize: (float) width : (float) height : (int) win
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSsetresizeincrements: (float) width : (float) height : (int) win ;
+- (void) DPSsetresizeincrements: (float) width : (float) height : (int) win
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSflushwindowrect: (float) x : (float) y : (float) w : (float) h : (int) win ;
+- (void) DPSflushwindowrect: (float) x : (float) y : (float) w : (float) h : (int) win
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPScapturemouse: (int) win ;
+- (void) DPScapturemouse: (int) win
 {
   [self subclassResponsibility: _cmd];
 }
@@ -2131,7 +2133,7 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSsetinputfocus: (int) win ;
+- (void) DPSsetinputfocus: (int) win
 {
   [self subclassResponsibility: _cmd];
 }
@@ -2146,27 +2148,27 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSstandardcursor: (int) style : (void **) cid ;
+- (void) DPSstandardcursor: (int) style : (void **) cid
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSimagecursor: (float) hotx : (float) hoty : (float) w : (float) h : (int) colors : (const char *) image : (void **) cid ;
+- (void) DPSimagecursor: (float) hotx : (float) hoty : (float) w : (float) h : (int) colors : (const char *) image : (void **) cid
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSsetcursorcolor: (float) fr : (float) fg : (float) fb : (float) br : (float) bg : (float) bb : (void *) cid ;
+- (void) DPSsetcursorcolor: (float) fr : (float) fg : (float) fb : (float) br : (float) bg : (float) bb : (void *) cid
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSstyleoffsets: (float *) r : (float *) l : (float *) t : (float *) b : (int) style ;
+- (void) DPSstyleoffsets: (float *) r : (float *) l : (float *) t : (float *) b : (int) style
 {
   [self subclassResponsibility: _cmd];
 }
 
-- (void) DPSdocedited: (int) edited : (int) window ;
+- (void) DPSdocedited: (int) edited : (int) window
 {
   [self subclassResponsibility: _cmd];
 }

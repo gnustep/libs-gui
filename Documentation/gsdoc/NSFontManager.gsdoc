@@ -1,32 +1,34 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSFontManager" prev="NSFont.html" next="NSFontPanel.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSFontManager" next="NSFontPanel" prev="NSFont" up="NSDocumentController">
   <head>
     <title>NSFontManager</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Fred Kiefer">
+      <email address="FredKiefer@gmx.de">
+        FredKiefer@gmx.de
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>Manages system and user fonts</abstract>
+    <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSFontManager</heading>
+      <heading>
+        Software documentation for the NSFontManager class
+      </heading>
       <class name="NSFontManager" super="NSObject">
-        <declared>Gui/NSFontManager.h</declared>
-        <conform>NSObject</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSFontManager.h</declared>
+        <desc>
+        </desc>
         <method type="void" factory="yes">
           <sel>setFontManagerFactory:</sel>
-          <arg type="Class">aClass</arg>
+          <arg type="Class">class</arg>
           <desc>
           </desc>
         </method>
         <method type="void" factory="yes">
           <sel>setFontPanelFactory:</sel>
-          <arg type="Class">factoryId</arg>
+          <arg type="Class">class</arg>
           <desc>
           </desc>
         </method>
@@ -70,13 +72,13 @@
         </method>
         <method type="NSFont*">
           <sel>convertFont:</sel>
-          <arg type="NSFont*">aFont</arg>
+          <arg type="NSFont*">fontObject</arg>
           <desc>
           </desc>
         </method>
         <method type="NSFont*">
           <sel>convertFont:</sel>
-          <arg type="NSFont*">aFont</arg>
+          <arg type="NSFont*">fontObject</arg>
           <sel>toFace:</sel>
           <arg type="NSString*">typeface</arg>
           <desc>
@@ -84,7 +86,7 @@
         </method>
         <method type="NSFont*">
           <sel>convertFont:</sel>
-          <arg type="NSFont*">aFont</arg>
+          <arg type="NSFont*">fontObject</arg>
           <sel>toFamily:</sel>
           <arg type="NSString*">family</arg>
           <desc>
@@ -92,23 +94,23 @@
         </method>
         <method type="NSFont*">
           <sel>convertFont:</sel>
-          <arg type="NSFont*">aFont</arg>
+          <arg type="NSFont*">fontObject</arg>
           <sel>toHaveTrait:</sel>
-          <arg type="NSFontTraitMask">fontTrait</arg>
+          <arg type="NSFontTraitMask">trait</arg>
           <desc>
           </desc>
         </method>
         <method type="NSFont*">
           <sel>convertFont:</sel>
-          <arg type="NSFont*">aFont</arg>
+          <arg type="NSFont*">fontObject</arg>
           <sel>toNotHaveTrait:</sel>
-          <arg type="NSFontTraitMask">fontTraitMask</arg>
+          <arg type="NSFontTraitMask">trait</arg>
           <desc>
           </desc>
         </method>
         <method type="NSFont*">
           <sel>convertFont:</sel>
-          <arg type="NSFont*">aFont</arg>
+          <arg type="NSFont*">fontObject</arg>
           <sel>toSize:</sel>
           <arg type="float">size</arg>
           <desc>
@@ -116,7 +118,9 @@
         </method>
         <method type="NSFont*">
           <sel>convertWeight:</sel>
-          <arg type="BOOL">increaseFlag</arg>
+          <arg type="BOOL">upFlag</arg>
+          <sel>ofFont:</sel>
+          <arg type="NSFont*">fontObject</arg>
           <desc>
           </desc>
         </method>
@@ -127,7 +131,7 @@
         </method>
         <method type="NSMenu*">
           <sel>fontMenu:</sel>
-          <arg type="BOOL">createFlag</arg>
+          <arg type="BOOL">create</arg>
           <desc>
           </desc>
         </method>
@@ -141,7 +145,7 @@
         </method>
         <method type="NSFontPanel*">
           <sel>fontPanel:</sel>
-          <arg type="BOOL">createFlag</arg>
+          <arg type="BOOL">create</arg>
           <desc>
           </desc>
         </method>
@@ -149,9 +153,11 @@
           <sel>fontWithFamily:</sel>
           <arg type="NSString*">family</arg>
           <sel>traits:</sel>
-          <arg type="NSFontTraitMask">fontTraitMask</arg>
+          <arg type="NSFontTraitMask">traits</arg>
           <sel>weight:</sel>
           <arg type="int">weight</arg>
+          <sel>size:</sel>
+          <arg type="float">size</arg>
           <desc>
           </desc>
         </method>
@@ -166,8 +172,10 @@
           </desc>
         </method>
         <method type="NSString*">
-          <sel> localizedNameForFamily:</sel>
+          <sel>localizedNameForFamily:</sel>
           <arg type="NSString*">family</arg>
+          <sel>face:</sel>
+          <arg type="NSString*">face</arg>
           <desc>
           </desc>
         </method>
@@ -225,13 +233,13 @@
         </method>
         <method type="void">
           <sel>setFontMenu:</sel>
-          <arg type="NSMenu*">aMenu</arg>
+          <arg type="NSMenu*">newMenu</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setSelectedFont:</sel>
-          <arg type="NSFont*">aFont</arg>
+          <arg type="NSFont*">fontObject</arg>
           <sel>isMultiple:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
@@ -239,31 +247,37 @@
         </method>
         <method type="NSFontTraitMask">
           <sel>traitsOfFont:</sel>
-          <arg type="NSFont*">aFont</arg>
+          <arg type="NSFont*">fontObject</arg>
           <desc>
           </desc>
         </method>
         <method type="int">
           <sel>weightOfFont:</sel>
-          <arg type="NSFont*">aFont</arg>
+          <arg type="NSFont*">fontObject</arg>
           <desc>
           </desc>
         </method>
-        <method type="void">
-          <sel>changeFont:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-          </desc>
-        </method>
+      </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSObject(NSFontManagerDelegate)
+        category
+      </heading>
+      <category name="NSFontManagerDelegate" class="NSObject">
+        <declared>AppKit/NSFontManager.h</declared>
+        <desc>
+        </desc>
         <method type="BOOL">
           <sel>fontManager:</sel>
-          <arg type="id">theFontManager</arg>
+          <arg type="id">sender</arg>
           <sel>willIncludeFont:</sel>
           <arg type="NSString*">fontName</arg>
           <desc>
           </desc>
         </method>
-      </class>
+      </category>
     </chapter>
   </body>
 </gsdoc>

@@ -1,23 +1,27 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSColor" prev="NSCoderAdditions.html" next="NSColorList.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSColor" next="NSColorList" prev="NSClipView" up="NSActionCell">
   <head>
     <title>NSColor</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>The colorful color class</abstract>
+    <copy>1996, 1998 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSColor</heading>
-      <class name="NSColor" super="NSResponder">
-        <declared>Gui/NSColor.h</declared>
+      <heading>
+        Software documentation for the NSColor class
+      </heading>
+      <class name="NSColor" super="NSObject">
+        <declared>AppKit/NSColor.h</declared>
         <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <conform>NSCopying</conform>
+        <desc>
+        </desc>
         <method type="NSColor*" factory="yes">
           <sel>blackColor</sel>
           <desc>
@@ -35,6 +39,12 @@
         </method>
         <method type="NSColor*" factory="yes">
           <sel>clearColor</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSColor*" factory="yes">
+          <sel>colorForControlTint:</sel>
+          <arg type="NSControlTint">controlTint</arg>
           <desc>
           </desc>
         </method>
@@ -71,6 +81,8 @@
         <method type="NSColor*" factory="yes">
           <sel>colorWithCalibratedWhite:</sel>
           <arg type="float">white</arg>
+          <sel>alpha:</sel>
+          <arg type="float">alpha</arg>
           <desc>
           </desc>
         </method>
@@ -91,6 +103,8 @@
           <arg type="float">yellow</arg>
           <sel>black:</sel>
           <arg type="float">black</arg>
+          <sel>alpha:</sel>
+          <arg type="float">alpha</arg>
           <desc>
           </desc>
         </method>
@@ -121,6 +135,14 @@
         <method type="NSColor*" factory="yes">
           <sel>colorWithDeviceWhite:</sel>
           <arg type="float">white</arg>
+          <sel>alpha:</sel>
+          <arg type="float">alpha</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSColor*" factory="yes">
+          <sel>colorWithPatternImage:</sel>
+          <arg type="NSImage*">image</arg>
           <desc>
           </desc>
         </method>
@@ -186,6 +208,16 @@
         </method>
         <method type="NSColor*" factory="yes">
           <sel>gridColor</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSColor*" factory="yes">
+          <sel>headerColor</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSColor*" factory="yes">
+          <sel>headerTextColor</sel>
           <desc>
           </desc>
         </method>
@@ -301,6 +333,11 @@
           </desc>
         </method>
         <method type="NSColor*" factory="yes">
+          <sel>windowBackgroundColor</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSColor*" factory="yes">
           <sel>windowFrameColor</sel>
           <desc>
           </desc>
@@ -327,7 +364,9 @@
         </method>
         <method type="NSColor*">
           <sel>blendedColorWithFraction:</sel>
-          <arg type="float">fractiono</arg>
+          <arg type="float">fraction</arg>
+          <sel>ofColor:</sel>
+          <arg type="NSColor*">aColor</arg>
           <desc>
           </desc>
         </method>
@@ -365,6 +404,8 @@
         <method type="NSColor*">
           <sel>colorUsingColorSpaceName:</sel>
           <arg type="NSString*">colorSpace</arg>
+          <sel>device:</sel>
+          <arg type="NSDictionary*">deviceDescription</arg>
           <desc>
           </desc>
         </method>
@@ -391,9 +432,11 @@
           <sel>magenta:</sel>
           <arg type="float*">magenta</arg>
           <sel>yellow:</sel>
-          <arg type="float *">yellow</arg>
+          <arg type="float*">yellow</arg>
           <sel>black:</sel>
           <arg type="float*">black</arg>
+          <sel>alpha:</sel>
+          <arg type="float*">alpha</arg>
           <desc>
           </desc>
         </method>
@@ -403,7 +446,7 @@
           <sel>saturation:</sel>
           <arg type="float*">saturation</arg>
           <sel>brightness:</sel>
-          <arg type="float *">brightness</arg>
+          <arg type="float*">brightness</arg>
           <sel>alpha:</sel>
           <arg type="float*">alpha</arg>
           <desc>
@@ -415,7 +458,7 @@
           <sel>green:</sel>
           <arg type="float*">green</arg>
           <sel>blue:</sel>
-          <arg type="float *">blue</arg>
+          <arg type="float*">blue</arg>
           <sel>alpha:</sel>
           <arg type="float*">alpha</arg>
           <desc>
@@ -424,6 +467,8 @@
         <method type="void">
           <sel>getWhite:</sel>
           <arg type="float*">white</arg>
+          <sel>alpha:</sel>
+          <arg type="float*">alpha</arg>
           <desc>
           </desc>
         </method>
@@ -434,7 +479,7 @@
         </method>
         <method type="NSColor*">
           <sel>highlightWithLevel:</sel>
-          <arg type="float">highlightLevel</arg>
+          <arg type="float">level</arg>
           <desc>
           </desc>
         </method>
@@ -458,6 +503,11 @@
           <desc>
           </desc>
         </method>
+        <method type="NSImage*">
+          <sel>patternImage</sel>
+          <desc>
+          </desc>
+        </method>
         <method type="float">
           <sel>redComponent</sel>
           <desc>
@@ -475,7 +525,7 @@
         </method>
         <method type="NSColor*">
           <sel>shadowWithLevel:</sel>
-          <arg type="float">shadowLevel</arg>
+          <arg type="float">level</arg>
           <desc>
           </desc>
         </method>
@@ -496,6 +546,22 @@
           </desc>
         </method>
       </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSCoder(NSCoderAdditions) category
+      </heading>
+      <category name="NSCoderAdditions" class="NSCoder">
+        <declared>AppKit/NSColor.h</declared>
+        <desc>
+        </desc>
+        <method type="NSColor*">
+          <sel>decodeNXColor</sel>
+          <desc>
+          </desc>
+        </method>
+      </category>
     </chapter>
   </body>
 </gsdoc>

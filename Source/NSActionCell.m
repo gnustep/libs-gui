@@ -1,7 +1,6 @@
-/* 
-   NSActionCell.m
+/** <title>NSActionCell</title>
 
-   Abstract cell for target/action paradigm
+   <abstract>Abstract cell for target/action paradigm</abstract>
 
    Copyright (C) 1996-1999 Free Software Foundation, Inc.
 

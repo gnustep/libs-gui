@@ -1,23 +1,24 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSPopUpButtonCell" prev="NSPopUpButton.html" next="NSPrintInfo.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSPopUpButtonCell" next="NSPrintInfo" prev="NSPopUpButton" up="NSActionCell">
   <head>
     <title>NSPopUpButtonCell</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Michael Hanni">
+      <email address="mhanni@sprintmail.com">
+        mhanni@sprintmail.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <copy>1999 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSPopUpButtonCell</heading>
+      <heading>
+        Software documentation for the NSPopUpButtonCell class
+      </heading>
       <class name="NSPopUpButtonCell" super="NSMenuItemCell">
-        <declared>Gui/NSPopUpButtonCell.h</declared>
-        <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSPopUpButtonCell.h</declared>
+        <desc>
+        </desc>
         <method type="void">
           <sel>addItemWithTitle:</sel>
           <arg type="NSString*">title</arg>
@@ -43,6 +44,8 @@
         <method type="void">
           <sel>attachPopUpWithFrame:</sel>
           <arg type="NSRect">cellFrame</arg>
+          <sel>inView:</sel>
+          <arg type="NSView*">controlView</arg>
           <desc>
           </desc>
         </method>
@@ -70,13 +73,13 @@
         </method>
         <method type="int">
           <sel>indexOfItemWithTag:</sel>
-          <arg type="int">tag</arg>
+          <arg type="int">aTag</arg>
           <desc>
           </desc>
         </method>
         <method type="int">
           <sel>indexOfItemWithTarget:</sel>
-          <arg type="id">target</arg>
+          <arg type="id">aTarget</arg>
           <sel>andAction:</sel>
           <arg type="SEL">actionSelector</arg>
           <desc>
@@ -96,6 +99,8 @@
         <method type="id">
           <sel>initTextCell:</sel>
           <arg type="NSString*">stringValue</arg>
+          <sel>pullsDown:</sel>
+          <arg type="BOOL">pullDown</arg>
           <desc>
           </desc>
         </method>
@@ -151,12 +156,6 @@
           </desc>
         </method>
         <method type="void">
-          <sel>performClick:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
           <sel>performClickWithFrame:</sel>
           <arg type="NSRect">frame</arg>
           <sel>inView:</sel>
@@ -191,11 +190,6 @@
           <desc>
           </desc>
         </method>
-        <method type="id&lt;NSMenuItem&gt;">
-          <sel>selectedItem</sel>
-          <desc>
-          </desc>
-        </method>
         <method type="void">
           <sel>selectItem:</sel>
           <arg type="id&lt;NSMenuItem&gt;">item</arg>
@@ -211,6 +205,11 @@
         <method type="void">
           <sel>selectItemWithTitle:</sel>
           <arg type="NSString*">title</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="id&lt;NSMenuItem&gt;">
+          <sel>selectedItem</sel>
           <desc>
           </desc>
         </method>

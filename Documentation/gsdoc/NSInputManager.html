@@ -1,71 +1,190 @@
-<html><head>
- <title>NSInputManager</title>
-</head>
-<body>
-<a href ="NSImageView.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSInputServer.html">[Next] </a>
-<h1>NSInputManager</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSInputManager</a></h2>
-<h2><a name ="NSInputManager">NSInputManager</a></h2>
-<p><b>Declared in: </b> Gui/NSInputManager.h</p>
-<p><b>Inherits from: </b> NSObject</p>
-<p><b>Conforms to: </b> NSTextInput
-</p>
-<hr>
+<html>
+  <head>
+    <title>NSInputManager</title>
+  </head>
+  <body>
+    <h1>NSInputManager</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Fred Kiefer(<a href="mailto:FredKiefer@gmx.de"><code>
+        FredKiefer@gmx.de
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <p>Copyright: (C) 2001 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the NSInputManager class
+      </h1>
+    <h2><a name="class$NSInputManager">NSInputManager</a> : NSObject</h2>
+    Declared: AppKit/NSInputManager.h<br />
+    Conform: <a href="#protocol$(NSTextInput)">NSTextInput</a><br />
+    <p>
 
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSInputManager.html#method-0">+currentInputManager</a>
-<li ><a href ="NSInputManager.html#method-1">-initWithName:</a>
-<li ><a href ="NSInputManager.html#method-2">-localizedInputManagerName</a>
-<li ><a href ="NSInputManager.html#method-3">-markedTextSelectionChanged:</a>
-<li ><a href ="NSInputManager.html#method-4">-markedTextWillBeAbandoned:</a>
-<li ><a href ="NSInputManager.html#method-5">-wantsToInterpretAllKeystrokes</a>
-</ul>
-<hr><h2>Class Methods </h2>
-<h3><a name ="method-0">currentInputManager</a></h3>
-+ (NSInputManager*) <b>currentInputManager</b>;<br>
+            </p>
+    <h3>currentInputManager</a></h3>
+    + (<a href="#class$NSInputManager">NSInputManager</a>*) <b>currentInputManager</b>;<br />
+    <p>
 
-          
- <hr>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-1">initWithName:</a></h3>
-- (NSInputManager*) <b>initWithName:</b> (NSString*)inputServerName;<br>
+              </p>
+    <hr />
+    <h3>cycleToNextInputLanguage:</a></h3>
+    + (void) <b>cycleToNextInputLanguage:</b> (id)sender;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-2">localizedInputManagerName</a></h3>
-- (NSString*) <b>localizedInputManagerName</b>;<br>
+              </p>
+    <hr />
+    <h3>cycleToNextInputServerInLanguage:</a></h3>
+    + (void) <b>cycleToNextInputServerInLanguage:</b> (id)sender;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-3">markedTextSelectionChanged:</a></h3>
-- (void) <b>markedTextSelectionChanged:</b> (NSRange)aRange;<br>
+              </p>
+    <hr />
+    <h3>handleMouseEvent:</a></h3>
+    - (BOOL) <b>handleMouseEvent:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theMouseEvent;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-4">markedTextWillBeAbandoned:</a></h3>
-- (void) <b>markedTextWillBeAbandoned:</b> (id)sender;<br>
+              </p>
+    <hr />
+    <h3>image</a></h3>
+    - (<a href="NSImage.html#class$NSImage">NSImage</a>*) <b>image</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-5">wantsToInterpretAllKeystrokes</a></h3>
-- (BOOL) <b>wantsToInterpretAllKeystrokes</b>;<br>
+              </p>
+    <hr />
+    <h3>initWithName:host:</a></h3>
+    - (<a href="#class$NSInputManager">NSInputManager</a>*) <b>initWithName:</b> (NSString*)inputServerName<b> host:</b> (NSString*)hostName;<br />
+    <p>
 
-          
- <hr>
-</body>
+              </p>
+    <hr />
+    <h3>language</a></h3>
+    - (NSString*) <b>language</b>;<br />
+    <p>
 
- </html>
+              </p>
+    <hr />
+    <h3>localizedInputManagerName</a></h3>
+    - (NSString*) <b>localizedInputManagerName</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>markedTextAbandoned:</a></h3>
+    - (void) <b>markedTextAbandoned:</b> (id)client;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>markedTextSelectionChanged:client:</a></h3>
+    - (void) <b>markedTextSelectionChanged:</b> (NSRange)newSel<b> client:</b> (id)client;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>server</a></h3>
+    - (<a href="NSInputServer.html#class$NSInputServer">NSInputServer</a>*) <b>server</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>wantsToDelayTextChangeNotifications</a></h3>
+    - (BOOL) <b>wantsToDelayTextChangeNotifications</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>wantsToHandleMouseEvents</a></h3>
+    - (BOOL) <b>wantsToHandleMouseEvents</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>wantsToInterpretAllKeystrokes</a></h3>
+    - (BOOL) <b>wantsToInterpretAllKeystrokes</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the NSTextInput protocol
+      </h1>
+    <h2><a name="protocol$(NSTextInput)">NSTextInput</a></h2>
+    Declared: AppKit/NSInputManager.h<br />
+    <p>
+
+            </p>
+    <h3>attributedSubstringFromRange:</a></h3>
+    - (NSAttributedString*) <b>attributedSubstringFromRange:</b> (NSRange)theRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>characterIndexForPoint:</a></h3>
+    - (unsigned int) <b>characterIndexForPoint:</b> (NSPoint)thePoint;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>conversationIdentifier</a></h3>
+    - (long) <b>conversationIdentifier</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>doCommandBySelector:</a></h3>
+    - (void) <b>doCommandBySelector:</b> (SEL)aSelector;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>firstRectForCharacterRange:</a></h3>
+    - (NSRect) <b>firstRectForCharacterRange:</b> (NSRange)theRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>hasMarkedText</a></h3>
+    - (BOOL) <b>hasMarkedText</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>insertText:</a></h3>
+    - (void) <b>insertText:</b> (id)aString;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>markedRange</a></h3>
+    - (NSRange) <b>markedRange</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>selectedRange</a></h3>
+    - (NSRange) <b>selectedRange</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setMarkedText:selectedRange:</a></h3>
+    - (void) <b>setMarkedText:</b> (id)aString<b> selectedRange:</b> (NSRange)selRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>unmarkText</a></h3>
+    - (void) <b>unmarkText</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>validAttributesForMarkedText</a></h3>
+    - (NSArray*) <b>validAttributesForMarkedText</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+  </body>
+</html>

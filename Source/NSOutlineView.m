@@ -1,7 +1,6 @@
-/* 
-   NSOutlineView.h
+/** <title>NSOutlineView</title>
 
-   The outline class.
+   <abstract>The outline class.</abstract>
    
    Copyright (C) 2001 Free Software Foundation, Inc.
 

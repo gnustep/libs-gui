@@ -1,1104 +1,1334 @@
-<html><head>
- <title>NSWindow</title>
-</head>
-<body>
-<a href ="NSView.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSWindowController.html">[Next] </a>
-<h1>NSWindow</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-<dt>James Dessart
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSWindow</a></h2>
-<h2><a name ="NSWindow">NSWindow</a></h2>
-<p><b>Declared in: </b> Gui/NSWindow.h</p>
-<p><b>Inherits from: </b> NSResponder</p>
-<p><b>Conforms to: </b> NSCoding
-</p>
-<hr>
+<html>
+  <head>
+    <title>NSWindow</title>
+  </head>
+  <body>
+    <h1>NSWindow</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Scott Christley(<a href="mailto:scottc@net-community.com"><code>
+        scottc@net-community.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Felipe A. Rodriguez(<a href="mailto:far@ix.netcom.com"><code>
+        far@ix.netcom.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Richard Frith-Macdonald(<a href="mailto:richard@brainstorm.co.uk"><code>
+        richard@brainstorm.co.uk
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <blockquote>
+The window class    </blockquote>
+    <p>Copyright: (C) 1996 Free Software Foundation, Inc.</p>
+    <h1>NSWindow</h1>
+    <p>
 
-          <p>
-
-          Instances of the NSWindow class handle on-screen windows, their associated
-          NSViews, and events generate by the user.  An NSWindow's size is defined by its
-          frame rectangle, which encompasses its entire structure, and its content rectangle,
-          which includes only the content.
+        Instances of the NSWindow class handle on-screen
+        windows, their associated NSViews, and events generate
+        by the user. An NSWindow's size is defined by its frame
+        rectangle, which encompasses its entire structure,
+        and its content rectangle, which includes only the content.
           </p>
+    <p>
 
-
-          <p>
-
-          Every NSWindow has a content view, the NSView which forms the root of the
-          window's view hierarchy.  This view can be set using the <code>setContentView:</code>
-          method, and accessed through the <code>contentView</code> method.  
-          <code>setContentView:</code> replaces the default content view created by NSWindow.
+        Every NSWindow has a content view, the NSView which forms
+        the root of the window's view hierarchy. This view can be
+        set using the <code>setContentView:</code> method, and
+        accessed through the <code>contentView</code> method.
+        <code>setContentView:</code> replaces the default
+        content view created by NSWindow.
           </p>
+    <p>
 
-
-          <p>
-
-          Other views may be added to the window by using the content view's 
-          <code>addSubview:</code> method.  These subviews can also have subviews added, forming
-          a tree structure, the view hierarchy.  When an NSWindow must display itself, it causes
-          this hierarchy to draw itself.  Leaf nodes in the view hierarchy are drawn last,
-          causing them to potentially obscure views further up in the hierarchy.
+        Other views may be added to the window by using the
+        content view's <code>addSubview:</code> method. These
+        subviews can also have subviews added, forming a tree
+        structure, the view hierarchy. When an NSWindow must
+        display itself, it causes this hierarchy to draw
+        itself. Leaf nodes in the view hierarchy are drawn
+        last, causing them to potentially obscure views further
+        up in the hierarchy.
           </p>
+    <p>
 
-
-          <p>
-
-          A delegate can be specified for an NSWindow, which will receive notifications of
-          events pertaining to the window.  The delegate is set using <code>setDelegate:</code>,
-          and can be retrieved using <code>delegate</code>.  The delegate can restrain resizing
-          by implementing the <code>windowWillResize: toSize:</code> method, or control the closing
-          of the window by implementing <code>windowShouldClose:</code>.
+        A delegate can be specified for an NSWindow, which will
+        receive notifications of events pertaining to the
+        window. The delegate is set using
+        <code>setDelegate:</code>, and can be retrieved using
+        <code>delegate</code>. The delegate can restrain
+        resizing by implementing the
+        <code>windowWillResize: toSize:</code> method, or
+        control the closing of the window by implementing
+        <code>windowShouldClose:</code>.
           </p>
-
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSWindow.html#method-0">+contentRectForFrameRect:</a>
-<li ><a href ="NSWindow.html#method-1">+defaultDepthLimit</a>
-<li ><a href ="NSWindow.html#method-2">+frameRectForContentRect:</a>
-<li ><a href ="NSWindow.html#method-3">+menuChanged:</a>
-<li ><a href ="NSWindow.html#method-4">+minFrameWidthWithTitle:styleMask:</a>
-<li ><a href ="NSWindow.html#method-5">+removeFrameUsingName:</a>
-<li ><a href ="NSWindow.html#method-6">-acceptsMouseMovedEvents</a>
-<li ><a href ="NSWindow.html#method-7">-areCursorRectsEnabled</a>
-<li ><a href ="NSWindow.html#method-8">-aspectRatio</a>
-<li ><a href ="NSWindow.html#method-9">-backgroundColor</a>
-<li ><a href ="NSWindow.html#method-10">-backingType</a>
-<li ><a href ="NSWindow.html#method-11">-becomeKeyWindow</a>
-<li ><a href ="NSWindow.html#method-12">-becomeMainWindow</a>
-<li ><a href ="NSWindow.html#method-13">-cacheImageInRect:</a>
-<li ><a href ="NSWindow.html#method-14">-canBecomeKeyWindow</a>
-<li ><a href ="NSWindow.html#method-15">-canBecomeMainWindow</a>
-<li ><a href ="NSWindow.html#method-16">-canStoreColor</a>
-<li ><a href ="NSWindow.html#method-17">-cascadeTopLeftFromPoint:</a>
-<li ><a href ="NSWindow.html#method-18">-center</a>
-<li ><a href ="NSWindow.html#method-19">-close</a>
-<li ><a href ="NSWindow.html#method-20">-constrainFrameRect:</a>
-<li ><a href ="NSWindow.html#method-21">-contentView</a>
-<li ><a href ="NSWindow.html#method-22">-convertBaseToScreen:</a>
-<li ><a href ="NSWindow.html#method-23">-convertScreenToBase:</a>
-<li ><a href ="NSWindow.html#method-24">-currentEvent</a>
-<li ><a href ="NSWindow.html#method-25">-dataWithEPSInsideRect:</a>
-<li ><a href ="NSWindow.html#method-26">-deepestScreen</a>
-<li ><a href ="NSWindow.html#method-27">-defaultButtonCell</a>
-<li ><a href ="NSWindow.html#method-28">-delegate</a>
-<li ><a href ="NSWindow.html#method-29">-deminiaturize:</a>
-<li ><a href ="NSWindow.html#method-30">-depthLimit</a>
-<li ><a href ="NSWindow.html#method-31">-deviceDescription</a>
-<li ><a href ="NSWindow.html#method-32">-disableCursorRects</a>
-<li ><a href ="NSWindow.html#method-33">-disableFlushWindow</a>
-<li ><a href ="NSWindow.html#method-34">-disableKeyEquivalentForDefaultButtonCell</a>
-<li ><a href ="NSWindow.html#method-35">-discardCachedImage</a>
-<li ><a href ="NSWindow.html#method-36">-discardCursorRects</a>
-<li ><a href ="NSWindow.html#method-37">-discardEventsMatchingMask:beforeEvent:</a>
-<li ><a href ="NSWindow.html#method-38">-display</a>
-<li ><a href ="NSWindow.html#method-39">-displayIfNeeded</a>
-<li ><a href ="NSWindow.html#method-40">-dragImage:at:offset:event:pasteboard:source:slideBack:</a>
-<li ><a href ="NSWindow.html#method-41">-enableCursorRects</a>
-<li ><a href ="NSWindow.html#method-42">-enableFlushWindow</a>
-<li ><a href ="NSWindow.html#method-43">-enableKeyEquivalentForDefaultButtonCell</a>
-<li ><a href ="NSWindow.html#method-44">-endEditingFor:</a>
-<li ><a href ="NSWindow.html#method-45">-fax:</a>
-<li ><a href ="NSWindow.html#method-46">-fieldEditor:</a>
-<li ><a href ="NSWindow.html#method-47">-firstResponder</a>
-<li ><a href ="NSWindow.html#method-48">-flushWindow</a>
-<li ><a href ="NSWindow.html#method-49">-flushWindowIfNeeded</a>
-<li ><a href ="NSWindow.html#method-50">-frame</a>
-<li ><a href ="NSWindow.html#method-51">-frameAutosaveName</a>
-<li ><a href ="NSWindow.html#method-52">-gState</a>
-<li ><a href ="NSWindow.html#method-53">-hasDynamicDepthLimit</a>
-<li ><a href ="NSWindow.html#method-54">-hidesOnDeactivate</a>
-<li ><a href ="NSWindow.html#method-56">-initWithContentRect:styleMask:backing:</a>
-<li ><a href ="NSWindow.html#method-57">-initWithContentRect:styleMask:backing:defer:screen:</a>
-<li ><a href ="NSWindow.html#method-55">-initialFirstResponder</a>
-<li ><a href ="NSWindow.html#method-58">-interfaceStyle</a>
-<li ><a href ="NSWindow.html#method-59">-invalidateCursorRectsForView:</a>
-<li ><a href ="NSWindow.html#method-60">-isAutodisplay</a>
-<li ><a href ="NSWindow.html#method-61">-isDocumentEdited</a>
-<li ><a href ="NSWindow.html#method-62">-isExcludedFromWindowsMenu</a>
-<li ><a href ="NSWindow.html#method-63">-isFlushWindowDisabled</a>
-<li ><a href ="NSWindow.html#method-64">-isKeyWindow</a>
-<li ><a href ="NSWindow.html#method-65">-isMainWindow</a>
-<li ><a href ="NSWindow.html#method-66">-isMiniaturized</a>
-<li ><a href ="NSWindow.html#method-67">-isOneShot</a>
-<li ><a href ="NSWindow.html#method-68">-isReleasedWhenClosed</a>
-<li ><a href ="NSWindow.html#method-69">-isVisible</a>
-<li ><a href ="NSWindow.html#method-70">-isZoomed;</a>
-<li ><a href ="NSWindow.html#method-71">-keyDown:</a>
-<li ><a href ="NSWindow.html#method-72">-keyViewSelectionDirection</a>
-<li ><a href ="NSWindow.html#method-73">-level</a>
-<li ><a href ="NSWindow.html#method-74">-makeFirstResponder:</a>
-<li ><a href ="NSWindow.html#method-75">-makeKeyAndOrderFront:</a>
-<li ><a href ="NSWindow.html#method-76">-makeKeyWindow</a>
-<li ><a href ="NSWindow.html#method-77">-makeMainWindow</a>
-<li ><a href ="NSWindow.html#method-78">-maxSize</a>
-<li ><a href ="NSWindow.html#method-82">-minSize</a>
-<li ><a href ="NSWindow.html#method-79">-miniaturize:</a>
-<li ><a href ="NSWindow.html#method-80">-miniwindowImage</a>
-<li ><a href ="NSWindow.html#method-81">-miniwindowTitle</a>
-<li ><a href ="NSWindow.html#method-83">-mouseLocationOutsideOfEventStream</a>
-<li ><a href ="NSWindow.html#method-84">-nextEventMatchingMask:</a>
-<li ><a href ="NSWindow.html#method-85">-nextEventMatchingMask:untilDate:inMode:dequeue:</a>
-<li ><a href ="NSWindow.html#method-86">-orderBack:</a>
-<li ><a href ="NSWindow.html#method-87">-orderFront:</a>
-<li ><a href ="NSWindow.html#method-88">-orderFrontRegardless</a>
-<li ><a href ="NSWindow.html#method-89">-orderOut:</a>
-<li ><a href ="NSWindow.html#method-90">-orderWindow:relativeTo:</a>
-<li ><a href ="NSWindow.html#method-91">-performClose:</a>
-<li ><a href ="NSWindow.html#method-92">-performMiniaturize:</a>
-<li ><a href ="NSWindow.html#method-93">-performZoom:</a>
-<li ><a href ="NSWindow.html#method-94">-postEvent:</a>
-<li ><a href ="NSWindow.html#method-95">-print:</a>
-<li ><a href ="NSWindow.html#method-96">-registerForDraggedTypes:</a>
-<li ><a href ="NSWindow.html#method-97">-representedFilename</a>
-<li ><a href ="NSWindow.html#method-98">-resetCursorRects</a>
-<li ><a href ="NSWindow.html#method-99">-resignKeyWindow</a>
-<li ><a href ="NSWindow.html#method-100">-resignMainWindow</a>
-<li ><a href ="NSWindow.html#method-101">-resizeFlags</a>
-<li ><a href ="NSWindow.html#method-102">-resizeIncrements</a>
-<li ><a href ="NSWindow.html#method-103">-restoreCachedImage</a>
-<li ><a href ="NSWindow.html#method-104">-saveFrameUsingName:</a>
-<li ><a href ="NSWindow.html#method-105">-screen</a>
-<li ><a href ="NSWindow.html#method-106">-selectKeyViewFollowingView:</a>
-<li ><a href ="NSWindow.html#method-107">-selectKeyViewPrecedingView:</a>
-<li ><a href ="NSWindow.html#method-108">-selectNextKeyView:</a>
-<li ><a href ="NSWindow.html#method-109">-selectPreviousKeyView:</a>
-<li ><a href ="NSWindow.html#method-110">-sendEvent:</a>
-<li ><a href ="NSWindow.html#method-111">-setAcceptsMouseMovedEvents:</a>
-<li ><a href ="NSWindow.html#method-112">-setAspectRatio:</a>
-<li ><a href ="NSWindow.html#method-113">-setAutodisplay:</a>
-<li ><a href ="NSWindow.html#method-114">-setBackgroundColor:</a>
-<li ><a href ="NSWindow.html#method-115">-setBackingType:</a>
-<li ><a href ="NSWindow.html#method-116">-setContentSize:</a>
-<li ><a href ="NSWindow.html#method-117">-setContentView:</a>
-<li ><a href ="NSWindow.html#method-118">-setDefaultButtonCell:</a>
-<li ><a href ="NSWindow.html#method-119">-setDelegate:</a>
-<li ><a href ="NSWindow.html#method-120">-setDepthLimit:</a>
-<li ><a href ="NSWindow.html#method-121">-setDocumentEdited:</a>
-<li ><a href ="NSWindow.html#method-122">-setDynamicDepthLimit:</a>
-<li ><a href ="NSWindow.html#method-123">-setExcludedFromWindowsMenu:</a>
-<li ><a href ="NSWindow.html#method-124">-setFrame:</a>
-<li ><a href ="NSWindow.html#method-125">-setFrameAutosaveName:</a>
-<li ><a href ="NSWindow.html#method-126">-setFrameFromString:</a>
-<li ><a href ="NSWindow.html#method-127">-setFrameOrigin:</a>
-<li ><a href ="NSWindow.html#method-128">-setFrameTopLeftPoint:</a>
-<li ><a href ="NSWindow.html#method-129">-setFrameUsingName:</a>
-<li ><a href ="NSWindow.html#method-130">-setHidesOnDeactivate:</a>
-<li ><a href ="NSWindow.html#method-131">-setInitialFirstResponder:</a>
-<li ><a href ="NSWindow.html#method-132">-setInterfaceStyle:</a>
-<li ><a href ="NSWindow.html#method-133">-setLevel:</a>
-<li ><a href ="NSWindow.html#method-134">-setMaxSize:</a>
-<li ><a href ="NSWindow.html#method-137">-setMinSize:</a>
-<li ><a href ="NSWindow.html#method-135">-setMiniwindowImage:</a>
-<li ><a href ="NSWindow.html#method-136">-setMiniwindowTitle:</a>
-<li ><a href ="NSWindow.html#method-138">-setOneShot:</a>
-<li ><a href ="NSWindow.html#method-139">-setReleasedWhenClosed:</a>
-<li ><a href ="NSWindow.html#method-140">-setRepresentedFilename:</a>
-<li ><a href ="NSWindow.html#method-141">-setResizeIncrements:</a>
-<li ><a href ="NSWindow.html#method-142">-setTitle:</a>
-<li ><a href ="NSWindow.html#method-143">-setTitleWithRepresentedFilename:</a>
-<li ><a href ="NSWindow.html#method-144">-setViewsNeedDisplay:</a>
-<li ><a href ="NSWindow.html#method-145">-setWindowController:</a>
-<li ><a href ="NSWindow.html#method-146">-stringWithSavedFrame</a>
-<li ><a href ="NSWindow.html#method-147">-styleMask</a>
-<li ><a href ="NSWindow.html#method-148">-title</a>
-<li ><a href ="NSWindow.html#method-149">-tryToPerform:</a>
-<li ><a href ="NSWindow.html#method-150">-unregisterDraggedTypes</a>
-<li ><a href ="NSWindow.html#method-151">-update</a>
-<li ><a href ="NSWindow.html#method-152">-useOptimizedDrawing:</a>
-<li ><a href ="NSWindow.html#method-153">-validRequestorForSendType:returnType:</a>
-<li ><a href ="NSWindow.html#method-154">-viewsNeedDisplay</a>
-<li ><a href ="NSWindow.html#method-155">-windowController</a>
-<li ><a href ="NSWindow.html#method-156">-windowHandle</a>
-<li ><a href ="NSWindow.html#method-157">-windowNumber</a>
-<li ><a href ="NSWindow.html#method-158">-worksWhenModal</a>
-<li ><a href ="NSWindow.html#method-159">-zoom:</a>
-</ul>
-<hr><h2>Class Methods </h2>
-<h3><a name ="method-0">contentRectForFrameRect:</a></h3>
-+ (NSRect) <b>contentRectForFrameRect:</b> (NSRect)frameRect;<br>
-
-          
- <hr>
-<h3><a name ="method-1">defaultDepthLimit</a></h3>
-+ (NSWindowDepth) <b>defaultDepthLimit</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-2">frameRectForContentRect:</a></h3>
-+ (NSRect) <b>frameRectForContentRect:</b> (NSRect)contentRect;<br>
-
-          
- <hr>
-<h3><a name ="method-3">menuChanged:</a></h3>
-+ (void) <b>menuChanged:</b> (NSMenu*)aMenu;<br>
-
-          
- <hr>
-<h3><a name ="method-4">minFrameWidthWithTitle:styleMask:</a></h3>
-+ (float) <b>minFrameWidthWithTitle:</b> (NSString*)aTitle <b>styleMask:</b> (unsigned int)aStyle;<br>
-
-          
- <hr>
-<h3><a name ="method-5">removeFrameUsingName:</a></h3>
-+ (void) <b>removeFrameUsingName:</b> (NSString*)name;<br>
-
-          
- <hr>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-6">acceptsMouseMovedEvents</a></h3>
-- (BOOL) <b>acceptsMouseMovedEvents</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-7">areCursorRectsEnabled</a></h3>
-- (BOOL) <b>areCursorRectsEnabled</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-8">aspectRatio</a></h3>
-- (NSSize) <b>aspectRatio</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-9">backgroundColor</a></h3>
-- (NSColor*) <b>backgroundColor</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-10">backingType</a></h3>
-- (NSBackingStoreType) <b>backingType</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-11">becomeKeyWindow</a></h3>
-- (void) <b>becomeKeyWindow</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-12">becomeMainWindow</a></h3>
-- (void) <b>becomeMainWindow</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-13">cacheImageInRect:</a></h3>
-- (void) <b>cacheImageInRect:</b> (NSRect)aRect;<br>
-
-          
- <hr>
-<h3><a name ="method-14">canBecomeKeyWindow</a></h3>
-- (BOOL) <b>canBecomeKeyWindow</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-15">canBecomeMainWindow</a></h3>
-- (BOOL) <b>canBecomeMainWindow</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-16">canStoreColor</a></h3>
-- (BOOL) <b>canStoreColor</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-17">cascadeTopLeftFromPoint:</a></h3>
-- (NSPoint) <b>cascadeTopLeftFromPoint:</b> (NSPoint)topLeftPoint;<br>
-
-          
- <hr>
-<h3><a name ="method-18">center</a></h3>
-- (void) <b>center</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-19">close</a></h3>
-- (void) <b>close</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-20">constrainFrameRect:</a></h3>
-- (NSRect) <b>constrainFrameRect:</b> (NSRect)frameRect;<br>
-
-          
- <hr>
-<h3><a name ="method-21">contentView</a></h3>
-- (id) <b>contentView</b>;<br>
-
-          <p>
-
-          Returns the NSWindow's content view.
-          </p>
-
-          
- <hr>
-<h3><a name ="method-22">convertBaseToScreen:</a></h3>
-- (NSPoint) <b>convertBaseToScreen:</b> (NSPoint)aPoint;<br>
-
-          
- <hr>
-<h3><a name ="method-23">convertScreenToBase:</a></h3>
-- (NSPoint) <b>convertScreenToBase:</b> (NSPoint)aPoint;<br>
-
-          
- <hr>
-<h3><a name ="method-24">currentEvent</a></h3>
-- (NSEvent*) <b>currentEvent</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-25">dataWithEPSInsideRect:</a></h3>
-- (NSData*) <b>dataWithEPSInsideRect:</b> (NSRect)aRect;<br>
-
-          
- <hr>
-<h3><a name ="method-26">deepestScreen</a></h3>
-- (NSScreen*) <b>deepestScreen</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-27">defaultButtonCell</a></h3>
-- (NSButtonCell*) <b>defaultButtonCell</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-28">delegate</a></h3>
-- (id) <b>delegate</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-29">deminiaturize:</a></h3>
-- (void) <b>deminiaturize:</b> (id)sender;<br>
-
-	  Causes the window to deminiaturize. Normally you would not call 
-	  this method directly. A window is automatically deminiaturized
-	  by the user via a mouse cloick event.
-          
- <hr>
-<h3><a name ="method-30">depthLimit</a></h3>
-- (NSWindowDepth) <b>depthLimit</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-31">deviceDescription</a></h3>
-- (NSDictionary*) <b>deviceDescription</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-32">disableCursorRects</a></h3>
-- (void) <b>disableCursorRects</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-33">disableFlushWindow</a></h3>
-- (void) <b>disableFlushWindow</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-34">disableKeyEquivalentForDefaultButtonCell</a></h3>
-- (void) <b>disableKeyEquivalentForDefaultButtonCell</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-35">discardCachedImage</a></h3>
-- (void) <b>discardCachedImage</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-36">discardCursorRects</a></h3>
-- (void) <b>discardCursorRects</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-37">discardEventsMatchingMask:beforeEvent:</a></h3>
-- (void) <b>discardEventsMatchingMask:</b> (unsigned int)mask <b>beforeEvent:</b> (NSEvent*)lastEvent;<br>
-
-          
- <hr>
-<h3><a name ="method-38">display</a></h3>
-- (void) <b>display</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-39">displayIfNeeded</a></h3>
-- (void) <b>displayIfNeeded</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-40">dragImage:at:offset:event:pasteboard:source:slideBack:</a></h3>
-- (void) <b>dragImage:</b> (NSImage*)anImage <b>at:</b> (NSPoint)aPoint <b>offset:</b> (NSSize)initialOffset <b>event:</b> (NSEvent *)theEvent <b>pasteboard:</b> (NSPasteboard*)pboard <b>source:</b> (id)sourceObject <b>slideBack:</b> (BOOL)slideBack;<br>
-
-          
- <hr>
-<h3><a name ="method-41">enableCursorRects</a></h3>
-- (void) <b>enableCursorRects</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-42">enableFlushWindow</a></h3>
-- (void) <b>enableFlushWindow</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-43">enableKeyEquivalentForDefaultButtonCell</a></h3>
-- (void) <b>enableKeyEquivalentForDefaultButtonCell</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-44">endEditingFor:</a></h3>
-- (void) <b>endEditingFor:</b> (id)anObject;<br>
-
-          
- <hr>
-<h3><a name ="method-45">fax:</a></h3>
-- (void) <b>fax:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-46">fieldEditor:</a></h3>
-- (NSText*) <b>fieldEditor:</b> (BOOL)createFlag;<br>
-
-          
- <hr>
-<h3><a name ="method-47">firstResponder</a></h3>
-- (NSResponder*) <b>firstResponder</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-48">flushWindow</a></h3>
-- (void) <b>flushWindow</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-49">flushWindowIfNeeded</a></h3>
-- (void) <b>flushWindowIfNeeded</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-50">frame</a></h3>
-- (NSRect) <b>frame</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-51">frameAutosaveName</a></h3>
-- (NSString*) <b>frameAutosaveName</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-52">gState</a></h3>
-- (int) <b>gState</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-53">hasDynamicDepthLimit</a></h3>
-- (BOOL) <b>hasDynamicDepthLimit</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-54">hidesOnDeactivate</a></h3>
-- (BOOL) <b>hidesOnDeactivate</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-55">initialFirstResponder</a></h3>
-- (NSView*) <b>initialFirstResponder</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-56">initWithContentRect:styleMask:backing:</a></h3>
-- (id) <b>initWithContentRect:</b> (NSRect)contentRect <b>styleMask:</b> (unsigned int)styleMask <b>backing:</b> (NSBackingStoreType)backingType;<br>
-
-          <p>
-
-          Initializes the receiver with a content rect of <var>contentRect</var>, a style mask of
-          <var>styleMask</var>, and a backing store type of <var>backingType</var>.
-          </p>
-
-          <p>
-
-          The style mask values are <code>NSTitledWindowMask</code>, for a window with a title,
-          <code>NSClosableWindowMask</code>, for a window with a close widget, 
-          <code>NSMiniaturizableWindowMask</code>, for a window with a miniaturize widget,
-          and <code>NSResizableWindowMask</code>, for a window with a resizing widget.  These
-          mask values can be OR'd in any combination.
-          </p>
-
-          <p>
-
-          Backing store values are <code>NSBackingStoreBuffered</code>, 
-          <code>NSBackingStoreRetained</code> and <code>NSBackingStoreNonretained</code>.
-          </p>
-
-          
- <hr>
-<h3><a name ="method-57">initWithContentRect:styleMask:backing:defer:screen:</a></h3>
-- (id) <b>initWithContentRect:</b> (NSRect)contentRect <b>styleMask:</b> (unsigned int)styleMask <b>backing:</b> (NSBackingStoreType)bufferingType <b>defer:</b> (BOOL)flag <b>screen:</b> (NSScreen*)aScreen;<br>
-
-          <p>
-
-          Initializes the receiver with a content rect of <var>contentRect</var>, a style mask of
-          <var>styleMask</var>, a backing store type of <var>backingType</var> and a boolean
-          <var>flag</var>.  <var>flag</var> specifies whether the window should be created now
-          (<code>NO</code>), or when it is displayed (<code>YES</code>).
-          </p>
-
-          <p>
-
-          The style mask values are <code>NSTitledWindowMask</code>, for a window with a title,
-          <code>NSClosableWindowMask</code>, for a window with a close widget, 
-          <code>NSMiniaturizableWindowMask</code>, for a window with a miniaturize widget,
-          and <code>NSResizableWindowMask</code>, for a window with a resizing widget.  These
-          mask values can be OR'd in any combination.
-          </p>
-
-          <p>
-
-          Backing store values are <code>NSBackingStoreBuffered</code>, 
-          <code>NSBackingStoreRetained</code> and <code>NSBackingStoreNonretained</code>.
-          </p>
-
-          
- <hr>
-<h3><a name ="method-58">interfaceStyle</a></h3>
-- (NSInterfaceStyle) <b>interfaceStyle</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-59">invalidateCursorRectsForView:</a></h3>
-- (void) <b>invalidateCursorRectsForView:</b> (NSView*)aView;<br>
-
-          
- <hr>
-<h3><a name ="method-60">isAutodisplay</a></h3>
-- (BOOL) <b>isAutodisplay</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-61">isDocumentEdited</a></h3>
-- (BOOL) <b>isDocumentEdited</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-62">isExcludedFromWindowsMenu</a></h3>
-- (BOOL) <b>isExcludedFromWindowsMenu</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-63">isFlushWindowDisabled</a></h3>
-- (BOOL) <b>isFlushWindowDisabled</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-64">isKeyWindow</a></h3>
-- (BOOL) <b>isKeyWindow</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-65">isMainWindow</a></h3>
-- (BOOL) <b>isMainWindow</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-66">isMiniaturized</a></h3>
-- (BOOL) <b>isMiniaturized</b>;<br>
-
-	  Returns <code>YES</code> if the window has been miniaturized.
-          
- <hr>
-<h3><a name ="method-67">isOneShot</a></h3>
-- (BOOL) <b>isOneShot</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-68">isReleasedWhenClosed</a></h3>
-- (BOOL) <b>isReleasedWhenClosed</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-69">isVisible</a></h3>
-- (BOOL) <b>isVisible</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-70">isZoomed;</a></h3>
-- (BOOL) <b>isZoomed;</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-71">keyDown:</a></h3>
-- (void) <b>keyDown:</b> (NSEvent*)theEvent;<br>
-
-          
- <hr>
-<h3><a name ="method-72">keyViewSelectionDirection</a></h3>
-- (NSSelectionDirection) <b>keyViewSelectionDirection</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-73">level</a></h3>
-- (int) <b>level</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-74">makeFirstResponder:</a></h3>
-- (BOOL) <b>makeFirstResponder:</b> (NSResponder*)aResponder;<br>
-
-          
- <hr>
-<h3><a name ="method-75">makeKeyAndOrderFront:</a></h3>
-- (void) <b>makeKeyAndOrderFront:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-76">makeKeyWindow</a></h3>
-- (void) <b>makeKeyWindow</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-77">makeMainWindow</a></h3>
-- (void) <b>makeMainWindow</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-78">maxSize</a></h3>
-- (NSSize) <b>maxSize</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-79">miniaturize:</a></h3>
-- (void) <b>miniaturize:</b> (id)sender;<br>
-
-	  Causes the window to miniaturize, that is the window is removed
-	  from the screen and it's counterpart (mini)window is displayed.
-          
- <hr>
-<h3><a name ="method-80">miniwindowImage</a></h3>
-- (NSImage*) <b>miniwindowImage</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-81">miniwindowTitle</a></h3>
-- (NSString*) <b>miniwindowTitle</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-82">minSize</a></h3>
-- (NSSize) <b>minSize</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-83">mouseLocationOutsideOfEventStream</a></h3>
-- (NSPoint) <b>mouseLocationOutsideOfEventStream</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-84">nextEventMatchingMask:</a></h3>
-- (NSEvent*) <b>nextEventMatchingMask:</b> (unsigned int)mask;<br>
-
-          
- <hr>
-<h3><a name ="method-85">nextEventMatchingMask:untilDate:inMode:dequeue:</a></h3>
-- (NSEvent*) <b>nextEventMatchingMask:</b> (unsigned int)mask <b>untilDate:</b> (NSDate*)expirationDate <b>inMode:</b> (NSString *)mode <b>dequeue:</b> (BOOL)dequeue;<br>
-
-          
- <hr>
-<h3><a name ="method-86">orderBack:</a></h3>
-- (void) <b>orderBack:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-87">orderFront:</a></h3>
-- (void) <b>orderFront:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-88">orderFrontRegardless</a></h3>
-- (void) <b>orderFrontRegardless</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-89">orderOut:</a></h3>
-- (void) <b>orderOut:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-90">orderWindow:relativeTo:</a></h3>
-- (void) <b>orderWindow:</b> (NSWindowOrderingMode)place <b>relativeTo:</b> (int)otherWindowNumber;<br>
-
-          
- <hr>
-<h3><a name ="method-91">performClose:</a></h3>
-- (void) <b>performClose:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-92">performMiniaturize:</a></h3>
-- (void) <b>performMiniaturize:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-93">performZoom:</a></h3>
-- (void) <b>performZoom:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-94">postEvent:</a></h3>
-- (void) <b>postEvent:</b> (NSEvent*)anEvent;<br>
-
-          
- <hr>
-<h3><a name ="method-95">print:</a></h3>
-- (void) <b>print:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-96">registerForDraggedTypes:</a></h3>
-- (void) <b>registerForDraggedTypes:</b> (NSArray*)pboardTypes;<br>
-
-          
- <hr>
-<h3><a name ="method-97">representedFilename</a></h3>
-- (NSString*) <b>representedFilename</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-98">resetCursorRects</a></h3>
-- (void) <b>resetCursorRects</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-99">resignKeyWindow</a></h3>
-- (void) <b>resignKeyWindow</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-100">resignMainWindow</a></h3>
-- (void) <b>resignMainWindow</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-101">resizeFlags</a></h3>
-- (int) <b>resizeFlags</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-102">resizeIncrements</a></h3>
-- (NSSize) <b>resizeIncrements</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-103">restoreCachedImage</a></h3>
-- (void) <b>restoreCachedImage</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-104">saveFrameUsingName:</a></h3>
-- (void) <b>saveFrameUsingName:</b> (NSString*)name;<br>
-
-          
- <hr>
-<h3><a name ="method-105">screen</a></h3>
-- (NSScreen*) <b>screen</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-106">selectKeyViewFollowingView:</a></h3>
-- (void) <b>selectKeyViewFollowingView:</b> (NSView*)aView;<br>
-
-          
- <hr>
-<h3><a name ="method-107">selectKeyViewPrecedingView:</a></h3>
-- (void) <b>selectKeyViewPrecedingView:</b> (NSView*)aView;<br>
-
-          
- <hr>
-<h3><a name ="method-108">selectNextKeyView:</a></h3>
-- (void) <b>selectNextKeyView:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-109">selectPreviousKeyView:</a></h3>
-- (void) <b>selectPreviousKeyView:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-110">sendEvent:</a></h3>
-- (void) <b>sendEvent:</b> (NSEvent*)theEvent;<br>
-
-          
- <hr>
-<h3><a name ="method-111">setAcceptsMouseMovedEvents:</a></h3>
-- (void) <b>setAcceptsMouseMovedEvents:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-112">setAspectRatio:</a></h3>
-- (void) <b>setAspectRatio:</b> (NSSize)ratio;<br>
-
-          
- <hr>
-<h3><a name ="method-113">setAutodisplay:</a></h3>
-- (void) <b>setAutodisplay:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-114">setBackgroundColor:</a></h3>
-- (void) <b>setBackgroundColor:</b> (NSColor*)aColor;<br>
-
-          
- <hr>
-<h3><a name ="method-115">setBackingType:</a></h3>
-- (void) <b>setBackingType:</b> (NSBackingStoreType)backingType;<br>
-
-          
- <hr>
-<h3><a name ="method-116">setContentSize:</a></h3>
-- (void) <b>setContentSize:</b> (NSSize)aSize;<br>
-
-          
- <hr>
-<h3><a name ="method-117">setContentView:</a></h3>
-- (void) <b>setContentView:</b> (NSView*)aView;<br>
-
-          <p>
-
-          Sets the window's content view to <var>aView</var>, replacing any previous content view.
-          </p>
-
-          
- <hr>
-<h3><a name ="method-118">setDefaultButtonCell:</a></h3>
-- (void) <b>setDefaultButtonCell:</b> (NSButtonCell*)aButtonCell;<br>
-
-          
- <hr>
-<h3><a name ="method-119">setDelegate:</a></h3>
-- (void) <b>setDelegate:</b> (id)anObject;<br>
-
-          
- <hr>
-<h3><a name ="method-120">setDepthLimit:</a></h3>
-- (void) <b>setDepthLimit:</b> (NSWindowDepth)limit;<br>
-
-          
- <hr>
-<h3><a name ="method-121">setDocumentEdited:</a></h3>
-- (void) <b>setDocumentEdited:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-122">setDynamicDepthLimit:</a></h3>
-- (void) <b>setDynamicDepthLimit:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-123">setExcludedFromWindowsMenu:</a></h3>
-- (void) <b>setExcludedFromWindowsMenu:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-124">setFrame:</a></h3>
-- (void) <b>setFrame:</b> (NSRect)frameRect;<br>
-
-          
- <hr>
-<h3><a name ="method-125">setFrameAutosaveName:</a></h3>
-- (BOOL) <b>setFrameAutosaveName:</b> (NSString*)name;<br>
-
-          
- <hr>
-<h3><a name ="method-126">setFrameFromString:</a></h3>
-- (void) <b>setFrameFromString:</b> (NSString*)aString;<br>
-
-          
- <hr>
-<h3><a name ="method-127">setFrameOrigin:</a></h3>
-- (void) <b>setFrameOrigin:</b> (NSPoint)aPoint;<br>
-
-          
- <hr>
-<h3><a name ="method-128">setFrameTopLeftPoint:</a></h3>
-- (void) <b>setFrameTopLeftPoint:</b> (NSPoint)aPoint;<br>
-
-          
- <hr>
-<h3><a name ="method-129">setFrameUsingName:</a></h3>
-- (BOOL) <b>setFrameUsingName:</b> (NSString*)name;<br>
-
-          
- <hr>
-<h3><a name ="method-130">setHidesOnDeactivate:</a></h3>
-- (void) <b>setHidesOnDeactivate:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-131">setInitialFirstResponder:</a></h3>
-- (void) <b>setInitialFirstResponder:</b> (NSView*)aView;<br>
-
-          
- <hr>
-<h3><a name ="method-132">setInterfaceStyle:</a></h3>
-- (void) <b>setInterfaceStyle:</b> (NSInterfaceStyle)interfaceStyle;<br>
-
-          
- <hr>
-<h3><a name ="method-133">setLevel:</a></h3>
-- (void) <b>setLevel:</b> (int)newLevel;<br>
-
-          
- <hr>
-<h3><a name ="method-134">setMaxSize:</a></h3>
-- (void) <b>setMaxSize:</b> (NSSize)aSize;<br>
-
-          
- <hr>
-<h3><a name ="method-135">setMiniwindowImage:</a></h3>
-- (void) <b>setMiniwindowImage:</b> (NSImage*)anImage;<br>
-
-          
- <hr>
-<h3><a name ="method-136">setMiniwindowTitle:</a></h3>
-- (void) <b>setMiniwindowTitle:</b> (NSString*)aString;<br>
-
-          
- <hr>
-<h3><a name ="method-137">setMinSize:</a></h3>
-- (void) <b>setMinSize:</b> (NSSize)aSize;<br>
-
-          
- <hr>
-<h3><a name ="method-138">setOneShot:</a></h3>
-- (void) <b>setOneShot:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-139">setReleasedWhenClosed:</a></h3>
-- (void) <b>setReleasedWhenClosed:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-140">setRepresentedFilename:</a></h3>
-- (void) <b>setRepresentedFilename:</b> (NSString*)path;<br>
-
-          
- <hr>
-<h3><a name ="method-141">setResizeIncrements:</a></h3>
-- (void) <b>setResizeIncrements:</b> (NSSize)increments;<br>
-
-          
- <hr>
-<h3><a name ="method-142">setTitle:</a></h3>
-- (void) <b>setTitle:</b> (NSString*)aString;<br>
-
-          <p>
-
-          Sets the window's title to the string <var>aString</var>.
-          </p>
-
-          
- <hr>
-<h3><a name ="method-143">setTitleWithRepresentedFilename:</a></h3>
-- (void) <b>setTitleWithRepresentedFilename:</b> (NSString*)path;<br>
-
-          
- <hr>
-<h3><a name ="method-144">setViewsNeedDisplay:</a></h3>
-- (void) <b>setViewsNeedDisplay:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-145">setWindowController:</a></h3>
-- (void) <b>setWindowController:</b> (NSWindowController*)windowController;<br>
-
-          
- <hr>
-<h3><a name ="method-146">stringWithSavedFrame</a></h3>
-- (NSString*) <b>stringWithSavedFrame</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-147">styleMask</a></h3>
-- (unsigned int) <b>styleMask</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-148">title</a></h3>
-- (NSString*) <b>title</b>;<br>
-
-          <p>
-
-          Returns an NSString containing the text of the window's title.
-          </p>
-
-          
- <hr>
-<h3><a name ="method-149">tryToPerform:</a></h3>
-- (BOOL) <b>tryToPerform:</b> (SEL)anAction;<br>
-
-          
- <hr>
-<h3><a name ="method-150">unregisterDraggedTypes</a></h3>
-- (void) <b>unregisterDraggedTypes</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-151">update</a></h3>
-- (void) <b>update</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-152">useOptimizedDrawing:</a></h3>
-- (void) <b>useOptimizedDrawing:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-153">validRequestorForSendType:returnType:</a></h3>
-- (id) <b>validRequestorForSendType:</b> (NSString*)sendType <b>returnType:</b> (NSString*)returnType;<br>
-
-          
- <hr>
-<h3><a name ="method-154">viewsNeedDisplay</a></h3>
-- (BOOL) <b>viewsNeedDisplay</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-155">windowController</a></h3>
-- (id) <b>windowController</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-156">windowHandle</a></h3>
-- (void*) <b>windowHandle</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-157">windowNumber</a></h3>
-- (int) <b>windowNumber</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-158">worksWhenModal</a></h3>
-- (BOOL) <b>worksWhenModal</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-159">zoom:</a></h3>
-- (void) <b>zoom:</b> (id)sender;<br>
-
-          
- <hr>
-</body>
-
- </html>
+    <h2><a name="class$NSWindow">NSWindow</a> : <a href="NSResponder.html#class$NSResponder">NSResponder</a></h2>
+    Declared: AppKit/NSWindow.h<br />
+    Conform: NSCoding<br />
+    <p>
+
+            </p>
+    <h3>contentRectForFrameRect:styleMask:</a></h3>
+    + (NSRect) <b>contentRectForFrameRect:</b> (NSRect)aRect<b> styleMask:</b> (unsigned int)aStyle;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>defaultDepthLimit</a></h3>
+    + (NSWindowDepth) <b>defaultDepthLimit</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>frameRectForContentRect:styleMask:</a></h3>
+    + (NSRect) <b>frameRectForContentRect:</b> (NSRect)aRect<b> styleMask:</b> (unsigned int)aStyle;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>menuChanged:</a></h3>
+    + (void) <b>menuChanged:</b> (<a href="NSMenu.html#class$NSMenu">NSMenu</a>*)aMenu;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>minFrameWidthWithTitle:styleMask:</a></h3>
+    + (NSRect) <b>minFrameWidthWithTitle:</b> (NSString*)aTitle<b> styleMask:</b> (unsigned int)aStyle;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>removeFrameUsingName:</a></h3>
+    + (void) <b>removeFrameUsingName:</b> (NSString*)name;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>acceptsMouseMovedEvents</a></h3>
+    - (BOOL) <b>acceptsMouseMovedEvents</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>alphaValue</a></h3>
+    - (float) <b>alphaValue</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>animationResizeTime:</a></h3>
+    - (NSTimeInterval) <b>animationResizeTime:</b> (NSRect)newFrame;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>areCursorRectsEnabled</a></h3>
+    - (BOOL) <b>areCursorRectsEnabled</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>aspectRatio</a></h3>
+    - (NSSize) <b>aspectRatio</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>backgroundColor</a></h3>
+    - (<a href="NSColor.html#class$NSColor">NSColor</a>*) <b>backgroundColor</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>backingType</a></h3>
+    - (NSBackingStoreType) <b>backingType</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>becomeKeyWindow</a></h3>
+    - (void) <b>becomeKeyWindow</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>becomeMainWindow</a></h3>
+    - (void) <b>becomeMainWindow</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>cacheImageInRect:</a></h3>
+    - (void) <b>cacheImageInRect:</b> (NSRect)aRect;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>canBecomeKeyWindow</a></h3>
+    - (BOOL) <b>canBecomeKeyWindow</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>canBecomeMainWindow</a></h3>
+    - (BOOL) <b>canBecomeMainWindow</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>canHide</a></h3>
+    - (BOOL) <b>canHide</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>canStoreColor</a></h3>
+    - (BOOL) <b>canStoreColor</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>cascadeTopLeftFromPoint:</a></h3>
+    - (NSPoint) <b>cascadeTopLeftFromPoint:</b> (NSPoint)topLeftPoint;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>center</a></h3>
+    - (void) <b>center</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>close</a></h3>
+    - (void) <b>close</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>constrainFrameRect:toScreen:</a></h3>
+    - (NSRect) <b>constrainFrameRect:</b> (NSRect)frameRect<b> toScreen:</b> (id)screen;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>contentView</a></h3>
+    - (id) <b>contentView</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>convertBaseToScreen:</a></h3>
+    - (NSPoint) <b>convertBaseToScreen:</b> (NSPoint)basePoint;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>convertScreenToBase:</a></h3>
+    - (NSPoint) <b>convertScreenToBase:</b> (NSPoint)screenPoint;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>counterpart</a></h3>
+    - (<a href="#class$NSWindow">NSWindow</a>*) <b>counterpart</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>currentEvent</a></h3>
+    - (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*) <b>currentEvent</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>dataWithEPSInsideRect:</a></h3>
+    - (NSData*) <b>dataWithEPSInsideRect:</b> (NSRect)rect;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>dataWithPDFInsideRect:</a></h3>
+    - (NSData*) <b>dataWithPDFInsideRect:</b> (NSRect)aRect;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>deepestScreen</a></h3>
+    - (<a href="NSScreen.html#class$NSScreen">NSScreen</a>*) <b>deepestScreen</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>defaultButtonCell</a></h3>
+    - (<a href="NSButtonCell.html#class$NSButtonCell">NSButtonCell</a>*) <b>defaultButtonCell</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>delegate</a></h3>
+    - (id) <b>delegate</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>deminiaturize:</a></h3>
+    - (void) <b>deminiaturize:</b> (id)sender;<br />
+    <p>
+
+            Causes the window to deminiaturize. Normally you
+            would not call this method directly. A window is
+            automatically deminiaturized by the user via
+            a mouse cloick event.
+              </p>
+    <hr />
+    <h3>depthLimit</a></h3>
+    - (NSWindowDepth) <b>depthLimit</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>deviceDescription</a></h3>
+    - (NSDictionary*) <b>deviceDescription</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>disableCursorRects</a></h3>
+    - (void) <b>disableCursorRects</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>disableFlushWindow</a></h3>
+    - (void) <b>disableFlushWindow</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>disableKeyEquivalentForDefaultButtonCell</a></h3>
+    - (void) <b>disableKeyEquivalentForDefaultButtonCell</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>discardCachedImage</a></h3>
+    - (void) <b>discardCachedImage</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>discardCursorRects</a></h3>
+    - (void) <b>discardCursorRects</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>discardEventsMatchingMask:beforeEvent:</a></h3>
+    - (void) <b>discardEventsMatchingMask:</b> (unsigned int)mask<b> beforeEvent:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)lastEvent;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>display</a></h3>
+    - (void) <b>display</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>displayIfNeeded</a></h3>
+    - (void) <b>displayIfNeeded</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>dragImage:at:offset:event:pasteboard:source:slideBack:</a></h3>
+    - (void) <b>dragImage:</b> (<a href="NSImage.html#class$NSImage">NSImage</a>*)anImage<b> at:</b> (NSPoint)baseLocation<b> offset:</b> (NSSize)initialOffset<b> event:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)event<b> pasteboard:</b> (<a href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pboard<b> source:</b> (id)sourceObject<b> slideBack:</b> (BOOL)slideFlag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>drawers</a></h3>
+    - (NSArray*) <b>drawers</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>enableCursorRects</a></h3>
+    - (void) <b>enableCursorRects</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>enableFlushWindow</a></h3>
+    - (void) <b>enableFlushWindow</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>enableKeyEquivalentForDefaultButtonCell</a></h3>
+    - (void) <b>enableKeyEquivalentForDefaultButtonCell</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>endEditingFor:</a></h3>
+    - (void) <b>endEditingFor:</b> (id)anObject;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>fax:</a></h3>
+    - (void) <b>fax:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>fieldEditor:forObject:</a></h3>
+    - (<a href="NSText.html#class$NSText">NSText</a>*) <b>fieldEditor:</b> (BOOL)createFlag<b> forObject:</b> (id)anObject;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>firstResponder</a></h3>
+    - (<a href="NSResponder.html#class$NSResponder">NSResponder</a>*) <b>firstResponder</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>flushWindow</a></h3>
+    - (void) <b>flushWindow</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>flushWindowIfNeeded</a></h3>
+    - (void) <b>flushWindowIfNeeded</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>frame</a></h3>
+    - (NSRect) <b>frame</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>frameAutosaveName</a></h3>
+    - (NSString*) <b>frameAutosaveName</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>gState</a></h3>
+    - (int) <b>gState</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>hasDynamicDepthLimit</a></h3>
+    - (BOOL) <b>hasDynamicDepthLimit</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>hasShadow</a></h3>
+    - (BOOL) <b>hasShadow</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>hidesOnDeactivate</a></h3>
+    - (BOOL) <b>hidesOnDeactivate</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>initWithContentRect:styleMask:backing:defer:</a></h3>
+    - (id) <b>initWithContentRect:</b> (NSRect)contentRect<b> styleMask:</b> (unsigned int)aStyle<b> backing:</b> (NSBackingStoreType)bufferingType<b> defer:</b> (BOOL)flag;<br />
+    <p>
+
+                </p>
+    <hr />
+    <h3>initWithContentRect:styleMask:backing:defer:screen:</a></h3>
+    - (id) <b>initWithContentRect:</b> (NSRect)contentRect<b> styleMask:</b> (unsigned int)aStyle<b> backing:</b> (NSBackingStoreType)bufferingType<b> defer:</b> (BOOL)flag<b> screen:</b> (<a href="NSScreen.html#class$NSScreen">NSScreen</a>*)aScreen;<br />
+    <p>
+
+                </p>
+    <hr />
+    <h3>initWithWindowRef:</a></h3>
+    - (<a href="#class$NSWindow">NSWindow</a>*) <b>initWithWindowRef:</b> (void*)windowRef;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>initialFirstResponder</a></h3>
+    - (<a href="NSView.html#class$NSView">NSView</a>*) <b>initialFirstResponder</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>invalidateCursorRectsForView:</a></h3>
+    - (void) <b>invalidateCursorRectsForView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isAutodisplay</a></h3>
+    - (BOOL) <b>isAutodisplay</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isDocumentEdited</a></h3>
+    - (BOOL) <b>isDocumentEdited</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isExcludedFromWindowsMenu</a></h3>
+    - (BOOL) <b>isExcludedFromWindowsMenu</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isFlushWindowDisabled</a></h3>
+    - (BOOL) <b>isFlushWindowDisabled</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isKeyWindow</a></h3>
+    - (BOOL) <b>isKeyWindow</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isMainWindow</a></h3>
+    - (BOOL) <b>isMainWindow</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isMiniaturized</a></h3>
+    - (BOOL) <b>isMiniaturized</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isOneShot</a></h3>
+    - (BOOL) <b>isOneShot</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isOpaque</a></h3>
+    - (BOOL) <b>isOpaque</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isReleasedWhenClosed</a></h3>
+    - (BOOL) <b>isReleasedWhenClosed</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isVisible</a></h3>
+    - (BOOL) <b>isVisible</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>keyDown:</a></h3>
+    - (void) <b>keyDown:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>keyViewSelectionDirection</a></h3>
+    - (NSSelectionDirection) <b>keyViewSelectionDirection</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>level</a></h3>
+    - (int) <b>level</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>makeFirstResponder:</a></h3>
+    - (BOOL) <b>makeFirstResponder:</b> (<a href="NSResponder.html#class$NSResponder">NSResponder</a>*)aResponder;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>makeKeyAndOrderFront:</a></h3>
+    - (void) <b>makeKeyAndOrderFront:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>makeKeyWindow</a></h3>
+    - (void) <b>makeKeyWindow</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>makeMainWindow</a></h3>
+    - (void) <b>makeMainWindow</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>maxSize</a></h3>
+    - (NSSize) <b>maxSize</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>minSize</a></h3>
+    - (NSSize) <b>minSize</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>miniaturize:</a></h3>
+    - (void) <b>miniaturize:</b> (id)sender;<br />
+    <p>
+
+            Causes the window to miniaturize, that is the window
+            is removed from the screen and it's counterpart
+            (mini)window is displayed.
+              </p>
+    <hr />
+    <h3>miniwindowImage</a></h3>
+    - (<a href="NSImage.html#class$NSImage">NSImage</a>*) <b>miniwindowImage</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>miniwindowTitle</a></h3>
+    - (NSString*) <b>miniwindowTitle</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>mouseLocationOutsideOfEventStream</a></h3>
+    - (NSPoint) <b>mouseLocationOutsideOfEventStream</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>nextEventMatchingMask:</a></h3>
+    - (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*) <b>nextEventMatchingMask:</b> (unsigned int)mask;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>nextEventMatchingMask:untilDate:inMode:dequeue:</a></h3>
+    - (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*) <b>nextEventMatchingMask:</b> (unsigned int)mask<b> untilDate:</b> (NSDate*)expiration<b> inMode:</b> (NSString*)mode<b> dequeue:</b> (BOOL)deqFlag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>orderBack:</a></h3>
+    - (void) <b>orderBack:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>orderFront:</a></h3>
+    - (void) <b>orderFront:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>orderFrontRegardless</a></h3>
+    - (void) <b>orderFrontRegardless</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>orderOut:</a></h3>
+    - (void) <b>orderOut:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>orderWindow:relativeTo:</a></h3>
+    - (void) <b>orderWindow:</b> (NSWindowOrderingMode)place<b> relativeTo:</b> (int)otherWin;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>performClose:</a></h3>
+    - (void) <b>performClose:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>performMiniaturize:</a></h3>
+    - (void) <b>performMiniaturize:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>performZoom:</a></h3>
+    - (void) <b>performZoom:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>postEvent:atStart:</a></h3>
+    - (void) <b>postEvent:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)event<b> atStart:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>print:</a></h3>
+    - (void) <b>print:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>registerForDraggedTypes:</a></h3>
+    - (void) <b>registerForDraggedTypes:</b> (NSArray*)newTypes;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>representedFilename</a></h3>
+    - (NSString*) <b>representedFilename</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>resetCursorRects</a></h3>
+    - (void) <b>resetCursorRects</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>resignKeyWindow</a></h3>
+    - (void) <b>resignKeyWindow</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>resignMainWindow</a></h3>
+    - (void) <b>resignMainWindow</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>resizeFlags</a></h3>
+    - (int) <b>resizeFlags</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>resizeIncrements</a></h3>
+    - (NSSize) <b>resizeIncrements</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>restoreCachedImage</a></h3>
+    - (void) <b>restoreCachedImage</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>runToolbarCustomizationPalette:</a></h3>
+    - (void) <b>runToolbarCustomizationPalette:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>saveFrameUsingName:</a></h3>
+    - (void) <b>saveFrameUsingName:</b> (NSString*)name;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>screen</a></h3>
+    - (<a href="NSScreen.html#class$NSScreen">NSScreen</a>*) <b>screen</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>selectKeyViewFollowingView:</a></h3>
+    - (void) <b>selectKeyViewFollowingView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>selectKeyViewPrecedingView:</a></h3>
+    - (void) <b>selectKeyViewPrecedingView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>selectNextKeyView:</a></h3>
+    - (void) <b>selectNextKeyView:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>selectPreviousKeyView:</a></h3>
+    - (void) <b>selectPreviousKeyView:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>sendEvent:</a></h3>
+    - (void) <b>sendEvent:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setAcceptsMouseMovedEvents:</a></h3>
+    - (void) <b>setAcceptsMouseMovedEvents:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setAlphaValue:</a></h3>
+    - (void) <b>setAlphaValue:</b> (float)windowAlpha;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setAspectRatio:</a></h3>
+    - (void) <b>setAspectRatio:</b> (NSSize)ratio;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setAutodisplay:</a></h3>
+    - (void) <b>setAutodisplay:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setBackgroundColor:</a></h3>
+    - (void) <b>setBackgroundColor:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)color;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setBackingType:</a></h3>
+    - (void) <b>setBackingType:</b> (NSBackingStoreType)type;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setCanHide:</a></h3>
+    - (void) <b>setCanHide:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setContentSize:</a></h3>
+    - (void) <b>setContentSize:</b> (NSSize)aSize;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setContentView:</a></h3>
+    - (void) <b>setContentView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+    <p>
+
+            Sets the window's content view to <var>aView</var>,
+            replacing any previous content view.
+              </p>
+    <hr />
+    <h3>setDefaultButtonCell:</a></h3>
+    - (void) <b>setDefaultButtonCell:</b> (<a href="NSButtonCell.html#class$NSButtonCell">NSButtonCell</a>*)aButtonCell;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setDelegate:</a></h3>
+    - (void) <b>setDelegate:</b> (id)anObject;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setDepthLimit:</a></h3>
+    - (void) <b>setDepthLimit:</b> (NSWindowDepth)limit;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setDocumentEdited:</a></h3>
+    - (void) <b>setDocumentEdited:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setDynamicDepthLimit:</a></h3>
+    - (void) <b>setDynamicDepthLimit:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setExcludedFromWindowsMenu:</a></h3>
+    - (void) <b>setExcludedFromWindowsMenu:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setFrame:display:</a></h3>
+    - (void) <b>setFrame:</b> (NSRect)frameRect<b> display:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setFrame:display:animate:</a></h3>
+    - (void) <b>setFrame:</b> (NSRect)frameRect<b> display:</b> (BOOL)displayFlag<b> animate:</b> (BOOL)animationFlag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setFrameAutosaveName:</a></h3>
+    - (BOOL) <b>setFrameAutosaveName:</b> (NSString*)name;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setFrameFromString:</a></h3>
+    - (void) <b>setFrameFromString:</b> (NSString*)string;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setFrameOrigin:</a></h3>
+    - (void) <b>setFrameOrigin:</b> (NSPoint)aPoint;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setFrameTopLeftPoint:</a></h3>
+    - (void) <b>setFrameTopLeftPoint:</b> (NSPoint)aPoint;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setFrameUsingName:</a></h3>
+    - (BOOL) <b>setFrameUsingName:</b> (NSString*)name;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setFrameUsingName:force:</a></h3>
+    - (BOOL) <b>setFrameUsingName:</b> (NSString*)name<b> force:</b> (BOOL)force;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setHasShadow:</a></h3>
+    - (void) <b>setHasShadow:</b> (BOOL)hasShadow;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setHidesOnDeactivate:</a></h3>
+    - (void) <b>setHidesOnDeactivate:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setInitialFirstResponder:</a></h3>
+    - (void) <b>setInitialFirstResponder:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setLevel:</a></h3>
+    - (void) <b>setLevel:</b> (int)newLevel;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setMaxSize:</a></h3>
+    - (void) <b>setMaxSize:</b> (NSSize)aSize;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setMinSize:</a></h3>
+    - (void) <b>setMinSize:</b> (NSSize)aSize;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setMiniwindowImage:</a></h3>
+    - (void) <b>setMiniwindowImage:</b> (<a href="NSImage.html#class$NSImage">NSImage</a>*)image;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setMiniwindowTitle:</a></h3>
+    - (void) <b>setMiniwindowTitle:</b> (NSString*)title;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setOneShot:</a></h3>
+    - (void) <b>setOneShot:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setOpaque:</a></h3>
+    - (void) <b>setOpaque:</b> (BOOL)isOpaque;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setReleasedWhenClosed:</a></h3>
+    - (void) <b>setReleasedWhenClosed:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setRepresentedFilename:</a></h3>
+    - (void) <b>setRepresentedFilename:</b> (NSString*)aString;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setResizeIncrements:</a></h3>
+    - (void) <b>setResizeIncrements:</b> (NSSize)aSize;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setShowsResizeIndicator:</a></h3>
+    - (void) <b>setShowsResizeIndicator:</b> (BOOL)show;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setTitle:</a></h3>
+    - (void) <b>setTitle:</b> (NSString*)aString;<br />
+    <p>
+
+            Sets the window's title to the string
+            <var>aString</var>.
+              </p>
+    <hr />
+    <h3>setTitleWithRepresentedFilename:</a></h3>
+    - (void) <b>setTitleWithRepresentedFilename:</b> (NSString*)aString;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setToolbar:</a></h3>
+    - (void) <b>setToolbar:</b> (NSToolbar*)toolbar;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setViewsNeedDisplay:</a></h3>
+    - (void) <b>setViewsNeedDisplay:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setWindowController:</a></h3>
+    - (void) <b>setWindowController:</b> (<a href="NSWindowController.html#class$NSWindowController">NSWindowController</a>*)windowController;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>showsResizeIndicator</a></h3>
+    - (BOOL) <b>showsResizeIndicator</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>stringWithSavedFrame</a></h3>
+    - (NSString*) <b>stringWithSavedFrame</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>styleMask</a></h3>
+    - (unsigned int) <b>styleMask</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>title</a></h3>
+    - (NSString*) <b>title</b>;<br />
+    <p>
+
+            Returns an NSString containing the text of the
+            window's title.
+              </p>
+    <hr />
+    <h3>toggleToolbarShown:</a></h3>
+    - (void) <b>toggleToolbarShown:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>toolbar</a></h3>
+    - (NSToolbar*) <b>toolbar</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>tryToPerform:with:</a></h3>
+    - (BOOL) <b>tryToPerform:</b> (SEL)anAction<b> with:</b> (id)anObject;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>unregisterDraggedTypes</a></h3>
+    - (void) <b>unregisterDraggedTypes</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>update</a></h3>
+    - (void) <b>update</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>useOptimizedDrawing:</a></h3>
+    - (void) <b>useOptimizedDrawing:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>validRequestorForSendType:returnType:</a></h3>
+    - (id) <b>validRequestorForSendType:</b> (NSString*)sendType<b> returnType:</b> (NSString*)returnType;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>viewsNeedDisplay</a></h3>
+    - (BOOL) <b>viewsNeedDisplay</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>windowController</a></h3>
+    - (id) <b>windowController</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>windowHandle</a></h3>
+    - (void*) <b>windowHandle</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>windowNumber</a></h3>
+    - (int) <b>windowNumber</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>windowRef</a></h3>
+    - (void*) <b>windowRef</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>worksWhenModal</a></h3>
+    - (BOOL) <b>worksWhenModal</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>zoom:</a></h3>
+    - (void) <b>zoom:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the
+        NSObject(NSWindowDelegate) category
+      </h1>
+    <h2>NSObject(<a name="category$NSObject(NSWindowDelegate)">NSWindowDelegate</a>)</h2>
+    Declared: AppKit/NSWindow.h<br />
+    <p>
+
+            </p>
+    <h3>windowDidBecomeKey:</a></h3>
+    - (void) <b>windowDidBecomeKey:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>windowDidBecomeMain:</a></h3>
+    - (void) <b>windowDidBecomeMain:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>windowDidChangeScreen:</a></h3>
+    - (void) <b>windowDidChangeScreen:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>windowDidDeminiaturize:</a></h3>
+    - (void) <b>windowDidDeminiaturize:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>windowDidExpose:</a></h3>
+    - (void) <b>windowDidExpose:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>windowDidMiniaturize:</a></h3>
+    - (void) <b>windowDidMiniaturize:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>windowDidMove:</a></h3>
+    - (void) <b>windowDidMove:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>windowDidResignKey:</a></h3>
+    - (void) <b>windowDidResignKey:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>windowDidResignMain:</a></h3>
+    - (void) <b>windowDidResignMain:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>windowDidResize:</a></h3>
+    - (void) <b>windowDidResize:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>windowDidUpdate:</a></h3>
+    - (void) <b>windowDidUpdate:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>windowShouldClose:</a></h3>
+    - (BOOL) <b>windowShouldClose:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>windowShouldZoom:toFrame:</a></h3>
+    - (BOOL) <b>windowShouldZoom:</b> (<a href="#class$NSWindow">NSWindow</a>*)sender<b> toFrame:</b> (NSRect)aFrame;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>windowWillClose:</a></h3>
+    - (void) <b>windowWillClose:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>windowWillMiniaturize:</a></h3>
+    - (void) <b>windowWillMiniaturize:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>windowWillMove:</a></h3>
+    - (void) <b>windowWillMove:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>windowWillResize:toSize:</a></h3>
+    - (NSSize) <b>windowWillResize:</b> (<a href="#class$NSWindow">NSWindow</a>*)sender<b> toSize:</b> (NSSize)frameSize;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>windowWillReturnFieldEditor:toObject:</a></h3>
+    - (id) <b>windowWillReturnFieldEditor:</b> (<a href="#class$NSWindow">NSWindow</a>*)sender<b> toObject:</b> (id)client;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>windowWillUseStandardFrame:defaultFrame:</a></h3>
+    - (NSRect) <b>windowWillUseStandardFrame:</b> (<a href="#class$NSWindow">NSWindow</a>*)sender<b> defaultFrame:</b> (NSRect)aFrame;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the
+        NSWindow(GNUstepBackend) category
+      </h1>
+    <h2><a href="#class$NSWindow">NSWindow</a>(<a name="category$NSWindow(GNUstepBackend)">GNUstepBackend</a>)</h2>
+    Declared: AppKit/NSWindow.h<br />
+    <p>
+
+            </p>
+    <h3>_captureMouse:</a></h3>
+    - (void) <b>_captureMouse:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>_initDefaults</a></h3>
+    - (void) <b>_initDefaults</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>_releaseMouse:</a></h3>
+    - (void) <b>_releaseMouse:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>_setVisible:</a></h3>
+    - (void) <b>_setVisible:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the
+        NSWindow(GNUstepTextView) category
+      </h1>
+    <h2><a href="#class$NSWindow">NSWindow</a>(<a name="category$NSWindow(GNUstepTextView)">GNUstepTextView</a>)</h2>
+    Declared: AppKit/NSWindow.h<br />
+    <p>
+
+            </p>
+    <h3>_futureFirstResponder</a></h3>
+    - (id) <b>_futureFirstResponder</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+  </body>
+</html>

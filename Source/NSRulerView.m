@@ -1,7 +1,6 @@
-/*
-   NSRulerView.m
+/** <title>NSRulerView</title>
 
-   The NSRulerView class.
+   <abstract>The NSRulerView class.</abstract>
 
    Copyright (C) 2001 Free Software Foundation, Inc.
 
@@ -260,7 +259,7 @@ unitToPointsConversionFactor:(float)conversionFactor
   return 0.0;
 }
 
-- (float)baselineLocation;
+- (float)baselineLocation
 {
   // FIXME
   return 0.0;

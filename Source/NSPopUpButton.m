@@ -1,11 +1,10 @@
-/* 
-   NSPopUpButton.m
+/** <title>NSPopUpButton</title>
 
-   Popup list class
+   <abstract>Popup list class</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
+   Author: Scott Christley <scottc@net-community.com>
    Date: 1996
    Author: Michael Hanni <mhanni@sprintmail.com>
    Date: June 1999

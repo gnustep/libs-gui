@@ -1,26 +1,32 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSTextStorage" prev="NSTextFieldCell.html" next="NSTextTab.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSTextStorage" next="NSTextView" prev="NSTextFieldCell" up="NSActionCell">
   <head>
     <title>NSTextStorage</title>
     <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+      <email address="richard@brainstorm.co.uk">
+        richard@brainstorm.co.uk
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <copy>1999 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSTextStorage</heading>
+      <heading>
+        Software documentation for the NSTextStorage class
+      </heading>
       <class name="NSTextStorage" super="NSMutableAttributedString">
-        <declared>Gui/NSTextStorage.h</declared>
-        <conform>NSCopying</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSTextStorage.h</declared>
+        <desc>
+        </desc>
         <method type="void">
           <sel>addLayoutManager:</sel>
-          <arg type="NSLayoutManager*">aLayoutManager</arg>
+          <arg type="NSLayoutManager*">obj</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>beginEditing</sel>
           <desc>
           </desc>
         </method>
@@ -36,15 +42,15 @@
         </method>
         <method type="void">
           <sel>edited:</sel>
-          <arg type="unsigned int">mask</arg>
+          <arg type="unsigned">mask</arg>
           <sel>range:</sel>
-          <arg type="NSRange">oldRange</arg>
+          <arg type="NSRange">old</arg>
           <sel>changeInLength:</sel>
-          <arg type="int">lengthChange</arg>
+          <arg type="int">delta</arg>
           <desc>
           </desc>
         </method>
-        <method type="unsigned int">
+        <method type="unsigned">
           <sel>editedMask</sel>
           <desc>
           </desc>
@@ -56,6 +62,23 @@
         </method>
         <method type="void">
           <sel>endEditing</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ensureAttributesAreFixedInRange:</sel>
+          <arg type="NSRange">range</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>fixesAttributesLazily</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>invalidateAttributesInRange:</sel>
+          <arg type="NSRange">range</arg>
           <desc>
           </desc>
         </method>
@@ -71,29 +94,41 @@
         </method>
         <method type="void">
           <sel>removeLayoutManager:</sel>
-          <arg type="NSLayoutManager*">aLayoutManager</arg>
+          <arg type="NSLayoutManager*">obj</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setDelegate:</sel>
-          <arg type="id">anObject</arg>
+          <arg type="id">delegate</arg>
           <desc>
           </desc>
         </method>
+      </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSObject(NSTextStorageDelegate)
+        category
+      </heading>
+      <category name="NSTextStorageDelegate" class="NSObject">
+        <declared>AppKit/NSTextStorage.h</declared>
+        <desc>
+        </desc>
         <method type="void">
           <sel>textStorageDidProcessEditing:</sel>
-          <arg type="NSNotification*">aNotification</arg>
+          <arg type="NSNotification*">notification</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>textStorageWillProcessEditing:</sel>
-          <arg type="NSNotification*">aNotification</arg>
+          <arg type="NSNotification*">notification</arg>
           <desc>
           </desc>
         </method>
-      </class>
+      </category>
     </chapter>
   </body>
 </gsdoc>

@@ -1,11 +1,10 @@
-/* 
-   NSResponder.m
+/** <title>NSResponder</title>
 
-   Abstract class which is basis of command and event processing
+   <abstract>Abstract class which is basis of command and event processing</abstract>
 
    Copyright (C) 1996,1999 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
+   Author: Scott Christley <scottc@net-community.com>
    Date: 1996
    
    This file is part of the GNUstep GUI Library.

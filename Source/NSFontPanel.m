@@ -1,18 +1,12 @@
-/* 
-   NSFontPanel.m
+/** <title>NSFontPanel</title>
 
-   System generic panel for selecting and previewing fonts
+   <abstract>System generic panel for selecting and previewing fonts</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author: Scott Christley <scottc@net-community.com>
-   Date: 1996
-
-   Modified:  Fred Kiefer <FredKiefer@gmx.de>
+   Author: Fred Kiefer <FredKiefer@gmx.de>
    Date: Febuary 2000
-   Almost complete rewrite.
-
-   Nicola Pero <n.pero@mi.flashnet.it>
+   Author: Nicola Pero <n.pero@mi.flashnet.it>
    Date: January 2001 - sizings and resizings
  
    This file is part of the GNUstep GUI Library.

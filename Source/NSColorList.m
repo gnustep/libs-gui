@@ -1,7 +1,6 @@
-/* 
-   NSColorList.m
+/** <title>NSColorList</title>
 
-   Manage named lists of NSColors.
+   <abstract>Manage named lists of NSColors.</abstract>
 
    Copyright (C) 1996, 2000 Free Software Foundation, Inc.
 

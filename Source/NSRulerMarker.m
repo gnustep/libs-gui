@@ -1,7 +1,6 @@
-/* 
-   NSRulerMarker.m
+/** <title>NSRulerMarker</title>
 
-   Displays a symbol in a NSRulerView.
+   <abstract>Displays a symbol in a NSRulerView.</abstract>
 
    Copyright (C) 2001 Free Software Foundation, Inc.
 

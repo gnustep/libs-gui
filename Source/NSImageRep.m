@@ -1,11 +1,10 @@
-/*
-   NSImageRep.m
+/** <title>NSImageRep</title>
 
-   Abstract representation of an image.
+   <abstract>Abstract representation of an image.</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Adam Fedor <fedor@colorado.edu>
+   Author: Adam Fedor <fedor@colorado.edu>
    Date: Feb 1996
 
    This file is part of the GNUstep Application Kit Library.

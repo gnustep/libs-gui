@@ -1,23 +1,27 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSCell" prev="NSCachedImageRep.html" next="NSClipView.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSCell" next="NSClipView" prev="NSCachedImageRep" up="NSActionCell">
   <head>
     <title>NSCell</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>The abstract cell class</abstract>
+    <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSCell</heading>
+      <heading>
+        Software documentation for the NSCell class
+      </heading>
       <class name="NSCell" super="NSObject">
-        <declared>Gui/NSCell.h</declared>
+        <declared>AppKit/NSCell.h</declared>
+        <conform>NSCopying</conform>
         <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <desc>
+        </desc>
         <method type="NSMenu*" factory="yes">
           <sel>defaultMenu</sel>
           <desc>
@@ -110,12 +114,16 @@
         <method type="void">
           <sel>drawInteriorWithFrame:</sel>
           <arg type="NSRect">cellFrame</arg>
+          <sel>inView:</sel>
+          <arg type="NSView*">controlView</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>drawWithFrame:</sel>
           <arg type="NSRect">cellFrame</arg>
+          <sel>inView:</sel>
+          <arg type="NSView*">controlView</arg>
           <desc>
           </desc>
         </method>
@@ -131,15 +139,23 @@
           <sel>inView:</sel>
           <arg type="NSView*">controlView</arg>
           <sel>editor:</sel>
-          <arg type="NSText *">textObj</arg>
+          <arg type="NSText*">textObject</arg>
           <sel>delegate:</sel>
           <arg type="id">anObject</arg>
+          <sel>event:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>encodeWithCoder:</sel>
+          <arg type="NSCoder*">aCoder</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>endEditing:</sel>
-          <arg type="NSText*">textObj</arg>
+          <arg type="NSText*">textObject</arg>
           <desc>
           </desc>
         </method>
@@ -178,9 +194,11 @@
         </method>
         <method type="void">
           <sel>highlight:</sel>
-          <arg type="BOOL">flag</arg>
+          <arg type="BOOL">lit</arg>
           <sel>withFrame:</sel>
           <arg type="NSRect">cellFrame</arg>
+          <sel>inView:</sel>
+          <arg type="NSView*">controlView</arg>
           <desc>
           </desc>
         </method>
@@ -209,6 +227,12 @@
         <method type="id">
           <sel>initTextCell:</sel>
           <arg type="NSString*">aString</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="id">
+          <sel>initWithCoder:</sel>
+          <arg type="NSCoder*">aDecoder</arg>
           <desc>
           </desc>
         </method>
@@ -332,6 +356,24 @@
         <method type="void">
           <sel>resetCursorRect:</sel>
           <arg type="NSRect">cellFrame</arg>
+          <sel>inView:</sel>
+          <arg type="NSView*">controlView</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>selectWithFrame:</sel>
+          <arg type="NSRect">aRect</arg>
+          <sel>inView:</sel>
+          <arg type="NSView*">controlView</arg>
+          <sel>editor:</sel>
+          <arg type="NSText*">textObject</arg>
+          <sel>delegate:</sel>
+          <arg type="id">anObject</arg>
+          <sel>start:</sel>
+          <arg type="int">selStart</arg>
+          <sel>length:</sel>
+          <arg type="int">selLength</arg>
           <desc>
           </desc>
         </method>
@@ -391,6 +433,8 @@
         <method type="void">
           <sel>setCellAttribute:</sel>
           <arg type="NSCellAttribute">aParameter</arg>
+          <sel>to:</sel>
+          <arg type="int">value</arg>
           <desc>
           </desc>
         </method>
@@ -425,6 +469,12 @@
           </desc>
         </method>
         <method type="void">
+          <sel>setFloatValue:</sel>
+          <arg type="float">aFloat</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
           <sel>setFloatingPointFormat:</sel>
           <arg type="BOOL">autoRange</arg>
           <sel>left:</sel>
@@ -435,14 +485,8 @@
           </desc>
         </method>
         <method type="void">
-          <sel>setFloatValue:</sel>
-          <arg type="float">aFloat</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
           <sel>setFont:</sel>
-          <arg type="NSFont*">fontObj</arg>
+          <arg type="NSFont*">fontObject</arg>
           <desc>
           </desc>
         </method>
@@ -454,7 +498,7 @@
         </method>
         <method type="void">
           <sel>setImage:</sel>
-          <arg type="NSImage*">image</arg>
+          <arg type="NSImage*">anImage</arg>
           <desc>
           </desc>
         </method>
@@ -567,7 +611,7 @@
         </method>
         <method type="NSText*">
           <sel>setUpFieldEditorAttributes:</sel>
-          <arg type="NSText*">textObj</arg>
+          <arg type="NSText*">textObject</arg>
           <desc>
           </desc>
         </method>
@@ -585,6 +629,8 @@
         <method type="BOOL">
           <sel>startTrackingAt:</sel>
           <arg type="NSPoint">startPoint</arg>
+          <sel>inView:</sel>
+          <arg type="NSView*">controlView</arg>
           <desc>
           </desc>
         </method>
@@ -600,6 +646,8 @@
           <arg type="NSPoint">stopPoint</arg>
           <sel>inView:</sel>
           <arg type="NSView*">controlView</arg>
+          <sel>mouseIsUp:</sel>
+          <arg type="BOOL">flag</arg>
           <desc>
           </desc>
         </method>
@@ -662,7 +710,7 @@
           <sel>ofView:</sel>
           <arg type="NSView*">controlView</arg>
           <sel>untilMouseUp:</sel>
-          <arg type="BOOL">untilMouseUp</arg>
+          <arg type="BOOL">flag</arg>
           <desc>
           </desc>
         </method>
@@ -677,6 +725,49 @@
           </desc>
         </method>
       </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the NSCell(PrivateMethods)
+        category
+      </heading>
+      <category name="PrivateMethods" class="NSCell">
+        <declared>AppKit/NSCell.h</declared>
+        <desc>
+        </desc>
+        <method type="void">
+          <sel>_drawAttributedText:</sel>
+          <arg type="NSAttributedString*">title</arg>
+          <sel>inFrame:</sel>
+          <arg type="NSRect">cellFrame</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>_drawText:</sel>
+          <arg type="NSString*">title</arg>
+          <sel>inFrame:</sel>
+          <arg type="NSRect">cellFrame</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSMutableDictionary*">
+          <sel>_nonAutoreleasedTypingAttributes</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSSize">
+          <sel>_sizeText:</sel>
+          <arg type="NSString*">title</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSColor*">
+          <sel>textColor</sel>
+          <desc>
+          </desc>
+        </method>
+      </category>
     </chapter>
   </body>
 </gsdoc>

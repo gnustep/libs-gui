@@ -1,7 +1,6 @@
-/*
-   NSEPSImageRep.m
+/** <title>NSEPSImageRep</title>
 
-   EPS image representation.
+   <abstract>EPS image representation.</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
    

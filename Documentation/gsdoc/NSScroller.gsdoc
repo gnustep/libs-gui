@@ -1,25 +1,43 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSScroller" prev="NSScrollView.html" next="NSSecureTextField.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSScroller" next="NSSecureTextField" prev="NSScrollView" up="NSActionCell">
   <head>
     <title>NSScroller</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Ovidiu Predescu">
+      <email address="ovidiu@net-community.com">
+        ovidiu@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Felipe A. Rodriguez">
+      <email address="far@ix.netcom.com">
+        far@ix.netcom.com
+      </email>
+    </author>
+    <author name="Richard Frith-Macdonald">
+      <email address="richard@brainstorm.co.uk">
+        richard@brainstorm.co.uk
+      </email>
+    </author>
+    <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSScroller</heading>
+      <heading>
+        Software documentation for the NSScroller class
+      </heading>
       <class name="NSScroller" super="NSControl">
-        <declared>Gui/NSScroller.h</declared>
+        <declared>AppKit/NSScroller.h</declared>
         <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <desc>
+        </desc>
         <method type="float" factory="yes">
           <sel>scrollerWidth</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="float" factory="yes">
+          <sel>scrollerWidthForControlSize:</sel>
+          <arg type="NSControlSize">controlSize</arg>
           <desc>
           </desc>
         </method>
@@ -33,9 +51,19 @@
           <desc>
           </desc>
         </method>
+        <method type="NSControlSize">
+          <sel>controlSize</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSControlTint">
+          <sel>controlTint</sel>
+          <desc>
+          </desc>
+        </method>
         <method type="void">
           <sel>drawArrow:</sel>
-          <arg type="NSScrollerArrow">arrow</arg>
+          <arg type="NSScrollerArrow">whichButton</arg>
           <sel>highlight:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
@@ -43,6 +71,11 @@
         </method>
         <method type="void">
           <sel>drawKnob</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>drawKnobSlot</sel>
           <desc>
           </desc>
         </method>
@@ -62,12 +95,6 @@
           <desc>
           </desc>
         </method>
-        <method type="id">
-          <sel>initWithFrame:</sel>
-          <arg type="NSRect">frameRect</arg>
-          <desc>
-          </desc>
-        </method>
         <method type="float">
           <sel>knobProportion</sel>
           <desc>
@@ -75,13 +102,25 @@
         </method>
         <method type="NSRect">
           <sel>rectForPart:</sel>
-          <arg type="NSScrollerPart">aPart</arg>
+          <arg type="NSScrollerPart">partCode</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setArrowsPosition:</sel>
-          <arg type="NSScrollArrowPosition">location</arg>
+          <arg type="NSScrollArrowPosition">where</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setControlSize:</sel>
+          <arg type="NSControlSize">controlSize</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setControlTint:</sel>
+          <arg type="NSControlTint">controlTint</arg>
           <desc>
           </desc>
         </method>
@@ -89,13 +128,13 @@
           <sel>setFloatValue:</sel>
           <arg type="float">aFloat</arg>
           <sel>knobProportion:</sel>
-          <arg type="float">knobProp</arg>
+          <arg type="float">ratio</arg>
           <desc>
           </desc>
         </method>
         <method type="NSScrollerPart">
           <sel>testPart:</sel>
-          <arg type="NSPoint">aPoint</arg>
+          <arg type="NSPoint">thePoint</arg>
           <desc>
           </desc>
         </method>

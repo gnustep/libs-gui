@@ -1,23 +1,34 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSScrollView" prev="NSScreen.html" next="NSScroller.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSScrollView" next="NSScroller" prev="NSScreen" up="NSActionCell">
   <head>
     <title>NSScrollView</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Ovidiu Predescu">
+      <email address="ovidiu@net-community.com">
+        ovidiu@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Felipe A. Rodriguez">
+      <email address="far@ix.netcom.com">
+        far@ix.netcom.com
+      </email>
+    </author>
+    <author name="Richard Frith-Macdonald">
+      <email address="richard@brainstorm.co.uk">
+        richard@brainstorm.co.uk
+      </email>
+    </author>
+    <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSScrollView</heading>
+      <heading>
+        Software documentation for the NSScrollView class
+      </heading>
       <class name="NSScrollView" super="NSView">
-        <declared>Gui/NSScrollView.h</declared>
-        <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSScrollView.h</declared>
+        <desc>
+        </desc>
         <method type="NSSize" factory="yes">
           <sel>contentSizeForFrameSize:</sel>
           <arg type="NSSize">frameSize</arg>
@@ -89,6 +100,11 @@
           </desc>
         </method>
         <method type="BOOL">
+          <sel>drawsBackground</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
           <sel>hasHorizontalRuler</sel>
           <desc>
           </desc>
@@ -125,11 +141,6 @@
         </method>
         <method type="NSScroller*">
           <sel>horizontalScroller</sel>
-          <desc>
-          </desc>
-        </method>
-        <method type="BOOL">
-          <sel>isRulerVisible</sel>
           <desc>
           </desc>
         </method>
@@ -186,6 +197,12 @@
         <method type="void">
           <sel>setDocumentView:</sel>
           <arg type="NSView*">aView</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setDrawsBackground:</sel>
+          <arg type="BOOL">flag</arg>
           <desc>
           </desc>
         </method>
@@ -275,7 +292,7 @@
         </method>
         <method type="void">
           <sel>setVerticalRulerView:</sel>
-          <arg type="NSRulerView*">aRulerView</arg>
+          <arg type="NSRulerView*">ruler</arg>
           <desc>
           </desc>
         </method>
@@ -287,12 +304,6 @@
         </method>
         <method type="void">
           <sel>tile</sel>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
-          <sel>toggleRuler:</sel>
-          <arg type="id">sender</arg>
           <desc>
           </desc>
         </method>

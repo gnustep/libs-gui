@@ -1,9 +1,8 @@
-/*                                                    -*-objc-*-
-   NSInputServer.m
+/** <title>NSInputServer</title>                                -*-objc-*-
 
    Copyright (C) 2001 Free Software Foundation, Inc.
 
-   Author: Fred Kiefer <FredKiefer@gmx.de>
+   Author: Fred Kiefer <FredKiefer@gmx.de> 
    Date: August 2001
 
    This file is part of the GNUstep GUI Library.

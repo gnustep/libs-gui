@@ -1,23 +1,25 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSWorkspace" prev="NSWindowController.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSWorkspace" prev="NSWindowController" up="NSActionCell">
   <head>
     <title>NSWorkspace</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>Workspace class</abstract>
+    <copy>1996-1999, 2001 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSWorkspace</heading>
+      <heading>
+        Software documentation for the NSWorkspace class
+      </heading>
       <class name="NSWorkspace" super="NSObject">
-        <declared>Gui/NSWorkspace.h</declared>
-        <conform>NSObject</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSWorkspace.h</declared>
+        <desc>
+        </desc>
         <method type="NSWorkspace*" factory="yes">
           <sel>sharedWorkspace</sel>
           <desc>
@@ -56,11 +58,11 @@
           <sel>isRemovable:</sel>
           <arg type="BOOL*">removableFlag</arg>
           <sel>isWritable:</sel>
-          <arg type="BOOL *">writableFlag</arg>
+          <arg type="BOOL*">writableFlag</arg>
           <sel>isUnmountable:</sel>
           <arg type="BOOL*">unmountableFlag</arg>
           <sel>description:</sel>
-          <arg type="NSString **">description</arg>
+          <arg type="NSString**">description</arg>
           <sel>type:</sel>
           <arg type="NSString**">fileSystemType</arg>
           <desc>
@@ -71,6 +73,8 @@
           <arg type="NSString*">fullPath</arg>
           <sel>application:</sel>
           <arg type="NSString**">appName</arg>
+          <sel>type:</sel>
+          <arg type="NSString**">type</arg>
           <desc>
           </desc>
         </method>
@@ -81,7 +85,7 @@
         </method>
         <method type="NSImage*">
           <sel>iconForFile:</sel>
-          <arg type="NSString*">fullPath</arg>
+          <arg type="NSString*">aPath</arg>
           <desc>
           </desc>
         </method>
@@ -93,7 +97,13 @@
         </method>
         <method type="NSImage*">
           <sel>iconForFiles:</sel>
-          <arg type="NSArray*">fullPaths</arg>
+          <arg type="NSArray*">pathArray</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>isFilePackageAtPath:</sel>
+          <arg type="NSString*">fullPath</arg>
           <desc>
           </desc>
         </method>
@@ -119,12 +129,23 @@
           </desc>
         </method>
         <method type="NSArray*">
+          <sel>mountedLocalVolumePaths</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSArray*">
           <sel>mountedRemovableMedia</sel>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>noteFileSystemChanged</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>noteFileSystemChanged:</sel>
+          <arg type="NSString*">path</arg>
           <desc>
           </desc>
         </method>
@@ -181,30 +202,32 @@
           </desc>
         </method>
         <method type="BOOL">
+          <sel>openURL:</sel>
+          <arg type="NSURL*">url</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
           <sel>performFileOperation:</sel>
           <arg type="NSString*">operation</arg>
           <sel>source:</sel>
-          <arg type="NSString *">source</arg>
+          <arg type="NSString*">source</arg>
           <sel>destination:</sel>
           <arg type="NSString*">destination</arg>
           <sel>files:</sel>
-          <arg type="NSArray *">files</arg>
+          <arg type="NSArray*">files</arg>
           <sel>tag:</sel>
           <arg type="int*">tag</arg>
           <desc>
           </desc>
         </method>
         <method type="BOOL">
-	  
           <sel>selectFile:</sel>
-	  
           <arg type="NSString*">fullPath</arg>
-	  
           <sel>inFileViewerRootedAtPath:</sel>
-	  
-          <arg type="NSString*">rootFullPath</arg>
-	    <desc>
-	    </desc>
+          <arg type="NSString*">rootFullpath</arg>
+          <desc>
+          </desc>
         </method>
         <method type="void">
           <sel>slideImage:</sel>
@@ -228,6 +251,73 @@
           </desc>
         </method>
       </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the NSWorkspace(GNUstep)
+        category
+      </heading>
+      <category name="GNUstep" class="NSWorkspace">
+        <declared>AppKit/NSWorkspace.h</declared>
+        <desc>
+        </desc>
+        <method type="NSImage*">
+          <sel>appIconForApp:</sel>
+          <arg type="NSString*">appName</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSBundle*">
+          <sel>bundleForApp:</sel>
+          <arg type="NSString*">appName</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSString*">
+          <sel>getBestAppInRole:</sel>
+          <arg type="NSString*">role</arg>
+          <sel>forExtension:</sel>
+          <arg type="NSString*">ext</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSString*">
+          <sel>getBestIconForExtension:</sel>
+          <arg type="NSString*">ext</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSDictionary*">
+          <sel>infoForExtension:</sel>
+          <arg type="NSString*">ext</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSString*">
+          <sel>locateApplicationBinary:</sel>
+          <arg type="NSString*">appName</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setBestApp:</sel>
+          <arg type="NSString*">appName</arg>
+          <sel>inRole:</sel>
+          <arg type="NSString*">role</arg>
+          <sel>forExtension:</sel>
+          <arg type="NSString*">ext</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setBestIcon:</sel>
+          <arg type="NSString*">iconPath</arg>
+          <sel>forExtension:</sel>
+          <arg type="NSString*">ext</arg>
+          <desc>
+          </desc>
+        </method>
+      </category>
     </chapter>
   </body>
 </gsdoc>

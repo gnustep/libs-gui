@@ -1,563 +1,669 @@
-<html><head>
- <title>NSApplication</title>
-</head>
-<body>
-<a href ="NSAffineTransform.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSAttributedStrngAdds.html">[Next] </a>
-<h1>NSApplication</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSApplication</a></h2>
-<h2><a name ="NSApplication">NSApplication</a></h2>
-<p><b>Declared in: </b> Gui/NSApplication.h</p>
-<p><b>Inherits from: </b> NSResponder</p>
-<p><b>Conforms to: </b> NSCoding
-</p>
-<hr>
-
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSApplication.html#method-0">+setApplicationHandle:previousHandle:commandLine:show:</a>
-<li ><a href ="NSApplication.html#method-1">+useRunningCopyOfApplication</a>
-<li ><a href ="NSApplication.html#method-2">-abortModal</a>
-<li ><a href ="NSApplication.html#method-3">-activateContextHelpMode:</a>
-<li ><a href ="NSApplication.html#method-4">-activateIgnoringOtherApps:</a>
-<li ><a href ="NSApplication.html#method-5">-addWindowsItem:title:filename:</a>
-<li ><a href ="NSApplication.html#method-67">-application:</a>
-<li ><a href ="NSApplication.html#method-70">-application:</a>
-<li ><a href ="NSApplication.html#method-69">-application:</a>
-<li ><a href ="NSApplication.html#method-68">-application:openFileWithoutUI:</a>
-<li ><a href ="NSApplication.html#method-71">-applicationDidBecomeActive:</a>
-<li ><a href ="NSApplication.html#method-72">-applicationDidFinishLaunching:</a>
-<li ><a href ="NSApplication.html#method-73">-applicationDidHide:</a>
-<li ><a href ="NSApplication.html#method-74">-applicationDidResignActive:</a>
-<li ><a href ="NSApplication.html#method-75">-applicationDidUnhide:</a>
-<li ><a href ="NSApplication.html#method-76">-applicationDidUpdate:</a>
-<li ><a href ="NSApplication.html#method-6">-applicationHandle</a>
-<li ><a href ="NSApplication.html#method-7">-applicationIconImage</a>
-<li ><a href ="NSApplication.html#method-77">-applicationOpenUntitledFile:</a>
-<li ><a href ="NSApplication.html#method-78">-applicationShouldOpenUntitledFile:</a>
-<li ><a href ="NSApplication.html#method-79">-applicationShouldTerminate:</a>
-<li ><a href ="NSApplication.html#method-80">-applicationShouldTerminateAfterLastWindowClosed:</a>
-<li ><a href ="NSApplication.html#method-81">-applicationWillBecomeActive:</a>
-<li ><a href ="NSApplication.html#method-82">-applicationWillFinishLaunching:</a>
-<li ><a href ="NSApplication.html#method-83">-applicationWillHide:</a>
-<li ><a href ="NSApplication.html#method-85">-applicationWillResignActive:</a>
-<li ><a href ="NSApplication.html#method-84">-applicationWillTerminate:</a>
-<li ><a href ="NSApplication.html#method-86">-applicationWillUnhide:</a>
-<li ><a href ="NSApplication.html#method-87">-applicationWillUpdate:</a>
-<li ><a href ="NSApplication.html#method-8">-arrangeInFront:</a>
-<li ><a href ="NSApplication.html#method-9">-beginModalSessionForWindow:</a>
-<li ><a href ="NSApplication.html#method-10">-changeWindowsItem:title:filename:</a>
-<li ><a href ="NSApplication.html#method-11">-context</a>
-<li ><a href ="NSApplication.html#method-12">-currentEvent</a>
-<li ><a href ="NSApplication.html#method-13">-deactivate</a>
-<li ><a href ="NSApplication.html#method-14">-discardEventsMatchingMask:beforeEvent:</a>
-<li ><a href ="NSApplication.html#method-15">-endModalSession:</a>
-<li ><a href ="NSApplication.html#method-16">-finishLaunching</a>
-<li ><a href ="NSApplication.html#method-17">-hide:</a>
-<li ><a href ="NSApplication.html#method-18">-isActive</a>
-<li ><a href ="NSApplication.html#method-19">-isHidden</a>
-<li ><a href ="NSApplication.html#method-20">-isRunning</a>
-<li ><a href ="NSApplication.html#method-21">-keyWindow</a>
-<li ><a href ="NSApplication.html#method-22">-mainMenu</a>
-<li ><a href ="NSApplication.html#method-23">-mainWindow</a>
-<li ><a href ="NSApplication.html#method-24">-makeWindowsPerform:</a>
-<li ><a href ="NSApplication.html#method-25">-miniaturizeAll:</a>
-<li ><a href ="NSApplication.html#method-26">-modalWindow</a>
-<li ><a href ="NSApplication.html#method-27">-nextEventMatchingMask:untilDate:inMode:dequeue:</a>
-<li ><a href ="NSApplication.html#method-28">-orderFrontColorPanel:</a>
-<li ><a href ="NSApplication.html#method-29">-orderFrontStandardAboutPanel:</a>
-<li ><a href ="NSApplication.html#method-30">-orderFrontStandardAboutPanelWithOptions:</a>
-<li ><a href ="NSApplication.html#method-31">-postEvent:</a>
-<li ><a href ="NSApplication.html#method-32">-preventWindowOrdering</a>
-<li ><a href ="NSApplication.html#method-33">-registerServicesMenuSendTypes:returnTypes:</a>
-<li ><a href ="NSApplication.html#method-34">-removeWindowsItem:</a>
-<li ><a href ="NSApplication.html#method-35">-reportException:</a>
-<li ><a href ="NSApplication.html#method-36">-run</a>
-<li ><a href ="NSApplication.html#method-37">-runModalForWindow:</a>
-<li ><a href ="NSApplication.html#method-38">-runModalSession:</a>
-<li ><a href ="NSApplication.html#method-39">-runPageLayout:</a>
-<li ><a href ="NSApplication.html#method-40">-sendAction:to:from:</a>
-<li ><a href ="NSApplication.html#method-41">-sendEvent:</a>
-<li ><a href ="NSApplication.html#method-42">-servicesMenu</a>
-<li ><a href ="NSApplication.html#method-43">-servicesProvider</a>
-<li ><a href ="NSApplication.html#method-44">-setApplicationIconImage:</a>
-<li ><a href ="NSApplication.html#method-45">-setDelegate:</a>
-<li ><a href ="NSApplication.html#method-46">-setMainMenu:</a>
-<li ><a href ="NSApplication.html#method-47">-setServicesMenu:</a>
-<li ><a href ="NSApplication.html#method-48">-setServicesProvider:</a>
-<li ><a href ="NSApplication.html#method-49">-setWindowsMenu:</a>
-<li ><a href ="NSApplication.html#method-50">-setWindowsNeedUpdate:</a>
-<li ><a href ="NSApplication.html#method-51">-showHelp:</a>
-<li ><a href ="NSApplication.html#method-52">-stop:</a>
-<li ><a href ="NSApplication.html#method-53">-stopModal</a>
-<li ><a href ="NSApplication.html#method-54">-stopModalWithCode:</a>
-<li ><a href ="NSApplication.html#method-55">-targetForAction:</a>
-<li ><a href ="NSApplication.html#method-56">-terminate:</a>
-<li ><a href ="NSApplication.html#method-57">-tryToPerform:</a>
-<li ><a href ="NSApplication.html#method-58">-unhide:</a>
-<li ><a href ="NSApplication.html#method-59">-unhideWithoutActivation</a>
-<li ><a href ="NSApplication.html#method-60">-updateWindows</a>
-<li ><a href ="NSApplication.html#method-61">-updateWindowsItem:</a>
-<li ><a href ="NSApplication.html#method-62">-validRequestorForSendType:returnType:</a>
-<li ><a href ="NSApplication.html#method-65">-windowWithWindowHandle:</a>
-<li ><a href ="NSApplication.html#method-66">-windowWithWindowNumber:</a>
-<li ><a href ="NSApplication.html#method-63">-windows</a>
-<li ><a href ="NSApplication.html#method-64">-windowsMenu</a>
-</ul>
-<hr><h2>Class Methods </h2>
-<h3><a name ="method-0">setApplicationHandle:previousHandle:commandLine:show:</a></h3>
-+ (void) <b>setApplicationHandle:</b> (void*)hInstance <b>previousHandle:</b> (void*)prevInstance <b>commandLine:</b> (NSString*)cmdLine <b>show:</b> (int)cmdShow;<br>
-
-          
- <hr>
-<h3><a name ="method-1">useRunningCopyOfApplication</a></h3>
-+ (void) <b>useRunningCopyOfApplication</b>;<br>
-
-          
- <hr>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-2">abortModal</a></h3>
-- (void) <b>abortModal</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-3">activateContextHelpMode:</a></h3>
-- (void) <b>activateContextHelpMode:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-4">activateIgnoringOtherApps:</a></h3>
-- (void) <b>activateIgnoringOtherApps:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-5">addWindowsItem:title:filename:</a></h3>
-- (void) <b>addWindowsItem:</b> (NSWindow*)aWindow <b>title:</b> (NSString*)title <b>filename:</b> (BOOL)isFilename;<br>
-
-          
- <hr>
-<h3><a name ="method-6">applicationHandle</a></h3>
-- (void*) <b>applicationHandle</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-7">applicationIconImage</a></h3>
-- (NSImage*) <b>applicationIconImage</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-8">arrangeInFront:</a></h3>
-- (void) <b>arrangeInFront:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-9">beginModalSessionForWindow:</a></h3>
-- (NSModalSession) <b>beginModalSessionForWindow:</b> (NSWindow*)aWindow;<br>
-
-          
- <hr>
-<h3><a name ="method-10">changeWindowsItem:title:filename:</a></h3>
-- (void) <b>changeWindowsItem:</b> (NSWindow*)aWindow <b>title:</b> (NSString*)aString <b>filename:</b> (BOOL)isFilename;<br>
-
-          
- <hr>
-<h3><a name ="method-11">context</a></h3>
-- (NSDPSContext*) <b>context</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-12">currentEvent</a></h3>
-- (NSEvent*) <b>currentEvent</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-13">deactivate</a></h3>
-- (void) <b>deactivate</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-14">discardEventsMatchingMask:beforeEvent:</a></h3>
-- (void) <b>discardEventsMatchingMask:</b> (unsigned int)mask <b>beforeEvent:</b> (NSEvent*)lastEvent;<br>
-
-          
- <hr>
-<h3><a name ="method-15">endModalSession:</a></h3>
-- (void) <b>endModalSession:</b> (NSModalSession)session;<br>
-
-          
- <hr>
-<h3><a name ="method-16">finishLaunching</a></h3>
-- (void) <b>finishLaunching</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-17">hide:</a></h3>
-- (void) <b>hide:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-18">isActive</a></h3>
-- (BOOL) <b>isActive</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-19">isHidden</a></h3>
-- (BOOL) <b>isHidden</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-20">isRunning</a></h3>
-- (BOOL) <b>isRunning</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-21">keyWindow</a></h3>
-- (NSWindow*) <b>keyWindow</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-22">mainMenu</a></h3>
-- (NSMenu*) <b>mainMenu</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-23">mainWindow</a></h3>
-- (NSWindow*) <b>mainWindow</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-24">makeWindowsPerform:</a></h3>
-- (NSWindow*) <b>makeWindowsPerform:</b> (SEL)aSelector;<br>
-
-          
- <hr>
-<h3><a name ="method-25">miniaturizeAll:</a></h3>
-- (void) <b>miniaturizeAll:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-26">modalWindow</a></h3>
-- (NSWindow*) <b>modalWindow</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-27">nextEventMatchingMask:untilDate:inMode:dequeue:</a></h3>
-- (NSEvent*) <b>nextEventMatchingMask:</b> (unsigned int)mask <b>untilDate:</b> (NSDate*)expiration <b>inMode:</b> (NSString*)mode <b>dequeue:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-28">orderFrontColorPanel:</a></h3>
-- (void) <b>orderFrontColorPanel:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-29">orderFrontStandardAboutPanel:</a></h3>
-- (void) <b>orderFrontStandardAboutPanel:</b> (id)sender;;<br>
-
-          
- <hr>
-<h3><a name ="method-30">orderFrontStandardAboutPanelWithOptions:</a></h3>
-- (void) <b>orderFrontStandardAboutPanelWithOptions:</b> (NSDictionary*)optionsDictionary;;<br>
-
-          
- <hr>
-<h3><a name ="method-31">postEvent:</a></h3>
-- (void) <b>postEvent:</b> (NSEvent*)anEvent;<br>
-
-          
- <hr>
-<h3><a name ="method-32">preventWindowOrdering</a></h3>
-- (void) <b>preventWindowOrdering</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-33">registerServicesMenuSendTypes:returnTypes:</a></h3>
-- (void) <b>registerServicesMenuSendTypes:</b> (NSArray*)sendTypes <b>returnTypes:</b> (NSArray*)returnTypes;<br>
-
-          
- <hr>
-<h3><a name ="method-34">removeWindowsItem:</a></h3>
-- (void) <b>removeWindowsItem:</b> (NSWindow*)aWindow;<br>
-
-          
- <hr>
-<h3><a name ="method-35">reportException:</a></h3>
-- (void) <b>reportException:</b> (NSException*)anException;<br>
-
-          
- <hr>
-<h3><a name ="method-36">run</a></h3>
-- (void) <b>run</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-37">runModalForWindow:</a></h3>
-- (int) <b>runModalForWindow:</b> (NSWindow*)aWindow;<br>
-
-          
- <hr>
-<h3><a name ="method-38">runModalSession:</a></h3>
-- (int) <b>runModalSession:</b> (NSModalSession)session;<br>
-
-          
- <hr>
-<h3><a name ="method-39">runPageLayout:</a></h3>
-- (void) <b>runPageLayout:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-40">sendAction:to:from:</a></h3>
-- (BOOL) <b>sendAction:</b> (SEL)anAction <b>to:</b> (id)aTarget <b>from:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-41">sendEvent:</a></h3>
-- (void) <b>sendEvent:</b> (NSEvent*)anEvent;<br>
-
-          
- <hr>
-<h3><a name ="method-42">servicesMenu</a></h3>
-- (NSMenu*) <b>servicesMenu</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-43">servicesProvider</a></h3>
-- (id) <b>servicesProvider</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-44">setApplicationIconImage:</a></h3>
-- (void) <b>setApplicationIconImage:</b> (NSImage*)anImage;<br>
-
-          
- <hr>
-<h3><a name ="method-45">setDelegate:</a></h3>
-- (void) <b>setDelegate:</b> (id)anObject;<br>
-
-          
- <hr>
-<h3><a name ="method-46">setMainMenu:</a></h3>
-- (void) <b>setMainMenu:</b> (NSMenu*)aMenu;<br>
-
-          
- <hr>
-<h3><a name ="method-47">setServicesMenu:</a></h3>
-- (void) <b>setServicesMenu:</b> (NSMenu*)aMenu;<br>
-
-          
- <hr>
-<h3><a name ="method-48">setServicesProvider:</a></h3>
-- (void) <b>setServicesProvider:</b> (id)aProvider;<br>
-
-          
- <hr>
-<h3><a name ="method-49">setWindowsMenu:</a></h3>
-- (void) <b>setWindowsMenu:</b> (NSMenu*)aMenu;<br>
-
-          
- <hr>
-<h3><a name ="method-50">setWindowsNeedUpdate:</a></h3>
-- (void) <b>setWindowsNeedUpdate:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-51">showHelp:</a></h3>
-- (void) <b>showHelp:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-52">stop:</a></h3>
-- (void) <b>stop:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-53">stopModal</a></h3>
-- (void) <b>stopModal</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-54">stopModalWithCode:</a></h3>
-- (void) <b>stopModalWithCode:</b> (int)returnCode;<br>
-
-          
- <hr>
-<h3><a name ="method-55">targetForAction:</a></h3>
-- (id) <b>targetForAction:</b> (SEL)aSelector;<br>
-
-          
- <hr>
-<h3><a name ="method-56">terminate:</a></h3>
-- (void) <b>terminate:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-57">tryToPerform:</a></h3>
-- (BOOL) <b>tryToPerform:</b> (SEL)aSelector;<br>
-
-          
- <hr>
-<h3><a name ="method-58">unhide:</a></h3>
-- (void) <b>unhide:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-59">unhideWithoutActivation</a></h3>
-- (void) <b>unhideWithoutActivation</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-60">updateWindows</a></h3>
-- (void) <b>updateWindows</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-61">updateWindowsItem:</a></h3>
-- (void) <b>updateWindowsItem:</b> (NSWindow*)aWindow;<br>
-
-          
- <hr>
-<h3><a name ="method-62">validRequestorForSendType:returnType:</a></h3>
-- (id) <b>validRequestorForSendType:</b> (NSString*)sendType <b>returnType:</b> (NSString*)returnType;<br>
-
-          
- <hr>
-<h3><a name ="method-63">windows</a></h3>
-- (NSArray*) <b>windows</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-64">windowsMenu</a></h3>
-- (NSMenu*) <b>windowsMenu</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-65">windowWithWindowHandle:</a></h3>
-- (NSWindow*) <b>windowWithWindowHandle:</b> (void*)hWnd;<br>
-
-          
- <hr>
-<h3><a name ="method-66">windowWithWindowNumber:</a></h3>
-- (NSWindow*) <b>windowWithWindowNumber:</b> (int)windowNum;<br>
-
-          
- <hr>
-<h3><a name ="method-67">application:</a></h3>
-- (BOOL) <b>application:</b> (NSApplication*)theApplication;<br>
-
-          
- <hr>
-<h3><a name ="method-68">application:openFileWithoutUI:</a></h3>
-- (BOOL) <b>application:</b> (NSApplication*)sender <b>openFileWithoutUI:</b> (NSString*)filename;<br>
-
-          
- <hr>
-<h3><a name ="method-69">application:</a></h3>
-- (BOOL) <b>application:</b> (NSApplication*)theApplication;<br>
-
-          
- <hr>
-<h3><a name ="method-70">application:</a></h3>
-- (BOOL) <b>application:</b> (NSApplication*)theApplication;<br>
-
-          
- <hr>
-<h3><a name ="method-71">applicationDidBecomeActive:</a></h3>
-- (void) <b>applicationDidBecomeActive:</b> (NSNotification*)aNotification;<br>
-
-          
- <hr>
-<h3><a name ="method-72">applicationDidFinishLaunching:</a></h3>
-- (void) <b>applicationDidFinishLaunching:</b> (NSNotification*)aNotification;<br>
-
-          
- <hr>
-<h3><a name ="method-73">applicationDidHide:</a></h3>
-- (void) <b>applicationDidHide:</b> (NSNotification*)aNotification;<br>
-
-          
- <hr>
-<h3><a name ="method-74">applicationDidResignActive:</a></h3>
-- (void) <b>applicationDidResignActive:</b> (NSNotification*)aNotification;<br>
-
-          
- <hr>
-<h3><a name ="method-75">applicationDidUnhide:</a></h3>
-- (void) <b>applicationDidUnhide:</b> (NSNotification*)aNotification;<br>
-
-          
- <hr>
-<h3><a name ="method-76">applicationDidUpdate:</a></h3>
-- (void) <b>applicationDidUpdate:</b> (NSNotification*)aNotification;<br>
-
-          
- <hr>
-<h3><a name ="method-77">applicationOpenUntitledFile:</a></h3>
-- (BOOL) <b>applicationOpenUntitledFile:</b> (NSApplication*)theApplication;<br>
-
-          
- <hr>
-<h3><a name ="method-78">applicationShouldOpenUntitledFile:</a></h3>
-- (BOOL) <b>applicationShouldOpenUntitledFile:</b> (NSApplication*)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-79">applicationShouldTerminate:</a></h3>
-- (BOOL) <b>applicationShouldTerminate:</b> (NSApplication*)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-80">applicationShouldTerminateAfterLastWindowClosed:</a></h3>
-- (BOOL) <b>applicationShouldTerminateAfterLastWindowClosed:</b> (NSApplication*)theApplication;<br>
-
-          
- <hr>
-<h3><a name ="method-81">applicationWillBecomeActive:</a></h3>
-- (void) <b>applicationWillBecomeActive:</b> (NSNotification*)aNotification;<br>
-
-          
- <hr>
-<h3><a name ="method-82">applicationWillFinishLaunching:</a></h3>
-- (void) <b>applicationWillFinishLaunching:</b> (NSNotification*)aNotification;<br>
-
-          
- <hr>
-<h3><a name ="method-83">applicationWillHide:</a></h3>
-- (void) <b>applicationWillHide:</b> (NSNotification*)aNotification;<br>
-
-          
- <hr>
-<h3><a name ="method-84">applicationWillTerminate:</a></h3>
-- (void) <b>applicationWillTerminate:</b> (NSNotification*)aNotification;<br>
-
-          
- <hr>
-<h3><a name ="method-85">applicationWillResignActive:</a></h3>
-- (void) <b>applicationWillResignActive:</b> (NSNotification*)aNotification;<br>
-
-          
- <hr>
-<h3><a name ="method-86">applicationWillUnhide:</a></h3>
-- (void) <b>applicationWillUnhide:</b> (NSNotification*)aNotification;<br>
-
-          
- <hr>
-<h3><a name ="method-87">applicationWillUpdate:</a></h3>
-- (void) <b>applicationWillUpdate:</b> (NSNotification*)aNotification;<br>
-
-          
- <hr>
-</body>
-
- </html>
+<html>
+  <head>
+    <title>NSApplication</title>
+  </head>
+  <body>
+    <h1>NSApplication</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Scott Christley(<a href="mailto:scottc@net-community.com"><code>
+        scottc@net-community.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Felipe A. Rodriguez(<a href="mailto:far@ix.netcom.com"><code>
+        far@ix.netcom.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Richard Frith-Macdonald(<a href="mailto:richard@brainstorm.co.uk"><code>
+        richard@brainstorm.co.uk
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <blockquote>
+The one and only application class    </blockquote>
+    <p>Copyright: (C) 1996,1999 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the NSApplication class
+      </h1>
+    <h2><a name="class$NSApplication">NSApplication</a> : NSResponder</h2>
+    Declared: AppKit/NSApplication.h<br />
+    Conform: NSCoding<br />
+    <p>
+
+            </p>
+    <h3>detachDrawingThread:toTarget:withObject:</a></h3>
+    + (void) <b>detachDrawingThread:</b> (SEL)selector<b> toTarget:</b> (id)target<b> withObject:</b> (id)argument;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>sharedApplication</a></h3>
+    + (<a href="#class$NSApplication">NSApplication</a>*) <b>sharedApplication</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>abortModal</a></h3>
+    - (void) <b>abortModal</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>activateIgnoringOtherApps:</a></h3>
+    - (void) <b>activateIgnoringOtherApps:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>addWindowsItem:title:filename:</a></h3>
+    - (void) <b>addWindowsItem:</b> (NSWindow*)aWindow<b> title:</b> (NSString*)aString<b> filename:</b> (BOOL)isFilename;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>applicationIconImage</a></h3>
+    - (NSImage*) <b>applicationIconImage</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>arrangeInFront:</a></h3>
+    - (void) <b>arrangeInFront:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>beginModalSessionForWindow:</a></h3>
+    - (NSModalSession) <b>beginModalSessionForWindow:</b> (NSWindow*)theWindow;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>beginSheet:modalForWindow:modalDelegate:didEndSelector:contextInfo:</a></h3>
+    - (void) <b>beginSheet:</b> (NSWindow*)sheet<b> modalForWindow:</b> (NSWindow*)docWindow<b> modalDelegate:</b> (id)modalDelegate<b> didEndSelector:</b> (SEL)didEndSelector<b> contextInfo:</b> (void*)contextInfo;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>changeWindowsItem:title:filename:</a></h3>
+    - (void) <b>changeWindowsItem:</b> (NSWindow*)aWindow<b> title:</b> (NSString*)aString<b> filename:</b> (BOOL)isFilename;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>context</a></h3>
+    - (NSGraphicsContext*) <b>context</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>currentEvent</a></h3>
+    - (NSEvent*) <b>currentEvent</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>deactivate</a></h3>
+    - (void) <b>deactivate</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>delegate</a></h3>
+    - (id) <b>delegate</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>discardEventsMatchingMask:beforeEvent:</a></h3>
+    - (void) <b>discardEventsMatchingMask:</b> (unsigned int)mask<b> beforeEvent:</b> (NSEvent*)lastEvent;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>encodeWithCoder:</a></h3>
+    - (void) <b>encodeWithCoder:</b> (NSCoder*)aCoder;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>endModalSession:</a></h3>
+    - (void) <b>endModalSession:</b> (NSModalSession)theSession;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>endSheet:</a></h3>
+    - (void) <b>endSheet:</b> (NSWindow*)sheet;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>endSheet:returnCode:</a></h3>
+    - (void) <b>endSheet:</b> (NSWindow*)sheet<b> returnCode:</b> (int)returnCode;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>finishLaunching</a></h3>
+    - (void) <b>finishLaunching</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>hide:</a></h3>
+    - (void) <b>hide:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>hideOtherApplications:</a></h3>
+    - (void) <b>hideOtherApplications:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>initWithCoder:</a></h3>
+    - (id) <b>initWithCoder:</b> (NSCoder*)aDecoder;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isActive</a></h3>
+    - (BOOL) <b>isActive</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isHidden</a></h3>
+    - (BOOL) <b>isHidden</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isRunning</a></h3>
+    - (BOOL) <b>isRunning</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>keyWindow</a></h3>
+    - (NSWindow*) <b>keyWindow</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>mainMenu</a></h3>
+    - (NSMenu*) <b>mainMenu</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>mainWindow</a></h3>
+    - (NSWindow*) <b>mainWindow</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>makeWindowsPerform:inOrder:</a></h3>
+    - (NSWindow*) <b>makeWindowsPerform:</b> (SEL)aSelector<b> inOrder:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>miniaturizeAll:</a></h3>
+    - (void) <b>miniaturizeAll:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>modalWindow</a></h3>
+    - (NSWindow*) <b>modalWindow</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>nextEventMatchingMask:untilDate:inMode:dequeue:</a></h3>
+    - (NSEvent*) <b>nextEventMatchingMask:</b> (unsigned int)mask<b> untilDate:</b> (NSDate*)expiration<b> inMode:</b> (NSString*)mode<b> dequeue:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>orderFrontColorPanel:</a></h3>
+    - (void) <b>orderFrontColorPanel:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>orderFrontDataLinkPanel:</a></h3>
+    - (void) <b>orderFrontDataLinkPanel:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>orderFrontHelpPanel:</a></h3>
+    - (void) <b>orderFrontHelpPanel:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>orderFrontStandardAboutPanel:</a></h3>
+    - (void) <b>orderFrontStandardAboutPanel:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>orderFrontStandardAboutPanelWithOptions:</a></h3>
+    - (void) <b>orderFrontStandardAboutPanelWithOptions:</b> (NSDictionary*)options;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>orderFrontStandardInfoPanel:</a></h3>
+    - (void) <b>orderFrontStandardInfoPanel:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>orderFrontStandardInfoPanelWithOptions:</a></h3>
+    - (void) <b>orderFrontStandardInfoPanelWithOptions:</b> (NSDictionary*)options;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>postEvent:atStart:</a></h3>
+    - (void) <b>postEvent:</b> (NSEvent*)event<b> atStart:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>preventWindowOrdering</a></h3>
+    - (void) <b>preventWindowOrdering</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>registerServicesMenuSendTypes:returnTypes:</a></h3>
+    - (void) <b>registerServicesMenuSendTypes:</b> (NSArray*)sendTypes<b> returnTypes:</b> (NSArray*)returnTypes;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>removeWindowsItem:</a></h3>
+    - (void) <b>removeWindowsItem:</b> (NSWindow*)aWindow;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>reportException:</a></h3>
+    - (void) <b>reportException:</b> (NSException*)anException;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>run</a></h3>
+    - (void) <b>run</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>runModalForWindow:</a></h3>
+    - (int) <b>runModalForWindow:</b> (NSWindow*)theWindow;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>runModalForWindow:relativeToWindow:</a></h3>
+    - (int) <b>runModalForWindow:</b> (NSWindow*)theWindow<b> relativeToWindow:</b> (NSWindow*)docWindow;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>runModalSession:</a></h3>
+    - (int) <b>runModalSession:</b> (NSModalSession)theSession;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>runPageLayout:</a></h3>
+    - (void) <b>runPageLayout:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>sendAction:to:from:</a></h3>
+    - (BOOL) <b>sendAction:</b> (SEL)aSelector<b> to:</b> (id)aTarget<b> from:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>sendEvent:</a></h3>
+    - (void) <b>sendEvent:</b> (NSEvent*)theEvent;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>servicesMenu</a></h3>
+    - (NSMenu*) <b>servicesMenu</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>servicesProvider</a></h3>
+    - (id) <b>servicesProvider</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setAppleMenu:</a></h3>
+    - (void) <b>setAppleMenu:</b> (NSMenu*)aMenu;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setApplicationIconImage:</a></h3>
+    - (void) <b>setApplicationIconImage:</b> (NSImage*)anImage;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setDelegate:</a></h3>
+    - (void) <b>setDelegate:</b> (id)anObject;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setMainMenu:</a></h3>
+    - (void) <b>setMainMenu:</b> (NSMenu*)aMenu;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setServicesMenu:</a></h3>
+    - (void) <b>setServicesMenu:</b> (NSMenu*)aMenu;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setServicesProvider:</a></h3>
+    - (void) <b>setServicesProvider:</b> (id)anObject;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setWindowsMenu:</a></h3>
+    - (void) <b>setWindowsMenu:</b> (NSMenu*)aMenu;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setWindowsNeedUpdate:</a></h3>
+    - (void) <b>setWindowsNeedUpdate:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>stop:</a></h3>
+    - (void) <b>stop:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>stopModal</a></h3>
+    - (void) <b>stopModal</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>stopModalWithCode:</a></h3>
+    - (void) <b>stopModalWithCode:</b> (int)returnCode;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>targetForAction:</a></h3>
+    - (id) <b>targetForAction:</b> (SEL)aSelector;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>targetForAction:to:from:</a></h3>
+    - (id) <b>targetForAction:</b> (SEL)theAction<b> to:</b> (id)theTarget<b> from:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>terminate:</a></h3>
+    - (void) <b>terminate:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>tryToPerform:with:</a></h3>
+    - (BOOL) <b>tryToPerform:</b> (SEL)aSelector<b> with:</b> (id)anObject;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>unhide:</a></h3>
+    - (void) <b>unhide:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>unhideAllApplications:</a></h3>
+    - (void) <b>unhideAllApplications:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>unhideWithoutActivation</a></h3>
+    - (void) <b>unhideWithoutActivation</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>updateWindows</a></h3>
+    - (void) <b>updateWindows</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>updateWindowsItem:</a></h3>
+    - (void) <b>updateWindowsItem:</b> (NSWindow*)aWindow;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>validRequestorForSendType:returnType:</a></h3>
+    - (id) <b>validRequestorForSendType:</b> (NSString*)sendType<b> returnType:</b> (NSString*)returnType;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>windowWithWindowNumber:</a></h3>
+    - (NSWindow*) <b>windowWithWindowNumber:</b> (int)windowNum;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>windows</a></h3>
+    - (NSArray*) <b>windows</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>windowsMenu</a></h3>
+    - (NSMenu*) <b>windowsMenu</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the
+        NSObject(NSServicesRequests)
+        category
+      </h1>
+    <h2>NSObject(<a name="category$NSObject(NSServicesRequests)">NSServicesRequests</a>)</h2>
+    Declared: AppKit/NSApplication.h<br />
+    <p>
+
+            </p>
+    <h3>iconWindow</a></h3>
+    - (NSWindow*) <b>iconWindow</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>readSelectionFromPasteboard:</a></h3>
+    - (BOOL) <b>readSelectionFromPasteboard:</b> (NSPasteboard*)pboard;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>writeSelectionToPasteboard:types:</a></h3>
+    - (BOOL) <b>writeSelectionToPasteboard:</b> (NSPasteboard*)pboard<b> types:</b> (NSArray*)types;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the GSAppDelegateProtocol
+        protocol
+      </h1>
+    <h2><a name="protocol$(GSAppDelegateProtocol)">GSAppDelegateProtocol</a></h2>
+    Declared: AppKit/NSApplication.h<br />
+    <p>
+
+            </p>
+    <h3>application:openFile:</a></h3>
+    - (BOOL) <b>application:</b> (<a href="#class$NSApplication">NSApplication</a>*)app<b> openFile:</b> (NSString*)filename;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>application:openFileWithoutUI:</a></h3>
+    - (BOOL) <b>application:</b> (<a href="#class$NSApplication">NSApplication</a>*)app<b> openFileWithoutUI:</b> (NSString*)filename;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>application:openTempFile:</a></h3>
+    - (BOOL) <b>application:</b> (<a href="#class$NSApplication">NSApplication</a>*)app<b> openTempFile:</b> (NSString*)filename;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>application:printFile:</a></h3>
+    - (BOOL) <b>application:</b> (<a href="#class$NSApplication">NSApplication</a>*)theApplication<b> printFile:</b> (NSString*)filename;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>applicationDidBecomeActive:</a></h3>
+    - (void) <b>applicationDidBecomeActive:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>applicationDidFinishLaunching:</a></h3>
+    - (void) <b>applicationDidFinishLaunching:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>applicationDidHide:</a></h3>
+    - (void) <b>applicationDidHide:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>applicationDidResignActive:</a></h3>
+    - (void) <b>applicationDidResignActive:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>applicationDidUnhide:</a></h3>
+    - (void) <b>applicationDidUnhide:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>applicationDidUpdate:</a></h3>
+    - (void) <b>applicationDidUpdate:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>applicationOpenUntitledFile:</a></h3>
+    - (BOOL) <b>applicationOpenUntitledFile:</b> (<a href="#class$NSApplication">NSApplication</a>*)app;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>applicationShouldOpenUntitledFile:</a></h3>
+    - (BOOL) <b>applicationShouldOpenUntitledFile:</b> (<a href="#class$NSApplication">NSApplication</a>*)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>applicationShouldTerminate:</a></h3>
+    - (BOOL) <b>applicationShouldTerminate:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>applicationShouldTerminateAfterLastWindowClosed:</a></h3>
+    - (BOOL) <b>applicationShouldTerminateAfterLastWindowClosed:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>applicationWillBecomeActive:</a></h3>
+    - (void) <b>applicationWillBecomeActive:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>applicationWillFinishLaunching:</a></h3>
+    - (void) <b>applicationWillFinishLaunching:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>applicationWillHide:</a></h3>
+    - (void) <b>applicationWillHide:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>applicationWillResignActive:</a></h3>
+    - (void) <b>applicationWillResignActive:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>applicationWillTerminate:</a></h3>
+    - (void) <b>applicationWillTerminate:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>applicationWillUnhide:</a></h3>
+    - (void) <b>applicationWillUnhide:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>applicationWillUpdate:</a></h3>
+    - (void) <b>applicationWillUpdate:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+  </body>
+</html>

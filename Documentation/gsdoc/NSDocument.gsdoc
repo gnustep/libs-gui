@@ -1,26 +1,28 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSDocument" prev="NSDPSContext.html" next="NSDocumentController.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSDocument" next="NSDocumentController" prev="NSCustomImageRep" up="NSActionCell">
   <head>
     <title>NSDocument</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Carl Lindberg">
+      <email address="Carl.Lindberg@hbo.com">
+        Carl.Lindberg@hbo.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>The abstract document class</abstract>
+    <copy>1999 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSDocument</heading>
+      <heading>
+        Software documentation for the NSDocument class
+      </heading>
       <class name="NSDocument" super="NSObject">
-        <declared>Gui/NSDocument.h</declared>
-        <conform>NSObject</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSDocument.h</declared>
+        <desc>
+        </desc>
         <method type="BOOL" factory="yes">
           <sel>isNativeType:</sel>
-          <arg type="NSString*">aType</arg>
+          <arg type="NSString*">type</arg>
           <desc>
           </desc>
         </method>
@@ -36,7 +38,7 @@
         </method>
         <method type="void">
           <sel>addWindowController:</sel>
-          <arg type="NSWindowController*">aController</arg>
+          <arg type="NSWindowController*">windowController</arg>
           <desc>
           </desc>
         </method>
@@ -46,19 +48,23 @@
           </desc>
         </method>
         <method type="void">
-          <sel>close</sel>
+          <sel>canCloseDocumentWithDelegate:</sel>
+          <arg type="id">delegate</arg>
+          <sel>shouldCloseSelector:</sel>
+          <arg type="SEL">shouldCloseSelector</arg>
+          <sel>contextInfo:</sel>
+          <arg type="void*">contextInfo</arg>
           <desc>
           </desc>
         </method>
-        <method type="IBAction">
-          <sel>closeDocument:</sel>
-          <arg type="id">sender</arg>
+        <method type="void">
+          <sel>close</sel>
           <desc>
           </desc>
         </method>
         <method type="NSData*">
           <sel>dataRepresentationOfType:</sel>
-          <arg type="NSString*">aType</arg>
+          <arg type="NSString*">type</arg>
           <desc>
           </desc>
         </method>
@@ -83,9 +89,14 @@
           <desc>
           </desc>
         </method>
+        <method type="NSString*">
+          <sel>fileTypeFromLastRunSavePanel</sel>
+          <desc>
+          </desc>
+        </method>
         <method type="NSFileWrapper*">
           <sel>fileWrapperRepresentationOfType:</sel>
-          <arg type="NSString*">aType</arg>
+          <arg type="NSString*">type</arg>
           <desc>
           </desc>
         </method>
@@ -102,6 +113,16 @@
         <method type="id">
           <sel>initWithContentsOfFile:</sel>
           <arg type="NSString*">fileName</arg>
+          <sel>ofType:</sel>
+          <arg type="NSString*">fileType</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="id">
+          <sel>initWithContentsOfURL:</sel>
+          <arg type="NSURL*">url</arg>
+          <sel>ofType:</sel>
+          <arg type="NSString*">fileType</arg>
           <desc>
           </desc>
         </method>
@@ -117,22 +138,32 @@
         </method>
         <method type="BOOL">
           <sel>loadDataRepresentation:</sel>
-          <arg type="NSData*">docData</arg>
+          <arg type="NSData*">data</arg>
+          <sel>ofType:</sel>
+          <arg type="NSString*">type</arg>
           <desc>
           </desc>
         </method>
         <method type="BOOL">
           <sel>loadFileWrapperRepresentation:</sel>
           <arg type="NSFileWrapper*">wrapper</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="NSArray*">
-          <sel>makeWindowControllers</sel>
+          <sel>ofType:</sel>
+          <arg type="NSString*">type</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
+          <sel>makeWindowControllers</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>prepareSavePanel:</sel>
+          <arg type="NSSavePanel*">savePanel</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="IBAction">
           <sel>printDocument:</sel>
           <arg type="id">sender</arg>
           <desc>
@@ -152,10 +183,26 @@
         <method type="BOOL">
           <sel>readFromFile:</sel>
           <arg type="NSString*">fileName</arg>
+          <sel>ofType:</sel>
+          <arg type="NSString*">type</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>readFromURL:</sel>
+          <arg type="NSURL*">url</arg>
+          <sel>ofType:</sel>
+          <arg type="NSString*">type</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
+          <sel>removeWindowController:</sel>
+          <arg type="NSWindowController*">windowController</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="IBAction">
           <sel>revertDocumentToSaved:</sel>
           <arg type="id">sender</arg>
           <desc>
@@ -164,6 +211,16 @@
         <method type="BOOL">
           <sel>revertToSavedFromFile:</sel>
           <arg type="NSString*">fileName</arg>
+          <sel>ofType:</sel>
+          <arg type="NSString*">type</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>revertToSavedFromURL:</sel>
+          <arg type="NSURL*">url</arg>
+          <sel>ofType:</sel>
+          <arg type="NSString*">type</arg>
           <desc>
           </desc>
         </method>
@@ -182,26 +239,62 @@
           </desc>
         </method>
         <method type="void">
+          <sel>runModalSavePanelForSaveOperation:</sel>
+          <arg type="NSSaveOperationType">saveOperation</arg>
+          <sel>delegate:</sel>
+          <arg type="id">delegate</arg>
+          <sel>didSaveSelector:</sel>
+          <arg type="SEL">didSaveSelector</arg>
+          <sel>contextInfo:</sel>
+          <arg type="void*">contextInfo</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="IBAction">
           <sel>runPageLayout:</sel>
           <arg type="id">sender</arg>
           <desc>
           </desc>
         </method>
-        <method type="void">
+        <method type="IBAction">
           <sel>saveDocument:</sel>
           <arg type="id">sender</arg>
           <desc>
           </desc>
         </method>
-        <method type="void">
+        <method type="IBAction">
           <sel>saveDocumentAs:</sel>
           <arg type="id">sender</arg>
           <desc>
           </desc>
         </method>
-        <method type="void">
+        <method type="IBAction">
           <sel>saveDocumentTo:</sel>
           <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>saveDocumentWithDelegate:</sel>
+          <arg type="id">delegate</arg>
+          <sel>didSaveSelector:</sel>
+          <arg type="SEL">didSaveSelector</arg>
+          <sel>contextInfo:</sel>
+          <arg type="void*">contextInfo</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>saveToFile:</sel>
+          <arg type="NSString*">fileName</arg>
+          <sel>saveOperation:</sel>
+          <arg type="NSSaveOperationType">saveOperation</arg>
+          <sel>delegate:</sel>
+          <arg type="id">delegate</arg>
+          <sel>didSaveSelector:</sel>
+          <arg type="SEL">didSaveSelector</arg>
+          <sel>contextInfo:</sel>
+          <arg type="void*">contextInfo</arg>
           <desc>
           </desc>
         </method>
@@ -213,7 +306,7 @@
         </method>
         <method type="void">
           <sel>setFileType:</sel>
-          <arg type="NSString*">docType</arg>
+          <arg type="NSString*">type</arg>
           <desc>
           </desc>
         </method>
@@ -235,6 +328,12 @@
           <desc>
           </desc>
         </method>
+        <method type="void">
+          <sel>setWindow:</sel>
+          <arg type="NSWindow*">window</arg>
+          <desc>
+          </desc>
+        </method>
         <method type="BOOL">
           <sel>shouldChangePrintInfo:</sel>
           <arg type="NSPrintInfo*">newPrintInfo</arg>
@@ -244,6 +343,18 @@
         <method type="BOOL">
           <sel>shouldCloseWindowController:</sel>
           <arg type="NSWindowController*">windowController</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>shouldCloseWindowController:</sel>
+          <arg type="NSWindowController*">windowController</arg>
+          <sel>delegate:</sel>
+          <arg type="id">delegate</arg>
+          <sel>shouldCloseSelector:</sel>
+          <arg type="SEL">callback</arg>
+          <sel>contextInfo:</sel>
+          <arg type="void*">contextInfo</arg>
           <desc>
           </desc>
         </method>
@@ -264,13 +375,19 @@
         </method>
         <method type="void">
           <sel>updateChangeCount:</sel>
-          <arg type="NSDocumentChangeType">changeType</arg>
+          <arg type="NSDocumentChangeType">change</arg>
           <desc>
           </desc>
         </method>
         <method type="BOOL">
           <sel>validateMenuItem:</sel>
           <arg type="NSMenuItem*">anItem</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>validateUserInterfaceItem:</sel>
+          <arg type="id&lt;NSValidatedUserInterfaceItem&gt;">anItem</arg>
           <desc>
           </desc>
         </method>
@@ -299,6 +416,26 @@
         <method type="BOOL">
           <sel>writeToFile:</sel>
           <arg type="NSString*">fileName</arg>
+          <sel>ofType:</sel>
+          <arg type="NSString*">type</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>writeToURL:</sel>
+          <arg type="NSURL*">url</arg>
+          <sel>ofType:</sel>
+          <arg type="NSString*">type</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>writeWithBackupToFile:</sel>
+          <arg type="NSString*">fileName</arg>
+          <sel>ofType:</sel>
+          <arg type="NSString*">fileType</arg>
+          <sel>saveOperation:</sel>
+          <arg type="NSSaveOperationType">saveOp</arg>
           <desc>
           </desc>
         </method>

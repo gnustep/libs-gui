@@ -2,30 +2,279 @@
  <title>NSMenuItem</title>
 </head>
 <body>
-<a href ="NSMenu.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSMenuItemCell.html">[Next] </a>
 <h1>NSMenuItem</h1>
 <h3>Authors </h3>
  <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
+<dt>Ovidiu Predescu
+<dd>
+<dt>David Lazaro Saz
 <dd>
 </dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSMenuItem</a></h2>
-<h2><a name ="NSMenuItem">NSMenuItem</a></h2>
-<p><b>Declared in: </b> Gui/NSMenuItem.h</p>
-<p><b>Inherits from: </b> NSObject</p>
+<blockquote>The menu cell class.</blockquote>
+<p>Copyright: (C) 1996 Free Software Foundation, Inc.</p>
+<h2><a name ="cont-0">
+        Software documentation for the NSMenuItem protocol
+      </a></h2>
+<h2><a name ="NSMenuItem">NSMenuItem Protocol </a></h2>
+<p><b>Declared in: </b> </p>
 <hr>
 
+        
+<ul>
+<li ><a href ="NSMenuItem.html#method-0">+separatorItem</a>
+<li ><a href ="NSMenuItem.html#method-1">+setUsesUserKeyEquivalents:</a>
+<li ><a href ="NSMenuItem.html#method-2">+usesUserKeyEquivalents</a>
+<li ><a href ="NSMenuItem.html#method-3">-action</a>
+<li ><a href ="NSMenuItem.html#method-4">-hasSubmenu</a>
+<li ><a href ="NSMenuItem.html#method-5">-image</a>
+<li ><a href ="NSMenuItem.html#method-6">-initWithTitle:action:keyEquivalent:</a>
+<li ><a href ="NSMenuItem.html#method-7">-isEnabled</a>
+<li ><a href ="NSMenuItem.html#method-8">-isSeparatorItem</a>
+<li ><a href ="NSMenuItem.html#method-9">-keyEquivalent</a>
+<li ><a href ="NSMenuItem.html#method-10">-keyEquivalentModifierMask</a>
+<li ><a href ="NSMenuItem.html#method-11">-menu</a>
+<li ><a href ="NSMenuItem.html#method-12">-mixedStateImage</a>
+<li ><a href ="NSMenuItem.html#method-13">-mnemonic</a>
+<li ><a href ="NSMenuItem.html#method-14">-mnemonicLocation</a>
+<li ><a href ="NSMenuItem.html#method-15">-offStateImage</a>
+<li ><a href ="NSMenuItem.html#method-16">-onStateImage</a>
+<li ><a href ="NSMenuItem.html#method-17">-representedObject</a>
+<li ><a href ="NSMenuItem.html#method-18">-setAction:</a>
+<li ><a href ="NSMenuItem.html#method-19">-setEnabled:</a>
+<li ><a href ="NSMenuItem.html#method-20">-setImage:</a>
+<li ><a href ="NSMenuItem.html#method-21">-setKeyEquivalent:</a>
+<li ><a href ="NSMenuItem.html#method-22">-setKeyEquivalentModifierMask:</a>
+<li ><a href ="NSMenuItem.html#method-23">-setMenu:</a>
+<li ><a href ="NSMenuItem.html#method-24">-setMixedStateImage:</a>
+<li ><a href ="NSMenuItem.html#method-25">-setMnemonicLocation:</a>
+<li ><a href ="NSMenuItem.html#method-26">-setOffStateImage:</a>
+<li ><a href ="NSMenuItem.html#method-27">-setOnStateImage:</a>
+<li ><a href ="NSMenuItem.html#method-28">-setRepresentedObject:</a>
+<li ><a href ="NSMenuItem.html#method-29">-setState:</a>
+<li ><a href ="NSMenuItem.html#method-30">-setSubmenu:</a>
+<li ><a href ="NSMenuItem.html#method-31">-setTag:</a>
+<li ><a href ="NSMenuItem.html#method-32">-setTarget:</a>
+<li ><a href ="NSMenuItem.html#method-33">-setTitle:</a>
+<li ><a href ="NSMenuItem.html#method-34">-setTitleWithMnemonic:</a>
+<li ><a href ="NSMenuItem.html#method-35">-state</a>
+<li ><a href ="NSMenuItem.html#method-36">-submenu</a>
+<li ><a href ="NSMenuItem.html#method-37">-tag</a>
+<li ><a href ="NSMenuItem.html#method-38">-target</a>
+<li ><a href ="NSMenuItem.html#method-39">-title</a>
+<li ><a href ="NSMenuItem.html#method-40">-userKeyEquivalent</a>
+<li ><a href ="NSMenuItem.html#method-41">-userKeyEquivalentModifierMask</a>
+</ul>
+<hr>
+<h3><a name ="method-0">separatorItem</a></h3>
++ (id&#60;NSMenuItem>) <b>separatorItem</b>;<br>
+
           
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-</ul>
+ <hr>
+<h3><a name ="method-1">setUsesUserKeyEquivalents:</a></h3>
++ (void) <b>setUsesUserKeyEquivalents:</b> (BOOL)flag;<br>
+
+          
+ <hr>
+<h3><a name ="method-2">usesUserKeyEquivalents</a></h3>
++ (BOOL) <b>usesUserKeyEquivalents</b>;<br>
+
+          
+ <hr>
+<h3><a name ="method-3">action</a></h3>
+- (SEL) <b>action</b>;<br>
+
+          
+ <hr>
+<h3><a name ="method-4">hasSubmenu</a></h3>
+- (BOOL) <b>hasSubmenu</b>;<br>
+
+          
+ <hr>
+<h3><a name ="method-5">image</a></h3>
+- (NSImage*) <b>image</b>;<br>
+
+          
+ <hr>
+<h3><a name ="method-6">initWithTitle:action:keyEquivalent:</a></h3>
+- (id) <b>initWithTitle:</b> (NSString*)aString <b>action:</b> (SEL)aSelector <b>keyEquivalent:</b> (NSString*)charCode;<br>
+
+          
+ <hr>
+<h3><a name ="method-7">isEnabled</a></h3>
+- (BOOL) <b>isEnabled</b>;<br>
+
+          
+ <hr>
+<h3><a name ="method-8">isSeparatorItem</a></h3>
+- (BOOL) <b>isSeparatorItem</b>;<br>
+
+          
+ <hr>
+<h3><a name ="method-9">keyEquivalent</a></h3>
+- (NSString*) <b>keyEquivalent</b>;<br>
+
+          
+ <hr>
+<h3><a name ="method-10">keyEquivalentModifierMask</a></h3>
+- (unsigned int) <b>keyEquivalentModifierMask</b>;<br>
+
+          
+ <hr>
+<h3><a name ="method-11">menu</a></h3>
+- (NSMenu*) <b>menu</b>;<br>
+
+          
+ <hr>
+<h3><a name ="method-12">mixedStateImage</a></h3>
+- (NSImage*) <b>mixedStateImage</b>;<br>
+
+          
+ <hr>
+<h3><a name ="method-13">mnemonic</a></h3>
+- (NSString*) <b>mnemonic</b>;<br>
+
+          
+ <hr>
+<h3><a name ="method-14">mnemonicLocation</a></h3>
+- (unsigned) <b>mnemonicLocation</b>;<br>
+
+          
+ <hr>
+<h3><a name ="method-15">offStateImage</a></h3>
+- (NSImage*) <b>offStateImage</b>;<br>
+
+          
+ <hr>
+<h3><a name ="method-16">onStateImage</a></h3>
+- (NSImage*) <b>onStateImage</b>;<br>
+
+          
+ <hr>
+<h3><a name ="method-17">representedObject</a></h3>
+- (id) <b>representedObject</b>;<br>
+
+          
+ <hr>
+<h3><a name ="method-18">setAction:</a></h3>
+- (void) <b>setAction:</b> (SEL)aSelector;<br>
+
+          
+ <hr>
+<h3><a name ="method-19">setEnabled:</a></h3>
+- (void) <b>setEnabled:</b> (BOOL)flag;<br>
+
+          
+ <hr>
+<h3><a name ="method-20">setImage:</a></h3>
+- (void) <b>setImage:</b> (NSImage*)menuImage;<br>
+
+          
+ <hr>
+<h3><a name ="method-21">setKeyEquivalent:</a></h3>
+- (void) <b>setKeyEquivalent:</b> (NSString*)aKeyEquivalent;<br>
+
+          
+ <hr>
+<h3><a name ="method-22">setKeyEquivalentModifierMask:</a></h3>
+- (void) <b>setKeyEquivalentModifierMask:</b> (unsigned int)mask;<br>
+
+          
+ <hr>
+<h3><a name ="method-23">setMenu:</a></h3>
+- (void) <b>setMenu:</b> (NSMenu*)menu;<br>
+
+          
+ <hr>
+<h3><a name ="method-24">setMixedStateImage:</a></h3>
+- (void) <b>setMixedStateImage:</b> (NSImage*)image;<br>
+
+          
+ <hr>
+<h3><a name ="method-25">setMnemonicLocation:</a></h3>
+- (void) <b>setMnemonicLocation:</b> (unsigned)location;<br>
+
+          
+ <hr>
+<h3><a name ="method-26">setOffStateImage:</a></h3>
+- (void) <b>setOffStateImage:</b> (NSImage*)image;<br>
+
+          
+ <hr>
+<h3><a name ="method-27">setOnStateImage:</a></h3>
+- (void) <b>setOnStateImage:</b> (NSImage*)image;<br>
+
+          
+ <hr>
+<h3><a name ="method-28">setRepresentedObject:</a></h3>
+- (void) <b>setRepresentedObject:</b> (id)anObject;<br>
+
+          
+ <hr>
+<h3><a name ="method-29">setState:</a></h3>
+- (void) <b>setState:</b> (int)state;<br>
+
+          
+ <hr>
+<h3><a name ="method-30">setSubmenu:</a></h3>
+- (void) <b>setSubmenu:</b> (NSMenu*)submenu;<br>
+
+          
+ <hr>
+<h3><a name ="method-31">setTag:</a></h3>
+- (void) <b>setTag:</b> (int)anInt;<br>
+
+          
+ <hr>
+<h3><a name ="method-32">setTarget:</a></h3>
+- (void) <b>setTarget:</b> (id)anObject;<br>
+
+          
+ <hr>
+<h3><a name ="method-33">setTitle:</a></h3>
+- (void) <b>setTitle:</b> (NSString*)aString;<br>
+
+          
+ <hr>
+<h3><a name ="method-34">setTitleWithMnemonic:</a></h3>
+- (void) <b>setTitleWithMnemonic:</b> (NSString*)stringWithAmpersand;<br>
+
+          
+ <hr>
+<h3><a name ="method-35">state</a></h3>
+- (int) <b>state</b>;<br>
+
+          
+ <hr>
+<h3><a name ="method-36">submenu</a></h3>
+- (NSMenu*) <b>submenu</b>;<br>
+
+          
+ <hr>
+<h3><a name ="method-37">tag</a></h3>
+- (int) <b>tag</b>;<br>
+
+          
+ <hr>
+<h3><a name ="method-38">target</a></h3>
+- (id) <b>target</b>;<br>
+
+          
+ <hr>
+<h3><a name ="method-39">title</a></h3>
+- (NSString*) <b>title</b>;<br>
+
+          
+ <hr>
+<h3><a name ="method-40">userKeyEquivalent</a></h3>
+- (NSString*) <b>userKeyEquivalent</b>;<br>
+
+          
+ <hr>
+<h3><a name ="method-41">userKeyEquivalentModifierMask</a></h3>
+- (unsigned int) <b>userKeyEquivalentModifierMask</b>;<br>
+
+          
+ <hr>
 </body>
 
  </html>

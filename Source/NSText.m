@@ -1,15 +1,14 @@
-/*
-   NSText.m
+/** <title>NSText</title>
 
-   The RTFD text class
+   <abstract>The RTFD text class</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
+   Author: Scott Christley <scottc@net-community.com>
    Date: 1996
-   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Author: Felipe A. Rodriguez <far@ix.netcom.com>
    Date: July 1998
-   Author:  Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
+   Author:  Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de></email></author>
    Date: August 1998
    Author: Fred Kiefer <FredKiefer@gmx.de>
    Date: March 2000

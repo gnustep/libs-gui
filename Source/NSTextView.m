@@ -1,5 +1,4 @@
-/* 
-   NSTextView.m
+/** <title>NSTextView</title>
 
    Copyright (C) 1996, 1998, 2000 Free Software Foundation, Inc.
 
@@ -169,7 +168,7 @@ static NSNotificationCenter *nc;
 
 /* Initializing Methods */
 
-- (NSTextContainer*) buildUpTextNetwork: (NSSize)aSize;
+- (NSTextContainer*) buildUpTextNetwork: (NSSize)aSize
 {
   NSTextContainer *textContainer;
   NSLayoutManager *layoutManager;

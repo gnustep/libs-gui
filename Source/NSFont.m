@@ -1,7 +1,6 @@
-/* 
-   NSFont.m
+/** <title>NSFont</title>
 
-   The font class
+   <abstract>The font class</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 

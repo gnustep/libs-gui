@@ -1,13 +1,12 @@
-/*
-   NSControl.m
+/** <title>NSControl</title>
 
-   The abstract control class
+   <abstract>The abstract control class</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
+   Author: Scott Christley <scottc@net-community.com>
    Date: 1996
-   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Author: Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: August 1998
 
    This file is part of the GNUstep GUI Library.

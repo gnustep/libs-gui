@@ -1,9 +1,8 @@
-/*
-   NSTabViewItem.m
+/** <title>NSTabViewItem</title>
 
    Copyright (C) 2000 Free Software Foundation, Inc.
 
-   Author:  Michael Hanni  <mhanni@sprintmail.com>
+   Author: Michael Hanni <mhanni@sprintmail.com>
    Date: 1999
 
    This file is part of the GNUstep GUI Library.

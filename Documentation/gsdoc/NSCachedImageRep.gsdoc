@@ -1,30 +1,32 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSCachedImageRep" prev="NSButtonCell.html" next="NSCell.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSCachedImageRep" next="NSCell" prev="NSButtonCell" up="NSActionCell">
   <head>
     <title>NSCachedImageRep</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Adam Fedor">
+      <email address="fedor@gnu.org">
+        fedor@gnu.org
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>Cached image representation.</abstract>
+    <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSCachedImageRep</heading>
+      <heading>
+        Software documentation for the NSCachedImageRep class
+      </heading>
       <class name="NSCachedImageRep" super="NSImageRep">
-        <declared>Gui/NSImageRep.h</declared>
-        <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSCachedImageRep.h</declared>
+        <desc>
+        </desc>
         <method type="id">
           <sel>initWithSize:</sel>
-          <arg type="NSSize">size</arg>
+          <arg type="NSSize">aSize</arg>
           <sel>depth:</sel>
-          <arg type="NSWindowDepth">depth</arg>
+          <arg type="NSWindowDepth">aDepth</arg>
           <sel>separate:</sel>
-          <arg type="BOOL">flag</arg>
+          <arg type="BOOL">separate</arg>
           <sel>alpha:</sel>
           <arg type="BOOL">alpha</arg>
           <desc>
@@ -32,7 +34,9 @@
         </method>
         <method type="id">
           <sel>initWithWindow:</sel>
-          <arg type="NSWindow*">aWindow</arg>
+          <arg type="NSWindow*">win</arg>
+          <sel>rect:</sel>
+          <arg type="NSRect">rect</arg>
           <desc>
           </desc>
         </method>

@@ -1,30 +1,60 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSDocumentController" prev="NSDocument.html" next="NSEPSImageRep.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSDocumentController" next="NSEPSImageRep">
   <head>
     <title>NSDocumentController</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Carl Lindberg">
+      <email address="Carl.Lindberg@hbo.com">
+        Carl.Lindberg@hbo.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>The document controller class</abstract>
+    <copy>1999 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSDocumentController</heading>
+      <heading>
+        Software documentation for the NSDocumentController
+        class
+      </heading>
       <class name="NSDocumentController" super="NSObject">
-        <declared>Gui/NSDocumentController.h</declared>
-        <conform>NSObject</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSDocumentController.h</declared>
+        <desc>
+        </desc>
         <method type="id" factory="yes">
           <sel>sharedDocumentController</sel>
           <desc>
           </desc>
         </method>
+        <method type="NSArray*">
+          <sel>URLsFromRunningOpenPanel</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>addDocument:</sel>
+          <arg type="NSDocument*">document</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="IBAction">
+          <sel>clearRecentDocuments:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
         <method type="BOOL">
           <sel>closeAllDocuments</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>closeAllDocumentsWithDelegate:</sel>
+          <arg type="id">delegate</arg>
+          <sel>didCloseAllSelector:</sel>
+          <arg type="SEL">didAllCloseSelector</arg>
+          <sel>contextInfo:</sel>
+          <arg type="void*">contextInfo</arg>
           <desc>
           </desc>
         </method>
@@ -40,13 +70,13 @@
         </method>
         <method type="NSString*">
           <sel>displayNameForType:</sel>
-          <arg type="NSString*">docType</arg>
+          <arg type="NSString*">type</arg>
           <desc>
           </desc>
         </method>
         <method type="Class">
           <sel>documentClassForType:</sel>
-          <arg type="NSString*">docType</arg>
+          <arg type="NSString*">type</arg>
           <desc>
           </desc>
         </method>
@@ -69,7 +99,7 @@
         </method>
         <method type="NSArray*">
           <sel>fileExtensionsFromType:</sel>
-          <arg type="NSString*">docType</arg>
+          <arg type="NSString*">type</arg>
           <desc>
           </desc>
         </method>
@@ -86,6 +116,16 @@
         <method type="id">
           <sel>makeDocumentWithContentsOfFile:</sel>
           <arg type="NSString*">fileName</arg>
+          <sel>ofType:</sel>
+          <arg type="NSString*">type</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="id">
+          <sel>makeDocumentWithContentsOfURL:</sel>
+          <arg type="NSURL*">url</arg>
+          <sel>ofType:</sel>
+          <arg type="NSString*">type</arg>
           <desc>
           </desc>
         </method>
@@ -95,13 +135,25 @@
           <desc>
           </desc>
         </method>
-        <method type="void">
+        <method type="IBAction">
           <sel>newDocument:</sel>
           <arg type="id">sender</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
+          <sel>noteNewRecentDocument:</sel>
+          <arg type="NSDocument*">aDocument</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>noteNewRecentDocumentURL:</sel>
+          <arg type="NSURL*">anURL</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="IBAction">
           <sel>openDocument:</sel>
           <arg type="id">sender</arg>
           <desc>
@@ -110,12 +162,35 @@
         <method type="id">
           <sel>openDocumentWithContentsOfFile:</sel>
           <arg type="NSString*">fileName</arg>
+          <sel>display:</sel>
+          <arg type="BOOL">display</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="id">
+          <sel>openDocumentWithContentsOfURL:</sel>
+          <arg type="NSURL*">url</arg>
+          <sel>display:</sel>
+          <arg type="BOOL">display</arg>
           <desc>
           </desc>
         </method>
         <method type="id">
           <sel>openUntitledDocumentOfType:</sel>
-          <arg type="NSString*">docType</arg>
+          <arg type="NSString*">type</arg>
+          <sel>display:</sel>
+          <arg type="BOOL">display</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSArray*">
+          <sel>recentDocumentURLs</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>removeDocument:</sel>
+          <arg type="NSDocument*">document</arg>
           <desc>
           </desc>
         </method>
@@ -123,17 +198,33 @@
           <sel>reviewUnsavedDocumentsWithAlertTitle:</sel>
           <arg type="NSString*">title</arg>
           <sel>cancellable:</sel>
-          <arg type="BOOL">flag</arg>
+          <arg type="BOOL">cancellable</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>reviewUnsavedDocumentsWithAlertTitle:</sel>
+          <arg type="NSString*">title</arg>
+          <sel>cancellable:</sel>
+          <arg type="BOOL">cancellable</arg>
+          <sel>delegate:</sel>
+          <arg type="id">delegate</arg>
+          <sel>didReviewAllSelector:</sel>
+          <arg type="SEL">didReviewAllSelector</arg>
+          <sel>contextInfo:</sel>
+          <arg type="void*">contextInfo</arg>
           <desc>
           </desc>
         </method>
         <method type="int">
           <sel>runModalOpenPanel:</sel>
           <arg type="NSOpenPanel*">openPanel</arg>
+          <sel>forTypes:</sel>
+          <arg type="NSArray*">openableFileExtensions</arg>
           <desc>
           </desc>
         </method>
-        <method type="void">
+        <method type="IBAction">
           <sel>saveAllDocuments:</sel>
           <arg type="id">sender</arg>
           <desc>
@@ -159,6 +250,12 @@
         <method type="BOOL">
           <sel>validateMenuItem:</sel>
           <arg type="NSMenuItem*">anItem</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>validateUserInterfaceItem:</sel>
+          <arg type="id&lt;NSValidatedUserInterfaceItem&gt;">anItem</arg>
           <desc>
           </desc>
         </method>

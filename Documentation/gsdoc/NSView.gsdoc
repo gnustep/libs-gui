@@ -1,70 +1,85 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.6//EN" "http://www.gnustep.org/gsdoc-0_6_6.xml">
-<gsdoc base="NSView" prev="NSTextView.html" next="NSWindow.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSView" next="NSWindow" prev="NSTextView" up="NSDocumentController">
   <head>
     <title>NSView</title>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
+    </author>
+    <author name="Felipe A. Rodriguez">
+      <email address="far@ix.netcom.com">
+        far@ix.netcom.com
+      </email>
+    </author>
+    <author name="Ovidiu Predescu">
+      <email address="ovidiu@net-community.com">
+        ovidiu@net-community.com
+      </email>
+    </author>
     <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+      <email address="richard@brainstorm.co.uk">
+        richard@brainstorm.co.uk
+      </email>
     </author>
-    <author name="James Dessart">
-      <email address="skwirl@cam.org"/>
-    </author>
-    <author name="Nicola Pero">
-      <email address="n.pero@mi.flashnet.it"/>
-    </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>
+      The view class which encapsulates all drawing functionality
+    </abstract>
+    <copy>(C) 1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
       <heading>NSView</heading>
+      <p>
+        NSView is an abstract class which provides facilities
+        for drawing in a window and receiving events. It is the
+        superclass of many of the visual elements of the
+        GUI.
+      </p>
+      <p>
+        In order to display itself, a view must be placed in a
+        window (represented by an NSWindow object). Within the
+        window is a hierarchy of NSViews, headed by the window's
+        content view. Every other view in a window is a
+        descendant of this view.
+      </p>
+      <p>
+        Subclasses can override <code>drawRect:</code> in
+        order to implement their appearance. Other methods of
+        NSView and NSResponder can also be overridden to handle
+        user generated events.
+      </p>
       <class name="NSView" super="NSResponder">
-        <declared>Gui/NSView.h</declared>
-        <conform>NSCoding</conform>
-          <desc>
-
-          <p>NSView is an abstract class which provides facilities for
-          drawing in a window and receiving events.  It is the
-          superclass of many of the visual elements of the GUI.</p>
-
-          <p>In order to display itself, a view must be placed in a
-          window (represented by an NSWindow object).  Within the
-          window is a hierarchy of NSViews, headed by the window's
-          content view.  Every other view in a window is a descendant
-          of this view.</p>
-
-          <p>Subclasses can override <code>drawRect:</code> in order
-          to implement their appearance.  Other methods of NSView and
-          NSResponder can also be overridden to handle user generated
-          events.</p>
-
-          </desc>
+        <declared>AppKit/NSView.h</declared>
+        <desc>
+        </desc>
         <method type="NSMenu*" factory="yes">
           <sel>defaultMenu</sel>
           <desc>
-          <p>As of yet, unimplemented.</p>
           </desc>
         </method>
         <method type="NSView*" factory="yes">
           <sel>focusView</sel>
           <desc>
-          <p>Returns the view which currently has the focus.</p>
+            Return the view at the top of graphics contexts
+            stack or <code>nil</code> if none is focused.
           </desc>
         </method>
         <method type="BOOL">
           <sel>acceptsFirstMouse:</sel>
           <arg type="NSEvent*">theEvent</arg>
           <desc>
-          <p>Returns <code>YES</code> if the view object will accept the first click
-          received when in an inactive window, and <code>NO</code> otherwise.</p>
+            Returns <code>YES</code> if the view object will
+            accept the first click received when in an inactive
+            window, and <code>NO</code> otherwise.
           </desc>
         </method>
         <method type="void">
           <sel>addCursorRect:</sel>
           <arg type="NSRect">aRect</arg>
           <sel>cursor:</sel>
-          <arg type="NSCursor*">aCursor</arg>
+          <arg type="NSCursor*">anObject</arg>
           <desc>
           </desc>
         </method>
@@ -72,9 +87,7 @@
           <sel>addSubview:</sel>
           <arg type="NSView*">aView</arg>
           <desc>
-          <p>
-          Adds <var>aView</var> as a subview of the receiver.
-          </p>
+            Adds <var>aView</var> as a subview of the receiver.
           </desc>
         </method>
         <method type="void">
@@ -92,13 +105,23 @@
           <desc>
           </desc>
         </method>
+        <method type="NSToolTipTag">
+          <sel>addToolTipRect:</sel>
+          <arg type="NSRect">aRect</arg>
+          <sel>owner:</sel>
+          <arg type="id">anObject</arg>
+          <sel>userData:</sel>
+          <arg type="void*">data</arg>
+          <desc>
+          </desc>
+        </method>
         <method type="NSTrackingRectTag">
           <sel>addTrackingRect:</sel>
           <arg type="NSRect">aRect</arg>
           <sel>owner:</sel>
           <arg type="id">anObject</arg>
           <sel>userData:</sel>
-          <arg type="void*">userData</arg>
+          <arg type="void*">data</arg>
           <sel>assumeInside:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
@@ -108,9 +131,11 @@
           <sel>adjustPageHeightNew:</sel>
           <arg type="float*">newBottom</arg>
           <sel>top:</sel>
-          <arg type="float">top</arg>
+          <arg type="float">oldTop</arg>
           <sel>bottom:</sel>
-          <arg type="float">proposedBottom</arg>
+          <arg type="float">oldBottom</arg>
+          <sel>limit:</sel>
+          <arg type="float">bottomLimit</arg>
           <desc>
           </desc>
         </method>
@@ -118,46 +143,49 @@
           <sel>adjustPageWidthNew:</sel>
           <arg type="float*">newRight</arg>
           <sel>left:</sel>
-          <arg type="float">left</arg>
+          <arg type="float">oldLeft</arg>
           <sel>right:</sel>
-          <arg type="float">proposedRight</arg>
+          <arg type="float">oldRight</arg>
+          <sel>limit:</sel>
+          <arg type="float">rightLimit</arg>
           <desc>
           </desc>
         </method>
         <method type="NSRect">
           <sel>adjustScroll:</sel>
-          <arg type="NSRect">proposedVisibleRect</arg>
+          <arg type="NSRect">newVisible</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>allocateGState</sel>
           <desc>
-          <p>
-	  Tell the view to maintain a private gstate object which 
-	  encapsulates all the information about drawing, such as coordinate
-	  transforms, line widths, etc. If you do not invoke this method,
-	  a gstate object is constructed each time the view is lockFocused.
-	  Allocating a private gstate may improve the performance of views
-	  that are focused a lot and have a lot of customized drawing
-	  parameters.
-          </p>
-	  <p>
-	  View subclasses should override the setUpGstate method to set these
-	  custom parameters.
-          </p>
+            <p>
+              Tell the view to maintain a private gstate object
+              which encapsulates all the information about
+              drawing, such as coordinate transforms, line
+              widths, etc. If you do not invoke this method, a
+              gstate object is constructed each time the view is
+              lockFocused. Allocating a private gstate may
+              improve the performance of views that are focused
+              a lot and have a lot of customized drawing parameters.
+            </p>
+            <p>
+              View subclasses should override the setUpGstate
+              method to set these custom parameters.
+            </p>
           </desc>
         </method>
         <method type="NSView*">
           <sel>ancestorSharedWithView:</sel>
           <arg type="NSView*">aView</arg>
           <desc>
-          <p>
-          Returns <code>self</code> if <var>aView</var> is the receiver or <var>aView</var> is a 
-          subview of the receiver, the ancestor view shared by <var>aView</var> and the receiver, 
-          if any, <var>aView</var> if it is an ancestor of  the receiver, otherwise returns 
-          <code>nil</code>.
-          </p>
+            Returns <code>self</code> if <var>aView</var> is
+            the receiver or <var>aView</var> is a subview of the
+            receiver, the ancestor view shared by
+            <var>aView</var> and the receiver, if any,
+            <var>aView</var> if it is an ancestor of the
+            receiver, otherwise returns <code>nil</code>.
           </desc>
         </method>
         <method type="BOOL">
@@ -177,12 +205,44 @@
           </desc>
         </method>
         <method type="void">
+          <sel>beginDocument</sel>
+          <desc>
+            Writes header and job information for the PostScript
+            document. This includes at a minimum, PostScript
+            header information. It may also include job setup
+            information if the output is intended for a
+            printer (i.e. not an EPS file). Most of the
+            information for writing the header comes from
+            the NSPrintOperation and NSPrintInfo objects associated
+            with the current print operation. There isn't normally
+            anything that the program needs to override at the
+            beginning of a document, although if there is
+            additional setup that needs to be done, you can
+            override the NSView's methods endHeaderComments,
+            endPrologue, beginSetup, and/or endSetup. This
+            method calls the above methods in the listed order
+            before or after writing the required information.
+            For an EPS operation, the beginSetup and endSetup
+            methods aren't used.
+          </desc>
+        </method>
+        <method type="void">
           <sel>beginPage:</sel>
           <arg type="int">ordinalNum</arg>
           <sel>label:</sel>
-          <arg type="NSString *">aString</arg>
+          <arg type="NSString*">aString</arg>
           <sel>bBox:</sel>
           <arg type="NSRect">pageRect</arg>
+          <sel>fonts:</sel>
+          <arg type="NSString*">fontNames</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>beginPageInRect:</sel>
+          <arg type="NSRect">aRect</arg>
+          <sel>atPlacement:</sel>
+          <arg type="NSPoint">location</arg>
           <desc>
           </desc>
         </method>
@@ -196,17 +256,19 @@
         </method>
         <method type="void">
           <sel>beginPrologueBBox:</sel>
-          <arg type="NSRect">boundingBox</arg>
+          <arg type="NSRect">bBox</arg>
           <sel>creationDate:</sel>
           <arg type="NSString*">dateCreated</arg>
           <sel>createdBy:</sel>
-          <arg type="NSString *">anApplication</arg>
+          <arg type="NSString*">anApplication</arg>
           <sel>fonts:</sel>
           <arg type="NSString*">fontNames</arg>
           <sel>forWhom:</sel>
-          <arg type="NSString *">user</arg>
+          <arg type="NSString*">user</arg>
           <sel>pages:</sel>
           <arg type="int">numPages</arg>
+          <sel>title:</sel>
+          <arg type="NSString*">aTitle</arg>
           <desc>
           </desc>
         </method>
@@ -252,6 +314,8 @@
         <method type="NSPoint">
           <sel>convertPoint:</sel>
           <arg type="NSPoint">aPoint</arg>
+          <sel>toView:</sel>
+          <arg type="NSView*">aView</arg>
           <desc>
           </desc>
         </method>
@@ -293,6 +357,18 @@
           <desc>
           </desc>
         </method>
+        <method type="NSData*">
+          <sel>dataWithPDFInsideRect:</sel>
+          <arg type="NSRect">aRect</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>didAddSubview:</sel>
+          <arg type="NSView*">subview</arg>
+          <desc>
+          </desc>
+        </method>
         <method type="void">
           <sel>discardCursorRects</sel>
           <desc>
@@ -327,7 +403,7 @@
         </method>
         <method type="void">
           <sel>displayRect:</sel>
-          <arg type="NSRect">aRect</arg>
+          <arg type="NSRect">rect</arg>
           <desc>
           </desc>
         </method>
@@ -339,11 +415,13 @@
         </method>
         <method type="BOOL">
           <sel>dragFile:</sel>
-          <arg type="NSString*">fullPath</arg>
+          <arg type="NSString*">filename</arg>
           <sel>fromRect:</sel>
-          <arg type="NSRect">aRect</arg>
+          <arg type="NSRect">rect</arg>
           <sel>slideBack:</sel>
-          <arg type="BOOL">slideBack</arg>
+          <arg type="BOOL">slideFlag</arg>
+          <sel>event:</sel>
+          <arg type="NSEvent*">event</arg>
           <desc>
           </desc>
         </method>
@@ -351,17 +429,17 @@
           <sel>dragImage:</sel>
           <arg type="NSImage*">anImage</arg>
           <sel>at:</sel>
-          <arg type="NSPoint">imageLoc</arg>
+          <arg type="NSPoint">viewLocation</arg>
           <sel>offset:</sel>
-          <arg type="NSSize">mouseOffset</arg>
+          <arg type="NSSize">initialOffset</arg>
           <sel>event:</sel>
-          <arg type="NSEvent *">theEvent</arg>
+          <arg type="NSEvent*">event</arg>
           <sel>pasteboard:</sel>
           <arg type="NSPasteboard*">pboard</arg>
           <sel>source:</sel>
           <arg type="id">sourceObject</arg>
           <sel>slideBack:</sel>
-          <arg type="BOOL">slideBack</arg>
+          <arg type="BOOL">slideFlag</arg>
           <desc>
           </desc>
         </method>
@@ -373,26 +451,28 @@
         </method>
         <method type="void">
           <sel>drawRect:</sel>
-          <arg type="NSRect">aRect</arg>
+          <arg type="NSRect">rect</arg>
           <desc>
-	    This method is invoked to handle drawing inside the view.
-	    The default NSView's implementation does nothing;
-	    subclasses might override it to draw something inside the
-	    view.  Since NSView's implementation is guaranteed to be
-	    empty, you should not call super's implementation when you
-	    override it in subclasses.  drawRect: is invoked when the
-	    focus has already been locked on the view; you can use
-	    arbitrary postscript functions in drawRect: to draw inside
-	    your view; the coordinate system in which you draw is the
-	    view's own coordinate system (this means for example that
-	    you should refer to the rectangle covered by the view
-	    using its bounds, and not its frame).  The argument of
-	    drawRect: is the rectangle which needs to be redrawn.  In
-	    a lossy implementation, you can ignore the argument and
-	    redraw the whole view; if you are aiming at performance,
-	    you may want to redraw only what is inside the rectangle
-	    which needs to be redrawn; this usually improves drawing
-	    performance considerably.
+            This method is invoked to handle drawing inside the
+            view. The default NSView's implementation does
+            nothing; subclasses might override it to draw
+            something inside the view. Since NSView's
+            implementation is guaranteed to be empty,
+            you should not call super's implementation when you
+            override it in subclasses. drawRect: is invoked
+            when the focus has already been locked on the view;
+            you can use arbitrary postscript functions in drawRect:
+            to draw inside your view; the coordinate system in which
+            you draw is the view's own coordinate system (this
+            means for example that you should refer to the
+            rectangle covered by the view using its bounds,
+            and not its frame). The argument of drawRect: is the
+            rectangle which needs to be redrawn. In a lossy
+            implementation, you can ignore the argument
+            and redraw the whole view; if you are aiming at
+            performance, you may want to redraw only what
+            is inside the rectangle which needs to be redrawn; this
+            usually improves drawing performance considerably.
           </desc>
         </method>
         <method type="void">
@@ -403,6 +483,11 @@
         </method>
         <method type="NSScrollView*">
           <sel>enclosingScrollView</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>endDocument</sel>
           <desc>
           </desc>
         </method>
@@ -455,12 +540,13 @@
         <method type="int">
           <sel>gState</sel>
           <desc>
-	  Returns an identifier that represents the view's gstate object,
-	  which is used to encapsulate drawing information about the view.
-	  Most of the time a gstate object is created from scratch when
-	  the view is focused, so if the view is not currently focused or
-	  allocateGState has not been called, then this method will
-	  return 0.
+            Returns an identifier that represents the view's
+            gstate object, which is used to encapsulate drawing
+            information about the view. Most of the time a
+            gstate object is created from scratch when the view
+            is focused, so if the view is not currently focused or
+            allocateGState has not been called, then
+            this method will
           </desc>
         </method>
         <method type="float">
@@ -472,8 +558,8 @@
           <sel>hitTest:</sel>
           <arg type="NSPoint">aPoint</arg>
           <desc>
-          <p>Returns the subview, lowest in the receiver's hierarchy, which contains 
-          <var>aPoint</var></p>
+            Returns the subview, lowest in the receiver's
+            hierarchy, which contains <var>aPoint</var>
           </desc>
         </method>
         <method type="id">
@@ -482,18 +568,12 @@
           <desc>
           </desc>
         </method>
-        <method type="NSInterfaceStyle">
-          <sel>interfaceStyle</sel>
-          <desc>
-          </desc>
-        </method>
         <method type="BOOL">
           <sel>isDescendantOf:</sel>
           <arg type="NSView*">aView</arg>
           <desc>
-          <p>
-          Returns <code>YES</code> if <var>aView</var> is an ancestor of the receiver.
-          </p>
+            Returns <code>YES</code> if <var>aView</var> is an
+            ancestor of the receiver.
           </desc>
         </method>
         <method type="BOOL">
@@ -518,13 +598,15 @@
         </method>
         <method type="BOOL">
           <sel>knowsPageRange:</sel>
-          <arg type="NSRangePointer">range</arg>
+          <arg type="NSRange*">range</arg>
           <desc>
           </desc>
         </method>
         <method type="BOOL">
           <sel>knowsPagesFirst:</sel>
           <arg type="int*">firstPageNum</arg>
+          <sel>last:</sel>
+          <arg type="int*">lastPageNum</arg>
           <desc>
           </desc>
         </method>
@@ -539,11 +621,15 @@
           <desc>
           </desc>
         </method>
+        <method type="BOOL">
+          <sel>lockFocusIfCanDraw</sel>
+          <desc>
+          </desc>
+        </method>
         <method type="NSMenu*">
           <sel>menuForEvent:</sel>
           <arg type="NSEvent*">theEvent</arg>
           <desc>
-          <p>As of yet, unimplemented.</p>
           </desc>
         </method>
         <method type="BOOL">
@@ -552,16 +638,12 @@
           <sel>inRect:</sel>
           <arg type="NSRect">aRect</arg>
           <desc>
-          <p>Returns whether or not <var>aPoint</var> lies within <var>aRect</var>.</p>
+            Returns whether or not <var>aPoint</var> lies
+            within <var>aRect</var>
           </desc>
         </method>
         <method type="BOOL">
           <sel>needsDisplay</sel>
-          <desc>
-          </desc>
-        </method>
-        <method type="BOOL">
-          <sel>needsPanelToBecomeKey</sel>
           <desc>
           </desc>
         </method>
@@ -618,9 +700,14 @@
           <desc>
           </desc>
         </method>
+        <method type="NSString*">
+          <sel>printJobTitle</sel>
+          <desc>
+          </desc>
+        </method>
         <method type="NSRect">
           <sel>rectForPage:</sel>
-          <arg type="int">pageNumber</arg>
+          <arg type="int">page</arg>
           <desc>
           </desc>
         </method>
@@ -632,76 +719,101 @@
         </method>
         <method type="void">
           <sel>registerForDraggedTypes:</sel>
-          <arg type="NSArray*">pboardTypes</arg>
+          <arg type="NSArray*">types</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>releaseGState</sel>
           <desc>
-	  Frees the gstate object, if there is one. Note that the next time
-	  the view is lockFocused, the gstate will be allocated again.
+            Frees the gstate object, if there is one. Note that
+            the next time the view is lockFocused, the gstate will
+            be allocated again.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>removeAllToolTips</sel>
+          <desc>
           </desc>
         </method>
         <method type="void">
           <sel>removeCursorRect:</sel>
           <arg type="NSRect">aRect</arg>
           <sel>cursor:</sel>
-          <arg type="NSCursor*">aCursor</arg>
+          <arg type="NSCursor*">anObject</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>removeFromSuperview</sel>
           <desc>
-	    <p>
-	      Removes the receiver from its superviews list of subviews,
-	      by invoking the superviews [-removeSubview:] method, and
-	      marks the rectangle that the reciever occupied in the
-	      superview as needing redisplay.
-	    </p>
-	    <p>
-	       This is dangerous to use during display, since it alters the
-	       rectangles needing display.
-	    </p>
+            <p>
+              Removes the receiver from its superviews list of
+              subviews, by invoking the superviews [
+              <ref type="method" id="-removeSubview:">
+                -removeSubview:
+              </ref>
+              ] method, and marks the rectangle that the reciever
+              occupied in the superview as needing redisplay.
+            </p>
+            <p>
+              This is dangerous to use during display, since it
+              alters the rectangles needing display.
+            </p>
           </desc>
         </method>
         <method type="void">
           <sel>removeFromSuperviewWithoutNeedingDisplay</sel>
           <desc>
-	    <p>
-	      Removes the receiver from its superviews list of subviews,
-	      by invoking the superviews [-removeSubview:] method.
-	    </p>
+            Removes the receiver from its superviews list of
+            subviews, by invoking the superviews [
+            <ref type="method" id="-removeSubview:">
+              -removeSubview:
+            </ref>
+            ] method.
           </desc>
         </method>
         <method type="void">
           <sel>removeSubview:</sel>
-          <arg type="NSView*">aView</arg>
+          <arg type="NSView*">aSubview</arg>
           <desc>
-	    <p>
-	      Removes the view from the receivers list of subviews
-	      and from the responder chain.
-	    </p>
-	    <p>
-              Also invokes [aView -viewWillMoveToWindow: nil] to handle
-	      removal of aView (and recursively, its children) from its
-	      window - performing tidyup by invalidating cursor rects etc.
-	    </p>
+            <p>
+              Removes the view from the receivers list of
+              subviews and from the responder chain.
+            </p>
+            <p>
+              Also invokes [aView
+              <ref type="method" id="-viewWillMoveToWindow:">
+                -viewWillMoveToWindow:
+              </ref>
+              <code>nil</code>] to handle removal of aView (and
+              recursively, its children) from its window -
+              performing tidyup by invalidating cursor rects
+              etc.
+            </p>
           </desc>
-	  <standards><NotMacOS-X/><NotOpenStep/></standards>
+          <standards>
+            <NotMacOS-X /> <NotOpenStep />
+          </standards>
+        </method>
+        <method type="void">
+          <sel>removeToolTip:</sel>
+          <arg type="NSToolTipTag">tag</arg>
+          <desc>
+          </desc>
         </method>
         <method type="void">
           <sel>removeTrackingRect:</sel>
-          <arg type="NSTrackingRectTag">aTag</arg>
+          <arg type="NSTrackingRectTag">tag</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>renewGState</sel>
           <desc>
-	  Invalidates the view's gstate object so it will be set up
-	  again using setUpGState the next time the view is focused.
+            Invalidates the view's gstate object so it will
+            be set up again using setUpGState the next time the view
+            is focused.
           </desc>
         </method>
         <method type="void">
@@ -710,9 +822,8 @@
           <sel>with:</sel>
           <arg type="NSView*">newView</arg>
           <desc>
-          <p>
-          Removes <var>oldView</var> from the receiver and places <var>newView</var> in its place.
-          </p>
+            Removes <var>oldView</var> from the receiver and
+            places <var>newView</var> in its place.
           </desc>
         </method>
         <method type="void">
@@ -722,13 +833,13 @@
         </method>
         <method type="void">
           <sel>resizeSubviewsWithOldSize:</sel>
-          <arg type="NSSize">oldFrameSize</arg>
+          <arg type="NSSize">oldSize</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>resizeWithOldSuperviewSize:</sel>
-          <arg type="NSSize">oldFrameSize</arg>
+          <arg type="NSSize">oldSize</arg>
           <desc>
           </desc>
         </method>
@@ -740,13 +851,15 @@
         </method>
         <method type="void">
           <sel>scaleUnitSquareToSize:</sel>
-          <arg type="NSSize">newUnitSize</arg>
+          <arg type="NSSize">newSize</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>scrollClipView:</sel>
           <arg type="NSClipView*">aClipView</arg>
+          <sel>toPoint:</sel>
+          <arg type="NSPoint">aPoint</arg>
           <desc>
           </desc>
         </method>
@@ -759,6 +872,8 @@
         <method type="void">
           <sel>scrollRect:</sel>
           <arg type="NSRect">aRect</arg>
+          <sel>by:</sel>
+          <arg type="NSSize">delta</arg>
           <desc>
           </desc>
         </method>
@@ -782,7 +897,7 @@
         </method>
         <method type="void">
           <sel>setBounds:</sel>
-          <arg type="NSRect">boundsRect</arg>
+          <arg type="NSRect">aRect</arg>
           <desc>
           </desc>
         </method>
@@ -829,12 +944,6 @@
           </desc>
         </method>
         <method type="void">
-          <sel>setInterfaceStyle:</sel>
-          <arg type="NSInterfaceStyle">interfaceStyle</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
           <sel>setNeedsDisplay:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
@@ -842,7 +951,7 @@
         </method>
         <method type="void">
           <sel>setNeedsDisplayInRect:</sel>
-          <arg type="NSRect">invalidRect</arg>
+          <arg type="NSRect">rect</arg>
           <desc>
           </desc>
         </method>
@@ -865,6 +974,12 @@
           </desc>
         </method>
         <method type="void">
+          <sel>setPreviousKeyView:</sel>
+          <arg type="NSView*">aView</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
           <sel>setToolTip:</sel>
           <arg type="NSString*">string</arg>
           <desc>
@@ -877,7 +992,7 @@
         </method>
         <method type="BOOL">
           <sel>shouldDelayWindowOrderingForEvent:</sel>
-          <arg type="NSEvent*">theEvent</arg>
+          <arg type="NSEvent*">anEvent</arg>
           <desc>
           </desc>
         </method>
@@ -887,13 +1002,9 @@
           </desc>
         </method>
         <method type="void">
-	  
           <sel>sortSubviewsUsingFunction:</sel>
-	  
           <arg type="int (*)(id,id,void*)">compare</arg>
-	  
           <sel>context:</sel>
-	  
           <arg type="void*">context</arg>
           <desc>
           </desc>
@@ -920,7 +1031,7 @@
         </method>
         <method type="void">
           <sel>translateOriginToPoint:</sel>
-          <arg type="NSPoint">newOrigin</arg>
+          <arg type="NSPoint">point</arg>
           <desc>
           </desc>
         </method>
@@ -935,18 +1046,33 @@
           </desc>
         </method>
         <method type="void">
-          <sel>viewWillMoveToSuperview:</sel>
-          <arg type="NSView*">newSuperview</arg>
+          <sel>viewDidMoveToSuperview</sel>
           <desc>
-          <p>Notifies the receiver that its superview is being changed to 
-          <var>newSuperview</var>.</p>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>viewDidMoveToWindow</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>viewWillMoveToSuperview:</sel>
+          <arg type="NSView*">newSuper</arg>
+          <desc>
+            Notifies the receiver that its superview is being
+            changed to <var>newSuperview</var>.
           </desc>
         </method>
         <method type="void">
           <sel>viewWillMoveToWindow:</sel>
           <arg type="NSWindow*">newWindow</arg>
           <desc>
-          <p>Notifies the receiver that it will now be a view of <var>newWindow</var>.</p>
+            Notifies the receiver that it will now be a view
+            of <var>newWindow</var>. Note, this method is also used
+            when removing a view from a window (in which case,
+            <var>newWindow</var> is <code>nil</code>) to let all
+            the subviews know that they have also been removed from
+            the window.
           </desc>
         </method>
         <method type="id">
@@ -965,16 +1091,28 @@
           <desc>
           </desc>
         </method>
+        <method type="void">
+          <sel>willRemoveSubview:</sel>
+          <arg type="NSView*">subview</arg>
+          <desc>
+          </desc>
+        </method>
         <method type="NSWindow*">
           <sel>window</sel>
           <desc>
-          <p>
-          Returns the window in which the receiver resides.
-          </p>
+            Returns the window in which the receiver resides.
           </desc>
         </method>
         <method type="void">
           <sel>writeEPSInsideRect:</sel>
+          <arg type="NSRect">rect</arg>
+          <sel>toPasteboard:</sel>
+          <arg type="NSPasteboard*">pasteboard</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>writePDFInsideRect:</sel>
           <arg type="NSRect">aRect</arg>
           <sel>toPasteboard:</sel>
           <arg type="NSPasteboard*">pboard</arg>
@@ -982,6 +1120,37 @@
           </desc>
         </method>
       </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the NSView(PrivateMethods)
+        category
+      </heading>
+      <category name="PrivateMethods" class="NSView">
+        <declared>AppKit/NSView.h</declared>
+        <desc>
+        </desc>
+        <method type="void">
+          <sel>_invalidateCoordinates</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSAffineTransform*">
+          <sel>_matrixFromWindow</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSAffineTransform*">
+          <sel>_matrixToWindow</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>_rebuildCoordinates</sel>
+          <desc>
+          </desc>
+        </method>
+      </category>
     </chapter>
   </body>
 </gsdoc>

@@ -1,23 +1,30 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSButtonCell" prev="NSButton.html" next="NSCachedImageRep.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSButtonCell" next="NSCachedImageRep" prev="NSButton" up="NSActionCell">
   <head>
     <title>NSButtonCell</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Felipe A. Rodriguez">
+      <email address="far@ix.netcom.com">
+        far@ix.netcom.com
+      </email>
+    </author>
+    <abstract>The button cell class</abstract>
+    <copy>1996-1999 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSButtonCell</heading>
+      <heading>
+        Software documentation for the NSButtonCell class
+      </heading>
       <class name="NSButtonCell" super="NSActionCell">
-        <declared>Gui/NSButtonCell.h</declared>
-        <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSButtonCell.h</declared>
+        <desc>
+        </desc>
         <method type="NSImage*">
           <sel>alternateImage</sel>
           <desc>
@@ -28,7 +35,7 @@
           <desc>
           </desc>
         </method>
-        <method type="unsigned int">
+        <method type="unsigned">
           <sel>alternateMnemonicLocation</sel>
           <desc>
           </desc>
@@ -82,11 +89,6 @@
           </desc>
         </method>
         <method type="BOOL">
-          <sel>isOpaque</sel>
-          <desc>
-          </desc>
-        </method>
-        <method type="BOOL">
           <sel>isTransparent</sel>
           <desc>
           </desc>
@@ -107,13 +109,13 @@
           </desc>
         </method>
         <method type="void">
-          <sel> mouseEntered:</sel>
+          <sel>mouseEntered:</sel>
           <arg type="NSEvent*">event</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
-          <sel> mouseExited:</sel>
+          <sel>mouseExited:</sel>
           <arg type="NSEvent*">event</arg>
           <desc>
           </desc>
@@ -126,13 +128,13 @@
         </method>
         <method type="void">
           <sel>setAlternateImage:</sel>
-          <arg type="NSImage*">image</arg>
+          <arg type="NSImage*">anImage</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setAlternateMnemonicLocation:</sel>
-          <arg type="unsigned int">location</arg>
+          <arg type="unsigned">location</arg>
           <desc>
           </desc>
         </method>
@@ -168,13 +170,13 @@
         </method>
         <method type="void">
           <sel>setButtonType:</sel>
-          <arg type="NSButtonType">aType</arg>
+          <arg type="NSButtonType">buttonType</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setFont:</sel>
-          <arg type="NSFont*">fontObj</arg>
+          <arg type="NSFont*">fontObject</arg>
           <desc>
           </desc>
         </method>
@@ -186,7 +188,7 @@
         </method>
         <method type="void">
           <sel>setHighlightsBy:</sel>
-          <arg type="int">aType</arg>
+          <arg type="int">mask</arg>
           <desc>
           </desc>
         </method>
@@ -204,7 +206,7 @@
         </method>
         <method type="void">
           <sel>setKeyEquivalent:</sel>
-          <arg type="NSString*">aKeyEquivalent</arg>
+          <arg type="NSString*">key</arg>
           <desc>
           </desc>
         </method>
@@ -217,6 +219,8 @@
         <method type="void">
           <sel>setKeyEquivalentFont:</sel>
           <arg type="NSString*">fontName</arg>
+          <sel>size:</sel>
+          <arg type="float">fontSize</arg>
           <desc>
           </desc>
         </method>
@@ -235,14 +239,14 @@
           </desc>
         </method>
         <method type="void">
-          <sel> setShowsBorderOnlyWhileMouseInside:</sel>
+          <sel>setShowsBorderOnlyWhileMouseInside:</sel>
           <arg type="BOOL">show</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setShowsStateBy:</sel>
-          <arg type="int">aType</arg>
+          <arg type="int">mask</arg>
           <desc>
           </desc>
         </method>
@@ -270,13 +274,13 @@
           <desc>
           </desc>
         </method>
-        <method type="int">
-          <sel>showsStateBy</sel>
+        <method type="BOOL">
+          <sel>showsBorderOnlyWhileMouseInside</sel>
           <desc>
           </desc>
         </method>
-        <method type="BOOL">
-          <sel> showsBorderOnlyWhileMouseInside</sel>
+        <method type="int">
+          <sel>showsStateBy</sel>
           <desc>
           </desc>
         </method>

@@ -1,13 +1,9 @@
-/*
-   NSScreen.m
-
-   Description...
+/** <title>NSScreen</title>
 
    Copyright (C) 1996, 2000 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
+   Author: Scott Christley <scottc@net-community.com>
    Date: 1996
- 
    Major modifications and updates
    Author: Gregory John Casamento <borgheron@yahoo.com>
    Date: 2000

@@ -1,214 +1,254 @@
-<html><head>
- <title>NSTabView</title>
-</head>
-<body>
-<a href ="NSStringAdditions.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSTabViewItem.html">[Next] </a>
-<h1>NSTabView</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSTabView</a></h2>
-<h2><a name ="NSTabView">NSTabView</a></h2>
-<p><b>Declared in: </b> Gui/NSTabView.h</p>
-<p><b>Inherits from: </b> NSView</p>
-<p><b>Conforms to: </b> NSCoding
-</p>
-<hr>
+<html>
+  <head>
+    <title>NSTabView</title>
+  </head>
+  <body>
+    <h1>NSTabView</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Michael Hanni(<a href="mailto:mhanni@sprintmail.com"><code>
+        mhanni@sprintmail.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <blockquote>
+The tabular view class    </blockquote>
+    <p>Copyright: (C) 1999,2000 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the NSTabView class
+      </h1>
+    <h2><a name="class$NSTabView">NSTabView</a> : <a href="NSView.html#class$NSView">NSView</a></h2>
+    Declared: AppKit/NSTabView.h<br />
+    Conform: NSCoding<br />
+    <p>
 
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSTabView.html#method-4">- drawsBackground</a>
-<li ><a href ="NSTabView.html#method-0">-addTabViewItem:</a>
-<li ><a href ="NSTabView.html#method-1">-allowsTruncatedLabels</a>
-<li ><a href ="NSTabView.html#method-2">-contentRect</a>
-<li ><a href ="NSTabView.html#method-3">-delegate</a>
-<li ><a href ="NSTabView.html#method-5">-font</a>
-<li ><a href ="NSTabView.html#method-6">-indexOfTabViewItem:</a>
-<li ><a href ="NSTabView.html#method-7">-indexOfTabViewItemWithIdentifier:</a>
-<li ><a href ="NSTabView.html#method-8">-insertTabViewItem:</a>
-<li ><a href ="NSTabView.html#method-9">-minimumSize</a>
-<li ><a href ="NSTabView.html#method-10">-numberOfTabViewItems</a>
-<li ><a href ="NSTabView.html#method-11">-removeTabViewItem:</a>
-<li ><a href ="NSTabView.html#method-12">-selectFirstTabViewItem:</a>
-<li ><a href ="NSTabView.html#method-13">-selectLastTabViewItem:</a>
-<li ><a href ="NSTabView.html#method-14">-selectNextTabViewItem:</a>
-<li ><a href ="NSTabView.html#method-15">-selectPreviousTabViewItem:</a>
-<li ><a href ="NSTabView.html#method-17">-selectTabViewItem:</a>
-<li ><a href ="NSTabView.html#method-18">-selectTabViewItemAtIndex:</a>
-<li ><a href ="NSTabView.html#method-19">-selectTabViewItemWithIdentifier:</a>
-<li ><a href ="NSTabView.html#method-16">-selectedTabViewItem</a>
-<li ><a href ="NSTabView.html#method-20">-setAllowsTruncatedLabels:</a>
-<li ><a href ="NSTabView.html#method-21">-setDelegate:</a>
-<li ><a href ="NSTabView.html#method-22">-setDrawsBackground:</a>
-<li ><a href ="NSTabView.html#method-23">-setFont:</a>
-<li ><a href ="NSTabView.html#method-24">-setTabViewType:</a>
-<li ><a href ="NSTabView.html#method-25">-tabViewItemAtIndex:</a>
-<li ><a href ="NSTabView.html#method-26">-tabViewItemAtPoint:</a>
-<li ><a href ="NSTabView.html#method-27">-tabViewItems</a>
-<li ><a href ="NSTabView.html#method-28">-tabViewType</a>
-<li ><a href ="NSTabView.html#method-29">-takeSelectedTabViewItemFromSender:</a>
-</ul>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-0">addTabViewItem:</a></h3>
-- (void) <b>addTabViewItem:</b> (NSTabViewItem*)tabViewItem;<br>
+            </p>
+    <h3>addTabViewItem:</a></h3>
+    - (void) <b>addTabViewItem:</b> (<a href="NSTabViewItem.html#class$NSTabViewItem">NSTabViewItem</a>*)tabViewItem;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-1">allowsTruncatedLabels</a></h3>
-- (BOOL) <b>allowsTruncatedLabels</b>;<br>
+              </p>
+    <hr />
+    <h3>allowsTruncatedLabels</a></h3>
+    - (BOOL) <b>allowsTruncatedLabels</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-2">contentRect</a></h3>
-- (NSRect) <b>contentRect</b>;<br>
+              </p>
+    <hr />
+    <h3>contentRect</a></h3>
+    - (NSRect) <b>contentRect</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-3">delegate</a></h3>
-- (id) <b>delegate</b>;<br>
+              </p>
+    <hr />
+    <h3>controlSize</a></h3>
+    - (NSControlSize) <b>controlSize</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-4"> drawsBackground</a></h3>
-- (BOOL) <b> drawsBackground</b>;<br>
+              </p>
+    <hr />
+    <h3>controlTint</a></h3>
+    - (NSControlTint) <b>controlTint</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-5">font</a></h3>
-- (NSFont*) <b>font</b>;<br>
+              </p>
+    <hr />
+    <h3>delegate</a></h3>
+    - (id) <b>delegate</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-6">indexOfTabViewItem:</a></h3>
-- (int) <b>indexOfTabViewItem:</b> (NSTabViewItem*)tabViewItem;<br>
+              </p>
+    <hr />
+    <h3>drawsBackground</a></h3>
+    - (BOOL) <b>drawsBackground</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-7">indexOfTabViewItemWithIdentifier:</a></h3>
-- (int) <b>indexOfTabViewItemWithIdentifier:</b> (id)identifier;<br>
+              </p>
+    <hr />
+    <h3>font</a></h3>
+    - (<a href="NSFont.html#class$NSFont">NSFont</a>*) <b>font</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-8">insertTabViewItem:</a></h3>
-- (void) <b>insertTabViewItem:</b> (NSTabViewItem*)tabViewItem;<br>
+              </p>
+    <hr />
+    <h3>indexOfTabViewItem:</a></h3>
+    - (int) <b>indexOfTabViewItem:</b> (<a href="NSTabViewItem.html#class$NSTabViewItem">NSTabViewItem</a>*)tabViewItem;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-9">minimumSize</a></h3>
-- (NSSize) <b>minimumSize</b>;<br>
+              </p>
+    <hr />
+    <h3>indexOfTabViewItemWithIdentifier:</a></h3>
+    - (int) <b>indexOfTabViewItemWithIdentifier:</b> (id)identifier;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-10">numberOfTabViewItems</a></h3>
-- (int) <b>numberOfTabViewItems</b>;<br>
+              </p>
+    <hr />
+    <h3>insertTabViewItem:atIndex:</a></h3>
+    - (void) <b>insertTabViewItem:</b> (<a href="NSTabViewItem.html#class$NSTabViewItem">NSTabViewItem</a>*)tabViewItem<b> atIndex:</b> (int)index;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-11">removeTabViewItem:</a></h3>
-- (void) <b>removeTabViewItem:</b> (NSTabViewItem*)tabViewItem;<br>
+              </p>
+    <hr />
+    <h3>minimumSize</a></h3>
+    - (NSSize) <b>minimumSize</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-12">selectFirstTabViewItem:</a></h3>
-- (void) <b>selectFirstTabViewItem:</b> (id)sender;<br>
+              </p>
+    <hr />
+    <h3>numberOfTabViewItems</a></h3>
+    - (int) <b>numberOfTabViewItems</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-13">selectLastTabViewItem:</a></h3>
-- (void) <b>selectLastTabViewItem:</b> (id)sender;<br>
+              </p>
+    <hr />
+    <h3>removeTabViewItem:</a></h3>
+    - (void) <b>removeTabViewItem:</b> (<a href="NSTabViewItem.html#class$NSTabViewItem">NSTabViewItem</a>*)tabViewItem;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-14">selectNextTabViewItem:</a></h3>
-- (void) <b>selectNextTabViewItem:</b> (id)sender;<br>
+              </p>
+    <hr />
+    <h3>selectFirstTabViewItem:</a></h3>
+    - (void) <b>selectFirstTabViewItem:</b> (id)sender;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-15">selectPreviousTabViewItem:</a></h3>
-- (void) <b>selectPreviousTabViewItem:</b> (id)sender;<br>
+              </p>
+    <hr />
+    <h3>selectLastTabViewItem:</a></h3>
+    - (void) <b>selectLastTabViewItem:</b> (id)sender;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-16">selectedTabViewItem</a></h3>
-- (NSTabViewItem*) <b>selectedTabViewItem</b>;<br>
+              </p>
+    <hr />
+    <h3>selectNextTabViewItem:</a></h3>
+    - (void) <b>selectNextTabViewItem:</b> (id)sender;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-17">selectTabViewItem:</a></h3>
-- (void) <b>selectTabViewItem:</b> (NSTabViewItem*)tabViewItem;<br>
+              </p>
+    <hr />
+    <h3>selectPreviousTabViewItem:</a></h3>
+    - (void) <b>selectPreviousTabViewItem:</b> (id)sender;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-18">selectTabViewItemAtIndex:</a></h3>
-- (void) <b>selectTabViewItemAtIndex:</b> (int)index;<br>
+              </p>
+    <hr />
+    <h3>selectTabViewItem:</a></h3>
+    - (void) <b>selectTabViewItem:</b> (<a href="NSTabViewItem.html#class$NSTabViewItem">NSTabViewItem</a>*)tabViewItem;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-19">selectTabViewItemWithIdentifier:</a></h3>
-- (void) <b>selectTabViewItemWithIdentifier:</b> (id)identifier;;<br>
+              </p>
+    <hr />
+    <h3>selectTabViewItemAtIndex:</a></h3>
+    - (void) <b>selectTabViewItemAtIndex:</b> (int)index;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-20">setAllowsTruncatedLabels:</a></h3>
-- (void) <b>setAllowsTruncatedLabels:</b> (BOOL)allowTruncatedLabels;<br>
+              </p>
+    <hr />
+    <h3>setAllowsTruncatedLabels:</a></h3>
+    - (void) <b>setAllowsTruncatedLabels:</b> (BOOL)allowTruncatedLabels;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-21">setDelegate:</a></h3>
-- (void) <b>setDelegate:</b> (id)anObject;<br>
+              </p>
+    <hr />
+    <h3>setControlSize:</a></h3>
+    - (void) <b>setControlSize:</b> (NSControlSize)size;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-22">setDrawsBackground:</a></h3>
-- (void) <b>setDrawsBackground:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>setControlTint:</a></h3>
+    - (void) <b>setControlTint:</b> (NSControlTint)tint;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-23">setFont:</a></h3>
-- (void) <b>setFont:</b> (NSFont*)font;<br>
+              </p>
+    <hr />
+    <h3>setDelegate:</a></h3>
+    - (void) <b>setDelegate:</b> (id)anObject;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-24">setTabViewType:</a></h3>
-- (void) <b>setTabViewType:</b> (NSTabViewType)tabViewType;<br>
+              </p>
+    <hr />
+    <h3>setDrawsBackground:</a></h3>
+    - (void) <b>setDrawsBackground:</b> (BOOL)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-25">tabViewItemAtIndex:</a></h3>
-- (NSTabViewItem*) <b>tabViewItemAtIndex:</b> (int)index;<br>
+              </p>
+    <hr />
+    <h3>setFont:</a></h3>
+    - (void) <b>setFont:</b> (<a href="NSFont.html#class$NSFont">NSFont</a>*)font;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-26">tabViewItemAtPoint:</a></h3>
-- (NSTabViewItem*) <b>tabViewItemAtPoint:</b> (NSPoint)point;<br>
+              </p>
+    <hr />
+    <h3>setTabViewType:</a></h3>
+    - (void) <b>setTabViewType:</b> (NSTabViewType)tabViewType;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-27">tabViewItems</a></h3>
-- (NSArray*) <b>tabViewItems</b>;<br>
+              </p>
+    <hr />
+    <h3>tabViewItemAtIndex:</a></h3>
+    - (<a href="NSTabViewItem.html#class$NSTabViewItem">NSTabViewItem</a>*) <b>tabViewItemAtIndex:</b> (int)index;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-28">tabViewType</a></h3>
-- (NSTabViewType) <b>tabViewType</b>;<br>
+              </p>
+    <hr />
+    <h3>tabViewItemAtPoint:</a></h3>
+    - (<a href="NSTabViewItem.html#class$NSTabViewItem">NSTabViewItem</a>*) <b>tabViewItemAtPoint:</b> (NSPoint)point;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-29">takeSelectedTabViewItemFromSender:</a></h3>
-- (void) <b>takeSelectedTabViewItemFromSender:</b> (id)sender;<br>
+              </p>
+    <hr />
+    <h3>tabViewItems</a></h3>
+    - (NSArray*) <b>tabViewItems</b>;<br />
+    <p>
 
-          
- <hr>
-</body>
+              </p>
+    <hr />
+    <h3>tabViewType</a></h3>
+    - (NSTabViewType) <b>tabViewType</b>;<br />
+    <p>
 
- </html>
+              </p>
+    <hr />
+    <h3>takeSelectedTabViewItemFromSender:</a></h3>
+    - (void) <b>takeSelectedTabViewItemFromSender:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the
+        NSObject(NSTabViewDelegate)
+        category
+      </h1>
+    <h2>NSObject(<a name="category$NSObject(NSTabViewDelegate)">NSTabViewDelegate</a>)</h2>
+    Declared: AppKit/NSTabView.h<br />
+    <p>
+
+            </p>
+    <h3>tabView:didSelectTabViewItem:</a></h3>
+    - (void) <b>tabView:</b> (<a href="#class$NSTabView">NSTabView</a>*)tabView<b> didSelectTabViewItem:</b> (<a href="NSTabViewItem.html#class$NSTabViewItem">NSTabViewItem</a>*)tabViewItem;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>tabView:shouldSelectTabViewItem:</a></h3>
+    - (BOOL) <b>tabView:</b> (<a href="#class$NSTabView">NSTabView</a>*)tabView<b> shouldSelectTabViewItem:</b> (<a href="NSTabViewItem.html#class$NSTabViewItem">NSTabViewItem</a>*)tabViewItem;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>tabView:willSelectTabViewItem:</a></h3>
+    - (void) <b>tabView:</b> (<a href="#class$NSTabView">NSTabView</a>*)tabView<b> willSelectTabViewItem:</b> (<a href="NSTabViewItem.html#class$NSTabViewItem">NSTabViewItem</a>*)tabViewItem;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>tabViewDidChangeNumberOfTabViewItems:</a></h3>
+    - (void) <b>tabViewDidChangeNumberOfTabViewItems:</b> (<a href="#class$NSTabView">NSTabView</a>*)TabView;<br />
+    <p>
+
+              </p>
+    <hr />
+  </body>
+</html>

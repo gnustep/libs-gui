@@ -1,24 +1,34 @@
-<html><head>
- <title>NSPrintOperation</title>
-</head>
-<body>
-<a href ="NSPrintInfo.html">[Previous] </a>
-<a href ="NSPageLayout.html">[Up] </a>
-<a href ="NSPrintPanel.html">[Next] </a>
-<h1>NSPrintOperation</h1>
-<h3>Authors </h3>
- <dl>
-<dt>Fred Kiefer
-<dd>
-<dt>Adam Fedor
-<dd>
-</dl>
-<blockquote>
+<html>
+  <head>
+    <title>NSPrintOperation</title>
+  </head>
+  <body>
+    <h1>NSPrintOperation</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Scott Christley(<a href="mailto:scottc@net-community.com"><code>
+        scottc@net-community.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Fred Kiefer(<a href="mailto:FredKiefer@gmx.de"><code>
+        FredKiefer@gmx.de
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Adam Fedor(<a href="mailto:fedor@gnu.org"><code>
+        fedor@gnu.org
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <blockquote>
+
       Controls generation of EPS, PDF or PS print jobs.
-    </blockquote>
-<p>Copyright: (C) 1996 Free Software Foundation, Inc.</p>
-<h2><a name ="cont-0">Class Description</a></h2>
-<p>
+        </blockquote>
+    <p>Copyright: (C) 1996 Free Software Foundation, Inc.</p>
+    <h1>Class Description</h1>
+    <p>
 
         NSPrintOperation controls printing of an
         NSView. When invoked normally it will (optionally)
@@ -30,102 +40,71 @@
         sized and oriented pages and finally delivers the result
         to the appropriate place, whether it be a printer, and
         PostScript file, or another output.
-      </p>
-<h2><a name ="NSPrintOperation">NSPrintOperation</a></h2>
-<p><b>Declared in: </b> ../../Headers/gnustep/gui/NSPrintOperation.h</p>
-<p><b>Inherits from: </b> NSObject</p>
-<hr>
+          </p>
+    <h2><a name="class$NSPrintOperation">NSPrintOperation</a> : NSObject</h2>
+    Declared: AppKit/NSPrintOperation.h<br />
+    <p>
 
-        
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSPrintOperation.html#method-0">+EPSOperationWithView:insideRect:toData:</a>
-<li ><a href ="NSPrintOperation.html#method-1">+EPSOperationWithView:insideRect:toData:printInfo:</a>
-<li ><a href ="NSPrintOperation.html#method-2">+EPSOperationWithView:insideRect:toPath:printInfo:</a>
-<li ><a href ="NSPrintOperation.html#method-3">+PDFOperationWithView:insideRect:toData:</a>
-<li ><a href ="NSPrintOperation.html#method-4">+PDFOperationWithView:insideRect:toData:printInfo:</a>
-<li ><a href ="NSPrintOperation.html#method-5">+PDFOperationWithView:insideRect:toPath:printInfo:</a>
-<li ><a href ="NSPrintOperation.html#method-6">+currentOperation</a>
-<li ><a href ="NSPrintOperation.html#method-7">+printOperationWithView:</a>
-<li ><a href ="NSPrintOperation.html#method-8">+printOperationWithView:printInfo:</a>
-<li ><a href ="NSPrintOperation.html#method-9">+setCurrentOperation:</a>
-<li ><a href ="NSPrintOperation.html#method-10">-accessoryView</a>
-<li ><a href ="NSPrintOperation.html#method-11">-cleanUpOperation</a>
-<li ><a href ="NSPrintOperation.html#method-12">-context</a>
-<li ><a href ="NSPrintOperation.html#method-13">-createContext</a>
-<li ><a href ="NSPrintOperation.html#method-14">-currentPage</a>
-<li ><a href ="NSPrintOperation.html#method-15">-deliverResult</a>
-<li ><a href ="NSPrintOperation.html#method-16">-destroyContext</a>
-<li ><a href ="NSPrintOperation.html#method-17">-initEPSOperationWithView:insideRect:toData:printInfo:</a>
-<li ><a href ="NSPrintOperation.html#method-18">-initWithView:printInfo:</a>
-<li ><a href ="NSPrintOperation.html#method-19">-isCopyingOperation</a>
-<li ><a href ="NSPrintOperation.html#method-20">-isEPSOperation</a>
-<li ><a href ="NSPrintOperation.html#method-21">-pageOrder</a>
-<li ><a href ="NSPrintOperation.html#method-22">-printInfo</a>
-<li ><a href ="NSPrintOperation.html#method-23">-printPanel</a>
-<li ><a href ="NSPrintOperation.html#method-24">-runOperation</a>
-<li ><a href ="NSPrintOperation.html#method-25">-runOperationModalForWindow:delegate:didRunSelector:contextInfo:</a>
-<li ><a href ="NSPrintOperation.html#method-26">-setAccessoryView:</a>
-<li ><a href ="NSPrintOperation.html#method-27">-setPageOrder:</a>
-<li ><a href ="NSPrintOperation.html#method-28">-setPrintInfo:</a>
-<li ><a href ="NSPrintOperation.html#method-29">-setPrintPanel:</a>
-<li ><a href ="NSPrintOperation.html#method-30">-setShowPanels:</a>
-<li ><a href ="NSPrintOperation.html#method-31">-showPanels</a>
-<li ><a href ="NSPrintOperation.html#method-32">-view</a>
-</ul>
-<hr><h2>Class Methods </h2>
-<h3><a name ="method-0">EPSOperationWithView:insideRect:toData:</a></h3>
-+ (NSPrintOperation*) <b>EPSOperationWithView:</b> (NSView*)aView <b>insideRect:</b> (NSRect)rect <b>toData:</b> (NSMutableData*)data;<br>
+            </p>
+    <h3>EPSOperationWithView:insideRect:toData:</a></h3>
+    + (<a href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>EPSOperationWithView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView<b> insideRect:</b> (NSRect)rect<b> toData:</b> (NSMutableData*)data;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-1">EPSOperationWithView:insideRect:toData:printInfo:</a></h3>
-+ (NSPrintOperation*) <b>EPSOperationWithView:</b> (NSView*)aView <b>insideRect:</b> (NSRect)rect <b>toData:</b> (NSMutableData*)data <b>printInfo:</b> (NSPrintInfo*)aPrintInfo;<br>
+              </p>
+    <hr />
+    <h3>EPSOperationWithView:insideRect:toData:printInfo:</a></h3>
+    + (<a href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>EPSOperationWithView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView<b> insideRect:</b> (NSRect)rect<b> toData:</b> (NSMutableData*)data<b> printInfo:</b> (<a href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)aPrintInfo;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-2">EPSOperationWithView:insideRect:toPath:printInfo:</a></h3>
-+ (NSPrintOperation*) <b>EPSOperationWithView:</b> (NSView*)aView <b>insideRect:</b> (NSRect)rect <b>toPath:</b> (NSString*)path <b>printInfo:</b> (NSPrintInfo*)aPrintInfo;<br>
+              </p>
+    <hr />
+    <h3>EPSOperationWithView:insideRect:toPath:printInfo:</a></h3>
+    + (<a href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>EPSOperationWithView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView<b> insideRect:</b> (NSRect)rect<b> toPath:</b> (NSString*)path<b> printInfo:</b> (<a href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)aPrintInfo;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-3">PDFOperationWithView:insideRect:toData:</a></h3>
-+ (NSPrintOperation*) <b>PDFOperationWithView:</b> (NSView*)aView <b>insideRect:</b> (NSRect)rect <b>toData:</b> (NSMutableData*)data;<br>
+              </p>
+    <hr />
+    <h3>PDFOperationWithView:insideRect:toData:</a></h3>
+    + (<a href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>PDFOperationWithView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView<b> insideRect:</b> (NSRect)rect<b> toData:</b> (NSMutableData*)data;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-4">PDFOperationWithView:insideRect:toData:printInfo:</a></h3>
-+ (NSPrintOperation*) <b>PDFOperationWithView:</b> (NSView*)aView <b>insideRect:</b> (NSRect)rect <b>toData:</b> (NSMutableData*)data <b>printInfo:</b> (NSPrintInfo*)aPrintInfo;<br>
+              </p>
+    <hr />
+    <h3>PDFOperationWithView:insideRect:toData:printInfo:</a></h3>
+    + (<a href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>PDFOperationWithView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView<b> insideRect:</b> (NSRect)rect<b> toData:</b> (NSMutableData*)data<b> printInfo:</b> (<a href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)aPrintInfo;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-5">PDFOperationWithView:insideRect:toPath:printInfo:</a></h3>
-+ (NSPrintOperation*) <b>PDFOperationWithView:</b> (NSView*)aView <b>insideRect:</b> (NSRect)rect <b>toPath:</b> (NSString*)path <b>printInfo:</b> (NSPrintInfo*)aPrintInfo;<br>
+              </p>
+    <hr />
+    <h3>PDFOperationWithView:insideRect:toPath:printInfo:</a></h3>
+    + (<a href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>PDFOperationWithView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView<b> insideRect:</b> (NSRect)rect<b> toPath:</b> (NSString*)path<b> printInfo:</b> (<a href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)aPrintInfo;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-6">currentOperation</a></h3>
-+ (NSPrintOperation*) <b>currentOperation</b>;<br>
+              </p>
+    <hr />
+    <h3>currentOperation</a></h3>
+    + (<a href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>currentOperation</b>;<br />
+    <p>
 
             Returns the NSPrintOperation object that is
             currently performing a print operation (if any).
-          
- <hr>
-<h3><a name ="method-7">printOperationWithView:</a></h3>
-+ (NSPrintOperation*) <b>printOperationWithView:</b> (NSView*)aView;<br>
+              </p>
+    <hr />
+    <h3>printOperationWithView:</a></h3>
+    + (<a href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>printOperationWithView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-8">printOperationWithView:printInfo:</a></h3>
-+ (NSPrintOperation*) <b>printOperationWithView:</b> (NSView*)aView <b>printInfo:</b> (NSPrintInfo*)aPrintInfo;<br>
+              </p>
+    <hr />
+    <h3>printOperationWithView:printInfo:</a></h3>
+    + (<a href="#class$NSPrintOperation">NSPrintOperation</a>*) <b>printOperationWithView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView<b> printInfo:</b> (<a href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)aPrintInfo;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-9">setCurrentOperation:</a></h3>
-+ (void) <b>setCurrentOperation:</b> (NSPrintOperation*)operation;<br>
+              </p>
+    <hr />
+    <h3>setCurrentOperation:</a></h3>
+    + (void) <b>setCurrentOperation:</b> (<a href="#class$NSPrintOperation">NSPrintOperation</a>*)operation;<br />
+    <p>
 
             Set the current NSPrintOperation to the supplied
             <var>operation</var> object. As this is currently
@@ -134,150 +113,170 @@
             lost (along with any associated context), so be
             careful to call this only when there is no current
             <var>operation</var>.
-          
- <hr>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-10">accessoryView</a></h3>
-- (NSView*) <b>accessoryView</b>;<br>
+              </p>
+    <hr />
+    <h3>accessoryView</a></h3>
+    - (<a href="NSView.html#class$NSView">NSView</a>*) <b>accessoryView</b>;<br />
+    <p>
 
             Returns the accessory view used by the NSPrintPanel
             associated with the receiver.
-          
- <hr>
-<h3><a name ="method-11">cleanUpOperation</a></h3>
-- (void) <b>cleanUpOperation</b>;<br>
+              </p>
+    <hr />
+    <h3>cleanUpOperation</a></h3>
+    - (void) <b>cleanUpOperation</b>;<br />
+    <p>
 
             Called by the print operation and it has finished
             running a printing operation.
-          
- <hr>
-<h3><a name ="method-12">context</a></h3>
-- (NSGraphicsContext*) <b>context</b>;<br>
+              </p>
+    <hr />
+    <h3>context</a></h3>
+    - (<a href="NSGraphicsContext.html#class$NSGraphicsContext">NSGraphicsContext</a>*) <b>context</b>;<br />
+    <p>
 
             Returns the graphic contexts used by the print
             operation.
-          
- <hr>
-<h3><a name ="method-13">createContext</a></h3>
-- (NSGraphicsContext*) <b>createContext</b>;<br>
+              </p>
+    <hr />
+    <h3>createContext</a></h3>
+    - (<a href="NSGraphicsContext.html#class$NSGraphicsContext">NSGraphicsContext</a>*) <b>createContext</b>;<br />
+    <p>
 
             This method is used by the print operation to create a
             special graphics context for use while running the
             print operation.
-          
- <hr>
-<h3><a name ="method-14">currentPage</a></h3>
-- (int) <b>currentPage</b>;<br>
+              </p>
+    <hr />
+    <h3>currentPage</a></h3>
+    - (int) <b>currentPage</b>;<br />
+    <p>
 
             Returns the page currently being printing. Returns
             0 if no page is currently being printed
-          
- <hr>
-<h3><a name ="method-15">deliverResult</a></h3>
-- (BOOL) <b>deliverResult</b>;<br>
+              </p>
+    <hr />
+    <h3>deliverResult</a></h3>
+    - (BOOL) <b>deliverResult</b>;<br />
+    <p>
 
             Called by the print operation to deliver the results
             of the printing operation. This might include sending
             the output to a printer, a file or a previewing
             program. Returns <code>YES</code> if the output
             was delivered sucessfully.
-          
- <hr>
-<h3><a name ="method-16">destroyContext</a></h3>
-- (void) <b>destroyContext</b>;<br>
+              </p>
+    <hr />
+    <h3>destroyContext</a></h3>
+    - (void) <b>destroyContext</b>;<br />
+    <p>
 
             This method is used by the print operation to destroy
             the special graphic context used while running the
             print operation.
-          
- <hr>
-<h3><a name ="method-17">initEPSOperationWithView:insideRect:toData:printInfo:</a></h3>
-- (id) <b>initEPSOperationWithView:</b> (NSView*)aView <b>insideRect:</b> (NSRect)rect <b>toData:</b> (NSMutableData*)data <b>printInfo:</b> (NSPrintInfo*)aPrintInfo;<br>
+              </p>
+    <hr />
+    <h3>initEPSOperationWithView:insideRect:toData:printInfo:</a></h3>
+    - (id) <b>initEPSOperationWithView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView<b> insideRect:</b> (NSRect)rect<b> toData:</b> (NSMutableData*)data<b> printInfo:</b> (<a href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)aPrintInfo;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-18">initWithView:printInfo:</a></h3>
-- (id) <b>initWithView:</b> (NSView*)aView <b>printInfo:</b> (NSPrintInfo*)aPrintInfo;<br>
+              </p>
+    <hr />
+    <h3>initWithView:printInfo:</a></h3>
+    - (id) <b>initWithView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView<b> printInfo:</b> (<a href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)aPrintInfo;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-19">isCopyingOperation</a></h3>
-- (BOOL) <b>isCopyingOperation</b>;<br>
+              </p>
+    <hr />
+    <h3>isCopyingOperation</a></h3>
+    - (BOOL) <b>isCopyingOperation</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-20">isEPSOperation</a></h3>
-- (BOOL) <b>isEPSOperation</b>;<br>
+              </p>
+    <hr />
+    <h3>isEPSOperation</a></h3>
+    - (BOOL) <b>isEPSOperation</b>;<br />
+    <p>
 
             Returns <code>YES</code> if the receiver is
             performing an operation whose output is EPS
             format.
-          
- <hr>
-<h3><a name ="method-21">pageOrder</a></h3>
-- (NSPrintingPageOrder) <b>pageOrder</b>;<br>
+              </p>
+    <hr />
+    <h3>pageOrder</a></h3>
+    - (NSPrintingPageOrder) <b>pageOrder</b>;<br />
+    <p>
 
             Returns the page order of printing.
-          
- <hr>
-<h3><a name ="method-22">printInfo</a></h3>
-- (NSPrintInfo*) <b>printInfo</b>;<br>
+              </p>
+    <hr />
+    <h3>printInfo</a></h3>
+    - (<a href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*) <b>printInfo</b>;<br />
+    <p>
 
             Returns the NSPrintInfo object associated with the
             receiver.
-          
- <hr>
-<h3><a name ="method-23">printPanel</a></h3>
-- (NSPrintPanel*) <b>printPanel</b>;<br>
+              </p>
+    <hr />
+    <h3>printPanel</a></h3>
+    - (<a href="NSPrintPanel.html#class$NSPrintPanel">NSPrintPanel</a>*) <b>printPanel</b>;<br />
+    <p>
 
             Returns the NSPrintPanel associated with the
             receiver.
-          
- <hr>
-<h3><a name ="method-24">runOperation</a></h3>
-- (BOOL) <b>runOperation</b>;<br>
+              </p>
+    <hr />
+    <h3>runOperation</a></h3>
+    - (BOOL) <b>runOperation</b>;<br />
+    <p>
 
             Call this message to run the print operation on a
             view. This includes (optionally) displaying a print
             panel and working with the NSView to paginate and
             draw the contents of the view.
-          
- <hr>
-<h3><a name ="method-25">runOperationModalForWindow:delegate:didRunSelector:contextInfo:</a></h3>
-- (void) <b>runOperationModalForWindow:</b> (NSWindow*)docWindow <b>delegate:</b> (id)delegate <b>didRunSelector:</b> (SEL)didRunSelector <b>contextInfo:</b> (void*)contextInfo;<br>
+              </p>
+    <hr />
+    <h3>runOperationModalForWindow:delegate:didRunSelector:contextInfo:</a></h3>
+    - (void) <b>runOperationModalForWindow:</b> (<a href="NSWindow.html#class$NSWindow">NSWindow</a>*)docWindow<b> delegate:</b> (id)delegate<b> didRunSelector:</b> (SEL)didRunSelector<b> contextInfo:</b> (void*)contextInfo;<br />
+    <p>
 
             Run a print operation modally with respect to a window.
-          
- <hr>
-<h3><a name ="method-26">setAccessoryView:</a></h3>
-- (void) <b>setAccessoryView:</b> (NSView*)aView;<br>
+              </p>
+    <hr />
+    <h3>setAccessoryView:</a></h3>
+    - (void) <b>setAccessoryView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+    <p>
 
             Set the accessory view used by the NSPrintPanel
             associated with the receiver.
-          
- <hr>
-<h3><a name ="method-27">setPageOrder:</a></h3>
-- (void) <b>setPageOrder:</b> (NSPrintingPageOrder)order;<br>
+              </p>
+    <hr />
+    <h3>setPageOrder:</a></h3>
+    - (void) <b>setPageOrder:</b> (NSPrintingPageOrder)order;<br />
+    <p>
 
             Set the page <var>order</var> used when printing.
-          
- <hr>
-<h3><a name ="method-28">setPrintInfo:</a></h3>
-- (void) <b>setPrintInfo:</b> (NSPrintInfo*)aPrintInfo;<br>
+              </p>
+    <hr />
+    <h3>setPrintInfo:</a></h3>
+    - (void) <b>setPrintInfo:</b> (<a href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)aPrintInfo;<br />
+    <p>
 
             Set the NSPrintInfo object associated with the
             receiver.
-          
- <hr>
-<h3><a name ="method-29">setPrintPanel:</a></h3>
-- (void) <b>setPrintPanel:</b> (NSPrintPanel*)panel;<br>
+              </p>
+    <hr />
+    <h3>setPrintPanel:</a></h3>
+    - (void) <b>setPrintPanel:</b> (<a href="NSPrintPanel.html#class$NSPrintPanel">NSPrintPanel</a>*)panel;<br />
+    <p>
 
             Sets the NSPrintPanel used by the receiver obtaining
             and displaying printing information from/to the user.
-          
- <hr>
-<h3><a name ="method-30">setShowPanels:</a></h3>
-- (void) <b>setShowPanels:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>setShowPanels:</a></h3>
+    - (void) <b>setShowPanels:</b> (BOOL)flag;<br />
+    <p>
 
             Use this to set whether a print panel is displayed
             during a printing operation. If set to
@@ -285,22 +284,23 @@
             that was previously set and does not display any
             status information about the progress of the
             printing operation.
-          
- <hr>
-<h3><a name ="method-31">showPanels</a></h3>
-- (BOOL) <b>showPanels</b>;<br>
+              </p>
+    <hr />
+    <h3>showPanels</a></h3>
+    - (BOOL) <b>showPanels</b>;<br />
+    <p>
 
             Returns <code>YES</code> if the reciever display an
             NSPrintPanel and other information when
             running a print operation.
-          
- <hr>
-<h3><a name ="method-32">view</a></h3>
-- (NSView*) <b>view</b>;<br>
+              </p>
+    <hr />
+    <h3>view</a></h3>
+    - (<a href="NSView.html#class$NSView">NSView</a>*) <b>view</b>;<br />
+    <p>
 
             Return the view that is the being printed.
-          
- <hr>
-</body>
-
- </html>
+              </p>
+    <hr />
+  </body>
+</html>

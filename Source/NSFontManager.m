@@ -1,13 +1,10 @@
-/* 
-   NSFontManager.m
+/** <title>NSFontManager</title>
 
-   Manages system and user fonts
+   <abstract>Manages system and user fonts</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
-   Modified:  Fred Kiefer <FredKiefer@gmx.de>
+   Author: Fred Kiefer <FredKiefer@gmx.de>
    Date: January 2000
    Almost complete rewrite.
    
@@ -798,7 +795,7 @@ static Class		fontPanelClass = Nil;
 }
 
 - (BOOL) fontNamed: (NSString*)typeface 
-         hasTraits: (NSFontTraitMask)fontTraitMask;
+         hasTraits: (NSFontTraitMask)fontTraitMask
 {
   // TODO: This method is implemented very slow, but I dont 
   // see any use for it, so why change it?

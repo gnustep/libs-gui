@@ -1,23 +1,30 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSPopUpButton" prev="NSPasteboard.html" next="NSPopUpButtonCell.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSPopUpButton" next="NSPopUpButtonCell" prev="NSPasteboard" up="NSActionCell">
   <head>
     <title>NSPopUpButton</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Michael Hanni">
+      <email address="mhanni@sprintmail.com">
+        mhanni@sprintmail.com
+      </email>
+    </author>
+    <abstract>Popup list class</abstract>
+    <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSPopUpButton</heading>
+      <heading>
+        Software documentation for the NSPopUpButton class
+      </heading>
       <class name="NSPopUpButton" super="NSButton">
-        <declared>Gui/NSPopUpButton.h</declared>
-        <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSPopUpButton.h</declared>
+        <desc>
+        </desc>
         <method type="void">
           <sel>addItemWithTitle:</sel>
           <arg type="NSString*">title</arg>
@@ -75,6 +82,8 @@
         <method type="id">
           <sel>initWithFrame:</sel>
           <arg type="NSRect">frameRect</arg>
+          <sel>pullsDown:</sel>
+          <arg type="BOOL">flag</arg>
           <desc>
           </desc>
         </method>
@@ -119,11 +128,6 @@
           <desc>
           </desc>
         </method>
-        <method type="NSMenu*">
-          <sel>menu</sel>
-          <desc>
-          </desc>
-        </method>
         <method type="int">
           <sel>numberOfItems</sel>
           <desc>
@@ -156,14 +160,9 @@
           <desc>
           </desc>
         </method>
-        <method type="id&lt;NSMenuItem&gt;">
-          <sel>selectedItem</sel>
-          <desc>
-          </desc>
-        </method>
         <method type="void">
-          <sel>selectItem</sel>
-          <arg type="id &lt;NSMenuItem&gt;">anObject</arg>
+          <sel>selectItem:</sel>
+          <arg type="id&lt;NSMenuItem&gt;">anObject</arg>
           <desc>
           </desc>
         </method>
@@ -179,21 +178,14 @@
           <desc>
           </desc>
         </method>
+        <method type="id&lt;NSMenuItem&gt;">
+          <sel>selectedItem</sel>
+          <desc>
+          </desc>
+        </method>
         <method type="void">
           <sel>setAutoenablesItems:</sel>
           <arg type="BOOL">flag</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
-          <sel>setFont:</sel>
-          <arg type="NSFont*">fontObject</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
-          <sel>setMenu:</sel>
-          <arg type="NSMenu*">menu</arg>
           <desc>
           </desc>
         </method>
@@ -209,7 +201,7 @@
           <desc>
           </desc>
         </method>
-        <method type="int">
+        <method type="void">
           <sel>setTitle:</sel>
           <arg type="NSString*">aString</arg>
           <desc>

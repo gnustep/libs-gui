@@ -1,7 +1,6 @@
-/* 
-   NSAttributedString.m
+/** <title>NSAttributedStringAdditions</title>
 
-   Categories which add capabilities to NSAttributedString 
+   <abstract>Categories which add capabilities to NSAttributedString</abstract>
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 

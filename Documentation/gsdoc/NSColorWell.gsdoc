@@ -1,23 +1,33 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSColorWell" prev="NSColorPicker.html" next="NSComboBox.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSColorWell" next="NSComboBox" prev="NSColorPicker" up="NSActionCell">
   <head>
     <title>NSColorWell</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Felipe A. Rodriguez">
+      <email address="far@ix.netcom.com">
+        far@ix.netcom.com
+      </email>
+    </author>
+    <abstract>
+      Control for selecting and display a single color value.
+    </abstract>
+    <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSColorWell</heading>
+      <heading>
+        Software documentation for the NSColorWell class
+      </heading>
       <class name="NSColorWell" super="NSControl">
-        <declared>Gui/NSColorWell.h</declared>
+        <declared>AppKit/NSColorWell.h</declared>
         <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <desc>
+        </desc>
         <method type="void">
           <sel>activate:</sel>
           <arg type="BOOL">exclusive</arg>
@@ -37,6 +47,18 @@
         <method type="void">
           <sel>drawWellInside:</sel>
           <arg type="NSRect">insideRect</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>encodeWithCoder:</sel>
+          <arg type="NSCoder*">aCoder</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="id">
+          <sel>initWithCoder:</sel>
+          <arg type="NSCoder*">aDecoder</arg>
           <desc>
           </desc>
         </method>

@@ -1,60 +1,87 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSBitmapImageRep" prev="NSBezierPath.html" next="NSBox.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSBitmapImageRep" next="NSBox" prev="NSBezierPath" up="NSActionCell">
   <head>
-    <title>NSBitmapImageRep</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <title>NSBitmapImageRep.m</title>
+    <author name="Adam Fedor">
+      <email address="fedor@gnu.org">
+        fedor@gnu.org
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>Bitmap image representation.</abstract>
+    <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSBitmapImageRep</heading>
+      <heading>
+        Software documentation for the NSBitmapImageRep class
+      </heading>
       <class name="NSBitmapImageRep" super="NSImageRep">
-        <declared>Gui/NSImage.h</declared>
-        <conform>NSCoding</conform>
+        <declared>AppKit/NSBitmapImageRep.h</declared>
+        <desc>
+        </desc>
+        <method type="NSData*" factory="yes">
+          <sel>TIFFRepresentationOfImageRepsInArray:</sel>
+          <arg type="NSArray*">anArray</arg>
           <desc>
           </desc>
+        </method>
+        <method type="NSData*" factory="yes">
+          <sel>TIFFRepresentationOfImageRepsInArray:</sel>
+          <arg type="NSArray*">anArray</arg>
+          <sel>usingCompression:</sel>
+          <arg type="NSTIFFCompression">type</arg>
+          <sel>factor:</sel>
+          <arg type="float">factor</arg>
+          <desc>
+          </desc>
+        </method>
         <method type="void" factory="yes">
           <sel>getTIFFCompressionTypes:</sel>
-          <arg type="constNSTIFFCompression**">list</arg>
+          <arg type="const NSTIFFCompression**">list</arg>
           <sel>count:</sel>
           <arg type="int*">numTypes</arg>
           <desc>
           </desc>
         </method>
-        <method type="NSArray*" factory="yes">
-          <sel>imageRepsWithData:</sel>
-          <arg type="NSData*">bitmapData</arg>
+        <method type="id" factory="yes">
+          <sel>imageRepWithData:</sel>
+          <arg type="NSData*">tiffData</arg>
           <desc>
           </desc>
         </method>
-        <method type="id" factory="yes">
-          <sel>imageRepWithData:</sel>
-          <arg type="NSData*">bitmapData</arg>
+        <method type="NSArray*" factory="yes">
+          <sel>imageRepsWithData:</sel>
+          <arg type="NSData*">tiffData</arg>
           <desc>
           </desc>
         </method>
         <method type="NSString*" factory="yes">
           <sel>localizedNameForTIFFCompressionType:</sel>
-          <arg type="NSTIFFCompression">compression</arg>
+          <arg type="NSTIFFCompression">type</arg>
           <desc>
           </desc>
         </method>
         <method type="NSData*" factory="yes">
-          <sel>TIFFRepresentationOfImageRepsInArray:</sel>
-          <arg type="NSArray*">array</arg>
+          <sel>representationOfImageRepsInArray:</sel>
+          <arg type="NSArray*">imageReps</arg>
+          <sel>usingType:</sel>
+          <arg type="NSBitmapImageFileType">storageType</arg>
+          <sel>properties:</sel>
+          <arg type="NSDictionary*">properties</arg>
           <desc>
           </desc>
         </method>
-        <method type="NSData*" factory="yes">
-          <sel>TIFFRepresentationOfImageRepsInArray:</sel>
-          <arg type="NSArray*">array</arg>
-          <sel>usingCompression:</sel>
-          <arg type="NSTIFFCompression">compression</arg>
+        <method type="NSData*">
+          <sel>TIFFRepresentation</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSData*">
+          <sel>TIFFRepresentationUsingCompression:</sel>
+          <arg type="NSTIFFCompression">type</arg>
+          <sel>factor:</sel>
+          <arg type="float">factor</arg>
           <desc>
           </desc>
         </method>
@@ -80,7 +107,19 @@
         </method>
         <method type="BOOL">
           <sel>canBeCompressedUsing:</sel>
-          <arg type="NSTIFFCompression">compression</arg>
+          <arg type="NSTIFFCompression">type</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>colorizeByMappingGray:</sel>
+          <arg type="float">midPoint</arg>
+          <sel>toColor:</sel>
+          <arg type="NSColor*">midPointColor</arg>
+          <sel>blackMapping:</sel>
+          <arg type="NSColor*">shadowColor</arg>
+          <sel>whiteMapping:</sel>
+          <arg type="NSColor*">lightColor</arg>
           <desc>
           </desc>
         </method>
@@ -92,7 +131,9 @@
         </method>
         <method type="void">
           <sel>getCompression:</sel>
-          <arg type="NSTIFFCompression*">compression</arg>
+          <arg type="NSTIFFCompression*">type</arg>
+          <sel>factor:</sel>
+          <arg type="float*">factor</arg>
           <desc>
           </desc>
         </method>
@@ -128,7 +169,7 @@
         </method>
         <method type="id">
           <sel>initWithData:</sel>
-          <arg type="NSData*">bitmapData</arg>
+          <arg type="NSData*">tiffData</arg>
           <desc>
           </desc>
         </method>
@@ -154,6 +195,14 @@
           <desc>
           </desc>
         </method>
+        <method type="NSData*">
+          <sel>representationUsingType:</sel>
+          <arg type="NSBitmapImageFileType">storageType</arg>
+          <sel>properties:</sel>
+          <arg type="NSDictionary*">properties</arg>
+          <desc>
+          </desc>
+        </method>
         <method type="int">
           <sel>samplesPerPixel</sel>
           <desc>
@@ -161,24 +210,45 @@
         </method>
         <method type="void">
           <sel>setCompression:</sel>
-          <arg type="NSTIFFCompression">compression</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="NSData*">
-          <sel>TIFFRepresentation</sel>
-          <desc>
-          </desc>
-        </method>
-        <method type="NSData*">
-          <sel>TIFFRepresentationUsingCompression:</sel>
-          <arg type="NSTIFFCompression">comp</arg>
+          <arg type="NSTIFFCompression">type</arg>
           <sel>factor:</sel>
           <arg type="float">factor</arg>
           <desc>
           </desc>
         </method>
+        <method type="void">
+          <sel>setProperty:</sel>
+          <arg type="NSString*">property</arg>
+          <sel>withValue:</sel>
+          <arg type="id">value</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="id">
+          <sel>valueForProperty:</sel>
+          <arg type="NSString*">property</arg>
+          <desc>
+          </desc>
+        </method>
       </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSBitmapImageRep(GNUstepExtension)
+        category
+      </heading>
+      <category name="GNUstepExtension" class="NSBitmapImageRep">
+        <declared>AppKit/NSBitmapImageRep.h</declared>
+        <desc>
+        </desc>
+        <method type="NSArray*" factory="yes">
+          <sel>imageRepsWithFile:</sel>
+          <arg type="NSString*">filename</arg>
+          <desc>
+          </desc>
+        </method>
+      </category>
     </chapter>
   </body>
 </gsdoc>

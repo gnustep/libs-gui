@@ -1,7 +1,6 @@
-/*
-   NSTextField.m
+/** <title>NSTextField</title>
 
-   Text field control class for text entry
+   <abstract>Text field control class for text entry</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 

@@ -10,8 +10,6 @@
    Date: 1997
    Author:  Felipe A. Rodriguez <far@ix.netcom.com>
    Date: August 1998
-   Author: <author name="Various People"></author>
-   Date: Oct 2001
 
    This file is part of the GNUstep GUI Library.
 

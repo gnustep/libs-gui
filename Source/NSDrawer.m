@@ -1,11 +1,10 @@
-/*
-   NSDrawer.m
+/** <title>NSDrawer</title>
 
-   The drawer class
+   <abstract>The drawer class</abstract>
 
    Copyright (C) 2001 Free Software Foundation, Inc.
 
-   Author:  Fred Kiefer <FredKiefer@gmx.de>
+   Author: Fred Kiefer <FredKiefer@gmx.de>
    Date: 2001
    
    This file is part of the GNUstep GUI Library.

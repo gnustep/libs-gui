@@ -1,281 +1,288 @@
-<html><head>
- <title>NSMenuView</title>
-</head>
-<body>
-<a href ="NSMenuItemCell.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSMutableAttributedString.html">[Next] </a>
-<h1>NSMenuView</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSMenuView</a></h2>
-<h2><a name ="NSMenuView">NSMenuView</a></h2>
-<p><b>Declared in: </b> Gui/NSMenuView.h</p>
-<p><b>Inherits from: </b> NSView</p>
-<p><b>Conforms to: </b> NSCoding
-</p>
-<hr>
+<html>
+  <head>
+    <title>NSMenuView</title>
+  </head>
+  <body>
+    <h1>NSMenuView</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Fred Kiefer(<a href="mailto:FredKiefer@gmx.de"><code>
+        FredKiefer@gmx.de
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>David Lazaro Saz(<a href="mailto:khelekir@encomix.es"><code>
+        khelekir@encomix.es
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Michael Hanni(<a href="mailto:mhanni@sprintmail.com"><code>
+        mhanni@sprintmail.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <p>Copyright: (C) 1999 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the NSMenuView class
+      </h1>
+    <h2><a name="class$NSMenuView">NSMenuView</a> : <a href="NSView.html#class$NSView">NSView</a></h2>
+    Declared: AppKit/NSMenuView.h<br />
+    Conform: NSCoding<br />
+    <p>
 
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSMenuView.html#method-0">+menuBarHeight</a>
-<li ><a href ="NSMenuView.html#method-3">-attachSubmenuForItemAtIndex:</a>
-<li ><a href ="NSMenuView.html#method-1">-attachedMenu</a>
-<li ><a href ="NSMenuView.html#method-2">-attachedMenuView</a>
-<li ><a href ="NSMenuView.html#method-4">-detachSubmenu</a>
-<li ><a href ="NSMenuView.html#method-5">-font</a>
-<li ><a href ="NSMenuView.html#method-6">-highlightedItemIndex</a>
-<li ><a href ="NSMenuView.html#method-7">-horizontalEdgePadding</a>
-<li ><a href ="NSMenuView.html#method-8">-imageAndTitleOffset</a>
-<li ><a href ="NSMenuView.html#method-9">-imageAndTitleWidth</a>
-<li ><a href ="NSMenuView.html#method-10">-indexOfItemAtPoint:</a>
-<li ><a href ="NSMenuView.html#method-11">-innerRect</a>
-<li ><a href ="NSMenuView.html#method-12">-isAttached</a>
-<li ><a href ="NSMenuView.html#method-13">-isHorizontal</a>
-<li ><a href ="NSMenuView.html#method-14">-isTornOff</a>
-<li ><a href ="NSMenuView.html#method-15">-itemAdded:</a>
-<li ><a href ="NSMenuView.html#method-16">-itemChanged:</a>
-<li ><a href ="NSMenuView.html#method-17">-itemRemoved:</a>
-<li ><a href ="NSMenuView.html#method-18">-keyEquivalentOffset</a>
-<li ><a href ="NSMenuView.html#method-19">-keyEquivalentWidth</a>
-<li ><a href ="NSMenuView.html#method-20">-locationForSubmenu:</a>
-<li ><a href ="NSMenuView.html#method-21">-menu</a>
-<li ><a href ="NSMenuView.html#method-22">-menuItemCellForItemAtIndex:</a>
-<li ><a href ="NSMenuView.html#method-23">-needsSizing</a>
-<li ><a href ="NSMenuView.html#method-24">-performActionWithHighlightingForItemAtIndex:</a>
-<li ><a href ="NSMenuView.html#method-25">-rectOfItemAtIndex:</a>
-<li ><a href ="NSMenuView.html#method-26">-resizeWindowWithMaxHeight:</a>
-<li ><a href ="NSMenuView.html#method-27">-setFont:</a>
-<li ><a href ="NSMenuView.html#method-28">-setHighlightedItemIndex:</a>
-<li ><a href ="NSMenuView.html#method-29">-setHorizontal:</a>
-<li ><a href ="NSMenuView.html#method-30">-setHorizontalEdgePadding:</a>
-<li ><a href ="NSMenuView.html#method-31">-setMenu:</a>
-<li ><a href ="NSMenuView.html#method-32">-setMenuItemCell:forItemAtIndex:</a>
-<li ><a href ="NSMenuView.html#method-33">-setNeedsDisplayForItemAtIndex:</a>
-<li ><a href ="NSMenuView.html#method-34">-setNeedsSizing:</a>
-<li ><a href ="NSMenuView.html#method-35">-setWindowFrameForAttachingToRect:onScreen:preferredEdge:popUpSelectedItem:</a>
-<li ><a href ="NSMenuView.html#method-36">-sizeToFit</a>
-<li ><a href ="NSMenuView.html#method-37">-stateImageOffset</a>
-<li ><a href ="NSMenuView.html#method-38">-stateImageWidth</a>
-<li ><a href ="NSMenuView.html#method-39">-trackWithEvent:</a>
-<li ><a href ="NSMenuView.html#method-40">-update</a>
-</ul>
-<hr><h2>Class Methods </h2>
-<h3><a name ="method-0">menuBarHeight</a></h3>
-+ (float) <b>menuBarHeight</b>;<br>
+            </p>
+    <h3>menuBarHeight</a></h3>
+    + (float) <b>menuBarHeight</b>;<br />
+    <p>
 
-          
- <hr>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-1">attachedMenu</a></h3>
-- (NSMenu*) <b>attachedMenu</b>;<br>
+              </p>
+    <hr />
+    <h3>attachSubmenuForItemAtIndex:</a></h3>
+    - (void) <b>attachSubmenuForItemAtIndex:</b> (int)index;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-2">attachedMenuView</a></h3>
-- (NSMenuView*) <b>attachedMenuView</b>;<br>
+              </p>
+    <hr />
+    <h3>attachedMenu</a></h3>
+    - (<a href="NSMenu.html#class$NSMenu">NSMenu</a>*) <b>attachedMenu</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-3">attachSubmenuForItemAtIndex:</a></h3>
-- (void) <b>attachSubmenuForItemAtIndex:</b> (int)index;<br>
+              </p>
+    <hr />
+    <h3>attachedMenuView</a></h3>
+    - (<a href="#class$NSMenuView">NSMenuView</a>*) <b>attachedMenuView</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-4">detachSubmenu</a></h3>
-- (void) <b>detachSubmenu</b>;<br>
+              </p>
+    <hr />
+    <h3>detachSubmenu</a></h3>
+    - (void) <b>detachSubmenu</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-5">font</a></h3>
-- (NSFont*) <b>font</b>;<br>
+              </p>
+    <hr />
+    <h3>font</a></h3>
+    - (<a href="NSFont.html#class$NSFont">NSFont</a>*) <b>font</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-6">highlightedItemIndex</a></h3>
-- (int) <b>highlightedItemIndex</b>;<br>
+              </p>
+    <hr />
+    <h3>highlightedItemIndex</a></h3>
+    - (int) <b>highlightedItemIndex</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-7">horizontalEdgePadding</a></h3>
-- (float) <b>horizontalEdgePadding</b>;<br>
+              </p>
+    <hr />
+    <h3>horizontalEdgePadding</a></h3>
+    - (float) <b>horizontalEdgePadding</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-8">imageAndTitleOffset</a></h3>
-- (float) <b>imageAndTitleOffset</b>;<br>
+              </p>
+    <hr />
+    <h3>imageAndTitleOffset</a></h3>
+    - (float) <b>imageAndTitleOffset</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-9">imageAndTitleWidth</a></h3>
-- (float) <b>imageAndTitleWidth</b>;<br>
+              </p>
+    <hr />
+    <h3>imageAndTitleWidth</a></h3>
+    - (float) <b>imageAndTitleWidth</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-10">indexOfItemAtPoint:</a></h3>
-- (int) <b>indexOfItemAtPoint:</b> (NSPoint)point;<br>
+              </p>
+    <hr />
+    <h3>indexOfItemAtPoint:</a></h3>
+    - (int) <b>indexOfItemAtPoint:</b> (NSPoint)point;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-11">innerRect</a></h3>
-- (NSRect) <b>innerRect</b>;<br>
+              </p>
+    <hr />
+    <h3>initAsTearOff</a></h3>
+    - (id) <b>initAsTearOff</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-12">isAttached</a></h3>
-- (BOOL) <b>isAttached</b>;<br>
+              </p>
+    <hr />
+    <h3>innerRect</a></h3>
+    - (NSRect) <b>innerRect</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-13">isHorizontal</a></h3>
-- (BOOL) <b>isHorizontal</b>;<br>
+              </p>
+    <hr />
+    <h3>isAttached</a></h3>
+    - (BOOL) <b>isAttached</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-14">isTornOff</a></h3>
-- (BOOL) <b>isTornOff</b>;<br>
+              </p>
+    <hr />
+    <h3>isHorizontal</a></h3>
+    - (BOOL) <b>isHorizontal</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-15">itemAdded:</a></h3>
-- (void) <b>itemAdded:</b> (NSNotification*)notification;<br>
+              </p>
+    <hr />
+    <h3>isTornOff</a></h3>
+    - (BOOL) <b>isTornOff</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-16">itemChanged:</a></h3>
-- (void) <b>itemChanged:</b> (NSNotification*)notification;<br>
+              </p>
+    <hr />
+    <h3>itemAdded:</a></h3>
+    - (void) <b>itemAdded:</b> (NSNotification*)notification;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-17">itemRemoved:</a></h3>
-- (void) <b>itemRemoved:</b> (NSNotification*)notification;<br>
+              </p>
+    <hr />
+    <h3>itemChanged:</a></h3>
+    - (void) <b>itemChanged:</b> (NSNotification*)notification;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-18">keyEquivalentOffset</a></h3>
-- (float) <b>keyEquivalentOffset</b>;<br>
+              </p>
+    <hr />
+    <h3>itemRemoved:</a></h3>
+    - (void) <b>itemRemoved:</b> (NSNotification*)notification;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-19">keyEquivalentWidth</a></h3>
-- (float) <b>keyEquivalentWidth</b>;<br>
+              </p>
+    <hr />
+    <h3>keyEquivalentOffset</a></h3>
+    - (float) <b>keyEquivalentOffset</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-20">locationForSubmenu:</a></h3>
-- (NSPoint) <b>locationForSubmenu:</b> (NSMenu*)aSubmenu;<br>
+              </p>
+    <hr />
+    <h3>keyEquivalentWidth</a></h3>
+    - (float) <b>keyEquivalentWidth</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-21">menu</a></h3>
-- (NSMenu*) <b>menu</b>;<br>
+              </p>
+    <hr />
+    <h3>locationForSubmenu:</a></h3>
+    - (NSPoint) <b>locationForSubmenu:</b> (<a href="NSMenu.html#class$NSMenu">NSMenu</a>*)aSubmenu;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-22">menuItemCellForItemAtIndex:</a></h3>
-- (NSMenuItemCell*) <b>menuItemCellForItemAtIndex:</b> (int)index;<br>
+              </p>
+    <hr />
+    <h3>menu</a></h3>
+    - (<a href="NSMenu.html#class$NSMenu">NSMenu</a>*) <b>menu</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-23">needsSizing</a></h3>
-- (BOOL) <b>needsSizing</b>;<br>
+              </p>
+    <hr />
+    <h3>menuItemCellForItemAtIndex:</a></h3>
+    - (<a href="NSMenuItemCell.html#class$NSMenuItemCell">NSMenuItemCell</a>*) <b>menuItemCellForItemAtIndex:</b> (int)index;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-24">performActionWithHighlightingForItemAtIndex:</a></h3>
-- (void) <b>performActionWithHighlightingForItemAtIndex:</b> (int)index;<br>
+              </p>
+    <hr />
+    <h3>needsSizing</a></h3>
+    - (BOOL) <b>needsSizing</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-25">rectOfItemAtIndex:</a></h3>
-- (NSRect) <b>rectOfItemAtIndex:</b> (int)index;<br>
+              </p>
+    <hr />
+    <h3>performActionWithHighlightingForItemAtIndex:</a></h3>
+    - (void) <b>performActionWithHighlightingForItemAtIndex:</b> (int)index;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-26">resizeWindowWithMaxHeight:</a></h3>
-- (void) <b>resizeWindowWithMaxHeight:</b> (float)maxHeight;<br>
+              </p>
+    <hr />
+    <h3>rectOfItemAtIndex:</a></h3>
+    - (NSRect) <b>rectOfItemAtIndex:</b> (int)index;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-27">setFont:</a></h3>
-- (void) <b>setFont:</b> (NSFont*)font;<br>
+              </p>
+    <hr />
+    <h3>resizeWindowWithMaxHeight:</a></h3>
+    - (void) <b>resizeWindowWithMaxHeight:</b> (float)maxHeight;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-28">setHighlightedItemIndex:</a></h3>
-- (void) <b>setHighlightedItemIndex:</b> (int)index;<br>
+              </p>
+    <hr />
+    <h3>setFont:</a></h3>
+    - (void) <b>setFont:</b> (<a href="NSFont.html#class$NSFont">NSFont</a>*)font;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-29">setHorizontal:</a></h3>
-- (void) <b>setHorizontal:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>setHighlightedItemIndex:</a></h3>
+    - (void) <b>setHighlightedItemIndex:</b> (int)index;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-30">setHorizontalEdgePadding:</a></h3>
-- (void) <b>setHorizontalEdgePadding:</b> (float)pad;<br>
+              </p>
+    <hr />
+    <h3>setHorizontal:</a></h3>
+    - (void) <b>setHorizontal:</b> (BOOL)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-31">setMenu:</a></h3>
-- (void) <b>setMenu:</b> (NSMenu*)menu;<br>
+              </p>
+    <hr />
+    <h3>setHorizontalEdgePadding:</a></h3>
+    - (void) <b>setHorizontalEdgePadding:</b> (float)pad;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-32">setMenuItemCell:forItemAtIndex:</a></h3>
-- (void) <b>setMenuItemCell:</b> (NSMenuItemCell*)cell <b>forItemAtIndex:</b> (int)index;<br>
+              </p>
+    <hr />
+    <h3>setMenu:</a></h3>
+    - (void) <b>setMenu:</b> (<a href="NSMenu.html#class$NSMenu">NSMenu</a>*)menu;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-33">setNeedsDisplayForItemAtIndex:</a></h3>
-- (void) <b>setNeedsDisplayForItemAtIndex:</b> (int)index;<br>
+              </p>
+    <hr />
+    <h3>setMenuItemCell:forItemAtIndex:</a></h3>
+    - (void) <b>setMenuItemCell:</b> (<a href="NSMenuItemCell.html#class$NSMenuItemCell">NSMenuItemCell</a>*)cell<b> forItemAtIndex:</b> (int)index;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-34">setNeedsSizing:</a></h3>
-- (void) <b>setNeedsSizing:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>setNeedsDisplayForItemAtIndex:</a></h3>
+    - (void) <b>setNeedsDisplayForItemAtIndex:</b> (int)index;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-35">setWindowFrameForAttachingToRect:onScreen:preferredEdge:popUpSelectedItem:</a></h3>
-- (void) <b>setWindowFrameForAttachingToRect:</b> (NSRect)screenRect <b>onScreen:</b> (NSScreen *)screen <b>preferredEdge:</b> (NSRectEdge)edge <b>popUpSelectedItem:</b> (int)selectedItemIndex;<br>
+              </p>
+    <hr />
+    <h3>setNeedsSizing:</a></h3>
+    - (void) <b>setNeedsSizing:</b> (BOOL)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-36">sizeToFit</a></h3>
-- (void) <b>sizeToFit</b>;<br>
+              </p>
+    <hr />
+    <h3>setWindowFrameForAttachingToRect:onScreen:preferredEdge:popUpSelectedItem:</a></h3>
+    - (void) <b>setWindowFrameForAttachingToRect:</b> (NSRect)screenRect<b> onScreen:</b> (<a href="NSScreen.html#class$NSScreen">NSScreen</a>*)screen<b> preferredEdge:</b> (NSRectEdge)edge<b> popUpSelectedItem:</b> (int)selectedItemIndex;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-37">stateImageOffset</a></h3>
-- (float) <b>stateImageOffset</b>;<br>
+              </p>
+    <hr />
+    <h3>sizeToFit</a></h3>
+    - (void) <b>sizeToFit</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-38">stateImageWidth</a></h3>
-- (float) <b>stateImageWidth</b>;<br>
+              </p>
+    <hr />
+    <h3>stateImageOffset</a></h3>
+    - (float) <b>stateImageOffset</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-39">trackWithEvent:</a></h3>
-- (BOOL) <b>trackWithEvent:</b> (NSEvent*)event;<br>
+              </p>
+    <hr />
+    <h3>stateImageWidth</a></h3>
+    - (float) <b>stateImageWidth</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-40">update</a></h3>
-- (void) <b>update</b>;<br>
+              </p>
+    <hr />
+    <h3>trackWithEvent:</a></h3>
+    - (BOOL) <b>trackWithEvent:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)event;<br />
+    <p>
 
-          
- <hr>
-</body>
+              </p>
+    <hr />
+    <h3>update</a></h3>
+    - (void) <b>update</b>;<br />
+    <p>
 
- </html>
+              </p>
+    <hr />
+  </body>
+</html>

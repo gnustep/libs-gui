@@ -1,11 +1,10 @@
-/*
-   NSSlider.m
+/** <title>NSSlider</title>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
    Author: Ovidiu Predescu <ovidiu@net-community.com>
    Date: September 1997
-   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Author: Felipe A. Rodriguez <far@ix.netcom.com>
    Date: August 1998
 
    This file is part of the GNUstep GUI Library.
@@ -88,6 +87,36 @@ float _floatValueForMousePoint (NSPoint point, NSRect knobRect,
 }
 
 
+/**
+  <unit>
+  <heading>Class Description</heading>
+  
+  <p>An NSSlider displays, and allows control of, some value in the
+  application.  It represents a continuous stream of values of type
+  <code>float</code>, which can be retrieved by the method
+  <code>floatValue</code> and set by the method
+  <code>setFloatValue:</code>.</p>
+
+  <p>This control is a continuous control.  It sends its action
+  message as long as the user is manipulating it.  This can be changed
+  by passing <code>NO</code> to the <code>setContinuous:</code>
+  message of a given NSSlider.</p>
+
+  <p>Although methods for adding and managing a title are provided,
+  the slider's knob can cover this title, so it is recommended that a
+  label be added near the slider, for identification.</p>
+
+  <p>As with many controls, NSSlider relies on its cell counterpart,
+  NSSliderCell.  For more information, please see the specification
+  for NSSliderCell.</p>
+
+  <p>Use of an NSSlider to do the role of an NSScroller is not
+  recommended.  A scroller is intended to represent the visible
+  portion of a view, whereas a slider is intended to represent some
+  value.</p>
+
+  </unit>
+*/
 @implementation NSSlider
 
 static Class cellClass;
@@ -123,101 +152,144 @@ static Class cellClass;
   return self;
 }
 
+/** 
+  Returns the value by which the slider will be incremented if the
+  user holds down the ALT key. */
 - (double) altIncrementValue
 {
   return [_cell altIncrementValue];
 }
 
+/**
+  Returns the image drawn in the slider's track.  Returns
+  <code>nil</code> if this has not been set.  */
 - (NSImage *) image
 {
   return [_cell image];
 }
 
+/**
+  Returns whether or not the slider is vertical.  If, for some reason,
+  this cannot be determined, for such reasons as the slider is not yet
+  displayed, this method returns -1.  Generally, a slider is
+  considered vertical if its height is greater than its width.  */
 - (int) isVertical
 {
   return [_cell isVertical];
 }
 
+/**
+  Returns the thickness of the slider's knob.  This value is in
+  pixels, and is the size of the knob along the slider's track.  */
 - (float) knobThickness
 {
   return [_cell knobThickness];
 }
 
+/**
+  Sets the value by which the slider will be incremented, when the
+  ALT key is held down, to <var>increment</var>. */
 - (void) setAltIncrementValue: (double)increment
 {
   [_cell setAltIncrementValue: increment];
 }
 
+/** Sets the image to be displayed in the slider's track to <var>barImage</var>.
+ */
 - (void) setImage: (NSImage *)backgroundImage
 {
   [_cell setImage: backgroundImage];
 }
 
+/** 
+  Sets the thickness of the knob to <var>thickness</var>, in pixels.
+  This value sets the amount of space which the knob takes up in the
+  slider's track.  */
 - (void) setKnobThickness: (float)aFloat
 {
   [_cell setKnobThickness: aFloat];
 }
 
+/**
+  Sets the title of the slider to <var>barTitle</var>.  This title is displayed 
+  on the slider's track, behind the knob.
+*/
 - (void) setTitle: (NSString *)aString
 {
   [_cell setTitle: aString];
 }
 
+/** Sets the cell used to draw the title to <var>titleCell</var>. */
 - (void) setTitleCell: (NSCell *)aCell
 {
   [_cell setTitleCell: aCell];
 }
 
+/** Sets the colour with which the title will be drawn to <var>color</var>. */
 - (void) setTitleColor: (NSColor *)aColor
 {
   [_cell setTitleColor: aColor];
 }
 
+/** Sets the font with which the title will be drawm to <var>font</var>. */
 - (void) setTitleFont: (NSFont *)fontObject
 {
   [_cell setTitleFont: fontObject];
 }
 
+/** Returns the title of the slider as an <code>NSString</code>. */
 - (NSString *) title
 {
   return [_cell title];
 }
 
+/** Returns the cell used to draw the title. */
 - (id) titleCell
 {
   return [_cell titleCell];
 }
 
+/** Returns the colour used to draw the title. */
 - (NSColor *) titleColor
 {
   return [_cell titleColor];
 }
 
+/** Returns the font used to draw the title. */
 - (NSFont *) titleFont
 {
   return [_cell titleFont];
 }
 
+/** Returns the maximum value that the slider represents. */
 - (double) maxValue
 {
   return [_cell maxValue];
 }
 
+/** Returns the minimum value that the slider represents. */
 - (double) minValue
 {
   return [_cell minValue];
 }
 
+/**
+   Sets the maximum value that the sliders represents to <var>maxValue</var>. */
 - (void) setMaxValue: (double)aDouble
 {
   [_cell setMaxValue: aDouble];
 }
 
+/** Sets the minimum value that the slider represents to <var>minValue</var>. */
 - (void) setMinValue: (double)aDouble
 {
   [_cell setMinValue: aDouble];
 }
 
+/** 
+  Returns <code>YES</code> by default.  This will allow the first
+  click sent to the slider, when in an inactive window, to both bring
+  the window into focus and manipulate the slider. */
 - (BOOL) acceptsFirstMouse: (NSEvent *)theEvent
 {
   return YES;
@@ -234,7 +306,7 @@ static Class cellClass;
   return [_cell closestTickMarkValueToValue: aValue];
 }
 
-- (int) indexOfTickMarkAtPoint: (NSPoint)point;
+- (int) indexOfTickMarkAtPoint: (NSPoint)point
 {
   return [_cell indexOfTickMarkAtPoint: point];
 }
@@ -244,32 +316,32 @@ static Class cellClass;
   return [_cell numberOfTickMarks];
 }
 
-- (NSRect) rectOfTickMarkAtIndex: (int)index;
+- (NSRect) rectOfTickMarkAtIndex: (int)index
 {
   return [_cell rectOfTickMarkAtIndex: index];
 }
 
-- (void) setAllowsTickMarkValuesOnly: (BOOL)flag;
+- (void) setAllowsTickMarkValuesOnly: (BOOL)flag
 {
   [_cell setAllowsTickMarkValuesOnly: flag];
 }
 
-- (void) setNumberOfTickMarks: (int)numberOfTickMarks;
+- (void) setNumberOfTickMarks: (int)numberOfTickMarks
 {
  [_cell setNumberOfTickMarks: numberOfTickMarks];
 }
 
-- (void) setTickMarkPosition: (NSTickMarkPosition)position;
+- (void) setTickMarkPosition: (NSTickMarkPosition)position
 {
  [_cell setTickMarkPosition: position];
 }
 
-- (NSTickMarkPosition) tickMarkPosition;
+- (NSTickMarkPosition) tickMarkPosition
 {
   return [_cell tickMarkPosition];
 }
 
-- (double) tickMarkValueAtIndex: (int)index;
+- (double) tickMarkValueAtIndex: (int)index
 {
   return [_cell tickMarkValueAtIndex: index];
 }

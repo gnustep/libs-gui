@@ -1,7 +1,6 @@
-/*
-   NSForm.m
+/** <title>NSForm</title>
 
-   Form class, a matrix of text fields with labels
+   <abstract>Form class, a matrix of text fields with labels</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 

@@ -1,23 +1,36 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSCursor" prev="NSControl.html" next="NSCustomImageRep.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSCursor" next="NSCustomImageRep" prev="NSControl" up="NSActionCell">
   <head>
     <title>NSCursor</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Adam Fedor">
+      <email address="fedor@gnu.org">
+        fedor@gnu.org
+      </email>
+    </author>
+    <abstract>Holds an image to use as a cursor</abstract>
+    <copy>1996,1999,2001 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSCursor</heading>
+      <heading>
+        Software documentation for the NSCursor class
+      </heading>
       <class name="NSCursor" super="NSObject">
-        <declared>Gui/NSCursor.h</declared>
+        <declared>AppKit/NSCursor.h</declared>
         <conform>NSCoding</conform>
+        <desc>
+        </desc>
+        <method type="NSCursor*" factory="yes">
+          <sel>IBeamCursor</sel>
           <desc>
           </desc>
+        </method>
         <method type="NSCursor*" factory="yes">
           <sel>arrowCursor</sel>
           <desc>
@@ -28,13 +41,18 @@
           <desc>
           </desc>
         </method>
+        <method type="NSCursor*" factory="yes">
+          <sel>greenArrowCursor</sel>
+          <desc>
+          </desc>
+        </method>
         <method type="void" factory="yes">
           <sel>hide</sel>
           <desc>
           </desc>
         </method>
-        <method type="NSCursor*" factory="yes">
-          <sel>IBeamCursor</sel>
+        <method type="BOOL" factory="yes">
+          <sel>isHiddenUntilMouseMoves</sel>
           <desc>
           </desc>
         </method>
@@ -67,6 +85,12 @@
         <method type="id">
           <sel>initWithImage:</sel>
           <arg type="NSImage*">newImage</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="id">
+          <sel>initWithImage:</sel>
+          <arg type="NSImage*">newImage</arg>
           <sel>foregroundColorHint:</sel>
           <arg type="NSColor*">fg</arg>
           <sel>backgroundColorHint:</sel>
@@ -79,6 +103,8 @@
         <method type="id">
           <sel>initWithImage:</sel>
           <arg type="NSImage*">newImage</arg>
+          <sel>hotSpot:</sel>
+          <arg type="NSPoint">hotSpot</arg>
           <desc>
           </desc>
         </method>
@@ -94,13 +120,13 @@
         </method>
         <method type="void">
           <sel>mouseEntered:</sel>
-          <arg type="NSEvent*">anEvent</arg>
+          <arg type="NSEvent*">theEvent</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>mouseExited:</sel>
-          <arg type="NSEvent*">anEvent</arg>
+          <arg type="NSEvent*">theEvent</arg>
           <desc>
           </desc>
         </method>
@@ -116,6 +142,18 @@
         </method>
         <method type="void">
           <sel>set</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setHotSpot:</sel>
+          <arg type="NSPoint">spot</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setImage:</sel>
+          <arg type="NSImage*">newImage</arg>
           <desc>
           </desc>
         </method>

@@ -1,9 +1,8 @@
-/*
-   NSStepper.m
+/** <title>NSStepper</title>
 
    Copyright (C) 2001 Free Software Foundation, Inc.
 
-   Author:  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+   Author: Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
    Date: August 2001
 
    This file is part of the GNUstep GUI Library.

@@ -1,184 +1,165 @@
-<html><head>
- <title>NSMenuItemCell</title>
-</head>
-<body>
-<a href ="NSMenuItem.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSMenuView.html">[Next] </a>
-<h1>NSMenuItemCell</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSMenuItemCell</a></h2>
-<h2><a name ="NSMenuItemCell">NSMenuItemCell</a></h2>
-<p><b>Declared in: </b> Gui/NSMenuItemCell.h</p>
-<p><b>Inherits from: </b> NSButtonCell</p>
-<p><b>Conforms to: </b> NSCoding
-</p>
-<hr>
+<html>
+  <head>
+    <title>NSMenuItemCell</title>
+  </head>
+  <body>
+    <h1>NSMenuItemCell</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Michael Hanni(<a href="mailto:mhanni@sprintmail.com"><code>
+        mhanni@sprintmail.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <p>Copyright: (C) 1999 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the NSMenuItemCell class
+      </h1>
+    <h2><a name="class$NSMenuItemCell">NSMenuItemCell</a> : <a href="NSButtonCell.html#class$NSButtonCell">NSButtonCell</a></h2>
+    Declared: AppKit/NSMenuItemCell.h<br />
+    Conform: NSCopying<br />
+    Conform: NSCoding<br />
+    <p>
 
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSMenuItemCell.html#method-0">-calcSize</a>
-<li ><a href ="NSMenuItemCell.html#method-1">-drawBorderAndBackgroundWithFrame:</a>
-<li ><a href ="NSMenuItemCell.html#method-2">-drawImageWithFrame:</a>
-<li ><a href ="NSMenuItemCell.html#method-3">-drawKeyEquivalentWithFrame:</a>
-<li ><a href ="NSMenuItemCell.html#method-4">-drawSeparatorItemWithFrame:</a>
-<li ><a href ="NSMenuItemCell.html#method-5">-drawStateImageWithFrame:</a>
-<li ><a href ="NSMenuItemCell.html#method-6">-drawTitleWithFrame:</a>
-<li ><a href ="NSMenuItemCell.html#method-7">-imageRectForBounds:</a>
-<li ><a href ="NSMenuItemCell.html#method-8">-imageWidth</a>
-<li ><a href ="NSMenuItemCell.html#method-9">-isHighlighted</a>
-<li ><a href ="NSMenuItemCell.html#method-10">-keyEquivalentRectForBounds:</a>
-<li ><a href ="NSMenuItemCell.html#method-11">-keyEquivalentWidth</a>
-<li ><a href ="NSMenuItemCell.html#method-12">-menuItem</a>
-<li ><a href ="NSMenuItemCell.html#method-13">-menuView</a>
-<li ><a href ="NSMenuItemCell.html#method-14">-needsDisplay</a>
-<li ><a href ="NSMenuItemCell.html#method-15">-needsSizing</a>
-<li ><a href ="NSMenuItemCell.html#method-16">-setHighlighted:</a>
-<li ><a href ="NSMenuItemCell.html#method-17">-setMenuItem:</a>
-<li ><a href ="NSMenuItemCell.html#method-18">-setMenuView:</a>
-<li ><a href ="NSMenuItemCell.html#method-19">-setNeedsDisplay:</a>
-<li ><a href ="NSMenuItemCell.html#method-20">-setNeedsSizing:</a>
-<li ><a href ="NSMenuItemCell.html#method-21">-stateImageRectForBounds:</a>
-<li ><a href ="NSMenuItemCell.html#method-22">-stateImageWidth</a>
-<li ><a href ="NSMenuItemCell.html#method-23">-titleRectForBounds:</a>
-<li ><a href ="NSMenuItemCell.html#method-24">-titleWidth</a>
-</ul>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-0">calcSize</a></h3>
-- (void) <b>calcSize</b>;<br>
+            </p>
+    <h3>calcSize</a></h3>
+    - (void) <b>calcSize</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-1">drawBorderAndBackgroundWithFrame:</a></h3>
-- (void) <b>drawBorderAndBackgroundWithFrame:</b> (NSRect)cellFrame;<br>
+              </p>
+    <hr />
+    <h3>drawBorderAndBackgroundWithFrame:inView:</a></h3>
+    - (void) <b>drawBorderAndBackgroundWithFrame:</b> (NSRect)cellFrame<b> inView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-2">drawImageWithFrame:</a></h3>
-- (void) <b>drawImageWithFrame:</b> (NSRect)cellFrame;<br>
+              </p>
+    <hr />
+    <h3>drawImageWithFrame:inView:</a></h3>
+    - (void) <b>drawImageWithFrame:</b> (NSRect)cellFrame<b> inView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-3">drawKeyEquivalentWithFrame:</a></h3>
-- (void) <b>drawKeyEquivalentWithFrame:</b> (NSRect)cellFrame;<br>
+              </p>
+    <hr />
+    <h3>drawKeyEquivalentWithFrame:inView:</a></h3>
+    - (void) <b>drawKeyEquivalentWithFrame:</b> (NSRect)cellFrame<b> inView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-4">drawSeparatorItemWithFrame:</a></h3>
-- (void) <b>drawSeparatorItemWithFrame:</b> (NSRect)cellFrame;<br>
+              </p>
+    <hr />
+    <h3>drawSeparatorItemWithFrame:inView:</a></h3>
+    - (void) <b>drawSeparatorItemWithFrame:</b> (NSRect)cellFrame<b> inView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-5">drawStateImageWithFrame:</a></h3>
-- (void) <b>drawStateImageWithFrame:</b> (NSRect)cellFrame;<br>
+              </p>
+    <hr />
+    <h3>drawStateImageWithFrame:inView:</a></h3>
+    - (void) <b>drawStateImageWithFrame:</b> (NSRect)cellFrame<b> inView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-6">drawTitleWithFrame:</a></h3>
-- (void) <b>drawTitleWithFrame:</b> (NSRect)cellFrame;<br>
+              </p>
+    <hr />
+    <h3>drawTitleWithFrame:inView:</a></h3>
+    - (void) <b>drawTitleWithFrame:</b> (NSRect)cellFrame<b> inView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)controlView;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-7">imageRectForBounds:</a></h3>
-- (NSRect) <b>imageRectForBounds:</b> (NSRect)cellFrame;<br>
+              </p>
+    <hr />
+    <h3>imageRectForBounds:</a></h3>
+    - (NSRect) <b>imageRectForBounds:</b> (NSRect)cellFrame;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-8">imageWidth</a></h3>
-- (float) <b>imageWidth</b>;<br>
+              </p>
+    <hr />
+    <h3>imageWidth</a></h3>
+    - (float) <b>imageWidth</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-9">isHighlighted</a></h3>
-- (BOOL) <b>isHighlighted</b>;<br>
+              </p>
+    <hr />
+    <h3>isHighlighted</a></h3>
+    - (BOOL) <b>isHighlighted</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-10">keyEquivalentRectForBounds:</a></h3>
-- (NSRect) <b>keyEquivalentRectForBounds:</b> (NSRect)cellFrame;<br>
+              </p>
+    <hr />
+    <h3>keyEquivalentRectForBounds:</a></h3>
+    - (NSRect) <b>keyEquivalentRectForBounds:</b> (NSRect)cellFrame;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-11">keyEquivalentWidth</a></h3>
-- (float) <b>keyEquivalentWidth</b>;<br>
+              </p>
+    <hr />
+    <h3>keyEquivalentWidth</a></h3>
+    - (float) <b>keyEquivalentWidth</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-12">menuItem</a></h3>
-- (NSMenuItem*) <b>menuItem</b>;<br>
+              </p>
+    <hr />
+    <h3>menuItem</a></h3>
+    - (NSMenuItem*) <b>menuItem</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-13">menuView</a></h3>
-- (NSMenuView*) <b>menuView</b>;<br>
+              </p>
+    <hr />
+    <h3>menuView</a></h3>
+    - (<a href="NSMenuView.html#class$NSMenuView">NSMenuView</a>*) <b>menuView</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-14">needsDisplay</a></h3>
-- (BOOL) <b>needsDisplay</b>;<br>
+              </p>
+    <hr />
+    <h3>needsSizing</a></h3>
+    - (BOOL) <b>needsSizing</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-15">needsSizing</a></h3>
-- (BOOL) <b>needsSizing</b>;<br>
+              </p>
+    <hr />
+    <h3>setHighlighted:</a></h3>
+    - (void) <b>setHighlighted:</b> (BOOL)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-16">setHighlighted:</a></h3>
-- (void) <b>setHighlighted:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>setMenuItem:</a></h3>
+    - (void) <b>setMenuItem:</b> (NSMenuItem*)item;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-17">setMenuItem:</a></h3>
-- (void) <b>setMenuItem:</b> (NSMenuItem*)item;<br>
+              </p>
+    <hr />
+    <h3>setMenuView:</a></h3>
+    - (void) <b>setMenuView:</b> (<a href="NSMenuView.html#class$NSMenuView">NSMenuView</a>*)menuView;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-18">setMenuView:</a></h3>
-- (void) <b>setMenuView:</b> (NSMenuView*)menuView;<br>
+              </p>
+    <hr />
+    <h3>setNeedsSizing:</a></h3>
+    - (void) <b>setNeedsSizing:</b> (BOOL)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-19">setNeedsDisplay:</a></h3>
-- (void) <b>setNeedsDisplay:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>stateImageRectForBounds:</a></h3>
+    - (NSRect) <b>stateImageRectForBounds:</b> (NSRect)cellFrame;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-20">setNeedsSizing:</a></h3>
-- (void) <b>setNeedsSizing:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>stateImageWidth</a></h3>
+    - (float) <b>stateImageWidth</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-21">stateImageRectForBounds:</a></h3>
-- (NSRect) <b>stateImageRectForBounds:</b> (NSRect)cellFrame;<br>
+              </p>
+    <hr />
+    <h3>titleRectForBounds:</a></h3>
+    - (NSRect) <b>titleRectForBounds:</b> (NSRect)cellFrame;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-22">stateImageWidth</a></h3>
-- (float) <b>stateImageWidth</b>;<br>
+              </p>
+    <hr />
+    <h3>titleWidth</a></h3>
+    - (float) <b>titleWidth</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-23">titleRectForBounds:</a></h3>
-- (NSRect) <b>titleRectForBounds:</b> (NSRect)cellFrame;<br>
-
-          
- <hr>
-<h3><a name ="method-24">titleWidth</a></h3>
-- (float) <b>titleWidth</b>;<br>
-
-          
- <hr>
-</body>
-
- </html>
+              </p>
+    <hr />
+  </body>
+</html>

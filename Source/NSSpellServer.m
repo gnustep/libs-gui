@@ -1,14 +1,12 @@
-/* 
-   NSSpellServer.m
+/** <title>NSSpellServer</title>
 
-   Class to allow a spell checker to be available to other apps.
+   <abstract>Class to allow a spell checker to be available to other apps.</abstract>
 
    Copyright (C) 2001, 1996 Free Software Foundation, Inc.
 
-   Author by: Gregory Casamento <greg_casamento@yahoo.com>
+   Author by: Gregory John Casamento <borgheron@yahoo.com>
    Date: 2001
-
-   Author:  Scott Christley <scottc@net-community.com>
+   Author: Scott Christley <scottc@net-community.com> 
    Date: 1996
 
    This file is part of the GNUstep GUI Library.

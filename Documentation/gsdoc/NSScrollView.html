@@ -1,347 +1,347 @@
-<html><head>
- <title>NSScrollView</title>
-</head>
-<body>
-<a href ="NSScreen.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSScroller.html">[Next] </a>
-<h1>NSScrollView</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSScrollView</a></h2>
-<h2><a name ="NSScrollView">NSScrollView</a></h2>
-<p><b>Declared in: </b> Gui/NSScrollView.h</p>
-<p><b>Inherits from: </b> NSView</p>
-<p><b>Conforms to: </b> NSCoding
-</p>
-<hr>
+<html>
+  <head>
+    <title>NSScrollView</title>
+  </head>
+  <body>
+    <h1>NSScrollView</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Ovidiu Predescu(<a href="mailto:ovidiu@net-community.com"><code>
+        ovidiu@net-community.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Felipe A. Rodriguez(<a href="mailto:far@ix.netcom.com"><code>
+        far@ix.netcom.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Richard Frith-Macdonald(<a href="mailto:richard@brainstorm.co.uk"><code>
+        richard@brainstorm.co.uk
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <p>Copyright: (C) 1996 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the NSScrollView class
+      </h1>
+    <h2><a name="class$NSScrollView">NSScrollView</a> : <a href="NSView.html#class$NSView">NSView</a></h2>
+    Declared: AppKit/NSScrollView.h<br />
+    <p>
 
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSScrollView.html#method-0">+contentSizeForFrameSize:hasHorizontalScroller:hasVerticalScroller:borderType:</a>
-<li ><a href ="NSScrollView.html#method-1">+frameSizeForContentSize:hasHorizontalScroller:hasVerticalScroller:borderType:</a>
-<li ><a href ="NSScrollView.html#method-2">+rulerViewClass</a>
-<li ><a href ="NSScrollView.html#method-3">+setRulerViewClass:</a>
-<li ><a href ="NSScrollView.html#method-4">-backgroundColor</a>
-<li ><a href ="NSScrollView.html#method-5">-borderType</a>
-<li ><a href ="NSScrollView.html#method-6">-contentSize</a>
-<li ><a href ="NSScrollView.html#method-7">-contentView</a>
-<li ><a href ="NSScrollView.html#method-8">-documentCursor</a>
-<li ><a href ="NSScrollView.html#method-9">-documentView</a>
-<li ><a href ="NSScrollView.html#method-10">-documentVisibleRect</a>
-<li ><a href ="NSScrollView.html#method-11">-hasHorizontalRuler</a>
-<li ><a href ="NSScrollView.html#method-12">-hasHorizontalScroller</a>
-<li ><a href ="NSScrollView.html#method-13">-hasVerticalRuler</a>
-<li ><a href ="NSScrollView.html#method-14">-hasVerticalScroller</a>
-<li ><a href ="NSScrollView.html#method-15">-horizontalLineScroll</a>
-<li ><a href ="NSScrollView.html#method-16">-horizontalPageScroll</a>
-<li ><a href ="NSScrollView.html#method-17">-horizontalRulerView</a>
-<li ><a href ="NSScrollView.html#method-18">-horizontalScroller</a>
-<li ><a href ="NSScrollView.html#method-19">-isRulerVisible</a>
-<li ><a href ="NSScrollView.html#method-20">-lineScroll</a>
-<li ><a href ="NSScrollView.html#method-21">-pageScroll</a>
-<li ><a href ="NSScrollView.html#method-22">-reflectScrolledClipView:</a>
-<li ><a href ="NSScrollView.html#method-23">-rulersVisible</a>
-<li ><a href ="NSScrollView.html#method-24">-scrollsDynamically</a>
-<li ><a href ="NSScrollView.html#method-25">-setBackgroundColor:</a>
-<li ><a href ="NSScrollView.html#method-26">-setBorderType:</a>
-<li ><a href ="NSScrollView.html#method-27">-setContentView:</a>
-<li ><a href ="NSScrollView.html#method-28">-setDocumentCursor:</a>
-<li ><a href ="NSScrollView.html#method-29">-setDocumentView:</a>
-<li ><a href ="NSScrollView.html#method-30">-setHasHorizontalRuler:</a>
-<li ><a href ="NSScrollView.html#method-31">-setHasHorizontalScroller:</a>
-<li ><a href ="NSScrollView.html#method-32">-setHasVerticalRuler:</a>
-<li ><a href ="NSScrollView.html#method-33">-setHasVerticalScroller:</a>
-<li ><a href ="NSScrollView.html#method-34">-setHorizontalLineScroll:</a>
-<li ><a href ="NSScrollView.html#method-35">-setHorizontalPageScroll:</a>
-<li ><a href ="NSScrollView.html#method-36">-setHorizontalRulerView:</a>
-<li ><a href ="NSScrollView.html#method-37">-setHorizontalScroller:</a>
-<li ><a href ="NSScrollView.html#method-38">-setLineScroll:</a>
-<li ><a href ="NSScrollView.html#method-39">-setPageScroll:</a>
-<li ><a href ="NSScrollView.html#method-40">-setRulersVisible:</a>
-<li ><a href ="NSScrollView.html#method-41">-setScrollsDynamically:</a>
-<li ><a href ="NSScrollView.html#method-42">-setVerticalLineScroll:</a>
-<li ><a href ="NSScrollView.html#method-43">-setVerticalPageScroll:</a>
-<li ><a href ="NSScrollView.html#method-44">-setVerticalRulerView:</a>
-<li ><a href ="NSScrollView.html#method-45">-setVerticalScroller:</a>
-<li ><a href ="NSScrollView.html#method-46">-tile</a>
-<li ><a href ="NSScrollView.html#method-47">-toggleRuler:</a>
-<li ><a href ="NSScrollView.html#method-48">-verticalLineScroll</a>
-<li ><a href ="NSScrollView.html#method-49">-verticalPageScroll</a>
-<li ><a href ="NSScrollView.html#method-50">-verticalRulerView</a>
-<li ><a href ="NSScrollView.html#method-51">-verticalScroller</a>
-</ul>
-<hr><h2>Class Methods </h2>
-<h3><a name ="method-0">contentSizeForFrameSize:hasHorizontalScroller:hasVerticalScroller:borderType:</a></h3>
-+ (NSSize) <b>contentSizeForFrameSize:</b> (NSSize)frameSize <b>hasHorizontalScroller:</b> (BOOL)hFlag <b>hasVerticalScroller:</b> (BOOL)vFlag <b>borderType:</b> (NSBorderType)borderType;<br>
+            </p>
+    <h3>contentSizeForFrameSize:hasHorizontalScroller:hasVerticalScroller:borderType:</a></h3>
+    + (NSSize) <b>contentSizeForFrameSize:</b> (NSSize)frameSize<b> hasHorizontalScroller:</b> (BOOL)hFlag<b> hasVerticalScroller:</b> (BOOL)vFlag<b> borderType:</b> (NSBorderType)borderType;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-1">frameSizeForContentSize:hasHorizontalScroller:hasVerticalScroller:borderType:</a></h3>
-+ (NSSize) <b>frameSizeForContentSize:</b> (NSSize)contentSize <b>hasHorizontalScroller:</b> (BOOL)hFlag <b>hasVerticalScroller:</b> (BOOL)vFlag <b>borderType:</b> (NSBorderType)borderType;<br>
+              </p>
+    <hr />
+    <h3>frameSizeForContentSize:hasHorizontalScroller:hasVerticalScroller:borderType:</a></h3>
+    + (NSSize) <b>frameSizeForContentSize:</b> (NSSize)contentSize<b> hasHorizontalScroller:</b> (BOOL)hFlag<b> hasVerticalScroller:</b> (BOOL)vFlag<b> borderType:</b> (NSBorderType)borderType;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-2">rulerViewClass</a></h3>
-+ (Class) <b>rulerViewClass</b>;<br>
+              </p>
+    <hr />
+    <h3>rulerViewClass</a></h3>
+    + (Class) <b>rulerViewClass</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-3">setRulerViewClass:</a></h3>
-+ (void) <b>setRulerViewClass:</b> (Class)aClass;<br>
+              </p>
+    <hr />
+    <h3>setRulerViewClass:</a></h3>
+    + (void) <b>setRulerViewClass:</b> (Class)aClass;<br />
+    <p>
 
-          
- <hr>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-4">backgroundColor</a></h3>
-- (NSColor*) <b>backgroundColor</b>;<br>
+              </p>
+    <hr />
+    <h3>backgroundColor</a></h3>
+    - (<a href="NSColor.html#class$NSColor">NSColor</a>*) <b>backgroundColor</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-5">borderType</a></h3>
-- (NSBorderType) <b>borderType</b>;<br>
+              </p>
+    <hr />
+    <h3>borderType</a></h3>
+    - (NSBorderType) <b>borderType</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-6">contentSize</a></h3>
-- (NSSize) <b>contentSize</b>;<br>
+              </p>
+    <hr />
+    <h3>contentSize</a></h3>
+    - (NSSize) <b>contentSize</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-7">contentView</a></h3>
-- (NSClipView*) <b>contentView</b>;<br>
+              </p>
+    <hr />
+    <h3>contentView</a></h3>
+    - (<a href="NSClipView.html#class$NSClipView">NSClipView</a>*) <b>contentView</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-8">documentCursor</a></h3>
-- (NSCursor*) <b>documentCursor</b>;<br>
+              </p>
+    <hr />
+    <h3>documentCursor</a></h3>
+    - (<a href="NSCursor.html#class$NSCursor">NSCursor</a>*) <b>documentCursor</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-9">documentView</a></h3>
-- (id) <b>documentView</b>;<br>
+              </p>
+    <hr />
+    <h3>documentView</a></h3>
+    - (id) <b>documentView</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-10">documentVisibleRect</a></h3>
-- (NSRect) <b>documentVisibleRect</b>;<br>
+              </p>
+    <hr />
+    <h3>documentVisibleRect</a></h3>
+    - (NSRect) <b>documentVisibleRect</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-11">hasHorizontalRuler</a></h3>
-- (BOOL) <b>hasHorizontalRuler</b>;<br>
+              </p>
+    <hr />
+    <h3>drawsBackground</a></h3>
+    - (BOOL) <b>drawsBackground</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-12">hasHorizontalScroller</a></h3>
-- (BOOL) <b>hasHorizontalScroller</b>;<br>
+              </p>
+    <hr />
+    <h3>hasHorizontalRuler</a></h3>
+    - (BOOL) <b>hasHorizontalRuler</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-13">hasVerticalRuler</a></h3>
-- (BOOL) <b>hasVerticalRuler</b>;<br>
+              </p>
+    <hr />
+    <h3>hasHorizontalScroller</a></h3>
+    - (BOOL) <b>hasHorizontalScroller</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-14">hasVerticalScroller</a></h3>
-- (BOOL) <b>hasVerticalScroller</b>;<br>
+              </p>
+    <hr />
+    <h3>hasVerticalRuler</a></h3>
+    - (BOOL) <b>hasVerticalRuler</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-15">horizontalLineScroll</a></h3>
-- (float) <b>horizontalLineScroll</b>;<br>
+              </p>
+    <hr />
+    <h3>hasVerticalScroller</a></h3>
+    - (BOOL) <b>hasVerticalScroller</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-16">horizontalPageScroll</a></h3>
-- (float) <b>horizontalPageScroll</b>;<br>
+              </p>
+    <hr />
+    <h3>horizontalLineScroll</a></h3>
+    - (float) <b>horizontalLineScroll</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-17">horizontalRulerView</a></h3>
-- (NSRulerView*) <b>horizontalRulerView</b>;<br>
+              </p>
+    <hr />
+    <h3>horizontalPageScroll</a></h3>
+    - (float) <b>horizontalPageScroll</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-18">horizontalScroller</a></h3>
-- (NSScroller*) <b>horizontalScroller</b>;<br>
+              </p>
+    <hr />
+    <h3>horizontalRulerView</a></h3>
+    - (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*) <b>horizontalRulerView</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-19">isRulerVisible</a></h3>
-- (BOOL) <b>isRulerVisible</b>;<br>
+              </p>
+    <hr />
+    <h3>horizontalScroller</a></h3>
+    - (<a href="NSScroller.html#class$NSScroller">NSScroller</a>*) <b>horizontalScroller</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-20">lineScroll</a></h3>
-- (float) <b>lineScroll</b>;<br>
+              </p>
+    <hr />
+    <h3>lineScroll</a></h3>
+    - (float) <b>lineScroll</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-21">pageScroll</a></h3>
-- (float) <b>pageScroll</b>;<br>
+              </p>
+    <hr />
+    <h3>pageScroll</a></h3>
+    - (float) <b>pageScroll</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-22">reflectScrolledClipView:</a></h3>
-- (void) <b>reflectScrolledClipView:</b> (NSClipView*)aClipView;<br>
+              </p>
+    <hr />
+    <h3>reflectScrolledClipView:</a></h3>
+    - (void) <b>reflectScrolledClipView:</b> (<a href="NSClipView.html#class$NSClipView">NSClipView</a>*)aClipView;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-23">rulersVisible</a></h3>
-- (BOOL) <b>rulersVisible</b>;<br>
+              </p>
+    <hr />
+    <h3>rulersVisible</a></h3>
+    - (BOOL) <b>rulersVisible</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-24">scrollsDynamically</a></h3>
-- (BOOL) <b>scrollsDynamically</b>;<br>
+              </p>
+    <hr />
+    <h3>scrollsDynamically</a></h3>
+    - (BOOL) <b>scrollsDynamically</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-25">setBackgroundColor:</a></h3>
-- (void) <b>setBackgroundColor:</b> (NSColor*)aColor;<br>
+              </p>
+    <hr />
+    <h3>setBackgroundColor:</a></h3>
+    - (void) <b>setBackgroundColor:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)aColor;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-26">setBorderType:</a></h3>
-- (void) <b>setBorderType:</b> (NSBorderType)borderType;<br>
+              </p>
+    <hr />
+    <h3>setBorderType:</a></h3>
+    - (void) <b>setBorderType:</b> (NSBorderType)borderType;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-27">setContentView:</a></h3>
-- (void) <b>setContentView:</b> (NSClipView*)aView;<br>
+              </p>
+    <hr />
+    <h3>setContentView:</a></h3>
+    - (void) <b>setContentView:</b> (<a href="NSClipView.html#class$NSClipView">NSClipView</a>*)aView;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-28">setDocumentCursor:</a></h3>
-- (void) <b>setDocumentCursor:</b> (NSCursor*)aCursor;<br>
+              </p>
+    <hr />
+    <h3>setDocumentCursor:</a></h3>
+    - (void) <b>setDocumentCursor:</b> (<a href="NSCursor.html#class$NSCursor">NSCursor</a>*)aCursor;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-29">setDocumentView:</a></h3>
-- (void) <b>setDocumentView:</b> (NSView*)aView;<br>
+              </p>
+    <hr />
+    <h3>setDocumentView:</a></h3>
+    - (void) <b>setDocumentView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-30">setHasHorizontalRuler:</a></h3>
-- (void) <b>setHasHorizontalRuler:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>setDrawsBackground:</a></h3>
+    - (void) <b>setDrawsBackground:</b> (BOOL)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-31">setHasHorizontalScroller:</a></h3>
-- (void) <b>setHasHorizontalScroller:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>setHasHorizontalRuler:</a></h3>
+    - (void) <b>setHasHorizontalRuler:</b> (BOOL)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-32">setHasVerticalRuler:</a></h3>
-- (void) <b>setHasVerticalRuler:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>setHasHorizontalScroller:</a></h3>
+    - (void) <b>setHasHorizontalScroller:</b> (BOOL)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-33">setHasVerticalScroller:</a></h3>
-- (void) <b>setHasVerticalScroller:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>setHasVerticalRuler:</a></h3>
+    - (void) <b>setHasVerticalRuler:</b> (BOOL)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-34">setHorizontalLineScroll:</a></h3>
-- (void) <b>setHorizontalLineScroll:</b> (float)aFloat;<br>
+              </p>
+    <hr />
+    <h3>setHasVerticalScroller:</a></h3>
+    - (void) <b>setHasVerticalScroller:</b> (BOOL)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-35">setHorizontalPageScroll:</a></h3>
-- (void) <b>setHorizontalPageScroll:</b> (float)aFloat;<br>
+              </p>
+    <hr />
+    <h3>setHorizontalLineScroll:</a></h3>
+    - (void) <b>setHorizontalLineScroll:</b> (float)aFloat;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-36">setHorizontalRulerView:</a></h3>
-- (void) <b>setHorizontalRulerView:</b> (NSRulerView*)aRulerView;<br>
+              </p>
+    <hr />
+    <h3>setHorizontalPageScroll:</a></h3>
+    - (void) <b>setHorizontalPageScroll:</b> (float)aFloat;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-37">setHorizontalScroller:</a></h3>
-- (void) <b>setHorizontalScroller:</b> (NSScroller*)aScroller;<br>
+              </p>
+    <hr />
+    <h3>setHorizontalRulerView:</a></h3>
+    - (void) <b>setHorizontalRulerView:</b> (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-38">setLineScroll:</a></h3>
-- (void) <b>setLineScroll:</b> (float)aFloat;<br>
+              </p>
+    <hr />
+    <h3>setHorizontalScroller:</a></h3>
+    - (void) <b>setHorizontalScroller:</b> (<a href="NSScroller.html#class$NSScroller">NSScroller</a>*)aScroller;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-39">setPageScroll:</a></h3>
-- (void) <b>setPageScroll:</b> (float)aFloat;<br>
+              </p>
+    <hr />
+    <h3>setLineScroll:</a></h3>
+    - (void) <b>setLineScroll:</b> (float)aFloat;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-40">setRulersVisible:</a></h3>
-- (void) <b>setRulersVisible:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>setPageScroll:</a></h3>
+    - (void) <b>setPageScroll:</b> (float)aFloat;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-41">setScrollsDynamically:</a></h3>
-- (void) <b>setScrollsDynamically:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>setRulersVisible:</a></h3>
+    - (void) <b>setRulersVisible:</b> (BOOL)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-42">setVerticalLineScroll:</a></h3>
-- (void) <b>setVerticalLineScroll:</b> (float)aFloat;<br>
+              </p>
+    <hr />
+    <h3>setScrollsDynamically:</a></h3>
+    - (void) <b>setScrollsDynamically:</b> (BOOL)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-43">setVerticalPageScroll:</a></h3>
-- (void) <b>setVerticalPageScroll:</b> (float)aFloat;<br>
+              </p>
+    <hr />
+    <h3>setVerticalLineScroll:</a></h3>
+    - (void) <b>setVerticalLineScroll:</b> (float)aFloat;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-44">setVerticalRulerView:</a></h3>
-- (void) <b>setVerticalRulerView:</b> (NSRulerView*)aRulerView;<br>
+              </p>
+    <hr />
+    <h3>setVerticalPageScroll:</a></h3>
+    - (void) <b>setVerticalPageScroll:</b> (float)aFloat;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-45">setVerticalScroller:</a></h3>
-- (void) <b>setVerticalScroller:</b> (NSScroller*)aScroller;<br>
+              </p>
+    <hr />
+    <h3>setVerticalRulerView:</a></h3>
+    - (void) <b>setVerticalRulerView:</b> (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)ruler;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-46">tile</a></h3>
-- (void) <b>tile</b>;<br>
+              </p>
+    <hr />
+    <h3>setVerticalScroller:</a></h3>
+    - (void) <b>setVerticalScroller:</b> (<a href="NSScroller.html#class$NSScroller">NSScroller</a>*)aScroller;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-47">toggleRuler:</a></h3>
-- (void) <b>toggleRuler:</b> (id)sender;<br>
+              </p>
+    <hr />
+    <h3>tile</a></h3>
+    - (void) <b>tile</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-48">verticalLineScroll</a></h3>
-- (float) <b>verticalLineScroll</b>;<br>
+              </p>
+    <hr />
+    <h3>verticalLineScroll</a></h3>
+    - (float) <b>verticalLineScroll</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-49">verticalPageScroll</a></h3>
-- (float) <b>verticalPageScroll</b>;<br>
+              </p>
+    <hr />
+    <h3>verticalPageScroll</a></h3>
+    - (float) <b>verticalPageScroll</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-50">verticalRulerView</a></h3>
-- (NSRulerView*) <b>verticalRulerView</b>;<br>
+              </p>
+    <hr />
+    <h3>verticalRulerView</a></h3>
+    - (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*) <b>verticalRulerView</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-51">verticalScroller</a></h3>
-- (NSScroller*) <b>verticalScroller</b>;<br>
+              </p>
+    <hr />
+    <h3>verticalScroller</a></h3>
+    - (<a href="NSScroller.html#class$NSScroller">NSScroller</a>*) <b>verticalScroller</b>;<br />
+    <p>
 
-          
- <hr>
-</body>
-
- </html>
+              </p>
+    <hr />
+  </body>
+</html>

@@ -1,13 +1,12 @@
-/* 
-   NSMenuView.m
+/** <title>NSMenuView</title>
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 
    Author: Fred Kiefer <FredKiefer@gmx.de>
    Date: Sep 2001
-   Author:  David Lazaro Saz <khelekir@encomix.es>
+   Author: David Lazaro Saz <khelekir@encomix.es>
    Date: Oct 1999
-   Author:  Michael Hanni <mhanni@sprintmail.com>
+   Author: Michael Hanni <mhanni@sprintmail.com>
    Date: 1999
    
    This file is part of the GNUstep GUI Library.

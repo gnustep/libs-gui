@@ -1,16 +1,15 @@
-/*
-   NSEvent.m
+/** <title>NSEvent</title>
 
-   The event class
+   <abstract>The event class</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author: 	Scott Christley <scottc@net-community.com>
-   Author: 	Ovidiu Predescu <ovidiu@net-community.com>
+   Author: Scott Christley <scottc@net-community.com>
+   Author: Ovidiu Predescu <ovidiu@net-community.com>
    Date: 1996
-   Author: 	Felipe A. Rodriguez <far@ix.netcom.com>
+   Author: Felipe A. Rodriguez <far@ix.netcom.com>
    Date: Sept 1998
-   Updated: 	Richard Frith-Macdonald <richard@brainstorm.co.uk>
+   Updated: Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: June 1999
 
    This file is part of the GNUstep GUI Library.

@@ -1,185 +1,250 @@
-<html><head>
- <title>NSDocumentController</title>
-</head>
-<body>
-<a href ="NSDocument.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSEPSImageRep.html">[Next] </a>
-<h1>NSDocumentController</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSDocumentController</a></h2>
-<h2><a name ="NSDocumentController">NSDocumentController</a></h2>
-<p><b>Declared in: </b> Gui/NSDocumentController.h</p>
-<p><b>Inherits from: </b> NSObject</p>
-<p><b>Conforms to: </b> NSObject
-</p>
-<hr>
+<html>
+  <head>
+    <title>NSDocumentController</title>
+  </head>
+  <body>
+    <h1>NSDocumentController</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Carl Lindberg(<a href="mailto:Carl.Lindberg@hbo.com"><code>
+        Carl.Lindberg@hbo.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <blockquote>
+The document controller class    </blockquote>
+    <p>Copyright: (C) 1999 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the NSDocumentController
+        class
+      </h1>
+    <h2><a name="class$NSDocumentController">NSDocumentController</a> : NSObject</h2>
+    Declared: AppKit/NSDocumentController.h<br />
+    <p>
 
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSDocumentController.html#method-0">+sharedDocumentController</a>
-<li ><a href ="NSDocumentController.html#method-1">-closeAllDocuments</a>
-<li ><a href ="NSDocumentController.html#method-2">-currentDirectory</a>
-<li ><a href ="NSDocumentController.html#method-3">-currentDocument</a>
-<li ><a href ="NSDocumentController.html#method-4">-displayNameForType:</a>
-<li ><a href ="NSDocumentController.html#method-5">-documentClassForType:</a>
-<li ><a href ="NSDocumentController.html#method-6">-documentForFileName:</a>
-<li ><a href ="NSDocumentController.html#method-7">-documentForWindow:</a>
-<li ><a href ="NSDocumentController.html#method-8">-documents</a>
-<li ><a href ="NSDocumentController.html#method-9">-fileExtensionsFromType:</a>
-<li ><a href ="NSDocumentController.html#method-10">-fileNamesFromRunningOpenPanel</a>
-<li ><a href ="NSDocumentController.html#method-11">-hasEditedDocuments</a>
-<li ><a href ="NSDocumentController.html#method-12">-makeDocumentWithContentsOfFile:</a>
-<li ><a href ="NSDocumentController.html#method-13">-makeUntitledDocumentOfType:</a>
-<li ><a href ="NSDocumentController.html#method-14">-newDocument:</a>
-<li ><a href ="NSDocumentController.html#method-15">-openDocument:</a>
-<li ><a href ="NSDocumentController.html#method-16">-openDocumentWithContentsOfFile:</a>
-<li ><a href ="NSDocumentController.html#method-17">-openUntitledDocumentOfType:</a>
-<li ><a href ="NSDocumentController.html#method-18">-reviewUnsavedDocumentsWithAlertTitle:cancellable:</a>
-<li ><a href ="NSDocumentController.html#method-19">-runModalOpenPanel:</a>
-<li ><a href ="NSDocumentController.html#method-20">-saveAllDocuments:</a>
-<li ><a href ="NSDocumentController.html#method-21">-setShouldCreateUI:</a>
-<li ><a href ="NSDocumentController.html#method-22">-shouldCreateUI</a>
-<li ><a href ="NSDocumentController.html#method-23">-typeFromFileExtension:</a>
-<li ><a href ="NSDocumentController.html#method-24">-validateMenuItem:</a>
-</ul>
-<hr><h2>Class Methods </h2>
-<h3><a name ="method-0">sharedDocumentController</a></h3>
-+ (id) <b>sharedDocumentController</b>;<br>
+            </p>
+    <h3>sharedDocumentController</a></h3>
+    + (id) <b>sharedDocumentController</b>;<br />
+    <p>
 
-          
- <hr>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-1">closeAllDocuments</a></h3>
-- (BOOL) <b>closeAllDocuments</b>;<br>
+              </p>
+    <hr />
+    <h3>URLsFromRunningOpenPanel</a></h3>
+    - (NSArray*) <b>URLsFromRunningOpenPanel</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-2">currentDirectory</a></h3>
-- (NSString*) <b>currentDirectory</b>;<br>
+              </p>
+    <hr />
+    <h3>addDocument:</a></h3>
+    - (void) <b>addDocument:</b> (<a href="NSDocument.html#class$NSDocument">NSDocument</a>*)document;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-3">currentDocument</a></h3>
-- (id) <b>currentDocument</b>;<br>
+              </p>
+    <hr />
+    <h3>clearRecentDocuments:</a></h3>
+    - (IBAction) <b>clearRecentDocuments:</b> (id)sender;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-4">displayNameForType:</a></h3>
-- (NSString*) <b>displayNameForType:</b> (NSString*)docType;<br>
+              </p>
+    <hr />
+    <h3>closeAllDocuments</a></h3>
+    - (BOOL) <b>closeAllDocuments</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-5">documentClassForType:</a></h3>
-- (Class) <b>documentClassForType:</b> (NSString*)docType;<br>
+              </p>
+    <hr />
+    <h3>closeAllDocumentsWithDelegate:didCloseAllSelector:contextInfo:</a></h3>
+    - (void) <b>closeAllDocumentsWithDelegate:</b> (id)delegate<b> didCloseAllSelector:</b> (SEL)didAllCloseSelector<b> contextInfo:</b> (void*)contextInfo;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-6">documentForFileName:</a></h3>
-- (id) <b>documentForFileName:</b> (NSString*)fileName;<br>
+              </p>
+    <hr />
+    <h3>currentDirectory</a></h3>
+    - (NSString*) <b>currentDirectory</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-7">documentForWindow:</a></h3>
-- (id) <b>documentForWindow:</b> (NSWindow*)window;<br>
+              </p>
+    <hr />
+    <h3>currentDocument</a></h3>
+    - (id) <b>currentDocument</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-8">documents</a></h3>
-- (NSArray*) <b>documents</b>;<br>
+              </p>
+    <hr />
+    <h3>displayNameForType:</a></h3>
+    - (NSString*) <b>displayNameForType:</b> (NSString*)type;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-9">fileExtensionsFromType:</a></h3>
-- (NSArray*) <b>fileExtensionsFromType:</b> (NSString*)docType;<br>
+              </p>
+    <hr />
+    <h3>documentClassForType:</a></h3>
+    - (Class) <b>documentClassForType:</b> (NSString*)type;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-10">fileNamesFromRunningOpenPanel</a></h3>
-- (NSArray*) <b>fileNamesFromRunningOpenPanel</b>;<br>
+              </p>
+    <hr />
+    <h3>documentForFileName:</a></h3>
+    - (id) <b>documentForFileName:</b> (NSString*)fileName;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-11">hasEditedDocuments</a></h3>
-- (BOOL) <b>hasEditedDocuments</b>;<br>
+              </p>
+    <hr />
+    <h3>documentForWindow:</a></h3>
+    - (id) <b>documentForWindow:</b> (<a href="NSWindow.html#class$NSWindow">NSWindow</a>*)window;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-12">makeDocumentWithContentsOfFile:</a></h3>
-- (id) <b>makeDocumentWithContentsOfFile:</b> (NSString*)fileName;<br>
+              </p>
+    <hr />
+    <h3>documents</a></h3>
+    - (NSArray*) <b>documents</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-13">makeUntitledDocumentOfType:</a></h3>
-- (id) <b>makeUntitledDocumentOfType:</b> (NSString*)type;<br>
+              </p>
+    <hr />
+    <h3>fileExtensionsFromType:</a></h3>
+    - (NSArray*) <b>fileExtensionsFromType:</b> (NSString*)type;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-14">newDocument:</a></h3>
-- (void) <b>newDocument:</b> (id)sender;<br>
+              </p>
+    <hr />
+    <h3>fileNamesFromRunningOpenPanel</a></h3>
+    - (NSArray*) <b>fileNamesFromRunningOpenPanel</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-15">openDocument:</a></h3>
-- (void) <b>openDocument:</b> (id)sender;<br>
+              </p>
+    <hr />
+    <h3>hasEditedDocuments</a></h3>
+    - (BOOL) <b>hasEditedDocuments</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-16">openDocumentWithContentsOfFile:</a></h3>
-- (id) <b>openDocumentWithContentsOfFile:</b> (NSString*)fileName;<br>
+              </p>
+    <hr />
+    <h3>makeDocumentWithContentsOfFile:ofType:</a></h3>
+    - (id) <b>makeDocumentWithContentsOfFile:</b> (NSString*)fileName<b> ofType:</b> (NSString*)type;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-17">openUntitledDocumentOfType:</a></h3>
-- (id) <b>openUntitledDocumentOfType:</b> (NSString*)docType;<br>
+              </p>
+    <hr />
+    <h3>makeDocumentWithContentsOfURL:ofType:</a></h3>
+    - (id) <b>makeDocumentWithContentsOfURL:</b> (NSURL*)url<b> ofType:</b> (NSString*)type;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-18">reviewUnsavedDocumentsWithAlertTitle:cancellable:</a></h3>
-- (BOOL) <b>reviewUnsavedDocumentsWithAlertTitle:</b> (NSString*)title <b>cancellable:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>makeUntitledDocumentOfType:</a></h3>
+    - (id) <b>makeUntitledDocumentOfType:</b> (NSString*)type;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-19">runModalOpenPanel:</a></h3>
-- (int) <b>runModalOpenPanel:</b> (NSOpenPanel*)openPanel;<br>
+              </p>
+    <hr />
+    <h3>newDocument:</a></h3>
+    - (IBAction) <b>newDocument:</b> (id)sender;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-20">saveAllDocuments:</a></h3>
-- (void) <b>saveAllDocuments:</b> (id)sender;<br>
+              </p>
+    <hr />
+    <h3>noteNewRecentDocument:</a></h3>
+    - (void) <b>noteNewRecentDocument:</b> (<a href="NSDocument.html#class$NSDocument">NSDocument</a>*)aDocument;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-21">setShouldCreateUI:</a></h3>
-- (void) <b>setShouldCreateUI:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>noteNewRecentDocumentURL:</a></h3>
+    - (void) <b>noteNewRecentDocumentURL:</b> (NSURL*)anURL;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-22">shouldCreateUI</a></h3>
-- (BOOL) <b>shouldCreateUI</b>;<br>
+              </p>
+    <hr />
+    <h3>openDocument:</a></h3>
+    - (IBAction) <b>openDocument:</b> (id)sender;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-23">typeFromFileExtension:</a></h3>
-- (NSString*) <b>typeFromFileExtension:</b> (NSString*)fileExtension;<br>
+              </p>
+    <hr />
+    <h3>openDocumentWithContentsOfFile:display:</a></h3>
+    - (id) <b>openDocumentWithContentsOfFile:</b> (NSString*)fileName<b> display:</b> (BOOL)display;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-24">validateMenuItem:</a></h3>
-- (BOOL) <b>validateMenuItem:</b> (NSMenuItem*)anItem;<br>
+              </p>
+    <hr />
+    <h3>openDocumentWithContentsOfURL:display:</a></h3>
+    - (id) <b>openDocumentWithContentsOfURL:</b> (NSURL*)url<b> display:</b> (BOOL)display;<br />
+    <p>
 
-          
- <hr>
-</body>
+              </p>
+    <hr />
+    <h3>openUntitledDocumentOfType:display:</a></h3>
+    - (id) <b>openUntitledDocumentOfType:</b> (NSString*)type<b> display:</b> (BOOL)display;<br />
+    <p>
 
- </html>
+              </p>
+    <hr />
+    <h3>recentDocumentURLs</a></h3>
+    - (NSArray*) <b>recentDocumentURLs</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>removeDocument:</a></h3>
+    - (void) <b>removeDocument:</b> (<a href="NSDocument.html#class$NSDocument">NSDocument</a>*)document;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>reviewUnsavedDocumentsWithAlertTitle:cancellable:</a></h3>
+    - (BOOL) <b>reviewUnsavedDocumentsWithAlertTitle:</b> (NSString*)title<b> cancellable:</b> (BOOL)cancellable;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>reviewUnsavedDocumentsWithAlertTitle:cancellable:delegate:didReviewAllSelector:contextInfo:</a></h3>
+    - (void) <b>reviewUnsavedDocumentsWithAlertTitle:</b> (NSString*)title<b> cancellable:</b> (BOOL)cancellable<b> delegate:</b> (id)delegate<b> didReviewAllSelector:</b> (SEL)didReviewAllSelector<b> contextInfo:</b> (void*)contextInfo;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>runModalOpenPanel:forTypes:</a></h3>
+    - (int) <b>runModalOpenPanel:</b> (<a href="NSOpenPanel.html#class$NSOpenPanel">NSOpenPanel</a>*)openPanel<b> forTypes:</b> (NSArray*)openableFileExtensions;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>saveAllDocuments:</a></h3>
+    - (IBAction) <b>saveAllDocuments:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setShouldCreateUI:</a></h3>
+    - (void) <b>setShouldCreateUI:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>shouldCreateUI</a></h3>
+    - (BOOL) <b>shouldCreateUI</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>typeFromFileExtension:</a></h3>
+    - (NSString*) <b>typeFromFileExtension:</b> (NSString*)fileExtension;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>validateMenuItem:</a></h3>
+    - (BOOL) <b>validateMenuItem:</b> (NSMenuItem*)anItem;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>validateUserInterfaceItem:</a></h3>
+    - (BOOL) <b>validateUserInterfaceItem:</b> (id)anItem;<br />
+    <p>
+
+              </p>
+    <hr />
+  </body>
+</html>

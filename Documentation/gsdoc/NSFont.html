@@ -1,347 +1,392 @@
-<html><head>
- <title>NSFont</title>
-</head>
-<body>
-<a href ="NSFileWrapper.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSFontManager.html">[Next] </a>
-<h1>NSFont</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSFont</a></h2>
-<h2><a name ="NSFont">NSFont</a></h2>
-<p><b>Declared in: </b> Gui/NSFont.h</p>
-<p><b>Inherits from: </b> NSObject</p>
-<p><b>Conforms to: </b> NSCoding
-</p>
-<hr>
+<html>
+  <head>
+    <title>NSFont</title>
+  </head>
+  <body>
+    <h1>NSFont</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Ovidiu Predescu(<a href="mailto:ovidiu@net-community.com"><code>
+        ovidiu@net-community.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <blockquote>
+The font class    </blockquote>
+    <p>Copyright: (C) 1996 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the NSFont class
+      </h1>
+    <h2><a name="class$NSFont">NSFont</a> : NSObject</h2>
+    Declared: AppKit/NSFont.h<br />
+    Conform: NSCoding<br />
+    Conform: NSCopying<br />
+    <p>
 
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSFont.html#method-0">+boldSystemFontOfSize:</a>
-<li ><a href ="NSFont.html#method-1">+controlContentFontOfSize:</a>
-<li ><a href ="NSFont.html#method-3">+fontWithName:</a>
-<li ><a href ="NSFont.html#method-2">+fontWithName:</a>
-<li ><a href ="NSFont.html#method-4">+menuFontOfSize:</a>
-<li ><a href ="NSFont.html#method-5">+messageFontOfSize:</a>
-<li ><a href ="NSFont.html#method-6">+paletteFontOfSize:</a>
-<li ><a href ="NSFont.html#method-7">+preferredFontNames</a>
-<li ><a href ="NSFont.html#method-8">+setPreferredFontNames:</a>
-<li ><a href ="NSFont.html#method-9">+setUserFixedPitchFont:</a>
-<li ><a href ="NSFont.html#method-10">+setUserFont:</a>
-<li ><a href ="NSFont.html#method-11">+systemFontOfSize:</a>
-<li ><a href ="NSFont.html#method-12">+titleBarFontOfSize:</a>
-<li ><a href ="NSFont.html#method-13">+toolTipsFontOfSize:</a>
-<li ><a href ="NSFont.html#method-14">+useFont:</a>
-<li ><a href ="NSFont.html#method-15">+userFixedPitchFontOfSize:</a>
-<li ><a href ="NSFont.html#method-16">+userFontOfSize:</a>
-<li ><a href ="NSFont.html#method-29">- glyphPacking</a>
-<li ><a href ="NSFont.html#method-17">-advancementForGlyph:</a>
-<li ><a href ="NSFont.html#method-18">-afmFileContents</a>
-<li ><a href ="NSFont.html#method-19">-ascender</a>
-<li ><a href ="NSFont.html#method-20">-boundingRectForFont</a>
-<li ><a href ="NSFont.html#method-21">-boundingRectForGlyph:</a>
-<li ><a href ="NSFont.html#method-22">-capHeight</a>
-<li ><a href ="NSFont.html#method-23">-descender</a>
-<li ><a href ="NSFont.html#method-24">-displayName</a>
-<li ><a href ="NSFont.html#method-25">-encodingScheme</a>
-<li ><a href ="NSFont.html#method-26">-familyName</a>
-<li ><a href ="NSFont.html#method-27">-fontName</a>
-<li ><a href ="NSFont.html#method-28">-glyphIsEncoded:</a>
-<li ><a href ="NSFont.html#method-30">-glyphWithName:</a>
-<li ><a href ="NSFont.html#method-31">-isBaseFont</a>
-<li ><a href ="NSFont.html#method-32">-isFixedPitch</a>
-<li ><a href ="NSFont.html#method-33">-italicAngle</a>
-<li ><a href ="NSFont.html#method-34">-matrix</a>
-<li ><a href ="NSFont.html#method-35">-maximumAdvancement</a>
-<li ><a href ="NSFont.html#method-36">-mostCompatibleStringEncoding</a>
-<li ><a href ="NSFont.html#method-37">-pointSize</a>
-<li ><a href ="NSFont.html#method-38">-positionOfGlyph:forCharacter:struckOverRect:</a>
-<li ><a href ="NSFont.html#method-39">-positionOfGlyph:precededByGlyph:</a>
-<li ><a href ="NSFont.html#method-40">-positionOfGlyph:struckOverGlyph:metricsExist:</a>
-<li ><a href ="NSFont.html#method-41">-positionOfGlyph:struckOverRect:metricsExist:</a>
-<li ><a href ="NSFont.html#method-42">-positionOfGlyph:withRelation:toBaseGlyph:totalAdvancement:metricsExist:</a>
-<li ><a href ="NSFont.html#method-43">-positionsForCompositeSequence:numberOfGlyphs:pointArray:</a>
-<li ><a href ="NSFont.html#method-44">-printerFont</a>
-<li ><a href ="NSFont.html#method-45">-screenFont</a>
-<li ><a href ="NSFont.html#method-46">-set</a>
-<li ><a href ="NSFont.html#method-47">-underlinePosition</a>
-<li ><a href ="NSFont.html#method-48">-underlineThickness</a>
-<li ><a href ="NSFont.html#method-49">-widthOfString:</a>
-<li ><a href ="NSFont.html#method-50">-widths</a>
-<li ><a href ="NSFont.html#method-51">-xHeight</a>
-</ul>
-<hr><h2>Class Methods </h2>
-<h3><a name ="method-0">boldSystemFontOfSize:</a></h3>
-+ (NSFont*) <b>boldSystemFontOfSize:</b> (float)fontSize;<br>
+            </p>
+    <h3>boldSystemFontOfSize:</a></h3>
+    + (<a href="#class$NSFont">NSFont</a>*) <b>boldSystemFontOfSize:</b> (float)fontSize;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-1">controlContentFontOfSize:</a></h3>
-+ (NSFont*) <b>controlContentFontOfSize:</b> (float)fontSize;<br>
+              </p>
+    <hr />
+    <h3>controlContentFontOfSize:</a></h3>
+    + (<a href="#class$NSFont">NSFont</a>*) <b>controlContentFontOfSize:</b> (float)fontSize;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-2">fontWithName:</a></h3>
-+ (NSFont*) <b>fontWithName:</b> (NSString*)typeface;<br>
+              </p>
+    <hr />
+    <h3>fontWithName:matrix:</a></h3>
+    + (<a href="#class$NSFont">NSFont</a>*) <b>fontWithName:</b> (NSString*)name<b> matrix:</b> (const float*)fontMatrix;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-3">fontWithName:</a></h3>
-+ (NSFont*) <b>fontWithName:</b> (NSString*)fontName;<br>
+              </p>
+    <hr />
+    <h3>fontWithName:size:</a></h3>
+    + (<a href="#class$NSFont">NSFont</a>*) <b>fontWithName:</b> (NSString*)name<b> size:</b> (float)fontSize;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-4">menuFontOfSize:</a></h3>
-+ (NSFont*) <b>menuFontOfSize:</b> (float)fontSize;<br>
+              </p>
+    <hr />
+    <h3>labelFontOfSize:</a></h3>
+    + (<a href="#class$NSFont">NSFont</a>*) <b>labelFontOfSize:</b> (float)fontSize;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-5">messageFontOfSize:</a></h3>
-+ (NSFont*) <b>messageFontOfSize:</b> (float)fontSize;<br>
+              </p>
+    <hr />
+    <h3>labelFontSize</a></h3>
+    + (float) <b>labelFontSize</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-6">paletteFontOfSize:</a></h3>
-+ (NSFont*) <b>paletteFontOfSize:</b> (float)fontSize;<br>
+              </p>
+    <hr />
+    <h3>menuFontOfSize:</a></h3>
+    + (<a href="#class$NSFont">NSFont</a>*) <b>menuFontOfSize:</b> (float)fontSize;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-7">preferredFontNames</a></h3>
-+ (NSArray*) <b>preferredFontNames</b>;<br>
+              </p>
+    <hr />
+    <h3>messageFontOfSize:</a></h3>
+    + (<a href="#class$NSFont">NSFont</a>*) <b>messageFontOfSize:</b> (float)fontSize;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-8">setPreferredFontNames:</a></h3>
-+ (void) <b>setPreferredFontNames:</b> (NSArray*)fontNames;<br>
+              </p>
+    <hr />
+    <h3>paletteFontOfSize:</a></h3>
+    + (<a href="#class$NSFont">NSFont</a>*) <b>paletteFontOfSize:</b> (float)fontSize;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-9">setUserFixedPitchFont:</a></h3>
-+ (void) <b>setUserFixedPitchFont:</b> (NSFont*)aFont;<br>
+              </p>
+    <hr />
+    <h3>preferredFontNames</a></h3>
+    + (NSArray*) <b>preferredFontNames</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-10">setUserFont:</a></h3>
-+ (void) <b>setUserFont:</b> (NSFont*)aFont;<br>
+              </p>
+    <hr />
+    <h3>setPreferredFontNames:</a></h3>
+    + (void) <b>setPreferredFontNames:</b> (NSArray*)fontNames;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-11">systemFontOfSize:</a></h3>
-+ (NSFont*) <b>systemFontOfSize:</b> (float)fontSize;<br>
+              </p>
+    <hr />
+    <h3>setUserFixedPitchFont:</a></h3>
+    + (void) <b>setUserFixedPitchFont:</b> (<a href="#class$NSFont">NSFont</a>*)font;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-12">titleBarFontOfSize:</a></h3>
-+ (NSFont*) <b>titleBarFontOfSize:</b> (float)fontSize;<br>
+              </p>
+    <hr />
+    <h3>setUserFont:</a></h3>
+    + (void) <b>setUserFont:</b> (<a href="#class$NSFont">NSFont</a>*)font;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-13">toolTipsFontOfSize:</a></h3>
-+ (NSFont*) <b>toolTipsFontOfSize:</b> (float)fontSize;<br>
+              </p>
+    <hr />
+    <h3>smallSystemFontSize</a></h3>
+    + (float) <b>smallSystemFontSize</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-14">useFont:</a></h3>
-+ (void) <b>useFont:</b> (NSString*)fontName;<br>
+              </p>
+    <hr />
+    <h3>systemFontOfSize:</a></h3>
+    + (<a href="#class$NSFont">NSFont</a>*) <b>systemFontOfSize:</b> (float)fontSize;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-15">userFixedPitchFontOfSize:</a></h3>
-+ (NSFont*) <b>userFixedPitchFontOfSize:</b> (float)fontSize;<br>
+              </p>
+    <hr />
+    <h3>systemFontSize</a></h3>
+    + (float) <b>systemFontSize</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-16">userFontOfSize:</a></h3>
-+ (NSFont*) <b>userFontOfSize:</b> (float)fontSize;<br>
+              </p>
+    <hr />
+    <h3>titleBarFontOfSize:</a></h3>
+    + (<a href="#class$NSFont">NSFont</a>*) <b>titleBarFontOfSize:</b> (float)fontSize;<br />
+    <p>
 
-          
- <hr>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-17">advancementForGlyph:</a></h3>
-- (NSSize) <b>advancementForGlyph:</b> (NSGlyph)aGlyph;<br>
+              </p>
+    <hr />
+    <h3>toolTipsFontOfSize:</a></h3>
+    + (<a href="#class$NSFont">NSFont</a>*) <b>toolTipsFontOfSize:</b> (float)fontSize;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-18">afmFileContents</a></h3>
-- (NSString*) <b>afmFileContents</b>;<br>
+              </p>
+    <hr />
+    <h3>useFont:</a></h3>
+    + (void) <b>useFont:</b> (NSString*)name;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-19">ascender</a></h3>
-- (float) <b>ascender</b>;<br>
+              </p>
+    <hr />
+    <h3>userFixedPitchFontOfSize:</a></h3>
+    + (<a href="#class$NSFont">NSFont</a>*) <b>userFixedPitchFontOfSize:</b> (float)fontSize;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-20">boundingRectForFont</a></h3>
-- (NSRect) <b>boundingRectForFont</b>;<br>
+              </p>
+    <hr />
+    <h3>userFontOfSize:</a></h3>
+    + (<a href="#class$NSFont">NSFont</a>*) <b>userFontOfSize:</b> (float)fontSize;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-21">boundingRectForGlyph:</a></h3>
-- (NSRect) <b>boundingRectForGlyph:</b> (NSGlyph)aGlyph;<br>
+              </p>
+    <hr />
+    <h3>advancementForGlyph:</a></h3>
+    - (NSSize) <b>advancementForGlyph:</b> (NSGlyph)aGlyph;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-22">capHeight</a></h3>
-- (float) <b>capHeight</b>;<br>
+              </p>
+    <hr />
+    <h3>afmDictionary</a></h3>
+    - (NSDictionary*) <b>afmDictionary</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-23">descender</a></h3>
-- (float) <b>descender</b>;<br>
+              </p>
+    <hr />
+    <h3>afmFileContents</a></h3>
+    - (NSString*) <b>afmFileContents</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-24">displayName</a></h3>
-- (NSString*) <b>displayName</b>;<br>
+              </p>
+    <hr />
+    <h3>ascender</a></h3>
+    - (float) <b>ascender</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-25">encodingScheme</a></h3>
-- (NSString*) <b>encodingScheme</b>;<br>
+              </p>
+    <hr />
+    <h3>boundingRectForFont</a></h3>
+    - (NSRect) <b>boundingRectForFont</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-26">familyName</a></h3>
-- (NSString*) <b>familyName</b>;<br>
+              </p>
+    <hr />
+    <h3>boundingRectForGlyph:</a></h3>
+    - (NSRect) <b>boundingRectForGlyph:</b> (NSGlyph)aGlyph;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-27">fontName</a></h3>
-- (NSString*) <b>fontName</b>;<br>
+              </p>
+    <hr />
+    <h3>capHeight</a></h3>
+    - (float) <b>capHeight</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-28">glyphIsEncoded:</a></h3>
-- (BOOL) <b>glyphIsEncoded:</b> (NSGlyph)aGlyph;<br>
+              </p>
+    <hr />
+    <h3>defaultLineHeightForFont</a></h3>
+    - (float) <b>defaultLineHeightForFont</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-29"> glyphPacking</a></h3>
-- (NSMultibyteGlyphPacking) <b> glyphPacking</b>;<br>
+              </p>
+    <hr />
+    <h3>descender</a></h3>
+    - (float) <b>descender</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-30">glyphWithName:</a></h3>
-- (NSGlyph) <b>glyphWithName:</b> (NSString*)glyphName;<br>
+              </p>
+    <hr />
+    <h3>displayName</a></h3>
+    - (NSString*) <b>displayName</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-31">isBaseFont</a></h3>
-- (BOOL) <b>isBaseFont</b>;<br>
+              </p>
+    <hr />
+    <h3>encodingScheme</a></h3>
+    - (NSString*) <b>encodingScheme</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-32">isFixedPitch</a></h3>
-- (BOOL) <b>isFixedPitch</b>;<br>
+              </p>
+    <hr />
+    <h3>familyName</a></h3>
+    - (NSString*) <b>familyName</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-33">italicAngle</a></h3>
-- (float) <b>italicAngle</b>;<br>
+              </p>
+    <hr />
+    <h3>fontName</a></h3>
+    - (NSString*) <b>fontName</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-34">matrix</a></h3>
-- (constfloat*) <b>matrix</b>;<br>
+              </p>
+    <hr />
+    <h3>glyphIsEncoded:</a></h3>
+    - (BOOL) <b>glyphIsEncoded:</b> (NSGlyph)aGlyph;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-35">maximumAdvancement</a></h3>
-- (NSSize) <b>maximumAdvancement</b>;<br>
+              </p>
+    <hr />
+    <h3>glyphPacking</a></h3>
+    - (NSMultibyteGlyphPacking) <b>glyphPacking</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-36">mostCompatibleStringEncoding</a></h3>
-- (NSStringEncoding) <b>mostCompatibleStringEncoding</b>;<br>
+              </p>
+    <hr />
+    <h3>glyphWithName:</a></h3>
+    - (NSGlyph) <b>glyphWithName:</b> (NSString*)glyphName;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-37">pointSize</a></h3>
-- (float) <b>pointSize</b>;<br>
+              </p>
+    <hr />
+    <h3>isBaseFont</a></h3>
+    - (BOOL) <b>isBaseFont</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-38">positionOfGlyph:forCharacter:struckOverRect:</a></h3>
-- (NSPoint) <b>positionOfGlyph:</b> (NSGlyph)aGlyph <b>forCharacter:</b> (unichar)aChar <b>struckOverRect:</b> (NSRect)aRect;<br>
+              </p>
+    <hr />
+    <h3>isFixedPitch</a></h3>
+    - (BOOL) <b>isFixedPitch</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-39">positionOfGlyph:precededByGlyph:</a></h3>
-- (NSPoint) <b>positionOfGlyph:</b> (NSGlyph)aGlyph <b>precededByGlyph:</b> (NSGlyph)prevGlyph;<br>
+              </p>
+    <hr />
+    <h3>italicAngle</a></h3>
+    - (float) <b>italicAngle</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-40">positionOfGlyph:struckOverGlyph:metricsExist:</a></h3>
-- (NSPoint) <b>positionOfGlyph:</b> (NSGlyph)aGlyph <b>struckOverGlyph:</b> (NSGlyph)baseGlyph <b>metricsExist:</b> (BOOL*)flag;<br>
+              </p>
+    <hr />
+    <h3>matrix</a></h3>
+    - (const float*) <b>matrix</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-41">positionOfGlyph:struckOverRect:metricsExist:</a></h3>
-- (NSPoint) <b>positionOfGlyph:</b> (NSGlyph)aGlyph <b>struckOverRect:</b> (NSRect)aRect <b>metricsExist:</b> (BOOL*)flag;<br>
+              </p>
+    <hr />
+    <h3>maximumAdvancement</a></h3>
+    - (NSSize) <b>maximumAdvancement</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-42">positionOfGlyph:withRelation:toBaseGlyph:totalAdvancement:metricsExist:</a></h3>
-- (NSPoint) <b>positionOfGlyph:</b> (NSGlyph)aGlyph <b>withRelation:</b> (NSGlyphRelation)relation <b>toBaseGlyph:</b> (NSGlyph)baseGlyph <b>totalAdvancement:</b> (NSSizePointer)offset <b>metricsExist:</b> (BOOL*)flag;<br>
+              </p>
+    <hr />
+    <h3>minimumAdvancement</a></h3>
+    - (NSSize) <b>minimumAdvancement</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-43">positionsForCompositeSequence:numberOfGlyphs:pointArray:</a></h3>
-- (int) <b>positionsForCompositeSequence:</b> (NSGlyph*)glyphs <b>numberOfGlyphs:</b> (int)numGlyphs <b>pointArray:</b> (NSPointArray)points;<br>
+              </p>
+    <hr />
+    <h3>mostCompatibleStringEncoding</a></h3>
+    - (NSStringEncoding) <b>mostCompatibleStringEncoding</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-44">printerFont</a></h3>
-- (NSFont*) <b>printerFont</b>;<br>
+              </p>
+    <hr />
+    <h3>pointSize</a></h3>
+    - (float) <b>pointSize</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-45">screenFont</a></h3>
-- (NSFont*) <b>screenFont</b>;<br>
+              </p>
+    <hr />
+    <h3>positionOfGlyph:forCharacter:struckOverRect:</a></h3>
+    - (NSPoint) <b>positionOfGlyph:</b> (NSGlyph)aGlyph<b> forCharacter:</b> (unichar)aChar<b> struckOverRect:</b> (NSRect)aRect;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-46">set</a></h3>
-- (void) <b>set</b>;<br>
+              </p>
+    <hr />
+    <h3>positionOfGlyph:precededByGlyph:isNominal:</a></h3>
+    - (NSPoint) <b>positionOfGlyph:</b> (NSGlyph)curGlyph<b> precededByGlyph:</b> (NSGlyph)prevGlyph<b> isNominal:</b> (BOOL*)nominal;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-47">underlinePosition</a></h3>
-- (float) <b>underlinePosition</b>;<br>
+              </p>
+    <hr />
+    <h3>positionOfGlyph:struckOverGlyph:metricsExist:</a></h3>
+    - (NSPoint) <b>positionOfGlyph:</b> (NSGlyph)aGlyph<b> struckOverGlyph:</b> (NSGlyph)baseGlyph<b> metricsExist:</b> (BOOL*)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-48">underlineThickness</a></h3>
-- (float) <b>underlineThickness</b>;<br>
+              </p>
+    <hr />
+    <h3>positionOfGlyph:struckOverRect:metricsExist:</a></h3>
+    - (NSPoint) <b>positionOfGlyph:</b> (NSGlyph)aGlyph<b> struckOverRect:</b> (NSRect)aRect<b> metricsExist:</b> (BOOL*)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-49">widthOfString:</a></h3>
-- (float) <b>widthOfString:</b> (NSString*)aString;<br>
+              </p>
+    <hr />
+    <h3>positionOfGlyph:withRelation:toBaseGlyph:totalAdvancement:metricsExist:</a></h3>
+    - (NSPoint) <b>positionOfGlyph:</b> (NSGlyph)aGlyph<b> withRelation:</b> (NSGlyphRelation)relation<b> toBaseGlyph:</b> (NSGlyph)baseGlyph<b> totalAdvancement:</b> (NSSize*)offset<b> metricsExist:</b> (BOOL*)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-50">widths</a></h3>
-- (float*) <b>widths</b>;<br>
+              </p>
+    <hr />
+    <h3>positionsForCompositeSequence:numberOfGlyphs:pointArray:</a></h3>
+    - (int) <b>positionsForCompositeSequence:</b> (NSGlyph*)glyphs<b> numberOfGlyphs:</b> (int)numGlyphs<b> pointArray:</b> (NSPoint*)points;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-51">xHeight</a></h3>
-- (float) <b>xHeight</b>;<br>
+              </p>
+    <hr />
+    <h3>printerFont</a></h3>
+    - (<a href="#class$NSFont">NSFont</a>*) <b>printerFont</b>;<br />
+    <p>
 
-          
- <hr>
-</body>
+              </p>
+    <hr />
+    <h3>screenFont</a></h3>
+    - (<a href="#class$NSFont">NSFont</a>*) <b>screenFont</b>;<br />
+    <p>
 
- </html>
+              </p>
+    <hr />
+    <h3>set</a></h3>
+    - (void) <b>set</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>underlinePosition</a></h3>
+    - (float) <b>underlinePosition</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>underlineThickness</a></h3>
+    - (float) <b>underlineThickness</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>widthOfString:</a></h3>
+    - (float) <b>widthOfString:</b> (NSString*)string;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>xHeight</a></h3>
+    - (float) <b>xHeight</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the NSFont(GNUstep)
+        category
+      </h1>
+    <h2><a href="#class$NSFont">NSFont</a>(<a name="category$NSFont(GNUstep)">GNUstep</a>)</h2>
+    Declared: AppKit/NSFont.h<br />
+    <p>
+
+            </p>
+    <h3>fontInfo</a></h3>
+    - (GSFontInfo*) <b>fontInfo</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+  </body>
+</html>

@@ -1,17 +1,16 @@
-/*
-   NSMatrix.m
+/** <title>NSMatrix</title>
 
-   Matrix class for grouping controls
+   <abstract>Matrix class for grouping controls</abstract>
 
    Copyright (C) 1996, 1997, 1999 Free Software Foundation, Inc.
 
-   Author:  Ovidiu Predescu <ovidiu@net-community.com>
+   Author: Ovidiu Predescu <ovidiu@net-community.com>
    Date: March 1997
    A completely rewritten version of the original source by Pascal Forget and
    Scott Christley.
-   Modified:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Modified: Felipe A. Rodriguez <far@ix.netcom.com>
    Date: August 1998
-   Cell handling rewritten: <richard@brainstorm.co.uk>
+   Cell handling rewritten: Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: November 1999
    Implementation of Editing: Nicola Pero <n.pero@mi.flashnet.it>
    Date: November 1999

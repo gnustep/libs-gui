@@ -1,12 +1,11 @@
-/*
-   NSStringDrawing.m
+/** <title>NSStringAdditions</title>
 
-   Categories which add drawing capabilities to NSAttributedString
-   and NSString.
+   <abstract>Categories which add drawing capabilities to NSAttributedString
+   and NSString.</abstract>
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 
-   Author:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+   Author: Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: Mar 1999 - rewrite from scratch
 
    This file is part of the GNUstep GUI Library.

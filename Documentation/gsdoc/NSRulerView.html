@@ -1,287 +1,289 @@
-<html><head>
- <title>NSRulerView</title>
-</head>
-<body>
-<a href ="NSRulerMarker.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSSavePanel.html">[Next] </a>
-<h1>NSRulerView</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSRulerView</a></h2>
-<h2><a name ="NSRulerView">NSRulerView</a></h2>
-<p><b>Declared in: </b> Gui/NSRulerView.h</p>
-<p><b>Inherits from: </b> NSView</p>
-<p><b>Conforms to: </b> NSCoding
-</p>
-<hr>
+<html>
+  <head>
+    <title>NSRulerView</title>
+  </head>
+  <body>
+    <h1>NSRulerView</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Fred Kiefer(<a href="mailto:FredKiefer@gmx.de"><code>
+        FredKiefer@gmx.de
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <blockquote>
+The NSRulerView class.    </blockquote>
+    <p>Copyright: (C) 2001 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the NSRulerView class
+      </h1>
+    <h2><a name="class$NSRulerView">NSRulerView</a> : <a href="NSView.html#class$NSView">NSView</a></h2>
+    Declared: AppKit/NSRulerView.h<br />
+    <p>
 
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSRulerView.html#method-0">+registerUnitWithName:abbreviation:unitToPointsConversionFactor:stepUpCycle:stepDownCycle:</a>
-<li ><a href ="NSRulerView.html#method-1">-accessoryView</a>
-<li ><a href ="NSRulerView.html#method-2">-addMarker:</a>
-<li ><a href ="NSRulerView.html#method-3">-baselineLocation</a>
-<li ><a href ="NSRulerView.html#method-4">-clientView</a>
-<li ><a href ="NSRulerView.html#method-5">-drawHashMarksAndLabelsInRect:</a>
-<li ><a href ="NSRulerView.html#method-6">-drawMarkersInRect:</a>
-<li ><a href ="NSRulerView.html#method-7">-initWithScrollView:</a>
-<li ><a href ="NSRulerView.html#method-8">-invalidateHashMarks</a>
-<li ><a href ="NSRulerView.html#method-9">-isFlipped</a>
-<li ><a href ="NSRulerView.html#method-10">-markers</a>
-<li ><a href ="NSRulerView.html#method-11">-measurementUnits</a>
-<li ><a href ="NSRulerView.html#method-12">-moveRulerlineFromLocation:toLocation:</a>
-<li ><a href ="NSRulerView.html#method-13">-orientation</a>
-<li ><a href ="NSRulerView.html#method-14">-originOffset</a>
-<li ><a href ="NSRulerView.html#method-15">-removeMarker:</a>
-<li ><a href ="NSRulerView.html#method-16">-requiredThickness</a>
-<li ><a href ="NSRulerView.html#method-17">-reservedThicknessForAccessoryView</a>
-<li ><a href ="NSRulerView.html#method-18">-reservedThicknessForMarkers</a>
-<li ><a href ="NSRulerView.html#method-19">-ruleThickness</a>
-<li ><a href ="NSRulerView.html#method-32">-rulerView:didAddMarker:</a>
-<li ><a href ="NSRulerView.html#method-33">-rulerView:didMoveMarker:</a>
-<li ><a href ="NSRulerView.html#method-34">-rulerView:didRemoveMarker:</a>
-<li ><a href ="NSRulerView.html#method-35">-rulerView:handleMouseDown:</a>
-<li ><a href ="NSRulerView.html#method-36">-rulerView:shouldAddMarker:</a>
-<li ><a href ="NSRulerView.html#method-37">-rulerView:shouldMoveMarker:</a>
-<li ><a href ="NSRulerView.html#method-38">-rulerView:shouldRemoveMarker:</a>
-<li ><a href ="NSRulerView.html#method-39">-rulerView:willAddMarker:atLocation:</a>
-<li ><a href ="NSRulerView.html#method-40">-rulerView:willMoveMarker:toLocation:</a>
-<li ><a href ="NSRulerView.html#method-41">-rulerView:willSetClientView:</a>
-<li ><a href ="NSRulerView.html#method-20">-scrollView</a>
-<li ><a href ="NSRulerView.html#method-21">-setAccessoryView:</a>
-<li ><a href ="NSRulerView.html#method-22">-setClientView:</a>
-<li ><a href ="NSRulerView.html#method-23">-setMarkers:</a>
-<li ><a href ="NSRulerView.html#method-24">-setMeasurementUnits:</a>
-<li ><a href ="NSRulerView.html#method-25">-setOrientation:</a>
-<li ><a href ="NSRulerView.html#method-26">-setOriginOffset:</a>
-<li ><a href ="NSRulerView.html#method-27">-setReservedThicknessForAccessoryView:</a>
-<li ><a href ="NSRulerView.html#method-28">-setReservedThicknessForMarkers:</a>
-<li ><a href ="NSRulerView.html#method-29">-setRuleThickness:</a>
-<li ><a href ="NSRulerView.html#method-30">-setScrollView:</a>
-<li ><a href ="NSRulerView.html#method-31">-trackMarker:withMouseEvent:</a>
-</ul>
-<hr><h2>Class Methods </h2>
-<h3><a name ="method-0">registerUnitWithName:abbreviation:unitToPointsConversionFactor:stepUpCycle:stepDownCycle:</a></h3>
-+ (void) <b>registerUnitWithName:</b> (NSString*)unitName <b>abbreviation:</b> (NSString*)abbreviation <b>unitToPointsConversionFactor:</b> (float)conversionFactor <b>stepUpCycle:</b> (NSArray *)stepUpCycle <b>stepDownCycle:</b> (NSArray*)stepDownCycle;<br>
+            </p>
+    <h3>registerUnitWithName:abbreviation:unitToPointsConversionFactor:stepUpCycle:stepDownCycle:</a></h3>
+    + (void) <b>registerUnitWithName:</b> (NSString*)unitName<b> abbreviation:</b> (NSString*)abbreviation<b> unitToPointsConversionFactor:</b> (float)conversionFactor<b> stepUpCycle:</b> (NSArray*)stepUpCycle<b> stepDownCycle:</b> (NSArray*)stepDownCycle;<br />
+    <p>
 
-          
- <hr>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-1">accessoryView</a></h3>
-- (NSView*) <b>accessoryView</b>;<br>
+              </p>
+    <hr />
+    <h3>accessoryView</a></h3>
+    - (<a href="NSView.html#class$NSView">NSView</a>*) <b>accessoryView</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-2">addMarker:</a></h3>
-- (void) <b>addMarker:</b> (NSRulerMarker*)aMarker;<br>
+              </p>
+    <hr />
+    <h3>addMarker:</a></h3>
+    - (void) <b>addMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-3">baselineLocation</a></h3>
-- (float) <b>baselineLocation</b>;<br>
+              </p>
+    <hr />
+    <h3>baselineLocation</a></h3>
+    - (float) <b>baselineLocation</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-4">clientView</a></h3>
-- (NSView*) <b>clientView</b>;<br>
+              </p>
+    <hr />
+    <h3>clientView</a></h3>
+    - (<a href="NSView.html#class$NSView">NSView</a>*) <b>clientView</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-5">drawHashMarksAndLabelsInRect:</a></h3>
-- (void) <b>drawHashMarksAndLabelsInRect:</b> (NSRect)aRect;<br>
+              </p>
+    <hr />
+    <h3>drawHashMarksAndLabelsInRect:</a></h3>
+    - (void) <b>drawHashMarksAndLabelsInRect:</b> (NSRect)aRect;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-6">drawMarkersInRect:</a></h3>
-- (void) <b>drawMarkersInRect:</b> (NSRect)aRect;<br>
+              </p>
+    <hr />
+    <h3>drawMarkersInRect:</a></h3>
+    - (void) <b>drawMarkersInRect:</b> (NSRect)aRect;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-7">initWithScrollView:</a></h3>
-- (id) <b>initWithScrollView:</b> (NSScrollView*)aScrollView;<br>
+              </p>
+    <hr />
+    <h3>initWithScrollView:orientation:</a></h3>
+    - (id) <b>initWithScrollView:</b> (<a href="NSScrollView.html#class$NSScrollView">NSScrollView</a>*)aScrollView<b> orientation:</b> (NSRulerOrientation)orientation;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-8">invalidateHashMarks</a></h3>
-- (void) <b>invalidateHashMarks</b>;<br>
+              </p>
+    <hr />
+    <h3>invalidateHashMarks</a></h3>
+    - (void) <b>invalidateHashMarks</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-9">isFlipped</a></h3>
-- (BOOL) <b>isFlipped</b>;<br>
+              </p>
+    <hr />
+    <h3>isFlipped</a></h3>
+    - (BOOL) <b>isFlipped</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-10">markers</a></h3>
-- (NSArray*) <b>markers</b>;<br>
+              </p>
+    <hr />
+    <h3>markers</a></h3>
+    - (NSArray*) <b>markers</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-11">measurementUnits</a></h3>
-- (NSString*) <b>measurementUnits</b>;<br>
+              </p>
+    <hr />
+    <h3>measurementUnits</a></h3>
+    - (NSString*) <b>measurementUnits</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-12">moveRulerlineFromLocation:toLocation:</a></h3>
-- (void) <b>moveRulerlineFromLocation:</b> (float)oldLoc <b>toLocation:</b> (float)newLoc;<br>
+              </p>
+    <hr />
+    <h3>moveRulerlineFromLocation:toLocation:</a></h3>
+    - (void) <b>moveRulerlineFromLocation:</b> (float)oldLoc<b> toLocation:</b> (float)newLoc;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-13">orientation</a></h3>
-- (NSRulerOrientation) <b>orientation</b>;<br>
+              </p>
+    <hr />
+    <h3>orientation</a></h3>
+    - (NSRulerOrientation) <b>orientation</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-14">originOffset</a></h3>
-- (float) <b>originOffset</b>;<br>
+              </p>
+    <hr />
+    <h3>originOffset</a></h3>
+    - (float) <b>originOffset</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-15">removeMarker:</a></h3>
-- (void) <b>removeMarker:</b> (NSRulerMarker*)aMarker;<br>
+              </p>
+    <hr />
+    <h3>removeMarker:</a></h3>
+    - (void) <b>removeMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-16">requiredThickness</a></h3>
-- (float) <b>requiredThickness</b>;<br>
+              </p>
+    <hr />
+    <h3>requiredThickness</a></h3>
+    - (float) <b>requiredThickness</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-17">reservedThicknessForAccessoryView</a></h3>
-- (float) <b>reservedThicknessForAccessoryView</b>;<br>
+              </p>
+    <hr />
+    <h3>reservedThicknessForAccessoryView</a></h3>
+    - (float) <b>reservedThicknessForAccessoryView</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-18">reservedThicknessForMarkers</a></h3>
-- (float) <b>reservedThicknessForMarkers</b>;<br>
+              </p>
+    <hr />
+    <h3>reservedThicknessForMarkers</a></h3>
+    - (float) <b>reservedThicknessForMarkers</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-19">ruleThickness</a></h3>
-- (float) <b>ruleThickness</b>;<br>
+              </p>
+    <hr />
+    <h3>ruleThickness</a></h3>
+    - (float) <b>ruleThickness</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-20">scrollView</a></h3>
-- (NSScrollView*) <b>scrollView</b>;<br>
+              </p>
+    <hr />
+    <h3>scrollView</a></h3>
+    - (<a href="NSScrollView.html#class$NSScrollView">NSScrollView</a>*) <b>scrollView</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-21">setAccessoryView:</a></h3>
-- (void) <b>setAccessoryView:</b> (NSView*)aView;<br>
+              </p>
+    <hr />
+    <h3>setAccessoryView:</a></h3>
+    - (void) <b>setAccessoryView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-22">setClientView:</a></h3>
-- (void) <b>setClientView:</b> (NSView*)aView;<br>
+              </p>
+    <hr />
+    <h3>setClientView:</a></h3>
+    - (void) <b>setClientView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-23">setMarkers:</a></h3>
-- (void) <b>setMarkers:</b> (NSArray*)markers;<br>
+              </p>
+    <hr />
+    <h3>setMarkers:</a></h3>
+    - (void) <b>setMarkers:</b> (NSArray*)markers;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-24">setMeasurementUnits:</a></h3>
-- (void) <b>setMeasurementUnits:</b> (NSString*)unitName;<br>
+              </p>
+    <hr />
+    <h3>setMeasurementUnits:</a></h3>
+    - (void) <b>setMeasurementUnits:</b> (NSString*)unitName;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-25">setOrientation:</a></h3>
-- (void) <b>setOrientation:</b> (NSRulerOrientation)orientation;<br>
+              </p>
+    <hr />
+    <h3>setOrientation:</a></h3>
+    - (void) <b>setOrientation:</b> (NSRulerOrientation)orientation;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-26">setOriginOffset:</a></h3>
-- (void) <b>setOriginOffset:</b> (float)offset;<br>
+              </p>
+    <hr />
+    <h3>setOriginOffset:</a></h3>
+    - (void) <b>setOriginOffset:</b> (float)offset;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-27">setReservedThicknessForAccessoryView:</a></h3>
-- (void) <b>setReservedThicknessForAccessoryView:</b> (float)thickness;<br>
+              </p>
+    <hr />
+    <h3>setReservedThicknessForAccessoryView:</a></h3>
+    - (void) <b>setReservedThicknessForAccessoryView:</b> (float)thickness;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-28">setReservedThicknessForMarkers:</a></h3>
-- (void) <b>setReservedThicknessForMarkers:</b> (float)thickness;<br>
+              </p>
+    <hr />
+    <h3>setReservedThicknessForMarkers:</a></h3>
+    - (void) <b>setReservedThicknessForMarkers:</b> (float)thickness;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-29">setRuleThickness:</a></h3>
-- (void) <b>setRuleThickness:</b> (float)thickness;<br>
+              </p>
+    <hr />
+    <h3>setRuleThickness:</a></h3>
+    - (void) <b>setRuleThickness:</b> (float)thickness;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-30">setScrollView:</a></h3>
-- (void) <b>setScrollView:</b> (NSScrollView*)scrollView;<br>
+              </p>
+    <hr />
+    <h3>setScrollView:</a></h3>
+    - (void) <b>setScrollView:</b> (<a href="NSScrollView.html#class$NSScrollView">NSScrollView</a>*)scrollView;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-31">trackMarker:withMouseEvent:</a></h3>
-- (BOOL) <b>trackMarker:</b> (NSRulerMarker*)aMarker <b>withMouseEvent:</b> (NSEvent*)theEvent;<br>
+              </p>
+    <hr />
+    <h3>trackMarker:withMouseEvent:</a></h3>
+    - (BOOL) <b>trackMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker<b> withMouseEvent:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-32">rulerView:didAddMarker:</a></h3>
-- (void) <b>rulerView:</b> (NSRulerView*)aRulerView <b>didAddMarker:</b> (NSRulerMarker*)aMarker;<br>
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the
+        NSObject(NSRulerViewClient)
+        category
+      </h1>
+    <h2>NSObject(<a name="category$NSObject(NSRulerViewClient)">NSRulerViewClient</a>)</h2>
+    Declared: AppKit/NSRulerView.h<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-33">rulerView:didMoveMarker:</a></h3>
-- (void) <b>rulerView:</b> (NSRulerView*)aRulerView <b>didMoveMarker:</b> (NSRulerMarker*)aMarker;<br>
+            </p>
+    <h3>rulerView:didAddMarker:</a></h3>
+    - (void) <b>rulerView:</b> (<a href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> didAddMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-34">rulerView:didRemoveMarker:</a></h3>
-- (void) <b>rulerView:</b> (NSRulerView*)aRulerView <b>didRemoveMarker:</b> (NSRulerMarker*)aMarker;<br>
+              </p>
+    <hr />
+    <h3>rulerView:didMoveMarker:</a></h3>
+    - (void) <b>rulerView:</b> (<a href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> didMoveMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-35">rulerView:handleMouseDown:</a></h3>
-- (void) <b>rulerView:</b> (NSRulerView*)aRulerView <b>handleMouseDown:</b> (NSEvent*)theEvent;<br>
+              </p>
+    <hr />
+    <h3>rulerView:didRemoveMarker:</a></h3>
+    - (void) <b>rulerView:</b> (<a href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> didRemoveMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-36">rulerView:shouldAddMarker:</a></h3>
-- (BOOL) <b>rulerView:</b> (NSRulerView*)aRulerView <b>shouldAddMarker:</b> (NSRulerMarker*)aMarker;<br>
+              </p>
+    <hr />
+    <h3>rulerView:handleMouseDown:</a></h3>
+    - (void) <b>rulerView:</b> (<a href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> handleMouseDown:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-37">rulerView:shouldMoveMarker:</a></h3>
-- (BOOL) <b>rulerView:</b> (NSRulerView*)aRulerView <b>shouldMoveMarker:</b> (NSRulerMarker*)aMarker;<br>
+              </p>
+    <hr />
+    <h3>rulerView:shouldAddMarker:</a></h3>
+    - (BOOL) <b>rulerView:</b> (<a href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> shouldAddMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-38">rulerView:shouldRemoveMarker:</a></h3>
-- (BOOL) <b>rulerView:</b> (NSRulerView*)aRulerView <b>shouldRemoveMarker:</b> (NSRulerMarker*)aMarker;<br>
+              </p>
+    <hr />
+    <h3>rulerView:shouldMoveMarker:</a></h3>
+    - (BOOL) <b>rulerView:</b> (<a href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> shouldMoveMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-39">rulerView:willAddMarker:atLocation:</a></h3>
-- (float) <b>rulerView:</b> (NSRulerView*)aRulerView <b>willAddMarker:</b> (NSRulerMarker*)aMarker <b>atLocation:</b> (float)location;<br>
+              </p>
+    <hr />
+    <h3>rulerView:shouldRemoveMarker:</a></h3>
+    - (BOOL) <b>rulerView:</b> (<a href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> shouldRemoveMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-40">rulerView:willMoveMarker:toLocation:</a></h3>
-- (float) <b>rulerView:</b> (NSRulerView*)aRulerView <b>willMoveMarker:</b> (NSRulerMarker*)aMarker <b>toLocation:</b> (float)location;<br>
+              </p>
+    <hr />
+    <h3>rulerView:willAddMarker:atLocation:</a></h3>
+    - (float) <b>rulerView:</b> (<a href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> willAddMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker<b> atLocation:</b> (float)location;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-41">rulerView:willSetClientView:</a></h3>
-- (void) <b>rulerView:</b> (NSRulerView*)aRulerView <b>willSetClientView:</b> (NSView*)newClient;<br>
+              </p>
+    <hr />
+    <h3>rulerView:willMoveMarker:toLocation:</a></h3>
+    - (float) <b>rulerView:</b> (<a href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> willMoveMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker<b> toLocation:</b> (float)location;<br />
+    <p>
 
-          
- <hr>
-</body>
+              </p>
+    <hr />
+    <h3>rulerView:willSetClientView:</a></h3>
+    - (void) <b>rulerView:</b> (<a href="#class$NSRulerView">NSRulerView</a>*)aRulerView<b> willSetClientView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)newClient;<br />
+    <p>
 
- </html>
+              </p>
+    <hr />
+  </body>
+</html>

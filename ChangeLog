@@ -1,3 +1,18 @@
+2001-12-17  Adam Fedor  <fedor@gnu.org>
+
+	* Source/*m: Add basic markup for autogsdoc generation.
+	(various locations): Remove semi-colon at end of method names.
+	NSSliderCell.m, NSSlider.m, NSTableColumn.m, NSView.m, NSWindow.m:
+	Add documentation formerly in gsdoc files to comments.
+
+	* Headers/gnustep/gui/NSColorList.h, NSPageLayout.h,
+	NSPrintInfo.h, NSPrintOperation.h, NSPrinter.h, NSView.h: Correct
+	method types, remove unused markup.
+
+	* Documentation/gsdoc/GNUmakefile: Add variables for autmatic
+	document generatation via autgsdoc.
+	* Documentation/gsdoc/*gsdoc, *html: Update.
+
 Sat Dec 15 09:12:44 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	Patches from Ludovic Marcotte modified by myself.

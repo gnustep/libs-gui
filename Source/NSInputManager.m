@@ -1,5 +1,4 @@
-/*                                                    -*-objc-*-
-   NSInputManager.m
+/** <title>NSInputManager</title>                              -*-objc-*-
 
    Copyright (C) 2001 Free Software Foundation, Inc.
 
@@ -40,7 +39,7 @@
 + (void) cycleToNextInputLanguage: (id)sender
 {}
 
-+ (void) cycleToNextInputServerInLanguage: (id)sender;
++ (void) cycleToNextInputServerInLanguage: (id)sender
 {}
 
 
@@ -125,7 +124,7 @@
   return nil;
 }
 
-- (NSAttributedString *) attributedSubstringFromRange: (NSRange)theRange;
+- (NSAttributedString *) attributedSubstringFromRange: (NSRange)theRange
 {
   return nil;
 }

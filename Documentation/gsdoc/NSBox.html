@@ -1,142 +1,144 @@
-<html><head>
- <title>NSBox</title>
-</head>
-<body>
-<a href ="NSBitmapImageRep.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSBrowser.html">[Next] </a>
-<h1>NSBox</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSBox</a></h2>
-<h2><a name ="NSBox">NSBox</a></h2>
-<p><b>Declared in: </b> Gui/NSBox.h</p>
-<p><b>Inherits from: </b> NSView</p>
-<p><b>Conforms to: </b> NSCoding
-</p>
-<hr>
+<html>
+  <head>
+    <title>NSBox</title>
+  </head>
+  <body>
+    <h1>NSBox</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Scott Christley(<a href="mailto:scottc@net-community.com"><code>
+        scottc@net-community.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <blockquote>
 
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSBox.html#method-0">-borderRect</a>
-<li ><a href ="NSBox.html#method-1">-borderType</a>
-<li ><a href ="NSBox.html#method-2">-contentView</a>
-<li ><a href ="NSBox.html#method-3">-contentViewMargins</a>
-<li ><a href ="NSBox.html#method-4">-setBorderType:</a>
-<li ><a href ="NSBox.html#method-5">-setContentView:</a>
-<li ><a href ="NSBox.html#method-6">-setContentViewMargins:</a>
-<li ><a href ="NSBox.html#method-7">-setFrameFromContentFrame:</a>
-<li ><a href ="NSBox.html#method-8">-setTitle:</a>
-<li ><a href ="NSBox.html#method-9">-setTitleFont:</a>
-<li ><a href ="NSBox.html#method-10">-setTitlePosition:</a>
-<li ><a href ="NSBox.html#method-11">-setTitleWithMnemonic:</a>
-<li ><a href ="NSBox.html#method-12">-sizeToFit</a>
-<li ><a href ="NSBox.html#method-13">-title</a>
-<li ><a href ="NSBox.html#method-14">-titleCell</a>
-<li ><a href ="NSBox.html#method-15">-titleFont</a>
-<li ><a href ="NSBox.html#method-16">-titlePosition</a>
-<li ><a href ="NSBox.html#method-17">-titleRect</a>
-</ul>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-0">borderRect</a></h3>
-- (NSRect) <b>borderRect</b>;<br>
+      Simple box view that can display a border and title
+        </blockquote>
+    <p>Copyright: (C) 1996 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the NSBox class
+      </h1>
+    <h2><a name="class$NSBox">NSBox</a> : <a href="NSView.html#class$NSView">NSView</a></h2>
+    Declared: AppKit/NSBox.h<br />
+    Conform: NSCoding<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-1">borderType</a></h3>
-- (NSBorderType) <b>borderType</b>;<br>
+            </p>
+    <h3>borderRect</a></h3>
+    - (NSRect) <b>borderRect</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-2">contentView</a></h3>
-- (id) <b>contentView</b>;<br>
+              </p>
+    <hr />
+    <h3>borderType</a></h3>
+    - (NSBorderType) <b>borderType</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-3">contentViewMargins</a></h3>
-- (NSSize) <b>contentViewMargins</b>;<br>
+              </p>
+    <hr />
+    <h3>contentView</a></h3>
+    - (id) <b>contentView</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-4">setBorderType:</a></h3>
-- (void) <b>setBorderType:</b> (NSBorderType)aType;<br>
+              </p>
+    <hr />
+    <h3>contentViewMargins</a></h3>
+    - (NSSize) <b>contentViewMargins</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-5">setContentView:</a></h3>
-- (void) <b>setContentView:</b> (NSView*)aView;<br>
+              </p>
+    <hr />
+    <h3>minimumSize</a></h3>
+    - (NSSize) <b>minimumSize</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-6">setContentViewMargins:</a></h3>
-- (void) <b>setContentViewMargins:</b> (NSSize)offsetSize;<br>
+              </p>
+    <hr />
+    <h3>setBorderType:</a></h3>
+    - (void) <b>setBorderType:</b> (NSBorderType)aType;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-7">setFrameFromContentFrame:</a></h3>
-- (void) <b>setFrameFromContentFrame:</b> (NSRect)contentFrame;<br>
+              </p>
+    <hr />
+    <h3>setContentView:</a></h3>
+    - (void) <b>setContentView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-8">setTitle:</a></h3>
-- (void) <b>setTitle:</b> (NSString*)aString;<br>
+              </p>
+    <hr />
+    <h3>setContentViewMargins:</a></h3>
+    - (void) <b>setContentViewMargins:</b> (NSSize)offsetSize;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-9">setTitleFont:</a></h3>
-- (void) <b>setTitleFont:</b> (NSFont*)aFont;<br>
+              </p>
+    <hr />
+    <h3>setFrameFromContentFrame:</a></h3>
+    - (void) <b>setFrameFromContentFrame:</b> (NSRect)contentFrame;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-10">setTitlePosition:</a></h3>
-- (void) <b>setTitlePosition:</b> (NSTitlePosition)aPosition;<br>
+              </p>
+    <hr />
+    <h3>setTitle:</a></h3>
+    - (void) <b>setTitle:</b> (NSString*)aString;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-11">setTitleWithMnemonic:</a></h3>
-- (void) <b>setTitleWithMnemonic:</b> (NSString*)aString;<br>
+              </p>
+    <hr />
+    <h3>setTitleFont:</a></h3>
+    - (void) <b>setTitleFont:</b> (<a href="NSFont.html#class$NSFont">NSFont</a>*)fontObj;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-12">sizeToFit</a></h3>
-- (void) <b>sizeToFit</b>;<br>
+              </p>
+    <hr />
+    <h3>setTitlePosition:</a></h3>
+    - (void) <b>setTitlePosition:</b> (NSTitlePosition)aPosition;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-13">title</a></h3>
-- (NSString*) <b>title</b>;<br>
+              </p>
+    <hr />
+    <h3>setTitleWithMnemonic:</a></h3>
+    - (void) <b>setTitleWithMnemonic:</b> (NSString*)aString;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-14">titleCell</a></h3>
-- (id) <b>titleCell</b>;<br>
+              </p>
+    <hr />
+    <h3>sizeToFit</a></h3>
+    - (void) <b>sizeToFit</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-15">titleFont</a></h3>
-- (NSFont*) <b>titleFont</b>;<br>
+              </p>
+    <hr />
+    <h3>title</a></h3>
+    - (NSString*) <b>title</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-16">titlePosition</a></h3>
-- (NSTitlePosition) <b>titlePosition</b>;<br>
+              </p>
+    <hr />
+    <h3>titleCell</a></h3>
+    - (id) <b>titleCell</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-17">titleRect</a></h3>
-- (NSRect) <b>titleRect</b>;<br>
+              </p>
+    <hr />
+    <h3>titleFont</a></h3>
+    - (<a href="NSFont.html#class$NSFont">NSFont</a>*) <b>titleFont</b>;<br />
+    <p>
 
-          
- <hr>
-</body>
+              </p>
+    <hr />
+    <h3>titlePosition</a></h3>
+    - (NSTitlePosition) <b>titlePosition</b>;<br />
+    <p>
 
- </html>
+              </p>
+    <hr />
+    <h3>titleRect</a></h3>
+    - (NSRect) <b>titleRect</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+  </body>
+</html>

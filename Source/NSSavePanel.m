@@ -1,14 +1,13 @@
-/*
-   NSSavePanel.m
+/** <title>NSSavePanel</title>
 
-   Standard save panel for saving files
+   <abstract>Standard save panel for saving files</abstract>
 
    Copyright (C) 1999, 2000 Free Software Foundation, Inc.
 
-   Author:  Jonathan Gapen <jagapen@smithlab.chem.wisc.edu>
+   Author: Jonathan Gapen <jagapen@smithlab.chem.wisc.edu>
    Date: 1999
 
-   Author:  Nicola Pero <n.pero@mi.flashnet.it>
+   Author: Nicola Pero <n.pero@mi.flashnet.it>
    Date: 1999
 
    Author:  Mirko Viviani <mirko.viviani@rccr.cremona.it>

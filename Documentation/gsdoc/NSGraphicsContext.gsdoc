@@ -1,31 +1,81 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSGraphicsContext" prev="NSFormCell.html" next="NSHelpManager.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSGraphicsContext" next="NSHelpManager">
   <head>
     <title>NSGraphicsContext</title>
     <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+      <email address="richard@brainstorm.co.uk">
+        richard@brainstorm.co.uk
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Adam Fedor">
+      <email address="fedor@gnu.org">
+        fedor@gnu.org
+      </email>
+    </author>
+    <abstract>GNUstep drawing context class.</abstract>
+    <copy>1998,1999 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSGraphicsContext</heading>
+      <heading>
+        Software documentation for the NSGraphicsContext class
+      </heading>
       <class name="NSGraphicsContext" super="NSObject">
-        <declared>Gui/NSGraphicsContext.h</declared>
-        <conform>NSObject</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSGraphicsContext.h</declared>
+        <desc>
+        </desc>
         <method type="NSGraphicsContext*" factory="yes">
           <sel>currentContext</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL" factory="yes">
+          <sel>currentContextDrawingToScreen</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSGraphicsContext*" factory="yes">
+          <sel>graphicsContextWithAttributes:</sel>
+          <arg type="NSDictionary*">info</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSGraphicsContext*" factory="yes">
+          <sel>graphicsContextWithWindow:</sel>
+          <arg type="NSWindow*">aWindow</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void" factory="yes">
+          <sel>restoreGraphicsState</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void" factory="yes">
+          <sel>saveGraphicsState</sel>
           <desc>
           </desc>
         </method>
         <method type="void" factory="yes">
           <sel>setCurrentContext:</sel>
           <arg type="NSGraphicsContext*">context</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void" factory="yes">
+          <sel>setGraphicsState:</sel>
+          <arg type="int">graphicsState</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void" factory="yes">
+          <sel>waitAllContexts</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSDictionary*">
+          <sel>attributes</sel>
           <desc>
           </desc>
         </method>
@@ -36,6 +86,11 @@
         </method>
         <method type="void">
           <sel>flushGraphics</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void*">
+          <sel>graphicsPort</sel>
           <desc>
           </desc>
         </method>
@@ -60,6 +115,2083 @@
           </desc>
         </method>
       </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSGraphicsContext(GNUstep) category
+      </heading>
+      <category name="GNUstep" class="NSGraphicsContext">
+        <declared>AppKit/NSGraphicsContext.h</declared>
+        <desc>
+        </desc>
+        <method type="NSGraphicsContext*" factory="yes">
+          <sel>defaultContextWithInfo:</sel>
+          <arg type="NSDictionary*">info</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void" factory="yes">
+          <sel>setDefaultContextClass:</sel>
+          <arg type="Class">defaultContextClass</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>_addDragTypes:</sel>
+          <arg type="NSArray*">types</arg>
+          <sel>toWindow:</sel>
+          <arg type="NSWindow*">win</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="id&lt;NSDraggingInfo&gt;">
+          <sel>_dragInfo</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSCountedSet*">
+          <sel>_dragTypesForWindow:</sel>
+          <arg type="NSWindow*">win</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>_postExternalEvent:</sel>
+          <arg type="NSEvent*">event</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>_removeDragTypes:</sel>
+          <arg type="NSArray*">types</arg>
+          <sel>fromWindow:</sel>
+          <arg type="NSWindow*">win</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>destroyContext</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSView*">
+          <sel>focusView</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="id">
+          <sel>initWithContextInfo:</sel>
+          <arg type="NSDictionary*">info</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>lockFocusView:</sel>
+          <arg type="NSView*">aView</arg>
+          <sel>inRect:</sel>
+          <arg type="NSRect">rect</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSMutableData*">
+          <sel>mutableData</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>resetUsedFonts</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>unlockFocusView:</sel>
+          <arg type="NSView*">aView</arg>
+          <sel>needsFlush:</sel>
+          <arg type="BOOL">flush</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>useFont:</sel>
+          <arg type="NSString*">fontName</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSSet*">
+          <sel>usedFonts</sel>
+          <desc>
+          </desc>
+        </method>
+      </category>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSGraphicsContext(NSGraphics)
+        category
+      </heading>
+      <category name="NSGraphics" class="NSGraphicsContext">
+        <declared>AppKit/NSGraphicsContext.h</declared>
+        <desc>
+        </desc>
+        <method type="void" factory="yes">
+          <sel>initializeBackend</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="const NSWindowDepth*">
+          <sel>GSAvailableDepthsForScreen:</sel>
+          <arg type="int">screen</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="unsigned int">
+          <sel>GSWDefineAsUserObj</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>GSWSetViewIsFlipped:</sel>
+          <arg type="BOOL">flipped</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>GSWViewIsFlipped</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSWindowDepth">
+          <sel>GSWindowDepthForScreen:</sel>
+          <arg type="int">screen</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>NSBeep</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>NSCopyBitmapFromGState:</sel>
+          <arg type="int">srcGstate</arg>
+          <sel>:</sel>
+          <arg type="NSRect">srcRect</arg>
+          <sel>:</sel>
+          <arg type="NSRect">destRect</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>NSCopyBits:</sel>
+          <arg type="int">srcGstate</arg>
+          <sel>:</sel>
+          <arg type="NSRect">srcRect</arg>
+          <sel>:</sel>
+          <arg type="NSPoint">destPoint</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>NSDottedFrameRect:</sel>
+          <arg type="const NSRect">aRect</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>NSDrawBitmap:</sel>
+          <arg type="NSRect">rect</arg>
+          <sel>:</sel>
+          <arg type="int">pixelsWide</arg>
+          <sel>:</sel>
+          <arg type="int">pixelsHigh</arg>
+          <sel>:</sel>
+          <arg type="int">bitsPerSample</arg>
+          <sel>:</sel>
+          <arg type="int">samplesPerPixel</arg>
+          <sel>:</sel>
+          <arg type="int">bitsPerPixel</arg>
+          <sel>:</sel>
+          <arg type="int">bytesPerRow</arg>
+          <sel>:</sel>
+          <arg type="BOOL">isPlanar</arg>
+          <sel>:</sel>
+          <arg type="BOOL">hasAlpha</arg>
+          <sel>:</sel>
+          <arg type="NSString*">colorSpaceName</arg>
+          <sel>:</sel>
+          <arg type="const unsigned char*const[5]">data</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>NSEraseRect:</sel>
+          <arg type="NSRect">aRect</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>NSFrameRect:</sel>
+          <arg type="const NSRect">aRect</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>NSFrameRectWithWidth:</sel>
+          <arg type="const NSRect">aRect</arg>
+          <sel>:</sel>
+          <arg type="float">frameWidth</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>NSHighlightRect:</sel>
+          <arg type="NSRect">aRect</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSColor*">
+          <sel>NSReadPixel:</sel>
+          <arg type="NSPoint">location</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>NSRectClip:</sel>
+          <arg type="NSRect">aRect</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>NSRectClipList:</sel>
+          <arg type="const NSRect*">rects</arg>
+          <sel>:</sel>
+          <arg type="int">count</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>NSRectFill:</sel>
+          <arg type="NSRect">aRect</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>NSRectFillList:</sel>
+          <arg type="const NSRect*">rects</arg>
+          <sel>:</sel>
+          <arg type="int">count</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>NSRectFillListWithGrays:</sel>
+          <arg type="const NSRect*">rects</arg>
+          <sel>:</sel>
+          <arg type="const float*">grays</arg>
+          <sel>:</sel>
+          <arg type="int">count</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>NSRectFillUsingOperation:</sel>
+          <arg type="NSRect">aRect</arg>
+          <sel>:</sel>
+          <arg type="NSCompositingOperation">op</arg>
+          <desc>
+          </desc>
+        </method>
+      </category>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the NSGraphicsContext(Ops)
+        category
+      </heading>
+      <category name="Ops" class="NSGraphicsContext">
+        <declared>AppKit/NSGraphicsContext.h</declared>
+        <desc>
+        </desc>
+        <method type="void">
+          <sel>DPSDiscardEventsMatchingMask:</sel>
+          <arg type="unsigned">mask</arg>
+          <sel>beforeEvent:</sel>
+          <arg type="NSEvent*">limit</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSFontDirectory</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSEvent*">
+          <sel>DPSGetEventMatchingMask:</sel>
+          <arg type="unsigned">mask</arg>
+          <sel>beforeDate:</sel>
+          <arg type="NSDate*">limit</arg>
+          <sel>inMode:</sel>
+          <arg type="NSString*">mode</arg>
+          <sel>dequeue:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSISOLatin1Encoding</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSPostEvent:</sel>
+          <arg type="NSEvent*">anEvent</arg>
+          <sel>atStart:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSPrintf:</sel>
+          <arg type="char*">fmt</arg>
+          <sel>:</sel>
+          <arg type="va_list">args</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSSharedFontDirectory</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSStandardEncoding</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSWriteData:</sel>
+          <arg type="char*">buf</arg>
+          <sel>:</sel>
+          <arg type="unsigned int">count</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSalphaimage</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSarc:</sel>
+          <arg type="float">x</arg>
+          <sel>:</sel>
+          <arg type="float">y</arg>
+          <sel>:</sel>
+          <arg type="float">r</arg>
+          <sel>:</sel>
+          <arg type="float">angle1</arg>
+          <sel>:</sel>
+          <arg type="float">angle2</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSarcn:</sel>
+          <arg type="float">x</arg>
+          <sel>:</sel>
+          <arg type="float">y</arg>
+          <sel>:</sel>
+          <arg type="float">r</arg>
+          <sel>:</sel>
+          <arg type="float">angle1</arg>
+          <sel>:</sel>
+          <arg type="float">angle2</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSarct:</sel>
+          <arg type="float">x1</arg>
+          <sel>:</sel>
+          <arg type="float">y1</arg>
+          <sel>:</sel>
+          <arg type="float">x2</arg>
+          <sel>:</sel>
+          <arg type="float">y2</arg>
+          <sel>:</sel>
+          <arg type="float">r</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSarcto:</sel>
+          <arg type="float">x1</arg>
+          <sel>:</sel>
+          <arg type="float">y1</arg>
+          <sel>:</sel>
+          <arg type="float">x2</arg>
+          <sel>:</sel>
+          <arg type="float">y2</arg>
+          <sel>:</sel>
+          <arg type="float">r</arg>
+          <sel>:</sel>
+          <arg type="float*">xt1</arg>
+          <sel>:</sel>
+          <arg type="float*">yt1</arg>
+          <sel>:</sel>
+          <arg type="float*">xt2</arg>
+          <sel>:</sel>
+          <arg type="float*">yt2</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSashow:</sel>
+          <arg type="float">x</arg>
+          <sel>:</sel>
+          <arg type="float">y</arg>
+          <sel>:</sel>
+          <arg type="const char*">s</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSawidthshow:</sel>
+          <arg type="float">cx</arg>
+          <sel>:</sel>
+          <arg type="float">cy</arg>
+          <sel>:</sel>
+          <arg type="int">c</arg>
+          <sel>:</sel>
+          <arg type="float">ax</arg>
+          <sel>:</sel>
+          <arg type="float">ay</arg>
+          <sel>:</sel>
+          <arg type="const char*">s</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScapturegstate:</sel>
+          <arg type="int*">gst</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScapturemouse:</sel>
+          <arg type="int">win</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScharpath:</sel>
+          <arg type="const char*">s</arg>
+          <sel>:</sel>
+          <arg type="int">b</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSclear</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScleartomark</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSclip</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSclippath</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSclosepath</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScolorimage</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScomposite:</sel>
+          <arg type="float">x</arg>
+          <sel>:</sel>
+          <arg type="float">y</arg>
+          <sel>:</sel>
+          <arg type="float">w</arg>
+          <sel>:</sel>
+          <arg type="float">h</arg>
+          <sel>:</sel>
+          <arg type="int">gstateNum</arg>
+          <sel>:</sel>
+          <arg type="float">dx</arg>
+          <sel>:</sel>
+          <arg type="float">dy</arg>
+          <sel>:</sel>
+          <arg type="int">op</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScompositerect:</sel>
+          <arg type="float">x</arg>
+          <sel>:</sel>
+          <arg type="float">y</arg>
+          <sel>:</sel>
+          <arg type="float">w</arg>
+          <sel>:</sel>
+          <arg type="float">h</arg>
+          <sel>:</sel>
+          <arg type="int">op</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSconcat:</sel>
+          <arg type="const float*">m</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSconcatmatrix</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScopy:</sel>
+          <arg type="int">n</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScopypage</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScount:</sel>
+          <arg type="int*">n</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScountscreenlist:</sel>
+          <arg type="int">context</arg>
+          <sel>:</sel>
+          <arg type="int*">count</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScounttomark:</sel>
+          <arg type="int*">n</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScountwindowlist:</sel>
+          <arg type="int">context</arg>
+          <sel>:</sel>
+          <arg type="int*">count</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentalpha:</sel>
+          <arg type="float*">alpha</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentcacheparams</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentcmykcolor:</sel>
+          <arg type="float*">c</arg>
+          <sel>:</sel>
+          <arg type="float*">m</arg>
+          <sel>:</sel>
+          <arg type="float*">y</arg>
+          <sel>:</sel>
+          <arg type="float*">k</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentdash</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentdefaultdepthlimit:</sel>
+          <arg type="int*">limit</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentdrawingfunction:</sel>
+          <arg type="int*">function</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentflat:</sel>
+          <arg type="float*">flatness</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentfont</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentgcdrawable:</sel>
+          <arg type="void**">gc</arg>
+          <sel>:</sel>
+          <arg type="void**">draw</arg>
+          <sel>:</sel>
+          <arg type="int*">x</arg>
+          <sel>:</sel>
+          <arg type="int*">y</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentgcdrawablecolor:</sel>
+          <arg type="void**">gc</arg>
+          <sel>:</sel>
+          <arg type="void**">draw</arg>
+          <sel>:</sel>
+          <arg type="int*">x</arg>
+          <sel>:</sel>
+          <arg type="int*">y</arg>
+          <sel>:</sel>
+          <arg type="int*">colorInfo</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentgray:</sel>
+          <arg type="float*">gray</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentgstate:</sel>
+          <arg type="int">gst</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrenthalftone</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrenthalftonephase:</sel>
+          <arg type="float*">x</arg>
+          <sel>:</sel>
+          <arg type="float*">y</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrenthsbcolor:</sel>
+          <arg type="float*">h</arg>
+          <sel>:</sel>
+          <arg type="float*">s</arg>
+          <sel>:</sel>
+          <arg type="float*">b</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentlinecap:</sel>
+          <arg type="int*">linecap</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentlinejoin:</sel>
+          <arg type="int*">linejoin</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentlinewidth:</sel>
+          <arg type="float*">width</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentmatrix</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentmiterlimit:</sel>
+          <arg type="float*">limit</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentoffset:</sel>
+          <arg type="int*">x</arg>
+          <sel>:</sel>
+          <arg type="int*">y</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentowner:</sel>
+          <arg type="int">win</arg>
+          <sel>:</sel>
+          <arg type="int*">owner</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentpoint:</sel>
+          <arg type="float*">x</arg>
+          <sel>:</sel>
+          <arg type="float*">y</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentrgbcolor:</sel>
+          <arg type="float*">r</arg>
+          <sel>:</sel>
+          <arg type="float*">g</arg>
+          <sel>:</sel>
+          <arg type="float*">b</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentscreen</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentserverdevice:</sel>
+          <arg type="void**">serverptr</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentstrokeadjust:</sel>
+          <arg type="int*">b</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrenttransfer</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentwindow:</sel>
+          <arg type="int*">num</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentwindowalpha:</sel>
+          <arg type="int">win</arg>
+          <sel>:</sel>
+          <arg type="int*">alpha</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentwindowbounds:</sel>
+          <arg type="int">num</arg>
+          <sel>:</sel>
+          <arg type="float*">x</arg>
+          <sel>:</sel>
+          <arg type="float*">y</arg>
+          <sel>:</sel>
+          <arg type="float*">w</arg>
+          <sel>:</sel>
+          <arg type="float*">h</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentwindowdepth:</sel>
+          <arg type="int">win</arg>
+          <sel>:</sel>
+          <arg type="int*">depth</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentwindowdepthlimit:</sel>
+          <arg type="int">win</arg>
+          <sel>:</sel>
+          <arg type="int*">limit</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentwindowdevice:</sel>
+          <arg type="int">win</arg>
+          <sel>:</sel>
+          <arg type="void**">windowptr</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurrentwindowlevel:</sel>
+          <arg type="int">win</arg>
+          <sel>:</sel>
+          <arg type="int*">level</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPScurveto:</sel>
+          <arg type="float">x1</arg>
+          <sel>:</sel>
+          <arg type="float">y1</arg>
+          <sel>:</sel>
+          <arg type="float">x2</arg>
+          <sel>:</sel>
+          <arg type="float">y2</arg>
+          <sel>:</sel>
+          <arg type="float">x3</arg>
+          <sel>:</sel>
+          <arg type="float">y3</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSdefaultmatrix</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSdefinefont</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSdefineuserobject</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSdissolve:</sel>
+          <arg type="float">x</arg>
+          <sel>:</sel>
+          <arg type="float">y</arg>
+          <sel>:</sel>
+          <arg type="float">w</arg>
+          <sel>:</sel>
+          <arg type="float">h</arg>
+          <sel>:</sel>
+          <arg type="int">gstateNum</arg>
+          <sel>:</sel>
+          <arg type="float">dx</arg>
+          <sel>:</sel>
+          <arg type="float">dy</arg>
+          <sel>:</sel>
+          <arg type="float">delta</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSdocedited:</sel>
+          <arg type="int">edited</arg>
+          <sel>:</sel>
+          <arg type="int">window</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSdtransform:</sel>
+          <arg type="float">x1</arg>
+          <sel>:</sel>
+          <arg type="float">y1</arg>
+          <sel>:</sel>
+          <arg type="float*">x2</arg>
+          <sel>:</sel>
+          <arg type="float*">y2</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSdup</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSeoclip</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSeofill</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSeoviewclip</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSerasepage</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSexch</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSexecstack</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSexecuserobject:</sel>
+          <arg type="int">index</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSfill</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSfindfont:</sel>
+          <arg type="const char*">name</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSfindwindow:</sel>
+          <arg type="float">x</arg>
+          <sel>:</sel>
+          <arg type="float">y</arg>
+          <sel>:</sel>
+          <arg type="int">op</arg>
+          <sel>:</sel>
+          <arg type="int">otherWin</arg>
+          <sel>:</sel>
+          <arg type="float*">lx</arg>
+          <sel>:</sel>
+          <arg type="float*">ly</arg>
+          <sel>:</sel>
+          <arg type="int*">winFound</arg>
+          <sel>:</sel>
+          <arg type="int*">didFind</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSflattenpath</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSflush</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSflushwindowrect:</sel>
+          <arg type="float">x</arg>
+          <sel>:</sel>
+          <arg type="float">y</arg>
+          <sel>:</sel>
+          <arg type="float">w</arg>
+          <sel>:</sel>
+          <arg type="float">h</arg>
+          <sel>:</sel>
+          <arg type="int">win</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSfrontwindow:</sel>
+          <arg type="int*">num</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSget</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSgetboolean:</sel>
+          <arg type="int*">it</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSgetchararray:</sel>
+          <arg type="int">size</arg>
+          <sel>:</sel>
+          <arg type="char*">s</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSgetfloat:</sel>
+          <arg type="float*">it</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSgetfloatarray:</sel>
+          <arg type="int">size</arg>
+          <sel>:</sel>
+          <arg type="float*">a</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSgetint:</sel>
+          <arg type="int*">it</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSgetintarray:</sel>
+          <arg type="int">size</arg>
+          <sel>:</sel>
+          <arg type="int*">a</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSgetstring:</sel>
+          <arg type="char*">s</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSgrestore</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSgrestoreall</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSgsave</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSgstate</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPShidecursor</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSidentmatrix</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSidtransform:</sel>
+          <arg type="float">x1</arg>
+          <sel>:</sel>
+          <arg type="float">y1</arg>
+          <sel>:</sel>
+          <arg type="float*">x2</arg>
+          <sel>:</sel>
+          <arg type="float*">y2</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSimage</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSimagecursor:</sel>
+          <arg type="float">hotx</arg>
+          <sel>:</sel>
+          <arg type="float">hoty</arg>
+          <sel>:</sel>
+          <arg type="float">w</arg>
+          <sel>:</sel>
+          <arg type="float">h</arg>
+          <sel>:</sel>
+          <arg type="int">colors</arg>
+          <sel>:</sel>
+          <arg type="const char*">image</arg>
+          <sel>:</sel>
+          <arg type="void**">cid</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSimagemask</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSindex:</sel>
+          <arg type="int">i</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSinitclip</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSinitgraphics</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSinitmatrix</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSinitviewclip</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSinvertmatrix</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSitransform:</sel>
+          <arg type="float">x1</arg>
+          <sel>:</sel>
+          <arg type="float">y1</arg>
+          <sel>:</sel>
+          <arg type="float*">x2</arg>
+          <sel>:</sel>
+          <arg type="float*">y2</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSkshow:</sel>
+          <arg type="const char*">s</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSlineto:</sel>
+          <arg type="float">x</arg>
+          <sel>:</sel>
+          <arg type="float">y</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSmakefont</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSmark</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSmatrix</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSminiwindow:</sel>
+          <arg type="int">num</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSmouselocation:</sel>
+          <arg type="float*">x</arg>
+          <sel>:</sel>
+          <arg type="float*">y</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSmoveto:</sel>
+          <arg type="float">x</arg>
+          <sel>:</sel>
+          <arg type="float">y</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSmovewindow:</sel>
+          <arg type="float">x</arg>
+          <sel>:</sel>
+          <arg type="float">y</arg>
+          <sel>:</sel>
+          <arg type="int">num</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSnewpath</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSnull</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSorderwindow:</sel>
+          <arg type="int">op</arg>
+          <sel>:</sel>
+          <arg type="int">otherWin</arg>
+          <sel>:</sel>
+          <arg type="int">winNum</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSpathbbox:</sel>
+          <arg type="float*">llx</arg>
+          <sel>:</sel>
+          <arg type="float*">lly</arg>
+          <sel>:</sel>
+          <arg type="float*">urx</arg>
+          <sel>:</sel>
+          <arg type="float*">ury</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSpathforall</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSplacewindow:</sel>
+          <arg type="float">x</arg>
+          <sel>:</sel>
+          <arg type="float">y</arg>
+          <sel>:</sel>
+          <arg type="float">w</arg>
+          <sel>:</sel>
+          <arg type="float">h</arg>
+          <sel>:</sel>
+          <arg type="int">win</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSpop</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSput</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSrcurveto:</sel>
+          <arg type="float">x1</arg>
+          <sel>:</sel>
+          <arg type="float">y1</arg>
+          <sel>:</sel>
+          <arg type="float">x2</arg>
+          <sel>:</sel>
+          <arg type="float">y2</arg>
+          <sel>:</sel>
+          <arg type="float">x3</arg>
+          <sel>:</sel>
+          <arg type="float">y3</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSreadimage</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSrectclip:</sel>
+          <arg type="float">x</arg>
+          <sel>:</sel>
+          <arg type="float">y</arg>
+          <sel>:</sel>
+          <arg type="float">w</arg>
+          <sel>:</sel>
+          <arg type="float">h</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSrectfill:</sel>
+          <arg type="float">x</arg>
+          <sel>:</sel>
+          <arg type="float">y</arg>
+          <sel>:</sel>
+          <arg type="float">w</arg>
+          <sel>:</sel>
+          <arg type="float">h</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSrectstroke:</sel>
+          <arg type="float">x</arg>
+          <sel>:</sel>
+          <arg type="float">y</arg>
+          <sel>:</sel>
+          <arg type="float">w</arg>
+          <sel>:</sel>
+          <arg type="float">h</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSrectviewclip:</sel>
+          <arg type="float">x</arg>
+          <sel>:</sel>
+          <arg type="float">y</arg>
+          <sel>:</sel>
+          <arg type="float">w</arg>
+          <sel>:</sel>
+          <arg type="float">h</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSreleasemouse</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSrestore</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSreversepath</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSrlineto:</sel>
+          <arg type="float">x</arg>
+          <sel>:</sel>
+          <arg type="float">y</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSrmoveto:</sel>
+          <arg type="float">x</arg>
+          <sel>:</sel>
+          <arg type="float">y</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSroll:</sel>
+          <arg type="int">n</arg>
+          <sel>:</sel>
+          <arg type="int">j</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSrotate:</sel>
+          <arg type="float">angle</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsave</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSscale:</sel>
+          <arg type="float">x</arg>
+          <sel>:</sel>
+          <arg type="float">y</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSscalefont:</sel>
+          <arg type="float">size</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSscreenlist:</sel>
+          <arg type="int">context</arg>
+          <sel>:</sel>
+          <arg type="int">count</arg>
+          <sel>:</sel>
+          <arg type="int*">windows</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSselectfont:</sel>
+          <arg type="const char*">name</arg>
+          <sel>:</sel>
+          <arg type="float">scale</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsendboolean:</sel>
+          <arg type="int">it</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsendchararray:</sel>
+          <arg type="const char*">s</arg>
+          <sel>:</sel>
+          <arg type="int">size</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsendfloat:</sel>
+          <arg type="float">it</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsendfloatarray:</sel>
+          <arg type="const float*">a</arg>
+          <sel>:</sel>
+          <arg type="int">size</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsendint:</sel>
+          <arg type="int">it</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsendintarray:</sel>
+          <arg type="const int*">a</arg>
+          <sel>:</sel>
+          <arg type="int">size</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsendstring:</sel>
+          <arg type="const char*">s</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetalpha:</sel>
+          <arg type="float">a</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetautofill:</sel>
+          <arg type="int">truth</arg>
+          <sel>:</sel>
+          <arg type="int">num</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetbbox:</sel>
+          <arg type="float">llx</arg>
+          <sel>:</sel>
+          <arg type="float">lly</arg>
+          <sel>:</sel>
+          <arg type="float">urx</arg>
+          <sel>:</sel>
+          <arg type="float">ury</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetcmykcolor:</sel>
+          <arg type="float">c</arg>
+          <sel>:</sel>
+          <arg type="float">m</arg>
+          <sel>:</sel>
+          <arg type="float">y</arg>
+          <sel>:</sel>
+          <arg type="float">k</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetcursorcolor:</sel>
+          <arg type="float">fr</arg>
+          <sel>:</sel>
+          <arg type="float">fg</arg>
+          <sel>:</sel>
+          <arg type="float">fb</arg>
+          <sel>:</sel>
+          <arg type="float">br</arg>
+          <sel>:</sel>
+          <arg type="float">bg</arg>
+          <sel>:</sel>
+          <arg type="float">bb</arg>
+          <sel>:</sel>
+          <arg type="void*">cid</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetdash:</sel>
+          <arg type="const float*">pat</arg>
+          <sel>:</sel>
+          <arg type="int">size</arg>
+          <sel>:</sel>
+          <arg type="float">offset</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetdefaultdepthlimit:</sel>
+          <arg type="int">limit</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetdrawingfunction:</sel>
+          <arg type="int">function</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetexposurecolor</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetflat:</sel>
+          <arg type="float">flatness</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetfont:</sel>
+          <arg type="int">f</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetgcdrawable:</sel>
+          <arg type="void*">gc</arg>
+          <sel>:</sel>
+          <arg type="void*">draw</arg>
+          <sel>:</sel>
+          <arg type="int">x</arg>
+          <sel>:</sel>
+          <arg type="int">y</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetgcdrawablecolor:</sel>
+          <arg type="void*">gc</arg>
+          <sel>:</sel>
+          <arg type="void*">draw</arg>
+          <sel>:</sel>
+          <arg type="int">x</arg>
+          <sel>:</sel>
+          <arg type="int">y</arg>
+          <sel>:</sel>
+          <arg type="const int*">colorInfo</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetgray:</sel>
+          <arg type="float">gray</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetgstate:</sel>
+          <arg type="int">gst</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsethalftone</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsethalftonephase:</sel>
+          <arg type="float">x</arg>
+          <sel>:</sel>
+          <arg type="float">y</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsethsbcolor:</sel>
+          <arg type="float">h</arg>
+          <sel>:</sel>
+          <arg type="float">s</arg>
+          <sel>:</sel>
+          <arg type="float">b</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetinputfocus:</sel>
+          <arg type="int">win</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetinputstate:</sel>
+          <arg type="int">window</arg>
+          <sel>:</sel>
+          <arg type="int">state</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetlinecap:</sel>
+          <arg type="int">linecap</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetlinejoin:</sel>
+          <arg type="int">linejoin</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetlinewidth:</sel>
+          <arg type="float">width</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetmatrix</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetmaxsize:</sel>
+          <arg type="float">width</arg>
+          <sel>:</sel>
+          <arg type="float">height</arg>
+          <sel>:</sel>
+          <arg type="int">win</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetminsize:</sel>
+          <arg type="float">width</arg>
+          <sel>:</sel>
+          <arg type="float">height</arg>
+          <sel>:</sel>
+          <arg type="int">win</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetmiterlimit:</sel>
+          <arg type="float">limit</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetoffset:</sel>
+          <arg type="short int">x</arg>
+          <sel>:</sel>
+          <arg type="short int">y</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetowner:</sel>
+          <arg type="int">owner</arg>
+          <sel>:</sel>
+          <arg type="int">win</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetresizeincrements:</sel>
+          <arg type="float">width</arg>
+          <sel>:</sel>
+          <arg type="float">height</arg>
+          <sel>:</sel>
+          <arg type="int">win</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetrgbactual:</sel>
+          <arg type="double">r</arg>
+          <sel>:</sel>
+          <arg type="double">g</arg>
+          <sel>:</sel>
+          <arg type="double">b</arg>
+          <sel>:</sel>
+          <arg type="int*">success</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetrgbcolor:</sel>
+          <arg type="float">r</arg>
+          <sel>:</sel>
+          <arg type="float">g</arg>
+          <sel>:</sel>
+          <arg type="float">b</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetscreen</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetsendexposed:</sel>
+          <arg type="int">truth</arg>
+          <sel>:</sel>
+          <arg type="int">num</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetstrokeadjust:</sel>
+          <arg type="int">b</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsettransfer</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetwindowdepthlimit:</sel>
+          <arg type="int">limit</arg>
+          <sel>:</sel>
+          <arg type="int">win</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetwindowlevel:</sel>
+          <arg type="int">level</arg>
+          <sel>:</sel>
+          <arg type="int">win</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSsetwindowtype:</sel>
+          <arg type="int">type</arg>
+          <sel>:</sel>
+          <arg type="int">win</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSshow:</sel>
+          <arg type="const char*">s</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSshowcursor</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSshowpage</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSstandardcursor:</sel>
+          <arg type="int">style</arg>
+          <sel>:</sel>
+          <arg type="void**">cid</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSstroke</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSstrokepath</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSstyleoffsets:</sel>
+          <arg type="float*">l</arg>
+          <sel>:</sel>
+          <arg type="float*">r</arg>
+          <sel>:</sel>
+          <arg type="float*">t</arg>
+          <sel>:</sel>
+          <arg type="float*">b</arg>
+          <sel>:</sel>
+          <arg type="int">style</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSstylewindow:</sel>
+          <arg type="int">style</arg>
+          <sel>:</sel>
+          <arg type="int">num</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPStermwindow:</sel>
+          <arg type="int">num</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPStitlewindow:</sel>
+          <arg type="const char*">window_title</arg>
+          <sel>:</sel>
+          <arg type="int">num</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPStransform:</sel>
+          <arg type="float">x1</arg>
+          <sel>:</sel>
+          <arg type="float">y1</arg>
+          <sel>:</sel>
+          <arg type="float*">x2</arg>
+          <sel>:</sel>
+          <arg type="float*">y2</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPStranslate:</sel>
+          <arg type="float">x</arg>
+          <sel>:</sel>
+          <arg type="float">y</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSueofill:</sel>
+          <arg type="const char*">nums</arg>
+          <sel>:</sel>
+          <arg type="int">n</arg>
+          <sel>:</sel>
+          <arg type="const char*">op</arg>
+          <sel>:</sel>
+          <arg type="int">l</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSufill:</sel>
+          <arg type="const char*">nums</arg>
+          <sel>:</sel>
+          <arg type="int">n</arg>
+          <sel>:</sel>
+          <arg type="const char*">ops</arg>
+          <sel>:</sel>
+          <arg type="int">l</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSundefinefont:</sel>
+          <arg type="const char*">name</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSundefineuserobject:</sel>
+          <arg type="int">index</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSupdatewindow:</sel>
+          <arg type="int">win</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSustroke:</sel>
+          <arg type="const char*">nums</arg>
+          <sel>:</sel>
+          <arg type="int">n</arg>
+          <sel>:</sel>
+          <arg type="const char*">ops</arg>
+          <sel>:</sel>
+          <arg type="int">l</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSustrokepath:</sel>
+          <arg type="const char*">nums</arg>
+          <sel>:</sel>
+          <arg type="int">n</arg>
+          <sel>:</sel>
+          <arg type="const char*">ops</arg>
+          <sel>:</sel>
+          <arg type="int">l</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSviewclip</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSviewclippath</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSwidthshow:</sel>
+          <arg type="float">x</arg>
+          <sel>:</sel>
+          <arg type="float">y</arg>
+          <sel>:</sel>
+          <arg type="int">c</arg>
+          <sel>:</sel>
+          <arg type="const char*">s</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSwindow:</sel>
+          <arg type="float">x</arg>
+          <sel>:</sel>
+          <arg type="float">y</arg>
+          <sel>:</sel>
+          <arg type="float">w</arg>
+          <sel>:</sel>
+          <arg type="float">h</arg>
+          <sel>:</sel>
+          <arg type="int">type</arg>
+          <sel>:</sel>
+          <arg type="int*">num</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSwindowdevice:</sel>
+          <arg type="int">num</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSwindowdeviceround:</sel>
+          <arg type="int">num</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSwindowlist:</sel>
+          <arg type="int">context</arg>
+          <sel>:</sel>
+          <arg type="int">count</arg>
+          <sel>:</sel>
+          <arg type="int*">windows</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSxshow:</sel>
+          <arg type="const char*">s</arg>
+          <sel>:</sel>
+          <arg type="const float*">numarray</arg>
+          <sel>:</sel>
+          <arg type="int">size</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSxyshow:</sel>
+          <arg type="const char*">s</arg>
+          <sel>:</sel>
+          <arg type="const float*">numarray</arg>
+          <sel>:</sel>
+          <arg type="int">size</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>DPSyshow:</sel>
+          <arg type="const char*">s</arg>
+          <sel>:</sel>
+          <arg type="const float*">numarray</arg>
+          <sel>:</sel>
+          <arg type="int">size</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setFont:</sel>
+          <arg type="NSFont*">font</arg>
+          <desc>
+          </desc>
+        </method>
+      </category>
     </chapter>
   </body>
 </gsdoc>

@@ -1,604 +1,737 @@
-<html><head>
- <title>NSTableView</title>
-</head>
-<body>
-<a href ="NSTableHeaderView.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSText.html">[Next] </a>
-<h1>NSTableView</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSTableView</a></h2>
-<h2><a name ="NSTableView">NSTableView</a></h2>
-<p><b>Declared in: </b> Gui/NSTableView.h</p>
-<p><b>Inherits from: </b> NSControl</p>
-<p><b>Conforms to: </b> NSCoding
-</p>
-<hr>
-
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSTableView.html#method-0">-addTableColumn:</a>
-<li ><a href ="NSTableView.html#method-1">-allowsColumnReordering</a>
-<li ><a href ="NSTableView.html#method-2">-allowsColumnResizing</a>
-<li ><a href ="NSTableView.html#method-3">-allowsColumnSelection</a>
-<li ><a href ="NSTableView.html#method-4">-allowsEmptySelection</a>
-<li ><a href ="NSTableView.html#method-5">-allowsMultipleSelection</a>
-<li ><a href ="NSTableView.html#method-6">-autoresizesAllColumnsToFit</a>
-<li ><a href ="NSTableView.html#method-7">-autosaveName</a>
-<li ><a href ="NSTableView.html#method-8">-autosaveTableColumns</a>
-<li ><a href ="NSTableView.html#method-9">-backgroundColor</a>
-<li ><a href ="NSTableView.html#method-10">-clickedColumn</a>
-<li ><a href ="NSTableView.html#method-11">-clickedRow</a>
-<li ><a href ="NSTableView.html#method-12">-columnAtPoint:</a>
-<li ><a href ="NSTableView.html#method-14">-columnWithIdentifier:</a>
-<li ><a href ="NSTableView.html#method-13">-columnsInRect:</a>
-<li ><a href ="NSTableView.html#method-15">-cornerView</a>
-<li ><a href ="NSTableView.html#method-16">-dataSource</a>
-<li ><a href ="NSTableView.html#method-17">-delegate</a>
-<li ><a href ="NSTableView.html#method-18">-deselectAll:</a>
-<li ><a href ="NSTableView.html#method-19">-deselectColumn:</a>
-<li ><a href ="NSTableView.html#method-20">-deselectRow:</a>
-<li ><a href ="NSTableView.html#method-21">-doubleAction</a>
-<li ><a href ="NSTableView.html#method-22">-drawGridInClipRect:</a>
-<li ><a href ="NSTableView.html#method-23">-drawRow:</a>
-<li ><a href ="NSTableView.html#method-24">-drawsGrid</a>
-<li ><a href ="NSTableView.html#method-25">-editColumn:row:withEvent:</a>
-<li ><a href ="NSTableView.html#method-26">-editedColumn</a>
-<li ><a href ="NSTableView.html#method-27">-editedRow</a>
-<li ><a href ="NSTableView.html#method-28">-frameOfCellAtColumn:</a>
-<li ><a href ="NSTableView.html#method-29">-gridColor</a>
-<li ><a href ="NSTableView.html#method-30">-headerView</a>
-<li ><a href ="NSTableView.html#method-31">-highlightSelectionInClipRect:</a>
-<li ><a href ="NSTableView.html#method-32">-initWithFrame:</a>
-<li ><a href ="NSTableView.html#method-33">-intercellSpacing</a>
-<li ><a href ="NSTableView.html#method-34">-isColumnSelected:</a>
-<li ><a href ="NSTableView.html#method-35">-isRowSelected:</a>
-<li ><a href ="NSTableView.html#method-36">-moveColumn:</a>
-<li ><a href ="NSTableView.html#method-37">-noteNumberOfRowsChanged</a>
-<li ><a href ="NSTableView.html#method-38">-numberOfColumns</a>
-<li ><a href ="NSTableView.html#method-39">-numberOfRows</a>
-<li ><a href ="NSTableView.html#method-40">-numberOfSelectedColumns</a>
-<li ><a href ="NSTableView.html#method-41">-numberOfSelectedRows</a>
-<li ><a href ="NSTableView.html#method-42">-rectOfColumn:</a>
-<li ><a href ="NSTableView.html#method-43">-rectOfRow:</a>
-<li ><a href ="NSTableView.html#method-44">-reloadData</a>
-<li ><a href ="NSTableView.html#method-45">-removeTableColumn:</a>
-<li ><a href ="NSTableView.html#method-46">-rowAtPoint:</a>
-<li ><a href ="NSTableView.html#method-47">-rowHeight</a>
-<li ><a href ="NSTableView.html#method-48">-rowsInRect:</a>
-<li ><a href ="NSTableView.html#method-49">-scrollColumnToVisible:</a>
-<li ><a href ="NSTableView.html#method-50">-scrollRowToVisible:</a>
-<li ><a href ="NSTableView.html#method-51">-selectAll:</a>
-<li ><a href ="NSTableView.html#method-52">-selectColumn:byExtendingSelection:</a>
-<li ><a href ="NSTableView.html#method-57">-selectRow:byExtendingSelection:</a>
-<li ><a href ="NSTableView.html#method-53">-selectedColumn</a>
-<li ><a href ="NSTableView.html#method-54">-selectedColumnEnumerator</a>
-<li ><a href ="NSTableView.html#method-55">-selectedRow</a>
-<li ><a href ="NSTableView.html#method-56">-selectedRowEnumerator</a>
-<li ><a href ="NSTableView.html#method-86">-selectionShouldChangeInTableView:</a>
-<li ><a href ="NSTableView.html#method-58">-setAllowsColumnReordering:</a>
-<li ><a href ="NSTableView.html#method-59">-setAllowsColumnResizing:</a>
-<li ><a href ="NSTableView.html#method-60">-setAllowsColumnSelection:</a>
-<li ><a href ="NSTableView.html#method-61">-setAllowsEmptySelection:</a>
-<li ><a href ="NSTableView.html#method-62">-setAllowsMultipleSelection:</a>
-<li ><a href ="NSTableView.html#method-63">-setAutoresizesAllColumnsToFit:</a>
-<li ><a href ="NSTableView.html#method-64">-setAutosaveName:</a>
-<li ><a href ="NSTableView.html#method-65">-setAutosaveTableColumns:</a>
-<li ><a href ="NSTableView.html#method-66">-setBackgroundColor:</a>
-<li ><a href ="NSTableView.html#method-67">-setCornerView:</a>
-<li ><a href ="NSTableView.html#method-68">-setDataSource:</a>
-<li ><a href ="NSTableView.html#method-69">-setDelegate:</a>
-<li ><a href ="NSTableView.html#method-70">-setDoubleAction:</a>
-<li ><a href ="NSTableView.html#method-71">-setDrawsGrid:</a>
-<li ><a href ="NSTableView.html#method-72">-setGridColor:</a>
-<li ><a href ="NSTableView.html#method-73">-setHeaderView:</a>
-<li ><a href ="NSTableView.html#method-74">-setIntercellSpacing:</a>
-<li ><a href ="NSTableView.html#method-75">-setRowHeight:</a>
-<li ><a href ="NSTableView.html#method-76">-sizeLastColumnToFit</a>
-<li ><a href ="NSTableView.html#method-77">-sizeToFit</a>
-<li ><a href ="NSTableView.html#method-79">-tableColumnWithIdentifier:</a>
-<li ><a href ="NSTableView.html#method-78">-tableColumns</a>
-<li ><a href ="NSTableView.html#method-87">-tableView:shouldEditTableColumn:</a>
-<li ><a href ="NSTableView.html#method-88">-tableView:shouldSelectRow:</a>
-<li ><a href ="NSTableView.html#method-89">-tableView:shouldSelectTableColumn:</a>
-<li ><a href ="NSTableView.html#method-90">-tableView:willDisplayCell:forTableColumn:</a>
-<li ><a href ="NSTableView.html#method-91">-tableViewColumnDidMove:</a>
-<li ><a href ="NSTableView.html#method-92">-tableViewColumnDidResize:</a>
-<li ><a href ="NSTableView.html#method-93">-tableViewSelectionDidChange:</a>
-<li ><a href ="NSTableView.html#method-94">-tableViewSelectionIsChanging:</a>
-<li ><a href ="NSTableView.html#method-80">-textDidBeginEditing:</a>
-<li ><a href ="NSTableView.html#method-81">-textDidChange:</a>
-<li ><a href ="NSTableView.html#method-82">-textDidEndEditing:</a>
-<li ><a href ="NSTableView.html#method-83">-textShouldBeginEditing:</a>
-<li ><a href ="NSTableView.html#method-84">-textShouldEndEditing:</a>
-<li ><a href ="NSTableView.html#method-85">-tile</a>
-</ul>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-0">addTableColumn:</a></h3>
-- (void) <b>addTableColumn:</b> (NSTableColumn*)aColumn;<br>
-
-          
- <hr>
-<h3><a name ="method-1">allowsColumnReordering</a></h3>
-- (BOOL) <b>allowsColumnReordering</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-2">allowsColumnResizing</a></h3>
-- (BOOL) <b>allowsColumnResizing</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-3">allowsColumnSelection</a></h3>
-- (BOOL) <b>allowsColumnSelection</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-4">allowsEmptySelection</a></h3>
-- (BOOL) <b>allowsEmptySelection</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-5">allowsMultipleSelection</a></h3>
-- (BOOL) <b>allowsMultipleSelection</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-6">autoresizesAllColumnsToFit</a></h3>
-- (BOOL) <b>autoresizesAllColumnsToFit</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-7">autosaveName</a></h3>
-- (NSString*) <b>autosaveName</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-8">autosaveTableColumns</a></h3>
-- (BOOL) <b>autosaveTableColumns</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-9">backgroundColor</a></h3>
-- (NSColor*) <b>backgroundColor</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-10">clickedColumn</a></h3>
-- (int) <b>clickedColumn</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-11">clickedRow</a></h3>
-- (int) <b>clickedRow</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-12">columnAtPoint:</a></h3>
-- (int) <b>columnAtPoint:</b> (NSPoint)aPoint;<br>
-
-          
- <hr>
-<h3><a name ="method-13">columnsInRect:</a></h3>
-- (NSRange) <b>columnsInRect:</b> (NSRect)aRect;<br>
-
-          
- <hr>
-<h3><a name ="method-14">columnWithIdentifier:</a></h3>
-- (int) <b>columnWithIdentifier:</b> (id)anObject;<br>
-
-          
- <hr>
-<h3><a name ="method-15">cornerView</a></h3>
-- (NSView*) <b>cornerView</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-16">dataSource</a></h3>
-- (id) <b>dataSource</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-17">delegate</a></h3>
-- (id) <b>delegate</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-18">deselectAll:</a></h3>
-- (void) <b>deselectAll:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-19">deselectColumn:</a></h3>
-- (void) <b>deselectColumn:</b> (int)columnIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-20">deselectRow:</a></h3>
-- (void) <b>deselectRow:</b> (int)rowIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-21">doubleAction</a></h3>
-- (SEL) <b>doubleAction</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-22">drawGridInClipRect:</a></h3>
-- (void) <b>drawGridInClipRect:</b> (NSRect)aRect;<br>
-
-          
- <hr>
-<h3><a name ="method-23">drawRow:</a></h3>
-- (void) <b>drawRow:</b> (int)rowIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-24">drawsGrid</a></h3>
-- (BOOL) <b>drawsGrid</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-25">editColumn:row:withEvent:</a></h3>
-- (void) <b>editColumn:</b> (int)columnIndex <b>row:</b> (int)rowIndex <b>withEvent:</b> (NSEvent*)theEvent;<br>
-
-          
- <hr>
-<h3><a name ="method-26">editedColumn</a></h3>
-- (int) <b>editedColumn</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-27">editedRow</a></h3>
-- (int) <b>editedRow</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-28">frameOfCellAtColumn:</a></h3>
-- (NSRect) <b>frameOfCellAtColumn:</b> (int)columnIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-29">gridColor</a></h3>
-- (NSColor*) <b>gridColor</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-30">headerView</a></h3>
-- (NSTableHeaderView*) <b>headerView</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-31">highlightSelectionInClipRect:</a></h3>
-- (void) <b>highlightSelectionInClipRect:</b> (NSRect)clipRect;<br>
-
-          
- <hr>
-<h3><a name ="method-32">initWithFrame:</a></h3>
-- (id) <b>initWithFrame:</b> (NSRect)frameRect;<br>
-
-          
- <hr>
-<h3><a name ="method-33">intercellSpacing</a></h3>
-- (NSSize) <b>intercellSpacing</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-34">isColumnSelected:</a></h3>
-- (BOOL) <b>isColumnSelected:</b> (int)columnIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-35">isRowSelected:</a></h3>
-- (BOOL) <b>isRowSelected:</b> (int)rowIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-36">moveColumn:</a></h3>
-- (void) <b>moveColumn:</b> (int)columnIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-37">noteNumberOfRowsChanged</a></h3>
-- (void) <b>noteNumberOfRowsChanged</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-38">numberOfColumns</a></h3>
-- (int) <b>numberOfColumns</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-39">numberOfRows</a></h3>
-- (int) <b>numberOfRows</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-40">numberOfSelectedColumns</a></h3>
-- (int) <b>numberOfSelectedColumns</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-41">numberOfSelectedRows</a></h3>
-- (int) <b>numberOfSelectedRows</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-42">rectOfColumn:</a></h3>
-- (NSRect) <b>rectOfColumn:</b> (int)columnIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-43">rectOfRow:</a></h3>
-- (NSRect) <b>rectOfRow:</b> (int)rowIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-44">reloadData</a></h3>
-- (void) <b>reloadData</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-45">removeTableColumn:</a></h3>
-- (void) <b>removeTableColumn:</b> (NSTableColumn*)aTableColumn;<br>
-
-          
- <hr>
-<h3><a name ="method-46">rowAtPoint:</a></h3>
-- (int) <b>rowAtPoint:</b> (NSPoint)aPoint;<br>
-
-          
- <hr>
-<h3><a name ="method-47">rowHeight</a></h3>
-- (float) <b>rowHeight</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-48">rowsInRect:</a></h3>
-- (NSRange) <b>rowsInRect:</b> (NSRect)aRect;<br>
-
-          
- <hr>
-<h3><a name ="method-49">scrollColumnToVisible:</a></h3>
-- (void) <b>scrollColumnToVisible:</b> (int)columnIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-50">scrollRowToVisible:</a></h3>
-- (void) <b>scrollRowToVisible:</b> (int)rowIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-51">selectAll:</a></h3>
-- (void) <b>selectAll:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-52">selectColumn:byExtendingSelection:</a></h3>
-- (void) <b>selectColumn:</b> (int)columnIndex <b>byExtendingSelection:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-53">selectedColumn</a></h3>
-- (int) <b>selectedColumn</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-54">selectedColumnEnumerator</a></h3>
-- (NSEnumerator*) <b>selectedColumnEnumerator</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-55">selectedRow</a></h3>
-- (int) <b>selectedRow</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-56">selectedRowEnumerator</a></h3>
-- (NSEnumerator*) <b>selectedRowEnumerator</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-57">selectRow:byExtendingSelection:</a></h3>
-- (void) <b>selectRow:</b> (int)rowIndex <b>byExtendingSelection:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-58">setAllowsColumnReordering:</a></h3>
-- (void) <b>setAllowsColumnReordering:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-59">setAllowsColumnResizing:</a></h3>
-- (void) <b>setAllowsColumnResizing:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-60">setAllowsColumnSelection:</a></h3>
-- (void) <b>setAllowsColumnSelection:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-61">setAllowsEmptySelection:</a></h3>
-- (void) <b>setAllowsEmptySelection:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-62">setAllowsMultipleSelection:</a></h3>
-- (void) <b>setAllowsMultipleSelection:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-63">setAutoresizesAllColumnsToFit:</a></h3>
-- (void) <b>setAutoresizesAllColumnsToFit:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-64">setAutosaveName:</a></h3>
-- (void) <b>setAutosaveName:</b> (NSString*)name;<br>
-
-          
- <hr>
-<h3><a name ="method-65">setAutosaveTableColumns:</a></h3>
-- (void) <b>setAutosaveTableColumns:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-66">setBackgroundColor:</a></h3>
-- (void) <b>setBackgroundColor:</b> (NSColor*)aColor;<br>
-
-          
- <hr>
-<h3><a name ="method-67">setCornerView:</a></h3>
-- (void) <b>setCornerView:</b> (NSView*)aView;<br>
-
-          
- <hr>
-<h3><a name ="method-68">setDataSource:</a></h3>
-- (void) <b>setDataSource:</b> (id)anObject;<br>
-
-          
- <hr>
-<h3><a name ="method-69">setDelegate:</a></h3>
-- (void) <b>setDelegate:</b> (id)anObject;<br>
-
-          
- <hr>
-<h3><a name ="method-70">setDoubleAction:</a></h3>
-- (void) <b>setDoubleAction:</b> (SEL)aSelector;<br>
-
-          
- <hr>
-<h3><a name ="method-71">setDrawsGrid:</a></h3>
-- (void) <b>setDrawsGrid:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-72">setGridColor:</a></h3>
-- (void) <b>setGridColor:</b> (NSColor*)aColor;<br>
-
-          
- <hr>
-<h3><a name ="method-73">setHeaderView:</a></h3>
-- (void) <b>setHeaderView:</b> (NSTableHeaderView*)aHeaderView;<br>
-
-          
- <hr>
-<h3><a name ="method-74">setIntercellSpacing:</a></h3>
-- (void) <b>setIntercellSpacing:</b> (NSSize)aSize;<br>
-
-          
- <hr>
-<h3><a name ="method-75">setRowHeight:</a></h3>
-- (void) <b>setRowHeight:</b> (float)rowHeight;<br>
-
-          
- <hr>
-<h3><a name ="method-76">sizeLastColumnToFit</a></h3>
-- (void) <b>sizeLastColumnToFit</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-77">sizeToFit</a></h3>
-- (void) <b>sizeToFit</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-78">tableColumns</a></h3>
-- (NSArray*) <b>tableColumns</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-79">tableColumnWithIdentifier:</a></h3>
-- (NSTableColumn*) <b>tableColumnWithIdentifier:</b> (id)anObject;<br>
-
-          
- <hr>
-<h3><a name ="method-80">textDidBeginEditing:</a></h3>
-- (void) <b>textDidBeginEditing:</b> (NSNotification*)aNotification;<br>
-
-          
- <hr>
-<h3><a name ="method-81">textDidChange:</a></h3>
-- (void) <b>textDidChange:</b> (NSNotification*)aNotification;<br>
-
-          
- <hr>
-<h3><a name ="method-82">textDidEndEditing:</a></h3>
-- (void) <b>textDidEndEditing:</b> (NSNotification*)aNotification;<br>
-
-          
- <hr>
-<h3><a name ="method-83">textShouldBeginEditing:</a></h3>
-- (BOOL) <b>textShouldBeginEditing:</b> (NSText*)textObject;<br>
-
-          
- <hr>
-<h3><a name ="method-84">textShouldEndEditing:</a></h3>
-- (BOOL) <b>textShouldEndEditing:</b> (NSText*)textObject;<br>
-
-          
- <hr>
-<h3><a name ="method-85">tile</a></h3>
-- (void) <b>tile</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-86">selectionShouldChangeInTableView:</a></h3>
-- (BOOL) <b>selectionShouldChangeInTableView:</b> (NSTableView*)aTableView;<br>
-
-          
- <hr>
-<h3><a name ="method-87">tableView:shouldEditTableColumn:</a></h3>
-- (BOOL) <b>tableView:</b> (NSTableView*)aTableView <b>shouldEditTableColumn:</b> (NSTableColumn*)aTableColumn;<br>
-
-          
- <hr>
-<h3><a name ="method-88">tableView:shouldSelectRow:</a></h3>
-- (BOOL) <b>tableView:</b> (NSTableView*)aTableView <b>shouldSelectRow:</b> (int)rowIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-89">tableView:shouldSelectTableColumn:</a></h3>
-- (BOOL) <b>tableView:</b> (NSTableView*)aTableView <b>shouldSelectTableColumn:</b> (NSTableColumn*)aTableColumn;<br>
-
-          
- <hr>
-<h3><a name ="method-90">tableView:willDisplayCell:forTableColumn:</a></h3>
-- (void) <b>tableView:</b> (NSTableView*)aTableView <b>willDisplayCell:</b> (id)aCell <b>forTableColumn:</b> (NSTableColumn*)aTableColumn;<br>
-
-          
- <hr>
-<h3><a name ="method-91">tableViewColumnDidMove:</a></h3>
-- (void) <b>tableViewColumnDidMove:</b> (NSNotification*)aNotification;<br>
-
-          
- <hr>
-<h3><a name ="method-92">tableViewColumnDidResize:</a></h3>
-- (void) <b>tableViewColumnDidResize:</b> (NSNotification*)aNotification;<br>
-
-          
- <hr>
-<h3><a name ="method-93">tableViewSelectionDidChange:</a></h3>
-- (void) <b>tableViewSelectionDidChange:</b> (NSNotification*)aNotification;<br>
-
-          
- <hr>
-<h3><a name ="method-94">tableViewSelectionIsChanging:</a></h3>
-- (void) <b>tableViewSelectionIsChanging:</b> (NSNotification*)aNotification;<br>
-
-          
- <hr>
-</body>
-
- </html>
+<html>
+  <head>
+    <title>NSTableView</title>
+  </head>
+  <body>
+    <h1>NSTableView</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Nicola Pero(<a href="mailto:n.pero@mi.flashnet.it"><code>
+        n.pero@mi.flashnet.it
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Pierre-Yves Rivaille(<a href="mailto:pyrivail@ens-lyon.fr"><code>
+        pyrivail@ens-lyon.fr
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <p>Copyright: (C) 2000 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the NSTableView class
+      </h1>
+    <h2><a name="class$NSTableView">NSTableView</a> : <a href="NSControl.html#class$NSControl">NSControl</a></h2>
+    Declared: AppKit/NSTableView.h<br />
+    <p>
+
+            </p>
+    <h3>addTableColumn:</a></h3>
+    - (void) <b>addTableColumn:</b> (NSTableColumn*)aColumn;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>allowsColumnReordering</a></h3>
+    - (BOOL) <b>allowsColumnReordering</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>allowsColumnResizing</a></h3>
+    - (BOOL) <b>allowsColumnResizing</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>allowsColumnSelection</a></h3>
+    - (BOOL) <b>allowsColumnSelection</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>allowsEmptySelection</a></h3>
+    - (BOOL) <b>allowsEmptySelection</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>allowsMultipleSelection</a></h3>
+    - (BOOL) <b>allowsMultipleSelection</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>autoresizesAllColumnsToFit</a></h3>
+    - (BOOL) <b>autoresizesAllColumnsToFit</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>autosaveName</a></h3>
+    - (NSString*) <b>autosaveName</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>autosaveTableColumns</a></h3>
+    - (BOOL) <b>autosaveTableColumns</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>backgroundColor</a></h3>
+    - (<a href="NSColor.html#class$NSColor">NSColor</a>*) <b>backgroundColor</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>clickedColumn</a></h3>
+    - (int) <b>clickedColumn</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>clickedRow</a></h3>
+    - (int) <b>clickedRow</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>columnAtPoint:</a></h3>
+    - (int) <b>columnAtPoint:</b> (NSPoint)aPoint;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>columnWithIdentifier:</a></h3>
+    - (int) <b>columnWithIdentifier:</b> (id)anObject;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>columnsInRect:</a></h3>
+    - (NSRange) <b>columnsInRect:</b> (NSRect)aRect;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>cornerView</a></h3>
+    - (<a href="NSView.html#class$NSView">NSView</a>*) <b>cornerView</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>dataSource</a></h3>
+    - (id) <b>dataSource</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>delegate</a></h3>
+    - (id) <b>delegate</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>deselectAll:</a></h3>
+    - (void) <b>deselectAll:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>deselectColumn:</a></h3>
+    - (void) <b>deselectColumn:</b> (int)columnIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>deselectRow:</a></h3>
+    - (void) <b>deselectRow:</b> (int)rowIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>doubleAction</a></h3>
+    - (SEL) <b>doubleAction</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>dragImageForRows:event:dragImageOffset:</a></h3>
+    - (<a href="NSImage.html#class$NSImage">NSImage</a>*) <b>dragImageForRows:</b> (NSArray*)dragRows<b> event:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)dragEvent<b> dragImageOffset:</b> (NSPoint*)dragImageOffset;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>drawGridInClipRect:</a></h3>
+    - (void) <b>drawGridInClipRect:</b> (NSRect)aRect;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>drawRow:clipRect:</a></h3>
+    - (void) <b>drawRow:</b> (int)rowIndex<b> clipRect:</b> (NSRect)aRect;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>drawsGrid</a></h3>
+    - (BOOL) <b>drawsGrid</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>editColumn:row:withEvent:select:</a></h3>
+    - (void) <b>editColumn:</b> (int)columnIndex<b> row:</b> (int)rowIndex<b> withEvent:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent<b> select:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>editedColumn</a></h3>
+    - (int) <b>editedColumn</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>editedRow</a></h3>
+    - (int) <b>editedRow</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>frameOfCellAtColumn:row:</a></h3>
+    - (NSRect) <b>frameOfCellAtColumn:</b> (int)columnIndex<b> row:</b> (int)rowIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>gridColor</a></h3>
+    - (<a href="NSColor.html#class$NSColor">NSColor</a>*) <b>gridColor</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>headerView</a></h3>
+    - (<a href="NSTableHeaderView.html#class$NSTableHeaderView">NSTableHeaderView</a>*) <b>headerView</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>highlightSelectionInClipRect:</a></h3>
+    - (void) <b>highlightSelectionInClipRect:</b> (NSRect)clipRect;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>highlightedTableColumn</a></h3>
+    - (NSTableColumn*) <b>highlightedTableColumn</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>indicatorImageInTableColumn:</a></h3>
+    - (<a href="NSImage.html#class$NSImage">NSImage</a>*) <b>indicatorImageInTableColumn:</b> (NSTableColumn*)aTableColumn;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>intercellSpacing</a></h3>
+    - (NSSize) <b>intercellSpacing</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isColumnSelected:</a></h3>
+    - (BOOL) <b>isColumnSelected:</b> (int)columnIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isRowSelected:</a></h3>
+    - (BOOL) <b>isRowSelected:</b> (int)rowIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>moveColumn:toColumn:</a></h3>
+    - (void) <b>moveColumn:</b> (int)columnIndex<b> toColumn:</b> (int)newIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>noteNumberOfRowsChanged</a></h3>
+    - (void) <b>noteNumberOfRowsChanged</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>numberOfColumns</a></h3>
+    - (int) <b>numberOfColumns</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>numberOfRows</a></h3>
+    - (int) <b>numberOfRows</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>numberOfSelectedColumns</a></h3>
+    - (int) <b>numberOfSelectedColumns</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>numberOfSelectedRows</a></h3>
+    - (int) <b>numberOfSelectedRows</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>rectOfColumn:</a></h3>
+    - (NSRect) <b>rectOfColumn:</b> (int)columnIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>rectOfRow:</a></h3>
+    - (NSRect) <b>rectOfRow:</b> (int)rowIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>reloadData</a></h3>
+    - (void) <b>reloadData</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>removeTableColumn:</a></h3>
+    - (void) <b>removeTableColumn:</b> (NSTableColumn*)aColumn;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>rowAtPoint:</a></h3>
+    - (int) <b>rowAtPoint:</b> (NSPoint)aPoint;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>rowHeight</a></h3>
+    - (float) <b>rowHeight</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>rowsInRect:</a></h3>
+    - (NSRange) <b>rowsInRect:</b> (NSRect)aRect;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>scrollColumnToVisible:</a></h3>
+    - (void) <b>scrollColumnToVisible:</b> (int)columnIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>scrollRowToVisible:</a></h3>
+    - (void) <b>scrollRowToVisible:</b> (int)rowIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>selectAll:</a></h3>
+    - (void) <b>selectAll:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>selectColumn:byExtendingSelection:</a></h3>
+    - (void) <b>selectColumn:</b> (int)columnIndex<b> byExtendingSelection:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>selectRow:byExtendingSelection:</a></h3>
+    - (void) <b>selectRow:</b> (int)rowIndex<b> byExtendingSelection:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>selectedColumn</a></h3>
+    - (int) <b>selectedColumn</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>selectedColumnEnumerator</a></h3>
+    - (NSEnumerator*) <b>selectedColumnEnumerator</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>selectedRow</a></h3>
+    - (int) <b>selectedRow</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>selectedRowEnumerator</a></h3>
+    - (NSEnumerator*) <b>selectedRowEnumerator</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setAllowsColumnReordering:</a></h3>
+    - (void) <b>setAllowsColumnReordering:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setAllowsColumnResizing:</a></h3>
+    - (void) <b>setAllowsColumnResizing:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setAllowsColumnSelection:</a></h3>
+    - (void) <b>setAllowsColumnSelection:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setAllowsEmptySelection:</a></h3>
+    - (void) <b>setAllowsEmptySelection:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setAllowsMultipleSelection:</a></h3>
+    - (void) <b>setAllowsMultipleSelection:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setAutoresizesAllColumnsToFit:</a></h3>
+    - (void) <b>setAutoresizesAllColumnsToFit:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setAutosaveName:</a></h3>
+    - (void) <b>setAutosaveName:</b> (NSString*)name;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setAutosaveTableColumns:</a></h3>
+    - (void) <b>setAutosaveTableColumns:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setBackgroundColor:</a></h3>
+    - (void) <b>setBackgroundColor:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)aColor;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setCornerView:</a></h3>
+    - (void) <b>setCornerView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setDataSource:</a></h3>
+    - (void) <b>setDataSource:</b> (id)anObject;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setDelegate:</a></h3>
+    - (void) <b>setDelegate:</b> (id)anObject;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setDoubleAction:</a></h3>
+    - (void) <b>setDoubleAction:</b> (SEL)aSelector;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setDrawsGrid:</a></h3>
+    - (void) <b>setDrawsGrid:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setDropRow:dropOperation:</a></h3>
+    - (void) <b>setDropRow:</b> (int)row<b> dropOperation:</b> (NSTableViewDropOperation)operation;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setFrame:</a></h3>
+    - (void) <b>setFrame:</b> (NSRect)aRect;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setGridColor:</a></h3>
+    - (void) <b>setGridColor:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)aColor;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setHeaderView:</a></h3>
+    - (void) <b>setHeaderView:</b> (<a href="NSTableHeaderView.html#class$NSTableHeaderView">NSTableHeaderView</a>*)aHeaderView;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setHighlightedTableColumn:</a></h3>
+    - (void) <b>setHighlightedTableColumn:</b> (NSTableColumn*)aTableColumn;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setIndicatorImage:inTableColumn:</a></h3>
+    - (void) <b>setIndicatorImage:</b> (<a href="NSImage.html#class$NSImage">NSImage</a>*)anImage<b> inTableColumn:</b> (NSTableColumn*)aTableColumn;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setIntercellSpacing:</a></h3>
+    - (void) <b>setIntercellSpacing:</b> (NSSize)aSize;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setRowHeight:</a></h3>
+    - (void) <b>setRowHeight:</b> (float)rowHeight;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setVerticalMotionCanBeginDrag:</a></h3>
+    - (void) <b>setVerticalMotionCanBeginDrag:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>sizeLastColumnToFit</a></h3>
+    - (void) <b>sizeLastColumnToFit</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>tableColumnWithIdentifier:</a></h3>
+    - (NSTableColumn*) <b>tableColumnWithIdentifier:</b> (id)anObject;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>tableColumns</a></h3>
+    - (NSArray*) <b>tableColumns</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textDidBeginEditing:</a></h3>
+    - (void) <b>textDidBeginEditing:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textDidChange:</a></h3>
+    - (void) <b>textDidChange:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textDidEndEditing:</a></h3>
+    - (void) <b>textDidEndEditing:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textShouldBeginEditing:</a></h3>
+    - (BOOL) <b>textShouldBeginEditing:</b> (<a href="NSText.html#class$NSText">NSText</a>*)textObject;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textShouldEndEditing:</a></h3>
+    - (BOOL) <b>textShouldEndEditing:</b> (<a href="NSText.html#class$NSText">NSText</a>*)aTextObject;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>tile</a></h3>
+    - (void) <b>tile</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>verticalMotionCanBeginDrag</a></h3>
+    - (BOOL) <b>verticalMotionCanBeginDrag</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the
+        NSObject(NSTableDataSource)
+        category
+      </h1>
+    <h2>NSObject(<a name="category$NSObject(NSTableDataSource)">NSTableDataSource</a>)</h2>
+    Declared: AppKit/NSTableView.h<br />
+    <p>
+
+            </p>
+    <h3>numberOfRowsInTableView:</a></h3>
+    - (int) <b>numberOfRowsInTableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)aTableView;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>tableView:acceptDrop:row:dropOperation:</a></h3>
+    - (BOOL) <b>tableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)tableView<b> acceptDrop:</b> (id)info<b> row:</b> (int)row<b> dropOperation:</b> (NSTableViewDropOperation)operation;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>tableView:objectValueForTableColumn:row:</a></h3>
+    - (id) <b>tableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)aTableView<b> objectValueForTableColumn:</b> (NSTableColumn*)aTableColumn<b> row:</b> (int)rowIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>tableView:setObjectValue:forTableColumn:row:</a></h3>
+    - (void) <b>tableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)aTableView<b> setObjectValue:</b> (id)anObject<b> forTableColumn:</b> (NSTableColumn*)aTableColumn<b> row:</b> (int)rowIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>tableView:validateDrop:proposedRow:proposedDropOperation:</a></h3>
+    - (NSDragOperation) <b>tableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)tableView<b> validateDrop:</b> (id)info<b> proposedRow:</b> (int)row<b> proposedDropOperation:</b> (NSTableViewDropOperation)operation;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>tableView:writeRows:toPasteboard:</a></h3>
+    - (BOOL) <b>tableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)tableView<b> writeRows:</b> (NSArray*)rows<b> toPasteboard:</b> (<a href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pboard;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the
+        NSObject(NSTableViewDelegate)
+        category
+      </h1>
+    <h2>NSObject(<a name="category$NSObject(NSTableViewDelegate)">NSTableViewDelegate</a>)</h2>
+    Declared: AppKit/NSTableView.h<br />
+    <p>
+
+            </p>
+    <h3>selectionShouldChangeInTableView:</a></h3>
+    - (BOOL) <b>selectionShouldChangeInTableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)aTableView;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>tableView:didClickTableColumn:</a></h3>
+    - (void) <b>tableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)tableView<b> didClickTableColumn:</b> (NSTableColumn*)tableColumn;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>tableView:didDragTableColumn:</a></h3>
+    - (void) <b>tableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)tableView<b> didDragTableColumn:</b> (NSTableColumn*)tableColumn;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>tableView:mouseDownInHeaderOfTableColumn:</a></h3>
+    - (void) <b>tableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)tableView<b> mouseDownInHeaderOfTableColumn:</b> (NSTableColumn*)tableColumn;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>tableView:shouldEditTableColumn:row:</a></h3>
+    - (BOOL) <b>tableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)aTableView<b> shouldEditTableColumn:</b> (NSTableColumn*)aTableColumn<b> row:</b> (int)rowIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>tableView:shouldSelectRow:</a></h3>
+    - (BOOL) <b>tableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)aTableView<b> shouldSelectRow:</b> (int)rowIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>tableView:shouldSelectTableColumn:</a></h3>
+    - (BOOL) <b>tableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)aTableView<b> shouldSelectTableColumn:</b> (NSTableColumn*)aTableColumn;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>tableView:willDisplayCell:forTableColumn:row:</a></h3>
+    - (void) <b>tableView:</b> (<a href="#class$NSTableView">NSTableView</a>*)aTableView<b> willDisplayCell:</b> (id)aCell<b> forTableColumn:</b> (NSTableColumn*)aTableColumn<b> row:</b> (int)rowIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>tableViewColumnDidMove:</a></h3>
+    - (void) <b>tableViewColumnDidMove:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>tableViewColumnDidResize:</a></h3>
+    - (void) <b>tableViewColumnDidResize:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>tableViewSelectionDidChange:</a></h3>
+    - (void) <b>tableViewSelectionDidChange:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>tableViewSelectionIsChanging:</a></h3>
+    - (void) <b>tableViewSelectionIsChanging:</b> (NSNotification*)aNotification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the NSTableView(GNUPrivate)
+        category
+      </h1>
+    <h2><a href="#class$NSTableView">NSTableView</a>(<a name="category$NSTableView(GNUPrivate)">GNUPrivate</a>)</h2>
+    Declared: AppKit/NSTableView.h<br />
+    <p>
+
+            </p>
+    <h3>_selectColumn:modifiers:</a></h3>
+    - (void) <b>_selectColumn:</b> (int)columnIndex<b> modifiers:</b> (unsigned int)modifiers;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>_sendDoubleActionForColumn:</a></h3>
+    - (void) <b>_sendDoubleActionForColumn:</b> (int)columnIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+  </body>
+</html>

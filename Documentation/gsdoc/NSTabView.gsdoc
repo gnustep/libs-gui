@@ -1,23 +1,26 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSTabView" prev="NSStringAdditions.html" next="NSTabViewItem.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSTabView" next="NSTabViewItem" prev="NSSplitView" up="NSActionCell">
   <head>
     <title>NSTabView</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Michael Hanni">
+      <email address="mhanni@sprintmail.com">
+        mhanni@sprintmail.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>The tabular view class</abstract>
+    <copy>1999,2000 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSTabView</heading>
+      <heading>
+        Software documentation for the NSTabView class
+      </heading>
       <class name="NSTabView" super="NSView">
-        <declared>Gui/NSTabView.h</declared>
+        <declared>AppKit/NSTabView.h</declared>
         <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <desc>
+        </desc>
         <method type="void">
           <sel>addTabViewItem:</sel>
           <arg type="NSTabViewItem*">tabViewItem</arg>
@@ -34,13 +37,23 @@
           <desc>
           </desc>
         </method>
+        <method type="NSControlSize">
+          <sel>controlSize</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSControlTint">
+          <sel>controlTint</sel>
+          <desc>
+          </desc>
+        </method>
         <method type="id">
           <sel>delegate</sel>
           <desc>
           </desc>
         </method>
         <method type="BOOL">
-          <sel> drawsBackground</sel>
+          <sel>drawsBackground</sel>
           <desc>
           </desc>
         </method>
@@ -64,6 +77,8 @@
         <method type="void">
           <sel>insertTabViewItem:</sel>
           <arg type="NSTabViewItem*">tabViewItem</arg>
+          <sel>atIndex:</sel>
+          <arg type="int">index</arg>
           <desc>
           </desc>
         </method>
@@ -107,11 +122,6 @@
           <desc>
           </desc>
         </method>
-        <method type="NSTabViewItem*">
-          <sel>selectedTabViewItem</sel>
-          <desc>
-          </desc>
-        </method>
         <method type="void">
           <sel>selectTabViewItem:</sel>
           <arg type="NSTabViewItem*">tabViewItem</arg>
@@ -125,14 +135,20 @@
           </desc>
         </method>
         <method type="void">
-          <sel>selectTabViewItemWithIdentifier:</sel>
-          <arg type="id">identifier;</arg>
+          <sel>setAllowsTruncatedLabels:</sel>
+          <arg type="BOOL">allowTruncatedLabels</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
-          <sel>setAllowsTruncatedLabels:</sel>
-          <arg type="BOOL">allowTruncatedLabels</arg>
+          <sel>setControlSize:</sel>
+          <arg type="NSControlSize">size</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setControlTint:</sel>
+          <arg type="NSControlTint">tint</arg>
           <desc>
           </desc>
         </method>
@@ -189,6 +205,48 @@
           </desc>
         </method>
       </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSObject(NSTabViewDelegate)
+        category
+      </heading>
+      <category name="NSTabViewDelegate" class="NSObject">
+        <declared>AppKit/NSTabView.h</declared>
+        <desc>
+        </desc>
+        <method type="void">
+          <sel>tabView:</sel>
+          <arg type="NSTabView*">tabView</arg>
+          <sel>didSelectTabViewItem:</sel>
+          <arg type="NSTabViewItem*">tabViewItem</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>tabView:</sel>
+          <arg type="NSTabView*">tabView</arg>
+          <sel>shouldSelectTabViewItem:</sel>
+          <arg type="NSTabViewItem*">tabViewItem</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>tabView:</sel>
+          <arg type="NSTabView*">tabView</arg>
+          <sel>willSelectTabViewItem:</sel>
+          <arg type="NSTabViewItem*">tabViewItem</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>tabViewDidChangeNumberOfTabViewItems:</sel>
+          <arg type="NSTabView*">TabView</arg>
+          <desc>
+          </desc>
+        </method>
+      </category>
     </chapter>
   </body>
 </gsdoc>

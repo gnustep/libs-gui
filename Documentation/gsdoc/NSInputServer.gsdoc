@@ -1,30 +1,105 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSInputServer" prev="NSInputManager.html" next="NSLayoutManager.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSInputServer" next="NSLayoutManager" prev="NSInputManager" up="NSActionCell">
   <head>
     <title>NSInputServer</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Fred Kiefer">
+      <email address="FredKiefer@gmx.de">
+        FredKiefer@gmx.de
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <copy>2001 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSInputServer</heading>
+      <heading>
+        Software documentation for the NSInputServer class
+      </heading>
       <class name="NSInputServer" super="NSObject">
-        <declared>Gui/NSInputServer.h</declared>
-        <conform>NSObject</conform>
+        <declared>AppKit/NSInputServer.h</declared>
+        <conform>NSInputServerMouseTracker</conform>
+        <conform>NSInputServiceProvider</conform>
+        <desc>
+        </desc>
+        <method type="id">
+          <sel>initWithDelegate:</sel>
+          <arg type="id">aDelegate</arg>
+          <sel>name:</sel>
+          <arg type="NSString*">name</arg>
           <desc>
           </desc>
+        </method>
+      </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSInputServerMouseTracker protocol
+      </heading>
+      <protocol name="NSInputServerMouseTracker">
+        <declared>AppKit/NSInputServer.h</declared>
+        <desc>
+        </desc>
+        <method type="BOOL">
+          <sel>mouseDownOnCharacterIndex:</sel>
+          <arg type="unsigned">index</arg>
+          <sel>atCoordinate:</sel>
+          <arg type="NSPoint">point</arg>
+          <sel>withModifier:</sel>
+          <arg type="unsigned int">flags</arg>
+          <sel>client:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>mouseDraggedOnCharacterIndex:</sel>
+          <arg type="unsigned">index</arg>
+          <sel>atCoordinate:</sel>
+          <arg type="NSPoint">point</arg>
+          <sel>withModifier:</sel>
+          <arg type="unsigned int">flags</arg>
+          <sel>client:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>mouseUpOnCharacterIndex:</sel>
+          <arg type="unsigned">index</arg>
+          <sel>atCoordinate:</sel>
+          <arg type="NSPoint">point</arg>
+          <sel>withModifier:</sel>
+          <arg type="unsigned int">flags</arg>
+          <sel>client:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+      </protocol>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the NSInputServiceProvider
+        protocol
+      </heading>
+      <protocol name="NSInputServiceProvider">
+        <declared>AppKit/NSInputServer.h</declared>
+        <desc>
+        </desc>
+        <method type="void">
+          <sel>activeConversationChanged:</sel>
+          <arg type="id">sender</arg>
+          <sel>toNewConversation:</sel>
+          <arg type="long">newConversation</arg>
+          <desc>
+          </desc>
+        </method>
         <method type="void">
           <sel>activeConversationWillChange:</sel>
           <arg type="id">sender</arg>
-          <sel>oldConversation:</sel>
-          <arg type="long">conv</arg>
-          <sel>newConversation:</sel>
-          <arg type="long">new</arg>
+          <sel>fromOldConversation:</sel>
+          <arg type="long">oldConversation</arg>
           <desc>
           </desc>
         </method>
@@ -34,72 +109,55 @@
           </desc>
         </method>
         <method type="void">
-          <sel>cancelInput:</sel>
+          <sel>doCommandBySelector:</sel>
+          <arg type="SEL">aSelector</arg>
+          <sel>client:</sel>
           <arg type="id">sender</arg>
-          <sel>conversation:</sel>
-          <arg type="long">conv</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
-          <sel>doCommandBySelector:</sel>
-          <arg type="SEL">aSelector</arg>
-          <sel>sender:</sel>
+          <sel>inputClientBecomeActive:</sel>
           <arg type="id">sender</arg>
-          <sel>conversation:</sel>
-          <arg type="long">conv</arg>
           <desc>
           </desc>
         </method>
-        <method type="id">
-          <sel></sel>
+        <method type="void">
+          <sel>inputClientDisabled:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>inputClientEnabled:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>inputClientResignActive:</sel>
+          <arg type="id">sender</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>insertText:</sel>
-          <arg type="NSString*">aString</arg>
-          <sel>sender:</sel>
+          <arg type="id">aString</arg>
+          <sel>client:</sel>
           <arg type="id">sender</arg>
-          <sel>conversation:</sel>
-          <arg type="long">conv</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>markedTextAbandoned:</sel>
+          <arg type="id">sender</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>markedTextSelectionChanged:</sel>
-          <arg type="NSRange">aRange</arg>
-          <sel>sender:</sel>
-          <arg type="id">sender</arg>
-          <sel>conversation:</sel>
-          <arg type="long">conv</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
-          <sel>markedTextWillBeAbandoned:</sel>
-          <arg type="id">sender</arg>
-          <sel>conversation:</sel>
-          <arg type="long">conv</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
-          <sel>senderDidBecomeActive:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
-          <sel>senderDidResignActive:</sel>
-          <arg type="id">sender</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
-          <sel>setActivated:</sel>
-          <arg type="BOOL">flag</arg>
-          <sel>sender:</sel>
+          <arg type="NSRange">newSelection</arg>
+          <sel>client:</sel>
           <arg type="id">sender</arg>
           <desc>
           </desc>
@@ -111,11 +169,21 @@
           </desc>
         </method>
         <method type="BOOL">
+          <sel>wantsToDelayTextChangeNotifications</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>wantsToHandleMouseEvents</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
           <sel>wantsToInterpretAllKeystrokes</sel>
           <desc>
           </desc>
         </method>
-      </class>
+      </protocol>
     </chapter>
   </body>
 </gsdoc>

@@ -1,11 +1,6 @@
-/*
-   NSTableHeaderView.m
+/** <title>NSTableHeaderView</title>
 
    Copyright (C) 1999 Free Software Foundation, Inc.
-
-   Author: Michael Hanni  <mhanni@sprintmail.com>
-   Date: 1999
-   Skeleton.
 
    Author: Nicola Pero <n.pero@mi.flashnet.it>
    Date: December 1999

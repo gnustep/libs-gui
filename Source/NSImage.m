@@ -1,11 +1,10 @@
-/*
-   NSImage.m
+/** <title>NSImage</title>
 
-   Load, manipulate and display images
+   <abstract>Load, manipulate and display images</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
    
-   Author:  Adam Fedor <fedor@colorado.edu>
+   Author: Adam Fedor <fedor@colorado.edu>
    Date: Feb 1996
    
    This library is free software; you can redistribute it and/or
@@ -23,13 +22,6 @@
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
    */ 
-/*
-    FIXME:  
-        [1] Filter services not implemented.
-	[2] Should there be a place to look for system bitmaps? 
-	(findImageNamed: ).
-	[3] bestRepresentation is not complete.
-*/
 #include <gnustep/gui/config.h>
 #include <string.h>
 
@@ -340,7 +332,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   return self;
 }
 
-- (id) initWithData: (NSData *)data;
+- (id) initWithData: (NSData *)data
 {
   self = [self init];
 
@@ -653,7 +645,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 // Using the Image 
 - (void) compositeToPoint: (NSPoint)aPoint 
-		operation: (NSCompositingOperation)op;
+		operation: (NSCompositingOperation)op
 {
   NSRect rect;
   // Might not be computed up to now
@@ -665,7 +657,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (void) compositeToPoint: (NSPoint)aPoint
 		 fromRect: (NSRect)aRect
-		operation: (NSCompositingOperation)op;
+		operation: (NSCompositingOperation)op
 {
   NSImageRep *rep;
 
@@ -735,7 +727,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 // FIXME We need another PS command for this
 }
 
-- (void) dissolveToPoint: (NSPoint)aPoint fraction: (float)aFloat;
+- (void) dissolveToPoint: (NSPoint)aPoint fraction: (float)aFloat
 {
   NSRect rect;
   NSSize size = [self size];
@@ -746,7 +738,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
 - (void) dissolveToPoint: (NSPoint)aPoint
 		fromRect: (NSRect)aRect 
-		fraction: (float)aFloat;
+		fraction: (float)aFloat
 {
   NSImageRep *rep;
 

@@ -1,11 +1,10 @@
-/* 
-   NSBitmapImageRep.m
+/** <title>NSBitmapImageRep.m</title>
 
-   Bitmap image representation.
+   <abstract>Bitmap image representation.</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
    
-   Author:  Adam Fedor <fedor@colorado.edu>
+   Author:  Adam Fedor <fedor@gnu.org>
    Date: Feb 1996
    
    This file is part of the GNUstep GUI Library.
@@ -192,7 +191,7 @@
 		isPlanar: (BOOL)isPlanar
 		colorSpaceName: (NSString *)colorSpaceName
 		bytesPerRow: (int)rowBytes
-		bitsPerPixel: (int)pixelBits;
+		bitsPerPixel: (int)pixelBits
 {
   if (!bps || !spp || !width || !height) 
     {

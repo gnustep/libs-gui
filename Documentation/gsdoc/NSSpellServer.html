@@ -1,88 +1,99 @@
-<html><head>
- <title>NSSpellServer</title>
-</head>
-<body>
-<a href ="NSSpellChecker.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSSplitView.html">[Next] </a>
-<h1>NSSpellServer</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSSpellServer</a></h2>
-<h2><a name ="NSSpellServer">NSSpellServer</a></h2>
-<p><b>Declared in: </b> Gui/NSSpellServer.h</p>
-<p><b>Inherits from: </b> NSObject</p>
-<p><b>Conforms to: </b> NSObject
-</p>
-<hr>
+<html>
+  <head>
+    <title>NSSpellServer</title>
+  </head>
+  <body>
+    <h1>NSSpellServer</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Gregory John Casamento(<a href="mailto:borgheron@yahoo.com"><code>
+        borgheron@yahoo.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Scott Christley(<a href="mailto:scottc@net-community.com"><code>
+        scottc@net-community.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <blockquote>
 
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSSpellServer.html#method-0">-delegate</a>
-<li ><a href ="NSSpellServer.html#method-1">-isWordInUserDictionaries:caseSensitive:</a>
-<li ><a href ="NSSpellServer.html#method-2">-registerLanguage:</a>
-<li ><a href ="NSSpellServer.html#method-3">-run</a>
-<li ><a href ="NSSpellServer.html#method-4">-setDelegate:</a>
-<li ><a href ="NSSpellServer.html#method-5">-spellServer:didForgetWord:inLanguage:</a>
-<li ><a href ="NSSpellServer.html#method-6">-spellServer:didLearnWord:inLanguage:</a>
-<li ><a href ="NSSpellServer.html#method-7">-spellServer:findMisspelledWordInString:language:wordCount:</a>
-<li ><a href ="NSSpellServer.html#method-8">-spellServer:suggestGuessesForWord:inLanguage:</a>
-</ul>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-0">delegate</a></h3>
-- (id) <b>delegate</b>;<br>
+      Class to allow a spell checker to be available to other
+      apps.
+        </blockquote>
+    <p>Copyright: (C) 2001, 1996 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the NSSpellServer class
+      </h1>
+    <h2><a name="class$NSSpellServer">NSSpellServer</a> : NSObject</h2>
+    Declared: AppKit/NSSpellServer.h<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-1">isWordInUserDictionaries:caseSensitive:</a></h3>
-- (BOOL) <b>isWordInUserDictionaries:</b> (NSString*)word <b>caseSensitive:</b> (BOOL)flag;<br>
+            </p>
+    <h3>delegate</a></h3>
+    - (id) <b>delegate</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-2">registerLanguage:</a></h3>
-- (BOOL) <b>registerLanguage:</b> (NSString*)language;<br>
+              </p>
+    <hr />
+    <h3>isWordInUserDictionaries:caseSensitive:</a></h3>
+    - (BOOL) <b>isWordInUserDictionaries:</b> (NSString*)word<b> caseSensitive:</b> (BOOL)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-3">run</a></h3>
-- (void) <b>run</b>;<br>
+              </p>
+    <hr />
+    <h3>registerLanguage:byVendor:</a></h3>
+    - (BOOL) <b>registerLanguage:</b> (NSString*)language<b> byVendor:</b> (NSString*)vendor;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-4">setDelegate:</a></h3>
-- (void) <b>setDelegate:</b> (id)anObject;<br>
+              </p>
+    <hr />
+    <h3>run</a></h3>
+    - (void) <b>run</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-5">spellServer:didForgetWord:inLanguage:</a></h3>
-- (void) <b>spellServer:</b> (NSSpellServer*)sender <b>didForgetWord:</b> (NSString*)word <b>inLanguage:</b> (NSString*)language;<br>
+              </p>
+    <hr />
+    <h3>setDelegate:</a></h3>
+    - (void) <b>setDelegate:</b> (id)anObject;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-6">spellServer:didLearnWord:inLanguage:</a></h3>
-- (void) <b>spellServer:</b> (NSSpellServer*)sender <b>didLearnWord:</b> (NSString*)word <b>inLanguage:</b> (NSString*)language;<br>
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the
+        NSObject(NSSpellServerDelegate)
+        category
+      </h1>
+    <h2>NSObject(<a name="category$NSObject(NSSpellServerDelegate)">NSSpellServerDelegate</a>)</h2>
+    Declared: AppKit/NSSpellServer.h<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-7">spellServer:findMisspelledWordInString:language:wordCount:</a></h3>
-- (NSRange) <b>spellServer:</b> (NSSpellServer*)sender <b>findMisspelledWordInString:</b> (NSString*)stringToCheck <b>language:</b> (NSString *)language <b>wordCount:</b> (int*)wordCount;<br>
+            </p>
+    <h3>spellServer:didForgetWord:inLanguage:</a></h3>
+    - (void) <b>spellServer:</b> (<a href="#class$NSSpellServer">NSSpellServer</a>*)sender<b> didForgetWord:</b> (NSString*)word<b> inLanguage:</b> (NSString*)language;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-8">spellServer:suggestGuessesForWord:inLanguage:</a></h3>
-- (NSArray*) <b>spellServer:</b> (NSSpellServer*)sender <b>suggestGuessesForWord:</b> (NSString*)word <b>inLanguage:</b> (NSString*)language;<br>
+              </p>
+    <hr />
+    <h3>spellServer:didLearnWord:inLanguage:</a></h3>
+    - (void) <b>spellServer:</b> (<a href="#class$NSSpellServer">NSSpellServer</a>*)sender<b> didLearnWord:</b> (NSString*)word<b> inLanguage:</b> (NSString*)language;<br />
+    <p>
 
-          
- <hr>
-</body>
+              </p>
+    <hr />
+    <h3>spellServer:findMisspelledWordInString:language:wordCount:countOnly:</a></h3>
+    - (NSRange) <b>spellServer:</b> (<a href="#class$NSSpellServer">NSSpellServer</a>*)sender<b> findMisspelledWordInString:</b> (NSString*)stringToCheck<b> language:</b> (NSString*)language<b> wordCount:</b> (int*)wordCount<b> countOnly:</b> (BOOL)countOnly;<br />
+    <p>
 
- </html>
+              </p>
+    <hr />
+    <h3>spellServer:suggestGuessesForWord:inLanguage:</a></h3>
+    - (NSArray*) <b>spellServer:</b> (<a href="#class$NSSpellServer">NSSpellServer</a>*)sender<b> suggestGuessesForWord:</b> (NSString*)word<b> inLanguage:</b> (NSString*)language;<br />
+    <p>
+
+              </p>
+    <hr />
+  </body>
+</html>

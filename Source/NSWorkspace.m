@@ -1,15 +1,14 @@
-/*
-   NSWorkspace.m
+/** <title>NSWorkspace</title>
 
-   Workspace class
+   <abstract>Workspace class</abstract>
 
    Copyright (C) 1996-1999, 2001 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
+   Author: Scott Christley <scottc@net-community.com>
    Date: 1996
    Implementation: Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: 1998
-   Implementation: Fred Kiefer <fredKiefer@gmx.de>
+   Implementation: Fred Kiefer <FredKiefer@gmx.de>
    Date: 2001
    
    This file is part of the GNUstep GUI Library.

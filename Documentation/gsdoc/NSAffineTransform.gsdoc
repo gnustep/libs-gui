@@ -1,23 +1,31 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSAffineTransform" prev="NSActionCell.html" next="NSApplication.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSAffineTransform" next="NSApplication" prev="NSActionCell" up="NSActionCell">
   <head>
-    <title>NSAffineTransform</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <title>NSAffineTransform.m</title>
+    <author name="Ovidiu Predescu">
+      <email address="ovidiu@net-community.com">
+        ovidiu@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Richard Frith-Macdonald">
+      <email address="richard@brainstorm.co.uk">
+        richard@brainstorm.co.uk
+      </email>
+    </author>
+    <copy>1996,1999 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSAffineTransform</heading>
+      <heading>
+        Software documentation for the NSAffineTransform class
+      </heading>
       <class name="NSAffineTransform" super="NSObject">
-        <declared>Gui/NSAffineTransform.h</declared>
+        <declared>AppKit/NSAffineTransform.h</declared>
+        <conform>NSCopying</conform>
         <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <desc>
+        </desc>
         <method type="NSAffineTransform*" factory="yes">
           <sel>transform</sel>
           <desc>
@@ -25,7 +33,7 @@
         </method>
         <method type="void">
           <sel>appendTransform:</sel>
-          <arg type="NSAffineTransform*">aTransform</arg>
+          <arg type="NSAffineTransform*">other</arg>
           <desc>
           </desc>
         </method>
@@ -47,7 +55,7 @@
         </method>
         <method type="void">
           <sel>prependTransform:</sel>
-          <arg type="NSAffineTransform*">aTransform</arg>
+          <arg type="NSAffineTransform*">other</arg>
           <desc>
           </desc>
         </method>
@@ -59,7 +67,7 @@
         </method>
         <method type="void">
           <sel>rotateByRadians:</sel>
-          <arg type="float">angle</arg>
+          <arg type="float">angleRad</arg>
           <desc>
           </desc>
         </method>
@@ -72,6 +80,8 @@
         <method type="void">
           <sel>scaleXBy:</sel>
           <arg type="float">scaleX</arg>
+          <sel>yBy:</sel>
+          <arg type="float">scaleY</arg>
           <desc>
           </desc>
         </method>
@@ -82,7 +92,7 @@
         </method>
         <method type="void">
           <sel>setTransformStruct:</sel>
-          <arg type="NSAffineTransformStruct">aTransformStruct</arg>
+          <arg type="NSAffineTransformStruct">val</arg>
           <desc>
           </desc>
         </method>
@@ -94,13 +104,13 @@
         </method>
         <method type="NSPoint">
           <sel>transformPoint:</sel>
-          <arg type="NSPoint">aPoint</arg>
+          <arg type="NSPoint">point</arg>
           <desc>
           </desc>
         </method>
         <method type="NSSize">
           <sel>transformSize:</sel>
-          <arg type="NSSize">aSize</arg>
+          <arg type="NSSize">size</arg>
           <desc>
           </desc>
         </method>
@@ -111,11 +121,152 @@
         </method>
         <method type="void">
           <sel>translateXBy:</sel>
-          <arg type="float">deltaX</arg>
+          <arg type="float">tranX</arg>
+          <sel>yBy:</sel>
+          <arg type="float">tranY</arg>
           <desc>
           </desc>
         </method>
       </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSAffineTransform(GNUstep) category
+      </heading>
+      <category name="GNUstep" class="NSAffineTransform">
+        <declared>AppKit/NSAffineTransform.h</declared>
+        <desc>
+        </desc>
+        <method type="NSAffineTransform*" factory="yes">
+          <sel>matrixFrom:</sel>
+          <arg type="const float[6]">_matrix</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>boundingRectFor:</sel>
+          <arg type="NSRect">rect</arg>
+          <sel>result:</sel>
+          <arg type="NSRect*">new</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>concatenateWith:</sel>
+          <arg type="NSAffineTransform*">other</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>concatenateWithMatrix:</sel>
+          <arg type="const float[6]">concat</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSPoint">
+          <sel>deltaPointInMatrixSpace:</sel>
+          <arg type="NSPoint">point</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>getMatrix:</sel>
+          <arg type="float[6]">replace</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>inverse</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>isRotated</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>makeIdentityMatrix</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSPoint">
+          <sel>pointInMatrixSpace:</sel>
+          <arg type="NSPoint">point</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSRect">
+          <sel>rectInMatrixSpace:</sel>
+          <arg type="NSRect">rect</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>rotateByAngle:</sel>
+          <arg type="float">angle</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="float">
+          <sel>rotationAngle</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>scaleBy:</sel>
+          <arg type="float">sx</arg>
+          <sel>:</sel>
+          <arg type="float">sy</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>scaleTo:</sel>
+          <arg type="float">sx</arg>
+          <sel>:</sel>
+          <arg type="float">sy</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setFrameOrigin:</sel>
+          <arg type="NSPoint">point</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setFrameRotation:</sel>
+          <arg type="float">angle</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setMatrix:</sel>
+          <arg type="const float[6]">replace</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSSize">
+          <sel>sizeInMatrixSpace:</sel>
+          <arg type="NSSize">size</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>takeMatrixFromTransform:</sel>
+          <arg type="NSAffineTransform*">other</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>translateToPoint:</sel>
+          <arg type="NSPoint">point</arg>
+          <desc>
+          </desc>
+        </method>
+      </category>
     </chapter>
   </body>
 </gsdoc>

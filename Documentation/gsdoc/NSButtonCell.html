@@ -1,322 +1,314 @@
-<html><head>
- <title>NSButtonCell</title>
-</head>
-<body>
-<a href ="NSButton.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSCachedImageRep.html">[Next] </a>
-<h1>NSButtonCell</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSButtonCell</a></h2>
-<h2><a name ="NSButtonCell">NSButtonCell</a></h2>
-<p><b>Declared in: </b> Gui/NSButtonCell.h</p>
-<p><b>Inherits from: </b> NSActionCell</p>
-<p><b>Conforms to: </b> NSCoding
-</p>
-<hr>
+<html>
+  <head>
+    <title>NSButtonCell</title>
+  </head>
+  <body>
+    <h1>NSButtonCell</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Scott Christley(<a href="mailto:scottc@net-community.com"><code>
+        scottc@net-community.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Felipe A. Rodriguez(<a href="mailto:far@ix.netcom.com"><code>
+        far@ix.netcom.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <blockquote>
+The button cell class    </blockquote>
+    <p>Copyright: (C) 1996-1999 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the NSButtonCell class
+      </h1>
+    <h2><a name="class$NSButtonCell">NSButtonCell</a> : <a href="NSActionCell.html#class$NSActionCell">NSActionCell</a></h2>
+    Declared: AppKit/NSButtonCell.h<br />
+    <p>
 
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSButtonCell.html#method-17">- mouseEntered:</a>
-<li ><a href ="NSButtonCell.html#method-18">- mouseExited:</a>
-<li ><a href ="NSButtonCell.html#method-38">- setShowsBorderOnlyWhileMouseInside:</a>
-<li ><a href ="NSButtonCell.html#method-45">- showsBorderOnlyWhileMouseInside</a>
-<li ><a href ="NSButtonCell.html#method-0">-alternateImage</a>
-<li ><a href ="NSButtonCell.html#method-1">-alternateMnemonic</a>
-<li ><a href ="NSButtonCell.html#method-2">-alternateMnemonicLocation</a>
-<li ><a href ="NSButtonCell.html#method-3">-alternateTitle</a>
-<li ><a href ="NSButtonCell.html#method-4">-attributedAlternateTitle</a>
-<li ><a href ="NSButtonCell.html#method-5">-attributedTitle</a>
-<li ><a href ="NSButtonCell.html#method-6">-bezelStyle</a>
-<li ><a href ="NSButtonCell.html#method-7">-getPeriodicDelay:interval:</a>
-<li ><a href ="NSButtonCell.html#method-8">-gradientType</a>
-<li ><a href ="NSButtonCell.html#method-9">-highlightsBy</a>
-<li ><a href ="NSButtonCell.html#method-10">-imageDimsWhenDisabled</a>
-<li ><a href ="NSButtonCell.html#method-11">-imagePosition</a>
-<li ><a href ="NSButtonCell.html#method-12">-isOpaque</a>
-<li ><a href ="NSButtonCell.html#method-13">-isTransparent</a>
-<li ><a href ="NSButtonCell.html#method-14">-keyEquivalent</a>
-<li ><a href ="NSButtonCell.html#method-15">-keyEquivalentFont</a>
-<li ><a href ="NSButtonCell.html#method-16">-keyEquivalentModifierMask</a>
-<li ><a href ="NSButtonCell.html#method-19">-performClick:</a>
-<li ><a href ="NSButtonCell.html#method-20">-setAlternateImage:</a>
-<li ><a href ="NSButtonCell.html#method-21">-setAlternateMnemonicLocation:</a>
-<li ><a href ="NSButtonCell.html#method-22">-setAlternateTitle:</a>
-<li ><a href ="NSButtonCell.html#method-23">-setAlternateTitleWithMnemonic:</a>
-<li ><a href ="NSButtonCell.html#method-24">-setAttributedAlternateTitle:</a>
-<li ><a href ="NSButtonCell.html#method-25">-setAttributedTitle:</a>
-<li ><a href ="NSButtonCell.html#method-26">-setBezelStyle:</a>
-<li ><a href ="NSButtonCell.html#method-27">-setButtonType:</a>
-<li ><a href ="NSButtonCell.html#method-28">-setFont:</a>
-<li ><a href ="NSButtonCell.html#method-29">-setGradientType:</a>
-<li ><a href ="NSButtonCell.html#method-30">-setHighlightsBy:</a>
-<li ><a href ="NSButtonCell.html#method-31">-setImageDimsWhenDisabled:</a>
-<li ><a href ="NSButtonCell.html#method-32">-setImagePosition:</a>
-<li ><a href ="NSButtonCell.html#method-33">-setKeyEquivalent:</a>
-<li ><a href ="NSButtonCell.html#method-35">-setKeyEquivalentFont:</a>
-<li ><a href ="NSButtonCell.html#method-34">-setKeyEquivalentFont:</a>
-<li ><a href ="NSButtonCell.html#method-36">-setKeyEquivalentModifierMask:</a>
-<li ><a href ="NSButtonCell.html#method-37">-setPeriodicDelay:interval:</a>
-<li ><a href ="NSButtonCell.html#method-39">-setShowsStateBy:</a>
-<li ><a href ="NSButtonCell.html#method-40">-setSound:</a>
-<li ><a href ="NSButtonCell.html#method-41">-setTitle:</a>
-<li ><a href ="NSButtonCell.html#method-42">-setTitleWithMnemonic:</a>
-<li ><a href ="NSButtonCell.html#method-43">-setTransparent:</a>
-<li ><a href ="NSButtonCell.html#method-44">-showsStateBy</a>
-<li ><a href ="NSButtonCell.html#method-46">-sound</a>
-<li ><a href ="NSButtonCell.html#method-47">-title</a>
-</ul>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-0">alternateImage</a></h3>
-- (NSImage*) <b>alternateImage</b>;<br>
+            </p>
+    <h3>alternateImage</a></h3>
+    - (<a href="NSImage.html#class$NSImage">NSImage</a>*) <b>alternateImage</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-1">alternateMnemonic</a></h3>
-- (NSString*) <b>alternateMnemonic</b>;<br>
+              </p>
+    <hr />
+    <h3>alternateMnemonic</a></h3>
+    - (NSString*) <b>alternateMnemonic</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-2">alternateMnemonicLocation</a></h3>
-- (unsigned int) <b>alternateMnemonicLocation</b>;<br>
+              </p>
+    <hr />
+    <h3>alternateMnemonicLocation</a></h3>
+    - (unsigned) <b>alternateMnemonicLocation</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-3">alternateTitle</a></h3>
-- (NSString*) <b>alternateTitle</b>;<br>
+              </p>
+    <hr />
+    <h3>alternateTitle</a></h3>
+    - (NSString*) <b>alternateTitle</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-4">attributedAlternateTitle</a></h3>
-- (NSAttributedString*) <b>attributedAlternateTitle</b>;<br>
+              </p>
+    <hr />
+    <h3>attributedAlternateTitle</a></h3>
+    - (NSAttributedString*) <b>attributedAlternateTitle</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-5">attributedTitle</a></h3>
-- (NSAttributedString*) <b>attributedTitle</b>;<br>
+              </p>
+    <hr />
+    <h3>attributedTitle</a></h3>
+    - (NSAttributedString*) <b>attributedTitle</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-6">bezelStyle</a></h3>
-- (NSBezelStyle) <b>bezelStyle</b>;<br>
+              </p>
+    <hr />
+    <h3>bezelStyle</a></h3>
+    - (NSBezelStyle) <b>bezelStyle</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-7">getPeriodicDelay:interval:</a></h3>
-- (void) <b>getPeriodicDelay:</b> (float*)delay <b>interval:</b> (float*)interval;<br>
+              </p>
+    <hr />
+    <h3>getPeriodicDelay:interval:</a></h3>
+    - (void) <b>getPeriodicDelay:</b> (float*)delay<b> interval:</b> (float*)interval;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-8">gradientType</a></h3>
-- (NSGradientType) <b>gradientType</b>;<br>
+              </p>
+    <hr />
+    <h3>gradientType</a></h3>
+    - (NSGradientType) <b>gradientType</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-9">highlightsBy</a></h3>
-- (int) <b>highlightsBy</b>;<br>
+              </p>
+    <hr />
+    <h3>highlightsBy</a></h3>
+    - (int) <b>highlightsBy</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-10">imageDimsWhenDisabled</a></h3>
-- (BOOL) <b>imageDimsWhenDisabled</b>;<br>
+              </p>
+    <hr />
+    <h3>imageDimsWhenDisabled</a></h3>
+    - (BOOL) <b>imageDimsWhenDisabled</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-11">imagePosition</a></h3>
-- (NSCellImagePosition) <b>imagePosition</b>;<br>
+              </p>
+    <hr />
+    <h3>imagePosition</a></h3>
+    - (NSCellImagePosition) <b>imagePosition</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-12">isOpaque</a></h3>
-- (BOOL) <b>isOpaque</b>;<br>
+              </p>
+    <hr />
+    <h3>isTransparent</a></h3>
+    - (BOOL) <b>isTransparent</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-13">isTransparent</a></h3>
-- (BOOL) <b>isTransparent</b>;<br>
+              </p>
+    <hr />
+    <h3>keyEquivalent</a></h3>
+    - (NSString*) <b>keyEquivalent</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-14">keyEquivalent</a></h3>
-- (NSString*) <b>keyEquivalent</b>;<br>
+              </p>
+    <hr />
+    <h3>keyEquivalentFont</a></h3>
+    - (<a href="NSFont.html#class$NSFont">NSFont</a>*) <b>keyEquivalentFont</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-15">keyEquivalentFont</a></h3>
-- (NSFont*) <b>keyEquivalentFont</b>;<br>
+              </p>
+    <hr />
+    <h3>keyEquivalentModifierMask</a></h3>
+    - (unsigned int) <b>keyEquivalentModifierMask</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-16">keyEquivalentModifierMask</a></h3>
-- (unsigned int) <b>keyEquivalentModifierMask</b>;<br>
+              </p>
+    <hr />
+    <h3>mouseEntered:</a></h3>
+    - (void) <b>mouseEntered:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)event;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-17"> mouseEntered:</a></h3>
-- (void) <b> mouseEntered:</b> (NSEvent*)event;<br>
+              </p>
+    <hr />
+    <h3>mouseExited:</a></h3>
+    - (void) <b>mouseExited:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)event;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-18"> mouseExited:</a></h3>
-- (void) <b> mouseExited:</b> (NSEvent*)event;<br>
+              </p>
+    <hr />
+    <h3>performClick:</a></h3>
+    - (void) <b>performClick:</b> (id)sender;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-19">performClick:</a></h3>
-- (void) <b>performClick:</b> (id)sender;<br>
+              </p>
+    <hr />
+    <h3>setAlternateImage:</a></h3>
+    - (void) <b>setAlternateImage:</b> (<a href="NSImage.html#class$NSImage">NSImage</a>*)anImage;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-20">setAlternateImage:</a></h3>
-- (void) <b>setAlternateImage:</b> (NSImage*)image;<br>
+              </p>
+    <hr />
+    <h3>setAlternateMnemonicLocation:</a></h3>
+    - (void) <b>setAlternateMnemonicLocation:</b> (unsigned)location;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-21">setAlternateMnemonicLocation:</a></h3>
-- (void) <b>setAlternateMnemonicLocation:</b> (unsigned int)location;<br>
+              </p>
+    <hr />
+    <h3>setAlternateTitle:</a></h3>
+    - (void) <b>setAlternateTitle:</b> (NSString*)aString;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-22">setAlternateTitle:</a></h3>
-- (void) <b>setAlternateTitle:</b> (NSString*)aString;<br>
+              </p>
+    <hr />
+    <h3>setAlternateTitleWithMnemonic:</a></h3>
+    - (void) <b>setAlternateTitleWithMnemonic:</b> (NSString*)aString;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-23">setAlternateTitleWithMnemonic:</a></h3>
-- (void) <b>setAlternateTitleWithMnemonic:</b> (NSString*)aString;<br>
+              </p>
+    <hr />
+    <h3>setAttributedAlternateTitle:</a></h3>
+    - (void) <b>setAttributedAlternateTitle:</b> (NSAttributedString*)aString;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-24">setAttributedAlternateTitle:</a></h3>
-- (void) <b>setAttributedAlternateTitle:</b> (NSAttributedString*)aString;<br>
+              </p>
+    <hr />
+    <h3>setAttributedTitle:</a></h3>
+    - (void) <b>setAttributedTitle:</b> (NSAttributedString*)aString;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-25">setAttributedTitle:</a></h3>
-- (void) <b>setAttributedTitle:</b> (NSAttributedString*)aString;<br>
+              </p>
+    <hr />
+    <h3>setBezelStyle:</a></h3>
+    - (void) <b>setBezelStyle:</b> (NSBezelStyle)bezelStyle;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-26">setBezelStyle:</a></h3>
-- (void) <b>setBezelStyle:</b> (NSBezelStyle)bezelStyle;<br>
+              </p>
+    <hr />
+    <h3>setButtonType:</a></h3>
+    - (void) <b>setButtonType:</b> (NSButtonType)buttonType;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-27">setButtonType:</a></h3>
-- (void) <b>setButtonType:</b> (NSButtonType)aType;<br>
+              </p>
+    <hr />
+    <h3>setFont:</a></h3>
+    - (void) <b>setFont:</b> (<a href="NSFont.html#class$NSFont">NSFont</a>*)fontObject;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-28">setFont:</a></h3>
-- (void) <b>setFont:</b> (NSFont*)fontObj;<br>
+              </p>
+    <hr />
+    <h3>setGradientType:</a></h3>
+    - (void) <b>setGradientType:</b> (NSGradientType)gradientType;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-29">setGradientType:</a></h3>
-- (void) <b>setGradientType:</b> (NSGradientType)gradientType;<br>
+              </p>
+    <hr />
+    <h3>setHighlightsBy:</a></h3>
+    - (void) <b>setHighlightsBy:</b> (int)mask;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-30">setHighlightsBy:</a></h3>
-- (void) <b>setHighlightsBy:</b> (int)aType;<br>
+              </p>
+    <hr />
+    <h3>setImageDimsWhenDisabled:</a></h3>
+    - (void) <b>setImageDimsWhenDisabled:</b> (BOOL)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-31">setImageDimsWhenDisabled:</a></h3>
-- (void) <b>setImageDimsWhenDisabled:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>setImagePosition:</a></h3>
+    - (void) <b>setImagePosition:</b> (NSCellImagePosition)aPosition;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-32">setImagePosition:</a></h3>
-- (void) <b>setImagePosition:</b> (NSCellImagePosition)aPosition;<br>
+              </p>
+    <hr />
+    <h3>setKeyEquivalent:</a></h3>
+    - (void) <b>setKeyEquivalent:</b> (NSString*)key;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-33">setKeyEquivalent:</a></h3>
-- (void) <b>setKeyEquivalent:</b> (NSString*)aKeyEquivalent;<br>
+              </p>
+    <hr />
+    <h3>setKeyEquivalentFont:</a></h3>
+    - (void) <b>setKeyEquivalentFont:</b> (<a href="NSFont.html#class$NSFont">NSFont</a>*)fontObj;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-34">setKeyEquivalentFont:</a></h3>
-- (void) <b>setKeyEquivalentFont:</b> (NSFont*)fontObj;<br>
+              </p>
+    <hr />
+    <h3>setKeyEquivalentFont:size:</a></h3>
+    - (void) <b>setKeyEquivalentFont:</b> (NSString*)fontName<b> size:</b> (float)fontSize;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-35">setKeyEquivalentFont:</a></h3>
-- (void) <b>setKeyEquivalentFont:</b> (NSString*)fontName;<br>
+              </p>
+    <hr />
+    <h3>setKeyEquivalentModifierMask:</a></h3>
+    - (void) <b>setKeyEquivalentModifierMask:</b> (unsigned int)mask;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-36">setKeyEquivalentModifierMask:</a></h3>
-- (void) <b>setKeyEquivalentModifierMask:</b> (unsigned int)mask;<br>
+              </p>
+    <hr />
+    <h3>setPeriodicDelay:interval:</a></h3>
+    - (void) <b>setPeriodicDelay:</b> (float)delay<b> interval:</b> (float)interval;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-37">setPeriodicDelay:interval:</a></h3>
-- (void) <b>setPeriodicDelay:</b> (float)delay <b>interval:</b> (float)interval;<br>
+              </p>
+    <hr />
+    <h3>setShowsBorderOnlyWhileMouseInside:</a></h3>
+    - (void) <b>setShowsBorderOnlyWhileMouseInside:</b> (BOOL)show;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-38"> setShowsBorderOnlyWhileMouseInside:</a></h3>
-- (void) <b> setShowsBorderOnlyWhileMouseInside:</b> (BOOL)show;<br>
+              </p>
+    <hr />
+    <h3>setShowsStateBy:</a></h3>
+    - (void) <b>setShowsStateBy:</b> (int)mask;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-39">setShowsStateBy:</a></h3>
-- (void) <b>setShowsStateBy:</b> (int)aType;<br>
+              </p>
+    <hr />
+    <h3>setSound:</a></h3>
+    - (void) <b>setSound:</b> (NSSound*)aSound;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-40">setSound:</a></h3>
-- (void) <b>setSound:</b> (NSSound*)aSound;<br>
+              </p>
+    <hr />
+    <h3>setTitle:</a></h3>
+    - (void) <b>setTitle:</b> (NSString*)aString;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-41">setTitle:</a></h3>
-- (void) <b>setTitle:</b> (NSString*)aString;<br>
+              </p>
+    <hr />
+    <h3>setTitleWithMnemonic:</a></h3>
+    - (void) <b>setTitleWithMnemonic:</b> (NSString*)aString;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-42">setTitleWithMnemonic:</a></h3>
-- (void) <b>setTitleWithMnemonic:</b> (NSString*)aString;<br>
+              </p>
+    <hr />
+    <h3>setTransparent:</a></h3>
+    - (void) <b>setTransparent:</b> (BOOL)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-43">setTransparent:</a></h3>
-- (void) <b>setTransparent:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>showsBorderOnlyWhileMouseInside</a></h3>
+    - (BOOL) <b>showsBorderOnlyWhileMouseInside</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-44">showsStateBy</a></h3>
-- (int) <b>showsStateBy</b>;<br>
+              </p>
+    <hr />
+    <h3>showsStateBy</a></h3>
+    - (int) <b>showsStateBy</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-45"> showsBorderOnlyWhileMouseInside</a></h3>
-- (BOOL) <b> showsBorderOnlyWhileMouseInside</b>;<br>
+              </p>
+    <hr />
+    <h3>sound</a></h3>
+    - (NSSound*) <b>sound</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-46">sound</a></h3>
-- (NSSound*) <b>sound</b>;<br>
+              </p>
+    <hr />
+    <h3>title</a></h3>
+    - (NSString*) <b>title</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-47">title</a></h3>
-- (NSString*) <b>title</b>;<br>
-
-          
- <hr>
-</body>
-
- </html>
+              </p>
+    <hr />
+  </body>
+</html>

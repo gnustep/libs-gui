@@ -1,14 +1,10 @@
-/* -*- C++ -*-
-   NSSecureTextField.m
+/** <title>NSSecureTextField</title>
 
-   Secure Text field control class for hidden text entry
+   <abstract>Secure Text field control class for hidden text entry</abstract>
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 
-   Original Author:  Lyndon Tremblay <humasect@coolmail.com>
-   Date: 1999
-
-   Rewrite by: Gregory John Casamento <borgheron@yahoo.com>
+   Author: Gregory John Casamento <borgheron@yahoo.com>
    Date: 2000
 
    This file is part of the GNUstep GUI Library.

@@ -1,23 +1,29 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSHelpManager" prev="NSGraphicsContext.html" next="NSImage.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSHelpManager" next="NSImage" prev="NSGraphicsContext" up="NSActionCell">
   <head>
     <title>NSHelpManager</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Pedro Ivo Andrade Tavares">
+      <email address="ptavares@iname.com">
+        ptavares@iname.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>
+      NSHelpManager is the class responsible for managing
+      context help for the application, and its mapping to the
+      graphic elements.
+    </abstract>
+    <copy>1999 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSHelpManager</heading>
+      <heading>
+        Software documentation for the NSHelpManager class
+      </heading>
       <class name="NSHelpManager" super="NSObject">
-        <declared>Gui/NSHelpManager.h</declared>
-        <conform>NSObject</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSHelpManager.h</declared>
+        <desc>
+        </desc>
         <method type="BOOL" factory="yes">
           <sel>isContextHelpModeActive</sel>
           <desc>
@@ -49,7 +55,7 @@
         <method type="void">
           <sel>setContextHelp:</sel>
           <arg type="NSAttributedString*">help</arg>
-          <sel>forObject:</sel>
+          <sel>withObject:</sel>
           <arg type="id">object</arg>
           <desc>
           </desc>
@@ -63,6 +69,47 @@
           </desc>
         </method>
       </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSApplication(NSHelpManager)
+        category
+      </heading>
+      <category name="NSHelpManager" class="NSApplication">
+        <declared>AppKit/NSHelpManager.h</declared>
+        <desc>
+        </desc>
+        <method type="void">
+          <sel>activateContextHelpMode:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>showHelp:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+      </category>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the NSBundle(NSHelpManager)
+        category
+      </heading>
+      <category name="NSHelpManager" class="NSBundle">
+        <declared>AppKit/NSHelpManager.h</declared>
+        <desc>
+        </desc>
+        <method type="NSAttributedString*">
+          <sel>contextHelpForKey:</sel>
+          <arg type="NSString*">key</arg>
+          <desc>
+          </desc>
+        </method>
+      </category>
     </chapter>
   </body>
 </gsdoc>

@@ -1,32 +1,33 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSComboBox" prev="NSColorWell.html" next="NSComboBoxCell.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSComboBox" next="NSComboBoxCell" prev="NSColorWell" up="NSActionCell">
   <head>
     <title>NSComboBox</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Gerrit van Dyk">
+      <email address="gerritvd@decillion.net">
+        gerritvd@decillion.net
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <copy>1999 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSComboBox</heading>
+      <heading>
+        Software documentation for the NSComboBox class
+      </heading>
       <class name="NSComboBox" super="NSTextField">
-        <declared>Gui/NSComboBox.h</declared>
-        <conform>NSObject</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSComboBox.h</declared>
+        <desc>
+        </desc>
         <method type="void">
-          <sel>addItemsWithObjectValues:</sel>
-          <arg type="id">objects</arg>
+          <sel>addItemWithObjectValue:</sel>
+          <arg type="id">object</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
-          <sel>addItemWithObjectValue:</sel>
-          <arg type="id">anObject</arg>
+          <sel>addItemsWithObjectValues:</sel>
+          <arg type="NSArray*">objects</arg>
           <desc>
           </desc>
         </method>
@@ -46,12 +47,6 @@
           <desc>
           </desc>
         </method>
-        <method type="void">
-          <sel>encodeWithCoder:</sel>
-          <arg type="NSCoder*">encoder</arg>
-          <desc>
-          </desc>
-        </method>
         <method type="BOOL">
           <sel>hasVerticalScroller</sel>
           <desc>
@@ -59,7 +54,7 @@
         </method>
         <method type="int">
           <sel>indexOfItemWithObjectValue:</sel>
-          <arg type="id">anObject</arg>
+          <arg type="id">object</arg>
           <desc>
           </desc>
         </method>
@@ -68,15 +63,11 @@
           <desc>
           </desc>
         </method>
-        <method type="id">
-          <sel>initWithCoder:</sel>
-          <arg type="NSCoder*">decoder</arg>
-          <desc>
-          </desc>
-        </method>
         <method type="void">
           <sel>insertItemWithObjectValue:</sel>
-          <arg type="id">anObject</arg>
+          <arg type="id">object</arg>
+          <sel>atIndex:</sel>
+          <arg type="int">index</arg>
           <desc>
           </desc>
         </method>
@@ -139,7 +130,7 @@
         </method>
         <method type="void">
           <sel>removeItemWithObjectValue:</sel>
-          <arg type="id">anObject</arg>
+          <arg type="id">object</arg>
           <desc>
           </desc>
         </method>
@@ -163,7 +154,7 @@
         </method>
         <method type="void">
           <sel>selectItemWithObjectValue:</sel>
-          <arg type="id">anObject</arg>
+          <arg type="id">object</arg>
           <desc>
           </desc>
         </method>
@@ -215,6 +206,84 @@
           </desc>
         </method>
       </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSObject(NSComboBoxDataSource)
+        category
+      </heading>
+      <category name="NSComboBoxDataSource" class="NSObject">
+        <declared>AppKit/NSComboBox.h</declared>
+        <desc>
+        </desc>
+        <method type="NSString*">
+          <sel>comboBox:</sel>
+          <arg type="NSComboBox*">aComboBox</arg>
+          <sel>completedString:</sel>
+          <arg type="NSString*">aString</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="unsigned int">
+          <sel>comboBox:</sel>
+          <arg type="NSComboBox*">aComboBox</arg>
+          <sel>indexOfItemWithStringValue:</sel>
+          <arg type="NSString*">string</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="id">
+          <sel>comboBox:</sel>
+          <arg type="NSComboBox*">aComboBox</arg>
+          <sel>objectValueForItemAtIndex:</sel>
+          <arg type="int">index</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="int">
+          <sel>numberOfItemsInComboBox:</sel>
+          <arg type="NSComboBox*">aComboBox</arg>
+          <desc>
+          </desc>
+        </method>
+      </category>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSObject(NSComboBoxNotifications)
+        category
+      </heading>
+      <category name="NSComboBoxNotifications" class="NSObject">
+        <declared>AppKit/NSComboBox.h</declared>
+        <desc>
+        </desc>
+        <method type="void">
+          <sel>comboBoxSelectionDidChange:</sel>
+          <arg type="NSNotification*">notification</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>comboBoxSelectionIsChanging:</sel>
+          <arg type="NSNotification*">notification</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>comboBoxWillDismiss:</sel>
+          <arg type="NSNotification*">notification</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>comboBoxWillPopUp:</sel>
+          <arg type="NSNotification*">notification</arg>
+          <desc>
+          </desc>
+        </method>
+      </category>
     </chapter>
   </body>
 </gsdoc>

@@ -1,15 +1,17 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.6//EN" "http://www.gnustep.org/gsdoc-0_6_6.xml">
-<gsdoc base="NSPageLayout" next="NSPrintInfo">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSPageLayout" next="NSPanel" prev="NSInputManager" up="NSDocumentController">
   <head>
     <title>NSPageLayout</title>
     <author name="Adam Fedor">
-      <email>fedor@gnu.org</email>
+      <email address="fedor@gnu.org">
+        fedor@gnu.org
+      </email>
     </author>
     <abstract>
       Standard panel for querying user about page layout.
     </abstract>
-    <copy>(C) 2001 Free Software Foundation, Inc.</copy>
+    <copy>2001 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
@@ -29,7 +31,7 @@
         user clicked on a Page Layout menu item.
       </p>
       <class name="NSPageLayout" super="NSPanel">
-        <declared>../../Headers/gnustep/gui/NSPageLayout.h</declared>
+        <declared>AppKit/NSPageLayout.h</declared>
         <desc>
         </desc>
         <method type="NSPageLayout*" factory="yes">

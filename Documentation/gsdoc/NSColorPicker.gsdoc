@@ -1,23 +1,39 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSColorPicker" prev="NSColorPanel.html" next="NSColorWell.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSColorPicker" next="NSColorWell" prev="NSColorPanel" up="NSActionCell">
   <head>
     <title>NSColorPicker</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Jonathan Gapen">
+      <email address="jagapen@whitewater.chem.wisc.edu">
+        jagapen@whitewater.chem.wisc.edu
+      </email>
+    </author>
+    <abstract>
+      Abstract superclass for NSColorPanel color pickers
+    </abstract>
+    <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSColorPicker</heading>
+      <heading>
+        Software documentation for the NSColorPicker class
+      </heading>
       <class name="NSColorPicker" super="NSObject">
-        <declared>Gui/NSColorPicker.h</declared>
+        <declared>AppKit/NSColorPicker.h</declared>
         <conform>NSColorPickingDefault</conform>
+        <desc>
+        </desc>
+        <method type="void">
+          <sel>alphaControlAddedOrRemoved:</sel>
+          <arg type="id">sender</arg>
           <desc>
           </desc>
+        </method>
         <method type="void">
           <sel>attachColorList:</sel>
           <arg type="NSColorList*">colorList</arg>
@@ -37,15 +53,17 @@
         </method>
         <method type="id">
           <sel>initWithPickerMask:</sel>
-          <arg type="int">mask</arg>
+          <arg type="int">aMask</arg>
           <sel>colorPanel:</sel>
-          <arg type="NSColorPanel*">owningColorPanel</arg>
+          <arg type="NSColorPanel*">colorPanel</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>insertNewButtonImage:</sel>
-          <arg type="NSImage*">newButtonImage</arg>
+          <arg type="NSImage*">newImage</arg>
+          <sel>in:</sel>
+          <arg type="NSButtonCell*">newButtonCell</arg>
           <desc>
           </desc>
         </method>

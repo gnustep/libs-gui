@@ -1,12 +1,11 @@
-/*
-   NSButtonCell.m
+/** <title>NSButtonCell</title>
 
-   The button cell class
+   <abstract>The button cell class</abstract>
 
    Copyright (C) 1996-1999 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
-	        Ovidiu Predescu <ovidiu@net-community.com>
+	    Ovidiu Predescu <ovidiu@net-community.com>
    Date: 1996
    Author:  Felipe A. Rodriguez <far@ix.netcom.com>
    Date: August 1998

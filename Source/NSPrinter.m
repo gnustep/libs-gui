@@ -1,12 +1,11 @@
-/* 
-   NSPrinter.m
+/** <title>NSPrinter</title>
 
-   Class representing a printer's or printer model's capabilities.
+   <abstract>Class representing a printer's or printer model's capabilities.</abstract>
 
    Copyright (C) 1996, 1997 Free Software Foundation, Inc.
 
-   Authors:  Simon Frankau <sgf@frankau.demon.co.uk>
-   Date: June 1997 - January 1998
+   Authors: Simon Frankau <sgf@frankau.demon.co.uk>
+   Date: June 1997
    
    This file is part of the GNUstep GUI Library.
 

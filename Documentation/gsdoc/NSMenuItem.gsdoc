@@ -1,23 +1,260 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSMenuItem" prev="NSMenu.html" next="NSMenuItemCell.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSMenuItem">
   <head>
     <title>NSMenuItem</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Ovidiu Predescu">
+      <email>ovidiu@net-community.com</email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="David Lazaro Saz">
+      <email>khelekir@encomix.es</email>
+    </author>
+    <abstract>The menu cell class.</abstract>
+    <copy>(C) 1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSMenuItem</heading>
-      <class name="NSMenuItem" super="NSObject">
-        <declared>Gui/NSMenuItem.h</declared>
+      <heading>
+        Software documentation for the NSMenuItem protocol
+      </heading>
+      <protocol name="NSMenuItem">
+        <declared></declared>
+        <desc>
+        </desc>
+        <method type="id&lt;NSMenuItem&gt;" factory="yes">
+          <sel>separatorItem</sel>
           <desc>
           </desc>
-      </class>
+        </method>
+        <method type="void" factory="yes">
+          <sel>setUsesUserKeyEquivalents:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL" factory="yes">
+          <sel>usesUserKeyEquivalents</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="SEL">
+          <sel>action</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>hasSubmenu</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSImage*">
+          <sel>image</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="id">
+          <sel>initWithTitle:</sel>
+          <arg type="NSString*">aString</arg>
+          <sel>action:</sel>
+          <arg type="SEL">aSelector</arg>
+          <sel>keyEquivalent:</sel>
+          <arg type="NSString*">charCode</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>isEnabled</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>isSeparatorItem</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSString*">
+          <sel>keyEquivalent</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="unsigned int">
+          <sel>keyEquivalentModifierMask</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSMenu*">
+          <sel>menu</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSImage*">
+          <sel>mixedStateImage</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSString*">
+          <sel>mnemonic</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="unsigned">
+          <sel>mnemonicLocation</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSImage*">
+          <sel>offStateImage</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSImage*">
+          <sel>onStateImage</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="id">
+          <sel>representedObject</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setAction:</sel>
+          <arg type="SEL">aSelector</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setEnabled:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setImage:</sel>
+          <arg type="NSImage*">menuImage</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setKeyEquivalent:</sel>
+          <arg type="NSString*">aKeyEquivalent</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setKeyEquivalentModifierMask:</sel>
+          <arg type="unsigned int">mask</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setMenu:</sel>
+          <arg type="NSMenu*">menu</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setMixedStateImage:</sel>
+          <arg type="NSImage*">image</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setMnemonicLocation:</sel>
+          <arg type="unsigned">location</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setOffStateImage:</sel>
+          <arg type="NSImage*">image</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setOnStateImage:</sel>
+          <arg type="NSImage*">image</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setRepresentedObject:</sel>
+          <arg type="id">anObject</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setState:</sel>
+          <arg type="int">state</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setSubmenu:</sel>
+          <arg type="NSMenu*">submenu</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setTag:</sel>
+          <arg type="int">anInt</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setTarget:</sel>
+          <arg type="id">anObject</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setTitle:</sel>
+          <arg type="NSString*">aString</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setTitleWithMnemonic:</sel>
+          <arg type="NSString*">stringWithAmpersand</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="int">
+          <sel>state</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSMenu*">
+          <sel>submenu</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="int">
+          <sel>tag</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="id">
+          <sel>target</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSString*">
+          <sel>title</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSString*">
+          <sel>userKeyEquivalent</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="unsigned int">
+          <sel>userKeyEquivalentModifierMask</sel>
+          <desc>
+          </desc>
+        </method>
+      </protocol>
     </chapter>
   </body>
 </gsdoc>

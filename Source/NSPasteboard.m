@@ -1,12 +1,11 @@
-/* 
-   NSPasteboard.m
+/** <title>NSPasteboard</title>
 
-   Description...	Implementation of class for communicating with the
-			pasteboard server.
+   <abstract>Implementation of class for communicating with the
+			pasteboard server.</abstract>
 
    Copyright (C) 1997,1999 Free Software Foundation, Inc.
 
-   Author:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+   Author: Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: 1997
    
    This file is part of the GNUstep GUI Library.

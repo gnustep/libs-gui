@@ -1,11 +1,10 @@
-/*
-   NSLayoutManager.m
+/** <title>NSLayoutManager</title>
 
-   The text layout manager class
+   <abstract>The text layout manager class</abstract>
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 
-   Author:  Jonathan Gapen <jagapen@smithlab.chem.wisc.edu>
+   Author: Jonathan Gapen <jagapen@smithlab.chem.wisc.edu>
    Date: July 1999
    Author:  Michael Hanni <mhanni@sprintmail.com>
    Date: August 1999

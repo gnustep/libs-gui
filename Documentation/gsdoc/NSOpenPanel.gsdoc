@@ -1,30 +1,75 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSOpenPanel" prev="NSMutableParaStyle.html" next="NSPICTImageRep.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSOpenPanel" next="NSPageLayout" prev="NSMenuView" up="NSActionCell">
   <head>
     <title>NSOpenPanel</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Daniel Bðhringer">
+      <email address="boehring@biomed.ruhr-uni-bochum.de">
+        boehring@biomed.ruhr-uni-bochum.de
+      </email>
+    </author>
+    <author name="Nicola Pero">
+      <email address="n.pero@mi.flashnet.it">
+        n.pero@mi.flashnet.it
+      </email>
+    </author>
+    <author name="Mirko Viviani">
+      <email address="mirko.viviani@rccr.cremona.it">
+        mirko.viviani@rccr.cremona.it
+      </email>
+    </author>
+    <abstract>
+      Standard open panel for opening files
+    </abstract>
+    <copy>
+      1996, 1998, 1999, 2000 Free Software Foundation, Inc.
+    </copy>
   </head>
   <body>
     <chapter>
-      <heading>NSOpenPanel</heading>
+      <heading>
+        Software documentation for the NSOpenPanel class
+      </heading>
       <class name="NSOpenPanel" super="NSSavePanel">
-        <declared>Gui/NSOpenPanel.h</declared>
-        <conform>NSObject</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSOpenPanel.h</declared>
+        <conform>NSCoding</conform>
+        <desc>
+        </desc>
         <method type="NSOpenPanel*" factory="yes">
           <sel>openPanel</sel>
           <desc>
           </desc>
         </method>
+        <method type="NSArray*">
+          <sel>URLs</sel>
+          <desc>
+          </desc>
+        </method>
         <method type="BOOL">
           <sel>allowsMultipleSelection</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>beginSheetForDirectory:</sel>
+          <arg type="NSString*">path</arg>
+          <sel>file:</sel>
+          <arg type="NSString*">name</arg>
+          <sel>types:</sel>
+          <arg type="NSArray*">fileTypes</arg>
+          <sel>modalForWindow:</sel>
+          <arg type="NSWindow*">docWindow</arg>
+          <sel>modalDelegate:</sel>
+          <arg type="id">delegate</arg>
+          <sel>didEndSelector:</sel>
+          <arg type="SEL">didEndSelector</arg>
+          <sel>contextInfo:</sel>
+          <arg type="void*">contextInfo</arg>
           <desc>
           </desc>
         </method>
@@ -45,11 +90,23 @@
         </method>
         <method type="int">
           <sel>runModalForDirectory:</sel>
-          <arg type="NSString*">directory</arg>
+          <arg type="NSString*">path</arg>
           <sel>file:</sel>
-          <arg type="NSString *">filename</arg>
+          <arg type="NSString*">name</arg>
           <sel>types:</sel>
           <arg type="NSArray*">fileTypes</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="int">
+          <sel>runModalForDirectory:</sel>
+          <arg type="NSString*">path</arg>
+          <sel>file:</sel>
+          <arg type="NSString*">name</arg>
+          <sel>types:</sel>
+          <arg type="NSArray*">fileTypes</arg>
+          <sel>relativeToWindow:</sel>
+          <arg type="NSWindow*">window</arg>
           <desc>
           </desc>
         </method>
@@ -74,11 +131,6 @@
         <method type="void">
           <sel>setCanChooseFiles:</sel>
           <arg type="BOOL">flag</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="NSArray*">
-          <sel>URLs</sel>
           <desc>
           </desc>
         </method>

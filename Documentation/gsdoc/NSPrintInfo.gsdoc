@@ -1,18 +1,22 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.6//EN" "http://www.gnustep.org/gsdoc-0_6_6.xml">
-<gsdoc base="NSPrintInfo" next="NSPrintOperation" prev="NSPageLayout" up="NSPageLayout">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSPrintInfo" next="NSPrintOperation" prev="NSPageLayout" up="NSDocumentController">
   <head>
     <title>NSPrintInfo</title>
     <author name="Simon Frankau">
-      <email>sgf@frankau.demon.co.uk</email>
+      <email address="sgf@frankau.demon.co.uk">
+        sgf@frankau.demon.co.uk
+      </email>
     </author>
     <author name="Adam Fedor">
-      <email>fedor@gnu.org</email>
+      <email address="fedor@gnu.org">
+        fedor@gnu.org
+      </email>
     </author>
     <abstract>
       Stores information used in printing.
     </abstract>
-    <copy>(C) 1996,1997 Free Software Foundation, Inc.</copy>
+    <copy>1996,1997 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
@@ -23,7 +27,7 @@
         and the destination information for printing.
       </p>
       <class name="NSPrintInfo" super="NSObject">
-        <declared>../../Headers/gnustep/gui/NSPrintInfo.h</declared>
+        <declared>AppKit/NSPrintInfo.h</declared>
         <conform>NSCoding</conform>
         <conform>NSCopying</conform>
         <desc>

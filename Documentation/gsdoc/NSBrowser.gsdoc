@@ -1,23 +1,43 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSBrowser" prev="NSBox.html" next="NSBrowserCell.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSBrowser" next="NSBrowserCell" prev="NSBox" up="NSActionCell">
   <head>
     <title>NSBrowser</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Felipe A. Rodriguez">
+      <email address="far@ix.netcom.com">
+        far@ix.netcom.com
+      </email>
+    </author>
+    <author name="Franck Wolff">
+      <email address="wolff@cybercable.fr">
+        wolff@cybercable.fr
+      </email>
+    </author>
+    <author name="Mirko Viviani">
+      <email address="mirko.viviani@rccr.cremona.it">
+        mirko.viviani@rccr.cremona.it
+      </email>
+    </author>
+    <abstract>
+      Control to display and select from hierarchal lists
+    </abstract>
+    <copy>1996, 1997 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSBrowser</heading>
+      <heading>
+        Software documentation for the NSBrowser class
+      </heading>
       <class name="NSBrowser" super="NSControl">
-        <declared>Gui/NSBrowser.h</declared>
+        <declared>AppKit/NSBrowser.h</declared>
         <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <desc>
+        </desc>
         <method type="Class" factory="yes">
           <sel>cellClass</sel>
           <desc>
@@ -93,8 +113,18 @@
           </desc>
         </method>
         <method type="void">
-          <sel>drawTitleOfColumn:</sel>
+          <sel>drawTitle:</sel>
+          <arg type="NSString*">title</arg>
+          <sel>inRect:</sel>
+          <arg type="NSRect">aRect</arg>
+          <sel>ofColumn:</sel>
           <arg type="int">column</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>encodeWithCoder:</sel>
+          <arg type="NSCoder*">aCoder</arg>
           <desc>
           </desc>
         </method>
@@ -117,6 +147,12 @@
         </method>
         <method type="BOOL">
           <sel>hasHorizontalScroller</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="id">
+          <sel>initWithCoder:</sel>
+          <arg type="NSCoder*">aDecoder</arg>
           <desc>
           </desc>
         </method>
@@ -169,7 +205,7 @@
           <desc>
           </desc>
         </method>
-        <method type="float">
+        <method type="int">
           <sel>minColumnWidth</sel>
           <desc>
           </desc>
@@ -312,7 +348,7 @@
         </method>
         <method type="void">
           <sel>setCellClass:</sel>
-          <arg type="Class">factoryId</arg>
+          <arg type="Class">classId</arg>
           <desc>
           </desc>
         </method>
@@ -348,7 +384,7 @@
         </method>
         <method type="void">
           <sel>setMatrixClass:</sel>
-          <arg type="Class">factoryId</arg>
+          <arg type="Class">classId</arg>
           <desc>
           </desc>
         </method>
@@ -360,7 +396,7 @@
         </method>
         <method type="void">
           <sel>setMinColumnWidth:</sel>
-          <arg type="float">columnWidth</arg>
+          <arg type="int">columnWidth</arg>
           <desc>
           </desc>
         </method>
@@ -372,7 +408,7 @@
         </method>
         <method type="void">
           <sel>setPathSeparator:</sel>
-          <arg type="NSString*">newString</arg>
+          <arg type="NSString*">aString</arg>
           <desc>
           </desc>
         </method>
@@ -451,6 +487,52 @@
           <desc>
           </desc>
         </method>
+      </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSBrowser(GNUstepExtensions)
+        category
+      </heading>
+      <category name="GNUstepExtensions" class="NSBrowser">
+        <declared>AppKit/NSBrowser.h</declared>
+        <desc>
+        </desc>
+        <method type="BOOL">
+          <sel>acceptsAlphaNumericalKeys</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>sendsActionOnAlphaNumericalKeys</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setAcceptsAlphaNumericalKeys:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setSendsActionOnAlphaNumericalKeys:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
+      </category>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSObject(NSBrowserDelegate)
+        category
+      </heading>
+      <category name="NSBrowserDelegate" class="NSObject">
+        <declared>AppKit/NSBrowser.h</declared>
+        <desc>
+        </desc>
         <method type="void">
           <sel>browser:</sel>
           <arg type="NSBrowser*">sender</arg>
@@ -529,7 +611,7 @@
           <desc>
           </desc>
         </method>
-      </class>
+      </category>
     </chapter>
   </body>
 </gsdoc>

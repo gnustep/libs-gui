@@ -1,7 +1,6 @@
-/*
-   GSHbox.m
+/** <title>GSHbox</title>
 
-   The GSHbox class (a GNU extension)
+   <abstract>The GSHbox class (a GNU extension)</abstract>
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 

@@ -1,191 +1,251 @@
-<html><head>
- <title>NSPasteboard</title>
-</head>
-<body>
-<a href ="NSParagraphStyle.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSPopUpButton.html">[Next] </a>
-<h1>NSPasteboard</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSPasteboard</a></h2>
-<h2><a name ="NSPasteboard">NSPasteboard</a></h2>
-<p><b>Declared in: </b> Gui/NSPasteboard.h</p>
-<p><b>Inherits from: </b> NSObject</p>
-<p><b>Conforms to: </b> NSObject
-</p>
-<hr>
+<html>
+  <head>
+    <title>NSPasteboard</title>
+  </head>
+  <body>
+    <h1>NSPasteboard</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Richard Frith-Macdonald(<a href="mailto:richard@brainstorm.co.uk"><code>
+        richard@brainstorm.co.uk
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <blockquote>
 
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSPasteboard.html#method-0">+generalPasteboard</a>
-<li ><a href ="NSPasteboard.html#method-1">+pasteboardByFilteringData:ofType:</a>
-<li ><a href ="NSPasteboard.html#method-2">+pasteboardByFilteringFile:</a>
-<li ><a href ="NSPasteboard.html#method-3">+pasteboardByFilteringTypesInPasteboard:</a>
-<li ><a href ="NSPasteboard.html#method-4">+pasteboardWithName:</a>
-<li ><a href ="NSPasteboard.html#method-5">+pasteboardWithUniqueName</a>
-<li ><a href ="NSPasteboard.html#method-6">+typesFilterableTo:</a>
-<li ><a href ="NSPasteboard.html#method-7">-addTypes:</a>
-<li ><a href ="NSPasteboard.html#method-8">-availableTypeFromArray:</a>
-<li ><a href ="NSPasteboard.html#method-9">-changeCount</a>
-<li ><a href ="NSPasteboard.html#method-10">-dataForType:</a>
-<li ><a href ="NSPasteboard.html#method-11">-declareTypes:</a>
-<li ><a href ="NSPasteboard.html#method-12">-name</a>
-<li ><a href ="NSPasteboard.html#method-25">-pasteboard:provideDataForType:</a>
-<li ><a href ="NSPasteboard.html#method-24">-pasteboardChangedOwner:</a>
-<li ><a href ="NSPasteboard.html#method-13">-propertyListForType:</a>
-<li ><a href ="NSPasteboard.html#method-14">-readFileContentsType:toFile:</a>
-<li ><a href ="NSPasteboard.html#method-15">-readFileWrapper;</a>
-<li ><a href ="NSPasteboard.html#method-16">-releaseGlobally</a>
-<li ><a href ="NSPasteboard.html#method-17">-setData:forType:</a>
-<li ><a href ="NSPasteboard.html#method-18">-setPropertyList:</a>
-<li ><a href ="NSPasteboard.html#method-19">-setString:forType:</a>
-<li ><a href ="NSPasteboard.html#method-20">-stringForType:</a>
-<li ><a href ="NSPasteboard.html#method-21">-types</a>
-<li ><a href ="NSPasteboard.html#method-22">-writeFileContents:</a>
-<li ><a href ="NSPasteboard.html#method-23">-writeFileWrapper:</a>
-</ul>
-<hr><h2>Class Methods </h2>
-<h3><a name ="method-0">generalPasteboard</a></h3>
-+ (NSPasteboard*) <b>generalPasteboard</b>;<br>
+      Implementation of class for communicating with the
+      pasteboard server.
+        </blockquote>
+    <p>Copyright: (C) 1997,1999 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the NSPasteboard class
+      </h1>
+    <h2><a name="class$NSPasteboard">NSPasteboard</a> : NSObject</h2>
+    Declared: AppKit/NSPasteboard.h<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-1">pasteboardByFilteringData:ofType:</a></h3>
-+ (NSPasteboard*) <b>pasteboardByFilteringData:</b> (NSData*)data <b>ofType:</b> (NSString*)type;<br>
+            </p>
+    <h3>generalPasteboard</a></h3>
+    + (<a href="#class$NSPasteboard">NSPasteboard</a>*) <b>generalPasteboard</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-2">pasteboardByFilteringFile:</a></h3>
-+ (NSPasteboard*) <b>pasteboardByFilteringFile:</b> (NSString*)filename;<br>
+              </p>
+    <hr />
+    <h3>pasteboardByFilteringData:ofType:</a></h3>
+    + (<a href="#class$NSPasteboard">NSPasteboard</a>*) <b>pasteboardByFilteringData:</b> (NSData*)data<b> ofType:</b> (NSString*)type;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-3">pasteboardByFilteringTypesInPasteboard:</a></h3>
-+ (NSPasteboard*) <b>pasteboardByFilteringTypesInPasteboard:</b> (NSPasteboard*)pasteboard;<br>
+              </p>
+    <hr />
+    <h3>pasteboardByFilteringFile:</a></h3>
+    + (<a href="#class$NSPasteboard">NSPasteboard</a>*) <b>pasteboardByFilteringFile:</b> (NSString*)filename;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-4">pasteboardWithName:</a></h3>
-+ (NSPasteboard*) <b>pasteboardWithName:</b> (NSString*)name;<br>
+              </p>
+    <hr />
+    <h3>pasteboardByFilteringTypesInPasteboard:</a></h3>
+    + (<a href="#class$NSPasteboard">NSPasteboard</a>*) <b>pasteboardByFilteringTypesInPasteboard:</b> (<a href="#class$NSPasteboard">NSPasteboard</a>*)pboard;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-5">pasteboardWithUniqueName</a></h3>
-+ (NSPasteboard*) <b>pasteboardWithUniqueName</b>;<br>
+              </p>
+    <hr />
+    <h3>pasteboardWithName:</a></h3>
+    + (<a href="#class$NSPasteboard">NSPasteboard</a>*) <b>pasteboardWithName:</b> (NSString*)aName;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-6">typesFilterableTo:</a></h3>
-+ (NSArray*) <b>typesFilterableTo:</b> (NSString*)type;<br>
+              </p>
+    <hr />
+    <h3>pasteboardWithUniqueName</a></h3>
+    + (<a href="#class$NSPasteboard">NSPasteboard</a>*) <b>pasteboardWithUniqueName</b>;<br />
+    <p>
 
-          
- <hr>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-7">addTypes:</a></h3>
-- (int) <b>addTypes:</b> (NSArray*)newTypes;<br>
+              </p>
+    <hr />
+    <h3>typesFilterableTo:</a></h3>
+    + (NSArray*) <b>typesFilterableTo:</b> (NSString*)type;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-8">availableTypeFromArray:</a></h3>
-- (NSString*) <b>availableTypeFromArray:</b> (NSArray*)types;<br>
+              </p>
+    <hr />
+    <h3>addTypes:owner:</a></h3>
+    - (int) <b>addTypes:</b> (NSArray*)newTypes<b> owner:</b> (id)newOwner;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-9">changeCount</a></h3>
-- (int) <b>changeCount</b>;<br>
+              </p>
+    <hr />
+    <h3>availableTypeFromArray:</a></h3>
+    - (NSString*) <b>availableTypeFromArray:</b> (NSArray*)types;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-10">dataForType:</a></h3>
-- (NSData*) <b>dataForType:</b> (NSString*)dataType;<br>
+              </p>
+    <hr />
+    <h3>changeCount</a></h3>
+    - (int) <b>changeCount</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-11">declareTypes:</a></h3>
-- (int) <b>declareTypes:</b> (NSArray*)newTypes;<br>
+              </p>
+    <hr />
+    <h3>dataForType:</a></h3>
+    - (NSData*) <b>dataForType:</b> (NSString*)dataType;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-12">name</a></h3>
-- (NSString*) <b>name</b>;<br>
+              </p>
+    <hr />
+    <h3>declareTypes:owner:</a></h3>
+    - (int) <b>declareTypes:</b> (NSArray*)newTypes<b> owner:</b> (id)newOwner;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-13">propertyListForType:</a></h3>
-- (id) <b>propertyListForType:</b> (NSString*)dataType;<br>
+              </p>
+    <hr />
+    <h3>name</a></h3>
+    - (NSString*) <b>name</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-14">readFileContentsType:toFile:</a></h3>
-- (NSString*) <b>readFileContentsType:</b> (NSString*)type <b>toFile:</b> (NSString*)filename;<br>
+              </p>
+    <hr />
+    <h3>propertyListForType:</a></h3>
+    - (id) <b>propertyListForType:</b> (NSString*)dataType;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-15">readFileWrapper;</a></h3>
-- (NSFileWrapper*) <b>readFileWrapper;</b>;<br>
+              </p>
+    <hr />
+    <h3>readFileContentsType:toFile:</a></h3>
+    - (NSString*) <b>readFileContentsType:</b> (NSString*)type<b> toFile:</b> (NSString*)filename;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-16">releaseGlobally</a></h3>
-- (void) <b>releaseGlobally</b>;<br>
+              </p>
+    <hr />
+    <h3>readFileWrapper</a></h3>
+    - (<a href="NSFileWrapper.html#class$NSFileWrapper">NSFileWrapper</a>*) <b>readFileWrapper</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-17">setData:forType:</a></h3>
-- (BOOL) <b>setData:</b> (NSData*)data <b>forType:</b> (NSString*)dataType;<br>
+              </p>
+    <hr />
+    <h3>releaseGlobally</a></h3>
+    - (void) <b>releaseGlobally</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-18">setPropertyList:</a></h3>
-- (BOOL) <b>setPropertyList:</b> (id)propertyList;<br>
+              </p>
+    <hr />
+    <h3>setData:forType:</a></h3>
+    - (BOOL) <b>setData:</b> (NSData*)data<b> forType:</b> (NSString*)dataType;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-19">setString:forType:</a></h3>
-- (BOOL) <b>setString:</b> (NSString*)string <b>forType:</b> (NSString*)dataType;<br>
+              </p>
+    <hr />
+    <h3>setPropertyList:forType:</a></h3>
+    - (BOOL) <b>setPropertyList:</b> (id)propertyList<b> forType:</b> (NSString*)dataType;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-20">stringForType:</a></h3>
-- (NSString*) <b>stringForType:</b> (NSString*)dataType;<br>
+              </p>
+    <hr />
+    <h3>setString:forType:</a></h3>
+    - (BOOL) <b>setString:</b> (NSString*)string<b> forType:</b> (NSString*)dataType;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-21">types</a></h3>
-- (NSArray*) <b>types</b>;<br>
+              </p>
+    <hr />
+    <h3>stringForType:</a></h3>
+    - (NSString*) <b>stringForType:</b> (NSString*)dataType;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-22">writeFileContents:</a></h3>
-- (BOOL) <b>writeFileContents:</b> (NSString*)filename;<br>
+              </p>
+    <hr />
+    <h3>types</a></h3>
+    - (NSArray*) <b>types</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-23">writeFileWrapper:</a></h3>
-- (BOOL) <b>writeFileWrapper:</b> (NSFileWrapper*)wrapper;;<br>
+              </p>
+    <hr />
+    <h3>writeFileContents:</a></h3>
+    - (BOOL) <b>writeFileContents:</b> (NSString*)filename;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-24">pasteboardChangedOwner:</a></h3>
-- (void) <b>pasteboardChangedOwner:</b> (NSPasteboard*)sender;<br>
+              </p>
+    <hr />
+    <h3>writeFileWrapper:</a></h3>
+    - (BOOL) <b>writeFileWrapper:</b> (<a href="NSFileWrapper.html#class$NSFileWrapper">NSFileWrapper</a>*)wrapper;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-25">pasteboard:provideDataForType:</a></h3>
-- (void) <b>pasteboard:</b> (NSPasteboard*)sender <b>provideDataForType:</b> (NSString*)type;<br>
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the
+        NSObject(NSPasteboardOwner)
+        category
+      </h1>
+    <h2>NSObject(<a name="category$NSObject(NSPasteboardOwner)">NSPasteboardOwner</a>)</h2>
+    Declared: AppKit/NSPasteboard.h<br />
+    <p>
 
-          
- <hr>
-</body>
+            </p>
+    <h3>pasteboard:provideDataForType:</a></h3>
+    - (void) <b>pasteboard:</b> (<a href="#class$NSPasteboard">NSPasteboard</a>*)sender<b> provideDataForType:</b> (NSString*)type;<br />
+    <p>
 
- </html>
+              </p>
+    <hr />
+    <h3>pasteboard:provideDataForType:andVersion:</a></h3>
+    - (void) <b>pasteboard:</b> (<a href="#class$NSPasteboard">NSPasteboard</a>*)sender<b> provideDataForType:</b> (NSString*)type<b> andVersion:</b> (int)ver;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>pasteboardChangedOwner:</a></h3>
+    - (void) <b>pasteboardChangedOwner:</b> (<a href="#class$NSPasteboard">NSPasteboard</a>*)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the
+        NSPasteboard(GNUstepExtensions)
+        category
+      </h1>
+    <h2><a href="#class$NSPasteboard">NSPasteboard</a>(<a name="category$NSPasteboard(GNUstepExtensions)">GNUstepExtensions</a>)</h2>
+    Declared: AppKit/NSPasteboard.h<br />
+    <p>
+
+            </p>
+    <h3>mimeTypeForPasteboardType:</a></h3>
+    + (NSString*) <b>mimeTypeForPasteboardType:</b> (NSString*)type;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>pasteboardTypeForMimeType:</a></h3>
+    + (NSString*) <b>pasteboardTypeForMimeType:</b> (NSString*)mimeType;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setChangeCount:</a></h3>
+    - (void) <b>setChangeCount:</b> (int)count;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the NSURL(NSPasteboard)
+        category
+      </h1>
+    <h2>NSURL(<a name="category$NSURL(NSPasteboard)">NSPasteboard</a>)</h2>
+    Declared: AppKit/NSPasteboard.h<br />
+    <p>
+
+            </p>
+    <h3>URLFromPasteboard:</a></h3>
+    + (NSURL*) <b>URLFromPasteboard:</b> (<a href="#class$NSPasteboard">NSPasteboard</a>*)pasteBoard;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>writeToPasteboard:</a></h3>
+    - (void) <b>writeToPasteboard:</b> (<a href="#class$NSPasteboard">NSPasteboard</a>*)pasteBoard;<br />
+    <p>
+
+              </p>
+    <hr />
+  </body>
+</html>

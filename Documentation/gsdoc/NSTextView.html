@@ -1,749 +1,843 @@
-<html><head>
- <title>NSTextView</title>
-</head>
-<body>
-<a href ="NSTextTab.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSView.html">[Next] </a>
-<h1>NSTextView</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSTextView</a></h2>
-<h2><a name ="NSTextView">NSTextView</a></h2>
-<p><b>Declared in: </b> Gui/NSTextView.h</p>
-<p><b>Inherits from: </b> NSText</p>
-<p><b>Conforms to: </b> NSTextInput
-</p>
-<hr>
-
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSTextView.html#method-0">+registerForServices</a>
-<li ><a href ="NSTextView.html#method-1">-acceptableDragTypes</a>
-<li ><a href ="NSTextView.html#method-2">-alignJustified:</a>
-<li ><a href ="NSTextView.html#method-3">-allowsUndo;</a>
-<li ><a href ="NSTextView.html#method-4">-backgroundColor</a>
-<li ><a href ="NSTextView.html#method-5">-becomeFirstResponder</a>
-<li ><a href ="NSTextView.html#method-6">-changeColor:</a>
-<li ><a href ="NSTextView.html#method-7">-cleanUpAfterDragOperation</a>
-<li ><a href ="NSTextView.html#method-8">-clickedOnLink:atIndex:</a>
-<li ><a href ="NSTextView.html#method-9">-delegate</a>
-<li ><a href ="NSTextView.html#method-10">-didChangeText</a>
-<li ><a href ="NSTextView.html#method-11">-dragOperationForDraggingInfo:</a>
-<li ><a href ="NSTextView.html#method-12">-drawInsertionPointInRect:color:turnedOn:</a>
-<li ><a href ="NSTextView.html#method-13">-drawsBackground</a>
-<li ><a href ="NSTextView.html#method-14">-encodeWithCoder:</a>
-<li ><a href ="NSTextView.html#method-15">-importsGraphics</a>
-<li ><a href ="NSTextView.html#method-16">-initWithCoder:</a>
-<li ><a href ="NSTextView.html#method-17">-initWithFrame:</a>
-<li ><a href ="NSTextView.html#method-18">-initWithFrame:textContainer:</a>
-<li ><a href ="NSTextView.html#method-19">-insertText:</a>
-<li ><a href ="NSTextView.html#method-20">-insertionPointColor</a>
-<li ><a href ="NSTextView.html#method-21">-invalidateTextContainerOrigin</a>
-<li ><a href ="NSTextView.html#method-22">-isEditable</a>
-<li ><a href ="NSTextView.html#method-23">-isFieldEditor</a>
-<li ><a href ="NSTextView.html#method-24">-isRichText</a>
-<li ><a href ="NSTextView.html#method-25">-isRulerVisible</a>
-<li ><a href ="NSTextView.html#method-26">-isSelectable</a>
-<li ><a href ="NSTextView.html#method-27">-layoutManager</a>
-<li ><a href ="NSTextView.html#method-28">-loosenKerning:</a>
-<li ><a href ="NSTextView.html#method-29">-lowerBaseline:</a>
-<li ><a href ="NSTextView.html#method-30">-markedRange</a>
-<li ><a href ="NSTextView.html#method-31">-markedTextAttributes</a>
-<li ><a href ="NSTextView.html#method-32">-pasteAsPlainText:</a>
-<li ><a href ="NSTextView.html#method-33">-pasteAsRichText:</a>
-<li ><a href ="NSTextView.html#method-34">-preferredPasteboardTypeFromArray:restrictedToTypesFromArray:</a>
-<li ><a href ="NSTextView.html#method-35">-raiseBaseline:</a>
-<li ><a href ="NSTextView.html#method-37">-readSelectionFromPasteboard:</a>
-<li ><a href ="NSTextView.html#method-38">-readSelectionFromPasteboard:</a>
-<li ><a href ="NSTextView.html#method-36">-readablePasteboardTypes</a>
-<li ><a href ="NSTextView.html#method-39">-replaceTextContainer:</a>
-<li ><a href ="NSTextView.html#method-40">-resignFirstResponder</a>
-<li ><a href ="NSTextView.html#method-41">-rulerView:didAddMarker:</a>
-<li ><a href ="NSTextView.html#method-42">-rulerView:didMoveMarker:</a>
-<li ><a href ="NSTextView.html#method-43">-rulerView:didRemoveMarker:</a>
-<li ><a href ="NSTextView.html#method-44">-rulerView:handleMouseDown:</a>
-<li ><a href ="NSTextView.html#method-45">-rulerView:shouldAddMarker:</a>
-<li ><a href ="NSTextView.html#method-46">-rulerView:shouldMoveMarker:</a>
-<li ><a href ="NSTextView.html#method-47">-rulerView:shouldRemoveMarker:</a>
-<li ><a href ="NSTextView.html#method-48">-rulerView:willAddMarker:atLocation:</a>
-<li ><a href ="NSTextView.html#method-49">-rulerView:willMoveMarker:toLocation:</a>
-<li ><a href ="NSTextView.html#method-50">-selectedRange</a>
-<li ><a href ="NSTextView.html#method-51">-selectedTextAttributes</a>
-<li ><a href ="NSTextView.html#method-52">-selectionAffinity</a>
-<li ><a href ="NSTextView.html#method-53">-selectionGranularity</a>
-<li ><a href ="NSTextView.html#method-54">-selectionRangeForProposedRange:</a>
-<li ><a href ="NSTextView.html#method-56">-setAlignment:</a>
-<li ><a href ="NSTextView.html#method-55">-setAllowsUndo:</a>
-<li ><a href ="NSTextView.html#method-57">-setBackgroundColor:</a>
-<li ><a href ="NSTextView.html#method-58">-setConstrainedFrameSize:</a>
-<li ><a href ="NSTextView.html#method-59">-setDelegate:</a>
-<li ><a href ="NSTextView.html#method-60">-setDrawsBackground:</a>
-<li ><a href ="NSTextView.html#method-61">-setEditable:</a>
-<li ><a href ="NSTextView.html#method-62">-setFieldEditor:</a>
-<li ><a href ="NSTextView.html#method-63">-setImportsGraphics:</a>
-<li ><a href ="NSTextView.html#method-64">-setInsertionPointColor:</a>
-<li ><a href ="NSTextView.html#method-65">-setMarkedTextAttributes:</a>
-<li ><a href ="NSTextView.html#method-66">-setNeedsDisplayInRect:avoidAdditionalLayout:</a>
-<li ><a href ="NSTextView.html#method-67">-setRichText:</a>
-<li ><a href ="NSTextView.html#method-68">-setRulerVisible:</a>
-<li ><a href ="NSTextView.html#method-69">-setSelectable:</a>
-<li ><a href ="NSTextView.html#method-70">-setSelectedRange:</a>
-<li ><a href ="NSTextView.html#method-71">-setSelectedRange:affinity:stillSelecting:</a>
-<li ><a href ="NSTextView.html#method-72">-setSelectedTextAttributes:</a>
-<li ><a href ="NSTextView.html#method-73">-setSelectionGranularity:</a>
-<li ><a href ="NSTextView.html#method-74">-setSmartInsertDeleteEnabled:</a>
-<li ><a href ="NSTextView.html#method-75">-setTextContainerInset:</a>
-<li ><a href ="NSTextView.html#method-76">-setTypingAttributes:</a>
-<li ><a href ="NSTextView.html#method-77">-setUsesFontPanel:</a>
-<li ><a href ="NSTextView.html#method-78">-setUsesRuler:</a>
-<li ><a href ="NSTextView.html#method-79">-shouldChangeTextInRange:</a>
-<li ><a href ="NSTextView.html#method-80">-shouldDrawInsertionPoint</a>
-<li ><a href ="NSTextView.html#method-81">-smartDeleteRangeForProposedRange:</a>
-<li ><a href ="NSTextView.html#method-82">-smartInsertAfterStringForString:replacingRange:</a>
-<li ><a href ="NSTextView.html#method-83">-smartInsertBeforeStringForString:replacingRange:</a>
-<li ><a href ="NSTextView.html#method-84">-spellCheckerDocumentTag</a>
-<li ><a href ="NSTextView.html#method-85">-textContainer</a>
-<li ><a href ="NSTextView.html#method-86">-textContainerInset</a>
-<li ><a href ="NSTextView.html#method-87">-textContainerOrigin</a>
-<li ><a href ="NSTextView.html#method-88">-textStorage</a>
-<li ><a href ="NSTextView.html#method-106">-textView:clickedOnCell:</a>
-<li ><a href ="NSTextView.html#method-107">-textView:clickedOnCell:inRect:</a>
-<li ><a href ="NSTextView.html#method-108">-textView:clickedOnLink:</a>
-<li ><a href ="NSTextView.html#method-109">-textView:clickedOnLink:atIndex:</a>
-<li ><a href ="NSTextView.html#method-110">-textView:doCommandBySelector:</a>
-<li ><a href ="NSTextView.html#method-111">-textView:doubleClickedOnCell:</a>
-<li ><a href ="NSTextView.html#method-112">-textView:doubleClickedOnCell:inRect:</a>
-<li ><a href ="NSTextView.html#method-113">-textView:draggedCell:inRect:event:</a>
-<li ><a href ="NSTextView.html#method-114">-textView:draggedCell:inRect:event:atIndex:</a>
-<li ><a href ="NSTextView.html#method-115">-textView:shouldChangeTextInRange:</a>
-<li ><a href ="NSTextView.html#method-116">-textView:willChangeSelectionFromCharacterRange:</a>
-<li ><a href ="NSTextView.html#method-117">-textViewDidChangeSelection:</a>
-<li ><a href ="NSTextView.html#method-89">-tightenKerning:</a>
-<li ><a href ="NSTextView.html#method-90">-turnOffKerning:</a>
-<li ><a href ="NSTextView.html#method-91">-turnOffLigatures:</a>
-<li ><a href ="NSTextView.html#method-92">-typingAttributes</a>
-<li ><a href ="NSTextView.html#method-118">-undoManagerForTextView:</a>
-<li ><a href ="NSTextView.html#method-93">-updateDragTypeRegistration</a>
-<li ><a href ="NSTextView.html#method-94">-updateFontPanel</a>
-<li ><a href ="NSTextView.html#method-95">-updateInsertionPointStateAndRestartTimer:</a>
-<li ><a href ="NSTextView.html#method-96">-updateRuler</a>
-<li ><a href ="NSTextView.html#method-97">-useAllLigatures:</a>
-<li ><a href ="NSTextView.html#method-100">-useStandardKerning:</a>
-<li ><a href ="NSTextView.html#method-101">-useStandardLigatures:</a>
-<li ><a href ="NSTextView.html#method-98">-usesFontPanel</a>
-<li ><a href ="NSTextView.html#method-99">-usesRuler</a>
-<li ><a href ="NSTextView.html#method-102">-validRequestorForSendType:returnType:</a>
-<li ><a href ="NSTextView.html#method-103">-writablePasteboardTypes</a>
-<li ><a href ="NSTextView.html#method-104">-writeSelectionToPasteboard:</a>
-<li ><a href ="NSTextView.html#method-105">-writeSelectionToPasteboard:</a>
-</ul>
-<hr><h2>Class Methods </h2>
-<h3><a name ="method-0">registerForServices</a></h3>
-+ (void) <b>registerForServices</b>;<br>
-
-          
- <hr>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-1">acceptableDragTypes</a></h3>
-- (NSArray*) <b>acceptableDragTypes</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-2">alignJustified:</a></h3>
-- (void) <b>alignJustified:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-3">allowsUndo;</a></h3>
-- (BOOL) <b>allowsUndo;</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-4">backgroundColor</a></h3>
-- (NSColor*) <b>backgroundColor</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-5">becomeFirstResponder</a></h3>
-- (BOOL) <b>becomeFirstResponder</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-6">changeColor:</a></h3>
-- (void) <b>changeColor:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-7">cleanUpAfterDragOperation</a></h3>
-- (void) <b>cleanUpAfterDragOperation</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-8">clickedOnLink:atIndex:</a></h3>
-- (void) <b>clickedOnLink:</b> (id)link <b>atIndex:</b> (unsigned int)charIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-9">delegate</a></h3>
-- (id) <b>delegate</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-10">didChangeText</a></h3>
-- (void) <b>didChangeText</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-11">dragOperationForDraggingInfo:</a></h3>
-- (unsigned int) <b>dragOperationForDraggingInfo:</b> (id&#60;NSDraggingInfo>)dragInfo;<br>
-
-          
- <hr>
-<h3><a name ="method-12">drawInsertionPointInRect:color:turnedOn:</a></h3>
-- (void) <b>drawInsertionPointInRect:</b> (NSRect)aRect <b>color:</b> (NSColor *)aColor <b>turnedOn:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-13">drawsBackground</a></h3>
-- (BOOL) <b>drawsBackground</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-14">encodeWithCoder:</a></h3>
-- (void) <b>encodeWithCoder:</b> (NSCoder*)encoder;<br>
-
-          
- <hr>
-<h3><a name ="method-15">importsGraphics</a></h3>
-- (BOOL) <b>importsGraphics</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-16">initWithCoder:</a></h3>
-- (id) <b>initWithCoder:</b> (NSCoder*)decoder;<br>
-
-          
- <hr>
-<h3><a name ="method-17">initWithFrame:</a></h3>
-- (id) <b>initWithFrame:</b> (NSRect)frameRect;<br>
-
-          
- <hr>
-<h3><a name ="method-18">initWithFrame:textContainer:</a></h3>
-- (id) <b>initWithFrame:</b> (NSRect)frameRect <b>textContainer:</b> (NSTextContainer*)aTextContainer;<br>
-
-          
- <hr>
-<h3><a name ="method-19">insertText:</a></h3>
-- (void) <b>insertText:</b> (NSString*)aString;<br>
-
-          
- <hr>
-<h3><a name ="method-20">insertionPointColor</a></h3>
-- (NSColor*) <b>insertionPointColor</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-21">invalidateTextContainerOrigin</a></h3>
-- (void) <b>invalidateTextContainerOrigin</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-22">isEditable</a></h3>
-- (BOOL) <b>isEditable</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-23">isFieldEditor</a></h3>
-- (BOOL) <b>isFieldEditor</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-24">isRichText</a></h3>
-- (BOOL) <b>isRichText</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-25">isRulerVisible</a></h3>
-- (BOOL) <b>isRulerVisible</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-26">isSelectable</a></h3>
-- (BOOL) <b>isSelectable</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-27">layoutManager</a></h3>
-- (NSLayoutManager*) <b>layoutManager</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-28">loosenKerning:</a></h3>
-- (void) <b>loosenKerning:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-29">lowerBaseline:</a></h3>
-- (void) <b>lowerBaseline:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-30">markedRange</a></h3>
-- (NSRange) <b>markedRange</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-31">markedTextAttributes</a></h3>
-- (NSDictionary*) <b>markedTextAttributes</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-32">pasteAsPlainText:</a></h3>
-- (void) <b>pasteAsPlainText:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-33">pasteAsRichText:</a></h3>
-- (void) <b>pasteAsRichText:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-34">preferredPasteboardTypeFromArray:restrictedToTypesFromArray:</a></h3>
-- (NSString*) <b>preferredPasteboardTypeFromArray:</b> (NSArray*)availableTypes <b>restrictedToTypesFromArray:</b> (NSArray*)allowedTypes;<br>
-
-          
- <hr>
-<h3><a name ="method-35">raiseBaseline:</a></h3>
-- (void) <b>raiseBaseline:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-36">readablePasteboardTypes</a></h3>
-- (NSArray*) <b>readablePasteboardTypes</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-37">readSelectionFromPasteboard:</a></h3>
-- (BOOL) <b>readSelectionFromPasteboard:</b> (NSPasteboard*)pboard;<br>
-
-          
- <hr>
-<h3><a name ="method-38">readSelectionFromPasteboard:</a></h3>
-- (BOOL) <b>readSelectionFromPasteboard:</b> (NSPasteboard*)pboard;<br>
-
-          
- <hr>
-<h3><a name ="method-39">replaceTextContainer:</a></h3>
-- (void) <b>replaceTextContainer:</b> (NSTextContainer*)aTextContainer;<br>
-
-          
- <hr>
-<h3><a name ="method-40">resignFirstResponder</a></h3>
-- (BOOL) <b>resignFirstResponder</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-41">rulerView:didAddMarker:</a></h3>
-- (void) <b>rulerView:</b> (NSRulerView*)aRulerView <b>didAddMarker:</b> (NSRulerMarker*)aMarker;<br>
-
-          
- <hr>
-<h3><a name ="method-42">rulerView:didMoveMarker:</a></h3>
-- (void) <b>rulerView:</b> (NSRulerView*)aRulerView <b>didMoveMarker:</b> (NSRulerMarker*)aMarker;<br>
-
-          
- <hr>
-<h3><a name ="method-43">rulerView:didRemoveMarker:</a></h3>
-- (void) <b>rulerView:</b> (NSRulerView*)aRulerView <b>didRemoveMarker:</b> (NSRulerMarker*)aMarker;<br>
-
-          
- <hr>
-<h3><a name ="method-44">rulerView:handleMouseDown:</a></h3>
-- (void) <b>rulerView:</b> (NSRulerView*)aRulerView <b>handleMouseDown:</b> (NSEvent*)theEvent;<br>
-
-          
- <hr>
-<h3><a name ="method-45">rulerView:shouldAddMarker:</a></h3>
-- (BOOL) <b>rulerView:</b> (NSRulerView*)aRulerView <b>shouldAddMarker:</b> (NSRulerMarker*)aMarker;<br>
-
-          
- <hr>
-<h3><a name ="method-46">rulerView:shouldMoveMarker:</a></h3>
-- (BOOL) <b>rulerView:</b> (NSRulerView*)aRulerView <b>shouldMoveMarker:</b> (NSRulerMarker*)aMarker;<br>
-
-          
- <hr>
-<h3><a name ="method-47">rulerView:shouldRemoveMarker:</a></h3>
-- (BOOL) <b>rulerView:</b> (NSRulerView*)aRulerView <b>shouldRemoveMarker:</b> (NSRulerMarker*)aMarker;<br>
-
-          
- <hr>
-<h3><a name ="method-48">rulerView:willAddMarker:atLocation:</a></h3>
-- (float) <b>rulerView:</b> (NSRulerView*)aRulerView <b>willAddMarker:</b> (NSRulerMarker*)aMarker <b>atLocation:</b> (float)location;<br>
-
-          
- <hr>
-<h3><a name ="method-49">rulerView:willMoveMarker:toLocation:</a></h3>
-- (float) <b>rulerView:</b> (NSRulerView*)aRulerView <b>willMoveMarker:</b> (NSRulerMarker*)aMarker <b>toLocation:</b> (float)location;<br>
-
-          
- <hr>
-<h3><a name ="method-50">selectedRange</a></h3>
-- (NSRange) <b>selectedRange</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-51">selectedTextAttributes</a></h3>
-- (NSDictionary*) <b>selectedTextAttributes</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-52">selectionAffinity</a></h3>
-- (NSSelectionAffinity) <b>selectionAffinity</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-53">selectionGranularity</a></h3>
-- (NSSelectionGranularity) <b>selectionGranularity</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-54">selectionRangeForProposedRange:</a></h3>
-- (NSRange) <b>selectionRangeForProposedRange:</b> (NSRange)proposedSelRange;<br>
-
-          
- <hr>
-<h3><a name ="method-55">setAllowsUndo:</a></h3>
-- (void) <b>setAllowsUndo:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-56">setAlignment:</a></h3>
-- (void) <b>setAlignment:</b> (NSTextAlignment)alignment;<br>
-
-          
- <hr>
-<h3><a name ="method-57">setBackgroundColor:</a></h3>
-- (void) <b>setBackgroundColor:</b> (NSColor*)aColor;<br>
-
-          
- <hr>
-<h3><a name ="method-58">setConstrainedFrameSize:</a></h3>
-- (void) <b>setConstrainedFrameSize:</b> (NSSize)desiredSize;<br>
-
-          
- <hr>
-<h3><a name ="method-59">setDelegate:</a></h3>
-- (void) <b>setDelegate:</b> (id)anObject;<br>
-
-          
- <hr>
-<h3><a name ="method-60">setDrawsBackground:</a></h3>
-- (void) <b>setDrawsBackground:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-61">setEditable:</a></h3>
-- (void) <b>setEditable:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-62">setFieldEditor:</a></h3>
-- (void) <b>setFieldEditor:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-63">setImportsGraphics:</a></h3>
-- (void) <b>setImportsGraphics:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-64">setInsertionPointColor:</a></h3>
-- (void) <b>setInsertionPointColor:</b> (NSColor*)aColor;<br>
-
-          
- <hr>
-<h3><a name ="method-65">setMarkedTextAttributes:</a></h3>
-- (void) <b>setMarkedTextAttributes:</b> (NSDictionary*)attributes;<br>
-
-          
- <hr>
-<h3><a name ="method-66">setNeedsDisplayInRect:avoidAdditionalLayout:</a></h3>
-- (void) <b>setNeedsDisplayInRect:</b> (NSRect)aRect <b>avoidAdditionalLayout:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-67">setRichText:</a></h3>
-- (void) <b>setRichText:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-68">setRulerVisible:</a></h3>
-- (void) <b>setRulerVisible:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-69">setSelectable:</a></h3>
-- (void) <b>setSelectable:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-70">setSelectedRange:</a></h3>
-- (void) <b>setSelectedRange:</b> (NSRange)charRange;<br>
-
-          
- <hr>
-<h3><a name ="method-71">setSelectedRange:affinity:stillSelecting:</a></h3>
-- (void) <b>setSelectedRange:</b> (NSRange)charRange <b>affinity:</b> (NSSelectionAffinity)affinity <b>stillSelecting:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-72">setSelectedTextAttributes:</a></h3>
-- (void) <b>setSelectedTextAttributes:</b> (NSDictionary*)attributes;<br>
-
-          
- <hr>
-<h3><a name ="method-73">setSelectionGranularity:</a></h3>
-- (void) <b>setSelectionGranularity:</b> (NSSelectionGranularity)granularity;<br>
-
-          
- <hr>
-<h3><a name ="method-74">setSmartInsertDeleteEnabled:</a></h3>
-- (void) <b>setSmartInsertDeleteEnabled:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-75">setTextContainerInset:</a></h3>
-- (void) <b>setTextContainerInset:</b> (NSSize)inset;<br>
-
-          
- <hr>
-<h3><a name ="method-76">setTypingAttributes:</a></h3>
-- (void) <b>setTypingAttributes:</b> (NSDictionary*)attributes;<br>
-
-          
- <hr>
-<h3><a name ="method-77">setUsesFontPanel:</a></h3>
-- (void) <b>setUsesFontPanel:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-78">setUsesRuler:</a></h3>
-- (void) <b>setUsesRuler:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-79">shouldChangeTextInRange:</a></h3>
-- (BOOL) <b>shouldChangeTextInRange:</b> (NSRange)affectedCharRange;<br>
-
-          
- <hr>
-<h3><a name ="method-80">shouldDrawInsertionPoint</a></h3>
-- (BOOL) <b>shouldDrawInsertionPoint</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-81">smartDeleteRangeForProposedRange:</a></h3>
-- (NSRange) <b>smartDeleteRangeForProposedRange:</b> (NSRange)proposedCharRange;<br>
-
-          
- <hr>
-<h3><a name ="method-82">smartInsertAfterStringForString:replacingRange:</a></h3>
-- (NSString*) <b>smartInsertAfterStringForString:</b> (NSString*)aString <b>replacingRange:</b> (NSRange)charRange;<br>
-
-          
- <hr>
-<h3><a name ="method-83">smartInsertBeforeStringForString:replacingRange:</a></h3>
-- (NSString*) <b>smartInsertBeforeStringForString:</b> (NSString*)aString <b>replacingRange:</b> (NSRange)charRange;<br>
-
-          
- <hr>
-<h3><a name ="method-84">spellCheckerDocumentTag</a></h3>
-- (int) <b>spellCheckerDocumentTag</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-85">textContainer</a></h3>
-- (NSTextContainer*) <b>textContainer</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-86">textContainerInset</a></h3>
-- (NSSize) <b>textContainerInset</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-87">textContainerOrigin</a></h3>
-- (NSPoint) <b>textContainerOrigin</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-88">textStorage</a></h3>
-- (NSTextStorage*) <b>textStorage</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-89">tightenKerning:</a></h3>
-- (void) <b>tightenKerning:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-90">turnOffKerning:</a></h3>
-- (void) <b>turnOffKerning:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-91">turnOffLigatures:</a></h3>
-- (void) <b>turnOffLigatures:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-92">typingAttributes</a></h3>
-- (NSDictionary*) <b>typingAttributes</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-93">updateDragTypeRegistration</a></h3>
-- (void) <b>updateDragTypeRegistration</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-94">updateFontPanel</a></h3>
-- (void) <b>updateFontPanel</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-95">updateInsertionPointStateAndRestartTimer:</a></h3>
-- (void) <b>updateInsertionPointStateAndRestartTimer:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-96">updateRuler</a></h3>
-- (void) <b>updateRuler</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-97">useAllLigatures:</a></h3>
-- (void) <b>useAllLigatures:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-98">usesFontPanel</a></h3>
-- (BOOL) <b>usesFontPanel</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-99">usesRuler</a></h3>
-- (BOOL) <b>usesRuler</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-100">useStandardKerning:</a></h3>
-- (void) <b>useStandardKerning:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-101">useStandardLigatures:</a></h3>
-- (void) <b>useStandardLigatures:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-102">validRequestorForSendType:returnType:</a></h3>
-- (id) <b>validRequestorForSendType:</b> (NSString*)sendType <b>returnType:</b> (NSString*)returnType;<br>
-
-          
- <hr>
-<h3><a name ="method-103">writablePasteboardTypes</a></h3>
-- (NSArray*) <b>writablePasteboardTypes</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-104">writeSelectionToPasteboard:</a></h3>
-- (BOOL) <b>writeSelectionToPasteboard:</b> (NSPasteboard*)pboard;<br>
-
-          
- <hr>
-<h3><a name ="method-105">writeSelectionToPasteboard:</a></h3>
-- (BOOL) <b>writeSelectionToPasteboard:</b> (NSPasteboard*)pboard;<br>
-
-          
- <hr>
-<h3><a name ="method-106">textView:clickedOnCell:</a></h3>
-- (void) <b>textView:</b> (NSTextView*)aTextView <b>clickedOnCell:</b> (id&#60;NSTextAttachmentCell>)attachmentCell;<br>
-
-          
- <hr>
-<h3><a name ="method-107">textView:clickedOnCell:inRect:</a></h3>
-- (void) <b>textView:</b> (NSTextView*)textView <b>clickedOnCell:</b> (id&#60;NSTextAttachmentCell>)cell <b>inRect:</b> (NSRect)cellFrame;<br>
-
-          
- <hr>
-<h3><a name ="method-108">textView:clickedOnLink:</a></h3>
-- (BOOL) <b>textView:</b> (NSTextView*)textView <b>clickedOnLink:</b> (id)link;<br>
-
-          
- <hr>
-<h3><a name ="method-109">textView:clickedOnLink:atIndex:</a></h3>
-- (BOOL) <b>textView:</b> (NSTextView*)textView <b>clickedOnLink:</b> (id)link <b>atIndex:</b> (unsigned int)charIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-110">textView:doCommandBySelector:</a></h3>
-- (BOOL) <b>textView:</b> (NSTextView*)aTextView <b>doCommandBySelector:</b> (SEL)aSelector;<br>
-
-          
- <hr>
-<h3><a name ="method-111">textView:doubleClickedOnCell:</a></h3>
-- (void) <b>textView:</b> (NSTextView*)aTextView <b>doubleClickedOnCell:</b> (id&#60;NSTextAttachmentCell>)attachmentCell;<br>
-
-          
- <hr>
-<h3><a name ="method-112">textView:doubleClickedOnCell:inRect:</a></h3>
-- (void) <b>textView:</b> (NSTextView*)textView <b>doubleClickedOnCell:</b> (id&#60;NSTextAttachmentCell>)cell <b>inRect:</b> (NSRect)cellFrame;<br>
-
-          
- <hr>
-<h3><a name ="method-113">textView:draggedCell:inRect:event:</a></h3>
-- (void) <b>textView:</b> (NSTextView*)aTextView <b>draggedCell:</b> (id&#60;NSTextAttachmentCell>)attachmentCell <b>inRect:</b> (NSRect)aRect <b>event:</b> (NSEvent*)theEvent;<br>
-
-          
- <hr>
-<h3><a name ="method-114">textView:draggedCell:inRect:event:atIndex:</a></h3>
-- (void) <b>textView:</b> (NSTextView*)view <b>draggedCell:</b> (id&#60;NSTextAttachmentCell>)cell <b>inRect:</b> (NSRect)rect <b>event:</b> (NSEvent*)event <b>atIndex:</b> (unsigned int)charIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-115">textView:shouldChangeTextInRange:</a></h3>
-- (BOOL) <b>textView:</b> (NSTextView*)aTextView <b>shouldChangeTextInRange:</b> (NSRange)affectedCharRange;<br>
-
-          
- <hr>
-<h3><a name ="method-116">textView:willChangeSelectionFromCharacterRange:</a></h3>
-- (NSRange) <b>textView:</b> (NSTextView*)aTextView <b>willChangeSelectionFromCharacterRange:</b> (NSRange)oldSelectedCharRange;<br>
-
-          
- <hr>
-<h3><a name ="method-117">textViewDidChangeSelection:</a></h3>
-- (void) <b>textViewDidChangeSelection:</b> (NSNotification*)aNotification;<br>
-
-          
- <hr>
-<h3><a name ="method-118">undoManagerForTextView:</a></h3>
-- (NSUndoManager*) <b>undoManagerForTextView:</b> (NSTextView*)view;<br>
-
-          
- <hr>
-</body>
-
- </html>
+<html>
+  <head>
+    <title>NSTextView</title>
+  </head>
+  <body>
+    <h1>NSTextView</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Scott Christley(<a href="mailto:scottc@net-community.com"><code>
+        scottc@net-community.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Felipe A. Rodriguez(<a href="mailto:far@ix.netcom.com"><code>
+        far@ix.netcom.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>(<a href="mailto:boehring@biomed.ruhr-uni-bochum.de"><code>
+        boehring@biomed.ruhr-uni-bochum.de
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Fred Kiefer(<a href="mailto:FredKiefer@gmx.de"><code>
+        FredKiefer@gmx.de
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Nicola Pero(<a href="mailto:n.pero@mi.flashnet.it"><code>
+        n.pero@mi.flashnet.it
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <p>Copyright: (C) 1996, 1998, 2000 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the NSTextView class
+      </h1>
+    <h2><a name="class$NSTextView">NSTextView</a> : <a href="NSText.html#class$NSText">NSText</a></h2>
+    Declared: AppKit/NSTextView.h<br />
+    Conform: <a href="NSInputManager.html#protocol$(NSTextInput)">NSTextInput</a><br />
+    <p>
+
+            </p>
+    <h3>registerForServices</a></h3>
+    + (void) <b>registerForServices</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>acceptableDragTypes</a></h3>
+    - (NSArray*) <b>acceptableDragTypes</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>alignJustified:</a></h3>
+    - (void) <b>alignJustified:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>changeColor:</a></h3>
+    - (void) <b>changeColor:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>cleanUpAfterDragOperation</a></h3>
+    - (void) <b>cleanUpAfterDragOperation</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>dragImageForSelectionWithEvent:origin:</a></h3>
+    - (<a href="NSImage.html#class$NSImage">NSImage</a>*) <b>dragImageForSelectionWithEvent:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)event<b> origin:</b> (NSPoint*)origin;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>dragOperationForDraggingInfo:type:</a></h3>
+    - (unsigned int) <b>dragOperationForDraggingInfo:</b> (id)dragInfo<b> type:</b> (NSString*)type;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>dragSelectionWithEvent:offset:slideBack:</a></h3>
+    - (BOOL) <b>dragSelectionWithEvent:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)event<b> offset:</b> (NSSize)mouseOffset<b> slideBack:</b> (BOOL)slideBack;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>drawInsertionPointInRect:color:turnedOn:</a></h3>
+    - (void) <b>drawInsertionPointInRect:</b> (NSRect)rect<b> color:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)color<b> turnedOn:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>initWithFrame:</a></h3>
+    - (id) <b>initWithFrame:</b> (NSRect)frameRect;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>initWithFrame:textContainer:</a></h3>
+    - (id) <b>initWithFrame:</b> (NSRect)frameRect<b> textContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>insertText:</a></h3>
+    - (void) <b>insertText:</b> (NSString*)insertString;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>invalidateTextContainerOrigin</a></h3>
+    - (void) <b>invalidateTextContainerOrigin</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>layoutManager</a></h3>
+    - (<a href="NSLayoutManager.html#class$NSLayoutManager">NSLayoutManager</a>*) <b>layoutManager</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>loosenKerning:</a></h3>
+    - (void) <b>loosenKerning:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>lowerBaseline:</a></h3>
+    - (void) <b>lowerBaseline:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>pasteAsPlainText:</a></h3>
+    - (void) <b>pasteAsPlainText:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>pasteAsRichText:</a></h3>
+    - (void) <b>pasteAsRichText:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>preferredPasteboardTypeFromArray:restrictedToTypesFromArray:</a></h3>
+    - (NSString*) <b>preferredPasteboardTypeFromArray:</b> (NSArray*)availableTypes<b> restrictedToTypesFromArray:</b> (NSArray*)allowedTypes;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>raiseBaseline:</a></h3>
+    - (void) <b>raiseBaseline:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>readSelectionFromPasteboard:</a></h3>
+    - (BOOL) <b>readSelectionFromPasteboard:</b> (<a href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pboard;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>readSelectionFromPasteboard:type:</a></h3>
+    - (BOOL) <b>readSelectionFromPasteboard:</b> (<a href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pboard<b> type:</b> (NSString*)type;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>readablePasteboardTypes</a></h3>
+    - (NSArray*) <b>readablePasteboardTypes</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>replaceTextContainer:</a></h3>
+    - (void) <b>replaceTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>rulerView:didAddMarker:</a></h3>
+    - (void) <b>rulerView:</b> (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)ruler<b> didAddMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)marker;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>rulerView:didMoveMarker:</a></h3>
+    - (void) <b>rulerView:</b> (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView<b> didMoveMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>rulerView:didRemoveMarker:</a></h3>
+    - (void) <b>rulerView:</b> (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView<b> didRemoveMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>rulerView:handleMouseDown:</a></h3>
+    - (void) <b>rulerView:</b> (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView<b> handleMouseDown:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>rulerView:shouldAddMarker:</a></h3>
+    - (BOOL) <b>rulerView:</b> (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView<b> shouldAddMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>rulerView:shouldMoveMarker:</a></h3>
+    - (BOOL) <b>rulerView:</b> (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView<b> shouldMoveMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>rulerView:shouldRemoveMarker:</a></h3>
+    - (BOOL) <b>rulerView:</b> (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView<b> shouldRemoveMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>rulerView:willAddMarker:atLocation:</a></h3>
+    - (float) <b>rulerView:</b> (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView<b> willAddMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker<b> atLocation:</b> (float)location;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>rulerView:willMoveMarker:toLocation:</a></h3>
+    - (float) <b>rulerView:</b> (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)aRulerView<b> willMoveMarker:</b> (<a href="NSRulerMarker.html#class$NSRulerMarker">NSRulerMarker</a>*)aMarker<b> toLocation:</b> (float)location;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>selectionRangeForProposedRange:granularity:</a></h3>
+    - (NSRange) <b>selectionRangeForProposedRange:</b> (NSRange)proposedCharRange<b> granularity:</b> (NSSelectionGranularity)granul;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setAlignment:range:</a></h3>
+    - (void) <b>setAlignment:</b> (NSTextAlignment)alignment<b> range:</b> (NSRange)aRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setConstrainedFrameSize:</a></h3>
+    - (void) <b>setConstrainedFrameSize:</b> (NSSize)desiredSize;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setNeedsDisplayInRect:avoidAdditionalLayout:</a></h3>
+    - (void) <b>setNeedsDisplayInRect:</b> (NSRect)aRect<b> avoidAdditionalLayout:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setRulerVisible:</a></h3>
+    - (void) <b>setRulerVisible:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setTextContainer:</a></h3>
+    - (void) <b>setTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setTextContainerInset:</a></h3>
+    - (void) <b>setTextContainerInset:</b> (NSSize)inset;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>shouldDrawInsertionPoint</a></h3>
+    - (BOOL) <b>shouldDrawInsertionPoint</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textContainer</a></h3>
+    - (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*) <b>textContainer</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textContainerInset</a></h3>
+    - (NSSize) <b>textContainerInset</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textContainerOrigin</a></h3>
+    - (NSPoint) <b>textContainerOrigin</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textStorage</a></h3>
+    - (<a href="NSTextStorage.html#class$NSTextStorage">NSTextStorage</a>*) <b>textStorage</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>tightenKerning:</a></h3>
+    - (void) <b>tightenKerning:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>toggleTraditionalCharacterShape:</a></h3>
+    - (void) <b>toggleTraditionalCharacterShape:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>turnOffKerning:</a></h3>
+    - (void) <b>turnOffKerning:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>turnOffLigatures:</a></h3>
+    - (void) <b>turnOffLigatures:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>updateDragTypeRegistration</a></h3>
+    - (void) <b>updateDragTypeRegistration</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>updateFontPanel</a></h3>
+    - (void) <b>updateFontPanel</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>updateRuler</a></h3>
+    - (void) <b>updateRuler</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>useAllLigatures:</a></h3>
+    - (void) <b>useAllLigatures:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>useStandardKerning:</a></h3>
+    - (void) <b>useStandardKerning:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>useStandardLigatures:</a></h3>
+    - (void) <b>useStandardLigatures:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>writablePasteboardTypes</a></h3>
+    - (NSArray*) <b>writablePasteboardTypes</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>writeSelectionToPasteboard:type:</a></h3>
+    - (BOOL) <b>writeSelectionToPasteboard:</b> (<a href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pboard<b> type:</b> (NSString*)type;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>writeSelectionToPasteboard:types:</a></h3>
+    - (BOOL) <b>writeSelectionToPasteboard:</b> (<a href="NSPasteboard.html#class$NSPasteboard">NSPasteboard</a>*)pboard<b> types:</b> (NSArray*)types;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the
+        NSObject(NSTextViewDelegate)
+        category
+      </h1>
+    <h2>NSObject(<a name="category$NSObject(NSTextViewDelegate)">NSTextViewDelegate</a>)</h2>
+    Declared: AppKit/NSTextView.h<br />
+    <p>
+
+            </p>
+    <h3>textView:clickedOnCell:inRect:</a></h3>
+    - (void) <b>textView:</b> (<a href="#class$NSTextView">NSTextView</a>*)textView<b> clickedOnCell:</b> (id)cell<b> inRect:</b> (NSRect)cellFrame;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textView:clickedOnCell:inRect:atIndex:</a></h3>
+    - (void) <b>textView:</b> (<a href="#class$NSTextView">NSTextView</a>*)textView<b> clickedOnCell:</b> (id)cell<b> inRect:</b> (NSRect)cellFrame<b> atIndex:</b> (unsigned)charIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textView:clickedOnLink:</a></h3>
+    - (BOOL) <b>textView:</b> (<a href="#class$NSTextView">NSTextView</a>*)textView<b> clickedOnLink:</b> (id)link;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textView:clickedOnLink:atIndex:</a></h3>
+    - (BOOL) <b>textView:</b> (<a href="#class$NSTextView">NSTextView</a>*)textView<b> clickedOnLink:</b> (id)link<b> atIndex:</b> (unsigned)charIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textView:doCommandBySelector:</a></h3>
+    - (BOOL) <b>textView:</b> (<a href="#class$NSTextView">NSTextView</a>*)textView<b> doCommandBySelector:</b> (SEL)commandSelector;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textView:doubleClickedOnCell:inRect:</a></h3>
+    - (void) <b>textView:</b> (<a href="#class$NSTextView">NSTextView</a>*)textView<b> doubleClickedOnCell:</b> (id)cell<b> inRect:</b> (NSRect)cellFrame;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textView:doubleClickedOnCell:inRect:atIndex:</a></h3>
+    - (void) <b>textView:</b> (<a href="#class$NSTextView">NSTextView</a>*)textView<b> doubleClickedOnCell:</b> (id)cell<b> inRect:</b> (NSRect)cellFrame<b> atIndex:</b> (unsigned)charIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textView:draggedCell:inRect:event:</a></h3>
+    - (void) <b>textView:</b> (<a href="#class$NSTextView">NSTextView</a>*)view<b> draggedCell:</b> (id)cell<b> inRect:</b> (NSRect)rect<b> event:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)event;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textView:draggedCell:inRect:event:atIndex:</a></h3>
+    - (void) <b>textView:</b> (<a href="#class$NSTextView">NSTextView</a>*)view<b> draggedCell:</b> (id)cell<b> inRect:</b> (NSRect)rect<b> event:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)event<b> atIndex:</b> (unsigned)charIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textView:shouldChangeTextInRange:replacementString:</a></h3>
+    - (BOOL) <b>textView:</b> (<a href="#class$NSTextView">NSTextView</a>*)textView<b> shouldChangeTextInRange:</b> (NSRange)affectedCharRange<b> replacementString:</b> (NSString*)replacementString;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textView:willChangeSelectionFromCharacterRange:toCharacterRange:</a></h3>
+    - (NSRange) <b>textView:</b> (<a href="#class$NSTextView">NSTextView</a>*)textView<b> willChangeSelectionFromCharacterRange:</b> (NSRange)oldSelectedCharRange<b> toCharacterRange:</b> (NSRange)newSelectedCharRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textViewDidChangeSelection:</a></h3>
+    - (void) <b>textViewDidChangeSelection:</b> (NSNotification*)notification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>undoManagerForTextView:</a></h3>
+    - (NSUndoManager*) <b>undoManagerForTextView:</b> (<a href="#class$NSTextView">NSTextView</a>*)view;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the
+        NSTextView(GSTextViewUpdateMultipleViews)
+        category
+      </h1>
+    <h2><a href="#class$NSTextView">NSTextView</a>(<a name="category$NSTextView(GSTextViewUpdateMultipleViews)">GSTextViewUpdateMultipleViews</a>)</h2>
+    Declared: AppKit/NSTextView.h<br />
+    <p>
+
+            </p>
+    <h3>_updateMultipleTextViews</a></h3>
+    - (void) <b>_updateMultipleTextViews</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the NSTextView(NSSharing)
+        category
+      </h1>
+    <h2><a href="#class$NSTextView">NSTextView</a>(<a name="category$NSTextView(NSSharing)">NSSharing</a>)</h2>
+    Declared: AppKit/NSTextView.h<br />
+    <p>
+
+            </p>
+    <h3>allowsUndo</a></h3>
+    - (BOOL) <b>allowsUndo</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>backgroundColor</a></h3>
+    - (<a href="NSColor.html#class$NSColor">NSColor</a>*) <b>backgroundColor</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>becomeFirstResponder</a></h3>
+    - (BOOL) <b>becomeFirstResponder</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>delegate</a></h3>
+    - (id) <b>delegate</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>didChangeText</a></h3>
+    - (void) <b>didChangeText</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>drawsBackground</a></h3>
+    - (BOOL) <b>drawsBackground</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>importsGraphics</a></h3>
+    - (BOOL) <b>importsGraphics</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>insertionPointColor</a></h3>
+    - (<a href="NSColor.html#class$NSColor">NSColor</a>*) <b>insertionPointColor</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isContinuousSpellCheckingEnabled</a></h3>
+    - (BOOL) <b>isContinuousSpellCheckingEnabled</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isEditable</a></h3>
+    - (BOOL) <b>isEditable</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isFieldEditor</a></h3>
+    - (BOOL) <b>isFieldEditor</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isRichText</a></h3>
+    - (BOOL) <b>isRichText</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isRulerVisible</a></h3>
+    - (BOOL) <b>isRulerVisible</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isSelectable</a></h3>
+    - (BOOL) <b>isSelectable</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>markedRange</a></h3>
+    - (NSRange) <b>markedRange</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>markedTextAttributes</a></h3>
+    - (NSDictionary*) <b>markedTextAttributes</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>rangeForUserCharacterAttributeChange</a></h3>
+    - (NSRange) <b>rangeForUserCharacterAttributeChange</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>rangeForUserParagraphAttributeChange</a></h3>
+    - (NSRange) <b>rangeForUserParagraphAttributeChange</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>rangeForUserTextChange</a></h3>
+    - (NSRange) <b>rangeForUserTextChange</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>resignFirstResponder</a></h3>
+    - (BOOL) <b>resignFirstResponder</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>selectedRange</a></h3>
+    - (NSRange) <b>selectedRange</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>selectedTextAttributes</a></h3>
+    - (NSDictionary*) <b>selectedTextAttributes</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>selectionAffinity</a></h3>
+    - (NSSelectionAffinity) <b>selectionAffinity</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>selectionGranularity</a></h3>
+    - (NSSelectionGranularity) <b>selectionGranularity</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setAllowsUndo:</a></h3>
+    - (void) <b>setAllowsUndo:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setBackgroundColor:</a></h3>
+    - (void) <b>setBackgroundColor:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)color;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setContinuousSpellCheckingEnabled:</a></h3>
+    - (void) <b>setContinuousSpellCheckingEnabled:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setDelegate:</a></h3>
+    - (void) <b>setDelegate:</b> (id)anObject;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setDrawsBackground:</a></h3>
+    - (void) <b>setDrawsBackground:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setEditable:</a></h3>
+    - (void) <b>setEditable:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setFieldEditor:</a></h3>
+    - (void) <b>setFieldEditor:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setImportsGraphics:</a></h3>
+    - (void) <b>setImportsGraphics:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setInsertionPointColor:</a></h3>
+    - (void) <b>setInsertionPointColor:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)color;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setMarkedTextAttributes:</a></h3>
+    - (void) <b>setMarkedTextAttributes:</b> (NSDictionary*)attributeDictionary;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setRichText:</a></h3>
+    - (void) <b>setRichText:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setRulerVisible:</a></h3>
+    - (void) <b>setRulerVisible:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setSelectable:</a></h3>
+    - (void) <b>setSelectable:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setSelectedRange:</a></h3>
+    - (void) <b>setSelectedRange:</b> (NSRange)charRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setSelectedRange:affinity:stillSelecting:</a></h3>
+    - (void) <b>setSelectedRange:</b> (NSRange)charRange<b> affinity:</b> (NSSelectionAffinity)affinity<b> stillSelecting:</b> (BOOL)stillSelectingFlag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setSelectedTextAttributes:</a></h3>
+    - (void) <b>setSelectedTextAttributes:</b> (NSDictionary*)attributeDictionary;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setSelectionGranularity:</a></h3>
+    - (void) <b>setSelectionGranularity:</b> (NSSelectionGranularity)granularity;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setSmartInsertDeleteEnabled:</a></h3>
+    - (void) <b>setSmartInsertDeleteEnabled:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setTypingAttributes:</a></h3>
+    - (void) <b>setTypingAttributes:</b> (NSDictionary*)attrs;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setUsesFontPanel:</a></h3>
+    - (void) <b>setUsesFontPanel:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setUsesRuler:</a></h3>
+    - (void) <b>setUsesRuler:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>shouldChangeTextInRange:replacementString:</a></h3>
+    - (BOOL) <b>shouldChangeTextInRange:</b> (NSRange)affectedCharRange<b> replacementString:</b> (NSString*)replacementString;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>smartDeleteRangeForProposedRange:</a></h3>
+    - (NSRange) <b>smartDeleteRangeForProposedRange:</b> (NSRange)proposedCharRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>smartInsertDeleteEnabled</a></h3>
+    - (BOOL) <b>smartInsertDeleteEnabled</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>smartInsertForString:replacingRange:beforeString:afterString:</a></h3>
+    - (void) <b>smartInsertForString:</b> (NSString*)aString<b> replacingRange:</b> (NSRange)charRange<b> beforeString:</b> (NSString**)beforeString<b> afterString:</b> (NSString**)afterString;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>spellCheckerDocumentTag</a></h3>
+    - (int) <b>spellCheckerDocumentTag</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>toggleContinuousSpellChecking:</a></h3>
+    - (void) <b>toggleContinuousSpellChecking:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>typingAttributes</a></h3>
+    - (NSDictionary*) <b>typingAttributes</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>updateInsertionPointStateAndRestartTimer:</a></h3>
+    - (void) <b>updateInsertionPointStateAndRestartTimer:</b> (BOOL)restartFlag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>usesFontPanel</a></h3>
+    - (BOOL) <b>usesFontPanel</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>usesRuler</a></h3>
+    - (BOOL) <b>usesRuler</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>validRequestorForSendType:returnType:</a></h3>
+    - (id) <b>validRequestorForSendType:</b> (NSString*)sendType<b> returnType:</b> (NSString*)returnType;<br />
+    <p>
+
+              </p>
+    <hr />
+  </body>
+</html>

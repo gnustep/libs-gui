@@ -1,23 +1,25 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSTabViewItem" prev="NSTabView.html" next="NSTableColumn.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSTabViewItem" next="NSTableHeaderCell" prev="NSTabView" up="NSActionCell">
   <head>
     <title>NSTabViewItem</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Michael Hanni">
+      <email address="mhanni@sprintmail.com">
+        mhanni@sprintmail.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <copy>2000 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSTabViewItem</heading>
+      <heading>
+        Software documentation for the NSTabViewItem class
+      </heading>
       <class name="NSTabViewItem" super="NSObject">
-        <declared>Gui/NSTabViewItem.h</declared>
+        <declared>AppKit/NSTabViewItem.h</declared>
         <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <desc>
+        </desc>
         <method type="NSColor*">
           <sel>color</sel>
           <desc>
@@ -26,6 +28,8 @@
         <method type="void">
           <sel>drawLabel:</sel>
           <arg type="BOOL">shouldTruncateLabel</arg>
+          <sel>inRect:</sel>
+          <arg type="NSRect">tabRect</arg>
           <desc>
           </desc>
         </method>
@@ -35,13 +39,13 @@
           </desc>
         </method>
         <method type="id">
-          <sel>initialFirstResponder</sel>
+          <sel>initWithIdentifier:</sel>
+          <arg type="id">identifier</arg>
           <desc>
           </desc>
         </method>
         <method type="id">
-          <sel>initWithIdentifier:</sel>
-          <arg type="id">identifier</arg>
+          <sel>initialFirstResponder</sel>
           <desc>
           </desc>
         </method>
@@ -96,12 +100,45 @@
           <desc>
           </desc>
         </method>
-        <method type="id">
+        <method type="NSView*">
           <sel>view</sel>
           <desc>
           </desc>
         </method>
       </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the NSTabViewItem(GNUstep)
+        category
+      </heading>
+      <category name="GNUstep" class="NSTabViewItem">
+        <declared>AppKit/NSTabViewItem.h</declared>
+        <desc>
+        </desc>
+        <method type="void">
+          <sel>_setTabState:</sel>
+          <arg type="NSTabState">tabState</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>_setTabView:</sel>
+          <arg type="NSTabView*">tabView</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSRect">
+          <sel>_tabRect</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSString*">
+          <sel>_truncatedLabel</sel>
+          <desc>
+          </desc>
+        </method>
+      </category>
     </chapter>
   </body>
 </gsdoc>

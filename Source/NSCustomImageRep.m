@@ -1,7 +1,6 @@
-/*
-   NSCustomImageRep.m
+/** <title>NSCustomImageRep</title>
 
-   Custom image representation.
+   <abstract>Custom image representation.</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
    

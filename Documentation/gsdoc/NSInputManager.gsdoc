@@ -1,31 +1,63 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSInputManager" prev="NSImageView.html" next="NSInputServer.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSInputManager" next="NSInputServer" prev="NSGraphicsContext" up="NSDocumentController">
   <head>
     <title>NSInputManager</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Fred Kiefer">
+      <email address="FredKiefer@gmx.de">
+        FredKiefer@gmx.de
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <copy>2001 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSInputManager</heading>
+      <heading>
+        Software documentation for the NSInputManager class
+      </heading>
       <class name="NSInputManager" super="NSObject">
-        <declared>Gui/NSInputManager.h</declared>
+        <declared>AppKit/NSInputManager.h</declared>
         <conform>NSTextInput</conform>
-          <desc>
-          </desc>
+        <desc>
+        </desc>
         <method type="NSInputManager*" factory="yes">
           <sel>currentInputManager</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void" factory="yes">
+          <sel>cycleToNextInputLanguage:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void" factory="yes">
+          <sel>cycleToNextInputServerInLanguage:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>handleMouseEvent:</sel>
+          <arg type="NSEvent*">theMouseEvent</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSImage*">
+          <sel>image</sel>
           <desc>
           </desc>
         </method>
         <method type="NSInputManager*">
           <sel>initWithName:</sel>
           <arg type="NSString*">inputServerName</arg>
+          <sel>host:</sel>
+          <arg type="NSString*">hostName</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSString*">
+          <sel>language</sel>
           <desc>
           </desc>
         </method>
@@ -35,14 +67,31 @@
           </desc>
         </method>
         <method type="void">
-          <sel>markedTextSelectionChanged:</sel>
-          <arg type="NSRange">aRange</arg>
+          <sel>markedTextAbandoned:</sel>
+          <arg type="id">client</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
-          <sel>markedTextWillBeAbandoned:</sel>
-          <arg type="id">sender</arg>
+          <sel>markedTextSelectionChanged:</sel>
+          <arg type="NSRange">newSel</arg>
+          <sel>client:</sel>
+          <arg type="id">client</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSInputServer*">
+          <sel>server</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>wantsToDelayTextChangeNotifications</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>wantsToHandleMouseEvents</sel>
           <desc>
           </desc>
         </method>
@@ -52,6 +101,84 @@
           </desc>
         </method>
       </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the NSTextInput protocol
+      </heading>
+      <protocol name="NSTextInput">
+        <declared>AppKit/NSInputManager.h</declared>
+        <desc>
+        </desc>
+        <method type="NSAttributedString*">
+          <sel>attributedSubstringFromRange:</sel>
+          <arg type="NSRange">theRange</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="unsigned int">
+          <sel>characterIndexForPoint:</sel>
+          <arg type="NSPoint">thePoint</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="long">
+          <sel>conversationIdentifier</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>doCommandBySelector:</sel>
+          <arg type="SEL">aSelector</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSRect">
+          <sel>firstRectForCharacterRange:</sel>
+          <arg type="NSRange">theRange</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>hasMarkedText</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>insertText:</sel>
+          <arg type="id">aString</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSRange">
+          <sel>markedRange</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSRange">
+          <sel>selectedRange</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setMarkedText:</sel>
+          <arg type="id">aString</arg>
+          <sel>selectedRange:</sel>
+          <arg type="NSRange">selRange</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>unmarkText</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSArray*">
+          <sel>validAttributesForMarkedText</sel>
+          <desc>
+          </desc>
+        </method>
+      </protocol>
     </chapter>
   </body>
 </gsdoc>

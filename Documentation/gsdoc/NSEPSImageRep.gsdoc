@@ -1,23 +1,25 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSEPSImageRep" prev="NSDocumentController.html" next="NSEvent.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSEPSImageRep" next="NSEvent" prev="NSDocumentController" up="NSActionCell">
   <head>
     <title>NSEPSImageRep</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Adam Fedor">
+      <email address="fedor@colorado.edu">
+        fedor@colorado.edu
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>EPS image representation.</abstract>
+    <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSEPSImageRep</heading>
+      <heading>
+        Software documentation for the NSEPSImageRep class
+      </heading>
       <class name="NSEPSImageRep" super="NSImageRep">
-        <declared>Gui/NSEPSImageRep.h</declared>
-        <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSEPSImageRep.h</declared>
+        <desc>
+        </desc>
         <method type="id" factory="yes">
           <sel>imageRepWithData:</sel>
           <arg type="NSData*">epsData</arg>

@@ -1,7 +1,6 @@
-/*
-   NSDocumentController.m
+/** <title>NSDocumentController</title>
 
-   The document controller class
+   <abstract>The document controller class</abstract>
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 
@@ -426,7 +425,7 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
 }
 
 - (BOOL) application:(NSApplication *)sender  
-	openTempFile: (NSString *)filename;
+	openTempFile: (NSString *)filename
 {
   return [self openDocumentWithContentsOfFile:filename display:YES] ? YES : NO;
 }
@@ -462,7 +461,7 @@ static NSDictionary *TypeInfoForName (NSArray *types, NSString *typeName)
   return _documents;
 }
 
-- (BOOL) hasEditedDocuments;
+- (BOOL) hasEditedDocuments
 {
   int i, count = [_documents count];
   

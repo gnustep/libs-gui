@@ -1,7 +1,6 @@
-/*
-   NSButton.m
+/** <title>NSButton</title>
 
-   The button class
+   <abstract>The button class</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 

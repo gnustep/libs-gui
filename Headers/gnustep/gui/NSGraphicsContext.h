@@ -2,9 +2,9 @@
 
    <abstract>Abstract drawing context class.</abstract>
 
-   Copyright <copy>(C) 1998,1999 Free Software Foundation, Inc.</copy>
+   Copyright (C) 1998,1999 Free Software Foundation, Inc.
 
-   Author: <author name="Richard Frith-Macdonald"><email>richard@brainstorm.co.uk</email></author>
+   Author: Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: Feb 1999
    Based on code by:  Adam Fedor <fedor@gnu.org>
    Date: Nov 1998

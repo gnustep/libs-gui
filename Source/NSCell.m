@@ -1,7 +1,6 @@
-/*
-   NSCell.m
+/** <title>NSCell</title>
 
-   The abstract cell class
+   <abstract>The abstract cell class</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 

@@ -1,48 +1,53 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSApplication" prev="NSAffineTransform.html" next="NSAttributedStrngAdds.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSApplication">
   <head>
     <title>NSApplication</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Felipe A. Rodriguez">
+      <email address="far@ix.netcom.com">
+        far@ix.netcom.com
+      </email>
+    </author>
+    <author name="Richard Frith-Macdonald">
+      <email address="richard@brainstorm.co.uk">
+        richard@brainstorm.co.uk
+      </email>
+    </author>
+    <abstract>The one and only application class</abstract>
+    <copy>1996,1999 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSApplication</heading>
+      <heading>
+        Software documentation for the NSApplication class
+      </heading>
       <class name="NSApplication" super="NSResponder">
-        <declared>Gui/NSApplication.h</declared>
+        <declared>AppKit/NSApplication.h</declared>
         <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <desc>
+        </desc>
         <method type="void" factory="yes">
-          <sel>setApplicationHandle:</sel>
-          <arg type="void*">hInstance</arg>
-          <sel>previousHandle:</sel>
-          <arg type="void*">prevInstance</arg>
-          <sel>commandLine:</sel>
-          <arg type="NSString*">cmdLine</arg>
-          <sel>show:</sel>
-          <arg type="int">cmdShow</arg>
+          <sel>detachDrawingThread:</sel>
+          <arg type="SEL">selector</arg>
+          <sel>toTarget:</sel>
+          <arg type="id">target</arg>
+          <sel>withObject:</sel>
+          <arg type="id">argument</arg>
           <desc>
           </desc>
         </method>
-        <method type="void" factory="yes">
-          <sel>useRunningCopyOfApplication</sel>
+        <method type="NSApplication*" factory="yes">
+          <sel>sharedApplication</sel>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>abortModal</sel>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
-          <sel>activateContextHelpMode:</sel>
-          <arg type="id">sender</arg>
           <desc>
           </desc>
         </method>
@@ -56,14 +61,9 @@
           <sel>addWindowsItem:</sel>
           <arg type="NSWindow*">aWindow</arg>
           <sel>title:</sel>
-          <arg type="NSString*">title</arg>
+          <arg type="NSString*">aString</arg>
           <sel>filename:</sel>
           <arg type="BOOL">isFilename</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void*">
-          <sel>applicationHandle</sel>
           <desc>
           </desc>
         </method>
@@ -80,7 +80,21 @@
         </method>
         <method type="NSModalSession">
           <sel>beginModalSessionForWindow:</sel>
-          <arg type="NSWindow*">aWindow</arg>
+          <arg type="NSWindow*">theWindow</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>beginSheet:</sel>
+          <arg type="NSWindow*">sheet</arg>
+          <sel>modalForWindow:</sel>
+          <arg type="NSWindow*">docWindow</arg>
+          <sel>modalDelegate:</sel>
+          <arg type="id">modalDelegate</arg>
+          <sel>didEndSelector:</sel>
+          <arg type="SEL">didEndSelector</arg>
+          <sel>contextInfo:</sel>
+          <arg type="void*">contextInfo</arg>
           <desc>
           </desc>
         </method>
@@ -94,7 +108,7 @@
           <desc>
           </desc>
         </method>
-        <method type="NSDPSContext*">
+        <method type="NSGraphicsContext*">
           <sel>context</sel>
           <desc>
           </desc>
@@ -109,6 +123,11 @@
           <desc>
           </desc>
         </method>
+        <method type="id">
+          <sel>delegate</sel>
+          <desc>
+          </desc>
+        </method>
         <method type="void">
           <sel>discardEventsMatchingMask:</sel>
           <arg type="unsigned int">mask</arg>
@@ -118,8 +137,28 @@
           </desc>
         </method>
         <method type="void">
+          <sel>encodeWithCoder:</sel>
+          <arg type="NSCoder*">aCoder</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
           <sel>endModalSession:</sel>
-          <arg type="NSModalSession">session</arg>
+          <arg type="NSModalSession">theSession</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>endSheet:</sel>
+          <arg type="NSWindow*">sheet</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>endSheet:</sel>
+          <arg type="NSWindow*">sheet</arg>
+          <sel>returnCode:</sel>
+          <arg type="int">returnCode</arg>
           <desc>
           </desc>
         </method>
@@ -131,6 +170,18 @@
         <method type="void">
           <sel>hide:</sel>
           <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>hideOtherApplications:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="id">
+          <sel>initWithCoder:</sel>
+          <arg type="NSCoder*">aDecoder</arg>
           <desc>
           </desc>
         </method>
@@ -167,6 +218,8 @@
         <method type="NSWindow*">
           <sel>makeWindowsPerform:</sel>
           <arg type="SEL">aSelector</arg>
+          <sel>inOrder:</sel>
+          <arg type="BOOL">flag</arg>
           <desc>
           </desc>
         </method>
@@ -200,20 +253,46 @@
           </desc>
         </method>
         <method type="void">
+          <sel>orderFrontDataLinkPanel:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>orderFrontHelpPanel:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
           <sel>orderFrontStandardAboutPanel:</sel>
-          <arg type="id">sender;</arg>
+          <arg type="id">sender</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>orderFrontStandardAboutPanelWithOptions:</sel>
-          <arg type="NSDictionary*">optionsDictionary;</arg>
+          <arg type="NSDictionary*">options</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>orderFrontStandardInfoPanel:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>orderFrontStandardInfoPanelWithOptions:</sel>
+          <arg type="NSDictionary*">options</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>postEvent:</sel>
-          <arg type="NSEvent*">anEvent</arg>
+          <arg type="NSEvent*">event</arg>
+          <sel>atStart:</sel>
+          <arg type="BOOL">flag</arg>
           <desc>
           </desc>
         </method>
@@ -249,13 +328,21 @@
         </method>
         <method type="int">
           <sel>runModalForWindow:</sel>
-          <arg type="NSWindow*">aWindow</arg>
+          <arg type="NSWindow*">theWindow</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="int">
+          <sel>runModalForWindow:</sel>
+          <arg type="NSWindow*">theWindow</arg>
+          <sel>relativeToWindow:</sel>
+          <arg type="NSWindow*">docWindow</arg>
           <desc>
           </desc>
         </method>
         <method type="int">
           <sel>runModalSession:</sel>
-          <arg type="NSModalSession">session</arg>
+          <arg type="NSModalSession">theSession</arg>
           <desc>
           </desc>
         </method>
@@ -267,7 +354,7 @@
         </method>
         <method type="BOOL">
           <sel>sendAction:</sel>
-          <arg type="SEL">anAction</arg>
+          <arg type="SEL">aSelector</arg>
           <sel>to:</sel>
           <arg type="id">aTarget</arg>
           <sel>from:</sel>
@@ -277,7 +364,7 @@
         </method>
         <method type="void">
           <sel>sendEvent:</sel>
-          <arg type="NSEvent*">anEvent</arg>
+          <arg type="NSEvent*">theEvent</arg>
           <desc>
           </desc>
         </method>
@@ -288,6 +375,12 @@
         </method>
         <method type="id">
           <sel>servicesProvider</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setAppleMenu:</sel>
+          <arg type="NSMenu*">aMenu</arg>
           <desc>
           </desc>
         </method>
@@ -317,7 +410,7 @@
         </method>
         <method type="void">
           <sel>setServicesProvider:</sel>
-          <arg type="id">aProvider</arg>
+          <arg type="id">anObject</arg>
           <desc>
           </desc>
         </method>
@@ -330,12 +423,6 @@
         <method type="void">
           <sel>setWindowsNeedUpdate:</sel>
           <arg type="BOOL">flag</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
-          <sel>showHelp:</sel>
-          <arg type="id">sender</arg>
           <desc>
           </desc>
         </method>
@@ -362,6 +449,16 @@
           <desc>
           </desc>
         </method>
+        <method type="id">
+          <sel>targetForAction:</sel>
+          <arg type="SEL">theAction</arg>
+          <sel>to:</sel>
+          <arg type="id">theTarget</arg>
+          <sel>from:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
         <method type="void">
           <sel>terminate:</sel>
           <arg type="id">sender</arg>
@@ -371,11 +468,19 @@
         <method type="BOOL">
           <sel>tryToPerform:</sel>
           <arg type="SEL">aSelector</arg>
+          <sel>with:</sel>
+          <arg type="id">anObject</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>unhide:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>unhideAllApplications:</sel>
           <arg type="id">sender</arg>
           <desc>
           </desc>
@@ -404,6 +509,12 @@
           <desc>
           </desc>
         </method>
+        <method type="NSWindow*">
+          <sel>windowWithWindowNumber:</sel>
+          <arg type="int">windowNum</arg>
+          <desc>
+          </desc>
+        </method>
         <method type="NSArray*">
           <sel>windows</sel>
           <desc>
@@ -414,27 +525,59 @@
           <desc>
           </desc>
         </method>
+      </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSObject(NSServicesRequests)
+        category
+      </heading>
+      <category name="NSServicesRequests" class="NSObject">
+        <declared>AppKit/NSApplication.h</declared>
+        <desc>
+        </desc>
         <method type="NSWindow*">
-          <sel>windowWithWindowHandle:</sel>
-          <arg type="void*">hWnd</arg>
+          <sel>iconWindow</sel>
           <desc>
           </desc>
         </method>
-        <method type="NSWindow*">
-          <sel>windowWithWindowNumber:</sel>
-          <arg type="int">windowNum</arg>
+        <method type="BOOL">
+          <sel>readSelectionFromPasteboard:</sel>
+          <arg type="NSPasteboard*">pboard</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>writeSelectionToPasteboard:</sel>
+          <arg type="NSPasteboard*">pboard</arg>
+          <sel>types:</sel>
+          <arg type="NSArray*">types</arg>
+          <desc>
+          </desc>
+        </method>
+      </category>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the GSAppDelegateProtocol
+        protocol
+      </heading>
+      <protocol name="GSAppDelegateProtocol">
+        <declared>AppKit/NSApplication.h</declared>
+        <desc>
+        </desc>
+        <method type="BOOL">
+          <sel>application:</sel>
+          <arg type="NSApplication*">app</arg>
+          <sel>openFile:</sel>
+          <arg type="NSString*">filename</arg>
           <desc>
           </desc>
         </method>
         <method type="BOOL">
           <sel>application:</sel>
-          <arg type="NSApplication*">theApplication</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="BOOL">
-          <sel>application:</sel>
-          <arg type="NSApplication*">sender</arg>
+          <arg type="NSApplication*">app</arg>
           <sel>openFileWithoutUI:</sel>
           <arg type="NSString*">filename</arg>
           <desc>
@@ -442,13 +585,17 @@
         </method>
         <method type="BOOL">
           <sel>application:</sel>
-          <arg type="NSApplication*">theApplication</arg>
+          <arg type="NSApplication*">app</arg>
+          <sel>openTempFile:</sel>
+          <arg type="NSString*">filename</arg>
           <desc>
           </desc>
         </method>
         <method type="BOOL">
           <sel>application:</sel>
           <arg type="NSApplication*">theApplication</arg>
+          <sel>printFile:</sel>
+          <arg type="NSString*">filename</arg>
           <desc>
           </desc>
         </method>
@@ -490,7 +637,7 @@
         </method>
         <method type="BOOL">
           <sel>applicationOpenUntitledFile:</sel>
-          <arg type="NSApplication*">theApplication</arg>
+          <arg type="NSApplication*">app</arg>
           <desc>
           </desc>
         </method>
@@ -502,13 +649,13 @@
         </method>
         <method type="BOOL">
           <sel>applicationShouldTerminate:</sel>
-          <arg type="NSApplication*">sender</arg>
+          <arg type="id">sender</arg>
           <desc>
           </desc>
         </method>
         <method type="BOOL">
           <sel>applicationShouldTerminateAfterLastWindowClosed:</sel>
-          <arg type="NSApplication*">theApplication</arg>
+          <arg type="id">sender</arg>
           <desc>
           </desc>
         </method>
@@ -531,13 +678,13 @@
           </desc>
         </method>
         <method type="void">
-          <sel>applicationWillTerminate:</sel>
+          <sel>applicationWillResignActive:</sel>
           <arg type="NSNotification*">aNotification</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
-          <sel>applicationWillResignActive:</sel>
+          <sel>applicationWillTerminate:</sel>
           <arg type="NSNotification*">aNotification</arg>
           <desc>
           </desc>
@@ -554,7 +701,7 @@
           <desc>
           </desc>
         </method>
-      </class>
+      </protocol>
     </chapter>
   </body>
 </gsdoc>

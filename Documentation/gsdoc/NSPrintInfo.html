@@ -1,239 +1,244 @@
-<html><head>
- <title>NSPrintInfo</title>
-</head>
-<body>
-<a href ="NSPopUpButtonCell.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSPrintOperation.html">[Next] </a>
-<h1>NSPrintInfo</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSPrintInfo</a></h2>
-<h2><a name ="NSPrintInfo">NSPrintInfo</a></h2>
-<p><b>Declared in: </b> Gui/NSPrintInfo.h</p>
-<p><b>Inherits from: </b> NSObject</p>
-<p><b>Conforms to: </b> NSCoding
-</p>
-<hr>
+<html>
+  <head>
+    <title>NSPrintInfo</title>
+  </head>
+  <body>
+    <h1>NSPrintInfo</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Simon Frankau(<a href="mailto:sgf@frankau.demon.co.uk"><code>
+        sgf@frankau.demon.co.uk
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Adam Fedor(<a href="mailto:fedor@gnu.org"><code>
+        fedor@gnu.org
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <blockquote>
 
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSPrintInfo.html#method-0">+defaultPrinter</a>
-<li ><a href ="NSPrintInfo.html#method-1">+setDefaultPrinter:</a>
-<li ><a href ="NSPrintInfo.html#method-2">+setSharedPrintInfo:</a>
-<li ><a href ="NSPrintInfo.html#method-3">+sharedPrintInfo</a>
-<li ><a href ="NSPrintInfo.html#method-4">+sizeForPaperName:</a>
-<li ><a href ="NSPrintInfo.html#method-5">-bottomMargin</a>
-<li ><a href ="NSPrintInfo.html#method-6">-dictionary</a>
-<li ><a href ="NSPrintInfo.html#method-7">-horizontalPagination</a>
-<li ><a href ="NSPrintInfo.html#method-8">-initWithDictionary:</a>
-<li ><a href ="NSPrintInfo.html#method-9">-isHorizontallyCentered</a>
-<li ><a href ="NSPrintInfo.html#method-10">-isVerticallyCentered</a>
-<li ><a href ="NSPrintInfo.html#method-11">-jobDisposition</a>
-<li ><a href ="NSPrintInfo.html#method-12">-leftMargin</a>
-<li ><a href ="NSPrintInfo.html#method-13">-orientation</a>
-<li ><a href ="NSPrintInfo.html#method-14">-paperName</a>
-<li ><a href ="NSPrintInfo.html#method-15">-paperSize</a>
-<li ><a href ="NSPrintInfo.html#method-16">-printer</a>
-<li ><a href ="NSPrintInfo.html#method-17">-rightMargin</a>
-<li ><a href ="NSPrintInfo.html#method-18">-setBottomMargin:</a>
-<li ><a href ="NSPrintInfo.html#method-19">-setHorizontalPagination:</a>
-<li ><a href ="NSPrintInfo.html#method-20">-setHorizontallyCentered:</a>
-<li ><a href ="NSPrintInfo.html#method-21">-setJobDisposition:</a>
-<li ><a href ="NSPrintInfo.html#method-22">-setLeftMargin:</a>
-<li ><a href ="NSPrintInfo.html#method-23">-setOrientation:</a>
-<li ><a href ="NSPrintInfo.html#method-24">-setPaperName:</a>
-<li ><a href ="NSPrintInfo.html#method-25">-setPaperSize:</a>
-<li ><a href ="NSPrintInfo.html#method-26">-setPrinter:</a>
-<li ><a href ="NSPrintInfo.html#method-27">-setRightMargin:</a>
-<li ><a href ="NSPrintInfo.html#method-28">-setTopMargin:</a>
-<li ><a href ="NSPrintInfo.html#method-29">-setUpPrintOperationDefaultValues</a>
-<li ><a href ="NSPrintInfo.html#method-30">-setVerticalPagination:</a>
-<li ><a href ="NSPrintInfo.html#method-31">-setVerticallyCentered:</a>
-<li ><a href ="NSPrintInfo.html#method-32">-topMargin</a>
-<li ><a href ="NSPrintInfo.html#method-33">-verticalPagination</a>
-</ul>
-<hr><h2>Class Methods </h2>
-<h3><a name ="method-0">defaultPrinter</a></h3>
-+ (NSPrinter*) <b>defaultPrinter</b>;<br>
+      Stores information used in printing.
+        </blockquote>
+    <p>Copyright: (C) 1996,1997 Free Software Foundation, Inc.</p>
+    <h1>Class Description</h1>
+    <p>
 
-          
- <hr>
-<h3><a name ="method-1">setDefaultPrinter:</a></h3>
-+ (void) <b>setDefaultPrinter:</b> (NSPrinter*)aPrinter;<br>
+        NSPrintInfo is a storage object that stores
+        information that describes how a view is to printed
+        and the destination information for printing.
+          </p>
+    <h2><a name="class$NSPrintInfo">NSPrintInfo</a> : NSObject</h2>
+    Declared: AppKit/NSPrintInfo.h<br />
+    Conform: NSCoding<br />
+    Conform: NSCopying<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-2">setSharedPrintInfo:</a></h3>
-+ (void) <b>setSharedPrintInfo:</b> (NSPrintInfo*)printInfo;<br>
+            </p>
+    <h3>defaultPrinter</a></h3>
+    + (<a href="NSPrinter.html#class$NSPrinter">NSPrinter</a>*) <b>defaultPrinter</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-3">sharedPrintInfo</a></h3>
-+ (NSPrintInfo*) <b>sharedPrintInfo</b>;<br>
+              </p>
+    <hr />
+    <h3>setDefaultPrinter:</a></h3>
+    + (void) <b>setDefaultPrinter:</b> (<a href="NSPrinter.html#class$NSPrinter">NSPrinter</a>*)printer;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-4">sizeForPaperName:</a></h3>
-+ (NSSize) <b>sizeForPaperName:</b> (NSString*)name;<br>
+              </p>
+    <hr />
+    <h3>setSharedPrintInfo:</a></h3>
+    + (void) <b>setSharedPrintInfo:</b> (<a href="#class$NSPrintInfo">NSPrintInfo</a>*)printInfo;<br />
+    <p>
 
-          
- <hr>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-5">bottomMargin</a></h3>
-- (float) <b>bottomMargin</b>;<br>
+              </p>
+    <hr />
+    <h3>sharedPrintInfo</a></h3>
+    + (<a href="#class$NSPrintInfo">NSPrintInfo</a>*) <b>sharedPrintInfo</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-6">dictionary</a></h3>
-- (NSMutableDictionary*) <b>dictionary</b>;<br>
+              </p>
+    <hr />
+    <h3>sizeForPaperName:</a></h3>
+    + (NSSize) <b>sizeForPaperName:</b> (NSString*)name;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-7">horizontalPagination</a></h3>
-- (NSPrintingPaginationMode) <b>horizontalPagination</b>;<br>
+              </p>
+    <hr />
+    <h3>bottomMargin</a></h3>
+    - (float) <b>bottomMargin</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-8">initWithDictionary:</a></h3>
-- (id) <b>initWithDictionary:</b> (NSDictionary*)aDictionary;<br>
+              </p>
+    <hr />
+    <h3>dictionary</a></h3>
+    - (NSMutableDictionary*) <b>dictionary</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-9">isHorizontallyCentered</a></h3>
-- (BOOL) <b>isHorizontallyCentered</b>;<br>
+              </p>
+    <hr />
+    <h3>horizontalPagination</a></h3>
+    - (NSPrintingPaginationMode) <b>horizontalPagination</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-10">isVerticallyCentered</a></h3>
-- (BOOL) <b>isVerticallyCentered</b>;<br>
+              </p>
+    <hr />
+    <h3>initWithDictionary:</a></h3>
+    - (id) <b>initWithDictionary:</b> (NSDictionary*)aDict;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-11">jobDisposition</a></h3>
-- (NSString*) <b>jobDisposition</b>;<br>
+              </p>
+    <hr />
+    <h3>isHorizontallyCentered</a></h3>
+    - (BOOL) <b>isHorizontallyCentered</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-12">leftMargin</a></h3>
-- (float) <b>leftMargin</b>;<br>
+              </p>
+    <hr />
+    <h3>isVerticallyCentered</a></h3>
+    - (BOOL) <b>isVerticallyCentered</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-13">orientation</a></h3>
-- (NSPrintingOrientation) <b>orientation</b>;<br>
+              </p>
+    <hr />
+    <h3>jobDisposition</a></h3>
+    - (NSString*) <b>jobDisposition</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-14">paperName</a></h3>
-- (NSString*) <b>paperName</b>;<br>
+              </p>
+    <hr />
+    <h3>leftMargin</a></h3>
+    - (float) <b>leftMargin</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-15">paperSize</a></h3>
-- (NSSize) <b>paperSize</b>;<br>
+              </p>
+    <hr />
+    <h3>orientation</a></h3>
+    - (NSPrintingOrientation) <b>orientation</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-16">printer</a></h3>
-- (NSPrinter*) <b>printer</b>;<br>
+              </p>
+    <hr />
+    <h3>paperName</a></h3>
+    - (NSString*) <b>paperName</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-17">rightMargin</a></h3>
-- (float) <b>rightMargin</b>;<br>
+              </p>
+    <hr />
+    <h3>paperSize</a></h3>
+    - (NSSize) <b>paperSize</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-18">setBottomMargin:</a></h3>
-- (void) <b>setBottomMargin:</b> (float)margin;<br>
+              </p>
+    <hr />
+    <h3>printer</a></h3>
+    - (<a href="NSPrinter.html#class$NSPrinter">NSPrinter</a>*) <b>printer</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-19">setHorizontalPagination:</a></h3>
-- (void) <b>setHorizontalPagination:</b> (NSPrintingPaginationMode)mode;<br>
+              </p>
+    <hr />
+    <h3>rightMargin</a></h3>
+    - (float) <b>rightMargin</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-20">setHorizontallyCentered:</a></h3>
-- (void) <b>setHorizontallyCentered:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>setBottomMargin:</a></h3>
+    - (void) <b>setBottomMargin:</b> (float)value;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-21">setJobDisposition:</a></h3>
-- (void) <b>setJobDisposition:</b> (NSString*)disposition;<br>
+              </p>
+    <hr />
+    <h3>setHorizontalPagination:</a></h3>
+    - (void) <b>setHorizontalPagination:</b> (NSPrintingPaginationMode)mode;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-22">setLeftMargin:</a></h3>
-- (void) <b>setLeftMargin:</b> (float)margin;<br>
+              </p>
+    <hr />
+    <h3>setHorizontallyCentered:</a></h3>
+    - (void) <b>setHorizontallyCentered:</b> (BOOL)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-23">setOrientation:</a></h3>
-- (void) <b>setOrientation:</b> (NSPrintingOrientation)orientation;<br>
+              </p>
+    <hr />
+    <h3>setJobDisposition:</a></h3>
+    - (void) <b>setJobDisposition:</b> (NSString*)disposition;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-24">setPaperName:</a></h3>
-- (void) <b>setPaperName:</b> (NSString*)name;<br>
+              </p>
+    <hr />
+    <h3>setLeftMargin:</a></h3>
+    - (void) <b>setLeftMargin:</b> (float)value;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-25">setPaperSize:</a></h3>
-- (void) <b>setPaperSize:</b> (NSSize)aSize;<br>
+              </p>
+    <hr />
+    <h3>setOrientation:</a></h3>
+    - (void) <b>setOrientation:</b> (NSPrintingOrientation)mode;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-26">setPrinter:</a></h3>
-- (void) <b>setPrinter:</b> (NSPrinter*)aPrinter;<br>
+              </p>
+    <hr />
+    <h3>setPaperName:</a></h3>
+    - (void) <b>setPaperName:</b> (NSString*)name;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-27">setRightMargin:</a></h3>
-- (void) <b>setRightMargin:</b> (float)margin;<br>
+              </p>
+    <hr />
+    <h3>setPaperSize:</a></h3>
+    - (void) <b>setPaperSize:</b> (NSSize)size;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-28">setTopMargin:</a></h3>
-- (void) <b>setTopMargin:</b> (float)margin;<br>
+              </p>
+    <hr />
+    <h3>setPrinter:</a></h3>
+    - (void) <b>setPrinter:</b> (<a href="NSPrinter.html#class$NSPrinter">NSPrinter</a>*)aPrinter;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-29">setUpPrintOperationDefaultValues</a></h3>
-- (void) <b>setUpPrintOperationDefaultValues</b>;<br>
+              </p>
+    <hr />
+    <h3>setRightMargin:</a></h3>
+    - (void) <b>setRightMargin:</b> (float)value;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-30">setVerticalPagination:</a></h3>
-- (void) <b>setVerticalPagination:</b> (NSPrintingPaginationMode)mode;<br>
+              </p>
+    <hr />
+    <h3>setTopMargin:</a></h3>
+    - (void) <b>setTopMargin:</b> (float)value;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-31">setVerticallyCentered:</a></h3>
-- (void) <b>setVerticallyCentered:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>setUpPrintOperationDefaultValues</a></h3>
+    - (void) <b>setUpPrintOperationDefaultValues</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-32">topMargin</a></h3>
-- (float) <b>topMargin</b>;<br>
+              </p>
+    <hr />
+    <h3>setVerticalPagination:</a></h3>
+    - (void) <b>setVerticalPagination:</b> (NSPrintingPaginationMode)mode;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-33">verticalPagination</a></h3>
-- (NSPrintingPaginationMode) <b>verticalPagination</b>;<br>
+              </p>
+    <hr />
+    <h3>setVerticallyCentered:</a></h3>
+    - (void) <b>setVerticallyCentered:</b> (BOOL)flag;<br />
+    <p>
 
-          
- <hr>
-</body>
+              </p>
+    <hr />
+    <h3>topMargin</a></h3>
+    - (float) <b>topMargin</b>;<br />
+    <p>
 
- </html>
+              </p>
+    <hr />
+    <h3>verticalPagination</a></h3>
+    - (NSPrintingPaginationMode) <b>verticalPagination</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+  </body>
+</html>

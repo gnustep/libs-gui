@@ -1,14 +1,13 @@
-/* -*-objc-*-
-   NSOpenPanel.m
+/** <title>NSOpenPanel</title> -*-objc-*-
 
-   Standard open panel for opening files
+   <abstract>Standard open panel for opening files</abstract>
 
    Copyright (C) 1996, 1998, 1999, 2000 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
+   Author: Scott Christley <scottc@net-community.com>
    Date: 1996
 
-   Author:  Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
+   Author: Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
    Date: August 1998
 
    Source by Daniel Bðhringer integrated into Scott Christley's preliminary
@@ -17,7 +16,7 @@
    Author: Nicola Pero <n.pero@mi.flashnet.it>
    Date: October 1999 Completely Rewritten.
 
-   Author:  Mirko Viviani <mirko.viviani@rccr.cremona.it>
+   Author: Mirko Viviani <mirko.viviani@rccr.cremona.it>
    Date: September 2000
 
    This file is part of the GNUstep GUI Library.

@@ -1,24 +1,66 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSSavePanel" prev="NSRulerView.html" next="NSScreen.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSSavePanel" next="NSScreen" prev="NSRulerView" up="NSActionCell">
   <head>
     <title>NSSavePanel</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Jonathan Gapen">
+      <email address="jagapen@smithlab.chem.wisc.edu">
+        jagapen@smithlab.chem.wisc.edu
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Nicola Pero">
+      <email address="n.pero@mi.flashnet.it">
+        n.pero@mi.flashnet.it
+      </email>
+    </author>
+    <author name="Mirko Viviani">
+      <email address="mirko.viviani@rccr.cremona.it">
+        mirko.viviani@rccr.cremona.it
+      </email>
+    </author>
+    <abstract>
+      Standard save panel for saving files
+    </abstract>
+    <copy>1999, 2000 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSSavePanel</heading>
-      <class name="NSSavePanel">
-        <declared>Gui/NSSavePanel.h</declared>
-          <desc>
-          </desc>
+      <heading>
+        Software documentation for the NSSavePanel class
+      </heading>
+      <class name="NSSavePanel" super="NSPanel">
+        <declared>AppKit/NSSavePanel.h</declared>
+        <conform>NSCoding</conform>
+        <desc>
+        </desc>
         <method type="NSSavePanel*" factory="yes">
           <sel>savePanel</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSURL*">
+          <sel>URL</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSView*">
+          <sel>accessoryView</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>beginSheetForDirectory:</sel>
+          <arg type="NSString*">path</arg>
+          <sel>file:</sel>
+          <arg type="NSString*">filename</arg>
+          <sel>modalForWindow:</sel>
+          <arg type="NSWindow*">docWindow</arg>
+          <sel>modalDelegate:</sel>
+          <arg type="id">delegate</arg>
+          <sel>didEndSelector:</sel>
+          <arg type="SEL">didEndSelector</arg>
+          <sel>contextInfo:</sel>
+          <arg type="void*">contextInfo</arg>
           <desc>
           </desc>
         </method>
@@ -33,15 +75,8 @@
           <desc>
           </desc>
         </method>
-        <method type="void">
-          <sel>encodeWithCoder:</sel>
-          <arg type="NSCoder*">coder</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="id">
-          <sel>initWithCoder:</sel>
-          <arg type="NSCoder*">coder</arg>
+        <method type="NSString*">
+          <sel>filename</sel>
           <desc>
           </desc>
         </method>
@@ -62,8 +97,25 @@
           </desc>
         </method>
         <method type="int">
+          <sel>runModal</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="int">
           <sel>runModalForDirectory:</sel>
           <arg type="NSString*">path</arg>
+          <sel>file:</sel>
+          <arg type="NSString*">filename</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="int">
+          <sel>runModalForDirectory:</sel>
+          <arg type="NSString*">path</arg>
+          <sel>file:</sel>
+          <arg type="NSString*">filename</arg>
+          <sel>relativeToWindow:</sel>
+          <arg type="NSWindow*">window</arg>
           <desc>
           </desc>
         </method>
@@ -76,12 +128,6 @@
         <method type="void">
           <sel>setAccessoryView:</sel>
           <arg type="NSView*">aView</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
-          <sel>setDelegate:</sel>
-          <arg type="id">anObject</arg>
           <desc>
           </desc>
         </method>
@@ -99,19 +145,19 @@
         </method>
         <method type="void">
           <sel>setRequiredFileType:</sel>
-          <arg type="NSString*">type</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
-          <sel>setTreatsFilePackagesAsDirectories:</sel>
-          <arg type="BOOL">flag</arg>
+          <arg type="NSString*">fileType</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setTitle:</sel>
           <arg type="NSString*">title</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setTreatsFilePackagesAsDirectories:</sel>
+          <arg type="BOOL">flag</arg>
           <desc>
           </desc>
         </method>
@@ -130,23 +176,27 @@
           <desc>
           </desc>
         </method>
+      </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSObject(NSSavePanelDelegate)
+        category
+      </heading>
+      <category name="NSSavePanelDelegate" class="NSObject">
+        <declared>AppKit/NSSavePanel.h</declared>
+        <desc>
+        </desc>
         <method type="NSComparisonResult">
           <sel>panel:</sel>
           <arg type="id">sender</arg>
           <sel>compareFilename:</sel>
-          <arg type="NSString*">fileName1</arg>
+          <arg type="NSString*">filename1</arg>
           <sel>with:</sel>
-          <arg type="NSString *">fileName2</arg>
+          <arg type="NSString*">filename2</arg>
           <sel>caseSensitive:</sel>
-          <arg type="BOOL">flag</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="BOOL">
-          <sel>panel:</sel>
-          <arg type="id">sender</arg>
-          <sel>shouldShowFilename:</sel>
-          <arg type="NSString*">filename</arg>
+          <arg type="BOOL">caseSensitive</arg>
           <desc>
           </desc>
         </method>
@@ -158,7 +208,25 @@
           <desc>
           </desc>
         </method>
-      </class>
+        <method type="BOOL">
+          <sel>panel:</sel>
+          <arg type="id">sender</arg>
+          <sel>shouldShowFilename:</sel>
+          <arg type="NSString*">filename</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSString*">
+          <sel>panel:</sel>
+          <arg type="id">sender</arg>
+          <sel>userEnteredFilename:</sel>
+          <arg type="NSString*">fileName</arg>
+          <sel>confirmed:</sel>
+          <arg type="BOOL">okFlag</arg>
+          <desc>
+          </desc>
+        </method>
+      </category>
     </chapter>
   </body>
 </gsdoc>

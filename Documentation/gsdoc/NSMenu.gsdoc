@@ -1,25 +1,58 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSMenu" prev="NSMatrix.html" next="NSMenuItem.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSMenu" next="NSMenuItemCell" prev="NSMatrix" up="NSActionCell">
   <head>
     <title>NSMenu</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Fred Kiefer">
+      <email address="FredKiefer@gmx.de">
+        FredKiefer@gmx.de
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="David Lazaro Saz">
+      <email address="khelekir@encomix.es">
+        khelekir@encomix.es
+      </email>
+    </author>
+    <author name="Michael Hanni">
+      <email address="mhanni@sprintmail.com">
+        mhanni@sprintmail.com
+      </email>
+    </author>
+    <author name="Felipe A. Rodriguez">
+      <email address="far@ix.netcom.com">
+        far@ix.netcom.com
+      </email>
+    </author>
+    <author name="Ovidiu Predescu">
+      <email address="ovidiu@net-community.com">
+        ovidiu@net-community.com
+      </email>
+    </author>
+    <copy>1999 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSMenu</heading>
+      <heading>
+        Software documentation for the NSMenu class
+      </heading>
       <class name="NSMenu" super="NSObject">
-        <declared>Gui/NSMenu.h</declared>
+        <declared>AppKit/NSMenu.h</declared>
         <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <conform>NSCopying</conform>
+        <desc>
+        </desc>
         <method type="NSZone*" factory="yes">
           <sel>menuZone</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void" factory="yes">
+          <sel>popUpContextMenu:</sel>
+          <arg type="NSMenu*">menu</arg>
+          <sel>withEvent:</sel>
+          <arg type="NSEvent*">event</arg>
+          <sel>forView:</sel>
+          <arg type="NSView*">view</arg>
           <desc>
           </desc>
         </method>
@@ -52,11 +85,6 @@
         </method>
         <method type="BOOL">
           <sel>autoenablesItems</sel>
-          <desc>
-          </desc>
-        </method>
-        <method type="id">
-          <sel>contextMenuRepresentation</sel>
           <desc>
           </desc>
         </method>
@@ -113,6 +141,8 @@
         <method type="void">
           <sel>insertItem:</sel>
           <arg type="id&lt;NSMenuItem&gt;">newItem</arg>
+          <sel>atIndex:</sel>
+          <arg type="int">index</arg>
           <desc>
           </desc>
         </method>
@@ -122,7 +152,9 @@
           <sel>action:</sel>
           <arg type="SEL">aSelector</arg>
           <sel>keyEquivalent:</sel>
-          <arg type="NSString*">keyEquiv</arg>
+          <arg type="NSString*">charCode</arg>
+          <sel>atIndex:</sel>
+          <arg type="unsigned int">index</arg>
           <desc>
           </desc>
         </method>
@@ -217,12 +249,6 @@
           </desc>
         </method>
         <method type="void">
-          <sel>setContextMenuRepresentation:</sel>
-          <arg type="id">menuRep</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
           <sel>setMenuChangedMessagesEnabled:</sel>
           <arg type="BOOL">flag</arg>
           <desc>
@@ -249,14 +275,8 @@
           </desc>
         </method>
         <method type="void">
-          <sel>setTearOffMenuRepresentation:</sel>
-          <arg type="id">menuRep</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
           <sel>setTitle:</sel>
-          <arg type="NSString*">aString</arg>
+          <arg type="NSString*">aTitle</arg>
           <desc>
           </desc>
         </method>
@@ -276,11 +296,6 @@
           <desc>
           </desc>
         </method>
-        <method type="id">
-          <sel>tearOffMenuRepresentation</sel>
-          <desc>
-          </desc>
-        </method>
         <method type="NSString*">
           <sel>title</sel>
           <desc>
@@ -292,6 +307,103 @@
           </desc>
         </method>
       </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the NSMenu(GNUstepExtra)
+        category
+      </heading>
+      <category name="GNUstepExtra" class="NSMenu">
+        <declared>AppKit/NSMenu.h</declared>
+        <desc>
+        </desc>
+        <method type="BOOL">
+          <sel>_ownedByPopUp</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>_rightMouseDisplay:</sel>
+          <arg type="NSEvent*">theEvent</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>_setOwnedByPopUp:</sel>
+          <arg type="NSPopUpButtonCell*">popUp</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>close</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>closeTransient</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>display</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>displayTransient</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>isFollowTransient</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>isPartlyOffScreen</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>nestedCheckOffScreen</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>nestedSetFrameOrigin:</sel>
+          <arg type="NSPoint">aPoint</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>shiftOnScreen</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSWindow*">
+          <sel>window</sel>
+          <desc>
+          </desc>
+        </method>
+      </category>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSObject(NSMenuActionResponder)
+        category
+      </heading>
+      <category name="NSMenuActionResponder" class="NSObject">
+        <declared>AppKit/NSMenu.h</declared>
+        <desc>
+        </desc>
+        <method type="BOOL">
+          <sel>validateMenuItem:</sel>
+          <arg type="NSMenuItem*">aMenuItem</arg>
+          <desc>
+          </desc>
+        </method>
+      </category>
     </chapter>
   </body>
 </gsdoc>

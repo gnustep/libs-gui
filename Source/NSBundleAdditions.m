@@ -1,7 +1,6 @@
-/* 
-   NSBundle.m
+/** <title>NSBundleAdditions</title>
 
-   Implementation of NSBundle Additions
+   <abstract>Implementation of NSBundle Additions</abstract>
 
    Copyright (C) 1997, 1999 Free Software Foundation, Inc.
 

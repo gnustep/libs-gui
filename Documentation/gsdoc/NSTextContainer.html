@@ -1,136 +1,127 @@
-<html><head>
- <title>NSTextContainer</title>
-</head>
-<body>
-<a href ="NSTextAttachmentCell.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSTextField.html">[Next] </a>
-<h1>NSTextContainer</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSTextContainer</a></h2>
-<h2><a name ="NSTextContainer">NSTextContainer</a></h2>
-<p><b>Declared in: </b> Gui/NSTextContainer.h</p>
-<p><b>Inherits from: </b> NSObject</p>
-<p><b>Conforms to: </b> NSObject
-</p>
-<hr>
+<html>
+  <head>
+    <title>NSTextContainer</title>
+  </head>
+  <body>
+    <h1>NSTextContainer</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Jonathan Gapen(<a href="mailto:jagapen@smithlab.chem.wisc.edu"><code>
+        jagapen@smithlab.chem.wisc.edu
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <p>Copyright: (C) 1999 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the NSTextContainer class
+      </h1>
+    <h2><a name="class$NSTextContainer">NSTextContainer</a> : NSObject</h2>
+    Declared: AppKit/NSTextContainer.h<br />
+    <p>
 
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSTextContainer.html#method-0">-containerSize</a>
-<li ><a href ="NSTextContainer.html#method-1">-containsPoint:</a>
-<li ><a href ="NSTextContainer.html#method-2">-heightTracksTextView</a>
-<li ><a href ="NSTextContainer.html#method-3">-initWithContainerSize:</a>
-<li ><a href ="NSTextContainer.html#method-4">-isSimpleRectangularTextContainer</a>
-<li ><a href ="NSTextContainer.html#method-5">-layoutManager</a>
-<li ><a href ="NSTextContainer.html#method-6">-lineFragmentPadding</a>
-<li ><a href ="NSTextContainer.html#method-7">-lineFragmentRectForProposedRect:sweepDirection:movementDirection:</a>
-<li ><a href ="NSTextContainer.html#method-8">-replaceLayoutManager:</a>
-<li ><a href ="NSTextContainer.html#method-9">-setContainerSize:</a>
-<li ><a href ="NSTextContainer.html#method-10">-setHeightTracksTextView:</a>
-<li ><a href ="NSTextContainer.html#method-11">-setLayoutManager:</a>
-<li ><a href ="NSTextContainer.html#method-12">-setLineFragmentPadding:</a>
-<li ><a href ="NSTextContainer.html#method-13">-setTextView:</a>
-<li ><a href ="NSTextContainer.html#method-14">-setWidthTracksTextView:</a>
-<li ><a href ="NSTextContainer.html#method-15">-textView</a>
-<li ><a href ="NSTextContainer.html#method-16">-widthTracksTextView</a>
-</ul>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-0">containerSize</a></h3>
-- (NSSize) <b>containerSize</b>;<br>
+            </p>
+    <h3>containerSize</a></h3>
+    - (NSSize) <b>containerSize</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-1">containsPoint:</a></h3>
-- (BOOL) <b>containsPoint:</b> (NSPoint)aPoint;<br>
+              </p>
+    <hr />
+    <h3>containsPoint:</a></h3>
+    - (BOOL) <b>containsPoint:</b> (NSPoint)aPoint;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-2">heightTracksTextView</a></h3>
-- (BOOL) <b>heightTracksTextView</b>;<br>
+              </p>
+    <hr />
+    <h3>heightTracksTextView</a></h3>
+    - (BOOL) <b>heightTracksTextView</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-3">initWithContainerSize:</a></h3>
-- (id) <b>initWithContainerSize:</b> (NSSize)aSize;<br>
+              </p>
+    <hr />
+    <h3>initWithContainerSize:</a></h3>
+    - (id) <b>initWithContainerSize:</b> (NSSize)aSize;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-4">isSimpleRectangularTextContainer</a></h3>
-- (BOOL) <b>isSimpleRectangularTextContainer</b>;<br>
+              </p>
+    <hr />
+    <h3>isSimpleRectangularTextContainer</a></h3>
+    - (BOOL) <b>isSimpleRectangularTextContainer</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-5">layoutManager</a></h3>
-- (NSLayoutManager*) <b>layoutManager</b>;<br>
+              </p>
+    <hr />
+    <h3>layoutManager</a></h3>
+    - (<a href="NSLayoutManager.html#class$NSLayoutManager">NSLayoutManager</a>*) <b>layoutManager</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-6">lineFragmentPadding</a></h3>
-- (float) <b>lineFragmentPadding</b>;<br>
+              </p>
+    <hr />
+    <h3>lineFragmentPadding</a></h3>
+    - (float) <b>lineFragmentPadding</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-7">lineFragmentRectForProposedRect:sweepDirection:movementDirection:</a></h3>
-- (NSRect) <b>lineFragmentRectForProposedRect:</b> (NSRect)proposedRect <b>sweepDirection:</b> (NSLineSweepDirection)sweepDirection <b>movementDirection:</b> (NSLineMovementDirection)movementDirection;<br>
+              </p>
+    <hr />
+    <h3>lineFragmentRectForProposedRect:sweepDirection:movementDirection:remainingRect:</a></h3>
+    - (NSRect) <b>lineFragmentRectForProposedRect:</b> (NSRect)proposedRect<b> sweepDirection:</b> (NSLineSweepDirection)sweepDir<b> movementDirection:</b> (NSLineMovementDirection)moveDir<b> remainingRect:</b> (NSRect*)remainingRect;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-8">replaceLayoutManager:</a></h3>
-- (void) <b>replaceLayoutManager:</b> (NSLayoutManager*)aLayoutManager;<br>
+              </p>
+    <hr />
+    <h3>replaceLayoutManager:</a></h3>
+    - (void) <b>replaceLayoutManager:</b> (<a href="NSLayoutManager.html#class$NSLayoutManager">NSLayoutManager</a>*)newLayoutManager;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-9">setContainerSize:</a></h3>
-- (void) <b>setContainerSize:</b> (NSSize)aSize;<br>
+              </p>
+    <hr />
+    <h3>setContainerSize:</a></h3>
+    - (void) <b>setContainerSize:</b> (NSSize)aSize;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-10">setHeightTracksTextView:</a></h3>
-- (void) <b>setHeightTracksTextView:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>setHeightTracksTextView:</a></h3>
+    - (void) <b>setHeightTracksTextView:</b> (BOOL)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-11">setLayoutManager:</a></h3>
-- (void) <b>setLayoutManager:</b> (NSLayoutManager*)aLayoutManager;<br>
+              </p>
+    <hr />
+    <h3>setLayoutManager:</a></h3>
+    - (void) <b>setLayoutManager:</b> (<a href="NSLayoutManager.html#class$NSLayoutManager">NSLayoutManager</a>*)aLayoutManager;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-12">setLineFragmentPadding:</a></h3>
-- (void) <b>setLineFragmentPadding:</b> (float)aFloat;<br>
+              </p>
+    <hr />
+    <h3>setLineFragmentPadding:</a></h3>
+    - (void) <b>setLineFragmentPadding:</b> (float)aFloat;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-13">setTextView:</a></h3>
-- (void) <b>setTextView:</b> (NSTextView*)aTextView;<br>
+              </p>
+    <hr />
+    <h3>setTextView:</a></h3>
+    - (void) <b>setTextView:</b> (<a href="NSTextView.html#class$NSTextView">NSTextView</a>*)aTextView;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-14">setWidthTracksTextView:</a></h3>
-- (void) <b>setWidthTracksTextView:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>setWidthTracksTextView:</a></h3>
+    - (void) <b>setWidthTracksTextView:</b> (BOOL)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-15">textView</a></h3>
-- (NSTextView*) <b>textView</b>;<br>
+              </p>
+    <hr />
+    <h3>textView</a></h3>
+    - (<a href="NSTextView.html#class$NSTextView">NSTextView</a>*) <b>textView</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-16">widthTracksTextView</a></h3>
-- (BOOL) <b>widthTracksTextView</b>;<br>
+              </p>
+    <hr />
+    <h3>widthTracksTextView</a></h3>
+    - (BOOL) <b>widthTracksTextView</b>;<br />
+    <p>
 
-          
- <hr>
-</body>
-
- </html>
+              </p>
+    <hr />
+  </body>
+</html>

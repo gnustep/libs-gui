@@ -1,15 +1,14 @@
-/* 
-   NSSelection.m
+/** <title>NSSelection</title>
 
-   Description: NSSelection is used by NSDataLink to refer to a 
-                selection within a document.
+   <abstract>NSSelection is used by NSDataLink to refer to a 
+                selection within a document.</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Gregory John Casamento <greg_casamento@yahoo.com>
+   Author: Gregory John Casamento <borgheron@yahoo.com>
    Date: 2001
 
-   Author:  Scott Christley <scottc@net-community.com>
+   Author: Scott Christley <scottc@net-community.com>
    Date: 1996
    
    This file is part of the GNUstep GUI Library.

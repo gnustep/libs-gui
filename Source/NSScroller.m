@@ -1,14 +1,13 @@
-/*
-   NSScroller.m
+/** <title>NSScroller</title>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
    Author: Ovidiu Predescu <ovidiu@net-community.com>
    A completely rewritten version of the original source by Scott Christley.
    Date: July 1997
-   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Author: Felipe A. Rodriguez <far@ix.netcom.com>
    Date: August 1998
-   Author:  Richard frith-Macdonald <richard@brainstorm.co.uk>
+   Author: Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: Mar 1999 - Use flipped views and make conform to spec
 
    This file is part of the GNUstep GUI Library.

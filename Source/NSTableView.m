@@ -1,9 +1,8 @@
-/* 
-   NSTableView.m
+/** <title>NSTableView</title>
 
    Copyright (C) 2000 Free Software Foundation, Inc.
 
-   Author:  Nicola Pero <n.pero@mi.flashnet.it>
+   Author: Nicola Pero <n.pero@mi.flashnet.it>
    Date: March 2000, June 2000, August 2000, September 2000
    
    Author: Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>

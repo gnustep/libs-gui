@@ -1,23 +1,33 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSFontPanel" prev="NSFontManager.html" next="NSForm.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSFontPanel" next="NSForm" prev="NSFontManager" up="NSActionCell">
   <head>
     <title>NSFontPanel</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Fred Kiefer">
+      <email address="FredKiefer@gmx.de">
+        FredKiefer@gmx.de
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Nicola Pero">
+      <email address="n.pero@mi.flashnet.it">
+        n.pero@mi.flashnet.it
+      </email>
+    </author>
+    <abstract>
+      System generic panel for selecting and previewing fonts
+    </abstract>
+    <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSFontPanel</heading>
+      <heading>
+        Software documentation for the NSFontPanel class
+      </heading>
       <class name="NSFontPanel" super="NSPanel">
-        <declared>Gui/NSFontPanel.h</declared>
+        <declared>AppKit/NSFontPanel.h</declared>
         <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <desc>
+        </desc>
         <method type="NSFontPanel*" factory="yes">
           <sel>sharedFontPanel</sel>
           <desc>
@@ -40,7 +50,12 @@
         </method>
         <method type="NSFont*">
           <sel>panelConvertFont:</sel>
-          <arg type="NSFont*">aFont</arg>
+          <arg type="NSFont*">fontObject</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>reloadDefaultFontFamilies</sel>
           <desc>
           </desc>
         </method>
@@ -58,7 +73,7 @@
         </method>
         <method type="void">
           <sel>setPanelFont:</sel>
-          <arg type="NSFont*">aFont</arg>
+          <arg type="NSFont*">fontObject</arg>
           <sel>isMultiple:</sel>
           <arg type="BOOL">flag</arg>
           <desc>

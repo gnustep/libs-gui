@@ -1,23 +1,59 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSText" prev="NSTableView.html" next="NSTextAttachment.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSText" next="NSTextContainer" prev="NSTableView" up="NSActionCell">
   <head>
     <title>NSText</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Felipe A. Rodriguez">
+      <email address="far@ix.netcom.com">
+        far@ix.netcom.com
+      </email>
+    </author>
+    <author name="Daniel Bðhringer">
+      <email address="boehring@biomed.ruhr-uni-bochum.de">
+        boehring@biomed.ruhr-uni-bochum.de
+      </email>
+    </author>
+    <author name="Fred Kiefer">
+      <email address="FredKiefer@gmx.de">
+        FredKiefer@gmx.de
+      </email>
+    </author>
+    <author name="Nicola Pero">
+      <email address="n.pero@mi.flashnet.it">
+        n.pero@mi.flashnet.it
+      </email>
+    </author>
+    <abstract>The RTFD text class</abstract>
+    <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSText</heading>
+      <heading>
+        Software documentation for the NSText class
+      </heading>
       <class name="NSText" super="NSView">
-        <declared>Gui/NSText.h</declared>
+        <declared>AppKit/NSText.h</declared>
         <conform>NSChangeSpelling</conform>
+        <conform>NSIgnoreMisspelledWords</conform>
+        <desc>
+        </desc>
+        <method type="NSData*">
+          <sel>RTFDFromRange:</sel>
+          <arg type="NSRange">aRange</arg>
           <desc>
           </desc>
+        </method>
+        <method type="NSData*">
+          <sel>RTFFromRange:</sel>
+          <arg type="NSRange">aRange</arg>
+          <desc>
+          </desc>
+        </method>
         <method type="void">
           <sel>alignCenter:</sel>
           <arg type="id">sender</arg>
@@ -48,6 +84,12 @@
         </method>
         <method type="void">
           <sel>changeFont:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>changeSpelling:</sel>
           <arg type="id">sender</arg>
           <desc>
           </desc>
@@ -98,8 +140,20 @@
           <desc>
           </desc>
         </method>
+        <method type="void">
+          <sel>encodeWithCoder:</sel>
+          <arg type="NSCoder*">aCoder</arg>
+          <desc>
+          </desc>
+        </method>
         <method type="NSFont*">
           <sel>font</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>ignoreSpelling:</sel>
+          <arg type="id">sender</arg>
           <desc>
           </desc>
         </method>
@@ -109,8 +163,8 @@
           </desc>
         </method>
         <method type="id">
-          <sel>initWithFrame:</sel>
-          <arg type="NSRect">frameRect</arg>
+          <sel>initWithCoder:</sel>
+          <arg type="NSCoder*">aDecoder</arg>
           <desc>
           </desc>
         </method>
@@ -207,9 +261,27 @@
           <desc>
           </desc>
         </method>
-        <method type="NSData*">
-          <sel>RTFDFromRange:</sel>
+        <method type="void">
+          <sel>replaceRange:</sel>
           <arg type="NSRange">aRange</arg>
+          <sel>withRTF:</sel>
+          <arg type="NSData*">rtfData</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>replaceRange:</sel>
+          <arg type="NSRange">aRange</arg>
+          <sel>withRTFD:</sel>
+          <arg type="NSData*">rtfdData</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>replaceRange:</sel>
+          <arg type="NSRange">aRange</arg>
+          <sel>withString:</sel>
+          <arg type="NSString*">aString</arg>
           <desc>
           </desc>
         </method>
@@ -238,7 +310,15 @@
         </method>
         <method type="void">
           <sel>setBackgroundColor:</sel>
-          <arg type="NSColor*">aColor</arg>
+          <arg type="NSColor*">color</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setColor:</sel>
+          <arg type="NSColor*">color</arg>
+          <sel>ofRange:</sel>
+          <arg type="NSRange">aRange</arg>
           <desc>
           </desc>
         </method>
@@ -268,13 +348,15 @@
         </method>
         <method type="void">
           <sel>setFont:</sel>
-          <arg type="NSFont*">aFont</arg>
+          <arg type="NSFont*">font</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setFont:</sel>
-          <arg type="NSFont*">aFont</arg>
+          <arg type="NSFont*">font</arg>
+          <sel>ofRange:</sel>
+          <arg type="NSRange">aRange</arg>
           <desc>
           </desc>
         </method>
@@ -292,13 +374,13 @@
         </method>
         <method type="void">
           <sel>setMaxSize:</sel>
-          <arg type="NSSize">aSize</arg>
+          <arg type="NSSize">newMaxSize</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setMinSize:</sel>
-          <arg type="NSSize">aSize</arg>
+          <arg type="NSSize">newMinSize</arg>
           <desc>
           </desc>
         </method>
@@ -316,7 +398,7 @@
         </method>
         <method type="void">
           <sel>setSelectedRange:</sel>
-          <arg type="NSRange">aRange</arg>
+          <arg type="NSRange">range</arg>
           <desc>
           </desc>
         </method>
@@ -327,14 +409,30 @@
           </desc>
         </method>
         <method type="void">
-          <sel>setTextColor:</sel>
-          <arg type="NSColor*">aColor</arg>
+          <sel>setText:</sel>
+          <arg type="NSString*">string</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setText:</sel>
+          <arg type="NSString*">aString</arg>
+          <sel>range:</sel>
+          <arg type="NSRange">aRange</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setTextColor:</sel>
-          <arg type="NSColor*">aColor</arg>
+          <arg type="NSColor*">color</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setTextColor:</sel>
+          <arg type="NSColor*">color</arg>
+          <sel>range:</sel>
+          <arg type="NSRange">aRange</arg>
           <desc>
           </desc>
         </method>
@@ -378,6 +476,11 @@
           <desc>
           </desc>
         </method>
+        <method type="NSString*">
+          <sel>text</sel>
+          <desc>
+          </desc>
+        </method>
         <method type="NSColor*">
           <sel>textColor</sel>
           <desc>
@@ -410,41 +513,76 @@
           <sel>writeRTFDToFile:</sel>
           <arg type="NSString*">path</arg>
           <sel>atomically:</sel>
-          <arg type="BOOL">atomicFlag</arg>
+          <arg type="BOOL">flag</arg>
           <desc>
           </desc>
         </method>
+      </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSObject(NSTextDelegate) category
+      </heading>
+      <category name="NSTextDelegate" class="NSObject">
+        <declared>AppKit/NSText.h</declared>
+        <desc>
+        </desc>
         <method type="void">
           <sel>textDidBeginEditing:</sel>
-          <arg type="NSNotification*">aNotification</arg>
+          <arg type="NSNotification*">notification</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>textDidChange:</sel>
-          <arg type="NSNotification*">aNotification</arg>
+          <arg type="NSNotification*">notification</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>textDidEndEditing:</sel>
-          <arg type="NSNotification*">aNotification</arg>
+          <arg type="NSNotification*">notification</arg>
           <desc>
           </desc>
         </method>
         <method type="BOOL">
           <sel>textShouldBeginEditing:</sel>
-          <arg type="NSText*">aTextObject</arg>
+          <arg type="NSText*">textObject</arg>
           <desc>
           </desc>
         </method>
         <method type="BOOL">
           <sel>textShouldEndEditing:</sel>
-          <arg type="NSText*">aTextObject</arg>
+          <arg type="NSText*">textObject</arg>
           <desc>
           </desc>
         </method>
-      </class>
+      </category>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSText(GNUstepExtensions) category
+      </heading>
+      <category name="GNUstepExtensions" class="NSText">
+        <declared>AppKit/NSText.h</declared>
+        <desc>
+        </desc>
+        <method type="void">
+          <sel>replaceRange:</sel>
+          <arg type="NSRange">aRange</arg>
+          <sel>withAttributedString:</sel>
+          <arg type="NSAttributedString*">attrString</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="unsigned">
+          <sel>textLength</sel>
+          <desc>
+          </desc>
+        </method>
+      </category>
     </chapter>
   </body>
 </gsdoc>

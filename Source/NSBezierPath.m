@@ -1,7 +1,6 @@
-/* 
-   NSBezierPath.m
+/** <title>NSBezierPath.m</title>
 
-   The NSBezierPath class
+   <abstract>The NSBezierPath class</abstract>
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 

@@ -1,14 +1,15 @@
-/*
-   The window class
+/** <title>NSWindow</title>
+
+   <abstract>The window class</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
 	    Venkat Ajjanagadde <venkat@ocbi.com>
    Date: 1996
-   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Author: Felipe A. Rodriguez <far@ix.netcom.com>
    Date: June 1998
-   Author:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+   Author: Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: December 1998
 
    This file is part of the GNUstep GUI Library.
@@ -387,6 +388,40 @@ static NSCell	*tileCell = nil;
  *
  *****************************************************************************/
 
+/**
+  <unit>
+  <heading>NSWindow</heading>
+  
+  <p> Instances of the NSWindow class handle on-screen windows, their
+  associated NSViews, and events generate by the user.  An NSWindow's
+  size is defined by its frame rectangle, which encompasses its entire
+  structure, and its content rectangle, which includes only the
+  content.  </p>
+
+  <p> Every NSWindow has a content view, the NSView which forms the
+  root of the window's view hierarchy.  This view can be set using the
+  <code>setContentView:</code> method, and accessed through the
+  <code>contentView</code> method.  <code>setContentView:</code>
+  replaces the default content view created by NSWindow.  </p>
+
+  <p> Other views may be added to the window by using the content
+  view's <code>addSubview:</code> method.  These subviews can also
+  have subviews added, forming a tree structure, the view hierarchy.
+  When an NSWindow must display itself, it causes this hierarchy to
+  draw itself.  Leaf nodes in the view hierarchy are drawn last,
+  causing them to potentially obscure views further up in the
+  hierarchy.  </p>
+
+  <p> A delegate can be specified for an NSWindow, which will receive
+  notifications of events pertaining to the window.  The delegate is
+  set using <code>setDelegate:</code>, and can be retrieved using
+  <code>delegate</code>.  The delegate can restrain resizing by
+  implementing the <code>windowWillResize: toSize:</code> method, or
+  control the closing of the window by implementing
+  <code>windowShouldClose:</code>.  </p> 
+
+  </unit>
+*/
 @implementation NSWindow
 
 typedef struct NSView_struct
@@ -648,6 +683,21 @@ static NSNotificationCenter *nc = nil;
 /*
  * Initializing and getting a new NSWindow object
  */
+/**
+  <p> Initializes the receiver with a content rect of
+  <var>contentRect</var>, a style mask of <var>styleMask</var>, and a
+  backing store type of <var>backingType</var>.  </p>
+
+  <p> The style mask values are <code>NSTitledWindowMask</code>, for a
+  window with a title, <code>NSClosableWindowMask</code>, for a window
+  with a close widget, <code>NSMiniaturizableWindowMask</code>, for a
+  window with a miniaturize widget, and
+  <code>NSResizableWindowMask</code>, for a window with a resizing
+  widget.  These mask values can be OR'd in any combination.  </p>
+ 
+  <p> Backing store values are <code>NSBackingStoreBuffered</code>,
+  <code>NSBackingStoreRetained</code> and
+  <code>NSBackingStoreNonretained</code>.  </p> */
 - (id) initWithContentRect: (NSRect)contentRect
 		 styleMask: (unsigned int)aStyle
 		   backing: (NSBackingStoreType)bufferingType
@@ -662,6 +712,24 @@ static NSNotificationCenter *nc = nil;
 			    screen: nil];
 }
 
+/**
+  <p> Initializes the receiver with a content rect of
+  <var>contentRect</var>, a style mask of <var>styleMask</var>, a
+  backing store type of <var>backingType</var> and a boolean
+  <var>flag</var>.  <var>flag</var> specifies whether the window
+  should be created now (<code>NO</code>), or when it is displayed
+  (<code>YES</code>).  </p>
+
+  <p> The style mask values are <code>NSTitledWindowMask</code>, for a
+  window with a title, <code>NSClosableWindowMask</code>, for a window
+  with a close widget, <code>NSMiniaturizableWindowMask</code>, for a
+  window with a miniaturize widget, and
+  <code>NSResizableWindowMask</code>, for a window with a resizing
+  widget.  These mask values can be OR'd in any combination.  </p>
+
+  <p> Backing store values are <code>NSBackingStoreBuffered</code>,
+  <code>NSBackingStoreRetained</code> and
+  <code>NSBackingStoreNonretained</code>.  </p> */
 - (id) initWithContentRect: (NSRect)contentRect
 		 styleMask: (unsigned int)aStyle
 		   backing: (NSBackingStoreType)bufferingType
@@ -735,6 +803,9 @@ static NSNotificationCenter *nc = nil;
   return _contentView;
 }
 
+/**
+  Sets the window's content view to <var>aView</var>, replacing any
+  previous content view.  */
 - (void) setContentView: (NSView*)aView
 {
   if (aView == nil)
@@ -781,6 +852,7 @@ static NSNotificationCenter *nc = nil;
   ASSIGN(_representedFilename, aString);
 }
 
+/** Sets the window's title to the string <var>aString</var>. */
 - (void) setTitle: (NSString*)aString
 {
   if ([_windowTitle isEqual: aString] == NO)
@@ -824,32 +896,33 @@ static NSNotificationCenter *nc = nil;
   return _styleMask;
 }
 
+/** Returns an NSString containing the text of the window's title. */
 - (NSString*) title
 {
   return _windowTitle;
 }
 
-- (void) setHasShadow: (BOOL)hasShadow;
+- (void) setHasShadow: (BOOL)hasShadow
 {
   _f.has_shadow = hasShadow;
 }
 
-- (BOOL) hasShadow;
+- (BOOL) hasShadow
 {
   return _f.has_shadow;
 }
 
-- (void) setAlphaValue: (float)windowAlpha;
+- (void) setAlphaValue: (float)windowAlpha
 {
   _alphaValue = windowAlpha;
 }
 
-- (float) alphaValue;
+- (float) alphaValue
 {
   return _alphaValue;
 }
 
-- (void) setOpaque: (BOOL)isOpaque;
+- (void) setOpaque: (BOOL)isOpaque
 {
   _f.is_opaque = isOpaque;
 }
@@ -1080,12 +1153,12 @@ static NSNotificationCenter *nc = nil;
   return _f.hides_on_deactivate;
 }
 
-- (void) setCanHide: (BOOL)flag;
+- (void) setCanHide: (BOOL)flag
 {
   _f.can_hide = flag;
 }
 
-- (BOOL) canHide;
+- (BOOL) canHide
 {
   return _f.can_hide;
 }
@@ -1340,7 +1413,7 @@ static NSNotificationCenter *nc = nil;
   [self setFrame: frameRect display: displayFlag];
 }
 
-- (NSTimeInterval) animationResizeTime: (NSRect)newFrame;
+- (NSTimeInterval) animationResizeTime: (NSRect)newFrame
 {
   // TODO
   NSLog(@"Method %s is not implemented for class %s",
@@ -1939,6 +2012,10 @@ resetCursorRectsForView(NSView *theView)
   [nc postNotificationName: NSWindowDidDeminiaturizeNotification object: self];
 }
 
+/**
+  Causes the window to deminiaturize. Normally you would not call this
+  method directly. A window is automatically deminiaturized by the
+  user via a mouse cloick event.  */
 - (void) deminiaturize: sender
 {
   if (_counterpart != 0)
@@ -1962,6 +2039,9 @@ resetCursorRectsForView(NSView *theView)
   return _f.is_released_when_closed;
 }
 
+/**
+  Causes the window to miniaturize, that is the window is removed from
+  the screen and it's counterpart (mini)window is displayed.  */
 - (void) miniaturize: (id)sender
 {
   [nc postNotificationName: NSWindowWillMiniaturizeNotification
@@ -3578,14 +3658,14 @@ resetCursorRectsForView(NSView *theView)
   return nil;
 }
 
-- (void) setToolbar: (NSToolbar*)toolbar;
+- (void) setToolbar: (NSToolbar*)toolbar
 {
   // TODO
   NSLog(@"Method %s is not implemented for class %s",
 	"drawers", "NSWindow");
 }
 
-- (NSToolbar *) toolbar;
+- (NSToolbar *) toolbar
 {
   // TODO
   NSLog(@"Method %s is not implemented for class %s",
@@ -3593,21 +3673,21 @@ resetCursorRectsForView(NSView *theView)
   return nil;
 }
 
-- (void) toggleToolbarShown: (id)sender;
+- (void) toggleToolbarShown: (id)sender
 {
   // TODO
   NSLog(@"Method %s is not implemented for class %s",
 	"toggleToolbarShown:", "NSWindow");
 }
 
-- (void) runToolbarCustomizationPalette: (id)sender;
+- (void) runToolbarCustomizationPalette: (id)sender
 {
   // TODO
   NSLog(@"Method %s is not implemented for class %s",
 	"runToolbarCustomizationPalette:", "NSWindow");
 }
 
-- (NSWindow *) initWithWindowRef: (void *)windowRef;
+- (NSWindow *) initWithWindowRef: (void *)windowRef
 {
   // TODO
   NSLog(@"Method %s is not implemented for class %s",
@@ -3615,7 +3695,7 @@ resetCursorRectsForView(NSView *theView)
   return nil;
 }
 
-- (void *)windowRef;
+- (void *)windowRef
 {
   // TODO
   NSLog(@"Method %s is not implemented for class %s",

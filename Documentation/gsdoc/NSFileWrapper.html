@@ -1,208 +1,208 @@
-<html><head>
- <title>NSFileWrapper</title>
-</head>
-<body>
-<a href ="NSEvent.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSFont.html">[Next] </a>
-<h1>NSFileWrapper</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSFileWrapper</a></h2>
-<h2><a name ="NSFileWrapper">NSFileWrapper</a></h2>
-<p><b>Declared in: </b> Gui/NSFileWrapper.h</p>
-<p><b>Inherits from: </b> NSObject</p>
-<p><b>Conforms to: </b> NSObject
-</p>
-<hr>
+<html>
+  <head>
+    <title>NSFileWrapper</title>
+  </head>
+  <body>
+    <h1>NSFileWrapper</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Felipe A. Rodriguez(<a href="mailto:far@ix.netcom.com"><code>
+        far@ix.netcom.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Jonathan Gapen(<a href="mailto:jagapen@whitewater.chem.wisc.edu"><code>
+        jagapen@whitewater.chem.wisc.edu
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <blockquote>
 
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSFileWrapper.html#method-0">-addFileWithPath:</a>
-<li ><a href ="NSFileWrapper.html#method-1">-addFileWrapper:</a>
-<li ><a href ="NSFileWrapper.html#method-2">-addRegularFileWithContents:preferredFilename:</a>
-<li ><a href ="NSFileWrapper.html#method-3">-addSymbolicLinkWithDestination:preferredFilename:</a>
-<li ><a href ="NSFileWrapper.html#method-4">-fileAttributes</a>
-<li ><a href ="NSFileWrapper.html#method-6">-fileWrappers</a>
-<li ><a href ="NSFileWrapper.html#method-5">-filename</a>
-<li ><a href ="NSFileWrapper.html#method-7">-icon</a>
-<li ><a href ="NSFileWrapper.html#method-8">-initDirectoryWithFileWrappers:</a>
-<li ><a href ="NSFileWrapper.html#method-9">-initRegularFileWithContents:</a>
-<li ><a href ="NSFileWrapper.html#method-10">-initSymbolicLinkWithDestination:</a>
-<li ><a href ="NSFileWrapper.html#method-11">-initWithPath:</a>
-<li ><a href ="NSFileWrapper.html#method-12">-initWithSerializedRepresentation:</a>
-<li ><a href ="NSFileWrapper.html#method-13">-isDirectory</a>
-<li ><a href ="NSFileWrapper.html#method-14">-isRegularFile</a>
-<li ><a href ="NSFileWrapper.html#method-15">-isSymbolicLink</a>
-<li ><a href ="NSFileWrapper.html#method-16">-keyForFileWrapper:</a>
-<li ><a href ="NSFileWrapper.html#method-17">-needsToBeUpdatedFromPath:</a>
-<li ><a href ="NSFileWrapper.html#method-18">-preferredFilename</a>
-<li ><a href ="NSFileWrapper.html#method-19">-regularFileContents</a>
-<li ><a href ="NSFileWrapper.html#method-20">-removeFileWrapper:</a>
-<li ><a href ="NSFileWrapper.html#method-21">-serializedRepresentation</a>
-<li ><a href ="NSFileWrapper.html#method-22">-setFileAttributes:</a>
-<li ><a href ="NSFileWrapper.html#method-23">-setFilename:</a>
-<li ><a href ="NSFileWrapper.html#method-24">-setIcon:</a>
-<li ><a href ="NSFileWrapper.html#method-25">-setPreferredFilename:</a>
-<li ><a href ="NSFileWrapper.html#method-26">-symbolicLinkDestination</a>
-<li ><a href ="NSFileWrapper.html#method-27">-updateFromPath:</a>
-<li ><a href ="NSFileWrapper.html#method-28">-writeToFile:atomically:updateFilenames:</a>
-</ul>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-0">addFileWithPath:</a></h3>
-- (NSString*) <b>addFileWithPath:</b> (NSString*)path;<br>
+      Hold a file's contents in dynamic memory.
+        </blockquote>
+    <p>Copyright: (C) 1996 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the NSFileWrapper class
+      </h1>
+    <h2><a name="class$NSFileWrapper">NSFileWrapper</a> : NSObject</h2>
+    Declared: AppKit/NSFileWrapper.h<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-1">addFileWrapper:</a></h3>
-- (NSString*) <b>addFileWrapper:</b> (NSFileWrapper*)wrapper;<br>
+            </p>
+    <h3>addFileWithPath:</a></h3>
+    - (NSString*) <b>addFileWithPath:</b> (NSString*)path;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-2">addRegularFileWithContents:preferredFilename:</a></h3>
-- (NSString*) <b>addRegularFileWithContents:</b> (NSData*)contents <b>preferredFilename:</b> (NSString*)filename;<br>
+              </p>
+    <hr />
+    <h3>addFileWrapper:</a></h3>
+    - (NSString*) <b>addFileWrapper:</b> (<a href="#class$NSFileWrapper">NSFileWrapper</a>*)doc;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-3">addSymbolicLinkWithDestination:preferredFilename:</a></h3>
-- (NSString*) <b>addSymbolicLinkWithDestination:</b> (NSString*)path <b>preferredFilename:</b> (NSString*)filename;<br>
+              </p>
+    <hr />
+    <h3>addRegularFileWithContents:preferredFilename:</a></h3>
+    - (NSString*) <b>addRegularFileWithContents:</b> (NSData*)data<b> preferredFilename:</b> (NSString*)filename;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-4">fileAttributes</a></h3>
-- (NSDictionary*) <b>fileAttributes</b>;<br>
+              </p>
+    <hr />
+    <h3>addSymbolicLinkWithDestination:preferredFilename:</a></h3>
+    - (NSString*) <b>addSymbolicLinkWithDestination:</b> (NSString*)path<b> preferredFilename:</b> (NSString*)filename;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-5">filename</a></h3>
-- (NSString*) <b>filename</b>;<br>
+              </p>
+    <hr />
+    <h3>fileAttributes</a></h3>
+    - (NSDictionary*) <b>fileAttributes</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-6">fileWrappers</a></h3>
-- (NSDictionary*) <b>fileWrappers</b>;<br>
+              </p>
+    <hr />
+    <h3>fileWrappers</a></h3>
+    - (NSDictionary*) <b>fileWrappers</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-7">icon</a></h3>
-- (NSImage*) <b>icon</b>;<br>
+              </p>
+    <hr />
+    <h3>filename</a></h3>
+    - (NSString*) <b>filename</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-8">initDirectoryWithFileWrappers:</a></h3>
-- (id) <b>initDirectoryWithFileWrappers:</b> (NSDictionary*)wrappers;<br>
+              </p>
+    <hr />
+    <h3>icon</a></h3>
+    - (<a href="NSImage.html#class$NSImage">NSImage</a>*) <b>icon</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-9">initRegularFileWithContents:</a></h3>
-- (id) <b>initRegularFileWithContents:</b> (NSData*)contents;<br>
+              </p>
+    <hr />
+    <h3>initDirectoryWithFileWrappers:</a></h3>
+    - (id) <b>initDirectoryWithFileWrappers:</b> (NSDictionary*)docs;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-10">initSymbolicLinkWithDestination:</a></h3>
-- (id) <b>initSymbolicLinkWithDestination:</b> (NSString*)path;<br>
+              </p>
+    <hr />
+    <h3>initRegularFileWithContents:</a></h3>
+    - (id) <b>initRegularFileWithContents:</b> (NSData*)data;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-11">initWithPath:</a></h3>
-- (id) <b>initWithPath:</b> (NSString*)path;<br>
+              </p>
+    <hr />
+    <h3>initSymbolicLinkWithDestination:</a></h3>
+    - (id) <b>initSymbolicLinkWithDestination:</b> (NSString*)path;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-12">initWithSerializedRepresentation:</a></h3>
-- (id) <b>initWithSerializedRepresentation:</b> (NSData*)data;<br>
+              </p>
+    <hr />
+    <h3>initWithPath:</a></h3>
+    - (id) <b>initWithPath:</b> (NSString*)path;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-13">isDirectory</a></h3>
-- (BOOL) <b>isDirectory</b>;<br>
+              </p>
+    <hr />
+    <h3>initWithSerializedRepresentation:</a></h3>
+    - (id) <b>initWithSerializedRepresentation:</b> (NSData*)data;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-14">isRegularFile</a></h3>
-- (BOOL) <b>isRegularFile</b>;<br>
+              </p>
+    <hr />
+    <h3>isDirectory</a></h3>
+    - (BOOL) <b>isDirectory</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-15">isSymbolicLink</a></h3>
-- (BOOL) <b>isSymbolicLink</b>;<br>
+              </p>
+    <hr />
+    <h3>isRegularFile</a></h3>
+    - (BOOL) <b>isRegularFile</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-16">keyForFileWrapper:</a></h3>
-- (NSString*) <b>keyForFileWrapper:</b> (NSFileWrapper*)wrapper;<br>
+              </p>
+    <hr />
+    <h3>isSymbolicLink</a></h3>
+    - (BOOL) <b>isSymbolicLink</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-17">needsToBeUpdatedFromPath:</a></h3>
-- (BOOL) <b>needsToBeUpdatedFromPath:</b> (NSString*)path;<br>
+              </p>
+    <hr />
+    <h3>keyForFileWrapper:</a></h3>
+    - (NSString*) <b>keyForFileWrapper:</b> (<a href="#class$NSFileWrapper">NSFileWrapper</a>*)doc;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-18">preferredFilename</a></h3>
-- (NSString*) <b>preferredFilename</b>;<br>
+              </p>
+    <hr />
+    <h3>needsToBeUpdatedFromPath:</a></h3>
+    - (BOOL) <b>needsToBeUpdatedFromPath:</b> (NSString*)path;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-19">regularFileContents</a></h3>
-- (NSData*) <b>regularFileContents</b>;<br>
+              </p>
+    <hr />
+    <h3>preferredFilename</a></h3>
+    - (NSString*) <b>preferredFilename</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-20">removeFileWrapper:</a></h3>
-- (void) <b>removeFileWrapper:</b> (NSFileWrapper*)wrapper;<br>
+              </p>
+    <hr />
+    <h3>regularFileContents</a></h3>
+    - (NSData*) <b>regularFileContents</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-21">serializedRepresentation</a></h3>
-- (NSData*) <b>serializedRepresentation</b>;<br>
+              </p>
+    <hr />
+    <h3>removeFileWrapper:</a></h3>
+    - (void) <b>removeFileWrapper:</b> (<a href="#class$NSFileWrapper">NSFileWrapper</a>*)doc;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-22">setFileAttributes:</a></h3>
-- (void) <b>setFileAttributes:</b> (NSDictionary*)attributes;<br>
+              </p>
+    <hr />
+    <h3>serializedRepresentation</a></h3>
+    - (NSData*) <b>serializedRepresentation</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-23">setFilename:</a></h3>
-- (void) <b>setFilename:</b> (NSString*)filename;<br>
+              </p>
+    <hr />
+    <h3>setFileAttributes:</a></h3>
+    - (void) <b>setFileAttributes:</b> (NSDictionary*)attributes;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-24">setIcon:</a></h3>
-- (void) <b>setIcon:</b> (NSImage*)anImage;<br>
+              </p>
+    <hr />
+    <h3>setFilename:</a></h3>
+    - (void) <b>setFilename:</b> (NSString*)filename;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-25">setPreferredFilename:</a></h3>
-- (void) <b>setPreferredFilename:</b> (NSString*)filename;<br>
+              </p>
+    <hr />
+    <h3>setIcon:</a></h3>
+    - (void) <b>setIcon:</b> (<a href="NSImage.html#class$NSImage">NSImage</a>*)icon;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-26">symbolicLinkDestination</a></h3>
-- (NSString*) <b>symbolicLinkDestination</b>;<br>
+              </p>
+    <hr />
+    <h3>setPreferredFilename:</a></h3>
+    - (void) <b>setPreferredFilename:</b> (NSString*)filename;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-27">updateFromPath:</a></h3>
-- (BOOL) <b>updateFromPath:</b> (NSString*)path;<br>
+              </p>
+    <hr />
+    <h3>symbolicLinkDestination</a></h3>
+    - (NSString*) <b>symbolicLinkDestination</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-28">writeToFile:atomically:updateFilenames:</a></h3>
-- (BOOL) <b>writeToFile:</b> (NSString*)path <b>atomically:</b> (BOOL)atomicFlag <b>updateFilenames:</b> (BOOL)updateNamesFlag;<br>
+              </p>
+    <hr />
+    <h3>updateFromPath:</a></h3>
+    - (BOOL) <b>updateFromPath:</b> (NSString*)path;<br />
+    <p>
 
-          
- <hr>
-</body>
+              </p>
+    <hr />
+    <h3>writeToFile:atomically:updateFilenames:</a></h3>
+    - (BOOL) <b>writeToFile:</b> (NSString*)path<b> atomically:</b> (BOOL)atomicFlag<b> updateFilenames:</b> (BOOL)updateFilenamesFlag;<br />
+    <p>
 
- </html>
+              </p>
+    <hr />
+  </body>
+</html>

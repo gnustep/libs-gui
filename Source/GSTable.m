@@ -1,11 +1,10 @@
-/*
-   GSTable.m
+/** <titlt>GSTable.m</title>
 
-   The GSTable class (a GNU extension)
+   <abstract>The GSTable class (a GNU extension)</abstract>
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 
-   Author:  Nicola Pero <n.pero@mi.flashnet.it>
+   Author: Nicola Pero <n.pero@mi.flashnet.it>
    Date: 1999
 
    This file is part of the GNUstep GUI Library.

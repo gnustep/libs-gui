@@ -1,15 +1,13 @@
-/* 
-   NSMenuItem.m
+/** <title>NSMenuItem</title>
 
-   The menu cell class.
+   <abstract>The menu cell class.</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
+   Author: Ovidiu Predescu <ovidiu@net-community.com>
+   Date: May 1997
    Author:  David Lazaro Saz <khelekir@encomix.es>
    Date: Sep 1999
-
-   Author:  Ovidiu Predescu <ovidiu@net-community.com>
-   Date: May 1997
    
    This file is part of the GNUstep GUI Library.
 

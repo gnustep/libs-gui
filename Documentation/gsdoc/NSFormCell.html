@@ -1,118 +1,107 @@
-<html><head>
- <title>NSFormCell</title>
-</head>
-<body>
-<a href ="NSForm.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSGraphicsContext.html">[Next] </a>
-<h1>NSFormCell</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSFormCell</a></h2>
-<h2><a name ="NSFormCell">NSFormCell</a></h2>
-<p><b>Declared in: </b> Gui/NSFormCell.h</p>
-<p><b>Inherits from: </b> NSActionCell</p>
-<p><b>Conforms to: </b> NSCoding
-</p>
-<hr>
+<html>
+  <head>
+    <title>NSFormCell</title>
+  </head>
+  <body>
+    <h1>NSFormCell</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Ovidiu Predescu(<a href="mailto:ovidiu@net-community.com"><code>
+        ovidiu@net-community.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Nicola Pero(<a href="mailto:n.pero@mi.flashnet.it"><code>
+        n.pero@mi.flashnet.it
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <blockquote>
 
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSFormCell.html#method-0">-attributedTitle</a>
-<li ><a href ="NSFormCell.html#method-1">-initTextCell:</a>
-<li ><a href ="NSFormCell.html#method-2">-isOpaque</a>
-<li ><a href ="NSFormCell.html#method-3">-setAttributedTitle:</a>
-<li ><a href ="NSFormCell.html#method-4">-setTitle:</a>
-<li ><a href ="NSFormCell.html#method-5">-setTitleAlignment:</a>
-<li ><a href ="NSFormCell.html#method-6">-setTitleFont:</a>
-<li ><a href ="NSFormCell.html#method-7">-setTitleWidth:</a>
-<li ><a href ="NSFormCell.html#method-8">-setTitleWithMnemonic:</a>
-<li ><a href ="NSFormCell.html#method-9">-title</a>
-<li ><a href ="NSFormCell.html#method-10">-titleAlignment</a>
-<li ><a href ="NSFormCell.html#method-11">-titleFont</a>
-<li ><a href ="NSFormCell.html#method-12">-titleWidth</a>
-<li ><a href ="NSFormCell.html#method-13">-titleWidth:</a>
-</ul>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-0">attributedTitle</a></h3>
-- (NSAttributedString*) <b>attributedTitle</b>;<br>
+      The cell class for the NSForm control
+        </blockquote>
+    <p>Copyright: (C) 1996, 1999 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the NSFormCell class
+      </h1>
+    <h2><a name="class$NSFormCell">NSFormCell</a> : <a href="NSActionCell.html#class$NSActionCell">NSActionCell</a></h2>
+    Declared: AppKit/NSFormCell.h<br />
+    Conform: NSCoding<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-1">initTextCell:</a></h3>
-- (id) <b>initTextCell:</b> (NSString*)aString;<br>
+            </p>
+    <h3>attributedTitle</a></h3>
+    - (NSAttributedString*) <b>attributedTitle</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-2">isOpaque</a></h3>
-- (BOOL) <b>isOpaque</b>;<br>
+              </p>
+    <hr />
+    <h3>setAttributedTitle:</a></h3>
+    - (void) <b>setAttributedTitle:</b> (NSAttributedString*)anAttributedString;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-3">setAttributedTitle:</a></h3>
-- (void) <b>setAttributedTitle:</b> (NSAttributedString*)anAttributedString;<br>
+              </p>
+    <hr />
+    <h3>setTitle:</a></h3>
+    - (void) <b>setTitle:</b> (NSString*)aString;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-4">setTitle:</a></h3>
-- (void) <b>setTitle:</b> (NSString*)aString;<br>
+              </p>
+    <hr />
+    <h3>setTitleAlignment:</a></h3>
+    - (void) <b>setTitleAlignment:</b> (NSTextAlignment)mode;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-5">setTitleAlignment:</a></h3>
-- (void) <b>setTitleAlignment:</b> (NSTextAlignment)alignment;<br>
+              </p>
+    <hr />
+    <h3>setTitleFont:</a></h3>
+    - (void) <b>setTitleFont:</b> (<a href="NSFont.html#class$NSFont">NSFont</a>*)fontObject;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-6">setTitleFont:</a></h3>
-- (void) <b>setTitleFont:</b> (NSFont*)font;<br>
+              </p>
+    <hr />
+    <h3>setTitleWidth:</a></h3>
+    - (void) <b>setTitleWidth:</b> (float)width;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-7">setTitleWidth:</a></h3>
-- (void) <b>setTitleWidth:</b> (float)width;<br>
+              </p>
+    <hr />
+    <h3>setTitleWithMnemonic:</a></h3>
+    - (void) <b>setTitleWithMnemonic:</b> (NSString*)titleWithAmpersand;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-8">setTitleWithMnemonic:</a></h3>
-- (void) <b>setTitleWithMnemonic:</b> (NSString*)titleWithAmpersand;<br>
+              </p>
+    <hr />
+    <h3>title</a></h3>
+    - (NSString*) <b>title</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-9">title</a></h3>
-- (NSString*) <b>title</b>;<br>
+              </p>
+    <hr />
+    <h3>titleAlignment</a></h3>
+    - (NSTextAlignment) <b>titleAlignment</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-10">titleAlignment</a></h3>
-- (NSTextAlignment) <b>titleAlignment</b>;<br>
+              </p>
+    <hr />
+    <h3>titleFont</a></h3>
+    - (<a href="NSFont.html#class$NSFont">NSFont</a>*) <b>titleFont</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-11">titleFont</a></h3>
-- (NSFont*) <b>titleFont</b>;<br>
+              </p>
+    <hr />
+    <h3>titleWidth</a></h3>
+    - (float) <b>titleWidth</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-12">titleWidth</a></h3>
-- (float) <b>titleWidth</b>;<br>
+              </p>
+    <hr />
+    <h3>titleWidth:</a></h3>
+    - (float) <b>titleWidth:</b> (NSSize)size;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-13">titleWidth:</a></h3>
-- (float) <b>titleWidth:</b> (NSSize)aSize;<br>
-
-          
- <hr>
-</body>
-
- </html>
+              </p>
+    <hr />
+  </body>
+</html>

@@ -1,13 +1,11 @@
-/*
-   NSBrowserCell.m
+/** <title>NSBrowserCell</title>
 
-   Cell class for the NSBrowser
+   <abstract>Cell class for the NSBrowser</abstract>
 
    Copyright (C) 1996, 1997, 1999 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
-   
    Author: Nicola Pero <n.pero@mi.flashnet.it>
    Date: December 1999
 

@@ -1,7 +1,6 @@
-/*
-   NSBrowser.m
+/** <title>NSBrowser</title>
 
-   Control to display and select from hierarchal lists
+   <abstract>Control to display and select from hierarchal lists</abstract>
 
    Copyright (C) 1996, 1997 Free Software Foundation, Inc.
 

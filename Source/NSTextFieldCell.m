@@ -1,11 +1,10 @@
-/* 
-   NSTextFieldCell.m
+/** <title>NSTextFieldCell</title>
 
-   Cell class for the text field entry control
+   <abstract>Cell class for the text field entry control</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
+   Author: Scott Christley <scottc@net-community.com>
    Date: 1996
    Author: Nicola Pero <n.pero@mi.flashnet.it>
    Date: November 1999

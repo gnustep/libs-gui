@@ -1,13 +1,12 @@
-/* 
-   NSFileWrapper.m
+/** <title>NSFileWrapper</title>
 
-   NSFileWrapper objects hold a file's contents in dynamic memory.
+   <abstract>Hold a file's contents in dynamic memory.</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Author: Felipe A. Rodriguez <far@ix.netcom.com>
    Date: Sept 1998
-   Author:  Jonathan Gapen <jagapen@whitewater.chem.wisc.edu>
+   Author: Jonathan Gapen <jagapen@whitewater.chem.wisc.edu>
    Date: Dec 1999
    
    This file is part of the GNUstep GUI Library.
@@ -265,7 +264,7 @@
     }
 }
 
-- (NSString*) preferredFilename;
+- (NSString*) preferredFilename
 {
   return _preferredFilename;
 }
@@ -326,7 +325,7 @@
   ASSIGN(_iconImage, icon);
 }
 
-- (NSImage*) icon;
+- (NSImage*) icon
 {
   if (_iconImage == nil)
     {

@@ -1,9 +1,8 @@
-/* 
-   NSTableHeaderCell.m
+/** <title>NSTableHeaderCell</title>
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 
-   Author:  Nicola Pero <n.pero@mi.flashnet.it>
+   Author: Nicola Pero <n.pero@mi.flashnet.it>
    Date: 1999
    
    This file is part of the GNUstep GUI Library.

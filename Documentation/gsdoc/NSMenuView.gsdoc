@@ -1,25 +1,43 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSMenuView" prev="NSMenuItemCell.html" next="NSMutableAttributedString.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSMenuView" next="NSOpenPanel" prev="NSMenuItemCell" up="NSActionCell">
   <head>
     <title>NSMenuView</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Fred Kiefer">
+      <email address="FredKiefer@gmx.de">
+        FredKiefer@gmx.de
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="David Lazaro Saz">
+      <email address="khelekir@encomix.es">
+        khelekir@encomix.es
+      </email>
+    </author>
+    <author name="Michael Hanni">
+      <email address="mhanni@sprintmail.com">
+        mhanni@sprintmail.com
+      </email>
+    </author>
+    <copy>1999 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSMenuView</heading>
+      <heading>
+        Software documentation for the NSMenuView class
+      </heading>
       <class name="NSMenuView" super="NSView">
-        <declared>Gui/NSMenuView.h</declared>
+        <declared>AppKit/NSMenuView.h</declared>
         <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <desc>
+        </desc>
         <method type="float" factory="yes">
           <sel>menuBarHeight</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>attachSubmenuForItemAtIndex:</sel>
+          <arg type="int">index</arg>
           <desc>
           </desc>
         </method>
@@ -30,12 +48,6 @@
         </method>
         <method type="NSMenuView*">
           <sel>attachedMenuView</sel>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
-          <sel>attachSubmenuForItemAtIndex:</sel>
-          <arg type="int">index</arg>
           <desc>
           </desc>
         </method>
@@ -72,6 +84,11 @@
         <method type="int">
           <sel>indexOfItemAtPoint:</sel>
           <arg type="NSPoint">point</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="id">
+          <sel>initAsTearOff</sel>
           <desc>
           </desc>
         </method>
@@ -217,7 +234,7 @@
           <sel>setWindowFrameForAttachingToRect:</sel>
           <arg type="NSRect">screenRect</arg>
           <sel>onScreen:</sel>
-          <arg type="NSScreen *">screen</arg>
+          <arg type="NSScreen*">screen</arg>
           <sel>preferredEdge:</sel>
           <arg type="NSRectEdge">edge</arg>
           <sel>popUpSelectedItem:</sel>

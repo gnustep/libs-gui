@@ -1,142 +1,180 @@
-<html><head>
- <title>NSProgressIndicator</title>
-</head>
-<body>
-<a href ="NSPrinter.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSResponder.html">[Next] </a>
-<h1>NSProgressIndicator</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSProgressIndicator</a></h2>
-<h2><a name ="NSProgressIndicator">NSProgressIndicator</a></h2>
-<p><b>Declared in: </b> Gui/NSProgressIndicator.h</p>
-<p><b>Inherits from: </b> NSView</p>
-<p><b>Conforms to: </b> NSCoding
-</p>
-<hr>
+<html>
+  <head>
+    <title>NSProgressIndicator</title>
+  </head>
+  <body>
+    <h1>NSProgressIndicator</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Gerrit van Dyk(<a href="mailto:gerritvd@decimax.com"><code>
+        gerritvd@decimax.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <p>Copyright: (C) 1999 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the NSProgressIndicator
+        class
+      </h1>
+    <h2><a name="class$NSProgressIndicator">NSProgressIndicator</a> : <a href="NSView.html#class$NSView">NSView</a></h2>
+    Declared: AppKit/NSProgressIndicator.h<br />
+    <p>
 
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSProgressIndicator.html#method-0">-animate:</a>
-<li ><a href ="NSProgressIndicator.html#method-1">-animationDelay</a>
-<li ><a href ="NSProgressIndicator.html#method-2">-doubleValue</a>
-<li ><a href ="NSProgressIndicator.html#method-3">-incrementBy:</a>
-<li ><a href ="NSProgressIndicator.html#method-4">-initWithFrame:</a>
-<li ><a href ="NSProgressIndicator.html#method-5">-isBezeled</a>
-<li ><a href ="NSProgressIndicator.html#method-6">-isIndeterminate</a>
-<li ><a href ="NSProgressIndicator.html#method-7">-maxValue</a>
-<li ><a href ="NSProgressIndicator.html#method-8">-minValue</a>
-<li ><a href ="NSProgressIndicator.html#method-9">-setAnimationDelay:</a>
-<li ><a href ="NSProgressIndicator.html#method-10">-setBezeled:</a>
-<li ><a href ="NSProgressIndicator.html#method-11">-setDoubleValue:</a>
-<li ><a href ="NSProgressIndicator.html#method-12">-setIndeterminate:</a>
-<li ><a href ="NSProgressIndicator.html#method-13">-setMaxValue:</a>
-<li ><a href ="NSProgressIndicator.html#method-14">-setMinValue:</a>
-<li ><a href ="NSProgressIndicator.html#method-15">-setUsesThreadedAnimation:</a>
-<li ><a href ="NSProgressIndicator.html#method-16">-stopAnimation:</a>
-<li ><a href ="NSProgressIndicator.html#method-17">-usesThreadedAnimation</a>
-</ul>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-0">animate:</a></h3>
-- (void) <b>animate:</b> (id)sender;<br>
+            </p>
+    <h3>animate:</a></h3>
+    - (void) <b>animate:</b> (id)sender;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-1">animationDelay</a></h3>
-- (NSTimeInterval) <b>animationDelay</b>;<br>
+              </p>
+    <hr />
+    <h3>animationDelay</a></h3>
+    - (NSTimeInterval) <b>animationDelay</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-2">doubleValue</a></h3>
-- (double) <b>doubleValue</b>;<br>
+              </p>
+    <hr />
+    <h3>controlSize</a></h3>
+    - (NSControlSize) <b>controlSize</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-3">incrementBy:</a></h3>
-- (void) <b>incrementBy:</b> (double)delta;<br>
+              </p>
+    <hr />
+    <h3>controlTint</a></h3>
+    - (NSControlTint) <b>controlTint</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-4">initWithFrame:</a></h3>
-- (id) <b>initWithFrame:</b> (NSRect)frameRect;<br>
+              </p>
+    <hr />
+    <h3>doubleValue</a></h3>
+    - (double) <b>doubleValue</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-5">isBezeled</a></h3>
-- (BOOL) <b>isBezeled</b>;<br>
+              </p>
+    <hr />
+    <h3>incrementBy:</a></h3>
+    - (void) <b>incrementBy:</b> (double)delta;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-6">isIndeterminate</a></h3>
-- (BOOL) <b>isIndeterminate</b>;<br>
+              </p>
+    <hr />
+    <h3>isBezeled</a></h3>
+    - (BOOL) <b>isBezeled</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-7">maxValue</a></h3>
-- (double) <b>maxValue</b>;<br>
+              </p>
+    <hr />
+    <h3>isIndeterminate</a></h3>
+    - (BOOL) <b>isIndeterminate</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-8">minValue</a></h3>
-- (double) <b>minValue</b>;<br>
+              </p>
+    <hr />
+    <h3>maxValue</a></h3>
+    - (double) <b>maxValue</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-9">setAnimationDelay:</a></h3>
-- (void) <b>setAnimationDelay:</b> (NSTimeInterval)delay;<br>
+              </p>
+    <hr />
+    <h3>minValue</a></h3>
+    - (double) <b>minValue</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-10">setBezeled:</a></h3>
-- (void) <b>setBezeled:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>setAnimimationDelay:</a></h3>
+    - (void) <b>setAnimimationDelay:</b> (NSTimeInterval)delay;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-11">setDoubleValue:</a></h3>
-- (void) <b>setDoubleValue:</b> (double)doubleValue;<br>
+              </p>
+    <hr />
+    <h3>setBezeled:</a></h3>
+    - (void) <b>setBezeled:</b> (BOOL)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-12">setIndeterminate:</a></h3>
-- (void) <b>setIndeterminate:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>setControlSize:</a></h3>
+    - (void) <b>setControlSize:</b> (NSControlSize)size;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-13">setMaxValue:</a></h3>
-- (void) <b>setMaxValue:</b> (double)newMaximum;<br>
+              </p>
+    <hr />
+    <h3>setControlTint:</a></h3>
+    - (void) <b>setControlTint:</b> (NSControlTint)tint;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-14">setMinValue:</a></h3>
-- (void) <b>setMinValue:</b> (double)newMinimum;<br>
+              </p>
+    <hr />
+    <h3>setDoubleValue:</a></h3>
+    - (void) <b>setDoubleValue:</b> (double)aValue;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-15">setUsesThreadedAnimation:</a></h3>
-- (void) <b>setUsesThreadedAnimation:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>setIndeterminate:</a></h3>
+    - (void) <b>setIndeterminate:</b> (BOOL)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-16">stopAnimation:</a></h3>
-- (void) <b>stopAnimation:</b> (id)sender;<br>
+              </p>
+    <hr />
+    <h3>setMaxValue:</a></h3>
+    - (void) <b>setMaxValue:</b> (double)newMaximum;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-17">usesThreadedAnimation</a></h3>
-- (BOOL) <b>usesThreadedAnimation</b>;<br>
+              </p>
+    <hr />
+    <h3>setMinValue:</a></h3>
+    - (void) <b>setMinValue:</b> (double)newMinimum;<br />
+    <p>
 
-          
- <hr>
-</body>
+              </p>
+    <hr />
+    <h3>setUsesThreadedAnimation:</a></h3>
+    - (void) <b>setUsesThreadedAnimation:</b> (BOOL)flag;<br />
+    <p>
 
- </html>
+              </p>
+    <hr />
+    <h3>startAnimation:</a></h3>
+    - (void) <b>startAnimation:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>stopAnimation:</a></h3>
+    - (void) <b>stopAnimation:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>usesThreadedAnimation</a></h3>
+    - (BOOL) <b>usesThreadedAnimation</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the
+        NSProgressIndicator(GNUstepExtensions)
+        category
+      </h1>
+    <h2><a href="#class$NSProgressIndicator">NSProgressIndicator</a>(<a name="category$NSProgressIndicator(GNUstepExtensions)">GNUstepExtensions</a>)</h2>
+    Declared: AppKit/NSProgressIndicator.h<br />
+    <p>
+
+            </p>
+    <h3>isVertical</a></h3>
+    - (BOOL) <b>isVertical</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setVertical:</a></h3>
+    - (void) <b>setVertical:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+  </body>
+</html>

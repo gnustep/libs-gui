@@ -1,23 +1,34 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSForm" prev="NSFontPanel.html" next="NSFormCell.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSForm" next="NSFormCell" prev="NSFontPanel" up="NSActionCell">
   <head>
     <title>NSForm</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Ovidiu Predescu">
+      <email address="ovidiu@net-community.com">
+        ovidiu@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>
+      Form class, a matrix of text fields with labels
+    </abstract>
+    <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSForm</heading>
+      <heading>
+        Software documentation for the NSForm class
+      </heading>
       <class name="NSForm" super="NSMatrix">
-        <declared>Gui/NSForm.h</declared>
+        <declared>AppKit/NSForm.h</declared>
         <conform>NSCoding</conform>
+        <desc>
+        </desc>
+        <method type="void">
+          <sel>_setTitleWidthNeedsUpdate:</sel>
+          <arg type="NSNotification*">notification</arg>
           <desc>
           </desc>
+        </method>
         <method type="NSFormCell*">
           <sel>addEntry:</sel>
           <arg type="NSString*">title</arg>
@@ -26,19 +37,19 @@
         </method>
         <method type="id">
           <sel>cellAtIndex:</sel>
-          <arg type="int">entryIndex</arg>
+          <arg type="int">index</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>drawCellAtIndex:</sel>
-          <arg type="int">entryIndex</arg>
+          <arg type="int">index</arg>
           <desc>
           </desc>
         </method>
         <method type="int">
           <sel>indexOfCellWithTag:</sel>
-          <arg type="int">tag</arg>
+          <arg type="int">aTag</arg>
           <desc>
           </desc>
         </method>
@@ -51,19 +62,19 @@
           <sel>insertEntry:</sel>
           <arg type="NSString*">title</arg>
           <sel>atIndex:</sel>
-          <arg type="int">entryIndex</arg>
+          <arg type="int">index</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>removeEntryAtIndex:</sel>
-          <arg type="int">entryIndex</arg>
+          <arg type="int">index</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>selectTextAtIndex:</sel>
-          <arg type="int">entryIndex</arg>
+          <arg type="int">index</arg>
           <desc>
           </desc>
         </method>
@@ -93,25 +104,25 @@
         </method>
         <method type="void">
           <sel>setTextAlignment:</sel>
-          <arg type="int">alignment</arg>
+          <arg type="int">aMode</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setTextFont:</sel>
-          <arg type="NSFont*">font</arg>
+          <arg type="NSFont*">fontObject</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setTitleAlignment:</sel>
-          <arg type="NSTextAlignment">alignment</arg>
+          <arg type="NSTextAlignment">aMode</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setTitleFont:</sel>
-          <arg type="NSFont*">font</arg>
+          <arg type="NSFont*">fontObject</arg>
           <desc>
           </desc>
         </method>

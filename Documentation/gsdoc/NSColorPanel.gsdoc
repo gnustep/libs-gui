@@ -1,26 +1,28 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSColorPanel" prev="NSColorList.html" next="NSColorPicker.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSColorPanel" next="NSColorPicker" prev="NSColorList" up="NSActionCell">
   <head>
     <title>NSColorPanel</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>System generic color panel</abstract>
+    <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSColorPanel</heading>
+      <heading>
+        Software documentation for the NSColorPanel class
+      </heading>
       <class name="NSColorPanel" super="NSPanel">
-        <declared>Gui/NSColorPanel.h</declared>
-        <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSColorPanel.h</declared>
+        <desc>
+        </desc>
         <method type="BOOL" factory="yes">
           <sel>dragColor:</sel>
-          <arg type="NSColor*">color</arg>
+          <arg type="NSColor*">aColor</arg>
           <sel>withEvent:</sel>
           <arg type="NSEvent*">anEvent</arg>
           <sel>fromView:</sel>
@@ -62,7 +64,7 @@
         </method>
         <method type="void">
           <sel>attachColorList:</sel>
-          <arg type="NSColorList*">colorList</arg>
+          <arg type="NSColorList*">aColorList</arg>
           <desc>
           </desc>
         </method>
@@ -73,7 +75,7 @@
         </method>
         <method type="void">
           <sel>detachColorList:</sel>
-          <arg type="NSColorList*">colorList</arg>
+          <arg type="NSColorList*">aColorList</arg>
           <desc>
           </desc>
         </method>
@@ -95,13 +97,13 @@
         </method>
         <method type="void">
           <sel>setAction:</sel>
-          <arg type="SEL">action</arg>
+          <arg type="SEL">aSelector</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setColor:</sel>
-          <arg type="NSColor*">color</arg>
+          <arg type="NSColor*">aColor</arg>
           <desc>
           </desc>
         </method>
@@ -125,18 +127,12 @@
         </method>
         <method type="void">
           <sel>setTarget:</sel>
-          <arg type="id">target</arg>
+          <arg type="id">anObject</arg>
           <desc>
           </desc>
         </method>
         <method type="BOOL">
           <sel>showsAlpha</sel>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
-          <sel>changeColor:</sel>
-          <arg type="id">sender</arg>
           <desc>
           </desc>
         </method>

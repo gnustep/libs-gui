@@ -1,7 +1,6 @@
-/* 
-   GSHelpManagerPanel.m
+/** <title>GSHelpManagerPanel.m</title>
 
-   GSHelpManagerPanel displays a help message for an item.
+   <abstract>GSHelpManagerPanel displays a help message for an item.</abstract>
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 

@@ -1,11 +1,10 @@
-/*
-   NSColor.m
+/** <title>NSColor</title>
 
-   The colorful color class
+   <abstract>The colorful color class</abstract>
 
    Copyright (C) 1996, 1998 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
+   Author: Scott Christley <scottc@net-community.com>
    Date: 1996
 
    This file is part of the GNUstep GUI Library.
@@ -495,7 +494,7 @@ systemColorWithName(NSString *name)
 			        alpha: 1.0];
 }
 
-+ (NSColor*) orangeColor;
++ (NSColor*) orangeColor
 {
   return [self colorWithCalibratedRed: 1.0
 			        green: 0.5
@@ -503,7 +502,7 @@ systemColorWithName(NSString *name)
 			        alpha: 1.0];
 }
 
-+ (NSColor*) purpleColor;
++ (NSColor*) purpleColor
 {
   return [self colorWithCalibratedRed: 0.5
 			        green: 0.0
@@ -511,7 +510,7 @@ systemColorWithName(NSString *name)
 			        alpha: 1.0];
 }
 
-+ (NSColor*) redColor;
++ (NSColor*) redColor
 {
   return [self colorWithCalibratedRed: 1.0
 			        green: 0.0
@@ -519,7 +518,7 @@ systemColorWithName(NSString *name)
 			        alpha: 1.0];
 }
 
-+ (NSColor*) whiteColor;
++ (NSColor*) whiteColor
 {
   return [self colorWithCalibratedWhite: NSWhite alpha: 1.0];
 }

@@ -1,23 +1,25 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSButton" prev="NSBundleAdditions.html" next="NSButtonCell.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSButton" next="NSButtonCell" prev="NSBrowserCell" up="NSActionCell">
   <head>
     <title>NSButton</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>The button class</abstract>
+    <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSButton</heading>
+      <heading>
+        Software documentation for the NSButton class
+      </heading>
       <class name="NSButton" super="NSControl">
-        <declared>Gui/NSButton.h</declared>
-        <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSButton.h</declared>
+        <desc>
+        </desc>
         <method type="BOOL">
           <sel>allowsMixedState</sel>
           <desc>
@@ -59,6 +61,11 @@
         <method type="void">
           <sel>highlight:</sel>
           <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSImage*">
+          <sel>image</sel>
           <desc>
           </desc>
         </method>
@@ -107,7 +114,7 @@
         </method>
         <method type="void">
           <sel>setAlternateImage:</sel>
-          <arg type="NSImage*">image</arg>
+          <arg type="NSImage*">anImage</arg>
           <desc>
           </desc>
         </method>
@@ -149,7 +156,7 @@
         </method>
         <method type="void">
           <sel>setImage:</sel>
-          <arg type="NSImage*">image</arg>
+          <arg type="NSImage*">anImage</arg>
           <desc>
           </desc>
         </method>
@@ -161,7 +168,7 @@
         </method>
         <method type="void">
           <sel>setKeyEquivalent:</sel>
-          <arg type="NSString*">charCode</arg>
+          <arg type="NSString*">aKeyEquivalent</arg>
           <desc>
           </desc>
         </method>
@@ -185,7 +192,7 @@
           </desc>
         </method>
         <method type="void">
-          <sel> setShowsBorderOnlyWhileMouseInside:</sel>
+          <sel>setShowsBorderOnlyWhileMouseInside:</sel>
           <arg type="BOOL">show</arg>
           <desc>
           </desc>
@@ -221,7 +228,7 @@
           </desc>
         </method>
         <method type="BOOL">
-          <sel> showsBorderOnlyWhileMouseInside</sel>
+          <sel>showsBorderOnlyWhileMouseInside</sel>
           <desc>
           </desc>
         </method>

@@ -1,23 +1,32 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSFileWrapper" prev="NSEvent.html" next="NSFont.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSFileWrapper" next="NSFont" prev="NSEvent" up="NSActionCell">
   <head>
     <title>NSFileWrapper</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Felipe A. Rodriguez">
+      <email address="far@ix.netcom.com">
+        far@ix.netcom.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Jonathan Gapen">
+      <email address="jagapen@whitewater.chem.wisc.edu">
+        jagapen@whitewater.chem.wisc.edu
+      </email>
+    </author>
+    <abstract>
+      Hold a file's contents in dynamic memory.
+    </abstract>
+    <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSFileWrapper</heading>
+      <heading>
+        Software documentation for the NSFileWrapper class
+      </heading>
       <class name="NSFileWrapper" super="NSObject">
-        <declared>Gui/NSFileWrapper.h</declared>
-        <conform>NSObject</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSFileWrapper.h</declared>
+        <desc>
+        </desc>
         <method type="NSString*">
           <sel>addFileWithPath:</sel>
           <arg type="NSString*">path</arg>
@@ -26,13 +35,13 @@
         </method>
         <method type="NSString*">
           <sel>addFileWrapper:</sel>
-          <arg type="NSFileWrapper*">wrapper</arg>
+          <arg type="NSFileWrapper*">doc</arg>
           <desc>
           </desc>
         </method>
         <method type="NSString*">
           <sel>addRegularFileWithContents:</sel>
-          <arg type="NSData*">contents</arg>
+          <arg type="NSData*">data</arg>
           <sel>preferredFilename:</sel>
           <arg type="NSString*">filename</arg>
           <desc>
@@ -51,13 +60,13 @@
           <desc>
           </desc>
         </method>
-        <method type="NSString*">
-          <sel>filename</sel>
+        <method type="NSDictionary*">
+          <sel>fileWrappers</sel>
           <desc>
           </desc>
         </method>
-        <method type="NSDictionary*">
-          <sel>fileWrappers</sel>
+        <method type="NSString*">
+          <sel>filename</sel>
           <desc>
           </desc>
         </method>
@@ -68,13 +77,13 @@
         </method>
         <method type="id">
           <sel>initDirectoryWithFileWrappers:</sel>
-          <arg type="NSDictionary*">wrappers</arg>
+          <arg type="NSDictionary*">docs</arg>
           <desc>
           </desc>
         </method>
         <method type="id">
           <sel>initRegularFileWithContents:</sel>
-          <arg type="NSData*">contents</arg>
+          <arg type="NSData*">data</arg>
           <desc>
           </desc>
         </method>
@@ -113,7 +122,7 @@
         </method>
         <method type="NSString*">
           <sel>keyForFileWrapper:</sel>
-          <arg type="NSFileWrapper*">wrapper</arg>
+          <arg type="NSFileWrapper*">doc</arg>
           <desc>
           </desc>
         </method>
@@ -135,7 +144,7 @@
         </method>
         <method type="void">
           <sel>removeFileWrapper:</sel>
-          <arg type="NSFileWrapper*">wrapper</arg>
+          <arg type="NSFileWrapper*">doc</arg>
           <desc>
           </desc>
         </method>
@@ -158,7 +167,7 @@
         </method>
         <method type="void">
           <sel>setIcon:</sel>
-          <arg type="NSImage*">anImage</arg>
+          <arg type="NSImage*">icon</arg>
           <desc>
           </desc>
         </method>
@@ -185,7 +194,7 @@
           <sel>atomically:</sel>
           <arg type="BOOL">atomicFlag</arg>
           <sel>updateFilenames:</sel>
-          <arg type="BOOL">updateNamesFlag</arg>
+          <arg type="BOOL">updateFilenamesFlag</arg>
           <desc>
           </desc>
         </method>

@@ -1,23 +1,37 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSTextField" prev="NSTextContainer.html" next="NSTextFieldCell.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSTextField" next="NSTextFieldCell" prev="NSTextContainer" up="NSActionCell">
   <head>
     <title>NSTextField</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Felipe A. Rodriguez">
+      <email address="far@ix.netcom.com">
+        far@ix.netcom.com
+      </email>
+    </author>
+    <author name="Nicola Pero">
+      <email address="n.pero@mi.flashnet.it">
+        n.pero@mi.flashnet.it
+      </email>
+    </author>
+    <abstract>
+      Text field control class for text entry
+    </abstract>
+    <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSTextField</heading>
+      <heading>
+        Software documentation for the NSTextField class
+      </heading>
       <class name="NSTextField" super="NSControl">
-        <declared>Gui/NSTextField.h</declared>
-        <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSTextField.h</declared>
+        <desc>
+        </desc>
         <method type="BOOL">
           <sel>acceptsFirstResponder</sel>
           <desc>
@@ -144,6 +158,12 @@
           </desc>
         </method>
         <method type="void">
+          <sel>setNextText:</sel>
+          <arg type="id">anObject</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
           <sel>setPreviousText:</sel>
           <arg type="id">anObject</arg>
           <desc>
@@ -198,7 +218,7 @@
         </method>
         <method type="BOOL">
           <sel>textShouldEndEditing:</sel>
-          <arg type="NSText*">textObject</arg>
+          <arg type="NSText*">aTextObject</arg>
           <desc>
           </desc>
         </method>

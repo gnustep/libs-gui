@@ -1,472 +1,583 @@
-<html><head>
- <title>NSText</title>
-</head>
-<body>
-<a href ="NSTableView.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSTextAttachment.html">[Next] </a>
-<h1>NSText</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSText</a></h2>
-<h2><a name ="NSText">NSText</a></h2>
-<p><b>Declared in: </b> Gui/NSText.h</p>
-<p><b>Inherits from: </b> NSView</p>
-<p><b>Conforms to: </b> NSChangeSpelling
-</p>
-<hr>
-
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSText.html#method-33">-RTFDFromRange:</a>
-<li ><a href ="NSText.html#method-0">-alignCenter:</a>
-<li ><a href ="NSText.html#method-1">-alignLeft:</a>
-<li ><a href ="NSText.html#method-2">-alignRight:</a>
-<li ><a href ="NSText.html#method-3">-alignment</a>
-<li ><a href ="NSText.html#method-4">-backgroundColor</a>
-<li ><a href ="NSText.html#method-5">-changeFont:</a>
-<li ><a href ="NSText.html#method-6">-checkSpelling:</a>
-<li ><a href ="NSText.html#method-7">-copy:</a>
-<li ><a href ="NSText.html#method-8">-copyFont:</a>
-<li ><a href ="NSText.html#method-9">-copyRuler:</a>
-<li ><a href ="NSText.html#method-10">-cut:</a>
-<li ><a href ="NSText.html#method-11">-delegate</a>
-<li ><a href ="NSText.html#method-12">-delete:</a>
-<li ><a href ="NSText.html#method-13">-drawsBackground</a>
-<li ><a href ="NSText.html#method-14">-font</a>
-<li ><a href ="NSText.html#method-15">-importsGraphics</a>
-<li ><a href ="NSText.html#method-16">-initWithFrame:</a>
-<li ><a href ="NSText.html#method-17">-isEditable</a>
-<li ><a href ="NSText.html#method-18">-isFieldEditor</a>
-<li ><a href ="NSText.html#method-19">-isHorizontallyResizable</a>
-<li ><a href ="NSText.html#method-20">-isRichText</a>
-<li ><a href ="NSText.html#method-21">-isRulerVisible</a>
-<li ><a href ="NSText.html#method-22">-isSelectable</a>
-<li ><a href ="NSText.html#method-23">-isVerticallyResizable</a>
-<li ><a href ="NSText.html#method-24">-maxSize</a>
-<li ><a href ="NSText.html#method-25">-minSize</a>
-<li ><a href ="NSText.html#method-26">-paste:</a>
-<li ><a href ="NSText.html#method-27">-pasteFont:</a>
-<li ><a href ="NSText.html#method-28">-pasteRuler:</a>
-<li ><a href ="NSText.html#method-29">-readRTFDFromFile:</a>
-<li ><a href ="NSText.html#method-30">-replaceCharactersInRange:withRTF:</a>
-<li ><a href ="NSText.html#method-31">-replaceCharactersInRange:withRTFD:</a>
-<li ><a href ="NSText.html#method-32">-replaceCharactersInRange:withString:</a>
-<li ><a href ="NSText.html#method-34">-scrollRangeToVisible:</a>
-<li ><a href ="NSText.html#method-35">-selectAll:</a>
-<li ><a href ="NSText.html#method-36">-selectedRange</a>
-<li ><a href ="NSText.html#method-37">-setAlignment:</a>
-<li ><a href ="NSText.html#method-38">-setBackgroundColor:</a>
-<li ><a href ="NSText.html#method-39">-setDelegate:</a>
-<li ><a href ="NSText.html#method-40">-setDrawsBackground:</a>
-<li ><a href ="NSText.html#method-41">-setEditable:</a>
-<li ><a href ="NSText.html#method-42">-setFieldEditor:</a>
-<li ><a href ="NSText.html#method-43">-setFont:</a>
-<li ><a href ="NSText.html#method-44">-setFont:</a>
-<li ><a href ="NSText.html#method-45">-setHorizontallyResizable:</a>
-<li ><a href ="NSText.html#method-46">-setImportsGraphics:</a>
-<li ><a href ="NSText.html#method-47">-setMaxSize:</a>
-<li ><a href ="NSText.html#method-48">-setMinSize:</a>
-<li ><a href ="NSText.html#method-49">-setRichText:</a>
-<li ><a href ="NSText.html#method-50">-setSelectable:</a>
-<li ><a href ="NSText.html#method-51">-setSelectedRange:</a>
-<li ><a href ="NSText.html#method-52">-setString:</a>
-<li ><a href ="NSText.html#method-54">-setTextColor:</a>
-<li ><a href ="NSText.html#method-53">-setTextColor:</a>
-<li ><a href ="NSText.html#method-55">-setUsesFontPanel:</a>
-<li ><a href ="NSText.html#method-56">-setVerticallyResizable:</a>
-<li ><a href ="NSText.html#method-57">-showGuessPanel:</a>
-<li ><a href ="NSText.html#method-58">-sizeToFit</a>
-<li ><a href ="NSText.html#method-59">-string</a>
-<li ><a href ="NSText.html#method-60">-subscript:</a>
-<li ><a href ="NSText.html#method-61">-superscript:</a>
-<li ><a href ="NSText.html#method-62">-textColor</a>
-<li ><a href ="NSText.html#method-68">-textDidBeginEditing:</a>
-<li ><a href ="NSText.html#method-69">-textDidChange:</a>
-<li ><a href ="NSText.html#method-70">-textDidEndEditing:</a>
-<li ><a href ="NSText.html#method-71">-textShouldBeginEditing:</a>
-<li ><a href ="NSText.html#method-72">-textShouldEndEditing:</a>
-<li ><a href ="NSText.html#method-63">-toggleRuler:</a>
-<li ><a href ="NSText.html#method-64">-underline:</a>
-<li ><a href ="NSText.html#method-65">-unscript:</a>
-<li ><a href ="NSText.html#method-66">-usesFontPanel</a>
-<li ><a href ="NSText.html#method-67">-writeRTFDToFile:atomically:</a>
-</ul>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-0">alignCenter:</a></h3>
-- (void) <b>alignCenter:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-1">alignLeft:</a></h3>
-- (void) <b>alignLeft:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-2">alignRight:</a></h3>
-- (void) <b>alignRight:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-3">alignment</a></h3>
-- (NSTextAlignment) <b>alignment</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-4">backgroundColor</a></h3>
-- (NSColor*) <b>backgroundColor</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-5">changeFont:</a></h3>
-- (void) <b>changeFont:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-6">checkSpelling:</a></h3>
-- (void) <b>checkSpelling:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-7">copy:</a></h3>
-- (void) <b>copy:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-8">copyFont:</a></h3>
-- (void) <b>copyFont:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-9">copyRuler:</a></h3>
-- (void) <b>copyRuler:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-10">cut:</a></h3>
-- (void) <b>cut:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-11">delegate</a></h3>
-- (id) <b>delegate</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-12">delete:</a></h3>
-- (void) <b>delete:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-13">drawsBackground</a></h3>
-- (BOOL) <b>drawsBackground</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-14">font</a></h3>
-- (NSFont*) <b>font</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-15">importsGraphics</a></h3>
-- (BOOL) <b>importsGraphics</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-16">initWithFrame:</a></h3>
-- (id) <b>initWithFrame:</b> (NSRect)frameRect;<br>
-
-          
- <hr>
-<h3><a name ="method-17">isEditable</a></h3>
-- (BOOL) <b>isEditable</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-18">isFieldEditor</a></h3>
-- (BOOL) <b>isFieldEditor</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-19">isHorizontallyResizable</a></h3>
-- (BOOL) <b>isHorizontallyResizable</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-20">isRichText</a></h3>
-- (BOOL) <b>isRichText</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-21">isRulerVisible</a></h3>
-- (BOOL) <b>isRulerVisible</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-22">isSelectable</a></h3>
-- (BOOL) <b>isSelectable</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-23">isVerticallyResizable</a></h3>
-- (BOOL) <b>isVerticallyResizable</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-24">maxSize</a></h3>
-- (NSSize) <b>maxSize</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-25">minSize</a></h3>
-- (NSSize) <b>minSize</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-26">paste:</a></h3>
-- (void) <b>paste:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-27">pasteFont:</a></h3>
-- (void) <b>pasteFont:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-28">pasteRuler:</a></h3>
-- (void) <b>pasteRuler:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-29">readRTFDFromFile:</a></h3>
-- (BOOL) <b>readRTFDFromFile:</b> (NSString*)path;<br>
-
-          
- <hr>
-<h3><a name ="method-30">replaceCharactersInRange:withRTF:</a></h3>
-- (void) <b>replaceCharactersInRange:</b> (NSRange)aRange <b>withRTF:</b> (NSData*)rtfData;<br>
-
-          
- <hr>
-<h3><a name ="method-31">replaceCharactersInRange:withRTFD:</a></h3>
-- (void) <b>replaceCharactersInRange:</b> (NSRange)aRange <b>withRTFD:</b> (NSData*)rtfdData;<br>
-
-          
- <hr>
-<h3><a name ="method-32">replaceCharactersInRange:withString:</a></h3>
-- (void) <b>replaceCharactersInRange:</b> (NSRange)aRange <b>withString:</b> (NSString*)aString;<br>
-
-          
- <hr>
-<h3><a name ="method-33">RTFDFromRange:</a></h3>
-- (NSData*) <b>RTFDFromRange:</b> (NSRange)aRange;<br>
-
-          
- <hr>
-<h3><a name ="method-34">scrollRangeToVisible:</a></h3>
-- (void) <b>scrollRangeToVisible:</b> (NSRange)aRange;<br>
-
-          
- <hr>
-<h3><a name ="method-35">selectAll:</a></h3>
-- (void) <b>selectAll:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-36">selectedRange</a></h3>
-- (NSRange) <b>selectedRange</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-37">setAlignment:</a></h3>
-- (void) <b>setAlignment:</b> (NSTextAlignment)mode;<br>
-
-          
- <hr>
-<h3><a name ="method-38">setBackgroundColor:</a></h3>
-- (void) <b>setBackgroundColor:</b> (NSColor*)aColor;<br>
-
-          
- <hr>
-<h3><a name ="method-39">setDelegate:</a></h3>
-- (void) <b>setDelegate:</b> (id)anObject;<br>
-
-          
- <hr>
-<h3><a name ="method-40">setDrawsBackground:</a></h3>
-- (void) <b>setDrawsBackground:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-41">setEditable:</a></h3>
-- (void) <b>setEditable:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-42">setFieldEditor:</a></h3>
-- (void) <b>setFieldEditor:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-43">setFont:</a></h3>
-- (void) <b>setFont:</b> (NSFont*)aFont;<br>
-
-          
- <hr>
-<h3><a name ="method-44">setFont:</a></h3>
-- (void) <b>setFont:</b> (NSFont*)aFont;<br>
-
-          
- <hr>
-<h3><a name ="method-45">setHorizontallyResizable:</a></h3>
-- (void) <b>setHorizontallyResizable:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-46">setImportsGraphics:</a></h3>
-- (void) <b>setImportsGraphics:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-47">setMaxSize:</a></h3>
-- (void) <b>setMaxSize:</b> (NSSize)aSize;<br>
-
-          
- <hr>
-<h3><a name ="method-48">setMinSize:</a></h3>
-- (void) <b>setMinSize:</b> (NSSize)aSize;<br>
-
-          
- <hr>
-<h3><a name ="method-49">setRichText:</a></h3>
-- (void) <b>setRichText:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-50">setSelectable:</a></h3>
-- (void) <b>setSelectable:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-51">setSelectedRange:</a></h3>
-- (void) <b>setSelectedRange:</b> (NSRange)aRange;<br>
-
-          
- <hr>
-<h3><a name ="method-52">setString:</a></h3>
-- (void) <b>setString:</b> (NSString*)aString;<br>
-
-          
- <hr>
-<h3><a name ="method-53">setTextColor:</a></h3>
-- (void) <b>setTextColor:</b> (NSColor*)aColor;<br>
-
-          
- <hr>
-<h3><a name ="method-54">setTextColor:</a></h3>
-- (void) <b>setTextColor:</b> (NSColor*)aColor;<br>
-
-          
- <hr>
-<h3><a name ="method-55">setUsesFontPanel:</a></h3>
-- (void) <b>setUsesFontPanel:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-56">setVerticallyResizable:</a></h3>
-- (void) <b>setVerticallyResizable:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-57">showGuessPanel:</a></h3>
-- (void) <b>showGuessPanel:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-58">sizeToFit</a></h3>
-- (void) <b>sizeToFit</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-59">string</a></h3>
-- (NSString*) <b>string</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-60">subscript:</a></h3>
-- (void) <b>subscript:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-61">superscript:</a></h3>
-- (void) <b>superscript:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-62">textColor</a></h3>
-- (NSColor*) <b>textColor</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-63">toggleRuler:</a></h3>
-- (void) <b>toggleRuler:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-64">underline:</a></h3>
-- (void) <b>underline:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-65">unscript:</a></h3>
-- (void) <b>unscript:</b> (id)sender;<br>
-
-          
- <hr>
-<h3><a name ="method-66">usesFontPanel</a></h3>
-- (BOOL) <b>usesFontPanel</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-67">writeRTFDToFile:atomically:</a></h3>
-- (BOOL) <b>writeRTFDToFile:</b> (NSString*)path <b>atomically:</b> (BOOL)atomicFlag;<br>
-
-          
- <hr>
-<h3><a name ="method-68">textDidBeginEditing:</a></h3>
-- (void) <b>textDidBeginEditing:</b> (NSNotification*)aNotification;<br>
-
-          
- <hr>
-<h3><a name ="method-69">textDidChange:</a></h3>
-- (void) <b>textDidChange:</b> (NSNotification*)aNotification;<br>
-
-          
- <hr>
-<h3><a name ="method-70">textDidEndEditing:</a></h3>
-- (void) <b>textDidEndEditing:</b> (NSNotification*)aNotification;<br>
-
-          
- <hr>
-<h3><a name ="method-71">textShouldBeginEditing:</a></h3>
-- (BOOL) <b>textShouldBeginEditing:</b> (NSText*)aTextObject;<br>
-
-          
- <hr>
-<h3><a name ="method-72">textShouldEndEditing:</a></h3>
-- (BOOL) <b>textShouldEndEditing:</b> (NSText*)aTextObject;<br>
-
-          
- <hr>
-</body>
-
- </html>
+<html>
+  <head>
+    <title>NSText</title>
+  </head>
+  <body>
+    <h1>NSText</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Scott Christley(<a href="mailto:scottc@net-community.com"><code>
+        scottc@net-community.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Felipe A. Rodriguez(<a href="mailto:far@ix.netcom.com"><code>
+        far@ix.netcom.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>(<a href="mailto:boehring@biomed.ruhr-uni-bochum.de"><code>
+        boehring@biomed.ruhr-uni-bochum.de
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Fred Kiefer(<a href="mailto:FredKiefer@gmx.de"><code>
+        FredKiefer@gmx.de
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Nicola Pero(<a href="mailto:n.pero@mi.flashnet.it"><code>
+        n.pero@mi.flashnet.it
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <blockquote>
+The RTFD text class    </blockquote>
+    <p>Copyright: (C) 1996 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the NSText class
+      </h1>
+    <h2><a name="class$NSText">NSText</a> : <a href="NSView.html#class$NSView">NSView</a></h2>
+    Declared: AppKit/NSText.h<br />
+    Conform: NSChangeSpelling<br />
+    Conform: NSIgnoreMisspelledWords<br />
+    <p>
+
+            </p>
+    <h3>RTFDFromRange:</a></h3>
+    - (NSData*) <b>RTFDFromRange:</b> (NSRange)aRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>RTFFromRange:</a></h3>
+    - (NSData*) <b>RTFFromRange:</b> (NSRange)aRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>alignCenter:</a></h3>
+    - (void) <b>alignCenter:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>alignLeft:</a></h3>
+    - (void) <b>alignLeft:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>alignRight:</a></h3>
+    - (void) <b>alignRight:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>alignment</a></h3>
+    - (NSTextAlignment) <b>alignment</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>backgroundColor</a></h3>
+    - (<a href="NSColor.html#class$NSColor">NSColor</a>*) <b>backgroundColor</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>changeFont:</a></h3>
+    - (void) <b>changeFont:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>changeSpelling:</a></h3>
+    - (void) <b>changeSpelling:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>checkSpelling:</a></h3>
+    - (void) <b>checkSpelling:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>copy:</a></h3>
+    - (void) <b>copy:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>copyFont:</a></h3>
+    - (void) <b>copyFont:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>copyRuler:</a></h3>
+    - (void) <b>copyRuler:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>cut:</a></h3>
+    - (void) <b>cut:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>delegate</a></h3>
+    - (id) <b>delegate</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>delete:</a></h3>
+    - (void) <b>delete:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>drawsBackground</a></h3>
+    - (BOOL) <b>drawsBackground</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>encodeWithCoder:</a></h3>
+    - (void) <b>encodeWithCoder:</b> (NSCoder*)aCoder;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>font</a></h3>
+    - (<a href="NSFont.html#class$NSFont">NSFont</a>*) <b>font</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>ignoreSpelling:</a></h3>
+    - (void) <b>ignoreSpelling:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>importsGraphics</a></h3>
+    - (BOOL) <b>importsGraphics</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>initWithCoder:</a></h3>
+    - (id) <b>initWithCoder:</b> (NSCoder*)aDecoder;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isEditable</a></h3>
+    - (BOOL) <b>isEditable</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isFieldEditor</a></h3>
+    - (BOOL) <b>isFieldEditor</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isHorizontallyResizable</a></h3>
+    - (BOOL) <b>isHorizontallyResizable</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isRichText</a></h3>
+    - (BOOL) <b>isRichText</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isRulerVisible</a></h3>
+    - (BOOL) <b>isRulerVisible</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isSelectable</a></h3>
+    - (BOOL) <b>isSelectable</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isVerticallyResizable</a></h3>
+    - (BOOL) <b>isVerticallyResizable</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>maxSize</a></h3>
+    - (NSSize) <b>maxSize</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>minSize</a></h3>
+    - (NSSize) <b>minSize</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>paste:</a></h3>
+    - (void) <b>paste:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>pasteFont:</a></h3>
+    - (void) <b>pasteFont:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>pasteRuler:</a></h3>
+    - (void) <b>pasteRuler:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>readRTFDFromFile:</a></h3>
+    - (BOOL) <b>readRTFDFromFile:</b> (NSString*)path;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>replaceCharactersInRange:withRTF:</a></h3>
+    - (void) <b>replaceCharactersInRange:</b> (NSRange)aRange<b> withRTF:</b> (NSData*)rtfData;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>replaceCharactersInRange:withRTFD:</a></h3>
+    - (void) <b>replaceCharactersInRange:</b> (NSRange)aRange<b> withRTFD:</b> (NSData*)rtfdData;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>replaceCharactersInRange:withString:</a></h3>
+    - (void) <b>replaceCharactersInRange:</b> (NSRange)aRange<b> withString:</b> (NSString*)aString;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>replaceRange:withRTF:</a></h3>
+    - (void) <b>replaceRange:</b> (NSRange)aRange<b> withRTF:</b> (NSData*)rtfData;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>replaceRange:withRTFD:</a></h3>
+    - (void) <b>replaceRange:</b> (NSRange)aRange<b> withRTFD:</b> (NSData*)rtfdData;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>replaceRange:withString:</a></h3>
+    - (void) <b>replaceRange:</b> (NSRange)aRange<b> withString:</b> (NSString*)aString;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>scrollRangeToVisible:</a></h3>
+    - (void) <b>scrollRangeToVisible:</b> (NSRange)aRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>selectAll:</a></h3>
+    - (void) <b>selectAll:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>selectedRange</a></h3>
+    - (NSRange) <b>selectedRange</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setAlignment:</a></h3>
+    - (void) <b>setAlignment:</b> (NSTextAlignment)mode;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setBackgroundColor:</a></h3>
+    - (void) <b>setBackgroundColor:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)color;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setColor:ofRange:</a></h3>
+    - (void) <b>setColor:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)color<b> ofRange:</b> (NSRange)aRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setDelegate:</a></h3>
+    - (void) <b>setDelegate:</b> (id)anObject;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setDrawsBackground:</a></h3>
+    - (void) <b>setDrawsBackground:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setEditable:</a></h3>
+    - (void) <b>setEditable:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setFieldEditor:</a></h3>
+    - (void) <b>setFieldEditor:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setFont:</a></h3>
+    - (void) <b>setFont:</b> (<a href="NSFont.html#class$NSFont">NSFont</a>*)font;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setFont:ofRange:</a></h3>
+    - (void) <b>setFont:</b> (<a href="NSFont.html#class$NSFont">NSFont</a>*)font<b> ofRange:</b> (NSRange)aRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setHorizontallyResizable:</a></h3>
+    - (void) <b>setHorizontallyResizable:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setImportsGraphics:</a></h3>
+    - (void) <b>setImportsGraphics:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setMaxSize:</a></h3>
+    - (void) <b>setMaxSize:</b> (NSSize)newMaxSize;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setMinSize:</a></h3>
+    - (void) <b>setMinSize:</b> (NSSize)newMinSize;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setRichText:</a></h3>
+    - (void) <b>setRichText:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setSelectable:</a></h3>
+    - (void) <b>setSelectable:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setSelectedRange:</a></h3>
+    - (void) <b>setSelectedRange:</b> (NSRange)range;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setString:</a></h3>
+    - (void) <b>setString:</b> (NSString*)aString;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setText:</a></h3>
+    - (void) <b>setText:</b> (NSString*)string;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setText:range:</a></h3>
+    - (void) <b>setText:</b> (NSString*)aString<b> range:</b> (NSRange)aRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setTextColor:</a></h3>
+    - (void) <b>setTextColor:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)color;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setTextColor:range:</a></h3>
+    - (void) <b>setTextColor:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)color<b> range:</b> (NSRange)aRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setUsesFontPanel:</a></h3>
+    - (void) <b>setUsesFontPanel:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setVerticallyResizable:</a></h3>
+    - (void) <b>setVerticallyResizable:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>showGuessPanel:</a></h3>
+    - (void) <b>showGuessPanel:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>sizeToFit</a></h3>
+    - (void) <b>sizeToFit</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>string</a></h3>
+    - (NSString*) <b>string</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>subscript:</a></h3>
+    - (void) <b>subscript:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>superscript:</a></h3>
+    - (void) <b>superscript:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>text</a></h3>
+    - (NSString*) <b>text</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textColor</a></h3>
+    - (<a href="NSColor.html#class$NSColor">NSColor</a>*) <b>textColor</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>toggleRuler:</a></h3>
+    - (void) <b>toggleRuler:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>underline:</a></h3>
+    - (void) <b>underline:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>unscript:</a></h3>
+    - (void) <b>unscript:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>usesFontPanel</a></h3>
+    - (BOOL) <b>usesFontPanel</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>writeRTFDToFile:atomically:</a></h3>
+    - (BOOL) <b>writeRTFDToFile:</b> (NSString*)path<b> atomically:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the
+        NSObject(NSTextDelegate) category
+      </h1>
+    <h2>NSObject(<a name="category$NSObject(NSTextDelegate)">NSTextDelegate</a>)</h2>
+    Declared: AppKit/NSText.h<br />
+    <p>
+
+            </p>
+    <h3>textDidBeginEditing:</a></h3>
+    - (void) <b>textDidBeginEditing:</b> (NSNotification*)notification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textDidChange:</a></h3>
+    - (void) <b>textDidChange:</b> (NSNotification*)notification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textDidEndEditing:</a></h3>
+    - (void) <b>textDidEndEditing:</b> (NSNotification*)notification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textShouldBeginEditing:</a></h3>
+    - (BOOL) <b>textShouldBeginEditing:</b> (<a href="#class$NSText">NSText</a>*)textObject;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textShouldEndEditing:</a></h3>
+    - (BOOL) <b>textShouldEndEditing:</b> (<a href="#class$NSText">NSText</a>*)textObject;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the
+        NSText(GNUstepExtensions) category
+      </h1>
+    <h2><a href="#class$NSText">NSText</a>(<a name="category$NSText(GNUstepExtensions)">GNUstepExtensions</a>)</h2>
+    Declared: AppKit/NSText.h<br />
+    <p>
+
+            </p>
+    <h3>replaceRange:withAttributedString:</a></h3>
+    - (void) <b>replaceRange:</b> (NSRange)aRange<b> withAttributedString:</b> (NSAttributedString*)attrString;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textLength</a></h3>
+    - (unsigned) <b>textLength</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+  </body>
+</html>

@@ -1,23 +1,28 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSPasteboard" prev="NSParagraphStyle.html" next="NSPopUpButton.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSPasteboard" next="NSPopUpButton" prev="NSParagraphStyle" up="NSActionCell">
   <head>
     <title>NSPasteboard</title>
     <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+      <email address="richard@brainstorm.co.uk">
+        richard@brainstorm.co.uk
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>
+      Implementation of class for communicating with the
+      pasteboard server.
+    </abstract>
+    <copy>1997,1999 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSPasteboard</heading>
+      <heading>
+        Software documentation for the NSPasteboard class
+      </heading>
       <class name="NSPasteboard" super="NSObject">
-        <declared>Gui/NSPasteboard.h</declared>
-        <conform>NSObject</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSPasteboard.h</declared>
+        <desc>
+        </desc>
         <method type="NSPasteboard*" factory="yes">
           <sel>generalPasteboard</sel>
           <desc>
@@ -39,13 +44,13 @@
         </method>
         <method type="NSPasteboard*" factory="yes">
           <sel>pasteboardByFilteringTypesInPasteboard:</sel>
-          <arg type="NSPasteboard*">pasteboard</arg>
+          <arg type="NSPasteboard*">pboard</arg>
           <desc>
           </desc>
         </method>
         <method type="NSPasteboard*" factory="yes">
           <sel>pasteboardWithName:</sel>
-          <arg type="NSString*">name</arg>
+          <arg type="NSString*">aName</arg>
           <desc>
           </desc>
         </method>
@@ -63,6 +68,8 @@
         <method type="int">
           <sel>addTypes:</sel>
           <arg type="NSArray*">newTypes</arg>
+          <sel>owner:</sel>
+          <arg type="id">newOwner</arg>
           <desc>
           </desc>
         </method>
@@ -86,6 +93,8 @@
         <method type="int">
           <sel>declareTypes:</sel>
           <arg type="NSArray*">newTypes</arg>
+          <sel>owner:</sel>
+          <arg type="id">newOwner</arg>
           <desc>
           </desc>
         </method>
@@ -109,7 +118,7 @@
           </desc>
         </method>
         <method type="NSFileWrapper*">
-          <sel>readFileWrapper;</sel>
+          <sel>readFileWrapper</sel>
           <desc>
           </desc>
         </method>
@@ -129,6 +138,8 @@
         <method type="BOOL">
           <sel>setPropertyList:</sel>
           <arg type="id">propertyList</arg>
+          <sel>forType:</sel>
+          <arg type="NSString*">dataType</arg>
           <desc>
           </desc>
         </method>
@@ -159,7 +170,37 @@
         </method>
         <method type="BOOL">
           <sel>writeFileWrapper:</sel>
-          <arg type="NSFileWrapper*">wrapper;</arg>
+          <arg type="NSFileWrapper*">wrapper</arg>
+          <desc>
+          </desc>
+        </method>
+      </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSObject(NSPasteboardOwner)
+        category
+      </heading>
+      <category name="NSPasteboardOwner" class="NSObject">
+        <declared>AppKit/NSPasteboard.h</declared>
+        <desc>
+        </desc>
+        <method type="void">
+          <sel>pasteboard:</sel>
+          <arg type="NSPasteboard*">sender</arg>
+          <sel>provideDataForType:</sel>
+          <arg type="NSString*">type</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>pasteboard:</sel>
+          <arg type="NSPasteboard*">sender</arg>
+          <sel>provideDataForType:</sel>
+          <arg type="NSString*">type</arg>
+          <sel>andVersion:</sel>
+          <arg type="int">ver</arg>
           <desc>
           </desc>
         </method>
@@ -169,15 +210,60 @@
           <desc>
           </desc>
         </method>
-        <method type="void">
-          <sel>pasteboard:</sel>
-          <arg type="NSPasteboard*">sender</arg>
-          <sel>provideDataForType:</sel>
+      </category>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSPasteboard(GNUstepExtensions)
+        category
+      </heading>
+      <category name="GNUstepExtensions" class="NSPasteboard">
+        <declared>AppKit/NSPasteboard.h</declared>
+        <desc>
+        </desc>
+        <method type="NSString*" factory="yes">
+          <sel>mimeTypeForPasteboardType:</sel>
           <arg type="NSString*">type</arg>
           <desc>
           </desc>
         </method>
-      </class>
+        <method type="NSString*" factory="yes">
+          <sel>pasteboardTypeForMimeType:</sel>
+          <arg type="NSString*">mimeType</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setChangeCount:</sel>
+          <arg type="int">count</arg>
+          <desc>
+          </desc>
+        </method>
+      </category>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the NSURL(NSPasteboard)
+        category
+      </heading>
+      <category name="NSPasteboard" class="NSURL">
+        <declared>AppKit/NSPasteboard.h</declared>
+        <desc>
+        </desc>
+        <method type="NSURL*" factory="yes">
+          <sel>URLFromPasteboard:</sel>
+          <arg type="NSPasteboard*">pasteBoard</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>writeToPasteboard:</sel>
+          <arg type="NSPasteboard*">pasteBoard</arg>
+          <desc>
+          </desc>
+        </method>
+      </category>
     </chapter>
   </body>
 </gsdoc>

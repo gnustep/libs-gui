@@ -1,83 +1,1758 @@
-<html><head>
- <title>NSGraphicsContext</title>
-</head>
-<body>
-<a href ="NSFormCell.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSHelpManager.html">[Next] </a>
-<h1>NSGraphicsContext</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSGraphicsContext</a></h2>
-<h2><a name ="NSGraphicsContext">NSGraphicsContext</a></h2>
-<p><b>Declared in: </b> Gui/NSGraphicsContext.h</p>
-<p><b>Inherits from: </b> NSObject</p>
-<p><b>Conforms to: </b> NSObject
-</p>
-<hr>
+<html>
+  <head>
+    <title>NSGraphicsContext</title>
+  </head>
+  <body>
+    <h1>NSGraphicsContext</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Richard Frith-Macdonald(<a href="mailto:richard@brainstorm.co.uk"><code>
+        richard@brainstorm.co.uk
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Adam Fedor(<a href="mailto:fedor@gnu.org"><code>
+        fedor@gnu.org
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <blockquote>
+GNUstep drawing context class.    </blockquote>
+    <p>Copyright: (C) 1998,1999 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the NSGraphicsContext class
+      </h1>
+    <h2><a name="class$NSGraphicsContext">NSGraphicsContext</a> : NSObject</h2>
+    Declared: AppKit/NSGraphicsContext.h<br />
+    <p>
 
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSGraphicsContext.html#method-0">+currentContext</a>
-<li ><a href ="NSGraphicsContext.html#method-1">+setCurrentContext:</a>
-<li ><a href ="NSGraphicsContext.html#method-2">-flush</a>
-<li ><a href ="NSGraphicsContext.html#method-3">-flushGraphics</a>
-<li ><a href ="NSGraphicsContext.html#method-4">-isDrawingToScreen</a>
-<li ><a href ="NSGraphicsContext.html#method-5">-restoreGraphicsState</a>
-<li ><a href ="NSGraphicsContext.html#method-6">-saveGraphicsState</a>
-<li ><a href ="NSGraphicsContext.html#method-7">-wait</a>
-</ul>
-<hr><h2>Class Methods </h2>
-<h3><a name ="method-0">currentContext</a></h3>
-+ (NSGraphicsContext*) <b>currentContext</b>;<br>
+            </p>
+    <h3>currentContext</a></h3>
+    + (<a href="#class$NSGraphicsContext">NSGraphicsContext</a>*) <b>currentContext</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-1">setCurrentContext:</a></h3>
-+ (void) <b>setCurrentContext:</b> (NSGraphicsContext*)context;<br>
+              </p>
+    <hr />
+    <h3>currentContextDrawingToScreen</a></h3>
+    + (BOOL) <b>currentContextDrawingToScreen</b>;<br />
+    <p>
 
-          
- <hr>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-2">flush</a></h3>
-- (void) <b>flush</b>;<br>
+              </p>
+    <hr />
+    <h3>graphicsContextWithAttributes:</a></h3>
+    + (<a href="#class$NSGraphicsContext">NSGraphicsContext</a>*) <b>graphicsContextWithAttributes:</b> (NSDictionary*)info;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-3">flushGraphics</a></h3>
-- (void) <b>flushGraphics</b>;<br>
+              </p>
+    <hr />
+    <h3>graphicsContextWithWindow:</a></h3>
+    + (<a href="#class$NSGraphicsContext">NSGraphicsContext</a>*) <b>graphicsContextWithWindow:</b> (<a href="NSWindow.html#class$NSWindow">NSWindow</a>*)aWindow;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-4">isDrawingToScreen</a></h3>
-- (BOOL) <b>isDrawingToScreen</b>;<br>
+              </p>
+    <hr />
+    <h3>restoreGraphicsState</a></h3>
+    + (void) <b>restoreGraphicsState</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-5">restoreGraphicsState</a></h3>
-- (void) <b>restoreGraphicsState</b>;<br>
+              </p>
+    <hr />
+    <h3>saveGraphicsState</a></h3>
+    + (void) <b>saveGraphicsState</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-6">saveGraphicsState</a></h3>
-- (void) <b>saveGraphicsState</b>;<br>
+              </p>
+    <hr />
+    <h3>setCurrentContext:</a></h3>
+    + (void) <b>setCurrentContext:</b> (<a href="#class$NSGraphicsContext">NSGraphicsContext</a>*)context;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-7">wait</a></h3>
-- (void) <b>wait</b>;<br>
+              </p>
+    <hr />
+    <h3>setGraphicsState:</a></h3>
+    + (void) <b>setGraphicsState:</b> (int)graphicsState;<br />
+    <p>
 
-          
- <hr>
-</body>
+              </p>
+    <hr />
+    <h3>waitAllContexts</a></h3>
+    + (void) <b>waitAllContexts</b>;<br />
+    <p>
 
- </html>
+              </p>
+    <hr />
+    <h3>attributes</a></h3>
+    - (NSDictionary*) <b>attributes</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>flush</a></h3>
+    - (void) <b>flush</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>flushGraphics</a></h3>
+    - (void) <b>flushGraphics</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>graphicsPort</a></h3>
+    - (void*) <b>graphicsPort</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>isDrawingToScreen</a></h3>
+    - (BOOL) <b>isDrawingToScreen</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>restoreGraphicsState</a></h3>
+    - (void) <b>restoreGraphicsState</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>saveGraphicsState</a></h3>
+    - (void) <b>saveGraphicsState</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>wait</a></h3>
+    - (void) <b>wait</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the
+        NSGraphicsContext(GNUstep) category
+      </h1>
+    <h2><a href="#class$NSGraphicsContext">NSGraphicsContext</a>(<a name="category$NSGraphicsContext(GNUstep)">GNUstep</a>)</h2>
+    Declared: AppKit/NSGraphicsContext.h<br />
+    <p>
+
+            </p>
+    <h3>defaultContextWithInfo:</a></h3>
+    + (<a href="#class$NSGraphicsContext">NSGraphicsContext</a>*) <b>defaultContextWithInfo:</b> (NSDictionary*)info;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setDefaultContextClass:</a></h3>
+    + (void) <b>setDefaultContextClass:</b> (Class)defaultContextClass;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>_addDragTypes:toWindow:</a></h3>
+    - (BOOL) <b>_addDragTypes:</b> (NSArray*)types<b> toWindow:</b> (<a href="NSWindow.html#class$NSWindow">NSWindow</a>*)win;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>_dragInfo</a></h3>
+    - (id) <b>_dragInfo</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>_dragTypesForWindow:</a></h3>
+    - (NSCountedSet*) <b>_dragTypesForWindow:</b> (<a href="NSWindow.html#class$NSWindow">NSWindow</a>*)win;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>_postExternalEvent:</a></h3>
+    - (void) <b>_postExternalEvent:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)event;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>_removeDragTypes:fromWindow:</a></h3>
+    - (BOOL) <b>_removeDragTypes:</b> (NSArray*)types<b> fromWindow:</b> (<a href="NSWindow.html#class$NSWindow">NSWindow</a>*)win;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>destroyContext</a></h3>
+    - (void) <b>destroyContext</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>focusView</a></h3>
+    - (<a href="NSView.html#class$NSView">NSView</a>*) <b>focusView</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>initWithContextInfo:</a></h3>
+    - (id) <b>initWithContextInfo:</b> (NSDictionary*)info;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>lockFocusView:inRect:</a></h3>
+    - (void) <b>lockFocusView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView<b> inRect:</b> (NSRect)rect;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>mutableData</a></h3>
+    - (NSMutableData*) <b>mutableData</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>resetUsedFonts</a></h3>
+    - (void) <b>resetUsedFonts</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>unlockFocusView:needsFlush:</a></h3>
+    - (void) <b>unlockFocusView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView<b> needsFlush:</b> (BOOL)flush;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>useFont:</a></h3>
+    - (void) <b>useFont:</b> (NSString*)fontName;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>usedFonts</a></h3>
+    - (NSSet*) <b>usedFonts</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the
+        NSGraphicsContext(NSGraphics)
+        category
+      </h1>
+    <h2><a href="#class$NSGraphicsContext">NSGraphicsContext</a>(<a name="category$NSGraphicsContext(NSGraphics)">NSGraphics</a>)</h2>
+    Declared: AppKit/NSGraphicsContext.h<br />
+    <p>
+
+            </p>
+    <h3>initializeBackend</a></h3>
+    + (void) <b>initializeBackend</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>GSAvailableDepthsForScreen:</a></h3>
+    - (const NSWindowDepth*) <b>GSAvailableDepthsForScreen:</b> (int)screen;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>GSWDefineAsUserObj</a></h3>
+    - (unsigned int) <b>GSWDefineAsUserObj</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>GSWSetViewIsFlipped:</a></h3>
+    - (void) <b>GSWSetViewIsFlipped:</b> (BOOL)flipped;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>GSWViewIsFlipped</a></h3>
+    - (BOOL) <b>GSWViewIsFlipped</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>GSWindowDepthForScreen:</a></h3>
+    - (NSWindowDepth) <b>GSWindowDepthForScreen:</b> (int)screen;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>NSBeep</a></h3>
+    - (void) <b>NSBeep</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>NSCopyBitmapFromGState:::</a></h3>
+    - (void) <b>NSCopyBitmapFromGState:</b> (int)srcGstate<b> :</b> (NSRect)srcRect<b> :</b> (NSRect)destRect;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>NSCopyBits:::</a></h3>
+    - (void) <b>NSCopyBits:</b> (int)srcGstate<b> :</b> (NSRect)srcRect<b> :</b> (NSPoint)destPoint;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>NSDottedFrameRect:</a></h3>
+    - (void) <b>NSDottedFrameRect:</b> (const NSRect)aRect;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>NSDrawBitmap:::::::::::</a></h3>
+    - (void) <b>NSDrawBitmap:</b> (NSRect)rect<b> :</b> (int)pixelsWide<b> :</b> (int)pixelsHigh<b> :</b> (int)bitsPerSample<b> :</b> (int)samplesPerPixel<b> :</b> (int)bitsPerPixel<b> :</b> (int)bytesPerRow<b> :</b> (BOOL)isPlanar<b> :</b> (BOOL)hasAlpha<b> :</b> (NSString*)colorSpaceName<b> :</b> (const unsigned char*const[5])data;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>NSEraseRect:</a></h3>
+    - (void) <b>NSEraseRect:</b> (NSRect)aRect;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>NSFrameRect:</a></h3>
+    - (void) <b>NSFrameRect:</b> (const NSRect)aRect;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>NSFrameRectWithWidth::</a></h3>
+    - (void) <b>NSFrameRectWithWidth:</b> (const NSRect)aRect<b> :</b> (float)frameWidth;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>NSHighlightRect:</a></h3>
+    - (void) <b>NSHighlightRect:</b> (NSRect)aRect;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>NSReadPixel:</a></h3>
+    - (<a href="NSColor.html#class$NSColor">NSColor</a>*) <b>NSReadPixel:</b> (NSPoint)location;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>NSRectClip:</a></h3>
+    - (void) <b>NSRectClip:</b> (NSRect)aRect;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>NSRectClipList::</a></h3>
+    - (void) <b>NSRectClipList:</b> (const NSRect*)rects<b> :</b> (int)count;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>NSRectFill:</a></h3>
+    - (void) <b>NSRectFill:</b> (NSRect)aRect;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>NSRectFillList::</a></h3>
+    - (void) <b>NSRectFillList:</b> (const NSRect*)rects<b> :</b> (int)count;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>NSRectFillListWithGrays:::</a></h3>
+    - (void) <b>NSRectFillListWithGrays:</b> (const NSRect*)rects<b> :</b> (const float*)grays<b> :</b> (int)count;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>NSRectFillUsingOperation::</a></h3>
+    - (void) <b>NSRectFillUsingOperation:</b> (NSRect)aRect<b> :</b> (NSCompositingOperation)op;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the NSGraphicsContext(Ops)
+        category
+      </h1>
+    <h2><a href="#class$NSGraphicsContext">NSGraphicsContext</a>(<a name="category$NSGraphicsContext(Ops)">Ops</a>)</h2>
+    Declared: AppKit/NSGraphicsContext.h<br />
+    <p>
+
+            </p>
+    <h3>DPSDiscardEventsMatchingMask:beforeEvent:</a></h3>
+    - (void) <b>DPSDiscardEventsMatchingMask:</b> (unsigned)mask<b> beforeEvent:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)limit;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSFontDirectory</a></h3>
+    - (void) <b>DPSFontDirectory</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSGetEventMatchingMask:beforeDate:inMode:dequeue:</a></h3>
+    - (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*) <b>DPSGetEventMatchingMask:</b> (unsigned)mask<b> beforeDate:</b> (NSDate*)limit<b> inMode:</b> (NSString*)mode<b> dequeue:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSISOLatin1Encoding</a></h3>
+    - (void) <b>DPSISOLatin1Encoding</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSPostEvent:atStart:</a></h3>
+    - (void) <b>DPSPostEvent:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)anEvent<b> atStart:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSPrintf::</a></h3>
+    - (void) <b>DPSPrintf:</b> (char*)fmt<b> :</b> (va_list)args;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSSharedFontDirectory</a></h3>
+    - (void) <b>DPSSharedFontDirectory</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSStandardEncoding</a></h3>
+    - (void) <b>DPSStandardEncoding</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSWriteData::</a></h3>
+    - (void) <b>DPSWriteData:</b> (char*)buf<b> :</b> (unsigned int)count;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSalphaimage</a></h3>
+    - (void) <b>DPSalphaimage</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSarc:::::</a></h3>
+    - (void) <b>DPSarc:</b> (float)x<b> :</b> (float)y<b> :</b> (float)r<b> :</b> (float)angle1<b> :</b> (float)angle2;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSarcn:::::</a></h3>
+    - (void) <b>DPSarcn:</b> (float)x<b> :</b> (float)y<b> :</b> (float)r<b> :</b> (float)angle1<b> :</b> (float)angle2;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSarct:::::</a></h3>
+    - (void) <b>DPSarct:</b> (float)x1<b> :</b> (float)y1<b> :</b> (float)x2<b> :</b> (float)y2<b> :</b> (float)r;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSarcto:::::::::</a></h3>
+    - (void) <b>DPSarcto:</b> (float)x1<b> :</b> (float)y1<b> :</b> (float)x2<b> :</b> (float)y2<b> :</b> (float)r<b> :</b> (float*)xt1<b> :</b> (float*)yt1<b> :</b> (float*)xt2<b> :</b> (float*)yt2;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSashow:::</a></h3>
+    - (void) <b>DPSashow:</b> (float)x<b> :</b> (float)y<b> :</b> (const char*)s;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSawidthshow::::::</a></h3>
+    - (void) <b>DPSawidthshow:</b> (float)cx<b> :</b> (float)cy<b> :</b> (int)c<b> :</b> (float)ax<b> :</b> (float)ay<b> :</b> (const char*)s;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScapturegstate:</a></h3>
+    - (void) <b>DPScapturegstate:</b> (int*)gst;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScapturemouse:</a></h3>
+    - (void) <b>DPScapturemouse:</b> (int)win;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScharpath::</a></h3>
+    - (void) <b>DPScharpath:</b> (const char*)s<b> :</b> (int)b;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSclear</a></h3>
+    - (void) <b>DPSclear</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScleartomark</a></h3>
+    - (void) <b>DPScleartomark</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSclip</a></h3>
+    - (void) <b>DPSclip</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSclippath</a></h3>
+    - (void) <b>DPSclippath</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSclosepath</a></h3>
+    - (void) <b>DPSclosepath</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScolorimage</a></h3>
+    - (void) <b>DPScolorimage</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScomposite::::::::</a></h3>
+    - (void) <b>DPScomposite:</b> (float)x<b> :</b> (float)y<b> :</b> (float)w<b> :</b> (float)h<b> :</b> (int)gstateNum<b> :</b> (float)dx<b> :</b> (float)dy<b> :</b> (int)op;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScompositerect:::::</a></h3>
+    - (void) <b>DPScompositerect:</b> (float)x<b> :</b> (float)y<b> :</b> (float)w<b> :</b> (float)h<b> :</b> (int)op;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSconcat:</a></h3>
+    - (void) <b>DPSconcat:</b> (const float*)m;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSconcatmatrix</a></h3>
+    - (void) <b>DPSconcatmatrix</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScopy:</a></h3>
+    - (void) <b>DPScopy:</b> (int)n;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScopypage</a></h3>
+    - (void) <b>DPScopypage</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScount:</a></h3>
+    - (void) <b>DPScount:</b> (int*)n;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScountscreenlist::</a></h3>
+    - (void) <b>DPScountscreenlist:</b> (int)context<b> :</b> (int*)count;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScounttomark:</a></h3>
+    - (void) <b>DPScounttomark:</b> (int*)n;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScountwindowlist::</a></h3>
+    - (void) <b>DPScountwindowlist:</b> (int)context<b> :</b> (int*)count;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentalpha:</a></h3>
+    - (void) <b>DPScurrentalpha:</b> (float*)alpha;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentcacheparams</a></h3>
+    - (void) <b>DPScurrentcacheparams</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentcmykcolor::::</a></h3>
+    - (void) <b>DPScurrentcmykcolor:</b> (float*)c<b> :</b> (float*)m<b> :</b> (float*)y<b> :</b> (float*)k;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentdash</a></h3>
+    - (void) <b>DPScurrentdash</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentdefaultdepthlimit:</a></h3>
+    - (void) <b>DPScurrentdefaultdepthlimit:</b> (int*)limit;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentdrawingfunction:</a></h3>
+    - (void) <b>DPScurrentdrawingfunction:</b> (int*)function;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentflat:</a></h3>
+    - (void) <b>DPScurrentflat:</b> (float*)flatness;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentfont</a></h3>
+    - (void) <b>DPScurrentfont</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentgcdrawable::::</a></h3>
+    - (void) <b>DPScurrentgcdrawable:</b> (void**)gc<b> :</b> (void**)draw<b> :</b> (int*)x<b> :</b> (int*)y;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentgcdrawablecolor:::::</a></h3>
+    - (void) <b>DPScurrentgcdrawablecolor:</b> (void**)gc<b> :</b> (void**)draw<b> :</b> (int*)x<b> :</b> (int*)y<b> :</b> (int*)colorInfo;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentgray:</a></h3>
+    - (void) <b>DPScurrentgray:</b> (float*)gray;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentgstate:</a></h3>
+    - (void) <b>DPScurrentgstate:</b> (int)gst;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrenthalftone</a></h3>
+    - (void) <b>DPScurrenthalftone</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrenthalftonephase::</a></h3>
+    - (void) <b>DPScurrenthalftonephase:</b> (float*)x<b> :</b> (float*)y;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrenthsbcolor:::</a></h3>
+    - (void) <b>DPScurrenthsbcolor:</b> (float*)h<b> :</b> (float*)s<b> :</b> (float*)b;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentlinecap:</a></h3>
+    - (void) <b>DPScurrentlinecap:</b> (int*)linecap;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentlinejoin:</a></h3>
+    - (void) <b>DPScurrentlinejoin:</b> (int*)linejoin;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentlinewidth:</a></h3>
+    - (void) <b>DPScurrentlinewidth:</b> (float*)width;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentmatrix</a></h3>
+    - (void) <b>DPScurrentmatrix</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentmiterlimit:</a></h3>
+    - (void) <b>DPScurrentmiterlimit:</b> (float*)limit;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentoffset::</a></h3>
+    - (void) <b>DPScurrentoffset:</b> (int*)x<b> :</b> (int*)y;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentowner::</a></h3>
+    - (void) <b>DPScurrentowner:</b> (int)win<b> :</b> (int*)owner;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentpoint::</a></h3>
+    - (void) <b>DPScurrentpoint:</b> (float*)x<b> :</b> (float*)y;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentrgbcolor:::</a></h3>
+    - (void) <b>DPScurrentrgbcolor:</b> (float*)r<b> :</b> (float*)g<b> :</b> (float*)b;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentscreen</a></h3>
+    - (void) <b>DPScurrentscreen</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentserverdevice:</a></h3>
+    - (void) <b>DPScurrentserverdevice:</b> (void**)serverptr;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentstrokeadjust:</a></h3>
+    - (void) <b>DPScurrentstrokeadjust:</b> (int*)b;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrenttransfer</a></h3>
+    - (void) <b>DPScurrenttransfer</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentwindow:</a></h3>
+    - (void) <b>DPScurrentwindow:</b> (int*)num;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentwindowalpha::</a></h3>
+    - (void) <b>DPScurrentwindowalpha:</b> (int)win<b> :</b> (int*)alpha;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentwindowbounds:::::</a></h3>
+    - (void) <b>DPScurrentwindowbounds:</b> (int)num<b> :</b> (float*)x<b> :</b> (float*)y<b> :</b> (float*)w<b> :</b> (float*)h;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentwindowdepth::</a></h3>
+    - (void) <b>DPScurrentwindowdepth:</b> (int)win<b> :</b> (int*)depth;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentwindowdepthlimit::</a></h3>
+    - (void) <b>DPScurrentwindowdepthlimit:</b> (int)win<b> :</b> (int*)limit;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentwindowdevice::</a></h3>
+    - (void) <b>DPScurrentwindowdevice:</b> (int)win<b> :</b> (void**)windowptr;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurrentwindowlevel::</a></h3>
+    - (void) <b>DPScurrentwindowlevel:</b> (int)win<b> :</b> (int*)level;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPScurveto::::::</a></h3>
+    - (void) <b>DPScurveto:</b> (float)x1<b> :</b> (float)y1<b> :</b> (float)x2<b> :</b> (float)y2<b> :</b> (float)x3<b> :</b> (float)y3;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSdefaultmatrix</a></h3>
+    - (void) <b>DPSdefaultmatrix</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSdefinefont</a></h3>
+    - (void) <b>DPSdefinefont</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSdefineuserobject</a></h3>
+    - (void) <b>DPSdefineuserobject</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSdissolve::::::::</a></h3>
+    - (void) <b>DPSdissolve:</b> (float)x<b> :</b> (float)y<b> :</b> (float)w<b> :</b> (float)h<b> :</b> (int)gstateNum<b> :</b> (float)dx<b> :</b> (float)dy<b> :</b> (float)delta;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSdocedited::</a></h3>
+    - (void) <b>DPSdocedited:</b> (int)edited<b> :</b> (int)window;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSdtransform::::</a></h3>
+    - (void) <b>DPSdtransform:</b> (float)x1<b> :</b> (float)y1<b> :</b> (float*)x2<b> :</b> (float*)y2;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSdup</a></h3>
+    - (void) <b>DPSdup</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSeoclip</a></h3>
+    - (void) <b>DPSeoclip</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSeofill</a></h3>
+    - (void) <b>DPSeofill</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSeoviewclip</a></h3>
+    - (void) <b>DPSeoviewclip</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSerasepage</a></h3>
+    - (void) <b>DPSerasepage</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSexch</a></h3>
+    - (void) <b>DPSexch</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSexecstack</a></h3>
+    - (void) <b>DPSexecstack</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSexecuserobject:</a></h3>
+    - (void) <b>DPSexecuserobject:</b> (int)index;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSfill</a></h3>
+    - (void) <b>DPSfill</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSfindfont:</a></h3>
+    - (void) <b>DPSfindfont:</b> (const char*)name;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSfindwindow::::::::</a></h3>
+    - (void) <b>DPSfindwindow:</b> (float)x<b> :</b> (float)y<b> :</b> (int)op<b> :</b> (int)otherWin<b> :</b> (float*)lx<b> :</b> (float*)ly<b> :</b> (int*)winFound<b> :</b> (int*)didFind;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSflattenpath</a></h3>
+    - (void) <b>DPSflattenpath</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSflush</a></h3>
+    - (void) <b>DPSflush</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSflushwindowrect:::::</a></h3>
+    - (void) <b>DPSflushwindowrect:</b> (float)x<b> :</b> (float)y<b> :</b> (float)w<b> :</b> (float)h<b> :</b> (int)win;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSfrontwindow:</a></h3>
+    - (void) <b>DPSfrontwindow:</b> (int*)num;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSget</a></h3>
+    - (void) <b>DPSget</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSgetboolean:</a></h3>
+    - (void) <b>DPSgetboolean:</b> (int*)it;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSgetchararray::</a></h3>
+    - (void) <b>DPSgetchararray:</b> (int)size<b> :</b> (char*)s;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSgetfloat:</a></h3>
+    - (void) <b>DPSgetfloat:</b> (float*)it;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSgetfloatarray::</a></h3>
+    - (void) <b>DPSgetfloatarray:</b> (int)size<b> :</b> (float*)a;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSgetint:</a></h3>
+    - (void) <b>DPSgetint:</b> (int*)it;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSgetintarray::</a></h3>
+    - (void) <b>DPSgetintarray:</b> (int)size<b> :</b> (int*)a;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSgetstring:</a></h3>
+    - (void) <b>DPSgetstring:</b> (char*)s;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSgrestore</a></h3>
+    - (void) <b>DPSgrestore</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSgrestoreall</a></h3>
+    - (void) <b>DPSgrestoreall</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSgsave</a></h3>
+    - (void) <b>DPSgsave</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSgstate</a></h3>
+    - (void) <b>DPSgstate</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPShidecursor</a></h3>
+    - (void) <b>DPShidecursor</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSidentmatrix</a></h3>
+    - (void) <b>DPSidentmatrix</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSidtransform::::</a></h3>
+    - (void) <b>DPSidtransform:</b> (float)x1<b> :</b> (float)y1<b> :</b> (float*)x2<b> :</b> (float*)y2;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSimage</a></h3>
+    - (void) <b>DPSimage</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSimagecursor:::::::</a></h3>
+    - (void) <b>DPSimagecursor:</b> (float)hotx<b> :</b> (float)hoty<b> :</b> (float)w<b> :</b> (float)h<b> :</b> (int)colors<b> :</b> (const char*)image<b> :</b> (void**)cid;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSimagemask</a></h3>
+    - (void) <b>DPSimagemask</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSindex:</a></h3>
+    - (void) <b>DPSindex:</b> (int)i;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSinitclip</a></h3>
+    - (void) <b>DPSinitclip</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSinitgraphics</a></h3>
+    - (void) <b>DPSinitgraphics</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSinitmatrix</a></h3>
+    - (void) <b>DPSinitmatrix</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSinitviewclip</a></h3>
+    - (void) <b>DPSinitviewclip</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSinvertmatrix</a></h3>
+    - (void) <b>DPSinvertmatrix</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSitransform::::</a></h3>
+    - (void) <b>DPSitransform:</b> (float)x1<b> :</b> (float)y1<b> :</b> (float*)x2<b> :</b> (float*)y2;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSkshow:</a></h3>
+    - (void) <b>DPSkshow:</b> (const char*)s;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSlineto::</a></h3>
+    - (void) <b>DPSlineto:</b> (float)x<b> :</b> (float)y;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSmakefont</a></h3>
+    - (void) <b>DPSmakefont</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSmark</a></h3>
+    - (void) <b>DPSmark</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSmatrix</a></h3>
+    - (void) <b>DPSmatrix</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSminiwindow:</a></h3>
+    - (void) <b>DPSminiwindow:</b> (int)num;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSmouselocation::</a></h3>
+    - (void) <b>DPSmouselocation:</b> (float*)x<b> :</b> (float*)y;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSmoveto::</a></h3>
+    - (void) <b>DPSmoveto:</b> (float)x<b> :</b> (float)y;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSmovewindow:::</a></h3>
+    - (void) <b>DPSmovewindow:</b> (float)x<b> :</b> (float)y<b> :</b> (int)num;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSnewpath</a></h3>
+    - (void) <b>DPSnewpath</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSnull</a></h3>
+    - (void) <b>DPSnull</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSorderwindow:::</a></h3>
+    - (void) <b>DPSorderwindow:</b> (int)op<b> :</b> (int)otherWin<b> :</b> (int)winNum;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSpathbbox::::</a></h3>
+    - (void) <b>DPSpathbbox:</b> (float*)llx<b> :</b> (float*)lly<b> :</b> (float*)urx<b> :</b> (float*)ury;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSpathforall</a></h3>
+    - (void) <b>DPSpathforall</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSplacewindow:::::</a></h3>
+    - (void) <b>DPSplacewindow:</b> (float)x<b> :</b> (float)y<b> :</b> (float)w<b> :</b> (float)h<b> :</b> (int)win;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSpop</a></h3>
+    - (void) <b>DPSpop</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSput</a></h3>
+    - (void) <b>DPSput</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSrcurveto::::::</a></h3>
+    - (void) <b>DPSrcurveto:</b> (float)x1<b> :</b> (float)y1<b> :</b> (float)x2<b> :</b> (float)y2<b> :</b> (float)x3<b> :</b> (float)y3;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSreadimage</a></h3>
+    - (void) <b>DPSreadimage</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSrectclip::::</a></h3>
+    - (void) <b>DPSrectclip:</b> (float)x<b> :</b> (float)y<b> :</b> (float)w<b> :</b> (float)h;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSrectfill::::</a></h3>
+    - (void) <b>DPSrectfill:</b> (float)x<b> :</b> (float)y<b> :</b> (float)w<b> :</b> (float)h;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSrectstroke::::</a></h3>
+    - (void) <b>DPSrectstroke:</b> (float)x<b> :</b> (float)y<b> :</b> (float)w<b> :</b> (float)h;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSrectviewclip::::</a></h3>
+    - (void) <b>DPSrectviewclip:</b> (float)x<b> :</b> (float)y<b> :</b> (float)w<b> :</b> (float)h;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSreleasemouse</a></h3>
+    - (void) <b>DPSreleasemouse</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSrestore</a></h3>
+    - (void) <b>DPSrestore</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSreversepath</a></h3>
+    - (void) <b>DPSreversepath</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSrlineto::</a></h3>
+    - (void) <b>DPSrlineto:</b> (float)x<b> :</b> (float)y;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSrmoveto::</a></h3>
+    - (void) <b>DPSrmoveto:</b> (float)x<b> :</b> (float)y;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSroll::</a></h3>
+    - (void) <b>DPSroll:</b> (int)n<b> :</b> (int)j;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSrotate:</a></h3>
+    - (void) <b>DPSrotate:</b> (float)angle;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsave</a></h3>
+    - (void) <b>DPSsave</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSscale::</a></h3>
+    - (void) <b>DPSscale:</b> (float)x<b> :</b> (float)y;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSscalefont:</a></h3>
+    - (void) <b>DPSscalefont:</b> (float)size;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSscreenlist:::</a></h3>
+    - (void) <b>DPSscreenlist:</b> (int)context<b> :</b> (int)count<b> :</b> (int*)windows;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSselectfont::</a></h3>
+    - (void) <b>DPSselectfont:</b> (const char*)name<b> :</b> (float)scale;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsendboolean:</a></h3>
+    - (void) <b>DPSsendboolean:</b> (int)it;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsendchararray::</a></h3>
+    - (void) <b>DPSsendchararray:</b> (const char*)s<b> :</b> (int)size;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsendfloat:</a></h3>
+    - (void) <b>DPSsendfloat:</b> (float)it;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsendfloatarray::</a></h3>
+    - (void) <b>DPSsendfloatarray:</b> (const float*)a<b> :</b> (int)size;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsendint:</a></h3>
+    - (void) <b>DPSsendint:</b> (int)it;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsendintarray::</a></h3>
+    - (void) <b>DPSsendintarray:</b> (const int*)a<b> :</b> (int)size;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsendstring:</a></h3>
+    - (void) <b>DPSsendstring:</b> (const char*)s;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetalpha:</a></h3>
+    - (void) <b>DPSsetalpha:</b> (float)a;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetautofill::</a></h3>
+    - (void) <b>DPSsetautofill:</b> (int)truth<b> :</b> (int)num;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetbbox::::</a></h3>
+    - (void) <b>DPSsetbbox:</b> (float)llx<b> :</b> (float)lly<b> :</b> (float)urx<b> :</b> (float)ury;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetcmykcolor::::</a></h3>
+    - (void) <b>DPSsetcmykcolor:</b> (float)c<b> :</b> (float)m<b> :</b> (float)y<b> :</b> (float)k;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetcursorcolor:::::::</a></h3>
+    - (void) <b>DPSsetcursorcolor:</b> (float)fr<b> :</b> (float)fg<b> :</b> (float)fb<b> :</b> (float)br<b> :</b> (float)bg<b> :</b> (float)bb<b> :</b> (void*)cid;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetdash:::</a></h3>
+    - (void) <b>DPSsetdash:</b> (const float*)pat<b> :</b> (int)size<b> :</b> (float)offset;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetdefaultdepthlimit:</a></h3>
+    - (void) <b>DPSsetdefaultdepthlimit:</b> (int)limit;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetdrawingfunction:</a></h3>
+    - (void) <b>DPSsetdrawingfunction:</b> (int)function;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetexposurecolor</a></h3>
+    - (void) <b>DPSsetexposurecolor</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetflat:</a></h3>
+    - (void) <b>DPSsetflat:</b> (float)flatness;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetfont:</a></h3>
+    - (void) <b>DPSsetfont:</b> (int)f;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetgcdrawable::::</a></h3>
+    - (void) <b>DPSsetgcdrawable:</b> (void*)gc<b> :</b> (void*)draw<b> :</b> (int)x<b> :</b> (int)y;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetgcdrawablecolor:::::</a></h3>
+    - (void) <b>DPSsetgcdrawablecolor:</b> (void*)gc<b> :</b> (void*)draw<b> :</b> (int)x<b> :</b> (int)y<b> :</b> (const int*)colorInfo;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetgray:</a></h3>
+    - (void) <b>DPSsetgray:</b> (float)gray;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetgstate:</a></h3>
+    - (void) <b>DPSsetgstate:</b> (int)gst;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsethalftone</a></h3>
+    - (void) <b>DPSsethalftone</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsethalftonephase::</a></h3>
+    - (void) <b>DPSsethalftonephase:</b> (float)x<b> :</b> (float)y;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsethsbcolor:::</a></h3>
+    - (void) <b>DPSsethsbcolor:</b> (float)h<b> :</b> (float)s<b> :</b> (float)b;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetinputfocus:</a></h3>
+    - (void) <b>DPSsetinputfocus:</b> (int)win;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetinputstate::</a></h3>
+    - (void) <b>DPSsetinputstate:</b> (int)window<b> :</b> (int)state;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetlinecap:</a></h3>
+    - (void) <b>DPSsetlinecap:</b> (int)linecap;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetlinejoin:</a></h3>
+    - (void) <b>DPSsetlinejoin:</b> (int)linejoin;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetlinewidth:</a></h3>
+    - (void) <b>DPSsetlinewidth:</b> (float)width;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetmatrix</a></h3>
+    - (void) <b>DPSsetmatrix</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetmaxsize:::</a></h3>
+    - (void) <b>DPSsetmaxsize:</b> (float)width<b> :</b> (float)height<b> :</b> (int)win;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetminsize:::</a></h3>
+    - (void) <b>DPSsetminsize:</b> (float)width<b> :</b> (float)height<b> :</b> (int)win;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetmiterlimit:</a></h3>
+    - (void) <b>DPSsetmiterlimit:</b> (float)limit;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetoffset::</a></h3>
+    - (void) <b>DPSsetoffset:</b> (short int)x<b> :</b> (short int)y;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetowner::</a></h3>
+    - (void) <b>DPSsetowner:</b> (int)owner<b> :</b> (int)win;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetresizeincrements:::</a></h3>
+    - (void) <b>DPSsetresizeincrements:</b> (float)width<b> :</b> (float)height<b> :</b> (int)win;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetrgbactual::::</a></h3>
+    - (void) <b>DPSsetrgbactual:</b> (double)r<b> :</b> (double)g<b> :</b> (double)b<b> :</b> (int*)success;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetrgbcolor:::</a></h3>
+    - (void) <b>DPSsetrgbcolor:</b> (float)r<b> :</b> (float)g<b> :</b> (float)b;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetscreen</a></h3>
+    - (void) <b>DPSsetscreen</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetsendexposed::</a></h3>
+    - (void) <b>DPSsetsendexposed:</b> (int)truth<b> :</b> (int)num;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetstrokeadjust:</a></h3>
+    - (void) <b>DPSsetstrokeadjust:</b> (int)b;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsettransfer</a></h3>
+    - (void) <b>DPSsettransfer</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetwindowdepthlimit::</a></h3>
+    - (void) <b>DPSsetwindowdepthlimit:</b> (int)limit<b> :</b> (int)win;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetwindowlevel::</a></h3>
+    - (void) <b>DPSsetwindowlevel:</b> (int)level<b> :</b> (int)win;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSsetwindowtype::</a></h3>
+    - (void) <b>DPSsetwindowtype:</b> (int)type<b> :</b> (int)win;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSshow:</a></h3>
+    - (void) <b>DPSshow:</b> (const char*)s;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSshowcursor</a></h3>
+    - (void) <b>DPSshowcursor</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSshowpage</a></h3>
+    - (void) <b>DPSshowpage</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSstandardcursor::</a></h3>
+    - (void) <b>DPSstandardcursor:</b> (int)style<b> :</b> (void**)cid;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSstroke</a></h3>
+    - (void) <b>DPSstroke</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSstrokepath</a></h3>
+    - (void) <b>DPSstrokepath</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSstyleoffsets:::::</a></h3>
+    - (void) <b>DPSstyleoffsets:</b> (float*)l<b> :</b> (float*)r<b> :</b> (float*)t<b> :</b> (float*)b<b> :</b> (int)style;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSstylewindow::</a></h3>
+    - (void) <b>DPSstylewindow:</b> (int)style<b> :</b> (int)num;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPStermwindow:</a></h3>
+    - (void) <b>DPStermwindow:</b> (int)num;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPStitlewindow::</a></h3>
+    - (void) <b>DPStitlewindow:</b> (const char*)window_title<b> :</b> (int)num;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPStransform::::</a></h3>
+    - (void) <b>DPStransform:</b> (float)x1<b> :</b> (float)y1<b> :</b> (float*)x2<b> :</b> (float*)y2;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPStranslate::</a></h3>
+    - (void) <b>DPStranslate:</b> (float)x<b> :</b> (float)y;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSueofill::::</a></h3>
+    - (void) <b>DPSueofill:</b> (const char*)nums<b> :</b> (int)n<b> :</b> (const char*)op<b> :</b> (int)l;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSufill::::</a></h3>
+    - (void) <b>DPSufill:</b> (const char*)nums<b> :</b> (int)n<b> :</b> (const char*)ops<b> :</b> (int)l;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSundefinefont:</a></h3>
+    - (void) <b>DPSundefinefont:</b> (const char*)name;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSundefineuserobject:</a></h3>
+    - (void) <b>DPSundefineuserobject:</b> (int)index;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSupdatewindow:</a></h3>
+    - (void) <b>DPSupdatewindow:</b> (int)win;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSustroke::::</a></h3>
+    - (void) <b>DPSustroke:</b> (const char*)nums<b> :</b> (int)n<b> :</b> (const char*)ops<b> :</b> (int)l;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSustrokepath::::</a></h3>
+    - (void) <b>DPSustrokepath:</b> (const char*)nums<b> :</b> (int)n<b> :</b> (const char*)ops<b> :</b> (int)l;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSviewclip</a></h3>
+    - (void) <b>DPSviewclip</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSviewclippath</a></h3>
+    - (void) <b>DPSviewclippath</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSwidthshow::::</a></h3>
+    - (void) <b>DPSwidthshow:</b> (float)x<b> :</b> (float)y<b> :</b> (int)c<b> :</b> (const char*)s;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSwindow::::::</a></h3>
+    - (void) <b>DPSwindow:</b> (float)x<b> :</b> (float)y<b> :</b> (float)w<b> :</b> (float)h<b> :</b> (int)type<b> :</b> (int*)num;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSwindowdevice:</a></h3>
+    - (void) <b>DPSwindowdevice:</b> (int)num;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSwindowdeviceround:</a></h3>
+    - (void) <b>DPSwindowdeviceround:</b> (int)num;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSwindowlist:::</a></h3>
+    - (void) <b>DPSwindowlist:</b> (int)context<b> :</b> (int)count<b> :</b> (int*)windows;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSxshow:::</a></h3>
+    - (void) <b>DPSxshow:</b> (const char*)s<b> :</b> (const float*)numarray<b> :</b> (int)size;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSxyshow:::</a></h3>
+    - (void) <b>DPSxyshow:</b> (const char*)s<b> :</b> (const float*)numarray<b> :</b> (int)size;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>DPSyshow:::</a></h3>
+    - (void) <b>DPSyshow:</b> (const char*)s<b> :</b> (const float*)numarray<b> :</b> (int)size;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setFont:</a></h3>
+    - (void) <b>setFont:</b> (<a href="NSFont.html#class$NSFont">NSFont</a>*)font;<br />
+    <p>
+
+              </p>
+    <hr />
+  </body>
+</html>

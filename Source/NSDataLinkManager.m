@@ -1,11 +1,8 @@
-/* 
-   NSDataLinkManager.m
-
-   Description...
+/** <title>NSDataLinkManager</title>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
+   Author: Scott Christley <scottc@net-community.com>
    Date: 1996
    
    This file is part of the GNUstep GUI Library.

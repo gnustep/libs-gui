@@ -1,7 +1,6 @@
-/* 
-   NSFormCell.m
+/** <title>NSFormCell</title>
 
-   The cell class for the NSForm control
+   <abstract>The cell class for the NSForm control</abstract>
 
    Copyright (C) 1996, 1999 Free Software Foundation, Inc.
 

@@ -1,20 +1,18 @@
-/*
-   NSPanel.m
+/** <title>NSPanel</title>
 
-   Panel window class and related functions
+   <abstract>Panel window class and related functions</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   NSPanel implementation
-   Author:  Scott Christley <scottc@net-community.com>
+   Author: Scott Christley <scottc@net-community.com>
    Date: 1996
 
    GSAlertPanel and alert panel functions implementation
-   Author:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+   Author: Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: 1998
 
    GSAlertPanel and alert panel functions cleanup and improvements (scroll view)
-   Author: Pascal J. Bourguignon <pjb@imaginet.fr>
+   Author: Pascal J. Bourguignon <pjb@imaginet.fr>>
    Date: 2000-03-08
 
    This file is part of the GNUstep GUI Library.

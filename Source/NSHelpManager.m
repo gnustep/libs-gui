@@ -1,8 +1,7 @@
-/* 
-   NSHelpManager.m
+/** <title>NSHelpManager</title>
 
-   NSHelpManager is the class responsible for managing context help
-   for the application, and its mapping to the graphic elements.
+   <abstract>NSHelpManager is the class responsible for managing context help
+   for the application, and its mapping to the graphic elements.</abstract>
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 

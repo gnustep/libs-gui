@@ -1,5 +1,4 @@
-/* 
-   NSMenu.m
+/** <title>NSMenu</title>
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 
@@ -7,9 +6,9 @@
    Date: Aug 2001
    Author: David Lazaro Saz <khelekir@encomix.es>
    Date: Oct 1999
-   Author:  Michael Hanni <mhanni@sprintmail.com>
+   Author: Michael Hanni <mhanni@sprintmail.com>
    Date: 1999
-   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Author: Felipe A. Rodriguez <far@ix.netcom.com>
    Date: July 1998
    and: 
    Author: Ovidiu Predescu <ovidiu@net-community.com>

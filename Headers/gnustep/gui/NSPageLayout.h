@@ -2,9 +2,9 @@
 
    <abstract>Standard panel for querying user about page layout.</abstract>
 
-   Copyright <copy>(C) 2001 Free Software Foundation, Inc.</copy>
+   Copyright (C) 2001 Free Software Foundation, Inc.
 
-   Written By: <author name="Adam Fedor"><email>fedor@gnu.org</email></author>
+   Written By: Adam Fedor <fedor@gnu.org>
    Date: Oct 2001
    
    This file is part of the GNUstep GUI Library.

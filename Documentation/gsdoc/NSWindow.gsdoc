@@ -1,58 +1,75 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSWindow" prev="NSView.html" next="NSWindowController.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSWindow" next="NSWindowController" prev="NSView" up="NSActionCell">
   <head>
     <title>NSWindow</title>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
+    </author>
+    <author name="Felipe A. Rodriguez">
+      <email address="far@ix.netcom.com">
+        far@ix.netcom.com
+      </email>
+    </author>
     <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+      <email address="richard@brainstorm.co.uk">
+        richard@brainstorm.co.uk
+      </email>
     </author>
-    <author name="James Dessart">
-      <email address="skwirl@cam.org"/>
-    </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>The window class</abstract>
+    <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
       <heading>NSWindow</heading>
+      <p>
+        Instances of the NSWindow class handle on-screen
+        windows, their associated NSViews, and events generate
+        by the user. An NSWindow's size is defined by its frame
+        rectangle, which encompasses its entire structure,
+        and its content rectangle, which includes only the content.
+      </p>
+      <p>
+        Every NSWindow has a content view, the NSView which forms
+        the root of the window's view hierarchy. This view can be
+        set using the <code>setContentView:</code> method, and
+        accessed through the <code>contentView</code> method.
+        <code>setContentView:</code> replaces the default
+        content view created by NSWindow.
+      </p>
+      <p>
+        Other views may be added to the window by using the
+        content view's <code>addSubview:</code> method. These
+        subviews can also have subviews added, forming a tree
+        structure, the view hierarchy. When an NSWindow must
+        display itself, it causes this hierarchy to draw
+        itself. Leaf nodes in the view hierarchy are drawn
+        last, causing them to potentially obscure views further
+        up in the hierarchy.
+      </p>
+      <p>
+        A delegate can be specified for an NSWindow, which will
+        receive notifications of events pertaining to the
+        window. The delegate is set using
+        <code>setDelegate:</code>, and can be retrieved using
+        <code>delegate</code>. The delegate can restrain
+        resizing by implementing the
+        <code>windowWillResize: toSize:</code> method, or
+        control the closing of the window by implementing
+        <code>windowShouldClose:</code>.
+      </p>
       <class name="NSWindow" super="NSResponder">
-        <declared>Gui/NSWindow.h</declared>
+        <declared>AppKit/NSWindow.h</declared>
         <conform>NSCoding</conform>
-          <desc>
-          <p>
-          Instances of the NSWindow class handle on-screen windows, their associated
-          NSViews, and events generate by the user.  An NSWindow's size is defined by its
-          frame rectangle, which encompasses its entire structure, and its content rectangle,
-          which includes only the content.
-          </p>
-
-          <p>
-          Every NSWindow has a content view, the NSView which forms the root of the
-          window's view hierarchy.  This view can be set using the <code>setContentView:</code>
-          method, and accessed through the <code>contentView</code> method.  
-          <code>setContentView:</code> replaces the default content view created by NSWindow.
-          </p>
-
-          <p>
-          Other views may be added to the window by using the content view's 
-          <code>addSubview:</code> method.  These subviews can also have subviews added, forming
-          a tree structure, the view hierarchy.  When an NSWindow must display itself, it causes
-          this hierarchy to draw itself.  Leaf nodes in the view hierarchy are drawn last,
-          causing them to potentially obscure views further up in the hierarchy.
-          </p>
-
-          <p>
-          A delegate can be specified for an NSWindow, which will receive notifications of
-          events pertaining to the window.  The delegate is set using <code>setDelegate:</code>,
-          and can be retrieved using <code>delegate</code>.  The delegate can restrain resizing
-          by implementing the <code>windowWillResize: toSize:</code> method, or control the closing
-          of the window by implementing <code>windowShouldClose:</code>.
-          </p>
-          </desc>
+        <desc>
+        </desc>
         <method type="NSRect" factory="yes">
           <sel>contentRectForFrameRect:</sel>
-          <arg type="NSRect">frameRect</arg>
+          <arg type="NSRect">aRect</arg>
+          <sel>styleMask:</sel>
+          <arg type="unsigned int">aStyle</arg>
           <desc>
           </desc>
         </method>
@@ -63,7 +80,9 @@
         </method>
         <method type="NSRect" factory="yes">
           <sel>frameRectForContentRect:</sel>
-          <arg type="NSRect">contentRect</arg>
+          <arg type="NSRect">aRect</arg>
+          <sel>styleMask:</sel>
+          <arg type="unsigned int">aStyle</arg>
           <desc>
           </desc>
         </method>
@@ -73,7 +92,7 @@
           <desc>
           </desc>
         </method>
-        <method type="float" factory="yes">
+        <method type="NSRect" factory="yes">
           <sel>minFrameWidthWithTitle:</sel>
           <arg type="NSString*">aTitle</arg>
           <sel>styleMask:</sel>
@@ -89,6 +108,17 @@
         </method>
         <method type="BOOL">
           <sel>acceptsMouseMovedEvents</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="float">
+          <sel>alphaValue</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSTimeInterval">
+          <sel>animationResizeTime:</sel>
+          <arg type="NSRect">newFrame</arg>
           <desc>
           </desc>
         </method>
@@ -139,6 +169,11 @@
           </desc>
         </method>
         <method type="BOOL">
+          <sel>canHide</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
           <sel>canStoreColor</sel>
           <desc>
           </desc>
@@ -162,26 +197,30 @@
         <method type="NSRect">
           <sel>constrainFrameRect:</sel>
           <arg type="NSRect">frameRect</arg>
+          <sel>toScreen:</sel>
+          <arg type="id">screen</arg>
           <desc>
           </desc>
         </method>
         <method type="id">
           <sel>contentView</sel>
           <desc>
-          <p>
-          Returns the NSWindow's content view.
-          </p>
           </desc>
         </method>
         <method type="NSPoint">
           <sel>convertBaseToScreen:</sel>
-          <arg type="NSPoint">aPoint</arg>
+          <arg type="NSPoint">basePoint</arg>
           <desc>
           </desc>
         </method>
         <method type="NSPoint">
           <sel>convertScreenToBase:</sel>
-          <arg type="NSPoint">aPoint</arg>
+          <arg type="NSPoint">screenPoint</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSWindow*">
+          <sel>counterpart</sel>
           <desc>
           </desc>
         </method>
@@ -192,6 +231,12 @@
         </method>
         <method type="NSData*">
           <sel>dataWithEPSInsideRect:</sel>
+          <arg type="NSRect">rect</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSData*">
+          <sel>dataWithPDFInsideRect:</sel>
           <arg type="NSRect">aRect</arg>
           <desc>
           </desc>
@@ -215,9 +260,10 @@
           <sel>deminiaturize:</sel>
           <arg type="id">sender</arg>
           <desc>
-	  Causes the window to deminiaturize. Normally you would not call 
-	  this method directly. A window is automatically deminiaturized
-	  by the user via a mouse cloick event.
+            Causes the window to deminiaturize. Normally you
+            would not call this method directly. A window is
+            automatically deminiaturized by the user via
+            a mouse cloick event.
           </desc>
         </method>
         <method type="NSWindowDepth">
@@ -277,17 +323,22 @@
           <sel>dragImage:</sel>
           <arg type="NSImage*">anImage</arg>
           <sel>at:</sel>
-          <arg type="NSPoint">aPoint</arg>
+          <arg type="NSPoint">baseLocation</arg>
           <sel>offset:</sel>
           <arg type="NSSize">initialOffset</arg>
           <sel>event:</sel>
-          <arg type="NSEvent *">theEvent</arg>
+          <arg type="NSEvent*">event</arg>
           <sel>pasteboard:</sel>
           <arg type="NSPasteboard*">pboard</arg>
           <sel>source:</sel>
           <arg type="id">sourceObject</arg>
           <sel>slideBack:</sel>
-          <arg type="BOOL">slideBack</arg>
+          <arg type="BOOL">slideFlag</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSArray*">
+          <sel>drawers</sel>
           <desc>
           </desc>
         </method>
@@ -321,6 +372,8 @@
         <method type="NSText*">
           <sel>fieldEditor:</sel>
           <arg type="BOOL">createFlag</arg>
+          <sel>forObject:</sel>
+          <arg type="id">anObject</arg>
           <desc>
           </desc>
         </method>
@@ -360,45 +413,55 @@
           </desc>
         </method>
         <method type="BOOL">
+          <sel>hasShadow</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
           <sel>hidesOnDeactivate</sel>
           <desc>
           </desc>
         </method>
-        <method type="NSView*">
-          <sel>initialFirstResponder</sel>
-          <desc>
-          </desc>
-        </method>
         <method type="id">
           <sel>initWithContentRect:</sel>
           <arg type="NSRect">contentRect</arg>
           <sel>styleMask:</sel>
-          <arg type="unsigned int">styleMask</arg>
+          <arg type="unsigned int">aStyle</arg>
           <sel>backing:</sel>
-          <arg type="NSBackingStoreType">backingType</arg>
+          <arg type="NSBackingStoreType">bufferingType</arg>
+          <sel>defer:</sel>
+          <arg type="BOOL">flag</arg>
           <desc>
-          <p>
-          Initializes the receiver with a content rect of <var>contentRect</var>, a style mask of
-          <var>styleMask</var>, and a backing store type of <var>backingType</var>.
-          </p>
-          <p>
-          The style mask values are <code>NSTitledWindowMask</code>, for a window with a title,
-          <code>NSClosableWindowMask</code>, for a window with a close widget, 
-          <code>NSMiniaturizableWindowMask</code>, for a window with a miniaturize widget,
-          and <code>NSResizableWindowMask</code>, for a window with a resizing widget.  These
-          mask values can be OR'd in any combination.
-          </p>
-          <p>
-          Backing store values are <code>NSBackingStoreBuffered</code>, 
-          <code>NSBackingStoreRetained</code> and <code>NSBackingStoreNonretained</code>.
-          </p>
+            <p>
+              Initializes the receiver with a content rect
+              of <var>contentRect</var>, a style mask of
+              <var>styleMask</var>, and a backing store type of
+              <var>backingType</var>.
+            </p>
+            <p>
+              The style mask values are
+              <code>NSTitledWindowMask</code>, for a window with
+              a title, <code>NSClosableWindowMask</code>, for a
+              window with a close widget,
+              <code>NSMiniaturizableWindowMask</code>, for a
+              window with a miniaturize widget, and
+              <code>NSResizableWindowMask</code>, for a window
+              with a resizing widget. These mask values can be
+              OR'd in any combination.
+            </p>
+            <p>
+              Backing store values are
+              <code>NSBackingStoreBuffered</code>,
+              <code>NSBackingStoreRetained</code> and
+              <code>NSBackingStoreNonretained</code>.
+            </p>
           </desc>
         </method>
         <method type="id">
           <sel>initWithContentRect:</sel>
           <arg type="NSRect">contentRect</arg>
           <sel>styleMask:</sel>
-          <arg type="unsigned int">styleMask</arg>
+          <arg type="unsigned int">aStyle</arg>
           <sel>backing:</sel>
           <arg type="NSBackingStoreType">bufferingType</arg>
           <sel>defer:</sel>
@@ -406,27 +469,42 @@
           <sel>screen:</sel>
           <arg type="NSScreen*">aScreen</arg>
           <desc>
-          <p>
-          Initializes the receiver with a content rect of <var>contentRect</var>, a style mask of
-          <var>styleMask</var>, a backing store type of <var>backingType</var> and a boolean
-          <var>flag</var>.  <var>flag</var> specifies whether the window should be created now
-          (<code>NO</code>), or when it is displayed (<code>YES</code>).
-          </p>
-          <p>
-          The style mask values are <code>NSTitledWindowMask</code>, for a window with a title,
-          <code>NSClosableWindowMask</code>, for a window with a close widget, 
-          <code>NSMiniaturizableWindowMask</code>, for a window with a miniaturize widget,
-          and <code>NSResizableWindowMask</code>, for a window with a resizing widget.  These
-          mask values can be OR'd in any combination.
-          </p>
-          <p>
-          Backing store values are <code>NSBackingStoreBuffered</code>, 
-          <code>NSBackingStoreRetained</code> and <code>NSBackingStoreNonretained</code>.
-          </p>
+            <p>
+              Initializes the receiver with a content rect
+              of <var>contentRect</var>, a style mask of
+              <var>styleMask</var>, a backing store type of
+              <var>backingType</var> and a boolean
+              <var>flag</var>. <var>flag</var> specifies whether
+              the window should be created now (<code>NO</code>),
+              or when it is displayed (<code>YES</code>).
+            </p>
+            <p>
+              The style mask values are
+              <code>NSTitledWindowMask</code>, for a window with
+              a title, <code>NSClosableWindowMask</code>, for a
+              window with a close widget,
+              <code>NSMiniaturizableWindowMask</code>, for a
+              window with a miniaturize widget, and
+              <code>NSResizableWindowMask</code>, for a window
+              with a resizing widget. These mask values can be
+              OR'd in any combination.
+            </p>
+            <p>
+              Backing store values are
+              <code>NSBackingStoreBuffered</code>,
+              <code>NSBackingStoreRetained</code> and
+              <code>NSBackingStoreNonretained</code>.
+            </p>
           </desc>
         </method>
-        <method type="NSInterfaceStyle">
-          <sel>interfaceStyle</sel>
+        <method type="NSWindow*">
+          <sel>initWithWindowRef:</sel>
+          <arg type="void*">windowRef</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSView*">
+          <sel>initialFirstResponder</sel>
           <desc>
           </desc>
         </method>
@@ -469,11 +547,15 @@
         <method type="BOOL">
           <sel>isMiniaturized</sel>
           <desc>
-	  Returns <code>YES</code> if the window has been miniaturized.
           </desc>
         </method>
         <method type="BOOL">
           <sel>isOneShot</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>isOpaque</sel>
           <desc>
           </desc>
         </method>
@@ -484,11 +566,6 @@
         </method>
         <method type="BOOL">
           <sel>isVisible</sel>
-          <desc>
-          </desc>
-        </method>
-        <method type="BOOL">
-          <sel>isZoomed;</sel>
           <desc>
           </desc>
         </method>
@@ -535,12 +612,18 @@
           <desc>
           </desc>
         </method>
+        <method type="NSSize">
+          <sel>minSize</sel>
+          <desc>
+          </desc>
+        </method>
         <method type="void">
           <sel>miniaturize:</sel>
           <arg type="id">sender</arg>
           <desc>
-	  Causes the window to miniaturize, that is the window is removed
-	  from the screen and it's counterpart (mini)window is displayed.
+            Causes the window to miniaturize, that is the window
+            is removed from the screen and it's counterpart
+            (mini)window is displayed.
           </desc>
         </method>
         <method type="NSImage*">
@@ -550,11 +633,6 @@
         </method>
         <method type="NSString*">
           <sel>miniwindowTitle</sel>
-          <desc>
-          </desc>
-        </method>
-        <method type="NSSize">
-          <sel>minSize</sel>
           <desc>
           </desc>
         </method>
@@ -573,11 +651,11 @@
           <sel>nextEventMatchingMask:</sel>
           <arg type="unsigned int">mask</arg>
           <sel>untilDate:</sel>
-          <arg type="NSDate*">expirationDate</arg>
+          <arg type="NSDate*">expiration</arg>
           <sel>inMode:</sel>
-          <arg type="NSString *">mode</arg>
+          <arg type="NSString*">mode</arg>
           <sel>dequeue:</sel>
-          <arg type="BOOL">dequeue</arg>
+          <arg type="BOOL">deqFlag</arg>
           <desc>
           </desc>
         </method>
@@ -608,7 +686,7 @@
           <sel>orderWindow:</sel>
           <arg type="NSWindowOrderingMode">place</arg>
           <sel>relativeTo:</sel>
-          <arg type="int">otherWindowNumber</arg>
+          <arg type="int">otherWin</arg>
           <desc>
           </desc>
         </method>
@@ -632,7 +710,9 @@
         </method>
         <method type="void">
           <sel>postEvent:</sel>
-          <arg type="NSEvent*">anEvent</arg>
+          <arg type="NSEvent*">event</arg>
+          <sel>atStart:</sel>
+          <arg type="BOOL">flag</arg>
           <desc>
           </desc>
         </method>
@@ -644,7 +724,7 @@
         </method>
         <method type="void">
           <sel>registerForDraggedTypes:</sel>
-          <arg type="NSArray*">pboardTypes</arg>
+          <arg type="NSArray*">newTypes</arg>
           <desc>
           </desc>
         </method>
@@ -680,6 +760,12 @@
         </method>
         <method type="void">
           <sel>restoreCachedImage</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>runToolbarCustomizationPalette:</sel>
+          <arg type="id">sender</arg>
           <desc>
           </desc>
         </method>
@@ -731,6 +817,12 @@
           </desc>
         </method>
         <method type="void">
+          <sel>setAlphaValue:</sel>
+          <arg type="float">windowAlpha</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
           <sel>setAspectRatio:</sel>
           <arg type="NSSize">ratio</arg>
           <desc>
@@ -744,13 +836,19 @@
         </method>
         <method type="void">
           <sel>setBackgroundColor:</sel>
-          <arg type="NSColor*">aColor</arg>
+          <arg type="NSColor*">color</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setBackingType:</sel>
-          <arg type="NSBackingStoreType">backingType</arg>
+          <arg type="NSBackingStoreType">type</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setCanHide:</sel>
+          <arg type="BOOL">flag</arg>
           <desc>
           </desc>
         </method>
@@ -764,9 +862,8 @@
           <sel>setContentView:</sel>
           <arg type="NSView*">aView</arg>
           <desc>
-          <p>
-          Sets the window's content view to <var>aView</var>, replacing any previous content view.
-          </p>
+            Sets the window's content view to <var>aView</var>,
+            replacing any previous content view.
           </desc>
         </method>
         <method type="void">
@@ -808,6 +905,18 @@
         <method type="void">
           <sel>setFrame:</sel>
           <arg type="NSRect">frameRect</arg>
+          <sel>display:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setFrame:</sel>
+          <arg type="NSRect">frameRect</arg>
+          <sel>display:</sel>
+          <arg type="BOOL">displayFlag</arg>
+          <sel>animate:</sel>
+          <arg type="BOOL">animationFlag</arg>
           <desc>
           </desc>
         </method>
@@ -819,7 +928,7 @@
         </method>
         <method type="void">
           <sel>setFrameFromString:</sel>
-          <arg type="NSString*">aString</arg>
+          <arg type="NSString*">string</arg>
           <desc>
           </desc>
         </method>
@@ -841,6 +950,20 @@
           <desc>
           </desc>
         </method>
+        <method type="BOOL">
+          <sel>setFrameUsingName:</sel>
+          <arg type="NSString*">name</arg>
+          <sel>force:</sel>
+          <arg type="BOOL">force</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setHasShadow:</sel>
+          <arg type="BOOL">hasShadow</arg>
+          <desc>
+          </desc>
+        </method>
         <method type="void">
           <sel>setHidesOnDeactivate:</sel>
           <arg type="BOOL">flag</arg>
@@ -850,12 +973,6 @@
         <method type="void">
           <sel>setInitialFirstResponder:</sel>
           <arg type="NSView*">aView</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
-          <sel>setInterfaceStyle:</sel>
-          <arg type="NSInterfaceStyle">interfaceStyle</arg>
           <desc>
           </desc>
         </method>
@@ -872,26 +989,32 @@
           </desc>
         </method>
         <method type="void">
-          <sel>setMiniwindowImage:</sel>
-          <arg type="NSImage*">anImage</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
-          <sel>setMiniwindowTitle:</sel>
-          <arg type="NSString*">aString</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
           <sel>setMinSize:</sel>
           <arg type="NSSize">aSize</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
+          <sel>setMiniwindowImage:</sel>
+          <arg type="NSImage*">image</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setMiniwindowTitle:</sel>
+          <arg type="NSString*">title</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
           <sel>setOneShot:</sel>
           <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setOpaque:</sel>
+          <arg type="BOOL">isOpaque</arg>
           <desc>
           </desc>
         </method>
@@ -903,13 +1026,19 @@
         </method>
         <method type="void">
           <sel>setRepresentedFilename:</sel>
-          <arg type="NSString*">path</arg>
+          <arg type="NSString*">aString</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setResizeIncrements:</sel>
-          <arg type="NSSize">increments</arg>
+          <arg type="NSSize">aSize</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setShowsResizeIndicator:</sel>
+          <arg type="BOOL">show</arg>
           <desc>
           </desc>
         </method>
@@ -917,14 +1046,19 @@
           <sel>setTitle:</sel>
           <arg type="NSString*">aString</arg>
           <desc>
-          <p>
-          Sets the window's title to the string <var>aString</var>.
-          </p>
+            Sets the window's title to the string
+            <var>aString</var>.
           </desc>
         </method>
         <method type="void">
           <sel>setTitleWithRepresentedFilename:</sel>
-          <arg type="NSString*">path</arg>
+          <arg type="NSString*">aString</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setToolbar:</sel>
+          <arg type="NSToolbar*">toolbar</arg>
           <desc>
           </desc>
         </method>
@@ -937,6 +1071,11 @@
         <method type="void">
           <sel>setWindowController:</sel>
           <arg type="NSWindowController*">windowController</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>showsResizeIndicator</sel>
           <desc>
           </desc>
         </method>
@@ -953,14 +1092,26 @@
         <method type="NSString*">
           <sel>title</sel>
           <desc>
-          <p>
-          Returns an NSString containing the text of the window's title.
-          </p>
+            Returns an NSString containing the text of the
+            window's title.
+          </desc>
+        </method>
+        <method type="void">
+          <sel>toggleToolbarShown:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSToolbar*">
+          <sel>toolbar</sel>
+          <desc>
           </desc>
         </method>
         <method type="BOOL">
           <sel>tryToPerform:</sel>
           <arg type="SEL">anAction</arg>
+          <sel>with:</sel>
+          <arg type="id">anObject</arg>
           <desc>
           </desc>
         </method>
@@ -1008,6 +1159,11 @@
           <desc>
           </desc>
         </method>
+        <method type="void*">
+          <sel>windowRef</sel>
+          <desc>
+          </desc>
+        </method>
         <method type="BOOL">
           <sel>worksWhenModal</sel>
           <desc>
@@ -1020,6 +1176,189 @@
           </desc>
         </method>
       </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSObject(NSWindowDelegate) category
+      </heading>
+      <category name="NSWindowDelegate" class="NSObject">
+        <declared>AppKit/NSWindow.h</declared>
+        <desc>
+        </desc>
+        <method type="void">
+          <sel>windowDidBecomeKey:</sel>
+          <arg type="NSNotification*">aNotification</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>windowDidBecomeMain:</sel>
+          <arg type="NSNotification*">aNotification</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>windowDidChangeScreen:</sel>
+          <arg type="NSNotification*">aNotification</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>windowDidDeminiaturize:</sel>
+          <arg type="NSNotification*">aNotification</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>windowDidExpose:</sel>
+          <arg type="NSNotification*">aNotification</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>windowDidMiniaturize:</sel>
+          <arg type="NSNotification*">aNotification</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>windowDidMove:</sel>
+          <arg type="NSNotification*">aNotification</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>windowDidResignKey:</sel>
+          <arg type="NSNotification*">aNotification</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>windowDidResignMain:</sel>
+          <arg type="NSNotification*">aNotification</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>windowDidResize:</sel>
+          <arg type="NSNotification*">aNotification</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>windowDidUpdate:</sel>
+          <arg type="NSNotification*">aNotification</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>windowShouldClose:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>windowShouldZoom:</sel>
+          <arg type="NSWindow*">sender</arg>
+          <sel>toFrame:</sel>
+          <arg type="NSRect">aFrame</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>windowWillClose:</sel>
+          <arg type="NSNotification*">aNotification</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>windowWillMiniaturize:</sel>
+          <arg type="NSNotification*">aNotification</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>windowWillMove:</sel>
+          <arg type="NSNotification*">aNotification</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSSize">
+          <sel>windowWillResize:</sel>
+          <arg type="NSWindow*">sender</arg>
+          <sel>toSize:</sel>
+          <arg type="NSSize">frameSize</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="id">
+          <sel>windowWillReturnFieldEditor:</sel>
+          <arg type="NSWindow*">sender</arg>
+          <sel>toObject:</sel>
+          <arg type="id">client</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSRect">
+          <sel>windowWillUseStandardFrame:</sel>
+          <arg type="NSWindow*">sender</arg>
+          <sel>defaultFrame:</sel>
+          <arg type="NSRect">aFrame</arg>
+          <desc>
+          </desc>
+        </method>
+      </category>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSWindow(GNUstepBackend) category
+      </heading>
+      <category name="GNUstepBackend" class="NSWindow">
+        <declared>AppKit/NSWindow.h</declared>
+        <desc>
+        </desc>
+        <method type="void">
+          <sel>_captureMouse:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>_initDefaults</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>_releaseMouse:</sel>
+          <arg type="id">sender</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>_setVisible:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
+      </category>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSWindow(GNUstepTextView) category
+      </heading>
+      <category name="GNUstepTextView" class="NSWindow">
+        <declared>AppKit/NSWindow.h</declared>
+        <desc>
+        </desc>
+        <method type="id">
+          <sel>_futureFirstResponder</sel>
+          <desc>
+          </desc>
+        </method>
+      </category>
     </chapter>
   </body>
 </gsdoc>

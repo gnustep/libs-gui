@@ -1,9 +1,8 @@
-/*
-   NSApplication.m
+/** <title>NSApplication</title>
 
-   The one and only application class
+   <abstract>The one and only application class</abstract>
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996,1999 Free Software Foundation, Inc.
 
    Author: Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -1261,7 +1260,7 @@ static NSCell* tileCell = nil;
     }
 }
 
-- (NSEvent*) currentEvent;
+- (NSEvent*) currentEvent
 {
   return _current_event;
 }

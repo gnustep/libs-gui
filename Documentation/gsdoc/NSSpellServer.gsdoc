@@ -1,23 +1,33 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSSpellServer" prev="NSSpellChecker.html" next="NSSplitView.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSSpellServer" next="NSSplitView" prev="NSSpellChecker" up="NSActionCell">
   <head>
     <title>NSSpellServer</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Gregory John Casamento">
+      <email address="borgheron@yahoo.com">
+        borgheron@yahoo.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
+    </author>
+    <abstract>
+      Class to allow a spell checker to be available to other
+      apps.
+    </abstract>
+    <copy>2001, 1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSSpellServer</heading>
+      <heading>
+        Software documentation for the NSSpellServer class
+      </heading>
       <class name="NSSpellServer" super="NSObject">
-        <declared>Gui/NSSpellServer.h</declared>
-        <conform>NSObject</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSSpellServer.h</declared>
+        <desc>
+        </desc>
         <method type="id">
           <sel>delegate</sel>
           <desc>
@@ -34,6 +44,8 @@
         <method type="BOOL">
           <sel>registerLanguage:</sel>
           <arg type="NSString*">language</arg>
+          <sel>byVendor:</sel>
+          <arg type="NSString*">vendor</arg>
           <desc>
           </desc>
         </method>
@@ -48,6 +60,18 @@
           <desc>
           </desc>
         </method>
+      </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSObject(NSSpellServerDelegate)
+        category
+      </heading>
+      <category name="NSSpellServerDelegate" class="NSObject">
+        <declared>AppKit/NSSpellServer.h</declared>
+        <desc>
+        </desc>
         <method type="void">
           <sel>spellServer:</sel>
           <arg type="NSSpellServer*">sender</arg>
@@ -74,9 +98,11 @@
           <sel>findMisspelledWordInString:</sel>
           <arg type="NSString*">stringToCheck</arg>
           <sel>language:</sel>
-          <arg type="NSString *">language</arg>
+          <arg type="NSString*">language</arg>
           <sel>wordCount:</sel>
           <arg type="int*">wordCount</arg>
+          <sel>countOnly:</sel>
+          <arg type="BOOL">countOnly</arg>
           <desc>
           </desc>
         </method>
@@ -90,7 +116,7 @@
           <desc>
           </desc>
         </method>
-      </class>
+      </category>
     </chapter>
   </body>
 </gsdoc>

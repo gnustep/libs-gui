@@ -1,13 +1,12 @@
-/* 
-   NSColorWell.m
+/** <title>NSColorWell</title>
 
-   NSControl for selecting and display a single color value.
+   <abstract>Control for selecting and display a single color value.</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
+   Author: Scott Christley <scottc@net-community.com>
    Date: 1996
-   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Author: Felipe A. Rodriguez <far@ix.netcom.com>
    Date: May 1998
    
    This file is part of the GNUstep GUI Library.

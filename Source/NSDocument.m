@@ -1,7 +1,6 @@
-/*
-   NSDocument.m
+/** <title>NSDocument</title>
 
-   The abstract document class
+   <abstract>The abstract document class</abstract>
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 

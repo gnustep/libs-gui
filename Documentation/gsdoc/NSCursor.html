@@ -1,155 +1,183 @@
-<html><head>
- <title>NSCursor</title>
-</head>
-<body>
-<a href ="NSControl.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSCustomImageRep.html">[Next] </a>
-<h1>NSCursor</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSCursor</a></h2>
-<h2><a name ="NSCursor">NSCursor</a></h2>
-<p><b>Declared in: </b> Gui/NSCursor.h</p>
-<p><b>Inherits from: </b> NSObject</p>
-<p><b>Conforms to: </b> NSCoding
-</p>
-<hr>
+<html>
+  <head>
+    <title>NSCursor</title>
+  </head>
+  <body>
+    <h1>NSCursor</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Scott Christley(<a href="mailto:scottc@net-community.com"><code>
+        scottc@net-community.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Adam Fedor(<a href="mailto:fedor@gnu.org"><code>
+        fedor@gnu.org
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <blockquote>
+Holds an image to use as a cursor    </blockquote>
+    <p>Copyright: (C) 1996,1999,2001 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the NSCursor class
+      </h1>
+    <h2><a name="class$NSCursor">NSCursor</a> : NSObject</h2>
+    Declared: AppKit/NSCursor.h<br />
+    Conform: NSCoding<br />
+    <p>
 
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSCursor.html#method-3">+IBeamCursor</a>
-<li ><a href ="NSCursor.html#method-0">+arrowCursor</a>
-<li ><a href ="NSCursor.html#method-1">+currentCursor</a>
-<li ><a href ="NSCursor.html#method-2">+hide</a>
-<li ><a href ="NSCursor.html#method-4">+pop</a>
-<li ><a href ="NSCursor.html#method-5">+setHiddenUntilMouseMoves:</a>
-<li ><a href ="NSCursor.html#method-6">+unhide</a>
-<li ><a href ="NSCursor.html#method-7">-hotSpot</a>
-<li ><a href ="NSCursor.html#method-8">-image</a>
-<li ><a href ="NSCursor.html#method-10">-initWithImage:</a>
-<li ><a href ="NSCursor.html#method-9">-initWithImage:foregroundColorHint:backgroundColorHint:hotSpot:</a>
-<li ><a href ="NSCursor.html#method-11">-isSetOnMouseEntered</a>
-<li ><a href ="NSCursor.html#method-12">-isSetOnMouseExited</a>
-<li ><a href ="NSCursor.html#method-13">-mouseEntered:</a>
-<li ><a href ="NSCursor.html#method-14">-mouseExited:</a>
-<li ><a href ="NSCursor.html#method-15">-pop</a>
-<li ><a href ="NSCursor.html#method-16">-push</a>
-<li ><a href ="NSCursor.html#method-17">-set</a>
-<li ><a href ="NSCursor.html#method-18">-setOnMouseEntered:</a>
-<li ><a href ="NSCursor.html#method-19">-setOnMouseExited:</a>
-</ul>
-<hr><h2>Class Methods </h2>
-<h3><a name ="method-0">arrowCursor</a></h3>
-+ (NSCursor*) <b>arrowCursor</b>;<br>
+            </p>
+    <h3>IBeamCursor</a></h3>
+    + (<a href="#class$NSCursor">NSCursor</a>*) <b>IBeamCursor</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-1">currentCursor</a></h3>
-+ (NSCursor*) <b>currentCursor</b>;<br>
+              </p>
+    <hr />
+    <h3>arrowCursor</a></h3>
+    + (<a href="#class$NSCursor">NSCursor</a>*) <b>arrowCursor</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-2">hide</a></h3>
-+ (void) <b>hide</b>;<br>
+              </p>
+    <hr />
+    <h3>currentCursor</a></h3>
+    + (<a href="#class$NSCursor">NSCursor</a>*) <b>currentCursor</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-3">IBeamCursor</a></h3>
-+ (NSCursor*) <b>IBeamCursor</b>;<br>
+              </p>
+    <hr />
+    <h3>greenArrowCursor</a></h3>
+    + (<a href="#class$NSCursor">NSCursor</a>*) <b>greenArrowCursor</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-4">pop</a></h3>
-+ (void) <b>pop</b>;<br>
+              </p>
+    <hr />
+    <h3>hide</a></h3>
+    + (void) <b>hide</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-5">setHiddenUntilMouseMoves:</a></h3>
-+ (void) <b>setHiddenUntilMouseMoves:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>isHiddenUntilMouseMoves</a></h3>
+    + (BOOL) <b>isHiddenUntilMouseMoves</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-6">unhide</a></h3>
-+ (void) <b>unhide</b>;<br>
+              </p>
+    <hr />
+    <h3>pop</a></h3>
+    + (void) <b>pop</b>;<br />
+    <p>
 
-          
- <hr>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-7">hotSpot</a></h3>
-- (NSPoint) <b>hotSpot</b>;<br>
+              </p>
+    <hr />
+    <h3>setHiddenUntilMouseMoves:</a></h3>
+    + (void) <b>setHiddenUntilMouseMoves:</b> (BOOL)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-8">image</a></h3>
-- (NSImage*) <b>image</b>;<br>
+              </p>
+    <hr />
+    <h3>unhide</a></h3>
+    + (void) <b>unhide</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-9">initWithImage:foregroundColorHint:backgroundColorHint:hotSpot:</a></h3>
-- (id) <b>initWithImage:</b> (NSImage*)newImage <b>foregroundColorHint:</b> (NSColor*)fg <b>backgroundColorHint:</b> (NSColor*)bg <b>hotSpot:</b> (NSPoint)hotSpot;<br>
+              </p>
+    <hr />
+    <h3>hotSpot</a></h3>
+    - (NSPoint) <b>hotSpot</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-10">initWithImage:</a></h3>
-- (id) <b>initWithImage:</b> (NSImage*)newImage;<br>
+              </p>
+    <hr />
+    <h3>image</a></h3>
+    - (<a href="NSImage.html#class$NSImage">NSImage</a>*) <b>image</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-11">isSetOnMouseEntered</a></h3>
-- (BOOL) <b>isSetOnMouseEntered</b>;<br>
+              </p>
+    <hr />
+    <h3>initWithImage:</a></h3>
+    - (id) <b>initWithImage:</b> (<a href="NSImage.html#class$NSImage">NSImage</a>*)newImage;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-12">isSetOnMouseExited</a></h3>
-- (BOOL) <b>isSetOnMouseExited</b>;<br>
+              </p>
+    <hr />
+    <h3>initWithImage:foregroundColorHint:backgroundColorHint:hotSpot:</a></h3>
+    - (id) <b>initWithImage:</b> (<a href="NSImage.html#class$NSImage">NSImage</a>*)newImage<b> foregroundColorHint:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)fg<b> backgroundColorHint:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)bg<b> hotSpot:</b> (NSPoint)hotSpot;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-13">mouseEntered:</a></h3>
-- (void) <b>mouseEntered:</b> (NSEvent*)anEvent;<br>
+              </p>
+    <hr />
+    <h3>initWithImage:hotSpot:</a></h3>
+    - (id) <b>initWithImage:</b> (<a href="NSImage.html#class$NSImage">NSImage</a>*)newImage<b> hotSpot:</b> (NSPoint)hotSpot;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-14">mouseExited:</a></h3>
-- (void) <b>mouseExited:</b> (NSEvent*)anEvent;<br>
+              </p>
+    <hr />
+    <h3>isSetOnMouseEntered</a></h3>
+    - (BOOL) <b>isSetOnMouseEntered</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-15">pop</a></h3>
-- (void) <b>pop</b>;<br>
+              </p>
+    <hr />
+    <h3>isSetOnMouseExited</a></h3>
+    - (BOOL) <b>isSetOnMouseExited</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-16">push</a></h3>
-- (void) <b>push</b>;<br>
+              </p>
+    <hr />
+    <h3>mouseEntered:</a></h3>
+    - (void) <b>mouseEntered:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-17">set</a></h3>
-- (void) <b>set</b>;<br>
+              </p>
+    <hr />
+    <h3>mouseExited:</a></h3>
+    - (void) <b>mouseExited:</b> (<a href="NSEvent.html#class$NSEvent">NSEvent</a>*)theEvent;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-18">setOnMouseEntered:</a></h3>
-- (void) <b>setOnMouseEntered:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>pop</a></h3>
+    - (void) <b>pop</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-19">setOnMouseExited:</a></h3>
-- (void) <b>setOnMouseExited:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>push</a></h3>
+    - (void) <b>push</b>;<br />
+    <p>
 
-          
- <hr>
-</body>
+              </p>
+    <hr />
+    <h3>set</a></h3>
+    - (void) <b>set</b>;<br />
+    <p>
 
- </html>
+              </p>
+    <hr />
+    <h3>setHotSpot:</a></h3>
+    - (void) <b>setHotSpot:</b> (NSPoint)spot;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setImage:</a></h3>
+    - (void) <b>setImage:</b> (<a href="NSImage.html#class$NSImage">NSImage</a>*)newImage;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setOnMouseEntered:</a></h3>
+    - (void) <b>setOnMouseEntered:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setOnMouseExited:</a></h3>
+    - (void) <b>setOnMouseExited:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+  </body>
+</html>

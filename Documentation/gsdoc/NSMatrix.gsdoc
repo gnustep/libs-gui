@@ -1,26 +1,45 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSMatrix" prev="NSLayoutManager.html" next="NSMenu.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSMatrix" next="NSMenu" prev="NSLayoutManager" up="NSActionCell">
   <head>
     <title>NSMatrix</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Ovidiu Predescu">
+      <email address="ovidiu@net-community.com">
+        ovidiu@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>Matrix class for grouping controls</abstract>
+    <copy>1996, 1997, 1999 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSMatrix</heading>
+      <heading>
+        Software documentation for the NSMatrix class
+      </heading>
       <class name="NSMatrix" super="NSControl">
-        <declared>Gui/NSMatrix.h</declared>
+        <declared>AppKit/NSMatrix.h</declared>
         <conform>NSCoding</conform>
+        <desc>
+        </desc>
+        <method type="Class" factory="yes">
+          <sel>cellClass</sel>
           <desc>
           </desc>
+        </method>
+        <method type="void" factory="yes">
+          <sel>setCellClass:</sel>
+          <arg type="Class">classId</arg>
+          <desc>
+          </desc>
+        </method>
         <method type="BOOL">
           <sel>acceptsFirstMouse:</sel>
           <arg type="NSEvent*">theEvent</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="SEL">
+          <sel>action</sel>
           <desc>
           </desc>
         </method>
@@ -31,7 +50,7 @@
         </method>
         <method type="void">
           <sel>addColumnWithCells:</sel>
-          <arg type="NSArray*">newCells</arg>
+          <arg type="NSArray*">cellArray</arg>
           <desc>
           </desc>
         </method>
@@ -42,7 +61,7 @@
         </method>
         <method type="void">
           <sel>addRowWithCells:</sel>
-          <arg type="NSArray*">newCells</arg>
+          <arg type="NSArray*">cellArray</arg>
           <desc>
           </desc>
         </method>
@@ -113,6 +132,11 @@
           <desc>
           </desc>
         </method>
+        <method type="void">
+          <sel>deselectSelectedCell</sel>
+          <desc>
+          </desc>
+        </method>
         <method type="SEL">
           <sel>doubleAction</sel>
           <desc>
@@ -144,6 +168,8 @@
         <method type="void">
           <sel>getNumberOfRows:</sel>
           <arg type="int*">rowCount</arg>
+          <sel>columns:</sel>
+          <arg type="int*">columnCount</arg>
           <desc>
           </desc>
         </method>
@@ -152,6 +178,18 @@
           <arg type="int*">row</arg>
           <sel>column:</sel>
           <arg type="int*">column</arg>
+          <sel>forPoint:</sel>
+          <arg type="NSPoint">point</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>getRow:</sel>
+          <arg type="int*">row</arg>
+          <sel>column:</sel>
+          <arg type="int*">column</arg>
+          <sel>ofCell:</sel>
+          <arg type="NSCell*">aCell</arg>
           <desc>
           </desc>
         </method>
@@ -177,11 +215,11 @@
           <sel>mode:</sel>
           <arg type="int">aMode</arg>
           <sel>cellClass:</sel>
-          <arg type="Class">factoryId</arg>
+          <arg type="Class">class</arg>
           <sel>numberOfRows:</sel>
-          <arg type="int">numRows</arg>
+          <arg type="int">rowsHigh</arg>
           <sel>numberOfColumns:</sel>
-          <arg type="int">numColumns</arg>
+          <arg type="int">colsWide</arg>
           <desc>
           </desc>
         </method>
@@ -191,11 +229,11 @@
           <sel>mode:</sel>
           <arg type="int">aMode</arg>
           <sel>prototype:</sel>
-          <arg type="NSCell*">aCell</arg>
+          <arg type="NSCell*">prototype</arg>
           <sel>numberOfRows:</sel>
-          <arg type="int">numRows</arg>
+          <arg type="int">rowsHigh</arg>
           <sel>numberOfColumns:</sel>
-          <arg type="int">numColumns</arg>
+          <arg type="int">colsWide</arg>
           <desc>
           </desc>
         </method>
@@ -209,7 +247,7 @@
           <sel>insertColumn:</sel>
           <arg type="int">column</arg>
           <sel>withCells:</sel>
-          <arg type="NSArray*">newCells</arg>
+          <arg type="NSArray*">cellArray</arg>
           <desc>
           </desc>
         </method>
@@ -223,7 +261,7 @@
           <sel>insertRow:</sel>
           <arg type="int">row</arg>
           <sel>withCells:</sel>
-          <arg type="NSArray*">newCells</arg>
+          <arg type="NSArray*">cellArray</arg>
           <desc>
           </desc>
         </method>
@@ -314,7 +352,7 @@
         </method>
         <method type="void">
           <sel>removeColumn:</sel>
-          <arg type="int">column</arg>
+          <arg type="int">col</arg>
           <desc>
           </desc>
         </method>
@@ -326,7 +364,9 @@
         </method>
         <method type="void">
           <sel>renewRows:</sel>
-          <arg type="int">newRows</arg>
+          <arg type="int">r</arg>
+          <sel>columns:</sel>
+          <arg type="int">c</arg>
           <desc>
           </desc>
         </method>
@@ -418,8 +458,14 @@
           </desc>
         </method>
         <method type="void">
+          <sel>setAction:</sel>
+          <arg type="SEL">sel</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
           <sel>setAllowsEmptySelection:</sel>
-          <arg type="BOOL">flag</arg>
+          <arg type="BOOL">f</arg>
           <desc>
           </desc>
         </method>
@@ -437,37 +483,37 @@
         </method>
         <method type="void">
           <sel>setBackgroundColor:</sel>
-          <arg type="NSColor*">aColor</arg>
+          <arg type="NSColor*">c</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setCellBackgroundColor:</sel>
-          <arg type="NSColor*">aColor</arg>
+          <arg type="NSColor*">c</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setCellClass:</sel>
-          <arg type="Class">aClass</arg>
+          <arg type="Class">class</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setCellSize:</sel>
-          <arg type="NSSize">aSize</arg>
+          <arg type="NSSize">size</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setDelegate:</sel>
-          <arg type="id">anObject</arg>
+          <arg type="id">object</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setDoubleAction:</sel>
-          <arg type="SEL">aSelector</arg>
+          <arg type="SEL">sel</arg>
           <desc>
           </desc>
         </method>
@@ -479,19 +525,19 @@
         </method>
         <method type="void">
           <sel>setDrawsCellBackground:</sel>
-          <arg type="BOOL">flag</arg>
+          <arg type="BOOL">f</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setErrorAction:</sel>
-          <arg type="SEL">aSelector</arg>
+          <arg type="SEL">sel</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setIntercellSpacing:</sel>
-          <arg type="NSSize">aSize</arg>
+          <arg type="NSSize">size</arg>
           <desc>
           </desc>
         </method>
@@ -544,6 +590,8 @@
           <arg type="int">endPos</arg>
           <sel>anchor:</sel>
           <arg type="int">anchorPos</arg>
+          <sel>highlight:</sel>
+          <arg type="BOOL">flag</arg>
           <desc>
           </desc>
         </method>
@@ -576,7 +624,7 @@
         </method>
         <method type="void">
           <sel>sortUsingFunction:</sel>
-          <arg type="int(*)(id,id,void*)">comparator</arg>
+          <arg type="int (*)(id element1,id element2,void*userData)">comparator</arg>
           <sel>context:</sel>
           <arg type="void*">context</arg>
           <desc>
@@ -595,19 +643,19 @@
         </method>
         <method type="void">
           <sel>textDidBeginEditing:</sel>
-          <arg type="NSNotification*">notification</arg>
+          <arg type="NSNotification*">aNotification</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>textDidChange:</sel>
-          <arg type="NSNotification*">notification</arg>
+          <arg type="NSNotification*">aNotification</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>textDidEndEditing:</sel>
-          <arg type="NSNotification*">notification</arg>
+          <arg type="NSNotification*">aNotification</arg>
           <desc>
           </desc>
         </method>
@@ -619,7 +667,7 @@
         </method>
         <method type="BOOL">
           <sel>textShouldEndEditing:</sel>
-          <arg type="NSText*">textObject</arg>
+          <arg type="NSText*">aTextObject</arg>
           <desc>
           </desc>
         </method>

@@ -1,11 +1,10 @@
-/*
-   NSImageCell.m
+/** <title>NSImageCell</title>
 
-   The image cell class
+   <abstract>The image cell class</abstract>
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 
-   Author:  Jonathan Gapen   <jagapen@smithlab.chem.wisc.edu>
+   Author: Jonathan Gapen <jagapen@smithlab.chem.wisc.edu>
    Date: 1999
 
    This file is part of the GNUstep GUI Library.

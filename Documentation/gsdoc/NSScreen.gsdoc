@@ -1,23 +1,29 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSScreen" prev="NSSavePanel.html" next="NSScrollView.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSScreen" next="NSScrollView" prev="NSSavePanel" up="NSActionCell">
   <head>
     <title>NSScreen</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Gregory John Casamento">
+      <email address="borgheron@yahoo.com">
+        borgheron@yahoo.com
+      </email>
+    </author>
+    <copy>1996, 2000 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSScreen</heading>
+      <heading>
+        Software documentation for the NSScreen class
+      </heading>
       <class name="NSScreen" super="NSObject">
-        <declared>Gui/NSScreen.h</declared>
-        <conform>NSObject</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSScreen.h</declared>
+        <desc>
+        </desc>
         <method type="NSScreen*" factory="yes">
           <sel>deepestScreen</sel>
           <desc>
@@ -25,6 +31,11 @@
         </method>
         <method type="NSScreen*" factory="yes">
           <sel>mainScreen</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="void" factory="yes">
+          <sel>resetScreens</sel>
           <desc>
           </desc>
         </method>
@@ -48,7 +59,7 @@
           <desc>
           </desc>
         </method>
-        <method type="constNSWindowDepth*">
+        <method type="const NSWindowDepth*">
           <sel>supportedWindowDepths</sel>
           <desc>
           </desc>

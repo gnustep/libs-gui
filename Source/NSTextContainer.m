@@ -1,9 +1,8 @@
-/* 
-   NSTextContainer.m
+/** <title>NSTextContainer</title>
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 
-   Author:  Jonathan Gapen <jagapen@smithlab.chem.wisc.edu>
+   Author: Jonathan Gapen <jagapen@smithlab.chem.wisc.edu>
    Date: 1999
 
    This file is part of the GNUstep GUI Library.
@@ -298,7 +297,7 @@
 - (NSRect) lineFragmentRectForProposedRect: (NSRect)proposedRect
 			    sweepDirection: (NSLineSweepDirection)sweepDir
 			 movementDirection: (NSLineMovementDirection)moveDir
-			     remainingRect: (NSRect*)remainingRect;
+			     remainingRect: (NSRect*)remainingRect
 {
   // line fragment rectangle simply must fit within the container rectangle
   *remainingRect = NSZeroRect;

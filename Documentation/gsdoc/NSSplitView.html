@@ -1,76 +1,221 @@
-<html><head>
- <title>NSSplitView</title>
-</head>
-<body>
-<a href ="NSSpellServer.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSStringAdditions.html">[Next] </a>
-<h1>NSSplitView</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSSplitView</a></h2>
-<h2><a name ="NSSplitView">NSSplitView</a></h2>
-<p><b>Declared in: </b> Gui/NSSplitView.h</p>
-<p><b>Inherits from: </b> NSView</p>
-<p><b>Conforms to: </b> NSCoding
-</p>
-<hr>
+<html>
+  <head>
+    <title>NSSplitView</title>
+  </head>
+  <body>
+    <h1>NSSplitView</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Robert Vasvari(<a href="mailto:vrobi@ddrummer.com"><code>
+        vrobi@ddrummer.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Felipe A. Rodriguez(<a href="mailto:far@ix.netcom.com"><code>
+        far@ix.netcom.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Richard Frith-Macdonald(<a href="mailto:richard@brainstorm.co.uk"><code>
+        richard@brainstorm.co.uk
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Nicola Pero(<a href="mailto:n.pero@mi.flashnet.it"><code>
+        n.pero@mi.flashnet.it
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <blockquote>
 
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSSplitView.html#method-0">-adjustSubviews</a>
-<li ><a href ="NSSplitView.html#method-1">-delegate</a>
-<li ><a href ="NSSplitView.html#method-2">-dividerThickness</a>
-<li ><a href ="NSSplitView.html#method-3">-drawDividerInRect:</a>
-<li ><a href ="NSSplitView.html#method-4">-isVertical</a>
-<li ><a href ="NSSplitView.html#method-5">-setDelegate:</a>
-<li ><a href ="NSSplitView.html#method-6">-setVertical:</a>
-</ul>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-0">adjustSubviews</a></h3>
-- (void) <b>adjustSubviews</b>;<br>
+      Allows multiple views to share a region in a window
+        </blockquote>
+    <p>Copyright: (C) 
+      1996, 1998, 1999, 2000, 2001 Free Software Foundation, Inc.
+    </p>
+    <h1>
+        Software documentation for the NSSplitView class
+      </h1>
+    <h2><a name="class$NSSplitView">NSSplitView</a> : <a href="NSView.html#class$NSView">NSView</a></h2>
+    Declared: AppKit/NSSplitView.h<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-1">delegate</a></h3>
-- (id) <b>delegate</b>;<br>
+            </p>
+    <h3>adjustSubviews</a></h3>
+    - (void) <b>adjustSubviews</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-2">dividerThickness</a></h3>
-- (float) <b>dividerThickness</b>;<br>
+              </p>
+    <hr />
+    <h3>delegate</a></h3>
+    - (id) <b>delegate</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-3">drawDividerInRect:</a></h3>
-- (void) <b>drawDividerInRect:</b> (NSRect)aRect;<br>
+              </p>
+    <hr />
+    <h3>dividerThickness</a></h3>
+    - (float) <b>dividerThickness</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-4">isVertical</a></h3>
-- (BOOL) <b>isVertical</b>;<br>
+              </p>
+    <hr />
+    <h3>drawDividerInRect:</a></h3>
+    - (void) <b>drawDividerInRect:</b> (NSRect)aRect;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-5">setDelegate:</a></h3>
-- (void) <b>setDelegate:</b> (id)anObject;<br>
+              </p>
+    <hr />
+    <h3>isPaneSplitter</a></h3>
+    - (BOOL) <b>isPaneSplitter</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-6">setVertical:</a></h3>
-- (void) <b>setVertical:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>isSubviewCollapsed:</a></h3>
+    - (BOOL) <b>isSubviewCollapsed:</b> (<a href="NSView.html#class$NSView">NSView</a>*)subview;<br />
+    <p>
 
-          
- <hr>
-</body>
+              </p>
+    <hr />
+    <h3>isVertical</a></h3>
+    - (BOOL) <b>isVertical</b>;<br />
+    <p>
 
- </html>
+              </p>
+    <hr />
+    <h3>setDelegate:</a></h3>
+    - (void) <b>setDelegate:</b> (id)anObject;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setIsPaneSplitter:</a></h3>
+    - (void) <b>setIsPaneSplitter:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setVertical:</a></h3>
+    - (void) <b>setVertical:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the
+        NSObject(NSSplitViewDelegate)
+        category
+      </h1>
+    <h2>NSObject(<a name="category$NSObject(NSSplitViewDelegate)">NSSplitViewDelegate</a>)</h2>
+    Declared: AppKit/NSSplitView.h<br />
+    <p>
+
+            </p>
+    <h3>splitView:canCollapseSubview:</a></h3>
+    - (BOOL) <b>splitView:</b> (<a href="#class$NSSplitView">NSSplitView</a>*)sender<b> canCollapseSubview:</b> (<a href="NSView.html#class$NSView">NSView</a>*)subview;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>splitView:constrainMaxCoordinate:ofSubviewAt:</a></h3>
+    - (float) <b>splitView:</b> (<a href="#class$NSSplitView">NSSplitView</a>*)sender<b> constrainMaxCoordinate:</b> (float)proposedMax<b> ofSubviewAt:</b> (int)offset;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>splitView:constrainMinCoordinate:maxCoordinate:ofSubviewAt:</a></h3>
+    - (void) <b>splitView:</b> (<a href="#class$NSSplitView">NSSplitView</a>*)sender<b> constrainMinCoordinate:</b> (float*)min<b> maxCoordinate:</b> (float*)max<b> ofSubviewAt:</b> (int)offset;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>splitView:constrainMinCoordinate:ofSubviewAt:</a></h3>
+    - (float) <b>splitView:</b> (<a href="#class$NSSplitView">NSSplitView</a>*)sender<b> constrainMinCoordinate:</b> (float)proposedMin<b> ofSubviewAt:</b> (int)offset;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>splitView:constrainSplitPosition:ofSubviewAt:</a></h3>
+    - (float) <b>splitView:</b> (<a href="#class$NSSplitView">NSSplitView</a>*)sender<b> constrainSplitPosition:</b> (float)proposedPosition<b> ofSubviewAt:</b> (int)offset;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>splitView:resizeSubviewsWithOldSize:</a></h3>
+    - (void) <b>splitView:</b> (<a href="#class$NSSplitView">NSSplitView</a>*)sender<b> resizeSubviewsWithOldSize:</b> (NSSize)oldSize;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>splitViewDidResizeSubviews:</a></h3>
+    - (void) <b>splitViewDidResizeSubviews:</b> (NSNotification*)notification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>splitViewWillResizeSubviews:</a></h3>
+    - (void) <b>splitViewWillResizeSubviews:</b> (NSNotification*)notification;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the
+        NSSplitView(GNUstepExtra) category
+      </h1>
+    <h2><a href="#class$NSSplitView">NSSplitView</a>(<a name="category$NSSplitView(GNUstepExtra)">GNUstepExtra</a>)</h2>
+    Declared: AppKit/NSSplitView.h<br />
+    <p>
+
+            </p>
+    <h3>backgroundColor</a></h3>
+    - (<a href="NSColor.html#class$NSColor">NSColor</a>*) <b>backgroundColor</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>dimpleImage</a></h3>
+    - (<a href="NSImage.html#class$NSImage">NSImage</a>*) <b>dimpleImage</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>dividerColor</a></h3>
+    - (<a href="NSColor.html#class$NSColor">NSColor</a>*) <b>dividerColor</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>draggedBarWidth</a></h3>
+    - (float) <b>draggedBarWidth</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setBackgroundColor:</a></h3>
+    - (void) <b>setBackgroundColor:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)aColor;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setDimpleImage:resetDividerThickness:</a></h3>
+    - (void) <b>setDimpleImage:</b> (<a href="NSImage.html#class$NSImage">NSImage</a>*)anImage<b> resetDividerThickness:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setDividerColor:</a></h3>
+    - (void) <b>setDividerColor:</b> (<a href="NSColor.html#class$NSColor">NSColor</a>*)aColor;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setDraggedBarWidth:</a></h3>
+    - (void) <b>setDraggedBarWidth:</b> (float)newWidth;<br />
+    <p>
+
+              </p>
+    <hr />
+  </body>
+</html>

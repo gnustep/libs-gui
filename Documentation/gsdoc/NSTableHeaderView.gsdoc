@@ -1,23 +1,29 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSTableHeaderView" prev="NSTableHeaderCell.html" next="NSTableView.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSTableHeaderView" next="NSTableView" prev="NSTableHeaderCell" up="NSActionCell">
   <head>
     <title>NSTableHeaderView</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Nicola Pero">
+      <email address="n.pero@mi.flashnet.it">
+        n.pero@mi.flashnet.it
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Nicola Pero">
+      <email address="nicola@brainstorm.co.uk">
+        nicola@brainstorm.co.uk
+      </email>
+    </author>
+    <copy>1999 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSTableHeaderView</heading>
+      <heading>
+        Software documentation for the NSTableHeaderView class
+      </heading>
       <class name="NSTableHeaderView" super="NSView">
-        <declared>Gui/NSTableHeaderView.h</declared>
-        <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSTableHeaderView.h</declared>
+        <desc>
+        </desc>
         <method type="int">
           <sel>columnAtPoint:</sel>
           <arg type="NSPoint">aPoint</arg>

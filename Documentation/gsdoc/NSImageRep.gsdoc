@@ -1,23 +1,29 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSImageRep" prev="NSImageCell.html" next="NSImageView.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSImageRep" next="NSImageView" prev="NSImageCell" up="NSActionCell">
   <head>
     <title>NSImageRep</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Adam Fedor">
+      <email address="fedor@colorado.edu">
+        fedor@colorado.edu
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>
+      Abstract representation of an image.
+    </abstract>
+    <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSImageRep</heading>
+      <heading>
+        Software documentation for the NSImageRep class
+      </heading>
       <class name="NSImageRep" super="NSObject">
-        <declared>Gui/NSImageRep.h</declared>
+        <declared>AppKit/NSImageRep.h</declared>
         <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <conform>NSCopying</conform>
+        <desc>
+        </desc>
         <method type="BOOL" factory="yes">
           <sel>canInitWithData:</sel>
           <arg type="NSData*">data</arg>
@@ -65,6 +71,12 @@
           </desc>
         </method>
         <method type="id" factory="yes">
+          <sel>imageRepWithContentsOfURL:</sel>
+          <arg type="NSURL*">anURL</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="id" factory="yes">
           <sel>imageRepWithPasteboard:</sel>
           <arg type="NSPasteboard*">pasteboard</arg>
           <desc>
@@ -73,6 +85,12 @@
         <method type="NSArray*" factory="yes">
           <sel>imageRepsWithContentsOfFile:</sel>
           <arg type="NSString*">filename</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSArray*" factory="yes">
+          <sel>imageRepsWithContentsOfURL:</sel>
+          <arg type="NSURL*">anURL</arg>
           <desc>
           </desc>
         </method>
@@ -132,7 +150,7 @@
         </method>
         <method type="BOOL">
           <sel>drawInRect:</sel>
-          <arg type="NSRect">rect</arg>
+          <arg type="NSRect">aRect</arg>
           <desc>
           </desc>
         </method>
@@ -170,7 +188,7 @@
         </method>
         <method type="void">
           <sel>setColorSpaceName:</sel>
-          <arg type="NSString*">string</arg>
+          <arg type="NSString*">aString</arg>
           <desc>
           </desc>
         </method>

@@ -8,3 +8,7 @@ To build/install the gsdoc tool - see the core/base/GSDoc directory.
 The DTD describing the gsdoc documentation markup language can be found
 in the GSDoc directory.
 
+Note that most of these files are generated automatically from the
+source using the autogsdoc program. Don't edit these files
+directly. Add comments and documentation directly to the source file
+

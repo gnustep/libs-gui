@@ -1,13 +1,12 @@
-/*
-   NSScrollView.m
+/** <title>NSScrollView</title>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
    Author: Ovidiu Predescu <ovidiu@net-community.com>
    Date: July 1997
-   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Author: Felipe A. Rodriguez <far@ix.netcom.com>
    Date: October 1998
-   Author:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+   Author: Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: February 1999
    Table View Support: Nicola Pero <n.pero@mi.flashnet.it>
    Date: March 2000

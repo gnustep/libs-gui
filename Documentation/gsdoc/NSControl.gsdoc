@@ -1,23 +1,30 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSControl" prev="NSComboBoxCell.html" next="NSCursor.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSControl" next="NSCursor" prev="NSComboBoxCell" up="NSActionCell">
   <head>
     <title>NSControl</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Richard Frith-Macdonald">
+      <email address="richard@brainstorm.co.uk">
+        richard@brainstorm.co.uk
+      </email>
+    </author>
+    <abstract>The abstract control class</abstract>
+    <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSControl</heading>
+      <heading>
+        Software documentation for the NSControl class
+      </heading>
       <class name="NSControl" super="NSView">
-        <declared>&lt;</declared>
-        <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSControl.h</declared>
+        <desc>
+        </desc>
         <method type="Class" factory="yes">
           <sel>cellClass</sel>
           <desc>
@@ -25,7 +32,7 @@
         </method>
         <method type="void" factory="yes">
           <sel>setCellClass:</sel>
-          <arg type="Class">class</arg>
+          <arg type="Class">factoryId</arg>
           <desc>
           </desc>
         </method>
@@ -41,11 +48,6 @@
         </method>
         <method type="NSTextAlignment">
           <sel>alignment</sel>
-          <desc>
-          </desc>
-        </method>
-        <method type="NSAttributedString*">
-          <sel>attributedStringValue</sel>
           <desc>
           </desc>
         </method>
@@ -158,6 +160,8 @@
         <method type="BOOL">
           <sel>sendAction:</sel>
           <arg type="SEL">theAction</arg>
+          <sel>to:</sel>
+          <arg type="id">theTarget</arg>
           <desc>
           </desc>
         </method>
@@ -176,12 +180,6 @@
         <method type="void">
           <sel>setAlignment:</sel>
           <arg type="NSTextAlignment">mode</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
-          <sel>setAttributedStringValue:</sel>
-          <arg type="NSAttributedString*">object</arg>
           <desc>
           </desc>
         </method>
@@ -219,9 +217,9 @@
           <sel>setFloatingPointFormat:</sel>
           <arg type="BOOL">autoRange</arg>
           <sel>left:</sel>
-          <arg type="unsigned int">leftDigits</arg>
+          <arg type="unsigned">leftDigits</arg>
           <sel>right:</sel>
-          <arg type="unsigned int">rightDigits</arg>
+          <arg type="unsigned">rightDigits</arg>
           <desc>
           </desc>
         </method>
@@ -250,7 +248,7 @@
         </method>
         <method type="void">
           <sel>setObjectValue:</sel>
-          <arg type="id">object</arg>
+          <arg type="id">anObject</arg>
           <desc>
           </desc>
         </method>
@@ -345,6 +343,18 @@
           <desc>
           </desc>
         </method>
+      </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSObject(NSControlDelegate)
+        category
+      </heading>
+      <category name="NSControlDelegate" class="NSObject">
+        <declared>AppKit/NSControl.h</declared>
+        <desc>
+        </desc>
         <method type="BOOL">
           <sel>control:</sel>
           <arg type="NSControl*">control</arg>
@@ -389,24 +399,8 @@
           <desc>
           </desc>
         </method>
-        <method type="BOOL">
-          <sel>control:</sel>
-          <arg type="NSControl*">control</arg>
-          <sel>textView:</sel>
-          <arg type="NSTextView*">textView</arg>
-          <sel>doCommandBySelector:</sel>
-          <arg type="SEL">command</arg>
-          <desc>
-          </desc>
-        </method>
         <method type="void">
           <sel>controlTextDidBeginEditing:</sel>
-          <arg type="NSNotification*">aNotification</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
-          <sel>controlTextDidEndEditing:</sel>
           <arg type="NSNotification*">aNotification</arg>
           <desc>
           </desc>
@@ -417,7 +411,13 @@
           <desc>
           </desc>
         </method>
-      </class>
+        <method type="void">
+          <sel>controlTextDidEndEditing:</sel>
+          <arg type="NSNotification*">aNotification</arg>
+          <desc>
+          </desc>
+        </method>
+      </category>
     </chapter>
   </body>
 </gsdoc>

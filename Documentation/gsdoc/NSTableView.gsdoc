@@ -1,23 +1,29 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSTableView" prev="NSTableHeaderView.html" next="NSText.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSTableView" next="NSText" prev="NSTableHeaderView" up="NSActionCell">
   <head>
     <title>NSTableView</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Nicola Pero">
+      <email address="n.pero@mi.flashnet.it">
+        n.pero@mi.flashnet.it
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Pierre-Yves Rivaille">
+      <email address="pyrivail@ens-lyon.fr">
+        pyrivail@ens-lyon.fr
+      </email>
+    </author>
+    <copy>2000 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSTableView</heading>
+      <heading>
+        Software documentation for the NSTableView class
+      </heading>
       <class name="NSTableView" super="NSControl">
-        <declared>Gui/NSTableView.h</declared>
-        <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSTableView.h</declared>
+        <desc>
+        </desc>
         <method type="void">
           <sel>addTableColumn:</sel>
           <arg type="NSTableColumn*">aColumn</arg>
@@ -85,15 +91,15 @@
           <desc>
           </desc>
         </method>
-        <method type="NSRange">
-          <sel>columnsInRect:</sel>
-          <arg type="NSRect">aRect</arg>
-          <desc>
-          </desc>
-        </method>
         <method type="int">
           <sel>columnWithIdentifier:</sel>
           <arg type="id">anObject</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSRange">
+          <sel>columnsInRect:</sel>
+          <arg type="NSRect">aRect</arg>
           <desc>
           </desc>
         </method>
@@ -135,6 +141,16 @@
           <desc>
           </desc>
         </method>
+        <method type="NSImage*">
+          <sel>dragImageForRows:</sel>
+          <arg type="NSArray*">dragRows</arg>
+          <sel>event:</sel>
+          <arg type="NSEvent*">dragEvent</arg>
+          <sel>dragImageOffset:</sel>
+          <arg type="NSPoint*">dragImageOffset</arg>
+          <desc>
+          </desc>
+        </method>
         <method type="void">
           <sel>drawGridInClipRect:</sel>
           <arg type="NSRect">aRect</arg>
@@ -144,6 +160,8 @@
         <method type="void">
           <sel>drawRow:</sel>
           <arg type="int">rowIndex</arg>
+          <sel>clipRect:</sel>
+          <arg type="NSRect">aRect</arg>
           <desc>
           </desc>
         </method>
@@ -159,6 +177,8 @@
           <arg type="int">rowIndex</arg>
           <sel>withEvent:</sel>
           <arg type="NSEvent*">theEvent</arg>
+          <sel>select:</sel>
+          <arg type="BOOL">flag</arg>
           <desc>
           </desc>
         </method>
@@ -175,6 +195,8 @@
         <method type="NSRect">
           <sel>frameOfCellAtColumn:</sel>
           <arg type="int">columnIndex</arg>
+          <sel>row:</sel>
+          <arg type="int">rowIndex</arg>
           <desc>
           </desc>
         </method>
@@ -194,9 +216,14 @@
           <desc>
           </desc>
         </method>
-        <method type="id">
-          <sel>initWithFrame:</sel>
-          <arg type="NSRect">frameRect</arg>
+        <method type="NSTableColumn*">
+          <sel>highlightedTableColumn</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSImage*">
+          <sel>indicatorImageInTableColumn:</sel>
+          <arg type="NSTableColumn*">aTableColumn</arg>
           <desc>
           </desc>
         </method>
@@ -220,6 +247,8 @@
         <method type="void">
           <sel>moveColumn:</sel>
           <arg type="int">columnIndex</arg>
+          <sel>toColumn:</sel>
+          <arg type="int">newIndex</arg>
           <desc>
           </desc>
         </method>
@@ -267,7 +296,7 @@
         </method>
         <method type="void">
           <sel>removeTableColumn:</sel>
-          <arg type="NSTableColumn*">aTableColumn</arg>
+          <arg type="NSTableColumn*">aColumn</arg>
           <desc>
           </desc>
         </method>
@@ -314,6 +343,14 @@
           <desc>
           </desc>
         </method>
+        <method type="void">
+          <sel>selectRow:</sel>
+          <arg type="int">rowIndex</arg>
+          <sel>byExtendingSelection:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
         <method type="int">
           <sel>selectedColumn</sel>
           <desc>
@@ -331,14 +368,6 @@
         </method>
         <method type="NSEnumerator*">
           <sel>selectedRowEnumerator</sel>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
-          <sel>selectRow:</sel>
-          <arg type="int">rowIndex</arg>
-          <sel>byExtendingSelection:</sel>
-          <arg type="BOOL">flag</arg>
           <desc>
           </desc>
         </method>
@@ -427,6 +456,20 @@
           </desc>
         </method>
         <method type="void">
+          <sel>setDropRow:</sel>
+          <arg type="int">row</arg>
+          <sel>dropOperation:</sel>
+          <arg type="NSTableViewDropOperation">operation</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setFrame:</sel>
+          <arg type="NSRect">aRect</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
           <sel>setGridColor:</sel>
           <arg type="NSColor*">aColor</arg>
           <desc>
@@ -435,6 +478,20 @@
         <method type="void">
           <sel>setHeaderView:</sel>
           <arg type="NSTableHeaderView*">aHeaderView</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setHighlightedTableColumn:</sel>
+          <arg type="NSTableColumn*">aTableColumn</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setIndicatorImage:</sel>
+          <arg type="NSImage*">anImage</arg>
+          <sel>inTableColumn:</sel>
+          <arg type="NSTableColumn*">aTableColumn</arg>
           <desc>
           </desc>
         </method>
@@ -451,23 +508,24 @@
           </desc>
         </method>
         <method type="void">
-          <sel>sizeLastColumnToFit</sel>
+          <sel>setVerticalMotionCanBeginDrag:</sel>
+          <arg type="BOOL">flag</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
-          <sel>sizeToFit</sel>
-          <desc>
-          </desc>
-        </method>
-        <method type="NSArray*">
-          <sel>tableColumns</sel>
+          <sel>sizeLastColumnToFit</sel>
           <desc>
           </desc>
         </method>
         <method type="NSTableColumn*">
           <sel>tableColumnWithIdentifier:</sel>
           <arg type="id">anObject</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSArray*">
+          <sel>tableColumns</sel>
           <desc>
           </desc>
         </method>
@@ -497,7 +555,7 @@
         </method>
         <method type="BOOL">
           <sel>textShouldEndEditing:</sel>
-          <arg type="NSText*">textObject</arg>
+          <arg type="NSText*">aTextObject</arg>
           <desc>
           </desc>
         </method>
@@ -507,8 +565,123 @@
           </desc>
         </method>
         <method type="BOOL">
+          <sel>verticalMotionCanBeginDrag</sel>
+          <desc>
+          </desc>
+        </method>
+      </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSObject(NSTableDataSource)
+        category
+      </heading>
+      <category name="NSTableDataSource" class="NSObject">
+        <declared>AppKit/NSTableView.h</declared>
+        <desc>
+        </desc>
+        <method type="int">
+          <sel>numberOfRowsInTableView:</sel>
+          <arg type="NSTableView*">aTableView</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>tableView:</sel>
+          <arg type="NSTableView*">tableView</arg>
+          <sel>acceptDrop:</sel>
+          <arg type="id&lt;NSDraggingInfo&gt;">info</arg>
+          <sel>row:</sel>
+          <arg type="int">row</arg>
+          <sel>dropOperation:</sel>
+          <arg type="NSTableViewDropOperation">operation</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="id">
+          <sel>tableView:</sel>
+          <arg type="NSTableView*">aTableView</arg>
+          <sel>objectValueForTableColumn:</sel>
+          <arg type="NSTableColumn*">aTableColumn</arg>
+          <sel>row:</sel>
+          <arg type="int">rowIndex</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>tableView:</sel>
+          <arg type="NSTableView*">aTableView</arg>
+          <sel>setObjectValue:</sel>
+          <arg type="id">anObject</arg>
+          <sel>forTableColumn:</sel>
+          <arg type="NSTableColumn*">aTableColumn</arg>
+          <sel>row:</sel>
+          <arg type="int">rowIndex</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSDragOperation">
+          <sel>tableView:</sel>
+          <arg type="NSTableView*">tableView</arg>
+          <sel>validateDrop:</sel>
+          <arg type="id&lt;NSDraggingInfo&gt;">info</arg>
+          <sel>proposedRow:</sel>
+          <arg type="int">row</arg>
+          <sel>proposedDropOperation:</sel>
+          <arg type="NSTableViewDropOperation">operation</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>tableView:</sel>
+          <arg type="NSTableView*">tableView</arg>
+          <sel>writeRows:</sel>
+          <arg type="NSArray*">rows</arg>
+          <sel>toPasteboard:</sel>
+          <arg type="NSPasteboard*">pboard</arg>
+          <desc>
+          </desc>
+        </method>
+      </category>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSObject(NSTableViewDelegate)
+        category
+      </heading>
+      <category name="NSTableViewDelegate" class="NSObject">
+        <declared>AppKit/NSTableView.h</declared>
+        <desc>
+        </desc>
+        <method type="BOOL">
           <sel>selectionShouldChangeInTableView:</sel>
           <arg type="NSTableView*">aTableView</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>tableView:</sel>
+          <arg type="NSTableView*">tableView</arg>
+          <sel>didClickTableColumn:</sel>
+          <arg type="NSTableColumn*">tableColumn</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>tableView:</sel>
+          <arg type="NSTableView*">tableView</arg>
+          <sel>didDragTableColumn:</sel>
+          <arg type="NSTableColumn*">tableColumn</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>tableView:</sel>
+          <arg type="NSTableView*">tableView</arg>
+          <sel>mouseDownInHeaderOfTableColumn:</sel>
+          <arg type="NSTableColumn*">tableColumn</arg>
           <desc>
           </desc>
         </method>
@@ -517,6 +690,8 @@
           <arg type="NSTableView*">aTableView</arg>
           <sel>shouldEditTableColumn:</sel>
           <arg type="NSTableColumn*">aTableColumn</arg>
+          <sel>row:</sel>
+          <arg type="int">rowIndex</arg>
           <desc>
           </desc>
         </method>
@@ -543,6 +718,8 @@
           <arg type="id">aCell</arg>
           <sel>forTableColumn:</sel>
           <arg type="NSTableColumn*">aTableColumn</arg>
+          <sel>row:</sel>
+          <arg type="int">rowIndex</arg>
           <desc>
           </desc>
         </method>
@@ -570,7 +747,32 @@
           <desc>
           </desc>
         </method>
-      </class>
+      </category>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the NSTableView(GNUPrivate)
+        category
+      </heading>
+      <category name="GNUPrivate" class="NSTableView">
+        <declared>AppKit/NSTableView.h</declared>
+        <desc>
+        </desc>
+        <method type="void">
+          <sel>_selectColumn:</sel>
+          <arg type="int">columnIndex</arg>
+          <sel>modifiers:</sel>
+          <arg type="unsigned int">modifiers</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>_sendDoubleActionForColumn:</sel>
+          <arg type="int">columnIndex</arg>
+          <desc>
+          </desc>
+        </method>
+      </category>
     </chapter>
   </body>
 </gsdoc>

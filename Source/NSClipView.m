@@ -1,5 +1,4 @@
-/*
-   NSClipView.m
+/** <title>NSClipView</title>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 

@@ -1,23 +1,37 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSPanel" prev="NSPageLayout.html" next="NSParagraphStyle.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSPanel" next="NSParagraphStyle" prev="NSPageLayout" up="NSActionCell">
   <head>
     <title>NSPanel</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Richard Frith-Macdonald">
+      <email address="richard@brainstorm.co.uk">
+        richard@brainstorm.co.uk
+      </email>
+    </author>
+    <author name="Pascal J. Bourguignon">
+      <email address="pjb@imaginet.fr">
+        pjb@imaginet.fr
+      </email>
+    </author>
+    <abstract>
+      Panel window class and related functions
+    </abstract>
+    <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSPanel</heading>
+      <heading>
+        Software documentation for the NSPanel class
+      </heading>
       <class name="NSPanel" super="NSWindow">
-        <declared>Gui/NSPanel.h</declared>
-        <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSPanel.h</declared>
+        <desc>
+        </desc>
         <method type="BOOL">
           <sel>becomesKeyOnlyIfNeeded</sel>
           <desc>

@@ -1,23 +1,121 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSParagraphStyle" prev="NSPanel.html" next="NSPasteboard.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSParagraphStyle" next="NSPasteboard" prev="NSPanel" up="NSActionCell">
   <head>
     <title>NSParagraphStyle</title>
     <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+      <email address="richard@brainstorm.co.uk">
+        richard@brainstorm.co.uk
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>
+      NSParagraphStyle and NSMutableParagraphStyle
+      hold paragraph style information NSTextTab holds information
+      about a single tab stop
+    </abstract>
+    <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSParagraphStyle</heading>
-      <class name="NSParagraphStyle" super="NSObject">
-        <declared>Gui/NSParagraphStyle.h</declared>
-        <conform>NSCoding</conform>
+      <heading>
+        Software documentation for the NSMutableParagraphStyle
+        class
+      </heading>
+      <class name="NSMutableParagraphStyle" super="NSParagraphStyle">
+        <declared>AppKit/NSParagraphStyle.h</declared>
+        <desc>
+        </desc>
+        <method type="void">
+          <sel>addTabStop:</sel>
+          <arg type="NSTextTab*">anObject</arg>
           <desc>
           </desc>
+        </method>
+        <method type="void">
+          <sel>removeTabStop:</sel>
+          <arg type="NSTextTab*">anObject</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setAlignment:</sel>
+          <arg type="NSTextAlignment">newAlignment</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setFirstLineHeadIndent:</sel>
+          <arg type="float">aFloat</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setHeadIndent:</sel>
+          <arg type="float">aFloat</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setLineBreakMode:</sel>
+          <arg type="NSLineBreakMode">mode</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setLineSpacing:</sel>
+          <arg type="float">aFloat</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setMaximumLineHeight:</sel>
+          <arg type="float">aFloat</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setMinimumLineHeight:</sel>
+          <arg type="float">aFloat</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setParagraphSpacing:</sel>
+          <arg type="float">aFloat</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setParagraphStyle:</sel>
+          <arg type="NSParagraphStyle*">obj</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setTabStops:</sel>
+          <arg type="NSArray*">array</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setTailIndent:</sel>
+          <arg type="float">aFloat</arg>
+          <desc>
+          </desc>
+        </method>
+      </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the NSParagraphStyle class
+      </heading>
+      <class name="NSParagraphStyle" super="NSObject">
+        <declared>AppKit/NSParagraphStyle.h</declared>
+        <conform>NSCopying</conform>
+        <conform>NSMutableCopying</conform>
+        <conform>NSCoding</conform>
+        <desc>
+        </desc>
         <method type="NSParagraphStyle*" factory="yes">
           <sel>defaultParagraphStyle</sel>
           <desc>
@@ -70,6 +168,35 @@
         </method>
         <method type="float">
           <sel>tailIndent</sel>
+          <desc>
+          </desc>
+        </method>
+      </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the NSTextTab class
+      </heading>
+      <class name="NSTextTab" super="NSObject">
+        <declared>AppKit/NSParagraphStyle.h</declared>
+        <conform>NSCopying</conform>
+        <desc>
+        </desc>
+        <method type="id">
+          <sel>initWithType:</sel>
+          <arg type="NSTextTabType">type</arg>
+          <sel>location:</sel>
+          <arg type="float">loc</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="float">
+          <sel>location</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSTextTabType">
+          <sel>tabStopType</sel>
           <desc>
           </desc>
         </method>

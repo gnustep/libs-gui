@@ -1,17 +1,16 @@
-/*
-   NSView.m
+/** <title>NSView</title>
 
-   The view class which encapsulates all drawing functionality
+   <abstract>The view class which encapsulates all drawing functionality</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
+   Author: Scott Christley <scottc@net-community.com>
    Date: 1996
-   Author:  Ovidiu Predescu <ovidiu@net-community.com>.
+   Author: Ovidiu Predescu <ovidiu@net-community.com>
    Date: 1997
-   Author:  Felipe A. Rodriguez <far@ix.netcom.com>
+   Author: Felipe A. Rodriguez <far@ix.netcom.com>
    Date: August 1998
-   Author:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+   Author: Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: January 1999
 
    This file is part of the GNUstep GUI Library.
@@ -77,11 +76,30 @@ struct NSWindow_struct
   @defs(NSWindow)
 };
 
+/**
+  <unit>
+  <heading>NSView</heading>
+
+  <p>NSView is an abstract class which provides facilities for drawing
+  in a window and receiving events.  It is the superclass of many of
+  the visual elements of the GUI.</p>
+
+  <p>In order to display itself, a view must be placed in a window
+  (represented by an NSWindow object).  Within the window is a
+  hierarchy of NSViews, headed by the window's content view.  Every
+  other view in a window is a descendant of this view.</p>
+
+  <p>Subclasses can override <code>drawRect:</code> in order to
+  implement their appearance.  Other methods of NSView and NSResponder
+  can also be overridden to handle user generated events.</p>
+
+  </unit>
+*/
+  
 @implementation NSView
 
 /*
- *  Class variables
- */
+ * Class variables */
 static Class	rectClass;
 static Class	viewClass;
 
@@ -196,9 +214,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     }
 }
 
-/*
- * return the view at the top of graphics contexts stack
- * or nil if none is focused
+/**
+ Return the view at the top of graphics contexts stack
+ or nil if none is focused.
  */
 + (NSView*) focusView
 {
@@ -279,6 +297,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   [super dealloc];
 }
 
+/** Adds <var>aView</var> as a subview of the receiver. */
 - (void) addSubview: (NSView*)aView
 {
   if (aView == nil)
@@ -361,6 +380,12 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   RELEASE(aView);
 }
 
+/**
+  Returns <code>self</code> if <var>aView</var> is the receiver or
+  <var>aView</var> is a subview of the receiver, the ancestor view
+  shared by <var>aView</var> and the receiver, if any,
+  <var>aView</var> if it is an ancestor of the receiver, otherwise
+  returns <code>nil</code>.  */
 - (NSView*) ancestorSharedWithView: (NSView*)aView
 {
   if (self == aView)
@@ -386,6 +411,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   return [_super_view ancestorSharedWithView: [aView superview]];
 }
 
+/**
+  Returns <code>YES</code> if <var>aView</var> is an ancestor of the receiver.
+*/
 - (BOOL) isDescendantOf: (NSView*)aView
 {
   if (aView == self)
@@ -417,6 +445,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   return current;
 }
 
+/**
+  Removes the receiver from its superviews list of subviews, by
+  invoking the superviews [-removeSubview:] method.  */
 - (void) removeFromSuperviewWithoutNeedingDisplay
 {
   if (_super_view != nil)
@@ -425,6 +456,14 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     }
 }
 
+/**
+  <p> Removes the receiver from its superviews list of subviews, by
+  invoking the superviews [-removeSubview:] method, and marks the
+  rectangle that the reciever occupied in the superview as needing
+  redisplay.  </p>
+
+  <p> This is dangerous to use during display, since it alters the
+  rectangles needing display.  </p> */
 - (void) removeFromSuperview
 {
   if (_super_view != nil)
@@ -434,6 +473,15 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     }
 }
 
+/**
+  <p> Removes the view from the receivers list of subviews and from
+  the responder chain.  </p>
+
+  <p> Also invokes [aView -viewWillMoveToWindow: nil] to handle
+  removal of aView (and recursively, its children) from its window -
+  performing tidyup by invalidating cursor rects etc.  </p> 
+  <standards><NotMacOS-X/><NotOpenStep/></standards>
+*/
 - (void) removeSubview: (NSView*)aSubview
 {
   id view;
@@ -466,6 +514,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
     }
 }
 
+/**
+  Removes <var>oldView</var> from the receiver and places
+  <var>newView</var> in its place.  */
 - (void) replaceSubview: (NSView*)oldView with: (NSView*)newView
 {
   if (newView == oldView)
@@ -552,15 +603,19 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   [_sub_views sortUsingFunction: compare context: context];
 }
 
+/**
+  Notifies the receiver that its superview is being changed to
+  <var>newSuperview</var>.  */
 - (void) viewWillMoveToSuperview: (NSView*)newSuper
 {
   _super_view = newSuper;
 }
 
-/*
- * NOTE - this method is used when removing a view from a window
- * (in which case, newWindow is nil) to let all the subviews know
- * that they have also been removed from the window.
+/**
+  Notifies the receiver that it will now be a view of <var>newWindow</var>.
+  Note, this method is also used when removing a view from a window
+  (in which case, <var>newWindow</var> is nil) to let all the subviews know
+  that they have also been removed from the window.
  */
 - (void) viewWillMoveToWindow: (NSWindow*)newWindow
 {
@@ -1334,12 +1389,28 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   [self setFrame: newFrame];
 }
 
+/**
+  <p> Tell the view to maintain a private gstate object which
+  encapsulates all the information about drawing, such as coordinate
+  transforms, line widths, etc. If you do not invoke this method, a
+  gstate object is constructed each time the view is lockFocused.
+  Allocating a private gstate may improve the performance of views
+  that are focused a lot and have a lot of customized drawing
+  parameters.  </p> 
+
+  <p> View subclasses should override the
+  setUpGstate method to set these custom parameters.
+  </p> 
+*/
 - (void) allocateGState
 {
   _allocate_gstate = 1;
   _renew_gstate = 1;
 }
 
+/**
+  Frees the gstate object, if there is one. Note that the next time
+  the view is lockFocused, the gstate will be allocated again.  */
 - (void) releaseGState
 {
   if (_allocate_gstate && _gstate)
@@ -1350,11 +1421,20 @@ GSSetDragTypes(NSView* obj, NSArray *types)
      to call this method each time we invalidate the coordinates */
 }
 
+/**
+  Returns an identifier that represents the view's gstate object,
+  which is used to encapsulate drawing information about the view.
+  Most of the time a gstate object is created from scratch when the
+  view is focused, so if the view is not currently focused or
+  allocateGState has not been called, then this method will */
 - (int) gState
 {
   return _gstate;
 }
 
+/** 
+  Invalidates the view's gstate object so it will be set up again
+  using setUpGState the next time the view is focused.  */
 - (void) renewGState
 {
   _renew_gstate = 1;
@@ -1864,6 +1944,23 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   [_window flushWindow];
 }
 
+/**
+  This method is invoked to handle drawing inside the view.  The
+  default NSView's implementation does nothing; subclasses might
+  override it to draw something inside the view.  Since NSView's
+  implementation is guaranteed to be empty, you should not call
+  super's implementation when you override it in subclasses.
+  drawRect: is invoked when the focus has already been locked on the
+  view; you can use arbitrary postscript functions in drawRect: to
+  draw inside your view; the coordinate system in which you draw is
+  the view's own coordinate system (this means for example that you
+  should refer to the rectangle covered by the view using its bounds,
+  and not its frame).  The argument of drawRect: is the rectangle
+  which needs to be redrawn.  In a lossy implementation, you can
+  ignore the argument and redraw the whole view; if you are aiming at
+  performance, you may want to redraw only what is inside the
+  rectangle which needs to be redrawn; this usually improves drawing
+  performance considerably.  */
 - (void) drawRect: (NSRect)rect
 {}
 
@@ -2212,11 +2309,18 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 /*
  * Aiding Event Handling
  */
+/**
+  Returns <code>YES</code> if the view object will accept the first
+  click received when in an inactive window, and <code>NO</code>
+  otherwise.  */
 - (BOOL) acceptsFirstMouse: (NSEvent*)theEvent
 {
   return NO;
 }
 
+/**
+  Returns the subview, lowest in the receiver's hierarchy, which
+  contains <var>aPoint</var> */
 - (NSView*) hitTest: (NSPoint)aPoint
 {
   NSPoint p;
@@ -2256,6 +2360,9 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     return self;
 }
 
+/**
+  Returns whether or not <var>aPoint</var> lies within <var>aRect</var>
+*/
 - (BOOL) mouse: (NSPoint)aPoint  inRect: (NSRect)aRect
 {
   return NSMouseInRect (aPoint, aRect, _rFlags.flipped_view);
@@ -3143,6 +3250,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   _autoresizingMask = mask;
 }
 
+/** Returns the window in which the receiver resides. */
 - (NSWindow*) window
 {
   return _window;

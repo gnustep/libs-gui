@@ -1,23 +1,33 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSSpellChecker" prev="NSSliderCell.html" next="NSSpellServer.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSSpellChecker" next="NSSpellServer" prev="NSSliderCell" up="NSActionCell">
   <head>
     <title>NSSpellChecker</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Gregory John Casamento">
+      <email address="borgheron@yahoo.com">
+        borgheron@yahoo.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
+    </author>
+    <abstract>
+      Class to provide the graphical interface to the spell
+      checking service.
+    </abstract>
+    <copy>2001, 1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSSpellChecker</heading>
+      <heading>
+        Software documentation for the NSSpellChecker class
+      </heading>
       <class name="NSSpellChecker" super="NSObject">
-        <declared>Gui/NSSpellChecker.h</declared>
-        <conform>NSObject</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSSpellChecker.h</declared>
+        <desc>
+        </desc>
         <method type="NSSpellChecker*" factory="yes">
           <sel>sharedSpellChecker</sel>
           <desc>
@@ -41,6 +51,8 @@
         <method type="NSRange">
           <sel>checkSpellingOfString:</sel>
           <arg type="NSString*">stringToCheck</arg>
+          <sel>startingAt:</sel>
+          <arg type="int">startingOffset</arg>
           <desc>
           </desc>
         </method>
@@ -68,7 +80,15 @@
         </method>
         <method type="int">
           <sel>countWordsInString:</sel>
-          <arg type="NSString*">stringToCount</arg>
+          <arg type="NSString*">aString</arg>
+          <sel>language:</sel>
+          <arg type="NSString*">language</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSArray*">
+          <sel>guessesForWord:</sel>
+          <arg type="NSString*">word</arg>
           <desc>
           </desc>
         </method>
@@ -107,7 +127,7 @@
         </method>
         <method type="BOOL">
           <sel>setLanguage:</sel>
-          <arg type="NSString*">language</arg>
+          <arg type="NSString*">aLanguage</arg>
           <desc>
           </desc>
         </method>

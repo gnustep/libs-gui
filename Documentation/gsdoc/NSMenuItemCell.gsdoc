@@ -1,23 +1,26 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSMenuItemCell" prev="NSMenuItem.html" next="NSMenuView.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSMenuItemCell" next="NSMenuView" prev="NSMenu" up="NSActionCell">
   <head>
     <title>NSMenuItemCell</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Michael Hanni">
+      <email address="mhanni@sprintmail.com">
+        mhanni@sprintmail.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <copy>1999 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSMenuItemCell</heading>
+      <heading>
+        Software documentation for the NSMenuItemCell class
+      </heading>
       <class name="NSMenuItemCell" super="NSButtonCell">
-        <declared>Gui/NSMenuItemCell.h</declared>
+        <declared>AppKit/NSMenuItemCell.h</declared>
+        <conform>NSCopying</conform>
         <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <desc>
+        </desc>
         <method type="void">
           <sel>calcSize</sel>
           <desc>
@@ -26,36 +29,48 @@
         <method type="void">
           <sel>drawBorderAndBackgroundWithFrame:</sel>
           <arg type="NSRect">cellFrame</arg>
+          <sel>inView:</sel>
+          <arg type="NSView*">controlView</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>drawImageWithFrame:</sel>
           <arg type="NSRect">cellFrame</arg>
+          <sel>inView:</sel>
+          <arg type="NSView*">controlView</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>drawKeyEquivalentWithFrame:</sel>
           <arg type="NSRect">cellFrame</arg>
+          <sel>inView:</sel>
+          <arg type="NSView*">controlView</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>drawSeparatorItemWithFrame:</sel>
           <arg type="NSRect">cellFrame</arg>
+          <sel>inView:</sel>
+          <arg type="NSView*">controlView</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>drawStateImageWithFrame:</sel>
           <arg type="NSRect">cellFrame</arg>
+          <sel>inView:</sel>
+          <arg type="NSView*">controlView</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>drawTitleWithFrame:</sel>
           <arg type="NSRect">cellFrame</arg>
+          <sel>inView:</sel>
+          <arg type="NSView*">controlView</arg>
           <desc>
           </desc>
         </method>
@@ -97,11 +112,6 @@
           </desc>
         </method>
         <method type="BOOL">
-          <sel>needsDisplay</sel>
-          <desc>
-          </desc>
-        </method>
-        <method type="BOOL">
           <sel>needsSizing</sel>
           <desc>
           </desc>
@@ -121,12 +131,6 @@
         <method type="void">
           <sel>setMenuView:</sel>
           <arg type="NSMenuView*">menuView</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
-          <sel>setNeedsDisplay:</sel>
-          <arg type="BOOL">flag</arg>
           <desc>
           </desc>
         </method>

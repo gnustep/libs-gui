@@ -1,13 +1,12 @@
-/* 
-   NSColorPicker.m
+/** <title>NSColorPicker</title>
 
-   Abstract superclass for NSColorPanel color pickers
+   <abstract>Abstract superclass for NSColorPanel color pickers</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
+   Author: Scott Christley <scottc@net-community.com>
    Date: 1996
-   Author:  Jonathan Gapen <jagapen@whitewater.chem.wisc.edu>
+   Author: Jonathan Gapen <jagapen@whitewater.chem.wisc.edu>
    Date: March 2000
    
    This file is part of the GNUstep GUI Library.

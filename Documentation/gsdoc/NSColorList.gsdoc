@@ -1,23 +1,31 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSColorList" prev="NSColor.html" next="NSColorPanel.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSColorList" next="NSColorPanel" prev="NSColor" up="NSActionCell">
   <head>
     <title>NSColorList</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Nicola Pero">
+      <email address="n.pero@mi.flashnet.it">
+        n.pero@mi.flashnet.it
+      </email>
+    </author>
+    <abstract>Manage named lists of NSColors.</abstract>
+    <copy>1996, 2000 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSColorList</heading>
+      <heading>
+        Software documentation for the NSColorList class
+      </heading>
       <class name="NSColorList" super="NSObject">
-        <declared>Gui/NSColorList.h</declared>
+        <declared>AppKit/NSColorList.h</declared>
         <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <desc>
+        </desc>
         <method type="NSArray*" factory="yes">
           <sel>availableColorLists</sel>
           <desc>
@@ -40,6 +48,18 @@
           <desc>
           </desc>
         </method>
+        <method type="void">
+          <sel>encodeWithCoder:</sel>
+          <arg type="NSCoder*">aCoder</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="id">
+          <sel>initWithCoder:</sel>
+          <arg type="NSCoder*">aDecoder</arg>
+          <desc>
+          </desc>
+        </method>
         <method type="id">
           <sel>initWithName:</sel>
           <arg type="NSString*">name</arg>
@@ -58,9 +78,9 @@
           <sel>insertColor:</sel>
           <arg type="NSColor*">color</arg>
           <sel>key:</sel>
-          <arg type="NSString *">key</arg>
+          <arg type="NSString*">key</arg>
           <sel>atIndex:</sel>
-          <arg type="unsigned int">location</arg>
+          <arg type="unsigned">location</arg>
           <desc>
           </desc>
         </method>
@@ -87,7 +107,7 @@
         </method>
         <method type="void">
           <sel>setColor:</sel>
-          <arg type="NSColor*">color</arg>
+          <arg type="NSColor*">aColor</arg>
           <sel>forKey:</sel>
           <arg type="NSString*">key</arg>
           <desc>

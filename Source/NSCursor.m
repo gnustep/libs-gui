@@ -1,12 +1,13 @@
-/* 
-   NSCursor.m
+/** <title>NSCursor</title>
 
-   Holds an image to use as a cursor
+   <abstract>Holds an image to use as a cursor</abstract>
 
-   Copyright (C) 1996,1999 Free Software Foundation, Inc.
+   Copyright (C) 1996,1999,2001 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
+   Author: Scott Christley <scottc@net-community.com>
    Date: 1996
+   Author: Adam Fedor <fedor@gnu.org>
+   Date: Dec 2001
    
    This file is part of the GNUstep GUI Library.
 
@@ -215,11 +216,11 @@ static NSMutableDictionary *cursorDict = nil;
 		     hotSpot: NSMakePoint(0,15)];
 }
 
-- (id) initWithImage: (NSImage *)newImage hotSpot: (NSPoint)spot
+- (id) initWithImage: (NSImage *)newImage hotSpot: (NSPoint)hotSpot
 {
   //_is_set_on_mouse_entered = NO;
   //_is_set_on_mouse_exited = NO;
-  _hot_spot = spot;
+  _hot_spot = hotSpot;
   [self setImage: newImage];
 
   return self;

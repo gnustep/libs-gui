@@ -1,118 +1,160 @@
-<html><head>
- <title>NSPageLayout</title>
-</head>
-<body>
-<h1>NSPageLayout</h1>
-<h3>Authors </h3>
- <dl>
-<dt>Adam Fedor
-<dd>
-</dl>
-<blockquote>
+<html>
+  <head>
+    <title>NSPageLayout</title>
+  </head>
+  <body>
+    <h1>NSPageLayout</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Adam Fedor(<a href="mailto:fedor@gnu.org"><code>
+        fedor@gnu.org
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <blockquote>
+
       Standard panel for querying user about page layout.
-    </blockquote>
-<p>Copyright: (C) 2001 Free Software Foundation, Inc.</p>
-<h2><a name ="cont-0">
-        Software documentation for the NSPageLayout class
-      </a></h2>
-<h2><a name ="NSPageLayout">NSPageLayout</a></h2>
-<p><b>Declared in: </b> NSPageLayout.h</p>
-<p><b>Inherits from: </b> NSPanel</p>
-<hr>
+        </blockquote>
+    <p>Copyright: (C) 2001 Free Software Foundation, Inc.</p>
+    <h1>NSPageLayout</h1>
+    <p>
 
-        
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSPageLayout.html#method-0">+pageLayout</a>
-<li ><a href ="NSPageLayout.html#method-1">-accessoryView</a>
-<li ><a href ="NSPageLayout.html#method-2">-beginSheetWithPrintInfo:modalForWindow:delegate:didEndSelector:contextInfo:</a>
-<li ><a href ="NSPageLayout.html#method-3">-convertOldFactor:newFactor:</a>
-<li ><a href ="NSPageLayout.html#method-4">-pickedButton:</a>
-<li ><a href ="NSPageLayout.html#method-5">-pickedOrientation:</a>
-<li ><a href ="NSPageLayout.html#method-6">-pickedPaperSize:</a>
-<li ><a href ="NSPageLayout.html#method-7">-pickedUnits:</a>
-<li ><a href ="NSPageLayout.html#method-8">-printInfo</a>
-<li ><a href ="NSPageLayout.html#method-9">-readPrintInfo</a>
-<li ><a href ="NSPageLayout.html#method-10">-runModal</a>
-<li ><a href ="NSPageLayout.html#method-11">-runModalWithPrintInfo:</a>
-<li ><a href ="NSPageLayout.html#method-12">-setAccessoryView:</a>
-<li ><a href ="NSPageLayout.html#method-13">-writePrintInfo</a>
-</ul>
-<hr><h2>Class Methods </h2>
-<h3><a name ="method-0">pageLayout</a></h3>
-+ (NSPageLayout*) <b>pageLayout</b>;<br>
+        NSPageLayout provides a panel that allows the user
+        to specify certain information about the printer and how
+        data is formatted for printing. This includes information
+        about the paper size and orientation. Typically you would
+        create a page layout panel with the
+        pageLayout
 
-          
- <hr>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-1">accessoryView</a></h3>
-- (NSView*) <b>accessoryView</b>;<br>
+        class method. However, the best way to use the panel is
+        to have the application call the runPageLayout: method in
+        the NSApplication object which would both create a standard
+        NSPageLayout panel and display it in a modal loop.
+        This method would be sent up the responder chain if the
+        user clicked on a Page Layout menu item.
+          </p>
+    <h2><a name="class$NSPageLayout">NSPageLayout</a> : <a href="NSPanel.html#class$NSPanel">NSPanel</a></h2>
+    Declared: AppKit/NSPageLayout.h<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-2">beginSheetWithPrintInfo:modalForWindow:delegate:didEndSelector:contextInfo:</a></h3>
-- (void) <b>beginSheetWithPrintInfo:</b> (NSPrintInfo*)printInfo <b>modalForWindow:</b> (NSWindow*)docWindow <b>delegate:</b> (id)delegate <b>didEndSelector:</b> (SEL)didEndSelector <b>contextInfo:</b> (void*)contextInfo;<br>
+            </p>
+    <h3>pageLayout</a></h3>
+    + (<a href="#class$NSPageLayout">NSPageLayout</a>*) <b>pageLayout</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-3">convertOldFactor:newFactor:</a></h3>
-- (void) <b>convertOldFactor:</b> (float*)old <b>newFactor:</b> (float*)new;<br>
+            Creates and returns a shared instance of the
+            NSPageLayout panel.
+              </p>
+    <hr />
+    <h3>accessoryView</a></h3>
+    - (<a href="NSView.html#class$NSView">NSView</a>*) <b>accessoryView</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-4">pickedButton:</a></h3>
-- (void) <b>pickedButton:</b> (id)sender;<br>
+            Returns the accessory view for the page layout
+            panel
+              </p>
+    <hr />
+    <h3>beginSheetWithPrintInfo:modalForWindow:delegate:didEndSelector:contextInfo:</a></h3>
+    - (void) <b>beginSheetWithPrintInfo:</b> (<a href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)printInfo<b> modalForWindow:</b> (<a href="NSWindow.html#class$NSWindow">NSWindow</a>*)docWindow<b> delegate:</b> (id)delegate<b> didEndSelector:</b> (SEL)didEndSelector<b> contextInfo:</b> (void*)contextInfo;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-5">pickedOrientation:</a></h3>
-- (void) <b>pickedOrientation:</b> (id)sender;<br>
+              </p>
+    <hr />
+    <h3>convertOldFactor:newFactor:</a></h3>
+    - (void) <b>convertOldFactor:</b> (float*)old<b> newFactor:</b> (float*)new;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-6">pickedPaperSize:</a></h3>
-- (void) <b>pickedPaperSize:</b> (id)sender;<br>
+            Convert the <var>old</var> value to a
+            <var>new</var> one based on the current units. This
+            method has been depreciated. It doesn't do anything
+            useful
+              </p>
+    <hr />
+    <h3>pickedButton:</a></h3>
+    - (void) <b>pickedButton:</b> (id)sender;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-7">pickedUnits:</a></h3>
-- (void) <b>pickedUnits:</b> (id)sender;<br>
+            This method has been depreciated. It doesn't do
+            anything useful.
+              </p>
+    <hr />
+    <h3>pickedOrientation:</a></h3>
+    - (void) <b>pickedOrientation:</b> (id)sender;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-8">printInfo</a></h3>
-- (NSPrintInfo*) <b>printInfo</b>;<br>
+            This method has been depreciated. It doesn't do
+            anything useful.
+              </p>
+    <hr />
+    <h3>pickedPaperSize:</a></h3>
+    - (void) <b>pickedPaperSize:</b> (id)sender;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-9">readPrintInfo</a></h3>
-- (void) <b>readPrintInfo</b>;<br>
+            This method has been depreciated. It doesn't do
+            anything useful.
+              </p>
+    <hr />
+    <h3>pickedUnits:</a></h3>
+    - (void) <b>pickedUnits:</b> (id)sender;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-10">runModal</a></h3>
-- (int) <b>runModal</b>;<br>
+            This method has been depreciated. It doesn't do
+            anything useful.
+              </p>
+    <hr />
+    <h3>printInfo</a></h3>
+    - (<a href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*) <b>printInfo</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-11">runModalWithPrintInfo:</a></h3>
-- (int) <b>runModalWithPrintInfo:</b> (NSPrintInfo*)pInfo;<br>
+            Return the NSPrintInfo object that the receiver
+            stores layout information into.
+              </p>
+    <hr />
+    <h3>readPrintInfo</a></h3>
+    - (void) <b>readPrintInfo</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-12">setAccessoryView:</a></h3>
-- (void) <b>setAccessoryView:</b> (NSView*)aView;<br>
+            Updates the receiver panel with information from
+            its NSPrintInfo object
+              </p>
+    <hr />
+    <h3>runModal</a></h3>
+    - (int) <b>runModal</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-13">writePrintInfo</a></h3>
-- (void) <b>writePrintInfo</b>;<br>
+            Display the Page Layout panel in a modal loop.
+            Saves any aquired information in the shared
+            NSPrintInfo object. Returns NSCancelButton if
+            the user clicks the Cancel button or NSOKButton
+            otherwise.
+              </p>
+    <hr />
+    <h3>runModalWithPrintInfo:</a></h3>
+    - (int) <b>runModalWithPrintInfo:</b> (<a href="NSPrintInfo.html#class$NSPrintInfo">NSPrintInfo</a>*)pInfo;<br />
+    <p>
 
-          
- <hr>
-</body>
+            Display the Page Layout panel in a modal loop.
+            Saves any aquired information in the indicated
+            NSPrintInfo object. Returns NSCancelButton if
+            the user clicks the Cancel button or NSOKButton
+            otherwise.
+              </p>
+    <hr />
+    <h3>setAccessoryView:</a></h3>
+    - (void) <b>setAccessoryView:</b> (<a href="NSView.html#class$NSView">NSView</a>*)aView;<br />
+    <p>
 
- </html>
+            Set the accessory view for the page layout panel
+              </p>
+    <hr />
+    <h3>writePrintInfo</a></h3>
+    - (void) <b>writePrintInfo</b>;<br />
+    <p>
+
+            Writes any layout information set by the user to the
+            receiver's NSPrintInfo object
+              </p>
+    <hr />
+  </body>
+</html>

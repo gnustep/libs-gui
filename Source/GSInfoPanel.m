@@ -1,7 +1,6 @@
-/*
-   GSInfoPanel.m
+/** <title>GSInfoPanel.m</title>
 
-   Standard GNUstep info panel
+   <abstract>Standard GNUstep info panel</abstract>
 
    Copyright (C) 2000 Free Software Foundation, Inc.
 

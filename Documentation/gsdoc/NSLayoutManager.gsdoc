@@ -1,26 +1,33 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSLayoutManager" prev="NSInputServer.html" next="NSMatrix.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSLayoutManager" next="NSMatrix" prev="NSInputServer" up="NSActionCell">
   <head>
     <title>NSLayoutManager</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Jonathan Gapen">
+      <email address="jagapen@smithlab.chem.wisc.edu">
+        jagapen@smithlab.chem.wisc.edu
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Michael Hanni">
+      <email address="mhanni@sprintmail.com">
+        mhanni@sprintmail.com
+      </email>
+    </author>
+    <abstract>The text layout manager class</abstract>
+    <copy>1999 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSLayoutManager</heading>
+      <heading>
+        Software documentation for the NSLayoutManager class
+      </heading>
       <class name="NSLayoutManager" super="NSObject">
-        <declared>Gui/NSLayoutManager.h</declared>
-        <conform>NSObject</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSLayoutManager.h</declared>
+        <desc>
+        </desc>
         <method type="void">
           <sel>addTextContainer:</sel>
-          <arg type="NSTextContainer*">aTextContainer</arg>
+          <arg type="NSTextContainer*">obj</arg>
           <desc>
           </desc>
         </method>
@@ -37,9 +44,9 @@
           <desc>
           </desc>
         </method>
-        <method type="unsigned int">
+        <method type="unsigned">
           <sel>characterIndexForGlyphAtIndex:</sel>
-          <arg type="unsigned int">glyphIndex</arg>
+          <arg type="unsigned">glyphIndex</arg>
           <desc>
           </desc>
         </method>
@@ -58,41 +65,13 @@
         </method>
         <method type="void">
           <sel>deleteGlyphsInRange:</sel>
-          <arg type="NSRange">glyphRange</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
-          <sel>drawBackgroundForGlyphRange:</sel>
-          <arg type="NSRange">glyphRange</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
-          <sel>drawGlyphsForGlyphRange:</sel>
-          <arg type="NSRange">glyphRange</arg>
+          <arg type="NSRange">aRange</arg>
           <desc>
           </desc>
         </method>
         <method type="BOOL">
           <sel>drawsOutsideLineFragmentForGlyphAtIndex:</sel>
-          <arg type="unsigned int">glyphIndex</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
-          <sel>drawUnderlineForGlyphRange:</sel>
-          <arg type="NSRange">glyphRange</arg>
-          <sel>underlineType:</sel>
-          <arg type="int">underlineType</arg>
-          <sel>baselineOffset:</sel>
-          <arg type="float">baselineOffset</arg>
-          <sel>lineFragmentRect:</sel>
-          <arg type="NSRect">lineRect</arg>
-          <sel>lineFragmentGlyphRange:</sel>
-          <arg type="NSRange">lineGlyphRange</arg>
-          <sel>containerOrigin:</sel>
-          <arg type="NSPoint">containerOrigin</arg>
+          <arg type="unsigned">glyphIndex</arg>
           <desc>
           </desc>
         </method>
@@ -111,58 +90,47 @@
           <desc>
           </desc>
         </method>
-        <method type="NSTextView*">
-          <sel>firstTextView</sel>
-          <desc>
-          </desc>
-        </method>
-        <method type="unsigned int">
+        <method type="unsigned">
           <sel>firstUnlaidCharacterIndex</sel>
           <desc>
           </desc>
         </method>
-        <method type="unsigned int">
+        <method type="unsigned">
           <sel>firstUnlaidGlyphIndex</sel>
-          <desc>
-          </desc>
-        </method>
-        <method type="float">
-          <sel>fractionOfDistanceThroughGlyphForPoint:</sel>
-          <arg type="NSPoint">aPoint</arg>
-          <sel>inTextContainer:</sel>
-          <arg type="NSTextContainer*">aTextContainer</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>getFirstUnlaidCharacterIndex:</sel>
-          <arg type="unsigned int*">charIndex</arg>
+          <arg type="unsigned*">charIndex</arg>
           <sel>glyphIndex:</sel>
-          <arg type="unsigned int*">glyphIndex</arg>
+          <arg type="unsigned*">glyphIndex</arg>
           <desc>
           </desc>
         </method>
-        <method type="unsigned int">
+        <method type="unsigned">
           <sel>getGlyphs:</sel>
           <arg type="NSGlyph*">glyphArray</arg>
+          <sel>range:</sel>
+          <arg type="NSRange">glyphRange</arg>
           <desc>
           </desc>
         </method>
         <method type="NSGlyph">
           <sel>glyphAtIndex:</sel>
-          <arg type="unsigned int">glyphIndex</arg>
+          <arg type="unsigned">index</arg>
           <desc>
           </desc>
         </method>
         <method type="NSGlyph">
           <sel>glyphAtIndex:</sel>
-          <arg type="unsigned int">glyphIndex</arg>
+          <arg type="unsigned">index</arg>
           <sel>isValidIndex:</sel>
           <arg type="BOOL*">flag</arg>
           <desc>
           </desc>
         </method>
-        <method type="unsigned int">
+        <method type="unsigned">
           <sel>glyphIndexForPoint:</sel>
           <arg type="NSPoint">aPoint</arg>
           <sel>inTextContainer:</sel>
@@ -170,7 +138,7 @@
           <desc>
           </desc>
         </method>
-        <method type="unsigned int">
+        <method type="unsigned">
           <sel>glyphIndexForPoint:</sel>
           <arg type="NSPoint">aPoint</arg>
           <sel>inTextContainer:</sel>
@@ -192,7 +160,7 @@
           <sel>glyphRangeForBoundingRectWithoutAdditionalLayout:</sel>
           <arg type="NSRect">bounds</arg>
           <sel>inTextContainer:</sel>
-          <arg type="NSTextContainer*">container</arg>
+          <arg type="NSTextContainer*">aTextContainer</arg>
           <desc>
           </desc>
         </method>
@@ -210,11 +178,6 @@
           <desc>
           </desc>
         </method>
-        <method type="float">
-          <sel>hyphenationFactor</sel>
-          <desc>
-          </desc>
-        </method>
         <method type="id">
           <sel>init</sel>
           <desc>
@@ -224,73 +187,63 @@
           <sel>insertGlyph:</sel>
           <arg type="NSGlyph">aGlyph</arg>
           <sel>atGlyphIndex:</sel>
-          <arg type="unsigned int">glyphIndex</arg>
+          <arg type="unsigned">glyphIndex</arg>
           <sel>characterIndex:</sel>
-          <arg type="unsigned int">charIndex</arg>
+          <arg type="unsigned">charIndex</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>insertTextContainer:</sel>
           <arg type="NSTextContainer*">aTextContainer</arg>
+          <sel>atIndex:</sel>
+          <arg type="unsigned">index</arg>
           <desc>
           </desc>
         </method>
         <method type="int">
           <sel>intAttribute:</sel>
-          <arg type="int">attributeTag</arg>
+          <arg type="int">attribute</arg>
           <sel>forGlyphAtIndex:</sel>
-          <arg type="unsigned int">glyphIndex</arg>
+          <arg type="unsigned">glyphIndex</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>invalidateDisplayForCharacterRange:</sel>
-          <arg type="NSRange">charRange</arg>
+          <arg type="NSRange">aRange</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>invalidateDisplayForGlyphRange:</sel>
-          <arg type="NSRange">glyphRange</arg>
+          <arg type="NSRange">aRange</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>invalidateGlyphsForCharacterRange:</sel>
-          <arg type="NSRange">charRange</arg>
+          <arg type="NSRange">aRange</arg>
           <sel>changeInLength:</sel>
           <arg type="int">lengthChange</arg>
           <sel>actualCharacterRange:</sel>
-          <arg type="NSRange*">actualCharRange</arg>
+          <arg type="NSRange*">actualRange</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>invalidateLayoutForCharacterRange:</sel>
-          <arg type="NSRange">charRange</arg>
+          <arg type="NSRange">aRange</arg>
           <sel>isSoft:</sel>
           <arg type="BOOL">flag</arg>
           <sel>actualCharacterRange:</sel>
-          <arg type="NSRange*">actualCharRange</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="BOOL">
-          <sel>isValidGlyphIndex:</sel>
-          <arg type="unsigned int">glyphIndex</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="BOOL">
-          <sel>layoutManagerOwnsFirstResponderInWindow:</sel>
-          <arg type="NSWindow*">aWindow</arg>
+          <arg type="NSRange*">actualRange</arg>
           <desc>
           </desc>
         </method>
         <method type="NSRect">
           <sel>lineFragmentRectForGlyphAtIndex:</sel>
-          <arg type="unsigned int">glyphIndex</arg>
+          <arg type="unsigned">glyphIndex</arg>
           <sel>effectiveRange:</sel>
           <arg type="NSRange*">lineFragmentRange</arg>
           <desc>
@@ -298,7 +251,7 @@
         </method>
         <method type="NSRect">
           <sel>lineFragmentUsedRectForGlyphAtIndex:</sel>
-          <arg type="unsigned int">glyphIndex</arg>
+          <arg type="unsigned">glyphIndex</arg>
           <sel>effectiveRange:</sel>
           <arg type="NSRange*">lineFragmentRange</arg>
           <desc>
@@ -306,24 +259,24 @@
         </method>
         <method type="NSPoint">
           <sel>locationForGlyphAtIndex:</sel>
-          <arg type="unsigned int">glyphIndex</arg>
+          <arg type="unsigned">glyphIndex</arg>
           <desc>
           </desc>
         </method>
         <method type="BOOL">
           <sel>notShownAttributeForGlyphAtIndex:</sel>
-          <arg type="unsigned int">glyphIndex</arg>
+          <arg type="unsigned">glyphIndex</arg>
           <desc>
           </desc>
         </method>
-        <method type="unsigned int">
+        <method type="unsigned">
           <sel>numberOfGlyphs</sel>
           <desc>
           </desc>
         </method>
         <method type="NSRange">
           <sel>rangeOfNominallySpacedGlyphsContainingIndex:</sel>
-          <arg type="unsigned int">glyphIndex</arg>
+          <arg type="unsigned">glyphIndex</arg>
           <desc>
           </desc>
         </method>
@@ -331,9 +284,11 @@
           <sel>rectArrayForCharacterRange:</sel>
           <arg type="NSRange">charRange</arg>
           <sel>withinSelectedCharacterRange:</sel>
-          <arg type="NSRange">selCharRange</arg>
+          <arg type="NSRange">selChareRange</arg>
           <sel>inTextContainer:</sel>
           <arg type="NSTextContainer*">aTextContainer</arg>
+          <sel>rectCount:</sel>
+          <arg type="unsigned*">rectCount</arg>
           <desc>
           </desc>
         </method>
@@ -341,21 +296,25 @@
           <sel>rectArrayForGlyphRange:</sel>
           <arg type="NSRange">glyphRange</arg>
           <sel>withinSelectedGlyphRange:</sel>
-          <arg type="NSRange">selGlyphRange</arg>
+          <arg type="NSRange">selectedGlyphRange</arg>
           <sel>inTextContainer:</sel>
           <arg type="NSTextContainer*">aTextContainer</arg>
+          <sel>rectCount:</sel>
+          <arg type="unsigned*">rectCount</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>removeTextContainerAtIndex:</sel>
-          <arg type="unsigned int">index</arg>
+          <arg type="unsigned">index</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>replaceGlyphAtIndex:</sel>
-          <arg type="unsigned int">glyphIndex</arg>
+          <arg type="unsigned">index</arg>
+          <sel>withGlyph:</sel>
+          <arg type="NSGlyph">newGlyph</arg>
           <desc>
           </desc>
         </method>
@@ -365,23 +324,11 @@
           <desc>
           </desc>
         </method>
-        <method type="NSView*">
-          <sel>rulerAccessoryViewForTextView:</sel>
-          <arg type="NSTextView*">aTextView</arg>
-          <sel>paragraphStyle:</sel>
-          <arg type="NSParagraphStyle*">paraStyle</arg>
-          <sel>ruler:</sel>
-          <arg type="NSRulerView *">aRulerView</arg>
-          <sel>enabled:</sel>
-          <arg type="BOOL">flag</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="NSArray*">
-          <sel>rulerMarkersForTextView:</sel>
-          <arg type="NSTextView*">aTextView</arg>
-          <sel>paragraphStyle:</sel>
-          <arg type="NSParagraphStyle*">paraStyle</arg>
+        <method type="void">
+          <sel>setAttachmentSize:</sel>
+          <arg type="NSSize">attachmentSize</arg>
+          <sel>forGlyphRange:</sel>
+          <arg type="NSRange">glyphRange</arg>
           <desc>
           </desc>
         </method>
@@ -393,15 +340,15 @@
         </method>
         <method type="void">
           <sel>setCharacterIndex:</sel>
-          <arg type="unsigned int">charIndex</arg>
+          <arg type="unsigned">charIndex</arg>
           <sel>forGlyphAtIndex:</sel>
-          <arg type="unsigned int">glyphIndex</arg>
+          <arg type="unsigned">glyphIndex</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setDelegate:</sel>
-          <arg type="id">anObject</arg>
+          <arg type="id">aDelegate</arg>
           <desc>
           </desc>
         </method>
@@ -409,7 +356,7 @@
           <sel>setDrawsOutsideLineFragment:</sel>
           <arg type="BOOL">flag</arg>
           <sel>forGlyphAtIndex:</sel>
-          <arg type="unsigned int">glyphIndex</arg>
+          <arg type="unsigned">glyphIndex</arg>
           <desc>
           </desc>
         </method>
@@ -424,18 +371,12 @@
           </desc>
         </method>
         <method type="void">
-          <sel>setHyphenationFactor:</sel>
-          <arg type="float">factor</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
           <sel>setIntAttribute:</sel>
-          <arg type="int">attributeTag</arg>
+          <arg type="int">attribute</arg>
           <sel>value:</sel>
           <arg type="int">anInt</arg>
           <sel>forGlyphAtIndex:</sel>
-          <arg type="unsigned int">glyphIndex</arg>
+          <arg type="unsigned">glyphIndex</arg>
           <desc>
           </desc>
         </method>
@@ -444,6 +385,8 @@
           <arg type="NSRect">fragmentRect</arg>
           <sel>forGlyphRange:</sel>
           <arg type="NSRange">glyphRange</arg>
+          <sel>usedRect:</sel>
+          <arg type="NSRect">usedRect</arg>
           <desc>
           </desc>
         </method>
@@ -459,7 +402,7 @@
           <sel>setNotShownAttribute:</sel>
           <arg type="BOOL">flag</arg>
           <sel>forGlyphAtIndex:</sel>
-          <arg type="unsigned int">glyphIndex</arg>
+          <arg type="unsigned">glyphIndex</arg>
           <desc>
           </desc>
         </method>
@@ -478,28 +421,20 @@
         <method type="void">
           <sel>setTextContainer:</sel>
           <arg type="NSTextContainer*">aTextContainer</arg>
+          <sel>forGlyphRange:</sel>
+          <arg type="NSRange">glyphRange</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setTextStorage:</sel>
-          <arg type="NSTextStorage*">textStorage</arg>
+          <arg type="NSTextStorage*">aTextStorage</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setUsesScreenFonts:</sel>
           <arg type="BOOL">flag</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="void">
-          <sel>showAttachmentCell:</sel>
-          <arg type="NSCell*">cell</arg>
-          <sel>inRect:</sel>
-          <arg type="NSRect">rect</arg>
-          <sel>characterIndex:</sel>
-          <arg type="unsigned int">attachmentIndex;</arg>
           <desc>
           </desc>
         </method>
@@ -521,21 +456,21 @@
         </method>
         <method type="void">
           <sel>textContainerChangedGeometry:</sel>
-          <arg type="NSTextContainer*">aTextContainer</arg>
+          <arg type="NSTextContainer*">aContainer</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>textContainerChangedTextView:</sel>
-          <arg type="NSTextContainer*">aTextContainer</arg>
+          <arg type="NSTextContainer*">aContainer</arg>
           <desc>
           </desc>
         </method>
         <method type="NSTextContainer*">
           <sel>textContainerForGlyphAtIndex:</sel>
-          <arg type="unsigned int">glyphIndex</arg>
+          <arg type="unsigned">glyphIndex</arg>
           <sel>effectiveRange:</sel>
-          <arg type="NSRange*">effectiveGlyphRange</arg>
+          <arg type="NSRange*">effectiveRange</arg>
           <desc>
           </desc>
         </method>
@@ -553,13 +488,124 @@
           <sel>textStorage:</sel>
           <arg type="NSTextStorage*">aTextStorage</arg>
           <sel>edited:</sel>
-          <arg type="unsigned int">mask</arg>
+          <arg type="unsigned">mask</arg>
           <sel>range:</sel>
           <arg type="NSRange">range</arg>
           <sel>changeInLength:</sel>
           <arg type="int">lengthChange</arg>
           <sel>invalidatedRange:</sel>
-          <arg type="NSRange">invalidatedCharRange</arg>
+          <arg type="NSRange">invalidatedRange</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSRect">
+          <sel>usedRectForTextContainer:</sel>
+          <arg type="NSTextContainer*">container</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>usesScreenFonts</sel>
+          <desc>
+          </desc>
+        </method>
+      </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSLayoutManager(NSTextViewSupport)
+        category
+      </heading>
+      <category name="NSTextViewSupport" class="NSLayoutManager">
+        <declared>AppKit/NSLayoutManager.h</declared>
+        <desc>
+        </desc>
+        <method type="unsigned">
+          <sel>_charIndexForInsertionPointMovingFromY:</sel>
+          <arg type="float">position</arg>
+          <sel>bestX:</sel>
+          <arg type="float">wanted</arg>
+          <sel>up:</sel>
+          <arg type="BOOL">upFlag</arg>
+          <sel>textContainer:</sel>
+          <arg type="NSTextContainer*">tc</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>drawBackgroundForGlyphRange:</sel>
+          <arg type="NSRange">glyphsToShow</arg>
+          <sel>atPoint:</sel>
+          <arg type="NSPoint">origin</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>drawGlyphsForGlyphRange:</sel>
+          <arg type="NSRange">glyphsToShow</arg>
+          <sel>atPoint:</sel>
+          <arg type="NSPoint">origin</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>drawUnderlineForGlyphRange:</sel>
+          <arg type="NSRange">glyphRange</arg>
+          <sel>underlineType:</sel>
+          <arg type="int">underlineVal</arg>
+          <sel>baselineOffset:</sel>
+          <arg type="float">baselineOffset</arg>
+          <sel>lineFragmentRect:</sel>
+          <arg type="NSRect">lineRect</arg>
+          <sel>lineFragmentGlyphRange:</sel>
+          <arg type="NSRange">lineGlyphRange</arg>
+          <sel>containerOrigin:</sel>
+          <arg type="NSPoint">containerOrigin</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSTextView*">
+          <sel>firstTextView</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="float">
+          <sel>hyphenationFactor</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="BOOL">
+          <sel>layoutManagerOwnsFirstResponderInWindow:</sel>
+          <arg type="NSWindow*">window</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSView*">
+          <sel>rulerAccessoryViewForTextView:</sel>
+          <arg type="NSTextView*">view</arg>
+          <sel>paragraphStyle:</sel>
+          <arg type="NSParagraphStyle*">style</arg>
+          <sel>ruler:</sel>
+          <arg type="NSRulerView*">ruler</arg>
+          <sel>enabled:</sel>
+          <arg type="BOOL">isEnabled</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSArray*">
+          <sel>rulerMarkersForTextView:</sel>
+          <arg type="NSTextView*">view</arg>
+          <sel>paragraphStyle:</sel>
+          <arg type="NSParagraphStyle*">style</arg>
+          <sel>ruler:</sel>
+          <arg type="NSRulerView*">ruler</arg>
+          <desc>
+          </desc>
+        </method>
+        <method type="void">
+          <sel>setHyphenationFactor:</sel>
+          <arg type="float">factor</arg>
           <desc>
           </desc>
         </method>
@@ -572,7 +618,7 @@
           <sel>underlineGlyphRange:</sel>
           <arg type="NSRange">glyphRange</arg>
           <sel>underlineType:</sel>
-          <arg type="int">underlineType</arg>
+          <arg type="int">underlineVal</arg>
           <sel>lineFragmentRect:</sel>
           <arg type="NSRect">lineRect</arg>
           <sel>lineFragmentGlyphRange:</sel>
@@ -582,32 +628,35 @@
           <desc>
           </desc>
         </method>
-        <method type="NSRect">
-          <sel>usedRectForTextContainer:</sel>
-          <arg type="NSTextContainer*">aTextContainer</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="BOOL">
-          <sel>usesScreenFonts</sel>
-          <desc>
-          </desc>
-        </method>
+      </category>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSObject(NSLayoutManagerDelegate)
+        category
+      </heading>
+      <category name="NSLayoutManagerDelegate" class="NSObject">
+        <declared>AppKit/NSLayoutManager.h</declared>
+        <desc>
+        </desc>
         <method type="void">
           <sel>layoutManager:</sel>
-          <arg type="NSLayoutManager*">aLayoutManager</arg>
+          <arg type="NSLayoutManager*">layoutManager</arg>
           <sel>didCompleteLayoutForTextContainer:</sel>
-          <arg type="NSTextContainer*">aTextContainer</arg>
+          <arg type="NSTextContainer*">textContainer</arg>
+          <sel>atEnd:</sel>
+          <arg type="BOOL">layoutFinishedFlag</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>layoutManagerDidInvalidateLayout:</sel>
-          <arg type="NSLayoutManager*">aLayoutManager</arg>
+          <arg type="NSLayoutManager*">sender</arg>
           <desc>
           </desc>
         </method>
-      </class>
+      </category>
     </chapter>
   </body>
 </gsdoc>

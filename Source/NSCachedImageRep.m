@@ -1,11 +1,10 @@
-/*
-   NSCachedImageRep.m
+/** <title>NSCachedImageRep</title>
 
-   Cached image representation.
+   <abstract>Cached image representation.</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
    
-   Author:  Adam Fedor <fedor@colorado.edu>
+   Author:  Adam Fedor <fedor@gnu.org>
    Date: Feb 1996
    
    This file is part of the GNUstep GUI Library.

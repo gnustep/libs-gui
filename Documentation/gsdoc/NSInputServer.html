@@ -1,112 +1,159 @@
-<html><head>
- <title>NSInputServer</title>
-</head>
-<body>
-<a href ="NSInputManager.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSLayoutManager.html">[Next] </a>
-<h1>NSInputServer</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSInputServer</a></h2>
-<h2><a name ="NSInputServer">NSInputServer</a></h2>
-<p><b>Declared in: </b> Gui/NSInputServer.h</p>
-<p><b>Inherits from: </b> NSObject</p>
-<p><b>Conforms to: </b> NSObject
-</p>
-<hr>
+<html>
+  <head>
+    <title>NSInputServer</title>
+  </head>
+  <body>
+    <h1>NSInputServer</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Fred Kiefer(<a href="mailto:FredKiefer@gmx.de"><code>
+        FredKiefer@gmx.de
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <p>Copyright: (C) 2001 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the NSInputServer class
+      </h1>
+    <h2><a name="class$NSInputServer">NSInputServer</a> : NSObject</h2>
+    Declared: AppKit/NSInputServer.h<br />
+    Conform: <a href="#protocol$(NSInputServerMouseTracker)">NSInputServerMouseTracker</a><br />
+    Conform: <a href="#protocol$(NSInputServiceProvider)">NSInputServiceProvider</a><br />
+    <p>
 
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSInputServer.html#method-4">-</a>
-<li ><a href ="NSInputServer.html#method-0">-activeConversationWillChange:oldConversation:newConversation:</a>
-<li ><a href ="NSInputServer.html#method-1">-canBeDisabled</a>
-<li ><a href ="NSInputServer.html#method-2">-cancelInput:conversation:</a>
-<li ><a href ="NSInputServer.html#method-3">-doCommandBySelector:sender:conversation:</a>
-<li ><a href ="NSInputServer.html#method-5">-insertText:sender:conversation:</a>
-<li ><a href ="NSInputServer.html#method-6">-markedTextSelectionChanged:sender:conversation:</a>
-<li ><a href ="NSInputServer.html#method-7">-markedTextWillBeAbandoned:conversation:</a>
-<li ><a href ="NSInputServer.html#method-8">-senderDidBecomeActive:</a>
-<li ><a href ="NSInputServer.html#method-9">-senderDidResignActive:</a>
-<li ><a href ="NSInputServer.html#method-10">-setActivated:sender:</a>
-<li ><a href ="NSInputServer.html#method-11">-terminate:</a>
-<li ><a href ="NSInputServer.html#method-12">-wantsToInterpretAllKeystrokes</a>
-</ul>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-0">activeConversationWillChange:oldConversation:newConversation:</a></h3>
-- (void) <b>activeConversationWillChange:</b> (id)sender <b>oldConversation:</b> (long)conv <b>newConversation:</b> (long)new;<br>
+            </p>
+    <h3>initWithDelegate:name:</a></h3>
+    - (id) <b>initWithDelegate:</b> (id)aDelegate<b> name:</b> (NSString*)name;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-1">canBeDisabled</a></h3>
-- (BOOL) <b>canBeDisabled</b>;<br>
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the
+        NSInputServerMouseTracker protocol
+      </h1>
+    <h2><a name="protocol$(NSInputServerMouseTracker)">NSInputServerMouseTracker</a></h2>
+    Declared: AppKit/NSInputServer.h<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-2">cancelInput:conversation:</a></h3>
-- (void) <b>cancelInput:</b> (id)sender <b>conversation:</b> (long)conv;<br>
+            </p>
+    <h3>mouseDownOnCharacterIndex:atCoordinate:withModifier:client:</a></h3>
+    - (BOOL) <b>mouseDownOnCharacterIndex:</b> (unsigned)index<b> atCoordinate:</b> (NSPoint)point<b> withModifier:</b> (unsigned int)flags<b> client:</b> (id)sender;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-3">doCommandBySelector:sender:conversation:</a></h3>
-- (void) <b>doCommandBySelector:</b> (SEL)aSelector <b>sender:</b> (id)sender <b>conversation:</b> (long)conv;<br>
+              </p>
+    <hr />
+    <h3>mouseDraggedOnCharacterIndex:atCoordinate:withModifier:client:</a></h3>
+    - (BOOL) <b>mouseDraggedOnCharacterIndex:</b> (unsigned)index<b> atCoordinate:</b> (NSPoint)point<b> withModifier:</b> (unsigned int)flags<b> client:</b> (id)sender;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-4"></a></h3>
-- (id) <b></b>;<br>
+              </p>
+    <hr />
+    <h3>mouseUpOnCharacterIndex:atCoordinate:withModifier:client:</a></h3>
+    - (void) <b>mouseUpOnCharacterIndex:</b> (unsigned)index<b> atCoordinate:</b> (NSPoint)point<b> withModifier:</b> (unsigned int)flags<b> client:</b> (id)sender;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-5">insertText:sender:conversation:</a></h3>
-- (void) <b>insertText:</b> (NSString*)aString <b>sender:</b> (id)sender <b>conversation:</b> (long)conv;<br>
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the NSInputServiceProvider
+        protocol
+      </h1>
+    <h2><a name="protocol$(NSInputServiceProvider)">NSInputServiceProvider</a></h2>
+    Declared: AppKit/NSInputServer.h<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-6">markedTextSelectionChanged:sender:conversation:</a></h3>
-- (void) <b>markedTextSelectionChanged:</b> (NSRange)aRange <b>sender:</b> (id)sender <b>conversation:</b> (long)conv;<br>
+            </p>
+    <h3>activeConversationChanged:toNewConversation:</a></h3>
+    - (void) <b>activeConversationChanged:</b> (id)sender<b> toNewConversation:</b> (long)newConversation;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-7">markedTextWillBeAbandoned:conversation:</a></h3>
-- (void) <b>markedTextWillBeAbandoned:</b> (id)sender <b>conversation:</b> (long)conv;<br>
+              </p>
+    <hr />
+    <h3>activeConversationWillChange:fromOldConversation:</a></h3>
+    - (void) <b>activeConversationWillChange:</b> (id)sender<b> fromOldConversation:</b> (long)oldConversation;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-8">senderDidBecomeActive:</a></h3>
-- (void) <b>senderDidBecomeActive:</b> (id)sender;<br>
+              </p>
+    <hr />
+    <h3>canBeDisabled</a></h3>
+    - (BOOL) <b>canBeDisabled</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-9">senderDidResignActive:</a></h3>
-- (void) <b>senderDidResignActive:</b> (id)sender;<br>
+              </p>
+    <hr />
+    <h3>doCommandBySelector:client:</a></h3>
+    - (void) <b>doCommandBySelector:</b> (SEL)aSelector<b> client:</b> (id)sender;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-10">setActivated:sender:</a></h3>
-- (void) <b>setActivated:</b> (BOOL)flag <b>sender:</b> (id)sender;<br>
+              </p>
+    <hr />
+    <h3>inputClientBecomeActive:</a></h3>
+    - (void) <b>inputClientBecomeActive:</b> (id)sender;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-11">terminate:</a></h3>
-- (void) <b>terminate:</b> (id)sender;<br>
+              </p>
+    <hr />
+    <h3>inputClientDisabled:</a></h3>
+    - (void) <b>inputClientDisabled:</b> (id)sender;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-12">wantsToInterpretAllKeystrokes</a></h3>
-- (BOOL) <b>wantsToInterpretAllKeystrokes</b>;<br>
+              </p>
+    <hr />
+    <h3>inputClientEnabled:</a></h3>
+    - (void) <b>inputClientEnabled:</b> (id)sender;<br />
+    <p>
 
-          
- <hr>
-</body>
+              </p>
+    <hr />
+    <h3>inputClientResignActive:</a></h3>
+    - (void) <b>inputClientResignActive:</b> (id)sender;<br />
+    <p>
 
- </html>
+              </p>
+    <hr />
+    <h3>insertText:client:</a></h3>
+    - (void) <b>insertText:</b> (id)aString<b> client:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>markedTextAbandoned:</a></h3>
+    - (void) <b>markedTextAbandoned:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>markedTextSelectionChanged:client:</a></h3>
+    - (void) <b>markedTextSelectionChanged:</b> (NSRange)newSelection<b> client:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>terminate:</a></h3>
+    - (void) <b>terminate:</b> (id)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>wantsToDelayTextChangeNotifications</a></h3>
+    - (BOOL) <b>wantsToDelayTextChangeNotifications</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>wantsToHandleMouseEvents</a></h3>
+    - (BOOL) <b>wantsToHandleMouseEvents</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>wantsToInterpretAllKeystrokes</a></h3>
+    - (BOOL) <b>wantsToInterpretAllKeystrokes</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+  </body>
+</html>

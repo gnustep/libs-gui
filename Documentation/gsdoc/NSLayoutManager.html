@@ -1,532 +1,544 @@
-<html><head>
- <title>NSLayoutManager</title>
-</head>
-<body>
-<a href ="NSInputServer.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSMatrix.html">[Next] </a>
-<h1>NSLayoutManager</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSLayoutManager</a></h2>
-<h2><a name ="NSLayoutManager">NSLayoutManager</a></h2>
-<p><b>Declared in: </b> Gui/NSLayoutManager.h</p>
-<p><b>Inherits from: </b> NSObject</p>
-<p><b>Conforms to: </b> NSObject
-</p>
-<hr>
-
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSLayoutManager.html#method-0">-addTextContainer:</a>
-<li ><a href ="NSLayoutManager.html#method-1">-backgroundLayoutEnabled</a>
-<li ><a href ="NSLayoutManager.html#method-2">-boundingRectForGlyphRange:inTextContainer:</a>
-<li ><a href ="NSLayoutManager.html#method-3">-characterIndexForGlyphAtIndex:</a>
-<li ><a href ="NSLayoutManager.html#method-4">-characterRangeForGlyphRange:actualGlyphRange:</a>
-<li ><a href ="NSLayoutManager.html#method-5">-delegate</a>
-<li ><a href ="NSLayoutManager.html#method-6">-deleteGlyphsInRange:</a>
-<li ><a href ="NSLayoutManager.html#method-7">-drawBackgroundForGlyphRange:</a>
-<li ><a href ="NSLayoutManager.html#method-8">-drawGlyphsForGlyphRange:</a>
-<li ><a href ="NSLayoutManager.html#method-10">-drawUnderlineForGlyphRange:underlineType:baselineOffset:lineFragmentRect:lineFragmentGlyphRange:containerOrigin:</a>
-<li ><a href ="NSLayoutManager.html#method-9">-drawsOutsideLineFragmentForGlyphAtIndex:</a>
-<li ><a href ="NSLayoutManager.html#method-11">-extraLineFragmentRect</a>
-<li ><a href ="NSLayoutManager.html#method-12">-extraLineFragmentTextContainer</a>
-<li ><a href ="NSLayoutManager.html#method-13">-extraLineFragmentUsedRect</a>
-<li ><a href ="NSLayoutManager.html#method-14">-firstTextView</a>
-<li ><a href ="NSLayoutManager.html#method-15">-firstUnlaidCharacterIndex</a>
-<li ><a href ="NSLayoutManager.html#method-16">-firstUnlaidGlyphIndex</a>
-<li ><a href ="NSLayoutManager.html#method-17">-fractionOfDistanceThroughGlyphForPoint:inTextContainer:</a>
-<li ><a href ="NSLayoutManager.html#method-18">-getFirstUnlaidCharacterIndex:glyphIndex:</a>
-<li ><a href ="NSLayoutManager.html#method-19">-getGlyphs:</a>
-<li ><a href ="NSLayoutManager.html#method-20">-glyphAtIndex:</a>
-<li ><a href ="NSLayoutManager.html#method-21">-glyphAtIndex:isValidIndex:</a>
-<li ><a href ="NSLayoutManager.html#method-22">-glyphIndexForPoint:inTextContainer:</a>
-<li ><a href ="NSLayoutManager.html#method-23">-glyphIndexForPoint:inTextContainer:fractionOfDistanceThroughGlyph:</a>
-<li ><a href ="NSLayoutManager.html#method-24">-glyphRangeForBoundingRect:inTextContainer:</a>
-<li ><a href ="NSLayoutManager.html#method-25">-glyphRangeForBoundingRectWithoutAdditionalLayout:inTextContainer:</a>
-<li ><a href ="NSLayoutManager.html#method-26">-glyphRangeForCharacterRange:actualCharacterRange:</a>
-<li ><a href ="NSLayoutManager.html#method-27">-glyphRangeForTextContainer:</a>
-<li ><a href ="NSLayoutManager.html#method-28">-hyphenationFactor</a>
-<li ><a href ="NSLayoutManager.html#method-29">-init</a>
-<li ><a href ="NSLayoutManager.html#method-30">-insertGlyph:atGlyphIndex:characterIndex:</a>
-<li ><a href ="NSLayoutManager.html#method-31">-insertTextContainer:</a>
-<li ><a href ="NSLayoutManager.html#method-32">-intAttribute:forGlyphAtIndex:</a>
-<li ><a href ="NSLayoutManager.html#method-33">-invalidateDisplayForCharacterRange:</a>
-<li ><a href ="NSLayoutManager.html#method-34">-invalidateDisplayForGlyphRange:</a>
-<li ><a href ="NSLayoutManager.html#method-35">-invalidateGlyphsForCharacterRange:changeInLength:actualCharacterRange:</a>
-<li ><a href ="NSLayoutManager.html#method-36">-invalidateLayoutForCharacterRange:isSoft:actualCharacterRange:</a>
-<li ><a href ="NSLayoutManager.html#method-37">-isValidGlyphIndex:</a>
-<li ><a href ="NSLayoutManager.html#method-81">-layoutManager:didCompleteLayoutForTextContainer:</a>
-<li ><a href ="NSLayoutManager.html#method-82">-layoutManagerDidInvalidateLayout:</a>
-<li ><a href ="NSLayoutManager.html#method-38">-layoutManagerOwnsFirstResponderInWindow:</a>
-<li ><a href ="NSLayoutManager.html#method-39">-lineFragmentRectForGlyphAtIndex:effectiveRange:</a>
-<li ><a href ="NSLayoutManager.html#method-40">-lineFragmentUsedRectForGlyphAtIndex:effectiveRange:</a>
-<li ><a href ="NSLayoutManager.html#method-41">-locationForGlyphAtIndex:</a>
-<li ><a href ="NSLayoutManager.html#method-42">-notShownAttributeForGlyphAtIndex:</a>
-<li ><a href ="NSLayoutManager.html#method-43">-numberOfGlyphs</a>
-<li ><a href ="NSLayoutManager.html#method-44">-rangeOfNominallySpacedGlyphsContainingIndex:</a>
-<li ><a href ="NSLayoutManager.html#method-45">-rectArrayForCharacterRange:withinSelectedCharacterRange:inTextContainer:</a>
-<li ><a href ="NSLayoutManager.html#method-46">-rectArrayForGlyphRange:withinSelectedGlyphRange:inTextContainer:</a>
-<li ><a href ="NSLayoutManager.html#method-47">-removeTextContainerAtIndex:</a>
-<li ><a href ="NSLayoutManager.html#method-48">-replaceGlyphAtIndex:</a>
-<li ><a href ="NSLayoutManager.html#method-49">-replaceTextStorage:</a>
-<li ><a href ="NSLayoutManager.html#method-50">-rulerAccessoryViewForTextView:paragraphStyle:ruler:enabled:</a>
-<li ><a href ="NSLayoutManager.html#method-51">-rulerMarkersForTextView:paragraphStyle:</a>
-<li ><a href ="NSLayoutManager.html#method-52">-setBackgroundLayoutEnabled:</a>
-<li ><a href ="NSLayoutManager.html#method-53">-setCharacterIndex:forGlyphAtIndex:</a>
-<li ><a href ="NSLayoutManager.html#method-54">-setDelegate:</a>
-<li ><a href ="NSLayoutManager.html#method-55">-setDrawsOutsideLineFragment:forGlyphAtIndex:</a>
-<li ><a href ="NSLayoutManager.html#method-56">-setExtraLineFragmentRect:usedRect:textContainer:</a>
-<li ><a href ="NSLayoutManager.html#method-57">-setHyphenationFactor:</a>
-<li ><a href ="NSLayoutManager.html#method-58">-setIntAttribute:value:forGlyphAtIndex:</a>
-<li ><a href ="NSLayoutManager.html#method-59">-setLineFragmentRect:forGlyphRange:</a>
-<li ><a href ="NSLayoutManager.html#method-60">-setLocation:forStartOfGlyphRange:</a>
-<li ><a href ="NSLayoutManager.html#method-61">-setNotShownAttribute:forGlyphAtIndex:</a>
-<li ><a href ="NSLayoutManager.html#method-62">-setShowsControlCharacters:</a>
-<li ><a href ="NSLayoutManager.html#method-63">-setShowsInvisibleCharacters:</a>
-<li ><a href ="NSLayoutManager.html#method-64">-setTextContainer:</a>
-<li ><a href ="NSLayoutManager.html#method-65">-setTextStorage:</a>
-<li ><a href ="NSLayoutManager.html#method-66">-setUsesScreenFonts:</a>
-<li ><a href ="NSLayoutManager.html#method-67">-showAttachmentCell:inRect:characterIndex:</a>
-<li ><a href ="NSLayoutManager.html#method-68">-showsControlCharacters</a>
-<li ><a href ="NSLayoutManager.html#method-69">-showsInvisibleCharacters</a>
-<li ><a href ="NSLayoutManager.html#method-70">-substituteFontForFont:</a>
-<li ><a href ="NSLayoutManager.html#method-71">-textContainerChangedGeometry:</a>
-<li ><a href ="NSLayoutManager.html#method-72">-textContainerChangedTextView:</a>
-<li ><a href ="NSLayoutManager.html#method-73">-textContainerForGlyphAtIndex:effectiveRange:</a>
-<li ><a href ="NSLayoutManager.html#method-74">-textContainers</a>
-<li ><a href ="NSLayoutManager.html#method-75">-textStorage</a>
-<li ><a href ="NSLayoutManager.html#method-76">-textStorage:edited:range:changeInLength:invalidatedRange:</a>
-<li ><a href ="NSLayoutManager.html#method-77">-textViewForBeginningOfSelection</a>
-<li ><a href ="NSLayoutManager.html#method-78">-underlineGlyphRange:underlineType:lineFragmentRect:lineFragmentGlyphRange:containerOrigin:</a>
-<li ><a href ="NSLayoutManager.html#method-79">-usedRectForTextContainer:</a>
-<li ><a href ="NSLayoutManager.html#method-80">-usesScreenFonts</a>
-</ul>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-0">addTextContainer:</a></h3>
-- (void) <b>addTextContainer:</b> (NSTextContainer*)aTextContainer;<br>
-
-          
- <hr>
-<h3><a name ="method-1">backgroundLayoutEnabled</a></h3>
-- (BOOL) <b>backgroundLayoutEnabled</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-2">boundingRectForGlyphRange:inTextContainer:</a></h3>
-- (NSRect) <b>boundingRectForGlyphRange:</b> (NSRange)glyphRange <b>inTextContainer:</b> (NSTextContainer*)aTextContainer;<br>
-
-          
- <hr>
-<h3><a name ="method-3">characterIndexForGlyphAtIndex:</a></h3>
-- (unsigned int) <b>characterIndexForGlyphAtIndex:</b> (unsigned int)glyphIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-4">characterRangeForGlyphRange:actualGlyphRange:</a></h3>
-- (NSRange) <b>characterRangeForGlyphRange:</b> (NSRange)glyphRange <b>actualGlyphRange:</b> (NSRange*)actualGlyphRange;<br>
-
-          
- <hr>
-<h3><a name ="method-5">delegate</a></h3>
-- (id) <b>delegate</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-6">deleteGlyphsInRange:</a></h3>
-- (void) <b>deleteGlyphsInRange:</b> (NSRange)glyphRange;<br>
-
-          
- <hr>
-<h3><a name ="method-7">drawBackgroundForGlyphRange:</a></h3>
-- (void) <b>drawBackgroundForGlyphRange:</b> (NSRange)glyphRange;<br>
-
-          
- <hr>
-<h3><a name ="method-8">drawGlyphsForGlyphRange:</a></h3>
-- (void) <b>drawGlyphsForGlyphRange:</b> (NSRange)glyphRange;<br>
-
-          
- <hr>
-<h3><a name ="method-9">drawsOutsideLineFragmentForGlyphAtIndex:</a></h3>
-- (BOOL) <b>drawsOutsideLineFragmentForGlyphAtIndex:</b> (unsigned int)glyphIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-10">drawUnderlineForGlyphRange:underlineType:baselineOffset:lineFragmentRect:lineFragmentGlyphRange:containerOrigin:</a></h3>
-- (void) <b>drawUnderlineForGlyphRange:</b> (NSRange)glyphRange <b>underlineType:</b> (int)underlineType <b>baselineOffset:</b> (float)baselineOffset <b>lineFragmentRect:</b> (NSRect)lineRect <b>lineFragmentGlyphRange:</b> (NSRange)lineGlyphRange <b>containerOrigin:</b> (NSPoint)containerOrigin;<br>
-
-          
- <hr>
-<h3><a name ="method-11">extraLineFragmentRect</a></h3>
-- (NSRect) <b>extraLineFragmentRect</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-12">extraLineFragmentTextContainer</a></h3>
-- (NSTextContainer*) <b>extraLineFragmentTextContainer</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-13">extraLineFragmentUsedRect</a></h3>
-- (NSRect) <b>extraLineFragmentUsedRect</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-14">firstTextView</a></h3>
-- (NSTextView*) <b>firstTextView</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-15">firstUnlaidCharacterIndex</a></h3>
-- (unsigned int) <b>firstUnlaidCharacterIndex</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-16">firstUnlaidGlyphIndex</a></h3>
-- (unsigned int) <b>firstUnlaidGlyphIndex</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-17">fractionOfDistanceThroughGlyphForPoint:inTextContainer:</a></h3>
-- (float) <b>fractionOfDistanceThroughGlyphForPoint:</b> (NSPoint)aPoint <b>inTextContainer:</b> (NSTextContainer*)aTextContainer;<br>
-
-          
- <hr>
-<h3><a name ="method-18">getFirstUnlaidCharacterIndex:glyphIndex:</a></h3>
-- (void) <b>getFirstUnlaidCharacterIndex:</b> (unsigned int*)charIndex <b>glyphIndex:</b> (unsigned int*)glyphIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-19">getGlyphs:</a></h3>
-- (unsigned int) <b>getGlyphs:</b> (NSGlyph*)glyphArray;<br>
-
-          
- <hr>
-<h3><a name ="method-20">glyphAtIndex:</a></h3>
-- (NSGlyph) <b>glyphAtIndex:</b> (unsigned int)glyphIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-21">glyphAtIndex:isValidIndex:</a></h3>
-- (NSGlyph) <b>glyphAtIndex:</b> (unsigned int)glyphIndex <b>isValidIndex:</b> (BOOL*)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-22">glyphIndexForPoint:inTextContainer:</a></h3>
-- (unsigned int) <b>glyphIndexForPoint:</b> (NSPoint)aPoint <b>inTextContainer:</b> (NSTextContainer*)aTextContainer;<br>
-
-          
- <hr>
-<h3><a name ="method-23">glyphIndexForPoint:inTextContainer:fractionOfDistanceThroughGlyph:</a></h3>
-- (unsigned int) <b>glyphIndexForPoint:</b> (NSPoint)aPoint <b>inTextContainer:</b> (NSTextContainer*)aTextContainer <b>fractionOfDistanceThroughGlyph:</b> (float*)partialFraction;<br>
-
-          
- <hr>
-<h3><a name ="method-24">glyphRangeForBoundingRect:inTextContainer:</a></h3>
-- (NSRange) <b>glyphRangeForBoundingRect:</b> (NSRect)aRect <b>inTextContainer:</b> (NSTextContainer*)aTextContainer;<br>
-
-          
- <hr>
-<h3><a name ="method-25">glyphRangeForBoundingRectWithoutAdditionalLayout:inTextContainer:</a></h3>
-- (NSRange) <b>glyphRangeForBoundingRectWithoutAdditionalLayout:</b> (NSRect)bounds <b>inTextContainer:</b> (NSTextContainer*)container;<br>
-
-          
- <hr>
-<h3><a name ="method-26">glyphRangeForCharacterRange:actualCharacterRange:</a></h3>
-- (NSRange) <b>glyphRangeForCharacterRange:</b> (NSRange)charRange <b>actualCharacterRange:</b> (NSRange*)actualCharRange;<br>
-
-          
- <hr>
-<h3><a name ="method-27">glyphRangeForTextContainer:</a></h3>
-- (NSRange) <b>glyphRangeForTextContainer:</b> (NSTextContainer*)aTextContainer;<br>
-
-          
- <hr>
-<h3><a name ="method-28">hyphenationFactor</a></h3>
-- (float) <b>hyphenationFactor</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-29">init</a></h3>
-- (id) <b>init</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-30">insertGlyph:atGlyphIndex:characterIndex:</a></h3>
-- (void) <b>insertGlyph:</b> (NSGlyph)aGlyph <b>atGlyphIndex:</b> (unsigned int)glyphIndex <b>characterIndex:</b> (unsigned int)charIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-31">insertTextContainer:</a></h3>
-- (void) <b>insertTextContainer:</b> (NSTextContainer*)aTextContainer;<br>
-
-          
- <hr>
-<h3><a name ="method-32">intAttribute:forGlyphAtIndex:</a></h3>
-- (int) <b>intAttribute:</b> (int)attributeTag <b>forGlyphAtIndex:</b> (unsigned int)glyphIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-33">invalidateDisplayForCharacterRange:</a></h3>
-- (void) <b>invalidateDisplayForCharacterRange:</b> (NSRange)charRange;<br>
-
-          
- <hr>
-<h3><a name ="method-34">invalidateDisplayForGlyphRange:</a></h3>
-- (void) <b>invalidateDisplayForGlyphRange:</b> (NSRange)glyphRange;<br>
-
-          
- <hr>
-<h3><a name ="method-35">invalidateGlyphsForCharacterRange:changeInLength:actualCharacterRange:</a></h3>
-- (void) <b>invalidateGlyphsForCharacterRange:</b> (NSRange)charRange <b>changeInLength:</b> (int)lengthChange <b>actualCharacterRange:</b> (NSRange*)actualCharRange;<br>
-
-          
- <hr>
-<h3><a name ="method-36">invalidateLayoutForCharacterRange:isSoft:actualCharacterRange:</a></h3>
-- (void) <b>invalidateLayoutForCharacterRange:</b> (NSRange)charRange <b>isSoft:</b> (BOOL)flag <b>actualCharacterRange:</b> (NSRange*)actualCharRange;<br>
-
-          
- <hr>
-<h3><a name ="method-37">isValidGlyphIndex:</a></h3>
-- (BOOL) <b>isValidGlyphIndex:</b> (unsigned int)glyphIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-38">layoutManagerOwnsFirstResponderInWindow:</a></h3>
-- (BOOL) <b>layoutManagerOwnsFirstResponderInWindow:</b> (NSWindow*)aWindow;<br>
-
-          
- <hr>
-<h3><a name ="method-39">lineFragmentRectForGlyphAtIndex:effectiveRange:</a></h3>
-- (NSRect) <b>lineFragmentRectForGlyphAtIndex:</b> (unsigned int)glyphIndex <b>effectiveRange:</b> (NSRange*)lineFragmentRange;<br>
-
-          
- <hr>
-<h3><a name ="method-40">lineFragmentUsedRectForGlyphAtIndex:effectiveRange:</a></h3>
-- (NSRect) <b>lineFragmentUsedRectForGlyphAtIndex:</b> (unsigned int)glyphIndex <b>effectiveRange:</b> (NSRange*)lineFragmentRange;<br>
-
-          
- <hr>
-<h3><a name ="method-41">locationForGlyphAtIndex:</a></h3>
-- (NSPoint) <b>locationForGlyphAtIndex:</b> (unsigned int)glyphIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-42">notShownAttributeForGlyphAtIndex:</a></h3>
-- (BOOL) <b>notShownAttributeForGlyphAtIndex:</b> (unsigned int)glyphIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-43">numberOfGlyphs</a></h3>
-- (unsigned int) <b>numberOfGlyphs</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-44">rangeOfNominallySpacedGlyphsContainingIndex:</a></h3>
-- (NSRange) <b>rangeOfNominallySpacedGlyphsContainingIndex:</b> (unsigned int)glyphIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-45">rectArrayForCharacterRange:withinSelectedCharacterRange:inTextContainer:</a></h3>
-- (NSRect*) <b>rectArrayForCharacterRange:</b> (NSRange)charRange <b>withinSelectedCharacterRange:</b> (NSRange)selCharRange <b>inTextContainer:</b> (NSTextContainer*)aTextContainer;<br>
-
-          
- <hr>
-<h3><a name ="method-46">rectArrayForGlyphRange:withinSelectedGlyphRange:inTextContainer:</a></h3>
-- (NSRect*) <b>rectArrayForGlyphRange:</b> (NSRange)glyphRange <b>withinSelectedGlyphRange:</b> (NSRange)selGlyphRange <b>inTextContainer:</b> (NSTextContainer*)aTextContainer;<br>
-
-          
- <hr>
-<h3><a name ="method-47">removeTextContainerAtIndex:</a></h3>
-- (void) <b>removeTextContainerAtIndex:</b> (unsigned int)index;<br>
-
-          
- <hr>
-<h3><a name ="method-48">replaceGlyphAtIndex:</a></h3>
-- (void) <b>replaceGlyphAtIndex:</b> (unsigned int)glyphIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-49">replaceTextStorage:</a></h3>
-- (void) <b>replaceTextStorage:</b> (NSTextStorage*)newTextStorage;<br>
-
-          
- <hr>
-<h3><a name ="method-50">rulerAccessoryViewForTextView:paragraphStyle:ruler:enabled:</a></h3>
-- (NSView*) <b>rulerAccessoryViewForTextView:</b> (NSTextView*)aTextView <b>paragraphStyle:</b> (NSParagraphStyle*)paraStyle <b>ruler:</b> (NSRulerView *)aRulerView <b>enabled:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-51">rulerMarkersForTextView:paragraphStyle:</a></h3>
-- (NSArray*) <b>rulerMarkersForTextView:</b> (NSTextView*)aTextView <b>paragraphStyle:</b> (NSParagraphStyle*)paraStyle;<br>
-
-          
- <hr>
-<h3><a name ="method-52">setBackgroundLayoutEnabled:</a></h3>
-- (void) <b>setBackgroundLayoutEnabled:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-53">setCharacterIndex:forGlyphAtIndex:</a></h3>
-- (void) <b>setCharacterIndex:</b> (unsigned int)charIndex <b>forGlyphAtIndex:</b> (unsigned int)glyphIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-54">setDelegate:</a></h3>
-- (void) <b>setDelegate:</b> (id)anObject;<br>
-
-          
- <hr>
-<h3><a name ="method-55">setDrawsOutsideLineFragment:forGlyphAtIndex:</a></h3>
-- (void) <b>setDrawsOutsideLineFragment:</b> (BOOL)flag <b>forGlyphAtIndex:</b> (unsigned int)glyphIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-56">setExtraLineFragmentRect:usedRect:textContainer:</a></h3>
-- (void) <b>setExtraLineFragmentRect:</b> (NSRect)aRect <b>usedRect:</b> (NSRect)usedRect <b>textContainer:</b> (NSTextContainer*)aTextContainer;<br>
-
-          
- <hr>
-<h3><a name ="method-57">setHyphenationFactor:</a></h3>
-- (void) <b>setHyphenationFactor:</b> (float)factor;<br>
-
-          
- <hr>
-<h3><a name ="method-58">setIntAttribute:value:forGlyphAtIndex:</a></h3>
-- (void) <b>setIntAttribute:</b> (int)attributeTag <b>value:</b> (int)anInt <b>forGlyphAtIndex:</b> (unsigned int)glyphIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-59">setLineFragmentRect:forGlyphRange:</a></h3>
-- (void) <b>setLineFragmentRect:</b> (NSRect)fragmentRect <b>forGlyphRange:</b> (NSRange)glyphRange;<br>
-
-          
- <hr>
-<h3><a name ="method-60">setLocation:forStartOfGlyphRange:</a></h3>
-- (void) <b>setLocation:</b> (NSPoint)aPoint <b>forStartOfGlyphRange:</b> (NSRange)glyphRange;<br>
-
-          
- <hr>
-<h3><a name ="method-61">setNotShownAttribute:forGlyphAtIndex:</a></h3>
-- (void) <b>setNotShownAttribute:</b> (BOOL)flag <b>forGlyphAtIndex:</b> (unsigned int)glyphIndex;<br>
-
-          
- <hr>
-<h3><a name ="method-62">setShowsControlCharacters:</a></h3>
-- (void) <b>setShowsControlCharacters:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-63">setShowsInvisibleCharacters:</a></h3>
-- (void) <b>setShowsInvisibleCharacters:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-64">setTextContainer:</a></h3>
-- (void) <b>setTextContainer:</b> (NSTextContainer*)aTextContainer;<br>
-
-          
- <hr>
-<h3><a name ="method-65">setTextStorage:</a></h3>
-- (void) <b>setTextStorage:</b> (NSTextStorage*)textStorage;<br>
-
-          
- <hr>
-<h3><a name ="method-66">setUsesScreenFonts:</a></h3>
-- (void) <b>setUsesScreenFonts:</b> (BOOL)flag;<br>
-
-          
- <hr>
-<h3><a name ="method-67">showAttachmentCell:inRect:characterIndex:</a></h3>
-- (void) <b>showAttachmentCell:</b> (NSCell*)cell <b>inRect:</b> (NSRect)rect <b>characterIndex:</b> (unsigned int)attachmentIndex;;<br>
-
-          
- <hr>
-<h3><a name ="method-68">showsControlCharacters</a></h3>
-- (BOOL) <b>showsControlCharacters</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-69">showsInvisibleCharacters</a></h3>
-- (BOOL) <b>showsInvisibleCharacters</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-70">substituteFontForFont:</a></h3>
-- (NSFont*) <b>substituteFontForFont:</b> (NSFont*)originalFont;<br>
-
-          
- <hr>
-<h3><a name ="method-71">textContainerChangedGeometry:</a></h3>
-- (void) <b>textContainerChangedGeometry:</b> (NSTextContainer*)aTextContainer;<br>
-
-          
- <hr>
-<h3><a name ="method-72">textContainerChangedTextView:</a></h3>
-- (void) <b>textContainerChangedTextView:</b> (NSTextContainer*)aTextContainer;<br>
-
-          
- <hr>
-<h3><a name ="method-73">textContainerForGlyphAtIndex:effectiveRange:</a></h3>
-- (NSTextContainer*) <b>textContainerForGlyphAtIndex:</b> (unsigned int)glyphIndex <b>effectiveRange:</b> (NSRange*)effectiveGlyphRange;<br>
-
-          
- <hr>
-<h3><a name ="method-74">textContainers</a></h3>
-- (NSArray*) <b>textContainers</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-75">textStorage</a></h3>
-- (NSTextStorage*) <b>textStorage</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-76">textStorage:edited:range:changeInLength:invalidatedRange:</a></h3>
-- (void) <b>textStorage:</b> (NSTextStorage*)aTextStorage <b>edited:</b> (unsigned int)mask <b>range:</b> (NSRange)range <b>changeInLength:</b> (int)lengthChange <b>invalidatedRange:</b> (NSRange)invalidatedCharRange;<br>
-
-          
- <hr>
-<h3><a name ="method-77">textViewForBeginningOfSelection</a></h3>
-- (NSTextView*) <b>textViewForBeginningOfSelection</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-78">underlineGlyphRange:underlineType:lineFragmentRect:lineFragmentGlyphRange:containerOrigin:</a></h3>
-- (void) <b>underlineGlyphRange:</b> (NSRange)glyphRange <b>underlineType:</b> (int)underlineType <b>lineFragmentRect:</b> (NSRect)lineRect <b>lineFragmentGlyphRange:</b> (NSRange)lineGlyphRange <b>containerOrigin:</b> (NSPoint)containerOrigin;<br>
-
-          
- <hr>
-<h3><a name ="method-79">usedRectForTextContainer:</a></h3>
-- (NSRect) <b>usedRectForTextContainer:</b> (NSTextContainer*)aTextContainer;<br>
-
-          
- <hr>
-<h3><a name ="method-80">usesScreenFonts</a></h3>
-- (BOOL) <b>usesScreenFonts</b>;<br>
-
-          
- <hr>
-<h3><a name ="method-81">layoutManager:didCompleteLayoutForTextContainer:</a></h3>
-- (void) <b>layoutManager:</b> (NSLayoutManager*)aLayoutManager <b>didCompleteLayoutForTextContainer:</b> (NSTextContainer*)aTextContainer;<br>
-
-          
- <hr>
-<h3><a name ="method-82">layoutManagerDidInvalidateLayout:</a></h3>
-- (void) <b>layoutManagerDidInvalidateLayout:</b> (NSLayoutManager*)aLayoutManager;<br>
-
-          
- <hr>
-</body>
-
- </html>
+<html>
+  <head>
+    <title>NSLayoutManager</title>
+  </head>
+  <body>
+    <h1>NSLayoutManager</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Jonathan Gapen(<a href="mailto:jagapen@smithlab.chem.wisc.edu"><code>
+        jagapen@smithlab.chem.wisc.edu
+      </code></a>)</dt>
+      <dd>
+      </dd>
+      <dt>Michael Hanni(<a href="mailto:mhanni@sprintmail.com"><code>
+        mhanni@sprintmail.com
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <blockquote>
+The text layout manager class    </blockquote>
+    <p>Copyright: (C) 1999 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the NSLayoutManager class
+      </h1>
+    <h2><a name="class$NSLayoutManager">NSLayoutManager</a> : NSObject</h2>
+    Declared: AppKit/NSLayoutManager.h<br />
+    <p>
+
+            </p>
+    <h3>addTextContainer:</a></h3>
+    - (void) <b>addTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)obj;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>backgroundLayoutEnabled</a></h3>
+    - (BOOL) <b>backgroundLayoutEnabled</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>boundingRectForGlyphRange:inTextContainer:</a></h3>
+    - (NSRect) <b>boundingRectForGlyphRange:</b> (NSRange)glyphRange<b> inTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>characterIndexForGlyphAtIndex:</a></h3>
+    - (unsigned) <b>characterIndexForGlyphAtIndex:</b> (unsigned)glyphIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>characterRangeForGlyphRange:actualGlyphRange:</a></h3>
+    - (NSRange) <b>characterRangeForGlyphRange:</b> (NSRange)glyphRange<b> actualGlyphRange:</b> (NSRange*)actualGlyphRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>delegate</a></h3>
+    - (id) <b>delegate</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>deleteGlyphsInRange:</a></h3>
+    - (void) <b>deleteGlyphsInRange:</b> (NSRange)aRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>drawsOutsideLineFragmentForGlyphAtIndex:</a></h3>
+    - (BOOL) <b>drawsOutsideLineFragmentForGlyphAtIndex:</b> (unsigned)glyphIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>extraLineFragmentRect</a></h3>
+    - (NSRect) <b>extraLineFragmentRect</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>extraLineFragmentTextContainer</a></h3>
+    - (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*) <b>extraLineFragmentTextContainer</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>extraLineFragmentUsedRect</a></h3>
+    - (NSRect) <b>extraLineFragmentUsedRect</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>firstUnlaidCharacterIndex</a></h3>
+    - (unsigned) <b>firstUnlaidCharacterIndex</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>firstUnlaidGlyphIndex</a></h3>
+    - (unsigned) <b>firstUnlaidGlyphIndex</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>getFirstUnlaidCharacterIndex:glyphIndex:</a></h3>
+    - (void) <b>getFirstUnlaidCharacterIndex:</b> (unsigned*)charIndex<b> glyphIndex:</b> (unsigned*)glyphIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>getGlyphs:range:</a></h3>
+    - (unsigned) <b>getGlyphs:</b> (NSGlyph*)glyphArray<b> range:</b> (NSRange)glyphRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>glyphAtIndex:</a></h3>
+    - (NSGlyph) <b>glyphAtIndex:</b> (unsigned)index;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>glyphAtIndex:isValidIndex:</a></h3>
+    - (NSGlyph) <b>glyphAtIndex:</b> (unsigned)index<b> isValidIndex:</b> (BOOL*)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>glyphIndexForPoint:inTextContainer:</a></h3>
+    - (unsigned) <b>glyphIndexForPoint:</b> (NSPoint)aPoint<b> inTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>glyphIndexForPoint:inTextContainer:fractionOfDistanceThroughGlyph:</a></h3>
+    - (unsigned) <b>glyphIndexForPoint:</b> (NSPoint)aPoint<b> inTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer<b> fractionOfDistanceThroughGlyph:</b> (float*)partialFraction;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>glyphRangeForBoundingRect:inTextContainer:</a></h3>
+    - (NSRange) <b>glyphRangeForBoundingRect:</b> (NSRect)aRect<b> inTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>glyphRangeForBoundingRectWithoutAdditionalLayout:inTextContainer:</a></h3>
+    - (NSRange) <b>glyphRangeForBoundingRectWithoutAdditionalLayout:</b> (NSRect)bounds<b> inTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>glyphRangeForCharacterRange:actualCharacterRange:</a></h3>
+    - (NSRange) <b>glyphRangeForCharacterRange:</b> (NSRange)charRange<b> actualCharacterRange:</b> (NSRange*)actualCharRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>glyphRangeForTextContainer:</a></h3>
+    - (NSRange) <b>glyphRangeForTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>init</a></h3>
+    - (id) <b>init</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>insertGlyph:atGlyphIndex:characterIndex:</a></h3>
+    - (void) <b>insertGlyph:</b> (NSGlyph)aGlyph<b> atGlyphIndex:</b> (unsigned)glyphIndex<b> characterIndex:</b> (unsigned)charIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>insertTextContainer:atIndex:</a></h3>
+    - (void) <b>insertTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer<b> atIndex:</b> (unsigned)index;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>intAttribute:forGlyphAtIndex:</a></h3>
+    - (int) <b>intAttribute:</b> (int)attribute<b> forGlyphAtIndex:</b> (unsigned)glyphIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>invalidateDisplayForCharacterRange:</a></h3>
+    - (void) <b>invalidateDisplayForCharacterRange:</b> (NSRange)aRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>invalidateDisplayForGlyphRange:</a></h3>
+    - (void) <b>invalidateDisplayForGlyphRange:</b> (NSRange)aRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>invalidateGlyphsForCharacterRange:changeInLength:actualCharacterRange:</a></h3>
+    - (void) <b>invalidateGlyphsForCharacterRange:</b> (NSRange)aRange<b> changeInLength:</b> (int)lengthChange<b> actualCharacterRange:</b> (NSRange*)actualRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>invalidateLayoutForCharacterRange:isSoft:actualCharacterRange:</a></h3>
+    - (void) <b>invalidateLayoutForCharacterRange:</b> (NSRange)aRange<b> isSoft:</b> (BOOL)flag<b> actualCharacterRange:</b> (NSRange*)actualRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>lineFragmentRectForGlyphAtIndex:effectiveRange:</a></h3>
+    - (NSRect) <b>lineFragmentRectForGlyphAtIndex:</b> (unsigned)glyphIndex<b> effectiveRange:</b> (NSRange*)lineFragmentRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>lineFragmentUsedRectForGlyphAtIndex:effectiveRange:</a></h3>
+    - (NSRect) <b>lineFragmentUsedRectForGlyphAtIndex:</b> (unsigned)glyphIndex<b> effectiveRange:</b> (NSRange*)lineFragmentRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>locationForGlyphAtIndex:</a></h3>
+    - (NSPoint) <b>locationForGlyphAtIndex:</b> (unsigned)glyphIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>notShownAttributeForGlyphAtIndex:</a></h3>
+    - (BOOL) <b>notShownAttributeForGlyphAtIndex:</b> (unsigned)glyphIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>numberOfGlyphs</a></h3>
+    - (unsigned) <b>numberOfGlyphs</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>rangeOfNominallySpacedGlyphsContainingIndex:</a></h3>
+    - (NSRange) <b>rangeOfNominallySpacedGlyphsContainingIndex:</b> (unsigned)glyphIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>rectArrayForCharacterRange:withinSelectedCharacterRange:inTextContainer:rectCount:</a></h3>
+    - (NSRect*) <b>rectArrayForCharacterRange:</b> (NSRange)charRange<b> withinSelectedCharacterRange:</b> (NSRange)selChareRange<b> inTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer<b> rectCount:</b> (unsigned*)rectCount;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>rectArrayForGlyphRange:withinSelectedGlyphRange:inTextContainer:rectCount:</a></h3>
+    - (NSRect*) <b>rectArrayForGlyphRange:</b> (NSRange)glyphRange<b> withinSelectedGlyphRange:</b> (NSRange)selectedGlyphRange<b> inTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer<b> rectCount:</b> (unsigned*)rectCount;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>removeTextContainerAtIndex:</a></h3>
+    - (void) <b>removeTextContainerAtIndex:</b> (unsigned)index;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>replaceGlyphAtIndex:withGlyph:</a></h3>
+    - (void) <b>replaceGlyphAtIndex:</b> (unsigned)index<b> withGlyph:</b> (NSGlyph)newGlyph;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>replaceTextStorage:</a></h3>
+    - (void) <b>replaceTextStorage:</b> (<a href="NSTextStorage.html#class$NSTextStorage">NSTextStorage</a>*)newTextStorage;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setAttachmentSize:forGlyphRange:</a></h3>
+    - (void) <b>setAttachmentSize:</b> (NSSize)attachmentSize<b> forGlyphRange:</b> (NSRange)glyphRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setBackgroundLayoutEnabled:</a></h3>
+    - (void) <b>setBackgroundLayoutEnabled:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setCharacterIndex:forGlyphAtIndex:</a></h3>
+    - (void) <b>setCharacterIndex:</b> (unsigned)charIndex<b> forGlyphAtIndex:</b> (unsigned)glyphIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setDelegate:</a></h3>
+    - (void) <b>setDelegate:</b> (id)aDelegate;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setDrawsOutsideLineFragment:forGlyphAtIndex:</a></h3>
+    - (void) <b>setDrawsOutsideLineFragment:</b> (BOOL)flag<b> forGlyphAtIndex:</b> (unsigned)glyphIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setExtraLineFragmentRect:usedRect:textContainer:</a></h3>
+    - (void) <b>setExtraLineFragmentRect:</b> (NSRect)aRect<b> usedRect:</b> (NSRect)usedRect<b> textContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setIntAttribute:value:forGlyphAtIndex:</a></h3>
+    - (void) <b>setIntAttribute:</b> (int)attribute<b> value:</b> (int)anInt<b> forGlyphAtIndex:</b> (unsigned)glyphIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setLineFragmentRect:forGlyphRange:usedRect:</a></h3>
+    - (void) <b>setLineFragmentRect:</b> (NSRect)fragmentRect<b> forGlyphRange:</b> (NSRange)glyphRange<b> usedRect:</b> (NSRect)usedRect;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setLocation:forStartOfGlyphRange:</a></h3>
+    - (void) <b>setLocation:</b> (NSPoint)aPoint<b> forStartOfGlyphRange:</b> (NSRange)glyphRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setNotShownAttribute:forGlyphAtIndex:</a></h3>
+    - (void) <b>setNotShownAttribute:</b> (BOOL)flag<b> forGlyphAtIndex:</b> (unsigned)glyphIndex;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setShowsControlCharacters:</a></h3>
+    - (void) <b>setShowsControlCharacters:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setShowsInvisibleCharacters:</a></h3>
+    - (void) <b>setShowsInvisibleCharacters:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setTextContainer:forGlyphRange:</a></h3>
+    - (void) <b>setTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aTextContainer<b> forGlyphRange:</b> (NSRange)glyphRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setTextStorage:</a></h3>
+    - (void) <b>setTextStorage:</b> (<a href="NSTextStorage.html#class$NSTextStorage">NSTextStorage</a>*)aTextStorage;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setUsesScreenFonts:</a></h3>
+    - (void) <b>setUsesScreenFonts:</b> (BOOL)flag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>showsControlCharacters</a></h3>
+    - (BOOL) <b>showsControlCharacters</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>showsInvisibleCharacters</a></h3>
+    - (BOOL) <b>showsInvisibleCharacters</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>substituteFontForFont:</a></h3>
+    - (<a href="NSFont.html#class$NSFont">NSFont</a>*) <b>substituteFontForFont:</b> (<a href="NSFont.html#class$NSFont">NSFont</a>*)originalFont;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textContainerChangedGeometry:</a></h3>
+    - (void) <b>textContainerChangedGeometry:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aContainer;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textContainerChangedTextView:</a></h3>
+    - (void) <b>textContainerChangedTextView:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)aContainer;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textContainerForGlyphAtIndex:effectiveRange:</a></h3>
+    - (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*) <b>textContainerForGlyphAtIndex:</b> (unsigned)glyphIndex<b> effectiveRange:</b> (NSRange*)effectiveRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textContainers</a></h3>
+    - (NSArray*) <b>textContainers</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textStorage</a></h3>
+    - (<a href="NSTextStorage.html#class$NSTextStorage">NSTextStorage</a>*) <b>textStorage</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textStorage:edited:range:changeInLength:invalidatedRange:</a></h3>
+    - (void) <b>textStorage:</b> (<a href="NSTextStorage.html#class$NSTextStorage">NSTextStorage</a>*)aTextStorage<b> edited:</b> (unsigned)mask<b> range:</b> (NSRange)range<b> changeInLength:</b> (int)lengthChange<b> invalidatedRange:</b> (NSRange)invalidatedRange;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>usedRectForTextContainer:</a></h3>
+    - (NSRect) <b>usedRectForTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)container;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>usesScreenFonts</a></h3>
+    - (BOOL) <b>usesScreenFonts</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the
+        NSLayoutManager(NSTextViewSupport)
+        category
+      </h1>
+    <h2><a href="#class$NSLayoutManager">NSLayoutManager</a>(<a name="category$NSLayoutManager(NSTextViewSupport)">NSTextViewSupport</a>)</h2>
+    Declared: AppKit/NSLayoutManager.h<br />
+    <p>
+
+            </p>
+    <h3>_charIndexForInsertionPointMovingFromY:bestX:up:textContainer:</a></h3>
+    - (unsigned) <b>_charIndexForInsertionPointMovingFromY:</b> (float)position<b> bestX:</b> (float)wanted<b> up:</b> (BOOL)upFlag<b> textContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)tc;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>drawBackgroundForGlyphRange:atPoint:</a></h3>
+    - (void) <b>drawBackgroundForGlyphRange:</b> (NSRange)glyphsToShow<b> atPoint:</b> (NSPoint)origin;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>drawGlyphsForGlyphRange:atPoint:</a></h3>
+    - (void) <b>drawGlyphsForGlyphRange:</b> (NSRange)glyphsToShow<b> atPoint:</b> (NSPoint)origin;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>drawUnderlineForGlyphRange:underlineType:baselineOffset:lineFragmentRect:lineFragmentGlyphRange:containerOrigin:</a></h3>
+    - (void) <b>drawUnderlineForGlyphRange:</b> (NSRange)glyphRange<b> underlineType:</b> (int)underlineVal<b> baselineOffset:</b> (float)baselineOffset<b> lineFragmentRect:</b> (NSRect)lineRect<b> lineFragmentGlyphRange:</b> (NSRange)lineGlyphRange<b> containerOrigin:</b> (NSPoint)containerOrigin;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>firstTextView</a></h3>
+    - (<a href="NSTextView.html#class$NSTextView">NSTextView</a>*) <b>firstTextView</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>hyphenationFactor</a></h3>
+    - (float) <b>hyphenationFactor</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>layoutManagerOwnsFirstResponderInWindow:</a></h3>
+    - (BOOL) <b>layoutManagerOwnsFirstResponderInWindow:</b> (<a href="NSWindow.html#class$NSWindow">NSWindow</a>*)window;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>rulerAccessoryViewForTextView:paragraphStyle:ruler:enabled:</a></h3>
+    - (<a href="NSView.html#class$NSView">NSView</a>*) <b>rulerAccessoryViewForTextView:</b> (<a href="NSTextView.html#class$NSTextView">NSTextView</a>*)view<b> paragraphStyle:</b> (<a href="NSParagraphStyle.html#class$NSParagraphStyle">NSParagraphStyle</a>*)style<b> ruler:</b> (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)ruler<b> enabled:</b> (BOOL)isEnabled;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>rulerMarkersForTextView:paragraphStyle:ruler:</a></h3>
+    - (NSArray*) <b>rulerMarkersForTextView:</b> (<a href="NSTextView.html#class$NSTextView">NSTextView</a>*)view<b> paragraphStyle:</b> (<a href="NSParagraphStyle.html#class$NSParagraphStyle">NSParagraphStyle</a>*)style<b> ruler:</b> (<a href="NSRulerView.html#class$NSRulerView">NSRulerView</a>*)ruler;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>setHyphenationFactor:</a></h3>
+    - (void) <b>setHyphenationFactor:</b> (float)factor;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>textViewForBeginningOfSelection</a></h3>
+    - (<a href="NSTextView.html#class$NSTextView">NSTextView</a>*) <b>textViewForBeginningOfSelection</b>;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>underlineGlyphRange:underlineType:lineFragmentRect:lineFragmentGlyphRange:containerOrigin:</a></h3>
+    - (void) <b>underlineGlyphRange:</b> (NSRange)glyphRange<b> underlineType:</b> (int)underlineVal<b> lineFragmentRect:</b> (NSRect)lineRect<b> lineFragmentGlyphRange:</b> (NSRange)lineGlyphRange<b> containerOrigin:</b> (NSPoint)containerOrigin;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the
+        NSObject(NSLayoutManagerDelegate)
+        category
+      </h1>
+    <h2>NSObject(<a name="category$NSObject(NSLayoutManagerDelegate)">NSLayoutManagerDelegate</a>)</h2>
+    Declared: AppKit/NSLayoutManager.h<br />
+    <p>
+
+            </p>
+    <h3>layoutManager:didCompleteLayoutForTextContainer:atEnd:</a></h3>
+    - (void) <b>layoutManager:</b> (<a href="#class$NSLayoutManager">NSLayoutManager</a>*)layoutManager<b> didCompleteLayoutForTextContainer:</b> (<a href="NSTextContainer.html#class$NSTextContainer">NSTextContainer</a>*)textContainer<b> atEnd:</b> (BOOL)layoutFinishedFlag;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>layoutManagerDidInvalidateLayout:</a></h3>
+    - (void) <b>layoutManagerDidInvalidateLayout:</b> (<a href="#class$NSLayoutManager">NSLayoutManager</a>*)sender;<br />
+    <p>
+
+              </p>
+    <hr />
+  </body>
+</html>

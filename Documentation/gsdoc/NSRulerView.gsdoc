@@ -1,23 +1,25 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSRulerView" prev="NSRulerMarker.html" next="NSSavePanel.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSRulerView" next="NSSavePanel" prev="NSRulerMarker" up="NSActionCell">
   <head>
     <title>NSRulerView</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Fred Kiefer">
+      <email address="FredKiefer@gmx.de">
+        FredKiefer@gmx.de
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>The NSRulerView class.</abstract>
+    <copy>2001 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSRulerView</heading>
+      <heading>
+        Software documentation for the NSRulerView class
+      </heading>
       <class name="NSRulerView" super="NSView">
-        <declared>Gui/NSRulerView.h</declared>
-        <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <declared>AppKit/NSRulerView.h</declared>
+        <desc>
+        </desc>
         <method type="void" factory="yes">
           <sel>registerUnitWithName:</sel>
           <arg type="NSString*">unitName</arg>
@@ -26,7 +28,7 @@
           <sel>unitToPointsConversionFactor:</sel>
           <arg type="float">conversionFactor</arg>
           <sel>stepUpCycle:</sel>
-          <arg type="NSArray *">stepUpCycle</arg>
+          <arg type="NSArray*">stepUpCycle</arg>
           <sel>stepDownCycle:</sel>
           <arg type="NSArray*">stepDownCycle</arg>
           <desc>
@@ -68,6 +70,8 @@
         <method type="id">
           <sel>initWithScrollView:</sel>
           <arg type="NSScrollView*">aScrollView</arg>
+          <sel>orientation:</sel>
+          <arg type="NSRulerOrientation">orientation</arg>
           <desc>
           </desc>
         </method>
@@ -208,6 +212,18 @@
           <desc>
           </desc>
         </method>
+      </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the
+        NSObject(NSRulerViewClient)
+        category
+      </heading>
+      <category name="NSRulerViewClient" class="NSObject">
+        <declared>AppKit/NSRulerView.h</declared>
+        <desc>
+        </desc>
         <method type="void">
           <sel>rulerView:</sel>
           <arg type="NSRulerView*">aRulerView</arg>
@@ -292,7 +308,7 @@
           <desc>
           </desc>
         </method>
-      </class>
+      </category>
     </chapter>
   </body>
 </gsdoc>

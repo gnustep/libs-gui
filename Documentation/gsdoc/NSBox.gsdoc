@@ -1,23 +1,28 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSBox" prev="NSBitmapImageRep.html" next="NSBrowser.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSBox" next="NSBrowser" prev="NSBitmapImageRep" up="NSActionCell">
   <head>
     <title>NSBox</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Scott Christley">
+      <email address="scottc@net-community.com">
+        scottc@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>
+      Simple box view that can display a border and title
+    </abstract>
+    <copy>1996 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSBox</heading>
+      <heading>
+        Software documentation for the NSBox class
+      </heading>
       <class name="NSBox" super="NSView">
-        <declared>Gui/NSBox.h</declared>
+        <declared>AppKit/NSBox.h</declared>
         <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <desc>
+        </desc>
         <method type="NSRect">
           <sel>borderRect</sel>
           <desc>
@@ -35,6 +40,11 @@
         </method>
         <method type="NSSize">
           <sel>contentViewMargins</sel>
+          <desc>
+          </desc>
+        </method>
+        <method type="NSSize">
+          <sel>minimumSize</sel>
           <desc>
           </desc>
         </method>
@@ -70,7 +80,7 @@
         </method>
         <method type="void">
           <sel>setTitleFont:</sel>
-          <arg type="NSFont*">aFont</arg>
+          <arg type="NSFont*">fontObj</arg>
           <desc>
           </desc>
         </method>

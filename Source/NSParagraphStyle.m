@@ -1,15 +1,12 @@
-/* 
-   NSParagraphStyle.m
+/** <title>NSParagraphStyle</title>
 
-     NSParagraphStyle and NSMutableParagraphStyle hold paragraph style 
-     information NSTextTab holds information about a single tab stop
+   <abstract>NSParagraphStyle and NSMutableParagraphStyle hold paragraph style 
+     information NSTextTab holds information about a single tab stop</abstract>
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
-   Date: August 1998 - skeleton
-   Author:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
-   Date March 1999 - implementation
+   Author: Richard Frith-Macdonald <richard@brainstorm.co.uk>
+   Date March 1999
    
    This file is part of the GNUstep GUI Library.
 

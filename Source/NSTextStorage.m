@@ -1,9 +1,8 @@
-/* 
-   NSTextStorage.m
+/** <title>NSTextStorage</title>
 
    Copyright (C) 1999 Free Software Foundation, Inc.
 
-   Author:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+   Author: Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: 1999
   
    This file is part of the GNUstep GUI Library.

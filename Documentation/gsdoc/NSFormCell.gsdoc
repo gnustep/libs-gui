@@ -1,36 +1,35 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSFormCell" prev="NSForm.html" next="NSGraphicsContext.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSFormCell" next="NSGraphicsContext" prev="NSForm" up="NSActionCell">
   <head>
     <title>NSFormCell</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Ovidiu Predescu">
+      <email address="ovidiu@net-community.com">
+        ovidiu@net-community.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <author name="Nicola Pero">
+      <email address="n.pero@mi.flashnet.it">
+        n.pero@mi.flashnet.it
+      </email>
+    </author>
+    <abstract>
+      The cell class for the NSForm control
+    </abstract>
+    <copy>1996, 1999 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSFormCell</heading>
+      <heading>
+        Software documentation for the NSFormCell class
+      </heading>
       <class name="NSFormCell" super="NSActionCell">
-        <declared>Gui/NSFormCell.h</declared>
+        <declared>AppKit/NSFormCell.h</declared>
         <conform>NSCoding</conform>
-          <desc>
-          </desc>
+        <desc>
+        </desc>
         <method type="NSAttributedString*">
           <sel>attributedTitle</sel>
-          <desc>
-          </desc>
-        </method>
-        <method type="id">
-          <sel>initTextCell:</sel>
-          <arg type="NSString*">aString</arg>
-          <desc>
-          </desc>
-        </method>
-        <method type="BOOL">
-          <sel>isOpaque</sel>
           <desc>
           </desc>
         </method>
@@ -48,13 +47,13 @@
         </method>
         <method type="void">
           <sel>setTitleAlignment:</sel>
-          <arg type="NSTextAlignment">alignment</arg>
+          <arg type="NSTextAlignment">mode</arg>
           <desc>
           </desc>
         </method>
         <method type="void">
           <sel>setTitleFont:</sel>
-          <arg type="NSFont*">font</arg>
+          <arg type="NSFont*">fontObject</arg>
           <desc>
           </desc>
         </method>
@@ -92,7 +91,7 @@
         </method>
         <method type="float">
           <sel>titleWidth:</sel>
-          <arg type="NSSize">aSize</arg>
+          <arg type="NSSize">size</arg>
           <desc>
           </desc>
         </method>

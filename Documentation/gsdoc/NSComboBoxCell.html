@@ -1,250 +1,263 @@
-<html><head>
- <title>NSComboBoxCell</title>
-</head>
-<body>
-<a href ="NSComboBox.html">[Previous] </a>
-<a href ="Gui.html">[Up] </a>
-<a href ="NSControl.html">[Next] </a>
-<h1>NSComboBoxCell</h1>
-<h3>Authors </h3>
- <dl>
-<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
-<dd>
-</dl>
-<p>Version: $Revision$</p>
-<p>Date: $Date$</p>
-<h2><a name ="cont-0">NSComboBoxCell</a></h2>
-<h2><a name ="NSComboBoxCell">NSComboBoxCell</a></h2>
-<p><b>Declared in: </b> Gui/NSComboBoxCell.h</p>
-<p><b>Inherits from: </b> NSTextFieldCell</p>
-<p><b>Conforms to: </b> NSObject
-</p>
-<hr>
+<html>
+  <head>
+    <title>NSComboBoxCell</title>
+  </head>
+  <body>
+    <h1>NSComboBoxCell</h1>
+    <h3>Authors</h3>
+    <dl>
+      <dt>Gerrit van Dyk(<a href="mailto:gerritvd@decillion.net"><code>
+        gerritvd@decillion.net
+      </code></a>)</dt>
+      <dd>
+      </dd>
+    </dl>
+    <p>Copyright: (C) 1999 Free Software Foundation, Inc.</p>
+    <h1>
+        Software documentation for the NSComboBoxCell class
+      </h1>
+    <h2><a name="class$NSComboBoxCell">NSComboBoxCell</a> : <a href="NSTextFieldCell.html#class$NSTextFieldCell">NSTextFieldCell</a></h2>
+    Declared: AppKit/NSComboBoxCell.h<br />
+    <p>
 
-          
-<h2>Instance Variables </h2>
-<ul>
-</ul>
-<h2>Methods </h2>
-<ul>
-<li ><a href ="NSComboBoxCell.html#method-1">-addItemWithObjectValue:</a>
-<li ><a href ="NSComboBoxCell.html#method-0">-addItemsWithObjectValues:</a>
-<li ><a href ="NSComboBoxCell.html#method-2">-completedString:</a>
-<li ><a href ="NSComboBoxCell.html#method-3">-completes</a>
-<li ><a href ="NSComboBoxCell.html#method-4">-dataSource</a>
-<li ><a href ="NSComboBoxCell.html#method-5">-deselectItemAtIndex:</a>
-<li ><a href ="NSComboBoxCell.html#method-6">-encodeWithCoder:</a>
-<li ><a href ="NSComboBoxCell.html#method-7">-hasVerticalScroller</a>
-<li ><a href ="NSComboBoxCell.html#method-8">-indexOfItemWithObjectValue:</a>
-<li ><a href ="NSComboBoxCell.html#method-9">-indexOfSelectedItem</a>
-<li ><a href ="NSComboBoxCell.html#method-10">-initWithCoder:</a>
-<li ><a href ="NSComboBoxCell.html#method-11">-insertItemWithObjectValue:</a>
-<li ><a href ="NSComboBoxCell.html#method-12">-intercellSpacing</a>
-<li ><a href ="NSComboBoxCell.html#method-13">-itemHeight</a>
-<li ><a href ="NSComboBoxCell.html#method-14">-itemObjectValueAtIndex:</a>
-<li ><a href ="NSComboBoxCell.html#method-15">-noteNumberOfItemsChanged</a>
-<li ><a href ="NSComboBoxCell.html#method-16">-numberOfItems</a>
-<li ><a href ="NSComboBoxCell.html#method-17">-numberOfVisibleItems</a>
-<li ><a href ="NSComboBoxCell.html#method-18">-objectValueOfSelectedItem</a>
-<li ><a href ="NSComboBoxCell.html#method-19">-objectValues</a>
-<li ><a href ="NSComboBoxCell.html#method-20">-reloadData</a>
-<li ><a href ="NSComboBoxCell.html#method-21">-removeAllItems</a>
-<li ><a href ="NSComboBoxCell.html#method-22">-removeItemAtIndex:</a>
-<li ><a href ="NSComboBoxCell.html#method-23">-removeItemWithObjectValue:</a>
-<li ><a href ="NSComboBoxCell.html#method-24">-scrollItemAtIndexToTop:</a>
-<li ><a href ="NSComboBoxCell.html#method-25">-scrollItemAtIndexToVisible:</a>
-<li ><a href ="NSComboBoxCell.html#method-26">-selectItemAtIndex:</a>
-<li ><a href ="NSComboBoxCell.html#method-27">-selectItemWithObjectValue:</a>
-<li ><a href ="NSComboBoxCell.html#method-28">-setCompletes:</a>
-<li ><a href ="NSComboBoxCell.html#method-29">-setDataSource:</a>
-<li ><a href ="NSComboBoxCell.html#method-30">-setHasVerticalScroller:</a>
-<li ><a href ="NSComboBoxCell.html#method-31">-setIntercellSpacing:</a>
-<li ><a href ="NSComboBoxCell.html#method-32">-setItemHeight:</a>
-<li ><a href ="NSComboBoxCell.html#method-33">-setNumberOfVisibleItems:</a>
-<li ><a href ="NSComboBoxCell.html#method-34">-setUsesDataSource:</a>
-<li ><a href ="NSComboBoxCell.html#method-35">-usesDataSource</a>
-</ul>
-<hr><h2>Instances Methods </h2>
-<h3><a name ="method-0">addItemsWithObjectValues:</a></h3>
-- (void) <b>addItemsWithObjectValues:</b> (id)objects;<br>
+            </p>
+    <h3>addItemWithObjectValue:</a></h3>
+    - (void) <b>addItemWithObjectValue:</b> (id)object;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-1">addItemWithObjectValue:</a></h3>
-- (void) <b>addItemWithObjectValue:</b> (id)anObject;<br>
+              </p>
+    <hr />
+    <h3>addItemsWithObjectValues:</a></h3>
+    - (void) <b>addItemsWithObjectValues:</b> (NSArray*)objects;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-2">completedString:</a></h3>
-- (NSString*) <b>completedString:</b> (NSString*)substring;<br>
+              </p>
+    <hr />
+    <h3>completedString:</a></h3>
+    - (NSString*) <b>completedString:</b> (NSString*)substring;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-3">completes</a></h3>
-- (BOOL) <b>completes</b>;<br>
+              </p>
+    <hr />
+    <h3>completes</a></h3>
+    - (BOOL) <b>completes</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-4">dataSource</a></h3>
-- (id) <b>dataSource</b>;<br>
+              </p>
+    <hr />
+    <h3>dataSource</a></h3>
+    - (id) <b>dataSource</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-5">deselectItemAtIndex:</a></h3>
-- (void) <b>deselectItemAtIndex:</b> (int)index;<br>
+              </p>
+    <hr />
+    <h3>deselectItemAtIndex:</a></h3>
+    - (void) <b>deselectItemAtIndex:</b> (int)index;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-6">encodeWithCoder:</a></h3>
-- (void) <b>encodeWithCoder:</b> (NSCoder*)encoder;<br>
+              </p>
+    <hr />
+    <h3>hasVerticalScroller</a></h3>
+    - (BOOL) <b>hasVerticalScroller</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-7">hasVerticalScroller</a></h3>
-- (BOOL) <b>hasVerticalScroller</b>;<br>
+              </p>
+    <hr />
+    <h3>indexOfItemWithObjectValue:</a></h3>
+    - (int) <b>indexOfItemWithObjectValue:</b> (id)object;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-8">indexOfItemWithObjectValue:</a></h3>
-- (int) <b>indexOfItemWithObjectValue:</b> (id)anObject;<br>
+              </p>
+    <hr />
+    <h3>indexOfSelectedItem</a></h3>
+    - (int) <b>indexOfSelectedItem</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-9">indexOfSelectedItem</a></h3>
-- (int) <b>indexOfSelectedItem</b>;<br>
+              </p>
+    <hr />
+    <h3>insertItemWithObjectValue:atIndex:</a></h3>
+    - (void) <b>insertItemWithObjectValue:</b> (id)object<b> atIndex:</b> (int)index;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-10">initWithCoder:</a></h3>
-- (id) <b>initWithCoder:</b> (NSCoder*)decoder;<br>
+              </p>
+    <hr />
+    <h3>intercellSpacing</a></h3>
+    - (NSSize) <b>intercellSpacing</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-11">insertItemWithObjectValue:</a></h3>
-- (void) <b>insertItemWithObjectValue:</b> (id)anObject;<br>
+              </p>
+    <hr />
+    <h3>itemHeight</a></h3>
+    - (float) <b>itemHeight</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-12">intercellSpacing</a></h3>
-- (NSSize) <b>intercellSpacing</b>;<br>
+              </p>
+    <hr />
+    <h3>itemObjectValueAtIndex:</a></h3>
+    - (id) <b>itemObjectValueAtIndex:</b> (int)index;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-13">itemHeight</a></h3>
-- (float) <b>itemHeight</b>;<br>
+              </p>
+    <hr />
+    <h3>noteNumberOfItemsChanged</a></h3>
+    - (void) <b>noteNumberOfItemsChanged</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-14">itemObjectValueAtIndex:</a></h3>
-- (id) <b>itemObjectValueAtIndex:</b> (int)index;<br>
+              </p>
+    <hr />
+    <h3>numberOfItems</a></h3>
+    - (int) <b>numberOfItems</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-15">noteNumberOfItemsChanged</a></h3>
-- (void) <b>noteNumberOfItemsChanged</b>;<br>
+              </p>
+    <hr />
+    <h3>numberOfVisibleItems</a></h3>
+    - (int) <b>numberOfVisibleItems</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-16">numberOfItems</a></h3>
-- (int) <b>numberOfItems</b>;<br>
+              </p>
+    <hr />
+    <h3>objectValueOfSelectedItem</a></h3>
+    - (id) <b>objectValueOfSelectedItem</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-17">numberOfVisibleItems</a></h3>
-- (int) <b>numberOfVisibleItems</b>;<br>
+              </p>
+    <hr />
+    <h3>objectValues</a></h3>
+    - (NSArray*) <b>objectValues</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-18">objectValueOfSelectedItem</a></h3>
-- (id) <b>objectValueOfSelectedItem</b>;<br>
+              </p>
+    <hr />
+    <h3>reloadData</a></h3>
+    - (void) <b>reloadData</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-19">objectValues</a></h3>
-- (NSArray*) <b>objectValues</b>;<br>
+              </p>
+    <hr />
+    <h3>removeAllItems</a></h3>
+    - (void) <b>removeAllItems</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-20">reloadData</a></h3>
-- (void) <b>reloadData</b>;<br>
+              </p>
+    <hr />
+    <h3>removeItemAtIndex:</a></h3>
+    - (void) <b>removeItemAtIndex:</b> (int)index;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-21">removeAllItems</a></h3>
-- (void) <b>removeAllItems</b>;<br>
+              </p>
+    <hr />
+    <h3>removeItemWithObjectValue:</a></h3>
+    - (void) <b>removeItemWithObjectValue:</b> (id)object;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-22">removeItemAtIndex:</a></h3>
-- (void) <b>removeItemAtIndex:</b> (int)index;<br>
+              </p>
+    <hr />
+    <h3>scrollItemAtIndexToTop:</a></h3>
+    - (void) <b>scrollItemAtIndexToTop:</b> (int)index;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-23">removeItemWithObjectValue:</a></h3>
-- (void) <b>removeItemWithObjectValue:</b> (id)anObject;<br>
+              </p>
+    <hr />
+    <h3>scrollItemAtIndexToVisible:</a></h3>
+    - (void) <b>scrollItemAtIndexToVisible:</b> (int)index;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-24">scrollItemAtIndexToTop:</a></h3>
-- (void) <b>scrollItemAtIndexToTop:</b> (int)index;<br>
+              </p>
+    <hr />
+    <h3>selectItemAtIndex:</a></h3>
+    - (void) <b>selectItemAtIndex:</b> (int)index;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-25">scrollItemAtIndexToVisible:</a></h3>
-- (void) <b>scrollItemAtIndexToVisible:</b> (int)index;<br>
+              </p>
+    <hr />
+    <h3>selectItemWithObjectValue:</a></h3>
+    - (void) <b>selectItemWithObjectValue:</b> (id)object;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-26">selectItemAtIndex:</a></h3>
-- (void) <b>selectItemAtIndex:</b> (int)index;<br>
+              </p>
+    <hr />
+    <h3>setCompletes:</a></h3>
+    - (void) <b>setCompletes:</b> (BOOL)completes;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-27">selectItemWithObjectValue:</a></h3>
-- (void) <b>selectItemWithObjectValue:</b> (id)anObject;<br>
+              </p>
+    <hr />
+    <h3>setDataSource:</a></h3>
+    - (void) <b>setDataSource:</b> (id)aSource;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-28">setCompletes:</a></h3>
-- (void) <b>setCompletes:</b> (BOOL)completes;<br>
+              </p>
+    <hr />
+    <h3>setHasVerticalScroller:</a></h3>
+    - (void) <b>setHasVerticalScroller:</b> (BOOL)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-29">setDataSource:</a></h3>
-- (void) <b>setDataSource:</b> (id)aSource;<br>
+              </p>
+    <hr />
+    <h3>setIntercellSpacing:</a></h3>
+    - (void) <b>setIntercellSpacing:</b> (NSSize)aSize;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-30">setHasVerticalScroller:</a></h3>
-- (void) <b>setHasVerticalScroller:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h3>setItemHeight:</a></h3>
+    - (void) <b>setItemHeight:</b> (float)itemHeight;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-31">setIntercellSpacing:</a></h3>
-- (void) <b>setIntercellSpacing:</b> (NSSize)aSize;<br>
+              </p>
+    <hr />
+    <h3>setNumberOfVisibleItems:</a></h3>
+    - (void) <b>setNumberOfVisibleItems:</b> (int)visibleItems;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-32">setItemHeight:</a></h3>
-- (void) <b>setItemHeight:</b> (float)itemHeight;<br>
+              </p>
+    <hr />
+    <h3>setUsesDataSource:</a></h3>
+    - (void) <b>setUsesDataSource:</b> (BOOL)flag;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-33">setNumberOfVisibleItems:</a></h3>
-- (void) <b>setNumberOfVisibleItems:</b> (int)visibleItems;<br>
+              </p>
+    <hr />
+    <h3>usesDataSource</a></h3>
+    - (BOOL) <b>usesDataSource</b>;<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-34">setUsesDataSource:</a></h3>
-- (void) <b>setUsesDataSource:</b> (BOOL)flag;<br>
+              </p>
+    <hr />
+    <h1>
+        Software documentation for the
+        NSObject(NSComboBoxCellDataSource)
+        category
+      </h1>
+    <h2>NSObject(<a name="category$NSObject(NSComboBoxCellDataSource)">NSComboBoxCellDataSource</a>)</h2>
+    Declared: AppKit/NSComboBoxCell.h<br />
+    <p>
 
-          
- <hr>
-<h3><a name ="method-35">usesDataSource</a></h3>
-- (BOOL) <b>usesDataSource</b>;<br>
+            </p>
+    <h3>comboBoxCell:completedString:</a></h3>
+    - (NSString*) <b>comboBoxCell:</b> (<a href="#class$NSComboBoxCell">NSComboBoxCell</a>*)aComboBoxCell<b> completedString:</b> (NSString*)uncompletedString;<br />
+    <p>
 
-          
- <hr>
-</body>
+              </p>
+    <hr />
+    <h3>comboBoxCell:indexOfItemWithStringValue:</a></h3>
+    - (unsigned int) <b>comboBoxCell:</b> (<a href="#class$NSComboBoxCell">NSComboBoxCell</a>*)aComboBoxCell<b> indexOfItemWithStringValue:</b> (NSString*)string;<br />
+    <p>
 
- </html>
+              </p>
+    <hr />
+    <h3>comboBoxCell:objectValueForItemAtIndex:</a></h3>
+    - (id) <b>comboBoxCell:</b> (<a href="#class$NSComboBoxCell">NSComboBoxCell</a>*)aComboBoxCell<b> objectValueForItemAtIndex:</b> (int)index;<br />
+    <p>
+
+              </p>
+    <hr />
+    <h3>numberOfItemsInComboBoxCell:</a></h3>
+    - (int) <b>numberOfItemsInComboBoxCell:</b> (<a href="#class$NSComboBoxCell">NSComboBoxCell</a>*)comboBoxCell;<br />
+    <p>
+
+              </p>
+    <hr />
+  </body>
+</html>

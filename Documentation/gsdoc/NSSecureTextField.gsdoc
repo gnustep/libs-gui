@@ -1,23 +1,49 @@
 <?xml version="1.0"?>
-<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.5//EN" "http://www.gnustep.org/gsdoc-0_6_5.xml">
-<gsdoc base="NSSecureTextField" prev="NSScroller.html" next="NSSecureTextFieldCell.html" up="Gui.html">
+<!DOCTYPE gsdoc PUBLIC "-//GNUstep//DTD gsdoc 0.6.7//EN" "http://www.gnustep.org/gsdoc-0_6_7.xml">
+<gsdoc base="NSSecureTextField" next="NSSlider" prev="NSScroller" up="NSActionCell">
   <head>
     <title>NSSecureTextField</title>
-    <author name="Richard Frith-Macdonald">
-      <email address="rfm@gnu.org"/>
-      <url url="http://www.gnustep.org/developers/whoiswho.html"/>
+    <author name="Gregory John Casamento">
+      <email address="borgheron@yahoo.com">
+        borgheron@yahoo.com
+      </email>
     </author>
-    <version>$Revision$</version>
-    <date>$Date$</date>
+    <abstract>
+      Secure Text field control class for hidden text entry
+    </abstract>
+    <copy>1999 Free Software Foundation, Inc.</copy>
   </head>
   <body>
     <chapter>
-      <heading>NSSecureTextField</heading>
+      <heading>
+        Software documentation for the NSSecureTextField class
+      </heading>
       <class name="NSSecureTextField" super="NSTextField">
-        <declared>Gui/NSSecureTextField.h</declared>
-        <conform>NSCoding</conform>
+        <declared>AppKit/NSSecureTextField.h</declared>
+        <desc>
+        </desc>
+      </class>
+    </chapter>
+    <chapter>
+      <heading>
+        Software documentation for the NSSecureTextFieldCell
+        class
+      </heading>
+      <class name="NSSecureTextFieldCell" super="NSTextFieldCell">
+        <declared>AppKit/NSSecureTextField.h</declared>
+        <desc>
+        </desc>
+        <method type="BOOL">
+          <sel>echosBullets</sel>
           <desc>
           </desc>
+        </method>
+        <method type="void">
+          <sel>setEchosBullets:</sel>
+          <arg type="BOOL">flag</arg>
+          <desc>
+          </desc>
+        </method>
       </class>
     </chapter>
   </body>
