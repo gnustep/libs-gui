@@ -1,3 +1,8 @@
+2004-09-09  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCell.m (-setStringValue:, -setFont:, -setImage:):  Use
+	method call to change cell type. 
+
 2004-09-07  Adam Fedor  <fedor@gnu.org>
 
 	* Source/GNUmakefile: Specify INTERFACE_VERSION explicitly.

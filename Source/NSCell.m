@@ -344,7 +344,10 @@ static NSColor	*shadowCol;
 		    @"Attempt to use nil as string value");
     }
 
-  _cell.type = NSTextCellType;
+  if (_cell.type != NSTextCellType)
+    {
+      [self setType: NSTextCellType];
+    }
   _cell.contents_is_attributed_string = NO;
 
   if (_formatter == nil)
@@ -739,13 +742,13 @@ static NSColor	*shadowCol;
 
 - (void) setFont: (NSFont*)fontObject
 {
-  // This does not have any influence on attributed strings
-  ASSIGN (_font, fontObject);
-
   if (_cell.type != NSTextCellType)
     {
-      _cell.type = NSTextCellType;
+      [self setType: NSTextCellType];
     }
+
+  // This does not have any influence on attributed strings
+  ASSIGN (_font, fontObject);
 }
 
 - (void) setSelectable: (BOOL)flag
@@ -970,7 +973,10 @@ static NSColor	*shadowCol;
 		NSInvalidArgumentException);
     }
   
-  _cell.type = NSImageCellType;    
+  if (_cell.type != NSImageCellType)
+    {
+      [self setType: NSImageCellType];
+    }
   
   ASSIGN (_cell_image, anImage);
 }
