@@ -583,7 +583,6 @@ static NSMapTable* windowmaps = NULL;
 		    screen: (NSScreen*)aScreen
 {
   NSGraphicsContext	*context = GSCurrentContext();
-  NSRect		r = [[NSScreen mainScreen] frame];
   NSRect		cframe;
 
   NSDebugLog(@"NSWindow default initializer\n");
@@ -605,7 +604,7 @@ static NSMapTable* windowmaps = NULL;
   _frame = [NSWindow frameRectForContentRect: contentRect styleMask: aStyle];
   _minimumSize = NSMakeSize(_frame.size.width - contentRect.size.width + 1,
     _frame.size.height - contentRect.size.height + 1);
-  _maximumSize = r.size;
+  _maximumSize = NSMakeSize (10e4, 10e4);
 
   [self setNextResponder: NSApp];
 
@@ -1177,15 +1176,35 @@ static NSMapTable* windowmaps = NULL;
 
   origin.x = (screenSize.width - _frame.size.width) / 2;
   origin.y = (screenSize.height - _frame.size.height) / 2;
+
   [self setFrameOrigin: origin];
 }
 
 - (NSRect) constrainFrameRect: (NSRect)frameRect toScreen: screen
 {
-  NSRect	r = [screen frame];
+  NSRect screenRect = [screen frame];
+  float difference;
 
-  r = NSIntersectionRect(r, frameRect);
-  return r;
+  /* Move top edge of the window inside the screen */
+  difference = NSMaxY (frameRect) - NSMaxY (screenRect);
+
+  if (difference > 0)
+    {
+      frameRect.origin.y -= difference;
+    }
+  
+  /* If the window is resizable, resize it (if needed) so that the
+     bottom edge is on the screen too */
+  if (_styleMask & NSResizableWindowMask)
+    {
+      difference = screenRect.origin.y - frameRect.origin.y;
+      if (difference > 0)
+	{
+	  frameRect.size.height -= difference;
+	}
+    }
+
+  return frameRect;
 }
 
 - (NSRect) frame
@@ -1217,6 +1236,8 @@ static NSMapTable* windowmaps = NULL;
 {
   NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
 
+  frameRect = [self constrainFrameRect: frameRect toScreen: [self screen]];
+  
   if (_maximumSize.width > 0 && frameRect.size.width > _maximumSize.width)
     {
       frameRect.size.width = _maximumSize.width;
