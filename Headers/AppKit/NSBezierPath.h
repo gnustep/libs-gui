@@ -222,9 +222,11 @@ typedef enum {
 // Hit detection  
 //
 
+#ifndef	NO_GNUSTEP
 /** Returns the winding count, according to the PostScript definition,
     at the given point.  */
 - (int) windingCountAtPoint: (NSPoint)point;
+#endif
 
 /** Returns YES iff the path contains, according to the current
     <ref type="type" id="NSWindingRule">winding rule</ref>, the given point.
