@@ -412,13 +412,6 @@ _attributesAtIndexEffectiveRange(
   NSZone	*z = [self zone];
   GSTextInfo	*info;
 
-  {
-    NSString	*s = [self description];
-
-    if ([s length] > 300)
-      s = [s substringToIndex: 300];
-    NSLog(@"start -- %@", s);
-  }
   if (range.length == 0)
     {
       NSWarnMLog(@"Attempt to set attribute for zero-length range", 0);
@@ -497,14 +490,6 @@ SANITY();
   [self edited: NSTextStorageEditedAttributes
 	 range: range
 changeInLength: 0];
-
-  {
-    NSString	*s = [self description];
-
-    if ([s length] > 300)
-      s = [s substringToIndex: 300];
-    NSLog(@"attrs -- %@", s);
-  }
 }
 
 - (void) replaceCharactersInRange: (NSRange)range
@@ -629,14 +614,6 @@ SANITY();
   [self edited: NSTextStorageEditedCharacters
          range: range
 changeInLength: [aString length] - range.length];
-
-  {
-    NSString	*s = [self description];
-
-    if ([s length] > 300)
-      s = [s substringToIndex: 300];
-    NSLog(@"chars -- %@", s);
-  }
 }
 
 - (void) dealloc
