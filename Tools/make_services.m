@@ -50,6 +50,11 @@ static	NSMutableDictionary	*filterMap;
 static	NSMutableDictionary	*printMap;
 static	NSMutableDictionary	*spellMap;
 static	NSMutableDictionary	*applicationMap;
+static	NSMutableDictionary	*extensionsMap;
+
+static Class aClass;
+static Class dClass;
+static Class sClass;
 
 int
 main(int argc, char** argv)
@@ -72,6 +77,10 @@ main(int argc, char** argv)
 
   pool = [NSAutoreleasePool new];
 
+  aClass = [NSArray class];
+  dClass = [NSDictionary class];
+  sClass = [NSString class];
+
   proc = [NSProcessInfo processInfo];
   if (proc == nil)
     {
@@ -87,6 +96,7 @@ main(int argc, char** argv)
   printMap = [NSMutableDictionary dictionaryWithCapacity: 8];
   spellMap = [NSMutableDictionary dictionaryWithCapacity: 8];
   applicationMap = [NSMutableDictionary dictionaryWithCapacity: 64];
+  extensionsMap = [NSMutableDictionary dictionaryWithCapacity: 64];
 
   env = [proc environment];
   args = [proc arguments];
@@ -150,7 +160,7 @@ main(int argc, char** argv)
   if (str != nil)
     usrRoot = str;
   else
-    usrRoot = [NSString stringWithFormat: @"%@/GNUstep", NSHomeDirectory()];
+    usrRoot = [sClass stringWithFormat: @"%@/GNUstep", NSHomeDirectory()];
 
   mgr = [NSFileManager defaultManager];
   if (([mgr fileExistsAtPath: usrRoot isDirectory: &isDir] && isDir) == 0)
@@ -254,6 +264,7 @@ main(int argc, char** argv)
     {
       oldMap = nil;
     }
+  [applicationMap setObject: extensionsMap forKey: @"GSExtensionsMap"];
   if ([applicationMap isEqual: oldMap] == NO)
     {
       data = [NSSerializer serializePropertyList: applicationMap];
@@ -267,6 +278,117 @@ main(int argc, char** argv)
 
   [pool release];
   exit(0);
+}
+
+/*
+ * Load information about the types of files that an application supports.
+ */
+static void addExtensionsForApplication(NSDictionary *info, NSString *app)
+{
+  unsigned int  i;
+  id            o0;
+  NSArray       *a0;
+
+
+  o0 = [info objectForKey: @"NSTypes"];
+  if (o0)
+    {
+      if ([o0 isKindOfClass: aClass] == NO)
+        {
+          NSLog(@"bad app NSTypes (not an array) - %@\n", app);
+          return;
+        }
+      a0 = (NSArray*)o0;
+      i = [a0 count];
+      while (i-- > 0)
+        {
+          NSDictionary          *t;
+          NSString              *s;
+          NSArray               *a1;
+          id                    o1 = [a0 objectAtIndex: i];
+          unsigned int          j;
+
+          if ([o1 isKindOfClass: dClass] == NO)
+            {
+              NSLog(@"bad app NSTypes (type not a dictionary) - %@\n", app);
+              return;
+            }
+          t = (NSDictionary*)o1;
+          s = [t objectForKey: @"NSRole"];
+          if (s == nil || [s isEqual: @"None"] == YES)
+            {
+              continue; /* Not an extension we open.    */
+            }
+          o1 = [t objectForKey: @"NSUnixExtensions"];
+          if (o1 == nil)
+            {
+              continue;
+            }
+          if ([o1 isKindOfClass: aClass] == NO)
+            {
+              NSLog(@"bad app NSType (extensions not an array) - %@\n", app);
+              return;
+            }
+          a1 = (NSArray*)o1;
+          j = [a1 count];
+          while (j-- > 0)
+            {
+              NSString              *e;
+              NSMutableArray        *a;
+
+              e = [[a1 objectAtIndex: j] uppercaseString];
+              a = [extensionsMap objectForKey: e];
+              if (a == nil)
+                {
+                  a = [NSMutableArray arrayWithCapacity: 1];
+                  [extensionsMap setObject: a forKey: e];
+                }
+              if ([a containsObject: app] == NO)
+                {
+                  [a addObject: app];
+                } 
+            }
+        }
+    }
+  else
+    {
+      /*
+       *    If we have an old format list of extensions
+       *    handled by this application - ensure that
+       *    the name of the application is listed in
+       *    the array of applications handling each of
+       *    the extensions.
+       */
+      o0 = [info objectForKey: @"NSExtensions"];
+      if (o0 == nil)
+        {
+          return;
+        }
+      if ([o0 isKindOfClass: aClass] == NO)
+        {
+          NSLog(@"bad app NSExtensions (not an array) - %@\n", app);
+          return;
+        }
+      a0 = (NSArray*)o0;
+      i = [a0 count];
+      while (i-- > 0)
+        {
+          NSString              *e;
+          NSMutableArray        *a;
+
+          e = [[a0 objectAtIndex: i] uppercaseString];
+          a = [extensionsMap objectForKey: e];
+          if (a == nil)
+            {
+              a = [NSMutableArray arrayWithCapacity: 1];
+              [extensionsMap setObject: a forKey: e];
+            }
+          if ([a containsObject: app] == NO)
+            {
+              [a addObject: app];
+            } 
+        }
+    }
 }
 
 static void
@@ -291,19 +413,29 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
 	  newPath = [path stringByAppendingPathComponent: name];
 	  if ([mgr fileExistsAtPath: newPath isDirectory: &isDir] && isDir)
 	    {
-	      NSString	*infPath;
+	      NSString	                *oldPath;
+	      NSString	                *infPath;
 
 	      /*
-	       *	All (non-debug) application paths are noted by name
+	       *	All application paths are noted by name
 	       *	in the 'applicationMap' dictionary.
 	       */
-	      if ([ext isEqualToString: @"app"])
-		{
-		  if ([applicationMap objectForKey: name] == nil)
-		    {
-		      [applicationMap setObject: newPath forKey: name];
-		    }
-		}
+              if ((oldPath = [applicationMap objectForKey: name]) == nil)
+                {
+                  [applicationMap setObject: newPath forKey: name];
+                }
+              else
+                {
+                  /*
+                   * If we already have an entry for an application with
+                   * this name, we skip this one - the first one takes
+                   * precedence.
+                   */
+                  NSLog(@"duplicate app (%@) at '%@' and '%@'\n",
+                        name, oldPath, newPath);
+                  continue;
+                }
+
 	      infPath = [newPath stringByAppendingPathComponent: infoLoc];
 	      if ([mgr fileExistsAtPath: infPath isDirectory: &isDir] && !isDir)
 		{
@@ -312,18 +444,24 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
 		  info = [NSDictionary dictionaryWithContentsOfFile: infPath];
 		  if (info)
 		    {
-		      id	svcs = [info objectForKey: @"NSServices"];
+		      id	obj;
 
-		      if (svcs)
+                      /*
+                       * Load and validate any services definitions.
+                       */
+		      obj = [info objectForKey: @"NSServices"];
+		      if (obj)
 			{
 			  NSMutableArray	*entry;
 
-			  entry = validateEntry(svcs, newPath);
+			  entry = validateEntry(obj, newPath);
 			  if (entry)
 			    {
 			      [services setObject: entry forKey: newPath];
 			    }
 			}
+
+                      addExtensionsForApplication(info, name);
 		    }
 		  else
 		    {
@@ -446,7 +584,7 @@ validateEntry(id svcs, NSString *path)
   NSArray		*services;
   unsigned		pos;
 
-  if ([svcs isKindOfClass: [NSArray class]] == NO)
+  if ([svcs isKindOfClass: aClass] == NO)
     {
       NSLog(@"NSServices entry not an array - %@\n", path);
       return nil;
@@ -459,7 +597,7 @@ validateEntry(id svcs, NSString *path)
       id			svc;
 
       svc = [services objectAtIndex: pos];
-      if ([svc isKindOfClass: [NSDictionary class]])
+      if ([svc isKindOfClass: dClass])
 	{
 	  NSDictionary		*service = (NSDictionary*)svc;
 	  NSMutableDictionary	*newService;
@@ -483,9 +621,6 @@ static NSMutableDictionary*
 validateService(NSDictionary *service, NSString *path, unsigned pos)
 {
   static NSDictionary	*fields = nil;
-  static Class		aClass;
-  static Class		dClass;
-  static Class		sClass;
   NSEnumerator		*e;
   NSMutableDictionary	*result;
   NSString		*k;
@@ -493,9 +628,6 @@ validateService(NSDictionary *service, NSString *path, unsigned pos)
 
   if (fields == nil)
     {
-      aClass = [NSArray class];
-      dClass = [NSDictionary class];
-      sClass = [NSString class];
       fields = [NSDictionary dictionaryWithObjectsAndKeys:
 	@"string", @"NSMessage",
 	@"string", @"NSPortName",
