@@ -2436,6 +2436,7 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 		[_window selectKeyViewFollowingView: self];
 	      }
 	  }
+	  return;
 	  break;
 	}
     }
