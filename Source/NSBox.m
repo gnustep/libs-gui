@@ -301,7 +301,7 @@
 	}
       else // _content_view has no subviews
 	{
-	  [_content_view setFrame: NSZeroRect];
+  	  [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
 	}
     }
 
