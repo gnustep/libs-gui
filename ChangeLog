@@ -1,3 +1,46 @@
+Fri Mar 16 23:41:10 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* GNUmakefile.postamble
+	($(INSTALL_ROOT_DIR)/$(GNUSTEP_MAKEFILES)/Additional): New target;
+	create the directory.  (before-install): Do not create the
+	directory but depend on the new target.
+	* Images/GNUmakefile.postamble: Idem for $(imagedir).
+	* PrinterTypes/GNUmakefile.postamble: Idem for $(INSTALL_DIR).
+
+	* GNUmakefile: Removed `-' in front of include of
+	GNUmakefile.postamble.
+	* Images/GNUmakefile: Idem.
+	* Model/GNUmakefile: Idem.
+	* Panels/GNUmakefile: Idem.
+	* PrinterTypes/GNUmakefile: Idem.
+	* Tools/GNUmakefile: Idem for preamble and postamble.
+	
+	* Panels/GNUmakefile: Moved all targets, rules to 
+	Panels/GNUmakefile.postamble.  Removed $(prefix).
+	* Panels/GNUmakefile.postamble: Rewritten, simplified all rules.
+
+	* PrinterTypes/GNUmakefile.postamble (before-install): Merged
+	loop to create directories with the one in after-install; only
+	create the directories if they do not exist.  (after-install):
+	Merged code from before-install; do installation in a single
+	shell jump rather than two.
+
+	Standardized installation of header files:
+	* Source/GNUmakefile:
+	(libgnustep-gui_HEADER_FILES_INSTALL_DIR): Change it from / to
+	/AppKit.  (libgnustep-gui_HEADER_FILES): Removed the AppKit in
+	front of all of them.  (libgnustep-gui_HEADER_FILES_DIR):
+	Changed to ../Headers/AppKit
+	* Source/GNUmakefile.preamble (ADDITIONAL_INSTALL_DIRS):
+	Removed.
+
+	* Source/GNUmakefile.postamble: Do not create
+	./$(GNUSTEP_OBJ_DIR)/Parsers if it alread exists.
+
+	* Source/GNUmakefile.preamble: Commented out all empty code.
+	* Tools/GNUmakefile.preamble: Idem.
+	* Tools/GNUmakefile.postamble: Idem.
+
 Tue Mar 13 20:37:34 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/GSFontInfo.m ([+encodingForRegistry:encoding:]): Updated
