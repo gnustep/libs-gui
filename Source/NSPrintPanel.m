@@ -269,7 +269,6 @@ static NSPrintPanel *shared_instance;
     }
   else if (tag == NSPPOptionOKButton)
     {
-      NSLog(@"order out options");
       /* Do nothing. Just stops model on the options panel */
     }
   else

@@ -67,7 +67,7 @@
 #include <AppKit/NSAttributedString.h>
 
 /* From NSView.m */
-self NSView *viewIsPrinting;
+NSView *viewIsPrinting;
 
 static const int currentVersion = 2;
 
