@@ -1,3 +1,8 @@
+Sun Nov 28 19:37:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSOpenPanel.m: ([-filenames]) fix to handle multiple
+	selection correctly - was duplicating name of selected item.
+
 Sun Nov 28 04:44:43 1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	First implementation of editing in NSForm, NSMatrix.

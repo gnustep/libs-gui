@@ -182,6 +182,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
       NSMutableArray  *ret = [NSMutableArray array];
       NSString        *dir = [self directory];
       
+      dir = [dir stringByDeletingLastPathComponent];
       while ((currCell = [cellEnum nextObject]))
 	{
 	  [ret addObject: [NSString stringWithFormat: @"%@/%@", dir, 
