@@ -73,6 +73,7 @@ NSFormCell.m \
 NSGraphicsContext.m \
 NSHelpPanel.m \
 NSImage.m \
+NSImageCell.m \
 NSImageRep.m \
 NSImageView.m \
 NSInterfaceStyle.m \
@@ -160,6 +161,7 @@ AppKit/NSGraphics.h \
 AppKit/NSGraphicsContext.h \
 AppKit/NSHelpPanel.h \
 AppKit/NSImage.h \
+AppKit/NSImageCell.h \
 AppKit/NSImageRep.h \
 AppKit/NSImageView.h \
 AppKit/NSInterfaceStyle.h \

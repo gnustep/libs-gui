@@ -61,7 +61,7 @@
 @class NSSliderCell, NSMenuCell, NSBrowserCell, NSFormCell;
 @class NSEvent, NSCursor;
 @class NSColor, NSColorList, NSColorPanel, NSColorPicker, NSColorWell;
-@class NSImage, NSImageRep, NSBitmapImageRep, NSCachedImageRep;
+@class NSImage, NSImageCell, NSImageRep, NSBitmapImageRep, NSCachedImageRep;
 @class NSCustomImageRep, NSEPSImageRep;
 @class NSDataLink, NSDataLinkManager, NSDataLinkPanel;
 @class NSFont, NSFontManager, NSFontPanel;
@@ -105,6 +105,7 @@
 #include <AppKit/NSGraphicsContext.h>
 #include <AppKit/NSHelpPanel.h>
 #include <AppKit/NSImage.h>
+#include <AppKit/NSImageCell.h>
 #include <AppKit/NSImageRep.h>
 #include <AppKit/NSImageView.h>
 #include <AppKit/NSInterfaceStyle.h>
