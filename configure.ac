@@ -47,7 +47,8 @@ AC_CANONICAL_TARGET([])
 ADDITIONAL_INCLUDE_DIRS="$CPPFLAGS"
 ADDITIONAL_LIB_DIRS="$LDFLAGS"
 case "$target_os" in
-  freebsd*)   CPPFLAGS="$CPPFLAGS -I/usr/local/include"
+  freebsd* | openbsd* )   
+	      CPPFLAGS="$CPPFLAGS -I/usr/local/include"
               LDFLAGS="$LDFLAGS -L/usr/local/lib";;
   netbsd*)    CPPFLAGS="$CPPFLAGS -I/usr/pkg/include"
               LDFLAGS="$LDFLAGS -L/usr/pkg/lib";;
