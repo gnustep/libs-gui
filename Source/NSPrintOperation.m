@@ -1231,7 +1231,7 @@ scaleRect(NSRect rect, double scale)
     }
   else if ([job isEqual: NSPrintSpoolJob])
     {
-      sucess = [self _deliverSpooledResult];
+      success = [self _deliverSpooledResult];
     }
   else if ([job isEqual: NSPrintFaxJob])
     {

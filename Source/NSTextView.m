@@ -66,6 +66,9 @@
 #include <AppKit/NSColorPanel.h>
 #include <AppKit/NSAttributedString.h>
 
+/* From NSView.m */
+self NSView *viewIsPrinting;
+
 static const int currentVersion = 2;
 
 #define HUGE 1e7
@@ -3451,7 +3454,7 @@ afterString in order over charRange. */
       if (NSLocationInRange (location, drawnRange) 
 	  || location == NSMaxRange (drawnRange))
 	{
-	  if (_drawInsertionPointNow)
+	  if (_drawInsertionPointNow && viewIsPrinting != self)
 	    {
 	      [self drawInsertionPointInRect: _insertionPointRect  
 		    color: _caret_color  

@@ -357,8 +357,8 @@ APPKIT_EXPORT NSGraphicsContext	*GSCurrentContext();
 /* ----------------------------------------------------------------------- */
 /* Postscript Client functions */
 /* ----------------------------------------------------------------------- */
-- (void) DPSPrintf: (char *)fmt : (va_list)args;
-- (void) DPSWriteData: (char *)buf : (unsigned int)count;
+- (void) DPSPrintf: (const char *)fmt : (va_list)args;
+- (void) DPSWriteData: (const char *)buf : (unsigned int)count;
 
 @end
 

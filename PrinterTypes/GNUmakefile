@@ -41,7 +41,7 @@ Spanish.lproj	\
 Swedish.lproj
 
 
-RESOURCE_FILES = Printers
+RESOURCE_FILES = Printers GSProlog.ps
 
 -include GNUmakefile.preamble
 

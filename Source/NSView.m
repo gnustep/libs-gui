@@ -3321,6 +3321,22 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   DPSPrintf(ctxt, "%%%%EOF\n");
 }
 
+- (void) _loadPrinterProlog: (NSGraphicsContext *)ctxt
+{
+  NSString *prolog;
+  prolog = [NSBundle pathForGNUstepResource: @"GSProlog"
+                                     ofType: @"ps"
+                                inDirectory: @"PrinterTypes"];
+  if (prolog == nil)
+    {
+      NSLog(@"Cannot find printer prolog file");
+      return;
+    }
+  prolog = [NSString stringWithContentsOfFile: prolog];
+  DPSPrintf(ctxt, [prolog cString]);
+}
+
+
 /** 
     Writes header and job information for the PostScript document. This
     includes at a minimum, PostScript header information. It may also 
@@ -3377,7 +3393,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   [self endHeaderComments];
 
   DPSPrintf(ctxt, "%%%%BeginProlog\n");
-  // Prolog goes here !
+  [self _loadPrinterProlog: ctxt];
   [self endPrologue];
   if ([printOp isEPSOperation] == NO)
     {

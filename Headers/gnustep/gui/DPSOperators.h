@@ -452,11 +452,11 @@ __attribute__((unused));
 /* Postscript Client functions */
 /* ----------------------------------------------------------------------- */
 static inline void
-DPSPrintf(GSCTXT *ctxt, char * fmt, ...)
+DPSPrintf(GSCTXT *ctxt, const char * fmt, ...)
 __attribute__((unused));
 
 static inline void
-DPSWriteData(GSCTXT *ctxt, char * buf, unsigned int count)
+DPSWriteData(GSCTXT *ctxt, const char * buf, unsigned int count)
 __attribute__((unused));
 
 /* ----------------------------------------------------------------------- */
@@ -1172,7 +1172,7 @@ GSDrawImage(GSCTXT *ctxt, NSRect rect, void * imageref)
 /* Postscript Client functions */
 /* ----------------------------------------------------------------------- */
 static inline void
-DPSPrintf(GSCTXT *ctxt, char * fmt, ...)
+DPSPrintf(GSCTXT *ctxt, const char * fmt, ...)
 {
   va_list ap;
 
@@ -1184,7 +1184,7 @@ DPSPrintf(GSCTXT *ctxt, char * fmt, ...)
 }
 
 static inline void
-DPSWriteData(GSCTXT *ctxt, char * buf, unsigned int count)
+DPSWriteData(GSCTXT *ctxt, const char * buf, unsigned int count)
 {
   (ctxt->methods->DPSWriteData__)
     (ctxt, @selector(DPSWriteData::), buf, count);

@@ -1384,14 +1384,14 @@ NSGraphicsContext	*GSCurrentContext()
 /* ----------------------------------------------------------------------- */
 /** Write the string (with printf substitutions) to a PostScript context.
     Other output contexts will likely ignore this */
-- (void) DPSPrintf: (char *)fmt : (va_list)args
+- (void) DPSPrintf: (const char *)fmt : (va_list)args
 {
   [self subclassResponsibility: _cmd];
 }
 
 /** Write the encoded data to a PostScript context.
     Other output contexts will likely ignore this */
-- (void) DPSWriteData: (char *)buf : (unsigned int)count
+- (void) DPSWriteData: (const char *)buf : (unsigned int)count
 {
   [self subclassResponsibility: _cmd];
 }

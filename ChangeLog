@@ -1,5 +1,14 @@
 2002-10-28  Adam Fedor  <fedor@gnu.org>
 
+	* Source/NSTextView.m (-drawRect:): Don't draw insertion point
+	when printing.
+
+	* PrinterTypes/GSProlog.ps: New file.
+	* Source/NSView.m (-_loadPrinterProlog): New.
+	(beginPage:...): Use it.
+
+2002-10-28  Adam Fedor  <fedor@gnu.org>
+
 	* Source/NSScreen.m (-visibleFrame): Don't include dock
 	with NexT/WindowMaker styles (patch from Stefan <urbanek@host.sk>).
 
