@@ -916,8 +916,6 @@ void __dummy_GMAppKit_functionForLinking() {}
   [archiver encodeBOOL:[self drawsBackground] withName:@"drawsBackground"];
   [archiver encodeBOOL:[self isBordered] withName:@"isBordered"];
   [archiver encodeBOOL:[self isBezeled] withName:@"isBezeled"];
-  [archiver encodeObject:[self nextText] withName:@"nextText"];
-  [archiver encodeObject:[self previousText] withName:@"previousText"];
   [archiver encodeObject:[self delegate] withName:@"delegate"];
   [archiver encodeString:[self stringValue] withName:@"stringValue"];
   [archiver encodeBOOL:[self isEditable] withName:@"isEditable"];
@@ -940,8 +938,6 @@ void __dummy_GMAppKit_functionForLinking() {}
   [self setBordered:[unarchiver decodeBOOLWithName:@"isBordered"]];
   [self setBezeled:[unarchiver decodeBOOLWithName:@"isBezeled"]];
 
-  [self setNextText:[unarchiver decodeObjectWithName:@"nextText"]];
-  [self setPreviousText:[unarchiver decodeObjectWithName:@"previousText"]];
   [self setDelegate:[unarchiver decodeObjectWithName:@"delegate"]];
 
   theCell = [self cell];

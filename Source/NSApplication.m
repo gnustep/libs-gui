@@ -446,10 +446,14 @@ NSApplication	*NSApp = nil;
     {
       if (theSession)
 	{
+	  NSWindow *win_to_close = theSession->window;
+	  
 	  [self endModalSession: theSession];
+	  [win_to_close close];
 	}
       if ([[localException name] isEqual: NSAbortModalException] == NO)
 	[localException raise];
+      
       code = NSRunAbortedResponse;
     }
     NS_ENDHANDLER
@@ -548,6 +552,14 @@ NSApplication	*NSApp = nil;
   NSAssert(session == theSession, @"Session was changed while running");
 
   return theSession->runState;
+}
+
+- (BOOL) isRunningModalForWindow: (NSWindow *)theWindow
+{
+  if ((session) && (session->window == theWindow))
+    return YES;
+  else
+    return NO;
 }
 
 - (void) stop: (id)sender

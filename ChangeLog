@@ -3,6 +3,40 @@ Tue Oct 12  1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 	* Source/NSWorkspace.m: Added private notification center class to
 	handle notifications to be passed between applications.
 
+Sat Oct  10  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+        nextText and previousText can now be safely and almost trivially
+ 	implemented using the nextKeyView and previousKeyView facilities.
+	Today I did it for NSTextField:
+	* Headers/AppKit/NSTextField.h: Removed ivars nextText and
+ 	previousText
+	* Source/NSTextField.m ([-encodeWithCoder:]), ([-initWithCoder:]):
+	Update for removal of ivars nextText, previousText.
+	* Model/GMAppKit.m ([NSTextField -initWithModelUnarchiver:]),
+	([NSTextField -encodeWithModelArchiver:]): Updated for removal of
+ 	ivars.
+	* Source/NSTextField.m ([-nextText]), ([-previousText]),
+	([-setNextText:]), ([-setPreviousText:]): rewritten, by using
+ 	nextKeyView stuff.
+	* Source/NSTextField.m ([-keyDown:]): Completely rewritten the
+ 	part before the cell edit.
+
+	A little reorganization of keyboard event handling code written
+	in the last days; added Escape support:
+	* Headers/AppKit/NSApplication.h: Added prototype for
+ 	-isRunningModalForWindow:.
+	* Source/NSApplication.m ([-isRunningModalForWindow:]): new method
+	(a GNUstep extension).  Return YES if there is a modal session
+ 	running and it is running with the specified window.
+	* Source/NSApplication.m ([-runModalForWindow:]): Close the window
+ 	on abort.
+	* Source/NSTextField.m ([-keyUp:]): Removed method, useless.
+	* Source/NSView.m ([-keyDown:]): Removed method.  Moved the code
+	to [NSWindow -keyDown:].
+	* Source/NSView.m ([-keyUp:]): Removed method, useless.
+	* Source/NSWindow.m ([-keyDown:]): Implemented method.  Added
+	Escape support.
+
 Sat Oct  9  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 	
 	* Source/NSButton.m ([-keyDown:]): Perform a click if  

@@ -39,8 +39,6 @@
 @interface NSTextField : NSControl <NSCoding>
 {
   // Attributes
-  id next_text;
-  id previous_text;
   id text_delegate;
   SEL error_action;
   NSCursor *text_cursor;

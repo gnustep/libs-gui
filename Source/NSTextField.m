@@ -163,40 +163,22 @@ id _nsTextfieldCellClass = nil;
 //
 - (id) nextText
 {
-  return next_text;
+  return _nextKeyView;
 }
 
 - (id) previousText
 {
-  return previous_text;
+  return _previousKeyView;
 }
 
 - (void) setNextText: (id)anObject
 {
-  id t;
-
-  // Tell the object that we are the previous text Unless it already is
-  next_text = anObject;
-  if ([anObject respondsToSelector: @selector(setPreviousText:)])
-    {
-      t = [anObject previousText];
-      if (t != self)
-	[anObject setPreviousText: self];
-    }
+  [self setNextKeyView: anObject];
 }
 
 - (void) setPreviousText: (id)anObject
 {
-  id t;
-
-  // Tell the object that we are the next text Unless it already knows
-  previous_text = anObject;
-  if ([anObject respondsToSelector: @selector(setNextText:)])
-    {
-      t = [anObject nextText];
-      if (t != self)
-	[anObject setNextText: self];
-    }
+  [self setPreviousKeyView: anObject];
 }
 
 //
@@ -352,47 +334,39 @@ fprintf(stderr, " TextField mouseDown --- ");
     return;
 }
 
-/*
- * Get characters until you encounter
- * a carriage return, return number of characters.
- * Deal with backspaces, etc.  Deal with Expose events
- * on all windows associated with this application.
- * Deal with keyboard remapping.
- */
-
+// This is called if a key is pressed when an editing session
+// is not yet started.  (If needed, we start it from here).
 - (void) keyDown: (NSEvent *)theEvent
 {
-  unsigned int flags = [theEvent modifierFlags];
   unsigned int key_code = [theEvent keyCode];
-  id nextResponder;
-
-  NSDebugLLog(@"NSText", 
-    @"NSTextField: -keyDown %s\n", [[theEvent characters] cString]);
-
-  // If TAB, SHIFT-TAB or RETURN key then make another text the first
-  // responder. This depends on key.
-  if (key_code == 0x09 || key_code == 0x0d) {
-    if (key_code == 0x09 && (flags & NSShiftKeyMask))
-      nextResponder = previous_text;
-    else
-      nextResponder = next_text;
-
-    if ([nextResponder respondsToSelector: @selector(selectText: )])
-      // Either select the previous' text
-      [nextResponder selectText: self];
-    else
-      // Or select ourself
-      [self selectText: self];
-
-    // Have the target perform the action
-    [self sendAction: [self action] to: [self target]];
-    return;
-  }
-
-  // If not editable then don't recognize the key down
-  if (![self isEditable]) return;
-
-
+  
+  NSDebugLLog(@"NSText", @"NSTextField: -keyDown %s\n", 
+	      [[theEvent characters] cString]);
+  
+  // If not editable then we ignore the key down, pass it on
+  if (![self isEditable]) 
+    {
+      [super keyDown: theEvent];
+      return;
+    }
+  
+  // If the key is TAB (with or without SHIFT) or ESC, pass it on
+  if ((key_code == 0x09) || (key_code == 0x1b))
+    {
+      [super keyDown: theEvent];
+      return;
+    }
+  
+  // We handle ENTER here, to avoid setting up an editing session 
+  // only for it.
+  if (key_code == 0x0d)
+    {
+      [window selectKeyViewFollowingView: self];
+      [self sendAction: [cell action] to: [cell target]];
+      return;
+    }
+  
+  // Otherwise, start an editing session (FIXME the following)
 #if 1
 {
   NSRect cellFrame = bounds;
@@ -429,21 +403,6 @@ fprintf(stderr, " TextField mouseDown --- ");
   [self unlockFocus];
 //  [self setNeedsDisplay: YES];
 #endif
-}
-
-- (void) keyUp: (NSEvent *)theEvent
-{
-  unsigned int key_code = [theEvent keyCode];
-
-  // Ignore TAB and RETURN key
-  if ((key_code == 0x09) || (key_code == 0x0d))
-    {
-      return;
-    }
-
-  // If not editable then don't recognize the key up
-  if (![self isEditable])
-    return;
 }
 
 - (BOOL) acceptsFirstResponder
@@ -533,8 +492,6 @@ fprintf(stderr, " TextField mouseDown --- ");
 {
   [super encodeWithCoder: aCoder];
 
-  [aCoder encodeConditionalObject: next_text];
-  [aCoder encodeConditionalObject: previous_text];
   [aCoder encodeConditionalObject: text_delegate];
   [aCoder encodeValueOfObjCType: @encode(SEL) at: &error_action];
 }
@@ -543,8 +500,6 @@ fprintf(stderr, " TextField mouseDown --- ");
 {
   [super initWithCoder: aDecoder];
 
-  next_text = [aDecoder decodeObject];
-  previous_text = [aDecoder decodeObject];
   text_delegate = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: @encode(SEL) at: &error_action];
 

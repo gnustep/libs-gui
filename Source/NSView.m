@@ -2131,35 +2131,6 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     }
 }
 
-- (void) keyDown: (NSEvent *)theEvent
-{ 
-  unsigned int key_code = [theEvent keyCode];
-  
-  // If this is a TAB or TAB+SHIFT event, we handle it
-  if (key_code == 0x09) 
-    {
-      if ([theEvent modifierFlags] & NSShiftKeyMask)
-	[window selectKeyViewPrecedingView: self];
-      else
-	[window selectKeyViewFollowingView: self];
-      return;
-    }    
-  
-  // Otherwise, let the event go on in the responder chain
-  [super keyDown: theEvent];
-}
-
-- (void) keyUp: (NSEvent *)theEvent
-{
-  unsigned int key_code = [theEvent keyCode];
-
-  // We handle (ignoring them) TAB/SHIFT+TAB events
-  if (key_code == 0x09) 
-    return;
-  else // All other events go on in the chain
-    [super keyUp: theEvent];
-}
-
 /*
  * Dragging
  */

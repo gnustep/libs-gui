@@ -1241,6 +1241,42 @@ static NSRecursiveLock	*windowsLock;
   return _initial_first_responder;
 }
 
+- (void) keyDown: (NSEvent *)theEvent
+{ 
+  unsigned int key_code = [theEvent keyCode];
+
+  // TODO:  
+  // "A mnemonic matching the character(s) typed, 
+  // not requiring the Alternate key to be pressed"
+
+  // TODO:
+  // "A key equivalent, not requiring the Command (or Control) key 
+  // to be pressed"
+
+  // If this is a TAB or TAB+SHIFT event, move to the next key view
+  if (key_code == 0x09) 
+    {
+      if ([theEvent modifierFlags] & NSShiftKeyMask)
+	[self selectPreviousKeyView: self];
+      else
+	[self selectNextKeyView: self];
+      return;
+    }    
+  
+  // If this is an ESC event, abort modal loop 
+  if (key_code == 0x1b)
+    {
+      NSApplication *app = [NSApplication sharedApplication];
+      if ([app isRunningModalForWindow: self])
+	{
+	  // NB: The following *never* returns.
+	  [app abortModal];
+	}
+      return;
+    }
+  // Otherwise, pass the event up
+  [super keyDown: theEvent];
+}
 
 /* Return mouse location in reciever's base coord system, ignores event
  * loop status */
