@@ -60,8 +60,6 @@ static NSColor *clearCol = nil;
 
   if (_cell.is_highlighted == YES)
     {
-      NSLog(@"highlighting");
-      [controlView lockFocus];
       NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, 
 			       NSMinXEdge, NSMaxYEdge};
       NSRectEdge down_sides[] = {NSMaxXEdge, NSMaxYEdge, 
@@ -69,8 +67,11 @@ static NSColor *clearCol = nil;
       float grays[] = {NSBlack, NSBlack, 
 		       NSWhite, NSWhite};
       NSRect rect;
-      NSGraphicsContext *ctxt = GSCurrentContext();
-      
+      NSGraphicsContext *ctxt;
+
+      [controlView lockFocus];
+      ctxt = GSCurrentContext();
+
       if (GSWViewIsFlipped(ctxt) == YES)
 	{
 	  rect = NSDrawTiledRects(cellFrame, NSZeroRect,
@@ -89,7 +90,6 @@ static NSColor *clearCol = nil;
     }
   else
     {
-      [controlView lockFocus];
       NSRectEdge up_sides[] = {NSMaxXEdge, NSMinYEdge, 
 			       NSMinXEdge, NSMaxYEdge};
       NSRectEdge down_sides[] = {NSMaxXEdge, NSMaxYEdge, 
@@ -97,8 +97,11 @@ static NSColor *clearCol = nil;
       float grays[] = {NSBlack, NSBlack, 
 		       NSLightGray, NSLightGray};
       NSRect rect;
-      NSGraphicsContext *ctxt = GSCurrentContext();
+      NSGraphicsContext *ctxt;
       
+      [controlView lockFocus];
+      ctxt = GSCurrentContext();
+
       if (GSWViewIsFlipped(ctxt) == YES)
 	{
 	  rect = NSDrawTiledRects(cellFrame, NSZeroRect,
