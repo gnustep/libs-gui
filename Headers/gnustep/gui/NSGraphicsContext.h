@@ -36,7 +36,6 @@
 
 #include <AppKit/NSDragging.h>
 
-
 @class NSDate;
 @class NSDictionary;
 @class NSEvent;
@@ -46,6 +45,7 @@
 @class NSView;
 @class NSWindow;
 @class NSGraphicsContext;
+@class NSFont;
 
 
 
@@ -213,6 +213,8 @@ NSGraphicsContext	*GSCurrentContext();
 - (void) DPSselectfont: (const char*)name : (float)scale ;
 - (void) DPSsetfont: (int)f ;
 - (void) DPSundefinefont: (const char*)name ;
+- (void) setFont: (NSFont*) font;
+- (void) useFont: (NSString*) name;
 /* ----------------------------------------------------------------------- */
 /* Gstate operations */
 /* ----------------------------------------------------------------------- */

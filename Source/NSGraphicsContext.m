@@ -1104,6 +1104,21 @@ NSGraphicsContext	*GSCurrentContext()
   [self subclassResponsibility: _cmd];
 }
 
+- (void) setFont: (NSFont*) font
+{
+  [self subclassResponsibility: _cmd];
+}
+
+- (void) useFont: (NSString*) name
+{
+  /* 
+   * Do nothing here, printing subclasses will have to register all 
+   * the fonts used by the current print operation to be able to
+   * dump the %%DocumentFonts comment required by the Adobe Document 
+   * Structuring Convention (see the red book).
+   */
+}
+
 /* ----------------------------------------------------------------------- */
 /* Gstate operations */
 /* ----------------------------------------------------------------------- */
