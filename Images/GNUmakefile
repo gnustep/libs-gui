@@ -46,6 +46,9 @@ common_ArrowLeftH.tiff \
 common_Close.tiff \
 common_CloseH.tiff \
 common_CloseBroken.tiff \
+common_Home.tiff \
+common_Mount.tiff \
+common_Unmount.tiff \
 common_RadioOn.tiff \
 common_RadioOff.tiff \
 common_Right.tiff \
