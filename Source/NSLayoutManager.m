@@ -1437,11 +1437,14 @@ container
 		  cellFrame.size = la->size;
 		  cellFrame.origin.y -= cellFrame.size.height;
 
-		  /* Drawing the cell might mess up our state. */
+		  /* Drawing the cell might mess up our state, so we reset
+		  the font and color afterwards. */
 		  /* TODO:
-		  optimize this. probably cheaper to not save and
-		  explicitly reset just the stuff we actually use, or to
-		  collect attachments and draw them in bunches of eg. 4
+		  optimize this?
+		  collect attachments and draw them in bunches of eg. 4?
+
+		  probably not worth effort. better to optimize font and
+		  color setting :)
 
 		  should they really be drawn in our coordinate system?
 		  */
@@ -1450,10 +1453,6 @@ container
 		    characterIndex: char_index
 		    layoutManager: self];
 		  [f set];
-		  if (color == nil)
-		    {
-		      color = defaultTextColor;
-		    }
 		  [color set];
 		}
 	      continue;
@@ -1799,9 +1798,20 @@ this file describes this.
 
   if (layout_char > r.location)
     {
-      layout_char += lengthChange;
-      if (layout_char < r.location)
-        layout_char = r.location;
+      if (layout_char >= r.location + r.length)
+	layout_char += lengthChange;
+      else
+	{
+	  /*
+	  The last layout information we had is inside the range that
+	  is being invalidated.
+
+	  In this case, there'll be no soft-invalidated layout information
+	  to save. However, we still have layout information that we need
+	  to discard.
+	  */
+	  layout_char = r.location;
+	}
     }
 
   if (!layout_char)
@@ -1827,7 +1837,7 @@ this file describes this.
 
       /*
       Note that r.location might equal layout_char, in which case
-      r.location won't actually have any text container or line frag.
+      r.location might not actually have any text container or line frag.
       */
       if (!r.location)
 	{
@@ -2104,7 +2114,7 @@ no_soft_invalidation:
       In other words, unless the selection spans over the entire changed
       range, the changed range is deselected.
 
-      One important property of this behavios is that if length is 0 before,
+      One important property of this behavior is that if length is 0 before,
       it will be 0 after.
       */
       if (_selected_range.location >= NSMaxRange(range) - lengthChange)
