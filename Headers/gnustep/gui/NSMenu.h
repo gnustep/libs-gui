@@ -89,7 +89,6 @@
 
 /* Creating an NSMenu */
 - (id) initWithTitle: (NSString*)aTitle;
-- (id) initWithPopUpButton: (NSPopUpButton*)popb;
 
 /* Setting Up the Menu Commands */
 - (void) addItem: (id <NSMenuItem>)newItem;
