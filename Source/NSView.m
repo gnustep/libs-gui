@@ -274,8 +274,13 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
   [self viewWillMoveToWindow:nil];
 
+  /* Remove the view from the linked list of views maintained by the super view
+     so that the view will not receive an unneeded display message. */
+  [super_view _removeSubviewFromViewsThatNeedDisplay:self];
+
   views = [super_view subviews];
   [views removeObjectIdenticalTo:self];
+  super_view = nil;
 }
 
 - (void)replaceSubview:(NSView *)oldView
@@ -293,6 +298,10 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
       [oldView viewWillMoveToWindow:nil];
       [oldView setSuperview:nil];
       [newView setNextResponder:nil];
+
+      /* Remove the view from the linked list of views so that the old view
+         will not receive an unneeded display message. */
+      [self _removeSubviewFromViewsThatNeedDisplay:oldView];
 
       [sub_views replaceObjectAtIndex:index withObject:newView];
 
@@ -870,6 +879,23 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
      a subtree of views that need display inside the views hierarchy. */
   if (super_view)
     [super_view _addSubviewForNeedingDisplay:self];
+}
+
+- (void)_removeSubviewFromViewsThatNeedDisplay:(NSView*)view
+{
+  /* Remove view from the list of subviews that need display */
+  if (_subviewsThatNeedDisplay == view)
+    _subviewsThatNeedDisplay = view->_nextSiblingSubviewThatNeedsDisplay;
+  else {
+    NSView* currentView;
+
+    for (currentView = _subviewsThatNeedDisplay;
+	 currentView->_nextSiblingSubviewThatNeedsDisplay;
+	 currentView = currentView->_nextSiblingSubviewThatNeedsDisplay)
+      if (currentView->_nextSiblingSubviewThatNeedsDisplay == view)
+	currentView->_nextSiblingSubviewThatNeedsDisplay
+	    = view->_nextSiblingSubviewThatNeedsDisplay;
+  }
 }
 
 - (void)setNeedsDisplay:(BOOL)flag
