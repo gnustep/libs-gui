@@ -1,3 +1,9 @@
+Tue Sep 28  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSBrowser.m Fixed bug: ([-mouseDown:]): New method with a
+	void implementation (to prevent the original NSControl's method
+	from being ever executed).
+
 Mon Sep 27  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSOpenPanel.m ([+openPanel]): use NSSavePanel's new 

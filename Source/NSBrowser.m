@@ -1030,6 +1030,10 @@
 //
 // Event Handling
 //
+- (void)mouseDown: (NSEvent *)aEvent
+{
+}
+
 - (void)doClick: (id)sender
 {
   int column = [self columnOfMatrix: sender];
