@@ -1,3 +1,7 @@
+2003-04-08 15:33  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSTextView.m (-mouseDown:): Rewrite mouse tracking loop.
+
 2003-04-08 02:12  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSApplication.m: Note which thread is the -gui thread.

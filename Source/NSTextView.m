@@ -1,6 +1,6 @@
 /** <title>NSTextView</title>
 
-   Copyright (C) 1996, 1998, 2000, 2001, 2002 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1998, 2000, 2001, 2002, 2003 Free Software Foundation, Inc.
 
    Much code of this class was originally derived from code which was
    in NSText.m.
@@ -2884,10 +2884,12 @@ Figure out how the additional layout stuff is supposed to work.
   /* TODO: Only do relayout if needed */
   NSRange drawnRange;
   NSRect containerRect = rect;
+
   containerRect.origin.x -= _textContainerOrigin.x;
   containerRect.origin.y -= _textContainerOrigin.y;
   drawnRange = [_layoutManager glyphRangeForBoundingRect: containerRect 
 			       inTextContainer: _textContainer];
+
   if (_tf.draws_background)
     {
       /* First paint the background with the color.  This is necessary
@@ -3884,9 +3886,7 @@ other than copy/paste or dragging. */
   NSSelectionGranularity granularity = NSSelectByCharacter;
   NSRange chosenRange, proposedRange;
   NSPoint point, startPoint;
-  NSEvent *currentEvent;
   unsigned startIndex;
-  unsigned mask;
 
   /* If non selectable then ignore the mouse down. */
   if (_tf.is_selectable == NO)
@@ -4040,46 +4040,52 @@ other than copy/paste or dragging. */
   [self setSelectedRange: chosenRange  affinity: affinity  
 	stillSelecting: YES];
 
-  /* Do an immediate redisplay for visual feedback */
-  [self displayIfNeeded];
 
   /* Enter modal loop tracking the mouse */
-  
-  mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
-  
-  for (currentEvent = [_window nextEventMatchingMask: mask];
-       [currentEvent type] != NSLeftMouseUp;
-       currentEvent = [_window nextEventMatchingMask: mask])
-    {
-      BOOL didScroll = [self autoscroll: currentEvent];
+  {
+    unsigned int mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
+    NSEvent *currentEvent, *lastEvent = nil;
+    NSDate *distantPast = [NSDate distantPast];
 
-      point = [self convertPoint: [currentEvent locationInWindow]
-		    fromView: nil];
-      proposedRange = MakeRangeFromAbs ([self characterIndexForPoint: point],
-					startIndex);
-      chosenRange = [self selectionRangeForProposedRange: proposedRange
-			  granularity: granularity];
-      [self setSelectedRange: chosenRange  affinity: affinity  
-	    stillSelecting: YES];
+    currentEvent = [_window nextEventMatchingMask: mask
+		     untilDate: nil
+		     inMode: NSEventTrackingRunLoopMode
+		     dequeue: YES];
+    do
+      {
+	while (currentEvent && [currentEvent type] != NSLeftMouseUp)
+	  {
+	    lastEvent = currentEvent;
+	    currentEvent = [_window nextEventMatchingMask: mask
+			     untilDate: distantPast
+			     inMode: NSEventTrackingRunLoopMode
+			     dequeue: YES];
+	  }
+	if (currentEvent && [currentEvent type] == NSLeftMouseUp)
+	  break;
 
-      if (didScroll)
-	{
-	  /* TODO: Only redisplay where needed, and avoid relayout */
-	  [self setNeedsDisplay: YES];
-	}
-      
-      /* Do an immediate redisplay for visual feedback */
-      [self displayIfNeeded];
-    }
+	[self autoscroll: lastEvent];
+	point = [self convertPoint: [lastEvent locationInWindow]
+		  fromView: nil];
+	proposedRange = MakeRangeFromAbs([self characterIndexForPoint: point],
+					 startIndex);
+	chosenRange = [self selectionRangeForProposedRange: proposedRange
+			granularity: granularity];
+	[self setSelectedRange: chosenRange  affinity: affinity
+	  stillSelecting: YES];
+
+	currentEvent = [_window nextEventMatchingMask: mask
+			 untilDate: nil
+			 inMode: NSEventTrackingRunLoopMode
+			 dequeue: YES];
+      } while ([currentEvent type] != NSLeftMouseUp);
+  }
 
   NSDebugLog(@"chosenRange. location  = %d, length  = %d\n",
 	     (int)chosenRange.location, (int)chosenRange.length);
 
   [self setSelectedRange: chosenRange  affinity: affinity  
 	stillSelecting: NO];
-
-  /* Ahm - this shouldn't really be needed but... */
-  [self displayIfNeeded];
 
   /* Remember granularity till a new selection destroys the memory */
   [self setSelectionGranularity: granularity];
