@@ -1,4 +1,4 @@
-/* 
+/*
    NSMatrix.m
 
    Matrix class for grouping controls
@@ -11,14 +11,14 @@
    Scott Christley.
    Author:  Felipe A. Rodriguez <far@ix.netcom.com>
    Date: August 1998
-   
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public
    License as published by the Free Software Foundation; either
    version 2 of the License, or (at your option) any later version.
-   
+
    This library is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
@@ -28,7 +28,7 @@
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/ 
+*/
 
 #include <gnustep/gui/config.h>
 #include <stdlib.h>
@@ -622,7 +622,7 @@ static int mouseDownFlags = 0;
   [self sizeToCells];
 }
 
-- (void)sortUsingFunction:(int (*)(id element1, id element2, 
+- (void)sortUsingFunction:(int (*)(id element1, id element2,
 				   void *userData))comparator
 		  context:(void*)context
 {
@@ -744,7 +744,7 @@ static int mouseDownFlags = 0;
       }
   }
 
-  if(!allowsEmptySelection)								// if we don't allow an
+  if (!allowsEmptySelection)								// if we don't allow an
 	[self selectCellAtRow:0 column:0];					// empty selection
 }
 
@@ -990,7 +990,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
   [cellPrototype setScrollable:flag];
 }
 
-- (void)drawRect:(NSRect)rect
+- (void) drawRect: (NSRect)rect
 {
   int i, j;
   int row1, col1;	// The cell at the upper left corner
@@ -1003,47 +1003,56 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
       NSRectFill(rect);
     }
 
-  [self _getRow:&row1 column:&col1
-       forPoint:rect.origin
-	  above:NO right:NO
-	isBetweenCells:NULL];
-  [self _getRow:&row2 column:&col2
-	  forPoint:NSMakePoint(NSMaxX(rect), NSMaxY(rect))
-	  above:NO right:NO
-	  isBetweenCells:NULL];
+  [self _getRow: &row1 column: &col1 forPoint: rect.origin
+	  above: NO right: NO isBetweenCells: NULL];
+  [self _getRow: &row2 column: &col2
+       forPoint: NSMakePoint(NSMaxX(rect), NSMaxY(rect))
+	  above: NO right: NO isBetweenCells: NULL];
 
   if (row1 < 0)
     row1 = 0;
   if (col1 < 0)
     col1 = 0;
 
-//NSLog (@"display cells between (%d, %d) and (%d, %d)",row1,col1, row2, col2);
-
   /* Draw the cells within the drawing rectangle. */
   for (i = row1; i <= row2 && i < numRows; i++)
     for (j = col1; j <= col2 && j < numCols; j++)
-      [self drawCellAtRow:i column:j];
+      [self drawCellAtRow: i column: j];
 }
 
-- (void)drawCellAtRow:(int)row column:(int)column
+- (void) drawCellAtRow: (int)row column: (int)column
 {
-  NSCell *aCell = [self cellAtRow:row column:column];
-  NSRect cellFrame = [self cellFrameAtRow:row column:column];
-
-  [aCell drawWithFrame:cellFrame inView:self];
-}
-
-- (void)highlightCell:(BOOL)flag
-                atRow:(int)row
-               column:(int)column
-{
-  NSCell *aCell = [self cellAtRow:row column:column];
+  NSCell *aCell = [self cellAtRow: row column: column];
 
   if (aCell)
     {
-      [aCell highlight:flag
-             withFrame:[self cellFrameAtRow:row column:column]
-                inView:self];
+      NSRect cellFrame = [self cellFrameAtRow: row column: column];
+
+      if (drawsCellBackground)
+	{
+	  [cellBackgroundColor set];
+	  NSRectFill(cellFrame);
+	}
+      [aCell drawWithFrame: cellFrame inView: self];
+    }
+}
+
+- (void) highlightCell: (BOOL)flag atRow: (int)row column: (int)column
+{
+  NSCell *aCell = [self cellAtRow: row column: column];
+
+  if (aCell)
+    {
+      NSRect cellFrame = [self cellFrameAtRow: row column: column];
+
+      if (drawsCellBackground)
+	{
+	  [cellBackgroundColor set];
+	  NSRectFill(cellFrame);
+	}
+      [aCell highlight: flag
+             withFrame: cellFrame
+                inView: self];
     }
 }
 
@@ -1111,9 +1120,9 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
     [self sendAction];
 }
 
-- (BOOL)acceptsFirstMouse:(NSEvent*)theEvent
+- (BOOL) acceptsFirstMouse: (NSEvent*)theEvent
 {
-	return mode == NSListModeMatrix ? NO : YES;
+  return mode == NSListModeMatrix ? NO : YES;
 }
 
 - (void)_mouseDownNonListMode:(NSEvent *)theEvent
@@ -1129,7 +1138,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
   NSRect mouseCellFrame;
   unsigned eventMask = NSLeftMouseUpMask | NSLeftMouseDownMask
                      | NSMouseMovedMask  | NSLeftMouseDraggedMask;
-  
+
   [self lockFocus];
 
   if ((mode == NSRadioModeMatrix) && selectedCell)
@@ -1137,7 +1146,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
       [selectedCell setState: NSOffState];
       [self drawCellAtRow: selectedRow column: selectedColumn];
       [window flushWindow];
-      ((tMatrix)selectedCells)->matrix[selectedRow][selectedColumn] = NO;				
+      ((tMatrix)selectedCells)->matrix[selectedRow][selectedColumn] = NO;
       selectedCell = nil;
       selectedRow = selectedColumn = -1;
     }
@@ -1148,16 +1157,16 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
                                 fromView: nil];
       [self getRow: &mouseRow column: &mouseColumn forPoint: mouseLocation];
       mouseCellFrame = [self cellFrameAtRow: mouseRow column: mouseColumn];
-            
+
       if (((mode == NSRadioModeMatrix) && ![self allowsEmptySelection])
           || [self mouse: mouseLocation inRect: mouseCellFrame])
         {
           mouseCell = [self cellAtRow: mouseRow column: mouseColumn];
-            
+
           selectedCell = mouseCell;
           selectedRow = mouseRow;
           selectedColumn = mouseColumn;
-          ((tMatrix)selectedCells)->matrix[selectedRow][selectedColumn] = YES;				
+          ((tMatrix)selectedCells)->matrix[selectedRow][selectedColumn] = YES;
 
           if (((mode == NSRadioModeMatrix) || (mode == NSHighlightModeMatrix))
               && (highlightedCell != mouseCell))
@@ -1166,7 +1175,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
                 [self highlightCell: NO
                               atRow: highlightedRow
                              column: highlightedColumn];
-            
+
               highlightedCell = mouseCell;
               highlightedRow = mouseRow;
               highlightedColumn = mouseColumn;
@@ -1175,7 +1184,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
                            column: highlightedColumn];
               [window flushWindow];
             }
-            
+
           mouseUpInCell = [mouseCell trackMouse: theEvent
                                          inRect: mouseCellFrame
                                          ofView: self
@@ -1210,7 +1219,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
                                          inMode: NSEventTrackingRunLoopMode
                                         dequeue: YES];
     }
-    
+
     // the mouse went up.
     // if it was inside a cell, the cell has already sent the action.
     // if not, selectedCell is the last cell that had the mouse, and
@@ -1234,7 +1243,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
           }
         [self sendAction];
       }
-      
+
     if (highlightedCell)
       {
         [self highlightCell: NO
@@ -1251,7 +1260,7 @@ fprintf(stderr, " NSMatrix: selectTextAtRow --- ");
 {
 BOOL isBetweenCells, insideBounds;
 int row, column;
-unsigned eventMask = NSLeftMouseUpMask | NSLeftMouseDownMask | NSMouseMovedMask 
+unsigned eventMask = NSLeftMouseUpMask | NSLeftMouseDownMask | NSMouseMovedMask
 						| NSLeftMouseDraggedMask | NSPeriodicMask;
 NSPoint lastLocation = [theEvent locationInWindow];
 NSEvent* lastEvent = nil;
@@ -1263,94 +1272,94 @@ NSApplication *app = [NSApplication sharedApplication];
 static MPoint anchor = {0, 0};
 
 	mouseDownFlags = [theEvent modifierFlags];
-        
+
         if (mode != NSListModeMatrix)
           {
             [self _mouseDownNonListMode: theEvent];
             return;
           }
-          
+
 //FIXME list mode is not working well. there is a flipping coordinates bug
 //      when selecting by rect. the code here should be cleaned to eliminate
 //      references to other modes.
 
 	lastLocation = [self convertPoint:lastLocation fromView:nil];
-	if ((mode != NSTrackModeMatrix) && (mode != NSHighlightModeMatrix)) 
+	if ((mode != NSTrackModeMatrix) && (mode != NSHighlightModeMatrix))
 		[NSEvent startPeriodicEventsAfterDelay:0.05 withPeriod:0.05];
 	ASSIGN(lastEvent, theEvent);
 
 	[window _captureMouse: self];							// grab the mouse
 	[self lockFocus];					// selection involves two steps, first
 										// a loop that continues until the left
-	while (!done) 						// mouse goes up; then a series of 
+	while (!done) 						// mouse goes up; then a series of
 		{								// steps which send actions and display
 		BOOL shouldProceedEvent = NO;	// the cell as it should appear after
 										// the selection process is complete
-    	insideBounds = [self _getRow:&row 
+    	insideBounds = [self _getRow:&row
 							 column:&column
 							 forPoint:lastLocation
 							 above:NO right:NO
 							 isBetweenCells:&isBetweenCells];
-		if (insideBounds && !isBetweenCells) 			
-			{											 
+		if (insideBounds && !isBetweenCells)
+			{
       		aCell = [self cellAtRow:row column:column];
       		rect = [self cellFrameAtRow:row column:column];
 
-      		switch (mode) 
+      		switch (mode)
 				{
 				case NSTrackModeMatrix:				// in Track mode the cell
 					selectedCell = aCell;			// should track the mouse
 					selectedRow = row;				// until the cursor either
 					selectedColumn = column;		// leaves the cellframe or
 													// NSLeftMouseUp occurs
-					if([aCell trackMouse:lastEvent			
-							  inRect:rect					
-							  ofView:self				
-							  untilMouseUp:YES])			// YES if mouse 
+					if ([aCell trackMouse:lastEvent
+							  inRect:rect
+							  ofView:self
+							  untilMouseUp:YES])			// YES if mouse
 						done = YES;							// went up in cell
-					break;									
+					break;
 
 				case NSHighlightModeMatrix:			// Highlight mode is like
 					[aCell setState:1];				// Track mode except that
 					selectedCell = aCell;			// the cell is lit before
 					selectedRow = row;				// it begins tracking and
-					selectedColumn = column;		// unlit afterwards		
+					selectedColumn = column;		// unlit afterwards
 					[aCell highlight: YES withFrame: rect inView: self];
 					[window flushWindow];
-															
-					if([aCell trackMouse:lastEvent			 
-							  inRect:rect					
-							  ofView:self				
-							  untilMouseUp:YES])			// YES if mouse 
+
+					if ([aCell trackMouse:lastEvent
+							  inRect:rect
+							  ofView:self
+							  untilMouseUp:YES])			// YES if mouse
 						done = YES;							// went up in cell
 
-					[aCell setState:0];					
+					[aCell setState:0];
 					[aCell highlight: NO withFrame: rect inView: self];
 					[window flushWindow];
-					break;									
+					break;
 
 				case NSRadioModeMatrix:					// Radio mode allows no
 					if (previousCell == aCell)			// more than one cell
 						break;				 			// to be selected
-					
-					if(selectedCell)					
+
+					if (selectedCell)
 						{
 						[selectedCell setState:0];		// deselect previously
 						if (!previousCell)				// selected cell
-							previousCellRect = [self cellFrameAtRow:selectedRow 
+							previousCellRect = [self cellFrameAtRow:selectedRow
 									  			 	 column:selectedColumn];
-						[selectedCell highlight:NO 			
-									  withFrame:previousCellRect 
+						[selectedCell highlight:NO
+									  withFrame:previousCellRect
 									  inView:self];
 	  					((tMatrix)selectedCells)->matrix[selectedRow]
-														[selectedColumn] = NO;	
-						}			
+														[selectedColumn] = NO;
+						}
 					selectedCell = aCell;				// select current cell
-					selectedRow = row;					
+					selectedRow = row;
 					selectedColumn = column;
-					[aCell setState:1];	
+					[aCell setState:1];
 					[aCell highlight:YES withFrame:rect inView:self];
-	  				((tMatrix)selectedCells)->matrix[row][column] = YES;				
+	  				((tMatrix)selectedCells)->matrix[row][column] = YES;
 					[window flushWindow];
 	  				break;
 														// List mode allows
@@ -1359,27 +1368,27 @@ static MPoint anchor = {0, 0};
 	  				unsigned modifiers = [lastEvent modifierFlags];
 
 	  				if (previousCell == aCell)
-	    				break;			// When the user first clicks on a cell 
-										// we clear the existing selection 
+	    				break;			// When the user first clicks on a cell
+										// we clear the existing selection
 	  				if (!previousCell) 	// unless the Alternate or Shift keys
 						{				// have been pressed.
-						if (!(modifiers & NSShiftKeyMask) && 
+						if (!(modifiers & NSShiftKeyMask) &&
 								!(modifiers & NSAlternateKeyMask))
 							{
 	      					[self deselectAllCells];
 							anchor = MakePoint (column, row);
-							}			// Consider the selected cell as the 
-										// anchor from which to extend the 
+							}			// Consider the selected cell as the
+										// anchor from which to extend the
 										// selection to the current cell
 	    				if (!(modifiers & NSAlternateKeyMask))
 							{
 							selectedCell = aCell;		// select current cell
 							selectedRow = row;
 							selectedColumn = column;
-					
+
 							[selectedCell setState:1];
-							[selectedCell highlight:YES 
-										  withFrame:rect 
+							[selectedCell highlight:YES
+										  withFrame:rect
 										  inView:self];
 							((tMatrix)selectedCells)->matrix[row][column] =YES;
 							[window flushWindow];
@@ -1410,13 +1419,13 @@ static MPoint anchor = {0, 0};
     	if (done)										// if done break out of
       		break;										// the selection loop
 
-		while (!shouldProceedEvent) 					
+		while (!shouldProceedEvent)
 			{											// Get the next event
       		theEvent = [app nextEventMatchingMask:eventMask
 							untilDate:[NSDate distantFuture]
 							inMode:NSEventTrackingRunLoopMode
 							dequeue:YES];
-      		switch ([theEvent type]) 
+      		switch ([theEvent type])
 				{
 				case NSPeriodic:
 					NSDebugLog(@"NSMatrix: got NSPeriodic event\n");
@@ -1426,9 +1435,9 @@ static MPoint anchor = {0, 0};
 					done = YES;			// Track and Highlight modes do not use
 				case NSLeftMouseDown:	// periodic events so we must break out
 				default:				// and check if the mouse is in a cell
-					if ((mode == NSTrackModeMatrix) || 
+					if ((mode == NSTrackModeMatrix) ||
 							(mode == NSHighlightModeMatrix))
-				  		shouldProceedEvent = YES;	 
+				  		shouldProceedEvent = YES;
 					NSDebugLog(@"NSMatrix: got event of type: %d\n",
 								[theEvent type]);
 					ASSIGN(lastEvent, theEvent);
@@ -1438,40 +1447,40 @@ static MPoint anchor = {0, 0};
 		lastLocation = [lastEvent locationInWindow];
 		lastLocation = [self convertPoint:lastLocation fromView:nil];
   		}
-						
+
 	[window _releaseMouse: self];					// Release the mouse
 
   	switch (mode) 									// Finish the selection
 		{								 			// process
-		case NSRadioModeMatrix:	
-			if(selectedCell)			
+		case NSRadioModeMatrix:
+			if (selectedCell)
 				[selectedCell highlight:NO withFrame:rect inView:self];
-		case NSListModeMatrix:						
+		case NSListModeMatrix:
 			[self setNeedsDisplayInRect:rect];		// not needed by XRAW
 			[window flushWindow];
 		case NSHighlightModeMatrix:
 		case NSTrackModeMatrix:
 			break;
-  		}					
+  		}
 
-	if(selectedCell)
+	if (selectedCell)
 		{											// send single click action
-		if(!(selectedCellTarget = [selectedCell target]))
-			{					// selected cell has no target so send single  
-			if (target)			// click action to matrix's (self's) target			
+		if (!(selectedCellTarget = [selectedCell target]))
+			{					// selected cell has no target so send single
+			if (target)			// click action to matrix's (self's) target
 				[target performSelector:action withObject:self];
 			}					// in Track and Highlight modes the single
-		else 					// click action has already been sent by the 
+		else 					// click action has already been sent by the
 			{					// cell to it's target (if it has one)
 			if ((mode != NSTrackModeMatrix) && (mode != NSHighlightModeMatrix))
-				[selectedCellTarget performSelector:[selectedCell action] 
+				[selectedCellTarget performSelector:[selectedCell action]
 									withObject:self];
 			}
 		}
-								// click count > 1 indicates a double click					
-	if (target && doubleAction && ([lastEvent clickCount] > 1))				
-		[target performSelector:doubleAction withObject:self];	
-																
+								// click count > 1 indicates a double click
+	if (target && doubleAction && ([lastEvent clickCount] > 1))
+		[target performSelector:doubleAction withObject:self];
+
 	[self unlockFocus];
 
 	if ((mode != NSTrackModeMatrix) && (mode != NSHighlightModeMatrix))
@@ -1480,21 +1489,16 @@ static MPoint anchor = {0, 0};
 	[lastEvent release];
 }
 
-- (void)updateCell:(NSCell *)aCell			
-{ 														// attempt to update
-int r, c;												// only the cell and
-														// not the hole matrix
-	if([aCell isOpaque])
-		{														
-		if([self getRow:&r column:&c ofCell:aCell])
-			{
-			[self setNeedsDisplayInRect:[self cellFrameAtRow:r column:c]]; 
+- (void) updateCell: (NSCell*)aCell
+{
+  int		row, col;
+  NSRect	rect;
 
-			return;
-			}
-		}
-														// oh well, update the
-	[self setNeedsDisplay:YES]; 						// whole matrix
+  if ([self getRow: &row column: &col ofCell: aCell] == NO)
+    return;	// Not a cell in this matrix - we can't update it.
+
+  rect = [self cellFrameAtRow: row column: col];
+  [self setNeedsDisplayInRect: rect];
 }
 
 - (BOOL)performKeyEquivalent:(NSEvent*)theEvent
@@ -1674,12 +1678,12 @@ fprintf(stderr, " NSMatrix: keyDown --- ");
 
    Note that the cell numbering is flipped relative to the coordinate system.
  */
-- (BOOL)_getRow:(int*)row 
-		 column:(int*)column
-		 forPoint:(NSPoint)point
-		 above:(BOOL)aboveRequired
-		 right:(BOOL)rightRequired
-		 isBetweenCells:(BOOL*)isBetweenCells
+- (BOOL) _getRow: (int*)row
+	  column: (int*)column
+	forPoint: (NSPoint)point
+	   above: (BOOL)aboveRequired
+	   right: (BOOL)rightRequired
+  isBetweenCells: (BOOL*)isBetweenCells
 {
   BOOL rowReady = NO, colReady = NO;
   BOOL betweenRows = NO, betweenCols = NO;
@@ -1688,78 +1692,87 @@ fprintf(stderr, " NSMatrix: keyDown --- ");
   SET_POINTER_VALUE(isBetweenCells, NO);
 
   /* First check the limit cases */
-  if (point.x > theBounds.size.width) {
-    SET_POINTER_VALUE(column, numCols - 1);
-    colReady = YES;
-  }
-  else if (point.x < 0) {
-    SET_POINTER_VALUE(column, 0);
-    colReady = YES;
-  }
+  if (point.x > theBounds.size.width)
+    {
+      SET_POINTER_VALUE(column, numCols - 1);
+      colReady = YES;
+    }
+  else if (point.x < 0)
+    {
+      SET_POINTER_VALUE(column, 0);
+      colReady = YES;
+    }
 
-  if (point.y > theBounds.size.height) {
-    SET_POINTER_VALUE(row, numRows - 1);
-    rowReady = YES;
-  }
-  else if (point.y < 0) {
-    SET_POINTER_VALUE(row, 0);
-    rowReady = YES;
-  }
+  if (point.y > theBounds.size.height)
+    {
+      SET_POINTER_VALUE(row, numRows - 1);
+      rowReady = YES;
+    }
+  else if (point.y < 0)
+    {
+      SET_POINTER_VALUE(row, 0);
+      rowReady = YES;
+    }
 
   if (rowReady && colReady)
     return NO;
 
-  if (!rowReady) {
-    int approxRow = point.y / (cellSize.height + intercell.height);
-    float approxRowsHeight = approxRow * (cellSize.height + intercell.height);
+  if (!rowReady)
+    {
+      int approxRow = point.y / (cellSize.height + intercell.height);
+      float approxRowsHeight = approxRow * (cellSize.height + intercell.height);
 
-    /* Determine if the point is inside the cell */
-    betweenRows = !(point.y > approxRowsHeight
+      /* Determine if the point is inside the cell */
+      betweenRows = !(point.y > approxRowsHeight
 		    && point.y <= approxRowsHeight + cellSize.height);
 
-    /* If the point is between cells then adjust the computed row taking into
-       account the `aboveRequired' flag. */
-    if (aboveRequired && betweenRows)
-      approxRow++;
+      /* If the point is between cells then adjust the computed row taking into
+	 account the `aboveRequired' flag. */
+      if (aboveRequired && betweenRows)
+	approxRow++;
 
-#if HAS_FLIPPED_VIEWS
-    SET_POINTER_VALUE(row, approxRow);
-#else
-    SET_POINTER_VALUE(row, numRows - approxRow - 1);
+#if HAS_FLIPPED_VIEWS == 0
+      approxRow = numRows - approxRow - 1;
 #endif
-    if (*row < 0) {
-      *row = -1;
-      rowReady = YES;
+      if (approxRow < 0)
+	{
+	  approxRow = -1;
+	  rowReady = YES;
+	}
+      else if (approxRow >= numRows)
+	{
+	  approxRow = numRows - 1;
+	  rowReady = YES;
+	}
+      SET_POINTER_VALUE(row, approxRow);
     }
-    else if (*row >= numRows) {
-      *row = numRows - 1;
-      rowReady = YES;
+
+  if (!colReady)
+    {
+      int approxCol = point.x / (cellSize.width + intercell.width);
+      float approxColsWidth = approxCol * (cellSize.width + intercell.width);
+
+      /* Determine if the point is inside the cell */
+      betweenCols = !(point.x > approxColsWidth
+		      && point.x <= approxColsWidth + cellSize.width);
+
+      /* If the point is between cells then adjust the computed column taking
+	 into account the `rightRequired' flag. */
+      if (rightRequired && betweenCols)
+	approxCol++;
+
+      if (approxCol < 0)
+	{
+	  approxCol = -1;
+	  colReady = YES;
+	}
+      else if (approxCol >= numCols)
+	{
+	  approxCol = numCols - 1;
+	  colReady = YES;
+	}
+      SET_POINTER_VALUE(column, approxCol);
     }
-  }
-
-  if (!colReady) {
-    int approxCol = point.x / (cellSize.width + intercell.width);
-    float approxColsWidth = approxCol * (cellSize.width + intercell.width);
-
-    /* Determine if the point is inside the cell */
-    betweenCols = !(point.x > approxColsWidth
-		    && point.x <= approxColsWidth + cellSize.width);
-
-    /* If the point is between cells then adjust the computed column taking
-       into account the `rightRequired' flag. */
-    if (rightRequired && betweenCols)
-      approxCol++;
-
-    SET_POINTER_VALUE(column, approxCol);
-    if (*column < 0) {
-      *column = -1;
-      colReady = YES;
-    }
-    else if (*column >= numCols) {
-      *column = numCols - 1;
-      colReady = YES;
-    }
-  }
 
   /* If the point is outside the matrix bounds return NO */
   if (rowReady || colReady)
