@@ -1,3 +1,17 @@
+Fri Dec 22 19:20:00 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/externs.m: Added NSOldSelectedCharacterRange.
+	* Headers/gnustep/gui/NSTextView.h: Remove ivar for selection
+	affinity; added ivar related to delegate.
+	* Source/NSTextView.m ([-resignFirstResponder]): Rewritten
+	deleting insertion point; do not flush the window.
+	([-drawRect:]): Don't flush the window when drawing insertion
+	point.  ([-drawInsertionPointInRect:color:turnedOn:]): Don't flush
+	the window.  ([-drawInsertionPointAtIndex:color:turnedOn:]):
+	Removed.  Code moved to the new method
+	([-rectForInsertionPointAtIndex:]).  ([-selectionAffinity]):
+	Return NSSelectionAffinityDownstream.
+
 Thu Dec 21 19:46:45 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/gnustep/gui/NSWindow.h: New ivar _futureFirstResponder.
