@@ -64,6 +64,19 @@ static NSString	*NSGraphicsContextThreadKey = @"NSGraphicsContextThreadKey";
 #endif
 static NSString	*NSGraphicsContextStackKey = @"NSGraphicsContextStackKey";
 
+/* Colorspace constants */
+NSString *GSColorSpaceName = @"GSColorSpaceName";
+NSString *GSColorSpaceWhitePoint = @"GSColorSpaceWhitePoint";
+NSString *GSColorSpaceBlackPoint = @"GSColorSpaceBlackPoint";
+NSString *GSColorSpaceGamma = @"GSColorSpaceGamma";
+NSString *GSColorSpaceMatrix = @"GSColorSpaceMatrix";
+NSString *GSColorSpaceRange = @"GSColorSpaceRange";
+NSString *GSColorSpaceComponents = @"GSColorSpaceComponents";
+NSString *GSColorSpaceProfile = @"GSColorSpaceProfile";
+NSString *GSAlternateColorSpace = @"GSAlternateColorSpace";
+NSString *GSBaseColorSpace = @"GSBaseColorSpace";
+NSString *GSColorSpaceColorTable = @"GSColorSpaceColorTable";
+
 /*
  *	Function for rapid access to current graphics context.
  */

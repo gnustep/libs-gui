@@ -1,3 +1,7 @@
+2002-08-16  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSGraphicsContext.m: Define colorspace constants
+
 2002-08-15  Adam Fedor  <fedor@gnu.org>
 
 	* configure.ac: Add NetBSD header/ldflag support (Patch from
