@@ -2234,13 +2234,19 @@ This method is for user changes; see NSTextView_actions.m.
       NSRange glyphRange;
       unsigned glyphIndex;
       NSRect rect;
-      
-      charRange = NSMakeRange (aRange.location, 0);
-  if (charRange.location == [[[_layoutManager textStorage] string] length])
-    {
-      rect = NSZeroRect;
-      goto ugly_hack_done;
-    }
+
+      charRange = NSMakeRange (aRange.location, 1);
+      if (charRange.location == [[[_layoutManager textStorage] string] length])
+	{
+	  if (charRange.location == 0)
+	    {
+	      rect = NSZeroRect;
+	      goto ugly_hack_done;
+	    }
+	  else
+	    charRange.location--;
+	}
+
       glyphRange = [_layoutManager glyphRangeForCharacterRange: charRange 
 				   actualCharacterRange: NULL];
       glyphIndex = glyphRange.location;
@@ -4052,6 +4058,8 @@ configuation! */
   NSRange glyphRange;
   NSRect rect;
 
+  if (!aRange.length)
+    return NSZeroRect;
   glyphRange = [_layoutManager glyphRangeForCharacterRange: aRange 
 			       actualCharacterRange: NULL];
   rect = [_layoutManager boundingRectForGlyphRange: glyphRange 
