@@ -357,36 +357,31 @@ documentAttributes: (NSDictionary**)dict
 - (id) initWithRTFDFileWrapper: (NSFileWrapper*)wrapper
             documentAttributes: (NSDictionary**)dict
 {
-  if ([wrapper isRegularFile])
-    return [self initWithRTF: [wrapper regularFileContents]
-		 documentAttributes: dict];
-  else if ([wrapper isDirectory])
-    {
-      NSDictionary *files = [wrapper fileWrappers];
-      NSFileWrapper *contents;
-
-      // We try to read the main file in the directory
-      if ((contents = [files objectForKey: @"TXT.rtf"]) != nil)
-	return [self initWithRTF: [contents regularFileContents]
-		     documentAttributes: dict];
-    }
-
-  return nil;
+  NSAttributedString *new = [RTFConsumer parseRTFD: wrapper
+					 documentAttributes: dict];
+  // We do not return self but the newly created object
+  RELEASE(self);
+  return RETAIN(new); 
 }
 
 - (id) initWithRTFD: (NSData*)data
  documentAttributes: (NSDictionary**)dict
 {
-  // FIXME: We use RTF, as there are currently no additional images
-  return [self initWithRTF: data
-	       documentAttributes: dict];
+  NSFileWrapper *wrapper = [[NSFileWrapper alloc] 
+			       initWithSerializedRepresentation: data];
+  NSAttributedString *new = [RTFConsumer parseRTFD: wrapper
+					 documentAttributes: dict];
+  // We do not return self but the newly created object
+  RELEASE(self);
+  RELEASE(wrapper);
+  return RETAIN(new); 
 }
 
 - (id) initWithRTF: (NSData*)data
   documentAttributes: (NSDictionary**)dict
 {
-  NSAttributedString *new = parseRTFintoAttributedString(data, dict);
-
+  NSAttributedString *new = [RTFConsumer parseRTF: data
+					 documentAttributes: dict];
   // We do not return self but the newly created object
   RELEASE(self);
   return RETAIN(new); 
@@ -411,40 +406,24 @@ documentAttributes: (NSDictionary**)dict
 - (NSData*) RTFFromRange: (NSRange)range
       documentAttributes: (NSDictionary*)dict
 {
-  // FIXME: We use RTFD, as there are currently no additional images
-  return [self RTFDFromRange: range
-	       documentAttributes: dict];
+  return [RTFProducer produceRTF: [self attributedSubstringFromRange: range]
+		      documentAttributes: dict];
 }
 
 - (NSData*) RTFDFromRange: (NSRange)range
        documentAttributes: (NSDictionary*)dict
 {
-  return [RTFProducer RTFDFromAttributedString: 
-			  [self attributedSubstringFromRange: range]
-		      documentAttributes: dict];
+  return [[RTFProducer produceRTFD: [self attributedSubstringFromRange: range]
+		       documentAttributes: dict] serializedRepresentation];
 }
 
 - (NSFileWrapper*) RTFDFileWrapperFromRange: (NSRange)range
 			 documentAttributes: (NSDictionary*)dict
 {
-  if ([self containsAttachments])
-    {
-      NSMutableDictionary *fileDict = [NSMutableDictionary dictionary];
-      NSFileWrapper *txt = [[NSFileWrapper alloc]
-			     initRegularFileWithContents:
-			       [self RTFFromRange: range
-				     documentAttributes: dict]];
-
-      [fileDict setObject: txt forKey: @"TXT.rtf"];
-      // FIXME: We have to add the attachments to the directory file wrapper
-      
-      return [[NSFileWrapper alloc] initDirectoryWithFileWrappers: fileDict];
-    }
-  else
-    return [[NSFileWrapper alloc] initRegularFileWithContents:
-				    [self RTFFromRange: range
-					  documentAttributes: dict]];
+  return [RTFProducer produceRTFD: [self attributedSubstringFromRange: range]
+		      documentAttributes: dict];
 }
+
 @end
 
 @implementation NSMutableAttributedString (AppKit)
