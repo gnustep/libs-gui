@@ -30,6 +30,7 @@
 #define _GNUstep_H_NSFontPanel
 
 #include <AppKit/NSPanel.h>
+#include <AppKit/NSFontManager.h>
 
 @class NSFont;
 @class NSView;
@@ -64,6 +65,10 @@ enum {
   NSMutableArray *_faceList;
   int _family;
   int _face;
+  NSFontTraitMask _traits;
+  int _weight;
+  // user typed string for preview area
+  NSString *_previewString;
 
   // field for display
   NSView *_accessoryView;
