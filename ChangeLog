@@ -1,3 +1,8 @@
+Wed Feb 17  9:04:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Tools/make_services.m: Updated for change in NSProcessInfo
+	* Tools/set_show_service.m: Updated for change in NSProcessInfo
+
 Wed Feb 17  8:38:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSSplitView.m: ([-setDelegate:]) corrected to register

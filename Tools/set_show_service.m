@@ -51,7 +51,7 @@ main(int argc, char** argv)
 
   args = [proc arguments];
 
-  for (index = 0; index < [args count]; index++)
+  for (index = 1; index < [args count]; index++)
     {
       if ([[args objectAtIndex: index] isEqual: @"--help"])
 	{
