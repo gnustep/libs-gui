@@ -383,6 +383,8 @@ shouldRemoveMarker: (NSRulerMarker *)marker;
 
 /*************************** NSResponder methods ***************************/
 
+- (void) resignKeyWindow;
+- (void) becomeKeyWindow;
 - (BOOL) resignFirstResponder;
 - (BOOL) becomeFirstResponder;
 - (id) validRequestorForSendType:(NSString *)sendType 
