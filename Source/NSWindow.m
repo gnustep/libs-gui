@@ -8,6 +8,8 @@
    Date: 1996
    Author:  Felipe A. Rodriguez <far@ix.netcom.com>
    Date: June 1998
+   Author:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+   Date: December 1998
 
    This file is part of the GNUstep GUI Library.
 
@@ -1374,8 +1376,6 @@ id result = nil;
 
 - initWithCoder:aDecoder
 {
-  NSApplication *theApp;
-
   [super initWithCoder:aDecoder];
 
   NSDebugLog(@"NSWindow: start decoding\n");

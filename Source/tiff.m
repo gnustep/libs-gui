@@ -56,6 +56,7 @@
 
 #include <gnustep/gui/config.h>
 #include <gnustep/gui/nsimage-tiff.h>
+#include <Foundation/NSArray.h>
 #include <Foundation/NSString.h>
 #include <Foundation/NSUtilities.h>
 

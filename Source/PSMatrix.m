@@ -26,6 +26,7 @@
 #include <gnustep/gui/config.h>
 #include <math.h>
 
+#include <Foundation/NSArray.h>
 #include <Foundation/NSString.h>
 
 #include <AppKit/config.h>

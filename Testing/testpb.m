@@ -5,27 +5,6 @@
 #include <Foundation/NSGeometry.h>
 #include <AppKit/NSPasteboard.h>
 
-BOOL
-initialize_gnustep_backend(void)
-{
-  /* Dummy replacement for the xdps function */
-  return YES;
-}
-void NSHighlightRect(NSRect aRect)       						// dummy define
-{}
-void NSRectFill(NSRect aRect)       							// dummy define
-{}
-void NSBeep(void)												// dummy define
-{}
-
-@interface	GMModel: NSObject
-{
-}
-@end
-
-@implementation	GMModel
-@end
-
 @interface	pbOwner : NSObject
 {
 }

@@ -44,7 +44,7 @@ TEST_APP_NAME = buttons matrix menu nsbox nsbrowser nsbrowsercell \
 		slider windows
 
 # The source files to be compiled
-testpb_OBJC_FILES = testpb.m
+testpb_OBJC_FILES = testpb.m Functions.m
 buttons_OBJC_FILES = buttons.m
 matrix_OBJC_FILES = matrix.m
 menu_OBJC_FILES = menu.m

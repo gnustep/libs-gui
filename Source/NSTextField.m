@@ -204,12 +204,12 @@ id t;
 //
 // Handling Events 
 //
-- (void)mouseDown:(NSEvent *)theEvent
+- (void) mouseDown: (NSEvent*)theEvent
 {
-NSRect cellFrame = bounds;							
-													// If not selectable then 
-	if (![self isSelectable]) 						// don't recognize the 
-		return;										// mouse down
+  NSRect cellFrame = bounds;
+
+  if (![self isSelectable])
+    return;
 
 fprintf(stderr, " TextField mouseDown --- ");
 
@@ -219,39 +219,38 @@ fprintf(stderr, " TextField mouseDown --- ");
 //		    cellFrame.origin = [super_view convertPoint:frame.origin 
 //								 toView:[window contentView]];
 
-	if ([cell isBordered]) 								// draw the border if 
-		{												// needed.
-		if ([cell isBezeled]) 
-			{
-			cellFrame.origin.x += 4;
-			cellFrame.origin.y += 2;
-			cellFrame.size.width -= 6;
-			cellFrame.size.height -= 4;
-    		}
-		else 
-			{
-			cellFrame.origin.x += 1;
-			cellFrame.origin.y += 1;
-			cellFrame.size.width -= 2;
-			cellFrame.size.height -= 2;
-    		}
-  		}
-													// set field editor to
-	fprintf (stderr,
+  if ([cell isBordered])
+    {
+      if ([cell isBezeled]) 
+	{
+	  cellFrame.origin.x += 4;
+	  cellFrame.origin.y += 2;
+	  cellFrame.size.width -= 6;
+	  cellFrame.size.height -= 4;
+	}
+      else 
+	{
+	  cellFrame.origin.x += 1;
+	  cellFrame.origin.y += 1;
+	  cellFrame.size.width -= 2;
+	  cellFrame.size.height -= 2;
+	}
+    }
+
+  fprintf (stderr,
 	"XRTextField 0: rect origin (%1.2f, %1.2f), size (%1.2f, %1.2f)\n",
 				frame.origin.x, frame.origin.y, 
 				frame.size.width, frame.size.height);
-	fprintf (stderr,
+  fprintf (stderr,
 	"XRTextField 1: rect origin (%1.2f, %1.2f), size (%1.2f, %1.2f)\n",
 				cellFrame.origin.x, cellFrame.origin.y, 
 				cellFrame.size.width, cellFrame.size.height);
 
-	[cell editWithFrame:cellFrame 			
-					inView:self				
-					editor:[window fieldEditor:YES forObject:cell]	
-					delegate:self	
-					event:theEvent];
-
+  [cell editWithFrame: cellFrame
+	       inView: self
+	       editor: [window fieldEditor: YES forObject: cell]	
+	     delegate: self	
+		event: theEvent];
 
 //	[[self cell] _setCursorLocation:location];
 //	[[self cell] _setCursorVisibility: YES];

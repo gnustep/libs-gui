@@ -271,7 +271,7 @@ static Class rulerViewClass = nil;
   [self tile];
 }
 
-- (void)_doScroll: (NSScroller*)scroller
+- (void) _doScroll: (NSScroller*)scroller
 {
   float floatValue = [scroller floatValue];
   NSRect clipViewBounds = [_contentView bounds];
@@ -342,12 +342,6 @@ static Class rulerViewClass = nil;
     }
 
   [_contentView scrollToPoint: point];
-  // scroll clipview
-  // reflectScrolledClipView has been called by the clipView.
-
-  //FIXME: should this be here?
-  // NSWindow's doc says update is called for each event
-  [window update];
 }
 
 - (void) reflectScrolledClipView: (NSClipView*)aClipView
@@ -495,13 +489,14 @@ static Class rulerViewClass = nil;
       contentRect.origin.y += scrollerWidth + 1;
     }
 
-  // If the document view is not flipped reverse the meaning
-  // of the vertical scroller's
-  if (![_contentView isFlipped])
-    [_vertScroller setFloatValue: 1];
   [_horizScroller setFrame: horizScrollerRect];
   [_vertScroller setFrame: vertScrollerRect];
   [_contentView setFrame: contentRect];
+#if 1
+  // [_contentView viewFrameChanged: nil];
+  // update scroller
+  [self reflectScrolledClipView: (NSClipView*)_contentView];
+#endif
 }
 
 - (void) drawRect: (NSRect)rect
@@ -586,12 +581,6 @@ static Class rulerViewClass = nil;
   if (_contentView && ![_contentView isFlipped])
     [_vertScroller setFloatValue: 1];
   [self tile];
-#if 0
-/* Redundant stuff - done in -tile */
-  [_contentView viewFrameChanged: nil];
-  // update scroller
-  [self reflectScrolledClipView: (NSClipView*)_contentView];
-#endif
 }
 
 - (void) resizeSubviewsWithOldSize: (NSSize)oldSize

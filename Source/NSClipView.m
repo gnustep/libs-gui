@@ -5,6 +5,8 @@
 
    Author: Ovidiu Predescu <ovidiu@net-community.com>
    Date: July 1997
+   Author:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+   Date: January 1999
 
    This file is part of the GNUstep GUI Library.
 
@@ -184,7 +186,7 @@
       [_documentView setNeedsDisplayInRect:
               [self convertRect: newBounds toView: _documentView]];
     }
-  [super_view reflectScrolledClipView:self];
+  [super_view reflectScrolledClipView: self];
 }
 
 - (NSPoint) constrainScrollPoint: (NSPoint)proposedNewOrigin
