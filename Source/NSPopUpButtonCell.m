@@ -443,7 +443,7 @@
 
 - (void) dismissPopUp
 {
-  [[_menu window] orderOut: nil];
+  [_menu close];
 }
 
 - (BOOL) trackMouse: (NSEvent *)theEvent
@@ -520,7 +520,7 @@
    * Images are always drawn with their bottom-left corner at the origin
    * so we must adjust the position to take account of a flipped view.
    */
-  if ([control_view isFlipped])
+  if ([view isFlipped])
     position.y += size.height;
   [aImage  compositeToPoint: position operation: NSCompositeCopy];
 
