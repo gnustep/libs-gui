@@ -262,7 +262,6 @@ static NSCell* tileCell = nil;
 - _appIconInit
 {
   NSAppIconView	*iv;
-  NSGraphicsContext	*context = GSCurrentContext();
 
   if (app_icon == nil)
     app_icon = [[NSImage imageNamed: @"GNUstep"] retain];
@@ -279,7 +278,7 @@ static NSCell* tileCell = nil;
   [iv setImage: app_icon];
 
   [_app_icon_window orderFrontRegardless];
-  DPSsetinputfocus(context, [_app_icon_window windowNumber]);
+  DPSsetinputfocus(GSCurrentContext(), [_app_icon_window windowNumber]);
   return self;
 }
 
@@ -487,9 +486,7 @@ static NSCell* tileCell = nil;
        */
       if ([self keyWindow] == nil)
 	{
-	  NSGraphicsContext	*context = GSCurrentContext();
-
-	  DPSsetinputfocus(context, [_app_icon_window windowNumber]);
+	  DPSsetinputfocus(GSCurrentContext(), [_app_icon_window windowNumber]);
 	}
     }
 }
@@ -716,7 +713,6 @@ static NSCell* tileCell = nil;
 {
   if (app_is_active == NO)
     {
-      NSWindow			*kw;
       NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
       unsigned			count = [_inactive count];
       unsigned			i;
@@ -729,17 +725,20 @@ static NSCell* tileCell = nil;
 			object: self];
 
       NSDebugLog(@"activateIgnoringOtherApps start.");
+
       app_is_active = YES;
 
       for (i = 0; i < count; i++)
 	{
 	  [[_inactive objectAtIndex: i] orderFrontRegardless];
 	}
-      if ([self keyWindow] == nil && [_inactive containsObject: _hidden_key])
+      [_inactive removeAllObjects];
+      if (_hidden_key != nil
+	&& [[self windows] indexOfObjectIdenticalTo: _hidden_key] != NSNotFound)
 	{
 	  [_hidden_key makeKeyWindow];
+	  _hidden_key = nil;
 	}
-      [_inactive removeAllObjects];
 
       [main_menu update];
       [main_menu display];
@@ -748,14 +747,6 @@ static NSCell* tileCell = nil;
 	{
 	  [self unhide: nil];
 	}
-
-      kw = [self keyWindow];
-      if (kw != nil)
-	{
-	  [kw resignKeyWindow];
-	  [kw orderFront: self];
-	  [kw makeKeyWindow];
-       }
 
       NSDebugLog(@"activateIgnoringOtherApps end.");
 
@@ -776,9 +767,13 @@ static NSCell* tileCell = nil;
       [nc postNotificationName: NSApplicationWillResignActiveNotification
 			object: self];
 
+      app_is_active = NO;
+
       if ([self keyWindow] != nil)
 	{
 	  _hidden_key = [self keyWindow];
+	  [_hidden_key resignKeyWindow];
+	  DPSsetinputfocus(GSCurrentContext(), [_app_icon_window windowNumber]);
 	}
       for (i = 0; i < count; i++)
 	{
@@ -798,8 +793,6 @@ static NSCell* tileCell = nil;
 	      [win orderOut: self];
 	    }
 	}
-
-      app_is_active = NO;
 
       [nc postNotificationName: NSApplicationDidResignActiveNotification
 			object: self];
@@ -1391,6 +1384,8 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
       if ([self keyWindow] != nil)
 	{
 	  _hidden_key = [self keyWindow];
+	  [_hidden_key resignKeyWindow];
+	  DPSsetinputfocus(GSCurrentContext(), [_app_icon_window windowNumber]);
 	}
       for (i = 0; i < count; i++)
 	{
@@ -1451,26 +1446,26 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
   if (app_is_hidden == YES)
     {
       NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
-      unsigned			count = [_hidden count];
+      unsigned			count;
       unsigned			i;
 
       [nc postNotificationName: NSApplicationWillUnhideNotification
 			object: self];
 
-      app_is_hidden = NO;
+      count = [_hidden count];
       for (i = 0; i < count; i++)
 	{
 	  [[_hidden objectAtIndex: i] orderFrontRegardless];
 	}
-      if ([self keyWindow] == nil && [_hidden containsObject: _hidden_key])
+      [_hidden removeAllObjects];
+      if (_hidden_key != nil
+	&& [[self windows] indexOfObjectIdenticalTo: _hidden_key] != NSNotFound)
 	{
-	  NSGraphicsContext	*context = GSCurrentContext();
-
 	  [_hidden_key makeKeyAndOrderFront: self];
-	  DPSsetinputfocus(context, [_hidden_key windowNumber]);
 	  _hidden_key = nil;
 	}
-      [_hidden removeAllObjects];
+
+      app_is_hidden = NO;
 
       [nc postNotificationName: NSApplicationDidUnhideNotification
 			object: self];

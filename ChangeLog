@@ -1,3 +1,8 @@
+Sun Jan  2 20:20:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSApplication.m: Fixes for focusm handling.
+	* Source/NSWindow.m: ditto
+
 Fri Dec 31 17:28:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSSlider.m: ([drawRect:]) minor drawing fix to ensure that

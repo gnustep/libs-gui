@@ -549,10 +549,7 @@ static NSMapTable* windowmaps = NULL;
       NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
       _f.is_key = YES;
-      if ([self isVisible] == YES)
-	{
-	  DPSsetinputfocus(GSCurrentContext(), [self windowNumber]);
-	}
+      DPSsetinputfocus(GSCurrentContext(), [self windowNumber]);
       [self resetCursorRects];
       [nc postNotificationName: NSWindowDidBecomeKeyNotification object: self];
     }
@@ -670,6 +667,7 @@ static NSMapTable* windowmaps = NULL;
       unsigned	i;
       NSWindow	*w;
 
+      _f.visible = NO;
       if (_rFlags.needs_display == YES)
 	{
 	  /*
@@ -697,19 +695,18 @@ static NSMapTable* windowmaps = NULL;
 		}
 	    }
 	  /*
-	   * if we didn't find a possible key window - use tha app icon or,
+	   * if we didn't find a possible key window - use the app icon or,
 	   * failing that, use the menu window.
 	   */
 	  if (i == pos)
 	    {
 	      w = [NSApp iconWindow];
-	      if (w != nil && [w isVisible] == YES)
-		{
-		  [GSCurrentContext() DPSsetinputfocus: [w windowNumber]];
-		}
-	      else
+	      if (w == nil || [w isVisible] == NO)
 		{
 		  w = [[NSApp mainMenu] window];
+		}
+	      if (w != nil && [w isVisible] == YES)
+		{
 		  [GSCurrentContext() DPSsetinputfocus: [w windowNumber]];
 		}
 	    }
@@ -721,7 +718,7 @@ static NSMapTable* windowmaps = NULL;
 	  [self resignMainWindow];
 	  if (w != nil && [w canBecomeMainWindow])
 	    {
-	      [w makeKeyWindow];
+	      [w makeMainWindow];
 	    }
 	  else
 	    {
@@ -1819,35 +1816,36 @@ resetCursorRectsForView(NSView *theView)
   switch (type)
     {
       case NSLeftMouseDown:				  // Left mouse down
-	v = [content_view hitTest: [theEvent locationInWindow]];
-	if (first_responder != v)
-	  {
-	    [self makeFirstResponder: v];
-	    if (_f.is_key || [v acceptsFirstMouse: theEvent] == YES)
-	      {
-		if([NSHelpManager isContextHelpModeActive])
-		  {
-		    [v helpRequested: theEvent];
-		  }
-		else
-		  {
-		    [v mouseDown: theEvent];
-		  }
-	      }
-	  }
-	else
-	  {
-	    if([NSHelpManager isContextHelpModeActive])
-	      {
-		[v helpRequested: theEvent];
-	      }
-	    else
-	      {
-		[v mouseDown: theEvent];
-	      }
-	  }
-	last_point = [theEvent locationInWindow];
-	break;
+	{
+	  BOOL	wasKey = _f.is_key;
+
+	  if ([NSApp isActive] == NO && self != [NSApp iconWindow])
+	    {
+	      [NSApp activateIgnoringOtherApps: YES];
+	    }
+	  if (_f.is_key == NO)
+	    {
+	      [self makeKeyAndOrderFront: self];
+	    }
+	  v = [content_view hitTest: [theEvent locationInWindow]];
+	  if (first_responder != v)
+	    {
+	      [self makeFirstResponder: v];
+	    }
+	  if (wasKey == YES || [v acceptsFirstMouse: theEvent] == YES)
+	    {
+	      if ([NSHelpManager isContextHelpModeActive])
+		{
+		  [v helpRequested: theEvent];
+		}
+	      else
+		{
+		  [v mouseDown: theEvent];
+		}
+	    }
+	  last_point = [theEvent locationInWindow];
+	  break;
+	}
 
       case NSLeftMouseUp:				  // Left mouse up
 	v = first_responder;	/* Send to the view that got the mouse down. */
