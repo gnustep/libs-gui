@@ -39,6 +39,7 @@
   NSMutableDictionary *_itemDict;
   NSMutableArray *_items;
   NSMutableArray *_expandedItems;
+  NSMutableDictionary *_levelOfItems;
   BOOL _autoResizesOutlineColumn;
   BOOL _indentationMarkerFollowsCell;
   BOOL _autosaveExpandedItems;

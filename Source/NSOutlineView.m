@@ -89,81 +89,7 @@ static NSImage *unexpandable  = nil;
 - (void) _autoloadTableColumns;
 - (void) _openItem: (id)item;
 - (void) _closeItem: (id)item;
-- (NSDictionary *) _itemDictionary;
 @end
-
-// static functions
-static void _loadDictionary(NSOutlineView *outline,
-			    id startitem,
-			    NSMutableDictionary *allItems)
-{
-  int num = [[outline dataSource] outlineView: outline
-				  numberOfChildrenOfItem: startitem];
-  int i = 0;
-  id sitem = startitem;
-
-  if((num > 0) && !([allItems objectForKey: startitem]))
-    {
-      if(sitem == nil)
-	{
-	  sitem = [NSNull null];
-	}
-
-      [allItems setObject: [NSMutableArray array]
-		forKey: sitem];
-
-    }
-
-  for(i = 0; i < num; i++)
-    {
-      id anitem = [[outline dataSource] outlineView: outline
-					child: i
-					ofItem: startitem];
-      id anarray = [allItems objectForKey: sitem];
-      
-      [anarray addObject: anitem];
-      _loadDictionary(outline, anitem, allItems); 
-    }
-}
-
-static int _levelForItem(NSDictionary *outlineDict,
-			 id startitem,
-			 id searchitem,
-			 int level,
-			 BOOL *found)
-{
-  id sitem = startitem;
-  int num = 0;
-  int i = 0;
-  int finallevel = 0;
-
-  if(sitem == nil)
-    sitem = [NSNull null];
-  
-  // get the count for the array...
-  num = [[outlineDict objectForKey: sitem] count];
-
-  if(*found == YES)
-    {
-      return level;
-    }
-  
-  if(searchitem == startitem)
-    {
-      *found = YES;
-      return level;
-    }
-
-  for(i = 0; i < num; i++)
-    {
-      id anitem = [[outlineDict objectForKey: sitem] objectAtIndex: i];
-	
-      finallevel = _levelForItem(outlineDict, anitem, searchitem, level + 1, found); 
-      if(*found) break;
-    }
-
-  return finallevel;
-}
 
 @implementation NSOutlineView
 
@@ -194,11 +120,13 @@ static int _levelForItem(NSDictionary *outlineDict,
   _itemDict = [NSMutableDictionary dictionary];
   _items = [NSMutableArray array];
   _expandedItems = [NSMutableArray array];
+  _levelOfItems = [NSMutableDictionary dictionary];
 
   // Retain items
   RETAIN(_items);
   RETAIN(_expandedItems);
   RETAIN(_itemDict);
+  RETAIN(_levelOfItems);
 
   return self;
 }
@@ -240,6 +168,42 @@ static int _levelForItem(NSDictionary *outlineDict,
     }
 }
 
+- (void) _loadDictionaryStartingWith: (id) startitem
+			     atLevel: (int) level
+{
+  int num = [_dataSource outlineView: self
+			 numberOfChildrenOfItem: startitem];
+  int i = 0;
+  id sitem = startitem;
+
+  if(num > 0)
+    {
+      if(sitem == nil)
+	{
+	  sitem = [NSNull null];
+	}
+      
+      [_itemDict setObject: [NSMutableArray array]
+		forKey: sitem];
+
+    }
+
+  [_levelOfItems setObject: [NSNumber numberWithInt: level]
+		 forKey: sitem];
+
+  for(i = 0; i < num; i++)
+    {
+      id anitem = [_dataSource outlineView: self
+			       child: i
+			       ofItem: startitem];
+      id anarray = [_itemDict objectForKey: sitem];
+      
+      [anarray addObject: anitem];
+      [self _loadDictionaryStartingWith: anitem
+	    atLevel: level + 1]; 
+    }
+}
+
 - (void)_closeItem: (id)item
 {
   int numchildren = 0;
@@ -257,7 +221,6 @@ static int _levelForItem(NSDictionary *outlineDict,
 
   // For the close method it doesn't matter what order they are 
   // removed in.
-  
   for(i=0; i < numchildren; i++)
     {
       id child = [removeAll objectAtIndex: i];
@@ -503,8 +466,7 @@ static int _levelForItem(NSDictionary *outlineDict,
 {
   if(item != nil)
     {
-      BOOL found = NO;
-      return _levelForItem(_itemDict, nil, item, -1, &found);
+      return [[_levelOfItems objectForKey: item] intValue];
     }
 
   return -1;
@@ -583,7 +545,8 @@ static int _levelForItem(NSDictionary *outlineDict,
   if(reloadChildren && haschildren) // expand all
     {
       NSMutableDictionary *allChildren = [NSMutableDictionary dictionary];
-      _loadDictionary(self, item, allChildren);
+      [self _loadDictionaryStartingWith: item
+	    atLevel: [self levelForItem: item]];
       [_itemDict addEntriesFromDictionary: allChildren];
 
       // release the old array
@@ -635,7 +598,7 @@ static int _levelForItem(NSDictionary *outlineDict,
 - (void) noteNumberOfRowsChanged
 {
   _numberOfRows = [_items count];
-  
+
   /* If we are selecting rows, we have to check that we have no
      selected rows below the new end of the table */
   if (!_selectingColumns)
@@ -764,13 +727,19 @@ static int _levelForItem(NSDictionary *outlineDict,
       RELEASE(_itemDict);
     }
 
+  if(_levelOfItems != nil)
+    {
+      RELEASE(_levelOfItems);
+    }
+
   // create a new empty one
   _items = RETAIN([NSMutableArray array]); 
-  _itemDict = RETAIN([NSMutableDictionary dictionary]); 
+  _itemDict = RETAIN([NSMutableDictionary dictionary]);
+  _levelOfItems = RETAIN([NSMutableDictionary dictionary]);
 
   // reload all the open items...
-  _loadDictionary(self, nil, _itemDict);
-  //  NSLog(@"Dictionary = %@",_itemDict);
+  [self _loadDictionaryStartingWith: nil
+	atLevel: -1];
   [self _openItem: nil];
   [super reloadData];
 }
@@ -896,6 +865,11 @@ static int _levelForItem(NSDictionary *outlineDict,
 
   /* Using columnAtPoint: here would make it called twice per row per drawn 
      rect - so we avoid it and do it natively */
+
+  if(rowIndex >= _numberOfRows)
+    {
+      return;
+    }
 
   /* Determine starting column as fast as possible */
   x_pos = NSMinX (aRect);
