@@ -237,10 +237,14 @@
 - (void) setFilename: (NSString*)filename
 {
   if (filename == nil || [filename isEqualToString: @""])
-    [NSException raise: NSInternalInconsistencyException
-                format: @"Empty or nil argument to setFilename: "];
+    {
+      [NSException raise: NSInternalInconsistencyException
+		   format: @"Empty or nil argument to setFilename: "];
+    }
   else
-    ASSIGN(_filename, filename);
+    {
+      ASSIGN(_filename, filename);
+    }
 }
 
 - (NSString*) filename
@@ -251,10 +255,14 @@
 - (void) setPreferredFilename: (NSString*)filename
 {
   if (filename == nil || [filename isEqualToString: @""])
-    [NSException raise: NSInternalInconsistencyException
-                format: @"Empty or nil argument to setPreferredFilename: "];
+    {
+      [NSException raise: NSInternalInconsistencyException
+		   format: @"Empty or nil argument to setPreferredFilename: "];
+    }
   else
-    ASSIGN(_preferredFilename, filename);
+    {
+      ASSIGN(_preferredFilename, filename);
+    }
 }
 
 - (NSString*) preferredFilename;
@@ -265,8 +273,10 @@
 - (void) setFileAttributes: (NSDictionary*)attributes
 {
   if (_fileAttributes == nil)
-    _fileAttributes = [NSMutableDictionary new];
-
+    {
+      _fileAttributes = [NSMutableDictionary new];
+    }
+  
   [_fileAttributes addEntriesFromDictionary: attributes];
 }
 
@@ -278,25 +288,37 @@
 - (BOOL) isRegularFile
 {
   if (_wrapperType == GSFileWrapperRegularFileType)
-    return YES;
+    {
+      return YES;
+    }
   else
-    return NO;
+    { 
+      return NO;
+    }
 }
 
 - (BOOL) isDirectory
 {
   if (_wrapperType == GSFileWrapperDirectoryType)
-    return YES;
+    {
+      return YES;
+    }
   else
-    return NO;
+    {
+      return NO;
+    }
 }
 
 - (BOOL) isSymbolicLink
 {
   if (_wrapperType == GSFileWrapperSymbolicLinkType)
-    return YES;
+    {
+      return YES;
+    }
   else
-    return NO;
+    {
+      return NO;
+    }
 }
 
 - (void) setIcon: (NSImage*)icon
@@ -307,9 +329,13 @@
 - (NSImage*) icon;
 {
   if (_iconImage == nil)
-    return [[NSWorkspace sharedWorkspace] iconForFile: [self filename]];
+    {
+      return [[NSWorkspace sharedWorkspace] iconForFile: [self filename]];
+    }
   else
-    return _iconImage;
+    {
+      return _iconImage;
+    }
 }
 
 - (BOOL) needsToBeUpdatedFromPath: (NSString*)path
@@ -451,9 +477,13 @@
 
   wrapper = AUTORELEASE([[NSFileWrapper alloc] initWithPath: path]);
   if (wrapper != nil)
-    return [self addFileWrapper: wrapper];
+    {
+      return [self addFileWrapper: wrapper];
+    }
   else
-    return nil;
+    {
+      return nil;
+    }
 }
 
 - (NSString*) addRegularFileWithContents: (NSData*)data 
@@ -470,7 +500,9 @@
       return [self addFileWrapper: wrapper];
     }
   else
-    return nil;
+    {
+      return nil;
+    }
 }
 
 - (NSString*) addSymbolicLinkWithDestination: (NSString*)path 
@@ -487,7 +519,9 @@
       return [self addFileWrapper: wrapper];
     }
   else
-    return nil;
+    {
+      return nil;
+    }
 }
 
 //								
@@ -497,11 +531,15 @@
 - (NSData*) regularFileContents
 {
   if (_wrapperType == GSFileWrapperRegularFileType)
-    return _wrapperData;
+    {
+      return _wrapperData;
+    }
   else
-    [NSException raise: NSInternalInconsistencyException
-                format: @"File wrapper does not wrap regular file."];
-
+    {
+      [NSException raise: NSInternalInconsistencyException
+		   format: @"File wrapper does not wrap regular file."];
+    }
+  
   return nil; 
 }
 
@@ -512,11 +550,15 @@
 - (NSString*) symbolicLinkDestination
 {
   if (_wrapperType == GSFileWrapperSymbolicLinkType)
-    return _wrapperData;
+    {
+      return _wrapperData;
+    }
   else
-    [NSException raise: NSInternalInconsistencyException
-                format: @"File wrapper does not wrap symbolic link."];
-
+    {
+      [NSException raise: NSInternalInconsistencyException
+		   format: @"File wrapper does not wrap symbolic link."];
+    }
+  
   return nil;
 }
 
@@ -551,17 +593,23 @@
 
   switch (wrapperType)
     {
-      case GSFileWrapperRegularFileType: 
+    case GSFileWrapperRegularFileType: 
+      {
 	self = [self initRegularFileWithContents: wrapperData];
         break;
-      case GSFileWrapperSymbolicLinkType: 
+      }
+    case GSFileWrapperSymbolicLinkType: 
+      {
 	self = [self initSymbolicLinkWithDestination: wrapperData];
         break;
-      case GSFileWrapperDirectoryType: 
+      }
+    case GSFileWrapperDirectoryType: 
+      {
 	self = [self initDirectoryWithFileWrappers: wrapperData];
 	break;
+      }
     }
-
+  
   if (preferredFilename != nil)
     {
       [self setPreferredFilename: preferredFilename];
