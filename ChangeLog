@@ -1,4 +1,17 @@
-2002-08-02  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+2002-08-05  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Source/NSSplitView.m 
+	[NSplitView -setFrame:]:
+	  adjust the subviews.
+	[NSSplitView -resizeWithOldSuperviewSize:]:
+	  send the splitview's old size not the superview's old size to 
+	  [NSSplitView -_adjustSubviews:]
+	[NSSplitView -displayIfNeededInRectIgnoringOpacity:]
+	[NSSplitView -displayRectIgnoringOpacity:]
+	  set _never_displayed_before before calling _adjustSubviews.
+	  It could lead to a loop, if the delegate was calling -display.
+	
+2002-08-03  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSView.m ([NSView -replaceSubview:withSubview]):
 	The replacing subview was not inserted at the old subview's location.
