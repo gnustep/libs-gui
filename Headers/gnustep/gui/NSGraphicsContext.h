@@ -174,7 +174,6 @@ APPKIT_DECLARE NSGraphicsContext	*GSCurrentContext();
 - (BOOL) _removeDragTypes: (NSArray*)types fromWindow: (NSWindow *)win;
 - (NSCountedSet*) _dragTypesForWindow: (NSWindow *)win;
 - (id <NSDraggingInfo>)_dragInfo;
-- (void) _postExternalEvent: (NSEvent*)event;
 
 /* Private methods for printing */
 - (void) useFont: (NSString *)fontName;
@@ -541,6 +540,7 @@ APPKIT_DECLARE NSGraphicsContext	*GSCurrentContext();
 - (BOOL) GSWViewIsFlipped;
 - (NSWindowDepth) GSWindowDepthForScreen: (int) screen;
 - (const NSWindowDepth *) GSAvailableDepthsForScreen: (int) screen;
+- (NSSize) GSResolutionForScreen: (int) screen;
 
 @end
 
