@@ -55,11 +55,8 @@ static Class	cellClass;
 static Class	fontClass;
 static Class	imageClass;
 
-static NSColor	*bgCol;
-static NSColor	*hbgCol;
 static NSColor	*txtCol;
 static NSColor	*dtxtCol;
-static NSColor	*clearCol;
 static NSColor	*shadowCol;
 
 @interface	NSCell (PrivateColor)
@@ -69,11 +66,8 @@ static NSColor	*shadowCol;
 @implementation	NSCell (PrivateColor)
 + (void) _systemColorsChanged: (NSNotification*)n
 {
-  ASSIGN(bgCol, [colorClass controlBackgroundColor]);
-  ASSIGN(hbgCol, [colorClass selectedControlColor]);
   ASSIGN(txtCol, [colorClass controlTextColor]);
   ASSIGN(dtxtCol, [colorClass disabledControlTextColor]);
-  ASSIGN(clearCol, [colorClass clearColor]);
   ASSIGN(shadowCol, [colorClass controlDarkShadowColor]);
 }
 @end
@@ -499,11 +493,6 @@ static NSColor	*shadowCol;
   else
     [textObject setTextColor: dtxtCol];
   
-  if (cell_highlighted)
-    [textObject setBackgroundColor: hbgCol];
-  else
-    [textObject setBackgroundColor: bgCol];
-  
   [textObject setFont: [self font]];
   [textObject setAlignment: [self alignment]];
   [textObject setEditable: [self isEditable]];
@@ -551,9 +540,9 @@ static NSColor	*shadowCol;
 
   [textObject setFrame: [self drawingRectForBounds: aRect]];
   [textObject setText: [self stringValue]];
+  [textObject setSelectedRange: NSMakeRange (selStart, selLength)];
   [textObject setDelegate: anObject];
   [controlView addSubview: textObject];
-  [textObject setSelectedRange: NSMakeRange (selStart, selLength)];
   [[controlView window] makeFirstResponder: textObject];
   [textObject display];
 }
@@ -709,26 +698,14 @@ static NSColor	*shadowCol;
   [title drawInRect: cellFrame withAttributes: dict];
 }
 
+//
+// This drawing is minimal and with no background,
+// to make it easier for subclass to customize drawing. 
+//
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
   cellFrame = [self drawingRectForBounds: cellFrame];
   [controlView lockFocus];
-
-  // Clear the cell frame
-  if ([self isOpaque])
-    {
-      NSColor	*bg;
-
-      if (cell_highlighted)
-	bg = hbgCol;
-      else
-	bg = bgCol;
-      [bg set];
-      [cell_image setBackgroundColor: bg];
-      NSRectFill(cellFrame);
-    }
-  else
-    [cell_image setBackgroundColor: clearCol];
 
   switch ([self type])
     {
