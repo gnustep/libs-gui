@@ -31,13 +31,10 @@
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSMatrix.h>
+#include <AppKit/NSMenu.h>
 #include <AppKit/NSPopUpButton.h>
 #include <AppKit/NSPopUpButtonCell.h>
 #include <AppKit/PSOperators.h>
-
-@interface NSPopUpButtonCell (GNUstepPrivate)
-- (void) _popUpItemAction: (id)sender;
-@end
 
 @implementation NSPopUpButtonCell
 - (void) dealloc
@@ -62,13 +59,7 @@
 
   if ([stringValue length] > 0)
     {
-      id anItem;
-
-      [self insertItemWithTitle: stringValue atIndex: 0];
-
-      anItem = [self itemAtIndex: 0];
-      [anItem setTarget: self];
-      [anItem setAction: @selector(_popUpItemAction:)];
+      [self addItemWithTitle: stringValue]; 
     }
 
   _menu = [[NSMenu alloc] initWithTitle: @""];
@@ -158,8 +149,8 @@
   NSMenuItem *anItem = [NSMenuItem new];
 
   [anItem setTitle: title];
-  [anItem setTarget: self];
-  [anItem setAction: @selector(_popUpItemAction:)];
+  [anItem setTarget: [self target]];
+  [anItem setAction: [self action]];
 
   [_menu insertItem: anItem atIndex: [_menu numberOfItems]];
   RELEASE(anItem);
@@ -186,8 +177,6 @@
     index = [_menu numberOfItems];
 
   [anItem setTitle: title];
-  [anItem setTarget: self];
-  [anItem setAction: @selector(_popUpItemAction:)];
 
   [_menu insertItem: anItem atIndex: index];
   RELEASE(anItem);
@@ -396,54 +385,55 @@
 - (void) attachPopUpWithFrame: (NSRect)cellFrame
 		       inView: (NSView *)controlView
 {
-  NSNotificationCenter	*_aCenter = [NSNotificationCenter defaultCenter];
-  NSNotification	*_aNotif;
-  NSRect		scratchRect = cellFrame;
-  NSRect		winf;
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+  NSWindow              *cvWin = [controlView window];
+  NSMenuView            *mr = [_menu menuRepresentation];
+  int                   items;
 
-NSLog(@"cF %@", NSStringFromRect(cellFrame));
+  [nc postNotificationName: NSPopUpButtonCellWillPopUpNotification
+      object: self];
 
-  _aNotif = [NSNotification
-    notificationWithName: NSPopUpButtonCellWillPopUpNotification
-		  object: controlView
-		userInfo: nil];
+  [nc postNotificationName: NSPopUpButtonCellWillPopUpNotification
+      object: controlView];
 
-  [_aCenter postNotification: _aNotif];
-
-  _aNotif = [NSNotification
-    notificationWithName: NSPopUpButtonCellWillPopUpNotification
-		  object: self
-		userInfo: nil];
-
-  [_aCenter postNotification: _aNotif];
-
-  scratchRect.origin = NSMakePoint(0,0);
-  scratchRect = [controlView convertRect: scratchRect toView: nil];
-  scratchRect.origin = [[controlView window] convertBaseToScreen: scratchRect.origin];
-
-  [[_menu menuRepresentation] _setCellSize: cellFrame.size];
+  [mr _setCellSize: cellFrame.size];
   [_menu sizeToFit];
 
-  winf = [NSMenuWindow
-    frameRectForContentRect: [[_menu menuRepresentation] frame]
-		  styleMask: [[_menu window] styleMask]];
-  /*
-   * Set popup window frame origin so that the top-left corner of the
-   * window lines up with the top-left corner of this button.
-   */
-  winf.origin = scratchRect.origin;
-  winf.origin.y += scratchRect.size.height - winf.size.height;
- 
-  if (!_pbcFlags.pullsDown)
+  // Compute the frame (NB: the temporary frame to be passed 
+  // to mr as per spec, not yet the definitive frame where 
+  // the menu is going to appear)
+  items = [_menu numberOfItems];
+  if (items > 1)
     {
-      winf.origin.y += ([self indexOfSelectedItem] * scratchRect.size.height);
+      float f;
+      
+      f = cellFrame.size.height * (items - 1);
+      cellFrame.size.height += f;
+      cellFrame.origin.y -= f;
     }
-winf.origin.y -= 22;	/* HACK */
-NSLog(@"winf %@", NSStringFromRect(winf));
 
-  NSLog(@"here comes the popup.");
-                         
-  [[_menu window] setFrame: winf display: YES];
+  // Convert to Screen Coordinates
+  cellFrame = [controlView convertRect: cellFrame 
+			   toView: nil];
+  cellFrame.origin = [cvWin convertBaseToScreen: cellFrame.origin];
+  
+  // Ask the MenuView to attach the menu to this rect
+  if (_pbcFlags.pullsDown)
+    {
+      [mr setWindowFrameForAttachingToRect: cellFrame
+	  onScreen: [cvWin screen]
+	  preferredEdge: _pbcFlags.preferredEdge
+	  popUpSelectedItem: -1];
+    }
+  else 
+    {
+      [mr setWindowFrameForAttachingToRect: cellFrame
+	  onScreen: [cvWin screen]
+	  preferredEdge: _pbcFlags.preferredEdge
+	  popUpSelectedItem: [self indexOfSelectedItem]];
+    }
+  
+  // Last, display the window
   [[_menu window] orderFrontRegardless];
 }
 
@@ -457,21 +447,30 @@ NSLog(@"winf %@", NSStringFromRect(winf));
 	     ofView: (NSView *)controlView
        untilMouseUp: (BOOL)untilMouseUp
 {
+  return NO;
 }
 
 - (void) performClickWithFrame: (NSRect)frame
 			inView: (NSView *)controlView
 {
-  int indexToClick;
+  // TODO
 
-  [self attachPopUpWithFrame: frame
+  // This method is called to simulate programmatically a click
+  // [as NSCell's performClick:]
+  // This method is not executed upon mouse down; rather, it should
+  // simulate what would happen upon mouse down.  It should not start
+  // any real mouse tracking.
+
+  /*
+    int indexToClick;
+    [self attachPopUpWithFrame: frame
                       inView: controlView];
   indexToClick = [[_menu menuRepresentation] indexOfItemAtPoint: 
 			[[_menu window] mouseLocationOutsideOfEventStream]];
   [[_menu menuRepresentation] mouseDown: [NSApp currentEvent]];
 
-//  [[[_menu menuRepresentation] menuItemCellForItemAtIndex: indexToClick]
-//  performClick: nil];
+  [[[_menu menuRepresentation] menuItemCellForItemAtIndex: indexToClick]
+  performClick: nil];*/
 }
 
 // Arrow position for bezel style and borderless popups.
@@ -524,10 +523,4 @@ NSLog(@"winf %@", NSStringFromRect(winf));
   [view unlockFocus]; 
 }
 
-- (void) _popUpItemAction: (id)sender
-{
-  [self selectItemWithTitle: [sender title]];
-  NSLog(@"%@", [sender title]);
-  [self dismissPopUp];
-}
 @end
