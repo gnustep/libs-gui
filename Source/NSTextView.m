@@ -3114,12 +3114,19 @@ other than copy/paste or dragging. */
 
 - (unsigned) characterIndexForPoint: (NSPoint) point
 {
-  unsigned glyphIndex;
+  unsigned	index;
+  float		fraction;
 
-  glyphIndex = [_layoutManager glyphIndexForPoint: point 
-			       inTextContainer: _textContainer];
+  index = [_layoutManager glyphIndexForPoint: point 
+			     inTextContainer: _textContainer
+	      fractionOfDistanceThroughGlyph: &fraction];
 
-  return [_layoutManager characterIndexForGlyphAtIndex: glyphIndex];
+  index = [_layoutManager characterIndexForGlyphAtIndex: index];
+  if (fraction > 0.5)
+    {
+      index++;
+    }
+  return index;
 }
 
 - (NSRect) rectForCharacterIndex: (unsigned)index

@@ -3,10 +3,14 @@
 	* Source/NSAttributedString.m: ([-doubleClickAtIndex:]),
 	Fixed infinite loop.  Added code to cope with double click on the
 	space between words.
+	* Source/GSSimpleLayoutManager.m: Implemented
+	([-glyphIndexForPoint:inTextContainer:fractionOfDistanceThroughGlyph:])
 	* Source/NSTextView.m: ([-selectionRangeForProposedRange:granularity])
 	Re-implemented word selection using ([-doubleClickAtIndex:])
 	([-mouseDown:]) creatre proposed range for selection by merging old
-	selectin range with new location.
+	selection range with new location.
+	Modified ([-characterIndexForPoint:]) to take into account where the
+	character/glyph was clicked on.
 
 2000-12-24  Fred Kiefer  <FredKiefer@gmx.de>
 

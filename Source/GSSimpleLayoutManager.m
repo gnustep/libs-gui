@@ -195,8 +195,9 @@ static NSCharacterSet *invSelectionWordGranularitySet;
     return NSZeroRect;
 }
 
-- (unsigned)glyphIndexForPoint:(NSPoint)point 
-	       inTextContainer:(NSTextContainer *)aTextContainer
+- (unsigned) glyphIndexForPoint: (NSPoint)point
+		inTextContainer: (NSTextContainer*)aTextContainer
+ fractionOfDistanceThroughGlyph: (float*)partialFraction
 {
   _GNULineLayoutInfo *currentInfo = [_lineLayoutInformation 
 				      objectAtIndex: 
@@ -211,12 +212,22 @@ static NSCharacterSet *invSelectionWordGranularitySet;
   float fmax = NSMaxX(rect);
   float w1, w2;
 
+  if (partialFraction != 0)
+    {
+      *partialFraction = 0.0;
+    }
   if (x <= fmin)
-    return MAX(0, min - 1);
+    {
+      return MAX(0, min - 1);
+    }
   if (x >= fmax)
-    return MAX(0, max);
+    {
+      return MAX(0, max);
+    }
   if (range.length == 1)
-    return min;
+    {
+      return min;
+    }
 
   // this should give a good starting index for binary search
   i = (int)((max - min) * (x - fmin) / (fmax - fmin)) + min;
@@ -243,6 +254,10 @@ static NSCharacterSet *invSelectionWordGranularitySet;
 	  max = i - 1;
 	  i = (max + min) / 2;
 	  continue;
+	}
+      if (w1 > x)
+	{
+	  *partialFraction = 1.0 - (w1 - x)/(w1 - w2); 
 	}
       return MAX(0, i-1);
     }
