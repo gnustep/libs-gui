@@ -53,6 +53,7 @@
 #include <AppKit/NSTextView.h>
 #include <AppKit/NSParagraphStyle.h>
 #include <AppKit/NSRulerView.h>
+#include <AppKit/NSScrollView.h>
 #include <AppKit/NSPasteboard.h>
 #include <AppKit/NSSpellChecker.h>
 #include <AppKit/NSControl.h>
@@ -2190,7 +2191,7 @@ afterString in order over charRange. */
 	stillSelecting: YES];
 
   /* Do an immediate redisplay for visual feedback */
-  [_window flushWindow]; /* FIXME: This doesn't work while it should ! */
+  [self displayIfNeeded];
 
   /* Enter modal loop tracking the mouse */
   
@@ -2218,7 +2219,7 @@ afterString in order over charRange. */
 	}
       
       /* Do an immediate redisplay for visual feedback */
-      [_window flushWindow];
+      [self displayIfNeeded];
     }
 
   NSDebugLog(@"chosenRange. location  = %d, length  = %d\n",
@@ -2228,7 +2229,7 @@ afterString in order over charRange. */
 	stillSelecting: NO];
 
   /* Ahm - this shouldn't really be needed but... */
-  [_window flushWindow];
+  [self displayIfNeeded];
 
   /* Remember granularity till a new selection destroys the memory */
   [self setSelectionGranularity: granularity];
@@ -3260,8 +3261,8 @@ other than copy/paste or dragging. */
 	avoidAdditionalLayout: YES];
   /* Because we are called by a timer which is independent of any
      event processing in the gui runloop, we need to manually update
-     the windows.  */
-  [NSApp updateWindows];
+     the window.  */
+  [self displayIfNeeded];
 }
 
 + (NSDictionary*) defaultTypingAttributes
