@@ -114,8 +114,6 @@ static NSCharacterSet *invSelectionWordGranularitySet;
 
 @interface GSSimpleLayoutManager (Private)
 
-+ (void) setSelectionWordGranularitySet: (NSCharacterSet*)aSet;
-
 - (NSRect) rectForCharacterIndex: (unsigned) index;
 - (NSRange) lineRangeForRect: (NSRect) aRect;
 - (NSSize) _sizeOfRange: (NSRange) range;
@@ -141,15 +139,20 @@ static NSCharacterSet *invSelectionWordGranularitySet;
 
 + (void) initialize
 {
-  NSMutableCharacterSet	*ms;
-  NSCharacterSet        *whitespace;
-
-  whitespace = [NSCharacterSet whitespaceCharacterSet];
-  ms = [[NSCharacterSet whitespaceAndNewlineCharacterSet] mutableCopy];
-  [ms formIntersectionWithCharacterSet: [whitespace invertedSet]];
-  newlines = [ms copy];
-  RELEASE(ms);
-  [self setSelectionWordGranularitySet: whitespace];
+  if (self == [GSSimpleLayoutManager class])
+    {
+      NSMutableCharacterSet	*ms;
+      
+      ASSIGN (selectionWordGranularitySet, 
+	      [NSCharacterSet whitespaceCharacterSet]);
+      ASSIGN (invSelectionWordGranularitySet, 
+	      [selectionWordGranularitySet invertedSet]);
+      
+      ms = [[NSCharacterSet whitespaceAndNewlineCharacterSet] mutableCopy];
+      [ms formIntersectionWithCharacterSet: invSelectionWordGranularitySet];
+      newlines = [ms copy];
+      RELEASE(ms);
+    }
 }
 
 - (id) init
@@ -436,17 +439,6 @@ static NSCharacterSet *invSelectionWordGranularitySet;
 {
 }
 
-- (void)invalidateGlyphsForCharacterRange:(NSRange)charRange 
-			   changeInLength:(int)delta
-		     actualCharacterRange:(NSRange*)actualCharRange
-{
-  // As we currenty dont have any glyph character mapping, we only have 
-  // to adjust the ranges in the line layout infos
-
-  if (actualCharRange)
-    *actualCharRange = charRange;
-}
-
 - (void) invalidateLayoutForCharacterRange: (NSRange)aRange
 				    isSoft: (BOOL)flag
 		      actualCharacterRange: (NSRange*)actualRange
@@ -496,21 +488,6 @@ static NSCharacterSet *invSelectionWordGranularitySet;
 	inTextContainer: aTextContainer];
 }
 
-- (void)drawBackgroundForGlyphRange: (NSRange)glyphRange 
-			    atPoint: (NSPoint)containerOrigin
-{
-  NSTextContainer *aTextContainer;
-  
-  aTextContainer = [self textContainerForGlyphAtIndex: glyphRange.location
-			 effectiveRange: NULL];
-
-  [[[aTextContainer textView] backgroundColor] set];
-  
-  NSRectFill ([self boundingRectForGlyphRange: glyphRange 
-		    inTextContainer: aTextContainer]);
-  
-}
-
 - (void)drawGlyphsForGlyphRange: (NSRange)glyphRange 
 			atPoint: (NSPoint)containerOrigin
 {
@@ -552,12 +529,6 @@ forStartOfGlyphRange: (NSRange)glyphRange
 @end
 
 @implementation GSSimpleLayoutManager (Private)
-
-+ (void) setSelectionWordGranularitySet: (NSCharacterSet*) aSet
-{
-  ASSIGN(selectionWordGranularitySet, aSet);
-  ASSIGN(invSelectionWordGranularitySet, [aSet invertedSet]);
-}
 
 - (NSSize) _sizeOfRange: (NSRange)aRange
 {

@@ -2468,6 +2468,15 @@ forStartOfGlyphRange: (NSRange)glyphRange
 - (void) drawBackgroundForGlyphRange: (NSRange)glyphRange
 			     atPoint: (NSPoint)containerOrigin
 {
+  NSTextContainer *aTextContainer;
+  
+  aTextContainer = [self textContainerForGlyphAtIndex: glyphRange.location
+			 effectiveRange: NULL];
+  
+  [[[aTextContainer textView] backgroundColor] set];
+  
+  NSRectFill ([self boundingRectForGlyphRange: glyphRange 
+		    inTextContainer: aTextContainer]);
 }
 
 // These methods are called by NSTextView to do drawing.  You can
