@@ -72,7 +72,7 @@ static Class imageClass;
 {
   if (self == [NSMenuItem class])
     {
-      [self setVersion: 1];
+      [self setVersion: 2];
       imageClass = [NSImage class];
     }
 }
@@ -448,32 +448,56 @@ static Class imageClass;
   [aCoder encodeObject: _offStateImage];
   [aCoder encodeObject: _mixedStateImage];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_changesState];
-  [aCoder encodeConditionalObject: _target];
   [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
   [aCoder encodeValueOfObjCType: "i" at: &_tag];
   [aCoder encodeConditionalObject: _representedObject];
   [aCoder encodeObject: _submenu];
+  [aCoder encodeConditionalObject: _target];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_title];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_keyEquivalent];
-  [aDecoder decodeValueOfObjCType: "I" at: &_keyEquivalentModifierMask];
-  [aDecoder decodeValueOfObjCType: "I" at: &_mnemonicLocation];
-  [aDecoder decodeValueOfObjCType: "i" at: &_state];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_enabled];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_image];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_onStateImage];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_offStateImage];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_mixedStateImage];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_changesState];
-  _target = [aDecoder decodeObject];
-  [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
-  [aDecoder decodeValueOfObjCType: "i" at: &_tag];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_representedObject];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_submenu];
+  int version = [aDecoder versionForClassName: 
+			    @"NSMenuItem"];
 
+  if (version == 2)
+    {
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_title];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_keyEquivalent];
+      [aDecoder decodeValueOfObjCType: "I" at: &_keyEquivalentModifierMask];
+      [aDecoder decodeValueOfObjCType: "I" at: &_mnemonicLocation];
+      [aDecoder decodeValueOfObjCType: "i" at: &_state];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_enabled];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_image];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_onStateImage];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_offStateImage];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_mixedStateImage];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_changesState];
+      [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
+      [aDecoder decodeValueOfObjCType: "i" at: &_tag];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_representedObject];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_submenu];
+      _target = [aDecoder decodeObject];
+    }
+  else
+    {
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_title];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_keyEquivalent];
+      [aDecoder decodeValueOfObjCType: "I" at: &_keyEquivalentModifierMask];
+      [aDecoder decodeValueOfObjCType: "I" at: &_mnemonicLocation];
+      [aDecoder decodeValueOfObjCType: "i" at: &_state];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_enabled];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_image];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_onStateImage];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_offStateImage];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_mixedStateImage];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_changesState];
+      _target = [aDecoder decodeObject];
+      [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
+      [aDecoder decodeValueOfObjCType: "i" at: &_tag];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_representedObject];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_submenu];
+    }
   return self;
 }
 

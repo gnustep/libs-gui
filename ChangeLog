@@ -1,3 +1,10 @@
+2002-04-17  Pierre-Yves Rivaille <pyrivail@ens-lyon.gt>
+
+	* Source/NSMenuItem.m: 
+	([NSMenuItem -initWithCoder:], [NSMenuItem -encodeWithCoder:])
+	New encoding scheme. With the new scheme, menus can be loaded
+	properly from a gorm file.
+
 2002-04-16  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSPasteboard.m: Improve logging on server startup.
