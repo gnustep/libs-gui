@@ -114,6 +114,10 @@ typedef enum _NSFocusRingType {
   BOOL _coordinates_valid;
   BOOL _allocate_gstate;
   BOOL _renew_gstate;
+  BOOL _is_hidden;
+  BOOL _in_live_resize;
+
+  NSFocusRingType _focusRingType;
 
   void *_nextKeyView;
   void *_previousKeyView;

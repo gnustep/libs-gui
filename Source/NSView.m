@@ -1708,7 +1708,9 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (BOOL) canDraw
 {			// not implemented per OS spec FIX ME
-  if (_window != nil)
+  if (((viewIsPrinting != nil) && [self isDescendantOf: viewIsPrinting]) || 
+      ((_window != nil) && ([_window windowNumber] != 0) && 
+       ![self isHiddenOrHasHiddenAncestor]))
     {
       return YES;
     }
@@ -1832,7 +1834,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (void) displayIfNeededInRectIgnoringOpacity: (NSRect)aRect
 {
-  if (viewIsPrinting == nil && _window == nil)
+  if (![self canDraw])
     {
       return;
     }
@@ -1964,7 +1966,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   BOOL		subviewNeedsDisplay = NO;
   NSRect	neededRect;
 
-  if (viewIsPrinting == nil && _window == nil)
+  if (![self canDraw])
     {
       return;
     }
@@ -2103,8 +2105,12 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 - (BOOL) needsToDrawRect: (NSRect)aRect
 {
-  // FIXME
-  return YES;
+  NSRect rect;
+  struct NSWindow_struct *window_t;
+
+  window_t = (struct NSWindow_struct *)_window;
+  rect = [[window_t->_rectsBeingDrawn lastObject] rectValue];
+  return NSIntersectsRect(rect, aRect);
 }
 
 - (void) getRectsBeingDrawn: (const NSRect **)rects count: (int *)count
@@ -2239,19 +2245,18 @@ in the main thread.
 
 - (void) setKeyboardFocusRingNeedsDisplayInRect: (NSRect)rect
 {
-  // FIXME
+  // FIXME For external type special handling is needed
   [self setNeedsDisplayInRect: rect];
 }
 
 - (void) setFocusRingType: (NSFocusRingType)focusRingType
 {
-  // FIXME
+  _focusRingType = focusRingType;
 }
 
 - (NSFocusRingType) focusRingType
 {
-  // FIXME
-  return NSFocusRingTypeDefault;
+  return _focusRingType;
 }
 
 /*
@@ -2259,13 +2264,12 @@ in the main thread.
  */
 - (void) setHidden: (BOOL)flag
 {
-  // FIXME
+  _is_hidden = flag;
 }
 
 - (BOOL) isHidden
 {
-  // FIXME
-  return NO;
+  return _is_hidden;
 }
 
 - (BOOL) isHiddenOrHasHiddenAncestor
@@ -2278,18 +2282,19 @@ in the main thread.
  */
 - (BOOL) inLiveResize
 {
-  // FIXME
-  return NO;
+  return _in_live_resize;
 }
 
 - (void) viewWillStartLiveResize
 {
   // FIXME
+  _in_live_resize = YES; 
 }
 
 - (void) viewDidEndLiveResize
 {
   // FIXME
+  _in_live_resize = NO; 
 }
 
 /*
@@ -3009,7 +3014,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 - (BOOL) canBecomeKeyView
 {
   // FIXME
-  return [self acceptsFirstResponder] && ![self isHidden];
+  return [self acceptsFirstResponder] && ![self isHiddenOrHasHiddenAncestor];
 }
 
 /*
