@@ -122,7 +122,7 @@ static NSNotificationCenter *nc;
 /*
  * Used to implement the blinking insertion point
  */
-- (void) _blink;
+- (void) _blink: (NSTimer *)t;
 
 /*
  * these NSLayoutManager- like method is here only informally
@@ -1586,7 +1586,7 @@ static NSNotificationCenter *nc;
 	{
 	  _insertionPointTimer = [NSTimer scheduledTimerWithTimeInterval: 0.5
 					  target: self
-					  selector: @selector(_blink)
+					  selector: @selector(_blink:)
 					  userInfo: nil
 					  repeats: YES];
 	  RETAIN (_insertionPointTimer);
@@ -3836,7 +3836,7 @@ other than copy/paste or dragging. */
 
 @implementation NSTextView (GNUstepPrivate)
 
-- (void) _blink
+- (void) _blink: (NSTimer *)t
 {
   if (_drawInsertionPointNow)
     {
