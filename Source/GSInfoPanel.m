@@ -590,6 +590,7 @@ _new_label (NSString *value)
       [copyrightDescriptionLabel setFrame: f];
     }
 
+  [self center];
   return self;
 }
 @end
