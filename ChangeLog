@@ -1,7 +1,8 @@
 2004-01-12 Serg Stoyan <stoyan@on.com.ua>
 
-	* Source/GSTitleView.m (setOwner): Recognize class that responds to
-	menuRepresentation method as NSMenu derived class. Fix for Gorm.
+	* Source/GSTitleView.m (setOwner): Recognize class that responds 
+	to menuRepresentation method as NSMenu derived class. Fix for Gorm.
+	Use isKindOfClass: instead of class names comparison.
 
 	* Images/GNUmakefile: Added common_Miniaturize*.tiff to IMAGE_FILES.
 	* Images/common_CloseBroken.tiff: Updated.
