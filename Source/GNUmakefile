@@ -95,6 +95,7 @@ NSImageCell.m \
 NSImageRep.m \
 NSImageView.m \
 NSInputManager.m \
+NSInputManagerPriv.m \
 NSInputServer.m \
 NSInterfaceStyle.m \
 NSLayoutManager.m \
@@ -171,8 +172,6 @@ GSFontInfo.m \
 GSTable.m \
 GSHbox.m \
 GSVbox.m \
-GSKeyBindingAction.m \
-GSKeyBindingTable.m \
 NSTextView.m \
 NSTextView_actions.m \
 GSLayoutManager.m \
