@@ -47,9 +47,8 @@
 
   a) Title, if needed, this is a subview
   b) menu items
-
-
 */
+
 /* A menu's title is an instance of this class */
 @class NSButton;
 
@@ -117,7 +116,6 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 /*
  * Init methods.
  */
-
 - (id) initWithFrame: (NSRect)aFrame
 {
   NSRect r;
@@ -145,8 +143,12 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 
 - (id)initAsTearOff
 {
-  //FIXME
-  return [self init];
+	[self initWithFrame: NSZeroRect];
+	
+	if (_menu)
+		[_menu setTornOff: YES];
+	
+  return self;
 }
 
 - (void) dealloc
@@ -411,11 +413,6 @@ _addLeftBorderOffsetToRect(NSRect aRect)
     }
 }
 
-/**
-   Attach submenu if the item at index is a submenu.
-   It will figure out if the new submenu should be transient
-   or not.
-*/
 - (void) attachSubmenuForItemAtIndex: (int)index
 {
   /*
@@ -710,9 +707,8 @@ _addLeftBorderOffsetToRect(NSRect aRect)
       [self sizeToFit];
     }
 
-  /* When we are a normal menu we fiddle with the origin so that the item 
-   * rect is shifted 1 pixel over so we do not draw on the heavy line at 
-   * origin.x = 0.
+  /* Fiddle with the origin so that the item rect is shifted 1 pixel over 
+	 * so we do not draw on the heavy line at origin.x = 0.
    */
   theRect.origin.y = _cellSize.height * ([_itemCells count] - index - 1);
   theRect.origin.x = _leftBorderOffset;
@@ -725,11 +721,6 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   return theRect;
 }
 
-/**
-   Returns the index of the item below point.
-   Returns -1 if mouse is not above
-   a menu item.
-*/
 - (int) indexOfItemAtPoint: (NSPoint)point
 {
   unsigned howMany = [_itemCells count];
@@ -759,10 +750,6 @@ _addLeftBorderOffsetToRect(NSRect aRect)
   [self setNeedsDisplayInRect: aRect];
 }
 
-/**
-   Returns the correct frame origin for aSubmenu based on the location
-   of the receiver. This location may depend on the current NSInterfaceStyle.
-*/
 - (NSPoint) locationForSubmenu: (NSMenu *)aSubmenu
 {
   NSRect frame = [_window frame];
@@ -837,9 +824,6 @@ _addLeftBorderOffsetToRect(NSRect aRect)
       screenFrame.origin.x -= _leftBorderOffset;
     }  
   
-  // Move the menu window to screen?
-  // TODO
-  
   // Compute position for popups, if needed
   if (selectedItemIndex != -1) 
     {
@@ -913,7 +897,7 @@ _addLeftBorderOffsetToRect(NSRect aRect)
           candidateMenu = superMenu;
         }
     }
-
+	
   oldHighlightedIndex = [targetMenuView highlightedItemIndex];
   [targetMenuView setHighlightedItemIndex: indexToHighlight];
 
@@ -934,57 +918,6 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 #define MOVE_THRESHOLD_DELTA 2.0
 #define DELAY_MULTIPLIER     10
 
-/**
-   This method is responsible for tracking the mouse while this menu
-   is on the screen and the user is busy navigating the menu or one
-   of it submenus.  Responsible does not mean that this method does it
-   all.  For submenus for example it will call, indirectly, itself for
-   submenu under consideration.
-
-   It will return YES if user released mouse, not above a submenu item.
-   NO in all other circumstances.
-
-   Implementation detail:
-
-   <list>
-   <item> It use periodic events to update the highlight state
-     and attach / detach submenus.
-   </item>
-   <item> The flag justAttachedNewSubmenu is set to YES when
-     a new submenu is attached.  The effect is that the
-     highlightin / attaching / detaching is surpressed
-     for this menu.  This is done so the user is given
-     a change to move the mouse pointer into the newly
-     attached submenu.  Otherwise it would immediately
-     be removed as the mouse pointer move over another
-     item.
-
-     The logic for resetting the flag is rather adhoc.
-
-   <item> the flag subMenusNeedRemoving means that we
-     will remove all the submenus after we are done.
-
-     This flag is used to clean up the submenus
-     when the user has opened a submenu by clicking
-     and wants to close it again by clicking on the
-     hihglighted item.
-   </item>  
-   <item> When the user released the mouse this method
-     will cleanup all the transient menus.
-
-     Not only its own, but also its attached menu
-     and all its transient super menus.
-   </item>
-   <item> The clean up is done BEFORE the action is executed.
-     This is needed otherwise `hiding' the application
-     leaves a dangling menu.   If this is not acceptable,
-     there should be another mechanism of handling
-     the hiding.  BTW besides the `hiding' the application,
-     model panels are also a problem when the menu
-     is not cleared before executing the action.
-    </item>
-    </list>
-*/
 - (BOOL) trackWithEvent: (NSEvent*)event
 {
   unsigned	eventMask = NSPeriodicMask;
@@ -1271,16 +1204,13 @@ _addLeftBorderOffsetToRect(NSRect aRect)
 }
 
 /**
-   This method is called when the user clicks on a button
-   in the menu.  Or, if a right click happens and the
-   app menu is brought up.
+   This method is called when the user clicks on a button in the menu.
+	 Or, if a right click happens and the app menu is brought up.
 
-   The original position is stored, so we can restore
-   the position of menu.  The position of the menu
-   can change during the event tracking because
-   the menu will automatillay move when parts
-   are outside the screen and the user move the
-   mouse pointer to the edge of the screen.
+   The original position is stored, so we can restore the position of menu.
+	 The position of the menu can change during the event tracking because
+   the menu will automatillay move when parts are outside the screen and 
+	 the user move the mouse pointer to the edge of the screen.
 */
 - (void) mouseDown: (NSEvent*)theEvent
 {
