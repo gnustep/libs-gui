@@ -34,7 +34,7 @@ ifeq ($(GUI_LIB), nx)
 TOOL_NAME = nib2gmodel
 endif
 
-APP_NAME = test
+#APP_NAME = test
 
 libgmodel_OBJC_FILES = IMCustomObject.m IMConnectors.m IMLoading.m GMAppKit.m
 libgmodel_HEADER_FILES_DIR = ../Headers/AppKit
