@@ -312,7 +312,11 @@ NSApplication *theApp = [NSApplication sharedApplication];
 		return NO;
 }
 
-- (int)sendActionOn:(int)mask				{ return 0; }
+- (int) sendActionOn: (int)mask
+{
+  return [cell sendActionOn: mask];
+}
+
 - (void)setAction:(SEL)aSelector			{ [cell setAction:aSelector]; }
 - (void)setContinuous:(BOOL)flag			{ [cell setContinuous:flag]; }
 - (void)setTarget:(id)anObject				{ [cell setTarget:anObject]; }

@@ -376,6 +376,9 @@ NSSize old_size = frame.size;
 {
 float sx, sy;
 
+  if (aRect.size.width <= 0 || aRect.size.height <= 0)
+    [NSException raise: NSInvalidArgumentException
+		format: @"illegal bounds size supplied"];
 	bounds = aRect;
 	[boundsMatrix setFrameOrigin: NSMakePoint(-bounds.origin.x, 
 												-bounds.origin.y)];
@@ -408,6 +411,9 @@ float sx, sy;
 {
 float sx, sy;
 
+  if (newSize.width <= 0 || newSize.height <= 0)
+    [NSException raise: NSInvalidArgumentException
+		format: @"illegal bounds size supplied"];
 	bounds.size = newSize;
 	sx = frame.size.width / bounds.size.width;
 	sy = frame.size.height / bounds.size.height;
