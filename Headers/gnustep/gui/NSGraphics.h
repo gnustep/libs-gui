@@ -80,15 +80,15 @@ void NSRectFillListWithGrays(const NSRect *rects,
 //
 // Draw a Bordered Rectangle
 //
-void NSDrawButton(NSRect aRect, NSRect clipRect);
-void NSDrawGrayBezel(NSRect aRect, NSRect clipRect);
-void NSDrawGroove(NSRect aRect, NSRect clipRect);
-NSRect NSDrawTiledRects(NSRect boundsRect, NSRect clipRect, 
+void NSDrawButton(const NSRect aRect, const NSRect clipRect);
+void NSDrawGrayBezel(const NSRect aRect, const NSRect clipRect);
+void NSDrawGroove(const NSRect aRect, const NSRect clipRect);
+NSRect NSDrawTiledRects(NSRect aRect, const NSRect clipRect, 
 			const NSRectEdge *sides, const float *grays, 
 			int count);
-void NSDrawWhiteBezel(NSRect aRect, NSRect clipRect);
-void NSFrameRect(NSRect aRect);
-void NSFrameRectWithWidth(NSRect aRect, float frameWidth);
+void NSDrawWhiteBezel(const NSRect aRect, const NSRect clipRect);
+void NSFrameRect(const NSRect aRect);
+void NSFrameRectWithWidth(const NSRect aRect, float frameWidth);
 
 //
 // Get Information About Color Space and Window Depth

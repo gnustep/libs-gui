@@ -130,7 +130,7 @@
       // nada
       break;
     case NSImageFramePhoto:
-      // what does this one look like?
+      // what does this one look like? TODO (in sync with the rest of the code)
       break;
     case NSImageFrameGrayBezel:
       NSDrawGrayBezel(cellFrame, NSZeroRect);
@@ -209,7 +209,7 @@ static inline NSSize scaleProportionally(NSSize imageSize, NSRect canvasRect)
     return;
 
   // leave room for the frame
-  cellFrame = NSInsetRect(cellFrame, xDist, yDist);
+  cellFrame = [self drawingRectForBounds: cellFrame];
 
   switch( [self imageScaling] )
   {
@@ -287,6 +287,67 @@ static inline NSSize scaleProportionally(NSSize imageSize, NSRect canvasRect)
 
   // draw!
   [image compositeToPoint: position operation: NSCompositeCopy];
+}
+
+- (NSSize) cellSize
+{
+  NSSize borderSize, s;
+  
+  // Get border size
+  switch (_frameStyle)
+    {
+    case NSImageFrameNone:
+      borderSize = [NSCell sizeForBorderType: NSNoBorder];
+      break;
+    case NSImageFramePhoto:
+      // what does this one look like? TODO (in sync with the rest of the code)
+      borderSize = [NSCell sizeForBorderType: NSNoBorder];
+      break;
+    case NSImageFrameGrayBezel:
+    case NSImageFrameGroove:
+    case NSImageFrameButton:
+      borderSize = [NSCell sizeForBorderType: NSBezelBorder]; 
+      break;
+    }
+  
+  // Get Content Size
+  s = _original_image_size;
+  
+  // Add in border size
+  s.width += 2 * borderSize.width;
+  s.height += 2 * borderSize.height;
+  
+  return s;
+}
+
+- (NSSize) cellSizeForBounds: (NSRect)aRect
+{
+  // TODO
+  return NSZeroSize;
+}
+
+- (NSRect) drawingRectForBounds: (NSRect)theRect
+{
+  NSSize borderSize;
+
+  // Get border size
+  switch (_frameStyle)
+    {
+    case NSImageFrameNone:
+      borderSize = [NSCell sizeForBorderType: NSNoBorder];
+      break;
+    case NSImageFramePhoto:
+      // what does this one look like? TODO (in sync with the rest of the code)
+      borderSize = [NSCell sizeForBorderType: NSNoBorder];
+      break;
+    case NSImageFrameGrayBezel:
+    case NSImageFrameGroove:
+    case NSImageFrameButton:
+      borderSize = [NSCell sizeForBorderType: NSBezelBorder]; 
+      break;
+    }
+
+  return NSInsetRect (theRect, borderSize.width, borderSize.height);
 }
 
 - (id) copyWithZone: (NSZone *)zone

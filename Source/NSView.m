@@ -1041,7 +1041,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   if (options >= 1)
     {
       change = superViewFrameSize.width - oldSize.width;
-      changePerOption = floor(change/options);
+      changePerOption = change/options;
 
       if (autoresizingMask & NSViewWidthSizable)
 	{
@@ -1049,10 +1049,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 	  frame.size.width += changePerOption;
 	  if (is_rotated_or_scaled_from_base)
-	    {
-	      bounds.size.width *= frame.size.width/oldFrameWidth;
-	      bounds.size.width = floor(bounds.size.width);
-	    }
+	    bounds.size.width *= frame.size.width/oldFrameWidth;
 	  else
 	    bounds.size.width += changePerOption;
 	  changedSize = YES;
@@ -1081,7 +1078,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   if (options >= 1)
     {
       change = superViewFrameSize.height - oldSize.height;
-      changePerOption = floor(change/options);
+      changePerOption = change/options;
 
       if (autoresizingMask & NSViewHeightSizable)
 	{
@@ -1089,10 +1086,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 
 	  frame.size.height += changePerOption;
 	  if (is_rotated_or_scaled_from_base)
-	    {
-	      bounds.size.height *= frame.size.height/oldFrameHeight;
-	      bounds.size.height = floor(bounds.size.height);
-	    }
+	    bounds.size.height *= frame.size.height/oldFrameHeight;
 	  else
 	    bounds.size.height += changePerOption;
 	  changedSize = YES;
