@@ -92,7 +92,7 @@ float sumOfCharacterRange = 0;
 		font = (NSFont*)[self attribute:NSFontAttributeName
         			 		  atIndex:NSMaxRange(effectiveRange) 
 					 		  effectiveRange:&effectiveRange];
-		subString = [self substringFromRange:effectiveRange];
+		subString = [self attributedSubstringFromRange:effectiveRange];
 		sumOfCharacterRange += [font widthOfString:subString];
 		pointSize = MAX([font pointSize], pointSize);
 		}
