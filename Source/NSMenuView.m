@@ -28,7 +28,7 @@
 */ 
 
 
-#include <Foundation/NSThread.h>
+#include <Foundation/NSRunLoop.h>
 
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSEvent.h>
@@ -878,10 +878,18 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 
   [targetMenuView setHighlightedItemIndex: indexToHighlight];
 
-  [_menu performActionForItemAtIndex: index];
-  [NSThread sleepUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.1]];
+  /* We need to let the run loop run a little so that the fact that
+   * the item is highlighted gets displayed on screen.
+   */
+  [[NSRunLoop currentRunLoop] 
+    runUntilDate: [NSDate dateWithTimeIntervalSinceNow: 0.1]];
 
-  [targetMenuView setHighlightedItemIndex: -1];
+  [_menu performActionForItemAtIndex: index];
+
+  if (![_menu _ownedByPopUp])
+    {
+      [targetMenuView setHighlightedItemIndex: -1];
+    }
 }
 
 #define MOVE_THRESHOLD_DELTA 2.0
