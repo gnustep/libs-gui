@@ -35,7 +35,7 @@ include ../Version
 include ../config.make
 
 # The library to be compiled
-LIBRARY_NAME=libgnustep-gui
+LIBRARY_NAME = libgnustep-gui
 
 # The Objective-C source files to be compiled
 libgnustep-gui_C_FILES = \
@@ -164,6 +164,7 @@ libgnustep-gui_HEADER_FILES_INSTALL_DIR = /AppKit
 
 libgnustep-gui_HEADER_FILES = \
 AppKit.h \
+GSVersion.h \
 AppKitExceptions.h \
 DPSOperators.h \
 GMAppKit.h \
