@@ -1,3 +1,10 @@
+2002-03-04  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSSavePanel.m: Hack around accessory view addition/removal
+	code - fix a few bugs and simplify by relying more on autoresizing
+	and less on manual computation of resizing values.  Now works with
+	ProjectCentre on my system.
+
 2002-03-03  Gregory Casamento <greg_casamento@yahoo.com>
 	
 	* Images/common_outlineUnexpandable.tiff added.
