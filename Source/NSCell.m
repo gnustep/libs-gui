@@ -739,7 +739,7 @@ static NSColor	*shadowCol;
       case NSNullCellType:
          break;
     }
-    [controlView unlockFocus];
+  [controlView unlockFocus];
 }
 
 - (void) drawWithFrame: (NSRect)cellFrame inView: (NSView*)controlView

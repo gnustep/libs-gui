@@ -94,12 +94,9 @@ static NSString* NSImage_PATH = @"Images";
 
 - (void) dealloc
 {
-  if (fileName)
-    [fileName release];
-  if (rep)
-    [rep release];
-  if (bg)
-    [bg release];
+  TEST_RELEASE(fileName);
+  TEST_RELEASE(rep);
+  TEST_RELEASE(bg);
   NSDeallocateObject(self);
 }
 @end
@@ -134,15 +131,20 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 - (BOOL) loadFromData: (NSData *)data;
 - (BOOL) loadFromFile: (NSString *)fileName;
 - (NSImageRep *) lastRepresentation;
+- (NSImageRep*) cacheForRep: (NSImageRep*)rep
+		   onDevice: (NSDictionary*)deviceDescription;
+- (NSImageRep*) _doImageCache: (NSDictionary*)deviceDescription;
 @end
 
 @implementation NSImage
 
 /* Class variables and functions for class methods */
-static NSMutableDictionary* nameDict = nil;
-static NSDictionary* nsmapping = nil;
+static NSMutableDictionary	*nameDict = nil;
+static NSDictionary		*nsmapping = nil;
+static NSColor			*clearColor = nil;
+static Class			cacheClass = 0;
 
-+ (void)initialize
++ (void) initialize
 {
   if (self == [NSImage class])
     {
@@ -156,13 +158,14 @@ static NSDictionary* nsmapping = nil;
       // initialize the class variables
       nameDict = [[NSMutableDictionary alloc] initWithCapacity: 10];
       if (path)
-	nsmapping = [[[NSString stringWithContentsOfFile: path]
-				propertyListFromStringsFileFormat]
-				retain];
+	nsmapping = RETAIN([[NSString stringWithContentsOfFile: path]
+				propertyListFromStringsFileFormat]);
+      clearColor = RETAIN([NSColor clearColor]);
+      cacheClass = [NSCachedImageRep class];
     }
 }
 
-+ imageNamed: (NSString *)aName
++ (id) imageNamed: (NSString *)aName
 {
   NSString	*realName = [nsmapping objectForKey: aName];
 
@@ -252,7 +255,7 @@ static NSDictionary* nsmapping = nil;
 	  if (image)
 	    {
 	      [image setName: aName];
-	      [image release];		// Retained in dictionary.
+	      RELEASE(image);		// Retained in dictionary.
 	    }
 	  return image;
 	}
@@ -272,10 +275,10 @@ static NSDictionary* nsmapping = nil;
 }
 
 // Designated initializer for nearly everything.
-- initWithSize: (NSSize)aSize
+- (id) initWithSize: (NSSize)aSize
 {
   [super init];
-  _reps = [[NSMutableArray arrayWithCapacity: 2] retain];
+  _reps = [[NSMutableArray alloc] initWithCapacity: 2];
   if (aSize.width && aSize.height) 
     {
       _size = aSize;
@@ -302,7 +305,7 @@ static NSDictionary* nsmapping = nil;
       _flags.dataRetained = NO;
       if (![self useFromFile: fileName])
 	{
-	  [self release];
+	  RELEASE(self);
 	  return nil;
 	}
     }
@@ -318,7 +321,7 @@ static NSDictionary* nsmapping = nil;
       _flags.dataRetained = YES;
       if (![self useFromFile: fileName])
 	{
-	  [self release];
+	  RELEASE(self);
 	  return nil;
 	}
     }
@@ -333,14 +336,14 @@ static NSDictionary* nsmapping = nil;
     {
       if (![self loadFromData: data])
 	{
-	  [self release];
+	  RELEASE(self);
 	  return nil;
 	}
     }
   return self;
 }
 
-- initWithPasteboard: (NSPasteboard *)pasteboard
+- (id) initWithPasteboard: (NSPasteboard *)pasteboard
 {
   [self notImplemented: _cmd];
   return nil;
@@ -356,7 +359,8 @@ static NSDictionary* nsmapping = nil;
 {
   if (_size.width == 0) 
     {
-      NSImageRep* rep = [self bestRepresentationForDevice: nil];
+      NSImageRep	*rep = [self bestRepresentationForDevice: nil];
+
       _size = [rep size];
     }
   return _size;
@@ -365,52 +369,48 @@ static NSDictionary* nsmapping = nil;
 - (void) dealloc
 {
   [self representations];
-  [_repList release];
-  [_reps release];
+  RELEASE(_repList);
+  RELEASE(_reps);
   /* Make sure we don't remove name from the nameDict if we are just a copy
      of the named image, not the original image */
   if (name && self == [nameDict objectForKey: name]) 
     [nameDict removeObjectForKey: name];
-  [name release];
+  RELEASE(name);
   [super dealloc];
 }
 
-- copyWithZone: (NSZone *)zone
+- (id) copyWithZone: (NSZone *)zone
 {
-  NSImage* copy;
+  NSImage	*copy;
 
   // FIXME: maybe we should retain if _flags.dataRetained = NO
   copy = (NSImage*)NSCopyObject (self, 0, zone);
 
-  [name retain];
+  RETAIN(name);
   copy->_reps = [NSMutableArray new];
   copy->_repList = [NSMutableArray new];
-  [_color retain];
+  RETAIN(_color);
   _lockedView = nil;
-  [copy addRepresentations: [[[self representations] copyWithZone: zone]
-				autorelease]];
+  [copy addRepresentations: [self representations]];
   
   return copy;
 }
 
-- (BOOL)setName: (NSString *)string
+- (BOOL) setName: (NSString *)string
 {
   if (!nameDict)
-    nameDict = [[NSMutableDictionary dictionaryWithCapacity: 2] retain];
+    nameDict = [[NSMutableDictionary alloc] initWithCapacity: 2];
 
   if (!string || [nameDict objectForKey: string])
     return NO;
 
-  [string retain];
-  if (name)
-    [name release];
-  name = string;
+  ASSIGN(name, string);
 
   [nameDict setObject: self forKey: name];
   return YES;
 }
 
-- (NSString *)name
+- (NSString *) name
 {
   return name;
 }
@@ -421,7 +421,7 @@ static NSDictionary* nsmapping = nil;
   _flags.useEPSOnResolutionMismatch = flag;
 }
 
-- (BOOL)usesEPSOnResolutionMismatch
+- (BOOL) usesEPSOnResolutionMismatch
 {
   return _flags.useEPSOnResolutionMismatch;
 }
@@ -431,7 +431,7 @@ static NSDictionary* nsmapping = nil;
   _flags.colorMatchPreferred = flag;
 }
 
-- (BOOL)prefersColorMatch
+- (BOOL) prefersColorMatch
 {
   return _flags.colorMatchPreferred;
 }
@@ -441,7 +441,7 @@ static NSDictionary* nsmapping = nil;
   _flags.multipleResolutionMatching = flag;
 }
 
-- (BOOL)matchesOnMultipleResolution
+- (BOOL) matchesOnMultipleResolution
 {
   return _flags.multipleResolutionMatching;
 }
@@ -492,15 +492,18 @@ static NSDictionary* nsmapping = nil;
       GSRepData	 *repd = (GSRepData*)[_reps objectAtIndex: i];
 
       if (repd->bg != nil
-	|| [repd->rep isKindOfClass: [NSCachedImageRep class]] == NO)
-	valid = YES;
+	|| [repd->rep isKindOfClass: cacheClass] == NO)
+	{
+	  valid = YES;
+	  break;
+	}
     }
   return valid;
 }
 
 - (void) recache
 {
-  int i, count;
+  unsigned i, count;
 
   count = [_reps count];
   for (i = 0; i < count; i++) 
@@ -510,8 +513,7 @@ static NSDictionary* nsmapping = nil;
       repd = (GSRepData*)[_reps objectAtIndex: i];
       if (repd->bg != nil)
 	{
-	  [repd->bg release];
-	  repd->bg = nil;
+	  DESTROY(repd->bg);
 	}
     }
 }
@@ -528,18 +530,13 @@ static NSDictionary* nsmapping = nil;
 
 - (void) setBackgroundColor: (NSColor *)aColor
 {
-  if (_color != aColor)
-    {
-      if (_color)
-	[_color release];
-      _color = [aColor retain];
-    }
+  ASSIGN(_color, aColor);
 }
 
 - (NSColor *) backgroundColor
 {
   if (_color == nil)
-    _color = [[NSColor clearColor] retain];
+    _color = RETAIN(clearColor);
   return _color;
 }
 
@@ -575,39 +572,24 @@ static NSDictionary* nsmapping = nil;
 // a cache and no cache exists, create one and draw the representation in it
 // If a cache exists, but is not valid, redraw the cache from the original
 // image (if there is one).
-- (NSImageRep *)_doImageCache
+- (NSImageRep *)_doImageCache: (NSDictionary*)deviceDesc
 {
   NSImageRep	*rep = nil;
   GSRepData	*repd;
 
-  repd = repd_for_rep(_reps, [self bestRepresentationForDevice: nil]);
+  repd = repd_for_rep(_reps, [self bestRepresentationForDevice: deviceDesc]);
   rep = repd->rep;
 
-  if (doesCaching)
+  if (doesCaching == YES)
     {
       /*
        * If this is not a cached image rep - create a cache to be used to
        * render the image rep into, and switch to the cached rep.
        */
-      if ([rep isKindOfClass: [NSCachedImageRep class]] == NO) 
+      if ([rep isKindOfClass: cacheClass] == NO) 
 	{
-	  NSScreen		*cur = [NSScreen mainScreen];
-	  NSCachedImageRep	*cachedRep;
-	  NSSize		imageSize;
-  
-	  imageSize = [self size];
-	  if (imageSize.width == 0 || imageSize.height == 0)
-	    return nil;
-
-	  cachedRep = [[NSCachedImageRep alloc] initWithSize: _size
-						       depth: [cur depth]
-						    separate: NO
-						       alpha: NO];
-	  [self addRepresentation: cachedRep];
-	  [cachedRep release];		/* Retained in _reps array.	*/
-	  repd = repd_for_rep(_reps, cachedRep);
-	  repd->original = rep;
-	  rep = repd->rep;
+	  rep = [self cacheForRep: rep onDevice: deviceDesc];
+	  repd = repd_for_rep(_reps, rep);
 	} 
 
       /*
@@ -620,21 +602,16 @@ static NSDictionary* nsmapping = nil;
 	  NSRect	bounds;
 
 	  [self lockFocusOnRepresentation: rep];
-	  /*
-	   * If this is not a cache - the lockFocus will have created a
-	   * cache that we can use instead.
-	   */
-	  if (repd->original == nil)
-	    {
-	      repd = repd_for_rep(_reps, [self lastRepresentation]);
-	    }
 	  bounds = [_lockedView bounds];
-	  [_color set];
-	  NSEraseRect(bounds);
+	  if (_color != nil && [_color isEqual: clearColor] == NO)
+	    {
+	      [_color set];
+	      NSEraseRect(bounds);
+	    }
 	  [self drawRepresentation: repd->original 
 	    inRect: NSMakeRect(0, 0, _size.width, _size.height)];
 	  [self unlockFocus];
-	  repd->bg = [_color copy];
+	  repd->bg = _color ? [_color copy] : [clearColor copy];
 	}
     }
   
@@ -662,7 +639,7 @@ static NSDictionary* nsmapping = nil;
   // xxx If fromRect specifies something other than full image
   // then we need to construct a subimage to draw
 
-  rep = [self _doImageCache];
+  rep = [self _doImageCache: nil];
   [self drawRepresentation: rep inRect: rect];
 }
 
@@ -684,7 +661,7 @@ static NSDictionary* nsmapping = nil;
   // xxx If fromRect specifies something other than full image
   // then we need to construct a subimage to draw
 
-  rep = [self _doImageCache];
+  rep = [self _doImageCache: nil];
   [self drawRepresentation: rep inRect: rect];
 }
 
@@ -751,9 +728,9 @@ static NSDictionary* nsmapping = nil;
   if ([array indexOfObject: ext] == NSNotFound)
     return NO;
   repd = [GSRepData new];
-  repd->fileName = [fileName retain];
+  repd->fileName = RETAIN(fileName);
   [_reps addObject: repd];
-  [repd release];
+  RELEASE(repd);
   _flags.syncLoad = YES;
   return YES;
 }
@@ -777,29 +754,10 @@ static NSDictionary* nsmapping = nil;
   for (i = 0; i < count; i++)
     {
       repd = [GSRepData new];
-      repd->rep = [[imageRepArray objectAtIndex: i] retain];
+      repd->rep = RETAIN([imageRepArray objectAtIndex: i]);
       [_reps addObject: repd]; 
-      [repd release];
+      RELEASE(repd);
     }
-}
-
-- (BOOL) useCacheWithDepth: (int)depth
-{
-  NSSize imageSize;
-  NSCachedImageRep* rep;
-  
-  imageSize = [self size];
-  if (!imageSize.width || !imageSize.height)
-    return NO;
-
-
-  // FIXME: determine alpha? separate?
-  rep = [[NSCachedImageRep alloc] initWithSize: _size
-       depth: depth
-       separate: NO
-       alpha: NO];
-  [self addRepresentation: rep];
-  return YES;
 }
 
 - (void) removeRepresentation: (NSImageRep *)imageRep
@@ -824,57 +782,45 @@ static NSDictionary* nsmapping = nil;
 
 - (void) lockFocus
 {
-  NSScreen	*cur = [NSScreen mainScreen];
   NSImageRep	*rep;
 
   if (!(rep = [self bestRepresentationForDevice: nil])) 
     {
-      [self useCacheWithDepth: [cur depth]];
-      rep = [self lastRepresentation];
+      if ([rep isKindOfClass: cacheClass] == NO) 
+	{
+	  rep = [self cacheForRep: rep onDevice: nil];
+	}
     }
   [self lockFocusOnRepresentation: rep];
 }
 
 - (void) lockFocusOnRepresentation: (NSImageRep *)imageRep
 {
-  NSScreen	*cur = [NSScreen mainScreen];
-  NSWindow	*window;
-
-  if (!imageRep)
+  if (imageRep == nil)
     [NSException raise: NSInvalidArgumentException
       format: @"Cannot lock focus on nil rep"];
 
-  if (doesCaching)
+  if (doesCaching == YES)
     {
-      if (![imageRep isKindOfClass: [NSCachedImageRep class]]) 
-	{
-	  GSRepData	*cached;
-	  int		depth;
+      NSWindow	*window;
 
-	  if (_flags.unboundedCacheDepth)
-	    depth = [cur depth];      // FIXME: get depth correctly
-	  else
-	    depth = [cur depth];
-	  if (![self useCacheWithDepth: depth]) 
-	    {
-	      [NSException raise: NSImageCacheException
-		format: @"Unable to create cache"];
-	    }
-	  cached = repd_for_rep(_reps, [self lastRepresentation]);
-	  cached->original = imageRep;
-	  imageRep = cached->rep;
-	}
-	window = [(NSCachedImageRep *)imageRep window];
-	_lockedView = [window contentView];
-	[_lockedView lockFocus];
+      if ([imageRep isKindOfClass: cacheClass] == NO) 
+	{
+	  imageRep = [self cacheForRep: imageRep onDevice: nil];
+	} 
+      window = [(NSCachedImageRep *)imageRep window];
+      _lockedView = [window contentView];
+      [_lockedView lockFocus];
     }
 }
 
 - (void) unlockFocus
 {
-  if (_lockedView)
-    [_lockedView unlockFocus];
-  _lockedView = nil;
+  if (_lockedView != nil)
+    {
+      [_lockedView unlockFocus];
+      _lockedView = nil;
+    }
 }
 
 - (NSImageRep *) lastRepresentation
@@ -902,8 +848,7 @@ static NSDictionary* nsmapping = nil;
 
       /*
        *	What's the best representation? FIXME
-       *	At the moment we take the last bitmap we find, or the first
-       *	rep of any type if we don't find a bitmap.	
+       *	At the moment we take the last bitmap we find.
        */
       [_reps getObjects: reps];
       for (i = 0; i < count; i++)
@@ -914,71 +859,97 @@ static NSDictionary* nsmapping = nil;
 	    {
 	      rep = repd->rep;
 	    }
-	  else if (rep == nil)
-	    {
-	      rep = repd->rep;
-	    }
-	}
-
-      /*
-       * If we got a representation - see if we already have it cached.
-       */
-      if (doesCaching)
-	{
-	  if (rep != nil)
-	    {
-	      GSRepData	*invalidCache = nil;
-	      GSRepData	*validCache = nil;
-
-	      /*
-	       * Search the cached image reps for any whose original is our
-	       * 'best' image rep.  See if we can notice any invalidated
-	       * cache as we go - if we don't find a valid cache, we want to
-	       * re-use an invalidated one rather than createing a new one.
-	       */
-	      for (i = 0; i < count; i++)
-		{
-		  GSRepData	*repd = reps[i];
-    
-		  if (repd->original == rep)
-		    {
-		      if (repd->bg == nil)
-			{
-			  invalidCache = repd;
-			}
-		      else if ([repd->bg isEqual: _color] == YES)
-			{
-			  validCache = repd;
-			  break;
-			}
-		    }
-		}
-
-	      if (validCache)
-		{
-		  /*
-		   * If the image rep has transparencey and we are drawing
-		   * without a background (background is clear) then the
-		   * cache can't really be valid 'cos we might be drawing
-		   * transparency on top of anything.  So we invalidate
-		   * the cache by removing the background color information.
-		   */
-		  if ([rep hasAlpha]
-		    && [validCache->bg isEqual: [NSColor clearColor]])
-		    {
-		      [validCache->bg release];
-		      validCache->bg = nil;
-		    }
-		  rep = validCache->rep;
-		}
-	      else if (invalidCache)
-		{
-		  rep = invalidCache->rep;
-		}
-	    }
 	}
     }
   return rep;
+}
+
+- (NSImageRep*) cacheForRep: (NSImageRep*)rep
+		   onDevice: (NSDictionary*)deviceDescription
+{
+  if (doesCaching == YES)
+    {
+      NSImageRep	*cacheRep = nil;
+      unsigned		count = [_reps count];
+
+      if (count > 0)
+	{
+	  GSRepData	*invalidCache = nil;
+	  GSRepData	*validCache = nil;
+	  GSRepData	*reps[count];
+	  unsigned	i;
+
+	  [_reps getObjects: reps];
+
+	  /*
+	   * Search the cached image reps for any whose original is our
+	   * 'best' image rep.  See if we can notice any invalidated
+	   * cache as we go - if we don't find a valid cache, we want to
+	   * re-use an invalidated one rather than createing a new one.
+	   */
+	  for (i = 0; i < count; i++)
+	    {
+	      GSRepData	*repd = reps[i];
+
+	      if (repd->original == rep)
+		{
+		  if (repd->bg == nil)
+		    {
+		      invalidCache = repd;
+		    }
+		  else if ([repd->bg isEqual: _color] == YES)
+		    {
+		      validCache = repd;
+		      break;
+		    }
+		}
+	    }
+
+	  if (validCache != nil)
+	    {
+	      /*
+	       * If the image rep has transparencey and we are drawing
+	       * without a background (background is clear) then the
+	       * cache can't really be valid 'cos we might be drawing
+	       * transparency on top of anything.  So we invalidate
+	       * the cache by removing the background color information.
+	       */
+	      if ([rep hasAlpha] && [validCache->bg isEqual: clearColor])
+		{
+		  DESTROY(validCache->bg);
+		}
+	      cacheRep = validCache->rep;
+	    }
+	  else if (invalidCache != nil)
+	    {
+	      cacheRep = invalidCache->rep;
+	    }
+	}
+      if (cacheRep == nil)
+	{
+	  NSScreen	*cur = [NSScreen mainScreen];
+	  NSSize	imageSize;
+	  GSRepData	*repd;
+
+	  imageSize = [self size];
+	  if (imageSize.width == 0 || imageSize.height == 0)
+	    return nil;
+
+	  cacheRep = [[cacheClass alloc] initWithSize: _size
+						depth: [cur depth]
+					     separate: NO
+						alpha: NO];
+	  [self addRepresentation: cacheRep];
+	  RELEASE(cacheRep);		/* Retained in _reps array.	*/
+	  repd = repd_for_rep(_reps, cacheRep);
+	  repd->original = rep;
+	}
+      return cacheRep;
+    }
+  else
+    {
+      return rep;
+    }
 }
 
 - (NSArray *) representations
