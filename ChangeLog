@@ -1,3 +1,15 @@
+2000-06-26  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/NSFileWrapper.m
+	Added a crude implemention for [initWithSerializedRepresentation:]
+	and [serializedRepresentation]. Also scattered some AUTORELEASE and
+	RELEASE statements.
+	* Source/NSPasteboard.m 
+	[readFileContentsType:toFile:] and [writeFileContents:] now use file
+	wrappers to use the same format as the new methods.
+	* Source/NSText.m 
+	Turn on NSFileContentsPboardType in [readablePasteboardTypes].
+
 2000-06-26 Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSAttributedString.m: attachmentString() - retain newly
