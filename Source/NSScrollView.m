@@ -9,6 +9,8 @@
    Date: October 1998
    Author:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: February 1999
+   Table View Support: Nicola Pero <n.pero@mi.flashnet.it>
+   Date: March 2000
 
    This file is part of the GNUstep GUI Library.
 
@@ -36,6 +38,8 @@
 #include <AppKit/NSClipView.h>
 #include <AppKit/NSScrollView.h>
 #include <AppKit/NSRulerView.h>
+#include <AppKit/NSTableHeaderView.h>
+#include <AppKit/NSTableView.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/PSOperators.h>
 
@@ -394,6 +398,14 @@ static Class rulerViewClass = nil;
 	}
     }
 
+  if (_hasHeaderView)
+    {
+      NSPoint scrollTo;
+
+      scrollTo = [_headerClipView bounds].origin;
+      scrollTo.x += point.x - clipViewBounds.origin.x;
+      [_headerClipView scrollToPoint: scrollTo];
+    }
   [_contentView scrollToPoint: point];
 }
 
@@ -406,7 +418,9 @@ static Class rulerViewClass = nil;
   id documentView;
 
   if (aClipView != _contentView)
-    return;
+    {
+      return;
+    }
 
   NSDebugLog (@"reflectScrolledClipView:");
 
@@ -493,15 +507,36 @@ static Class rulerViewClass = nil;
 
 - (void) tile
 {
-  NSSize contentSize = [isa contentSizeForFrameSize: _bounds.size
-			      hasHorizontalScroller: _hasHorizScroller
-				hasVerticalScroller: _hasVertScroller
-					 borderType: _borderType];
+  
+  NSSize contentSize;
   float scrollerWidth = [NSScroller scrollerWidth];
-  NSRect contentRect = { NSZeroPoint, contentSize };
+  NSRect contentRect;
   NSRect vertScrollerRect = NSZeroRect;
   NSRect horizScrollerRect = NSZeroRect;
   float borderThickness = 0;
+  /* NSTableView related vars */
+  float headerViewHeight = 0;
+  NSView *cornerView = nil;
+  NSSize fakeBoundsSize;
+
+  if (_hasHeaderView == YES)
+    {
+      headerViewHeight = [[_headerClipView documentView] frame].size.height;
+    }
+
+  if ((_hasCornerView == YES) && (_hasHorizScroller == YES))
+    {
+      cornerView = [(NSTableView *)[_contentView documentView] cornerView];
+      if (headerViewHeight == 0)
+	headerViewHeight = [cornerView frame].size.height;
+    }
+  fakeBoundsSize = _bounds.size;
+  fakeBoundsSize.height -= headerViewHeight;
+  contentSize = [isa contentSizeForFrameSize: fakeBoundsSize
+		     hasHorizontalScroller: _hasHorizScroller
+		     hasVerticalScroller: _hasVertScroller
+		     borderType: _borderType];
+  contentRect = NSMakeRect (0, 0, contentSize.width, contentSize.height);
 
   switch (_borderType)
     {
@@ -526,9 +561,15 @@ static Class rulerViewClass = nil;
       vertScrollerRect.origin.x = _bounds.origin.x + borderThickness;
       vertScrollerRect.origin.y = _bounds.origin.y + borderThickness;
       vertScrollerRect.size.width = scrollerWidth;
-      vertScrollerRect.size.height = _bounds.size.height - 2 * borderThickness;
+      vertScrollerRect.size.height = fakeBoundsSize.height 
+	- 2 * borderThickness;
 
       contentRect.origin.x += scrollerWidth + 1;
+
+      if (_rFlags.flipped_view)
+	{
+	  vertScrollerRect.origin.y += headerViewHeight;
+	}
     }
 
   if (_hasHorizScroller)
@@ -540,12 +581,49 @@ static Class rulerViewClass = nil;
 
       if (_rFlags.flipped_view)
 	{
+	  contentRect.origin.y += headerViewHeight; 
+	  horizScrollerRect.origin.y += headerViewHeight;
 	  horizScrollerRect.origin.y += contentRect.size.height + 1;
 	}
       else
 	{
 	  contentRect.origin.y += scrollerWidth + 1;
 	}
+    }
+
+  if (_hasHeaderView)
+    {
+      NSRect rect;
+
+      rect.origin.x = contentRect.origin.x;
+      if (_rFlags.flipped_view)
+	{
+	  rect.origin.y = _bounds.origin.y + borderThickness;
+	}
+      else
+	{
+	  rect.origin.y = NSMaxY (_bounds);
+	  rect.origin.y -= headerViewHeight + borderThickness;
+	}
+      rect.size.width = contentRect.size.width;
+      rect.size.height = headerViewHeight;
+      [_headerClipView setFrame: rect];
+    }
+
+  if (_hasCornerView)
+    {
+      NSPoint origin;
+
+      origin.x = _bounds.origin.x + borderThickness;
+      if (_rFlags.flipped_view)
+	{
+	  origin.y = _bounds.origin.y + borderThickness;
+	}
+      else
+	{
+	  origin.y = NSMaxY (_bounds) - headerViewHeight - borderThickness;
+	}
+      [cornerView setFrameOrigin: origin];
     }
 
   [_horizScroller setFrame: horizScrollerRect];
@@ -560,7 +638,19 @@ static Class rulerViewClass = nil;
   float scrollerWidth = [NSScroller scrollerWidth];
   float horizLinePosition, horizLineLength = _bounds.size.width;
   float borderThickness = 0;
+  float headerViewHeight = 0;
 
+  if (_hasHeaderView == YES)
+    {
+      headerViewHeight = [[_headerClipView documentView] frame].size.height;
+    }
+  if ((_hasCornerView == YES) && (_hasHorizScroller == YES) 
+      && (headerViewHeight == 0))
+    {
+      headerViewHeight = [[(NSTableView *)[_contentView documentView] 
+					  cornerView] frame].size.height;
+    }
+  
   DPSgsave(ctxt);
   switch (_borderType)
     {
@@ -570,17 +660,17 @@ static Class rulerViewClass = nil;
       case NSLineBorder:
 	borderThickness = 1;
 	[[NSColor controlDarkShadowColor] set];
-	NSFrameRect(rect);
+	NSFrameRect(_bounds);
 	break;
 
       case NSBezelBorder:
 	borderThickness = 2;
-	NSDrawGrayBezel(rect, rect);
+	NSDrawGrayBezel(_bounds, rect);
 	break;
 
       case NSGrooveBorder:
 	borderThickness = 2;
-	NSDrawGroove(rect, rect);
+	NSDrawGroove(_bounds, rect);
 	break;
     }
 
@@ -593,8 +683,21 @@ static Class rulerViewClass = nil;
       horizLinePosition = scrollerWidth + borderThickness;
       horizLineLength -= scrollerWidth + 2 * borderThickness;
       DPSmoveto(ctxt, horizLinePosition, borderThickness);
-      DPSrlineto(ctxt, 0, _bounds.size.height - 2 * borderThickness - 1);
+      if (_rFlags.flipped_view)
+	DPSrmoveto(ctxt, 0, headerViewHeight);
+      DPSrlineto(ctxt, 0, _bounds.size.height - headerViewHeight 
+		 - 2 * borderThickness - 1);
       DPSstroke(ctxt);
+      if ((_hasHeaderView == YES) && (_hasCornerView == NO)) 
+	{
+	  float yStart = borderThickness + headerViewHeight - 1;
+
+	  if (_rFlags.flipped_view == NO)
+	    yStart = _bounds.size.height - yStart;
+	  DPSmoveto(ctxt, horizLinePosition, yStart); 
+	  DPSlineto(ctxt, borderThickness, yStart);
+	  DPSstroke(ctxt);
+	}
     }
 
   if (_hasHorizScroller)
@@ -633,6 +736,38 @@ static Class rulerViewClass = nil;
 
 - (void) setDocumentView: (NSView*)aView
 {
+  BOOL hadHeaderView = _hasHeaderView;
+
+  if (_hasCornerView == YES)
+    {
+      [self removeSubview: 
+	      [(NSTableView *)[_contentView documentView] cornerView]];
+    }
+  _hasCornerView = ([aView respondsToSelector: @selector(cornerView)]
+		    && ([(NSTableView *)aView cornerView] != nil));
+  if (_hasCornerView == YES)
+    {
+      [self addSubview: [(NSTableView *)aView cornerView]];
+    }
+  //
+  _hasHeaderView = ([aView respondsToSelector: @selector(headerView)]
+		    && ([(NSTableView *)aView headerView] != nil));
+  if (_hasHeaderView == YES)
+    {
+      if (hadHeaderView == NO)
+	{
+	  _headerClipView = [NSClipView new];
+	  [self addSubview: _headerClipView];
+	  RELEASE (_headerClipView);
+	}
+      [_headerClipView setDocumentView: 
+			 [(NSTableView *)aView headerView]];
+    }
+  else if (hadHeaderView == YES)
+    {
+      [self removeSubview: _headerClipView];
+    }
+  //
   [_contentView setDocumentView: aView];
   if (_contentView && !_contentView->_rFlags.flipped_view)
     [_vertScroller setFloatValue: 1];
