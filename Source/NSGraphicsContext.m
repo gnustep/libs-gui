@@ -207,26 +207,26 @@ struct NSWindow_struct
 {
   NSRect rect;
   struct NSWindow_struct *window;
+
   [focus_stack addObject: aView];
   window = (struct NSWindow_struct *)[aView window];
   /* Add aView's visible Rect to its Window's area to be flushed */
-  rect = [[aView _matrixToWindow] rectInMatrixSpace: [aView visibleRect]];
+  rect = [aView convertRect: [aView visibleRect] toView: nil];
   window->rectBeingDrawn = NSUnionRect(window->rectBeingDrawn, rect);
-
 }
 
 - (void) unlockFocusView: (NSView*)aView
 {
-  NSRect rect;
-  struct NSWindow_struct *window;
+  struct	NSWindow_struct *window;
   NSView	*v = [focus_stack lastObject];
 
   NSAssert(v == aView, NSInvalidArgumentException);
   /* Set Window's flush rect so our view is properly flushed */
   window = (struct NSWindow_struct *)[aView window];
-  rect = [self windowRectInDeviceSpace: window->rectBeingDrawn];
-  window->rectNeedingFlush = NSUnionRect(window->rectNeedingFlush, rect);
+  window->rectNeedingFlush = NSUnionRect(window->rectNeedingFlush,
+    window->rectBeingDrawn);
   window->rectBeingDrawn = NSZeroRect;
+  window->needs_flush = YES;
   [focus_stack removeLastObject];
 }
 
