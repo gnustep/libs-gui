@@ -67,6 +67,7 @@
 #include <AppKit/NSNibLoading.h>
 #include <AppKit/IMLoading.h>
 #include <AppKit/DPSOperators.h>
+#include <AppKit/NSPageLayout.h>
 
 /*
  * AppKit exception handler (overrides Foundation)
@@ -1709,8 +1710,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 
 - (void) runPageLayout: sender
 {
-  NSRunAlertPanel (NULL, @"Page Layout Panel not implemented yet",
-		   @"OK", NULL, NULL);
+  [[NSPageLayout pageLayout] runModal];
 }
 
 /* infoPanel, macosx API -- Deprecated */
