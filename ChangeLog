@@ -1,3 +1,10 @@
+2000-04-10  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Documentation/gsdoc/GNUmakefile: New file to build documentation
+	* AppKit.gsdoc: renamed to Gui.gsdoc to reflect GNUstep name for
+	library rather than NeXT/Apple trademarked one.  Updated links in
+	the other documentation files.
+
 2000-04-08  James Dessart <skwirl@cam.org>
 	* Documentation/gsdoc/NSSlider.gsdoc: Made corrections to class description
 	* Documentation/gsdoc/NSSliderCell.gsdoc: Basic documentation (added in mid-March)
