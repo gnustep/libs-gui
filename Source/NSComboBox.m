@@ -24,7 +24,11 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
-#import <AppKit/AppKit.h>
+#include <Foundation/NSNotification.h>
+#include <Foundation/NSString.h>
+#include <AppKit/NSApplication.h>
+#include <AppKit/NSComboBox.h>
+#include <AppKit/NSComboBoxCell.h>
 
 @interface NSObject(MouseUpping)
 - (NSEvent *)_mouseUpEvent;
@@ -35,6 +39,8 @@
  */
 static Class usedCellClass;
 static Class comboBoxCellClass;
+static NSNotificationCenter *nc;
+
 
 @implementation NSComboBox
 
@@ -45,6 +51,7 @@ static Class comboBoxCellClass;
        [self setVersion: 1];
        comboBoxCellClass = [NSComboBoxCell class];
        usedCellClass = comboBoxCellClass;
+       nc = [NSNotificationCenter defaultCenter];
     }
 }
 
@@ -225,6 +232,22 @@ static Class comboBoxCellClass;
 - (BOOL)completes
 {
   return [_cell completes];
+}
+
+- (void) setDelegate: (id)anObject
+{
+  [super setDelegate: anObject];
+
+#define SET_DELEGATE_NOTIFICATION(notif_name) \
+  if ([_delegate respondsToSelector: @selector(comboBox##notif_name:)]) \
+    [nc addObserver: _delegate \
+      selector: @selector(comboBox##notif_name:) \
+      name: NSComboBox##notif_name##Notification object: self]
+
+  SET_DELEGATE_NOTIFICATION(SelectionDidChange);
+  SET_DELEGATE_NOTIFICATION(SelectionIsChanging);
+  SET_DELEGATE_NOTIFICATION(WillPopUp);
+  SET_DELEGATE_NOTIFICATION(WillDismiss);
 }
 
 // Overridden
