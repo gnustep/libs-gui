@@ -1,3 +1,10 @@
+2005-02-21  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSCell.m (-initWithCoder):
+	* Source/NSButtonCell.m (-initWithCoder):
+	* Source/NSBrowser.m (-initWithCoder):
+	Small improvements on keyed decoding of flags.
+
 2005-02-19  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSSavePanel.m (-_setDefaultDirectory): New method to get

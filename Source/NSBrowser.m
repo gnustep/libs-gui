@@ -2408,7 +2408,17 @@ static NSTextFieldCell *titleCell;
       if ([aDecoder containsValueForKey: @"NSBrFlags"])
         {
 	  flags = [aDecoder decodeIntForKey: @"NSBrFlags"];
-	  // FIXME
+
+	  [self setHasHorizontalScroller: (flags & 0x10000)];
+	  [self setAllowsEmptySelection: !(flags & 0x20000)];
+	  [self setSendsActionOnArrowKeys: (flags & 0x40000)];
+	  [self setAcceptsArrowKeys: (flags & 0x100000)];
+	  [self setSeparatesColumns: (flags & 0x4000000)];
+	  [self setTakesTitleFromPreviousColumn: (flags & 0x8000000)];
+	  [self setTitled: (flags & 0x10000000)];
+	  [self setReusesColumns: (flags & 0x20000000)];
+	  [self setAllowsBranchSelection: (flags & 0x40000000)];
+	  [self setAllowsMultipleSelection: (flags & 0x80000000)];
 	}
 
       if ([aDecoder containsValueForKey: @"NSNumberOfVisibleColumns"])

@@ -1313,8 +1313,6 @@
   if ([aDecoder allowsKeyedCoding])
     {
       //NSControl *control = [aDecoder decodeObjectForKey: @"NSControlView"];
-      int bFlags;
-      int bFlags2;
       int delay = 0;
       int interval = 0;
       
@@ -1343,14 +1341,17 @@
 	}
       if ([aDecoder containsValueForKey: @"NSButtonFlags"])
         {
+	  int bFlags;
 	  int highlights = 0;  
 	  int show_state = NSNoCellMask;  
 
 	  bFlags = [aDecoder decodeIntForKey: @"NSButtonFlags"];
+
+	  [self setTransparent: (bFlags & 0x8000)];
 	  // FIXME
 	  if ((bFlags & 0x800000) == 0x800000)
 	    {
-		[self setBezelStyle: NSRegularSquareBezelStyle];
+	      [self setBordered: YES];
 	    }
 	  if ((bFlags & 0x6000000) == 0x6000000)
 	    {
@@ -1378,10 +1379,47 @@
 	}
       if ([aDecoder containsValueForKey: @"NSButtonFlags2"])
         {
-	  bFlags2 = [aDecoder decodeIntForKey: @"NSButtonFlags2"];
-	  // FIXME
-	}
+	  int bFlags2;
 
+	  bFlags2 = [aDecoder decodeIntForKey: @"NSButtonFlags2"];
+	  [self setShowsBorderOnlyWhileMouseInside: (bFlags2 & 0x8)];
+
+	  // FIXME
+	  switch (bFlags2 & 0x7)
+	    {
+	      case 1:
+		[self setBezelStyle: NSRoundedBezelStyle];
+		break;
+	      case 2:
+		[self setBezelStyle: NSRegularSquareBezelStyle];
+		break;
+	      case 3:
+		[self setBezelStyle: NSThickSquareBezelStyle];
+		break;
+	      case 4:
+		[self setBezelStyle: NSThickerSquareBezelStyle];
+		break;
+	      case 5:
+		//[self setBezelStyle: NSDisclosureBezelStyle];
+		break;
+	      case 6:
+		[self setBezelStyle: NSShadowlessSquareBezelStyle];
+		break;
+	      case 7:
+		[self setBezelStyle: NSCircularBezelStyle];
+		break;
+/*
+	      case 32:
+		[self setBezelStyle: NSTexturedSquareBezelStyle];
+		break;
+	      case 33:
+		[self setBezelStyle: NSHelpButtonBezelStyle];
+		break;
+*/
+	      default:
+		break;
+	    }
+	}
       if ([aDecoder containsValueForKey: @"NSPeriodicDelay"])
         {
 	  delay = [aDecoder decodeIntForKey: @"NSPeriodicDelay"];

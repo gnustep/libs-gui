@@ -2047,6 +2047,7 @@ static NSColor	*shadowCol;
 	  int cFlags2;
       
 	  cFlags2 = [aDecoder decodeIntForKey: @"NSCellFlags2"];
+	  [self setSendsActionOnEndEditing: (cFlags2 & 0x400000)];
 	  [self setAllowsMixedState: ((cFlags2 & 0x1000000) == 0x1000000)];
 	  [self setRefusesFirstResponder: ((cFlags2 & 0x2000000) == 0x2000000)];
 	  if ((cFlags2 & 0x4000000) == 0x4000000)
