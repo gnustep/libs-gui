@@ -1,4 +1,9 @@
-2003-02-16 02:08  Alexander Malmberg <alexander@malmberg.org>
+2003-02-17 02:16  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/gnustep/gui/GSLayoutManager.h, Source/GSLayoutManager.m:
+	Add some framework support for caching the last accessed run.
+
+2003-02-17 02:08  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSLayoutManager.m (-rectArrayForGlyphRange:
 	withinSelectedGlyphRange:inTextContainer:rectCount:,

@@ -191,6 +191,21 @@ glyph_run_t *GSLayoutManager_run_for_glyph_index(unsigned int glyphIndex,
   if (glyphs->glyph_length <= glyphIndex)
     return NULL;
 
+#if 0
+  if (cached_run)
+    {
+      if (glyphIndex >= cached_pos &&
+	  glyphIndex < cached_pos + cached_run->head.glyph_length)
+	{
+	  if (glyph_pos)
+	    *glyph_pos = cached_pos;
+	  if (char_pos)
+	    *char_pos = cached_cpos;
+	  return cached_run;
+	}
+    }
+#endif
+
   pos = cpos = 0;
   level = SKIP_LIST_DEPTH;
   h = glyphs;
@@ -223,6 +238,13 @@ glyph_run_t *GSLayoutManager_run_for_glyph_index(unsigned int glyphIndex,
 	*glyph_pos = pos;
 	if (char_pos)
 	  *char_pos = cpos;
+
+#if 0
+	cached_run = (glyph_run_t *)h;
+	cached_pos = pos;
+	cached_cpos = cpos;
+#endif
+
 	return (glyph_run_t *)h;
     }
 }
@@ -899,6 +921,11 @@ it should still be safe. might lose opportunities to merge runs, though.
 
   NSRange rng;
 
+
+  /*
+  We always clear out the cached run information to be safe.
+  */
+  cached_run = NULL;
 
 /*	[self _glyphDumpRuns];
 	printf("range=(%i+%i) lengthChange=%i\n", range.location, range.length, lengthChange);*/

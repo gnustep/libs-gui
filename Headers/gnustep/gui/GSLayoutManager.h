@@ -84,6 +84,15 @@ how it's supposed to work. It's functional and correct, but it isn't fast. */
   /* For -rectArrayForGlyphRange:... */
   NSRect *rect_array;
   int rect_array_size;
+
+
+  /*
+  Cached run. GSHorizontalTypesetter (and other typesetters, presumably)
+  often walk linearly through the glyphs. Thus, for many methods, we cache
+  the last run so we can quickly get more information for the next glyph.
+  */
+  struct GSLayoutManager_glyph_run_s *cached_run;
+  int cached_pos, cached_cpos;
 }
 
 
