@@ -99,6 +99,11 @@ static NSColor	*shadowCol;
     }
 }
 
++ (NSMenu *)defaultMenu
+{
+  return nil;
+}
+
 + (BOOL) prefersTrackingUntilMouseUp
 {
   return NO;
@@ -142,7 +147,8 @@ static NSColor	*shadowCol;
   _cell.type = NSTextCellType;
   _cell_font = RETAIN([fontClass userFontOfSize: 0]);
   _contents = RETAIN(aString);
-  _cell.text_align = NSCenterTextAlignment;
+  // In NSControl's doc they say this is the default
+  _cell.text_align = NSNaturalTextAlignment;
   // Implicitly set by allocation:
   //
   //_cell_image = nil;
@@ -208,9 +214,17 @@ static NSColor	*shadowCol;
 		     [_cell_font boundingRectForFont].size.height);
       break;
     case NSImageCellType:
-      s = [_cell_image size];
+      if (_cell_image == nil)
+	{
+	  s = NSZeroSize;
+	}
+      else
+	{
+	  s = [_cell_image size];
+	}
       break;
     case NSNullCellType:
+      //  macosx instead returns a 'very big size' here; we return NSZeroSize
       s = NSZeroSize;
       break;
     }
@@ -224,8 +238,12 @@ static NSColor	*shadowCol;
 
 - (NSSize) cellSizeForBounds: (NSRect)aRect
 {
-  // TODO
-  return NSZeroSize;
+  if (_cell.type == NSTextCellType)
+    {
+      // TODO: Resize the text to fit
+    }
+
+  return [self cellSize];
 }
 
 - (NSRect) drawingRectForBounds: (NSRect)theRect
@@ -250,7 +268,24 @@ static NSColor	*shadowCol;
 
 - (NSRect) titleRectForBounds: (NSRect)theRect
 {
-  return [self drawingRectForBounds: theRect];
+  if (_cell.type == NSTextCellType)
+    {
+      NSRect frame = [self drawingRectForBounds: theRect];
+      
+      // Add spacing between border and inside 
+      if (_cell.is_bordered || _cell.is_bezeled)
+	{
+	  frame.origin.x += 3;
+	  frame.size.width -= 6;
+	  frame.origin.y += 1;
+	  frame.size.height -= 2;
+	}
+      return frame;
+    }
+  else
+    {
+      return theRect;
+    }
 }
 
 /*
@@ -258,7 +293,22 @@ static NSColor	*shadowCol;
  */
 - (void) setType: (NSCellType)aType
 {
+
+  if (_cell.type == aType)
+    return;
+  
   _cell.type = aType;
+  switch (_cell.type)
+    {
+    case NSTextCellType:
+      ASSIGN(_cell_font, [fontClass userFontOfSize: 0]);
+      ASSIGN(_contents, @"title");
+      break;
+    case NSImageCellType:
+      TEST_RELEASE(_cell_image);
+      _cell_image = nil;
+      break;
+    }
 }
 
 - (NSCellType) type
@@ -271,12 +321,48 @@ static NSColor	*shadowCol;
  */
 - (void) setState: (int)value
 {
+  // FIXME
   _cell.state = value;
 }
 
 - (int) state
 {
   return _cell.state;
+}
+- (BOOL)allowsMixedState
+{
+  return _cell.allows_mixed_state;
+}
+
+- (void)setAllowsMixedState:(BOOL)flag
+{
+  _cell.allows_mixed_state = flag;
+}
+
+- (int)nextState
+{
+  switch (_cell.state)
+    {
+    case NSOnState:
+      return NSOffState;
+    case NSOffState:
+      if (_cell.allows_mixed_state)
+	{
+	  return NSMixedState;
+	}
+      else
+	{
+	  return NSOnState;
+	}
+    case NSMixedState:
+    default:
+      return NSOnState;
+    }
+}
+
+- (void)setNextState
+{
+  [self setState: [self nextState]];
 }
 
 /*
@@ -293,19 +379,16 @@ static NSColor	*shadowCol;
 }
 
 /*
- * Determining the first responder
- */
-- (BOOL) acceptsFirstResponder
-{
-  return !_cell.is_disabled;
-}
-
-/*
  * Setting the Image
  */
 - (NSImage*) image
 {
-  return _cell_image;
+  if (_cell.type == NSImageCellType)
+    {
+      return _cell_image;
+    }
+  else
+    return nil;
 }
 
 - (void) setImage: (NSImage*)anImage
@@ -324,6 +407,16 @@ static NSColor	*shadowCol;
 /*
  * Setting the NSCell's Value
  */
+- (id) objectValue
+{
+  // TODO
+  return nil;
+}
+- (BOOL)hasValidObjectValue
+{
+  // TODO
+  return NO;
+}
 - (double) doubleValue
 {
   return [_contents doubleValue];
@@ -342,6 +435,11 @@ static NSColor	*shadowCol;
 - (NSString*) stringValue
 {
   return _contents;
+}
+
+- (void) setObjectValue:(id)object 
+{
+  // TODO
 }
 
 - (void) setDoubleValue: (double)aDouble
@@ -384,6 +482,11 @@ static NSColor	*shadowCol;
 /*
  * Interacting with Other NSCells
  */
+- (void) takeObjectValueFrom: (id)sender
+{
+  [self setObjectValue: [sender objectValue]];
+}
+
 - (void) takeDoubleValueFrom: (id)sender
 {
   [self setDoubleValue: [sender doubleValue]];
@@ -474,10 +577,46 @@ static NSColor	*shadowCol;
 
 - (void) setWraps: (BOOL)flag
 {
+  _cell.wraps = flag;  
+  if (flag)
+    _cell.is_scrollable = NO;
 }
 
 - (BOOL) wraps
 {
+  return _cell.wraps;
+}
+
+- (void)setAttributedStringValue:(NSAttributedString *)attribStr
+{
+  //TODO
+}
+
+- (NSAttributedString *)attributedStringValue
+{
+  //TODO
+  return nil;
+}
+
+- (void)setAllowsEditingTextAttributes:(BOOL)flag
+{
+  //TODO
+}
+
+- (BOOL)allowsEditingTextAttributes
+{
+  //TODO
+  return NO;
+}
+
+- (void)setImportsGraphics:(BOOL)flag
+{
+  //TODO
+}
+
+- (BOOL)importsGraphics
+{
+  //TODO
   return NO;
 }
 
@@ -504,24 +643,11 @@ static NSColor	*shadowCol;
 	      delegate: (id)anObject
 		 event: (NSEvent *)theEvent
 {
-  NSRect frame;
-
   if (!controlView || !textObject || !_cell_font ||
 			(_cell.type != NSTextCellType))
     return;
 
-  frame = [self drawingRectForBounds: aRect];
-  
-  // Add spacing between border and inside 
-  if (_cell.is_bordered || _cell.is_bezeled)
-    {
-      frame.origin.x += 3;
-      frame.size.width -= 6;
-      frame.origin.y += 1;
-      frame.size.height -= 2;
-    }
-      
-  [textObject setFrame: frame];
+  [textObject setFrame: [self titleRectForBounds: aRect]];
   [controlView addSubview: textObject];  
   [textObject setText: _contents];
   [textObject setDelegate: anObject];
@@ -545,24 +671,11 @@ static NSColor	*shadowCol;
 		   start: (int)selStart
 		  length: (int)selLength
 {
-  NSRect frame;
-
   if (!controlView || !textObject || !_cell_font ||
 			(_cell.type != NSTextCellType))
     return;
 
-  frame = [self drawingRectForBounds: aRect];
-  
-  // Add spacing between border and inside 
-  if (_cell.is_bordered || _cell.is_bezeled)
-    {
-      frame.origin.x += 3;
-      frame.size.width -= 6;
-      frame.origin.y += 1;
-      frame.size.height -= 2;
-    }
-      
-  [textObject setFrame: frame];
+  [textObject setFrame: [self titleRectForBounds: aRect]];
   [controlView addSubview: textObject];
   [textObject setText: _contents];
   [textObject setSelectedRange: NSMakeRange (selStart, selLength)];
@@ -586,6 +699,7 @@ static NSColor	*shadowCol;
 
 - (void) setEntryType: (int)aType
 {
+  [self setType: NSTextCellType];
   _cell.entry_type = aType;
 }
 
@@ -599,6 +713,28 @@ static NSColor	*shadowCol;
   _cell.float_autorange = autoRange;
   _cell_float_left = leftDigits;
   _cell_float_right = rightDigits;
+}
+
+/*
+ * Menu
+ */
+- (void)setMenu:(NSMenu *)aMenu 
+{
+  //TODO
+}
+
+- (NSMenu *)menu
+{
+  //TODO
+  return nil;
+}
+
+- (NSMenu *)menuForEvent:(NSEvent *)anEvent 
+		  inRect:(NSRect)cellFrame 
+		  ofView:(NSView *)aView
+{
+  // TODO
+  return [self menu];
 }
 
 /*
@@ -653,6 +789,7 @@ static NSColor	*shadowCol;
   return nil;
 }
 
+// TODO: Remove this hack without breaking NSTextFieldCell
 - (NSColor*) textColor
 {
   if (_cell.is_disabled)
@@ -731,6 +868,7 @@ static NSColor	*shadowCol;
 
   cellFrame = [self drawingRectForBounds: cellFrame];
 
+  //FIXME: Check if this is also neccessary for images,
   // Add spacing between border and inside 
   if (_cell.is_bordered || _cell.is_bezeled)
     {
@@ -811,6 +949,10 @@ static NSColor	*shadowCol;
   if (_cell.is_highlighted != lit)
     {
       _cell.is_highlighted = lit;
+      // NB: This has a visible effect only if subclasses override drawWithFrame:inView: 
+      // to draw something special when the cell is highlighted. 
+      // NSCell simply draws border+text/image and makes no highlighting, 
+      // for easier subclassing.
       [self drawWithFrame: cellFrame inView: controlView];
     }
 }
@@ -841,6 +983,17 @@ static NSColor	*shadowCol;
   _action_mask = mask;
 
   return previousMask;
+}
+
+- (BOOL)sendsActionOnEndEditing
+{
+  //TODO
+  return NO;
+}
+
+- (void)setSendsActionOnEndEditing:(BOOL)flag
+{
+  //TODO
 }
 
 - (void) setContinuous: (BOOL)flag
@@ -926,12 +1079,74 @@ static NSColor	*shadowCol;
   return -1;
 }
 
+- (void)setFormatter:(NSFormatter *)newFormatter 
+{
+  //TODO
+}
+
+- (id)formatter
+{
+  //TODO
+  return nil;
+}
+
 /*
  * Handling Keyboard Alternatives
  */
 - (NSString*) keyEquivalent
 {
   return @"";
+}
+
+/*
+ * respond to keyboard
+ */
+- (BOOL) acceptsFirstResponder
+{
+  return !_cell.is_disabled && ([self refusesFirstResponder] == NO);
+}
+
+- (void)setShowsFirstResponder:(BOOL)flag 
+{
+}
+
+- (BOOL)showsFirstResponder
+{
+  return NO;
+}
+
+- (void)setTitleWithMnemonic:(NSString *)aString
+{
+  // Provided for compatibility only
+}
+
+- (NSString *)mnemonic
+{
+  // provided for compatibility only
+  return @"";
+}
+
+- (void)setMnemonicLocation:(unsigned int)location 
+{
+  // Provided for compatibility only
+}
+
+- (unsigned int)mnemonicLocation
+{
+  // Provided for compatibiliy only
+  return NSNotFound;
+}
+
+- (BOOL)refusesFirstResponder
+{
+  // Approximate compatibility behaviour
+  return _cell.is_disabled;
+}
+
+- (void)setRefusesFirstResponder:(BOOL)flag
+{
+  // Approximate compatibility behaviour
+  _cell.is_disabled = flag;
 }
 
 /*
@@ -945,7 +1160,8 @@ static NSColor	*shadowCol;
 }
 
 - (int) mouseDownFlags
-{
+{ 
+  //FIXME: Should be set on mouse down
   return 0;
 }
 
@@ -1233,6 +1449,10 @@ static NSColor	*shadowCol;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _cell.float_autorange;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _cell.wraps;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = _cell.allows_mixed_state;
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_cell_float_left];
   [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &_cell_float_right];
   tmp_int = _cell.image_position;
@@ -1274,7 +1494,12 @@ static NSColor	*shadowCol;
   _cell.is_continuous = flag;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
   _cell.float_autorange = flag;
-  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &_cell_float_left];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _cell.wraps = flag;
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+  _cell.allows_mixed_state = flag;
+  [aDecoder decodeValueOfObjCType: @encode(unsigned int) 
+	    at: &_cell_float_left];
   [aDecoder decodeValueOfObjCType: @encode(unsigned int) 
 	    at: &_cell_float_right];
   [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &tmp_int];
