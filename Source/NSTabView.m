@@ -152,6 +152,7 @@
 	    [tab_delegate tabView:self willSelectTabViewItem:tab_selected];
           }
 
+        tab_selected_item = [tab_items indexOfObject:tab_selected];
         [tab_selected _setTabState:NSSelectedTab];
         if ([tab_selected view])
           [self addSubview:[tab_selected view]];
@@ -161,6 +162,8 @@
 	  {
 	    [tab_delegate tabView:self didSelectTabViewItem:tab_selected];
           }
+
+	[self setNeedsDisplay:YES];
     }
 }
 
@@ -234,12 +237,13 @@
 {
   NSRect cRect = [self frame];
 
-  cRect.origin.x = 2;
-  cRect.origin.y = 2;
-  cRect.size.height -= 4;
-  cRect.size.width -= 4;
+  cRect.origin.x = 0;
+  cRect.origin.y = 0;
+  cRect.size.height += 1;
+  cRect.size.width += 1;
 
-  cRect.size.height -= 21;
+  if (tab_type == NSTopTabsBezelBorder)
+    cRect.size.height -= 21;
 
   return cRect;
 }
@@ -275,6 +279,15 @@
       borderThickness = 0;
       break;
   }
+
+  if (!tab_selected)
+    [self selectFirstTabViewItem:nil];
+
+  if (tab_type == NSNoTabsBezelBorder)
+    {
+      DPSgrestore(ctxt);
+      return;
+    }
 
   for (i=0;i<howMany;i++) {
     // where da tab be at?
