@@ -1,0 +1,215 @@
+/* GSNamedColorPicker.m
+
+   Copyright (C) 2001 Free Software Foundation, Inc.
+
+   Author:  Fred Kiefer <FredKiefer@gmx.de>
+   Date: January 2001
+   
+   This file is part of GNUstep.
+   
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2 of the License, or
+   (at your option) any later version.
+   
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+   
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
+#include <Foundation/Foundation.h>
+#include <AppKit/AppKit.h>
+
+@interface GSNamedColorPicker: NSColorPicker <NSColorPickingCustom>
+{
+  NSView *baseView;
+  NSComboBox *cb;
+  NSBrowser *browser;  
+  NSColorList *currentList;
+  NSArray *lists;
+}
+
+- (void) loadViews;
+- (void) listSelected: (int)index;
+- (void) colorSelected: (int)index;
+
+@end
+
+@implementation GSNamedColorPicker
+
+- (void) dealloc
+{
+  RELEASE(cb);
+  RELEASE(browser);
+  RELEASE(baseView);
+  RELEASE(lists);
+  [super dealloc];
+}
+
+- (void) finishInstantiate
+{
+}
+
+- (id)initWithPickerMask:(int)aMask
+	      colorPanel:(NSColorPanel *)colorPanel
+{
+  if (aMask & NSColorPanelColorListModeMask)
+    {
+      ASSIGN(lists, [NSColorList availableColorLists]);
+      return [super initWithPickerMask: aMask
+		    colorPanel: colorPanel];
+    }
+  RELEASE(self);
+  return nil;
+}
+
+- (int)currentMode
+{
+  return NSColorListModeColorPanel;
+}
+
+- (BOOL)supportsMode:(int)mode
+{
+  return mode == NSColorListModeColorPanel;
+}
+
+- (NSView *)provideNewView:(BOOL)initialRequest
+{
+  if (initialRequest)
+    {
+      [self loadViews];
+    }
+  return baseView;
+}
+
+- (void)setColor:(NSColor *)color
+{
+  NSColor *c = [color colorUsingColorSpaceName: NSNamedColorSpace];
+  NSString *list;
+  NSString *name;
+
+  if (c == nil)
+    return;
+
+  list = [c catalogNameComponent];
+  name = [c colorNameComponent];
+}
+
+- (void) loadViews
+{
+  baseView = [[NSView alloc] initWithFrame: NSMakeRect(0, 0, 200, 110)];
+  [baseView setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
+
+  cb = [[NSComboBox alloc] initWithFrame: NSMakeRect(0, 85, 196, 20)];
+  [cb setAutoresizingMask: (NSViewWidthSizable | NSViewMinYMargin)];
+  [cb setUsesDataSource: YES];
+  [cb setDataSource: self];
+  [cb setDelegate: self];
+  [cb setEditable: NO];
+  [baseView addSubview: cb];
+
+  browser = [[NSBrowser alloc] initWithFrame: NSMakeRect(0, 5, 196, 75)];
+  [browser setDelegate: self];
+  [browser setMaxVisibleColumns: 1];
+  [browser setAllowsMultipleSelection: NO];
+  [browser setAllowsEmptySelection: NO];
+  [browser setHasHorizontalScroller: NO];
+  [browser setTitled: NO];
+  [browser setTakesTitleFromPreviousColumn: NO];
+  [browser setPath: @"/"];
+  [browser setTarget: self];
+  [browser setDoubleAction: @selector(colorSelected:)];
+  [browser setAutoresizingMask: (NSViewWidthSizable | NSViewHeightSizable)];
+  [baseView addSubview: browser];
+}
+
+- (void) listSelected: (int)index
+{
+  currentList = [lists objectAtIndex: index];
+  [browser validateVisibleColumns];
+}
+
+- (void) colorSelected: (int)index
+{
+}
+
+-(NSString *)browser: (NSBrowser *)sender 
+       titleOfColumn: (int)column
+{
+  return nil;
+}
+
+-(void)browser: (NSBrowser *)sender 
+createRowsForColumn: (int)column
+      inMatrix: (NSMatrix *)matrix
+{
+  int i;
+  int count;
+  NSBrowserCell *cell;
+  NSColor *cl;
+  NSArray *keys = [currentList allKeys];
+  NSString *name;
+
+  count = [keys count];
+  NSLog(@"In create with %@ %d", currentList, count);
+  
+  if (count)
+    {
+      [matrix addColumn];
+      for (i = 0; i < count; i++)
+	{
+	  if (i > 0)
+	    [matrix addRow];
+	  name = [keys objectAtIndex: i];
+	  cl = [currentList colorWithKey: name];
+	  cell = [matrix cellAtRow: i
+			 column: 0];
+	  [cell setStringValue: name];
+	  [cell setRepresentedObject: cl];
+	  [cell setLeaf: YES];
+	}
+    }
+} 
+
+- (BOOL) browser: (NSBrowser*)sender 
+       selectRow: (int)row
+	inColumn: (int)column
+{
+}
+
+- (void)browser: (NSBrowser *)sender 
+willDisplayCell: (id)cell
+	  atRow: (int)row 
+	 column: (int)column
+{
+}
+
+- (int)numberOfItemsInComboBox:(NSComboBox *)aComboBox
+{
+   return [lists count];
+}
+
+- (id)comboBox:(NSComboBox *)aComboBox 
+objectValueForItemAtIndex:(int)index
+{
+   return [(NSColorList*)[lists objectAtIndex: index] name];
+}
+
+- (unsigned int)comboBox:(NSComboBox *)aComboBox
+    indexOfItemWithStringValue:(NSString *)string
+{
+   return [lists indexOfObject: [NSColorList colorListNamed: string]];
+}
+
+- (void)comboBoxSelectionDidChange:(NSNotification *)notification
+{
+    NSLog(@"Selection changed");
+  [self listSelected: [cb indexOfSelectedItem]];
+}
+
+@end

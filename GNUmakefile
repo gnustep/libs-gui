@@ -53,6 +53,7 @@ Tools \
 Panels \
 PrinterTypes \
 TextConverters \
+ColorPickers \
 KeyBindings \
 Resources
 

@@ -1,3 +1,10 @@
+2002-06-02  Alexander Malmberg  <alexander@malmberg.org>
+
+	Add basic color picker bundles: the wheel color picker and the
+	standard rgb/hsb/cmyk/gray picker.
+	* GNUmakefile: Add ColorPickers subproject.
+	* ColorPickers/: New files.
+
 Sun May 26 13:46:58 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSMatrix.m
