@@ -49,8 +49,8 @@
 	present there would have been carried over here.  However, this is just the 
 	first round.  This bundle uses GNUstep's original PageLayout and PrintPanel
 	GORM panels, it does not have its own.  Hence, it is very simple.  The plan
-  is for the future GSCUPS bundle to also use GNUstep's GORM panels, not for 
-  each bundle to have their own panels.
+	is for the future GSCUPS bundle to also use GNUstep's GORM panels, not for 
+	each bundle to have their own panels.
 	
 2004-07-09  Fred Kiefer <FredKiefer@gmx.de>
 
