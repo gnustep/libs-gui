@@ -1,3 +1,9 @@
+Fri Oct 22  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Documentation/gnustep-gui.tmpl.texi (Keyboard Modifiers):
+ 	Added short documentation on how to configure the xgps/xdps
+ 	backend keyboard modifiers.
+
 1999-10-21  Adam Fedor  <fedor@gnu.org>
 
 	* Remove backend window class and use new window ops.
