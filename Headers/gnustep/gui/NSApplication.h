@@ -76,6 +76,9 @@ extern NSString	*NSEventTrackingRunLoopMode;
   BOOL			unhide_on_activation;
   BOOL			windows_need_update;
   NSImage		*app_icon;
+  NSMutableArray	*_hidden;
+  NSMutableArray	*_inactive;
+  NSWindow		*_hidden_key;
 
   BOOL			inTrackingLoop;
 

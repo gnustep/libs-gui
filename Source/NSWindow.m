@@ -192,31 +192,6 @@ static NSMapTable* windowmaps = NULL;
   return 8;
 }
 
-- (void) _appNotification: (NSNotification*)aNotification
-{
-  NSString	*name = [aNotification name];
-
-  if ([name isEqualToString: NSApplicationWillBecomeActiveNotification])
-    {
-      if (_f.is_deactivated == YES && _f.is_closed == NO)
-	{
-	  [self orderFrontRegardless];
-	}
-    }
-  else if ([name isEqualToString: NSApplicationWillResignActiveNotification])
-    {
-      if (_f.hides_on_deactivate == YES && _f.visible == YES)
-	{
-	  _f.is_deactivated = YES;
-	  [self orderOut: self];
-	}
-    }
-  else
-    {
-      NSLog(@"Unexpected notification - %@", aNotification);
-    }
-}
-
 /*
  * Instance methods
  */
@@ -293,7 +268,6 @@ static NSMapTable* windowmaps = NULL;
 		    screen: (NSScreen*)aScreen
 {
   NSGraphicsContext	*context = GSCurrentContext();
-  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
   NSRect		r = [[NSScreen mainScreen] frame];
   NSRect		cframe;
 
@@ -354,15 +328,6 @@ static NSMapTable* windowmaps = NULL;
 		      title: window_title
 		   filename: isDoc];
     }
-
-  [nc addObserver: self
-	 selector: @selector(_appNotification:)
-	     name: NSApplicationWillBecomeActiveNotification
-	   object: NSApp];
-  [nc addObserver: self
-	 selector: @selector(_appNotification:)
-	     name: NSApplicationWillResignActiveNotification
-	   object: NSApp];
 
   NSDebugLog(@"NSWindow end of init\n");
   return self;
@@ -583,7 +548,7 @@ static NSMapTable* windowmaps = NULL;
   ASSIGN(_windowController, windowController);
 }
    
-- (id)windowController
+- (id) windowController
 { 
   return _windowController;
 }
@@ -596,6 +561,7 @@ static NSMapTable* windowmaps = NULL;
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
   _f.is_key = YES;
+  DPSsetinputfocus(GSCurrentContext(), [self windowNumber]);
   [self resetCursorRects];
   [nc postNotificationName: NSWindowDidBecomeKeyNotification object: self];
 }
@@ -702,11 +668,6 @@ static NSMapTable* windowmaps = NULL;
 - (void) orderWindow: (NSWindowOrderingMode)place relativeTo: (int)otherWin
 {
   DPSorderwindow(GSCurrentContext(), place, otherWin, [self windowNumber]);
-  if (place != NSWindowOut)
-    {
-      _f.is_deactivated = NO;
-      _f.is_closed = NO;
-    }
 }
 
 - (void) resignKeyWindow

@@ -308,6 +308,8 @@ static NSCell* tileCell = nil;
 
   NSDebugLog(@"Begin of NSApplication -init\n");
 
+  _hidden = [NSMutableArray new];
+  _inactive = [NSMutableArray new];
   [self _appIconInit];
   unhide_on_activation = YES;
   app_is_hidden = YES;
@@ -416,6 +418,8 @@ static NSCell* tileCell = nil;
   /* Let ourselves know we are within dealloc */
   gnustep_gui_app_is_in_dealloc = YES;
 
+  RELEASE(_hidden);
+  RELEASE(_inactive);
   RELEASE(listener);
   RELEASE(null_event);
   RELEASE(current_event);
@@ -439,9 +443,11 @@ static NSCell* tileCell = nil;
 {
   if (app_is_active == NO)
     {
-      NSGraphicsContext *context = GSCurrentContext();
-      NSWindow *kw = [self keyWindow];
-      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+      NSGraphicsContext		*context = GSCurrentContext();
+      NSWindow			*kw = [self keyWindow];
+      NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+      unsigned			count = [_inactive count];
+      unsigned			i;
 
      /*
        * Menus should observe this notification in order to make themselves
@@ -450,22 +456,31 @@ static NSCell* tileCell = nil;
       [nc postNotificationName: NSApplicationWillBecomeActiveNotification
 			object: self];
 
+      NSDebugLog(@"activateIgnoringOtherApps start.");
       app_is_active = YES;
 
+      for (i = 0; i < count; i++)
+	{
+	  [[_inactive objectAtIndex: i] orderFrontRegardless];
+	}
+      [_inactive removeAllObjects];
+
+      [main_menu update];
+      [main_menu display];
+
       if (unhide_on_activation)
-	[self unhide: nil];
+	{
+	  [self unhide: nil];
+	}
 
       if (kw == nil || [kw isVisible] == NO)
 	{
 	  kw = app_icon_window;
+	  [kw orderFrontRegardless];
 	}
-      NSDebugLog(@"activateIgnoringOtherApps start.");
-      [context flush];
+
       DPSsetinputfocus(context, [kw windowNumber]);
       NSDebugLog(@"activateIgnoringOtherApps end.");
-
-      [main_menu update];
-      [main_menu display];
 
       [nc postNotificationName: NSApplicationDidBecomeActiveNotification
 			object: self];
@@ -476,14 +491,33 @@ static NSCell* tileCell = nil;
 {
   if (app_is_active == YES)
     {
-      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+      NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+      NSArray			*windows_list = [self windows]; 
+      unsigned			count = [windows_list count];
+      unsigned			i;
 
-      /*
-       * Menus should observe this notification in order to make themselves
-       * invisible when the application is not active.
-       */
       [nc postNotificationName: NSApplicationWillResignActiveNotification
 			object: self];
+
+      [[self context] flush];
+      for (i = 0; i < count; i++)
+	{
+	  NSWindow	*win = [windows_list objectAtIndex: i];
+
+	  if ([win isVisible] == NO)
+	    {
+	      continue;		/* Already invisible	*/
+	    }
+	  if (win == app_icon_window)
+	    {
+	      continue;		/* can't hide the app icon.	*/
+	    }
+	  if ([win hidesOnDeactivate] == YES)
+	    {
+	      [_inactive addObject: win];
+	      [win orderOut: self];
+	    }
+	}
 
       app_is_active = NO;
 
@@ -1026,36 +1060,42 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 {
   if (app_is_hidden == NO)
     {
-      NSNotificationCenter	*nc;
-      NSArray			*windowArray;
-      unsigned			count;
+      NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+      NSArray			*windows_list = [self windows]; 
+      unsigned			count = [windows_list count];
       unsigned			i;
 
-      nc = [NSNotificationCenter defaultCenter];
       [nc postNotificationName: NSApplicationWillHideNotification
 			object: self];
 
-      windowArray = [self windows];
-      count = [windowArray count];
+      _hidden_key = [self keyWindow];
       for (i = 0; i < count; i++)
 	{
-	  id    win = [windowArray objectAtIndex: i];
+	  NSWindow	*win = [windows_list objectAtIndex: i];
 
-	  if ([win isKindOfClass: [NSWindow class]]
-	    && ![win isKindOfClass: [NSMenuWindow class]]
-	    && ![win isKindOfClass: [NSIconWindow class]])
+	  if ([win isVisible] == NO)
 	    {
-	      [win orderOut: self];
+	      continue;		/* Already invisible	*/
 	    }
+	  if (win == app_icon_window)
+	    {
+	      continue;		/* can't hide the app icon.	*/
+	    }
+	  if (app_is_active == YES && [win hidesOnDeactivate] == YES)
+	    {
+	      continue;		/* Will be hidden by deactivation	*/
+	    }
+	  [_hidden addObject: win];
+	  [win orderOut: self];
 	}
       app_is_hidden = YES;
+
       /*
        * On hiding we also deactivate the application which will make the menus
        * go away too.
        */
       [self deactivate];
       unhide_on_activation = YES;
-
 
       [nc postNotificationName: NSApplicationDidHideNotification
 			object: self];
@@ -1072,6 +1112,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
   if (app_is_hidden)
     {
       [self unhideWithoutActivation];
+      unhide_on_activation = NO;
       if (app_is_active == NO)
 	{
 	  /*
@@ -1079,7 +1120,6 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 	   */
 	  [self activateIgnoringOtherApps: YES];
 	}
-      unhide_on_activation = NO;
     }
 }
 
@@ -1087,38 +1127,27 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 {
   if (app_is_hidden == YES)
     {
-      NSNotificationCenter	*nc;
-      NSWindow			*key;
-      NSArray			*windowArray;
-      unsigned			count;
+      NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+      unsigned			count = [_hidden count];
       unsigned			i;
 
-      nc = [NSNotificationCenter defaultCenter];
       [nc postNotificationName: NSApplicationWillUnhideNotification
 			object: self];
 
-      key = [self keyWindow];
-      windowArray = [self windows];
-      count = [windowArray count];
+      app_is_hidden = NO;
       for (i = 0; i < count; i++)
 	{
-	  id    win = [windowArray objectAtIndex: i];
-
-	  if (win != key && [win isKindOfClass: [NSWindow class]]
-	    && ![win isKindOfClass: [NSMenuWindow class]]
-	    && ![win isKindOfClass: [NSIconWindow class]])
-	    {
-	      [win orderFrontRegardless];
-	    }
+	  [[_hidden objectAtIndex: i] orderFrontRegardless];
 	}
-      app_is_hidden = NO;
+      [_hidden removeAllObjects];
+      if ([[self windows] containsObject: _hidden_key])
+	{
+	  [_hidden_key makeKeyAndOrderFront: self];
+	  _hidden_key = nil;
+	}
 
       [nc postNotificationName: NSApplicationDidUnhideNotification
 			object: self];
-
-      if ([self keyWindow] != key)
-	[key orderFront: self];
-      [[self keyWindow] makeKeyAndOrderFront: self];
     }
 }
 
@@ -1152,35 +1181,36 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
  */
 - (NSWindow*) keyWindow
 {
-  NSArray *window_list = [self windows];
-  int i, j;
-  id w;
+  NSArray	*window_list = [self windows];
+  unsigned	c = [window_list count];
+  unsigned	i;
 
-  j = [window_list count];
-  for (i = 0; i < j; ++i)
+  for (i = 0; i < c; ++i)
     {
-      w = [window_list objectAtIndex: i];
+      NSWindow	*w = [window_list objectAtIndex: i];
       if ([w isKeyWindow])
-	return w;
+	{
+	  return w;
+	}
     }
-
   return nil;
 }
 
 - (NSWindow*) mainWindow
 {
-  NSArray *window_list = [self windows];
-  int i, j;
-  id w;
+  NSArray	*window_list = [self windows];
+  unsigned	c = [window_list count];
+  unsigned	i;
 
-  j = [window_list count];
-  for (i = 0; i < j; ++i)
+  for (i = 0; i < c; ++i)
     {
-      w = [window_list objectAtIndex: i];
-      if ([w isMainWindow])
-	return w;
-    }
+      NSWindow	*w = [window_list objectAtIndex: i];
 
+      if ([w isMainWindow])
+	{
+	  return w;
+	}
+    }
   return nil;
 }
 
@@ -1399,7 +1429,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
   /*
    * Now we insert a menu item for the window in the correct order.
    * Make special allowance for menu entries to 'arrangeInFront: '
-   * 'performMiniaturize: ' and 'preformClose: '.  If these exist the
+   * 'performMiniaturize: ' and 'performClose: '.  If these exist the
    * window entries should stay after the first one and before the
    * other two.
    */
