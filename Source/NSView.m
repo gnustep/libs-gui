@@ -1042,6 +1042,7 @@ BOOL changedSize = NO;
 	    }
 	}
       needs_display = stillNeedsDisplay;
+      [window flushWindow];
     }
 }
 
@@ -1099,8 +1100,6 @@ BOOL changedSize = NO;
 	}
     }
 
-  [window flushWindow];
-
   /*
    *	If the rect we displayed contains the invalidRect
    *	for the view then we can empty invalidRect.
@@ -1115,6 +1114,7 @@ BOOL changedSize = NO;
       stillNeedsDisplay = YES;
     }
   needs_display = stillNeedsDisplay;
+  [window flushWindow];
 }
 
 - (void)drawRect:(NSRect)rect

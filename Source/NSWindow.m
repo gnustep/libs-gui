@@ -510,57 +510,85 @@ NSPoint basePoint;
 //
 // Managing the display
 //
-- (void)disableFlushWindow                  { disable_flush_window = YES; }
-
-- (void)display
+- (void) disableFlushWindow
 {
-    visible = YES;
-    needs_display = NO;                             // inform first responder
-                                                    // of it's status so it can
-    [first_responder becomeFirstResponder];         // set the focus to itself
+  disable_flush_window = YES;
+}
 
-    [self disableFlushWindow];                      // tmp disable display
-
-    [[content_view superview] display];             // Draw the window view
-
-    [self enableFlushWindow];                       // Reenable displaying and
-}                                                   // flush the window
-
-- (void)displayIfNeeded
+- (void) display
 {
-    if (needs_display)
-        {
-        [[content_view superview] displayIfNeeded];
-        needs_display = NO;
-        }
+  visible = YES;
+  needs_display = NO;                             // inform first responder
+						  // of it's status so it can
+  [first_responder becomeFirstResponder];         // set the focus to itself
+
+  [self disableFlushWindow];                      // tmp disable display
+
+  [[content_view superview] display];             // Draw the window view
+
+  [self enableFlushWindow];                       // Reenable displaying and
+  [self flushWindowIfNeeded];                     // flush the window
+}
+
+- (void) displayIfNeeded
+{
+  if (needs_display)
+    {
+      [[content_view superview] displayIfNeeded];
+      needs_display = NO;
+    }
 }
 
 - (void) update
 {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
-  if (is_autodisplay && needs_display)              // if autodisplay is
-    {                                               // enabled and window
-      [self displayIfNeeded];                       // display
+  /*
+   *	if autodisplay is enabled and window display
+   */
+  if (is_autodisplay && needs_display)
+    {
+      [self disableFlushWindow];
+      [self displayIfNeeded];
+      [self enableFlushWindow];
       [self flushWindowIfNeeded];
     }
   [nc postNotificationName: NSWindowDidUpdateNotification object: self];
 }
 
-- (void)flushWindowIfNeeded
+- (void) flushWindowIfNeeded
 {
-    if (!disable_flush_window && needs_flush)
-        {
-        needs_flush = NO;
-        [self flushWindow];
-        }
+  if (!disable_flush_window && needs_flush)
+    {
+      needs_flush = NO;
+      [self flushWindow];
+    }
 }
 
-- (void)flushWindow                         {}      // implemented in back end
-- (void)enableFlushWindow                   { disable_flush_window = NO; }
-- (BOOL)isAutodisplay                       { return is_autodisplay; }
-- (BOOL)isFlushWindowDisabled               { return disable_flush_window; }
-- (void)setAutodisplay:(BOOL)flag           { is_autodisplay = flag; }
+- (void) flushWindow
+{
+  // implemented in back end
+}
+
+- (void) enableFlushWindow
+{
+  disable_flush_window = NO;
+}
+
+- (BOOL) isAutodisplay
+{
+  return is_autodisplay;
+}
+
+- (BOOL) isFlushWindowDisabled
+{
+  return disable_flush_window;
+}
+
+- (void) setAutodisplay: (BOOL)flag
+{
+  is_autodisplay = flag;
+}
 
 - (void) setViewsNeedDisplay: (BOOL)flag
 {
@@ -568,15 +596,22 @@ NSPoint basePoint;
   [[NSApplication sharedApplication] setWindowsNeedUpdate: YES];
 }
 
-- (BOOL)viewsNeedDisplay                    { return needs_display; }
-- (void)useOptimizedDrawing:(BOOL)flag      { optimize_drawing = flag; }
-
-- (BOOL)canStoreColor
+- (BOOL) viewsNeedDisplay
 {
-    if (depth_limit > 1)                            // If the depth is greater
-        return YES;                                 // than a single bit
-    else
-        return NO;
+  return needs_display;
+}
+
+- (void) useOptimizedDrawing: (BOOL)flag
+{
+  optimize_drawing = flag;
+}
+
+- (BOOL) canStoreColor
+{
+  if (depth_limit > 1)                            // If the depth is greater
+    return YES;                                 // than a single bit
+  else
+    return NO;
 }
 
 - (NSScreen *)deepestScreen                 { return [NSScreen deepestScreen];}
