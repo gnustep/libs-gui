@@ -32,7 +32,7 @@ include $(GNUSTEP_MAKEFILES)/common.make
 include ../Version
 LIBRARY_NAME = libgmodel
 
-ifeq ($(GUI_LIB), nx)
+ifeq ($(BUILD_NIB2GMODEL), yes)
 TOOL_NAME = nib2gmodel
 endif
 

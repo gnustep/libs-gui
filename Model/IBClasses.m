@@ -54,6 +54,8 @@
 @end
 #endif
 
+#ifndef GNU_GUI_LIBRARY
+
 @implementation NSCustomObject (NibToGModel)
 - (id)awakeAfterUsingCoder:(NSCoder*)aDecoder
 {
@@ -90,7 +92,6 @@
 }
 
 @end /* NSCustomObject */
-
 
 @implementation NSCustomView (NibToGModel)
 
@@ -254,3 +255,4 @@
 
 @end
 
+#endif
