@@ -32,9 +32,9 @@
 #define _GNUstep_H_GSToolbar
 
 #include <Foundation/NSObject.h>
+#include <Foundation/NSArray.h>
 
 @class NSString;
-@class NSArray;
 @class NSMutableArray;
 @class NSDictionary;
 @class NSMutableDictionary;
