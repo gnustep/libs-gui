@@ -1,3 +1,7 @@
+1998-11-19  Lyndon Tremblay  <tremblay2@home.com>
+
+	* GMAppKit.m: Fixed isBezeled and isBordered in NSTextField.
+
 Thu Nov 19 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* NSWindowView.m, NSScrollView.m and NSClipView.m add view isOpaque method.
