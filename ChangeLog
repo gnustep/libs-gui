@@ -1,3 +1,9 @@
+2001-12-02  Gregory Casamento <greg_casamento@yahoo.com>
+	* Source/NSTableView.m
+	-[NSTableView superviewFrameChanged:] Added a check to prevent
+	exception when column count is reduced to zero.  This change is 
+	consistent with behaviour observed on OPENSTEP4.2/Mach.
+
 2001-12-02  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWorkspace.m
