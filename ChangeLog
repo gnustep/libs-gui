@@ -1,3 +1,12 @@
+Fri Jan 15  9:30:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+        * Headers/AppKit/NSNibLoading.h: Added interface for new class -
+	GSNibContainer - to manage the contents of a nib.
+        * Source/NSBundleAdditions.m: Added implementation of GSNibContainer
+	and implemented the nib loading methods using it and NSArchiver.
+	This should give us a fast and simple alternative to gmodel files
+	where portability (and the ability to edit by hand) is not a issue.
+
 Tue Jan 12 11:57:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
         * Source/NSWindow.m: ([-sendEvent:]) fix cursor update code to set

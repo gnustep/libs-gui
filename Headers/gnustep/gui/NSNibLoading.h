@@ -3,10 +3,12 @@
 
    Something to do with loading Nibs?
 
-   Copyright (C) 1997 Free Software Foundation, Inc.
+   Copyright (C) 1997, 1999 Free Software Foundation, Inc.
 
    Author:  Simon Frankau <sgf@frankau.demon.co.uk>
    Date: 1997
+   Author:  Richard Frith-Macdonald <richard@branstorm.co.uk>
+   Date: 1999
    
    This file is part of the GNUstep GUI Library.
 
@@ -28,28 +30,55 @@
 #ifndef _GNUstep_H_NSNibLoading
 #define _GNUstep_H_NSNibLoading
 
+#include <Foundation/NSObject.h>
 #include <Foundation/NSBundle.h>
-#include <Foundation/NSDictionary.h>
+
+@class	NSString;
+@class	NSDictionary;
+@class	NSMutableDictionary;
 
 @interface NSObject (NSNibAwaking)
 
 //
 // Notification of Loading
 //
-- (void)awakeFromNib;
+- (void) awakeFromNib;
 
 @end
 
 
 @interface NSBundle (NSNibLoading)
 
-+ (BOOL)loadNibFile:(NSString *)fileName
-  externalNameTable:(NSDictionary *)context
-	   withZone:(NSZone *)zone;
++ (BOOL) loadNibFile: (NSString *)fileName
+   externalNameTable: (NSDictionary *)context
+	    withZone: (NSZone *)zone;
 
-+ (BOOL)loadNibNamed:(NSString *)aNibName
-	       owner:(id)owner;
++ (BOOL) loadNibNamed: (NSString *)aNibName
+	        owner: (id)owner;
 
 @end
+
+#ifndef	NO_GNUSTEP
+
+/*
+ *	This is the class that manages objects within a nib - when a nib is
+ *	loaded, the [-setAllOutlets] method is used to set up the objects
+ *	and the GSNibContainer object is released.
+ */
+@interface GSNibContainer : NSObject
+{
+  NSMutableDictionary	*nameTable;
+  NSMutableDictionary	*outletMap;
+}
+- (NSMutableDictionary*) nameTable;
+- (NSMutableDictionary*) outletsFrom: (NSString*)instanceName;
+- (void) setAllOutlets;
+- (BOOL) setOutlet: (NSString*)outletName from: (id)source to: (id)target;
+- (BOOL) setOutlet: (NSString*)outletName
+	  fromName: (NSString*)sourceName
+	    toName: (NSString*)targetName;
+@end
+
+#endif	/* NO_GNUSTEP */
 
 #endif // _GNUstep_H_NSNibLoading
