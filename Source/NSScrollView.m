@@ -178,25 +178,27 @@ NSSize size = contentSize;
 	[super dealloc];
 }
 
-- (void)setContentView:(NSView*)aView
+- (void) setContentView: (NSView*)aView
 {
-	ASSIGN(_contentView, aView);
-	[self addSubview:_contentView];
-	[self tile];
+  ASSIGN(_contentView, aView);
+  [self addSubview: _contentView];
+  [_contentView setAutoresizingMask: NSViewWidthSizable | NSViewHeightSizable];
+  [self tile];
 }
 
-- (void)setHorizontalScroller:(NSScroller*)aScroller
+- (void) setHorizontalScroller: (NSScroller*)aScroller
 {
-	[_horizScroller removeFromSuperview];
+  [_horizScroller removeFromSuperview];
 
-					// Do not add the scroller view to the subviews array yet; 
-					// -setHasHorizontalScroller must be invoked first
-	ASSIGN(_horizScroller, aScroller);
-	if (_horizScroller) 
-		{
-		[_horizScroller setTarget:self];
-		[_horizScroller setAction:@selector(_doScroll:)];
-		}
+  // Do not add the scroller view to the subviews array yet; 
+  // -setHasHorizontalScroller must be invoked first
+  ASSIGN(_horizScroller, aScroller);
+  if (_horizScroller) 
+    {
+      [_horizScroller setAutoresizingMask: NSViewWidthSizable];
+      [_horizScroller setTarget:self];
+      [_horizScroller setAction:@selector(_doScroll:)];
+    }
 }
 
 - (void)setHasHorizontalScroller:(BOOL)flag
@@ -218,18 +220,19 @@ NSSize size = contentSize;
 	[self tile];
 }
 
-- (void)setVerticalScroller:(NSScroller*)aScroller
+- (void) setVerticalScroller: (NSScroller*)aScroller
 {
-	[_vertScroller removeFromSuperview];
+  [_vertScroller removeFromSuperview];
 
-					// Do not add the scroller view to the subviews array yet; 
-					// -setHasVerticalScroller must be invoked first
-	ASSIGN(_vertScroller, aScroller);
-	if (_vertScroller) 
-		{
-		[_vertScroller setTarget:self];
-		[_vertScroller setAction:@selector(_doScroll:)];
-		}
+  // Do not add the scroller view to the subviews array yet; 
+  // -setHasVerticalScroller must be invoked first
+  ASSIGN(_vertScroller, aScroller);
+  if (_vertScroller) 
+    {
+      [_vertScroller setAutoresizingMask: NSViewHeightSizable];
+      [_vertScroller setTarget:self];
+      [_vertScroller setAction:@selector(_doScroll:)];
+    }
 }
 
 - (void)setHasVerticalScroller:(BOOL)flag
@@ -487,25 +490,20 @@ float borderThickness = 0;
 
 	if (_hasHorizScroller) 
 		{
-		horizScrollerRect.origin.x = boundsRect.origin.x
-									+ vertScrollerRect.origin.x 
-									+ vertScrollerRect.size.width + 1;
+		horizScrollerRect.origin.x = contentRect.origin.x;
 		horizScrollerRect.origin.y = boundsRect.origin.y + borderThickness;
-		horizScrollerRect.size.width = boundsRect.size.width
-										- horizScrollerRect.origin.x 
-										- borderThickness;
+		horizScrollerRect.size.width = contentRect.size.width;
 		horizScrollerRect.size.height = scrollerWidth;
 
 		contentRect.origin.y += scrollerWidth + 1;
-		contentRect.size.height -= 1;
   		}
 
-	[_contentView setFrame:contentRect];
-	[_horizScroller setFrame:horizScrollerRect];
-	[_vertScroller setFrame:vertScrollerRect];
 												// If the document view is not 
 	if (![_contentView isFlipped])				// flipped reverse the meaning
 		[_vertScroller setFloatValue:1];		// of the vertical scroller's
+	[_horizScroller setFrame:horizScrollerRect];
+	[_vertScroller setFrame:vertScrollerRect];
+	[_contentView setFrame:contentRect];
 }
 
 - (void)drawRect:(NSRect)rect
@@ -590,17 +588,23 @@ float borderThickness = 0;
 	if (_contentView && ![_contentView isFlipped])
 		[_vertScroller setFloatValue:1];
 	[self tile];
-	[_contentView viewFrameChanged:nil];	
+#if 0
+/* Redundant stuff - done in -tile */
+	[_contentView viewFrameChanged:nil];
 															// update scroller
 	[self reflectScrolledClipView:(NSClipView*)_contentView];	
+#endif
 }
 
+#if 0
+/* Don't need to override if we can trust the default autoresizing */
 - (void)resizeSubviewsWithOldSize:(NSSize)oldSize
 {
 	fprintf (stderr, "NSScrollView	resizeSubviewsWithOldSize \n");
 	[super resizeSubviewsWithOldSize:oldSize];
 	[self tile];
 }
+#endif
 
 - (id)documentView					{ return [_contentView documentView]; }
 - (NSCursor*)documentCursor			{ return [_contentView documentCursor]; }
