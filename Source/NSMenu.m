@@ -220,11 +220,16 @@ static NSNotificationCenter *nc;
   [contentView addSubview: _view];
   [contentView addSubview: _titleView];
 
-  // Set up the notification to start the process of redisplaying
-  // the menus where the user left them the last time.
+  /* Set up the notification to start the process of redisplaying
+     the menus where the user left them the last time.  
+     
+     Use NSApplicationDidFinishLaunching, and not
+     NSApplicationWillFinishLaunching, so that the programmer can set
+     up menus in NSApplicationWillFinishLaunching.
+  */
   [nc addObserver: self
       selector: @selector(_showTornOffMenuIfAny:)
-      name: NSApplicationWillFinishLaunchingNotification 
+      name: NSApplicationDidFinishLaunchingNotification 
       object: NSApp];
 
   return self;
