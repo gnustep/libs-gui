@@ -1,3 +1,11 @@
+Mon Nov 15  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/AppKit/NSFormCell.h: Prefixed ivars with underscore; 
+	added ivar _autoTitleWidth.
+	* Source/NSFormCell.m: Revised/rewritten most code.  Rethinked
+ 	drawing code to be fully compliant with OS spec and to support
+ 	editing.  Also, minor optimization: cache titleWidth.
+
 Sun Nov 14  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	Modified code so that text is highlighted only when moving between
