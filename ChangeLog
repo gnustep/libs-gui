@@ -1,5 +1,17 @@
 2000-05-13  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Headers/gnustep/gui/NSBezierPath.h
+	* Source/NSBezierPath.m
+	Added ivars and implementation for dashes.
+	* Source/GSTextStorage.h
+	* Source/GSTextStorage.m
+	Extracted the interface definition into a separate file.
+	* Source/NSStringDrawing.m
+	Integrated patches from Frederic <frederic.chauvin@noos.fr> to
+	seed up drawing.
+	
+2000-05-13  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/gnustep/gui/NSPasteboard.h
 	* Source/externs.m
 	Added some missing pasteboard types.
