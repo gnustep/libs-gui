@@ -245,6 +245,17 @@ GSCurrentServer(void)
   [super dealloc];
 }
 
+- glContextClass
+{
+  return nil;
+}
+
+- glPixelFormatClass
+{
+  return nil;
+}
+
+
 /* Drag and drop support. */
 /** Convienience method that calls -addDragTypes:toWindow: using the
     server that controls win.

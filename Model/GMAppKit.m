@@ -591,6 +591,9 @@ void __dummy_GMAppKit_functionForLinking() {}
 		withName:@"catalogName"];
     [archiver encodeString:[self colorNameComponent] withName:@"colorName"];
   }
+  else if ([colorSpaceName isEqual:@"NSPatternColorSpace"]) {
+    [archiver encodeObject: [self patternImage] withName: @"patternImage"];
+  }
 }
 
 + (id)createObjectForModelUnarchiver:(GMUnarchiver*)unarchiver
@@ -644,6 +647,23 @@ void __dummy_GMAppKit_functionForLinking() {}
     NSString *colornm = [unarchiver decodeStringWithName: @"colorName"];
     return [self colorWithCatalogName: catalog colorName: colornm];
   }
+  else if ([colorSpaceName isEqual:@"NSPatternColorSpace"]) {
+    NSImage *image = [unarchiver decodeObjectWithName: @"patternImage"];
+    if (image == nil)
+      {
+	NSLog(@"Internal: No can't decode colorspace %@", colorSpaceName);
+	NSLog(@"          creating generic white color");
+	return [NSColor colorWithDeviceWhite: 1.0  alpha: 1.0];
+      }
+    else
+      return [NSColor colorWithPatternImage: image];
+  }
+  else
+    {
+      NSLog(@"Internal: No decoder for colorspace %@", colorSpaceName);
+      NSLog(@"          creating generic white color");
+      return [NSColor colorWithDeviceWhite: 1.0  alpha: 1.0];
+    }
   return nil;
 }
 
@@ -983,7 +1003,7 @@ void __dummy_GMAppKit_functionForLinking() {}
   
   decodedItems = [unarchiver decodeArrayWithName: @"itemArray"];
   
-  if (decodedItems) 
+  if (decodedItems && [decodedItems count]) 
     {
       count = [decodedItems count]; 
       for (i = 0; i < count; i++) 
@@ -999,10 +1019,15 @@ void __dummy_GMAppKit_functionForLinking() {}
 	  [myItem setTag:           [item tag]];
 	  [myItem setKeyEquivalent: [item keyEquivalent]];
 	}
+      string = [unarchiver decodeStringWithName: @"selectedItem"];
+      [self selectItemWithTitle: string];
     }
-  
-  string = [unarchiver decodeStringWithName: @"selectedItem"];
-  [self selectItemWithTitle: string];
+  else
+    {
+      /* For old gmodels that didn't support popups */
+      [self addItemWithTitle: @"Item 1"];
+      [self selectItemAtIndex: 0];
+    }
 
   [self setEnabled: [unarchiver decodeBOOLWithName:     @"isEnabled"]];
   [self setTag:     [unarchiver decodeIntWithName:      @"tag"]];

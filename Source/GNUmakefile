@@ -101,6 +101,9 @@ NSMenu.m \
 NSMenuView.m \
 NSMenuItem.m \
 NSMenuItemCell.m \
+NSOpenGLContext.m \
+NSOpenGLPixelFormat.m \
+NSOpenGLView.m \
 NSOpenPanel.m \
 NSOutlineView.m \
 NSPageLayout.m \
@@ -254,6 +257,8 @@ NSMenuItem.h \
 NSMenuItemCell.h \
 NSMenuView.h \
 NSOpenPanel.h \
+NSOpenGL.h \
+NSOpenGLView.h \
 NSOutlineView.h \
 NSPageLayout.h \
 NSPanel.h \

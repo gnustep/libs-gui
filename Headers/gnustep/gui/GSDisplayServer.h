@@ -68,6 +68,10 @@ APPKIT_EXPORT NSString * GSScreenNumber;
 - (NSDictionary *) attributes;
 - (void) closeServer;
 
+/* GL context */
+- glContextClass;
+- glPixelFormatClass;
+
 /* Drag and drop support. */
 + (BOOL) addDragTypes: (NSArray*)types toWindow: (NSWindow *)win;
 + (BOOL) removeDragTypes: (NSArray*)types fromWindow: (NSWindow *)win;
