@@ -708,46 +708,56 @@ static SEL getSel;
   BOOL	betweenCols;
   BOOL	beyondRows;
   BOOL	beyondCols;
-  BOOL nullMatrix = NO;
   int	approxRow = point.y / (_cellSize.height + _intercell.height);
   float	approxRowsHeight = approxRow * (_cellSize.height + _intercell.height);
   int	approxCol = point.x / (_cellSize.width + _intercell.width);
   float	approxColsWidth = approxCol * (_cellSize.width + _intercell.width);
 
-  /* First check the limit cases */
-  beyondCols = (point.x > _bounds.size.width || point.x < 0);
+  /* First check the limit cases - is the point outside the matrix */
+  beyondCols = (point.x > _bounds.size.width  || point.x < 0);
   beyondRows = (point.y > _bounds.size.height || point.y < 0);
 
-  /* Determine if the point is inside the cell */
-  betweenRows = !(point.y > approxRowsHeight
-		&& point.y <= approxRowsHeight + _cellSize.height);
-  betweenCols = !(point.x > approxColsWidth
-		  && point.x <= approxColsWidth + _cellSize.width);
+  /* Determine if the point is inside a cell - note: if the point lies
+     on the cell boundaries, we consider it inside the cell.  to be
+     outside the cell (that is, in the intercell spacing) it must be
+     completely in the intercell spacing - not on the border */
+  /* The following is non zero if the point lies between rows (not inside 
+     a cell) */
+  betweenRows = (point.y < approxRowsHeight
+		 || point.y > approxRowsHeight + _cellSize.height);
+  betweenCols = (point.x < approxColsWidth
+		 || point.x > approxColsWidth + _cellSize.width);
 
-  if (beyondRows || betweenRows || beyondCols || betweenCols || nullMatrix)
+  if (beyondRows || betweenRows || beyondCols || betweenCols || 
+      (_numCols == 0) || (_numRows == 0))
     {
       if (row)
-	*row = -1;
+	{
+	  *row = -1;
+	}
 
       if (column)
-	*column = -1;
-
+	{
+	  *column = -1;
+	}
+      
       return NO;
     }
 
   if (row)
     {
       if (_rFlags.flipped_view == NO)
-	approxRow = _numRows - approxRow - 1;
-
-      if (approxRow < 0)
-	approxRow = 0;
-      else if (approxRow >= _numRows)
-	approxRow = _numRows - 1;
-      if (_numRows == 0)
 	{
-	  nullMatrix = YES;
+	  approxRow = _numRows - approxRow - 1;
+	}
+      
+      if (approxRow < 0)
+	{
 	  approxRow = 0;
+	}
+      else if (approxRow >= _numRows)
+	{
+	  approxRow = _numRows - 1;
 	}
       *row = approxRow;
     }
@@ -755,13 +765,12 @@ static SEL getSel;
   if (column)
     {
       if (approxCol < 0)
-	approxCol = 0;
-      else if (approxCol >= _numCols)
-	approxCol = _numCols - 1;
-      if (_numCols == 0)
 	{
-	  nullMatrix = YES;
 	  approxCol = 0;
+	}
+      else if (approxCol >= _numCols)
+	{
+	  approxCol = _numCols - 1;
 	}
       *column = approxCol;
     }
