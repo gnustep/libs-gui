@@ -47,13 +47,13 @@ typedef enum _NSTitlePosition {
 @interface NSBox : NSView <NSCoding>
 {
   // Attributes
-  id cell;
-  id content_view;
-  NSSize offsets;
-  NSRect border_rect;
-  NSRect title_rect;
-  NSBorderType border_type;
-  NSTitlePosition title_position;
+  id _cell;
+  id _content_view;
+  NSSize _offsets;
+  NSRect _border_rect;
+  NSRect _title_rect;
+  NSBorderType _border_type;
+  NSTitlePosition _title_position;
 }
 
 //
