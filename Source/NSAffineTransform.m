@@ -40,8 +40,8 @@
 #define B matrix.m12
 #define C matrix.m21
 #define D matrix.m22
-#define TX matrix.tx
-#define TY matrix.ty
+#define TX matrix.tX
+#define TY matrix.tY
 
 /* A Postscript matrix look like this:
 
@@ -100,8 +100,8 @@ static NSAffineTransformStruct identityTransform = {
   m[1] = matrix.m12;
   m[2] = matrix.m21;
   m[3] = matrix.m22;
-  m[4] = matrix.tx;
-  m[5] = matrix.ty;
+  m[4] = matrix.tX;
+  m[5] = matrix.tY;
   PSconcat(m);
 }
 
@@ -515,8 +515,8 @@ static NSAffineTransformStruct identityTransform = {
   matrix.m12 = replace[1];
   matrix.m21 = replace[2];
   matrix.m22 = replace[3];
-  matrix.tx = replace[4];
-  matrix.ty = replace[5];
+  matrix.tX = replace[4];
+  matrix.tY = replace[5];
 }
 
 - (void) getMatrix: (float[6])replace
@@ -525,8 +525,8 @@ static NSAffineTransformStruct identityTransform = {
   replace[1] = matrix.m12;
   replace[2] = matrix.m21;
   replace[3] = matrix.m22;
-  replace[4] = matrix.tx;
-  replace[5] = matrix.ty;
+  replace[4] = matrix.tX;
+  replace[5] = matrix.tY;
 }
 
 - (void) takeMatrixFromTransform: (NSAffineTransform *)aTransform
@@ -535,8 +535,8 @@ static NSAffineTransformStruct identityTransform = {
   matrix.m12 = aTransform->matrix.m12;
   matrix.m21 = aTransform->matrix.m21;
   matrix.m22 = aTransform->matrix.m22;
-  matrix.tx = aTransform->matrix.tx;
-  matrix.ty = aTransform->matrix.ty;
+  matrix.tX = aTransform->matrix.tX;
+  matrix.tY = aTransform->matrix.tY;
 }
 
 

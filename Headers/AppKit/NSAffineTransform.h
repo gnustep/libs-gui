@@ -37,8 +37,8 @@ typedef	struct {
   float	m12;
   float	m21;
   float	m22;
-  float	tx;
-  float	ty;
+  float	tX;
+  float	tY;
 } NSAffineTransformStruct;
 
 @interface NSAffineTransform : NSObject <NSCopying, NSCoding>

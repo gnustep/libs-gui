@@ -3996,7 +3996,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 	       * exactly overlays the original.	 To do that, we must translate
 	       * the origin by the height of the view.
 	       */
-	      flip->matrix.ty = _frame.size.height;
+	      flip->matrix.tY = _frame.size.height;
 	      (*appImp)(_matrixToWindow, appSel, flip);
 	    }
 	  (*appImp)(_matrixToWindow, appSel, _boundsMatrix);

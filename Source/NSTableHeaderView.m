@@ -40,7 +40,6 @@
 #include "AppKit/NSApplication.h"
 #include "AppKit/NSColor.h"
 #include "AppKit/NSScrollView.h"
-#include "AppKit/DPSOperators.h"
 #include "AppKit/NSGraphics.h"
 
 @interface NSTableView (GNUstepPrivate)
@@ -238,12 +237,10 @@
 
 
   {
-    NSGraphicsContext *ctxt = GSCurrentContext();
-    DPSsetgray(ctxt, NSBlack);
-    DPSrectfill(ctxt,_bounds.origin.x, _bounds.origin.y,
-		_bounds.size.width, 1.);
-    DPSrectfill(ctxt, NSMaxX(_bounds)-1., NSMinY(_bounds),
-		1., _bounds.size.height);
+    NSRectEdge up_sides[] = {NSMinYEdge, NSMaxXEdge};
+    float grays[] = {NSBlack, NSBlack};
+    
+    NSDrawTiledRects(_bounds, aRect, up_sides, grays, 2);
   }
 }
 

@@ -333,7 +333,7 @@ void NSEraseRect(NSRect aRect)
 {
   NSGraphicsContext *ctxt = GSCurrentContext();
   DPSgsave(ctxt);
-  DPSsetgray(ctxt, 1.0);
+  DPSsetgray(ctxt, NSWhite);
   NSRectFill(aRect);
   DPSgrestore(ctxt);
 }
@@ -456,7 +456,7 @@ void NSDottedFrameRect(const NSRect aRect)
   float dot_dash[] = {1.0, 1.0};
   NSGraphicsContext *ctxt = GSCurrentContext();
 
-  DPSsetgray(ctxt, 0.0);
+  DPSsetgray(ctxt, NSBlack);
   DPSsetlinewidth(ctxt, 1.0);
   // FIXME
   DPSsetdash(ctxt, dot_dash, 2, 0.0);
@@ -673,11 +673,15 @@ NSDrawWhiteBezel(const NSRect aRect,  const NSRect clipRect)
 void 
 NSDrawDarkBezel(NSRect aRect, NSRect clipRect)
 {
+  // FIXME
+  NSDrawGrayBezel(aRect, clipRect);
 }
 
 void 
 NSDrawLightBezel(NSRect aRect, NSRect clipRect)
 {
+  // FIXME
+  NSDrawWhiteBezel(aRect, clipRect);
 }
 
 void
@@ -715,7 +719,8 @@ NSDrawFramePhoto(const NSRect aRect, const NSRect clipRect)
 void 
 NSDrawWindowBackground(NSRect aRect)
 {
-// TODO
+  [[NSColor windowBackgroundColor] set];
+  NSRectFill(aRect);  
 }
 
 void 

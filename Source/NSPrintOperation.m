@@ -1057,7 +1057,7 @@ scaleRect(NSRect rect, double scale)
     DPSscale(ctxt, scale, scale);
   if ([self isFlipped])
     {
-      NSAffineTransformStruct	ats = { 1, 0, 0, -1, 0, 1 };
+      NSAffineTransformStruct	ats = { 1, 0, 0, -1, 0, NSHeight(_bounds) };
       NSAffineTransform *matrix, *flip;
       flip = [NSAffineTransform new];
       matrix = [NSAffineTransform new];
@@ -1069,7 +1069,6 @@ scaleRect(NSRect rect, double scale)
        * the origin by the height of the view.
        */
       [flip setTransformStruct: ats];
-      flip->matrix.ty = NSHeight(_bounds);
       [matrix appendTransform: flip];
       [matrix concat];
       yoffset = NSHeight(_frame) - NSMaxY(pageRect);
