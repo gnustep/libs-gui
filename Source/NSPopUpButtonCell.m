@@ -526,6 +526,8 @@ static NSImage *_pbc_image[2];
 	index = [self indexOfSelectedItem];
       if (index < 0)
 	index = 0;
+
+      [self selectItemAtIndex: index];
     }
 
   if ((index >= 0)  && ([_menu numberOfItems] > index))
