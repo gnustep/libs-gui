@@ -176,6 +176,11 @@ GSLayoutManager.m \
 GSTypesetter.m \
 GSHorizontalTypesetter.m
 
+# Turn off NSMenuItem warning that NSMenuItem conforms to <NSObject>,
+# but does not implement <NSObject>'s methods itself (it inherits
+# their implementation)
+NSMenuItem.m_FILE_FLAGS = -Wno-protocol
+
 ifneq ($(FOUNDATION_LIB), fd)
 libgnustep-gui_OBJC_FILES += NSPasteboard.m
 endif
