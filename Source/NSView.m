@@ -44,6 +44,7 @@
 #include <Foundation/NSArray.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSValue.h>
+#include <Foundation/NSDebug.h>
 
 #include <AppKit/NSView.h>
 #include <AppKit/NSWindow.h>
@@ -190,16 +191,14 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 {
   [super init];
 
-  NSAssert(frameRect.size.width >= 0 && frameRect.size.height >= 0,
-	@"illegal frame dimensions supplied");
   if (frameRect.size.width < 0)
     {
-      NSLog(@"[NSView -initWithFrame:] given negative width");
+      NSDebugMLLog(@"NSView", @"given negative width", 0);
       frameRect.size.width = 0;
     }
   if (frameRect.size.height < 0)
     {
-      NSLog(@"[NSView -initWithFrame:] given negative height");
+      NSDebugMLLog(@"NSView", @"given negative height", 0);
       frameRect.size.height = 0;
     }
   frame = frameRect;			// Set frame rectangle
@@ -546,16 +545,14 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 {
   NSSize old_size = frame.size;
 
-  NSAssert(frameRect.size.width >= 0 && frameRect.size.height >= 0,
-	@"illegal frame dimensions supplied");
   if (frameRect.size.width < 0)
     {
-      NSLog(@"[NSView -setFrame:] given negative width");
+      NSDebugMLLog(@"NSView", @"given negative width", 0);
       frameRect.size.width = 0;
     }
   if (frameRect.size.height < 0)
     {
-      NSLog(@"[NSView -setFrame:] given negative heigth");
+      NSDebugMLLog(@"NSView", @"given negative height", 0);
       frameRect.size.height = 0;
     }
   if (coordinates_valid)
@@ -588,16 +585,14 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 {
   NSSize old_size = frame.size;
 
-  NSAssert(newSize.width >= 0 && newSize.height >= 0,
-	@"illegal frame dimensions supplied");
   if (newSize.width < 0)
     {
-      NSLog(@"[NSView -setFrameSize:] given negative width");
+      NSDebugMLLog(@"NSView", @"given negative width", 0);
       newSize.width = 0;
     }
   if (newSize.height < 0)
     {
-      NSLog(@"[NSView -setFrameSize:] given negative height");
+      NSDebugMLLog(@"NSView", @"given negative height", 0);
       newSize.height = 0; 
     }
   if (coordinates_valid)
@@ -649,15 +644,14 @@ GSSetDragTypes(NSView* obj, NSArray *types)
   float sx;
   float sy;
 
-  NSAssert(newSize.width > 0 && newSize.height > 0, @"illegal size supplied");
   if (newSize.width < 0)
     {
-      NSLog(@"[NSView -scaleUnitSquareToSize:] given negative width");
+      NSDebugMLLog(@"NSView", @"given negative width", 0);
       newSize.width = 0;
     }
   if (newSize.height < 0)
     {
-      NSLog(@"[NSView -scaleUnitSquareToSize:] given negative height");
+      NSDebugMLLog(@"NSView", @"given negative height", 0);
       newSize.height = 0;
     }
   if (coordinates_valid)
@@ -704,16 +698,14 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 {
   float sx, sy;
 
-  NSAssert(aRect.size.width >= 0 && aRect.size.height >= 0,
-	@"illegal bounds dimensions supplied");
   if (aRect.size.width < 0)
     {
-      NSLog(@"[NSView -setBounds:] given negative width");
+      NSDebugMLLog(@"NSView", @"given negative width", 0);
       aRect.size.width = 0;
     }
   if (aRect.size.height < 0)
     {
-      NSLog(@"[NSView -setBounds:] given negative height");
+      NSDebugMLLog(@"NSView", @"given negative height", 0);
       aRect.size.height = 0;
     }
   if (coordinates_valid)
@@ -775,29 +767,19 @@ GSSetDragTypes(NSView* obj, NSArray *types)
 {
   float sx, sy;
 
-  NSAssert(newSize.width >= 0 && newSize.height >= 0,
-	@"illegal bounds dimensions supplied");
   if (newSize.width < 0)
     {
-      NSLog(@"[NSView -setBoundsSize:] given negative width");
+      NSDebugMLLog(@"NSView", @"given negative width", 0);
       newSize.width = 0;
     }
   if (newSize.height < 0)
     {
-      NSLog(@"[NSView -setBoundsSize:] given negative height");
+      NSDebugMLLog(@"NSView", @"given negative height", 0);
       newSize.height = 0;
     }
   if (coordinates_valid)
     {
       (*invalidateImp)(self, invalidateSel);
-    }
-  if (newSize.width == 0)
-    {
-      NSLog(@"[NSView -setBoundsSize:] zero width supplied");
-    }
-  if (newSize.height == 0)
-    {
-      NSLog(@"[NSView -setBoundsSize:] zero height supplied");
     }
 
   bounds.size = newSize;

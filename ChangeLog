@@ -4,7 +4,7 @@ Mon Sep 20  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 	the width or height of the argument is negative, but don't crash
 	the app. ([-setFrame:]): idem.
 	Modified by RFM to apply to all other cases of checking view size
-	also, retain NSAssert() to give core dump wieh built for debugging.
+	and also to add debug logging for all those cases.
 
 Mon Sep 20  1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
