@@ -540,6 +540,7 @@ static NSCell* tileCell = nil;
     }
 
   [GSCurrentContext() destroyContext];
+  [[NSUserDefaults standardUserDefaults] synchronize];
   NSDebugLog(@"NSApplication end of run loop\n");
 }
 

@@ -815,6 +815,7 @@ static NSMapTable* windowmaps = NULL;
 
   /*
    * Now we can tell the graphics context to do the actual resizing.
+   * We will recieve an event to tell us when the resize is done.
    */
   [GSCurrentContext() _setFrame: frameRect forWindow: [self windowNumber]];
 
@@ -1880,6 +1881,10 @@ resetCursorRectsForView(NSView *theView)
 	      case GSAppKitWindowResized:
 		frame.size.width = (float)[theEvent data1];
 		frame.size.height = (float)[theEvent data2];
+		if (autosave_name != nil)
+		  {
+		    [self saveFrameUsingName: autosave_name];
+		  }
 		if (content_view)
 		  {
 		    NSView	*wv = [content_view superview];			
@@ -2210,25 +2215,115 @@ resetCursorRectsForView(NSView *theView)
 
 - (void) setFrameFromString: (NSString *)string
 {
-  NSRect	frameRect = NSRectFromString(string);
+  NSScanner	*scanner = [NSScanner scannerWithString: string];
+  NSRect	nRect;
+  NSRect	sRect;
+  NSRect	fRect;
+  int		value;
 
-  if (maximum_size.width > 0 && frameRect.size.width > maximum_size.width)
+  /*
+   * Scan in the window frame (flipped coordinate system).
+   */
+  if ([scanner scanInt: &value] == NO)
     {
-      frameRect.size.width = maximum_size.width;
+      NSLog(@"Bad window frame format - x-coord missing");
+      return;
     }
-  if (maximum_size.height > 0 && frameRect.size.height > maximum_size.height)
+  fRect.origin.x = value;
+
+  if ([scanner scanInt: &value] == NO)
     {
-      frameRect.size.height = maximum_size.height;
+      NSLog(@"Bad window frame format - y-coord missing");
+      return;
     }
-  if (frameRect.size.width < minimum_size.width)
+  fRect.origin.y = value;
+
+  if ([scanner scanInt: &value] == NO)
     {
-      frameRect.size.width = minimum_size.width;
+      NSLog(@"Bad window frame format - width missing");
+      return;
     }
-  if (frameRect.size.height < minimum_size.height)
+  fRect.size.width = value;
+
+  if ([scanner scanInt: &value] == NO)
     {
-      frameRect.size.height = minimum_size.height;
+      NSLog(@"Bad window frame format - height missing");
+      return;
     }
-  [self setFrame: frameRect display: YES];
+  fRect.size.height = value;
+
+  /*
+   * Scan in the frame for the area the window was placed in in screen.
+   */
+  if ([scanner scanInt: &value] == NO)
+    {
+      NSLog(@"Bad screen frame format - x-coord missing");
+      return;
+    }
+  sRect.origin.x = value;
+
+  if ([scanner scanInt: &value] == NO)
+    {
+      NSLog(@"Bad screen frame format - y-coord missing");
+      return;
+    }
+  sRect.origin.y = value;
+
+  if ([scanner scanInt: &value] == NO)
+    {
+      NSLog(@"Bad screen frame format - width missing");
+      return;
+    }
+  sRect.size.width = value;
+
+  if ([scanner scanInt: &value] == NO)
+    {
+      NSLog(@"Bad screen frame format - height missing");
+      return;
+    }
+  sRect.size.height = value;
+
+  /*
+   * FIXME - the screen rectangle should give the area of the screen in which
+   * the window could be placed (ie a rectangle excluding the dock), but
+   * there is no API for that yet - so we just use the screen at present.
+   */
+  nRect = [[NSScreen mainScreen] frame];
+
+  /*
+   * FIXME - if the stored screen area is not the same as that currently
+   * available, we should probably adjust the window frame (position) in
+   * some way to try to amke layout sensible.
+   */
+  if (NSEqualRects(nRect, sRect) == NO)
+    {
+    }
+
+  /*
+   * Convert frame from flipped to normal coordinates.
+   */
+  fRect.origin.y -= fRect.size.height;
+
+  /*
+   * Check and set frame.
+   */
+  if (maximum_size.width > 0 && fRect.size.width > maximum_size.width)
+    {
+      fRect.size.width = maximum_size.width;
+    }
+  if (maximum_size.height > 0 && fRect.size.height > maximum_size.height)
+    {
+      fRect.size.height = maximum_size.height;
+    }
+  if (fRect.size.width < minimum_size.width)
+    {
+      fRect.size.width = minimum_size.width;
+    }
+  if (fRect.size.height < minimum_size.height)
+    {
+      fRect.size.height = minimum_size.height;
+    }
+  [self setFrame: fRect display: YES];
 }
 
 - (BOOL) setFrameUsingName: (NSString *)name
@@ -2248,7 +2343,23 @@ resetCursorRectsForView(NSView *theView)
 
 - (NSString *) stringWithSavedFrame
 {
-  return NSStringFromRect(frame);
+  NSRect	fRect;
+  NSRect	sRect;
+
+  fRect = frame;
+  fRect.origin.y += fRect.size.height;	/* Make flipped	*/
+  /*
+   * FIXME - the screen rectangle should give the area of the screen in which
+   * the window could be placed (ie a rectangle excluding the dock), but
+   * there is no API for that yet - so we just use the screen at present.
+   */
+  sRect = [[NSScreen mainScreen] frame];
+
+  return [NSString stringWithFormat: @"%d %d %d %d %d %d % d %d",
+    (int)fRect.origin.x, (int)fRect.origin.y,
+    (int)fRect.size.width, (int)fRect.size.height,
+    (int)sRect.origin.x, (int)sRect.origin.y,
+    (int)sRect.size.width, (int)sRect.size.height];
 }
 
 /*
