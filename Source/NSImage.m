@@ -787,7 +787,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 		fromRect: (NSRect)aRect 
 		fraction: (float)aFloat
 {
-  NSImageRep *rep;
+  NSImageRep *rep = nil;
 
   NS_DURING
     {
@@ -1049,7 +1049,7 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
   max_rep = nil;
   while ((rep = [enumerator nextObject]) != nil)
     {
-      int rep_bps;
+      int rep_bps = 0;
       if ([rep respondsToSelector: @selector(bitsPerPixel)])
         rep_bps = [(NSBitmapImageRep *)rep bitsPerPixel];
       if (rep_bps > max_bps)

@@ -69,6 +69,7 @@
 #include <AppKit/NSGraphics.h>
 #include <AppKit/GSDisplayServer.h>
 #include <AppKit/NSCachedImageRep.h>
+#include <AppKit/NSToolbar.h>
 
 BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 
@@ -3926,7 +3927,7 @@ Code shared with [NSPanel -sendEvent:], remember to update both places.
 - (void) setToolbar: (NSToolbar*)toolbar
 {
   ASSIGN(_toolbar, toolbar);
-  [_wv addSubview: [toolbar _toolbarView]];
+  [_wv addSubview: (NSView *)[toolbar _toolbarView]];
   [self setViewsNeedDisplay: YES];
 }
 
