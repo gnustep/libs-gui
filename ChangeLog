@@ -1,3 +1,10 @@
+Fri Jan 19 17:22:24 2001  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* GNUmakefile: Added RPM_DISABLE_RELOCATABLE and
+	PACKAGE_NEEDS_CONFIGURE.
+	* gnustep-gui.spec.in, gnustep-gui-debug.spec.in: New files.
+	* gnustep-gui.spec: Removed.
+
 Wed Jan 17 19:51:57 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSTableHeaderView.m ([-mouseDown:]): Fixed bug in
