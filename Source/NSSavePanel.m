@@ -45,8 +45,12 @@
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSPathUtilities.h>
 
-#define X_PAD	5
-#define Y_PAD	4
+#define _SAVE_PANEL_X_PAD	5
+#define _SAVE_PANEL_Y_PAD	4
+
+#define _SAVE_PANEL_TOP_VIEW_ORIGIN_Y  60
+#define _SAVE_PANEL_SIZE_WIDTH         280
+#define _SAVE_PANEL_SIZE_HEIGHT        350
 
 static NSSavePanel *gnustep_gui_save_panel = nil;
 
@@ -228,17 +232,27 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 -(id) _initWithoutGModel
 {
   [super initWithContentRect: NSMakeRect (100, 100, 280, 350)
-	 styleMask: NSTitledWindowMask backing: 2 defer: YES];
+	 styleMask: (NSTitledWindowMask | NSResizableWindowMask) 
+	 backing: 2 defer: YES];
   [self setMinSize: NSMakeSize (280, 350)];
+  // The horizontal resize increment has to be divided between 
+  // the two columns of the browser.  If it is odd, we would get 
+  // a non integer pixel origin of the second column, and the back-end 
+  // could have problems in drawing it.
+  [self setResizeIncrements: NSMakeSize (2, 1)];
   [[self contentView] setBounds: NSMakeRect (0, 0, 280, 350)];
   
   _topView = [[NSView alloc] initWithFrame: NSMakeRect (0, 60, 280, 290)];
   [_topView setBounds:  NSMakeRect (0, 0, 280, 290)];
+  [_topView setAutoresizingMask: 18];
+  [_topView setAutoresizesSubviews: YES];
   [[self contentView] addSubview: _topView];
   [_topView release];
   
   _bottomView = [[NSView alloc] initWithFrame: NSMakeRect (0, 0, 280, 60)];
   [_bottomView setBounds:  NSMakeRect (0, 0, 280, 60)];
+  [_bottomView setAutoresizingMask: 2];
+  [_bottomView setAutoresizesSubviews: YES];
   [[self contentView] addSubview: _bottomView];
   [_bottomView release];
 
@@ -249,6 +263,7 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
   [_browser setAllowsMultipleSelection: NO];
   [_browser setTarget: self];
   [_browser setAction: @selector(_processCellSelection)];
+  [_browser setAutoresizingMask: 18];
   [_topView addSubview: _browser];
   [_browser release];
 
@@ -269,6 +284,7 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
   [_prompt setBordered: NO];
   [_prompt setBezeled: NO];
   [_prompt setDrawsBackground: NO];
+  [_prompt setAutoresizingMask: 0];
   [_bottomView addSubview: _prompt];
   [_prompt release];
 
@@ -280,6 +296,7 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
   [_form setBezeled: YES];
   [_form setDrawsBackground: YES];
   [_form setContinuous: NO];
+  [_form setAutoresizingMask: 2];
   [_bottomView addSubview: _form];
   [_form release];
 
@@ -293,6 +310,8 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
     [button setImagePosition: NSImageOnly]; 
     [button setTarget: self];
     [button setAction: @selector(_setHomeDirectory)];
+    //    [_form setNextView: button];
+    [button setAutoresizingMask: 1];
     [_bottomView addSubview: button];
     [button release];
 
@@ -303,6 +322,7 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
     [button setImagePosition: NSImageOnly]; 
     [button setTarget: self];
     [button setAction: @selector(_mountMedia)];
+    [button setAutoresizingMask: 1];
     [_bottomView addSubview: button];
     [button release];
 
@@ -313,6 +333,7 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
     [button setImagePosition: NSImageOnly]; 
     [button setTarget: self];
     [button setAction: @selector(_unmountMedia)];
+    [button setAutoresizingMask: 1];
     [_bottomView addSubview: button];
     [button release];
 
@@ -323,6 +344,7 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
     [button setImagePosition: NSNoImage]; 
     [button setTarget: self];
     [button setAction: @selector(cancel:)];
+    [button setAutoresizingMask: 1];
     [_bottomView addSubview: button];
     [button release];
 
@@ -333,6 +355,8 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
     [button setImagePosition: NSNoImage]; 
     [button setTarget: self];
     [button setAction: @selector(ok:)];
+    //    [button setNextView: _form];
+    [button setAutoresizingMask: 1];
     [_bottomView addSubview: button];
     [button release];
   }
@@ -344,6 +368,7 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
     [imageView setImageFrameStyle: NSImageFrameNone];
     [imageView setImage:
       [[NSApplication sharedApplication] applicationIconImage]];
+    [imageView setAutoresizingMask: 8];
     [_topView addSubview: imageView];
     [imageView release];
   }
@@ -355,6 +380,7 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
   [_titleField setBezeled: NO];
   [_titleField setBordered: NO];
   [_titleField setFont: [NSFont messageFontOfSize: 18]];
+  [_titleField setAutoresizingMask: 8];
   [_topView addSubview: _titleField];
   [_titleField release];
   { 
@@ -362,6 +388,7 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
     bar = [[NSBox alloc] initWithFrame: NSMakeRect (0, 210, 310, 2)];
     [bar setBorderType: NSGrooveBorder];
     [bar setTitlePosition: NSNoTitle];
+    [bar setAutoresizingMask: 10];
     [_topView addSubview: bar];
     [bar release];
   }
@@ -468,58 +495,75 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 - (void) setAccessoryView: (NSView *)aView
 {
   NSView *contentView = [self contentView];
-  NSRect addedFrame, contentFrame, bottomFrame, topFrame;
+  NSRect addedFrame, bottomFrame, topFrame;
+  NSSize contentSize;
+  NSSize originalContentSize = NSMakeSize (_SAVE_PANEL_SIZE_WIDTH, 
+					   _SAVE_PANEL_SIZE_HEIGHT);
   NSDebugLLog(@"NSSavePanel", @"NSSavePanel -setAccessoryView");
-
+  
   if (aView == _accessoryView)
     return;
-
-  if (_accessoryView != nil)
+  
+  if (_accessoryView)
     {
       [_accessoryView removeFromSuperview];
-      [self setContentSize: _oldContentFrame.size];
-      [_topView setFrame: _oldTopViewFrame];
+      // Restore original size
+      [self setMinSize: originalContentSize];
+      [_topView setAutoresizingMask: NSViewWidthSizable];
+      [_bottomView setAutoresizingMask: NSViewWidthSizable];
+      [self setContentSize: originalContentSize];
+      [_topView setAutoresizingMask: 18];
+      [_bottomView setAutoresizingMask: 2];
+      // 
+      [_topView setFrameOrigin: NSMakePoint (0, _SAVE_PANEL_TOP_VIEW_ORIGIN_Y)];
       [_topView setNeedsDisplay: YES];
+
     }
 
   _accessoryView = aView;
 
-  if (_accessoryView != nil)
+  if (_accessoryView)
     {
-      // save old values
-      _oldContentFrame = [contentView frame];
-      _oldTopViewFrame = [_topView frame];
-
-      // pad out the new view
+      //
+      // Resize ourselves to make room for the accessory view
+      //
       addedFrame = [_accessoryView frame];
-      addedFrame.size.width += X_PAD * 2;
-      addedFrame.size.height += Y_PAD * 2;
-      
-      // re-size the content frame to cover existing views and the new view
-      // (it grows vertically always; horizontally only if needed)
-      contentFrame = _oldContentFrame;
-      contentFrame.size.height += NSHeight(addedFrame);
-      contentFrame.size.width = MAX(NSWidth(contentFrame), NSWidth(addedFrame));
-      [self setContentSize: contentFrame.size];
+      contentSize = originalContentSize;
+      contentSize.height += (addedFrame.size.height + (_SAVE_PANEL_Y_PAD * 2));
+      if ((addedFrame.size.width + (_SAVE_PANEL_X_PAD * 2)) > contentSize.width)
+	contentSize.width = (addedFrame.size.width + (_SAVE_PANEL_X_PAD * 2));  
 
-      /*
-       * now shrink and move the top view to make room for the new view
-       * (it needs to shrink because it re-sized itself to fit the content
-       * frame)
-       */
-      topFrame = [_topView frame];
-      topFrame.size.height -= NSHeight(addedFrame);
-      topFrame.origin.y += NSHeight(addedFrame);
-      [_topView setFrame: topFrame];
-      
-      // set origin for new view above bottom view
+      // Our views should resize horizontally, but not vertically
+      [_topView setAutoresizingMask: NSViewWidthSizable];
+      [_bottomView setAutoresizingMask: NSViewWidthSizable];
+      [self setContentSize: contentSize];
+      // Restore the original autoresizing masks
+      [_topView setAutoresizingMask: 18];
+      [_bottomView setAutoresizingMask: 2];
+
+      // Set new min size
+      [self setMinSize: contentSize];
+
+      //
+      // Pack the Views
+      //
+
+      // BottomView is ready
       bottomFrame = [_bottomView frame];
-      [_accessoryView setFrameOrigin:
-	  NSMakePoint(NSMidX(contentFrame) - NSMidX(addedFrame) + X_PAD,
-			  NSHeight(bottomFrame) + Y_PAD)];
 
-      // finally add the new view
-      [contentView addSubview: _accessoryView];
+      // AccessoryView
+      addedFrame.origin.x = (contentSize.width - addedFrame.size.width)/2;
+      addedFrame.origin.y =  bottomFrame.origin.y + bottomFrame.size.height 
+                                 + _SAVE_PANEL_Y_PAD;
+      [_accessoryView setFrameOrigin: addedFrame.origin];
+
+      // TopView
+      topFrame = [_topView frame];
+      topFrame.origin.y += (addedFrame.size.height + (_SAVE_PANEL_Y_PAD * 2));
+      [_topView setFrameOrigin: topFrame.origin];
+      
+      // Add the accessory view
+      [contentView addSubview:_accessoryView];
       [contentView setNeedsDisplay: YES];
     }
 }
