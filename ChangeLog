@@ -1,3 +1,15 @@
+2000-05-13  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSPasteboard.h
+	* Source/externs.m
+	Added some missing pasteboard types.
+	* Headers/gnustep/gui/NSView.h
+	* Source/NSView.m
+	Added missing methods from MacOS X specification.
+	* Source/NSStringDrawing.m
+	Corrected bug in setupChunk() that showed formats for the wrong
+	range of characters.
+	
 2001-05-13  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
 
 	* configure.in: added /usr/local/include and /usr/local/lib for
