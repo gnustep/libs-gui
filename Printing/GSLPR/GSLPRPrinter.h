@@ -1,5 +1,5 @@
 /* 
-   NSPrinter.h
+   GSLPRPrinter.h
 
    Class representing a printer's or printer model's capabilities.
 
@@ -39,8 +39,6 @@
 @interface GSLPRPrinter : NSPrinter <NSCoding>
 {
 }
-
-
 
 @end
 

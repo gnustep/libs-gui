@@ -150,7 +150,10 @@ static NSPrintInfo *sharedPrintInfo = nil;
 //
 - (id)initWithDictionary:(NSDictionary *)aDict
 {
-  [super init];
+  NSPrinter *printer;
+  NSString *pageSize;
+
+  self = [super init];
   
   _info = [[NSMutableDictionary alloc] init];
       
@@ -166,6 +169,31 @@ static NSPrintInfo *sharedPrintInfo = nil;
   [self setVerticallyCentered: YES];
   
   [self setOrientation: NSPortraitOrientation];
+
+  printer = [NSPrintInfo defaultPrinter];
+  [self setPrinter: printer];
+      
+
+  /* Set up other defaults from the printer object */
+  pageSize = [printer stringForKey: @"DefaultPageSize" 
+                           inTable: @"PPD"];
+                      
+  /* FIXME: Need to check for AutoSelect and probably a million other things... */
+  if (pageSize == nil)
+    pageSize = @"A4";
+  
+  [self setPaperName: pageSize];
+  
+  /* Set default margins. FIXME: Probably should check ImageableArea */
+  [self setRightMargin: 36];
+  
+  [self setLeftMargin: 36];
+  
+  [self setTopMargin: 72];
+  
+  [self setBottomMargin: 72];
+
+  
   
   if( aDict != nil )
     {
@@ -174,7 +202,6 @@ static NSPrintInfo *sharedPrintInfo = nil;
       if([[_info objectForKey: NSPrintPrinter] isKindOfClass: [NSString class]])
         {
           NSString *printerName;
-          NSPrinter *printer;
       
           printerName = [_info objectForKey: NSPrintPrinter];
           printer = [NSPrinter printerWithName: printerName];
@@ -187,6 +214,7 @@ static NSPrintInfo *sharedPrintInfo = nil;
     }
   return self;
 }
+
 
 - (void) dealloc
 {

@@ -119,46 +119,6 @@
 
 }
 
-
-
-
--(id) initWithDictionary:(NSDictionary *)aDict
-{
-  NSPrinter *printer;
-  NSString *pageSize;
-  NSSize size;
-  NSMutableDictionary *dict;
-  
-  NSDebugMLLog(@"GPrinting", @"");
-  self = [super initWithDictionary: nil];
-
-  printer = [GSLPRPrintInfo defaultPrinter];
-  [self setPrinter: printer];
-      
-
-  /* Set up other defaults from the printer object */
-  pageSize = [printer stringForKey: @"DefaultPageSize" 
-                           inTable: @"PPD"];
-                      
-  /* FIXME: Need to check for AutoSelect and probably a million other things... */
-  if (pageSize == nil)
-    pageSize = @"A4";
-  
-  [self setPaperName: pageSize];
-  
-  /* Set default margins. FIXME: Probably should check ImageableArea */
-  [self setRightMargin: 36];
-  
-  [self setLeftMargin: 36];
-  
-  [self setTopMargin: 72];
-  
-  [self setBottomMargin: 72];
-                        
-  return self;
-}
-
-
     
  
 @end

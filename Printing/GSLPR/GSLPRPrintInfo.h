@@ -1,4 +1,4 @@
-/** <title>NSPrintInfo</title>
+/** <title>GSLPRPrintInfo</title>
 
    <abstract>Stores information used in printing.</abstract>
 

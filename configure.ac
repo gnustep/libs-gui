@@ -294,6 +294,61 @@ if test $ac_cv_lib_audiofile_afGetVirtualFrameSize = yes -a $enable_gsnd = yes; 
 fi
 AC_SUBST(BUILD_GSND)
 
+
+#--------------------------------------------------------------------
+# Find CUPS
+#--------------------------------------------------------------------
+GSCUPS_CFLAGS=
+GSCUPS_LDFLAGS=
+GSCUPS_LIBS=
+GSCUPS_DATADIR=
+BUILD_GSCUPS=NO
+
+AC_ARG_ENABLE(cups,
+  [  --disable-cups          Disable cups printing support],,
+  enable_cups=yes)
+
+if test $enable_cups = yes; then
+  BUILD_GSCUPS=YES
+  AC_CHECK_PROG(have_cups, cups-config, yes, no)
+
+  if test $have_cups = no; then
+    echo "Could not find cups-config program, cups printing support will not be built."
+    enable_cups=no
+    BUILD_GSCUPS=NO
+  else
+    GSCUPS_CFLAGS=`cups-config --cflags`
+    GSCUPS_LDFLAGS=`cups-config --ldflags`
+    GSCUPS_LIBS=`cups-config --libs`
+    GSCUPS_DATADIR=`cups-config --datadir`
+
+    orig_CPPFLAGS="${CPPFLAGS}"
+    orig_LDFLAGS="${LDFLAGS}"
+    CPPFLAGS="$GSCUPS_CFLAGS ${CPPFLAGS}"
+    LDFLAGS="$GSCUPS_LDFLAGS ${LDFLAGS}"
+    
+    AC_CHECK_HEADERS(cups/cups.h, have_cups=yes, have_cups=no)
+    if test "$have_cups" = no; then
+      enable_cups=no
+      BUILD_GSCUPS=NO
+      echo "Could not find cups.h, cups printing support will not be built."
+    fi
+    AC_CHECK_LIB(cups, cupsServer, have_cups=yes, have_cups=no)
+    if test "$have_cups" = no; then
+      enable_cups=no
+      BUILD_GSCUPS=NO
+      echo "Could not find the cups library, cups printing support will not be built."
+    fi
+    CPPFLAGS="${orig_CPPFLAGS}"
+    LDFLAGS="${orig_LDFLAGS}"
+  fi
+fi
+AC_SUBST(GSCUPS_CFLAGS)
+AC_SUBST(GSCUPS_LDFLAGS)
+AC_SUBST(GSCUPS_LIBS)
+AC_SUBST(GSCUPS_DATADIR)
+AC_SUBST(BUILD_GSCUPS)
+
 #--------------------------------------------------------------------
 # Record the version
 #--------------------------------------------------------------------

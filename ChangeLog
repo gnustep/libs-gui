@@ -1,3 +1,35 @@
+2004-08-08 00:43  Chad Hardin <cehardin@mac.com>
+
+	* config.make.in: Added CUPS specific make variables.
+	* configure: Regenerated.
+	* configure.ac: Added code to detect the presence of 
+	cups for the new GSCUPS printing backend bundle.
+	Detects cups but the GSCUPS bundle is not ready yet
+	so it does not actually try to build anything related
+	to cups.
+	* Headers/AppKit/NSPrinter.h:
+	* Source/NSPrinter.m:
+	* Printing/GSLPR/GSLPRPrinter.m:
+	NSPrinter no longer assumes it is PPD specific.  However,
+	it does include a catagory named PPDParsing, which the
+	backend printing bundles can call to have a PPD file parsed
+	and placed into NSPrinter's tables.  All the PPD parsing code
+	was taken out of GSLPRPrinter.m.  Also, a lot of code format
+	cleanup was done.
+	* Printing/GSLPR/GSLPRPrintInfo.m:
+	* Source/AppKit/NSPrintInfo.m: Moved initWithDictionary: code
+	out of GSLPR's GSLPRPrintInfo implementation into here.
+	* Printing/GSLPR/GSLPRPrincipalClass.h: Correct copyright.
+	* Printing/GSLPR/GSLPRPrincipalClass.m: Correct copyright.
+	* Printing/GSLPR/GSLPRPrintInfo.h: Fixed reference to NSPrintInfo.
+	* Printing/GSLPR/GSLPRPrintOperation.h: Fixed referece to 
+	NSPrintOperation.
+	* Printing/GSLPR/GSLPRPrinter.h: Fixed reference to NSPrinter.
+	* Panels/English.lproj/GSPageLayout.gorm/objects.gorm: Increased the
+	size of the panel's title and made it bold.
+	* Printing/GNUmakefile: Added code to optionally build the (upcoming)
+	GSCUPS printing backend bundle.  Currently it's disabled.
+
 2004-08-07 13:18  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSTextView.m (-mouseDown:): Remove -containsAttachments

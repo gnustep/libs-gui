@@ -28,12 +28,20 @@
 
 include $(GNUSTEP_MAKEFILES)/common.make
 
+GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES=../gui.make
+
+include ../config.make
+include ../Version
+
 #
 # The list of subproject directories
 #
 SUBPROJECTS = \
-GSLPR
+GSLPR 
 
+ifeq ($(BUILD_GSCUPS), YES)
+#SUBPROJECTS += GSCUPS
+endif
 
 include $(GNUSTEP_MAKEFILES)/aggregate.make
 

@@ -1,4 +1,4 @@
-/** <title>NSPrintOperation</title>
+/** <title>GSLPRPrintOperation</title>
 
    <abstract>Controls generation of EPS, PDF or PS print jobs.</abstract>
 

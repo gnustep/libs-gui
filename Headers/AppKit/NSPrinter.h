@@ -1,15 +1,15 @@
 /* 
    NSPrinter.h
 
-   Class representing a printer's or printer model's capabilities.
+   Class representing a printer's capabilities.
 
-   Copyright (C) 1996, 1997,2004 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1997, 2004 Free Software Foundation, Inc.
 
    Authors:  Simon Frankau <sgf@frankau.demon.co.uk>
    Date: June 1997
    Modified for Printing Backend Support
    Author: Chad Hardin <cehardin@mac.com>
-   Date: June 2004
+   Date: July 2004
    
    This file is part of the GNUstep GUI Library.
 
@@ -49,7 +49,6 @@ typedef enum _NSPrinterTableStatus {
 @interface NSPrinter : NSObject <NSCoding>
 {
   NSString *_printerHost, *_printerName, *_printerNote, *_printerType;
-  int _cacheAcceptsBinary, _cacheOutputOrder;
   
   //The way openstep handled NSPrinter was odd, it had a concept of "real" 
   //printers and
@@ -67,68 +66,89 @@ typedef enum _NSPrinterTableStatus {
   //to put a lot of generic code in ths class that would have otherwise had
   //to have been handles by each bundle.  See +printerWithType: in NSPrinter.m
   //BOOL _isRealPrinter;
-  
-  NSMutableDictionary *_PPD;
-  NSMutableDictionary *_PPDOptionTranslation;
-  NSMutableDictionary *_PPDArgumentTranslation;
-  NSMutableDictionary *_PPDOrderDependency;
-  NSMutableDictionary *_PPDUIConstraints;
+
+  NSMutableDictionary *_tables; //maps the tables, which are 
+                                //NSMutableDictionaries, to their names 
+                               //(such as PPD, PPDOptionTranslation, etc)
 }
 
 //
 // Finding an NSPrinter 
 //
-+ (NSPrinter *)printerWithName:(NSString *)name;
-+ (NSPrinter *)printerWithType:(NSString *)type;
-+ (NSArray *)printerNames;
-+ (NSArray *)printerTypes;
++ (NSPrinter*) printerWithName: (NSString*) name;
+
++ (NSPrinter*) printerWithType: (NSString*) type;
+
++ (NSArray*) printerNames;
+
++ (NSArray*) printerTypes;
 
 //
 // Printer Attributes 
 //
-- (NSString *)host;
-- (NSString *)name;
-- (NSString *)note;
-- (NSString *)type;
+- (NSString*) host;
+
+- (NSString*) name;
+
+- (NSString*) note;
+
+- (NSString*) type;
 
 //
 // Retrieving Specific Information 
 //
-- (BOOL)acceptsBinary;
-- (NSRect)imageRectForPaper:(NSString *)paperName;
-- (NSSize)pageSizeForPaper:(NSString *)paperName;
-- (BOOL)isColor;
-- (BOOL)isFontAvailable:(NSString *)fontName;
-- (int)languageLevel;
-- (BOOL)isOutputStackInReverseOrder;
+- (BOOL) acceptsBinary;
+
+- (NSRect) imageRectForPaper: (NSString*) paperName;
+
+- (NSSize) pageSizeForPaper: (NSString*) paperName;
+
+- (BOOL) isColor;
+
+- (BOOL) isFontAvailable: (NSString*) fontName;
+
+- (int) languageLevel;
+
+- (BOOL) isOutputStackInReverseOrder;
+
 
 //
 // Querying the NSPrinter Tables 
 //
-- (BOOL)booleanForKey:(NSString *)key
-              inTable:(NSString *)table;
-- (NSDictionary *)deviceDescription;
-- (float)floatForKey:(NSString *)key
-             inTable:(NSString *)table;
-- (int)intForKey:(NSString *)key
-         inTable:(NSString *)table;
-- (NSRect)rectForKey:(NSString *)key
-             inTable:(NSString *)table;
-- (NSSize)sizeForKey:(NSString *)key
-             inTable:(NSString *)table;
-- (NSString *)stringForKey:(NSString *)key
-                   inTable:(NSString *)table;
-- (NSArray *)stringListForKey:(NSString *)key
-                      inTable:(NSString *)table;
-- (NSPrinterTableStatus)statusForTable:(NSString *)table;
-- (BOOL)isKey:(NSString *)key
-      inTable:(NSString *)table;
+- (BOOL) booleanForKey: (NSString*) key
+               inTable: (NSString*) table;
+
+- (NSDictionary*) deviceDescription;
+
+- (float) floatForKey: (NSString*) key
+              inTable: (NSString*) table;
+
+- (int) intForKey: (NSString*) key
+          inTable: (NSString*) table;
+
+- (NSRect) rectForKey: (NSString*) key
+              inTable: (NSString*) table;
+
+- (NSSize) sizeForKey: (NSString*) key
+              inTable: (NSString*) table;
+
+- (NSString*) stringForKey: (NSString*) key
+                   inTable: (NSString*) table;
+
+- (NSArray*) stringListForKey: (NSString*) key
+                      inTable: (NSString*) table;
+
+- (NSPrinterTableStatus) statusForTable: (NSString*) table;
+
+- (BOOL) isKey: (NSString*) key
+       inTable: (NSString*) table;
 
 //
 // NSCoding protocol
 //
-- (void)encodeWithCoder: (NSCoder *)aCoder;
-- initWithCoder: (NSCoder *)aDecoder;
+- (void) encodeWithCoder: (NSCoder*) aCoder;
+
+- initWithCoder: (NSCoder*) aDecoder;
 
 @end
 
@@ -141,20 +161,23 @@ typedef enum _NSPrinterTableStatus {
 //
 // Initialisation method used by backend bundles
 //
--(id) initWithName:(NSString *)name
-          withType:(NSString *)type
-          withHost:(NSString *)host
-          withNote:(NSString *)note;
+-(id) initWithName: (NSString*) name
+          withType: (NSString*) type
+          withHost: (NSString*) host
+          withNote: (NSString*) note;
 
--(id)       addValue:(NSString *)value
- andValueTranslation:(NSString *)valueTranslation
-andOptionTranslation:(NSString *)optionTranslation
-              forKey:(NSString *)key;
-
-
--(id) addString: (NSString*) string
-         forKey: (NSString*) key
-        inTable: (NSMutableDictionary*) table;
 @end 
+
+
+
+//
+// Have the NSPrinter parse a PPD and put it into its 
+// tables.  Used by the printing backend bundles.
+//
+@interface NSPrinter (PPDParsing)
+
+-(BOOL) parsePPDAtPath: (NSString*) ppdPath;
+
+@end
 
 #endif // _GNUstep_H_NSPrinter
