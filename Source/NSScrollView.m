@@ -181,7 +181,7 @@ static Class rulerViewClass = nil;
   [super dealloc];
 }
 
-- (void) setContentView: (NSView*)aView
+- (void) setContentView: (NSClipView*)aView
 {
   ASSIGN((id)_contentView, (id)aView);
   [self addSubview: _contentView];
@@ -632,7 +632,7 @@ static Class rulerViewClass = nil;
   return [_contentView bounds].size;
 }
 
-- (NSView*) contentView
+- (NSClipView*) contentView
 {
   return _contentView;
 }

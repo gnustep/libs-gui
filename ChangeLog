@@ -1,4 +1,11 @@
-Sat Mar 27  05:5800 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+Tue Mar 30 05:26:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/AppKit/NSScroller.h: Modified ([-setContentView:]) and
+	([-contentView]) to use NSClipView rather than NSView.
+	* NSScroller.m: Modified ([-setContentView:]) and ([-contentView]) to
+	use NSClipView rather than NSView.
+
+Sat Mar 27 05:58:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSBrowser.m: Override target, setTarget, action, setAction
 	* Headers/AppKit/NSBrowser.h: Add _action and _target ivars.
