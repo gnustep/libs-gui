@@ -66,15 +66,15 @@
 //
 - (id) _init
 {
-  cell_enabled = YES;
-  transparent = NO;
-  cell_bordered = YES;
-  showAltStateMask = NSNoCellMask;	// configure as a NSMomentaryPushButton
-  highlightsByMask = NSPushInCellMask | NSChangeGrayCellMask;
-  delayInterval = 0.4;
-  repeatInterval = 0.075;
-  altContents = nil;
-  keyEquivalentModifierMask = NSCommandKeyMask;
+  _cell.is_enabled = YES;
+  _is_transparent = NO;
+  _cell.is_bordered = YES;
+  _showAltStateMask = NSNoCellMask;	// configure as a NSMomentaryPushButton
+  _highlightsByMask = NSPushInCellMask | NSChangeGrayCellMask;
+  _delayInterval = 0.4;
+  _repeatInterval = 0.075;
+  _altContents = nil;
+  _keyEquivalentModifierMask = NSCommandKeyMask;
 
   return self;
 }
@@ -90,7 +90,7 @@
 {
   [super initImageCell: anImage];
 
-  contents = nil;
+  _contents = nil;
 
   return [self _init];
 }
@@ -104,10 +104,10 @@
 
 - (void) dealloc
 {
-  [altContents release];
-  [altImage release];
-  [keyEquivalent release];
-  [keyEquivalentFont release];
+  [_altContents release];
+  [_altImage release];
+  [_keyEquivalent release];
+  [_keyEquivalentFont release];
 
   [super dealloc];
 }
@@ -122,7 +122,7 @@
 
 - (NSString *) alternateTitle					
 {
-  return altContents;
+  return _altContents;
 }
 
 - (void) setFont: (NSFont *)fontObject		
@@ -133,16 +133,17 @@
 - (void) setTitle: (NSString *)aString
 {
   [self setStringValue: aString];
-  [self setState: [self state]];
 }
 
 - (void) setAlternateTitle: (NSString *)aString
 {
-  NSString* _string = [aString copy];
+  NSString* string = [aString copy];
 
-  ASSIGN(altContents, _string);
-  [_string release];
-  [self setState: [self state]];
+  ASSIGN(_altContents, string);
+  [string release]; 
+  if (_control_view)
+    if ([_control_view isKindOfClass: [NSControl class]])
+      [(NSControl *)_control_view updateCell: self];
 }
 
 //
@@ -150,22 +151,22 @@
 //
 - (NSImage *) alternateImage						
 {
-  return altImage;
+  return _altImage;
 }
 
 - (NSCellImagePosition) imagePosition			
 {
-  return image_position;
+  return _image_position;
 }
 
 - (void) setAlternateImage: (NSImage *)anImage
 {
-  ASSIGN(altImage, anImage);
+  ASSIGN(_altImage, anImage);
 }
 
 - (void) setImagePosition: (NSCellImagePosition)aPosition
 {
-  image_position = aPosition;
+  _image_position = aPosition;
 }
 
 //
@@ -173,14 +174,14 @@
 //
 - (void) getPeriodicDelay: (float *)delay interval: (float *)interval
 {
-  *delay = delayInterval;
-  *interval = repeatInterval;
+  *delay = _delayInterval;
+  *interval = _repeatInterval;
 }
 
 - (void) setPeriodicDelay: (float)delay interval: (float)interval
 {
-  delayInterval = delay;
-  repeatInterval = interval;
+  _delayInterval = delay;
+  _repeatInterval = interval;
   [self setContinuous: YES];
 }
 
@@ -189,41 +190,41 @@
 //
 - (NSString*) keyEquivalent
 {
-  return keyEquivalent;
+  return _keyEquivalent;
 }
 
 - (NSFont*) keyEquivalentFont
 {
-  return keyEquivalentFont;
+  return _keyEquivalentFont;
 }
 
 - (unsigned int) keyEquivalentModifierMask
 {
-  return keyEquivalentModifierMask;
+  return _keyEquivalentModifierMask;
 }
 
 - (void) setKeyEquivalent: (NSString*)key
 {
-  if (keyEquivalent != key)
+  if (_keyEquivalent != key)
     {
-      [keyEquivalent release];
-      keyEquivalent = [key copy];
+      [_keyEquivalent release];
+      _keyEquivalent = [key copy];
     }
 }
 
 - (void) setKeyEquivalentModifierMask: (unsigned int)mask
 {
-  keyEquivalentModifierMask = mask;
+  _keyEquivalentModifierMask = mask;
 }
 
 - (void) setKeyEquivalentFont: (NSFont*)fontObj
 {
-  ASSIGN(keyEquivalentFont, fontObj);
+  ASSIGN(_keyEquivalentFont, fontObj);
 }
 
 - (void) setKeyEquivalentFont: (NSString*)fontName size: (float)fontSize
 {
-  ASSIGN(keyEquivalentFont, [NSFont fontWithName: fontName size: fontSize]);
+  ASSIGN(_keyEquivalentFont, [NSFont fontWithName: fontName size: fontSize]);
 }
 
 //
@@ -231,12 +232,12 @@
 //
 - (BOOL) isTransparent					
 {
-  return transparent;
+  return _is_transparent;
 }
 
 - (void) setTransparent: (BOOL)flag	
 {
-  transparent = flag;
+  _is_transparent = flag;
 }
 
 - (BOOL) isOpaque
@@ -245,7 +246,7 @@
   // but that's wrong in our case, since if there is no border, 
   // we draw the interior of the cell to fill completely the bounds.  
   // They are likely to draw differently.
-  return !transparent;
+  return !_is_transparent;
 }
 
 //
@@ -253,22 +254,22 @@
 //
 - (int) highlightsBy						
 {
-  return highlightsByMask;
+  return _highlightsByMask;
 }
 
 - (void) setHighlightsBy: (int)mask	
 {
-  highlightsByMask = mask;
+  _highlightsByMask = mask;
 }
 
 - (void) setShowsStateBy: (int)mask	
 {
-  showAltStateMask = mask;
+  _showAltStateMask = mask;
 }
 
 - (void) setButtonType: (NSButtonType)buttonType
 {
-  [super setType: buttonType];
+  _cell_type = buttonType;
 
   switch (buttonType)
     {
@@ -313,13 +314,11 @@
 	[self setAlignment: NSLeftTextAlignment];
 	break;
     }
-
-  [self setState: [self state]];
 }
 
 - (int) showsStateBy						
 {
-  return showAltStateMask;
+  return _showAltStateMask;
 }
 
 - (void) setIntValue: (int)anInt		
@@ -339,17 +338,17 @@
 
 - (int) intValue							
 {
-  return [self state];
+  return _cell_state;
 }
 
 - (float) floatValue						
 {
-  return [self state];
+  return _cell_state;
 }
 
 - (double) doubleValue					
 {
-  return [self state];
+  return _cell_state;
 }
 
 //
@@ -357,10 +356,10 @@
 //
 - (NSColor *) textColor
 {
-  if ([self isEnabled] == NO)
+  if (_cell.is_enabled == NO)
     return [NSColor disabledControlTextColor];
-  if (([self state] && ([self showsStateBy] & NSChangeGrayCellMask))
-      || ([self isHighlighted] && ([self highlightsBy] & NSChangeGrayCellMask)))
+  if ((_cell_state && (_showAltStateMask & NSChangeGrayCellMask))
+      || (_cell.is_highlighted && (_highlightsByMask & NSChangeGrayCellMask)))
     return [NSColor selectedControlTextColor];
   return [NSColor controlTextColor];
 }
@@ -371,7 +370,7 @@
   [self setControlView: controlView];
 
   // transparent buttons never draw
-  if ([self isTransparent])
+  if (_is_transparent)
     return;
 
   // do nothing if cell's frame rect is zero
@@ -379,10 +378,10 @@
     return;
 
   // draw the border if needed
-  if ([self isBordered])
+  if (_cell.is_bordered)
     {
       [controlView lockFocus];
-      if ([self isHighlighted] && ([self highlightsBy] & NSPushInCellMask))
+      if (_cell.is_highlighted && (_highlightsByMask & NSPushInCellMask))
         {
           NSDrawGrayBezel(cellFrame, NSZeroRect);
         }
@@ -406,35 +405,37 @@
   NSRect	titleRect;
   NSSize	imageSize = {0, 0};
   NSColor	*backgroundColor = nil;
-  BOOL		flippedView = [control_view isFlipped];
+  BOOL		flippedView = [controlView isFlipped];
 
   // transparent buttons never draw
-  if ([self isTransparent])
+  if (_is_transparent)
     return;
+
+  _control_view = controlView;
 
   cellFrame = [self drawingRectForBounds: cellFrame];
   [controlView lockFocus];
 
   // pushed in buttons contents are displaced to the bottom right 1px
-  if ([self isBordered] && [self isHighlighted]
-    && ([self highlightsBy] & NSPushInCellMask))
+  if (_cell.is_bordered && _cell.is_highlighted
+    && (_highlightsByMask & NSPushInCellMask))
     {
       cellFrame = NSOffsetRect(cellFrame, 1., flippedView ? 1. : -1.);
     }
 
   // determine the background color
-  if ([self state])
+  if (_cell_state)
     {
-      if ([self showsStateBy]
+      if (_showAltStateMask
 	& (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
 	{
 	  backgroundColor = [NSColor selectedControlColor];
 	}
     }
 
-  if ([self isHighlighted])
+  if (_cell.is_highlighted)
     {
-      if ([self highlightsBy]
+      if (_highlightsByMask
 	& (NSChangeGrayCellMask | NSChangeBackgroundCellMask))
 	{
 	  backgroundColor = [NSColor selectedControlColor];
@@ -455,26 +456,26 @@
    * if highlighting is set (when a button is pushed it's
    * content is changed to the face of reversed state).
    */
-  if ([self isHighlighted])
-    mask = [self highlightsBy];
+  if (_cell.is_highlighted)
+    mask = _highlightsByMask;
   else
-    mask = [self showsStateBy];
+    mask = _showAltStateMask;
   if (mask & NSContentsCellMask)
-    showAlternate = [self state];
+    showAlternate = _cell_state;
 
-  if (showAlternate || [self isHighlighted])
+  if (showAlternate || _cell.is_highlighted)
     {
-      imageToDisplay = [self alternateImage];
+      imageToDisplay = _altImage;
       if (!imageToDisplay)
-	imageToDisplay = [self image];
-      titleToDisplay = [self alternateTitle];
+	imageToDisplay = _cell_image;
+      titleToDisplay = _altContents;
       if (titleToDisplay == nil || [titleToDisplay isEqual: @""])
-        titleToDisplay = [self title];
+        titleToDisplay = _contents;
     }
   else
     {
-      imageToDisplay = [self image];
-      titleToDisplay = [self title];
+      imageToDisplay = _cell_image;
+      titleToDisplay = _contents;
     }
 
   if (imageToDisplay)
@@ -483,7 +484,7 @@
       [imageToDisplay setBackgroundColor: backgroundColor];
     }
 
-  switch ([self imagePosition])
+  switch (_image_position)
     {
       case NSNoImage: 
 	imageToDisplay = nil;
@@ -601,26 +602,26 @@
   // The following code must be kept in sync with -drawInteriorWithFrame
   //
   
-  if ([self isHighlighted])
-    mask = [self highlightsBy];
+  if (_cell.is_highlighted)
+    mask = _highlightsByMask;
   else
-    mask = [self showsStateBy];
+    mask = _showAltStateMask;
   if (mask & NSContentsCellMask)
-    showAlternate = [self state];
+    showAlternate = _cell_state;
   
-  if (showAlternate || [self isHighlighted])
+  if (showAlternate || _cell.is_highlighted)
     {
-      imageToDisplay = [self alternateImage];
+      imageToDisplay = _altImage;
       if (!imageToDisplay)
-	imageToDisplay = [self image];
-      titleToDisplay = [self alternateTitle];
+	imageToDisplay = _cell_image;
+      titleToDisplay = _altContents;
       if (titleToDisplay == nil || [titleToDisplay isEqual: @""])
-	titleToDisplay = [self title];
+	titleToDisplay = _contents;
     }
   else
     {
-      imageToDisplay = [self image];
-      titleToDisplay = [self title];
+      imageToDisplay = _cell_image;
+      titleToDisplay = _contents;
     }
   
   if (imageToDisplay)
@@ -629,12 +630,12 @@
     imageSize = NSZeroSize;
   
   if (titleToDisplay)
-    titleSize = NSMakeSize ([cell_font widthOfString: titleToDisplay], 
-			    [cell_font pointSize]);
+    titleSize = NSMakeSize ([_cell_font widthOfString: titleToDisplay], 
+			    [_cell_font pointSize]);
   else 
     titleSize = NSZeroSize;
   
-  switch ([self imagePosition])
+  switch (_image_position)
     {
     case NSNoImage: 
       s = titleSize;
@@ -684,11 +685,11 @@
   }
  
   // Get border size
-  if ([self isBordered])
+  if (_cell.is_bordered)
     // Buttons only have three paths for border (NeXT looks)
     borderSize = NSMakeSize (1.5, 1.5);
   else
-    borderSize = [NSCell sizeForBorderType: NSNoBorder];
+    borderSize = NSZeroSize;
   
   // Add border size
   s.width += 2 * borderSize.width;
@@ -699,23 +700,19 @@
 
 - (NSRect) drawingRectForBounds: (NSRect)theRect
 {
-  if (cell_bordered)
+  if (_cell.is_bordered)
     {
       // Special case:  Buttons have only three different paths for border.
       // One white path at the top left corner, one black path at the
       // bottom right and another in dark gray at the inner bottom right.
-      float yDelta = [control_view isFlipped] ? 1. : 2.;
+      float yDelta = [_control_view isFlipped] ? 1. : 2.;
       return NSMakeRect (theRect.origin.x + 1.,
 			 theRect.origin.y + yDelta,
 			 theRect.size.width - 3.,
 			 theRect.size.height - 3.);
     }
   else
-    {
-      // Get border size
-      NSSize borderSize = [NSCell sizeForBorderType: NSNoBorder];
-      return NSInsetRect (theRect, borderSize.width, borderSize.height);
-    }
+    return theRect;
 }
 
 //
@@ -725,16 +722,16 @@
 {
   NSButtonCell	*c = [super copyWithZone: zone];
 
-  c->altContents = [altContents copyWithZone: zone];
-  if (altImage)
-    c->altImage = [altImage retain];
-  c->keyEquivalent = [keyEquivalent copyWithZone: zone];
-  if (keyEquivalentFont)
-    c->keyEquivalentFont = [keyEquivalentFont retain];
-  c->keyEquivalentModifierMask = keyEquivalentModifierMask;
-  c->transparent = transparent;
-  c->highlightsByMask = highlightsByMask;
-  c->showAltStateMask = showAltStateMask;
+  c->_altContents = [_altContents copyWithZone: zone];
+  if (_altImage)
+    c->_altImage = [_altImage retain];
+  c->_keyEquivalent = [_keyEquivalent copyWithZone: zone];
+  if (_keyEquivalentFont)
+    c->_keyEquivalentFont = [_keyEquivalentFont retain];
+  c->_keyEquivalentModifierMask = _keyEquivalentModifierMask;
+  c->_is_transparent = _is_transparent;
+  c->_highlightsByMask = _highlightsByMask;
+  c->_showAltStateMask = _showAltStateMask;
 
   return c;
 }
@@ -747,11 +744,11 @@
   [super encodeWithCoder: aCoder];
 
   NSDebugLog(@"NSButtonCell: start encoding\n");
-  [aCoder encodeObject: keyEquivalent];
-  [aCoder encodeObject: keyEquivalentFont];
-  [aCoder encodeObject: altContents];
-  [aCoder encodeObject: altImage];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &transparent];
+  [aCoder encodeObject: _keyEquivalent];
+  [aCoder encodeObject: _keyEquivalentFont];
+  [aCoder encodeObject: _altContents];
+  [aCoder encodeObject: _altImage];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_transparent];
   NSDebugLog(@"NSButtonCell: finish encoding\n");
 }
 
@@ -760,11 +757,11 @@
   [super initWithCoder: aDecoder];
 
   NSDebugLog(@"NSButtonCell: start decoding\n");
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &keyEquivalent];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &keyEquivalentFont];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &altContents];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &altImage];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &transparent];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_keyEquivalent];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_keyEquivalentFont];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_altContents];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_altImage];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_transparent];
   NSDebugLog(@"NSButtonCell: finish decoding\n");
 
   return self;
