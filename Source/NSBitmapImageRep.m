@@ -458,6 +458,9 @@
   else
     info.photoInterp = PHOTOMETRIC_RGB;
 
+  info.extraSamples = (_hasAlpha) ? 1 : 0;
+  if (type == 0)
+    type = COMPRESSION_NONE;
   info.compression = type;
   info.quality = (1 - ((float)factor)/255.0) * 100;
   info.numImages = 1;
