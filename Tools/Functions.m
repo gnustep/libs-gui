@@ -39,6 +39,8 @@ BOOL initialize_gnustep_backend(void)
 }
 void NSHighlightRect(NSRect aRect)
 {}
+void NSRectClip(NSRect aRect)
+{}
 void NSRectFill(NSRect aRect)
 {}
 void NSFrameRect(NSRect aRect)

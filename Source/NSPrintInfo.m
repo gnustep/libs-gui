@@ -30,6 +30,7 @@
 #include <Foundation/NSBundle.h>
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSException.h>
+#include <Foundation/NSEnumerator.h>
 #include <Foundation/NSValue.h>
 #include <AppKit/NSPrinter.h>
 

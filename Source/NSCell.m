@@ -41,7 +41,9 @@
 #include <AppKit/NSControl.h>
 #include <AppKit/NSCell.h>
 #include <AppKit/NSEvent.h>
+#include <AppKit/NSGraphics.h>
 #include <AppKit/NSColor.h>
+#include <AppKit/PSMatrix.h>
 
 
 
@@ -540,7 +542,7 @@ NSString* number_string = [[NSNumber numberWithInt:anInt] stringValue];
         }
     }
 
-  NSRectClip (cellFrame);
+  NSRectClip(cellFrame);
   [self drawInteriorWithFrame: cellFrame inView: controlView];
 
   PSgrestore ();

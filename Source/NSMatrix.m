@@ -39,6 +39,7 @@
 #include <Foundation/NSString.h>
 
 #include <AppKit/NSColor.h>
+#include <AppKit/NSCursor.h>
 #include <AppKit/NSActionCell.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSApplication.h>

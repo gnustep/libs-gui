@@ -31,6 +31,7 @@
 #include <Foundation/NSString.h>
 
 #include <AppKit/NSBox.h>
+#include <AppKit/NSGraphics.h>
 #include <AppKit/NSTextFieldCell.h>
 
 @interface NSBox (Private)

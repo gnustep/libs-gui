@@ -31,7 +31,7 @@
 #include <gnustep/gui/config.h>
 #include <AppKit/NSColorWell.h>
 #include <AppKit/NSColor.h>
-
+#include <AppKit/NSGraphics.h>
 
 #define XRBW 1.0								// half the width of the bevel
 #define XRHW 5.0								// width of border/handle

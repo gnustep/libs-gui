@@ -1,3 +1,13 @@
+1999-02-15 Michael Hanni <mhanni@sprintmail.com>
+
+	* Source/NSBox.m Source/NSButtonCell.m Source/NSCell.m
+	Source/NSColorWell.m Source/NSMatrix.m Source/NSPrintInfo.m
+	Source/NSScroller.m Source/NSSliderCell.m: fixed compilation
+	warnings by including proper includes.
+
+	* Tools/Functions.m: Defined NSRectClip(). Fixes fatal linking
+	errors in Tools/
+
 Mon Feb 15 12:20:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSBrowserCell.m: Code by Benhur to handle flipped views

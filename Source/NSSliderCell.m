@@ -28,6 +28,8 @@
 #include <Foundation/NSString.h>
 
 #include <AppKit/NSSliderCell.h>
+#include <AppKit/NSColor.h>
+#include <AppKit/NSGraphics.h>
 #include <AppKit/NSControl.h>
 #include <AppKit/NSImage.h>
 #include <AppKit/NSTextFieldCell.h>
