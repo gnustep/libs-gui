@@ -1,3 +1,10 @@
+Sat Sep  2 01:34:19 2000  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSFont.m ([+boldSystemFontOfSize:]),
+	([+systemFontOfSize:]), ([+userFixedPitchFontOfSize:]),
+	([+userFontOfSize:]): Cache font of size 0.  (setNSFont): Mark
+	caches as needing to be recomputed.
+	
 Fri Sep  1 22:34:55 2000  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSBrowser.m ([-_performLoadOfColumn:]): Fixed 
