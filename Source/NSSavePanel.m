@@ -1007,6 +1007,24 @@ selectCellWithString: (NSString*)title
           column: (int)column;
 @end 
 
+struct NSSavePanel_struct
+{
+  @defs (NSSavePanel)
+};
+
+static int compareFilenames (id elem1, id elem2, void *context)
+{
+  /* TODO - use IMP optimization here.  */
+  struct NSSavePanel_struct *s = (struct NSSavePanel_struct *)context;
+  NSSavePanel *self = (NSSavePanel *)context;
+
+  return (int)[s->_delegate panel: self
+		compareFilename: elem1
+		with: elem2
+		caseSensitive: YES];
+}
+
+
 @implementation NSSavePanel (_BrowserDelegate)
 - (void) browser: (id)sender
 createRowsForColumn: (int)column
@@ -1113,15 +1131,7 @@ createRowsForColumn: (int)column
   // Sort list of files to display
   if (_delegateHasCompareFilter == YES)
     {
-      int compare(id elem1, id elem2, void *context)
-      {
-	/* TODO - use IMP optimization here.  */
-	return (int)[_delegate panel: self
-		     compareFilename: elem1
-				with: elem2
-		       caseSensitive: YES];
-      }
-      files = [files sortedArrayUsingFunction: compare 
+      files = [files sortedArrayUsingFunction: compareFilenames 
 		     context: nil];
     }
   else
