@@ -123,7 +123,7 @@ static NSNotificationCenter *nc;
 - (int) numberOfVisibleItems { return _visibleItems; }
 - (void) setNumberOfVisibleItems: (int)visibleItems
 {
-  if (_visibleItems > 10)
+  if (visibleItems > 10)
     _visibleItems = visibleItems;
 }
 
