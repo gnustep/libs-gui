@@ -167,4 +167,4 @@
 
 #include <AppKit/PSOperators.h>
 
-#endif _GNUstep_H_AppKit
+#endif /* _GNUstep_H_AppKit */
