@@ -571,12 +571,42 @@
         <method type="void">
           <sel>removeFromSuperview</sel>
           <desc>
+	    <p>
+	      Removes the receiver from its superviews list of subviews,
+	      by invoking the superviews [-removeSubview:] method, and
+	      marks the rectangle that the reciever occupied in the
+	      superview as needing redisplay.
+	    </p>
+	    <p>
+	       This is dangerous to use during display, since it alters the
+	       rectangles needing display.
+	    </p>
           </desc>
         </method>
         <method type="void">
           <sel>removeFromSuperviewWithoutNeedingDisplay</sel>
           <desc>
+	    <p>
+	      Removes the receiver from its superviews list of subviews,
+	      by invoking the superviews [-removeSubview:] method.
+	    </p>
           </desc>
+        </method>
+        <method type="void">
+          <sel>removeSubview:</sel>
+          <arg type="NSView*">aView</arg>
+          <desc>
+	    <p>
+	      Removes the view from the receivers list of subviews
+	      and from the responder chain.
+	    </p>
+	    <p>
+              Also invokes [aView -viewWillMoveToWindow: nil] to handle
+	      removal of aView (and recursively, its children) from its
+	      window - performing tidyup by invalidating cursor rects etc.
+	    </p>
+          </desc>
+	  <standards><NotMacOS-X/><NotOpenStep/></standards>
         </method>
         <method type="void">
           <sel>removeTrackingRect:</sel>
