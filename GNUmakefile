@@ -55,7 +55,7 @@ Panels \
 PrinterTypes \
 TextConverters \
 ColorPickers \
-KeyBindings \
+InputManagers \
 Resources
 
 ifeq ($(doc), yes)
