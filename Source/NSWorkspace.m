@@ -746,9 +746,15 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
    */
   if (path == nil)
     {
+#ifdef GNUSTEP_BASE_LIBRARY
       path = RETAIN([[NSSearchPathForDirectoriesInDomains(
 	  GSToolsDirectory, NSSystemDomainMask, YES) objectAtIndex: 0] 
 		 stringByAppendingPathComponent: @"make_services"]);
+#else
+      path = RETAIN([[@GNUSTEP_INSTALL_PREFIX 
+			 stringByAppendingPathComponent: @"Tools"] 
+			stringByAppendingPathComponent: @"make_services"]);
+#endif
     }
   task = [NSTask launchedTaskWithLaunchPath: path
 				  arguments: nil];
