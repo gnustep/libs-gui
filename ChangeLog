@@ -1,3 +1,17 @@
+2001-02-04  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/NSColor.m
+	In [supportMaxColorSpaces] added conversions from RGB to CMYK.
+	In [colorUsingColorSpaceName:device:] added conversion from named
+	colour.
+	* Source/NSColorPanel.m
+	Reimplemented without using a GModel file.
+	* Headers/gnustep/gui/NSColor.h:
+	Removed	the color panel enumerators.
+	* Headers/gnustep/gui/NSColorPanel.h:
+	Added the color panel enumerators and corrected them. Adopted the
+	ivars to the new implementation.
+	
 Fri Feb  2 21:16:32 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSTableView.m ([-selectRow:byExtendingSelection:]): Fixed
