@@ -106,14 +106,8 @@
 
   if (_copiesOnScroll)
     /* TODO: move the visible portion of the document */;
-  else {
-#if 1
-    [self setNeedsDisplay:YES];
-#else
-    [self display];
-    [[self window] flushWindow];
-#endif
-  }
+  else
+    [_documentView setNeedsDisplay:YES];
 }
 
 - (NSPoint)constrainScrollPoint:(NSPoint)proposedNewOrigin

@@ -866,6 +866,11 @@ static id NSApp;
 - (void)setDelegate:anObject
 {
   delegate = anObject;
+
+  if ([delegate respondsToSelector:@selector(applicationDidFinishLaunching:)])
+    [[NSNotificationCenter defaultCenter] addObserver:delegate
+	  selector:@selector(applicationDidFinishLaunching:)
+	  name:NSApplicationDidFinishLaunchingNotification object:self];
 }
 
 //

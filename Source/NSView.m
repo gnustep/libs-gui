@@ -808,7 +808,14 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
 - (NSRect)visibleRect
 {
-  return bounds;
+  if (!super_view)
+    return bounds;
+  else {
+    NSRect superviewsVisibleRect
+	= [self convertRect:[super_view visibleRect] fromView:super_view];
+
+    return NSIntersectionRect (superviewsVisibleRect, frame);
+  }
 }
 
 - (void)_addSubviewForNeedingDisplay:(NSView*)view
