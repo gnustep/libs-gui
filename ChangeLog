@@ -1,3 +1,17 @@
+Thu Dec 10 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* NSWindow.h change window style enum to match WindowMaker's definition.
+	* GNUAlertPanel.m NSGetAlertPanel() replace centering code with call to 
+	center method, change window style mask, add class initialize.
+	* libgnustep-gui.m rename to Functions.m.
+	* Functions.m add new file as location for generic NS* and GS* functions,
+	move backend NSEventMaskFromType() into it.
+	* NSApplication.m discardEventsMatchingMask:.. rewrite (fix bugs),
+	runModalSession: dump all events not for modal window (fixes modal panel 
+	button display bug), arrangeInFront: preliminary implemenation.
+	* NSCell.m: Polish.
+	* NSWindow.m: center remove display invocation per 4.2 docs.
+
 Wed Dec 9 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
 
 	* NSView.m resizeWithOldSuperviewSize: revert to previous code and add bug

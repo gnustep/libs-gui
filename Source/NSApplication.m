@@ -67,7 +67,7 @@
 //
 // Types
 //
-struct	_NSModalSession {
+struct _NSModalSession {
   int		runState;
   NSWindow	*window;
   NSModalSession	previous;
@@ -96,13 +96,13 @@ static NSString	*NSAbortModalException = @"NSAbortModalException";
 													// Initial version
 		[self setVersion:1];
 													// So the application knows 
-		gnustep_gui_app_is_in_dealloc = NO;			// its within dealloc and
+		gnustep_gui_app_is_in_dealloc = NO;			// it's within dealloc and
 		}											// can prevent -release 
 }													// loops.
 
 + (NSApplication *)sharedApplication
 {											// If the global application does 
-	if (!NSApp) 							// not exist yet then create it
+	if (!NSApp) 							// not yet exist then create it
 		{
 		NSApp = [self alloc];				// Don't combine the following two
 		[NSApp init];						// statements into one to avoid
@@ -362,12 +362,14 @@ unsigned i;
 		count = [event_queue count];					// that there is an 
 		for (i = 0; i < count; i++)						// event.
 			{
-			event = [event_queue objectAtIndex: i];
+			event = [event_queue objectAtIndex: 0];
 			if ([event window] == theSession->window)
 				{
 				found = YES;
 				break;
 				}
+			else										// dump events not for 
+				[event_queue removeObjectAtIndex:0];	// the modal window
 			}
 
 		if (found == NO)
@@ -515,22 +517,21 @@ unsigned i;
 - (void)discardEventsMatchingMask:(unsigned int)mask
 					  beforeEvent:(NSEvent *)lastEvent
 {
-int i = 0, count;
+int i = 0, count, loop;
 NSEvent* event = nil;
-BOOL match = NO;										
+BOOL match;										
+														// if queue contains
+	if ((count = [event_queue count])) 					// events check them  
+		{												
+		for (loop = 0; ((event != lastEvent) && (loop < count)); loop++) 
+			{											
+			event = [event_queue objectAtIndex:i];		// Get next event from
+			match = NO;									// the events queue
 
-	count = [event_queue count];
-	event = [event_queue objectAtIndex:i];
-	while((event != lastEvent) && (i < count))						
-		{
-		if (mask == NSAnyEventMask)						// any event is a match
-			match = YES;									
-		else
-			{
-			if (event == null_event) 
-				match = YES;							// dump all null events 
+			if (mask == NSAnyEventMask)					// the any event mask
+				match = YES;							// matches all events		
 			else
-				{											
+				{
 				switch([event type])
 					{
 					case NSLeftMouseDown:
@@ -604,14 +605,15 @@ BOOL match = NO;
 						break;
 			
 					default:
-						match = NO;
 						break;
-			}	}	}									// remove event from
+				}	}									// remove event from
 														// the queue if it 
-		if (match) 										// matched the mask
-			[event_queue removeObjectAtIndex:i];		
-		event = [event_queue objectAtIndex:++i];		// get the next event
-    	};												// in the queue
+			if (match) 									// matched the mask
+				[event_queue removeObjectAtIndex:i];
+			else										// inc queue cntr only
+				i++;									// if not a match else
+			}											// we will run off the
+		}												// end of the queue
 }
 
 - (NSEvent*)_eventMatchingMask:(unsigned int)mask dequeue:(BOOL)flag		 
@@ -848,7 +850,7 @@ BOOL done = NO;
 }
 
 //
-// Hiding all windows
+// Hiding and arranging windows
 //
 - (void)hide:sender
 {
@@ -902,6 +904,14 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 													// notify we did unhide
   [nc postNotificationName: NSApplicationDidUnhideNotification
       object: self];
+}
+
+- (void)arrangeInFront:sender						// preliminary FIX ME
+{
+int i, count;
+													// Tell windows to unhide
+	for (i = 0, count = [window_list count]; i < count; i++)
+		[[window_list objectAtIndex:i] orderFront:sender];
 }
 
 //
@@ -1075,10 +1085,6 @@ int i;
 		[aWindow becomeMainWindow];					// main and key window
 		[aWindow becomeKeyWindow];
 		}
-}
-
-- (void)arrangeInFront:sender
-{
 }
 
 - (void)changeWindowsItem:aWindow 

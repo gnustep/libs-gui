@@ -420,11 +420,11 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 - (void)center
 {
 NSSize screenSize = [[NSScreen mainScreen] frame].size;
-NSRect n = frame;										// center the window
+NSPoint origin = frame.origin;							// center the window
 														// within it's screen
-	n.origin.x = (screenSize.width - frame.size.width) / 2;
-	n.origin.y = (screenSize.height - frame.size.height) / 2;
-	[self setFrame:n display:YES];
+	origin.x = (screenSize.width - frame.size.width) / 2;
+	origin.y = (screenSize.height - frame.size.height) / 2;
+	[self setFrameOrigin:origin];
 }
 
 - (NSRect)constrainFrameRect:(NSRect)frameRect toScreen:screen

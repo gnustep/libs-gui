@@ -54,19 +54,19 @@
 @class NSScreen;
 
 enum {
-  NSNormalWindowLevel   = 0,
-  NSFloatingWindowLevel  = 3,
-  NSDockWindowLevel   = 5,
-  NSSubmenuWindowLevel  = 10,
-  NSMainMenuWindowLevel  = 20
+  NSNormalWindowLevel = 0,
+  NSFloatingWindowLevel = 3,
+  NSDockWindowLevel = 5,
+  NSSubmenuWindowLevel = 10,
+  NSMainMenuWindowLevel = 20
 };
 
 enum {
-  NSBorderlessWindowMask = 1,
-  NSTitledWindowMask = 2,
-  NSClosableWindowMask = 4,
-  NSMiniaturizableWindowMask = 8,
-  NSResizableWindowMask = 16 
+  NSBorderlessWindowMask = 0,
+  NSTitledWindowMask = 1,
+  NSClosableWindowMask = 2,
+  NSMiniaturizableWindowMask = 4,
+  NSResizableWindowMask = 8
 };
 
 extern NSSize NSIconSize;

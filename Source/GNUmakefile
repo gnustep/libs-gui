@@ -36,7 +36,7 @@ include ../Version
 LIBRARY_NAME=libgnustep-gui
 
 # The Objective-C source files to be compiled
-libgnustep-gui_OBJC_FILES = libgnustep-gui.m \
+libgnustep-gui_OBJC_FILES = Functions.m \
 GSContext.m \
 NSActionCell.m \
 NSApplication.m \

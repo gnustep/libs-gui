@@ -69,6 +69,16 @@ static GNUAlertPanel	*reusableAlertPanel = nil;
 @end
 
 @implementation	GNUAlertPanel
+
+//
+// Class methods
+//
++ (void)initialize
+{
+	if (self == [GNUAlertPanel class])
+		[self setVersion:1];							
+}
+
 - (void) buttonAction: (id)sender
 {
   if (active == NO)
@@ -129,7 +139,7 @@ static GNUAlertPanel	*reusableAlertPanel = nil;
   if (self)
     {
       NSView	*content;
-      unsigned	bs = 8.0;		/* Inter-button space	*/
+      unsigned	bs = 10.0;		/* Inter-button space	*/
       unsigned	bh = 24.0;		/* Button height.	*/
       unsigned	bw = 72.0;		/* Button width.	*/
       NSRect	rect;
@@ -373,25 +383,15 @@ NSGetAlertPanel(NSString *title,
 	  return nil;
         }
 #else
-      NSRect	frame = [[NSScreen mainScreen] frame];
-
-      /*
-       *	Center the panel in the screen.
-       */
-      if (frame.size.width > PANX)
-	frame.origin.x += (frame.size.width - PANX)/2.0;
-      frame.size.width = PANX;
-
-      if (frame.size.height > PANY)
-	frame.origin.y += (frame.size.height - PANY)/2.0;
-      frame.size.height = PANY;
 
       panel = [GNUAlertPanel alloc];
-      panel = [panel initWithContentRect: frame
-			       styleMask: 0
-				 backing: NSBackingStoreRetained
-				   defer: YES
-				  screen: nil];
+      panel = [panel initWithContentRect:NSMakeRect(0,0,PANX,PANY)
+					 styleMask: NSTitledWindowMask
+					 backing: NSBackingStoreRetained
+					 defer: YES
+					 screen: nil];
+	  [panel center];
+
 #endif
     }
   else

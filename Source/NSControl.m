@@ -357,15 +357,14 @@ static id MB_NSCONTROL_CELL_CLASS = nil;
   return [cell isContinuous];
 }
 
-- (BOOL)sendAction:(SEL)theAction
-		to:(id)theTarget
+- (BOOL)sendAction:(SEL)theAction to:(id)theTarget
 {
-  NSApplication *theApp = [NSApplication sharedApplication];
+NSApplication *theApp = [NSApplication sharedApplication];
 
-  if (theAction && theTarget)
-    return [theApp sendAction:theAction to:theTarget from:self];
-  else
-    return NO;
+	if (theAction && theTarget)
+		return [theApp sendAction:theAction to:theTarget from:self];
+	else
+		return NO;
 }
 
 - (int)sendActionOn:(int)mask
