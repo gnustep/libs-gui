@@ -1,3 +1,37 @@
+Sat Dec 16 16:36:03 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/NSCell.h: Modified ivars to reduce memory
+	consumption.  String attributes are now stored in a font ivar,
+	three bits for alignment and wraps, and a bit to tell us if
+	_contents is a simple string or an attributed string.  Removed
+	_typingAttributes.
+	* Source/NSCell ([-initImageCell:]), ([-initTextCell:]),
+	([-dealloc]), ([-copyWithZone:]), ([-encodeWithCoder:]),
+	([-initWithCoder:]), ([-alignment]), ([-setAlignment:]),
+	([-font]), ([-setFont:]), ([-wraps]), ([-setWraps:]),
+	([-setUpFieldEditorAttribute:]): Updated for the new ivars.
+	([-doubleValue]), ([-intValue]), ([-floatValue]),
+	([-stringValue]), ([-mnemonic]), ([-cellSize]),
+	([-drawInteriorWithFrame:]),
+	([-editWithFrame:inView:editor:delegate:event]): Updated for the
+	case when we keep an attributed string in _contents.
+	([-setObjectValue:]), ([-setStringValue:]), ([-setType:]): Set the
+	_cell.contents_is_attributed_string flag.
+	([-setAttributedStringValue:]), ([-attributedStringValue]): 
+	Rewritten.
+	([-_typingAttributes]): Create from attributes stored in the cell.
+	([-_drawAttributedText:inFrame:]): New method.
+	([-_drawText:inFrame:]): Modified to avoid recomputing the
+	dictionary.
+	* Source/NSFormCell.m ([-cellSize]): Paranoia set of flag for
+	attributed string to NO in tweaked case of computing size with no
+	contents.
+	* Source/NSCell.m ([-isEntryAcceptable:]): Call the formatter's
+	[-getObjectValue:forString:errorDescription:] rather than
+	[-isPartialStringValid:newEditingString:errorDescription:].
+	* Source/NSFormCell.m ([-copyWithZone:]): Implemented (from a
+	suggestion by Georg Fleischmann).
+
 Fri Dec 15 21:40:49 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 	
 	* Headers/gnustep/gui/NSTextStorage.h: Prefixed all ivars with
