@@ -570,4 +570,48 @@ static NSImage *_pbc_image[2];
 
   [view unlockFocus]; 
 }
+
+- (NSSize) cellSize
+{
+  NSSize s;
+  NSSize imageSize;
+  int i, count;
+  NSString *title;
+  float candidateWidth;
+
+  count = [_menu numberOfItems];
+
+  if (count == 0)
+    return NSZeroSize;
+  
+  imageSize = [_pbc_image[_pbcFlags.pullsDown] size];
+  s = NSZeroSize;
+  
+  s.height = [_cell_font boundingRectForFont].size.height;
+  if (imageSize.height > s.height)
+    s.height = imageSize.height;
+  
+  for (i = 0; i < count; i++)
+    {
+      title = [[_menu itemAtIndex: i] title];
+      candidateWidth = [_cell_font widthOfString: title];
+
+      if (candidateWidth > s.width)
+	s.width = candidateWidth;
+    }
+
+  s.width += imageSize.width; 
+  s.width += 5; /* Left border to text (border included) */
+  s.width += 3; /* Text to Image */
+  s.width += 4; /* Right border to image (border included) */
+
+  /* (vertical) border: */
+  s.height += 2 * (_sizeForBorderType (NSBezelBorder).height);
+
+  /* Spacing between border and inside: */
+  s.height += 2 * 1;
+  s.width  += 2 * 3;
+  
+  return s;
+}
 @end
