@@ -118,6 +118,9 @@
   else if (newWidth < _min_width)
     newWidth = _min_width;
 
+  if (_width == newWidth)
+    return;
+  
   _width = newWidth;
   
   if (_tableView)
