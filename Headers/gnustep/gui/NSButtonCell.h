@@ -48,19 +48,16 @@ typedef enum _NSButtonType {
 @interface NSButtonCell : NSActionCell <NSCopying, NSCoding>
 {
   // Attributes
-  NSString *altContents;
-  NSImage *altImage;
-  NSString* keyEquivalent;
-  NSFont* keyEquivalentFont;
-  unsigned int keyEquivalentModifierMask;
-  BOOL transparent;
-  unsigned int highlightsByMask;
-  unsigned int showAltStateMask;
-  float delayInterval;
-  float repeatInterval;
-
-  // Reserved for back-end use
-  void *be_bc_reserved;
+  NSString *_altContents;
+  NSImage *_altImage;
+  NSString* _keyEquivalent;
+  NSFont* _keyEquivalentFont;
+  unsigned int _keyEquivalentModifierMask;
+  BOOL _is_transparent;
+  unsigned int _highlightsByMask;
+  unsigned int _showAltStateMask;
+  float _delayInterval;
+  float _repeatInterval;
 }
 
 //
