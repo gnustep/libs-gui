@@ -1,3 +1,18 @@
+2001-08-20  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSMenu.h
+	Moved the declaration of NSMenuWindow and NSMenuWindowTitleView
+	into the file NSMenu.m, making this private classes.
+	Removed unused ivars and renamed the remaining ivars to fit the
+	GNUstep sheme of underscore prefixes.
+	Added new method [popUpContextMenu:withEvent:forView:].
+	Made the methods [_ownedByPopUp] and [_setOwnedByPopUp:] public.
+	* Source/NSMenu.m
+	Adopted to changes in the header file.
+	* Source/NSMenuView.m
+	In [setWindowFrameForAttachingToRect:...popUpSelectedItem:]
+	replaced reference to NSMenuWindow with NSWindow.
+	
 2001-08-18  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/GSTextConverter.h
