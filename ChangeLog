@@ -1,3 +1,9 @@
+2004-10-24  Quentin Mathe <qmathe@club-internet.fr>
+        
+	* Source/NSWorkspace.m (-appIconForApp:): Fixed code to be more
+	generic by using -[NSBundle pathForImageResource:]. Now the method works
+	with NSIcon value not path based like "MyApplication.tiff".
+
 2004-10-22  08:26 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSStepperCell.m: Corrected issue with [NSStepperCell

@@ -1488,12 +1488,9 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
     {
       return nil;
     }
+    
   iconPath = [[bundle infoDictionary] objectForKey: @"NSIcon"];
-
-  if (![iconPath isAbsolutePath])
-    {
-      iconPath = [[bundle bundlePath] stringByAppendingPathComponent: iconPath];
-    }
+  iconPath = [bundle pathForImageResource: iconPath];
   
   return [self _saveImageFor: iconPath];
 }
