@@ -1,3 +1,8 @@
+Tue Jan  1 21:06:32 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSScrollView.m ([-tile]): Allocate space for the rulers
+	(Adapted from a patch from Diego Luis Kreutz <kreutz@inf.ufsm.br>).
+	
 Tue Jan  1 20:57:07 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSScrollView.m ([-tile]): Rewritten to be simpler to
