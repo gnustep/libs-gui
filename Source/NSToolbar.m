@@ -81,6 +81,12 @@ static const int current_version = 1;
   return self;
 }
 
+- (void) dealloc
+{
+  RELEASE (_item);
+  [super dealloc];
+}
+
 - (void)drawRect: (NSRect)aRect
 {
   // set the image and draw using the super class...
@@ -181,6 +187,21 @@ static const int current_version = 1;
   
   return self;
 }
+
+/* FIXME */
+- (void) dealloc
+{
+  DESTROY (_identifier);
+
+  if (_delegate != nil)
+    {
+      [nc removeObserver: _delegate  name: nil  object: self];
+      _delegate = nil;
+    }
+
+  [super dealloc];
+}
+
 
 - (void)insertItemWithItemIdentifier: (NSString *)itemIdentifier
                              atIndex: (int)index
