@@ -63,20 +63,25 @@
   id _destination = [destination nibInstantiate];
   SEL action = NSSelectorFromString (label);
 
-  if ([_source respondsToSelector:@selector(setTarget:)]) {
+  if ([_source respondsToSelector:@selector(setTarget:)])
+    {
 //    NSLog (@"%@: setting target to %@", _source, _destination);
-    [_source setTarget:_destination];
-  }
+      [_source setTarget:_destination];
+    }
   else
-    GSSetInstanceVariable (_source, @"target", (void*)[_destination retain]);
+    {
+      [_destination retain];
+      GSSetInstanceVariable (_source, @"target", &_destination);
+    }
 
-  if ([_source respondsToSelector:@selector(setAction:)]) {
+  if ([_source respondsToSelector:@selector(setAction:)])
+    {
 //    NSLog (@"%@: setting action to %@",
 //	    _source, NSStringFromSelector(action));
-    [_source setAction:action];
-  }
+      [_source setAction:action];
+    }
   else
-    GSSetInstanceVariable (_source, @"action", (void*)action);
+    GSSetInstanceVariable (_source, @"action", &action);
 }
 
 @end /* IMControlConnector:IMConnector */
@@ -99,7 +104,10 @@
   if (setSelector && [_source respondsToSelector:setSelector])
     [_source performSelector:setSelector withObject:_destination];
   else
-    GSSetInstanceVariable(_source, label, (void*)[_destination retain]);
+    {
+      [_destination retain];
+      GSSetInstanceVariable(_source, label, &_destination);
+    }
 }
 
 @end /* IMOutletConnector */
