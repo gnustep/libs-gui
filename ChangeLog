@@ -1,3 +1,8 @@
+2004-01-22 13:06  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSActionCell.m (-encodeWithCoder:): Encode nil instead of
+	the control view.
+
 2004-01-22 13:04  Alexander Malmberg <alexander@malmberg.org>
 
 	* Headers/Additions/GNUstepGUI/GSDrawFunctions.h: Add missing

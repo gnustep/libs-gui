@@ -319,8 +319,8 @@ static Class controlClass;
   [aCoder encodeValueOfObjCType: @encode(int) at: &_tag];
   [aCoder encodeConditionalObject: _target];
   [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
-  // This is only encoded for backward compatibility and wont be decoded.
-  [aCoder encodeConditionalObject: _control_view];
+  // This is only encoded for backward compatibility and won't be decoded.
+  [aCoder encodeConditionalObject: nil];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
@@ -331,7 +331,7 @@ static Class controlClass;
   [aDecoder decodeValueOfObjCType: @encode(int) at: &_tag];
   _target = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
-  // Don't decode _control_view, as this may no longe be valid.
+  // Don't decode _control_view, as this may no longer be valid.
   dummy = [aDecoder decodeObject];
   return self;
 }
