@@ -1,3 +1,10 @@
+2001-04-22  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSColorList.m: ([_loadAvailableColorLists]) Fixed bug causing
+	system color list to not be loaded ... was using == for NSString
+	comparison where isEqual was needed.
+	Also reformatted to conform to coding standards.
+
 2001-04-18  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/GSServicesManager.m: Save the name of the port on which we
