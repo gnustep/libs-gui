@@ -34,8 +34,9 @@
 @interface NSFormCell : NSActionCell <NSCoding>
 {
   float _titleWidth;
+  // Think the following as a BOOL ivar
   // YES if the titleWidth is automatically computed
-  BOOL _autoTitleWidth;
+#define _formcell_auto_title_width _cell.subclass_bool_one
   NSCell* _titleCell;
 }
 
