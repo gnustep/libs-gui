@@ -5,8 +5,8 @@
 
    Copyright (C) 2001, 1996 Free Software Foundation, Inc.
 
-   Author: Gregory John Casamento <borgheron@yahoo.com>
-   Date: 2001
+   Author: Gregory John Casamento <greg_casamento@yahoo.com>
+   Date: 2001,2003
 
    Author: Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -256,9 +256,10 @@ static int __documentTag = 0;
 - init
 {
   NSArray *userLanguages = [NSUserDefaults userLanguages];  
+  NSString *panel = nil;
 
   // Set the language to the default for the user.
-  [super init];
+  self = [super init];
   _language = [userLanguages objectAtIndex: 0];
   _wrapFlag = NO;
   _position = 0;
@@ -268,11 +269,13 @@ static int __documentTag = 0;
   _ignoredWords = [NSMutableDictionary new];
 
   // Load the gmodel file
-  if(![GSGuiBundle() loadNibFile: @"SpellPanel.gmodel"
+  panel = [GSGuiBundle() pathForResource: @"GSSpellPanel" ofType: @"gorm"
+		      inDirectory: nil];
+  if(![NSBundle loadNibFile: panel
 	  externalNameTable: [NSDictionary dictionaryWithObject: self forKey: @"NSOwner"]
 	           withZone: [self zone]])
     {
-      NSLog(@"NIB file load failed for SpellPanel");
+      NSLog(@"Model file load failed for GSSpellPanel");
       return nil;
     }
 
@@ -284,6 +287,7 @@ static int __documentTag = 0;
 {
   RELEASE(_ignoredWords);
   RELEASE(_serverProxy);
+  [super dealloc];
 }
 
 //
