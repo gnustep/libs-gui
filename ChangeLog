@@ -1,3 +1,9 @@
+2004-02-14 22:56  Matt Rice <ratmice@yahoo.com>
+		  Alexander Malmberg <alexander@malmberg.org>
+
+	* Tools/gopen.m (main): Remove NSTask-based app launching code; always
+	use [NSWorkspace -launchApplication:] to launch applications.
+
 2004-02-14  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSOutlineView.m: (-reloadItem:reloadChildren:) Simplified

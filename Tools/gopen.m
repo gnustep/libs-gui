@@ -168,31 +168,15 @@ main(int argc, char** argv, char **env_c)
 		    || [ext isEqualToString: @"debug"]
 		    || [ext isEqualToString: @"profile"])
 		    {
-		      NSString *appName = 
-			[[arg lastPathComponent] stringByDeletingPathExtension];
-		      NSString *executable = 
-			[arg stringByAppendingPathComponent: appName];
-		      
-		      if ([fm fileExistsAtPath: arg])
-			{
-			  if ([NSTask launchedTaskWithLaunchPath: executable 
-				      arguments: nil] == nil)
-			    {
-			      NSLog(@"Unable to launch: %@",arg);
-			    }
-			}
-		      else
-			{
-			  [workspace launchApplication: arg];
-			}
+		      [workspace launchApplication: arg];
 		    }
-		  else 
+		  else
 		    {
 		      if (![workspace openFile: arg
 			       withApplication: application])
 			{
-			  // no recognized extension, 
-			  // run application indicated by environment var.	
+			  // no recognized extension,
+			  // run application indicated by environment var.
 			  NSLog(@"Opening %@ with %@",arg,editor);
 			  [workspace openFile: arg withApplication: editor];
 			}
