@@ -1,12 +1,17 @@
+2002-06-07  Georg Fleischmann <georg@vhf.de>
+
+	* Model/GMAppKit.m ([NSCell -encodeWithModelArchiver:]): Restore
+	sendActionMask.
+
 2002-06-10  Alexander Malmberg  <alexander@malmberg.org>
 
-        * Source/GSServicesManager.m (-performService:...): Create
-        and use a local copy of the NSPasteboard.
+	* Source/GSServicesManager.m (-performService:...): Create and use
+	a local copy of the NSPasteboard.
 
 2002-06-08  Alexander Malmberg  <alexander@malmberg.org>
 
-        * Source/NSWindow.m (-_initDefaults): Make _miniaturizedImage
-        default to the application icon.
+	* Source/NSWindow.m (-_initDefaults): Make _miniaturizedImage
+	default to the application icon.
 
 2002-06-08  Alexander Malmberg  <alexander@malmberg.org>
 
