@@ -1,3 +1,13 @@
+Thu Dec  2 01:28:34 1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/AppKit/NSTableHeaderView.h: Added copyright.
+	* Source/NSTableHeaderView.m: Untested first attempt at drawing
+ 	code; it should work enough to make developing of NSTableView
+ 	possible.  Mouse events to be implemented after NSTableView works.
+	* Headers/AppKit/NSTableColumn.h: Added copyright, updates.
+	* Source/NSTableColumn.m: Rewritten nearly everything, class now 
+ 	finished, but not tested.
+
 Wed Dec  1 14:55:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSColor.m: Fixed a few transparency bugs in system colors.
