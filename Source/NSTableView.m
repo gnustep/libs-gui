@@ -5939,15 +5939,65 @@ byExtendingSelection: (BOOL)flag
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  int version = [aDecoder versionForClassName: 
-			    @"NSTableView"];
+  self = [super initWithCoder: aDecoder];
 
-  id aDelegate;
-
-  if (version == currentVersion)
+  if ([aDecoder allowsKeyedCoding])
     {
-      self = [super initWithCoder: aDecoder];
-      
+      NSSize intercellSpacing = [self intercellSpacing];
+      NSArray *columns;
+      NSEnumerator *e;
+      NSTableColumn *col;
+
+      [self setDataSource: [aDecoder decodeObjectForKey: @"NSDataSource"]];
+      [self setDelegate: [aDecoder decodeObjectForKey: @"NSDelegate"]];
+
+      [self setTarget: [aDecoder decodeObjectForKey: @"NSTarget"]];
+      if ([aDecoder containsValueForKey: @"NSAction"])
+        {
+	  NSString *action = [aDecoder decodeObjectForKey: @"NSAction"];
+	  [self setAction: NSSelectorFromString(action)];
+	}
+      if ([aDecoder containsValueForKey: @"NSBackgroundColor"])
+        {
+	  [self setBackgroundColor: [aDecoder decodeObjectForKey: @"NSBackgroundColor"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSGridColor"])
+        {
+	  [self setGridColor: [aDecoder decodeObjectForKey: @"NSGridColor"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSIntercellSpacingHeight"])
+        {
+	  intercellSpacing.height = [aDecoder decodeFloatForKey: @"NSIntercellSpacingHeight"];
+	}
+      if ([aDecoder containsValueForKey: @"NSIntercellSpacingWidth"])
+        {
+	  intercellSpacing.width = [aDecoder decodeFloatForKey: @"NSIntercellSpacingWidth"];
+	}
+      [self setIntercellSpacing: intercellSpacing];
+      if ([aDecoder containsValueForKey: @"NSRowHeight"])
+        {
+	  [self setRowHeight: [aDecoder decodeFloatForKey: @"NSRowHeight"]];
+	}
+
+      columns = [aDecoder decodeObjectForKey: @"NSTableColumns"];
+      e = [columns objectEnumerator];
+      while ((col = [e nextObject]) != nil)
+        {
+	  [self addTableColumn: col];
+	}
+
+      if ([aDecoder containsValueForKey: @"NSTvFlags"])
+        {
+	  //int vFlags = [aDecoder decodeIntForKey: @"NSTvFlags"];
+	  // FIXME set the flags
+	}
+    }
+  else
+    {
+      int version = [aDecoder versionForClassName: 
+				  @"NSTableView"];
+      id aDelegate;
+
       _dataSource      = [aDecoder decodeObject];
       _tableColumns    = RETAIN([aDecoder decodeObject]);
       _gridColor       = RETAIN([aDecoder decodeObject]);
@@ -5961,11 +6011,8 @@ byExtendingSelection: (BOOL)flag
       [_headerView setTableView: self];
       [_tableColumns makeObjectsPerformSelector: @selector(setTableView:)
 		     withObject: self];
-      
       [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfRows];
       [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfColumns];
-      
-
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_drawsGrid];
       [aDecoder decodeValueOfObjCType: @encode(float) at: &_rowHeight];
       [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
@@ -5975,8 +6022,14 @@ byExtendingSelection: (BOOL)flag
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnSelection];
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnResizing];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnReordering];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_autoresizesAllColumnsToFit];
+      if (version == currentVersion)
+        {
+	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnReordering];
+	}
+      else if (version >= 2)
+        {
+	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_autoresizesAllColumnsToFit];
+	} 
       
       ASSIGN (_selectedColumns, [NSMutableArray array]);
       ASSIGN (_selectedRows, [NSMutableArray array]);
@@ -5992,111 +6045,21 @@ byExtendingSelection: (BOOL)flag
       _editedColumn = -1;
       _editedRow = -1;
       
-      /*
-      [self tile];
-      
-      NSLog(@"frame %@", NSStringFromRect([self frame]));
-      NSLog(@"dataSource %@", _dataSource);
-      if (_dataSource != nil)
-	{
-	  [self setDataSource: _dataSource];
-	  NSLog(@"dataSource set");
+      if (version == 2)
+        {
+	  [self tile];
 	}
+      /*
+	NSLog(@"frame %@", NSStringFromRect([self frame]));
+	NSLog(@"dataSource %@", _dataSource);
+	if (_dataSource != nil)
+	  {
+	    [self setDataSource: _dataSource];
+	    NSLog(@"dataSource set");
+	  }
       */
     }
-  else if (version == 2)
-    {
-      self = [super initWithCoder: aDecoder];
-      
-      _dataSource      = [aDecoder decodeObject];
-      _tableColumns    = RETAIN([aDecoder decodeObject]);
-      _gridColor       = RETAIN([aDecoder decodeObject]);
-      _backgroundColor = RETAIN([aDecoder decodeObject]);
-      _headerView      = RETAIN([aDecoder decodeObject]);
-      _cornerView      = RETAIN([aDecoder decodeObject]);
-      aDelegate        = [aDecoder decodeObject];
-      _target          = [aDecoder decodeObject];
-      
-      [self setDelegate: aDelegate];
-      [_headerView setTableView: self];
-      [_tableColumns makeObjectsPerformSelector: @selector(setTableView:)
-		     withObject: self];
-      
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfRows];
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfColumns];
-      
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_drawsGrid];
-      [aDecoder decodeValueOfObjCType: @encode(float) at: &_rowHeight];
-      [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
-      _intercellSpacing = [aDecoder decodeSize];
-      
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsMultipleSelection];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnSelection];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnResizing];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_autoresizesAllColumnsToFit];
-      
-      ASSIGN (_selectedColumns, [NSMutableArray array]);
-      ASSIGN (_selectedRows, [NSMutableArray array]);
-      if (_numberOfColumns)
-	_columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), 
-				       sizeof(float) * _numberOfColumns);
-      
-      _clickedRow = -1;
-      _clickedColumn = -1;
-      _selectingColumns = NO;
-      _selectedColumn = -1;
-      _selectedRow = -1;
-      _editedColumn = -1;
-      _editedRow = -1;
-      [self tile];
-    }
-  else if (version == 1)
-    {
-      self = [super initWithCoder: aDecoder];
-      
-      _dataSource      = [aDecoder decodeObject];
-      _tableColumns    = RETAIN([aDecoder decodeObject]);
-      _gridColor       = RETAIN([aDecoder decodeObject]);
-      _backgroundColor = RETAIN([aDecoder decodeObject]);
-      _headerView      = RETAIN([aDecoder decodeObject]);
-      _cornerView      = RETAIN([aDecoder decodeObject]);
-      aDelegate        = [aDecoder decodeObject];
-      _target          = [aDecoder decodeObject];
-      
-      [self setDelegate: aDelegate];
-      [_headerView setTableView: self];
-      [_tableColumns makeObjectsPerformSelector: @selector(setTableView:)
-		     withObject: self];
-      
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfRows];
-      [aDecoder decodeValueOfObjCType: @encode(int) at: &_numberOfColumns];
-      
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_drawsGrid];
-      [aDecoder decodeValueOfObjCType: @encode(float) at: &_rowHeight];
-      [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_doubleAction];
-      _intercellSpacing = [aDecoder decodeSize];
-      
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsMultipleSelection];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsEmptySelection];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnSelection];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_allowsColumnResizing];
-      
-      ASSIGN (_selectedColumns, [NSMutableArray array]);
-      ASSIGN (_selectedRows, [NSMutableArray array]);
-      if (_numberOfColumns)
-	_columnOrigins = NSZoneMalloc (NSDefaultMallocZone (), 
-				       sizeof(float) * _numberOfColumns);
-      
-      _clickedRow = -1;
-      _clickedColumn = -1;
-      _selectingColumns = NO;
-      _selectedColumn = -1;
-      _selectedRow = -1;
-      _editedColumn = -1;
-      _editedRow = -1;
-    }
-
+  
   return self;
 }
 

@@ -940,27 +940,48 @@ buttonCellFrameFromRect(NSRect cellRect)
     [coder encodeConditionalObject: _dataSource];      
 }
 
-- (id) initWithCoder: (NSCoder *)coder
+- (id) initWithCoder: (NSCoder *)aDecoder
 {
-  BOOL dummy;
+  self = [super initWithCoder: aDecoder];
   
-  self = [super initWithCoder: coder];
-  
-  [coder decodeValueOfObjCType: @encode(id) at: &_buttonCell];
-  RETAIN(_buttonCell);
-  [coder decodeValueOfObjCType: @encode(id) at: &_popUpList];
-  RETAIN(_popUpList);
-  [coder decodeValueOfObjCType: @encode(BOOL) at: &_usesDataSource];
-  [coder decodeValueOfObjCType: @encode(BOOL) at: &_hasVerticalScroller];
-  [coder decodeValueOfObjCType: @encode(BOOL) at: &_completes];
-  [coder decodeValueOfObjCType: @encode(BOOL) at: &dummy];
-  [coder decodeValueOfObjCType: @encode(int) at: &_visibleItems];
-  [coder decodeValueOfObjCType: @encode(NSSize) at: &_intercellSpacing];
-  [coder decodeValueOfObjCType: @encode(float) at: &_itemHeight];
-  [coder decodeValueOfObjCType: @encode(int) at: &_selectedItem];
+  if ([aDecoder allowsKeyedCoding])
+    {
+      //id delegate = [aDecoder decodeObjectForKey: @"NSDelegate"];
+      // FIXME: This does not match the way GNUstep currently implements
+      // the list of popup items.
+      //id table = [aDecoder decodeObjectForKey: @"NSTableView"];
 
-  if (_usesDataSource == YES)
-    [self setDataSource: [coder decodeObject]];      
+      if ([aDecoder containsValueForKey: @"NSHasVerticalScroller"])
+        {
+	  [self setHasVerticalScroller: [aDecoder decodeBoolForKey: 
+						      @"NSHasVerticalScroller"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSVisibleItemCount"])
+        {
+	  [self setNumberOfVisibleItems: [aDecoder decodeIntForKey: 
+						       @"NSVisibleItemCount"]];
+	}
+    }
+  else
+    {
+      BOOL dummy;
+      
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_buttonCell];
+      RETAIN(_buttonCell);
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_popUpList];
+      RETAIN(_popUpList);
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_usesDataSource];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_hasVerticalScroller];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_completes];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &dummy];
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &_visibleItems];
+      [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &_intercellSpacing];
+      [aDecoder decodeValueOfObjCType: @encode(float) at: &_itemHeight];
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &_selectedItem];
+
+      if (_usesDataSource == YES)
+	[self setDataSource: [aDecoder decodeObject]];      
+    }
 
   return self;
 }

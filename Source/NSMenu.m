@@ -294,6 +294,9 @@ static NSNotificationCenter *nc;
 {
   [nc removeObserver: self];
 
+  // Now clean the pointer to us stored each _items element
+  [_items makeObjectsPerformSelector: @selector(setMenu:) withObject: nil];
+
   RELEASE(_notifications);
   RELEASE(_title);
   RELEASE(_items);
@@ -393,7 +396,10 @@ static NSNotificationCenter *nc;
    * isn't added.
    */
   if ([newItem menu] != nil)
-    return;
+    {
+      NSLog(@"The object %@ is already attached to a menu, then it isn't possible to add it.\n", newItem);
+      return;
+    }
   
   [_items insertObject: newItem atIndex: index];
   _needsSizing = YES;

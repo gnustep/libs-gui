@@ -384,39 +384,66 @@
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  int version = [aDecoder versionForClassName: 
-			    @"NSTableColumn"];
-
-  if (version == 2)
+  if ([aDecoder allowsKeyedCoding])
     {
-      self = [super init];
-      _identifier = RETAIN([aDecoder decodeObject]);
+      id identifier = [aDecoder decodeObjectForKey: @"NSIdentifier"];
 
-      [aDecoder decodeValueOfObjCType: @encode(float) at: &_width];
-      [aDecoder decodeValueOfObjCType: @encode(float) at: &_min_width];
-      [aDecoder decodeValueOfObjCType: @encode(float) at: &_max_width];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_resizable];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_editable];
-
-      _headerCell = RETAIN([aDecoder decodeObject]);
-      _dataCell   = RETAIN([aDecoder decodeObject]);
-      return self;
+      self = [self initWithIdentifier: identifier];
+      if ([aDecoder containsValueForKey: @"NSDataCell"])
+        {
+	  [self setDataCell: [aDecoder decodeObjectForKey: @"NSDataCell"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSHeaderCell"])
+        {
+	  [self setHeaderCell: [aDecoder decodeObjectForKey: @"NSHeaderCell"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSIsResizeable"])
+        {
+	  [self setResizable: [aDecoder decodeBoolForKey: @"NSIsResizeable"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSWidth"])
+        {
+	  [self setWidth: [aDecoder decodeFloatForKey: @"NSWidth"]]; 
+	}
+      if ([aDecoder containsValueForKey: @"NSMinWidth"])
+        {
+	  [self setMinWidth: [aDecoder decodeFloatForKey: @"NSMinWidth"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSMaxWidth"])
+        {
+	  [self setMaxWidth: [aDecoder decodeFloatForKey: @"NSMaxWidth"]];
+	}
     }
   else
     {
+      int version = [aDecoder versionForClassName: 
+				  @"NSTableColumn"];
+      
       self = [super init];
-      _identifier = RETAIN([aDecoder decodeObject]);
-      _headerCell = RETAIN([aDecoder decodeObject]);
-      _dataCell   = RETAIN([aDecoder decodeObject]);
-      
-      [aDecoder decodeValueOfObjCType: @encode(float) at: &_width];
-      [aDecoder decodeValueOfObjCType: @encode(float) at: &_min_width];
-      [aDecoder decodeValueOfObjCType: @encode(float) at: &_max_width];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_resizable];
-      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_editable];
-      
-      return self;
+      if (version == 2)
+        {
+	  _identifier = RETAIN([aDecoder decodeObject]);
+	  [aDecoder decodeValueOfObjCType: @encode(float) at: &_width];
+	  [aDecoder decodeValueOfObjCType: @encode(float) at: &_min_width];
+	  [aDecoder decodeValueOfObjCType: @encode(float) at: &_max_width];
+	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_resizable];
+	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_editable];
+	  _headerCell = RETAIN([aDecoder decodeObject]);
+	  _dataCell   = RETAIN([aDecoder decodeObject]);
+	}
+      else
+        {
+	  _identifier = RETAIN([aDecoder decodeObject]);
+	  _headerCell = RETAIN([aDecoder decodeObject]);
+	  _dataCell   = RETAIN([aDecoder decodeObject]);
+	  [aDecoder decodeValueOfObjCType: @encode(float) at: &_width];
+	  [aDecoder decodeValueOfObjCType: @encode(float) at: &_min_width];
+	  [aDecoder decodeValueOfObjCType: @encode(float) at: &_max_width];
+	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_resizable];
+	  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_editable];
+	}
     }
+  return self;
 }
 
 @end

@@ -473,11 +473,6 @@ _addLeftBorderOffsetToRect(NSRect aRect)
       [_titleView removeFromSuperview];
       _titleView = nil;
     }
-  
-  if ((_titleView != nil) && ([_titleView menu] == nil))
-    {
-      [_titleView setMenu: _attachedMenu];
-    }
 
   // Resize it anyway.
   [self sizeToFit];

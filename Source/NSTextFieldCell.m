@@ -198,12 +198,17 @@ static NSColor	*txtCol;
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder: aDecoder];
+  self = [super initWithCoder: aDecoder];
 
   if ([aDecoder allowsKeyedCoding])
     {
       [self setBackgroundColor: [aDecoder decodeObjectForKey: @"NSBackgroundColor"]];
       [self setTextColor: [aDecoder decodeObjectForKey: @"NSTextColor"]];
+      if ([aDecoder containsValueForKey: @"NSDrawsBackground"])
+        {
+	  [self setDrawsBackground: [aDecoder decodeBoolForKey: 
+						  @"NSDrawsBackground"]];
+	}
     }
   else
     {

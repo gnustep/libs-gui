@@ -325,14 +325,22 @@ static Class controlClass;
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  id dummy;
-
   self = [super initWithCoder: aDecoder];
-  [aDecoder decodeValueOfObjCType: @encode(int) at: &_tag];
-  _target = [aDecoder decodeObject];
-  [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
-  // Don't decode _control_view, as this may no longer be valid.
-  dummy = [aDecoder decodeObject];
+
+  if ([aDecoder allowsKeyedCoding])
+    {
+    }
+  else
+    {
+      id dummy;
+
+      [aDecoder decodeValueOfObjCType: @encode(int) at: &_tag];
+      _target = [aDecoder decodeObject];
+      [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
+      // Don't decode _control_view, as this may no longer be valid.
+      dummy = [aDecoder decodeObject];
+    }
+
   return self;
 }
 

@@ -631,10 +631,16 @@ static Class textFieldCellClass;
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  [super initWithCoder: aDecoder];
+  self = [super initWithCoder: aDecoder];
 
-  [self setDelegate: [aDecoder decodeObject]];
-  [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_error_action];
+  if ([aDecoder allowsKeyedCoding])
+    {
+    }
+  else
+    {
+      [self setDelegate: [aDecoder decodeObject]];
+      [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_error_action];
+    }
   _text_object = nil;
 
   return self;

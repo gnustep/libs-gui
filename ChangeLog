@@ -1,3 +1,17 @@
+2004-02-06  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSMenu.m (-dealloc) Clean up pointer from items to menu.
+	* Source/NSMenuView.m (-update) Removed the setting of the menu
+	for the title view. Patch by Quentin Mathé
+	(gnustep-quentin@club-internet.fr) 
+	* Source/NSActionCell.m
+	* Source/NSComboBoxCell.m
+	* Source/NSTableColumn.m
+	* Source/NSTableView.m
+	* Source/NSTextField.m
+	* Source/NSTextFieldCell.m
+	Added keyed decoding. 
+
 2004-02-05 21:04  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSTitleView.m: Fix declarations after statements.
