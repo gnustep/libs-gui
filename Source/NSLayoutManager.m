@@ -30,6 +30,8 @@
 #include <AppKit/NSLayoutManager.h>
 #include "GSSimpleLayoutManager.h"
 
+#include <AppKit/NSWindow.h>
+
 // _GSRunSearchKey is an internal class which serves as the foundation for
 // all our searching. This may not be an elegant way to go about this, so
 // if someone wants to optimize this out, please do.
@@ -393,42 +395,78 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
   }
 }
 
-//
-// Setting text containers
-//
+/*
+ * Setting text containers
+ */
 - (NSArray*) textContainers
 {
   return _textContainers;
 }
 
-// Add a container to the end of the array.  Must invalidate layout of
-// all glyphs after the previous last container (ie glyphs that were
-// not previously laid out because they would not fit anywhere).
+/* Add a container to the end of the array.  Must invalidate layout of
+ * all glyphs after the previous last container (ie glyphs that were
+ * not previously laid out because they would not fit anywhere). */
 - (void) addTextContainer: (NSTextContainer*)obj
 {
   if ([_textContainers indexOfObjectIdenticalTo: obj] == NSNotFound)
   {
+    int i;
+
     [_textContainers addObject: obj];
     [obj setLayoutManager: self];
     // TODO: Invalidate layout
+    _textContainersCount++;
+    /* NB: We do not retain this here !  It's already retained in the
+     array. */
+    _firstTextView = [(NSTextContainer *)[_textContainers objectAtIndex: 0] 
+					 textView];
+    for (i = 0; i < _textContainersCount; i++)
+      {
+	NSTextView *tv = [[_textContainers objectAtIndex: i] textView]; 
+	
+	[tv _updateMultipleTextViews];
+      }
   }
 }
 
-// Insert a container into the array before the container at index.  
-// Must invalidate layout of all glyphs in the containers from the one 
-// previously at index to the last container.
+/* Insert a container into the array before the container at index.
+ * Must invalidate layout of all glyphs in the containers from the one
+ * previously at index to the last container. */
 - (void) insertTextContainer: (NSTextContainer*)aTextContainer
 		     atIndex: (unsigned)index
 {
-  [_textContainers insertObject: aTextContainer atIndex: index];
+  int i;
+
+  [_textContainers insertObject: aTextContainer  atIndex: index];
+  _textContainersCount++;
+  _firstTextView = [(NSTextContainer *)[_textContainers objectAtIndex: 0] 
+				       textView];
+  for (i = 0; i < _textContainersCount; i++)
+    {
+      NSTextView *tv = [[_textContainers objectAtIndex: i] textView]; 
+	
+      [tv _updateMultipleTextViews];
+    }
   // TODO: Invalidate layout
 }
 
-// Removes the container at index from the array.  Must invalidate layout of all 
-// glyphs in the container being removed and any containers which come after it.
+// Removes the container at index from the array.  Must invalidate
+// layout of all glyphs in the container being removed and any
+// containers which come after it.
 - (void) removeTextContainerAtIndex: (unsigned)index
 {
+  int i;
+
   [_textContainers removeObjectAtIndex: index];
+  _textContainersCount--;
+  _firstTextView = [(NSTextContainer *)[_textContainers objectAtIndex: 0] 
+				       textView];  
+  for (i = 0; i < _textContainersCount; i++)
+    {
+      NSTextView *tv = [[_textContainers objectAtIndex: i] textView]; 
+      
+      [tv _updateMultipleTextViews];
+    }
 }
 
 //
@@ -1275,19 +1313,44 @@ needs to be redrawn when a range of glyphs changes. */
   return NULL;
 }
 
-//
-// Managing the responder chain 
-//
-// Returns YES if the firstResponder of the given window is one of the
-// NSTextViews attached to this NSLayoutManager.
+/*
+ * Managing the responder chain 
+ */
 - (BOOL) layoutManagerOwnsFirstResponderInWindow: (NSWindow*)aWindow
 {
+  id firstResponder = [aWindow firstResponder];
+
+  if (_textContainersCount == 1)
+    {
+      if (_firstTextView == firstResponder)
+	{
+	  return YES;
+	}
+    }
+  else
+    {
+      int i;
+
+      for (i = 0; i < _textContainersCount; i++)
+	{
+	  id tv = [[_textContainers objectAtIndex: i] textView]; 
+	  
+	  if (tv == firstResponder)
+	    {
+	      return YES;
+	    }
+	}
+    }
+
   return NO;
 }
 
 - (NSTextView*) firstTextView 
 {
   return [[_textContainers objectAtIndex: 0] textView];
+  /* WARNING: Uncommenting the following makes initialization 
+     with the other text objects more difficult. */
+  //  return _firstTextView;
 }
 
 // This method is special in that it won't cause layout if the
