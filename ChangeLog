@@ -1,3 +1,10 @@
+1999-12-29  David Lazaro  <khelekir@encomix.es>
+
+	Changed name of function so GNUstep GUI library can be linked again.
+	* Source/tiff.m (NSTiffWrite): Changed name of NSWriteTiff to
+	NSTiffWrite.
+	* Source/libgnustep-gui.def: Same change here.
+
 1999-12-28  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSBitmapImageRep.m ([NSBitmapImageRep

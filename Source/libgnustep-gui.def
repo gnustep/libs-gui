@@ -123,4 +123,4 @@ NSTiffGetColormap
 NSTiffGetInfo
 NSTiffOpenData
 NSTiffRead
-NSWriteTiff
+NSTiffWrite

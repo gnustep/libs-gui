@@ -421,7 +421,7 @@ NSTiffRead(int imageNumber, TIFF* image, NSTiffInfo* info, char* data)
 	}
 
 int  
-NSWriteTiff(TIFF* image, NSTiffInfo* info, char* data)
+NSTiffWrite(TIFF* image, NSTiffInfo* info, char* data)
 {
   tdata_t	buf = (tdata_t)data;
   int		i;
