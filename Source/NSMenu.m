@@ -927,6 +927,7 @@ static NSZone *menuZone = NULL;
                 origin.y += (location.y - lastLocation.y);
                 [window setFrameOrigin: origin];
   
+/* FIXME: Michael wrote this crappy hack.
                 while (!aDone)
                   {
                     if ((aMenu = [aMenu attachedMenu]))
@@ -948,6 +949,7 @@ static NSZone *menuZone = NULL;
                     else
                       aDone = YES;
                   }
+*/
               }
             break;
          
