@@ -1473,7 +1473,7 @@ static NSColor	*shadowCol;
 	     */
 	    if ([controlView isFlipped])
 	      position.y += size.height;
-	    [_cell_image compositeToPoint: position operation: NSCompositeCopy];
+	    [_cell_image compositeToPoint: position operation: NSCompositeSourceOver];
 	  }
 	 break;
 
