@@ -1,3 +1,9 @@
+Mon Jan 27 04:01:32 2003  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSScroller.m ([-mouseDown:]): When the knob slot if
+	clicked, do not set the new float value and send the action if the
+	float value has not changed.
+	
 Mon Jan 27 03:16:22 2003  Benhur Stein <benhur@inf.ufsm.br>
 
 	Patch with minor changes by Nicola:
@@ -7,6 +13,8 @@ Mon Jan 27 03:16:22 2003  Benhur Stein <benhur@inf.ufsm.br>
 	-testPart:.
 	([-drawArrow:highlight:]): Highlight the cell according to the
 	argument.
+	([-trackKnob:]): Do not set the new float value and send the
+	action if the float value has not changed.
 	
 Mon Jan 27 01:21:11 2003  Nicola Pero  <n.pero@mi.flashnet.it>
 
