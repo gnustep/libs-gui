@@ -937,3 +937,4 @@ case $basic_machine in
 esac
 
 echo $basic_machine$os
+
