@@ -1,3 +1,8 @@
+2003-06-05 16:42  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSMenu.m: Check the types of all defaults values before
+	using them.
+
 2003-06-05  Adam Fedor  <fedor@gnu.org>
 
 	* GMAppKit.m (-initWithModelUnarchiver:): #ifdef out ivar assignment

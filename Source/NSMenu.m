@@ -114,7 +114,7 @@
 
 
 static NSZone	*menuZone = NULL;
-static NSString	*NSMenuLocationsKey = @"NSMenuLocations"; 
+static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
 static NSString *NSEnqueuedMenuMoveName = @"EnqueuedMoveNotificationName";
 static NSNotificationCenter *nc;
 
@@ -213,7 +213,11 @@ static NSNotificationCenter *nc;
       NSString			*locString;
 
       defaults = [NSUserDefaults standardUserDefaults];
-      menuLocations = [[defaults objectForKey: NSMenuLocationsKey] mutableCopy];
+      menuLocations = [defaults objectForKey: NSMenuLocationsKey];
+      if ([menuLocations isKindOfClass: [NSDictionary class]])
+	menuLocations = [menuLocations mutableCopy];
+      else
+	menuLocations = nil;
 
       if ([_aWindow isVisible]
 	&& ([self isTornOff] || ([NSApp mainMenu] == self)))
@@ -1179,8 +1183,11 @@ static NSNotificationCenter *nc;
 
 	  defaults  = [NSUserDefaults standardUserDefaults];
 	  menuLocations = [defaults objectForKey: NSMenuLocationsKey];
-      
-	  location = [menuLocations objectForKey: key];
+
+	  if ([menuLocations isKindOfClass: [NSDictionary class]])
+	    location = [menuLocations objectForKey: key];
+	  else
+	    location = nil;
 	  if (location && [location isKindOfClass: [NSString class]])
 	    {
 	      [self setTornOff: YES];
@@ -1324,7 +1331,11 @@ static NSNotificationCenter *nc;
     {
       defaults = [NSUserDefaults standardUserDefaults];
       menuLocations = [defaults objectForKey: NSMenuLocationsKey];
-      location = [menuLocations objectForKey: key];
+
+      if ([menuLocations isKindOfClass: [NSDictionary class]])
+	location = [menuLocations objectForKey: key];
+      else
+	location = nil;
  
       if (location && [location isKindOfClass: [NSString class]])
         {
