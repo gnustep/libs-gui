@@ -211,6 +211,9 @@ enum {
 - (void) changeFont: (id)sender;
 - (NSFont*) font;
 - (void) setFont: (NSFont*)font;
+- (void) setFont: (NSFont*)font  range: (NSRange)aRange;
+
+/* Old OpenStep name for the same method.  */
 - (void) setFont: (NSFont*)font ofRange: (NSRange)aRange;
 
 /*
