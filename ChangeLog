@@ -1,3 +1,8 @@
+Tue Nov  2  1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSCell.m: Updated to notice changes in system colors,
+	also optimised a little by caching some classes.
+
 Sat Oct 30  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	Still work in progress, but this is a first preview 

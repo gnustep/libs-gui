@@ -49,18 +49,35 @@
 #include <AppKit/NSColor.h>
 #include <AppKit/PSOperators.h>
 
+static Class	colorClass;
+static Class	cellClass;
+static Class	fontClass;
+static Class	imageClass;
 
-static	NSColor	*bgCol;
-static	NSColor	*hbgCol;
-static	NSColor	*txtCol;
-static	NSColor	*dtxtCol;
-static	NSColor	*clearCol = nil;
+static NSColor	*bgCol;
+static NSColor	*hbgCol;
+static NSColor	*txtCol;
+static NSColor	*dtxtCol;
+static NSColor	*clearCol;
+static NSColor	*shadowCol;
 
+@interface	NSCell (PrivateColor)
++ (void) _systemColorsChanged: (NSNotification*)n;
+@end
+
+@implementation	NSCell (PrivateColor)
++ (void) _systemColorsChanged: (NSNotification*)n
+{
+  ASSIGN(bgCol, [colorClass controlBackgroundColor]);
+  ASSIGN(hbgCol, [colorClass selectedControlColor]);
+  ASSIGN(txtCol, [colorClass controlTextColor]);
+  ASSIGN(dtxtCol, [colorClass disabledControlTextColor]);
+  ASSIGN(clearCol, [colorClass clearColor]);
+  ASSIGN(shadowCol, [colorClass controlDarkShadowColor]);
+}
+@end
 
 @implementation NSCell
-
-static Class	imageClass;
-static Class	cellClass;
 
 /*
  * Class methods
@@ -70,8 +87,20 @@ static Class	cellClass;
   if (self == [NSCell class])
     {
       [self setVersion: 1];
-      imageClass = [NSImage class];
+      colorClass = [NSColor class];
       cellClass = [NSCell class];
+      fontClass = [NSFont class];
+      imageClass = [NSImage class];
+      /*
+       * Watch for changes to system colors, and simulate an initial change
+       * in order to set up our defaults.
+       */
+      [[NSNotificationCenter defaultCenter]
+	addObserver: self
+	   selector: @selector(_systemColorsChanged:)
+	       name: NSSystemColorsDidChangeNotification
+	     object: nil];
+      [self _systemColorsChanged: nil];
     }
 }
 
@@ -102,20 +131,10 @@ static Class	cellClass;
   cell_float_left = 0;
   cell_float_right = 0;
   action_mask = NSLeftMouseUpMask;
-
-  if (clearCol == nil)
-    {
-      bgCol = RETAIN([NSColor controlBackgroundColor]);
-      hbgCol = RETAIN([NSColor selectedControlColor]);
-      txtCol = RETAIN([NSColor controlTextColor]);
-      dtxtCol = RETAIN([NSColor disabledControlTextColor]);
-      clearCol = RETAIN([NSColor clearColor]);
-    }
-
   return self;
 }
 
-- init
+- (id) init
 {
   return [self initTextCell: @""];
 }
@@ -132,7 +151,7 @@ static Class	cellClass;
   cell_type = NSImageCellType;
   cell_image = RETAIN(anImage);
   image_position = NSImageOnly;
-  cell_font = RETAIN([NSFont userFontOfSize: 0]);
+  cell_font = RETAIN([fontClass userFontOfSize: 0]);
 
   return self;
 }
@@ -143,7 +162,7 @@ static Class	cellClass;
 
   [self _init];
 
-  cell_font = RETAIN([NSFont userFontOfSize: 0]);
+  cell_font = RETAIN([fontClass userFontOfSize: 0]);
   contents = RETAIN(aString);
   cell_type = NSTextCellType;
   text_align = NSCenterTextAlignment;
@@ -354,7 +373,7 @@ static Class	cellClass;
 
 - (void) setStringValue: (NSString *)aString
 {
-  NSString* _string;
+  NSString	*_string;
 
   if (cell_type != NSTextCellType)
     [self setType: NSTextCellType];
@@ -437,8 +456,8 @@ static Class	cellClass;
 
 - (void) setFont: (NSFont *)fontObject
 {
-  NSAssert(fontObject == nil || [fontObject isKindOfClass: [NSFont class]],
-	NSInvalidArgumentException);
+  NSAssert(fontObject == nil || [fontObject isKindOfClass: fontClass],
+    NSInvalidArgumentException);
 
   ASSIGN(cell_font, fontObject);
 }
@@ -635,10 +654,10 @@ static Class	cellClass;
 
 - (void) _drawText: (NSString *) title inFrame: (NSRect) cellFrame
 {
-  NSColor *textColor;
-  NSFont *font;
-  float titleWidth;
-  float titleHeight;
+  NSColor	*textColor;
+  NSFont	*font;
+  float		titleWidth;
+  float 	titleHeight;
   NSDictionary	*dict;
 
   if (!title)
@@ -757,7 +776,7 @@ static Class	cellClass;
   // draw the border if needed
   if ([self isBordered])
     {
-      [[NSColor controlDarkShadowColor] set];
+      [shadowCol set];
       NSFrameRect(cellFrame);
     }
   else if ([self isBezeled])
@@ -1097,7 +1116,7 @@ static Class	cellClass;
  */
 - (NSComparisonResult) compare: (id)otherCell
 {
-  if ([otherCell isKindOfClass: [NSCell class]] == NO)
+  if ([otherCell isKindOfClass: cellClass] == NO)
     [NSException raise: NSBadComparisonException
 		format: @"NSCell comparison with non-NSCell"];
   if (cell_type != NSTextCellType
