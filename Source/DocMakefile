@@ -231,8 +231,10 @@ after-clean::
 	$(RM) GuiAdditions.gsdoc
 	if [ -d Gui ]; then \
 	  $(RM) Gui/stamp; \
+	  $(RM) Gui/dependencies; \
 	  rmdir Gui; \
 	  $(RM) GuiAdditions/stamp; \
+	  $(RM) GuiAdditions/dependencies; \
 	  rmdir GuiAdditions; \
 	fi
 

@@ -1,3 +1,7 @@
+2003-10-05  Adam Fedor  <fedor@gnu.org>
+
+	* Source/DocMakefile: Remove dependencies file when cleaning.
+
 2003-10-03  Adam Fedor  <fedor@gnu.org>
 
 	* configure.ac: Use -Wl for netbsd linker options.
