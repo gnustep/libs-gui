@@ -69,6 +69,8 @@ static inline void _setFloatValue (NSTextField *field, float size)
 }
 
 
+NSText *sizeFieldText = nil;
+
 /* Implemented in NSBrowser */
 @interface GSBrowserTitleCell : NSTextFieldCell
 @end
@@ -328,6 +330,29 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   return self;
 }
 
+/*
+ * Overriding fieldEditor:forObject: because we don't want the field
+ * editor (which is used when you type in the size browser) to use the
+ * font panel, otherwise typing in the size browser can modify the
+ * currently selected font in unexpected ways !  */
+- (NSText *) fieldEditor: (BOOL)createFlag
+	       forObject: (id)anObject
+{
+  if (([anObject respondsToSelector: @selector(tag)])
+      && ([anObject tag] == NSFPSizeField))
+    {
+      if ((sizeFieldText == nil) && createFlag)
+        {
+          sizeFieldText = [NSText new];
+          [sizeFieldText setUsesFontPanel: NO];
+          [sizeFieldText setFieldEditor: YES];
+        }
+      return sizeFieldText;
+    }
+
+  return [super fieldEditor: createFlag  forObject: anObject];
+}
+
 @end
 
 @implementation NSFontPanel (Privat)
@@ -373,7 +398,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   self = [super initWithContentRect: contentRect 
 			  styleMask: style
 			    backing: NSBackingStoreRetained
-			      defer: NO
+			      defer: YES
 			     screen: nil];
   [self setTitle: @"Font Panel"];
 
@@ -541,6 +566,15 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   //[self setDefaultButtonCell: [setButton cell]];
   RELEASE(setButton);
 
+  // set up the next key view chain
+  [familyBrowser setNextKeyView: faceBrowser];
+  [faceBrowser setNextKeyView: sizeField];
+  [sizeField setNextKeyView: sizeBrowser];
+  [sizeBrowser setNextKeyView: revertButton];
+  [revertButton setNextKeyView: previewButton];
+  [previewButton setNextKeyView: setButton];
+  [setButton setNextKeyView: familyBrowser];
+
   [v addSubview: topArea];
   RELEASE(topArea);
 
@@ -555,6 +589,8 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   RELEASE(bottomArea);
 
   [self setMinSize: [self frame].size];
+
+  [self setInitialFirstResponder: setButton];
   
   return self;
 }
