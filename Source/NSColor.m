@@ -2,10 +2,12 @@
 
    <abstract>The colorful color class</abstract>
 
-   Copyright (C) 1996, 1998 Free Software Foundation, Inc.
+   Copyright (C) 1996, 1998, 2001, 2002 Free Software Foundation, Inc.
 
    Author: Scott Christley <scottc@net-community.com>
    Date: 1996
+   Author: Fred Kiefer <fredkiefer@gmx.de>
+   Date: 2001, 2002
 
    This file is part of the GNUstep GUI Library.
 
@@ -49,10 +51,13 @@ static Class	NSColorClass;
 {
   NSString *_catalog_name;
   NSString *_color_name;
+  NSString *_cached_name_space;
+  NSColor *_cached_color;
 }
 
 - (NSColor*) initWithCatalogName: (NSString *)listName
 		       colorName: (NSString *)colorName;
+- (void) recache;
 
 @end
 
@@ -154,110 +159,102 @@ static Class	NSColorClass;
 static BOOL gnustep_gui_ignores_alpha = YES;
 static NSColorList		*systemColors = nil;
 static NSMutableDictionary	*colorStrings = nil;
-static SEL cwkSel;
-static NSColor*	(*cwkImp)(NSColorList*, SEL, NSString*);
+static NSMutableDictionary	*systemDict = nil;
 
 static
 void initSystemColors()
 {
-  NSString *white;
-  NSString *lightGray;
-  NSString *gray;
-  NSString *darkGray;
-  NSString *black;
+  systemColors = [NSColorList colorListNamed: @"System"];
+  if (systemColors == nil)
+    {
+      NSString *white;
+      NSString *lightGray;
+      NSString *gray;
+      NSString *darkGray;
+      NSString *black;
+      NSEnumerator *e;
+      NSString *r;
 
-  // Set up a dictionary containing the names of all the system colors
-  // as keys and with colors in string format as values.
-  white = [NSString stringWithFormat: @"%f %f %f",
-		    NSWhite, NSWhite, NSWhite];
-  lightGray = [NSString stringWithFormat: @"%f %f %f",
-			NSLightGray, NSLightGray, NSLightGray];
-  gray = [NSString stringWithFormat: @"%f %f %f",
-		   NSGray, NSGray, NSGray];
-  darkGray = [NSString stringWithFormat: @"%f %f %f",
-		       NSDarkGray, NSDarkGray, NSDarkGray];
-  black = [NSString stringWithFormat: @"%f %f %f",
-		    NSBlack, NSBlack, NSBlack];
+      // Set up default system colors
+      systemColors = [[NSColorList alloc] initWithName: @"System"];
 
-  colorStrings = [[NSMutableDictionary alloc]
-		     initWithObjectsAndKeys:
+      // Set up a dictionary containing the names of all the system colors
+      // as keys and with colors in string format as values.
+      white = [NSString stringWithFormat: @"%f %f %f",
+			NSWhite, NSWhite, NSWhite];
+      lightGray = [NSString stringWithFormat: @"%f %f %f",
+			    NSLightGray, NSLightGray, NSLightGray];
+      gray = [NSString stringWithFormat: @"%f %f %f",
+		       NSGray, NSGray, NSGray];
+      darkGray = [NSString stringWithFormat: @"%f %f %f",
+			   NSDarkGray, NSDarkGray, NSDarkGray];
+      black = [NSString stringWithFormat: @"%f %f %f",
+			NSBlack, NSBlack, NSBlack];
+      
+      colorStrings = [[NSMutableDictionary alloc]
+		       initWithObjectsAndKeys:
 			 lightGray, @"controlBackgroundColor",
-		     lightGray, @"controlColor",
-		     lightGray, @"controlHighlightColor",
-		     white, @"controlLightHighlightColor",
-		     darkGray, @"controlShadowColor",
-		     black, @"controlDarkShadowColor",
-		     black, @"controlTextColor",
-		     darkGray, @"disabledControlTextColor",
-		     gray, @"gridColor",
-		     lightGray, @"headerColor",
-		     black, @"headerTextColor",
-		     white, @"highlightColor",
-		     black, @"keyboardFocusIndicatorColor",
-		     lightGray, @"knobColor",
-		     gray, @"scrollBarColor",
-		     white, @"selectedControlColor",
-		     black, @"selectedControlTextColor",
-		     lightGray, @"selectedKnobColor",
-		     white, @"selectedMenuItemColor",
-		     black, @"selectedMenuItemTextColor",
-		     lightGray, @"selectedTextBackgroundColor",
-		     black, @"selectedTextColor",
-		     black, @"shadowColor",
-		     white, @"textBackgroundColor",
-		     black, @"textColor",
-		     lightGray, @"windowBackgroundColor",
-		     black, @"windowFrameColor",
-		     white, @"windowFrameTextColor",
-		     //gray, @"windowFrameColor",
-		     //black, @"windowFrameTextColor",
-		     nil];
+		       lightGray, @"controlColor",
+		       lightGray, @"controlHighlightColor",
+		       white, @"controlLightHighlightColor",
+		       darkGray, @"controlShadowColor",
+		       black, @"controlDarkShadowColor",
+		       black, @"controlTextColor",
+		       darkGray, @"disabledControlTextColor",
+		       gray, @"gridColor",
+		       lightGray, @"headerColor",
+		       black, @"headerTextColor",
+		       white, @"highlightColor",
+		       black, @"keyboardFocusIndicatorColor",
+		       lightGray, @"knobColor",
+		       gray, @"scrollBarColor",
+		       white, @"selectedControlColor",
+		       black, @"selectedControlTextColor",
+		       lightGray, @"selectedKnobColor",
+		       white, @"selectedMenuItemColor",
+		       black, @"selectedMenuItemTextColor",
+		       lightGray, @"selectedTextBackgroundColor",
+		       black, @"selectedTextColor",
+		       black, @"shadowColor",
+		       white, @"textBackgroundColor",
+		       black, @"textColor",
+		       lightGray, @"windowBackgroundColor",
+		       black, @"windowFrameColor",
+		       white, @"windowFrameTextColor",
+		       //gray, @"windowFrameColor",
+		       //black, @"windowFrameTextColor",
+		       nil];
 
-  // Set up default system colors
-  systemColors = [[NSColorList alloc] initWithName: @"System"];
-  cwkSel = @selector(colorWithKey:);
-  cwkImp = (NSColor*(*)(NSColorList*, SEL, NSString*))
-      [systemColors methodForSelector: cwkSel];
+      e = [colorStrings keyEnumerator];
+  
+      while ((r = (NSString *)[e nextObject])) 
+	{
+	  NSString *cs = [colorStrings objectForKey: r];
+	  NSColor *c = [NSColorClass colorFromString: cs];
+
+	  if (c != nil)
+	    [systemColors setColor: c forKey: r];
+	}
+      
+      [systemColors writeToFile: nil];
+    }
+
+  systemDict = [NSMutableDictionary new];
 }
 
-/*
- * According to the specification this should return named colours, but
- * as we are currently missing the conversions to the device colour space
- * in all the places where this colours are used, we better return
- * the real colours here.
- */
 static NSColor*
 systemColorWithName(NSString *name)
 {
-  NSString	*rep;
-  NSColor	*color = (*cwkImp)(systemColors, cwkSel, name);
+  NSColor* col = [systemDict objectForKey: name];
 
-  if (color != nil)
-    return color;
-
-  rep = [colorStrings objectForKey: name];
-  if (rep == nil)
+  if (col == nil)
     {
-      NSLog(@"Request for unknown system color - '%@'\n", name);
-      return nil;
+      col = [NSColor colorWithCatalogName: @"System"
+		     colorName: name];
+      [systemDict setObject: col forKey: name];
     }
 
-  if (NSColorClass == 0)
-    {
-      color = [NSColor colorFromString: rep];
-    }
-  else
-    {
-      color = [NSColorClass colorFromString: rep];
-    }
-  if (color == nil)
-    {
-      NSLog(@"System color '%@' has bad string rep - '%@'\n", name, rep);
-      return nil;
-    }
-  [systemColors setColor: color forKey: name];
-
-  return color;
+  return col;
 }
 
 @implementation NSColor
@@ -1296,6 +1293,8 @@ systemColorWithName(NSString *name)
 		  else
 		    {
 		      [systemColors setColor: color forKey: key];
+		      // Refresh the cach for this named colour
+		      [[systemDict objectForKey: key] recache];
 		    }
 		}
 	    }
@@ -1328,6 +1327,8 @@ systemColorWithName(NSString *name)
 {
   RELEASE(_catalog_name);
   RELEASE(_color_name);
+  RELEASE(_cached_name_space);
+  RELEASE(_cached_color);
   [super dealloc];
 }
 
@@ -1348,7 +1349,9 @@ systemColorWithName(NSString *name)
 
       aCopy->_catalog_name = [_catalog_name copyWithZone: aZone];
       aCopy->_color_name = [_color_name copyWithZone: aZone];
-      return aCopy;
+      aCopy->_cached_name_space = nil;
+      aCopy->_cached_color = nil;
+	 return aCopy;
     }
 }
 
@@ -1429,11 +1432,29 @@ systemColorWithName(NSString *name)
       return self;
     }
 
+
+  // Is there a cache hit?
+  // FIXME How would we detect that the cache has become invalid by a
+  // change to the colour list?
+  if ([colorSpace isEqualToString: _cached_name_space])
+    {
+      return _cached_color;
+    }
+
   list = [NSColorList colorListNamed: _catalog_name];
   real = [list colorWithKey: _color_name];
 
-  return [real colorUsingColorSpaceName: colorSpace
-	       device: deviceDescription];
+  ASSIGN(_cached_color, [real colorUsingColorSpaceName: colorSpace
+		       device: deviceDescription]);
+  ASSIGN(_cached_name_space, colorSpace);
+
+  return _cached_color;
+}
+
+- (void) recache
+{
+  DESTROY(_cached_name_space);
+  DESTROY(_cached_color);
 }
 
 //
