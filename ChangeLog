@@ -1,3 +1,31 @@
+Wed Nov 17  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSBox.m ([-isOpaque]): Added method.
+	* Source/NSBrowser.m ([-isOpaque]): Added method.
+	* Source/NSBrowserCell.m ([-isOpaque]): Added method.
+	* Source/NSButtonCell.m ([-isOpaque]): Updated.
+	* Source/NSColorWell.m ([-isOpaque]): Added method.
+	* Source/NSControl.m ([-isOpaque]): Added method.
+	* Source/NSFormCell.m ([-isOpaque]): Improved.
+	* Source/NSMatrix.m ([-isOpaque]): Added method.
+	* Source/NSSliderCell.m ([-isOpaque]): Added method.
+	* Source/NSTabView.m ([-isOpaque]): Added method.
+	* Source/NSText.m ([-isOpaque]): Added method.
+	* Source/NSTextFieldCell.m ([-isOpaque]): Added method.
+	* Source/NSTextFieldCell.m: Tiny optimization by using _isOpaque.
+	* Headers/AppKit/NSTextFieldCell.h: Added ivar _isOpaque.
+	
+	* Source/NSCell.m ([-drawInteriorWithFrame:inView:]): Removed
+	[unused] drawing of background.  Now the drawing is minimal, but
+ 	easier to subclass.  ([-setUpFieldEditorAttributes:]): Removed 
+	setting of background.
+	* Source/NSBrowserCell.m ([-editWithFrame:inView:editor:delegate:
+	event:]), ([-endEditing:]), ([-_handleKeyEvent:]): Useless, removed.
+	* Headers/AppKit/NSButtonCell.h: Removed declaration of 
+	-performClick: to pacify the compiler.
+	* Source/NSMatrix.m ([-nextText]), ([-previousText]),
+ 	([-setNextText:]), ([-setPreviousText:]): Implemented.
+		
 1999-11-16  David Lazaro Saz  <khelekir@encomix.es>
 
 	* Source/NSMenu.m: Almost total rewrite of some of the parts. Added
