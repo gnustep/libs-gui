@@ -60,6 +60,24 @@ APPKIT_EXPORT NSString *NSDataLinkFileNameExtension;
 @interface NSDataLink : NSObject <NSCoding>
 {
   // Attributes
+  @private
+  // link info.
+  NSDataLinkNumber      linkNumber;
+  NSDataLinkDisposition disposition;
+  NSDataLinkUpdateMode  updateMode;
+  NSDataLinkManager    *manager;
+
+  // info about the source.
+  NSDate               *lastUpdateTime;
+  NSString             *sourceApplicationName;
+  NSString             *sourceFilename;
+  NSSelection          *sourceSelection;
+  NSArray              *types;
+
+  // info about the destination
+  NSString             *destinationApplicationName;
+  NSString             *destinationFilename;
+  NSSelection          *destinationSelection;
 }
 
 //
@@ -111,13 +129,6 @@ APPKIT_EXPORT NSString *NSDataLinkFileNameExtension;
 - (void)setUpdateMode:(NSDataLinkUpdateMode)mode;
 - (BOOL)updateDestination;
 - (NSDataLinkUpdateMode)updateMode;
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder: (NSCoder *)aCoder;
-- initWithCoder: (NSCoder *)aDecoder;
-
 @end
 
 #endif // _GNUstep_H_NSDataLink

@@ -37,7 +37,7 @@
   if (self == [NSDataLink class])
     {
       // Initial version
-      [self setVersion:1];
+      [self setVersion: 1];
     }
 }
 
@@ -54,9 +54,15 @@
 
 - (id)initLinkedToSourceSelection:(NSSelection *)selection
 			managedBy:(NSDataLinkManager *)linkManager
-supportingTypes:(NSArray *)newTypes
+		  supportingTypes:(NSArray *)newTypes
 {
-  return nil;
+  if((self = [self init]) != nil)
+    {
+      ASSIGN(sourceSelection,selection);
+      ASSIGN(manager,linkManager);
+      ASSIGN(types,newTypes);
+    }
+  return self;
 }
 
 - (id)initWithContentsOfFile:(NSString *)filename
@@ -90,17 +96,17 @@ supportingTypes:(NSArray *)newTypes
 //
 - (NSDataLinkDisposition)disposition
 {
-  return 0;
+  return disposition;
 }
 
 - (NSDataLinkNumber)linkNumber
 {
-  return 0;
+  return linkNumber;
 }
 
 - (NSDataLinkManager *)manager
 {
-  return nil;
+  return manager;
 }
 
 //
@@ -108,7 +114,7 @@ supportingTypes:(NSArray *)newTypes
 //
 - (NSDate *)lastUpdateTime
 {
-  return nil;
+  return lastUpdateTime;
 }
 
 - (BOOL)openSource
@@ -118,22 +124,22 @@ supportingTypes:(NSArray *)newTypes
 
 - (NSString *)sourceApplicationName
 {
-  return nil;
+  return sourceApplicationName;
 }
 
 - (NSString *)sourceFilename
 {
-  return nil;
+  return sourceFilename;
 }
 
 - (NSSelection *)sourceSelection
 {
-  return nil;
+  return sourceSelection;
 }
 
 - (NSArray *)types
 {
-  return nil;
+  return types;
 }
 
 //
@@ -141,17 +147,17 @@ supportingTypes:(NSArray *)newTypes
 //
 - (NSString *)destinationApplicationName
 {
-  return nil;
+  return destinationApplicationName;
 }
 
 - (NSString *)destinationFilename
 {
-  return nil;
+  return destinationFilename;
 }
 
 - (NSSelection *)destinationSelection
 {
-  return nil;
+  return destinationSelection;
 }
 
 //
@@ -163,10 +169,13 @@ supportingTypes:(NSArray *)newTypes
 }
 
 - (void)noteSourceEdited
-{}
+{
+}
 
 - (void)setUpdateMode:(NSDataLinkUpdateMode)mode
-{}
+{
+  updateMode = mode;
+}
 
 - (BOOL)updateDestination
 {
@@ -175,7 +184,7 @@ supportingTypes:(NSArray *)newTypes
 
 - (NSDataLinkUpdateMode)updateMode
 {
-  return 0;
+  return updateMode;
 }
 
 //
@@ -183,10 +192,44 @@ supportingTypes:(NSArray *)newTypes
 //
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
+  [aCoder encodeValueOfObjCType: @encode(int) at: &linkNumber];
+  [aCoder encodeValueOfObjCType: @encode(int) at: &disposition];
+  [aCoder encodeValueOfObjCType: @encode(int) at: &updateMode];
+  [aCoder encodeValueOfObjCType: @encode(id)  at: &manager];
+  [aCoder encodeValueOfObjCType: @encode(id)  at: &lastUpdateTime];
+  [aCoder encodeValueOfObjCType: @encode(id)  at: &sourceApplicationName];
+  [aCoder encodeValueOfObjCType: @encode(id)  at: &sourceFilename];
+  [aCoder encodeValueOfObjCType: @encode(id)  at: &sourceSelection];
+  [aCoder encodeValueOfObjCType: @encode(id)  at: &types];
+  [aCoder encodeValueOfObjCType: @encode(id)  at: &destinationApplicationName];
+  [aCoder encodeValueOfObjCType: @encode(id)  at: &destinationFilename];
+  [aCoder encodeValueOfObjCType: @encode(id)  at: &destinationSelection];
 }
 
-- (id) initWithCoder: (NSCoder*)aDecoder
+- (id) initWithCoder: (NSCoder*)aCoder
 {
+  int version = [aCoder versionForClassName: @"NSDataLink"];
+
+  if(version == 1)
+    {
+      [aCoder decodeValueOfObjCType: @encode(int) at: &linkNumber];
+      [aCoder decodeValueOfObjCType: @encode(int) at: &disposition];
+      [aCoder decodeValueOfObjCType: @encode(int) at: &updateMode];
+      [aCoder decodeValueOfObjCType: @encode(id)  at: &manager];
+      [aCoder decodeValueOfObjCType: @encode(id)  at: &lastUpdateTime];
+      [aCoder decodeValueOfObjCType: @encode(id)  at: &sourceApplicationName];
+      [aCoder decodeValueOfObjCType: @encode(id)  at: &sourceFilename];
+      [aCoder decodeValueOfObjCType: @encode(id)  at: &sourceSelection];
+      [aCoder decodeValueOfObjCType: @encode(id)  at: &types];
+      [aCoder decodeValueOfObjCType: @encode(id)  at: &destinationApplicationName];
+      [aCoder decodeValueOfObjCType: @encode(id)  at: &destinationFilename];
+      [aCoder decodeValueOfObjCType: @encode(id)  at: &destinationSelection];
+    }
+  else
+    {
+      NSLog(@"No decoder for NSDataLink version #%d",version);
+    }
+
   return self;
 }
 

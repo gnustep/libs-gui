@@ -1,6 +1,11 @@
+2004-01-24 15:17  Gregory John Casamento  <greg_casamento@yahoo.com>
+
+	* Headers/AppKit/NSDataLink.h: Added ivars.
+	* Source/NSDataLink.m: Added implementation of some methods.
+
 2004-01-23 21:32  Gregory John Casamento  <greg_casamento@yahoo.com>
 
-	* GSNibTemplates.m: Removal of some commented out test code.
+	* Source/GSNibTemplates.m: Removal of some commented out test code.
 
 2004-01-22 13:15  Alexander Malmberg <alexander@malmberg.org>
 
