@@ -31,8 +31,10 @@
 #include <AppKit/NSImage.h>
 #include <AppKit/NSMatrix.h>
 #include <AppKit/NSMenu.h>
+#include <AppKit/NSMenuView.h>
 #include <AppKit/NSPopUpButton.h>
 #include <AppKit/NSPopUpButtonCell.h>
+#include <AppKit/NSWindow.h>
 #include <AppKit/PSOperators.h>
 
 /* The image to use in a specific popupbutton is
