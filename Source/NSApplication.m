@@ -1537,11 +1537,11 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 		    }
 		  if ([aWindow isDocumentEdited])
 		    {
-		      newImage = [NSImage imageNamed: @"common_CloseBroken"];
+		      newImage = [NSImage imageNamed: @"common_WMCloseBroken"];
 		    }
 		  else
 		    {
-		      newImage = [NSImage imageNamed: @"common_Close"];
+		      newImage = [NSImage imageNamed: @"common_WMClose"];
 		    }
 		  if (newImage != oldImage)
 		    {
