@@ -35,6 +35,7 @@
   @private
     NSWindow            *_window;
     NSString            *_windowNibName;
+    NSString            *_windowNibPath;
     NSString            *_windowFrameAutosaveName;
     NSDocument          *_document;
     NSArray             *_topLevelObjects;
@@ -53,26 +54,35 @@
 - (id) initWithWindowNibName: (NSString *)windowNibName;  // self is the owner
 - (id) initWithWindowNibName: (NSString *)windowNibName  owner: (id)owner;
 - (id) initWithWindow: (NSWindow *)window;
+- (id) initWithWindowNibPath: (NSString *)windowNibPath
+		       owner: (id)owner;
 
-- (NSString *) windowNibName;
-- (id) owner;
-- (void) setDocument: (NSDocument *)document;
-- (id) document;
-- (void) setWindowFrameAutosaveName: (NSString *)name;
-- (NSString *) windowFrameAutosaveName;
-- (void) setShouldCloseDocument: (BOOL)flag;
-- (BOOL) shouldCloseDocument;
-- (void) setShouldCascadeWindows: (BOOL)flag;
-- (BOOL) shouldCascadeWindows;
-- (void) close;
-- (NSWindow *) window;
+- (void) loadWindow;
 - (IBAction) showWindow: (id)sender;
-- (NSString *) windowTitleForDocumentDisplayName: (NSString *)displayName;
 - (BOOL) isWindowLoaded;
+- (NSWindow *) window;
+- (void) setWindow: (NSWindow *)aWindow;
 - (void) windowDidLoad;
 - (void) windowWillLoad;
-- (void) loadWindow;
 
+- (void) setDocument: (NSDocument *)document;
+- (id) document;
+- (void) setDocumentEdited: (BOOL)flag;
+
+- (void) close;
+- (BOOL) shouldCloseDocument;
+- (void) setShouldCloseDocument: (BOOL)flag;
+
+- (id) owner;
+- (NSString *) windowNibName;
+- (NSString *) windowNibPath;
+
+- (BOOL) shouldCascadeWindows;
+- (void) setShouldCascadeWindows: (BOOL)flag;
+- (void) setWindowFrameAutosaveName: (NSString *)name;
+- (NSString *) windowFrameAutosaveName;
+- (NSString *) windowTitleForDocumentDisplayName: (NSString *)displayName;
+- (void) synchronizeWindowTitleWithDocumentName;
 @end
 
 #endif /* _GNUstep_H_NSWindowController */
