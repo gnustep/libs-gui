@@ -245,7 +245,7 @@ static NSImage	*arrowImageH = nil;
   if (_mcell_belongs_to_popupbutton && _cell.image_position)
     {
       /* Special case: draw image on the extreme right [FIXME check the distance]*/
-      cellFrame.origin.x  += cellFrame.size.width - mcell_imageWidth - 2;
+      cellFrame.origin.x  += cellFrame.size.width - mcell_imageWidth - 4;
       cellFrame.size.width = mcell_imageWidth;
       return cellFrame;
     }
@@ -353,13 +353,28 @@ static NSImage	*arrowImageH = nil;
 - (void) drawBorderAndBackgroundWithFrame:(NSRect)cellFrame
 				  inView:(NSView *)controlView
 {
-  if (_cell.is_highlighted && (_highlightsByMask & NSPushInCellMask))
+  if (_mcell_belongs_to_popupbutton)
     {
-      NSDrawGrayBezel(cellFrame, NSZeroRect);
+      cellFrame.origin.x--;
+      if (_cell.is_highlighted && (_highlightsByMask & NSPushInCellMask))
+	{
+	  NSDrawGrayBezel(cellFrame, NSZeroRect);
+	}
+      else
+	{
+	  NSDrawButton(cellFrame, NSZeroRect);
+	}
     }
   else
     {
-      NSDrawButton(cellFrame, NSZeroRect);
+      if (_cell.is_highlighted && (_highlightsByMask & NSPushInCellMask))
+        {
+          NSDrawGrayBezel(cellFrame, NSZeroRect);
+        }
+      else
+        {
+          NSDrawButton(cellFrame, NSZeroRect);
+        }
     }
 }
 
@@ -605,7 +620,16 @@ static NSImage	*arrowImageH = nil;
 
   // Set cell's background color
   [_backgroundColor set];
-  NSRectFill(cellFrame);
+  if (_mcell_belongs_to_popupbutton)
+    {
+      cellFrame.origin.x--;
+      NSRectFill(cellFrame);
+      cellFrame.origin.x++;
+    }
+  else
+    {
+      NSRectFill(cellFrame);
+    }
 
   /*
    * Determine the image and the title that will be
