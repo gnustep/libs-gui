@@ -92,10 +92,6 @@ static id validationCenter;
 
 // Validation support
 
-@interface NSView (ToolbarValidation)
-- (void) mouseDown: (NSEvent *)event;
-@end
-
 @interface GSValidationObject : NSObject
 {
   NSMutableArray *_observers;
@@ -149,17 +145,6 @@ static id validationCenter;
 @end
 
 // Validation mechanism
-
-@implementation NSView (ToolbarValidation)
-
-- (void) mouseDown: (NSEvent *)event
-{
-  GSValidationManager *validationManager = 
-    [[GSValidationCenter sharedValidationCenter] _validationManagerWithWindow: [self window]];
-
-  [validationManager performSelector: @selector(validate) withObject: nil afterDelay: 0.1];
-}
-@end
 
 @implementation GSValidationObject
 
@@ -223,14 +208,14 @@ static id validationCenter;
       NSView *vw = [window _windowView];
       
       ASSIGN(_window, window);
+      [nc addObserver: self selector: @selector(windowDidUpdate:) 
+        name: NSWindowDidUpdateNotification object: _window];
       [nc addObserver: self selector: @selector(windowWillClose:) 
         name: NSWindowWillCloseNotification object: _window];
 						
       ASSIGN(_trackingRectView, vw);
-      _trackingRect = [_trackingRectView addTrackingRect: [_trackingRectView bounds] 
-                                                   owner: self 
-			                        userData: nil 
-			                    assumeInside: NO];
+      _trackingRect = [_trackingRectView addTrackingRect: 
+        [_trackingRectView bounds] owner: self userData: nil assumeInside: NO];
     }
     
   return self;
@@ -238,7 +223,9 @@ static id validationCenter;
 
 - (void) invalidate
 {
-  [_trackingRectView removeTrackingRect: _trackingRect]; // tracking rect retains us, that is normal ?
+  [_trackingRectView removeTrackingRect: _trackingRect]; 
+  // tracking rect retains us, that is normal ?
+  
   [_validationTimer invalidate]; // timer idem
 }
 
@@ -275,7 +262,8 @@ static id validationCenter;
 					       selector: @selector(validate) 
 					       userInfo: nil 
 					        repeats: YES];
-      [[NSRunLoop currentRunLoop] addTimer: _validationTimer forMode: NSDefaultRunLoopMode];
+      [[NSRunLoop currentRunLoop] addTimer: _validationTimer 
+                                   forMode: NSDefaultRunLoopMode];
       [self validate];
     }
 }
@@ -289,8 +277,22 @@ static id validationCenter;
 
 - (void) validate
 { 
-  [[[GSValidationCenter sharedValidationCenter]
-     _validationObjectsWithWindow: _window] makeObjectsPerformSelector: @selector(validate)];
+  [[[GSValidationCenter sharedValidationCenter] 
+    _validationObjectsWithWindow: _window]  
+    makeObjectsPerformSelector: @selector(validate)];
+}
+
+
+- (void) windowDidUpdate: (NSNotification *)notification
+{
+  if ([[NSApp currentEvent] type] == NSLeftMouseUp)
+    {
+      GSValidationManager *validationManager = 
+      [[GSValidationCenter sharedValidationCenter] 
+        _validationManagerWithWindow: [notification object]];
+
+      [validationManager performSelector: @selector(validate) withObject: nil];
+    }
 }
 
 @end
@@ -312,8 +314,14 @@ static id validationCenter;
       _validationManagers = [[NSMutableArray alloc] init];
       _validationObjects = [[NSMutableArray alloc] init];
       
-      [nc addObserver: self selector: @selector(viewWillMove:) name: @"GSViewWillMoveToWindow" object: nil];
-      [nc addObserver: self selector: @selector(viewDidMove:) name: @"GSViewDidMoveToWindow" object: nil];
+      [nc addObserver: self 
+             selector: @selector(viewWillMove:) 
+	         name: @"GSViewWillMoveToWindow" 
+	       object: nil];
+      [nc addObserver: self 
+             selector: @selector(viewDidMove:) 
+	         name: @"GSViewDidMoveToWindow" 
+	       object: nil];
     }
   
   return self;
@@ -328,9 +336,11 @@ static id validationCenter;
 - (void) viewDidMove: (NSNotification *)notification
 {
   NSWindow *window = [[notification object] window];
-  GSValidationManager *validationManager = [self _validationManagerWithWindow : _prevWindow];
+  GSValidationManager *validationManager = 
+    [self _validationManagerWithWindow : _prevWindow];
   
-  if (validationManager != nil && [[self _validationObjectsWithWindow: _prevWindow] count] == 0)
+  if (validationManager != nil 
+    && [[self _validationObjectsWithWindow: _prevWindow] count] == 0)
     {
       [validationManager invalidate];
       [_validationManagers removeObject: validationManager];
@@ -352,14 +362,16 @@ static id validationCenter;
 
 /* validationObjectWithView: opposite method
  * Remove the object in the validation objects list.
- * Release the validation manager associated to the window (related to the validation object and its 
- * view) in the case there are no other validation objects related to this window.
+ * Release the validation manager associated to the window (related to the
+ * validation object and its view) in the case there are no other validation
+ * objects related to this window.
  */
 - (void) unregisterValidationObject: (GSValidationObject *)validationObject
 {
   int index;
   
-  if ((index = [_validationObjects indexOfObject: validationObject]) != NSNotFound)
+  if ((index = [_validationObjects indexOfObject: validationObject]) 
+    != NSNotFound) 
     {
       NSWindow *window = [[validationObject view] window];
       
@@ -367,7 +379,8 @@ static id validationCenter;
       
       if ([[self _validationObjectsWithWindow: window] count] == 0)
 	{ 
-	  GSValidationManager *validationManager = [self _validationManagerWithWindow: window];
+	  GSValidationManager *validationManager = 
+	    [self _validationManagerWithWindow: window];
 	  [validationManager invalidate];
 	  [_validationManagers removeObject: validationManager];
 	}
@@ -375,8 +388,9 @@ static id validationCenter;
 }
 
 /* Return the validation object associated with the parameter view.
- * If there is no such validation object, create it by using view and then check that an associated 
- * validation manager (bound to the window which the view depends on) exists.
+ * If there is no such validation object, create it by using view and then check
+ * that an associated validation manager (bound to the window which the view
+ * depends on) exists.
  * If there is no such validation manager, create it.
  */
 - (GSValidationObject *) validationObjectWithView: (NSView *)view
@@ -387,11 +401,13 @@ static id validationCenter;
   
   if (view == nil)
     {
-      NSLog(@"Validation object cannot be created because the view is nil");
+      NSDebugLog(@"Validation object cannot be created because the view is \
+        nil"); 
       return nil;
     }
   
-  validationObject = [[_validationObjects objectsWithValue: view forKey: @"_view"] objectAtIndex: 0];
+  validationObject = [[_validationObjects objectsWithValue: view 
+    forKey: @"_view"] objectAtIndex: 0];
   if (validationObject == nil)
     {
       validationObject = [[GSValidationObject alloc] initWithView: view];
@@ -403,7 +419,8 @@ static id validationCenter;
       validationManager = [self _validationManagerWithWindow: window];
       if (validationManager == nil)
         {
-	  validationManager = [[GSValidationManager alloc] initWithWindow: window];
+	  validationManager = 
+	    [[GSValidationManager alloc] initWithWindow: window]; 
 	  [_validationManagers addObject: validationManager];
 	  RELEASE(validationManager);
 	}
@@ -417,7 +434,8 @@ static id validationCenter;
 - (GSValidationManager *) _validationManagerWithWindow: (NSWindow *)window
 {
   GSValidationManager *validationManager = 
-    [[_validationManagers objectsWithValue: window forKey: @"_window"] objectAtIndex: 0];									 
+    [[_validationManagers objectsWithValue: window forKey: @"_window"] 
+      objectAtIndex: 0];									 
 
   return validationManager;
 }
@@ -489,9 +507,10 @@ static id validationCenter;
 
 // Accessors
 - (NSArray *) _visibleBackViews;
+- (BOOL) _usesStandardBackgroundColor;
 - (BOOL) _willBeVisible;
-- (void) _setWillBeVisible: (BOOL)willBeVisible;
 - (void) _setUsesStandardBackgroundColor: (BOOL)standard;
+- (void) _setWillBeVisible: (BOOL)willBeVisible;
 @end
 
 // ---
@@ -723,34 +742,68 @@ static id validationCenter;
   NSArray *itemsToSelect;
   NSEnumerator *e;
   NSToolbarItem *item;
-  NSArray *selectableIdentifiers;
+  NSArray *selectableIdentifiers = nil;
+  BOOL updated = NO;
   
   //  First, we have to deselect the previous selected toolbar items 
   selectedItems = [[self items] objectsWithValue: [self selectedItemIdentifier] 
-                                             forKey: @"_itemIdentifier"];
+                                          forKey: @"_itemIdentifier"];
   e = [selectedItems objectEnumerator];    
   while ((item = [e nextObject]) != nil)
     {
       [item _setSelected: NO];
-    }
-    
-   ASSIGN(_selectedItemIdentifier, itemIdentifier);
+    }   
    
-   if ([_delegate respondsToSelector: @selector(toolbarSelectableItemIdentifiers:)])
-     selectableIdentifiers = [_delegate toolbarSelectableItemIdentifiers: self];
+   if ([_delegate respondsToSelector:
+     @selector(toolbarSelectableItemIdentifiers:)]) 
+     {
+       selectableIdentifiers = 
+         [_delegate toolbarSelectableItemIdentifiers: self]; 
+     }
+   else
+     {
+       NSLog(@"toolbar delegate does not respond to %@", 
+         @selector(toolbarSelectableItemIdentifiers:));
+       return;
+     }
    
-   itemsToSelect = [_items objectsWithValue: _selectedItemIdentifier forKey: @"_itemIdentifier"];
+   if (selectableIdentifiers == nil)
+     {
+       NSLog(@"toolbar delegate returns no such selectable item identifiers");
+       return;
+     }
+   
+   itemsToSelect = [_items objectsWithValue: itemIdentifier 
+                                     forKey: @"_itemIdentifier"]; 
    e = [itemsToSelect objectEnumerator];
    while ((item = [e nextObject]) != nil)
      {
-       if ([selectableIdentifiers containsObject: [item itemIdentifier]] && ![item _selected])
-         [item _setSelected: YES];
+       if ([selectableIdentifiers containsObject: [item itemIdentifier]])
+         {
+	   if (![item _selected])
+	     [item _setSelected: YES];
+	   updated = YES;
+	 }
+     }
+   
+   if (updated)
+     {
+       ASSIGN(_selectedItemIdentifier, itemIdentifier);
+     }
+   else
+     {
+       NSLog(@"toolbar delegate returns no such selectable item identifiers");
      }
 }
 
 - (NSToolbarSizeMode) sizeMode
 {
   return _sizeMode;
+}
+
+- (BOOL) usesStandardBackgroundColor
+{
+  return [_toolbarView _usesStandardBackgroundColor];
 }
 
 - (void) setUsesStandardBackgroundColor: (BOOL)standard
@@ -867,11 +920,13 @@ static id validationCenter;
  *
  * The methods below handles the toolbar edition and broacasts each associated
  * event to the other toolbars with identical identifiers. 
- * Warning : broadcast process only happens between instances based on the same class.
+ * Warning : broadcast process only happens between instances based on the same
+ * class. 
  */
 
 #define TRANSMIT(signature) \
-  NSEnumerator *e = [[toolbars objectsWithValue: _identifier forKey: @"_identifier"] objectEnumerator]; \
+  NSEnumerator *e = [[toolbars objectsWithValue: _identifier forKey: \
+    @"_identifier"] objectEnumerator]; \
   GSToolbar *toolbar; \
   \
   while ((toolbar = [e nextObject]) != nil) \
@@ -890,7 +945,7 @@ static id validationCenter;
   if([allowedItems containsObject: itemIdentifier])
     {
       item = [self _toolbarItemForIdentifier: itemIdentifier];
-      if(item == nil)
+      if (item == nil)
 	{
 	  item = 
             [_delegate toolbar: self itemForItemIdentifier: itemIdentifier
@@ -901,9 +956,11 @@ static id validationCenter;
         {
           NSArray *selectableItems;
 	  
-	  if ([_delegate respondsToSelector: @selector(toolbarSelectableItemIdentifiers:)])
+	  if ([_delegate respondsToSelector:
+	    @selector(toolbarSelectableItemIdentifiers:)]) 
 	    {
-	      selectableItems = [_delegate toolbarSelectableItemIdentifiers: self];
+	      selectableItems = 
+	        [_delegate toolbarSelectableItemIdentifiers: self]; 
 	      if ([selectableItems containsObject: itemIdentifier])
 	        [item _setSelectable: YES];
 	    }
@@ -982,11 +1039,12 @@ static id validationCenter;
   if (_delegate == delegate 
     || (broadcast == NO && [_delegate isMemberOfClass: [delegate class]]))
     return;
-  // We don't reload instances which received this message and already have a
-  // delegate based on a class identical to the parameter delegate, it permits
-  // to use only one nib owner class as a toolbar delegate even if a new instance
-  // of the nib owner are created with each new window (see MiniController.m in
-  // the toolbar example application).
+  /* We don't reload instances which received this message and already have a
+   * delegate based on a class identical to the parameter delegate, it permits
+   * to use only one nib owner class as a toolbar delegate even if a new
+   * instance of the nib owner are created with each new window (see
+   * MiniController.m in the toolbar example application).
+   */
     
   
   #define CHECK_REQUIRED_METHOD(selector_name) \
@@ -994,7 +1052,8 @@ static id validationCenter;
     [NSException raise: NSInternalInconsistencyException \
                 format: @"delegate does not respond to %@",@#selector_name]
 
-  CHECK_REQUIRED_METHOD(toolbar:itemForItemIdentifier:willBeInsertedIntoToolbar:);
+  CHECK_REQUIRED_METHOD(toolbar:itemForItemIdentifier:
+    willBeInsertedIntoToolbar:); 
   CHECK_REQUIRED_METHOD(toolbarAllowedItemIdentifiers:);
   CHECK_REQUIRED_METHOD(toolbarDefaultItemIdentifiers:);
 
@@ -1032,20 +1091,39 @@ static id validationCenter;
   GSValidationCenter *vc = [GSValidationCenter sharedValidationCenter];
   GSToolbar *toolbarModel = [self _toolbarModel];
   
-  validationObject = [vc validationObjectWithView: _toolbarView];
-  if (validationObject != nil)
+  if (_toolbarView != nil)
     {
-      [validationObject removeObserver: self];
-      if ([[validationObject observers] count] == 0)
-        [vc unregisterValidationObject: validationObject];
+      validationObject = [vc validationObjectWithView: _toolbarView];
+      if (validationObject != nil)
+        {
+          [validationObject removeObserver: self];
+          if ([[validationObject observers] count] == 0)
+            [vc unregisterValidationObject: validationObject];
+        }
     }
-  
+    
   ASSIGN(_toolbarView, toolbarView);
-      
+  
+  if (_toolbarView == nil)
+    return;
+        
   validationObject = [vc validationObjectWithView: _toolbarView];
   if (validationObject != nil)
    [validationObject addObserver: self];
-    
+   
+  /* In the case, the user hasn't set a delegate until now, we set it.
+   * Why ?
+   * We don't set it before when the toolbar is inited, to do only one toolbar
+   * content load.
+   * ...
+   * 1 toolbar = [[GSToolbar alloc] initWithIdentifier: @"blabla"];
+   * 2 [toolbar setDelegate: myDelegate];
+   * In case such method like 1 sets a default delegate for the identifier by
+   * requesting a toolbar model, a toolbar content load would occur.
+   * With a method like 2 which follows immediatly :
+   * Another toolbar load content would occur related to a probably different
+   * delegate. 
+   */    
   if (_delegate == nil)
    [self _setDelegate: [toolbarModel delegate] broadcast: NO];
 }

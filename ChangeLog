@@ -1,3 +1,12 @@
+2004-05-29  Quentin Mathe <qmathe@lub-internet.fr>
+
+	* Source/NSControl.m: Reverted to the previous version (1.61) because 
+	the 2004/05/23 changes changed the way an event can be caught by one
+	responder definitively through the responder chain.
+	* Source/GSToolbar.m: New way to catch mouse events with the validation
+	system (Uses NSWindowDidUpdateNotification instead of events interception
+	at the view level) and other minor changes.
+
 2004-05-27 01:39  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSImage.m (-size): Don't try to get the size if rep is nil.

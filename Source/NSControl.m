@@ -552,10 +552,11 @@ static Class actionCellClass;
   if (![self isEnabled])
     return;
 
-  [super mouseDown: theEvent];
-
   if (_ignoresMultiClick && ([theEvent clickCount] > 1))
-    return;
+    {  
+      [super mouseDown: theEvent];
+      return;
+    }
 
   if ([_cell isContinuous])
     {
