@@ -275,18 +275,6 @@
   [super dealloc];
 }
 
-- (id) copyWithZone: (NSZone *)zone
-{
-  NSBitmapImageRep	*copy;
-
-  copy = (NSBitmapImageRep*)[super copyWithZone: zone];
-
-  copy->_imagePlanes = 0;
-  copy->_imageData = [_imageData copyWithZone: zone];
-
-  return copy;
-}
-
 + (BOOL) canInitWithData: (NSData *)data
 {
   TIFF	*image = NULL;
@@ -296,38 +284,37 @@
   return (image) ? YES : NO;
 }
 
-+ (BOOL) canInitWithPasteboard: (NSPasteboard *)pasteboard
-{
-  return [[pasteboard types] containsObject: NSTIFFPboardType]; 
-}
-
-+ (NSArray *) imageFileTypes
-{
-  NSArray *wtypes = [self _wrasterFileTypes];
-  if (wtypes)
-    {
-      wtypes = AUTORELEASE([wtypes mutableCopy]);
-      [(NSMutableArray *)wtypes addObjectsFromArray: 
-			   [self imageUnfilteredFileTypes]];
-    }
-  else
-    wtypes = [self imageUnfilteredFileTypes];
-  return wtypes;
-}
-
-+ (NSArray *) imagePasteboardTypes
-{
-  return [self imageUnfilteredPasteboardTypes];
-}
-
 + (NSArray *) imageUnfilteredFileTypes
 {
-  return [NSArray arrayWithObjects: @"tiff", @"tif", nil];
+  static NSArray *types = nil;
+
+  if (types == nil)
+    {
+      NSArray *wtypes = [self _wrasterFileTypes];
+
+      if (wtypes != nil)
+        {
+	  types = [wtypes mutableCopy];
+	  [(NSMutableArray *)types addObjectsFromArray: 
+				 [NSArray arrayWithObjects: @"tiff", @"tif", nil]];
+	}
+      else
+	types = [[NSArray alloc] initWithObjects: @"tiff", @"tif", nil];
+    }
+
+  return types;
 }
 
 + (NSArray *) imageUnfilteredPasteboardTypes
 {
-  return [NSArray arrayWithObjects: NSTIFFPboardType, nil];
+  static NSArray *types = nil;
+
+  if (types == nil)
+    {
+      types = [[NSArray alloc] initWithObjects: NSTIFFPboardType, nil];
+    }
+  
+  return types;
 }
 
 //
@@ -595,6 +582,19 @@
 {
   // TODO
   return nil;
+}
+
+// NSCopying protocol
+- (id) copyWithZone: (NSZone *)zone
+{
+  NSBitmapImageRep	*copy;
+
+  copy = (NSBitmapImageRep*)[super copyWithZone: zone];
+
+  copy->_imagePlanes = 0;
+  copy->_imageData = [_imageData copyWithZone: zone];
+
+  return copy;
 }
 
 //
