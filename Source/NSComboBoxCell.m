@@ -406,9 +406,7 @@ static GSComboWindow *gsWindow = nil;
   [self makeFirstResponder: _tableView];
   [self runLoopWithComboBoxCell: comboBoxCell];
   
-  [nc removeObserver: self];
-  [_tableView setDelegate: self];
-  // HACK: Need to reset the delegate to receive the next notifications
+  [nc removeObserver: self name: nil object: onWindow];
   
   [self close];
 
@@ -562,7 +560,9 @@ static GSComboWindow *gsWindow = nil;
 {
   if (!ForceBrowser)
     {
+  _localSelection = YES;
   [_tableView deselectAll: self];
+  _localSelection = NO;
     }
   else
     {
@@ -1431,16 +1431,26 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
     }
 }
 
+/** Overrides NSCell <code>trackMouse:inRect:ofView:untilMouseUp:</code> method to establish a
+ * new method behavior.
+ * In the case <var>flag</var> is NO, returns NO when the mouse down occurs in the text
+ * cell part or when the mouse down occurs in the button cell part followed by a
+ * mouse up outside, otherwise returns YES (when both the mouse down and the
+ * mouse up occurs in the button cell part).
+ * In the case <var>flag</var> is YES, returns NO when the mouse occurs in the text
+ * cell part, otherwise returns YES (when the mouse down occurs in the button cell
+ * part).
+ */
 - (BOOL) trackMouse: (NSEvent *)theEvent 
 	     inRect: (NSRect)cellFrame
 	     ofView: (NSView *)controlView 
        untilMouseUp: (BOOL)flag
 {
-  NSWindow *cvWindow = [controlView window];
   NSPoint point;
   BOOL isFlipped = [controlView isFlipped];
-  BOOL clicked = NO;
   NSRect buttonRect = buttonCellFrameFromRect(cellFrame);
+  NSRect textRect = textCellFrameFromRect(cellFrame);
+  BOOL result = NO;
 
   // Should this be set by NSActionCell ?
   if (_control_view != controlView)
@@ -1451,38 +1461,62 @@ static inline NSRect buttonCellFrameFromRect(NSRect cellRect)
   point = [controlView convertPoint: [theEvent locationInWindow]
 			   fromView: nil];
 
-  if (!NSMouseInRect(point, cellFrame, isFlipped))
-    return NO; 
-  else if ([theEvent type] == NSLeftMouseDown)
+  if (NSMouseInRect(point, textRect, isFlipped))
     {
-      if (NSMouseInRect(point, textCellFrameFromRect(cellFrame), isFlipped))
-	{
-	  return NO;
-	}
-      else if (NSMouseInRect(point, buttonRect, isFlipped))
- 	{
-          [controlView lockFocus];
-          [_buttonCell highlight: YES withFrame: buttonRect inView: controlView];
-	  [controlView unlockFocus];
-	  [cvWindow flushWindow];
-	  
-          clicked = [_buttonCell trackMouse: theEvent 
-	                             inRect: buttonRect
-	                             ofView: controlView
-		  	       untilMouseUp: NO];
-
-          /* The click will be send by the target/action we have set for the button cell. */
-	  	       
-	  [controlView lockFocus];
-          [_buttonCell highlight: NO withFrame: buttonRect inView: controlView];
-	  [controlView unlockFocus];
-	  [cvWindow flushWindow];
-	  
-	  return clicked;
-        }
+      return NO;
     }
-    
-  return NO;
+  else if (NSMouseInRect(point, buttonRect, isFlipped))
+    {
+      NSEvent *e = theEvent;
+      BOOL isMouseUp = NO;  
+      unsigned int eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
+       | NSMouseMovedMask | NSLeftMouseDraggedMask | NSOtherMouseDraggedMask
+       | NSRightMouseDraggedMask;
+      NSPoint location;
+	  
+      while (!isMouseUp) // Loop until mouse goes up
+        {
+          location = [controlView convertPoint: [e locationInWindow] fromView: nil];
+             
+	  // Ask the cell to track the mouse only when the mouse is within the cell
+          if (NSMouseInRect(location, buttonRect, isFlipped))
+	    {
+	      [_buttonCell setHighlighted: YES];
+	      [controlView setNeedsDisplay: YES];
+		
+	      result = [_buttonCell trackMouse: e
+		                        inRect: buttonRect
+		                        ofView: controlView
+		                  untilMouseUp: [NSButtonCell prefersTrackingUntilMouseUp]];
+              isMouseUp = result;
+
+	      [_buttonCell setHighlighted: NO];
+	      [controlView setNeedsDisplay: YES];
+            }
+		
+          if (!isMouseUp)
+	    {
+	      e = [NSApp nextEventMatchingMask: eventMask
+			             untilDate: nil
+		  		        inMode: NSEventTrackingRunLoopMode
+				       dequeue: YES];
+            
+	      if ([e type] == NSLeftMouseUp)
+	        isMouseUp = YES;
+	    }
+	}
+	
+      if (flag)
+        {
+	  return YES;
+	}
+      else
+        {	   
+          return NO;
+	}
+    }
+
+  return NO; // Pathological case, normally never happen
 }
 
 - (void) resetCursorRect: (NSRect)cellFrame inView: (NSView *)controlView

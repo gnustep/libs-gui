@@ -1,3 +1,17 @@
+2004-08-13  Quentin Mathe <qmathe@club-internet.fr>
+        
+	* Source/NSComboBoxCell.m:
+	* Source/NSComboBox.m:
+	Fixed broken combo box behavior introduced June 17 with version 1.27,
+	which produced wrong tracking in the button cell and extra mouse down
+	call in the NSComboBox superclass. Now the rewritten version is also
+	documented. 
+	Also now -[GSComboWindow deselectItemAtIndex:] still produces a
+	-[GSComboWindow tableViewSelectionDidChange:] call but the chain is
+	stopped in -[GSComboWindow validateSelection] by the _locationSelection
+	variable, then -[NSComboBoxCell selectItemAtIndex:] is not anymore
+	wrongly called.
+	
 2004-08-12 01:42  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSLayoutManager.m
