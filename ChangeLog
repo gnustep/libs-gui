@@ -2,6 +2,7 @@
 
 	* Source/NSPasteboard.m: Start gpbs for other server automatically.
 	Improve log messages.
+	* Tools/gpbs.m copied in fron gpbs.
 
 2002-03-09  Richard Frith-Macdonald <rfm@gnu.org>
 

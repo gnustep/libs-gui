@@ -1,4 +1,4 @@
-/* 
+/*
    gpbs.m
 
    GNUstep pasteboard server
@@ -7,47 +7,35 @@
 
    Author:  Richard Frith-Macdonald <richard@brainstorm.co.uk>
    Date: August 1997
-   
+
    This file is part of the GNUstep Project
 
    This library is free software; you can redistribute it and/or
    modify it under the terms of the GNU General Public License
    as published by the Free Software Foundation; either version 2
    of the License, or (at your option) any later version.
-    
-   You should have received a copy of the GNU General Public  
+
+   You should have received a copy of the GNU General Public
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-*/ 
+*/
 
-#include <gnustep/gui/config.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSData.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSConnection.h>
-#include <Foundation/NSDistantObject.h>
-#include <Foundation/NSArray.h>
-#include <Foundation/NSAutoreleasePool.h>
-#include <Foundation/NSDate.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSRunLoop.h>
-#include <Foundation/NSTimer.h>
-#include <Foundation/NSValue.h>
-#include <Foundation/NSException.h>
-#include <Foundation/NSLock.h>
-#include <Foundation/NSObjCRuntime.h>
+#include <Foundation/Foundation.h>
 #include <AppKit/NSPasteboard.h>
-
-#include <gnustep/gui/GSPasteboardServer.h>
-
-#include "wgetopt.h"
+#include <AppKit/GSPasteboardServer.h>
 
 #include <signal.h>
+#include <unistd.h>
 
 @class PasteboardServer;
+@class PasteboardObject;
+
+@protocol XPb
++ (id) ownerByOsPb: (NSString*)p;
+@end
+static Class	xPbClass;
 
 int debug = 0;
 int verbose = 0;
@@ -59,15 +47,19 @@ NSConnection		*conn = nil;
 NSLock			*dictionary_lock = nil;
 NSMutableDictionary	*pasteboards = nil;
 
+@interface	NSPasteboard (GNULocal)
++ (void) _localServer: (id<GSPasteboardSvr>)s;
+@end
+
 @interface PasteboardData: NSObject
 {
-  NSData*   data;
-  NSString* type;
-  id	    owner;
-  id	    pboard;
-  BOOL	    wantsChangedOwner;
-  BOOL	    hasGNUDataForType;
-  BOOL	    hasStdDataForType;
+  NSData	*data;
+  NSString	*type;
+  id		owner;
+  id		pboard;
+  BOOL		wantsChangedOwner;
+  BOOL		hasGNUDataForType;
+  BOOL		hasStdDataForType;
 }
 + (PasteboardData*) newWithType: (NSString*)aType
 			  owner: (id)anObject
@@ -98,9 +90,9 @@ NSMutableDictionary	*pasteboards = nil;
 
   if (d)
     {
-      d->type = [aType retain];
-      d->owner = [anObject retain];
-      d->pboard = [anotherObject retain];
+      d->type = RETAIN(aType);
+      d->owner = RETAIN(anObject);
+      d->pboard = RETAIN(anotherObject);
       d->wantsChangedOwner = wants;
       d->hasStdDataForType = StdData;
       d->hasGNUDataForType = GNUData;
@@ -117,20 +109,20 @@ NSMutableDictionary	*pasteboards = nil;
     {
       o = owner;
       owner = nil;
-      [o release];
+      RELEASE(o);
       o = pboard;
       pboard = nil;
-      [o release];
+      RELEASE(o);
       ourConnection = YES;
     }
   if (pboard && [pboard isProxy] && [pboard connectionForProxy] == c)
     {
       o = owner;
       owner = nil;
-      [o release];
+      RELEASE(o);
       o = pboard;
       pboard = nil;
-      [o release];
+      RELEASE(o);
       ourConnection = YES;
     }
   return ourConnection;
@@ -138,10 +130,10 @@ NSMutableDictionary	*pasteboards = nil;
 
 - (void) dealloc
 {
-  [type release];
-  [data release];
-  [owner release];
-  [pboard release];
+  RELEASE(type);
+  RELEASE(data);
+  RELEASE(owner);
+  RELEASE(pboard);
   [super dealloc];
 }
 
@@ -161,6 +153,17 @@ NSMutableDictionary	*pasteboards = nil;
 
 - (NSData*) newDataWithVersion: (int)version
 {
+  /*
+   * If the owner of this item is an X window - we can't use the data from
+   * the last time the selection was accessed because the X window may have
+   * changed it's selection without telling us - isn't X wonderful :-(
+   */
+  if (data != nil && owner != nil
+    && [owner isProxy] == NO && [owner isKindOfClass: xPbClass] == YES)
+    {
+      DESTROY(data);
+    }
+
   if (data == nil && (owner && pboard))
     {
       if (hasGNUDataForType)
@@ -194,9 +197,7 @@ NSMutableDictionary	*pasteboards = nil;
     {
       NSLog(@"set data for %x\n", (unsigned)self);
     }
-  [d retain];
-  [data release];
-  data = d;
+  ASSIGN(data, d);
 }
 
 - (id) type
@@ -211,18 +212,18 @@ NSMutableDictionary	*pasteboards = nil;
 
 @end
 
-
+
 
 @interface PasteboardEntry: NSObject
 {
-  int		refNum;
-  BOOL		hasBeenFiltered;
-  id		owner;
-  id		pboard;
-  NSMutableArray    *items;
-  BOOL		wantsChangedOwner;
-  BOOL		hasGNUDataForType;
-  BOOL		hasStdDataForType;
+  int			refNum;
+  id			owner;
+  id			pboard;
+  NSMutableArray	*items;
+  BOOL			hasBeenFiltered;
+  BOOL			wantsChangedOwner;
+  BOOL			hasGNUDataForType;
+  BOOL			hasStdDataForType;
 }
 + (PasteboardEntry*) newWithTypes: (NSArray*)someTypes
 			    owner: (id)anOwner
@@ -233,6 +234,7 @@ NSMutableDictionary	*pasteboards = nil;
 - (BOOL) hasBeenFiltered;
 - (PasteboardData*) itemForType: (NSString*)type;
 - (void) lostOwnership;
+- (id) owner;
 - (int) refNum;
 - (NSArray*) types;
 @end
@@ -250,8 +252,8 @@ NSMutableDictionary	*pasteboards = nil;
     {
       int     i;
 
-      e->owner = [anOwner retain];
-      e->pboard = [aPboard retain];
+      e->owner = RETAIN(anOwner);
+      e->pboard = RETAIN(aPboard);
 
       if (anOwner && [anOwner respondsToSelector:
 		@selector(pasteboardChangedOwner:)])
@@ -282,7 +284,7 @@ NSMutableDictionary	*pasteboards = nil;
 			hasStdDataForType: e->hasStdDataForType
 			hasGNUDataForType: e->hasGNUDataForType];
 	  [e->items addObject: d];
-	  [d release];
+	  RELEASE(d);
 	}
       e->refNum = count;
       if (verbose > 1)
@@ -331,7 +333,7 @@ NSMutableDictionary	*pasteboards = nil;
 			hasStdDataForType: StdData
 			hasGNUDataForType: GNUData];
 	  [items addObject: d];
-	  [d release];
+	  RELEASE(d);
 	}
     }
   if (verbose > 1)
@@ -350,10 +352,10 @@ NSMutableDictionary	*pasteboards = nil;
     {
       o = owner;
       owner = nil;
-      [o release];
+      RELEASE(o);
       o = pboard;
       pboard = nil;
-      [o release];
+      RELEASE(o);
       ourConnection = YES;
     }
 
@@ -361,10 +363,10 @@ NSMutableDictionary	*pasteboards = nil;
     {
       o = owner;
       owner = nil;
-      [o release];
+      RELEASE(o);
       o = pboard;
       pboard = nil;
-      [o release];
+      RELEASE(o);
       ourConnection = YES;
     }
 
@@ -386,9 +388,9 @@ NSMutableDictionary	*pasteboards = nil;
 
 - (void) dealloc
 {
-  [owner release];
-  [pboard release];
-  [items release];
+  RELEASE(owner);
+  RELEASE(pboard);
+  RELEASE(items);
   [super dealloc];
 }
 
@@ -431,7 +433,7 @@ NSMutableDictionary	*pasteboards = nil;
 	  PasteboardData	*d = [items objectAtIndex: i];
 
 	  if ([d wantsChangedOwner] == YES && [d owner] != nil
-	    && [a containsObject: [d owner]] == NO)
+	    && [a indexOfObjectIdenticalTo: [d owner]] == NSNotFound)
 	    {
 	      [a addObject: [d owner]];
 	    }
@@ -442,19 +444,19 @@ NSMutableDictionary	*pasteboards = nil;
 	  [owner pasteboardChangedOwner: pboard];
 	  if (owner != nil)
 	    {
-	      [a removeObject: owner];
+	      [a removeObjectIdenticalTo: owner];
 	    }
 	}
 
       for (i = 0; i < [items count] && [a count] > 0; i++)
 	{
-	  PasteboardData	*d = [items objectAtIndex:i];
+	  PasteboardData	*d = [items objectAtIndex: i];
 	  id			o = [d owner];
 
 	  if (o != nil && [a containsObject: o])
 	    {
 	      [o pasteboardChangedOwner: [d pboard]];
-	      [a removeObject: o];
+	      [a removeObjectIdenticalTo: o];
 	    }
 	}
     }
@@ -464,6 +466,11 @@ NSMutableDictionary	*pasteboards = nil;
 	[localException reason]);
     }
   NS_ENDHANDLER
+}
+
+- (id) owner
+{
+  return owner;
 }
 
 - (int) refNum
@@ -478,7 +485,7 @@ NSMutableDictionary	*pasteboards = nil;
 
   for (i = 0; i < [items count]; i++)
     {
-      PasteboardData* d = [items objectAtIndex:i];
+      PasteboardData* d = [items objectAtIndex: i];
       [t addObject: [d type]];
     }
   return t;
@@ -486,15 +493,15 @@ NSMutableDictionary	*pasteboards = nil;
 
 @end
 
-
+
 
 @interface PasteboardObject: NSObject <GSPasteboardObj>
 {
-  NSString	*name;
-  int		nextCount;
-  unsigned	histLength;
-  NSMutableArray    *history;
-  PasteboardEntry   *current;
+  NSString		*name;
+  int			nextCount;
+  unsigned		histLength;
+  NSMutableArray	*history;
+  PasteboardEntry	*current;
 }
 
 + (PasteboardObject*) pasteboardWithName: (NSString*)name;
@@ -504,12 +511,12 @@ NSMutableDictionary	*pasteboards = nil;
       pasteboard: (id)pboard
 	oldCount: (int)count;
 - (NSString*) availableTypeFromArray: (NSArray*)types
-	     changeCount: (int*)count;
+			 changeCount: (int*)count;
 - (int) changeCount;
 - (BOOL) checkConnection: (NSConnection*)c;
 - (NSData*) dataForType: (NSString*)type
-	   oldCount: (int)count
-      mustBeCurrent: (BOOL)flag;
+	       oldCount: (int)count
+	  mustBeCurrent: (BOOL)flag;
 - (int) declareTypes: (NSArray*)types
 	       owner: (id)owner
 	  pasteboard: (id)pboard;
@@ -529,7 +536,7 @@ NSMutableDictionary	*pasteboards = nil;
 
 + (void) initialize
 {
-  pasteboards = [[NSMutableDictionary alloc] initWithCapacity:8];
+  pasteboards = [[NSMutableDictionary alloc] initWithCapacity: 8];
   dictionary_lock = [[NSLock alloc] init];
 }
 
@@ -542,7 +549,7 @@ NSMutableDictionary	*pasteboards = nil;
   while (aName == nil)
     {
       aName = [NSString stringWithFormat: @"%dlocalName", number++];
-      if ([pasteboards objectForKey:aName] == nil)
+      if ([pasteboards objectForKey: aName] == nil)
 	{
 	  break;	// This name is unique.
 	}
@@ -556,13 +563,13 @@ NSMutableDictionary	*pasteboards = nil;
   if (pb == nil)
     {
       pb = [PasteboardObject alloc];
-      pb->name = [aName retain];
+      pb->name = RETAIN(aName);
       pb->nextCount = 1;
       pb->histLength = 1;
-      pb->history = [[NSMutableArray alloc] initWithCapacity:2];
+      pb->history = [[NSMutableArray alloc] initWithCapacity: 2];
       pb->current = nil;
       [pasteboards setObject: pb forKey: aName];
-      [pb autorelease];
+      AUTORELEASE(pb);
     }
   [dictionary_lock unlock];
   return pb;
@@ -573,11 +580,22 @@ NSMutableDictionary	*pasteboards = nil;
       pasteboard: (NSPasteboard*)pb
 	oldCount: (int)count
 {
-  PasteboardEntry *e = [self entryByCount:count];
+  PasteboardEntry *e = [self entryByCount: count];
 
   if (e)
     {
+      id	x = [xPbClass ownerByOsPb: name];
+
       [e addTypes: types owner: owner pasteboard: pb];
+
+      /*
+       * If there is an X pasteboard corresponding to this pasteboard, and the
+       * X system doesn't currently own the pasteboard, we must inform it of
+       * the change in the types of data supplied by this pasteboard.
+       * We do this by simulating a change of pasteboard ownership.
+       */
+      if (x != owner && x != nil)
+	[x pasteboardChangedOwner: pb];
       return count;
     }
   return 0;
@@ -594,7 +612,7 @@ NSMutableDictionary	*pasteboards = nil;
     }
   else
     {
-      e = [self entryByCount:*count];
+      e = [self entryByCount: *count];
     }
   if (e)
     {
@@ -603,7 +621,7 @@ NSMutableDictionary	*pasteboards = nil;
       *count = [e refNum];
       for (i = 0; i < [types count]; i++)
 	{
-	  NSString* key = [types objectAtIndex:i];
+	  NSString* key = [types objectAtIndex: i];
 
 	  if ([e itemForType: key] != nil)
 	    {
@@ -650,11 +668,12 @@ NSMutableDictionary	*pasteboards = nil;
     }
   else
     {
-      e = [self entryByCount:count];
+      e = [self entryByCount: count];
     }
   if (verbose)
     {
-      NSLog(@"get data for type '%@' version %d\n", type, e ? [e refNum] : -1);
+      NSLog(@"%@ get data for type '%@' version %d\n",
+	self, type, e ? [e refNum] : -1);
     }
   if (e)
     {
@@ -665,13 +684,13 @@ NSMutableDictionary	*pasteboards = nil;
 	  return [d newDataWithVersion: [e refNum]];
 	}
     }
-  return nil; 
+  return nil;
 }
 
 - (void) dealloc
 {
-  [name release];
-  [history release];
+  RELEASE(name);
+  RELEASE(history);
   [super dealloc];
 }
 
@@ -679,20 +698,42 @@ NSMutableDictionary	*pasteboards = nil;
 	       owner: (id)owner
 	  pasteboard: (NSPasteboard*)pb
 {
-  PasteboardEntry	*old = [current retain];
+  PasteboardEntry	*old = RETAIN(current);
+  id			x = [xPbClass ownerByOsPb: name];
+
+  /*
+   * If neither the new nor the old owner of the pasteboard is the X
+   * pasteboard owner corresponding to this pasteboard, we will need
+   * to inform the X owner of the change of ownership.
+   */
+  if (x == owner)
+    x = nil;
+  else if (x == [old owner])
+    x = nil;
 
   current = [PasteboardEntry newWithTypes: types
 				    owner: owner
 				   pboard: pb
 				      ref: nextCount++];
   [history addObject: current];
-  [current release];
+  RELEASE(current);
   if ([history count] > histLength)
     {
       [history removeObjectAtIndex: 0];
     }
   [old lostOwnership];
-  [old release];
+  RELEASE(old);
+  /*
+   * If there is an interested X pasteboard - inform it of the ownership
+   * change.
+   */
+  if (x != nil)
+    [x pasteboardChangedOwner: pb];
+  if (verbose)
+    {
+      NSLog(@"%@ declare types '%@' version %d\n",
+	self, types, [current refNum]);
+    }
   return [current refNum];
 }
 
@@ -712,9 +753,9 @@ NSMutableDictionary	*pasteboards = nil;
 
       for (i = 0; i < [history count]; i++)
 	{
-	  if ([[history objectAtIndex:i] refNum] == count)
+	  if ([[history objectAtIndex: i] refNum] == count)
 	    {
-	      return (PasteboardEntry*)[history objectAtIndex:i];
+	      return (PasteboardEntry*)[history objectAtIndex: i];
 	    }
 	}
       return nil;
@@ -745,7 +786,7 @@ NSMutableDictionary	*pasteboards = nil;
 
   if (verbose)
     {
-      NSLog(@"set data for type '%@' version %d\n", type, count);
+      NSLog(@"%@ set data for type '%@' version %d\n", self, type, count);
     }
   e = [self entryByCount: count];
   if (e)
@@ -811,7 +852,7 @@ NSMutableDictionary	*pasteboards = nil;
     {
       while ([history count] > histLength)
 	{
-	  [history removeObjectAtIndex:0];
+	  [history removeObjectAtIndex: 0];
 	}
     }
 }
@@ -826,7 +867,7 @@ NSMutableDictionary	*pasteboards = nil;
     }
   else
     {
-      e = [self entryByCount:*count];
+      e = [self entryByCount: *count];
     }
   if (e)
     {
@@ -844,7 +885,7 @@ NSMutableDictionary	*pasteboards = nil;
 
 @interface PasteboardServer : NSObject <GSPasteboardSvr>
 {
-  NSMutableArray*   permenant;
+  NSMutableArray	*permenant;
 }
 - (BOOL) connection: (NSConnection*)ancestor
   shouldMakeNewConnection: (NSConnection*)newConn;
@@ -856,13 +897,14 @@ NSMutableDictionary	*pasteboards = nil;
 - (id<GSPasteboardObj>) pasteboardByFilteringTypesInPasteboard: pb;
 - (id<GSPasteboardObj>) pasteboardWithName: (NSString*)name;
 - (id<GSPasteboardObj>) pasteboardWithUniqueName;
-- (NSArray*) typesFilterableTo: (NSString*)type;
 @end
+
+
 
 @implementation PasteboardServer
 
 - (BOOL) connection: (NSConnection*)ancestor
-  shouldMakeNewConnection: (NSConnection*)newConn
+  shouldMakeNewConnection: (NSConnection*)newConn;
 {
   [[NSNotificationCenter defaultCenter]
     addObserver: self
@@ -897,7 +939,7 @@ NSMutableDictionary	*pasteboards = nil;
 
 - (void) dealloc
 {
-  [permenant release];
+  RELEASE(permenant);
   [super dealloc];
 }
 
@@ -906,16 +948,27 @@ NSMutableDictionary	*pasteboards = nil;
   self = [super init];
   if (self)
     {
-      permenant = [[NSMutableArray alloc] initWithCapacity:5];
+      /*
+       * Tell the NSPasteboard class to use us as the server so that the X
+       * pasteboard owners can talk to us directly rather than over D.O.
+       */
+      [NSPasteboard _localServer: (id<GSPasteboardSvr>)self];
+
       /*
        *  Create all the pasteboards which must persist forever and add them
        *  to a local array.
        */
+      permenant = [[NSMutableArray alloc] initWithCapacity: 5];
       [permenant addObject: [self pasteboardWithName: NSGeneralPboard]];
+      [permenant addObject: [self pasteboardWithName: NSDragPboard]];
       [permenant addObject: [self pasteboardWithName: NSFontPboard]];
       [permenant addObject: [self pasteboardWithName: NSRulerPboard]];
       [permenant addObject: [self pasteboardWithName: NSFindPboard]];
-      [permenant addObject: [self pasteboardWithName: NSDragPboard]];
+
+      /*
+       * Ensure that the X pasteboard system is initialised.
+       */
+      xPbClass = NSClassFromString(@"XPbOwner");
     }
   return self;
 }
@@ -954,7 +1007,7 @@ NSMutableDictionary	*pasteboards = nil;
 
 
 
-static int
+static void
 ihandler(int sig)
 {
   signal(sig, SIG_DFL);
@@ -964,39 +1017,38 @@ ihandler(int sig)
 static void
 init(int argc, char** argv)
 {
-  const char  *options = "Hdv";
-  int	  sym;
+  NSArray	*args = [[NSProcessInfo processInfo] arguments];
+  unsigned	count;
 
-  while ((sym = getopt(argc, argv, options)) != -1)
+  for (count = 1; count < [args count]; count++)
     {
-      switch(sym)
+      NSString	*a = [args objectAtIndex: count];
+
+      if ([a isEqualToString: @"--help"] == YES)
 	{
-	  case 'H':
-	    printf("%s -[%s]\n", argv[0], options);
-	    printf("GNU Pasteboard server\n");
-	    printf("-H\tfor help\n");
-	    printf("-d\tavoid fork() to make debugging easy\n");
-	    printf("-v\tMore verbose debug output\n");
-	    exit(0);
-
-	  case 'd':
-	    debug++;
-	    break;
-
-	  case 'v':
-	    verbose++;
-	    break;
-
-	  default:
-	    printf("%s - GNU Pasteboard server\n", argv[0]);
-	    printf("-H	for help\n");
-	    exit(0);
+	  printf("gpbs\n\n");
+	  printf("GNU Pasteboard server\n");
+	  printf("--help\tfor help\n");
+	  printf("--no-fork\tavoid fork() to make debugging easy\n");
+	  printf("--verbose\tMore verbose debug output\n");
+	  exit(0);
+	}
+      else if ([a isEqualToString: @"--no-fork"] == YES)
+	debug++;
+      else if ([a isEqualToString: @"--verbose"] == YES)
+	verbose++;
+      else if ([a length] > 0)
+	{
+	  printf("gpbs - GNU Pasteboard server\n");
+	  printf("I don't understand '%s'\n", [a cString]);
+	  printf("--help	for help\n");
+	  exit(0);
 	}
     }
 
-  for (sym = 0; sym < 32; sym++)
+  for (count = 0; count < 32; count++)
     {
-      signal(sym, ihandler);
+      signal((int)count, ihandler);
     }
   signal(SIGPIPE, SIG_IGN);
   signal(SIGTTOU, SIG_IGN);
@@ -1040,14 +1092,13 @@ init(int argc, char** argv)
 int
 main(int argc, char** argv, char **env)
 {
-  NSAutoreleasePool	*pool;
+  CREATE_AUTORELEASE_POOL(pool);
   NSString      *hostname;
-
 
 #ifdef GS_PASS_ARGUMENTS
   [NSProcessInfo initializeWithArguments:argv count:argc environment:env];
 #endif
-  pool = [NSAutoreleasePool new];
+
   init(argc, argv);
 
   // [NSObject enableDoubleReleaseCheck: YES];
@@ -1068,16 +1119,16 @@ main(int argc, char** argv, char **env)
     addObserver: server
        selector: @selector(connectionBecameInvalid:)
 	   name: NSConnectionDidDieNotification
-	 object: conn];
+	 object: (id)conn];
 
   hostname = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
   if ([hostname length] == 0)
     {
       if ([conn registerName: PBSNAME] == NO)
-	{
-	  NSLog(@"Unable to register with name server.\n");
-	  exit(1);
-	}
+        {
+          NSLog(@"Unable to register with name server.\n");
+          exit(1);
+        }
     }
   else
     {
@@ -1090,8 +1141,7 @@ main(int argc, char** argv, char **env)
       if (host == nil)
         {
           NSLog(@"gdnc - unknown NSHost argument  ... %@ - quiting.", hostname);
-          DESTROY(self);
-          return self;
+          exit(1);
         }
       a = [host names];
       c = [a count];
@@ -1122,8 +1172,7 @@ main(int argc, char** argv, char **env)
       NSLog(@"GNU pasteboard server startup.\n");
     }
   [[NSRunLoop currentRunLoop] run];
-  [pool release];
+  RELEASE(pool);
   exit(0);
 }
-
 
