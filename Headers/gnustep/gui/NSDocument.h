@@ -29,15 +29,30 @@
 #ifndef _GNUstep_H_NSDocument
 #define _GNUstep_H_NSDocument
 
-#include <Foundation/Foundation.h>
+#include <Foundation/NSObject.h>
 #include <AppKit/NSNibDeclarations.h>
 #include <AppKit/NSUserInterfaceValidation.h>
 
 
-@class NSURL, NSUndoManager;
-@class NSWindow, NSView, NSSavePanel, NSMenuItem;
-@class NSPrintInfo, NSPopUpButton, NSFileWrapper;
-@class NSDocumentController, NSWindowController;
+/* Foundation classes */
+@class NSString;
+@class NSArray;
+@class NSMutableArray;
+@class NSData;
+@class NSFileManager;
+@class NSURL;
+@class NSUndoManager;
+
+/* AppKit classes */
+@class NSWindow;
+@class NSView;
+@class NSSavePanel;
+@class NSMenuItem;
+@class NSPrintInfo;
+@class NSPopUpButton;
+@class NSFileWrapper;
+@class NSDocumentController;
+@class NSWindowController;
 
 
 typedef enum _NSDocumentChangeType {
