@@ -125,7 +125,7 @@ static Class		fontPanelClass = Nil;
  */
 - (NSArray*) availableFonts
 {
-  int i;
+  unsigned int i;
   NSArray *fontsList = [_fontEnumerator availableFonts];
   NSMutableArray *fontNames = [NSMutableArray 
 				  arrayWithCapacity: [fontsList count]];
@@ -150,7 +150,7 @@ static Class		fontPanelClass = Nil;
 
 - (NSArray*) availableFontNamesWithTraits: (NSFontTraitMask)fontTraitMask
 {
-  int i, j;
+  unsigned int i, j;
   NSArray *fontFamilies = [self availableFontFamilies];
   NSMutableArray *fontNames = [NSMutableArray array];
   NSFontTraitMask traits;
@@ -181,7 +181,7 @@ static Class		fontPanelClass = Nil;
 
 - (NSArray*) availableMembersOfFontFamily: (NSString*)family
 {
-  int i;
+  unsigned int i;
   NSArray *fontsList = [_fontEnumerator availableMembersOfFontFamily: family];
   NSMutableArray *fonts = [NSMutableArray 
 			      arrayWithCapacity: [fontsList count]];
@@ -238,7 +238,7 @@ static Class		fontPanelClass = Nil;
   
   if (_fontMenu != nil)
     {
-      NSMenuItem *menuItem;
+      id <NSMenuItem> menuItem;
       NSFontTraitMask trait = [self traitsOfFont: fontObject];
 
       /*
@@ -376,7 +376,7 @@ static Class		fontPanelClass = Nil;
 - (NSFont*) convertFont: (NSFont*)fontObject
 {
   NSFont *newFont = fontObject;
-  int i;
+  unsigned int i;
   float size;
   float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0, 
 		   14.0, 16.0, 18.0, 24.0, 36.0, 48.0, 64.0};
@@ -615,7 +615,7 @@ static Class		fontPanelClass = Nil;
 
   if (upFlag)
     {
-      int i;
+      unsigned int i;
       // The documentation is a bit unclear about the range of weights
       // sometimes it says 0 to 9 and sometimes 0 to 15
       int next_w = 15;
@@ -654,7 +654,7 @@ static Class		fontPanelClass = Nil;
     }
   else
     {
-      int i;
+      unsigned int i;
       int next_w = 0;
 
       for (i = 0; i < [fontDefs count]; i++)
@@ -710,7 +710,7 @@ static Class		fontPanelClass = Nil;
 		      size: (float)size
 {
   NSArray *fontDefs = [self availableMembersOfFontFamily: family];
-  int i;
+  unsigned int i;
 
   //NSLog(@"Searching font %@: %i: %i", family, weight, traits);  
 
@@ -812,7 +812,7 @@ static Class		fontPanelClass = Nil;
 {
   // TODO: This method is implemented very slow, but I dont 
   // see any use for it, so why change it?
-  int i, j;
+  unsigned int i, j;
   NSArray *fontFamilies = [self availableFontFamilies];
   NSFontTraitMask traits;
   
@@ -878,7 +878,7 @@ static Class		fontPanelClass = Nil;
 {
   if (create && _fontMenu == nil)
     {
-      NSMenuItem *menuItem;
+      id <NSMenuItem> menuItem;
       
       // As the font menu is stored in a instance variable we 
       // dont autorelease it
