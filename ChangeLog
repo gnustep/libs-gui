@@ -1,3 +1,9 @@
+2003-10-07 23:38  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Headers/Additions/GNUstepGUI/GSNibTemplates.m: Added
+	setDeferFlag: and deferFlag declarations to 
+	GSWindowTemplate.
+
 2003-10-07 14:32  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSWindow.m (-miniaturize:): Check that the window is

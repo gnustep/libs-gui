@@ -97,6 +97,8 @@
 {
   BOOL                 _deferFlag;
 }
+- (void) setDeferFlag: (BOOL)flag;
+- (BOOL) deferFlag;
 @end
 
 @interface GSViewTemplate : GSClassSwapper
