@@ -24,6 +24,9 @@
    Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
    */
 
+#ifndef _GNUstep_H_GSDrawFunctions
+#define _GNUstep_H_GSDrawFunctions
+
 #include <Foundation/NSGeometry.h>
 
 @class NSColor;
@@ -34,6 +37,9 @@
 + (void) drawDarkBezel: (NSRect)border : (NSRect)clip;
 + (void) drawLightBezel: (NSRect) border : (NSRect)clip;
 + (void) drawGroove: (NSRect)border : (NSRect)clip;
-+ (void) drawFramePhoto: (NSRect) border : (NSRect)clip;
++ (void) drawFramePhoto: (NSRect)border : (NSRect)clip;
 
 @end
+
+#endif /* _GNUstep_H_GSDrawFunctions */
+

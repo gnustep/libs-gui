@@ -1,3 +1,11 @@
+2004-01-22 13:04  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/Additions/GNUstepGUI/GSDrawFunctions.h: Add missing
+	include guards.
+
+	* Source/GSDrawFunctions.m: Correct misspellings and clarify the
+	documentation.
+
 2004-01-22 12:16  Alexander Malmberg <alexander@malmberg.org>
 
 	* Model/GMAppKit.m ([NSFont +createObjectForModelUnarchiver:]):

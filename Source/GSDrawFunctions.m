@@ -36,14 +36,14 @@
   <heading>Class Description</heading>
   <p>
   This is a simple class used for encapsulating common drawing behaviors.
-  These methods stndardize drawing of buttons, borders and other common
-  gui elements. The drawing functions are encapsulated in a class to 
-  allow overridding of the methods so that these elements can be drawn
+  These methods standardize drawing of buttons, borders and other common
+  GUI elements. The drawing functions are encapsulated in a class to
+  allow overriding of the methods so that these elements can be drawn
   in different ways (e.g. with themes).
   </p>
   <p>
-  All the methods use the standard configurable colors defined in NSColor,
-  such as <code>controlLightHighlightColor</code>, 
+  The default implementation uses the standard configurable colors defined in 
+  NSColor, such as <code>controlLightHighlightColor</code>,
   <code>controlShadowColor</code> and  <code>controlDarkShadowColor</code>.
   </p>
   </unit>
