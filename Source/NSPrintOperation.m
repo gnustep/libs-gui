@@ -901,10 +901,10 @@ scaleRect(NSRect rect, double scale)
     {
       info.first = [[dict objectForKey: NSPrintFirstPage] intValue];
       info.last  = [[dict objectForKey: NSPrintLastPage] intValue];
-      info.first = MAX(info.first, viewPageRange.location);
-      info.first = MIN(info.first, NSMaxRange(viewPageRange) - 1);
+      info.first = MAX(info.first, (int)viewPageRange.location);
+      info.first = MIN(info.first, (int)(NSMaxRange(viewPageRange) - 1));
       info.last = MAX(info.last, info.first);
-      info.last = MIN(info.last, NSMaxRange(viewPageRange) - 1);
+      info.last = MIN(info.last, (int)(NSMaxRange(viewPageRange) - 1));
       viewPageRange = NSMakeRange(info.first, (info.last-info.first)+1);
     }
   info.lastWidth = info.lastHeight = 0;
