@@ -77,6 +77,7 @@ static Class fontPanelClass = Nil;
 {
   if (!sharedFontManager)
     {
+      NSDebugLog(@"Initializing NSFontManager fonts\n");
       sharedFontManager = [[fontManagerClass alloc] init];
       [sharedFontManager enumerateFontsAndFamilies];
     }

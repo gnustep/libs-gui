@@ -358,7 +358,6 @@ NSTiffRead(int imageNumber, TIFF* image, NSTiffInfo* info, char* data)
 		for ( col = 0; col < newinfo->width; col++) 
 		  for (i = 0; i < newinfo->samplesPerPixel; i++)
 		    {
-		      NSDebugLog(@"%d", *inP);
 		      *outP++ = *inP++;
 		    }
 	    }
