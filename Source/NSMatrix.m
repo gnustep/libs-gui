@@ -35,6 +35,19 @@
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 */
 
+/* Mouse Tracking Notes:
+
+   The behaviour of mouse tracking is a bit different on OS42 and MaxOSX. The 
+   implementation here reflects OS42 more closely (as the original code
+   in NSMatrix). Examples of differences:
+   - highlighting of NSButtonCells is different;
+   - OS42 makes each cell under the cursor track the mouse, MacOSX makes only
+     the clicked cell track it, untilMouseUp;
+   - if mouse goes up outside of a cell, OS42 sends the action, MacOSX does not
+   - keys used for selection in list mode are not the same (shift and alternate
+     on OS42, command and shift on MacOSX).
+*/
+
 #include <gnustep/gui/config.h>
 #include <stdlib.h>
 
@@ -86,12 +99,12 @@ static NSNotificationCenter *nc;
       _SIGN_x > 0 ? 1 : (_SIGN_x == 0 ? 0 : -1); })
 
 #define POINT_FROM_INDEX(index) \
-    ({MPoint point = { index % _numCols, index / _numCols }; point; })
+    ({MPoint point = { (index) % _numCols, (index) / _numCols }; point; })
 
 #define INDEX_FROM_COORDS(x,y) \
-    (y * _numCols + x)
+    ((y) * _numCols + (x))
 #define INDEX_FROM_POINT(point) \
-    (point.y * _numCols + point.x)
+    ((point).y * _numCols + (point).x)
 
 
 /* Some stuff needed to compute the selection in the list mode. */
@@ -128,6 +141,8 @@ static inline MPoint MakePoint (int x, int y)
 					 column: (int)column;
 - (void) _drawCellAtRow: (int)row 
                  column: (int)column;
+- (void) _setKeyRow: (int) row
+             column: (int) column;
 @end
 
 enum {
@@ -257,6 +272,7 @@ static SEL getSel;
     }
   else
     {
+      _selectedCell = nil;
       _selectedRow = _selectedColumn = -1;
     }
   return self;
@@ -413,6 +429,10 @@ static SEL getSel;
       if (_selectedCell && (_selectedColumn >= column))
 	{
 	  _selectedColumn++;
+	}
+      if (_dottedColumn >= column)
+	{
+	  _dottedColumn++;
 	}
     }
 
@@ -894,14 +914,10 @@ static SEL getSel;
 	  _selectedRow = row;
 	  _selectedColumn = column;
 
-	  if ([_cells[_dottedRow][_dottedColumn] acceptsFirstResponder])
-	    {
-	      _dottedRow = row;
-	      _dottedColumn = column;
-	    }
-
 	  [_selectedCell setState: value];
 	  _selectedCells[row][column] = YES;
+
+          [self _setKeyRow: row column: column];
 	}
       else if (_allowsEmptySelection)
 	{
@@ -1023,26 +1039,17 @@ static SEL getSel;
 
 - (void) _selectCell: (NSCell *)aCell atRow: (int)row column: (int)column
 {
-  /*
-   * We always deselect the current selection unless the new selection
-   * is the same. (in NSRadioModeMatrix)
-   */
-  if (_mode == NSRadioModeMatrix && _selectedCell && aCell
-    && _selectedCell != aCell)
-    {
-      _selectedCells[_selectedRow][_selectedColumn] = NO;
-      [_selectedCell setState: NSOffState];
-      [self setNeedsDisplayInRect: [self cellFrameAtRow: _selectedRow
-					 column: _selectedColumn]];
-    }
-
   if (aCell)
     {
       NSRect cellFrame;
 
       if (_selectedCell && _selectedCell != aCell)
 	{
-	  [_selectedCell setShowsFirstResponder: NO];
+          if (_mode == NSRadioModeMatrix)
+            {
+              _selectedCells[_selectedRow][_selectedColumn] = NO;
+              [_selectedCell setState: NSOffState];
+            }
 	  [self setNeedsDisplayInRect: [self cellFrameAtRow: _selectedRow
 					     column: _selectedColumn]];
 	}
@@ -1052,42 +1059,18 @@ static SEL getSel;
       _selectedColumn = column;
       _selectedCells[row][column] = YES;
 
-      cellFrame = [self cellFrameAtRow: row column: column];
-
-      if ([_cells[row][column] acceptsFirstResponder])
-	{
-	  int lastRow, lastColumn;
-
-	  lastRow = _dottedRow;
-	  lastColumn = _dottedColumn;
-
-	  _dottedRow = row;
-	  _dottedColumn = column;
-
-	  if (lastRow != -1 && lastColumn != -1
-	    && (lastRow != row || lastColumn != column) 
-	    && [self window] != nil)
-	    {
-	      [self setNeedsDisplayInRect: [self cellFrameAtRow: lastRow
-						 column: lastColumn]];
-	    }
-	}
-
       [_selectedCell setState: NSOnState];
 
       if (_mode == NSListModeMatrix)
-	[aCell setCellAttribute: NSCellHighlighted to: 1];
+	[aCell setHighlighted: YES];
 
+      cellFrame = [self cellFrameAtRow: row column: column];
       if (_autoscroll)
 	[self scrollRectToVisible: cellFrame];
 
-      // Note: we select the cell iff it is 'selectable', not 'editable' 
-      // as macosx says.  This looks definitely more appropriate. 
-      // [This is going to start editing only if the cell is also editable,
-      // otherwise the text gets selected and that's all.]
-      [self selectTextAtRow: row column: column];
-
       [self setNeedsDisplayInRect: cellFrame];
+
+      [self _setKeyRow: row column: column];
     }
   else
     {
@@ -1101,7 +1084,15 @@ static SEL getSel;
   int row, column;
 
   if ([self getRow: &row column: &column ofCell: aCell] == YES)
-    [self _selectCell: aCell atRow: row column: column];
+    {
+      [self _selectCell: aCell atRow: row column: column];
+
+      // Note: we select the cell iff it is 'selectable', not 'editable' 
+      // as macosx says.  This looks definitely more appropriate. 
+      // [This is going to start editing only if the cell is also editable,
+      // otherwise the text gets selected and that's all.]
+      [self selectTextAtRow: row column: column];
+    }
 }
 
 - (void) selectCellAtRow: (int)row column: (int)column
@@ -1117,7 +1108,10 @@ static SEL getSel;
   aCell = [self cellAtRow: row column: column];
 
   if (aCell)
-    [self _selectCell: aCell atRow: row column: column];
+    {
+      [self _selectCell: aCell atRow: row column: column];
+      [self selectTextAtRow: row column: column];
+    }
 }
 
 - (BOOL) selectCellWithTag: (int)anInt
@@ -1135,6 +1129,7 @@ static SEL getSel;
 	  if ([aCell tag] == anInt)
 	    {
 	      [self _selectCell: aCell atRow: i column: j];
+	      [self selectTextAtRow: i column: j];
 	      return YES;
 	    }
 	}
@@ -1167,103 +1162,125 @@ static SEL getSel;
 		   anchor: (int)anchorPos
 	        highlight: (BOOL)flag
 {
-  BOOL	 doSelect = NO;
-  BOOL	 doUnselect = NO;
-  BOOL   drawLast = NO;
-  int	 selectx = 0;
-  int	 selecty = 0;
-  int	 unselectx = 0;
-  int	 unselecty = 0;
-  int	 dca = endPos - anchorPos;
-  int	 dla = startPos - anchorPos;
-  int	 dca_dla = SIGN(dca) / (SIGN(dla) ? SIGN(dla) : 1);
-  int    lastDottedRow, lastDottedColumn;
-  MPoint end = POINT_FROM_INDEX(endPos);
-
-  if (dca_dla >= 0)
+  /* Cells are selected from the anchor (A) to the point where the mouse
+   * went down (S) and then they are selected (if the mouse moves away from A)
+   * or deselected (if the mouse moves closer to A) until the point 
+   * where the mouse goes up (E).
+   * This is inverted if flag is false (not sure about this though; if this is
+   * changed, mouse tracking in list mode should be changed too).
+   */
+  /* An easy way of doing this is unselecting all cells from A to S and then
+   * selecting all cells from A to E. Let's try to do it in a more optimized
+   * way..
+   */
+  /* Linear and rectangular selections are a bit different */
+  if (![self isSelectionByRect]
+      || [self numberOfRows] == 1 || [self numberOfColumns] == 1)
     {
-      if (ABS(dca) >= ABS(dla))
-	{
-	  doSelect = YES;
-	  selectx = MIN(startPos, endPos);
-	  selecty = MAX(startPos, endPos);
-	}
-      else
-	{
-	  doUnselect = YES;
-	  drawLast = YES;
-	  if (endPos < startPos)
-	    {
-	      unselectx = endPos + 1;
-	      unselecty = startPos;
-	    }
-	  else
-	    {
-	      unselectx = startPos;
-	      unselecty = endPos - 1;
-	    }
-	}
+      /* Linear selection
+       * There are three possibilities (ignoring direction):
+       *    A    S    E 
+       *    sssssssssss
+       *
+       *    A    E    S
+       *    ssssssuuuuu
+       *
+       *    E    A    S
+       *    ssssssuuuuu
+       *
+       * So, cells from A to E are selected and, if S is outside the
+       * range from A to E, cells from S to its closest point are unselected
+       */
+      int selStart = MIN(anchorPos, endPos);
+      int selEnd = MAX(anchorPos, endPos);
+      [self _setState: flag ? NSOnState : NSOffState
+	    highlight: flag
+	    startIndex: selStart
+	    endIndex: selEnd];
+      if (startPos > selEnd)
+        {
+          [self _setState: flag ? NSOffState : NSOnState
+	        highlight: !flag
+	        startIndex: selEnd+1
+	        endIndex: startPos];
+        }
+      else if (startPos < selStart)
+        {
+          [self _setState: flag ? NSOffState : NSOnState
+	        highlight: !flag
+	        startIndex: startPos
+	        endIndex: selStart-1];
+        }
+      
     }
   else
     {
-      doSelect = YES;
-      if (anchorPos < endPos)
-	{
-	  selectx = anchorPos;
-	  selecty = endPos;
-	}
-      else
-	{
-	  selectx = endPos;
-	  selecty = anchorPos;
-	}
-
-      doUnselect = YES;
-      if (anchorPos < startPos)
-	{
-	  unselectx = anchorPos;
-	  unselecty = startPos - 1;
-	}
-      else
-	{
-	  unselectx = startPos;
-	  unselecty = anchorPos - 1;
-	}
-    }
-
-  if (_dottedRow != -1 && _dottedColumn != -1
-      && (_dottedRow != end.y || _dottedColumn != end.x))
-    {
-      lastDottedRow = _dottedRow;
-      lastDottedColumn = _dottedColumn;
-
-      [self setNeedsDisplayInRect: [self cellFrameAtRow: lastDottedRow
-					 column: lastDottedColumn]];
-    }
-
-  _selectedRow = _dottedRow = end.y;
-  _selectedColumn = _dottedColumn = end.x;
-  _selectedCells[_selectedRow][_selectedColumn] = YES;
-  _selectedCell = _cells[_selectedRow][_selectedColumn];
-
-  if (doUnselect)
-    {
-      [self _setState: flag ? NSOffState : NSOnState
-	    highlight: flag ? NO : YES
-	    startIndex: unselectx
-	    endIndex: unselecty];
-    }
-  if (doSelect)
-    {
+      /* Rectangular selection
+       *
+       *   A     sss
+       *    S    sss
+       *     E   sss
+       *
+       *   A     ssu
+       *    E    ssu
+       *     S   uuu
+       *
+       *   E     ss 
+       *    A    ssu
+       *     S    uu
+       *
+       *   A     ssu
+       *     S   ssu
+       *    E    ss
+       *
+       * So, cells of the rect from A to E are selected and cells of the
+       * rect from A to S that are outside the first rect are unselected
+       */
+      MPoint anchorPoint = POINT_FROM_INDEX(anchorPos);
+      MPoint endPoint = POINT_FROM_INDEX(endPos);
+      MPoint startPoint = POINT_FROM_INDEX(startPos);
+      int minx_AE = MIN(anchorPoint.x, endPoint.x);
+      int miny_AE = MIN(anchorPoint.y, endPoint.y);
+      int maxx_AE = MAX(anchorPoint.x, endPoint.x);
+      int maxy_AE = MAX(anchorPoint.y, endPoint.y);
+      int minx_AS = MIN(anchorPoint.x, startPoint.x);
+      int miny_AS = MIN(anchorPoint.y, startPoint.y);
+      int maxx_AS = MAX(anchorPoint.x, startPoint.x);
+      int maxy_AS = MAX(anchorPoint.y, startPoint.y);
+      
       [self _setState: flag ? NSOnState : NSOffState
-	    highlight: flag ? YES : NO
-	    startIndex: selectx
-	    endIndex: selecty];
+	    highlight: flag
+	    startIndex: INDEX_FROM_COORDS(minx_AE, miny_AE)
+	    endIndex: INDEX_FROM_COORDS(maxx_AE, maxy_AE)];
+      if (startPoint.x > maxx_AE)
+        {
+          [self _setState: flag ? NSOffState : NSOnState
+	        highlight: !flag
+	        startIndex: INDEX_FROM_COORDS(maxx_AE+1, miny_AS)
+	        endIndex: INDEX_FROM_COORDS(startPoint.x, maxy_AS)];
+        }
+      else if (startPoint.x < minx_AE)
+        {
+          [self _setState: flag ? NSOffState : NSOnState
+	        highlight: !flag
+	        startIndex: INDEX_FROM_COORDS(startPoint.x, miny_AS)
+	        endIndex: INDEX_FROM_COORDS(minx_AE-1, maxy_AS)];
+        }
+      if (startPoint.y > maxy_AE)
+        {
+          [self _setState: flag ? NSOffState : NSOnState
+	        highlight: !flag
+	        startIndex: INDEX_FROM_COORDS(minx_AS, maxy_AE+1)
+	        endIndex: INDEX_FROM_COORDS(maxx_AS, startPoint.y)];
+        }
+      else if (startPoint.y < miny_AE)
+        {
+          [self _setState: flag ? NSOffState : NSOnState
+	        highlight: !flag
+	        startIndex: INDEX_FROM_COORDS(minx_AS, startPoint.y)
+	        endIndex: INDEX_FROM_COORDS(maxx_AS, miny_AE-1)];
+        }
     }
-
-  if (drawLast)
-    [self setNeedsDisplayInRect: [self cellFrameAtRow: _dottedRow
-				       column: _dottedColumn]];
 }
 
 - (id) cellAtRow: (int)row
@@ -1346,17 +1363,9 @@ static SEL getSel;
 	}
       else
 	{
-	  if (_keyCell != nil)
+	  if (_dottedRow != -1)
 	    {
-	      BOOL isValid;
-	      int row, column;
-	      
-	      isValid = [self getRow: &row  column: &column  
-			      ofCell: _keyCell];
-	      if (isValid == YES)
-		{
-		  [self selectTextAtRow: row  column: column];
-		}
+              [self selectTextAtRow: _dottedRow  column: _dottedColumn];
 	    }
 	}
       break;
@@ -1399,22 +1408,7 @@ static SEL getSel;
       if ([t resignFirstResponder] == NO)
 	return nil;
 
-    if (_selectedCell && _selectedCell != _cells[row][column])
-      {
-	[_selectedCell setShowsFirstResponder: NO];
-	[self setNeedsDisplayInRect: [self cellFrameAtRow: _selectedRow
-					   column: _selectedColumn]];
-      }
-
-    _selectedCell = _cells[row][column];
-    _selectedRow = row;
-    _selectedColumn = column;
-
-    if ([_cells[row][column] acceptsFirstResponder])
-      {
-	_dottedRow = row;
-	_dottedColumn = column;
-      }
+    [self _selectCell: _cells[row][column] atRow: row column: column];
 
     /* See comment in NSTextField */
     length = [[_selectedCell stringValue] length];
@@ -1432,7 +1426,14 @@ static SEL getSel;
 
 - (id) keyCell
 {
-  return _keyCell;
+  if (_dottedRow == -1 || _dottedColumn == -1)
+    {
+      return nil;
+    }
+  else
+    {
+      return _cells[_dottedRow][_dottedColumn];
+    }
 }
 
 - (void) setKeyCell: (NSCell *)aCell 
@@ -1444,7 +1445,7 @@ static SEL getSel;
 
   if (isValid == YES)
     {
-      ASSIGN (_keyCell, aCell);
+      [self _setKeyRow: row column: column];
     }
 }
 
@@ -1874,20 +1875,21 @@ static SEL getSel;
 	  NSRectFill(cellFrame);
 	}
       
-      if (_dottedRow == row && _dottedColumn == column
-	  && [aCell acceptsFirstResponder])
+      if (_dottedRow == row
+          && _dottedColumn == column
+	  && [aCell acceptsFirstResponder]
+          && [_window isKeyWindow]
+	  && [_window firstResponder] == self)
 	{
-	  [aCell
-	    setShowsFirstResponder: ([_window isKeyWindow]
-				     && [_window firstResponder] == self)];
+	  [aCell setShowsFirstResponder: YES];
+          [aCell drawWithFrame: cellFrame inView: self];
+          [aCell setShowsFirstResponder: NO];
 	}
       else
 	{
 	  [aCell setShowsFirstResponder: NO];
+          [aCell drawWithFrame: cellFrame inView: self];
 	}
-      
-      [aCell drawWithFrame: cellFrame inView: self];
-      [aCell setShowsFirstResponder: NO];
     }
 }
 
@@ -1897,33 +1899,8 @@ static SEL getSel;
 
   if (aCell)
     {
-      NSRect cellFrame = [self cellFrameAtRow: row column: column];
-      [self lockFocus];
-
-      if (_drawsCellBackground)
-	{
-	  [_cellBackgroundColor set];
-	  NSRectFill(cellFrame);
-	}
-
-      if (_dottedRow != -1 && _dottedColumn != -1
-	  && _cells[_dottedRow][_dottedColumn] == aCell
-	  && [_cells[_dottedRow][_dottedColumn] acceptsFirstResponder])
-	{
-	  [_cells[_dottedRow][_dottedColumn]
-		 setShowsFirstResponder:
-		   ([_window isKeyWindow]
-		    && [_window firstResponder] == self)];
-	}
-
-      [aCell highlight: flag
-             withFrame: cellFrame
-                inView: self];
-
-      if (_dottedRow != -1 && _dottedColumn != -1)
-	[_cells[_dottedRow][_dottedColumn] setShowsFirstResponder: NO];
-
-      [self unlockFocus];
+      [aCell setHighlighted: flag];
+      [self setNeedsDisplayInRect: [self cellFrameAtRow: row column: column]];
     }
 }
 
@@ -2026,20 +2003,17 @@ static SEL getSel;
 
 - (void) _mouseDownNonListMode: (NSEvent *)theEvent
 {
-  BOOL mouseUpInCell = NO, onCell, scrolling = NO;
-  NSCell *highlightedCell = nil;
-  int highlightedRow = 0;
-  int highlightedColumn = 0;
+  BOOL mouseUpInCell = NO, onCell, scrolling = NO, mouseUp = NO;
   NSCell *mouseCell;
   int mouseRow;
   int mouseColumn;
   NSPoint mouseLocation;
   NSRect mouseCellFrame;
-  NSEvent *currentEvent = nil;
+  NSCell *originallySelectedCell = _selectedCell;
   unsigned eventMask = NSLeftMouseUpMask | NSLeftMouseDownMask
                      | NSMouseMovedMask  | NSLeftMouseDraggedMask;
 
-  while (!mouseUpInCell && ([theEvent type] != NSLeftMouseUp))
+  while (!mouseUp)
     {
       mouseLocation = [self convertPoint: [theEvent locationInWindow]
                                 fromView: nil];
@@ -2048,69 +2022,43 @@ static SEL getSel;
 		     column: &mouseColumn
 		     forPoint: mouseLocation];
 
-      if (!onCell)
-	scrolling = NO;
-
       if (onCell)
 	{
 	  mouseCellFrame = [self cellFrameAtRow: mouseRow column: mouseColumn];
 	  mouseCell = [self cellAtRow: mouseRow column: mouseColumn];
 
 	  if (_autoscroll)
-	    scrolling = [self scrollRectToVisible: mouseCellFrame];
+            {
+	      scrolling = [self scrollRectToVisible: mouseCellFrame];
+            }
 
 	  if ([mouseCell isEnabled])
-	    {
-	      [self lockFocus];
-	      
-	      if ([mouseCell acceptsFirstResponder])
+	    {	      
+              int old_state;
+              
+              /* Select the cell before tracking. The cell can send its action
+               * during tracking, and the target discovers which cell was
+               * clicked calling selectedCell.
+               * The cell calls -nextState before sending the action, so its
+               * state should not be changed here (except in radio mode).
+               */
+              old_state = [mouseCell state];
+              [self _selectCell: mouseCell atRow: mouseRow column: mouseColumn];
+              if (_mode == NSRadioModeMatrix && !_allowsEmptySelection)
+                {
+                  [mouseCell setState: NSOffState];
+                }
+              else
+                {
+                  [mouseCell setState: old_state];
+                }
+              
+	      if (_mode != NSTrackModeMatrix)
 		{
-		  NSCell *aCell = [self cellAtRow: _dottedRow
-					column: _dottedColumn];
-
-		  _dottedRow = mouseRow;
-		  _dottedColumn = mouseColumn;
-
-		  if (aCell && aCell != mouseCell)
-		    [self drawCell: aCell];
-		}
-
-	      if (_selectedCell)
-		{
-		  if (_mode == NSRadioModeMatrix)
-		    {
-		      [_selectedCell setState: NSOffState];
-		      [self drawCell: _selectedCell];
-		    }
-
-		  _selectedCells[_selectedRow][_selectedColumn] = NO;
-		}
-
-	      _selectedCell = mouseCell;
-	      _selectedRow = mouseRow;
-	      _selectedColumn = mouseColumn;
-	      _selectedCells[_selectedRow][_selectedColumn] = YES;
-
-	      if (_mode != NSTrackModeMatrix && highlightedCell != mouseCell)
-		{
-		  highlightedCell = mouseCell;
-		  highlightedRow = mouseRow;
-		  highlightedColumn = mouseColumn;
-
 		  [self highlightCell: YES
-			atRow: highlightedRow
-			column: highlightedColumn];
-
+			atRow: mouseRow
+			column: mouseColumn];
 		}
-
-	      if (_mode == NSRadioModeMatrix)
-		{
-		  [mouseCell setState: NSOffState];
-		  [self drawCell: _selectedCell];
-		}
-	      
-	      [self unlockFocus];
-	      [_window flushWindow];
 
 	      mouseUpInCell = [mouseCell trackMouse: theEvent
                                          inRect: mouseCellFrame
@@ -2121,113 +2069,189 @@ static SEL getSel;
 
 	      if (_mode != NSTrackModeMatrix)
 		{
-		  if(_mode == NSRadioModeMatrix)
-		    {
-		      if (!mouseUpInCell)
-			[mouseCell setState: NSOnState];
-		    }
-
-		  highlightedCell = nil;
-
-		  [self lockFocus];
 		  [self highlightCell: NO
-			atRow: highlightedRow
-			column: highlightedColumn];
-		  [self unlockFocus];
+			atRow: mouseRow
+			column: mouseColumn];
 		}
+              else
+                {
+                  if ([mouseCell state] != old_state)
+                    {
+                      [self setNeedsDisplayInRect: mouseCellFrame];
+                    }
+                }
+                
+	      mouseUp = mouseUpInCell
+                      || ([[NSApp currentEvent] type] == NSLeftMouseUp);
 
 	      if (!mouseUpInCell)
 		{
-		  ASSIGN(currentEvent, [NSApp currentEvent]);
-
-		  if (currentEvent && currentEvent != theEvent
-		      && [currentEvent type] != NSPeriodic)
-		    {
-		      if (!scrolling)
-			{
-			  theEvent = currentEvent;
-			  continue;
-			}
-		    }
-		  else
-		    DESTROY(currentEvent);
+	          _selectedCells[_selectedRow][_selectedColumn] = NO;
+	          _selectedCell = nil;
+	          _selectedRow = _selectedColumn = -1;
 		}
 	    }
 	}
-      else if (_mode != NSRadioModeMatrix)
-        {
-          // mouse is not over a Cell
-	  if (_selectedCell != nil)
-	    {
-	      if ([_selectedCell state])
-		{
-		  [_selectedCell setState: NSOffState];
-		  [self lockFocus];
-		  [self drawCell: _selectedCell];
-		  [self unlockFocus];
-		}
-
-	      _selectedCells[_selectedRow][_selectedColumn] = NO;
-	      _selectedCell = nil;
-	      _selectedRow = _selectedColumn = -1;
-	    }
-        }
 
       // if mouse didn't go up, take next event
-      if (!mouseUpInCell)
+      if (!mouseUp)
 	{
-	  theEvent = [NSApp nextEventMatchingMask: eventMask
-			    untilDate: !scrolling || !currentEvent
+          NSEvent *newEvent;
+	  newEvent = [NSApp nextEventMatchingMask: eventMask
+			    untilDate: !scrolling
 			    ? [NSDate distantFuture]
 			    : [NSDate dateWithTimeIntervalSinceNow: 0.05]
 			    inMode: NSEventTrackingRunLoopMode
 			    dequeue: YES];
 
-	  if (scrolling && !theEvent)
-	    theEvent = currentEvent;
-	  else
-	    DESTROY(currentEvent);
+	  if (newEvent != nil)
+            {
+              theEvent = newEvent;
+              mouseUp = ([theEvent type] == NSLeftMouseUp);
+            }
 	}
     }
 
-  RELEASE(currentEvent);
-
-  // the mouse went up.
-  // if it was inside a cell, the cell has already sent the action.
-  // if not, _selectedCell is the last cell that had the mouse, and
-  // it's state is Off. It must be set into a consistent state.
-  // anyway, the action has to be sent
   if (!mouseUpInCell)
     {
-      if (_mode != NSRadioModeMatrix)
-	{
-	  if (_selectedCell != nil)
-	    {
-	      _selectedCells[_selectedRow][_selectedColumn] = NO;
-	      _selectedCell = nil;
-	      _selectedRow = _selectedColumn = -1;
-	    }
-	}
-      [self sendAction];
+      if (_mode == NSRadioModeMatrix && !_allowsEmptySelection)
+        {
+          [self selectCell: originallySelectedCell];
+        }
+      [self sendAction]; /* like OPENSTEP, unlike MacOSX */  
     }
 }
 
+- (void) _mouseDownListMode: (NSEvent *) theEvent
+{
+  NSPoint locationInWindow, mouseLocation;
+  int mouseRow, mouseColumn;
+  int mouseIndex, previousIndex = 0, anchor = 0;
+  id mouseCell, previousCell = nil;
+  BOOL onCell;
+  BOOL isSelecting = YES;
+  unsigned eventMask = NSLeftMouseUpMask | NSLeftMouseDownMask
+                     | NSMouseMovedMask | NSLeftMouseDraggedMask
+                     | NSPeriodicMask;
+
+  // List mode
+  // multiple cells can be selected, dragging the mouse
+  // cells do not track the mouse
+  // shift key makes expands selection noncontiguously
+  // alternate key expands selection contiguously
+  // implementation based on OS 4.2 behaviour, that is different from MacOS X
+
+  if (_autoscroll)
+    {
+      [NSEvent startPeriodicEventsAfterDelay: 0.05 withPeriod: 0.05];
+    }
+
+  locationInWindow = [theEvent locationInWindow];
+
+  while ([theEvent type] != NSLeftMouseUp)
+    {
+      // must convert location each time or periodic events won't work well
+      mouseLocation = [self convertPoint: locationInWindow fromView: nil];
+      onCell = [self getRow: &mouseRow
+		     column: &mouseColumn
+		     forPoint: mouseLocation];
+
+      if (onCell)
+	{
+	  mouseCell = [self cellAtRow: mouseRow column: mouseColumn];
+          mouseIndex = INDEX_FROM_COORDS(mouseColumn, mouseRow);
+
+	  if (_autoscroll)
+            {
+              NSRect mouseRect;
+              mouseRect = [self cellFrameAtRow: mouseRow column: mouseColumn];
+	      [self scrollRectToVisible: mouseRect];
+            }
+                         
+
+	  if (mouseCell != previousCell && [mouseCell isEnabled] == YES)
+	    {
+	      if (!previousCell)
+		{
+                  // When the user first clicks on a cell
+                  // we clear the existing selection
+                  // unless the Alternate or Shift keys have been pressed.
+		  if (!(mouseDownFlags & NSShiftKeyMask)
+		      && !(mouseDownFlags & NSAlternateKeyMask))
+		    {
+		      [self deselectAllCells];
+		    }
+                    
+                  /* The clicked cell is the anchor of the selection, unless
+                   * the Alternate key is pressed, when the anchor is made
+                   * the key cell, from which the selection will be 
+                   * extended (this is probably not the best cell when
+                   * selection is by rect)
+                   */
+		  if (!(mouseDownFlags & NSAlternateKeyMask))
+                    {
+		      anchor = INDEX_FROM_COORDS(mouseColumn, mouseRow);
+                    }
+                  else
+                    {
+                      if (_dottedColumn != -1)
+		        anchor = INDEX_FROM_COORDS(_dottedColumn, _dottedRow);
+                      else
+                        anchor = INDEX_FROM_COORDS(0, 0);
+                    }
+                    
+                  /* With the shift key pressed, clicking on a selected cell
+                   * deselects it (and inverts the selection on mouse dragging).
+                   */
+		  if (mouseDownFlags & NSShiftKeyMask)
+                    {
+                      isSelecting = ([mouseCell state] == NSOffState);
+                    }
+                  else
+                    {
+                      isSelecting = YES;
+                    }
+
+                  previousIndex = mouseIndex;
+		}
+                
+	      [self setSelectionFrom: previousIndex
+	            to: mouseIndex
+	            anchor: anchor
+	            highlight: isSelecting];
+              [self _setKeyRow: mouseRow column: mouseColumn];
+              
+              previousIndex = mouseIndex;
+	      previousCell = mouseCell;
+	    }
+	}
+
+      theEvent = [NSApp nextEventMatchingMask: eventMask
+                                    untilDate: [NSDate distantFuture]
+                                       inMode: NSEventTrackingRunLoopMode
+                                      dequeue: YES];
+
+      NSDebugLLog(@"NSMatrix", @"matrix: got event of type: %d\n",
+                  [theEvent type]);
+
+      if ([theEvent type] != NSPeriodic)
+        {
+          locationInWindow = [theEvent locationInWindow];
+        }
+    }
+
+  if (_autoscroll)
+    {
+      [NSEvent stopPeriodicEvents];
+    }
+
+  [self sendAction];
+}
 
 - (void) mouseDown: (NSEvent*)theEvent
 {
-  BOOL onCell;
   int row, column;
-  unsigned eventMask = NSLeftMouseUpMask | NSLeftMouseDownMask
-			| NSMouseMovedMask | NSLeftMouseDraggedMask
-			| NSPeriodicMask;
   NSPoint lastLocation = [theEvent locationInWindow];
-  NSEvent* lastEvent = nil;
-  BOOL done = NO;
-  NSRect rect;
-  id aCell, previousCell = nil;
-  NSRect previousRect;
-  NSApplication *app = [NSApplication sharedApplication];
-  static MPoint anchor = {0, 0};
   int clickCount;
 
   /*
@@ -2263,18 +2287,6 @@ static SEL getSel;
     {
       if ([_cells[row][column] isEnabled])
 	{
-	  if ((_mode == NSRadioModeMatrix) && _selectedCell != nil)
-	    {
-	      [_selectedCell setState: NSOffState];
-	      [self lockFocus];
-	      [self drawCellAtRow: _selectedRow column: _selectedColumn];
-	      [self unlockFocus];
-	      [_window flushWindow];
-	      _selectedCells[_selectedRow][_selectedColumn] = NO;
-	      _selectedCell = nil;
-	      _selectedRow = _selectedColumn = -1;
-	    }
-
 	  if ([_cells[row][column] isSelectable])
 	    {
 	      NSText* t = [_window fieldEditor: YES forObject: self];
@@ -2288,14 +2300,7 @@ static SEL getSel;
 		    }
 		}
 	      // During editing, the selected cell is the cell being edited
-	      _selectedCell = _cells[row][column];
-	      _selectedRow = row;
-	      _selectedColumn = column;
-	      if ([_cells[row][column] acceptsFirstResponder])
-		{
-		  _dottedRow = row;
-		  _dottedColumn = column;
-		}
+              [self _selectCell: _cells[row][column] atRow: row column: column];
 	      _textObject = [_selectedCell setUpFieldEditorAttributes: t];
 	      [_selectedCell editWithFrame: [self cellFrameAtRow: row
 						  column: column]
@@ -2323,112 +2328,13 @@ static SEL getSel;
   if (_mode != NSListModeMatrix)
     {
       [self _mouseDownNonListMode: theEvent];
-      return;
     }
-
-  [NSEvent startPeriodicEventsAfterDelay: 0.05
-	   withPeriod: 0.05];
-  ASSIGN(lastEvent, theEvent);
-
-  // selection involves two steps, first
-  // a loop that continues until the left mouse goes up; then a series of
-  // steps which send actions and display the cell as it should appear after
-  // the selection process is complete
-  while (!done)
+  else
     {
-      BOOL shouldProceedEvent = NO;
-
-      onCell = [self getRow: &row
-		     column: &column
-		     forPoint: lastLocation];
-
-      if (onCell)
-	{
-	  aCell = [self cellAtRow: row column: column];
-	  rect = [self cellFrameAtRow: row column: column];
-
-	  if (_autoscroll)
-	    [self scrollRectToVisible: rect];
-
-	  if (aCell != previousCell && [aCell isEnabled] == YES)
-	    {
-	      unsigned modifiers = [lastEvent modifierFlags];
-
-	      // List mode allows multiple cells to be selected
-
-	      // When the user first clicks on a cell
-	      // we clear the existing selection
-	      // unless the Alternate or Shift keys have been pressed.
-
-	      if (!previousCell)
-		{
-		  if (!(modifiers & NSShiftKeyMask)
-		      && !(modifiers & NSAlternateKeyMask))
-		    {
-		      [self deselectAllCells];
-		      anchor = MakePoint (column, row);
-		    }
-
-		  // Consider the selected cell as the
-		  // anchor from which to extend the
-		  // selection to the current cell
-		  if (!(modifiers & NSAlternateKeyMask))
-		    [self _selectCell: aCell atRow: row column: column];
-		}
-	      else
-		{
-		  [self setSelectionFrom:
-			  INDEX_FROM_COORDS(_selectedColumn, _selectedRow)
-			to: INDEX_FROM_COORDS(column, row)
-			anchor: INDEX_FROM_POINT(anchor)
-			highlight: YES];
-		}
-
-	      previousCell = aCell;
-	      previousRect = rect;
-	    }
-	}
-
-      // if done break out of selection loop
-      if (done)
-	break;
-
-      while (!shouldProceedEvent)
-	{
-	  theEvent = [app nextEventMatchingMask: eventMask
-				      untilDate: [NSDate distantFuture]
-					 inMode: NSEventTrackingRunLoopMode
-				        dequeue: YES];
-	  switch ([theEvent type])
-	    {
-	    case NSPeriodic:
-	      NSDebugLLog(@"NSMatrix", @"matrix: got NSPeriodic event\n");
-	      shouldProceedEvent = YES;
-	      break;
-
-	    case NSLeftMouseUp:
-	      done = YES;
-	    case NSLeftMouseDown:
-	    default:
-	      shouldProceedEvent = YES;
-	      NSDebugLLog(@"NSMatrix", @"matrix: got event of type: %d\n",
-			 [theEvent type]);
-	      ASSIGN(lastEvent, theEvent);
-	      continue;
-	    }
-	}
-      lastLocation = [lastEvent locationInWindow];
-      lastLocation = [self convertPoint: lastLocation fromView: nil];
+      [self _mouseDownListMode: theEvent];
     }
-
-  [self setNeedsDisplayInRect: rect];
-
-  [NSEvent stopPeriodicEvents];
-
-  [self sendAction];
-  
-  RELEASE(lastEvent);
 }
+
 
 - (void) updateCell: (NSCell*)aCell
 {
@@ -2530,7 +2436,7 @@ static SEL getSel;
   [aCoder encodeValueOfObjCType: @encode (SEL) at: &_doubleAction];
   [aCoder encodeValueOfObjCType: @encode (SEL) at: &_errorAction];
   [aCoder encodeValueOfObjCType: @encode (BOOL) at: &_tabKeyTraversesCells];
-  [aCoder encodeObject: _keyCell];
+  [aCoder encodeObject: [self keyCell]];
   /* We do not encode information on selected cells, because this is saved 
      with the cells themselves */
 }
@@ -3622,7 +3528,7 @@ static SEL getSel;
       int	j;
       int	colLimit;
 
-      if (i == startPoint.y)
+      if (_selectionByRect || i == startPoint.y)
 	{
 	  j = startPoint.x;
 	}
@@ -3640,15 +3546,21 @@ static SEL getSel;
 	{
 	  NSCell	*aCell = _cells[i][j];
 
-	  [aCell setState: state];
+          if ([aCell isEnabled]
+              && ([aCell state] != state || [aCell isHighlighted] != highlight
+                  || (state == NSOffState && _selectedCells[i][j] != NO)
+                  || (state != NSOffState && _selectedCells[i][j] == NO)))
+            {
+	      [aCell setState: state];
 
-	  if (state == NSOffState)
-	    _selectedCells[i][j] = NO;
-	  else
-	    _selectedCells[i][j] = YES;
+	      if (state == NSOffState)
+	        _selectedCells[i][j] = NO;
+	      else
+	        _selectedCells[i][j] = YES;
 
-	  [aCell setCellAttribute: NSCellHighlighted to: highlight];
-	  [self setNeedsDisplayInRect: [self cellFrameAtRow: i column: j]];
+	      [aCell setHighlighted: highlight];
+	      [self setNeedsDisplayInRect: [self cellFrameAtRow: i column: j]];
+            }
 	}
     }
 }
@@ -3762,4 +3674,23 @@ static SEL getSel;
     }
 }
 
+- (void) _setKeyRow: (int)row column: (int)column
+{
+  if (_dottedRow == row && _dottedColumn == column)
+    {
+      return;
+    }
+  if ([_cells[row][column] acceptsFirstResponder])
+    {
+      if (_dottedRow != -1 && _dottedColumn != -1)
+        {
+          [self setNeedsDisplayInRect: [self cellFrameAtRow: _dottedRow
+                                             column: _dottedColumn]];
+	}
+      _dottedRow = row;
+      _dottedColumn = column;
+      [self setNeedsDisplayInRect: [self cellFrameAtRow: _dottedRow
+                                         column: _dottedColumn]];
+    }
+}
 @end

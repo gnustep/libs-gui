@@ -81,7 +81,7 @@ typedef enum _NSMatrixMode {
   BOOL		_drawsCellBackground;
   BOOL		_autosizesCells;
   BOOL		_autoscroll;
-  id            _keyCell;
+  id            _reserved1;
   int		_dottedRow;
   int		_dottedColumn;
 }

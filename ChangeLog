@@ -1,3 +1,15 @@
+2003-03-18 Benhur Stein <benhur@inf.ufsm.br>
+
+        * Fix mouse tracking in NSMatrix
+	* Headers/gnustep/gui/NSMatrix.h: Change _keyCell ivar to _reserved1.
+        * Source/NSMatrix.m (-_setKeyRow:column:): New method
+        (-_selectCell:atRow:column:): Use it.
+        (-setSelectionFrom:to:anchor:highlight:): Rewrite.
+        (-highlightCell:atRow:column:): Simplify
+        (-_mouseDownNonListMode:): Fix tracking.
+        (-_mouseDownListMode:theEvent): New method.
+        (-mouseDown:): Use previous methods.
+
 2003-03-25 Serg Stoyan <stoyan@on.com.ua>
 
 	* Source/NSMenuView.m 
