@@ -298,6 +298,8 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
 }
 @end
 
+
+
 @implementation NSLayoutManager
 
 - (id) init
@@ -308,11 +310,16 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
   _delegate = nil;
   _textContainers = [[NSMutableArray alloc] initWithCapacity: 2];
 
-  containerRuns = [GSRunStorage new];
-  fragmentRuns = [GSRunStorage new];
-  locationRuns = [GSRunStorage new];
+  _containerRuns = [GSRunStorage new];
+  _fragmentRuns = [GSRunStorage new];
+  _locationRuns = [GSRunStorage new];
 
   return self;
+}
+
+- (void) dealloc
+{
+  [super dealloc];
 }
 
 //
@@ -380,12 +387,21 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
 			    changeInLength: (int)lengthChange
 		      actualCharacterRange: (NSRange*)actualRange
 {
+  // FIXME
+
+  // Currently we don't have context information
+  if (actualRange)
+    {
+      *actualRange = aRange;
+    }
 }
 
 - (void) invalidateLayoutForCharacterRange: (NSRange)aRange
 				    isSoft: (BOOL)flag
 		      actualCharacterRange: (NSRange*)actualRange
 {
+
+  [self _doLayout];
 }
 
 - (void) invalidateDisplayForCharacterRange: (NSRange)aRange
@@ -398,6 +414,15 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
 
 - (void) textContainerChangedGeometry: (NSTextContainer*)aContainer
 {
+  unsigned first = 0;
+
+  // find the first character in that text container
+
+  // invalidate the layout from here on
+  [self invalidateLayoutForCharacterRange: 
+	    NSMakeRange(first, [_textStorage length] - first)
+	isSoft: NO
+	actualCharacterRange: NULL];
 }
 
 - (void) textContainerChangedTextView: (NSTextContainer*)aContainer
@@ -410,28 +435,34 @@ static NSComparisonResult aSort(GSIArrayItem i0, GSIArrayItem i1)
       changeInLength: (int)lengthChange
     invalidatedRange: (NSRange)invalidatedRange
 {
+/*
   NSLog(@"NSLayoutManager was just notified that a change in the text
 storage occured.");
   NSLog(@"range: (%d, %d) changeInLength: %d invalidatedRange (%d, %d)",
 range.location, range.length, lengthChange, invalidatedRange.location,
 invalidatedRange.length);
-
-/*
-  if (mask == NSTextStorageEditedCharacters)
-    {
-      aLayoutHole = [[NSLayoutHole alloc]
-initWithCharacterRange: invalidatedRange isSoft: NO];
-    }
-  else if (mask == NSTextStorageEditedAttributes)
-    {
-    }
-  else if (mask == NSTextStorageEditedCharacters | NSTextStorageEditedAttributes)
-    {
-    }
 */
-  // invalidation should occure here.
+  int delta = 0;
+  unsigned last = NSMaxRange(invalidatedRange);
 
-  [self _doLayout];
+  if (mask & NSTextStorageEditedCharacters)
+    {
+      delta = lengthChange;
+    }
+
+  // hard invalidation occures here.
+  [self invalidateGlyphsForCharacterRange: range 
+	changeInLength: delta
+	actualCharacterRange: NULL];
+  [self invalidateLayoutForCharacterRange: invalidatedRange 
+	isSoft: NO
+	actualCharacterRange: NULL];
+
+  // the following range is soft invalidated
+  [self invalidateLayoutForCharacterRange: 
+	    NSMakeRange(last, [_textStorage length] - last)
+	isSoft: YES
+	actualCharacterRange: NULL];
 }
 
 //
@@ -543,7 +574,7 @@ initWithCharacterRange: invalidatedRange isSoft: NO];
   theLine->glyphRange = glyphRange;
   ASSIGN(theLine->textContainer, aTextContainer);
   
-  [containerRuns insertObject: theLine];
+  [_containerRuns insertObject: theLine];
 }
 
 - (NSRange) glyphRangeForTextContainer: (NSTextContainer*)aTextContainer
@@ -551,11 +582,11 @@ initWithCharacterRange: invalidatedRange isSoft: NO];
   int i;
 
   NSLog(@"glyphRangeForTextContainer: called. There are %d
-textContainer(s) in containerRuns.", [containerRuns count]);
+textContainer(s) in containerRuns.", [_containerRuns count]);
 
-  for (i=0;i<[containerRuns count];i++)
+  for (i=0;i<[_containerRuns count];i++)
     {
-      GSTextContainerLayoutInfo *aNewLine = [containerRuns objectAtIndex: i];
+      GSTextContainerLayoutInfo *aNewLine = [_containerRuns objectAtIndex: i];
 
 /*
       NSLog(@"glyphRangeForTextContainer: (%d, %d)",
@@ -582,7 +613,7 @@ aNewLine->glyphRange.length);
 {
   GSTextContainerLayoutInfo	*theLine;
 
-  theLine = [containerRuns objectContainingLocation: glyphIndex];
+  theLine = [_containerRuns objectContainingLocation: glyphIndex];
   if (theLine)
     {
       (NSRange*)effectiveRange = &theLine->glyphRange;
@@ -606,7 +637,7 @@ aNewLine->glyphRange.length);
   aNewLine->lineFragmentRect = fragmentRect;
   aNewLine->usedRect = usedRect;
 
-  [fragmentRuns insertObject: aNewLine];
+  [_fragmentRuns insertObject: aNewLine];
 }
 
 - (NSRect) lineFragmentRectForGlyphAtIndex: (unsigned)glyphIndex
@@ -614,7 +645,7 @@ aNewLine->glyphRange.length);
 {
   GSLineLayoutInfo	*theLine;
 
-  theLine = [fragmentRuns objectContainingLocation: glyphIndex];
+  theLine = [_fragmentRuns objectContainingLocation: glyphIndex];
   if (theLine)
     {
       (NSRange*)lineFragmentRange = &theLine->glyphRange;
@@ -630,7 +661,7 @@ aNewLine->glyphRange.length);
 {
   GSLineLayoutInfo	*theLine;
 
-  theLine = [fragmentRuns objectContainingLocation: glyphIndex];
+  theLine = [_fragmentRuns objectContainingLocation: glyphIndex];
   if (theLine)
     {
       (NSRange*)lineFragmentRange = &theLine->glyphRange;
@@ -684,7 +715,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
   aNewLine->glyphRange = glyphRange;
   aNewLine->point = aPoint;
 
-  [locationRuns insertObject: aNewLine];
+  [_locationRuns insertObject: aNewLine];
 }
 
 - (NSPoint) locationForGlyphAtIndex: (unsigned)glyphIndex
@@ -696,7 +727,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
 {
   GSLineLayoutInfo	*theLine;
 
-  theLine = [locationRuns objectContainingLocation: glyphIndex];
+  theLine = [_locationRuns objectContainingLocation: glyphIndex];
 
   if (theLine)
     {
@@ -864,11 +895,21 @@ be redrawn when a range of glyphs changes. */
 - (void) getFirstUnlaidCharacterIndex: (unsigned*)charIndex
 			   glyphIndex: (unsigned*)glyphIndex
 {
+  if (charIndex)
+    *charIndex = [self firstUnlaidCharacterIndex];
+
+  if (glyphIndex)
+    *glyphIndex = [self firstUnlaidGlyphIndex];
 }
 
 - (unsigned int) firstUnlaidCharacterIndex
 {
-  return 0;
+  return _firstUnlaidCharIndex;
+}
+
+- (unsigned int) firstUnlaidGlyphIndex
+{
+  return _firstUnlaidGlyphIndex;
 }
 
 //
@@ -886,7 +927,18 @@ be redrawn when a range of glyphs changes. */
 
 - (NSFont*) substituteFontForFont: (NSFont*)originalFont
 {
-  return originalFont;
+  NSFont *replaceFont;
+
+  if (_usesScreenFonts)
+    return originalFont;
+
+  // FIXME: Should check if any NSTextView is scalled or rotated
+  replaceFont = [originalFont screenFont];
+  
+  if (replaceFont != nil)
+    return replaceFont;
+  else
+    return originalFont;    
 }
 
 //
@@ -938,9 +990,9 @@ be redrawn when a range of glyphs changes. */
 {
   int firstPosition, lastPosition, i;
 
-  for (i=0;i<[fragmentRuns count];i++)
+  for (i=0;i<[_fragmentRuns count];i++)
     {
-      GSLineLayoutInfo *info = [fragmentRuns objectAtIndex: i];
+      GSLineLayoutInfo *info = [_fragmentRuns objectAtIndex: i];
 
 /*
       NSLog(@"i: %d glyphRange: (%d, %d) lineFragmentRect: (%f, %f) (%f, %f)",
@@ -954,9 +1006,9 @@ info->lineFragmentRect.size.height);
 */
     }
 
-  firstPosition = [fragmentRuns indexOfObjectContainingLocation: glyphRange.location];
-  lastPosition = [fragmentRuns 
-indexOfObjectContainingLocation: (glyphRange.location+glyphRange.length-3)];
+  firstPosition = [_fragmentRuns indexOfObjectContainingLocation: glyphRange.location];
+  lastPosition = [_fragmentRuns 
+		     indexOfObjectContainingLocation: (glyphRange.location+glyphRange.length-3)];
 
   NSLog(@"glyphRange: (%d, %d) position1: %d position2: %d",
 glyphRange.location, glyphRange.length, firstPosition, lastPosition);
@@ -965,13 +1017,13 @@ glyphRange.location, glyphRange.length, firstPosition, lastPosition);
     {
       if (lastPosition == -1)
         {
-          lastPosition = [fragmentRuns count] - 1; // FIXME
+          lastPosition = [_fragmentRuns count] - 1; // FIXME
 	  NSLog(@"fixed lastPosition: %d", lastPosition);
         }
 
       for (i = firstPosition; i <= lastPosition; i++)
         {
-	  GSLineLayoutInfo *aLine = [fragmentRuns objectAtIndex: i];
+	  GSLineLayoutInfo *aLine = [_fragmentRuns objectAtIndex: i];
 	  NSRect aRect = aLine->lineFragmentRect;
 	  aRect.size.height -= 4;
 
@@ -1288,4 +1340,5 @@ substringWithRange: ourRange]);
 			       startingAtGlyphIndex: gIndex];
     }
 }
+
 @end

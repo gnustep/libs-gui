@@ -41,34 +41,37 @@
 #import <AppKit/NSTextContainer.h>
 
 @class NSTypesetter;
-@class NSGlyphGenerator;
 @class NSTextView;
 @class NSWindow;
-@class NSColor;
 @class NSRulerView;
 @class NSParagraphStyle;
-@class NSRulerMarker;
+@class NSView;
+
+// These are unclear:
 @class NSBox;
-@class NSTextField;
-@class NSMatrix;
+@class NSGlyphGenerator;
+@class NSSortedArray;
 @class NSTabWell;
 @class NSStorage;
-@class NSRunStorage;
-@class NSSortedArray;
-@class NSView;
-@class NSEvent;
-
+@class NSTextField;
+@class NSMatrix;
 // Michael's botch list. :-)
 @class GSRunStorage;
 
-// These glyph attributes are used only inside the glyph generation machinery, but must be shared between componenets.
+/*
+  These glyph attributes are used only inside the glyph generation machinery, 
+  but must be shared between componenets.
+*/
 enum _NSGlyphAttribute {
     NSGlyphAttributeSoft = 0,
     NSGlyphAttributeElastic = 1,
     NSGlyphAttributeInscribe = 5,
 };
 
-// The inscribe attribute of a glyph determines how it is laid out relative to the previous glyph.
+/*
+  The inscribe attribute of a glyph determines how it is laid out relative to 
+  the previous glyph.
+*/
 typedef enum {
     NSGlyphInscribeBase = 0,
     NSGlyphInscribeBelow = 1,
@@ -79,25 +82,35 @@ typedef enum {
 
 @interface NSLayoutManager : NSObject
 {
+    BOOL			_backgroundLayout;
+    BOOL			_showsInvisibleChars;
+    BOOL			_showsControlChars;
+    float			_hyphenationFactor;
+    BOOL			_usesScreenFonts;
+    BOOL			_finished;
     NSTextStorage		*_textStorage;
-    NSGlyphGenerator		*_glyphGenerator;
     NSTypesetter		*_typesetter;
 
+    /*
+      These three arrays must bekeppt in step. The size of all is 
+      _glyph_max_count with _glyph_count used entries.
+     */
+    unsigned _glyph_count; 
+    unsigned _glyph_max_count; 
+    NSGlyph *_glyphs;
+    unsigned *char_glyph_mapping;
+    unsigned *glyph_attrs;
+
+    NSGlyphGenerator		*_glyphGenerator;
     NSMutableArray		*_textContainers;
     NSStorage			*_containerUsedRects;
 
-    NSStorage			*_glyphs;
 
     // GS data storage.
-    GSRunStorage *containerRuns;
-    GSRunStorage *fragmentRuns;
-    GSRunStorage *locationRuns;
+    GSRunStorage *_containerRuns;
+    GSRunStorage *_fragmentRuns;
+    GSRunStorage *_locationRuns;
 
-    NSRunStorage		*_containerRuns;
-    NSRunStorage		*_fragmentRuns;
-    NSRunStorage		*_glyphLocations;
-    NSRunStorage		*_glyphRotationRuns;
-    
     NSRect 			 _extraLineFragmentRect;
     NSRect 			 _extraLineFragmentUsedRect;
     NSTextContainer		*_extraLineFragmentContainer;
@@ -148,14 +161,6 @@ typedef enum {
     NSMatrix			*_rulerAccViewFixedLineHeightButtons;
 
     NSRange			 _newlyFilledGlyphRange;
-
-// Michael additions.
-    BOOL			_backgroundLayout;
-    BOOL			_showsInvisibleChars;
-    BOOL			_showsControlChars;
-    float			_hyphenationFactor;
-    BOOL			_usesScreenFonts;
-    BOOL			finished;
 }
 
 /**************************** Initialization ****************************/
@@ -271,10 +276,11 @@ typedef enum {
 - (void)setIntAttribute:(int)attributeTag value:(int)val forGlyphAtIndex:(unsigned)glyphIndex;
     // This method is used by the NSGlyphGenerator to set attributes.  It is not usually necessary for anyone but the glyph generator (and perhaps the typesetter) to call it.  It is provided as a public method so subclassers can extend it to accept other glyph attributes.  To add new glyph attributes to the text system you basically need to do two things.  You need to write a rulebook which will generate the attributes (in rulebooks attributes are identified by integer tags).  Then you need to subclass NSLayoutManager to provide someplace to store the new attribute and to override this method and -attribute:forGlyphAtIndex: to understand the integer tag which your new rulebook is generating.  NSLayoutManager's implementation understands the glyph attributes which it is prepared to remember.  Your override should pass any glyph attributes it does not understand up to the superclass's implementation.
 
-// This method will cause glyph generation as necessary to answer the question.
 
 - (int)intAttribute:(int)attributeTag forGlyphAtIndex:(unsigned)glyphIndex;
-    // This returns the value for the given glyph attribute at the glyph index specified.  Most apps will not have much use for this info but the typesetter and glyph generator might need to know about certain attributes.  You can override this method to know how to return any custom glyph attributes you want to support.
+// This returns the value for the given glyph attribute at the glyph index specified.  Most apps will not have much use for this info but the typesetter and glyph generator might need to know about certain attributes.  You can override this method to know how to return any custom glyph attributes you want to support.
+
+- (void)setAttachmentSize:(NSSize)attachmentSize forGlyphRange:(NSRange)glyphRange;
 
 /************************ Set/Get layout attributes ************************/
 
