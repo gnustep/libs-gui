@@ -33,14 +33,15 @@
 
 @class NSImage;
 @class NSEvent;
+@class NSColor;
 
 @interface NSCursor : NSObject <NSCoding>
 {
-  NSImage	*cursor_image;
-  NSPoint	hot_spot;
-  BOOL		is_set_on_mouse_entered;
-  BOOL		is_set_on_mouse_exited;
-  void		*cid;
+  NSImage	*_cursor_image;
+  NSPoint	_hot_spot;
+  BOOL		_is_set_on_mouse_entered;
+  BOOL		_is_set_on_mouse_exited;
+  void		*_cid;
 }
 
 /*
@@ -50,11 +51,20 @@
 - (id) initWithImage: (NSImage *)newImage
 	     hotSpot: (NSPoint)hotSpot;
 
+
+#ifndef	STRICT_OPENSTEP
+- (id)initWithImage:(NSImage *)newImage 
+foregroundColorHint:(NSColor *)fg 
+backgroundColorHint:(NSColor *)bg
+	    hotSpot:(NSPoint)hotSpot;
+#endif
+
 /*
  * Defining the Cursor
  */
 - (NSPoint) hotSpot;
 - (NSImage*) image;
+// This methods are defined in OpenStep, but not in MacOSX
 - (void) setHotSpot: (NSPoint)spot;
 - (void) setImage: (NSImage *)newImage;
 
@@ -82,12 +92,6 @@
 + (NSCursor*) arrowCursor;
 + (NSCursor*) currentCursor;
 + (NSCursor*) IBeamCursor;
-
-/*
- * NSCoding protocol
- */
-- (void) encodeWithCoder: (NSCoder*)aCoder;
-- (id) initWithCoder: (NSCoder*)aDecoder;
 
 @end
 
