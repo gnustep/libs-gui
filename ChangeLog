@@ -1,3 +1,57 @@
+2002-09-11  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Source/NSText.m ([NSText -initWithCoder:]): 
+	Retain the decoded background color.
+	
+	* Source/NSTextView.m : 
+	multiple location: don't ignore textContainer's inset
+	([NSTextView -initWithCoder:])
+	([NSTextView -encodeWithCoder:])
+	Encode caret color, textContainer's size and whether the 
+	textContainer has widthTracksTextView or heightTracksTextView set.
+	([NSTextView -sizeToFit]) Change width (height) only if
+	is_horizontally_resizable (is_vertically_resizable).
+	([NSTextView -scrollRangeToVisible:]) scrolls to the first char of 
+	the range.
+	([NSTextView -invalidateTextContainerOrigin]): Don't ignore inset,
+	set the origin so that the justification is preserved even if the
+	textContainer's width is larger that the textview's width.
+	([NSTextView -updateInsertionPointStateAndRestartTimer:]):
+	update and place the insertion point properly.
+	([NSTextView -moveDown:]) & ([NSTextView -moveUp:]):
+	Don't ignore inset. Make insertion point visible.
+	
+	* Source/NSTextField.m ([NSTextField -acceptsFirstResponder:]):
+	responds NO if the editing is still in progrss.
+	
+	* Source/NSLayoutManager.m 
+	([NSLayoutManager -drawBackgroundForGlyphRange:atPoint:]): 
+	Don't ignore textContainer's inset.
+
+	* Source/GSSimpleLayoutManager.m
+	Replaced [-drawLinesInLineRange:] with [-drawLinesInLineRange:atPoint:].
+	Replaced [-drawSelectionAsRangeNoCaret:] with
+	[-drawSelectionAsRangeNoCaret:atPoint:].
+	Those replacements make it easier to take inset into account.
+	([-lineFragmentUsedRectForGlyphAtIndex:effectiveRange:])
+	([-locationForGlyphAtIndex:])
+	([-boundingRectForGlyphRange:inTextContainer:])
+	([-rectForCharacterIndex:])
+	([-setNeedsDisplayForLineRange:inTextContainer:]):
+	Various fixes.
+	([-textStorage:edited:range:changeInLength:invalidatedRange:])
+	Update insertion point if needed (useful when alignment changes).
+	([-rebuildForRange:delta:inTextContainer:]):
+	Update layout mechanism.
+
+	* Source/NSCell.m
+	([NSCell -highlight:withFrame:inView:]):
+	Ask the control to draw the background if we are not opaque.
+	([NSCell -editWithFrame:inView:editor:delegate:event:]):
+	([NSCell -selectWithFrame:inView:editor:delegate:start:length:]):
+	([NSCell -endEditing:]):
+	instantiate (and remove) the textview so that it can be scrolled.
+	
 2002-09-09  Adam Fedor  <fedor@gnu.org>
 
 	* configure.ac: Switch to disaple gsnd.

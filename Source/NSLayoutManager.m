@@ -2762,14 +2762,18 @@ forStartOfGlyphRange: (NSRange)glyphRange
 			     atPoint: (NSPoint)containerOrigin
 {
   NSTextContainer *aTextContainer;
-  
+  NSRect rect;
+
   aTextContainer = [self textContainerForGlyphAtIndex: glyphRange.location
 			 effectiveRange: NULL];
   
   [[[aTextContainer textView] backgroundColor] set];
   
-  NSRectFill ([self boundingRectForGlyphRange: glyphRange 
-		    inTextContainer: aTextContainer]);
+  rect = [self boundingRectForGlyphRange: glyphRange 
+	       inTextContainer: aTextContainer];
+  rect.origin.x += containerOrigin.x;
+  rect.origin.x += containerOrigin.y;
+  NSRectFill (rect);
 }
 
 - (void) drawGlyphsForGlyphRange: (NSRange)glyphRange

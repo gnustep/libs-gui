@@ -54,6 +54,8 @@
 #include <AppKit/PSOperators.h>
 #include <AppKit/NSAttributedString.h>
 
+#include <AppKit/NSClipView.h>
+
 static Class	colorClass;
 static Class	cellClass;
 static Class	fontClass;
@@ -1692,7 +1694,11 @@ static NSColor	*shadowCol;
        * NSCell simply draws border+text/image and makes no highlighting, 
        * for easier subclassing.
        */
-     [self drawWithFrame: cellFrame inView: controlView];
+      if ([self isOpaque] == NO)
+	{
+	  [controlView displayRect: cellFrame];
+	}
+      [self drawWithFrame: cellFrame inView: controlView];
     }
 }
 
@@ -1708,8 +1714,32 @@ static NSColor	*shadowCol;
   if (!controlView || !textObject || (_cell.type != NSTextCellType))
     return;
 
-  [textObject setFrame: [self titleRectForBounds: aRect]];
-  [controlView addSubview: textObject];  
+  {
+    NSClipView *cv = [[NSClipView alloc] 
+		       initWithFrame:
+			 [self titleRectForBounds: aRect]];
+    [controlView addSubview: cv];
+    RELEASE(cv);
+    [cv setAutoresizesSubviews: NO];
+    [cv setDocumentView: textObject];
+    [textObject setFrame: [cv bounds]];
+    [textObject setHorizontallyResizable: YES];
+    [textObject setVerticallyResizable: NO];
+    [textObject 
+      setMaxSize: 
+	NSMakeSize (3000,
+		    [self titleRectForBounds: aRect].size.height)];
+    [textObject 
+      setMinSize: 
+	[self titleRectForBounds: aRect].size];
+    [[textObject textContainer] 
+      setContainerSize: 
+	NSMakeSize (3000,
+		    [self titleRectForBounds: aRect].size.height)];
+    [[textObject textContainer] setHeightTracksTextView: NO];
+    [[textObject textContainer] setWidthTracksTextView: NO];
+
+  }
 
   if (_formatter != nil)
     {
@@ -1734,6 +1764,7 @@ static NSColor	*shadowCol;
 	  [textObject setText: [(NSAttributedString *)_contents string]];
 	}
     }
+  [textObject sizeToFit];
   
   [textObject setDelegate: anObject];
   [[controlView window] makeFirstResponder: textObject];
@@ -1748,8 +1779,11 @@ static NSColor	*shadowCol;
 
 - (void) endEditing: (NSText*)textObject
 {
+  NSClipView *cv;
   [textObject setDelegate: nil];
+  cv = (NSClipView*)[textObject superview];
   [textObject removeFromSuperview];
+  [cv removeFromSuperview];
 }
 
 - (void) selectWithFrame: (NSRect)aRect
@@ -1762,17 +1796,61 @@ static NSColor	*shadowCol;
   if (!controlView || !textObject || (_cell.type != NSTextCellType))
     return;
 
-  [textObject setFrame: [self titleRectForBounds: aRect]];
-  [controlView addSubview: textObject];
-  if (_cell.contents_is_attributed_string == NO)
+  {
+    NSClipView *cv = [[NSClipView alloc] 
+		       initWithFrame:
+			 [self titleRectForBounds: aRect]];
+    [controlView addSubview: cv];
+    RELEASE(cv);
+    [cv setAutoresizesSubviews: NO];
+    [cv setDocumentView: textObject];
+    [textObject setFrame: [cv bounds]];
+    [textObject setHorizontallyResizable: YES];
+    [textObject setVerticallyResizable: NO];
+    [textObject 
+      setMaxSize: 
+	NSMakeSize (3000,
+		    [self titleRectForBounds: aRect].size.height)];
+    [textObject 
+      setMinSize: 
+	[self titleRectForBounds: aRect].size];
+    [[textObject textContainer] 
+      setContainerSize: 
+	NSMakeSize (3000,
+		    [self titleRectForBounds: aRect].size.height)];
+    [[textObject textContainer] setWidthTracksTextView: NO];
+    [[textObject textContainer] setWidthTracksTextView: NO];
+
+  }
+
+  if (_formatter != nil)
     {
-      [textObject setText: _contents];
+      NSString *contents; 
+
+      contents = [_formatter editingStringForObjectValue: _objectValue];
+      if (contents == nil)
+	{
+	  contents = _contents;
+	}
+      [textObject setText: contents];
     }
   else
     {
-      /* FIXME/TODO make sure this is correct. */
-      [textObject setText: [(NSAttributedString *)_contents string]];
+      if (_cell.contents_is_attributed_string == NO)
+	{
+	  [textObject setText: _contents];
+	}
+      else
+	{
+	  /* FIXME/TODO make sure this is correct. */
+	  [textObject setText: [(NSAttributedString *)_contents string]];
+	}
     }
+  [textObject sizeToFit];
+  
+  [textObject setDelegate: anObject];
+  [[controlView window] makeFirstResponder: textObject];
+
   [textObject setSelectedRange: NSMakeRange (selStart, selLength)];
   [textObject setDelegate: anObject];
   [[controlView window] makeFirstResponder: textObject];

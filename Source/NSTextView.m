@@ -20,6 +20,9 @@
    Author: Nicola Pero <n.pero@mi.flashnet.it>
    Date: 2000, 2001, 2002
 
+   Author: Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+   Date: September 2002
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -62,6 +65,8 @@
 #include <AppKit/NSTextStorage.h>
 #include <AppKit/NSColorPanel.h>
 #include <AppKit/NSAttributedString.h>
+
+static const int currentVersion = 2;
 
 #define HUGE 1e7
 
@@ -154,7 +159,7 @@ static NSNotificationCenter *nc;
 {
   if ([self class] == [NSTextView class])
     {
-      [self setVersion: 1];
+      [self setVersion: currentVersion];
       nc = [NSNotificationCenter defaultCenter];
       [self registerForServices];
     }
@@ -266,7 +271,8 @@ static NSNotificationCenter *nc;
 
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
-   BOOL flag;
+  BOOL flag;
+  NSSize containerSize = [_textContainer containerSize];
 
   [super encodeWithCoder: aCoder];
 
@@ -274,28 +280,71 @@ static NSNotificationCenter *nc;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
   flag = _tvf.allows_undo;
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  [aCoder encodeObject: _caret_color];
+  [aCoder encodeValueOfObjCType: @encode(NSSize) at: &containerSize];
+  flag = [_textContainer widthTracksTextView];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+  flag = [_textContainer heightTracksTextView];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &flag];
 }
 
 - (id) initWithCoder: (NSCoder *)aDecoder
 {
-  NSTextContainer *aTextContainer; 
-  BOOL flag;
+  int version = [aDecoder versionForClassName: 
+			    @"NSTextView"];
 
-  self = [super initWithCoder: aDecoder];
+  if (version == currentVersion)
+    {
+      NSTextContainer *aTextContainer; 
+      BOOL flag;
+      NSSize containerSize;
+     
+      self = [super initWithCoder: aDecoder];
+      
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _tvf.smart_insert_delete = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _tvf.allows_undo = flag;
+      
+      _caret_color  = RETAIN([aDecoder decodeObject]);
+      [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &containerSize];
+      /* build up the rest of the text system, which doesn't get stored 
+	 <doesn't even implement the Coding protocol>. */
+      aTextContainer = [self buildUpTextNetwork: _frame.size];
+      [aTextContainer setTextView: (NSTextView*)self];
+      [aTextContainer setContainerSize: containerSize];
 
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _tvf.smart_insert_delete = flag;
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
-  _tvf.allows_undo = flag;
-  
-  /* build up the rest of the text system, which doesn't get stored 
-     <doesn't even implement the Coding protocol>. */
-  aTextContainer = [self buildUpTextNetwork: _frame.size];
-  [aTextContainer setTextView: (NSTextView*)self];
-  /* See initWithFrame: for comments on this RELEASE */
-  RELEASE (self);
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [aTextContainer setWidthTracksTextView: flag];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [aTextContainer setHeightTracksTextView: flag];
 
-  [self setSelectedRange: NSMakeRange (0, 0)];
+      /* See initWithFrame: for comments on this RELEASE */
+      RELEASE (self);
+      
+      [self setSelectedRange: NSMakeRange (0, 0)];
+    }
+  else if (version == 1)
+    {
+      NSTextContainer *aTextContainer; 
+      BOOL flag;
+      
+      self = [super initWithCoder: aDecoder];
+      
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _tvf.smart_insert_delete = flag;
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
+      _tvf.allows_undo = flag;
+      
+      /* build up the rest of the text system, which doesn't get stored 
+	 <doesn't even implement the Coding protocol>. */
+      aTextContainer = [self buildUpTextNetwork: _frame.size];
+      [aTextContainer setTextView: (NSTextView*)self];
+      /* See initWithFrame: for comments on this RELEASE */
+      RELEASE (self);
+      
+      [self setSelectedRange: NSMakeRange (0, 0)];
+    }
 
   return self;
 }
@@ -363,11 +412,50 @@ static NSNotificationCenter *nc;
 	 this case.  So we set the attributes manually. */
       NSAttributedString *as;
       
-      as = AUTORELEASE ([[NSAttributedString alloc]
-			  initWithString: aString
-			  attributes: _typingAttributes]);  
-      [self replaceRange: aRange  withAttributedString: as];
+      if ([aString length] == 0)
+	{
+	  as = AUTORELEASE ([[NSAttributedString alloc]
+			  initWithString: @" "
+			  attributes: _typingAttributes]);
+	  [self replaceRange: aRange  withAttributedString: as];
+	  as = AUTORELEASE ([[NSAttributedString alloc]
+			      initWithString: aString
+			      attributes: _typingAttributes]);  
+	  [self replaceRange: NSMakeRange(0, 1) withAttributedString: as];
+	}
+      else
+	{
+	  as = AUTORELEASE ([[NSAttributedString alloc]
+			      initWithString: aString
+			      attributes: _typingAttributes]);  
+	  [self replaceRange: aRange  withAttributedString: as];
+	}
     }
+  // BEGIN: following code added by pyr
+  else if ([_textStorage length] == 0)
+    {
+      NSAttributedString *as;
+      if ([aString length] == 0)
+	{
+	  as = AUTORELEASE ([[NSAttributedString alloc]
+			  initWithString: @" "
+			  attributes: _typingAttributes]);
+	  [_textStorage replaceCharactersInRange: aRange  withAttributedString: as];
+	  as = AUTORELEASE ([[NSAttributedString alloc]
+			      initWithString: aString
+			      attributes: _typingAttributes]);  
+	  [_textStorage replaceCharactersInRange: NSMakeRange(0, 1) withAttributedString: as];
+	}
+      else
+	{
+	  as = AUTORELEASE ([[NSAttributedString alloc]
+			      initWithString: aString
+			      attributes: _typingAttributes]);  
+	  [_textStorage replaceCharactersInRange: aRange
+			withAttributedString: as];
+	}
+    }
+  // END
   else
     {
       [_textStorage replaceCharactersInRange: aRange  withString: aString];
@@ -837,17 +925,23 @@ static NSNotificationCenter *nc;
 
 - (void) sizeToFit
 {
+  NSSize size;
   if (_tf.is_horizontally_resizable || _tf.is_vertically_resizable)
-    {
-      NSSize size;
-      
-      size = [_layoutManager usedRectForTextContainer: _textContainer].size;
-      size.width  += 2 * _textContainerInset.width;
-      size.height += 2 * _textContainerInset.height;
+    size = [_layoutManager usedRectForTextContainer: _textContainer].size;
+  
+  if (!_tf.is_horizontally_resizable)
+    size.width = _bounds.size.width;
+  else
+    size.width += 2 * _textContainerInset.width;
 
-      [self setConstrainedFrameSize: size];
-    }
+  if (!_tf.is_vertically_resizable)
+    size.height = _bounds.size.height;
+  else
+    size.height += 2 * _textContainerInset.height;
+
+  [self setConstrainedFrameSize: size];
 }
+
 
 /*
  * [NSText] Spelling
@@ -897,11 +991,42 @@ static NSNotificationCenter *nc;
  */
 - (void) scrollRangeToVisible: (NSRange)aRange
 {
-  // Don't try scrolling an ancestor clipview if we are field editor.
-  // This makes things so much simpler and stabler for now.
-  if (_tf.is_field_editor == NO)
+  if (aRange.length > 0)
     {
-      [self scrollRectToVisible: [self rectForCharacterRange: aRange]];
+      aRange.length = 1;
+      [self scrollRectToVisible: 
+	      [self rectForCharacterRange: aRange]];
+    }
+  else
+    {
+      /* Update insertion point rect */
+      NSRange charRange;
+      NSRange glyphRange;
+      unsigned glyphIndex;
+      NSRect rect;
+      
+      charRange = NSMakeRange (aRange.location, 0);
+      glyphRange = [_layoutManager glyphRangeForCharacterRange: charRange 
+				   actualCharacterRange: NULL];
+      glyphIndex = glyphRange.location;
+      
+      rect = [_layoutManager lineFragmentUsedRectForGlyphAtIndex: glyphIndex 
+			     effectiveRange: NULL];
+      
+      rect.origin.x += _textContainerOrigin.x;
+      rect.origin.y += _textContainerOrigin.y;
+      if ([self selectionAffinity] != NSSelectionAffinityUpstream)
+	{
+	  /* Standard case - draw the insertion point just before the
+	     associated glyph index */
+	  NSPoint loc = [_layoutManager locationForGlyphAtIndex: glyphIndex];
+	  
+	  rect.origin.x += loc.x;      
+	}
+      
+      rect.size.width = 1;
+      [self scrollRectToVisible: rect];
+      
     }
 }
 
@@ -1015,6 +1140,8 @@ static NSNotificationCenter *nc;
 {
   _textContainerInset = inset;
   [self invalidateTextContainerOrigin];
+  [nc postNotificationName: NSViewFrameDidChangeNotification
+      object: self];
 }
 
 - (NSSize) textContainerInset
@@ -1042,19 +1169,60 @@ static NSNotificationCenter *nc;
      information is used when we ask the layout manager to draw - the
      base point is precisely this `text container origin', which is
      the origin of the used rect in our own coordinate system. */
+
+  /*  It seems like the `text container origin' is the origin
+      of the text container rect so that the used rect
+      is "well positionned" within the textview */
   
+
+
+  if (usedRect.size.width - _bounds.size.width < 0.0001)
+    {
+      NSRect rect;
+      float diff;
+      float ratio;
+      rect.origin = NSMakePoint(0, 0);
+      rect.size = textContainerSize;
+      diff = rect.size.width - usedRect.size.width;
+      
+      _textContainerOrigin.x = NSMinX(_bounds);
+      _textContainerOrigin.x += _textContainerInset.width;
+
+      if (diff)
+	{
+	  ratio = (_bounds.size.width - usedRect.size.width)
+	    / diff;
+
+	  if (NSMaxX(rect) == NSMaxX(usedRect))
+	    {
+	      _textContainerOrigin.x -= rect.size.width - _bounds.size.width;
+	    }
+	  else
+	    {
+	      _textContainerOrigin.x -= 
+		(int) (usedRect.origin.x * (1 - ratio ));
+	    }
+	}
+      else
+	{
+	}
+    }
+  else
+    {
+      /* First get the pure text container origin */
+      _textContainerOrigin.x = NSMinX (_bounds);
+      _textContainerOrigin.x += _textContainerInset.width;
+      /* Then move to the used rect origin */
+      _textContainerOrigin.x -= usedRect.origin.x;
+    }
+
   /* First get the pure text container origin */
-  _textContainerOrigin.x = NSMinX (_bounds);
-  _textContainerOrigin.x += _textContainerInset.width;
+  _textContainerOrigin.y = NSMinY (_bounds);
+  _textContainerOrigin.y += _textContainerInset.height;
+//    _textContainerOrigin.y -= textContainerSize.height;
   /* Then move to the used rect origin */
-  _textContainerOrigin.x += usedRect.origin.x;
-  
-  /* First get the pure text container origin */
-  _textContainerOrigin.y = NSMaxY (_bounds);
-  _textContainerOrigin.y -= _textContainerInset.height;
-  _textContainerOrigin.y -= textContainerSize.height;
-  /* Then move to the used rect origin */
-  _textContainerOrigin.y += usedRect.origin.y;
+  _textContainerOrigin.y -= usedRect.origin.y;
+
 }
 
 - (NSLayoutManager*) layoutManager
@@ -1427,8 +1595,13 @@ static NSNotificationCenter *nc;
 
       if (flag == NO)
 	{
-	  /* Make the selected range visible */
-	  [self scrollRangeToVisible: range]; 
+	  // FIXME
+	  // Make the selected range visible
+	  // We do not always want to scroll to the beginning of the
+	  // selection
+	  // however we do for sure if the selection's length is 0
+	  if (range.length == 0 && _tf.is_editable )
+	    [self scrollRangeToVisible: range]; 
 	}
 
       /* Try to optimize for overlapping ranges */
@@ -1518,6 +1691,7 @@ static NSNotificationCenter *nc;
   NSRange glyphRange;
   unsigned glyphIndex;
   NSRect rect;
+  NSRect oldInsertionPointRect;
 
   /* Simple case - no insertion point */
   if ((_selected_range.length > 0) || _selected_range.location == NSNotFound)
@@ -1526,7 +1700,6 @@ static NSNotificationCenter *nc;
 	{
 	  [_insertionPointTimer invalidate];
 	  DESTROY (_insertionPointTimer);
-	  _drawInsertionPointNow = YES;
 	}
       
       /* FIXME: horizontal position of insertion point */
@@ -1539,9 +1712,11 @@ static NSNotificationCenter *nc;
 			       actualCharacterRange: NULL];
   glyphIndex = glyphRange.location;
   
-  rect = [_layoutManager lineFragmentRectForGlyphAtIndex: glyphIndex 
+  rect = [_layoutManager lineFragmentUsedRectForGlyphAtIndex: glyphIndex 
 			 effectiveRange: NULL];
-  
+  rect.origin.x += _textContainerOrigin.x;
+  rect.origin.y += _textContainerOrigin.y;
+
   if ([self selectionAffinity] != NSSelectionAffinityUpstream)
     {
       /* Standard case - draw the insertion point just before the
@@ -1549,6 +1724,7 @@ static NSNotificationCenter *nc;
       NSPoint loc = [_layoutManager locationForGlyphAtIndex: glyphIndex];
       
       rect.origin.x += loc.x;      
+
     }
   else /* _affinity == NSSelectionAffinityUpstream - non standard */
     {
@@ -1580,8 +1756,10 @@ static NSNotificationCenter *nc;
 	}
     }
 
+
   rect.size.width = 1;
-  
+
+  oldInsertionPointRect = _insertionPointRect;
   _insertionPointRect = rect;
   
   /* Remember horizontal position of insertion point */
@@ -1592,6 +1770,22 @@ static NSNotificationCenter *nc;
       /* Start blinking timer if not yet started */
       if (_insertionPointTimer == nil  &&  [self shouldDrawInsertionPoint])
 	{
+	  _drawInsertionPointNow = NO;
+	  [self _blink: nil];
+	  _insertionPointTimer = [NSTimer scheduledTimerWithTimeInterval: 0.5
+					  target: self
+					  selector: @selector(_blink:)
+					  userInfo: nil
+					  repeats: YES];
+	  RETAIN (_insertionPointTimer);
+	}
+      else if (_insertionPointTimer != nil)
+	{
+	  [_insertionPointTimer invalidate];
+	  DESTROY (_insertionPointTimer);
+	  [self setNeedsDisplayInRect: oldInsertionPointRect];
+	  _drawInsertionPointNow = NO;
+	  [self _blink: nil];
 	  _insertionPointTimer = [NSTimer scheduledTimerWithTimeInterval: 0.5
 					  target: self
 					  selector: @selector(_blink:)
@@ -1610,8 +1804,10 @@ static NSNotificationCenter *nc;
     {
       if (_insertionPointTimer != nil)
 	{
+	  [self setNeedsDisplayInRect: oldInsertionPointRect];
 	  [_insertionPointTimer invalidate];
 	  DESTROY (_insertionPointTimer);
+
 	}
     }
 }
@@ -2067,6 +2263,7 @@ replacing the selection.
 
 - (void) didChangeText
 {
+  [self sizeToFit];
   [nc postNotificationName: NSTextDidChangeNotification  
       object: _notifObject];
 }
@@ -2467,6 +2664,7 @@ afterString in order over charRange. */
 - (void) moveUp: (id)sender
 {
   float originalInsertionPoint;
+  float savedOriginalInsertionPoint;
   float startingY;
   unsigned newLocation;
 
@@ -2481,10 +2679,16 @@ afterString in order over charRange. */
   
   /* Read from memory the horizontal position we aim to move the cursor 
      at on the next line */
+  savedOriginalInsertionPoint = _originalInsertPoint;
   originalInsertionPoint = _originalInsertPoint;
 
   /* Ask the layout manager to compute where to go */
   startingY = NSMidY (_insertionPointRect);
+
+  /* consider textContainerInset */
+  startingY -= _textContainerInset.height;
+  originalInsertionPoint -= _textContainerInset.width;
+
   newLocation = [_layoutManager 
 		  _charIndexForInsertionPointMovingFromY: startingY
 		  bestX: originalInsertionPoint
@@ -2497,12 +2701,13 @@ afterString in order over charRange. */
   /* Restore the _originalInsertPoint (which was changed
      by setSelectedRange:) because we don't want it to change between
      moveUp:/moveDown: operations. */
-  _originalInsertPoint = originalInsertionPoint;
+  _originalInsertPoint = savedOriginalInsertionPoint;
 }
 
 - (void) moveDown: (id)sender
 {
   float originalInsertionPoint;
+  float savedOriginalInsertionPoint;
   float startingY;
   unsigned newLocation;
 
@@ -2517,10 +2722,16 @@ afterString in order over charRange. */
 
   /* Read from memory the horizontal position we aim to move the cursor 
      at on the next line */
+  savedOriginalInsertionPoint = _originalInsertPoint;
   originalInsertionPoint = _originalInsertPoint;
 
   /* Ask the layout manager to compute where to go */
   startingY = NSMidY (_insertionPointRect);
+
+  /* consider textContainerInset */
+  startingY -= _textContainerInset.height;
+  originalInsertionPoint -= _textContainerInset.width;
+
   newLocation = [_layoutManager 
 		  _charIndexForInsertionPointMovingFromY: startingY
 		  bestX: originalInsertionPoint
@@ -2533,7 +2744,7 @@ afterString in order over charRange. */
   /* Restore the _originalInsertPoint (which was changed
      by setSelectedRange:) because we don't want it to change between
      moveUp:/moveDown: operations. */
-  _originalInsertPoint = originalInsertionPoint;
+  _originalInsertPoint = savedOriginalInsertionPoint;
 }
 
 - (void) moveLeft: (id)sender
@@ -3027,8 +3238,12 @@ afterString in order over charRange. */
 - (void) drawRect: (NSRect)rect
 {
   /* TODO: Only do relayout if needed */
-  NSRange drawnRange = [_layoutManager glyphRangeForBoundingRect: rect 
-				       inTextContainer: _textContainer];
+  NSRange drawnRange;
+  NSRect containerRect = rect;
+  containerRect.origin.x -= _textContainerOrigin.x;
+  containerRect.origin.y -= _textContainerOrigin.y;
+  drawnRange = [_layoutManager glyphRangeForBoundingRect: containerRect 
+			       inTextContainer: _textContainer];
   if (_tf.draws_background)
     {
       /* First paint the background with the color.  This is necessary
@@ -3043,6 +3258,7 @@ afterString in order over charRange. */
       /* Then draw the special background of the new glyphs.  */
       [_layoutManager drawBackgroundForGlyphRange: drawnRange 
 		      atPoint: _textContainerOrigin];
+
     }
 
   [_layoutManager drawGlyphsForGlyphRange: drawnRange 
@@ -3934,6 +4150,9 @@ other than copy/paste or dragging. */
   unsigned	index;
   float		fraction;
 
+  point.x -= _textContainerOrigin.x;
+  point.y -= _textContainerOrigin.y;
+
   index = [_layoutManager glyphIndexForPoint: point 
 			     inTextContainer: _textContainer
 	      fractionOfDistanceThroughGlyph: &fraction];
@@ -4122,12 +4341,15 @@ other than copy/paste or dragging. */
 - (NSRect) rectForCharacterRange: (NSRange)aRange
 {
   NSRange glyphRange;
+  NSRect rect;
 
   glyphRange = [_layoutManager glyphRangeForCharacterRange: aRange 
 			       actualCharacterRange: NULL];
-  
-  return [_layoutManager boundingRectForGlyphRange: glyphRange 
+  rect = [_layoutManager boundingRectForGlyphRange: glyphRange 
 			 inTextContainer: _textContainer];
+  rect.origin.x += _textContainerOrigin.x;
+  rect.origin.y += _textContainerOrigin.y;
+  return rect;
 }
 
 /** Extension method that copies the current selected text to the 

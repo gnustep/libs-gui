@@ -715,7 +715,7 @@ static	Class	concrete;
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &flag];
   _tf.is_ruler_visible = flag;
 
-  _background_color  = [aDecoder decodeObject];
+  _background_color  = RETAIN([aDecoder decodeObject]);
   [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &_minSize];
   [aDecoder decodeValueOfObjCType: @encode(NSSize) at: &_maxSize];
 

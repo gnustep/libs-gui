@@ -282,7 +282,9 @@ static Class textFieldCellClass;
 
   /* This could happen if someone pressed the mouse on the borders.  */
   if (_text_object)
-    return;
+    {
+      return;
+    }
 
   t = [_window fieldEditor: YES forObject: self];
 
@@ -297,7 +299,6 @@ static Class textFieldCellClass;
 
 
   //  [NSCursor hide];
-  
   _text_object = [_cell setUpFieldEditorAttributes: t];
   [_cell editWithFrame: _bounds
 	inView: self
@@ -313,7 +314,10 @@ static Class textFieldCellClass;
 
 - (BOOL) acceptsFirstResponder
 {
-  return [self isSelectable];
+  // we do not accept first responder if there is already a 
+  // _text_object, else it would make the _text_object resign
+  // and end editing
+  return (_text_object == nil) && [self isSelectable];
 }
 
 - (BOOL) becomeFirstResponder
