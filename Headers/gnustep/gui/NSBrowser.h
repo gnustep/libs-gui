@@ -42,46 +42,44 @@
 @interface NSBrowser : NSControl <NSCoding>
 {
   // Attributes
-  Class _browserCellClass;
   id _browserCellPrototype;
   id _browserMatrixClass;
   NSString *_pathSeparator;
+  
+  //NSBox *_horizontalScrollerBox;
+  NSScroller *_horizontalScroller;
+  NSTimeInterval _lastKeyPressed;
+  NSString *_charBuffer;
+
   BOOL _isLoaded;
   BOOL _allowsBranchSelection;
   BOOL _allowsEmptySelection;
   BOOL _allowsMultipleSelection;
-  int _maxVisibleColumns;
-  float _minColumnWidth;
   BOOL _reusesColumns;
   BOOL _separatesColumns;
   BOOL _takesTitleFromPreviousColumn;
   BOOL _isTitled;
-  
-  //NSBox *_horizontalScrollerBox;
-  NSScroller *_horizontalScroller;
   BOOL _hasHorizontalScroller;
   BOOL _skipUpdateScroller;
-
   BOOL _acceptsArrowKeys;
   BOOL _sendsActionOnArrowKeys;
   BOOL _acceptsAlphaNumericalKeys;
   BOOL _sendsActionOnAlphaNumericalKeys;
-  NSTimeInterval _lastKeyPressed;
-  NSString *_charBuffer;
-  int _alphaNumericalLastColumn;
 
   BOOL _passiveDelegate;
   id _browserDelegate;
+  id _target;
+  SEL _action;
   SEL _doubleAction;
   NSMutableArray *_browserColumns;
-  id _titleCell;
   NSSize _columnSize;
   NSRect _scrollerRect;
+  int _alphaNumericalLastColumn;
+  int _maxVisibleColumns;
+  float _minColumnWidth;
   int _lastColumnLoaded;
   int _firstVisibleColumn;
   int _lastVisibleColumn;
-  id _target;
-  SEL _action;
 }
 
 //
@@ -176,6 +174,10 @@
 - (void) drawTitle: (NSString *)title
 	    inRect: (NSRect)aRect
 	  ofColumn: (int)column;
+#ifndef STRICT_OPENSTEP
+- (void) drawTitleOfColumn: (int)column 
+		    inRect: (NSRect)aRect;
+#endif 
 - (BOOL) isTitled;
 - (void) setTitled: (BOOL)flag;
 - (void) setTitle: (NSString *)aString
@@ -228,12 +230,6 @@
 // Arranging an NSBrowser's Components 
 //
 - (void) tile;
-
-//
-// NSCoding protocol
-//
-- (void) encodeWithCoder: (NSCoder *)aCoder;
-- (id) initWithCoder: (NSCoder *)aDecoder;
 
 @end
 
