@@ -1224,14 +1224,20 @@ void __dummy_GMAppKit_functionForLinking() {}
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
   NSPoint wnOrigin = [self frame].origin;
-  NSRect ctFrame = [[self contentView] frame];
+  NSRect ctFrame = [[self contentView] frame], minRect;
   unsigned int style;
 
   ctFrame.origin = wnOrigin;
 
+  /* convert minSize to GNUstep frame (without title bar and resize bar) */
+  minRect.origin = wnOrigin;
+  minRect.size = [self minSize];
+  minRect = [NSWindow contentRectForFrameRect:minRect
+                                    styleMask:[self styleMask]];
+
   [archiver encodeRect:ctFrame withName:@"contentFrame"];
   [archiver encodeSize:[self maxSize] withName:@"maxSize"];
-  [archiver encodeSize:[self minSize] withName:@"minSize"];
+  [archiver encodeSize:minRect.size withName:@"minSize"];
   [archiver encodeString:[self frameAutosaveName]
 	    withName:@"frameAutosaveName"];
   [archiver encodeInt:[self level] withName:@"level"];
