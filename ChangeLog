@@ -1,5 +1,10 @@
 2000-09-11  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
 
+	* Source/NSText.m ([NSText -moveLeft:sender]): deselect text that
+	starts at the beginning of the line.
+
+2000-09-11  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
+
 	* Source/NSBrowser.m ([NSBrowser -_performLoadOfColumn:]): set
 	intercell spacing to 0.
 	* Source/NSMatrix.m ([NSMatrix -mouseDown:]): in NSRadioModeMatrix

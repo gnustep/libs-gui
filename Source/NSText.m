@@ -2540,11 +2540,14 @@ static NSNotificationCenter *nc;
 {
   NSRange newSelectedRange;
 
-  /* Do nothing if we are at beginning of text */
-  if (_selected_range.location == 0)
+  /* Do nothing if we are at beginning of text with no selection */
+  if (_selected_range.location == 0 && _selected_range.length == 0)
     return;
 
-  newSelectedRange.location = _selected_range.location - 1;
+  if (_selected_range.location == 0)
+    newSelectedRange.location = 0;
+  else
+    newSelectedRange.location = _selected_range.location - 1;
   newSelectedRange.length = 0;
 
   [self setSelectedRange: newSelectedRange];
