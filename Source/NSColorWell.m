@@ -62,8 +62,9 @@
 //
 - (void)drawRect:(NSRect)rect
 {
-  NSLog(@"NSColorWell drawRect: %f %f %f %f\n", rect.origin.x, rect.origin.y,
-	rect.size.width, rect.size.height);
+  NSDebugLog(@"NSColorWell drawRect: %f %f %f %f\n", rect.origin.x, 
+	     rect.origin.y,
+	     rect.size.width, rect.size.height);
 
   // Draw border
   if (is_bordered)

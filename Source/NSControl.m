@@ -106,8 +106,6 @@ NSString *NSControlTextDidChangeNotification = @"NSControlTextDidChangeNotificat
   id c;
   c = NSCopyObject (self, 0, zone);
 
-  NSLog(@"NSControl: copyWithZone\n");
-
   // make sure the new copy also has a new copy of the cell
   [cell retain];
   [c setCell: [[cell copy] autorelease]];
