@@ -354,7 +354,7 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
     button = [[NSButton alloc] initWithFrame: NSMakeRect (200, 5, 70, 28)];
     [button setBordered: YES];
     [button setButtonType: NSMomentaryPushButton];
-    [button setTitle:  @"Ok"];
+    [button setTitle:  @"OK"];
     [button setImagePosition: NSNoImage]; 
     [button setTarget: self];
     [button setAction: @selector(ok:)];
