@@ -795,8 +795,21 @@ static NSCell* tileCell = nil;
 	    openDocumentWithContentsOfFile: filePath display: YES];
 	}
     }
-  // TODO: Should also support printing of a file here.
-
+  else if ((filePath = [defs stringForKey: @"NSPrint"]) != nil)
+    {
+      if ([_delegate respondsToSelector: @selector(application:printFile:)])
+	{
+	  [_delegate application: self printFile: filePath];
+	}
+      [self terminate: self];
+    }
+  else if ([_delegate respondsToSelector: @selector(applicationShouldOpenUntitledFile:)] &&
+	   ([_delegate applicationShouldOpenUntitledFile: self] == YES) &&
+	   [_delegate respondsToSelector: @selector(applicationOpenUntitledFile:)])
+    {
+      [_delegate applicationOpenUntitledFile: self];
+    }
+  
   /* finish the launching post notification that launching has finished */
   [nc postNotificationName: NSApplicationDidFinishLaunchingNotification
 		    object: self];
@@ -1372,10 +1385,13 @@ See -runModalForWindow:
 	      relativeToWindow: docWindow];
 
   if ([modalDelegate respondsToSelector: didEndSelector])
-    // FIXME Those this work on all platforms???
-    [modalDelegate performSelector: didEndSelector 
-		   withObject: (NSObject*)ret 
-		   withObject: contextInfo];
+    {
+      void (*didEnd)(id, SEL, int, void*);
+
+      didEnd = (void (*)(id, SEL, int, void*))[modalDelegate methodForSelector: 
+								 didEndSelector];
+      didEnd(modalDelegate, didEndSelector, ret, contextInfo);
+    }
 }
 
 - (void) endSheet: (NSWindow *)sheet
