@@ -1,3 +1,21 @@
+Sat Dec 18 16:05:46 1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/AppKit/NSSplitView.h: Prefixed ivars with underscores;
+ 	changed widths' type from int to float; removed method
+ 	-setDividerThickNess:.  
+	* Source/NSSplitView.m: Updated for ivar name change; access ivars
+ 	directly.  ([-dividerThickness]): Return 6, our default
+ 	dividerThickness.  ([-setDividerThickness:]): Removed method.
+  	Subclasses need to ovverride -dividerThickness to do this (or else
+ 	use the GNUstep extension -setDimpleImage:resetDividerThickness:).
+  	([-initWithFrame:]): invoke dividerThickness to set the ivar
+ 	_dividerWidth, used everywhere else when needed.  Changed things
+ 	so that overriding dividerThickness should actually work;
+ 	untested.  ([-initWithCoder:]), ([-encodeWithCoder:]): Fixed.
+  	Tempor. commented out lines about encoding/decoding of dimple
+ 	image (which is anyway a GNUstep extension) till encoding/decoding
+ 	of images is implemented.
+
 Sat Dec 18  5:38:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSView.m: ([-initWithCoder:]) small optimisation and
