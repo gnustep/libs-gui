@@ -416,14 +416,21 @@ static int _gs_gui_color_picker_mode = NSRGBModeColorPanel;
 {
   NSPasteboard	*pb = [NSPasteboard pasteboardWithName: NSDragPboard];
   NSImage	*image = [NSImage imageNamed: @"common_ColorSwatch"];
+  NSSize	s;
+  NSPoint	p;
 
   [pb declareTypes: [NSArray arrayWithObjects: NSColorPboardType, nil]
              owner: aColor];
   [aColor writeToPasteboard: pb];
   [image setBackgroundColor: aColor];
 
+  s = [image size];
+  p = [sourceView convertPoint: [anEvent locationInWindow] fromView: nil];
+  p.x -= s.width/2;
+  p.y -= s.width/2;
+
   [sourceView dragImage: image
-                     at: [sourceView bounds].origin
+                     at: p
                  offset: NSMakeSize(0,0)
                   event: anEvent
              pasteboard: pb

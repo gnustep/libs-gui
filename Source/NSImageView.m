@@ -220,8 +220,17 @@ static Class imageCellClass;
 	  if ([pboard setData: [anImage TIFFRepresentation]
 		      forType: NSTIFFPboardType])
 	    {
+	      NSSize	s;
+	      NSPoint	p;
+
+	      // Center the image on the mouse position ... is this right?
+	      s = [anImage size];
+	      p = [theEvent locationInWindow];
+	      p = [self convertPoint: p fromView: nil];
+	      p.x -= s.width/2;
+	      p.y -= s.width/2;
 	      [_window dragImage: anImage
-		       at: [theEvent locationInWindow]
+		       at: p
 		       offset: NSMakeSize(0, 0)
 		       event: theEvent
 		       pasteboard: pboard

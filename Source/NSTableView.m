@@ -3613,18 +3613,40 @@ static inline float computePeriod(NSPoint mouseLocationWin,
 		      if ([self _writeRows: rows
 				toPasteboard: pboard] == YES)
 			{
-			  NSPoint p = NSZeroPoint;
-			  NSImage *dragImage =
-			    [self dragImageForRows: rows
-				  event: theEvent
-				  dragImageOffset: &p];
+			  NSPoint	p = NSZeroPoint;
+			  NSImage	*dragImage;
+			  NSSize	s;
+
+			  dragImage = [self dragImageForRows: rows
+						       event: theEvent
+					     dragImageOffset: &p];
+			  /*
+			   * Store image offset in s ... the returned
+			   * value is the position of the center of
+			   * the image, so we adjust to the bottom left
+			   * corner.
+			   */
+			  s = [dragImage size];
+			  s.width = p.x - s.width/2;
+			  s.height = p.y - s.height/2;
+
+			  /*
+			   * Find the current mouse location and adjust
+			   * it to determine the location of the bottom
+			   * left corner of the image in this view's
+			   * coordinate system.
+			   */
+			  p = [self convertPoint:
+			    [theEvent locationInWindow] fromView: nil];
+			  p.x += s.width;
+			  p.y += s.height;
 
 			  [self dragImage: dragImage
-				at: NSZeroPoint
-				offset: NSMakeSize(0, 0)
-				event: theEvent
-				pasteboard: pboard
-				source: self
+				       at: p
+				   offset: NSMakeSize(0, 0)
+				    event: theEvent
+			       pasteboard: pboard
+				   source: self
 				slideBack: YES];
 			  return;
 			}

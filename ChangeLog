@@ -1,3 +1,23 @@
+2005-04-01  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/GSDragView.m: when dragging, use the mouse offset to adjust
+	the initial position of the dragged image.
+	Modified internally to pass the original position of the image so
+	that slideback can slide to that position rather than the position
+	the mouse started from.  This makes no difference if the initial
+	mouse offset was zero, but does have an effect if the drag was
+	initiated by a mouse move at a location offset from the original
+	mouse down.
+	Exposed a couple of methods for subclasses.
+	* Source/NSColorPanel.m: Set image position for DnD so that color
+	swatch is centered on the mouse position.
+	* Source/NSImageView.m: ditto
+	* Source/NSTableView.m: ([-mouseDown:]) after calling the
+	([-dragImageForRows:event:dragImageOffset:]) method, use the
+	returned offset to position the center of the image relative
+	to the mouse pointer .. I *think* that's what the apple documentation
+	of the method means.
+
 2005-03-30  Adam Fedor  <fedor@gnu.org>
 
 	* Version 0.9.5

@@ -113,5 +113,12 @@
 	    source: (id)sourceObject
          slideBack: (BOOL)slideFlag;
 - (void) postDragEvent: (NSEvent*)theEvent;
+- (void) sendExternalEvent: (GSAppKitSubtype)subtype
+		    action: (NSDragOperation)action
+		  position: (NSPoint)eventLocation
+		 timestamp: (NSTimeInterval)time
+		  toWindow: (int)dWindowNumber;
+- (NSWindow*) windowAcceptingDnDunder: (NSPoint)mouseLocation
+			    windowRef: (int*)mouseWindowRef;
 
 @end

@@ -69,12 +69,6 @@
 	position: (NSPoint)eventLocation
        timestamp: (NSTimeInterval)time
 	toWindow: (NSWindow*)dWindow;
-- (void) _sendExternalEvent: (GSAppKitSubtype)subtype
-	     action: (NSDragOperation)action
-	   position: (NSPoint)eventLocation
-	  timestamp: (NSTimeInterval)time
-	   toWindow: (int)dWindowNumber;
-- (void) _handleDrag: (NSEvent*)theEvent;
 - (void) _handleEventDuringDragging: (NSEvent *)theEvent;
 - (void) _updateAndMoveImageToCorrectPosition;
 - (void) _moveDraggedImageToNewPosition;
@@ -82,8 +76,6 @@
 	numberOfSteps: (int) steps
 		delay: (float) delay
                waitAfterSlide: (BOOL) waitFlag;
-- (NSWindow*) _windowAcceptingDnDunder: (NSPoint) mouseLocation
-			     windowRef: (int*)mouseWindowRef;
 @end
 
 @implementation GSRawWindow
@@ -234,6 +226,7 @@ static	GSDragView *sharedDragView = nil;
 	 slideBack: (BOOL)slideFlag
 {
   NSPoint	eventPoint;
+  NSPoint	imagePoint;
 
   ASSIGN(dragPasteboard, pboard);
   ASSIGN(dragSource, sourceObject);
@@ -250,20 +243,26 @@ static	GSDragView *sharedDragView = nil;
   /*
    * The position of the mouse is the event location  plus any offset
    * provided.  We convert this from window coordinates to screen
-   * coordinates, then determine the screen offset between the mouse
-   * pointer and the dragged image.
+   * coordinates.
    */
   eventPoint = [event locationInWindow];
+  eventPoint = [[event window] convertBaseToScreen: eventPoint];
   eventPoint.x += initialOffset.width;
   eventPoint.y += initialOffset.height;
-  eventPoint = [[event window] convertBaseToScreen: eventPoint];
+
+  /*
+   * Adjust image location to match the mose adjustment.
+   */
+  imagePoint = screenLocation;
+  imagePoint.x += initialOffset.width;
+  imagePoint.y += initialOffset.height;
 
   [self _setupWindowFor: anImage
 	  mousePosition: eventPoint
-	  imagePosition: screenLocation];
+	  imagePosition: imagePoint];
 
   isDragging = YES;
-  [self _handleDrag: event];
+  [self _handleDrag: event slidePoint: screenLocation];
   isDragging = NO;
   DESTROY(dragSource);
   DESTROY(dragPasteboard);
@@ -532,11 +531,11 @@ static	GSDragView *sharedDragView = nil;
   [dWindow sendEvent: e];
 }
 
-- (void) _sendExternalEvent: (GSAppKitSubtype)subtype
-		     action: (NSDragOperation)action
-		   position: (NSPoint)eventLocation
-		  timestamp: (NSTimeInterval)time
-		   toWindow: (int)dWindowNumber
+- (void) sendExternalEvent: (GSAppKitSubtype)subtype
+		    action: (NSDragOperation)action
+		  position: (NSPoint)eventLocation
+		 timestamp: (NSTimeInterval)time
+		  toWindow: (int)dWindowNumber
 {
 }
 
@@ -561,7 +560,7 @@ static	GSDragView *sharedDragView = nil;
 
   - It seems that sometimes a periodic event get lost.
 */
-- (void) _handleDrag: (NSEvent*)theEvent
+- (void) _handleDrag: (NSEvent*)theEvent slidePoint: (NSPoint)slidePoint
 {
   // Caching some often used values. These values do not
   // change in this method.
@@ -656,11 +655,11 @@ static	GSDragView *sharedDragView = nil;
 	}
       else
 	{
-	  [self _sendExternalEvent: GSAppKitDraggingDrop
-		            action: 0
-		          position: NSZeroPoint
-		         timestamp: [theEvent timestamp]
-		          toWindow: targetWindowRef];
+	  [self sendExternalEvent: GSAppKitDraggingDrop
+		           action: 0
+		         position: NSZeroPoint
+		        timestamp: [theEvent timestamp]
+		         toWindow: targetWindowRef];
 	}
       deposited = YES;
     }
@@ -668,7 +667,7 @@ static	GSDragView *sharedDragView = nil;
     {
       if (slideBack)
         {
-          [self slideDraggedImageTo: startPoint];
+          [self slideDraggedImageTo: slidePoint];
         }
       [self _clearupWindow];
       [cursorBeforeDrag set];
@@ -765,11 +764,11 @@ static	GSDragView *sharedDragView = nil;
 	    }
 	  else
 	    {
-              [self _sendExternalEvent: GSAppKitDraggingUpdate
-		    action: dragMask & operationMask
-		    position: newPosition
-		    timestamp: [theEvent timestamp]
-		    toWindow: targetWindowRef];
+              [self sendExternalEvent: GSAppKitDraggingUpdate
+			       action: dragMask & operationMask
+			      position: newPosition
+			     timestamp: [theEvent timestamp]
+			      toWindow: targetWindowRef];
 	    }
           [self _setCursor];
         }
@@ -801,8 +800,8 @@ static	GSDragView *sharedDragView = nil;
   [self _moveDraggedImageToNewPosition];
   
   //--- Determine target window ---------------------------------------------
-  destWindow = [self _windowAcceptingDnDunder: dragPosition
-                                    windowRef: &mouseWindowRef];
+  destWindow = [self windowAcceptingDnDunder: dragPosition
+                                   windowRef: &mouseWindowRef];
 
   // If we have are not hovering above a window that we own
   // we are dragging to an external application.
@@ -833,11 +832,11 @@ static	GSDragView *sharedDragView = nil;
         }  
       else
         {  
-          [self _sendExternalEvent: GSAppKitDraggingExit
-		            action: dragMask & operationMask
-		          position: NSZeroPoint
-		         timestamp: dragSequence
-		          toWindow: targetWindowRef];
+          [self sendExternalEvent: GSAppKitDraggingExit
+		           action: dragMask & operationMask
+		         position: NSZeroPoint
+		        timestamp: dragSequence
+		         toWindow: targetWindowRef];
         }
     }
 
@@ -869,11 +868,11 @@ static	GSDragView *sharedDragView = nil;
         }
       else 
         {
-	  [self _sendExternalEvent: GSAppKitDraggingUpdate 
-		            action: dragMask & operationMask
-		          position: dragPosition
-		         timestamp: dragSequence
-		          toWindow: targetWindowRef];
+	  [self sendExternalEvent: GSAppKitDraggingUpdate 
+		           action: dragMask & operationMask
+		         position: dragPosition
+		        timestamp: dragSequence
+		         toWindow: targetWindowRef];
         }
     }
   else if (mouseWindowRef != 0)
@@ -892,11 +891,11 @@ static	GSDragView *sharedDragView = nil;
         }
       else
         {
-          [self _sendExternalEvent: GSAppKitDraggingEnter
-                            action: dragMask
-                          position: dragPosition
-                         timestamp: dragSequence
-                          toWindow: mouseWindowRef];
+          [self sendExternalEvent: GSAppKitDraggingEnter
+                           action: dragMask
+                         position: dragPosition
+                        timestamp: dragSequence
+                         toWindow: mouseWindowRef];
         }
     }
 
@@ -986,8 +985,8 @@ static	GSDragView *sharedDragView = nil;
   In mouseWindowRef the OS reference for this window is returned, this is even 
   set, if there is a native window, but no GNUstep window at this location.
  */
-- (NSWindow*) _windowAcceptingDnDunder: (NSPoint)mouseLocation
-			     windowRef: (int*)mouseWindowRef
+- (NSWindow*) windowAcceptingDnDunder: (NSPoint)mouseLocation
+			    windowRef: (int*)mouseWindowRef
 {
   int win;
 
