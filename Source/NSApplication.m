@@ -70,9 +70,10 @@
  * Types
  */
 struct _NSModalSession {
-  int	    runState;
-  NSWindow  *window;
-  NSModalSession    previous;
+  int			runState;
+  int			entryLevel;
+  NSWindow		*window;
+  NSModalSession	previous;
 };
 
 @interface NSIconWindow : NSWindow
@@ -885,16 +886,41 @@ static NSCell* tileCell = nil;
   theSession = (NSModalSession)NSZoneMalloc(NSDefaultMallocZone(),
 		    sizeof(struct _NSModalSession));
   theSession->runState = NSRunContinuesResponse;
+  theSession->entryLevel = [theWindow level];
   theSession->window = theWindow;
   theSession->previous = session;
   session = theSession;
+
+  /*
+   * The NSWindow documentation says runModalForWindow centers panels.
+   * Here would seem the best place to do it.
+   */
+  if ([theWindow isKindOfClass: [NSPanel class]])
+    {
+      [theWindow center];
+// FIXME need support for NSModalPanelWindowLevel in Window Maker
+//      [theWindow setLevel: NSModalPanelWindowLevel];
+    }
+  [theWindow orderFrontRegardless];
+  if ([self isActive] == YES)
+    {
+      if ([theWindow canBecomeKeyWindow] == YES)
+	{
+	  [theWindow makeKeyWindow];
+	}
+      else if ([theWindow canBecomeMainWindow] == YES)
+	{
+	  [theWindow makeMainWindow];
+	}
+    }
 
   return theSession;
 }
 
 - (void) endModalSession: (NSModalSession)theSession
 {
-  NSModalSession tmp = session;
+  NSModalSession	tmp = session;
+  NSArray		*windows = [self windows];
 
   if (theSession == 0)
     {
@@ -915,9 +941,17 @@ static NSCell* tileCell = nil;
     {
       tmp = session;
       session = tmp->previous;
+      if ([windows indexOfObjectIdenticalTo: tmp->window] != NSNotFound)
+	{
+	  [tmp->window setLevel: tmp->entryLevel];
+	}
       NSZoneFree(NSDefaultMallocZone(), tmp);
     }
   session = session->previous;
+  if ([windows indexOfObjectIdenticalTo: theSession->window] != NSNotFound)
+    {
+      [theSession->window setLevel: theSession->entryLevel];
+    }
   NSZoneFree(NSDefaultMallocZone(), theSession);
 }
 
@@ -925,26 +959,6 @@ static NSCell* tileCell = nil;
 {
   NSModalSession theSession = 0;
   int code = NSRunContinuesResponse;
-
-  /*
-   * The NSWindow documentation says runModalForWindow centers panels.
-   */
-  if ([theWindow isKindOfClass: [NSPanel class]])
-    {
-      [theWindow center];
-    }
-  [theWindow orderFrontRegardless];
-  if ([self isActive] == YES)
-    {
-      if ([theWindow canBecomeKeyWindow] == YES)
-	{
-	  [theWindow makeKeyWindow];
-	}
-      else if ([theWindow canBecomeMainWindow] == YES)
-	{
-	  [theWindow makeMainWindow];
-	}
-    }
 
   NS_DURING
     {

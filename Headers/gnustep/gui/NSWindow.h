@@ -61,9 +61,14 @@
 enum {
   NSNormalWindowLevel = 0,
   NSFloatingWindowLevel = 3,
-  NSDockWindowLevel = 5,
-  NSSubmenuWindowLevel = 10,
-  NSMainMenuWindowLevel = 20
+  NSSubmenuWindowLevel = 3,
+  NSTornOffMenuWindowLevel = 3,
+  NSDockWindowLevel = 5,	/* Deprecated - use NSStatusWindowLevel */
+  NSMainMenuWindowLevel = 20,
+  NSStatusWindowLevel = 21,
+  NSModalPanelWindowLevel = 100,
+  NSPopUpMenuWindowLevel = 101,
+  NSScreenSaverWindowLevel = 1000
 };
 
 enum {
