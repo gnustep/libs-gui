@@ -50,7 +50,14 @@
 
 #include "AppKit/DPSOperators.h"
 
+NSNotificationCenter *nc = nil;
+
 @implementation NSSplitView
+
++ (void) initialize
+{
+  nc = [NSNotificationCenter defaultCenter];
+}
 
 /*
  * Instance methods
@@ -77,6 +84,13 @@
   RELEASE(_backgroundColor);
   RELEASE(_dividerColor);
   RELEASE(_dimpleImage);
+
+  if (_delegate != nil)
+    {
+      [nc removeObserver: _delegate  name: nil  object: self];
+      _delegate = nil;
+    }
+
   [super dealloc];
 }
 
@@ -103,7 +117,6 @@
   unsigned	int eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask;
   /* YES if delegate implements splitView:constrainSplitPosition:ofSubviewAt:*/
   BOOL          delegateConstrains = NO;
-  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
   SEL           constrainSel = 
     @selector(splitView:constrainSplitPosition:ofSubviewAt:);
   IMP           constrainImp;
@@ -601,7 +614,6 @@
 
 - (void) adjustSubviews
 {
-  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
   NSArray	*subs = [self subviews];
   unsigned	count = [subs count];
   NSView	*views[count];
@@ -857,8 +869,6 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
 
 - (void) setDelegate: (id)anObject
 {
-  NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
-
   if (_delegate)
     {
       [nc removeObserver: _delegate  name: nil  object: self];
