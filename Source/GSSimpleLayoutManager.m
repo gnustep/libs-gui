@@ -933,11 +933,14 @@ forStartOfGlyphRange: (NSRange)glyphRange
 				       - 1] lineFragmentRect]);
 
       displayRect.size.width = width;
-      displayRect.origin.x +=
-	[[aTextContainer textView] textContainerInset].width;
-      displayRect.origin.y +=
-	[[aTextContainer textView] textContainerInset].height;
-      [[aTextContainer textView] setNeedsDisplayInRect: displayRect];
+      if ([aTextContainer textView])
+	{
+	  displayRect.origin.x +=
+	    [[aTextContainer textView] textContainerInset].width;
+	  displayRect.origin.y +=
+	    [[aTextContainer textView] textContainerInset].height;
+	  [[aTextContainer textView] setNeedsDisplayInRect: displayRect];
+	}
     }
 }
 
