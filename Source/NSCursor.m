@@ -50,7 +50,7 @@ static BOOL gnustep_gui_hidden_until_move;
       // Initialize class variables
       gnustep_gui_cursor_stack = [[NSMutableArray alloc] initWithCapacity: 2];
       gnustep_gui_hidden_until_move = YES;
-      gnustep_gui_current_cursor = [NSCursor arrowCursor];
+      gnustep_gui_current_cursor = [[NSCursor arrowCursor] retain];
     }
 }
 

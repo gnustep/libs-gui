@@ -3,10 +3,10 @@
 
    Stores information used in printing
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996,1997 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+   Author:  Simon Frankau <sgf@frankau.demon.co.uk>
+   Date: July 1997
    
    This file is part of the GNUstep GUI Library.
 
@@ -51,7 +51,7 @@ typedef enum _NSPrintingPaginationMode {
 
 @interface NSPrintInfo : NSObject <NSCoding>
 {
-  // Attributes
+  NSMutableDictionary *info;
 }
 
 //
@@ -144,7 +144,7 @@ extern NSString *NSPrintFaxSendTime;
 extern NSString *NSPrintFaxTrimPageEnds;
 extern NSString *NSPrintFaxUseCoverSheet;
 extern NSString *NSPrintFirstPage;
-extern NSString *NSPrintHorizonalPagination;
+extern NSString *NSPrintHorizontalPagination;
 extern NSString *NSPrintHorizontallyCentered;
 extern NSString *NSPrintJobDisposition;
 extern NSString *NSPrintJobFeatures;

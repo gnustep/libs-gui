@@ -248,6 +248,8 @@ enum {
 // Displaying 
 //
 - (NSView *)controlView;
+- (void)setControlView:(NSView*)aView;
+
 - (void)drawInteriorWithFrame:(NSRect)cellFrame
 		       inView:(NSView *)controlView;
 - (void)drawWithFrame:(NSRect)cellFrame

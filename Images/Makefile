@@ -24,7 +24,6 @@
 include $(GNUSTEP_SYSTEM_ROOT)/Makefiles/common.make
 
 include ../Version
-include ../config.mak
 
 imagedir = $(GNUSTEP_RESOURCES)/Images
 
@@ -47,6 +46,8 @@ common_Right.tiff \
 common_RightH.tiff \
 common_SwitchOn.tiff \
 common_SwitchOff.tiff \
+common_SliderHoriz.tiff \
+common_SliderVert.tiff \
 common_Dimple.tiff \
 common_ret.tiff
 

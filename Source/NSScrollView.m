@@ -29,6 +29,7 @@
 #include <AppKit/NSScroller.h>
 #include <AppKit/NSClipView.h>
 #include <AppKit/NSScrollView.h>
+#include <AppKit/NSWindow.h>
 
 #define ASSIGN(a, b) \
   [b retain]; \
@@ -198,10 +199,10 @@ static Class rulerViewClass = nil;
   NSRect documentRect = [_contentView documentRect];
   float amount = 0;
   NSPoint point;
-  BOOL wasAScrollerButton = YES;
 
   NSDebugLog (@"_doScroll: float value = %f", floatValue);
 
+  _knobMoved = NO;
   if (hitPart == NSScrollerIncrementLine)
     amount = _lineScroll;
   else if (hitPart == NSScrollerIncrementPage)
@@ -211,26 +212,26 @@ static Class rulerViewClass = nil;
   else if (hitPart == NSScrollerDecrementPage)
     amount = -_pageScroll;
   else
-    wasAScrollerButton = NO;
+    _knobMoved = YES;
 
-  if (wasAScrollerButton) {
+  if (!_knobMoved) {
     if (scroller == _horizScroller) {
-      point.x = -clipViewBounds.origin.x + amount;
-      point.y = -clipViewBounds.origin.y;
+      point.x = clipViewBounds.origin.x + amount;
+      point.y = clipViewBounds.origin.y;
     }
     else if (scroller == _vertScroller) {
-      point.x = -clipViewBounds.origin.x;
+      point.x = clipViewBounds.origin.x;
       /* For the vertical scroller the amount should actually be reversed */
-      amount = -amount;
+//      amount = -amount;
 
       /* If the view is flipped we also have to reverse the meanings of
          increasing or decreasing of the y coordinate */
-      if (![_contentView isFlipped])
-	amount = -amount;
+//      if (![_contentView isFlipped])
+//	amount = -amount;
 
       NSDebugLog (@"increment/decrement: amount = %f, flipped = %d",
 	      amount, [_contentView isFlipped]);
-      point.y = -clipViewBounds.origin.y + amount;
+      point.y = clipViewBounds.origin.y + amount;
     }
     else {
       /* do nothing */
@@ -241,10 +242,10 @@ static Class rulerViewClass = nil;
     if (scroller == _horizScroller) {
       point.x = floatValue * (documentRect.size.width
 			      - clipViewBounds.size.width);
-      point.y = -clipViewBounds.origin.y;
+      point.y = clipViewBounds.origin.y;
     }
     else if (scroller == _vertScroller) {
-      point.x = -clipViewBounds.origin.x;
+      point.x = clipViewBounds.origin.x;
       if (![_contentView isFlipped])
 	floatValue = 1 - floatValue;
       point.y = floatValue * (documentRect.size.height
@@ -257,52 +258,35 @@ static Class rulerViewClass = nil;
   }
 
   [_contentView scrollToPoint:point];
-
-  /* Update the scroller knob if the scroll occurred due to a
-     scroller button. */
-  if (wasAScrollerButton) {
-    NSRect newClipViewBounds = [_contentView bounds];
-
-    if (newClipViewBounds.origin.x != clipViewBounds.origin.x) {
-      /* Update the horizontal scroller */
-      floatValue = -newClipViewBounds.origin.x
-		   / (documentRect.size.width - newClipViewBounds.size.width);
-      [_horizScroller setFloatValue:floatValue];
-      [_horizScroller display];
-      NSDebugLog (@"new horiz float value %f", floatValue);
-    }
-
-    if (newClipViewBounds.origin.x != clipViewBounds.origin.y) {
-      /* Update the vertical scroller */
-      floatValue = -newClipViewBounds.origin.y
-		  / (documentRect.size.height - newClipViewBounds.size.height);
-      /* Take care if the document view is not flipped by reversing the meaning
-         of the float value. */
-      if (![_contentView isFlipped])
-	floatValue = 1 - floatValue;
-      [_vertScroller setFloatValue:floatValue];
-      [_vertScroller display];
-      NSDebugLog (@"new vert float value %f", floatValue);
-    }
-  }
+  _knobMoved = NO;
 }
 
 - (void)reflectScrolledClipView:(NSClipView*)aClipView
 {
-  NSRect documentRect = [_contentView documentRect];
-  NSRect clipViewBounds = [_contentView bounds];
+  NSRect documentRect = NSZeroRect;
+  NSRect clipViewBounds = NSZeroRect;
   float floatValue;
   float knobProportion;
 
+  if (_knobMoved)
+    return;
+
   NSDebugLog (@"reflectScrolledClipView:");
 
+  if (_contentView) {
+    clipViewBounds = [_contentView bounds];
+    if ([_contentView documentView])
+      documentRect = [_contentView documentRect]; 
+  }
+
   if (_hasVertScroller) {
-    if (documentRect.size.height < clipViewBounds.size.height)
+    if (documentRect.size.height <= clipViewBounds.size.height)
       [_vertScroller setEnabled:NO];
     else {
       [_vertScroller setEnabled:YES];
       knobProportion = clipViewBounds.size.height / documentRect.size.height;
-      floatValue = clipViewBounds.origin.y / clipViewBounds.size.height;
+      floatValue = clipViewBounds.origin.y
+		  / (documentRect.size.height - clipViewBounds.size.height);
       if (![_contentView isFlipped])
 	floatValue = 1 - floatValue;
       [_vertScroller setFloatValue:floatValue knobProportion:knobProportion];
@@ -310,12 +294,13 @@ static Class rulerViewClass = nil;
   }
 
   if (_hasHorizScroller) {
-    if (documentRect.size.width < clipViewBounds.size.width)
+    if (documentRect.size.width <= clipViewBounds.size.width)
       [_horizScroller setEnabled:NO];
     else {
       [_horizScroller setEnabled:YES];
       knobProportion = clipViewBounds.size.width / documentRect.size.width;
-      floatValue = clipViewBounds.origin.x / clipViewBounds.size.width;
+      floatValue = clipViewBounds.origin.x
+		   / (documentRect.size.width - clipViewBounds.size.width);
       [_horizScroller setFloatValue:floatValue knobProportion:knobProportion];
     }
   }

@@ -32,6 +32,7 @@
 #include <Foundation/NSCoder.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSNotification.h>
+#include <Foundation/NSValue.h>
 
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSApplication.h>
@@ -43,6 +44,7 @@
 #include <AppKit/NSSliderCell.h>
 #include <AppKit/NSScreen.h>
 #include <AppKit/NSCursor.h>
+#include <AppKit/PSMatrix.h>
 
 #define ASSIGN(variable, value) \
   [value retain]; \
@@ -53,6 +55,8 @@
 // NSWindow implementation
 //
 @implementation NSWindow
+
+static BOOL _needsFlushWindows = YES;
 
 //
 // Class methods
@@ -89,8 +93,7 @@
 + (NSRect)minFrameWidthWithTitle:(NSString *)aTitle
 		       styleMask:(unsigned int)aStyle
 {
-  NSRect t;
-  return t;
+  return NSZeroRect;
 }
 
 // Screens and window depths
@@ -98,6 +101,13 @@
 {
   return 8;
 }
+
++ (void)_setNeedsFlushWindows:(BOOL)flag
+{
+  _needsFlushWindows = flag;
+}
+
++ (BOOL)_needsFlushWindows		{ return _needsFlushWindows; }
 
 //
 // Instance methods
@@ -126,6 +136,7 @@
   [miniaturized_title release];
   [miniaturized_image release];
   [window_title release];
+  [_flushRectangles release];
 
   [super dealloc];
 }
@@ -184,6 +195,8 @@
 
   // Register ourselves with the Application object
   [theApp addWindowsItem:self title:window_title filename:NO];
+
+  _flushRectangles = [[NSMutableArray alloc] initWithCapacity:10];
 
   NSDebugLog(@"NSWindow end of init\n");
   return self;
@@ -592,24 +605,36 @@
 //
 // Managing the display
 //
-- (void)display
-{
-  visible = YES;
-
-  // Tell the first responder that it is the first responder
-  // So it can set the focus to itself
-  [first_responder becomeFirstResponder];
-}
-
 - (void)disableFlushWindow
 {
   disable_flush_window = YES;
 }
 
+- (void)display
+{
+  visible = YES;
+  needs_display = NO;
+
+  // Tell the first responder that it is the first responder
+  // So it can set the focus to itself
+  [first_responder becomeFirstResponder];
+
+  /* Temporary disable displaying */
+  [self disableFlushWindow];
+
+  // Draw the content view
+  [content_view display];
+
+  /* Reenable displaying and flush the window */
+  [self enableFlushWindow];
+}
+
 - (void)displayIfNeeded
 {
-  if (needs_display)
-    [self display];
+  if (needs_display) {
+    [content_view _displayNeededViews];
+    needs_display = NO;
+  }
 }
 
 - (void)enableFlushWindow
@@ -618,12 +643,41 @@
 }
 
 - (void)flushWindow
-{}
+{
+  needs_flush = NO;
+  [_flushRectangles removeAllObjects];
+  [content_view _recursivelyResetNeedsDisplayInAllViews];
+}
 
 - (void)flushWindowIfNeeded
 {
-  if (!disable_flush_window && needs_flush)
+  if (!disable_flush_window && needs_flush) {
+    needs_flush = NO;
     [self flushWindow];
+  }
+}
+
+- (void)_collectFlushRectangles
+{
+  PSMatrix* originMatrix;
+  PSMatrix* sizeMatrix;
+
+  if (disable_flush_window || backing_type == NSBackingStoreNonretained)
+    return;
+
+//  NSLog (@"_collectFlushRectangles");
+  [_flushRectangles removeAllObjects];
+
+  originMatrix = [[content_view _frameMatrix] copy];
+  [originMatrix concatenateWith:[content_view _boundsMatrix]];
+  sizeMatrix = [[content_view _boundsMatrix] copy];
+
+  [content_view _collectInvalidatedRectanglesInArray:_flushRectangles
+		originMatrix:originMatrix
+		sizeMatrix:sizeMatrix];
+
+  [originMatrix release];
+  [sizeMatrix release];
 }
 
 - (BOOL)isAutodisplay
@@ -1244,6 +1298,8 @@
         break;
       }
     }
+
+  [NSWindow _flushWindows];
 }
 
 - (BOOL)tryToPerform:(SEL)anAction with:anObject
@@ -1335,9 +1391,6 @@
 
 - (void)print:sender
 {}
-
-- (void)_setNeedsFlush:(BOOL)flag		{ needs_flush = flag; }
-- (BOOL)_needsFlush				{ return needs_flush; }
 
 //
 // Assigning a delegate
@@ -1460,6 +1513,65 @@
 {
   if ([delegate respondsToSelector:@selector(windowWillMove:)])
     return [delegate windowWillMove:aNotification];
+}
+
+- (void)_setNeedsFlush
+{
+//  NSLog (@"NSWindow _setNeedsFlush");
+  needs_flush = YES;
+  _needsFlushWindows = YES;
+}
+
+- (void)_view:(NSView*)view needsFlushInRect:(NSRect)rect
+{
+  [self _setNeedsFlush];
+
+  /* Convert the rectangle to the window coordinates */
+  rect = [view convertRect:rect toView:nil];
+
+  /* If the view is rotated then compute the bounding box of the rectangle in
+     the window's coordinates */
+  if ([view isRotatedFromBase])
+    rect = [view _boundingRectFor:rect];
+
+  /* TODO: Optimize adding rect to the already existing arrays */
+
+  [_flushRectangles addObject:[NSValue valueWithRect:rect]];
+}
+
+- (void)_setNeedsDisplay
+{
+//  NSLog (@"NSWindow setNeedsDisplay");
+  needs_display = YES;
+  [self _setNeedsFlush];
+}
+
+- (BOOL)_needsFlush				{ return needs_flush; }
+
++ (BOOL)_flushWindows
+{
+  int i, count;
+  NSArray* windowList;
+
+  if (!_needsFlushWindows)
+    return NO;
+
+//  NSLog (@"_flushWindows");
+
+  windowList = [[NSApplication sharedApplication] windows];
+
+  for (i = 0, count = [windowList count]; i < count; i++) {
+    NSWindow* window = [windowList objectAtIndex:i];
+
+    if (window->needs_display || window->needs_flush) {
+      [window _collectFlushRectangles];
+      [window displayIfNeeded];
+      [window flushWindowIfNeeded];
+    }
+  }
+
+  _needsFlushWindows = NO;
+  return YES;
 }
 
 //

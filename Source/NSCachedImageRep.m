@@ -61,7 +61,7 @@
 
   [super init];
 
-  _window = win;
+  _window = [win retain];
   _rect   = rect;
 
   /* Either win or rect must be non-NULL. If rect is empty, we get the

@@ -53,6 +53,7 @@
   BOOL _hasVertRuler;
   BOOL _scrollsDynamically;
   BOOL _rulersVisible;
+  BOOL _knobMoved;
 }
 
 /* Calculating layout */

@@ -46,11 +46,16 @@
 - (void)setFrameRotation:(float)angle;
 - (void)inverse;
 
+- (BOOL)isRotated;
+
+- (void)boundingRectFor:(NSRect)rect result:(NSRect*)result;
+
 /* Returns anotherMatrix * self */
 - (void)concatenateWith:(PSMatrix*)anotherMatrix;
 
 - (NSPoint)pointInMatrixSpace:(NSPoint)point;
 - (NSSize)sizeInMatrixSpace:(NSSize)size;
+- (NSRect)rectInMatrixSpace:(NSRect)rect;
 
 @end
 

@@ -183,6 +183,60 @@ static const float pi = 3.1415926535897932384626433;
   TX = newTX; TY = newTY;
 }
 
+- (BOOL)isRotated
+{
+  return rotationAngle != 0;
+}
+
+- (void)boundingRectFor:(NSRect)rect result:(NSRect*)new
+{
+  float angle = rotationAngle
+		- ((int)(rotationAngle / 360)) * rotationAngle;
+  float angleRad = pi * angle / 180;
+  float angle90Rad = pi * (angle + 90) / 180;
+  float cosWidth, cosHeight, sinWidth, sinHeight;
+  /* Shortcuts of the usual rect values */
+  float x = rect.origin.x;
+  float y = rect.origin.y;
+  float width = rect.size.width;
+  float height = rect.size.height;
+
+  if (rotationAngle == 0) {
+    *new = NSZeroRect;
+    return;
+  }
+
+  cosWidth = cos(angleRad);
+  cosHeight = cos(angle90Rad);
+  sinWidth = sin(angleRad);
+  sinHeight = sin(angle90Rad);
+
+  if (angle <= 90) {
+    new->origin.x = x + height * cosHeight;
+    new->origin.y = y;
+    new->size.width = width * cosWidth - height * cosHeight;
+    new->size.height = width * sinWidth + height * sinHeight;
+  }
+  else if (angle <= 180) {
+    new->origin.x = x + width * cosWidth + height * cosHeight;
+    new->origin.y = y + height * sinHeight;
+    new->size.width = -width * cosWidth - height * cosHeight;
+    new->size.height = width * sinWidth - height * sinHeight;
+  }
+  else if (angle <= 270) {
+    new->origin.x = x + width * cosWidth;
+    new->origin.y = y + width * sinWidth + height * sinHeight;
+    new->size.width = -width * cosWidth + height * cosHeight;
+    new->size.height = -width * sinWidth - height * sinHeight;
+  }
+  else {
+    new->origin.x = x;
+    new->origin.y = y;
+    new->size.width = width * cosWidth + height * cosHeight;
+    new->size.height = width * sinWidth + height * sinHeight;
+  }
+}
+
 - (NSPoint)pointInMatrixSpace:(NSPoint)point
 {
   NSPoint new;
@@ -199,6 +253,18 @@ static const float pi = 3.1415926535897932384626433;
 
   new.width = A * size.width + C * size.height + TX;
   new.height = B * size.width + D * size.height + TY;
+
+  return new;
+}
+
+- (NSRect)rectInMatrixSpace:(NSRect)rect
+{
+  NSRect new;
+
+  new.origin.x = A * rect.origin.x + C * rect.origin.y + TX;
+  new.origin.y = B * rect.origin.x + D * rect.origin.y + TY;
+  new.size.width = A * rect.size.width + C * rect.size.height + TX;
+  new.size.height = B * rect.size.width + D * rect.size.height + TY;
 
   return new;
 }

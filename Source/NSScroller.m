@@ -185,7 +185,11 @@ static NSButtonCell* knobCell = nil;
     return;
 
   _isEnabled = flag;
+#if 1
+  [self setNeedsDisplay:YES];
+#else
   [self display];
+#endif
 }
 
 - (void)setArrowsPosition:(NSScrollArrowPosition)where
@@ -194,7 +198,11 @@ static NSButtonCell* knobCell = nil;
     return;
 
   _arrowsPosition = where;
+#if 1
+  [self setNeedsDisplay:YES];
+#else
   [self display];
+#endif
 }
 
 - (void)setFloatValue:(float)aFloat
@@ -205,6 +213,10 @@ static NSButtonCell* knobCell = nil;
     _floatValue = 1;
   else
     _floatValue = aFloat;
+
+#if 1
+  [self setNeedsDisplayInRect:[self rectForPart:NSScrollerKnobSlot]];
+#endif
 }
 
 - (void)setFloatValue:(float)aFloat
@@ -218,8 +230,13 @@ static NSButtonCell* knobCell = nil;
     _knobProportion = ratio;
 
   [self setFloatValue:aFloat];
+
+#if 1
+  [self setNeedsDisplayInRect:[self rectForPart:NSScrollerKnobSlot]];
+#else
   [self display];
   [[self window] flushWindow];
+#endif
 }
 
 - (void)setFrame:(NSRect)frameRect
@@ -250,8 +267,12 @@ static NSButtonCell* knobCell = nil;
 {
   [super setFrameSize:size];
   [self checkSpaceForParts];
+#if 1
+  [self setNeedsDisplay:YES];
+#else
   [self display];
   [[self window] flushWindow];
+#endif
 }
 
 - (NSScrollerPart)testPart:(NSPoint)thePoint
@@ -297,7 +318,7 @@ static NSButtonCell* knobCell = nil;
   float position;
 
   if (_isHorizontal) {
-    /* Adjust the last point to lie inside the knob slot */
+    /* Adjust the point to lie inside the knob slot */
     if (point.x < slotRect.origin.x + knobRect.size.width / 2)
       position = slotRect.origin.x + knobRect.size.width / 2;
     else if (point.x > slotRect.origin.x + slotRect.size.width
@@ -312,7 +333,7 @@ static NSButtonCell* knobCell = nil;
 		  / (slotRect.size.width - knobRect.size.width);
   }
   else {
-    /* Adjust the last point to lie inside the knob slot */
+    /* Adjust the point to lie inside the knob slot */
     if (point.y < slotRect.origin.y + knobRect.size.height / 2)
       position = slotRect.origin.y + knobRect.size.height / 2;
     else if (point.y > slotRect.origin.y + slotRect.size.height
@@ -342,17 +363,8 @@ static NSButtonCell* knobCell = nil;
 
   switch (_hitPart) {
     case NSScrollerIncrementLine:
-      [self trackScrollButtons:theEvent];
-      break;
-
     case NSScrollerDecrementLine:
-      [self trackScrollButtons:theEvent];
-      break;
-
     case NSScrollerIncrementPage:
-      [self trackScrollButtons:theEvent];
-      break;
-
     case NSScrollerDecrementPage:
       [self trackScrollButtons:theEvent];
       break;
@@ -366,9 +378,11 @@ static NSButtonCell* knobCell = nil;
 
       [self setFloatValue:floatValue];
       [self sendAction:_action to:_target];
+#if 0
       [self drawKnobSlot];
       [self drawKnob];
       [[self window] flushWindow];
+#endif
       [self trackKnob:theEvent];
       break;
     }
@@ -410,11 +424,16 @@ static NSButtonCell* knobCell = nil;
 
       if (floatValue != oldFloatValue) {
 	[self setFloatValue:floatValue];
+#if 1
+	[self setNeedsDisplayInRect:[self rectForPart:NSScrollerKnobSlot]];
+#else
 	[self drawKnobSlot];
 	[self drawKnob];
+	[self setNeedsDisplayInRect:[self rectForPart:NSScrollerKnobSlot]];
 	[[self window] flushWindow];
+#endif
 	[self sendAction:_action to:_target];
-	oldFloatValue = _floatValue;
+	oldFloatValue = floatValue;
       }
       knobRect.origin = point;
     }
@@ -462,8 +481,13 @@ static NSButtonCell* knobCell = nil;
 
       /* Now unhighlight the cell */
       [theCell highlight:NO withFrame:rect inView:self];
+#if 1
+      [self setNeedsDisplayInRect:rect];
+#else
       [theCell drawWithFrame:rect inView:self];
+      [self setNeedsDisplayInRect:rect];
       [[self window] flushWindow];
+#endif
     }
 
     if (shouldReturn)
@@ -509,7 +533,6 @@ static NSButtonCell* knobCell = nil;
 
   /* Draw the knob */
   [self drawKnob];
-  [[self window] flushWindow];
 }
 
 - (void)drawArrow:(NSScrollerArrow)whichButton

@@ -66,7 +66,7 @@
 	  pullsDown:(BOOL)flag
 {
   [super initWithFrame:frameRect];
-  list_items = [NSMutableArray array];
+  list_items = [NSMutableArray new];
   is_up = NO;
   pulls_down = flag;
   selected_item = 0;
@@ -76,11 +76,7 @@
 
 - (void)dealloc
 {
-  int i, j;
-
-  j = [list_items count];
-  for (i = 0;i < j; ++i)
-    [[list_items objectAtIndex:i] release];
+  [list_items release];
   [super dealloc];
 }
 
@@ -180,7 +176,7 @@
 
 - (NSMenuCell *)lastItem
 {
-  if ([list_items count] != 0)
+  if ([list_items count])
     return [list_items lastObject];
   else
     return nil;
@@ -193,7 +189,7 @@
 
 - (NSString *)titleOfSelectedItem
 {
-  if ([list_items count] != 0)
+  if ([list_items count])
     return [list_items objectAtIndex:selected_item];
   else
     return nil;
@@ -214,7 +210,7 @@
 
 - (void)selectItemAtIndex:(int)index
 {
-  if ((index >= 0) && (index <= [list_items count]))
+  if ((index >= 0) && (index < [list_items count]))
     {
       selected_item = index;
       [self synchronizeTitleAndSelectedItem];
@@ -295,11 +291,7 @@
   [aCoder encodeObject: list_items];
   [aCoder encodeRect: list_rect];
   [aCoder encodeValueOfObjCType: "i" at: &selected_item];
-#if 0
-  [aCoder encodeObjectReference: pub_target withName: @"Target"];
-#else
   [aCoder encodeConditionalObject:pub_target];
-#endif
   [aCoder encodeValueOfObjCType: @encode(SEL) at: &pub_action];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_up];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &pulls_down];
@@ -312,11 +304,7 @@
   list_items = [aDecoder decodeObject];
   list_rect = [aDecoder decodeRect];
   [aDecoder decodeValueOfObjCType: "i" at: &selected_item];
-#if 0
-  [aDecoder decodeObjectAt: &pub_target withName: NULL];
-#else
   pub_target = [aDecoder decodeObject];
-#endif
   [aDecoder decodeValueOfObjCType: @encode(SEL) at: &pub_action];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_up];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &pulls_down];

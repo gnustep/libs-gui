@@ -30,6 +30,11 @@
 #include <AppKit/NSColorWell.h>
 #include <AppKit/NSColor.h>
 
+#define ASSIGN(a, b) \
+  [b retain]; \
+  [a release]; \
+  a = b;
+
 @implementation NSColorWell
 
 //
@@ -53,9 +58,15 @@
 
   is_bordered = YES;
   is_active = NO;
-  the_color = [NSColor blackColor];
+  ASSIGN(the_color, [NSColor blackColor]);
 
   return self;
+}
+
+- (void)dealloc
+{
+  [the_color release];
+  [super dealloc];
 }
 
 //
@@ -107,13 +118,13 @@
 
 - (void)setColor:(NSColor *)color
 {
-  the_color = color;
+  ASSIGN(the_color, color);
 }
 
 - (void)takeColorFrom:(id)sender
 {
   if ([sender respondsToSelector:@selector(color)])
-    the_color = [sender color];
+    ASSIGN(the_color, [sender color]);
 }
 
 //

@@ -32,7 +32,9 @@
 #include <Foundation/NSDictionary.h>
 #include <Foundation/NSArchiver.h>
 #include <Foundation/NSException.h>
+
 #include <AppKit/NSColorList.h>
+#include <AppKit/NSColor.h>
 #include <AppKit/AppKitExceptions.h>
 
 // global variable
@@ -59,7 +61,7 @@ static NSLock *gnustep_color_list_lock;
       [self setVersion:1];
 
       // Initialize the global array of color lists
-      gnustep_available_color_lists = [NSMutableArray array];
+      gnustep_available_color_lists = [NSMutableArray new];
       // And its access lock
       gnustep_color_list_lock = [[NSLock alloc] init];
     }
@@ -86,27 +88,22 @@ static NSLock *gnustep_color_list_lock;
 //
 + (NSColorList *)colorListNamed:(NSString *)name
 {
-  id e;
-  NSColorList* o;
-  BOOL found = NO;
+  int i, count;
+  NSColorList* color = nil;
 
   // Serialize access to color list
   [gnustep_color_list_lock lock];
-  e = [gnustep_available_color_lists objectEnumerator];
-  o = [e nextObject];
-  while ((o) && (!found))
-    {
-      if ([name compare: [o name]] == NSOrderedSame)
-	found = YES;
-      else
-	o = [e nextObject];
-    }
+  for (i = 0, count = [gnustep_available_color_lists count]; i < count; i++) {
+    color = [gnustep_available_color_lists objectAtIndex:i];
+    if ([name compare:[color name]] == NSOrderedSame)
+      break;
+  }
   [gnustep_color_list_lock unlock];
 
-  if (found)
-    return o;
-  else
+  if (i == count)
     return nil;
+  else
+    return color;
 }
 
 //
@@ -120,12 +117,9 @@ static NSLock *gnustep_color_list_lock;
   [super init];
 
   // Initialize instance variables
-  list_name = name;
-  [list_name retain];
-  color_list = [NSMutableDictionary dictionary];
-  [color_list retain];
-  color_list_keys = [NSMutableArray array];
-  [color_list_keys retain];
+  list_name = [name retain];
+  color_list = [NSMutableDictionary new];
+  color_list_keys = [NSMutableArray new];
   is_editable = YES;
   file_name = @"";
 
@@ -145,12 +139,11 @@ static NSLock *gnustep_color_list_lock;
   [super init];
 
   // Initialize instance variables
-  list_name = name;
-  [list_name retain];
+  list_name = [name retain];
   [self setFileNameFromPath: path];
 
   // Unarchive the color list
-  cl = [NSUnarchiver unarchiveObjectWithFile: file_name];
+  cl = [NSUnarchiver unarchiveObjectWithFile:file_name];
 
   // Copy the color list elements to self
   is_editable = [cl isEditable];

@@ -34,10 +34,15 @@
 #include <AppKit/NSView.h>
 #include <AppKit/NSGraphics.h>
 
-// Class variables
-static BOOL gnustep_gui_ignores_alpha = YES;
+#define ASSIGN(a, b) \
+  [b retain]; \
+  [a release]; \
+  a = b;
 
 @implementation NSColor
+
+// Class variables
+static BOOL gnustep_gui_ignores_alpha = YES;
 
 //
 // Class methods
@@ -560,6 +565,9 @@ static BOOL gnustep_gui_ignores_alpha = YES;
 //
 - (void)dealloc
 {
+  [colorspace_name release];
+  [catalog_name release];
+  [color_name release];
   [super dealloc];
 }
 
@@ -634,17 +642,17 @@ static BOOL gnustep_gui_ignores_alpha = YES;
 
 - (void)setColorSpaceName:(NSString *)str
 {
-  colorspace_name = str;
+  ASSIGN(colorspace_name, str);
 }
 
 - (void)setCatalogName:(NSString *)str
 {
-  catalog_name = str;
+  ASSIGN(catalog_name, str);
 }
 
 - (void)setColorName:(NSString *)str
 {
-  color_name = str;
+  ASSIGN(color_name, str);
 }
 
 // RGB component values

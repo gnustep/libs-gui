@@ -1,3 +1,138 @@
+Wed Oct  8 15:38:22 1997  Ovidiu Predescu <ovidiu@net-community.com>
+
+	* Heavy display and window flushing optimizations have been
+	implemented.
+	* Source/NSView.m (-setDisplayInRect:): Now is implemented to work
+	optimized.
+	(-displayRect:): Likewise.
+	(-setNeedsDisplay:): Likewise.
+	(-setNeedsDisplayInRect:): Likewise.
+	(-_addSubviewForNeedingDisplay:): New method.
+	(-_recursivelyResetNeedsDisplayInAllViews): Likewise.
+	(-_displayNeededViews): Likewise.
+	(-_collectFlushRectangles): Likewise.
+	(-_setNeedsDisplay): Likewise.
+	(-_setNeedsFlush): Likewise.
+	(-_needsFlush): Likewise.
+	(+_flushWindows): Likewise.
+	* Headers/gnustep/gui/NSWindow.h: Important optimization for window
+	flushing has been implemented.
+	* Source/NSWindow.m: Likewise.
+	* Headers/gnustep/gui/PSMatrix.h (boundingRectFor:): New method.
+	(isRotated): New method.
+	(rectInMatrixSpace:): New method.
+	* Source/NSApplication.m (-nextEventMatchingMask:untilDate:inMode:
+	dequeue:): Call the NSWindow class to flush the windows, then flush the
+	communication channels.
+	(-_flushCommunicationChannels): New method.
+	* Source/NSWindow.m (-disableFlushWindow): New method.
+	* Source/PSMatrix.m (-boundingRectFor:result:): New method.
+	(-rectInMatrixSpace:): Likewise.
+
+	* NSSlider has been implemented.
+	* Headers/gnustep/gui/NSSlider.h: New implementation.
+	* Source/NSSlider.m: Likewise.
+	* Headers/gnustep/gui/NSSliderCell.h: Likewise.
+	* Source/NSSliderCell.m: Likewise.
+
+	* Source/NSButton.m: Use -setNeedsDisplay: instead of display.
+	* Source/NSCell.m: Likewise.
+	* Source/NSControl.m: Likewise.
+	* Source/NSScroller.m: Likewise.
+	* Source/NSMatrix.m: Likewise. Removed all lock focuses because display
+	occurs at a later time. It is still possible to improve the
+	performance, but at least selection in the list mode works quite quick
+	under Solaris, not counting in radio mode which is (very) fast.
+
+	* Source/NSMenu.m (-drawRect:): Fixed code that determines what cells
+	need display.
+
+	Several cleanups.
+	* Source/NSActionCell.m: Remove commented out sequences of code.
+	* Source/NSApplication.m: Likewise.
+	* Source/NSPopUpButton.m: Likewise.
+	* Source/NSView.m: Likewise.
+
+	* Source/NSApplication.m: Fixed memory allocation problems by
+	retaining instance variables.
+	* Source/NSButtonCell.m: Likewise.
+	* Source/NSCachedImageRep.m: Likewise.
+	* Source/NSCell.m: Likewise.
+	* Source/NSColorList.m: Likewise.
+	* Source/NSColorWell.m: Likewise.
+	* Source/NSCursor.m: Likewise.
+	* Source/NSEvent.m: Likewise.
+	* Source/NSDPSContext.m: Likewise.
+	* Source/NSPopUpButton.m: Likewise.
+	* Source/NSWindow.m: Likewise.
+	(-dealloc): New method: release all instance variables.
+	* Source/NSColor.m (-dealloc): Likewise.
+	* Source/NSView.m (-dealloc): Release other two additional ivars.
+
+	* Source/NSApplication.m (-dealloc): Cleanup the windows array
+	deallocation. Other memory allocation problems have been fixed.
+	(-hide): Don't use an enumerator, iterate instead over the array.
+	(-unhide): Likewise.
+	(-miniaturizeAll): Likewise.
+	(-updateWindows): Likewise.
+	(-postEvent:atStart:): Fixed condition.
+	* Source/NSColorList.m (-colorListNamed:): Don't use an enumerator.
+
+	* Source/NSCell.m: Changed the size of the default font back to 12.
+	* Source/NSText.m: Likewise.
+	* Source/NSTextFieldCell.m: Likewise.
+
+	* Source/NSClipView.m (-scrollToPoint:): Fixed the code that moves the
+	bounds to a new point.
+	* Source/NSScrollView.m (-_doScroll:): Fixed the code that computes the
+	moving direction and step. Fixed the way the scroller position is
+	updated when a scroll button is pressed.
+
+	* Headers/gnustep/gui/NSApplication.h: Removed the backend category
+	because of the problems it presents with calling super in its methods.
+	* Source/NSApplication.m: Likewise.
+	(-handleNullEvent): New method.
+	* Headers/gnustep/gui/NSCell.h (-setControlView:): New method.
+	* Source/NSCell.m (-setControlView:): New method.
+	* Source/NSCell.m: Likewise.
+	* Headers/gnustep/gui/NSPrintInfo.h: Replaced with Simon Frankau's
+	implementation.
+	* Source/NSPrintInfo.m: Likewise.
+	* Headers/gnustep/gui/NSScrollView.h (_knobMoved): New instance
+	variable.
+	* Source/Makefile: Temporary exclude NSPasteboard from compiling.
+	* Source/Makefile.preamble: Add -Wall to the compile flags. Define the
+	libraries the GUI library depends upon.
+	* Source/NSApplication.m: Conditionally include NSConnection.h. Include
+	NSTimer.h. Define ASSIGN.
+	(+sharedApplication): Use two consecutive calls to initialize the NSApp
+	global variable.
+	(-nextEventMatchingMask:untilDate:inMode:dequeue:): Change the order in
+	which the expiration date is computed to avoid unnecessary operations.
+	* Source/NSView.m: Mark the view as being rotated and/or scaled when
+	setting bounds or frame.
+	(-sortSubviewsUsingFunction:context:): Implemented.
+	* Source/externs.m: Define NSPrintHorizontalPagination.
+
+Wed Oct  8 10:33:52 1997  Ovidiu Predescu <ovidiu@net-community.com>
+
+	* Headers/gnustep/gui/config.h.in: Changed to config.h.
+	* Headers/gnustep/gui/config.sed.nt: Removed.
+	* Images/common_SliderHoriz.tiff: New file.
+	* Images/common_SliderVert.tiff: New file.
+	* Images/Makefile: Added the above two files.
+	* aclocal.m4: Removed.
+	* configure: Removed.
+	* configure.in: Removed.
+	* configure.bat: Removed.
+	* config.guess: Removed.
+	* config.mak.in: Removed.
+	* config.sub: Removed.
+	* COPYING: Removed.
+	* install-sh: Removed.
+	* mkinstalldirs: Removed.
+	* Documentation/Makefile.in: Removed.
+
 Tue Sep 23 14:28:14 1997  Scott Christley  <scottc@net-community.com>
 
 	* Convert to the GNUstep makefile package.
@@ -158,7 +293,7 @@ Fri Aug 22 11:40:45 1997  Ovidiu Predescu <ovidiu@net-community.com>
 
 Mon Aug 18 09:38:27 1997  Ovidiu Predescu <ovidiu@net-community.com>
 
-	Start the port to NeXT PDO under Solaris.
+	Start the port to NeXT's PDO under Solaris.
 	* Headers/gnustep/gui/NSCStringText.h: Include Foundation/NSString.h.
 	* Headers/gnustep/gui/NSScreen.h: Declare NSArray.
 	* Headers/gnustep/gui/NSText.h: Include Foundation/NSRange.h.
@@ -179,7 +314,7 @@ Mon Aug 18 09:38:27 1997  Ovidiu Predescu <ovidiu@net-community.com>
 	* Source/NSDPSContext.m: Likewise. Also declare -copyWithZone: for
 	NSThread to make possible adding it to Foundation containers.
 
-	Add scaling and rotation support.
+	Added scaling and rotation support.
 	* Headers/gnustep/gui/NSView.h: Remove frame_rotation. Add frameMatrix
 	and boundsMatrix instance variables.
 	* Source/PSMatrix.m: New file.
@@ -258,10 +393,18 @@ Wed Aug  6 13:27:53 1997  Ovidiu Predescu <ovidiu@net-community.com>
 
 Tue Aug  5 14:39:29 1997  Ovidiu Predescu <ovidiu@net-community.com>
 
+	Implementation of scroll views.
+	* Source/NSClipView.m: The initial implementation.
+	* Source/NSScrollView.m: Likewise.
+
+	* NSScroller completely reworked.
+	* Source/NSScroller.m: Optimized to work with time events to gain speed
+	in user interaction.
 	* Images/common_ArrowLeftH.tiff: New file.
 	* Images/common_ArrowRightH.tiff: Likewise.
 	* Images/common_ArrowUpH.tiff: Likewise.
 	* Images/common_ArrowDownH.tiff: Likewise.
+
 	* Source/NSApplication.m (-nextEventMatchingMask:untilDate:inMode:
 	dequeue:): Do not pop-up the time events from the queue immediately
 	after -limitDateForMode: to avoid loosing the normal events.
@@ -269,12 +412,6 @@ Tue Aug  5 14:39:29 1997  Ovidiu Predescu <ovidiu@net-community.com>
 	tracks the mouse.
 	* Source/NSButtonCell.m: Likewise.
 	* Source/NSButton.m: Likewise.
-
-	Implementation of scroll views.
-	* Source/NSClipView.m: The initial implementation.
-	* Source/NSScrollView.m: Likewise.
-	* Source/NSScroller.m: Optimized to work with time events to gain speed
-	in user interaction.
 
 	* Source/NSView.m: Post notifications if needed when a frame or bound
 	change.

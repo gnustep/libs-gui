@@ -88,6 +88,7 @@ extern NSSize NSTokenSize;
   NSBackingStoreType backing_type;
   unsigned int style_mask;
   int window_level;
+  NSMutableArray* _flushRectangles;
 
   BOOL is_one_shot;
   BOOL needs_display;
@@ -395,9 +396,15 @@ extern NSSize NSTokenSize;
 - (void)encodeWithCoder:aCoder;
 - initWithCoder:aDecoder;
 
-// Private methods
-- (void)_setNeedsFlush:(BOOL)flag;
+/* Private methods */
+- (void)_view:(NSView*)view needsFlushInRect:(NSRect)rect;
+- (void)_setNeedsDisplay;
+- (void)_setNeedsFlush;
 - (BOOL)_needsFlush;
+- (void)_collectFlushRectangles;
++ (BOOL)_flushWindows;
++ (void)_setNeedsFlushWindows:(BOOL)flag;
++ (BOOL)_needsFlushWindows;
 
 @end
 

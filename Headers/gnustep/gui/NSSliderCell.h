@@ -1,12 +1,10 @@
-/* 
+/*
    NSSliderCell.h
-
-   Cell class for slider control
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+   Author: Ovidiu Predescu <ovidiu@net-community.com>
+   Date: September 1997
    
    This file is part of the GNUstep GUI Library.
 
@@ -21,10 +19,9 @@
    Library General Public License for more details.
 
    You should have received a copy of the GNU Library General Public
-   License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/ 
+   License along with this library; if not, write to the Free
+   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
 
 #ifndef _GNUstep_H_NSSliderCell
 #define _GNUstep_H_NSSliderCell
@@ -34,78 +31,60 @@
 @class NSString;
 @class NSColor;
 @class NSFont;
+@class NSImage;
 
 @interface NSSliderCell : NSActionCell <NSCoding>
 {
-  // Attributes
-  double max_value;
-  double min_value;
-  double scale_factor;
-  int scroll_size;
-  int knob_thickness; 
-  double page_value;
-  BOOL is_vertical;
+  float _minValue;
+  float _maxValue;
+  float _floatValue;
+  float _altIncrementValue;
+  id _titleCell;
+  id _knobCell;
+  NSRect _trackRect;
+  BOOL _isVertical;
 
   // Reserved for back-end use
   void *be_sc_reserved;
 }
 
-//
-// Determining Component Sizes 
-//
-- (NSSize)cellSizeForBounds:(NSRect)aRect;
-- (NSRect)knobRectFlipped:(BOOL)flipped;
-
-//
-// Setting Value Limits 
-//
-- (double)maxValue;
-- (double)minValue;
-- (void)setMaxValue:(double)aDouble;
-- (void)setMinValue:(double)aDouble;
-
-//
-// Modifying Graphic Attributes 
-//
-- (void)setVertical:(BOOL)value;
-- (int)isVertical;
-- (float)knobThickness;
-- (void)setKnobThickness:(float)aFloat;
-- (void)setTitle:(NSString *)aString;
-- (void)setTitleCell:(NSCell *)aCell;
-- (void)setTitleColor:(NSColor *)aColor;
-- (void)setTitleFont:(NSFont *)fontObject;
-- (NSString *)title;
-- (id)titleCell;
-- (NSFont *)titleFont;
-- (NSColor *)titleColor;
-
-//
-// Displaying the NSSliderCell 
-//
-- (void)drawBarInside:(NSRect)aRect
-	      flipped:(BOOL)flipped;
-- (void)drawKnob;
-- (void)drawKnob:(NSRect)knobRect;
-
-//
-// Modifying Behavior 
-//
+/* Asking about the cell's behavior */
 - (double)altIncrementValue;
-- (void)setAltIncrementValue:(double)incValue;
-
-//
-// Tracking the Mouse 
-//
 + (BOOL)prefersTrackingUntilMouseUp;
 - (NSRect)trackRect;
 
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
+/* Changing the cell's behavior */
+- (void)setAltIncrementValue:(double)increment;
+
+/* Displaying the cell */
+- (NSRect)knobRectFlipped:(BOOL)flipped;
+- (void)drawBarInside:(NSRect)aRect flipped:(BOOL)flipped;
+- (void)drawKnob;
+- (void)drawKnob:(NSRect)knobRect;
+
+/* Asking about the cell's appearance */
+- (float)knobThickness;
+- (int)isVertical;
+- (NSString*)title;
+- (id)titleCell;
+- (NSColor*)titleColor;
+- (NSFont*)titleFont;
+
+/* Changing the cell's appearance */
+- (void)setKnobThickness:(float)thickness;
+- (void)setTitle:(NSString*)title;
+- (void)setTitleCell:(NSCell*)aCell;
+- (void)setTitleColor:(NSColor*)color;
+- (void)setTitleFont:(NSFont*)font;
+
+/* Asking about the value limits */
+- (double)minValue;
+- (double)maxValue;
+
+/* Changing the value limits */
+- (void)setMinValue:(double)aDouble;
+- (void)setMaxValue:(double)aDouble;
 
 @end
 
-#endif // _GNUstep_H_NSSliderCell
+#endif /* _GNUstep_H_NSSliderCell */

@@ -6,8 +6,10 @@
    Copyright (C) 1996 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
-	    Ovidiu Predescu <ovidiu@net-community.com>
-   Date: 1996, 1997
+   Date: 1996
+
+   Heavily changed and extended by Ovidiu Predescu <ovidiu@net-community.com>.
+   Date: 1997
    
    This file is part of the GNUstep GUI Library.
 
@@ -35,26 +37,19 @@
 #include <Foundation/NSLock.h>
 #include <Foundation/NSArray.h>
 #include <Foundation/NSNotification.h>
+#include <Foundation/NSValue.h>
 
 #include <AppKit/NSView.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/TrackingRectangle.h>
 #include <AppKit/PSMatrix.h>
 
-//
-// Class variables
-//
+@implementation NSView
+
+/* Class variables */
 static NSMutableDictionary *gnustep_gui_nsview_thread_dict = nil;
 static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
-@implementation NSView
-
-//
-// Class methods
-//
-//
-// Initialization
-//
 + (void)initialize
 {
   if (self == [NSView class])
@@ -66,14 +61,12 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
       // Allocate dictionary for maintaining
       // mapping of threads to focused views
-      gnustep_gui_nsview_thread_dict = [NSMutableDictionary dictionary];
+      gnustep_gui_nsview_thread_dict = [NSMutableDictionary new];
       // Create lock for serializing access to dictionary
       gnustep_gui_nsview_lock = [[NSRecursiveLock alloc] init];
     }
 }
 
-//
-// Focusing
 //
 // +++ Really each thread should have a stack!
 //
@@ -130,18 +123,11 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
   return current_view;
 }
 
-//
-// Instance methods
-//
-//
-// Initializing NSView Objects 
-//
 - init
 {
   return [self initWithFrame:NSZeroRect];
 }
 
-// The default initializer
 - (id)initWithFrame:(NSRect)frameRect
 {
   // Our super is NSResponder
@@ -171,7 +157,6 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
   window = nil;
   is_rotated_from_base = NO;
   is_rotated_or_scaled_from_base = NO;
-  opaque = YES;
   disable_autodisplay = NO;
   needs_display = YES;
   post_frame_changes = NO;
@@ -182,6 +167,8 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
 - (void)dealloc
 {
+  [frameMatrix release];
+  [boundsMatrix release];
   [sub_views release];
   [tracking_rects release];
   [cursor_rects release];
@@ -189,9 +176,6 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
   [super dealloc];
 }
 
-//
-// Managing the NSView Hierarchy 
-//
 - (void)addSubview:(NSView *)aView
 {
   // make sure we aren't making ourself a subview of ourself or we're not
@@ -299,21 +283,8 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
 - (void)sortSubviewsUsingFunction:(int (*)(id ,id ,void *))compare 
 			  context:(void *)context
-{}
-
-- (NSMutableArray *)subviews
 {
-  return sub_views;
-}
-
-- (NSView *)superview
-{
-  return super_view;
-}
-
-- (void)setSuperview:(NSView *)superview
-{
-  super_view = superview;
+  [sub_views sortUsingFunction:compare context:context];
 }
 
 - (NSWindow *)window
@@ -338,23 +309,10 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
 }
 
-//
-// Modifying the Frame Rectangle 
-//
-
-- (float)frameRotation
-{
-  return [frameMatrix rotationAngle];
-}
-
-- (NSRect)frame
-{
-  return frame;
-}
-
 - (void)rotateByAngle:(float)angle
 {
   [boundsMatrix rotateByAngle:angle];
+  is_rotated_from_base = is_rotated_or_scaled_from_base = YES;
 
   if (post_bounds_changes)
     [[NSNotificationCenter defaultCenter]
@@ -403,41 +361,31 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 - (void)setFrameRotation:(float)angle
 {
   [frameMatrix setFrameRotation:angle];
+  is_rotated_from_base = is_rotated_or_scaled_from_base = YES;
 
   if (post_frame_changes)
     [[NSNotificationCenter defaultCenter]
       postNotificationName:NSViewFrameDidChangeNotification object:self];
 }
 
-//
-// Modifying the Coordinate System 
-//
-
-- (float)boundsRotation
-{
-  return [boundsMatrix rotationAngle];
-}
-
-- (NSRect)bounds
-{
-  return bounds;
-}
-
-- (BOOL)isFlipped
-{
-  return NO;
-}
-
 - (BOOL)isRotatedFromBase
 {
-  // TODO
-  return is_rotated_from_base;
+  if (is_rotated_from_base)
+    return is_rotated_from_base;
+  else if (super_view)
+    return [super_view isRotatedFromBase];
+  else
+    return NO;
 }
 
 - (BOOL)isRotatedOrScaledFromBase
 {
-  // TODO
-  return is_rotated_or_scaled_from_base;
+  if (is_rotated_or_scaled_from_base)
+    return is_rotated_or_scaled_from_base;
+  else if (super_view)
+    return [super_view isRotatedOrScaledFromBase];
+  else
+    return NO;
 }
 
 - (void)scaleUnitSquareToSize:(NSSize)newSize
@@ -450,6 +398,8 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
   bounds.size.width = frame.size.width / newSize.width;
   bounds.size.height = frame.size.height / newSize.height;
 
+  is_rotated_or_scaled_from_base = YES;
+
   [boundsMatrix scaleBy:frame.size.width / bounds.size.width
 		       :frame.size.height / bounds.size.height];
 
@@ -460,10 +410,17 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
 - (void)setBounds:(NSRect)aRect
 {
+  float sx, sy;
+
   bounds = aRect;
-  [boundsMatrix setFrameOrigin:bounds.origin];
-  [boundsMatrix scaleTo:frame.size.width / bounds.size.width
-		       :frame.size.height / bounds.size.height];
+  [boundsMatrix setFrameOrigin:
+		  NSMakePoint(-bounds.origin.x, -bounds.origin.y)];
+  sx = frame.size.width / bounds.size.width;
+  sy = frame.size.height / bounds.size.height;
+  [boundsMatrix scaleTo:sx :sy];
+
+  if (sx != 1 || sy != 1)
+    is_rotated_or_scaled_from_base = YES;
 
   if (post_bounds_changes)
     [[NSNotificationCenter defaultCenter]
@@ -473,7 +430,9 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 - (void)setBoundsOrigin:(NSPoint)newOrigin
 {
   bounds.origin = newOrigin;
-  [boundsMatrix setFrameOrigin:newOrigin];
+  /* We have to translate the origin of the bounds in the oposite direction
+     so that the newOrigin becomes the origin when viewed. */
+  [boundsMatrix setFrameOrigin:NSMakePoint(-newOrigin.x, -newOrigin.y)];
 
   if (post_bounds_changes)
     [[NSNotificationCenter defaultCenter]
@@ -482,9 +441,15 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
 - (void)setBoundsSize:(NSSize)newSize
 {
+  float sx, sy;
+
   bounds.size = newSize;
-  [boundsMatrix scaleTo:frame.size.width / bounds.size.width
-		       :frame.size.height / bounds.size.height];
+  sx = frame.size.width / bounds.size.width;
+  sy = frame.size.height / bounds.size.height;
+  [boundsMatrix scaleTo:sx :sy];
+
+  if (sx != 1 || sy != 1)
+    is_rotated_or_scaled_from_base = YES;
 
   if (post_bounds_changes)
     [[NSNotificationCenter defaultCenter]
@@ -494,6 +459,7 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 - (void)setBoundsRotation:(float)angle
 {
   [boundsMatrix setFrameRotation:angle];
+  is_rotated_from_base = is_rotated_or_scaled_from_base = YES;
 
   if (post_bounds_changes)
     [[NSNotificationCenter defaultCenter]
@@ -509,9 +475,6 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
       postNotificationName:NSViewBoundsDidChangeNotification object:self];
 }
 
-//
-// Converting Coordinates 
-//
 - (NSRect)centerScanRect:(NSRect)aRect
 {
   return NSZeroRect;
@@ -672,14 +635,6 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
   return [aView convertSize:aSize fromView:self];
 }
 
-//
-// Notifying Ancestor Views 
-//
-- (BOOL)postsFrameChangedNotifications
-{
-  return post_frame_changes;
-}
-
 - (void)setPostsFrameChangedNotifications:(BOOL)flag
 {
   post_frame_changes = flag;
@@ -690,14 +645,6 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
   post_bounds_changes = flag;
 }
 
-- (BOOL)postsBoundsChangedNotifications
-{
-  return post_bounds_changes;
-}
-
-//
-// Resizing Subviews 
-//
 - (void)resizeSubviewsWithOldSize:(NSSize)oldSize
 {
   id e, o;
@@ -726,25 +673,14 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
   autoresize_subviews = flag;
 }
 
-- (BOOL)autoresizesSubviews
-{
-  return autoresize_subviews;
-}
-
 - (void)setAutoresizingMask:(unsigned int)mask
-{}
-
-- (unsigned int)autoresizingMask
 {
-  return 0;
+  autoresizingMask = mask;
 }
 
 - (void)resizeWithOldSuperviewSize:(NSSize)oldSize
 {}
 
-//
-// Graphics State Objects 
-//
 - (void)allocateGState
 {}
 
@@ -762,9 +698,6 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 - (void)setUpGState
 {}
 
-//
-// Focusing 
-//
 - (void)lockFocus
 {
   NSView *s = [self superview];
@@ -789,51 +722,83 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
   [[self class] popFocusView];
 }
 
-//
-// Displaying 
-//
 - (BOOL)canDraw
 {
+  // TODO
   return YES;
+}
+
+- (void)_setNeedsFlush
+{
+  [window _setNeedsFlush];
 }
 
 - (void)display
 {
-  int i, j;
-
-  if (!boundsMatrix || !frameMatrix)
-    NSLog (@"warning: %@ %p has not setup the PS matrices",
-	  NSStringFromClass(isa), self);
-
-  [self lockFocus];
-  [self drawRect:bounds];
-  [self unlockFocus];
-
-  // Tell subviews to display
-  j = [sub_views count];
-  for (i = 0;i < j; ++i)
-    [(NSView *)[sub_views objectAtIndex:i] display];
-  [[self window] flushWindow];
+  invalidatedRectangle = NSZeroRect;
+  [self displayRect:bounds];
 }
 
 - (void)displayIfNeeded
 {
-  if ((needs_display) && (opaque)) {
-    [self display];
-    [self setNeedsDisplay:NO];
+  if (needs_display) {
+    NSRect rect = invalidatedRectangle;
+
+    invalidatedRectangle = NSZeroRect;
+    [self displayRect:rect];
   }
 }
 
 - (void)displayIfNeededIgnoringOpacity
 {
   if (needs_display) {
-    [self display];
-    [self setNeedsDisplay:NO];
+    NSRect rect = invalidatedRectangle;
+
+    invalidatedRectangle = NSZeroRect;
+    [self displayRect:rect];
   }
 }
 
-- (void)displayRect:(NSRect)aRect
-{}
+- (void)displayRect:(NSRect)rect
+{
+  int i, count;
+
+  if (!boundsMatrix || !frameMatrix)
+    NSLog (@"warning: %@ %p has not have the PS matrices setup!",
+	  NSStringFromClass(isa), self);
+
+//  NSLog (@"NSView displayRect:");
+
+  needs_display = NO;
+
+  [self lockFocus];
+  [self drawRect:rect];
+  [window _setNeedsFlush];
+//  [window _view:self needsFlushInRect:rect];
+  [self unlockFocus];
+
+  // Tell subviews to display
+  for (i = 0, count = [sub_views count]; i < count; ++i) {
+    NSView* subview = [sub_views objectAtIndex:i];
+    NSRect subviewFrame = subview->frame;
+    NSRect intersection;
+
+    /* If the subview is rotated compute its bounding rectangle and use this
+       one instead of the subview's frame. */
+    if ([subview->frameMatrix isRotated])
+      [subview->frameMatrix boundingRectFor:subviewFrame result:&subviewFrame];
+
+    /* Determine if the subview's frame intersects "rect"
+       so that we can display the subview. */
+    intersection = NSIntersectionRect (rect, subviewFrame);
+    if (intersection.origin.x || intersection.origin.y
+	|| intersection.size.width || intersection.size.height) {
+      /* Convert the intersection rectangle to the subview's coordinates */
+      intersection = [subview convertRect:intersection fromView:self];
+      [subview displayRect:intersection];
+    }
+  }
+}
 
 - (void)displayRectIgnoringOpacity:(NSRect)aRect
 {}
@@ -846,29 +811,153 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
   return bounds;
 }
 
-- (BOOL)isOpaque
+- (void)_addSubviewForNeedingDisplay:(NSView*)view
 {
-  return opaque;
-}
+  NSView* currentView;
 
-- (BOOL)needsDisplay
-{
-  return needs_display;
+  /* Add view in the list of sibling subviews that need display. First
+     check if view is not already there. */
+  currentView = _subviewsThatNeedDisplay;
+  while (currentView) {
+    if (currentView == view)
+      return;
+    currentView = currentView->_nextSiblingSubviewThatNeedsDisplay;
+  }
+
+  /* view is not in the list of subviews that need display; add it.
+     To do this concatenate the "view"'s list of siblings to the list of
+     subviews. Find the last element in the "view"'s list of siblings and
+     assign to its _nextSiblingSubviewThatNeedsDisplay ivar the first element
+     of the subviews that need display list in self.
+   */
+  currentView = view;
+  while (currentView->_nextSiblingSubviewThatNeedsDisplay)
+    currentView = currentView->_nextSiblingSubviewThatNeedsDisplay;
+
+  currentView->_nextSiblingSubviewThatNeedsDisplay = _subviewsThatNeedDisplay;
+  _subviewsThatNeedDisplay = view;
+
+  /* Now add recursively do the same algorithm with self. This way we'll create
+     a subtree of views that need display inside the views hierarchy. */
+  if (super_view)
+    [super_view _addSubviewForNeedingDisplay:self];
 }
 
 - (void)setNeedsDisplay:(BOOL)flag
 {
   needs_display = flag;
+  if (needs_display) {
+//    NSLog (@"NSView setNeedsDisplay:");
+    invalidatedRectangle = bounds;
+    [window _setNeedsDisplay];
+
+    if (super_view)
+      [super_view _addSubviewForNeedingDisplay:self];
+  }
 }
 
-- (void)setNeedsDisplayInRect:(NSRect)invalidRect
+- (void)setNeedsDisplayInRect:(NSRect)rect
 {
+//  NSLog (@"NSView setNeedsDisplayInRect:");
   needs_display = YES;
+  invalidatedRectangle = NSUnionRect (invalidatedRectangle, rect);
+  [window _setNeedsDisplay];
+
+    if (super_view)
+      [super_view _addSubviewForNeedingDisplay:self];
 }
 
-- (BOOL)shouldDrawColor
+- (void)_recursivelyResetNeedsDisplayInAllViews
 {
-  return YES;
+  NSView* currentView = _subviewsThatNeedDisplay;
+  NSView* nextView;
+
+  while (currentView) {
+    nextView = currentView->_nextSiblingSubviewThatNeedsDisplay;
+    [currentView _recursivelyResetNeedsDisplayInAllViews];
+    currentView->_nextSiblingSubviewThatNeedsDisplay = NULL;
+    currentView = nextView;
+  }
+  _subviewsThatNeedDisplay = NULL;
+}
+
+- (void)_displayNeededViews
+{
+  NSView* subview;
+
+  if (needs_display)
+    [self displayIfNeeded];
+
+  subview = _subviewsThatNeedDisplay;
+  while (subview) {
+    [subview _displayNeededViews];
+    subview = subview->_nextSiblingSubviewThatNeedsDisplay;
+  }
+}
+
+- (void)_collectInvalidatedRectanglesInArray:(NSMutableArray*)array
+  originMatrix:(PSMatrix*)originMatrix
+  sizeMatrix:(PSMatrix*)sizeMatrix
+{
+  PSMatrix* copyOfOriginMatrix;
+  PSMatrix* copyOfSizeMatrix;
+  NSView* subview = _subviewsThatNeedDisplay;
+
+//  NSLog (@"_collectInvalidatedRectanglesInArray");
+
+  while (subview) {
+    NSRect subviewFrame;
+    NSRect intersection;
+
+    /* Create copies of the original matrices passed by superview */
+    copyOfOriginMatrix = [originMatrix copy];
+    copyOfSizeMatrix = [sizeMatrix copy];
+
+    /* Concatenate the matrices copies with the subview matrices */
+    [copyOfOriginMatrix concatenateWith:subview->frameMatrix];
+    [copyOfOriginMatrix concatenateWith:subview->boundsMatrix];
+    [copyOfSizeMatrix concatenateWith:subview->boundsMatrix];
+
+    if (subview->needs_display) {
+      subviewFrame = subview->invalidatedRectangle;
+
+      /* If the subview is rotated compute its bounding rectangle and use this
+	  one instead of the invalidated rectangle. */
+      if ([subview->frameMatrix isRotated])
+	[subview->frameMatrix boundingRectFor:subviewFrame
+			      result:&subviewFrame];
+
+      /* Determine if the subview's invalidated frame rectangle intersects
+	 our bounds to find out if the subview gets displayed. */
+      intersection = NSIntersectionRect (bounds, subviewFrame);
+      if (intersection.origin.x || intersection.origin.y
+	  || intersection.size.width || intersection.size.height) {
+	/* Convert the intersection rectangle to the window coordinates */
+	intersection.origin
+	    = [copyOfOriginMatrix pointInMatrixSpace:intersection.origin];
+	intersection.size
+	    = [copyOfSizeMatrix sizeInMatrixSpace:intersection.size];
+
+	[array addObject:[NSValue valueWithRect:intersection]];
+      }
+    }
+    else
+      [subview _collectInvalidatedRectanglesInArray:array
+		originMatrix:copyOfOriginMatrix
+		sizeMatrix:copyOfSizeMatrix];
+
+    [copyOfOriginMatrix release];
+    [copyOfSizeMatrix release];
+    subview = subview->_nextSiblingSubviewThatNeedsDisplay;
+  }
+}
+
+- (NSRect)_boundingRectFor:(NSRect)rect
+{
+  NSRect new;
+
+  [frameMatrix boundingRectFor:rect result:&new];
+  return new;
 }
 
 //
@@ -950,19 +1039,6 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 - (void)resetCursorRects
 {}
 
-- (NSArray *)cursorRectangles
-{
-  return cursor_rects;
-}
-
-//
-// Assigning a Tag 
-//
-- (int)tag
-{
-  return -1;
-}
-
 - (id)viewWithTag:(int)aTag
 {
   int i, count;
@@ -1000,7 +1076,7 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
   // Check our sub_views
   count = [sub_views count];
-  for (i = 0; i < count; ++i)
+  for (i = count - 1; i >= 0; i--)
     {
       w = [sub_views objectAtIndex:i];
       v = [w hitTest:p];
@@ -1243,24 +1319,13 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
   NSDebugLog(@"NSView: start encoding\n");
   [aCoder encodeRect: frame];
   [aCoder encodeRect: bounds];
-#if 0
-  [aCoder encodeObjectReference: super_view withName: @"Superview"];
-#else
   [aCoder encodeConditionalObject:super_view];
-#endif
-
   [aCoder encodeObject: sub_views];
-
-#if 0
-  [aCoder encodeObjectReference: window withName: @"Window"];
-#else
   [aCoder encodeConditionalObject:window];
-#endif
   [aCoder encodeObject: tracking_rects];
   [aCoder encodeValueOfObjCType:@encode(BOOL) at: &is_rotated_from_base];
   [aCoder encodeValueOfObjCType:@encode(BOOL) 
 	  at: &is_rotated_or_scaled_from_base];
-  [aCoder encodeValueOfObjCType:@encode(BOOL) at: &opaque];
   [aCoder encodeValueOfObjCType:@encode(BOOL) at: &needs_display];
   [aCoder encodeValueOfObjCType:@encode(BOOL) at: &disable_autodisplay];
   [aCoder encodeValueOfObjCType:@encode(BOOL) at: &post_frame_changes];
@@ -1275,25 +1340,13 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
   NSDebugLog(@"NSView: start decoding\n");
   frame = [aDecoder decodeRect];
   bounds = [aDecoder decodeRect];
-#if 0
-  [aDecoder decodeObjectAt: &super_view withName: NULL];
-#else
   super_view = [aDecoder decodeObject];
-#endif
-
   sub_views = [aDecoder decodeObject];
-
-#if 0
-  [aDecoder decodeObjectAt: &window withName: NULL];
-#else
   window = [aDecoder decodeObject];
-#endif
-
   tracking_rects = [aDecoder decodeObject];
   [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &is_rotated_from_base];
   [aDecoder decodeValueOfObjCType:@encode(BOOL) 
 	  at: &is_rotated_or_scaled_from_base];
-  [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &opaque];
   [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &needs_display];
   [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &disable_autodisplay];
   [aDecoder decodeValueOfObjCType:@encode(BOOL) at: &post_frame_changes];
@@ -1302,5 +1355,26 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 
   return self;
 }
+
+/* Accessor methods */
+- (NSMutableArray *)subviews			{ return sub_views; }
+- (NSView *)superview				{ return super_view; }
+- (void)setSuperview:(NSView *)superview	{ super_view = superview; }
+- (NSRect)frame					{ return frame; }
+- (float)frameRotation			{ return [frameMatrix rotationAngle]; }
+- (BOOL)shouldDrawColor				{ return YES; }
+- (BOOL)isOpaque				{ return NO; }
+- (BOOL)needsDisplay				{ return needs_display; }
+- (BOOL)autoresizesSubviews			{ return autoresize_subviews; }
+- (unsigned int)autoresizingMask		{ return autoresizingMask; }
+- (int)tag					{ return -1; }
+- (NSArray *)cursorRectangles			{ return cursor_rects; }
+- (float)boundsRotation		{ return [boundsMatrix rotationAngle]; }
+- (NSRect)bounds				{ return bounds; }
+- (BOOL)isFlipped				{ return NO; }
+- (BOOL)postsFrameChangedNotifications		{ return post_frame_changes; }
+- (BOOL)postsBoundsChangedNotifications		{ return post_bounds_changes; }
+- (PSMatrix*)_frameMatrix			{ return frameMatrix; }
+- (PSMatrix*)_boundsMatrix			{ return boundsMatrix; }
 
 @end

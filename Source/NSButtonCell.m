@@ -6,6 +6,7 @@
    Copyright (C) 1996 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
+	    Ovidiu Predescu <ovidiu@net-community.com>
    Date: 1996
    
    This file is part of the GNUstep GUI Library.
@@ -38,6 +39,11 @@
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSFont.h>
 #include <AppKit/NSImage.h>
+
+#define ASSIGN(a, b) \
+  [b retain]; \
+  [a release]; \
+  a = b;
 
 //
 // NSButtonCell implementation
@@ -147,7 +153,7 @@
 
 - (void)setAlternateImage:(NSImage *)anImage
 {
-  altImage = [anImage retain];
+  ASSIGN(altImage, anImage);
 }
 
 - (void)setImagePosition:(NSCellImagePosition)aPosition
@@ -193,7 +199,9 @@
 
 - (void)setKeyEquivalent:(NSString *)key
 {
-  keyEquivalent = [key copy];
+  id copy = [key copy];
+  ASSIGN(keyEquivalent, copy);
+  [copy release];
 }
 
 - (void)setKeyEquivalentModifierMask:(unsigned int)mask
@@ -203,13 +211,13 @@
 
 - (void)setKeyEquivalentFont:(NSFont *)fontObj
 {
-  keyEquivalentFont = [fontObj retain];
+  ASSIGN(keyEquivalentFont, fontObj);
 }
 
 - (void)setKeyEquivalentFont:(NSString *)fontName 
 			size:(float)fontSize
 {
-  keyEquivalentFont = [[NSFont fontWithName:fontName size:fontSize] retain];
+  ASSIGN(keyEquivalentFont, [NSFont fontWithName:fontName size:fontSize]);
 }
 
 //

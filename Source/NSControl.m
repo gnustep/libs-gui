@@ -122,6 +122,9 @@ static id MB_NSCONTROL_CELL_CLASS = nil;
   if (![aCell isKindOfClass:[NSCell class]])
     return;
 
+  [cell setControlView:nil];
+  [aCell setControlView:self];
+
   [aCell retain];
   [cell release];
   cell = aCell;
@@ -177,19 +180,19 @@ static id MB_NSCONTROL_CELL_CLASS = nil;
 - (void)setDoubleValue:(double)aDouble
 {
   [[self selectedCell] setDoubleValue:aDouble];
-  [self displayIfNeeded];
+  [self setNeedsDisplay:YES];
 }
 
 - (void)setFloatValue:(float)aFloat
 {
   [[self selectedCell] setFloatValue:aFloat];
-  [self displayIfNeeded];
+  [self setNeedsDisplay:YES];
 }
 
 - (void)setIntValue:(int)anInt
 {
   [[self selectedCell] setIntValue:anInt];
-  [self displayIfNeeded];
+  [self setNeedsDisplay:YES];
 }
 
 - (void)setNeedsDisplay
@@ -200,7 +203,7 @@ static id MB_NSCONTROL_CELL_CLASS = nil;
 - (void)setStringValue:(NSString *)aString
 {
   [[self selectedCell] setStringValue:aString];
-  [self displayIfNeeded];
+  [self setNeedsDisplay:YES];
 }
 
 - (NSString *)stringValue
@@ -214,25 +217,25 @@ static id MB_NSCONTROL_CELL_CLASS = nil;
 - (void)takeDoubleValueFrom:(id)sender
 {
   [[self selectedCell] takeDoubleValueFrom:sender];
-  [self displayIfNeeded];
+  [self setNeedsDisplay:YES];
 }
 
 - (void)takeFloatValueFrom:(id)sender
 {
   [[self selectedCell] takeFloatValueFrom:sender];
-  [self displayIfNeeded];
+  [self setNeedsDisplay:YES];
 }
 
 - (void)takeIntValueFrom:(id)sender
 {
   [[self selectedCell] takeIntValueFrom:sender];
-  [self displayIfNeeded];
+  [self setNeedsDisplay:YES];
 }
 
 - (void)takeStringValueFrom:(id)sender
 {
   [[self selectedCell] takeStringValueFrom:sender];
-  [self displayIfNeeded];
+  [self setNeedsDisplay:YES];
 }
 
 //
@@ -259,7 +262,7 @@ static id MB_NSCONTROL_CELL_CLASS = nil;
   if (cell)
     {
       [cell setAlignment:mode];
-      [self displayIfNeeded];
+      [self setNeedsDisplay:YES];
     }
 }
 

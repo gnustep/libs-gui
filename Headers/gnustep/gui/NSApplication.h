@@ -37,6 +37,7 @@
 @class NSException;
 @class NSNotification;
 @class NSDate;
+@class NSTimer;
 
 @class NSEvent;
 @class NSPasteboard;
@@ -261,12 +262,9 @@ extern NSString *NSEventTrackingRunLoopMode;
 - (void)encodeWithCoder:aCoder;
 - initWithCoder:aDecoder;
 
-@end
-
 //
 // Backend methods
 //
-@interface NSApplication (GNUstepBackend)
 
 // the null event
 + (void)setNullEvent:(NSEvent *)e;
@@ -279,10 +277,17 @@ extern NSString *NSEventTrackingRunLoopMode;
 // handle a non-translated event
 - (void)handleNullEvent;
 
-/* Set up the run loop input sources for a given mode */
-- (void)setupRunLoopInputSourcesForMode:(NSString*)mode;
+/* Private methods */
+- (void)_flushCommunicationChannels;
 
 @end
+
+
+@interface NSApplication (BackendMethods)
+/* Set up the run loop input sources for a given mode */
+- (void)setupRunLoopInputSourcesForMode:(NSString*)mode;
+@end
+
 
 @interface NSObject (NSServicesRequests)
 

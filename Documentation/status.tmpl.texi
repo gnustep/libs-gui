@@ -83,7 +83,8 @@ No determination of component sizes.  Editing
 text, validating input, represented object, and some other odd and end
 methods not implemented.
 
-@item NSClipView:: [2]
+@item NSClipView:: [9]
+The class has been implemented but does not work yet with copy on scroll.
 
 @item NSColor:: [8]
 Now implements all colorspaces; however, does not know the difference
@@ -125,7 +126,7 @@ Ghostscript are empty.
 @item NSEPSImageRep:: [2]
 
 @item NSEvent:: [9]
-All methods implemented except periodic events.
+All methods implemented including periodic events.
 
 @item NSFont:: [9]
 Now maintains AFM and glyph information but requires the backend
@@ -138,11 +139,12 @@ Ghostscript System, but still requires additional work.
 @item NSFontPanel:: [2]
 May be usable with backend implementation.
 
-@item NSForm:: [9]
+@item NSForm:: [8]
 The code has been written, it greatly depends on NSMatrix, but no tests have
 been made.
 
-@item NSFormCell:: [2]
+@item NSFormCell:: [8]
+The code has been written but no tests have been made.
 
 @item NSHelpPanel:: [2]
 
@@ -205,15 +207,16 @@ Knows nothing about window depth, greatly depends upon backend implementation.
 Filled out implementation so that it should be almost complete; requires
 backend implementation of a few methods.
 
-@item NSScrollView:: [2]
+@item NSScrollView:: [8]
+The code has been implemented though it does not deal yet with copy on scroll.
 
 @item NSSelection:: [2]
 
-@item NSSlider:: [4]
-Usability greatly depends upon backend implementation.
+@item NSSlider:: [10]
+Implemented. Does not require backend support.
 
-@item NSSliderCell:: [6]
-No title or image capability implemented, greatly depends upon backend.
+@item NSSliderCell:: [10]
+Implemented. Requires only a method to be implemented in the backend.
 
 @item NSSpellChecker:: [2]
 
@@ -225,17 +228,18 @@ No title or image capability implemented, greatly depends upon backend.
 Usability greatly depends upon backend implementation.
 
 @item NSTextField:: [8]
-Does not properly send text delegate messages.
+Does not properly send text delegate messages. Does not handle selection yet
+and does not hide the cursor when it resigns as the first responder.
 
 @item NSTextFieldCell:: [4]
 Usability greatly depends upon backend implementation.
 
 @item NSView:: [6] 
 Maintains subview lists, notification of new window, send resizing
-messages to subviews.  Rotation, scaling, or translation of user
-coordinate space depends upon backend implementation.  Event handling
+messages to subviews.  Rotation, scaling and translation of user
+coordinate space have been implemented.  Event handling
 and tracking rectangles implemented.  Cursor management implemented.  No
-scrolling capability.  No printing, paging, or postscript.
+autoscrolling capability.  No printing, paging, or postscript.
 
 @item NSWindow:: [4]
 Most methods not implemented, but maybe usable with backend implementation.

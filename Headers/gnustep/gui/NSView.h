@@ -6,8 +6,10 @@
    Copyright (C) 1996 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
-	    Ovidiu Predescu <ovidiu@net-community.com>
-   Date: 1996, 1997
+   Date: 1996
+
+   Heavily changed and extended by Ovidiu Predescu <ovidiu@net-community.com>.
+   Date: 1997
    
    This file is part of the GNUstep GUI Library.
 
@@ -72,20 +74,25 @@ enum {
   id frameMatrix;
   id boundsMatrix;
 
-  id super_view;
+  NSView* super_view;
   NSMutableArray *sub_views;
   id window;
   NSMutableArray *tracking_rects;
   NSMutableArray *cursor_rects;
+  NSRect invalidatedRectangle;
+  unsigned int autoresizingMask;
 
   BOOL is_rotated_from_base;
   BOOL is_rotated_or_scaled_from_base;
-  BOOL opaque;
   BOOL needs_display;
   BOOL disable_autodisplay;
   BOOL post_frame_changes;
   BOOL post_bounds_changes;
   BOOL autoresize_subviews;
+
+  NSView* _nextSiblingSubviewThatNeedsDisplay;
+	/* NULL if no sibling view needs display */
+  NSView* _subviewsThatNeedDisplay;
 
   // Reserved for back-end use
   void *be_view_reserved;
@@ -337,6 +344,29 @@ enum {
 - initWithCoder:aDecoder;
 
 @end
+
+
+@class PSMatrix;
+
+@interface NSView (PrivateMethods)
+/* If the view is rotated returns the bounding box of the rect in the "normal"
+   coordinates */
+- (NSRect)_boundingRectFor:(NSRect)rect;
+
+- (void)_recursivelyResetNeedsDisplayInAllViews;
+- (void)_displayNeededViews;
+
+/* Collects into `array' the invalid rectangles that need to be displayed. All
+   the rectangles are expressed in the window coordinates and not of the views
+   they come from. */
+- (void)_collectInvalidatedRectanglesInArray:(NSMutableArray*)array
+  originMatrix:(PSMatrix*)matrix1
+  sizeMatrix:(PSMatrix*)matrix2;
+
+- (PSMatrix*)_frameMatrix;
+- (PSMatrix*)_boundsMatrix;
+@end
+
 
 /* Notifications */
 extern NSString *NSViewFrameDidChangeNotification;

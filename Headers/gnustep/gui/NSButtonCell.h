@@ -6,6 +6,7 @@
    Copyright (C) 1996 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
+	    Ovidiu Predescu <ovidiu@net-community.com>
    Date: 1996
    
    This file is part of the GNUstep GUI Library.

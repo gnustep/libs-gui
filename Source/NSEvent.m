@@ -39,6 +39,7 @@
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSWindow.h>
+#include <DPSClient/NSDPSContext.h>
 
 @implementation NSEvent
 
@@ -76,6 +77,8 @@ static NSRecursiveLock* timersLock = nil;
 
 - (void)setContext:(NSDPSContext *)context
 {
+  [context retain];
+  [event_context release];
   event_context = context;
 }
 
@@ -404,6 +407,7 @@ static NSRecursiveLock* timersLock = nil;
       [event_data.key.char_keys release];
       [event_data.key.unmodified_keys release];
     }
+  [event_context release];
   [super dealloc];
 }
 

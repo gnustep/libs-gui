@@ -219,6 +219,7 @@ NSString *NSPrintRightMargin = @"PrintRightMargin";
 NSString *NSPrintSavePath = @"PrintSavePath";
 NSString *NSPrintScalingFactor = @"PrintScalingFactor";
 NSString *NSPrintTopMargin = @"PrintTopMargin";
+NSString *NSPrintHorizontalPagination = @"PrintHorizontalPagination";
 NSString *NSPrintVerticalPagination = @"PrintVerticalPagination";
 NSString *NSPrintVerticallyCentered = @"PrintVerticallyCentered";
 

@@ -102,12 +102,17 @@
 #endif
 
   point = [self constrainScrollPoint:point];
-  [super setBoundsOrigin:NSMakePoint(-point.x, -point.y)];
+  [self setBoundsOrigin:NSMakePoint(point.x, point.y)];
+
   if (_copiesOnScroll)
     /* TODO: move the visible portion of the document */;
   else {
+#if 1
+    [self setNeedsDisplay:YES];
+#else
     [self display];
     [[self window] flushWindow];
+#endif
   }
 }
 

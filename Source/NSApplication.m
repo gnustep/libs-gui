@@ -31,11 +31,11 @@
 
 #include <Foundation/NSArray.h>
 #include <Foundation/NSNotification.h>
-#include <Foundation/NSConnection.h>
 #include <Foundation/NSRunLoop.h>
 #include <Foundation/NSAutoreleasePool.h>
+#include <Foundation/NSTimer.h>
 
-#ifdef NEXT_PDO
+#ifndef LIB_FOUNDATION_LIBRARY
 # include <Foundation/NSConnection.h>
 #endif
 
@@ -55,6 +55,11 @@
 static BOOL gnustep_gui_app_is_in_dealloc;
 static NSEvent *gnustep_gui_null_event;
 static id NSApp;
+
+#define ASSIGN(a, b) \
+  [b retain]; \
+  [a release]; \
+  a = b;
 
 @implementation NSApplication
 
@@ -79,8 +84,13 @@ static id NSApp;
 + (NSApplication *)sharedApplication
 {
   // If the global application does not exist yet then create it
-  if (!NSApp)
-    NSApp = [[self alloc] init];
+  if (!NSApp) {
+    /* Don't combine the following two statements into one to avoid problems
+       with some classes initialization code that tries to get the shared
+       application. */
+    NSApp = [self alloc];
+    [NSApp init];
+  }
   return NSApp;
 }
 
@@ -98,18 +108,18 @@ static id NSApp;
   NSDebugLog(@"Begin of NSApplication -init\n");
 
   // allocate the window list
-  window_list = [NSMutableArray array];
+  window_list = [NSMutableArray new];
   window_count = 1;
 
   //
   // Event handling setup
   //
   // allocate the event queue
-  event_queue = [[NSMutableArray alloc] init];
+  event_queue = [NSMutableArray new];
   // No current event
   current_event = nil;
   // The NULL event
-  gnustep_gui_null_event = [[NSEvent alloc] init];
+  gnustep_gui_null_event = [NSEvent new];
 
   //
   // We are the end of the responder chain
@@ -147,19 +157,7 @@ static id NSApp;
   // Let ourselves know we are within dealloc
   gnustep_gui_app_is_in_dealloc = YES;
 
-  // Release the window list
-  // We retain all of the objects in our list
-  //   so we need to release them
-
-  //NSArray doesn't know -removeAllObjects yet
-  [window_list removeAllObjects];
-  //j = [window_list count];
-  //for (i = 0;i < j; ++i)
-  //  [[window_list objectAtIndex:i] release];
-
-  // no need -array is autoreleased
-  //[window_list release];
-
+  [window_list release];
   [event_queue release];
   [current_event release];
   [super dealloc];
@@ -283,14 +281,15 @@ static id NSApp;
       //
     default:
       {
+	NSWindow* window = [theEvent window];
+
 	if (!theEvent) NSDebugLog(@"NSEvent is nil!\n");
-	NSDebugLog(@"NSEvent type: %d\n", [theEvent type]);
-	NSDebugLog(@"send event to window\n");
-	NSDebugLog([[theEvent window] description]);
-	NSDebugLog(@"\n");
-	if (![theEvent window])
-	  NSDebugLog(@"no window\n");
-	[[theEvent window] sendEvent:theEvent];
+	NSDebugLog(@"NSEvent type: %d", [theEvent type]);
+	NSDebugLog(@"send event to window");
+	NSDebugLog([window description]);
+	if (!window)
+	  NSDebugLog(@"no window");
+	[window sendEvent:theEvent];
       }
     }
 }
@@ -371,7 +370,7 @@ static id NSApp;
     return NO;
 }
 
-- (void)setCurrentEvent:(NSEvent *)theEvent;
+- (void)setCurrentEvent:(NSEvent *)theEvent
 {
     [theEvent retain];
     [current_event release];
@@ -419,12 +418,11 @@ static id NSApp;
   NSEvent *event;
   BOOL done = NO;
 
-  if (!expiration)
-    expiration = [NSDate distantFuture];
-
   event = [self _eventMatchingMask:mask];
   if (event)
     done = YES;
+  else if (!expiration)
+    expiration = [NSDate distantFuture];
 
   // Not in queue so wait for next event
   while (!done) {
@@ -439,6 +437,8 @@ static id NSApp;
     else
       limitDate = expiration;
 
+    [NSWindow _flushWindows];
+    [self _flushCommunicationChannels];
     [currentLoop runMode:mode beforeDate:limitDate];
 
     event = [self _eventMatchingMask:mask];
@@ -505,7 +505,7 @@ static id NSApp;
 
 - (void)postEvent:(NSEvent *)event atStart:(BOOL)flag
 {
-  if (flag)
+  if (!flag)
     [event_queue addObject: event];
   else
     [event_queue insertObject: event atIndex: 0];
@@ -567,15 +567,13 @@ static id NSApp;
 //
 - (void)hide:sender
 {
-  id e;
-  NSWindow *w;
+  int i, count;
 
   // TODO: hide the menu
 
   // Tell the windows to hide
-  e = [window_list objectEnumerator];
-  while ((w = [e nextObject]))
-    [w performHide: sender];
+  for (i = 0, count = [window_list count]; i < count; i++)
+    [[window_list objectAtIndex:i] performHide:sender];
 
   app_is_hidden = YES;
 }
@@ -587,13 +585,11 @@ static id NSApp;
 
 - (void)unhide:sender
 {
-  id e;
-  NSWindow *w;
+  int i, count;
 
   // Tell the windows to unhide
-  e = [window_list objectEnumerator];
-  while ((w = [e nextObject]))
-    [w performUnhide: sender];
+  for (i = 0, count = [window_list count]; i < count; i++)
+    [[window_list objectAtIndex:i] performUnhide:sender];
 
   // TODO: unhide the menu
 
@@ -647,15 +643,10 @@ static id NSApp;
 
 - (void)miniaturizeAll:sender
 {
-  id e, obj;
+  int i, count;
 
-  e = [window_list objectEnumerator];
-  obj = [e nextObject];
-  while (obj)
-    {
-      [obj miniaturize: sender];
-      obj = [e nextObject];
-    }
+  for (i = 0, count = [window_list count]; i < count; i++)
+    [[window_list objectAtIndex:i] miniaturize:sender];
 }
 
 - (void)preventWindowOrdering
@@ -668,15 +659,10 @@ static id NSApp;
 
 - (void)updateWindows
 {
-  id e, obj;
+  int i, count;
 
-  e = [window_list objectEnumerator];
-  obj = [e nextObject];
-  while (obj)
-    {
-      [obj update];
-      obj = [e nextObject];
-    }
+  for (i = 0, count = [window_list count]; i < count; i++)
+    [[window_list objectAtIndex:i] update];
 }
 
 - (NSArray *)windows
@@ -1015,22 +1001,11 @@ static id NSApp;
   [super encodeWithCoder:aCoder];
 
   [aCoder encodeObject: window_list];
-  // We don't want to code the event queue do we?
-  //[aCoder encodeObject: event_queue];
-  //[aCoder encodeObject: current_event];
-#if 0
-  [aCoder encodeObjectReference: key_window withName: @"Key window"];
-  [aCoder encodeObjectReference: main_window withName: @"Main window"];
-  [aCoder encodeObjectReference: delegate withName: @"Delegate"];
-  [aCoder encodeObject: main_menu];
-  [aCoder encodeObjectReference: windows_menu withName: @"Windows menu"];
-#else
   [aCoder encodeConditionalObject:key_window];
   [aCoder encodeConditionalObject:main_window];
   [aCoder encodeConditionalObject:delegate];
   [aCoder encodeObject:main_menu];
   [aCoder encodeConditionalObject:windows_menu];
-#endif
 }
 
 - initWithCoder:aDecoder
@@ -1038,34 +1013,17 @@ static id NSApp;
   [super initWithCoder:aDecoder];
 
   window_list = [aDecoder decodeObject];
-#if 0
-  [aDecoder decodeObjectAt: &key_window withName: NULL];
-  [aDecoder decodeObjectAt: &main_window withName: NULL];
-  [aDecoder decodeObjectAt: &delegate withName: NULL];
-  main_menu = [aDecoder decodeObject];
-  [aDecoder decodeObjectAt: &windows_menu withName: NULL];
-#else
   key_window = [aDecoder decodeObject];
   main_window = [aDecoder decodeObject];
   delegate = [aDecoder decodeObject];
   main_menu = [aDecoder decodeObject];
   windows_menu = [aDecoder decodeObject];
-#endif
-
   return self;
 }
 
-@end
-
-//
-// Backend methods
-// empty implementations
-//
-@implementation NSApplication (GNUstepBackend)
-
 + (void)setNullEvent:(NSEvent *)e
 {
-  gnustep_gui_null_event = e;
+  ASSIGN(gnustep_gui_null_event, e);
 }
 
 + (NSEvent *)getNullEvent;
@@ -1076,7 +1034,7 @@ static id NSApp;
 // Get next event
 - (NSEvent *)getNextEvent
 {
-  [event_queue addObject: gnustep_gui_null_event];
+  [event_queue addObject:gnustep_gui_null_event];
   return gnustep_gui_null_event;
 }
 
@@ -1087,6 +1045,9 @@ static id NSApp;
 
 // handle a non-translated event
 - (void)handleNullEvent
+{}
+
+- (void)_flushCommunicationChannels
 {}
 
 - (void)setupRunLoopInputSourcesForMode:(NSString*)mode

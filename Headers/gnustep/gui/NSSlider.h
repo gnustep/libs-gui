@@ -1,12 +1,10 @@
-/* 
+/*
    NSSlider.h
-
-   The slider control class
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+   Author: Ovidiu Predescu <ovidiu@net-community.com>
+   Date: September 1997
    
    This file is part of the GNUstep GUI Library.
 
@@ -21,10 +19,9 @@
    Library General Public License for more details.
 
    You should have received a copy of the GNU Library General Public
-   License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/ 
+   License along with this library; if not, write to the Free
+   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
 
 #ifndef _GNUstep_H_NSSlider
 #define _GNUstep_H_NSSlider
@@ -38,20 +35,8 @@
 @class NSColor;
 @class NSEvent;
 
-@interface NSSlider : NSControl <NSCoding>
-{
-  // Attributes
-}
+@interface NSSlider : NSControl
 
-//
-// Setting the Cell Class
-//
-+ (Class)cellClass;
-+ (void)setCellClass:(Class)classId;
-
-//
-// Modifying an NSSlider's Appearance 
-//
 - (NSImage *)image;
 - (int)isVertical;
 - (float)knobThickness;
@@ -65,25 +50,11 @@
 - (id)titleCell;
 - (NSColor *)titleColor;
 - (NSFont *)titleFont;
-
-//
-// Setting and Getting Value Limits 
-//
 - (double)maxValue;
 - (double)minValue;
 - (void)setMaxValue:(double)aDouble;
 - (void)setMinValue:(double)aDouble;
-
-//
-// Handling Events 
-//
 - (BOOL)acceptsFirstMouse:(NSEvent *)theEvent;
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
 
 @end
 

@@ -204,16 +204,20 @@ static NSFont* menuFont = nil;
 - (void)drawRect:(NSRect)rect
 {
   int i, count = [cells count];
+  int max, howMany;
   NSRect intRect = {{0, 0}, {0, 0}};
 
+  max = count - rect.origin.y / (cellSize.height + INTERCELL_SPACE);
+  howMany = rect.size.height / (cellSize.height + INTERCELL_SPACE);
+
+  intRect.origin.y = (count - max) * (cellSize.height + INTERCELL_SPACE);
   intRect.size = cellSize;
-  for (i = count - 1; i >= 0; i--) {
+  for (i = max - 1; howMany >= 0; i--, howMany--) {
     id aCell = [cells objectAtIndex:i];
 
     [aCell drawWithFrame:intRect inView:self];
     intRect.origin.y += cellSize.height + INTERCELL_SPACE;
   }
-  [[self window] flushWindow];
 }
 
 - (NSSize)cellSize			{ return cellSize; }

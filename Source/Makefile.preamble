@@ -42,7 +42,7 @@
 ADDITIONAL_CPPFLAGS = -DGNUSTEP_INSTALL_LIBDIR=\"$(GNUSTEP_LIBRARIES_ROOT)\"
 
 # Additional flags to pass to the Objective-C compiler
-ADDITIONAL_OBJCFLAGS = 
+ADDITIONAL_OBJCFLAGS = -Wall
 
 # Additional flags to pass to the C compiler
 ADDITIONAL_CFLAGS = 
@@ -65,3 +65,9 @@ ADDITIONAL_INSTALL_DIRS = $(GNUSTEP_HEADERS)/gnustep \
    $(GNUSTEP_HEADERS)/gnustep/gui \
    $(GNUSTEP_HEADERS)/gnustep/gui/AppKit \
    $(GNUSTEP_HEADERS)/gnustep/gui/DPSClient
+
+# What are the libraries this library depends upon. This is needed for some
+# systems where building a shared library requires to pass to the linker
+# all the libraries the target library depends upon.
+
+LIBRARIES_DEPEND_UPON = -l$(FOUNDATION_LIBRARY_NAME) -ltiff

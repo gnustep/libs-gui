@@ -108,7 +108,7 @@
   cell_type = NSImageCellType;
   cell_image = [anImage retain];
   image_position = NSImageOnly;
-  cell_font = [[NSFont userFontOfSize:16] retain];
+  cell_font = [[NSFont userFontOfSize:12] retain];
   return self;
 }
 
@@ -116,11 +116,7 @@
 {
   [self _init];
 
-  // Not a string class --then forget it
-  //if (![aString isKindOfClass:[NSString class]])
-  //	return nil;
-
-  cell_font = [[NSFont userFontOfSize:16] retain];
+  cell_font = [[NSFont userFontOfSize:12] retain];
   contents = [aString retain];
   cell_type = NSTextCellType;
   text_align = NSCenterTextAlignment;
@@ -489,6 +485,11 @@
   return control_view;
 }
 
+- (void)setControlView:(NSView*)view
+{
+  control_view = view;
+}
+
 - (void)drawInteriorWithFrame:(NSRect)cellFrame
 		       inView:(NSView *)controlView
 {}
@@ -639,7 +640,11 @@
   // If point is in cellFrame then highlight the cell
   if ([controlView mouse: point inRect: cellFrame]) {
     [self highlight:YES withFrame:cellFrame inView:controlView];
+#if 1
+    [controlView setNeedsDisplayInRect:cellFrame];
+#else
     [[controlView window] flushWindow];
+#endif
   }
   else
     return NO;
@@ -686,8 +691,12 @@
       if (cell_highlighted) {
 	[self highlight: NO withFrame: cellFrame 
 	      inView: controlView];
+#if 1
+	[controlView setNeedsDisplayInRect:cellFrame];
+#else
 	[self drawWithFrame: cellFrame inView: controlView];
 	[[controlView window] flushWindow];
+#endif
       }
       
       // Do we now return or keep tracking
@@ -704,8 +713,12 @@
       if (!cell_highlighted) {
 	[self highlight: YES withFrame: cellFrame 
 	      inView: controlView];
+#if 1
+	[controlView setNeedsDisplayInRect:cellFrame];
+#else
 	//[self drawWithFrame: cellFrame inView: controlView];
 	[[controlView window] flushWindow];
+#endif
       }
     }
 
@@ -747,6 +760,10 @@
     NSDebugLog(@"NSCell mouse went up in cell\n");
     return YES;
   }
+
+#if 1
+  [controlView setNeedsDisplayInRect:cellFrame];
+#endif
 
   // Otherwise return NO
   NSDebugLog(@"NSCell mouse did not go up in cell\n");
@@ -837,11 +854,7 @@
   [aCoder encodeValueOfObjCType: "i" at: &cell_type];
   [aCoder encodeValueOfObjCType: @encode(NSTextAlignment) at: &text_align];
   [aCoder encodeValueOfObjCType: "i" at: &entry_type];
-#if 0
-  [aCoder encodeObjectReference: control_view withName: @"Control view"];
-#else
   [aCoder encodeConditionalObject:control_view];
-#endif
 }
 
 - initWithCoder:aDecoder
@@ -865,11 +878,7 @@
   [aDecoder decodeValueOfObjCType: "i" at: &cell_type];
   [aDecoder decodeValueOfObjCType: @encode(NSTextAlignment) at: &text_align];
   [aDecoder decodeValueOfObjCType: "i" at: &entry_type];
-#if 0
-  [aDecoder decodeObjectAt: &control_view withName: NULL];
-#else
   control_view = [aDecoder decodeObject];
-#endif
   return self;
 }
 

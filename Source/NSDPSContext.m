@@ -34,6 +34,11 @@
 #include <Foundation/NSDictionary.h>
 #include <gnustep/dps/NSDPSContext.h>
 
+#define ASSIGN(a, b) \
+  [b retain]; \
+  [a release]; \
+  a = b;
+
 //
 // DPS exceptions
 //
@@ -113,7 +118,7 @@ static BOOL GNU_CONTEXT_SYNCHRONIZED = NO;
 	    errorProc:(DPSErrorProc)errorProc
 {
   [super init];
-  context_data = data;
+  ASSIGN(context_data, data);
   is_screen_context = YES;
   error_proc = errorProc;
   text_proc = tProc;
@@ -121,6 +126,13 @@ static BOOL GNU_CONTEXT_SYNCHRONIZED = NO;
   chained_child = nil;
 
   return self;
+}
+
+- (void)dealloc
+{
+  [context_data release];
+  [chained_child release];
+  [super dealloc];
 }
 
 //
@@ -291,7 +303,7 @@ static BOOL GNU_CONTEXT_SYNCHRONIZED = NO;
 {
   if (child)
     {
-      chained_child = child;
+      chained_child = [child retain];
       [child setParentContext: self];
     }
 }
@@ -311,6 +323,7 @@ static BOOL GNU_CONTEXT_SYNCHRONIZED = NO;
   if (chained_child)
     {
       [chained_child setParentContext: nil];
+      [chained_child release];
       chained_child = nil;
     }
 }

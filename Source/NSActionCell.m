@@ -197,6 +197,7 @@
   action = aSelector;
 }
 
+/* NSActionCell does not retain its target! */
 - (void)setTarget:(id)anObject
 {
   target = anObject;
@@ -237,29 +238,17 @@
 - (void)encodeWithCoder:aCoder
 {
   [super encodeWithCoder:aCoder];
-
   [aCoder encodeValueOfObjCType: "i" at: &tag];
-#if 0
-  [aCoder encodeObjectReference: target withName: @"Target"];
-#else
   [aCoder encodeConditionalObject:target];
-#endif
-
   [aCoder encodeValueOfObjCType:@encode(SEL) at: &action];
 }
 
 - initWithCoder:aDecoder
 {
   [super initWithCoder:aDecoder];
-
   [aDecoder decodeValueOfObjCType: "i" at: &tag];
-#if 0
-  [aDecoder decodeObjectAt: &target withName: NULL];
-#else
   target = [aDecoder decodeObject];
-#endif
   [aDecoder decodeValueOfObjCType: @encode(SEL) at: &action];
-
   return self;
 }
 

@@ -74,7 +74,6 @@ NSMenuItem.m \
 NSOpenPanel.m \
 NSPageLayout.m \
 NSPanel.m \
-NSPasteboard.m \
 NSPrinter.m \
 NSPrintInfo.m \
 NSPrintOperation.m \
@@ -101,6 +100,7 @@ TrackingRectangle.m \
 PSMatrix.m \
 tiff.m \
 externs.m
+# NSPasteboard.m
 
 HEADER_FILES_DIR = ../Headers
 HEADER_FILES_INSTALL_DIR = /gnustep/gui

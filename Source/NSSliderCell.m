@@ -1,12 +1,10 @@
-/* 
+/*
    NSSliderCell.m
-
-   Cell class for slider control
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
-   Date: 1996
+   Author: Ovidiu Predescu <ovidiu@net-community.com>
+   Date: September 1997
    
    This file is part of the GNUstep GUI Library.
 
@@ -21,309 +19,201 @@
    Library General Public License for more details.
 
    You should have received a copy of the GNU Library General Public
-   License along with this library; see the file COPYING.LIB.
-   If not, write to the Free Software Foundation,
-   59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/ 
+   License along with this library; if not, write to the Free
+   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
 
 #include <Foundation/NSString.h>
+
 #include <AppKit/NSSliderCell.h>
 #include <AppKit/NSControl.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSEvent.h>
-#include <AppKit/NSWindow.h>
+#include <AppKit/NSImage.h>
+#include <AppKit/NSTextFieldCell.h>
 
-//
-// NSSliderCell implementation
-//
+#define ASSIGN(a, b) \
+  [b retain]; \
+  [a release]; \
+  a = b;
+
 @implementation NSSliderCell
 
-//
-// Class methods
-//
-+ (void)initialize
-{
-  if (self == [NSSliderCell class])
-    {
-      // Initial version
-      [self setVersion:1];
-    }
-}
-
-//
-// Instance methods
-//
-//
-// Initialization
-//
 - init
 {
-  [self initTextCell:@""];
-  return self;
-}
+  [self initImageCell:nil];
+  _altIncrementValue = -1;
+  _isVertical = -1;
+  _minValue = 0;
+  _maxValue = 1;
+  _floatValue = 0;
+  [self setBordered:YES];
+  [self setBezeled:YES];
 
-- initImageCell:(NSImage *)anImage
-{
-  return nil;
-}
+  _knobCell = [NSCell new];
 
-- initTextCell:(NSString *)aString
-{
-  [super initTextCell:aString];
-  [self setEnabled:YES];
-  knob_thickness = 6;
-  page_value = 6;
-  [self setDoubleValue:0];
   return self;
 }
 
 - (void)dealloc
 {
+  [_titleCell release];
+  [_knobCell release];
   [super dealloc];
-}
-
-//
-// Determining Component Sizes 
-//
-- (NSSize)cellSizeForBounds:(NSRect)aRect
-{
-  return NSZeroSize;
-}
-
-- (NSRect)knobRectFlipped:(BOOL)flipped
-{
-  return NSZeroRect;
-}
-
-//
-// Setting the NSCell's Value 
-//
-- (void)setDoubleValue:(double)aDouble
-{
-  double value = aDouble;
-
-  if (aDouble < min_value) value = min_value;
-  if (aDouble > max_value) value = max_value;
-  [super setDoubleValue:value];
 }
 
 - (void)setFloatValue:(float)aFloat
 {
-  [self setDoubleValue:(double)aFloat];
-}
-
-- (void)setIntValue:(int)anInt
-{
-  [self setDoubleValue:(double)anInt];
-}
-
-- (void)setStringValue:(NSString *)aString
-{
-}
-
-//
-// Setting Value Limits 
-//
-- (double)maxValue
-{
-  return max_value;
-}
-
-- (double)minValue
-{
-  return min_value;
-}
-
-- (void)setMaxValue:(double)aDouble
-{
-  double val_range;
-
-  // Swap values if new max is less than min
-  if (aDouble < min_value)
-    {
-      max_value = min_value;
-      min_value = aDouble;
-    }
+  if (aFloat < _minValue)
+    _floatValue = _minValue;
+  else if (aFloat > _maxValue)
+    _floatValue = _maxValue;
   else
-    max_value = aDouble;
-
-  val_range = max_value - min_value;
-  if (val_range != 0)
-    {
-      scale_factor = scroll_size/val_range; 
-      if (scale_factor != 0)
-	page_value = knob_thickness * (1/scale_factor);
-    }
+    _floatValue = aFloat;
 }
 
-- (void)setMinValue:(double)aDouble
+- (void)drawBarInside:(NSRect)aRect flipped:(BOOL)flipped
 {
-  double val_range;
+  if ([self image])
+    return;
 
-  // Swap values if new min is greater than max
-  if (aDouble > max_value)
-    {
-      min_value = max_value;
-      max_value = aDouble;
-    }
-  else
-    min_value = aDouble;
-
-  val_range = max_value - min_value;
-  if (val_range != 0)
-    {
-      scale_factor = scroll_size/val_range; 
-      if (scale_factor != 0)
-	page_value = knob_thickness * (1/scale_factor);
-    }
+  /* We should now draw the bar. Since this code depends on backend this method
+     should be overwritten in backend. */
 }
 
-//
-// Modifying Graphic Attributes 
-//
-- (void)setVertical:(BOOL)value
+- (NSRect)knobRectFlipped:(BOOL)flipped
 {
-  is_vertical = value;
+  NSImage* image = [_knobCell image];
+  NSSize size;
+  NSPoint origin;
+  float floatValue;
+
+  if (_isVertical && flipped)
+    _floatValue = _maxValue + _minValue - _floatValue;
+
+  floatValue = (_floatValue - _minValue) / (_maxValue - _minValue);
+
+  size = [image size];
+
+  if (_isVertical) {
+    origin.x = 0;
+    origin.y = (_trackRect.size.height - size.height) * floatValue;
+  }
+  else {
+    origin.x = (_trackRect.size.width - size.width) * floatValue;
+    origin.y = 0;
+  }
+
+  return NSMakeRect (origin.x, origin.y, size.width, size.height);  
 }
 
-- (int)isVertical
+- (void)drawKnob
 {
-  return is_vertical;
+  [self drawKnob:[self knobRectFlipped:[[self controlView] isFlipped]]];
+}
+
+- (void)drawKnob:(NSRect)knobRect
+{
+  [_knobCell drawInteriorWithFrame:knobRect inView:[self controlView]];
+}
+
+- (void)drawInteriorWithFrame:(NSRect)cellFrame inView:(NSView*)controlView
+{
+  BOOL vertical = (cellFrame.size.height > cellFrame.size.width);
+  NSImage* image;
+  NSSize size;
+
+  if (vertical != _isVertical) {
+    if (vertical) {
+      image = [NSImage imageNamed:@"common_SliderVert"];
+      size = [image size];
+      [_knobCell setImage:image];
+      [image setSize:NSMakeSize (cellFrame.size.width, size.height)];
+    }
+    else {
+      image = [NSImage imageNamed:@"common_SliderHoriz"];
+      size = [image size];
+      [_knobCell setImage:image];
+      [image setSize:NSMakeSize (size.width, cellFrame.size.height)];
+    }
+  }
+  _isVertical = vertical;
+
+  _trackRect = cellFrame;
+
+  if (_titleCell)
+    [_titleCell drawInteriorWithFrame:cellFrame inView:controlView];
+
+  [self drawBarInside:cellFrame flipped:[controlView isFlipped]];
+  [self drawKnob];
 }
 
 - (float)knobThickness
 {
-  return knob_thickness;
+  NSImage* image = [_knobCell image];
+  NSSize size = [image size];
+
+  return _isVertical ? size.height : size.width;
 }
 
-- (void)setKnobThickness:(float)aFloat
+- (void)setKnobThickness:(float)thickness
 {
-  int old_scroll = scroll_size;
-  double val_range;
+  NSImage* image = [_knobCell image];
+  NSSize size = [image size];
 
-  // Recalculate the scroll size
-  scroll_size = old_scroll + knob_thickness;
-  knob_thickness = aFloat;
-  scroll_size -= knob_thickness;
+  if (_isVertical)
+    size.height = thickness;
+  else
+    size.width = thickness;
 
-  val_range = max_value - min_value;
-  if (val_range != 0)
-    {
-      scale_factor = scroll_size/val_range; 
-      if (scale_factor != 0)
-	page_value = knob_thickness * (1/scale_factor);
-    }
+  [image setSize:size];
 }
 
-- (void)setTitle:(NSString *)aString
-{}
-
-- (void)setTitleCell:(NSCell *)aCell
-{}
-
-- (void)setTitleColor:(NSColor *)aColor
-{}
-
-- (void)setTitleFont:(NSFont *)fontObject
-{}
-
-- (NSString *)title
+- (void)setAltIncrementValue:(double)increment
 {
-  return nil;
+  _altIncrementValue = increment;
 }
 
-- (id)titleCell
+- (void)setMinValue:(double)aDouble
 {
-  return nil;
+  _minValue = aDouble;
+  if (_floatValue < _minValue)
+    _floatValue = _minValue;
 }
 
-- (NSFont *)titleFont
+- (void)setMaxValue:(double)aDouble
 {
-  return nil;
+  _maxValue = aDouble;
+  if (_floatValue > _maxValue)
+    _floatValue = _maxValue;
 }
 
-- (NSColor *)titleColor
+- (id)titleCell				{ return _titleCell; }
+- (NSColor*)titleColor			{ return [_titleCell textColor]; }
+- (NSFont*)titleFont			{ return [_titleCell font]; }
+- (void)setTitle:(NSString*)title	{ [_titleCell setStringValue:title]; }
+- (NSString*)title			{ return [_titleCell stringValue]; }
+- (void)setTitleCell:(NSCell*)aCell	{ ASSIGN(_titleCell, aCell); }
+- (void)setTitleColor:(NSColor*)color	{ [_titleCell setTextColor:color]; }
+- (void)setTitleFont:(NSFont*)font	{ [_titleCell setFont:font]; }
+- (int)isVertical			{ return _isVertical; }
+- (double)altIncrementValue		{ return _altIncrementValue; }
++ (BOOL)prefersTrackingUntilMouseUp	{ return YES; }
+- (NSRect)trackRect			{ return _trackRect; }
+- (double)minValue			{ return _minValue; }
+- (double)maxValue			{ return _maxValue; }
+- (float)floatValue			{ return _floatValue; }
+
+- (id)initWithCoder:(NSCoder*)decoder
 {
-  return nil;
-}
-
-//
-// Displaying the NSSliderCell 
-//
-- (void)drawBarInside:(NSRect)aRect
-	      flipped:(BOOL)flipped
-{}
-
-- (void)drawKnob
-{}
-
-- (void)drawKnob:(NSRect)knobRect
-{}
-
-//
-// Modifying Behavior 
-//
-- (double)altIncrementValue
-{
-  return page_value;
-}
-
-- (void)setAltIncrementValue:(double)incValue
-{
-  page_value = incValue;
-}
-
-//
-// Tracking the Mouse 
-//
-+ (BOOL)prefersTrackingUntilMouseUp
-{
-  return NO;
-}
-
-- (NSRect)trackRect
-{
-  return NSZeroRect;
-}
-
-//
-// Displaying
-//
-- (void)drawWithFrame:(NSRect)cellFrame
-	       inView:(NSView *)controlView
-{
-}
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder
-{
-  [super encodeWithCoder:aCoder];
-
-  [aCoder encodeValueOfObjCType: "d" at: &max_value];
-  [aCoder encodeValueOfObjCType: "d" at: &min_value];
-  [aCoder encodeValueOfObjCType: "d" at: &scale_factor];
-  [aCoder encodeValueOfObjCType: "i" at: &scroll_size];
-  [aCoder encodeValueOfObjCType: "i" at: &knob_thickness];
-  [aCoder encodeValueOfObjCType: "d" at: &page_value];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_vertical];
-}
-
-- initWithCoder:aDecoder
-{
-  [super initWithCoder:aDecoder];
-
-  [aDecoder decodeValueOfObjCType: "d" at: &max_value];
-  [aDecoder decodeValueOfObjCType: "d" at: &min_value];
-  [aDecoder decodeValueOfObjCType: "d" at: &scale_factor];
-  [aDecoder decodeValueOfObjCType: "i" at: &scroll_size];
-  [aDecoder decodeValueOfObjCType: "i" at: &knob_thickness];
-  [aDecoder decodeValueOfObjCType: "d" at: &page_value];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_vertical];
-
+  self = [super initWithCoder:decoder];
+  [decoder decodeValuesOfObjCTypes:"ffff",
+	      &_minValue, &_maxValue, &_floatValue, &_altIncrementValue];
   return self;
 }
 
-@end
+- (void)encodeWithCoder:(NSCoder*)coder
+{
+  [coder encodeValuesOfObjCTypes:"ffff",
+	      _minValue, _maxValue, _floatValue, _altIncrementValue];
+}
 
+@end
