@@ -2612,8 +2612,13 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   unsigned count;
   NSView *v = nil, *w;
 
-  /* If not within our frame then it can't be a hit */
-  if (![_super_view mouse: aPoint inRect: _frame])
+  /*
+  If not within our frame then it can't be a hit.
+
+  As a special case, always assume that it's a hit if our _super_view is nil,
+  ie. if we're the top-level view in a window.
+  */
+  if (_super_view && ![_super_view mouse: aPoint inRect: _frame])
     return nil;
 
   p = [self convertPoint: aPoint fromView: _super_view];
