@@ -1,3 +1,9 @@
+2003-07-12 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSMatrix.m: -[NSMatrix keyCell] failed to check if the
+	_cells array is initialized before accessing it.  This was causing
+	a core dump when unarchiving.
+
 2003-07-10 03:37  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSStringDrawing.m, Source/NSTextView.m: Adjust "really large"

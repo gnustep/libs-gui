@@ -1454,10 +1454,12 @@ static SEL getSel;
     {
       return nil;
     }
-  else
+  else if(_cells != 0)
     {
       return _cells[_dottedRow][_dottedColumn];
     }
+
+  return nil;
 }
 
 - (void) setKeyCell: (NSCell *)aCell 
