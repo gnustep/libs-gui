@@ -41,6 +41,8 @@
 + (BOOL)loadIMFile:(NSString*)path owner:(id)owner bundle:(NSBundle*)bundle;
 - (void)_makeConnections;
 - (void)_setObjects:objects connections:connections;
+- (NSArray *) objects;
+- (NSArray *) connections;
 @end
 
 #endif /* _GNUstep_H_IMLoading */

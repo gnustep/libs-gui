@@ -1,3 +1,8 @@
+2002-11-13  Adam Fedor  <fedor@gnu.org>
+
+	* Model/IMLoading.m ([GMModel -objects]): New.
+	([GMModel -connections]): Idem.
+
 2002-11-12  Adam Fedor  <fedor@gnu.org>
 
 	* Headers/gnustep/gui/AppKit.h: Add NSDocumentController.

@@ -190,6 +190,16 @@ BOOL _fileOwnerDecoded = NO;
   return self;
 }
 
+- (NSArray *) objects
+{
+  return objects;
+}
+
+- (NSArray *) connections
+{
+  return connections;
+}
+
 @end /* GMModel */
 
 

@@ -834,4 +834,4 @@
     RootObject = {Connections = "ConnectionArray"; Objects = "ObjectArray"; isa = GMModel; }; 
     TopLevelObjects = (RootObject);
     Version = 1;
-};
+}
