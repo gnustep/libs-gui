@@ -24,15 +24,21 @@
 #ifndef __AppKitDefines_INCLUDE
 #define __AppKitDefines_INCLUDE
 
+#ifdef GNUSTEP_WITH_DLL 
+
 #if BUILD_libgnustep_gui_DLL
 #  define APPKIT_EXPORT  __declspec(dllexport)
 #  define APPKIT_DECLARE __declspec(dllexport)
-#elif libgnustep_gui_ISDLL
+#else
 #  define APPKIT_EXPORT  extern __declspec(dllimport)
 #  define APPKIT_DECLARE __declspec(dllimport)
-#else
+#endif
+
+#else /* GNUSTEP_WITH[OUT]_DLL */
+
 #  define APPKIT_EXPORT extern
 #  define APPKIT_DECLARE
+
 #endif
 
 #endif /* __AppKitDefines_INCLUDE */
