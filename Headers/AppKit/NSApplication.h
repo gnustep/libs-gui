@@ -62,9 +62,9 @@
 typedef struct _NSModalSession *NSModalSession;
 
 enum {
-  NSRunStoppedResponse,
-  NSRunAbortedResponse,
-  NSRunContinuesResponse
+  NSRunStoppedResponse = (-1000),
+  NSRunAbortedResponse = (-1001),
+  NSRunContinuesResponse = (-1002)
 };
 
 #ifndef STRICT_OPENSTEP

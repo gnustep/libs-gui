@@ -1,3 +1,21 @@
+2004-02-29  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Header/AppKit/NSApplication.h:
+	Defined values for the constants NSRunStoppedResponse,
+	NSRunAbortedResponse, NSRunContinuesResponse.
+	* Source/NSOpenPanel.m: (-ok:)
+	* Source/NSSavePanel.m: (-cancel:, -ok:) Use stopModalWithCode:
+	with the approriate button code.
+	* Source/NSSavePanel.m: (-runModalForDirectory:file:,
+	-runModalForDirectory:file:relativeToWindow:) Removed the check
+	for the pressed button and return the value of the model loop
+	directly.
+	* Source/NSBox.m: (-drawRect:) Blank out the title rectangle
+	here and not delegate this to the title cell via the background
+	colour. (-initWithFrame:) Use an NSCell instead of an
+	NSTextFieldCell for the title, as setBackgroundColour: is no
+	longer needed.
+
 2004-02-28  Adam Fedor  <fedor@gnu.org>
 
 	* configure.ac: Don't add CPPFLAGS to ADDITIONAL_INCLUDES, add
@@ -58,7 +76,7 @@
 	-viewWillStartLiveResize, -viewDidEndLiveResize,
 	-mouseDownCanMoveWindow, -dragPromisedFilesOfTypes:...event:,
 	-canBecomeKeyView) 
-	Stups for new MacOSX methods.
+	Stubs for new MacOSX methods.
 
 2004-02-17 00:18  Gregory John Casamento <greg_casamento@yahoo.com>
 

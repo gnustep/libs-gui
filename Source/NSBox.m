@@ -65,12 +65,10 @@
 {
   [super initWithFrame: frameRect];
 	
-  _cell = [[NSTextFieldCell alloc] initTextCell: @"Title"];
+  _cell = [[NSCell alloc] initTextCell: @"Title"];
   [_cell setAlignment: NSCenterTextAlignment];
   [_cell setBordered: NO];
   [_cell setEditable: NO];
-  [_cell setDrawsBackground: YES];
-  //[_cell setBackgroundColor: [NSColor controlColor]];
   _offsets.width = 5;
   _offsets.height = 5;
   _border_rect = _bounds;
@@ -381,7 +379,14 @@
   // Draw title
   if (_title_position != NSNoTitle)
     {
-      [_cell setBackgroundColor: color];
+      // If the title is on the border, clip a hole in the later 
+      if ((_border_type != NSNoBorder) &&
+	  ((_title_position == NSAtTop) || 
+	   (_title_position == NSAtBottom)))
+        {
+	  [color set];
+	  NSRectFill(_title_rect);
+	}
       [_cell drawWithFrame: _title_rect inView: self];
     }
 }

@@ -891,12 +891,7 @@ selectCellWithString: (NSString*)title
 - (int) runModalForDirectory: (NSString*)path file: (NSString*)filename
 {
   [self _setupForDirectory: path file: filename];
-  [NSApp runModalForWindow: self];
-
-  if (_OKButtonPressed)
-    return NSOKButton;
-  else 
-    return NSCancelButton;
+  return [NSApp runModalForWindow: self];
 }
 
 - (int) runModalForDirectory: (NSString *)path
@@ -904,13 +899,8 @@ selectCellWithString: (NSString*)title
 	    relativeToWindow: (NSWindow*)window
 {
   [self _setupForDirectory: path file: filename];
-  [NSApp runModalForWindow: self
-	 relativeToWindow: window];
-
-  if (_OKButtonPressed)
-    return NSOKButton;
-  else 
-    return NSCancelButton;
+  return [NSApp runModalForWindow: self
+		relativeToWindow: window];
 }
 
 - (void) beginSheetForDirectory: (NSString *)path
@@ -973,7 +963,7 @@ selectCellWithString: (NSString*)title
 {
   _fullFileName = nil;
   _directory = nil;
-  [NSApp stopModal];
+  [NSApp stopModalWithCode: NSCancelButton];
   [self close];
 }
 
@@ -1083,7 +1073,7 @@ selectCellWithString: (NSString*)title
       return;
 
   _OKButtonPressed = YES;
-  [NSApp stopModal];
+  [NSApp stopModalWithCode: NSOKButton];
   [self close];
 }
 
