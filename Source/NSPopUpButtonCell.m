@@ -202,10 +202,11 @@ static NSImage *_pbc_image[2];
 
 - (void) removeAllItems
 {
-  while ([_menu numberOfItems] > 0)
+  while ([_menu numberOfItems] > 1)
     {
       [_menu removeItemAtIndex: 0];
     }
+  [[_menu itemAtIndex: 0] setTitle: @""];
 }
 
 // Accessing the items
@@ -512,7 +513,8 @@ static NSImage *_pbc_image[2];
     return;
 
   /* Get the NSMenuItemCell of the selected item */
-  aCell = [[_menu menuRepresentation] menuItemCellForItemAtIndex: [self indexOfSelectedItem]];
+  aCell = [[_menu menuRepresentation] 
+           menuItemCellForItemAtIndex: [self indexOfSelectedItem]];
 
   /* Turn off highlighting so the NSPopUpButton looks right */
   [aCell setHighlighted: NO];
