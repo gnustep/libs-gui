@@ -292,23 +292,17 @@ static NSInputManager *currentInputManager = nil;
 
 - (void) loadBindingsFromFile: (NSString *)fullPath
 {
-  NS_DURING
-    {
-      NSDictionary *bindings;
+  NSDictionary *bindings;
       
-      bindings = [NSDictionary dictionaryWithContentsOfFile: fullPath];
-      if (bindings == nil)
-	{
-	  [NSException raise];
-	}
-      
-      [_rootBindingTable loadBindingsFromDictionary: bindings];
-    }
-  NS_HANDLER
+  bindings = [NSDictionary dictionaryWithContentsOfFile: fullPath];
+  if (bindings == nil)
     {
       NSLog (@"Unable to load KeyBindings from file %@", fullPath);
     }
-  NS_ENDHANDLER 
+  else
+    {
+      [_rootBindingTable loadBindingsFromDictionary: bindings];
+    }
 }
 
 - (void) loadBindingsWithName: (NSString *)fileName

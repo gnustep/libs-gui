@@ -1,3 +1,8 @@
+2003-11-07 14:42  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSInputManager.m (-loadBindingsFromFile:): Handle errors
+	directly instead of using (broken) exception code.
+
 2003-11-01 18:19  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSLayoutManager.m (-drawGlyphsForGlyphRange:atPoint:):
