@@ -33,6 +33,7 @@
 #include "AppKit/NSToolbar.h"
 #include "AppKit/NSMenuItem.h"
 #include "AppKit/NSImage.h"
+#include "AppKit/NSButton.h"
 
 @implementation NSToolbarItem
 - (BOOL)allowsDuplicatesInToolbar
@@ -42,7 +43,7 @@
 
 - (NSImage *)image
 {
-  if(_flags.viewRespondsToImage)
+  if(_flags._image)
     {
       return [_view image];
     }
@@ -57,7 +58,7 @@
 
 - (BOOL)isEnabled
 {
-  if(_flags.viewRespondsToIsEnabled)
+  if(_flags._isEnabled)
     {
       return [_view isEnabled];
     }
@@ -96,7 +97,7 @@
 
 - (void)setAction: (SEL)action
 {
-  if(_flags.viewRespondsToSetAction)
+  if(_flags._setAction)
     {
       [_view setAction: action];
     }
@@ -104,7 +105,7 @@
 
 - (void)setEnabled: (BOOL)enabled
 {
-  if(_flags.viewRespondsToSetEnabled)
+  if(_flags._setEnabled)
     {
       [_view setEnabled: enabled];
     }
@@ -112,7 +113,7 @@
 
 - (void)setImage: (NSImage *)image
 {
-  if(_flags.viewRespondsToSetImage)
+  if(_flags._setImage)
     {
       [_view setImage: image];
     }
@@ -145,7 +146,7 @@
 
 - (void)setTag: (int)tag
 {
-  if(_flags.viewRespondsToTag)
+  if(_flags._tag)
     {
       [_view setTag: tag];
     }
@@ -153,7 +154,7 @@
 
 - (void)setTarget: (id)target
  {
-   if(_flags.viewRespondsToTarget)
+   if(_flags._target)
     {
       [_view setTarget: target];
     }
@@ -168,22 +169,22 @@
 {
   ASSIGN(_view, view);
   // gets
-  _flags.viewRespondsToIsEnabled  = [_view respondsToSelector: @selector(isEnabled)];
-  _flags.viewRespondsToTag        = [_view respondsToSelector: @selector(tag)];
-  _flags.viewRespondsToAction     = [_view respondsToSelector: @selector(action)];
-  _flags.viewRespondsToTarget     = [_view respondsToSelector: @selector(target)];
-  _flags.viewRespondsToImage      = [_view respondsToSelector: @selector(image)];
+  _flags._isEnabled  = [_view respondsToSelector: @selector(isEnabled)];
+  _flags._tag        = [_view respondsToSelector: @selector(tag)];
+  _flags._action     = [_view respondsToSelector: @selector(action)];
+  _flags._target     = [_view respondsToSelector: @selector(target)];
+  _flags._image      = [_view respondsToSelector: @selector(image)];
   // sets
-  _flags.viewRespondsToSetEnabled = [_view respondsToSelector: @selector(setEnabled:)];
-  _flags.viewRespondsToSetTag     = [_view respondsToSelector: @selector(setTag:)];
-  _flags.viewRespondsToSetAction  = [_view respondsToSelector: @selector(setAction:)];
-  _flags.viewRespondsToSetTarget  = [_view respondsToSelector: @selector(setTarget:)];
-  _flags.viewRespondsToSetImage   = [_view respondsToSelector: @selector(setImage:)];
+  _flags._setEnabled = [_view respondsToSelector: @selector(setEnabled:)];
+  _flags._setTag     = [_view respondsToSelector: @selector(setTag:)];
+  _flags._setAction  = [_view respondsToSelector: @selector(setAction:)];
+  _flags._setTarget  = [_view respondsToSelector: @selector(setTarget:)];
+  _flags._setImage   = [_view respondsToSelector: @selector(setImage:)];
 }
 
 - (int)tag
 {
-  if(_flags.viewRespondsToTag)
+  if(_flags._tag)
     {
       return [_view tag];
     }
@@ -214,7 +215,7 @@
 // NSValidatedUserInterfaceItem protocol
 - (SEL)action
 {
-  if(_flags.viewRespondsToAction)
+  if(_flags._action)
     {
       return [_view action];
     }
@@ -223,7 +224,7 @@
 
 - (id)target
 {
-  if(_flags.viewRespondsToTarget)
+  if(_flags._target)
     {
       return [_view target];
     }
@@ -233,6 +234,20 @@
 // NSCopying protocol
 - (id)copyWithZone: (NSZone *)zone 
 {
+  NSToolbarItem *new = [[NSToolbarItem allocWithZone: zone] initWithItemIdentifier: _itemIdentifier];
+
+  // copy all items individually...
+  [new setTarget: [self target]];
+  [new setAction: [self action]];
+  [new setView: [self view]];
+  [new setToolTip: [[self toolTip] copyWithZone: zone]];
+  [new setTag: [self tag]];
+  [new setImage: [[self image] copyWithZone: zone]];
+  [new setEnabled: [self isEnabled]];
+  [new setPaletteLabel: [[self paletteLabel] copyWithZone: zone]];
+  [new setMinSize: NSMakeSize(_minSize.width, _minSize.height)];
+  [new setMaxSize: NSMakeSize(_maxSize.width, _maxSize.height)];
+
   return self;
 }
 @end
@@ -253,7 +268,9 @@
 - (id) initWithItemIdentifier: (NSString *)itemIdentifier
 {
   NSImage *image = [NSImage imageNamed: @"GSToolbarSeperatorItem"];
+  NSButton *button = [NSButton initWithFrame: NSMakeRect(0,0,48,48)];
   [super initWithItemIdentifier: itemIdentifier];
+  [self setView: button];
   [self setImage: image];
   return self;
 }
@@ -269,7 +286,9 @@
 - (id) initWithItemIdentifier: (NSString *)itemIdentifier
 {
   NSImage *image = [NSImage imageNamed: @"GSToolbarSpaceItem"];
+  NSButton *button = [NSButton initWithFrame: NSMakeRect(0,0,48,48)];
   [super initWithItemIdentifier: itemIdentifier];
+  [self setView: button];
   [self setImage: image];
   return self;
 }
@@ -285,7 +304,9 @@
 - (id) initWithItemIdentifier: (NSString *)itemIdentifier
 {
   NSImage *image = [NSImage imageNamed: @"GSToolbarFlexibleSpaceItem"];
+  NSButton *button = [NSButton initWithFrame: NSMakeRect(0,0,48,48)];
   [super initWithItemIdentifier: itemIdentifier];
+  [self setView: button];
   [self setImage: image];
   return self;
 }
@@ -301,7 +322,9 @@
 - (id) initWithItemIdentifier: (NSString *)itemIdentifier
 {
   NSImage *image = [NSImage imageNamed: @"GSToolbarShowColorsItem"];
+  NSButton *button = [NSButton initWithFrame: NSMakeRect(0,0,48,48)];
   [super initWithItemIdentifier: itemIdentifier];
+  [self setView: button];
   [self setImage: image];
   return self;
 }
@@ -317,7 +340,9 @@
 - (id) initWithItemIdentifier: (NSString *)itemIdentifier
 {
   NSImage *image = [NSImage imageNamed: @"GSToolbarShowFontsItem"];
+  NSButton *button = [NSButton initWithFrame: NSMakeRect(0,0,48,48)];
   [super initWithItemIdentifier: itemIdentifier];
+  [self setView: button];
   [self setImage: image];
   return self;
 }
@@ -333,7 +358,9 @@
 - (id) initWithItemIdentifier: (NSString *)itemIdentifier
 {
   NSImage *image = [NSImage imageNamed: @"GSToolbarCustomizeToolbarItem"];
+  NSButton *button = [NSButton initWithFrame: NSMakeRect(0,0,48,48)];
   [super initWithItemIdentifier: itemIdentifier];
+  [self setView: button];
   [self setImage: image];
   return self;
 }

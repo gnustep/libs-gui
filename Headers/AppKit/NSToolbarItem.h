@@ -75,23 +75,22 @@ APPKIT_EXPORT NSString *NSToolbarPrintItemIdentifier;
 
   // record the fact that the view responds to these
   // to save time.
-  struct __tbflags
+  struct __flags
   {
     // gets
-    unsigned int viewRespondsToIsEnabled:1;
-    unsigned int viewRespondsToTag:1;
-    unsigned int viewRespondsToAction:1;
-    unsigned int viewRespondsToTarget:1;
-    unsigned int viewRespondsToImage:1;
+    unsigned int _isEnabled:1;
+    unsigned int _tag:1;
+    unsigned int _action:1;
+    unsigned int _target:1;
+    unsigned int _image:1;
     // sets
-    unsigned int viewRespondsToSetEnabled:1;
-    unsigned int viewRespondsToSetTag:1;
-    unsigned int viewRespondsToSetAction:1;
-    unsigned int viewRespondsToSetTarget:1;
-    unsigned int viewRespondsToSetImage:1;
-    // other flags
-    unsigned int isUserRemovable:1;
-    unsigned int RESERVED:21; // to even out the long.
+    unsigned int _setEnabled:1;
+    unsigned int _setTag:1;
+    unsigned int _setAction:1;
+    unsigned int _setTarget:1;
+    unsigned int _setImage:1;
+    // to even out the long.
+    unsigned int RESERVED:22;
   } _flags;
 }
 

@@ -1,3 +1,10 @@
+2003-08-29  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* NSToolbarItem.[hm]: Implemented copyWithZone: for NSCopying,
+	removed an unused flag and shortened the flag names which were
+	somewhat long.  Did some general cleanup.  Implemented standard
+	items.
+	
 2003-08-28  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* GSNibTemplates.m: Removed an extra release which was causing
