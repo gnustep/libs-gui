@@ -44,8 +44,8 @@
 - (id) initWithType: (NSTextTabType)type location: (float)loc
 {
   self = [super init];
-  tabStopType = type;
-  location = loc;
+  _tabStopType = type;
+  _location = loc;
   return self;
 }
 
@@ -57,10 +57,10 @@
     return NSOrderedSame;
   if (anObject == nil || ([anObject isKindOfClass: self->isa] == NO))
     return NSOrderedAscending;
-  loc = ((NSTextTab*)anObject)->location;
-  if (loc < location)
+  loc = ((NSTextTab*)anObject)->_location;
+  if (loc < _location)
     return NSOrderedAscending;
-  else if (loc > location)
+  else if (loc > _location)
     return NSOrderedDescending;
   else
     return NSOrderedSame;
@@ -68,9 +68,9 @@
 
 - (unsigned) hash
 {
-  unsigned val = (unsigned)location;
+  unsigned val = (unsigned)_location;
 
-  val ^= (unsigned)tabStopType;
+  val ^= (unsigned)_tabStopType;
   return val;
 }
 
@@ -80,21 +80,21 @@
     return YES;
   if ([anObject isKindOfClass: self->isa] == NO)
     return NO;
-  else if (((NSTextTab*)anObject)->tabStopType != tabStopType)
+  else if (((NSTextTab*)anObject)->_tabStopType != _tabStopType)
     return NO;
-  else if (((NSTextTab*)anObject)->location != location)
+  else if (((NSTextTab*)anObject)->_location != _location)
     return NO;
   return YES;
 }
 
 - (float) location
 {
-  return location;
+  return _location;
 }
 
 - (NSTextTabType) tabStopType
 {
-  return tabStopType;
+  return _tabStopType;
 }
 @end
 
@@ -115,20 +115,13 @@ static NSParagraphStyle	*defaultStyle = nil;
 	{
 	  NSTextTab	*tab;
 
+	  /* FIXME: (i * 1) ? */
 	  tab = [[NSTextTab alloc] initWithType: NSLeftTabStopType
-				       location: (i*1)*28.0];
-	  [style->tabStops addObject: tab];
+				       location: (i * 1) * 28.0];
+	  [style->_tabStops addObject: tab];
 	  RELEASE(tab);
 	}
-
-      /*
-       * If another thread was doing this at the same time, it may have
-       * assigned it's own defaultStyle - if so we use that and discard ours.
-       */
-      if (defaultStyle != nil)
-	RELEASE(style);
-      else
-	defaultStyle = style;
+      defaultStyle = style;
     }
   return defaultStyle;
 }
@@ -140,25 +133,24 @@ static NSParagraphStyle	*defaultStyle = nil;
       NSLog(@"Argh - attempt to dealloc the default paragraph style!");
       return;
     }
-  RELEASE(tabStops);
+  RELEASE (_tabStops);
   [super dealloc];
 }
 
 - (id) init
 {
   self = [super init];
-  alignment = NSNaturalTextAlignment;
-  firstLineHeadIndent = 0.0;
-  headIndent = 0.0;
-  lineBreakMode = NSLineBreakByWordWrapping;
-  lineSpacing = 0.0;
-  maximumLineHeight = 0.0;
-  minimumLineHeight = 0.0;
-  paragraphSpacing = 0.0;
-  tailIndent = 0.0;
-  // FIXME: I find it surprising that this is mutable, this propably was done to
-  // reuse it for NSMutableParagraphStyle. Still I think it is wrong.
-  tabStops = [[NSMutableArray allocWithZone: [self zone]] initWithCapacity: 12];
+  _alignment = NSNaturalTextAlignment;
+  _firstLineHeadIndent = 0.0;
+  _headIndent = 0.0;
+  _lineBreakMode = NSLineBreakByWordWrapping;
+  _lineSpacing = 0.0;
+  _maximumLineHeight = 0.0;
+  _minimumLineHeight = 0.0;
+  _paragraphSpacing = 0.0;
+  _tailIndent = 0.0;
+  _tabStops = [[NSMutableArray allocWithZone: [self zone]] 
+		initWithCapacity: 12];
   return self;
 }
 
@@ -170,7 +162,7 @@ static NSParagraphStyle	*defaultStyle = nil;
  */
 - (float) lineSpacing
 {
-  return lineSpacing;
+  return _lineSpacing;
 }
 
 /*
@@ -178,12 +170,12 @@ static NSParagraphStyle	*defaultStyle = nil;
  */
 - (float) paragraphSpacing
 {
-  return paragraphSpacing;
+  return _paragraphSpacing;
 }
 
 - (NSTextAlignment) alignment
 {
-  return alignment;
+  return _alignment;
 }
 
 /*
@@ -196,7 +188,7 @@ static NSParagraphStyle	*defaultStyle = nil;
  */
 - (float) headIndent
 {
-  return headIndent;
+  return _headIndent;
 }
 
 /*
@@ -205,7 +197,7 @@ static NSParagraphStyle	*defaultStyle = nil;
  */
 - (float) tailIndent
 {
-  return tailIndent;
+  return _tailIndent;
 }
 
 /*
@@ -213,7 +205,7 @@ static NSParagraphStyle	*defaultStyle = nil;
  */
 - (float) firstLineHeadIndent
 {
-  return firstLineHeadIndent;
+  return _firstLineHeadIndent;
 }
 
 /*
@@ -221,7 +213,7 @@ static NSParagraphStyle	*defaultStyle = nil;
  */
 - (NSArray *) tabStops
 {
-  return AUTORELEASE([tabStops copyWithZone: NSDefaultMallocZone()]);
+  return AUTORELEASE ([_tabStops copyWithZone: NSDefaultMallocZone ()]);
 }
 
 /*
@@ -231,7 +223,7 @@ static NSParagraphStyle	*defaultStyle = nil;
  */
 - (float) minimumLineHeight
 {
-  return minimumLineHeight;
+  return _minimumLineHeight;
 }
 
 /*
@@ -239,24 +231,24 @@ static NSParagraphStyle	*defaultStyle = nil;
  */
 - (float) maximumLineHeight
 {
-  return maximumLineHeight;
+  return _maximumLineHeight;
 } 
 
 - (NSLineBreakMode) lineBreakMode
 {
-  return lineBreakMode;
+  return _lineBreakMode;
 }
 
 - (id) copyWithZone: (NSZone*)aZone
 {
-  if (NSShouldRetainWithZone(self, aZone) == YES)
-    return RETAIN(self);
+  if (NSShouldRetainWithZone (self, aZone) == YES)
+    return RETAIN (self);
   else
     {
       NSParagraphStyle	*c;
 
-      c = (NSParagraphStyle*)NSCopyObject(self, 0, aZone);
-      c->tabStops = [tabStops mutableCopyWithZone: aZone];
+      c = (NSParagraphStyle*)NSCopyObject (self, 0, aZone);
+      c->_tabStops = [_tabStops mutableCopyWithZone: aZone];
       return c;
     }
 }
@@ -274,21 +266,22 @@ static NSParagraphStyle	*defaultStyle = nil;
 {
   unsigned	count;
 
-  [aCoder decodeValueOfObjCType: @encode(NSTextAlignment) at: &alignment];
-  [aCoder decodeValueOfObjCType: @encode(NSLineBreakMode) at: &lineBreakMode];
-  [aCoder decodeValueOfObjCType: @encode(float) at: &firstLineHeadIndent];
-  [aCoder decodeValueOfObjCType: @encode(float) at: &headIndent];
-  [aCoder decodeValueOfObjCType: @encode(float) at: &lineSpacing];
-  [aCoder decodeValueOfObjCType: @encode(float) at: &maximumLineHeight];
-  [aCoder decodeValueOfObjCType: @encode(float) at: &minimumLineHeight];
-  [aCoder decodeValueOfObjCType: @encode(float) at: &paragraphSpacing];
-  [aCoder decodeValueOfObjCType: @encode(float) at: &tailIndent];
+  [aCoder decodeValueOfObjCType: @encode(NSTextAlignment) at: &_alignment];
+  [aCoder decodeValueOfObjCType: @encode(NSLineBreakMode) 
+	  at: &_lineBreakMode];
+  [aCoder decodeValueOfObjCType: @encode(float) at: &_firstLineHeadIndent];
+  [aCoder decodeValueOfObjCType: @encode(float) at: &_headIndent];
+  [aCoder decodeValueOfObjCType: @encode(float) at: &_lineSpacing];
+  [aCoder decodeValueOfObjCType: @encode(float) at: &_maximumLineHeight];
+  [aCoder decodeValueOfObjCType: @encode(float) at: &_minimumLineHeight];
+  [aCoder decodeValueOfObjCType: @encode(float) at: &_paragraphSpacing];
+  [aCoder decodeValueOfObjCType: @encode(float) at: &_tailIndent];
 
   /*
    *	Tab stops don't conform to NSCoding - so we do it the long way.
    */
   [aCoder decodeValueOfObjCType: @encode(unsigned) at: &count];
-  tabStops = [[NSMutableArray alloc] initWithCapacity: count];
+  _tabStops = [[NSMutableArray alloc] initWithCapacity: count];
   if (count > 0)
     {
       float		locations[count];
@@ -307,8 +300,8 @@ static NSParagraphStyle	*defaultStyle = nil;
 
 	  tab = [NSTextTab alloc];
 	  tab = [tab initWithType: types[i] location: locations[i]];
-	  [tabStops addObject: tab];
-	  RELEASE(tab);
+	  [_tabStops addObject: tab];
+	  RELEASE (tab);
 	}
     }
 
@@ -319,20 +312,21 @@ static NSParagraphStyle	*defaultStyle = nil;
 {
   unsigned	count;
 
-  [aCoder encodeValueOfObjCType: @encode(NSTextAlignment) at: &alignment];
-  [aCoder encodeValueOfObjCType: @encode(NSLineBreakMode) at: &lineBreakMode];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &firstLineHeadIndent];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &headIndent];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &lineSpacing];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &maximumLineHeight];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &minimumLineHeight];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &paragraphSpacing];
-  [aCoder encodeValueOfObjCType: @encode(float) at: &tailIndent];
+  [aCoder encodeValueOfObjCType: @encode(NSTextAlignment) at: &_alignment];
+  [aCoder encodeValueOfObjCType: @encode(NSLineBreakMode) 
+	  at: &_lineBreakMode];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &_firstLineHeadIndent];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &_headIndent];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &_lineSpacing];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &_maximumLineHeight];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &_minimumLineHeight];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &_paragraphSpacing];
+  [aCoder encodeValueOfObjCType: @encode(float) at: &_tailIndent];
 
   /*
    *	Tab stops don't conform to NSCoding - so we do it the long way.
    */
-  count = [tabStops count];
+  count = [_tabStops count];
   [aCoder encodeValueOfObjCType: @encode(unsigned) at: &count];
   if (count > 0)
     {
@@ -342,7 +336,7 @@ static NSParagraphStyle	*defaultStyle = nil;
 
       for (i = 0; i < count; i++)
 	{
-	  NSTextTab	*tab = [tabStops objectAtIndex: i];
+	  NSTextTab	*tab = [_tabStops objectAtIndex: i];
 
 	  locations[count] = [tab location]; 
 	  types[count] = [tab tabStopType]; 
@@ -364,67 +358,67 @@ static NSParagraphStyle	*defaultStyle = nil;
 
 + (NSParagraphStyle*) defaultParagraphStyle
 {
-  return AUTORELEASE([[NSParagraphStyle defaultParagraphStyle] mutableCopy]);
+  return AUTORELEASE ([[NSParagraphStyle defaultParagraphStyle] mutableCopy]);
 }
 
 - (void) setLineSpacing: (float)aFloat
 {
-  NSAssert(aFloat >= 0.0, NSInvalidArgumentException);
-  lineSpacing = aFloat;
+  NSAssert (aFloat >= 0.0, NSInvalidArgumentException);
+  _lineSpacing = aFloat;
 }
 
 - (void) setParagraphSpacing: (float)aFloat
 {
-  NSAssert(aFloat >= 0.0, NSInvalidArgumentException);
-  paragraphSpacing = aFloat;
+  NSAssert (aFloat >= 0.0, NSInvalidArgumentException);
+  _paragraphSpacing = aFloat;
 }
 
 - (void) setAlignment: (NSTextAlignment)newAlignment
 {
-  alignment = newAlignment;
+  _alignment = newAlignment;
 }
 
 - (void) setFirstLineHeadIndent: (float)aFloat
 {
-  NSAssert(aFloat >= 0.0, NSInvalidArgumentException);
-  firstLineHeadIndent = aFloat;
+  NSAssert (aFloat >= 0.0, NSInvalidArgumentException);
+  _firstLineHeadIndent = aFloat;
 }
 
 - (void) setHeadIndent: (float)aFloat
 {
-  NSAssert(aFloat >= 0.0, NSInvalidArgumentException);
-  headIndent = aFloat;
+  NSAssert (aFloat >= 0.0, NSInvalidArgumentException);
+  _headIndent = aFloat;
 }
 
 - (void) setTailIndent: (float)aFloat
 {
-  tailIndent = aFloat;
+  _tailIndent = aFloat;
 }
 
 - (void) setLineBreakMode: (NSLineBreakMode)mode
 {
-  lineBreakMode = mode;
+  _lineBreakMode = mode;
 }
 
 - (void) setMinimumLineHeight: (float)aFloat
 {
-  NSAssert(aFloat >= 0.0, NSInvalidArgumentException);
-  minimumLineHeight = aFloat;
+  NSAssert (aFloat >= 0.0, NSInvalidArgumentException);
+  _minimumLineHeight = aFloat;
 }
 
 - (void) setMaximumLineHeight: (float)aFloat
 {
-  NSAssert(aFloat >= 0.0, NSInvalidArgumentException);
-  maximumLineHeight = aFloat;
+  NSAssert (aFloat >= 0.0, NSInvalidArgumentException);
+  _maximumLineHeight = aFloat;
 }
 
 - (void) addTabStop: (NSTextTab*)anObject
 {
-  unsigned	count = [tabStops count];
+  unsigned	count = [_tabStops count];
 
   if (count == 0)
     {
-      [tabStops addObject: anObject];
+      [_tabStops addObject: anObject];
     }
   else
     {
@@ -432,32 +426,32 @@ static NSParagraphStyle	*defaultStyle = nil;
 	{
 	  NSTextTab	*tab;
 
-	  tab = [tabStops objectAtIndex: count];
+	  tab = [_tabStops objectAtIndex: count];
 	  if ([tab compare: anObject] != NSOrderedDescending)
 	    {
-	      [tabStops insertObject: anObject atIndex: count+1];
+	      [_tabStops insertObject: anObject atIndex: count + 1];
 	      return;
 	    }
 	}
-      [tabStops insertObject: anObject atIndex: 0];
+      [_tabStops insertObject: anObject atIndex: 0];
     }
 }
 
 - (void) removeTabStop: (NSTextTab*)anObject
 {
-  unsigned	i = [tabStops indexOfObject: anObject];
+  unsigned	i = [_tabStops indexOfObject: anObject];
 
   if (i != NSNotFound)
-    [tabStops removeObjectAtIndex: i];
+    [_tabStops removeObjectAtIndex: i];
 }
 
 - (void) setTabStops: (NSArray *)array
 {
-  if (array != tabStops)
+  if (array != _tabStops)
     {
-      [tabStops removeAllObjects];
-      [tabStops addObjectsFromArray: array];
-      [tabStops sortUsingSelector: @selector(compare:)];
+      [_tabStops removeAllObjects];
+      [_tabStops addObjectsFromArray: array];
+      [_tabStops sortUsingSelector: @selector(compare:)];
     }
 }
 
@@ -469,19 +463,18 @@ static NSParagraphStyle	*defaultStyle = nil;
     return;
 
   /* Can add tab stops without sorting as we know they are already sorted. */
-  [tabStops removeAllObjects];
-  [tabStops addObjectsFromArray: p->tabStops];
+  [_tabStops removeAllObjects];
+  [_tabStops addObjectsFromArray: p->_tabStops];
 
-  alignment = p->alignment;
-  firstLineHeadIndent = p->firstLineHeadIndent;
-  headIndent = p->headIndent;
-  lineBreakMode = p->lineBreakMode;
-  lineSpacing = p->lineSpacing;
-  maximumLineHeight = p->maximumLineHeight;
-  minimumLineHeight = p->minimumLineHeight;
-  paragraphSpacing = p->paragraphSpacing;
-  tailIndent = p->tailIndent;
+  _alignment = p->_alignment;
+  _firstLineHeadIndent = p->_firstLineHeadIndent;
+  _headIndent = p->_headIndent;
+  _lineBreakMode = p->_lineBreakMode;
+  _lineSpacing = p->_lineSpacing;
+  _maximumLineHeight = p->_maximumLineHeight;
+  _minimumLineHeight = p->_minimumLineHeight;
+  _paragraphSpacing = p->_paragraphSpacing;
+  _tailIndent = p->_tailIndent;
 }
 
 @end
-

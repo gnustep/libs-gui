@@ -49,26 +49,26 @@ typedef enum _NSLineBreakMode {		/* What to do with long lines */
 
 @interface NSTextTab : NSObject <NSCopying>
 {
-  NSTextTabType	tabStopType;
-  float		location;
+  NSTextTabType	_tabStopType;
+  float		_location;
 }
-- (id) initWithType: (NSTextTabType)type location: (float)loc;
+- (id) initWithType: (NSTextTabType)type  location: (float)loc;
 - (float) location;
 - (NSTextTabType) tabStopType;
 @end
 
 @interface NSParagraphStyle : NSObject <NSCopying, NSMutableCopying, NSCoding>
 {
-  float lineSpacing;
-  float paragraphSpacing;
-  float headIndent;
-  float tailIndent;
-  float firstLineHeadIndent;
-  float minimumLineHeight;
-  float maximumLineHeight;
-  NSMutableArray *tabStops;
-  NSTextAlignment alignment;
-  NSLineBreakMode lineBreakMode;
+  float _lineSpacing;
+  float _paragraphSpacing;
+  float _headIndent;
+  float _tailIndent;
+  float _firstLineHeadIndent;
+  float _minimumLineHeight;
+  float _maximumLineHeight;
+  NSMutableArray *_tabStops;
+  NSTextAlignment _alignment;
+  NSLineBreakMode _lineBreakMode;
 }
 
 + (NSParagraphStyle*) defaultParagraphStyle;

@@ -1,3 +1,9 @@
+Tue Dec 12 23:50:04 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/NSParagraphStyle.h: Prefixed all ivars with
+	underscores.
+	* Source/NSParagraphStyle.m: Updated for ivar name change.
+
 Tue Dec 12 21:07:56 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSMenuItemCell.m ([-drawInteriorWithFrame:inView:]),
