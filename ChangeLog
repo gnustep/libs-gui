@@ -1,3 +1,13 @@
+Sat Jun 22 14:53:27 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/NSAffineTransform.h ([-rotateByAngle:]): Method removed.
+	* Source/NSAffineTransform.m Idem.
+
+Sat Jun 22 14:52:19 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSView.m ([-rotateByAngle:]): Use -rotateByDegrees:, not
+	-rotateByAngle:, to rotate the affine transform.
+
 Sat Jun 22 14:46:35 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/gnustep/gui/NSAffineTransform.h ([+matrixFrom:]): Method removed.
