@@ -31,9 +31,14 @@
 #ifndef _GNUstep_H_NSHelpPanel
 #define _GNUstep_H_NSHelpPanel
 
+#include <AppKit/NSApplication.h>
 #include <AppKit/NSPanel.h>
 
 @class NSString;
+
+@interface NSApplication (NSHelpPanel)
+- (void) orderFrontHelpPanel: (id)sender;
+@end
 
 @interface NSHelpPanel : NSPanel <NSCoding>
 {

@@ -25,6 +25,18 @@
 
 #include <gnustep/gui/config.h>
 #include <AppKit/NSHelpPanel.h>
+#include <AppKit/NSHelpManager.h>
+
+
+@implementation NSApplication (NSHelpPanel)
+
+- (void) orderFrontHelpPanel: sender
+{
+  // This is implemented in NSHelpManager.m
+  [self showHelp: sender];
+}
+
+@end
 
 @implementation NSHelpPanel
 
