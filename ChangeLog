@@ -1,3 +1,16 @@
+2005-01-11 23:50  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/AppKit/NSBezierPath.h (NSWindingRule)
+ 	(-containsPoint): Document.
+	(-windingCountAtPoint:): New method.
+	* Source/NSBezierPath.m: Remove some trailing whitespace.
+	(PI): Correct rounding.
+	(contribution, -contributionToContains:): Remove.
+	(winding_line, winding_curve): New functions.
+	(-windingCountAtPoint:): New method.
+	(-containsPoint:): Use -windingCountAtPoint: instead of
+	-contributionToContains:. Don't flatten the path.
+
 2005-01-09  Matt Rice  <ratmice@yahoo.com>
 	
 	* Source/NSTableHeaderCell.m (-drawInteriorWithFrame:inView:): Use

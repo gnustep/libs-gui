@@ -1,7 +1,7 @@
 /* 
    The NSBezierPath class
 
-   Copyright (C) 1999 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2005 Free Software Foundation, Inc.
 
    Author:  Enrico Sersale <enrico@imago.ro>
    Date: Dec 1999
@@ -45,6 +45,17 @@ typedef enum {
   NSBevelLineJoinStyle = 2
 } NSLineJoinStyle;
 
+/** A winding rule defines which points are considered inside and which
+    points are considered outside a path.
+    <deflist>
+      <term>NSNonZeroWindingRule</term>
+      <desc>A point is inside the path iff the winding count at the point
+      is non-zero.</desc>
+      <term>NSEvenOddWindingRule</term>
+      <desc>A point is inside the path iff the winding count at the point
+      is odd.</desc>
+    </deflist>
+    */
 typedef enum {
   NSNonZeroWindingRule,
   NSEvenOddWindingRule
@@ -209,7 +220,15 @@ typedef enum {
 
 //
 // Hit detection  
-// 
+//
+
+/** Returns the winding count, according to the PostScript definition,
+    at the given point.  */
+- (int) windingCountAtPoint: (NSPoint)point;
+
+/** Returns YES iff the path contains, according to the current
+    <ref type="type" id="NSWindingRule">winding rule</ref>, the given point.
+    */
 - (BOOL)containsPoint:(NSPoint)point;
 
 //

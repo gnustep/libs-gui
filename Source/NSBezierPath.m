@@ -2,7 +2,7 @@
 
    <abstract>The NSBezierPath class</abstract>
 
-   Copyright (C) 1999 Free Software Foundation, Inc.
+   Copyright (C) 1999, 2005 Free Software Foundation, Inc.
 
    Author:  Enrico Sersale <enrico@imago.ro>
    Date: Dec 1999
@@ -38,7 +38,7 @@
 #include <math.h>
 
 #ifndef PI
-#define PI 3.1415926535897932384626433
+#define PI 3.1415926535897932384626434
 #endif
 
 // This magic number is 4 *(sqrt(2) -1)/3
@@ -455,12 +455,12 @@ static float default_miter_limit = 10.0;
       // FIXME: I don't see how this should work with color changes
       if(_cacheImage == nil) 
         {
-	  _cacheImage = [[NSImage alloc] initWithSize: bounds.size];		
+	  _cacheImage = [[NSImage alloc] initWithSize: bounds.size];
 	  [_cacheImage lockFocus];
 	  DPStranslate(ctxt, -origin.x, -origin.y);
 	  [ctxt GSSendBezierPath: self];
 	  DPSstroke(ctxt);
-	  [_cacheImage unlockFocus];						
+	  [_cacheImage unlockFocus];
 	}
       [_cacheImage compositeToPoint: origin operation: NSCompositeCopy];
     } 
@@ -483,7 +483,7 @@ static float default_miter_limit = 10.0;
       // FIXME: I don't see how this should work with color changes
       if(_cacheImage == nil) 
         {
-	  _cacheImage = [[NSImage alloc] initWithSize: bounds.size];		
+	  _cacheImage = [[NSImage alloc] initWithSize: bounds.size];
 	  [_cacheImage lockFocus];
 	  DPStranslate(ctxt, -origin.x, -origin.y);
 	  [ctxt GSSendBezierPath: self];
@@ -768,18 +768,18 @@ static float default_miter_limit = 10.0;
 - (NSBezierPathElement) elementAtIndex: (int)index
 		      associatedPoints: (NSPoint *)points
 {
-  [self subclassResponsibility:_cmd];	
+  [self subclassResponsibility:_cmd];
   return 0;
 }
 
 - (NSBezierPathElement) elementAtIndex: (int)index
 {
-  return [self elementAtIndex: index associatedPoints: NULL];	
+  return [self elementAtIndex: index associatedPoints: NULL];
 }
 
 - (void)setAssociatedPoints:(NSPoint *)points atIndex:(int)index
 {
-  [self subclassResponsibility:_cmd];	
+  [self subclassResponsibility:_cmd];
 }
 
 //
@@ -1141,141 +1141,323 @@ static float default_miter_limit = 10.0;
   // TODO
 }
 
-//
-// Hit detection  
-// 
-/*
- * Return the contribution of a path segment from start to end to 
- * the containsPoint method for point.
- */
-static 
-int contribution(NSPoint point, float dir, NSPoint start, NSPoint end, BOOL *hit)
+
+/* We use our own point structure with double elements while recursing to
+   avoid losing accuracy at really fine subdivisions of curves.  */
+typedef struct
 {
-  double t;
-  double len;
-  double a;
+  double x, y;
+} double_point;
 
-  start.x -= point.x;
-  start.y -= point.y;
-  len = sqrt(start.x * start.x +  start.y * start.y);
-  a = atan2(start.y, start.x);
-  start.x = cos(a - dir) * len;
-  start.y = sin(a - dir) * len;
-  end.x -= point.x;
-  end.y -= point.y;
-  len = sqrt(end.x * end.x +  end.y * end.y);
-  a = atan2(end.y, end.x);
-  end.x = cos(a - dir) * len;
-  end.y = sin(a - dir) * len;
+static int winding_line(double_point from, double_point to, double_point p)
+{
+  int y_dir;
+  double k, x;
 
-  if ((start.y == 0) || (end.y == 0))
-    {
-      *hit = YES;
-      return 0;
-    }
-  *hit = NO;
+  if (from.y == to.y)
+    return 0;
 
-  // Both point on the same half plain
-  if ((start.y < 0) == (end.y < 0))
+  if (to.y < from.y)
     {
-      return 0;
+      y_dir = -2;
+      if (p.y < to.y)
+	return 0;
+      if (p.y > from.y)
+	return 0;
     }
-  
-  // Does the line hit the coordinate line on the positive side?
-  t = (0 - start.y) * (end.x - start.x) / (end.y - start.y) + start.x;
+  else
+    {
+      y_dir = 2;
+      if (p.y < from.y)
+	return 0;
+      if (p.y > to.y)
+	return 0;
+    }
 
-  if (t > 0)
+  if (p.y == from.y || p.y == to.y)
+    y_dir /= 2;
+
+  /* The line is intersected.  Check if the intersection is outside the
+     line's bounding box.  */
+  if (to.x < from.x)
     {
-      if (start.y > 0)
-	  return 1;
-      else 
-	  return -1;
+      if (p.x < to.x)
+	return 0;
+      if (p.x > from.x)
+	return y_dir;
     }
-  else 
+  else
     {
-      if (t == 0)
-	*hit = YES;
-      return 0;
+      if (p.x < from.x)
+	return 0;
+      if (p.x > to.x)
+	return y_dir;
     }
+
+  /* Determine the exact x coordinate of the intersection.  */
+  k = (double)(from.x - to.x) / (double)(from.y - to.y);
+  x = to.x + k * (double)(p.y - to.y);
+  if (x < p.x)
+    return y_dir;
+
+  return 0;
 }
 
-- (int) contributionToContains: (NSPoint)point
+static int winding_curve(double_point from, double_point to, double_point c1,
+			 double_point c2, double_point p, int depth)
 {
-  int i;
-  // Full total of contribution
-  int sum = 0;
-  // running total for the current subpath
-  int sub = 0;
-  NSBezierPathElement type;
-  NSPoint p, pts[3];
-  NSPoint first_p, last_p;
-  int count = [self elementCount];
-  BOOL first = YES;
-  float dir = 2 * PI * rand() / RAND_MAX; 
-  BOOL hit;
+  double x0, x1;
+  double y0, y1;
+  double scale;
 
-  for(i = 0; i < count; i++) 
+  /* Get the vertical extents of the convex hull.  */
+  y0 = y1 = from.y;
+  if (to.y < y0)
+    y0 = to.y;
+  else if (to.y > y1)
+    y1 = to.y;
+  if (c1.y < y0)
+    y0 = c1.y;
+  else if (c1.y > y1)
+    y1 = c1.y;
+  if (c2.y < y0)
+    y0 = c2.y;
+  else if (c2.y > y1)
+    y1 = c2.y;
+
+  /* If the point is outside the convex hull, the line can't intersect the
+     curve.  */
+  if (p.y < y0 || p.y > y1)
+    return 0;
+
+  /* Get the horizontal convex hull.  */
+  x0 = x1 = from.x;
+  if (to.x < x0)
+    x0 = to.x;
+  else if (to.x > x1)
+    x1 = to.x;
+  if (c1.x < x0)
+    x0 = c1.x;
+  else if (c1.x > x1)
+    x1 = c1.x;
+  if (c2.x < x0)
+    x0 = c2.x;
+  else if (c2.x > x1)
+    x1 = c2.x;
+
+  /* If the point is left of the convex hull, the line doesn't intersect
+     the curve.  */
+  if (p.x < x0)
+    return 0;
+
+  /* If the point is right of the convex hull, the net winding count is 0,
+     1, or -1, and it depends only on how the end-points are placed in
+     relation to the point.  Essentially, it's equivalent to a line.  */
+  if (p.x > x1)
+    return winding_line(from, to, p);
+
+  /* Limit the recursion, just to be safe.  */
+  if (depth >= 40)
+    return winding_line(from, to, p);
+
+  /* The line possibly intersects the curve in some interesting way.  If the
+     curve is flat enough, we can pretend it's a line.  Otherwise, we
+     subdivide and recurse.
+
+     First, calculate a suitable scale based on the coordinates of the
+     convex hull.  This is used to get a good cutoff for the subdivision.
+     Since it's based on the coordinates in the curve, scaling the curve
+     up or down won't affect relative accuracy.  Note that if the scale is
+     zero, the convex hull, and thus the curve, has no extent.  */
+
+  scale = fabs(x0) + fabs(x1) + fabs(y0) + fabs(y1);
+  if (!scale)
+    return 0;
+
+  scale /= 40000000.0;
+
+  /* Deal with the degenerate case to == from.  */
+  if (to.x == from.x && to.y == from.y)
+    {
+      if (x1 - x0 < scale && y1 - y0 < scale)
+	return winding_line(from, to, p);
+    }
+  else
+    {
+      double dx, dy;
+      double nx, ny;
+      double d0, d1, d2, d3;
+
+      /* Get the direction vector and the normal vector.  */
+      dx = to.x - from.x;
+      dy = to.y - from.y;
+      d0 = sqrt(dx * dx + dy * dy);
+      dx /= d0;
+      dy /= d0;
+      nx = dy;
+      ny = -dx;
+
+      /* Check that the distances along the direction vector are
+	 monotone.  */
+
+      d0 = from.x * dx + from.y * dy;
+      d1 = c1.x * dx + c1.y * dy;
+      d2 = c2.x * dx + c2.y * dy;
+      d3 = to.x * dx + to.y * dy;
+
+      if ((d3 > d2 && d2 > d1 && d1 > d0)
+	  || (d3 < d2 && d2 < d1 && d1 < d0))
+	{
+	  /* Check that the control points are close to the straigt line
+	     between from and to.  */
+	  d0 = to.x * nx + to.y * ny;
+	  d1 = c1.x * nx + c1.y * ny;
+	  d2 = c2.x * nx + c2.y * ny;
+
+	  if (fabs(d0 - d1) < scale && fabs(d0 - d2) < scale)
+	    {
+	      /* It's flat enough.  */
+	      return winding_line(from, to, p);
+	    }
+	}
+    }
+
+  {
+    /* Subdivide.  */
+    double_point m, l1, l2, r1, r2;
+
+    m.x = (from.x + to.x + 3 * (c1.x + c2.x)) / 8;
+    m.y = (from.y + to.y + 3 * (c1.y + c2.y)) / 8;
+
+    l1.x = (from.x + c1.x) / 2;
+    l1.y = (from.y + c1.y) / 2;
+
+    l2.x = (from.x + 2 * c1.x + c2.x) / 4;
+    l2.y = (from.y + 2 * c1.y + c2.y) / 4;
+
+    r2.x = (to.x + c2.x) / 2;
+    r2.y = (to.y + c2.y) / 2;
+
+    r1.x = (to.x + 2 * c2.x + c1.x) / 4;
+    r1.y = (to.y + 2 * c2.y + c1.y) / 4;
+
+    return winding_curve(from, m, l1, l2, p, depth + 1)
+	   + winding_curve(m, to, r1, r2, p, depth + 1);
+  }
+}
+
+- (int) windingCountAtPoint: (NSPoint)point
+{
+  int total;
+  NSBezierPathElement type;
+  int count;
+  BOOL first;
+  NSPoint pts[3];
+  NSPoint first_p, last_p;
+  int i;
+
+  /* We trace a line from (-INF, point.y) to (point) and count the
+     intersections.  Simple, really. ;)
+
+     Lines are trivially checked with a few complications:
+
+     a. Tangent lines, i.e. horizontal lines.  These can be ignored since
+	the winding count is undefined on edges.
+
+     b. Lines whose endpoints are touched by our infinite line.  To get
+	these right, we return half a winding for such intersections.
+	Except for intermediate horizontal lines, which are ignored, the
+	next line will also be intersected in one endpoint.  If it's going
+	in the same direction as the first line, the two half intersections
+	will add up to one real intersection.  If it isn't, the two half
+	intersections with opposite signs will cancel out.  Either way, we
+	get the right results.
+
+	(If this happens for the first element, s/next/previous/ in the
+	explanation.  In practice, we double the winding counts while
+	working and divide by 2 just before returning.)
+
+     Curves are checked first using the convex hull, and if necessary, by
+     subdividing until they are flat enough to check as lines.  We use a
+     very fine subdivision, and thus get good accuracy.  This is possible
+     because only the parts of the curve that might intersect the line are
+     subdivided (due to the convex hull checks).  */
+
+  total = 0;
+  count = [self elementCount];
+
+  /* 'Unroll' the first element to avoid compiler warnings.  It has to be
+     a MoveTo, anyway.  */
+  type = [self elementAtIndex: 0 associatedPoints: pts];
+  if (type != NSMoveToBezierPathElement)
+    {
+      NSWarnLog(@"Invalid path, first element isn't MoveTo.");
+      return 0;
+    }
+  last_p = first_p = pts[0];
+  first = NO;
+
+#define D(a) (double_point){a.x,a.y}
+  for (i = 1; i < count; i++)
     {
       type = [self elementAtIndex: i associatedPoints: pts];
-      
-      switch(type) 
-        {
+      switch(type)
+	{
 	  case NSMoveToBezierPathElement:
-	      // Was the last sub path closed without close?
-	      if (!first && NSEqualPoints(first_p, last_p))
-	        {
-		  sum += sub;
-		}
-	      sub = 0;
-	      first_p = last_p = pts[0];
-	      first = NO;
-	      break;
+	    if (!first)
+	      {
+		total += winding_line(D(last_p), D(first_p), D(point));
+	      }
+	    last_p = first_p = pts[0];
+	    first = NO;
+	    break;
 	  case NSLineToBezierPathElement:
-	      p = pts[0];
-	      if (first)
-	        {
-		  first_p = last_p = p;
-		  first = NO;
-		}
-	      else
-	        {
-		  sub += contribution(point, dir, last_p, p, &hit);
-		  if (hit)
-		    return 0;
-		  last_p = p;
-		}
-	      break;
-	  case NSCurveToBezierPathElement:
-	      // Not possible as flattend!
-	      break;
-	  case NSClosePathBezierPathElement:
-	      sub +=  contribution(point, dir, last_p, first_p, &hit);
-	      if (hit)
+	    if (first)
+	      {
+		NSWarnLog(@"Invalid path, LineTo without MoveTo.");
 		return 0;
-	      sum += sub;
-	      sub = 0;
-	      last_p = first_p;
-	      first = YES;
-	      break;
+	      }
+	    total += winding_line(D(last_p), D(pts[0]), D(point));
+	    last_p = pts[0];
+	    break;
+	  case NSCurveToBezierPathElement:
+	    if (first)
+	      {
+		NSWarnLog(@"Invalid path, CurveTo without MoveTo.");
+		return 0;
+	      }
+	    total += winding_curve(D(last_p), D(pts[2]), D(pts[0]), D(pts[1]), D(point), 0);
+	    last_p = pts[2];
+	    break;
+	  case NSClosePathBezierPathElement:
+	    if (first)
+	      {
+		NSWarnLog(@"Invalid path, ClosePath with no open subpath.");
+		return 0;
+	      }
+	    first = YES;
+	    total += winding_line(D(last_p), D(first_p), D(point));
+	    break;
 	  default:
-	      break;
+	    NSWarnLog(@"Invalid element in path.");
+	    return 0;
 	}
-    }  
-
-  /*
-   * Check if the last sub path was closed.
-   * It wont do any harm, if there was only one point in the subpath, 
-   * as this will result in a subtotal of 0.
-   */
-  if (!first && NSEqualPoints(first_p, last_p))
-    {
-      sum += sub;
     }
-  
-  return sum;
+
+  if (!first)
+    total += winding_line(D(last_p), D(first_p), D(point));
+#undef D
+
+  if (total & 1)
+    {
+      /* This should only happen for points on edges, and the winding
+	 count is undefined at such points.  */
+      NSDebugLLog(@"NSBezierPath", @"winding count total is odd");
+    }
+  return total / 2;
 }
 
-- (BOOL)containsPoint:(NSPoint)point
+- (BOOL) containsPoint: (NSPoint)point
 {
   int sum;
 
@@ -1285,7 +1467,7 @@ int contribution(NSPoint point, float dir, NSPoint start, NSPoint end, BOOL *hit
   if (!NSPointInRect(point, [self bounds]))
     return NO;
 
-  sum = [[self bezierPathByFlatteningPath] contributionToContains: point];
+  sum = [self windingCountAtPoint: point];
   if ([self windingRule] == NSNonZeroWindingRule)
     {
       if (sum == 0)
