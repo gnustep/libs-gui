@@ -1579,8 +1579,8 @@ static NSNotificationCenter *nc;
 		     example, we need to use bold for further
 		     insertions - this is why we take the attributes
 		     from range.location - 1. */
-		  dict = [_textStorage attributesAtIndex: (charRange.location - 1)
-				       effectiveRange: NULL];
+		  dict = [_textStorage attributesAtIndex:
+		    (charRange.location - 1) effectiveRange: NULL];
 		}
 	      else
 		{
@@ -1598,7 +1598,7 @@ static NSNotificationCenter *nc;
     {
       NSRange overlap;
 
-      if (flag == NO)
+      if (stillSelectingFlag == NO)
 	{
 	  // FIXME
 	  // Make the selected range visible
@@ -3701,7 +3701,7 @@ afterString in order over charRange. */
 - (BOOL) rulerView: (NSRulerView*)ruler
 shouldRemoveMarker: (NSRulerMarker*)marker
 {
-  return [(id)[aMarker representedObject] isKindOfClass: [NSTextTab class]];
+  return [(id)[marker representedObject] isKindOfClass: [NSTextTab class]];
 }
 
 /**
