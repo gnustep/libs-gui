@@ -1,5 +1,12 @@
 2000-04-30  Fred Kiefer <FredKiefer@gmx.de>
 
+	* Source/NSGraphicsContext.m
+	Implemented the button, bezel and groove drawing with
+	NSDrawTiledRects. The old implemention is still here. It should be
+	deleted later on.
+	
+2000-04-30  Fred Kiefer <FredKiefer@gmx.de>
+
 	* Headers/gnustep/gui/GSMethodTable.h
 	* Headers/gnustep/gui/NSGraphics.h
 	Added GSWViewIsFlipped and changed GSWSetViewIsFlipped_.
