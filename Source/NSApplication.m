@@ -1581,7 +1581,7 @@ Returns the target object that will respond to aSelector, if any. The
 method first checks if any of the key window's first responders, the
 key window or its delegate responds. Next it checks the main window in
 the same way. Finally it checks the receiver (NSApplication) and it's
-delegate.  
+delegate.
 </p>
 */
 - (id) targetForAction: (SEL)aSelector
@@ -1606,10 +1606,22 @@ delegate.
 	{
 	  return keyWindow;
 	}
+
       resp = [keyWindow delegate];
       if (resp != nil && [resp respondsToSelector: aSelector])
 	{
 	  return resp;
+	}
+
+      if ([NSDocumentController isDocumentBasedApplication])
+	{
+	  resp = [[NSDocumentController sharedDocumentController]
+		   documentForWindow: keyWindow];
+	  
+	  if (resp != nil  && [resp respondsToSelector: aSelector])
+	    {
+	      return resp;
+	    }
 	}
     }
 
