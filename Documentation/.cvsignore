@@ -1,6 +1,11 @@
 gnustep-gui.texi
 version.texi
 version.tmpl.texi
+install.texi
+news.texi
+readme.texi
+announce.texi
+todo.texi
 *.log
 *.dvi
 *.ps
@@ -18,4 +23,9 @@ version.tmpl.texi
 *.vrs
 *.cl
 *.pr
+ANNOUNCE
+BUGS
+INSTALL
+NEWS
+README
 
