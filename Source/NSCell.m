@@ -325,10 +325,11 @@ static NSColor	*shadowCol;
   NSString *string = aString;
 
   /* We warn about nil for compatibiliy with MacOS X, which refuses
-     nil */
+     nil.  */
   if (string == nil)
     {
-      NSWarnMLog (@"attempt to use nil as string value");
+      NSDebugMLLog (@"MacOSXCompatibility", 
+		    @"Attempt to use nil as string value");
     }
 
   _cell.type = NSTextCellType;
