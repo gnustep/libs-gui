@@ -1,3 +1,14 @@
+2003-03-01  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSTextView_actions.m
+	Use method calls instead of some of the direct references to
+	NSLayoutManager ivar. General clean up.
+	* Source/NSApplication.m
+	Added support to print a file in [finishLaunching]. Use safer way
+	to call selector in [beginSheet:...contextInfo:].
+	* Source/GSSlideView.m
+	In [drawRect:]use the frame of the view, not the given rect.
+
 2003-02-26 17:09  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSLayoutManager.m
