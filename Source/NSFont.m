@@ -743,7 +743,10 @@ setNSFont(NSString* key, NSFont* font)
   float fontMatrix[6];
   memcpy(fontMatrix, matrix, sizeof(matrix));
   fontMatrix[3] *= -1;
-  return [NSFont fontWithName: fontName matrix: fontMatrix];
+  return AUTORELEASE([placeHolder initWithName: fontName
+			    matrix: fontMatrix
+			       fix: YES
+			screenFont: screenFont]);
 }
 
 //
