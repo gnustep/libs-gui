@@ -169,7 +169,7 @@ static NSSavePanel *gnustep_gui_save_panel = nil;
 -(id) _initWithoutGModel
 {
   [super initWithContentRect: NSMakeRect (100, 100, 280, 350)
-	 styleMask: 9 backing: 2 defer: YES];
+	 styleMask: NSTitledWindowMask backing: 2 defer: YES];
   [self setMinSize: NSMakeSize (280, 350)];
   [[self contentView] setBounds: NSMakeRect (0, 0, 280, 350)];
   
