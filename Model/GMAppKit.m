@@ -587,16 +587,9 @@ void __dummy_GMAppKit_functionForLinking() {}
     [archiver encodeFloat:[self brightnessComponent] withName:@"brightness"];
   }
   else if ([colorSpaceName isEqual:@"NSNamedColorSpace"]) {
-    // TODO: change it when NSColor in GNUstep will have named color lists
-#if 1
-    NSColor* new
-	= [self colorUsingColorSpaceName:@"NSCalibratedRGBColorSpace"];
-    [new encodeWithModelArchiver:archiver];
-#else
     [unarchiver encodeString:[self catalogNameComponent]
 		withName:@"catalogName"];
     [unarchiver encodeString:[self colorNameComponent] withName:@"colorName"];
-#endif
   }
 }
 
@@ -647,7 +640,9 @@ void __dummy_GMAppKit_functionForLinking() {}
     return [self colorWithCalibratedRed:red green:green blue:blue alpha:alpha];
   }
   else if ([colorSpaceName isEqual:@"NSNamedColorSpace"]) {
-    NSAssert (0, @"Named color spaces not supported yet!");
+    NSString *catalog = [unarchiver decodeObjecWithName: @"catalogName"];
+    NSString *colornm = [unarchiver decodeObjecWithName: @"colorName"];
+    return [self colorWithCatalogName: catalog colorName: colornm];
   }
   return nil;
 }
@@ -941,6 +936,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
+  [archiver encodeRect:     [self frame]     withName: @"frame"];
   [archiver encodeBOOL:     [self pullsDown] withName: @"pullsDown"];
   [archiver encodeBOOL:     [self isEnabled] withName: @"isEnabled"];
   [archiver encodeInt:      [self tag]       withName: @"tag"];
@@ -960,10 +956,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 #endif
 
   //[archiver encodeString:[self titleOfSelectedItem] withName:@"selectedItem"];
-  //[archiver encodeString:[self title] withName:@"selectedItem"];
-  //[super encodeWithModelArchiver:archiver];
-
-  [archiver encodeRect: [self frame] withName:@"frame"];
+  [archiver encodeString:[self title] withName:@"selectedItem"];
 }
 
 + (id)createObjectForModelUnarchiver:(GMUnarchiver*)unarchiver
