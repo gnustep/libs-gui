@@ -274,6 +274,7 @@
   NSPoint  location;
   unsigned eventMask = NSLeftMouseUpMask | NSPeriodicMask;
   BOOL     done = NO;
+  BOOL	   moved = NO;
   NSDate   *theDistantFuture = [NSDate distantFuture];
   NSPoint  startWindowOrigin;
   NSPoint  endWindowOrigin;
@@ -309,6 +310,7 @@
             {
               NSPoint origin = [_window frame].origin;
 
+	      moved = YES;
               origin.x += (location.x - lastLocation.x);
               origin.y += (location.y - lastLocation.y);
 	      if (_ownedByMenu)
@@ -339,6 +341,13 @@
     }
 
   [NSEvent stopPeriodicEvents];
+
+  if (moved == YES)
+    {
+      // Let everything know the window has moved.
+      [[NSNotificationCenter defaultCenter]
+	postNotificationName: NSWindowDidMoveNotification object: _window];
+    }
 }
 
 // We do not need app menu over menu

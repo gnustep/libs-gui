@@ -1,3 +1,9 @@
+2005-02-14  Richard Frith-Macdoanld <rfm@gnu.org>
+
+	* Source/GSTitleView.m (-mouseDown:): Post an
+	NSWindowDidMoveNotification at end of method if window was dragged.
+	Fixes bug #11906
+
 2005-02-12  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/GSDisplayServer.h (-setalpha::): Declare.
