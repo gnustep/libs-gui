@@ -1,3 +1,17 @@
+2004-06-22  Adrian Robert <arobert@cogsci.ucsd.edu>
+
+	* Documentation/manual: Beginnings of programming manual for GUI like
+	the one for Base but just focusing on the library itself (no
+	Objective-C introduction).  Structure copied from base manual.
+	* Documentation/gnustep-gui.texi: Moved to manual/Introduction.texi.
+	* Documentation/Gui/Introduction.gsdoc: Moved to
+	manual/BasicClasses.texi.
+	* Documentation/Gui/Gui.gsdoc: Updated to reflect above moves.
+	* Documentation/General/OpenStepCompliance.gsdoc: Fix typos.
+	* Documentation/GNUmakefile: Update to build manual and also be a
+	little more parallel to base Documentation makefile.
+	* Documentation/GNUmakefile.postamble: Remove stray backslash.
+
 2004-06-21  Fred Kiefer <FredKiefer@gmx.de>
 
         * Source/NSTableView.m:
