@@ -2218,9 +2218,9 @@ forStartOfGlyphRange: (NSRange)glyphRange
 	  if (NSMinY(lf->used_rect) < y0)
 	    y0 = NSMinY(lf->used_rect);
 	  if (NSMaxX(lf->used_rect) > x1)
-	    x1 = NSMinX(lf->used_rect);
+	    x1 = NSMaxX(lf->used_rect);
 	  if (NSMaxY(lf->used_rect) > y1)
-	    y1 = NSMinY(lf->used_rect);
+	    y1 = NSMaxY(lf->used_rect);
 	}
       used = NSMakeRect(x0, y0, x1 - x0, y1 - y0);
     }
