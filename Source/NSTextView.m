@@ -707,7 +707,7 @@ to this method from the text container or layout manager.
       /* There is no text network, and the layout manager's attributes
       might not be set up. We reset them to standard values. */
 
-      DESTROY(_layoutManager->typingAttributes);
+      DESTROY(_layoutManager->_typingAttributes);
 
       _layoutManager->_typingAttributes = [[isa defaultTypingAttributes] mutableCopy];
       _layoutManager->_original_selected_range.location = NSNotFound;
