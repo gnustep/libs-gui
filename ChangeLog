@@ -1,3 +1,12 @@
+Wed Jun 13 02:36:44 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSBitmapImageRep.m ([+imageRepsWithData:]): Replaced
+	[self class] with self.  ([+imageUnfilteredFileTypes]): add
+	extensions directly rather than using a temporary array.
+	([+imageRepsWithFile:]): As a temporary bug fix, evaluate
+	extension manually: if it is `tiff' or `tif', use libtiff;
+	otherwise, try backend code.
+	
 2001-06-11  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
 
 	* Source/NSSavePanel.m ([NSSavePanel -_initWithoutGModel]): do not set
