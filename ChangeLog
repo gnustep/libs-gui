@@ -1,8 +1,8 @@
-Thu Aug 30 18:23:08 2001  Nicola Pero  <nicola@brainstorm.co.uk>
+2001-08-30  Adam Fedor  <fedor@gnu.org>
 
-	* Source/NSBitmapImageRep.m ([+canInitWithData:]): Do not call
-	NSTiffClose if the image is NULL (Suggested by Ludovic Marcotte
-	<ludovic@Sophos.ca>).
+	* Source/NSImage.m (-initWithCoder:): Fix encode typo.
+	* Source/tiff.m (NSTiffWrite): Don't set JPEG quality if not
+	doing JPEG compression
 
 Thu Aug 30 10:30:22 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 

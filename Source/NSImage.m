@@ -1031,23 +1031,23 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 
       [coder decodeValueOfObjCType: @encode(NSSize) at: &_size];
       [coder decodeValueOfObjCType: @encode(id) at: &_color];
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       _flags.scalable = flag;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       _flags.dataRetained = flag;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       _flags.flipDraw = flag;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       _flags.sizeWasExplicitlySet = flag;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       _flags.useEPSOnResolutionMismatch = flag;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       _flags.colorMatchPreferred = flag;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       _flags.multipleResolutionMatching = flag;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       _flags.cacheSeparately = flag;
-      [coder encodeValueOfObjCType: @encode(BOOL) at: &flag];
+      [coder decodeValueOfObjCType: @encode(BOOL) at: &flag];
       _flags.unboundedCacheDepth = flag;
 
       /*

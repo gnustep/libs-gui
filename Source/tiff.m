@@ -451,7 +451,8 @@ NSTiffWrite(TIFF* image, NSTiffInfo* info, char* data)
   TIFFSetField(image, TIFFTAG_IMAGEWIDTH, info->width);
   TIFFSetField(image, TIFFTAG_IMAGELENGTH, info->height);
   TIFFSetField(image, TIFFTAG_COMPRESSION, info->compression);
-  TIFFSetField(image, TIFFTAG_JPEGQUALITY, info->quality);
+  if (info->compression = COMPRESSION_JPEG)
+    TIFFSetField(image, TIFFTAG_JPEGQUALITY, info->quality);
   TIFFSetField(image, TIFFTAG_SUBFILETYPE, info->subfileType);
   TIFFSetField(image, TIFFTAG_BITSPERSAMPLE, info->bitsPerSample);
   TIFFSetField(image, TIFFTAG_SAMPLESPERPIXEL, info->samplesPerPixel);
