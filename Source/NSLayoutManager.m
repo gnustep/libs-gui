@@ -2042,6 +2042,16 @@ aLine->lineFragmentRect.size.height);
   return _delegate;
 }
 
+- (unsigned) _charIndexForInsertionPointMovingFromY: (float)position
+					      bestX: (float)wanted
+						 up: (BOOL)upFlag
+				      textContainer: (NSTextContainer *)tc
+{
+  [self subclassResponsibility: _cmd];
+  return 0;
+}
+
+
 @end /* NSLayoutManager */
 
 /* The methods laid out here are not correct, however the code they
