@@ -1,3 +1,9 @@
+Mon Oct 22 01:10:24 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSWindow.m ([NSWindow -dealloc]): Remove all subviews
+	from this window before releasing them.  This fixes crashes when
+	some views were deallocated after the window.
+
 2001-10-21  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSScrollView.m
