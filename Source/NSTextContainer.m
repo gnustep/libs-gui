@@ -112,7 +112,8 @@ use bounds rectangle instead of frame? */
       [nc removeObserver: self
 	  name: NSViewFrameDidChangeNotification
 	  object: _textView];
-      
+
+      [_textView setTextContainer: nil];
       RELEASE(_textView);
     }
   [super dealloc];
