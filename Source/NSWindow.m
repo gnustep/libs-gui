@@ -558,20 +558,26 @@ static NSMapTable* windowmaps = NULL;
  */
 - (void) becomeKeyWindow
 {
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  if (_f.is_key == NO)
+    {
+      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
-  _f.is_key = YES;
-  DPSsetinputfocus(GSCurrentContext(), [self windowNumber]);
-  [self resetCursorRects];
-  [nc postNotificationName: NSWindowDidBecomeKeyNotification object: self];
+      _f.is_key = YES;
+      DPSsetinputfocus(GSCurrentContext(), [self windowNumber]);
+      [self resetCursorRects];
+      [nc postNotificationName: NSWindowDidBecomeKeyNotification object: self];
+    }
 }
 
 - (void) becomeMainWindow
 {
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  if (_f.is_main == NO)
+    {
+      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
-  _f.is_main = YES;
-  [nc postNotificationName: NSWindowDidBecomeMainNotification object: self];
+      _f.is_main = YES;
+      [nc postNotificationName: NSWindowDidBecomeMainNotification object: self];
+    }
 }
 
 - (BOOL) canBecomeKeyWindow
@@ -672,19 +678,25 @@ static NSMapTable* windowmaps = NULL;
 
 - (void) resignKeyWindow
 {
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  if (_f.is_key == YES)
+    {
+      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
-  _f.is_key = NO;
-  [self discardCursorRects];
-  [nc postNotificationName: NSWindowDidResignKeyNotification object: self];
+      _f.is_key = NO;
+      [self discardCursorRects];
+      [nc postNotificationName: NSWindowDidResignKeyNotification object: self];
+    }
 }
 
 - (void) resignMainWindow
 {
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  if (_f.is_main == YES)
+    {
+      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
-  _f.is_main = NO;
-  [nc postNotificationName: NSWindowDidResignMainNotification object: self];
+      _f.is_main = NO;
+      [nc postNotificationName: NSWindowDidResignMainNotification object: self];
+    }
 }
 
 - (void) setHidesOnDeactivate: (BOOL)flag

@@ -734,7 +734,6 @@ void __dummy_GMAppKit_functionForLinking() {}
   [archiver encodeInt:[self tag] withName:@"tag"];
   [archiver encodeBOOL:[self isEnabled] withName:@"isEnabled"];
   [archiver encodeBOOL:[self changesState] withName:@"changesState"];
-  [archiver encodeConditionalObject:[self menu] withName:@"menu"];
   [archiver encodeObject:[self submenu] withName:@"submenu"];
   [archiver encodeConditionalObject:[self representedObject]
 	                   withName:@"representedObject"];
@@ -755,7 +754,7 @@ void __dummy_GMAppKit_functionForLinking() {}
   [self setTag:[unarchiver decodeIntWithName:@"tag"]];
   [self setEnabled:[unarchiver decodeBOOLWithName:@"isEnabled"]];
   [self setChangesState:[unarchiver decodeBOOLWithName:@"changesState"]];
-  [self setMenu:[unarchiver decodeObjectWithName:@"menu"]];
+  [self setMenu:nil];
   [self setSubmenu:[unarchiver decodeObjectWithName:@"submenu"]];
   [self setRepresentedObject:[unarchiver
 			       decodeObjectWithName:@"representedObject"]];

@@ -1,7 +1,17 @@
-Mon Nov 22  7:33:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+1999-11-21  Tim McIntosh  <rockford@novia.net>
+
+	* Model/GMAppKit.m ([NSMenuItem -initWithModelUnarchiver:]),
+	([NSMenuItem -encodeWithModelArchiver:]): "menu" should not be a
+	persistent field.  [NSMenu addItem:] will reject menu items for which
+	[NSMenuItem menu] returns non-nil.
+
+Mon Nov 22 14:51:33:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSWindow.m: Tidied activation/deactivation code.
 	* Source/NSApplication.m: Fixed Windows menu for new menu API.
+	Changed to use arrays to store deactivated/hidden windows and to
+	keep track of key window when hidden.  Watch window notifications
+	to keep track of which window is key/main.
 
 Sat Nov 20  6:56:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 

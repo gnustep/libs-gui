@@ -62,8 +62,8 @@ extern NSString	*NSEventTrackingRunLoopMode;
 {
   NSEvent		*current_event;
   NSModalSession	session;
-  NSWindow		*key_window;
-  NSWindow		*main_window;
+  NSWindow		*_key_window;
+  NSWindow		*_main_window;
   id			delegate;
   id			listener;
   NSMenu		*main_menu;

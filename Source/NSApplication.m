@@ -152,11 +152,11 @@ static NSCell* tileCell = nil;
 	kw = [self window];
 
       [NSApp unhide: self];
-      if (kw)
+      if ([NSApp keyWindow] == nil && kw != nil)
 	{
-	  NSGraphicsContext *context = GSCurrentContext();
+	  NSGraphicsContext	*context = GSCurrentContext();
+
           [kw orderFrontRegardless];
-	  [context flush];
 	  DPSsetinputfocus(context, [kw windowNumber]);
 	}
     }
@@ -290,6 +290,92 @@ static NSCell* tileCell = nil;
   return self;
 }
 
+- (void) _windowDidBecomeKey: (NSNotification*) notification
+{
+  id	obj = [notification object];
+
+  if (_key_window == nil && [obj isKindOfClass: [NSWindow class]])
+    {
+      _key_window = obj;
+    }
+  else
+    {
+      NSLog(@"Bogus attempt to set key window");
+    }
+}
+
+- (void) _windowDidBecomeMain: (NSNotification*) notification
+{
+  id	obj = [notification object];
+
+  if (_main_window == nil && [obj isKindOfClass: [NSWindow class]])
+    {
+      _main_window = obj;
+    }
+  else
+    {
+      NSLog(@"Bogus attempt to set main window");
+    }
+}
+
+- (void) _windowDidResignKey: (NSNotification*) notification
+{
+  id	obj = [notification object];
+
+  if (_key_window == obj)
+    {
+      _key_window = nil;
+    }
+  else
+    {
+      NSLog(@"Bogus attempt to resign key window");
+    }
+}
+
+- (void) _windowDidResignMain: (NSNotification*) notification
+{
+  id	obj = [notification object];
+
+  if (_main_window == obj)
+    {
+      _main_window = nil;
+    }
+  else
+    {
+      NSLog(@"Bogus attempt to resign key window");
+    }
+}
+
+
+- (void) _windowWillClose: (NSNotification*) notification
+{
+  int count, wincount, realcount;
+  id win =  [self windows];
+  wincount = [win count];
+  realcount = 0;
+  for(count = 0; count < wincount; count++)
+    {
+      if([[win objectAtIndex: count] canBecomeMainWindow])
+	{
+	  realcount ++;
+	}
+    }
+  
+  /* If there's only one window left, and that's the one being closed, 
+     then we ask the delegate if the app is to be terminated. */
+  if ((realcount <= 1) && [[notification object] isMainWindow])
+    {
+      NSLog(@"asking delegate whether to terminate app...");
+      if ([delegate respondsToSelector: @selector(applicationShouldTerminateAfterLastWindowClosed:)])
+	{
+	  if([delegate applicationShouldTerminateAfterLastWindowClosed: self])
+	    {
+	      [self terminate: self];
+	    }
+	}
+    }
+}
+
 - (id) init
 {
   if (NSApp != nil && NSApp != self)
@@ -366,11 +452,17 @@ static NSCell* tileCell = nil;
 
   [self activateIgnoringOtherApps: YES];
 
-#ifndef STRICT_OPENSTEP
-  /* Register self as observer to every window closing. */
+  /* Register self as observer to window events. */
   [nc addObserver: self selector: @selector(_windowWillClose:)
       name: NSWindowWillCloseNotification object: nil];
-#endif
+  [nc addObserver: self selector: @selector(_windowDidBecomeKey:)
+      name: NSWindowDidBecomeKeyNotification object: nil];
+  [nc addObserver: self selector: @selector(_windowDidBecomeMain:)
+      name: NSWindowDidBecomeMainNotification object: nil];
+  [nc addObserver: self selector: @selector(_windowDidResignKey:)
+      name: NSWindowDidResignKeyNotification object: nil];
+  [nc addObserver: self selector: @selector(_windowDidResignMain:)
+      name: NSWindowDidResignMainNotification object: nil];
 
   /* finish the launching post notification that launching has finished */
   [nc postNotificationName: NSApplicationDidFinishLaunchingNotification
@@ -417,6 +509,8 @@ static NSCell* tileCell = nil;
 
   /* Let ourselves know we are within dealloc */
   gnustep_gui_app_is_in_dealloc = YES;
+
+  [[NSNotificationCenter defaultCenter] removeObserver: self];
 
   RELEASE(_hidden);
   RELEASE(_inactive);
@@ -650,8 +744,17 @@ static NSCell* tileCell = nil;
   if ([theWindow isKindOfClass: [NSPanel class]])
     [theWindow center];
 
-  if ([self isActive])
-    [theWindow makeKeyWindow];
+  if ([self isActive] == YES)
+    {
+      if ([theWindow canBecomeKeyWindow] == YES)
+	{
+	  [theWindow makeKeyWindow];
+	}
+      else if ([theWindow canBecomeMainWindow] == YES)
+	{
+	  [theWindow makeMainWindow];
+	}
+    }
   [theWindow orderFrontRegardless];
 
   theSession = NULL;
@@ -699,7 +802,14 @@ static NSCell* tileCell = nil;
 		format: @"runModalSession: with wrong session"];
 
   pool = [NSAutoreleasePool new];
-  [theSession->window makeKeyAndOrderFront: self];
+  if ([theSession->window canBecomeKeyWindow] == YES)
+    {
+      [theSession->window makeKeyWindow];
+    }
+  else if ([theSession->window canBecomeMainWindow] == YES)
+    {
+      [theSession->window makeMainWindow];
+    }
 
   ctxt = GSCurrentContext();
 
@@ -1142,7 +1252,10 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
       [_hidden removeAllObjects];
       if ([[self windows] containsObject: _hidden_key])
 	{
+	  NSGraphicsContext	*context = GSCurrentContext();
+
 	  [_hidden_key makeKeyAndOrderFront: self];
+	  DPSsetinputfocus(context, [_hidden_key windowNumber]);
 	  _hidden_key = nil;
 	}
 
@@ -1181,37 +1294,12 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
  */
 - (NSWindow*) keyWindow
 {
-  NSArray	*window_list = [self windows];
-  unsigned	c = [window_list count];
-  unsigned	i;
-
-  for (i = 0; i < c; ++i)
-    {
-      NSWindow	*w = [window_list objectAtIndex: i];
-      if ([w isKeyWindow])
-	{
-	  return w;
-	}
-    }
-  return nil;
+  return _key_window;
 }
 
 - (NSWindow*) mainWindow
 {
-  NSArray	*window_list = [self windows];
-  unsigned	c = [window_list count];
-  unsigned	i;
-
-  for (i = 0; i < c; ++i)
-    {
-      NSWindow	*w = [window_list objectAtIndex: i];
-
-      if ([w isMainWindow])
-	{
-	  return w;
-	}
-    }
-  return nil;
+  return _main_window;
 }
 
 - (NSWindow*) makeWindowsPerform: (SEL)aSelector inOrder: (BOOL)flag
@@ -1807,37 +1895,6 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
   [self setWindowsMenu: obj];
   return self;
 }
-
-#ifndef STRICT_OPENSTEP
-- (void) _windowWillClose: (NSNotification*) notification
-{
-  int count, wincount, realcount;
-  id win =  [self windows];
-  wincount = [win count];
-  realcount = 0;
-  for(count = 0; count < wincount; count++)
-    {
-      if([[win objectAtIndex: count] canBecomeMainWindow])
-	{
-	  realcount ++;
-	}
-    }
-  
-  /* If there's only one window left, and that's the one being closed, 
-     then we ask the delegate if the app is to be terminated. */
-  if ((realcount <= 1) && [[notification object] isMainWindow])
-    {
-      NSLog(@"asking delegate whether to terminate app...");
-      if ([delegate respondsToSelector: @selector(applicationShouldTerminateAfterLastWindowClosed:)])
-	{
-	  if([delegate applicationShouldTerminateAfterLastWindowClosed: self])
-	    {
-	      [self terminate: self];
-	    }
-	}
-    }
-}
-#endif
 
 @end /* NSApplication */
 
