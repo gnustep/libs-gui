@@ -210,7 +210,7 @@ static NSNotificationCenter *nc;
 
 /* Designated initializer */
 - (id) initWithFrame: (NSRect)frameRect
-       textContainer: (NSTextContainer*)aTextContainer
+       textContainer: (NSTextContainer*)container
 {
   [super initWithFrame: frameRect];
 
@@ -235,7 +235,7 @@ static NSNotificationCenter *nc;
 
   [self setBackgroundColor: [NSColor textBackgroundColor]];
 
-  [aTextContainer setTextView: self];
+  [container setTextView: self];
 
   [self setEditable: YES];
 
@@ -479,7 +479,7 @@ static NSNotificationCenter *nc;
   return [_textStorage RTFFromRange: aRange  documentAttributes: nil];
 }
 
-- (NSString *) string
+- (NSString*) string
 {
   return [_textStorage string];
 }
@@ -500,9 +500,9 @@ static NSNotificationCenter *nc;
   return _selected_range;
 }
 
-- (void) setSelectedRange: (NSRange)range
+- (void) setSelectedRange: (NSRange)charRange
 {
-  [self setSelectedRange: range  affinity: [self selectionAffinity]
+  [self setSelectedRange: charRange  affinity: [self selectionAffinity]
 	stillSelecting: NO];
 }
 
@@ -1116,22 +1116,22 @@ static NSNotificationCenter *nc;
 }
 
 /* This should only be called by [NSTextContainer -setTextView:] */
-- (void) setTextContainer: (NSTextContainer*)aTextContainer
+- (void) setTextContainer: (NSTextContainer*)container
 {
-  _textContainer = aTextContainer;
-  _layoutManager = [aTextContainer layoutManager];
+  _textContainer = container;
+  _layoutManager = [container layoutManager];
   _textStorage = [_layoutManager textStorage];
 
   [self _updateMultipleTextViews];
 }
 
-- (void) replaceTextContainer: (NSTextContainer*)aTextContainer
+- (void) replaceTextContainer: (NSTextContainer*)newContainer
 {
   /* FIXME/TODO: Tell the layout manager the text container is changed
      keeping all the rest intact */
 
   /* Do not retain: text container is owning us. */
-  _textContainer = aTextContainer;
+  _textContainer = newContainer;
 
   [self _updateMultipleTextViews];
 }
@@ -1250,12 +1250,12 @@ static NSNotificationCenter *nc;
   return _tvf.allows_undo;
 }
 
-- (void) setNeedsDisplayInRect: (NSRect)aRect
+- (void) setNeedsDisplayInRect: (NSRect)rect
 	 avoidAdditionalLayout: (BOOL)flag
 {
   /* FIXME: This is here until the layout manager is working */
   /* This is very important */
-  [super setNeedsDisplayInRect: aRect];
+  [super setNeedsDisplayInRect: rect];
 }
 
 /* We override NSView's setNeedsDisplayInRect: */
@@ -1498,9 +1498,9 @@ static NSNotificationCenter *nc;
 #undef NSTEXTVIEW_SYNC
 
 /* NB: Only NSSelectionAffinityDownstream works */
-- (void) setSelectedRange: (NSRange)range
+- (void) setSelectedRange: (NSRange)charRange
 		 affinity: (NSSelectionAffinity)affinity
-	   stillSelecting: (BOOL)flag
+	   stillSelecting: (BOOL)stillSelectingFlag
 {
   /* The `official' (the last one the delegate approved of) selected
      range before this one. */
@@ -1510,7 +1510,7 @@ static NSNotificationCenter *nc;
      different from the last official one: */
   NSRange oldDisplayedRange = _selected_range;
 
-  if (flag == YES)
+  if (stillSelectingFlag == YES)
     {
       /* Store the original range before the interactive selection
          process begin.  That's because we will need to ask the delegate 
@@ -1538,24 +1538,24 @@ static NSNotificationCenter *nc;
       /* Ask delegate to modify the range */
       if (_tvf.delegate_responds_to_will_change_sel)
 	{
-	  range = [_delegate textView: _notifObject
+	  charRange = [_delegate textView: _notifObject
 			     willChangeSelectionFromCharacterRange: oldRange
-			     toCharacterRange: range];
+			     toCharacterRange: charRange];
 	}
     }
 
   /* Set the new selected range */
-  _selected_range = range;
+  _selected_range = charRange;
 
   /* FIXME: when and if to restart timer <and where to stop it before> */
-  [self updateInsertionPointStateAndRestartTimer: !flag];
+  [self updateInsertionPointStateAndRestartTimer: !stillSelectingFlag];
 
-  if (flag == NO)
+  if (stillSelectingFlag == NO)
     {
       [self updateFontPanel];
       
       /* Insertion Point */
-      if (range.length)
+      if (charRange.length)
 	{
 	  // Store the selected text in the selection pasteboard
 	  [self copySelection];
@@ -1573,20 +1573,20 @@ static NSNotificationCenter *nc;
 	    {
 	      NSDictionary *dict;
 	    
-	      if (range.location > 0)
+	      if (charRange.location > 0)
 		{
 		  /* If the insertion point is after a bold word, for
 		     example, we need to use bold for further
 		     insertions - this is why we take the attributes
 		     from range.location - 1. */
-		  dict = [_textStorage attributesAtIndex: (range.location - 1)
+		  dict = [_textStorage attributesAtIndex: (charRange.location - 1)
 				       effectiveRange: NULL];
 		}
 	      else
 		{
 		  /* Unless we are at the beginning of text - we use the 
 		     first valid attributes then */
-		  dict = [_textStorage attributesAtIndex: range.location
+		  dict = [_textStorage attributesAtIndex: charRange.location
 				       effectiveRange: NULL];
 		}
 	      [self setTypingAttributes: dict];
@@ -1605,31 +1605,31 @@ static NSNotificationCenter *nc;
 	  // We do not always want to scroll to the beginning of the
 	  // selection
 	  // however we do for sure if the selection's length is 0
-	  if (range.length == 0 && _tf.is_editable )
-	    [self scrollRangeToVisible: range]; 
+	  if (charRange.length == 0 && _tf.is_editable )
+	    [self scrollRangeToVisible: charRange]; 
 	}
 
       /* Try to optimize for overlapping ranges */
-      overlap = NSIntersectionRange (oldRange, range);
+      overlap = NSIntersectionRange (oldRange, charRange);
       if (overlap.length)
 	{
-	  if (range.location != oldDisplayedRange.location)
+	  if (charRange.location != oldDisplayedRange.location)
 	    {
 	      NSRange r;
-	      r = MakeRangeFromAbs (MIN (range.location, 
+	      r = MakeRangeFromAbs (MIN (charRange.location, 
 					 oldDisplayedRange.location),
-				    MAX (range.location, 
+				    MAX (charRange.location, 
 					 oldDisplayedRange.location));
 	      [self setNeedsDisplayInRect: [self rectForCharacterRange: r]
 		    avoidAdditionalLayout: YES];
 	    }
-	  if (NSMaxRange (range) != NSMaxRange (oldDisplayedRange))
+	  if (NSMaxRange (charRange) != NSMaxRange (oldDisplayedRange))
 	    {
 	      NSRange r;
 
-	      r = MakeRangeFromAbs (MIN (NSMaxRange (range), 
+	      r = MakeRangeFromAbs (MIN (NSMaxRange (charRange), 
 					 NSMaxRange (oldDisplayedRange)),
-				    MAX (NSMaxRange (range),
+				    MAX (NSMaxRange (charRange),
 					 NSMaxRange (oldDisplayedRange)));
 	      [self setNeedsDisplayInRect: [self rectForCharacterRange: r]
 		    avoidAdditionalLayout: YES];
@@ -1637,7 +1637,7 @@ static NSNotificationCenter *nc;
 	}
       else
 	{
-	  [self setNeedsDisplayInRect: [self rectForCharacterRange: range]
+	  [self setNeedsDisplayInRect: [self rectForCharacterRange: charRange]
 		avoidAdditionalLayout: YES];
 	  [self setNeedsDisplayInRect: [self rectForCharacterRange: 
 					       oldDisplayedRange]
@@ -1650,7 +1650,7 @@ static NSNotificationCenter *nc;
   /* TODO: Remove the marking from marked text if the new selection is
      greater than the marked region. */
   
-  if (flag == NO)
+  if (stillSelectingFlag == NO)
     {
       NSDictionary *userInfo;
 
@@ -1679,9 +1679,9 @@ static NSNotificationCenter *nc;
   return _selectionGranularity;
 }
 
-- (void) setInsertionPointColor: (NSColor*)aColor
+- (void) setInsertionPointColor: (NSColor*)color
 {
-  ASSIGN (_caret_color, aColor);
+  ASSIGN (_caret_color, color);
 }
 
 - (NSColor*) insertionPointColor
@@ -1689,7 +1689,7 @@ static NSNotificationCenter *nc;
   return _caret_color;
 }
 
-- (void) updateInsertionPointStateAndRestartTimer: (BOOL)flag
+- (void) updateInsertionPointStateAndRestartTimer: (BOOL)restartFlag
 {
   /* Update insertion point rect */
   NSRange charRange;
@@ -1770,7 +1770,7 @@ static NSNotificationCenter *nc;
   /* Remember horizontal position of insertion point */
   _originalInsertPoint = _insertionPointRect.origin.x;
 
-  if (flag)
+  if (restartFlag)
     {
       /* Start blinking timer if not yet started */
       if (_insertionPointTimer == nil  &&  [self shouldDrawInsertionPoint])
@@ -1817,9 +1817,9 @@ static NSNotificationCenter *nc;
     }
 }
 
-- (void) setSelectedTextAttributes: (NSDictionary *)attributes
+- (void) setSelectedTextAttributes: (NSDictionary *)attributeDictionary
 {
-  ASSIGN (_selectedTextAttributes, attributes);
+  ASSIGN (_selectedTextAttributes, attributeDictionary);
 }
 
 - (NSDictionary *) selectedTextAttributes
@@ -1834,9 +1834,9 @@ static NSNotificationCenter *nc;
   return NSMakeRange (NSNotFound, 0);
 }
 
-- (void) setMarkedTextAttributes: (NSDictionary*)attributes
+- (void) setMarkedTextAttributes: (NSDictionary*)attributeDictionary
 {
-  ASSIGN (_markedTextAttributes, attributes);
+  ASSIGN (_markedTextAttributes, attributeDictionary);
 }
 
 - (NSDictionary*) markedTextAttributes
@@ -1862,19 +1862,18 @@ static NSNotificationCenter *nc;
   [self setTextColor: aColor  range: aRange];
 }
 
-- (void) setAlignment: (NSTextAlignment)alignment  range: (NSRange)aRange
+- (void) setAlignment: (NSTextAlignment)alignment  range: (NSRange)range
 { 
   NSParagraphStyle *style;
   NSMutableParagraphStyle *mstyle;
   
-  if (aRange.location == NSNotFound)
+  if (range.location == NSNotFound)
     return;
 
-  if (![self shouldChangeTextInRange: aRange  replacementString: nil])
+  if (![self shouldChangeTextInRange: range  replacementString: nil])
     return;
   [_textStorage beginEditing];
-  [_textStorage setAlignment: alignment
-		range: aRange];
+  [_textStorage setAlignment: alignment range: range];
   [_textStorage endEditing];
   [self didChangeText];
 
@@ -1916,22 +1915,22 @@ static NSNotificationCenter *nc;
 	  NSMakeRange (insertRange.location + [insertString length], 0)];
 }
 
-- (void) setTypingAttributes: (NSDictionary*)dict
+- (void) setTypingAttributes: (NSDictionary*)attrs
 {
-  if (dict == nil)
+  if (attrs == nil)
     {
-      dict = [isa defaultTypingAttributes];
+      attrs = [isa defaultTypingAttributes];
     }
 
-  if ([dict isKindOfClass: [NSMutableDictionary class]] == NO)
+  if ([attrs isKindOfClass: [NSMutableDictionary class]] == NO)
     {
       RELEASE (_typingAttributes);
       _typingAttributes = [[NSMutableDictionary alloc] 
-			    initWithDictionary: dict];
+			    initWithDictionary: attrs];
     }
   else
     {
-      ASSIGN (_typingAttributes, (NSMutableDictionary*)dict);
+      ASSIGN (_typingAttributes, (NSMutableDictionary*)attrs);
     }
   [self updateFontPanel];
   [self updateRuler];
@@ -3462,15 +3461,15 @@ afterString in order over charRange. */
     }
 }
 
-/*
- * Ruler Views
+/**
+ * Mote movement of marker
  */
-- (void) rulerView: (NSRulerView*)aRulerView
-     didMoveMarker: (NSRulerMarker*)aMarker
+- (void) rulerView: (NSRulerView*)ruler
+     didMoveMarker: (NSRulerMarker*)marker
 {
-  NSTextTab *old_tab = [aMarker representedObject];
+  NSTextTab *old_tab = [marker representedObject];
   NSTextTab *new_tab = [[NSTextTab alloc] initWithType: [old_tab tabStopType]
-					  location: [aMarker makerLocation]];
+					  location: [marker makerLocation]];
   NSRange range = [self rangeForUserParagraphAttributeChange];
   unsigned	loc = range.location;
   NSParagraphStyle *style;
@@ -3527,14 +3526,17 @@ afterString in order over charRange. */
   [_typingAttributes setObject: mstyle forKey: NSParagraphStyleAttributeName];
   RELEASE (mstyle); 
 
-  [aMarker setRepresentedObject: new_tab];
+  [marker setRepresentedObject: new_tab];
   RELEASE(new_tab);
 }
 
-- (void) rulerView: (NSRulerView*)aRulerView
-   didRemoveMarker: (NSRulerMarker*)aMarker
+/**
+ * Handle removal of marker.
+ */
+- (void) rulerView: (NSRulerView*)ruler
+   didRemoveMarker: (NSRulerMarker*)marker
 {
-  NSTextTab *tab = [aMarker representedObject];
+  NSTextTab *tab = [marker representedObject];
   NSRange range = [self rangeForUserParagraphAttributeChange];
   unsigned	loc = range.location;
   NSParagraphStyle *style;
@@ -3649,14 +3651,17 @@ afterString in order over charRange. */
   RELEASE (mstyle); 
 }
 
-- (void) rulerView: (NSRulerView*)aRulerView
-   handleMouseDown: (NSEvent*)theEvent
+/**
+ * Set new marker position from mouse down location.
+ */
+- (void) rulerView: (NSRulerView*)ruler
+   handleMouseDown: (NSEvent*)event
 {
-  NSPoint point = [aRulerView convertPoint: [theEvent locationInWindow] 
-			      fromView: nil];
+  NSPoint point = [ruler convertPoint: [event locationInWindow] 
+			     fromView: nil];
   float location = point.x;
   NSRulerMarker *marker = [[NSRulerMarker alloc] 
-			      initWithRulerView: aRulerView
+			      initWithRulerView: ruler
 			      markerLocation: location
 			      image: [NSImage imageNamed: @"common_LeftTabStop"]
 			      imageOrigin: NSMakePoint(0, 0)];
@@ -3664,33 +3669,46 @@ afterString in order over charRange. */
 					  location: location];
 
   [marker setRepresentedObject: tab];
-  [aRulerView addMarker: marker];
+  [ruler addMarker: marker];
   RELEASE(marker);
   AUTORELEASE(tab);
 }
 
-- (BOOL) rulerView: (NSRulerView*)aRulerView
-   shouldAddMarker: (NSRulerMarker*)aMarker
+/**
+ * Return YES if the marker should be added, NO otherwise.
+ */
+- (BOOL) rulerView: (NSRulerView*)ruler
+   shouldAddMarker: (NSRulerMarker*)marker
 {
-  return [self shouldChangeTextInRange: [self rangeForUserParagraphAttributeChange]
-	       replacementString: nil];
+  return [self shouldChangeTextInRange:
+    [self rangeForUserParagraphAttributeChange] replacementString: nil];
 }
 
-- (BOOL) rulerView: (NSRulerView*)aRulerView
-  shouldMoveMarker: (NSRulerMarker*)aMarker
+
+/**
+ * Return YES if the marker should be moved, NO otherwise.
+ */
+- (BOOL) rulerView: (NSRulerView*)ruler
+  shouldMoveMarker: (NSRulerMarker*)marker
 {
-  return [self shouldChangeTextInRange: [self rangeForUserParagraphAttributeChange]
-	       replacementString: nil];
+  return [self shouldChangeTextInRange:
+    [self rangeForUserParagraphAttributeChange] replacementString: nil];
 }
 
-- (BOOL) rulerView: (NSRulerView*)aRulerView
-shouldRemoveMarker: (NSRulerMarker*)aMarker
+/**
+ * Return YES if the marker should be removed, NO otherwise.
+ */
+- (BOOL) rulerView: (NSRulerView*)ruler
+shouldRemoveMarker: (NSRulerMarker*)marker
 {
   return [(id)[aMarker representedObject] isKindOfClass: [NSTextTab class]];
 }
 
-- (float) rulerView: (NSRulerView*)aRulerView
-      willAddMarker: (NSRulerMarker*)aMarker 
+/**
+ * Return a position for adding by constraining the specified location.
+ */
+- (float) rulerView: (NSRulerView*)ruler
+      willAddMarker: (NSRulerMarker*)marker 
 	 atLocation: (float)location
 {
   NSSize size = [_textContainer containerSize];
@@ -3704,8 +3722,11 @@ shouldRemoveMarker: (NSRulerMarker*)aMarker
   return location;
 }
 
-- (float) rulerView: (NSRulerView*)aRulerView
-     willMoveMarker: (NSRulerMarker*)aMarker 
+/**
+ * Return a new position by constraining the specified location.
+ */
+- (float) rulerView: (NSRulerView*)ruler
+     willMoveMarker: (NSRulerMarker*)marker 
 	 toLocation: (float)location
 {
   NSSize size = [_textContainer containerSize];
@@ -3817,8 +3838,12 @@ shouldRemoveMarker: (NSRulerMarker*)aMarker
 	    ![self isContinuousSpellCheckingEnabled]];
 }
 
+/**
+ * Return a range of text which encompasses proposedCharRange but is
+ * extended (if necessary) to match the type of selection specified by gr.
+ */
 - (NSRange) selectionRangeForProposedRange: (NSRange)proposedCharRange
-			       granularity: (NSSelectionGranularity)granul
+			       granularity: (NSSelectionGranularity)gr
 {
   unsigned index;
   NSRange aRange;
@@ -3843,48 +3868,48 @@ shouldRemoveMarker: (NSRulerMarker*)aMarker
       return proposedCharRange;
     }
 
-  switch (granul)
+  switch (gr)
     {
-    case NSSelectByWord:
-      index = proposedCharRange.location;
-      if (index >= length)
-	{
-	  index = length - 1;
-	}
-      newRange = [_textStorage doubleClickAtIndex: index];
-      if (proposedCharRange.length > 1)
-	{
-	  index = NSMaxRange(proposedCharRange) - 1;
-	  if (index >= length)
-	    {
-	      index = length - 1;
-	    }
-	  aRange = [_textStorage doubleClickAtIndex: index];
-	  newRange = NSUnionRange(newRange, aRange);
-	}
-      return newRange;
+      case NSSelectByWord:
+	index = proposedCharRange.location;
+	if (index >= length)
+	  {
+	    index = length - 1;
+	  }
+	newRange = [_textStorage doubleClickAtIndex: index];
+	if (proposedCharRange.length > 1)
+	  {
+	    index = NSMaxRange(proposedCharRange) - 1;
+	    if (index >= length)
+	      {
+		index = length - 1;
+	      }
+	    aRange = [_textStorage doubleClickAtIndex: index];
+	    newRange = NSUnionRange(newRange, aRange);
+	  }
+	return newRange;
 
-    case NSSelectByParagraph:
-      return [string lineRangeForRange: proposedCharRange];
+      case NSSelectByParagraph:
+	return [string lineRangeForRange: proposedCharRange];
 
-    case NSSelectByCharacter:
-    default:
-      if (proposedCharRange.length == 0)
-	return proposedCharRange;
+      case NSSelectByCharacter:
+      default:
+	if (proposedCharRange.length == 0)
+	  return proposedCharRange;
 
-      /* Expand the beginning character */
-      index = proposedCharRange.location;
-      newRange = [string rangeOfComposedCharacterSequenceAtIndex: index];
-      /* If the proposedCharRange is empty we only ajust the beginning */
-      if (proposedCharRange.length == 0)
-	{
-	  return newRange;
-	}
-      /* Expand the finishing character */
-      index = NSMaxRange (proposedCharRange) - 1;
-      aRange = [string rangeOfComposedCharacterSequenceAtIndex: index];
-      newRange.length = NSMaxRange(aRange) - newRange.location;
-      return newRange;
+	/* Expand the beginning character */
+	index = proposedCharRange.location;
+	newRange = [string rangeOfComposedCharacterSequenceAtIndex: index];
+	/* If the proposedCharRange is empty we only ajust the beginning */
+	if (proposedCharRange.length == 0)
+	  {
+	    return newRange;
+	  }
+	/* Expand the finishing character */
+	index = NSMaxRange (proposedCharRange) - 1;
+	aRange = [string rangeOfComposedCharacterSequenceAtIndex: index];
+	newRange.length = NSMaxRange(aRange) - newRange.location;
+	return newRange;
     }
 }
 

@@ -476,15 +476,15 @@ APPKIT_EXPORT NSString *NSOldSelectedCharacterRange;
 #endif /* _GNUstep_H_NSTextView */
 
 #if 0
-NSFontAttributeName; /* NSFont, default Helvetica 12 */
-->  NSParagraphStyleAttributeName; /* NSParagraphStyle, default defaultParagraphStyle */
-NSForegroundColorAttributeName; /* NSColor, default blackColor */
-NSUnderlineStyleAttributeName; /* int, default 0: no underline */
-NSSuperscriptAttributeName; /* int, default 0 */
-NSBackgroundColorAttributeName; /* NSColor, default nil: no background */
-->  NSAttachmentAttributeName; /* NSTextAttachment, default nil */
-NSLigatureAttributeName; /* int, default 1: default ligatures, 0: no ligatures, 2: all ligatures */
-NSBaselineOffsetAttributeName; /* float, in points; offset from baseline, default 0 */
-NSKernAttributeName; /* float, amount to modify default kerning, if 0, kerning off */
+// NSFontAttributeName; /* NSFont, default Helvetica 12 */
+//  NSParagraphStyleAttributeName; /* NSParagraphStyle, default defaultParagraphStyle */
+// NSForegroundColorAttributeName; /* NSColor, default blackColor */
+// NSUnderlineStyleAttributeName; /* int, default 0: no underline */
+// NSSuperscriptAttributeName; /* int, default 0 */
+// NSBackgroundColorAttributeName; /* NSColor, default nil: no background */
+//  NSAttachmentAttributeName; /* NSTextAttachment, default nil */
+// NSLigatureAttributeName; /* int, default 1: default ligatures, 0: no ligatures, 2: all ligatures */
+// NSBaselineOffsetAttributeName; /* float, in points; offset from baseline, default 0 */
+// NSKernAttributeName; /* float, amount to modify default kerning, if 0, kerning off */
 #endif
 

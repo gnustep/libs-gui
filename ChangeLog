@@ -16,6 +16,7 @@
 	* Source/NSWindow.m: Slight documentation update/addition.
 	* Source/NSView.m: ditto.
 	* Source/NSToolbar.m: ditto.
+	* Source/NSTextView.m: ditto.
 
 2002-10-11  Adam Fedor  <fedor@gnu.org>
 
