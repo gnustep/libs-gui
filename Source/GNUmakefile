@@ -138,6 +138,7 @@ NSWindowController.m \
 NSWorkspace.m \
 GSComboSupport.m \
 GSHelpManagerPanel.m \
+GSInfoPanel.m \
 GSTextStorage.m \
 GSTrackingRect.m \
 GSServicesManager.m \
@@ -161,6 +162,7 @@ AppKit/AppKitExceptions.h \
 AppKit/DPSOperators.h \
 AppKit/GMAppKit.h \
 AppKit/GMArchiver.h \
+AppKit/GSInfoPanel.h \
 AppKit/GSMethodTable.h \
 AppKit/GSPasteboardServer.h \
 AppKit/GSServicesManager.h \
