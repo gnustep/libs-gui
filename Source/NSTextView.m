@@ -375,88 +375,8 @@ static NSNotificationCenter *nc;
 
 - (void) setSelectedRange: (NSRange)range
 {
-/*
-  NSLog(@"setSelectedRange (%d, %d)", charRange.location, charRange.length);
-  [[NSNotificationCenter defaultCenter]
-    postNotificationName: NSTextViewDidChangeSelectionNotification
-    object: self];
-  _selected_range = charRange;
-*/
-  NSRange oldRange = _selected_range;
-  NSRange overlap;
-
-  // Nothing to do, if the range is still the same
-  if (NSEqualRanges(range, oldRange))
-    return;
-
-  //<!> ask delegate for selection validation
-
-  _selected_range  = range;
-  [self updateFontPanel];
-
-#if 0
-  [nc postNotificationName: NSTextViewDidChangeSelectionNotification
-      object: self
-      userInfo: [NSDictionary dictionaryWithObjectsAndKeys:
-				NSStringFromRange (_selected_range),
-			      NSOldSelectedCharacterRange, nil]];
-#endif
-
-  // display
-  if (range.length)
-    {
-      // <!>disable caret timed entry
-    }
-  else	// no selection
-    {
-      if (_tf.is_rich_text)
-	{
-	   NSDictionary *dict;
-
-	   dict = [_textStorage attributesAtIndex: range.location
-				effectiveRange: NULL];
-	   [self setTypingAttributes: dict];
-	}
-      // <!>enable caret timed entry
-    }
-
-  if (!_window)
-    return;
-
-  // Make the selected range visible
-  [self scrollRangeToVisible: range]; 
-
-  // Redisplay what has changed
-  // This does an unhighlight of the old selected region
-  overlap = NSIntersectionRange (oldRange, range);
-  if (overlap.length)
-    {
-      // Try to optimize for overlapping ranges
-      if (range.location != oldRange.location)
-	{
-	  NSRange r;
-	  r = MakeRangeFromAbs (MIN (range.location, oldRange.location),
-				MAX (range.location, oldRange.location));
-	  [self setNeedsDisplayInRect: [self rectForCharacterRange: r]];
-	}
-      if (NSMaxRange (range) != NSMaxRange (oldRange))
-	{
-	  NSRange r = MakeRangeFromAbs (MIN (NSMaxRange (range), 
-					     NSMaxRange (oldRange)),
-					MAX (NSMaxRange (range),
-					     NSMaxRange (oldRange)));
-	  [self setNeedsDisplayInRect: [self rectForCharacterRange: r]];
-	}
-    }
-  else
-    {
-      [self setNeedsDisplayInRect: [self rectForCharacterRange: range]];
-      [self setNeedsDisplayInRect: [self rectForCharacterRange: oldRange]];
-    }
-
-  [self setSelectionGranularity: NSSelectByCharacter];
-  // Also removes the marking from
-  // marked text if the new selection is greater than the marked region.
+  [self setSelectedRange: range  affinity: [self selectionAffinity]
+	stillSelecting: NO];
 }
 
 /*
@@ -1341,19 +1261,96 @@ static NSNotificationCenter *nc;
 
 #undef NSTEXTVIEW_SYNC
 
-- (void) setSelectedRange: (NSRange)charRange
+- (void) setSelectedRange: (NSRange)range
 		 affinity: (NSSelectionAffinity)affinity
 	   stillSelecting: (BOOL)flag
 {
-  // Use affinity to determine the insertion point
+  /* TODO: Use affinity to determine the insertion point */
 
-  if (flag)
+  if (flag == YES)
     {
-      _selected_range = charRange;
+      _selected_range = range;
       [self setSelectionGranularity: NSSelectByCharacter];
+      return;
     }
   else
-      [self setSelectedRange: charRange];
+    {
+      NSRange oldRange = _selected_range;
+      NSRange overlap;
+
+      // Nothing to do, if the range is still the same
+      if (NSEqualRanges(range, oldRange))
+	return;
+      
+      //<!> ask delegate for selection validation
+      
+      _selected_range = range;
+      [self updateFontPanel];
+      
+#if 0
+      [nc postNotificationName: NSTextViewDidChangeSelectionNotification
+	  object: self
+	  userInfo: [NSDictionary dictionaryWithObjectsAndKeys:
+				    NSStringFromRange (_selected_range),
+				  NSOldSelectedCharacterRange, nil]];
+#endif
+      
+      // display
+      if (range.length)
+	{
+	  /* <!>disable caret timed entry */
+	}
+      else  /* no selection, only insertion point */
+	{
+	  if (_tf.is_rich_text)
+	    {
+	      NSDictionary *dict;
+	      
+	      dict = [_textStorage attributesAtIndex: range.location
+				   effectiveRange: NULL];
+	      [self setTypingAttributes: dict];
+	    }
+	  /* <!>enable caret timed entry */
+	}
+      
+      if (!_window)
+	return;
+      
+      // Make the selected range visible
+      [self scrollRangeToVisible: range]; 
+      
+      // Redisplay what has changed
+      // This does an unhighlight of the old selected region
+      overlap = NSIntersectionRange (oldRange, range);
+      if (overlap.length)
+	{
+	  // Try to optimize for overlapping ranges
+	  if (range.location != oldRange.location)
+	    {
+	      NSRange r;
+	      r = MakeRangeFromAbs (MIN (range.location, oldRange.location),
+				    MAX (range.location, oldRange.location));
+	      [self setNeedsDisplayInRect: [self rectForCharacterRange: r]];
+	    }
+	  if (NSMaxRange (range) != NSMaxRange (oldRange))
+	    {
+	      NSRange r = MakeRangeFromAbs (MIN (NSMaxRange (range), 
+						 NSMaxRange (oldRange)),
+					    MAX (NSMaxRange (range),
+						 NSMaxRange (oldRange)));
+	      [self setNeedsDisplayInRect: [self rectForCharacterRange: r]];
+	    }
+	}
+      else
+	{
+	  [self setNeedsDisplayInRect: [self rectForCharacterRange: range]];
+	  [self setNeedsDisplayInRect: [self rectForCharacterRange: oldRange]];
+	}
+      
+      [self setSelectionGranularity: NSSelectByCharacter];
+      // Also removes the marking from
+      // marked text if the new selection is greater than the marked region.
+    }
 }
 
 /* Override in subclasses to change the default selection affinity */
@@ -1863,11 +1860,13 @@ afterString in order over charRange. */
  */
 - (void) mouseDown: (NSEvent*)theEvent
 {
+  NSSelectionAffinity affinity = [self selectionAffinity];
   NSSelectionGranularity granularity = NSSelectByCharacter;
   NSRange chosenRange, proposedRange;
   NSPoint point, startPoint;
   NSEvent *currentEvent;
   unsigned startIndex;
+  unsigned mask;
 
   /* If non selectable then ignore the mouse down. */
   if (_tf.is_selectable == NO)
@@ -1878,58 +1877,88 @@ afterString in order over charRange. */
   /* Otherwise, NSWindow has already made us first responder (if
      possible) */
 
-  switch ([theEvent clickCount])
+  startPoint = [self convertPoint: [theEvent locationInWindow] fromView: nil];
+  
+  if ([theEvent modifierFlags] & NSShiftKeyMask)
     {
-    case 1: granularity = NSSelectByCharacter;
-      break;
-    case 2: granularity = NSSelectByWord;
-      break;
-    case 3: granularity = NSSelectByParagraph;
-      break;
+      /* Shift-click is for extending an existing selection using 
+	 the existing granularity */
+      granularity = _selectionGranularity;
+      /* Compute the new selection */
+      startIndex = [self characterIndexForPoint: startPoint];
+      proposedRange = NSMakeRange (startIndex, 0);
+      proposedRange = [self selectionRangeForProposedRange: proposedRange
+			    granularity: granularity];
+      /* Merge it with the old one */
+      proposedRange = NSUnionRange (_selected_range, proposedRange);
+      /* Now decide what happens if the user shift-drags.  The range 
+	 will be based in startIndex, so we need to adjust it. */
+      if (startIndex <= _selected_range.location) 
+	{
+	  startIndex = NSMaxRange (proposedRange);
+	}
+      else 
+	{
+	  startIndex = proposedRange.location;
+	}
+    }
+  else /* No shift */
+    {
+      switch ([theEvent clickCount])
+	{
+	case 1: granularity = NSSelectByCharacter;
+	  break;
+	case 2: granularity = NSSelectByWord;
+	  break;
+	case 3: granularity = NSSelectByParagraph;
+	  break;
+	}
+      startIndex = [self characterIndexForPoint: startPoint];
+      proposedRange = NSMakeRange (startIndex, 0);
     }
 
-  startPoint = [self convertPoint: [theEvent locationInWindow] fromView: nil];
-  startIndex = [self characterIndexForPoint: startPoint];
-
-  proposedRange = NSMakeRange(startIndex, 0);
   chosenRange = [self selectionRangeForProposedRange: proposedRange
 		      granularity: granularity];
 
   [self setSelectedRange: chosenRange];
-  // Do an imidiate redisplay for visual feedback
-  [_window flushWindow];
+  /* Do an immediate redisplay for visual feedback */
+  [_window flushWindow]; /* FIXME: This doesn't work while it should ! */
 
-  //<!> make this non - blocking (or make use of timed entries)
-  // run modal loop
-  for (currentEvent = [_window
-			nextEventMatchingMask:
-			  (NSLeftMouseDraggedMask|NSLeftMouseUpMask)];
+  /* Enter modal loop tracking the mouse */
+  
+  mask = NSLeftMouseDraggedMask | NSLeftMouseUpMask;
+  
+  for (currentEvent = [_window nextEventMatchingMask: mask];
        [currentEvent type] != NSLeftMouseUp;
-       (currentEvent = [_window
-			 nextEventMatchingMask:
-			   (NSLeftMouseDraggedMask|NSLeftMouseUpMask)]))
+       currentEvent = [_window nextEventMatchingMask: mask])
     {
       BOOL didScroll = [self autoscroll: currentEvent];
+
       point = [self convertPoint: [currentEvent locationInWindow]
 		    fromView: nil];
       proposedRange = MakeRangeFromAbs ([self characterIndexForPoint: point],
 					startIndex);
-      // Add one more character as selected, as zero length is cursor.
-      proposedRange.length++;
- 
       chosenRange = [self selectionRangeForProposedRange: proposedRange
 			  granularity: granularity];
 
       [self setSelectedRange: chosenRange];
 
       if (didScroll)
-	[self setNeedsDisplay: YES];
-      // Do an imidiate redisplay for visual feedback
+	{
+	  /* FIXME: Only redisplay where needed, and avoid relayout */
+	  [self setNeedsDisplay: YES];
+	}
+      
+      /* Do an immediate redisplay for visual feedback */
       [_window flushWindow];
     }
 
   NSDebugLog(@"chosenRange. location  = %d, length  = %d\n",
 	     (int)chosenRange.location, (int)chosenRange.length);
+
+  /* Remember granularity till a new selection destroys the memory */
+  [self setSelectionGranularity: granularity];
+
   // remember for column stable cursor up/down
   _currentCursor = [self rectForCharacterIndex: chosenRange.location].origin;
 }
