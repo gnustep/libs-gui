@@ -73,7 +73,8 @@ static NSOpenPanel *gnustep_gui_open_panel = nil;
 
     //if( ![GMModel loadIMFile:@"SavePanel" owner:NSApp] )
       [[NSOpenPanel alloc] _initWithoutGModel];
-    
+
+    [gnustep_gui_open_panel _setDefaults];
     [gnustep_gui_open_panel setTitle:@"Open"];
 
     // [GMUnarchiver decodeClassName:@"NSSavePanel"

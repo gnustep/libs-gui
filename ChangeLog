@@ -1,3 +1,27 @@
+Mon Oct  4  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+        Implementation of 'initial first responder' stuff for NSWindow:
+	* Headers/AppKit/NSWindow.h: New instance variable
+ 	_initial_first_responder
+	* Source/NSWindow.m: ([-dealloc]), ([-initDefaults]),
+ 	([-encodeWithCoder:]), ([-decodeWithCoder:]): updated to take
+ 	account for the new ivar _initial_first_responder.
+	* Model/GMAppKit.m ([NSWindow -encodeWithModelArchiver:]): Added
+ 	initialFirstResponder
+ 	([NSWindow -initWithModelUnarchiver:]): idem
+	([NSPanel -encodeWithModelArchiver:]): idem
+	([NSPanel -initWithModelUnarchiver:]): idem
+	([NSSavePanel -encodeWithModelArchiver:]): idem
+	([NSSavePanel -initWithModelUnarchiver:]): idem
+	* Source/NSWindow.m ([-setInitialFirstResponder:]): implemented method.
+  	([-initialFirstResponder]): implemented method.
+	* Source/NSWindow.m ([-display]): If there is no first_responder,
+ 	set it to _initial_first_responder (if non-nil).
+
+	Minor fixes:
+	* Source/GNUmakefile: Added missing AppKit/AppKitExceptions.h
+	* Source/NSOpenPanel.m ([+openPanel]): Set defaults after creating.
+
 Tue Sep 28  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSBrowser.m Fixed bug: ([-mouseDown:]): New method with a

@@ -95,6 +95,7 @@ extern NSSize NSTokenSize;
   id            content_view;
   id            first_responder;
   id            original_responder;
+  NSView        *_initial_first_responder;
   id            delegate;
   id            _fieldEditor;
   id            _lastDragView;

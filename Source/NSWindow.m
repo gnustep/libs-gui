@@ -124,6 +124,7 @@ static SEL	ctSel = @selector(_checkTrackingRectangles:forEvent:);
 static IMP	ccImp;
 static IMP	ctImp;
 static Class	responderClass;
+static Class	viewClass;
 static NSMutableSet	*autosaveNames;
 static NSRecursiveLock	*windowsLock;
 
@@ -139,6 +140,7 @@ static NSRecursiveLock	*windowsLock;
       ccImp = [self instanceMethodForSelector: ccSel];
       ctImp = [self instanceMethodForSelector: ctSel];
       responderClass = [NSResponder class];
+      viewClass = [NSView class];
       autosaveNames = [NSMutableSet new];
       windowsLock = [NSRecursiveLock new];
     }
@@ -214,7 +216,8 @@ static NSRecursiveLock	*windowsLock;
   TEST_RELEASE(miniaturized_image);
   TEST_RELEASE(window_title);
   TEST_RELEASE(rectsBeingDrawn);
-  
+  TEST_RELEASE(_initial_first_responder);
+
   /*
    * FIXME This should not be necessary - the views should have removed
    * their drag types, so we should already have been removed.
@@ -808,6 +811,9 @@ static NSRecursiveLock	*windowsLock;
 - (void) display
 {
   needs_display = NO;
+ if (!first_responder)
+   if (_initial_first_responder)
+     [self makeFirstResponder: _initial_first_responder];
   /*
    * inform first responder of it's status so it can set the focus to itself
    */
@@ -1219,6 +1225,22 @@ static NSRecursiveLock	*windowsLock;
   [first_responder becomeFirstResponder];
   return YES;
 }
+
+- (void) setInitialFirstResponder: (NSView *)aView
+{ 
+  if ([aView isKindOfClass: viewClass])
+    {
+      if (_initial_first_responder)
+	[_initial_first_responder autorelease];
+      _initial_first_responder = [aView retain];
+    }
+}
+
+- (NSView *) initialFirstResponder
+{ 
+  return _initial_first_responder;
+}
+
 
 /* Return mouse location in reciever's base coord system, ignores event
  * loop status */
@@ -2100,6 +2122,7 @@ static NSRecursiveLock	*windowsLock;
   [aCoder encodeSize: minimum_size];
   [aCoder encodeSize: maximum_size];
   [aCoder encodeObject: miniaturized_image];
+  [aCoder encodeConditionalObject: _initial_first_responder];
   [aCoder encodeValueOfObjCType: @encode(NSBackingStoreType) at: &backing_type];
   [aCoder encodeValueOfObjCType: @encode(int) at: &window_level];
   [aCoder encodeValueOfObjCType: @encode(unsigned) at: &disable_flush_window];
@@ -2141,6 +2164,7 @@ static NSRecursiveLock	*windowsLock;
   minimum_size = [aDecoder decodeSize];
   maximum_size = [aDecoder decodeSize];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &miniaturized_image];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_initial_first_responder];
   [aDecoder decodeValueOfObjCType: @encode(NSBackingStoreType)
 	at: &backing_type];
   [aDecoder decodeValueOfObjCType: @encode(int) at: &window_level];
@@ -2205,6 +2229,7 @@ static NSRecursiveLock	*windowsLock;
 {
   first_responder = nil;
   original_responder = nil;
+  _initial_first_responder = nil;
   delegate = nil;
   window_num = 0;
   gstate = 0;

@@ -255,7 +255,8 @@ AppKit/PSOperators.h \
 AppKit/GSHelpManagerPanel.h \
 AppKit/GSPasteboardServer.h \
 AppKit/GSServicesManager.h \
-AppKit/GSWraps.h
+AppKit/GSWraps.h \
+AppKit/AppKitExceptions.h
 
 -include GNUmakefile.preamble
 
