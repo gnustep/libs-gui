@@ -234,14 +234,15 @@ static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
  * <p>If no icon was available, it uses a default folder icon or a
  * special icon for the root directory.
  * </p>
- * <p>The information about what file types an app can handle needs to be in
- * the MacOS-X format in the Info-gnustep.plist/Info.plist for the app -
- * see http://developer.apple.com/techpubs/macosxserver/System/Documentation/Developer/YellowBox/ReleaseNotes/InfoPlist.html.
+ * <p>The information about what file types an app can handle needs
+ * to be stored in Info-gnustep.plist in an array keyed on the name
+ * <em>NSTypes</em>, within which each value is a dictionary.<br />
  * </p>
  * <p>In the NSTypes fields, NSWorkspace uses NSIcon (the icon to use
  * for the type) NSUnixExtensions (a list of file extensions
  * corresponding to the type) and NSRole (what the app can do with
- * documents of this type). In the AppList cache, make_services
+ * documents of this type <em>Editor</em>, <em>Viewer</em>,
+ * or <em>None</em>). In the AppList cache, make_services
  * generates a dictionary, keyed by file extension, whose values are
  * the dictionaries containing the NSTypes dictionaries of each
  * of the apps that handle the extension.  The NSWorkspace class
@@ -254,7 +255,9 @@ static NSString	*GSWorkspaceNotification = @"GSWorkspaceNotification";
  * handled by the applications delegate).  If the application is not
  * running, NSWorkspace will instead attempt to launch the application
  * passing the filename to open after a '-GSFilePath' flag
- * in the command line arguments.
+ * in the command line arguments.  For a GNUstep application, the
+ * application will recognize this and invoke the -application:openFile:
+ * method passing it the file name.
  * </p>
  * <p>This command line argument mechanism provides a way for non-gnustep
  * applications to be used to open files simply by provideing a wrapper
