@@ -1,3 +1,9 @@
+2003-07-21  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSFileWrapper.m: Tidy initialisation and fix leak in
+	dealloc.
+	* Source/NSTextAttachment.m: ditto.
+
 2003-07-19  Adam Fedor  <fedor@gnu.org>
 
 	* GNUmakefile: Build Documentation if doc=yes (yes by default).

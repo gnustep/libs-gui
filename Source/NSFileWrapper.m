@@ -39,6 +39,7 @@
 #include <Foundation/NSFileManager.h>
 #include <Foundation/NSArchiver.h>
 #include <Foundation/NSDebug.h>
+#include <Foundation/NSAutoreleasePool.h>
 
 @implementation NSFileWrapper
 
@@ -49,59 +50,65 @@
 // Init instance of directory type
 - (id) initDirectoryWithFileWrappers: (NSDictionary*)docs
 {
-  NSEnumerator *enumerator;
-  id key;
-  NSFileWrapper *wrapper;
-  [super init];
-
-  _wrapperType = GSFileWrapperDirectoryType;
-  ASSIGN(_wrapperData, [NSMutableDictionary dictionaryWithCapacity: [docs count]]);
-
-  enumerator = [docs keyEnumerator];
-  while ((key = [enumerator nextObject]))
+  self = [super init];
+  if (self != nil)
     {
-      wrapper = (NSFileWrapper*)[docs objectForKey: key];
+      NSEnumerator	*enumerator;
+      id		key;
+      NSFileWrapper	*wrapper;
 
-      if (![wrapper preferredFilename])
-        [wrapper setPreferredFilename: key];
+      _wrapperType = GSFileWrapperDirectoryType;
+      _wrapperData
+	= [[NSMutableDictionary alloc] initWithCapacity: [docs count]];
 
-      [_wrapperData setObject: wrapper forKey: key];
+      enumerator = [docs keyEnumerator];
+      while ((key = [enumerator nextObject]) != nil)
+	{
+	  wrapper = (NSFileWrapper*)[docs objectForKey: key];
+
+	  if (![wrapper preferredFilename])
+	    {
+	      [wrapper setPreferredFilename: key];
+	    }
+	  [_wrapperData setObject: wrapper forKey: key];
+	}
     }
-
   return self;
 }
     
 // Init instance of regular file type
 - (id) initRegularFileWithContents: (NSData*)data
 {
-  [super init];
-
-  _wrapperData = [data copyWithZone: [self zone]];
-  _wrapperType = GSFileWrapperRegularFileType;
-  
+  self = [super init];
+  if (self != nil)
+    {
+      _wrapperData = [data copyWithZone: [self zone]];
+      _wrapperType = GSFileWrapperRegularFileType;
+     } 
   return self;
 }
 
 // Init instance of symbolic link type
 - (id) initSymbolicLinkWithDestination: (NSString*)path
 {
-  [super init];
-
-  _wrapperData = [path copyWithZone: [self zone]];
-  _wrapperType = GSFileWrapperSymbolicLinkType;
-
+  self = [super init];
+  if (self != nil)
+    {
+      _wrapperData = [path copyWithZone: [self zone]];
+      _wrapperType = GSFileWrapperSymbolicLinkType;
+    }
   return self;
 }
 
-// Init an instance from the file,
-// directory, or symbolic link at path. 
-// This can create a tree of instances
-// with a directory instance at the top
-
+/**
+ * Init an instance from the file, directory, or symbolic link at path.<br /> 
+ * This can create a tree of instances with a directory instance at the top
+ */
 - (id) initWithPath: (NSString*)path
 {
-  NSFileManager *fm = [NSFileManager defaultManager];
-  NSString *fileType;
+  CREATE_AUTORELEASE_POOL(arp);
+  NSFileManager	*fm = [NSFileManager defaultManager];
+  NSString	*fileType;
 
   NSDebugLLog(@"NSFileWrapper", @"initWithPath: %@", path);
 
@@ -113,20 +120,22 @@
   fileType = [[self fileAttributes] fileType];
   if ([fileType isEqualToString: @"NSFileTypeDirectory"])
     {
-      NSString *filename;
-      NSMutableArray *fileWrappers = [NSMutableArray new];
-      NSArray *filenames = [fm directoryContentsAtPath: path];
-      NSEnumerator *enumerator = [filenames objectEnumerator];
+      NSString		*filename;
+      NSMutableArray	*fileWrappers = [NSMutableArray array];
+      NSArray		*filenames = [fm directoryContentsAtPath: path];
+      NSEnumerator	*enumerator = [filenames objectEnumerator];
 
-      while ((filename = [enumerator nextObject]))
+      while ((filename = [enumerator nextObject]) != nil)
         {
-          [fileWrappers addObject: 
-	     AUTORELEASE([[NSFileWrapper alloc] initWithPath: 
-	       [path stringByAppendingPathComponent: filename]])];
+	  NSFileWrapper	*w;
+
+	  w = [[NSFileWrapper alloc] initWithPath: 
+	       [path stringByAppendingPathComponent: filename]];
+          [fileWrappers addObject: w]; 
+	  RELEASE(w);
         }
       self = [self initDirectoryWithFileWrappers: 
         [NSDictionary dictionaryWithObjects: fileWrappers forKeys: filenames]];
-      RELEASE(fileWrappers);
     }
   else if ([fileType isEqualToString: @"NSFileTypeRegular"])
     {
@@ -138,7 +147,7 @@
       self = [self initSymbolicLinkWithDestination: 
                  [fm pathContentOfSymbolicLinkAtPath: path]];
     }
-
+  RELEASE(arp);
   return self;
 }
 
@@ -163,6 +172,7 @@
   TEST_RELEASE(_preferredFilename);
   TEST_RELEASE(_wrapperData);
   TEST_RELEASE(_iconImage);
+  [super dealloc];
 }
 
 //

@@ -271,23 +271,27 @@
 
 @implementation NSTextAttachment
 
-- (id)init
+- (id) init
 {
   return [self initWithFileWrapper: nil];
 }
 
-- (void)dealloc
+- (void) dealloc
 {
   DESTROY(_fileWrapper);
   DESTROY(_cell);
+  [super dealloc];
 }
 
-- (id)initWithFileWrapper:(NSFileWrapper *)fileWrapper
+- (id) initWithFileWrapper:(NSFileWrapper *)fileWrapper
 {
-  ASSIGN(_fileWrapper, fileWrapper);
-  _cell = [[NSTextAttachmentCell alloc ] init];
-  [_cell setAttachment: self];
-
+  self = [super init];
+  if (self != nil)
+    {
+      ASSIGN(_fileWrapper, fileWrapper);
+      _cell = [[NSTextAttachmentCell alloc ] init];
+      [_cell setAttachment: self];
+    }
   return self;
 }
 
