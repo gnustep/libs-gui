@@ -97,6 +97,11 @@
 - (int)indexOfItemWithObjectValue:(id)object;
 - (NSArray *)objectValues;
 
+- (BOOL) trackMouse: (NSEvent *)theEvent 
+	     inRect: (NSRect)cellFrame
+	     ofView: (NSView *)controlView 
+       untilMouseUp: (BOOL)flag;
+
 #ifndef	STRICT_OPENSTEP
 /* text completion */
 - (NSString *)completedString:(NSString *)substring;

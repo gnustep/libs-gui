@@ -456,8 +456,8 @@ static NSNotificationCenter *nc;
 - (void) mouseDown: (NSEvent*)theEvent
 {
   BOOL buttonClicked; 
-  // buttonClicked is set to the value YNO when the click occurs in the text cell
-  // and to the value YES when it occurs in the button cell
+  // buttonClicked is set to the value NO when the click occurs in the text cell
+  // and to the value YES when it occurs in the button cell.
   
   buttonClicked = [_cell trackMouse: theEvent inRect: [self bounds] 
     ofView: self untilMouseUp: YES];

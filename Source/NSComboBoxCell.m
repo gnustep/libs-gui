@@ -1278,10 +1278,10 @@ numberOfRowsInColumn: (int)column
  * You rarely needs to call this method explicitly in your code.
  * By default, the implementation of this method first checks whether the combo
  * box cell uses a data source and whether the data source responds to 
- * comboBox:completedString: or comboBoxCell:completedString:. When it is the
- * case, it uses this method to return <var>str</var>, else this method goes
- * through the combo box cell items one by one and returns the first item found
- * starting with <var>substring</var>.
+ * <code>comboBox:completedString:</code> or <code>comboBoxCell:completedString:</code>. 
+ * When it is the case, it uses this method to return <var>str</var>, else this
+ * method goes through the combo box cell items one by one and returns the first
+ * item found starting with <var>substring</var>.
  * In the case, you want another behavior, you can override this method without
  * need to call the superclass method.
  */
