@@ -45,6 +45,8 @@
 #include <AppKit/NSImage.h>
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSSplitView.h>
+#include <AppKit/NSGraphics.h>
+#include <AppKit/NSWindow.h>
 
 #include "AppKit/DPSOperators.h"
 

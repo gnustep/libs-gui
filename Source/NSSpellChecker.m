@@ -47,6 +47,9 @@
 #include <AppKit/NSBrowser.h>
 #include <AppKit/NSBrowserCell.h>
 #include <AppKit/NSPopUpButton.h>
+#include <AppKit/NSGraphics.h>
+#include <AppKit/NSWindow.h>
+#include <AppKit/NSPanel.h>
 
 // prototype for function to create name for server
 NSString *GSSpellServerName(NSString *checkerDictionary, NSString *language);
