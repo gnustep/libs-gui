@@ -401,6 +401,10 @@ forStartOfGlyphRange: (NSRange)glyphRange;
 
 - (void) setHyphenationFactor: (float)factor;
 
+- (unsigned) _charIndexForInsertionPointMovingFromY: (float)position
+					      bestX: (float)wanted
+						 up: (BOOL)upFlag
+				      textContainer: (NSTextContainer *)tc;
 @end
 
 @interface NSObject (NSLayoutManagerDelegate)
