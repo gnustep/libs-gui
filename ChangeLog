@@ -1,3 +1,11 @@
+2001-02-18  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSColorWell.m: Tidied a little, and made changes to conform
+	to macOS-X documentation and observed NeXTstep behavior.  Of note -
+	1. colorwell should not deactivate when panel is closed.
+	2. setting color of an active well should set the color of the panel
+	(though it should not raise it).
+
 Sun Feb 18 13:35:55 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSClipView.m ([-setBoundsOrigin:]): Make rect to copy

@@ -44,62 +44,115 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
 
 @implementation NSColorWell
 
-//
-// Class methods
-//
-+ (void)initialize
+/*
+ * Class methods
+ */
++ (void) initialize
 {
   if (self == [NSColorWell class])
-    [self setVersion: 1];
+    {
+      [self setVersion: 1];
+    }
 }
 
-// FIXME: This is a hack.  An NSColorWell shouldn't need an associated
-// cell, but without one the setTarget: and setAction: methods get passed
-// to an NSCell object by the superclass (NSControl).  NSCell raises an
-// exception on these methods, but NSActionCell actually implements them.
-+ (Class)cellClass
+/*
+ * Instance methods
+ */
+
+- (BOOL) acceptsFirstMouse: (NSEvent *)event
 {
-  return [NSActionCell class];
+  return YES;
 }
 
-//
-// Instance methods
-//
-- (id) initWithFrame: (NSRect)frameRect
+- (SEL) action
 {
-  [super initWithFrame: frameRect];
+  return _action;
+}
 
-  _is_bordered = YES;
+- (void) activate: (BOOL)exclusive
+{
+  NSNotificationCenter	*nc = [NSNotificationCenter defaultCenter];
+  NSColorPanel		*colorPanel = [NSColorPanel sharedColorPanel];
+
+  if (exclusive == YES)
+    {
+      [nc postNotificationName: GSColorWellDidBecomeExclusiveNotification
+                        object: self];
+    }
+
+  [nc addObserver: self
+         selector: @selector(deactivate)
+             name: GSColorWellDidBecomeExclusiveNotification
+           object: nil];
+
+  _is_active = YES;
+
+  [colorPanel setColor: _the_color];
+  [colorPanel orderFront: self];
+
+  [self setNeedsDisplay: YES];
+}
+
+- (NSColor *) color
+{
+  return _the_color;
+}
+
+- (void) deactivate
+{
   _is_active = NO;
-  _the_color = RETAIN([NSColor blackColor]);
 
-  [self registerForDraggedTypes:
-      [NSArray arrayWithObjects: NSColorPboardType, nil]];
+  [[NSNotificationCenter defaultCenter] removeObserver: self];
 
-  return self;
+  [self setNeedsDisplay: YES];
 }
 
-- (void)dealloc
+- (void) dealloc
 {
-  if (_is_active)
-    [self deactivate];
-
+  if (_is_active == YES)
+    {
+      [self deactivate];
+    }
   TEST_RELEASE(_the_color);
   [self unregisterDraggedTypes];
   [super dealloc];
 }
 
-/*
- * Drawing
- */
+- (unsigned int) draggingEntered: (id <NSDraggingInfo>)sender
+{
+  NSPasteboard *pb;
+  NSDragOperation sourceDragMask;
+       
+  NSDebugLLog(@"NSColorWell", @"%@: draggingEntered", self);
+  sourceDragMask = [sender draggingSourceOperationMask];
+  pb = [sender draggingPasteboard];
+ 
+  if ([[pb types] indexOfObject: NSColorPboardType] != NSNotFound)
+    {
+      if (sourceDragMask & NSDragOperationCopy)
+        {
+          return NSDragOperationCopy;
+        }
+    }
+ 
+  return NSDragOperationNone;
+} 
+
+- (unsigned int) draggingSourceOperationMaskForLocal: (BOOL)flag
+{
+  return NSDragOperationCopy;
+}
+
 - (void) drawRect: (NSRect)clipRect
 {
   NSRect aRect = _bounds;
   
   if (NSIntersectsRect(aRect, clipRect) == NO)
-    return;
+    {
+      return;
+    }
 
-  if (_is_bordered)
+  if (_is_bordered == YES)
     {
       /*
        * Draw border.
@@ -110,10 +163,14 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
        * Fill in control color.
        */
       aRect = NSInsetRect(aRect, 2.0, 2.0);
-      if (_is_active)
-        [[NSColor selectedControlColor] set];
+      if (_is_active == YES)
+	{
+	  [[NSColor selectedControlColor] set];
+	}
       else
-        [[NSColor controlColor] set];
+	{
+	  [[NSColor controlColor] set];
+	}
       NSRectFill(NSIntersectionRect(aRect, clipRect));
 
       /*
@@ -122,7 +179,9 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
       _wellRect = NSInsetRect(_bounds, 8.0, 8.0);
     }
   else
-    _wellRect = _bounds;
+    {
+      _wellRect = _bounds;
+    }
 
   aRect = _wellRect;
 
@@ -151,11 +210,61 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
   [_the_color drawSwatchInRect: insideRect];
 }
 
-- (BOOL) acceptsFirstMouse: (NSEvent *)event
+- (void) encodeWithCoder: (NSCoder*)aCoder
 {
-  return YES;
+  [super encodeWithCoder: aCoder];
+  [aCoder encodeObject: _the_color];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_active];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_bordered];
+  [aCoder encodeConditionalObject: _target];
+  [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
 }
 
+- (id) initWithCoder: (NSCoder*)aDecoder
+{
+  self = [super initWithCoder: aDecoder];
+  if (self != nil)
+    {
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_the_color];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_active];
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_bordered];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_target];
+      // Undo RETAIN by decoder
+      TEST_RELEASE(_target);
+      [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
+    }
+  return self;
+}
+
+- (id) initWithFrame: (NSRect)frameRect
+{
+  self = [super initWithFrame: frameRect];
+  if (self != nil)
+    {
+      _is_bordered = YES;
+      _is_active = NO;
+      _the_color = RETAIN([NSColor blackColor]);
+
+      [self registerForDraggedTypes:
+	[NSArray arrayWithObjects: NSColorPboardType, nil]];
+    }
+  return self;
+}
+
+- (BOOL) isActive
+{
+  return _is_active;
+}
+
+- (BOOL) isBordered
+{
+  return _is_bordered;
+}
+
+- (BOOL) isOpaque
+{
+  return _is_bordered;
+}
 
 - (void) mouseDown: (NSEvent *)theEvent
 {
@@ -170,79 +279,62 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
     }
   else if (_is_active == NO)
     {
-      NSColorPanel *colorPanel = [NSColorPanel sharedColorPanel];
-
       [self activate: YES];
-
-      [[NSNotificationCenter defaultCenter]
-          addObserver: self
-             selector: @selector(deactivate)
-                 name: NSWindowWillCloseNotification
-               object: colorPanel];
-
-      [colorPanel setColor: _the_color];
-      [colorPanel orderFront: self];
     }
   else
-    [self deactivate];
-}
-
-- (BOOL) isOpaque
-{
-  return _is_bordered;
-}
-
-
-//
-// Activating 
-//
-- (void)activate: (BOOL)exclusive
-{
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-
-  if (exclusive == YES)
     {
-      [nc postNotificationName: GSColorWellDidBecomeExclusiveNotification
-                        object: self];
+      [self deactivate];
     }
+}
 
-  [nc addObserver: self
-         selector: @selector(deactivate)
-             name: GSColorWellDidBecomeExclusiveNotification
-           object: nil];
+- (BOOL) performDragOperation: (id <NSDraggingInfo>)sender
+{
+  NSPasteboard *pb = [sender draggingPasteboard];
+         
+  NSDebugLLog(@"NSColorWell", @"%@: performDragOperation", self);
+  [self setColor: [NSColor colorFromPasteboard: pb]];
+  return YES;
+}
+ 
+- (BOOL) prepareForDragOperation: (id <NSDraggingInfo>)sender
+{
+  return YES;
+}
+ 
+- (void) setAction: (SEL)action
+{
+  _action = action;
+}
 
-  _is_active = YES;
+- (void) setBordered: (BOOL)bordered
+{
+  _is_bordered = bordered;
   [self setNeedsDisplay: YES];
-}
-
-- (void)deactivate
-{
-  _is_active = NO;
-
-  [[NSNotificationCenter defaultCenter] removeObserver: self];
-
-  [self setNeedsDisplay: YES];
-}
-
-- (BOOL)isActive
-{
-  return _is_active;
-}
-
-//
-// Managing Color 
-//
-- (NSColor *) color
-{
-  return _the_color;
 }
 
 - (void) setColor: (NSColor *)color
 {
   ASSIGN(_the_color, color);
+  /*
+   * Experimentation with NeXTstep shows that when the color of an active
+   * colorwell is set, the color of the shared color panel is set too,
+   * though this does not raise the color panel, only the event of
+   * activation does that.
+   */
+  if ([self isActive])
+    {
+      NSColorPanel	*colorPanel = [NSColorPanel sharedColorPanel];
+
+      [colorPanel setColor: _the_color];
+    }
   // Notify our target of colour change
   [self sendAction: _action to: _target];
   [self setNeedsDisplay: YES];
+}
+
+- (void) setTarget: (id)target
+{
+  _target = target;
 }
 
 - (void) takeColorFrom: (id)sender
@@ -253,113 +345,9 @@ static NSString *GSColorWellDidBecomeExclusiveNotification =
     }
 }
 
-
-- (void) setAction: (SEL)action
-{
-  _action = action;
-}
-
-- (SEL) action
-{
-  return _action;
-}
-
-- (void) setTarget: (id)target
-{
-  _target = target;
-}
-
 - (id) target
 {
   return _target;
-}
-
-//
-// Managing Borders 
-//
-- (BOOL) isBordered
-{
-  return _is_bordered;
-}
-
-- (void) setBordered: (BOOL)bordered
-{
-  _is_bordered = bordered;
-  [self setNeedsDisplay: YES];
-}
-
-//
-// NSDraggingSource
-//
-  
-- (unsigned int) draggingSourceOperationMaskForLocal: (BOOL)flag
-{
-  return NSDragOperationCopy;
-}
-
-//
-// NSDraggingDestination
-//
-  
-- (unsigned int) draggingEntered: (id <NSDraggingInfo>)sender
-{
-  NSPasteboard *pb;
-  NSDragOperation sourceDragMask;
-       
-  NSDebugLLog(@"NSColorWell", @"%@: draggingEntered", self);
-  sourceDragMask = [sender draggingSourceOperationMask];
-  pb = [sender draggingPasteboard];
- 
-  if ([[pb types] indexOfObject: NSColorPboardType] != NSNotFound)
-    {
-      if (sourceDragMask & NSDragOperationCopy)
-        {
-          return NSDragOperationCopy;
-        }
-    }
- 
-  return NSDragOperationNone;
-} 
-
-- (BOOL) prepareForDragOperation: (id <NSDraggingInfo>)sender
-{
-  return YES;
-}
- 
-- (BOOL) performDragOperation: (id <NSDraggingInfo>)sender
-{
-  NSPasteboard *pb = [sender draggingPasteboard];
-         
-  NSDebugLLog(@"NSColorWell", @"%@: performDragOperation", self);
-  [self setColor: [NSColor colorFromPasteboard: pb]];
-  return YES;
-}
- 
-//
-// NSCoding protocol
-//
-- (void) encodeWithCoder: (NSCoder*)aCoder
-{
-  [super encodeWithCoder: aCoder];
-  [aCoder encodeObject: _the_color];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_active];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_bordered];
-  [aCoder encodeConditionalObject: _target];
-  [aCoder encodeValueOfObjCType: @encode(SEL) at: &_action];
-}
-
-- (id) initWithCoder: (NSCoder*)aDecoder
-{
-  [super initWithCoder: aDecoder];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_the_color];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_active];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_bordered];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &_target];
-  // Undo RETAIN by decoder
-  TEST_RELEASE(_target);
-  [aDecoder decodeValueOfObjCType: @encode(SEL) at: &_action];
-
-  return self;
 }
 
 @end
