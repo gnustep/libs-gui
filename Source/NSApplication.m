@@ -201,11 +201,17 @@ NSApplication	*NSApp = nil;
    */
   if ((filePath = [defs stringForKey: @"GSFilePath"]) != nil)
     {
-      [self application: self openFile: filePath];
+      if ([delegate respondsToSelector: @selector(application:openFile:)])
+	{
+	  [delegate application: self openFile: filePath];
+	}
     }
   else if ((filePath = [defs stringForKey: @"GSTempPath"]) != nil)
     {
-      [self application: self openTempFile: filePath];
+      if ([delegate respondsToSelector: @selector(application:openTempFile:)])
+	{
+	  [delegate application: self openTempFile: filePath];
+	}
     }
 }
 
@@ -575,34 +581,21 @@ NSApplication	*NSApp = nil;
 	  break;
 	}
 
-      case NSRightMouseDown:
-	if (main_menu)
-	  {
-	    static NSMenu	*copyOfMainMenu = nil;
-	    NSWindow		*copyMenuWindow;
-
-	    if (!copyOfMainMenu)	/* display the menu under the mouse */
-	      copyOfMainMenu = [main_menu copy];
-	    copyMenuWindow = [copyOfMainMenu window];
-	    [copyOfMainMenu _rightMouseDisplay];
-	    [copyMenuWindow _captureMouse: self];
-	    [[copyOfMainMenu menuView] mouseDown: theEvent];
-	    [copyMenuWindow _releaseMouse: self];
-	  }
-	break;
-
       default:	/* pass all other events to the event's window	*/
 	{
-	  NSWindow* window = [theEvent window];
+	  NSWindow	*window = [theEvent window];
 
 	  if (!theEvent)
 	    NSDebugLog(@"NSEvent is nil!\n");
 	  NSDebugLog(@"NSEvent type: %d", [theEvent type]);
 	  NSDebugLog(@"send event to window");
 	  NSDebugLog([window description]);
-	  if (!window)
+	  if (window)
+	    [window sendEvent: theEvent];
+	  else if ([theEvent type] == NSRightMouseDown)
+	    [self rightMouseDown: theEvent];
+	  else
 	    NSDebugLog(@"no window");
-	  [window sendEvent: theEvent];
 	}
     }
 }
@@ -1343,7 +1336,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 		}
 	      if (changed)
 		{
-		  [[item controlView] sizeToFit];
+		  [(id)[item controlView] sizeToFit];
 		  [menu sizeToFit];
 		  [menu update];
 		}
@@ -1413,7 +1406,11 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
  */
 - (void) terminate: (id)sender
 {
-  if ([self applicationShouldTerminate: self])
+  BOOL	shouldTerminate = YES;
+
+  if ([delegate respondsToSelector: @selector(applicationShouldTerminate:)])
+    shouldTerminate = [delegate applicationShouldTerminate: sender];
+  if (shouldTerminate)
     {
       app_should_quit = YES;
       /*
@@ -1455,131 +1452,6 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
   SET_DELEGATE_NOTIFICATION(WillResignActive);
   SET_DELEGATE_NOTIFICATION(WillUnhide);
   SET_DELEGATE_NOTIFICATION(WillUpdate);
-}
-
-/*
- * Implemented by the delegate
- */
-- (BOOL) application: sender openFileWithoutUI: (NSString *)filename
-{
-  BOOL result = NO;
-
-  if ([delegate respondsToSelector: @selector(application:openFileWithoutUI:)])
-    result = [delegate application: sender openFileWithoutUI: filename];
-
-  return result;
-}
-
-- (BOOL) application: (NSApplication *)app openFile: (NSString *)filename
-{
-  BOOL result = NO;
-
-  if ([delegate respondsToSelector: @selector(application:openFile:)])
-    result = [delegate application: app openFile: filename];
-
-  return result;
-}
-
-- (BOOL) application: (NSApplication *)app openTempFile: (NSString *)filename
-{
-  BOOL result = NO;
-
-  if ([delegate respondsToSelector: @selector(application:openTempFile:)])
-    result = [delegate application: app openTempFile: filename];
-
-  return result;
-}
-
-- (void) applicationDidBecomeActive: (NSNotification *)aNotification
-{
-  if ([delegate respondsToSelector: @selector(applicationDidBecomeActive:)])
-    [delegate applicationDidBecomeActive: aNotification];
-}
-
-- (void) applicationDidFinishLaunching: (NSNotification *)aNotification
-{
-  if ([delegate respondsToSelector: @selector(applicationDidFinishLaunching:)])
-    [delegate applicationDidFinishLaunching: aNotification];
-}
-
-- (void) applicationDidHide: (NSNotification *)aNotification
-{
-  if ([delegate respondsToSelector: @selector(applicationDidHide:)])
-    [delegate applicationDidHide: aNotification];
-}
-
-- (void) applicationDidResignActive: (NSNotification *)aNotification
-{
-  if ([delegate respondsToSelector: @selector(applicationDidResignActive:)])
-    [delegate applicationDidResignActive: aNotification];
-}
-
-- (void) applicationDidUnhide: (NSNotification *)aNotification
-{
-  if ([delegate respondsToSelector: @selector(applicationDidUnhide:)])
-    [delegate applicationDidUnhide: aNotification];
-}
-
-- (void) applicationDidUpdate: (NSNotification *)aNotification
-{
-  if ([delegate respondsToSelector: @selector(applicationDidUpdate:)])
-    [delegate applicationDidUpdate: aNotification];
-}
-
-- (BOOL) applicationOpenUntitledFile: (NSApplication *)app
-{
-  BOOL result = NO;
-
-  if ([delegate respondsToSelector: @selector(applicationOpenUntitledFile:)])
-    result = [delegate applicationOpenUntitledFile: app];
-
-  return result;
-}
-
-- (BOOL) applicationShouldTerminate: sender
-{
-  BOOL result = YES;
-
-  if ([delegate respondsToSelector: @selector(applicationShouldTerminate:)])
-    result = [delegate applicationShouldTerminate: sender];
-
-  return result;
-}
-
-- (void) applicationWillBecomeActive: (NSNotification *)aNotification
-{
-  if ([delegate respondsToSelector: @selector(applicationWillBecomeActive:)])
-    [delegate applicationWillBecomeActive: aNotification];
-}
-
-- (void) applicationWillFinishLaunching: (NSNotification *)aNotification
-{
-  if ([delegate respondsToSelector: @selector(applicationWillFinishLaunching:)])
-    [delegate applicationWillFinishLaunching: aNotification];
-}
-
-- (void) applicationWillHide: (NSNotification *)aNotification
-{
-  if ([delegate respondsToSelector: @selector(applicationWillHide:)])
-    [delegate applicationWillHide: aNotification];
-}
-
-- (void) applicationWillResignActive: (NSNotification *)aNotification
-{
-  if ([delegate respondsToSelector: @selector(applicationWillResignActive:)])
-    [delegate applicationWillResignActive: aNotification];
-}
-
-- (void) applicationWillUnhide: (NSNotification *)aNotification
-{
-  if ([delegate respondsToSelector: @selector(applicationWillUnhide:)])
-    [delegate applicationWillUnhide: aNotification];
-}
-
-- (void) applicationWillUpdate: (NSNotification *)aNotification
-{
-  if ([delegate respondsToSelector: @selector(applicationWillUpdate:)])
-    [delegate applicationWillUpdate: aNotification];
 }
 
 /*

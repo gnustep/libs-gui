@@ -3,7 +3,7 @@
 
    The one and only application class
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996,1999 Free Software Foundation, Inc.
 
    Author:  Scott Christley <scottc@net-community.com>
    Date: 1996
@@ -55,227 +55,202 @@ enum {
   NSRunContinuesResponse
 };
 
-extern NSString *NSModalPanelRunLoopMode;
-extern NSString *NSEventTrackingRunLoopMode;
+extern NSString	*NSModalPanelRunLoopMode;
+extern NSString	*NSEventTrackingRunLoopMode;
 
 @interface NSApplication : NSResponder <NSCoding>
 {
-  // Attributes
-  NSEvent *current_event;
-  NSModalSession session;
-  id key_window;
-  id main_window;
-  id delegate;
-  id listener;
-  NSMenu *main_menu;
-  NSMenuItem *windows_menu;
-  unsigned int current_mod;
-  BOOL app_is_running;
-  BOOL app_should_quit;
-  BOOL app_is_active;
-  BOOL app_is_hidden;
-  BOOL unhide_on_activation;
-  BOOL windows_need_update;
-  NSImage *app_icon;
+  NSEvent		*current_event;
+  NSModalSession	session;
+  NSWindow		*key_window;
+  NSWindow		*main_window;
+  id			delegate;
+  id			listener;
+  NSMenu		*main_menu;
+  NSMenuItem		*windows_menu;
+  unsigned		current_mod;
+  BOOL			app_is_running;
+  BOOL			app_should_quit;
+  BOOL			app_is_active;
+  BOOL			app_is_hidden;
+  BOOL			unhide_on_activation;
+  BOOL			windows_need_update;
+  NSImage		*app_icon;
 
-  BOOL inTrackingLoop;
+  BOOL			inTrackingLoop;
 
   // Reserved for back-end use
   void *be_app_reserved;
 }
 
-//
-// Class methods
-//
-//
-// Creating and initializing the NSApplication
-//
-+ (NSApplication *)sharedApplication;
+/*
+ * Class methods
+ */
 
-//
-// Instance methods
-//
-//
-// Creating and initializing the NSApplication
-//
-- (void)finishLaunching;
+/*
+ * Creating and initializing the NSApplication
+ */
++ (NSApplication*) sharedApplication;
 
-//
-// Changing the active application
-//
-- (void)activateIgnoringOtherApps:(BOOL)flag;
-- (void)deactivate;
-- (BOOL)isActive;
+/*
+ * Instance methods
+ */
 
-//
-// Running the event loop
-//
-- (void)abortModal;
-- (NSModalSession)beginModalSessionForWindow:(NSWindow *)theWindow;
-- (void)endModalSession:(NSModalSession)theSession;
-- (BOOL)isRunning;
-- (void)run;
-- (int)runModalForWindow:(NSWindow *)theWindow;
-- (int)runModalSession:(NSModalSession)theSession;
-- (void)sendEvent:(NSEvent *)theEvent;
-- (void)stop:sender;
-- (void)stopModal;
-- (void)stopModalWithCode:(int)returnCode;
+/*
+ * Creating and initializing the NSApplication
+ */
+- (void) finishLaunching;
 
-//
-// Getting, removing, and posting events
-//
-- (NSEvent *)currentEvent;
-- (void)discardEventsMatchingMask:(unsigned int)mask
-						beforeEvent:(NSEvent *)lastEvent;
-- (NSEvent *)nextEventMatchingMask:(unsigned int)mask
-						untilDate:(NSDate *)expiration
-						inMode:(NSString *)mode
-						dequeue:(BOOL)flag;
-- (void)postEvent:(NSEvent *)event atStart:(BOOL)flag;
+/*
+ * Changing the active application
+ */
+- (void) activateIgnoringOtherApps: (BOOL)flag;
+- (void) deactivate;
+- (BOOL) isActive;
 
-//
-// Sending action messages
-//
-- (BOOL)sendAction:(SEL)aSelector
-		to:aTarget
-	      from:sender;
-- targetForAction:(SEL)aSelector;
-- (BOOL)tryToPerform:(SEL)aSelector
-		with:anObject;
+/*
+ * Running the event loop
+ */
+- (void) abortModal;
+- (NSModalSession) beginModalSessionForWindow: (NSWindow*)theWindow;
+- (void) endModalSession: (NSModalSession)theSession;
+- (BOOL) isRunning;
+- (void) run;
+- (int) runModalForWindow: (NSWindow*)theWindow;
+- (int) runModalSession: (NSModalSession)theSession;
+- (void) sendEvent: (NSEvent*)theEvent;
+- (void) stop: (id)sender;
+- (void) stopModal;
+- (void) stopModalWithCode: (int)returnCode;
 
-//
-// Setting the application's icon
-//
-- (void)setApplicationIconImage:(NSImage *)anImage;
-- (NSImage *)applicationIconImage;
+/*
+ * Getting, removing, and posting events
+ */
+- (NSEvent*) currentEvent;
+- (void) discardEventsMatchingMask: (unsigned)mask
+		       beforeEvent: (NSEvent*)lastEvent;
+- (NSEvent*) nextEventMatchingMask: (unsigned)mask
+			 untilDate: (NSDate*)expiration
+			    inMode: (NSString*)mode
+			   dequeue: (BOOL)flag;
+- (void) postEvent: (NSEvent*)event atStart: (BOOL)flag;
 
-//
-// Hiding all windows
-//
-- (void)hide:sender;
-- (BOOL)isHidden;
-- (void)unhide:sender;
-- (void)unhideWithoutActivation;
+/*
+ * Sending action messages
+ */
+- (BOOL) sendAction: (SEL)aSelector
+		 to: (id)aTarget
+	       from: (id)sender;
+- (id) targetForAction: (SEL)aSelector;
+- (BOOL) tryToPerform: (SEL)aSelector
+		 with: (id)anObject;
 
-//
-// Managing windows
-//
-- (NSWindow *)keyWindow;
-- (NSWindow *)mainWindow;
-- (NSWindow *)makeWindowsPerform:(SEL)aSelector
-			 inOrder:(BOOL)flag;
-- (void)miniaturizeAll:sender;
-- (void)preventWindowOrdering;
-- (void)setWindowsNeedUpdate:(BOOL)flag;
-- (void)updateWindows;
-- (NSArray *)windows;
-- (NSWindow *)windowWithWindowNumber:(int)windowNum;
+/*
+ * Setting the application's icon
+ */
+- (void) setApplicationIconImage: (NSImage*)anImage;
+- (NSImage*) applicationIconImage;
 
-//
-// Showing Standard Panels
-//
-- (void)orderFrontColorPanel:sender;
-- (void)orderFrontDataLinkPanel:sender;
-- (void)orderFrontHelpPanel:sender;
-- (void)runPageLayout:sender;
+/*
+ * Hiding all windows
+ */
+- (void) hide: (id)sender;
+- (BOOL) isHidden;
+- (void) unhide: (id)sender;
+- (void) unhideWithoutActivation;
 
-//
-// Getting the main menu
-//
-- (NSMenu *)mainMenu;
-- (void)setMainMenu:(NSMenu *)aMenu;
+/*
+ * Managing windows
+ */
+- (NSWindow*) keyWindow;
+- (NSWindow*) mainWindow;
+- (NSWindow*) makeWindowsPerform: (SEL)aSelector
+			 inOrder: (BOOL)flag;
+- (void) miniaturizeAll: (id)sender;
+- (void) preventWindowOrdering;
+- (void) setWindowsNeedUpdate: (BOOL)flag;
+- (void) updateWindows;
+- (NSArray*) windows;
+- (NSWindow*) windowWithWindowNumber: (int)windowNum;
 
-//
-// Managing the Windows menu
-//
-- (void)addWindowsItem:aWindow
-		 title:(NSString *)aString
-	      filename:(BOOL)isFilename;
-- (void)arrangeInFront:sender;
-- (void)changeWindowsItem:aWindow
-		 title:(NSString *)aString
-		 filename:(BOOL)isFilename;
-- (void)removeWindowsItem:aWindow;
-- (void)setWindowsMenu:aMenu;
-- (void)updateWindowsItem:aWindow;
-- (NSMenu *)windowsMenu;
+/*
+ * Showing Standard Panels
+ */
+- (void) orderFrontColorPanel: (id)sender;
+- (void) orderFrontDataLinkPanel: (id)sender;
+- (void) orderFrontHelpPanel: (id)sender;
+- (void) runPageLayout: (id)sender;
 
-//
-// Managing the Service menu
-//
-- (void)registerServicesMenuSendTypes:(NSArray *)sendTypes
-			  returnTypes:(NSArray *)returnTypes;
-- (NSMenu *)servicesMenu;
-- (id)servicesProvider;
-- (void)setServicesMenu:(NSMenu *)aMenu;
-- (void)setServicesProvider:(id)anObject;
-- validRequestorForSendType:(NSString *)sendType
-		 returnType:(NSString *)returnType;
+/*
+ * Getting the main menu
+ */
+- (NSMenu*) mainMenu;
+- (void) setMainMenu: (NSMenu*)aMenu;
 
-//
-// Getting the display context
-//
-- (NSGraphicsContext *)context;
+/*
+ * Managing the Windows menu
+ */
+- (void) addWindowsItem: (NSWindow*)aWindow
+		  title: (NSString*)aString
+	       filename: (BOOL)isFilename;
+- (void) arrangeInFront: (id)sender;
+- (void) changeWindowsItem: (NSWindow*)aWindow
+		     title: (NSString*)aString
+		  filename: (BOOL)isFilename;
+- (void) removeWindowsItem: (NSWindow*)aWindow;
+- (void) setWindowsMenu: (NSMenu*)aMenu;
+- (void) updateWindowsItem: (NSWindow*)aWindow;
+- (NSMenu*) windowsMenu;
 
-//
-// Reporting an exception
-//
-- (void)reportException:(NSException *)anException;
+/*
+ * Managing the Service menu
+ */
+- (void) registerServicesMenuSendTypes: (NSArray*)sendTypes
+			   returnTypes: (NSArray*)returnTypes;
+- (NSMenu*) servicesMenu;
+- (id) servicesProvider;
+- (void) setServicesMenu: (NSMenu*)aMenu;
+- (void) setServicesProvider: (id)anObject;
+- (id) validRequestorForSendType: (NSString*)sendType
+		      returnType: (NSString*)returnType;
 
-//
-// Terminating the application
-//
-- (void)terminate:sender;
+/*
+ * Getting the display context
+ */
+- (NSGraphicsContext*) context;
 
-//
-// Assigning a delegate
-//
-- delegate;
-- (void)setDelegate:anObject;
+/*
+ * Reporting an exception
+ */
+- (void) reportException: (NSException*)anException;
 
-//
-// Implemented by the delegate
-//
-- (BOOL)application:sender openFileWithoutUI:(NSString *)filename;
-- (BOOL)application:(NSApplication *)app openFile:(NSString *)filename;
-- (BOOL)application:(NSApplication *)app openTempFile:(NSString *)filename;
-- (void)applicationDidBecomeActive:(NSNotification *)aNotification;
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification;
-- (void)applicationDidHide:(NSNotification *)aNotification;
-- (void)applicationDidResignActive:(NSNotification *)aNotification;
-- (void)applicationDidUnhide:(NSNotification *)aNotification;
-- (void)applicationDidUpdate:(NSNotification *)aNotification;
-- (BOOL)applicationOpenUntitledFile:(NSApplication *)app;
-- (BOOL)applicationShouldTerminate:sender;
-- (void)applicationWillBecomeActive:(NSNotification *)aNotification;
-- (void)applicationWillFinishLaunching:(NSNotification *)aNotification;
-- (void)applicationWillHide:(NSNotification *)aNotification;
-- (void)applicationWillResignActive:(NSNotification *)aNotification;
-- (void)applicationWillUnhide:(NSNotification *)aNotification;
-- (void)applicationWillUpdate:(NSNotification *)aNotification;
+/*
+ * Terminating the application
+ */
+- (void) terminate: (id)sender;
 
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder:aCoder;
-- initWithCoder:aDecoder;
+/*
+ * Assigning a delegate
+ */
+- (id) delegate;
+- (void) setDelegate: (id)anObject;
+
+/*
+ * NSCoding protocol
+ */
+- (void) encodeWithCoder: (NSCoder*)aCoder;
+- (id) initWithCoder: (NSCoder*)aDecoder;
 
 @end
-
-
-@interface NSApplication (BackendMethods)
-/* Set up the run loop input sources for a given mode */
-- (void)setupRunLoopInputSourcesForMode:(NSString*)mode;
-@end
-
 
 @interface NSObject (NSServicesRequests)
 
-// Pasteboard Read/Write
-- (BOOL)readSelectionFromPasteboard:(NSPasteboard *)pboard;
-- (BOOL)writeSelectionToPasteboard:(NSPasteboard *)pboard
-                             types:(NSArray *)types;
+/*
+ * Pasteboard Read/Write
+ */
+- (BOOL) readSelectionFromPasteboard: (NSPasteboard*)pboard;
+- (BOOL) writeSelectionToPasteboard: (NSPasteboard*)pboard
+                              types: (NSArray*)types;
 
 @end
 
@@ -283,53 +258,87 @@ extern NSString *NSEventTrackingRunLoopMode;
 /* Backend functions */
 extern BOOL initialize_gnustep_backend (void);
 
+#ifndef	NO_GNUSTEP
+/*
+ * A formal protocol that duplicates the informal protocol for delegates.
+ */
+@protocol	GSAppDelegateProtocol
+- (BOOL) application: (NSApplication*)app
+   openFileWithoutUI: (NSString*)filename;
+- (BOOL) application: (NSApplication*)app
+	    openFile: (NSString*)filename;
+- (BOOL) application: (NSApplication*)app
+	openTempFile: (NSString*)filename;
+- (void) applicationDidBecomeActive: (NSNotification*)aNotification;
+- (void) applicationDidFinishLaunching: (NSNotification*)aNotification;
+- (void) applicationDidHide: (NSNotification*)aNotification;
+- (void) applicationDidResignActive: (NSNotification*)aNotification;
+- (void) applicationDidUnhide: (NSNotification*)aNotification;
+- (void) applicationDidUpdate: (NSNotification*)aNotification;
+- (BOOL) applicationOpenUntitledFile: (NSApplication*)app;
+- (BOOL) applicationShouldTerminate: (id)sender;
+- (void) applicationWillBecomeActive: (NSNotification*)aNotification;
+- (void) applicationWillFinishLaunching: (NSNotification*)aNotification;
+- (void) applicationWillHide: (NSNotification*)aNotification;
+- (void) applicationWillResignActive: (NSNotification*)aNotification;
+- (void) applicationWillUnhide: (NSNotification*)aNotification;
+- (void) applicationWillUpdate: (NSNotification*)aNotification;
+@end
+#endif
 
-//
-// Notifications
-//
-extern NSString *NSApplicationDidBecomeActiveNotification;
-extern NSString *NSApplicationDidFinishLaunchingNotification;
-extern NSString *NSApplicationDidHideNotification;
-extern NSString *NSApplicationDidResignActiveNotification;
-extern NSString *NSApplicationDidUnhideNotification;
-extern NSString *NSApplicationDidUpdateNotification;
-extern NSString *NSApplicationWillBecomeActiveNotification;
-extern NSString *NSApplicationWillFinishLaunchingNotification;
-extern NSString *NSApplicationWillTerminateNotification;
-extern NSString *NSApplicationWillHideNotification;
-extern NSString *NSApplicationWillResignActiveNotification;
-extern NSString *NSApplicationWillUnhideNotification;
-extern NSString *NSApplicationWillUpdateNotification;
+/*
+ * Notifications
+ */
+extern NSString	*NSApplicationDidBecomeActiveNotification;
+extern NSString	*NSApplicationDidFinishLaunchingNotification;
+extern NSString	*NSApplicationDidHideNotification;
+extern NSString	*NSApplicationDidResignActiveNotification;
+extern NSString	*NSApplicationDidUnhideNotification;
+extern NSString	*NSApplicationDidUpdateNotification;
+extern NSString	*NSApplicationWillBecomeActiveNotification;
+extern NSString	*NSApplicationWillFinishLaunchingNotification;
+extern NSString	*NSApplicationWillTerminateNotification;
+extern NSString	*NSApplicationWillHideNotification;
+extern NSString	*NSApplicationWillResignActiveNotification;
+extern NSString	*NSApplicationWillUnhideNotification;
+extern NSString	*NSApplicationWillUpdateNotification;
 
-//
-// Determine Whether an Item Is Included in Services Menus
-//
-int NSSetShowsServicesMenuItem(NSString *item, BOOL showService);
-BOOL NSShowsServicesMenuItem(NSString *item);
+/*
+ * Determine Whether an Item Is Included in Services Menus
+ */
+int
+NSSetShowsServicesMenuItem(NSString *item, BOOL showService);
 
-//
-// Programmatically Invoke a Service
-//
-BOOL NSPerformService(NSString *item, NSPasteboard *pboard);
+BOOL
+NSShowsServicesMenuItem(NSString *item);
 
-//
-// Force Services Menu to Update Based on New Services
-//
-void NSUpdateDynamicServices(void);
+/*
+ * Programmatically Invoke a Service
+ */
+BOOL
+NSPerformService(NSString *item, NSPasteboard *pboard);
 
-//
-// Register object to handle services requests.
-//
+/*
+ * Force Services Menu to Update Based on New Services
+ */
+void
+NSUpdateDynamicServices(void);
+
+/*
+ * Register object to handle services requests.
+ */
 void
 NSRegisterServicesProvider(id provider, NSString *name);
 
-int NSApplicationMain(int argc, const char **argv);
+int
+NSApplicationMain(int argc, const char **argv);
 
-NSString *NSOpenStepRootDirectory(void);
+NSString*
+NSOpenStepRootDirectory(void);
 
-//
-// The NSApp global variable.
-//
-extern NSApplication *NSApp;
+/*
+ * The NSApp global variable.
+ */
+extern NSApplication	*NSApp;
 
 #endif // _GNUstep_H_NSApplication

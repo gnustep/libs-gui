@@ -29,6 +29,8 @@
 #include <gnustep/gui/config.h>
 #include <Foundation/NSCoder.h>
 #include <AppKit/NSResponder.h>
+#include <AppKit/NSApplication.h>
+#include <AppKit/NSMenu.h>
 #include <AppKit/NSGraphics.h>
 #include <objc/objc.h>
 
@@ -115,7 +117,7 @@
   if (next_responder)
     return [next_responder flagsChanged: theEvent];
   else
-    return [self noResponderFor: @selector(flagsChanged: )];
+    return [self noResponderFor: @selector(flagsChanged:)];
 }
 
 - (void) helpRequested: (NSEvent *)theEvent
@@ -123,7 +125,7 @@
   if (next_responder)
     return [next_responder helpRequested: theEvent];
   else
-    return [self noResponderFor: @selector(helpRequested: )];
+    return [self noResponderFor: @selector(helpRequested:)];
 }
 
 - (void) keyDown: (NSEvent *)theEvent
@@ -131,7 +133,7 @@
   if (next_responder)
     return [next_responder keyDown: theEvent];
   else
-    return [self noResponderFor: @selector(keyDown: )];
+    return [self noResponderFor: @selector(keyDown:)];
 }
 
 - (void) keyUp: (NSEvent *)theEvent
@@ -139,7 +141,7 @@
   if (next_responder)
     return [next_responder keyUp: theEvent];
   else
-    return [self noResponderFor: @selector(keyUp: )];
+    return [self noResponderFor: @selector(keyUp:)];
 }
 
 - (void) mouseDown: (NSEvent *)theEvent
@@ -147,7 +149,7 @@
   if (next_responder)
     return [next_responder mouseDown: theEvent];
   else
-    return [self noResponderFor: @selector(mouseDown: )];
+    return [self noResponderFor: @selector(mouseDown:)];
 }
 
 - (void) mouseDragged: (NSEvent *)theEvent
@@ -155,7 +157,7 @@
   if (next_responder)
     return [next_responder mouseDragged: theEvent];
   else
-    return [self noResponderFor: @selector(mouseDragged: )];
+    return [self noResponderFor: @selector(mouseDragged:)];
 }
 
 - (void) mouseEntered: (NSEvent *)theEvent
@@ -163,7 +165,7 @@
   if (next_responder)
     return [next_responder mouseEntered: theEvent];
   else
-    return [self noResponderFor: @selector(mouseEntered: )];
+    return [self noResponderFor: @selector(mouseEntered:)];
 }
 
 - (void) mouseExited: (NSEvent *)theEvent
@@ -171,7 +173,7 @@
   if (next_responder)
     return [next_responder mouseExited: theEvent];
   else
-    return [self noResponderFor: @selector(mouseExited: )];
+    return [self noResponderFor: @selector(mouseExited:)];
 }
 
 - (void) mouseMoved: (NSEvent *)theEvent
@@ -179,7 +181,7 @@
   if (next_responder)
     return [next_responder mouseMoved: theEvent];
   else
-    return [self noResponderFor: @selector(mouseMoved: )];
+    return [self noResponderFor: @selector(mouseMoved:)];
 }
 
 - (void) mouseUp: (NSEvent *)theEvent
@@ -187,13 +189,13 @@
   if (next_responder)
     return [next_responder mouseUp: theEvent];
   else
-    return [self noResponderFor: @selector(mouseUp: )];
+    return [self noResponderFor: @selector(mouseUp:)];
 }
 
 - (void) noResponderFor: (SEL)eventSelector
 {
   /* Only beep for key down events */
-  if (sel_eq(eventSelector, @selector(keyDown: )))
+  if (sel_eq(eventSelector, @selector(keyDown:)))
     NSBeep();
 }
 
@@ -202,7 +204,14 @@
   if (next_responder)
     return [next_responder rightMouseDown: theEvent];
   else
-    return [self noResponderFor: @selector(rightMouseDown: )];
+    {
+      NSMenu	*menu = [NSApp mainMenu];
+
+      if (menu)
+	[menu _rightMouseDisplay];
+      else
+	return [self noResponderFor: @selector(rightMouseDown:)];
+    }
 }
 
 - (void) rightMouseDragged: (NSEvent *)theEvent
@@ -210,7 +219,7 @@
   if (next_responder)
     return [next_responder rightMouseDragged: theEvent];
   else
-    return [self noResponderFor: @selector(rightMouseDragged: )];
+    return [self noResponderFor: @selector(rightMouseDragged:)];
 }
 
 - (void) rightMouseUp: (NSEvent *)theEvent
@@ -218,7 +227,7 @@
   if (next_responder)
     return [next_responder rightMouseUp: theEvent];
   else
-    return [self noResponderFor: @selector(rightMouseUp: )];
+    return [self noResponderFor: @selector(rightMouseUp:)];
 }
 
 /*

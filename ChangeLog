@@ -1,3 +1,13 @@
+Fri Jul  9  9:33:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/AppKit/NSApplication.h: Removed delegate methods from
+	NSApplication, and put them in a protocol instead.  Removed obsolete
+	backend method.
+	* Source/NSApplication.m: Removed delegate methods.  Removed code
+	that intercepted the right mouse button.
+	* Source/NSResponder.m: Added code so that the last responder will
+	pop-up the main menu if NSRightMouseDown has not been handled.
+
 Tue Jul  6 21:45:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Headers/AppKit/NSGraphicsContext.h: Added new method to perform
