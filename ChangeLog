@@ -1,3 +1,8 @@
+2004-04-09  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
+
+	* Documentation/GuiUser/LanguageSetup.gsdoc: Added Korean stuff.
+	  (Thanks to Song Woo-il.)
+
 2004-04-04  Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Headers/AppKit.h: Added NSNib.h to the #ifndef STRICT_OPENSTEP
