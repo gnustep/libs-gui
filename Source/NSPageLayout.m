@@ -43,7 +43,7 @@
 #include <AppKit/NSPageLayout.h>
 #include <AppKit/NSPrinter.h>
 
-NSPageLayout *shared_instance;
+static NSPageLayout *shared_instance;
 
 #define GSPANELNAME @"GSPageLayout"
 

@@ -42,7 +42,7 @@
 #include <AppKit/NSSavePanel.h>
 #include <AppKit/NSView.h>
 
-NSPrintPanel *shared_instance;
+static NSPrintPanel *shared_instance;
 
 #define GSPANELNAME @"GSPrintPanel"
 
