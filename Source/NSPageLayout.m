@@ -520,10 +520,10 @@ static NSPageLayout *shared_instance;
 
   //TODO Scaling 
   {
-    control = [[self contentView] viewWithTag: NSPLScaleField];
     float scale = 100;
     NSNumber *scaleNumber; 
-    if ( (scaleNumber = [dict objectForKey:NSPrintScalingFactor]  ) ) 
+    control = [[self contentView] viewWithTag: NSPLScaleField];
+    if ((scaleNumber = [dict objectForKey:NSPrintScalingFactor]))
       {
 	scale = [scaleNumber floatValue];
       }

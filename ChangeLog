@@ -1,3 +1,8 @@
+2004-03-08 19:19  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSPageLayout.m (-readPrintInfo): Move declarations before
+	statements.
+
 2004-03-08 19:04  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSComboBoxCell.m (-runModalPopUp): Don't make the popup
