@@ -254,8 +254,14 @@
     }
   else
     {
-      // Set source ivar to 
-      NSLog(@"Direct setting of ivars not yet implemented");
+      /*
+       * Use the GNUstep additional function to set the instance variable
+       * directly.
+       * FIXME - need some way to do this for libFoundation and Foundation
+       * based systems.
+       */
+      GSSetInstanceVariable(source, outletName, (void*)&target); 
+      NSLog(@"Direct setting of ivar failed");
     }
   return NO;
 }
