@@ -1,3 +1,13 @@
+1999-06-20  Michael Hanni  <mhanni@sprintmail.com>
+
+	* Source/NSPopUpButton.m: hooked up all the actions and targets
+	now works for popup, haven't finished pulldown yet.
+	* Source/NSTabView.m: now draws the view correctly for all cases(?)
+	* Source/NSTabViewItem.m: spits out correct values for string
+	length, though more work is needed. No drawing, no events yet.
+
+	NSPopUpButton now has basic functionality, ie. it works.
+
 1999-06-19  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Images/common_Nibble.tiff: made inner gray area transparent.

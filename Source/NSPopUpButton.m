@@ -34,6 +34,7 @@
 #include <AppKit/NSPopUpButtonCell.h>
 #include <AppKit/NSApplication.h>
 #include <AppKit/NSMenu.h>
+#include <AppKit/NSFont.h>
 
 @implementation NSPopUpButtonMatrix
 - (id) initWithFrame: (NSRect)rect
@@ -57,8 +58,6 @@
 { 
   id menuCell = [[NSPopUpButtonCell new] autorelease];
 
-  NSLog(@"insertItem.\n");
- 
   [menuCell setFont:[NSFont systemFontOfSize:12]];
   [menuCell setTitle: aString];
 //  [menuCell setAction: aSelector];
@@ -77,6 +76,11 @@
 - (NSString *)titleOfSelectedItem
 {
   return [[cells objectAtIndex:selected_cell] title];
+}
+
+- (void)setPopUpButton:(NSPopUpButton *)popb
+{
+  ASSIGN(popup_button, popb);
 }
 @end
 
@@ -116,6 +120,7 @@
 {
   [super initWithFrame:frameRect];
   list_items = [[NSPopUpButtonMatrix alloc] initWithFrame:frameRect];
+  [list_items setPopUpButton:self];
   is_up = NO;
   pulls_down = flag;
   selected_item = 0;
@@ -150,6 +155,19 @@
 - (void)setTarget:(id)anObject
 {
   pub_target = anObject;
+}
+
+- (void)buttonSelected:(id)sender
+{
+  selected_item = [self indexOfItemWithTitle:[sender title]];
+
+  [self synchronizeTitleAndSelectedItem];
+
+  [self drawRect:[self frame]];
+  [self setNeedsDisplay:YES];
+
+  if (pub_target && pub_action)
+    [pub_target performSelector:pub_action withObject:self];
 }
 
 //
@@ -350,12 +368,10 @@
 //
 - (void)mouseDown:(NSEvent *)theEvent
 {
-  NSLog(@"mouseDown:");
 }
 
 - (void)mouseUp:(NSEvent *)theEvent
 {
-  NSLog(@"mouseUp:");
 }
 
 - (void)mouseMoved:(NSEvent *)theEvent
@@ -364,8 +380,6 @@
 
 - (NSView *)hitTest:(NSPoint)aPoint
 {
-  NSLog(@"hitTest:");
-
   // First check ourselves
 //  if ([self mouse:aPoint inRect:bounds]) return self;
   if ([self mouse:aPoint inRect:[self frame]]) return self;

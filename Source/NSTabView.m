@@ -1,4 +1,8 @@
+
+#include <AppKit/NSColor.h>
+#include <AppKit/NSImage.h>
 #include <AppKit/NSTabView.h>
+#include <AppKit/PSOperators.h>
 
 @implementation NSTabView
 - (id)initWithFrame:(NSRect)rect
@@ -8,6 +12,7 @@
   // setup variables  
 
   tab_items = [NSMutableArray new];
+  tab_font = [NSFont systemFontOfSize:12];
 
   return self;
 }
@@ -16,12 +21,14 @@
 
 - (void)addTabViewItem:(NSTabViewItem *)tabViewItem
 {
+  [tabViewItem _setTabView:self];
   [tab_items insertObject:tabViewItem atIndex:[tab_items count]];
 }
 
 - (void)insertTabViewItem:(NSTabViewItem *)tabViewItem
 		  atIndex:(int)index
 {
+  [tabViewItem _setTabView:self];
   [tab_items insertObject:tabViewItem atIndex:index];
 }
 
@@ -153,6 +160,38 @@
 - (NSRect)contentRect
 {
   return NSZeroRect;
+}
+
+// Drawing.
+
+- (void)drawRect:(NSRect)rect
+{
+  NSGraphicsContext     *ctxt = GSCurrentContext();
+  float borderThickness;
+  int howMany = [tab_items count];
+
+  DPSgsave(ctxt);
+
+  switch (tab_type) {
+    case NSTopTabsBezelBorder:
+      rect.size.height -= 20;
+      NSDrawButton(rect, rect);
+      borderThickness = 2;
+      break;
+    case NSNoTabsBezelBorder:
+      NSDrawButton(rect, rect);
+      borderThickness = 2;
+      break;
+    case NSNoTabsLineBorder:
+      NSFrameRect(rect);
+      borderThickness = 1;
+      break;
+    case NSNoTabsNoBorder:
+      borderThickness = 0;
+      break;
+  }
+
+  DPSgrestore(ctxt);
 }
 
 // Event handling.

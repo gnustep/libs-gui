@@ -1,3 +1,4 @@
+#include <AppKit/NSFont.h>
 #include <AppKit/NSTabViewItem.h>
 
 @implementation NSTabViewItem
@@ -36,10 +37,18 @@
 
 - (NSSize)sizeOfLabel:(BOOL)shouldTruncateLabel
 {
-  if (shouldTruncateLabel) {
-  } else {
-  }
+  NSSize rSize;
 
+  rSize.height = 12;
+
+  if (shouldTruncateLabel) {
+    // what is the algo to truncate?
+    rSize.width = [[item_tabview font] widthOfString:item_label];
+    return rSize;
+  } else {
+    rSize.width = [[item_tabview font] widthOfString:item_label];
+    return rSize;
+  }
   return NSZeroSize;
 }
 
@@ -75,6 +84,11 @@
 }
 
 // Tab view, this is the "super" view.
+
+- (void)_setTabView:(NSTabView *)tabView
+{
+  ASSIGN(item_tabview, tabView);
+}
 
 - (NSTabView *)tabView
 {

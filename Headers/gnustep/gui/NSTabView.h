@@ -89,5 +89,16 @@ typedef enum {
 - (NSTabViewItem *)tabViewItemAtPoint:(NSPoint)point;
 @end
 
+@interface NSObject(NSTabViewDelegate)
+/*
+- (void)tabViewDidChangeNumberOfTabViewItems:(NSTabView *)tabView;
+tabViewDidSelectTabViewItemtabView:didSelectTabViewItem:
+tabViewShouldSelectTabViewItemtabView:shouldSelectTabViewItem:
+tabViewWillSelectTabViewItemtabView:willSelectTabViewItem:
+*/
+@end
+
 #endif // _GNUstep_H_NSTabView
+
+/* Notifications */
 

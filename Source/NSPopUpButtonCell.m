@@ -1,4 +1,5 @@
 #include <gnustep/gui/config.h>  
+#include <AppKit/NSMatrix.h>
 #include <AppKit/NSPopUpButtonCell.h>
 
 @implementation NSPopUpButtonCell
@@ -7,6 +8,4 @@
   if (self == [NSPopUpButtonCell class])
     [self setVersion: 1];
 }
-
-
 @end

@@ -39,12 +39,15 @@
 
 @class NSFont;
 @class NSMatrix;
+@class NSPopUpButton;
 
 @interface NSPopUpButtonMatrix : NSMenuMatrix
 {
   int selected_cell;
+  NSPopUpButton *popup_button;
 }
 - (id) initWithFrame: (NSRect)rect;
+- (void)setPopUpButton:(NSPopUpButton *)popb;
 - (void) setIndexOfSelectedItem:(int)itemNum;
 @end
 
