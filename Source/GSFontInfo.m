@@ -163,7 +163,7 @@ static GSFontEnumerator *sharedEnumerator = nil;
 {
   int i;
   [super init];
-  fontDictionary = [[NSMutableDictionary dictionaryWithCapacity:25] retain];
+  ASSIGN(fontDictionary, [NSMutableDictionary dictionaryWithCapacity:25]);
   for (i = 0; i < 256; i++)
     widths[i] = 0.0;
   return self;
@@ -301,6 +301,12 @@ static GSFontEnumerator *sharedEnumerator = nil;
   return widths; 
 }
 
+- (float)defaultLineHeightForFont
+{
+  // ascent plus descent plus some suitable linegap
+  return [self ascender] + [self descender] + [self pointSize]/ 11.0;
+}
+
 - (NSSize) advancementForGlyph: (NSGlyph)aGlyph
 {
   return NSMakeSize(0,0);
@@ -316,6 +322,11 @@ static GSFontEnumerator *sharedEnumerator = nil;
   return NO;
 }
 
+- (NSMultibyteGlyphPacking)glyphPacking
+{
+  return NSOneByteGlyphPacking;
+}
+
 - (NSGlyph) glyphWithName: (NSString*)glyphName
 {
   return 0;
@@ -325,7 +336,88 @@ static GSFontEnumerator *sharedEnumerator = nil;
 	    precededByGlyph: (NSGlyph)prevGlyph
 		  isNominal: (BOOL*)nominal
 {
-  return NSMakePoint(0,0);
+  NSSize advance;
+
+  if (nominal)
+    *nominal = YES;
+
+  if (curGlyph == NSControlGlyph || prevGlyph == NSControlGlyph)
+    return NSZeroPoint;
+
+  if (curGlyph == NSNullGlyph)
+    advance = [self advancementForGlyph: prevGlyph];
+  else 
+    // Should check kerning
+    advance = [self advancementForGlyph: prevGlyph];
+
+  return NSMakePoint(advance.width, advance.height); 
+}
+
+- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
+              forCharacter:(unichar)aChar 
+            struckOverRect:(NSRect)aRect
+{
+  return NSZeroPoint;
+}
+
+- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
+           struckOverGlyph:(NSGlyph)baseGlyph 
+              metricsExist:(BOOL *)flag
+{
+  if (flag)
+    *flag = NO;
+
+  return NSZeroPoint;
+}
+
+- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
+            struckOverRect:(NSRect)aRect 
+              metricsExist:(BOOL *)flag
+{
+  if (flag)
+    *flag = NO;
+
+  return NSZeroPoint;
+}
+
+- (NSPoint)positionOfGlyph:(NSGlyph)aGlyph 
+              withRelation:(NSGlyphRelation)relation 
+               toBaseGlyph:(NSGlyph)baseGlyph
+          totalAdvancement:(NSSize *)offset 
+              metricsExist:(BOOL *)flag
+{
+  NSRect baseRect = [self boundingRectForGlyph: baseGlyph];
+  NSPoint point = NSZeroPoint;
+
+  if (flag)
+    *flag = NO;
+
+  if (relation == NSGlyphBelow)
+    {
+      point = baseRect.origin;
+    }
+  else
+    {
+      point = NSMakePoint(baseRect.origin.x, NSMaxY(baseRect));
+    }
+
+  if (offset)
+    {
+       NSSize baseSize = [self advancementForGlyph: baseGlyph];
+       NSSize aSize = [self advancementForGlyph: aGlyph];
+
+       if (baseSize.width > aSize.width)
+	 *offset = baseSize;
+       else
+	 *offset = aSize;
+    }
+
+  return point;
+}
+
+- (NSStringEncoding)mostCompatibleStringEncoding
+{
+  return NSASCIIStringEncoding;
 }
 
 - (float) widthOfString: (NSString*)string
