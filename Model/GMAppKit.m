@@ -519,7 +519,8 @@ void __dummy_GMAppKit_functionForLinking() {}
 
   [archiver encodeObject:[self documentView] withName:@"documentView"];
   [archiver encodeBOOL:[self copiesOnScroll] withName:@"copiesOnScroll"];
-  [archiver encodeBOOL:[self drawsBackground] withName:@"drawsBackground"];
+  if([self respondsToSelector: @selector(drawsBackground)])
+    [archiver encodeBOOL:[self drawsBackground] withName:@"drawsBackground"];
   [archiver encodeObject:[self backgroundColor] withName:@"backgroundColor"];
 }
 
@@ -529,7 +530,8 @@ void __dummy_GMAppKit_functionForLinking() {}
 
   [self setDocumentView:[unarchiver decodeObjectWithName:@"documentView"]];
   [self setCopiesOnScroll:[unarchiver decodeBOOLWithName:@"copiesOnScroll"]];
-  [self setDrawsBackground:[unarchiver decodeBOOLWithName:@"drawsBackground"]];
+  if([self respondsToSelector: @selector(setDrawsBackground:)])
+    [self setDrawsBackground:[unarchiver decodeBOOLWithName:@"drawsBackground"]];
   [self setBackgroundColor:[unarchiver decodeObjectWithName:@"backgroundColor"]];
   return self;
 }
@@ -1019,7 +1021,6 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 @end /* NSResponder (GMArchiverMethods) */
 
-
 @implementation NSTextField (GMArchiverMethods)
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
@@ -1042,6 +1043,25 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 @end /* NSTextField (GMArchiverMethods) */
 
+@implementation NSSecureTextFieldCell (GMArchiverMethods)
+
+- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+{
+  [super encodeWithModelArchiver:archiver];
+  if([self respondsToSelector: @selector(echosBullets)])
+    [archiver encodeBOOL:[self echosBullets] withName:@"echosBullets"];
+}
+
+- (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
+{
+  self = [super initWithModelUnarchiver:unarchiver];
+  if([self respondsToSelector: @selector(setEchosBullets:)])
+    [self setEchosBullets:[unarchiver decodeBOOLWithName:@"echosBullets"]];
+
+  return self;
+}
+
+@end /* NSSecureTextFieldCell (GMArchiverMethods) */
 
 @implementation NSView (GMArchiverMethods)
 

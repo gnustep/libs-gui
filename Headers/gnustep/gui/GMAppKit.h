@@ -76,6 +76,9 @@
 @interface NSTextField (GMArchiverMethods) <ModelCoding>
 @end
 
+@interface NSSecureTextFieldCell (GMArchiverMethods) <ModelCoding>
+@end
+
 @interface NSView (GMArchiverMethods) <ModelCoding>
 @end
 

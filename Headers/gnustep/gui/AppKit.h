@@ -56,7 +56,7 @@
 // Controls
 @class NSControl, NSButton, NSTextField, NSScroller, NSBox, NSForm, NSMatrix;
 @class NSPopUpButton, NSProgressIndicator, NSSlider, NSBrowser, NSForm;
-@class NSComboBox;
+@class NSComboBox, NSSecureTextField;
 // Cells
 @class NSCell, NSActionCell, NSButtonCell, NSTextFieldCell, NSFormCell;
 @class NSSliderCell, NSMenuCell, NSBrowserCell, NSFormCell;
@@ -69,7 +69,7 @@
 @class NSFont, NSFontManager, NSFontPanel;
 @class NSPageLayout, NSPrinter, NSPrintInfo, NSPrintOperation, NSPrintPanel;
 @class NSParagraphStyle, NSMutableParagraphStyle, NSPasteboard, NSSelection;
-@class NSSpellChecker, NSSpellServer, NSTextTab;
+@class NSSpellChecker, NSSpellServer, NSTextTab, NSSecureTextFieldCell;
 
 #include <AppKit/NSActionCell.h>
 #include <AppKit/NSAffineTransform.h>
@@ -167,4 +167,4 @@
 
 #include <AppKit/PSOperators.h>
 
-#endif /* _GNUstep_H_AppKit */
+#endif _GNUstep_H_AppKit
