@@ -1,3 +1,10 @@
+2001-03-21  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSColor.m: Change archiving/unarchiving of colors to avoid
+	storing private subclasses in archive.  Fixed bug in unarchiving that
+	caused crashes when retrieving old archives. Tidied source a little to
+	ret rid of some contraventions of coding standards (long lines etc).
+
 2001-03-21  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSColor.h
