@@ -1,9 +1,9 @@
-/** <title>NSInputManager</title>                              -*-objc-*-
+/* NSInputManager                              -*-objc-*-
 
    Copyright (C) 2001 Free Software Foundation, Inc.
 
    Author: Nicola Pero <n.pero@mi.flashnet.it>
-   Date: December 2001
+   Date: December 2001, January 2002
 
    This file is part of the GNUstep GUI Library.
 
@@ -28,8 +28,11 @@
 #include <AppKit/NSInputServer.h>
 #include <AppKit/NSText.h>
 
+#include "GSKeyBindingAction.h"
+#include "GSKeyBindingTable.h"
+
 /* A table mapping character names to characters, used to interpret
-   the character names found in KeyBindings dictionary files.  */
+   the character names found in KeyBindings dictionaries.  */
 #define CHARACTER_TABLE_SIZE 77
 
 static struct 
@@ -124,7 +127,6 @@ character_table[CHARACTER_TABLE_SIZE] =
 
 static NSInputManager *currentInputManager = nil;
 
-
 @implementation NSInputManager
 
 + (NSInputManager *) currentInputManager
@@ -137,24 +139,20 @@ static NSInputManager *currentInputManager = nil;
   return currentInputManager;
 }
 
-- (void) bindKey: (NSString *)key  toAction: (NSString *)action
++ (BOOL) parseKey: (NSString *)key 
+    intoCharacter: (unichar *)character
+     andModifiers: (int *)modifiers
 {
-  /* First we try to parse the key into a character/flags couple  */
-  unichar character = 0;
-  unsigned flags = 0;
-  BOOL isFunctionKey = NO;
-  /* Then we parse the action into a selector  */
-  SEL selector;
-
-  NSString *c;
+  int flags = 0;
+  unichar c = 0;
 
   /* Parse the key: first break it into segments separated by - */
   NSArray *components = [key componentsSeparatedByString: @"-"];
+  NSString *name;
 
   /* Then, parse the modifiers.  The modifiers are the components 
      - all of them except the last one!  */
   int i, count = [components count];
-  int index;
 
   for (i = 0; i < count - 1; i++)
     {
@@ -179,122 +177,109 @@ static NSInputManager *currentInputManager = nil;
 	{
 	  flags |= NSShiftKeyMask;
 	}
+      else if ([modifier isEqualToString: @"NumericPad"]
+	       ||  [modifier isEqualToString: @"Numeric"]
+	       ||  [modifier isEqualToString: @"N"])
+	{
+	  flags |= NSNumericPadKeyMask;
+	}
       else
 	{
 	  NSLog (@"NSInputManager - unknown modifier '%@' ignored", modifier);
+	  return NO;
 	}
     }
 
-  /* The actual index in the little SEL table is the following one.  */
-  index = flags / 2;
-  
   /* Now, parse the actual key.  */
-  c = [components objectAtIndex: (count - 1)];
+  name = [components objectAtIndex: (count - 1)];
   
-  if ([c isEqualToString: @""])
+  if ([name isEqualToString: @""])
     {
       /* This happens if '-' was the character.  */
-      character = '-';
+      c = '-';
     }
-  else if ([c length] == 1)
+  else if ([name length] == 1)
     {
       /* A single character, such as 'a'.  */
-      character = [c characterAtIndex: 0];
+      c = [name characterAtIndex: 0];
     }
   else
     {
       /* A descriptive string, such as Tab or Home.  */
       for (i = 0; i < CHARACTER_TABLE_SIZE; i++)
 	{
-	  if ([c isEqualToString: (character_table[i]).name])
+	  if ([name isEqualToString: (character_table[i]).name])
 	    {
-	      character = (character_table[i]).character;
-	      isFunctionKey = YES;
+	      c = (character_table[i]).character;
+	      flags |= NSFunctionKeyMask;
 	      break;
 	    }
 	}
       if (i == CHARACTER_TABLE_SIZE)
 	{
 	  NSLog (@"NSInputManager - unknown character '%@' ignored", c);
-	  return;
+	  return NO;
+	}
+    }  
+  if (character != NULL)
+    {
+      *character = c;
+    }
+
+  if (modifiers != NULL)
+    {
+      *modifiers = flags;
+    }
+
+  return YES;
+}
+
++ (NSString *) describeKeyStroke: (unichar)character
+		   withModifiers: (int)modifiers
+{
+  NSMutableString *description = [NSMutableString new];
+  int i;
+
+  if (modifiers & NSCommandKeyMask)
+    {
+      [description appendString: @"Command-"];
+    }
+
+  if (modifiers & NSControlKeyMask)
+    {
+      [description appendString: @"Control-"];
+    }
+
+  if (modifiers & NSAlternateKeyMask)
+    {
+      [description appendString: @"Alternate-"];
+    }
+
+  if (modifiers & NSShiftKeyMask)
+    {
+      [description appendString: @"Shift-"];
+    }
+
+  if (modifiers & NSNumericPadKeyMask)
+    {
+      [description appendString: @"Numeric-"];
+    }
+
+  for (i = 0; i < CHARACTER_TABLE_SIZE; i++)
+    {
+      if (character == ((character_table[i]).character))
+	{
+	  [description appendString: character_table[i].name];
+	  break;
 	}
     }  
 
-  /* "" as action means disable the keybinding.  It can be used to override
-     a previous keybinding.  */
-  if ([action isEqualToString: @""])
+  if (i == CHARACTER_TABLE_SIZE)
     {
-      selector = NULL;
+      NSString *c = [NSString stringWithCharacters: &character  length: 1];
+      [description appendString: c];
     }
-  else
-    {
-      selector = NSSelectorFromString (action);
-      if (selector == NULL)
-       {
-         NSLog (@"NSInputManager: unknown selector '%@' ignored", action);
-         return;
-       }
-    }
-    
-  /* Check if there are already some bindings for this character.  */
-  for (i = 0; i < _bindingsCount; i++)
-    {
-      if (_bindings[i].character == character)
-	{
-	  (_bindings[i]).selector[index] = selector;
-	  if (!isFunctionKey)
-	    {
-	      /* Not a function key - set the selector for the character
-		 with shift as well - we don't actually know if the character
-		 is typed with shift or not ! */
-	      flags |= NSShiftKeyMask;
-	      index = flags / 2;
-	      
-	      (_bindings[i]).selector[index] = selector;
-	    }
-	  return;
-	}
-    }
-
-  /* Ok - allocate memory for the new binding.  */
-  if (_bindingsCount == 0)
-    {
-      _bindingsCount = 1;
-      _bindings = objc_malloc (sizeof (struct _GSInputManagerBinding));
-    }
-  else
-    {
-      _bindingsCount++;
-      _bindings = objc_realloc (_bindings, 
-				sizeof (struct _GSInputManagerBinding) 
-				* _bindingsCount);
-    }
-  _bindings[_bindingsCount - 1].character = character;
-
-  /* Set to NULL all selectors.  */
-  for (i = 0; i < 8; i++)
-    {
-      (_bindings[_bindingsCount - 1]).selector[i] = NULL;
-    }
-
-  /* Now save the selector.  */
-  (_bindings[_bindingsCount - 1]).selector[index] = selector;
-  if (!isFunctionKey)
-    {
-      /* Not a function key - set the selector for the character
-	 with shift as well - we don't actually know if the character
-	 is typed with shift or not ! */
-      flags |= NSShiftKeyMask;
-      index = flags / 2;
-      
-      (_bindings[_bindingsCount - 1]).selector[index] = selector;
-    }
-}
-
-- (void) dealloc
-{
-  objc_free (_bindings);
-  return;
+  return description;
 }
 
 - (void) loadBindingsFromFile: (NSString *)fullPath
@@ -302,8 +287,6 @@ static NSInputManager *currentInputManager = nil;
   NS_DURING
     {
       NSDictionary *bindings;
-      NSEnumerator *e;
-      NSString *key;
       
       bindings = [NSDictionary dictionaryWithContentsOfFile: fullPath];
       if (bindings == nil)
@@ -311,12 +294,7 @@ static NSInputManager *currentInputManager = nil;
 	  [NSException raise];
 	}
       
-      e = [bindings keyEnumerator];
-      while ((key = [e nextObject]) != nil)
-	{
-	  [self bindKey: key  
-		toAction: [bindings objectForKey: key]];
-	}
+      [_rootBindingTable loadBindingsFromDictionary: bindings];
     }
   NS_HANDLER
     {
@@ -362,6 +340,46 @@ static NSInputManager *currentInputManager = nil;
   defaults = [NSUserDefaults standardUserDefaults];
 
   self = [super init];
+
+  _rootBindingTable = [GSKeyBindingTable new];
+  
+  /* Read the abort key from the user defaults.  */
+  {
+    NSString *abortKey = [defaults stringForKey: @"GSAbortKey"];
+
+    if (abortKey == nil)
+      {
+	_abortCharacter = 'g';
+	_abortFlags = NSControlKeyMask;		
+      }
+    else if (![NSInputManager parseKey: abortKey  
+			      intoCharacter: &_abortCharacter
+			      andModifiers: &_abortFlags])
+      {
+	NSLog (@"Could not parse GSAbortKey - using Control-g");
+	_abortCharacter = 'g';
+	_abortFlags = NSControlKeyMask;		
+      }
+  }
+
+  /* Read the quote key from the user defaults.  */
+  {
+    NSString *quoteKey = [defaults stringForKey: @"GSQuoteKey"];
+    GSKeyBindingActionQuoteNextKeyStroke *quoteAction;
+    
+    quoteAction = [[GSKeyBindingActionQuoteNextKeyStroke alloc] init];
+
+    if (quoteKey == nil)
+      {
+	quoteKey = @"Control-q";
+      }
+
+    [_rootBindingTable bindKey: quoteKey  toAction: quoteAction];
+    RELEASE (quoteAction);
+  }
+  
+
+  /* FIXME all the following is gonna change.  */
 
   /* Normally, when we start up, we load all the keybindings we find
      in the following files, in this order:
@@ -436,6 +454,13 @@ static NSInputManager *currentInputManager = nil;
   NSEvent *theEvent;
   NSEnumerator *eventEnum = [eventArray objectEnumerator];
 
+  /* If the client has changed, reset our internal state before going
+     on.  */
+  if (client != _currentClient)
+    {
+      [self resetInternalState];
+    }
+
   _currentClient = client;
 
   while ((theEvent = [eventEnum nextObject]) != nil)
@@ -446,73 +471,151 @@ static NSInputManager *currentInputManager = nil;
       unsigned flags = [theEvent modifierFlags] & (NSShiftKeyMask 
 						   | NSAlternateKeyMask 
 						   | NSControlKeyMask);
-      BOOL done = NO;
-      int i;
-      
+
       if ([unmodifiedCharacters length] > 0)
 	{
 	  character = [unmodifiedCharacters characterAtIndex: 0];
 	}
-
       
-      /* Look up the character in the keybindings dictionary.  */
-      for (i = 0; i < _bindingsCount; i++)
+      if (!_interpretNextKeyStrokeLiterally)
 	{
-	  if (_bindings[i].character == character)
+	  GSKeyBindingAction *action;
+	  GSKeyBindingTable *table;
+	  BOOL found;
+
+	  /* Special keybinding recognized in all contexts - abort -
+	     normally bound to Control-g.  The user is confused and
+	     wants to go home.  Abort whatever train of thoughts we
+	     were following, discarding whatever pending keystrokes we
+	     have, and return into default state.  */
+	  if (character == _abortCharacter  &&  flags == _abortFlags)
 	    {
-	      SEL selector  = (_bindings[i]).selector[flags / 2];
+	      [self resetInternalState];
+	      break;
+	    }
+
+	  /* Look up the character in the current keybindings table.  */
+	  found = [_currentBindingTable lookupKeyStroke: character
+					modifiers: flags
+					returningActionIn: &action
+					tableIn: &table];
+	  
+	  if (found)
+	    {
+	      if (action != nil)
+		{
+		  /* First reset our internal state - we are done
+		     interpreting this keystroke sequence.  */
+		  [self resetInternalState];
+		  
+		  /* Then perform the action.  The action might actually
+		     modify our internal state, which is why we reset it
+		     before calling the action! (for example, performing
+		     the action might cause us to interpret the next
+		     keystroke literally).  */
+		  [action performActionWithInputManager: self];
+		  break;
+		}
+	      else if (table != nil)
+		{
+		  /* It's part of a composite multi-stroke
+		     keybinding.  */
+		  _currentBindingTable = table;
+		  [_pendingKeyEvents addObject: theEvent];
+		  break;
+		}
+	      /* Else it is as if we didn't find it! */
+	    }
+	  
+	  /* Ok - the keybinding wasn't found.  If we were tracking a
+	     multi-stroke keybinding, it means we were on a false
+	     track.  */
+	  if ([_pendingKeyEvents count] > 0)
+	    {
+	      NSEvent *e;
+
+	      /* Save the pending events locally in this stack
+		 frame.  */
+	      NSMutableArray *a = _pendingKeyEvents;
+	      RETAIN (a);
 	      
-	      if (selector == NULL)
-		{
-		  /* Get out of loop with done = NO - we found the
-		     keybinding, but it was bound to the default
-		     action, so we stop searching and fall back on the
-		     default action.  */
-		  break;
-		}
-	      else
-		{
-		  [self doCommandBySelector: selector];
-		  done = YES;
-		  break;
-		}
-	    }
-	}
+	      /* Reset our internal state.  */
+	      [self resetInternalState];
+	      
+	      /* Take the very first event we received and which we
+		 tried to interpret as a key binding, which now we
+		 know was the wrong thing to do.  */	      
+	      e = [a objectAtIndex: 0];
 
-      /* If not yet found, perform the default action.  */
-      if (!done)
+	      /* Interpret it literally, since interpreting it as a
+		 keybinding failed.  */
+	      _interpretNextKeyStrokeLiterally = YES;
+	      [self handleKeyboardEvents: [NSArray arrayWithObject: e]
+		    client: client];
+
+	      /* Now feed the remaining pending key events to
+		 ourselves for interpretation - again from
+		 scratch.  */
+	      [a removeObjectAtIndex: 0];
+	      [a addObject: theEvent];
+	      
+	      [self handleKeyboardEvents: a
+		    client: client];
+
+	      RELEASE (a);
+	      break;
+	    }	  
+	}
+      
+      /* We couldn't (or shouldn't) find the keybinding ... perform
+	 the default action - literally interpreting the
+	 keystroke.  */
+
+      /* If this was a forced literal interpretation, make sure the
+	 next one is interpreted normally.  */
+      _interpretNextKeyStrokeLiterally = NO;
+
+      switch (character)
 	{
-	  switch (character)
+	case NSBackspaceCharacter:
+	  [self doCommandBySelector: @selector (deleteBackward:)];
+	  break;
+	  
+	case NSTabCharacter:
+	  if (flags & NSShiftKeyMask)
 	    {
-	    case NSBackspaceCharacter:
-	      [self doCommandBySelector: @selector (deleteBackward:)];
-	      break;
-
-	    case NSTabCharacter:
-	      if (flags & NSShiftKeyMask)
-		{
-		  [self doCommandBySelector: @selector (insertBacktab:)];
-		}
-	      else
-		{
-		  [self doCommandBySelector: @selector (insertTab:)];
-		}
-	      break;
-
-	    case NSEnterCharacter:
-	    case NSFormFeedCharacter:
-	    case NSCarriageReturnCharacter:
-	      [self doCommandBySelector: @selector (insertNewline:)];
-	      break;
-
-	    default:
-	      [self insertText: characters];
-	      break;
+	      [self doCommandBySelector: @selector (insertBacktab:)];
 	    }
+	  else
+	    {
+	      [self doCommandBySelector: @selector (insertTab:)];
+	    }
+	  break;
+	  
+	case NSEnterCharacter:
+	case NSFormFeedCharacter:
+	case NSCarriageReturnCharacter:
+	  [self doCommandBySelector: @selector (insertNewline:)];
+	  break;
+	  
+	default:
+	  [self insertText: characters];
+	  break;
 	}
-    }
+    }  
 }
 
+- (void) resetInternalState
+{
+  _currentBindingTable = _rootBindingTable;
+  ASSIGN (_pendingKeyEvents, [NSMutableArray array]);
+  _interpretNextKeyStrokeLiterally = NO;
+}
+
+- (void) quoteNextKeyStroke
+{
+  _interpretNextKeyStrokeLiterally = YES;
+}
 
 - (BOOL) handleMouseEvent: (NSEvent *)theMouseEvent
 {
