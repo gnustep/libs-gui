@@ -709,19 +709,6 @@ void __dummy_GMAppKit_functionForLinking() {}
 
   imageName = [unarchiver decodeStringWithName:@"name"];
 
-  /* If the image is a standard system image with the MacOSX name, 
-     convert the name to the GNUstep name */
-#ifdef GNU_GUI_LIBRARY
-  if ([imageName isEqualToString: @"NSMenuCheckmark"])
-    imageName = @"common_2DCheckMark";
-  else if ([imageName isEqualToString: @"NSMenuArrow"])
-    imageName = @"common_3DArrowRight";
-  /*  else if ([imageName isEqualToString: @"NSMenuMixedState"])
-      imageName = @"common_??";*/
-  else if ([imageName isEqualToString: @"NSAppleMenuImage"])
-    imageName = @"GNUstepMenuImage";
-#endif
-
   if (imageName)
     image = [NSImage imageNamed: imageName];
 
