@@ -163,6 +163,11 @@ static Class cellClass;
   return [[self selectedCell] intValue];
 }
 
+- (id) objectValue
+{
+  return [[self selectedCell] objectValue];
+}
+
 - (void) setDoubleValue: (double)aDouble
 {
   [self abortEditing];
@@ -184,6 +189,14 @@ static Class cellClass;
   [self abortEditing];
 
   [[self selectedCell] setIntValue: anInt];
+  [self setNeedsDisplay: YES];
+}
+
+- (void) setObjectValue: (id)anObject
+{
+  [self abortEditing];
+
+  [[self selectedCell] setObjectValue: anObject];
   [self setNeedsDisplay: YES];
 }
 
@@ -226,6 +239,12 @@ static Class cellClass;
   [self setNeedsDisplay: YES];
 }
 
+- (void) takeObjectValueFrom: (id)sender
+{
+  [[self selectedCell] takeObjectValueFrom: sender];
+  [self setNeedsDisplay: YES];
+}
+
 - (void) takeStringValueFrom: (id)sender
 {
   [[self selectedCell] takeStringValueFrom: sender];
@@ -262,6 +281,7 @@ static Class cellClass;
 
 - (void) setFont: (NSFont *)fontObject
 {
+  // TODO: Complete
   if (_cell)
     [_cell setFont: fontObject];
 }
@@ -270,6 +290,9 @@ static Class cellClass;
 			   left: (unsigned)leftDigits
 			  right: (unsigned)rightDigits
 {
+  // TODO: Complete
+  [_cell setFloatingPointFormat: autoRange  left: leftDigits
+	 right: rightDigits];
 }
 
 /*
