@@ -1598,7 +1598,7 @@ static NSTextFieldCell *titleCell;
     {
       _scrollerRect.origin.x = bs.width;
       _scrollerRect.origin.y = bs.height - 1;
-      _scrollerRect.size.width = (_frame.size.width - (2 * bs.width)) + 1;
+      _scrollerRect.size.width = (_frame.size.width - (2 * bs.width));
       _scrollerRect.size.height = scrollerWidth;
       
       if (_separatesColumns)
@@ -2087,7 +2087,8 @@ static NSTextFieldCell *titleCell;
 	{
 	  p1 = NSMakePoint((_columnSize.width * i) + 2 + (i-1), 
 			   _columnSize.height + scrollerWidth + 2);
-	  p2 = NSMakePoint((_columnSize.width * i) + 2 + (i-1), scrollerWidth + 3);
+	  p2 = NSMakePoint((_columnSize.width * i) + 2 + (i-1),
+			   scrollerWidth + 2);
 	  [NSBezierPath strokeLineFromPoint: p1 toPoint: p2];
 	}
       
