@@ -201,30 +201,35 @@ Code shared with [NSWindow -sendEvent:], remember to update both places.
   NSEventType	type;
 
   type = [theEvent type];
-  switch (type)
+  if (type == NSLeftMouseDown)
     {
-      case NSLeftMouseDown:
+      if (_f.visible)
 	{
 	  BOOL	wasKey = _f.is_key;
 
-	  if ([NSApp isActive] == NO && ((NSWindow *)self) != [NSApp iconWindow])
-	    {
-	      [NSApp activateIgnoringOtherApps: YES];
-	    }
 	  if (_f.has_closed == NO)
 	    {
 	      v = [_contentView hitTest: [theEvent locationInWindow]];
 	      if (_f.is_key == NO)
 		{
+		  /* NSPanel modification: check becomesKeyOnlyIfNeeded. */
 		  if (!_becomesKeyOnlyIfNeeded || [v needsPanelToBecomeKey])
 		    [self makeKeyAndOrderFront: self];
+		}
+	      /* Activate the app *after* making the receiver key, as app
+		 activation tries to make the previous key window key. */
+	      if ([NSApp isActive] == NO && self != [NSApp iconWindow])
+		{
+		  [NSApp activateIgnoringOtherApps: YES];
 		}
 	      if (_firstResponder != v)
 		{
 		  [self makeFirstResponder: v];
 		}
 	      if (_lastView)
-		DESTROY(_lastView);
+ 		{
+		  DESTROY(_lastView);
+		}
 	      if (wasKey == YES || [v acceptsFirstMouse: theEvent] == YES)
 		{
 		  if ([NSHelpManager isContextHelpModeActive])
@@ -243,12 +248,10 @@ Code shared with [NSWindow -sendEvent:], remember to update both places.
 		}
 	    }
 	  _lastPoint = [theEvent locationInWindow];
-	  break;
 	}
-      default:
-	[super sendEvent: theEvent];
-	break;
+      return;
     }
+  [super sendEvent: theEvent];
 }
 
 @end /* NSPanel */

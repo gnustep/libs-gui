@@ -1,3 +1,10 @@
+2003-11-26 23:55  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSWindow.m (-sendEvent:): Ignore most events sent to
+	windows that have been ordered out.
+	* Source/NSPanel.m (-sendEvent:): Synchronize with [NSWindow
+	-sendEvent:].
+
 2003-11-26 23:54  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSView.m (-autoscroll:): Document.

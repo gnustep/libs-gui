@@ -2839,6 +2839,19 @@ resetCursorRectsForView(NSView *theView)
   NSView	*v;
   NSEventType	type;
 
+  /*
+  If the backend reacts slowly, events (eg. mouse down) might arrive for a
+  window that has been ordered out (and thus is logically invisible). We
+  need to ignore those events. Otherwise, eg. clicking twice on a button
+  that ends a modal session and closes the window with the button might
+  cause the button to be pressed twice, which causes Bad Things to happen
+  when it tries to stop a modal session twice.
+
+  We let NSAppKitDefined events through since they deal with window ordering.
+  */
+  if (!_f.visible && [theEvent type] != NSAppKitDefined)
+    return;
+
   if (!_f.cursor_rects_valid)
     {
       [self resetCursorRects];
