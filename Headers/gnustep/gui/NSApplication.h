@@ -30,6 +30,7 @@
 #define _GNUstep_H_NSApplication
 
 #include <AppKit/NSResponder.h>
+#include <AppKit/GSInfoPanel.h>
 
 @class NSArray;
 @class NSMutableArray;
@@ -69,18 +70,20 @@ extern NSString	*NSEventTrackingRunLoopMode;
   NSMenu		*main_menu;
   NSMenuItem		*windows_menu;
   unsigned		current_mod;
+  // 8 bits
   BOOL			app_is_running;
   BOOL			app_should_quit;
   BOOL			app_is_active;
   BOOL			app_is_hidden;
   BOOL			unhide_on_activation;
   BOOL			windows_need_update;
+  BOOL			inTrackingLoop;
   NSImage		*app_icon;
   NSMutableArray	*_hidden;
   NSMutableArray	*_inactive;
   NSWindow		*_hidden_key;
   NSWindow		*_app_icon_window;
-  BOOL			inTrackingLoop;
+  GSInfoPanel           *_infoPanel;
 
   // Reserved for back-end use
   void *be_app_reserved;
@@ -184,6 +187,17 @@ extern NSString	*NSEventTrackingRunLoopMode;
 - (void) orderFrontDataLinkPanel: (id)sender;
 - (void) orderFrontHelpPanel: (id)sender;
 - (void) runPageLayout: (id)sender;
+/* GNUstep extensions displaying an infoPanel, title is 'Info' */
+/* For a list of the useful values in the dictionary, see GSInfoPanel.h. 
+   The entries are mostly compatible with macosx. */
+- (void) orderFrontStandardInfoPanel: (id)sender;
+- (void) orderFrontStandardInfoPanelWithOptions: (NSDictionary *)dictionary;
+/* macosx extensions displaying an aboutPanel, title is 'About'. 
+   NB: These two methods do exactly the same as the two methods above, 
+   only the title is different. */
+- (void) orderFrontStandardAboutPanel: (id)sender;
+- (void) orderFrontStandardAboutPanelWithOptions: (NSDictionary *)dictionary;
+
 
 /*
  * Getting the main menu

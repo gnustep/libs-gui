@@ -719,6 +719,8 @@ static NSCell* tileCell = nil;
       NSZoneFree(NSDefaultMallocZone(), tmp);
     }
 
+  TEST_RELEASE (_infoPanel);
+
   [super dealloc];
 }
 
@@ -1612,19 +1614,57 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
  * Showing Standard Panels
  */
 - (void) orderFrontColorPanel: sender
-{
+{ 
+  NSRunAlertPanel (NULL, @"Color Panel not implemented yet",
+		   @"OK", NULL, NULL);
 }
 
 - (void) orderFrontDataLinkPanel: sender
 {
+  NSRunAlertPanel (NULL, @"Data Link Panel not implemented yet",
+		   @"OK", NULL, NULL);
 }
 
 - (void) orderFrontHelpPanel: sender
 {
+  NSRunAlertPanel (NULL, @"Help Panel not implemented yet",
+		   @"OK", NULL, NULL)
 }
 
 - (void) runPageLayout: sender
 {
+  NSRunAlertPanel (NULL, @"Page Layout Panel not implemented yet",
+		   @"OK", NULL, NULL);
+}
+
+/* infoPanel, macosx API -- 'About' in the title */
+- (void) orderFrontStandardAboutPanel: sender
+{
+  [self orderFrontStandardAboutPanel: sender];
+}
+
+- (void) orderFrontStandardAboutPanelWithOptions: (NSDictionary *)options
+{
+  if (_infoPanel == nil)
+    _infoPanel = [[GSInfoPanel alloc] initWithDictionary: options];
+  
+  [_infoPanel setTitle: @"About"];
+  [_infoPanel orderFront: self];
+}
+
+/* infoPanel, GNUstep API -- 'Info' in the title */
+- (void) orderFrontStandardInfoPanel: sender
+{
+  [self orderFrontStandardInfoPanelWithOptions: nil];
+}
+
+- (void) orderFrontStandardInfoPanelWithOptions: (NSDictionary *)options
+{
+  if (_infoPanel == nil)
+    _infoPanel = [[GSInfoPanel alloc] initWithDictionary: options];
+  
+  [_infoPanel setTitle: @"Info"];
+  [_infoPanel orderFront: self];
 }
 
 /*
