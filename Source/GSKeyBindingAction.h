@@ -89,4 +89,4 @@
 {}
 @end
 
-#endif _GS_KEYBINDING_ACTION_H
+#endif /* _GS_KEYBINDING_ACTION_H */
