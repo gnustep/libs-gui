@@ -2824,8 +2824,8 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
       // yet the sc's document view, otherwise it will not move it
       [sc setDocumentView: matrix];
 
-      // so we do it manually anyway - the clipview's coordinate
-      // system is flipped - we want the matrix to appear on top
+      // the clipview's coordinate system is flipped - we need the
+      // matrix to appear on top - adjust for it
       mr.origin.y = cs.height;
       [matrix setFrame: mr];
     }
