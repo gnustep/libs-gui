@@ -1,3 +1,16 @@
+Mon Jan  7 17:35:30 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/gnustep/gui/NSApplication.h (_windows_menu): Changed to
+	be an NSMenu * instead of a NSMenuItem *.  This is more logical
+	since often the windows menu is set before the main menu is
+	created.
+	* Source/NSApplication.m: Updated for change in ivar.
+	([-setWindowsMenu:]), ([-setMainMenu:]): Simplified a lot.  All
+	code dependent on the name of the 'Windows' menu was removed as
+	too complex and unreliable when the application is translated.
+	All applications are now required to create the Windows menu
+	themselves, and to call setWindowsMenu: to have it used.
+		
 Mon Jan  7 16:05:19 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSApplication.m ([-setMainMenu:]): Only manually set a
