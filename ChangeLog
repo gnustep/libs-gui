@@ -1,3 +1,11 @@
+2001-01-22  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSLayoutManager.m: loads of glyph changes - added some
+	implementation notes.  Implemented gaps in the glyphs stream.
+	I think all glyph methods are implemented now (probably). 
+	Really needs someone elses eye casting over it, to try to
+	catch any obvious bugs.
+
 2001-01-20  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Source/NSBezierPath.m 

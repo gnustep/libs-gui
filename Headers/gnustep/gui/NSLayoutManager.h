@@ -109,11 +109,12 @@ typedef enum {
   NSTypesetter		*_typesetter;
 
   void			*_glyphData;	// Private glyph storage.
-  void			*_currentGlyphs;	
+  void			*_currentGlyphs;	// Current chunk pointer.
+  unsigned		_currentGlyph;		// Current glyph index.
   void			*_glyphGaps;	// Gaps in character mapping.
-  unsigned		_chunkIndex;
-  unsigned		_glyphIndex;
-  unsigned		_endCharIndex;	// After last char with generated glyph.
+  unsigned		_chunkIndex;	// Current chunk in glyph stream.
+  unsigned		_glyphIndex;	// Current glyph in chunk.
+  unsigned		_numberOfGlyphs;	// After last generated glyph.
   
   NSGlyphGenerator		*_glyphGenerator;
   NSStorage			*_containerUsedRects;
