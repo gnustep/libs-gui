@@ -1,3 +1,7 @@
+Tue Apr  6 14:50:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Applied Felipes fixes from mgstep.
+
 Thu Apr  1 20:45:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSStringDrawing.m: improved paragraph style handling and
