@@ -65,14 +65,16 @@ typedef enum _NSMatrixMode {
   NSSize	intercell;
   NSColor	*backgroundColor;
   NSColor	*cellBackgroundColor;
-  id		delegate;
-  id		target;
-  SEL		action;
-  SEL		doubleAction;
-  SEL		errorAction;
-  id		selectedCell;
-  int		selectedRow;
-  int		selectedColumn;
+  id		_delegate;
+  NSText*       _textObject;        
+  BOOL          _tabKeyTraversesCells;
+  id		_target;
+  SEL		_action;
+  SEL		_doubleAction;
+  SEL		_errorAction;
+  id		_selectedCell;
+  int		_selectedRow;
+  int		_selectedColumn;
   BOOL		allowsEmptySelection;
   BOOL		selectionByRect;
   BOOL		drawsBackground;
@@ -233,6 +235,8 @@ typedef enum _NSMatrixMode {
 - (id) previousText;
 - (void) setNextText: (id)anObject;
 - (void) setPreviousText: (id)anObject;
+- (BOOL) tabKeyTraversesCells;
+- (void) setTabKeyTraversesCells: (BOOL)flag;
 
 /*
  * Assigning a Delegate 
