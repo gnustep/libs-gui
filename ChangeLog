@@ -1,10 +1,12 @@
 2002-10-25  Adam Fedor  <fedor@gnu.org>
 
+
 	* Source/NSApplication.m: Remove some NSDebugLogs.
 
 	* Source/NSDocument.m
 	(-fileNameFromRunningSavePanelForSaveOperation:): Set dicectory to
 	the currentDirectory if no fileName is set. Localize.
+	(-fileAttributesToWriteToFile:ofType:saveOperation:): Stib implement.
 	* Source/NSDocumentController.m: Document.
 	(+sharedDocumentController): Proper allocation/init. Set ourselves
 	as the application delegate if there isn't one already.

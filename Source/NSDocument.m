@@ -573,6 +573,14 @@
   return [self fileType];
 }
 
+- (NSDictionary *)fileAttributesToWriteToFile: (NSString *)fullDocumentPath 
+				       ofType: (NSString *)docType 
+				saveOperation: (NSSaveOperationType)saveOperationType
+{
+  // FIXME: Implement.
+  return [NSDictionary dictionary];
+}
+
 - (BOOL)writeToFile:(NSString *)fileName 
 	     ofType:(NSString *)type 
        originalFile:(NSString *)origFileName

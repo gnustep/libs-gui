@@ -139,7 +139,8 @@ typedef enum _NSSaveOperationType {
 - (BOOL)loadDataRepresentation:(NSData *)data ofType:(NSString *)type;
 
 - (NSFileWrapper *)fileWrapperRepresentationOfType:(NSString *)type;
-- (BOOL)loadFileWrapperRepresentation:(NSFileWrapper *)wrapper ofType:(NSString *)type;
+- (BOOL)loadFileWrapperRepresentation:(NSFileWrapper *)wrapper 
+			       ofType:(NSString *)type;
 
 - (BOOL)writeToFile:(NSString *)fileName ofType:(NSString *)type;
 - (BOOL)readFromFile:(NSString *)fileName ofType:(NSString *)type;
@@ -154,6 +155,13 @@ typedef enum _NSSaveOperationType {
 - (NSString *)fileNameFromRunningSavePanelForSaveOperation:(NSSaveOperationType)saveOperation;
 - (int)runModalSavePanel:(NSSavePanel *)savePanel withAccessoryView:(NSView *)accessoryView;
 - (NSString *)fileTypeFromLastRunSavePanel;
+- (NSDictionary *)fileAttributesToWriteToFile: (NSString *)fullDocumentPath 
+				       ofType: (NSString *)docType 
+				saveOperation: (NSSaveOperationType)saveOperationType;
+- (BOOL)writeToFile:(NSString *)fileName 
+	     ofType:(NSString *)type 
+       originalFile:(NSString *)origFileName
+      saveOperation:(NSSaveOperationType)saveOp;
 - (BOOL)writeWithBackupToFile:(NSString *)fileName 
 		       ofType:(NSString *)fileType 
 		saveOperation:(NSSaveOperationType)saveOp;
