@@ -54,7 +54,8 @@ void __dummy_IMLoading_functionForLinking()
     gmodelName = [gmodelName stringByDeletingPathExtension];
 
   /* Use owner's bundle (if any) just like +loadNibNamed:owner: does. */
-  bundle = [NSBundle bundleForClass: owner];
+  bundle = [NSBundle bundleForClass: [owner class]];
+
   if (bundle == nil)
     bundle = [NSBundle mainBundle];
 
