@@ -1369,8 +1369,12 @@ immediately.
 <p>
  Although Apple's docs state that, before processing the events, it makes the
  session window key and orders the window front, this method does not attempt
- to do this (due to excessive overhead).  Therefore you should do it yourself
- beforehand, if needed.
+ to do this, because: 1) we don't want to interfere with use of other apps
+ during modal session for this app; 2) occasionally other windows are active
+ and should be usable during modal sessions (e.g., a popup dialog from a modal
+ window); 3) most of the time -beginModalSessionForWindow: will have been
+ called in advance.  If the latter is not the case, you may need to order the
+ window front yourself in advance.
 </p>
 <p>
 See Also: -runModalForWindow:
