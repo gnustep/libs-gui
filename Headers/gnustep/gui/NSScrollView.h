@@ -44,8 +44,10 @@
   NSScroller* _vertScroller;
   NSRulerView* _horizRuler;
   NSRulerView* _vertRuler;
-  float _lineScroll;
-  float _pageScroll;
+  float _hLineScroll;
+  float _hPageScroll;
+  float _vLineScroll;
+  float _vPageScroll;
   NSBorderType _borderType;
   BOOL _hasHorizScroller;
   BOOL _hasVertScroller;
@@ -115,6 +117,16 @@
 - (float)pageScroll;
 - (void)setScrollsDynamically:(BOOL)flag;
 - (BOOL)scrollsDynamically;
+#ifndef	STRICT_OPENSTEP
+- (float) horizontalLineScroll;
+- (float) horizontalPageScroll;
+- (float) verticalLineScroll;
+- (float) verticalPageScroll;
+- (void) setHorizontalLineScroll: (float)aFloat;
+- (void) setHorizontalPageScroll: (float)aFloat;
+- (void) setVerticalLineScroll: (float)aFloat;
+- (void) setVerticalPageScroll: (float)aFloat;
+#endif
 
 /* Updating display after scrolling */
 - (void)reflectScrolledClipView:(NSClipView*)aClipView;

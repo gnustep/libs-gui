@@ -240,11 +240,15 @@
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [aCoder encodeConditionalObject: next_responder];
+  [aCoder encodeValueOfObjCType: @encode(NSInterfaceStyle)
+			     at: &interface_style];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   next_responder = [aDecoder decodeObject];
+  [aDecoder decodeValueOfObjCType: @encode(NSInterfaceStyle)
+			       at: &interface_style];
   return self;
 }
 

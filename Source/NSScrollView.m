@@ -30,6 +30,7 @@
 #include <gnustep/gui/config.h>
 #include <math.h>
 
+#include <Foundation/NSException.h>
 #include <AppKit/NSScroller.h>
 #include <AppKit/NSClipView.h>
 #include <AppKit/NSScrollView.h>
@@ -158,8 +159,10 @@ static Class rulerViewClass = nil;
 {
   [super initWithFrame: rect];
   [self setContentView: AUTORELEASE([NSClipView new])];
-  _lineScroll = 10;
-  _pageScroll = 10;
+  _hLineScroll = 10;
+  _hPageScroll = 10;
+  _vLineScroll = 10;
+  _vPageScroll = 10;
   _borderType = NSBezelBorder;
   _scrollsDynamically = YES;
   [self tile];
@@ -296,33 +299,31 @@ static Class rulerViewClass = nil;
     {
       if (hitPart == NSScrollerIncrementLine)
 	{
-	  amount = _lineScroll;
+	  if (scroller == _horizScroller)
+	    amount = _hLineScroll;
+	  else
+	    amount = _vLineScroll;
 	}
       else if (hitPart == NSScrollerDecrementLine)
 	{
-	  amount = -_lineScroll;
+	  if (scroller == _horizScroller)
+	    amount = -_hLineScroll;
+	  else
+	    amount = -_vLineScroll;
 	}
       else if (hitPart == NSScrollerIncrementPage)
 	{
 	  if (scroller == _horizScroller)
-	    {
-	      amount = clipViewBounds.size.width - _pageScroll;
-	    }
+	    amount = clipViewBounds.size.width - _hPageScroll;
 	  else
-	    {
-	      amount = clipViewBounds.size.height - _pageScroll;
-	    }
+	    amount = clipViewBounds.size.height - _vPageScroll;
 	}
       else if (hitPart == NSScrollerDecrementPage)
 	{
 	  if (scroller == _horizScroller)
-	    {
-	      amount = _pageScroll - clipViewBounds.size.width;
-	    }
+	    amount = _hPageScroll - clipViewBounds.size.width;
 	  else
-	    {
-	      amount = _pageScroll - clipViewBounds.size.height;
-	    }
+	    amount = _vPageScroll - clipViewBounds.size.height;
 	}
       else
 	{
@@ -367,7 +368,6 @@ static Class rulerViewClass = nil;
     }
 
   [_contentView scrollToPoint: point];
-  [window update];
 }
 
 - (void) reflectScrolledClipView: (NSClipView*)aClipView
@@ -690,22 +690,70 @@ static Class rulerViewClass = nil;
 
 - (void) setLineScroll: (float)aFloat
 {
-  _lineScroll = aFloat;
+  _hLineScroll = aFloat;
+  _vLineScroll = aFloat;
+}
+
+- (void) setHorizontalLineScroll: (float)aFloat
+{
+  _hLineScroll = aFloat;
+}
+
+- (void) setVerticalLineScroll: (float)aFloat
+{
+  _vLineScroll = aFloat;
 }
 
 - (float) lineScroll
 {
-  return _lineScroll;
+  if (_hLineScroll != _vLineScroll)
+    [NSException raise: NSInternalInconsistencyException
+		format: @"horizontal and vertical values not same"];
+  return _vLineScroll;
+}
+
+- (float) horizontalLineScroll
+{
+  return _hLineScroll;
+}
+
+- (float) verticalLineScroll
+{
+  return _vLineScroll;
 }
 
 - (void) setPageScroll: (float)aFloat
 {
-  _pageScroll = aFloat;
+  _hPageScroll = aFloat;
+  _vPageScroll = aFloat;
+}
+
+- (void) setHorizontalPageScroll: (float)aFloat
+{
+  _hPageScroll = aFloat;
+}
+
+- (void) setVerticalPageScroll: (float)aFloat
+{
+  _vPageScroll = aFloat;
 }
 
 - (float) pageScroll
 {
-  return _pageScroll;
+  if (_hPageScroll != _vPageScroll)
+    [NSException raise: NSInternalInconsistencyException
+		format: @"horizontal and vertical values not same"];
+  return _vPageScroll;
+}
+
+- (float) horizontalPageScroll
+{
+  return _hPageScroll;
+}
+
+- (float) verticalPageScroll
+{
+  return _vPageScroll;
 }
 
 - (void) setScrollsDynamically: (BOOL)flag

@@ -850,11 +850,18 @@ void __dummy_GMAppKit_functionForLinking() {}
 
   if ((nextResponder = [self nextResponder]))
     [archiver encodeObject:nextResponder withName:@"nextResponder"];
+  if ([self respondsToSelector: @selector(interfaceStyle)])
+    [archiver encodeUnsignedInt: [self interfaceStyle]
+            withName:@"interfaceStyle"];
 }
 
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
 {
   [self setNextResponder:[unarchiver decodeObjectWithName:@"nextResponder"]];
+  if ([self respondsToSelector: @selector(setInterfaceStyle:)])
+    [self setInterfaceStyle:
+        [unarchiver decodeUnsignedIntWithName:@"interfaceStyle"]];
+
   return self;
 }
 

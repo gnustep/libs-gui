@@ -1,8 +1,23 @@
+Sat Jun 12  9:35:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSResponder.m: Update encoding/decoding for interface styles
+	* Model/GMAppKit.m: Update for interface styles
+	* Headers/AppKit/NSScrollView.h: Added MacOS-X methods -
+	setHorizontalLineScroll, setVerticalLineScroll,
+	setHorizontalPageScroll, setVerticalPageScroll
+	horizontalLineScroll, verticalLineScroll,
+	horizontalPageScroll, verticalPageScroll
+	* Source/NSScrollView.m: Added new MacOS-X methods -
+        setHorizontalLineScroll, setVerticalLineScroll,
+        setHorizontalPageScroll, setVerticalPageScroll
+        horizontalLineScroll, verticalLineScroll,
+        horizontalPageScroll, verticalPageScroll
+
 Fri Jun 11  8:35:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
-	* NSScroller.m: Fixed bug in recognising page-scrolls - now sets the
-	NSINcrementPage and NSDecrementPage correctly.
-	* NSScxrollView.m: Fixed bug in scrolling by page - now uses the
+	* Source/NSScroller.m: Fixed bug in recognising page-scrolls -
+	now sets the NSIncrementPage and NSDecrementPage correctly.
+	* Source/NSScrollView.m: Fixed bug in scrolling by page - now uses the
 	page size as the context to retain, as it should.
 
 Thu Jun 10 22:25:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
