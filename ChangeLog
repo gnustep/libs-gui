@@ -1,5 +1,9 @@
 2003-07-21  Andrew Ruder <aeruder@ksu.edu>
 
+	* Source/NSBundleAdditions.m: Fix memory leaks.
+
+2003-07-21  Andrew Ruder <aeruder@ksu.edu>
+
 	* Source/GSMemoryPanel.m: Add dealloc method
 	* Source/NSOutlineView.m: Efficiency tweak.
 	* Headers/AppKit/NSComboBoxCell.h:Fix misplaced semicolon 

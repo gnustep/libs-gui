@@ -763,6 +763,7 @@ Class gmodel_class(void)
 
 - (void) dealloc
 {
+  RELEASE(_parentClassName);
   RELEASE(_className);
   [super dealloc];
 }
@@ -773,9 +774,7 @@ Class gmodel_class(void)
 
   // Start initially with the highest level class...
   ASSIGN(_className, NSStringFromClass([super class]));
-  RETAIN(_className);
   ASSIGN(_parentClassName, NSStringFromClass([super class]));
-  RETAIN(_parentClassName);
 
   // defer flag...
   _deferFlag = NO;
@@ -841,7 +840,6 @@ Class gmodel_class(void)
 - (void) setClassName: (NSString *)name
 {
   ASSIGN(_className, name);
-  RETAIN(_className);
 }
 
 - (NSString *)className
@@ -872,6 +870,7 @@ Class gmodel_class(void)
 
 - (void) dealloc
 {
+  RELEASE(_parentClassName);
   RELEASE(_className);
   [super dealloc];
 }
@@ -880,9 +879,7 @@ Class gmodel_class(void)
 {
   // Start initially with the highest level class...
   ASSIGN(_className, NSStringFromClass([super class]));
-  RETAIN(_className);
   ASSIGN(_parentClassName, NSStringFromClass([super class]));
-  RETAIN(_parentClassName);
   [super initWithFrame: frame];
 
   return self;
@@ -893,9 +890,7 @@ Class gmodel_class(void)
   // Start initially with the highest level class...
   [super init];
   ASSIGN(_className, NSStringFromClass([super class]));
-  RETAIN(_className);
   ASSIGN(_parentClassName, NSStringFromClass([super class]));
-  RETAIN(_parentClassName);
   return self;
 }
 
@@ -944,7 +939,6 @@ Class gmodel_class(void)
 - (void) setClassName: (NSString *)name
 {
   ASSIGN(_className, name);
-  RETAIN(_className);
 }
 
 - (NSString *)className
@@ -966,6 +960,7 @@ Class gmodel_class(void)
 
 - (void) dealloc
 {
+  RELEASE(_parentClassName);
   RELEASE(_className);
   [super dealloc];
 }
@@ -974,9 +969,7 @@ Class gmodel_class(void)
 {
   // Start initially with the highest level class...
   ASSIGN(_className, NSStringFromClass([super class]));
-  RETAIN(_className);
   ASSIGN(_parentClassName, NSStringFromClass([super class]));
-  RETAIN(_parentClassName);
   [super initWithFrame: frame];
   return self;
 }
@@ -986,7 +979,7 @@ Class gmodel_class(void)
   // Start initially with the highest level class...
   [super init];
   ASSIGN(_className, NSStringFromClass([super class]));
-  RETAIN(_className);
+  ASSIGN(_parentClassName, NSStringFromClass([super class]));
   return self;
 }
 
@@ -1045,7 +1038,6 @@ Class gmodel_class(void)
 - (void) setClassName: (NSString *)name
 {
   ASSIGN(_className, name);
-  RETAIN(_className);
 }
 
 - (NSString *)className
@@ -1066,6 +1058,7 @@ Class gmodel_class(void)
 
 - (void) dealloc
 {
+  RELEASE(_parentClassName);
   RELEASE(_className);
   [super dealloc];
 }
@@ -1074,9 +1067,7 @@ Class gmodel_class(void)
 {
   // Start initially with the highest level class...
   ASSIGN(_className, NSStringFromClass([super class]));
-  RETAIN(_className);
   ASSIGN(_parentClassName, NSStringFromClass([super class]));
-  RETAIN(_parentClassName);
   [super initWithFrame: frame];
   return self;
 }
@@ -1085,9 +1076,7 @@ Class gmodel_class(void)
 {
   [super init];
   ASSIGN(_className, NSStringFromClass([super class]));
-  RETAIN(_className);
   ASSIGN(_parentClassName, NSStringFromClass([super class]));
-  RETAIN(_parentClassName);
   return self;
 }
 
@@ -1150,7 +1139,6 @@ Class gmodel_class(void)
 - (void) setClassName: (NSString *)name
 {
   ASSIGN(_className, name);
-  RETAIN(_className);
 }
 
 - (NSString *)className
@@ -1171,6 +1159,7 @@ Class gmodel_class(void)
 
 - (void) dealloc
 {
+  RELEASE(_parentClassName);
   RELEASE(_className);
   [super dealloc];
 }
@@ -1180,9 +1169,7 @@ Class gmodel_class(void)
   [super init];
   // Start initially with the highest level class...
   ASSIGN(_className, NSStringFromClass([super class]));
-  RETAIN(_className);
   ASSIGN(_parentClassName, NSStringFromClass([super class]));
-  RETAIN(_parentClassName);
   return self;
 }
 
@@ -1253,6 +1240,7 @@ Class gmodel_class(void)
 
 - (void) dealloc
 {
+  RELEASE(_parentClassName);
   RELEASE(_className);
   [super dealloc];
 }
@@ -1261,9 +1249,7 @@ Class gmodel_class(void)
 {
   // Start initially with the highest level class...
   ASSIGN(_className, NSStringFromClass([super class]));
-  RETAIN(_className);
   ASSIGN(_parentClassName, NSStringFromClass([super class]));
-  RETAIN(_parentClassName);
   [super initWithFrame: frame];
 
   return self;
@@ -1274,9 +1260,7 @@ Class gmodel_class(void)
   // Start initially with the highest level class...
   [super init];
   ASSIGN(_className, NSStringFromClass([super class]));
-  RETAIN(_className);
   ASSIGN(_parentClassName, NSStringFromClass([super class]));
-  RETAIN(_parentClassName);
   return self;
 }
 
@@ -1355,7 +1339,6 @@ Class gmodel_class(void)
 - (void) setClassName: (NSString *)name
 {
   ASSIGN(_className, name);
-  RETAIN(_className);
 }
 
 - (NSString *)className
@@ -1376,6 +1359,7 @@ Class gmodel_class(void)
 
 - (void) dealloc
 {
+  RELEASE(_parentClassName);
   RELEASE(_className);
   [super dealloc];
 }
@@ -1384,9 +1368,7 @@ Class gmodel_class(void)
 {
   // Start initially with the highest level class...
   ASSIGN(_className, NSStringFromClass([super class]));
-  RETAIN(_className);
   ASSIGN(_parentClassName, NSStringFromClass([super class]));
-  RETAIN(_parentClassName);
   _buttonType = NSMomentaryLightButton;
   [super initWithFrame: frame];
   
@@ -1398,9 +1380,7 @@ Class gmodel_class(void)
   // Start initially with the highest level class...
   [super init];
   ASSIGN(_className, NSStringFromClass([super class]));
-  RETAIN(_className);
   ASSIGN(_parentClassName, NSStringFromClass([super class]));
-  RETAIN(_parentClassName);
   _buttonType = NSMomentaryLightButton;
   return self;
 }
@@ -1476,7 +1456,6 @@ Class gmodel_class(void)
 - (void) setClassName: (NSString *)name
 {
   ASSIGN(_className, name);
-  RETAIN(_className);
 }
 
 - (NSString *)className
@@ -1488,6 +1467,12 @@ Class gmodel_class(void)
 // this class holds the data from subclasses so that more specific templates
 // need not be made.
 @implementation GSObjectData
+- (void) dealloc
+{
+  RELEASE(dictionary);
+  [super dealloc];
+}
+
 - (void) setValuesFromObject: (id)object
 {
 }
@@ -1548,7 +1533,6 @@ Class gmodel_class(void)
 - (void) setClassName: (NSString *)name
 {
   ASSIGN(_className, name);
-  RETAIN(_className);
 }
 
 - (id) template
