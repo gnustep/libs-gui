@@ -240,22 +240,21 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
 - (void) _buildUpLayout;
 - (void) drawRect: (NSRect)rect
     withSelection: (NSRange)range;
-
-// GNU utility methods
-- (void) _illegalMovement: (int) notNumber;
+- (NSRect) _textBounds;
 
 /*
  * various GNU extensions
  */
-
 + (void) setSelectionWordGranularitySet: (NSCharacterSet*)aSet;
 + (void) setSelectionParagraphGranularitySet: (NSCharacterSet*)aSet;
 
 + (NSDictionary*) defaultTypingAttributes;
 
 //
-// private
+// GNU utility methods
 //
+- (void) setAttributes: (NSDictionary*) attributes range: (NSRange) aRange;
+- (void) _illegalMovement: (int) notNumber;
 - (void) deleteRange: (NSRange)aRange backspace: (BOOL)flag;
 
 - (void) setSelectedRangeNoDrawing: (NSRange)range;
@@ -265,7 +264,6 @@ static NSRange MakeRangeFromAbs (int a1,int a2) // not the same as NSMakeRange!
 - (void) drawSelectionAsRangeNoCaret: (NSRange)aRange;
 - (void) drawSelectionAsRange: (NSRange)aRange;
 
-- (NSRect) _textBounds;
 @end
 
 
@@ -1373,8 +1371,11 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 - (void) replaceCharactersInRange: (NSRange)aRange
 		       withString: (NSString*)aString
 {
+  if (aRange.location == NSNotFound)
+    return;
+
   if (![self shouldChangeTextInRange: aRange
-	     replacementString: nil])
+	     replacementString: aString])
     return;  
   [_textStorage beginEditing];
   [_textStorage replaceCharactersInRange: aRange withString: aString];
@@ -1503,6 +1504,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 {
   if (flag)
     _tf.is_rich_text = flag;
+  // FIXME: When switched off remove attachments
   _tf.imports_graphics = flag;
 }
 
@@ -1706,6 +1708,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
   int maxSelRange;
   NSRange aRange= [self rangeForUserCharacterAttributeChange];
   NSRange searchRange = aRange;
+  NSFont *font;
 
   if (aRange.location == NSNotFound)
     return;
@@ -1719,10 +1722,10 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
        searchRange = NSMakeRange (NSMaxRange (foundRange),
 				  maxSelRange - NSMaxRange(foundRange)))
     {
-      NSFont *font = [_textStorage attribute: NSFontAttributeName
-				   atIndex: searchRange.location
-				   longestEffectiveRange: &foundRange
-				   inRange: searchRange];
+      font = [_textStorage attribute: NSFontAttributeName
+			   atIndex: searchRange.location
+			   longestEffectiveRange: &foundRange
+			   inRange: searchRange];
       if (font != nil)
       {
 	  [self setFont: [sender convertFont: font]
@@ -1731,7 +1734,13 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
     }
   [_textStorage endEditing];
   [self didChangeText];
-  // FIXME: set typing attributes
+  // Set typing attributes
+  font = [_typingAttributes objectForKey: NSFontAttributeName];
+  if (font != nil)
+    {
+      [_typingAttributes setObject: [sender convertFont: font] 
+			 forKey: NSFontAttributeName];
+    }
 }
 
 - (void) setFont: (NSFont*)font
@@ -1865,6 +1874,9 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 //
 - (void) subscript: (id)sender
 {
+  NSNumber *value = [_typingAttributes 
+		       objectForKey: NSSuperscriptAttributeName];
+  int sValue;
   NSRange aRange = [self rangeForUserCharacterAttributeChange];
 
   if (aRange.location == NSNotFound)
@@ -1880,17 +1892,21 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
       [_textStorage endEditing];
       [self didChangeText];
     }
+
+  // Set the typing attributes
+  if (value != nil)
+    sValue = [value intValue] - 1;
   else
-    {
-      // FIXME: Set the typing attributes
-      /* [_typingAttributes
-	  setObject: [NSNumber numberWithInt: ]
-	  forKey: NSSuperScriptAttributeName]; */
-    }
+    sValue = -1;
+  [_typingAttributes setObject: [NSNumber numberWithInt: sValue]
+		     forKey: NSSuperscriptAttributeName];
 }
 
 - (void) superscript: (id)sender
 {
+  NSNumber *value = [_typingAttributes 
+		       objectForKey: NSSuperscriptAttributeName];
+  int sValue;
   NSRange aRange = [self rangeForUserCharacterAttributeChange];
 
   if (aRange.location == NSNotFound)
@@ -1906,10 +1922,14 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
       [_textStorage endEditing];
       [self didChangeText];
     }
+
+  // Set the typing attributes
+  if (value != nil)
+    sValue = [value intValue] + 1;
   else
-    {
-      // FIXME: Set the typing attributes
-    }
+    sValue = 1;
+  [_typingAttributes setObject: [NSNumber numberWithInt: sValue]
+		     forKey: NSSuperscriptAttributeName];
 }
 
 - (void) unscript: (id)sender
@@ -1929,10 +1949,9 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
       [_textStorage endEditing];
       [self didChangeText];
     }
-  else
-    {
-      // FIXME: Set the typing attributes
-    }
+
+  // Set the typing attributes
+  [_typingAttributes removeObjectForKey: NSSuperscriptAttributeName];
 }
 
 - (void) underline: (id)sender
@@ -1960,8 +1979,8 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
       [_textStorage endEditing];
       [self didChangeText];
     }
-  else  // no redraw necess.
-    [_typingAttributes
+
+  [_typingAttributes
       setObject: [NSNumber numberWithInt: doUnderline]
       forKey: NSUnderlineStyleAttributeName];
 }
@@ -2650,9 +2669,13 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 - (void) replaceRange: (NSRange) aRange
  withAttributedString: (NSAttributedString*) attrString
 {
+  if (aRange.location == NSNotFound)
+    return;
+
   if (![self shouldChangeTextInRange: aRange
 	     replacementString: [attrString string]])
     return;
+
   [_textStorage beginEditing];
   if (_tf.is_rich_text)
     [_textStorage replaceCharactersInRange: aRange
@@ -2984,25 +3007,31 @@ of characters (if any) to be replaced by the new data.
     {
       if ([type isEqualToString: NSRTFPboardType])
 	{
-	  [self replaceRange: [self rangeForUserTextChange]
-		withAttributedString: AUTORELEASE([[NSAttributedString alloc] 
-					 initWithRTF:
-					   [pboard dataForType: NSRTFPboardType]
-					 documentAttributes: NULL])];
+	  [self replaceCharactersInRange: [self rangeForUserTextChange]
+		withRTF: [pboard dataForType: NSRTFPboardType]];
 	  return YES;
 	}
     }
 
   if (_tf.imports_graphics)
     {
-      // FIXME: Should also support: NSFileContentsPboardType and NSTIFFPboardType
       if ([type isEqualToString: NSRTFDPboardType])
 	{
+	  [self replaceCharactersInRange: [self rangeForUserTextChange]
+		withRTFD: [pboard dataForType: NSRTFDPboardType]];
+	  return YES;
+	}
+      // FIXME: Should also support: NSTIFFPboardType
+      if ([type isEqualToString: NSFileContentsPboardType])
+	{
+	  NSTextAttachment *attachment = [[NSTextAttachment alloc] 
+					      initWithFileWrapper: 
+						  [pboard readFileWrapper]];
+
 	  [self replaceRange: [self rangeForUserTextChange]
-		withAttributedString: AUTORELEASE([[NSAttributedString alloc]
-					 initWithRTFD:
-					   [pboard dataForType: NSRTFDPboardType]
-					 documentAttributes: NULL])];
+		withAttributedString: 
+		    [NSAttributedString attributedStringWithAttachment: attachment]];
+	  RELEASE(attachment);
 	  return YES;
 	}
     }
@@ -3022,22 +3051,13 @@ of characters (if any) to be replaced by the new data.
   // font pasting
   if ([type isEqualToString: NSFontPboardType])
     {
-      NSData *data = [pboard dataForType: NSFontPboardType];
+      NSDictionary *dict = [pboard propertyListForType: NSFontPboardType];
 
-      if (data != nil)
+      if (dict != nil)
 	{
-	  // FIXME: Should use different format here
-	  NSFont *font = [NSUnarchiver unarchiveObjectWithData: data];
-
-	  if (font != nil)
-	    {
-	      NSRange aRange = [self rangeForUserCharacterAttributeChange];
-
-	      if (aRange.location != NSNotFound)
-		[self setFont: font ofRange: aRange];
-
-	      return YES;
-	    }
+	  [self setAttributes: dict 
+		range: [self rangeForUserCharacterAttributeChange]];
+	  return YES;
 	}
       return NO;
     }
@@ -3045,21 +3065,15 @@ of characters (if any) to be replaced by the new data.
   // ruler pasting
   if ([type isEqualToString: NSRulerPboardType])
     {
-      NSData *data = [pboard dataForType: NSRulerPboardType];
+      NSDictionary *dict = [pboard propertyListForType: NSRulerPboardType];
 
-      if (data != nil)
+      if (dict != nil)
 	{
-	  // FIXME: Should use different format here
-	  NSParagraphStyle *style = [NSUnarchiver unarchiveObjectWithData: data];
-	  if (style != nil)
-	    {
-	      NSRange aRange = [self rangeForUserParagraphAttributeChange];
-
-	      if (aRange.location != NSNotFound)
-		  // FIXME: Pasting of ruler is missing
-		  ;
-	    }
+	  [self setAttributes: dict 
+		range: [self rangeForUserParagraphAttributeChange]];
+	  return YES;
 	}
+      return NO;
     }
  
   return NO;
@@ -3068,8 +3082,8 @@ of characters (if any) to be replaced by the new data.
 - (NSArray*) readablePasteboardTypes
 {
   // get default types, what are they?
-    NSMutableArray *ret = [NSMutableArray arrayWithObjects: NSRulerPboardType,
-					  NSColorPboardType, NSFontPboardType, nil];
+  NSMutableArray *ret = [NSMutableArray arrayWithObjects: NSRulerPboardType,
+					NSColorPboardType, NSFontPboardType, nil];
 
   if (_tf.imports_graphics)
     {
@@ -3160,37 +3174,22 @@ other than copy/paste or dragging. */
 
       if ([type isEqualToString: NSFontPboardType])
         {
-	  // FIXME: We should use fontAttributesInRange: with the selection
-	  NSFont *font = [self font];
-	  NSData *data = nil;
-	  
-	  if (font != nil)
-	    // FIXME: Should use different format here
-	    data = [NSArchiver archivedDataWithRootObject: font];
+	  NSDictionary *dict = [_textStorage fontAttributesInRange: _selected_range];
 
-	  if (data != nil)
+	  if (dict != nil)
 	    {
-	      [pboard setData: data forType: NSFontPboardType];
+	      [pboard setPropertyList: dict forType: NSFontPboardType];
 	      ret = YES;
 	    }
 	}
 
       if ([type isEqualToString: NSRulerPboardType])
         {
-	  NSParagraphStyle *style;
-	  NSData *data = nil;
+	  NSDictionary *dict = [_textStorage rulerAttributesInRange: _selected_range];
 
-	  // FIXME: Should use rulerAttributesInRange:
-	  style = [_textStorage attribute: NSParagraphStyleAttributeName
-				atIndex: _selected_range.location
-				effectiveRange: &_selected_range];
-
-	  if (style != nil)
-	    data = [NSArchiver archivedDataWithRootObject: style];
-
-	  if (data != nil)
+	  if (dict != nil)
 	    {
-	      [pboard setData: data forType: NSRulerPboardType];
+	      [pboard setPropertyList: dict forType: NSRulerPboardType];
 	      ret = YES;
 	    }
 	}
@@ -3202,7 +3201,6 @@ other than copy/paste or dragging. */
 @end
 
 @implementation NSText(GNUstepPrivate)
-
 
 + (void) setSelectionWordGranularitySet: (NSCharacterSet*) aSet
 {
@@ -3223,6 +3221,30 @@ other than copy/paste or dragging. */
 			 [NSFont userFontOfSize: 12], NSFontAttributeName,
 		         [NSColor textColor], NSForegroundColorAttributeName,
 		         nil];
+}
+
+- (void) setAttributes: (NSDictionary*) attributes range: (NSRange) aRange
+{
+  NSString *type;
+  id val;
+  NSEnumerator *enumerator = [attributes keyEnumerator];
+
+  if (aRange.location != NSNotFound)
+    return;
+  if (![self shouldChangeTextInRange: aRange
+	     replacementString: nil])
+    return;
+	      
+  [_textStorage beginEditing];
+  while ((type = [enumerator nextObject]) != nil)
+    {
+      val = [attributes objectForKey: type];
+      [_textStorage addAttribute: type
+		    value: val
+		    range: aRange];
+    }
+  [_textStorage endEditing];
+  [self didChangeText];
 }
 
 - (void) _illegalMovement: (int) textMovement
@@ -3290,10 +3312,10 @@ other than copy/paste or dragging. */
 {
   NSRange deleteRange;
 
-  if (!aRange.length && !flag)
+  if (aRange.location == NSNotFound)
     return;
 
-  if (!aRange.location && ! aRange.length)
+  if (!aRange.length && !(flag && aRange.location))
     return;
 
   if (aRange.length)
@@ -3305,7 +3327,7 @@ other than copy/paste or dragging. */
       deleteRange = NSMakeRange (MAX (0, aRange.location - 1), 1);
     }
 
-  if (![self shouldChangeTextInRange: aRange
+  if (![self shouldChangeTextInRange: deleteRange
 	    replacementString: @""])
     return;
   [_textStorage beginEditing];
