@@ -1,16 +1,18 @@
-/* 
+/*                                                        -*-objc-*-
     NSText.h
 
     The text object
 
     Copyright (C) 1996 Free Software Foundation, Inc.
 
-    Author: 	Scott Christley <scottc@net-community.com>
+    Author: Scott Christley <scottc@net-community.com>
     Date: 1996
-    Author: 	Felipe A. Rodriguez <far@ix.netcom.com>
+    Author: Felipe A. Rodriguez <far@ix.netcom.com>
     Date: July 1998
-    Author: 	Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
+    Author: Daniel Bðhringer <boehring@biomed.ruhr-uni-bochum.de>
     Date: August 1998
+    Author: Nicola Pero <n.pero@mi.flashnet.it>
+    Date: December 2000
 
     This file is part of the GNUstep GUI Library.
 
@@ -43,12 +45,17 @@
  * methods that a text editing object should have; it has ivars to
  * track the various options (editable, selectable, background color
  * etc) and implementations for methods setting and getting these
- * generic options and for quite some helper methods which are simple
+ * generic options and for some helper methods which are simple
  * wrappers around the real basic editing methods.  The real editing
  * methods are not implemented in NSText, which is why it is abstract.
  * To make a working subclass, you need to implement these methods.
- * */
-
+ * The working subclass could potentially be implemented in absolutely
+ * *any* way you want.  I have been told that some versions of Emacs
+ * can be embedded as an X subwindow inside alien widgets and windows
+ * - so yes, potentially if you are able to figure out how to embed 
+ * Emacs inside the GNUstep NSView tree, you can write a subclass 
+ * of NSText which just uses Emacs. */
+ 
 #include <AppKit/NSView.h>
 #include <AppKit/NSSpellProtocol.h>
 #include <Foundation/NSRange.h>
@@ -58,9 +65,6 @@
 @class NSNotification;
 @class NSColor;
 @class NSFont;
-@class NSTextStorage;
-@class NSTextContainer;
-@class NSLayoutManager;
 
 typedef enum _NSTextAlignment {
   NSLeftTextAlignment = 0,
@@ -96,31 +100,9 @@ enum {
 
 #include <AppKit/NSStringDrawing.h>
 
-// these definitions should migrate to NSTextView when implemented
-typedef enum _NSSelectionGranularity {	
-  NSSelectByCharacter	= 0,
-  NSSelectByWord	= 1,
-  NSSelectByParagraph	= 2,
-} NSSelectionGranularity;
-
-#ifndef NO_GNUSTEP
-typedef enum _NSSelectionAffinity {	
-  NSSelectionAffinityUpstream	= 0,
-  NSSelectionAffinityDownstream	= 1,
-} NSSelectionAffinity;
-#endif
-
-@interface NSText : NSView <NSChangeSpelling,NSIgnoreMisspelledWords>
+@interface NSText : NSView <NSChangeSpelling, NSIgnoreMisspelledWords>
 {	
   id _delegate;
-  // content
-  NSTextStorage	*_textStorage;
-  NSTextContainer *_textContainer;
-
-  // contains layout information
-  NSLayoutManager *_layoutManager;  
-
-  // Attributes
   struct GSTextFlagsType {
     unsigned is_field_editor: 1;
     unsigned is_editable: 1;
@@ -134,37 +116,31 @@ typedef enum _NSSelectionAffinity {
     unsigned uses_ruler: 1;
     unsigned is_ruler_visible: 1;
   } _tf;
-  NSMutableDictionary *_typingAttributes;
   NSColor *_background_color;
-  NSRange _selected_range;
-  NSColor *_caret_color;
   NSSize _minSize;
   NSSize _maxSize;
-  
-  int _spellCheckerDocumentTag;
-  
-  // column-stable cursor up/down
-  NSPoint _currentCursor;
 }
 
 /*
- * Getting and Setting Contents */
-- (void) replaceCharactersInRange: (NSRange)aRange
+ * Getting and Setting Contents 
+ */
+- (void) replaceCharactersInRange: (NSRange)aRange  
 			  withRTF: (NSData*)rtfData;
-- (void) replaceCharactersInRange: (NSRange)aRange
+- (void) replaceCharactersInRange: (NSRange)aRange  
 			 withRTFD: (NSData*)rtfdData;
-- (void) replaceCharactersInRange: (NSRange)aRange
+- (void) replaceCharactersInRange: (NSRange)aRange  
 		       withString: (NSString*)aString;
 - (void) setString: (NSString*)string;
 - (NSString*) string;
 
-// old fashioned
-- (void) replaceRange: (NSRange)range withString: (NSString*)aString;
-- (void) replaceRange: (NSRange)range withRTF: (NSData*)rtfData;
-- (void) replaceRange: (NSRange)range withRTFD: (NSData*)rtfdData;
+/*
+ * Old fashioned OpenStep methods (wrappers for the previous ones)
+ */
+ - (void) replaceRange: (NSRange)range  withString: (NSString*)aString;
+- (void) replaceRange: (NSRange)range  withRTF: (NSData*)rtfData;
+- (void) replaceRange: (NSRange)range  withRTFD: (NSData*)rtfdData;
 - (void) setText: (NSString*)string;
-- (void) setText: (NSString*)aString 
-	   range: (NSRange)aRange;
+- (void) setText: (NSString*)aString  range: (NSRange)aRange;
 - (NSString*) text;
 
 /*
@@ -174,7 +150,6 @@ typedef enum _NSSelectionAffinity {
 - (BOOL) drawsBackground;
 - (void) setBackgroundColor: (NSColor*)color;
 - (void) setDrawsBackground: (BOOL)flag;
-
 
 /*
  * Managing Global Characteristics
@@ -309,59 +284,11 @@ typedef enum _NSSelectionAffinity {
 - (void) ignoreSpelling: (id)sender;
 @end
 
+@interface NSText (GNUstepExtensions)
 
-@interface NSText(NSTextView)
-// Methods that should be declared on NSTextView, but are usable for NSText
-- (NSTextContainer *)textContainer;
-- (NSPoint)textContainerOrigin;
-- (NSSize) textContainerInset;
-- (void) setRulerVisible: (BOOL)flag;
-
-- (NSRange)rangeForUserTextChange;
-- (NSRange)rangeForUserCharacterAttributeChange;
-- (NSRange)rangeForUserParagraphAttributeChange;
-
-- (BOOL)shouldChangeTextInRange:(NSRange)affectedCharRange 
-              replacementString:(NSString *)replacementString;
-- (void)didChangeText;
-
-- (void) setAlignment: (NSTextAlignment)alignment
-                range: (NSRange)aRange;
-
-- (int) spellCheckerDocumentTag;
-
-// changed to only except class NSString
-- (void) insertText: (NSString*)insertString;
-
-- (NSMutableDictionary*) typingAttributes;
-- (void) setTypingAttributes: (NSDictionary*)attrs;
-
-- (void) updateFontPanel;
-
-- (BOOL) shouldDrawInsertionPoint;
-- (void) drawInsertionPointInRect: (NSRect)rect 
-			    color: (NSColor*)color 
-			 turnedOn: (BOOL)flag;
-
-// override if you want special cursor behaviour
-- (NSRange) selectionRangeForProposedRange: (NSRange)proposedCharRange 
-			       granularity: (NSSelectionGranularity)granularity;
-
-- (NSString *)preferredPasteboardTypeFromArray:(NSArray *)availableTypes 
-                    restrictedToTypesFromArray:(NSArray *)allowedTypes;
-- (BOOL)readSelectionFromPasteboard:(NSPasteboard *)pboard;
-- (BOOL)readSelectionFromPasteboard:(NSPasteboard *)pboard type:(NSString *)type;
-- (NSArray *)readablePasteboardTypes;
-- (NSArray *)writablePasteboardTypes;
-- (BOOL)writeSelectionToPasteboard:(NSPasteboard *)pboard type:(NSString *)type;
-- (BOOL)writeSelectionToPasteboard:(NSPasteboard *)pboard types:(NSArray *)types;
-@end
-
-
-@interface NSText(GNUstepExtension)
-// GNU extension
 - (void) replaceRange: (NSRange)range 
  withAttributedString: (NSAttributedString*)attrString;
+
 - (unsigned) textLength;
 
 @end
@@ -371,27 +298,13 @@ extern NSString *NSTextDidBeginEditingNotification;
 extern NSString *NSTextDidEndEditingNotification;
 extern NSString *NSTextDidChangeNotification;
 
-#ifdef GNUSTEP
-@interface NSObject(NSTextDelegate)
+@interface NSObject (NSTextDelegate)
 - (BOOL) textShouldBeginEditing: (NSText*)textObject; /* YES means do it */
 - (BOOL) textShouldEndEditing: (NSText*)textObject; /* YES means do it */
 - (void) textDidBeginEditing: (NSNotification*)notification;
 - (void) textDidEndEditing: (NSNotification*)notification;
 - (void) textDidChange: (NSNotification*)notification; /* Any keyDown or paste which changes the contents causes this */
 @end
-#endif
 
 #endif // _GNUstep_H_NSText
 
-#if 0
-NSFontAttributeName; /* NSFont, default Helvetica 12 */
-->  NSParagraphStyleAttributeName; /* NSParagraphStyle, default defaultParagraphStyle */
-NSForegroundColorAttributeName; /* NSColor, default blackColor */
-NSUnderlineStyleAttributeName; /* int, default 0: no underline */
-NSSuperscriptAttributeName; /* int, default 0 */
-NSBackgroundColorAttributeName; /* NSColor, default nil: no background */
-->  NSAttachmentAttributeName; /* NSTextAttachment, default nil */
-NSLigatureAttributeName; /* int, default 1: default ligatures, 0: no ligatures, 2: all ligatures */
-NSBaselineOffsetAttributeName; /* float, in points; offset from baseline, default 0 */
-NSKernAttributeName; /* float, amount to modify default kerning, if 0, kerning off */
-#endif
