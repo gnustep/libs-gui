@@ -1,360 +1,365 @@
 <html><head>
-<title>NSImage</title>
+ <title>NSImage</title>
 </head>
 <body>
-<a href="NSHelpManager.html">[Previous]</a>
-<a href="Gui.html">[Up]</a>
-<a href="NSImageCell.html">[Next]</a>
+<a href ="NSHelpManager.html">[Previous]</a>
+<a href ="Gui.html">[Up]</a>
+<a href ="NSImageCell.html">[Next]</a>
 <h1>NSImage</h1>
-<h3>Authors</h3>
-<dl>
-<dt><a href="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
+<h3>Authors </h3>
+ <dl>
+<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
 <dd>
 </dl>
-<p>Version: 0.1</p>
-<p>Date: 28 February, 2000</p>
-<h2><a name="cont-0">NSImage</a></h2>
-<h2><a name="NSImage">NSImage</a></h2>
-<p><b>Declared in:</b> Gui/NSImage.h</p>
-<p><b>Inherits from:</b> NSObject</p>
-<p><b>Conforms to:</b> NSCoding
+<p>Version: $Revision$</p>
+<p>Date: $Date$</p>
+<h2><a name ="cont-0">NSImage</a></h2>
+<h2><a name ="NSImage">NSImage</a></h2>
+<p><b>Declared in: </b> Gui/NSImage.h</p>
+<p><b>Inherits from: </b> NSObject</p>
+<p><b>Conforms to: </b> NSCoding
 </p>
 <hr>
 
           
+<h2>Instance Variables </h2>
 <ul>
-<li><a href="NSImage.html#method-0">+canInitWithPasteboard:</a>
-<li><a href="NSImage.html#method-1">+imageFileTypes</a>
-<li><a href="NSImage.html#method-2">+imageNamed:</a>
-<li><a href="NSImage.html#method-3">+imagePasteboardTypes</a>
-<li><a href="NSImage.html#method-4">+imageUnfilteredFileTypes</a>
-<li><a href="NSImage.html#method-5">+imageUnfilteredPasteboardTypes</a>
-<li><a href="NSImage.html#method-50">-TIFFRepresentation</a>
-<li><a href="NSImage.html#method-51">-TIFFRepresentationUsingCompression:factor:</a>
-<li><a href="NSImage.html#method-6">-addRepresentation:</a>
-<li><a href="NSImage.html#method-7">-addRepresentations:</a>
-<li><a href="NSImage.html#method-8">-backgroundColor</a>
-<li><a href="NSImage.html#method-9">-bestRepresentationForDevice:</a>
-<li><a href="NSImage.html#method-10">-cacheDepthMatchesImageDepth</a>
-<li><a href="NSImage.html#method-11">-compositeToPoint:fromRect:operation:</a>
-<li><a href="NSImage.html#method-12">-compositeToPoint:operation:</a>
-<li><a href="NSImage.html#method-13">-delegate</a>
-<li><a href="NSImage.html#method-14">-dissolveToPoint:fraction:</a>
-<li><a href="NSImage.html#method-15">-dissolveToPoint:fromRect:fraction:</a>
-<li><a href="NSImage.html#method-16">-drawRepresentation:</a>
-<li><a href="NSImage.html#method-54">-imageDidNotDraw:</a>
-<li><a href="NSImage.html#method-17">-initByReferencingFile:</a>
-<li><a href="NSImage.html#method-18">-initWithBitmapHandle:</a>
-<li><a href="NSImage.html#method-19">-initWithContentsOfFile:</a>
-<li><a href="NSImage.html#method-20">-initWithData:</a>
-<li><a href="NSImage.html#method-21">-initWithIconHandle:</a>
-<li><a href="NSImage.html#method-22">-initWithPasteboard:</a>
-<li><a href="NSImage.html#method-23">-initWithSize:</a>
-<li><a href="NSImage.html#method-24">-isCachedSeparately</a>
-<li><a href="NSImage.html#method-25">-isDataRetained</a>
-<li><a href="NSImage.html#method-26">-isFlipped</a>
-<li><a href="NSImage.html#method-27">-isValid</a>
-<li><a href="NSImage.html#method-28">-lockFocus</a>
-<li><a href="NSImage.html#method-29">-lockFocusOnRepresentation:</a>
-<li><a href="NSImage.html#method-30">-matchesOnMultipleResolution</a>
-<li><a href="NSImage.html#method-31">-name</a>
-<li><a href="NSImage.html#method-32">-prefersColorMatch</a>
-<li><a href="NSImage.html#method-33">-recache</a>
-<li><a href="NSImage.html#method-34">-removeRepresentation:</a>
-<li><a href="NSImage.html#method-35">-representations</a>
-<li><a href="NSImage.html#method-36">-scalesWhenResized</a>
-<li><a href="NSImage.html#method-37">-setBackgroundColor:</a>
-<li><a href="NSImage.html#method-38">-setCacheDepthMatchesImageDepth:</a>
-<li><a href="NSImage.html#method-39">-setCachedSeparately:</a>
-<li><a href="NSImage.html#method-40">-setDataRetained:</a>
-<li><a href="NSImage.html#method-41">-setDelegate:</a>
-<li><a href="NSImage.html#method-42">-setFlipped:</a>
-<li><a href="NSImage.html#method-43">-setMatchesOnMultipleResolution:</a>
-<li><a href="NSImage.html#method-44">-setName:</a>
-<li><a href="NSImage.html#method-45">-setPrefersColorMatch:</a>
-<li><a href="NSImage.html#method-46">-setScalesWhenResized:</a>
-<li><a href="NSImage.html#method-47">-setSize:</a>
-<li><a href="NSImage.html#method-48">-setUsesEPSOnResolutionMismatch:</a>
-<li><a href="NSImage.html#method-49">-size</a>
-<li><a href="NSImage.html#method-52">-unlockFocus</a>
-<li><a href="NSImage.html#method-53">-usesEPSOnResolutionMismatch</a>
 </ul>
-<hr>
-<h2><a name="method-0">canInitWithPasteboard:</a></h2>
-+ (BOOL) <b>canInitWithPasteboard:</b> (NSPasteboard*)pasteboard<br>
+<h2>Methods </h2>
+<ul>
+<li><a href ="NSImage.html#method-0">+canInitWithPasteboard:</a>
+<li><a href ="NSImage.html#method-1">+imageFileTypes</a>
+<li><a href ="NSImage.html#method-2">+imageNamed:</a>
+<li><a href ="NSImage.html#method-3">+imagePasteboardTypes</a>
+<li><a href ="NSImage.html#method-4">+imageUnfilteredFileTypes</a>
+<li><a href ="NSImage.html#method-5">+imageUnfilteredPasteboardTypes</a>
+<li><a href ="NSImage.html#method-50">-TIFFRepresentation</a>
+<li><a href ="NSImage.html#method-51">-TIFFRepresentationUsingCompression:factor:</a>
+<li><a href ="NSImage.html#method-6">-addRepresentation:</a>
+<li><a href ="NSImage.html#method-7">-addRepresentations:</a>
+<li><a href ="NSImage.html#method-8">-backgroundColor</a>
+<li><a href ="NSImage.html#method-9">-bestRepresentationForDevice:</a>
+<li><a href ="NSImage.html#method-10">-cacheDepthMatchesImageDepth</a>
+<li><a href ="NSImage.html#method-11">-compositeToPoint:fromRect:operation:</a>
+<li><a href ="NSImage.html#method-12">-compositeToPoint:operation:</a>
+<li><a href ="NSImage.html#method-13">-delegate</a>
+<li><a href ="NSImage.html#method-14">-dissolveToPoint:fraction:</a>
+<li><a href ="NSImage.html#method-15">-dissolveToPoint:fromRect:fraction:</a>
+<li><a href ="NSImage.html#method-16">-drawRepresentation:</a>
+<li><a href ="NSImage.html#method-54">-imageDidNotDraw:</a>
+<li><a href ="NSImage.html#method-17">-initByReferencingFile:</a>
+<li><a href ="NSImage.html#method-18">-initWithBitmapHandle:</a>
+<li><a href ="NSImage.html#method-19">-initWithContentsOfFile:</a>
+<li><a href ="NSImage.html#method-20">-initWithData:</a>
+<li><a href ="NSImage.html#method-21">-initWithIconHandle:</a>
+<li><a href ="NSImage.html#method-22">-initWithPasteboard:</a>
+<li><a href ="NSImage.html#method-23">-initWithSize:</a>
+<li><a href ="NSImage.html#method-24">-isCachedSeparately</a>
+<li><a href ="NSImage.html#method-25">-isDataRetained</a>
+<li><a href ="NSImage.html#method-26">-isFlipped</a>
+<li><a href ="NSImage.html#method-27">-isValid</a>
+<li><a href ="NSImage.html#method-28">-lockFocus</a>
+<li><a href ="NSImage.html#method-29">-lockFocusOnRepresentation:</a>
+<li><a href ="NSImage.html#method-30">-matchesOnMultipleResolution</a>
+<li><a href ="NSImage.html#method-31">-name</a>
+<li><a href ="NSImage.html#method-32">-prefersColorMatch</a>
+<li><a href ="NSImage.html#method-33">-recache</a>
+<li><a href ="NSImage.html#method-34">-removeRepresentation:</a>
+<li><a href ="NSImage.html#method-35">-representations</a>
+<li><a href ="NSImage.html#method-36">-scalesWhenResized</a>
+<li><a href ="NSImage.html#method-37">-setBackgroundColor:</a>
+<li><a href ="NSImage.html#method-38">-setCacheDepthMatchesImageDepth:</a>
+<li><a href ="NSImage.html#method-39">-setCachedSeparately:</a>
+<li><a href ="NSImage.html#method-40">-setDataRetained:</a>
+<li><a href ="NSImage.html#method-41">-setDelegate:</a>
+<li><a href ="NSImage.html#method-42">-setFlipped:</a>
+<li><a href ="NSImage.html#method-43">-setMatchesOnMultipleResolution:</a>
+<li><a href ="NSImage.html#method-44">-setName:</a>
+<li><a href ="NSImage.html#method-45">-setPrefersColorMatch:</a>
+<li><a href ="NSImage.html#method-46">-setScalesWhenResized:</a>
+<li><a href ="NSImage.html#method-47">-setSize:</a>
+<li><a href ="NSImage.html#method-48">-setUsesEPSOnResolutionMismatch:</a>
+<li><a href ="NSImage.html#method-49">-size</a>
+<li><a href ="NSImage.html#method-52">-unlockFocus</a>
+<li><a href ="NSImage.html#method-53">-usesEPSOnResolutionMismatch</a>
+</ul>
+<hr><h2>Class Methods </h2>
+<h3><a name ="method-0">canInitWithPasteboard:</a></h3>
++ (BOOL) <b>canInitWithPasteboard:</b> (NSPasteboard*)pasteboard;<br>
 
           
-<hr>
-<h2><a name="method-1">imageFileTypes</a></h2>
-+ (NSArray*) <b>imageFileTypes</b><br>
+ <hr>
+<h3><a name ="method-1">imageFileTypes</a></h3>
++ (NSArray*) <b>imageFileTypes</b>;<br>
 
           
-<hr>
-<h2><a name="method-2">imageNamed:</a></h2>
-+ (id) <b>imageNamed:</b> (NSString*)name<br>
+ <hr>
+<h3><a name ="method-2">imageNamed:</a></h3>
++ (id) <b>imageNamed:</b> (NSString*)name;<br>
 
           
-<hr>
-<h2><a name="method-3">imagePasteboardTypes</a></h2>
-+ (NSArray*) <b>imagePasteboardTypes</b><br>
+ <hr>
+<h3><a name ="method-3">imagePasteboardTypes</a></h3>
++ (NSArray*) <b>imagePasteboardTypes</b>;<br>
 
           
-<hr>
-<h2><a name="method-4">imageUnfilteredFileTypes</a></h2>
-+ (NSArray*) <b>imageUnfilteredFileTypes</b><br>
+ <hr>
+<h3><a name ="method-4">imageUnfilteredFileTypes</a></h3>
++ (NSArray*) <b>imageUnfilteredFileTypes</b>;<br>
 
           
-<hr>
-<h2><a name="method-5">imageUnfilteredPasteboardTypes</a></h2>
-+ (NSArray*) <b>imageUnfilteredPasteboardTypes</b><br>
+ <hr>
+<h3><a name ="method-5">imageUnfilteredPasteboardTypes</a></h3>
++ (NSArray*) <b>imageUnfilteredPasteboardTypes</b>;<br>
 
           
-<hr>
-<h2><a name="method-6">addRepresentation:</a></h2>
-- (void) <b>addRepresentation:</b> (NSImageRep*)imageRep<br>
+ <hr>
+<hr><h2>Instances Methods </h2>
+<h3><a name ="method-6">addRepresentation:</a></h3>
+- (void) <b>addRepresentation:</b> (NSImageRep*)imageRep;<br>
 
           
-<hr>
-<h2><a name="method-7">addRepresentations:</a></h2>
-- (void) <b>addRepresentations:</b> (NSArray*)imageReps<br>
+ <hr>
+<h3><a name ="method-7">addRepresentations:</a></h3>
+- (void) <b>addRepresentations:</b> (NSArray*)imageReps;<br>
 
           
-<hr>
-<h2><a name="method-8">backgroundColor</a></h2>
-- (NSColor*) <b>backgroundColor</b><br>
+ <hr>
+<h3><a name ="method-8">backgroundColor</a></h3>
+- (NSColor*) <b>backgroundColor</b>;<br>
 
           
-<hr>
-<h2><a name="method-9">bestRepresentationForDevice:</a></h2>
-- (NSImageRep*) <b>bestRepresentationForDevice:</b> (NSDictionary*)deviceDescription<br>
+ <hr>
+<h3><a name ="method-9">bestRepresentationForDevice:</a></h3>
+- (NSImageRep*) <b>bestRepresentationForDevice:</b> (NSDictionary*)deviceDescription;<br>
 
           
-<hr>
-<h2><a name="method-10">cacheDepthMatchesImageDepth</a></h2>
-- (BOOL) <b>cacheDepthMatchesImageDepth</b><br>
+ <hr>
+<h3><a name ="method-10">cacheDepthMatchesImageDepth</a></h3>
+- (BOOL) <b>cacheDepthMatchesImageDepth</b>;<br>
 
           
-<hr>
-<h2><a name="method-11">compositeToPoint:fromRect:operation:</a></h2>
-- (void) <b>compositeToPoint:</b> (NSPoint)aPoint <b>fromRect:</b> (NSRect)aRect <b>operation:</b> (NSCompositingOperation)op<br>
+ <hr>
+<h3><a name ="method-11">compositeToPoint:fromRect:operation:</a></h3>
+- (void) <b>compositeToPoint:</b> (NSPoint)aPoint <b>fromRect:</b> (NSRect)aRect <b>operation:</b> (NSCompositingOperation)op;<br>
 
           
-<hr>
-<h2><a name="method-12">compositeToPoint:operation:</a></h2>
-- (void) <b>compositeToPoint:</b> (NSPoint)aPoint <b>operation:</b> (NSCompositingOperation)op<br>
+ <hr>
+<h3><a name ="method-12">compositeToPoint:operation:</a></h3>
+- (void) <b>compositeToPoint:</b> (NSPoint)aPoint <b>operation:</b> (NSCompositingOperation)op;<br>
 
           
-<hr>
-<h2><a name="method-13">delegate</a></h2>
-- (id) <b>delegate</b><br>
+ <hr>
+<h3><a name ="method-13">delegate</a></h3>
+- (id) <b>delegate</b>;<br>
 
           
-<hr>
-<h2><a name="method-14">dissolveToPoint:fraction:</a></h2>
-- (void) <b>dissolveToPoint:</b> (NSPoint)aPoint <b>fraction:</b> (float)aFloat<br>
+ <hr>
+<h3><a name ="method-14">dissolveToPoint:fraction:</a></h3>
+- (void) <b>dissolveToPoint:</b> (NSPoint)aPoint <b>fraction:</b> (float)aFloat;<br>
 
           
-<hr>
-<h2><a name="method-15">dissolveToPoint:fromRect:fraction:</a></h2>
-- (void) <b>dissolveToPoint:</b> (NSPoint)aPoint <b>fromRect:</b> (NSRect)aRect <b>fraction:</b> (float)aFloat<br>
+ <hr>
+<h3><a name ="method-15">dissolveToPoint:fromRect:fraction:</a></h3>
+- (void) <b>dissolveToPoint:</b> (NSPoint)aPoint <b>fromRect:</b> (NSRect)aRect <b>fraction:</b> (float)aFloat;<br>
 
           
-<hr>
-<h2><a name="method-16">drawRepresentation:</a></h2>
-- (BOOL) <b>drawRepresentation:</b> (NSImageRep*)imageRep<br>
+ <hr>
+<h3><a name ="method-16">drawRepresentation:</a></h3>
+- (BOOL) <b>drawRepresentation:</b> (NSImageRep*)imageRep;<br>
 
           
-<hr>
-<h2><a name="method-17">initByReferencingFile:</a></h2>
-- (id) <b>initByReferencingFile:</b> (NSString*)filename<br>
+ <hr>
+<h3><a name ="method-17">initByReferencingFile:</a></h3>
+- (id) <b>initByReferencingFile:</b> (NSString*)filename;<br>
 
           
-<hr>
-<h2><a name="method-18">initWithBitmapHandle:</a></h2>
-- (id) <b>initWithBitmapHandle:</b> (void*)bitmap<br>
+ <hr>
+<h3><a name ="method-18">initWithBitmapHandle:</a></h3>
+- (id) <b>initWithBitmapHandle:</b> (void*)bitmap;<br>
 
           
-<hr>
-<h2><a name="method-19">initWithContentsOfFile:</a></h2>
-- (id) <b>initWithContentsOfFile:</b> (NSString*)filename<br>
+ <hr>
+<h3><a name ="method-19">initWithContentsOfFile:</a></h3>
+- (id) <b>initWithContentsOfFile:</b> (NSString*)filename;<br>
 
           
-<hr>
-<h2><a name="method-20">initWithData:</a></h2>
-- (id) <b>initWithData:</b> (NSData*)data<br>
+ <hr>
+<h3><a name ="method-20">initWithData:</a></h3>
+- (id) <b>initWithData:</b> (NSData*)data;<br>
 
           
-<hr>
-<h2><a name="method-21">initWithIconHandle:</a></h2>
-- (id) <b>initWithIconHandle:</b> (void*)icon<br>
+ <hr>
+<h3><a name ="method-21">initWithIconHandle:</a></h3>
+- (id) <b>initWithIconHandle:</b> (void*)icon;<br>
 
           
-<hr>
-<h2><a name="method-22">initWithPasteboard:</a></h2>
-- (id) <b>initWithPasteboard:</b> (NSPasteboard*)pasteboard<br>
+ <hr>
+<h3><a name ="method-22">initWithPasteboard:</a></h3>
+- (id) <b>initWithPasteboard:</b> (NSPasteboard*)pasteboard;<br>
 
           
-<hr>
-<h2><a name="method-23">initWithSize:</a></h2>
-- (id) <b>initWithSize:</b> (NSSize)aSize<br>
+ <hr>
+<h3><a name ="method-23">initWithSize:</a></h3>
+- (id) <b>initWithSize:</b> (NSSize)aSize;<br>
 
           
-<hr>
-<h2><a name="method-24">isCachedSeparately</a></h2>
-- (BOOL) <b>isCachedSeparately</b><br>
+ <hr>
+<h3><a name ="method-24">isCachedSeparately</a></h3>
+- (BOOL) <b>isCachedSeparately</b>;<br>
 
           
-<hr>
-<h2><a name="method-25">isDataRetained</a></h2>
-- (BOOL) <b>isDataRetained</b><br>
+ <hr>
+<h3><a name ="method-25">isDataRetained</a></h3>
+- (BOOL) <b>isDataRetained</b>;<br>
 
           
-<hr>
-<h2><a name="method-26">isFlipped</a></h2>
-- (BOOL) <b>isFlipped</b><br>
+ <hr>
+<h3><a name ="method-26">isFlipped</a></h3>
+- (BOOL) <b>isFlipped</b>;<br>
 
           
-<hr>
-<h2><a name="method-27">isValid</a></h2>
-- (BOOL) <b>isValid</b><br>
+ <hr>
+<h3><a name ="method-27">isValid</a></h3>
+- (BOOL) <b>isValid</b>;<br>
 
           
-<hr>
-<h2><a name="method-28">lockFocus</a></h2>
-- (void) <b>lockFocus</b><br>
+ <hr>
+<h3><a name ="method-28">lockFocus</a></h3>
+- (void) <b>lockFocus</b>;<br>
 
           
-<hr>
-<h2><a name="method-29">lockFocusOnRepresentation:</a></h2>
-- (void) <b>lockFocusOnRepresentation:</b> (NSImageRep*)imageRepresentation<br>
+ <hr>
+<h3><a name ="method-29">lockFocusOnRepresentation:</a></h3>
+- (void) <b>lockFocusOnRepresentation:</b> (NSImageRep*)imageRepresentation;<br>
 
           
-<hr>
-<h2><a name="method-30">matchesOnMultipleResolution</a></h2>
-- (BOOL) <b>matchesOnMultipleResolution</b><br>
+ <hr>
+<h3><a name ="method-30">matchesOnMultipleResolution</a></h3>
+- (BOOL) <b>matchesOnMultipleResolution</b>;<br>
 
           
-<hr>
-<h2><a name="method-31">name</a></h2>
-- (NSString*) <b>name</b><br>
+ <hr>
+<h3><a name ="method-31">name</a></h3>
+- (NSString*) <b>name</b>;<br>
 
           
-<hr>
-<h2><a name="method-32">prefersColorMatch</a></h2>
-- (BOOL) <b>prefersColorMatch</b><br>
+ <hr>
+<h3><a name ="method-32">prefersColorMatch</a></h3>
+- (BOOL) <b>prefersColorMatch</b>;<br>
 
           
-<hr>
-<h2><a name="method-33">recache</a></h2>
-- (void) <b>recache</b><br>
+ <hr>
+<h3><a name ="method-33">recache</a></h3>
+- (void) <b>recache</b>;<br>
 
           
-<hr>
-<h2><a name="method-34">removeRepresentation:</a></h2>
-- (void) <b>removeRepresentation:</b> (NSImageRep*)imageRep<br>
+ <hr>
+<h3><a name ="method-34">removeRepresentation:</a></h3>
+- (void) <b>removeRepresentation:</b> (NSImageRep*)imageRep;<br>
 
           
-<hr>
-<h2><a name="method-35">representations</a></h2>
-- (NSArray*) <b>representations</b><br>
+ <hr>
+<h3><a name ="method-35">representations</a></h3>
+- (NSArray*) <b>representations</b>;<br>
 
           
-<hr>
-<h2><a name="method-36">scalesWhenResized</a></h2>
-- (BOOL) <b>scalesWhenResized</b><br>
+ <hr>
+<h3><a name ="method-36">scalesWhenResized</a></h3>
+- (BOOL) <b>scalesWhenResized</b>;<br>
 
           
-<hr>
-<h2><a name="method-37">setBackgroundColor:</a></h2>
-- (void) <b>setBackgroundColor:</b> (NSColor*)aColor<br>
+ <hr>
+<h3><a name ="method-37">setBackgroundColor:</a></h3>
+- (void) <b>setBackgroundColor:</b> (NSColor*)aColor;<br>
 
           
-<hr>
-<h2><a name="method-38">setCacheDepthMatchesImageDepth:</a></h2>
-- (void) <b>setCacheDepthMatchesImageDepth:</b> (BOOL)flag<br>
+ <hr>
+<h3><a name ="method-38">setCacheDepthMatchesImageDepth:</a></h3>
+- (void) <b>setCacheDepthMatchesImageDepth:</b> (BOOL)flag;<br>
 
           
-<hr>
-<h2><a name="method-39">setCachedSeparately:</a></h2>
-- (void) <b>setCachedSeparately:</b> (BOOL)flag<br>
+ <hr>
+<h3><a name ="method-39">setCachedSeparately:</a></h3>
+- (void) <b>setCachedSeparately:</b> (BOOL)flag;<br>
 
           
-<hr>
-<h2><a name="method-40">setDataRetained:</a></h2>
-- (void) <b>setDataRetained:</b> (BOOL)flag<br>
+ <hr>
+<h3><a name ="method-40">setDataRetained:</a></h3>
+- (void) <b>setDataRetained:</b> (BOOL)flag;<br>
 
           
-<hr>
-<h2><a name="method-41">setDelegate:</a></h2>
-- (void) <b>setDelegate:</b> (id)anObject<br>
+ <hr>
+<h3><a name ="method-41">setDelegate:</a></h3>
+- (void) <b>setDelegate:</b> (id)anObject;<br>
 
           
-<hr>
-<h2><a name="method-42">setFlipped:</a></h2>
-- (void) <b>setFlipped:</b> (BOOL)flag<br>
+ <hr>
+<h3><a name ="method-42">setFlipped:</a></h3>
+- (void) <b>setFlipped:</b> (BOOL)flag;<br>
 
           
-<hr>
-<h2><a name="method-43">setMatchesOnMultipleResolution:</a></h2>
-- (void) <b>setMatchesOnMultipleResolution:</b> (BOOL)flag<br>
+ <hr>
+<h3><a name ="method-43">setMatchesOnMultipleResolution:</a></h3>
+- (void) <b>setMatchesOnMultipleResolution:</b> (BOOL)flag;<br>
 
           
-<hr>
-<h2><a name="method-44">setName:</a></h2>
-- (BOOL) <b>setName:</b> (NSString*)aString<br>
+ <hr>
+<h3><a name ="method-44">setName:</a></h3>
+- (BOOL) <b>setName:</b> (NSString*)aString;<br>
 
           
-<hr>
-<h2><a name="method-45">setPrefersColorMatch:</a></h2>
-- (void) <b>setPrefersColorMatch:</b> (BOOL)flag<br>
+ <hr>
+<h3><a name ="method-45">setPrefersColorMatch:</a></h3>
+- (void) <b>setPrefersColorMatch:</b> (BOOL)flag;<br>
 
           
-<hr>
-<h2><a name="method-46">setScalesWhenResized:</a></h2>
-- (void) <b>setScalesWhenResized:</b> (BOOL)flag<br>
+ <hr>
+<h3><a name ="method-46">setScalesWhenResized:</a></h3>
+- (void) <b>setScalesWhenResized:</b> (BOOL)flag;<br>
 
           
-<hr>
-<h2><a name="method-47">setSize:</a></h2>
-- (void) <b>setSize:</b> (NSSize)aSize<br>
+ <hr>
+<h3><a name ="method-47">setSize:</a></h3>
+- (void) <b>setSize:</b> (NSSize)aSize;<br>
 
           
-<hr>
-<h2><a name="method-48">setUsesEPSOnResolutionMismatch:</a></h2>
-- (void) <b>setUsesEPSOnResolutionMismatch:</b> (BOOL)flag<br>
+ <hr>
+<h3><a name ="method-48">setUsesEPSOnResolutionMismatch:</a></h3>
+- (void) <b>setUsesEPSOnResolutionMismatch:</b> (BOOL)flag;<br>
 
           
-<hr>
-<h2><a name="method-49">size</a></h2>
-- (NSSize) <b>size</b><br>
+ <hr>
+<h3><a name ="method-49">size</a></h3>
+- (NSSize) <b>size</b>;<br>
 
           
-<hr>
-<h2><a name="method-50">TIFFRepresentation</a></h2>
-- (NSData*) <b>TIFFRepresentation</b><br>
+ <hr>
+<h3><a name ="method-50">TIFFRepresentation</a></h3>
+- (NSData*) <b>TIFFRepresentation</b>;<br>
 
           
-<hr>
-<h2><a name="method-51">TIFFRepresentationUsingCompression:factor:</a></h2>
-- (NSData*) <b>TIFFRepresentationUsingCompression:</b> (NSTIFFCompression)comp <b>factor:</b> (float)aFloat<br>
+ <hr>
+<h3><a name ="method-51">TIFFRepresentationUsingCompression:factor:</a></h3>
+- (NSData*) <b>TIFFRepresentationUsingCompression:</b> (NSTIFFCompression)comp <b>factor:</b> (float)aFloat;<br>
 
           
-<hr>
-<h2><a name="method-52">unlockFocus</a></h2>
-- (void) <b>unlockFocus</b><br>
+ <hr>
+<h3><a name ="method-52">unlockFocus</a></h3>
+- (void) <b>unlockFocus</b>;<br>
 
           
-<hr>
-<h2><a name="method-53">usesEPSOnResolutionMismatch</a></h2>
-- (BOOL) <b>usesEPSOnResolutionMismatch</b><br>
+ <hr>
+<h3><a name ="method-53">usesEPSOnResolutionMismatch</a></h3>
+- (BOOL) <b>usesEPSOnResolutionMismatch</b>;<br>
 
           
-<hr>
-<h2><a name="method-54">imageDidNotDraw:</a></h2>
-- (NSImage*) <b>imageDidNotDraw:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-54">imageDidNotDraw:</a></h3>
+- (NSImage*) <b>imageDidNotDraw:</b> (id)sender;<br>
 
           
-<hr>
+ <hr>
 </body>
 
-</html>
+ </html>

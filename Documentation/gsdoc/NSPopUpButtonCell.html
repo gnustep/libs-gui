@@ -1,300 +1,304 @@
 <html><head>
-<title>NSPopUpButtonCell</title>
+ <title>NSPopUpButtonCell</title>
 </head>
 <body>
-<a href="NSPopUpButton.html">[Previous]</a>
-<a href="Gui.html">[Up]</a>
-<a href="NSPrintInfo.html">[Next]</a>
+<a href ="NSPopUpButton.html">[Previous]</a>
+<a href ="Gui.html">[Up]</a>
+<a href ="NSPrintInfo.html">[Next]</a>
 <h1>NSPopUpButtonCell</h1>
-<h3>Authors</h3>
-<dl>
-<dt><a href="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
+<h3>Authors </h3>
+ <dl>
+<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
 <dd>
 </dl>
-<p>Version: 0.1</p>
-<p>Date: 28 February, 2000</p>
-<h2><a name="cont-0">NSPopUpButtonCell</a></h2>
-<h2><a name="NSPopUpButtonCell">NSPopUpButtonCell</a></h2>
-<p><b>Declared in:</b> Gui/NSPopUpButtonCell.h</p>
-<p><b>Inherits from:</b> NSMenuItemCell</p>
-<p><b>Conforms to:</b> NSCoding
+<p>Version: $Revision$</p>
+<p>Date: $Date$</p>
+<h2><a name ="cont-0">NSPopUpButtonCell</a></h2>
+<h2><a name ="NSPopUpButtonCell">NSPopUpButtonCell</a></h2>
+<p><b>Declared in: </b> Gui/NSPopUpButtonCell.h</p>
+<p><b>Inherits from: </b> NSMenuItemCell</p>
+<p><b>Conforms to: </b> NSCoding
 </p>
 <hr>
 
           
+<h2>Instance Variables </h2>
 <ul>
-<li><a href="NSPopUpButtonCell.html#method-0">-addItemWithTitle:</a>
-<li><a href="NSPopUpButtonCell.html#method-1">-addItemsWithTitles:</a>
-<li><a href="NSPopUpButtonCell.html#method-2">-altersStateOfSelectedItem</a>
-<li><a href="NSPopUpButtonCell.html#method-3">-arrowPosition</a>
-<li><a href="NSPopUpButtonCell.html#method-4">-attachPopUpWithFrame:</a>
-<li><a href="NSPopUpButtonCell.html#method-5">-autoenablesItems</a>
-<li><a href="NSPopUpButtonCell.html#method-6">-dismissPopUp</a>
-<li><a href="NSPopUpButtonCell.html#method-7">-indexOfItem:</a>
-<li><a href="NSPopUpButtonCell.html#method-8">-indexOfItemWithRepresentedObject:</a>
-<li><a href="NSPopUpButtonCell.html#method-9">-indexOfItemWithTag:</a>
-<li><a href="NSPopUpButtonCell.html#method-10">-indexOfItemWithTarget:andAction:</a>
-<li><a href="NSPopUpButtonCell.html#method-11">-indexOfItemWithTitle:</a>
-<li><a href="NSPopUpButtonCell.html#method-12">-indexOfSelectedItem</a>
-<li><a href="NSPopUpButtonCell.html#method-13">-initTextCell:</a>
-<li><a href="NSPopUpButtonCell.html#method-14">-insertItemWithTitle:atIndex:</a>
-<li><a href="NSPopUpButtonCell.html#method-15">-itemArray</a>
-<li><a href="NSPopUpButtonCell.html#method-16">-itemAtIndex:</a>
-<li><a href="NSPopUpButtonCell.html#method-17">-itemTitleAtIndex:</a>
-<li><a href="NSPopUpButtonCell.html#method-18">-itemTitles</a>
-<li><a href="NSPopUpButtonCell.html#method-19">-itemWithTitle:</a>
-<li><a href="NSPopUpButtonCell.html#method-20">-lastItem</a>
-<li><a href="NSPopUpButtonCell.html#method-21">-menu</a>
-<li><a href="NSPopUpButtonCell.html#method-22">-numberOfItems</a>
-<li><a href="NSPopUpButtonCell.html#method-23">-performClick:</a>
-<li><a href="NSPopUpButtonCell.html#method-24">-performClickWithFrame:inView:</a>
-<li><a href="NSPopUpButtonCell.html#method-25">-preferredEdge</a>
-<li><a href="NSPopUpButtonCell.html#method-26">-pullsDown</a>
-<li><a href="NSPopUpButtonCell.html#method-27">-removeAllItems</a>
-<li><a href="NSPopUpButtonCell.html#method-28">-removeItemAtIndex:</a>
-<li><a href="NSPopUpButtonCell.html#method-29">-removeItemWithTitle:</a>
-<li><a href="NSPopUpButtonCell.html#method-31">-selectItem:</a>
-<li><a href="NSPopUpButtonCell.html#method-32">-selectItemAtIndex:</a>
-<li><a href="NSPopUpButtonCell.html#method-33">-selectItemWithTitle:</a>
-<li><a href="NSPopUpButtonCell.html#method-30">-selectedItem</a>
-<li><a href="NSPopUpButtonCell.html#method-34">-setAltersStateOfSelectedItem:</a>
-<li><a href="NSPopUpButtonCell.html#method-35">-setArrowPosition:</a>
-<li><a href="NSPopUpButtonCell.html#method-36">-setAutoenablesItems:</a>
-<li><a href="NSPopUpButtonCell.html#method-37">-setMenu:</a>
-<li><a href="NSPopUpButtonCell.html#method-38">-setPreferredEdge:</a>
-<li><a href="NSPopUpButtonCell.html#method-39">-setPullsDown:</a>
-<li><a href="NSPopUpButtonCell.html#method-40">-setTitle:</a>
-<li><a href="NSPopUpButtonCell.html#method-41">-setUsesItemFromMenu:</a>
-<li><a href="NSPopUpButtonCell.html#method-42">-synchronizeTitleAndSelectedItem</a>
-<li><a href="NSPopUpButtonCell.html#method-43">-titleOfSelectedItem</a>
-<li><a href="NSPopUpButtonCell.html#method-44">-usesItemFromMenu</a>
 </ul>
-<hr>
-<h2><a name="method-0">addItemWithTitle:</a></h2>
-- (void) <b>addItemWithTitle:</b> (NSString*)title<br>
+<h2>Methods </h2>
+<ul>
+<li><a href ="NSPopUpButtonCell.html#method-0">-addItemWithTitle:</a>
+<li><a href ="NSPopUpButtonCell.html#method-1">-addItemsWithTitles:</a>
+<li><a href ="NSPopUpButtonCell.html#method-2">-altersStateOfSelectedItem</a>
+<li><a href ="NSPopUpButtonCell.html#method-3">-arrowPosition</a>
+<li><a href ="NSPopUpButtonCell.html#method-4">-attachPopUpWithFrame:</a>
+<li><a href ="NSPopUpButtonCell.html#method-5">-autoenablesItems</a>
+<li><a href ="NSPopUpButtonCell.html#method-6">-dismissPopUp</a>
+<li><a href ="NSPopUpButtonCell.html#method-7">-indexOfItem:</a>
+<li><a href ="NSPopUpButtonCell.html#method-8">-indexOfItemWithRepresentedObject:</a>
+<li><a href ="NSPopUpButtonCell.html#method-9">-indexOfItemWithTag:</a>
+<li><a href ="NSPopUpButtonCell.html#method-10">-indexOfItemWithTarget:andAction:</a>
+<li><a href ="NSPopUpButtonCell.html#method-11">-indexOfItemWithTitle:</a>
+<li><a href ="NSPopUpButtonCell.html#method-12">-indexOfSelectedItem</a>
+<li><a href ="NSPopUpButtonCell.html#method-13">-initTextCell:</a>
+<li><a href ="NSPopUpButtonCell.html#method-14">-insertItemWithTitle:atIndex:</a>
+<li><a href ="NSPopUpButtonCell.html#method-15">-itemArray</a>
+<li><a href ="NSPopUpButtonCell.html#method-16">-itemAtIndex:</a>
+<li><a href ="NSPopUpButtonCell.html#method-17">-itemTitleAtIndex:</a>
+<li><a href ="NSPopUpButtonCell.html#method-18">-itemTitles</a>
+<li><a href ="NSPopUpButtonCell.html#method-19">-itemWithTitle:</a>
+<li><a href ="NSPopUpButtonCell.html#method-20">-lastItem</a>
+<li><a href ="NSPopUpButtonCell.html#method-21">-menu</a>
+<li><a href ="NSPopUpButtonCell.html#method-22">-numberOfItems</a>
+<li><a href ="NSPopUpButtonCell.html#method-23">-performClick:</a>
+<li><a href ="NSPopUpButtonCell.html#method-24">-performClickWithFrame:inView:</a>
+<li><a href ="NSPopUpButtonCell.html#method-25">-preferredEdge</a>
+<li><a href ="NSPopUpButtonCell.html#method-26">-pullsDown</a>
+<li><a href ="NSPopUpButtonCell.html#method-27">-removeAllItems</a>
+<li><a href ="NSPopUpButtonCell.html#method-28">-removeItemAtIndex:</a>
+<li><a href ="NSPopUpButtonCell.html#method-29">-removeItemWithTitle:</a>
+<li><a href ="NSPopUpButtonCell.html#method-31">-selectItem:</a>
+<li><a href ="NSPopUpButtonCell.html#method-32">-selectItemAtIndex:</a>
+<li><a href ="NSPopUpButtonCell.html#method-33">-selectItemWithTitle:</a>
+<li><a href ="NSPopUpButtonCell.html#method-30">-selectedItem</a>
+<li><a href ="NSPopUpButtonCell.html#method-34">-setAltersStateOfSelectedItem:</a>
+<li><a href ="NSPopUpButtonCell.html#method-35">-setArrowPosition:</a>
+<li><a href ="NSPopUpButtonCell.html#method-36">-setAutoenablesItems:</a>
+<li><a href ="NSPopUpButtonCell.html#method-37">-setMenu:</a>
+<li><a href ="NSPopUpButtonCell.html#method-38">-setPreferredEdge:</a>
+<li><a href ="NSPopUpButtonCell.html#method-39">-setPullsDown:</a>
+<li><a href ="NSPopUpButtonCell.html#method-40">-setTitle:</a>
+<li><a href ="NSPopUpButtonCell.html#method-41">-setUsesItemFromMenu:</a>
+<li><a href ="NSPopUpButtonCell.html#method-42">-synchronizeTitleAndSelectedItem</a>
+<li><a href ="NSPopUpButtonCell.html#method-43">-titleOfSelectedItem</a>
+<li><a href ="NSPopUpButtonCell.html#method-44">-usesItemFromMenu</a>
+</ul>
+<hr><h2>Instances Methods </h2>
+<h3><a name ="method-0">addItemWithTitle:</a></h3>
+- (void) <b>addItemWithTitle:</b> (NSString*)title;<br>
 
           
-<hr>
-<h2><a name="method-1">addItemsWithTitles:</a></h2>
-- (void) <b>addItemsWithTitles:</b> (NSArray*)itemTitles<br>
+ <hr>
+<h3><a name ="method-1">addItemsWithTitles:</a></h3>
+- (void) <b>addItemsWithTitles:</b> (NSArray*)itemTitles;<br>
 
           
-<hr>
-<h2><a name="method-2">altersStateOfSelectedItem</a></h2>
-- (BOOL) <b>altersStateOfSelectedItem</b><br>
+ <hr>
+<h3><a name ="method-2">altersStateOfSelectedItem</a></h3>
+- (BOOL) <b>altersStateOfSelectedItem</b>;<br>
 
           
-<hr>
-<h2><a name="method-3">arrowPosition</a></h2>
-- (NSPopUpArrowPosition) <b>arrowPosition</b><br>
+ <hr>
+<h3><a name ="method-3">arrowPosition</a></h3>
+- (NSPopUpArrowPosition) <b>arrowPosition</b>;<br>
 
           
-<hr>
-<h2><a name="method-4">attachPopUpWithFrame:</a></h2>
-- (void) <b>attachPopUpWithFrame:</b> (NSRect)cellFrame<br>
+ <hr>
+<h3><a name ="method-4">attachPopUpWithFrame:</a></h3>
+- (void) <b>attachPopUpWithFrame:</b> (NSRect)cellFrame;<br>
 
           
-<hr>
-<h2><a name="method-5">autoenablesItems</a></h2>
-- (BOOL) <b>autoenablesItems</b><br>
+ <hr>
+<h3><a name ="method-5">autoenablesItems</a></h3>
+- (BOOL) <b>autoenablesItems</b>;<br>
 
           
-<hr>
-<h2><a name="method-6">dismissPopUp</a></h2>
-- (void) <b>dismissPopUp</b><br>
+ <hr>
+<h3><a name ="method-6">dismissPopUp</a></h3>
+- (void) <b>dismissPopUp</b>;<br>
 
           
-<hr>
-<h2><a name="method-7">indexOfItem:</a></h2>
-- (int) <b>indexOfItem:</b> (id&#60;NSMenuItem>)item<br>
+ <hr>
+<h3><a name ="method-7">indexOfItem:</a></h3>
+- (int) <b>indexOfItem:</b> (id&#60;NSMenuItem>)item;<br>
 
           
-<hr>
-<h2><a name="method-8">indexOfItemWithRepresentedObject:</a></h2>
-- (int) <b>indexOfItemWithRepresentedObject:</b> (id)obj<br>
+ <hr>
+<h3><a name ="method-8">indexOfItemWithRepresentedObject:</a></h3>
+- (int) <b>indexOfItemWithRepresentedObject:</b> (id)obj;<br>
 
           
-<hr>
-<h2><a name="method-9">indexOfItemWithTag:</a></h2>
-- (int) <b>indexOfItemWithTag:</b> (int)tag<br>
+ <hr>
+<h3><a name ="method-9">indexOfItemWithTag:</a></h3>
+- (int) <b>indexOfItemWithTag:</b> (int)tag;<br>
 
           
-<hr>
-<h2><a name="method-10">indexOfItemWithTarget:andAction:</a></h2>
-- (int) <b>indexOfItemWithTarget:</b> (id)target <b>andAction:</b> (SEL)actionSelector<br>
+ <hr>
+<h3><a name ="method-10">indexOfItemWithTarget:andAction:</a></h3>
+- (int) <b>indexOfItemWithTarget:</b> (id)target <b>andAction:</b> (SEL)actionSelector;<br>
 
           
-<hr>
-<h2><a name="method-11">indexOfItemWithTitle:</a></h2>
-- (int) <b>indexOfItemWithTitle:</b> (NSString*)title<br>
+ <hr>
+<h3><a name ="method-11">indexOfItemWithTitle:</a></h3>
+- (int) <b>indexOfItemWithTitle:</b> (NSString*)title;<br>
 
           
-<hr>
-<h2><a name="method-12">indexOfSelectedItem</a></h2>
-- (int) <b>indexOfSelectedItem</b><br>
+ <hr>
+<h3><a name ="method-12">indexOfSelectedItem</a></h3>
+- (int) <b>indexOfSelectedItem</b>;<br>
 
           
-<hr>
-<h2><a name="method-13">initTextCell:</a></h2>
-- (id) <b>initTextCell:</b> (NSString*)stringValue<br>
+ <hr>
+<h3><a name ="method-13">initTextCell:</a></h3>
+- (id) <b>initTextCell:</b> (NSString*)stringValue;<br>
 
           
-<hr>
-<h2><a name="method-14">insertItemWithTitle:atIndex:</a></h2>
-- (void) <b>insertItemWithTitle:</b> (NSString*)title <b>atIndex:</b> (int)index<br>
+ <hr>
+<h3><a name ="method-14">insertItemWithTitle:atIndex:</a></h3>
+- (void) <b>insertItemWithTitle:</b> (NSString*)title <b>atIndex:</b> (int)index;<br>
 
           
-<hr>
-<h2><a name="method-15">itemArray</a></h2>
-- (NSArray*) <b>itemArray</b><br>
+ <hr>
+<h3><a name ="method-15">itemArray</a></h3>
+- (NSArray*) <b>itemArray</b>;<br>
 
           
-<hr>
-<h2><a name="method-16">itemAtIndex:</a></h2>
-- (id&#60;NSMenuItem>) <b>itemAtIndex:</b> (int)index<br>
+ <hr>
+<h3><a name ="method-16">itemAtIndex:</a></h3>
+- (id&#60;NSMenuItem>) <b>itemAtIndex:</b> (int)index;<br>
 
           
-<hr>
-<h2><a name="method-17">itemTitleAtIndex:</a></h2>
-- (NSString*) <b>itemTitleAtIndex:</b> (int)index<br>
+ <hr>
+<h3><a name ="method-17">itemTitleAtIndex:</a></h3>
+- (NSString*) <b>itemTitleAtIndex:</b> (int)index;<br>
 
           
-<hr>
-<h2><a name="method-18">itemTitles</a></h2>
-- (NSArray*) <b>itemTitles</b><br>
+ <hr>
+<h3><a name ="method-18">itemTitles</a></h3>
+- (NSArray*) <b>itemTitles</b>;<br>
 
           
-<hr>
-<h2><a name="method-19">itemWithTitle:</a></h2>
-- (id&#60;NSMenuItem>) <b>itemWithTitle:</b> (NSString*)title<br>
+ <hr>
+<h3><a name ="method-19">itemWithTitle:</a></h3>
+- (id&#60;NSMenuItem>) <b>itemWithTitle:</b> (NSString*)title;<br>
 
           
-<hr>
-<h2><a name="method-20">lastItem</a></h2>
-- (id&#60;NSMenuItem>) <b>lastItem</b><br>
+ <hr>
+<h3><a name ="method-20">lastItem</a></h3>
+- (id&#60;NSMenuItem>) <b>lastItem</b>;<br>
 
           
-<hr>
-<h2><a name="method-21">menu</a></h2>
-- (NSMenu*) <b>menu</b><br>
+ <hr>
+<h3><a name ="method-21">menu</a></h3>
+- (NSMenu*) <b>menu</b>;<br>
 
           
-<hr>
-<h2><a name="method-22">numberOfItems</a></h2>
-- (int) <b>numberOfItems</b><br>
+ <hr>
+<h3><a name ="method-22">numberOfItems</a></h3>
+- (int) <b>numberOfItems</b>;<br>
 
           
-<hr>
-<h2><a name="method-23">performClick:</a></h2>
-- (void) <b>performClick:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-23">performClick:</a></h3>
+- (void) <b>performClick:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-24">performClickWithFrame:inView:</a></h2>
-- (void) <b>performClickWithFrame:</b> (NSRect)frame <b>inView:</b> (NSView*)controlView<br>
+ <hr>
+<h3><a name ="method-24">performClickWithFrame:inView:</a></h3>
+- (void) <b>performClickWithFrame:</b> (NSRect)frame <b>inView:</b> (NSView*)controlView;<br>
 
           
-<hr>
-<h2><a name="method-25">preferredEdge</a></h2>
-- (NSRectEdge) <b>preferredEdge</b><br>
+ <hr>
+<h3><a name ="method-25">preferredEdge</a></h3>
+- (NSRectEdge) <b>preferredEdge</b>;<br>
 
           
-<hr>
-<h2><a name="method-26">pullsDown</a></h2>
-- (BOOL) <b>pullsDown</b><br>
+ <hr>
+<h3><a name ="method-26">pullsDown</a></h3>
+- (BOOL) <b>pullsDown</b>;<br>
 
           
-<hr>
-<h2><a name="method-27">removeAllItems</a></h2>
-- (void) <b>removeAllItems</b><br>
+ <hr>
+<h3><a name ="method-27">removeAllItems</a></h3>
+- (void) <b>removeAllItems</b>;<br>
 
           
-<hr>
-<h2><a name="method-28">removeItemAtIndex:</a></h2>
-- (void) <b>removeItemAtIndex:</b> (int)index<br>
+ <hr>
+<h3><a name ="method-28">removeItemAtIndex:</a></h3>
+- (void) <b>removeItemAtIndex:</b> (int)index;<br>
 
           
-<hr>
-<h2><a name="method-29">removeItemWithTitle:</a></h2>
-- (void) <b>removeItemWithTitle:</b> (NSString*)title<br>
+ <hr>
+<h3><a name ="method-29">removeItemWithTitle:</a></h3>
+- (void) <b>removeItemWithTitle:</b> (NSString*)title;<br>
 
           
-<hr>
-<h2><a name="method-30">selectedItem</a></h2>
-- (id&#60;NSMenuItem>) <b>selectedItem</b><br>
+ <hr>
+<h3><a name ="method-30">selectedItem</a></h3>
+- (id&#60;NSMenuItem>) <b>selectedItem</b>;<br>
 
           
-<hr>
-<h2><a name="method-31">selectItem:</a></h2>
-- (void) <b>selectItem:</b> (id&#60;NSMenuItem>)item<br>
+ <hr>
+<h3><a name ="method-31">selectItem:</a></h3>
+- (void) <b>selectItem:</b> (id&#60;NSMenuItem>)item;<br>
 
           
-<hr>
-<h2><a name="method-32">selectItemAtIndex:</a></h2>
-- (void) <b>selectItemAtIndex:</b> (int)index<br>
+ <hr>
+<h3><a name ="method-32">selectItemAtIndex:</a></h3>
+- (void) <b>selectItemAtIndex:</b> (int)index;<br>
 
           
-<hr>
-<h2><a name="method-33">selectItemWithTitle:</a></h2>
-- (void) <b>selectItemWithTitle:</b> (NSString*)title<br>
+ <hr>
+<h3><a name ="method-33">selectItemWithTitle:</a></h3>
+- (void) <b>selectItemWithTitle:</b> (NSString*)title;<br>
 
           
-<hr>
-<h2><a name="method-34">setAltersStateOfSelectedItem:</a></h2>
-- (void) <b>setAltersStateOfSelectedItem:</b> (BOOL)flag<br>
+ <hr>
+<h3><a name ="method-34">setAltersStateOfSelectedItem:</a></h3>
+- (void) <b>setAltersStateOfSelectedItem:</b> (BOOL)flag;<br>
 
           
-<hr>
-<h2><a name="method-35">setArrowPosition:</a></h2>
-- (void) <b>setArrowPosition:</b> (NSPopUpArrowPosition)position<br>
+ <hr>
+<h3><a name ="method-35">setArrowPosition:</a></h3>
+- (void) <b>setArrowPosition:</b> (NSPopUpArrowPosition)position;<br>
 
           
-<hr>
-<h2><a name="method-36">setAutoenablesItems:</a></h2>
-- (void) <b>setAutoenablesItems:</b> (BOOL)flag<br>
+ <hr>
+<h3><a name ="method-36">setAutoenablesItems:</a></h3>
+- (void) <b>setAutoenablesItems:</b> (BOOL)flag;<br>
 
           
-<hr>
-<h2><a name="method-37">setMenu:</a></h2>
-- (void) <b>setMenu:</b> (NSMenu*)menu<br>
+ <hr>
+<h3><a name ="method-37">setMenu:</a></h3>
+- (void) <b>setMenu:</b> (NSMenu*)menu;<br>
 
           
-<hr>
-<h2><a name="method-38">setPreferredEdge:</a></h2>
-- (void) <b>setPreferredEdge:</b> (NSRectEdge)edge<br>
+ <hr>
+<h3><a name ="method-38">setPreferredEdge:</a></h3>
+- (void) <b>setPreferredEdge:</b> (NSRectEdge)edge;<br>
 
           
-<hr>
-<h2><a name="method-39">setPullsDown:</a></h2>
-- (void) <b>setPullsDown:</b> (BOOL)flag<br>
+ <hr>
+<h3><a name ="method-39">setPullsDown:</a></h3>
+- (void) <b>setPullsDown:</b> (BOOL)flag;<br>
 
           
-<hr>
-<h2><a name="method-40">setTitle:</a></h2>
-- (void) <b>setTitle:</b> (NSString*)aString<br>
+ <hr>
+<h3><a name ="method-40">setTitle:</a></h3>
+- (void) <b>setTitle:</b> (NSString*)aString;<br>
 
           
-<hr>
-<h2><a name="method-41">setUsesItemFromMenu:</a></h2>
-- (void) <b>setUsesItemFromMenu:</b> (BOOL)flag<br>
+ <hr>
+<h3><a name ="method-41">setUsesItemFromMenu:</a></h3>
+- (void) <b>setUsesItemFromMenu:</b> (BOOL)flag;<br>
 
           
-<hr>
-<h2><a name="method-42">synchronizeTitleAndSelectedItem</a></h2>
-- (void) <b>synchronizeTitleAndSelectedItem</b><br>
+ <hr>
+<h3><a name ="method-42">synchronizeTitleAndSelectedItem</a></h3>
+- (void) <b>synchronizeTitleAndSelectedItem</b>;<br>
 
           
-<hr>
-<h2><a name="method-43">titleOfSelectedItem</a></h2>
-- (NSString*) <b>titleOfSelectedItem</b><br>
+ <hr>
+<h3><a name ="method-43">titleOfSelectedItem</a></h3>
+- (NSString*) <b>titleOfSelectedItem</b>;<br>
 
           
-<hr>
-<h2><a name="method-44">usesItemFromMenu</a></h2>
-- (BOOL) <b>usesItemFromMenu</b><br>
+ <hr>
+<h3><a name ="method-44">usesItemFromMenu</a></h3>
+- (BOOL) <b>usesItemFromMenu</b>;<br>
 
           
-<hr>
+ <hr>
 </body>
 
-</html>
+ </html>

@@ -1,108 +1,112 @@
 <html><head>
-<title>NSInputServer</title>
+ <title>NSInputServer</title>
 </head>
 <body>
-<a href="NSInputManager.html">[Previous]</a>
-<a href="Gui.html">[Up]</a>
-<a href="NSLayoutManager.html">[Next]</a>
+<a href ="NSInputManager.html">[Previous]</a>
+<a href ="Gui.html">[Up]</a>
+<a href ="NSLayoutManager.html">[Next]</a>
 <h1>NSInputServer</h1>
-<h3>Authors</h3>
-<dl>
-<dt><a href="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
+<h3>Authors </h3>
+ <dl>
+<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
 <dd>
 </dl>
-<p>Version: 0.1</p>
-<p>Date: 28 February, 2000</p>
-<h2><a name="cont-0">NSInputServer</a></h2>
-<h2><a name="NSInputServer">NSInputServer</a></h2>
-<p><b>Declared in:</b> Gui/NSInputServer.h</p>
-<p><b>Inherits from:</b> NSObject</p>
-<p><b>Conforms to:</b> NSObject
+<p>Version: $Revision$</p>
+<p>Date: $Date$</p>
+<h2><a name ="cont-0">NSInputServer</a></h2>
+<h2><a name ="NSInputServer">NSInputServer</a></h2>
+<p><b>Declared in: </b> Gui/NSInputServer.h</p>
+<p><b>Inherits from: </b> NSObject</p>
+<p><b>Conforms to: </b> NSObject
 </p>
 <hr>
 
           
+<h2>Instance Variables </h2>
 <ul>
-<li><a href="NSInputServer.html#method-4">-</a>
-<li><a href="NSInputServer.html#method-0">-activeConversationWillChange:oldConversation:newConversation:</a>
-<li><a href="NSInputServer.html#method-1">-canBeDisabled</a>
-<li><a href="NSInputServer.html#method-2">-cancelInput:conversation:</a>
-<li><a href="NSInputServer.html#method-3">-doCommandBySelector:sender:conversation:</a>
-<li><a href="NSInputServer.html#method-5">-insertText:sender:conversation:</a>
-<li><a href="NSInputServer.html#method-6">-markedTextSelectionChanged:sender:conversation:</a>
-<li><a href="NSInputServer.html#method-7">-markedTextWillBeAbandoned:conversation:</a>
-<li><a href="NSInputServer.html#method-8">-senderDidBecomeActive:</a>
-<li><a href="NSInputServer.html#method-9">-senderDidResignActive:</a>
-<li><a href="NSInputServer.html#method-10">-setActivated:sender:</a>
-<li><a href="NSInputServer.html#method-11">-terminate:</a>
-<li><a href="NSInputServer.html#method-12">-wantsToInterpretAllKeystrokes</a>
 </ul>
-<hr>
-<h2><a name="method-0">activeConversationWillChange:oldConversation:newConversation:</a></h2>
-- (void) <b>activeConversationWillChange:</b> (id)sender <b>oldConversation:</b> (long)conv <b>newConversation:</b> (long)new<br>
+<h2>Methods </h2>
+<ul>
+<li><a href ="NSInputServer.html#method-4">-</a>
+<li><a href ="NSInputServer.html#method-0">-activeConversationWillChange:oldConversation:newConversation:</a>
+<li><a href ="NSInputServer.html#method-1">-canBeDisabled</a>
+<li><a href ="NSInputServer.html#method-2">-cancelInput:conversation:</a>
+<li><a href ="NSInputServer.html#method-3">-doCommandBySelector:sender:conversation:</a>
+<li><a href ="NSInputServer.html#method-5">-insertText:sender:conversation:</a>
+<li><a href ="NSInputServer.html#method-6">-markedTextSelectionChanged:sender:conversation:</a>
+<li><a href ="NSInputServer.html#method-7">-markedTextWillBeAbandoned:conversation:</a>
+<li><a href ="NSInputServer.html#method-8">-senderDidBecomeActive:</a>
+<li><a href ="NSInputServer.html#method-9">-senderDidResignActive:</a>
+<li><a href ="NSInputServer.html#method-10">-setActivated:sender:</a>
+<li><a href ="NSInputServer.html#method-11">-terminate:</a>
+<li><a href ="NSInputServer.html#method-12">-wantsToInterpretAllKeystrokes</a>
+</ul>
+<hr><h2>Instances Methods </h2>
+<h3><a name ="method-0">activeConversationWillChange:oldConversation:newConversation:</a></h3>
+- (void) <b>activeConversationWillChange:</b> (id)sender <b>oldConversation:</b> (long)conv <b>newConversation:</b> (long)new;<br>
 
           
-<hr>
-<h2><a name="method-1">canBeDisabled</a></h2>
-- (BOOL) <b>canBeDisabled</b><br>
+ <hr>
+<h3><a name ="method-1">canBeDisabled</a></h3>
+- (BOOL) <b>canBeDisabled</b>;<br>
 
           
-<hr>
-<h2><a name="method-2">cancelInput:conversation:</a></h2>
-- (void) <b>cancelInput:</b> (id)sender <b>conversation:</b> (long)conv<br>
+ <hr>
+<h3><a name ="method-2">cancelInput:conversation:</a></h3>
+- (void) <b>cancelInput:</b> (id)sender <b>conversation:</b> (long)conv;<br>
 
           
-<hr>
-<h2><a name="method-3">doCommandBySelector:sender:conversation:</a></h2>
-- (void) <b>doCommandBySelector:</b> (SEL)aSelector <b>sender:</b> (id)sender <b>conversation:</b> (long)conv<br>
+ <hr>
+<h3><a name ="method-3">doCommandBySelector:sender:conversation:</a></h3>
+- (void) <b>doCommandBySelector:</b> (SEL)aSelector <b>sender:</b> (id)sender <b>conversation:</b> (long)conv;<br>
 
           
-<hr>
-<h2><a name="method-4"></a></h2>
-- (id) <b></b><br>
+ <hr>
+<h3><a name ="method-4"></a></h3>
+- (id) <b></b>;<br>
 
           
-<hr>
-<h2><a name="method-5">insertText:sender:conversation:</a></h2>
-- (void) <b>insertText:</b> (NSString*)aString <b>sender:</b> (id)sender <b>conversation:</b> (long)conv<br>
+ <hr>
+<h3><a name ="method-5">insertText:sender:conversation:</a></h3>
+- (void) <b>insertText:</b> (NSString*)aString <b>sender:</b> (id)sender <b>conversation:</b> (long)conv;<br>
 
           
-<hr>
-<h2><a name="method-6">markedTextSelectionChanged:sender:conversation:</a></h2>
-- (void) <b>markedTextSelectionChanged:</b> (NSRange)aRange <b>sender:</b> (id)sender <b>conversation:</b> (long)conv<br>
+ <hr>
+<h3><a name ="method-6">markedTextSelectionChanged:sender:conversation:</a></h3>
+- (void) <b>markedTextSelectionChanged:</b> (NSRange)aRange <b>sender:</b> (id)sender <b>conversation:</b> (long)conv;<br>
 
           
-<hr>
-<h2><a name="method-7">markedTextWillBeAbandoned:conversation:</a></h2>
-- (void) <b>markedTextWillBeAbandoned:</b> (id)sender <b>conversation:</b> (long)conv<br>
+ <hr>
+<h3><a name ="method-7">markedTextWillBeAbandoned:conversation:</a></h3>
+- (void) <b>markedTextWillBeAbandoned:</b> (id)sender <b>conversation:</b> (long)conv;<br>
 
           
-<hr>
-<h2><a name="method-8">senderDidBecomeActive:</a></h2>
-- (void) <b>senderDidBecomeActive:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-8">senderDidBecomeActive:</a></h3>
+- (void) <b>senderDidBecomeActive:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-9">senderDidResignActive:</a></h2>
-- (void) <b>senderDidResignActive:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-9">senderDidResignActive:</a></h3>
+- (void) <b>senderDidResignActive:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-10">setActivated:sender:</a></h2>
-- (void) <b>setActivated:</b> (BOOL)flag <b>sender:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-10">setActivated:sender:</a></h3>
+- (void) <b>setActivated:</b> (BOOL)flag <b>sender:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-11">terminate:</a></h2>
-- (void) <b>terminate:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-11">terminate:</a></h3>
+- (void) <b>terminate:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-12">wantsToInterpretAllKeystrokes</a></h2>
-- (BOOL) <b>wantsToInterpretAllKeystrokes</b><br>
+ <hr>
+<h3><a name ="method-12">wantsToInterpretAllKeystrokes</a></h3>
+- (BOOL) <b>wantsToInterpretAllKeystrokes</b>;<br>
 
           
-<hr>
+ <hr>
 </body>
 
-</html>
+ </html>

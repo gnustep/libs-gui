@@ -1,330 +1,335 @@
 <html><head>
-<title>NSDocument</title>
+ <title>NSDocument</title>
 </head>
 <body>
-<a href="NSDPSContext.html">[Previous]</a>
-<a href="Gui.html">[Up]</a>
-<a href="NSDocumentController.html">[Next]</a>
+<a href ="NSDPSContext.html">[Previous]</a>
+<a href ="Gui.html">[Up]</a>
+<a href ="NSDocumentController.html">[Next]</a>
 <h1>NSDocument</h1>
-<h3>Authors</h3>
-<dl>
-<dt><a href="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
+<h3>Authors </h3>
+ <dl>
+<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
 <dd>
 </dl>
-<p>Version: 0.1</p>
-<p>Date: 28 February, 2000</p>
-<h2><a name="cont-0">NSDocument</a></h2>
-<h2><a name="NSDocument">NSDocument</a></h2>
-<p><b>Declared in:</b> Gui/NSDocument.h</p>
-<p><b>Inherits from:</b> NSObject</p>
-<p><b>Conforms to:</b> NSObject
+<p>Version: $Revision$</p>
+<p>Date: $Date$</p>
+<h2><a name ="cont-0">NSDocument</a></h2>
+<h2><a name ="NSDocument">NSDocument</a></h2>
+<p><b>Declared in: </b> Gui/NSDocument.h</p>
+<p><b>Inherits from: </b> NSObject</p>
+<p><b>Conforms to: </b> NSObject
 </p>
 <hr>
 
           
+<h2>Instance Variables </h2>
 <ul>
-<li><a href="NSDocument.html#method-0">+isNativeType:</a>
-<li><a href="NSDocument.html#method-1">+readableTypes</a>
-<li><a href="NSDocument.html#method-2">+writableTypes</a>
-<li><a href="NSDocument.html#method-3">-addWindowController:</a>
-<li><a href="NSDocument.html#method-4">-canCloseDocument</a>
-<li><a href="NSDocument.html#method-5">-close</a>
-<li><a href="NSDocument.html#method-6">-closeDocument:</a>
-<li><a href="NSDocument.html#method-7">-dataRepresentationOfType:</a>
-<li><a href="NSDocument.html#method-8">-displayName</a>
-<li><a href="NSDocument.html#method-9">-fileName</a>
-<li><a href="NSDocument.html#method-10">-fileNameFromRunningSavePanelForSaveOperation:</a>
-<li><a href="NSDocument.html#method-11">-fileType</a>
-<li><a href="NSDocument.html#method-12">-fileWrapperRepresentationOfType:</a>
-<li><a href="NSDocument.html#method-13">-hasUndoManager</a>
-<li><a href="NSDocument.html#method-14">-init</a>
-<li><a href="NSDocument.html#method-15">-initWithContentsOfFile:</a>
-<li><a href="NSDocument.html#method-16">-isDocumentEdited</a>
-<li><a href="NSDocument.html#method-17">-keepBackupFile</a>
-<li><a href="NSDocument.html#method-18">-loadDataRepresentation:</a>
-<li><a href="NSDocument.html#method-19">-loadFileWrapperRepresentation:</a>
-<li><a href="NSDocument.html#method-20">-makeWindowControllers</a>
-<li><a href="NSDocument.html#method-21">-printDocument:</a>
-<li><a href="NSDocument.html#method-22">-printInfo</a>
-<li><a href="NSDocument.html#method-23">-printShowingPrintPanel:</a>
-<li><a href="NSDocument.html#method-24">-readFromFile:</a>
-<li><a href="NSDocument.html#method-25">-revertDocumentToSaved:</a>
-<li><a href="NSDocument.html#method-26">-revertToSavedFromFile:</a>
-<li><a href="NSDocument.html#method-27">-runModalPageLayoutWithPrintInfo:</a>
-<li><a href="NSDocument.html#method-28">-runModalSavePanel:withAccessoryView:</a>
-<li><a href="NSDocument.html#method-29">-runPageLayout:</a>
-<li><a href="NSDocument.html#method-30">-saveDocument:</a>
-<li><a href="NSDocument.html#method-31">-saveDocumentAs:</a>
-<li><a href="NSDocument.html#method-32">-saveDocumentTo:</a>
-<li><a href="NSDocument.html#method-33">-setFileName:</a>
-<li><a href="NSDocument.html#method-34">-setFileType:</a>
-<li><a href="NSDocument.html#method-35">-setHasUndoManager:</a>
-<li><a href="NSDocument.html#method-36">-setPrintInfo:</a>
-<li><a href="NSDocument.html#method-37">-setUndoManager:</a>
-<li><a href="NSDocument.html#method-38">-shouldChangePrintInfo:</a>
-<li><a href="NSDocument.html#method-39">-shouldCloseWindowController:</a>
-<li><a href="NSDocument.html#method-40">-shouldRunSavePanelWithAccessoryView</a>
-<li><a href="NSDocument.html#method-41">-showWindows</a>
-<li><a href="NSDocument.html#method-42">-undoManager</a>
-<li><a href="NSDocument.html#method-43">-updateChangeCount:</a>
-<li><a href="NSDocument.html#method-44">-validateMenuItem:</a>
-<li><a href="NSDocument.html#method-45">-windowControllerDidLoadNib:</a>
-<li><a href="NSDocument.html#method-46">-windowControllerWillLoadNib:</a>
-<li><a href="NSDocument.html#method-47">-windowControllers</a>
-<li><a href="NSDocument.html#method-48">-windowNibName</a>
-<li><a href="NSDocument.html#method-49">-writeToFile:</a>
 </ul>
-<hr>
-<h2><a name="method-0">isNativeType:</a></h2>
-+ (BOOL) <b>isNativeType:</b> (NSString*)aType<br>
+<h2>Methods </h2>
+<ul>
+<li><a href ="NSDocument.html#method-0">+isNativeType:</a>
+<li><a href ="NSDocument.html#method-1">+readableTypes</a>
+<li><a href ="NSDocument.html#method-2">+writableTypes</a>
+<li><a href ="NSDocument.html#method-3">-addWindowController:</a>
+<li><a href ="NSDocument.html#method-4">-canCloseDocument</a>
+<li><a href ="NSDocument.html#method-5">-close</a>
+<li><a href ="NSDocument.html#method-6">-closeDocument:</a>
+<li><a href ="NSDocument.html#method-7">-dataRepresentationOfType:</a>
+<li><a href ="NSDocument.html#method-8">-displayName</a>
+<li><a href ="NSDocument.html#method-9">-fileName</a>
+<li><a href ="NSDocument.html#method-10">-fileNameFromRunningSavePanelForSaveOperation:</a>
+<li><a href ="NSDocument.html#method-11">-fileType</a>
+<li><a href ="NSDocument.html#method-12">-fileWrapperRepresentationOfType:</a>
+<li><a href ="NSDocument.html#method-13">-hasUndoManager</a>
+<li><a href ="NSDocument.html#method-14">-init</a>
+<li><a href ="NSDocument.html#method-15">-initWithContentsOfFile:</a>
+<li><a href ="NSDocument.html#method-16">-isDocumentEdited</a>
+<li><a href ="NSDocument.html#method-17">-keepBackupFile</a>
+<li><a href ="NSDocument.html#method-18">-loadDataRepresentation:</a>
+<li><a href ="NSDocument.html#method-19">-loadFileWrapperRepresentation:</a>
+<li><a href ="NSDocument.html#method-20">-makeWindowControllers</a>
+<li><a href ="NSDocument.html#method-21">-printDocument:</a>
+<li><a href ="NSDocument.html#method-22">-printInfo</a>
+<li><a href ="NSDocument.html#method-23">-printShowingPrintPanel:</a>
+<li><a href ="NSDocument.html#method-24">-readFromFile:</a>
+<li><a href ="NSDocument.html#method-25">-revertDocumentToSaved:</a>
+<li><a href ="NSDocument.html#method-26">-revertToSavedFromFile:</a>
+<li><a href ="NSDocument.html#method-27">-runModalPageLayoutWithPrintInfo:</a>
+<li><a href ="NSDocument.html#method-28">-runModalSavePanel:withAccessoryView:</a>
+<li><a href ="NSDocument.html#method-29">-runPageLayout:</a>
+<li><a href ="NSDocument.html#method-30">-saveDocument:</a>
+<li><a href ="NSDocument.html#method-31">-saveDocumentAs:</a>
+<li><a href ="NSDocument.html#method-32">-saveDocumentTo:</a>
+<li><a href ="NSDocument.html#method-33">-setFileName:</a>
+<li><a href ="NSDocument.html#method-34">-setFileType:</a>
+<li><a href ="NSDocument.html#method-35">-setHasUndoManager:</a>
+<li><a href ="NSDocument.html#method-36">-setPrintInfo:</a>
+<li><a href ="NSDocument.html#method-37">-setUndoManager:</a>
+<li><a href ="NSDocument.html#method-38">-shouldChangePrintInfo:</a>
+<li><a href ="NSDocument.html#method-39">-shouldCloseWindowController:</a>
+<li><a href ="NSDocument.html#method-40">-shouldRunSavePanelWithAccessoryView</a>
+<li><a href ="NSDocument.html#method-41">-showWindows</a>
+<li><a href ="NSDocument.html#method-42">-undoManager</a>
+<li><a href ="NSDocument.html#method-43">-updateChangeCount:</a>
+<li><a href ="NSDocument.html#method-44">-validateMenuItem:</a>
+<li><a href ="NSDocument.html#method-45">-windowControllerDidLoadNib:</a>
+<li><a href ="NSDocument.html#method-46">-windowControllerWillLoadNib:</a>
+<li><a href ="NSDocument.html#method-47">-windowControllers</a>
+<li><a href ="NSDocument.html#method-48">-windowNibName</a>
+<li><a href ="NSDocument.html#method-49">-writeToFile:</a>
+</ul>
+<hr><h2>Class Methods </h2>
+<h3><a name ="method-0">isNativeType:</a></h3>
++ (BOOL) <b>isNativeType:</b> (NSString*)aType;<br>
 
           
-<hr>
-<h2><a name="method-1">readableTypes</a></h2>
-+ (NSArray*) <b>readableTypes</b><br>
+ <hr>
+<h3><a name ="method-1">readableTypes</a></h3>
++ (NSArray*) <b>readableTypes</b>;<br>
 
           
-<hr>
-<h2><a name="method-2">writableTypes</a></h2>
-+ (NSArray*) <b>writableTypes</b><br>
+ <hr>
+<h3><a name ="method-2">writableTypes</a></h3>
++ (NSArray*) <b>writableTypes</b>;<br>
 
           
-<hr>
-<h2><a name="method-3">addWindowController:</a></h2>
-- (void) <b>addWindowController:</b> (NSWindowController*)aController<br>
+ <hr>
+<hr><h2>Instances Methods </h2>
+<h3><a name ="method-3">addWindowController:</a></h3>
+- (void) <b>addWindowController:</b> (NSWindowController*)aController;<br>
 
           
-<hr>
-<h2><a name="method-4">canCloseDocument</a></h2>
-- (BOOL) <b>canCloseDocument</b><br>
+ <hr>
+<h3><a name ="method-4">canCloseDocument</a></h3>
+- (BOOL) <b>canCloseDocument</b>;<br>
 
           
-<hr>
-<h2><a name="method-5">close</a></h2>
-- (void) <b>close</b><br>
+ <hr>
+<h3><a name ="method-5">close</a></h3>
+- (void) <b>close</b>;<br>
 
           
-<hr>
-<h2><a name="method-6">closeDocument:</a></h2>
-- (IBAction) <b>closeDocument:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-6">closeDocument:</a></h3>
+- (IBAction) <b>closeDocument:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-7">dataRepresentationOfType:</a></h2>
-- (NSData*) <b>dataRepresentationOfType:</b> (NSString*)aType<br>
+ <hr>
+<h3><a name ="method-7">dataRepresentationOfType:</a></h3>
+- (NSData*) <b>dataRepresentationOfType:</b> (NSString*)aType;<br>
 
           
-<hr>
-<h2><a name="method-8">displayName</a></h2>
-- (NSString*) <b>displayName</b><br>
+ <hr>
+<h3><a name ="method-8">displayName</a></h3>
+- (NSString*) <b>displayName</b>;<br>
 
           
-<hr>
-<h2><a name="method-9">fileName</a></h2>
-- (NSString*) <b>fileName</b><br>
+ <hr>
+<h3><a name ="method-9">fileName</a></h3>
+- (NSString*) <b>fileName</b>;<br>
 
           
-<hr>
-<h2><a name="method-10">fileNameFromRunningSavePanelForSaveOperation:</a></h2>
-- (NSString*) <b>fileNameFromRunningSavePanelForSaveOperation:</b> (NSSaveOperationType)saveOperation<br>
+ <hr>
+<h3><a name ="method-10">fileNameFromRunningSavePanelForSaveOperation:</a></h3>
+- (NSString*) <b>fileNameFromRunningSavePanelForSaveOperation:</b> (NSSaveOperationType)saveOperation;<br>
 
           
-<hr>
-<h2><a name="method-11">fileType</a></h2>
-- (NSString*) <b>fileType</b><br>
+ <hr>
+<h3><a name ="method-11">fileType</a></h3>
+- (NSString*) <b>fileType</b>;<br>
 
           
-<hr>
-<h2><a name="method-12">fileWrapperRepresentationOfType:</a></h2>
-- (NSFileWrapper*) <b>fileWrapperRepresentationOfType:</b> (NSString*)aType<br>
+ <hr>
+<h3><a name ="method-12">fileWrapperRepresentationOfType:</a></h3>
+- (NSFileWrapper*) <b>fileWrapperRepresentationOfType:</b> (NSString*)aType;<br>
 
           
-<hr>
-<h2><a name="method-13">hasUndoManager</a></h2>
-- (BOOL) <b>hasUndoManager</b><br>
+ <hr>
+<h3><a name ="method-13">hasUndoManager</a></h3>
+- (BOOL) <b>hasUndoManager</b>;<br>
 
           
-<hr>
-<h2><a name="method-14">init</a></h2>
-- (id) <b>init</b><br>
+ <hr>
+<h3><a name ="method-14">init</a></h3>
+- (id) <b>init</b>;<br>
 
           
-<hr>
-<h2><a name="method-15">initWithContentsOfFile:</a></h2>
-- (id) <b>initWithContentsOfFile:</b> (NSString*)fileName<br>
+ <hr>
+<h3><a name ="method-15">initWithContentsOfFile:</a></h3>
+- (id) <b>initWithContentsOfFile:</b> (NSString*)fileName;<br>
 
           
-<hr>
-<h2><a name="method-16">isDocumentEdited</a></h2>
-- (BOOL) <b>isDocumentEdited</b><br>
+ <hr>
+<h3><a name ="method-16">isDocumentEdited</a></h3>
+- (BOOL) <b>isDocumentEdited</b>;<br>
 
           
-<hr>
-<h2><a name="method-17">keepBackupFile</a></h2>
-- (BOOL) <b>keepBackupFile</b><br>
+ <hr>
+<h3><a name ="method-17">keepBackupFile</a></h3>
+- (BOOL) <b>keepBackupFile</b>;<br>
 
           
-<hr>
-<h2><a name="method-18">loadDataRepresentation:</a></h2>
-- (BOOL) <b>loadDataRepresentation:</b> (NSData*)docData<br>
+ <hr>
+<h3><a name ="method-18">loadDataRepresentation:</a></h3>
+- (BOOL) <b>loadDataRepresentation:</b> (NSData*)docData;<br>
 
           
-<hr>
-<h2><a name="method-19">loadFileWrapperRepresentation:</a></h2>
-- (BOOL) <b>loadFileWrapperRepresentation:</b> (NSFileWrapper*)wrapper<br>
+ <hr>
+<h3><a name ="method-19">loadFileWrapperRepresentation:</a></h3>
+- (BOOL) <b>loadFileWrapperRepresentation:</b> (NSFileWrapper*)wrapper;<br>
 
           
-<hr>
-<h2><a name="method-20">makeWindowControllers</a></h2>
-- (NSArray*) <b>makeWindowControllers</b><br>
+ <hr>
+<h3><a name ="method-20">makeWindowControllers</a></h3>
+- (NSArray*) <b>makeWindowControllers</b>;<br>
 
           
-<hr>
-<h2><a name="method-21">printDocument:</a></h2>
-- (void) <b>printDocument:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-21">printDocument:</a></h3>
+- (void) <b>printDocument:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-22">printInfo</a></h2>
-- (NSPrintInfo*) <b>printInfo</b><br>
+ <hr>
+<h3><a name ="method-22">printInfo</a></h3>
+- (NSPrintInfo*) <b>printInfo</b>;<br>
 
           
-<hr>
-<h2><a name="method-23">printShowingPrintPanel:</a></h2>
-- (void) <b>printShowingPrintPanel:</b> (BOOL)flag<br>
+ <hr>
+<h3><a name ="method-23">printShowingPrintPanel:</a></h3>
+- (void) <b>printShowingPrintPanel:</b> (BOOL)flag;<br>
 
           
-<hr>
-<h2><a name="method-24">readFromFile:</a></h2>
-- (BOOL) <b>readFromFile:</b> (NSString*)fileName<br>
+ <hr>
+<h3><a name ="method-24">readFromFile:</a></h3>
+- (BOOL) <b>readFromFile:</b> (NSString*)fileName;<br>
 
           
-<hr>
-<h2><a name="method-25">revertDocumentToSaved:</a></h2>
-- (void) <b>revertDocumentToSaved:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-25">revertDocumentToSaved:</a></h3>
+- (void) <b>revertDocumentToSaved:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-26">revertToSavedFromFile:</a></h2>
-- (BOOL) <b>revertToSavedFromFile:</b> (NSString*)fileName<br>
+ <hr>
+<h3><a name ="method-26">revertToSavedFromFile:</a></h3>
+- (BOOL) <b>revertToSavedFromFile:</b> (NSString*)fileName;<br>
 
           
-<hr>
-<h2><a name="method-27">runModalPageLayoutWithPrintInfo:</a></h2>
-- (int) <b>runModalPageLayoutWithPrintInfo:</b> (NSPrintInfo*)printInfo<br>
+ <hr>
+<h3><a name ="method-27">runModalPageLayoutWithPrintInfo:</a></h3>
+- (int) <b>runModalPageLayoutWithPrintInfo:</b> (NSPrintInfo*)printInfo;<br>
 
           
-<hr>
-<h2><a name="method-28">runModalSavePanel:withAccessoryView:</a></h2>
-- (int) <b>runModalSavePanel:</b> (NSSavePanel*)savePanel <b>withAccessoryView:</b> (NSView*)accessoryView<br>
+ <hr>
+<h3><a name ="method-28">runModalSavePanel:withAccessoryView:</a></h3>
+- (int) <b>runModalSavePanel:</b> (NSSavePanel*)savePanel <b>withAccessoryView:</b> (NSView*)accessoryView;<br>
 
           
-<hr>
-<h2><a name="method-29">runPageLayout:</a></h2>
-- (void) <b>runPageLayout:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-29">runPageLayout:</a></h3>
+- (void) <b>runPageLayout:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-30">saveDocument:</a></h2>
-- (void) <b>saveDocument:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-30">saveDocument:</a></h3>
+- (void) <b>saveDocument:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-31">saveDocumentAs:</a></h2>
-- (void) <b>saveDocumentAs:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-31">saveDocumentAs:</a></h3>
+- (void) <b>saveDocumentAs:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-32">saveDocumentTo:</a></h2>
-- (void) <b>saveDocumentTo:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-32">saveDocumentTo:</a></h3>
+- (void) <b>saveDocumentTo:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-33">setFileName:</a></h2>
-- (void) <b>setFileName:</b> (NSString*)fileName<br>
+ <hr>
+<h3><a name ="method-33">setFileName:</a></h3>
+- (void) <b>setFileName:</b> (NSString*)fileName;<br>
 
           
-<hr>
-<h2><a name="method-34">setFileType:</a></h2>
-- (void) <b>setFileType:</b> (NSString*)docType<br>
+ <hr>
+<h3><a name ="method-34">setFileType:</a></h3>
+- (void) <b>setFileType:</b> (NSString*)docType;<br>
 
           
-<hr>
-<h2><a name="method-35">setHasUndoManager:</a></h2>
-- (void) <b>setHasUndoManager:</b> (BOOL)flag<br>
+ <hr>
+<h3><a name ="method-35">setHasUndoManager:</a></h3>
+- (void) <b>setHasUndoManager:</b> (BOOL)flag;<br>
 
           
-<hr>
-<h2><a name="method-36">setPrintInfo:</a></h2>
-- (void) <b>setPrintInfo:</b> (NSPrintInfo*)printInfo<br>
+ <hr>
+<h3><a name ="method-36">setPrintInfo:</a></h3>
+- (void) <b>setPrintInfo:</b> (NSPrintInfo*)printInfo;<br>
 
           
-<hr>
-<h2><a name="method-37">setUndoManager:</a></h2>
-- (void) <b>setUndoManager:</b> (NSUndoManager*)undoManager<br>
+ <hr>
+<h3><a name ="method-37">setUndoManager:</a></h3>
+- (void) <b>setUndoManager:</b> (NSUndoManager*)undoManager;<br>
 
           
-<hr>
-<h2><a name="method-38">shouldChangePrintInfo:</a></h2>
-- (BOOL) <b>shouldChangePrintInfo:</b> (NSPrintInfo*)newPrintInfo<br>
+ <hr>
+<h3><a name ="method-38">shouldChangePrintInfo:</a></h3>
+- (BOOL) <b>shouldChangePrintInfo:</b> (NSPrintInfo*)newPrintInfo;<br>
 
           
-<hr>
-<h2><a name="method-39">shouldCloseWindowController:</a></h2>
-- (BOOL) <b>shouldCloseWindowController:</b> (NSWindowController*)windowController<br>
+ <hr>
+<h3><a name ="method-39">shouldCloseWindowController:</a></h3>
+- (BOOL) <b>shouldCloseWindowController:</b> (NSWindowController*)windowController;<br>
 
           
-<hr>
-<h2><a name="method-40">shouldRunSavePanelWithAccessoryView</a></h2>
-- (BOOL) <b>shouldRunSavePanelWithAccessoryView</b><br>
+ <hr>
+<h3><a name ="method-40">shouldRunSavePanelWithAccessoryView</a></h3>
+- (BOOL) <b>shouldRunSavePanelWithAccessoryView</b>;<br>
 
           
-<hr>
-<h2><a name="method-41">showWindows</a></h2>
-- (void) <b>showWindows</b><br>
+ <hr>
+<h3><a name ="method-41">showWindows</a></h3>
+- (void) <b>showWindows</b>;<br>
 
           
-<hr>
-<h2><a name="method-42">undoManager</a></h2>
-- (NSUndoManager*) <b>undoManager</b><br>
+ <hr>
+<h3><a name ="method-42">undoManager</a></h3>
+- (NSUndoManager*) <b>undoManager</b>;<br>
 
           
-<hr>
-<h2><a name="method-43">updateChangeCount:</a></h2>
-- (void) <b>updateChangeCount:</b> (NSDocumentChangeType)changeType<br>
+ <hr>
+<h3><a name ="method-43">updateChangeCount:</a></h3>
+- (void) <b>updateChangeCount:</b> (NSDocumentChangeType)changeType;<br>
 
           
-<hr>
-<h2><a name="method-44">validateMenuItem:</a></h2>
-- (BOOL) <b>validateMenuItem:</b> (NSMenuItem*)anItem<br>
+ <hr>
+<h3><a name ="method-44">validateMenuItem:</a></h3>
+- (BOOL) <b>validateMenuItem:</b> (NSMenuItem*)anItem;<br>
 
           
-<hr>
-<h2><a name="method-45">windowControllerDidLoadNib:</a></h2>
-- (void) <b>windowControllerDidLoadNib:</b> (NSWindowController*)windowController<br>
+ <hr>
+<h3><a name ="method-45">windowControllerDidLoadNib:</a></h3>
+- (void) <b>windowControllerDidLoadNib:</b> (NSWindowController*)windowController;<br>
 
           
-<hr>
-<h2><a name="method-46">windowControllerWillLoadNib:</a></h2>
-- (void) <b>windowControllerWillLoadNib:</b> (NSWindowController*)windowController<br>
+ <hr>
+<h3><a name ="method-46">windowControllerWillLoadNib:</a></h3>
+- (void) <b>windowControllerWillLoadNib:</b> (NSWindowController*)windowController;<br>
 
           
-<hr>
-<h2><a name="method-47">windowControllers</a></h2>
-- (NSArray*) <b>windowControllers</b><br>
+ <hr>
+<h3><a name ="method-47">windowControllers</a></h3>
+- (NSArray*) <b>windowControllers</b>;<br>
 
           
-<hr>
-<h2><a name="method-48">windowNibName</a></h2>
-- (NSString*) <b>windowNibName</b><br>
+ <hr>
+<h3><a name ="method-48">windowNibName</a></h3>
+- (NSString*) <b>windowNibName</b>;<br>
 
           
-<hr>
-<h2><a name="method-49">writeToFile:</a></h2>
-- (BOOL) <b>writeToFile:</b> (NSString*)fileName<br>
+ <hr>
+<h3><a name ="method-49">writeToFile:</a></h3>
+- (BOOL) <b>writeToFile:</b> (NSString*)fileName;<br>
 
           
-<hr>
+ <hr>
 </body>
 
-</html>
+ </html>

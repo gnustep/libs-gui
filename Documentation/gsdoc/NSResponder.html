@@ -1,576 +1,580 @@
 <html><head>
-<title>NSResponder</title>
+ <title>NSResponder</title>
 </head>
 <body>
-<a href="NSProgressIndicator.html">[Previous]</a>
-<a href="Gui.html">[Up]</a>
-<a href="NSRulerMarker.html">[Next]</a>
+<a href ="NSProgressIndicator.html">[Previous]</a>
+<a href ="Gui.html">[Up]</a>
+<a href ="NSRulerMarker.html">[Next]</a>
 <h1>NSResponder</h1>
-<h3>Authors</h3>
-<dl>
-<dt><a href="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
+<h3>Authors </h3>
+ <dl>
+<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
 <dd>
 </dl>
-<p>Version: 0.1</p>
-<p>Date: 28 February, 2000</p>
-<h2><a name="cont-0">NSResponder</a></h2>
-<h2><a name="NSResponder">NSResponder</a></h2>
-<p><b>Declared in:</b> Gui/NSResponder.h</p>
-<p><b>Inherits from:</b> NSObject</p>
-<p><b>Conforms to:</b> NSCoding
+<p>Version: $Revision$</p>
+<p>Date: $Date$</p>
+<h2><a name ="cont-0">NSResponder</a></h2>
+<h2><a name ="NSResponder">NSResponder</a></h2>
+<p><b>Declared in: </b> Gui/NSResponder.h</p>
+<p><b>Inherits from: </b> NSObject</p>
+<p><b>Conforms to: </b> NSCoding
 </p>
 <hr>
 
           
+<h2>Instance Variables </h2>
 <ul>
-<li><a href="NSResponder.html#method-0">-acceptsFirstResponder</a>
-<li><a href="NSResponder.html#method-1">-becomeFirstResponder</a>
-<li><a href="NSResponder.html#method-2">-capitalizeWord:</a>
-<li><a href="NSResponder.html#method-3">-centerSelectionInVisibleArea:</a>
-<li><a href="NSResponder.html#method-4">-changeCaseOfLetter:</a>
-<li><a href="NSResponder.html#method-5">-complete:</a>
-<li><a href="NSResponder.html#method-6">-deleteBackward:</a>
-<li><a href="NSResponder.html#method-7">-deleteForward:</a>
-<li><a href="NSResponder.html#method-8">-deleteToBeginningOfLine:</a>
-<li><a href="NSResponder.html#method-9">-deleteToBeginningOfParagraph:</a>
-<li><a href="NSResponder.html#method-10">-deleteToEndOfLine:</a>
-<li><a href="NSResponder.html#method-11">-deleteToEndOfParagraph:</a>
-<li><a href="NSResponder.html#method-12">-deleteToMark:</a>
-<li><a href="NSResponder.html#method-13">-deleteWordBackward:</a>
-<li><a href="NSResponder.html#method-14">-deleteWordForward:</a>
-<li><a href="NSResponder.html#method-15">-doCommandBySelector:</a>
-<li><a href="NSResponder.html#method-16">-flagsChanged:</a>
-<li><a href="NSResponder.html#method-17">-flushBufferedKeyEvents</a>
-<li><a href="NSResponder.html#method-18">-helpRequested:</a>
-<li><a href="NSResponder.html#method-19">-indent:</a>
-<li><a href="NSResponder.html#method-20">-insertBacktab:</a>
-<li><a href="NSResponder.html#method-21">-insertNewline:</a>
-<li><a href="NSResponder.html#method-22">-insertNewlineIgnoringFieldEditor:</a>
-<li><a href="NSResponder.html#method-23">-insertParagraphSeparator:</a>
-<li><a href="NSResponder.html#method-24">-insertTab:</a>
-<li><a href="NSResponder.html#method-25">-insertTabIgnoringFieldEditor:</a>
-<li><a href="NSResponder.html#method-26">-insertText:</a>
-<li><a href="NSResponder.html#method-27">-interfaceStyle</a>
-<li><a href="NSResponder.html#method-28">-interpretKeyEvents:</a>
-<li><a href="NSResponder.html#method-29">-keyDown:</a>
-<li><a href="NSResponder.html#method-30">-keyUp:</a>
-<li><a href="NSResponder.html#method-31">-lowercaseWord:</a>
-<li><a href="NSResponder.html#method-32">-menu</a>
-<li><a href="NSResponder.html#method-33">-mouseDown:</a>
-<li><a href="NSResponder.html#method-34">-mouseDragged:</a>
-<li><a href="NSResponder.html#method-35">-mouseEntered:</a>
-<li><a href="NSResponder.html#method-36">-mouseExited:</a>
-<li><a href="NSResponder.html#method-37">-mouseMoved:</a>
-<li><a href="NSResponder.html#method-38">-mouseUp:</a>
-<li><a href="NSResponder.html#method-39">-moveBackward:</a>
-<li><a href="NSResponder.html#method-40">-moveBackwardAndModifySelection:</a>
-<li><a href="NSResponder.html#method-41">-moveDown:</a>
-<li><a href="NSResponder.html#method-42">-moveDownAndModifySelection:</a>
-<li><a href="NSResponder.html#method-43">-moveForward:</a>
-<li><a href="NSResponder.html#method-44">-moveForwardAndModifySelection:</a>
-<li><a href="NSResponder.html#method-45">-moveLeft:</a>
-<li><a href="NSResponder.html#method-46">-moveRight:</a>
-<li><a href="NSResponder.html#method-47">-moveToBeginningOfDocument:</a>
-<li><a href="NSResponder.html#method-48">-moveToBeginningOfLine:</a>
-<li><a href="NSResponder.html#method-49">-moveToBeginningOfParagraph:</a>
-<li><a href="NSResponder.html#method-50">-moveToEndOfDocument:</a>
-<li><a href="NSResponder.html#method-51">-moveToEndOfLine:</a>
-<li><a href="NSResponder.html#method-52">-moveToEndOfParagraph:</a>
-<li><a href="NSResponder.html#method-53">-moveUp:</a>
-<li><a href="NSResponder.html#method-54">-moveUpAndModifySelection:</a>
-<li><a href="NSResponder.html#method-55">-moveWordBackward:</a>
-<li><a href="NSResponder.html#method-56">-moveWordBackwardAndModifySelection:</a>
-<li><a href="NSResponder.html#method-57">-moveWordForward:</a>
-<li><a href="NSResponder.html#method-58">-moveWordForwardAndModifySelection:</a>
-<li><a href="NSResponder.html#method-59">-nextResponder</a>
-<li><a href="NSResponder.html#method-60">-noResponderFor:</a>
-<li><a href="NSResponder.html#method-61">-pageDown:</a>
-<li><a href="NSResponder.html#method-62">-pageUp:</a>
-<li><a href="NSResponder.html#method-63">-performKeyEquivalent:</a>
-<li><a href="NSResponder.html#method-64">-performMnemonic:</a>
-<li><a href="NSResponder.html#method-65">-resignFirstResponder</a>
-<li><a href="NSResponder.html#method-66">-rightMouseDown:</a>
-<li><a href="NSResponder.html#method-67">-rightMouseDragged:</a>
-<li><a href="NSResponder.html#method-68">-rightMouseUp:</a>
-<li><a href="NSResponder.html#method-69">-scrollLineDown:</a>
-<li><a href="NSResponder.html#method-70">-scrollLineUp:</a>
-<li><a href="NSResponder.html#method-71">-scrollPageDown:</a>
-<li><a href="NSResponder.html#method-72">-scrollPageUp:</a>
-<li><a href="NSResponder.html#method-73">-selectAll:</a>
-<li><a href="NSResponder.html#method-74">-selectLine:</a>
-<li><a href="NSResponder.html#method-75">-selectParagraph:</a>
-<li><a href="NSResponder.html#method-76">-selectToMark:</a>
-<li><a href="NSResponder.html#method-77">-selectWord:</a>
-<li><a href="NSResponder.html#method-78">-setInterfaceStyle:</a>
-<li><a href="NSResponder.html#method-79">-setMark:</a>
-<li><a href="NSResponder.html#method-80">-setMenu:</a>
-<li><a href="NSResponder.html#method-81">-setNextResponder:</a>
-<li><a href="NSResponder.html#method-82">-showContextHelp:</a>
-<li><a href="NSResponder.html#method-83">-swapWithMark:</a>
-<li><a href="NSResponder.html#method-84">-transpose:</a>
-<li><a href="NSResponder.html#method-85">-transposeWords:</a>
-<li><a href="NSResponder.html#method-86">-tryToPerform:</a>
-<li><a href="NSResponder.html#method-87">-undoManager</a>
-<li><a href="NSResponder.html#method-88">-uppercaseWord:</a>
-<li><a href="NSResponder.html#method-89">-validRequestorForSendType:returnType:</a>
-<li><a href="NSResponder.html#method-90">-yank:</a>
 </ul>
-<hr>
-<h2><a name="method-0">acceptsFirstResponder</a></h2>
-- (BOOL) <b>acceptsFirstResponder</b><br>
+<h2>Methods </h2>
+<ul>
+<li><a href ="NSResponder.html#method-0">-acceptsFirstResponder</a>
+<li><a href ="NSResponder.html#method-1">-becomeFirstResponder</a>
+<li><a href ="NSResponder.html#method-2">-capitalizeWord:</a>
+<li><a href ="NSResponder.html#method-3">-centerSelectionInVisibleArea:</a>
+<li><a href ="NSResponder.html#method-4">-changeCaseOfLetter:</a>
+<li><a href ="NSResponder.html#method-5">-complete:</a>
+<li><a href ="NSResponder.html#method-6">-deleteBackward:</a>
+<li><a href ="NSResponder.html#method-7">-deleteForward:</a>
+<li><a href ="NSResponder.html#method-8">-deleteToBeginningOfLine:</a>
+<li><a href ="NSResponder.html#method-9">-deleteToBeginningOfParagraph:</a>
+<li><a href ="NSResponder.html#method-10">-deleteToEndOfLine:</a>
+<li><a href ="NSResponder.html#method-11">-deleteToEndOfParagraph:</a>
+<li><a href ="NSResponder.html#method-12">-deleteToMark:</a>
+<li><a href ="NSResponder.html#method-13">-deleteWordBackward:</a>
+<li><a href ="NSResponder.html#method-14">-deleteWordForward:</a>
+<li><a href ="NSResponder.html#method-15">-doCommandBySelector:</a>
+<li><a href ="NSResponder.html#method-16">-flagsChanged:</a>
+<li><a href ="NSResponder.html#method-17">-flushBufferedKeyEvents</a>
+<li><a href ="NSResponder.html#method-18">-helpRequested:</a>
+<li><a href ="NSResponder.html#method-19">-indent:</a>
+<li><a href ="NSResponder.html#method-20">-insertBacktab:</a>
+<li><a href ="NSResponder.html#method-21">-insertNewline:</a>
+<li><a href ="NSResponder.html#method-22">-insertNewlineIgnoringFieldEditor:</a>
+<li><a href ="NSResponder.html#method-23">-insertParagraphSeparator:</a>
+<li><a href ="NSResponder.html#method-24">-insertTab:</a>
+<li><a href ="NSResponder.html#method-25">-insertTabIgnoringFieldEditor:</a>
+<li><a href ="NSResponder.html#method-26">-insertText:</a>
+<li><a href ="NSResponder.html#method-27">-interfaceStyle</a>
+<li><a href ="NSResponder.html#method-28">-interpretKeyEvents:</a>
+<li><a href ="NSResponder.html#method-29">-keyDown:</a>
+<li><a href ="NSResponder.html#method-30">-keyUp:</a>
+<li><a href ="NSResponder.html#method-31">-lowercaseWord:</a>
+<li><a href ="NSResponder.html#method-32">-menu</a>
+<li><a href ="NSResponder.html#method-33">-mouseDown:</a>
+<li><a href ="NSResponder.html#method-34">-mouseDragged:</a>
+<li><a href ="NSResponder.html#method-35">-mouseEntered:</a>
+<li><a href ="NSResponder.html#method-36">-mouseExited:</a>
+<li><a href ="NSResponder.html#method-37">-mouseMoved:</a>
+<li><a href ="NSResponder.html#method-38">-mouseUp:</a>
+<li><a href ="NSResponder.html#method-39">-moveBackward:</a>
+<li><a href ="NSResponder.html#method-40">-moveBackwardAndModifySelection:</a>
+<li><a href ="NSResponder.html#method-41">-moveDown:</a>
+<li><a href ="NSResponder.html#method-42">-moveDownAndModifySelection:</a>
+<li><a href ="NSResponder.html#method-43">-moveForward:</a>
+<li><a href ="NSResponder.html#method-44">-moveForwardAndModifySelection:</a>
+<li><a href ="NSResponder.html#method-45">-moveLeft:</a>
+<li><a href ="NSResponder.html#method-46">-moveRight:</a>
+<li><a href ="NSResponder.html#method-47">-moveToBeginningOfDocument:</a>
+<li><a href ="NSResponder.html#method-48">-moveToBeginningOfLine:</a>
+<li><a href ="NSResponder.html#method-49">-moveToBeginningOfParagraph:</a>
+<li><a href ="NSResponder.html#method-50">-moveToEndOfDocument:</a>
+<li><a href ="NSResponder.html#method-51">-moveToEndOfLine:</a>
+<li><a href ="NSResponder.html#method-52">-moveToEndOfParagraph:</a>
+<li><a href ="NSResponder.html#method-53">-moveUp:</a>
+<li><a href ="NSResponder.html#method-54">-moveUpAndModifySelection:</a>
+<li><a href ="NSResponder.html#method-55">-moveWordBackward:</a>
+<li><a href ="NSResponder.html#method-56">-moveWordBackwardAndModifySelection:</a>
+<li><a href ="NSResponder.html#method-57">-moveWordForward:</a>
+<li><a href ="NSResponder.html#method-58">-moveWordForwardAndModifySelection:</a>
+<li><a href ="NSResponder.html#method-59">-nextResponder</a>
+<li><a href ="NSResponder.html#method-60">-noResponderFor:</a>
+<li><a href ="NSResponder.html#method-61">-pageDown:</a>
+<li><a href ="NSResponder.html#method-62">-pageUp:</a>
+<li><a href ="NSResponder.html#method-63">-performKeyEquivalent:</a>
+<li><a href ="NSResponder.html#method-64">-performMnemonic:</a>
+<li><a href ="NSResponder.html#method-65">-resignFirstResponder</a>
+<li><a href ="NSResponder.html#method-66">-rightMouseDown:</a>
+<li><a href ="NSResponder.html#method-67">-rightMouseDragged:</a>
+<li><a href ="NSResponder.html#method-68">-rightMouseUp:</a>
+<li><a href ="NSResponder.html#method-69">-scrollLineDown:</a>
+<li><a href ="NSResponder.html#method-70">-scrollLineUp:</a>
+<li><a href ="NSResponder.html#method-71">-scrollPageDown:</a>
+<li><a href ="NSResponder.html#method-72">-scrollPageUp:</a>
+<li><a href ="NSResponder.html#method-73">-selectAll:</a>
+<li><a href ="NSResponder.html#method-74">-selectLine:</a>
+<li><a href ="NSResponder.html#method-75">-selectParagraph:</a>
+<li><a href ="NSResponder.html#method-76">-selectToMark:</a>
+<li><a href ="NSResponder.html#method-77">-selectWord:</a>
+<li><a href ="NSResponder.html#method-78">-setInterfaceStyle:</a>
+<li><a href ="NSResponder.html#method-79">-setMark:</a>
+<li><a href ="NSResponder.html#method-80">-setMenu:</a>
+<li><a href ="NSResponder.html#method-81">-setNextResponder:</a>
+<li><a href ="NSResponder.html#method-82">-showContextHelp:</a>
+<li><a href ="NSResponder.html#method-83">-swapWithMark:</a>
+<li><a href ="NSResponder.html#method-84">-transpose:</a>
+<li><a href ="NSResponder.html#method-85">-transposeWords:</a>
+<li><a href ="NSResponder.html#method-86">-tryToPerform:</a>
+<li><a href ="NSResponder.html#method-87">-undoManager</a>
+<li><a href ="NSResponder.html#method-88">-uppercaseWord:</a>
+<li><a href ="NSResponder.html#method-89">-validRequestorForSendType:returnType:</a>
+<li><a href ="NSResponder.html#method-90">-yank:</a>
+</ul>
+<hr><h2>Instances Methods </h2>
+<h3><a name ="method-0">acceptsFirstResponder</a></h3>
+- (BOOL) <b>acceptsFirstResponder</b>;<br>
+
+          
+ <hr>
+<h3><a name ="method-1">becomeFirstResponder</a></h3>
+- (BOOL) <b>becomeFirstResponder</b>;<br>
 
           
-<hr>
-<h2><a name="method-1">becomeFirstResponder</a></h2>
-- (BOOL) <b>becomeFirstResponder</b><br>
+ <hr>
+<h3><a name ="method-2">capitalizeWord:</a></h3>
+- (void) <b>capitalizeWord:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-2">capitalizeWord:</a></h2>
-- (void) <b>capitalizeWord:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-3">centerSelectionInVisibleArea:</a></h3>
+- (void) <b>centerSelectionInVisibleArea:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-3">centerSelectionInVisibleArea:</a></h2>
-- (void) <b>centerSelectionInVisibleArea:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-4">changeCaseOfLetter:</a></h3>
+- (void) <b>changeCaseOfLetter:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-4">changeCaseOfLetter:</a></h2>
-- (void) <b>changeCaseOfLetter:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-5">complete:</a></h3>
+- (void) <b>complete:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-5">complete:</a></h2>
-- (void) <b>complete:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-6">deleteBackward:</a></h3>
+- (void) <b>deleteBackward:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-6">deleteBackward:</a></h2>
-- (void) <b>deleteBackward:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-7">deleteForward:</a></h3>
+- (void) <b>deleteForward:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-7">deleteForward:</a></h2>
-- (void) <b>deleteForward:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-8">deleteToBeginningOfLine:</a></h3>
+- (void) <b>deleteToBeginningOfLine:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-8">deleteToBeginningOfLine:</a></h2>
-- (void) <b>deleteToBeginningOfLine:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-9">deleteToBeginningOfParagraph:</a></h3>
+- (void) <b>deleteToBeginningOfParagraph:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-9">deleteToBeginningOfParagraph:</a></h2>
-- (void) <b>deleteToBeginningOfParagraph:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-10">deleteToEndOfLine:</a></h3>
+- (void) <b>deleteToEndOfLine:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-10">deleteToEndOfLine:</a></h2>
-- (void) <b>deleteToEndOfLine:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-11">deleteToEndOfParagraph:</a></h3>
+- (void) <b>deleteToEndOfParagraph:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-11">deleteToEndOfParagraph:</a></h2>
-- (void) <b>deleteToEndOfParagraph:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-12">deleteToMark:</a></h3>
+- (void) <b>deleteToMark:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-12">deleteToMark:</a></h2>
-- (void) <b>deleteToMark:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-13">deleteWordBackward:</a></h3>
+- (void) <b>deleteWordBackward:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-13">deleteWordBackward:</a></h2>
-- (void) <b>deleteWordBackward:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-14">deleteWordForward:</a></h3>
+- (void) <b>deleteWordForward:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-14">deleteWordForward:</a></h2>
-- (void) <b>deleteWordForward:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-15">doCommandBySelector:</a></h3>
+- (void) <b>doCommandBySelector:</b> (SEL)aSelector;<br>
 
           
-<hr>
-<h2><a name="method-15">doCommandBySelector:</a></h2>
-- (void) <b>doCommandBySelector:</b> (SEL)aSelector<br>
+ <hr>
+<h3><a name ="method-16">flagsChanged:</a></h3>
+- (void) <b>flagsChanged:</b> (NSEvent*)theEvent;<br>
 
           
-<hr>
-<h2><a name="method-16">flagsChanged:</a></h2>
-- (void) <b>flagsChanged:</b> (NSEvent*)theEvent<br>
+ <hr>
+<h3><a name ="method-17">flushBufferedKeyEvents</a></h3>
+- (void) <b>flushBufferedKeyEvents</b>;<br>
 
           
-<hr>
-<h2><a name="method-17">flushBufferedKeyEvents</a></h2>
-- (void) <b>flushBufferedKeyEvents</b><br>
+ <hr>
+<h3><a name ="method-18">helpRequested:</a></h3>
+- (void) <b>helpRequested:</b> (NSEvent*)theEvent;<br>
 
           
-<hr>
-<h2><a name="method-18">helpRequested:</a></h2>
-- (void) <b>helpRequested:</b> (NSEvent*)theEvent<br>
+ <hr>
+<h3><a name ="method-19">indent:</a></h3>
+- (void) <b>indent:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-19">indent:</a></h2>
-- (void) <b>indent:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-20">insertBacktab:</a></h3>
+- (void) <b>insertBacktab:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-20">insertBacktab:</a></h2>
-- (void) <b>insertBacktab:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-21">insertNewline:</a></h3>
+- (void) <b>insertNewline:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-21">insertNewline:</a></h2>
-- (void) <b>insertNewline:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-22">insertNewlineIgnoringFieldEditor:</a></h3>
+- (void) <b>insertNewlineIgnoringFieldEditor:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-22">insertNewlineIgnoringFieldEditor:</a></h2>
-- (void) <b>insertNewlineIgnoringFieldEditor:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-23">insertParagraphSeparator:</a></h3>
+- (void) <b>insertParagraphSeparator:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-23">insertParagraphSeparator:</a></h2>
-- (void) <b>insertParagraphSeparator:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-24">insertTab:</a></h3>
+- (void) <b>insertTab:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-24">insertTab:</a></h2>
-- (void) <b>insertTab:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-25">insertTabIgnoringFieldEditor:</a></h3>
+- (void) <b>insertTabIgnoringFieldEditor:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-25">insertTabIgnoringFieldEditor:</a></h2>
-- (void) <b>insertTabIgnoringFieldEditor:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-26">insertText:</a></h3>
+- (void) <b>insertText:</b> (NSString*)aString;<br>
 
           
-<hr>
-<h2><a name="method-26">insertText:</a></h2>
-- (void) <b>insertText:</b> (NSString*)aString<br>
+ <hr>
+<h3><a name ="method-27">interfaceStyle</a></h3>
+- (NSInterfaceStyle) <b>interfaceStyle</b>;<br>
 
           
-<hr>
-<h2><a name="method-27">interfaceStyle</a></h2>
-- (NSInterfaceStyle) <b>interfaceStyle</b><br>
+ <hr>
+<h3><a name ="method-28">interpretKeyEvents:</a></h3>
+- (void) <b>interpretKeyEvents:</b> (NSArray*)eventArray;<br>
 
           
-<hr>
-<h2><a name="method-28">interpretKeyEvents:</a></h2>
-- (void) <b>interpretKeyEvents:</b> (NSArray*)eventArray<br>
+ <hr>
+<h3><a name ="method-29">keyDown:</a></h3>
+- (void) <b>keyDown:</b> (NSEvent*)theEvent;<br>
 
           
-<hr>
-<h2><a name="method-29">keyDown:</a></h2>
-- (void) <b>keyDown:</b> (NSEvent*)theEvent<br>
+ <hr>
+<h3><a name ="method-30">keyUp:</a></h3>
+- (void) <b>keyUp:</b> (NSEvent*)theEvent;<br>
 
           
-<hr>
-<h2><a name="method-30">keyUp:</a></h2>
-- (void) <b>keyUp:</b> (NSEvent*)theEvent<br>
+ <hr>
+<h3><a name ="method-31">lowercaseWord:</a></h3>
+- (void) <b>lowercaseWord:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-31">lowercaseWord:</a></h2>
-- (void) <b>lowercaseWord:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-32">menu</a></h3>
+- (NSMenu*) <b>menu</b>;<br>
 
           
-<hr>
-<h2><a name="method-32">menu</a></h2>
-- (NSMenu*) <b>menu</b><br>
+ <hr>
+<h3><a name ="method-33">mouseDown:</a></h3>
+- (void) <b>mouseDown:</b> (NSEvent*)theEvent;<br>
 
           
-<hr>
-<h2><a name="method-33">mouseDown:</a></h2>
-- (void) <b>mouseDown:</b> (NSEvent*)theEvent<br>
+ <hr>
+<h3><a name ="method-34">mouseDragged:</a></h3>
+- (void) <b>mouseDragged:</b> (NSEvent*)theEvent;<br>
 
           
-<hr>
-<h2><a name="method-34">mouseDragged:</a></h2>
-- (void) <b>mouseDragged:</b> (NSEvent*)theEvent<br>
+ <hr>
+<h3><a name ="method-35">mouseEntered:</a></h3>
+- (void) <b>mouseEntered:</b> (NSEvent*)theEvent;<br>
 
           
-<hr>
-<h2><a name="method-35">mouseEntered:</a></h2>
-- (void) <b>mouseEntered:</b> (NSEvent*)theEvent<br>
+ <hr>
+<h3><a name ="method-36">mouseExited:</a></h3>
+- (void) <b>mouseExited:</b> (NSEvent*)theEvent;<br>
 
           
-<hr>
-<h2><a name="method-36">mouseExited:</a></h2>
-- (void) <b>mouseExited:</b> (NSEvent*)theEvent<br>
+ <hr>
+<h3><a name ="method-37">mouseMoved:</a></h3>
+- (void) <b>mouseMoved:</b> (NSEvent*)theEvent;<br>
 
           
-<hr>
-<h2><a name="method-37">mouseMoved:</a></h2>
-- (void) <b>mouseMoved:</b> (NSEvent*)theEvent<br>
+ <hr>
+<h3><a name ="method-38">mouseUp:</a></h3>
+- (void) <b>mouseUp:</b> (NSEvent*)theEvent;<br>
 
           
-<hr>
-<h2><a name="method-38">mouseUp:</a></h2>
-- (void) <b>mouseUp:</b> (NSEvent*)theEvent<br>
+ <hr>
+<h3><a name ="method-39">moveBackward:</a></h3>
+- (void) <b>moveBackward:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-39">moveBackward:</a></h2>
-- (void) <b>moveBackward:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-40">moveBackwardAndModifySelection:</a></h3>
+- (void) <b>moveBackwardAndModifySelection:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-40">moveBackwardAndModifySelection:</a></h2>
-- (void) <b>moveBackwardAndModifySelection:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-41">moveDown:</a></h3>
+- (void) <b>moveDown:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-41">moveDown:</a></h2>
-- (void) <b>moveDown:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-42">moveDownAndModifySelection:</a></h3>
+- (void) <b>moveDownAndModifySelection:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-42">moveDownAndModifySelection:</a></h2>
-- (void) <b>moveDownAndModifySelection:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-43">moveForward:</a></h3>
+- (void) <b>moveForward:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-43">moveForward:</a></h2>
-- (void) <b>moveForward:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-44">moveForwardAndModifySelection:</a></h3>
+- (void) <b>moveForwardAndModifySelection:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-44">moveForwardAndModifySelection:</a></h2>
-- (void) <b>moveForwardAndModifySelection:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-45">moveLeft:</a></h3>
+- (void) <b>moveLeft:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-45">moveLeft:</a></h2>
-- (void) <b>moveLeft:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-46">moveRight:</a></h3>
+- (void) <b>moveRight:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-46">moveRight:</a></h2>
-- (void) <b>moveRight:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-47">moveToBeginningOfDocument:</a></h3>
+- (void) <b>moveToBeginningOfDocument:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-47">moveToBeginningOfDocument:</a></h2>
-- (void) <b>moveToBeginningOfDocument:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-48">moveToBeginningOfLine:</a></h3>
+- (void) <b>moveToBeginningOfLine:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-48">moveToBeginningOfLine:</a></h2>
-- (void) <b>moveToBeginningOfLine:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-49">moveToBeginningOfParagraph:</a></h3>
+- (void) <b>moveToBeginningOfParagraph:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-49">moveToBeginningOfParagraph:</a></h2>
-- (void) <b>moveToBeginningOfParagraph:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-50">moveToEndOfDocument:</a></h3>
+- (void) <b>moveToEndOfDocument:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-50">moveToEndOfDocument:</a></h2>
-- (void) <b>moveToEndOfDocument:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-51">moveToEndOfLine:</a></h3>
+- (void) <b>moveToEndOfLine:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-51">moveToEndOfLine:</a></h2>
-- (void) <b>moveToEndOfLine:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-52">moveToEndOfParagraph:</a></h3>
+- (void) <b>moveToEndOfParagraph:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-52">moveToEndOfParagraph:</a></h2>
-- (void) <b>moveToEndOfParagraph:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-53">moveUp:</a></h3>
+- (void) <b>moveUp:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-53">moveUp:</a></h2>
-- (void) <b>moveUp:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-54">moveUpAndModifySelection:</a></h3>
+- (void) <b>moveUpAndModifySelection:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-54">moveUpAndModifySelection:</a></h2>
-- (void) <b>moveUpAndModifySelection:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-55">moveWordBackward:</a></h3>
+- (void) <b>moveWordBackward:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-55">moveWordBackward:</a></h2>
-- (void) <b>moveWordBackward:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-56">moveWordBackwardAndModifySelection:</a></h3>
+- (void) <b>moveWordBackwardAndModifySelection:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-56">moveWordBackwardAndModifySelection:</a></h2>
-- (void) <b>moveWordBackwardAndModifySelection:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-57">moveWordForward:</a></h3>
+- (void) <b>moveWordForward:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-57">moveWordForward:</a></h2>
-- (void) <b>moveWordForward:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-58">moveWordForwardAndModifySelection:</a></h3>
+- (void) <b>moveWordForwardAndModifySelection:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-58">moveWordForwardAndModifySelection:</a></h2>
-- (void) <b>moveWordForwardAndModifySelection:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-59">nextResponder</a></h3>
+- (NSResponder*) <b>nextResponder</b>;<br>
 
           
-<hr>
-<h2><a name="method-59">nextResponder</a></h2>
-- (NSResponder*) <b>nextResponder</b><br>
+ <hr>
+<h3><a name ="method-60">noResponderFor:</a></h3>
+- (void) <b>noResponderFor:</b> (SEL)eventSelector;<br>
 
           
-<hr>
-<h2><a name="method-60">noResponderFor:</a></h2>
-- (void) <b>noResponderFor:</b> (SEL)eventSelector<br>
+ <hr>
+<h3><a name ="method-61">pageDown:</a></h3>
+- (void) <b>pageDown:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-61">pageDown:</a></h2>
-- (void) <b>pageDown:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-62">pageUp:</a></h3>
+- (void) <b>pageUp:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-62">pageUp:</a></h2>
-- (void) <b>pageUp:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-63">performKeyEquivalent:</a></h3>
+- (BOOL) <b>performKeyEquivalent:</b> (NSEvent*)theEvent;<br>
 
           
-<hr>
-<h2><a name="method-63">performKeyEquivalent:</a></h2>
-- (BOOL) <b>performKeyEquivalent:</b> (NSEvent*)theEvent<br>
+ <hr>
+<h3><a name ="method-64">performMnemonic:</a></h3>
+- (BOOL) <b>performMnemonic:</b> (NSString*)aString;<br>
 
           
-<hr>
-<h2><a name="method-64">performMnemonic:</a></h2>
-- (BOOL) <b>performMnemonic:</b> (NSString*)aString<br>
+ <hr>
+<h3><a name ="method-65">resignFirstResponder</a></h3>
+- (BOOL) <b>resignFirstResponder</b>;<br>
 
           
-<hr>
-<h2><a name="method-65">resignFirstResponder</a></h2>
-- (BOOL) <b>resignFirstResponder</b><br>
+ <hr>
+<h3><a name ="method-66">rightMouseDown:</a></h3>
+- (void) <b>rightMouseDown:</b> (NSEvent*)theEvent;<br>
 
           
-<hr>
-<h2><a name="method-66">rightMouseDown:</a></h2>
-- (void) <b>rightMouseDown:</b> (NSEvent*)theEvent<br>
+ <hr>
+<h3><a name ="method-67">rightMouseDragged:</a></h3>
+- (void) <b>rightMouseDragged:</b> (NSEvent*)theEvent;<br>
 
           
-<hr>
-<h2><a name="method-67">rightMouseDragged:</a></h2>
-- (void) <b>rightMouseDragged:</b> (NSEvent*)theEvent<br>
+ <hr>
+<h3><a name ="method-68">rightMouseUp:</a></h3>
+- (void) <b>rightMouseUp:</b> (NSEvent*)theEvent;<br>
 
           
-<hr>
-<h2><a name="method-68">rightMouseUp:</a></h2>
-- (void) <b>rightMouseUp:</b> (NSEvent*)theEvent<br>
+ <hr>
+<h3><a name ="method-69">scrollLineDown:</a></h3>
+- (void) <b>scrollLineDown:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-69">scrollLineDown:</a></h2>
-- (void) <b>scrollLineDown:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-70">scrollLineUp:</a></h3>
+- (void) <b>scrollLineUp:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-70">scrollLineUp:</a></h2>
-- (void) <b>scrollLineUp:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-71">scrollPageDown:</a></h3>
+- (void) <b>scrollPageDown:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-71">scrollPageDown:</a></h2>
-- (void) <b>scrollPageDown:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-72">scrollPageUp:</a></h3>
+- (void) <b>scrollPageUp:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-72">scrollPageUp:</a></h2>
-- (void) <b>scrollPageUp:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-73">selectAll:</a></h3>
+- (void) <b>selectAll:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-73">selectAll:</a></h2>
-- (void) <b>selectAll:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-74">selectLine:</a></h3>
+- (void) <b>selectLine:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-74">selectLine:</a></h2>
-- (void) <b>selectLine:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-75">selectParagraph:</a></h3>
+- (void) <b>selectParagraph:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-75">selectParagraph:</a></h2>
-- (void) <b>selectParagraph:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-76">selectToMark:</a></h3>
+- (void) <b>selectToMark:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-76">selectToMark:</a></h2>
-- (void) <b>selectToMark:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-77">selectWord:</a></h3>
+- (void) <b>selectWord:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-77">selectWord:</a></h2>
-- (void) <b>selectWord:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-78">setInterfaceStyle:</a></h3>
+- (void) <b>setInterfaceStyle:</b> (NSInterfaceStyle)interfaceStyle;<br>
 
           
-<hr>
-<h2><a name="method-78">setInterfaceStyle:</a></h2>
-- (void) <b>setInterfaceStyle:</b> (NSInterfaceStyle)interfaceStyle<br>
+ <hr>
+<h3><a name ="method-79">setMark:</a></h3>
+- (void) <b>setMark:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-79">setMark:</a></h2>
-- (void) <b>setMark:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-80">setMenu:</a></h3>
+- (void) <b>setMenu:</b> (NSMenu*)aMenu;<br>
 
           
-<hr>
-<h2><a name="method-80">setMenu:</a></h2>
-- (void) <b>setMenu:</b> (NSMenu*)aMenu<br>
+ <hr>
+<h3><a name ="method-81">setNextResponder:</a></h3>
+- (void) <b>setNextResponder:</b> (NSResponder*)aResponder;<br>
 
           
-<hr>
-<h2><a name="method-81">setNextResponder:</a></h2>
-- (void) <b>setNextResponder:</b> (NSResponder*)aResponder<br>
+ <hr>
+<h3><a name ="method-82">showContextHelp:</a></h3>
+- (void) <b>showContextHelp:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-82">showContextHelp:</a></h2>
-- (void) <b>showContextHelp:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-83">swapWithMark:</a></h3>
+- (void) <b>swapWithMark:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-83">swapWithMark:</a></h2>
-- (void) <b>swapWithMark:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-84">transpose:</a></h3>
+- (void) <b>transpose:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-84">transpose:</a></h2>
-- (void) <b>transpose:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-85">transposeWords:</a></h3>
+- (void) <b>transposeWords:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-85">transposeWords:</a></h2>
-- (void) <b>transposeWords:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-86">tryToPerform:</a></h3>
+- (BOOL) <b>tryToPerform:</b> (SEL)anAction;<br>
 
           
-<hr>
-<h2><a name="method-86">tryToPerform:</a></h2>
-- (BOOL) <b>tryToPerform:</b> (SEL)anAction<br>
+ <hr>
+<h3><a name ="method-87">undoManager</a></h3>
+- (NSUndoManager*) <b>undoManager</b>;<br>
 
           
-<hr>
-<h2><a name="method-87">undoManager</a></h2>
-- (NSUndoManager*) <b>undoManager</b><br>
+ <hr>
+<h3><a name ="method-88">uppercaseWord:</a></h3>
+- (void) <b>uppercaseWord:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-88">uppercaseWord:</a></h2>
-- (void) <b>uppercaseWord:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-89">validRequestorForSendType:returnType:</a></h3>
+- (id) <b>validRequestorForSendType:</b> (NSString*)sendType <b>returnType:</b> (NSString*)returnType;<br>
 
           
-<hr>
-<h2><a name="method-89">validRequestorForSendType:returnType:</a></h2>
-- (id) <b>validRequestorForSendType:</b> (NSString*)sendType <b>returnType:</b> (NSString*)returnType<br>
+ <hr>
+<h3><a name ="method-90">yank:</a></h3>
+- (void) <b>yank:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-90">yank:</a></h2>
-- (void) <b>yank:</b> (id)sender<br>
-
-          
-<hr>
+ <hr>
 </body>
 
-</html>
+ </html>

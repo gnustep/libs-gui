@@ -1,546 +1,551 @@
 <html><head>
-<title>NSBrowser</title>
+ <title>NSBrowser</title>
 </head>
 <body>
-<a href="NSBox.html">[Previous]</a>
-<a href="Gui.html">[Up]</a>
-<a href="NSBrowserCell.html">[Next]</a>
+<a href ="NSBox.html">[Previous]</a>
+<a href ="Gui.html">[Up]</a>
+<a href ="NSBrowserCell.html">[Next]</a>
 <h1>NSBrowser</h1>
-<h3>Authors</h3>
-<dl>
-<dt><a href="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
+<h3>Authors </h3>
+ <dl>
+<dt><a href ="http://www.gnustep.org/developers/whoiswho.html">Richard Frith-Macdonald</a>
 <dd>
 </dl>
-<p>Version: 0.1</p>
-<p>Date: 28 February, 2000</p>
-<h2><a name="cont-0">NSBrowser</a></h2>
-<h2><a name="NSBrowser">NSBrowser</a></h2>
-<p><b>Declared in:</b> Gui/NSBrowser.h</p>
-<p><b>Inherits from:</b> NSControl</p>
-<p><b>Conforms to:</b> NSCoding
+<p>Version: $Revision$</p>
+<p>Date: $Date$</p>
+<h2><a name ="cont-0">NSBrowser</a></h2>
+<h2><a name ="NSBrowser">NSBrowser</a></h2>
+<p><b>Declared in: </b> Gui/NSBrowser.h</p>
+<p><b>Inherits from: </b> NSControl</p>
+<p><b>Conforms to: </b> NSCoding
 </p>
 <hr>
 
           
+<h2>Instance Variables </h2>
 <ul>
-<li><a href="NSBrowser.html#method-0">+cellClass</a>
-<li><a href="NSBrowser.html#method-1">-acceptsArrowKeys</a>
-<li><a href="NSBrowser.html#method-2">-addColumn</a>
-<li><a href="NSBrowser.html#method-3">-allowsBranchSelection</a>
-<li><a href="NSBrowser.html#method-4">-allowsEmptySelection</a>
-<li><a href="NSBrowser.html#method-5">-allowsMultipleSelection</a>
-<li><a href="NSBrowser.html#method-77">-browser:createRowsForColumn:inMatrix:</a>
-<li><a href="NSBrowser.html#method-78">-browser:isColumnValid:</a>
-<li><a href="NSBrowser.html#method-79">-browser:numberOfRowsInColumn:</a>
-<li><a href="NSBrowser.html#method-80">-browser:selectCellWithString:inColumn:</a>
-<li><a href="NSBrowser.html#method-81">-browser:selectRow:inColumn:</a>
-<li><a href="NSBrowser.html#method-82">-browser:titleOfColumn:</a>
-<li><a href="NSBrowser.html#method-83">-browser:willDisplayCell:atRow:column:</a>
-<li><a href="NSBrowser.html#method-84">-browserDidScroll:</a>
-<li><a href="NSBrowser.html#method-85">-browserWillScroll:</a>
-<li><a href="NSBrowser.html#method-6">-cellPrototype</a>
-<li><a href="NSBrowser.html#method-7">-columnOfMatrix:</a>
-<li><a href="NSBrowser.html#method-8">-delegate</a>
-<li><a href="NSBrowser.html#method-9">-displayAllColumns</a>
-<li><a href="NSBrowser.html#method-10">-displayColumn:</a>
-<li><a href="NSBrowser.html#method-11">-doClick:</a>
-<li><a href="NSBrowser.html#method-12">-doDoubleClick:</a>
-<li><a href="NSBrowser.html#method-13">-doubleAction</a>
-<li><a href="NSBrowser.html#method-14">-drawTitleOfColumn:</a>
-<li><a href="NSBrowser.html#method-15">-firstVisibleColumn</a>
-<li><a href="NSBrowser.html#method-16">-frameOfColumn:</a>
-<li><a href="NSBrowser.html#method-17">-frameOfInsideOfColumn:</a>
-<li><a href="NSBrowser.html#method-18">-hasHorizontalScroller</a>
-<li><a href="NSBrowser.html#method-19">-isLoaded</a>
-<li><a href="NSBrowser.html#method-20">-isTitled</a>
-<li><a href="NSBrowser.html#method-21">-lastColumn</a>
-<li><a href="NSBrowser.html#method-22">-lastVisibleColumn</a>
-<li><a href="NSBrowser.html#method-23">-loadColumnZero</a>
-<li><a href="NSBrowser.html#method-24">-loadedCellAtRow:column:</a>
-<li><a href="NSBrowser.html#method-25">-matrixClass</a>
-<li><a href="NSBrowser.html#method-26">-matrixInColumn:</a>
-<li><a href="NSBrowser.html#method-27">-maxVisibleColumns</a>
-<li><a href="NSBrowser.html#method-28">-minColumnWidth</a>
-<li><a href="NSBrowser.html#method-29">-numberOfVisibleColumns</a>
-<li><a href="NSBrowser.html#method-30">-path</a>
-<li><a href="NSBrowser.html#method-31">-pathSeparator</a>
-<li><a href="NSBrowser.html#method-32">-pathToColumn:</a>
-<li><a href="NSBrowser.html#method-33">-reloadColumn:</a>
-<li><a href="NSBrowser.html#method-34">-reusesColumns</a>
-<li><a href="NSBrowser.html#method-35">-scrollColumnToVisible:</a>
-<li><a href="NSBrowser.html#method-36">-scrollColumnsLeftBy:</a>
-<li><a href="NSBrowser.html#method-37">-scrollColumnsRightBy:</a>
-<li><a href="NSBrowser.html#method-38">-scrollViaScroller:</a>
-<li><a href="NSBrowser.html#method-39">-selectAll:</a>
-<li><a href="NSBrowser.html#method-40">-selectRow:inColumn:</a>
-<li><a href="NSBrowser.html#method-41">-selectedCell</a>
-<li><a href="NSBrowser.html#method-42">-selectedCellInColumn:</a>
-<li><a href="NSBrowser.html#method-43">-selectedCells</a>
-<li><a href="NSBrowser.html#method-44">-selectedColumn</a>
-<li><a href="NSBrowser.html#method-45">-selectedRowInColumn:</a>
-<li><a href="NSBrowser.html#method-46">-sendAction</a>
-<li><a href="NSBrowser.html#method-47">-sendsActionOnArrowKeys</a>
-<li><a href="NSBrowser.html#method-48">-separatesColumns</a>
-<li><a href="NSBrowser.html#method-49">-setAcceptsArrowKeys:</a>
-<li><a href="NSBrowser.html#method-50">-setAllowsBranchSelection:</a>
-<li><a href="NSBrowser.html#method-51">-setAllowsEmptySelection:</a>
-<li><a href="NSBrowser.html#method-52">-setAllowsMultipleSelection:</a>
-<li><a href="NSBrowser.html#method-53">-setCellClass:</a>
-<li><a href="NSBrowser.html#method-54">-setCellPrototype:</a>
-<li><a href="NSBrowser.html#method-55">-setDelegate:</a>
-<li><a href="NSBrowser.html#method-56">-setDoubleAction:</a>
-<li><a href="NSBrowser.html#method-57">-setHasHorizontalScroller:</a>
-<li><a href="NSBrowser.html#method-58">-setLastColumn:</a>
-<li><a href="NSBrowser.html#method-59">-setMatrixClass:</a>
-<li><a href="NSBrowser.html#method-60">-setMaxVisibleColumns:</a>
-<li><a href="NSBrowser.html#method-61">-setMinColumnWidth:</a>
-<li><a href="NSBrowser.html#method-62">-setPath:</a>
-<li><a href="NSBrowser.html#method-63">-setPathSeparator:</a>
-<li><a href="NSBrowser.html#method-64">-setReusesColumns:</a>
-<li><a href="NSBrowser.html#method-65">-setSendsActionOnArrowKeys:</a>
-<li><a href="NSBrowser.html#method-66">-setSeparatesColumns:</a>
-<li><a href="NSBrowser.html#method-67">-setTakesTitleFromPreviousColumn:</a>
-<li><a href="NSBrowser.html#method-68">-setTitle:ofColumn:</a>
-<li><a href="NSBrowser.html#method-69">-setTitled:</a>
-<li><a href="NSBrowser.html#method-70">-takesTitleFromPreviousColumn</a>
-<li><a href="NSBrowser.html#method-71">-tile</a>
-<li><a href="NSBrowser.html#method-72">-titleFrameOfColumn:</a>
-<li><a href="NSBrowser.html#method-73">-titleHeight</a>
-<li><a href="NSBrowser.html#method-74">-titleOfColumn:</a>
-<li><a href="NSBrowser.html#method-75">-updateScroller</a>
-<li><a href="NSBrowser.html#method-76">-validateVisibleColumns</a>
 </ul>
-<hr>
-<h2><a name="method-0">cellClass</a></h2>
-+ (Class) <b>cellClass</b><br>
+<h2>Methods </h2>
+<ul>
+<li><a href ="NSBrowser.html#method-0">+cellClass</a>
+<li><a href ="NSBrowser.html#method-1">-acceptsArrowKeys</a>
+<li><a href ="NSBrowser.html#method-2">-addColumn</a>
+<li><a href ="NSBrowser.html#method-3">-allowsBranchSelection</a>
+<li><a href ="NSBrowser.html#method-4">-allowsEmptySelection</a>
+<li><a href ="NSBrowser.html#method-5">-allowsMultipleSelection</a>
+<li><a href ="NSBrowser.html#method-77">-browser:createRowsForColumn:inMatrix:</a>
+<li><a href ="NSBrowser.html#method-78">-browser:isColumnValid:</a>
+<li><a href ="NSBrowser.html#method-79">-browser:numberOfRowsInColumn:</a>
+<li><a href ="NSBrowser.html#method-80">-browser:selectCellWithString:inColumn:</a>
+<li><a href ="NSBrowser.html#method-81">-browser:selectRow:inColumn:</a>
+<li><a href ="NSBrowser.html#method-82">-browser:titleOfColumn:</a>
+<li><a href ="NSBrowser.html#method-83">-browser:willDisplayCell:atRow:column:</a>
+<li><a href ="NSBrowser.html#method-84">-browserDidScroll:</a>
+<li><a href ="NSBrowser.html#method-85">-browserWillScroll:</a>
+<li><a href ="NSBrowser.html#method-6">-cellPrototype</a>
+<li><a href ="NSBrowser.html#method-7">-columnOfMatrix:</a>
+<li><a href ="NSBrowser.html#method-8">-delegate</a>
+<li><a href ="NSBrowser.html#method-9">-displayAllColumns</a>
+<li><a href ="NSBrowser.html#method-10">-displayColumn:</a>
+<li><a href ="NSBrowser.html#method-11">-doClick:</a>
+<li><a href ="NSBrowser.html#method-12">-doDoubleClick:</a>
+<li><a href ="NSBrowser.html#method-13">-doubleAction</a>
+<li><a href ="NSBrowser.html#method-14">-drawTitleOfColumn:</a>
+<li><a href ="NSBrowser.html#method-15">-firstVisibleColumn</a>
+<li><a href ="NSBrowser.html#method-16">-frameOfColumn:</a>
+<li><a href ="NSBrowser.html#method-17">-frameOfInsideOfColumn:</a>
+<li><a href ="NSBrowser.html#method-18">-hasHorizontalScroller</a>
+<li><a href ="NSBrowser.html#method-19">-isLoaded</a>
+<li><a href ="NSBrowser.html#method-20">-isTitled</a>
+<li><a href ="NSBrowser.html#method-21">-lastColumn</a>
+<li><a href ="NSBrowser.html#method-22">-lastVisibleColumn</a>
+<li><a href ="NSBrowser.html#method-23">-loadColumnZero</a>
+<li><a href ="NSBrowser.html#method-24">-loadedCellAtRow:column:</a>
+<li><a href ="NSBrowser.html#method-25">-matrixClass</a>
+<li><a href ="NSBrowser.html#method-26">-matrixInColumn:</a>
+<li><a href ="NSBrowser.html#method-27">-maxVisibleColumns</a>
+<li><a href ="NSBrowser.html#method-28">-minColumnWidth</a>
+<li><a href ="NSBrowser.html#method-29">-numberOfVisibleColumns</a>
+<li><a href ="NSBrowser.html#method-30">-path</a>
+<li><a href ="NSBrowser.html#method-31">-pathSeparator</a>
+<li><a href ="NSBrowser.html#method-32">-pathToColumn:</a>
+<li><a href ="NSBrowser.html#method-33">-reloadColumn:</a>
+<li><a href ="NSBrowser.html#method-34">-reusesColumns</a>
+<li><a href ="NSBrowser.html#method-35">-scrollColumnToVisible:</a>
+<li><a href ="NSBrowser.html#method-36">-scrollColumnsLeftBy:</a>
+<li><a href ="NSBrowser.html#method-37">-scrollColumnsRightBy:</a>
+<li><a href ="NSBrowser.html#method-38">-scrollViaScroller:</a>
+<li><a href ="NSBrowser.html#method-39">-selectAll:</a>
+<li><a href ="NSBrowser.html#method-40">-selectRow:inColumn:</a>
+<li><a href ="NSBrowser.html#method-41">-selectedCell</a>
+<li><a href ="NSBrowser.html#method-42">-selectedCellInColumn:</a>
+<li><a href ="NSBrowser.html#method-43">-selectedCells</a>
+<li><a href ="NSBrowser.html#method-44">-selectedColumn</a>
+<li><a href ="NSBrowser.html#method-45">-selectedRowInColumn:</a>
+<li><a href ="NSBrowser.html#method-46">-sendAction</a>
+<li><a href ="NSBrowser.html#method-47">-sendsActionOnArrowKeys</a>
+<li><a href ="NSBrowser.html#method-48">-separatesColumns</a>
+<li><a href ="NSBrowser.html#method-49">-setAcceptsArrowKeys:</a>
+<li><a href ="NSBrowser.html#method-50">-setAllowsBranchSelection:</a>
+<li><a href ="NSBrowser.html#method-51">-setAllowsEmptySelection:</a>
+<li><a href ="NSBrowser.html#method-52">-setAllowsMultipleSelection:</a>
+<li><a href ="NSBrowser.html#method-53">-setCellClass:</a>
+<li><a href ="NSBrowser.html#method-54">-setCellPrototype:</a>
+<li><a href ="NSBrowser.html#method-55">-setDelegate:</a>
+<li><a href ="NSBrowser.html#method-56">-setDoubleAction:</a>
+<li><a href ="NSBrowser.html#method-57">-setHasHorizontalScroller:</a>
+<li><a href ="NSBrowser.html#method-58">-setLastColumn:</a>
+<li><a href ="NSBrowser.html#method-59">-setMatrixClass:</a>
+<li><a href ="NSBrowser.html#method-60">-setMaxVisibleColumns:</a>
+<li><a href ="NSBrowser.html#method-61">-setMinColumnWidth:</a>
+<li><a href ="NSBrowser.html#method-62">-setPath:</a>
+<li><a href ="NSBrowser.html#method-63">-setPathSeparator:</a>
+<li><a href ="NSBrowser.html#method-64">-setReusesColumns:</a>
+<li><a href ="NSBrowser.html#method-65">-setSendsActionOnArrowKeys:</a>
+<li><a href ="NSBrowser.html#method-66">-setSeparatesColumns:</a>
+<li><a href ="NSBrowser.html#method-67">-setTakesTitleFromPreviousColumn:</a>
+<li><a href ="NSBrowser.html#method-68">-setTitle:ofColumn:</a>
+<li><a href ="NSBrowser.html#method-69">-setTitled:</a>
+<li><a href ="NSBrowser.html#method-70">-takesTitleFromPreviousColumn</a>
+<li><a href ="NSBrowser.html#method-71">-tile</a>
+<li><a href ="NSBrowser.html#method-72">-titleFrameOfColumn:</a>
+<li><a href ="NSBrowser.html#method-73">-titleHeight</a>
+<li><a href ="NSBrowser.html#method-74">-titleOfColumn:</a>
+<li><a href ="NSBrowser.html#method-75">-updateScroller</a>
+<li><a href ="NSBrowser.html#method-76">-validateVisibleColumns</a>
+</ul>
+<hr><h2>Class Methods </h2>
+<h3><a name ="method-0">cellClass</a></h3>
++ (Class) <b>cellClass</b>;<br>
+
+          
+ <hr>
+<hr><h2>Instances Methods </h2>
+<h3><a name ="method-1">acceptsArrowKeys</a></h3>
+- (BOOL) <b>acceptsArrowKeys</b>;<br>
+
+          
+ <hr>
+<h3><a name ="method-2">addColumn</a></h3>
+- (void) <b>addColumn</b>;<br>
 
           
-<hr>
-<h2><a name="method-1">acceptsArrowKeys</a></h2>
-- (BOOL) <b>acceptsArrowKeys</b><br>
+ <hr>
+<h3><a name ="method-3">allowsBranchSelection</a></h3>
+- (BOOL) <b>allowsBranchSelection</b>;<br>
 
           
-<hr>
-<h2><a name="method-2">addColumn</a></h2>
-- (void) <b>addColumn</b><br>
+ <hr>
+<h3><a name ="method-4">allowsEmptySelection</a></h3>
+- (BOOL) <b>allowsEmptySelection</b>;<br>
 
           
-<hr>
-<h2><a name="method-3">allowsBranchSelection</a></h2>
-- (BOOL) <b>allowsBranchSelection</b><br>
+ <hr>
+<h3><a name ="method-5">allowsMultipleSelection</a></h3>
+- (BOOL) <b>allowsMultipleSelection</b>;<br>
 
           
-<hr>
-<h2><a name="method-4">allowsEmptySelection</a></h2>
-- (BOOL) <b>allowsEmptySelection</b><br>
+ <hr>
+<h3><a name ="method-6">cellPrototype</a></h3>
+- (id) <b>cellPrototype</b>;<br>
 
           
-<hr>
-<h2><a name="method-5">allowsMultipleSelection</a></h2>
-- (BOOL) <b>allowsMultipleSelection</b><br>
+ <hr>
+<h3><a name ="method-7">columnOfMatrix:</a></h3>
+- (int) <b>columnOfMatrix:</b> (NSMatrix*)matrix;<br>
 
           
-<hr>
-<h2><a name="method-6">cellPrototype</a></h2>
-- (id) <b>cellPrototype</b><br>
+ <hr>
+<h3><a name ="method-8">delegate</a></h3>
+- (id) <b>delegate</b>;<br>
 
           
-<hr>
-<h2><a name="method-7">columnOfMatrix:</a></h2>
-- (int) <b>columnOfMatrix:</b> (NSMatrix*)matrix<br>
+ <hr>
+<h3><a name ="method-9">displayAllColumns</a></h3>
+- (void) <b>displayAllColumns</b>;<br>
 
           
-<hr>
-<h2><a name="method-8">delegate</a></h2>
-- (id) <b>delegate</b><br>
+ <hr>
+<h3><a name ="method-10">displayColumn:</a></h3>
+- (void) <b>displayColumn:</b> (int)column;<br>
 
           
-<hr>
-<h2><a name="method-9">displayAllColumns</a></h2>
-- (void) <b>displayAllColumns</b><br>
+ <hr>
+<h3><a name ="method-11">doClick:</a></h3>
+- (void) <b>doClick:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-10">displayColumn:</a></h2>
-- (void) <b>displayColumn:</b> (int)column<br>
+ <hr>
+<h3><a name ="method-12">doDoubleClick:</a></h3>
+- (void) <b>doDoubleClick:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-11">doClick:</a></h2>
-- (void) <b>doClick:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-13">doubleAction</a></h3>
+- (SEL) <b>doubleAction</b>;<br>
 
           
-<hr>
-<h2><a name="method-12">doDoubleClick:</a></h2>
-- (void) <b>doDoubleClick:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-14">drawTitleOfColumn:</a></h3>
+- (void) <b>drawTitleOfColumn:</b> (int)column;<br>
 
           
-<hr>
-<h2><a name="method-13">doubleAction</a></h2>
-- (SEL) <b>doubleAction</b><br>
+ <hr>
+<h3><a name ="method-15">firstVisibleColumn</a></h3>
+- (int) <b>firstVisibleColumn</b>;<br>
 
           
-<hr>
-<h2><a name="method-14">drawTitleOfColumn:</a></h2>
-- (void) <b>drawTitleOfColumn:</b> (int)column<br>
+ <hr>
+<h3><a name ="method-16">frameOfColumn:</a></h3>
+- (NSRect) <b>frameOfColumn:</b> (int)column;<br>
 
           
-<hr>
-<h2><a name="method-15">firstVisibleColumn</a></h2>
-- (int) <b>firstVisibleColumn</b><br>
+ <hr>
+<h3><a name ="method-17">frameOfInsideOfColumn:</a></h3>
+- (NSRect) <b>frameOfInsideOfColumn:</b> (int)column;<br>
 
           
-<hr>
-<h2><a name="method-16">frameOfColumn:</a></h2>
-- (NSRect) <b>frameOfColumn:</b> (int)column<br>
+ <hr>
+<h3><a name ="method-18">hasHorizontalScroller</a></h3>
+- (BOOL) <b>hasHorizontalScroller</b>;<br>
 
           
-<hr>
-<h2><a name="method-17">frameOfInsideOfColumn:</a></h2>
-- (NSRect) <b>frameOfInsideOfColumn:</b> (int)column<br>
+ <hr>
+<h3><a name ="method-19">isLoaded</a></h3>
+- (BOOL) <b>isLoaded</b>;<br>
 
           
-<hr>
-<h2><a name="method-18">hasHorizontalScroller</a></h2>
-- (BOOL) <b>hasHorizontalScroller</b><br>
+ <hr>
+<h3><a name ="method-20">isTitled</a></h3>
+- (BOOL) <b>isTitled</b>;<br>
 
           
-<hr>
-<h2><a name="method-19">isLoaded</a></h2>
-- (BOOL) <b>isLoaded</b><br>
+ <hr>
+<h3><a name ="method-21">lastColumn</a></h3>
+- (int) <b>lastColumn</b>;<br>
 
           
-<hr>
-<h2><a name="method-20">isTitled</a></h2>
-- (BOOL) <b>isTitled</b><br>
+ <hr>
+<h3><a name ="method-22">lastVisibleColumn</a></h3>
+- (int) <b>lastVisibleColumn</b>;<br>
 
           
-<hr>
-<h2><a name="method-21">lastColumn</a></h2>
-- (int) <b>lastColumn</b><br>
+ <hr>
+<h3><a name ="method-23">loadColumnZero</a></h3>
+- (void) <b>loadColumnZero</b>;<br>
 
           
-<hr>
-<h2><a name="method-22">lastVisibleColumn</a></h2>
-- (int) <b>lastVisibleColumn</b><br>
+ <hr>
+<h3><a name ="method-24">loadedCellAtRow:column:</a></h3>
+- (id) <b>loadedCellAtRow:</b> (int)row <b>column:</b> (int)column;<br>
 
           
-<hr>
-<h2><a name="method-23">loadColumnZero</a></h2>
-- (void) <b>loadColumnZero</b><br>
+ <hr>
+<h3><a name ="method-25">matrixClass</a></h3>
+- (Class) <b>matrixClass</b>;<br>
 
           
-<hr>
-<h2><a name="method-24">loadedCellAtRow:column:</a></h2>
-- (id) <b>loadedCellAtRow:</b> (int)row <b>column:</b> (int)column<br>
+ <hr>
+<h3><a name ="method-26">matrixInColumn:</a></h3>
+- (NSMatrix*) <b>matrixInColumn:</b> (int)column;<br>
 
           
-<hr>
-<h2><a name="method-25">matrixClass</a></h2>
-- (Class) <b>matrixClass</b><br>
+ <hr>
+<h3><a name ="method-27">maxVisibleColumns</a></h3>
+- (int) <b>maxVisibleColumns</b>;<br>
 
           
-<hr>
-<h2><a name="method-26">matrixInColumn:</a></h2>
-- (NSMatrix*) <b>matrixInColumn:</b> (int)column<br>
+ <hr>
+<h3><a name ="method-28">minColumnWidth</a></h3>
+- (float) <b>minColumnWidth</b>;<br>
 
           
-<hr>
-<h2><a name="method-27">maxVisibleColumns</a></h2>
-- (int) <b>maxVisibleColumns</b><br>
+ <hr>
+<h3><a name ="method-29">numberOfVisibleColumns</a></h3>
+- (int) <b>numberOfVisibleColumns</b>;<br>
 
           
-<hr>
-<h2><a name="method-28">minColumnWidth</a></h2>
-- (float) <b>minColumnWidth</b><br>
+ <hr>
+<h3><a name ="method-30">path</a></h3>
+- (NSString*) <b>path</b>;<br>
 
           
-<hr>
-<h2><a name="method-29">numberOfVisibleColumns</a></h2>
-- (int) <b>numberOfVisibleColumns</b><br>
+ <hr>
+<h3><a name ="method-31">pathSeparator</a></h3>
+- (NSString*) <b>pathSeparator</b>;<br>
 
           
-<hr>
-<h2><a name="method-30">path</a></h2>
-- (NSString*) <b>path</b><br>
+ <hr>
+<h3><a name ="method-32">pathToColumn:</a></h3>
+- (NSString*) <b>pathToColumn:</b> (int)column;<br>
 
           
-<hr>
-<h2><a name="method-31">pathSeparator</a></h2>
-- (NSString*) <b>pathSeparator</b><br>
+ <hr>
+<h3><a name ="method-33">reloadColumn:</a></h3>
+- (void) <b>reloadColumn:</b> (int)column;<br>
 
           
-<hr>
-<h2><a name="method-32">pathToColumn:</a></h2>
-- (NSString*) <b>pathToColumn:</b> (int)column<br>
+ <hr>
+<h3><a name ="method-34">reusesColumns</a></h3>
+- (BOOL) <b>reusesColumns</b>;<br>
 
           
-<hr>
-<h2><a name="method-33">reloadColumn:</a></h2>
-- (void) <b>reloadColumn:</b> (int)column<br>
+ <hr>
+<h3><a name ="method-35">scrollColumnToVisible:</a></h3>
+- (void) <b>scrollColumnToVisible:</b> (int)column;<br>
 
           
-<hr>
-<h2><a name="method-34">reusesColumns</a></h2>
-- (BOOL) <b>reusesColumns</b><br>
+ <hr>
+<h3><a name ="method-36">scrollColumnsLeftBy:</a></h3>
+- (void) <b>scrollColumnsLeftBy:</b> (int)shiftAmount;<br>
 
           
-<hr>
-<h2><a name="method-35">scrollColumnToVisible:</a></h2>
-- (void) <b>scrollColumnToVisible:</b> (int)column<br>
+ <hr>
+<h3><a name ="method-37">scrollColumnsRightBy:</a></h3>
+- (void) <b>scrollColumnsRightBy:</b> (int)shiftAmount;<br>
 
           
-<hr>
-<h2><a name="method-36">scrollColumnsLeftBy:</a></h2>
-- (void) <b>scrollColumnsLeftBy:</b> (int)shiftAmount<br>
+ <hr>
+<h3><a name ="method-38">scrollViaScroller:</a></h3>
+- (void) <b>scrollViaScroller:</b> (NSScroller*)sender;<br>
 
           
-<hr>
-<h2><a name="method-37">scrollColumnsRightBy:</a></h2>
-- (void) <b>scrollColumnsRightBy:</b> (int)shiftAmount<br>
+ <hr>
+<h3><a name ="method-39">selectAll:</a></h3>
+- (void) <b>selectAll:</b> (id)sender;<br>
 
           
-<hr>
-<h2><a name="method-38">scrollViaScroller:</a></h2>
-- (void) <b>scrollViaScroller:</b> (NSScroller*)sender<br>
+ <hr>
+<h3><a name ="method-40">selectRow:inColumn:</a></h3>
+- (void) <b>selectRow:</b> (int)row <b>inColumn:</b> (int)column;<br>
 
           
-<hr>
-<h2><a name="method-39">selectAll:</a></h2>
-- (void) <b>selectAll:</b> (id)sender<br>
+ <hr>
+<h3><a name ="method-41">selectedCell</a></h3>
+- (id) <b>selectedCell</b>;<br>
 
           
-<hr>
-<h2><a name="method-40">selectRow:inColumn:</a></h2>
-- (void) <b>selectRow:</b> (int)row <b>inColumn:</b> (int)column<br>
+ <hr>
+<h3><a name ="method-42">selectedCellInColumn:</a></h3>
+- (id) <b>selectedCellInColumn:</b> (int)column;<br>
 
           
-<hr>
-<h2><a name="method-41">selectedCell</a></h2>
-- (id) <b>selectedCell</b><br>
+ <hr>
+<h3><a name ="method-43">selectedCells</a></h3>
+- (NSArray*) <b>selectedCells</b>;<br>
 
           
-<hr>
-<h2><a name="method-42">selectedCellInColumn:</a></h2>
-- (id) <b>selectedCellInColumn:</b> (int)column<br>
+ <hr>
+<h3><a name ="method-44">selectedColumn</a></h3>
+- (int) <b>selectedColumn</b>;<br>
 
           
-<hr>
-<h2><a name="method-43">selectedCells</a></h2>
-- (NSArray*) <b>selectedCells</b><br>
+ <hr>
+<h3><a name ="method-45">selectedRowInColumn:</a></h3>
+- (int) <b>selectedRowInColumn:</b> (int)column;<br>
 
           
-<hr>
-<h2><a name="method-44">selectedColumn</a></h2>
-- (int) <b>selectedColumn</b><br>
+ <hr>
+<h3><a name ="method-46">sendAction</a></h3>
+- (BOOL) <b>sendAction</b>;<br>
 
           
-<hr>
-<h2><a name="method-45">selectedRowInColumn:</a></h2>
-- (int) <b>selectedRowInColumn:</b> (int)column<br>
+ <hr>
+<h3><a name ="method-47">sendsActionOnArrowKeys</a></h3>
+- (BOOL) <b>sendsActionOnArrowKeys</b>;<br>
 
           
-<hr>
-<h2><a name="method-46">sendAction</a></h2>
-- (BOOL) <b>sendAction</b><br>
+ <hr>
+<h3><a name ="method-48">separatesColumns</a></h3>
+- (BOOL) <b>separatesColumns</b>;<br>
 
           
-<hr>
-<h2><a name="method-47">sendsActionOnArrowKeys</a></h2>
-- (BOOL) <b>sendsActionOnArrowKeys</b><br>
+ <hr>
+<h3><a name ="method-49">setAcceptsArrowKeys:</a></h3>
+- (void) <b>setAcceptsArrowKeys:</b> (BOOL)flag;<br>
 
           
-<hr>
-<h2><a name="method-48">separatesColumns</a></h2>
-- (BOOL) <b>separatesColumns</b><br>
+ <hr>
+<h3><a name ="method-50">setAllowsBranchSelection:</a></h3>
+- (void) <b>setAllowsBranchSelection:</b> (BOOL)flag;<br>
 
           
-<hr>
-<h2><a name="method-49">setAcceptsArrowKeys:</a></h2>
-- (void) <b>setAcceptsArrowKeys:</b> (BOOL)flag<br>
+ <hr>
+<h3><a name ="method-51">setAllowsEmptySelection:</a></h3>
+- (void) <b>setAllowsEmptySelection:</b> (BOOL)flag;<br>
 
           
-<hr>
-<h2><a name="method-50">setAllowsBranchSelection:</a></h2>
-- (void) <b>setAllowsBranchSelection:</b> (BOOL)flag<br>
+ <hr>
+<h3><a name ="method-52">setAllowsMultipleSelection:</a></h3>
+- (void) <b>setAllowsMultipleSelection:</b> (BOOL)flag;<br>
 
           
-<hr>
-<h2><a name="method-51">setAllowsEmptySelection:</a></h2>
-- (void) <b>setAllowsEmptySelection:</b> (BOOL)flag<br>
+ <hr>
+<h3><a name ="method-53">setCellClass:</a></h3>
+- (void) <b>setCellClass:</b> (Class)factoryId;<br>
 
           
-<hr>
-<h2><a name="method-52">setAllowsMultipleSelection:</a></h2>
-- (void) <b>setAllowsMultipleSelection:</b> (BOOL)flag<br>
+ <hr>
+<h3><a name ="method-54">setCellPrototype:</a></h3>
+- (void) <b>setCellPrototype:</b> (NSCell*)aCell;<br>
 
           
-<hr>
-<h2><a name="method-53">setCellClass:</a></h2>
-- (void) <b>setCellClass:</b> (Class)factoryId<br>
+ <hr>
+<h3><a name ="method-55">setDelegate:</a></h3>
+- (void) <b>setDelegate:</b> (id)anObject;<br>
 
           
-<hr>
-<h2><a name="method-54">setCellPrototype:</a></h2>
-- (void) <b>setCellPrototype:</b> (NSCell*)aCell<br>
+ <hr>
+<h3><a name ="method-56">setDoubleAction:</a></h3>
+- (void) <b>setDoubleAction:</b> (SEL)aSelector;<br>
 
           
-<hr>
-<h2><a name="method-55">setDelegate:</a></h2>
-- (void) <b>setDelegate:</b> (id)anObject<br>
+ <hr>
+<h3><a name ="method-57">setHasHorizontalScroller:</a></h3>
+- (void) <b>setHasHorizontalScroller:</b> (BOOL)flag;<br>
 
           
-<hr>
-<h2><a name="method-56">setDoubleAction:</a></h2>
-- (void) <b>setDoubleAction:</b> (SEL)aSelector<br>
+ <hr>
+<h3><a name ="method-58">setLastColumn:</a></h3>
+- (void) <b>setLastColumn:</b> (int)column;<br>
 
           
-<hr>
-<h2><a name="method-57">setHasHorizontalScroller:</a></h2>
-- (void) <b>setHasHorizontalScroller:</b> (BOOL)flag<br>
+ <hr>
+<h3><a name ="method-59">setMatrixClass:</a></h3>
+- (void) <b>setMatrixClass:</b> (Class)factoryId;<br>
 
           
-<hr>
-<h2><a name="method-58">setLastColumn:</a></h2>
-- (void) <b>setLastColumn:</b> (int)column<br>
+ <hr>
+<h3><a name ="method-60">setMaxVisibleColumns:</a></h3>
+- (void) <b>setMaxVisibleColumns:</b> (int)columnCount;<br>
 
           
-<hr>
-<h2><a name="method-59">setMatrixClass:</a></h2>
-- (void) <b>setMatrixClass:</b> (Class)factoryId<br>
+ <hr>
+<h3><a name ="method-61">setMinColumnWidth:</a></h3>
+- (void) <b>setMinColumnWidth:</b> (float)columnWidth;<br>
 
           
-<hr>
-<h2><a name="method-60">setMaxVisibleColumns:</a></h2>
-- (void) <b>setMaxVisibleColumns:</b> (int)columnCount<br>
+ <hr>
+<h3><a name ="method-62">setPath:</a></h3>
+- (BOOL) <b>setPath:</b> (NSString*)path;<br>
 
           
-<hr>
-<h2><a name="method-61">setMinColumnWidth:</a></h2>
-- (void) <b>setMinColumnWidth:</b> (float)columnWidth<br>
+ <hr>
+<h3><a name ="method-63">setPathSeparator:</a></h3>
+- (void) <b>setPathSeparator:</b> (NSString*)newString;<br>
 
           
-<hr>
-<h2><a name="method-62">setPath:</a></h2>
-- (BOOL) <b>setPath:</b> (NSString*)path<br>
+ <hr>
+<h3><a name ="method-64">setReusesColumns:</a></h3>
+- (void) <b>setReusesColumns:</b> (BOOL)flag;<br>
 
           
-<hr>
-<h2><a name="method-63">setPathSeparator:</a></h2>
-- (void) <b>setPathSeparator:</b> (NSString*)newString<br>
+ <hr>
+<h3><a name ="method-65">setSendsActionOnArrowKeys:</a></h3>
+- (void) <b>setSendsActionOnArrowKeys:</b> (BOOL)flag;<br>
 
           
-<hr>
-<h2><a name="method-64">setReusesColumns:</a></h2>
-- (void) <b>setReusesColumns:</b> (BOOL)flag<br>
+ <hr>
+<h3><a name ="method-66">setSeparatesColumns:</a></h3>
+- (void) <b>setSeparatesColumns:</b> (BOOL)flag;<br>
 
           
-<hr>
-<h2><a name="method-65">setSendsActionOnArrowKeys:</a></h2>
-- (void) <b>setSendsActionOnArrowKeys:</b> (BOOL)flag<br>
+ <hr>
+<h3><a name ="method-67">setTakesTitleFromPreviousColumn:</a></h3>
+- (void) <b>setTakesTitleFromPreviousColumn:</b> (BOOL)flag;<br>
 
           
-<hr>
-<h2><a name="method-66">setSeparatesColumns:</a></h2>
-- (void) <b>setSeparatesColumns:</b> (BOOL)flag<br>
+ <hr>
+<h3><a name ="method-68">setTitle:ofColumn:</a></h3>
+- (void) <b>setTitle:</b> (NSString*)aString <b>ofColumn:</b> (int)column;<br>
 
           
-<hr>
-<h2><a name="method-67">setTakesTitleFromPreviousColumn:</a></h2>
-- (void) <b>setTakesTitleFromPreviousColumn:</b> (BOOL)flag<br>
+ <hr>
+<h3><a name ="method-69">setTitled:</a></h3>
+- (void) <b>setTitled:</b> (BOOL)flag;<br>
 
           
-<hr>
-<h2><a name="method-68">setTitle:ofColumn:</a></h2>
-- (void) <b>setTitle:</b> (NSString*)aString <b>ofColumn:</b> (int)column<br>
+ <hr>
+<h3><a name ="method-70">takesTitleFromPreviousColumn</a></h3>
+- (BOOL) <b>takesTitleFromPreviousColumn</b>;<br>
 
           
-<hr>
-<h2><a name="method-69">setTitled:</a></h2>
-- (void) <b>setTitled:</b> (BOOL)flag<br>
+ <hr>
+<h3><a name ="method-71">tile</a></h3>
+- (void) <b>tile</b>;<br>
 
           
-<hr>
-<h2><a name="method-70">takesTitleFromPreviousColumn</a></h2>
-- (BOOL) <b>takesTitleFromPreviousColumn</b><br>
+ <hr>
+<h3><a name ="method-72">titleFrameOfColumn:</a></h3>
+- (NSRect) <b>titleFrameOfColumn:</b> (int)column;<br>
 
           
-<hr>
-<h2><a name="method-71">tile</a></h2>
-- (void) <b>tile</b><br>
+ <hr>
+<h3><a name ="method-73">titleHeight</a></h3>
+- (float) <b>titleHeight</b>;<br>
 
           
-<hr>
-<h2><a name="method-72">titleFrameOfColumn:</a></h2>
-- (NSRect) <b>titleFrameOfColumn:</b> (int)column<br>
+ <hr>
+<h3><a name ="method-74">titleOfColumn:</a></h3>
+- (NSString*) <b>titleOfColumn:</b> (int)column;<br>
 
           
-<hr>
-<h2><a name="method-73">titleHeight</a></h2>
-- (float) <b>titleHeight</b><br>
+ <hr>
+<h3><a name ="method-75">updateScroller</a></h3>
+- (void) <b>updateScroller</b>;<br>
 
           
-<hr>
-<h2><a name="method-74">titleOfColumn:</a></h2>
-- (NSString*) <b>titleOfColumn:</b> (int)column<br>
+ <hr>
+<h3><a name ="method-76">validateVisibleColumns</a></h3>
+- (void) <b>validateVisibleColumns</b>;<br>
 
           
-<hr>
-<h2><a name="method-75">updateScroller</a></h2>
-- (void) <b>updateScroller</b><br>
+ <hr>
+<h3><a name ="method-77">browser:createRowsForColumn:inMatrix:</a></h3>
+- (void) <b>browser:</b> (NSBrowser*)sender <b>createRowsForColumn:</b> (int)column <b>inMatrix:</b> (NSMatrix*)matrix;<br>
 
           
-<hr>
-<h2><a name="method-76">validateVisibleColumns</a></h2>
-- (void) <b>validateVisibleColumns</b><br>
+ <hr>
+<h3><a name ="method-78">browser:isColumnValid:</a></h3>
+- (BOOL) <b>browser:</b> (NSBrowser*)sender <b>isColumnValid:</b> (int)column;<br>
 
           
-<hr>
-<h2><a name="method-77">browser:createRowsForColumn:inMatrix:</a></h2>
-- (void) <b>browser:</b> (NSBrowser*)sender <b>createRowsForColumn:</b> (int)column <b>inMatrix:</b> (NSMatrix*)matrix<br>
+ <hr>
+<h3><a name ="method-79">browser:numberOfRowsInColumn:</a></h3>
+- (int) <b>browser:</b> (NSBrowser*)sender <b>numberOfRowsInColumn:</b> (int)column;<br>
 
           
-<hr>
-<h2><a name="method-78">browser:isColumnValid:</a></h2>
-- (BOOL) <b>browser:</b> (NSBrowser*)sender <b>isColumnValid:</b> (int)column<br>
+ <hr>
+<h3><a name ="method-80">browser:selectCellWithString:inColumn:</a></h3>
+- (BOOL) <b>browser:</b> (NSBrowser*)sender <b>selectCellWithString:</b> (NSString*)title <b>inColumn:</b> (int)column;<br>
 
           
-<hr>
-<h2><a name="method-79">browser:numberOfRowsInColumn:</a></h2>
-- (int) <b>browser:</b> (NSBrowser*)sender <b>numberOfRowsInColumn:</b> (int)column<br>
+ <hr>
+<h3><a name ="method-81">browser:selectRow:inColumn:</a></h3>
+- (BOOL) <b>browser:</b> (NSBrowser*)sender <b>selectRow:</b> (int)row <b>inColumn:</b> (int)column;<br>
 
           
-<hr>
-<h2><a name="method-80">browser:selectCellWithString:inColumn:</a></h2>
-- (BOOL) <b>browser:</b> (NSBrowser*)sender <b>selectCellWithString:</b> (NSString*)title <b>inColumn:</b> (int)column<br>
+ <hr>
+<h3><a name ="method-82">browser:titleOfColumn:</a></h3>
+- (NSString*) <b>browser:</b> (NSBrowser*)sender <b>titleOfColumn:</b> (int)column;<br>
 
           
-<hr>
-<h2><a name="method-81">browser:selectRow:inColumn:</a></h2>
-- (BOOL) <b>browser:</b> (NSBrowser*)sender <b>selectRow:</b> (int)row <b>inColumn:</b> (int)column<br>
+ <hr>
+<h3><a name ="method-83">browser:willDisplayCell:atRow:column:</a></h3>
+- (void) <b>browser:</b> (NSBrowser*)sender <b>willDisplayCell:</b> (id)cell <b>atRow:</b> (int)row <b>column:</b> (int)column;<br>
 
           
-<hr>
-<h2><a name="method-82">browser:titleOfColumn:</a></h2>
-- (NSString*) <b>browser:</b> (NSBrowser*)sender <b>titleOfColumn:</b> (int)column<br>
+ <hr>
+<h3><a name ="method-84">browserDidScroll:</a></h3>
+- (void) <b>browserDidScroll:</b> (NSBrowser*)sender;<br>
 
           
-<hr>
-<h2><a name="method-83">browser:willDisplayCell:atRow:column:</a></h2>
-- (void) <b>browser:</b> (NSBrowser*)sender <b>willDisplayCell:</b> (id)cell <b>atRow:</b> (int)row <b>column:</b> (int)column<br>
+ <hr>
+<h3><a name ="method-85">browserWillScroll:</a></h3>
+- (void) <b>browserWillScroll:</b> (NSBrowser*)sender;<br>
 
           
-<hr>
-<h2><a name="method-84">browserDidScroll:</a></h2>
-- (void) <b>browserDidScroll:</b> (NSBrowser*)sender<br>
-
-          
-<hr>
-<h2><a name="method-85">browserWillScroll:</a></h2>
-- (void) <b>browserWillScroll:</b> (NSBrowser*)sender<br>
-
-          
-<hr>
+ <hr>
 </body>
 
-</html>
+ </html>
