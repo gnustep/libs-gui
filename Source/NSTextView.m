@@ -1185,7 +1185,6 @@ static NSNotificationCenter *nc;
 {
   NSArray *array;
   int i, count;
-  void (*msg)(id, SEL, BOOL);
 
   if (IS_SYNCHRONIZING_FLAGS == YES)
     {
@@ -1197,31 +1196,32 @@ static NSNotificationCenter *nc;
   array = [_layoutManager textContainers];
   count = [array count];
 
-  msg = (void (*)(id, SEL, BOOL))[self methodForSelector: action];
-
-  if (!msg)
-    {
-      [NSException raise: NSGenericException
-		   format: @"invalid selector in "
-		   @"_syncTextViewsCalling:withFlag:"];
-    }
-
   IS_SYNCHRONIZING_FLAGS = YES;
 
   for (i = 0; i < count; i++)
     {
       NSTextView *tv; 
+      void (*msg)(id, SEL, BOOL);
 
       tv = [(NSTextContainer *)[array objectAtIndex: i] textView];
-      (*msg) (tv, action, flag);
+      msg = (void (*)(id, SEL, BOOL))[tv methodForSelector: action];
+      if (msg != NULL)
+	{
+	  (*msg) (tv, action, flag);
+	}
+      else
+	{
+	  /* Ahm.  What shall we do here.  It can't happen, can it ? */
+	  NSLog (@"Weird error - _syncTextViewsByCalling:withFlag: couldn't find method for selector");
+	}
     }
 
   IS_SYNCHRONIZING_FLAGS = NO;
 }
 
-#define NSTEXTVIEW_SYNC(X) \
+#define NSTEXTVIEW_SYNC \
   if (_tvf.multiple_textviews && (IS_SYNCHRONIZING_FLAGS == NO)) \
-    {  [self _syncTextViewsByCalling: X  withFlag: flag]; \
+    {  [self _syncTextViewsByCalling: _cmd  withFlag: flag]; \
     return; }
 
 /*
@@ -1240,7 +1240,7 @@ static NSNotificationCenter *nc;
 
 - (void) setEditable: (BOOL)flag
 {
-  NSTEXTVIEW_SYNC (@selector(setEditable:));
+  NSTEXTVIEW_SYNC;
   [super setEditable: flag];
   
   if ([self shouldDrawInsertionPoint])
@@ -1260,7 +1260,7 @@ static NSNotificationCenter *nc;
 
 - (void) setFieldEditor: (BOOL)flag
 {
-  NSTEXTVIEW_SYNC (@selector(setFieldEditor:));
+  NSTEXTVIEW_SYNC;
   [self setHorizontallyResizable: NO];
   [self setVerticallyResizable: NO];
   [super setFieldEditor: flag];
@@ -1268,13 +1268,13 @@ static NSNotificationCenter *nc;
 
 - (void) setSelectable: (BOOL)flag
 {
-  NSTEXTVIEW_SYNC (@selector(setSelectable:));
+  NSTEXTVIEW_SYNC;
   [super setSelectable: flag];
 }
 
 - (void) setRichText: (BOOL)flag
 {
-  NSTEXTVIEW_SYNC (@selector(setRichText:));
+  NSTEXTVIEW_SYNC;
 
   [super setRichText: flag];
   [self updateDragTypeRegistration];
@@ -1283,7 +1283,7 @@ static NSNotificationCenter *nc;
 
 - (void) setImportsGraphics: (BOOL)flag
 {
-  NSTEXTVIEW_SYNC (@selector(setImportsGraphics:));
+  NSTEXTVIEW_SYNC;
 
   [super setImportsGraphics: flag];
   [self updateDragTypeRegistration];
@@ -1291,7 +1291,7 @@ static NSNotificationCenter *nc;
 
 - (void) setUsesRuler: (BOOL)flag
 {
-  NSTEXTVIEW_SYNC (@selector(setUsesRuler:));
+  NSTEXTVIEW_SYNC;
   _tf.uses_ruler = flag;
 }
 
@@ -1302,7 +1302,7 @@ static NSNotificationCenter *nc;
 
 - (void) setUsesFontPanel: (BOOL)flag
 {
-  NSTEXTVIEW_SYNC (@selector(setUsesFontPanel:));
+  NSTEXTVIEW_SYNC;
   [super setUsesFontPanel: flag];
 }
 
@@ -1310,7 +1310,7 @@ static NSNotificationCenter *nc;
 {
   NSScrollView *sv;
 
-  NSTEXTVIEW_SYNC (@selector(setRulerVisible:));
+  NSTEXTVIEW_SYNC;
 
   sv = [self enclosingScrollView];
   _tf.is_ruler_visible = flag;
@@ -3185,8 +3185,8 @@ afterString in order over charRange. */
   RELEASE (mstyle); 
 }
 
-- (void)rulerView:(NSRulerView *)ruler 
-     didAddMarker:(NSRulerMarker *)marker
+- (void) rulerView: (NSRulerView *)ruler 
+      didAddMarker: (NSRulerMarker *)marker
 {
   NSTextTab *tab = [marker representedObject];
   NSRange range = [self rangeForUserParagraphAttributeChange];
@@ -4077,14 +4077,15 @@ other than copy/paste or dragging. */
 
 - (void) _illegalMovement: (int)textMovement
 {
-  // This is similar to [self resignFirstResponder], with the
-  // difference that in the notification we need to put the
-  // NSTextMovement, which resignFirstResponder does not.  Also, if we
-  // are ending editing, we are going to be removed, so it's useless
-  // to update any drawing.
+  /* This is similar to [self resignFirstResponder], with the
+     difference that in the notification we need to put the
+     NSTextMovement, which resignFirstResponder does not.  Also, if we
+     are ending editing, we are going to be removed, so it's useless
+     to update any drawing.  Please note that this ends up calling
+     resignFirstResponder anyway.  */
   NSNumber *number;
   NSDictionary *uiDictionary;
-  
+
   if ((_tf.is_editable)
       && ([_delegate respondsToSelector:
 		       @selector(textShouldEndEditing:)])
@@ -4103,6 +4104,9 @@ other than copy/paste or dragging. */
 			       forKey: @"NSTextMovement"];
   [nc postNotificationName: NSTextDidEndEditingNotification
       object: self  userInfo: uiDictionary];
+  /* The TextField will get the notification, and drop our first responder
+   * status if it's the case ... in that case, our -resignFirstResponder will
+   * be called!  */
   return;
 }
 

@@ -188,8 +188,9 @@ initialize_gnustep_backend(void)
 	    path = [path stringByAppendingPathComponent: @"Bundles"];
 	    path = [path stringByAppendingPathComponent: bundleName];
 	    if ([[NSFileManager defaultManager] fileExistsAtPath: path])
-	      break;
-	    path = nil;
+	      {
+		break;
+	      }
 	  }
 	NSCAssert1(path != nil, 
 		  GSGuiLocalizedString (@"Unable to load backend %@",
@@ -474,23 +475,54 @@ static NSCell* tileCell = nil;
     }
 }
 
-+ (void)detachDrawingThread:(SEL)selector toTarget:(id)target withObject:(id)argument
++ (void) detachDrawingThread: (SEL)selector
+		    toTarget: (id)target
+		  withObject: (id)argument
 {
-    // TODO: This is not fully defined by Apple
+  /* TODO: This is not fully defined by Apple.  */
 }
 
+/* 
+ * Return the shared application instance, creating one (of the
+ * receiver class) if needed.  There is (and must always be) only a
+ * single shared application instance for each application.  After the
+ * shared application instance has been created, you can access it
+ * directly via the global variable NSApp (but not before!).  When the
+ * shared application instance is created, it is also automatically
+ * initialized (that is, its -init method is called), which connects
+ * to the window server and prepares the gui library for actual
+ * operation.  For this reason, you must always call [NSApplication
+ * sharedApplication] before using any functionality of the gui
+ * library - so, normally, this should be one of the first commands in
+ * your program (if you use NSApplicationMain(), this is automatically
+ * done).
+ *
+ * The shared application instance is normally an instance of
+ * NSApplication; but you can subclass NSApplication, and have an
+ * instance of your own subclass be created and used as the shared
+ * application instance.  If you want to get this result, you need to
+ * make sure the first time you call +sharedApplication is on your
+ * custom NSApplication subclass (rather than on NSApplication).
+ * Putting [MyApplicationClass sharedApplication]; as the first
+ * command in your program is the recommended way. :-) If you use
+ * NSApplicationMain(), it automatically creates the appropriate
+ * instance (which you can control by editing the info dictionary of
+ * the application).
+ *
+ * It is not safe to call this method from multiple threads - it would
+ * be useless anyway since the whole library is not thread safe: there
+ * must always be at most one thread using the gui library at a time.
+ * (If you absolutely need to have multiple threads in your
+ * application, make sure only one of them uses the gui [the 'drawing'
+ * thread], and the other ones do not).
+ */
 + (NSApplication *) sharedApplication
 {
-  /* If the global application does not yet exist then create it */
-  if (!NSApp)
+  /* If the global application does not yet exist then create it.  */
+  if (NSApp == nil)
     {
-      /*
-       * Don't combine the following two statements into one to avoid
-       * problems with some classes' initialization code that tries
-       * to get the shared application.
-       */
-      NSApp = [self alloc];
-      [NSApp init];
+      /* -init sets NSApp.  */
+      [[self alloc] init];
     }
   return NSApp;
 }
@@ -498,67 +530,103 @@ static NSCell* tileCell = nil;
 /*
  * Instance methods
  */
+
+/* 
+ * This method initializes an NSApplication instance.  It sets the
+ * shared application instance to be the receiver, and then connects
+ * to the window server and performs the actual gui library
+ * initialization.
+ *
+ * If there is a already a shared application instance, calling this
+ * method results in an assertion (and normally program abortion/crash).
+ *
+ * It is recommended that you /never/ call this method directly from
+ * your code!  It's called automatically (and only once) by
+ * [NSApplication sharedApplication].  You might override this method
+ * in subclasses (make sure to call super's :-), then your overridden
+ * method will automatically be called (guaranteed once in the
+ * lifetime of the application) when you call [MyApplicationClass
+ * sharedApplication].
+ *
+ * If you call this method from your code (which we discourage you
+ * from doing), it is /your/ responsibility to make sure it is called
+ * only once (this is according to the openstep specification).  Since
+ * +sharedApplication automatically calls this method, making also
+ * sure it calls it only once, you definitely want to use
+ * +sharedApplication instead of calling -init directly.  
+ */
 - (id) init
 {
-  GSDisplayServer *srv;
-
-  if (NSApp != nil && NSApp != self)
-    {
-      RELEASE(self);
-      return [NSApplication sharedApplication];
-    }
-  
-  // Initialization must be enclosed in an autorelease pool
+  /*
+   * As per openstep specification, calling -init twice is a bug in
+   * the program.  +sharedApplication automatically makes sure it
+   * never calls -init more than once, and programmers should normally
+   * use +sharedApplication in programs.
+   *
+   * Please refrain from trying to have this method work with multiple
+   * calls (such as returning NSApp instead of raising an assertion).
+   * No matter what you do, you can't protect subclass -init custom
+   * code from multiple executions by changing the implementation here
+   * - so it's just simpler and cleaner that multiple -init executions
+   * are always forbidden, and subclasses inherit exactly the same
+   * kind of multiple execution protection as the superclass has, and
+   * initialization code behaves always in the same way for this class
+   * and for subclasses.
+   */
+  NSAssert (NSApp == nil, 
+	    GSGuiLocalizedString 
+	    (@"[NSApplication -init] called more than once", nil));
   {
+    GSDisplayServer *srv;
+    /* Initialization must be enclosed in an autorelease pool.  */
     CREATE_AUTORELEASE_POOL (_app_init_pool);
-
-    self = [super init];
+    
+    /* 
+     * Set NSApp as soon as possible, since other gui classes (which
+     * we refer or use in this method) might be calling [NSApplication
+     * sharedApplication] during their initialization, and we want
+     * those calls to succeed.  
+     */
     NSApp = self;
-    if (NSApp == nil)
-      {
-	NSLog(GSGuiLocalizedString 
-	      (@"Cannot allocate the application instance!\n", nil));
-	RELEASE (_app_init_pool);
-	return nil;
-      }
     
     NSDebugLog(@"Begin of NSApplication -init\n");
-
-    /* Initialize the backend here. */
+    
+    /* Initialize the backend here.  */
     initialize_gnustep_backend();
-
-    /* Connect to our window server */
+    
+    /* Connect to our window server.  */
     srv = [GSDisplayServer serverWithAttributes: nil];
     RETAIN(srv);
     [GSDisplayServer setCurrentServer: srv];
-
-    /* Create a default context. */
+    
+    /* Create a default context.  */
     _default_context = [NSGraphicsContext graphicsContextWithAttributes: nil];
     RETAIN(_default_context);
     [NSGraphicsContext setCurrentContext: _default_context];
-
-    /* Initialize font manager */
+    
+    /* Initialize font manager.  */
     [NSFontManager sharedFontManager];
-
+    
     _hidden = [[NSMutableArray alloc] init];
     _inactive = [[NSMutableArray alloc] init];
     _unhide_on_activation = YES;
     _app_is_hidden = YES;
-    /* Ivar already automatically initialized to NO when the app is created */
+    /* Ivar already automatically initialized to NO when the app is
+       created.  */
     //_app_is_active = NO;
     //_main_menu = nil;
     _windows_need_update = YES;
-
-    /* Set a new exception handler for the gui library */
+    
+    /* Set a new exception handler for the gui library.  */
     NSSetUncaughtExceptionHandler (_NSAppKitUncaughtExceptionHandler);
-      
+    
     _listener = [GSServicesManager newWithApplication: self];
     
-    /* NSEvent doesn't use -init so we use +alloc instead of +new */
+    /* NSEvent doesn't use -init so we use +alloc instead of +new.  */
     _current_event = [NSEvent alloc]; // no current event
     null_event = [NSEvent alloc];    // create dummy event
     
-    /* We are the end of responder chain	*/
+    /* We are the end of responder chain.  */
     [self setNextResponder: nil];
     
     RELEASE (_app_init_pool);

@@ -242,7 +242,6 @@ backgroundColorHint:(NSColor *)bg
 	fg = [NSColor blackColor];
       bg = [bg colorUsingColorSpaceName: NSDeviceRGBColorSpace];
       fg = [fg colorUsingColorSpaceName: NSDeviceRGBColorSpace];
-      NSLog(@"fg color is %@", fg);
       [GSCurrentServer() setcursorcolor: fg : bg : _cid];
     }
   return cursor;

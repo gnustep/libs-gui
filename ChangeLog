@@ -1,3 +1,53 @@
+2002-08-01  Adam Fedor  <fedor@gnu.org>
+
+	* Version:0.8.0
+
+Tue Jul 30 11:07:45 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	Patch by David Ayers (<d.ayers@inode.at>), modified:
+	* Source/NSTextView.m ([-_syncTextViewsByCalling:withFlag:]):
+	Compute the imp for each different textview, not just once for
+	all, so that we should be able to manage the case where they are
+	of different NSTextView subclasses.
+	(NSTEXTVIEW_SYNC): Removed the argument; just use _cmd as the
+	selector; updated all users.
+
+2002-07-26  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSStringDrawing.m (setupSpecialRun): Set run width
+	(patch from Nicholas Roard).
+
+	* Source/NSPrintInfo.m (+initPrintInfoDefaults): Add missing ';'
+	
+Thu Jul 25 12:51:52 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSApplication.m ([+sharedApplication]): Rewritten;
+	documented verbosely the method.
+	([-init]): Rewritten code checking, setting and managing NSApp;
+	documented verbosely the method.
+
+2002-07-22  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSImageCell.m (-setImage:): Check if non-nil.
+	Make sure size is not 0.
+
+Mon Jul 22 12:50:34 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSApplication.m (initialize_gnustep_backend): Remove
+	useless instruction in loop looking for the backend.  (Patch by
+	David David Relson <relson@osagesoftware.com>).
+
+2002-07-20  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSWindow.m (-_initDefaults): Set background
+	to windowBackgroundColor.
+
+2002-07-19  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSImage.m (-lockFocusOnRepresentation:): Make sure
+	newly created cache image is valid.
+	* Source/NSCursor.m (backgroundColorHint:): Remove extra NSLog.
+
 2002-07-17  Adam Fedor  <fedor@gnu.org>
 
 	* Version: 0.7.9

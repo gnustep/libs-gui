@@ -384,7 +384,7 @@ NSDictionary *paperSizes = nil;
 #else
   NSBundle *adminBundle;
 
-  adminBundle = [NSBundle bundleWithPath: @GNUSTEP_INSTALL_LIBDIR] 
+  adminBundle = [NSBundle bundleWithPath: @GNUSTEP_INSTALL_LIBDIR];
   path = [adminBundle pathForResource: @"PrintDefaults" 
 		      ofType: nil
 		      inDirectory: @"PrinterAdmin"];
