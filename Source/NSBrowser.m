@@ -530,7 +530,7 @@ static NSTextFieldCell *titleCell;
        * specified path is already partially selected.  If this is the
        * case, we can avoid redrawing those columns.
        */
-      for (i = 0; i <= _lastColumnLoaded && i < numberOfSubStrings; i++)
+      for (i = 0; i <= _lastColumnLoaded && (unsigned)i < numberOfSubStrings; i++)
         {
           NSString  *c = [[self selectedCellInColumn: i] stringValue];
 
@@ -574,7 +574,7 @@ static NSTextFieldCell *titleCell;
 	}
       else
         {
-          unsigned numOfRows = [matrix numberOfRows];
+          int numOfRows = [matrix numberOfRows];
           int row;
 
 	  // find the cell in the browser matrix which is equal to aStr
@@ -1708,6 +1708,12 @@ static NSTextFieldCell *titleCell;
       //      [self _setColumnTitlesNeedDisplay];  
       [self setNeedsDisplay: YES];
     }
+}
+
+/** Override from NSControl. Don't do anything to change the size of the 
+    browser.  */
+- (void) sizeToFit
+{
 }
 
 /*
