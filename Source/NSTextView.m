@@ -63,7 +63,8 @@
 {
   NSArray *types;
       
-  types  = [NSArray arrayWithObjects: NSStringPboardType, NSRTFPboardType, NSRTFDPboardType, nil];
+  types  = [NSArray arrayWithObjects: NSStringPboardType, 
+		    NSRTFPboardType, NSRTFDPboardType, nil];
  
   [[NSApplication sharedApplication] registerServicesMenuSendTypes: types
 						       returnTypes: types];
@@ -729,7 +730,8 @@ other than copy/paste or dragging. */
 charIndex. The delegate may take any appropriate actions to handle the
 click in its textView: clickedOnLink: atIndex: method. */
   if (_delegate != nil && 
-      [_delegate respondsToSelector: @selector(textView:clickedOnLink:atIndex:)])
+      [_delegate respondsToSelector: 
+		   @selector(textView:clickedOnLink:atIndex:)])
       [_delegate textView: self clickedOnLink: link atIndex: charIndex];
 }
 
@@ -775,10 +777,10 @@ replacing the selection.
 }
 
 - (NSRange) selectionRangeForProposedRange: (NSRange)proposedSelRange
-			       granularity: (NSSelectionGranularity)granularity
+			       granularity: (NSSelectionGranularity)gr
 {
   return [super selectionRangeForProposedRange: proposedSelRange
-		granularity: granularity];
+		granularity: gr];
 }
 
 - (NSRange) rangeForUserCharacterAttributeChange
@@ -1103,3 +1105,4 @@ container, returning the modified location. */
   return NSZeroRect;
 }
 @end
+
