@@ -57,13 +57,20 @@
 @class NSView;
 @class NSWindowController;
 
+/*
+ * Window levels are taken from MacOS-X
+ * NSDesktopWindowLevel is copied from Window maker and is intended to be
+ * the level at which things on the desktop sit ... so you should be able
+ * to put a desktop background just below it.
+ */
 enum {
+  NSDesktopWindowLevel = -1000,	/* GNUstep addition	*/
   NSNormalWindowLevel = 0,
   NSFloatingWindowLevel = 3,
   NSSubmenuWindowLevel = 3,
   NSTornOffMenuWindowLevel = 3,
-  NSDockWindowLevel = 5,	/* Deprecated - use NSStatusWindowLevel */
   NSMainMenuWindowLevel = 20,
+  NSDockWindowLevel = 21,	/* Deprecated - use NSStatusWindowLevel */
   NSStatusWindowLevel = 21,
   NSModalPanelWindowLevel = 100,
   NSPopUpMenuWindowLevel = 101,

@@ -1,3 +1,10 @@
+2001-02-08  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Headers/gnustep/gui/NSWindow.h: Added a GNUstep specific window
+	level for the desktop (to work in conjunction with Window Maker)
+	and changed the deprectated dock window level to match the value
+	in MacOS-X beta.
+
 Thu Feb  8 19:17:25 2001  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/gnustep/gui/AppKit.h: Include NSSecureTextField.h.
