@@ -1,3 +1,13 @@
+Wed Mar 01 16:21:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/gnustep/gui/NSWindow.h: New style values added for
+	app iconwindow and miniwindows.
+	New ivar added for miniwindow counterpart. New method ([-counterpart])
+	* Source/NSApplication.m: Create the iconwindow usig the new style.
+	* Source/NSWindow.m: Many modifications to support miniwindow
+	counterparts and create miniwindows when required (when a window
+	is miniaturised).
+
 Tue Feb 29 16:34:49 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Documentation/gsdoc/Introduction.gsdoc: New file - beginning of

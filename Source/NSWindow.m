@@ -65,6 +65,170 @@
 
 BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo);
 
+@interface	NSMiniWindow : NSWindow
+@end
+
+@implementation	NSMiniWindow
+
+- (BOOL) canBecomeMainWindow
+{
+  return NO;
+}
+
+- (BOOL) canBecomeKeyWindow
+{
+  return NO;
+}
+
+- (void) initDefaults
+{
+  [super initDefaults];
+  [self setExcludedFromWindowsMenu: YES];
+  [self setReleasedWhenClosed: NO];
+  window_level = NSDockWindowLevel;
+}
+
+@end
+
+@interface NSMiniWindowView : NSView
+{
+  NSCell	*imageCell;
+  NSCell	*titleCell;
+}
+- (void) setImage: (NSImage*)anImage;
+- (void) setTitle: (NSString*)aString;
+@end
+
+static NSCell* tileCell = nil;
+
+@implementation NSMiniWindowView
+
++ (void) initialize
+{
+  NSImage	*tileImage = [NSImage imageNamed: @"common_Tile"];
+
+  tileCell = [[NSCell alloc] initImageCell: tileImage];
+  [tileCell setBordered: NO];
+}
+
+- (BOOL) acceptsFirstMouse: (NSEvent*)theEvent
+{
+  return YES;
+}
+
+- (void) dealloc
+{
+  TEST_RELEASE(imageCell);
+  TEST_RELEASE(titleCell);
+  [super dealloc];
+}
+
+- (void) drawRect: (NSRect)rect
+{                                                
+  [tileCell drawWithFrame: NSMakeRect(0,0,64,64) inView: self];
+  [imageCell drawWithFrame: NSMakeRect(8,8,48,48) inView: self];
+  [titleCell drawWithFrame: NSMakeRect(0,56,64,8) inView: self];
+}
+
+- (void) mouseDown: (NSEvent*)theEvent
+{
+  if ([theEvent clickCount] >= 2)
+    {
+      NSWindow	*w = [_window counterpart];
+
+      [_window orderOut: self];
+      [w orderFront: self];
+    }
+  else
+    {
+      NSPoint	lastLocation;
+      NSPoint	location;
+      unsigned	eventMask = NSLeftMouseDownMask | NSLeftMouseUpMask
+				| NSPeriodicMask | NSRightMouseUpMask;
+      NSDate	*theDistantFuture = [NSDate distantFuture];
+      BOOL	done = NO;
+
+      lastLocation = [theEvent locationInWindow];
+      [NSEvent startPeriodicEventsAfterDelay: 0.02 withPeriod: 0.02];
+
+      while (!done)
+	{
+	  theEvent = [NSApp nextEventMatchingMask: eventMask
+					untilDate: theDistantFuture
+					   inMode: NSEventTrackingRunLoopMode
+					  dequeue: YES];
+	
+	  switch ([theEvent type])
+	    {
+	      case NSRightMouseUp:
+	      case NSLeftMouseUp:
+	      /* right mouse up or left mouse up means we're done */
+		done = YES;
+		break;
+	      case NSPeriodic:
+		location = [_window mouseLocationOutsideOfEventStream];
+		if (NSEqualPoints(location, lastLocation) == NO)
+		  {
+		    NSPoint	origin = [_window frame].origin;
+
+		    origin.x += (location.x - lastLocation.x);
+		    origin.y += (location.y - lastLocation.y);
+		    [_window setFrameOrigin: origin];
+		  }
+		break;
+
+	      default:
+		break;
+	    }
+	}
+      [NSEvent stopPeriodicEvents];
+    }
+}                                                        
+
+- (void) setImage: (NSImage*)anImage
+{
+  if (imageCell == nil)
+    {
+      imageCell = [[NSCell alloc] initImageCell: anImage];
+      [imageCell setBordered: NO];
+    }
+  else
+    {
+      [imageCell setImage: anImage];
+    }
+  if (_window != nil)
+    {
+      [self lockFocus];
+      [self drawRect: [self bounds]];
+      [self unlockFocus];
+      [_window flushWindow];
+    }
+}
+
+- (void) setTitle: (NSString*)aString
+{
+  if (titleCell == nil)
+    {
+      titleCell = [[NSCell alloc] initTextCell: aString];
+      [titleCell setBordered: NO];
+    }
+  else
+    {
+      [titleCell setStringValue: aString];
+    }
+  if (_window != nil)
+    {
+      [self lockFocus];
+      [self drawRect: [self bounds]];
+      [self unlockFocus];
+      [_window flushWindow];
+    }
+}
+
+@end
+
+
+
 @interface GSWindowView : NSView
 {
 }
@@ -221,6 +385,13 @@ static NSMapTable* windowmaps = NULL;
   [NSApp removeWindowsItem: self];
 
   [self setFrameAutosaveName: nil];
+  if (_counterpart != 0 && (style_mask & NSMiniWindowMask) == 0)
+    {
+      NSWindow	*mini = [NSApp windowWithWindowNumber: _counterpart];
+
+      _counterpart = 0;
+      RELEASE(mini);
+    }
   TEST_RELEASE(_wv);
   TEST_RELEASE(_fieldEditor);
   TEST_RELEASE(background_color);
@@ -484,11 +655,38 @@ static NSMapTable* windowmaps = NULL;
 - (void) setMiniwindowImage: (NSImage *)image
 {
   ASSIGN(miniaturized_image, image);
+  if (_counterpart != 0 && (style_mask & NSMiniWindowMask) == 0)
+    {
+      NSMiniWindow	*mini = [NSApp windowWithWindowNumber: _counterpart];
+      id		v = [mini contentView];
+
+      if ([v respondsToSelector: @selector(setImage:)])
+	{
+	  [v setImage: [self miniwindowImage]];
+	}
+    }
 }
 
 - (void) setMiniwindowTitle: (NSString*)title
 {
   ASSIGN(miniaturized_title, title);
+  if (_counterpart != 0 && (style_mask & NSMiniWindowMask) == 0)
+    {
+      NSMiniWindow	*mini = [NSApp windowWithWindowNumber: _counterpart];
+      id		v = [mini contentView];
+
+      if ([v respondsToSelector: @selector(setTitle:)])
+	{
+	  [v setTitle: [self miniwindowTitle]];
+	}
+    }
+}
+
+- (NSWindow*) counterpart
+{
+  if (_counterpart == 0)
+    return nil;
+  return [NSApp windowWithWindowNumber: _counterpart];
 }
 
 /*
@@ -1370,18 +1568,27 @@ resetCursorRectsForView(NSView *theView)
 
 - (void) miniaturize: sender
 {
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  if ((style_mask & (NSIconWindowMask | NSMiniWindowMask)) == 0)
+    {
+      NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
 
-  [nc postNotificationName: NSWindowWillMiniaturizeNotification object: self];
+      [nc postNotificationName: NSWindowWillMiniaturizeNotification
+			object: self];
 
-  [self performMiniaturize: self];
-  [nc postNotificationName: NSWindowDidMiniaturizeNotification object: self];
+      [self performMiniaturize: self];
+      [nc postNotificationName: NSWindowDidMiniaturizeNotification
+			object: self];
+    }
+  else
+    {
+      NSLog(@"Attempt to miniaturise miniwindow or iconwindow");
+    }
 }
 
 - (void) performClose: sender
 {
   /* self must have a close button in order to be closed */
-  if (!([self styleMask] & NSClosableWindowMask))
+  if (!(style_mask & NSClosableWindowMask))
     {
       NSBeep();
       return;
@@ -1427,8 +1634,36 @@ resetCursorRectsForView(NSView *theView)
 
 - (void) performMiniaturize: (id)sender
 {
-  DPSminiwindow(GSCurrentContext(), window_num);
-  _f.is_miniaturized = YES;
+  if ((style_mask & (NSIconWindowMask | NSMiniWindowMask)) == 0)
+    {
+      /*
+       * Ensure that we have a miniwindow counterpart.
+       */
+      if (_counterpart == 0)
+	{
+	  NSWindow		*mini;
+	  NSMiniWindowView	*v;
+
+	  mini = [[NSMiniWindow alloc]
+	    initWithContentRect: NSMakeRect(0,0,64,64)
+		      styleMask: NSMiniWindowMask
+			backing: NSBackingStoreBuffered
+			  defer: NO];
+	  mini->_counterpart = [self windowNumber];
+	  _counterpart = [mini windowNumber];
+	  v = [[NSMiniWindowView alloc] initWithFrame: NSMakeRect(0,0,64,64)];
+	  [v setImage: [self miniwindowImage]];
+	  [v setTitle: [self miniwindowTitle]];
+	  [mini setContentView: v];
+	  RELEASE(v);
+	}
+      DPSminiwindow(GSCurrentContext(), window_num);
+      _f.is_miniaturized = YES;
+    }
+  else
+    {
+      NSLog(@"Attempt to miniaturise miniwindow or iconwindow");
+    }
 }
 
 - (int) resizeFlags
@@ -2719,7 +2954,6 @@ resetCursorRectsForView(NSView *theView)
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   BOOL		flag;
-  NSPoint	p;
 
   [super encodeWithCoder: aCoder];
 

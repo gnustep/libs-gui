@@ -281,7 +281,7 @@ static NSCell* tileCell = nil;
 
   _app_icon_window = [[NSIconWindow alloc] initWithContentRect: 
 					    NSMakeRect(0,0,64,64)
-				styleMask: NSBorderlessWindowMask
+				styleMask: NSIconWindowMask
 				  backing: NSBackingStoreRetained
 				    defer: NO
 				   screen: nil];

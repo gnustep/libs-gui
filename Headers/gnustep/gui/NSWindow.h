@@ -76,7 +76,9 @@ enum {
   NSTitledWindowMask = 1,
   NSClosableWindowMask = 2,
   NSMiniaturizableWindowMask = 4,
-  NSResizableWindowMask = 8
+  NSResizableWindowMask = 8,
+  NSIconWindowMask = 64,	/* GNUstep extension - app icon window	*/
+  NSMiniWindowMask = 128	/* GNUstep extension - miniwindows	*/
 };
 
 #ifndef STRICT_OPENSTEP
@@ -123,6 +125,7 @@ extern NSSize NSTokenSize;
 
   NSWindowDepth depth_limit;
   NSWindowController *_windowController;
+  int		_counterpart;
 
   struct GSWindowFlagsType {
     unsigned	accepts_drag:1;
@@ -221,6 +224,9 @@ extern NSSize NSTokenSize;
 - (NSString *) miniwindowTitle;
 - (void) setMiniwindowImage: (NSImage *)image;
 - (void) setMiniwindowTitle: (NSString *)title;
+#ifndef	NO_GNUSTEP
+- (NSWindow*) counterpart;
+#endif
 
 /*
  * The field editor
