@@ -1,3 +1,7 @@
+Fri Mar 10 12:42:44 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSSplitView.m ([-mouseDown:]): Fixed bug.
+
 Fri Mar 10 10:48:00 2000  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Documentation/gsdoc/NSView.gsdoc: Added a little documentation for
