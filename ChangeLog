@@ -15,6 +15,7 @@
 
 	* Source/GSServicesManager.m: removed NSMenuMatrix code. Should
 	work properly now.
+	* TODO: added the unimplemented classes TODO list.
 
 1999-07-18  Michael Hanni  <mhanni@sprintmail.com>
 
