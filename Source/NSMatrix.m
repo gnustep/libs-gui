@@ -55,6 +55,7 @@
 #include <Foundation/NSArray.h>
 #include <Foundation/NSAutoreleasePool.h>
 #include <Foundation/NSException.h>
+#include <Foundation/NSKeyedArchiver.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSFormatter.h>
 #include <Foundation/NSDebug.h>
@@ -2477,77 +2478,164 @@ static SEL getSel;
 
   [super initWithCoder: aDecoder];
 
-  _myZone = [self zone];
-  [aDecoder decodeValueOfObjCType: @encode (int) at: &_mode];
-  [aDecoder decodeValueOfObjCType: @encode (BOOL) at: &_allowsEmptySelection];
-  [aDecoder decodeValueOfObjCType: @encode (BOOL) at: &_selectionByRect];
-  [aDecoder decodeValueOfObjCType: @encode (BOOL) at: &_autosizesCells];
-  [aDecoder decodeValueOfObjCType: @encode (BOOL) at: &_autoscroll];
-  _cellSize = [aDecoder decodeSize];
-  _intercell = [aDecoder decodeSize];
-  [aDecoder decodeValueOfObjCType: @encode (id) at: &_backgroundColor];
-  [aDecoder decodeValueOfObjCType: @encode (id) at: &_cellBackgroundColor];
-  [aDecoder decodeValueOfObjCType: @encode (BOOL) at: &_drawsBackground];
-  [aDecoder decodeValueOfObjCType: @encode (BOOL) at: &_drawsCellBackground];
-
-  class = NSClassFromString ((NSString *)[aDecoder decodeObject]);
-  if (class != Nil)
+  if ([aDecoder allowsKeyedCoding])
     {
-      [self setCellClass: class]; 
-    }
+      if ([aDecoder containsValueForKey: @"NSBackgroundColor"])
+        {
+	  [self setBackgroundColor: [aDecoder decodeObjectForKey: @"NSBackgroundColor"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSCellBackgroundColor"])
+        {
+	  [self setBackgroundColor: [aDecoder decodeObjectForKey: @"NSCellBackgroundColor"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSProtoCell"])
+        {
+	  [self setPrototype: [aDecoder decodeObjectForKey: @"NSProtoCell"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSCellClass"])
+        {
+	    class = NSClassFromString((NSString *)[aDecoder decodeObjectForKey: @"NSCellClass"]);
+	    if (class != Nil)
+	      {
+		[self setCellClass: class]; 
+	      }
+	}
+      if ([aDecoder containsValueForKey: @"NSCellSize"])
+        {
+	  [self setCellSize: [aDecoder decodeSizeForKey: @"NSCellSize"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSIntercellSpacing"])
+        {
+	  [self setIntercellSpacing: [aDecoder decodeSizeForKey: @"NSIntercellSpacing"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSMatrixFlags"])
+        {
+	  int mFlags;
 
-  cell = [aDecoder decodeObject];
-  if (cell != nil)
-    {
-      [self setPrototype: cell];
-    }
+	  mFlags = [aDecoder decodeIntForKey: @"NSMatrixFlags"];
+	  // FIXME
+	}
+      if ([aDecoder containsValueForKey: @"NSNumCols"])
+        {
+	  columns = [aDecoder decodeIntForKey: @"NSNumCols"];
+	}
+      if ([aDecoder containsValueForKey: @"NSNumRows"])
+        {
+	  rows = [aDecoder decodeIntForKey: @"NSNumRows"];
+	}
 
-  if (_cellPrototype == nil)
-    {
-      [self setCellClass: [isa cellClass]];
-    }
+      array = [aDecoder decodeObjectForKey: @"NSCells"];
+      [self renewRows: rows  columns: columns];
+      count = [array count];
+      if (count != rows * columns)
+        {
+	  NSLog (@"Trying to decode an invalid NSMatrix: cell number does not fit matrix dimension");
+	  // Quick fix to do what we can
+	  if (count > rows * columns)
+	    {
+	      count = rows * columns;
+	    }
+	}
 
-  [aDecoder decodeValueOfObjCType: @encode (int) at: &rows];
-  [aDecoder decodeValueOfObjCType: @encode (int) at: &columns];
 
-  /* NB: This works without changes for NSForm */
-  array = [aDecoder decodeObject];
-  [self renewRows: rows  columns: columns];
-  count = [array count];
-  if (count != rows * columns)
-    {
-      NSLog (@"Trying to decode an invalid NSMatrix: cell number does not fit matrix dimension");
-      // Quick fix to do what we can
-      if (count > rows * columns)
-	{
-	  count = rows * columns;
+      for (i = 0; i < count; i++)
+        {
+	  int row, column;
+	  cell = [array objectAtIndex: i];
+	  
+	  row = i / columns;
+	  column = i % columns;
+	  
+	  [self putCell:cell   atRow: row   column: column];
+	  if ([cell state])
+	    {
+	      [self selectCellAtRow: row   column: column];
+	    }
+	}
+
+      if ([aDecoder containsValueForKey: @"NSSelectedCol"])
+        {
+	  _selectedColumn = [aDecoder decodeIntForKey: @"NSSelectedCol"];
+	}
+      if ([aDecoder containsValueForKey: @"NSSelectedRow"])
+        {
+	  _selectedRow = [aDecoder decodeIntForKey: @"NSSelectedRow"];
 	}
     }
-
-  _selectedRow = _selectedColumn = 0;
-
-  for (i = 0; i < count; i++)
+  else
     {
-      int row, column;
-      cell = [array objectAtIndex: i];
-
-      row = i / columns;
-      column = i % columns;
+      _myZone = [self zone];
+      [aDecoder decodeValueOfObjCType: @encode (int) at: &_mode];
+      [aDecoder decodeValueOfObjCType: @encode (BOOL) at: &_allowsEmptySelection];
+      [aDecoder decodeValueOfObjCType: @encode (BOOL) at: &_selectionByRect];
+      [aDecoder decodeValueOfObjCType: @encode (BOOL) at: &_autosizesCells];
+      [aDecoder decodeValueOfObjCType: @encode (BOOL) at: &_autoscroll];
+      _cellSize = [aDecoder decodeSize];
+      _intercell = [aDecoder decodeSize];
+      [aDecoder decodeValueOfObjCType: @encode (id) at: &_backgroundColor];
+      [aDecoder decodeValueOfObjCType: @encode (id) at: &_cellBackgroundColor];
+      [aDecoder decodeValueOfObjCType: @encode (BOOL) at: &_drawsBackground];
+      [aDecoder decodeValueOfObjCType: @encode (BOOL) at: &_drawsCellBackground];
       
-      [self putCell:cell   atRow: row   column: column];
-      if ([cell state])
-	 {
-	   [self selectCellAtRow: row   column: column];
-	 }
-     }
+      class = NSClassFromString ((NSString *)[aDecoder decodeObject]);
+      if (class != Nil)
+        {
+	  [self setCellClass: class]; 
+	}
+      
+      cell = [aDecoder decodeObject];
+      if (cell != nil)
+        {
+	  [self setPrototype: cell];
+	}
+      
+      if (_cellPrototype == nil)
+        {
+	  [self setCellClass: [isa cellClass]];
+	}
+      
+      [aDecoder decodeValueOfObjCType: @encode (int) at: &rows];
+      [aDecoder decodeValueOfObjCType: @encode (int) at: &columns];
 
-  [aDecoder decodeValueOfObjCType: @encode (id) at: &_delegate];
-  [aDecoder decodeValueOfObjCType: @encode (id) at: &_target];
-  [aDecoder decodeValueOfObjCType: @encode (SEL) at: &_action];
-  [aDecoder decodeValueOfObjCType: @encode (SEL) at: &_doubleAction];
-  [aDecoder decodeValueOfObjCType: @encode (SEL) at: &_errorAction];
-  [aDecoder decodeValueOfObjCType: @encode (BOOL) at: &_tabKeyTraversesCells];
-  [self setKeyCell: [aDecoder decodeObject]];
+      /* NB: This works without changes for NSForm */
+      array = [aDecoder decodeObject];
+      [self renewRows: rows  columns: columns];
+      count = [array count];
+      if (count != rows * columns)
+        {
+	  NSLog (@"Trying to decode an invalid NSMatrix: cell number does not fit matrix dimension");
+	  // Quick fix to do what we can
+	  if (count > rows * columns)
+	    {
+	      count = rows * columns;
+	    }
+	}
+
+      _selectedRow = _selectedColumn = 0;
+
+      for (i = 0; i < count; i++)
+        {
+	  int row, column;
+	  cell = [array objectAtIndex: i];
+	  
+	  row = i / columns;
+	  column = i % columns;
+	  
+	  [self putCell:cell   atRow: row   column: column];
+	  if ([cell state])
+	    {
+	      [self selectCellAtRow: row   column: column];
+	    }
+	}
+      
+      [aDecoder decodeValueOfObjCType: @encode (id) at: &_delegate];
+      [aDecoder decodeValueOfObjCType: @encode (id) at: &_target];
+      [aDecoder decodeValueOfObjCType: @encode (SEL) at: &_action];
+      [aDecoder decodeValueOfObjCType: @encode (SEL) at: &_doubleAction];
+      [aDecoder decodeValueOfObjCType: @encode (SEL) at: &_errorAction];
+      [aDecoder decodeValueOfObjCType: @encode (BOOL) at: &_tabKeyTraversesCells];
+      [self setKeyCell: [aDecoder decodeObject]];
+    }
   
   return self;
 }

@@ -368,12 +368,24 @@ static NSColor	*shadowCol;
   BOOL tmp;
 
   [super initWithCoder: aDecoder];
-
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
-  _formcell_auto_title_width = tmp;
-  [aDecoder decodeValueOfObjCType: @encode(float) at: &_displayedTitleWidth];
-  [aDecoder decodeValueOfObjCType: @encode(id)
-	    at: &_titleCell];
+  if ([aDecoder allowsKeyedCoding])
+    {
+      if ([aDecoder containsValueForKey: @"NSTitleWidth"])
+        {
+	  [self setTitleWidth: [aDecoder decodeFloatForKey: @"NSTitleWidth"]];
+	}
+      if ([aDecoder containsValueForKey: @"NSTitleCell"])
+        {
+	  ASSIGN(_titleCell, [aDecoder decodeObjectForKey: @"NSTitleCell"]);
+	}
+    }
+  else
+    {
+      [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
+      _formcell_auto_title_width = tmp;
+      [aDecoder decodeValueOfObjCType: @encode(float) at: &_displayedTitleWidth];
+      [aDecoder decodeValueOfObjCType: @encode(id) at: &_titleCell];
+    }
   return self;
 }
 

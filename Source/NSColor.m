@@ -1056,7 +1056,7 @@ systemColorWithName(NSString *name)
 	  float red = 0.0;
 	  float green = 0.0;
 	  float blue = 0.0;
-	  float alpha = 0.0;
+	  float alpha = 1.0;
 	  NSString *str;
 	  NSScanner *scanner;
 	  
@@ -1069,8 +1069,10 @@ systemColorWithName(NSString *name)
 	      [scanner scanFloat: &red];
 	      [scanner scanFloat: &green];
 	      [scanner scanFloat: &blue];
+	      RELEASE(scanner);
+	      RELEASE(str);
 	    }
-	  
+
 	  self = [NSColor colorWithCalibratedRed: red
 			  green: green
 			  blue: blue
@@ -1081,7 +1083,7 @@ systemColorWithName(NSString *name)
 	  unsigned length;
 	  const uint8_t *data;
 	  float white = 0.0;
-	  float alpha = 0.0;
+	  float alpha = 1.0;
 	  NSString *str;
 	  NSScanner *scanner;
 	  
@@ -1092,6 +1094,8 @@ systemColorWithName(NSString *name)
 	      str = [[NSString alloc] initWithCString: data length: length];
 	      scanner = [[NSScanner alloc] initWithString: str];
 	      [scanner scanFloat: &white];
+	      RELEASE(scanner);
+	      RELEASE(str);
 	    }
 	  
 	  self = [NSColor colorWithDeviceWhite: white

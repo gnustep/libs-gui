@@ -1,3 +1,12 @@
+2004-10-08  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSFormCell.m: (-initWithCoder:):
+	* Source/NSMatrix.m: (-initWithCoder:): Implemented keyed decoding.
+	* Source/NSColor.m: (-initWithCoder:): Corrected handling of alpha
+	values (use 1 instead of 0)
+	* Source/NSCell.m: (-initWithCoder:): Added some more flag
+	handling and rearranged code.
+
 2004-10-08 09:17  Chad Hardin  <cehardin@mac.com>
 
 	* Printing/GSLPR/GSLPRPageLayout.m: Fixed a #define

@@ -2006,7 +2006,8 @@ static NSColor	*shadowCol;
   if ([aDecoder allowsKeyedCoding])
     {
       NSString *contents = [aDecoder decodeObjectForKey: @"NSContents"];
-      NSFont *support = [aDecoder decodeObjectForKey: @"NSSupport"];
+
+      self = [self initTextCell: contents];
 
       if ([aDecoder containsValueForKey: @"NSCellFlags"])
         {
@@ -2022,6 +2023,10 @@ static NSColor	*shadowCol;
 	  [self setSelectable: ((cFlags & 0x200001) == 0x200001)];
 	  [self setBezeled: ((cFlags & 0x400000) == 0x400000)];
 	  [self setBordered: ((cFlags & 0x800000) == 0x800000)];
+	  if ((cFlags & 0x4000000) == 0x4000000)
+	    {
+	      [self setType: NSTextCellType];
+	    }
 	  [self setEditable: ((cFlags & 0x10000000) == 0x10000000)];
 	  // This bit flag is the other way around!
 	  [self setEnabled: ((cFlags & 0x20000000) != 0x20000000)];
@@ -2036,13 +2041,39 @@ static NSColor	*shadowCol;
 	  cFlags2 = [aDecoder decodeIntForKey: @"NSCellFlags2"];
 	  [self setAllowsMixedState: ((cFlags2 & 0x1000000) == 0x1000000)];
 	  [self setRefusesFirstResponder: ((cFlags2 & 0x2000000) == 0x2000000)];
+	  if ((cFlags2 & 0x4000000) == 0x4000000)
+	    {
+	      [self setAlignment: NSRightTextAlignment];
+	    }
+	  if ((cFlags2 & 0x8000000) == 0x8000000)
+	    {
+	      [self setAlignment: NSCenterTextAlignment];
+	    }
+	  if ((cFlags2 & 0xC000000) == 0xC000000)
+	    {
+	      [self setAlignment: NSJustifiedTextAlignment];
+	    }
+	  if ((cFlags2 & 0x10000000) == 0x10000000)
+	    {
+	      [self setAlignment: NSNaturalTextAlignment];
+	    }
+
 	  [self setImportsGraphics: ((cFlags2 & 0x20000000) == 0x20000000)];
 	  [self setAllowsEditingTextAttributes: ((cFlags2 & 0x40000000) == 0x40000000)];
 	  // FIXME
 	}
+      if ([aDecoder containsValueForKey: @"NSSupport"])
+        {
+	  NSFont *support = [aDecoder decodeObjectForKey: @"NSSupport"];
 
-      self = [self initTextCell: contents];
-      [self setFont: support];
+	  [self setFont: support];
+	}
+      if ([aDecoder containsValueForKey: @"NSFormatter"])
+        {
+	  NSFormatter *formatter = [aDecoder decodeObjectForKey: @"NSFormatter"];
+
+	  [self setFormatter: formatter];
+	}
     }
   else
     {
