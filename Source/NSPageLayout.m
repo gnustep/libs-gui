@@ -49,6 +49,15 @@ static NSPageLayout *shared_instance;
 
 #define CONTROL(panel, name) [[panel contentView] viewWithTag: name]
 
+@implementation NSApplication (NSPageLayout)
+
+- (void) runPageLayout: sender
+{
+  [[NSPageLayout pageLayout] runModal];
+}
+
+@end
+
 /**
 <unit>
   <heading>NSPageLayout</heading>

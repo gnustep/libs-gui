@@ -28,6 +28,7 @@
 #ifndef _GNUstep_H_NSPageLayout
 #define _GNUstep_H_NSPageLayout
 
+#include <AppKit/NSApplication.h>
 #include <AppKit/NSPanel.h>
 
 @class NSPrintInfo;
@@ -44,6 +45,10 @@ enum {
   NSPLCancelButton,
   NSPLOKButton 
 };
+
+@interface NSApplication (NSPageLayout)
+- (void) runPageLayout: (id)sender;
+@end
 
 @interface NSPageLayout : NSPanel
 {
