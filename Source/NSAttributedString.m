@@ -1018,6 +1018,7 @@ documentAttributes: (NSDictionary **)dict
         {
 	  [self deleteCharactersInRange: NSMakeRange (range.location, 1)];
 	  range.length--;
+	  end--;
 	}
 
       location = NSMaxRange (range);

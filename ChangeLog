@@ -1,3 +1,14 @@
+2003-02-11 16:33  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSAttributedString.m (-fixAttachmentAttributeInRange:):
+	Update end index when a character is deleted.
+
+	* Source/NSTextStorage.m (-processEditing): Make sure we always
+	give a valid range and delta to the layout managers.
+
+	* Source/NSTextView.m (-setSelectedRange:affinity:stillSelecting:):
+	Clamp the selected range to the text storage's length.
+
 2003-02-10  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSBrowser.m: Rewrote and documented the ([-setPath:]) method
