@@ -123,9 +123,7 @@ static NSNotificationCenter *nc;
  * these NSLayoutManager- like methods are here only informally
  */
 - (unsigned) characterIndexForPoint: (NSPoint)point;
-- (NSRect) rectForCharacterIndex: (unsigned)index;
 - (NSRect) rectForCharacterRange: (NSRange)aRange;
-- (NSRect) rectForInsertionPointAtIndex: (unsigned)index;
 
 /*
  * various GNU extensions
@@ -501,7 +499,7 @@ static NSNotificationCenter *nc;
       return;
     }
   
-  [self setFont: font  ofRange: NSMakeRange (0, [self textLength])];
+  [self setFont: font  ofRange: NSMakeRange (0, [_textStorage length])];
   [_typingAttributes setObject: font  forKey: NSFontAttributeName];
 }
 
@@ -525,27 +523,33 @@ static NSNotificationCenter *nc;
  */
 - (NSTextAlignment) alignment
 {
-  /* FIXME */
-  NSRange aRange = [self rangeForUserParagraphAttributeChange];
+  unsigned location = 0;
   NSParagraphStyle *aStyle;
 
-  if (aRange.location != NSNotFound)
+  if (_tf.is_rich_text)
+    {
+      location = [self rangeForUserParagraphAttributeChange].location;
+    }
+  
+  if (location != NSNotFound)
     {
       aStyle = [_textStorage attribute: NSParagraphStyleAttributeName
-			     atIndex: aRange.location
+			     atIndex: location
 			     effectiveRange: NULL];
       if (aStyle != nil)
-	return [aStyle alignment]; 
+	{
+	  return [aStyle alignment]; 
+	}
     }
 
-  // Get alignment from typing attributes
+  /* Get alignment from typing attributes */
   return [[_typingAttributes objectForKey: NSParagraphStyleAttributeName] 
 	   alignment];
 }
 
 - (void) setAlignment: (NSTextAlignment)mode
 {
-  [self setAlignment: mode  range: NSMakeRange (0, [self textLength])];
+  [self setAlignment: mode  range: NSMakeRange (0, [_textStorage length])];
 }
 
 - (void) alignCenter: (id)sender
@@ -589,7 +593,7 @@ static NSNotificationCenter *nc;
 - (void) setTextColor: (NSColor*)color
 {
   /* FIXME: This should work also for non rich text objects */
-  NSRange fullRange = NSMakeRange (0, [self textLength]);
+  NSRange fullRange = NSMakeRange (0, [_textStorage length]);
 
   [self setTextColor: color  range: fullRange];
 }
@@ -752,7 +756,7 @@ static NSNotificationCenter *nc;
 	{
 	  [self setRichText: YES];
 	}
-      [self replaceRange: NSMakeRange (0, [self textLength])
+      [self replaceRange: NSMakeRange (0, [_textStorage length])
 	    withAttributedString: peek];
       RELEASE(peek);
       return YES;
@@ -763,7 +767,7 @@ static NSNotificationCenter *nc;
 - (BOOL) writeRTFDToFile: (NSString*)path  atomically: (BOOL)flag
 {
   NSFileWrapper *wrapper;
-  NSRange range = NSMakeRange (0, [self textLength]);
+  NSRange range = NSMakeRange (0, [_textStorage length]);
   
   wrapper = [_textStorage RTFDFileWrapperFromRange: range  
 			  documentAttributes: nil];
@@ -1267,12 +1271,11 @@ static NSNotificationCenter *nc;
 
 #undef NSTEXTVIEW_SYNC
 
+/* NB: Only NSSelectionAffinityDownstream works */
 - (void) setSelectedRange: (NSRange)range
 		 affinity: (NSSelectionAffinity)affinity
 	   stillSelecting: (BOOL)flag
 {
-  /* TODO: Use affinity to determine the insertion point */
-
   /* The `official' (the last one the delegate approved of) selected
      range before this one. */
   NSRange oldRange;
@@ -1318,6 +1321,9 @@ static NSNotificationCenter *nc;
   /* Set the new selected range */
   _selected_range = range;
 
+  /* FIXME: when and if to restart timer <and where to stop it before> */
+  [self updateInsertionPointStateAndRestartTimer: !flag];
+
   if (flag == NO)
     {
       [self updateFontPanel];
@@ -1351,7 +1357,6 @@ static NSNotificationCenter *nc;
 		}
 	      [self setTypingAttributes: dict];
 	    }
-	  /* <!>enable caret timed entry */
 	}
     }
 
@@ -1420,10 +1425,8 @@ static NSNotificationCenter *nc;
     }
 }
 
-/* Override in subclasses to change the default selection affinity */
-- (NSSelectionAffinity) selectionAffinity
-{
-  /* FIXME: which one should be the default ? */
+- (NSSelectionAffinity) selectionAffinity 
+{ 
   return NSSelectionAffinityDownstream;
 }
 
@@ -1439,7 +1442,7 @@ static NSNotificationCenter *nc;
 
 - (void) setInsertionPointColor: (NSColor*)aColor
 {
-  ASSIGN(_caret_color, aColor);
+  ASSIGN (_caret_color, aColor);
 }
 
 - (NSColor*) insertionPointColor
@@ -1449,9 +1452,85 @@ static NSNotificationCenter *nc;
 
 - (void) updateInsertionPointStateAndRestartTimer: (BOOL)flag
 {
-  // _caretLocation =
+  /* Update insertion point rect */
+  NSRange charRange;
+  NSRange glyphRange;
+  unsigned glyphIndex;
+  NSRect rect;
 
-  // restart blinking timer.
+  /* Simple case - no insertion point */
+  if ((_selected_range.length > 0) || _selected_range.location == NSNotFound)
+    {
+      _insertionPointRect = NSZeroRect;
+      
+      /* FIXME: horizontal position of insertion point */
+      _originalInsertPoint = 0;
+      return;
+    }
+
+  charRange = NSMakeRange (_selected_range.location, 1);
+  glyphRange = [_layoutManager glyphRangeForCharacterRange: charRange 
+			       actualCharacterRange: NULL];
+  glyphIndex = glyphRange.location;
+  
+  rect = [_layoutManager lineFragmentRectForGlyphAtIndex: glyphIndex 
+			 effectiveRange: NULL];
+  
+  if ([self selectionAffinity] != NSSelectionAffinityUpstream)
+    {
+      /* Standard case - draw the insertion point just before the
+	 associated glyph index */
+      NSPoint loc = [_layoutManager locationForGlyphAtIndex: glyphIndex];
+      
+      rect.origin.x += loc.x;      
+    }
+  else /* _affinity == NSSelectionAffinityUpstream - non standard */
+    {
+      /* FIXME - THIS DOES NOT WORK - as a consequence,
+         NSSelectionAffinityUpstream DOES NOT WORK */
+
+      /* Check - if the previous glyph is on another line */
+      
+      /* FIXME: Don't know how to do this check, this is a hack and
+         DOES NOT WORK - clearly this code should be inside the layout
+         manager anyway */
+      NSRect rect2;
+      
+      rect2 = [_layoutManager lineFragmentRectForGlyphAtIndex: glyphIndex - 1
+			      effectiveRange: NULL];
+      if (NSMinY (rect2) < NSMinY (rect))
+	{
+	  /* Then we need to draw the insertion point just after the
+             previous glyph - DOES NOT WORK */
+	  glyphRange = NSMakeRange (glyphIndex - 1, 1);
+	  rect = [_layoutManager boundingRectForGlyphRange: glyphRange
+				 inTextContainer:_textContainer];
+	  rect.origin.x = NSMaxX (rect) - 1;
+	}
+      else /* Else, standard case again */
+	{
+	  NSPoint loc = [_layoutManager locationForGlyphAtIndex: glyphIndex];
+	  rect.origin.x += loc.x;	  
+	}
+    }
+
+  rect.size.width = 1;
+  
+  if (rect.size.height == 0)
+    {
+      rect.size.height = 12;
+    }  
+
+  _insertionPointRect = rect;
+
+  
+  /* Remember horizontal position of insertion point */
+  _originalInsertPoint = _insertionPointRect.origin.x;
+
+  if (flag)
+    {
+      /* TODO: Restart blinking timer */
+    }
 }
 
 - (void) setSelectedTextAttributes: (NSDictionary *)attributes
@@ -1468,12 +1547,12 @@ static NSNotificationCenter *nc;
 {
   // calculate
 
-  return NSMakeRange(NSNotFound, 0);
+  return NSMakeRange (NSNotFound, 0);
 }
 
 - (void) setMarkedTextAttributes: (NSDictionary*)attributes
 {
-  ASSIGN(_markedTextAttributes, attributes);
+  ASSIGN (_markedTextAttributes, attributes);
 }
 
 - (NSDictionary*) markedTextAttributes
@@ -1551,10 +1630,6 @@ static NSNotificationCenter *nc;
   // move cursor <!> [self selectionRangeForProposedRange: ]
   [self setSelectedRange:
 	  NSMakeRange (insertRange.location + [insertString length], 0)];
-
-  // remember x for row - stable cursor movements
-  _currentCursor = [self rectForCharacterIndex:
-			   _selected_range.location].origin;
 }
 
 - (void) setTypingAttributes: (NSDictionary*)dict
@@ -2049,9 +2124,6 @@ afterString in order over charRange. */
 
   /* Remember granularity till a new selection destroys the memory */
   [self setSelectionGranularity: granularity];
-
-  // remember for column stable cursor up/down
-  _currentCursor = [self rectForCharacterIndex: chosenRange.location].origin;
 }
 
 - (void) keyDown: (NSEvent*)theEvent
@@ -2113,7 +2185,7 @@ afterString in order over charRange. */
      character */
   if (range.length == 0)
     {
-      if (range.location != [self textLength])
+      if (range.location != [_textStorage length])
 	{
 	  /* Not at the end of text -- delete following character */
 	  range.length = 1;
@@ -2140,11 +2212,6 @@ afterString in order over charRange. */
   /* The new selected range is just the insertion point at the beginning 
      of deleted range */
   [self setSelectedRange: NSMakeRange (range.location, 0)];
-
-  /* remember x for row - stable cursor movements - FIXME: Move this
-     inside setSelectedRange: */
-  _currentCursor = [self rectForCharacterIndex:
-			   _selected_range.location].origin;
 }
 
 - (void) deleteBackward: (id)sender
@@ -2188,52 +2255,52 @@ afterString in order over charRange. */
   /* The new selected range is just the insertion point at the beginning 
      of deleted range */
   [self setSelectedRange: NSMakeRange (range.location, 0)];
-
-  /* remember x for row - stable cursor movements - FIXME: Move this
-     inside setSelectedRange: */
-  _currentCursor = [self rectForCharacterIndex:
-			   _selected_range.location].origin;
 }
 
-
-//<!> choose granularity according to keyboard modifier flags
 - (void) moveUp: (id)sender
 {
-  unsigned cursorIndex;
-  NSPoint cursorPoint;
-  NSRange newRange;
+  float originalInsertionPoint;
+  float startingY;
+  unsigned newLocation;
 
   if (_tf.is_field_editor)
     {
       [self _illegalMovement: NSUpTextMovement];
       return;
     }
-
+  
   /* Do nothing if we are at beginning of text */
   if (_selected_range.location == 0)
-    return;
-
-  if (_selected_range.length)
     {
-      _currentCursor = [self rectForCharacterIndex:
-			       _selected_range.location].origin;
+      return;
     }
-  cursorIndex = _selected_range.location;
-  cursorPoint = [self rectForCharacterIndex: cursorIndex].origin;
-  cursorIndex = [self characterIndexForPoint:
-			NSMakePoint (_currentCursor.x + 0.001,
-				     MAX (0, cursorPoint.y - 0.001))];
+  
+  /* Read from memory the horizontal position we aim to move the cursor 
+     at on the next line */
+  originalInsertionPoint = _originalInsertPoint;
 
-  newRange.location = cursorIndex;
-  newRange.length = 0;
-  [self setSelectedRange: newRange];
+  /* Ask the layout manager to compute where to go */
+  startingY = NSMidY (_insertionPointRect);
+  newLocation = [_layoutManager 
+		  _charIndexForInsertionPointMovingFromY: startingY
+		  bestX: originalInsertionPoint
+		  up: YES 
+		  textContainer: _textContainer];
+
+  /* Move the insertion point */
+  [self setSelectedRange: NSMakeRange (newLocation, 0)];
+
+  /* Restore the _originalInsertPoint (which was changed
+     by setSelectedRange:) because we don't want it to change between
+     moveUp:/moveDown: operations. */
+  _originalInsertPoint = originalInsertionPoint;
 }
 
 - (void) moveDown: (id)sender
 {
-  unsigned cursorIndex;
-  NSRect cursorRect;
-  NSRange newRange;
+  float originalInsertionPoint;
+  float startingY;
+  unsigned newLocation;
 
   if (_tf.is_field_editor)
     {
@@ -2242,28 +2309,35 @@ afterString in order over charRange. */
     }
 
   /* Do nothing if we are at end of text */
-  if (_selected_range.location == [self textLength])
-    return;
-
-  if (_selected_range.length != 0)
+  if (_selected_range.location == [_textStorage length])
     {
-      _currentCursor = [self rectForCharacterIndex:
-			       NSMaxRange (_selected_range)].origin;
+      return;
     }
-  cursorIndex = _selected_range.location;
-  cursorRect = [self rectForCharacterIndex: cursorIndex];
-  cursorIndex = [self characterIndexForPoint:
-			  NSMakePoint(_currentCursor.x + 0.001,
-				      NSMaxY (cursorRect) + 0.001)];
 
-  newRange.location = cursorIndex;
-  newRange.length = 0;
-  [self setSelectedRange: newRange];
+  /* Read from memory the horizontal position we aim to move the cursor 
+     at on the next line */
+  originalInsertionPoint = _originalInsertPoint;
+
+  /* Ask the layout manager to compute where to go */
+  startingY = NSMidY (_insertionPointRect);
+  newLocation = [_layoutManager 
+		  _charIndexForInsertionPointMovingFromY: startingY
+		  bestX: originalInsertionPoint
+		  up: NO
+		  textContainer: _textContainer];
+
+  /* Move the insertion point */
+  [self setSelectedRange: NSMakeRange (newLocation, 0)];
+
+  /* Restore the _originalInsertPoint (which was changed
+     by setSelectedRange:) because we don't want it to change between
+     moveUp:/moveDown: operations. */
+  _originalInsertPoint = originalInsertionPoint;
 }
 
 - (void) moveLeft: (id)sender
 {
-  NSRange newSelectedRange;
+  unsigned newLocation;
 
   /* Do nothing if we are at beginning of text with no selection */
   if (_selected_range.location == 0 && _selected_range.length == 0)
@@ -2276,21 +2350,21 @@ afterString in order over charRange. */
     }
 
   if (_selected_range.location == 0)
-    newSelectedRange.location = 0;
+    {
+      newLocation = 0;
+    }
   else
-    newSelectedRange.location = _selected_range.location - 1;
-  newSelectedRange.length = 0;
+    {
+      newLocation = _selected_range.location - 1;
+    }
 
-  [self setSelectedRange: newSelectedRange];
-
-  _currentCursor.x = [self rectForCharacterIndex:
-			   _selected_range.location].origin.x;
+  [self setSelectedRange: NSMakeRange (newLocation, 0)];
 }
 
 - (void) moveRight: (id)sender
 {
-  NSRange newSelectedRange;
-  unsigned int length = [self textLength];
+  unsigned int length = [_textStorage length];
+  unsigned newLocation;
 
   /* Do nothing if we are at end of text */
   if (_selected_range.location == length)
@@ -2302,13 +2376,9 @@ afterString in order over charRange. */
       return;
     }
 
-  newSelectedRange.location = MIN(NSMaxRange(_selected_range) + 1, length);
-  newSelectedRange.length = 0;
+  newLocation = MIN (NSMaxRange (_selected_range) + 1, length);
 
-  [self setSelectedRange: newSelectedRange];
-
-  _currentCursor.x = [self rectForCharacterIndex:
-			   _selected_range.location].origin.x;
+  [self setSelectedRange: NSMakeRange (newLocation, 0)];
 }
 
 
@@ -2365,10 +2435,8 @@ afterString in order over charRange. */
 
   if ([self shouldDrawInsertionPoint])
     {
-      NSRect rect;
-      
-      rect = [self rectForInsertionPointAtIndex: _selected_range.location];
-      [self setNeedsDisplayInRect: rect  avoidAdditionalLayout: YES];
+      [self setNeedsDisplayInRect: _insertionPointRect  
+	    avoidAdditionalLayout: YES];
       //<!> stop timed entry
     }
 
@@ -2434,10 +2502,8 @@ afterString in order over charRange. */
       if (NSLocationInRange (location, drawnRange) 
 	  || location == NSMaxRange (drawnRange))
 	{
-	  NSRect rect;
-	  
-	  rect = [self rectForInsertionPointAtIndex: location];
-	  [self drawInsertionPointInRect: rect  color: _caret_color  
+	  [self drawInsertionPointInRect: _insertionPointRect  
+		color: _caret_color  
 		turnedOn: YES];
 	}
     }
@@ -3076,8 +3142,9 @@ other than copy/paste or dragging. */
 + (NSDictionary*) defaultTypingAttributes
 {
   return [NSDictionary dictionaryWithObjectsAndKeys:
-			 [NSParagraphStyle defaultParagraphStyle], NSParagraphStyleAttributeName,
-			 [NSFont userFontOfSize: 0], NSFontAttributeName,
+			 [NSParagraphStyle defaultParagraphStyle], 
+		         NSParagraphStyleAttributeName,
+		         [NSFont userFontOfSize: 0], NSFontAttributeName,
 		         [NSColor textColor], NSForegroundColorAttributeName,
 		         nil];
 }
@@ -3106,11 +3173,11 @@ other than copy/paste or dragging. */
 
 - (void) _illegalMovement: (int)textMovement
 {
-  // This is similar to [self resignFirstResponder],
-  // with the difference that in the notification we need
-  // to put the NSTextMovement, which resignFirstResponder
-  // does not.  Also, if we are ending editing, we are going
-  // to be removed, so it's useless to update any drawing.
+  // This is similar to [self resignFirstResponder], with the
+  // difference that in the notification we need to put the
+  // NSTextMovement, which resignFirstResponder does not.  Also, if we
+  // are ending editing, we are going to be removed, so it's useless
+  // to update any drawing.
   NSNumber *number;
   NSDictionary *uiDictionary;
   
@@ -3160,13 +3227,6 @@ other than copy/paste or dragging. */
 }
 // end: drag accepting---------------------------------
 
-// central text deletion/backspace method
-// (takes care of optimized redraw/ cursor positioning)
-- (void) deleteRange: (NSRange) aRange  backspace: (BOOL) flag
-{
-
-}
-
 - (unsigned) characterIndexForPoint: (NSPoint)point
 {
   unsigned	index;
@@ -3184,30 +3244,7 @@ other than copy/paste or dragging. */
   return index;
 }
 
-- (NSRect) rectForCharacterIndex: (unsigned)index
-{
-  NSRange charRange;
-  NSRange glyphRange;
-  unsigned glyphIndex;
-  NSRect rect;
-  NSPoint loc;
-
-  charRange = NSMakeRange (index, 1);
-  glyphRange = [_layoutManager glyphRangeForCharacterRange: charRange 
-			       actualCharacterRange: NULL];
-  glyphIndex = glyphRange.location;
-
-  rect = [_layoutManager lineFragmentRectForGlyphAtIndex: glyphIndex 
-			 effectiveRange: NULL];
-  loc = [_layoutManager locationForGlyphAtIndex: glyphIndex];
-
-  rect.origin.x += loc.x;
-  rect.size.width -= loc.x;
-
-  return rect;
-}
-
-- (NSRect) rectForCharacterRange: (NSRange) aRange
+- (NSRect) rectForCharacterRange: (NSRange)aRange
 {
   NSRange glyphRange;
 
@@ -3217,18 +3254,6 @@ other than copy/paste or dragging. */
   return [_layoutManager boundingRectForGlyphRange: glyphRange 
 			 inTextContainer: _textContainer];
 }
-
-- (NSRect) rectForInsertionPointAtIndex: (unsigned)index
-{
-  NSRect rect  = [self rectForCharacterIndex: index];
-  rect.size.width = 1;
-  
-  if (rect.size.height == 0)
-    rect.size.height = 12;
-  
-  return rect;
-}
-
 @end
 
 @implementation NSTextView(NSTextInput)

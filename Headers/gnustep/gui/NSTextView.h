@@ -94,7 +94,6 @@ typedef enum _NSSelectionAffinity {
 
   /* manages layout information */
   NSLayoutManager *_layoutManager;  
-
   /* container position */
   NSSize _textContainerInset;
   NSPoint _textContainerOrigin;
@@ -111,8 +110,20 @@ typedef enum _NSSelectionAffinity {
   NSDictionary *_markedTextAttributes;
   NSSelectionGranularity _selectionGranularity;
 
-  /* Column-stable cursor up/down */
-  NSPoint _currentCursor;
+  /* Stores the insertion point rect - updated by
+     updateInsertionPointStateAndRestartTimer: - we must make sure we
+     call the method every time that the insertion point rect might
+     need to be recomputed <eg, relayout>. */
+  NSRect _insertionPointRect;
+
+  /* This is used when you move the insertion point up or down.  The
+     system remembers the horizontal position of the insertion point
+     at the beginning of the process, and always tries to put the
+     insertion point in that horizontal position on each line when you
+     go up or down.  The memory of the horizontal position is changed
+     as soon as you do something different from moving the cursor
+     up/down. */
+  float _originalInsertPoint;
 }
 
 /**************************** Initializing ****************************/
@@ -282,6 +293,8 @@ shouldRemoveMarker: (NSRulerMarker *)marker;
 - (void) setSelectedRange: (NSRange)charRange 
 		 affinity: (NSSelectionAffinity)affinity 
 	   stillSelecting: (BOOL)stillSelectingFlag;
+/* Called by drawing routines to determine where to draw insertion
+   point */
 - (NSSelectionAffinity) selectionAffinity;
 - (NSSelectionGranularity) selectionGranularity;
 - (void) setSelectionGranularity: (NSSelectionGranularity)granularity;
