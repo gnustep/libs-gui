@@ -56,6 +56,7 @@
 
 @implementation NSNib
 
+// Private methods...
 + (NSString *) _nibFilename: (NSString *)fileName
 {
   NSFileManager	*mgr = [NSFileManager defaultManager];
@@ -129,6 +130,39 @@
       object: nil];
 }
 
+- (NSDictionary *) _copyTable: (NSDictionary *)dict
+{
+  NSMutableDictionary *ctx = nil;
+
+  if(dict != nil)
+    {
+      id obj = nil;
+
+      // copy the dictionary...
+      ctx = [NSMutableDictionary dictionaryWithDictionary: dict];
+
+      // remove and set the owner...
+      obj = [ctx objectForKey: @"NSNibOwner"];
+      if(obj != nil)
+	{
+	  [ctx removeObjectForKey: @"NSNibOwner"];
+	  [ctx setObject: obj forKey: @"NSOwner"];
+	}
+
+      // Remove and set the top level objects...
+      obj = [ctx objectForKey: @"NSNibTopLevelObjects"];
+      if(obj != nil)
+	{
+	  [ctx removeObjectForKey: @"NSNibTopLevelObjects"];
+	  [ctx setObject: obj forKey: @"NSTopLevelObjects"];
+	}
+    }
+
+  return ctx;
+}
+
+// Public methods...
+
 /**
  * Load the NSNib object from the specified URL.  This location can be
  * any type of resource capable of being pointed to by the NSURL object.
@@ -172,38 +206,6 @@
     }
   return self;
 }
-
-- (NSDictionary *) _copyTable: (NSDictionary *)dict
-{
-  NSMutableDictionary *ctx = nil;
-
-  if(dict != nil)
-    {
-      id obj = nil;
-
-      // copy the dictionary...
-      ctx = [NSMutableDictionary dictionaryWithDictionary: dict];
-
-      // remove and set the owner...
-      obj = [ctx objectForKey: @"NSNibOwner"];
-      if(obj != nil)
-	{
-	  [ctx removeObjectForKey: @"NSNibOwner"];
-	  [ctx setObject: obj forKey: @"NSOwner"];
-	}
-
-      // Remove and set the top level objects...
-      obj = [ctx objectForKey: @"NSNibTopLevelObjects"];
-      if(obj != nil)
-	{
-	  [ctx removeObjectForKey: @"NSNibTopLevelObjects"];
-	  [ctx setObject: obj forKey: @"NSTopLevelObjects"];
-	}
-    }
-
-  return ctx;
-}
-
 
 /**
  * This is a GNUstep specific method.  This method is used when the caller wants the
