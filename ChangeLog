@@ -20,7 +20,9 @@ Mon Jan 10 00:32:44 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 	* Source/NSSplitView.m: idem.
 	* Source/NSTabView.m: idem. 
 	* Source/NSTableHeaderView.m: idem.
+	* Source/NSTableView.m: idem.
 	* Source/NSTextField.m: idem.
+	* Source/NSTextView.m: idem.
 	* Source/NSView.m: idem.
 	* Source/NSWindow.m: idem.
 	* Model/GMAppKit.m: idem. 
@@ -31,6 +33,7 @@ Mon Jan 10 00:32:44 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 	* Source/NSColor.m ([+colorFromString:]): Fixed typo.
 	* Source/NSScroller.m ([-drawRect:]): Fixed bug: should fill
  	_bounds, not _frame.	
+	* Source/NSTableView.m: Some code added.
 	* Source/NSText.m: Access ivars _frame, _bounds, _window directly.
 	* Source/NSWindow.m ([-sendEvent:]), ([-setFrame:display:]),
  	([-orderWindow:relativeTo:]), ([-becomeKeyWindow]): Access ivar
