@@ -1,3 +1,37 @@
+Mon Dec 13 16:06:36 1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Headers/AppKit/NSActionCell.h: Added ivar _control_view.
+	* Headers/AppKit/NSBrowserCell.h: Use two bits to store two BOOL.
+	* Headers/AppKit/NSButtonCell.h: Use a bit to store a BOOL.
+	* Headers/AppKit/NSCell.h: Moved ivar _control_view to
+ 	NSActionCell.  Packed more ivars into the bitfield.  
+	Added two bits in the bitfield for subclass use.  Removed 
+	unused ivar _cell_size.
+	* Headers/AppKit/NSFormCell.h: Use a bit to store a BOOL.
+	* Headers/AppKit/NSTextFieldCell.h: Use two bits for two BOOL.
+	* Source/NSActionCell.m ([-drawWithFrame:inView:]): Added 
+	method, per spec.  
+	* core/gui/Source/NSButtonCell.m: Updated.
+	* Source/NSBrowser.m: Tiny optms in GSBrowserTitleCell.
+	* Source/NSBrowserCell.m: Updated.
+	* Source/NSButtonCell.m: Updated.
+	* Source/NSCell.m ([NSCell -setControlView:]): Removed, this
+ 	method should not exist.  Moved actual implementation of
+ 	([-controlView]) to NSActionCell, as per spec.  Moved any
+ 	reference to _control_view to NSActionCell; in ([-performClick:]),
+ 	invoke [self controlView].
+	* Source/NSControl.m ([-setCell:]): Updated.
+	* Source/NSFormCell.m: Updated.
+	* Source/NSImageCell.m: idem.
+	* Source/NSMenuItemCell.m: idem.
+	* Source/NSPopUpButtonCell.m: idem.
+	* Source/NSTableHeaderCell.m: idem.
+	* Source/NSTextFieldCell.m: idem.
+
+	* Headers/AppKit/NSColorWell.h: Removed unused ivar. 
+	* Headers/AppKit/NSScroller.h: Removed unused ivar.
+	* Headers/AppKit/NSView.h: Removed unused ivar needs_display.
+
 Mon Dec 13 03:51:30 1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	Cell optimizations: use a bitfield in NSCell to reduce memory
