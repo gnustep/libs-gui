@@ -33,8 +33,7 @@ GNUSTEP_LOCAL_ADDITIONAL_MAKEFILES = ../gui.make
 include $(GNUSTEP_MAKEFILES)/common.make
 
 # The color picker bundle to be compiled
-#BUNDLE_NAME = StandardPicker NamedPicker WheelPicker
-BUNDLE_NAME = StandardPicker WheelPicker
+BUNDLE_NAME = StandardPicker NamedPicker WheelPicker
 
 BUNDLE_INSTALL_DIR = $(GNUSTEP_LIBRARY)/ColorPickers
 
