@@ -1,3 +1,13 @@
+2003-07-10 Benhur Stein <benhur@inf.ufsm.br>
+
+	* Source/NSSavePanel.m: added new private method
+	_compareFilename:with:. Use it in _selectCellName:.
+	In [-browser:createRowsForColumn:inMatrix:]: use self as context to
+	sortedArrayUsingFunction:context:
+	* Source/NSOpenPanel.m (-_selectCellName:): use new [NSSavePanel
+	_compareFilename:with:] method.
+	* This fixes bug #4255
+
 2003-07-05  Adam Fedor  <fedor@gnu.org>
 
 	* configure.ac: Add openbsd flags like freebsd.

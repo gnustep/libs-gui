@@ -63,6 +63,13 @@ static NSFileManager *_fm = nil;
 static BOOL _gs_display_reading_progress = NO;
 
 //
+// SavePanel filename compare
+//
+@interface NSString (_gsSavePanel)
+- (NSComparisonResult)_gsSavePanelCompare:(NSString *)other;
+@end
+
+//
 // NSSavePanel private methods
 //
 @interface NSSavePanel (_PrivateMethods)
@@ -80,6 +87,7 @@ static BOOL _gs_display_reading_progress = NO;
 - (void) _setupForDirectory: (NSString *)path file: (NSString *)name;
 - (BOOL) _shouldShowExtension: (NSString *)extension isDir: (BOOL *)isDir;
 - (void) _windowResized: (NSNotification*)n;
+- (NSComparisonResult) _compareFilename: (NSString *)n1 with: (NSString *)n2;
 @end /* NSSavePanel (PrivateMethods) */
 
 @implementation NSSavePanel (_PrivateMethods)
@@ -364,7 +372,6 @@ static BOOL _gs_display_reading_progress = NO;
   NSArray            *cells;
   NSMatrix           *matrix;
   NSComparisonResult  result;
-  NSRange             range;
   int                 i, titleLength, cellLength, numberOfCells;
 
   matrix = [_browser matrixInColumn:[_browser lastColumn]];
@@ -374,9 +381,6 @@ static BOOL _gs_display_reading_progress = NO;
   titleLength = [title length];
   if(!titleLength)
     return;
-
-  range.location = 0;
-  range.length = titleLength;
 
   cells = [matrix cells];
   numberOfCells = [cells count];
@@ -389,7 +393,7 @@ static BOOL _gs_display_reading_progress = NO;
       if(cellLength != titleLength)
 	continue;
 
-      result = [cellString compare:title options:0 range:range];
+      result = [self _compareFilename:cellString with:title];
 
       if(result == NSOrderedSame)
 	{
@@ -488,6 +492,21 @@ selectCellWithString: (NSString*)title
 - (void) _windowResized: (NSNotification*)n
 {
   [_browser setMaxVisibleColumns: [_browser frame].size.width / 140];
+}
+
+- (NSComparisonResult) _compareFilename: (NSString *)n1 with: (NSString *)n2
+{
+  if (_delegateHasCompareFilter)
+    {
+      return [_delegate panel: self
+              compareFilename: n1 
+                         with: n2 
+                caseSensitive: YES];
+    }
+  else
+    {
+      return [n1 _gsSavePanelCompare: n2];
+    }
 }
 
 @end /* NSSavePanel (PrivateMethods) */
@@ -1074,10 +1093,6 @@ selectCellWithString: (NSString*)title
 //
 // SavePanel filename compare
 //
-@interface NSString (_gsSavePanel)
-- (NSComparisonResult)_gsSavePanelCompare:(NSString *)other;
-@end
-
 @implementation NSString (_gsSavePanel)
 - (NSComparisonResult)_gsSavePanelCompare:(NSString *)other
 {
@@ -1301,7 +1316,7 @@ createRowsForColumn: (int)column
   if (_delegateHasCompareFilter == YES)
     {
       files = [files sortedArrayUsingFunction: compareFilenames 
-		     context: nil];
+		     context: self];
     }
   else
     files = [files sortedArrayUsingSelector: @selector(_gsSavePanelCompare:)];

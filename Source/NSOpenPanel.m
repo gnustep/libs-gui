@@ -60,6 +60,7 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
 - (void) _selectTextInColumn: (int)column;
 - (void) _setupForDirectory: (NSString *)path file: (NSString *)filename;
 - (BOOL) _shouldShowExtension: (NSString *)extension isDir: (BOOL *)isDir;
+- (NSComparisonResult) _compareFilename: (NSString *)n1 with: (NSString *)n2;
 @end
 
 @implementation NSOpenPanel (_PrivateMethods)
@@ -183,7 +184,8 @@ static NSOpenPanel *_gs_gui_open_panel = nil;
       if(cellLength < titleLength)
 	continue;
 
-      result = [cellString compare:title options:0 range:range];
+      result = [self _compareFilename:[cellString substringWithRange:range]
+                                 with:title];
 
       if(result == NSOrderedSame)
 	{
