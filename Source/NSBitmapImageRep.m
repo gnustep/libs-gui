@@ -379,7 +379,8 @@
 
 - (BOOL) draw
 {
-  NSDrawBitmap(NSZeroRect,
+  NSRect irect = NSMakeRect(0, 0, size.width, size.height);
+  NSDrawBitmap(irect,
 	       _pixelsWide,
 	       _pixelsHigh,
 	       bitsPerSample,
