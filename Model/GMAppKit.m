@@ -1031,7 +1031,7 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 #ifdef GNU_GUI_LIBRARY
   _rFlags.flipped_view = [self isFlipped];
-  if ([sub_views count])
+  if ([_sub_views count])
     _rFlags.has_subviews = 1;
 #endif
 
