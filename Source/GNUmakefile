@@ -58,7 +58,6 @@ NSBrowserCell.m \
 NSBundleAdditions.m \
 NSButton.m \
 NSButtonCell.m \
-NSCStringText.m \
 NSCachedImageRep.m \
 NSCell.m \
 NSClipView.m \
@@ -312,7 +311,6 @@ IMCustomObject.h \
 IMLoading.h \
 NSAttributedString.h \
 NSColorPicking.h \
-NSCStringText.h \
 NSDocumentFrameworkPrivate.h \
 NSDragging.h \
 NSGraphics.h \

@@ -1,3 +1,10 @@
+Wed Feb 27 19:58:12 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSCStringText.m: Obsolete file removed.
+	* Headers/gnustep/gui/NSCStringText.h: Obsolete file removed.
+	* Source/GNUmakefile (libgnustep-gui_OBJC_FILES): Removed NSCStringText.m
+	(libgnustep-gui_HEADER_FILES): Removed NSCStringText.h.
+
 Wed Feb 27 18:59:54 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/gnustep/gui/NSInputManager.h (_insertControlKeystrokes): New ivar.
