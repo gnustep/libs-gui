@@ -73,9 +73,9 @@
 - (id)init
 {
   NSRect pf = {{100,100}, {300,300}};
-  NSRect ts = {{0,0}, {300,40}};
+  NSRect ts = {{0,0}, {300,50}};
   NSRect bs = {{0,0}, {300,182}};
-  NSRect pa = {{7,0}, {286,40}};
+  NSRect pa = {{7,0}, {286,50}};
   NSRect l = {{7,162}, {110,20}};
   NSRect ss = {{7,0}, {110,160}};
   NSRect b = {{60,5}, {75,25}};
@@ -105,9 +105,9 @@
 
   v = [self contentView];
 
-  topArea = [[NSView alloc] initWithFrame:NSMakeRect(0,50,300,238)];
+  topArea = [[NSView alloc] initWithFrame:NSMakeRect(0,50,300,240)];
 
-  splitView = [[NSSplitView alloc] initWithFrame:NSMakeRect(0,0,300,238)];  
+  splitView = [[NSSplitView alloc] initWithFrame:NSMakeRect(0,0,300,240)];  
   [splitView setVertical:NO]; 
   [topArea addSubview:splitView];
 
