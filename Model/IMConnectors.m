@@ -117,9 +117,13 @@ object_set_instance_variable (id anObject,
 {
   id _source = [source nibInstantiate];
   id _destination = [destination nibInstantiate];
-  NSString* setMethodName = [@"set" stringByAppendingString:
-				    [label capitalizedString]];
+  NSString* setMethodName = [[@"set" stringByAppendingString:
+				    [label capitalizedString]]
+				    stringByAppendingString:@":"];
   SEL setSelector = NSSelectorFromString (setMethodName);
+
+//  NSLog (@"establish connection: source %@, destination %@, label %@",
+//	  _source, _destination, label);
 
   if (setSelector && [_source respondsToSelector:setSelector])
     [_source performSelector:setSelector withObject:_destination];

@@ -72,8 +72,10 @@ void __dummy_GMAppKit_functionForLinking() {}
   windows = [unarchiver decodeObjectWithName:@"windows"];
   keyWindow = [unarchiver decodeObjectWithName:@"keyWindow"];
   mainWindow = [unarchiver decodeObjectWithName:@"mainWindow"];
+
   anObject = [unarchiver decodeObjectWithName:@"delegate"];
-  [self setDelegate:anObject];
+  if (anObject)
+    [self setDelegate:anObject];
 
 #if NeXT_GUI_LIBRARY
   mainMenu = [unarchiver decodeObjectWithName:@"mainMenu"];
@@ -105,10 +107,45 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (Class)classForModelArchiver
 {
-  return [NSApplication class];
+//  return [NSApplication class];
+  return isa;
 }
 
 @end /* NSApplication (GMArchiverMethods) */
+
+
+@implementation NSBox (GMArchiverMethods)
+- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+{
+  [super encodeWithModelArchiver:archiver];
+
+  [archiver encodeInt:[self borderType] withName:@"borderType"];
+  [archiver encodeInt:[self titlePosition] withName:@"titlePosition"];
+  [archiver encodeString:[self title] withName:@"title"];
+  [archiver encodeObject:[self titleFont] withName:@"titleFont"];
+  [archiver encodeObject:[self contentView] withName:@"contentView"];
+}
+
+- (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
+{
+  self = [super initWithModelUnarchiver:unarchiver];
+
+  [self setBorderType:[unarchiver decodeIntWithName:@"borderType"]];
+  [self setTitlePosition:[unarchiver decodeIntWithName:@"titlePosition"]];
+  [self setTitle:[unarchiver decodeStringWithName:@"title"]];
+  [self setTitleFont:[unarchiver decodeObjectWithName:@"titleFont"]];
+  [self setContentView:[unarchiver decodeObjectWithName:@"contentView"]];
+
+  return self;
+}
+
+- (Class)classForModelArchiver
+{
+//  return [NSBox class];
+  return isa;
+}
+
+@end /* NSBox (GMArchiverMethods) */
 
 
 @implementation NSButton (GMArchiverMethods)
@@ -165,7 +202,8 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (Class)classForModelArchiver
 {
-  return [NSButton class];
+//  return [NSButton class];
+  return isa;
 }
 
 @end /* NSButton (GMArchiverMethods) */
@@ -190,7 +228,8 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (Class)classForModelArchiver
 {
-  return [NSCell class];
+//  return [NSCell class];
+  return isa;
 }
 
 @end /* NSCell (GMArchiverMethods) */
@@ -298,7 +337,8 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (Class)classForModelArchiver
 {
-  return [NSColor class];
+//  return [NSColor class];
+  return isa;
 }
 
 @end /* NSColor (GMArchiverMethods) */
@@ -345,7 +385,8 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (Class)classForModelArchiver
 {
-  return [NSControl class];
+//  return [NSControl class];
+  return isa;
 }
 
 @end /* NSControl (GMArchiverMethods) */
@@ -365,7 +406,8 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (Class)classForModelArchiver
 {
-  return [NSCStringText class];
+//  return [NSCStringText class];
+  return isa;
 }
 
 @end /* NSCStringText (GMArchiverMethods) */
@@ -392,7 +434,8 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (Class)classForModelArchiver
 {
-  return [NSFont class];
+//  return [NSFont class];
+  return isa;
 }
 
 @end /* NSFont (GMArchiverMethods) */
@@ -423,7 +466,8 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (Class)classForModelArchiver
 {
-  return [NSImage class];
+//  return [NSImage class];
+  return isa;
 }
 
 @end /* NSImage (GMArchiverMethods) */
@@ -468,7 +512,8 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (Class)classForModelArchiver
 {
-  return [NSMenuItem class];
+//  return [NSMenuItem class];
+  return isa;
 }
 
 @end /* NSMenuItem (GMArchiverMethods) */
@@ -523,7 +568,8 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (Class)classForModelArchiver
 {
-  return [NSMenu class];
+//  return [NSMenu class];
+  return isa;
 }
 
 @end /* NSMenu (GMArchiverMethods) */
@@ -544,7 +590,8 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (Class)classForModelArchiver
 {
-  return [NSPopUpButton class];
+//  return [NSPopUpButton class];
+  return isa;
 }
 
 @end /* NSPopUpButton (GMArchiverMethods) */
@@ -568,7 +615,8 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (Class)classForModelArchiver
 {
-  return [NSResponder class];
+//  return [NSResponder class];
+  return isa;
 }
 
 @end /* NSResponder (GMArchiverMethods) */
@@ -631,7 +679,8 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (Class)classForModelArchiver
 {
-  return [NSTextField class];
+//  return [NSTextField class];
+  return isa;
 }
 
 @end /* NSTextField (GMArchiverMethods) */
@@ -696,7 +745,8 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (Class)classForModelArchiver
 {
-  return [NSView class];
+//  return [NSView class];
+  return isa;
 }
 
 @end /* NSView (GMArchiverMethods) */
@@ -777,7 +827,8 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (Class)classForModelArchiver
 {
-  return [NSWindow class];
+//  return [NSWindow class];
+  return isa;
 }
 
 @end /* NSWindow (GMArchiverMethods) */

@@ -32,6 +32,9 @@
 @interface NSApplication (GMArchiverMethods) <ModelCoding>
 @end
 
+@interface NSBox (GMArchiverMethods) <ModelCoding>
+@end
+
 @interface NSButton (GMArchiverMethods) <ModelCoding>
 @end
 
