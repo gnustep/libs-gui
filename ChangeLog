@@ -1,3 +1,17 @@
+Mon Feb 25 13:04:12 2002  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Source/NSInputManager.m ([+describeKeyStroke:withModifiers:]):
+	Output NumericPad-, not Numeric-, for a numeric pad key.
+	* Source/NSInputManager.m ([-handleKeyboardEvents:client:]): Do
+	not discard the NumericPad modifier flag when looking up
+	keystrokes.  Remove shift from flags when the keystroke is not a
+	function key.  Do not output function keys literally if they are
+	not bound to anything.
+	* Source/GSKeyBindingTable.m ([-bindKey:toAction:]): Simplified -
+	do not insert keybindings twice - with and without shift - if they
+	are not function keys.  Simplified comparisons and updates for
+	this change.  Fixed memory leak when overriding keybindings.
+
 Mon Feb 25 02:16:32 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	Rewritten the input manager keybinding engine to be a full blown
