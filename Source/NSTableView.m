@@ -38,6 +38,7 @@
 #import <AppKit/NSTextFieldCell.h>
 #import <AppKit/NSWindow.h>
 #import <AppKit/PSOperators.h>
+#import <AppKit/NSCachedImageRep.h>
 
 static NSNotificationCenter *nc = nil;
 
@@ -262,6 +263,7 @@ _isCellEditable (id delegate, NSArray *tableColumns,
   _allowsMultipleSelection = NO;
   _allowsColumnSelection = YES;
   _allowsColumnResizing = YES;
+  _allowsColumnReordering = YES;
   _editedColumn = -1;
   _editedRow = -1;
   _selectedColumn = -1;
@@ -717,13 +719,12 @@ _isCellEditable (id delegate, NSArray *tableColumns,
 
 - (void) setAllowsColumnReordering: (BOOL)flag
 {
-  // TODO
+  _allowsColumnReordering = flag;
 }
 
 - (BOOL) allowsColumnReordering
 {
-  // TODO
-  return NO;
+  return _allowsColumnReordering;
 }
 
 - (void) setAllowsColumnResizing: (BOOL)flag
@@ -2843,16 +2844,111 @@ byExtendingSelection: (BOOL)flag
 }
 
 - (void) _userResizedTableColumn: (int)index
+			   width: (float)width
+{
+  [[_tableColumns objectAtIndex: index] setWidth: width];
+}
+
+- (float *) _columnOrigins
+{
+  return _columnOrigins;
+}
+/*
+- (void) _userResizedTableColumn: (int)index
 		       leftWidth: (float)lwidth
 		      rightWidth: (float)rwidth
 {
-  _tilingDisabled = YES;
-  [[_tableColumns objectAtIndex: index] setWidth: lwidth];
-  [[_tableColumns objectAtIndex: index + 1] setWidth: rwidth];
-  _tilingDisabled = NO;
-  [self tile];
+  [self _userResizedTableColumn: index
+	width:lwidth];
 }
 
+- (void) _userResizedTableColumn: (int)index
+			   width: (float)width
+{
+  int i;
+  //  NSRect oldColumnRect = [self rectOfColumn: index];
+  //  NSRect newColumnRect;
+  NSRect oldLeftRect, newLeftRect;
+  NSTableColumn *column = [_tableColumns objectAtIndex: index];
+  float deltaWidth = width - [column width];
+  NSImage *cache;
+  NSImageRep *rep;
+  
+  _tilingDisabled = YES;
+
+  oldLeftRect.origin.x = _columnOrigins[index+1];
+  oldLeftRect.origin.y = _bounds.origin.y;
+  oldLeftRect.size.height = _bounds.size.height;
+  oldLeftRect.size.width = (_bounds.size.width +
+			    _bounds.origin.x -
+			    oldLeftRect.origin.x);
+
+  newLeftRect = oldLeftRect;
+  oldLeftRect = NSIntersectionRect(oldLeftRect, 
+				   [self visibleRect]);
+
+  rep =
+    [[NSCachedImageRep allocWithZone:[self zone]] 
+       initWithSize:oldLeftRect.size 
+       depth:[NSWindow defaultDepthLimit] 
+       separate:YES 
+       alpha:NO];
+  cache = [[NSImage allocWithZone:[self zone]] 
+	    initWithSize:oldLeftRect.size];
+  [cache addRepresentation: rep];
+  [cache lockFocusOnRepresentation: rep];
+  PScomposite(NSMinX(oldLeftRect), NSMinY(oldLeftRect),
+	      NSWidth(oldLeftRect), NSHeight(oldLeftRect),
+	      [[self window] gState], 0.0, 0.0, NSCompositeCopy);
+  [cache unlockFocus];
+
+
+  newLeftRect.origin.x += deltaWidth;
+  [column setWidth: width];
+  
+  // we need to update :
+  //   _columnOrigins
+
+  for(i = index + 1; i < _numberOfColumns; i++)
+    {
+      _columnOrigins[i] += deltaWidth;
+    }
+  // to call :
+  //   setFrameSize on self
+  //   setFrameSize on _headerView
+  {
+    NSSize frameSize = _frame.size; // frameSize == [self frame].size
+    frameSize.width += deltaWidth;
+    [self setFrameSize: frameSize];
+    if (_headerView != nil)
+      {
+	[_headerView setFrameSize: 
+		       NSMakeSize (_frame.size.width,
+				   [_headerView frame].size.height)];
+	[_headerView setNeedsDisplay: YES];
+      }
+  }
+
+  // to copy what's needed
+  {
+    NSSize commonSize;
+    newLeftRect = NSIntersectionRect(newLeftRect, [self visibleRect]);
+    commonSize.width = MIN(NSWidth(newLeftRect), 
+			   NSWidth(oldLeftRect));
+    commonSize.height = NSHeight(newLeftRect);
+    [rep setSize: commonSize];
+    [self lockFocus];
+    [rep drawAtPoint: newLeftRect.origin];
+    [self unlockFocus];
+  }
+  [self setNeedsDisplay: NO];
+
+  // to call
+  //   drawRect where needed...
+  //  sleep(2);
+  _tilingDisabled = NO;
+}
+*/
 // Return YES on success; NO if no selectable cell found.
 -(BOOL) _editNextEditableCellAfterRow: (int)row
 			       column: (int)column
