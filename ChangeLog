@@ -1,3 +1,10 @@
+Wed Feb  6 14:12:51 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSLayoutManager.m: Removed old unused unfinished layout
+	code.
+	* Headers/gnustep/gui/NSLayoutManager.h: Removed the corresponding
+	declarations.
+
 2002-02-06  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSWindow.m: ([-sendEvent:]) handle mouse down in window if
