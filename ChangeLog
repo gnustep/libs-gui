@@ -1,3 +1,12 @@
+2001-12-07  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSWorkspace.m
+	[_workspaceApplication] renamed defaults key for Workspace
+	application to GSWorkspaceApplication.
+	* Documentation/gsdoc/DefaultsSummary.gsdoc
+	Documented NSWorkspace defaults entry GSWorkspaceApplication
+	and the new xgps defaults entry GSFontMask.
+	
 2001-12-07  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSImage.m (-drawRepresentation:inRect:): Draw
