@@ -368,9 +368,6 @@ NSUnRegisterServicesProvider(NSString *name);
 APPKIT_EXPORT int
 NSApplicationMain(int argc, const char **argv);
 
-APPKIT_EXPORT NSString*
-NSOpenStepRootDirectory(void);
-
 APPKIT_EXPORT void 
 NSShowSystemInfoPanel(NSDictionary *options);
 

@@ -39,16 +39,16 @@
 
 /* Structure to store common information about a tiff. */
 typedef struct {
-    u_long  imageNumber;
-    u_long  subfileType;
-    u_long  width;
-    u_long  height;
-    u_short bitsPerSample;    /* number of bits per data channel */
-    u_short samplesPerPixel;  /* number of channels per pixel */
-    u_short planarConfig;     /* meshed or separate */
-    u_short photoInterp;      /* photometric interpretation of bitmap data, */
-    u_short compression;
-    u_short extraSamples;     /* Alpha */
+    uint32  imageNumber;
+    uint32  subfileType;
+    uint32  width;
+    uint32  height;
+    uint16 bitsPerSample;    /* number of bits per data channel */
+    uint16 samplesPerPixel;  /* number of channels per pixel */
+    uint16 planarConfig;     /* meshed or separate */
+    uint16 photoInterp;      /* photometric interpretation of bitmap data, */
+    uint16 compression;
+    uint16 extraSamples;     /* Alpha */
     int     assocAlpha;
     int     quality;	      /* compression quality (for jpeg) 1 to 255 */
     int     numImages;	      /* number of images in tiff */
@@ -56,10 +56,10 @@ typedef struct {
 } NSTiffInfo; 
 
 typedef struct {
-    u_int    size;
-    u_short *red;
-    u_short *green;
-    u_short *blue;
+    uint32 size;
+    uint16 *red;
+    uint16 *green;
+    uint16 *blue;
 } NSTiffColormap;
 
 typedef char* realloc_data_callback(char* data, long size);

@@ -188,10 +188,12 @@ init(int argc, char** argv)
     {
       signal(sym, ihandler);
     }
+#ifndef __MINGW__
   signal(SIGPIPE, SIG_IGN);
   signal(SIGTTOU, SIG_IGN);
   signal(SIGTTIN, SIG_IGN);
   signal(SIGHUP, SIG_IGN);
+#endif
   signal(SIGTERM, ihandler);
 
   if (debug == 0)
@@ -199,6 +201,7 @@ init(int argc, char** argv)
       /*
        *  Now fork off child process to run in background.
        */
+#ifndef __MINGW__
       switch (fork())
 	{
 	  case -1:
@@ -223,6 +226,7 @@ init(int argc, char** argv)
 	      }
 	    exit(0);
 	}
+#endif
     }
 }
 

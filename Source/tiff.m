@@ -259,7 +259,7 @@ NSTiffInfo *
 NSTiffGetInfo(int imageNumber, TIFF* image)
 {
   NSTiffInfo* info;
-  u_short *sample_info = NULL;
+  uint16 *sample_info = NULL;
 
   if (image == NULL)
     return NULL;
@@ -337,9 +337,9 @@ NSTiffRead(TIFF* image, NSTiffInfo* info, char* data)
   int     row, col;
   int     maxval;
   int	  error = 0;
-  u_char* outP;
-  u_char* buf;
-  u_char* raster;
+  uint8* outP;
+  uint8* buf;
+  uint8* raster;
   NSTiffColormap* map;
   int scan_line_size;
 
@@ -358,7 +358,7 @@ NSTiffRead(TIFF* image, NSTiffInfo* info, char* data)
   scan_line_size = TIFFScanlineSize(image);
   buf = _TIFFmalloc(scan_line_size);
   
-  raster = (u_char *)data;
+  raster = (uint8 *)data;
   outP = raster;
   switch (info->photoInterp) 
     {
@@ -388,7 +388,7 @@ NSTiffRead(TIFF* image, NSTiffInfo* info, char* data)
       {
 	for (row = 0; row < info->height; ++row) 
 	  {
-	    u_char *inP;
+	    uint8 *inP;
 	    READ_SCANLINE(0);
 	    inP = buf;
 	    for (col = 0; col < info->width; col++) 

@@ -1,3 +1,16 @@
+2001-08-02  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/gnustep/gui/NSApplication.h: Remove duplicate
+	NSOpenStepRoorDirectory decl.
+	
+	* Headers/gnustep/gui/nsimage-tiff.h: Use TIFF defined types
+	for variables.
+	* Source/tiff.m: Likewise.
+	
+	* Model/GNUmakefile: Add -lobjc to ...LIBRARIES_DEPEND.
+
+	* Tools/example.m: Don't use certain signals and fork on MINGW.
+
 2001-08-01  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/gnustep/gui/NSEvent.h
