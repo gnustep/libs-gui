@@ -53,6 +53,10 @@ static Class		fontPanelClass = Nil;
 - (GSFontInfo *) fontInfo;
 @end
 
+@interface NSFontManager (GNUstepBackend)
+- (BOOL) _includeFont: (NSString*)fontName;
+@end
+
 @implementation NSFontManager
 
 /*
@@ -572,7 +576,7 @@ static Class		fontPanelClass = Nil;
 - (NSFont*) convertWeight: (BOOL)upFlag
 		   ofFont: (NSFont*)fontObject
 {
-  NSFont *newFont;
+  NSFont *newFont = nil;
   NSString *fontName = nil;
   NSFontTraitMask trait = [self traitsOfFont: fontObject];
   float size = [fontObject pointSize];
@@ -589,10 +593,6 @@ static Class		fontPanelClass = Nil;
       // sometimes it says 0 to 9 and sometimes 0 to 15
       int next_w = 15;
 
-      // Correct the trait
-      if (w == 8)
-	trait |= NSBoldFontMask;
-
       for (i = 0; i < [fontDefs count]; i++)
 	{
 	  NSArray *fontDef = [fontDefs objectAtIndex: i];
@@ -606,16 +606,29 @@ static Class		fontPanelClass = Nil;
 	    }
 	}
 
-      w = next_w;
+      if (fontName == nil)
+        {
+	  // Not found, try again with changed trait
+	  trait |= NSBoldFontMask;
+	  
+	  for (i = 0; i < [fontDefs count]; i++)
+	    { 
+	      NSArray *fontDef = [fontDefs objectAtIndex: i];
+	      int w1 = [[fontDef objectAtIndex: 2] intValue];
+
+	      if (w1 > w && w1 < next_w && 
+		  [[fontDef objectAtIndex: 3] unsignedIntValue] == trait)
+	        {
+		  next_w = w1;
+		  fontName = [fontDef objectAtIndex: 0];
+		}
+	    }
+	}
     }
   else
     {
       int i;
       int next_w = 0;
-
-      // Correct the trait
-      if (w == 9)
-	trait &= ~NSBoldFontMask;
 
       for (i = 0; i < [fontDefs count]; i++)
 	{
@@ -630,18 +643,30 @@ static Class		fontPanelClass = Nil;
 	    }
 	}
 
-      w = next_w;
+      if (fontName == nil)
+        {
+	  // Not found, try again with changed trait
+	  trait &= ~NSBoldFontMask;
+
+	  for (i = 0; i < [fontDefs count]; i++)
+	    {
+	      NSArray *fontDef = [fontDefs objectAtIndex: i];
+	      int w1 = [[fontDef objectAtIndex: 2] intValue];
+	      
+	      if (w1 < w && w1 > next_w && 
+		  [[fontDef objectAtIndex: 3] unsignedIntValue] == trait)
+	        {
+		  next_w = w1;
+		  fontName = [fontDef objectAtIndex: 0];
+		}
+	    }
+	}
     }
 
   if (fontName != nil)
     newFont = [NSFont fontWithName: fontName
 		      size: size];
-  else 
-    newFont = [self fontWithFamily: family 
-		    traits: trait
-		    weight: w
-		    size: size];
-  
+
   if (newFont == nil)
     return fontObject;
   else 
