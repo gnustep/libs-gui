@@ -1,3 +1,7 @@
+2001-03-22  Adam Fedor  <fedor@gnu.org>
+
+	* Version: 0.6.8
+
 2001-03-22  Mirko Viviani  <mirko.viviani@rccr.cremona.it>
 
 	* Source/NSBrowser.m ([NSBrowser -_unloadFromColumn:]): fix index out
