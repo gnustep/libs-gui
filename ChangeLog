@@ -1,5 +1,6 @@
 2000-04-27  Jonathan Gapen  <jagapen@whitewater.chem.wisc.edu>
 
+	* Headers/gnustep/gui/NSColorWell.h: Add ivar, prepend underscores.
 	* Images/common_ColorSwatch.tiff: New file.
 	* Images/GNUmakefile: Update.
 	* Model/IMLoading.m: Bugfix in [+loadGModelNamed:owner:] to invoke
