@@ -334,6 +334,7 @@ static Class rulerViewClass = nil;
     }
 
   [_contentView scrollToPoint: point];
+  [window update];
 }
 
 - (void) reflectScrolledClipView: (NSClipView*)aClipView

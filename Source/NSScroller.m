@@ -704,9 +704,9 @@ static BOOL preCalcValues = NO;
 
   [self drawKnobSlot];
   [self drawKnob];
+
   [self drawArrow: NSScrollerDecrementArrow highlight: NO];
   [self drawArrow: NSScrollerIncrementArrow highlight: NO];
-
 }
 
 - (void) drawArrow: (NSScrollerArrow)whichButton highlight: (BOOL)flag
@@ -825,8 +825,11 @@ static BOOL preCalcValues = NO;
 		0 : 2 * (buttonsWidth + buttonsDistance));
 	  height = knobHeight;
 	  width = buttonsWidth;
+#if 0
 	  if (_isHorizontal)	// keeps horiz knob off of the buttons
 	    y++;
+#endif
+	  x = buttonsDistance;
 	  break;
 	}
 
@@ -865,6 +868,7 @@ static BOOL preCalcValues = NO;
 	  return NSZeroRect;
 	width = buttonsWidth;
 	height = buttonsWidth;
+	x = buttonsDistance;
 	break;
 
       case NSScrollerIncrementLine:
@@ -883,6 +887,7 @@ static BOOL preCalcValues = NO;
 	  return NSZeroRect;
 	height = buttonsWidth;
 	width = buttonsWidth;
+	x = buttonsDistance;
 	break;
 
       case NSScrollerNoPart:
