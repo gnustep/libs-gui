@@ -170,8 +170,6 @@ NSGraphicsContext	*GSCurrentContext();
  */
 
 @interface NSGraphicsContext (Ops)
-/* initialize the backend */
-+ (void)initializeBackend;
 /* ----------------------------------------------------------------------- */
 /* Color operations */
 /* ----------------------------------------------------------------------- */
@@ -444,9 +442,16 @@ NSGraphicsContext	*GSCurrentContext();
 - (void) DPScurrentserverdevice: (void **)serverptr;
 - (void) DPScurrentwindowdevice: (int)win : (void **)windowptr;
 
+@end
+
+/* Common graphics functions */
+@interface NSGraphicsContext (NSGraphics) 
 /* ----------------------------------------------------------------------- */
 /* NSGraphics Ops */	
 /* ----------------------------------------------------------------------- */
+/* initialize the backend */
++ (void) initializeBackend;
+
 /*
  * Rectangle Drawing Functions
  */
@@ -458,6 +463,9 @@ NSGraphicsContext	*GSCurrentContext();
 - (void) NSRectFillList: (const NSRect *)rects : (int) count;
 - (void) NSRectFillListWithGrays: (const NSRect *)rects : (const float *)grays
 				:(int) count;
+- (NSRect) NSDrawTiledRects: (NSRect) aRect : (const NSRect) clipRect  
+			   : (const NSRectEdge *) sides 
+			   :  (const float *)grays : (int) count;
 
 /*
  * Draw a Bordered Rectangle
@@ -466,9 +474,6 @@ NSGraphicsContext	*GSCurrentContext();
 - (void) NSDrawGrayBezel: (const NSRect) aRect : (const NSRect) clipRect;
 - (void) NSDrawBezel: (const NSRect) aRect : (const NSRect) clipRect;
 - (void) NSDrawGroove: (const NSRect) aRect : (const NSRect) clipRect;
-- (NSRect) NSDrawTiledRects: (NSRect) aRect : (const NSRect) clipRect  
-			   : (const NSRectEdge *) sides 
-			   :  (const float *)grays : (int) count;
 - (void) NSDrawWhiteBezel: (const NSRect) aRect :  (const NSRect) clipRect;
 - (void) NSDottedFrameRect: (const NSRect) aRect;
 - (void) NSFrameRect: (const NSRect) aRect;
@@ -503,9 +508,9 @@ NSGraphicsContext	*GSCurrentContext();
 
 /* Context helper wraps */
 - (unsigned int) GSWDefineAsUserObj;
-- (void) GSWViewIsFlipped: (BOOL) flipped;
+- (void) GSWSetViewIsFlipped: (BOOL) flipped;
+- (BOOL) GSWViewIsFlipped;
 - (NSWindowDepth) GSWindowDepthForScreen: (int) screen;
-
 - (const NSWindowDepth *) GSAvailableDepthsForScreen: (int) screen;
 
 @end
