@@ -634,44 +634,44 @@ restart:
 
 NS_DURING
   curLayoutManager = layoutManager;
- curTextContainer = textContainer;
- curTextStorage = [layoutManager textStorage];
+  curTextContainer = textContainer;
+  curTextStorage = [layoutManager textStorage];
 
 /*	printf("*** layout some stuff |%@|\n",curTextStorage);
 	[curLayoutManager _glyphDumpRuns];*/
 
- curGlyph = glyphIndex;
+  curGlyph = glyphIndex;
 
- [self _cacheClear];
+  [self _cacheClear];
 
- newParagraph = NO;
- if (!curGlyph)
-   newParagraph = YES;
+  newParagraph = NO;
+  if (!curGlyph)
+    newParagraph = YES;
 
- ret = 0;
- curPoint = NSMakePoint(0,NSMaxY(previousLineFragRect));
- while (1)
-   {
-     ret = [self layoutLineNewParagraph: newParagraph];
-     if (ret == 3)
-       {
-	 newParagraph = YES;
-	 ret = 0;
-       }
-     else
-       newParagraph = NO;
-     if (ret)
-       break;
+  ret = 0;
+  curPoint = NSMakePoint(0,NSMaxY(previousLineFragRect));
+  while (1)
+    {
+      ret = [self layoutLineNewParagraph: newParagraph];
+      if (ret == 3)
+	{
+	  newParagraph = YES;
+	  ret = 0;
+	}
+      else
+	newParagraph = NO;
+      if (ret)
+	break;
 
-     if (howMany)
-       if (!--howMany)
-	 break;
+      if (howMany)
+	if (!--howMany)
+	  break;
    }
 
- *nextGlyphIndex = curGlyph;
+  *nextGlyphIndex = curGlyph;
 NS_HANDLER
   [lock unlock];
-  printf("got exception %@\n",localException);
+//  printf("got exception %@\n",localException);
   [localException raise];
 NS_ENDHANDLER
   [lock unlock];

@@ -830,15 +830,25 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
   int cpos, pos = charRange.location + charRange.length - 1;
   int i, target;
 
-  /* TODO: should this really be valid? */
+  /* TODO: should this really be valid?
+
+  This is causing all kinds of problems when border glyph ranges are passed
+  to other functions. Better to keep the layout manager clean of all this and
+  let NSTextView deal with it.
+  */
+#if 1
   if (charRange.length == 0 && charRange.location == [[_textStorage string] length])
     {
       if (actualCharRange)
 	*actualCharRange = NSMakeRange([[_textStorage string] length], 0);
       return NSMakeRange([self numberOfGlyphs], 0);
     }
+#endif
+  /* TODO: this case is also dubious, but it makes sense to return like this,
+  so it's mostly the caller's fault */
   if (charRange.length == 0)
     {
+      NSLog(@"Warning: %s called with zero-length range", __PRETTY_FUNCTION__);
       if (actualCharRange)
 	*actualCharRange = NSMakeRange(0, 0);
       return NSMakeRange(0, 0);
@@ -1316,7 +1326,8 @@ it should still be safe. might lose opportunities to merge runs, though.
 //	printf("_doLayout\n");
   for (i = 0, tc = textcontainers; i < num_textcontainers; i++, tc++)
     {
-//		printf("_doLayout in %i\n", i);
+/*		printf("_doLayout in %i  (size (%g %g))\n",
+			i, [tc->textContainer containerSize].width, [tc->textContainer containerSize].height);*/
       if (tc->complete)
 	{
 //			printf("  already done\n");
@@ -1335,7 +1346,7 @@ it should still be safe. might lose opportunities to merge runs, though.
 			previousLineFragmentRect: prev
 			nextGlyphIndex: &next
 			numberOfLineFragments: 0];
-	  //			printf("  got j = %i\n", j);
+//			printf("  got j = %i\n", j);
 	  if (j)
 	    break;
 	}
@@ -1873,6 +1884,7 @@ forStartOfGlyphRange: (NSRange)glyphRange
   [self _invalidateLayoutFromContainer: index];
   [tc->textContainer setLayoutManager: nil];
   [tc->textContainer release];
+
   num_textcontainers--;
   for (i = index; i < num_textcontainers; i++)
     textcontainers[i] = textcontainers[i + 1];
@@ -1987,6 +1999,8 @@ forStartOfGlyphRange: (NSRange)glyphRange
    * The text storage is owning us - it retains us.
    */
   _textStorage = aTextStorage;
+
+  /* TODO: tell all the text containers about that change! */
 }
 
 /**
