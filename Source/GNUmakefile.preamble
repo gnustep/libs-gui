@@ -71,6 +71,14 @@ ADDITIONAL_INCLUDE_DIRS += -I../Headers/Additions -I../Headers \
 # ADDITIONAL_LIB_DIRS = 
 
 #
+# Solaris [7,8] systems cannot load tiff files due to some problem compiling
+# this file with optimization
+#
+ifeq ($(findstring solaris, $(GNUSTEP_TARGET_OS)), solaris)
+NSBitmapImageRep+JPEG.m_FILE_FILTER_OUT_FLAGS = -O%
+endif
+
+#
 # Flags dealing with installing and uninstalling
 #
 

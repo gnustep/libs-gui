@@ -1,3 +1,8 @@
+2004-10-01  Adam Fedor  <fedor@gnu.org>
+
+	* Source/GNUmakefile.preamble: Add filter out flags for
+	compilation of some files on Solaris.
+
 2004-09-27 17:49  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSServicesManager.m (NSPerformService): Check whether the
