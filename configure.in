@@ -93,7 +93,7 @@ AC_SUBST(GNUSTEP_GUI_SUBMINOR_VERSION)
 AC_SUBST(ADDITIONAL_LIB_DIRS)
 AC_SUBST(ADDITIONAL_INCLUDE_DIRS)
 
-AC_OUTPUT(config.make gui.make)
+AC_OUTPUT(config.make gui.make Headers/gnustep/gui/GSVersion.h)
 
 
 
