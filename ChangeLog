@@ -1,3 +1,10 @@
+Sun Nov 22 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* NSClipView.m: ([-setDocumentView:]) Ignore attempt to assign a
+	view that is already the document view - could previously result
+	in the current document view being deallocated before it was
+	put back in place - thus crashing the app.
+
 1998-11-22  03:44  Lyndon Tremblay  <tremblay2@home.com>
 
 	* GMAppKit.m: [-_unconditionallyResetNeedsDisplayInAllViews] 
