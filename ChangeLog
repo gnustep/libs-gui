@@ -1,3 +1,17 @@
+Tue Jun 15  9:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSWindow.m: Handle dnd registration for the window by using
+	the window view (the superview of the content view).
+	* Source/NSView.m: Incorporate code for keeping track of dnd
+	registered views.  Add support for notifying the graphics context
+	of changes to the types registered by views in each window.
+	* Source/GSDragManager.m: Removed - merged into NSView.m
+	* Source/NSGraphicsContext.m: Added dnd registration methods.
+	* Source/GNUmakefile: Removed GSDragManager.
+	* Headers/AppKit/GSDragManager.h: Removed
+	* Headers/AppKit/NSView.h: Added GSGetDragTypes()
+	* Headers/AppKit/NSGraphicsContext.h: Added dnd registration methods.
+
 1999-06-14  Michael Hanni  <mhanni@sprintmail.com>
 
 	* Model/GMAppKit.m: Minor adjustments for MacOS-X so nib2model
