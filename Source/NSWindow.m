@@ -494,6 +494,20 @@ static NSMapTable* windowmaps = NULL;
  */
 - (void) endEditingFor: (id)anObject
 {
+  NSText *t = [self fieldEditor: NO 
+		    forObject: anObject];
+
+  if (t && (first_responder == t))
+    {
+      [[NSNotificationCenter defaultCenter] 
+	postNotificationName: NSTextDidEndEditingNotification 
+	object: t];
+      [t setText: @""];
+      [t setDelegate: nil];
+      [t removeFromSuperview];
+      first_responder = self;
+      [first_responder becomeFirstResponder];
+    }
 }
 
 - (NSText *) fieldEditor: (BOOL)createFlag forObject: (id)anObject
