@@ -1,3 +1,9 @@
+Sat Jun  9 02:54:37 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSTextView.m (NSTEXTVIEW_SYNC): Use full selector as
+	argument to the macro to prevent warning/problems with new
+	compilers.  Updated all calling code.
+	
 2000-06-08  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSBitmapImageRep.m
