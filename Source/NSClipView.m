@@ -44,6 +44,8 @@
 
 - (void)setDocumentView:(NSView*)aView
 {
+  if (_documentView == aView)
+    return;
   if (_documentView)
     [_documentView removeFromSuperview];
 
