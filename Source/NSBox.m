@@ -61,31 +61,31 @@
 {
   [super initWithFrame: frameRect];
 	
-  cell = [[NSTextFieldCell alloc] initTextCell: @"Title"];
-  [cell setAlignment: NSCenterTextAlignment];
-  [cell setBordered: NO];
-  [cell setEditable: NO];
-  [cell setDrawsBackground: YES];
-  [cell setBackgroundColor: [window backgroundColor]];
-  offsets.width = 5;
-  offsets.height = 5;
-  border_rect = bounds;
-  border_type = NSGrooveBorder;
-  title_position = NSAtTop;
-  title_rect = NSZeroRect;
+  _cell = [[NSTextFieldCell alloc] initTextCell: @"Title"];
+  [_cell setAlignment: NSCenterTextAlignment];
+  [_cell setBordered: NO];
+  [_cell setEditable: NO];
+  [_cell setDrawsBackground: YES];
+  [_cell setBackgroundColor: [window backgroundColor]];
+  _offsets.width = 5;
+  _offsets.height = 5;
+  _border_rect = bounds;
+  _border_type = NSGrooveBorder;
+  _title_position = NSAtTop;
+  _title_rect = NSZeroRect;
   [self setAutoresizesSubviews: NO];
-  content_view = [NSView new];
-  [super addSubview: content_view];
-  [content_view setFrame: [self calcSizesAllowingNegative: NO]];
-  [content_view release];
+  _content_view = [NSView new];
+  [super addSubview: _content_view];
+  [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
+  [_content_view release];
 
   return self;
 }
 
 - (void) dealloc
 {
-  if (cell) 
-    [cell release];
+  if (_cell) 
+    [_cell release];
 
   [super dealloc];
 }
@@ -95,20 +95,20 @@
 //
 - (NSRect) borderRect
 {
-  return border_rect;
+  return _border_rect;
 }
 
 - (NSBorderType) borderType
 {
-  return border_type;
+  return _border_type;
 }
 
 - (void) setBorderType: (NSBorderType)aType
 {
-  if (border_type != aType)
+  if (_border_type != aType)
     {
-      border_type = aType;
-      [content_view setFrame: [self calcSizesAllowingNegative: NO]];
+      _border_type = aType;
+      [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
       [self setNeedsDisplay: YES];
     }
 }
@@ -116,8 +116,8 @@
 // TODO: implement the macosx behaviour for setTitle:
 - (void) setTitle: (NSString *)aString
 {
-  [cell setStringValue: aString];
-  [content_view setFrame: [self calcSizesAllowingNegative: NO]];
+  [_cell setStringValue: aString];
+  [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
   [self setNeedsDisplay: YES];
 }
 
@@ -125,44 +125,44 @@
 
 - (void) setTitleFont: (NSFont *)fontObj
 {
-  [cell setFont: fontObj];
-  [content_view setFrame: [self calcSizesAllowingNegative: NO]];
+  [_cell setFont: fontObj];
+  [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
   [self setNeedsDisplay: YES];
 }
 
 - (void) setTitlePosition: (NSTitlePosition)aPosition
 {
-  if (title_position != aPosition)
+  if (_title_position != aPosition)
     {
-      title_position = aPosition;
-      [content_view setFrame: [self calcSizesAllowingNegative: NO]];
+      _title_position = aPosition;
+      [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
       [self setNeedsDisplay: YES];
     }
 }
 
 - (NSString*) title
 {
-  return [cell stringValue];
+  return [_cell stringValue];
 }
 
 - (id) titleCell
 {
-  return cell;
+  return _cell;
 }
 
 - (NSFont*) titleFont
 {
-  return [cell font];
+  return [_cell font];
 }
 
 - (NSTitlePosition) titlePosition
 {
-  return title_position;
+  return _title_position;
 }
 
 - (NSRect) titleRect
 {
-  return title_rect;
+  return _title_rect;
 }
 
 //
@@ -170,21 +170,21 @@
 //
 - (id) contentView
 {
-  return content_view;
+  return _content_view;
 }
 
 - (NSSize) contentViewMargins
 {
-  return offsets;
+  return _offsets;
 }
 
 - (void) setContentView: (NSView*)aView
 {
   if (aView)
     {
-      [super replaceSubview: content_view with: aView];
-      content_view = aView;
-      [content_view setFrame: [self calcSizesAllowingNegative: NO]];
+      [super replaceSubview: _content_view with: aView];
+      _content_view = aView;
+      [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
     }
 }
 
@@ -193,8 +193,8 @@
   NSAssert(offsetSize.width >= 0 && offsetSize.height >= 0,
 	@"illegal margins supplied");
 
-  offsets = offsetSize;
-  [content_view setFrame: [self calcSizesAllowingNegative: NO]];
+  _offsets = offsetSize;
+  [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
   [self setNeedsDisplay: YES];
 
 }
@@ -205,12 +205,12 @@
 - (void) setFrame: (NSRect)frameRect
 {
   [super setFrame: frameRect];
-  [content_view setFrame: [self calcSizesAllowingNegative: NO]];
+  [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
 }
 - (void) setFrameSize: (NSSize)newSize
 {
   [super setFrameSize: newSize];
-  [content_view setFrame: [self calcSizesAllowingNegative: NO]];
+  [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
 }
 - (void) setFrameFromContentFrame: (NSRect)contentFrame
 {
@@ -221,8 +221,8 @@
   NSAssert(contentFrame.size.width >= 0 && contentFrame.size.height >= 0,
 	@"illegal content frame supplied");
 
-  if ([self superview])
-    r = [[self superview] convertRect: r fromView: self];
+  if (super_view)
+    r = [super_view convertRect: r fromView: self];
   
   // Add the difference to the frame
   f.size.width = f.size.width + (contentFrame.size.width - r.size.width);
@@ -231,18 +231,18 @@
   f.origin.y = f.origin.y + (contentFrame.origin.y - r.origin.y);
 
   [self setFrame: f];
-  [content_view setFrame: [self calcSizesAllowingNegative: NO]];  
+  [_content_view setFrame: [self calcSizesAllowingNegative: NO]];  
 }
 
 - (void) sizeToFit
 {
   NSRect f;
 
-  if ([content_view respondsToSelector: @selector(sizeToFit)])
-    [content_view sizeToFit];
-  else // content_view !respondsToSelector: sizeToFit
+  if ([_content_view respondsToSelector: @selector(sizeToFit)])
+    [_content_view sizeToFit];
+  else // _content_view !respondsToSelector: sizeToFit
     {   
-      NSArray *subviewArray = [content_view subviews];
+      NSArray *subviewArray = [_content_view subviews];
       if ([subviewArray count])
 	{
 	  id o, e = [subviewArray objectEnumerator];
@@ -260,39 +260,39 @@
 	      if ((f.origin.y + f.size.height) > (r.origin.y + r.size.height))
 		r.size.height = (f.origin.y + f.size.height) - r.origin.y;
 	    }
-	  [content_view setBoundsOrigin: r.origin];
-	  r.size = [self convertSize: r.size fromView: content_view];
-	  [content_view setAutoresizesSubviews: NO];
-	  [content_view setFrameSize: r.size];
-	  [content_view setAutoresizesSubviews: YES];
+	  [_content_view setBoundsOrigin: r.origin];
+	  r.size = [self convertSize: r.size fromView: _content_view];
+	  [_content_view setAutoresizesSubviews: NO];
+	  [_content_view setFrameSize: r.size];
+	  [_content_view setAutoresizesSubviews: YES];
 	}
-      else // content_view has no subviews
+      else // _content_view has no subviews
 	{
-	  [content_view setFrame: NSZeroRect];
+	  [_content_view setFrame: NSZeroRect];
 	}
     }
 
-  f = [content_view frame];
+  f = [_content_view frame];
 
   // The box width should be enough to display the title
-  if (title_position != NSNoTitle)
+  if (_title_position != NSNoTitle)
     {
-      NSSize titleSize = [cell cellSize];
+      NSSize titleSize = [_cell cellSize];
       titleSize.width += 1;
       if (f.size.width < titleSize.width)
 	f.size.width = titleSize.width;
     }
   
-  if ([self superview])
-    [self setFrameFromContentFrame: [self convertRect: f toView: [self superview]]];
-  else // ![self superview]
+  if (super_view != nil)
+    [self setFrameFromContentFrame: [self convertRect: f toView: super_view]];
+  else // super_view == nil
     [self setFrameFromContentFrame: f]; 
 }
 
 - (void) resizeWithOldSuperviewSize: (NSSize)oldSize
 {
   [super resizeWithOldSuperviewSize: oldSize];
-  [content_view setFrame: [self calcSizesAllowingNegative: NO]];
+  [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
 }
 
 //
@@ -300,19 +300,19 @@
 //
 - (void) addSubview: (NSView*)aView
 {
-  [content_view addSubview: aView];
+  [_content_view addSubview: aView];
 }
 
 - (void) addSubview: (NSView*)aView
          positioned: (NSWindowOrderingMode)place
          relativeTo: (NSView*)otherView
 {
-  [content_view addSubview: aView positioned: place relativeTo: otherView];
+  [_content_view addSubview: aView positioned: place relativeTo: otherView];
 }
 
 - (void) replaceSubview: (NSView *)aView with: (NSView*) newView
 {
-  [content_view replaceSubview: aView with: newView];
+  [_content_view replaceSubview: aView with: newView];
 }
 
 //
@@ -326,36 +326,27 @@
   NSRectFill(rect);
 
   // Draw border
-  switch (border_type)
+  switch (_border_type)
     {
     case NSNoBorder: 
       break;
     case NSLineBorder: 
       [[NSColor controlDarkShadowColor] set];
-      NSFrameRect(border_rect);
+      NSFrameRect(_border_rect);
       break;
     case NSBezelBorder: 
-      NSDrawGrayBezel(border_rect, rect);
+      NSDrawGrayBezel(_border_rect, rect);
       break;
     case NSGrooveBorder: 
-      NSDrawGroove(border_rect, rect);
+      NSDrawGroove(_border_rect, rect);
       break;
     }
 
   // Draw title
-  switch (title_position)
+  if (_title_position != NSNoTitle)
     {
-    case NSNoTitle: 
-      // Nothing to do
-      break;
-    case NSAboveTop: 
-    case NSAtTop: 
-    case NSBelowTop: 
-    case NSAboveBottom: 
-    case NSAtBottom: 
-    case NSBelowBottom: 
-      [cell setBackgroundColor: [window backgroundColor]];
-      [cell drawWithFrame: title_rect inView: self];
+      [_cell setBackgroundColor: [window backgroundColor]];
+      [_cell drawWithFrame: _title_rect inView: self];
     }
 }
 
@@ -371,31 +362,44 @@
 {
   [super encodeWithCoder: aCoder];
 
-  [aCoder encodeObject: cell];
-  [aCoder encodeObject: content_view];
-  [aCoder encodeSize: offsets];
-  [aCoder encodeRect: border_rect];
-  [aCoder encodeRect: title_rect];
-  [aCoder encodeValueOfObjCType: @encode(NSBorderType) at: &border_type];
-  [aCoder encodeValueOfObjCType: @encode(NSTitlePosition) at: &title_position];
+  [aCoder encodeObject: _cell];
+  [aCoder encodeSize: _offsets];
+  [aCoder encodeValueOfObjCType: @encode(NSBorderType) at: &_border_type];
+  [aCoder encodeValueOfObjCType: @encode(NSTitlePosition) at: &_title_position];
+  // NB: the content view is our (only) subview, so it is already 
+  // encoded by NSView.
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
-  id aview;
   [super initWithCoder: aDecoder];
 
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &cell];
-  aview = [aDecoder decodeObject];
-  [self setContentView: aview];
-  offsets = [aDecoder decodeSize];
-  border_rect = [aDecoder decodeRect];
-  title_rect = [aDecoder decodeRect];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_cell];
+  _offsets = [aDecoder decodeSize];
   [aDecoder decodeValueOfObjCType: @encode(NSBorderType)
-			       at: &border_type];
+			       at: &_border_type];
   [aDecoder decodeValueOfObjCType: @encode(NSTitlePosition) 
-			       at: &title_position];
+			       at: &_title_position];
 
+  // The content view is our only sub_view
+  if ([sub_views count] == 0)
+    {
+  
+      NSDebugLLog(@"NSBox", @"NSBox: decoding without content view\n");
+      // No content view
+      _content_view = nil;
+      [self calcSizesAllowingNegative: NO];
+    }
+  else 
+    {
+      if ([sub_views count] != 1)
+	{
+	  NSLog (@"Warning: Encoded NSBox with more than one content view!");
+	}
+      _content_view = [sub_views objectAtIndex: 0];
+      // The following also computes _title_rect and _border_rect.
+      [_content_view setFrame: [self calcSizesAllowingNegative: NO]];
+    }
   return self;
 }
 
@@ -407,28 +411,28 @@
 {
   NSRect r = NSZeroRect;
 
-  switch (title_position)
+  switch (_title_position)
     {
     case NSNoTitle: 
       {
-	NSSize borderSize = _sizeForBorderType (border_type);
-	border_rect = bounds;
-	title_rect = NSZeroRect;
+	NSSize borderSize = _sizeForBorderType (_border_type);
+	_border_rect = bounds;
+	_title_rect = NSZeroRect;
 
 	// Add the offsets to the border rect
-	r.origin.x = offsets.width + borderSize.width;
-	r.origin.y = offsets.height + borderSize.height;
-	r.size.width = border_rect.size.width - (2 * offsets.width)
+	r.origin.x = _offsets.width + borderSize.width;
+	r.origin.y = _offsets.height + borderSize.height;
+	r.size.width = _border_rect.size.width - (2 * _offsets.width)
 	  - (2 * borderSize.width);
-	r.size.height = border_rect.size.height - (2 * offsets.height)
+	r.size.height = _border_rect.size.height - (2 * _offsets.height)
 	  - (2 * borderSize.height);
 
 	break;
       }
     case NSAboveTop: 
       {
-	NSSize titleSize = [cell cellSize];
-	NSSize borderSize = _sizeForBorderType (border_type);
+	NSSize titleSize = [_cell cellSize];
+	NSSize borderSize = _sizeForBorderType (_border_type);
 	float c;
 
 	// Add spacer around title
@@ -436,31 +440,31 @@
 	titleSize.height += 1;
 
 	// Adjust border rect by title cell
-	border_rect = bounds;
-	border_rect.size.height -= titleSize.height + borderSize.height;
+	_border_rect = bounds;
+	_border_rect.size.height -= titleSize.height + borderSize.height;
 
 	// Add the offsets to the border rect
-	r.origin.x = border_rect.origin.x + offsets.width + borderSize.width;
-	r.origin.y = border_rect.origin.y + offsets.height + borderSize.height;
-	r.size.width = border_rect.size.width - (2 * offsets.width)
+	r.origin.x = _border_rect.origin.x + _offsets.width + borderSize.width;
+	r.origin.y = _border_rect.origin.y + _offsets.height + borderSize.height;
+	r.size.width = _border_rect.size.width - (2 * _offsets.width)
 	  - (2 * borderSize.width);
-	r.size.height = border_rect.size.height - (2 * offsets.height)
+	r.size.height = _border_rect.size.height - (2 * _offsets.height)
 	  - (2 * borderSize.height);
 
 	// center the title cell
 	c = (bounds.size.width - titleSize.width) / 2;
 	if (c < 0) c = 0;
-	title_rect.origin.x = bounds.origin.x + c;
-	title_rect.origin.y = bounds.origin.y + border_rect.size.height
+	_title_rect.origin.x = bounds.origin.x + c;
+	_title_rect.origin.y = bounds.origin.y + _border_rect.size.height
 	  + borderSize.height;
-	title_rect.size = titleSize;
+	_title_rect.size = titleSize;
 
 	break;
       }
     case NSBelowTop: 
       {
-	NSSize titleSize = [cell cellSize];
-	NSSize borderSize = _sizeForBorderType (border_type);
+	NSSize titleSize = [_cell cellSize];
+	NSSize borderSize = _sizeForBorderType (_border_type);
 	float c;
 
 	// Add spacer around title
@@ -468,87 +472,87 @@
 	titleSize.height += 1;
 
 	// Adjust border rect by title cell
-	border_rect = bounds;
+	_border_rect = bounds;
 
 	// Add the offsets to the border rect
-	r.origin.x = border_rect.origin.x + offsets.width + borderSize.width;
-	r.origin.y = border_rect.origin.y + offsets.height + borderSize.height;
-	r.size.width = border_rect.size.width - (2 * offsets.width)
+	r.origin.x = _border_rect.origin.x + _offsets.width + borderSize.width;
+	r.origin.y = _border_rect.origin.y + _offsets.height + borderSize.height;
+	r.size.width = _border_rect.size.width - (2 * _offsets.width)
 	  - (2 * borderSize.width);
-	r.size.height = border_rect.size.height - (2 * offsets.height)
+	r.size.height = _border_rect.size.height - (2 * _offsets.height)
 	  - (2 * borderSize.height);
 
 	// Adjust by the title size
 	r.size.height -= titleSize.height + borderSize.height;
 
 	// center the title cell
-	c = (border_rect.size.width - titleSize.width) / 2;
+	c = (_border_rect.size.width - titleSize.width) / 2;
 	if (c < 0) c = 0;
-	title_rect.origin.x = border_rect.origin.x + c;
-	title_rect.origin.y = border_rect.origin.y + border_rect.size.height
+	_title_rect.origin.x = _border_rect.origin.x + c;
+	_title_rect.origin.y = _border_rect.origin.y + _border_rect.size.height
 	  - titleSize.height - borderSize.height;
-	title_rect.size = titleSize;
+	_title_rect.size = titleSize;
 
 	break;
       }
     case NSAtTop: 
       {
-	NSSize titleSize = [cell cellSize];
-	NSSize borderSize = _sizeForBorderType (border_type);
+	NSSize titleSize = [_cell cellSize];
+	NSSize borderSize = _sizeForBorderType (_border_type);
 	float c;
 
 	// Add spacer around title
 	titleSize.width += 1;
 	titleSize.height += 1;
 
-	border_rect = bounds;
+	_border_rect = bounds;
 
 	// Adjust by the title size
-	border_rect.size.height -= titleSize.height / 2;
+	_border_rect.size.height -= titleSize.height / 2;
 
 	// Add the offsets to the border rect
-	r.origin.x = border_rect.origin.x + offsets.width + borderSize.width;
-	r.origin.y = border_rect.origin.y + offsets.height + borderSize.height;
-	r.size.width = border_rect.size.width - (2 * offsets.width)
+	r.origin.x = _border_rect.origin.x + _offsets.width + borderSize.width;
+	r.origin.y = _border_rect.origin.y + _offsets.height + borderSize.height;
+	r.size.width = _border_rect.size.width - (2 * _offsets.width)
 	  - (2 * borderSize.width);
-	r.size.height = border_rect.size.height - (2 * offsets.height)
+	r.size.height = _border_rect.size.height - (2 * _offsets.height)
 	  - (2 * borderSize.height);
 
 	// Adjust by the title size
 	r.size.height -= (titleSize.height / 2) + borderSize.height;
 
 	// center the title cell
-	c = (border_rect.size.width - titleSize.width) / 2;
+	c = (_border_rect.size.width - titleSize.width) / 2;
 	if (c < 0) c = 0;
-	title_rect.origin.x = border_rect.origin.x + c;
-	title_rect.origin.y = border_rect.origin.y + border_rect.size.height
+	_title_rect.origin.x = _border_rect.origin.x + c;
+	_title_rect.origin.y = _border_rect.origin.y + _border_rect.size.height
 	  - (titleSize.height / 2);
-	title_rect.size = titleSize;
+	_title_rect.size = titleSize;
 
 	break;
       }
     case NSAtBottom: 
       {
-	NSSize titleSize = [cell cellSize];
-	NSSize borderSize = _sizeForBorderType (border_type);
+	NSSize titleSize = [_cell cellSize];
+	NSSize borderSize = _sizeForBorderType (_border_type);
 	float c;
 
 	// Add spacer around title
 	titleSize.width += 1;
 	titleSize.height += 1;
 
-	border_rect = bounds;
+	_border_rect = bounds;
 
 	// Adjust by the title size
-	border_rect.origin.y += titleSize.height / 2;
-	border_rect.size.height -= titleSize.height / 2;
+	_border_rect.origin.y += titleSize.height / 2;
+	_border_rect.size.height -= titleSize.height / 2;
 
 	// Add the offsets to the border rect
-	r.origin.x = border_rect.origin.x + offsets.width + borderSize.width;
-	r.origin.y = border_rect.origin.y + offsets.height + borderSize.height;
-	r.size.width = border_rect.size.width - (2 * offsets.width)
+	r.origin.x = _border_rect.origin.x + _offsets.width + borderSize.width;
+	r.origin.y = _border_rect.origin.y + _offsets.height + borderSize.height;
+	r.size.width = _border_rect.size.width - (2 * _offsets.width)
 	  - (2 * borderSize.width);
-	r.size.height = border_rect.size.height - (2 * offsets.height)
+	r.size.height = _border_rect.size.height - (2 * _offsets.height)
 	  - (2 * borderSize.height);
 
 	// Adjust by the title size
@@ -556,18 +560,18 @@
 	r.size.height -= (titleSize.height / 2) + borderSize.height;
 
 	// center the title cell
-	c = (border_rect.size.width - titleSize.width) / 2;
+	c = (_border_rect.size.width - titleSize.width) / 2;
 	if (c < 0) c = 0;
-	title_rect.origin.x = c;
-	title_rect.origin.y = 0;
-	title_rect.size = titleSize;
+	_title_rect.origin.x = c;
+	_title_rect.origin.y = 0;
+	_title_rect.size = titleSize;
 
 	break;
       }
     case NSBelowBottom: 
       {
-	NSSize titleSize = [cell cellSize];
-	NSSize borderSize = _sizeForBorderType (border_type);
+	NSSize titleSize = [_cell cellSize];
+	NSSize borderSize = _sizeForBorderType (_border_type);
 	float c;
 
 	// Add spacer around title
@@ -575,45 +579,45 @@
 	titleSize.height += 1;
 
 	// Adjust by the title
-	border_rect = bounds;
-	border_rect.origin.y += titleSize.height + borderSize.height;
-	border_rect.size.height -= titleSize.height + borderSize.height;
+	_border_rect = bounds;
+	_border_rect.origin.y += titleSize.height + borderSize.height;
+	_border_rect.size.height -= titleSize.height + borderSize.height;
 
 	// Add the offsets to the border rect
-	r.origin.x = border_rect.origin.x + offsets.width + borderSize.width;
-	r.origin.y = border_rect.origin.y + offsets.height + borderSize.height;
-	r.size.width = border_rect.size.width - (2 * offsets.width)
+	r.origin.x = _border_rect.origin.x + _offsets.width + borderSize.width;
+	r.origin.y = _border_rect.origin.y + _offsets.height + borderSize.height;
+	r.size.width = _border_rect.size.width - (2 * _offsets.width)
 	  - (2 * borderSize.width);
-	r.size.height = border_rect.size.height - (2 * offsets.height)
+	r.size.height = _border_rect.size.height - (2 * _offsets.height)
 	  - (2 * borderSize.height);
 
 	// center the title cell
-	c = (border_rect.size.width - titleSize.width) / 2;
+	c = (_border_rect.size.width - titleSize.width) / 2;
 	if (c < 0) c = 0;
-	title_rect.origin.x = c;
-	title_rect.origin.y = 0;
-	title_rect.size = titleSize;
+	_title_rect.origin.x = c;
+	_title_rect.origin.y = 0;
+	_title_rect.size = titleSize;
 
 	break;
       }
     case NSAboveBottom: 
       {
-	NSSize titleSize = [cell cellSize];
-	NSSize borderSize = _sizeForBorderType (border_type);
+	NSSize titleSize = [_cell cellSize];
+	NSSize borderSize = _sizeForBorderType (_border_type);
 	float c;
 
 	// Add spacer around title
 	titleSize.width += 1;
 	titleSize.height += 1;
 
-	border_rect = bounds;
+	_border_rect = bounds;
 
 	// Add the offsets to the border rect
-	r.origin.x = border_rect.origin.x + offsets.width + borderSize.width;
-	r.origin.y = border_rect.origin.y + offsets.height + borderSize.height;
-	r.size.width = border_rect.size.width - (2 * offsets.width)
+	r.origin.x = _border_rect.origin.x + _offsets.width + borderSize.width;
+	r.origin.y = _border_rect.origin.y + _offsets.height + borderSize.height;
+	r.size.width = _border_rect.size.width - (2 * _offsets.width)
 	  - (2 * borderSize.width);
-	r.size.height = border_rect.size.height - (2 * offsets.height)
+	r.size.height = _border_rect.size.height - (2 * _offsets.height)
 	  - (2 * borderSize.height);
 
 	// Adjust by the title size
@@ -621,11 +625,11 @@
 	r.size.height -= titleSize.height + borderSize.height;
 
 	// center the title cell
-	c = (border_rect.size.width - titleSize.width) / 2;
+	c = (_border_rect.size.width - titleSize.width) / 2;
 	if (c < 0) c = 0;
-	title_rect.origin.x = border_rect.origin.x + c;
-	title_rect.origin.y = border_rect.origin.y + borderSize.height;
-	title_rect.size = titleSize;
+	_title_rect.origin.x = _border_rect.origin.x + c;
+	_title_rect.origin.y = _border_rect.origin.y + borderSize.height;
+	_title_rect.size = titleSize;
 
 	break;
       }
