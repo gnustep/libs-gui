@@ -94,16 +94,17 @@
     {
       v = [subs objectAtIndex: i];
       r = [v frame];
-      /* if the click is inside of a subview, return.
-	 this should never happen */
+      /* if the click is inside of a subview, return.  this should
+	 happen only if a subview has leaked a mouse down to next
+	 responder */
       if (NSPointInRect(p, r))
 	{
-	  NSLog(@"NSSplitView got mouseDown that should have gone to subview");
+	  NSLog(@"NSSplitView got mouseDown in subview area");
 	  goto RETURN_LABEL;
 	}
       if (_isVertical == NO)
         {
-	  if (NSMaxY(r) < p.y)
+	  if (NSMaxY(r) <= p.y)
 	    {				// can happen only when i>0.
  	      NSView	*tempView;
 
@@ -128,7 +129,7 @@
         }
       else
         {
-	  if (NSMinX(r) > p.x)
+	  if (NSMinX(r) >= p.x)
             {
 	      offset = i;
 
@@ -298,11 +299,12 @@
 
   [_window invalidateCursorRectsForView: self];
 
-RETURN_LABEL:
-  [_window setAcceptsMouseMovedEvents: NO];
+
   [self setNeedsDisplay: YES];
 
   [self display];
+RETURN_LABEL:
+  [_window setAcceptsMouseMovedEvents: NO];
 }
 
 - (void) adjustSubviews
