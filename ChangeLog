@@ -1,3 +1,15 @@
+2000-05-12  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSFont.h
+	* Source/NSFontManager.m
+	Made [NSFont fontInfo] a public method to use it in the backend.
+	* Headers/gnustep/gui/NSGraphicsContext.h
+	* Source/NSGraphicsContext.m
+	New methods to set and use a font.
+	* Source/NSFont.m
+	New implementation of [useFont] and [set] which call methods 
+	on the context.  
+	
 2001-05-11  Adam Fedor  <fedor@gnu.org>
 
 	* configure.in: Check for tiffio.h. Add path to include dirs
