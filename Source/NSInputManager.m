@@ -220,13 +220,22 @@ static NSInputManager *currentInputManager = nil;
 	}
     }  
 
-  selector = NSSelectorFromString (action);
-  if (selector == NULL)
+  /* "" as action means disable the keybinding.  It can be used to override
+     a previous keybinding.  */
+  if ([action isEqualToString: @""])
     {
-      NSLog (@"NSInputManager: unknown selector '%@' ignored", action);
-      return;
+      selector = NULL;
     }
-  
+  else
+    {
+      selector = NSSelectorFromString (action);
+      if (selector == NULL)
+       {
+         NSLog (@"NSInputManager: unknown selector '%@' ignored", action);
+         return;
+       }
+    }
+    
   /* Check if there are already some bindings for this character.  */
   for (i = 0; i < _bindingsCount; i++)
     {
