@@ -284,6 +284,7 @@ this to return nil to indicate that we have no context menu.
 - (void) setTitle: (NSString*)aString
 {
   [_cell setTitle: aString];
+  [self synchronizeTitleAndSelectedItem];
 }
 
 - (void) synchronizeTitleAndSelectedItem
