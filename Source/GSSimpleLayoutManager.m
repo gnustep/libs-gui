@@ -844,7 +844,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
 // returns range of lines actually updated
 - (NSRange) rebuildForRange: (NSRange)aRange
-		  delta: (int)insertionDelta
+		      delta: (int)insertionDelta
 	    inTextContainer:(NSTextContainer *)aTextContainer 
 {
   NSPoint drawingPoint = NSZeroPoint;
@@ -861,37 +861,37 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 
   if (maxLines)
     {
-	int insertionLineIndex = [self lineLayoutIndexForGlyphIndex: 
-					   aRange.location];
-	int nextLine = [self lineLayoutIndexForGlyphIndex: 
-				 NSMaxRange(aRange) - insertionDelta] + 1;
-
-	if (nextLine < maxLines)
+      int insertionLineIndex = [self lineLayoutIndexForGlyphIndex:
+				       aRange.location];
+      int nextLine = [self lineLayoutIndexForGlyphIndex: 
+			     NSMaxRange(aRange) - insertionDelta] + 1;
+      
+      if (nextLine < maxLines)
 	{
 	  // remember old array for optimization purposes
 	  ghostArray = AUTORELEASE([[_lineLayoutInformation
-					subarrayWithRange:
-					    NSMakeRange (nextLine, 
-							 maxLines - nextLine)]
-				       mutableCopy]);
+				      subarrayWithRange:
+					NSMakeRange (nextLine, 
+						     maxLines - nextLine)]
+				     mutableCopy]);
 	}
-	
-	aLine = MAX(0, insertionLineIndex - 1);
-	if (aLine)
-	  {
-	    _GNULineLayoutInfo *lastValidLineInfo = [_lineLayoutInformation 
-							objectAtIndex: aLine - 1];
-	    NSRect aRect = lastValidLineInfo->lineFragmentRect;
-	    
-	    startingIndex = NSMaxRange(lastValidLineInfo->glyphRange);
-	    drawingPoint = aRect.origin;
-	    drawingPoint.y += aRect.size.height;
-	  }
-	
-	[_lineLayoutInformation removeObjectsInRange:
-				    NSMakeRange (aLine, maxLines - aLine)];
+      
+      aLine = MAX(0, insertionLineIndex - 1);
+      if (aLine)
+	{
+	  _GNULineLayoutInfo *lastValidLineInfo = [_lineLayoutInformation 
+						    objectAtIndex: aLine - 1];
+	  NSRect aRect = lastValidLineInfo->lineFragmentRect;
+	  
+	  startingIndex = NSMaxRange(lastValidLineInfo->glyphRange);
+	  drawingPoint = aRect.origin;
+	  drawingPoint.y += aRect.size.height;
+	}
+      
+      [_lineLayoutInformation removeObjectsInRange:
+				NSMakeRange (aLine, maxLines - aLine)];
     }
-
+  
   if (!length)
     {
       float width = [aTextContainer containerSize].width;
@@ -924,13 +924,17 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
       // 'paraPos' to point after the terminating newline character (if any).
       para = NSMakeRange(paraPos, length - paraPos);
       eol = [allText rangeOfCharacterFromSet: newlines
-				     options: NSLiteralSearch
-				       range: para];
+		     options: NSLiteralSearch
+		     range: para];
 
       if (eol.length == 0)
-	eol.location = length;
+	{
+	  eol.location = length;
+	}
       else
-	para.length = eol.location - para.location;
+	{
+	  para.length = eol.location - para.location;
+	}
       paraPos = NSMaxRange(eol);
       position = para.location;
 
@@ -954,18 +958,24 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	  unsigned scannerPosition = localLineStartIndex;
 
 	  if (NSIsEmptyRect(remainingRect))
-	    fragmentRect = NSMakeRect (0, drawingPoint.y, HUGE, HUGE);
+	    {
+	      fragmentRect = NSMakeRect (0, drawingPoint.y, HUGE, HUGE);
+	    }
 	  else 
-	    fragmentRect = remainingRect;
-
-	  fragmentRect = [aTextContainer lineFragmentRectForProposedRect: fragmentRect
-					 sweepDirection: NSLineSweepRight
-					 movementDirection: NSLineMoveDown
-					 remainingRect: &remainingRect];
+	    {
+	      fragmentRect = remainingRect;
+	    }
+	  
+	  fragmentRect = [aTextContainer 
+			   lineFragmentRectForProposedRect: fragmentRect
+			   sweepDirection: NSLineSweepRight
+			   movementDirection: NSLineMoveDown
+			   remainingRect: &remainingRect];
 	  if (NSIsEmptyRect(fragmentRect))
  	    {
 	      // No more space in the text container, give up doing the layout
-	      return NSMakeRange(aLine, MAX(1, [_lineLayoutInformation count] - aLine));
+	      int a = MAX (1, [_lineLayoutInformation count] - aLine);
+	      return NSMakeRange(aLine, a);
 	    }
 
 	  width = fragmentRect.size.width - 2 * padding;
@@ -990,12 +1000,16 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 		= scanRange(lScanner, selectionWordGranularitySet);
 
 	      if (leadingSpacesRange.length)
-		currentStringRange = NSUnionRange(leadingSpacesRange,
-						   currentStringRange);
+		{
+		  currentStringRange = NSUnionRange(leadingSpacesRange,
+						    currentStringRange);
+		}
 	      if (trailingSpacesRange.length)
-		currentStringRange = NSUnionRange(trailingSpacesRange,
-						   currentStringRange);
-
+		{
+		  currentStringRange = NSUnionRange(trailingSpacesRange,
+						    currentStringRange);
+		}
+	      
 	      // evaluate size of current word
 	      advanceSize = [self _sizeOfRange:
 				    NSMakeRange (currentStringRange.location + position,
@@ -1031,8 +1045,10 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 		    }
 		}
 	      else 
-		isBuckled = NO;
-
+		{
+		  isBuckled = NO;
+		}
+	      
 	      // line to long
 	      if (usedLineRect.size.width + advanceSize.width > width || 
 		  isBuckled)
@@ -1062,42 +1078,47 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 		  scannerPosition += eol.length;
 		  usedLineRect.size.width += 1;
 		  // FIXME: This should use the real font size!!
-		  if (!usedLineRect.size.height)
+		  if (usedLineRect.size.height == 0)
+		    {
 		      usedLineRect.size.height = 12;
+		    }
 		}
 	    }
-
+	  
 	  lineGlyphRange = NSMakeRange (startingLineCharIndex,
-					  scannerPosition - localLineStartIndex);
-	  // Adjust the height of the line fragment rect, as this will the to big
+					scannerPosition - localLineStartIndex);
+	  // Adjust the height of the line fragment rect, as this will
+	  // the to big
 	  fragmentRect.size.height = usedLineRect.size.height;
-
-	  // This range is to small, as there are more lines that fit into the container
+	  
+	  // This range is to small, as there are more lines that fit
+	  // into the container
 	  [self setTextContainer: aTextContainer 
 		forGlyphRange: lineGlyphRange];
-
+	  
 	  [self setLineFragmentRect: fragmentRect
 		forGlyphRange: lineGlyphRange
 		usedRect: usedLineRect];
 
-	  // This range is too big, as there are different runs in the glyph range
+	  // This range is too big, as there are different runs in the
+	  // glyph range
 	  [self setLocation: NSMakePoint(0.0, 0.0)
 		forStartOfGlyphRange: lineGlyphRange];
-
+	  
 	  currentLineIndex++;
 	  startingLineCharIndex = NSMaxRange(lineGlyphRange);
 	  drawingPoint.y += usedLineRect.size.height;
 	  drawingPoint.x = 0;
 	  
 	  RELEASE(pool);
-
+	  
 	  if (ghostArray != nil)
 	    {
 	      float yDisplacement = 0;
-
-	      // is it possible to simply patch layout changes
-	      // into layout array instead of doing a time
-	      // consuming re - layout of the whole doc?
+	      
+	      // is it possible to simply patch layout changes into
+	      // layout array instead of doing a time consuming re -
+	      // layout of the whole doc?
 	      if ([self _relocLayoutArray: ghostArray
 			offset: insertionDelta
 			floatTrift: &yDisplacement])
@@ -1106,7 +1127,9 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 		  
 		  // y displacement: redisplay all remaining lines
 		  if (yDisplacement)
+		    {
 		      erg = [_lineLayoutInformation count] - aLine;
+		    }
 		  else 
 		    {
 		      // return 2: redisplay only this and previous line
@@ -1119,7 +1142,7 @@ scanRange(NSScanner *scanner, NSCharacterSet* aSet)
 	}
       while ([lScanner isAtEnd] == NO);
     }
-
+  
   // lines actually updated (optimized drawing)
   return NSMakeRange(aLine, MAX(1, [_lineLayoutInformation count] - aLine));
 }
