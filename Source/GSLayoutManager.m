@@ -1155,7 +1155,7 @@ it should still be safe. might lose opportunities to merge runs, though.
 }
 
 
-#define GET_GLYPH(rv) \
+#define GET_GLYPH \
 	glyph_run_t *r; \
 	int pos, cpos; \
 \
@@ -1166,7 +1166,6 @@ it should still be safe. might lose opportunities to merge runs, though.
 		{ \
 			[NSException raise: NSRangeException \
 				format: @"%s glyph range out of range", __PRETTY_FUNCTION__]; \
-			return rv; \
 		} \
 	} \
  \
@@ -1175,31 +1174,30 @@ it should still be safe. might lose opportunities to merge runs, though.
 	{ \
 		[NSException raise: NSRangeException \
 			format: @"%s glyph range out of range", __PRETTY_FUNCTION__]; \
-		return rv; \
 	} \
 	idx -= pos;
 
 - (void) setDrawsOutsideLineFragment: (BOOL)flag 
 	forGlyphAtIndex: (unsigned int)idx
 {
-  GET_GLYPH()
+  GET_GLYPH
   r->glyphs[idx].drawsOutsideLineFragment = !!flag;
 }
 - (BOOL) drawsOutsideLineFragmentForGlyphAtIndex: (unsigned int)idx
 {
-  GET_GLYPH(NO)
+  GET_GLYPH
   return r->glyphs[idx].drawsOutsideLineFragment;
 }
 
 - (void) setNotShownAttribute: (BOOL)flag 
 	forGlyphAtIndex: (unsigned int)idx
 {
-  GET_GLYPH()
+  GET_GLYPH
   r->glyphs[idx].isNotShown = !!flag;
 }
 - (BOOL) notShownAttributeForGlyphAtIndex: (unsigned int)idx
 {
-  GET_GLYPH(NO)
+  GET_GLYPH
   return r->glyphs[idx].isNotShown;
 }
 
@@ -1207,7 +1205,7 @@ it should still be safe. might lose opportunities to merge runs, though.
 - (NSFont *) effectiveFontForGlyphAtIndex: (unsigned int)idx
 	range: (NSRange *)range
 {
-  GET_GLYPH(nil)
+  GET_GLYPH
   if (range)
     *range = NSMakeRange(pos, r->head.glyph_length);
   return r->font;
