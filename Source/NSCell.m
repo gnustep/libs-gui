@@ -382,73 +382,108 @@ static NSColor	*shadowCol;
 	case NSCellHasOverlappingImage: 
 	  return _cell.image_position == NSImageOverlaps;
 	case NSCellHasImageHorizontal: 
-	  return (_cell.image_position == NSImageRight) ||
-	    (_cell.image_position == NSImageLeft);
+	  {
+	    return (_cell.image_position == NSImageRight) 
+	      || (_cell.image_position == NSImageLeft);
+	  }
 	case NSCellHasImageOnLeftOrBottom: 
-	  return (_cell.image_position == NSImageBelow) ||
-	    (_cell.image_position == NSImageLeft);
-	default:
+	  {
+	    return (_cell.image_position == NSImageBelow) 
+	      || (_cell.image_position == NSImageLeft);
+	  }
       }
 
   return 0;
 }
 
-- (void) setCellAttribute: (NSCellAttribute)aParameter to: (int)value
+- (void) setCellAttribute: (NSCellAttribute)aParameter  to: (int)value
 {
   switch (aParameter)
     {
     case NSCellDisabled:
-      _cell.is_disabled = value;
-      break;
+      {
+	_cell.is_disabled = value;
+	break;
+      }
     case NSCellState:
-      _cell.state = value;
-      break;
+      {
+	_cell.state = value;
+	break;
+      }
     case NSCellEditable:
-      _cell.is_editable = value;
-      break;
-    case NSCellHighlighted:  
-      _cell.is_highlighted = value;
-      break;
+      {
+	_cell.is_editable = value;
+	break;
+      }
+    case NSCellHighlighted:
+      {
+	_cell.is_highlighted = value;
+	break;
+      }
     case NSCellHasOverlappingImage:
-      if (value)
-	_cell.image_position = NSImageOverlaps;
-      else
-	{
-	  if (_cell.image_position == NSImageOverlaps)
-	    _cell.image_position = NSImageLeft;
-	}
-      break;
+      {
+	if (value)
+	  {
+	    _cell.image_position = NSImageOverlaps;
+	  }
+	else
+	  {
+	    if (_cell.image_position == NSImageOverlaps)
+	      {
+		_cell.image_position = NSImageLeft;
+	      }
+	  }
+	break;
+      }
     case NSCellHasImageHorizontal:
-      if (value)
-	{
-	  if (_cell.image_position != NSImageLeft
-	      && _cell.image_position != NSImageRight)
-	    _cell.image_position = NSImageLeft;
-	}
-      else
-	{
-	  if (_cell.image_position == NSImageLeft)
-	    _cell.image_position = NSImageAbove;
-	  else if (_cell.image_position == NSImageRight)
-	    _cell.image_position = NSImageBelow;
-	}
-      break;
+      {
+	if (value)
+	  {
+	    if (_cell.image_position != NSImageLeft
+		&& _cell.image_position != NSImageRight)
+	      {
+		_cell.image_position = NSImageLeft;
+	      }
+	  }
+	else
+	  {
+	    if (_cell.image_position == NSImageLeft)
+	      {
+		_cell.image_position = NSImageAbove;
+	      }
+	    else if (_cell.image_position == NSImageRight)
+	      {
+		_cell.image_position = NSImageBelow;
+	      }
+	  }
+	break;
+      }
     case NSCellHasImageOnLeftOrBottom:
-      if (value)
-	{
-	  if (_cell.image_position == NSImageAbove)
-	    _cell.image_position = NSImageBelow;
-	  else
-	    _cell.image_position = NSImageLeft;
-	}
-      else
-	{
-	  if (_cell.image_position == NSImageBelow)
-	    _cell.image_position = NSImageAbove;
-	  else
-	    _cell.image_position = NSImageRight;
-	}
-      break;
+      {
+	if (value)
+	  {
+	    if (_cell.image_position == NSImageAbove)
+	      {
+		_cell.image_position = NSImageBelow;
+	      }
+	    else
+	      {
+		_cell.image_position = NSImageLeft;
+	      }
+	  }
+	else
+	  {
+	    if (_cell.image_position == NSImageBelow)
+	      {
+		_cell.image_position = NSImageAbove;
+	      }
+	    else
+	      {
+		_cell.image_position = NSImageRight;
+	      }
+	  }
+	break;
+      }
       /*
     case NSCellChangesContents:
       _cell. = value;
@@ -458,12 +493,15 @@ static NSColor	*shadowCol;
       break;
 */
     case NSCellIsBordered:
-      _cell.is_bordered = value;
-      break;
+      {
+	_cell.is_bordered = value;
+	break;
+      }
     case NSCellAllowsMixedState:
-      _cell.allows_mixed_state = value;
-      break;
-    default:
+      {
+	_cell.allows_mixed_state = value;
+	break;
+      }
     }
 }
 
@@ -473,21 +511,27 @@ static NSColor	*shadowCol;
 - (void) setType: (NSCellType)aType
 {
   if (_cell.type == aType)
-    return;
+    {
+      return;
+    }
   
   _cell.type = aType;
   switch (_cell.type)
     {
       case NSTextCellType:
-	ASSIGN (_contents, @"title");
-	_cell.contents_is_attributed_string = NO;
-	/* Doc says we have to reset the font too. */
-	ASSIGN (_font, [fontClass userFontOfSize: 0]);
-	break;
+	{
+	  ASSIGN (_contents, @"title");
+	  _cell.contents_is_attributed_string = NO;
+	  /* Doc says we have to reset the font too. */
+	  ASSIGN (_font, [fontClass userFontOfSize: 0]);
+	  break;
+	}
       case NSImageCellType:
-	TEST_RELEASE (_cell_image);
-	_cell_image = nil;
-	break;
+	{
+	  TEST_RELEASE (_cell_image);
+	  _cell_image = nil;
+	  break;
+	}
     }
 }
 
@@ -531,14 +575,18 @@ static NSColor	*shadowCol;
 {
   _cell.is_bezeled = flag;
   if (_cell.is_bezeled)
-    _cell.is_bordered = NO;
+    {
+      _cell.is_bordered = NO;
+    }
 }
 
 - (void) setBordered: (BOOL)flag
 {
   _cell.is_bordered = flag;
   if (_cell.is_bordered)
-    _cell.is_bezeled = NO;
+    {
+      _cell.is_bezeled = NO;
+    }
 }
 
 /*
@@ -553,11 +601,17 @@ static NSColor	*shadowCol;
    * constants when calling this method, this way your code won't be
    * broken by changes. */
   if (value > 0 || (value < 0 && _cell.allows_mixed_state == NO))
-    _cell.state = NSOnState;
+    {
+      _cell.state = NSOnState;
+    }
   else if (value == 0)
-    _cell.state = NSOffState;
+    {
+      _cell.state = NSOffState;
+    }
   else 
-    _cell.state = NSMixedState;
+    {
+      _cell.state = NSMixedState;
+    }
 }
 
 - (int) state
@@ -574,7 +628,9 @@ static NSColor	*shadowCol;
 {
   _cell.allows_mixed_state = flag;
   if (!flag && _cell.state == NSMixedState)
-    [self setNextState];
+    {
+      [self setNextState];
+    }
 }
 
 - (int) nextState
@@ -582,19 +638,25 @@ static NSColor	*shadowCol;
   switch (_cell.state)
     {
       case NSOnState:
-	return NSOffState;
+	{
+	  return NSOffState;
+	}
       case NSOffState:
-	if (_cell.allows_mixed_state)
-	  {
-	    return NSMixedState;
-	  }
-	else
-	  {
-	    return NSOnState;
-	  }
+	{
+	  if (_cell.allows_mixed_state)
+	    {
+	      return NSMixedState;
+	    }
+	  else
+	    {
+	      return NSOnState;
+	    }
+	}
       case NSMixedState:
       default:
-	return NSOnState;
+	{
+	  return NSOnState;
+	}
     }
 }
 
