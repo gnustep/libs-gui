@@ -159,6 +159,119 @@ static GSFontEnumerator *sharedEnumerator = nil;
                                                      matrix: fmatrix]);
 }
 
++ (int) weightForString: (NSString *)weightString
+{
+  static NSDictionary *dict = nil;
+  NSNumber *num;
+  
+  if (dict == nil)
+    {
+      dict = [NSDictionary dictionaryWithObjectsAndKeys:
+			       [NSNumber numberWithInt: 1], @"ultralight",
+			   [NSNumber numberWithInt: 2], @"thin",
+			   [NSNumber numberWithInt: 3], @"light",
+			   [NSNumber numberWithInt: 3], @"extralight",
+			   [NSNumber numberWithInt: 4], @"book",
+			   [NSNumber numberWithInt: 5], @"regular",
+			   [NSNumber numberWithInt: 5], @"plain",
+			   [NSNumber numberWithInt: 5], @"display",
+			   [NSNumber numberWithInt: 5], @"roman",
+			   [NSNumber numberWithInt: 5], @"semilight",
+			   [NSNumber numberWithInt: 6], @"medium",
+			   [NSNumber numberWithInt: 7], @"demi",
+			   [NSNumber numberWithInt: 7], @"demibold",
+			   [NSNumber numberWithInt: 8], @"semi",
+			   [NSNumber numberWithInt: 8], @"semibold",
+			   [NSNumber numberWithInt: 9], @"bold",
+			   [NSNumber numberWithInt: 10], @"extra",
+			   [NSNumber numberWithInt: 10], @"extrabold",
+			   [NSNumber numberWithInt: 11], @"heavy",
+			   [NSNumber numberWithInt: 11], @"heavyface",
+			   [NSNumber numberWithInt: 12], @"ultrabold",
+			   [NSNumber numberWithInt: 13], @"ultra",
+			   [NSNumber numberWithInt: 13], @"ultrablack",
+			   [NSNumber numberWithInt: 13], @"fat",
+			   [NSNumber numberWithInt: 14], @"extrablack",
+			   [NSNumber numberWithInt: 14], @"obese",
+			   [NSNumber numberWithInt: 14], @"nord",
+			   nil];
+    }
+
+  if ((weightString == nil) || 
+      ((num = [dict objectForKey: weightString]) == nil))
+    {
+      return 5;
+    } 
+  else
+    {
+      return [num intValue];
+    }
+}
+
++ (NSString *) stringForWeight: (int)aWeight
+{
+  static NSArray *arr = nil;
+
+  if (arr == nil)
+    {
+      arr = [NSArray arrayWithObjects: @"", @"ultralight",
+		     @"thin", @"light", @"book", @"regular",
+		     @"medium", @"demibold", @"semibold",
+		     @"bold", @"extrabold", @"heavy",
+		     @"black", @"ultrablack", @"extrablack", 
+		     nil];
+    }
+
+  if ((aWeight < 1) || (aWeight > 14))
+    return @"";
+  else
+    return [arr objectAtIndex: aWeight];
+}
+
++ (NSStringEncoding) encodingForRegistry: (NSString*)registry 
+				encoding: (NSString*)encoding
+{
+  if ([registry isEqualToString: @"iso8859"])
+    {
+      if ([encoding isEqualToString: @"1"])
+	return NSISOLatin1StringEncoding;
+      else if ([encoding isEqualToString: @"2"])
+	return NSISOLatin2StringEncoding;
+      else if ([encoding isEqualToString: @"5"])
+	return NSWindowsCP1251StringEncoding;
+      else if ([encoding isEqualToString: @"7"])
+	return NSWindowsCP1253StringEncoding;
+      // Other latin encodings are currently not supported
+    }
+  else if ([registry isEqualToString: @"iso10646"])
+    {
+      if ([encoding isEqualToString: @"1"])
+	return NSUnicodeStringEncoding;
+    }
+  else if ([registry isEqualToString: @"microsoft"])
+    {
+      if ([encoding isEqualToString: @"symbol"])
+	return NSSymbolStringEncoding;
+      else if ([encoding isEqualToString: @"cp1250"])
+	return NSWindowsCP1250StringEncoding;
+      else if ([encoding isEqualToString: @"cp1251"])
+	return NSWindowsCP1251StringEncoding;
+      else if ([encoding isEqualToString: @"cp1252"])
+	return NSWindowsCP1252StringEncoding;
+      else if ([encoding isEqualToString: @"cp1253"])
+	return NSWindowsCP1253StringEncoding;
+      else if ([encoding isEqualToString: @"cp1254"])
+	return NSWindowsCP1254StringEncoding;
+    }
+  else if ([registry isEqualToString: @"apple"])
+    {
+      if ([encoding isEqualToString: @"roman"])
+	return NSMacOSRomanStringEncoding;
+    }
+
+  return NSASCIIStringEncoding;
+}
+
 - init
 {
   [super init];

@@ -80,6 +80,11 @@
 + (GSFontInfo*) fontInfoForFontName: (NSString*)fontName 
                              matrix: (const float *)fmatrix;
 
++ (int) weightForString: (NSString *)weightString;
++ (NSString *) stringForWeight: (int)weight;
++ (NSStringEncoding) encodingForRegistry: (NSString*)registry 
+				encoding: (NSString*)encoding;
+
 - (NSDictionary *)afmDictionary;
 - (NSString *)afmFileContents;
 - (NSRect)boundingRectForFont;
