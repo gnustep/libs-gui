@@ -188,7 +188,7 @@ glyphRangeForTextContainer:textContainer];
     }
 
   [self unlockFocus];
-  [[self window] flushWindow];
+  [_window flushWindow];
 }
 
 - (void)setConstrainedFrameSize:(NSSize)desiredSize
@@ -945,7 +945,7 @@ container, returning the modified location. */
     selectedRange].location+[aString length],0)];
 
   [self display];
-  [window update]; 
+  [_window update]; 
   [self textDidChange: nil];      // broadcast notification
 
   NSLog(@"%@", [textStorage string]);
