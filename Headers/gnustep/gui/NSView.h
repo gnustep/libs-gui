@@ -72,9 +72,9 @@ enum {
   NSViewMinXMargin	= 1,	// left margin between views can stretch
   NSViewWidthSizable	= 2,	// view's width can stretch
   NSViewMaxXMargin	= 4,	// right margin between views can stretch
-  NSViewMinYMargin	= 8,	// top margin between views can stretch
+  NSViewMinYMargin	= 8,	// bottom margin between views can stretch
   NSViewHeightSizable	= 16,	// view's height can stretch
-  NSViewMaxYMargin	= 32 	// bottom margin between views can stretch
+  NSViewMaxYMargin	= 32 	// top margin between views can stretch
 };
 
 @interface NSView : NSResponder <NSCoding>
