@@ -30,12 +30,17 @@
 
 #include <gnustep/gui/config.h>
 #include <AppKit/NSActionCell.h>
+#include <AppKit/NSApplication.h>
 #include <AppKit/NSColorPanel.h>
 #include <AppKit/NSColorWell.h>
 #include <AppKit/NSColor.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSPasteboard.h>
+#include <AppKit/NSWindow.h>
+#include <Foundation/NSNotification.h>
 
+static NSString *GSColorWellDidBecomeExclusiveNotification =
+                    @"GSColorWellDidBecomeExclusiveNotification";
 
 @implementation NSColorWell
 
@@ -64,9 +69,9 @@
 {
   [super initWithFrame: frameRect];
 
-  is_bordered = YES;
-  is_active = NO;
-  the_color = [[NSColor blackColor] retain];
+  _is_bordered = YES;
+  _is_active = NO;
+  _the_color = RETAIN([NSColor blackColor]);
 
   [self registerForDraggedTypes:
       [NSArray arrayWithObjects: NSColorPboardType, nil]];
@@ -76,7 +81,7 @@
 
 - (void)dealloc
 {
-  [the_color release];
+  TEST_RELEASE(_the_color);
   [self unregisterDraggedTypes];
   [super dealloc];
 }
@@ -84,65 +89,96 @@
 /*
  * Drawing
  */
-- (void) drawRect: (NSRect)rect
+- (void) drawRect: (NSRect)clipRect
 {
   NSRect aRect = _bounds;
   
-  if (NSIntersectsRect(aRect, rect) == NO)
+  if (NSIntersectsRect(aRect, clipRect) == NO)
     return;
 
-  if (is_bordered)
+  if (_is_bordered)
     {
       /*
-       * Draw outer frame.
+       * Draw border.
        */
-      NSDrawButton(aRect, rect);
+      NSDrawButton(aRect, clipRect);
 
       /*
        * Fill in control color.
        */
       aRect = NSInsetRect(aRect, 2.0, 2.0);
-      [[NSColor controlColor] set];
-      NSRectFill(NSIntersectionRect(aRect, rect));
-
-      aRect = NSInsetRect(aRect, 5.0, 5.0);
+      if (_is_active)
+        [[NSColor selectedControlColor] set];
+      else
+        [[NSColor controlColor] set];
+      NSRectFill(NSIntersectionRect(aRect, clipRect));
 
       /*
-       * OpenStep 4.2 behavior is to omit the inner border for
-       * non-enabled NSColorWell objects.
+       * Set an inset rect for the color area
        */
-      if ([self isEnabled])
-        {
-          /*
-           * Draw inner frame.
-           */
-          NSDrawGrayBezel(aRect, rect);
-          aRect = NSInsetRect(aRect, 2.0, 2.0);
-        }
+      _wellRect = NSInsetRect(_bounds, 8.0, 8.0);
     }
   else
-    aRect = NSInsetRect(aRect, 9.0, 9.0);
+    _wellRect = _bounds;
 
-  [self drawWellInside: NSIntersectionRect(aRect, rect)];
+  aRect = _wellRect;
+
+  /*
+   * OpenStep 4.2 behavior is to omit the inner border for
+   * non-enabled NSColorWell objects.
+   */
+  if ([self isEnabled])
+    {
+      /*
+       * Draw inner frame.
+       */
+      NSDrawGrayBezel(aRect, clipRect);
+      aRect = NSInsetRect(aRect, 2.0, 2.0);
+    }
+
+  [self drawWellInside: NSIntersectionRect(aRect, clipRect)];
 }
 
 - (void) drawWellInside: (NSRect)insideRect
 {
   if (NSIsEmptyRect(insideRect))
     return;
-  [the_color drawSwatchInRect: insideRect];
+  [_the_color drawSwatchInRect: insideRect];
 }
 
 - (void) mouseDown: (NSEvent *)theEvent
 {
-  [NSColorPanel dragColor: the_color
-                withEvent: theEvent
-                 fromView: self];
+  NSPoint point = [self convertPoint: [theEvent locationInWindow]
+                            fromView: nil];
+
+  if ([self mouse: point inRect: _wellRect])
+    {
+      [NSColorPanel dragColor: _the_color
+                    withEvent: theEvent
+                     fromView: self];
+    }
+  else if (_is_active == NO)
+    {
+      NSColorPanel *colorPanel = [NSColorPanel sharedColorPanel];
+
+      [self activate: YES];
+
+      [[NSNotificationCenter defaultCenter]
+          addObserver: self
+             selector: @selector(deactivate)
+                 name: NSWindowWillCloseNotification
+               object: colorPanel];
+
+      [colorPanel setColor: _the_color];
+      [colorPanel orderFront: self];
+    }
+  else
+    [self deactivate];
 }
 
 - (BOOL) isOpaque
 {
-  return is_bordered;
+  return _is_bordered;
 }
 
 
@@ -151,17 +187,35 @@
 //
 - (void)activate: (BOOL)exclusive
 {
-  is_active = YES;
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+
+  if (exclusive == YES)
+    {
+      [nc postNotificationName: GSColorWellDidBecomeExclusiveNotification
+                        object: self];
+    }
+
+  [nc addObserver: self
+         selector: @selector(deactivate)
+             name: GSColorWellDidBecomeExclusiveNotification
+           object: nil];
+
+  _is_active = YES;
+  [self setNeedsDisplay: YES];
 }
 
 - (void)deactivate
 {
-  is_active = NO;
+  _is_active = NO;
+
+  [[NSNotificationCenter defaultCenter] removeObserver: self];
+
+  [self setNeedsDisplay: YES];
 }
 
 - (BOOL)isActive
 {
-  return is_active;
+  return _is_active;
 }
 
 //
@@ -169,19 +223,19 @@
 //
 - (NSColor *)color
 {
-  return the_color;
+  return _the_color;
 }
 
 - (void)setColor: (NSColor *)color
 {
-  ASSIGN(the_color, color);
-  [self display];
+  ASSIGN(_the_color, color);
+  [self setNeedsDisplay: YES];
 }
 
 - (void)takeColorFrom: (id)sender
 {
   if ([sender respondsToSelector: @selector(color)])
-    ASSIGN(the_color, [sender color]);
+    ASSIGN(_the_color, [sender color]);
 }
 
 //
@@ -189,13 +243,13 @@
 //
 - (BOOL)isBordered
 {
-  return is_bordered;
+  return _is_bordered;
 }
 
 - (void)setBordered: (BOOL)bordered
 {
-  is_bordered = bordered;
-  [self display];
+  _is_bordered = bordered;
+  [self setNeedsDisplay: YES];
 }
 
 //
@@ -251,17 +305,17 @@
 - (void) encodeWithCoder: (NSCoder*)aCoder
 {
   [super encodeWithCoder: aCoder];
-  [aCoder encodeObject: the_color];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_active];
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &is_bordered];
+  [aCoder encodeObject: _the_color];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_active];
+  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_is_bordered];
 }
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
   [super initWithCoder: aDecoder];
-  [aDecoder decodeValueOfObjCType: @encode(id) at: &the_color];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_active];
-  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_bordered];
+  [aDecoder decodeValueOfObjCType: @encode(id) at: &_the_color];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_active];
+  [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_is_bordered];
 
   return self;
 }
