@@ -1,3 +1,11 @@
+2001-12-02  Gregory Casamento <greg_casamento@yahoo.com>
+	* Tools/gopen.m 
+	Modified to eliminate the output of "No application for extension 
+	'app'"  when launching an application using gopen.  The code now 
+	checks to see if an app  is being launched first, then, if not, 
+	attempts to open the file.   It's also slightly more efficient to 
+	check for an app first before calling -[NSWorkspace openFile:].
+
 2001-12-01  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSWorkspace.m
