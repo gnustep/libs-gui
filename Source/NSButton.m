@@ -231,6 +231,7 @@ id MB_NSBUTTON_CLASS;
 
 - (void)highlight:(BOOL)flag
 {
+  [cell highlight: flag withFrame: bounds inView: self];
 }
 
 //
@@ -260,8 +261,8 @@ id MB_NSBUTTON_CLASS;
     NSApplication *theApp = [NSApplication sharedApplication];
     BOOL mouseUp, done;
     NSEvent *e;
-    unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask
-        | NSMouseMovedMask;
+    unsigned int event_mask = NSLeftMouseDownMask | NSLeftMouseUpMask |
+      NSMouseMovedMask | NSLeftMouseDraggedMask | NSRightMouseDraggedMask;
 
     NSDebugLog(@"NSButton mouseDown\n");
 

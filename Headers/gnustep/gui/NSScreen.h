@@ -33,11 +33,16 @@
 
 #include <AppKit/stdappkit.h>
 #include <AppKit/TypesandConstants.h>
+#include <Foundation/NSDictionary.h>
 
 @interface NSScreen : NSObject
 
 {
   // Attributes
+  NSMutableDictionary *device_desc;
+
+  // Reserved for backend use
+  void *be_screen_reserved;
 }
 
 //

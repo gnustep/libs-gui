@@ -1,3 +1,16 @@
+Fri Jun 21 11:09:50 1996  GNUstep Development  <gnustep@duncan.ocbi.com>
+
+	* Headers/gnustep/gui/NSScreen.h: Add instance variables for
+	a screen's device dictionary and for the backend.
+	* Source/NSButton.m (highlight:): Implement method.
+	(mouseDown:): Add mouse dragged events to tracking event mask.
+	* Source/NSCell.m (trackMouse:inRect:ofView:untilMouseUp:): Likewise.
+	* Source/NSMatrix.m (createInitialMatrix): Wrong initial capacity.
+	* Source/NSScreen.m: Initial implementation.
+	* Source/NSView.m (convertRectToWindow:): New method.
+	(convertPointToWindow:): New method.
+	(convertPoint:fromView:, convertPoint:toView:): Implement method.
+
 Wed Jun 19 14:25:46 1996  Scott Christley <scottc@net-community.com>
 
 	* Source/NSView.m (resizeSubviewsWithOldSize:): Implement method.

@@ -42,7 +42,7 @@ includedir = $(prefix)/include
 
 MAKEDEFINES =
 
-CC = @CC@
+CC = @CC@ -g
 CPPFLAGS = @CPPFLAGS@
 CFLAGS = -c $(GCCFLAGS) -I../Headers $(CPPFLAGS)
 
@@ -277,6 +277,7 @@ installdirs:
 
 install-lib: $(MAIN_FILE)$(libext)
 	$(INSTALL_PROGRAM) $(MAIN_FILE)$(libext) $(libdir)
+	$(RANLIB) $(libdir)/$(MAIN_FILE)$(libext)
 
 install-headers:
 	for file in $(GNUSTEP1_HEADERS); do \

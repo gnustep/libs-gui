@@ -872,6 +872,8 @@ inMode:(NSString *)mode
     case NSLeftMouseDown:
       {
 	NSView *v = [content_view hitTest:[theEvent locationInWindow]];
+	NSLog([content_view description]);
+	NSLog(@"\n");
 	[v mouseDown:theEvent];
 	last_point = [theEvent locationInWindow];
 	break;

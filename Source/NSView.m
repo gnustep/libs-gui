@@ -449,6 +449,53 @@ NSString *NSViewFocusChangedNotification;
 //
 // Converting Coordinates 
 //
+- (NSRect)convertRectToWindow:(NSRect)r
+{
+  NSRect f, t, a;
+  id s;
+
+  a = r;
+  f = [self frame];
+  s = [self superview];
+  // climb up the superview chain
+  while (s)
+    {
+      t = [s frame];
+      // translate frame
+      f.origin.x += t.origin.x;
+      f.origin.y += t.origin.y;
+      s = [s superview];
+    }
+  a.origin.x += f.origin.x;
+  a.origin.y += f.origin.y;
+
+  return a;
+}
+
+- (NSPoint)convertPointToWindow:(NSPoint)p
+{
+  NSRect f, t;
+  NSPoint a;
+  id s;
+
+  a = p;
+  f = [self frame];
+  s = [self superview];
+  // climb up the superview chain
+  while (s)
+    {
+      t = [s frame];
+      // translate frame
+      f.origin.x += t.origin.x;
+      f.origin.y += t.origin.y;
+      s = [s superview];
+    }
+  a.x += f.origin.x;
+  a.y += f.origin.y;
+
+  return a;
+}
+
 - (NSRect)centerScanRect:(NSRect)aRect
 {
   return NSZeroRect;
@@ -457,17 +504,58 @@ NSString *NSViewFocusChangedNotification;
 - (NSPoint)convertPoint:(NSPoint)aPoint
 	       fromView:(NSView *)aView
 {
-  return NSZeroPoint;
+  NSPoint p, q;
+  NSRect r;
+
+  // Must belong to the same window
+  if (([self window] != [aView window]) && (aView))
+    return NSZeroPoint;
+
+  // if aView is nil
+  // then converting from window
+  // so convert from the content from the content view of the window
+  if (aView == nil)
+    return [self convertPoint: aPoint fromView:[[self window] contentView]];
+
+  // Convert the point to window coordinates
+  p = [aView convertPointToWindow: aPoint];
+
+  // Convert out origin to window coordinates
+  q = [self convertPointToWindow: bounds.origin];
+
+  NSLog(@"point convert: %f %f %f %f\n", p.x, p.y, q.x, q.y);
+
+  // now translate
+  p.x -= q.x;
+  p.y -= q.y;
+
+  return p;
 }
 
 - (NSPoint)convertPoint:(NSPoint)aPoint
 		 toView:(NSView *)aView
 {
-  NSPoint p;
+  NSPoint p, q;
+  NSRect r;
 
   // Must belong to the same window
   if (([self window] != [aView window]) && (aView))
     return NSZeroPoint;
+
+  // if aView is nil
+  // then converting to window
+  if (aView == nil)
+    return [self convertPointToWindow: aPoint];
+
+  // convert everything to window coordinates
+  p = [self convertPointToWindow: aPoint];
+  r = [aView bounds];
+  q = [aView convertPointToWindow: r.origin];
+  NSLog(@"point convert: %f %f %f %f\n", p.x, p.y, q.x, q.y);
+
+  // now translate
+  p.x -= q.x;
+  p.y -= q.y;
 
   return p;
 }

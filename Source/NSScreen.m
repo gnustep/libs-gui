@@ -73,6 +73,17 @@ NSString *NSDeviceSize = @"Size";
 //
 // Instance methods
 //
+- init
+{
+  [super init];
+
+  // Create our device description dictionary
+  // The backend will have to fill the dictionary
+  device_desc = [NSMutableDictionary dictionary];
+
+  return self;
+}
+
 //
 // Reading Screen Information
 //
@@ -86,9 +97,11 @@ NSString *NSDeviceSize = @"Size";
   return NSZeroRect;
 }
 
+// Make a copy of our dictionary and return it
 - (NSDictionary *)deviceDescription
 {
-  return nil;
+  NSDictionary *d = [[NSDictionary alloc] initWithDictionary: device_desc];
+  return d;
 }
 
 @end
