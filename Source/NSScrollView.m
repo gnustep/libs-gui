@@ -23,6 +23,8 @@
    Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
+#include <math.h>
+
 #include <AppKit/NSScroller.h>
 #include <AppKit/NSClipView.h>
 #include <AppKit/NSScrollView.h>
@@ -212,11 +214,11 @@ static Class rulerViewClass = nil;
 
   if (wasAScrollerButton) {
     if (scroller == _horizScroller) {
-      point.x = clipViewBounds.origin.x + amount;
-      point.y = clipViewBounds.origin.y;
+      point.x = -clipViewBounds.origin.x + amount;
+      point.y = -clipViewBounds.origin.y;
     }
     else if (scroller == _vertScroller) {
-      point.x = clipViewBounds.origin.x;
+      point.x = -clipViewBounds.origin.x;
       /* For the vertical scroller the amount should actually be reversed */
       amount = -amount;
 
@@ -227,7 +229,7 @@ static Class rulerViewClass = nil;
 
       NSDebugLog (@"increment/decrement: amount = %f, flipped = %d",
 	      amount, [_contentView isFlipped]);
-      point.y = clipViewBounds.origin.y + amount;
+      point.y = -clipViewBounds.origin.y + amount;
     }
     else {
       /* do nothing */
@@ -238,10 +240,10 @@ static Class rulerViewClass = nil;
     if (scroller == _horizScroller) {
       point.x = floatValue * (documentRect.size.width
 			      - clipViewBounds.size.width);
-      point.y = clipViewBounds.origin.y;
+      point.y = -clipViewBounds.origin.y;
     }
     else if (scroller == _vertScroller) {
-      point.x = clipViewBounds.origin.x;
+      point.x = -clipViewBounds.origin.x;
       if (![_contentView isFlipped])
 	floatValue = 1 - floatValue;
       point.y = floatValue * (documentRect.size.height
@@ -262,7 +264,7 @@ static Class rulerViewClass = nil;
 
     if (newClipViewBounds.origin.x != clipViewBounds.origin.x) {
       /* Update the horizontal scroller */
-      floatValue = newClipViewBounds.origin.x
+      floatValue = -newClipViewBounds.origin.x
 		   / (documentRect.size.width - newClipViewBounds.size.width);
       [_horizScroller setFloatValue:floatValue];
       [_horizScroller display];
@@ -271,7 +273,7 @@ static Class rulerViewClass = nil;
 
     if (newClipViewBounds.origin.x != clipViewBounds.origin.y) {
       /* Update the vertical scroller */
-      floatValue = newClipViewBounds.origin.y
+      floatValue = -newClipViewBounds.origin.y
 		  / (documentRect.size.height - newClipViewBounds.size.height);
       /* Take care if the document view is not flipped by reversing the meaning
          of the float value. */

@@ -466,7 +466,6 @@ static id NSApp;
 			   dequeue:(BOOL)flag
 {
   NSEvent *event = nil;
-  int i, j;
 
   event = [self _eventMatchingMask:mask];
 

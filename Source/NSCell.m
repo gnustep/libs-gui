@@ -709,7 +709,8 @@
     }
 
     // should we continue tracking?
-    if (![self continueTracking:last_point at:point inView:controlView]) {
+    if (!done
+	&& ![self continueTracking:last_point at:point inView:controlView]) {
       NSDebugLog(@"NSCell stop tracking\n");
       done = YES;
     }

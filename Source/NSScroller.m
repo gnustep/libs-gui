@@ -453,7 +453,7 @@ static NSButtonCell* knobCell = nil;
 
     if (theCell) {
       NSDebugLog (@"tracking cell %x", theCell);
-      /* Track the mouse while mouse goes up */
+      /* Track the mouse until mouse goes up */
       shouldReturn = [theCell trackMouse:theEvent
 			      inRect:rect
 			      ofView:self
@@ -471,7 +471,7 @@ static NSButtonCell* knobCell = nil;
     theEvent = [[NSApplication sharedApplication]
 		 nextEventMatchingMask:eventMask
 		 untilDate:[NSDate distantFuture] 
-		 inMode:NSEventTrackingRunLoopMode // NSDefaultRunLoopMode
+		 inMode:NSEventTrackingRunLoopMode
 		 dequeue:YES];
     eventType = [theEvent type];
     location = [self convertPoint:[theEvent locationInWindow] fromView:nil];
@@ -496,7 +496,7 @@ static NSButtonCell* knobCell = nil;
 
 - (void)drawRect:(NSRect)rect
 {
-  NSLog (@"NSScroller drawRect: ((%f, %f), (%f, %f))",
+  NSDebugLog (@"NSScroller drawRect: ((%f, %f), (%f, %f))",
 	rect.origin.x, rect.origin.y, rect.size.width, rect.size.height);
 
   /* Draw the scroller buttons */
@@ -517,7 +517,7 @@ static NSButtonCell* knobCell = nil;
   NSRect rect = [self rectForPart:(whichButton == NSScrollerIncrementArrow
 					? NSScrollerIncrementLine
 					: NSScrollerDecrementLine)];
-  id theCell;
+  id theCell = nil;
 
   NSDebugLog (@"position of %s cell is (%f, %f)",
 	 (whichButton == NSScrollerIncrementArrow ? "increment" : "decrement"),

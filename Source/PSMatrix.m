@@ -71,6 +71,17 @@ static const float pi = 3.1415926535897932384626433;
   C *= sy; D *= sy;
 }
 
+- (void)scaleTo:(float)sx :(float)sy
+{
+  float angle = rotationAngle;
+
+  A = sx; B = 0;
+  C = 0; D = sy;
+  if (rotationAngle) {
+    [self rotateByAngle:angle];
+    rotationAngle = angle;
+  }
+}
 - (void)translateToPoint:(NSPoint)point
 {
   float newTX, newTY;

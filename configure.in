@@ -6,6 +6,7 @@ AC_INIT(Source/NSApplication.m)
 #   Copyright (C) 1996 Free Software Foundation, Inc.
 #
 #   Written by:  Scott Christley <scottc@net-community.com>
+#		 Ovidiu Predescu <ovidiu@net-community.com>
 #
 #   This file is part of the GNUstep GUI Library.
 #
@@ -34,6 +35,22 @@ AC_CONFIG_HEADER(Headers/gnustep/gui/config.h)
 #--------------------------------------------------------------------
 AC_CANONICAL_SYSTEM
 
+changequote(,)dnl
+case "${host_cpu}" in
+    i[45]86)	host_cpu=i386;;
+    hppa1.1)	host_cpu=hppa;;
+esac
+
+case "${host_os}" in
+    solaris2*)	host_os=solaris2;;
+esac
+changequote([,])dnl
+
+HOST=$host
+HOST_CPU=$host_cpu
+HOST_VENDOR=$host_vendor
+HOST_OS=$host_os
+
 #--------------------------------------------------------------------
 # Find the compiler
 #--------------------------------------------------------------------
@@ -57,6 +74,16 @@ AC_SUBST(PIPE)
 # Standard ANSI headers
 #--------------------------------------------------------------------
 AC_HEADER_STDC
+
+#--------------------------------------------------------------------
+# Look for the X directory because the DPS related files can be there
+# in case we are on a DPS native machine
+#--------------------------------------------------------------------
+AC_PATH_X
+if test $HOST_OS = solaris2; then
+    ac_x_includes=$ac_x_includes/X11
+fi
+CPPFLAGS="$CPPFLAGS -I$ac_x_includes"
 
 #--------------------------------------------------------------------
 # Look for the TIFF library
@@ -107,6 +134,8 @@ AC_CHECK_LIB(pcthread, pthread_create,
 	    ,
 	    AC_CHECK_LIB(pthread, pthread_create))
 AC_CHECK_LIB(m, sqrt)
+AC_CHECK_LIB(nsl, chown)
+AC_CHECK_LIB(socket, accept)
 
 # Determine the Foundation library
 AC_FIND_FOUNDATION

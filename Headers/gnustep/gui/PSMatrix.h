@@ -39,6 +39,7 @@
 - (void)translateToPoint:(NSPoint)point;
 - (void)rotateByAngle:(float)angle;
 - (void)scaleBy:(float)sx :(float)sy;
+- (void)scaleTo:(float)sx :(float)sy;
 - (void)makeIdentityMatrix;
 - (float)rotationAngle;
 - (void)setFrameOrigin:(NSPoint)point;

@@ -92,25 +92,19 @@
 
 - (void)scrollToPoint:(NSPoint)point
 {
+#if DEBUGLOG
   NSPoint currentPoint = [self bounds].origin;
 
-  NSDebugLog (@"scrollToPoint: current point (%f, %f), point (%f, %f)",
+  NSLog (@"scrollToPoint: current point (%f, %f), point (%f, %f)",
 	currentPoint.x, currentPoint.y,
 	point.x, point.y);
+#endif
 
   point = [self constrainScrollPoint:point];
-  [super setBoundsOrigin:point];
+  [super setBoundsOrigin:NSMakePoint(-point.x, -point.y)];
   if (_copiesOnScroll)
     /* TODO: move the visible portion of the document */;
   else {
-    NSPoint frameOrigin = [_documentView frame].origin;
-    NSPoint newFrameOrigin;
-
-    newFrameOrigin.x = frameOrigin.x - (point.x - currentPoint.x);
-    newFrameOrigin.y = frameOrigin.y - (point.y - currentPoint.y);
-    [_documentView setPostsFrameChangedNotifications:NO];
-    [_documentView setFrameOrigin:newFrameOrigin];
-    [_documentView setPostsFrameChangedNotifications:YES];
     [self display];
     [[self window] flushWindow];
   }

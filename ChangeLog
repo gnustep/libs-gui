@@ -1,3 +1,18 @@
+Fri Aug 22 11:40:45 1997  Ovidiu Predescu <ovidiu@net-community.com>
+
+	Fixed scrolling to work with the new scalation/rotation code.
+	* Source/PSMatrix.m (-scaleTo:): New method.
+	* Source/NSCell.m (-trackMouse:...): Check if done before asking if
+	needs to continue tracking.
+	* Source/NSClipView.m (-scrollToPoint:): Set the bounds origin to the
+	oposite point.
+	* Source/NSScrollView.m (-_doScroll:): Take into consideration the
+	bounds origin which is in the third quadrant.
+	* Source/NSView.m (-setBounds:): Use scaleTo: rather than scaleBy:.
+	(-setBoundsSize:): Likewise.
+	(-hitTest:): Fixed to work with views that have the bounds origin other
+	that (0, 0).
+
 Mon Aug 18 09:38:27 1997  Ovidiu Predescu <ovidiu@net-community.com>
 
 	Start the port to NeXT PDO under Solaris.

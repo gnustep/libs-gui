@@ -461,7 +461,7 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 {
   bounds = aRect;
   [boundsMatrix setFrameOrigin:bounds.origin];
-  [boundsMatrix scaleBy:frame.size.width / bounds.size.width
+  [boundsMatrix scaleTo:frame.size.width / bounds.size.width
 		       :frame.size.height / bounds.size.height];
 
   if (post_bounds_changes)
@@ -482,7 +482,7 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
 - (void)setBoundsSize:(NSSize)newSize
 {
   bounds.size = newSize;
-  [boundsMatrix scaleBy:frame.size.width / bounds.size.width
+  [boundsMatrix scaleTo:frame.size.width / bounds.size.width
 		       :frame.size.height / bounds.size.height];
 
   if (post_bounds_changes)
@@ -991,9 +991,11 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
   int i, count;
   NSView *v = nil, *w;
 
-  // If not within our bounds then immediately return
+  // If not within our frame then immediately return
+  if (![self mouse:aPoint inRect:frame])
+    return nil;
+
   p = [self convertPoint:aPoint fromView:super_view];
-  if (![self mouse:p inRect:bounds]) return nil;
 
   // Check our sub_views
   count = [sub_views count];
