@@ -215,6 +215,9 @@ NSMutableArray *views;
 	if (!super_view) 									// if no superview then
 		return;											// just return
 
+	if([window firstResponder] == self)
+		[window makeFirstResponder:window];
+	
 	[self viewWillMoveToWindow:nil];
 
 	views = [super_view subviews];

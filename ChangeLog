@@ -1,3 +1,8 @@
+Wed Dec 16 1998  Felipe A. Rodriguez  <far@ix.netcom.com>
+
+	* NSWindow.m acceptsFirstResponder implement.
+	* NSView.m: removeFromSuperview remove view from responder chain.
+
 Wed Dec 16 15:30:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
         * NSResponder.m: bugfix - now beeps when it can't handle a key down.
