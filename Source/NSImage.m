@@ -183,6 +183,8 @@ static Class			cacheClass = 0;
       NSString *the_name = aName;
       main_bundle = [NSBundle mainBundle];
       ext  = [aName pathExtension];
+      if (ext && [ext length] == 0)
+      	ext = nil;
 
       /* Check if extension is one of the image types */
       array = [self imageFileTypes];

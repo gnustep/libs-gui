@@ -1,3 +1,7 @@
+2000-05-23  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSImage.m ([NSImage +imageNamed:]): Check for nil extension.
+
 2000-05-12 Georg Fleischmann
 
         * gui/Model/GMAppKit.m
