@@ -1,3 +1,9 @@
+Wed Oct 17 04:30:25 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSTabView.m ([NSTabView -dealloc]): Do not release the
+	selected tab view item (Patch by Ludovic Marcotte
+	<ludovi@Sophos.ca>).
+
 Wed Oct 17 18:18:54 2001  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSTableView.m ([-setDataSource:]): Do not release the old
