@@ -1,3 +1,10 @@
+Wed Sep  1  9:28:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+        * Tools/GNUmakefile.preamble: patch by doko@cs.tu-berlin.de so that
+        make_services is linked without the gste-gui library.
+	* Tools/make_services.m: minor fixes to get rid of some compiler
+	warnings - remove unused variables etc.
+
 Wed Sep  1  9:17:00 1999  n.pero@mi.flashnet.it
 	* Source/NSBox.m: (-initWithFrame:) changed default border type to 
 	NSGrooveBorder (as in MacOS-X).  Resize content view to fit the box. 

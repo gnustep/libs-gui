@@ -31,6 +31,7 @@
 #include	<Foundation/NSDebug.h>
 #include	<Foundation/NSDistributedLock.h>
 #include	<Foundation/NSAutoreleasePool.h>
+#include	<Foundation/NSPathUtilities.h>
 #include	<Foundation/NSSerialization.h>
 
 static void scanDirectory(NSMutableDictionary *services, NSString *path);
@@ -347,7 +348,6 @@ static void addExtensionsForApplication(NSDictionary *info, NSString *app)
       while (i-- > 0)
         {
           NSDictionary          *t;
-          NSString              *s;
           NSArray               *a1;
           id                    o1 = [a0 objectAtIndex: i];
           unsigned int          j;
@@ -460,7 +460,6 @@ scanDirectory(NSMutableDictionary *services, NSString *path)
 	  if ([mgr fileExistsAtPath: newPath isDirectory: &isDir] && isDir)
 	    {
 	      NSString		*oldPath;
-	      NSString		*infPath;
 	      NSBundle		*bundle;
 	      NSDictionary	*info;
 
