@@ -57,18 +57,31 @@ typedef enum {
   GSGlyphInscription,
 } GSGlyphAttributes;
 
-/*
- * A structure to hold information about a glyph in the glyph stream
- * NB. This structure should be no more than 32 bits, so it can fit
- * in as a GSIArray element.
- */
-typedef	struct {
-  unsigned offset:24;			// characters in from start of chunk
-  unsigned drawsOutsideLineFragment:1;	// glyph bigger than fragment?
-  unsigned isNotShown:1;		// glyph invisible (space, tab etc)
-  unsigned inscription:3;		// NSGlyphInscription info
-  unsigned generation:3;		// Other attributes
+typedef	union {
+  /*
+   * A structure to hold information about a glyph in the glyph stream
+   * NB. This structure should be no more than 64 bits, so it can fit
+   * in as a GSIArray element of the same size as the NSRange structure
+   * used to hold gap information.
+   */
+  struct {
+    unsigned offset:24;			// characters in from start of chunk
+    unsigned drawsOutsideLineFragment:1;	// glyph bigger than fragment?
+    unsigned isNotShown:1;		// glyph invisible (space, tab etc)
+    unsigned inscription:3;		// NSGlyphInscription info
+    unsigned generation:3;		// Other attributes
+    NSGlyph  glyph;			// The glyph itsself
+  } g;
+  NSRange	r;			// A range of invalidated glyphs (gap)
 } GSGlyphAttrs;
+
+#define	gRange(A)		((A).ext.r)
+#define	gGlyph(A)		((A).ext.g.glyph)
+#define	gOffset(A)		((A).ext.g.offset)
+#define	gDrawsOutside(A)	((A).ext.g.drawsOutsideLineFragment)
+#define	gIsNotShown(A)		((A).ext.g.isNotShown)
+#define	gInscription(A)		((A).ext.g.inscription)
+#define	gGeneration(A)		((A).ext.g.generation)
 
 
 
@@ -98,9 +111,9 @@ typedef	struct {
 static NSComparisonResult
 offsetSort(GSIArrayItem i0, GSIArrayItem i1)
 {
-  if ((i0.ext).offset < (i1.ext).offset)
+  if (gOffset(i0) < gOffset(i1))
     return NSOrderedAscending;
-  else if ((i0.ext).offset > (i1.ext).offset)
+  else if (gOffset(i0) > gOffset(i1))
     return NSOrderedDescending;
   else
     return NSOrderedSame;
@@ -151,8 +164,8 @@ offsetSort(GSIArrayItem i0, GSIArrayItem i1)
  * 1. The glyph stream is a continuous array of glyphs ranging from 0 up.
  * 2. The character index of a glyph in the glyph stream is greater than
  *    or equal to that of the glyph that preceeds it.
- * 3. The gap array contains glyph indices in numeric order and where no
- *    index exceeds the length of the glyph stream.
+ * 3. The gap array contains ranges of invalidated glyphs in numeric order
+ *    and where no index exceeds the length of the glyph stream.
  * 4. The glyph stream consists of at least one chunk whose glyph index
  *    is zero.
  */
@@ -166,8 +179,7 @@ offsetSort(GSIArrayItem i0, GSIArrayItem i1)
 typedef struct {
   unsigned	charIndex;	// Index of character at start of chunk
   unsigned	glyphIndex;	// Index of glyph at start of chunk
-  GSIArray_t	glyphs;		// Array of glyphs.
-  GSIArray_t	attrs;		// Array of attributes.
+  GSIArray_t	glyphs;		// Array of glyphs and their attributes.
 } GSGlyphChunk;
 
 /*
@@ -218,7 +230,6 @@ GSCreateGlyphChunk(unsigned glyphIndex, unsigned charIndex)
   chunk->charIndex = charIndex;
   chunk->glyphIndex = glyphIndex;
   GSIArrayInitWithZoneAndCapacity(&chunk->glyphs, NSDefaultMallocZone(), 8);
-  GSIArrayInitWithZoneAndCapacity(&chunk->attrs, NSDefaultMallocZone(), 8);
   return chunk;
 }
 
@@ -226,7 +237,6 @@ static void
 GSDestroyGlyphChunk(GSGlyphChunk *chunk)
 {
   GSIArrayClear(&chunk->glyphs);
-  GSIArrayClear(&chunk->attrs);
   NSZoneFree(NSDefaultMallocZone(), chunk);
 }
 
@@ -291,17 +301,14 @@ typedef struct {
 #define	_gaps		((GSIArray)(((lmDefs)lm)->_glyphGaps))
 
 
-static GSGlyphAttrs	_Attrs(NSLayoutManager *lm);
 static BOOL		_Back(NSLayoutManager *lm);
 static unsigned		_CharEnd(NSLayoutManager *lm);
 static unsigned		_CharIndex(NSLayoutManager *lm);
-static NSGlyph		_Glyph(NSLayoutManager *lm);
 static unsigned		_GlyphEnd(NSLayoutManager *lm);
 static unsigned		_GlyphIndex(NSLayoutManager *lm);
+static GSIArrayItem	*_Info(NSLayoutManager *lm);
 static BOOL		_JumpToChar(NSLayoutManager *lm, unsigned charIndex);
 static BOOL		_JumpToGlyph(NSLayoutManager *lm, unsigned glyphIndex);
-static void		_SetAttrs(NSLayoutManager *lm, GSGlyphAttrs a);
-static void		_SetGlyph(NSLayoutManager *lm, NSGlyph g);
 static BOOL		_Step(NSLayoutManager *lm);
 
 
@@ -382,11 +389,7 @@ _Adjust(NSLayoutManager *lm, unsigned from, int lengthChange)
 	{
 	  while (offset < GSIArrayCount(&chunk->glyphs))
 	    {
-	      GSGlyphAttrs	a;
-
-	      a = GSIArrayItemAtIndex(&chunk->attrs, offset).ext;
-	      a.offset += lengthChange;
-	      GSIArraySetItemAtIndex(&chunk->attrs, (GSIArrayItem)a, offset);
+	      gOffset(GSIArrayItems(&chunk->glyphs)[offset]) += lengthChange;
 	      offset--;
 	    }
 	  index++;
@@ -405,15 +408,6 @@ _Adjust(NSLayoutManager *lm, unsigned from, int lengthChange)
 }
 
 /*
- * Return the current glyph attributes.
- */
-static inline GSGlyphAttrs
-_Attrs(NSLayoutManager *lm)
-{
-  return GSIArrayItemAtIndex(&_chunk->attrs, _offset).ext;
-}
-
-/*
  * Return the index of the character immediately beyond the last
  * generated glyph.
  */
@@ -429,11 +423,10 @@ _CharEnd(NSLayoutManager *lm)
       unsigned		j;
 
       c = (GSGlyphChunk*)GSIArrayItemAtIndex(_chunks, i).ptr;
-      j = GSIArrayCount(&c->attrs);
+      j = GSIArrayCount(&c->glyphs);
       if (j-- > 0)
 	{
-          return c->charIndex + (GSIArrayItemAtIndex(&c->attrs, j).ext).offset
-	    + 1;
+          return c->charIndex + gOffset(GSIArrayItemAtIndex(&c->glyphs, j)) + 1;
 	}
     }
   return 0;
@@ -470,16 +463,7 @@ static inline unsigned
 _CharIndex(NSLayoutManager *lm)
 {
   return _chunk->charIndex
-    + (GSIArrayItemAtIndex(&_chunk->attrs, _offset).ext).offset;
-}
-
-/*
- * Return the value of the current glyph.
- */
-static inline NSGlyph
-_Glyph(NSLayoutManager *lm)
-{
-  return (NSGlyph)GSIArrayItemAtIndex(&_chunk->glyphs, _offset).ulng;
+    + gOffset(GSIArrayItemAtIndex(&_chunk->glyphs, _offset));
 }
 
 /*
@@ -492,13 +476,22 @@ _GlyphIndex(NSLayoutManager *lm)
 }
 
 /*
+ * Return the current glyph and attributes
+ */
+static GSIArrayItem *
+_Info(NSLayoutManager *lm)
+{
+  return GSIArrayItems(&_chunk->glyphs) + _offset;
+}
+
+/*
  * Locate the first glyph corresponding to the specified character index
  * and make it the current glyph.
  */
 static BOOL
 _JumpToChar(NSLayoutManager *lm, unsigned charIndex)
 {
-  GSGlyphAttrs	tmp;
+  GSIArrayItem	tmp;
   GSGlyphChunk	*c;
   unsigned	i;
   unsigned	o;
@@ -506,8 +499,8 @@ _JumpToChar(NSLayoutManager *lm, unsigned charIndex)
 
   i = GSChunkForCharIndex(_chunks, charIndex);
   c = (GSGlyphChunk*)GSIArrayItemAtIndex(_chunks, i).ptr;
-  tmp.offset = charIndex - c->charIndex;
-  o = GSIArrayInsertionPosition(&c->attrs, (GSIArrayItem)tmp, offsetSort); 
+  gOffset(tmp) = charIndex - c->charIndex;
+  o = GSIArrayInsertionPosition(&c->glyphs, tmp, offsetSort); 
   if (o == 0)
     {
       return NO;	// Insertion position not found.
@@ -519,7 +512,7 @@ _JumpToChar(NSLayoutManager *lm, unsigned charIndex)
    * character index we were asked for.  If it doesn't we have probably
    * failed to find a glyph matching the character.
    */
-  co = (GSIArrayItemAtIndex(&c->attrs, o).ext).offset;
+  co = gOffset(GSIArrayItemAtIndex(&c->glyphs, o));
   if (co + c->charIndex != charIndex)
     {
       if ([((lmDefs)lm)->_textStorage length] > charIndex)
@@ -547,7 +540,7 @@ _JumpToChar(NSLayoutManager *lm, unsigned charIndex)
   /*
    * Locate the *first* glyph for this character index...
    */
-  while (o > 0 && (GSIArrayItemAtIndex(&c->attrs, o-1).ext).offset == co)
+  while (o > 0 && gOffset(GSIArrayItemAtIndex(&c->glyphs, o-1)) == co)
     {
       o--;
     }
@@ -602,24 +595,6 @@ _JumpToGlyph(NSLayoutManager *lm, unsigned glyphIndex)
     }
 }
 
-/*
- * Set the attributes of the current glyph
- */
-static inline void
-_SetAttrs(NSLayoutManager *lm, GSGlyphAttrs a)
-{
-  GSIArraySetItemAtIndex(&_chunk->attrs, (GSIArrayItem)a, _offset);
-}
-
-/*
- * Set the value of the current glyph
- */
-static inline void
-_SetGlyph(NSLayoutManager *lm, NSGlyph g)
-{
-  GSIArraySetItemAtIndex(&_chunk->glyphs, (GSIArrayItem)g, _offset);
-}
-
 #if	USE_GLYPHS
 static void
 _Sane(NSLayoutManager *lm)
@@ -654,15 +629,15 @@ _Sane(NSLayoutManager *lm)
       count = GSIArrayCount(&chunk->glyphs);
       if (count > 0)
 	{
-	  GSGlyphAttrs	a;
+	  GSIArrayItem	a;
 	  unsigned	i;
 
 	  for (i = 0; i < count; i++)
 	    {
-	      a = GSIArrayItemAtIndex(&chunk->attrs, i).ext;
-	      NSCAssert(chunk->charIndex + a.offset >= lastChar,
+	      a = GSIArrayItemAtIndex(&chunk->glyphs, i);
+	      NSCAssert(chunk->charIndex + gOffset(a) >= lastChar,
 		NSInternalInconsistencyException);
-	      lastChar = chunk->charIndex + a.offset;
+	      lastChar = chunk->charIndex + gOffset(a);
 	    }
 	  lastGlyph = chunk->glyphIndex + count - 1;
 	}
@@ -699,15 +674,15 @@ _GLog(NSLayoutManager *lm, SEL _cmd)
         count, chunk->glyphIndex, chunk->charIndex);
       if (count > 0)
 	{
-	  GSGlyphAttrs	a;
+	  GSIArrayItem	a;
 	  unsigned	i;
 
 	  for (i = 0; i < count; i++)
 	    {
-	      a = GSIArrayItemAtIndex(&chunk->attrs, i).ext;
+	      a = GSIArrayItemAtIndex(&chunk->glyphs, i);
 	      fprintf(stderr, "     %4d %4d %c",
 		chunk->glyphIndex + i,
-	     	chunk->charIndex + a.offset,
+	     	chunk->charIndex + gOffset(a),
 		(char)GSIArrayItemAtIndex(&chunk->glyphs, i).ulng);
 	    }
 	  fprintf(stderr, "\n");
@@ -737,6 +712,22 @@ _GLog(NSLayoutManager *lm, SEL _cmd)
 @end
 
 
+/**
+ * <p>
+ * A layout manager handles layout and glyph management for a text
+ * storage.  A glyph is a symbol draewn to a display, and while
+ * there is usually a one to one correspondence between glyphs
+ * and characters in the text storage, that is no always the case.</p>
+ * <p>
+ * Sometimes a group of characters (a unicode composed character sequence)
+ * can represent a single glyph, sometimes a single unicode character is
+ * represented by multiple glyphs.</p>
+ * <p>
+ * eg. The text storage may contain the unichar o-umlaut and
+ * the glyph stream could contain the two glyphs "o" and umlaut.
+ * In this case, we would have two glyphs, with different glyph indexes,
+ * both corresponding to a single character index.</p>
+ */
 @implementation NSLayoutManager
 
 + (id) allocWithZone: (NSZone*)z
@@ -753,9 +744,9 @@ _GLog(NSLayoutManager *lm, SEL _cmd)
 }
 
 /** <init />
- * Sets up this instance. Finds the shared 
- * NSGlyphGenerator and the shared default NSTypesetter. 
- * The NSLayoutManager starts off without a NSTextStorage
+ * Sets up this instance. We should in future find a glyph generator and a
+ * typesetter to use with glyphs management, but for now we just set up
+ * the glyph storage.
  */
 - (id) init
 {
@@ -831,10 +822,10 @@ _GLog(NSLayoutManager *lm, SEL _cmd)
 }
 
 /**
- * The set method generally should not be called directly, but you may
- * want to override it.  Used to get and set the text storage.  The
- * set method is called by the NSTextStorage's
- * addTextStorageObserver/removeTextStorageObserver methods.
+ * Sets the text storage for the layout manager.
+ * Use -replaceTextStorage: instead as a rule. - this method is really
+ * more for internal use by the text system.
+ * Invalidates the entire layout (should it??)
  */
 - (void) setTextStorage: (NSTextStorage*)aTextStorage
 {
@@ -868,18 +859,18 @@ _GLog(NSLayoutManager *lm, SEL _cmd)
    invalidatedRange: aRange];
 }
 
+/**
+ * Returns the text storage for this layout manager.
+ */
 - (NSTextStorage*) textStorage
 {
   return _textStorage;
 }
 
 /**
- * This method should be used instead of the primitive
- * -setTextStorage: if you need to replace a NSLayoutManager's
- * NSTextStorage with a new one leaving the rest of the web intact.
- * This method deals with all the work of making sure the
- * NSLayoutManager doesn't get deallocated and transferring all the
- * NSLayoutManager s on the old NSTextStorage to the new one.
+ * Replaces the test storage with a new one.<br />
+ * Takes care (since layout managers are owned by text storages)
+ * not to get self deallocated.
  */
 - (void) replaceTextStorage: (NSTextStorage*)newTextStorage
 {
@@ -893,13 +884,15 @@ _GLog(NSLayoutManager *lm, SEL _cmd)
 
   while ((object = (NSLayoutManager*)[enumerator nextObject]) != nil)
     {
+      RETAIN(object);
       [_textStorage removeLayoutManager: object];
       [newTextStorage addLayoutManager: object];
+      RELEASE(object);
     }
 }
 
-/*
- * Setting text containers
+/**
+ * Return the text containers
  */
 - (NSArray*) textContainers
 {
@@ -907,9 +900,7 @@ _GLog(NSLayoutManager *lm, SEL _cmd)
 }
 
 /**
- * Add a container to the end of the array.  Must invalidate layout of
- * all glyphs after the previous last container (ie glyphs that were
- * not previously laid out because they would not fit anywhere).
+ * Adds a container to the layout manager.
  */
 - (void) addTextContainer: (NSTextContainer*)obj
 {
@@ -919,7 +910,7 @@ _GLog(NSLayoutManager *lm, SEL _cmd)
       
       [_textContainers addObject: obj];
       [obj setLayoutManager: self];
-      // TODO: Invalidate layout
+      // FIXME: Invalidate layout beyond previous last container
       _textContainersCount++;
       /* NB: We do not retain this here !  It's already retained in the
 	 array. */
@@ -935,9 +926,7 @@ _GLog(NSLayoutManager *lm, SEL _cmd)
 }
 
 /**
- * Insert a container into the array before the container at index.
- * Must invalidate layout of all glyphs in the containers from the one
- * previously at index to the last container.
+ * Inserts a new text container at index.
  */
 - (void) insertTextContainer: (NSTextContainer*)aTextContainer
 		     atIndex: (unsigned)index
@@ -954,18 +943,17 @@ _GLog(NSLayoutManager *lm, SEL _cmd)
 	
       [tv _updateMultipleTextViews];
     }
-  // TODO: Invalidate layout
+  // FIXME: Invalidate layout from thsi container onwards
 }
 
 /**
- * Removes the container at index from the array.  Must invalidate
- * layout of all glyphs in the container being removed and any
- * containers which come after it.
+ * Removes the text container at index.
  */
 - (void) removeTextContainerAtIndex: (unsigned)index
 {
   int i;
 
+  // FIXME  invalidate from thsi point onwards.
   [_textContainers removeObjectAtIndex: index];
   _textContainersCount--;
   if (_textContainersCount > 0)
@@ -987,18 +975,20 @@ _GLog(NSLayoutManager *lm, SEL _cmd)
 }
 
 /**
- * This removes all glyphs for the old character range, adjusts the
- * character indices of all the subsequent glyphs by the change in
- * length, and invalidates the new character range.  If
- * actualCharRange is non-NULL it will be set to the actual range
- * invalidated after any necessary expansion.
+ * This determines the glyph range corresponding to aRange and
+ * marks the glyphs as invalid.  It adjusts the character locations
+ * of all glyphs beyond this by lengthChange.  It returns the
+ * actual character range corresponding to the invalidated glyphs
+ * if actualRange is non-nul.
  */
 - (void) invalidateGlyphsForCharacterRange: (NSRange)aRange
 			    changeInLength: (int)lengthChange
 		      actualCharacterRange: (NSRange*)actualRange
 {
+  GSIArrayItem	item;
   NSRange	cRange;
   NSRange	gRange;
+  unsigned	count;
 
 _GLog(self,_cmd);
   if (actualRange != 0)
@@ -1025,46 +1015,98 @@ _GLog(self,_cmd);
       return;		// Nothing to do.
     }
 
-  [self deleteGlyphsInRange: gRange];
-
   /*
    * Now adjust character locations for glyphs if necessary.
    */
   _Adjust(self, gRange.location, lengthChange);
 
   /*
-   * Unless the 'lengthChange' accounts for the entire character range
-   * or the deleted glyphs were at the end of the glyph stream, we must
-   * note the presence of a gap.
+   * Now adjust invalidated gaps in the glyph stream.
    */
-  if (cRange.length + lengthChange > -1 && gRange.location < _GlyphEnd(self))
+  count = GSIArrayCount((GSIArray)_glyphGaps);
+  if (count == 0)
     {
-      unsigned	count = GSIArrayCount((GSIArray)_glyphGaps);
+      gRange(item) = gRange;
+      GSIArrayInsertItem((GSIArray)_glyphGaps, item, 0);
+    }
+  else
+    {
+      unsigned	pos;
 
-      if (count == 0)
-        {
-	  GSIArrayInsertItem((GSIArray)_glyphGaps,
-	    (GSIArrayItem)gRange.location, 0);
-	}
-      else
-        {
-	  unsigned	pos;
+      for (pos = 0; pos < count; pos++)
+	{
+	  NSRange	val;
+	  NSRange	tmp;
 
-	  for (pos = 0; pos < count; pos++)
+	  val = gRange(GSIArrayItemAtIndex((GSIArray)_glyphGaps, pos));
+
+	  /*
+	   * If there is no overlap, we must either insert the new gap
+	   * before the found one, or continue to look at the next gap.
+	   */
+	  tmp = NSIntersectionRange(gRange, val);
+	  if (tmp.length == 0)
 	    {
-	      unsigned	val;
-
-	      val = GSIArrayItemAtIndex((GSIArray)_glyphGaps, pos).ulng;
-	      if (val == gRange.location)
+	      if (gRange.location < val.location)
 		{
-		  break;	// Gap already marked here.
-		}
-	      if (val > gRange.location)
-		{
-		  GSIArrayInsertItem((GSIArray)_glyphGaps,
-		    (GSIArrayItem)gRange.location, pos);
+		  gRange(item) = gRange;
+		  GSIArrayInsertItem((GSIArray)_glyphGaps, item, pos);
 		  break;
 		}
+	      continue;
+	    }
+
+	  /*
+	   * If the new gap is entirely within an existing one, we
+	   * don't need to do anything.
+	   */
+	  if (val.location <= gRange.location
+	    && NSMaxRange(val) >= NSMaxRange(gRange))
+	    {
+	      break;
+	    }
+
+	  /*
+	   * Update the existing gap to be a union with our new gap.
+	   */
+	  gRange = NSUnionRange(gRange, val);
+	  gRange(item) = gRange;
+	  GSIArraySetItemAtIndex((GSIArray)_glyphGaps, item, pos);
+
+	  while (pos + 1 < count)
+	    {
+	      val = gRange(GSIArrayItemAtIndex((GSIArray)_glyphGaps, pos + 1));
+
+	      /*
+	       * If there is no overlap with the next gap, we have
+	       * nothing more to do.
+	       */
+	      tmp = NSIntersectionRange(gRange, val);
+	      if (tmp.length == 0)
+		{
+		  break;
+		}
+
+	      /*
+	       * If the next gap extends beyond our gap, we can remove
+	       * the current one and replace the next one with a union.
+	       */
+	      if (val.location <= gRange.location
+		&& NSMaxRange(val) >= NSMaxRange(gRange))
+		{
+		  GSIArrayRemoveItemsFromIndex((GSIArray)_glyphGaps, pos);
+		  count--;
+		  gRange(item) = NSUnionRange(gRange, val);
+		  GSIArraySetItemAtIndex((GSIArray)_glyphGaps, item, pos);
+		  break;
+		}
+
+	      /*
+	       * The next gap is contained within our gap, so we can
+	       * simply remove it. Then loop to examine the one beyond
+	       */
+	      GSIArrayRemoveItemsFromIndex((GSIArray)_glyphGaps, pos + 1);
+	      count--;
 	    }
 	}
     }
@@ -1075,17 +1117,12 @@ _Sane(self);
 }
 
 /**
- * This invalidates the layout information (glyph location and
- * rotation) for the given range of characters.  If flag is YES then
- * this range is marked as a hard layout invalidation.  If NO, then
- * the invalidation is soft.  A hard invalid layout range indicates
- * that layout information must be completely recalculated no matter
- * what.  A soft invalid layout range means that there is already old
- * layout info for the range in question, and if the NSLayoutManager
- * is smart enough to figure out how to avoid doing the complete
- * relayout, it may perform any optimization available.  If
- * actualCharRange is non-NULL it will be set to the actual range
- * invalidated after any necessary expansion.
+ * This invalidates glyph positions for all glyphs corresponding
+ * to the specified character range.<br />
+ * If flag is YES then the layout information needs to be redone from
+ * scratch, but if it's NO, the layout manager may try to optimise
+ * layout from the old information.<br />
+ * If actualRange is non-nul, returns the actual range invalidated.
  */
 - (void) invalidateLayoutForCharacterRange: (NSRange)aRange
 				    isSoft: (BOOL)flag
@@ -1095,10 +1132,7 @@ _Sane(self);
 }
 
 /**
- * Invalidates display for the character range given.
- * Unlaid parts of the range are remembered and will definitely be
- * redisplayed at some point later when the layout is available.
- * Does not cause layout.
+ * Causes redisplay of aRange, but does not lose the alyout information.
  */
 - (void) invalidateDisplayForCharacterRange: (NSRange)aRange
 {
@@ -1106,10 +1140,7 @@ _Sane(self);
 }
 
 /**
- * Invalidates display for the glyph range given.
- * Any part of the range that does not yet
- * have glyphs generated is ignored.
- * Does not cause layout.
+ * Causes redisplay of aRange, but does not lose the alyout information.
  */
 - (void) invalidateDisplayForGlyphRange: (NSRange)aRange
 {
@@ -1117,8 +1148,8 @@ _Sane(self);
 }
 
 /**
- * Invalidates layout of all glyphs in container and all subsequent
- * containers.
+ * Invalidates the layout of all glyphs in aContainer and all containers
+ * following it.
  */
 - (void) textContainerChangedGeometry: (NSTextContainer*)aContainer
 {
@@ -1134,8 +1165,8 @@ _Sane(self);
 }
 
 /**
- * Called by NSTextContainer whenever its textView changes.  Used to
- * keep notifications in synch.
+ * Notifies the layout manager that one of its text containers has
+ * changed its view and an update of the display is needed.
  */
 - (void) textContainerChangedTextView: (NSTextContainer*)aContainer
 {
@@ -1169,12 +1200,12 @@ _Sane(self);
 }
 
 /**
- * Sent from processEditing in NSTextStorage. newCharRange is the
- * range in the final string which was explicitly
- * edited. invalidatedRange includes stuff which was changed as a
- * result of attribute fixing. invalidatedRange is either equal to
- * newCharRange or larger. Layout managers should not change the
- * contents of the text storage during the execution of this message.
+ * This method is used to handle an editing change to aTextStorage.
+ * The mask value indicates whether characters or attribuytes or both
+ * have changed.<br />
+ * If characters have not changed, the lengthChange argument is ignored.<br/>
+ * The newCharRange is the effected range currently in the storage, while
+ * invalidatedRange is the original range effected.
  */
 - (void) textStorage: (NSTextStorage*)aTextStorage
 	      edited: (unsigned)mask
@@ -1220,8 +1251,8 @@ _GLog(self,_cmd);
 }
 
 /**
- * This method allows you to set whether text gets laid out in
- * the background when there's nothing else to do.
+ * Sets flag to say if text should get laid out in
+ * the background when the run lopp is idle.
  */
 - (void) setBackgroundLayoutEnabled: (BOOL)flag
 {
@@ -1229,36 +1260,28 @@ _GLog(self,_cmd);
 }
 
 /**
- * This method allows you to query whether text gets laid out in
- * the background when there's nothing else to do.
+ * Returns flag to say if text should get laid out in
+ * the background when the run lopp is idle.
  */
 - (BOOL) backgroundLayoutEnabled
 {
   return _backgroundLayout;
 }
 
-//
-// Accessing glyphs
-//
-// These methods are primitive.  They do not cause the bookkeeping of
-// filling holes to happen.  They do not cause invalidation of other
-// stuff.
-
 /**
- * Inserts a single glyph into the glyph stream at glyphIndex.
- * The character index which this glyph corresponds to is given
- * by charIndex.
- * Invariants ...
- * a)  Glyph chunks are ordered sequentially from zero by character index.
- * b)  Glyph chunks are ordered sequentially from zero by glyph index.
- * c)  Adjacent glyphs may share a character index.
+ * Used by the internal glyph generation system to insert aGlyph into
+ * the glyph stream athe the specified glyphIndex and charIndex.<br />
+ * Invariants ...<br />
+ * a)  Glyph chunks are ordered sequentially from zero by character index.<br />
+ * b)  Glyph chunks are ordered sequentially from zero by glyph index.<br />
+ * c)  Adjacent glyphs may share a character index.<br />
  */
 - (void) insertGlyph: (NSGlyph)aGlyph
 	atGlyphIndex: (unsigned)glyphIndex
       characterIndex: (unsigned)charIndex
 {
   unsigned		chunkCount = GSIArrayCount(glyphChunks);
-  GSGlyphAttrs		attrs = { 0 };
+  GSIArrayItem		info = { 0 };
   GSGlyphChunk		*chunk;
   unsigned		pos;
 
@@ -1270,8 +1293,8 @@ _GLog(self,_cmd);
        * very first glyph and can simply be added to a new chunk.
        */
       chunk = GSCreateGlyphChunk(glyphIndex, charIndex);
-      GSIArrayAddItem(&chunk->glyphs, (GSIArrayItem)aGlyph);
-      GSIArrayAddItem(&chunk->attrs, (GSIArrayItem)attrs);
+      gGlyph(info) = aGlyph;
+      GSIArrayAddItem(&chunk->glyphs, info);
       GSIArrayAddItem(glyphChunks, (GSIArrayItem)(void*)chunk);
     }
   else
@@ -1315,9 +1338,9 @@ _GLog(self,_cmd);
 
 	      previous = (GSGlyphChunk*)GSIArrayItemAtIndex(glyphChunks,
 		chunkIndex-1).ptr;
-	      c = GSIArrayCount(&previous->attrs);
+	      c = GSIArrayCount(&previous->glyphs);
 	      c = previous->charIndex
-		+ (GSIArrayItemAtIndex(&previous->attrs, c).ext).offset;
+		+ gOffset(GSIArrayItemAtIndex(&previous->glyphs, c));
 	      if (c > charIndex)
 		{
 		  [NSException raise: NSRangeException
@@ -1344,7 +1367,7 @@ _GLog(self,_cmd);
 
 	  if (gOffset > 0)
 	    {
-	      c += (GSIArrayItemAtIndex(&chunk->attrs, gOffset-1).ext).offset;
+	      c += gOffset(GSIArrayItemAtIndex(&chunk->glyphs, gOffset-1));
 	    }
 	  if (charIndex < c)
 	    {
@@ -1384,7 +1407,7 @@ _GLog(self,_cmd);
 	  unsigned	p; 
 
 	  p = chunk->charIndex
-	    + (GSIArrayItemAtIndex(&chunk->attrs, gOffset-1).ext).offset;
+	    + gOffset(GSIArrayItemAtIndex(&chunk->glyphs, gOffset-1));
 	  if (p > charIndex)
 	    {
 	      [NSException raise: NSRangeException
@@ -1392,7 +1415,7 @@ _GLog(self,_cmd);
 		@"character index less than that of previous glyph"];
 	    }
 	  n = chunk->charIndex
-	    + (GSIArrayItemAtIndex(&chunk->attrs, gOffset).ext).offset;
+	    + gOffset(GSIArrayItemAtIndex(&chunk->glyphs, gOffset));
 	  if (n < charIndex)
 	    {
 	      [NSException raise: NSRangeException
@@ -1412,9 +1435,9 @@ _GLog(self,_cmd);
 	  unsigned	splitAt = gCount/2;
 	  unsigned	splitChar;
 
-	  splitChar = (GSIArrayItemAtIndex(&chunk->attrs, splitAt).ext).offset;
+	  splitChar = gOffset(GSIArrayItemAtIndex(&chunk->glyphs, splitAt));
 	  while (splitAt > 0 && splitChar
-	    == (GSIArrayItemAtIndex(&chunk->attrs, splitAt-1).ext).offset)
+	    == gOffset(GSIArrayItemAtIndex(&chunk->glyphs, splitAt-1)))
 	    {
 	      splitAt--;
 	    }
@@ -1434,7 +1457,7 @@ _GLog(self,_cmd);
 	   * Ok - split the chunk into two (roughly) equal parts.
 	   */
 	  splitChar
-	    = (GSIArrayItemAtIndex(&chunk->attrs, splitAt).ext).offset;
+	    = gOffset(GSIArrayItemAtIndex(&chunk->glyphs, splitAt));
 	  newChunk = GSCreateGlyphChunk(chunk->glyphIndex + splitAt,
 	    chunk->charIndex + splitChar);
 	  GSIArrayInsertItem(glyphChunks, (GSIArrayItem)(void*)newChunk,
@@ -1443,30 +1466,20 @@ _GLog(self,_cmd);
 	  from = splitAt;
 	  while (from < GSIArrayCount(&chunk->glyphs))
 	    {
-	      GSGlyphAttrs	attrs;
-	      NSGlyph		glyph;
+	      GSIArrayItem	info;
 
 	      /*
 	       * Remove attributes from old chunk and add to new.
 	       * Adjust offset for character index of new chunk.
 	       */
-	      attrs = GSIArrayItemAtIndex(&chunk->attrs, from).ext;
-	      attrs.offset -= splitChar;
-	      GSIArrayInsertItem(&newChunk->attrs,
-		(GSIArrayItem)attrs, pos);
-
-	      /*
-	       * Remove glyph from old chunk and add to new.
-	       */
-	      glyph = GSIArrayItemAtIndex(&chunk->glyphs, from).ulng;
-	      GSIArrayInsertItem(&newChunk->glyphs,
-		(GSIArrayItem)glyph, pos);
+	      info = GSIArrayItemAtIndex(&chunk->glyphs, from);
+	      gOffset(info) -= splitChar;
+	      GSIArrayInsertItem(&newChunk->glyphs, info, pos);
 
 	      from++;
 	      pos++;
 	    }
 	  GSIArrayRemoveItemsFromIndex(&chunk->glyphs, splitAt);
-	  GSIArrayRemoveItemsFromIndex(&chunk->attrs, splitAt);
 	  /*
 	   * And set up so we point at the correct half of the split chunk.
 	   */
@@ -1496,11 +1509,7 @@ _GLog(self,_cmd);
 	       */
 	      for (pos = 0; pos < gCount; pos++)
 		{
-		  GSGlyphAttrs	tmp;
-
-		  tmp = GSIArrayItemAtIndex(&chunk->attrs, pos).ext;
-		  tmp.offset += diff;
-		  GSIArraySetItemAtIndex(&chunk->attrs, (GSIArrayItem)tmp, pos);
+		  gOffset(GSIArrayItems(&chunk->glyphs)[pos]) += diff;
 		}
 	      chunk->charIndex = charIndex;
 	    }
@@ -1509,9 +1518,9 @@ _GLog(self,_cmd);
       /*
        * At last we insert the glyph and its attributes into the chunk.
        */
-      attrs.offset = charIndex - chunk->charIndex;
-      GSIArrayInsertItem(&chunk->glyphs, (GSIArrayItem)aGlyph, gOffset);
-      GSIArrayInsertItem(&chunk->attrs, (GSIArrayItem)attrs, gOffset);
+      gOffset(info) = charIndex - chunk->charIndex;
+      gGlyph(info) = aGlyph;
+      GSIArrayInsertItem(&chunk->glyphs, info, gOffset);
 
       /*
        * Now adjust the glyph index for all following chunks so we will
@@ -1545,12 +1554,10 @@ _Sane(self);
 }
 
 /**
- * If there are any holes in the glyph stream this will cause glyph
- * generation for all holes sequentially encountered until the desired
- * index is available.  The first variant raises a NSRangeError if the
- * requested index is out of bounds, the second does not, but instead
- * optionally returns a flag indicating whether the requested index
- * exists.
+ * Returns the glyph at the specified index.<br />
+ * Causes any gaps (areas where glyphs have been invalidated) before this
+ * index to be re-filled.<br />
+ * Raises an exception if the index is out of range.
  */
 - (NSGlyph) glyphAtIndex: (unsigned)index
 {
@@ -1566,6 +1573,13 @@ _Sane(self);
   return glyph;
 }
 
+/**
+ * Returns the glyph at the specified index.<br />
+ * Causes any gaps (areas where glyphs have been invalidated) before this
+ * index to be re-filled.<br />
+ * Sets the flag to indicate whether the index was found ... if it wasn't
+ * the returned glyph is meaningless.
+ */
 - (NSGlyph) glyphAtIndex: (unsigned)index
 	    isValidIndex: (BOOL*)flag
 {
@@ -1667,7 +1681,7 @@ _Sane(self);
   if (_JumpToGlyph(self, index) == YES)
     {
       *flag = YES;
-      glyph = _Glyph(self);
+      glyph = gGlyph(*_Info(self));
     }
   else
     {
@@ -1698,9 +1712,8 @@ _Sane(self);
 }
 
 /**
- * Replaces the glyph currently at glyphIndex with newGlyph.  The
- * character index of the glyph is assumed to remain the same
- * (although it can, of course, be set explicitly if needed).
+ * Replaces the glyph at index with newGlyph without changing
+ * character index or other attributes.
  */
 - (void) replaceGlyphAtIndex: (unsigned)index
 		   withGlyph: (NSGlyph)newGlyph
@@ -1711,21 +1724,13 @@ _GLog(self,_cmd);
       [NSException raise: NSRangeException
 		  format: @"glyph index out of range"];
     }
-  _SetGlyph(self, newGlyph);
+  gGlyph(*_Info(self)) = newGlyph;
 _GLog(self,_cmd);
 }
 
 /**
- * This causes glyph generation similarly to asking for a single
- * glyph.  It formats a sequence of NSGlyphs (unsigned long ints).  It
- * does not include glyphs that aren't shown in the result but does
- * zero-terminate the array.  The memory passed in to the function
- * should be large enough for at least glyphRange.length+1 elements.
- * The actual number of glyphs stuck into the array is returned (not
- * counting the null-termination).  RM!!! check out the private method
- * "_packedGlyphs:range:length:" if you need to send glyphs to the
- * window server.  It returns a (conceptually) autoreleased array of
- * big-endian packed glyphs.  Don't use this method to do that.
+ * This returns a nul terminated array of glyphs ... so glyphArray
+ * should contain space for glyphRange.length+1 glyphs.
  */
 - (unsigned) getGlyphs: (NSGlyph*)glyphArray
 		 range: (NSRange)glyphRange
@@ -1748,9 +1753,11 @@ _GLog(self,_cmd);
        */
       while (toFetch-- > 0)
 	{
-	  if (_Attrs(self).isNotShown == 0)
+	  GSIArrayItem	info = *_Info(self);
+
+	  if (gIsNotShown(info) == 0)
 	    {
-	      glyphArray[packed++] = _Glyph(self);
+	      glyphArray[packed++] = gGlyph(info);
 	    }
 	  _Step(self);	// Move to next glyph.
 	}
@@ -1761,8 +1768,8 @@ _GLog(self,_cmd);
 }
 
 /**
- * Removes all glyphs in aRange from the storage, possibly leaving a gap
- * in the glyph stream.
+ * Removes all the glyphs in aRange from the glyph stream, causing all
+ * subsequent glyphs to have their index decreased by aRange.length
  */
 - (void) deleteGlyphsInRange: (NSRange)aRange
 {
@@ -1829,7 +1836,6 @@ _GLog(self,_cmd);
 	{
 	  pos = chunk->glyphIndex + offset;
 	  GSIArrayRemoveItemsFromIndex(&chunk->glyphs, offset);
-	  GSIArrayRemoveItemsFromIndex(&chunk->attrs, offset);
 	}
       chunk = (GSGlyphChunk*)GSIArrayItemAtIndex(glyphChunks, chunkEnd).ptr;
     }
@@ -1847,7 +1853,6 @@ _GLog(self,_cmd);
   while (offset-- > from)
     {
       GSIArrayRemoveItemAtIndex(&chunk->glyphs, from);
-      GSIArrayRemoveItemAtIndex(&chunk->attrs, from);
     }
   while (++chunkEnd < GSIArrayCount(glyphChunks))
     {
@@ -1905,8 +1910,9 @@ _Sane(self);
 }
 
 /**
- * If there are any gaps in the glyph stream, this will cause all
- * invalid character ranges to have glyphs generated for them.
+ * Returns the number of glyphs in the glyph stream ... causing generation
+ * of new glyphs to fill gaps and to extend the stream until all characters
+ * in the text storage have had glyphs generated.
  */
 - (unsigned) numberOfGlyphs
 {
@@ -1933,13 +1939,11 @@ _Sane(self);
 }
 
 /**
- * Sets the index of the corresponding character for the glyph at the
- * given glyphIndex to be charIndex.
+ * Sets the glyph at glyphIndex to correspond to the character at charIndex.
  */
 - (void) setCharacterIndex: (unsigned)charIndex
 	   forGlyphAtIndex: (unsigned)glyphIndex
 {
-  GSGlyphAttrs	attrs;
   int		diff;
 
 _GLog(self,_cmd);
@@ -1989,25 +1993,21 @@ _GLog(self,_cmd);
       chunk->charIndex += diff;
       while (_Step(self) == YES && (GSGlyphChunk*)_currentGlyphs == chunk)
 	{
-	  attrs = _Attrs(self);
-	  attrs.offset += diff;
-	  _SetAttrs(self, attrs);
+	  gOffset(*_Info(self)) += diff;
 	}
     }
   else
     {
-      attrs = _Attrs(self);
-      attrs.offset += diff;
-      _SetAttrs(self, attrs);
+      gOffset(*_Info(self)) += diff;
     }
 _GLog(self,_cmd);
 _Sane(self);
 }
 
 /**
- * If there are any holes in the glyph stream this will cause glyph
- * generation for all holes sequentially encountered until the desired
- * index is available.
+ * Returns the character index for the specified glyphIndex.<br />
+ * If there are invalidated ranges (gaps) in the glyph stream before
+ * glyphIndex, this will cause glyph generation to fill them.
  */
 - (unsigned) characterIndexForGlyphAtIndex: (unsigned)glyphIndex
 {
@@ -2062,15 +2062,9 @@ _GLog(self,_cmd);
 }
 
 /**
- * This method can cause glyph generation.  Returns the range of
- * characters that generated the glyphs in the given glyphRange.
- * actualGlyphRange, if not NULL, will be set to the full range of
- * glyphs that the character range returned generated.  This range may
- * be identical or slightly larger than the requested glyphRange.  For
- * instance, if the text storage contains the unichar (o-umlaut) and
- * the glyph store contains the two atomic glyphs "o" and (umlaut),
- * and if the glyphRange given encloses only the first or second
- * glyph, the actualGlyphRange will be set to enclose both glyphs.
+ * Returns the range of characters that generated the glyphs in glyphRange.
+ * Sets actualGlyphRange (if non-nul) to the range of glyphs generated by
+ * those characters.
  */
 - (NSRange) characterRangeForGlyphRange: (NSRange)glyphRange
 		       actualGlyphRange: (NSRange*)actualGlyphRange
@@ -2144,16 +2138,10 @@ _GLog(self,_cmd);
 }
 
 /**
- * This method can cause glyph generation.
- * Returns the range of glyphs that are generated from the unichars in
- * the given charRange.  actualCharRange, if not NULL, will be set to
- * the actual range of characters that fully define the glyph range
- * returned.  This range may be identical or slightly larger than the
- * requested characterRange.  For instance, if the text storage
- * contains the unichars "o" and (umlaut) and the glyph store contains
- * the single precomposed glyph (o-umlaut), and if the characterRange
- * given encloses only the first or second unichar, the
- * actualCharRange will be set to enclose both unichars.
+ * Returns the range of glyphs that are generated from the characters in
+ * charRange.
+ * Sets actualCharRange (if non-nul) to the full range of characters which
+ * generated those glyphs.
  */
 - (NSRange) glyphRangeForCharacterRange: (NSRange)charRange
 		   actualCharacterRange: (NSRange*)actualCharRange
@@ -2183,7 +2171,7 @@ _GLog(self,_cmd);
 	}
       if (NSMaxRange(charRange) > NSMaxRange(r))
 	{
-	  pos = NSMaxRange(charrange) - 1;
+	  pos = NSMaxRange(charRange) - 1;
 	  r = [s rangeOfComposedCharacterSequenceAtIndex: pos];
 	  if (r.length > 0)
 	    {
@@ -2286,30 +2274,16 @@ _GLog(self,_cmd);
 }
 
 /**
- * Each NSGlyph has an attribute field, yes?  This method is
- * primitive.  It does not cause any invalidation of other stuff.
- * This method also will not cause glyph generation.  The glyph being
- * set must already be there.  This method is used by the
- * NSGlyphGenerator to set attributes.  It is not usually necessary
- * for anyone but the glyph generator (and perhaps the typesetter) to
- * call it.  It is provided as a public method so subclassers can
- * extend it to accept other glyph attributes.  To add new glyph
- * attributes to the text system you basically need to do two things.
- * You need to write a rulebook which will generate the attributes (in
- * rulebooks attributes are identified by integer tags).  Then you
- * need to subclass NSLayoutManager to provide someplace to store the
- * new attribute and to override this method and
- * -attribute:forGlyphAtIndex: to understand the integer tag which
- * your new rulebook is generating.  NSLayoutManager's implementation
- * understands the glyph attributes which it is prepared to remember.
- * Your override should pass any glyph attributes it does not
- * understand up to the superclass's implementation.
+ * This method modifies the attributes of an existing glyph at glyphIndex.
+ * It only deals with the existing attribute types ... if you subclass and
+ * add new attributed, you must replace this method with one which can
+ * store your new attributes.
  */
 - (void) setIntAttribute: (int)attribute
 		   value: (int)anInt
 	 forGlyphAtIndex: (unsigned)glyphIndex
 {
-  GSGlyphAttrs	attrs;
+  GSIArrayItem	info;
 
 _GLog(self,_cmd);
   if (_JumpToGlyph(self, glyphIndex) == NO)
@@ -2317,52 +2291,48 @@ _GLog(self,_cmd);
       [NSException raise: NSRangeException
 		  format: @"glyph index out of range"];
     }
-  attrs = _Attrs(self);
+  info = *_Info(self);
   if (attribute == GSGlyphDrawsOutsideLineFragment)
     {
       if (anInt == 0)
 	{
-	  attrs.drawsOutsideLineFragment = 0;
+	  gDrawsOutside(info) = 0;
 	}
       else
 	{
-	  attrs.drawsOutsideLineFragment = 1;
+	  gDrawsOutside(info) = 1;
 	}
     }
   else if (attribute == GSGlyphIsNotShown)
     {
       if (anInt == 0)
 	{
-	  attrs.isNotShown = 0;
+	  gIsNotShown(info) = 0;
 	}
       else
 	{
-	  attrs.isNotShown = 1;
+	  gIsNotShown(info) = 1;
 	}
     }
   else if (attribute == GSGlyphGeneration)
     {
-      attrs.generation = anInt;
+      gGeneration(info) = anInt;
     }
   else if (attribute == GSGlyphInscription)
     {
-      attrs.inscription = anInt;
+      gInscription(info) = anInt;
     }
-  _SetAttrs(self, attrs);
+  *_Info(self) = info;
 _GLog(self,_cmd);
 }
 
 /**
- * This returns the value for the given glyph attribute at the glyph
- * index specified.  Most apps will not have much use for this info
- * but the typesetter and glyph generator might need to know about
- * certain attributes.  You can override this method to know how to
- * return any custom glyph attributes you want to support.
+ * Returns the value for the attribute at the glyphIndex.
  */
 - (int) intAttribute: (int)attribute
      forGlyphAtIndex: (unsigned)glyphIndex
 {
-  GSGlyphAttrs	attrs;
+  GSIArrayItem	info;
 
 _GLog(self,_cmd);
   if (_JumpToGlyph(self, glyphIndex) == NO)
@@ -2370,11 +2340,11 @@ _GLog(self,_cmd);
       [NSException raise: NSRangeException
 		  format: @"glyph index out of range"];
     }
-  attrs = _Attrs(self);
+  info = *_Info(self);
 
   if (attribute == GSGlyphDrawsOutsideLineFragment)
     {
-      if (attrs.drawsOutsideLineFragment == 0)
+      if (gDrawsOutside(info) == 0)
 	{
 	  return 0;
 	}
@@ -2385,7 +2355,7 @@ _GLog(self,_cmd);
     }
   else if (attribute == GSGlyphIsNotShown)
     {
-      if (attrs.isNotShown == 0)
+      if (gIsNotShown(info) == 0)
 	{
 	  return 0;
 	}
@@ -2396,40 +2366,22 @@ _GLog(self,_cmd);
     }
   else if (attribute == GSGlyphGeneration)
     {
-      return attrs.generation;
+      return gGeneration(info);
     }
   else if (attribute == GSGlyphInscription)
     {
-      return attrs.inscription;
+      return gInscription(info);
     }
 
   return 0;
 }
 
-//
-// Handling layout for text containers 
-//
-// These methods are fairly primitive.  They do not cause any kind of
-// invalidation to happen.  The glyphs being set must already exist.
-// This is not a hardship since the NSTypesetter will have had to ask
-// for the actual glyphs already by the time it goes to set this, and
-// asking for the glyphs causes the glyph to be generated if
-// necessary.  Associates the given container with the given range of
-// glyphs.  This method should be called by the typesetter first (ie
-// before setting line fragment rect or any of the layout bits) for
-// each range of glyphs it lays out.  This method will set several key
-// layout atttributes (like not shown and draws outside line fragment)
-// to their default values.
 - (void) setTextContainer: (NSTextContainer*)aTextContainer
 	    forGlyphRange: (NSRange)glyphRange
 {
   /* TODO */
 }
 
-// All of these methods can cause glyph generation AND layout.
-// Returns the range of characters which have been laid into the given
-// container.  This is a less efficient method than the similar
-// -textContainerForGlyphAtIndex:effectiveRange:.
 - (NSRange) glyphRangeForTextContainer: (NSTextContainer*)aTextContainer
 {
   /* TODO */
@@ -2437,10 +2389,9 @@ _GLog(self,_cmd);
 }
 
 /**
- * Returns the container in which the given glyph is laid and
- * (optionally) by reference the whole range of glyphs that are in
- * that container.  This will cause glyph generation AND layout as
- * needed.
+ * Returns the text container in which the glyph at glyphIndex is laid.
+ * If effectiveRange is non-nul, returns the range of all glyphs in the
+ * container.
  */
 - (NSTextContainer*) textContainerForGlyphAtIndex: (unsigned)glyphIndex
                                    effectiveRange: (NSRange*)effectiveRange
@@ -2460,11 +2411,6 @@ _GLog(self,_cmd);
     }
 }
 
-//
-// Handling line fragment rectangles 
-//
-// Associates the given line fragment bounds with the given range of
-// glyphs.
 - (void) setLineFragmentRect: (NSRect)fragmentRect
 	       forGlyphRange: (NSRange)glyphRange
 		    usedRect: (NSRect)usedRect
@@ -2472,10 +2418,6 @@ _GLog(self,_cmd);
   /* TODO */
 }
 
-// Returns the rect for the line fragment in which the given glyph is
-// laid and (optionally) by reference the whole range of glyphs that
-// are in that fragment.  This will cause glyph generation AND layout
-// as needed.
 - (NSRect) lineFragmentRectForGlyphAtIndex: (unsigned)glyphIndex
 			    effectiveRange: (NSRange*)lineFragmentRange
 {
@@ -2483,10 +2425,6 @@ _GLog(self,_cmd);
   return NSZeroRect;
 }
 
-// Returns the usage rect for the line fragment in which the given
-// glyph is laid and (optionally) by reference the whole range of
-// glyphs that are in that fragment.  This will cause glyph generation
-// AND layout as needed.
 - (NSRect) lineFragmentUsedRectForGlyphAtIndex: (unsigned)glyphIndex
 				effectiveRange: (NSRange*)lineFragmentRange
 {
@@ -2494,12 +2432,6 @@ _GLog(self,_cmd);
   return NSZeroRect;
 }
 
-// Sets the bounds and container for the extra line fragment.  The
-// extra line fragment is used when the text backing ends with a hard
-// line break or when the text backing is totally empty to define the
-// extra line which needs to be displayed.  If the text backing does
-// not end with a hard line break this should be set to NSZeroRect and
-// nil.
 - (void) setExtraLineFragmentRect: (NSRect)aRect
 			 usedRect: (NSRect)usedRect
 		    textContainer: (NSTextContainer*)aTextContainer
@@ -2507,7 +2439,6 @@ _GLog(self,_cmd);
   /* TODO */
 }
 
-// Return info about the extra line fragment.
 - (NSRect) extraLineFragmentRect 
 {
   /* TODO */
@@ -2526,9 +2457,6 @@ _GLog(self,_cmd);
   return nil;
 }
 
-// Returns the container's currently used area.  This is the size that
-// the view would need to be in order to display all the stuff that is
-// currently laid into the container.  This causes no generation.
 - (NSRect)usedRectForTextContainer:(NSTextContainer *)container
 {
   /* TODO */
@@ -2541,10 +2469,6 @@ _GLog(self,_cmd);
   /* TODO */
 }
 
-// Used to indicate that a particular glyph for some reason marks
-// outside its line fragment bounding rect.  This can commonly happen
-// if a fixed line height is used (consider a 12 point line height and
-// a 24 point glyph).
 - (void) setDrawsOutsideLineFragment: (BOOL)flag
 		     forGlyphAtIndex: (unsigned)glyphIndex
 {
@@ -2553,8 +2477,6 @@ _GLog(self,_cmd);
 	forGlyphAtIndex: glyphIndex];
 }
 
-// Returns whether the glyph will make marks outside its line
-// fragment's bounds.
 - (BOOL) drawsOutsideLineFragmentForGlyphAtIndex: (unsigned)glyphIndex
 {
   if ([self intAttribute: GSGlyphDrawsOutsideLineFragment
@@ -2565,65 +2487,24 @@ _GLog(self,_cmd);
   return NO;
 }
 
-//
-// Layout of glyphs 
-//
-
-// Sets the location to draw the first glyph of the given range at.
-// Setting the location for a glyph range implies that its first glyph
-// is NOT nominally spaced with respect to the previous glyph.  When
-// all is said and done all glyphs in the layoutManager should have
-// been included in a range passed to this method.  But only glyphs
-// which start a new nominal rtange should be at the start of such
-// ranges.  Glyph locations are given relative the their line fragment
-// bounding rect's origin.
 - (void) setLocation: (NSPoint)aPoint
 forStartOfGlyphRange: (NSRange)glyphRange
 {
   /* TODO */
 }
 
-// Returns the location that the given glyph will draw at.  If this
-// glyph doesn't have an explicit location set for it (ie it is part
-// of (but not first in) a sequence of nominally spaced characters),
-// the location is calculated from the location of the last glyph with
-// a location set.  Glyph locations are relative the their line
-// fragment bounding rect's origin (see
-// -lineFragmentForGlyphAtIndex:effectiveRange: below for finding line
-// fragment bounding rects).  This will cause glyph generation AND
-// layout as needed.
 - (NSPoint) locationForGlyphAtIndex: (unsigned)glyphIndex
 {
   /* TODO */
   return NSZeroPoint;
 }
 
-// Returns the range including the first glyph from glyphIndex on back
-// that has a location set and up to, but not including the next glyph
-// that has a location set.  This is a range of glyphs that can be
-// shown with a single postscript show operation.
 - (NSRange) rangeOfNominallySpacedGlyphsContainingIndex: (unsigned)glyphIndex
 {
   /* TODO */
   return NSMakeRange(NSNotFound, 0);
 }
 
-// Returns an array of NSRects and the number of rects by reference
-// which define the region in container that encloses the given range.
-// If a selected range is given in the second argument, the rectangles
-// returned will be correct for drawing the selection.  Selection
-// rectangles are generally more complicated than enclosing rectangles
-// and supplying a selected range is the clue these methods use to
-// determine whether to go to the trouble of doing this special work.
-// If the caller is interested in this more from an enclosing point of
-// view rather than a selection point of view pass {NSNotFound, 0} as
-// the selected range.  This method works hard to do the minimum
-// amount of work required to answer the question.  The resulting
-// array is owned by the layoutManager and will be reused when either
-// of these two methods OR -boundingRectForGlyphRange:inTextContainer:
-// is called.  Note that one of these methods may be called
-// indirectly.  The upshot is that if you aren't going to use the
-// rects right away, you should copy them to another location.
 - (NSRect*) rectArrayForCharacterRange: (NSRange)charRange
           withinSelectedCharacterRange: (NSRange)selChareRange
                        inTextContainer: (NSTextContainer*)aTextContainer
@@ -2642,13 +2523,6 @@ forStartOfGlyphRange: (NSRange)glyphRange
   return _cachedRectArray;
 }
 
-// Returns the smallest bounding rect (in container coordinates) which
-// completely encloses the glyphs in the given glyphRange that are in
-// the given container.  If no container is given, then the container
-// of the first glyph is assumed.  Basically, the range is intersected
-// with the container's range before computing the bounding rect.
-// This method can be used to translate glyph ranges into display
-// rectangles for invalidation.
 - (NSRect) boundingRectForGlyphRange: (NSRange)glyphRange
 		     inTextContainer: (NSTextContainer*)aTextContainer
 {
@@ -2656,13 +2530,6 @@ forStartOfGlyphRange: (NSRange)glyphRange
   return NSZeroRect;
 }
 
-// Returns the minimum contiguous glyph range that would need to be
-// displayed in order to draw all glyphs that fall (even partially)
-// within the bounding rect given.  This range might include glyphs
-// which do not fall into the rect at all.  At most this will return
-// the glyph range for the whole container.  The "WithoutFillingHoles"
-// variant will not generate glyphs or perform layout in attempting to
-// answer, and, thus, will potentially not be totally correct.
 - (NSRange) glyphRangeForBoundingRect: (NSRect)aRect
 		      inTextContainer: (NSTextContainer*)aTextContainer
 {
@@ -2677,14 +2544,6 @@ forStartOfGlyphRange: (NSRange)glyphRange
   return NSMakeRange(0, 0);
 }
 
-// Returns the index of the glyph which under the given point which is
-// expressed in the given container's coordinate system.  If no glyph
-// is under the point the "nearest" glyph is returned where "nearest"
-// is defined in such a way that selection works like it should.  See
-// the implementation for details.  partialFraction, if provided, is
-// set to the fraction of the distance between the location of the
-// glyph returned and the location of the next glyph that the point is
-// at.
 - (unsigned) glyphIndexForPoint: (NSPoint)aPoint
 		inTextContainer: (NSTextContainer*)aTextContainer
  fractionOfDistanceThroughGlyph: (float*)partialFraction
@@ -2702,11 +2561,6 @@ forStartOfGlyphRange: (NSRange)glyphRange
 	       fractionOfDistanceThroughGlyph: NULL];
 }
 
-//
-// Display of special glyphs 
-//
-// Some glyphs are not shown.  The typesetter decides which ones and
-// sets this attribute in layoutManager where the view can find it.
 - (void) setNotShownAttribute: (BOOL)flag
 	      forGlyphAtIndex: (unsigned)glyphIndex
 {
@@ -2715,8 +2569,6 @@ forStartOfGlyphRange: (NSRange)glyphRange
 	forGlyphAtIndex: glyphIndex];
 }
 
-// Some glyphs are not shown.  This will cause glyph generation and
-// layout as needed..
 - (BOOL) notShownAttributeForGlyphAtIndex: (unsigned)glyphIndex
 {
   if ([self intAttribute: GSGlyphIsNotShown forGlyphAtIndex: glyphIndex] == 1)
@@ -2726,9 +2578,6 @@ forStartOfGlyphRange: (NSRange)glyphRange
   return NO;
 }
 
-// If YES, and the rulebooks and fonts in use support it, whitespace
-// and other "invisible" unicodes will be shown with special glyphs
-// (ie "." for space, the little CR icon for new lines, etc...)
 - (void) setShowsInvisibleCharacters: (BOOL)flag
 {
   _showsInvisibleChars = flag;
@@ -2739,10 +2588,6 @@ forStartOfGlyphRange: (NSRange)glyphRange
   return _showsInvisibleChars;
 }
 
-// If YES, and the rulebooks and fonts in use support it, control
-// characters will be rendered visibly (usually like "^M", but
-// possibly with special glyphs if the the font and rulebook supports
-// it).
 - (void) setShowsControlCharacters: (BOOL)flag
 {
   _showsControlChars = flag;
@@ -2753,9 +2598,6 @@ forStartOfGlyphRange: (NSRange)glyphRange
   return _showsControlChars;
 }
 
-//
-// Controlling hyphenation 
-//
 - (void) setHyphenationFactor: (float)factor
 {
   _hyphenationFactor = factor;
@@ -2766,12 +2608,6 @@ forStartOfGlyphRange: (NSRange)glyphRange
   return _hyphenationFactor;
 }
 
-//
-// Finding unlaid characters/glyphs 
-//
-// Returns (by reference) the character index or glyph index or both
-// of the first unlaid character/glyph in the layout manager at this
-// time.
 - (void) getFirstUnlaidCharacterIndex: (unsigned*)charIndex
 			   glyphIndex: (unsigned*)glyphIndex
 {
@@ -2796,11 +2632,6 @@ forStartOfGlyphRange: (NSRange)glyphRange
   return _firstUnlaidGlyphIndex;
 }
 
-//
-// Using screen fonts 
-//
-// Sets whether this layoutManager will use screen fonts when it is
-// possible to do so.
 - (void) setUsesScreenFonts: (BOOL)flag
 {
   _usesScreenFonts = flag;
@@ -2811,15 +2642,6 @@ forStartOfGlyphRange: (NSRange)glyphRange
   return _usesScreenFonts;
 }
 
-// Returns a font to use in place of originalFont.  This method is
-// used to substitute screen fonts for regular fonts.  If screen fonts
-// are allowed AND no NSTextView managed by this layoutManager is
-// scaled or rotated AND a screen font is available for originalFont,
-// it is returned, otherwise originalFont is returned.  MF:??? This
-// method will eventually need to know or be told whether use of
-// screen fonts is appropriate in a given situation (ie screen font
-// used might be enabled or disabled, we might be printing, etc...).
-// This method causes no generation.
 - (NSFont*) substituteFontForFont: (NSFont*)originalFont
 {
   NSFont *replaceFont;
@@ -2842,15 +2664,6 @@ forStartOfGlyphRange: (NSRange)glyphRange
     }
 }
 
-//
-// Handling rulers 
-//
-// These return, respectively, an array of text ruler objects for the
-// current selection and the accessory view that the text system uses
-// for ruler.  If you have turned off automatic ruler updating through
-// the use of setUsesRulers: so that you can do more complex things,
-// but you still want to display the appropriate text ruler objects
-// and/or accessory view, you can use these methods.
 - (NSView*) rulerAccessoryViewForTextView: (NSTextView*)aTextView
                            paragraphStyle: (NSParagraphStyle*)paragraphStyle
                                     ruler: (NSRulerView*)aRulerView
@@ -2940,17 +2753,11 @@ forStartOfGlyphRange: (NSRange)glyphRange
   return _firstTextView;
 }
 
-// This method is special in that it won't cause layout if the
-// beginning of the selected range is not yet laid out.  Other than
-// that this method could be done through other API.
 - (NSTextView*) textViewForBeginningOfSelection
 {
   return nil;
 }
 
-//
-// Drawing 
-//
 - (void) drawBackgroundForGlyphRange: (NSRange)glyphRange
 			     atPoint: (NSPoint)containerOrigin
 {
@@ -2965,15 +2772,6 @@ forStartOfGlyphRange: (NSRange)glyphRange
 		    inTextContainer: aTextContainer]);
 }
 
-// These methods are called by NSTextView to do drawing.  You can
-// override these if you think you can draw the stuff any better
-// (but not to change layout).  You can call them if you want, but
-// focus must already be locked on the destination view or MF:???image?.
-// -drawBackgroundGorGlyphRange:atPoint: should draw the background
-// color and selection and marked range aspects of the text display. 
-// -drawGlyphsForGlyphRange:atPoint: should draw the actual glyphs. 
-// The point in either method is the container origin in the currently
-// focused view's coordinates for the container the glyphs lie in.
 - (void) drawGlyphsForGlyphRange: (NSRange)glyphRange
 			 atPoint: (NSPoint)containerOrigin
 {
@@ -2990,20 +2788,6 @@ forStartOfGlyphRange: (NSRange)glyphRange
   /* TODO */
 }
 
-// The first of these methods actually draws an appropriate underline
-// for the glyph range given.  The second method potentailly breaks
-// the range it is given up into subranges and calls drawUnderline...
-// for ranges that should actually have the underline drawn.  As
-// examples of why there are two methods, consider two situations.
-// First, in all cases you don't want to underline the leading and
-// trailing whitespace on a line.  The -underlineGlyphRange... method
-// is passed glyph ranges that have underlining turned on, but it will
-// then look for this leading and trailing white space and only pass
-// the ranges that should actually be underlined to -drawUnderline...
-// Second, if the underlineType: indicates that only words, (ie no
-// whitespace), should be underlined, then -underlineGlyphRange...
-// will carve the range it is passed up into words and only pass word
-// ranges to -drawUnderline.
 - (void) underlineGlyphRange: (NSRange)glyphRange
 	       underlineType: (int)underlineType
 	    lineFragmentRect: (NSRect)lineRect
@@ -3013,9 +2797,6 @@ forStartOfGlyphRange: (NSRange)glyphRange
   /* TODO */
 }
 
-//
-// Setting the delegate 
-//
 - (void) setDelegate: (id)aDelegate
 {
   _delegate = aDelegate;

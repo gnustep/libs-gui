@@ -1,3 +1,10 @@
+2002-02-24  Richard Frith-Macdonald  <rfm@gnu.org>
+
+	* Source/NSLayoutManager.m: More changes to glyph code - store
+	glyphs and their attributes in the same array, store gaps as
+	ranges rather than simple indexs.  Update comments.
+	Still not working and turned off using #if
+
 Sat Feb 23 22:07:09 2002  Gregory Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSOutlineView.m: More improvements.   Expansion of 
