@@ -157,6 +157,15 @@ static NSPrintPanel *shared_instance;
   return self;
 }
 
+- (void) dealloc
+{
+  RELEASE(_accessoryView);
+  RELEASE(_savePath);
+  RELEASE(_optionPanel);
+  
+  [super dealloc];
+}
+
 //
 // Customizing the Panel 
 //

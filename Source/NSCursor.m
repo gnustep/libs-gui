@@ -62,7 +62,7 @@ static NSMutableDictionary *cursorDict = nil;
       NSCursor_class = self;
       gnustep_gui_cursor_stack = [[NSMutableArray alloc] initWithCapacity: 2];
       gnustep_gui_hidden_until_move = YES;
-      cursorDict = RETAIN([NSMutableDictionary dictionary]);
+      cursorDict = [NSMutableDictionary new]; 
       [[self arrowCursor] push];
     }
 }
@@ -248,7 +248,11 @@ backgroundColorHint:(NSColor *)bg
     }
   return cursor;
 }
-
+- (void)dealloc
+{
+  RELEASE (_cursor_image);
+  [super dealloc];
+}
 /*
  * Defining the Cursor
  */

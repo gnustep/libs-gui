@@ -1,6 +1,9 @@
 2003-07-22  Andrew Ruder <aeruder@ksu.edu>
 
 	* Source/NSWindow.m: Fix potential (unlikely) leak
+	* Source/NSCursor.m: Fix memory leak;
+	* Source/NSResponder.m: Fix memory leak;
+	* Source/NSPrintPanel.m: Fix memory leak;
 
 2003-07-21  Kazunobu Kuriyama <kazunobu.kuriyama@nifty.com>
 

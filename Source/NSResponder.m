@@ -332,7 +332,11 @@
 
   return self;
 }
-
+- (void) dealloc
+{
+  RELEASE(_menu);
+  [super dealloc];
+}
 - (NSMenu*) menu
 {
   return _menu;
