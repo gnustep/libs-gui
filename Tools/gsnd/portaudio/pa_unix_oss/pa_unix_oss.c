@@ -109,13 +109,11 @@ PaDriverInfo;
 #include <pthread.h>
 #include <errno.h>
 
-#ifdef __linux__
+#if defined(__linux__)
 #include <linux/soundcard.h>
-#else
-#ifdef __FreeBSD__
+#elif defined(__FreeBSD__) || defined(__FreeBSD_kernel__)
 #include <sys/soundcard.h>
-#else
-#ifdef __OpenBSD__
+#elif defined(__OpenBSD__)
 #include <soundcard.h>
 #else
 #include <machine/soundcard.h> /* JH20010905 */
