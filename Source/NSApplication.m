@@ -1194,11 +1194,28 @@ static NSCell* tileCell = nil;
 
   NS_DURING
     {
+      NSDate		*limit;
+      GSDisplayServer	*srv;
+
       theSession = [self beginModalSessionForWindow: theWindow];
+      limit = [NSDate distantFuture];
+      srv = GSCurrentServer();
+
       while (code == NSRunContinuesResponse)
 	{
+	  /*
+	   * Try to handle events for this session, discarding others.
+	   */
 	  code = [self runModalSession: theSession];
+	  if (code == NSRunContinuesResponse)
+	    {
+	      /*
+	       * Wait until there are more events to handle.
+	       */
+	      DPSPeekEvent(srv, NSAnyEventMask, limit, NSDefaultRunLoopMode);
+	    }
 	}
+
       [self endModalSession: theSession];
     }
   NS_HANDLER
@@ -1223,12 +1240,14 @@ static NSCell* tileCell = nil;
 
 /** 
 <p>
-Processes one event for a modal session described by the theSession
-variable. Before processing the event, it makes the session window key
+Processes any events for a modal session described by the theSession
+variable. Before processing the events, it makes the session window key
 and orders the window front, so there is no need to do this
 separately. When finished, it returns the state of the session (i.e.
 whether it is still running or has been stopped, etc) 
 </p>
+<p>If there are no pending events for the session, this method returns
+immediately.
 <p>
 See Also: -runModalForWindow:
 </p>
@@ -1237,7 +1256,7 @@ See Also: -runModalForWindow:
 {
   NSAutoreleasePool	*pool;
   GSDisplayServer	*srv;
-  BOOL		found = NO;
+  BOOL		done = NO;
   NSEvent	*event;
   NSDate	*limit;
   
@@ -1259,42 +1278,18 @@ See Also: -runModalForWindow:
       [theSession->window makeMainWindow];
     }
 
+  RELEASE (pool);
+
   // Use the default context for all events.
   srv = GSCurrentServer();
 
-  /*
-   * Set a limit date in the distant future so we wait until we get an
-   * event.  We discard events that are not for this window.  When we
-   * find one for this window, we push it back at the start of the queue.
-   */
-  limit = [NSDate distantFuture];
-  do
-    {
-      event = DPSGetEvent(srv, NSAnyEventMask, limit, NSDefaultRunLoopMode);
-      if (event != nil)
-	{
-	  NSWindow	*eventWindow = [event window];
+  // Only handle input which is already available.
+  limit = [NSDate distantPast];
 
-	  if (eventWindow == theSession->window || [eventWindow worksWhenModal])
-	    {
-	      DPSPostEvent(srv, event, YES);
-	      found = YES;
-	    }
-	  else if ([event type] == NSAppKitDefined)
-	    {
-	      /* Handle resize and other window manager events now */
-	      [self sendEvent: event];
-	    }
-	}
-    }
-  while (found == NO && theSession->runState == NSRunContinuesResponse);
-
-  RELEASE (pool);
   /*
    *	Deal with the events in the queue.
    */
-  
-  while (found == YES && theSession->runState == NSRunContinuesResponse)
+  while (done == NO && theSession->runState == NSRunContinuesResponse)
     {
       IF_NO_GC(pool = [arpClass new]);
 
@@ -1303,21 +1298,28 @@ See Also: -runModalForWindow:
 	{
 	  NSWindow	*eventWindow = [event window];
 
-	  if (eventWindow == theSession->window || [eventWindow worksWhenModal])
+	  /*
+	   * We handle events for the session window, events for any
+	   * window which works when modal, and any window management
+	   * events.  All others are ignored/discarded.
+	   */
+	  if (eventWindow == theSession->window
+	    || [eventWindow worksWhenModal] == YES
+	    || [event type] == NSAppKitDefined)
 	    {
 	      ASSIGN(_current_event, event);
 	    }
 	  else
 	    {
-	      found = NO;
+	      event = nil;	// Ignore/discard this event.
 	    }
 	}
       else
 	{
-	  found = NO;
+	  done = YES;		// No more events pending.
 	}
 
-      if (found == YES)
+      if (event != nil)
 	{
 	  NSEventType	type = [_current_event type];
 

@@ -6,6 +6,12 @@
 	(-getEventMatchingMask:beforeDate:inMode:dequeue:) fix incorrect
 	termination ... should terminate when limit date has passed,
 	irrespective of the state of any input sources.
+	* Source/NSApplication.m: ([-runModalForWindow:]) wait for new events
+	between calls to ([-runModalSession:])
+	([-runModalSession:]) rewritten to handle multiple events, but only
+	those events which are available ... ie don't wait for more.
+	Requires latest base library from CVS to get modified/corrected
+	runloop behavior.
 
 2003-10-26 15:18  Alexander Malmberg <alexander@malmberg.org>
 		  Matt Rice <ratmice@yahoo.com>
