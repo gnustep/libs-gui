@@ -1,3 +1,10 @@
+2000-12-23  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSAttributedString.m: ([-doubleClickAtIndex:]),
+	([-lineBreakBeforeIndex:withinRange:]),
+	([-nextWordFromIndex:forward:]) cope with apostrophes and hyphens
+	within words.
+
 Fri Dec 22 21:40:58 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/gnustep/gui/NSTextView.h: Added ivar to store the

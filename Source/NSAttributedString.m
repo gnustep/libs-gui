@@ -74,6 +74,7 @@ static void cache_init_real ()
   [m formUnionWithCharacterSet: cset];
   cset = [NSCharacterSet illegalCharacterSet];
   [m formUnionWithCharacterSet: cset];
+  [m removeCharactersInString: @"-"];
   wordBreakCSet = [m copy];
   RELEASE (m);
   
@@ -229,6 +230,16 @@ static inline void cache_init ()
   startRange = [str rangeOfCharacterFromSet: wordBreakCSet
 		    options: NSBackwardsSearch | NSLiteralSearch
 		    range: scanRange];
+  while (startRange.length > 0 && startRange.location > 0
+    && [str characterAtIndex: startRange.location] == '\''
+    && [wordCSet characterIsMember:
+      [str characterAtIndex: startRange.location-1]])
+    {
+      location = startRange.location - 1;
+      scanRange = NSMakeRange (0, location);
+      startRange = [str rangeOfCharacterFromSet: wordBreakCSet
+	options: NSBackwardsSearch|NSLiteralSearch range: scanRange];
+    }
   if (startRange.length == 0)
     {
       return NSNotFound;
@@ -259,10 +270,39 @@ static inline void cache_init ()
   startRange = [str rangeOfCharacterFromSet: wordBreakCSet
 				    options: NSBackwardsSearch|NSLiteralSearch
 				      range: scanRange];
+
+  while (startRange.length > 0
+    && startRange.location > 0 && startRange.location < length - 1
+    && [str characterAtIndex: startRange.location] == '\''
+    && [wordCSet characterIsMember:
+      [str characterAtIndex: startRange.location - 1]]
+    && [wordCSet characterIsMember:
+      [str characterAtIndex: startRange.location + 1]])
+    {
+      location = startRange.location - 1;
+      scanRange = NSMakeRange (0, location);
+      startRange = [str rangeOfCharacterFromSet: wordBreakCSet
+	options: NSBackwardsSearch|NSLiteralSearch range: scanRange];
+    }
+
   scanRange = NSMakeRange (location, length - location);
   endRange = [str rangeOfCharacterFromSet: wordBreakCSet
 				  options: NSLiteralSearch
 				    range: scanRange];
+  while (endRange.length > 0
+    && endRange.location > 0 && endRange.location < length - 1
+    && [str characterAtIndex: endRange.location] == '\''
+    && [wordCSet characterIsMember:
+      [str characterAtIndex: endRange.location - 1]]
+    && [wordCSet characterIsMember:
+      [str characterAtIndex: endRange.location + 1]])
+    {
+      location = endRange.location + 1;
+      scanRange = NSMakeRange (location, length - location);
+      startRange = [str rangeOfCharacterFromSet: wordBreakCSet
+	options: NSLiteralSearch range: scanRange];
+    }
+
   if (startRange.length == 0)
     {
       location = 0;
@@ -304,6 +344,27 @@ static inline void cache_init ()
       range = [str rangeOfCharacterFromSet: wordBreakCSet
 		                   options: NSLiteralSearch
                           	     range: range];
+      /*
+       * If we found an apostrophe in the middle of a word,
+       * we have to skip forward.
+       */
+      if (location > 0)
+	{
+	  while (range.length > 0
+	    && range.location > 0 && range.location < length - 1
+	    && [str characterAtIndex: range.location] == '\''
+	    && [wordCSet characterIsMember:
+	      [str characterAtIndex: range.location - 1]]
+	    && [wordCSet characterIsMember:
+	      [str characterAtIndex: range.location + 1]])
+	    {
+	      location = range.location + 1;
+	      range = NSMakeRange (location, length - location);
+	      range = [str rangeOfCharacterFromSet: wordBreakCSet
+		options: NSLiteralSearch range: range];
+	    }
+	}
+
       if (range.length == 0)
 	{
 	  return length;
@@ -325,10 +386,20 @@ static inline void cache_init ()
       BOOL inWord;
 
       inWord = [wordCSet characterIsMember: [str characterAtIndex: location]];
+      if (inWord == NO && location > 0
+	&& location > 0 && location < length - 1
+	&& [str characterAtIndex: location] == '\''
+	&& [wordCSet characterIsMember:
+	  [str characterAtIndex: location - 1]]
+	&& [wordCSet characterIsMember:
+	  [str characterAtIndex: location + 1]])
+	{
+	  inWord = YES;
+	}
       
       range = NSMakeRange (0, location);
 
-      if (!inWord)
+      if (inWord == NO)
 	{
 	  range = [str rangeOfCharacterFromSet: wordCSet
 		       options: NSBackwardsSearch | NSLiteralSearch
@@ -343,6 +414,18 @@ static inline void cache_init ()
       range = [str rangeOfCharacterFromSet: wordBreakCSet
 		   options: NSBackwardsSearch | NSLiteralSearch
 		   range: range];
+      while (range.length > 0
+	&& range.location > 0 && range.location < length - 1
+	&& [str characterAtIndex: range.location] == '\''
+	&& [wordCSet characterIsMember:
+	  [str characterAtIndex: range.location - 1]]
+	&& [wordCSet characterIsMember:
+	  [str characterAtIndex: range.location + 1]])
+	{
+	  range = NSMakeRange (0, range.location - 1);
+	  range = [str rangeOfCharacterFromSet: wordBreakCSet
+	    options: NSBackwardsSearch|NSLiteralSearch range: range];
+	}
       if (range.length == 0)
 	{
 	  return 0;
