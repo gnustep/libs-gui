@@ -1,3 +1,14 @@
+2000-05-20  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Headers/gnustep/gui/NSTextView.h:
+	Corrected signature for [smartInsertForString:...]
+	* Source/NSAttributedString.m:
+	[setAlignment:range:] allwas use a mutableCopy
+	* Headers/gnustep/gui/NSText.h:
+	* Source/NSText.m:
+	* Source/NSTextView.m:
+	Reorganised all the Copy and Paste code. Added some implementation.
+
 2000-05-23  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSImage.m ([NSImage +imageNamed:]): Check for nil extension.
