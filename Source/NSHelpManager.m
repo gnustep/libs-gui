@@ -44,8 +44,8 @@
 {
   id helpFile = nil;
   NSDictionary *contextHelp = 
-    [[NSDictionary dictionaryWithContentsOfFile: 
-		    [self pathForResource: @"Help" ofType: @"plist"]] retain];
+    RETAIN([NSDictionary dictionaryWithContentsOfFile: 
+			     [self pathForResource: @"Help" ofType: @"plist"]]);
 
   if(contextHelp)
     {
@@ -63,8 +63,8 @@
 		   pathForResource: key 
 		   ofType: @"rtf" 
 		   inDirectory: @"Help"];
-      return [[[NSAttributedString alloc] initWithPath: (NSString *)helpFile 
-				 documentAttributes: nil] autorelease];
+      return AUTORELEASE([[NSAttributedString alloc] initWithPath: (NSString *)helpFile 
+						     documentAttributes: NULL]);
     }
 
   return nil;
