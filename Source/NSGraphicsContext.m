@@ -1454,15 +1454,9 @@ NSGraphicsContext	*GSCurrentContext(void)
 /* NSGraphics Ops */	
 /* ----------------------------------------------------------------------- */
 @implementation NSGraphicsContext (NSGraphics)
-/** Read the data inside rect (defined in the current graphics state)
-    and return the information as a bitmap. The dictionary contains
-    the bitmap data plus various information about the size and format
-    of the data. The dictionary keys include ImageSize, ImageBPS,
-    ImageSPP, and ImageData.
-*/
+
 - (NSDictionary *) GSReadRect: (NSRect) rect
 {
-  [self subclassResponsibility: _cmd];
   return nil;
 }
 

@@ -326,21 +326,21 @@ static BOOL supports_lzw_compression = NO;
       RELEASE(self);
       return nil;
     }
-  _imageData = RETAIN([dict objectForKey: @"ImageData"]);
+  _imageData = RETAIN([dict objectForKey: @"Data"]);
   if (_imageData == nil)
     {
       NSLog(@"NSBitmapImageRep initWithFocusedViewRect: failed");
       RELEASE(self);
       return nil;
     }
-  bps = [[dict objectForKey: @"ImageBPS"] intValue];
+  bps = [[dict objectForKey: @"BitsPerSample"] intValue];
   if (bps == 0)
     bps = 8;
-  spp = [[dict objectForKey: @"ImageSPP"] intValue];
-  alpha = [[dict objectForKey: @"ImageAlpha"] intValue];
-  size = [[dict objectForKey: @"ImageSize"] sizeValue];
-  space = [dict objectForKey: @"ImageColorSpace"];
-  planes[0] = (unsigned char *)[_imageData mutableBytes];
+  spp = [[dict objectForKey: @"SamplesPerPixel"] intValue];
+  alpha = [[dict objectForKey: @"HasAlpha"] intValue];
+  size = [[dict objectForKey: @"Size"] sizeValue];
+  space = [dict objectForKey: @"ColorSpace"];
+  planes[0] = (unsigned char *)[_imageData bytes];
   self = [self initWithBitmapDataPlanes: planes
 		pixelsWide: size.width
 		pixelsHigh: size.height

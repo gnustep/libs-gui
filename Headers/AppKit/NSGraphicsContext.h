@@ -372,7 +372,41 @@ APPKIT_EXPORT NSGraphicsContext	*GSCurrentContext(void);
 /* ----------------------------------------------------------------------- */
 /* NSGraphics Ops */	
 /* ----------------------------------------------------------------------- */
-@interface NSGraphicsContext (NSGraphics) 
+@interface NSGraphicsContext (NSGraphics)
+
+/**
+<p>
+Read raw pixels from the device and return the information as a bitmap.
+Pixels are read from the smallest device-pixel aligned rectangle
+containing rect (defined in the current graphics state and clipped to
+the current window, but not against the clipping path). If the resulting
+device rectangle is degenerate, Size will be (0,0) and Data will be nil,
+but the other entries in the dictionary will be filled in.
+</p><p>
+If the device does not support the operation, returns nil.
+</p><p>
+The returned dictionary contains at least the following keys:
+</p>
+<deflist>
+<term>Data</term><desc>An NSData-instance with the image data.</desc>
+
+<term>Size</term><desc>An NSValue/NSSize with the size in pixels of the
+returned image data.</desc>
+
+<term>BitsPerSample</term><desc>An NSValue/unsigned int.</desc>
+
+<term>SamplesPerPixel</term><desc>An NSValue/unsigned int.</desc>
+
+<term>ColorSpace</term><desc>An NSString with the name of the color space the
+data is in.</desc>
+
+<term>HasAlpha</term><desc>An NSValue/unsigned int. 0 if the returned image
+does not have an alpha channel, 1 if it does.</desc>
+
+<term>Matrix</term><desc>An NSAffineTransform-instance that contains the
+transform between current user space and image space for this image.</desc>
+</deflist>
+*/
 - (NSDictionary *) GSReadRect: (NSRect)rect;
 
 /* Soon to be obsolete */

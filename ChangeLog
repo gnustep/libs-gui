@@ -1,3 +1,10 @@
+2004-07-30 15:52  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/AppKit/NSGraphicsContext.h (-GSReadRect:): Document.
+	* Source/NSBitmapImageRep.m (-initWithFocusedViewRect:): Update for
+	new key names from GSReadRect:.
+	* Source/NSGraphicsContext.m (-GSReadRect:): Return nil.
+
 2004-07-29  Adrian Robert  <arobert@cogsci.ucsd.edu>
 
 	* Documentation/GuiUser/DefaultsSummary.gsdoc: Added some explanation
