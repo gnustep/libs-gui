@@ -313,17 +313,29 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 			  objectForKey: @"NSMenuItemIndex"] intValue];
   NSMenuItem *anItem = [_items_link objectAtIndex: index];
   id          aCell  = [NSMenuItemCell new];
+  int wasHighlighted = _highlightedItemIndex;
 
   [aCell setMenuItem: anItem];
   [aCell setMenuView: self];
   [aCell setFont: _font];
 
-  if ([self highlightedItemIndex] == index)
-    [aCell setHighlighted: YES];
-  else
-    [aCell setHighlighted: NO];
-
+  /* Unlight the previous highlighted cell if the index of the highlighted
+   * cell will be ruined up by the insertion of the new cell.  */
+  if (wasHighlighted >= index)
+    {
+      [self setHighlightedItemIndex: -1];
+    }
+  
   [_itemCells insertObject: aCell atIndex: index];
+  
+  /* Restore the highlighted cell, with the new index for it.  */
+  if (wasHighlighted >= index)
+    {
+      /* Please note that if wasHighlighted == -1, it shouldn't be possible
+       * to be here.  */
+      [self setHighlightedItemIndex: ++wasHighlighted];
+    }
+
   [aCell setNeedsSizing: YES];
   RELEASE(aCell);
 
