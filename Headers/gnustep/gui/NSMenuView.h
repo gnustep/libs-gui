@@ -47,28 +47,28 @@
 
 @interface NSMenuView : NSView <NSCoding>
 {
-  NSMenu *menuv_menu;
-  NSMutableArray *menuv_itemCells;
-  BOOL menuv_horizontal;
-  NSFont *menuv_font;
-  int menuv_highlightedItemIndex;
-  float menuv_horizontalEdgePad;
-  float menuv_stateImageOffset;
-  float menuv_stateImageWidth;
-  float menuv_imageAndTitleOffset;
-  float menuv_imageAndTitleWidth;
-  float menuv_keyEqOffset;
-  float menuv_keyEqWidth;
-  BOOL menuv_needsSizing;
-  NSSize cellSize;
+  NSMutableArray *_itemCells;
+  BOOL _horizontal;
+  NSFont *_font;
+  int _highlightedItemIndex;
+  float _horizontalEdgePad;
+  float _stateImageOffset;
+  float _stateImageWidth;
+  float _imageAndTitleOffset;
+  float _imageAndTitleWidth;
+  float _keyEqOffset;
+  float _keyEqWidth;
+  BOOL _needsSizing;
+  NSSize _cellSize;
 @private
-  id menuv_items_link;
-  BOOL menuv_keepAttachedMenus;
+  id _items_link;
+  BOOL _keepAttachedMenus;
   int _oldHighlightedItemIndex;
 }
 
 + (float)menuBarHeight;
 
+- (id)initAsTearOff;
 - (void)setMenu:(NSMenu *)menu;
 - (NSMenu *)menu;
 - (void)setHorizontal:(BOOL)flag;
@@ -115,12 +115,8 @@
 - (BOOL)trackWithEvent:(NSEvent *)event;
 @end
 
-@interface NSMenuView (Private)
-- (id) initWithFrame: (NSRect)aFrame
-            cellSize: (NSSize)aSize;
-- (void) setPopUpButton: (NSPopUpButton *)popb;
-- (NSPopUpButton *) popupButton;
-- (void)setTitleWidth:(float)titleWidth;
+@interface NSMenuView (GNUstepExtension)
+- (void) _setCellSize: (NSSize)aSize;
 @end
 
 #endif
