@@ -1,3 +1,10 @@
+Tue Nov 30 11:52:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSCachecImageRep.m: Improve initialisation and added
+	partial implementations (no scaling) for ([-drawAtPoint:]) and
+	([-drawInRect:]) - the superclass versions didn't work due to
+	current state of gstate management.
+
 Mon Nov 29 17:23:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSMatrix.m: Memory bounds error fixed.

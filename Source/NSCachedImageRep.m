@@ -36,6 +36,7 @@
 #include <Foundation/NSException.h>
 
 #include <AppKit/NSCachedImageRep.h>
+#include <AppKit/NSView.h>
 #include <AppKit/NSWindow.h>
 
 @interface GSCacheW : NSWindow
@@ -104,6 +105,11 @@
 					  styleMask: NSBorderlessWindowMask
 					    backing: NSBackingStoreRetained
 					      defer: NO];
+  [self setSize: _rect.size];
+  [self setAlpha: NO];		/* FIXME - when we have alpha in windows */
+  [self setOpaque: YES];
+  [self setPixelsHigh: _rect.size.height];
+  [self setPixelsWide: _rect.size.width];
   return self;
 }
 
@@ -127,6 +133,40 @@
 - (BOOL)draw
 {
   NSCopyBits([_window gState], _rect, _rect.origin);
+  return NO;
+}
+
+- (BOOL) drawAtPoint: (NSPoint)aPoint
+{
+  NSGraphicsContext *ctxt;
+
+  if (size.width == 0 && size.height == 0)
+    return NO;
+
+  NSDebugLLog(@"NSImage", @"Drawing at point %f %f\n", aPoint.x, aPoint.y);
+  ctxt = GSCurrentContext();
+  if (aPoint.x != 0 || aPoint.y != 0)
+    {
+      if ([[ctxt focusView] isFlipped])
+	aPoint.y -= size.height;
+    }
+  NSCopyBits([_window gState], _rect, aPoint);
+  return NO;
+}
+
+- (BOOL) drawInRect: (NSRect)aRect
+{
+  NSGraphicsContext *ctxt;
+
+  NSDebugLLog(@"NSImage", @"Drawing in rect (%f %f %f %f)\n", 
+	      NSMinX(aRect), NSMinY(aRect), NSWidth(aRect), NSHeight(aRect));
+  if (size.width == 0 && size.height == 0)
+    return NO;
+
+  ctxt = GSCurrentContext();
+  if ([[ctxt focusView] isFlipped])
+    aRect.origin.y -= NSHeight(aRect);
+  NSCopyBits([_window gState], _rect, aRect.origin);
   return NO;
 }
 

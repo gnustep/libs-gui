@@ -892,6 +892,8 @@ static NSDictionary* nsmapping = nil;
 
       /*
        *	What's the best representation? FIXME
+       *	At the moment we take the last bitmap we find, or the first
+       *	rep of any type if we don't find a bitmap.	
        */
       [_reps getObjects: reps];
       for (i = 0; i < count; i++)
@@ -899,6 +901,10 @@ static NSDictionary* nsmapping = nil;
 	  GSRepData	*repd = reps[i];
     
 	  if ([repd->rep isKindOfClass: [NSBitmapImageRep class]])
+	    {
+	      rep = repd->rep;
+	    }
+	  else if (rep == nil)
 	    {
 	      rep = repd->rep;
 	    }
