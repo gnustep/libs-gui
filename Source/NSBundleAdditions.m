@@ -203,49 +203,62 @@ Class gmodel_class(void)
 
   if (gmclass == Nil)
     {
-	NSBundle *theBundle;
-	NSEnumerator *benum;
-	NSString *path;
+      NSBundle	*theBundle;
+      NSEnumerator *benum;
+      NSString	*path;
 
-	/* Find the bundle */
-	benum = [NSStandardLibraryPaths() objectEnumerator];
-	while ((path = [benum nextObject]))
-	  {
-	    path = [path stringByAppendingPathComponent: @"Bundles"];
-	    path = [path stringByAppendingPathComponent: @"libgmodel.bundle"];
-	    if ([[NSFileManager defaultManager] fileExistsAtPath: path])
-	      break;
-	    path = nil;
-	  }
-	NSCAssert(path != nil, @"Unable to load gmodel bundle");
-	NSDebugLog(@"Loading gmodel from %@", path);
+      /* Find the bundle */
+      benum = [NSStandardLibraryPaths() objectEnumerator];
+      while ((path = [benum nextObject]))
+	{
+	  path = [path stringByAppendingPathComponent: @"Bundles"];
+	  path = [path stringByAppendingPathComponent: @"libgmodel.bundle"];
+	  if ([[NSFileManager defaultManager] fileExistsAtPath: path])
+	    break;
+	  path = nil;
+	}
+      NSCAssert(path != nil, @"Unable to load gmodel bundle");
+      NSDebugLog(@"Loading gmodel from %@", path);
 
-	theBundle = [NSBundle bundleWithPath: path];
-	NSCAssert(theBundle != nil, @"Can't init gmodel bundle");
-	gmclass = [theBundle classNamed: @"GMModel"];
-	NSCAssert(gmclass, @"Can't load gmodel bundle");
+      theBundle = [NSBundle bundleWithPath: path];
+      NSCAssert(theBundle != nil, @"Can't init gmodel bundle");
+      gmclass = [theBundle classNamed: @"GMModel"];
+      NSCAssert(gmclass, @"Can't load gmodel bundle");
     }
   return gmclass;
 }
 
-+ (BOOL) loadNibFile: (NSString *)fileName
-   externalNameTable: (NSDictionary *)context
-	    withZone: (NSZone *)zone
++ (BOOL) loadNibFile: (NSString*)fileName
+   externalNameTable: (NSDictionary*)context
+	    withZone: (NSZone*)zone
 {
   BOOL		loaded = NO;
   NSUnarchiver	*unarchiver = nil;
   NSString      *ext = [fileName pathExtension];
 
-  if ([[fileName pathExtension] isEqual: @"nib"])
+  if ([ext isEqual: @"nib"])
     {
-      /* We can't read nibs, look for an equivalent gmodel file */
-      fileName = [fileName stringByDeletingPathExtension];
-      fileName = [fileName stringByAppendingPathExtension: @"gmodel"];
+      NSFileManager	*mgr = [NSFileManager defaultManager];
+      NSString		*base = [fileName stringByDeletingPathExtension];
+
+      /* We can't read nibs, look for an equivalent gorm or gmodel file */
+      fileName = [base stringByAppendingPathExtension: @"gorm"];
+      if ([mgr isReadableFileAtPath: fileName])
+	{
+	  ext = @"gorm";
+	}
+      else
+	{
+	  fileName = [fileName stringByAppendingPathExtension: @"gmodel"];
+	  ext = @"gmodel";
+	}
     }
 
-  // If the file to be read is a gmodel, use the GMModel method to
-  // read it in and skip the dearchiving below.
-  if([ext isEqualToString: @"gmodel"])
+  /*
+   * If the file to be read is a gmodel, use the GMModel method to
+   * read it in and skip the dearchiving below.
+   */
+  if ([ext isEqualToString: @"gmodel"])
     {
       return [gmodel_class() loadIMFile: fileName
 		      owner: [context objectForKey: @"NSOwner"]];
@@ -293,9 +306,10 @@ Class gmodel_class(void)
     }
   NS_ENDHANDLER
 
-  if (!loaded)
-	NSLog(@"Failed to load Nib\n");
-  
+  if (loaded == NO)
+    {
+      NSLog(@"Failed to load Nib\n");
+    }
   return loaded;
 }
 
@@ -306,8 +320,9 @@ Class gmodel_class(void)
   NSBundle	*bundle;
 
   if (owner == nil || aNibName == nil)
-    return NO;
-
+    {
+      return NO;
+    }
   table = [NSDictionary dictionaryWithObject: owner forKey: @"NSOwner"];
   bundle = [self bundleForClass: [owner class]];
   if (bundle == nil)
@@ -403,11 +418,15 @@ Class gmodel_class(void)
   NSString *path = [self pathForNibResource: fileName];
 
   if (path != nil)
-    return [NSBundle loadNibFile: path
-		     externalNameTable: context
-		     withZone: (NSZone*)zone];
+    {
+      return [NSBundle loadNibFile: path
+		 externalNameTable: context
+			  withZone: (NSZone*)zone];
+    }
   else 
-    return NO;
+    {
+      return NO;
+    }
 }
 @end
 
@@ -422,7 +441,7 @@ Class gmodel_class(void)
    active, [win -orderFront:] requests get ignored, so we add the window
    to the inactive list, so it gets sent an -orderFront when the app
    becomes active. */
-- (void)_deactivateVisibleWindow: (NSWindow *)win
+- (void) _deactivateVisibleWindow: (NSWindow *)win
 {
   if (_inactive)
     [_inactive addObject: win];

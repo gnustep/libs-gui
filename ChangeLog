@@ -1,4 +1,10 @@
-2002-02-10  Michael Hanni <mhanni@sprintmail.com>
+2002-02-11  Richard Frith-Macdonald  <rfm@gnu.org>
+
+	* Source/NSBundleAdditions.m:
+	([loadNibFile:externalNameTable:withZone:]) fix so that, if given a
+	name with a .nib extension, try correctly to use a .gorm or .gmodel.
+
+ 002-02-10  Michael Hanni <mhanni@sprintmail.com>
 
         * Source/NSMenuView.m ([-drawRect:]): make this more efficent,    
         only redraw cells that we clip.
@@ -140,6 +146,7 @@ Sun Feb  3 11:53:13 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 	* Source/GSTextStorage.m: Use new GSI API from latest CVS base
 	* library.
 
+>>>>>>> 1.1333
 2002-01-31  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSCell.m
