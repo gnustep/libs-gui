@@ -52,9 +52,10 @@
      * be sure to change the flag accordingly.
      */
     unsigned	flipped_view:1;
-    unsigned	has_subviews:1;
-    unsigned	has_currects:1;
-    unsigned	has_trkrects:1;
+    unsigned	has_subviews:1;		/* This view has subviews	*/
+    unsigned	has_currects:1;		/* This view has cursor rects	*/
+    unsigned	has_trkrects:1;		/* This view has tracking rects	*/
+    unsigned	has_draginfo:1;		/* View/window has drag types	*/
   } _rFlags;
 }
 

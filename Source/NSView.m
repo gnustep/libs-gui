@@ -47,6 +47,7 @@
 
 #include <AppKit/NSView.h>
 #include <AppKit/NSWindow.h>
+#include <AppKit/GSDragManager.h>
 #include <AppKit/GSTrackingRect.h>
 #include <AppKit/NSAffineTransform.h>
 
@@ -147,13 +148,14 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
 - (void) dealloc
 {
-  [matrixToWindow release];
-  [matrixFromWindow release];
-  [frameMatrix release];
-  [boundsMatrix release];
-  [sub_views release];
-  [tracking_rects release];
-  [cursor_rects release];
+  RELEASE(matrixToWindow);
+  RELEASE(matrixFromWindow);
+  RELEASE(frameMatrix);
+  RELEASE(boundsMatrix);
+  TEST_RELEASE(sub_views);
+  TEST_RELEASE(tracking_rects);
+  TEST_RELEASE(cursor_rects);
+  [self unregisterDraggedTypes];
 
   [super dealloc];
 }
@@ -166,7 +168,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
       return;
     }
 
-  [aView retain];
+  RETAIN(aView);
   [aView removeFromSuperview];
   [aView viewWillMoveToWindow: window];
   [aView viewWillMoveToSuperview: self];
@@ -175,7 +177,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   _rFlags.has_subviews = 1;
   [aView resetCursorRects];
   [aView setNeedsDisplay: YES];
-  [aView release];
+  RELEASE(aView);
 }
 
 - (void) addSubview: (NSView*)aView
@@ -202,7 +204,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
       else
 	index = [sub_views count];
     }
-  [aView retain];
+  RETAIN(aView);
   [aView removeFromSuperview];
   [aView viewWillMoveToWindow: window];
   [aView viewWillMoveToSuperview: self];
@@ -214,7 +216,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   _rFlags.has_subviews = 1;
   [aView resetCursorRects];
   [aView setNeedsDisplay: YES];
-  [aView release];
+  RELEASE(aView);
 }
 
 - (NSView*) ancestorSharedWithView: (NSView*)aView
@@ -280,13 +282,13 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 
   if ([window firstResponder] == self)
     [window makeFirstResponder: window];
-  [self retain];
+  RETAIN(self);
   [super_view->sub_views removeObjectIdenticalTo: self];
   if ([super_view->sub_views count] == 0)
     super_view->_rFlags.has_subviews = 0;
   super_view = nil;
   [self viewWillMoveToWindow: nil];
-  [self release];
+  RELEASE(self);
 }
 
 - (void) removeFromSuperview
@@ -307,13 +309,13 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
   if ([window firstResponder] == self)
     [window makeFirstResponder: window];
   [super_view setNeedsDisplayInRect: frame];
-  [self retain];
+  RETAIN(self);
   [super_view->sub_views removeObjectIdenticalTo: self];
   if ([super_view->sub_views count] == 0)
     super_view->_rFlags.has_subviews = 0;
   super_view = nil;
   [self viewWillMoveToWindow: nil];
-  [self release];
+  RELEASE(self);
 }
 
 - (void) replaceSubview: (NSView*)oldView with: (NSView*)newView
@@ -333,7 +335,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
        * of the receiver then we do nothing - but here we add newView anyway.
        * So a replacement with no oldView is an addition.
        */
-      [newView retain];
+      RETAIN(newView);
       [newView removeFromSuperview];
       [newView viewWillMoveToWindow: window];
       [newView viewWillMoveToSuperview: self];
@@ -342,7 +344,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
       _rFlags.has_subviews = 1;
       [newView resetCursorRects];
       [newView setNeedsDisplay: YES];
-      [newView release];
+      RELEASE(newView);
     }
   else if ([sub_views indexOfObjectIdenticalTo: oldView] != NSNotFound)
     {
@@ -365,7 +367,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 	   * newView), remove the oldView, and insert the newView in it's
 	   * place.
 	   */
-	  [newView retain];
+	  RETAIN(newView);
 	  [newView removeFromSuperview];
 	  index = [sub_views indexOfObjectIdenticalTo: oldView];
 	  [oldView removeFromSuperview];
@@ -376,7 +378,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 	  _rFlags.has_subviews = 1;
 	  [newView resetCursorRects];
 	  [newView setNeedsDisplay: YES];
-	  [newView release];
+	  RELEASE(newView);
 	}
     }
 }
@@ -1452,7 +1454,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
 	     userData: NULL
 	       inside: YES];
   [cursor_rects addObject: m];
-  [m release];
+  RELEASE(m);
   _rFlags.has_currects = 1;
 }
 
@@ -1687,11 +1689,12 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
     }
   ++t;
 
-  m = [[[GSTrackingRect alloc] initWithRect: aRect
+  m = [[GSTrackingRect alloc] initWithRect: aRect
 				        tag: t
 				      owner: anObject
 				   userData: data
-				     inside: flag] autorelease];
+				     inside: flag];
+  AUTORELEASE(m);
   [tracking_rects addObject: m];
   _rFlags.has_trkrects = 1;
   return t;
@@ -1718,10 +1721,19 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
 {}
 
 - (void) registerForDraggedTypes: (NSArray*)newTypes
-{}
+{
+  GSRegisterDragTypes(self, newTypes);
+  _rFlags.has_draginfo = 1;
+}
 
 - (void) unregisterDraggedTypes
-{}
+{
+  if (_rFlags.has_draginfo)
+    {
+      GSUnregisterDragTypes(self);
+      _rFlags.has_draginfo = 0;
+    }
+}
 
 //
 // Printing
@@ -1944,7 +1956,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
    * a mutable array does a shallow copy - which is what we want to give
    * away - we don't want people to mess with our actual subviews array.
    */
-  return [[sub_views mutableCopyWithZone: NSDefaultMallocZone()] autorelease];
+  return AUTORELEASE([sub_views mutableCopyWithZone: NSDefaultMallocZone()]);
 }
 
 - (NSView*) superview

@@ -1,3 +1,14 @@
+Tue Jun  1 18:20:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/AppKit/NSResponder.h: New flag for dnd.
+	* Headers/AppKit/GSDragManager.h: new file.
+	* Source/GSDragManager.m: new file.
+	* Source/NSView.m: Implemented drag registration/unregistration and
+	prepared for garbage collection.
+	* Source/NSWindow.m: Implemented drag registration/unregistration and
+	prepared for garbage collection.
+	* Source/GNUmakefile: Updated for above changes
+
 Fri May 28 15:15:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSPanel.m: ([-canBecomeKeyWindow]) return NO only if the

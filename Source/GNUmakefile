@@ -108,6 +108,7 @@ NSView.m \
 NSWindow.m \
 NSWorkspace.m \
 GSTrackingRect.m \
+GSDragManager.m \
 GSServicesManager.m \
 tiff.m \
 externs.m
@@ -210,6 +211,7 @@ AppKit/GSMethodTable.h \
 AppKit/DPSOperators.h \
 AppKit/PSOperators.h \
 AppKit/GSPasteboardServer.h \
+AppKit/GSDragManager.h \
 AppKit/GSServicesManager.h
 
 -include GNUmakefile.preamble

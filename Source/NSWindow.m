@@ -168,18 +168,18 @@ static Class	responderClass;
 {
   if (content_view)
     {
-      [[content_view superview] release];         // Release the window view
-      [content_view release];                     // Release the content view
+      RELEASE([content_view superview]);	/* Release the window view */
+      RELEASE(content_view);
     }
 
-  if (_fieldEditor)
-    [_fieldEditor release];
-  [background_color release];
-  [represented_filename release];
-  [miniaturized_title release];
-  [miniaturized_image release];
-  [window_title release];
-  [rectsBeingDrawn release];
+  TEST_RELEASE(_fieldEditor);
+  TEST_RELEASE(background_color);
+  TEST_RELEASE(represented_filename);
+  TEST_RELEASE(miniaturized_title);
+  TEST_RELEASE(miniaturized_image);
+  TEST_RELEASE(window_title);
+  TEST_RELEASE(rectsBeingDrawn);
+  [self unregisterDraggedTypes];
 
   [super dealloc];
 }
@@ -233,12 +233,12 @@ static Class	responderClass;
 
   cframe.origin = NSZeroPoint;                    // Create the content view
   cframe.size = frame.size;
-  [self setContentView: [[[NSView alloc] initWithFrame: cframe] autorelease]];
+  [self setContentView: AUTORELEASE([[NSView alloc] initWithFrame: cframe])];
 
   /* rectBeingDrawn is variable used to optimize flushing the backing store.
      It is set by NSGraphicContext during a lockFocus to tell NSWindow what
      part a view is drawing in, so NSWindow only has to flush that portion */
-  rectsBeingDrawn = [[NSMutableArray arrayWithCapacity: 10] retain]; 
+  rectsBeingDrawn = RETAIN([NSMutableArray arrayWithCapacity: 10]); 
   NSDebugLog(@"NSWindow end of init\n");
 
   return self;
@@ -258,7 +258,7 @@ static Class	responderClass;
 
   // contentview can't be nil
   if (!aView)
-    aView = [[[NSView alloc] initWithFrame: frame] autorelease];
+    aView = AUTORELEASE([[NSView alloc] initWithFrame: frame]);
 
   // If window view has not been created, create it
   if ((!content_view) || ([content_view superview] == nil))
@@ -416,15 +416,20 @@ static Class	responderClass;
 }
 
 - (NSText *) fieldEditor: (BOOL)createFlag forObject: (id)anObject
-{                                                   // ask delegate if it can
-  if ([delegate respondsToSelector:               // provide a field editor
+{
+  /* ask delegate if it can provide a field editor */
+  if ([delegate respondsToSelector:
             @selector(windowWillReturnFieldEditor:toObject:)])
     return [delegate windowWillReturnFieldEditor: self toObject: anObject];
 
-  if(!_fieldEditor && createFlag)                 // each window has a global
-    {                                           // text field editor, if it
-      _fieldEditor = [[NSText new] retain];       // doesn't exist create it
-      [_fieldEditor setFieldEditor: YES];          // if create flag is set
+  /*
+   * Each window has a global text field editor, if it doesn't exist create it
+   * if create flag is set
+   */
+  if (!_fieldEditor && createFlag)
+    {
+      _fieldEditor = [NSText new];
+      [_fieldEditor setFieldEditor: YES];
     }
 
   return _fieldEditor;
@@ -899,14 +904,14 @@ static Class	responderClass;
    * removal takes place when we post the notification.
    */
   if (is_released_when_closed)
-    [self retain];
+    RETAIN(self);
 
   [nc postNotificationName: NSWindowWillCloseNotification object: self];
   [theApp removeWindowsItem: self];
   [self orderOut: self];
 
   if (is_released_when_closed)
-    [self release];
+    RELEASE(self);
 }
 
 - (void) deminiaturize: sender
@@ -1435,12 +1440,19 @@ static Class	responderClass;
 {
 }
 
-- (void) registerForDraggedTypes: (NSArray *)newTypes
+- (void) registerForDraggedTypes: (NSArray*)newTypes
 {
+  GSRegisterDragTypes(self, newTypes);
+  _rFlags.has_draginfo = 1;
 }
 
 - (void) unregisterDraggedTypes
 {
+  if (_rFlags.has_draginfo)
+    {
+      GSUnregisterDragTypes(self);
+      _rFlags.has_draginfo = 0;
+    }
 }
 
 //
@@ -1801,7 +1813,7 @@ static Class	responderClass;
   delegate = nil;
   window_num = 0;
   gstate = 0;
-  background_color = [[NSColor controlColor] retain];
+  background_color = RETAIN([NSColor controlColor]);
   represented_filename = @"Window";
   miniaturized_title = @"Window";
   miniaturized_image = nil;
