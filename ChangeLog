@@ -1,4 +1,15 @@
-2003-02-23 00:02  Alexander Malmberg <alexander@malmberg.org>
+2003-02-24 03:49  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/GSLayoutManager.m (-_glyphForCharacter:index:positions::):
+	Fix handling of the case where the exact glyph is found during
+	the binary search.
+
+	* Source/NSLayoutManager.m (-drawGlyphsForGlyphRange:atPoint:):
+	Check that a range has a background color before checking that there
+	are rectangles for it (since ranges practically always have
+	rectangles, and very rarely a background color).
+
+2003-02-24 00:02  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSParagraphStyle.m: Implement -isEqual: and -hash.
 

@@ -581,7 +581,7 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
       else if (r->glyphs[mid].char_offset < target)
 	lo = mid + 1;
       else
-	hi = lo;
+	hi = lo = mid;
     }
   i = lo;
   while (r->glyphs[i].char_offset > target)
@@ -907,7 +907,7 @@ static glyph_run_t *run_insert(glyph_run_head_t **context)
 
   GLYPH_SCAN_FORWARD(r, i, pos, cpos, r->glyphs[i].char_offset + cpos <= target)
 
-    glyph_range.length = i + pos - glyph_range.location;
+  glyph_range.length = i + pos - glyph_range.location;
   if (i == r->head.glyph_length)
     char_range.length = glyphs->char_length - char_range.location;
   else
@@ -1235,6 +1235,11 @@ places where we switch.
 
 	This happens a lot with repeated single-character insertions, aka.
 	typing in a text view.
+	*/
+	/*
+	TODO: This is not triggered if a character is added at the very end
+	of the text. Might be a good idea to merge runs in that case, too.
+	Maybe do it in -_generateRunsToCharacter:, instead.
 	*/
 	if (rng.location < ch && context[0]->char_length &&
 	    context[0]->char_length < 16)
