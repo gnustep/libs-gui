@@ -1209,10 +1209,14 @@ rectForCharacterIndex: [self selectedRange].location],
 //
 // Managing the Field Editor
 //
-- (BOOL) isFieldEditor				{ return is_field_editor; }
+- (BOOL) isFieldEditor				
+{ 
+  return is_field_editor; 
+}
 
 - (void) setFieldEditor: (BOOL)flag
-{	is_field_editor  = flag;
+{
+  is_field_editor  = flag;
 }
 
 - (int) lineLayoutIndexForCharacterIndex: (unsigned) anIndex
@@ -1499,117 +1503,159 @@ NSLog(NSStringFromRange(redrawLineRange));
 }
 
 
-
 - (void) keyDown: (NSEvent *)theEvent
-{	unsigned short keyCode;
+{	
+  unsigned short keyCode;
+  
+  // If not editable then don't recognize the key down
+  if (!is_editable) 
+    {
+      [super keyDown: theEvent];
+      return;
+    }					
+  
+  keyCode = [theEvent keyCode];
 
-	if (!is_editable) return; 					// If not editable then don't  recognize the key down
-
-	if ((keyCode = [theEvent keyCode])) 
-	switch(keyCode)
-	{	case 	NSUpArrowFunctionKey: 	//NSUpArrowFunctionKey: 
-			[self moveCursorUp: self];
-		return;
-		case 	NSDownArrowFunctionKey: 	//NSDownArrowFunctionKey: 
-			[self moveCursorDown: self];
-		return;
-		case 	NSLeftArrowFunctionKey: 	//NSLeftArrowFunctionKey: 
-			[self moveCursorLeft: self];
-		return;
-		case 	NSRightArrowFunctionKey: //NSRightArrowFunctionKey: 
-			[self moveCursorRight: self];
-		return;
-		case    NSBackspaceKey: 	// backspace
-			[self deleteRange: [self selectedRange] backspace: YES];
-		return;
-#if 1
-		case 0x6d: 	// end - key: debugging: enforce complete re - layout
-
-			[lineLayoutInformation autorelease]; lineLayoutInformation = nil;
-			[self rebuildLineLayoutInformationStartingAtLine: 0];
-			[self setNeedsDisplay: YES];
-		return;
-#endif
-#if 1
-		case 0x45: 	// num - lock: debugging
-			NSLog([lineLayoutInformation description]);
-		return;
-#endif
-		case NSCarriageReturnKey: 	// return
-			if ([self isFieldEditor])	//textShouldEndEditing delegation is handled in resignFirstResponder
-			{
-#if 0
-// Movement codes for movement between fields; these codes are the intValue of the NSTextMovement key in NSTextDidEndEditing notifications
-				[NSNumber numberWithInt: NSIllegalTextMovement]
-				[NSNumber numberWithInt: NSReturnTextMovement]
-				[NSNumber numberWithInt: NSTabTextMovement]
-				[NSNumber numberWithInt: NSBacktabTextMovement]
-				[NSNumber numberWithInt: NSLeftTextMovement]
-				[NSNumber numberWithInt: NSRightTextMovement]
-				[NSNumber numberWithInt: NSUpTextMovement]
-				[NSNumber numberWithInt: NSDownTextMovement]
-#endif
-				[[self window] makeFirstResponder: [self nextResponder]];
-				[self textDidEndEditing: [NSNotification notificationWithName: NSTextDidEndEditingNotification object: self
-							   userInfo: [NSDictionary dictionaryWithObjectsAndKeys: [NSNumber numberWithInt: NSReturnTextMovement],@"NSTextMovement",nil]]];
-			} else
-			{
-	NSLog(@"\bCarriage return.\b\n");
-
-	[self insertText: [[self class] newlineString]];
-				return;
-			}
-		break;
-/* fixme */
-		case 0x09: 
-			if ([self isFieldEditor])
-			  {
-			    [[self window] makeFirstResponder: [self nextResponder]];
-			    [self textDidEndEditing: [NSNotification
-notificationWithName: NSTextDidEndEditingNotification object: self
-	userInfo: [NSDictionary dictionaryWithObjectsAndKeys: [NSNumber numberWithInt: NSTabTextMovement],@"NSTextMovement",nil]]];
-			    break;
-			  }
-/* fixme */
+  // Some keys are extremely special if we are field editor 
+  if ([self isFieldEditor]) 
+    {
+      int notNumber = NSIllegalTextMovement;
+      
+      switch (keyCode)
+	{	
+	case NSUpArrowFunctionKey:
+	  notNumber = NSUpTextMovement;
+	  break;
+	case NSDownArrowFunctionKey:
+	  notNumber = NSDownTextMovement;
+	  break;
+	case NSLeftArrowFunctionKey:
+	  //notNumber = NSLeftTextMovement;
+	  break;
+	case NSRightArrowFunctionKey:
+	  //notNumber = NSRightTextMovement;
+	  break;
+	case NSCarriageReturnKey: 
+	  notNumber = NSReturnTextMovement;
+	  break;
+	case 0x09: 
+	  if ([theEvent modifierFlags] & NSShiftKeyMask)
+	    notNumber = NSBacktabTextMovement;
+	  else 
+	    notNumber = NSTabTextMovement;
+	  break;
 	}
-#if 0
-NSLog(@"keycode: %x",keyCode);
-#endif
+      if (notNumber != NSIllegalTextMovement)
 	{
-		// else
-		[self insertText: [theEvent characters]];
+	  if ([self resignFirstResponder])
+	    {
+	      NSNumber *number;
+	      NSDictionary *uiDictionary;
+	      NSNotification *notification;
+	      
+	      number = [NSNumber numberWithInt: notNumber];
+	      uiDictionary = [NSDictionary dictionaryWithObjectsAndKeys: number,
+					   @"NSTextMovement", NULL];
+	      notification = [NSNotification notificationWithName: 
+					       NSTextDidEndEditingNotification 
+					     object: self
+					     userInfo: uiDictionary]; 
+	      [self textDidEndEditing: notification];
+	    }
+	  return;
 	}
+    }
+
+  // Special Characters for generic NSText
+  switch(keyCode)
+    {	
+    case NSUpArrowFunctionKey: 
+      [self moveCursorUp: self];
+      return;
+    case NSDownArrowFunctionKey:
+      [self moveCursorDown: self];
+      return;
+    case NSLeftArrowFunctionKey:
+      [self moveCursorLeft: self];
+      return;
+    case NSRightArrowFunctionKey:
+      [self moveCursorRight: self];
+      return;
+    case NSBackspaceKey: 
+      [self deleteRange: [self selectedRange] backspace: YES];
+      return;
+#if 1
+    case 0x6d: 	// end - key: debugging: enforce complete re - layout
+      [lineLayoutInformation autorelease]; 
+      lineLayoutInformation = nil;
+      [self rebuildLineLayoutInformationStartingAtLine: 0];
+      [self setNeedsDisplay: YES];
+      return;
+#endif
+#if 1
+      // TODO: Choose another key
+    case 0x45: 	// num - lock: debugging
+      NSLog ([lineLayoutInformation description]);
+      return;
+#endif
+    case NSCarriageReturnKey:
+      NSLog (@"\bCarriage return.\b\n");
+      [self insertText: [[self class] newlineString]];
+      return;
+    }
+  
+  // If the character(s) was not a special one, simply insert it.
+  [self insertText: [theEvent characters]];
 }
 
 - (BOOL) acceptsFirstResponder
-{	if ([self isSelectable]) return YES;
-	else return NO;
+{	
+  if ([self isSelectable]) 
+    return YES;
+  else 
+    return NO;
 }
 
 - (BOOL) resignFirstResponder
-{	if ([self shouldDrawInsertionPoint])
-	{
-//		[self lockFocus];
-		[self drawInsertionPointAtIndex: [self selectedRange].location color: nil turnedOn: NO];
-//		[self unlockFocus];
+{	
+  if ([self isEditable]) 
+    if ([self textShouldEndEditing: self] == NO)
+      return NO;
 
-		//<!> stop timed entry
-	}
-	if ([self isEditable]) return [self textShouldEndEditing: (NSText*)self];
-	return YES;
+  // Add any clean-up stuff here
+
+  if ([self shouldDrawInsertionPoint])
+    {
+      [self drawInsertionPointAtIndex: [self selectedRange].location 
+	    color: nil turnedOn: NO];
+      
+      //<!> stop timed entry
+    }
+
+  [self textDidEndEditing: nil];
+  return YES;
 }
 
 - (BOOL) becomeFirstResponder
 {
-//	if ([self shouldDrawInsertionPoint])
-//	{
-//		[self lockFocus];
-//		[self drawInsertionPointAtIndex: [self selectedRange].location color: [NSColor blackColor] turnedOn: YES];
-//		[self unlockFocus];
-//		//<!> restart timed entry
-//	}
-	if ([self isEditable] && [self textShouldBeginEditing: (NSText*)self]) return YES;
-	else return NO;
+  if ([self isSelectable]) 
+    if ([self textShouldBeginEditing: self])
+      {
+	// Add any initialization stuff here.
+
+	//if ([self shouldDrawInsertionPoint])
+	//  {
+	//   [self lockFocus];
+	//   [self drawInsertionPointAtIndex: [self selectedRange].location 
+	//      color: [NSColor blackColor] turnedOn: YES];
+	//   [self unlockFocus];
+	//   //<!> restart timed entry
+	//  }
+	[self textDidBeginEditing: nil];
+	return YES;
+      }
+
+  return NO;
 }
 
 /*
@@ -1643,38 +1689,77 @@ NSLog(@"keycode: %x",keyCode);
 /*
  * Implemented by the Delegate
  */
-
 - (void) textDidBeginEditing: (NSNotification *)aNotification
-{	if ([delegate respondsToSelector: @selector(textDidBeginEditing: )])
-    	[delegate textDidBeginEditing: aNotification? aNotification: [NSNotification notificationWithName: NSTextDidBeginEditingNotification object: self]];
+{	
+  if ([delegate respondsToSelector: @selector(textDidBeginEditing: )])
+    {
+      if (!aNotification)
+	aNotification = [NSNotification notificationWithName: 
+					  NSTextDidBeginEditingNotification 
+					object: self];
+      [delegate textDidBeginEditing: aNotification];
+    }
 
-	[[NSNotificationCenter defaultCenter] postNotificationName: NSTextDidBeginEditingNotification object: self];
+  [[NSNotificationCenter defaultCenter] 
+    postNotificationName: NSTextDidBeginEditingNotification 
+    object: (id)self];
 }
 
 - (void)textDidChange: (NSNotification *)aNotification
-{	if ([delegate respondsToSelector: @selector(textDidChange: )])
-		[delegate textDidChange: aNotification? aNotification: [NSNotification notificationWithName: NSTextDidChangeNotification object: self]];
+{	
+  if ([delegate respondsToSelector: @selector(textDidChange: )])
+    {
+      if (!aNotification)
+	aNotification = [NSNotification notificationWithName: 
+					  NSTextDidChangeNotification 
+					object: (id)self];
 
-	[[NSNotificationCenter defaultCenter] postNotificationName: NSTextDidChangeNotification object: self];
+      [delegate textDidChange: aNotification];
+    }
+
+ [[NSNotificationCenter defaultCenter] 
+   postNotificationName: NSTextDidChangeNotification 
+   object: (id)self];
 }
 
 - (void)textDidEndEditing: (NSNotification *)aNotification
-{	if ([delegate respondsToSelector: @selector(textDidEndEditing: )])
-    	[delegate textDidEndEditing: aNotification? aNotification: [NSNotification notificationWithName: NSTextDidEndEditingNotification object: self]];
-
-	[[NSNotificationCenter defaultCenter] postNotificationName: NSTextDidEndEditingNotification object: self];
+{	
+  if ([delegate respondsToSelector: @selector(textDidEndEditing: )])
+    {
+      if (!aNotification)
+	aNotification = [NSNotification notificationWithName: 
+					  NSTextDidEndEditingNotification 
+					object: (id)self];
+      [delegate textDidEndEditing: aNotification];      
+    }
+  
+  [[NSNotificationCenter defaultCenter] 
+    postNotificationName: NSTextDidEndEditingNotification 
+    object: (id)self];
 }
 
 - (BOOL) textShouldBeginEditing: (NSText *)textObject
-{	if ([delegate respondsToSelector: @selector(textShouldBeginEditing: )])
-    	return [delegate textShouldBeginEditing: (NSText*)self];
-	else return YES;
+{	
+  if ([delegate respondsToSelector: @selector(textShouldBeginEditing: )])
+    return [delegate textShouldBeginEditing: self];
+  else 
+    return YES;
 }
 
 - (BOOL) textShouldEndEditing: (NSText *)textObject
-{	if ([delegate respondsToSelector: @selector(textShouldEndEditing: )])
-    	return [delegate textShouldEndEditing: (NSText*)self];
-	else return YES;
+{	
+  if ([delegate respondsToSelector: @selector(textShouldEndEditing: )])
+    return [delegate textShouldEndEditing: self];
+  else 
+    return YES;
+}
+
+- (BOOL) textShouldEndEditing: (NSText *)textObject
+{	
+  if ([delegate respondsToSelector: @selector(textShouldEndEditing: )])
+    return [delegate textShouldEndEditing: self];
+  else 
+    return YES;
 }
 
 - (NSRange) characterRangeForBoundingRect: (NSRect)boundsRect
