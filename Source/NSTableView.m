@@ -4915,7 +4915,7 @@ byExtendingSelection: (BOOL)flag
   NSImage *dragImage = [[NSImage alloc]
 			 initWithSize: NSMakeSize(8, 8)];
 
-  return dragImage;
+  return AUTORELEASE(dragImage);
 }
 
 - (void) setDropRow: (int)row

@@ -1,3 +1,8 @@
+2004-04-16 15:33  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSTableView.m (-dragImageForRows:event:dragImageOffset:):
+	Autorelease the new image.
+
 2004-04-14 00:36  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSBrowser.m (-keyDown:): When the user selects a cell
