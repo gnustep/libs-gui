@@ -151,6 +151,7 @@ NSWorkspace.m \
 GSComboSupport.m \
 GSHelpManagerPanel.m \
 GSInfoPanel.m \
+GSMemoryPanel.m \
 GSTextStorage.m \
 GSTrackingRect.m \
 GSServicesManager.m \
@@ -295,6 +296,7 @@ DPSOperators.h \
 GMAppKit.h \
 GMArchiver.h \
 GSFontInfo.h \
+GSMemoryPanel.h \
 GSInfoPanel.h \
 GSMethodTable.h \
 GSPasteboardServer.h \
