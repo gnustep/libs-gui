@@ -801,12 +801,22 @@ byExtendingSelection: (BOOL) flag
 
 - (void) noteNumberOfRowsChanged
 {
-  // TODO
+  NSRect superviewBounds; // Get this *after* [self setFrame:]
+  
   _numberOfRows = [_dataSource numberOfRowsInTableView: self];
-  //  _table_height = _numberOfRows * _rowHeight;
-  // TODO: Update scrollers, but do *not* mark us as needing 
-  // redisplay.  Unless the number of entries is less than the 
-  // maximal number of visible entries
+  [self setFrame: NSMakeRect (_frame.origin.x, 
+			      _frame.origin.y,
+			      _frame.size.width, 
+			      (_numberOfRows * _rowHeight) + 1)];
+  
+  /* If we are shorter in height than the enclosing clipview, we
+     should redraw us now. */
+  superviewBounds = [_super_view bounds];
+  if ((superviewBounds.origin.x <= _frame.origin.x) 
+      && (NSMaxY (superviewBounds) >= NSMaxY (_frame)))
+    {
+      [self setNeedsDisplay: YES];
+    }
 }
 
 - (void) tile
