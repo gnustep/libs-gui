@@ -627,7 +627,7 @@ container */
 
   NSGraphicsContext *ctxt = GSCurrentContext();
 
-#define GBUF_SIZE 16
+#define GBUF_SIZE 16 /* TODO: tweak */
   NSGlyph gbuf[GBUF_SIZE];
   int gbuf_len;
   NSPoint gbuf_point;
@@ -724,16 +724,22 @@ container */
 		  DPSnewpath(ctxt);
 		  gbuf_len = 0;
 		}
-	      color = new_color;
-	      if (color)
-		[color set];
-	      else
+	      if (color != new_color)
 		{
-		  DPSsetgray(ctxt, 0.0);
-		  DPSsetalpha(ctxt, 1.0);
+		  color = new_color;
+		  if (color)
+		    [color set];
+		  else
+		    {
+		      DPSsetgray(ctxt, 0.0);
+		      DPSsetalpha(ctxt, 1.0);
+		    }
 		}
-	      f = glyph_run->font;
-	      [f set];
+	      if (f != glyph_run->font)
+		{
+		  f = glyph_run->font;
+		  [f set];
+		}
 	    }
 	}
       if (!glyph->isNotShown && glyph->g && glyph->g != NSControlGlyph)
