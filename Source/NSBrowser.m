@@ -728,6 +728,7 @@ static NSTextFieldCell *titleCell;
 	 initWithFrame: rect];
   [sc setHasHorizontalScroller: NO];
   [sc setHasVerticalScroller: YES];
+  [sc setBorderType: NSBezelBorder];
   [bc setColumnScrollView: sc];
   [self addSubview: sc];
   RELEASE(sc);
