@@ -2254,6 +2254,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &disable_autodisplay];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &post_frame_changes];
   [aCoder encodeValueOfObjCType: @encode(BOOL) at: &autoresize_subviews];
+  [aCoder encodeValueOfObjCType: @encode(unsigned int) at: &autoresizingMask];
   NSDebugLLog(@"NSView", @"NSView: finish encoding\n");
 }
 
@@ -2275,6 +2276,7 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &disable_autodisplay];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &post_frame_changes];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &autoresize_subviews];
+  [aDecoder decodeValueOfObjCType: @encode(unsigned int) at: &autoresizingMask];
   NSDebugLLog(@"NSView", @"NSView: finish decoding\n");
 
   frameMatrix = [NSAffineTransform new];

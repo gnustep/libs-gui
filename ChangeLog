@@ -1,3 +1,13 @@
+iMon Sep 13  1999  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSImageView.m ([-setImage:]): Added update of the cell. 
+	([-setImageAlignment:]): idem.	
+	([-setImageScaling:]): idem.
+	([-setImageFrameStyle:]): idem. 
+	* Source/NSView.m ([-encodeWithCoder:]): added encoding of the
+	autoresizingMask ([-initWithCoder:]): added decoding of the same
+	variable.
+	
 Sun Sep 12  1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
         * Source/NSView.m ([-resizeWithOldSuperviewSize:]): Fixed
