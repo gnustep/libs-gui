@@ -567,6 +567,9 @@ static NSColor	*shadowCol;
 
 - (NSCellType) type
 {
+  if (_cell.type == NSImageCellType && _cell_image == nil)
+    return NSNullCellType;
+    
   return _cell.type;
 }
 

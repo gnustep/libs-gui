@@ -371,6 +371,18 @@
 - (void) setImagePosition: (NSCellImagePosition)aPosition
 {
   _cell.image_position = aPosition;
+   
+  // In the GNUstep NSButtonCell implementation, the cell type depends only on
+  // the image position. 
+    
+  if (_cell.image_position == NSNoImage)
+    {
+      [super setType: NSTextCellType];
+    }
+  else
+    {
+      [super setType: NSImageCellType];
+    }
 }
 
 /*
@@ -1220,7 +1232,7 @@
     {
       [_sound play];
     }
-    
+
   [super performClickWithFrame: cellFrame inView: controlView];
 }
 

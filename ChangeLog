@@ -1,4 +1,13 @@
 2004-11-07  Quentin Mathe <qmathe@club-internet.fr>
+        
+	* Source/NSCell.m (-type): Now returns NSNullCellType when the image
+	value is nil and the cell type is NSImageCellType, in order to match the
+	documented Cocoa behavior.
+	* Source/NSButtonCell.m (-setImagePosition:): Finished to commit the
+	patch (not fully applied) associated with the revision 1.90, the bug
+	#10595 is now corrected.
+
+2004-11-07  Quentin Mathe <qmathe@club-internet.fr>
 
         * Source/NSWindow.m (-constrainFrameRect:toScreen:): Modified the method
 	to match the specification and the constraints used when the user
