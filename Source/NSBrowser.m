@@ -1307,26 +1307,28 @@
   NSArray	*subStrings;
   NSString	*aStr;
   unsigned	numberOfSubStrings;
-  unsigned	i;
+  unsigned	i, j;
 
+  // Column Zero is always present. 
+  [self loadColumnZero];
+
+  // If that's all, return.
+  if ([path isEqualToString: _pathSeparator])
+    return YES;
+
+  // Otherwise, decompose the path.
   subStrings = [path componentsSeparatedByString: _pathSeparator];
-                                // ensure that column zero
-  if (![self isLoaded]) {       // is loaded
-      [self loadColumnZero];
-  } 
-  else {                        // and is the last column
-      [self setLastColumn: 0];
-  }
   numberOfSubStrings = [subStrings count];
 
-  if (numberOfSubStrings == 2)
+  // Ignore a trailing void component. 
+  if (![subStrings objectAtIndex: 0])
     {
-      /* select root path */
-      if ([[subStrings objectAtIndex: 1] length] == 0)
-	{
-	  [self scrollColumnsLeftBy: [_browserColumns count]];
-	  return YES;
-	}
+      NSRange theRange;
+      
+      theRange.location = 1;
+      numberOfSubStrings--;
+      theRange.length = numberOfSubStrings;
+      subStrings = [subStrings subarrayWithRange: theRange];
     }
 
   // cycle thru str's array created from path
@@ -1335,56 +1337,49 @@
       NSBrowserColumn	*bc = [_browserColumns objectAtIndex: i-1];
       NSMatrix		*matrix = [bc columnMatrix];
       NSArray		*cells = [matrix cells];
-      unsigned		j, numOfRows = [cells count];
+      unsigned		numOfRows = [cells count];
       NSBrowserCell	*selectedCell = nil;
-
+      BOOL              found = NO;
+      
       aStr = [subStrings objectAtIndex: i];
-      // find the cell in the browser matrix with the equal to aStr
-      for (j = 0; j < numOfRows; j++)
+      if (aStr)
 	{
-	  NSArray	*cellRow = [cells objectAtIndex: j];
-	  unsigned	 numOfCols, k;
-
-	  numOfCols = [cellRow count];
-	  for (k = 0; k < numOfCols; k++)
+	  // find the cell in the browser matrix with the equal to aStr
+	  for (j = 0; j < numOfRows; j++)
 	    {
 	      NSString	*cellString;
-
-	      selectedCell = [cellRow objectAtIndex: k];
+	      
+	      selectedCell = [cells objectAtIndex: j];
 	      cellString = [selectedCell stringValue];
-
+	      
 	      if ([cellString isEqualToString: aStr])
 		{
-		  int r, c;
-
-		  k = numOfCols;
-		  j = numOfRows;
-		  if ([matrix getRow: &r column: &c ofCell: selectedCell])
-		    [matrix selectCellAtRow: r column: c];
-		  else
-		    selectedCell = nil;
+		  [matrix selectCellAtRow: j column: 0];
+		  found = YES;
+		  break;
 		}
 	    }
+	  // if unable to find a cell whose title matches aStr return NO
+	  if (found == NO)
+	    {
+	      NSLog (@"NSBrowser: unable to find cell '%@' in column %d\n", 
+		     aStr, i - 1);
+	      return NO;
+	    }
+	  // if the cell is not a leaf add a column to the browser for it
+	  if (![selectedCell isLeaf])
+	    {
+	      [self addColumn];
+	      [self _performLoadOfColumn: i];
+	      [self setLastColumn: i];
+	      [self _adjustMatrixOfColumn: i];
+	      [self scrollColumnsRightBy: 1];
+	    }
+	  else
+	    break;
 	}
-      // if unable to find a cell whose title matches aStr return NO
-      if (!selectedCell)
-	{
-	  NSLog(@"NSBrowser: unable to find cell '%@' in column %d\n", aStr, i - 1);
-	  return NO;
-	}
-      // if the cell is not a leaf add a column to the browser for it
-      if (![selectedCell isLeaf])
-	{
-	  [self addColumn];
-	  [self _performLoadOfColumn: i];
-	  [self setLastColumn: i];
-	  [self _adjustMatrixOfColumn: i];
-	  [self scrollColumnsRightBy: 1];
-	}
-      else
-	break;
     }
-
+  
   return YES;
 }
 
