@@ -92,6 +92,7 @@ static	Class	concrete;
 			  turnedOn: (BOOL)flag;
 @end
 
+/* TODO: Remove */
 // not the same as NSMakeRange!
 static inline
 NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
@@ -593,8 +594,7 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
     return [_typingAttributes objectForKey: NSForegroundColorAttributeName];
 }
 
-- (void) setTextColor: (NSColor*) color
-		range: (NSRange) aRange
+- (void) setTextColor: (NSColor*)color  range: (NSRange)aRange
 {
   if (aRange.location == NSNotFound)
     return;
@@ -619,13 +619,12 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   [self didChangeText];
 }
 
-- (void) setColor: (NSColor*) color
-	  ofRange: (NSRange) aRange
+- (void) setColor: (NSColor*)color  ofRange: (NSRange)aRange
 {
   [self setTextColor: color  range: aRange];
 }
 
-- (void) setTextColor: (NSColor*) color
+- (void) setTextColor: (NSColor*)color
 {
   NSRange fullRange = NSMakeRange (0, [self textLength]);
 
@@ -935,22 +934,9 @@ NSRange MakeRangeFromAbs (unsigned a1, unsigned a2)
   return _delegate;
 }
 
-- (void) setDelegate: (id) anObject
+- (void) setDelegate: (id)anObject
 {
-  if (_delegate)
-    [nc removeObserver: _delegate name: nil object: self];
-  ASSIGN(_delegate, anObject);
-
-#define SET_DELEGATE_NOTIFICATION(notif_name) \
-  if ([_delegate respondsToSelector: @selector(text##notif_name:)]) \
-    [nc addObserver: _delegate \
-          selector: @selector(text##notif_name:) \
-              name: NSText##notif_name##Notification \
-            object: self]
-
-  SET_DELEGATE_NOTIFICATION(DidBeginEditing);
-  SET_DELEGATE_NOTIFICATION(DidChange);
-  SET_DELEGATE_NOTIFICATION(DidEndEditing);
+  _delegate = anObject;
 }
 
 //
