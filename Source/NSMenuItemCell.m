@@ -255,6 +255,7 @@ static BOOL usesUserKeyEquivalents = YES;
   NSGraphicsContext	*ctxt = GSCurrentContext();
   NSRect		floodRect = cellFrame;
   NSString		*keyQ = nil;
+  NSColor		*backColor;
 
   NSDrawButton(cellFrame, cellFrame);
 
@@ -265,12 +266,13 @@ static BOOL usesUserKeyEquivalents = YES;
 
   if (cell_highlighted)
     {
-      [[NSColor selectedMenuItemColor] set];
+      backColor = [NSColor selectedMenuItemColor];
     }
   else
     {
-      [[NSColor controlColor] set];
+      backColor = [NSColor controlColor];
     }
+  [backColor set];
   NSRectFill(floodRect);
 
   if ([self isEnabled])
@@ -293,14 +295,30 @@ static BOOL usesUserKeyEquivalents = YES;
   DPSmoveto(ctxt, cellFrame.origin.x + 5, cellFrame.origin.y + 6);
   DPSshow(ctxt, [[self title] cString]);
 
-  if (mcell_has_submenu) {
-    floodRect.origin.x = cellFrame.size.width - 12;
-    floodRect.origin.y += 5;
-    floodRect.size.height = 7;
-    floodRect.size.width = 7;
+  if (mcell_has_submenu)
+    {
+      NSSize size;
+      NSPoint position;
+      NSImage	*im = [NSImage imageNamed:@"common_3DArrowRight"];
 
-    [self _drawImage:[NSImage imageNamed:@"common_3DArrowRight"] inFrame:floodRect];  
-  } else if (keyQ = [self keyEquivalent]) {
+      floodRect.origin.x = cellFrame.size.width - 12;
+      floodRect.origin.y += 5;
+      floodRect.size.height = 7;
+      floodRect.size.width = 7;
+
+      [im setBackgroundColor: backColor];
+      size = [im size];
+      position.x = MAX(NSMidX(floodRect) - (size.width/2.),0.);
+      position.y = MAX(NSMidY(floodRect) - (size.height/2.),0.);
+      /*
+       * Images are always drawn with their bottom-left corner at the origin
+       * so we must adjust the position to take account of a flipped view.
+       */
+      if ([control_view isFlipped])
+	position.y += size.height;
+      [im compositeToPoint: position operation: NSCompositeCopy];
+    }
+  else if (keyQ = [self keyEquivalent]) {
     floodRect.origin.x = cellFrame.size.width - 12;
     floodRect.origin.y += 5;
     floodRect.size.height = 7;

@@ -356,7 +356,6 @@ enum {
 //
 @interface NSCell (PrivateMethods)
 
-- (void) _drawImage: (NSImage*)anImage inFrame: (NSRect)aRect;
 - (void) _drawText: (NSString*)aString inFrame: (NSRect)aRect;
 
 @end

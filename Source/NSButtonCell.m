@@ -415,9 +415,10 @@
   BOOL		showAlternate = NO;
   unsigned	mask;
   NSImage	*imageToDisplay;
+  NSRect	imageRect;
   NSString	*titleToDisplay;
+  NSRect	titleRect;
   NSSize	imageSize = {0, 0};
-  NSRect	rect;
   NSColor	*backgroundColor = nil;
 
   // transparent buttons never draw
@@ -430,14 +431,14 @@
   if ([self state])
     {
       if ( [self showsStateBy]
-           & (NSChangeGrayCellMask | NSChangeBackgroundCellMask) )
+	& (NSChangeGrayCellMask | NSChangeBackgroundCellMask) )
 	backgroundColor = [NSColor selectedControlColor];
     }
 
   if ([self isHighlighted])
     {
       if ( [self highlightsBy]
-           & (NSChangeGrayCellMask | NSChangeBackgroundCellMask) )
+	& (NSChangeGrayCellMask | NSChangeBackgroundCellMask) )
 	backgroundColor = [NSColor selectedControlColor];
     }
 
@@ -448,11 +449,13 @@
   [backgroundColor set];
   NSRectFill(cellFrame);
 
-  // Determine the image and the title that will be
-  // displayed. If the NSContentsCellMask is set the
-  // image and title are swapped only if state is 1 or
-  // if highlighting is set (when a button is pushed it's
-  // content is changed to the face of reversed state).
+  /*
+   * Determine the image and the title that will be
+   * displayed. If the NSContentsCellMask is set the
+   * image and title are swapped only if state is 1 or
+   * if highlighting is set (when a button is pushed it's
+   * content is changed to the face of reversed state).
+   */
   if ([self isHighlighted])
     mask = [self highlightsBy];
   else
@@ -481,70 +484,77 @@
       [imageToDisplay setBackgroundColor: backgroundColor];
     }
 
-  rect = NSMakeRect (cellFrame.origin.x, cellFrame.origin.y,
-                     imageSize.width, imageSize.height);
-
   switch ([self imagePosition])
     {
       case NSNoImage: 
-	 // draw title only
-	 [self _drawText: titleToDisplay inFrame: cellFrame];
-	 break;
+	imageToDisplay = nil;
+	titleRect = cellFrame;
+	break;
 
       case NSImageOnly: 
-	 // draw image only
-	 [self _drawImage: imageToDisplay inFrame: cellFrame];
-	 break;
+	titleToDisplay = nil;
+	imageRect = cellFrame;
+	break;
 
       case NSImageLeft: 
-	 // draw image to the left of the title
-	 rect.origin = cellFrame.origin;
-	 rect.size.width = imageSize.width;
-	 rect.size.height = cellFrame.size.height;
-	 [self _drawImage: imageToDisplay inFrame: rect];
+	imageRect.origin = cellFrame.origin;
+	imageRect.size.width = imageSize.width;
+	imageRect.size.height = cellFrame.size.height;
 
-	 // draw title
-	 rect.origin.x += imageSize.width + xDist;
-	 rect.size.width = cellFrame.size.width - imageSize.width - xDist;
-	 [self _drawText: titleToDisplay inFrame: rect];
-	 break;
+	titleRect = imageRect;
+	titleRect.origin.x += imageSize.width + xDist;
+	titleRect.size.width = cellFrame.size.width - imageSize.width - xDist;
+	break;
 
       case NSImageRight: 
-	 // draw image to the right of the title
-	 rect.origin.x = NSMaxX (cellFrame) - imageSize.width;
-	 rect.origin.y = cellFrame.origin.y;
-	 rect.size.width = imageSize.width;
-	 rect.size.height = cellFrame.size.height;
-	 [self _drawImage: imageToDisplay inFrame: rect];
+	imageRect.origin.x = NSMaxX(cellFrame) - imageSize.width;
+	imageRect.origin.y = cellFrame.origin.y;
+	imageRect.size.width = imageSize.width;
+	imageRect.size.height = cellFrame.size.height;
 
-	 // draw title
-	 rect.origin = cellFrame.origin;
-	 rect.size.width = cellFrame.size.width - imageSize.width - xDist;
-	 rect.size.height = cellFrame.size.height;
-	 [self _drawText: titleToDisplay inFrame: rect];
-	 break;
+	titleRect.origin = cellFrame.origin;
+	titleRect.size.width = cellFrame.size.width - imageSize.width - xDist;
+	titleRect.size.height = cellFrame.size.height;
+	break;
 
       case NSImageBelow: 
-	 // draw image below title
-	 cellFrame.size.height /= 2;
-	 [self _drawImage: imageToDisplay inFrame: cellFrame];
-	 cellFrame.origin.y += cellFrame.size.height;
-	 [self _drawText: titleToDisplay inFrame: cellFrame];
-	 break;
+	imageRect = cellFrame;
+	imageRect.size.height /= 2;
+	titleRect = imageRect;
+        titleRect.origin.y += titleRect.size.height;
+	break;
 
       case NSImageAbove: 
-	 // draw image above title
-	 cellFrame.size.height /= 2;
-	 [self _drawText: titleToDisplay inFrame: cellFrame];
-	 cellFrame.origin.y += cellFrame.size.height;
-	 [self _drawImage: imageToDisplay inFrame: cellFrame];
-	 break;
+	titleRect = cellFrame;
+	titleRect.size.height /= 2;
+	imageRect = titleRect;
+        imageRect.origin.y += imageRect.size.height;
+	break;
 
       case NSImageOverlaps: 
-	 // draw title over the image
-	 [self _drawImage: imageToDisplay inFrame: cellFrame];
-	 [self _drawText: titleToDisplay inFrame: cellFrame];
-	 break;
+	titleRect = cellFrame;
+	imageRect = cellFrame;
+	break;
+    }
+  if (imageToDisplay != nil)
+    {
+      NSSize size;
+      NSPoint position;
+
+      size = [imageToDisplay size];
+      position.x = MAX(NSMidX(imageRect) - (size.width/2.),0.);
+      position.y = MAX(NSMidY(imageRect) - (size.height/2.),0.);
+      /*
+       * Images are always drawn with their bottom-left corner at the origin
+       * so we must adjust the position to take account of a flipped view.
+       */
+      if ([control_view isFlipped])
+	position.y += size.height;
+      [imageToDisplay compositeToPoint: position operation: NSCompositeCopy];
+    }
+  if (titleToDisplay != nil)
+    {
+      [self _drawText: titleToDisplay inFrame: titleRect];
     }
 }
 

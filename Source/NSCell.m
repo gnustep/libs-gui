@@ -681,34 +681,6 @@ static Class	cellClass;
   [title drawInRect: cellFrame withAttributes: dict];
 }
 
-static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
-{
-  NSPoint p;
-  p.x = MAX(NSMidX(outerRect) - (innerSize.width/2.),0.);
-  p.y = MAX(NSMidY(outerRect) - (innerSize.height/2.),0.);
-  return p;
-}
-
-// Draw image centered in frame.
-- (void) _drawImage: (NSImage *) image inFrame: (NSRect) cellFrame
-{
-  NSSize size;
-  NSPoint position;
-
-  if (!image)
-    return;
-
-  size = [image size];
-  position = centerSizeInRect(size, cellFrame);
-  /*
-   * Images are always drawn with their bottom-left corner at the origin
-   * so we must adjust the position to take account of a flipped view.
-   */
-  if ([control_view isFlipped])
-    position.y += size.height;
-  [image compositeToPoint: position operation: NSCompositeCopy];
-}
-
 - (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
 {
   cellFrame = [self drawingRectForBounds: cellFrame];
@@ -732,13 +704,31 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   switch ([self type])
     {
       case NSTextCellType:
-           [self _drawText: [self stringValue] inFrame: cellFrame];
-           break;
+	 [self _drawText: [self stringValue] inFrame: cellFrame];
+	 break;
+
       case NSImageCellType:
-           [self _drawImage: cell_image inFrame: cellFrame];
-           break;
+	if (cell_image)
+	  {
+	    NSSize size;
+	    NSPoint position;
+
+	    size = [cell_image size];
+	    position.x = MAX(NSMidX(cellFrame) - (size.width/2.),0.);
+	    position.y = MAX(NSMidY(cellFrame) - (size.height/2.),0.);
+	    /*
+	     * Images are always drawn with their bottom-left corner
+	     * at the origin so we must adjust the position to take
+	     * account of a flipped view.
+	     */
+	    if ([control_view isFlipped])
+	      position.y += size.height;
+	    [cell_image compositeToPoint: position operation: NSCompositeCopy];
+	  }
+	 break;
+
       case NSNullCellType:
-          break;
+         break;
     }
 }
 

@@ -1,3 +1,10 @@
+Sat Sep 11 11:20:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Headers/AppKit/NSCell.h: Removed ([-_drawImage:inFrame:])
+	* Source/NSCell.m: Removed ([-_drawImage:inFrame:])
+	* Source/NSButtonCell.m:  Don't use ([-_drawImage:inFrame:])
+	* Source/NSPopUpButtonCell.m:  Don't use ([-_drawImage:inFrame:])
+
 Sat Sep 11 1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSControl.m ([-sizeToFit]): implemented method.  

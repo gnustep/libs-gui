@@ -60,6 +60,8 @@
                 inView: (NSView*)view  
 {
   NSGraphicsContext     *ctxt = GSCurrentContext();
+  NSColor	*backColor;
+  NSImage	*toDraw = nil;
   NSRect rect = cellFrame;
   NSRect arect = cellFrame;
   NSPoint point;
@@ -73,17 +75,31 @@
  
   if (cell_highlighted)
     {
-      [[NSColor selectedMenuItemColor] set];
+      backColor = [NSColor selectedMenuItemColor];
     }
   else
     {
-      [[NSColor controlColor] set];  
+      backColor = [NSColor controlColor];
     }
+  [backColor set];
   NSRectFill(arect);
 
   if (cell_image)
     {
-      [self _drawImage:cell_image inFrame:cellFrame];
+      NSSize size;
+      NSPoint position;
+
+      [cell_image setBackgroundColor: backColor];
+      size = [cell_image size];
+      position.x = MAX(NSMidX(cellFrame) - (size.width/2.),0.);
+      position.y = MAX(NSMidY(cellFrame) - (size.height/2.),0.);
+      /*
+       * Images are always drawn with their bottom-left corner at the origin
+       * so we must adjust the position to take account of a flipped view.
+       */
+      if ([control_view isFlipped])
+	position.y += size.height;
+      [cell_image compositeToPoint: position operation: NSCompositeCopy];
 
       rect.size.width = 5;                         // calc image rect
       rect.size.height = 11;
@@ -125,16 +141,16 @@
       if ([[[popb selectedItem] representedObject] isEqual: contents])
         {
           if ([popb pullsDown] == NO)
-            [super _drawImage:[NSImage imageNamed:@"common_Nibble"] inFrame:rect];
+            toDraw = [NSImage imageNamed:@"common_Nibble"];
           else
-            [super _drawImage:[NSImage imageNamed:@"common_3DArrowDown"] inFrame:rect];
+            toDraw = [NSImage imageNamed:@"common_3DArrowDown"];
 	}
       else if ([[[popb selectedItem] representedObject] isEqual: cell_image])
         {
           if ([popb pullsDown] == NO)
-            [super _drawImage:[NSImage imageNamed:@"common_UpAndDownArrowSmall.tiff"] inFrame:rect];
+            toDraw = [NSImage imageNamed:@"common_UpAndDownArrowSmall.tiff"];
           else
-            [super _drawImage:[NSImage imageNamed:@"common_DownArrowSmall"] inFrame:rect];
+            toDraw = [NSImage imageNamed:@"common_DownArrowSmall"];
 	}
     }
   else if ([view isKindOfClass:[NSPopUpButton class]])
@@ -143,17 +159,34 @@
 	isEqual: contents])
         {
           if ([(NSPopUpButton *)view pullsDown] == NO)
-            [super _drawImage:[NSImage imageNamed:@"common_Nibble"] inFrame:rect];
+            toDraw = [NSImage imageNamed:@"common_Nibble"];
           else
-            [super _drawImage:[NSImage imageNamed:@"common_3DArrowDown"] inFrame:rect];
+            toDraw = [NSImage imageNamed:@"common_3DArrowDown"];
 	}
       else if ([[[(NSPopUpButton *)view selectedItem] representedObject] isEqual: cell_image])
         {
           if ([(NSPopUpButton *)view pullsDown] == NO)
-            [super _drawImage:[NSImage imageNamed:@"common_UpAndDownArrowSmall"] inFrame:rect];
+            toDraw = [NSImage imageNamed:@"common_UpAndDownArrowSmall"];
           else
-            [super _drawImage:[NSImage imageNamed:@"common_DownArrowSmall"] inFrame:rect];
+            toDraw = [NSImage imageNamed:@"common_DownArrowSmall"];
 	}
+    }
+  if (toDraw != nil)
+    {
+      NSSize size;
+      NSPoint position;
+
+      [toDraw setBackgroundColor: backColor];
+      size = [toDraw size];
+      position.x = MAX(NSMidX(rect) - (size.width/2.),0.);
+      position.y = MAX(NSMidY(rect) - (size.height/2.),0.);
+      /*
+       * Images are always drawn with their bottom-left corner at the origin
+       * so we must adjust the position to take account of a flipped view.
+       */
+      if ([control_view isFlipped])
+	position.y += size.height;
+      [toDraw compositeToPoint: position operation: NSCompositeCopy];
     }
 }
 @end
