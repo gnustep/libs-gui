@@ -2,6 +2,7 @@
 
 	* Tools/gsnd/gsnd.m (main): Close any open file descriptors so
 	we can be a proper daemon.
+	Fixes #4825
 
 2003-08-22  Gregory John Casamento <greg_casamento@yahoo.com>
 
