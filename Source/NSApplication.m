@@ -147,11 +147,11 @@ initialize_gnustep_backend(void)
 
   if( first )
     {
+      Class backend;
 
       first = 0;
 #ifdef BACKEND_BUNDLE
       {      
-	Class backend;
 	NSBundle *theBundle;
 	NSEnumerator *benum;
 	NSString *path, *bundleName;
@@ -185,7 +185,11 @@ initialize_gnustep_backend(void)
 	[backend initializeBackend];
       }
 #else
-      [GSBackend initializeBackend];
+      /* GSBackend will be in a separate library, so use the runtime
+	 to find the class and avoid an unresolved reference problem */
+      backend = [[NSBundle gnustepBundle] classNamed: @"GSBackend"];
+      NSCAssert(backend, @"Can't find backend context");
+      [backend initializeBackend];
 #endif
     }
   return YES;
