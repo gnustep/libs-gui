@@ -1,3 +1,9 @@
+Thu Jan 11 22:09:57 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSTextView.m ([-deleteBackward:]), ([-deleteForward:]):
+	Completely rewritten.  ([-deleteRange:backspace:]): Removed.
+	([-delete:]): wrap [-deleteForward:].
+	
 2001-01-11  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/gnustep/gui/NSLayoutManager.h: Remove some unused ivars.
