@@ -735,7 +735,7 @@ static NSNotificationCenter *nc;
   [nc postNotificationName: NSMenuWillSendActionNotification
                     object: self
                   userInfo: d];
-  if (NULL != (action = [item action]))
+  if ((action = [item action]) != NULL)
     {
       [NSApp sendAction: action
 	     to: [item target]
