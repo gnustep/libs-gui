@@ -1,3 +1,8 @@
+2004-12-23 05:38 Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Images/MagnifyGlass.tiff: Added.  The NSColorPanel class uses
+	this image.
+	
 2004-12-13  Quentin Mathe <qmathe@club-internet.fr>
 
        * Source/NSComboBoxCell.m: Modified the code to be clearer

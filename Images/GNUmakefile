@@ -120,7 +120,8 @@ common_ToolbarSpaceItem.tiff \
 common_ClosedHandCursor.tiff \
 common_OpenHandCursor.tiff \
 page_landscape.tiff \
-page_portrait.tiff
+page_portrait.tiff \
+MagnifyGlass.tiff 
 
 -include GNUmakefile.preamble
 
