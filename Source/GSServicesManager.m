@@ -58,9 +58,7 @@
 
 #include <AppKit/GSServicesManager.h>
 
-@interface NSDocumentController (ApplicationPrivate)
-+ (BOOL) isDocumentBasedApplication;
-@end
+static GSServicesManager	*manager = nil;
 
 /*
  *	The GSListener class is for talking to other applications.
@@ -227,6 +225,14 @@ NSRegisterServicesProvider(id provider, NSString *name)
   if ([delegate respondsToSelector: aSel] == YES)
     return [delegate performv: aSel :frame];
 
+  /*
+   *    If the selector matches the correct form for a file operaqtion
+   *    send the message to the manager.
+   */
+  if ([selName hasPrefix: @"application:"] == YES
+    && [manager respondsToSelector: aSel] == YES)
+    return [(id)manager performv: aSel :frame];
+
   [NSException raise: NSGenericException
 	      format: @"method %@ not implemented", selName];
   return nil;
@@ -255,6 +261,17 @@ NSRegisterServicesProvider(id provider, NSString *name)
   if ([delegate respondsToSelector: aSel] == YES)
     {
       [anInvocation invokeWithTarget: delegate];
+      return;
+    }
+
+  /*
+   *    If the selector matches the correct form for a file operaqtion
+   *    send the message to the manager.
+   */
+  if ([selName hasPrefix: @"application:"] == YES
+    && [manager respondsToSelector: aSel] == YES)
+    {
+      [anInvocation invokeWithTarget: manager];
       return;
     }
 
@@ -322,7 +339,6 @@ NSRegisterServicesProvider(id provider, NSString *name)
 
 @implementation GSServicesManager
 
-static GSServicesManager	*manager = nil;
 static NSString         *servicesName = @".GNUstepServices";
 static NSString         *disabledName = @".GNUstepDisabled";
 
@@ -390,19 +406,15 @@ static NSString         *disabledName = @".GNUstepDisabled";
   id	del = [NSApp delegate];
   BOOL	result = NO;
 
+  [NSApp activateIgnoringOtherApps: YES];
   if ([del respondsToSelector: _cmd])
     {
-      [NSApp activateIgnoringOtherApps: YES];
       result = [del application: theApp openFile: file];
     }
-  else if ([NSDocumentController isDocumentBasedApplication] == YES)
+  else if ([[NSDocumentController sharedDocumentController]
+    openDocumentWithContentsOfFile: file display: YES] != nil)
     {
-      [NSApp activateIgnoringOtherApps: YES];
-      if ([[NSDocumentController sharedDocumentController]
-        openDocumentWithContentsOfFile: file display: YES] != nil)
-	{
-	  result = YES;
-	}
+      result = YES;
     }
   return result;
 }
@@ -417,13 +429,10 @@ static NSString         *disabledName = @".GNUstepDisabled";
     {
       result = [del application: theApp openFileWithoutUI: file];
     }
-  else if ([NSDocumentController isDocumentBasedApplication] == YES)
+  else if ([[NSDocumentController sharedDocumentController]
+    openDocumentWithContentsOfFile: file display: NO] != nil)
     {
-      if ([[NSDocumentController sharedDocumentController]
-        openDocumentWithContentsOfFile: file display: NO] != nil)
-	{
-	  result = YES;
-	}
+      result = YES;
     }
   return result;
 }
