@@ -338,9 +338,9 @@ static NSFont *_leafFont;
   [super initWithCoder: aDecoder];
 
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
-  _browsercell_is_leaf = tmp;
+  [self setLeaf: tmp];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &tmp];
-  _browsercell_is_loaded = tmp;
+  [self setLoaded: tmp];
   [aDecoder decodeValueOfObjCType: @encode(id) at: &_alternateImage];
 
   return self;
