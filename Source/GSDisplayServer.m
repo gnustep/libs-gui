@@ -903,9 +903,15 @@ GSCurrentServer(void)
 	  return AUTORELEASE(event);
 	}
       if (loop == nil)
-	loop = [NSRunLoop currentRunLoop];
+	{
+	  loop = [NSRunLoop currentRunLoop];
+	}
+      if ([loop runMode: mode beforeDate: limit] == NO)
+	{
+	  break;	// Nothing we can do ... no input handlers.
+	}
     }
-  while ([loop runMode: mode beforeDate: limit] == YES);
+  while ([limit timeIntervalSinceNow] > 0.0);
 
   return nil;	/* No events in specified time	*/
 }
