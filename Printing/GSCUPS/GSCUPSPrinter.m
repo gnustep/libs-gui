@@ -165,6 +165,12 @@ static BOOL didWarn;
 
   cupsFreeDests( numDests, dests );
 
+  // No printer found, return at least the dummy printer
+  if ([set count] == 0)
+    {
+      [set addObject: GSCUPSDummyPrinterName];
+    }
+
   return [set allObjects];
 }
 

@@ -1,3 +1,8 @@
+2005-01-16  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Printing/GSCUPS/GSCUPSPrinter.m (+printerNames): Add dummy
+	printer to list, if no printers are found.
+
 2005-01-16 06:39 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSDocument.m: In validateMenuItem: added code to 
