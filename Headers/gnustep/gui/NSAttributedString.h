@@ -28,13 +28,18 @@
 #ifndef _GNUstep_H_NSAttributedString
 #define _GNUstep_H_NSAttributedString
 
-#include <Foundation/Foundation.h>
+#include <Foundation/NSAttributedString.h>
+#include <Foundation/NSGeometry.h>
 #include <AppKit/NSFileWrapper.h>
 #include <AppKit/NSFontManager.h>
 #include <AppKit/NSText.h>
 #include <AppKit/AppKitDefines.h>
 
 @class NSTextAttachment;
+@class NSString;
+@class NSDictionary;
+@class NSData;
+@class NSURL;
 
 /* Global NSString attribute names used in accessing the respective
    property in a text attributes dictionary.  if the key is not in the
