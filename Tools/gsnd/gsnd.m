@@ -67,11 +67,11 @@
 
 static int	is_daemon = 0;		/* Currently running as daemon.	 */
 
-short **_X;
-short **_Y;
-unsigned int _Time;
-double _factor;
-BOOL _initial;
+static short **sX;
+static short **sY;
+static unsigned int sTime;
+static double sfactor;
+static BOOL sinitial;
 
 void clearResamplerMemory();
 void initializeResampler(double fac);
@@ -281,182 +281,183 @@ struct SoundServer_t {
 
 - (void)dealloc
 {
-	RELEASE (name);
-	TEST_RELEASE (identifier);
-	RELEASE (data);
- 	[super dealloc];
+  RELEASE (name);
+  TEST_RELEASE (identifier);
+  RELEASE (data);
+  [super dealloc];
 }
 	
 - (id)initWithNSSoundObject:(id<GSSndObj>)anobject
 {
-	self = [super init];
+  self = [super init];
 	
-	if (self) {	
-		ASSIGN (name, [anobject name]);
-		ASSIGN (identifier, [anobject identifier]);		
-		data = [[anobject data] mutableCopy];
-		frameCount = [anobject frameCount];
-		rate = [anobject samplingRate];
-		startPos = 0;
-		endPos = 0;
-		posInBytes = 0;
-		playing = NO;
-		paused = NO;
+  if (self) 
+    {	
+      ASSIGN (name, [anobject name]);
+      ASSIGN (identifier, [anobject identifier]);		
+      data = [[anobject data] mutableCopy];
+      frameCount = [anobject frameCount];
+      rate = [anobject samplingRate];
+      startPos = 0;
+      endPos = 0;
+      posInBytes = 0;
+      playing = NO;
+      paused = NO;
 					
-		[self resampleWithFactor: (PLAY_RATE / rate)];
-	}
+      [self resampleWithFactor: (PLAY_RATE / rate)];
+    }
 	
-	return self;
+  return self;
 }
 
 - (void)setIdentifier:(NSString *)identstr
 {
-	ASSIGN (identifier, identstr);	
+  ASSIGN (identifier, identstr);	
 }
 
 - (void)resampleWithFactor:(float)factor
 {
-	gss16 *outbuff;
-	int extra_sample;
-	long out_count;
-	float out_length;
+  gss16 *outbuff;
+  int extra_sample;
+  long out_count;
+  float out_length;
 	
-	rate *= factor;
+  rate *= factor;
 	
-	if (factor <= 1.0) {
-		extra_sample = 50;
-	} else {
-		extra_sample = (int)factor + 50;
-	}
+  if (factor <= 1.0) {
+    extra_sample = 50;
+  } else {
+    extra_sample = (int)factor + 50;
+  }
 		
-	out_count = (long)ceil((frameCount) * factor) + extra_sample;	
-	out_length = out_count * FRAME_SIZE;
+  out_count = (long)ceil((frameCount) * factor) + extra_sample;	
+  out_length = out_count * FRAME_SIZE;
 	
-	outbuff = NSZoneMalloc(NSDefaultMallocZone(), GS_SIZEOF_SHORT * out_length);
+  outbuff = NSZoneMalloc(NSDefaultMallocZone(), GS_SIZEOF_SHORT * out_length);
 
-	initializeResampler(factor);
-	resample(frameCount, out_count, (gss16 *)[data bytes], outbuff);
+  initializeResampler(factor);
+  resample(frameCount, out_count, (gss16 *)[data bytes], outbuff);
 
-	TEST_RELEASE (data);
-	data = [[NSMutableData alloc] initWithCapacity: 1];
+  TEST_RELEASE (data);
+  data = [[NSMutableData alloc] initWithCapacity: 1];
 		
-	[data appendBytes: (const void *)outbuff 
-						 length: out_length];
+  [data appendBytes: (const void *)outbuff 
+	length: out_length];
 
-	NSZoneFree(NSDefaultMallocZone(), outbuff);
-	clearResamplerMemory();
+  NSZoneFree(NSDefaultMallocZone(), outbuff);
+  clearResamplerMemory();
 	
-	frameCount = (long)([data length] / FRAME_SIZE);	
+  frameCount = (long)([data length] / FRAME_SIZE);	
 }
 
 - (void)reset
 {
-	startPos = 0;
-	endPos = 0;
-	posInBytes = 0;	
-	playing = NO;
-	paused = NO;
-	DESTROY (identifier);
+  startPos = 0;
+  endPos = 0;
+  posInBytes = 0;	
+  playing = NO;
+  paused = NO;
+  DESTROY (identifier);
 }
 
 - (NSData *)data
 {
-	return data;
+  return data;
 }
 
 - (NSData *)remainingData
 {
-	long start = (long)(posInBytes * FRAME_SIZE);
-	long length = (long)([data length] - start);		
-	return [data subdataWithRange: NSMakeRange(start, length)];
+  long start = (long)(posInBytes * FRAME_SIZE);
+  long length = (long)([data length] - start);		
+  return [data subdataWithRange: NSMakeRange(start, length)];
 }
 
 - (void)setStartPos:(long)p
 {
-	startPos = p;
+  startPos = p;
 }
 
 - (void)setEndPos:(long)p
 {
-	endPos = p;
+  endPos = p;
 }
 
 - (void)setPlaying:(BOOL)value
 {
-	playing = value;
+  playing = value;
 }
 
 - (void)setPaused:(BOOL)value
 {
-	paused = value;
+  paused = value;
 }
 				
 - (NSString *)name
 {
-	return name;
+  return name;
 }
 
 - (NSString *)identifier
 {
-	return identifier;
+  return identifier;
 }
 
 - (long)frameCount
 {
-	return frameCount;
+  return frameCount;
 }
 
 - (float)rate
 {
-	return rate;
+  return rate;
 }
 
 - (long)startPos
 {
-	return startPos;
+  return startPos;
 }
 
 - (long)endPos
 {
-	return endPos;
+  return endPos;
 }
 
 - (long)posInBytes
 {
-	return posInBytes;
+  return posInBytes;
 }
 
 - (void)posInBytesAdd
 {
-	posInBytes++;
+  posInBytes++;
 }
 
 - (BOOL)isPlaying
 {
-	return playing;
+  return playing;
 }
 
 - (BOOL)isPaused
 {
-	return paused;
+  return paused;
 }
 
 - (id)copyWithZone:(NSZone *)zone
 {
   Snd *snd = (Snd *)NSCopyObject(self, 0, zone);
 
-	snd->name = [name copy];		
-	snd->identifier = nil;			
-	snd->frameCount = frameCount;
-	snd->rate = rate;
-	snd->startPos = 0;
-	snd->endPos = 0;
-	snd->posInBytes = 0;
-	snd->playing = NO;
-	snd->paused = NO;
-	snd->data = [data mutableCopy];		
+  snd->name = [name copy];		
+  snd->identifier = nil;			
+  snd->frameCount = frameCount;
+  snd->rate = rate;
+  snd->startPos = 0;
+  snd->endPos = 0;
+  snd->posInBytes = 0;
+  snd->playing = NO;
+  snd->paused = NO;
+  snd->data = [data mutableCopy];		
 
-	return snd;
+  return snd;
 }
 
 @end
@@ -466,66 +467,66 @@ struct SoundServer_t {
 
 static int paCallback(void *inputBuffer,
                       void *outputBuffer,
-             unsigned long framesPerBuffer,
-               PaTimestamp outTime,
+		      unsigned long framesPerBuffer,
+		      PaTimestamp outTime,
                       void *userData)
 {
-	NSData *data;
-	long length;	
-	int chunkLength;
-	int retvalue;
-	void *buffer[CHUNK_LENGTH];
-	gss16 *in;
-	int i;
+  NSData *data;
+  long length;	
+  int chunkLength;
+  int retvalue;
+  void *buffer[CHUNK_LENGTH];
+  gss16 *in;
+  int i;
 	
-	CREATE_AUTORELEASE_POOL(pool);										
+  CREATE_AUTORELEASE_POOL(pool);										
 								
-	data = serverPtr->soundData;
-	length = [data length];	
+  data = serverPtr->soundData;
+  length = [data length];	
 		
-	if ((serverPtr->position + CHUNK_LENGTH) < length) {
-		chunkLength = CHUNK_LENGTH;
-		retvalue = 0;
-	} else {	
-		chunkLength = length - serverPtr->position;
-		retvalue = 1;
-	}
+  if ((serverPtr->position + CHUNK_LENGTH) < length) {
+    chunkLength = CHUNK_LENGTH;
+    retvalue = 0;
+  } else {	
+    chunkLength = length - serverPtr->position;
+    retvalue = 1;
+  }
 
-	[data getBytes: &buffer range: NSMakeRange(serverPtr->position, chunkLength)];
-	in = (gss16 *)buffer;	
+  [data getBytes: &buffer range: NSMakeRange(serverPtr->position, chunkLength)];
+  in = (gss16 *)buffer;	
 	
-	for(i = 0; i < framesPerBuffer; i++) {	 
-		((gss16 *)outputBuffer)[i * 2] = in[i * 2];
-		((gss16 *)outputBuffer)[i * 2 + 1] = in[i * 2 + 1];
-		[(SoundServer *)serverPtr updatePosition];
-	}
+  for(i = 0; i < framesPerBuffer; i++) {	 
+    ((gss16 *)outputBuffer)[i * 2] = in[i * 2];
+    ((gss16 *)outputBuffer)[i * 2 + 1] = in[i * 2 + 1];
+    [(SoundServer *)serverPtr updatePosition];
+  }
 
-	if (retvalue == 1) {
-		PaError err;
+  if (retvalue == 1) {
+    PaError err;
 				
-		err = Pa_CloseStream(pStream);
-		if (err != paNoError) {
-			NSLog(@"PortAudio Pa_CloseStream error: %s", Pa_GetErrorText(err));			
-		}
+    err = Pa_CloseStream(pStream);
+    if (err != paNoError) {
+      NSLog(@"PortAudio Pa_CloseStream error: %s", Pa_GetErrorText(err));			
+    }
 		
     err = Pa_Terminate();	
-		if (err != paNoError) {
-			NSLog(@"PortAudio Pa_Terminate error: %s", Pa_GetErrorText(err));			
-		}
+    if (err != paNoError) {
+      NSLog(@"PortAudio Pa_Terminate error: %s", Pa_GetErrorText(err));			
+    }
 		
-		[(SoundServer *)serverPtr stopAll];
-	}
+    [(SoundServer *)serverPtr stopAll];
+  }
 
-	serverPtr->isPlaying = !retvalue;
+  serverPtr->isPlaying = !retvalue;
 	
-	RELEASE (pool);
+  RELEASE (pool);
 	
-	return retvalue;
+  return retvalue;
 }
 
 - (void)dealloc
 {
-	[nc removeObserver: self];
+  [nc removeObserver: self];
   RELEASE (sounds);
   RELEASE (soundData);
   [super dealloc];
@@ -536,483 +537,483 @@ static int paCallback(void *inputBuffer,
   self = [super init];
 
   if (self) {
-		NSString *hostname;
-		NSNumber *csize;
+    NSString *hostname;
+    NSNumber *csize;
 
-		serverPtr = (struct SoundServer_t *)self;		
-		nc = [NSNotificationCenter defaultCenter];
+    serverPtr = (struct SoundServer_t *)self;		
+    nc = [NSNotificationCenter defaultCenter];
 
-		csize = [[NSUserDefaults standardUserDefaults] objectForKey: @"cachesize"];			
-		maxCacheSize = csize ? [csize longValue] : CACHE_SIZE;					
+    csize = [[NSUserDefaults standardUserDefaults] objectForKey: @"cachesize"];			
+    maxCacheSize = csize ? [csize longValue] : CACHE_SIZE;					
 
-		sounds = [[NSMutableArray alloc] initWithCapacity: 1];
-		soundData = [[NSMutableData alloc] initWithCapacity: 1];
-		frameCount = 0;
-		position = 0;
-		posInBytes = 0;
-		isPlaying = NO;		
+    sounds = [[NSMutableArray alloc] initWithCapacity: 1];
+    soundData = [[NSMutableData alloc] initWithCapacity: 1];
+    frameCount = 0;
+    position = 0;
+    posInBytes = 0;
+    isPlaying = NO;		
 
-  	conn = [NSConnection defaultConnection];
-  	[conn setRootObject: self];
-  	[conn setDelegate: self];
-  	[nc addObserver: self
-      		 selector: @selector(connectionBecameInvalid:)
-	    				 name: NSConnectionDidDieNotification object: (id)conn];
+    conn = [NSConnection defaultConnection];
+    [conn setRootObject: self];
+    [conn setDelegate: self];
+    [nc addObserver: self
+	selector: @selector(connectionBecameInvalid:)
+	name: NSConnectionDidDieNotification object: (id)conn];
 
-  	hostname = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
-  	if ([hostname length] == 0
+    hostname = [[NSUserDefaults standardUserDefaults] stringForKey: @"NSHost"];
+    if ([hostname length] == 0
     	|| [[NSHost hostWithName: hostname] isEqual: [NSHost currentHost]] == YES) {
-			if ([conn registerName: GSNDNAME] == NO) {
-				NSLog(@"Unable to register with name server.\n");
-				exit(1);
-			}
-		} else {
-			NSHost *host = [NSHost hostWithName: hostname];
-			NSPort *port = [conn receivePort];
-			NSPortNameServer *ns = [NSPortNameServer systemDefaultPortNameServer];
-			NSArray *a;
-			unsigned c;
+      if ([conn registerName: GSNDNAME] == NO) {
+	NSLog(@"Unable to register with name server.\n");
+	exit(1);
+      }
+    } else {
+      NSHost *host = [NSHost hostWithName: hostname];
+      NSPort *port = [conn receivePort];
+      NSPortNameServer *ns = [NSPortNameServer systemDefaultPortNameServer];
+      NSArray *a;
+      unsigned c;
 
-			if (host == nil) {
-				NSLog(@"gsnd - unknown NSHost argument  ... %@ - quiting.", hostname);
-				exit(1);
-			}
+      if (host == nil) {
+	NSLog(@"gsnd - unknown NSHost argument  ... %@ - quiting.", hostname);
+	exit(1);
+      }
 
-			a = [host names];
-			c = [a count];
-			while (c-- > 0) {
-				NSString *name = [a objectAtIndex: c];
+      a = [host names];
+      c = [a count];
+      while (c-- > 0) {
+	NSString *name = [a objectAtIndex: c];
 
-				name = [GSNDNAME stringByAppendingFormat: @"-%@", name];
-				if ([ns registerPort: port forName: name] == NO) {
-				}
-			}
-
-			a = [host addresses];
-			c = [a count];
-			while (c-- > 0) {
-				NSString *name = [a objectAtIndex: c];
-
-				name = [GSNDNAME stringByAppendingFormat: @"-%@", name];
-				if ([ns registerPort: port forName: name] == NO) {
-				}
-			}
-		}
+	name = [GSNDNAME stringByAppendingFormat: @"-%@", name];
+	if ([ns registerPort: port forName: name] == NO) {
 	}
+      }
+
+      a = [host addresses];
+      c = [a count];
+      while (c-- > 0) {
+	NSString *name = [a objectAtIndex: c];
+
+	name = [GSNDNAME stringByAppendingFormat: @"-%@", name];
+	if ([ns registerPort: port forName: name] == NO) {
+	}
+      }
+    }
+  }
 		
   return self;
 }
 
 - (BOOL)playSound:(id)aSound
 {
-	id<GSSndObj> obj;
-	NSString *soundName;
-	NSString *idendstr;	
-	Snd *snd = nil;
+  id<GSSndObj> obj;
+  NSString *soundName;
+  NSString *idendstr;	
+  Snd *snd = nil;
 
-	[self checkCachedSounds];
+  [self checkCachedSounds];
 		
-	obj = (id<GSSndObj>)aSound;	
-	soundName = [obj name];
-	idendstr = [obj identifier];	
+  obj = (id<GSSndObj>)aSound;	
+  soundName = [obj name];
+  idendstr = [obj identifier];	
 	
-	if (idendstr == nil) {
-		idendstr = [self uniqueSoundIdentifier];
-		[obj setIdentifier: idendstr]; 
-	} else {		
-		snd = [self soundWithIdentifier: idendstr];
+  if (idendstr == nil) {
+    idendstr = [self uniqueSoundIdentifier];
+    [obj setIdentifier: idendstr]; 
+  } else {		
+    snd = [self soundWithIdentifier: idendstr];
 
-		if ((snd != nil) && (([snd isPlaying]) || ([snd isPaused]))) {
-			return NO;
-		}
-	}
+    if ((snd != nil) && (([snd isPlaying]) || ([snd isPaused]))) {
+      return NO;
+    }
+  }
 	
-	if (snd == nil) {	
-		snd = [self cachedSoundWithName: soundName];
+  if (snd == nil) {	
+    snd = [self cachedSoundWithName: soundName];
 
-		if (snd == nil) {
-			snd = [[Snd alloc] initWithNSSoundObject: obj];
-			[sounds addObject: snd];	
-			RELEASE (snd);
-		} else {		
-			if ([snd isPlaying] || [snd isPaused]) {
-				snd = [snd copy];
-				[sounds addObject: snd];
-				RELEASE (snd);
-			}					
-			[snd reset];
-			[snd setIdentifier: idendstr];					
-		}
-	}				
+    if (snd == nil) {
+      snd = [[Snd alloc] initWithNSSoundObject: obj];
+      [sounds addObject: snd];	
+      RELEASE (snd);
+    } else {		
+      if ([snd isPlaying] || [snd isPaused]) {
+	snd = [snd copy];
+	[sounds addObject: snd];
+	RELEASE (snd);
+      }					
+      [snd reset];
+      [snd setIdentifier: idendstr];					
+    }
+  }				
 	
-	if (isPlaying == NO) {
-		frameCount = [snd frameCount];			
-		TEST_RELEASE (soundData);
-		soundData = [[snd data] mutableCopy];
-		isPlaying = YES;	
+  if (isPlaying == NO) {
+    frameCount = [snd frameCount];			
+    TEST_RELEASE (soundData);
+    soundData = [[snd data] mutableCopy];
+    isPlaying = YES;	
 		
-		[snd setStartPos: 0];
-		[snd setEndPos: (long)([soundData length] / FRAME_SIZE)];
-		[snd setPlaying: YES];
+    [snd setStartPos: 0];
+    [snd setEndPos: (long)([soundData length] / FRAME_SIZE)];
+    [snd setPlaying: YES];
 			
-		[self play];
+    [self play];
 		
-	} else {
-		[self mixWithSound: snd];
-	}
+  } else {
+    [self mixWithSound: snd];
+  }
 	
-	return YES;
+  return YES;
 }
 
 - (BOOL)stopSoundWithIdentifier:(NSString *)identifier
 {
-	Snd *snd = [self soundWithIdentifier: identifier];
+  Snd *snd = [self soundWithIdentifier: identifier];
 		
-	if (snd && [snd isPlaying]) {
-		[self unMixSound: snd];
-		[snd reset];
-		[self checkIsPlaying];
-		return YES;
-	}		
+  if (snd && [snd isPlaying]) {
+    [self unMixSound: snd];
+    [snd reset];
+    [self checkIsPlaying];
+    return YES;
+  }		
 
-	return NO;
+  return NO;
 }
 
 - (BOOL)pauseSoundWithIdentifier:(NSString *)identifier
 {
-	Snd *snd = [self soundWithIdentifier: identifier];
+  Snd *snd = [self soundWithIdentifier: identifier];
 		
-	if (snd && [snd isPlaying]) {
-		[self unMixSound: snd];
+  if (snd && [snd isPlaying]) {
+    [self unMixSound: snd];
 
-		[snd setPlaying: NO];
-		[snd setPaused: YES];
-		[snd setStartPos: 0];
-		[snd setEndPos: 0];
+    [snd setPlaying: NO];
+    [snd setPaused: YES];
+    [snd setStartPos: 0];
+    [snd setEndPos: 0];
 		
-		[self checkIsPlaying];
-		return YES;
-	}		
+    [self checkIsPlaying];
+    return YES;
+  }		
 
-	return NO;
+  return NO;
 }
 
 - (BOOL)resumeSoundWithIdentifier:(NSString *)identifier
 {
-	Snd *snd = [self soundWithIdentifier: identifier];
+  Snd *snd = [self soundWithIdentifier: identifier];
 		
-	if (snd  && [snd isPaused]) {
-		if (isPlaying == NO) {
-			TEST_RELEASE (soundData);
-			soundData = [[snd remainingData] mutableCopy];
+  if (snd  && [snd isPaused]) {
+    if (isPlaying == NO) {
+      TEST_RELEASE (soundData);
+      soundData = [[snd remainingData] mutableCopy];
 
-			frameCount = (long)([soundData length] / FRAME_SIZE);
+      frameCount = (long)([soundData length] / FRAME_SIZE);
 
-			[snd setStartPos: 0];
-			[snd setEndPos: (long)([soundData length] / FRAME_SIZE)];	
-			[snd setPaused: NO];
-			[snd setPlaying: YES];
+      [snd setStartPos: 0];
+      [snd setEndPos: (long)([soundData length] / FRAME_SIZE)];	
+      [snd setPaused: NO];
+      [snd setPlaying: YES];
 			
-			isPlaying = YES;	
-			[self play];
+      isPlaying = YES;	
+      [self play];
 						
-		} else {
-			[snd setPlaying: YES];
-			[snd setPaused: NO];
-			[self mixWithSound: snd];
-		}
+    } else {
+      [snd setPlaying: YES];
+      [snd setPaused: NO];
+      [self mixWithSound: snd];
+    }
 		
-		return YES;
-	}		
+    return YES;
+  }		
 
-	return NO;
+  return NO;
 }
 
 - (BOOL)isPlayingSoundWithIdentifier:(NSString *)identifier
 {
-	Snd *snd = [self soundWithIdentifier: identifier];
+  Snd *snd = [self soundWithIdentifier: identifier];
 		
-	if (snd) {
-		return [snd isPlaying];
-	}		
+  if (snd) {
+    return [snd isPlaying];
+  }		
 
-	return NO;
+  return NO;
 }
 
 - (void)play
 {
-	PaError err;
-	int d = 0;
+  PaError err;
+  int d = 0;
 		
   err = Pa_Initialize();
   if(err != paNoError) {
-		NSLog(@"PortAudio error: %s", Pa_GetErrorText(err));
+    NSLog(@"PortAudio error: %s", Pa_GetErrorText(err));
   } else {
-		NSLog(@"Pa_Initialize");
-	}
+    NSLog(@"Pa_Initialize");
+  }
 
-	err = Pa_OpenDefaultStream(&pStream, 0, DEFAULT_CHANNELS, paInt16, 
-												PLAY_RATE, BUFFER_SIZE_IN_FRAMES, 0, paCallback, &d);
+  err = Pa_OpenDefaultStream(&pStream, 0, DEFAULT_CHANNELS, paInt16, 
+			     PLAY_RATE, BUFFER_SIZE_IN_FRAMES, 0, paCallback, &d);
 
   if(err != paNoError) {
-		NSLog(@"PortAudio Pa_OpenDefaultStream error: %s", Pa_GetErrorText(err));
+    NSLog(@"PortAudio Pa_OpenDefaultStream error: %s", Pa_GetErrorText(err));
   } else {
-		NSLog(@"Pa_OpenDefaultStream");
-	}
+    NSLog(@"Pa_OpenDefaultStream");
+  }
 
-	err = Pa_StartStream(pStream);
+  err = Pa_StartStream(pStream);
   if(err != paNoError) {
-		NSLog(@"PortAudio Pa_StartStream error: %s", Pa_GetErrorText(err));
+    NSLog(@"PortAudio Pa_StartStream error: %s", Pa_GetErrorText(err));
   } else {
-		NSLog(@"Pa_StartStream");
-	}
+    NSLog(@"Pa_StartStream");
+  }
 
   Pa_Sleep(2);
 }
 
 - (void)mixWithSound:(Snd *)snd
 {
-	if (isPlaying == NO) {
-		return;
+  if (isPlaying == NO) {
+    return;
 		
-	} else {
-		NSData *snddata = [snd remainingData];
-		long inFrameCount = (long)([snddata length] / FRAME_SIZE); 
-		gss16 *in = (gss16 *)[snddata bytes];		
-		gss16 *out = (gss16 *)[soundData mutableBytes];
-  	gss32 sum_l;
-  	gss32 sum_r;	
-		long inPos;
-		int i, j;
+  } else {
+    NSData *snddata = [snd remainingData];
+    long inFrameCount = (long)([snddata length] / FRAME_SIZE); 
+    gss16 *in = (gss16 *)[snddata bytes];		
+    gss16 *out = (gss16 *)[soundData mutableBytes];
+    gss32 sum_l;
+    gss32 sum_r;	
+    long inPos;
+    int i, j;
 
-		[snd setStartPos: posInBytes + [snd posInBytes]];
-		[snd setEndPos: posInBytes + (long)([snddata length] / FRAME_SIZE)];
+    [snd setStartPos: posInBytes + [snd posInBytes]];
+    [snd setEndPos: posInBytes + (long)([snddata length] / FRAME_SIZE)];
 
-		j = 0;	
-		for (i = posInBytes; i < frameCount; i++) {
-			sum_l = out[i * 2] + in[j * 2];
-			sum_r = out[i * 2 + 1] + in[j * 2 + 1];
+    j = 0;	
+    for (i = posInBytes; i < frameCount; i++) {
+      sum_l = out[i * 2] + in[j * 2];
+      sum_r = out[i * 2 + 1] + in[j * 2 + 1];
 
-			out[i * 2] = CLAMP (sum_l, INT16_MIN, INT16_MAX);
-			out[i * 2 + 1] = CLAMP (sum_r, INT16_MIN, INT16_MAX);
+      out[i * 2] = CLAMP (sum_l, INT16_MIN, INT16_MAX);
+      out[i * 2 + 1] = CLAMP (sum_r, INT16_MIN, INT16_MAX);
 									
-			j++;
-			if (j == inFrameCount) {
-				break;
-			}
-		}
+      j++;
+      if (j == inFrameCount) {
+	break;
+      }
+    }
 
-		inPos = (j * FRAME_SIZE);	
-		if (inPos < ([snddata length] - 1)) {
-			long remLength = [snddata length] - inPos;
-			NSRange range = NSMakeRange(inPos, remLength);
+    inPos = (j * FRAME_SIZE);	
+    if (inPos < ([snddata length] - 1)) {
+      long remLength = [snddata length] - inPos;
+      NSRange range = NSMakeRange(inPos, remLength);
 
-			[soundData appendData: [snddata subdataWithRange: range]];		
-			frameCount = (long)([soundData length] / FRAME_SIZE);
-		}	
+      [soundData appendData: [snddata subdataWithRange: range]];		
+      frameCount = (long)([soundData length] / FRAME_SIZE);
+    }	
 
-		[snd setPlaying: YES];
-	}
+    [snd setPlaying: YES];
+  }
 }
 
 - (void)unMixSound:(Snd *)snd
 {
-	if (isPlaying == NO) {
-		return;
+  if (isPlaying == NO) {
+    return;
 		
-	} else {
-		int *in = (int *)[[snd data] bytes];		
-		int *out = (int *)[soundData mutableBytes];
-		long deleteFrom = [snd startPos] + [snd posInBytes];
-		long deleteTo = [snd endPos];	
-		int i, j;
+  } else {
+    int *in = (int *)[[snd data] bytes];		
+    int *out = (int *)[soundData mutableBytes];
+    long deleteFrom = [snd startPos] + [snd posInBytes];
+    long deleteTo = [snd endPos];	
+    int i, j;
 
-		j = [snd posInBytes];	
-		for (i = deleteFrom; i < frameCount; i++) {
-			out[i] -= in[j]; 				
-			j++;
-			if (j == deleteTo) {
-				break;
-			}
-		}
-	}
+    j = [snd posInBytes];	
+    for (i = deleteFrom; i < frameCount; i++) {
+      out[i] -= in[j]; 				
+      j++;
+      if (j == deleteTo) {
+	break;
+      }
+    }
+  }
 }
 
 - (void)updatePosition
 {
-	int i;
+  int i;
 
-	posInBytes++;
-	position = (long)(posInBytes * FRAME_SIZE);		
+  posInBytes++;
+  position = (long)(posInBytes * FRAME_SIZE);		
 	
-	for (i = 0; i < [sounds count]; i++) {
-		Snd *snd = [sounds objectAtIndex: i];
+  for (i = 0; i < [sounds count]; i++) {
+    Snd *snd = [sounds objectAtIndex: i];
 	
-		if ([snd isPlaying]) {		
-			[snd posInBytesAdd];
+    if ([snd isPlaying]) {		
+      [snd posInBytesAdd];
 			
-			if (posInBytes == [snd endPos]) {
-				[snd reset];
-			}
-		}
-	}
+      if (posInBytes == [snd endPos]) {
+	[snd reset];
+      }
+    }
+  }
 }
 
 - (void)stopAll
 {
-	int i;
+  int i;
 	
-	[self checkCachedSounds];
+  [self checkCachedSounds];
 	
-	for (i = 0; i < [sounds count]; i++) {
-		Snd *snd = [sounds objectAtIndex: i];
+  for (i = 0; i < [sounds count]; i++) {
+    Snd *snd = [sounds objectAtIndex: i];
 		
-		if ([snd isPaused]) {		
-			[snd setStartPos: 0];
-			[snd setEndPos: 0];			
-		} else {
-			[snd reset];
-		}
-	}
+    if ([snd isPaused]) {		
+      [snd setStartPos: 0];
+      [snd setEndPos: 0];			
+    } else {
+      [snd reset];
+    }
+  }
 	
-	TEST_RELEASE (soundData);
-	soundData = [[NSMutableData alloc] initWithCapacity: 1];
-	frameCount = 0;
-	position = 0;
-	posInBytes = 0;
-	isPlaying = NO;			
+  TEST_RELEASE (soundData);
+  soundData = [[NSMutableData alloc] initWithCapacity: 1];
+  frameCount = 0;
+  position = 0;
+  posInBytes = 0;
+  isPlaying = NO;			
 }
 
 - (void)checkIsPlaying
 {
-	int i;
-	BOOL found = NO;
+  int i;
+  BOOL found = NO;
 	
-	for (i = 0; i < [sounds count]; i++) {
-		Snd *snd = [sounds objectAtIndex: i];
+  for (i = 0; i < [sounds count]; i++) {
+    Snd *snd = [sounds objectAtIndex: i];
 		
-		if ([snd isPlaying]) {		
-			found = YES;
-			break;
-		} 
-	}
+    if ([snd isPlaying]) {		
+      found = YES;
+      break;
+    } 
+  }
 
-	if (found == NO) {
-		[self stopAll];
-	}
+  if (found == NO) {
+    [self stopAll];
+  }
 }
 
 - (Snd *)cachedSoundWithName:(NSString *)aName
 {
-	int i;
+  int i;
 			
-	for (i = 0; i < [sounds count]; i++) {
-		Snd *snd = [sounds objectAtIndex: i];	
-		if ([[snd name] isEqual: aName]) {
-			return snd;
-		}
-	}
+  for (i = 0; i < [sounds count]; i++) {
+    Snd *snd = [sounds objectAtIndex: i];	
+    if ([[snd name] isEqual: aName]) {
+      return snd;
+    }
+  }
 
-	return nil;
+  return nil;
 }
 
 - (void)checkCachedSounds
 {
-	int i, j, count;
-	long csize = 0;
+  int i, j, count;
+  long csize = 0;
 	
-	count = [sounds count];
+  count = [sounds count];
 	
-	for (i = 0; i < count; i++) {
-		Snd *snd0 = [sounds objectAtIndex: i];
-		NSString *name = [snd0 name];
+  for (i = 0; i < count; i++) {
+    Snd *snd0 = [sounds objectAtIndex: i];
+    NSString *name = [snd0 name];
 	
-		for (j = 0; j < count; j++) {
-			Snd *snd1 = [sounds objectAtIndex: j];
+    for (j = 0; j < count; j++) {
+      Snd *snd1 = [sounds objectAtIndex: j];
 	
-			if (([[snd1 name] isEqual: name]) && (snd0 != snd1)) {			
-				if (([snd1 isPaused] == NO) && ([snd1 isPlaying] == NO)) {
-					[sounds removeObject: snd1];	
-					count--;
-					i--;
-					j--;
-				}
-			}
-		}
+      if (([[snd1 name] isEqual: name]) && (snd0 != snd1)) {			
+	if (([snd1 isPaused] == NO) && ([snd1 isPlaying] == NO)) {
+	  [sounds removeObject: snd1];	
+	  count--;
+	  i--;
+	  j--;
 	}
+      }
+    }
+  }
 	
-	count = [sounds count];
+  count = [sounds count];
 	
-	for (i = 0; i < count; i++) {
-		csize += [[[sounds objectAtIndex: i] data] length];
-	}
+  for (i = 0; i < count; i++) {
+    csize += [[[sounds objectAtIndex: i] data] length];
+  }
 
-	if (csize > maxCacheSize) {		
-		for (i = 0; i < count; i++) {
-			Snd *snd = [sounds objectAtIndex: i];		
+  if (csize > maxCacheSize) {		
+    for (i = 0; i < count; i++) {
+      Snd *snd = [sounds objectAtIndex: i];		
 	
-			if (([snd isPlaying] == NO) && ([snd isPaused] == NO)) {
-				csize -= [[snd data] length];	
-				[sounds removeObject: snd];	
-				count--;
-				i--;
-			}		
-			if (csize <= maxCacheSize) {
-				break;
-			}
-		}
-	}	
+      if (([snd isPlaying] == NO) && ([snd isPaused] == NO)) {
+	csize -= [[snd data] length];	
+	[sounds removeObject: snd];	
+	count--;
+	i--;
+      }		
+      if (csize <= maxCacheSize) {
+	break;
+      }
+    }
+  }	
 }
 
 - (Snd *)soundWithIdentifier:(NSString *)identifier
 {
-	int i;
+  int i;
 		
-	for (i = 0; i < [sounds count]; i++) {
-		Snd *snd = [sounds objectAtIndex: i];
+  for (i = 0; i < [sounds count]; i++) {
+    Snd *snd = [sounds objectAtIndex: i];
 
-		if ([[snd identifier] isEqual: identifier]) {
-			return snd;
-		}		
-	}
+    if ([[snd identifier] isEqual: identifier]) {
+      return snd;
+    }		
+  }
 
-	return nil;
+  return nil;
 }
 
 - (Snd *)soundWithName:(NSString *)aName identifier:(NSString *)ident
 {
-	int i;
+  int i;
 		
-	for (i = 0; i < [sounds count]; i++) {
-		Snd *snd = [sounds objectAtIndex: i];
+  for (i = 0; i < [sounds count]; i++) {
+    Snd *snd = [sounds objectAtIndex: i];
 
-		if ([[snd identifier] isEqual: ident]) {
-			NSString *sname = [snd name];
+    if ([[snd identifier] isEqual: ident]) {
+      NSString *sname = [snd name];
 				
-			if ([sname isEqual: aName]) {
-				return snd;
-			}
-		}		
-	}
+      if ([sname isEqual: aName]) {
+	return snd;
+      }
+    }		
+  }
 
-	return nil;
+  return nil;
 }
 
 - (NSString *)uniqueSoundIdentifier
 {
-	int identifier = [[NSProcessInfo processInfo] processIdentifier];
-	NSString *identstr = [NSString stringWithFormat: @"sound_%i_%i", identifier, random()];
+  int identifier = [[NSProcessInfo processInfo] processIdentifier];
+  NSString *identstr = [NSString stringWithFormat: @"sound_%i_%i", identifier, random()];
 
-	return identstr;
+  return identstr;
 }
 
 - (BOOL)connection:(NSConnection*)ancestor
-  		shouldMakeNewConnection:(NSConnection*)newConn;
+shouldMakeNewConnection:(NSConnection*)newConn;
 {
   [nc addObserver: self
-      	 selector: @selector(connectionBecameInvalid:)
-	    			 name: NSConnectionDidDieNotification
-	  			 object: newConn];
+      selector: @selector(connectionBecameInvalid:)
+      name: NSConnectionDidDieNotification
+      object: newConn];
 
   [newConn setDelegate: self];
 
@@ -1024,16 +1025,17 @@ static int paCallback(void *inputBuffer,
   id connection = [notification object];
 
   if (connection == conn) {
-		NSLog(@"Help - sound server connection has died!\n");
-		exit(1);
-	}
+    NSLog(@"Help - sound server connection has died!\n");
+    exit(1);
+  }
 
   return self;
 }
 
 @end
 
-int main(int argc, char** argv, char **env)
+int 
+main(int argc, char** argv, char **env)
 {
   int c;
   CREATE_AUTORELEASE_POOL(pool);
@@ -1050,29 +1052,29 @@ int main(int argc, char** argv, char **env)
     a[argc] = "--no-fork";
     a[argc+1] = 0;
     if (_spawnv(_P_NOWAIT, argv[0], a) == -1) {
-	  	fprintf(stderr, "gsnd - spawn failed - bye.\n");
-	  	exit(1);
-		}
+      fprintf(stderr, "gsnd - spawn failed - bye.\n");
+      exit(1);
+    }
     exit(0);
   }
 #else
-	is_daemon = 1;
-	switch (fork()) {
-	  case -1:
-	    NSLog(@"gsnd - fork failed - bye.\n");
-	    exit(1);
+  is_daemon = 1;
+  switch (fork()) {
+  case -1:
+    NSLog(@"gsnd - fork failed - bye.\n");
+    exit(1);
 
-	  case 0:
+  case 0:
 #ifdef NeXT
-			setpgrp(0, getpid());
+    setpgrp(0, getpid());
 #else
-			setsid();
+    setsid();
 #endif
-		break;
+    break;
 
-		default:
-			exit(0);
-	}
+  default:
+    exit(0);
+  }
 
   /*
    *	Ensure we don't have any open file descriptors which may refer
@@ -1090,21 +1092,21 @@ int main(int argc, char** argv, char **env)
   if (open("/dev/null", O_RDONLY) != 0)
     {
       sprintf(ebuf, "failed to open stdin from /dev/null (%s)\n",
-	strerror(errno));
+	      strerror(errno));
       gsnd_log(LOG_CRIT);
       exit(EXIT_FAILURE);
     }
   if (open("/dev/null", O_WRONLY) != 1)
     {
       sprintf(ebuf, "failed to open stdout from /dev/null (%s)\n",
-	strerror(errno));
+	      strerror(errno));
       gsnd_log(LOG_CRIT);
       exit(EXIT_FAILURE);
     }
   if (is_daemon && open("/dev/null", O_WRONLY) != 2)
     {
       sprintf(ebuf, "failed to open stderr from /dev/null (%s)\n",
-	strerror(errno));
+	      strerror(errno));
       gsnd_log(LOG_CRIT);
       exit(EXIT_FAILURE);
     }
@@ -1112,10 +1114,11 @@ int main(int argc, char** argv, char **env)
 
   gsnd = [[SoundServer alloc] init];
 
-  if (gsnd == nil) {
-		NSLog(@"Unable to create gsnd object.\n");
-		exit(1);
-	}
+  if (gsnd == nil) 
+    {
+      NSLog(@"Unable to create gsnd object.\n");
+      exit(1);
+    }
 	
   [[NSRunLoop currentRunLoop] run];
   RELEASE(pool);
@@ -1128,241 +1131,277 @@ int main(int argc, char** argv, char **env)
 // Resampler Functions
 //
 
-void clearResamplerMemory()
+void 
+clearResamplerMemory()
 {
-	int i;
+  int i;
 
-	if (_X != NULL) {
-		for (i = 0; i < DEFAULT_CHANNELS; i++) {
-			NSZoneFree(NSDefaultMallocZone(), _X[i]);
-			_X[i] = NULL;
-			NSZoneFree(NSDefaultMallocZone(), _Y[i]);		
-			_Y[i] = NULL;
-		}
-		NSZoneFree(NSDefaultMallocZone(), _X);
-		_X = NULL;
-		NSZoneFree(NSDefaultMallocZone(), _Y);		
-		_Y = NULL;
+  if (sX != NULL) 
+    {
+      for (i = 0; i < DEFAULT_CHANNELS; i++) 
+	{
+	  NSZoneFree(NSDefaultMallocZone(), sX[i]);
+	  sX[i] = NULL;
+	  NSZoneFree(NSDefaultMallocZone(), sY[i]);		
+	  sY[i] = NULL;
 	}
+      NSZoneFree(NSDefaultMallocZone(), sX);
+      sX = NULL;
+      NSZoneFree(NSDefaultMallocZone(), sY);		
+      sY = NULL;
+    }
 }
 
-void initializeResampler(double fac)
+void 
+initializeResampler(double fac)
 {
-	int i;
+  int i;
 
-	clearResamplerMemory();
+  clearResamplerMemory();
 
-	_factor = fac;
-	_initial = YES;
+  sfactor = fac;
+  sinitial = YES;
 
-	// Allocate all new memory
-	_X = NSZoneMalloc(NSDefaultMallocZone(), GS_SIZEOF_SHORT * DEFAULT_CHANNELS);
-	_Y = NSZoneMalloc(NSDefaultMallocZone(), GS_SIZEOF_SHORT * DEFAULT_CHANNELS);
+  // Allocate all new memory
+  sX = NSZoneMalloc(NSDefaultMallocZone(), GS_SIZEOF_SHORT * DEFAULT_CHANNELS);
+  sY = NSZoneMalloc(NSDefaultMallocZone(), GS_SIZEOF_SHORT * DEFAULT_CHANNELS);
 
-	for (i = 0; i < DEFAULT_CHANNELS; i++) {
-		// Add extra to allow of offset of input data (Xoff in main routine)
-		_X[i] = NSZoneMalloc(NSDefaultMallocZone(), GS_SIZEOF_SHORT * (IBUFFSIZE + 256));
-		_Y[i] = NSZoneMalloc(NSDefaultMallocZone(), GS_SIZEOF_SHORT * (int)(((double)IBUFFSIZE) * _factor));
-		memset(_X[i], 0, GS_SIZEOF_SHORT * (IBUFFSIZE + 256));    
-	}
+  for (i = 0; i < DEFAULT_CHANNELS; i++) 
+    {
+      // Add extra to allow of offset of input data (Xoff in main routine)
+      sX[i] = NSZoneMalloc(NSDefaultMallocZone(), GS_SIZEOF_SHORT * (IBUFFSIZE + 256));
+      sY[i] = NSZoneMalloc(NSDefaultMallocZone(), GS_SIZEOF_SHORT * (int)(((double)IBUFFSIZE) * sfactor));
+      memset(sX[i], 0, GS_SIZEOF_SHORT * (IBUFFSIZE + 256));    
+    }
 }
 
-int resample(int inCount, int outCount, short inArray[], short outArray[])
+int 
+resample(int inCount, int outCount, short inArray[], short outArray[])
 {
-	int Ycount = resampleFast(inCount, outCount, inArray, outArray);
-	_initial = NO;
-	return Ycount;
+  int Ycount = resampleFast(inCount, outCount, inArray, outArray);
+  sinitial = NO;
+  return Ycount;
 }
 
 int resampleFast(int inCount, int outCount, short inArray[], short outArray[])
 {
-	unsigned int Time2;		/* Current time/pos in input sample */
-	unsigned short Xp, Xread;
-	int OBUFFSIZE = (int)(((double)IBUFFSIZE) * _factor);
-	unsigned short Nout = 0, Nx, orig_Nx;
-	unsigned short maxOutput;
-	int total_inCount = 0;
-	int c, i, Ycount, last;
-	BOOL first_pass = YES;
-	unsigned short Xoff = 10;
+  unsigned int Time2;		/* Current time/pos in input sample */
+  unsigned short Xp, Xread;
+  int OBUFFSIZE = (int)(((double)IBUFFSIZE) * sfactor);
+  unsigned short Nout = 0, Nx, orig_Nx;
+  unsigned short maxOutput;
+  int total_inCount = 0;
+  int c, i, Ycount, last;
+  BOOL first_pass = YES;
+  unsigned short Xoff = 10;
 
-	Nx = IBUFFSIZE - 2 * Xoff;     /* # of samples to process each iteration */
-	last = 0;			/* Have not read last input sample yet */
-	Ycount = 0;			/* Current sample and length of output file */
+  Nx = IBUFFSIZE - 2 * Xoff;     /* # of samples to process each iteration */
+  last = 0;			/* Have not read last input sample yet */
+  Ycount = 0;			/* Current sample and length of output file */
 
-	Xp = Xoff;			/* Current "now"-sample pointer for input */
-	Xread = Xoff;		/* Position in input array to read into */
+  Xp = Xoff;			/* Current "now"-sample pointer for input */
+  Xread = Xoff;		/* Position in input array to read into */
 
-	if (_initial == YES) {
-		_Time = (Xoff << Np);	/* Current-time pointer for converter */
-	}
+  if (sinitial == YES) 
+    {
+      sTime = (Xoff << Np);	/* Current-time pointer for converter */
+    }
 	
-	do {
-		if (!last) {		/* If haven't read last sample yet */
-			last = resamplerReadData(inCount, inArray, _X, IBUFFSIZE, (int)Xread, first_pass);
-			first_pass = NO;
+  do 
+    {
+      if (!last) 
+	{		/* If haven't read last sample yet */
+	  last = resamplerReadData(inCount, inArray, sX, IBUFFSIZE, (int)Xread, first_pass);
+	  first_pass = NO;
 			
-			if (last && ((last - Xoff) < Nx)) { /* If last sample has been read... */
-				Nx = last - Xoff;	/* ...calc last sample affected by filter */
-			 	if (Nx <= 0) {
-		  		break;
-				}
-			}
+	  if (last && ((last - Xoff) < Nx)) 
+	    { /* If last sample has been read... */
+	      Nx = last - Xoff;	/* ...calc last sample affected by filter */
+	      if (Nx <= 0) 
+		{
+		  break;
 		}
+	    }
+	}
 
-		if ((outCount-Ycount) > (OBUFFSIZE - (2 * Xoff * _factor))) {
-			maxOutput = OBUFFSIZE - (unsigned short)(2 * Xoff * _factor);
-		} else {
-			maxOutput = outCount-Ycount;
-		}
+      if ((outCount-Ycount) > (OBUFFSIZE - (2 * Xoff * sfactor)))
+	{
+	  maxOutput = OBUFFSIZE - (unsigned short)(2 * Xoff * sfactor);
+	} 
+      else 
+	{
+	  maxOutput = outCount-Ycount;
+	}
 		    
-		for (c = 0; c < DEFAULT_CHANNELS; c++) {
-			orig_Nx = Nx;
-			Time2 = _Time;
+      for (c = 0; c < DEFAULT_CHANNELS; c++) 
+	{
+	  orig_Nx = Nx;
+	  Time2 = sTime;
+	
+	  /* Resample stuff in input buffer */
+	  Nout = SrcLinear(sX[c], sY[c], sfactor, &Time2, orig_Nx, maxOutput);
+	}
 			
-			/* Resample stuff in input buffer */
-			Nout = SrcLinear(_X[c], _Y[c], _factor, &Time2, orig_Nx, maxOutput);
-		}
+      Nx = orig_Nx;
+      sTime = Time2;
+
+      sTime -= (Nx << Np);	/* Move converter Nx samples back in time */
+      Xp += Nx;		/* Advance by number of samples processed */
+		
+      for (c = 0; c < DEFAULT_CHANNELS; c++) 
+	{
+	  for (i = 0; i < (IBUFFSIZE - Xp + Xoff); i++) 
+	    { /* Copy part of input signal */
+	      sX[c][i] = sX[c][i + Xp - Xoff]; /* that must be re-used */
+	    }
+	}
+		
+      if (last) 
+	{		/* If near end of sample... */
+	  last -= Xp;		/* ...keep track were it ends */
 			
-		Nx = orig_Nx;
-		_Time = Time2;
+	  if (!last) 
+	    {		/* Lengthen input by 1 sample if... */
+	      last++;	
+	    }             	/* ...needed to keep flag YES */
+	}
 
-		_Time -= (Nx << Np);	/* Move converter Nx samples back in time */
-		Xp += Nx;		/* Advance by number of samples processed */
-		
-		for (c = 0; c < DEFAULT_CHANNELS; c++) {
-			for (i = 0; i < (IBUFFSIZE - Xp + Xoff); i++) { /* Copy part of input signal */
-				_X[c][i] = _X[c][i + Xp - Xoff]; /* that must be re-used */
-	   	}
-		}
-		
-		if (last) {		/* If near end of sample... */
-			last -= Xp;		/* ...keep track were it ends */
-			
-			if (!last) {		/* Lengthen input by 1 sample if... */
-				last++;	
-			}             	/* ...needed to keep flag YES */
-		}
-
-		Xread = IBUFFSIZE - Nx;	/* Pos in input buff to read new data into */
-		Xp = Xoff;
+      Xread = IBUFFSIZE - Nx;	/* Pos in input buff to read new data into */
+      Xp = Xoff;
 	
-		Ycount += Nout;
-		if (Ycount > outCount) {
-			Nout -= (Ycount - outCount);
-			Ycount = outCount;
-		}
+      Ycount += Nout;
+      if (Ycount > outCount) 
+	{
+	  Nout -= (Ycount - outCount);
+	  Ycount = outCount;
+	}
 
-		if (Nout > OBUFFSIZE) { /* Check to see if output buff overflowed */
-	 		return resampleError("Output array overflow");
-		}
+      if (Nout > OBUFFSIZE) 
+	{ /* Check to see if output buff overflowed */
+	  return resampleError("Output array overflow");
+	}
 		
-		for (c = 0; c < DEFAULT_CHANNELS; c++) {
-	   	for (i = 0; i < Nout; i++) {
-				outArray[c * outCount + i + Ycount - Nout] = _Y[c][i];
-			}
-		}
+      for (c = 0; c < DEFAULT_CHANNELS; c++) 
+	{
+	  for (i = 0; i < Nout; i++) 
+	    {
+	      outArray[c * outCount + i + Ycount - Nout] = sY[c][i];
+	    }
+	}
 		
-		total_inCount += Nx;
+      total_inCount += Nx;
 
-	} while (Ycount < outCount); /* Continue until done */
+    } while (Ycount < outCount); /* Continue until done */
 
-	inCount = total_inCount;
+  inCount = total_inCount;
 
-	return(Ycount);		/* Return # of samples in output file */
+  return(Ycount);		/* Return # of samples in output file */
 }
 
-int SrcLinear(short X[], short Y[], double factor, unsigned int *Time, 
-																		unsigned short Nx, unsigned short Nout)
+int 
+SrcLinear(short X[], short Y[], double factor, unsigned int *Time, 
+	  unsigned short Nx, unsigned short Nout)
 {
-	short iconst;
-	short *Xp, *Ystart;
-	int v, x1, x2;
+  short iconst;
+  short *Xp, *Ystart;
+  int v, x1, x2;
 
-	double dt;                  /* Step through input signal */ 
-	unsigned int dtb;           /* Fixed-point version of Dt */
-	unsigned int start_sample, end_sample;
+  double dt;                  /* Step through input signal */ 
+  unsigned int dtb;           /* Fixed-point version of Dt */
+  unsigned int start_sample, end_sample;
 
-	dt = 1.0 / factor;            /* Output sampling period */
-	dtb = (unsigned int)(dt * (1 << Np) + 0.5); /* Fixed-point representation */
+  dt = 1.0 / factor;            /* Output sampling period */
+  dtb = (unsigned int)(dt * (1 << Np) + 0.5); /* Fixed-point representation */
 
-	start_sample = *Time >> Np;
-	Ystart = Y;
+  start_sample = *Time >> Np;
+  Ystart = Y;
 
-	while (Y - Ystart != Nout) {
-		iconst = *Time & Pmask;
-		Xp = &X[*Time >> Np];      /* Ptr to current input sample */
-		x1 = *Xp++;
-		x2 = *Xp;
-		x1 *= (1 << Np) - iconst;
-		x2 *= iconst;
-		v = x1 + x2;
-		*Y++ = WordToHword(v, Np);   /* Deposit output */
-		*Time += dtb;		    /* Move to next sample by time increment */
-	}
+  while (Y - Ystart != Nout) 
+    {
+      iconst = *Time & Pmask;
+      Xp = &X[*Time >> Np];      /* Ptr to current input sample */
+      x1 = *Xp++;
+      x2 = *Xp;
+      x1 *= (1 << Np) - iconst;
+      x2 *= iconst;
+      v = x1 + x2;
+      *Y++ = WordToHword(v, Np);   /* Deposit output */
+      *Time += dtb;		    /* Move to next sample by time increment */
+    }
 	
-	end_sample = *Time >> Np;
-	Nx = end_sample - start_sample;
-	return (Y - Ystart);            /* Return number of output samples */
+  end_sample = *Time >> Np;
+  Nx = end_sample - start_sample;
+  return (Y - Ystart);            /* Return number of output samples */
 }
 
-inline short WordToHword(int v, int scl)
+inline short
+WordToHword(int v, int scl)
 {
-	short out;	
-	int llsb;
+  short out;	
+  int llsb;
 	
-	llsb = (1 << (scl - 1));
-	v += llsb;          /* round */
-	v >>= scl;
-	if (v > INT16_MAX) {
-		v = INT16_MAX;
-	} else if (v < INT16_MIN) {
-		v = INT16_MIN;
-	}
-	out = (short)v;
+  llsb = (1 << (scl - 1));
+  v += llsb;          /* round */
+  v >>= scl;
+  if (v > INT16_MAX) 
+    {
+      v = INT16_MAX;
+    } 
+  else if (v < INT16_MIN)
+    {
+      v = INT16_MIN;
+    }
+  out = (short)v;
 	
-	return out;
+  return out;
 }
 
-int resamplerReadData(int inCount, short inArray[], short *outPtr[], 
-															int dataArraySize, int Xoff, BOOL init_count) 
+int 
+resamplerReadData(int inCount, short inArray[], short *outPtr[], 
+		  int dataArraySize, int Xoff, BOOL init_count) 
 {
-	int i, Nsamps, c;
-	static unsigned int framecount;  /* frames previously read */
-	short *ptr;
+  int i, Nsamps, c;
+  static unsigned int framecount;  /* frames previously read */
+  short *ptr;
 
-	if (init_count == YES) {
-		framecount = 0;       /* init this too */
-	}
+  if (init_count == YES) 
+    {
+      framecount = 0;       /* init this too */
+    }
 	
-	Nsamps = dataArraySize - Xoff;   /* Calculate number of samples to get */
+  Nsamps = dataArraySize - Xoff;   /* Calculate number of samples to get */
 
-	// Don't overrun input buffers
-	if (Nsamps > (inCount - (int)framecount)) {
-		Nsamps = inCount - framecount;
+  // Don't overrun input buffers
+  if (Nsamps > (inCount - (int)framecount)) 
+    {
+      Nsamps = inCount - framecount;
+    }
+
+  for (c = 0; c < DEFAULT_CHANNELS; c++)
+    {
+      ptr = outPtr[c];
+      ptr += Xoff;        /* Start at designated sample number */
+
+      for (i = 0; i < Nsamps; i++) 
+	{
+	  *ptr++ = (short) inArray[c * inCount + i + framecount];
 	}
+    }
 
-	for (c = 0; c < DEFAULT_CHANNELS; c++) {
-		ptr = outPtr[c];
-		ptr += Xoff;        /* Start at designated sample number */
+  framecount += Nsamps;
 
-		for (i = 0; i < Nsamps; i++) {
-			*ptr++ = (short) inArray[c * inCount + i + framecount];
-		}
-	}
-
-	framecount += Nsamps;
-
-	if ((int)framecount >= inCount) {          /* return index of last samp */
-		return (((Nsamps - (framecount - inCount)) - 1) + Xoff);
-	}
+  if ((int)framecount >= inCount) 
+    {          /* return index of last samp */
+      return (((Nsamps - (framecount - inCount)) - 1) + Xoff);
+    }
 	
-	return 0;
+  return 0;
 }
 
-int resampleError(char *s)
+int 
+resampleError(char *s)
 {
-	NSLog([NSString stringWithCString: s]);
-	return -1;
+  NSLog([NSString stringWithCString: s]);
+  return -1;
 }
 
