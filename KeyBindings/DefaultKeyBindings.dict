@@ -1,0 +1,39 @@
+{ /* -*-c-*- */
+
+  /* Function keys */
+  "UpArrow" = "moveUp:";
+  "DownArrow" = "moveDown:";
+  "LeftArrow" = "moveLeft:";
+  "RightArrow" = "moveRight:";
+
+  "Alternate-LeftArrow" = "moveWordBackward:";
+  "Control-LeftArrow" = "moveToBeginningOfLine:";
+  "Control-Shift-LeftArrow" = "selectLine:";
+  "Alternate-RightArrow" = "moveWordForward:";
+  "Control-RightArrow" = "moveToEndOfLine:";
+  "Control-Shift-RightArrow" = "selectLine:";
+
+  "Delete" = "deleteForward:";
+  "Home" = "moveToBeginningOfDocument:";
+  "Shift-Home" = "selectAll:";
+  "Begin" = "moveToBeginningOfLine:";
+  "End" = "moveToEndOfDocument:";
+  "Shift-End" = "selectAll:";
+  "PageUp" = "pageUp:";
+  "PageDown" = "pageDown:";
+
+  /* Emacs keybindings */
+  "Alternate-<" = "moveToBeginningOfDocument:";
+  "Alternate->" = "moveToEndOfDocument:";
+  "Control-a" = "moveToBeginningOfLine:";
+  "Control-b" = "moveLeft:";
+  "Alternate-b" = "moveWordBackward:";
+  "Control-d" = "deleteForward:";
+  "Control-e" = "moveToEndOfLine:";
+  "Control-f" = "moveRight:";
+  "Alternate-f" = "moveWordForward:";
+  "Control-n" = "moveDown:";
+  "Control-p" = "moveUp:";
+  "Control-v" = "pageDown:";
+  "Alternate-v" = "pageUp:";
+}
