@@ -324,13 +324,7 @@ static NSString *attachmentString()
 		   range: range];
       if (range.length == 0)
 	return 0;
-      range = NSMakeRange(range.location, location - range.location);
-      range = [str rangeOfCharacterFromSet: wordCSet()
-				   options: NSLiteralSearch
-				     range: range];
-      if (range.length == 0)
-	return 0;
-      return range.location;
+      return NSMaxRange(range);
     }
 }
 
