@@ -55,6 +55,12 @@
 
 #include <math.h>
 
+@interface NSButtonCell (Private)
+// Overriden private internal method
+- (void) _drawImage: (NSImage *)anImage inFrame: (NSRect)aRect 
+  isFlipped: (BOOL)flipped;
+@end
+
 @implementation NSButtonCell
 
 /*
@@ -942,12 +948,12 @@
 	 * The drawing code below will then center the image in imageRect.
 	 */
 	titleRect.origin.x = cellFrame.origin.x;
-	titleRect.origin.y = cellFrame.origin.y;
+	titleRect.origin.y = cellFrame.origin.y + GSCellTextImageYDist;
 	titleRect.size.width = cellFrame.size.width;
 	titleRect.size.height = titleSize.height;
 
 	imageRect.origin.x = cellFrame.origin.x;
-	imageRect.origin.y = NSMaxY(titleRect) + GSCellTextImageYDist;
+	imageRect.origin.y = NSMaxY(titleRect);
 	imageRect.size.width = cellFrame.size.width;
 	imageRect.size.height = NSMaxY(cellFrame) - imageRect.origin.y;
 
@@ -1009,30 +1015,7 @@
   // Draw image
   if (imageToDisplay != nil)
     {
-      NSSize size;
-      NSPoint position;
-
-      size = [imageToDisplay size];
-      position.x = MAX(NSMidX(imageRect) - (size.width / 2.), 0.);
-      position.y = MAX(NSMidY(imageRect) - (size.height / 2.), 0.);
-      /*
-       * Images are always drawn with their bottom-left corner at the origin
-       * so we must adjust the position to take account of a flipped view.
-       */
-      if (flippedView)
-	{
-	  position.y += size.height;
-	}
-	
-      if (_cell.is_disabled && _image_dims_when_disabled)
-	{
-	  [imageToDisplay dissolveToPoint: position fraction: 0.5];
-	}
-      else
-	{
-	  [imageToDisplay compositeToPoint: position 
-	                         operation: NSCompositeSourceOver];
-	}
+      [self _drawImage: imageToDisplay inFrame: imageRect isFlipped: flippedView];
     }
 
   // Draw title
@@ -1324,6 +1307,43 @@
 		                   at: &_showAltStateMask];
     }
   return self;
+}
+
+@end
+
+@implementation NSButtonCell (Private)
+
+// Overriden private internal method
+- (void) _drawImage: (NSImage *)anImage inFrame: (NSRect)aRect 
+  isFlipped: (BOOL)flipped
+{
+  // To keep partially in sync with the NSCell overriden method
+  
+  NSSize size;
+  NSPoint position;
+
+  size = [anImage size];
+  position.x = MAX(NSMidX(aRect) - (size.width / 2.), 0.);
+  position.y = MAX(NSMidY(aRect) - (size.height / 2.), 0.);
+  
+  /*
+   * Images are always drawn with their bottom-left corner at the origin
+   * so we must adjust the position to take account of a flipped view.
+   */
+  if (flipped)
+    {
+      position.y += size.height;
+    }
+	
+  if (_cell.is_disabled && _image_dims_when_disabled)
+    {
+      [anImage dissolveToPoint: position fraction: 0.5];
+    }
+  else
+    {
+      [anImage compositeToPoint: position 
+	                     operation: NSCompositeSourceOver];
+    }
 }
 
 @end

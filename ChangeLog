@@ -1,3 +1,21 @@
+2004-08-30  Quentin Mathe <qmathe@club-internet.fr>
+
+        * Headers/AppKit/NSCell.h:
+	* Source/NSCell.m:
+	Make the code a bit more modular with a distinct private method to
+	implement the image drawing (the text drawing is already located in a
+	separate method), see -_drawImage:inFrame:isFlipped:,
+	previously implemented in -drawInteriorWithFrame:inView:
+	* Source/NSButtonCell.m: Moved code specific to NSButtonCell
+	-drawInteriorWithFrame:inView: in a new method
+	-_drawImage:inFrame:isFlipped to match the method added to NSCell. Also
+	reverted the 2004-08-11 21:35 Alexander Malmberg commit to have  identical
+	margin between the border and the text with every image positions.
+	Source/NSToolbarItem.m:
+	Added -_drawImage:inFrame:isFlipped and _drawAttributedText:inFrame:
+	to override the superclasses behavior, it permits to have the
+	GSToolbarButtonCell layout not dependent on the NSButtonCell code.
+
 2004-08-29 02:48  Matt Rice <ratmice@yahoo.com>
 
 	* Source/NSTableView.m (-draggingUpdated:): Return
@@ -27,17 +45,24 @@
 	
 2004-08-13  Quentin Mathe <qmathe@club-internet.fr>
         
-	* Source/NSComboBoxCell.m:
-	* Source/NSComboBox.m:
-	Fixed broken combo box behavior introduced June 17 with version 1.27,
-	which produced wrong tracking in the button cell and extra mouse down
-	call in the NSComboBox superclass. Now the rewritten version is also
-	documented. 
-	Also now -[GSComboWindow deselectItemAtIndex:] still produces a
-	-[GSComboWindow tableViewSelectionDidChange:] call but the chain is
-	stopped in -[GSComboWindow validateSelection] by the _locationSelection
-	variable, then -[NSComboBoxCell selectItemAtIndex:] is not anymore
-	wrongly called.
+	* Source/NSComboBoxCell.m -(runModalPopUpWithComboBoxCell:): Remove the
+	observer only for the variable onWindow, then it is not needed anymore
+	to reset the table view delegate. 
+	(-deselectItemAtIndex:): Added a _localSelection flag, the result is now
+	the method still triggers -[GSComboWindow tableViewSelectionDidChange:]
+	call but the _localSelection variable in -validateSelection
+	avoids to have -selectItemAtIndex: wrongly called.
+	(-trackMouse:inRect:ofView:untilMouseUp:): Fixed broken combo box
+	behavior introduced June 17 with version 1.27, which produced wrong
+	tracking in the button cell and extra mouse down call in the NSComboBox
+	superclass. Now the rewritten version is also documented. 
+	* Source/NSComboBox.m (-mouseDown:): Reverted the use of the variable
+	clicked (that contributes to fix the bug explained above) and renamed it
+	buttonClicked.
+	* Headers/AppKit/NSComboBoxCell.h: Added the method
+	-trackMouse:inRect:ofView:untilMouseUp to have the documentation
+        generated for this overriden method , it shouldn't be needed( it is a
+	temporary hack until we have the root problem corrected).
 	
 2004-08-12 01:42  Alexander Malmberg <alexander@malmberg.org>
 

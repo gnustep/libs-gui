@@ -1664,34 +1664,21 @@ static NSColor	*shadowCol;
   switch (_cell.type)
     {
       case NSTextCellType:
-        {
-	  [self _drawAttributedText: [self attributedStringValue]
-		inFrame: cellFrame];
-	}
+        [self _drawAttributedText: [self attributedStringValue]
+                          inFrame: cellFrame];
 	break;
 
       case NSImageCellType:
 	if (_cell_image)
 	  {
-	    NSSize size;
-	    NSPoint position;
-
-	    size = [_cell_image size];
-	    position.x = MAX(NSMidX(cellFrame) - (size.width/2.),0.);
-	    position.y = MAX(NSMidY(cellFrame) - (size.height/2.),0.);
-	    /*
-	     * Images are always drawn with their bottom-left corner
-	     * at the origin so we must adjust the position to take
-	     * account of a flipped view.
-	     */
-	    if ([controlView isFlipped])
-	      position.y += size.height;
-	    [_cell_image compositeToPoint: position operation: NSCompositeSourceOver];
-	  }
-	 break;
+	    [self _drawImage: _cell_image 
+	             inFrame: cellFrame 
+		   isFlipped: [controlView isFlipped]];
+	  }        
+	break;
 
       case NSNullCellType:
-         break;
+        break;
     }
 
   if (_cell.shows_first_responder)
@@ -2204,6 +2191,27 @@ static NSColor	*shadowCol;
 
   [aString drawInRect: cellFrame  withAttributes: attributes];
   RELEASE (attributes);
+}
+
+- (void) _drawImage: (NSImage *)anImage inFrame: (NSRect)aRect 
+  isFlipped: (BOOL)flipped
+{
+  NSSize size;
+  NSPoint position;
+
+  size = [anImage size];
+  position.x = MAX(NSMidX(aRect) - (size.width/2.),0.);
+  position.y = MAX(NSMidY(aRect) - (size.height/2.),0.);
+  
+  /*
+   * Images are always drawn with their bottom-left corner
+   * at the origin so we must adjust the position to take
+   * account of a flipped view.
+   */
+  if (flipped)
+    position.y += size.height;
+  
+  [anImage compositeToPoint: position operation: NSCompositeSourceOver];
 }
 
 @end

@@ -38,8 +38,10 @@
 #include "AppKit/NSMenuItem.h"
 #include "AppKit/NSImage.h"
 #include "AppKit/NSButton.h"
+#include "AppKit/NSButtonCell.h"
 #include "AppKit/NSFont.h"
 #include "AppKit/NSEvent.h"
+#include "AppKit/NSParagraphStyle.h"
 #include "GNUstepGUI/GSToolbar.h"
 #include "GNUstepGUI/GSToolbarView.h"
 
@@ -122,16 +124,35 @@ static NSFont *SmallFont = nil;
 - (void) setToolbarItemAction: (SEL)action;
 @end
 
+@interface GSToolbarButtonCell : NSButtonCell
+{
+  NSRect titleRect;
+  NSRect imageRect;
+}
+
+@end
+
+// ---
+
 @implementation GSToolbarButton
++ (void) initialize
+{
+  if (self == [GSToolbarButton class])
+    [GSToolbarButton setCellClass: [GSToolbarButtonCell class]];
+}  
+
 - (id) initWithToolbarItem: (NSToolbarItem *)toolbarItem
 { 
-  self = [super initWithFrame: NSMakeRect(ItemBackViewX, ItemBackViewY, ItemBackViewDefaultWidth, ItemBackViewDefaultHeight)];
+  self = [super initWithFrame: NSMakeRect(ItemBackViewX, ItemBackViewY,
+    ItemBackViewDefaultWidth, ItemBackViewDefaultHeight)]; 
   // Frame will be reset by the layout method
   
   if (self != nil)
     {
       // Don't do an ASSIGN here, the toolbar item itself retains us.
       _toolbarItem = toolbarItem;
+      
+      //[self setCell: [[GSToolbarButtonCell alloc] init]];
     }
   return self;   
 }
@@ -280,6 +301,84 @@ static NSFont *SmallFont = nil;
 
 @end
 
+@implementation GSToolbarButtonCell
+
+// Overriden NSButtonCell method
+- (void) drawInteriorWithFrame: (NSRect)cellFrame inView: (NSView*)controlView
+{
+  NSSize titleSize = [[self attributedTitle] size];
+  // We ignore alternateAttributedTitle, it is not needed
+  
+  // We store the values we need to customize the drawing into titleRect and imageRect
+  
+  titleRect.origin.x = cellFrame.origin.x;
+  titleRect.origin.y = cellFrame.origin.y + InsetItemTextY;
+  titleRect.size.width =  cellFrame.size.width;
+  titleRect.size.height = titleSize.height;
+  
+  imageRect.origin.x = cellFrame.origin.x;
+  imageRect.origin.y = cellFrame.origin.y;
+  if ([self imagePosition] != NSImageOnly)     
+    imageRect.origin.y += titleRect.size.height;
+  imageRect.size.width = cellFrame.size.width;
+  imageRect.size.height = cellFrame.size.height;
+  if ([self imagePosition] != NSImageOnly)     
+    imageRect.size.height -= titleRect.size.height;
+    
+  [super drawInteriorWithFrame: cellFrame inView: controlView];
+}
+
+// Overriden NSCell method
+- (void) _drawAttributedText: (NSAttributedString*)aString 
+		     inFrame: (NSRect)aRect
+{
+  if (aString == nil)
+    return;
+
+  /** Important: text should always be vertically centered without
+   * considering descender [as if descender did not exist].
+   * This is particularly important for single line texts.
+   * Please make sure the output remains always correct.
+   */
+  // We ignore aRect value
+
+  [aString drawInRect: titleRect];
+}
+
+// Overriden NSButtonCell method
+- (void) _drawImage: (NSImage *)anImage inFrame: (NSRect)aRect isFlipped: (BOOL)flipped
+{
+  NSSize size;
+  NSPoint position;
+
+  // We ignore aRect value
+  
+  size = [anImage size];
+  position.x = MAX(NSMidX(imageRect) - (size.width / 2.), 0.);
+  position.y = MAX(NSMidY(imageRect) - (size.height / 2.), 0.);
+  
+  /*
+   * Images are always drawn with their bottom-left corner at the origin
+   * so we must adjust the position to take account of a flipped view.
+   */
+  if (flipped)
+    {
+      position.y += size.height;
+    }
+	
+  if (_cell.is_disabled && _image_dims_when_disabled)
+    {
+      [anImage dissolveToPoint: position fraction: 0.5];
+    }
+  else
+    {
+      [anImage compositeToPoint: position 
+	              operation: NSCompositeSourceOver];
+    }
+}
+
+@end
+
 /*
  * Back view used to enclose toolbar item's custom view
  */
@@ -322,37 +421,48 @@ static NSFont *SmallFont = nil;
   [super dealloc];
 }
 
-- (void)drawRect: (NSRect)rect
-{
-  NSAttributedString *attrString;
-  NSDictionary *attr;
-  NSColor *color;
-  float textX;
-  
+- (void) drawRect: (NSRect)rect
+{  
   [super drawRect: rect]; // We draw _view which is a subview
-  
-  if (_enabled)
-    {
-      color = [NSColor blackColor];
-    }
-  else
-    {
-      color = [NSColor disabledControlTextColor];
-    }
-    
+     
   if (_showLabel)
     {
+      NSAttributedString *attrString;
+      NSDictionary *attr;
+      NSColor *color;
+      NSMutableParagraphStyle *pStyle = [NSMutableParagraphStyle defaultParagraphStyle];
+      NSRect titleRect;
+      NSRect viewBounds = [self bounds];
+
+      if (_enabled)
+        {
+          color = [NSColor blackColor];
+        }
+      else
+        {
+          color = [NSColor disabledControlTextColor];
+        }
+	
+      [pStyle setAlignment: NSCenterTextAlignment];
+      
       // We draw the label
       attr = [NSDictionary dictionaryWithObjectsAndKeys: _font, 
 					   NSFontAttributeName,
 							 color,
 				NSForegroundColorAttributeName,
+				                        pStyle,
+				 NSParagraphStyleAttributeName,
 						          nil];
       attrString = [[NSAttributedString alloc] initWithString: [_toolbarItem label] attributes: attr];
-      textX = (([self frame].size.width - InsetItemTextX) - [attrString size].width) / 2;
-      [attrString drawAtPoint: NSMakePoint(textX, InsetItemTextY)];
+      
+      titleRect.origin.x = viewBounds.origin.x;
+      titleRect.origin.y = viewBounds.origin.y + InsetItemTextY;
+      titleRect.size.width = viewBounds.size.width;
+      titleRect.size.height = [attrString size].height;
+      [attrString drawInRect: titleRect];
+      
       DESTROY(attrString);
-    }
+   }
 }
 
 - (void) layout
