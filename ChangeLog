@@ -1,6 +1,20 @@
 2000-07-01  Fred Kiefer  <FredKiefer@gmx.de>
 
 	* Source/NSFileWrapper.m
+	Corrected decoding and added a RETAIN in 
+	[initWithSerializedRepresentation:]
+	* Source/Parser/RTFProducer.m
+	* Source/Parser/RTFProducer.h
+	* Source/Parser/attributedStringConsumer.m
+	* Source/Parser/rtfConsumer.h
+	Added new methods to read/write RTFD and resturctured the methods
+	for RTF.
+	* Source/NSAttributedString.m 
+	Use new RTFD methods
+
+2000-07-01  Fred Kiefer  <FredKiefer@gmx.de>
+
+	* Source/NSFileWrapper.m
 	Implemented coding and replaced [initWithSerializedRepresentation:]
 	and [serializedRepresentation] to use it.
 	* Source/NSText.m
