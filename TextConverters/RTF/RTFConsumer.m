@@ -190,7 +190,8 @@ readNSString (StringContext *ctxt)
 
 - (void) resetParagraphStyle
 {
-  ASSIGN(paragraph, [NSMutableParagraphStyle defaultParagraphStyle]);
+  DESTROY(paragraph);
+  paragraph = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
   real_fi = real_li = 0.0;
 
   tabChanged = NO;
@@ -221,8 +222,11 @@ readNSString (StringContext *ctxt)
 
   if (!tabChanged)
     {
+      NSArray *a;
+      a = [[NSArray alloc] initWithObjects: tab, nil];
       // remove all tab stops
-      [paragraph setTabStops: [NSArray arrayWithObject: tab]];
+      [paragraph setTabStops: a];
+      DESTROY(a);
       tabChanged = YES;
     }
   else
@@ -456,6 +460,7 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 
   initStringContext(&stringCtxt, rtfString);
   lexInitContext(&scanner, &stringCtxt, (int (*)(void*))readNSString);
+  [result beginEditing];
   NS_DURING
     GSRTFparse((void *)self, &scanner);
   NS_HANDLER
@@ -463,6 +468,8 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 	  [localException reason]);
   //[localException raise];
   NS_ENDHANDLER
+  [result endEditing];
+
   RELEASE(rtfString);
   RELEASE(pool);
   // document attributes
@@ -518,8 +525,9 @@ static BOOL classInheritsFromNSMutableAttributedString (Class c)
 /* handle errors (this is the yacc error mech)	*/
 void GSRTFerror (const char *msg)
 {
-  [NSException raise:NSInvalidArgumentException 
-	       format:@"Syntax error in RTF: %s", msg];
+/*  [NSException raise:NSInvalidArgumentException
+	       format:@"Syntax error in RTF: %s", msg];*/
+  NSDebugLLog(@"RTFParser",@"Syntax error in RTF: %s", msg);
 }
 
 void GSRTFgenericRTFcommand (void *ctxt, RTFcmd cmd)
@@ -533,14 +541,12 @@ void GSRTFgenericRTFcommand (void *ctxt, RTFcmd cmd)
 void GSRTFstart (void *ctxt)
 {
   NSDebugLLog(@"RTFParser", @"Start RTF parsing");
-  [RESULT beginEditing];
 }
 
 // Finished to parse one piece of RTF.
 void GSRTFstop (void *ctxt)
 {
   //<!> close all open bolds et al.
-  [RESULT endEditing];
   NSDebugLLog(@"RTFParser", @"End RTF parsing");
 }
 
@@ -578,15 +584,20 @@ void GSRTFmangleText (void *ctxt, const char *text)
 
   if (!IGNORE && textlen)
     {
+      NSString *str = [[NSString alloc] initWithCString: text];
       [RESULT replaceCharactersInRange: insertionRange 
-	      withString: [NSString stringWithCString:text]];
+	      withString: str];
+      DESTROY(str);
+
       if (CHANGED)
         {
-	  attributes = [NSMutableDictionary 
-			 dictionaryWithObjectsAndKeys:
+	  NSParagraphStyle *ps = [PARAGRAPH copy];
+	  attributes = [[NSMutableDictionary alloc]
+			 initWithObjectsAndKeys:
 			   [CTXT currentFont], NSFontAttributeName,
-			 [[PARAGRAPH copy] autorelease], NSParagraphStyleAttributeName,
+			 ps, NSParagraphStyleAttributeName,
 			 nil];
+	  DESTROY(ps);
 	  if (UNDERLINE)
 	    {
 	      [attributes setObject: [CTXT underline]
@@ -610,6 +621,7 @@ void GSRTFmangleText (void *ctxt, const char *text)
 	  
 	  [RESULT setAttributes: attributes 
 		  range: NSMakeRange(oldPosition, textlen)];
+	  DESTROY(attributes);
 	  CHANGED = NO;
 	}
     }

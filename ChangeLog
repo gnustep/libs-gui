@@ -1,3 +1,14 @@
+2003-04-07 11:56  Alexander Malmberg <alexander@malmberg.org>
+
+	* TextConverters/RTF/rtfGrammer.y: Add error recovery rules.
+	* TextConverters/RTF/rtfGrammer.tab.c: Rebuild.
+
+	* TextConverters/RTF/RTFConsumer.m: Change uses of autoreleased
+	objects to retain/release explicitly instead.
+
+	(GSRTFError): Try to recover from errors instead of raising an
+	exception.
+
 2003-04-06 19:56  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSWindow.m: Make sure -_handleWindowNeedsDisplay: is run

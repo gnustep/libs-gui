@@ -180,6 +180,7 @@ rtfIngredients:	/*	empty	*/
 		|	rtfIngredients rtfStatement
 		|	rtfIngredients RTFtext		{ GSRTFmangleText(CTXT, $2); free((void *)$2); }
 		|	rtfIngredients rtfBlock
+		|	rtfIngredients error
 		;
 
 rtfBlock:	'{' { GSRTFopenBlock(CTXT, NO); } rtfIngredients '}' { GSRTFcloseBlock(CTXT, NO); } /* may be empty */
@@ -190,6 +191,7 @@ rtfBlock:	'{' { GSRTFopenBlock(CTXT, NO); } rtfIngredients '}' { GSRTFcloseBlock
 		|	'{' { GSRTFopenBlock(CTXT, YES); } RTFheader rtfIngredients '}' { GSRTFcloseBlock(CTXT, YES); }
 		|	'{' { GSRTFopenBlock(CTXT, YES); } RTFfooter rtfIngredients '}' { GSRTFcloseBlock(CTXT, YES); }
 		|	'{' { GSRTFopenBlock(CTXT, YES); } RTFpict rtfIngredients '}' { GSRTFcloseBlock(CTXT, YES); }
+		|	'{' error '}'
 		;
 
 
