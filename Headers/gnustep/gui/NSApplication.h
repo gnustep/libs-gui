@@ -61,7 +61,6 @@ extern NSString *NSEventTrackingRunLoopMode;
 @interface NSApplication : NSResponder <NSCoding>
 {
   // Attributes
-  NSMutableArray *window_list;
   NSMutableArray *event_queue;
   NSEvent *current_event;
   NSModalSession session;
@@ -69,10 +68,8 @@ extern NSString *NSEventTrackingRunLoopMode;
   id main_window;
   id delegate;
   id listener;
-  int window_count;
   NSMenu *main_menu;
   NSMenuItem *windows_menu;
-  int windows_menu_count;
   unsigned int current_mod;
   BOOL app_is_running;
   BOOL app_should_quit;

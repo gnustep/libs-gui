@@ -97,12 +97,6 @@ static id NSApp;
 static NSString *NSAbortModalException = @"NSAbortModalException";
 
 
-@interface NSApplication (Private)
-- (BOOL) validateMenuItem: (id<NSMenuItem>)item;
-- (void) _windowWillClose: (NSNotification*)n;
-- (void) _windowWillOpen: (NSWindow*)win;
-@end
-
 @implementation NSApplication
 
 //
@@ -141,8 +135,6 @@ static NSString *NSAbortModalException = @"NSAbortModalException";
     NSDebugLog(@"Begin of NSApplication -init\n");
 
     listener = [GSServicesManager newWithApplication: self];
-    window_list = [NSMutableArray new];                 // allocate window list
-    window_count = 1;
 
     main_menu = nil;
     windows_need_update = YES;
@@ -207,7 +199,6 @@ NSString* mainModelFile;
     gnustep_gui_app_is_in_dealloc = YES;            // are within dealloc
 
     [listener release];
-    [window_list release];
     [event_queue release];
     [current_event release];
 
@@ -475,7 +466,7 @@ NSAutoreleasePool* pool;
           /*
            *    Check to see if the window has gone away - if so, end session.
            */
-          if ([window_list indexOfObjectIdenticalTo: session->window] ==
+          if ([[self windows] indexOfObjectIdenticalTo: session->window] ==
             NSNotFound || [session->window isVisible] == NO)
             [self stopModal];
           if (windows_need_update)
@@ -1127,6 +1118,7 @@ BOOL done = NO;
 //
 - (NSWindow*) keyWindow
 {
+  NSArray *window_list = [self windows];
   int i, j;
   id w;
 
@@ -1143,6 +1135,7 @@ BOOL done = NO;
 
 - (NSWindow*) mainWindow
 {
+  NSArray *window_list = [self windows];
   int i, j;
   id w;
 
@@ -1159,6 +1152,7 @@ BOOL done = NO;
 
 - (NSWindow*) makeWindowsPerform: (SEL)aSelector inOrder: (BOOL)flag
 {
+  NSArray       *window_list = [self windows];
   unsigned      i;
 
   if (flag)
@@ -1193,6 +1187,7 @@ BOOL done = NO;
 
 - (void)miniaturizeAll:sender
 {
+  NSArray *window_list = [self windows];
   unsigned i, count;
 
   for (i = 0, count = [window_list count]; i < count; i++)
@@ -1212,6 +1207,7 @@ BOOL done = NO;
 {                                                   // to all visible windows
 int i, count;
 NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  NSArray *window_list = [self windows];
                                                     // notify that an update is
                                                     // imminent
     [nc postNotificationName:NSApplicationWillUpdateNotification object:self];
@@ -1226,25 +1222,27 @@ NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
     [nc postNotificationName:NSApplicationDidUpdateNotification object:self];
 }
 
-- (NSArray *)windows
+- (NSArray*) windows
 {
-    return window_list;
+  // Implemented by backend.
+  return nil;
 }
 
 - (NSWindow *)windowWithWindowNumber:(int)windowNum
 {
-unsigned i, j;
-NSWindow *w;
+  NSArray *window_list = [self windows];
+  unsigned i, j;
+  NSWindow *w;
 
-    j = [window_list count];
-    for (i = 0;i < j; ++i)
-        {
-        w = [window_list objectAtIndex:i];
-        if ([w windowNumber] == windowNum)
-            return w;
-        }
+  j = [window_list count];
+  for (i = 0; i < j; ++i)
+    {
+      w = [window_list objectAtIndex: i];
+      if ([w windowNumber] == windowNum)
+        return w;
+    }
 
-    return nil;
+  return nil;
 }
 
 //
@@ -1324,30 +1322,11 @@ NSWindow *w;
                 format: @"Object of bad type passed as window"];
 
   /*
-   * If this window is new to us, we add it to the main menu list and
-   * do any necessary bookkeeping.
-   */
-  if ([window_list indexOfObjectIdenticalTo: aWindow] == NSNotFound)
-    {
-      [self _windowWillOpen: aWindow];
-    }
-
-  /*
    *    If Menus are implemented as a subclass of window we must make sure
    *    to exclude them from the windows menu.
    */
   if ([aWindow isKindOfClass: [NSMenu class]])
     return;
-
-/*
- * FIXME - the following five lines shouldn't be here - but the X stuff
- * terminates if I take them out!
- */
-if ([window_list count] == 1)
-  {
-    [aWindow becomeKeyWindow];
-    [aWindow becomeMainWindow];
-  }
 
   /*
    * Can't permit an untitled window in the window menu.
@@ -1378,7 +1357,6 @@ if ([window_list count] == 1)
           if ([item target] == aWindow)
             {
               [menu removeItem: item]; 
-	      windows_menu_count--;
               break;
             }
         }
@@ -1422,7 +1400,6 @@ if ([window_list count] == 1)
                             action: @selector(makeKeyAndOrderFront:)
                      keyEquivalent: @""
                            atIndex: i];
-  windows_menu_count++;
   [item setTarget: aWindow];
   [menu sizeToFit];
   [menu update];
@@ -1448,7 +1425,6 @@ if ([window_list count] == 1)
           if ([item target] == aWindow)
             {
               [menu removeItem: item]; 
-	      windows_menu_count--;
               [menu sizeToFit];
               [menu update];
               break;
@@ -1473,7 +1449,7 @@ if ([window_list count] == 1)
        * Remove all the windows from the old windows menu and store
        * them in a temporary array for insertion into the new menu.
        */
-      windows = [NSMutableArray arrayWithCapacity: windows_menu_count];
+      windows = [NSMutableArray arrayWithCapacity: 10];
       if (menu)
 	{
 	  NSArray   *itemArray;
@@ -1491,7 +1467,6 @@ if ([window_list count] == 1)
 		{
 		  [windows addObject: win];
 		  [menu removeItem: item]; 
-		  windows_menu_count--;
 		}
 	    }
 	}
@@ -1499,7 +1474,6 @@ if ([window_list count] == 1)
       /*
        * Now use [-changeWindowsItem:title:filename:] to build the new menu.
        */
-      windows_menu_count = 0;
       [main_menu setSubmenu: aMenu forItem: (id<NSMenuItem>)windows_menu];
       while ((win = [windows lastObject]) != nil)
 	{
@@ -1809,7 +1783,6 @@ BOOL result = YES;
 {
   [super encodeWithCoder:aCoder];
 
-  [aCoder encodeObject: window_list];
   [aCoder encodeConditionalObject:key_window];
   [aCoder encodeConditionalObject:main_window];
   [aCoder encodeConditionalObject:delegate];
@@ -1821,7 +1794,6 @@ BOOL result = YES;
 {
   [super initWithCoder:aDecoder];
 
-  window_list = [aDecoder decodeObject];
   key_window = [aDecoder decodeObject];
   main_window = [aDecoder decodeObject];
   delegate = [aDecoder decodeObject];
@@ -1850,65 +1822,3 @@ BOOL result = YES;
 
 @end /* NSApplication */
 
-@implementation NSApplication (Private)
-
-/*
- * Method for automatically enabling or disabling menu items
- * 'arrangeInFront:' is only valid if we have something in the windows menu.
- */
-- (BOOL) validateMenuItem: (id<NSMenuItem>)item
-{
-  SEL	action = [item action];
-
-  if (action)
-    {
-      if (sel_eq(action, @selector(arrangeinFront:)))
-	{
-	  if (windows_menu_count)
-	    return YES;
-	}
-      else if ([self respondsToSelector: action])
-	return YES;
-    }
-  return NO;
-}
-
-- (void) _windowWillClose: (NSNotification*)n
-{
-  NSWindow	*win = [n object];
-
-  if ([win isReleasedWhenClosed])
-    {
-      NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
-
-      [nc removeObserver: self
-		    name: NSWindowWillCloseNotification
-		  object: win];
-      [window_list removeObjectIdenticalTo: win];
-
-      /*
-       * Horrible kludge to handle case where an application has no menu - we
-       * assume that this is the only window in the application and terminate.
-       * We only do this for windows that release when closed - any other
-       * window may be intended to re-open.
-       */
-      if (main_menu == nil)
-	[self terminate: nil];
-    }
-}
-
-- (void) _windowWillOpen: (NSWindow*)win
-{
-  if ([window_list indexOfObjectIdenticalTo: win] == NSNotFound)
-    {
-      NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
-
-      [window_list addObject: win];
-      [win setWindowNumber: window_count++];
-      [nc addObserver: self
-	     selector: @selector(_windowWillClose:)
-		 name: NSWindowWillCloseNotification
-	       object: win];
-    }
-}
-@end

@@ -632,8 +632,9 @@ NSView *v;
 
   /*
    * If 'is_released_when_closed' then the window will be removed from the
-   * applications list of windows (causing it to be released) - so we must
-   * bracket any work we do in a retain/release sequence.
+   * global list of windows (causing it to be released) - so we must
+   * bracket any work we do in a retain/release sequence in case that
+   * removal takes place when we post the notification.
    */
   if (is_released_when_closed)
     [self retain];

@@ -1,3 +1,11 @@
+Sun Dec 20  6:30:00 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+        NSApplication.h: Removed windows_menu_count again - and removed
+        window_list ivar - backend should return window list in ([-windows]).
+        NSApplication.m: Removed window_list ivar - use calls to ([-windows])
+        instead.  Remove code dealing with adding/removing windows - done in
+        backend instead.
+
 Fri Dec 18 10:32300 1998  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
         NSApplication.h: New instance variable to give reasonable perfomance
