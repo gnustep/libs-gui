@@ -1,3 +1,19 @@
+2002-10-29  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
+
+	* Source/NSSplitView.m ([NSSplitView -resizeSubviewsWithOldSize:]):
+	Move code from setFrame: & resizeWithOldSuperviewSize:
+	to resizeSubviewsWithOldSize:.
+
+	* Source/NSColorPanel.m ([NSColorPanel _initWithoutGModel]):
+	make the window a little bit higher. Some ColorPickers would not fit.
+	* ColorPickers/GSCMYKColorPicker.tiff:
+	* ColorPickers/GSGrayColorPicker.tiff:
+	* ColorPickers/GSHSBColorPicker.tiff:
+	* ColorPickers/GSRGBColorPicker.tiff:
+	resize so that the image fits within the NSButton. 
+	(only blank area was removed)
+
+
 2002-10-29  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Headers/gnustep/gui/GSMethodTable.h:

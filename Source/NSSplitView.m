@@ -814,21 +814,12 @@ static inline NSPoint centerSizeInRect(NSSize innerSize, NSRect outerRect)
   return YES;
 }
 
-- (void) setFrame: (NSRect) newFrame
+- (void) resizeSubviewsWithOldSize: (NSSize) oldSize
 {
-  NSRect oldFrame = [self frame];
-  [super setFrame: newFrame];
-  [self _adjustSubviews: oldFrame.size];
+  [self _adjustSubviews: oldSize];
   [_window invalidateCursorRectsForView: self];
 }
 
-- (void) resizeWithOldSuperviewSize: (NSSize)oldSize
-{
-  NSRect oldFrame = [self frame];  
-  [super resizeWithOldSuperviewSize: oldSize];
-  [self _adjustSubviews: oldFrame.size];
-  [_window invalidateCursorRectsForView: self];
-}
 
 - (void) displayIfNeededInRectIgnoringOpacity: (NSRect)aRect
 {
