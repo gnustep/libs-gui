@@ -1,3 +1,7 @@
+2001-02-13  Adam Fedor  <fedor@gnu.org>
+
+	* Version: 0.6.7
+
 2001-02-11  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSApplication.m ([NSApplication -init]): Don't set our
