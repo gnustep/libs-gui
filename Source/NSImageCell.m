@@ -226,36 +226,27 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
       case NSScaleProportionally:
 	{
 	  NSDebugLLog(@"NSImageCell", @"NSScaleProportionally");
-	  [_cell_image setScalesWhenResized:YES];
-	  [_cell_image setSize: scaleProportionally (_original_image_size, 
-						     cellFrame)];
+	  imageSize = scaleProportionally ([_cell_image size], cellFrame);
 	  break;
 	}
       case NSScaleToFit:
 	{
 	  NSDebugLLog(@"NSImageCell", @"NSScaleToFit");
-	  [_cell_image setScalesWhenResized:YES];
-	  [_cell_image setSize: cellFrame.size];
+	  imageSize = cellFrame.size;
 	  break;
 	}
+      default:
       case NSScaleNone:
 	{
 	  NSDebugLLog(@"NSImageCell", @"NSScaleNone");
-	  [_cell_image setScalesWhenResized:NO];
-	  // don't let the image size overrun the space available
-	  if (_original_image_size.width > cellFrame.size.width
-	    || _original_image_size.height > cellFrame.size.height)
-	    [_cell_image setSize: cellFrame.size];
-	  else
-	    [_cell_image setSize: _original_image_size];
+	  imageSize = [_cell_image size];
 	  break;
 	}
     }
 
-  imageSize = [_cell_image size];
-
   switch (_imageAlignment)
     {
+      default:
       case NSImageAlignLeft:
 	position.x = xLeftInRect(imageSize, cellFrame);
 	position.y = yCenterInRect(imageSize, cellFrame, is_flipped);
@@ -299,7 +290,20 @@ scaleProportionally(NSSize imageSize, NSRect canvasRect)
     position.y += imageSize.height;
 
   // draw!
-  [_cell_image compositeToPoint: position operation: NSCompositeSourceOver];
+  /* TODO: Clean this up when bug #11712 is fixed.  */
+  if (NSEqualSizes(imageSize, [_cell_image size]))
+    [_cell_image compositeToPoint: position operation: NSCompositeSourceOver];
+  else
+    {
+      BOOL wasScalable = [_cell_image scalesWhenResized];
+      [_cell_image setScalesWhenResized: YES];
+      [_cell_image drawRepresentation:
+	  [_cell_image bestRepresentationForDevice: nil]
+	inRect:
+	  NSMakeRect(position.x, position.y, imageSize.width,
+		     imageSize.height)];
+      [_cell_image setScalesWhenResized: wasScalable];
+    }
 
   if (_cell.shows_first_responder)
     NSDottedFrameRect(cellFrame);

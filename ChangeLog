@@ -1,3 +1,9 @@
+2005-01-24 00:48  Alexander Malmberg  <alexander@malmberg.org>
+
+	* Source/NSImageCell.m (-drawInteriorWithFrame:inView:): Draw
+	the image using the right size, but don't scale it. Work around
+	bug #11712.
+
 2005-01-22 Adrian Robert <arobert@cogsci.ucsd.edu>
 	* Source/NSFontManager.m (-fontWithFamily:traits:weight:size:)
 	Corrected logic in fallback approximate trait search for weight 5 or 6
