@@ -82,7 +82,8 @@ typedef enum _NSCellAttribute {
   NSCellHasImageHorizontal,  
   NSCellHasImageOnLeftOrBottom, 
   NSCellChangesContents,  
-  NSCellIsInsetButton
+  NSCellIsInsetButton,
+  NSCellAllowsMixedState
 } NSCellAttribute;
 
 enum {
@@ -95,16 +96,14 @@ enum {
 
 enum {
   xDist = 2,	// horizontal distance between the text and image rects. 
-  yDist = 2		// vertical distance between the text and image rects. 
+  yDist = 2	// vertical distance between the text and image rects. 
 };
 
-#ifndef	STRICT_OPENSTEP
-enum {
+enum { 
   NSOffState			= 0,
   NSOnState			= 1,
   NSMixedState			= 2
 };
-#endif
 
 @interface NSCell : NSObject <NSCopying, NSCoding>
 {
@@ -113,24 +112,24 @@ enum {
   NSImage *_cell_image;
   NSFont *_cell_font;
   struct GSCellFlagsType { 
-    // total 28 bits.  Any idea on how to use the other 4 ?
-    unsigned	is_highlighted:1;
-    unsigned	is_disabled:1;    
-    unsigned	is_editable:1;   
-    unsigned	is_bordered:1;   
-    unsigned	is_bezeled:1;   
-    unsigned	is_scrollable:1;
-    unsigned	is_selectable:1;
-    unsigned	is_continuous:1;
-    unsigned	float_autorange:1;
-    unsigned    state:2;          // 3 values
-    unsigned    text_align:3;     // 5 values
-    unsigned    image_position:4; // 7 values
-    unsigned    type:4;           // 8 values (see NSButtonCell)
-    unsigned    entry_type:4;     // 8 values
+    // total 28 bits.  4 bits left.
+    unsigned is_highlighted:1;
+    unsigned is_disabled:1;    
+    unsigned is_editable:1;   
+    unsigned is_bordered:1;   
+    unsigned is_bezeled:1;   
+    unsigned is_scrollable:1;
+    unsigned is_selectable:1;
+    unsigned is_continuous:1;
+    unsigned float_autorange:1;
+    unsigned state:2;          // 3 values; 
+    unsigned text_align:3;     // 5 values
+    unsigned image_position:4; // 7 values
+    unsigned type:4;           // 8 values (see NSButtonCell)
+    unsigned entry_type:4;     // 8 values
     // 2 bits reserved for subclass use
-    unsigned    subclass_bool_one:1;
-    unsigned    subclass_bool_two:1;
+    unsigned subclass_bool_one:1;
+    unsigned subclass_bool_two:1;
   } _cell;
   unsigned int _cell_float_left;
   unsigned int _cell_float_right;
@@ -139,20 +138,38 @@ enum {
 }
 
 //
+// Class methods
+// 
++ (NSMenu *)defaultMenu;
++ (BOOL) prefersTrackingUntilMouseUp;
+
+//
 // Initializing an NSCell 
 //
 - (id)initImageCell:(NSImage *)anImage;
 - (id)initTextCell:(NSString *)aString;
 
 //
-// Determining Component Sizes 
+// Setting the NSCell's Value 
 //
-- (void)calcDrawInfo:(NSRect)aRect;
-- (NSSize)cellSize;
-- (NSSize)cellSizeForBounds:(NSRect)aRect;
-- (NSRect)drawingRectForBounds:(NSRect)theRect;
-- (NSRect)imageRectForBounds:(NSRect)theRect;
-- (NSRect)titleRectForBounds:(NSRect)theRect;
+- (id)objectValue;
+- (BOOL)hasValidObjectValue;
+- (double)doubleValue;
+- (float)floatValue;
+- (int)intValue;
+- (NSString *)stringValue;
+- (void) setObjectValue:(id)object;
+- (void)setDoubleValue:(double)aDouble;
+- (void)setFloatValue:(float)aFloat;
+- (void)setIntValue:(int)anInt;
+- (void)setStringValue:(NSString *)aString;
+
+//
+// Setting Parameters 
+//
+- (int)cellAttribute:(NSCellAttribute)aParameter;
+- (void)setCellAttribute:(NSCellAttribute)aParameter
+		      to:(int)value;
 
 //
 // Setting the NSCell's Type 
@@ -161,42 +178,29 @@ enum {
 - (NSCellType)type;
 
 //
-// Setting the NSCell's State 
-//
-- (void)setState:(int)value;
-- (int)state;
-
-//
 // Enabling and Disabling the NSCell 
 //
 - (BOOL)isEnabled;
 - (void)setEnabled:(BOOL)flag;
 
 //
-// Setting the Image 
+// Modifying Graphic Attributes 
 //
-- (NSImage *)image;
-- (void)setImage:(NSImage *)anImage;
+- (BOOL)isBezeled;
+- (BOOL)isBordered;
+- (BOOL)isOpaque;
+- (void)setBezeled:(BOOL)flag;
+- (void)setBordered:(BOOL)flag;
 
 //
-// Setting the NSCell's Value 
+// Setting the NSCell's State 
 //
-- (double)doubleValue;
-- (float)floatValue;
-- (int)intValue;
-- (NSString *)stringValue;
-- (void)setDoubleValue:(double)aDouble;
-- (void)setFloatValue:(float)aFloat;
-- (void)setIntValue:(int)anInt;
-- (void)setStringValue:(NSString *)aString;
-
-//
-// Interacting with Other NSCells 
-//
-- (void)takeDoubleValueFrom:(id)sender;
-- (void)takeFloatValueFrom:(id)sender;
-- (void)takeIntValueFrom:(id)sender;
-- (void)takeStringValueFrom:(id)sender;
+- (void)setState:(int)value;
+- (int)state;
+- (BOOL)allowsMixedState;
+- (void)setAllowsMixedState:(BOOL)flag;
+- (int)nextState;
+- (void)setNextState;
 
 //
 // Modifying Text Attributes 
@@ -211,69 +215,15 @@ enum {
 - (void)setFont:(NSFont *)fontObject;
 - (void)setSelectable:(BOOL)flag;
 - (void)setScrollable:(BOOL)flag;
-- (NSText *)setUpFieldEditorAttributes:(NSText *)textObject;
 - (void)setWraps:(BOOL)flag;
 - (BOOL)wraps;
-
-//
-// Editing Text 
-//
-- (void)editWithFrame:(NSRect)aRect
-	       inView:(NSView *)controlView	
-	       editor:(NSText *)textObject	
-	       delegate:(id)anObject	
-		event:(NSEvent *)theEvent;
-- (void)endEditing:(NSText *)textObject;
-- (void)selectWithFrame:(NSRect)aRect
-		 inView:(NSView *)controlView	 
-		 editor:(NSText *)textObject	 
-		 delegate:(id)anObject	 
-		  start:(int)selStart	 
-		 length:(int)selLength;
-
-//
-// Validating Input 
-//
-- (int)entryType;
-- (BOOL)isEntryAcceptable:(NSString *)aString;
-- (void)setEntryType:(int)aType;
-
-//
-// Formatting Data 
-//
-- (void)setFloatingPointFormat:(BOOL)autoRange
-			  left:(unsigned int)leftDigits
-			 right:(unsigned int)rightDigits;
-
-//
-// Modifying Graphic Attributes 
-//
-- (BOOL)isBezeled;
-- (BOOL)isBordered;
-- (BOOL)isOpaque;
-- (void)setBezeled:(BOOL)flag;
-- (void)setBordered:(BOOL)flag;
-
-//
-// Setting Parameters 
-//
-- (int)cellAttribute:(NSCellAttribute)aParameter;
-- (void)setCellAttribute:(NSCellAttribute)aParameter
-		      to:(int)value;
-
-//
-// Displaying 
-//
-- (NSView *)controlView;
-
-- (void)drawInteriorWithFrame:(NSRect)cellFrame
-		       inView:(NSView *)controlView;
-- (void)drawWithFrame:(NSRect)cellFrame
-	       inView:(NSView *)controlView;
-- (void)highlight:(BOOL)lit
-	withFrame:(NSRect)cellFrame
-	   inView:(NSView *)controlView;
-- (BOOL)isHighlighted;
+- (void)setAttributedStringValue:(NSAttributedString *)attribStr;
+- (NSAttributedString *)attributedStringValue;
+- (void)setAllowsEditingTextAttributes:(BOOL)flag;
+- (BOOL)allowsEditingTextAttributes;
+- (void)setImportsGraphics:(BOOL)flag;
+- (BOOL)importsGraphics;
+- (NSText *)setUpFieldEditorAttributes:(NSText *)textObject;
 
 //
 // Target and Action 
@@ -285,7 +235,12 @@ enum {
 - (void)setContinuous:(BOOL)flag;
 - (void)setTarget:(id)anObject;
 - (id)target;
-- (void)performClick:(id)sender;
+
+//
+// Setting the Image 
+//
+- (NSImage *)image;
+- (void)setImage:(NSImage *)anImage;
 
 //
 // Assigning a Tag 
@@ -294,14 +249,72 @@ enum {
 - (int)tag;
 
 //
-// Handling Keyboard Alternatives 
+// Formatting Data and Validating Input 
 //
-- (NSString *)keyEquivalent;
+- (void)setFormatter:(NSFormatter *)newFormatter;
+- (id)formatter;
+- (int)entryType;
+- (BOOL)isEntryAcceptable:(NSString *)aString;
+- (void)setEntryType:(int)aType;
+- (void)setFloatingPointFormat:(BOOL)autoRange
+                          left:(unsigned int)leftDigits
+                         right:(unsigned int)rightDigits;
+
+//
+// Menu
+//
+- (void)setMenu:(NSMenu *)aMenu;
+- (NSMenu *)menu;
+- (NSMenu *)menuForEvent:(NSEvent *)anEvent 
+                  inRect:(NSRect)cellFrame 
+                  ofView:(NSView *)aView;
+
+//
+// Comparing to Another NSCell 
+//
+- (NSComparisonResult)compare:(id)otherCell;
+
+//
+// respond to keyboard
+//
+// All these methods except -performClick: are provided only for some
+// compatibility with MacOS-X code and their use in new programs is
+// deprecated.  Please use -isEnabled, -setEnabled: instead of
+// -acceptsFirstReponder, -refusesFirstResponder,
+// -setRefusesFirstResponder:.  Mnemonics (eg 'File' with the 'F'
+// underlined as in MS Windows(tm) menus) are not part of GNUstep's
+// interface so methods referring to mnemonics do nothing -- they are
+// provided for compatibility only; please use key equivalents instead
+// in your GNUstep programs.
+- (BOOL)acceptsFirstResponder;                     // deprecated  
+- (void)setShowsFirstResponder:(BOOL)flag;         // does nothing
+- (BOOL)showsFirstResponder;                       // does nothing
+- (void)setTitleWithMnemonic:(NSString *)aString;  // does nothing
+- (NSString *)mnemonic;                            // does nothing
+- (void)setMnemonicLocation:(unsigned int)location;// does nothing
+- (unsigned int)mnemonicLocation;                  // does nothing
+- (BOOL)refusesFirstResponder;                     // deprecated  
+- (void)setRefusesFirstResponder:(BOOL)flag;       // deprecated  
+- (void)performClick:(id)sender;                   // good
+
+//
+// Interacting with Other NSCells 
+//
+- (void)takeObjectValueFrom: (id)sender;
+- (void)takeDoubleValueFrom:(id)sender;
+- (void)takeFloatValueFrom:(id)sender;
+- (void)takeIntValueFrom:(id)sender;
+- (void)takeStringValueFrom:(id)sender;
+
+//
+// Using the NSCell to Represent an Object
+//
+- (id)representedObject;
+- (void)setRepresentedObject:(id)anObject;
 
 //
 // Tracking the Mouse 
 //
-+ (BOOL)prefersTrackingUntilMouseUp;
 - (BOOL)continueTracking:(NSPoint)lastPoint
 		      at:(NSPoint)currentPoint
 		  inView:(NSView *)controlView;
@@ -326,15 +339,51 @@ enum {
 		 inView:(NSView *)controlView;
 
 //
-// Comparing to Another NSCell 
+// Handling Keyboard Alternatives 
 //
-- (NSComparisonResult)compare:(id)otherCell;
+- (NSString *)keyEquivalent;
 
 //
-// Using the NSCell to Represent an Object
+// Determining Component Sizes 
 //
-- (id)representedObject;
-- (void)setRepresentedObject:(id)anObject;
+- (void)calcDrawInfo:(NSRect)aRect;
+- (NSSize)cellSize;
+- (NSSize)cellSizeForBounds:(NSRect)aRect;
+- (NSRect)drawingRectForBounds:(NSRect)theRect;
+- (NSRect)imageRectForBounds:(NSRect)theRect;
+- (NSRect)titleRectForBounds:(NSRect)theRect;
+
+//
+// Displaying 
+//
+- (NSView *)controlView;
+
+- (void)drawInteriorWithFrame:(NSRect)cellFrame
+		       inView:(NSView *)controlView;
+- (void)drawWithFrame:(NSRect)cellFrame
+	       inView:(NSView *)controlView;
+- (void)highlight:(BOOL)lit
+	withFrame:(NSRect)cellFrame
+	   inView:(NSView *)controlView;
+- (BOOL)isHighlighted;
+
+//
+// Editing Text 
+//
+- (void)editWithFrame:(NSRect)aRect
+	       inView:(NSView *)controlView	
+	       editor:(NSText *)textObject	
+	       delegate:(id)anObject	
+		event:(NSEvent *)theEvent;
+- (BOOL)sendsActionOnEndEditing;
+- (void)setSendsActionOnEndEditing:(BOOL)flag;
+- (void)endEditing:(NSText *)textObject;
+- (void)selectWithFrame:(NSRect)aRect
+		 inView:(NSView *)controlView	 
+		 editor:(NSText *)textObject	 
+		 delegate:(id)anObject	 
+		  start:(int)selStart	 
+		 length:(int)selLength;
 
 //
 // NSCoding protocol
@@ -344,7 +393,7 @@ enum {
 
 @end
 
-//
+// 
 // Methods that are private GNUstep extensions
 //
 @interface NSCell (PrivateMethods)
