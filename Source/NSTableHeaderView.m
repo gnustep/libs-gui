@@ -737,6 +737,14 @@
 	    {
 	      [_tableView _selectColumn: columnIndex
 			  modifiers: modifiers];
+	      
+	      [_tableView _didClickTableColumn:
+			   currentColumn];
+
+	      [self lockFocus];
+	      [self drawRect: [self headerRectOfColumn: columnIndex]];
+	      [self unlockFocus];
+	      [_window flushWindow];
 	    }
 	  else // mouseDragged == YES
 	    {
