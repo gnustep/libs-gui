@@ -1,3 +1,9 @@
+2002-10-02  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/NSWorkspace.m: ([-getInfoForFile:application:type:])
+	Make an exception for directories without file extensions ... never
+	return plain type for them even if apps claim to open them.
+
 Wed Oct  2 11:26:21 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSTextView.m
@@ -6,9 +12,9 @@ Wed Oct  2 11:26:21 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 	and textDidBeginEditingNotification unless the textview is already
 	first responder (Patch by David Ayers <d.ayers@inode.at>).
 
-2002-10-01  Richard Frith-Macdonald <rfm@gnu.org>
+2002-10-02  Richard Frith-Macdonald <rfm@gnu.org>
 
-	* Source/NSWorkspace.m: ([-gtInfoForFile:application:type:])
+	* Source/NSWorkspace.m: ([-getInfoForFile:application:type:])
 	Try to return a plain file type for directories which are openable
 	by some app.
 

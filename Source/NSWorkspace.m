@@ -646,7 +646,7 @@ inFileViewerRootedAtPath: (NSString*)rootFullpath
 	    {
 	      *type = NSPlainFileType;
 	    }
-	  else if (*appName != nil)
+	  else if (*appName != nil && [extension length] > 0)
 	    {
 	      *type = NSPlainFileType;
 	    }
