@@ -3,6 +3,13 @@
 	* Source/NSImage.m
 	In [initWithIconHandle:] and [initWithBitmapHandle:] release the
 	new bitmap image representation after adding it to the array.
+	* Source/NSBitmapImageRep.m
+	In [_initFromTIFFImage:number:] free the info returned by
+	NSTiffGetInfo(). 
+	* Source/NSTableView.m
+	In [sizeToFit] free isResizable.
+	* Source/GSMemoryPanel.m
+	In [update:] free the list returned by GSDebugAllocationClassList().
 
 2003-07-24  Adam Fedor  <fedor@gnu.org>
 
