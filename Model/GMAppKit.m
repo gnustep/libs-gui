@@ -230,70 +230,71 @@ void __dummy_GMAppKit_functionForLinking() {}
 
 - (void)encodeWithModelArchiver:(GMArchiver*)archiver
 {
-    [archiver encodeInt:[self type] withName:@"type"];
-    [archiver encodeObject:[self font] withName:@"font"];
-    [archiver encodeString:[self stringValue] withName:@"stringValue"];
-    [archiver encodeInt:[self entryType] withName:@"entryType"];
-    [archiver encodeInt:[self alignment] withName:@"alignment"];
-    [archiver encodeBOOL:[self wraps] withName:@"wraps"];
-    [archiver encodeObject:[self image] withName:@"image"];
-    [archiver encodeInt:[self state] withName:@"state"];
-    [archiver encodeBOOL:[self isEnabled] withName:@"isEnabled"];
-    [archiver encodeBOOL:[self isBordered] withName:@"isBordered"];
-    [archiver encodeBOOL:[self isBezeled] withName:@"isBezeled"];
-    [archiver encodeBOOL:[self isEditable] withName:@"isEditable"];
-    [archiver encodeBOOL:[self isSelectable] withName:@"isSelectable"];
-    [archiver encodeBOOL:[self isScrollable] withName:@"isScrollable"];
-    [archiver encodeBOOL:[self isContinuous] withName:@"isContinuous"];
-    [archiver encodeInt:[self sendActionOn:0] withName:@"sendActionMask"];
+  [archiver encodeInt:[self type] withName:@"type"];
+  [archiver encodeObject:[self font] withName:@"font"];
+  [archiver encodeString:[self stringValue] withName:@"stringValue"];
+  [archiver encodeInt:[self entryType] withName:@"entryType"];
+  [archiver encodeInt:[self alignment] withName:@"alignment"];
+  [archiver encodeBOOL:[self wraps] withName:@"wraps"];
+  [archiver encodeObject:[self image] withName:@"image"];
+  [archiver encodeInt:[self state] withName:@"state"];
+  [archiver encodeBOOL:[self isEnabled] withName:@"isEnabled"];
+  [archiver encodeBOOL:[self isBordered] withName:@"isBordered"];
+  [archiver encodeBOOL:[self isBezeled] withName:@"isBezeled"];
+  [archiver encodeBOOL:[self isEditable] withName:@"isEditable"];
+  [archiver encodeBOOL:[self isSelectable] withName:@"isSelectable"];
+  [archiver encodeBOOL:[self isScrollable] withName:@"isScrollable"];
+  [archiver encodeBOOL:[self isContinuous] withName:@"isContinuous"];
+  [archiver encodeInt:[self sendActionOn: 0] withName:@"sendActionMask"];
 }
 
 - (id)initWithModelUnarchiver:(GMUnarchiver*)unarchiver
 {
-    int cellType = [unarchiver decodeIntWithName:@"type"];
-    NSFont* font = [unarchiver decodeObjectWithName:@"font"];
-
-    // this is a tricky object to decode, because a number of its methods
-    // have side-effects; [-setEntryType:] converts the cell to a text-type
-    // cell and sets its font to the system font, so it comes first
-    [self setEntryType:[unarchiver decodeIntWithName:@"entryType"]];
-
-    // now set the font
-    [self setFont:font];
-
-    // both [-setImage:] and [-setStringValue:] convert the cell to an
-    // image or text cell (respectively), so they must be called in the
-    // correct order for the type of cell desired
-    switch (cellType)
-      {
-        case NSTextCellType:
-          [self setImage:[unarchiver decodeObjectWithName:@"image"]];
-          [self setStringValue:
+  int cellType = [unarchiver decodeIntWithName:@"type"];
+  NSFont* font = [unarchiver decodeObjectWithName:@"font"];
+  
+  // this is a tricky object to decode, because a number of its methods
+  // have side-effects; [-setEntryType:] converts the cell to a text-type
+  // cell and sets its font to the system font, so it comes first
+  [self setEntryType:[unarchiver decodeIntWithName:@"entryType"]];
+  
+  // now set the font
+  [self setFont:font];
+  
+  // both [-setImage:] and [-setStringValue:] convert the cell to an
+  // image or text cell (respectively), so they must be called in the
+  // correct order for the type of cell desired
+  switch (cellType)
+    {
+    case NSTextCellType:
+      [self setImage:[unarchiver decodeObjectWithName:@"image"]];
+      [self setStringValue: 
+	      [unarchiver decodeStringWithName:@"stringValue"]];
+      break;
+    case NSImageCellType:
+      [self setStringValue:
               [unarchiver decodeStringWithName:@"stringValue"]];
-          break;
-        case NSImageCellType:
-          [self setStringValue:
-              [unarchiver decodeStringWithName:@"stringValue"]];
-          [self setImage:[unarchiver decodeObjectWithName:@"image"]];
-          break;
-        case NSNullCellType:
-          [self setType: NSNullCellType];
-          break;
-      }
-    [self setAlignment:[unarchiver decodeIntWithName:@"alignment"]];
-    [self setWraps:[unarchiver decodeBOOLWithName:@"wraps"]];
-    [self setState:[unarchiver decodeIntWithName:@"state"]];
-    [self setEnabled:[unarchiver decodeBOOLWithName:@"isEnabled"]];
-    [self setBordered:[unarchiver decodeBOOLWithName:@"isBordered"]];
-    [self setBezeled:[unarchiver decodeBOOLWithName:@"isBezeled"]];
-    [self setEditable:[unarchiver decodeBOOLWithName:@"isEditable"]];
-    [self setSelectable:[unarchiver decodeBOOLWithName:@"isSelectable"]];
-    [self setScrollable:[unarchiver decodeBOOLWithName:@"isScrollable"]];
-    [self setContinuous:[unarchiver decodeBOOLWithName:@"isContinuous"]];
-    /* Temporary commented out so buttons keep on working - new code fixing this under testing */
-    //    [self sendActionOn:[unarchiver decodeIntWithName:@"sendActionMask"]];
-
-    return self;
+      [self setImage:[unarchiver decodeObjectWithName:@"image"]];
+      break;
+    case NSNullCellType:
+      [self setType: NSNullCellType];
+      break;
+    }
+  [self setAlignment:[unarchiver decodeIntWithName:@"alignment"]];
+  [self setWraps:[unarchiver decodeBOOLWithName:@"wraps"]];
+  [self setState:[unarchiver decodeIntWithName:@"state"]];
+  [self setEnabled:[unarchiver decodeBOOLWithName:@"isEnabled"]];
+  [self setBordered:[unarchiver decodeBOOLWithName:@"isBordered"]];
+  [self setBezeled:[unarchiver decodeBOOLWithName:@"isBezeled"]];
+  [self setEditable:[unarchiver decodeBOOLWithName:@"isEditable"]];
+  [self setSelectable:[unarchiver decodeBOOLWithName:@"isSelectable"]];
+  [self setScrollable:[unarchiver decodeBOOLWithName:@"isScrollable"]];
+  [self setContinuous:[unarchiver decodeBOOLWithName:@"isContinuous"]];
+  /* Temporary commented out so buttons keep on working - new code
+   * fixing this under testing */
+  //    [self sendActionOn:[unarchiver decodeIntWithName:@"sendActionMask"]];
+  
+  return self;
 }
 
 @end /* NSCell (GMArchiverMethods) */
