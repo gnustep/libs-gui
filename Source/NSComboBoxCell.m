@@ -473,11 +473,11 @@
    NSSize	size;
    NSPoint	point,oldPoint;
 
-   if (![self isEnabled])
+   if (!_cell.is_enabled)
       return;
 
    if (![self controlView])
-      control_view = _popView;
+      _control_view = _popView;
 
    size = [[self _popUp] popUpCellSizeForPopUp:self];
    if (size.width == 0 || size.height == 0)
