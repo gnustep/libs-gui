@@ -86,8 +86,8 @@ static NSImage *unexpandable  = nil;
 				column: (int)column;
 - (BOOL) _editPreviousEditableCellBeforeRow: (int)row
 				     column: (int)column;
-- (void) _autosaveTableColumns;
-- (void) _autoloadTableColumns;
+- (void) _autosaveExpandedItems;
+- (void) _autoloadExpandedItems;
 - (void) _openItem: (id)item;
 - (void) _closeItem: (id)item;
 @end
@@ -565,7 +565,39 @@ static NSImage *unexpandable  = nil;
 
 - (void)setAutosaveExpandedItems: (BOOL)flag
 {
+  if(flag == _autosaveExpandedItems)
+    {
+      return;
+    }
+
   _autosaveExpandedItems = flag;
+  if(flag)
+    {
+      [self _autoloadExpandedItems];
+      // notify when an item expands...
+      [nc addObserver: self
+	  selector: @selector(_autosaveExpandedItems)
+	  name: NSOutlineViewItemDidExpandNotification
+	  object: self];
+
+      // notify when an item collapses...
+      [nc addObserver: self
+	  selector: @selector(_autosaveExpandedItems)
+	  name: NSOutlineViewItemDidCollapseNotification
+	  object: self];
+    }
+  else
+    {
+      // notify when an item expands...
+      [nc removeObserver: self
+	  name: NSOutlineViewItemDidExpandNotification
+	  object: self];
+
+      // notify when an item collapses...
+      [nc removeObserver: self
+	  name: NSOutlineViewItemDidCollapseNotification
+	  object: self];
+    }
 }
 
 - (void)setIndentationMarkerFollowsCell: (BOOL)followsCell
@@ -1454,5 +1486,51 @@ static NSImage *unexpandable  = nil;
   return YES;
 }
 
+// Autosave methods...
+- (void) setAutosaveName: (NSString *)name
+{
+  [super setAutosaveName: name];
+  [self _autoloadExpandedItems];
+}
+
+- (void) _autosaveExpandedItems
+{
+  if (_autosaveExpandedItems && _autosaveName != nil) 
+    {
+      NSUserDefaults      *defaults;
+      NSString            *tableKey;
+
+      defaults  = [NSUserDefaults standardUserDefaults];
+      tableKey = [NSString stringWithFormat: @"NSOutlineView Expanded Items %@", 
+			   _autosaveName];
+      [defaults setObject: _expandedItems  forKey: tableKey];
+      [defaults synchronize];
+    }
+}
+
+- (void) _autoloadExpandedItems
+{
+  if (_autosaveExpandedItems && _autosaveName != nil) 
+    { 
+      NSUserDefaults     *defaults;
+      id                  config;
+      NSString           *tableKey;
+
+      defaults  = [NSUserDefaults standardUserDefaults];
+      tableKey = [NSString stringWithFormat: @"NSOutlineView Expanded Items %@", 
+			   _autosaveName];
+      config = [defaults objectForKey: tableKey];
+      if (config != nil) 
+	{
+	  NSEnumerator *en = [config objectEnumerator];
+	  id item = nil;
+	  
+	  while ((item = [en nextObject]) != nil) 
+	    {
+	      [self expandItem: item];
+	    }
+	}
+    }
+}
 @end /* implementation of NSOutlineView */
 

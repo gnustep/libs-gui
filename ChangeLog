@@ -1,3 +1,8 @@
+2002-04-01  Gregory Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSOutlineView.m
+	Added methods to implement autosaving of expandedItems.
+
 2002-04-01  Adam Fedor  <fedor@gnu.org>
 
 	* Source/NSApplication.m (-init): Retain the server
