@@ -1,3 +1,21 @@
+Tue Dec 25 09:54:21 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSButtonCell.m ([-drawInteriorWithFrame:inView:]): Draw
+	the background color.
+
+Tue Dec 25 09:23:24 2001  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSScrollView.m ([-_doScroll:]): Mark the horizontal and
+	vertical ruler as needing redisplay if needed.
+	([-setHorizontalRulerView:]): Add/remove the new horizontal ruler
+	as a subview; set _hasHorizontalRule to NO if the new horizontal
+	ruler is nil; tile if rulers are visible.
+	([-setHasVerticalRuler:]): Similar changes.
+	([-setHasHorizontalRuler:]): Rewritten.  In particular, use the
+	class specified in +rulerViewClass when creating the new ruler.
+	([-setVerticalRulerView:]): Similar changes.
+	(Patches from Diego Luis Kreutz <kreutz@inf.ufsm.br> modified).
+	
 2001-12-24  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextView.m
