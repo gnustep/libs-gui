@@ -173,7 +173,7 @@ static NSImage *unexpandable  = nil;
 	}
 
       [self _collectItemsStartingWith: anitem
-	    into: allChildren]; 
+	    into: allChildren];
     }
 }
 
@@ -318,39 +318,24 @@ static NSImage *unexpandable  = nil;
 	  object: self
 	  userInfo: infoDict];
       
-
+      // recursively find all children and call this method to open them.
       if(collapseChildren) // collapse all
 	{
+	  NSMutableArray *allChildren = nil;
 	  int numchild = 0;
 	  int index = 0;
-	  NSMutableArray *allChildren = [NSMutableArray array];
+	  id sitem = (item == nil)?[NSNull null]:item;
 
-	  [self _collectItemsStartingWith: item into: allChildren];
+	  allChildren = NSMapGet(_itemDict, sitem);
 	  numchild = [allChildren count];
 
 	  for(index = 0;index < numchild;index++)
 	    {
 	      id child = [allChildren objectAtIndex: index];
 
-	      if([self isExpandable: child] &&
-		 [self isItemExpanded: child])
+	      if([self isExpandable: child])
 		{
-		  NSMutableDictionary *childDict = [NSDictionary dictionary];      
-		  [childDict setObject: child forKey: @"NSObject"];
-		  
-		  // Send out the notification to let observers know 
-		  // that this is about to occur.
-		  [nc postNotificationName: NSOutlineViewItemWillCollapseNotification
-		      object: self
-		      userInfo: childDict];
-		  
-		  [self _closeItem: child];
-		  
-		  // Send out the notification to let observers know that
-		  // this is about to occur.
-		  [nc postNotificationName: NSOutlineViewItemDidCollapseNotification
-		      object: self
-		      userInfo: childDict];
+		  [self collapseItem: child collapseChildren: collapseChildren];
 		}
 	    }
 	}
@@ -373,60 +358,51 @@ static NSImage *unexpandable  = nil;
       canExpand = [_delegate outlineView: self shouldExpandItem: item];
     }
 
-  if([self isExpandable: item] && ![self isItemExpanded: item] && canExpand)
+  // if the item is expandable
+  if([self isExpandable: item])
     {
-      NSMutableDictionary *infoDict = [NSMutableDictionary dictionary];
-      
-      [infoDict setObject: item forKey: @"NSObject"];
-      
-      // Send out the notification to let observers know that this is about
-      // to occur.
-      [nc postNotificationName: NSOutlineViewItemWillExpandNotification
-	  object: self
-	  userInfo: infoDict];
+      // if it is not already expanded and it can be expanded, then expand
+      if(![self isItemExpanded: item] && canExpand)
+	{
+	  NSMutableDictionary *infoDict = [NSMutableDictionary dictionary];
 
-      // insert the root element, if necessary otherwise insert the
-      // actual object.
-      [self _openItem: item];
+	  [infoDict setObject: item forKey: @"NSObject"];
+	  
+	  // Send out the notification to let observers know that this is about
+	  // to occur.
+	  [nc postNotificationName: NSOutlineViewItemWillExpandNotification
+	      object: self
+	      userInfo: infoDict];
+	  
+	  // insert the root element, if necessary otherwise insert the
+	  // actual object.
+	  [self _openItem: item];
+	  
+	  // Send out the notification to let observers know that this has
+	  // occured.
+	  [nc postNotificationName: NSOutlineViewItemDidExpandNotification
+	      object: self
+	      userInfo: infoDict];
+	}
 
-      // Send out the notification to let observers know that this has
-      // occured.
-      [nc postNotificationName: NSOutlineViewItemDidExpandNotification
-	  object: self
-	  userInfo: infoDict];
-
+      // recursively find all children and call this method to open them.
       if(expandChildren) // expand all
 	{
 	  NSMutableArray *allChildren = nil;
 	  int numchild = 0;
 	  int index = 0;
+	  id sitem = (item == nil)?[NSNull null]:item;
 
-	  [self _collectItemsStartingWith: item into: allChildren];
+	  allChildren = NSMapGet(_itemDict, sitem);
 	  numchild = [allChildren count];
 
 	  for(index = 0;index < numchild;index++)
 	    {
 	      id child = [allChildren objectAtIndex: index];
 
-	      if([self isExpandable: child] &&
-		 ![self isItemExpanded: child])
+	      if([self isExpandable: child])
 		{
-		  NSMutableDictionary *childDict = [NSMutableDictionary dictionary];
-		  
-		  [childDict setObject: child forKey: @"NSObject"];
-		  // Send out the notification to let observers know that this has
-		  // occured.
-		  [nc postNotificationName: NSOutlineViewItemWillExpandNotification
-		      object: self
-		      userInfo: childDict];
-
-		  [self _openItem: child];
-		  
-		  // Send out the notification to let observers know that this has
-		  // occured.
-		  [nc postNotificationName: NSOutlineViewItemDidExpandNotification
-		      object: self
-		      userInfo: childDict];
+		  [self expandItem: child expandChildren: expandChildren];
 		}
 	    }
 	}      
@@ -714,30 +690,19 @@ static NSImage *unexpandable  = nil;
 
 - (void) setDataSource: (id)anObject
 {
-  NSArray *requiredMethods = 
-    [NSArray arrayWithObjects: @"outlineView:child:ofItem:",
-	     @"outlineView:isItemExpandable:",
-	     @"outlineView:numberOfChildrenOfItem:",
-	     @"outlineView:objectValueForTableColumn:byItem:",
-	     nil];
-  NSEnumerator *en = [requiredMethods objectEnumerator];
-  NSString *selectorName = nil;
+#define CHECK_REQUIRED_METHOD(selector_name) \
+  if (![anObject respondsToSelector: @selector(##selector_name)]) \
+    [NSException raise: NSInternalInconsistencyException \
+                 format: @"data source does not respond to ##selector_name"]
+
+  CHECK_REQUIRED_METHOD(outlineView:child:ofItem:);
+  CHECK_REQUIRED_METHOD(outlineView:isItemExpandable:);
+  CHECK_REQUIRED_METHOD(outlineView:numberOfChildrenOfItem:);
+  CHECK_REQUIRED_METHOD(outlineView:objectValueForTableColumn:byItem:);
 
   // Is the data source editable?
   _dataSource_editable = [anObject respondsToSelector: 
 				     @selector(outlineView:setObjectValue:forTableColumn:byItem:)];
-
-  while((selectorName = [en nextObject]) != nil)
-    {
-      SEL sel = NSSelectorFromString(selectorName);
-      if ([anObject respondsToSelector: sel] == NO) 
-	{
-	  [NSException 
-	    raise: NSInternalInconsistencyException 
-	    format: @"Data Source doesn't respond to %@",
-	    selectorName];
-	}
-    }
 
   /* We do *not* retain the dataSource, it's like a delegate */
   _dataSource = anObject;
