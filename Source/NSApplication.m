@@ -1982,7 +1982,9 @@ image.
 {
   // On right mouse down display the main menu transient
   if (_main_menu != nil)
-    [_main_menu _rightMouseDisplay: theEvent];
+    [NSMenu popUpContextMenu: _main_menu
+	    withEvent: theEvent
+	    forView: nil];
   else
     [super rightMouseDown: theEvent];
 }
