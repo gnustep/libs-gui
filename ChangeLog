@@ -1,3 +1,11 @@
+Wed Feb 27 23:50:42 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/GSKeyBindingTable.m ([-bindKey:toAction:]): Implemented
+	support for describing multi-stroke keybindings using arrays as
+	keys.
+	* Source/GSKeyBindingTable.h ([-bindKey:toAction:]): Now accepts
+	an id as key.
+	
 Wed Feb 27 23:27:21 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/GSKeyBindingTable.m ([-bindKey:toAction:]): Modified so

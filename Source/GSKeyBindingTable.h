@@ -94,7 +94,7 @@ struct _GSKeyBinding
  * normally used by the NSInputManager to bind very special actions
  * such as Control-q (interpret literally next keystroke)].
  */
-- (void) bindKey: (NSString *)key  toAction: (id)action;
+- (void) bindKey: (id)key  toAction: (id)action;
 
 /* The input manager calls this when it wants to look up a keybinding
  * in the table.  The method returns YES if the keybinding is in the

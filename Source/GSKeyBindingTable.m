@@ -33,7 +33,7 @@
 - (void) loadBindingsFromDictionary: (NSDictionary *)dict
 {
   NSEnumerator *e;
-  NSString *key;
+  id key;
   
   e = [dict keyEnumerator];
   while ((key = [e nextObject]) != nil)
@@ -42,7 +42,7 @@
     }
 }
 
-- (void) bindKey: (NSString *)key  toAction: (id)action
+- (void) bindKey: (id)key  toAction: (id)action
 {
   unichar character;
   int modifiers;
@@ -50,8 +50,54 @@
   GSKeyBindingTable *t = nil;
   BOOL isTable = NO;
   int i;
+
+  /* First, try to determine what exactly is key :-) ... it might
+     either be a simple string, "Control-f", or an array,
+     ("Control-x", "Control-s").  We implement the case of arrays in
+     terms of the case of strings.  */
+  if ([key isKindOfClass: [NSArray class]])
+    {
+      if ([(NSArray *)key count] == 0)
+	{
+	  /* Ignore them.  */
+	  return;
+	}
+      else if ([(NSArray *)key count] == 1)
+	{
+	  key = [key objectAtIndex: 0];
+	}
+      else
+	{
+	  /* Ok - simply convert that into a temporary dictionary
+	     representation and store that.  Eg, key ("Control-x",
+	     "Control-s", "Control-k") action "moveUp:" gets converted
+	     into: key "Control-x" action { "Control-s" = {
+	     "Control-k" = "moveUp:"; }; }.  */
+
+	  /* Now start from the end of the array, and start building
+	     the temporary dictionary structure going backwards.  */
+	  id value = action;
+	  int j;
+
+	  for (j = [key count] - 1; j > 0; j--)
+	    {
+	      NSMutableDictionary *tmp = [NSMutableDictionary dictionary];
+	      [tmp setObject: value  forKey: [key objectAtIndex: j]];
+	      value = tmp;
+	    }
+	  key = [key objectAtIndex: 0];
+	  action = value;
+	}
+    }
   
-  if (![NSInputManager parseKey: key 
+
+  if (![key isKindOfClass: [NSString class]])
+    {
+      NSLog (@"GSKeyBindingTable - key %@ is not a NSString!", key);
+      return;
+    }
+  
+  if (![NSInputManager parseKey: (NSString *)key 
 		       intoCharacter: &character
 		       andModifiers: &modifiers])
     {
