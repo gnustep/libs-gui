@@ -65,15 +65,17 @@
 #ifndef ASSIGN
 #define ASSIGN(object,value)    ({\
 if (value != object) \
-  if (value) \
-    { \
-      [value retain]; \
-    } \
-  if (object) \
-    { \
-      [object release]; \
-    } \
-  object = value; \
+  { \
+    if (value) \
+      { \
+	[value retain]; \
+      } \
+    if (object) \
+      { \
+	[object release]; \
+      } \
+    object = value; \
+  } \
 })
 #endif
 
