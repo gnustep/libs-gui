@@ -680,6 +680,9 @@
     }
 }
 
+//
+// NSCopying protocol
+//
 - (id) copyWithZone: (NSZone*)zone
 {
   NSButtonCell	*c = [super copyWithZone: zone];
