@@ -26,6 +26,7 @@
 
 #include <AppKit/NSTableHeaderCell.h>
 #include <AppKit/NSColor.h>
+#include <AppKit/NSFont.h>
 #include <AppKit/NSGraphics.h>
 #include <AppKit/NSImage.h>
 
@@ -45,12 +46,25 @@ static NSColor *clearCol = nil;
   _cell.text_align = NSCenterTextAlignment;
   ASSIGN (_text_color, [NSColor windowFrameTextColor]);
   [self setBackgroundColor: [NSColor controlShadowColor]];
-  _cell.is_bordered = NO;
-  _cell.is_bezeled = NO;
+  [self setFont: [NSFont titleBarFontOfSize:12]];
+  _cell.is_bezeled = YES;
   _textfieldcell_draws_background = YES;
 
   return self;
 }
+- (void) drawWithFrame: (NSRect)cellFrame
+		inView: (NSView *)controlView
+{
+  if (NSIsEmptyRect (cellFrame) || ![controlView window])
+    return;
+  
+  [controlView lockFocus];
+  NSDrawButton (cellFrame, NSZeroRect);
+  [controlView unlockFocus];
+  [super drawInteriorWithFrame: cellFrame inView: controlView];
+}
+
+
 // Override drawInteriorWithFrame:inView: to be able 
 // to display images as NSCell does
 - (void) drawInteriorWithFrame: (NSRect)cellFrame 
