@@ -568,7 +568,8 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
   NSArray	*subStrings;
   NSString	*aStr;
   unsigned	numberOfSubStrings;
-  unsigned	i, j, column = 0;
+  unsigned	i, j;
+  int           column = 0;
   BOOL	      	found = YES;
 
   // If that's all, return.
@@ -602,7 +603,9 @@ static float scrollerWidth; // == [NSScroller scrollerWidth]
 
   column = _lastColumnLoaded;
   if (column < 0)
-    column = 0;
+    {
+      column = 0;
+    }
 
   // cycle thru str's array created from path
   for (i = 0; i < numberOfSubStrings; i++)
