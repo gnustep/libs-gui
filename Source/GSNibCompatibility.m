@@ -66,6 +66,8 @@
   in the next major release.
 */
 
+#define DEPRECATION_WARNING NSLog(@"WARNING: Attempt to encode/decode an deprecated template.  Please update the .gorm.  Load the gorm file in Gorm.app and resave to update it.")
+
 @implementation NSWindowTemplate
 + (void) initialize
 {
@@ -86,11 +88,11 @@
 {
   [super init];
 
-  // Start initially with the highest level class...
+  // Start initially with the highest level class
   ASSIGN(_className, NSStringFromClass([super class]));
   ASSIGN(_parentClassName, NSStringFromClass([super class]));
 
-  // defer flag...
+  // defer flag
   _deferFlag = NO;
 
   return self;
@@ -143,6 +145,7 @@
     }
   else
     {
+      DEPRECATION_WARNING;
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_className];  
       [aDecoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];  
       [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];  
@@ -152,10 +155,7 @@
 
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_className];  
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_parentClassName];  
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_deferFlag];  
-  [super encodeWithCoder: aCoder];
+  DEPRECATION_WARNING;
 }
 
 - (id) awakeAfterUsingCoder: (NSCoder *)coder
@@ -187,7 +187,7 @@
 	    backing: [self backingType]
 	    defer: _deferFlag];
     
-    // fill in actual object from template...
+  // fill in actual object from template
   [obj setBackgroundColor: [self backgroundColor]];
   [(NSWindow*)obj setContentView: [self contentView]];
   [obj setFrameAutosaveName: [self frameAutosaveName]];
@@ -205,7 +205,7 @@
   return obj;
 }
 
-// setters and getters...
+// setters and getters
 - (void) setClassName: (NSString *)name
 {
   ASSIGN(_className, name);
@@ -246,7 +246,7 @@
 
 - initWithFrame: (NSRect)frame
 {
-  // Start initially with the highest level class...
+  // Start initially with the highest level class
   ASSIGN(_className, NSStringFromClass([super class]));
   ASSIGN(_parentClassName, NSStringFromClass([super class]));
   [super initWithFrame: frame];
@@ -256,7 +256,7 @@
 
 - init
 {
-  // Start initially with the highest level class...
+  // Start initially with the highest level class
   [super init];
   ASSIGN(_className, NSStringFromClass([super class]));
   ASSIGN(_parentClassName, NSStringFromClass([super class]));
@@ -265,6 +265,7 @@
 
 - (id) initWithCoder: (NSCoder *)aCoder
 {
+  DEPRECATION_WARNING;
   [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
   [aCoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];
   return [super initWithCoder: aCoder];
@@ -272,9 +273,7 @@
 
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_className];  
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_parentClassName];  
-  [super encodeWithCoder: aCoder];
+  DEPRECATION_WARNING;
 }
 
 - (id) awakeAfterUsingCoder: (NSCoder *)coder
@@ -344,7 +343,7 @@
 
 - initWithFrame: (NSRect)frame
 {
-  // Start initially with the highest level class...
+  // Start initially with the highest level class
   ASSIGN(_className, NSStringFromClass([super class]));
   ASSIGN(_parentClassName, NSStringFromClass([super class]));
   [super initWithFrame: frame];
@@ -353,7 +352,7 @@
 
 - init
 {
-  // Start initially with the highest level class...
+  // Start initially with the highest level class
   [super init];
   ASSIGN(_className, NSStringFromClass([super class]));
   ASSIGN(_parentClassName, NSStringFromClass([super class]));
@@ -362,6 +361,7 @@
 
 - (id) initWithCoder: (NSCoder *)aCoder
 {
+  DEPRECATION_WARNING;
   [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
   [aCoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];  
   return [super initWithCoder: aCoder];
@@ -369,9 +369,7 @@
 
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_className];  
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_parentClassName];  
-  [super encodeWithCoder: aCoder];
+  DEPRECATION_WARNING;
 }
 
 - (id) awakeAfterUsingCoder: (NSCoder *)coder
@@ -419,7 +417,7 @@
   return obj;
 }
 
-// accessor methods...
+// accessor methods
 - (void) setClassName: (NSString *)name
 {
   ASSIGN(_className, name);
@@ -450,7 +448,7 @@
 
 - initWithFrame: (NSRect)frame
 {
-  // Start initially with the highest level class...
+  // Start initially with the highest level class
   ASSIGN(_className, NSStringFromClass([super class]));
   ASSIGN(_parentClassName, NSStringFromClass([super class]));
   [super initWithFrame: frame];
@@ -467,6 +465,7 @@
 
 - (id) initWithCoder: (NSCoder *)aCoder
 {
+  DEPRECATION_WARNING;
   [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
   [aCoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];  
   return [super initWithCoder: aCoder];
@@ -474,9 +473,7 @@
 
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_className];  
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_parentClassName];  
-  [super encodeWithCoder: aCoder];
+  DEPRECATION_WARNING;
 }
 
 - (id) awakeAfterUsingCoder: (NSCoder *)coder
@@ -560,7 +557,7 @@
 - init
 {
   [super init];
-  // Start initially with the highest level class...
+  // Start initially with the highest level class
   ASSIGN(_className, NSStringFromClass([super class]));
   ASSIGN(_parentClassName, NSStringFromClass([super class]));
   return self;
@@ -568,6 +565,7 @@
 
 - (id) initWithCoder: (NSCoder *)aCoder
 {
+  DEPRECATION_WARNING;
   [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
   [aCoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];  
   return [super initWithCoder: aCoder];
@@ -575,9 +573,7 @@
 
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_className];  
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_parentClassName];  
-  [super encodeWithCoder: aCoder];
+  DEPRECATION_WARNING;
 }
 
 - (id) awakeAfterUsingCoder: (NSCoder *)coder
@@ -648,7 +644,7 @@
 
 - initWithFrame: (NSRect)frame
 {
-  // Start initially with the highest level class...
+  // Start initially with the highest level class
   ASSIGN(_className, NSStringFromClass([super class]));
   ASSIGN(_parentClassName, NSStringFromClass([super class]));
   [super initWithFrame: frame];
@@ -658,7 +654,7 @@
 
 - init
 {
-  // Start initially with the highest level class...
+  // Start initially with the highest level class
   [super init];
   ASSIGN(_className, NSStringFromClass([super class]));
   ASSIGN(_parentClassName, NSStringFromClass([super class]));
@@ -667,6 +663,7 @@
 
 - (id) initWithCoder: (NSCoder *)aCoder
 {
+  DEPRECATION_WARNING;
   [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
   [aCoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];  
   [aCoder decodeValueOfObjCType: @encode(id) at: &_delegate];  
@@ -677,12 +674,7 @@
 
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_className];  
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_parentClassName];  
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_delegate];  
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_dataSource];  
-  [aCoder encodeValueOfObjCType: @encode(BOOL) at: &_usesDataSource];  
-  [super encodeWithCoder: aCoder];
+  DEPRECATION_WARNING;
 }
 
 - (id) awakeAfterUsingCoder: (NSCoder *)coder
@@ -726,15 +718,15 @@
   [obj setEnabled: [self isEnabled]];
   [obj setContinuous: [self isContinuous]];
 
-  // since only some controls have delegates, we need to test...
+  // since only some controls have delegates, we need to test
   if([obj respondsToSelector: @selector(setDelegate:)])
       [obj setDelegate: _delegate];
 
-  // since only some controls have data sources, we need to test...
+  // since only some controls have data sources, we need to test
   if([obj respondsToSelector: @selector(setDataSource:)])
       [obj setDataSource: _dataSource];
 
-  // since only some controls have data sources, we need to test...
+  // since only some controls have data sources, we need to test
   if([obj respondsToSelector: @selector(setUsesDataSource:)])
       [obj setUsesDataSource: _usesDataSource];
 
@@ -775,7 +767,7 @@
 
 - initWithFrame: (NSRect)frame
 {
-  // Start initially with the highest level class...
+  // Start initially with the highest level class
   ASSIGN(_className, NSStringFromClass([super class]));
   ASSIGN(_parentClassName, NSStringFromClass([super class]));
   _buttonType = NSMomentaryLightButton;
@@ -786,7 +778,7 @@
 
 - init
 {
-  // Start initially with the highest level class...
+  // Start initially with the highest level class
   [super init];
   ASSIGN(_className, NSStringFromClass([super class]));
   ASSIGN(_parentClassName, NSStringFromClass([super class]));
@@ -796,6 +788,7 @@
 
 - (id) initWithCoder: (NSCoder *)aCoder
 {
+  DEPRECATION_WARNING;
   [aCoder decodeValueOfObjCType: @encode(id) at: &_className];  
   [aCoder decodeValueOfObjCType: @encode(id) at: &_parentClassName];  
   [aCoder decodeValueOfObjCType: @encode(int) at: &_buttonType];  
@@ -804,10 +797,7 @@
 
 - (void) encodeWithCoder: (NSCoder *)aCoder
 {
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_className];  
-  [aCoder encodeValueOfObjCType: @encode(id) at: &_parentClassName];  
-  [aCoder encodeValueOfObjCType: @encode(int) at: &_buttonType];  
-  [super encodeWithCoder: aCoder];
+  DEPRECATION_WARNING;
 }
 
 - (id) awakeAfterUsingCoder: (NSCoder *)coder

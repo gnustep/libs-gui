@@ -114,13 +114,15 @@ static NSDataLinkPanel *__sharedDataLinkPanel;
 //
 + (void)getLink:(NSDataLink **)link
 	manager:(NSDataLinkManager **)linkManager
-isMultiple:(BOOL *)flag
-{}
+     isMultiple:(BOOL *)flag
+{
+}
 
 + (void)setLink:(NSDataLink *)link
 	manager:(NSDataLinkManager *)linkManager
-isMultiple:(BOOL)flag
-{}
+     isMultiple:(BOOL)flag
+{
+}
 
 //
 // Instance methods
@@ -131,13 +133,15 @@ isMultiple:(BOOL)flag
 //
 - (void)getLink:(NSDataLink **)link
 	manager:(NSDataLinkManager **)linkManager
-isMultiple:(BOOL *)flag
-{}
+     isMultiple:(BOOL *)flag
+{
+}
 
 - (void)setLink:(NSDataLink *)link
 	manager:(NSDataLinkManager *)linkManager
-isMultiple:(BOOL)flag
-{}
+     isMultiple:(BOOL)flag
+{
+}
 
 //
 // Customizing the Panel
@@ -148,7 +152,8 @@ isMultiple:(BOOL)flag
 }
 
 - (void)setAccessoryView:(NSView *)aView
-{}
+{
+}
 
 //
 // Responding to User Input

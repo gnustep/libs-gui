@@ -1,3 +1,13 @@
+2004-06-25  Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* Source/GSNibCompatibility.m: Print a message when .gorm files are
+	loaded which use the old templates contained here.  The next major
+	release should see the removal of these templates from GNUstep.  The
+	new templates have completely superceded these.
+	* Source/NSTextView.m: Added call to register for types in
+	initWithCoder:
+	* Source/NSDataLinkPanel.m: Minor reformatting.
+
 2004-06-26  Serg Stoyan <stoyan255@ukr.net>
 
         * Source/NSBrowser.m:
@@ -39,6 +49,7 @@
 	little more parallel to base Documentation makefile.
 	* Documentation/GNUmakefile.postamble: Remove stray backslash.
 
+>>>>>>> 1.2290
 2004-06-21  Fred Kiefer <FredKiefer@gmx.de>
 
         * Source/NSTableView.m:
@@ -61,6 +72,7 @@
 	* Source/GSDragView.m: (-_handleEventDuringDragging:) Get mouse
 	location on periodic event.
 
+>>>>>>> 1.2286
 2004-06-19  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Headers/Additions/GNUstepGUI/GSDisplayServer.h: Added new method
@@ -72,6 +84,7 @@
 	(-_windowAcceptingDnDunder:windowRef:) with new GSDisplayServer
 	method.	
 	
+>>>>>>> 1.2283
 2004-06-17  Fred Kiefer <FredKiefer@gmx.de>
 
        * Source/NSComboBoxCell.m: buttonCellFrameFromRect(),

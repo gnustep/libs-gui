@@ -747,6 +747,10 @@ that makes decoding and encoding compatible with the old code.
       [self _recacheDelegateResponses];
       [self invalidateTextContainerOrigin];
 
+      // register for services...
+      if (!did_register_for_services)
+	[isa registerForServices];
+
       [self setPostsFrameChangedNotifications: YES];
       [notificationCenter addObserver: self
 			  selector: @selector(_updateState:)
