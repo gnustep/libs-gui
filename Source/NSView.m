@@ -44,6 +44,7 @@
 #include <Foundation/NSArray.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSValue.h>
+#include <Foundation/NSData.h>
 #include <Foundation/NSDebug.h>
 
 #include <AppKit/NSView.h>
@@ -54,6 +55,9 @@
 #include <AppKit/NSAffineTransform.h>
 #include <AppKit/NSScrollView.h>
 #include <AppKit/NSClipView.h>
+#include <AppKit/NSPasteboard.h>
+#include <AppKit/NSPrintInfo.h>
+#include <AppKit/NSPrintOperation.h>
 
 struct NSWindow_struct
 {
@@ -2344,20 +2348,36 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
  */
 - (NSData*) dataWithEPSInsideRect: (NSRect)aRect
 {
-  return nil;
+  NSMutableData *data = [NSMutableData data];
+  
+  [[NSPrintOperation EPSOperationWithView: self
+		     insideRect: aRect
+		     toData: data] runOperation];
+  return data;
 }
 
 - (void) fax: (id)sender
 {
+  NSPrintInfo *aPrintInfo = [NSPrintInfo sharedPrintInfo];
+
+  [aPrintInfo setJobDisposition: NSPrintFaxJob];
+  [[NSPrintOperation printOperationWithView: self
+		     printInfo: aPrintInfo] runOperation];
 }
 
 - (void) print: (id)sender
 {
+  [[NSPrintOperation printOperationWithView: self] runOperation];
 }
 
 - (void) writeEPSInsideRect: (NSRect)rect
 	       toPasteboard: (NSPasteboard*)pasteboard
 {
+  NSData *data = [self dataWithEPSInsideRect: rect];
+
+  if (data != nil)
+    [pasteboard setData: data
+		forType: NSPostScriptPboardType];
 }
 
 /*
