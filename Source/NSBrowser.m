@@ -1765,7 +1765,7 @@ static NSTextFieldCell *titleCell;
       flag = YES;
     }
 
-  if (!flag)
+  if (!flag && anObject)
     [NSException raise: NSBrowserIllegalDelegateException
 		 format: @"Delegate does not respond to %s or %s\n",
 		 "browser: numberOfRowsInColumn: ",

@@ -1,3 +1,8 @@
+2003-10-02  Andrew Ruder  <aereder@ksu.edu>
+
+	* Source/NSBrowser.m (-[NSBrowser setDelegate]:):  Check for nil
+	object to allow unsetting the delegate.
+
 2003-09-29  Adam Fedor  <fedor@gnu.org>
 
 	* Version 0.9.0
