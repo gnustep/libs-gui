@@ -45,7 +45,7 @@ enum {
 
 extern const float *NSFontIdentityMatrix;
 
-@interface NSFont : NSObject <NSCoding>
+@interface NSFont : NSObject <NSCoding, NSCopying>
 {
   NSString *fontName;
   float matrix[6];

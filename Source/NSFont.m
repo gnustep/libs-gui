@@ -201,6 +201,23 @@ void setNSFont(NSString* key, NSFont* font)
 }
 
 //
+// NSCopying Protocol
+//
+- copyWithZone: (NSZone *)zone
+{
+  NSFont *new_font;
+  if (NSShouldRetainWithZone(self, zone))
+    new_font = RETAIN(self);
+  else
+    {
+      new_font = (NSFont *)NSCopyObject(self, 0, zone);
+      [new_font->fontName copyWithZone: zone];
+      [new_font->fontInfo copyWithZone: zone];
+    }
+  return new_font;
+}
+
+//
 // Setting the Font
 //
 - (void)set

@@ -1,3 +1,8 @@
+2000-03-31  Adam Fedor  <fedor@gnu.org>
+
+	* Headers/gnustep/gui/NSFont.h: Conform to NSCopying.
+	* Source/NSFont.m ([NSFont -copyWithZone:]): Implement.
+
 2000-03-31  Jonathan Gapen  <jagapen@whitewater.chem.wisc.edu>
 
 	* Model/GMAppKit.m: Re-organize NSCell's [-initWithModelUnarchiver:]
