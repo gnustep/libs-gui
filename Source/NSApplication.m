@@ -391,7 +391,7 @@ static id NSApp;
 - (NSEvent*)_eventMatchingMask:(unsigned int)mask
 {
   NSEvent* event;
-  int i, count;
+  int i, count = [event_queue count];
 
   [self getNextEvent];
 
@@ -459,6 +459,10 @@ static id NSApp;
     if (event)
       break;
   }
+
+  // flush any windows that need it
+  [NSWindow _flushWindows];
+  [self _flushCommunicationChannels];
 
   type = [event type];
 

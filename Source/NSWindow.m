@@ -33,6 +33,7 @@
 #include <Foundation/NSArray.h>
 #include <Foundation/NSNotification.h>
 #include <Foundation/NSValue.h>
+#include <Foundation/NSException.h>
 
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSApplication.h>
@@ -129,11 +130,12 @@ static BOOL _needsFlushWindows = YES;
 
 - (void)dealloc
 {
-  // Release the window view
-  if (content_view) [[content_view superview] release];
-
   // Release the content view
-  if (content_view) [content_view release];
+  if (content_view) {
+    // Release the window view
+    [[content_view superview] release];
+    [content_view release];
+  }
 
   [background_color release];
   [represented_filename release];
@@ -224,27 +226,23 @@ static BOOL _needsFlushWindows = YES;
 
   // If the window view hasn't been created yet
   // then create it
-  if ((!content_view) || ([content_view superview] == nil))
-    {
-      wv = [[NSWindowView alloc] initWithFrame: frame];
-      [wv viewWillMoveToWindow: self];
-    }
+  if ((!content_view) || ([content_view superview] == nil)) {
+    wv = [[NSWindowView alloc] initWithFrame: frame];
+    [wv viewWillMoveToWindow: self];
+  }
   else
     wv = [content_view superview];
 
   if (content_view)
-    {
-      [content_view removeFromSuperview];
-      [content_view viewWillMoveToWindow:nil];
-    }
+    [content_view removeFromSuperview];
 
   ASSIGN(content_view, aView);
 
   // Add to our window view
   [wv addSubview: content_view];
-
-  // Tell the view its changing windows
-  [content_view viewWillMoveToWindow:self];
+  NSAssert1 ([[wv subviews] count] == 1,
+	     @"window's view has %d  subviews!",
+	     [[wv subviews] count]);
 
   // Make us the view's next responder
   [content_view setNextResponder:self];
@@ -716,7 +714,7 @@ static BOOL _needsFlushWindows = YES;
   return disable_flush_window;
 }
 
-- (void)setAutoDisplay:(BOOL)flag
+- (void)setAutodisplay:(BOOL)flag
 {
   is_autodisplay = flag;
 }

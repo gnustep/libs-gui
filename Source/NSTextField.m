@@ -266,6 +266,8 @@ id gnustep_gui_nstextfield_cell_class = nil;
   return [cell textColor];
 }
 
+- (id)selectedCell			{ return cell; }
+
 //
 // Target and Action 
 //

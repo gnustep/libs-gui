@@ -102,7 +102,8 @@
 - (BOOL)menuChangedMessagesEnabled;
 - (void)sizeToFit;
 
-/* Getting the menu title */
+/* Getting and setting the menu title */
+- (void)setTitle:(NSString*)aTitle;
 - (NSString*)title;
 
 /* Getting the menu cells matrix */

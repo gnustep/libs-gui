@@ -71,9 +71,6 @@ typedef struct _rep_data_t
   BOOL	        validCache;
 } rep_data_t;
 
-/* Class variables and functions for class methods */
-static NSMutableDictionary*	nameDict;
-
 NSArray *iterate_reps_for_types(NSArray *imageReps, SEL method);
 
 /* Find the rep_data_t holding a representation */
@@ -132,20 +129,37 @@ set_repd_for_rep(NSMutableArray *_reps, NSImageRep *rep, rep_data_t *new_repd)
 
 @implementation NSImage
 
+/* Class variables and functions for class methods */
+static NSMutableDictionary* nameDict = nil;
+static NSDictionary* nsmapping = nil;
+
 + (void)initialize
 {
   if (self == [NSImage class])
     {
+      NSBundle *system = [NSBundle bundleWithPath:gnustep_libdir];
+      NSString* path = [system pathForResource:@"nsmapping"
+			       ofType:@"strings"
+			       inDirectory:NSImage_PATH];
       // Initial version
       [self setVersion:1];
 
       // initialize the class variables
       nameDict = [[NSMutableDictionary alloc] initWithCapacity: 10];
+      if (path)
+	nsmapping = [[[NSString stringWithContentsOfFile:path]
+				propertyListFromStringsFileFormat]
+				retain];
     }
 }
 
 + imageNamed: (NSString *)aName
 {
+  NSString* realName = [nsmapping objectForKey:aName];
+
+  if (realName)
+    aName = realName;
+
   /* If there is no image with that name, search in the main bundle */
   if (!nameDict || ![nameDict objectForKey:aName]) 
     {

@@ -51,7 +51,8 @@ common_SwitchOff.tiff \
 common_SliderHoriz.tiff \
 common_SliderVert.tiff \
 common_Dimple.tiff \
-common_ret.tiff
+common_ret.tiff \
+nsmapping.strings
 
 -include GNUmakefile.preamble
 

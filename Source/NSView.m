@@ -947,6 +947,20 @@ static NSRecursiveLock *gnustep_gui_nsview_lock = nil;
   _nextSiblingSubviewThatNeedsDisplay = NULL;
 }
 
+- (void)_unconditionallyResetNeedsDisplayInAllViews
+{
+  int i, count;
+
+  _subviewsThatNeedDisplay = NULL;
+  _nextSiblingSubviewThatNeedsDisplay = NULL;
+
+  if (!sub_views || !(count = [sub_views count]))
+    return;
+
+  for (i = 0; i < count; i++)
+    [[sub_views objectAtIndex:i] _unconditionallyResetNeedsDisplayInAllViews];
+}
+
 - (void)_displayNeededViews
 {
   NSView* subview;

@@ -356,6 +356,7 @@ enum {
 - (void)_recursivelyResetNeedsDisplayInAllViews;
 - (void)_removeSubviewFromViewsThatNeedDisplay:(NSView*)view;
 - (void)_displayNeededViews;
+- (void)_unconditionallyResetNeedsDisplayInAllViews;
 
 /* Collects into `array' the invalid rectangles that need to be displayed. All
    the rectangles are expressed in the window coordinates and not of the views

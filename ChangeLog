@@ -1,3 +1,52 @@
+Wed Dec  3 14:12:35 1997  Ovidiu Predescu <ovidiu@net-community.com>
+
+	Added the code to support the loading of model files (similar to nib
+	files under OPENSTEP). The model file is a human readable and
+	modifiable file which is portable across many OpenStep implementations.
+	* Model: New directory.
+	* Model/GMAppKit.h: New file.
+	* Model/GMAppKit.m: Likewise.
+	* Model/GNUmakefile: Likewise.
+	* Model/IBClasses.h: Likewise.
+	* Model/IBClasses.m: Likewise.
+	* Model/IMConnectors.h: Likewise.
+	* Model/IMConnectors.m: Likewise.
+	* Model/IMCustomObject.h: Likewise.
+	* Model/IMCustomObject.m: Likewise.
+	* Model/IMLoading.h: Likewise.
+	* Model/IMLoading.m: Likewise.
+	* Model/Translator.h: Likewise.
+	* Model/Translator.m: Likewise.
+	* Model/nib2gmodel.m: Likewise.
+	* Model/test.nib: Likewise.
+	* Model/test.m: Likewise.
+	* Model/test.gmodel: Likewise.
+	* Model/Controller.h: Likewise.
+	* Model/Controller.m: Likewise.
+
+	Support the standard OpenStep images in NSImage:
+	* Images/nsmapping.strings: New file. It contains the mapping between
+	the OpenStep name to the GNUstep file name that contains the image.
+	* Images/GNUmakefile: Added nsmapping.strings to the list of files that
+	get installed.
+	* Source/NSImage.m: Support the above modification.
+
+	* Headers/gnustep/gui/NSView.h
+	(_unconditionallyResetNeedsDisplayInAllViews): Define the method.
+	(setAutoDisplay:): Fixed typo.
+	* Source/NSView.m: New method that unconditionally sets the additional
+	pointers needed for display and flush in NSView.
+	* Source/NSApplication.m (nextEventMatchingMask:untilDate:inMode:
+	dequeue:): Flush the communication channel after the while loop ends.
+	* Source/NSMenu.m: Changed the definition of MAX.
+	(_resizeMenuForCellSize): Resize the menu cells matrix to fit all the
+	cells.
+	(sizeToFit): Call _resizeMenuForCellSize to resize the cells matrix.
+	* Source/NSTextField.m (selectedCell): New method.
+	* Source/NSWindow.m: Include <Foundation/NSException.h>.
+	(dealloc, setContentView:): Clean up the code.
+	(setAutodisplay): Fixed typo.
+
 Fri Nov 14 09:34:45 1997  Scott Christley  <scottc@net-community.com>
 
 	* Headers/gnustep/gui/NSApplication.h (-getNextEvent): Method
@@ -66,6 +115,15 @@ Thu Oct 30 15:51:43 1997  Scott Christley  <scottc@net-community.com>
 	* Tools/GNUmakefile: Make system root the default install dir.
 	* Tools/GNUmakefile.postamble: Install after instead of before.
 	* Tools/GNUmakefile.preamble: Add directory and library.
+
+Wed Oct 29 13:02:53 1997  Ovidiu Predescu <ovidiu@net-community.com>
+
+	* Source/NSView.m (_removeSubviewFromViewsThatNeedDisplay:): New
+	method to remove a view from its super view linked list of views that
+	need display.
+	(removeFromSuperview): Invoke the above method to remove itself from
+	the list of views that need display.
+	(replaceSubview:with:): Likewise.
 
 Wed Oct 29 12:22:22 1997  Ovidiu Predescu <ovidiu@net-community.com>
 

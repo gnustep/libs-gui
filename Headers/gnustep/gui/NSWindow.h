@@ -259,7 +259,7 @@ extern NSSize NSTokenSize;
 - (void)flushWindowIfNeeded;
 - (BOOL)isAutodisplay;
 - (BOOL)isFlushWindowDisabled;
-- (void)setAutoDisplay:(BOOL)flag;
+- (void)setAutodisplay:(BOOL)flag;
 - (void)setViewsNeedDisplay:(BOOL)flag;
 - (void)update;
 - (void)useOptimizedDrawing:(BOOL)flag;

@@ -1,0 +1,129 @@
+/*
+   IBClasses.m
+
+   Copyright (C) 1996 Free Software Foundation, Inc.
+
+   Author: Ovidiu Predescu <ovidiu@net-community.com>
+   Date: November 1997
+   
+   This file is part of the GNUstep GUI Library.
+
+   This library is free software; you can redistribute it and/or
+   modify it under the terms of the GNU Library General Public
+   License as published by the Free Software Foundation; either
+   version 2 of the License, or (at your option) any later version.
+   
+   This library is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Library General Public License for more details.
+
+   You should have received a copy of the GNU Library General Public
+   License along with this library; if not, write to the Free
+   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+*/
+
+#include <stdio.h>
+
+#import <Foundation/NSCoder.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSArray.h>
+#import <extensions/GMArchiver.h>
+#import "IBClasses.h"
+#import "Translator.h"
+#import "IMConnectors.h"
+#import "IMCustomObject.h"
+
+//#define DEBUG
+
+@implementation NSCustomObject (NibToGModel)
+- (id)awakeAfterUsingCoder:(NSCoder*)aDecoder
+{
+#ifdef DEBUG
+  NSLog (@"%x awakeAfterUsingCoder NSCustomObject: className = %@, realObject = %@, "
+	 @"extension = %@", self, className, realObject, extension);
+#endif
+  [objects addObject:self];
+  return self;
+}
+
+- description
+{
+  return [NSString stringWithFormat:@"className = %@, realObject = %@, extension = %@", className, realObject, extension];
+}
+
+- nibInstantiate
+{
+  return self;
+}
+
+- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+{
+  [archiver encodeString:className withName:@"className"];
+  if (realObject)
+    [archiver encodeObject:realObject withName:@"realObject"];
+  if (extension)
+    [archiver encodeObject:extension withName:@"extension"];
+}
+
+- (Class)classForModelArchiver
+{
+  return [IMCustomObject class];
+}
+
+@end /* NSCustomObject */
+
+
+@implementation NSIBConnector (NibToGModel)
+- (id)awakeAfterUsingCoder:(NSCoder*)aDecoder
+{
+#ifdef DEBUG
+  NSLog (@"%x awakeAfterUsingCoder %@: source = %@, destination = %@, label = %@",
+	  self, NSStringFromClass(isa), source, destination, label);
+#endif
+
+  [source retain];
+  [destination retain];
+  [label retain];
+  [connections addObject:self];
+  return self;
+}
+
+- (void)encodeWithModelArchiver:(GMArchiver*)archiver
+{
+  [archiver encodeObject:source withName:@"source"];
+  [archiver encodeObject:destination withName:@"destination"];
+  [archiver encodeObject:label withName:@"label"];
+}
+
+- (Class)classForModelArchiver
+{
+  return [IMConnector class];
+}
+
+@end /* NSIBConnector */
+
+
+@implementation NSIBOutletConnector (NibToGModel)
+- (void)establishConnection
+{
+}
+
+- (Class)classForModelArchiver
+{
+  return [IMOutletConnector class];
+}
+
+@end /* NSIBOutletConnector */
+
+
+@implementation NSIBControlConnector (NibToGModel)
+- (void)establishConnection
+{
+}
+
+- (Class)classForModelArchiver
+{
+  return [IMControlConnector class];
+}
+@end /* NSIBControlConnector */

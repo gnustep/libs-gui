@@ -47,14 +47,17 @@
 #ifdef MAX
 # undef MAX
 #endif
-# define MAX(a, b) \
-    ({typedef _ta = (a), _tb = (b);   \
-	_ta _a = (a); _tb _b = (b);     \
+#define MAX(a, b) \
+    ({typeof(a) _a = (a); typeof(b) _b = (b);     \
 	_a > _b ? _a : _b; })
 
 
 @interface NSMenu (PrivateMethods2)
 - (void)_menuChanged;
+@end
+
+@interface NSMenuMatrix (PrivateMethods2)
+- (void)_resizeMenuForCellSize;
 @end
 
 
@@ -112,6 +115,21 @@ static NSFont* menuFont = nil;
 
 - (void)_resizeMenuForCellSize
 {
+  int i, count;
+  float titleWidth;
+
+  /* Compute the new width of the menu cells matrix */
+  cellSize.width = 0;
+  count = [cells count];
+  for (i = 0; i < count; i++) {
+    titleWidth = [menuFont widthOfString:
+				[[cells objectAtIndex:i] stringValue]];
+    cellSize.width = MAX(titleWidth + ADDITIONAL_WIDTH, cellSize.width);
+  }
+  cellSize.width = MAX([menuFont widthOfString:[menu title]]
+			  + ADDITIONAL_WIDTH,
+			cellSize.width);
+
   /* Resize the frame to hold all the menu cells */
   [super setFrameSize:NSMakeSize (cellSize.width,
       (cellSize.height + INTERCELL_SPACE) * [cells count] - INTERCELL_SPACE)];
@@ -123,18 +141,13 @@ static NSFont* menuFont = nil;
 			       atIndex:(unsigned int)index
 {
   id menuCell = [[[NSMenu cellClass] new] autorelease];
-  float titleWidth;
 
   [menuCell setTitle:aString];
   [menuCell setAction:aSelector];
   [menuCell setKeyEquivalent:charCode];
   [menuCell setFont:menuFont];
 
-  titleWidth = [menuFont widthOfString:aString];
-  cellSize = NSMakeSize (MAX(titleWidth + ADDITIONAL_WIDTH, cellSize.width),
-			 cellSize.height);
   [cells insertObject:menuCell atIndex:index];
-
   [self _resizeMenuForCellSize];
 
   return menuCell;
@@ -143,22 +156,11 @@ static NSFont* menuFont = nil;
 - (void)removeItem:(id <NSMenuItem>)anItem
 {
   int row = [cells indexOfObject:anItem];
-  float titleWidth;
-  int i, count;
 
   if (row == -1)
     return;
 
   [cells removeObjectAtIndex:row];
-
-  /* Compute the new width of the menu cells matrix */
-  cellSize.width = 0;
-  count = [cells count];
-  for (i = 0; i < count; i++) {
-    titleWidth = [menuFont widthOfString:[cells objectAtIndex:i]];
-    cellSize.width = MAX(titleWidth + ADDITIONAL_WIDTH, cellSize.width);
-  }
-
   [self _resizeMenuForCellSize];
 }
 
@@ -710,7 +712,15 @@ static Class menuCellClass = nil;
 - (void)sizeToFit
 {
   // SUBCLASS
+  [menuCells _resizeMenuForCellSize];
+  [menuCells setNeedsDisplay:YES];
   menuHasChanged = NO;
+}
+
+- (void)setTitle:(NSString*)aTitle
+{
+  ASSIGN(title, aTitle);
+  [self sizeToFit];
 }
 
 - (NSString*)title
