@@ -1062,7 +1062,15 @@ TODO: not really clear what these should do
 	}
       else if (_selected_range.location + _selected_range.length >= range.location)
 	{
-	  _selected_range.length += lengthChange;
+	  if (-lengthChange > _selected_range.length)
+	    {
+	      _selected_range.length = 0;
+	      _selected_range.location = range.location;
+	    }
+	  else
+	    {
+	      _selected_range.length += lengthChange;
+	    }
 	}
     }
 
@@ -1079,6 +1087,7 @@ TODO: not really clear what these should do
       [[textcontainers[i].textContainer textView] sizeToFit]; /* TODO? */
       [[textcontainers[i].textContainer textView] setNeedsDisplay: YES];
     }
+
 }
 
 @end
