@@ -1,9 +1,11 @@
-2001-06-23  Gregory John Casamento  <greg_casamento@yahoo.com
+2001-06-23  Gregory John Casamento  <greg_casamento@yahoo.com>
+
 	* Source/NSSpellChecker.m updated to use the guesses browser.  
 	Delegate methods implemented to fill in the guesses for the 
 	current misspelled word.
 
 2001-06-20  Gregory John Casamento  <greg_casamento@yahoo.com>
+
 	* Source/NSSpellChecker.m implementation 
 	* Source/NSSpellServer.m implementation 
 	* Tools/GSspell.m for the GSspell.service.
