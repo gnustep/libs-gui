@@ -345,6 +345,11 @@ APPKIT_EXPORT NSString	*NSEventTrackingRunLoopMode;
 @end
 
 #ifndef	NO_GNUSTEP
+
+@interface NSApplication (GSGUIInternal)
+- (void) _windowWillDealloc: (NSWindow *)window;
+@end
+
 /*
  * A formal protocol that duplicates the informal protocol for delegates.
  */

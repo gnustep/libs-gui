@@ -646,6 +646,10 @@ many times.
 			target: self
 		      argument: nil];
   [NSApp removeWindowsItem: self];
+  [NSApp _windowWillDealloc: self];
+
+  NSAssert([NSApp keyWindow] != self, @"window being deallocated is key");
+  NSAssert([NSApp mainWindow] != self, @"window being deallocated is main");
 
   if (_autosaveName != nil)
     {

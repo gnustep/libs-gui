@@ -141,7 +141,7 @@ _NSAppKitUncaughtExceptionHandler (NSException *exception)
 static NSBundle *guiBundle = nil;
 
 /* Get the bundle.  */
-NSBundle *GSGuiBundle ()
+NSBundle *GSGuiBundle (void)
 {
   return guiBundle;
 }
@@ -234,7 +234,7 @@ initialize_gnustep_backend(void)
 }
 
 void
-gsapp_user_bundles()
+gsapp_user_bundles(void)
 {
   NSUserDefaults *defs=[NSUserDefaults standardUserDefaults];
   NSArray *a=[defs arrayForKey: @"GSAppKitUserBundles"];
@@ -500,7 +500,7 @@ static NSCell* tileCell = nil;
        * Dummy functions to fool linker into linking files that contain
        * only catagories - static libraries seem to have problems here.
        */
-      extern void	GSStringDrawingDummyFunction();
+      extern void	GSStringDrawingDummyFunction(void);
 
       GSStringDrawingDummyFunction();
 
@@ -2881,3 +2881,17 @@ image.
 }
 
 @end // NSApplication (Private)
+
+
+@implementation NSApplication (GSGUIInternal)
+
+- (void) _windowWillDealloc: (NSWindow *)window
+{
+  if (window == _key_window)
+    _key_window = nil;
+  if (window == _main_window)
+    _main_window = nil;
+}
+
+@end
+

@@ -1,3 +1,11 @@
+2003-11-26 14:47  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/AppKit/NSApplication.h: Add -_windowWillDealloc:.
+	* Source/NSApplication.m: Fix some prototypes.
+	(-_windowWillDealloc:): Implement.
+	* Source/NSWindow.m (-dealloc): Call -_windowWillDealloc: so NSApp
+	can clear any unretained references to the window.
+
 2003-11-25 17:16  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSWindow.m (-orderWindow:relativeTo:): Start the window
