@@ -130,8 +130,7 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   //  if (![NSBundle loadNibNamed: @"FontPanel" owner: self]);
   [self _initWithoutGModel];
 
-  ASSIGN(_familyList, [[NSFontManager sharedFontManager] 
-			availableFontFamilies]);
+  [self reloadDefaultFontFamilies];
   ASSIGN(_faceList, [NSArray array]);
   _face = -1;
   _family = -1;
@@ -165,6 +164,12 @@ float sizes[] = {4.0, 6.0, 8.0, 9.0, 10.0, 11.0, 12.0, 13.0,
   NSButton *setButton = [[self contentView] viewWithTag: NSFPSetButton];
 
   [setButton setEnabled: flag];
+}
+
+- (void) reloadDefaultFontFamilies
+{
+  ASSIGN(_familyList, [[NSFontManager sharedFontManager] 
+			availableFontFamilies]);
 }
 
 /*
