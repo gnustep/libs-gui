@@ -73,12 +73,14 @@ main(int argc, char** argv, char **env_c)
 
   if (application)
     {
-      [workspace launchApplication: application];
+// Don't start the application itself but use it for file opening. 
+//      [workspace launchApplication: application];
     }
   
   if (filetoopen)
     {
-      [workspace openFile: filetoopen];
+      [workspace openFile: filetoopen
+		 withApplication: application];
     }
 
   if (filetoprint)
@@ -169,7 +171,8 @@ main(int argc, char** argv, char **env_c)
 		    }
 		  else 
 		    {
-		      if (![workspace openFile: arg])
+		      if (![workspace openFile: arg
+				      withApplication: application])
 			{
 			  // no recognized extension, 
 			  // run application indicated by environment var.	
