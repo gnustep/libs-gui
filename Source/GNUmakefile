@@ -164,6 +164,7 @@ AppKit/NSMatrix.h \
 AppKit/NSMenu.h \
 AppKit/NSMenuItem.h \
 AppKit/NSNibLoading.h \
+AppKit/NSNibDeclarations.h \
 AppKit/NSOpenPanel.h \
 AppKit/NSPageLayout.h \
 AppKit/NSPanel.h \

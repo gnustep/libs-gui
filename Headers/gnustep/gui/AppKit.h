@@ -138,5 +138,6 @@
 #include <AppKit/NSView.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSWorkspace.h>
+#include <AppKit/NSNibDeclarations.h>
 
 #endif _GNUstep_H_AppKit

@@ -1,3 +1,10 @@
+Tue Feb 16 17:06:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Additions provided by mgiddings@ypc.net -
+	* Headers/AppKit/NSNibDeclarations.h: New file
+	* Headers/AppKit/AppKit.h: Added NSNibDeclarations.h
+	* Source/GNUmakefile: Added NSNibDeclarations.h
+
 Tue Feb 16 10:45:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Tools/gpbs.m: Improve handling of loss of connections - don't remove
