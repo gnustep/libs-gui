@@ -359,6 +359,11 @@
     }
 }
 
+- (BOOL) isOpaque
+{
+  return YES;
+}
+
 //
 // NSCoding protocol
 //
