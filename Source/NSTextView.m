@@ -3628,7 +3628,7 @@ other than copy/paste or dragging. */
 					 type: (NSString *)type
 {
   //FIXME
-  return NSDragOperationGeneric;
+  return NSDragOperationCopy | NSDragOperationGeneric;
 }
 
 - (NSImage *) dragImageForSelectionWithEvent: (NSEvent *)event
