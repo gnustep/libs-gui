@@ -41,11 +41,39 @@
 #include <AppKit/NSView.h>
 #include <AppKit/NSWindow.h>
 
+/**
+   The NSMenu class uses an object implementing the NSMenuView protocol to
+   do the actual drawing.
+
+   Normally there is no good reason to write your own class implementing
+   this protocol.  However if you want to customize your menus you should
+   implement this protocol to ensure that it works nicely together
+   with sub/super menus not using your custom menurepresentation.
+
+   <br/>
+   <strong>How menus are drawn</strong><br/>
+
+   
+*/
+
 @class NSColor;
 @class NSPopUpButton;
 @class NSFont;
 
-@interface NSMenuView : NSView <NSCoding>
+/**
+   This class implements several menu look and feels at the same time.
+   The looks and feels implemented are:
+   <list>
+   <item>Ordinary vertically stacked menus with the NeXT submenu positioning behavour.</item>
+   <item>Vertically stacked menus with the WindowMaker submenu placement.  This behaviour
+   is selected by choosing the <strong>GSWindowMakerInterfaceStyle</strong>. </item>
+   <item>Horizontally stacked menus.  This can be only set on a individual basis by
+   using [NSMenuView-setHorizontal:]. </item>
+   <item>PopupButtons are actually menus.  This class implements also the behaviour for the
+   NSPopButtons.  See for the the class NSPopButton.</item>
+   </list>
+*/
+@interface NSMenuView : NSView <NSCoding, NSMenuView>
 {
   NSMutableArray *_itemCells;
   BOOL _horizontal;
@@ -62,9 +90,8 @@
   NSSize _cellSize;
 @private
   id _items_link;
-  BOOL _keepAttachedMenus;
-  int _oldHighlightedItemIndex;
   int _leftBorderOffset;
+  id  _titleView;
 }
 
 + (float)menuBarHeight;
@@ -84,14 +111,14 @@
 - (NSMenuView *)attachedMenuView;
 - (NSMenu *)attachedMenu;
 - (BOOL)isAttached;
+- (void) detachSubmenu;
+- (void) attachSubmenuForItemAtIndex: (int) index;
 - (BOOL)isTornOff;
 - (void)setHorizontalEdgePadding:(float)pad;
 - (float)horizontalEdgePadding;
 - (void)itemChanged:(NSNotification *)notification;
 - (void)itemAdded:(NSNotification *)notification;
 - (void)itemRemoved:(NSNotification *)notification;
-- (void)detachSubmenu;
-- (void)attachSubmenuForItemAtIndex:(int)index;
 - (void)update;
 - (void)setNeedsSizing:(BOOL)flag;
 - (BOOL)needsSizing;
@@ -115,5 +142,6 @@
 - (void)performActionWithHighlightingForItemAtIndex:(int)index;
 - (BOOL)trackWithEvent:(NSEvent *)event;
 @end
+
 
 #endif

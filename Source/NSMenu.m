@@ -55,23 +55,57 @@
 #include <AppKit/NSScreen.h>
 #include <AppKit/NSAttributedString.h>
 
+
+/*
+  Drawing related:
+
+              NSMenu superMenu   (if not root menu, the parent meu)
+                ^
+                |
+                |    +------------------> NSMenuView view  (content, draws the menu items)
+                |    |
+              NSMenu +----------+-------> NSMenuPanel A    (regular window, torn off window)
+                |    |          `-------> NSMenuPanel B    (transient window)
+                |    |           
+                |    +------------------> NSString title   (title)
+                |
+                v
+              NSMenu attachedMenu  (the menu that is attached to this one, during navigation)
+              
+
+
+   +--[NSMenuPanel]------+
+   | +-[NSMenuView]----+ |
+   | | title if applic | |
+   | | +-------------+ | |
+   | | | NSMenuItem- | | |
+   | | | Cell        | | |
+   | | +-------------+ | |
+   | |       .         | |
+   | |       .         | |
+   | +-----------------+ |
+   +---------------------+
+
+   The two windows
+   ---------------
+
+   Basically we have for a menu two windows, window A and window B.
+   Window A is the regular window and Window B is used for transient windows.
+
+   At any one time, the views, like title view, NSMenuView are put either in
+   window A or in window B.  They are moved over from one window to the oter
+   when needed.
+
+   the code is supposed to know when it is using window A or B.
+   But it will probably only work correctly when
+
+   window A correspond to _transient == NO
+   window B correspond to _transient == YES
+*/
+
+
 /* Subclass of NSPanel since menus cannot become key */
 @interface NSMenuPanel : NSPanel
-@end
-
-/* A menu's title is an instance of this class */
-@interface NSMenuWindowTitleView : NSView
-{
-  id  menu;
-  NSButton *button;
-}
-
-- (void) addCloseButton;
-- (void) releaseCloseButton;
-- (void) createButton;
-- (void) setMenu: (NSMenu*)menu;
-- (NSMenu*) menu;
-
 @end
 
 @interface NSMenuView (GNUstepPrivate)
@@ -80,13 +114,18 @@
 
 
 static NSZone	*menuZone = NULL;
-static NSString	*NSMenuLocationsKey = @"NSMenuLocations";
+static NSString	*NSMenuLocationsKey = @"NSMenuLocations"; 
+static NSString *NSEnqueuedMenuMoveName = @"EnqueuedMoveNotificationName";
 static NSNotificationCenter *nc;
 
 @interface	NSMenu (GNUstepPrivate)
+
 - (NSString *) _locationKey;
 - (NSMenuPanel *) _createWindow;
+- (void) _updateUserDefaults: (id) notification;
+
 @end
+
 
 @implementation NSMenuPanel
 - (BOOL) canBecomeKeyWindow
@@ -139,6 +178,68 @@ static NSNotificationCenter *nc;
   return win;
 }
 
+/**
+   Will track the mouse movement.  It will trigger the updating of the user
+   defaults in due time.
+*/
+- (void) _menuMoved: (id) notification
+{
+  NSNotification *resend;
+
+  resend = [NSNotification notificationWithName: NSEnqueuedMenuMoveName
+                           object: self];
+  
+  [[NSNotificationQueue defaultQueue]
+    enqueueNotification: resend
+    postingStyle: NSPostASAP
+    coalesceMask: NSNotificationCoalescingOnSender
+    forModes:  [NSArray arrayWithObject: NSDefaultRunLoopMode]];
+}
+
+/**
+   Save the current menu position in the standard user defaults
+*/
+- (void) _updateUserDefaults: (id) notification
+{
+  NSString *key;
+
+  NSDebugLLog (@"NSMenu", @"Synchronizing user defaults");
+  key = [self _locationKey];
+  if (key != nil)
+    {
+      NSUserDefaults		*defaults;
+      NSMutableDictionary	*menuLocations;
+      NSString			*locString;
+
+      defaults = [NSUserDefaults standardUserDefaults];
+      menuLocations = [[defaults objectForKey: NSMenuLocationsKey] mutableCopy];
+
+      if ([_aWindow isVisible] && [self isTornOff])
+        {
+          if (menuLocations == nil)
+            {
+              menuLocations = AUTORELEASE([[NSMutableDictionary alloc] initWithCapacity: 2]);
+            }
+          locString = [[self window] stringWithSavedFrame];
+          [menuLocations setObject: locString forKey: key];
+        }
+      else
+        {
+          [menuLocations removeObjectForKey: key];
+        }
+
+      if ([menuLocations count] > 0)
+        {
+          [defaults setObject: menuLocations forKey: NSMenuLocationsKey];
+        }
+      else
+        {
+          [defaults removeObjectForKey: NSMenuLocationsKey];
+        }
+      [defaults synchronize];
+    }
+}
+
 @end
 
 
@@ -168,7 +269,7 @@ static NSNotificationCenter *nc;
 }
 
 /*
- * Initializing a New NSMenu
+ *
  */
 - (id) init
 {
@@ -185,14 +286,15 @@ static NSNotificationCenter *nc;
   RELEASE(_view);
   RELEASE(_aWindow);
   RELEASE(_bWindow);
-  RELEASE(_titleView);
 
   [super dealloc];
 }
 
+/*
+   
+*/
 - (id) initWithTitle: (NSString*)aTitle
 {
-  float  height;
   NSView *contentView;
 
   [super init];
@@ -203,19 +305,12 @@ static NSNotificationCenter *nc;
   // Create an array to store out menu items.
   _items = [[NSMutableArray alloc] init];
 
-  // We have no supermenu.
-  // _superMenu = nil;
-  // _is_tornoff = NO;
-  // _follow_transient = NO;
-
   _changedMessagesEnabled = YES;
   _notifications = [[NSMutableArray alloc] init];
   _changed = YES;
   // According to the spec, menus do autoenable by default.
   _autoenable = YES;
 
-  // Transient windows private stuff.
-  // _oldAttachedMenu = nil;
 
   /* Please note that we own all this menu network of objects.  So, 
      none of these objects should be retaining us.  When we are deallocated,
@@ -231,15 +326,8 @@ static NSNotificationCenter *nc;
   _view = [[NSMenuView alloc] initWithFrame: NSMakeRect(0,0,50,50)];
   [_view setMenu: self];
 
-  // Create the title view
-  height = [[_view class] menuBarHeight];
-  _titleView = [[NSMenuWindowTitleView alloc] initWithFrame: 
-						NSMakeRect(0, 0, 50, height)];
-  [_titleView setMenu: self];
-
   contentView = [_aWindow contentView];
   [contentView addSubview: _view];
-  [contentView addSubview: _titleView];
 
   /* Set up the notification to start the process of redisplaying
      the menus where the user left them the last time.  
@@ -258,6 +346,16 @@ static NSNotificationCenter *nc;
       name: NSApplicationWillBecomeActiveNotification 
       object: NSApp];
 
+  [nc addObserver: self
+      selector: @selector (_menuMoved:)
+      name: NSWindowDidMoveNotification
+      object: _aWindow];
+
+  [nc addObserver: self
+      selector: @selector (_updateUserDefaults:)
+      name: NSEnqueuedMenuMoveName
+      object: self];
+  
   return self;
 }
 
@@ -558,18 +656,34 @@ static NSNotificationCenter *nc;
 
 - (void) submenuAction: (id)sender
 {
-  [_view detachSubmenu];
 }
+
 
 - (NSMenu *) attachedMenu
 {
-  if (_attachedMenu && _follow_transient
-      && !_attachedMenu->_follow_transient)
+  if (_attachedMenu && _transient
+      && !_attachedMenu->_transient)
     return nil;
 
   return _attachedMenu;
 }
 
+
+/**
+   Look for the semantics in the header.  Note that
+   this implementation works because there are ... cases:
+   <enum>
+   <item>
+   This menu is transient, its supermenu is also transient.
+   In this case we just do the check between the transient windows
+   and everything is fine
+   </item>
+   <item>
+   The menu is transient, its supermenu is not transient.
+   This can go WRONG
+   </item>
+   </enum>
+*/
 - (BOOL) isAttached
 {
   return _superMenu && [_superMenu attachedMenu] == self;
@@ -835,6 +949,9 @@ static NSNotificationCenter *nc;
 //
 // Updating the Menu Layout
 //
+// Wim 20030301: Question, what happens when the notification trigger
+// new notifications?  I think it is not allowed to add items
+// to the _notifications array while enumerating it.
 - (void) setMenuChangedMessagesEnabled: (BOOL)flag
 { 
   if (_changedMessagesEnabled != flag)
@@ -869,39 +986,25 @@ static NSNotificationCenter *nc;
   NSRect menuFrame;
   NSSize size;
 
-  //if ([_view needsSizing])
-    [_view sizeToFit];
+  [_view sizeToFit];
 
   menuFrame = [_view frame];
   size = menuFrame.size;
 
   windowFrame = [_aWindow frame];
+  [_aWindow setContentSize: size];
+  [_aWindow setFrameTopLeftPoint:
+              NSMakePoint(NSMinX(windowFrame),NSMaxY(windowFrame))];
 
+  windowFrame = [_bWindow frame];
+  [_bWindow setContentSize: size];
+  [_bWindow setFrameTopLeftPoint:
+              NSMakePoint(NSMinX(windowFrame),NSMaxY(windowFrame))];
+  
   if (_popUpButtonCell == nil)
     {
-      float height = [[_view class] menuBarHeight];
-
-      size.height += height;
-      [_aWindow setContentSize: size];
-      [_aWindow setFrameTopLeftPoint:
-	NSMakePoint(NSMinX(windowFrame),NSMaxY(windowFrame))];
-
-      windowFrame = [_bWindow frame];
-      [_bWindow setContentSize: size];
-      [_bWindow setFrameTopLeftPoint:
-	NSMakePoint(NSMinX(windowFrame),NSMaxY(windowFrame))];
-
       [_view setFrameOrigin: NSMakePoint (0, 0)];
-      [_titleView setFrame: NSMakeRect (0, size.height - height, 
-				       size.width, height)];
-      [_titleView setNeedsDisplay: YES];
-    }
-  else
-    {
-      [_aWindow setContentSize: size];
-      [_aWindow setFrameTopLeftPoint:
-	NSMakePoint(NSMinX(windowFrame),NSMaxY(windowFrame))];
-    }
+    } 
 
   [_view setNeedsDisplay: YES];
 
@@ -1013,23 +1116,22 @@ static NSNotificationCenter *nc;
 #define IS_OFFSCREEN(WINDOW) \
   !(NSContainsRect([[NSScreen mainScreen] frame], [WINDOW frame]))
 
-- (void) _setTornOff: (BOOL)flag
+- (void) setTornOff: (BOOL)flag
 {
   NSMenu	*supermenu;
 
-  _is_tornoff = flag;
+  _is_tornoff = flag; 
 
   if (flag)
-    [_titleView addCloseButton];
-  else
-    [_titleView releaseCloseButton];
-
-  supermenu = [self supermenu];
-  if (supermenu != nil)
     {
-      [[supermenu menuRepresentation] setHighlightedItemIndex: -1];
-      supermenu->_attachedMenu = nil;
+      supermenu = [self supermenu];
+      if (supermenu != nil)
+        {
+          [[supermenu menuRepresentation] setHighlightedItemIndex: -1];
+          supermenu->_attachedMenu = nil;
+        }
     }
+  [_view update];
 }
 
 - (void) _showTornOffMenuIfAny: (NSNotification*)notification
@@ -1051,7 +1153,7 @@ static NSNotificationCenter *nc;
 	  location = [menuLocations objectForKey: key];
 	  if (location && [location isKindOfClass: [NSString class]])
 	    {
-	      [self _setTornOff: YES];
+	      [self setTornOff: YES];
 	      [self display];
 	    }
 	}
@@ -1068,52 +1170,25 @@ static NSNotificationCenter *nc;
   }
 }
 
-- (BOOL) isFollowTransient
+- (BOOL) isTransient
 {
-  return _follow_transient;
+  return _transient;
 } 
 
 - (BOOL) isPartlyOffScreen
 {
-  return _isPartlyOffScreen;
-}
-
-- (void) nestedCheckOffScreen
-{
-  // This method is used when the menu is moved.
-  if (_attachedMenu)
-    [_attachedMenu nestedCheckOffScreen];
-
-  _isPartlyOffScreen = IS_OFFSCREEN(_aWindow);
+  return IS_OFFSCREEN ([self window]);
 }
 
 - (void) _performMenuClose: (id)sender
 {
-  NSString		*key;
-
   if (_attachedMenu)
     [_view detachSubmenu];
-
-  key = [self _locationKey];
-  if (key != nil)
-    {
-      NSUserDefaults		*defaults;
-      NSMutableDictionary	*menuLocations;
-
-      defaults = [NSUserDefaults standardUserDefaults];
-      menuLocations = [[defaults objectForKey: NSMenuLocationsKey] mutableCopy];
-      [menuLocations removeObjectForKey: key];
-      if ([menuLocations count] > 0)
-        [defaults setObject: menuLocations forKey: NSMenuLocationsKey];
-      else
-        [defaults removeObjectForKey: NSMenuLocationsKey];
-      RELEASE(menuLocations);
-      [defaults synchronize];
-    }
-
+  
   [_view setHighlightedItemIndex: -1];
-  [self _setTornOff: NO];
   [self close];
+  [self setTornOff: NO];
+  [self _updateUserDefaults: nil];
 } 
 
 - (void) _rightMouseDisplay: (NSEvent*)theEvent
@@ -1125,6 +1200,11 @@ static NSNotificationCenter *nc;
 
 - (void) display
 {
+  if (_transient)
+    {
+      NSDebugLLog (@"NSMenu", @"trying to display while alreay displayed transient");
+    }
+  
   if (_changed)
     [self sizeToFit];
 
@@ -1142,10 +1222,7 @@ static NSNotificationCenter *nc;
 	  [self setGeometry];
 	}
     }
-
   [_aWindow orderFrontRegardless];
-
-  _isPartlyOffScreen = IS_OFFSCREEN(_aWindow);
 }
 
 - (void) displayTransient
@@ -1153,8 +1230,15 @@ static NSNotificationCenter *nc;
   NSPoint location;
   NSView *contentView;
 
-  _follow_transient = YES;
-
+  if (_transient)
+    {
+      NSDebugLLog (@"NSMenu", @"displaying transient while it is transient");
+      return;
+    }
+  
+  _oldHiglightedIndex = [[self menuRepresentation] highlightedItemIndex];
+  _transient = YES;
+  
   /*
    * Cache the old submenu if any and query the supermenu our position.
    * Otherwise, raise menu under the mouse.
@@ -1180,19 +1264,13 @@ static NSNotificationCenter *nc;
   [_bWindow setFrameOrigin: location];
 
   [_view removeFromSuperviewWithoutNeedingDisplay];
-  [_titleView removeFromSuperviewWithoutNeedingDisplay];
-
-  if (_is_tornoff)
-    [_titleView releaseCloseButton];
 
   contentView = [_bWindow contentView];
   [contentView addSubview: _view];
-  [contentView addSubview: _titleView];
-
+  [_view update];
   [_bWindow orderFront: self];
-
-  _isPartlyOffScreen = IS_OFFSCREEN(_bWindow);
 }
+
 
 - (void) setGeometry
 {
@@ -1232,6 +1310,12 @@ static NSNotificationCenter *nc;
 {
   NSMenu *sub = [self attachedMenu];
 
+
+  if (_transient)
+    {
+      NSDebugLLog (@"NSMenu", @"We should not close ordinary menu while transient version is still open");
+    }
+  
   /*
    * If we have an attached submenu, we must close that too - but then make
    * sure we still have a record of it so that it can be re-displayed if we
@@ -1245,39 +1329,48 @@ static NSNotificationCenter *nc;
   [_aWindow orderOut: self];
   [_aWindow setFrameOrigin: NSMakePoint (0, 0)];
 
-  if (_superMenu)
-    _superMenu->_attachedMenu = nil;
+  if (_superMenu && ![self isTornOff])
+    {
+      _superMenu->_attachedMenu = nil;
+      [[_superMenu menuRepresentation] setHighlightedItemIndex: -1];
+    }
 }
 
 - (void) closeTransient
 {
   NSView *contentView;
+
+  if (_transient == NO)
+    {
+      NSDebugLLog (@"NSMenu", @"Closing transient: %@ while it is NOT transient now", _title);
+      return;
+    }
   
   [_bWindow orderOut: self];
   [_view removeFromSuperviewWithoutNeedingDisplay];
-  [_titleView removeFromSuperviewWithoutNeedingDisplay];
 
   contentView = [_aWindow contentView];
   [contentView addSubview: _view];
-
-  if (_is_tornoff)
-    [_titleView addCloseButton];
-
-  [contentView addSubview: _titleView];
-  [contentView setNeedsDisplay: YES];
+  [contentView setNeedsDisplay: YES]; 
 
   // Restore the old submenu (if any).
   if (_superMenu != nil)
-    _superMenu->_attachedMenu = _oldAttachedMenu;
+    {
+      _superMenu->_attachedMenu = _oldAttachedMenu;
+      [[_superMenu menuRepresentation] setHighlightedItemIndex:
+                                         [_superMenu indexOfItemWithSubmenu: _superMenu->_attachedMenu]];
+    }
 
-  _follow_transient = NO;
+  [[self menuRepresentation] setHighlightedItemIndex: _oldHiglightedIndex];
+  
+  _transient = NO;
 
-  _isPartlyOffScreen = IS_OFFSCREEN(_aWindow);
+  [_view update];
 }
 
 - (NSWindow*) window
 {
-  if (_follow_transient)
+  if (_transient)
     return (NSWindow *)_bWindow;
   else
     return (NSWindow *)_aWindow;
@@ -1290,7 +1383,7 @@ static NSNotificationCenter *nc;
 */
 - (void) nestedSetFrameOrigin: (NSPoint) aPoint
 {
-  NSWindow *theWindow = _follow_transient ? _bWindow : _aWindow;
+  NSWindow *theWindow = [self window];
 
   // Move ourself and get our width.
   [theWindow setFrameOrigin: aPoint];
@@ -1307,39 +1400,37 @@ static NSNotificationCenter *nc;
 
 - (void) shiftOnScreen
 {
-  NSWindow *theWindow = _follow_transient ? _bWindow : _aWindow;
+  NSWindow *theWindow = _transient ? _bWindow : _aWindow;
   NSRect    frameRect = [theWindow frame];
+  NSRect    screenRect = [[NSScreen mainScreen] frame];
   NSPoint   vector    = {0.0, 0.0};
-  BOOL      moveIt    = YES;
-
-  if (frameRect.origin.y < 0)
+  BOOL      moveIt    = NO;
+  
+  // 1 - determine the amount we need to shift in the y direction.
+  if (NSMinY (frameRect) < 0)
     {
-      if (frameRect.origin.y + SHIFT_DELTA <= 0)
-	vector.y = SHIFT_DELTA;
-      else
-	vector.y = -frameRect.origin.y;
+      vector.y = MIN (SHIFT_DELTA, -NSMinY (frameRect));
+      moveIt = YES;
     }
-  else if (frameRect.origin.x < 0)
+  else if (NSMaxY (frameRect) > NSMaxY (screenRect))
     {
-      if (frameRect.origin.x + SHIFT_DELTA <= 0)
-	vector.x = SHIFT_DELTA;
-      else
-	vector.x = -frameRect.origin.x;
+      vector.y = -MIN (SHIFT_DELTA, NSMaxY (frameRect) - NSMaxY (screenRect));
+      moveIt = YES;
     }
-  else
-    {
-      vector.x  = frameRect.origin.x + frameRect.size.width;
-      vector.x -= [[NSScreen mainScreen] frame].size.width;
 
-      if (vector.x > 0)
-	{
-	  if (vector.x - SHIFT_DELTA <= 0)
-	    vector.x = -SHIFT_DELTA;
-	  else
-	    vector.x = -vector.x - 2;
-	}
-      else
-	moveIt = NO;
+  // 2 - determine the amount we need to shift in the x direction.
+  if (NSMinX (frameRect) < 0)
+    {
+      vector.x = MIN (SHIFT_DELTA, -NSMinX (frameRect));
+      moveIt = YES;
+    }
+  // Note the -3.  This is done so the menu, after shifting completely
+  // has some spare room on the right hand side.  This is needed otherwise
+  // the user can never access submenus of this menu.
+  else if (NSMaxX (frameRect) > NSMaxX (screenRect) - 3)
+    {
+      vector.x = -MIN (SHIFT_DELTA, NSMaxX (frameRect) - NSMaxX (screenRect) + 3);
+      moveIt = YES;
     }
 
   if (moveIt)
@@ -1353,7 +1444,7 @@ static NSNotificationCenter *nc;
 	for (candidateMenu = masterMenu = self;
 	     (candidateMenu = masterMenu->_superMenu)
 	       && (!masterMenu->_is_tornoff
-		   || masterMenu->_follow_transient);
+		   || masterMenu->_transient);
 	     masterMenu = candidateMenu);
 
 	masterLocation = [[masterMenu window] frame].origin;
@@ -1362,8 +1453,6 @@ static NSNotificationCenter *nc;
 
 	[masterMenu nestedSetFrameOrigin: destinationPoint];
     }
-  else
-    _isPartlyOffScreen = NO;
 }
 
 - (BOOL)_ownedByPopUp
@@ -1378,191 +1467,18 @@ static NSNotificationCenter *nc;
       _popUpButtonCell = popUp;
       if (popUp != nil)
 	{
-	  [_titleView removeFromSuperviewWithoutNeedingDisplay];
 	  [_aWindow setLevel: NSPopUpMenuWindowLevel];
 	  [_bWindow setLevel: NSPopUpMenuWindowLevel];
 	}
-
-      {
-	NSArray *itemCells = [_view _itemCells];
-	int i;
-	int count = [itemCells count];
-	
-	for ( i = 0; i < count; i++ )
-	  {
-	    [[itemCells objectAtIndex: i] setMenuView: _view];
-	  }
-      }
     }
+  [self update];
+}
+
+- (NSString*) description
+{
+  return [NSString stringWithFormat: @"NSMenu: %@ (%@)",
+            _title, _transient ? @"Transient": @"Normal"];
 }
 
 @end
 
-
-@implementation NSMenuWindowTitleView
-
-- (BOOL) acceptsFirstMouse: (NSEvent *)theEvent
-{
-  return YES;
-} 
- 
-- (void) setMenu: (NSMenu*)aMenu
-{
-  menu = aMenu;
-}
-
-- (NSMenu*) menu
-{
-  return menu;
-}
-  
-- (void) drawRect: (NSRect)rect
-{
-  NSRect workRect = [self bounds];
-  NSRectEdge sides[] = {NSMinXEdge, NSMaxYEdge};
-  float grays[] = {NSDarkGray, NSDarkGray};
-  /* Cache the title attributes */
-  static NSDictionary *attr = nil;
-
-  // Draw the dark gray upper left lines.
-  workRect = NSDrawTiledRects(workRect, workRect, sides, grays, 2);
-  
-  // Draw the title box's button.
-  NSDrawButton(workRect, workRect);
-  
-  // Paint it Black!
-  workRect.origin.x += 1;
-  workRect.origin.y += 2;
-  workRect.size.height -= 3;
-  workRect.size.width -= 3;
-  [[NSColor windowFrameColor] set];
-  NSRectFill(workRect);
-
-  // Draw the title
-  if (attr == nil)
-    {
-      attr = [[NSDictionary alloc] 
-	       initWithObjectsAndKeys: 
-		 [NSFont boldSystemFontOfSize: 0], NSFontAttributeName,
-	       [NSColor windowFrameTextColor], NSForegroundColorAttributeName,
-	       nil];
-    }
-
-  // This gives the correct position
-  workRect.origin.x += 5;
-  workRect.size.width -= 5;
-  workRect.size.height -= 2;
-  [[menu title] drawInRect: workRect  withAttributes: attr];
-}
-
-- (void) mouseDown: (NSEvent*)theEvent
-{
-  NSString		*key;
-  NSPoint		lastLocation;
-  NSPoint		location;
-  unsigned		eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask;
-  BOOL			done = NO;
-  NSDate		*theDistantFuture = [NSDate distantFuture];
-
-  lastLocation = [theEvent locationInWindow];
-   
-  if (![menu isTornOff] && [menu supermenu])
-    {
-      [menu _setTornOff: YES];
-    }
- 
-  while (!done)
-    {
-      theEvent = [NSApp nextEventMatchingMask: eventMask
-                                     untilDate: theDistantFuture
-                                        inMode: NSEventTrackingRunLoopMode
-                                       dequeue: YES];
-  
-      switch ([theEvent type])
-        {
-	case NSLeftMouseUp: 
-	  done = YES; 
-	  break;
-	case NSLeftMouseDragged:   
-	  location = [_window mouseLocationOutsideOfEventStream];
-	  if (NSEqualPoints(location, lastLocation) == NO)
-	    {
-	      NSPoint origin = [_window frame].origin;
-
-	      origin.x += (location.x - lastLocation.x);
-	      origin.y += (location.y - lastLocation.y);
-	      [menu nestedSetFrameOrigin: origin];
-	      [menu nestedCheckOffScreen];
-	    }
-	  break;
-         
-	default: 
-	  break;
-        }
-    }
-
-  /*
-   * Same current menu frame in defaults database.
-   */
-  key = [menu _locationKey];
-  if (key != nil)
-    {
-      NSUserDefaults		*defaults;
-      NSMutableDictionary	*menuLocations;
-      NSString			*locString;
-
-      defaults = [NSUserDefaults standardUserDefaults];
-      menuLocations = [[defaults objectForKey: NSMenuLocationsKey] mutableCopy];
-      if (menuLocations == nil)
-	{
-	  menuLocations = AUTORELEASE([[NSMutableDictionary alloc] initWithCapacity: 2]);
-	}
-      locString = [[menu window] stringWithSavedFrame];
-      [menuLocations setObject: locString forKey: key];
-      [defaults setObject: menuLocations forKey: NSMenuLocationsKey];
-      [defaults synchronize];
-    }
-}
-
-- (void) createButton
-{
-  // create the menu's close button
-  NSImage* closeImage = [NSImage imageNamed: @"common_Close"];
-  NSImage* closeHImage = [NSImage imageNamed: @"common_CloseH"];
-  NSSize imageSize = [closeImage size];
-  NSRect rect = { { _frame.size.width - imageSize.width - 4,
-		    (_frame.size.height - imageSize.height) / 2},
-		  { imageSize.height, imageSize.width } };
-
-  button = [[NSButton alloc] initWithFrame: rect];
-  [button setButtonType: NSMomentaryLight];
-  [button setImagePosition: NSImageOnly];
-  [button setImage: closeImage];
-  [button setAlternateImage: closeHImage];
-  [button setBordered: NO];
-  [button setTarget: menu];
-  [button setAction: @selector(_performMenuClose:)];
-  [button setAutoresizingMask: NSViewMinXMargin];
-  
-  [self setAutoresizingMask: NSViewMinXMargin | NSViewMinYMargin | NSViewMaxYMargin];
-}
-            
-- (void) releaseCloseButton
-{
-  [button removeFromSuperview];
-}
-  
-- (void) addCloseButton
-{
-  if (button == nil)
-    [self createButton];
-  [self addSubview: button];
-  [self setNeedsDisplay: YES];
-}
-
-- (void) rightMouseDown: (NSEvent*)theEvent
-{
-  // Dont show our menu
-}
-
-@end /* NSMenuWindowTitleView */

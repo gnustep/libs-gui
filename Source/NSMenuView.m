@@ -25,8 +25,7 @@
    License along with this library; see the file COPYING.LIB.
    If not, write to the Free Software Foundation,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-*/ 
-
+*/
 
 #include <Foundation/NSRunLoop.h>
 
@@ -34,8 +33,39 @@
 #include <AppKit/NSEvent.h>
 #include <AppKit/NSFont.h>
 #include <AppKit/NSMenuView.h>
+#include <AppKit/NSMenu.h>
+#include <AppKit/NSButton.h>
 #include <AppKit/NSWindow.h>
 #include <AppKit/PSOperators.h>
+
+#include <Foundation/NSDebug.h>
+
+#include <AppKit/NSImage.h>
+
+/*
+  NSMenuView contains:
+
+  a) Title, if needed, this is a subview
+  b) menu items
+
+
+*/
+/* A menu's title is an instance of this class */
+@class NSButton;
+
+@interface NSMenuWindowTitleView : NSView
+{
+  NSMenu *menu;
+  NSButton *button;
+}
+
+- (void) addCloseButton;
+- (void) removeCloseButton;
+- (void) createButton;
+- (void) setMenu: (NSMenu*)menu;
+- (NSMenu*) menu;
+
+@end
 
 @implementation NSMenuView
 
@@ -80,6 +110,13 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 {
   return YES;
 }
+// We do not want to popup menus in this menu.
+- (id) menuForEvent: (NSEvent*) theEvent
+{
+  NSDebugLLog (@"NSMenu", @"Query for menu in view");
+  return nil;
+}
+
 
 /*
  * Init methods.
@@ -108,6 +145,11 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
   // Create an array to store our menu item cells.
   _itemCells = [NSMutableArray new];
 
+  // Create title view and add it.  CHECKME, should we do this here?
+  _titleView = [[NSMenuWindowTitleView alloc] init];
+
+  [self addSubview: _titleView];
+  
   return self;
 }
 
@@ -171,6 +213,7 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
                     name: NSMenuDidRemoveItemNotification
                   object: _menu];
 
+  [_titleView setMenu: _menu];  // WO CHECKME does this needs reorganizing?
   // Force menu view's layout to be recalculated.
   [self setNeedsSizing: YES];
 }
@@ -259,12 +302,7 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 
 - (NSMenuView*) attachedMenuView
 {
-  NSMenu *attachedMenu;
-
-  if ((attachedMenu = [_menu attachedMenu]))
-    return [attachedMenu menuRepresentation];
-  else
-    return nil;
+  return [[_menu attachedMenu] menuRepresentation];
 }
 
 - (NSMenu*) attachedMenu
@@ -366,6 +404,7 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 /*
  * Working with Submenus.
  */
+
 - (void) detachSubmenu
 {
   NSMenu     *attachedMenu = [_menu attachedMenu];
@@ -378,17 +417,24 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 
   [attachedMenuView detachSubmenu];
 
-  [attachedMenuView setHighlightedItemIndex: -1];
-
-  if ([attachedMenu isFollowTransient])
+  NSDebugLLog (@"NSMenu", @"detach submenu: %@ from: %@",
+               attachedMenu, _menu);
+  
+  if ([attachedMenu isTransient])
     {
       [attachedMenu closeTransient];
-      [attachedMenuView setHighlightedItemIndex: _oldHighlightedItemIndex];
     }
   else
-    [attachedMenu close];
+    {
+      [attachedMenu close];
+    }
 }
 
+/**
+   Attach submenu if the item at index is a submenu.
+   It will figure out if the new submenu should be transient
+   or not.
+*/
 - (void) attachSubmenuForItemAtIndex: (int)index
 {
   /*
@@ -397,17 +443,26 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
    * soon as we release the mouse the user will be able to leave submenus
    * open on the screen and interact with other menus at the same time.
    */
-  NSMenu *attachableMenu = [[_items_link objectAtIndex: index] submenu];
+  NSMenu *attachableMenu;
 
-  if ([attachableMenu isTornOff] || [_menu isFollowTransient])
+  if (index < 0)
     {
-      _oldHighlightedItemIndex = [[attachableMenu menuRepresentation]
-						  highlightedItemIndex];
+      return;
+    }
+  
+  attachableMenu = [[_items_link objectAtIndex: index] submenu];
+
+  if ([attachableMenu isTornOff] || [_menu isTransient])
+    {
+      NSDebugLLog (@"NSMenu",  @"Will open transient: %@", attachableMenu);
       [attachableMenu displayTransient];
-      [[attachableMenu menuRepresentation] setHighlightedItemIndex: -1];
+      [[attachableMenu menuRepresentation] setHighlightedItemIndex: -1]; 
     }
   else
-    [attachableMenu display];
+    {
+      NSDebugLLog (@"NSMenu",  @"Will open normal: %@", attachableMenu);
+      [attachableMenu display];
+    }
 }
 
 /*
@@ -417,6 +472,15 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 {
   [_menu update];
 
+  if ([_menu isTornOff] && ![_menu isTransient])
+    {
+      [_titleView addCloseButton];
+    }
+  else
+    {
+      [_titleView removeCloseButton];
+    }
+  
   if (_needsSizing)
     [self sizeToFit];
 }
@@ -527,8 +591,12 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 
   if (_horizontal == NO)
     {
+      float menuBarHeight = [[self class] menuBarHeight];
+      
       [self setFrameSize: NSMakeSize(_cellSize.width + _leftBorderOffset, 
-				     (howMany * _cellSize.height))];
+				     (howMany * _cellSize.height) + menuBarHeight)];
+      [_titleView setFrame: NSMakeRect (0, howMany * _cellSize.height,
+                                        NSWidth (_bounds), menuBarHeight)];
     }
   else
     {
@@ -617,7 +685,7 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
    */
   if (_horizontal == NO)
     {
-      theRect.origin.y = _bounds.size.height - (_cellSize.height * (index + 1));
+      theRect.origin.y = _cellSize.height * ([_itemCells count] - index - 1);
       theRect.origin.x = _leftBorderOffset;
     }
   else
@@ -635,6 +703,11 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
   return theRect;
 }
 
+/**
+   Returns the index of the item below point.
+   Returns -1 if mouse is not above
+   a menu item.
+*/
 - (int) indexOfItemAtPoint: (NSPoint)point
 {
   unsigned howMany = [_itemCells count];
@@ -774,7 +847,7 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
   // TODO
 
   // Compute position for popups, if needed
-  if (selectedItemIndex > -1)
+  if (selectedItemIndex != -1) 
     {
       if (_horizontal == NO)
         {
@@ -852,7 +925,8 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
   NSMenu     *candidateMenu = _menu;
   NSMenuView *targetMenuView;
   int        indexToHighlight = index;
-
+  int        oldHighlightedIndex;
+  
   for (;;)
     {
       NSMenu *superMenu = [candidateMenu supermenu];
@@ -872,9 +946,7 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 	}
     }
 
-  if ([targetMenuView attachedMenu])
-    [targetMenuView detachSubmenu];
-
+  oldHighlightedIndex = [targetMenuView highlightedItemIndex];
   [targetMenuView setHighlightedItemIndex: indexToHighlight];
 
   /* We need to let the run loop run a little so that the fact that
@@ -887,29 +959,77 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 
   if (![_menu _ownedByPopUp])
     {
-      [targetMenuView setHighlightedItemIndex: -1];
+      [targetMenuView setHighlightedItemIndex: oldHighlightedIndex];
     }
 }
 
 #define MOVE_THRESHOLD_DELTA 2.0
 #define DELAY_MULTIPLIER     10
 
+/**
+   This method is responsible for tracking the mouse while this menu
+   is on the screen and the user is busy navigating the menu or one
+   of it submenus.  Responsible does not mean that this method does it
+   all.  For submenus for example it will call, indirectly, itself for
+   submenu under consideration.
+
+   It will return YES if user released mouse, not above a submenu item.
+   NO in all other circumstances.
+
+   Implementation detail:
+
+   <list>
+   <item> It use periodic events to update the highlight state
+     and attach / detach submenus.
+   </item>
+   <item> The flag justAttachedNewSubmenu is set to YES when
+     a new submenu is attached.  The effect is that the
+     highlightin / attaching / detaching is surpressed
+     for this menu.  This is done so the user is given
+     a change to move the mouse pointer into the newly
+     attached submenu.  Otherwise it would immediately
+     be removed as the mouse pointer move over another
+     item.
+
+     The logic for resetting the flag is rather adhoc.
+
+   <item> the flag subMenusNeedRemoving means that we
+     will remove all the submenus after we are done.
+
+     This flag is used to clean up the submenus
+     when the user has opened a submenu by clicking
+     and wants to close it again by clicking on the
+     hihglighted item.
+   </item>  
+   <item> When the user released the mouse this method
+     will cleanup all the transient menus.
+
+     Not only its own, but also its attached menu
+     and all its transient super menus.
+   </item>
+   <item> The clean up is done BEFORE the action is executed.
+     This is needed otherwise `hiding' the application
+     leaves a dangling menu.   If this is not acceptable,
+     there should be another mechanism of handling
+     the hiding.  BTW besides the `hiding' the application,
+     model panels are also a problem when the menu
+     is not cleared before executing the action.
+    </item>
+    </list>
+*/
 - (BOOL) trackWithEvent: (NSEvent*)event
 {
   unsigned	eventMask = NSPeriodicMask;
   NSDate        *theDistantFuture = [NSDate distantFuture];
-  int		index;
-  NSPoint	location;
   NSPoint	lastLocation = {0,0};
-  NSMenu	*alreadyAttachedMenu = NO;
-  BOOL		mouseMoved = NO;
-  BOOL		delayedSelect = NO;
+  BOOL		justAttachedNewSubmenu = NO;
+  BOOL          subMenusNeedRemoving = YES;
   int		delayCount = 0;
-  float		xDelta = MOVE_THRESHOLD_DELTA;
+  int           indexOfActionToExecute = -1;
   NSEvent	*original;
-  NSEventType	type = [event type];
+  NSEventType	type;
   NSEventType	end;
-
+  
   /*
    * The original event is unused except to determine whether the method
    * was invoked in response to a right or left mouse down.
@@ -917,122 +1037,144 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
    * submenu.
    */
   original = AUTORELEASE(RETAIN(event));
-  if (type == NSRightMouseDown)
+
+  type = [event type];
+
+  if (type == NSRightMouseDown || type == NSRightMouseDragged)
     {
       end = NSRightMouseUp;
       eventMask |= NSRightMouseUpMask | NSRightMouseDraggedMask;
     }
-  else if (type == NSOtherMouseDown)
+  else if (type == NSOtherMouseDown || type == NSOtherMouseDragged)
     {
       end = NSOtherMouseUp;
       eventMask |= NSOtherMouseUpMask | NSOtherMouseDraggedMask;
     }
-  else
+  else if (type == NSLeftMouseDown || type == NSLeftMouseDragged)
     {
       end = NSLeftMouseUp;
       eventMask |= NSLeftMouseUpMask | NSLeftMouseDraggedMask;
     }
-      
+  else
+    {
+      NSLog (@"Unexpected event: %d during event tracking in NSMenuView", type);
+      end = NSLeftMouseUp;
+      eventMask |= NSLeftMouseUpMask | NSLeftMouseDraggedMask;
+    }
+  
   do
     {
-      location     = [_window mouseLocationOutsideOfEventStream];
-      index        = [self indexOfItemAtPoint: location];
+      if (type == NSPeriodic || event == original)
+	{
+          NSPoint	location;
+          int           index;
+          
+          location     = [_window mouseLocationOutsideOfEventStream];
+          index        = [self indexOfItemAtPoint: location];
 
-      if (index != _highlightedItemIndex)
-	{
-	  mouseMoved = YES;	/* Ok - had an initial movement. */
-	}
-      if (type == NSPeriodic)
-	{
+          // 1 - if menus is only partly visible and the mouse is at the
+          //     edge of the screen we move the menu so it will be visible.
+          
 	  if ([_menu isPartlyOffScreen])
 	    {
 	      NSPoint pointerLoc = [_window convertBaseToScreen: location];
-
-	      // TODO: Why 1 in the Y axis?
+              // The +/-1 in the y - direction is because the flipping between X-coordinates
+              // and GNUstep coordinates let the GNUstep screen coordinates start with 1.
 	      if (pointerLoc.x == 0 || pointerLoc.y == 1
-		|| pointerLoc.x == [[_window screen] frame].size.width - 1)
+                  || pointerLoc.x == [[_window screen] frame].size.width - 1
+                  || pointerLoc.y == [[_window screen] frame].size.height)
 		[_menu shiftOnScreen];
 	    }
 
-	  if (delayedSelect && mouseMoved && [event type] == NSPeriodic)
-	    {
-	      float	xDiff = location.x - lastLocation.x;
 
-	      if (xDiff > xDelta)
-		{
-		  delayCount++;
-		  if (delayCount >= DELAY_MULTIPLIER)
-		    delayedSelect = NO;
-		}
-	      else
-		{
-		  delayedSelect = NO;
-		}
+          // 2 - Check if we have to reset the justAttachedNewSubmenu flag to NO.
+          if (justAttachedNewSubmenu && index != -1 && index != _highlightedItemIndex)
+            { 
+              if (location.x - lastLocation.x > MOVE_THRESHOLD_DELTA)
+                {
+                  delayCount ++;
+                  if (delayCount >= DELAY_MULTIPLIER)
+                    {
+                      justAttachedNewSubmenu = NO;
+                    }
+                }
+              else
+                {
+                  justAttachedNewSubmenu = NO;
+                }
+            }
 
-	      lastLocation = location;
-	    }
-	}
 
-      if (index == -1)
-	{
-	  NSWindow	*w;
+          // 3 - If we have moved outside this menu, take appropriate action
+          if (index == -1)
+            {
+              NSPoint   locationInScreenCoordinates;
+              NSWindow *windowUnderMouse;
+              NSMenu   *candidateMenu;
+              
+              subMenusNeedRemoving = NO;
+              
+              locationInScreenCoordinates = [_window convertBaseToScreen: location];
 
-	  location = [_window convertBaseToScreen: location];
+              // 3a - Check if moved into one of the ancester menus.
+              //      This is tricky, there are a few possibilities:
+              //          We are a transient attached menu of a non-transient menu
+              //          We are a non-transient attached menu
+              //          We are a root: isTornOff of AppMenu
+              candidateMenu = [_menu supermenu];
+              while (candidateMenu  
+                     && !NSMouseInRect (locationInScreenCoordinates, [[candidateMenu window] frame], NO) // not found yet
+                     && (! ([candidateMenu isTornOff] && ![candidateMenu isTransient]))  // no root of display tree
+                     && [candidateMenu isAttached]) // has displayed parent
+                {
+                  candidateMenu = [candidateMenu supermenu];
+                }
+              
+              if (candidateMenu != nil && NSMouseInRect (locationInScreenCoordinates,
+                                                         [[candidateMenu window] frame], NO))
+                {
+                  // The call to fetch attachedMenu is not needed.  But putting
+                  // it here avoids flicker when we go back to an ancester meu
+                  // and the attached menu is alreay correct.
+                  [[[candidateMenu attachedMenu] menuRepresentation] detachSubmenu];
+                  return [[candidateMenu menuRepresentation]
+                           trackWithEvent: original];
+                }
 
-	  /*
-	   * If the mouse is back in the supermenu, we return NO so that
-	   * our caller knows the button was not released.
-	   */
-	  w = [[_menu supermenu] window];
-	  if (w != nil && NSMouseInRect(location, [w frame], NO) == YES)
-	    {
-	      return NO;
-	    }
-	  /*
-	   * if the mouse is in our attached menu - get that menu to track it.
-	   */
-	  w = [[_menu attachedMenu] window];
-	  if (w != nil && NSMouseInRect(location, [w frame], NO) == YES)
-	    {
-	      if ([[self attachedMenuView] trackWithEvent: original])
-		return YES;
-	    }
-	  else
-	    {
-	      if (index != _highlightedItemIndex)
-		[self setHighlightedItemIndex: index];
-	    }
-#if 0
-	  if (([_menu supermenu] && ![_menu isTornOff])
-	      || [_menu isFollowTransient])
-	    return NO;
-#endif
-	}
-      else
-	{
-	  if (index != _highlightedItemIndex)
-	    {
-	      if (![_menu attachedMenu] || !delayedSelect)
-		{
-		  [self setHighlightedItemIndex: index];
+              // 3b - Check if we enter the attached submenu
+              windowUnderMouse = [[_menu attachedMenu] window];
+              if (windowUnderMouse != nil && NSMouseInRect (locationInScreenCoordinates,
+                                                            [windowUnderMouse frame], NO))
+                {
+                  BOOL wasTransient = [_menu isTransient];
+                  BOOL subMenuResult = [[self attachedMenuView] trackWithEvent: original];
+                  
+                  if (subMenuResult && wasTransient == [_menu isTransient])
+                    {
+                      [self detachSubmenu];
+                    }
+                  return subMenuResult;
+                }
+            }
+          
+          // 4 - We changed the selected item and should update.
+          if (!justAttachedNewSubmenu && index != _highlightedItemIndex)
+            {
+              subMenusNeedRemoving = NO;
+              [self detachSubmenu];
+              [self setHighlightedItemIndex: index];
 
-		  if ([_menu attachedMenu])
-		    [self detachSubmenu];
-
-		  if ((alreadyAttachedMenu =
-		       [[_items_link objectAtIndex: index] submenu]))
-		    {
-		      [self attachSubmenuForItemAtIndex: index];
-		      mouseMoved = NO;
-		      delayedSelect = YES;
-		      delayCount = 0;
-		    }
-		  else
-		    {
-		      delayedSelect = NO;
-		    }
-		}
-	    }
+              // WO: Question?  Why the ivar _items_link
+              if (index >= 0 && [[_items_link objectAtIndex: index] submenu])
+                {
+                  [self attachSubmenuForItemAtIndex: index];
+                  justAttachedNewSubmenu = YES;
+                  delayCount = 0;
+                }
+            }
+          
+          // Update last seen location for the justAttachedNewSubmenu logic.
+          lastLocation = location;
 	}
 
       event = [NSApp nextEventMatchingMask: eventMask
@@ -1043,77 +1185,154 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
     }
   while (type != end);
 
-  // Perform actions as needed.
-  if (index != -1 && !alreadyAttachedMenu)
-    {
-      // Stop the periodic events before performing the action
-      [NSEvent stopPeriodicEvents];
-      [_menu performActionForItemAtIndex: index];
 
-      if (![_menu isFollowTransient] && ![_menu _ownedByPopUp])
-	[self setHighlightedItemIndex: -1];
+  // Ok, we released the mouse
+  // There are now a few possibilities:
+  // A - We released the mouse outside the menu.
+  //     Then we want the situation as it was before
+  //     we entered everything.
+  // B - We released the mouse on a submenu item
+  //     (i) - this was highlighted before we started clicking:
+  //           Remove attached menus
+  //     (ii) - this was not highlighted before pressed the mouse button;
+  //            Keep attached menus.
+  // C - We released the mouse above an ordinary action:
+  //     Execute the action.
+  //
+  //  In case A, B and C we want the transient menus to be removed
+  //  In case A and C we want to remove the menus that were created
+  //  during the dragging.
+
+  //  So we should do the following things:
+  // 
+  // 1 - Stop periodic events,
+  // 2 - Determine the action.
+  // 3 - Remove the Transient menus from the screen.
+  // 4 - Perform the action if there is one.
+  
+  [NSEvent stopPeriodicEvents];
+
+  // We need to store this, because _highlightedItemIndex
+  // will not be valid after we removed this menu from the screen.
+  indexOfActionToExecute = _highlightedItemIndex;
+  
+  // remove transient menus. --------------------------------------------
+  {
+    NSMenu *currentMenu = _menu;
+
+    while (currentMenu && ![currentMenu isTransient])
+      {
+        currentMenu = [currentMenu attachedMenu];
+      }
+    
+    while ([currentMenu isTransient] &&
+           [currentMenu supermenu])
+      {
+        currentMenu = [currentMenu supermenu];
+      }
+
+    [[currentMenu menuRepresentation] detachSubmenu];
+    
+    if ([currentMenu isTransient])
+      {
+        [currentMenu closeTransient];
+      }
+  }
+
+  // ---------------------------------------------------------------------
+  if (indexOfActionToExecute == -1)
+    {
+      return YES;
+    }
+  
+  if (indexOfActionToExecute >= 0
+      && [_menu attachedMenu] != nil && [_menu attachedMenu] ==
+      [[_items_link objectAtIndex: indexOfActionToExecute] submenu])
+    {
+      if (subMenusNeedRemoving)
+        {
+          [self detachSubmenu];
+        }
+      // Clicked on a submenu.
+      return NO;
     }
 
-  // Close menus if needed.
-  if (!_keepAttachedMenus || index == -1
-    || (alreadyAttachedMenu && [alreadyAttachedMenu isFollowTransient]))
+  [_menu performActionForItemAtIndex: indexOfActionToExecute];
+
+  // Remove highlighting.
+  // We first check if it still highlighted because it could be the
+  // case that we choose an action in a transient window which
+  // has already dissappeared.  
+  if (indexOfActionToExecute == _highlightedItemIndex)
     {
-      NSMenu     *parentMenu;
-      NSMenu     *masterMenu;
-
-      for (parentMenu = masterMenu = _menu;
-	   (parentMenu = [masterMenu supermenu])
-	    && (![masterMenu isTornOff] || [masterMenu isFollowTransient]);
-	   masterMenu = parentMenu);
-
-      if ([masterMenu attachedMenu])
-	{
-	  NSMenuView *masterMenuView = [masterMenu menuRepresentation];
-
-	  [masterMenuView detachSubmenu];
-	  [masterMenuView setHighlightedItemIndex: -1];
-	}
+      [self setHighlightedItemIndex: -1];
     }
-
   return YES;
 }
 
+/**
+   This method is called when the user clicks on a button
+   in the menu.  Or, if a right click happens and the
+   app menu is brought up.
+
+   The original position is stored, so we can restore
+   the position of menu.  The position of the menu
+   can change during the event tracking because
+   the menu will automatillay move when parts
+   are outside the screen and the user move the
+   mouse pointer to the edge of the screen.
+*/
 - (void) mouseDown: (NSEvent*)theEvent
 {
   NSRect	currentFrame;
   NSRect	originalFrame;
   NSPoint	currentTopLeft;
   NSPoint	originalTopLeft;
+  BOOL          restorePosition;
+  /*
+   * Only for non transient menus do we want
+   * to remember the position.
+   */ 
+  restorePosition = ![_menu isTransient];
 
-  _keepAttachedMenus = YES;
-  originalFrame = [_window frame];
-  originalTopLeft = originalFrame.origin;
-  originalTopLeft.y += originalFrame.size.height;
-
+  if (restorePosition)
+    { // store old position;
+      originalFrame = [_window frame];
+      originalTopLeft = originalFrame.origin;
+      originalTopLeft.y += originalFrame.size.height;
+    }
+  
   [NSEvent startPeriodicEventsAfterDelay: 0.1 withPeriod: 0.05];
   [self trackWithEvent: theEvent];
   [NSEvent stopPeriodicEvents];
 
-  currentFrame = [_window frame];
-  currentTopLeft = currentFrame.origin;
-  currentTopLeft.y += currentFrame.size.height;
-
-  if (NSEqualPoints(currentTopLeft, originalTopLeft) == NO)
+  if (restorePosition)
     {
-      NSPoint	origin = currentFrame.origin;
+      currentFrame = [_window frame];
+      currentTopLeft = currentFrame.origin;
+      currentTopLeft.y += currentFrame.size.height;
 
-      origin.x += (originalTopLeft.x - currentTopLeft.x);
-      origin.y += (originalTopLeft.y - currentTopLeft.y);
-      [_menu nestedSetFrameOrigin: origin];
-      [_menu nestedCheckOffScreen];
+      if (NSEqualPoints(currentTopLeft, originalTopLeft) == NO)
+        {
+          NSPoint	origin = currentFrame.origin;
+          
+          origin.x += (originalTopLeft.x - currentTopLeft.x);
+          origin.y += (originalTopLeft.y - currentTopLeft.y);
+          [_menu nestedSetFrameOrigin: origin];
+        }
     }
-  _keepAttachedMenus = NO;
+}
+
+- (void) rightMouseDown: (NSEvent*) theEvent
+{
+  [self mouseDown: theEvent];
 }
 
 - (BOOL) performKeyEquivalent: (NSEvent *)theEvent
 {
   return [_menu performKeyEquivalent: theEvent];
 }
+
 
 /*
  * NSCoding Protocol
@@ -1155,8 +1374,165 @@ _addLeftBorderOffsetToRect(NSRect aRect, BOOL isHorizontal)
 @end
 
 @implementation NSMenuView (GNUstepPrivate)
+
 - (NSArray *)_itemCells
 {
   return _itemCells;
 }
+
+
 @end
+
+@implementation NSMenuWindowTitleView
+
+- (BOOL) acceptsFirstMouse: (NSEvent *)theEvent
+{
+  return YES;
+} 
+ 
+- (void) setMenu: (NSMenu*)aMenu
+{
+  menu = aMenu;
+}
+
+- (NSMenu*) menu
+{
+  return menu;
+}
+  
+- (void) drawRect: (NSRect)rect
+{
+  NSRect workRect = [self bounds];
+  NSRectEdge sides[] = {NSMinXEdge, NSMaxYEdge};  float grays[] = {NSDarkGray, NSDarkGray};
+  /* Cache the title attributes */
+  static NSDictionary *attr = nil;
+
+  // Draw the dark gray upper left lines.
+  workRect = NSDrawTiledRects(workRect, workRect, sides, grays, 2);
+  
+  // Draw the title box's button.
+  NSDrawButton(workRect, workRect);
+  
+  // Paint it Black!
+  workRect.origin.x += 1;
+  workRect.origin.y += 2;
+  workRect.size.height -= 3;
+  workRect.size.width -= 3;
+  [[NSColor windowFrameColor] set];
+  NSRectFill(workRect);
+
+  // Draw the title
+  if (attr == nil)
+    {
+      attr = [[NSDictionary alloc] 
+	       initWithObjectsAndKeys: 
+		 [NSFont boldSystemFontOfSize: 0], NSFontAttributeName,
+	       [NSColor windowFrameTextColor], NSForegroundColorAttributeName,
+	       nil];
+    }
+
+  // This gives the correct position
+  // WO: No it doesn't!
+  workRect.origin.x += 5;
+  workRect.size.width -= 5;
+  workRect.size.height -= 2;
+  [[menu title] drawInRect: workRect  withAttributes: attr];
+}
+
+- (void) mouseDown: (NSEvent*)theEvent
+{
+  NSPoint		lastLocation;
+  NSPoint		location;
+  unsigned		eventMask = NSLeftMouseUpMask | NSLeftMouseDraggedMask;
+  BOOL			done = NO;
+  NSDate		*theDistantFuture = [NSDate distantFuture];
+
+  NSDebugLLog (@"NSMenu", @"Mouse down in title!");
+  
+  lastLocation = [theEvent locationInWindow];
+   
+  if (![menu isTornOff] && [menu supermenu])
+    {
+      [menu setTornOff: YES];
+    }
+
+  while (!done)
+    {
+      theEvent = [NSApp nextEventMatchingMask: eventMask
+                                     untilDate: theDistantFuture
+                                        inMode: NSEventTrackingRunLoopMode
+                                       dequeue: YES];
+  
+      switch ([theEvent type])
+        {
+        case NSRightMouseUp:
+        case NSLeftMouseUp: 
+	  done = YES; 
+	  break;
+        case NSRightMouseDragged:
+	case NSLeftMouseDragged:   
+	  location = [_window mouseLocationOutsideOfEventStream];
+	  if (NSEqualPoints(location, lastLocation) == NO)
+	    {
+	      NSPoint origin = [_window frame].origin;
+
+	      origin.x += (location.x - lastLocation.x);
+	      origin.y += (location.y - lastLocation.y);
+	      [menu nestedSetFrameOrigin: origin];
+	    }
+	  break;
+         
+	default: 
+	  break;
+        }
+    }
+}
+
+- (void) createButton
+{
+  // create the menu's close button
+  NSImage* closeImage = [NSImage imageNamed: @"common_Close"];
+  NSImage* closeHImage = [NSImage imageNamed: @"common_CloseH"];
+  NSSize imageSize = [closeImage size];
+  NSRect rect = { { _frame.size.width - imageSize.width - 4,
+		    (_frame.size.height - imageSize.height) / 2},
+		  { imageSize.height, imageSize.width } };
+
+  button = [[NSButton alloc] initWithFrame: rect];
+  [button setButtonType: NSMomentaryLight];
+  [button setImagePosition: NSImageOnly];
+  [button setImage: closeImage];
+  [button setAlternateImage: closeHImage];
+  [button setBordered: NO];
+  [button setTarget: menu];
+  [button setAction: @selector(_performMenuClose:)];
+  [button setAutoresizingMask: NSViewMinXMargin];
+  
+  [self setAutoresizingMask: NSViewMinXMargin | NSViewMinYMargin | NSViewMaxYMargin];
+}
+            
+- (void) removeCloseButton
+{
+  [button removeFromSuperview];
+}
+  
+- (void) addCloseButton
+{
+  if (button == nil)
+    [self createButton];
+  [self addSubview: button];
+  [self setNeedsDisplay: YES];
+}
+
+
+- (void) rightMouseDown: (NSEvent*)theEvent
+{
+}
+
+// We do not want to popup menus in this menu.
+- (id) menuForEvent: (NSEvent*) theEvent
+{
+  return nil;
+}
+
+@end /* NSMenuWindowTitleView */

@@ -1,3 +1,54 @@
+2003-03-06  Willem Rein Oudshoorn  <woudshoo@xs4all.nl>
+
+	* Source/NSMenuView.m: Added NSMenuTitleView (moved
+	from NSMenu).
+	([NSMenuView -detachSubmenu]): Removed setting highlighting.
+	([NSMenuView -attachSubmenuForItemAtIndex:]) added logging.
+	([NSMenuView -update]): Handle _titleView.
+	([NSMenuView -sizeToFit]): Take titleView into account
+	([NSMenuView -performActionWithHighlightingForItemAtIndex:]): 
+	restore old highlighting.
+	([NSMenuView -trackWithEvent:]): Rewritten.
+	([NSMenuView -mouseDown:]): Only restore menu position
+	when needed.
+	([NSMenuView -rightMouseDown:theEvent]): On menus treat
+	as ordinary mouse down to avoid rightclick menus on menus.
+
+	* Source/NSMenu.m (NSView): Moved NSMenuWindowTitleView to
+	NSMenuView.  Added comments. Added -_updateUserDefaults:,
+	-_menuMoved: methods to track moving menus.
+	Renamed -_setTornOff:  to -setTornOff:, -isFollowTransient to
+	-isTransient.
+	([NSMenu -initWithTitle:]): Remove some old comments, remove
+	reference to titleView, listen to window move notification and
+	enqueued move notification.
+	([NSMenu -attachedMenu]): Adjusted for renamed ivar.
+	([NSMenu -sizeToFit]): Remove references to titleView
+	([NSMenu -setTornOff:]): Remove references to titleView,
+	call update to NSMenuView instead.  
+	([NSMenu -isPartlyOffScreen]): Do not depend in removed ivar.
+	([NSMenu -_performMenuClose:]): adjust to renamed methods, will
+	force synchronization of userdefaults.
+	([NSMenu -displayTransient]): Removed references to _titleView,
+	remember the highlighted index to restore with -closeTransient.
+	([NSMenu -close]): remove references to _titleview, use methods instead
+	of relying on ivars. added call to update on menu representation.
+	([NSMenu -closeTransient]): Remove references to _titleView, restore
+	highlighted index. Call update on menu representantation.
+	([NSMenu -shiftOnScreen]): Rewrote to move in x and y direction
+	simultanuously.
+	([NSMenuWindowTitleView -acceptsFirstMouse:]): Removed useless 
+	code to set menuview for itemCells.
+
+	* Headers/gnustep/gui/NSMenuView.h: added ivar _titleView.
+	(moved from NSMenu). 
+
+	* Headers/gnustep/gui/NSMenu.h: Added NSMenuView protocol,
+	added documentation to NSMenu class.  
+	(MSMenu): Removed ivar _titleView, _isPartlyOffScreen, added
+	ivar _oldHighlightedIndex.  Renamed method -isFollowTransient to
+	-isTransient. Removed method -nestedCheckOffScreen
+
 2003-03-05 17:07  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSLayoutManager.m (-drawGlyphsForGlyphRange:atPoint:):
