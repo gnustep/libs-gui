@@ -80,6 +80,8 @@ behavior.
 
 Another assumption is that each text container will contain at least one
 line frag (unless there are no more glyphs to typeset).
+TODO: this doesn't hold for containers with 0 height or 0 width. need to
+test. rare case, though
 
 
 
@@ -2079,23 +2081,53 @@ no_soft_invalidation:
 
       One option is to only adjust when absolutely necessary to keep the
       selected range valid.
+
+
+      Current behavior for all cases:
+
+      Start     End       Action
+(of selection, wrt range, before change)
+      --------------------------
+      after     after     location += lengthChange;
+      in        after     length = NSMaxRange(sel)-NSMaxRange(range)-lengthChange; location=NSMaxRange(range);
+      in        in        length = 0; location=range.location;
+      before    after     length += lengthChange;
+      before    in        length = range.location-location;
+      before    before    do nothing
+
+      In other words, unless the selection spans over the entire changed
+      range, the changed range is deselected.
+
+      One important property of this behavios is that if length is 0 before,
+      it will be 0 after.
       */
-      if (_selected_range.location >= range.location + range.length - lengthChange)
-	{
+      if (_selected_range.location >= NSMaxRange(range) - lengthChange)
+	{ /* after after */
 	  _selected_range.location += lengthChange;
 	}
-      else if (_selected_range.location + _selected_range.length >= range.location)
+      else if (_selected_range.location >= range.location)
 	{
-	    if ((lengthChange < 0) && 
-		((unsigned)(-lengthChange) > _selected_range.length))
-	    {
+	  if (NSMaxRange(_selected_range) > NSMaxRange(range) - lengthChange)
+	    { /* in after */
+	      _selected_range.length = NSMaxRange(_selected_range) - NSMaxRange(range) - lengthChange;
+	      _selected_range.location = NSMaxRange(range);
+	    }
+	  else
+	    { /* in in */
 	      _selected_range.length = 0;
 	      _selected_range.location = range.location;
 	    }
-	  else
-	    {
-	      _selected_range.length += lengthChange;
-	    }
+	}
+      else if (NSMaxRange(_selected_range) > NSMaxRange(range) - lengthChange)
+	{ /* before after */
+	  _selected_range.length += lengthChange;
+	}
+      else if (NSMaxRange(_selected_range) > range.location)
+	{ /* before in */
+	  _selected_range.length = range.location - _selected_range.location;
+	}
+      else
+	{ /* before before */
 	}
     }
 }

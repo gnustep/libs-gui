@@ -1,3 +1,9 @@
+2003-07-05 18:02  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSLayoutManager.m
+	(-textStorage:edited:range:changeInLength:invalidatedRange:): Improve
+	behavior of the adjustments to the selected range.
+
 2003-07-05 17:20  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/NSAttributedString.m (-fixParagraphStyleAttributeInRange:):
