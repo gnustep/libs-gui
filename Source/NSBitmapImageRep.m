@@ -61,10 +61,17 @@
 + (BOOL) canInitWithData: (NSData *)data
 {
   TIFF	*image = NULL;
-  image = NSTiffOpenDataRead((char *)[data bytes], [data length]);
-  NSTiffClose(image);
+  image = NSTiffOpenDataRead ((char *)[data bytes], [data length]);
 
-  return (image) ? YES : NO;
+  if (image != NULL)
+    {
+      NSTiffClose (image);
+      return YES;
+    }
+  else
+    {
+      return NO;
+    }
 }
 
 + (NSArray *) imageUnfilteredFileTypes
