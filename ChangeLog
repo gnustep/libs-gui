@@ -1,3 +1,9 @@
+2003-02-09 15:23  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSTextView_actions.m: Fix several movement actions (used
+	to move from the wrong end of the selected range, or mixed glyphs
+	and characters).
+
 2003-02-09 14:48  Alexander Malmberg <alexander@malmberg.org>
 
 	* Source/GSHorizontalTypesetter.m: Make the main method reentrant

@@ -863,7 +863,7 @@ check if there was a reason for that.
 -(void) moveWordBackward: (id)sender
 {
   unsigned int newLocation;
-  newLocation = [_textStorage nextWordFromIndex: _layoutManager->_selected_range.location
+  newLocation = [_textStorage nextWordFromIndex: [self _movementOrigin]
 			      forward: NO];
   [self _moveTo: newLocation
 	 select: NO];
@@ -871,7 +871,7 @@ check if there was a reason for that.
 -(void) moveWordBackwardAndModifySelection: (id)sender
 {
   unsigned int newLocation;
-  newLocation = [_textStorage nextWordFromIndex: _layoutManager->_selected_range.location
+  newLocation = [_textStorage nextWordFromIndex: [self _movementOrigin]
 			      forward: NO];
   [self _moveTo: newLocation
 	 select: YES];
@@ -880,7 +880,7 @@ check if there was a reason for that.
 -(void) moveWordForward: (id)sender
 {
   unsigned newLocation;
-  newLocation = [_textStorage nextWordFromIndex: _layoutManager->_selected_range.location
+  newLocation = [_textStorage nextWordFromIndex: [self _movementOrigin]
 			      forward: YES];
   [self _moveTo: newLocation
 	 select: NO];
@@ -888,10 +888,10 @@ check if there was a reason for that.
 -(void) moveWordForwardAndModifySelection: (id)sender
 {
   unsigned newLocation;
-  newLocation = [_textStorage nextWordFromIndex: _layoutManager->_selected_range.location
-			      forward: NO];
+  newLocation = [_textStorage nextWordFromIndex: [self _movementOrigin]
+			      forward: YES];
   [self _moveTo: newLocation
-	 select: NO];
+	 select: YES];
 }
 
 -(void) moveToBeginningOfDocument: (id)sender
@@ -910,8 +910,9 @@ check if there was a reason for that.
 {
   NSRange aRange;
   
-  aRange = [[_textStorage string] lineRangeForRange: _layoutManager->_selected_range];
-  [self setSelectedRange: NSMakeRange (aRange.location, 0)];
+  aRange = [[_textStorage string] lineRangeForRange: NSMakeRange([self _movementOrigin], 0)];
+  [self _moveTo: aRange.location
+	 select: NO];
 }
 
 -(void) moveToEndOfParagraph: (id)sender
@@ -920,7 +921,7 @@ check if there was a reason for that.
   unsigned newLocation;
   unsigned maxRange;
   
-  aRange = [[_textStorage string] lineRangeForRange: _layoutManager->_selected_range];
+  aRange = [[_textStorage string] lineRangeForRange: NSMakeRange([self _movementOrigin], 0)];
   maxRange = NSMaxRange (aRange);
 
   if (maxRange == 0)
@@ -963,7 +964,8 @@ check if there was a reason for that.
       newLocation = aRange.location;
     }
 
-  [self setSelectedRange: NSMakeRange (newLocation, 0) ];
+  [self _moveTo: newLocation
+	 select: NO];
 }
 
 
@@ -1089,18 +1091,18 @@ and layout is left-to-right */
 
 -(void) selectLine: (id)sender
 {
-  if ([_textStorage length] > 0)
-    {
-      NSRange aRange;
-      NSRect ignored;
+  unsigned int start, end, cindex;
 
-      /* TODO: broken. assumes glyph==character */
-      ignored = [_layoutManager lineFragmentRectForGlyphAtIndex: 
-				  _layoutManager->_selected_range.location
-				effectiveRange: &aRange];
-      
-      [self setSelectedRange: aRange];
-    }
+  cindex = [self _movementOrigin];
+  start = [_layoutManager characterIndexMoving: GSInsertionPointMoveLeft
+	     fromCharacterIndex: cindex
+	     originalCharacterIndex: cindex
+	     distance: 1e8];
+  end = [_layoutManager characterIndexMoving: GSInsertionPointMoveRight
+	   fromCharacterIndex: cindex
+	   originalCharacterIndex: cindex
+	   distance: 1e8];
+  [self setSelectedRange: NSMakeRange(start, end - start)];
 }
 
 
