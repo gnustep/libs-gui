@@ -1453,7 +1453,7 @@ static SEL	invalidateSel = @selector(_invalidateCoordinates);
  */
 - (NSRect) adjustScroll: (NSRect)newVisible
 {
-  return NSZeroRect;
+  return newVisible;
 }
 
 - (BOOL) autoscroll: (NSEvent*)theEvent
