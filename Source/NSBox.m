@@ -237,6 +237,40 @@
   [_content_view setFrame: [self calcSizesAllowingNegative: NO]];  
 }
 
+-(NSSize) minimumSize
+{
+  NSRect r;
+  NSSize borderSize = _sizeForBorderType (_border_type);
+
+  if ([_content_view respondsToSelector: @selector(minimumSize)])
+    {
+      r.size = [_content_view minimumSize];
+    }
+  else
+    {   
+      NSArray *subviewArray = [_content_view subviews];
+      if ([subviewArray count])
+	{
+	  id o, e = [subviewArray objectEnumerator];
+	  r = [[e nextObject] frame];
+	  // Loop through subviews and calculate rect to encompass all
+	  while ((o = [e nextObject]))
+	    {
+	      r = NSUnionRect(r, [o frame]);
+	    }
+	}
+      else // _content_view has no subviews
+	{
+	  r = NSZeroRect;
+	}
+    }
+
+  r.size = [self convertSize: r.size fromView: _content_view];
+  r.size.width += (2 * _offsets.width) + (2 * borderSize.width);
+  r.size.height += (2 * _offsets.height) + (2 * borderSize.height);
+  return r.size;
+}
+
 - (void) sizeToFit
 {
   NSRect f;
@@ -255,15 +289,7 @@
 	  // Loop through subviews and calculate rect to encompass all
 	  while ((o = [e nextObject]))
 	    {
-	      f = [o frame];
-	      if (f.origin.x < r.origin.x)
-		r.origin.x = f.origin.x;
-	      if (f.origin.y < f.origin.y)
-		r.origin.y = f.origin.y;
-	      if ((f.origin.x + f.size.width) > (r.origin.x + r.size.width))
-		r.size.width = (f.origin.x + f.size.width) - r.origin.x;
-	      if ((f.origin.y + f.size.height) > (r.origin.y + r.size.height))
-		r.size.height = (f.origin.y + f.size.height) - r.origin.y;
+	      r = NSUnionRect(r, [o frame]);
 	    }
 	  [_content_view setBoundsOrigin: r.origin];
 	  r.size = [self convertSize: r.size fromView: _content_view];

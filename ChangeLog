@@ -1,3 +1,8 @@
+2001-06-06  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSBox.m ([NSBox -minimumSize]): New method.
+	* Headers/gnustep/gui/NSBox.h: Declare it.
+
 2000-06-06  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/NSTextAttachment.m 

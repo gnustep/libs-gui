@@ -88,6 +88,9 @@ typedef enum _NSTitlePosition {
 - (void)setFrameFromContentFrame:(NSRect)contentFrame;
 - (void)sizeToFit;
 
+#ifndef NO_GNUSTEP
+-(NSSize) minimumSize;
+#endif
 @end
 
 #endif // _GNUstep_H_NSBox
