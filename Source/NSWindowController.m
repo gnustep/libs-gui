@@ -47,7 +47,28 @@
     }
 
   self = [self initWithWindow: nil];
-  ASSIGN (_windowNibName, windowNibName);
+  ASSIGN(_windowNibName, windowNibName);
+  _owner = owner;
+  return self;
+}
+
+- (id) initWithWindowNibPath: (NSString *)windowNibPath
+		       owner: (id)owner
+{
+  if (windowNibPath == nil)
+    {
+      [NSException raise: NSInvalidArgumentException
+		   format: @"attempt to init NSWindowController with nil windowNibPath"];
+    }
+
+  if (owner == nil)
+    {
+      [NSException raise: NSInvalidArgumentException
+		   format: @"attempt to init NSWindowController with nil owner"];
+    }
+
+  self = [self initWithWindow: nil];
+  ASSIGN(_windowNibPath, windowNibPath);
   _owner = owner;
   return self;
 }
@@ -78,16 +99,42 @@
 - (void) dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver: self];
-  RELEASE (_windowNibName);
-  RELEASE (_windowFrameAutosaveName);
-  RELEASE (_topLevelObjects);
+  RELEASE(_windowNibName);
+  RELEASE(_windowNibPath);
+  RELEASE(_windowFrameAutosaveName);
+  RELEASE(_topLevelObjects);
   AUTORELEASE (_window); /* FIXME - should be RELEASE I think */
   [super dealloc];
 }
 
 - (NSString *) windowNibName
 {
+  if ((_windowNibName == nil) && (_windowNibPath != nil))
+  {
+    return [[_windowNibPath lastPathComponent] 
+	       stringByDeletingPathExtension];
+  }
+
   return _windowNibName;
+}
+
+- (NSString *)windowNibPath
+{
+  if ((_windowNibName != nil) && (_windowNibPath == nil))
+  {
+    NSString *path;
+
+    // This is not fully correct as nib resources are searched different.
+    path = [[NSBundle bundleForClass: [_owner class]] 
+	       pathForNibResource: _windowNibName];
+    if (path == nil)
+      path = [[NSBundle mainBundle] 
+		 pathForNibResource: _windowNibName];
+
+    return path;
+  }
+
+  return _windowNibPath;
 }
 
 - (id) owner
@@ -99,7 +146,7 @@
 {
   // FIXME - this is RETAINed and never RELEASEd ...
   ASSIGN (_document, document);
-  [self _synchronizeWindowTitleWithDocumentName];
+  [self synchronizeWindowTitleWithDocumentName];
 
   if (_document != nil)
     {
@@ -122,13 +169,18 @@
   return _document;
 }
 
+- (void) setDocumentEdited: (BOOL)flag
+{
+  [_window setDocumentEdited: flag];
+}
+
 - (void) setWindowFrameAutosaveName:(NSString *)name
 {
-  ASSIGN (_windowFrameAutosaveName, name);
+  ASSIGN(_windowFrameAutosaveName, name);
   
   if ([self isWindowLoaded])
     {
-      [[self window] setFrameAutosaveName:name? name : @""];
+      [[self window] setFrameAutosaveName: name ? name : @""];
     }
 }
 
@@ -161,7 +213,6 @@
 {
   [_window close];
 }
-
 
 - (void) _windowWillClose: (NSNotification *)notification
 {
@@ -223,10 +274,17 @@
   return _window;
 }
 
-// Private method; the nib loading will call this.
 - (void) setWindow: (NSWindow *)aWindow
 {
   ASSIGN (_window, aWindow);
+  if (_document != nil)
+    {
+      [_window setReleasedWhenClosed: YES];
+    }
+  else
+    {
+      [_window setReleasedWhenClosed: NO];
+    }
 }
 
 - (IBAction) showWindow: (id)sender
@@ -249,7 +307,7 @@
   return displayName;
 }
 
-- (void) _synchronizeWindowTitleWithDocumentName
+- (void) synchronizeWindowTitleWithDocumentName
 {
   if (_document != nil)
     {
@@ -264,10 +322,9 @@
         }
       else
         {
-          if (filename) [_window setRepresentedFilename:filename];
-	  {
-            [_window setTitle:title];
-	  }
+          if (filename) 
+	    [_window setRepresentedFilename: filename];
+	  [_window setTitle: title];
         }
     }
 }
@@ -291,7 +348,7 @@
 
   [_window setWindowController: self];
 
-  [self _synchronizeWindowTitleWithDocumentName];
+  [self synchronizeWindowTitleWithDocumentName];
   
   [[NSNotificationCenter defaultCenter]
                 addObserver: self
@@ -344,6 +401,26 @@
       return;
     }
 
+  if ((_windowNibName == nil) && (_windowNibPath != nil))
+    {
+      NSDictionary *table;
+
+      table = [NSDictionary dictionaryWithObject: _owner forKey: @"NSOwner"];
+	
+      if ([NSBundle loadNibFile: _windowNibPath
+		    externalNameTable: table
+		    withZone: [_owner zone]])
+        {
+	  _wcFlags.nibIsLoaded = YES;
+	  
+	  if (_window == nil  &&  _document != nil  &&  _owner == _document)
+	    {
+	      [self setWindow: [_document _transferWindowOwnership]];
+	    }
+	  return;
+	}
+    }
+
   if ([NSBundle loadNibNamed: _windowNibName  owner: _owner])
     {
       _wcFlags.nibIsLoaded = YES;
@@ -352,18 +429,10 @@
 	{
 	  [self setWindow: [_document _transferWindowOwnership]];
 	}
-
-      if (_document != nil)
-	{
-	  [_window setReleasedWhenClosed: YES];
-	}
-      else
-	{
-	  [_window setReleasedWhenClosed: NO];
-	}
     }
   else
     {
+      // FIXME: We should still try the main bundle
       NSLog (@"%@: could not load nib named %@.nib", 
 	     [self class], _windowNibName);
     }
