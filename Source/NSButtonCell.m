@@ -241,7 +241,11 @@
 
 - (BOOL) isOpaque
 {
-	return !transparent && [self isBordered];
+  // MacOS-X says we should return !transparent && [self isBordered], 
+  // but that's wrong in our case, since if there is no border, 
+  // we draw the interior of the cell to fill completely the bounds.  
+  // They are likely to draw differently.
+  return !transparent;
 }
 
 //
@@ -386,7 +390,7 @@
         {
           NSDrawButton(cellFrame, NSZeroRect);
         }
-        [controlView unlockFocus];
+      [controlView unlockFocus];
     }
 
   [self drawInteriorWithFrame: cellFrame inView: controlView];
