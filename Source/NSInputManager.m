@@ -314,22 +314,24 @@ static NSInputManager *currentInputManager = nil;
 {
   NSArray *paths;
   NSEnumerator *enumerator;
-  NSString *bundlePath;
-  
-  paths = NSSearchPathForDirectoriesInDomains (GSLibrariesDirectory,
+  NSString *libraryPath;
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+
+  paths = NSSearchPathForDirectoriesInDomains (NSLibraryDirectory,
 					       NSAllDomainsMask, YES);
   /* paths are in the order - user, network, local, root. Instead we
      want to load keybindings in the order root, local, network, user
      - so that user can override root - for this reason we use a
      reverseObjectEnumerator.  */
   enumerator = [paths reverseObjectEnumerator];
-  while ((bundlePath = [enumerator nextObject]) != nil)
+  while ((libraryPath = [enumerator nextObject]) != nil)
     {
-      NSBundle *bundle = [NSBundle bundleWithPath: bundlePath];
-      NSString *fullPath = [bundle pathForResource: fileName
-				   ofType: @"dict"
-				   inDirectory: @"KeyBindings"];
-      if (fullPath != nil)
+      NSString *fullPath;
+      fullPath =
+	[[[libraryPath stringByAppendingPathComponent: @"KeyBindings"]
+	  stringByAppendingPathComponent: fileName]
+	  stringByAppendingPathExtension: @"dict"];
+      if ([fileManager fileExistsAtPath: fullPath])
 	{
 	  [self loadBindingsFromFile: fullPath];
 	}
@@ -391,11 +393,11 @@ static NSInputManager *currentInputManager = nil;
 
   /* Normally, when we start up, we load all the keybindings we find
      in the following files, in this order:
-     
-     $GNUSTEP_SYSTEM_ROOT/Libraries/Resources/KeyBindings/DefaultKeyBindings.dict
-     $GNUSTEP_LOCAL_ROOT/Libraries/Resources/KeyBindings/DefaultKeyBindings.dict
-     $GNUSTEP_NETWORK_ROOT/Libraries/Resources/KeyBindings/DefaultKeyBindings.dict
-     $GNUSTEP_USER_ROOT/Libraries/Resources/KeyBindings/DefaultKeyBindings.dict
+
+     $GNUSTEP_SYSTEM_ROOT/Library/KeyBindings/DefaultKeyBindings.dict
+     $GNUSTEP_LOCAL_ROOT/Library/KeyBindings/DefaultKeyBindings.dict
+     $GNUSTEP_NETWORK_ROOT/Library/KeyBindings/DefaultKeyBindings.dict
+     $GNUSTEP_USER_ROOT/Library/KeyBindings/DefaultKeyBindings.dict
      
      This gives you a first way of adding your customized keybindings
      - adding a DefaultKeyBindings.dict to your GNUSTEP_USER_ROOT, and

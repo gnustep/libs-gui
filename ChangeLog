@@ -1,3 +1,10 @@
+2003-05-01 20:02  Alexander Malmberg <alexander@malmberg.org>
+
+	* Source/NSInputManager.m (-loadBindingsWithName:): Update for file
+	system layout changes.
+
+	* Source/NSTextView.m (-drawRect:): Draw the background correctly.
+
 2003-04-30  Richard Frith-Macdonald <rfm@gnu.org>
 
 	* Source/NSScrollView.m: ([scrollWheel:]) enable horizontal scrolling
