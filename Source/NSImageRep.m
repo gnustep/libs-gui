@@ -60,11 +60,8 @@ static Class NSImageRep_class = NULL;
 
       NSImageRep_class = self;
       imageReps = [[NSMutableArray alloc] initWithCapacity: 2];
-      obj = [[NSUserDefaults standardUserDefaults] 
-      		stringForKey: @"ImageCompositing"];
-      if (!obj || [obj boolValue] == YES)
-        [imageReps addObject: [NSBitmapImageRep class]];
-      //      [imageReps addObject: [NSEPSImageRep class]];
+      [imageReps addObject: [NSBitmapImageRep class]];
+      //[imageReps addObject: [NSEPSImageRep class]];
     }
 }
 
@@ -489,7 +486,7 @@ static Class NSImageRep_class = NULL;
   NSImageRep	*copy;
 
   copy = (NSImageRep*)NSCopyObject(self, 0, zone);
-  copy->_colorSpace = RETAIN(_colorSpace);
+  copy->_colorSpace = [_colorSpace copyWithZone: zone];
 
   return copy;
 }
