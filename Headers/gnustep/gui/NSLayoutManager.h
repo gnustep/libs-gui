@@ -360,7 +360,9 @@ typedef enum {
 - (NSRange)glyphRangeForBoundingRectWithoutAdditionalLayout:(NSRect)bounds inTextContainer:(NSTextContainer *)container;
     // Returns the minimum contiguous glyph range that would need to be displayed in order to draw all glyphs that fall (even partially) within the bounding rect given.  This range might include glyphs which do not fall into the rect at all.  At most this will return the glyph range for the whole container.  The "WithoutFillingHoles" variant will not generate glyphs or perform layout in attempting to answer, and, thus, will potentially not be totally correct.
 
-- (unsigned)glyphIndexForPoint:(NSPoint)point inTextContainer:(NSTextContainer *)container fractionOfDistanceThroughGlyph:(float *)partialFraction;
+- (unsigned)glyphIndexForPoint:(NSPoint)aPoint inTextContainer:(NSTextContainer *)aTextContainer;
+- (unsigned)glyphIndexForPoint:(NSPoint)point inTextContainer:(NSTextContainer *)container 
+fractionOfDistanceThroughGlyph:(float *)partialFraction;
     // Returns the index of the glyph which under the given point which is expressed in the given container's coordinate system.  If no glyph is under the point the "nearest" glyph is returned where "nearest" is defined in such a way that selection works like it should.  See the implementation for details.  partialFraction, if provided, is set to the fraction of the distance between the location of the glyph returned and the location of the next glyph that the point is at.
 
 - (void)getFirstUnlaidCharacterIndex:(unsigned *)charIndex glyphIndex:(unsigned *)glyphIndex;
