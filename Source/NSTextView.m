@@ -2596,6 +2596,64 @@ afterString in order over charRange. */
   [self setSelectedRange: newRange];
 }
 
+- (void) moveWordBackward: (id)sender
+{
+  unsigned newLocation;
+  
+  newLocation = [_textStorage nextWordFromIndex: _selected_range.location
+			      forward: NO];
+  
+  [self setSelectedRange: NSMakeRange (newLocation, 0)];
+}
+
+- (void) moveWordForward: (id)sender
+{
+  unsigned newLocation;
+  
+  newLocation = [_textStorage nextWordFromIndex: _selected_range.location
+			      forward: YES];
+  
+  [self setSelectedRange: NSMakeRange (newLocation, 0)];
+}
+
+- (void) moveWordBackwardAndModifySelection: (id)sender
+{
+  unsigned newLocation;
+  NSRange newRange;
+
+  [self setSelectionGranularity: NSSelectByWord];
+  
+  newLocation = [_textStorage nextWordFromIndex: _selected_range.location
+			      forward: NO];
+  
+  newRange = NSMakeRange (newLocation, 
+			  NSMaxRange (_selected_range) - newLocation);
+  
+  newRange = [self selectionRangeForProposedRange: newRange
+		   granularity: NSSelectByCharacter];
+  
+  [self setSelectedRange: newRange];
+}
+
+- (void) moveWordForwardAndModifySelection: (id)sender
+{
+  unsigned newMaxRange;
+  NSRange newRange;
+  
+  [self setSelectionGranularity: NSSelectByWord];
+
+  newMaxRange = [_textStorage nextWordFromIndex: NSMaxRange (_selected_range)
+			      forward: YES];
+  
+  newRange = NSMakeRange (_selected_range.location, 
+			  newMaxRange - _selected_range.location);
+  
+  newRange = [self selectionRangeForProposedRange: newRange
+		   granularity: NSSelectByCharacter];
+
+  [self setSelectedRange: newRange];
+}
+
 - (void) moveToBeginningOfDocument: (id)sender
 {
   [self setSelectedRange: NSMakeRange (0, 0)];
@@ -2683,42 +2741,6 @@ afterString in order over charRange. */
     }
 
   [self setSelectedRange: NSMakeRange (newLocation, 0) ];
-}
-
-- (void) moveWordBackward: (id)sender
-{
-  if (_selected_range.location == 0 || [_textStorage length] == 0)
-    {
-      return;
-    }
-  else
-    {
-      unsigned int i;
-
-      i = [_textStorage nextWordFromIndex: _selected_range.location  
-			forward: NO];
-      [self setSelectedRange: NSMakeRange (i, 0)];
-    }
-}
-
-- (void) moveWordForward: (id)sender
-{
-  unsigned int length;
-  
-  length = [_textStorage length];
-  
-  if (_selected_range.location == length || length == 0)
-    {
-      return;
-    }
-  else
-    {
-      unsigned int i;
-      
-      i = [_textStorage nextWordFromIndex: _selected_range.location  
-			forward: YES];
-      [self setSelectedRange: NSMakeRange (i, 0)];
-    }
 }
 
 - (void) pageDown: (id)sender
