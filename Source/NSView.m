@@ -499,7 +499,7 @@ GSSetDragTypes(NSView* obj, NSArray *types)
       if (window != nil)
 	[ctxt _removeDragTypes: t fromWindow: [window windowNumber]];
       if (newWindow != nil)
-	[ctxt _addDragTypes: t toWindow: [newWindow windowNumber]];
+        [ctxt _addDragTypes: t toWindow: [newWindow windowNumber]];
     }
 
   window = newWindow;
@@ -2282,6 +2282,12 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &post_frame_changes];
   [aDecoder decodeValueOfObjCType: @encode(BOOL) at: &autoresize_subviews];
   NSDebugLLog(@"NSView", @"NSView: finish decoding\n");
+
+  frameMatrix = [NSAffineTransform new];
+  boundsMatrix = [NSAffineTransform new];
+  matrixToWindow = [NSAffineTransform new];
+  matrixFromWindow = [NSAffineTransform new];
+  [frameMatrix setFrameOrigin: frame.origin];
 
   /*
    *	Keep a note of whether this is a flipped view or not.

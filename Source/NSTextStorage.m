@@ -139,7 +139,7 @@ changeInLength: [attributedString length] - aRange.length];
 - (void) edited: (unsigned)mask range: (NSRange)old changeInLength: (int)delta
 {
 
-  NSLog(@"edited:range:changeInLength: called");
+  NSDebugLLog(@"NSText", @"edited:range:changeInLength: called");
 
   /*
    * Add in any new flags for this edit.
@@ -193,7 +193,7 @@ changeInLength: [attributedString length] - aRange.length];
 
   NSNotificationCenter* nc = [NSNotificationCenter defaultCenter];
 
-  NSLog(@"processEditing called in NSTextStorage.");
+  NSDebugLLog(@"NSText", @"processEditing called in NSTextStorage.");
 
   [nc postNotificationName: NSTextStorageWillProcessEditingNotification
 		    object: self];

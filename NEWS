@@ -1,12 +1,15 @@
 NEWS
 ****
 
-The currently released version of the library is `0.5.5'.
+The currently released version of the library is `0.6.0'.
+
+Noteworthy changes in version `0.6.0'
+=====================================
 
 Noteworthy changes in version `0.5.5'
 =====================================
 
-   Probably to extensive to list.
+   Too extensive to list.
 
    * A lot of rewritting has been done to the classes, with general
      cleanup of coordinate conversion code, etc.

@@ -171,8 +171,8 @@ glyphRangeForTextContainer:textContainer];
 {
   [self lockFocus];
 
-  NSLog(@"drawInsertionPointInRect: (%f, %f)", aRect.size.width,
-aRect.size.height);
+  NSDebugLLog(@"NSText", 
+    @"drawInsertionPointInRect: (%f, %f)", aRect.size.width, aRect.size.height);
 
   aRect.size.width = 1;
 
@@ -315,7 +315,7 @@ aRect.size.height);
 		affinity:(NSSelectionAffinity)affinity
 	  stillSelecting:(BOOL)flag
 {
-  NSLog(@"setSelectedRange stillSelecting.");
+  NSDebugLLog(@"NSText", @"setSelectedRange stillSelecting.");
 
   tv_selectedRange = charRange;
   [self setSelectionGranularity:NSSelectByCharacter];
@@ -930,7 +930,7 @@ container, returning the modified location. */
 
 - (void)insertText:(NSString *)aString
 {
-  NSLog(@"%@", aString);
+  NSDebugLLog(@"NSText", @"%@", aString);
 
   if (![aString isKindOfClass:[NSAttributedString class]])
     aString = [[NSAttributedString alloc] initWithString:aString

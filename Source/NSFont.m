@@ -288,8 +288,7 @@ void setNSFont(NSString* key, NSFont* font)
 {
   [aDecoder decodeValueOfObjCType: @encode(id) at: &fontName];
   [aDecoder decodeArrayOfObjCType: @encode(float) count: 6 at: matrix];
-
-  return self;
+  return [[self class] fontWithName: fontName matrix: matrix];
 }
 
 @end /* NSFont */

@@ -1,6 +1,6 @@
 #include <AppKit/NSMenuItem.h>
 
-@interface NSPopUpButtonCell : NSMenuItemCell <NSMenuItem>
+@interface NSPopUpButtonCell : NSMenuItemCell
 {
 }
 @end

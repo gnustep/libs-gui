@@ -194,6 +194,9 @@
 	@"illegal margins supplied");
 
   offsets = offsetSize;
+  [content_view setFrame: [self calcSizesAllowingNegative: NO]];
+  [self setNeedsDisplay: YES];
+
 }
 
 //
@@ -228,11 +231,7 @@
   f.origin.y = f.origin.y + (contentFrame.origin.y - r.origin.y);
 
   [self setFrame: f];
-  if ([self superview])
-    [content_view setFrame: [self convertRect: contentFrame
-				  fromView: [self superview]]];  
-  else // ![self superview]
-    [content_view setFrame: contentFrame];
+  [content_view setFrame: [self calcSizesAllowingNegative: NO]];  
 }
 
 - (void) sizeToFit
@@ -378,10 +377,12 @@
 
 - (id) initWithCoder: (NSCoder*)aDecoder
 {
+  id aview;
   [super initWithCoder: aDecoder];
 
   [aDecoder decodeValueOfObjCType: @encode(id) at: &cell];
-  content_view = [aDecoder decodeObject];
+  aview = [aDecoder decodeObject];
+  [self setContentView: aview];
   offsets = [aDecoder decodeSize];
   border_rect = [aDecoder decodeRect];
   title_rect = [aDecoder decodeRect];

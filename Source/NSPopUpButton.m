@@ -156,9 +156,7 @@
 
 - (void)removeAllItems
 {
-  int i;
-
-  [[popb_menu itemArray] removeAllObjects];
+  [(NSMutableArray *)[popb_menu itemArray] removeAllObjects];
 
 /*
   for (i=0;i<[self numberOfItems];i++)
@@ -315,14 +313,14 @@
   if (!popb_pullsDown)
     {
       int aIndex = [self indexOfItemWithTitle:aString];
-
+  
       if (aIndex >= 0)
         popb_selectedItem = aIndex;
       else
         {
-	  [self addItemWithTitle:aString];
+         [self addItemWithTitle:aString];
           popb_selectedItem = [self indexOfItemWithTitle:aString];
-	  [self setNeedsDisplay:YES];
+         [self setNeedsDisplay:YES];
         }
     }
   else
@@ -380,12 +378,11 @@
 - (void)sizeToFit
 {
   [[popb_menu menuView] sizeToFit];
-}
+} 
 
 - (void)_popup:(NSNotification*)notification
 {
   NSPopUpButton *popb = [notification object];
-  NSPoint cP;
   NSRect butf;
   NSRect winf;   
 
@@ -475,7 +472,7 @@
 {
   // First check ourselves
 //  if ([self mouse:aPoint inRect:bounds]) return self;
-  if ([self mouse:aPoint inRect:frame]) return self;
+  if ([self mouse:aPoint inRect: frame]) return self;
 
   return nil;
 }
@@ -488,7 +485,10 @@
   id aCell;
 
   if ([popb_menu numberOfItems] == 0)
-    return;
+    {
+      [[NSPopUpButtonCell new] drawWithFrame:rect inView:self];
+      return;
+    }
 
   if (!popb_pullsDown)
     aCell  = [[popb_menu itemArray] objectAtIndex:popb_selectedItem]; 

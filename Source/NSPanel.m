@@ -692,7 +692,9 @@ NSRunAlertPanel(NSString *title,
     }
 
   [panel center];
-  [panel makeKeyAndOrderFront: panel];
+  if ([NSApp isActive])
+    [panel makeKeyWindow];
+  [panel orderFrontRegardless];
   result = [panel runModal];
   NSReleaseAlertPanel(panel);
   return result;
@@ -715,7 +717,9 @@ NSRunCriticalAlertPanel(NSString *title,
   va_end (ap);
 
   [panel center];
-  [panel makeKeyAndOrderFront: panel];
+  if ([NSApp isActive])
+    [panel makeKeyWindow];
+  [panel orderFrontRegardless];
   result = [panel runModal];
   NSReleaseAlertPanel(panel);
   return result;
@@ -738,7 +742,9 @@ NSRunInformationalAlertPanel(NSString *title,
   va_end (ap);
 
   [panel center];
-  [panel makeKeyAndOrderFront: panel];
+  if ([NSApp isActive])
+    [panel makeKeyWindow];
+  [panel orderFrontRegardless];
   result = [panel runModal];
   NSReleaseAlertPanel(panel);
   return result;
@@ -802,7 +808,9 @@ NSRunLocalizedAlertPanel(NSString *table,
     }
 
   [panel center];
-  [panel makeKeyAndOrderFront: panel];
+  if ([NSApp isActive])
+    [panel makeKeyWindow];
+  [panel orderFrontRegardless];
   result = [panel runModal];
   NSReleaseAlertPanel(panel);
   return result;

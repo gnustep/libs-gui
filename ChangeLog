@@ -1,13 +1,5 @@
 1999-09-07  Michael Hanni   <mhanni@sprintmail.com>
 
-	* Source/NSInterfaceStyle.m: added support for
-	GSWindowMakerInterfaceStyle.
-	* Headers/NSInterfaceStyle.h: added enum
-	GSWindowMakerInterfaceStyle.
-	* Source/NSMenu.m: implemented NSInterfaceStyle based window maker
-	like menus. i.e. they line up with the menu item selected.
-	try 'defaults write NSGlobalDomain NSMenuInterfaceStyle
-	     GSWindowMakerInterfaceStyle'
 	* Source/NSTabView.m: some modifications to make tabs on the
 	bottom look a little better.
 	* Source/NSAttributedString.m: turned off fixParagraphAttributes,
@@ -38,48 +30,15 @@ Mon Sep  6  6:37:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 	* Source/NSWindow.m: added enable/disable flush fix from dawn.
 	* Headers/NSWindow.h: added enable/disable flush fix from dawn.
 
-1999-09-05  Michael Hanni   <mhanni@sprintmail.com>
-
-        * Source/NSMenuView.m: fix nagging bug reported by Gregory John
-        Casamento  <gcasamen@my-deja.com>.
-
-1999-09-04  Michael Hanni   <mhanni@sprintmail.com>
-
-        * Model/GMAppKit.m: patch from Tim Bissell
-        <tim.bissell@dresdnerkb.com> adds proper decoding/encoding of
-        NSButtonCell titles.
-        * Source/NSSlider.m: patch to add missing unlockFocus.
-        * Source/NSBrowserCell.m: patch from Tim Bissell
-        <tim.bissell@dresdnerkb.com> set NSBrowerCell to be initially not
-        editable (mimcs OS 4.2 behaviour).
-        * Source/NSWorkspace.m: added patch from Tim Bissell
-        <tim.bissell@dresdnerkb.com> which adds special GNUstep
-        functionality to NSWorkspace (for FileViewer.app).
-        * Headers/NSWorkspace.h: added method definitions for additions by
-        Tim Bissell <tim.bissell@dresdnerkb.com>
-
 Fri Sep  3 22:45:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSAttributedString.m: implemented (untested) most of the
 	missing methods, and fixed a few memory leaks.
 
-Thu Sep  2 16:42:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
-
-	* NSWorkspace.m: Trivial fix to pass app when opening files.
-	* GSServicesManager.m: Fix to send open commands to app delegate
-	rather than to application object itsself.
-	* NSApplication.m: Fix to recognise file open request on commandline.
-
 Thu Sep  2 12:50:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* NSWorkspace.m: Fixes for locating icons in application resources.
 	* NSBundleAdditions.m: implemented ([-pathForImageresource:])
-
-Thu Sep  2  9:50:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
-
-	* NSWorkspace.m: Attempted fix for locateApplicationBinary and tidied.
-	Modified fix for getting file icons of directories where the extension
-	is meaningless.  Look for .dir.tiff as well.
 
 Wed Sep  1  9:55:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
@@ -127,55 +86,6 @@ Wed Sep  1  9:17:00 1999  n.pero@mi.flashnet.it
 	correct answer in case the min of the origin's of the subviews is
 	positive; keep better care of the fact that frames are not expressed
 	always in the same coordinate system. 
-
-Tue Aug 31  9:45:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
-
-	Fixes to remove hard-coded colors from gui.  I'm not sure this is
-	entirely correct - in places where we expect to display white text on
-	a dark-gray background, I've used windowFrameTextColor and
-	controlShadowColor, since the MacOS-X documentation doesn't seem to
-	specify anything exactly for this.
-	* NSBrowser.m: use windowFrameTextColor for title text and
-	controlShadowColor for background.
-	* NSClipView.m: (-init) use controlColor for default background.
-	* NSColorWell.m: (-drawRect:) use controlColor for background.
-	* NSFontPanel.m: use windowFrameTextColor for title text and
-        controlShadowColor for background.
-	* NSMatrix.m: Use controlBackgroundColor for backgrounds.
-	* NSMenu.m: ([NSMenuWindowTitleView drawRect:]) use windowFrameColor
-	and windowFrameTextColor.
-	* NSMenuItemCell.m: use selectedMenuItemColor or controlColor for
-	background, and use selectedMenuItemTextColor, controlTextColor, or
-	disabledControlTextColor for text.
-	* NSPopUpButtonCell.m: use selectedMenuItemColor or controlColor for
-        background, and use selectedMenuItemTextColor, controlTextColor for
-        text.
-	* NSSplitView.m: ([-initWithFrame:]) use controlShadowColor for the
-	divider, and controlBackgroundColor for background.
-	* NSTabViewItem.m: use controlBackgroundColor.
-	* NSTableHeaderCell.m: use controlShadowColor for header.
-	* NSTableView.m: use gridColor for the grid.
-	* NSText.m: Tidied most chunks of code using color.
-
-Fri Aug 27  8:02:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
-
-	Patch from Nicola Pero <n.pero@mi.flashnet.it>
-	* Source/NSBox.m: Fix setFrameFromContentFrame: for zero rect frame.
-
-Wed Aug 25 09:42:05 1999  Martin Man  <Martin.Man@seznam.cz>
-
-        * Source/NSWindow.m ([NSWindow -setFrameTopLeftPoint:]): Corrected
-        positioning of window's top left point. X coordinate was ignored
-        and Y coordinate was computed in wrong way.
-
-Thu Aug 26  5:07:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
-
-	Patch from Nicola Pero <n.pero@mi.flashnet.it> modified to use
-	controlDarkShadowColor rather than blackColor.
-	* Source/NSBox.m: draw line borders in correct color.
-	* Source/NSCell.m ditto
-	* Source/NSScrollView.m: ditto
-	* Source/NSTabView.m: ditto
 
 Sun Aug 22 11:52:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
@@ -230,6 +140,215 @@ Sun Aug 22 11:52:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 	layoutManager.
 	* Source/NSTextView.m: more code additions to coincide with the
 	new NSLayoutManager.
+
+1999-09-07  Adam Fedor  <fedor@gnu.org>
+
+	* Version: 0.6.0
+
+	* Source/NSLayoutManager.m: Change NSLog to NSDebugLLog
+	* Source/NSText.m: Likewise.
+	* Source/NSTextContainer.m: Likewise.
+	* Source/NSTextField.m: Likewise.
+	* Source/NSTextStorage.m: Likewise.
+	* Source/NSTextView.m: Likewise.
+
+	* Source/NSBox.m ([NSBox -initWithCoder:]): Remember to set the
+	content view.
+	* Source/NSFontPanel.m ([NSFontPanel -setPanelFont:isMultiple:]): 
+	ASSIGN panel_font (e.g. retain it).
+	(-initWithCoder:): Likewise.
+	* Source/NSText.m ([NSText -initWithFrame:]): Retain default_font.
+	(-initWithCoder:): Likewise.
+
+1999-09-07  Michael Hanni   <mhanni@sprintmail.com>
+
+        * Source/NSInterfaceStyle.m: added support for
+        GSWindowMakerInterfaceStyle.
+        * Headers/NSInterfaceStyle.h: added enum
+        GSWindowMakerInterfaceStyle.
+        * Source/NSMenu.m: implemented NSInterfaceStyle based window maker
+        like menus. i.e. they line up with the menu item selected.
+        try 'defaults write NSGlobalDomain NSMenuInterfaceStyle
+             GSWindowMakerInterfaceStyle'
+
+1999-09-05  Michael Hanni   <mhanni@sprintmail.com>
+
+	* Source/NSMenuView.m: fix nagging bug reported by Gregory John
+	Casamento  <gcasamen@my-deja.com>.
+	* Source/NSWorkspace.m: reverted an erroneous patch I applied.
+
+1999-09-04  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSMenu.m: added missing method ([-_rightMouseDisplay]) 
+	with a void implementation.  In future, it should be given 
+	a complete implementation, or removed.  At present, the method 
+	is only called by NSResponder.
+
+1999-09-04  Michael Hanni   <mhanni@sprintmail.com>
+
+	* Model/GMAppKit.m: patch from Tim Bissell
+	<tim.bissell@dresdnerkb.com> adds proper decoding/encoding of
+	NSButtonCell titles.
+	* Source/NSCell.m: updated copy from HEAD.
+	* Source/NSText.m: ditto + minor additions.
+	* Source/NSView.m: patch to prevent X crashes.
+	* Source/NSMenu.m: multiple patches from HEAD.
+	* Source/NSPopUpButton.m: ditto.
+	* Source/NSSlider.m: patch to add missing unlockFocus.
+ 	* Source/NSBrowserCell.m: patch from Tim Bissell
+	<tim.bissell@dresdnerkb.com> set NSBrowerCell to be initially not
+	editable (mimcs OS 4.2 behaviour).
+	* Source/NSWorkspace.m: added patch from Tim Bissell
+	<tim.bissell@dresdnerkb.com> which adds special GNUstep
+	functionality to NSWorkspace (for FileViewer.app).
+	* Headers/NSWorkspace.h: added method definitions for additions by
+	Tim Bissell <tim.bissell@dresdnerkb.com>
+
+Thu Sep  2 16:42:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+        * NSWorkspace.m: Trivial fix to pass app when opening files.
+        * GSServicesManager.m: Fix to send open commands to app delegate
+        rather than to application object itsself.
+        * NSApplication.m: Fix to recognise file open request on commandline.
+
+Thu Sep  2  9:50:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* NSWorkspace.m: Attempted fix for locateApplicationBinary and tidied.
+	Modified fix for getting file icons of directories where the extension
+	is meaningless.  Look for .dir.tiff as well.
+
+1999-09-01  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSFont.m ([NSFont -initWithCoder:]): Get the real font
+	from the fontname.
+	* Source/NSView.m ([NSFont -initWithCoder:]): Initialize frameMatrix
+	and other matrices. (Fixes suggested by GerritVD@decimax.com).
+		
+Mon Aug 30 15:53:41 1999  Martin Man  <Martin.Man@seznam.cz>
+
+        * Headers/AppKit/NSPopUpButton.h: 
+        * Source/NSPopUpButton.m: setTitle's return type changed from int
+        to void to conform openstep specs.
+
+Wed Sep  1  9:28:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Tools/GNUmakefile.preamble: patch by doko@cs.tu-berlin.de so that
+	make_services is linked without the gstep-gui library.
+
+Wed Sep  1  9:25:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSBox.m: set default border type to NSGrooveBorder as
+	suggested by n.pero
+
+Tue Aug 31 10:45:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	Fixes to remove hard-coded colors from gui.  I'm not sure this is
+	entirely correct - in places where we expect to display white text on
+	a dark-gray background, I've used windowFrameTextColor and
+	controlShadowColor, since the MacOS-X documentation doesn't seem to
+	specify anything exactly for this.
+	* NSBrowser.m: use windowFrameTextColor for title text and
+	controlShadowColor for background.
+	* NSClipView.m: (-init) use controlColor for default background.
+	* NSColorWell.m: (-drawRect:) use controlColor for background.
+	* NSFontPanel.m: use windowFrameTextColor for title text and
+        controlShadowColor for background.
+	* NSMatrix.m: Use controlBackgroundColor for backgrounds.
+	* NSMenu.m: ([NSMenuWindowTitleView drawRect:]) use windowFrameColor
+	and windowFrameTextColor.
+	* NSMenuItemCell.m: use selectedMenuItemColor or controlColor for
+	background, and use selectedMenuItemTextColor, controlTextColor, or
+	disabledControlTextColor for text.
+	* NSPopUpButtonCell.m: use selectedMenuItemColor or controlColor for
+        background, and use selectedMenuItemTextColor, controlTextColor for
+        text.
+	* NSSplitView.m: ([-initWithFrame:]) use controlShadowColor for the
+	divider, and controlBackgroundColor for background.
+	* NSTabViewItem.m: use controlBackgroundColor.
+	* NSTableHeaderCell.m: use controlShadowColor for header.
+	* NSTableView.m: use gridColor for the grid.
+
+1999-08-29  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSCell.m ([NSCell -trackMouse:inRect:ofView:untilMouseUp:]): 
+	Remove setNeedsDisplay, which was causing button to disappear when
+	mouse left bounds.
+
+1999-08-23  Pedro Ivo Andrade Tavares  <ptavares@iname.com>
+
+        * Source/NSApplication.m: fixed a bug where it would ask if it should
+        terminate when a panel over the main window was closed.
+
+Fri Aug 27  8:02:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+        Patch from Nicola Pero <n.pero@mi.flashnet.it> 
+        * Source/NSBox.m: Fix setFrameFromContentFrame: for zero rect frame.
+
+Wed Aug 25 09:42:05 1999  Martin Man  <Martin.Man@seznam.cz>
+
+	* Source/NSWindow.m ([NSWindow -setFrameTopLeftPoint:]): Corrected
+	positioning of window's top left point. X coordinate was ignored
+	and Y coordinate was computed in wrong way.
+
+Thu Aug 26  5:07:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+        Patch from Niico Pero <n.pero@mi.flashnet.it> modified to use
+        controlDarkShadowColor rather than blackColor.
+        * Source/NSBox.m: draw line borders in correct color.
+        * Source/NSCell.m ditto
+        * Source/NSScrollView.m: ditto
+        * Source/NSTabView.m: ditto
+
+1999-08-24  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSPanel.m (NSRun...AlertPanel): Change window mapping to
+	orderFrontRegardless so panel comes up even when app is not active.
+
+1999-08-22  Adam Fedor  <fedor@gnu.org>
+
+	* Documentation/gnustep-gui.tmpl.texi: New with GNUstep specific
+	documentation.
+
+Sat Aug 21  8:00:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSApplication: ([-setMainMenu:]) close the old main menu
+	(if any) and display the new one if the app is active.
+	* Headers/AppKit/NSWindow.h: Changed ivar to support flush enable
+	* Source/NSWindow.m: Fixed frame sizing to permit setting of frame
+	beyond min/max size.  Fixed bug in enable/disable flush.
+
+1999-08-12  Adam Fedor  <fedor@gnu.org>
+
+	* Model/GMArchiver.m (-encodeObject:withName:): Don't encode
+	object if there is a replacement object for it. (Patch from Benhur
+	Stein <Benhur-de-Oliveira.Stein@imag.fr>)
+
+1999-08-10  Adam Fedor  <fedor@gnu.org>
+
+	* Source/NSClipView.m (-setBoundsOrigin:): Remove
+	window update.
+	* Source/NSScroller.m (-_floatValueForMousePoint:): 
+	Better position calculations.
+	(-trackScrollButtons:): Various improvements. 
+	* Source/NSWindow.m (-setViewsNeedDisplay:): Rewrite to automatically
+	update in event loop.
+	* Source/NSTextView.m (-drawRect:): Minor fix. (Patches and
+	suggestions from  Benhur Stein <Benhur-de-Oliveira.Stein@imag.fr>). 
+
+Mon Aug  9 13:57:48 1999  Adam Fedor  <fedor@ultra.doc.com>
+
+	* NSGraphicsContext.m (-DPSGetEventMatchingMask:...): Add check
+	for NSAppKitDefined and other masks.
+	* NSWindow.m (-sendEvent:): Get dragInfo object fix.
+
+1999-08-06  Adam Fedor  <fedor@gnu.org>
+
+	* many files: Update FSF mailing address.
+	
+Fri Aug  6 15:07:29 1999  Adam Fedor  <fedor@ultra.doc.com>
+
+	* Headers/gnustep/gui/NSDragging: Corrected method name.
+	* Source/NSWindow.m: Likewise.
 
 1999-08-03  Michael Hanni  <mhanni@sprintmail.com>
 

@@ -78,8 +78,8 @@ be placed in
 
 @section Where do I send bug reports?
 
-Bug reports can be sent to the GNUstep discussion list
-@email{discuss-gnustep@@gnu.org}.
+Bug reports can be sent to 
+@email{bug-gnustep@@gnu.org}.
 
 @noindent
 Creators rejoice!@*

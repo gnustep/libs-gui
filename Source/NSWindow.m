@@ -738,6 +738,13 @@ static NSRecursiveLock	*windowsLock;
 
 - (void) setMaxSize: (NSSize)aSize
 {
+  /*
+   * Documented maximum size for macOS-X - do we need this restriction?
+   */
+  if (aSize.width > 10000)
+    aSize.width = 10000;
+  if (aSize.height > 10000)
+    aSize.height = 10000;
   maximum_size = aSize;
 }
 
@@ -859,10 +866,34 @@ static NSRecursiveLock	*windowsLock;
   is_autodisplay = flag;
 }
 
+- (void) _handleWindowNeedsDisplay: (id)bogus
+{
+    [self displayIfNeeded];
+}
+
 - (void) setViewsNeedDisplay: (BOOL)flag
 {
   needs_display = flag;
-  [NSApp setWindowsNeedUpdate: YES];
+  if (flag)
+    {
+      [NSApp setWindowsNeedUpdate: YES];
+      [[NSRunLoop currentRunLoop]
+             performSelector: @selector(_handleWindowNeedsDisplay:)
+                      target: self
+                    argument: nil
+                       order: 600000 /*NSDisplayWindowRunLoopOrdering in OS*/
+                       modes: [NSArray arrayWithObjects:
+                                       NSDefaultRunLoopMode,
+                                       NSModalPanelRunLoopMode,
+                                       NSEventTrackingRunLoopMode, nil]];
+    }
+  else
+    {
+      [[NSRunLoop currentRunLoop]
+             cancelPerformSelector: @selector(_handleWindowNeedsDisplay:)
+                            target: self
+                          argument: nil];
+    }
 }
 
 - (BOOL) viewsNeedDisplay
@@ -1612,6 +1643,7 @@ static NSRecursiveLock	*windowsLock;
 	      break;
 
 	    case GSAppKitDraggingExit:
+	      dragInfo = [GSCurrentContext() _dragInfo];
 	      if (_lastDragView && accepts_drag)
 		GSPerformDragSelector(_lastDragView, 
 				      @selector(draggingExited:), dragInfo,
@@ -1621,6 +1653,7 @@ static NSRecursiveLock	*windowsLock;
 	    case GSAppKitDraggingDrop:
 	      if (_lastDragView && accepts_drag)
 		{
+	          dragInfo = [GSCurrentContext() _dragInfo];
 		  GSPerformDragSelector(_lastDragView, 
 					@selector(prepareForDragOperation:), 
 					dragInfo, action);
@@ -1791,9 +1824,25 @@ static NSRecursiveLock	*windowsLock;
 
 - (void) setFrameFromString: (NSString *)string
 {
-  NSRect	rect = NSRectFromString(string);
+  NSRect	frameRect = NSRectFromString(string);
 
-  [self setFrame: rect display: YES];
+  if (maximum_size.width > 0 && frameRect.size.width > maximum_size.width)
+    {
+      frameRect.size.width = maximum_size.width;
+    }
+  if (maximum_size.height > 0 && frameRect.size.height > maximum_size.height)
+    {
+      frameRect.size.height = maximum_size.height;
+    }
+  if (frameRect.size.width < minimum_size.width)
+    {
+      frameRect.size.width = minimum_size.width;
+    }
+  if (frameRect.size.height < minimum_size.height)
+    {
+      frameRect.size.height = minimum_size.height;
+    }
+  [self setFrame: frameRect display: YES];
 }
 
 - (BOOL) setFrameUsingName: (NSString *)name
@@ -2154,7 +2203,7 @@ static NSRecursiveLock	*windowsLock;
 
 BOOL GSViewAcceptsDrag(NSView *v, id<NSDraggingInfo> dragInfo)
 {
-  NSPasteboard *pb = [dragInfo draggingPasteBoard];
+  NSPasteboard *pb = [dragInfo draggingPasteboard];
   if ([pb availableTypeFromArray: GSGetDragTypes(v)])
     return YES;
   return NO;

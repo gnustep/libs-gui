@@ -433,7 +433,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
   draws_background = YES;
   [self setBackgroundColor: [NSColor textBackgroundColor]];
   [self setTextColor: [NSColor textColor]];
-  default_font = [NSFont userFontOfSize: 12];
+  default_font = RETAIN([NSFont userFontOfSize: 12]);
 
   [self setSelectionWordGranularitySet:
     [NSCharacterSet characterSetWithCharactersInString: @" "]];	//[NSCharacterSet whitespaceCharacterSet]
@@ -626,8 +626,6 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 
 	while(lpos && [set characterIsMember: [string characterAtIndex: lpos]]== lmemberstate) lpos--;
 	if ([set characterIsMember: [string characterAtIndex: lpos]] != lmemberstate && lpos < proposedCharRange.location) lpos++;
-
-	NSLog(@"lpos = %d, rpos = %d\n", lpos, rpos);
 
 	return MakeRangeFromAbs(lpos,rpos);
 }
@@ -834,7 +832,7 @@ static NSRange MakeRangeFromAbs(int a1,int a2)
 	{	if (font)
 		{	[rtfContent addAttribute: NSFontAttributeName value: font range: range];
 			[self rebuildFromCharacterIndex: range.location];
-NSLog(@"did set font");
+NSDebugLLog(@"NSText", @"did set font");
 		}
 	} else {}
 }
@@ -1339,7 +1337,7 @@ currentCursorY=[self rectForCharacterIndex: NSMaxRange([self selectedRange])].or
 		didDragging=YES;
 	}
 
-        NSLog(@"chosenRange. location = % d, length = %d\n",
+        NSDebugLog(@"chosenRange. location = % d, length = %d\n",
 (int)chosenRange.location, (int)chosenRange.length);
 
 	[self setSelectedRangeNoDrawing: chosenRange];
@@ -1498,6 +1496,7 @@ NSLog(NSStringFromRange(redrawLineRange));
 
 -(void) keyDown: (NSEvent *)theEvent
 {	unsigned short keyCode;
+
 	if (!is_editable) return; 					// If not editable then don't  recognize the key down
 
 	if ((keyCode=[theEvent keyCode])) 
@@ -1533,7 +1532,6 @@ NSLog(NSStringFromRange(redrawLineRange));
 		case NSCarriageReturnKey: 	// return
 			if ([self isFieldEditor])	//textShouldEndEditing delegation is handled in resignFirstResponder
 			{
-	NSLog(@"isFieldEditor return\n");
 #if 0
 // Movement codes for movement between fields; these codes are the intValue of the NSTextMovement key in NSTextDidEndEditing notifications
 				[NSNumber numberWithInt: NSIllegalTextMovement]
@@ -2276,8 +2274,8 @@ NSLog(@"opti hook 2");
 	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_ruler_visible];
 	[aDecoder decodeValueOfObjCType: @encode(BOOL) at: &is_field_editor];
 	background_color = [aDecoder decodeObject];
-	text_color = [aDecoder decodeObject];
-	default_font=[aDecoder decodeObject];
+	text_color = RETAIN([aDecoder decodeObject]);
+	default_font = RETAIN([aDecoder decodeObject]);
 	[aDecoder decodeValueOfObjCType: @encode(NSRange) at: &selected_range];
 
 	return self;

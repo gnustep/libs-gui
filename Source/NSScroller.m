@@ -25,7 +25,7 @@
 
    You should have received a copy of the GNU Library General Public
    License along with this library; if not, write to the Free
-   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+   Software Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111 USA.
 */
 
 #include <gnustep/gui/config.h>
@@ -60,16 +60,6 @@ static NSButtonCell* knobCell = nil;
 static const float scrollerWidth = 18;
 static const float buttonsWidth = 16;
 
-static float halfKnobRectHeight;
-static float slotOriginPlusKnobHeight;
-static float slotOriginPlusSlotHeightMinusKnobHeight;
-static float slotHeightMinusKnobHeight;
-static float halfKnobRectWidth;
-static float slotOriginPlusKnobWidth;
-static float slotOriginPlusSlotWidthMinusHalfKnobWidth;
-static float slotWidthMinusKnobWidth;
-static NSRect slotRect = {{0,0},{0,0}};
-static BOOL preCalcValues = NO;
 
 /*
  * Class methods
@@ -402,113 +392,37 @@ static BOOL preCalcValues = NO;
 {
   NSRect knobRect = [self rectForPart: NSScrollerKnob];
   NSRect slotRect = [self rectForPart: NSScrollerKnobSlot];
-  float floatValue = 0;
   float position;
+  float min_pos;
+  float max_pos;
 
   /*
-   * Adjust point to lie within the knob slot
+   * Compute limits and mouse position
    */
   if (_isHorizontal)
     {
-      float halfKnobRectWidth = knobRect.size.width / 2;
-
-      if (point.x < slotRect.origin.x + halfKnobRectWidth)
-	position = slotRect.origin.x + halfKnobRectWidth;
-      else
-	{
-	  if (point.x > slotRect.origin.x + slotRect.size.width -
-					halfKnobRectWidth)
-	    position = slotRect.origin.x + slotRect.size.width -
-							halfKnobRectWidth;
-	  else
-	    position = point.x;
-	}
-      /*
-       * Compute float value given the knob size
-       */
-      floatValue = (position - (slotRect.origin.x + halfKnobRectWidth))
-		    / (slotRect.size.width - knobRect.size.width);
+      min_pos = NSMinX(slotRect) + NSWidth(knobRect) / 2;
+      max_pos = NSMaxX(slotRect) - NSWidth(knobRect) / 2;
+      position = point.x;
     }
   else
     {
-      float halfKnobRectHeight = knobRect.size.height / 2;
-
-      if (point.y < slotRect.origin.y + halfKnobRectHeight)
-	  position = slotRect.origin.y + halfKnobRectHeight;
-      else
-	{
-	  if (point.y > slotRect.origin.y + slotRect.size.height -
-			  halfKnobRectHeight)
-	    position = slotRect.origin.y + slotRect.size.height -
-					  halfKnobRectHeight;
-	  else
-	    position = point.y;
-	}
-      /*
-       * Compute float value given the knob size
-       */
-      floatValue = (position - (slotRect.origin.y + halfKnobRectHeight)) /
-		  (slotRect.size.height - knobRect.size.height);
+      min_pos = NSMinY(slotRect) + NSHeight(knobRect) / 2;
+      max_pos = NSMaxY(slotRect) - NSHeight(knobRect) / 2;
+      position = point.y;
     }
 
-  return floatValue;
+  /*
+   * Compute float value
+   */
+
+  if (position <= min_pos)
+    return 0;
+  if (position >= max_pos)
+    return 1;
+  return (position - min_pos) / (max_pos - min_pos);
 }
 
-- (void) _preCalcParts
-{
-  NSRect knobRect = [self rectForPart: NSScrollerKnob];
-
-  slotRect = [self rectForPart: NSScrollerKnobSlot];
-  halfKnobRectWidth = knobRect.size.width / 2;
-  slotOriginPlusKnobWidth = slotRect.origin.x + halfKnobRectWidth;
-  slotOriginPlusSlotWidthMinusHalfKnobWidth = slotRect.origin.x +
-      slotRect.size.width - halfKnobRectWidth;
-  slotWidthMinusKnobWidth = slotRect.size.width - knobRect.size.width;
-
-  halfKnobRectHeight = knobRect.size.height / 2;
-  slotOriginPlusKnobHeight = slotRect.origin.y + halfKnobRectHeight;
-  slotOriginPlusSlotHeightMinusKnobHeight = slotRect.origin.y +
-      slotRect.size.height - halfKnobRectHeight;
-  slotHeightMinusKnobHeight = slotRect.size.height - knobRect.size.height;
-}
-
-- (float) _floatValueForMousePointFromPreCalc: (NSPoint)point
-{
-  float floatValue = 0;
-  float position;
-
-  if (_isHorizontal)
-    {
-      if (point.x < slotOriginPlusKnobWidth)
-	position = slotOriginPlusKnobWidth;
-      else
-	{
-	  if (point.x > slotOriginPlusSlotWidthMinusHalfKnobWidth)
-	    position = slotOriginPlusSlotWidthMinusHalfKnobWidth;
-	  else
-	    position = point.x;
-	}
-      floatValue = (position - slotOriginPlusKnobWidth) /
-				      slotWidthMinusKnobWidth;
-    }
-  else
-    {
-      if (point.y < slotOriginPlusKnobHeight)
-	position = slotOriginPlusKnobHeight;
-      else
-	{
-	  if (point.y > slotOriginPlusSlotHeightMinusKnobHeight)
-	    position = slotOriginPlusSlotHeightMinusKnobHeight;
-	  else
-	    position = point.y;
-	}
-
-      floatValue = (position - slotOriginPlusKnobHeight) /
-				    slotHeightMinusKnobHeight;
-    }
-
-  return floatValue;
-}
 
 - (void) mouseDown: (NSEvent*)theEvent
 {
@@ -572,40 +486,28 @@ static BOOL preCalcValues = NO;
 			  | NSPeriodicMask;
   NSPoint	point;
   NSPoint	apoint;
-  float		oldFloatValue = _floatValue;
+  float		lastPosition;
+  float		newPosition;
   float		floatValue;
-  float		xoffset = 0;
-  float		yoffset = 0;
+  float		offset;
   NSDate	*theDistantFuture = [NSDate distantFuture];
   NSEventType	eventType;
-  NSRect	knobRect = {{0,0},{0,0}};
-  unsigned	periodCount = 0;
+  NSRect	knobRect;
   unsigned	flags = [theEvent modifierFlags];
-  BOOL		firstTime = YES;
-
-  [self _preCalcParts];
-  preCalcValues = YES;
 
   knobRect = [self rectForPart: NSScrollerKnob];
 
-  if (_hitPart == NSScrollerKnob)
+  apoint = [theEvent locationInWindow];
+  point = [self convertPoint: apoint fromView: nil];
+  if (_isHorizontal)
     {
-      apoint = [theEvent locationInWindow];
-      point = [self convertPoint: apoint fromView: nil];
-      if (_isHorizontal)
-	{
-	  if (point.x != knobRect.origin.x + knobRect.size.width/2)
-	    {
-	      xoffset = knobRect.origin.x + knobRect.size.width/2 - point.x;
-	    }
-	}
-      else
-	{
-	  if (point.y != knobRect.origin.y + knobRect.size.height/2)
-	    {
-	      yoffset = knobRect.origin.y  + knobRect.size.height/2 - point.y;
-	    }
-	}
+      lastPosition = NSMidX(knobRect);
+      offset = lastPosition - point.x;
+    }
+  else
+    {
+      lastPosition = NSMidY(knobRect);
+      offset = lastPosition - point.y;
     }
 
   _hitPart = NSScrollerKnob;
@@ -621,66 +523,36 @@ static BOOL preCalcValues = NO;
 	{
 	  apoint = [theEvent locationInWindow];
 	  flags = [theEvent modifierFlags];
-	  periodCount = 0;
 	}
       else
 	{
-	  /*
-	   * if 6x periods have gone by w/o movement
-	   * check mouse and update if necessary
-	   */
-	  if (periodCount == 6)
-	    {
-	      apoint = [window mouseLocationOutsideOfEventStream];
-	      periodCount = 0;
-	    }
-
 	  point = [self convertPoint: apoint fromView: nil];
-	  point.x += xoffset;
-	  point.y += yoffset;
+          if (_isHorizontal)
+	    newPosition = point.x + offset;
+          else
+	    newPosition = point.y + offset;
 
-	  if (point.x != knobRect.origin.x || point.y != knobRect.origin.y)
-	    {
-	      if (firstTime)
-		{
-		  firstTime = NO;
-		}
-	      else if (flags & NSAlternateKeyMask)
-		{
-		  float	diff;
+          if (newPosition != lastPosition)
+            {
+              if (flags & NSAlternateKeyMask)
+	        {
+	          float	diff;
 
-		  diff = point.x - knobRect.origin.x;
-		  diff = diff * 3 / 4;
-		  xoffset -= diff;
-		  point.x -= diff;
-		  diff = point.y - knobRect.origin.y;
-		  diff = diff * 3 / 4;
-		  yoffset -= diff;
-		  point.y -= diff;
-		}
+	          diff = newPosition - lastPosition;
+	          diff = diff * 3 / 4;
+	          offset -= diff;
+	          newPosition -= diff;
+	        }
 
-	      floatValue = [self _floatValueForMousePointFromPreCalc: point];
+              // only one coordinate (X or Y) is used to compute floatValue.
+              point = NSMakePoint(newPosition, newPosition);
+	      floatValue = [self _floatValueForMousePoint: point];
 
-	      if (floatValue != oldFloatValue)
-		{
-		  [self setFloatValue: floatValue];
-		  [self sendAction: _action to: _target];
+	      [self setFloatValue: floatValue];
+	      [self sendAction: _action to: _target];
 
-		  /*
-		   * Get current float value - which may have been changed
-		   * when we sent the action to the target.
-		   */
-		  oldFloatValue = _floatValue;
-		  [window update];
-		}
-	      knobRect.origin = point;
-	    }
-	  /*
-	   * avoid timing related scrolling hesitation by counting number of
-	   * periodic events since scroll pos was updated, when this reaches
-	   * 6x periodic rate an update is forced on next periodic event
-	   */
-	  periodCount++;
+	      lastPosition = newPosition;
+            }
 	}
 
       theEvent = [NSApp nextEventMatchingMask: eventMask
@@ -689,8 +561,6 @@ static BOOL preCalcValues = NO;
 				      dequeue: YES];
     }
   [NSEvent stopPeriodicEvents];
-
-  preCalcValues = NO;
 }
 
 - (void) trackScrollButtons: (NSEvent*)theEvent
@@ -748,7 +618,7 @@ static BOOL preCalcValues = NO;
 	  [self unlockFocus];
 	  [window flushWindow];
 
-	  NSLog (@"tracking cell %x", theCell);
+	  NSDebugLog (@"tracking cell %x", theCell);
 
 	  shouldReturn = [theCell trackMouse: theEvent
 				      inRect: rect
@@ -821,13 +691,7 @@ static BOOL preCalcValues = NO;
 {
   NSRect rect;
 
-  /*
-   * in a modal loop we have already pre calc'd our parts
-   */
-  if (preCalcValues)
-    rect = slotRect;
-  else
-    rect = [self rectForPart: NSScrollerKnobSlot];
+  rect = [self rectForPart: NSScrollerKnobSlot];
 
   [[NSColor scrollBarColor] set];
   NSRectFill(rect);
@@ -904,6 +768,7 @@ static BOOL preCalcValues = NO;
 	  slotHeight = height - (_arrowsPosition == NSScrollerArrowsNone
 	    ?  0 : buttonsSize);
 	  knobHeight = _knobProportion * slotHeight;
+	  knobHeight = (float)floor(knobHeight);
 	  if (knobHeight < buttonsWidth)
 	    knobHeight = buttonsWidth;
 

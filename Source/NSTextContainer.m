@@ -70,7 +70,7 @@
 
 - (id) initWithContainerSize: (NSSize)aSize
 {
-  NSLog(@"NSTextContainer initWithContainerSize");
+  NSDebugLLog(@"NSText", @"NSTextContainer initWithContainerSize");
   _layoutManager = nil;
   _textView = nil;
   _containerRect.size = aSize;

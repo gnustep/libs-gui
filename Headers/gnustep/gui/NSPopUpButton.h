@@ -94,7 +94,7 @@
                    andAction:(SEL)actionSelector;
 - (void)setPreferredEdge:(NSRectEdge)edge;
 - (NSRectEdge)preferredEdge;
-- (int)setTitle:(NSString *)aString;
+- (void)setTitle:(NSString *)aString;
 - (void)synchronizeTitleAndSelectedItem;
 - (void)_popup:(NSNotification*)notification;
 - (void)mouseDown:(NSEvent *)theEvent;

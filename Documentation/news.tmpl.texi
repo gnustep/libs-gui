@@ -9,9 +9,11 @@
 
 The currently released version of the library is @samp{@value{GNUSTEP-GUI-VERSION}}.
 
+@section Noteworthy changes in version @samp{0.6.0}
+
 @section Noteworthy changes in version @samp{0.5.5}
 
-Probably to extensive to list.
+Too extensive to list.
 
 @itemize @bullet
 

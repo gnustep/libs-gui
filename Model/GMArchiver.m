@@ -232,7 +232,7 @@
     id upperObjectRepresentation;
 
     anObject = [anObject replacementObjectForModelArchiver: self];
- 
+
     label = NSMapGet(objects, anObject);
 
     if (findingConditionals && !label) {
@@ -270,9 +270,6 @@
 	 encoded. */
       upperObjectRepresentation = lastObjectRepresentation;
 
-// Removed by patch, was archiving templates and all kinds of naughty
-// stuff.
-//      anObject = [anObject replacementObjectForModelArchiver: self];
       archiveClass = [anObject classForModelArchiver];
 
       if (!findingConditionals) {

@@ -241,7 +241,7 @@
 - (void)setPanelFont: (NSFont *)fontObject
 	  isMultiple: (BOOL)flag
 {
-  panel_font = fontObject;
+  ASSIGN(panel_font, fontObject);
 }
 
 //
@@ -293,7 +293,7 @@
 {
   [super initWithCoder: aDecoder];
 
-  panel_font = [aDecoder decodeObject];
+  panel_font = RETAIN([aDecoder decodeObject]);
 
   return self;
 }
