@@ -30,7 +30,6 @@
 #define _GNUstep_H_NSApplication
 
 #include <AppKit/NSResponder.h>
-#include <AppKit/GSInfoPanel.h>
 
 @class NSArray;
 @class NSAutoreleasePool;
@@ -48,6 +47,8 @@
 @class NSImage;
 @class NSWindow;
 @class NSGraphicsContext;
+
+@class GSInfoPanel;
 
 typedef struct _NSModalSession *NSModalSession;
 
