@@ -67,7 +67,6 @@ after-clean::
 # Things to do after distcleaning
 after-distclean::
 	rm -f config.status config.log config.cache TAGS config.mak
-	cd Headers ; cd gnustep ; cd gui ; rm -f config.h
 	cd Headers ; rm -rf AppKit ; rm -rf DPSClient
 
 # Things to do before checking

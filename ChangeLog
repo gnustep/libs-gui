@@ -1,3 +1,9 @@
+Mon Oct 13 12:08:51 1997  Ovidiu Predescu <ovidiu@net-community.com>
+
+	* Headers/gnustep/gui/config.h: Added to repository.
+	* Makefile.postamble: Don't delete config.h file since it's no longer
+	automatically generated.
+
 Wed Oct  8 15:38:22 1997  Ovidiu Predescu <ovidiu@net-community.com>
 
 	* Heavy display and window flushing optimizations have been
