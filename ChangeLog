@@ -1,3 +1,12 @@
+2002-04-01  Gregory Casamento <greg_casamento@yahoo.com>
+
+	* Source/NSOutlineView.m
+	Replaced dictionaries w/ NSMapTable.   NSDictionary required
+	items of the NSOutlineView to implement the NSCopying protocol
+	which is incorrect.
+	* Headers/gnustep/gui/NSOutlineView.h
+	Replaced dictionaries in class declaration.
+	
 2002-03-31  Fred Kiefer <FredKiefer@gmx.de>
 
 	* Source/Window.m

@@ -30,16 +30,17 @@
 #define _GNUstep_H_NSOutlineView
 
 #include <AppKit/NSTableView.h>
+#include <Foundation/NSMapTable.h>
 
 @class NSMutableArray;
 @class NSString;
 
 @interface NSOutlineView : NSTableView
 {
-  NSMutableDictionary *_itemDict;
+  NSMapTable *_itemDict;
   NSMutableArray *_items;
   NSMutableArray *_expandedItems;
-  NSMutableDictionary *_levelOfItems;
+  NSMapTable *_levelOfItems;
   BOOL _autoResizesOutlineColumn;
   BOOL _indentationMarkerFollowsCell;
   BOOL _autosaveExpandedItems;

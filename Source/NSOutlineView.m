@@ -43,6 +43,7 @@
 #import <AppKit/PSOperators.h>
 #import <AppKit/NSCachedImageRep.h>
 #import <Foundation/NSArray.h>
+#import <Foundation/NSMapTable.h>
 
 static NSNotificationCenter *nc = nil;
 static const int current_version = 1;
@@ -117,16 +118,19 @@ static NSImage *unexpandable  = nil;
   _autosaveExpandedItems = NO;
   _indentationPerLevel = 0.0;
   _outlineTableColumn = nil;
-  _itemDict = [NSMutableDictionary dictionary];
+  _itemDict = NSCreateMapTable(NSObjectMapKeyCallBacks,
+			       NSObjectMapValueCallBacks,
+			       64);
   _items = [NSMutableArray array];
   _expandedItems = [NSMutableArray array];
-  _levelOfItems = [NSMutableDictionary dictionary];
+  _levelOfItems = NSCreateMapTable(NSObjectMapKeyCallBacks,
+				   NSObjectMapValueCallBacks,
+				   64);
+
 
   // Retain items
   RETAIN(_items);
   RETAIN(_expandedItems);
-  RETAIN(_itemDict);
-  RETAIN(_levelOfItems);
 
   return self;
 }
@@ -147,15 +151,14 @@ static NSImage *unexpandable  = nil;
 {
   int num = 0;
   int i = 0;
-  id sitem = startitem;
+  id object = nil;
 
-  if(sitem == nil)
-    sitem = [NSNull null];
-
-  num = [[_itemDict objectForKey: sitem] count];
+  object = NSMapGet(_itemDict, startitem); 
+  num = [object count];
   for(i = 0; i < num; i++)
     {
-      id anitem = [[_itemDict objectForKey: sitem] objectAtIndex: i];
+      id obj = NSMapGet(_itemDict, startitem);
+      id anitem = [obj objectAtIndex: i];
 
       // Only collect the children if the item is expanded
       if([self isItemExpanded: startitem])
@@ -174,29 +177,22 @@ static NSImage *unexpandable  = nil;
   int num = [_dataSource outlineView: self
 			 numberOfChildrenOfItem: startitem];
   int i = 0;
-  id sitem = startitem;
+  id sitem = (startitem == nil)?[NSNull null]:startitem;
 
   if(num > 0)
     {
-      if(sitem == nil)
-	{
-	  sitem = [NSNull null];
-	}
-      
-      [_itemDict setObject: [NSMutableArray array]
-		forKey: sitem];
-
+      NSMapInsert(_itemDict, sitem, [NSMutableArray array]);
     }
 
-  [_levelOfItems setObject: [NSNumber numberWithInt: level]
-		 forKey: sitem];
+  NSMapInsert(_levelOfItems, sitem, [NSNumber numberWithInt: level]);
 
   for(i = 0; i < num; i++)
     {
       id anitem = [_dataSource outlineView: self
 			       child: i
 			       ofItem: startitem];
-      id anarray = [_itemDict objectForKey: sitem];
+
+      id anarray = NSMapGet(_itemDict, sitem); 
       
       [anarray addObject: anitem];
       [self _loadDictionaryStartingWith: anitem
@@ -233,13 +229,11 @@ static NSImage *unexpandable  = nil;
   int numchildren = 0;
   int i = 0;
   int insertionPoint = 0;
-  id sitem = item;
-  
-  if(item == nil)
-    sitem = [NSNull null];
-  
-  numchildren = [[_itemDict objectForKey: sitem] count];
-  // NSLog(@"item: %@ children: %d", sitem, numchildren);
+  id object = nil;
+  id sitem = (item == nil)?[NSNull null]:item;
+
+  object = NSMapGet(_itemDict, sitem);
+  numchildren = [object count];
   
   // open the item...
   if(item != nil)
@@ -260,7 +254,8 @@ static NSImage *unexpandable  = nil;
   [self setNeedsDisplay: YES];  
   for(i=numchildren-1; i >= 0; i--)
     {
-      id child = [[_itemDict objectForKey: sitem] objectAtIndex: i];
+      id obj = NSMapGet(_itemDict, sitem);
+      id child = [obj objectAtIndex: i];
 
       // Add all of the children...
       if([self isItemExpanded: child])
@@ -466,7 +461,8 @@ static NSImage *unexpandable  = nil;
 {
   if(item != nil)
     {
-      return [[_levelOfItems objectForKey: item] intValue];
+      id object = NSMapGet(_levelOfItems, item);
+      return [object intValue];
     }
 
   return -1;
@@ -486,7 +482,7 @@ static NSImage *unexpandable  = nil;
        childIndex: (int *)index
 	 ofParent: (id)parent
 {
-  NSArray *allKeys = [_itemDict allKeys];
+  NSArray *allKeys = NSAllMapTableKeys(_itemDict);
   BOOL hasChildren = NO;
   NSEnumerator *en = [allKeys objectEnumerator];
   id object = nil;
@@ -502,7 +498,7 @@ static NSImage *unexpandable  = nil;
   
   while((object = [en nextObject]))
     {
-      NSArray *childArray = [_itemDict objectForKey: object];
+      NSArray *childArray = NSMapGet(_itemDict, object);
 
       if((*index = [childArray indexOfObject: item]) != NSNotFound)
 	{
@@ -521,15 +517,13 @@ static NSImage *unexpandable  = nil;
 
 - (void)reloadItem: (id)item reloadChildren: (BOOL)reloadChildren
 {
-  id object = item;
   id parent = nil;
   id dsobj = nil;
   BOOL haschildren = NO;
   int index = 0;
+  id obj = nil;
+  id object = (item == nil)?([NSNull null]):item;
 
-  if(object == nil)
-    object = [NSNull null];
-  
   // find the item
   haschildren = [self _findItem: object
 		   childIndex: &index
@@ -539,15 +533,14 @@ static NSImage *unexpandable  = nil;
 		       child: index
 		       ofItem: parent];
   
-  [[_itemDict objectForKey: parent] removeObject: item];
-  [[_itemDict objectForKey: parent] insertObject: dsobj atIndex: index];
+  obj = NSMapGet(_itemDict, parent);
+  [obj removeObject: item];
+  [obj insertObject: dsobj atIndex: index];
   
   if(reloadChildren && haschildren) // expand all
     {
-      NSMutableDictionary *allChildren = [NSMutableDictionary dictionary];
-      [self _loadDictionaryStartingWith: item
-	    atLevel: [self levelForItem: item]];
-      [_itemDict addEntriesFromDictionary: allChildren];
+      [self _loadDictionaryStartingWith: object
+	    atLevel: [self levelForItem: object]];
 
       // release the old array
       if(_items != nil)
@@ -722,20 +715,24 @@ static NSImage *unexpandable  = nil;
       RELEASE(_items); 
     }
 
-  if(_itemDict != nil)
+  if(_itemDict != NULL)
     {
-      RELEASE(_itemDict);
+      NSFreeMapTable(_itemDict);
     }
 
-  if(_levelOfItems != nil)
+  if(_levelOfItems != NULL)
     {
-      RELEASE(_levelOfItems);
+      NSFreeMapTable(_levelOfItems);
     }
 
   // create a new empty one
   _items = RETAIN([NSMutableArray array]); 
-  _itemDict = RETAIN([NSMutableDictionary dictionary]);
-  _levelOfItems = RETAIN([NSMutableDictionary dictionary]);
+  _itemDict = NSCreateMapTable(NSObjectMapKeyCallBacks,
+			       NSObjectMapValueCallBacks,
+			       64);
+  _levelOfItems = NSCreateMapTable(NSObjectMapKeyCallBacks,
+				   NSObjectMapValueCallBacks,
+				   64);
 
   // reload all the open items...
   [self _loadDictionaryStartingWith: nil
@@ -794,16 +791,17 @@ static NSImage *unexpandable  = nil;
   [aDecoder decodeValueOfObjCType: @encode(float) at: &_indentationPerLevel];
   _outlineTableColumn = [aDecoder decodeObject];
 
-  _itemDict = [NSMutableDictionary dictionary];
+  _itemDict = NSCreateMapTable(NSObjectMapKeyCallBacks,
+			       NSObjectMapValueCallBacks,
+			       64);
   _items = [NSMutableArray array];
   _expandedItems = [NSMutableArray array];
-  _levelOfItems = [NSMutableDictionary dictionary];
-
+  _levelOfItems = NSCreateMapTable(NSObjectMapKeyCallBacks,
+				   NSObjectMapValueCallBacks,
+				   64); 
   // Retain items
   RETAIN(_items);
   RETAIN(_expandedItems);
-  RETAIN(_itemDict);
-  RETAIN(_levelOfItems);
 
   return self;
 }
