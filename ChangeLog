@@ -1,3 +1,12 @@
+2005-01-14 16:11  Alexander Malmberg <alexander@malmberg.org>
+
+	* Headers/AppKit/NSSavePanel.h (-panel:shouldShowFilename:):
+	Document.
+	* Source/NSSavePanel.m (-setDelegate:): Call -validateVisibleColumns.
+	Whitespace cleanups.
+	(-browser:isColumnValid:): Give the delegate the complete path to
+	each file.
+
 2005-01-14 09:25 Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* Source/NSDocument.m: Minor change.  The init method now sets the

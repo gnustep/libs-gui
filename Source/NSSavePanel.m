@@ -1192,16 +1192,17 @@ selectCellWithString: (NSString*)title
     _delegateHasUserEnteredFilename = NO;
 
   if ([aDelegate respondsToSelector: @selector(panel:directoryDidChange:)])
-     _delegateHasDirectoryDidChange = YES;
+    _delegateHasDirectoryDidChange = YES;
   else 
     _delegateHasDirectoryDidChange = NO;      
 
   if ([aDelegate respondsToSelector: @selector(panelSelectionDidChange:)])
-     _delegateHasSelectionDidChange = YES;
+    _delegateHasSelectionDidChange = YES;
   else 
     _delegateHasSelectionDidChange = NO;      
 
   [super setDelegate: aDelegate];
+  [self validateVisibleColumns];
 }
 
 - (void) setCanSelectHiddenExtension: (BOOL) flag
@@ -1550,7 +1551,8 @@ createRowsForColumn: (int)column
 {
   NSArray	*cells = [[sender matrixInColumn: column] cells];
   unsigned	count = [cells count], i;
-  
+  NSString	*path = [sender pathToColumn: column];
+
   // iterate through the cells asking the delegate if each filename is valid
   // if it says no for any filename, the column is not valid
   if (_delegateHasShowFilenameFilter == YES)
@@ -1558,7 +1560,8 @@ createRowsForColumn: (int)column
       {
 	if (![_delegate panel: self 
 			shouldShowFilename:
-			  [[cells objectAtIndex: i] stringValue]])
+			  [path stringByAppendingPathComponent:
+			    [[cells objectAtIndex: i] stringValue]]])
 	  return NO;
       }
 

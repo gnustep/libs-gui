@@ -203,6 +203,9 @@ enum {
 	     compareFilename: (NSString *)filename1
 			with: (NSString *)filename2
 	       caseSensitive: (BOOL)caseSensitive;	 
+/** Sent by NSSavePanel to check whether a file should be displayed in
+    the panel or not.  The filename argument is the complete path
+    to the file.  */
 - (BOOL) panel: (id)sender shouldShowFilename: (NSString *)filename;
 - (NSString *)panel: (id)sender
 userEnteredFilename: (NSString *)fileName

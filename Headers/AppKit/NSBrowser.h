@@ -250,6 +250,7 @@
 
 - (void) browser: (NSBrowser *)sender createRowsForColumn: (int)column
   inMatrix: (NSMatrix *)matrix;
+/** Returns YES iff */
 - (BOOL) browser: (NSBrowser *)sender isColumnValid: (int)column;
 - (int) browser: (NSBrowser *)sender numberOfRowsInColumn: (int)column;
 - (BOOL) browser: (NSBrowser *)sender selectCellWithString: (NSString *)title
