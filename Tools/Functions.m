@@ -57,6 +57,8 @@ void NSDrawPopupNibble(NSPoint aPoint)
 {}
 void NSDrawDownArrow(NSPoint aPoint)
 {}
+void NSDottedFrameRect(NSRect aRect)
+{}
 
 /* Dummy wraps */
 unsigned int GSWDefineAsUserObj(NSGraphicsContext *ctxt) {return 0;}
