@@ -1,3 +1,12 @@
+Sun Mar  5 01:51:52 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Model/GMAppKit.m ([NSPanel -encodeWithModelArchiver:]): Cleaned,
+	simplified by invoking super's implementation; removed all code
+	pertaining to super leaving only the part specific to this
+	subclass.  ([NSPanel -initWithModelUnarchiver:]): Idem.
+	([NSSavePanel -encodeWithModelArchiver:]): Idem.  ([NSSavePanel
+	-initWithModelUnarchiver:]): Idem.
+	
 Sun Mar  5 01:19:21 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Source/NSMenu.m ([NSMenu -indexOfItem:]): Bug fix: return -1 if
