@@ -116,10 +116,7 @@
   NSImage* image;
   NSSize size;
 
-  if (_cell.is_bordered)
-    cellFrame = NSInsetRect(cellFrame, 1, 1);
-  else if (_cell.is_bezeled)
-    cellFrame = NSInsetRect(cellFrame, 2, 2);
+  cellFrame = [self drawingRectForBounds: cellFrame];
 
   [controlView lockFocus];
   if (vertical != _isVertical) {
