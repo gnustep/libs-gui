@@ -1,7 +1,8 @@
 Thu Dec  2  6:07:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
 	* Source/NSImage.m: Use opacity values from image reps to cache more
-	intelligently, and set the opacity of caches correctly.
+	intelligently, and set the opacity of caches correctly. Removed an ivar
+	* Headers/AppKit/NSImage.h: removed _repList ivar - not needed
 
 Thu Dec  2 01:28:34 1999  Nicola Pero  <n.pero@mi.flashnet.it>
 

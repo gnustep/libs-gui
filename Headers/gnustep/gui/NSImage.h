@@ -68,7 +68,6 @@
     unsigned	syncLoad:1;
   } _flags;
   NSMutableArray	*_reps;
-  NSMutableArray	*_repList;
   NSColor		*_color;
   NSView	*_lockedView;
   id		delegate;

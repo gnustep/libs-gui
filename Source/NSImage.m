@@ -131,7 +131,6 @@ repd_for_rep(NSArray *_reps, NSImageRep *rep)
 - (BOOL) useFromFile: (NSString *)fileName;
 - (BOOL) loadFromData: (NSData *)data;
 - (BOOL) loadFromFile: (NSString *)fileName;
-- (NSImageRep *) lastRepresentation;
 - (NSImageRep*) cacheForRep: (NSImageRep*)rep
 		   onDevice: (NSDictionary*)deviceDescription;
 - (NSImageRep*) _doImageCache: (NSDictionary*)deviceDescription;
@@ -370,7 +369,6 @@ static Class			cacheClass = 0;
 - (void) dealloc
 {
   [self representations];
-  RELEASE(_repList);
   RELEASE(_reps);
   /* Make sure we don't remove name from the nameDict if we are just a copy
      of the named image, not the original image */
@@ -389,7 +387,6 @@ static Class			cacheClass = 0;
 
   RETAIN(name);
   copy->_reps = [NSMutableArray new];
-  copy->_repList = [NSMutableArray new];
   RETAIN(_color);
   _lockedView = nil;
   [copy addRepresentations: [self representations]];
@@ -832,13 +829,6 @@ static Class			cacheClass = 0;
     }
 }
 
-- (NSImageRep *) lastRepresentation
-{
-  // Reconstruct the rep list if it has changed
-  [self representations];
-  return [_repList lastObject];
-}
-
 - (NSImageRep*) bestRepresentationForDevice: (NSDictionary*)deviceDescription
 {
   NSImageRep	*rep = nil;
@@ -998,21 +988,29 @@ static Class			cacheClass = 0;
 
 - (NSArray *) representations
 {
-  unsigned	i, count;
+  unsigned	count;
 
-  if (!_repList)
-    _repList = [[NSMutableArray alloc] init];
   if (_flags.syncLoad)
-    [self _loadImageFilenames];
-  [_repList removeAllObjects];
-  count = [_reps count];
-  for (i = 0; i < count; i++) 
     {
-      GSRepData	*repd = [_reps objectAtIndex: i];
-
-      [_repList addObject: repd->rep];
+      [self _loadImageFilenames];
     }
-  return _repList;
+  count = [_reps count];
+  if (count == 0)
+    {
+      return [NSArray array];
+    }
+  else
+    {
+      id	repList[count];
+      unsigned	i;
+
+      [_reps getObjects: repList];
+      for (i = 0; i < count; i++) 
+	{
+	  repList[i] = ((GSRepData*)repList[i])->rep;
+	}
+      return [NSArray arrayWithObjects: repList count: count];
+    }
 }
 
 - (void) setDelegate: anObject
