@@ -57,15 +57,6 @@
 - (void)setBackgroundColor:(NSColor *)aColor;
 - (NSColor *)backgroundColor;
 
-- (id)setUpFieldEditorAttributes: (NSText *)textObject;
-
-
-//
-// NSCoding protocol
-//
-- (void)encodeWithCoder: (NSCoder *)aCoder;
-- initWithCoder: (NSCoder *)aDecoder;
-
 @end
 
 #endif // _GNUstep_H_NSTextFieldCell
