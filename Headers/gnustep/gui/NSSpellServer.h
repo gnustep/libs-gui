@@ -5,7 +5,10 @@
 
    Copyright (C) 1996 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
+   Author:  Gregory John Casamento <borgheron@yahoo.com>
+   Date: 2000
+
+   Author of previous version: Scott Christley <scottc@net-community.com>
    Date: 1996
    
    This file is part of the GNUstep GUI Library.
@@ -30,55 +33,61 @@
 #define _GNUstep_H_NSSpellServer
 
 #include <Foundation/NSObject.h>
-#include <Foundation/NSArray.h>
+#include <Foundation/NSRange.h>
+
+// Forward declarations
+@class NSConnection;
+@class NSMutableArray;
+@class NSMutableDictionary;
 
 @interface NSSpellServer : NSObject
-
 {
-  // Attributes
+@private
+  id _delegate;
+  BOOL _caseSensitive; 
+  NSMutableDictionary *_userDictionaries;
 }
 
-//
 // Checking in Your Service 
-//
 - (BOOL)registerLanguage:(NSString *)language
 		byVendor:(NSString *)vendor;
 
-//
 // Assigning a Delegate 
-//
 - (id)delegate;
 - (void)setDelegate:(id)anObject;
 
-//
 // Running the Service 
-//
 - (void)run;
 
-//
 // Checking User Dictionaries 
-//
 - (BOOL)isWordInUserDictionaries:(NSString *)word
 		   caseSensitive:(BOOL)flag;
-
-//
-// Methods Implemented by the Delegate 
-//
-- (NSRange)spellServer:(NSSpellServer *)sender
-findMisspelledWordInString:(NSString *)stringToCheck
-language:(NSString *)language
-wordCount:(int *)wordCount
-countOnly:(BOOL)countOnly;
-- (NSArray *)spellServer:(NSSpellServer *)sender
-   suggestGuessesForWord:(NSString *)word
-inLanguage:(NSString *)language;
-- (void)spellServer:(NSSpellServer *)sender
-       didLearnWord:(NSString *)word
-inLanguage:(NSString *)language;
-- (void)spellServer:(NSSpellServer *)sender
-      didForgetWord:(NSString *)word
-inLanguage:(NSString *)language;
-
 @end
 
+//
+// NOTE: This is an informal protocol since the
+//  NSSpellChecker will need to use a proxy object
+//  to call these methods.   If they are defined on
+//  NSObject, then the compiler won't complain
+//  about not being able to find the method. (GJC)
+//
+@interface NSObject (NSSpellServerDelegate)
+- (NSRange)spellServer:(NSSpellServer *)sender
+findMisspelledWordInString:(NSString *)stringToCheck
+                  language:(NSString *)language
+                 wordCount:(int *)wordCount
+                 countOnly:(BOOL)countOnly;
+
+- (NSArray *)spellServer:(NSSpellServer *)sender
+   suggestGuessesForWord:(NSString *)word
+              inLanguage:(NSString *)language;
+
+- (void)spellServer:(NSSpellServer *)sender
+       didLearnWord:(NSString *)word
+         inLanguage:(NSString *)language;
+
+- (void)spellServer:(NSSpellServer *)sender
+      didForgetWord:(NSString *)word
+         inLanguage:(NSString *)language;
+@end
 #endif // _GNUstep_H_NSSpellServer

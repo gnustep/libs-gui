@@ -1,0 +1,8 @@
+	NSServices = 
+	(
+		{
+			NSExecutable = GSspell; 
+			NSLanguages = (English); 
+			NSSpellChecker = GNU;
+		}
+	);

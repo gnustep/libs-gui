@@ -35,7 +35,7 @@ include $(GNUSTEP_MAKEFILES)/common.make
 include ../Version
 # The applications to be compiled
 TOOL_NAME = make_services set_show_service
-SERVICE_NAME = example
+SERVICE_NAME = example GSspell
 
 # The source files to be compiled
 gpbs_OBJC_FILES = gpbs.m Functions.m
@@ -43,6 +43,8 @@ make_services_OBJC_FILES = make_services.m Functions.m
 set_show_service_OBJC_FILES = set_show_service.m Functions.m
 
 example_OBJC_FILES = example.m Functions.m
+
+GSspell_OBJC_FILES = GSspell.m
 
 include GNUmakefile.preamble
 

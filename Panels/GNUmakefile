@@ -35,7 +35,7 @@ include $(GNUSTEP_MAKEFILES)/common.make
 
 include ../Version
 
-PANELS = ColorPanel.gmodel SavePanel.gmodel
+PANELS = ColorPanel.gmodel SavePanel.gmodel SpellPanel.gmodel
 
 -include GNUmakefile.preamble
 -include GNUmakefile.local

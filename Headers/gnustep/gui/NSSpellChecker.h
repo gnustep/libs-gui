@@ -3,11 +3,14 @@
 
    Class which is interface to spell-checking service
 
-   Copyright (C) 1996 Free Software Foundation, Inc.
+   Copyright (C) 1996, 2001 Free Software Foundation, Inc.
 
-   Author:  Scott Christley <scottc@net-community.com>
+   Author:  Gregory John Casamento <greg_casamento@yahoo.com>
+   Date: 2001
+
+   Author: Scott Christley <scottc@net-community.com>
    Date: 1996
-   
+
    This file is part of the GNUstep GUI Library.
 
    This library is free software; you can redistribute it and/or
@@ -32,14 +35,40 @@
 #include <Foundation/NSObject.h>
 #include <Foundation/NSRange.h>
 
+@class NSProxy;
 @class NSString;
 @class NSArray;
 @class NSView;
 @class NSPanel;
+@class NSDictionary;
+@class NSMutableDictionary;
 
 @interface NSSpellChecker : NSObject
 {
-  // Attributes
+@private
+  /* Non-GUI attributes */
+  id _serverProxy;
+  NSString *_language;
+  NSMutableDictionary *_ignoredWords;
+
+  // Variables to keep state...
+  int _position; 
+  int _currentTag;
+  BOOL _wrapFlag;
+
+  // GUI ...
+  id _wordField;
+  id _accessoryView;
+  id _dictionaryPulldown;
+  id _spellPanel;
+
+  // Buttons... (so we can enable/disable, if necessary)
+  id _learnButton;
+  id _forgetButton;
+  id _ignoreButton;
+  id _guessButton;
+  id _findNextButton;
+  id _correctButton;
 }
 
 //
@@ -89,6 +118,5 @@
 - (void)updateSpellingPanelWithMisspelledWord:(NSString *)word;
 
 @end
-
 #endif // _GNUstep_H_NSSpellChecker
 
