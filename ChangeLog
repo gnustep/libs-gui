@@ -1,3 +1,11 @@
+Sat Mar  4 20:39:02 2000  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Model/GMAppKit.m ([NSWindow -initWithModelUnarchiver:]):
+	OrderFrontRegardless the window if it is visible, so that visible
+	windows from the main gmodel - which is loaded before the app is
+	activated - are ordered front correctly.  This is not yet a
+	complete solution - see comment in the source.
+
 Sat Mar  4 18:34:47 2000  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	Fixed major problem with creating gmodels from nibs on MACOSX.  
