@@ -270,7 +270,7 @@ static Class defaultCellClass = nil;
   // Compute max of title width in the cells
   for (i = 0; i < count; i++)
     {
-      candidate_title_width = [cells[i][0] titleWidth];
+      candidate_title_width = [_cells[i][0] titleWidth];
       if (candidate_title_width > new_title_width)  
 	new_title_width = candidate_title_width;
     }
@@ -279,7 +279,7 @@ static Class defaultCellClass = nil;
   rect = NSMakeRect (0, 0, new_title_width, 0);
   for (i = 0; i < count; i++)
     {
-      [cells[i][0] calcDrawInfo: rect];
+      [_cells[i][0] calcDrawInfo: rect];
     }
   _title_width_needs_update = NO;
 }
