@@ -1,4 +1,9 @@
-2002-01-15	Ludovic Marcotte  <ludovic@Sophos.ca>
+Wed Jan 16 23:45:32 2002  Nicola Pero  <n.pero@mi.flashnet.it>
+
+	* Source/NSApplication.m (NSAbortModalException): Removed
+	declaration - suggested by Stephen Brandon.
+
+2002-01-15  Ludovic Marcotte  <ludovic@Sophos.ca>
 	
 	* Source/NSParagraphStyle.m ([NSParagraphStyle -encodeWithCoder:])
 	fixed the index used for our locations and type arrays from
