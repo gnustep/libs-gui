@@ -284,6 +284,7 @@ extern BOOL initialize_gnustep_backend (void);
 - (void) applicationDidUpdate: (NSNotification*)aNotification;
 - (BOOL) applicationOpenUntitledFile: (NSApplication*)app;
 - (BOOL) applicationShouldTerminate: (id)sender;
+- (BOOL) applicationShouldTerminateAfterLastWindowClosed: (id)sender;
 - (void) applicationWillBecomeActive: (NSNotification*)aNotification;
 - (void) applicationWillFinishLaunching: (NSNotification*)aNotification;
 - (void) applicationWillHide: (NSNotification*)aNotification;
