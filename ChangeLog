@@ -1,3 +1,15 @@
+2002-02-26  Fred Kiefer <FredKiefer@gmx.de>
+
+	* Source/NSImage.m
+	[setSize:] recache representations if size changes.
+	[recache] throw old caches away as size may have changed.
+	* Source/NSCachedImageRep.m
+	[GSCacheW _initDefaults] set window not to be released when
+	closed. As NSApp now closes all windows on terminate.
+	* Source/NSApplication.m
+	[NSIconWindow orderWindow:relativeTo:] don't complain about order
+	out if application is closing.
+	
 Mon Feb 25 17:53:19 2002  Nicola Pero <nicola@brainstorm.co.uk>
 
 	* Source/NSMenuItemCell.m ([-initWithCoder:]): Added code to decode old
@@ -159,7 +171,6 @@ Fri Feb 22 18:22:48 2002  Nicola Pero  <nicola@brainstorm.co.uk>
 
 	* Source/NSApplication.m ([-terminate:]): Use an autorelease pool.
 
->>>>>>> 1.1360
 Thu Feb 21 23:29:50 2002  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/gnustep/gui/NSWindow.h (_originalResponder): Ivar removed.
