@@ -2036,14 +2036,43 @@ afterString in order over charRange. */
      possible) */
 
   startPoint = [self convertPoint: [theEvent locationInWindow] fromView: nil];
-  
+  startIndex = [self characterIndexForPoint: startPoint];
+
+  if (_tf.imports_graphics == YES)
+    {
+      NSTextAttachment *attachment;
+      
+      // Check if the click was on an attachment cell
+      attachment = [_textStorage attribute: NSAttachmentAttributeName
+				 atIndex: startIndex
+				 effectiveRange: NULL];
+
+      if (attachment != nil)
+        { 
+	  id <NSTextAttachmentCell> cell = [attachment attachmentCell];
+	  // FIXME: Where to get the cellFrame?
+	  NSRect cellFrame = NSMakeRect(0, 0, 0, 0);
+	  
+	  if ((cell != nil) &&
+	      ([cell wantsToTrackMouseForEvent: theEvent 
+		     inRect: cellFrame
+		     ofView: self
+		     atCharacterIndex: startIndex] == YES) &&
+	      ([cell trackMouse: theEvent 
+		     inRect: cellFrame 
+		     ofView: self
+		     atCharacterIndex: startIndex
+		     untilMouseUp: NO] == YES))
+	      return;
+	}
+    }
+
   if ([theEvent modifierFlags] & NSShiftKeyMask)
     {
       /* Shift-click is for extending an existing selection using 
 	 the existing granularity */
       granularity = _selectionGranularity;
       /* Compute the new selection */
-      startIndex = [self characterIndexForPoint: startPoint];
       proposedRange = NSMakeRange (startIndex, 0);
       proposedRange = NSUnionRange (_selected_range, proposedRange);
       proposedRange = [self selectionRangeForProposedRange: proposedRange
@@ -2072,7 +2101,6 @@ afterString in order over charRange. */
 	case 3: granularity = NSSelectByParagraph;
 	  break;
 	}
-      startIndex = [self characterIndexForPoint: startPoint];
       proposedRange = NSMakeRange (startIndex, 0);
     }
 
