@@ -1,3 +1,8 @@
+Wed Feb 20 12:36:05 2002  Nicola Pero  <nicola@brainstorm.co.uk>
+
+	* Model/GMAppKit.m ([NSBox -subviewsForModel]): New method fixing
+	problems with subviews of NSBox objects.
+
 2002-02-20  Richard Frith-Macdonald  <rfm@gnu.org>
 
 	* Source/NSLayoutManager.m: Lots of changes to glyph code, including
