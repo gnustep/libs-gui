@@ -30,7 +30,6 @@
 # the source code.
 after-all::
 	$(MAKE) -C ../Source -f DocMakefile
-	$(MAKE) -C Gui -f GNUmakefile
 
 # Things to do before installing
 # before-install::

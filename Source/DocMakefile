@@ -141,7 +141,16 @@ DOCUMENT_NAME = Gui
 
 Gui_DOC_INSTALL_DIR = Developer
 
-Gui_AGSDOC_FILES = ../Documentation/Gui.gsdoc $(AUTOGSDOC_HEADERS)
+Gui_AGSDOC_FILES = ../Documentation/Gui/Gui.gsdoc \
+	../Documentation/Gui/Introduction.gsdoc \
+	../Documentation/Gui/DefaultsSummary.gsdoc \
+	../Documentation/Gui/LanguageSetup.gsdoc \
+	../Documentation/Gui/NSBundleAdditions.gsdoc \
+	../Documentation/Gui/NSCoderAdditions.gsdoc \
+	../Documentation/Gui/NSMutableAttributedStringAdditions.gsdoc \
+	../Documentation/Gui/NSMutableParagraphStyle.gsdoc \
+	../Documentation/Gui/NSStringAdditions.gsdoc \
+	$(AUTOGSDOC_HEADERS)
 
 #
 # Hack ... using the -DocumentationDirectory flag overrides the value
