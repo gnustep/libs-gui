@@ -184,6 +184,10 @@ Gui_AGSDOC_FLAGS = \
 	-HeaderDirectory ../Headers/AppKit \
 	-Declared AppKit \
 	-Standards YES \
+	-ConstantsTemplate TypesAndConstants \
+	-FunctionsTemplate Functions \
+	-TypedefsTemplate TypesAndConstants \
+	- VariablesTemplate TypesAndConstants \
 	-WordMap '{\
 	APPKIT_EXPORT=extern;APPKIT_DECLARE="";\
 	}' -Up Gui

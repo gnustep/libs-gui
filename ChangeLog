@@ -1,3 +1,8 @@
+2002-09-29  Richard Frith-Macdonald <rfm@gnu.org>
+
+	* Source/Makefile: Set flags to generate documentation using
+	templates.
+
 2002-09-18  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
 	* Source/NSSplitView.m ([NSSplitView -initWithCoder:]):
