@@ -14,6 +14,20 @@ help is greatly appreciated.  Send email to @email{scottc@@net-community.com}.
 
 @itemize @bullet
 
+@item Consolodate examples & tests [3, OpenStep] (980913).
+Also fix or document whatever bugs are there.
+
+@item Cut gradient code out of WindowMaker and insert in menus [4,
+WindowMaker] (980913). 
+
+@item Define interface between GNUstep and window manager [7, X11 window
+managers] (980912). 
+Work with WindowMaker folks on this.
+
+@item Need to write an interface for a simple drawing engine [7, PS, X11] (980913).
+So we can maintain compatibility between DPS backends and other
+backends, and have a unified printing mechanism.
+
 @item Need an rtf parser [6 - Objective-C, RTF] (980820).
 
 @item
@@ -83,7 +97,7 @@ first responder. Another thing to be done is to handle text
 selections. Cursor flushing is fairly simple to implement with
 timer events; selection should also be simple enough.
 
-@item
+@item NSText [8, NSText] (980101)
 the biggest challange is the text system. Some work has been done
 by ANOQ of the Sun, but it is a mixture between the old and the
 new API for NSText from the newer OPENSTEP. In my opinion we
@@ -93,13 +107,7 @@ view-only, you can't really use the code to edit the text. My
 estimate for a fairly complete version of it would be 2 good
 people working full time for 3-4 months.
 
-@item
-Printing architecture.  Careful thoughts needs to go into how the
-printing capabilities can be done in the most portable way, possibly
-take into consideration systems that don't support the Display
-Ghostscript System and/or printing to non-Postscript printers.
-
-@item
+@item Implement drag and drop [6, drag&drop interfaces&standards] (980101)
 Drag and drop/pasteboard framework.  Is there a way this can be done so
 that all GNU programs can take advantage of it and not just GNUstep?
 That would be optimal because GNUstep and non-GNUstep programs would then
@@ -114,8 +122,5 @@ excluding GIF files which are currently restricted by patents.
 @item
 The spell server and checker; along with this would be to create an
 interface with the GNU Dictionary project.
-
-@item
-Work with WindowMaker folks on a workspace manager.
 
 @end itemize
