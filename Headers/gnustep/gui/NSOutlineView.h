@@ -125,7 +125,9 @@ persistentObjectForItem: (id)item;
 /*
  * Constants
  */
-enum { NSOutlineViewDropOnItemIndex = -1 };
+extern int NSOutlineViewDropOnItemIndex;
+
+//enum { NSOutlineViewDropOnItemIndex = -1 };
 
 /*
  * Notifications

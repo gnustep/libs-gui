@@ -46,6 +46,19 @@
 static NSNotificationCenter *nc = nil;
 static const int current_version = 1;
 
+int NSOutlineViewDropOnItemIndex = -1;
+
+static int lastVerticalQuarterPosition;
+static int lastHorizontalHalfPosition;
+
+static NSRect oldDraggingRect;
+static int oldDropRow;
+static int oldProposedDropRow;
+static int currentDropRow;
+static int oldDropLevel;
+static int currentDropLevel;
+
+
 // Cache the arrow images...
 static NSImage *collapsed = nil;
 static NSImage *expanded  = nil;
@@ -483,11 +496,6 @@ static int _levelForItem(NSOutlineView *outline,
 - (void)setAutosaveExpandedItems: (BOOL)flag
 {
   _autosaveExpandedItems = flag;
-}
-
-- (void)setDropItem:(id)item dropChildIndex: (int)index
-{
-  // Nothing yet...
 }
 
 - (void)setIndentationMarkerFollowsCell: (BOOL)followsCell
@@ -994,5 +1002,339 @@ static int _levelForItem(NSOutlineView *outline,
 
   return YES;
 }
+
+
+- (void) setDropItem: (id) item
+      dropChildIndex: (int) childIndex
+{
+  int row = [_items indexOfObject: item];
+  id itemAfter;
+
+  if (row == NSNotFound)
+    {
+      return;
+    }
+
+  if ([self isItemExpanded: item] == NO)
+    {
+      return;
+    }
+
+  if (childIndex == NSOutlineViewDropOnItemIndex)
+    {
+      currentDropRow = row;
+      currentDropLevel = NSOutlineViewDropOnItemIndex;
+    }
+  else
+    {
+      itemAfter = [_dataSource outlineView: self
+			       child: childIndex
+			       ofItem: item];
+      currentDropRow = [_items indexOfObject: itemAfter];
+      currentDropLevel = [self levelForItem: itemAfter];
+    }
+}
+
+- (BOOL) _isDraggingSource
+{
+  return [_dataSource respondsToSelector:
+			@selector(outlineView:writeItems:toPasteboard:)];
+}
+
+- (BOOL) _writeRows: (NSArray *) rows
+       toPasteboard: (NSPasteboard *)pboard
+{
+  int count = [rows count];
+  int i;
+  NSMutableArray *itemArray = [NSMutableArray
+				arrayWithCapacity: count];
+
+  for ( i = 0; i < count; i++ )
+    {
+      [itemArray addObject: 
+		   [self itemAtRow: 
+			   [[rows objectAtIndex: i] intValue]]];
+    }
+
+  if ([_dataSource respondsToSelector:
+		     @selector(outlineView:writeItems:toPasteboard:)] == YES)
+    {
+      return [_dataSource outlineView: self
+			  writeItems: itemArray
+			  toPasteboard: pboard];
+    }
+  return NO;
+}
+
+/*
+ *  Drag'n'drop support
+ */
+
+- (unsigned int) draggingEntered: (id <NSDraggingInfo>) sender
+{
+  NSLog(@"draggingEntered");
+  currentDropRow = -1;
+  //  currentDropOperation = -1;
+  oldDropRow = -1;
+  lastVerticalQuarterPosition = -1;
+  oldDraggingRect = NSMakeRect(0.,0., 0., 0.);
+  return NSDragOperationCopy;
+}
+
+
+- (unsigned int) draggingUpdated: (id <NSDraggingInfo>) sender
+{
+  NSPoint p = [sender draggingLocation];
+  NSRect newRect;
+  int row;
+  int verticalQuarterPosition;
+  int horizontalHalfPosition;
+  int levelBefore;
+  int levelAfter;
+  int level;
+
+  p = [self convertPoint: p fromView: nil];
+  verticalQuarterPosition = 
+    (p.y - _bounds.origin.y) / _rowHeight * 4.;
+  horizontalHalfPosition = 
+    (p.x - _bounds.origin.y) / _indentationPerLevel * 2.;
+
+
+  if ((verticalQuarterPosition - oldProposedDropRow * 4 <= 2) &&
+      (verticalQuarterPosition - oldProposedDropRow * 4 >= -3) )
+    {
+      row = oldProposedDropRow;
+    }
+  else
+    {
+      row = (verticalQuarterPosition + 2) / 4;
+    }
+
+  if (row > _numberOfRows)
+    row = _numberOfRows;
+
+  //  NSLog(@"horizontalHalfPosition = %d", horizontalHalfPosition);
+
+  //  NSLog(@"dropRow %d", row);
+
+  if (row == 0)
+    {
+      levelBefore = 0;
+    }
+  else
+    {
+      levelBefore = [self levelForRow: (row - 1)];
+    }
+  if (row == _numberOfRows)
+    {
+      levelAfter = 0;
+    }
+  else
+    {
+      levelAfter = [self levelForRow: row];
+    }
+
+  if (levelBefore < levelAfter)
+    levelBefore = levelAfter;
+
+  
+  //  NSLog(@"horizontalHalfPosition = %d", horizontalHalfPosition);
+  //  NSLog(@"level before = %d", levelBefore);
+  //  NSLog(@"level after = %d", levelAfter);
+
+
+
+  if ((lastVerticalQuarterPosition != verticalQuarterPosition)
+      || (lastHorizontalHalfPosition != horizontalHalfPosition))
+    {
+      id item;
+      int childIndex;
+
+      if (horizontalHalfPosition / 2 < levelAfter)
+	horizontalHalfPosition = levelAfter * 2;
+      else if (horizontalHalfPosition / 2 > levelBefore)
+	horizontalHalfPosition = levelBefore * 2 + 1;
+      level = horizontalHalfPosition / 2;
+
+
+      lastVerticalQuarterPosition = verticalQuarterPosition;
+      lastHorizontalHalfPosition = horizontalHalfPosition;
+      
+      //      NSLog(@"horizontalHalfPosition = %d", horizontalHalfPosition);
+      //      NSLog(@"verticalQuarterPosition = %d", verticalQuarterPosition);
+      
+      currentDropRow = row;
+      currentDropLevel = level;
+
+      {
+	int i;
+	int j = 0;
+	int lvl;
+	for ( i = row - 1; i >= 0; i-- )
+	  {
+	    lvl = [self levelForRow: i];
+	    if (lvl == level - 1)
+	      {
+		break;
+	      }
+	    else if (lvl == level)
+	      {
+		j++;
+	      }
+	  }
+	//	NSLog(@"found %d (proposed childIndex = %d)", i, j);
+	if (i == -1)
+	  item = nil;
+	else
+	  item = [self itemAtRow: i];
+	
+	childIndex = j;
+      }
+
+
+      oldProposedDropRow = currentDropRow;
+      if ([_dataSource respondsToSelector: 
+			 @selector(outlineView:validateDrop:proposedItem:proposedChildIndex:)])
+	{
+	  //	  NSLog(@"currentDropLevel %d, currentDropRow %d",
+	  //		currentDropRow, currentDropLevel);
+	  [_dataSource outlineView: self
+		       validateDrop: sender
+		       proposedItem: item
+		       proposedChildIndex: childIndex];
+	  //	  NSLog(@"currentDropLevel %d, currentDropRow %d", 
+	  //		currentDropRow, currentDropLevel);
+	}
+      
+      if ((currentDropRow != oldDropRow) || (currentDropLevel != oldDropLevel))
+	{
+	  [self lockFocus];
+	  
+	  [self setNeedsDisplayInRect: oldDraggingRect];
+	  [self displayIfNeeded];
+	  
+	  [[NSColor darkGrayColor] set];
+	  
+	  //	  NSLog(@"currentDropLevel %d, currentDropRow %d", 
+	  //		currentDropRow, currentDropLevel);
+	  if (currentDropLevel != NSOutlineViewDropOnItemIndex)
+	    {
+	      if (currentDropRow == 0)
+		{
+		  newRect = NSMakeRect([self visibleRect].origin.x,
+				       currentDropRow * _rowHeight,
+				       [self visibleRect].size.width,
+				       3);
+		}
+	      else if (currentDropRow == _numberOfRows)
+		{
+		  newRect = NSMakeRect([self visibleRect].origin.x,
+				       currentDropRow * _rowHeight - 2,
+				       [self visibleRect].size.width,
+				       3);
+		}
+	      else
+		{
+		  newRect = NSMakeRect([self visibleRect].origin.x,
+				       currentDropRow * _rowHeight - 1,
+				       [self visibleRect].size.width,
+				       3);
+		}
+	      newRect.origin.x += currentDropLevel * _indentationPerLevel;
+	      newRect.size.width -= currentDropLevel * _indentationPerLevel;
+	      NSRectFill(newRect);
+	      oldDraggingRect = newRect;
+
+	    }
+	  else
+	    {
+	      newRect = [self frameOfCellAtColumn: 0
+			      row: currentDropRow];
+	      newRect.origin.x = _bounds.origin.x;
+	      newRect.size.width = _bounds.size.width + 2;
+	      newRect.origin.x -= _intercellSpacing.height / 2;
+	      newRect.size.height += _intercellSpacing.height;
+	      oldDraggingRect = newRect;
+	      oldDraggingRect.origin.y -= 1;
+	      oldDraggingRect.size.height += 2;
+
+	      newRect.size.height -= 1;
+
+	      newRect.origin.x += 3;
+	      newRect.size.width -= 3;
+		
+	      if (_drawsGrid)
+		{
+		  //newRect.origin.y += 1;
+		  //newRect.origin.x += 1;
+		  //newRect.size.width -= 2;
+		  newRect.size.height += 1;
+		}
+	      else
+		{
+		}
+
+	      newRect.origin.x += currentDropLevel * _indentationPerLevel;
+	      newRect.size.width -= currentDropLevel * _indentationPerLevel;
+
+	      NSFrameRectWithWidth(newRect, 2.0);
+	      //	      NSRectFill(newRect);
+
+	      }
+	  [_window flushWindow];
+	  
+	  [self unlockFocus];
+	  
+	  oldDropRow = currentDropRow;
+	  oldDropLevel = currentDropLevel;
+	}
+    }
+
+
+  return NSDragOperationCopy;
+}
+
+- (BOOL) performDragOperation: (id<NSDraggingInfo>)sender
+{
+  NSLog(@"performDragOperation");
+  if ([_dataSource 
+	respondsToSelector: 
+	  @selector(outlineView:validateDrop:proposedItem:proposedChildIndex:)])
+    {
+      id item;
+      int childIndex;
+      int i;
+      int j = 0;
+      int lvl;
+      for ( i = currentDropRow - 1; i >= 0; i-- )
+	{
+	  lvl = [self levelForRow: i];
+	  if (lvl == currentDropLevel - 1)
+	    {
+	      break;
+	    }
+	  else if (lvl == currentDropLevel)
+	    {
+	      j++;
+	    }
+	}
+      if (i == -1)
+	item = nil;
+      else
+	item = [self itemAtRow: i];
+      
+      childIndex = j;
+
+
+      return [_dataSource 
+	       outlineView: self
+		 validateDrop: sender
+		 proposedItem: item
+		 proposedChildIndex: childIndex];
+    }
+  else
+    return NO;
+}
+
 @end /* implementation of NSOutlineView */
 

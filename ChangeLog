@@ -1,5 +1,9 @@
 2002-03-22  Pierre-Yves Rivaille <pyrivail@ens-lyon.fr>
 
+	* Source/NSOutlineView.h
+	Moved NSOutlineViewDropOnItemIndex from enum to int.
+	* Source/NSOutlineView.m:
+	Drag'n'drop support.
 	* Source/NSTableView.m 
 	([NSTableView -selectRow:byExtendingSelection:]): 
 	rowIndex == _numberOfRows was not catched as invalid.
