@@ -133,6 +133,8 @@ Gui_GSDOC_FILES = Gui.gsdoc \
 	NSWindowController.gsdoc \
 	NSWorkspace.gsdoc
 
+Gui_DOC_INSTALL_DIR = Developer/Gui/Reference
+
 -include Makefile.preamble
 
 -include GNUmakefile.local
