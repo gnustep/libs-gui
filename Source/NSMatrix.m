@@ -204,6 +204,33 @@ static SEL getSel;
   _mode = aMode;
   if ((_numCols > 0) && (_numRows > 0))
     {
+      /* 
+	 We must not round the _cellSize to integers here!
+	 
+	 Any approximation is a loss of information.  We should give
+	 to the backend as much information as possible, and trust
+	 that it will use that information to provide the best
+	 possible rendering on that device.  Depending on the backend,
+	 that might go up to using antialias or advanced graphics
+	 tricks to make an advanced rendering of things not lying on
+	 pixel boundaries.  Approximating here just gives less
+	 information to the backend, making the rendering worse.
+	 
+	 Even if the backend is just approximating to pixels, it would
+	 still be wrong to round _cellSize here, because rounding
+	 sizes of rectangles without considering the origin of the
+	 rectangles has been definitely found to be wrong and to cause
+	 incorrect rendering.  The origin of the whole matrix is very
+	 likely a non-integer - if not originally, as a consequence of
+	 the fact that the user resized the window - so making the
+	 cell size integer does not cause drawing to be done on pixel
+	 boundaries anyway, and will actually make more difficult for
+	 the backend to render the rectangles properly since it will
+	 be drawing approximately rectangles which are already only an
+	 approximate description - and this first approximation having
+	 been done incorrectly too! - of what we really want to draw.
+      */
+
       _cellSize = NSMakeSize (frameRect.size.width/_numCols,
 			      frameRect.size.height/_numRows);
     }
