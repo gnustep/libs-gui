@@ -1,3 +1,8 @@
+Sat Dec 18  5:38:00 1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
+	* Source/NSView.m: ([-initWithCoder:]) small optimisation and
+	consistency check when decoding and adding subviews.
+
 Fri Dec 17 23:44:53 1999  Nicola Pero  <n.pero@mi.flashnet.it>
 
 	* Headers/AppKit/NSBox.h: Prefixed ivars with underscores.

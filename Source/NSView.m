@@ -2504,15 +2504,8 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
   e = [subs objectEnumerator];
   while ((sub = [e nextObject]) != nil)
     {
-      // We can't use [self addSubview: sub]; because NSBox overrides
-      // that method: we need to take the long way.
-      if ([self isDescendantOf: sub])
-	{
-	  NSLog(@"Operation addSubview: creates a loop in the views tree!\n");
-	  continue;
-	}
-      RETAIN (sub);
-      [sub removeFromSuperview];
+      NSAssert(sub->window == nil, NSInternalInconsistencyException);
+      NSAssert(sub->super_view == nil, NSInternalInconsistencyException);
       [sub viewWillMoveToWindow: window];
       [sub viewWillMoveToSuperview: self];
       [sub setNextResponder: self];
@@ -2520,7 +2513,6 @@ static NSView* findByTag(NSView *view, int aTag, unsigned *level)
       _rFlags.has_subviews = 1;
       [sub resetCursorRects];
       [sub setNeedsDisplay: YES];
-      RELEASE(sub);
     }
   RELEASE(subs);
 
