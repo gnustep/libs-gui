@@ -1,4 +1,4 @@
-/* 
+/*
    NSWorkspace.m
 
    Description...
@@ -597,6 +597,7 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
 {
   NSString      *port = [appName stringByDeletingPathExtension];
   id            app = nil;
+  NSDictionary  *userinfo = nil;
 
   /*
    *	Try to contact a running application.
@@ -626,6 +627,16 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
 	    @"Continue", nil, nil);
 	  return NO;
 	}
+
+      userinfo = [NSDictionary dictionaryWithObject: appName
+                           forKey: @"NSApplicationName"];
+
+     // App being launched, raise NSWorkspaceWillLaunchApplicationNotification
+     [workspaceCenter
+          postNotificationName: NSWorkspaceWillLaunchApplicationNotification
+          object: self
+          userInfo: userinfo];
+
       args = [NSArray arrayWithObjects: @"-GSFilePath", fullPath, nil];
       if ([NSTask launchedTaskWithLaunchPath: path arguments: args] == nil)
 	{
@@ -635,6 +646,12 @@ extIconForApp(NSWorkspace *ws, NSString *appName, NSDictionary *typeInfo)
 	    @"Continue", nil, nil);
 	  return NO;
 	}
+
+      [workspaceCenter
+	postNotificationName: NSWorkspaceDidLaunchApplicationNotification
+	object: self
+	userInfo: userinfo];
+
       return YES;
     }
   else
@@ -935,12 +952,31 @@ inFileViewerRootedAtPath: (NSString *)rootFullpath
 	        autolaunch: (BOOL)autolaunch
 {
   NSString	*path;
+  NSDictionary  *userinfo;
 
   path = [self locateApplicationBinary: appName];
+
   if (path == nil)
     return NO;
+
+  userinfo = [NSDictionary dictionaryWithObject: appName
+                           forKey: @"NSApplicationName"];
+
+  // App being launched, raise NSWorkspaceWillLaunchApplicationNotification
+  [workspaceCenter
+    postNotificationName: NSWorkspaceWillLaunchApplicationNotification
+    object: self
+    userInfo: userinfo];
+
   if ([NSTask launchedTaskWithLaunchPath: path arguments: nil] == nil)
     return NO;
+
+  // App has been launched raise NSWorkspaceDidLaunchApplicationNotification
+  [workspaceCenter
+     postNotificationName: NSWorkspaceDidLaunchApplicationNotification
+    object: self
+    userInfo: userinfo];
+
   return YES;
 }
 

@@ -1,5 +1,14 @@
 Tue Oct 12  1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
 
+	* Source/NSApplication.m: Attempts to fix ordering of application
+	activation und unhiding on launch.
+	* Source/NSWorkspace.m: Patch by Aled.Davies@bigfoot.com to send
+	notifications on application launch
+	* Source/NSWorkspace.m: Patch by Aled.Davies@bigfoot.com to send
+	notifications on application launch.
+
+Tue Oct 12  1999  Richard Frith-Macdonald <richard@brainstorm.co.uk>
+
 	* Source/NSWorkspace.m: Added private notification center class to
 	handle notifications to be passed between applications.
 

@@ -148,7 +148,9 @@ NSApplication	*NSApp = nil;
 
   NSDebugLog(@"Begin of NSApplication -init\n");
 
-  app_is_active = YES;
+  unhide_on_activation = YES;
+  app_is_hidden = YES;
+  app_is_active = NO;
   listener = [GSServicesManager newWithApplication: self];
 
   main_menu = nil;
@@ -197,6 +199,8 @@ NSApplication	*NSApp = nil;
 
   /* Register our listener to incoming services requests etc. */
   [listener registerAsServiceProvider];
+
+  [self activateIgnoringOtherApps: YES];
 
 #ifndef STRICT_OPENSTEP
   /* Register self as observer to every window closing. */
@@ -298,7 +302,6 @@ NSApplication	*NSApp = nil;
       [nc postNotificationName: NSApplicationWillResignActiveNotification
 			object: self];
 
-      unhide_on_activation = NO;
       app_is_active = NO;
 
       [nc postNotificationName: NSApplicationDidResignActiveNotification
@@ -889,6 +892,7 @@ NSAssert([event retainCount] > 0, NSInternalInconsistencyException);
 	   */
 	  [self activateIgnoringOtherApps: YES];
 	}
+      unhide_on_activation = NO;
     }
 }
 
